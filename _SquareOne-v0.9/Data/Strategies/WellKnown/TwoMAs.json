@@ -1,0 +1,91 @@
+{
+  "$type": "Sq1.Core.StrategyBase.Strategy, Sq1.Core",
+  "Guid": "7725f2be-42e2-495f-8d71-5ecd0c305d29",
+  "Name": "TwoMAs",
+  "ScriptSourceCode": "using System;\r\nusing System.Diagnostics;\r\n\r\nusing Sq1.Core;\r\nusing Sq1.Core.DataTypes;\r\nusing Sq1.Core.Execution;\r\nusing Sq1.Core.Indicators;\r\nusing Sq1.Core.StrategyBase;\r\nusing Sq1.Core.Streaming;\r\n\r\nnamespace Sq1.Strategies.Worldexplorer {\r\n\tpublic class TwoMAs : Script {\r\n\t\t[IndicatorParameterAttribute(Name=\"Period\",\r\n\t\t\tValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]\r\n\t\tpublic IndicatorAverageMovingSimple MAslow { get; set; }\r\n\r\n\t\t[IndicatorParameterAttribute(Name = \"Period\",\r\n\t\t\tValueCurrent = 15, ValueMin = 10, ValueMax = 20, ValueIncrement = 1)]\r\n\t\tpublic IndicatorAverageMovingSimple MAfast { get; set; }\r\n\t\t\r\n\t\tpublic int PeriodLargestAmongMAs { get {\r\n\t\t\t\tint ret = this.MAfast.Period;\r\n\t\t\t\tif (ret > this.MAslow.Period) ret = this.MAslow.Period; \r\n\t\t\t\treturn ret;\r\n\t\t\t} }\r\n\r\n\t\tpublic override void InitializeBacktest() {\r\n\t\t\tthis.MAslow.LineColor = System.Drawing.Color.LightCoral;\r\n\t\t\tthis.MAfast.LineColor = System.Drawing.Color.LightSeaGreen;\r\n\t\t}\r\n\t\tpublic override void OnNewQuoteOfStreamingBarCallback(Quote quote) {\r\n\t\t}\r\n\t\tpublic override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {\r\n\t\t\tBar barStreaming = barStaticFormed.ParentBars.BarStreaming;\r\n\t\t\tif (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;\r\n\r\n\t\t\tdouble maSlowThis = this.MAslow.OwnValuesCalculated[barStaticFormed.ParentBarsIndex];\r\n\t\t\tdouble maSlowPrev = this.MAslow.OwnValuesCalculated[barStaticFormed.ParentBarsIndex - 1];\r\n\r\n\t\t\tdouble maFastThis = this.MAfast.OwnValuesCalculated[barStaticFormed.ParentBarsIndex];\r\n\t\t\tdouble maFastPrev = this.MAfast.OwnValuesCalculated[barStaticFormed.ParentBarsIndex - 1];\r\n\r\n\t\t\tbool fastCrossedUp = false;\r\n\t\t\tif (maFastThis > maSlowThis && maFastPrev < maSlowPrev) fastCrossedUp = true; \r\n\t\t\t\t\r\n\t\t\tbool fastCrossedDown = false;\r\n\t\t\tif (maFastThis < maSlowThis && maFastPrev > maSlowPrev) fastCrossedDown = true;\r\n\r\n\t\t\tif (fastCrossedUp && fastCrossedDown) {\r\n\t\t\t\tstring msg = \"TWO_CROSSINGS_SHOULD_NEVER_HAPPEN_SIMULTANEOUSLY\";\r\n\t\t\t\tAssembler.PopupException(msg);\r\n\t\t\t\tDebugger.Break();\r\n\t\t\t}\r\n\t\t\tbool crossed = fastCrossedUp || fastCrossedDown;\r\n\t\t\t\t\r\n\t\t\tPosition lastPos = base.LastPosition;\r\n\t\t\tbool isLastPositionNotClosedYet = base.IsLastPositionNotClosedYet;\r\n\t\t\tif (isLastPositionNotClosedYet && crossed) {\r\n\t\t\t\tstring msg = \"ExitAtMarket@\" + barStaticFormed.ParentBarsIdent;\r\n\t\t\t\tAlert exitPlaced = ExitAtMarket(barStreaming, lastPos, msg);\r\n\t\t\t}\r\n\r\n\t\t\tif (fastCrossedUp) {\r\n\t\t\t\tstring msg = \"BuyAtMarket@\" + barStaticFormed.ParentBarsIdent;\r\n\t\t\t\tPosition buyPlaced = BuyAtMarket(barStreaming, msg);\r\n\t\t\t}\r\n\t\t\tif (fastCrossedDown) {\r\n\t\t\t\tstring msg = \"ShortAtMarket@\" + barStaticFormed.ParentBarsIdent;\r\n\t\t\t\tPosition shortPlaced = ShortAtMarket(barStreaming, msg);\r\n\t\t\t}\r\n\t\t}\r\n\t\tpublic override void OnAlertFilledCallback(Alert alertFilled) {\r\n\t\t}\r\n\t\tpublic override void OnAlertKilledCallback(Alert alertKilled) {\r\n\t\t}\r\n\t\tpublic override void OnAlertNotSubmittedCallback(Alert alertNotSubmitted, int barNotSubmittedRelno) {\r\n\t\t}\r\n\t\tpublic override void OnPositionOpenedCallback(Position positionOpened) {\r\n\t\t}\r\n\t\tpublic override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedByPrototype) {\r\n\t\t}\r\n\t\tpublic override void OnPositionClosedCallback(Position positionClosed) {\r\n\t\t}\r\n\r\n\t}\r\n}\r\n",
+  "DotNetReferences": null,
+  "DllPathIfNoSourceCode": null,
+  "ExceptionsLimitToAbortBacktest": 10,
+  "StoredInJsonAbspath": "C:\\SquareOne\\_SquareOne-v0.9\\Data\\Strategies\\WellKnown\\TwoMAs.json",
+  "ScriptContextCurrentName": "Default",
+  "ScriptContextsByName": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
+    "Default": {
+      "$type": "Sq1.Core.StrategyBase.ContextScript, Sq1.Core",
+      "PositionSize": {
+        "$type": "Sq1.Core.Execution.PositionSize, Sq1.Core",
+        "Mode": 1,
+        "DollarsConstantEachTrade": 0.0,
+        "SharesConstantEachTrade": 1.0
+      },
+      "IsCurrent": true,
+      "ChartAutoSubmitting": false,
+      "ReporterShortNamesUserInvokedJSONcheck": [
+        "Positions",
+        "Performance"
+      ],
+      "BacktestOnRestart": true,
+      "BacktestOnSelectorsChange": true,
+      "ReportersSnapshots": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
+        "Performance": null,
+        "Positions": {
+          "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
+          "ShowEntriesExits": false,
+          "ShowPercentage": true,
+          "ShowBarsHeld": false,
+          "ShowMaeMfe": true,
+          "ShowSignals": false,
+          "ShowCommission": false,
+          "Colorify": true
+        }
+      },
+      "ApplyCommission": false,
+      "EnableSlippage": false,
+      "LimitOrderSlippage": false,
+      "RoundEquityLots": false,
+      "RoundEquityLotsToUpperHundred": false,
+      "NoDecimalRoundingForLimitStopPrice": false,
+      "SlippageUnits": 1.0,
+      "SlippageTicks": 1,
+      "PriceLevelSizeForBonds": 0,
+      "Name": "Default",
+      "Symbol": "RIM3",
+      "DataSourceName": "MOCK",
+      "ScaleInterval": {
+        "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+        "Scale": 3,
+        "Interval": 1,
+        "IsIntraday": true,
+        "TimeSpanInSeconds": 60
+      },
+      "DataRange": {
+        "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
+        "Range": 1,
+        "StartDate": "0001-01-01T00:00:00",
+        "EndDate": "9999-12-31T23:59:59.9999999",
+        "RecentBars": 900,
+        "RecentTimeunits": 0
+      },
+      "ChartStreaming": false,
+      "ShowRangeBar": false,
+      "ParameterValuesById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
+        "1": 120.0,
+        "2": 120.0,
+        "3": 0.0,
+        "4": 120.0,
+        "5": 210.0,
+        "6": 224.0,
+        "7": -210.0,
+        "8": 40.0,
+        "9": 200.0,
+        "10": 1000.0
+      }
+    }
+  },
+  "HasChartOnly": false,
+  "ScriptParametersJSONcheck": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+  }
+}

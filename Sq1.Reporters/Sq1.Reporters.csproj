@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C4C13969-293D-4DD9-82BB-6A8ACA9D714E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sq1.Reporters</RootNamespace>
+    <AssemblyName>Sq1.Reporters</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>4096</FileAlignment>
+    <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Sq1.Gui\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Performance.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Performance.Customizer.cs">
+      <DependentUpon>Performance.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Performance.Designer.cs">
+      <DependentUpon>Performance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Positions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Positions.Designer.cs">
+      <DependentUpon>Positions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Positions.Customizer.cs">
+      <DependentUpon>Positions.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Positions.EventConsumer.cs">
+      <DependentUpon>Positions.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PositionsDataSnapshot.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ObjectListView_260-src\ObjectListView2010.csproj">
+      <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
+      <Name>ObjectListView2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
+      <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
+      <Name>Sq1.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sq1.Gui.Widgets\Sq1.Widgets.csproj">
+      <Project>{E4E3D133-E335-4437-B85E-89D6738B3FA2}</Project>
+      <Name>Sq1.Widgets</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <None Include="icons\45degrees3-LongEntryLoss.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\45degrees3-LongEntryProfit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\45degrees3-LongEntryUnknown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\45degrees3-LongExitLoss.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\45degrees3-LongExitProfit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\45degrees3-ShortEntryLoss.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\45degrees3-ShortEntryProfit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\45degrees3-ShortEntryUnknown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\45degrees3-ShortExitLoss.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icons\45degrees3-ShortExitProfit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Performance.resx">
+      <DependentUpon>Performance.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Positions.resx">
+      <DependentUpon>Positions.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

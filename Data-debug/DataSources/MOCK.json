@@ -1,0 +1,23 @@
+{
+  "$type": "Sq1.Core.DataFeed.DataSource, Sq1.Core",
+  "SymbolSelected": "",
+  "Symbols": [
+    "RIM3"
+  ],
+  "ScaleInterval": {
+    "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+    "Scale": 3,
+    "Interval": 1,
+    "IsIntraday": true,
+    "TimeSpanInSeconds": 60
+  },
+  "StaticProvider": null,
+  "StreamingProvider": null,
+  "BrokerProvider": null,
+  "MarketName": "MOCK",
+  "Name": "MOCK",
+  "StaticProviderName": "STATIC_PROVIDER_NOT_INITIALIZED",
+  "StreamingProviderName": "STREAMING_PROVIDER_NOT_INITIALIZED",
+  "BrokerProviderName": "BROKER_PROVIDER_NOT_INITIALIZED",
+  "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\MOCK"
+}

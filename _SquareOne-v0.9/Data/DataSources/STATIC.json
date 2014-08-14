@@ -1,0 +1,25 @@
+{
+  "$type": "Sq1.Core.DataFeed.DataSource, Sq1.Core",
+  "SymbolSelected": "",
+  "Symbols": [
+    "GMKN",
+    "LKOH",
+    "SBER"
+  ],
+  "ScaleInterval": {
+    "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+    "Scale": 3,
+    "Interval": 5,
+    "IsIntraday": true,
+    "TimeSpanInSeconds": 300
+  },
+  "StaticProvider": null,
+  "StreamingProvider": null,
+  "BrokerProvider": null,
+  "MarketName": "BACKTEST",
+  "Name": "STATIC",
+  "StaticProviderName": "STATIC_PROVIDER_NOT_INITIALIZED",
+  "StreamingProviderName": "STREAMING_PROVIDER_NOT_INITIALIZED",
+  "BrokerProviderName": "BROKER_PROVIDER_NOT_INITIALIZED",
+  "DataSourceAbspath": "C:\\myWLD\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\STATIC"
+}

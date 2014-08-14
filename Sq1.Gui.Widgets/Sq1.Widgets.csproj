@@ -1,0 +1,394 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{E4E3D133-E335-4437-B85E-89D6738B3FA2}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Sq1.Widgets</RootNamespace>
+    <AssemblyName>Sq1.Widgets</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WarningLevel>4</WarningLevel>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CsvImporter\ColumnCatcher.cs" />
+    <Compile Include="CsvImporter\CsvBar.cs" />
+    <Compile Include="CsvImporter\CsvImporterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CsvImporter\CsvImporterControl.Designer.cs">
+      <DependentUpon>CsvImporterControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CsvImporter\CsvImporterControl.EventConsumer.cs">
+      <DependentUpon>CsvImporterControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CsvImporter\CsvFieldType.cs" />
+    <Compile Include="CsvImporter\CsvImporterDataSnapshot.cs" />
+    <Compile Include="CsvImporter\CsvTypeParser.cs" />
+    <Compile Include="CsvImporter\DirectoryInfoEventArgs.cs" />
+    <Compile Include="CsvImporter\FieldSetup.cs" />
+    <Compile Include="CsvImporter\ImportSourceFileBrowser.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CsvImporter\ImportSourceFileBrowser.Designer.cs">
+      <DependentUpon>ImportSourceFileBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CsvImporter\ImportSourcePathInfo.cs" />
+    <Compile Include="CsvImporter\ImportTargetDataSource.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CsvImporter\ImportTargetDataSource.Designer.cs">
+      <DependentUpon>ImportTargetDataSource.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataSourceEditor\DataSourceEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataSourceEditor\DataSourceEditorControl.Designer.cs">
+      <DependentUpon>DataSourceEditorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataSourceEditor\DataSourceEditorControl.EventConsumer.cs">
+      <DependentUpon>DataSourceEditorControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataSourceEditor\MarketInfoEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataSourceEditor\MarketInfoEditor.Designer.cs">
+      <DependentUpon>MarketInfoEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataSourceTree\DataSourcesTreeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataSourceTree\DataSourcesTreeControl.Customizer.cs">
+      <DependentUpon>DataSourcesTreeControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataSourceTree\DataSourcesTreeControl.Designer.cs">
+      <DependentUpon>DataSourcesTreeControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataSourceTree\DataSourcesTreeControl.EventConsumer.cs">
+      <DependentUpon>DataSourcesTreeControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataSourceTree\DataSourcesTreeControl.EventGenerator.cs">
+      <DependentUpon>DataSourcesTreeControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataSourceTree\DataSourceTreeDataSnapshot.cs" />
+    <Compile Include="DockContentImproved\DockContentImproved.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Exceptions\ExceptionsControlDataSnapshot.cs" />
+    <Compile Include="Exceptions\ExceptionsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Exceptions\ExceptionsControl.Customizer.cs">
+      <DependentUpon>ExceptionsControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Exceptions\ExceptionsControl.Designer.cs">
+      <DependentUpon>ExceptionsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Exceptions\ExceptionsControl.EventConsumer.cs">
+      <DependentUpon>ExceptionsControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Execution\ExecutionTreeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Execution\ExecutionTreeControl.Customizer.cs">
+      <DependentUpon>ExecutionTreeControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Execution\ExecutionTreeControl.Designer.cs">
+      <DependentUpon>ExecutionTreeControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Execution\ExecutionTreeControl.EventConsumer.cs">
+      <DependentUpon>ExecutionTreeControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Execution\ExecutionTreeControl.EventGenerator.cs">
+      <DependentUpon>ExecutionTreeControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Execution\ExecutionTreeDataSnapshot.cs" />
+    <Compile Include="LabeledTextBox\LabeledTextBoxControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LabeledTextBox\LabeledTextBoxControl.Designer.cs">
+      <DependentUpon>LabeledTextBoxControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LabeledTextBox\LabeledTextBoxUserTypedArgs.cs" />
+    <Compile Include="LabeledTextBox\MenuItemLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="LabeledTextBox\MenuItemLabeledTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ObjectListViewDemo\ShellUtilities.cs" />
+    <Compile Include="ProgressBacktestETA\ProgressBarAndLabel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProgressBacktestETA\ProgressBarAndLabel.Designer.cs">
+      <DependentUpon>ProgressBarAndLabel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RangeBar\AsyncGraphBuilder.cs" />
+    <Compile Include="RangeBar\AsyncGraphBuilderBars.cs" />
+    <Compile Include="RangeBar\RangeBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RangeBar\RangeBarArgs.cs" />
+    <Compile Include="RangeBar\RangeBarDateTime.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RangeBar\RangeBarInteger.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RangeBar\RangeBarNonGeneric.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="RangeBar\RangeBarWithGraph.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ScriptEditor\CodeCompletionDataProvider.cs" />
+    <Compile Include="ScriptEditor\CodeFoldingStrategy.cs" />
+    <Compile Include="ScriptEditor\MethodInsightDataProvider.cs" />
+    <Compile Include="ScriptEditor\OptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScriptEditor\OptionsDialog.Designer.cs">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptEditor\ScriptEditorEventArgs.cs" />
+    <Compile Include="ScriptEditor\ScriptEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ScriptEditor\ScriptEditor.Designer.cs">
+      <DependentUpon>ScriptEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SteppingSlider\DomainUpDownWithMouseEvents.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SteppingSlider\MenuItemSlidersAutoGrowPreview.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SteppingSlider\PanelFillSlider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SteppingSlider\SliderComboControl.EventConsumer.cs">
+      <DependentUpon>SliderComboControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SteppingSlider\SlidersAutoGrowControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SteppingSlider\SlidersAutoGrowControl.Designer.cs">
+      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SteppingSlider\SliderComboControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SteppingSlider\SliderComboControl.Designer.cs">
+      <DependentUpon>SliderComboControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SteppingSlider\MenuItemTrackBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProgressBacktestETA\ToolStripItemProgressBarETA.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SteppingSlider\SlidersAutoGrowControl.EventConsumer.cs">
+      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SteppingSlider\SlidersAutoGrowControl.EventGenerator.cs">
+      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SteppingSlider\SlidersAutoGrowControl.MenuProvider.cs">
+      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SteppingSlider\SlidersAutoGrowControl.MenuProvider.EventConsumer.cs">
+      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SteppingSlider\SlidersAutoGrowControl.MenuProvider.EventGenerator.cs">
+      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StrategiesTree\StrategiesTreeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StrategiesTree\StrategiesTreeControl.Customizer.cs">
+      <DependentUpon>StrategiesTreeControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StrategiesTree\StrategiesTreeControl.Designer.cs">
+      <DependentUpon>StrategiesTreeControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategiesTree\StrategiesTreeControl.EventConsumer.cs">
+      <DependentUpon>StrategiesTreeControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StrategiesTree\StrategiesTreeControl.EventDistributor.cs">
+      <DependentUpon>StrategiesTreeControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StrategiesTree\StrategiesTreeDataSnapshot.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CsvImporter\CsvImporterControl.resx">
+      <DependentUpon>CsvImporterControl.Designer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CsvImporter\ImportSourceFileBrowser.resx">
+      <DependentUpon>ImportSourceFileBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CsvImporter\ImportTargetDataSource.resx">
+      <DependentUpon>ImportTargetDataSource.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataSourceEditor\DataSourceEditorControl.resx">
+      <DependentUpon>DataSourceEditorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataSourceEditor\MarketInfoEditor.resx">
+      <DependentUpon>MarketInfoEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataSourceTree\DataSourcesTreeControl.resx">
+      <DependentUpon>DataSourcesTreeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Exceptions\ExceptionsControl.resx">
+      <DependentUpon>ExceptionsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Execution\ExecutionTreeControl.resx">
+      <DependentUpon>ExecutionTreeControl.Designer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LabeledTextBox\LabeledTextBoxControl.resx">
+      <DependentUpon>LabeledTextBoxControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgressBacktestETA\ProgressBarAndLabel.resx">
+      <DependentUpon>ProgressBarAndLabel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScriptEditor\OptionsDialog.resx">
+      <DependentUpon>OptionsDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScriptEditor\ScriptEditor.resx">
+      <DependentUpon>ScriptEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SteppingSlider\PanelFillSlider.resx">
+      <DependentUpon>PanelFillSlider.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SteppingSlider\SlidersAutoGrowControl.resx">
+      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SteppingSlider\SliderComboControl.resx">
+      <DependentUpon>SliderComboControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StrategiesTree\StrategiesTreeControl.resx">
+      <DependentUpon>StrategiesTreeControl.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
+      <Project>{82541DA4-EE4A-4078-BF05-63B48A8AA51E}</Project>
+      <Name>CsvHelper35</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DigitalRune-TextEditor-1.3.1\DigitalRune.Windows.TextEditor\DigitalRune.Windows.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>DigitalRune.Windows.TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\dockpanelsuite290-master\WinFormsUI\WinFormsUI.csproj">
+      <Project>{E580A3F0-6BED-4649-A159-58998CC077F3}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Json45r11\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json.Net20</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ObjectListView_260-src\ObjectListView2010.csproj">
+      <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
+      <Name>ObjectListView2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
+      <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
+      <Name>Sq1.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder-closed.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder-opened.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\field.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\method.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TextFile.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ObjectListViewDemo" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

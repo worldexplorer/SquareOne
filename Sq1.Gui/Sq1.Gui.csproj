@@ -1,0 +1,264 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B7859AC7-B11D-45A9-AF18-BE0069C17527}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sq1.Gui</RootNamespace>
+    <AssemblyName>Sq1.Gui</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>4096</FileAlignment>
+    <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Sq1.Gui.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <ApplicationIcon>Sq1-64.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Forms\ChartForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChartForm.Designer.cs">
+      <DependentUpon>ChartForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ChartForm.EventConsumer.cs">
+      <DependentUpon>ChartForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChartForm.EventDistributor.cs">
+      <DependentUpon>ChartForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChartFormDataSnapshot.cs" />
+    <Compile Include="Forms\ChartFormManager.cs" />
+    <Compile Include="Forms\ChartFormEventManager.cs" />
+    <Compile Include="Forms\ChartFormStreamingConsumer.cs" />
+    <Compile Include="Forms\ScriptEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ScriptEditorForm.Designer.cs">
+      <DependentUpon>ScriptEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="FormFactories\ScriptEditorFormFactory.cs" />
+    <Compile Include="GuiDataSnapshot.cs" />
+    <Compile Include="ReportersSupport\ReportersFormsManager.cs" />
+    <Compile Include="ReportersSupport\MenuItemsProvider.cs" />
+    <Compile Include="ReportersSupport\ReporterFormWrapper.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportersSupport\ReporterFormWrapper.Designer.cs">
+      <DependentUpon>ReporterFormWrapper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Singletons\CsvImporterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\CsvImporterForm.Designer.cs">
+      <DependentUpon>CsvImporterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Singletons\DockContentSingleton.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\ExecutionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\ExecutionForm.Designer.cs">
+      <DependentUpon>ExecutionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Singletons\MainForm.EventConsumer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\MainFormEventManager.cs" />
+    <Compile Include="Singletons\MainFormWorkspacesManager.cs" />
+    <Compile Include="Singletons\StrategiesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\StrategiesForm.Designer.cs">
+      <DependentUpon>StrategiesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Singletons\DataSourcesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\DataSourcesForm.Designer.cs">
+      <DependentUpon>DataSourcesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Singletons\ExceptionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\ExceptionsForm.Designer.cs">
+      <DependentUpon>ExceptionsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Singletons\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Singletons\MainForm.IStatusReporter.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\MainForm.Deserializer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\DataSourceEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\DataSourceEditorForm.Designer.cs">
+      <DependentUpon>DataSourceEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Singletons\SlidersForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\SlidersForm.Designer.cs">
+      <DependentUpon>SlidersForm.cs</DependentUpon>
+    </Compile>
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\ChartForm.resx">
+      <DependentUpon>ChartForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ScriptEditorForm.resx">
+      <DependentUpon>ScriptEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportersSupport\ReporterFormWrapper.resx">
+      <DependentUpon>ReporterFormWrapper.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\CsvImporterForm.resx">
+      <DependentUpon>CsvImporterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\ExecutionForm.resx">
+      <DependentUpon>ExecutionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\StrategiesForm.resx">
+      <DependentUpon>StrategiesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\DataSourcesForm.resx">
+      <DependentUpon>DataSourcesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\ExceptionsForm.resx">
+      <DependentUpon>ExceptionsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\DataSourceEditorForm.resx">
+      <DependentUpon>DataSourceEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\SlidersForm.resx">
+      <DependentUpon>SlidersForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dockpanelsuite290-master\WinFormsUI\WinFormsUI.csproj">
+      <Project>{E580A3F0-6BED-4649-A159-58998CC077F3}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Json45r11\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json.Net20</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ObjectListView_260-src\ObjectListView2010.csproj">
+      <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
+      <Name>ObjectListView2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sq1.Charting\Sq1.Charting.csproj">
+      <Project>{5F3ADF2A-7480-4C2B-919A-ABC017B66CFC}</Project>
+      <Name>Sq1.Charting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
+      <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
+      <Name>Sq1.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sq1.Gui.Widgets\Sq1.Widgets.csproj">
+      <Project>{E4E3D133-E335-4437-B85E-89D6738B3FA2}</Project>
+      <Name>Sq1.Widgets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sq1.Reporters\Sq1.Reporters.csproj">
+      <Project>{C4C13969-293D-4DD9-82BB-6A8ACA9D714E}</Project>
+      <Name>Sq1.Reporters</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

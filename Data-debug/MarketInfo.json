@@ -1,0 +1,139 @@
+{
+  "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.MarketInfo, Sq1.Core]], mscorlib",
+  "MOCK": {
+    "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
+    "Name": "MOCK",
+    "Description": "23:59 hours open",
+    "MarketOpenServerTime": "2013-04-17T00:00:00",
+    "MarketCloseServerTime": "2013-09-10T23:59:00",
+    "DaysOfWeekOpen": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      0
+    ],
+    "TimeZoneName": "Eastern Standard Time",
+    "ClearingTimespans": [
+      {
+        "$type": "Sq1.Core.DataTypes.MarketClearingTimespan, Sq1.Core",
+        "SuspendServerTimeOfDay": "2013-04-17T14:00:00",
+        "ResumeServerTimeOfDay": "2013-04-17T14:03:00",
+        "DaysOfWeekWhenClearingHappens": null
+      }
+    ],
+    "HolidaysYMD000": [],
+    "ShortDays": []
+  },
+  "FORTS": {
+    "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
+    "Name": "FORTS",
+    "Description": "RTS Index Futures and Options Market (RIM3)",
+    "MarketOpenServerTime": "2013-04-17T10:00:00",
+    "MarketCloseServerTime": "2013-08-08T23:49:59",
+    "DaysOfWeekOpen": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "TimeZoneName": "Russian Standard Time",
+    "ClearingTimespans": [
+      {
+        "$type": "Sq1.Core.DataTypes.MarketClearingTimespan, Sq1.Core",
+        "SuspendServerTimeOfDay": "2013-04-17T14:00:00",
+        "ResumeServerTimeOfDay": "2013-04-17T14:03:00",
+        "DaysOfWeekWhenClearingHappens": null
+      },
+      {
+        "$type": "Sq1.Core.DataTypes.MarketClearingTimespan, Sq1.Core",
+        "SuspendServerTimeOfDay": "2013-04-17T18:45:00",
+        "ResumeServerTimeOfDay": "2013-04-17T19:00:00",
+        "DaysOfWeekWhenClearingHappens": null
+      }
+    ],
+    "HolidaysYMD000": [],
+    "ShortDays": []
+  },
+  "BACKTEST": {
+    "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
+    "Name": "BACKTEST",
+    "Description": "BACKTEST_NO_RESTRICTIONS",
+    "MarketOpenServerTime": "2013-04-17T00:00:00",
+    "MarketCloseServerTime": "2013-08-08T23:49:59",
+    "DaysOfWeekOpen": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      0
+    ],
+    "TimeZoneName": "Eastern Standard Time",
+    "ClearingTimespans": [],
+    "HolidaysYMD000": [],
+    "ShortDays": []
+  },
+  "US": {
+    "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
+    "Name": "US",
+    "Description": "NYSE, Nasdaq and Amex equities",
+    "MarketOpenServerTime": "2013-04-17T09:30:00",
+    "MarketCloseServerTime": "2013-04-17T16:00:00",
+    "DaysOfWeekOpen": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "TimeZoneName": "Eastern Standard Time",
+    "ClearingTimespans": [],
+    "HolidaysYMD000": [
+      "2007-07-04T00:00:00",
+      "2007-12-25T00:00:00",
+      "2007-09-03T00:00:00",
+      "2008-07-04T00:00:00",
+      "2008-12-25T00:00:00",
+      "2008-09-01T00:00:00",
+      "2009-07-04T00:00:00",
+      "2009-12-25T00:00:00",
+      "2009-09-07T00:00:00",
+      "2010-07-04T00:00:00",
+      "2010-12-25T00:00:00",
+      "2010-09-06T00:00:00",
+      "2011-07-04T00:00:00",
+      "2011-12-25T00:00:00",
+      "2011-09-05T00:00:00",
+      "2012-07-04T00:00:00",
+      "2012-12-25T00:00:00",
+      "2012-09-03T00:00:00",
+      "2013-07-04T00:00:00",
+      "2013-12-25T00:00:00",
+      "2013-09-02T00:00:00",
+      "2014-07-04T00:00:00",
+      "2014-12-25T00:00:00",
+      "2014-09-01T00:00:00",
+      "2015-07-04T00:00:00",
+      "2015-12-25T00:00:00",
+      "2015-09-07T00:00:00",
+      "2016-07-04T00:00:00",
+      "2016-12-25T00:00:00",
+      "2016-09-05T00:00:00",
+      "2017-07-04T00:00:00",
+      "2017-12-25T00:00:00",
+      "2017-09-04T00:00:00",
+      "2018-07-04T00:00:00",
+      "2018-12-25T00:00:00",
+      "2018-09-03T00:00:00",
+      "2019-07-04T00:00:00",
+      "2019-12-25T00:00:00",
+      "2019-09-02T00:00:00"
+    ],
+    "ShortDays": []
+  }
+}

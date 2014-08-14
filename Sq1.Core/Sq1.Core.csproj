@@ -1,0 +1,257 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Sq1.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\PChuchkalov\AppData\Roaming\ICSharpCode/SharpDevelop4\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <RootNamespace>Sq1.Core</RootNamespace>
+    <SignAssembly>False</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED</DefineConstants>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <StartAction>Project</StartAction>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Accounting\Account.cs" />
+    <Compile Include="Assembler.cs" />
+    <Compile Include="AssemblerDataSnapshot.cs" />
+    <Compile Include="Backtesting\Backtester.cs" />
+    <Compile Include="Backtesting\BacktestQuoteBarConsumer.cs" />
+    <Compile Include="Backtesting\BacktestQuotesGeneratorFourStroke.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Broker\CommissionCalculatorZero.cs" />
+    <Compile Include="Broker\OrderEventDistributor.cs" />
+    <Compile Include="Broker\OrderProcessorEventDistributor.cs" />
+    <Compile Include="Broker\OrdersShadowTreeDerived.cs" />
+    <Compile Include="Charting\ChartPanelType.cs" />
+    <Compile Include="Charting\ChartShadow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Charting\DictionaryManyToOne.cs" />
+    <Compile Include="Charting\LineStyle.cs" />
+    <Compile Include="Charting\HostPanelForIndicator.cs" />
+    <Compile Include="Charting\ScriptToChartCommunicator.cs" />
+    <Compile Include="DataFeed\IDataSourceEditor.cs" />
+    <Compile Include="DataFeed\NamedObjectJsonEventArgs.cs" />
+    <Compile Include="DataTypes\BarsUnscaled.cs" />
+    <Compile Include="DoubleBuffered\PanelDoubleBuffered.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DoubleBuffered\UserControlDoubleBuffered.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Execution\OrderStateMessageEventArgs.cs" />
+    <Compile Include="Execution\Position.Stats.cs">
+      <DependentUpon>Position.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Indicators\Indicator.cs" />
+    <Compile Include="Indicators\IndicatorAverageMovingSimple.cs" />
+    <Compile Include="Indicators\IndicatorParameter.cs" />
+    <Compile Include="Indicators\IndicatorParameterAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataFeed\NamedObjectJsonSerializable.cs" />
+    <Compile Include="Repositories\RepositoryBarsFile.cs" />
+    <Compile Include="Repositories\RepositoryBarsSameScaleInterval.cs" />
+    <Compile Include="Repositories\RepositoryCustomMarketInfo.cs" />
+    <Compile Include="Repositories\RepositoryCustomSymbolInfo.cs" />
+    <Compile Include="Repositories\RepositoryDllBrokerProvider.cs" />
+    <Compile Include="Repositories\RepositoryDllJsonStrategy.cs" />
+    <Compile Include="Repositories\RepositoryDllReporters.cs" />
+    <Compile Include="Repositories\RepositoryDllScanner.cs" />
+    <Compile Include="Repositories\RepositoryDllStaticProvider.cs" />
+    <Compile Include="Repositories\RepositoryDllStreamingProvider.cs" />
+    <Compile Include="Repositories\RepositoryFoldersNoJson.cs" />
+    <Compile Include="Repositories\RepositoryJsonDataSource.cs" />
+    <Compile Include="Repositories\ScriptRepository.cs" />
+    <Compile Include="Serializers\RepositoryJsonsInFolder.cs" />
+    <Compile Include="Serializers\SerializerLogrotate.cs" />
+    <Compile Include="Serializers\SerializerLogrotatePeriodic.cs" />
+    <Compile Include="Serializers\Serializer.cs" />
+    <Compile Include="Charting\ContextChart.cs" />
+    <Compile Include="StrategyBase\ContextScript.cs" />
+    <Compile Include="StrategyBase\NotOnChartBarsHelper.cs" />
+    <Compile Include="StrategyBase\NotOnChartBarsKey.cs" />
+    <Compile Include="StrategyBase\Reporter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StrategyBase\ScriptParameterEventArgs.cs" />
+    <Compile Include="StrategyBase\ScriptParameterAttribute.cs" />
+    <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
+    <Compile Include="Streaming\StreamingEarlyBinder.cs" />
+    <Compile Include="Streaming\StreamingSolidifier.cs" />
+    <Compile Include="Support\SkipInstantiationAt.cs" />
+    <Compile Include="Broker\OrderListByType.cs" />
+    <Compile Include="Broker\OrderCallbackDupesChecker.cs" />
+    <Compile Include="Broker\OrderCallbackDupesCheckerTransparent.cs" />
+    <Compile Include="Broker\OrderList.cs" />
+    <Compile Include="Broker\OrderListByState.cs" />
+    <Compile Include="Broker\OrderProcessorDataSnapshot.cs" />
+    <Compile Include="Broker\OrderPostProcessorStateChangedTrigger.cs" />
+    <Compile Include="Broker\OrderPostProcessorStateHook.cs" />
+    <Compile Include="Broker\BrokerEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataTypes\BarEventArgs.cs" />
+    <Compile Include="DataTypes\BarScaleIntervalEventArgs.cs" />
+    <Compile Include="DataTypes\BarDataRangeEventArgs.cs" />
+    <Compile Include="Execution\PositionSizeEventArgs.cs" />
+    <Compile Include="Execution\Alert.cs" />
+    <Compile Include="Execution\ByBarDumpStatus.cs" />
+    <Compile Include="Execution\ReporterPokeUnit.cs" />
+    <Compile Include="Execution\OrderStatesCollections.cs" />
+    <Compile Include="Execution\MarketConverter.cs" />
+    <Compile Include="Execution\MarketOrderAs.cs" />
+    <Compile Include="Execution\OrderSpreadSide.cs" />
+    <Compile Include="DataTypes\QuoteEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Execution\PositionPrototype.cs" />
+    <Compile Include="Execution\ExecutionDataSnapshot.cs" />
+    <Compile Include="Execution\AlertEventArgs.cs" />
+    <Compile Include="Execution\ReporterPokeUnitEventArgs.cs" />
+    <Compile Include="StrategyBase\BidOrAsk.cs" />
+    <Compile Include="StrategyBase\MarketSimStreaming.cs" />
+    <Compile Include="Execution\PositionEventArgs.cs" />
+    <Compile Include="StrategyBase\PerformanceEventArg.cs" />
+    <Compile Include="StrategyBase\PositionPrototypeActivator.cs" />
+    <Compile Include="StrategyBase\ScriptExecutor.cs" />
+    <Compile Include="StrategyBase\ScriptExecutorEventGenerator.cs" />
+    <Compile Include="Streaming\StreamingEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Backtesting\BacktestBrokerProvider.cs" />
+    <Compile Include="Backtesting\BacktestDataSource.cs" />
+    <Compile Include="Backtesting\BacktestStreamingProvider.cs" />
+    <Compile Include="DataFeed\DataSourceEventArgs.cs" />
+    <Compile Include="DataFeed\DataSourceSymbolEventArgs.cs" />
+    <Compile Include="DataTypes\DataSeriesProxyBars.cs" />
+    <Compile Include="DataTypes\DataSeriesTimeBased.cs" />
+    <Compile Include="DataTypes\DataSeriesBasic.cs" />
+    <Compile Include="DataTypes\MarketClearingTimespan.cs" />
+    <Compile Include="DataTypes\PriceLevelRoundingMode.cs" />
+    <Compile Include="Broker\OrderPostProcessorReplacerTidalThenCrossMarket.cs" />
+    <Compile Include="Broker\OrderPostProcessorSequencerCloseThenOpen.cs" />
+    <Compile Include="Broker\OrderPostProcessorEmergencyLock.cs" />
+    <Compile Include="Broker\OrderPostProcessorEmergency.cs" />
+    <Compile Include="Broker\OrderPostProcessorRejected.cs" />
+    <Compile Include="Backtesting\BacktestMode.cs" />
+    <Compile Include="Backtesting\BacktestSpreadModeler.cs" />
+    <Compile Include="Backtesting\BacktestSpreadModelerConstant.cs" />
+    <Compile Include="Backtesting\BacktestQuotesGenerator.cs" />
+    <Compile Include="Streaming\IStreamingConsumer.cs" />
+    <Compile Include="Streaming\DataDistributor.cs" />
+    <Compile Include="Streaming\StreamingDataSnapshot.cs" />
+    <Compile Include="Streaming\SymbolScaleDistributionChannel.cs" />
+    <Compile Include="Streaming\StreamingProvider.cs" />
+    <Compile Include="StrategyBase\StrategyEventArgs.cs" />
+    <Compile Include="Support\SymbolParser.cs" />
+    <Compile Include="Support\WindowsFormsUtils.cs" />
+    <Compile Include="DataTypes\Bar.cs" />
+    <Compile Include="DataTypes\BarDataRange.cs" />
+    <Compile Include="DataTypes\BarScaleInterval.cs" />
+    <Compile Include="DataTypes\BarRange.cs" />
+    <Compile Include="DataTypes\Bars.cs" />
+    <Compile Include="DataTypes\BarScale.cs" />
+    <Compile Include="DataTypes\BarsEventArgs.cs" />
+    <Compile Include="Broker\BrokerProvider.cs" />
+    <Compile Include="Broker\CommissionCalculator.cs" />
+    <Compile Include="DataTypes\ConnectionState.cs" />
+    <Compile Include="DataTypes\DataSeriesProxyableFromBars.cs" />
+    <Compile Include="DataFeed\DataSource.cs" />
+    <Compile Include="Support\IStatusReporter.cs" />
+    <Compile Include="DataTypes\MarketInfo.cs" />
+    <Compile Include="DataTypes\MarketShortDay.cs" />
+    <Compile Include="Execution\Order.cs" />
+    <Compile Include="Execution\OrderEventArgs.cs" />
+    <Compile Include="Execution\OrderStateMessage.cs" />
+    <Compile Include="Execution\OrderState.cs" />
+    <Compile Include="Execution\MarketLimitStop.cs" />
+    <Compile Include="Execution\Position.cs" />
+    <Compile Include="Execution\PositionSize.cs" />
+    <Compile Include="Execution\PositionLongShort.cs" />
+    <Compile Include="Execution\PositionSizeMode.cs" />
+    <Compile Include="DataTypes\Quote.cs" />
+    <Compile Include="DataTypes\SecurityType.cs" />
+    <Compile Include="Static\StaticProvider.cs" />
+    <Compile Include="StrategyBase\Strategy.cs" />
+    <Compile Include="StrategyBase\ScriptParameter.cs" />
+    <Compile Include="DataTypes\SymbolInfo.cs" />
+    <Compile Include="DataTypes\SymbolLock.cs" />
+    <Compile Include="StrategyBase\SystemPerformance.cs" />
+    <Compile Include="StrategyBase\SystemPerformanceSlice.cs" />
+    <Compile Include="Broker\OrderProcessor.cs" />
+    <Compile Include="Execution\Direction.cs" />
+    <Compile Include="StrategyBase\Script.cs" />
+    <Compile Include="StrategyBase\ScriptCompiler.cs" />
+    <Compile Include="StrategyBase\MarketRealStreaming.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
+      <Project>{82541DA4-EE4A-4078-BF05-63B48A8AA51E}</Project>
+      <Name>CsvHelper35</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Json45r11\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json.Net20</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Repositories" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
