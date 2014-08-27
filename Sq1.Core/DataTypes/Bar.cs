@@ -317,5 +317,8 @@ namespace Sq1.Core.DataTypes {
 			if (entryFillPrice > this.High) return false;
 			return true;			
 		}
+		public Bar BarFirstForCurrentTradingDay { get {
+				return this.ParentBars.ScanBackwardsFindBarFirstForCurrentTradingDay(this);
+			} }
 	}
 }

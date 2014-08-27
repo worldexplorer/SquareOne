@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core.Charting;
+using Sq1.Core.Charting.OnChart;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DoubleBuffered;
 using Sq1.Core.Execution;
@@ -92,7 +93,9 @@ namespace Sq1.Core.Charting {
 			throw new NotImplementedException();
 		}
 		
-		public virtual void LineDrawModify(string id, Color color, int width, Bar barStart, double priceStart, Bar barEnd, double priceEnd) {
+		public virtual ChartOperationStatus LineDrawModify(
+					string id, int barStart, double priceStart, int barEnd, double priceEnd,
+					Color color, int width) {
 			throw new NotImplementedException();
 		}
 #endregion
@@ -103,5 +106,5 @@ namespace Sq1.Core.Charting {
 		public virtual void SetIndicators(Dictionary<string, Indicator> indicators) {
 			throw new NotImplementedException();
 		}
-	}
+	}	
 }

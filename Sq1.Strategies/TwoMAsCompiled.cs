@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
@@ -31,6 +32,31 @@ namespace Sq1.Strategies.Demo {
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
+			Bar barFirstForCurrentTradingDay = barStaticFormed.BarFirstForCurrentTradingDay;
+			double dayOpenedAtPrice = barFirstForCurrentTradingDay.Open;
+			
+			// one line is drawn across one day regardless of timeframe: just the date is enough to "address" the line 
+			string lineId = barFirstForCurrentTradingDay.DateTimeOpen.ToString("yyyy-MMM-dd");
+			//Debugger.Break();
+			base.Executor.ChartShadow.LineDrawModify(lineId,
+				barFirstForCurrentTradingDay.ParentBarsIndex, dayOpenedAtPrice,
+				barStaticFormed.ParentBarsIndex, dayOpenedAtPrice,
+				Color.Blue, 1);
+
+			
+			double upperLimit = dayOpenedAtPrice + dayOpenedAtPrice * 0.005;	//143.200 + 716 = 143.916 - most likely visible on the chart, not beoynd
+			double lowerLimit = dayOpenedAtPrice - dayOpenedAtPrice * 0.005;
+			
+			base.Executor.ChartShadow.LineDrawModify(lineId + "_red",
+				barFirstForCurrentTradingDay.ParentBarsIndex, upperLimit,
+				barStaticFormed.ParentBarsIndex, upperLimit,
+				Color.Red, 2);
+			base.Executor.ChartShadow.LineDrawModify(lineId + "_green",
+				barFirstForCurrentTradingDay.ParentBarsIndex, lowerLimit,
+				barStaticFormed.ParentBarsIndex, lowerLimit,
+				Color.Green, 2);
+			
+			
 			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming;
 			if (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;
 

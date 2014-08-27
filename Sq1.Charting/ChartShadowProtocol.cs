@@ -1,9 +1,16 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Windows.Forms;
 
+using Sq1.Charting.OnChart;
 using Sq1.Core;
 using Sq1.Core.Charting;
+using Sq1.Core.Charting.OnChart;
+using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Charting {
 	public partial class ChartControl {
@@ -59,6 +66,70 @@ namespace Sq1.Charting {
 				? position.ExitAlert.PlacedBar.ParentBarsIndex
 				: position.EntryAlert.PlacedBar.ParentBarsIndex;
 			this.scrollToBarSafely(bar);
+		}
+		public override void PositionsClearBacktestStarting() {
+			this.ScriptExecutorObjects.PositionsClearBacktestStarting();
+		}
+		public override void PositionsBacktestAdd(List<Position> positionsMaster) {
+			this.ScriptExecutorObjects.PositionArrowsBacktestAdd(positionsMaster);
+		}
+		public override void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) {
+			this.ScriptExecutorObjects.PositionArrowsRealtimeAdd(pokeUnit);
+		}
+		public override void PendingHistoryClearBacktestStarting() {
+			this.ScriptExecutorObjects.PendingHistoryClearBacktestStarting();
+		}
+		public override void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
+			this.ScriptExecutorObjects.PendingHistoryBacktestAdd(alertsPendingHistorySafeCopy);
+		}
+		public override void PendingRealtimeAdd(ReporterPokeUnit pokeUnit) {
+			this.ScriptExecutorObjects.PendingRealtimeAdd(pokeUnit);
+		}
+		public override HostPanelForIndicator GetHostPanelForIndicator(Indicator indicator) {
+			switch (indicator.ChartPanelType) {
+				case ChartPanelType.PanelPrice: return this.panelPrice;
+				case ChartPanelType.PanelVolume: return this.panelVolume;
+				case ChartPanelType.PanelIndicatorSingle:
+				case ChartPanelType.PanelIndicatorMultiple: 
+				default:
+					throw new NotImplementedException();
+			}
+		}
+		public override void SetIndicators(Dictionary<string, Indicator> indicators) {
+			this.ScriptExecutorObjects.SetIndicators(indicators);
+		}
+		public override ChartOperationStatus LineDrawModify (
+					// parameters could be a class, but I didnt introduce class Sq1.Core.Line because:
+					// 1) I don't want Sq1.Charting to depend on Sq1.Core too much
+					// 		so that other developers could take only Sq1.ChartShadow and adapt it for another trading application
+					// 2) I'd be tempted to inherit Sq1.Core.Line in Sq1.Charting.Line and both would carry ambigous functionality
+					// 3) I don't need classes as grouped parameters; I intoduce a class only when:
+					//		3.1) grouped parameters are used in Lists or Dictionaries;
+					//		3.1) grouped parameters have a STATE and class is a container for STATE related to group of members;
+					//		here I just pass the parameters for constructor; the STATE is kept in Sq1.Charting.Line
+					//		and Sq1.Core shouldn't have access to the on-chart-drawn objects;
+					// 4) if the command to CreateOrModify succeeds => you have ChartOperationStatus; if it fails you have an Assembler.PopupException()
+ 					//		nothing else I want to do in Script with LineDrawModify() => KISS
+					string lineId, int barStart, double priceStart, int barEnd, double priceEnd,
+					Color color, int width) {
+			
+			// OnChartLine = {Chart's implementation detail}, that's why it's in ChartControl.dll and is not exposed to the Script;
+			// OnChartLine.Status = {AddOrModify's output}, so that the Script could base decisions upon status of the operation done to OnChartLine
+			// HACK current implementation is based on responsibilities-s-DLLs distribution which might not be optimal; returning only Status should be enough
+			// TODO define what you want and how you distribute roles among DLLs before refactoring
+			OnChartLine line = null;
+			try {
+				line = this.ScriptExecutorObjects.LineAddOrModify(lineId, barStart, priceStart, barEnd, priceEnd, color, width);
+			} catch (Exception ex) {
+				if (line != null) {
+					Assembler.PopupException(line.ToString() + " //LineAddOrModify()");
+				} else {
+					string msg = "EXECUTOROBJECTS_DIDNT_EVEN_RETURN_LINE_SOMETHING_SERIOUS";
+					Assembler.PopupException(msg + " //LineAddOrModify()");
+				}
+				return ChartOperationStatus.Unknown;
+			}
+			return line.Status;
 		}
 	}
 }
