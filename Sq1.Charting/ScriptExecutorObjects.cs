@@ -142,11 +142,11 @@ namespace Sq1.Charting {
 					this.LinesByRightBar.Add(lineCreated.BarRight, new List<OnChartLine>());
 				}
 				this.LinesByRightBar[lineCreated.BarRight].Add(lineCreated);
+				
 				return lineCreated;
 			}
 			
 			OnChartLine line = this.LinesById[lineId];
-			
 			if (		line.BarLeft	== barLeft	&& line.PriceLeft	== priceLeft
 			   		 && line.BarRight	== barRight	&& line.PriceRight	== priceRight
 			   		 && line.Color		== color	&& line.Width		== width) {

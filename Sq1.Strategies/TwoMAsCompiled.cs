@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 
 using Sq1.Core;
+using Sq1.Core.Charting.OnChart;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
@@ -56,6 +57,16 @@ namespace Sq1.Strategies.Demo {
 				barStaticFormed.ParentBarsIndex, lowerLimit,
 				Color.Green, 2);
 			
+			
+			if (barStaticFormed == barFirstForCurrentTradingDay) {
+				ChartOperationStatus status = base.Executor.ChartShadow.LineDrawModify(lineId + "_brown",
+					barStaticFormed.ParentBarsIndex, lowerLimit,
+					barStaticFormed.ParentBarsIndex, upperLimit,
+					Color.Brown, 3);
+				if (status != ChartOperationStatus.JustCreated) {
+					Debugger.Break();
+				}
+			}
 			
 			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming;
 			if (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;

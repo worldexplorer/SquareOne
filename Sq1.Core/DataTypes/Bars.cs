@@ -371,9 +371,6 @@ namespace Sq1.Core.DataTypes {
 				if (eachBarBackwards.DateTimeOpen.Year	< startScanFrom.DateTimeOpen.Year) break;
 				ret = eachBarBackwards;
 			}
-			if (ret == startScanFrom) {
-				ret = this[0];
-			}
 			return ret;
 		}
 	}
