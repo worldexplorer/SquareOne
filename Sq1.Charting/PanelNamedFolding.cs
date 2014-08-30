@@ -613,9 +613,13 @@ namespace Sq1.Charting {
 		public int BarToXBeyondGoInside(int barIndexCanBeBeyondVisibleSlidingWindow) {
 			int ret = this.BarToX(barIndexCanBeBeyondVisibleSlidingWindow);
 			//barVisible < this.VisibleBarLeft_cached) return -1;
-			if (ret == -1) return 0;
+			if (ret == -1) {
+				return 0;
+			}
 			//barVisible > this.VisibleBarRight_cached) return -2;
-			if (ret == -2) return this.ChartControl.ChartWidthMinusGutterRightPrice;
+			if (ret == -2) {
+				return this.ChartControl.ChartWidthMinusGutterRightPrice;
+			}
 			return ret;
 		}
 		public int BarToX(int barVisible) {

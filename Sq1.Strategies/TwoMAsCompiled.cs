@@ -33,40 +33,7 @@ namespace Sq1.Strategies.Demo {
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
-			Bar barFirstForCurrentTradingDay = barStaticFormed.BarFirstForCurrentTradingDay;
-			double dayOpenedAtPrice = barFirstForCurrentTradingDay.Open;
-			
-			// one line is drawn across one day regardless of timeframe: just the date is enough to "address" the line 
-			string lineId = barFirstForCurrentTradingDay.DateTimeOpen.ToString("yyyy-MMM-dd");
-			//Debugger.Break();
-			base.Executor.ChartShadow.LineDrawModify(lineId,
-				barFirstForCurrentTradingDay.ParentBarsIndex, dayOpenedAtPrice,
-				barStaticFormed.ParentBarsIndex, dayOpenedAtPrice,
-				Color.Blue, 1);
-
-			
-			double upperLimit = dayOpenedAtPrice + dayOpenedAtPrice * 0.005;	//143.200 + 716 = 143.916 - most likely visible on the chart, not beoynd
-			double lowerLimit = dayOpenedAtPrice - dayOpenedAtPrice * 0.005;
-			
-			base.Executor.ChartShadow.LineDrawModify(lineId + "_red",
-				barFirstForCurrentTradingDay.ParentBarsIndex, upperLimit,
-				barStaticFormed.ParentBarsIndex, upperLimit,
-				Color.Red, 2);
-			base.Executor.ChartShadow.LineDrawModify(lineId + "_green",
-				barFirstForCurrentTradingDay.ParentBarsIndex, lowerLimit,
-				barStaticFormed.ParentBarsIndex, lowerLimit,
-				Color.Green, 2);
-			
-			
-			if (barStaticFormed == barFirstForCurrentTradingDay) {
-				ChartOperationStatus status = base.Executor.ChartShadow.LineDrawModify(lineId + "_brown",
-					barStaticFormed.ParentBarsIndex, lowerLimit,
-					barStaticFormed.ParentBarsIndex, upperLimit,
-					Color.Brown, 3);
-				if (status != ChartOperationStatus.JustCreated) {
-					Debugger.Break();
-				}
-			}
+			this.drawLinesSample(barStaticFormed);
 			
 			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming;
 			if (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;
@@ -119,5 +86,48 @@ namespace Sq1.Strategies.Demo {
 		public override void OnPositionClosedCallback(Position positionClosed) {
 		}
 
+		void drawLinesSample(Bar barStaticFormed) {
+			Bar barFirstForCurrentTradingDay = barStaticFormed.BarFirstForCurrentTradingDay;
+			double dayOpenedAtPrice = barFirstForCurrentTradingDay.Open;
+			
+			// one line is drawn across one day regardless of timeframe: just the date is enough to "address" the line 
+			string lineId = barFirstForCurrentTradingDay.DateTimeOpen.ToString("yyyy-MMM-dd");
+			//Debugger.Break();
+			base.Executor.ChartShadow.LineDrawModify(lineId,
+				barFirstForCurrentTradingDay.ParentBarsIndex, dayOpenedAtPrice,
+				barStaticFormed.ParentBarsIndex, dayOpenedAtPrice,
+				Color.Blue, 1);
+
+			
+			double upperLimit = dayOpenedAtPrice + dayOpenedAtPrice * 0.005;	//143.200 + 716 = 143.916 - most likely visible on the chart, not beoynd
+			double lowerLimit = dayOpenedAtPrice - dayOpenedAtPrice * 0.005;
+			
+			base.Executor.ChartShadow.LineDrawModify(lineId + "_red",
+				barFirstForCurrentTradingDay.ParentBarsIndex, upperLimit,
+				barStaticFormed.ParentBarsIndex, upperLimit,
+				Color.Red, 2);
+			base.Executor.ChartShadow.LineDrawModify(lineId + "_green",
+				barFirstForCurrentTradingDay.ParentBarsIndex, lowerLimit,
+				barStaticFormed.ParentBarsIndex, lowerLimit,
+				Color.Green, 2);
+			
+			
+			if (barStaticFormed == barFirstForCurrentTradingDay) {
+				ChartOperationStatus status = base.Executor.ChartShadow.LineDrawModify(lineId + "_brown",
+					barStaticFormed.ParentBarsIndex, lowerLimit,
+					barStaticFormed.ParentBarsIndex, upperLimit,
+					Color.Brown, 3);
+				if (status != ChartOperationStatus.JustCreated) {
+					Debugger.Break();
+				}
+			}
+
+			if (base.Bars.Count == base.Executor.Backtester.BarsOriginal.Count) {
+				base.Executor.ChartShadow.LineDrawModify("acrossAllBars",
+					0, base.Bars.BarStaticFirst.Open,
+					base.Bars.BarStaticLast.ParentBarsIndex, base.Bars.BarStaticLast.Open,
+					Color.Goldenrod, 1);
+			}
+		}
 	}
 }

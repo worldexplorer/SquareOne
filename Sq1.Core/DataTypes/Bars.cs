@@ -45,7 +45,7 @@ namespace Sq1.Core.DataTypes {
 			}
 		}
 		public Bar BarStaticFirst { get {
-				Bar last = base.BarLast;
+				Bar last = base.BarFirst;
 				if (last == null) return null; 
 				if (last != this.BarStreaming) return last;
 				return null;
