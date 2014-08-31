@@ -133,6 +133,7 @@ namespace Sq1.Gui.Forms {
 				this.DataSnapshot.ChartSerno = charSernoNext;
 			}
 			this.DataSnapshot.StrategyGuidJsonCheck = strategy.Guid.ToString();
+			this.DataSnapshot.StrategyNameJsonCheck = strategy.Name;
 			this.DataSnapshotSerializer.Serialize();
 			
 			if (this.ChartForm == null) {

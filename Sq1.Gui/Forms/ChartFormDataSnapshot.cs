@@ -6,6 +6,7 @@ using Sq1.Core.StrategyBase;
 namespace Sq1.Gui.Forms {
 	public class ChartFormDataSnapshot {
 		public string StrategyGuidJsonCheck;
+		public string StrategyNameJsonCheck;
 		
 		[JsonIgnore]
 		int chartSerno;
@@ -32,6 +33,7 @@ namespace Sq1.Gui.Forms {
 		public ChartFormDataSnapshot() {
 			this.chartSerno = -1;
 			this.StrategyGuidJsonCheck = "NOT_INITIALIZED ChartFormManager.Initialize()";
+			this.StrategyNameJsonCheck = "NOT_INITIALIZED ChartFormManager.Initialize()";
 			//this.ContextChart = new ContextChart();	// should be nullified when a strategy is loaded to the chart
 		}
 		

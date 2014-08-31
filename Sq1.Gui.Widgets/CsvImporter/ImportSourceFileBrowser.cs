@@ -92,7 +92,11 @@ namespace Sq1.Widgets.CsvImporter {
 				return;
 			}
             DirectoryInfo pathInfo = new DirectoryInfo(pathCsv);
-			if (!pathInfo.Exists) return;
+			if (!pathInfo.Exists) {
+				this.olvColumnFileName.FillsFreeSpace = false;	// 100%CPU trying to resize; moved it here from Designer.cs
+				return;
+			}
+			this.olvColumnFileName.FillsFreeSpace = true;		// restore if there is aything to display
 			this.txtFolder.Text = pathCsv;
 			if (this.OnDirectoryChanged != null) {
 				this.OnDirectoryChanged(this, new DirectoryInfoEventArgs(pathInfo));
