@@ -34,6 +34,8 @@ namespace Sq1.Strategies.Demo {
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
 			this.drawLinesSample(barStaticFormed);
+			this.testBarBackground(barStaticFormed);
+
 			
 			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming;
 			if (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;
@@ -128,6 +130,10 @@ namespace Sq1.Strategies.Demo {
 					base.Bars.BarStaticLast.ParentBarsIndex, base.Bars.BarStaticLast.Open,
 					Color.Goldenrod, 1);
 			}
+		}
+		void testBarBackground(Bar barStaticFormed) {
+			Color bg = (barStaticFormed.Open > barStaticFormed.Close) ? Color.LightGreen : Color.LightSalmon;
+			base.Executor.ChartShadow.BarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
 		}
 	}
 }

@@ -48,8 +48,8 @@
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
         "Range": 0,
-        "StartDate": "2009-08-09T00:00:00-04:00",
-        "EndDate": "2014-08-09T00:00:00-04:00",
+        "StartDate": "2009-08-08T21:00:00-07:00",
+        "EndDate": "2014-08-08T21:00:00-07:00",
         "RecentBars": 500,
         "RecentTimeunits": 10
       },

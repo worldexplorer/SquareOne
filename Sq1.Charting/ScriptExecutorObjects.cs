@@ -202,6 +202,26 @@ namespace Sq1.Charting {
 				}
 			}
 			return line;
-		}		
+		}
+		public bool BarBackgroundSet(int barIndex, Color color) {
+			bool createdFalseModifiedTrue = false;
+			if (this.BarBackgroundsByBar.ContainsKey(barIndex)) {
+				this.BarBackgroundsByBar.Add(barIndex, color);
+				return createdFalseModifiedTrue;
+			}
+			this.BarBackgroundsByBar[barIndex] = color;
+			createdFalseModifiedTrue = true;
+			return createdFalseModifiedTrue;
+		}
+		public bool BarForegroundSet(int barIndex, Color color) {
+			bool createdFalseModifiedTrue = false;
+			if (this.BarForegroundsByBar.ContainsKey(barIndex)) {
+				this.BarForegroundsByBar.Add(barIndex, color);
+				return createdFalseModifiedTrue;
+			}
+			this.BarForegroundsByBar[barIndex] = color;
+			createdFalseModifiedTrue = true;
+			return createdFalseModifiedTrue;
+		}
 	}
 }

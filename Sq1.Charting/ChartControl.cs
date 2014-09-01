@@ -11,7 +11,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Charting {
-	public partial class ChartControl : ChartShadow {
+	public partial class ChartControl {
 		public Bars Bars { get; private set; }
 		public bool BarsEmpty { get { return this.Bars == null || this.Bars.Count == 0; } }
 		public bool BarsNotEmpty { get { return this.Bars != null && this.Bars.Count > 0; } }

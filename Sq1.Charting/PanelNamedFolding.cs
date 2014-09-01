@@ -412,6 +412,10 @@ namespace Sq1.Charting {
 					             this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
 				}
 			}
+			
+			// before I draw vertical lines for date/time, I paint backgrounds for the bars if set from Script;
+			this.renderBarBackgrounds(g);
+			// now I draw vertical lines for date/time
 			if (this.GutterBottomDraw) {
 				if (this.GutterRightFontHeight_cached <= 0) return;	// not initialized yet
 				//this.ChartControl.ChartSettings.PenGridlinesVerticalNewDate.Width = 2f;
@@ -1014,5 +1018,36 @@ namespace Sq1.Charting {
 				this.GutterBottomHeight_cached = this.GutterBottomFontHeight_cached + this.ChartControl.ChartSettings.GutterBottomPadding* 2;
 	 		}
 		}
+		void renderBarBackgrounds(Graphics g) {
+			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice;
+			int halfPadding = this.ChartControl.ChartSettings.BarPaddingRight / 2;
+			//halfPadding += 1;		// fixes 1-2px spaces between bars background
+			barX -= halfPadding;	// emulate bar having paddings from left and right
+			for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
+				if (barIndex > this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderBarsPrice(): " + msg);
+					continue;
+				}
+				
+				ScriptExecutorObjects seo = this.ChartControl.ScriptExecutorObjects;
+				if (seo.BarBackgroundsByBar.ContainsKey(barIndex) == false) continue;
+				
+				barX -= this.BarWidthIncludingPadding_cached;
+				Rectangle barFullHeight = new Rectangle();
+				barFullHeight.X = barX;
+				barFullHeight.Width = this.BarWidthIncludingPadding_cached;
+				barFullHeight.Y = 0;
+				barFullHeight.Height = this.PanelHeightMinusGutterBottomHeight;
+
+				Color backgroundSetByScript = seo.BarBackgroundsByBar[barIndex];
+				Color backgroundMoreTransparent = Color.FromArgb(this.ChartControl.ChartSettings.BarsBackgroundTransparencyAlfa, backgroundSetByScript);
+
+				using (Brush backBrush = new SolidBrush(backgroundMoreTransparent)) {
+					g.FillRectangle(backBrush, barFullHeight);
+				}
+			}
+		}
+
 	}
 }

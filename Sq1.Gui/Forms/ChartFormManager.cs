@@ -409,6 +409,12 @@ namespace Sq1.Gui.Forms {
 			if (this.Strategy == null) {
 				//string msg = "ChartFormsManager doesn't have a pointer to Strategy; Opening a Chart without Strategy is NYI";
 				//throw new Exception(msg);
+				if (this.DataSnapshot.ContextChart == null) {
+					string msg = "CHART_WITHOUT_STRATEGY_MUST_HAVE_DataSnapshot.ContextChart; Sq1.Gui.Layout.xml and ChartFormDataSnapshot-*.json aren't in sync";
+					this.ChartForm.Text = msg;
+					Assembler.PopupException(msg);
+					return;
+				}
 				this.ChartForm.Text = this.DataSnapshot.ContextChart.ToString();
 				return;
 			}

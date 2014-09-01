@@ -72,6 +72,7 @@ namespace Sq1.Charting {
 		[DataMember] public int		AlertPendingEllipseWidth { get; set; }
 		[DataMember] public bool	MousePositionTrackOnGutters { get; set; }
 		[DataMember] public Color	MousePositionTrackOnGuttersColor { get; set; }
+		[DataMember] public int		BarsBackgroundTransparencyAlfa { get; set; }
 
 		//!!!![JsonIgnore] is all down there because JSON.dll is .NET20 while [DataMember] is defined in .NET35's System.Runtime.Serialization
 
@@ -214,16 +215,16 @@ namespace Sq1.Charting {
 		[JsonIgnore] Pen penPositionPlannedEllipse;
 		//[Browsable(false)]
 		[JsonIgnore] public Pen PenPositionPlannedEllipse { get {
-				if (this.penPositionPlannedEllipse == null) this.penPositionPlannedEllipse = 
-					new Pen(ColorMakeTransparent(this.PositionPlannedEllipseColor, this.PositionPlannedEllipseColorAlpha), this.PositionPlannedEllipseDiameter);
+				if (this.penPositionPlannedEllipse == null) this.penPositionPlannedEllipse =
+					new Pen(Color.FromArgb(this.PositionPlannedEllipseColorAlpha, this.PositionPlannedEllipseColor), this.PositionPlannedEllipseDiameter);
 				return this.penPositionPlannedEllipse;
 			} }
 
 		[JsonIgnore] Pen penPositionFilledDot;
 		//[Browsable(false)]
 		[JsonIgnore] public Pen PenPositionFilledDot { get {
-				if (this.penPositionFilledDot == null) this.penPositionFilledDot = 
-					new Pen(ColorMakeTransparent(this.PositionFilledDotColor, this.PositionFilledDotColorAlpha));
+				if (this.penPositionFilledDot == null) this.penPositionFilledDot =
+					new Pen(Color.FromArgb(this.PositionFilledDotColorAlpha, this.PositionFilledDotColor));
 				return this.penPositionFilledDot;
 			} }
 
@@ -231,7 +232,7 @@ namespace Sq1.Charting {
 		//[Browsable(false)]
 		[JsonIgnore] public Brush BrushPositionFilledDot { get {
 				if (this.brushPositionFilledDot == null) this.brushPositionFilledDot = 
-					new SolidBrush(ColorMakeTransparent(this.PositionFilledDotColor, this.PositionFilledDotColorAlpha));
+					new SolidBrush(Color.FromArgb(this.PositionFilledDotColorAlpha, this.PositionFilledDotColor));
 				return this.brushPositionFilledDot;
 			} }
 
@@ -239,14 +240,14 @@ namespace Sq1.Charting {
 		//[Browsable(false)]
 		[JsonIgnore] public Pen PenPositionLineEntryExitConnectedUnknown { get {
 				if (this.penPositionLineEntryExitConnectedUnknown == null) this.penPositionLineEntryExitConnectedUnknown =
-					new Pen(ColorMakeTransparent(this.PositionLineNoExitYetColor, this.PositionLineNoExitYetColorAlpha));
+					new Pen(Color.FromArgb(this.PositionLineNoExitYetColorAlpha, this.PositionLineNoExitYetColor));
 				return this.penPositionLineEntryExitConnectedUnknown;
 			} }
 		[JsonIgnore] Pen penPositionLineEntryExitConnectedProfit;
 		//[Browsable(false)]
 		[JsonIgnore] public Pen PenPositionLineEntryExitConnectedProfit { get {
 				if (this.penPositionLineEntryExitConnectedProfit == null) this.penPositionLineEntryExitConnectedProfit =
-					new Pen(ColorMakeTransparent(this.PositionLineProfitableColor, this.PositionLineProfitableColorAlpha));
+					new Pen(Color.FromArgb(this.PositionLineProfitableColorAlpha, this.PositionLineProfitableColor));
 				return this.penPositionLineEntryExitConnectedProfit;
 			} }
 
@@ -255,7 +256,7 @@ namespace Sq1.Charting {
 		//[Browsable(false)]
 		[JsonIgnore] public Pen PenPositionLineEntryExitConnectedLoss { get {
 				if (this.penPositionLineEntryExitConnectedLoss == null) this.penPositionLineEntryExitConnectedLoss =
-					new Pen(ColorMakeTransparent(this.PositionLineLossyColor, this.PositionLineLossyColorAlpha));
+					new Pen(Color.FromArgb(this.PositionLineLossyColorAlpha, this.PositionLineLossyColor));
 				return this.penPositionLineEntryExitConnectedLoss;
 			} }
 
@@ -263,7 +264,7 @@ namespace Sq1.Charting {
 		//[Browsable(false)]
 		[JsonIgnore] public Pen PenAlertPendingEllipse { get {
 				if (this.penAlertPendingEllipse == null) this.penAlertPendingEllipse =
-					new Pen(ColorMakeTransparent(this.AlertPendingEllipseColor, this.AlertPendingEllipseColorAlpha), this.AlertPendingEllipseWidth);
+					new Pen(Color.FromArgb(this.AlertPendingEllipseColorAlpha, this.AlertPendingEllipseColor), this.AlertPendingEllipseWidth);
 				return this.penAlertPendingEllipse;
 			} }
 
@@ -337,6 +338,7 @@ namespace Sq1.Charting {
 			AlertPendingEllipseWidth = 1;
 			MousePositionTrackOnGutters = true;
 			MousePositionTrackOnGuttersColor = Color.LightGray;
+			BarsBackgroundTransparencyAlfa = 32;
 		}
 		
 		public static Color ColorReverse(Color color) {
@@ -344,9 +346,6 @@ namespace Sq1.Charting {
 			int green = 255 - color.G;
 			int blue = 255 - color.B;
 			return Color.FromArgb((int)red, (int)green, (int)blue);
-		}
-		public static Color ColorMakeTransparent(Color color, int alpha=255) {
-			return Color.FromArgb(alpha, color.R, color.G, color.B);
 		}
 	}
 }
