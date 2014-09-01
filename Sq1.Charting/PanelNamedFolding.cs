@@ -606,12 +606,20 @@ namespace Sq1.Charting {
 		}
 
 		public int BarToXshadowBeyondGoInside(int barIndexCanBeBeyondVisibleSlidingWindow) {
+			int ret = this.BarToXBeyondGoInside(barIndexCanBeBeyondVisibleSlidingWindow);
+			ret += this.BarShadowXoffset_cached;
+			return ret;
+		}
+		public int BarToXBeyondGoInside(int barIndexCanBeBeyondVisibleSlidingWindow) {
 			int ret = this.BarToX(barIndexCanBeBeyondVisibleSlidingWindow);
 			//barVisible < this.VisibleBarLeft_cached) return -1;
-			if (ret == -1) return 0;
+			if (ret == -1) {
+				return 0;
+			}
 			//barVisible > this.VisibleBarRight_cached) return -2;
-			if (ret == -2) return this.ChartControl.ChartWidthMinusGutterRightPrice;
-			ret += this.BarShadowXoffset_cached;
+			if (ret == -2) {
+				return this.ChartControl.ChartWidthMinusGutterRightPrice;
+			}
 			return ret;
 		}
 		public int BarToX(int barVisible) {

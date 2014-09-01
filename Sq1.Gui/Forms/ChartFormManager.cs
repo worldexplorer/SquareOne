@@ -133,6 +133,7 @@ namespace Sq1.Gui.Forms {
 				this.DataSnapshot.ChartSerno = charSernoNext;
 			}
 			this.DataSnapshot.StrategyGuidJsonCheck = strategy.Guid.ToString();
+			this.DataSnapshot.StrategyNameJsonCheck = strategy.Name;
 			this.DataSnapshotSerializer.Serialize();
 			
 			if (this.ChartForm == null) {
@@ -444,7 +445,9 @@ namespace Sq1.Gui.Forms {
 			//SlidersForm.Instance.Initialize(this.Strategy);
 		}
 		public void StrategyCompileActivatePopulateSlidersShow() {
-			this.StrategyCompileActivatePopulateSlidersBeforeShow();
+			if (this.Strategy.ActivatedFromDll == false) {
+				this.StrategyCompileActivatePopulateSlidersBeforeShow();
+			}
 			SlidersForm.Instance.Initialize(this.Strategy);
 			SlidersForm.Instance.Show(this.dockPanel);
 		}

@@ -78,14 +78,6 @@ namespace Sq1.Charting {
 			}
 			this.InvalidateAllPanelsFolding();
 		}
-		protected override void OnResize(EventArgs e) {
-			if (this.ScrollLargeChange <= 0) {
-				//Debugger.Break();	// HAPPENS_WHEN_WINDOW_IS_MINIMIZED... how to disable any OnPaint when app isn't visible?...
-				return;
-			}
-		    this.hScrollBar.LargeChange = this.ScrollLargeChange;
-		    base.OnResize(e);	// will invoke UserControlDoubleBuffered.OnResize() if you inherited so here you are DoubleBuffer-safe
-		}
 		public void SyncHorizontalScrollToBarsCount() {
 			// this.HorizontalScroll represents the scrolling window for the content, useful in UserControl.Autoscroll when an innerPanel is wider or has Top|Left < 0 
 			// this.hScrollBar represents a sensor which accepts user clicks on a visual surface
@@ -150,20 +142,6 @@ namespace Sq1.Charting {
 			this.hScrollBar.Value = scrollEventArgs.NewValue;	// USE_DEBUGGER_SETTING_SENSOR_TO_THE_VALUE_IT_HAS_JUST_NOTIFIED_YOU_MAKES_SENSE
 			this.InvalidateAllPanelsFolding();
 		}
-		
-		protected override void OnMouseMove(MouseEventArgs e) {
-			// it looks like parent should get mouse updates from the Panels?...
-			int a = 1;
-		}
-		protected override void OnMouseWheel(MouseEventArgs e) {
-			base.OnMouseWheel(e);
-			if (e.Delta == 0) return;
-			if (e.Delta > 0) {
-				this.ScrollOnePageLeft();
-			} else {
-				this.ScrollOnePageRight();
-			}
-		}
 		void barEventsAttach() {
 			if (this.Bars == null) return; 
 			this.Bars.BarStaticAdded			+= new EventHandler<BarEventArgs>(ChartControl_BarAddedUpdated_ShouldTriggerRepaint);		// quite useless since I don't plan to append-statically to displayed-bars 
@@ -187,54 +165,7 @@ namespace Sq1.Charting {
 			this.InvalidateAllPanelsFolding();
 			this.RangeBar.Invalidate();
 		}
-		#region IsInputKey is a filter OnKeyDown should go together
-		protected override bool IsInputKey(Keys keyData) {
-			switch (keyData) {
-				case Keys.Right:
-				case Keys.Left:
-				case Keys.Up:
-				case Keys.Down:
-					return true;
-//				case Keys.Shift | Keys.Right:
-//				case Keys.Shift | Keys.Left:
-//				case Keys.Shift | Keys.Up:
-//				case Keys.Shift | Keys.Down:
-//					return true;
-			}
-			return base.IsInputKey(keyData);
-		}
-		protected override void OnKeyDown(KeyEventArgs keyEventArgs) {
-			if (this.BarsEmpty) return;
-			switch (keyEventArgs.KeyCode) {
-				case Keys.Up:
-					this.BarWidthIncrementAtKeyPressRate();
-					break;
-				case Keys.Down:
-					this.BarWidthDecrementAtKeyPressRate();
-					break;
-				case Keys.Left:
-					this.ScrollOneBarLeftAtKeyPressRate();
-					break;
-				case Keys.Right:
-					this.ScrollOneBarRightAtKeyPressRate();
-					break;
-				case Keys.Home:
-					this.scrollToBarSafely(0);
-					break;
-				case Keys.End:
-					this.scrollToBarSafely(this.Bars.Count - 1);
-					break;
-				case Keys.PageDown:
-					this.ScrollOnePageRight();
-					break;
-				case Keys.PageUp:
-					this.ScrollOnePageLeft();
-					break;
-			}
-			base.OnKeyDown(keyEventArgs);
-		}
-		#endregion
-		
+
 		public void BarWidthIncrementAtKeyPressRate() {
 			if (this.ChartSettings.BarWidthIncludingPadding >= 50) return; 
 			this.ChartSettings.BarWidthIncludingPadding += this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep;
@@ -361,37 +292,7 @@ namespace Sq1.Charting {
 			this.InvalidateAllPanelsFolding();
 			return wasInvalidated;
 		}
-		public override void PositionsClearBacktestStarting() {
-			this.ScriptExecutorObjects.PositionsClearBacktestStarting();
-		}
-		public override void PositionsBacktestAdd(List<Position> positionsMaster) {
-			this.ScriptExecutorObjects.PositionArrowsBacktestAdd(positionsMaster);
-		}
-		public override void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) {
-			this.ScriptExecutorObjects.PositionArrowsRealtimeAdd(pokeUnit);
-		}
-		public override void PendingHistoryClearBacktestStarting() {
-			this.ScriptExecutorObjects.PendingHistoryClearBacktestStarting();
-		}
-		public override void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
-			this.ScriptExecutorObjects.PendingHistoryBacktestAdd(alertsPendingHistorySafeCopy);
-		}
-		public override void PendingRealtimeAdd(ReporterPokeUnit pokeUnit) {
-			this.ScriptExecutorObjects.PendingRealtimeAdd(pokeUnit);
-		}
-		public override HostPanelForIndicator GetHostPanelForIndicator(Indicator indicator) {
-			switch (indicator.ChartPanelType) {
-				case ChartPanelType.PanelPrice: return this.panelPrice;
-				case ChartPanelType.PanelVolume: return this.panelVolume;
-				case ChartPanelType.PanelIndicatorSingle:
-				case ChartPanelType.PanelIndicatorMultiple: 
-				default:
-					throw new NotImplementedException();
-			}
-		}
-		public override void SetIndicators(Dictionary<string, Indicator> indicators) {
-			this.ScriptExecutorObjects.SetIndicators(indicators);
-		}
+
 		
 		public void PropagateSettingSplitterDistancePriceVsVolume() {
 			if (this.ChartSettings.PriceVsVolumeSplitterDistance == 0) {
@@ -399,19 +300,6 @@ namespace Sq1.Charting {
 			} else {
 				this.splitContainerPriceVsVolume.SplitterDistance = this.ChartSettings.PriceVsVolumeSplitterDistance;
 			}
-		}
-		void splitContainerPriceVsVolume_SplitterMoved(object sender, SplitterEventArgs e) {
-			//v1 this.ChartSettings.PriceVsVolumeSplitterDistance = this.splitContainerPriceVsVolume.SplitterDistance;
-			//v2
-			if (base.DesignMode) return;
-			if (this.ChartSettings == null) return;	// may be redundant
-			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-			//if (this.ChartSettings.PriceVsVolumeSplitterDistance == e.SplitY) return;
-			//this.ChartSettings.PriceVsVolumeSplitterDistance = e.SplitY;
-			if (this.ChartSettings.PriceVsVolumeSplitterDistance == this.splitContainerPriceVsVolume.SplitterDistance) return;
-			this.ChartSettings.PriceVsVolumeSplitterDistance = this.splitContainerPriceVsVolume.SplitterDistance;
-			this.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 		public AlertArrow TooltipPositionShownForAlertArrow { get {
 				AlertArrow ret = null;
@@ -428,5 +316,3 @@ namespace Sq1.Charting {
 			} }
 	}
 }
-//		public bool TooltipPriceShownAndMouseOverIt { get { return this.TooltipPrice.Visible && this.TooltipPrice.Capture; } }
-//		public bool TooltipPositionShownAndMouseOverIt { get { return this.tooltipPosition.Visible && this.tooltipPosition.Capture; } }

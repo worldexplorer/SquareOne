@@ -45,7 +45,7 @@ namespace Sq1.Core.DataTypes {
 			}
 		}
 		public Bar BarStaticFirst { get {
-				Bar last = base.BarLast;
+				Bar last = base.BarFirst;
 				if (last == null) return null; 
 				if (last != this.BarStreaming) return last;
 				return null;
@@ -353,6 +353,25 @@ namespace Sq1.Core.DataTypes {
 				}
 			}
 			return barsConverted;
+		}
+		public Bar ScanBackwardsFindBarFirstForCurrentTradingDay(Bar startScanFrom) {
+			Bar ret = startScanFrom;
+			if (this.ContainsKey(startScanFrom.DateTimeOpen) == false) {
+				#if DEBUG
+				string msg = "BARS_DOEST_CONTAIN_THE_DATEOPEN_OF_ITSOWN_BAR_ADDING_SHOULDVE_DONE_A_BETTER_JOB_AND_THROW_OR_ROUND";
+				Assembler.PopupException(msg);
+				#endif
+			}
+			int indexToStartScanningBackwards = this.IndexOfKey(startScanFrom.DateTimeOpen);
+			for (int i = indexToStartScanningBackwards; i >= 0; i--) {
+				Bar eachBarBackwards = this[i];
+				// stop scanning when we hit yesterday; then in RET we'll get lastKnownSameDayBar
+				if (eachBarBackwards.DateTimeOpen.Day	< startScanFrom.DateTimeOpen.Day) break;
+				if (eachBarBackwards.DateTimeOpen.Month	< startScanFrom.DateTimeOpen.Month) break;
+				if (eachBarBackwards.DateTimeOpen.Year	< startScanFrom.DateTimeOpen.Year) break;
+				ret = eachBarBackwards;
+			}
+			return ret;
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 
+using Sq1.Charting.OnChart;
 using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
@@ -23,6 +24,9 @@ namespace Sq1.Charting {
 			base.PaintWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter foregrounds
 			howManyPositionArrowsBeyondPriceBoundaries = this.AlignVisiblePositionArrowsAndCountMaxOutstanding();
 			this.renderBarsPrice(g);
+			// TODO MOVE_IT_UPSTACK_AND_PLACE_AFTER_renderBarsPrice_SO_THAT_POSITION_LINES_SHOWUP_ON_TOP_OF_BARS 
+			//this.renderPositions(g);
+			this.renderOnChartLines(g);
 			//this.RenderBidAsk(g);
 			//this.RenderPositions(g);
 		}
@@ -78,7 +82,7 @@ namespace Sq1.Charting {
 			for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
 				if (barIndex > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					Assembler.PopupException("RenderBarsPrice(): " + msg);
+					Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderBarsPrice(): " + msg);
 					continue;
 				}
 				Bar bar = base.ChartControl.Bars[barIndex];
@@ -98,6 +102,7 @@ namespace Sq1.Charting {
 				this.pendingAlertsDrawIfExistForBar(barIndex, shadowX, g);
 				this.positionArrowsLinesDrawIfExistForBar(barIndex, shadowX, g);
 
+				// TODO MOVE_IT_UPSTACK_AND_PLACE_AFTER_renderBarsPrice_SO_THAT_POSITION_LINES_SHOWUP_ON_TOP_OF_BARS 
 				AlertArrow arrow = this.ChartControl.TooltipPositionShownForAlertArrow;
 				if (arrow == null) continue;
 				if (arrow.BarIndexFilled != barIndex) continue;
@@ -227,6 +232,82 @@ namespace Sq1.Charting {
 			using (Pen penLineHighlighted = new Pen(colorLessTransparent, width)) {
 				g.DrawLine(penLineHighlighted, mouseEndX, mouseEndY, oppositeEndX, oppositeEndY);
 			};
+		}
+		void renderOnChartLines(Graphics g) {
+			if (VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLines(): " + msg);
+				return;
+			}
+			// DO_I_NEED_SIMILAR_CHECK_HERE???? MOST_LIKELY_I_DONT this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
+
+			int barX = base.ChartControl.ChartWidthMinusGutterRightPrice;
+
+			ScriptExecutorObjects seo = this.ChartControl.ScriptExecutorObjects;
+			List<OnChartLine> linesToDraw = new List<OnChartLine>();		// helps to avoid drawing the same line twice
+
+			// v1 - buggy because it doesn't display lines started way before and ended way later the visible barWindow
+			//for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
+			//    // 1. render the lines that end on each visible bar and stretch to the left
+			//    if (seo.LinesByRightBar.ContainsKey(barIndex)) {
+			//        List<OnChartLine> linesEndingHere = seo.LinesByRightBar[barIndex];
+			//        foreach (OnChartLine line in linesEndingHere) {
+			//            if (linesToDraw.Contains(line)) continue;
+			//            linesToDraw.Add(line);
+			//        }
+			//    }
+			//    // 2. render the lines that start from each visible bar and stretch to the right
+			//    if (seo.LinesByLeftBar.ContainsKey(barIndex)) {
+			//        List<OnChartLine> linesStartingHere = seo.LinesByLeftBar[barIndex];
+			//        foreach (OnChartLine line in linesStartingHere) {
+			//            if (linesToDraw.Contains(line)) continue;
+			//            linesToDraw.Add(line);
+			//        }
+			//    }
+			//}
+			// v2,v3: render the lines that start AND end beyond visible bars range
+			// v2 - very clean but I expect it to be very slow
+			//foreach (OnChartLine line in seo.LinesById.Values) {
+			//    if (line.BarLeft > VisibleBarRight_cached) continue;	//whole line is at right of visible bar window
+			//    if (line.BarRight < VisibleBarLeft_cached) continue;	//whole line is at  left of visible bar window
+			//    if (linesToDraw.Contains(line)) continue;	// should never "continue"
+			//    linesToDraw.Add(line);
+			//}
+			//v3 - will work faster closer to right edge of Chart (fastest when StreamingBar is displayed); will display all lines that start AND end beoynd VisibleBars
+			List<int> lineRightEnds = new List<int>(this.ChartControl.ScriptExecutorObjects.LinesByRightBar.Keys);
+			lineRightEnds.Sort();
+			lineRightEnds.Reverse();
+			foreach (int index in lineRightEnds) {				// 5,3,2,0 (sorted & reversed enforced: max => min)
+				if (index < base.VisibleBarLeft_cached) break;	// if our VisibleLeft is 3 we should ignore all lines ending at 2 
+			    List<OnChartLine> linesByRight = seo.LinesByRightBar[index];
+			    foreach (OnChartLine line in linesByRight) {
+			        if (line.BarLeft > base.VisibleBarRight_cached) continue;	// line will start after VisibleRight
+			        if (linesToDraw.Contains(line)) {
+#if DEBUG
+						string msg = "should never happen";
+						Debugger.Break();
+#endif
+						continue;
+					}
+			        linesToDraw.Add(line);
+			    }
+			}
+
+			foreach (OnChartLine line in linesToDraw) {
+				//LINES_DONT_TOUCH_EACHOTHER_CONNECTING_SHADOWS_BUT_BETTER_THAN_line.BarRight+1_BELOW
+				int lineLeftX = base.BarToXshadowBeyondGoInside(line.BarLeft);
+				int lineRightX = base.BarToXshadowBeyondGoInside(line.BarRight);
+				//LINE_SHIFTED_TO_LEFT_SO_LAST_BAR_ISNT_SHOWN
+				//int lineLeftX = base.BarToXBeyondGoInside(line.BarLeft);
+				//int lineRightX = base.BarToXBeyondGoInside(line.BarRight + 1);
+					
+				int lineRightYInverted = base.ValueToYinverted(line.PriceRight);
+				int lineLeftYInverted = base.ValueToYinverted(line.PriceLeft);
+
+				using (Pen pen = new Pen(line.Color, line.Width)) {		// I hate wasting disposing Pens and Brushes
+					g.DrawLine(pen, lineRightX, lineRightYInverted, lineLeftX, lineLeftYInverted);
+				}
+			}
 		}
 	}
 }

@@ -92,6 +92,9 @@ namespace Sq1.Charting {
 			} }
 		public string ValueFormattedToSymbolInfoDecimalsOr5(double value, bool useFormatForPrice = true) {
 			string format = "N" + (useFormatForPrice ? this.BarsDecimalsPrice : this.BarsDecimalsVolume);
+			if (useFormatForPrice) {
+				return value.ToString(format);
+			}
 			double num = Math.Abs(value);
 			if (num >= 1000000000000.0) {
 				value /= 1000000000000.0;

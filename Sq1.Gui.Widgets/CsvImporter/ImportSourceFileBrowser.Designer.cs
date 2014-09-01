@@ -119,7 +119,7 @@
 			this.olvColumnFileName.AutoCompleteEditor = false;
 			this.olvColumnFileName.AutoCompleteEditorMode = System.Windows.Forms.AutoCompleteMode.None;
 			this.olvColumnFileName.CellPadding = null;
-			this.olvColumnFileName.FillsFreeSpace = true;
+			//this.olvColumnFileName.FillsFreeSpace = true;
 			this.olvColumnFileName.Groupable = false;
 			this.olvColumnFileName.Text = "CSV File to Parse";
 			this.olvColumnFileName.ToolTipText = "- use Control key to select multiple files;\r\n- type to focus on matching item\r\n- " +
