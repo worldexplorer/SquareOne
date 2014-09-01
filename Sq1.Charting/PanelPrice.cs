@@ -85,9 +85,10 @@ namespace Sq1.Charting {
 					Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderBarsPrice(): " + msg);
 					continue;
 				}
+				
 				Bar bar = base.ChartControl.Bars[barIndex];
 				//bar.CheckOHLCVthrow();
-				barX -= this.BarWidthIncludingPadding_cached;
+				barX -= base.BarWidthIncludingPadding_cached;
 				int barYOpenInverted = base.ValueToYinverted(bar.Open);
 				int barYHighInverted = base.ValueToYinverted(bar.High);
 				int barYLowInverted = base.ValueToYinverted(bar.Low);

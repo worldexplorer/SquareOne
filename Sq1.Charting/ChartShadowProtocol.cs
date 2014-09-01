@@ -13,7 +13,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Charting {
-	public partial class ChartControl {
+	public partial class ChartControl : ChartShadow {
 		public void ActivateParentForm() {
 			Form parent = this.Parent as Form;
 			if (parent != null) {
@@ -130,6 +130,26 @@ namespace Sq1.Charting {
 				return ChartOperationStatus.Unknown;
 			}
 			return line.Status;
+		}
+		public override bool BarBackgroundSet(int bar, Color color) {
+			bool ret = false;
+			try {
+				ret = this.ScriptExecutorObjects.BarBackgroundSet(bar, color);
+			} catch (Exception ex) {
+				string msg = "EXECUTOROBJECTS_COULDNT_FIND_BAR";
+				Assembler.PopupException(msg + " //LineAddOrModify()");
+			}
+			return ret;
+		}
+		public override bool BarForegroundSet(int bar, Color color) {
+			bool ret = false;
+			try {
+				ret = this.ScriptExecutorObjects.BarForegroundSet(bar, color);
+			} catch (Exception ex) {
+				string msg = "EXECUTOROBJECTS_COULDNT_FIND_BAR";
+				Assembler.PopupException(msg + " //LineAddOrModify()");
+			}
+			return ret;
 		}
 	}
 }

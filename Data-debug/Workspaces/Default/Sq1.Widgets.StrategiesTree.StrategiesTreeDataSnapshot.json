@@ -2,6 +2,7 @@
   "$type": "Sq1.Widgets.StrategiesTree.StrategiesTreeDataSnapshot, Sq1.Widgets",
   "StrategyFoldersExpanded": [
     "WellKnown",
-    "my"
+    "my",
+    "Sq1.Strategies.Demo.dll"
   ]
 }

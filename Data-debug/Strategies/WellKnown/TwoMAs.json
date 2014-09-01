@@ -85,7 +85,5 @@
     }
   },
   "HasChartOnly": false,
-  "ScriptParametersJSONcheck": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-  }
+  "ScriptParametersJSONcheck": null
 }

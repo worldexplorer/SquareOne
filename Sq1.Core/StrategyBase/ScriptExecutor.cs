@@ -827,7 +827,7 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 			if (this.Bars == null) {
-				string msg = "WILL_NOT_EXECUTE_BACKTESTER until you select 1) TimeFrame 2) Range 3) PositionSize - for corresponding Chart; " + this;
+				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Bars=null; select 1) TimeFrame 2) Range 3) PositionSize - for corresponding Chart; " + this;
 				throw new Exception(msg);
 			}
 

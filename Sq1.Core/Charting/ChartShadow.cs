@@ -98,6 +98,12 @@ namespace Sq1.Core.Charting {
 					Color color, int width) {
 			throw new NotImplementedException();
 		}
+		public virtual bool BarBackgroundSet(int bar, Color color) {
+			throw new NotImplementedException();
+		}
+		public virtual bool BarForegroundSet(int bar, Color color) {
+			throw new NotImplementedException();
+		}
 #endregion
 		
 		public virtual HostPanelForIndicator GetHostPanelForIndicator(Indicator indicator) {
