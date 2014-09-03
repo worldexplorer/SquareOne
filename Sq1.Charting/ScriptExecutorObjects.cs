@@ -205,7 +205,7 @@ namespace Sq1.Charting {
 		}
 		public bool BarBackgroundSet(int barIndex, Color color) {
 			bool createdFalseModifiedTrue = false;
-			if (this.BarBackgroundsByBar.ContainsKey(barIndex)) {
+			if (this.BarBackgroundsByBar.ContainsKey(barIndex) == false) {
 				this.BarBackgroundsByBar.Add(barIndex, color);
 				return createdFalseModifiedTrue;
 			}
@@ -213,15 +213,29 @@ namespace Sq1.Charting {
 			createdFalseModifiedTrue = true;
 			return createdFalseModifiedTrue;
 		}
+		public Color BarBackgroundGet(int barIndex) {
+			Color ret = Color.Empty;
+			if (this.BarBackgroundsByBar.ContainsKey(barIndex)) {
+				ret = this.BarBackgroundsByBar[barIndex];
+			}
+			return ret;
+		}
 		public bool BarForegroundSet(int barIndex, Color color) {
 			bool createdFalseModifiedTrue = false;
-			if (this.BarForegroundsByBar.ContainsKey(barIndex)) {
+			if (this.BarForegroundsByBar.ContainsKey(barIndex) == false) {
 				this.BarForegroundsByBar.Add(barIndex, color);
 				return createdFalseModifiedTrue;
 			}
 			this.BarForegroundsByBar[barIndex] = color;
 			createdFalseModifiedTrue = true;
 			return createdFalseModifiedTrue;
+		}
+		public Color BarForegroundGet(int barIndex) {
+			Color ret = Color.Empty;
+			if (this.BarForegroundsByBar.ContainsKey(barIndex)) {
+				ret = this.BarForegroundsByBar[barIndex];
+			}
+			return ret;
 		}
 	}
 }

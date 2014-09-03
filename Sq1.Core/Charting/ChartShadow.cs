@@ -101,7 +101,13 @@ namespace Sq1.Core.Charting {
 		public virtual bool BarBackgroundSet(int bar, Color color) {
 			throw new NotImplementedException();
 		}
+		public virtual Color BarBackgroundGet(int bar) {
+			throw new NotImplementedException();
+		}
 		public virtual bool BarForegroundSet(int bar, Color color) {
+			throw new NotImplementedException();
+		}
+		public virtual Color BarForegroundGet(int bar) {
 			throw new NotImplementedException();
 		}
 #endregion

@@ -17,7 +17,7 @@ namespace Sq1.Charting {
 				//v2
 				// http://stackoverflow.com/questions/2882789/net-vertical-scrollbar-not-respecting-maximum-property
 				float physicalMax = this.hScrollBar.Maximum - this.hScrollBar.LargeChange + 1;
-				if (physicalMax <= 0) {
+				if (physicalMax < 0) {
 					#if DEBUG
 					Debugger.Break();
 					#endif
