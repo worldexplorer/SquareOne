@@ -42,6 +42,11 @@ namespace Sq1.Core.StrategyBase {
 				if (null == pos) return false;
 				return (pos.ExitMarketLimitStop == MarketLimitStop.Unknown);
 			} }
+		public Position LastPositionOpenNow { get {
+				List<Position> positionsOpenNow = this.PositionsOpenNow;
+				if (positionsOpenNow.Count == 0) return null;
+				return positionsOpenNow[positionsOpenNow.Count - 1];
+			} }
 		public Position LastPosition { get {
 				List<Position> positionsMaster = this.Executor.ExecutionDataSnapshot.PositionsMaster;
 				if (positionsMaster.Count == 0) return null;
