@@ -80,8 +80,11 @@ namespace Sq1.Charting {
 			this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
 			for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
-				if (barIndex > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+				if (barIndex >= base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderBarsPrice(): " + msg);
 					continue;
 				}

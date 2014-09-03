@@ -165,13 +165,16 @@ namespace Sq1.Charting {
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 			
 			if (this.ChartControl == null) {
-				this.DrawError(e.Graphics, "PanelNamedFolding[" + this.PanelName + "].ChartControl=null; invoke PanelNamedFolding.Initialize() from derived.ctor()");
+				string msg = "PanelNamedFolding[" + this.PanelName + "].ChartControl=null; invoke PanelNamedFolding.Initialize() from derived.ctor()";
+				Debugger.Break();
+				this.DrawError(e.Graphics, msg);
 				return;
 			}
 			if (this.ChartControl.BarsEmpty) {
 				string msig = this.Name + ".OnPaintDoubleBuffered() ";
 				string msg = "CHART_CONTROL_BARS_NULL_OR_EMPTY: this.ChartControl.BarsEmpty ";
 				//if (this.ChartControl.Bars != null) msg = "BUG: bars=[" + this.ChartControl.Bars + "]";
+				Debugger.Break();
 				this.DrawError(e.Graphics, msg + msig);
 				return;
 			}
@@ -194,9 +197,9 @@ namespace Sq1.Charting {
 				}
 			} catch (Exception ex) {
 				string msg = "OnPaintDoubleBuffered(): caught[" + ex.Message + "]";
+				Debugger.Break();
 				Assembler.PopupException(msg, ex);
 				this.DrawError(e.Graphics, msg);
-				Debugger.Break();
 			} finally {
 				this.ImPaintingForegroundNow = false;
 			}
@@ -292,6 +295,9 @@ namespace Sq1.Charting {
 				// TODO: we get here 4 times per Panel: DockContentHandler.SetVisible, set_FlagClipWindow, WndProc * 2
 				
 				this.VisibleBarRight_cached = this.ChartControl.VisibleBarRight;
+				if (this.VisibleBarRight_cached < 0) {
+					Debugger.Break();
+				}
 				this.VisibleBarLeft_cached = this.ChartControl.VisibleBarLeft;
 				this.VisibleBarsCount_cached = VisibleBarRight_cached - VisibleBarLeft_cached;
 				if (this.VisibleBarsCount_cached == 0) return;
@@ -1024,9 +1030,12 @@ namespace Sq1.Charting {
 			//halfPadding += 1;		// fixes 1-2px spaces between bars background
 			barX -= halfPadding;	// emulate bar having paddings from left and right
 			for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
-				if (barIndex > this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+				if (barIndex >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 					Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderBarsPrice(): " + msg);
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					continue;
 				}
 				

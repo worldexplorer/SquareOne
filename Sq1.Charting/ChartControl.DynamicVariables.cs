@@ -12,7 +12,21 @@ namespace Sq1.Charting {
 		public int BarsCanFitForCurrentWidth { get { return this.ChartWidthMinusGutterRightPrice / this.ChartSettings.BarWidthIncludingPadding; } }
 		public int ScrollLargeChange { get { return (int)(this.BarsCanFitForCurrentWidth * 0.9f); } }
 		public int VisibleBarRight { get {
-				return this.hScrollBar.Value;
+				//v1 return this.hScrollBar.Value;
+				int ret = this.hScrollBar.Value;
+				//v2
+				// http://stackoverflow.com/questions/2882789/net-vertical-scrollbar-not-respecting-maximum-property
+				float physicalMax = this.hScrollBar.Maximum - this.hScrollBar.LargeChange + 1;
+				if (physicalMax <= 0) {
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return ret;
+				}
+				float part0to1 = this.hScrollBar.Value / physicalMax;
+				if (part0to1 > 1) part0to1 = 1;	//	NONSENSE: this.hScrollBar.Value=432, physicalMax=423 - am I still resizing?...
+				ret = (int)(part0to1 * (this.Bars.Count - 1));
+				return ret;
 			} }
 		public int VisibleBarLeft { get {
 				int ret = this.VisibleBarRight - this.BarsCanFitForCurrentWidth;

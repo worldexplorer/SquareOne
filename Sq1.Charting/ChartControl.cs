@@ -132,15 +132,28 @@ namespace Sq1.Charting {
 			this.scrollToBarSafely(this.hScrollBar.Minimum);
 		}
 		void hScrollBar_Scroll(object sender, ScrollEventArgs scrollEventArgs) {
-			if (this.Bars == null) return;
-			
-			if (scrollEventArgs.Type == ScrollEventType.EndScroll && scrollEventArgs.NewValue > this.Bars.Count - 1) {
-				scrollEventArgs.NewValue = this.Bars.Count - 1;
+			if (this.Bars == null) {
+#if DEBUG
+				string msg = "POSSIBLY_DISABLE_SCROLLBAR_WHEN_CHART_HAS_NO_BARS? OR MAKE_CHART_ALWAYS_DISPLAY_BARS";
+				Debugger.Break();
+#endif
+				return;
 			}
-			this.ChartSettings.ScrollPositionAtBarIndex = scrollEventArgs.NewValue;
-			this.RaiseChartSettingsChangedContainerShouldSerialize();
-			this.hScrollBar.Value = scrollEventArgs.NewValue;	// USE_DEBUGGER_SETTING_SENSOR_TO_THE_VALUE_IT_HAS_JUST_NOTIFIED_YOU_MAKES_SENSE
-			this.InvalidateAllPanelsFolding();
+
+			if (this.hScrollBar.Value != scrollEventArgs.NewValue) {	// FILTER_OUT_UNNECESSARY_INVOCATIONS
+				//ALREADY_THERE_AFTER_EVENT_HANDLER_TERMINATES this.hScrollBar.Value = scrollEventArgs.NewValue;
+				this.InvalidateAllPanelsFolding();
+			}
+
+			if (scrollEventArgs.Type == ScrollEventType.ThumbPosition || scrollEventArgs.Type == ScrollEventType.ThumbTrack) {
+				// dragging: ThumbPosition -> ThumbTrack -> EndScroll; EndScroll will follow 100% and we'll serialize
+				return;
+			}
+			// single-click input (arrows, direct position) or EndScroll after ThumbPosition
+			if (this.ChartSettings.ScrollPositionAtBarIndex != this.hScrollBar.Value) {
+				this.ChartSettings.ScrollPositionAtBarIndex  = this.hScrollBar.Value;
+				this.RaiseChartSettingsChangedContainerShouldSerialize();	//scrollbar should have OnDragCompleteMouseReleased event!!!
+			}
 		}
 		void barEventsAttach() {
 			if (this.Bars == null) return; 
