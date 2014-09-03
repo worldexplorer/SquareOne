@@ -137,9 +137,12 @@ namespace Sq1.Charting {
 				ret = this.ScriptExecutorObjects.BarBackgroundSet(bar, color);
 			} catch (Exception ex) {
 				string msg = "EXECUTOROBJECTS_COULDNT_FIND_BAR";
-				Assembler.PopupException(msg + " //LineAddOrModify()");
+				Assembler.PopupException(msg + " //BarBackgroundSet()");
 			}
 			return ret;
+		}
+		public override Color BarBackgroundGet(int bar) {
+			return this.ScriptExecutorObjects.BarBackgroundGet(bar);
 		}
 		public override bool BarForegroundSet(int bar, Color color) {
 			bool ret = false;
@@ -150,6 +153,9 @@ namespace Sq1.Charting {
 				Assembler.PopupException(msg + " //LineAddOrModify()");
 			}
 			return ret;
+		}
+		public override Color BarForegroundGet(int bar) {
+			return this.ScriptExecutorObjects.BarForegroundGet(bar);
 		}
 	}
 }
