@@ -87,7 +87,7 @@ namespace Sq1.Gui.Forms {
 			this.ChartForm = new ChartForm(this);
 			this.DataSnapshot.StrategyGuidJsonCheck = "NO_STRATEGY_CHART_ONLY";
 			if (this.DataSnapshot.ChartSettings == null) {
-				// delete "ChartSettings": {} from JSON to reset to ChartControl>Design>ChartSettings>Properties 
+				// delete "ChartSettings": {} from JSON to reset to ChartControl>Design>ChartSettings>Properties
 				this.DataSnapshot.ChartSettings = this.ChartForm.ChartControl.ChartSettings;	// opening from Datasource => save
 			} else {
 				this.ChartForm.ChartControl.ChartSettings = this.DataSnapshot.ChartSettings;	// otherwize JustDeserialized => propagate
@@ -109,7 +109,7 @@ namespace Sq1.Gui.Forms {
 			
 			this.EventManager = new ChartFormEventManager(this);
 			this.ChartForm.AttachEventsToChartFormsManager();
-						
+			
 			try {
 				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig);
 			} catch (Exception ex) {
@@ -148,10 +148,10 @@ namespace Sq1.Gui.Forms {
 				//this.ChartForm.Chart.Initialize(this.Executor);
 				//ScriptExecutor.DataSource: you should not access DataSource before you've set Bars
 				//this.ChartForm.ChartStreamingConsumer.Initialize(this);
-	
+				
 				this.scriptEditorFormFactory = new ScriptEditorFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
 				this.ChartForm.CtxReporters.Items.AddRange(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
-	
+				
 				this.EventManager = new ChartFormEventManager(this);
 				this.ChartForm.AttachEventsToChartFormsManager();
 			} else {
@@ -192,10 +192,10 @@ namespace Sq1.Gui.Forms {
 			} }
 
 		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(string msig, bool loadNewBars = true, bool skipBacktest = false) {
-			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception 
+			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
 			ContextChart context = this.ContextCurrentChartOrStrategy;
 			msig += (this.Strategy != null) ?
-					" << PopulateCurrentScriptContext(): Strategy[" + this.Strategy + "].ScriptContextCurrent[" + context.Name + "]"
+				" << PopulateCurrentScriptContext(): Strategy[" + this.Strategy + "].ScriptContextCurrent[" + context.Name + "]"
 				:	" << PopulateCurrentScriptContext(): this.ChartForm[" + this.ChartForm.Text + "].ChartControl.ContextChart[" + context.Name + "]";
 
 			//BarScaleInterval barScaleInterval = (contextToPopulate.ScaleInterval != null) ? contextToPopulate.ScaleInterval : new BarScaleInterval();
@@ -339,9 +339,9 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg + msig);
 				this.Strategy.ScriptContextCurrent.BacktestOnRestart = false;
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
-#if DEBUG
+				#if DEBUG
 				Debugger.Break();
-#endif
+				#endif
 				return;
 			}
 			if (this.Strategy.Script.Executor == null) {
@@ -424,12 +424,12 @@ namespace Sq1.Gui.Forms {
 				this.ScriptEditorForm.Text = windowTitle;
 			}
 			//ALWAYS_NOT_NULL REDUNDANT if (this.ChartForm != null) {
-				this.ChartForm.Text = windowTitle;
-				if (this.Strategy.ActivatedFromDll == true) this.ChartForm.Text += "-DLL";
-				this.ChartForm.IsHidden = false;
+			this.ChartForm.Text = windowTitle;
+			if (this.Strategy.ActivatedFromDll == true) this.ChartForm.Text += "-DLL";
+			this.ChartForm.IsHidden = false;
 			//}
 		}
-		public void StrategyCompileActivatePopulateSlidersBeforeShow() {
+		public void StrategyCompileActivateBeforeShow() {
 			if (this.Strategy.ActivatedFromDll) {
 				string msg = "WONT_COMPILE_STRATEGY_ACTIVATED_FROM_DLL_SHOULD_HAVE_NO_OPTION_IN_UI_TO_COMPILE_IT " + this.Strategy.ToString();
 				Assembler.PopupException(msg);
@@ -451,9 +451,11 @@ namespace Sq1.Gui.Forms {
 			//SlidersForm.Instance.Initialize(this.Strategy);
 		}
 		public void StrategyCompileActivatePopulateSlidersShow() {
-			if (this.Strategy.ActivatedFromDll == false) {
-				this.StrategyCompileActivatePopulateSlidersBeforeShow();
-			}
+			if (this.Strategy.ActivatedFromDll == false) this.StrategyCompileActivateBeforeShow();
+			this.PopulateSliders();
+		}
+		public void PopulateSliders() {
+			if (this.Strategy == null) return;
 			SlidersForm.Instance.Initialize(this.Strategy);
 			SlidersForm.Instance.Show(this.dockPanel);
 		}

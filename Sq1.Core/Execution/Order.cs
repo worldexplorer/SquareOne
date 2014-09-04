@@ -13,72 +13,41 @@ namespace Sq1.Core.Execution {
 	[DataContract]
 	public class Order {
 		//public string GUID = Guid.NewGuid().ToString();
-		[DataMember]
-		public DateTime TimeCreatedBroker;
-		[DataMember]
-		public double PriceRequested;
-		[DataMember]
-		public double PriceFill;
-		[DataMember]
-		public double QtyRequested;
-		[DataMember]
-		public double QtyFill;
+		[DataMember] public DateTime TimeCreatedBroker;
+		[DataMember] public double PriceRequested;
+		[DataMember] public double PriceFill;
+		[DataMember] public double QtyRequested;
+		[DataMember] public double QtyFill;
 
-		[DataMember]
-		public string GUID;
-		[DataMember]
-		public OrderState State;
-		[DataMember]
-		public DateTime StateUpdateLastTimeLocal;
-		[DataMember]
-		public int SernoSession;
-		[DataMember]
-		public long SernoExchange;
+		[DataMember] public string GUID;
+		[DataMember] public OrderState State;
+		[DataMember] public DateTime StateUpdateLastTimeLocal;
+		[DataMember] public int SernoSession;
+		[DataMember] public long SernoExchange;
 
-		[DataMember]
-		public bool IsReplacement;
-		[DataMember]
-		public string ReplacementForGUID;
-		[DataMember]
-		public string ReplacedByGUID;
+		[DataMember] public bool IsReplacement;
+		[DataMember] public string ReplacementForGUID;
+		[DataMember] public string ReplacedByGUID;
 
-		[DataMember]
-		public bool IsEmergencyClose;
-		[DataMember]
-		public int EmergencyCloseAttemptSerno;
-		[DataMember]
-		public string EmergencyReplacementForGUID;
-		[DataMember]
-		public string EmergencyReplacedByGUID;
+		[DataMember] public bool IsEmergencyClose;
+		[DataMember] public int EmergencyCloseAttemptSerno;
+		[DataMember] public string EmergencyReplacementForGUID;
+		[DataMember] public string EmergencyReplacedByGUID;
 
-		[DataMember]
-		public bool IsKiller;
-		[DataMember]
-		public string VictimGUID;
-		[JsonIgnore]
-		public Order VictimToBeKilled;
-		[DataMember]
-		public string KillerGUID;
-		[JsonIgnore]
-		public Order KillerOrder;
+		[DataMember] public bool IsKiller;
+		[DataMember] public string VictimGUID;
+		[JsonIgnore] public Order VictimToBeKilled;
+		[DataMember] public string KillerGUID;
+		[JsonIgnore] public Order KillerOrder;
 
-		[DataMember]
-		public DateTime DateServerLastFillUpdate;
-		[DataMember]
-		public bool FromAutoTrading { get; private set; }
-		[DataMember]
-		public double SlippageFill;
-		[DataMember]
-		public int SlippageIndex;
-		[DataMember]
-		public double CurrentAsk;
-		[DataMember]
-		public double CurrentBid;		// json.deserialize will put NULL when { get; private set; }
-		[DataMember]
-		public OrderSpreadSide SpreadSide;
-		[DataMember]
-		public string PriceSpreadSideAsString {
-			get {
+		[DataMember] public DateTime DateServerLastFillUpdate;
+		[DataMember] public bool FromAutoTrading { get; private set; }
+		[DataMember] public double SlippageFill;
+		[DataMember] public int SlippageIndex;
+		[DataMember] public double CurrentAsk;
+		[DataMember] public double CurrentBid;		// json.deserialize will put NULL when { get; private set; }
+		[DataMember] public OrderSpreadSide SpreadSide;
+		[DataMember] public string PriceSpreadSideAsString { get {
 				string ret = "";
 				switch (this.SpreadSide) {
 					case OrderSpreadSide.AskCrossed:
@@ -94,12 +63,9 @@ namespace Sq1.Core.Execution {
 						break;
 				}
 				return ret;
-			}
-		}
+			} }
 		//[JsonIgnore]
-		[DataMember]
-		public Alert Alert;		// json.deserialize will put NULL when { get; private set; }
-
+		[DataMember] public Alert Alert;		// json.deserialize will put NULL when { get; private set; }
 		
 		[JsonIgnore]
 		// why Concurrent: OrderProcessor adds while GUI reads (a copy); why Stack: ExecutionTree displays Messages RecentOnTop;
@@ -110,9 +76,8 @@ namespace Sq1.Core.Execution {
 		private ConcurrentQueue<OrderStateMessage> messages;
 		
 		//[JsonIgnore]
-		[DataMember]
 		// List because Json.Net doesn't serialize ConcurrentQueue as []; I wanted deserialization compability
-		public List<OrderStateMessage> MessagesSerializationProxy {
+		[DataMember] public List<OrderStateMessage> MessagesSerializationProxy {
 			get {
 				// don't return {new List(empty)} as the next line; if JsonConvert.DeserializeObject gets NULL it'll SET a deserialized list  
 				if (this.messages.Count == 0) return null; 
@@ -146,8 +111,7 @@ namespace Sq1.Core.Execution {
 		
 		public List<Order> DerivedOrders;
 		
-		[DataMember]
-		public List<string> DerivedOrdersGuids;/* {
+		[DataMember] public List<string> DerivedOrdersGuids;/* {
 			get {
 				if (this.derivedOrdersGuids == null) return null;
 				var ret = new List<string>();
@@ -196,23 +160,18 @@ namespace Sq1.Core.Execution {
 		
 		// TODO_OrderStateCollections: REFACTOR
 		// states to be better named/handled in OrderStateCollections.cs
-		public bool CanBeReplacedLimitStop {
-			get {
+		public bool CanBeReplacedLimitStop { get {
 				return this.State == OrderState.Active
 					|| this.State == OrderState.Submitted
 					|| this.State == OrderState.FilledPartially;
-			}
-		}
-		public bool ExpectingCallbackFromBroker {
-			get {
+			} }
+		public bool ExpectingCallbackFromBroker { get {
 				return this.State == OrderState.Active
 					|| this.State == OrderState.Submitting
 					|| this.State == OrderState.Submitted
 					|| this.State == OrderState.KillPending;
-			}
-		}
-		public bool StateChangeableToSubmitted {
-			get {
+			} }
+		public bool StateChangeableToSubmitted { get {
 				if (this.State == OrderState.PreSubmit
 					|| this.State == OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted
 					|| this.State == OrderState.AutoSubmitNotEnabled
@@ -221,48 +180,38 @@ namespace Sq1.Core.Execution {
 					return true;
 				}
 				return false;
-			}
-		}
-		public bool InEmergencyState {
-			get {
+			} }
+		public bool InEmergencyState { get {
 				if (this.State == OrderState.EmergencyCloseSheduledForRejected
 						|| this.State == OrderState.EmergencyCloseSheduledForRejectedLimitReached
 						|| this.State == OrderState.EmergencyCloseSheduledForErrorSubmittingBroker) {
 					return true;
 				}
 				return false;
-			}
-		}
-		public OrderState ComplementaryEmergencyStateForError {
-			get {
+			} }
+		public OrderState ComplementaryEmergencyStateForError { get {
 				OrderState newState = OrderState.Error;
 				if (this.State == OrderState.Rejected) newState = OrderState.EmergencyCloseSheduledForRejected;
 				if (this.State == OrderState.RejectedLimitReached) newState = OrderState.EmergencyCloseSheduledForRejectedLimitReached;
 				if (this.State == OrderState.ErrorSubmittingBroker) newState = OrderState.EmergencyCloseSheduledForErrorSubmittingBroker;
 				return newState;
-			}
-		}
-		public bool stateChangeableToEmergency {
-			get {
+			} }
+		public bool stateChangeableToEmergency { get {
 				return (ComplementaryEmergencyStateForError != OrderState.Error);
-			}
-		}
+			} }
 		// /TODO_OrderStateCollections: REFACTOR
 
 
 
 		public string ExtendedOrderType;
 		public int AddedToOrdersListCounter;
-		public string OrderExtendedOrMarketLimitStopAsString {
-			get {
+		public string OrderExtendedOrMarketLimitStopAsString { get {
 				if (this.ExtendedOrderType != "") {
 					return this.ExtendedOrderType;
 				}
 				return this.Alert.MarketLimitStop.ToString();
-			}
-		}
-		public string LastMessage {
-			get {
+			} }
+		public string LastMessage { get {
 				int count = this.messages.Count; 
 				if (count == 0) return "";
 				OrderStateMessage lastOmsg;
@@ -271,31 +220,24 @@ namespace Sq1.Core.Execution {
 					throw new Exception("messages.TryPeek() failed while messages.Count[" + count + "/" + messages.Count + "]");
 				}
 				return lastOmsg.Message; 
-			}
-		}
-		public bool hasSlippagesDefined {
-			get {
+			} }
+		public bool hasSlippagesDefined { get {
 				int slippageIndexMax = this.Alert.Bars.SymbolInfo.getSlippageIndexMax(this.Alert.Direction);
 				return (slippageIndexMax == -1) ? false : true;
-			}
-		}
-		public bool noMoreSlippagesAvailable {
-			get {
+			} }
+		public bool noMoreSlippagesAvailable { get {
 				string msg = "slippagesNotDefinedOr?";
 				int slippageIndexMax = this.Alert.Bars.SymbolInfo.getSlippageIndexMax(this.Alert.Direction);
 				if (slippageIndexMax == -1) return false;
 				return (this.SlippageIndex > slippageIndexMax) ? true : false;
-			}
-		}
-		public bool EmergencyCloseAttemptSernoExceedLimit {
-			get {
+			} }
+		public bool EmergencyCloseAttemptSernoExceedLimit { get {
 				if (this.Alert.Bars.SymbolInfo.EmergencyCloseAttemptsMax <= 0) return false;
 				if (this.EmergencyCloseAttemptSerno > this.Alert.Bars.SymbolInfo.EmergencyCloseAttemptsMax) {
 					return true;
 				}
 				return false;
-			}
-		}
+			} }
 
 		private static int absno = 0;
 		public double CommissionFill;

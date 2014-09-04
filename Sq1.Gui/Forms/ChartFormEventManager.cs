@@ -45,13 +45,19 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		internal void DataSourcesTree_OnSymbolSelected(object sender, DataSourceSymbolEventArgs e) {
-			Strategy strategyToSave = this.chartFormManager.Strategy;
-			if (strategyToSave.ScriptContextCurrent.Symbol == e.Symbol) {
-				string msg = "DebuggableCallback invokes ObjectListView.OnMouseUp():8266 twice, and ObjectListView.WndProc():4996 doesn't have a filter";
-				Assembler.PopupException(msg);
-				return;
-			}
+			//v1
+			//Strategy strategyToSave = this.chartFormManager.Strategy;
+			//if (strategyToSave.ScriptContextCurrent.Symbol == e.Symbol) {
+			//if (contextChart.Symbol == e.Symbol) {
+			//	string msg = "DebuggableCallback invokes ObjectListView.OnMouseUp():8266 twice, and ObjectListView.WndProc():4996 doesn't have a filter";
+			//	Assembler.PopupException(msg);
+			//	return;
+			//}
 			try {
+				//v2
+				ContextChart contextChart = this.chartFormManager.ContextCurrentChartOrStrategy;
+				if (contextChart.DataSourceName != e.DataSource.Name)	contextChart.DataSourceName = e.DataSource.Name; 
+				if (contextChart.Symbol			!= e.Symbol) 			contextChart.Symbol 		= e.Symbol;
 				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("DataSourcesTree_OnSymbolSelected");
 			} catch (Exception ex) {
 				Assembler.PopupException("DataSourcesTree_OnSymbolSelected()", ex);

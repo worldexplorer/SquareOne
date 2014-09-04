@@ -208,7 +208,7 @@ namespace Sq1.Reporters {
 				}
 				buffer.Append(position.EntryFilledPrice.ToString("C"));
 				buffer.Append("\t");
-				if (position.NoExitBarOrStreaming) {
+				if (position.ExitNotFilledOrStreaming) {
 					buffer.Append("Open");
 					buffer.Append("\t");
 					buffer.Append("Open");
@@ -234,7 +234,7 @@ namespace Sq1.Reporters {
 				buffer.Append("\t");
 				buffer.Append(position.EntrySignal.ToString());
 				buffer.Append("\t");
-				if (position.NoExitBarOrStreaming) {
+				if (position.ExitNotFilledOrStreaming) {
 					buffer.Append("Open");
 					buffer.Append("\t");
 				} else {

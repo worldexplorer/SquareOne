@@ -62,8 +62,6 @@ namespace Sq1.Core.Backtesting {
 
 			this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
 		}
-		public Bars ConsumerBarsToAppendInto {
-			get { return backtester.BarsSimulating; }
-		}
+		public Bars ConsumerBarsToAppendInto { get { return backtester.BarsSimulating; } }
 	}
 }

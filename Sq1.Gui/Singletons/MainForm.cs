@@ -126,6 +126,9 @@ namespace Sq1.Gui.Singletons {
 	
 				//this.PropagateSelectorsForCurrentChart();
 				//WHY???this.MainFormEventManager.DockPanel_ActiveDocumentChanged(this, EventArgs.Empty);
+				if (this.ChartFormActive != null) {
+					this.ChartFormActive.ChartFormManager.PopulateSliders();
+				}
 	
 				this.WorkspacesManager.SelectWorkspaceLoaded(workspaceToLoad);
 

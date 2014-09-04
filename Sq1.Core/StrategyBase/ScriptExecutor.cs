@@ -496,11 +496,15 @@ namespace Sq1.Core.StrategyBase {
 			} catch (Exception ex) {
 				string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
 				Assembler.PopupException(msg + msig, ex);
-				//Debugger.Break();
+				#if DEBUG
+				Debugger.Break();
+				#endif
 			}
 			bool removed = this.ExecutionDataSnapshot.AlertsPendingRemove(alertFilled);
 			if (removed == false) {
+				#if DEBUG
 				Debugger.Break();
+				#endif
 			}
 			if (alertFilled.IsEntryAlert) {
 				// position has its parent alert in Position.ctor()

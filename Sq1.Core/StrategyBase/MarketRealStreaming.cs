@@ -73,7 +73,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "position=null, can't close it!";
 				throw new Exception(msg);
 			}
-			if (position.NoExitBarOrStreaming == false) {
+			if (position.ExitNotFilledOrStreaming == false) {
 				string msg = "position.Active=false, can't close it!";
 				throw new Exception(msg);
 			}

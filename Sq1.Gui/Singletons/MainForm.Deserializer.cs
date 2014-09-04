@@ -108,7 +108,9 @@ namespace Sq1.Gui.Singletons {
 					} else {
 						chartFormsManagerDeserialized.InitializeStrategyAfterDeserialization(this, strategyGuid);
 						this.GuiDataSnapshot.AddChartFormsManagerJustDeserialized(chartFormsManagerDeserialized);
-						chartFormsManagerDeserialized.StrategyCompileActivatePopulateSlidersBeforeShow();	// if it was streaming at exit, we should have it ready
+						if (chartFormsManagerDeserialized.Strategy.ActivatedFromDll == false) {
+							chartFormsManagerDeserialized.StrategyCompileActivateBeforeShow();	// if it was streaming at exit, we should have it ready
+						}
 					}
 					chartFormsManagerDeserialized.PopulateWindowTitlesFromChartContextOrStrategy();
 					ret = chartFormsManagerDeserialized.ChartForm;

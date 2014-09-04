@@ -10,8 +10,7 @@ namespace Sq1.Core.Repositories {
 		public string Extension { get; protected set; }
 		public BarScaleInterval ScaleInterval { get; protected set; }
 		
-		public List<string> SymbolsInFolder {
-			get {
+		public List<string> SymbolsInFolder { get {
 				List<string> ret = new List<string>();
 				string[] files = Directory.GetFiles(this.DataSourceAbspath);
 				for (int i = 0; i < files.Length; i++) {
@@ -25,10 +24,8 @@ namespace Sq1.Core.Repositories {
 	//				ret.AddRange(this.GetExistingSymbols(subFolder));
 	//			}
 				return ret;
-			}
-		}
-		public List<BarScaleInterval> BarScalesInParentFolder {
-			get {
+			} }
+		public List<BarScaleInterval> BarScalesInParentFolder { get {
 				List<BarScaleInterval> ret = new List<BarScaleInterval>();
 				string[] directories = Directory.GetDirectories(this.DataSourceAbspath);
 				foreach (string folderAbsname in directories) {
@@ -45,11 +42,8 @@ namespace Sq1.Core.Repositories {
 					}
 				}
 				return ret;
-			}
-		}
-		
-		public string SubfolderScaleInterval {
-			get {
+			} }
+		public string SubfolderScaleInterval { get {
 				string ret = "NO_SUBFOLDER_FOR_UNKNOWN_BARSCALE";
 				switch (this.ScaleInterval.Scale) {
 					case BarScale.Yearly:		ret = "Yearly";										break;
@@ -62,20 +56,15 @@ namespace Sq1.Core.Repositories {
 					case BarScale.Tick:			ret = "Tick-"   + this.ScaleInterval.Interval;		break;
 				}
 				return ret;
-			}
-		}
-		
+			} }
 		bool createNonExistingSubfolder;
-		public string SubfolderAbspath {
-			get {
+		public string SubfolderAbspath { get {
 				string ret = Path.Combine(this.DataSourceAbspath, this.SubfolderScaleInterval);
 				if (!Directory.Exists(ret) && this.createNonExistingSubfolder) {
 					Directory.CreateDirectory(ret);
 				}
 				return ret;
-			}
-		}
-		
+			} }
 		public RepositoryBarsSameScaleInterval(string dataSourceAbspath, BarScaleInterval scaleInterval, bool createNonExistingSubfolder = true, string extension = "BAR") {
 			this.DataSourceAbspath = dataSourceAbspath;
 			//if (this.FolderWithSymbolFiles.EndsWith(Path.DirectorySeparatorChar) == false) this.FolderWithSymbolFiles += Path.DirectorySeparatorChar;
@@ -105,7 +94,6 @@ namespace Sq1.Core.Repositories {
 			// Data-debug\MockStaticProvider\Mock-debug\Minute-1\RIM3_Minute-1.BAR
 			return symbol + "_" + this.SubfolderScaleInterval + "." + this.Extension;
 		}
-
 		public void SymbolDataFileAdd(string symbolToAdd, bool overwriteIfExistsDontThrow = false) {
 			string abspath = this.AbspathForSymbol(symbolToAdd);
 			if (File.Exists(abspath)) {

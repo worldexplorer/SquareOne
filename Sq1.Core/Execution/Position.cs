@@ -41,7 +41,7 @@ namespace Sq1.Core.Execution {
 
 		public string StrategyID;
 		//public bool NoExitBarOrStreaming { get { return (this.ExitBarIndex == -1 || this.ExitBarIndex == this.Bars.Count); } }
-		public bool NoExitBarOrStreaming { get {
+		public bool ExitNotFilledOrStreaming { get {
 				if (this.ExitFilledBarIndex == -1) return true;
 				if (this.ExitBar == null) return true;
 				if (this.ExitBar.IsBarStreaming) return true;
@@ -49,16 +49,13 @@ namespace Sq1.Core.Execution {
 			} }
 		//public bool EntrySafeToPaint { get { return (this.EntryBar > -1 && this.EntryBar < this.Bars.Count); } }
 		//public bool ExitSafeToPaint { get { return (this.ExitBar > -1 && this.ExitBar < this.Bars.Count); } }
-		public DateTime EntryDate {
-			get {
+		public DateTime EntryDate { get {
 				//if (this.EntryBarIndex < 0 || this.EntryBarIndex > this.Bars.Count) return DateTime.MinValue;
 				Bar barEntry = this.EntryBar;		// don't take it from Alert! dateFilled depends on the market, not on your strategy
 				if (barEntry == null) return DateTime.MinValue; 
 				return this.EntryBar.DateTimeOpen;
-			}
-		}
-		public DateTime ExitDate {
-			get {
+			} }
+		public DateTime ExitDate { get {
 //				if (this.ExitBarIndex == -1 || this.ExitBarIndex > this.Bars.Count) {
 //					if (this.ExitAlert != null) return this.ExitAlert.DateTime;
 //					return DateTime.MinValue;
@@ -72,19 +69,15 @@ namespace Sq1.Core.Execution {
 				Bar barExit = this.ExitBar;		// don't take it from this.ExitAlert! dateFilled depends on the market, not on your strategy
 				if (barExit == null) return DateTime.MinValue; 
 				return this.EntryBar.DateTimeOpen;
-			}
-		}
-		public double Size {
-			get {
+			} }
+		public double Size { get {
 				if (this.Bars.SymbolInfo.SecurityType == SecurityType.Future) {
 					return this.Bars.SymbolInfo.LeverageForFutures * this.Shares;
 				}
 				return this.EntryFilledPrice * this.Shares;
-			}
-		}
+			} }
 
-		public double ExitOrStreamingPrice {
-			get {
+		public double ExitOrStreamingPrice { get {
 				double ret = -1;
 //				if (this.ExitBarIndex == -1 || this.ExitBarIndex > this.Bars.Count) {
 //					Bar partial = this.Bars.StreamingBarCloneReadonly;
@@ -115,44 +108,33 @@ namespace Sq1.Core.Execution {
 				}
 				if (this.ExitFilledSlippage != -1) ret += this.ExitFilledSlippage;
 				return ret;
-			}
-		}
-		public double EntryPriceNoSlippage {
-			get {
+			} }
+		public double EntryPriceNoSlippage { get {
 				double ret = 0;
 				if (this.EntryFilledPrice == -1) return ret;
 				ret = this.EntryFilledPrice - this.EntryFilledSlippage;
 				return ret;
-			}
-		}
-		public double ExitOrCurrentPriceNoSlippage {
-			get {
+			} }
+		public double ExitOrCurrentPriceNoSlippage { get {
 				double ret = this.ExitOrStreamingPrice;
 				if (this.ExitFilledSlippage != -1) ret -= this.ExitFilledSlippage;
 				return ret;
-			}
-		}
-		public bool IsEntryFilled {
-			get {
+			} }
+		public bool IsEntryFilled { get {
 				if (this.EntryFilledPrice == -1) return false;
 				if (this.EntryFilledQty == -1) return false;
 				if (this.EntryFilledCommission == -1) return false;
 				if (this.EntryFilledSlippage == -1) return false;
 				return true;
-			}
-		}
-		public bool IsExitFilled {
-			get {
+			} }
+		public bool IsExitFilled { get {
 				if (this.ExitFilledPrice == -1) return false;
 				if (this.ExitFilledQty == -1) return false;
 				if (this.ExitFilledCommission == -1) return false;
 				if (this.ExitFilledSlippage == -1) return false;
 				return true;
-			}
-		}
-
-		public bool ClosedByTakeProfitLogically {
-			get {
+			} }
+		public bool ClosedByTakeProfitLogically { get {
 				if (this.EntryFilledPrice == -1) {
 					throw new Exception("position.EntryPrice=-1, make sure you called EntryFilledWith()");
 				}
@@ -166,19 +148,15 @@ namespace Sq1.Core.Execution {
 
 				if (this.PositionLongShort == PositionLongShort.Long) return exitAboveEntry;
 				else return !exitAboveEntry;
-			}
-		}
-
+			} }
 		// prototype-related methods
-		public bool IsExitFilledWithPrototypedAlert {
-			get {
+		public bool IsExitFilledWithPrototypedAlert { get {
 				this.checkThrowPrototypeNotNullAndIsExitFilled();
 				bool oneSideFilled =
 					this.ExitAlert == this.Prototype.StopLossAlertForAnnihilation ||
 					this.ExitAlert == this.Prototype.TakeProfitAlertForAnnihilation;
 				return oneSideFilled;
-			}
-		}
+			} }
 		protected void checkThrowPrototypeNotNullAndIsExitFilled() {
 			if (this.Prototype == null) {
 				throw new Exception("this.Prototype=null, check IsPrototypeNull first");
@@ -187,29 +165,22 @@ namespace Sq1.Core.Execution {
 				throw new Exception("position isn't closed yet, ExitFilled=false");
 			}
 		}
-		public bool IsExitFilledByPrototypedStopLoss {
-			get {
+		public bool IsExitFilledByPrototypedStopLoss { get {
 				this.checkThrowPrototypeNotNullAndIsExitFilled();
 				if (this.ExitAlert == this.Prototype.StopLossAlertForAnnihilation) return true;
 				return false;
-			}
-		}
-		public bool IsExitFilledByPrototypedTakeProfit {
-			get {
+			} }
+		public bool IsExitFilledByPrototypedTakeProfit { get {
 				this.checkThrowPrototypeNotNullAndIsExitFilled();
 				if (this.ExitAlert == this.Prototype.TakeProfitAlertForAnnihilation) return true;
 				return false;
-			}
-		}
-		public Alert PrototypedExitCounterpartyAlert {
-			get {
+			} }
+		public Alert PrototypedExitCounterpartyAlert { get {
 				if (this.IsExitFilledByPrototypedTakeProfit) return this.Prototype.StopLossAlertForAnnihilation;
 				if (this.IsExitFilledByPrototypedStopLoss) return this.Prototype.TakeProfitAlertForAnnihilation;
 				string msg = "Prototyped position closed by some prototype-unrelated alert[" + this.ExitAlert + "]";
 				throw new Exception(msg);
-			}
-		}
-
+			} }
 		public Position() {
 			PositionLongShort = PositionLongShort.Unknown;
 			StrategyID = "STRATEGY_ID_NOT_INITIALIZED";

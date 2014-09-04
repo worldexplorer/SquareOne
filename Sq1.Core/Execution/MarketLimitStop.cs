@@ -1,27 +1,27 @@
 ﻿namespace Sq1.Core.Execution {
 // http://www.metatrader5.com/en/terminal/help/trading/general_concept/order_types
-//Buy Limit  trade request to buy at the Ask price that is equal to or lower
+//Buy Limit - trade request to buy at the Ask price that is equal to or lower
 //	than that specified in the order. The current price level is higher
 //	than the value in the order. Usually this order is placed in anticipation of that
 //	the security price, having fallen to a certain level, will increase;
-//Buy Stop  trade request to buy at the Ask price that is equal to or higher
+//Buy Stop - trade request to buy at the Ask price that is equal to or higher
 //	than that specified in the order. The current price level is lower
 //	than the value in the order. Usually this order is placed in anticipation of that
 //	the security price, having reached a certain level, will keep on increasing;
-//Sell Limit  trade request to sell at the Bid price that is equal to or higher
+//Sell Limit - trade request to sell at the Bid price that is equal to or higher
 //	than that specified in the order. The current price level is lower
 //	than the value in the order. Usually this order is placed in anticipation of that
 //	the security price, having increased to a certain level, will fall;
-//Sell Stop  trade request to sell at the Bid price that is equal to or lower
+//Sell Stop - trade request to sell at the Bid price that is equal to or lower
 //	than that specified in the order. The current price level is higher
 //	than the value in the order. Usually this order is placed in anticipation of that
 //	the security price, having reached a certain level, will keep on falling;
-//Buy Stop Limit  this type is the combination of the two first types being a
+//Buy Stop Limit - this type is the combination of the two first types being a
 //	stop order for placing Buy Limit. As soon as the future Ask price reaches
 //	the stop-level indicated in the order (the Price field), a Buy Limit order
 //	will be placed at the level, specified in Stop Limit price field. The stop-level is set above
 //	the current Ask price, and the Stop Limit price is set below the stop-level.
-//Sell Stop Limit  this type is a stop order for placing Sell Limit. As soon as the future Bid price
+//Sell Stop Limit - this type is a stop order for placing Sell Limit. As soon as the future Bid price
 //	reaches the stop-level indicated in the order (the Price field), a Sell Limit order
 //	will be placed at the level, specified in Stop Limit price field. The stop-level is set below
 //	the current Bid price, and the Stop Limit price is set above the stop-level.

@@ -59,7 +59,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		private void bindNewStreamingBarAppendPokeConsumersStaticFormed() {
+		void bindNewStreamingBarAppendPokeConsumersStaticFormed() {
 			Bar barStreamingUnattached = StreamingBarFactoryUnattached.StreamingBarUnattached.Clone();
 			if (consumersBar.Count == 0) {
 				Assembler.PopupException("Can't push lastBarFormed[" + barStreamingUnattached + "]: no BarConsumers for SymbolScaleInterval["
@@ -134,11 +134,8 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 		}
-		public string SymbolScaleInterval {
-			get { return this.Symbol + "_" + this.ScaleInterval; }
-		}
-		public string ConsumersQuoteAsString {
-			get {
+		public string SymbolScaleInterval { get { return this.Symbol + "_" + this.ScaleInterval; } }
+		public string ConsumersQuoteAsString { get {
 				string ret = "";
 				lock (lockConsumersQuote) {
 					foreach (IStreamingConsumer consumer in consumersQuote) {
@@ -147,10 +144,8 @@ namespace Sq1.Core.Streaming {
 					}
 				}
 				return ret;
-			}
-		}
-		public string ConsumersBarAsString {
-			get {
+			} }
+		public string ConsumersBarAsString { get {
 				string ret = "";
 				lock (lockConsumersBar) {
 					foreach (IStreamingConsumer consumer in consumersBar) {
@@ -159,8 +154,7 @@ namespace Sq1.Core.Streaming {
 					}
 				}
 				return ret;
-			}
-		}
+			} }
 		public override string ToString() {
 			return this.SymbolScaleInterval + ":Quotes[" + ConsumersQuoteAsString + "],Bars[" + ConsumersBarAsString + "]";
 		}
@@ -186,13 +180,11 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 		}
-		public int ConsumersQuoteCount {
-			get {
+		public int ConsumersQuoteCount { get {
 				lock (lockConsumersQuote) {
 					return consumersQuote.Count;
 				}
-			}
-		}
+			} }
 
 		public bool ConsumersBarContains(IStreamingConsumer consumer) {
 			lock (lockConsumersBar) {
@@ -218,12 +210,10 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 		}
-		public int ConsumersBarCount {
-			get {
+		public int ConsumersBarCount { get {
 				lock (lockConsumersBar) {
 					return consumersBar.Count;
 				}
-			}
-		}
+			} }
 	}
 }

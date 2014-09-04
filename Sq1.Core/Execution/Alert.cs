@@ -1,7 +1,9 @@
 ﻿using System;
-using System.Windows.Forms;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
+using System.Windows.Forms;
+
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
@@ -14,8 +16,7 @@ namespace Sq1.Core.Execution {
 		[DataMember] public int PlacedBarIndex { get; protected set; }
 		[DataMember] public Bar FilledBar { get; protected set; }
 		[DataMember] public int FilledBarIndex { get; protected set; }
-		[DataMember] public DateTime PlacedDateTime {
-			get {
+		[DataMember] public DateTime PlacedDateTime { get {
 				if (this.PlacedBar == null) return DateTime.MinValue;
 //				if (this.PlacedBarIndex == -1 || this.PlacedBarIndex > this.Bars.Count) return PlacedDateTime.MinValue;
 //				if (this.PlacedBarIndex == this.Bars.Count) {
@@ -23,8 +24,7 @@ namespace Sq1.Core.Execution {
 //				}
 //				return this.Bars[this.PlacedBarIndex].DateTimeOpen;
 				return this.PlacedBar.DateTimeOpen;
-			}
-		}
+			} }
 		[DataMember] public DateTime QuoteCreatedThisAlertServerTime;	// EXECUTOR_ENRICHES_ALERT_WITH_QUOTE { get; protected set; }
 		[DataMember] public string Symbol;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC  { get; protected set; }
 		[DataMember] public string SymbolClass;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
@@ -33,8 +33,7 @@ namespace Sq1.Core.Execution {
 		// contains BrokerProvider for further {new Order(Alert)} execution
 		[DataMember] public string dataSourceName { get; protected set; }
 		//public DataSource dataSource;
-		public DataSource DataSource {
-			get {
+		public DataSource DataSource { get {
 				if (this.Bars == null) {
 					throw new Exception("alert.Bars=null for alert[" + this + "]");
 				}
@@ -44,12 +43,7 @@ namespace Sq1.Core.Execution {
 				dataSourceName = this.Bars.DataSource.Name;
 				//dataSource = this.Bars.DataSource;
 				return this.Bars.DataSource;
-			}
-			//set {
-			//	dataSource = value;
-			//	dataSourceName = value.Name;
-			//}
-		}
+			} }
 		
 		//doesn't contain Slippage
 		[DataMember] public double PriceScript;
@@ -66,8 +60,7 @@ namespace Sq1.Core.Execution {
 		[DataMember] public Guid StrategyID;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
 		[DataMember] public string StrategyName;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
 		public Strategy Strategy { get; protected set; }
-		public bool IsExecutorBacktestingNow {
-			get {
+		public bool IsExecutorBacktestingNow { get {
 				if (this.Strategy.Script == null) {
 					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script=null for " + this);
 				}
@@ -78,29 +71,25 @@ namespace Sq1.Core.Execution {
 					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor.BacktesterFacade=null for " + this);
 				}
 				return this.Strategy.Script.Executor.Backtester.IsBacktestingNow;
-			}
-		}
+			} }
 		[DataMember] public BarScaleInterval BarsScaleInterval { get; protected set; }
 		[DataMember] public OrderSpreadSide OrderSpreadSide;
 		[DataMember] public Quote QuoteCreatedThisAlert;
 		[DataMember] public Quote QuoteLastWhenThisAlertFilled;
 
 		public Position PositionAffected;
-		public DateTime PositionEntryDate {
-			get {
+		public DateTime PositionEntryDate { get {
 				if (this.PositionAffected != null) {
 					return this.PositionAffected.EntryDate;
 				}
 				return DateTime.MinValue;
-			}
-		}
+			} }
 
 		// set on Order(alert).executed;
 		public Order OrderFollowed;
 		public ManualResetEvent MreOrderFollowedIsNotNull { get; private set; }
 		[DataMember] public double PriceDeposited;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
-		public string IsAlertCreatedOnPreviousBar {
-			get {
+		public string IsAlertCreatedOnPreviousBar { get {
 				string ret = "";
 				DateTime serverTimeNow = this.Bars.MarketInfo.ServerTimeNow;
 				DateTime nextBarOpen = this.PlacedBar.DateTimeNextBarOpenUnconditional;
@@ -109,8 +98,7 @@ namespace Sq1.Core.Execution {
 					ret = "serverTimeNow[" + serverTimeNow + "] >= nextBarOpen[" + nextBarOpen + "]";
 				}
 				return ret;
-			}
-		}
+			} }
 
 		public Alert() {	// called by Json.Deserialize()
 			PlacedBarIndex = -1;
@@ -186,8 +174,7 @@ namespace Sq1.Core.Execution {
 				return;
 			}
 		}
-
-		private void initByFetchingForSerialization() {
+		void initByFetchingForSerialization() {
 			string firstReadInits4Serialization;
 			//firstReadInits4Serialization = this.Symbol;
 			firstReadInits4Serialization = this.SymbolClass;
@@ -202,9 +189,7 @@ namespace Sq1.Core.Execution {
 				+ "/" + SymbolClass;
 			return msg;
 		}
-
-		public double QtyFilledThroughPosition {
-			get {
+		public double QtyFilledThroughPosition { get {
 				double ret = 0;
 				if (this.PositionAffected == null) return ret;
 				if (this.IsEntryAlert && this.PositionAffected.EntryAlert == this) {
@@ -214,11 +199,8 @@ namespace Sq1.Core.Execution {
 					ret = this.PositionAffected.Shares;
 				}
 				return ret;
-			}
-		}
-
-		public double PriceFilledThroughPosition {
-			get {
+			} }
+		public double PriceFilledThroughPosition { get {
 				double ret = 0;
 				if (this.PositionAffected == null) return ret;
 				if (this.IsEntryAlert && this.PositionAffected.EntryAlert == this) {
@@ -228,9 +210,7 @@ namespace Sq1.Core.Execution {
 					ret = this.PositionAffected.ExitFilledPrice;
 				}
 				return ret;
-			}
-		}
-
+			} }
 		public string ToStringForTooltip() {
 			string longOrderType = (MarketLimitStop == MarketLimitStop.StopLimit) ? "" : "\t";
 
@@ -318,17 +298,22 @@ namespace Sq1.Core.Execution {
 			}
 			if (this.IsEntryAlert) {
 				this.PositionAffected.FillEntryWith(barFill, priceFill, qtyFill, slippageFill, commissionFill);
+				if (this.PositionAffected.EntryFilledBarIndex != barFillRelno) {
+					string msg = "ENTRY_ALERT_SIMPLE_CHECK_FAILED_AVOIDING_EXCEPTION_IN_PositionsMasterOpenNewAdd"
+						+ "EntryFilledBarIndex[" + this.PositionAffected.EntryFilledBarIndex + "] != barFillRelno[" + barFillRelno + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+				}
 			} else {
 				this.PositionAffected.FillExitWith(barFill, priceFill, qtyFill, slippageFill, commissionFill);
 			}
 		}
-		public bool IsFilled {
-			get {
+		public bool IsFilled { get {
 				if (this.PositionAffected == null) return false;
 				return this.IsEntryAlert
 					? this.PositionAffected.IsEntryFilled
 					: this.PositionAffected.IsExitFilled;
-			}
-		}
+			} }
 	}
 }
