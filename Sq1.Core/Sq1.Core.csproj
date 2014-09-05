@@ -85,7 +85,7 @@
     <Compile Include="Charting\DictionaryManyToOne.cs" />
     <Compile Include="Charting\LineStyle.cs" />
     <Compile Include="Charting\HostPanelForIndicator.cs" />
-    <Compile Include="Charting\OnChart\ChartOperationStatus.cs" />
+    <Compile Include="Charting\OnChart\OnChartObjectOperationStatus.cs" />
     <Compile Include="Charting\ScriptToChartCommunicator.cs" />
     <Compile Include="DataFeed\IDataSourceEditor.cs" />
     <Compile Include="DataFeed\NamedObjectJsonEventArgs.cs" />

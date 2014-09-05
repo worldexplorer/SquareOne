@@ -75,6 +75,8 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="OnChart\OnChartBarAnnotation.cs" />
+    <Compile Include="OnChart\OnChartLabel.cs" />
     <Compile Include="OnChart\OnChartLine.cs" />
     <Compile Include="PanelNamedFolding.cs">
       <SubType>Component</SubType>

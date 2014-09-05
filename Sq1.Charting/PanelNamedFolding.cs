@@ -36,7 +36,9 @@ namespace Sq1.Charting {
 
 		[Browsable(false)] public string PanelNameAndSymbol { get { return this.PanelName + " " + this.BarsIdent; } }
 		[Browsable(false)] public ChartControl ChartControl;	//{ get { return base.Parent as ChartControl; } }
-		int yForNextLabelUpperLeft = 0;
+		int chartLabelsUpperLeftYincremental = 12;
+		int chartLabelsUpperLeftX = 10;
+		int labelPlatePadding = 3;
 		
 		// price, volume or indicator-calculated
 		[Browsable(false)] public virtual double VisibleMin { get { return this.ChartControl.VisiblePriceMin; } }
@@ -134,22 +136,43 @@ namespace Sq1.Charting {
 			barsIdent = chartControl.Bars.SymbolIntervalScale;
 			this.Initialize(chartControl, barsIdent);
 		}
-		public void DrawLabelOnNextLine(Graphics g, string msg, Color color, bool drawIndicatorSquare = false) {
-			if (color == null) color = Color.Red;	// error
-			this.yForNextLabelUpperLeft += 12;
-			int x = 10;
-			if (drawIndicatorSquare) x = 4;
-			using (var brush = new SolidBrush(color)) {
+		public void DrawLabelOnNextLine(Graphics g, string msg, Font font, Color colorForeground, Color colorBackground, bool drawIndicatorSquare = false) {
+			if (colorForeground == Color.Empty) colorForeground = Color.Red;	// error
+			bool drawBackgroundRectangle = (colorBackground == Color.Empty) ? true : false;
+			//if (colorForeground == null) colorForeground = Color.White;
+			if (font == null) font = this.Font; 
+			SizeF measurements = g.MeasureString(msg, font);
+			int labelMeasuredWidth = (int) measurements.Width;
+			int labelMeasuredHeight = (int) measurements.Height; 
+			
+			int x = this.chartLabelsUpperLeftX;
+			using (var brushLabel = new SolidBrush(colorForeground)) {
+				if (drawBackgroundRectangle) {
+					Debugger.Break();	//TESTME
+					Rectangle labelPlate = new Rectangle();
+					labelPlate.X = x - this.labelPlatePadding;
+					labelPlate.Y = this.chartLabelsUpperLeftYincremental - this.labelPlatePadding;
+					labelPlate.Width = labelMeasuredWidth + this.labelPlatePadding;
+					labelPlate.Height = labelMeasuredHeight + this.labelPlatePadding;
+
+					if (labelPlate.X < 0) labelPlate.X = 0;
+					if (labelPlate.Y < 0) labelPlate.Y = 0;
+
+					using (var brushLabelPlate = new SolidBrush(colorBackground)) 	g.FillRectangle(brushLabelPlate, labelPlate);
+					using (var penLabelPlateBorder = new Pen(Color.LightGray))		g.DrawRectangle(penLabelPlateBorder, labelPlate);
+				}
 				if (drawIndicatorSquare) {
-					Rectangle square = new Rectangle(x, this.yForNextLabelUpperLeft + 4, 5, 5);
-					g.FillRectangle(brush, square);
+					x += 4;
+					Rectangle square = new Rectangle(x, this.chartLabelsUpperLeftYincremental + 4, 5, 5);
+					g.FillRectangle(brushLabel, square);
 					x += 8;
 				}
-				g.DrawString(msg, this.Font, brush, new Point(x, this.yForNextLabelUpperLeft));
+				g.DrawString(msg, font, brushLabel, new Point(x, this.chartLabelsUpperLeftYincremental));
 			}
+			this.chartLabelsUpperLeftYincremental += labelMeasuredHeight + (int) labelMeasuredHeight / 4;
 		}
 		public void DrawError(Graphics g, string msg) {
-			this.DrawLabelOnNextLine(g, msg, Color.Red);
+			this.DrawLabelOnNextLine(g, msg, null, Color.Red, Color.Empty);
 		}
 		//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD #if NON_DOUBLE_BUFFERED
 //		protected override void OnResize(EventArgs e) {	//PanelDoubleBuffered does this already to DisposeAndNullify managed Graphics
@@ -252,7 +275,7 @@ namespace Sq1.Charting {
 					string dateLast = indicator.BarsEffective.BarLast.DateTimeOpen.ToString(Assembler.DateTimeFormatIndicatorHasNoValuesFor);
 					//TOO_NOISY_SEE_TOOLTIP_PRICE msg += " (" + dateFirst + ")..(" + dateLast + ") <> barRq[" + dateRq + "]";
 				}
-				this.DrawLabelOnNextLine(graphics, msg, indicator.LineColor, true);
+				this.DrawLabelOnNextLine(graphics, msg, null, indicator.LineColor, Color.Empty, true);
 			}
 		}
 		protected virtual void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
@@ -269,7 +292,7 @@ namespace Sq1.Charting {
 			//#endif
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
-			this.yForNextLabelUpperLeft = 5;
+			this.chartLabelsUpperLeftYincremental = 5;
 			//if (this.ChartControl.BarsNotEmpty) {}
 			if (this.ImPaintingBackgroundNow) return;
 			if (this.ChartControl == null) {

@@ -115,11 +115,11 @@ namespace Sq1.Strategies.Demo {
 			
 			
 			if (barStaticFormed == barFirstForCurrentTradingDay) {
-				ChartOperationStatus status = base.Executor.ChartShadow.LineDrawModify(lineId + "_brown",
+				OnChartObjectOperationStatus status = base.Executor.ChartShadow.LineDrawModify(lineId + "_brown",
 					barStaticFormed.ParentBarsIndex, lowerLimit,
 					barStaticFormed.ParentBarsIndex, upperLimit,
 					Color.Brown, 3);
-				if (status != ChartOperationStatus.JustCreated) {
+				if (status != OnChartObjectOperationStatus.OnChartObjectJustCreated) {
 					Debugger.Break();
 				}
 			}

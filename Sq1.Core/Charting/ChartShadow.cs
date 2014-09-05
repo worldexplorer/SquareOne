@@ -93,21 +93,31 @@ namespace Sq1.Core.Charting {
 			throw new NotImplementedException();
 		}
 		
-		public virtual ChartOperationStatus LineDrawModify(
-					string id, int barStart, double priceStart, int barEnd, double priceEnd,
-					Color color, int width) {
+		public virtual OnChartObjectOperationStatus LineDrawModify(
+				string id, int barStart, double priceStart, int barEnd, double priceEnd,
+				Color color, int width) {
 			throw new NotImplementedException();
 		}
-		public virtual bool BarBackgroundSet(int bar, Color color) {
+		public virtual bool BarBackgroundSet(int barIndex, Color color) {
 			throw new NotImplementedException();
 		}
-		public virtual Color BarBackgroundGet(int bar) {
+		public virtual Color BarBackgroundGet(int barIndex) {
 			throw new NotImplementedException();
 		}
-		public virtual bool BarForegroundSet(int bar, Color color) {
+		public virtual bool BarForegroundSet(int barIndex, Color color) {
 			throw new NotImplementedException();
 		}
-		public virtual Color BarForegroundGet(int bar) {
+		public virtual Color BarForegroundGet(int barIndex) {
+			throw new NotImplementedException();
+		}
+		public virtual OnChartObjectOperationStatus ChartLabelDrawOnNextLineModify(
+				string labelId, string labelText,
+				Font font, Color colorFore, Color colorBack) {
+			throw new NotImplementedException();
+		}
+		public virtual OnChartObjectOperationStatus BarAnnotationDrawModify(
+				int barIndex, string barAnnotationId, string barAnnotationText,
+				Font font, Color colorFore, Color colorBack) {
 			throw new NotImplementedException();
 		}
 #endregion

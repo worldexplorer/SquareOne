@@ -22,18 +22,20 @@ namespace Sq1.Charting {
 		
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
 			base.PaintWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter foregrounds
-			howManyPositionArrowsBeyondPriceBoundaries = this.AlignVisiblePositionArrowsAndCountMaxOutstanding();
+			howManyPositionArrowsBeyondPriceBoundaries = this.alignVisiblePositionArrowsAndCountMaxOutstanding();
 			this.renderBarsPrice(g);
 			// TODO MOVE_IT_UPSTACK_AND_PLACE_AFTER_renderBarsPrice_SO_THAT_POSITION_LINES_SHOWUP_ON_TOP_OF_BARS 
 			//this.renderPositions(g);
+			this.renderOnChartLabels(g);
 			this.renderOnChartLines(g);
+			this.renderOnChartBarAnnotations(g);
 			//this.RenderBidAsk(g);
 			//this.RenderPositions(g);
 		}
 		protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
 			base.PaintBackgroundWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter backgrounds
 		}
-		public int AlignVisiblePositionArrowsAndCountMaxOutstanding() {
+		int alignVisiblePositionArrowsAndCountMaxOutstanding() {
 			int ret = 0;
 			Dictionary<int, List<AlertArrow>> arrowListByBar = base.ChartControl.ScriptExecutorObjects.AlertArrowsListByBar;
 			
@@ -113,7 +115,7 @@ namespace Sq1.Charting {
 				this.drawPositionLineForArrow(arrow, g, true);
 			}
 		}
-		public void pendingAlertsDrawIfExistForBar(int barIndex, int shadowX, Graphics g) {
+		void pendingAlertsDrawIfExistForBar(int barIndex, int shadowX, Graphics g) {
 			Dictionary<int, List<Alert>> alertPendingListByBar = base.ChartControl.ScriptExecutorObjects.AlertsPendingHistorySafeCopy;
 			if (alertPendingListByBar.ContainsKey(barIndex) == false) return;
 			List<Alert> alertsPending = alertPendingListByBar[barIndex];
@@ -135,7 +137,7 @@ namespace Sq1.Charting {
 				}
 			}
 		}
-		public void positionArrowsLinesDrawIfExistForBar(int barIndex, int shadowX, Graphics g) {
+		void positionArrowsLinesDrawIfExistForBar(int barIndex, int shadowX, Graphics g) {
 			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = base.ChartControl.ScriptExecutorObjects.AlertArrowsListByBar;
 			if (alertArrowsListByBar.ContainsKey(barIndex) == false) return;
 			List<AlertArrow> arrows = alertArrowsListByBar[barIndex];
@@ -183,7 +185,7 @@ namespace Sq1.Charting {
 				}
 			}
 		}
-		private void drawPositionLineForArrow(AlertArrow arrow, Graphics g, bool highlighted = false) {
+		void drawPositionLineForArrow(AlertArrow arrow, Graphics g, bool highlighted = false) {
 			Position position = arrow.Position;
 			if (position.EntryFilledBarIndex == -1) return;		// position without EntryFilled shouldn't have a Line
 
@@ -312,6 +314,22 @@ namespace Sq1.Charting {
 					g.DrawLine(pen, lineRightX, lineRightYInverted, lineLeftX, lineLeftYInverted);
 				}
 			}
+		}
+		void renderOnChartLabels(Graphics g) {
+			if (VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLabels(): " + msg);
+				return;
+			}
+			// DO_I_NEED_SIMILAR_CHECK_HERE???? MOST_LIKELY_I_DONT this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
+
+			ScriptExecutorObjects seo = this.ChartControl.ScriptExecutorObjects;
+			foreach (OnChartLabel label in seo.ChartLabelsById.Values) {
+				base.DrawLabelOnNextLine(g, label.LabelText, label.Font, label.ColorForeground, label.ColorBackground);
+			}
+		}
+		void renderOnChartBarAnnotations(Graphics g) {
+			
 		}
 	}
 }
