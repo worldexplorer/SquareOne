@@ -22,14 +22,10 @@ namespace Sq1.Core.DataTypes {
 		public double Close;
 		public double Volume;
 
-		[JsonIgnore]
-		public Bars ParentBars { get; protected set; }
-		[JsonIgnore]
-		public int ParentBarsIndex { get; protected set; }
-		[JsonIgnore]
-		public bool HasParentBars { get { return this.ParentBars != null; } }
-		public string ParentBarsIdent {
-			get {
+		[JsonIgnore] public Bars ParentBars { get; protected set; }
+		[JsonIgnore] public int ParentBarsIndex { get; protected set; }
+		[JsonIgnore] public bool HasParentBars { get { return this.ParentBars != null; } }
+		public string ParentBarsIdent { get {
 				if (this.HasParentBars == false) return "NO_PARENT_BARS";
 				string ret = "StaticBar";
 				//if (this.ParentBarsIndex <  this.ParentBars.Count - 1) ret = this.ParentBarsIndex.ToString();
@@ -41,35 +37,25 @@ namespace Sq1.Core.DataTypes {
 				if (this.IsBarStaticFirst) ret = "StaticBarFist";// +this.ParentBarsIndex;
 				ret += "#" + this.ParentBarsIndex + "/" + (this.ParentBars.Count-1);
 				return ret;
-			}
-		}
-		[JsonIgnore]
-		public bool IsBarStreaming {
-			get {
+			} }
+		[JsonIgnore] public bool IsBarStreaming { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsStreamingBar: Bar[" + this + "].HasParentBars=false");
 				}
 				return this == this.ParentBars.BarStreaming;
-			}
-		}
-		[JsonIgnore]
-		public bool IsBarStaticLast {
-			get {
+			} }
+		[JsonIgnore] public bool IsBarStaticLast { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsLastStaticBar: Bar[" + this + "].HasParentBars=false");
 				}
 				return this == this.ParentBars.BarStaticLast;
-			}
-		}
-		[JsonIgnore]
-		public bool IsBarStaticFirst {
-			get {
+			} }
+		[JsonIgnore] public bool IsBarStaticFirst { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsFirstStaticBar: Bar[" + this + "].HasParentBars=false");
 				}
 				return this == this.ParentBars.BarStaticFirst;
-			}
-		}
+			} }
 		// Perst deserializer invokes default ctor()
 		public Bar() {
 			// ChartRenderer would update its max/min if NaN
@@ -211,7 +197,7 @@ namespace Sq1.Core.DataTypes {
 			msg = "lastStaticBar.DOHLCV=barAdding.DOHLCV";
 			return true;
 		}
-		private DateTime addIntervalsToDate(DateTime dateTime1, int intervalMultiplier) {
+		DateTime addIntervalsToDate(DateTime dateTime1, int intervalMultiplier) {
 			if (this.DateTimeOpen == DateTime.MinValue) return DateTime.MinValue;
 			DateTime dateTime = roundDateDownToMyInterval(dateTime1);
 			int addTimeIntervals = this.ScaleInterval.Interval * intervalMultiplier;
@@ -248,7 +234,7 @@ namespace Sq1.Core.DataTypes {
 			}
 			return dateTime;
 		}
-		private DateTime roundDateDownToMyInterval(DateTime dateTime1) {
+		DateTime roundDateDownToMyInterval(DateTime dateTime1) {
 			if (this.ScaleInterval == null) throw new Exception("ScaleInterval=null in roundDateDownToInterval(" + dateTime1 + ")");
 			DateTime dateTime = new DateTime(dateTime1.Ticks);
 			switch (this.ScaleInterval.Scale) {
@@ -301,22 +287,33 @@ namespace Sq1.Core.DataTypes {
 			this.Volume += quoteClone.Size;
 		}
 		public override string ToString() {
+			string priceFormat = "N";
+			string volumeFormat = "N";
+			int decimalsPrice = 3;
+			int decimalsVolume = 3;
+			
+			if (this.ParentBars != null && this.ParentBars.SymbolInfo != null) {
+				decimalsPrice = this.ParentBars.SymbolInfo.DecimalsPrice;
+				decimalsVolume = this.ParentBars.SymbolInfo.DecimalsVolume;
+				priceFormat = "N" + decimalsPrice;
+				volumeFormat = "N" + decimalsVolume;
+			}
+			
 			return this.ParentBarsIdent + ":"
 				+ Symbol + "(" + ScaleInterval + ") "
 				+ "T[" + DateTimeOpen + "]"
-				+ "O[" + Math.Round(Open, 3) + "]"
-				+ "H[" + Math.Round(High, 3) + "]"
-				+ "L[" + Math.Round(Low, 3) + "]"
-				+ "C[" + Math.Round(Close, 3) + "]"
-				+ "V[" + Math.Round(Volume, 3) + "]"
+				+ "O[" + Math.Round(this.Open,	decimalsPrice).ToString(priceFormat) + "]"
+				+ "H[" + Math.Round(this.High,	decimalsPrice).ToString(priceFormat) + "]"
+				+ "L[" + Math.Round(this.Low,	decimalsPrice).ToString(priceFormat) + "]"
+				+ "C[" + Math.Round(this.Close,	decimalsPrice).ToString(priceFormat) + "]"
+				+ "V[" + Math.Round(this.Volume,decimalsVolume).ToString(volumeFormat) + "]"
 				;
 		}
-		
-		public bool ContainsPrice(double entryFillPrice) {
-			if (entryFillPrice < this.Low) return false; 
-			if (entryFillPrice > this.High) return false;
-			return true;			
-		}
+//		public bool ContainsPrice(double entryFillPrice) {
+//			if (entryFillPrice < this.Low) return false; 
+//			if (entryFillPrice > this.High) return false;
+//			return true;
+//		}
 		public Bar BarFirstForCurrentTradingDay { get {
 				return this.ParentBars.ScanBackwardsFindBarFirstForCurrentTradingDay(this);
 			} }

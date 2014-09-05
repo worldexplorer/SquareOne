@@ -23,7 +23,7 @@ namespace Sq1.Core.Backtesting {
 			this.QuoteAbsno = 0;
 		}
 
-		protected Quote generateNewQuoteChildrenHelper(int intraBarSerno, string source, string symbol, DateTime serverTime, double price, int volume) {
+		protected Quote generateNewQuoteChildrenHelper(int intraBarSerno, string source, string symbol, DateTime serverTime, double price, double volume) {
 			Quote quote = new Quote();
 			quote.Absno = ++this.QuoteAbsno;
 			quote.ServerTime = serverTime;

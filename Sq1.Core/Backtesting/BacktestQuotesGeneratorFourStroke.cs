@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using Sq1.Core.DataTypes;
 
@@ -34,7 +35,15 @@ namespace Sq1.Core.Backtesting {
 						throw new Exception("Stroke[" + stroke + "] isn't supported in 4-stroke QuotesGenerator");
 				}
 				DateTime serverTime = bar.DateTimeOpen + interStrokeAdjustment;
-				Quote quote = base.generateNewQuoteChildrenHelper(stroke, "RunSimulationFourStrokeOHLC", bar.Symbol, serverTime, price, (int)bar.Volume / 4);
+				double volumeOneQuarterOfBar = bar.Volume / 4;
+				if (bar.ParentBars != null && bar.ParentBars.SymbolInfo != null) {
+					volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, bar.ParentBars.SymbolInfo.DecimalsVolume);
+				}
+				if (volumeOneQuarterOfBar == 0) {
+					// TESTED_FOR_BAR_VOLUME_3 Debugger.Break();
+					volumeOneQuarterOfBar = 1;
+				}
+				Quote quote = base.generateNewQuoteChildrenHelper(stroke, "RunSimulationFourStrokeOHLC", bar.Symbol, serverTime, price, volumeOneQuarterOfBar);
 				base.QuotesGeneratedForOneBar.Add(quote);
 			}
 			List<Quote> clone = new List<Quote>(base.QuotesGeneratedForOneBar);
