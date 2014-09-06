@@ -36,9 +36,7 @@ namespace Sq1.Charting {
 
 		[Browsable(false)] public string PanelNameAndSymbol { get { return this.PanelName + " " + this.BarsIdent; } }
 		[Browsable(false)] public ChartControl ChartControl;	//{ get { return base.Parent as ChartControl; } }
-		int chartLabelsUpperLeftYincremental = 12;
-		int chartLabelsUpperLeftX = 10;
-		int labelPlatePadding = 3;
+		int chartLabelsUpperLeftYincremental;
 		
 		// price, volume or indicator-calculated
 		[Browsable(false)] public virtual double VisibleMin { get { return this.ChartControl.VisiblePriceMin; } }
@@ -138,38 +136,57 @@ namespace Sq1.Charting {
 		}
 		public void DrawLabelOnNextLine(Graphics g, string msg, Font font, Color colorForeground, Color colorBackground, bool drawIndicatorSquare = false) {
 			if (colorForeground == Color.Empty) colorForeground = Color.Red;	// error
-			bool drawBackgroundRectangle = (colorBackground == Color.Empty) ? true : false;
+			bool drawBackgroundRectangle = (colorBackground == Color.Empty) ? false : true;
 			//if (colorForeground == null) colorForeground = Color.White;
 			if (font == null) font = this.Font; 
 			SizeF measurements = g.MeasureString(msg, font);
 			int labelMeasuredWidth = (int) measurements.Width;
 			int labelMeasuredHeight = (int) measurements.Height; 
 			
-			int x = this.chartLabelsUpperLeftX;
-			using (var brushLabel = new SolidBrush(colorForeground)) {
-				if (drawBackgroundRectangle) {
-					Debugger.Break();	//TESTME
-					Rectangle labelPlate = new Rectangle();
-					labelPlate.X = x - this.labelPlatePadding;
-					labelPlate.Y = this.chartLabelsUpperLeftYincremental - this.labelPlatePadding;
-					labelPlate.Width = labelMeasuredWidth + this.labelPlatePadding;
-					labelPlate.Height = labelMeasuredHeight + this.labelPlatePadding;
+			int x = this.ChartControl.ChartSettings.ChartLabelsUpperLeftX;
+			if (drawBackgroundRectangle) {
+				Rectangle labelPlate = new Rectangle();
+				labelPlate.X = x - this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding;
+				labelPlate.Y = this.chartLabelsUpperLeftYincremental - this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding;
+				labelPlate.Width = labelMeasuredWidth + this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2;
+				labelPlate.Height = labelMeasuredHeight + this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2;
 
-					if (labelPlate.X < 0) labelPlate.X = 0;
-					if (labelPlate.Y < 0) labelPlate.Y = 0;
+				if (labelPlate.X < 0) labelPlate.X = 0;
+				if (labelPlate.Y < 0) labelPlate.Y = 0;
 
-					using (var brushLabelPlate = new SolidBrush(colorBackground)) 	g.FillRectangle(brushLabelPlate, labelPlate);
-					using (var penLabelPlateBorder = new Pen(Color.LightGray))		g.DrawRectangle(penLabelPlateBorder, labelPlate);
-				}
 				if (drawIndicatorSquare) {
-					x += 4;
-					Rectangle square = new Rectangle(x, this.chartLabelsUpperLeftYincremental + 4, 5, 5);
+					int extendedBySquare = this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding * 2
+						+ this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquareSize;
+					labelPlate.Width += extendedBySquare;
+				}
+
+				using (var brushLabelPlate = new SolidBrush(colorBackground)) 	g.FillRectangle(brushLabelPlate, labelPlate);
+				using (var penLabelPlateBorder = new Pen(Color.LightGray))		g.DrawRectangle(penLabelPlateBorder, labelPlate);
+			}
+			
+			using (var brushLabel = new SolidBrush(colorForeground)) {
+				if (drawIndicatorSquare) {
+					//x += this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding;
+					Rectangle square = new Rectangle();
+					square.X = x;
+					square.Y = this.chartLabelsUpperLeftYincremental + this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding;
+					square.Width = this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquareSize;
+					square.Height = this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquareSize;
 					g.FillRectangle(brushLabel, square);
-					x += 8;
+					
+					int squareAndRightPadding = this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquareSize
+										 	  + this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding;
+					x += squareAndRightPadding;
 				}
 				g.DrawString(msg, font, brushLabel, new Point(x, this.chartLabelsUpperLeftYincremental));
 			}
-			this.chartLabelsUpperLeftYincremental += labelMeasuredHeight + (int) labelMeasuredHeight / 4;
+			
+			int lineSpacing = (int) labelMeasuredHeight / 8;
+			if (lineSpacing == 0) lineSpacing = 1; 
+			this.chartLabelsUpperLeftYincremental += labelMeasuredHeight + lineSpacing;
+			if (drawBackgroundRectangle) {
+				this.chartLabelsUpperLeftYincremental += this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2;
+			}
 		}
 		public void DrawError(Graphics g, string msg) {
 			this.DrawLabelOnNextLine(g, msg, null, Color.Red, Color.Empty);
@@ -197,7 +214,7 @@ namespace Sq1.Charting {
 				string msig = this.Name + ".OnPaintDoubleBuffered() ";
 				string msg = "CHART_CONTROL_BARS_NULL_OR_EMPTY: this.ChartControl.BarsEmpty ";
 				//if (this.ChartControl.Bars != null) msg = "BUG: bars=[" + this.ChartControl.Bars + "]";
-				Debugger.Break();
+				//Debugger.Break();
 				this.DrawError(e.Graphics, msg + msig);
 				return;
 			}
@@ -292,7 +309,7 @@ namespace Sq1.Charting {
 			//#endif
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
-			this.chartLabelsUpperLeftYincremental = 5;
+			this.chartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
 			//if (this.ChartControl.BarsNotEmpty) {}
 			if (this.ImPaintingBackgroundNow) return;
 			if (this.ChartControl == null) {

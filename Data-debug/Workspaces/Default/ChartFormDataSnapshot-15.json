@@ -1,6 +1,6 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "StrategyGuidJsonCheck": "07e7825e-8e85-4e90-a852-bf04377cdc37",
   "StrategyNameJsonCheck": "EnterEveryBarCompiled",
   "ContextChart": null,
   "ChartSettings": {
@@ -11,7 +11,7 @@
     "GutterBottomDateFormatWeekly": "MMM-yy",
     "GutterBottomDateFormatYearly": "yyyy",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 9,
+    "BarWidthIncludingPadding": 29,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
     "PriceColorBarDown": "IndianRed",
@@ -44,7 +44,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 80,
+    "ScrollPositionAtBarIndex": 321,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -60,7 +60,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 238,
+    "PriceVsVolumeSplitterDistance": 325,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
@@ -69,9 +69,9 @@
     "BarsBackgroundTransparencyAlfa": 32,
     "ChartLabelsUpperLeftYstartTopmost": 18,
     "ChartLabelsUpperLeftX": 5,
-    "ChartLabelsUpperLeftPlatePadding": 1,
+    "ChartLabelsUpperLeftPlatePadding": 3,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
     "ChartLabelsUpperLeftIndicatorSquareSize": 5
   },
-  "ChartSerno": 11
+  "ChartSerno": 15
 }

@@ -7,7 +7,8 @@ namespace Sq1.Core.Execution {
 		public double DollarsConstantEachTrade;
 		public double SharesConstantEachTrade;
 		
-		public PositionSize() {
+		[Obsolete]
+		private PositionSize() {
 			Mode = PositionSizeMode.Unknown;
 		}
 		public PositionSize(PositionSizeMode mode, double value) : this() {

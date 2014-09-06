@@ -215,6 +215,17 @@ namespace Sq1.Gui.Forms {
 			}
 			this.ChartControl.RangeBarCollapsed = !this.mniShowBarRange.Checked; 
 
+
+			if (ctxScript.PositionSize.Mode == PositionSizeMode.Unknown) {
+				ctxScript.PositionSize = new PositionSize(PositionSizeMode.SharesConstantEachTrade, 1);
+				string msg = "FIXED_POSITIONSIZE_TO_SHARE_1 strategy[" + this.ChartFormManager.Executor.Strategy
+					+ "].ScriptContextsByName[" + ctxScript.Name + "] had PositionSize.Mode=Unknown";
+				Assembler.PopupException(msg);
+				#if DEBUG
+				Debugger.Break();
+				#endif
+			}
+
 			switch (ctxScript.PositionSize.Mode) {
 				case PositionSizeMode.SharesConstantEachTrade:
 					this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldValue = ctxScript.PositionSize.SharesConstantEachTrade.ToString();

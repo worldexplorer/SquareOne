@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
+
+using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
@@ -20,7 +23,7 @@ namespace Sq1.Strategies.Demo {
 		public IndicatorAverageMovingSimple MAfast { get; set; }
 
 		protected void log(string msg) {
-			if (this.Parameters[2].ValueCurrent == 0.0) {
+			if (this.ParametersById[2].ValueCurrent == 0.0) {
 				return;
 			}
 			string whereIam = "\n\r\n\rEnterEveryBar.cs now=[" + DateTime.Now.ToString("ddd dd-MMM-yyyy HH:mm:ss.fff") + "]";
@@ -41,6 +44,21 @@ namespace Sq1.Strategies.Demo {
 			//this.MAslow.LineWidth = 2;
 			this.MAslow.LineColor = System.Drawing.Color.LightCoral;
 			this.MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
+			
+			testChartLabelDrawOnNextLineModify();
+		}
+		void testChartLabelDrawOnNextLineModify() {
+			string parameterNameToLookup = "test";
+			if (base.ParametersByNameInlineCopy.ContainsKey(parameterNameToLookup) == false) {
+				string msg = "if you renamed parameter [" + parameterNameToLookup + "] please ajdust the name here as well";
+				Assembler.PopupException(msg);
+			}
+			ScriptParameter param = base.ParametersByNameInlineCopy[parameterNameToLookup];
+			double paramValue = param.ValueCurrent;
+			//Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
+			//base.Executor.ChartShadow.ChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);
+			Font font = new Font("Consolas", 8, FontStyle.Bold);
+			base.Executor.ChartShadow.ChartLabelDrawOnNextLineModify("labelTest", parameterNameToLookup + "[" + paramValue + "]", font, Color.Brown, Color.Beige);
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 			//double slowStreaming = this.MAslow.BarClosesProxied.StreamingValue;
@@ -68,7 +86,7 @@ namespace Sq1.Strategies.Demo {
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
 			Bar barStreaming = base.Bars.BarStreaming;
 			if (this.Executor.Backtester.IsBacktestingNow == false) {
-				Debugger.Break();
+				//Debugger.Break();
 			}
 			if (barStaticFormed.ParentBarsIndex <= 2) return;
 			if (barStaticFormed.IsBarStreaming) {

@@ -84,6 +84,5 @@
       }
     }
   },
-  "HasChartOnly": false,
-  "ScriptParametersJSONcheck": null
+  "HasChartOnly": false
 }

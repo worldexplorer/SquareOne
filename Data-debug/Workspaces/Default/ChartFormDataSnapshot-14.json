@@ -1,8 +1,30 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "NO_STRATEGY_CHART_ONLY",
-  "StrategyNameJsonCheck": "EnterEveryBarCompiled",
-  "ContextChart": null,
+  "StrategyGuidJsonCheck": "61071a95-692c-4b35-9dbe-39832913cb68",
+  "StrategyNameJsonCheck": "StopLimitTestCompiled",
+  "ContextChart": {
+    "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
+    "Name": "CHART_RIM3",
+    "Symbol": "RIM3",
+    "DataSourceName": "MOCK",
+    "ScaleInterval": {
+      "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+      "Scale": 3,
+      "Interval": 1,
+      "IsIntraday": true,
+      "TimeSpanInSeconds": 60
+    },
+    "DataRange": {
+      "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
+      "Range": 1,
+      "StartDate": "0001-01-01T00:00:00",
+      "EndDate": "9999-12-31T23:59:59.9999999",
+      "RecentBars": 500,
+      "RecentTimeunits": 0
+    },
+    "ChartStreaming": false,
+    "ShowRangeBar": false
+  },
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
     "GutterBottomDateFormatDayOpener": "ddd dd-MMM-yyyy",
@@ -11,7 +33,7 @@
     "GutterBottomDateFormatWeekly": "MMM-yy",
     "GutterBottomDateFormatYearly": "yyyy",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 9,
+    "BarWidthIncludingPadding": 8,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
     "PriceColorBarDown": "IndianRed",
@@ -44,7 +66,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 80,
+    "ScrollPositionAtBarIndex": 0,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -60,7 +82,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 238,
+    "PriceVsVolumeSplitterDistance": 233,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
@@ -69,9 +91,9 @@
     "BarsBackgroundTransparencyAlfa": 32,
     "ChartLabelsUpperLeftYstartTopmost": 18,
     "ChartLabelsUpperLeftX": 5,
-    "ChartLabelsUpperLeftPlatePadding": 1,
+    "ChartLabelsUpperLeftPlatePadding": 3,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
     "ChartLabelsUpperLeftIndicatorSquareSize": 5
   },
-  "ChartSerno": 11
+  "ChartSerno": 14
 }

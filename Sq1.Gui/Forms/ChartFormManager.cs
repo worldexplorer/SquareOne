@@ -22,7 +22,7 @@ namespace Sq1.Gui.Forms {
 		public ChartFormDataSnapshot DataSnapshot;
 		public Serializer<ChartFormDataSnapshot> DataSnapshotSerializer;
 		
-		bool FOR_DEBUGGING_initializedWithStrategyAfterDeserialization;
+		public bool StrategyFoundDuringDeserialization { get; private set; }
 		// private shortcuts
 		DockPanel dockPanel { get { return this.MainForm.DockPanel; } }
 
@@ -50,6 +50,7 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		public ChartFormManager(int charSernoDeserialized = -1) {
+			this.StrategyFoundDuringDeserialization = false;
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
 			this.ScriptEditedNeedsSaving = false;
 //			this.Executor = new ScriptExecutor(Assembler.InstanceInitialized.ScriptExecutorConfig
@@ -67,6 +68,9 @@ namespace Sq1.Gui.Forms {
 				"ChartFormDataSnapshot-" + charSernoDeserialized + ".json", "Workspaces",
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
+			if (this.DataSnapshot == null) {
+				Debugger.Break();
+			}
 			this.DataSnapshot.ChartSerno = charSernoDeserialized;
 			this.DataSnapshotSerializer.Serialize();
 		}
@@ -183,27 +187,27 @@ namespace Sq1.Gui.Forms {
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
 				Assembler.PopupException(msg + msig, ex);
+				#if DEBUG
+				Debugger.Break();
+				#endif
 			}
 		}
-
-		
 		public ContextChart ContextCurrentChartOrStrategy { get {
 				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart;
 			} }
-
 		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(string msig, bool loadNewBars = true, bool skipBacktest = false) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
 			ContextChart context = this.ContextCurrentChartOrStrategy;
+			if (context == null) {
+				string msg = "WONT_POPULATE_NULL_CONTEXT: strategy JSON/DLL was removedBetweenRestart / deserializedWithExceptionDueToDataFormatChange" +
+					" + chart for strategy doesn't contain Context; expect also Bars=NULL exception";
+				Assembler.PopupException(msg);
+				return;
+			}
 			msig += (this.Strategy != null) ?
 				" << PopulateCurrentScriptContext(): Strategy[" + this.Strategy + "].ScriptContextCurrent[" + context.Name + "]"
 				:	" << PopulateCurrentScriptContext(): this.ChartForm[" + this.ChartForm.Text + "].ChartControl.ContextChart[" + context.Name + "]";
 
-			//BarScaleInterval barScaleInterval = (contextToPopulate.ScaleInterval != null) ? contextToPopulate.ScaleInterval : new BarScaleInterval();
-			if (context.ScaleInterval.Scale == BarScale.Unknown) {
-				string msg = "contextToPopulate.ScaleInterval[" + context.ScaleInterval + "] has BarScale.Unknown #1" + "; WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
 			if (string.IsNullOrEmpty(context.DataSourceName)) {
 				string msg = "DataSourceName.IsNullOrEmpty; WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
 				Assembler.PopupException(msg + msig);
@@ -223,37 +227,40 @@ namespace Sq1.Gui.Forms {
 			string symbol = context.Symbol;
 			
 			if (context.ChartStreaming) {
-				string msg = "strategyToSave[" + this.Strategy + "].ScriptContextCurrent[].ChartStreaming=true"
+				string msg = "CHART_STREAMING_DISABLED_FORCIBLY_POSSIBLY_ENABLED_BY_OPENCHART ContextCurrentChartOrStrategy.ChartStreaming=true"
 					+ "; Selectors should've been Disable()d on chat[" + this.ChartForm + "].Activated() or StreamingOn()"
 					+ " in MainForm.PropagateSelectorsForCurrentChart()";
-				throw new Exception(msg + msig);
+				context.ChartStreaming = false;
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				Assembler.PopupException(msg + msig);
 			}
 			
-			BarScaleInterval barScaleInterval = context.ScaleInterval;
-			if (barScaleInterval.Scale == BarScale.Unknown) barScaleInterval = dataSource.ScaleInterval;
-			if (barScaleInterval.Scale == BarScale.Unknown) {
-				string msg = "barScaleInterval.ScaleInterval[" + barScaleInterval + "] has BarScale.Unknown #3"
-					+ "; WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
-				throw new Exception(msg + msig);
+			if (context.ScaleInterval.Scale == BarScale.Unknown) {
+				if (dataSource.ScaleInterval.Scale == BarScale.Unknown) {
+					string msg1 = "SCALE_INTERVAL_UNKNOWN_BOTH_CONTEXT_DATASOURCE WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
+					throw new Exception(msg1 + msig);
+				}
+				context.ScaleInterval = dataSource.ScaleInterval;
+				string msg2 = "CONTEXT_SCALE_INTERVAL_UNKNOWN_FIXED_TO_DATASOURCE contextToPopulate.ScaleInterval[" + context.ScaleInterval + "]";
+				Assembler.PopupException(msg2 + msig);
 			}
-			BarDataRange barRange = (context.DataRange != null) ? context.DataRange : new BarDataRange();
 			//PositionSize posSize = (contextToPopulate.PositionSize != null) ? contextToPopulate.PositionSize : new PositionSize();
 			
 			if (loadNewBars) {
-				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, barScaleInterval);
+				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, context.ScaleInterval);
 				if (barsAll.Count > 0) {
 					this.ChartForm.ChartControl.RangeBar.Initialize(barsAll, barsAll);
 				}
 
-				Bars barsClicked = barsAll.SelectRange(barRange);
+				if (context.DataRange == null) context.DataRange = new BarDataRange();
+				Bars barsClicked = barsAll.SelectRange(context.DataRange);
 				
 				this.Executor.SetBars(barsClicked);
 				this.ChartForm.ChartControl.Initialize(barsClicked);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
 				this.ChartForm.PopulateBtnStreamingClickedAndText();
-
-				context.ScaleInterval = barScaleInterval;
-				context.DataRange = barRange;
 			}
 
 			// set original Streaming Icon before we lost in simulationPreBarsSubstitute() and launched backtester in another thread
@@ -318,15 +325,27 @@ namespace Sq1.Gui.Forms {
 			this.InitializeChartNoStrategy(mainForm, null);
 		}
 		public void InitializeStrategyAfterDeserialization(MainForm mainForm, string strategyGuid) {
+			this.StrategyFoundDuringDeserialization = false;
 			Strategy strategyFound = null;
 			if (String.IsNullOrEmpty(strategyGuid) == false) {
 				strategyFound = Assembler.InstanceInitialized.RepositoryDllJsonStrategy.LookupByGuid(strategyGuid); 	// can return NULL here
 			}
-			this.InitializeWithStrategy(mainForm, strategyFound);
-			this.FOR_DEBUGGING_initializedWithStrategyAfterDeserialization = true;
 			if (strategyFound == null) {
 				string msg = "STRATEGY_NOT_FOUND: RepositoryDllJsonStrategy.LookupByGuid(strategyGuid=" + strategyGuid + ")";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				Assembler.PopupException(msg);
+				return;
+			}
+			this.InitializeWithStrategy(mainForm, strategyFound);
+			this.StrategyFoundDuringDeserialization = true;
+			if (this.Executor.Bars == null) {
+				string msg = "TYRINIG_AVOID_BARS_NULL_EXCEPTION: FIXME InitializeWithStrategy() didn't load bars";
+				Assembler.PopupException(msg);
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				return;
 			}
 			// ALREADY_DONE_BY_InitializeWithStrategy()_ABOVE this.Strategy = strategyFound;
@@ -351,6 +370,7 @@ namespace Sq1.Gui.Forms {
 			// make sure so that reporters will get poked
 			this.Executor.BacktesterRunSimulationTrampoline(new Action(this.afterBacktesterCompleteOnceOnRestart), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
+			return;
 		}
 		public void ReportersDumpCurrentForSerialization() {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;

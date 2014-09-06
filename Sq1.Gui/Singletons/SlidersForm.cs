@@ -17,7 +17,7 @@ namespace Sq1.Gui.Singletons {
 		public void Initialize(Strategy strategy) {
 			try {
 				base.SuspendLayout();
-				if (strategy.Script == null || strategy.Script.Parameters.Count == 0) {
+				if (strategy.Script == null || strategy.Script.ParametersById.Count == 0) {
 					this.SlidersAutoGrowControl.Hide();
 					this.pnlNoParametersInScript.Show();
 					this.lblScriptName.Text = (strategy.Script == null) ? "NO_SCRIPT" : strategy.Name;

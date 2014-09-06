@@ -814,9 +814,9 @@ namespace Sq1.Core.StrategyBase {
 			} catch (Exception ex) {
 				string msg = "RUN_SIMULATION_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Bars + "]";
 				Assembler.PopupException(msg, ex);
-#if DEBUG
+				#if DEBUG
 				Debugger.Break();
-#endif
+				#endif
 			} finally {
 				this.Backtester.SetRunningFalseNotifyWaitingThreadsBacktestCompleted();
 			}

@@ -1,12 +1,12 @@
 {
   "$type": "Sq1.Core.StrategyBase.Strategy, Sq1.Core",
-  "Guid": "d7062341-ab3a-423e-b2df-95b9391266c3",
-  "Name": "TwoMAsCompiled",
-  "ScriptSourceCode": null,
+  "Guid": "8bc7f531-6a31-46c7-9f63-1ba6027c56b2",
+  "Name": "sampleStrategy",
+  "ScriptSourceCode": "namespace sample.Strategies {\r\npublic class MyScript : Script {\r\npublic override void ExecuteOnNewQuote(Quote quote) {\r\nlog(\"ExecuteOnNewQuote(): [\" + quote.ToString() + \"]\");\r\n}\r\n}\r\n}\r\n",
   "DotNetReferences": null,
-  "DllPathIfNoSourceCode": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
+  "DllPathIfNoSourceCode": null,
   "ExceptionsLimitToAbortBacktest": 10,
-  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json",
+  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\sampleFolder\\sampleStrategy.json",
   "ScriptContextCurrentName": "Default",
   "ScriptContextsByName": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
@@ -60,6 +60,5 @@
       }
     }
   },
-  "HasChartOnly": false,
-  "ScriptParametersByIdJSONcheck": "(None)"
+  "HasChartOnly": false
 }

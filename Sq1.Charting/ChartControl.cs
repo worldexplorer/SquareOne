@@ -305,7 +305,6 @@ namespace Sq1.Charting {
 			this.InvalidateAllPanelsFolding();
 			return wasInvalidated;
 		}
-
 		
 		public void PropagateSettingSplitterDistancePriceVsVolume() {
 			if (this.ChartSettings.PriceVsVolumeSplitterDistance == 0) {

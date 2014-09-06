@@ -57,7 +57,7 @@ namespace Sq1.Core.Indicators {
 		public Bars BarsEffective { get {
 				if (this.Executor == null) {
 					Assembler.PopupException("YOU_FORGOT_TO_INVOKE_INDICATOR.INITIALIZE()_OR_WAIT_UNTIL_ITLLBE_INVOKED_LATER Executor=null in Indicator.BarsEffective_get()");
-					//Debugger.Break();
+					Debugger.Break();
 					return this.barsEffective_cached;
 				}
 				this.barsEffective_cached = null;

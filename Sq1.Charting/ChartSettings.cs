@@ -73,7 +73,12 @@ namespace Sq1.Charting {
 		[DataMember] public bool	MousePositionTrackOnGutters { get; set; }
 		[DataMember] public Color	MousePositionTrackOnGuttersColor { get; set; }
 		[DataMember] public int		BarsBackgroundTransparencyAlfa { get; set; }
-
+		[DataMember] public int		ChartLabelsUpperLeftYstartTopmost { get; set; }
+		[DataMember] public int		ChartLabelsUpperLeftX { get; set; }
+		[DataMember] public int		ChartLabelsUpperLeftPlatePadding { get; set; }
+		[DataMember] public int		ChartLabelsUpperLeftIndicatorSquarePadding { get; set; }
+		[DataMember] public int		ChartLabelsUpperLeftIndicatorSquareSize { get; set; }
+		
 		//!!!![JsonIgnore] is all down there because JSON.dll is .NET20 while [DataMember] is defined in .NET35's System.Runtime.Serialization
 
 		// DONE_IN_RenderBarsPrice_KISS cache them all until user edits this.BarTotalWidthPx so they won't be calculated again with the same result for each bar
@@ -339,6 +344,11 @@ namespace Sq1.Charting {
 			MousePositionTrackOnGutters = true;
 			MousePositionTrackOnGuttersColor = Color.LightGray;
 			BarsBackgroundTransparencyAlfa = 32;
+			ChartLabelsUpperLeftYstartTopmost = 18;
+			ChartLabelsUpperLeftX = 5;
+			ChartLabelsUpperLeftPlatePadding = 1;
+			ChartLabelsUpperLeftIndicatorSquarePadding = 4;
+			ChartLabelsUpperLeftIndicatorSquareSize = 5;
 		}
 		
 		public static Color ColorReverse(Color color) {
