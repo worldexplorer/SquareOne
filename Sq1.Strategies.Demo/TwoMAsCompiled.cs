@@ -35,7 +35,7 @@ namespace Sq1.Strategies.Demo {
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
 			this.drawLinesSample(barStaticFormed);
 			this.testBarBackground(barStaticFormed);
-
+			this.testBarAnnotations(barStaticFormed);
 			
 			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming;
 			if (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;
@@ -134,6 +134,16 @@ namespace Sq1.Strategies.Demo {
 		void testBarBackground(Bar barStaticFormed) {
 			Color bg = (barStaticFormed.Open > barStaticFormed.Close) ? Color.LightGreen : Color.LightSalmon;
 			base.Executor.ChartShadow.BarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
+		}
+		void testBarAnnotations(Bar barStaticFormed) {
+			int barIndex = barStaticFormed.ParentBarsIndex;
+			string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
+			labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
+			labelText += barStaticFormed.BarIndexAfterMarketOpenExpected + ":" + barStaticFormed.BarIndexBeforeMarketCloseExpected;
+			Font font = new Font("Arial", 9);
+			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
+			base.Executor.ChartShadow.BarAnnotationDrawModify(
+				barIndex, "ann" + barIndex, labelText, font, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
 		}
 	}
 }

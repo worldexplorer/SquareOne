@@ -174,10 +174,12 @@ namespace Sq1.Charting {
 			return label.Status;
 		}
 		public override OnChartObjectOperationStatus BarAnnotationDrawModify(
-				int barIndex, string barAnnotationId, string barAnnotationText, Font font, Color colorFore, Color colorBack) {
+				int barIndex, string barAnnotationId, string barAnnotationText,
+				Font font, Color colorFore, Color colorBack, bool aboveBar = true) {
 			OnChartBarAnnotation barAnnotation = null;
 			try {
-				barAnnotation = this.ScriptExecutorObjects.BarAnnotationAddOrModify(barIndex, barAnnotationId, barAnnotationText, font, colorFore, colorBack);
+				barAnnotation = this.ScriptExecutorObjects.BarAnnotationAddOrModify(
+					barIndex, barAnnotationId, barAnnotationText, font, colorFore, colorBack, aboveBar);
 			} catch (Exception ex) {
 				if (barAnnotation != null) {
 					Assembler.PopupException(barAnnotation.ToString() + " //BarAnnotationDrawMofify()");

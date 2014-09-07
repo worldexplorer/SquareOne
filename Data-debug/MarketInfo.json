@@ -4,8 +4,8 @@
     "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
     "Name": "MOCK",
     "Description": "23:59 hours open",
-    "MarketOpenServerTime": "2013-04-17T00:00:00",
-    "MarketCloseServerTime": "2013-09-10T23:59:00",
+    "MarketOpenServerTime": "2014-09-07T10:00:00",
+    "MarketCloseServerTime": "2014-09-07T23:40:00",
     "DaysOfWeekOpen": [
       1,
       2,
@@ -21,11 +21,82 @@
         "$type": "Sq1.Core.DataTypes.MarketClearingTimespan, Sq1.Core",
         "SuspendServerTimeOfDay": "2013-04-17T14:00:00",
         "ResumeServerTimeOfDay": "2013-04-17T14:03:00",
-        "DaysOfWeekWhenClearingHappens": null
+        "DaysOfWeekWhenClearingHappens": null,
+        "SuspendServerTimeOfDayAsString": "14:00",
+        "ResumeServerTimeOfDayAsString": "14:03",
+        "DaysOfWeekWhenClosingNotHappensAsString": ""
       }
     ],
     "HolidaysYMD000": [],
-    "ShortDays": []
+    "ShortDays": [],
+    "MarketOpenServerTimeAsString": "23:40",
+    "MarketCloseServerTimeAsString": "10:00",
+    "TimeZoneInfo": {
+      "$type": "System.TimeZoneInfo, mscorlib",
+      "Id": "Eastern Standard Time",
+      "DisplayName": "(UTC-05:00) Eastern Time (US & Canada)",
+      "StandardName": "Eastern Standard Time",
+      "DaylightName": "Eastern Daylight Time",
+      "BaseUtcOffset": "-05:00:00",
+      "AdjustmentRules": [
+        {
+          "$type": "System.TimeZoneInfo+AdjustmentRule, mscorlib",
+          "DateStart": "0001-01-01T00:00:00",
+          "DateEnd": "2006-12-31T00:00:00",
+          "DaylightDelta": "01:00:00",
+          "DaylightTransitionStart": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 4,
+            "Week": 1,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          },
+          "DaylightTransitionEnd": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 10,
+            "Week": 5,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          }
+        },
+        {
+          "$type": "System.TimeZoneInfo+AdjustmentRule, mscorlib",
+          "DateStart": "2007-01-01T00:00:00",
+          "DateEnd": "9999-12-31T00:00:00",
+          "DaylightDelta": "01:00:00",
+          "DaylightTransitionStart": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 3,
+            "Week": 2,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          },
+          "DaylightTransitionEnd": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 11,
+            "Week": 1,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          }
+        }
+      ],
+      "SupportsDaylightSavingTime": true
+    },
+    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+    "ServerTimeNow": "2014-09-07T01:38:25.4138",
+    "TodayIsTradingDay": true,
+    "IsMarketOpenNow": false,
+    "MarketIsAfterCloseNow": false,
+    "MarketCloseLocalTime": "2014-09-07T23:40:00-04:00",
+    "LastTradingSessionEndedServerTime": "2014-09-06T10:00:00"
   },
   "FORTS": {
     "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
@@ -46,17 +117,91 @@
         "$type": "Sq1.Core.DataTypes.MarketClearingTimespan, Sq1.Core",
         "SuspendServerTimeOfDay": "2013-04-17T14:00:00",
         "ResumeServerTimeOfDay": "2013-04-17T14:03:00",
-        "DaysOfWeekWhenClearingHappens": null
+        "DaysOfWeekWhenClearingHappens": null,
+        "SuspendServerTimeOfDayAsString": "14:00",
+        "ResumeServerTimeOfDayAsString": "14:03",
+        "DaysOfWeekWhenClosingNotHappensAsString": ""
       },
       {
         "$type": "Sq1.Core.DataTypes.MarketClearingTimespan, Sq1.Core",
         "SuspendServerTimeOfDay": "2013-04-17T18:45:00",
         "ResumeServerTimeOfDay": "2013-04-17T19:00:00",
-        "DaysOfWeekWhenClearingHappens": null
+        "DaysOfWeekWhenClearingHappens": null,
+        "SuspendServerTimeOfDayAsString": "18:45",
+        "ResumeServerTimeOfDayAsString": "19:00",
+        "DaysOfWeekWhenClosingNotHappensAsString": ""
       }
     ],
     "HolidaysYMD000": [],
-    "ShortDays": []
+    "ShortDays": [],
+    "MarketOpenServerTimeAsString": "23:49",
+    "MarketCloseServerTimeAsString": "10:00",
+    "TimeZoneInfo": {
+      "$type": "System.TimeZoneInfo, mscorlib",
+      "Id": "Russian Standard Time",
+      "DisplayName": "(UTC+04:00) Moscow, St. Petersburg, Volgograd",
+      "StandardName": "Russian Standard Time",
+      "DaylightName": "Russian Daylight Time",
+      "BaseUtcOffset": "04:00:00",
+      "AdjustmentRules": [
+        {
+          "$type": "System.TimeZoneInfo+AdjustmentRule, mscorlib",
+          "DateStart": "0001-01-01T00:00:00",
+          "DateEnd": "2010-12-31T00:00:00",
+          "DaylightDelta": "01:00:00",
+          "DaylightTransitionStart": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 3,
+            "Week": 5,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          },
+          "DaylightTransitionEnd": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T03:00:00",
+            "Month": 10,
+            "Week": 5,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          }
+        },
+        {
+          "$type": "System.TimeZoneInfo+AdjustmentRule, mscorlib",
+          "DateStart": "2011-01-01T00:00:00",
+          "DateEnd": "2011-12-31T00:00:00",
+          "DaylightDelta": "01:00:00",
+          "DaylightTransitionStart": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 3,
+            "Week": 5,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          },
+          "DaylightTransitionEnd": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T00:00:00",
+            "Month": 1,
+            "Week": 1,
+            "Day": 1,
+            "DayOfWeek": 6,
+            "IsFixedDateRule": false
+          }
+        }
+      ],
+      "SupportsDaylightSavingTime": true
+    },
+    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri",
+    "ServerTimeNow": "2014-09-07T09:38:25.4294",
+    "TodayIsTradingDay": false,
+    "IsMarketOpenNow": false,
+    "MarketIsAfterCloseNow": false,
+    "MarketCloseLocalTime": "2013-08-08T15:49:59-04:00",
+    "LastTradingSessionEndedServerTime": "2014-09-05T10:00:00"
   },
   "BACKTEST": {
     "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
@@ -76,7 +221,75 @@
     "TimeZoneName": "Eastern Standard Time",
     "ClearingTimespans": [],
     "HolidaysYMD000": [],
-    "ShortDays": []
+    "ShortDays": [],
+    "MarketOpenServerTimeAsString": "23:49",
+    "MarketCloseServerTimeAsString": "00:00",
+    "TimeZoneInfo": {
+      "$type": "System.TimeZoneInfo, mscorlib",
+      "Id": "Eastern Standard Time",
+      "DisplayName": "(UTC-05:00) Eastern Time (US & Canada)",
+      "StandardName": "Eastern Standard Time",
+      "DaylightName": "Eastern Daylight Time",
+      "BaseUtcOffset": "-05:00:00",
+      "AdjustmentRules": [
+        {
+          "$type": "System.TimeZoneInfo+AdjustmentRule, mscorlib",
+          "DateStart": "0001-01-01T00:00:00",
+          "DateEnd": "2006-12-31T00:00:00",
+          "DaylightDelta": "01:00:00",
+          "DaylightTransitionStart": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 4,
+            "Week": 1,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          },
+          "DaylightTransitionEnd": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 10,
+            "Week": 5,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          }
+        },
+        {
+          "$type": "System.TimeZoneInfo+AdjustmentRule, mscorlib",
+          "DateStart": "2007-01-01T00:00:00",
+          "DateEnd": "9999-12-31T00:00:00",
+          "DaylightDelta": "01:00:00",
+          "DaylightTransitionStart": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 3,
+            "Week": 2,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          },
+          "DaylightTransitionEnd": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 11,
+            "Week": 1,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          }
+        }
+      ],
+      "SupportsDaylightSavingTime": true
+    },
+    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+    "ServerTimeNow": "2014-09-07T01:38:25.4294",
+    "TodayIsTradingDay": true,
+    "IsMarketOpenNow": true,
+    "MarketIsAfterCloseNow": false,
+    "MarketCloseLocalTime": "2013-08-08T23:49:59-04:00",
+    "LastTradingSessionEndedServerTime": "2014-09-06T00:00:00"
   },
   "US": {
     "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
@@ -134,6 +347,74 @@
       "2019-12-25T00:00:00",
       "2019-09-02T00:00:00"
     ],
-    "ShortDays": []
+    "ShortDays": [],
+    "MarketOpenServerTimeAsString": "16:00",
+    "MarketCloseServerTimeAsString": "09:30",
+    "TimeZoneInfo": {
+      "$type": "System.TimeZoneInfo, mscorlib",
+      "Id": "Eastern Standard Time",
+      "DisplayName": "(UTC-05:00) Eastern Time (US & Canada)",
+      "StandardName": "Eastern Standard Time",
+      "DaylightName": "Eastern Daylight Time",
+      "BaseUtcOffset": "-05:00:00",
+      "AdjustmentRules": [
+        {
+          "$type": "System.TimeZoneInfo+AdjustmentRule, mscorlib",
+          "DateStart": "0001-01-01T00:00:00",
+          "DateEnd": "2006-12-31T00:00:00",
+          "DaylightDelta": "01:00:00",
+          "DaylightTransitionStart": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 4,
+            "Week": 1,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          },
+          "DaylightTransitionEnd": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 10,
+            "Week": 5,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          }
+        },
+        {
+          "$type": "System.TimeZoneInfo+AdjustmentRule, mscorlib",
+          "DateStart": "2007-01-01T00:00:00",
+          "DateEnd": "9999-12-31T00:00:00",
+          "DaylightDelta": "01:00:00",
+          "DaylightTransitionStart": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 3,
+            "Week": 2,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          },
+          "DaylightTransitionEnd": {
+            "$type": "System.TimeZoneInfo+TransitionTime, mscorlib",
+            "TimeOfDay": "0001-01-01T02:00:00",
+            "Month": 11,
+            "Week": 1,
+            "Day": 1,
+            "DayOfWeek": 0,
+            "IsFixedDateRule": false
+          }
+        }
+      ],
+      "SupportsDaylightSavingTime": true
+    },
+    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri",
+    "ServerTimeNow": "2014-09-07T01:38:25.4294",
+    "TodayIsTradingDay": false,
+    "IsMarketOpenNow": false,
+    "MarketIsAfterCloseNow": false,
+    "MarketCloseLocalTime": "2013-04-17T16:00:00-04:00",
+    "LastTradingSessionEndedServerTime": "2014-09-05T09:30:00"
   }
 }

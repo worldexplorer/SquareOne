@@ -41,16 +41,17 @@
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
-        "Interval": 1,
+        "Interval": 10,
         "IsIntraday": true,
-        "TimeSpanInSeconds": 60
+        "AsTimeSpanInSeconds": 600,
+        "AsTimeSpan": "00:10:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
         "Range": 1,
         "StartDate": "0001-01-01T00:00:00",
         "EndDate": "9999-12-31T23:59:59.9999999",
-        "RecentBars": 500,
+        "RecentBars": 1500,
         "RecentTimeunits": 0
       },
       "ChartStreaming": false,

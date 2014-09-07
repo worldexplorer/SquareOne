@@ -5,22 +5,15 @@ using System.Runtime.Serialization;
 namespace Sq1.Core.DataTypes {
 	[DataContract]
 	public class MarketInfo {
-		[DataMember]
-		public string Name;
-		[DataMember]
-		public string Description;
-		[DataMember]
-		public DateTime MarketOpenServerTime;
-		public string MarketOpenServerTimeAsString { get { return MarketCloseServerTime.ToString("HH:mm"); } }
-		[DataMember]
-		public DateTime MarketCloseServerTime;
-		public string MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
-		[DataMember]
-		public List<DayOfWeek> DaysOfWeekOpen;
-		[DataMember]
-		public string TimeZoneName;
-		public TimeZoneInfo TimeZoneInfo {
-			get {
+		[DataMember] public string Name;
+		[DataMember] public string Description;
+		[DataMember] public DateTime MarketOpenServerTime;
+					 public string MarketOpenServerTimeAsString { get { return MarketCloseServerTime.ToString("HH:mm"); } }
+		[DataMember] public DateTime MarketCloseServerTime;
+					 public string MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
+		[DataMember] public List<DayOfWeek> DaysOfWeekOpen;
+		[DataMember] public string TimeZoneName;
+		public TimeZoneInfo TimeZoneInfo { get {
 				TimeZoneInfo ret = TimeZoneInfo.Local;
 				if (String.IsNullOrEmpty(this.TimeZoneName)) return ret;
 				try {
@@ -31,14 +24,10 @@ namespace Sq1.Core.DataTypes {
 					//throw;
 				}
 				return ret;
-			}
-		}
-		[DataMember]
-		public List<MarketClearingTimespan> ClearingTimespans;
-		[DataMember]
-		public List<DateTime> HolidaysYMD000;
-		[DataMember]
-		public List<MarketShortDay> ShortDays;
+			} }
+		[DataMember] public List<MarketClearingTimespan> ClearingTimespans;
+		[DataMember] public List<DateTime> HolidaysYMD000;
+		[DataMember] public List<MarketShortDay> ShortDays;
 
 		public MarketInfo() {
 			Name = "ERROR_DESERIALISING_JSON";
@@ -53,22 +42,18 @@ namespace Sq1.Core.DataTypes {
 			HolidaysYMD000 = new List<DateTime>();
 			ShortDays = new List<MarketShortDay>();
 		}
-		public string DaysOfWeekOpenAsString {
-			get {
+		public string DaysOfWeekOpenAsString { get {
 				if (DaysOfWeekOpen == null) return "Mon,Tue,Wed,Thu,Fri";
 				return DaysOfWeekAsString(DaysOfWeekOpen);
-			}
-		}
-		string clearingTimespansAsString {
-			get {
+			} }
+		string clearingTimespansAsString { get {
 				string closedHours = "";
 				foreach (MarketClearingTimespan closedHour in this.ClearingTimespans) {
 					closedHours += closedHour + ",";
 				}
 				closedHours = closedHours.TrimEnd(',');
 				return closedHours;
-			}
-		}
+			} }
 		public static string DaysOfWeekAsString(List<DayOfWeek> dows) {
 			string ret = "";
 			foreach (DayOfWeek dow in dows) {
@@ -86,20 +71,11 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		public DateTime ServerTimeNow { get { return this.ConvertLocalTimeToServer(DateTime.Now); } }
-		public bool TodayIsTradingDay {
-			get { return this.IsTradeableDayServerTime(this.ServerTimeNow); }
-		}
-		public bool IsMarketOpenNow {
-			get { return this.IsMarketOpenAtServerTime(this.ServerTimeNow); }
-		}
-		public bool MarketIsAfterCloseNow {
-			get { return this.isMarketAfterCloseServerTime(this.ServerTimeNow); }
-		}
-		public DateTime MarketCloseLocalTime {
-			get { return this.ConvertServerTimeToLocal(this.MarketCloseServerTime); }
-		}
-		public DateTime LastTradingSessionEndedServerTime {
-			get {
+		public bool TodayIsTradingDay { get { return this.IsTradeableDayServerTime(this.ServerTimeNow); } }
+		public bool IsMarketOpenNow { get { return this.IsMarketOpenAtServerTime(this.ServerTimeNow); } }
+		public bool MarketIsAfterCloseNow { get { return this.isMarketAfterCloseServerTime(this.ServerTimeNow); } }
+		public DateTime MarketCloseLocalTime { get { return this.ConvertServerTimeToLocal(this.MarketCloseServerTime); } }
+		public DateTime LastTradingSessionEndedServerTime { get {
 				DateTime dateTimeServer = ServerTimeNow;
 				if (this.IsTradeableDayServerTime(dateTimeServer)
 						&& this.isMarketAfterCloseServerTime(dateTimeServer) == false) {
@@ -111,8 +87,7 @@ namespace Sq1.Core.DataTypes {
 				dateTimeServer = new DateTime(dateTimeServer.Year, dateTimeServer.Month, dateTimeServer.Day,
 					this.MarketOpenServerTime.Hour, this.MarketOpenServerTime.Minute, 0);
 				return dateTimeServer;
-			}
-		}
+			} }
 		public bool IsTradeableDayServerTime(DateTime dateServer) {
 			bool isHoliday = this.isHoliday(dateServer);
 			bool isDayOfWeekOpen = this.isTradeableDayOfWeek(dateServer);

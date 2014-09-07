@@ -11,15 +11,18 @@ namespace Sq1.Charting.OnChart {
 		public Font Font;
 		public Color ColorForeground;
 		public Color ColorBackground;
+		public bool AboveBar;
+		public bool ShouldDrawBackground { get { return this.ColorBackground != Color.Empty; } }
 		
 		public OnChartBarAnnotation(string barAnnotationId, string barAnnotationText,
-		                            Font font, Color colorForeground, Color colorBackground) {
+		                            Font font, Color colorForeground, Color colorBackground, bool aboveBar = true) {
 			BarAnnotationId = barAnnotationId;
 			BarAnnotationText = barAnnotationText;
 			Font = font;
 			ColorForeground = colorForeground;
 			ColorBackground = colorBackground;
 			Status = OnChartObjectOperationStatus.OnChartObjectJustCreated;
+			AboveBar = aboveBar;
 		}
 
 		public override string ToString() {

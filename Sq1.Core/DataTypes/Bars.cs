@@ -288,7 +288,7 @@ namespace Sq1.Core.DataTypes {
 				int low = rand.Next(candleBodyLow - shadowLimit, candleBodyLow);
 				int volume = rand.Next(volumeMax);
 				this.BarCreateAppendBindStatic(dateCurrent, open, high, low, close, volume);
-				dateCurrent = dateCurrent.AddSeconds(this.ScaleInterval.TimeSpanInSeconds);
+				dateCurrent = dateCurrent.AddSeconds(this.ScaleInterval.AsTimeSpanInSeconds);
 				open = close;
 			}
 		}
@@ -373,5 +373,11 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
+		public int BarsMaxDayCanFit { get {
+				int ret = 0;
+				TimeSpan wholeDay = new TimeSpan(24, 0, 0);
+				ret = (int) (wholeDay.TotalSeconds / this.ScaleInterval.AsTimeSpan.TotalSeconds);
+				return ret;
+			} }
 	}
 }

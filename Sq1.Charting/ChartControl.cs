@@ -180,7 +180,7 @@ namespace Sq1.Charting {
 		}
 
 		public void BarWidthIncrementAtKeyPressRate() {
-			if (this.ChartSettings.BarWidthIncludingPadding >= 50) return; 
+			if (this.ChartSettings.BarWidthIncludingPadding >= this.ChartSettings.BarWidthIncludingPaddingMax) return; 
 			this.ChartSettings.BarWidthIncludingPadding += this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep;
 			this.InvalidateAllPanelsFolding();
 			base.RaiseChartSettingsChangedContainerShouldSerialize();

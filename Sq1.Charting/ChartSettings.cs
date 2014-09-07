@@ -13,6 +13,7 @@ namespace Sq1.Charting {
 	public class ChartSettings {	//: Component {
 		[DataMember] public Color	ChartColorBackground { get; set; }
 		[DataMember] public int		BarWidthIncludingPadding { get; set; }
+		[DataMember] public int		BarWidthIncludingPaddingMax { get; set; }
 		[DataMember] public Font	PanelNameAndSymbolFont { get; set; }
 		[DataMember] public Color	PriceColorBarUp { get; set; }
 		[DataMember] public Color	PriceColorBarDown { get; set; }
@@ -285,6 +286,7 @@ namespace Sq1.Charting {
 		public ChartSettings()	{
 			ChartColorBackground = Color.White;
 			BarWidthIncludingPadding = 8;
+			BarWidthIncludingPaddingMax = 100;
 			PanelNameAndSymbolFont = new Font("Microsoft Sans Serif", 8.25f);
 			PriceColorBarUp = Color.RoyalBlue;
 			PriceColorBarDown = Color.IndianRed;

@@ -43,7 +43,8 @@
         "Scale": 0,
         "Interval": 0,
         "IsIntraday": false,
-        "TimeSpanInSeconds": 0
+        "AsTimeSpanInSeconds": 0,
+        "AsTimeSpan": "00:00:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",

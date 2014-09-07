@@ -324,12 +324,70 @@ namespace Sq1.Charting {
 			// DO_I_NEED_SIMILAR_CHECK_HERE???? MOST_LIKELY_I_DONT this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
 			ScriptExecutorObjects seo = this.ChartControl.ScriptExecutorObjects;
-			foreach (OnChartLabel label in seo.ChartLabelsById.Values) {
+			foreach (OnChartLabel label in seo.OnChartLabelsById.Values) {
 				base.DrawLabelOnNextLine(g, label.LabelText, label.Font, label.ColorForeground, label.ColorBackground);
 			}
 		}
 		void renderOnChartBarAnnotations(Graphics g) {
-			
+			// TODO remove dupes from render*, move loop upstack
+			if (VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLabels(): " + msg);
+				return;
+			}
+			// DO_I_NEED_SIMILAR_CHECK_HERE???? MOST_LIKELY_I_DONT this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
+
+			int barX = base.ChartControl.ChartWidthMinusGutterRightPrice - base.BarShadowXoffset_cached;
+			ScriptExecutorObjects seo = this.ChartControl.ScriptExecutorObjects;
+			for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
+				if (barIndex >= base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderBarsPrice(): " + msg);
+					continue;
+				}
+				
+				if (seo.OnChartBarAnnotationsByBar.ContainsKey(barIndex) == false) continue;
+				
+				barX -= base.BarWidthIncludingPadding_cached;
+				
+				Bar bar = base.ChartControl.Bars[barIndex];
+				int barYHighInverted = base.ValueToYinverted(bar.High);
+				int barYLowInverted = base.ValueToYinverted(bar.Low);
+				
+				Dictionary<string, OnChartBarAnnotation> barAnnotationsById =  seo.OnChartBarAnnotationsByBar[barIndex];
+				foreach (OnChartBarAnnotation barAnnotation in barAnnotationsById.Values) {
+					//DUPLICATION copypaste from DrawLabel
+					Font font = (barAnnotation.Font != null) ? barAnnotation.Font : base.Font;
+					SizeF measurements = g.MeasureString(barAnnotation.BarAnnotationText, font);
+					int labelMeasuredWidth = (int) measurements.Width;
+					int labelMeasuredHeight = (int) measurements.Height;
+	
+					int x = barX - labelMeasuredWidth / 2;
+					if (barAnnotation.ShouldDrawBackground) {
+						x -= this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding;
+					}
+						
+					int y = -1;
+					if (barAnnotation.AboveBar) {
+						y = barYHighInverted - labelMeasuredHeight;
+						if (barAnnotation.ShouldDrawBackground) {
+							y -= this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2;
+						}
+					} else {
+						y = barYLowInverted;
+						if (barAnnotation.ShouldDrawBackground) {
+							y += this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding;
+						}
+					}
+					
+					base.DrawLabel(g, x, y,
+					               barAnnotation.BarAnnotationText, barAnnotation.Font,
+					               barAnnotation.ColorForeground, barAnnotation.ColorBackground, false);
+				}
+			}
 		}
 	}
 }

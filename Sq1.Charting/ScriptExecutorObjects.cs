@@ -23,8 +23,8 @@ namespace Sq1.Charting {
 		public Dictionary<int, Color> BarBackgroundsByBar { get; private set; }
 		public Dictionary<int, Color> BarForegroundsByBar { get; private set; }
 
-		public Dictionary<string, OnChartLabel> ChartLabelsById { get; private set; }
-		public Dictionary<int, Dictionary<string, OnChartBarAnnotation>> BarAnnotationsByBar { get; private set; }
+		public Dictionary<string, OnChartLabel> OnChartLabelsById { get; private set; }
+		public Dictionary<int, Dictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
 
 		
 		public ScriptExecutorObjects() {
@@ -39,8 +39,8 @@ namespace Sq1.Charting {
 			BarBackgroundsByBar = new Dictionary<int, Color>();
 			BarForegroundsByBar = new Dictionary<int, Color>();
 
-			ChartLabelsById = new Dictionary<string, OnChartLabel>();
-			BarAnnotationsByBar = new Dictionary<int, Dictionary<string, OnChartBarAnnotation>>();
+			OnChartLabelsById = new Dictionary<string, OnChartLabel>();
+			OnChartBarAnnotationsByBar = new Dictionary<int, Dictionary<string, OnChartBarAnnotation>>();
 		}
 		public void PositionsClearBacktestStarting() {
 			this.AlertArrowsListByBar.Clear();
@@ -54,8 +54,8 @@ namespace Sq1.Charting {
 			this.BarBackgroundsByBar.Clear();
 			this.BarForegroundsByBar.Clear();
 
-			this.ChartLabelsById.Clear();
-			this.BarAnnotationsByBar.Clear();
+			this.OnChartLabelsById.Clear();
+			this.OnChartBarAnnotationsByBar.Clear();
 		}
 		public void PositionArrowsBacktestAdd(List<Position> positionsMaster) {
 			foreach (Position pos in positionsMaster) {
@@ -249,14 +249,14 @@ namespace Sq1.Charting {
 		}
 		public OnChartLabel ChartLabelAddOrModify(string labelId, string labelText, Font font, Color colorFore, Color colorBack) {
 			//Add() candidate starts below
-			if (this.ChartLabelsById.ContainsKey(labelId) == false) {
+			if (this.OnChartLabelsById.ContainsKey(labelId) == false) {
 				OnChartLabel labelCreated = new OnChartLabel(labelId, labelText, font, colorFore, colorBack);
-				this.ChartLabelsById.Add(labelId, labelCreated);
+				this.OnChartLabelsById.Add(labelId, labelCreated);
 				return labelCreated;
 			}
 			
 			//Modify() candidate starts below
-			OnChartLabel labelToModify = this.ChartLabelsById[labelId];
+			OnChartLabel labelToModify = this.OnChartLabelsById[labelId];
 			if (		labelToModify.LabelText			== labelText	&& labelToModify.Font				== font
 			   		 && labelToModify.ColorForeground	== colorFore	&& labelToModify.ColorBackground	== colorBack) {
 				labelToModify.Status = OnChartObjectOperationStatus.OnChartObjectNotModifiedSinceParametersDidntChange;
@@ -274,15 +274,16 @@ namespace Sq1.Charting {
 			return labelToModify;
 		}
 		public OnChartBarAnnotation BarAnnotationAddOrModify(int barIndex, string barAnnotationId, string barAnnotationText,
-		                                                     Font font, Color colorFore, Color colorBack) {
+		                                                     Font font, Color colorFore, Color colorBack, bool aboveBar = true) {
 			//Add() candidate starts below
-			if (this.BarAnnotationsByBar.ContainsKey(barIndex) == false) {
-				this.BarAnnotationsByBar.Add(barIndex, new Dictionary<string, OnChartBarAnnotation>());
+			if (this.OnChartBarAnnotationsByBar.ContainsKey(barIndex) == false) {
+				this.OnChartBarAnnotationsByBar.Add(barIndex, new Dictionary<string, OnChartBarAnnotation>());
 			}
-			Dictionary<string, OnChartBarAnnotation> annotationsForBar = this.BarAnnotationsByBar[barIndex];
+			Dictionary<string, OnChartBarAnnotation> annotationsForBar = this.OnChartBarAnnotationsByBar[barIndex];
 
 			if (annotationsForBar.ContainsKey(barAnnotationId) == false) {
-				OnChartBarAnnotation barAnnotationCreated = new OnChartBarAnnotation(barAnnotationId, barAnnotationText, font, colorFore, colorBack);
+				OnChartBarAnnotation barAnnotationCreated = new OnChartBarAnnotation(
+					barAnnotationId, barAnnotationText, font, colorFore, colorBack, aboveBar);
 				annotationsForBar.Add(barAnnotationId, barAnnotationCreated);
 				return barAnnotationCreated;
 			}
