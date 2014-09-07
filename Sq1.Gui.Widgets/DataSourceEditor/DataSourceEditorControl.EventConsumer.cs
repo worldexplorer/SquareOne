@@ -89,10 +89,22 @@ namespace Sq1.Widgets.DataSourceEditor {
 			if (ds.StaticProvider == null) return;
 			//new StaticProviderDetailsForm(ds.StaticProvider).Show();
 		}
-		private void btnNext_Click(object sender, EventArgs e) {
+		private void btnCancel_Click(object sender, EventArgs e) {
+			if (this.Parent != null) {
+				DockContent parentAsDock = this.Parent as DockContent;  
+				if (parentAsDock != null) {
+					// Really closes the Form, so that next time invoked .Instance should invoke Initialize() to add Rows into this.dgMarketName parentAsDock.Close();
+					// RESOLVED: DockContent.Hide() does its job
+					parentAsDock.Hide();
+				} else {
+					base.Parent.Hide();
+				}
+			} else {
+				base.Hide();
+			}
 		}
-		private void btnPrevious_Click(object sender, EventArgs e) {
-		}
+		private void btnNext_Click(object sender, EventArgs e) { }
+		private void btnPrevious_Click(object sender, EventArgs e) { }
 		private void btnSave_Click(object sender, EventArgs e) {
 			try {
 				this.ApplyEditorsToDataSourceAndClose();

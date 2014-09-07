@@ -140,7 +140,7 @@ namespace Sq1.Strategies.Demo {
 			string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
 			labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
 			labelText += barStaticFormed.BarIndexAfterMarketOpenExpected + ":" + barStaticFormed.BarIndexBeforeMarketCloseExpected;
-			Font font = new Font("Arial", 9);
+			Font font = new Font("Arial", 6);
 			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
 			base.Executor.ChartShadow.BarAnnotationDrawModify(
 				barIndex, "ann" + barIndex, labelText, font, Color.ForestGreen, Color.Empty, evenAboveOddBelow);

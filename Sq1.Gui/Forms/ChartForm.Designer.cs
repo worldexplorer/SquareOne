@@ -18,6 +18,7 @@ namespace Sq1.Gui.Forms {
 			this.ctxBacktest = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniBacktestOnRestart = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBacktestOnSelectorsChange = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniBacktestOnDataSourceSaved = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBacktestNow = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnitlbPositionSizeSharesConstantEachTrade = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
@@ -66,6 +67,7 @@ namespace Sq1.Gui.Forms {
 			// ctxBacktest
 			// 
 			this.ctxBacktest.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+									this.mniBacktestOnDataSourceSaved,
 									this.mniBacktestOnRestart,
 									this.mniBacktestOnSelectorsChange,
 									this.mniBacktestNow,
@@ -82,7 +84,7 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnRestart.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniBacktestOnRestart.Name = "mniBacktestOnRestart";
 			this.mniBacktestOnRestart.Size = new System.Drawing.Size(231, 22);
-			this.mniBacktestOnRestart.Text = "Backtest After Restart";
+			this.mniBacktestOnRestart.Text = "Backtest On Application Restart";
 			this.mniBacktestOnRestart.Click += new System.EventHandler(this.mniBacktestOnRestart_Click);
 			// 
 			// mniBacktestOnSelectorsChange
@@ -92,8 +94,20 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnSelectorsChange.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniBacktestOnSelectorsChange.Name = "mniBacktestOnSelectorsChange";
 			this.mniBacktestOnSelectorsChange.Size = new System.Drawing.Size(231, 22);
-			this.mniBacktestOnSelectorsChange.Text = "Backtest On Selectors Change";
+			this.mniBacktestOnSelectorsChange.Text = "Backtest On Bars/ScriptParameters Changed";
 			this.mniBacktestOnSelectorsChange.Click += new System.EventHandler(this.mniBacktestOnEveryChange_Click);
+			
+			// 
+			// mniBacktestOnDataSourceEdited
+			// 
+			this.mniBacktestOnDataSourceSaved.Checked = true;
+			this.mniBacktestOnDataSourceSaved.CheckOnClick = true;
+			this.mniBacktestOnDataSourceSaved.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.mniBacktestOnDataSourceSaved.Name = "mniBacktestOnDataSourceSaved";
+			this.mniBacktestOnDataSourceSaved.Size = new System.Drawing.Size(231, 22);
+			this.mniBacktestOnDataSourceSaved.Text = "Backtest On DataSource Saved";
+			this.mniBacktestOnDataSourceSaved.Click += new System.EventHandler(this.mniBacktestOnEveryChange_Click);
+				
 			// 
 			// mniBacktestNow
 			// 
@@ -425,6 +439,7 @@ namespace Sq1.Gui.Forms {
 		public System.Windows.Forms.ToolStripDropDownButton DdbStrategy;
 		private System.Windows.Forms.ToolStripMenuItem mniBacktestNow;
 		private System.Windows.Forms.ToolStripMenuItem mniBacktestOnSelectorsChange;
+		private System.Windows.Forms.ToolStripMenuItem mniBacktestOnDataSourceSaved;
 		private System.Windows.Forms.ToolStripMenuItem mniBacktestOnRestart;
 		private System.Windows.Forms.ContextMenuStrip ctxBacktest;
 		public Sq1.Charting.ChartControl ChartControl;

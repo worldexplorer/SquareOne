@@ -25,7 +25,7 @@ namespace Sq1.Charting {
 			//for (int i = 0; i < base.ChartControl.BarsCanFitForCurrentWidth; i++) {
 			//	int barFromRight = base.ChartControl.BarsCanFitForCurrentWidth - i - 1;
 			//int barX = this.BarTotalWidthPx_localCache * barFromRight;
-			int barX = base.ChartControl.ChartWidthMinusGutterRightPrice;
+			int barX = base.ChartControl.ChartWidthMinusGutterRightPrice - base.BarWidthIncludingPadding_cached;
 			for (int i = base.VisibleBarRight_cached; i > base.VisibleBarLeft_cached; i--) {
 				if (i > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
@@ -38,10 +38,10 @@ namespace Sq1.Charting {
 					if (double.IsNaN(bar.Close)) continue;
 					if (double.IsNaN(bar.Volume)) continue;
 				//}
-				barX -= base.BarWidthIncludingPadding_cached;
 				int barYVolume = base.ValueToYinverted(bar.Volume);
 				bool fillCandleBody = (bar.Open > bar.Close) ? true : false;
 				base.RenderBarHistogram(g, barX, barYVolume, fillCandleBody);
+				barX -= base.BarWidthIncludingPadding_cached;
 			}
 		}
 	}

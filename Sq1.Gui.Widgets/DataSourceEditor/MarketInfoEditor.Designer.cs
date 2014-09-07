@@ -416,7 +416,7 @@
 			this.lblMarketDaysOfWeek.Name = "lblMarketDaysOfWeek";
 			this.lblMarketDaysOfWeek.Size = new System.Drawing.Size(71, 13);
 			this.lblMarketDaysOfWeek.TabIndex = 48;
-			this.lblMarketDaysOfWeek.Text = "DaysOfWeek";
+			this.lblMarketDaysOfWeek.Text = "DaysOfWeek (type Mon,Tue,Wed)";
 			// 
 			// tableLayoutPanel1
 			// 

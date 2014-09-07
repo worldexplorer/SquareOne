@@ -23,6 +23,7 @@
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": true,
       "BacktestOnSelectorsChange": true,
+      "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
       },
@@ -36,15 +37,15 @@
       "SlippageTicks": 1,
       "PriceLevelSizeForBonds": 0,
       "Name": "Default",
-      "Symbol": "UNDEFINED",
-      "DataSourceName": "UNDEFINED",
+      "Symbol": "RIM3",
+      "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-        "Scale": 0,
-        "Interval": 0,
-        "IsIntraday": false,
-        "AsTimeSpanInSeconds": 0,
-        "AsTimeSpan": "00:00:00"
+        "Scale": 3,
+        "Interval": 5,
+        "IsIntraday": true,
+        "AsTimeSpanInSeconds": 300,
+        "AsTimeSpan": "00:05:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",

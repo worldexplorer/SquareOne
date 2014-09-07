@@ -4,7 +4,7 @@
     "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
     "Name": "MOCK",
     "Description": "23:59 hours open",
-    "MarketOpenServerTime": "2014-09-07T10:00:00",
+    "MarketOpenServerTime": "2014-09-07T00:00:00",
     "MarketCloseServerTime": "2014-09-07T23:40:00",
     "DaysOfWeekOpen": [
       1,
@@ -29,8 +29,6 @@
     ],
     "HolidaysYMD000": [],
     "ShortDays": [],
-    "MarketOpenServerTimeAsString": "23:40",
-    "MarketCloseServerTimeAsString": "10:00",
     "TimeZoneInfo": {
       "$type": "System.TimeZoneInfo, mscorlib",
       "Id": "Eastern Standard Time",
@@ -90,13 +88,7 @@
       ],
       "SupportsDaylightSavingTime": true
     },
-    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
-    "ServerTimeNow": "2014-09-07T01:38:25.4138",
-    "TodayIsTradingDay": true,
-    "IsMarketOpenNow": false,
-    "MarketIsAfterCloseNow": false,
-    "MarketCloseLocalTime": "2014-09-07T23:40:00-04:00",
-    "LastTradingSessionEndedServerTime": "2014-09-06T10:00:00"
+    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri,Sat,Sun"
   },
   "FORTS": {
     "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
@@ -134,8 +126,6 @@
     ],
     "HolidaysYMD000": [],
     "ShortDays": [],
-    "MarketOpenServerTimeAsString": "23:49",
-    "MarketCloseServerTimeAsString": "10:00",
     "TimeZoneInfo": {
       "$type": "System.TimeZoneInfo, mscorlib",
       "Id": "Russian Standard Time",
@@ -195,13 +185,7 @@
       ],
       "SupportsDaylightSavingTime": true
     },
-    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri",
-    "ServerTimeNow": "2014-09-07T09:38:25.4294",
-    "TodayIsTradingDay": false,
-    "IsMarketOpenNow": false,
-    "MarketIsAfterCloseNow": false,
-    "MarketCloseLocalTime": "2013-08-08T15:49:59-04:00",
-    "LastTradingSessionEndedServerTime": "2014-09-05T10:00:00"
+    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri"
   },
   "BACKTEST": {
     "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
@@ -222,8 +206,6 @@
     "ClearingTimespans": [],
     "HolidaysYMD000": [],
     "ShortDays": [],
-    "MarketOpenServerTimeAsString": "23:49",
-    "MarketCloseServerTimeAsString": "00:00",
     "TimeZoneInfo": {
       "$type": "System.TimeZoneInfo, mscorlib",
       "Id": "Eastern Standard Time",
@@ -283,13 +265,7 @@
       ],
       "SupportsDaylightSavingTime": true
     },
-    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
-    "ServerTimeNow": "2014-09-07T01:38:25.4294",
-    "TodayIsTradingDay": true,
-    "IsMarketOpenNow": true,
-    "MarketIsAfterCloseNow": false,
-    "MarketCloseLocalTime": "2013-08-08T23:49:59-04:00",
-    "LastTradingSessionEndedServerTime": "2014-09-06T00:00:00"
+    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri,Sat,Sun"
   },
   "US": {
     "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
@@ -348,8 +324,6 @@
       "2019-09-02T00:00:00"
     ],
     "ShortDays": [],
-    "MarketOpenServerTimeAsString": "16:00",
-    "MarketCloseServerTimeAsString": "09:30",
     "TimeZoneInfo": {
       "$type": "System.TimeZoneInfo, mscorlib",
       "Id": "Eastern Standard Time",
@@ -409,12 +383,6 @@
       ],
       "SupportsDaylightSavingTime": true
     },
-    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri",
-    "ServerTimeNow": "2014-09-07T01:38:25.4294",
-    "TodayIsTradingDay": false,
-    "IsMarketOpenNow": false,
-    "MarketIsAfterCloseNow": false,
-    "MarketCloseLocalTime": "2013-04-17T16:00:00-04:00",
-    "LastTradingSessionEndedServerTime": "2014-09-05T09:30:00"
+    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri"
   }
 }

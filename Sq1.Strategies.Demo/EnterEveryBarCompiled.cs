@@ -195,10 +195,14 @@ namespace Sq1.Strategies.Demo {
 			string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
 			labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
 			labelText += barStaticFormed.BarIndexAfterMarketOpenExpected + ":" + barStaticFormed.BarIndexBeforeMarketCloseExpected;
-			Font font = new Font("Arial", 9);
+			Font font = new Font("Consolas", 7);
+			//bool evenAboveOddBelow = true;
 			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
 			base.Executor.ChartShadow.BarAnnotationDrawModify(
 				barIndex, "ann" + barIndex, labelText, font, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
+			// checking labels stacking next upon (underneath) the previous
+			base.Executor.ChartShadow.BarAnnotationDrawModify(
+				barIndex, "ann2" + barIndex, labelText, font, Color.ForestGreen, Color.LightGray, evenAboveOddBelow);
 		}
 	}
 }

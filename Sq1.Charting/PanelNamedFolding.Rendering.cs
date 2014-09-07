@@ -49,7 +49,8 @@ namespace Sq1.Charting {
 				
 				int minDistanceInFontHeights = this.ThisPanelIsPricePanel ? 3 : 2;
 				int minDistancePixels = minDistanceInFontHeights * this.GutterRightFontHeight_cached;
-				int panelHeightPlusSqueezers = this.PanelHeightMinusGutterBottomHeight_cached + this.PaddingVerticalSqueeze * 2;
+				//int panelHeightPlusSqueezers = this.PanelHeightMinusGutterBottomHeight_cached + this.PaddingVerticalSqueeze * 2;
+				int panelHeightPlusSqueezers = this.PanelHeightMinusGutterBottomHeight_cached;
 				double howManyLinesWillFit = panelHeightPlusSqueezers / (double)minDistancePixels;
 				double gridStep = 0;
 				try {
@@ -302,10 +303,9 @@ namespace Sq1.Charting {
 				indicator.DotsDrawnForCurrentSlidingWindow = 0;
 			}
 
-			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice;
+			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice - this.BarWidthIncludingPadding_cached;
 			// i > this.VisibleBarLeft_cached is enough because Indicator.Draw() takes previous bar
 			for (int i = this.VisibleBarRight_cached; i > this.VisibleBarLeft_cached; i--) {
-				barX -= this.BarWidthIncludingPadding_cached;
 				Bar bar = this.ChartControl.Bars[i];
 
 				int barYHighInverted = this.ValueToYinverted(bar.High);
@@ -325,20 +325,46 @@ namespace Sq1.Charting {
 					if (indicator.HostPanelForIndicator != this) continue;
 					bool indicatorLegDrawn = indicator.DrawValue(graphics, bar, candleBodyInverted);
 				}
+				barX -= this.BarWidthIncludingPadding_cached;
 			}
 			foreach (Indicator indicator in indicators.Values) {
 				if (indicator.HostPanelForIndicator != this) continue;
-				if (indicator.Executor == null) continue;
-				string msg = indicator.NameWithParameters;
-				if (indicator.DotsDrawnForCurrentSlidingWindow <= 0 && indicator.Executor != null) {
+				if (indicator.Executor == null) {							// indicator.BarsEffective will throw if indicator.Executor==null
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					continue;
+				}
+				if (indicator.BarsEffective == null) {
+					string msg = "DONT_RUN_BACKTESTER_BEFORE_BARS_ARE_LOADED /RenderIndicators()";
+					Assembler.PopupException(msg);
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					continue;
+				}
+				if (indicator.BarsEffective.BarLast == null) continue;
+				string indicatorLabel = indicator.NameWithParameters;
+				
+				// UNNECESSARY_BUT_HELPS_CATCH_BUGS begin
+				if (indicator.DotsDrawnForCurrentSlidingWindow <= 0) {
 					Bar barLeft = this.ChartControl.Bars[this.VisibleBarLeft_cached];
 					string dateRq = barLeft.DateTimeOpen.ToString(Assembler.DateTimeFormatIndicatorHasNoValuesFor);
-					// indicator.BarsEffective will throw if indicator.Executor==null
+					if (indicator.BarsEffective.BarFirst == null) {	// happens after I edited DataSource and removed ",Sun" from DaysMarketOpen
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						string msg2 = "SKIPPING_RENDERING_INDICATOR_TITLES for indicator[" + indicator + "].BarsEffective[" + indicator.BarsEffective + "].BarFirst=null";
+						Assembler.PopupException(msg2);
+						continue;
+					}
 					string dateFirst = indicator.BarsEffective.BarFirst.DateTimeOpen.ToString(Assembler.DateTimeFormatIndicatorHasNoValuesFor);
 					string dateLast = indicator.BarsEffective.BarLast.DateTimeOpen.ToString(Assembler.DateTimeFormatIndicatorHasNoValuesFor);
 					//TOO_NOISY_SEE_TOOLTIP_PRICE msg += " (" + dateFirst + ")..(" + dateLast + ") <> barRq[" + dateRq + "]";
 				}
-				this.DrawLabelOnNextLine(graphics, msg, null, indicator.LineColor, Color.Empty, true);
+				// UNNECESSARY_BUT_HELPS_CATCH_BUGS end
+				
+				this.DrawLabelOnNextLine(graphics, indicatorLabel, null, indicator.LineColor, Color.Empty, true);
 			}
 		}
 	}

@@ -238,8 +238,14 @@ namespace Sq1.Charting {
 				this.VisibleMax_cached = this.VisibleMax;
 				this.VisibleRange_cached = this.VisibleMax_cached - this.VisibleMin_cached;
 
-				this.VisibleMinMinusTopSqueezer_cached = this.VisibleMin_cached - this.PaddingVerticalSqueeze;
-				this.VisibleMaxPlusBottomSqueezer_cached = this.VisibleMax_cached + this.PaddingVerticalSqueeze;
+				double pixelsSqueezedToPriceDistance = 0;
+				if (this.PaddingVerticalSqueeze > 0 && base.Height > 0) {
+					double priceDistanceInOnePixel = this.VisibleRange_cached / base.Height;
+					pixelsSqueezedToPriceDistance = this.PaddingVerticalSqueeze * priceDistanceInOnePixel;
+				}
+				
+				this.VisibleMinMinusTopSqueezer_cached = this.VisibleMin_cached - pixelsSqueezedToPriceDistance;
+				this.VisibleMaxPlusBottomSqueezer_cached = this.VisibleMax_cached + pixelsSqueezedToPriceDistance;
 				this.VisibleRangeWithTwoSqueezers_cached = this.VisibleMaxPlusBottomSqueezer_cached - VisibleMinMinusTopSqueezer_cached;
 
 

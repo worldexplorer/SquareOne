@@ -198,14 +198,14 @@ namespace Sq1.Charting {
 //				return;
 //			}
 			this.panelPrice.Invalidate();
-			base.RaiseChartSettingsChangedContainerShouldSerialize();
+			//base.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 		public void DragUpUnsqueeze() {
 			if (this.ChartSettings.SqueezeVerticalPaddingPx < this.ChartSettings.SqueezeVerticalPaddingStep) return;
 			this.ChartSettings.SqueezeVerticalPaddingPx -= this.ChartSettings.SqueezeVerticalPaddingStep;
 //			this.BarWidthIncrement();
 			this.panelPrice.Invalidate();
-			base.RaiseChartSettingsChangedContainerShouldSerialize();
+			//base.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 		public void TooltipPriceShowAlone(Bar barToPopulate, Rectangle barWithShadowsRectangle) {
 			if (this.ChartSettings.TooltipPriceShow == false) return;

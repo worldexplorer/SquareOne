@@ -42,7 +42,7 @@ namespace Sq1.Charting {
 			OnChartLabelsById = new Dictionary<string, OnChartLabel>();
 			OnChartBarAnnotationsByBar = new Dictionary<int, Dictionary<string, OnChartBarAnnotation>>();
 		}
-		public void PositionsClearBacktestStarting() {
+		public void ClearAllBeforeBacktest() {
 			this.AlertArrowsListByBar.Clear();
 			this.Indicators.Clear();
 			this.AlertsPendingHistorySafeCopy.Clear();
@@ -113,10 +113,6 @@ namespace Sq1.Charting {
 			foreach (Indicator indicator in indicators.Values) {
 				indicator.DotsDrawnForCurrentSlidingWindow = -1;
 			}
-		}
-		
-		public void PendingHistoryClearBacktestStarting() {
-			this.AlertsPendingHistorySafeCopy.Clear();
 		}
 		public void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
 			this.AlertsPendingHistorySafeCopy = alertsPendingHistorySafeCopy;

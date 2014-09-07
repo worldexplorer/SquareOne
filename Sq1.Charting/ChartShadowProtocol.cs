@@ -67,8 +67,8 @@ namespace Sq1.Charting {
 				: position.EntryAlert.PlacedBar.ParentBarsIndex;
 			this.scrollToBarSafely(bar);
 		}
-		public override void PositionsClearBacktestStarting() {
-			this.ScriptExecutorObjects.PositionsClearBacktestStarting();
+		public override void ClearAllScriptObjectsBeforeBacktest() {
+			this.ScriptExecutorObjects.ClearAllBeforeBacktest();
 		}
 		public override void PositionsBacktestAdd(List<Position> positionsMaster) {
 			this.ScriptExecutorObjects.PositionArrowsBacktestAdd(positionsMaster);
@@ -76,9 +76,9 @@ namespace Sq1.Charting {
 		public override void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) {
 			this.ScriptExecutorObjects.PositionArrowsRealtimeAdd(pokeUnit);
 		}
-		public override void PendingHistoryClearBacktestStarting() {
-			this.ScriptExecutorObjects.PendingHistoryClearBacktestStarting();
-		}
+//		public override void PendingHistoryClearBacktestStarting() {
+//			this.ScriptExecutorObjects.PendingHistoryClearBacktestStarting();
+//		}
 		public override void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
 			this.ScriptExecutorObjects.PendingHistoryBacktestAdd(alertsPendingHistorySafeCopy);
 		}

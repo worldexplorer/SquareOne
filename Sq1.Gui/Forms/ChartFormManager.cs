@@ -121,7 +121,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
-		public void InitializeWithStrategy(MainForm mainForm, Strategy strategy) {
+		public void InitializeWithStrategy(MainForm mainForm, Strategy strategy, bool skipBacktestDuringDeserialization = true) {
 			string msig = "ChartFormsManager.InitializeWithStrategy(" + strategy + "): ";
 
 			this.MainForm = mainForm;
@@ -183,7 +183,9 @@ namespace Sq1.Gui.Forms {
 
 			try {
 				//I'm here via Persist.Deserialize() (=> Reporters haven't been restored yet => backtest should be postponed); will backtest in InitializeStrategyAfterDeserialization
-				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
+				// STRATEGY_CLICK_TO_CHART_DOESNT_BACKTEST this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
+				// ALL_SORT_OF_STARTUP_ERRORS this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, false);
+				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, skipBacktestDuringDeserialization);
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
 				Assembler.PopupException(msg + msig, ex);
@@ -230,11 +232,11 @@ namespace Sq1.Gui.Forms {
 				string msg = "CHART_STREAMING_DISABLED_FORCIBLY_POSSIBLY_ENABLED_BY_OPENCHART ContextCurrentChartOrStrategy.ChartStreaming=true"
 					+ "; Selectors should've been Disable()d on chat[" + this.ChartForm + "].Activated() or StreamingOn()"
 					+ " in MainForm.PropagateSelectorsForCurrentChart()";
-				context.ChartStreaming = false;
 				#if DEBUG
 				Debugger.Break();
 				#endif
 				Assembler.PopupException(msg + msig);
+				context.ChartStreaming = false;
 			}
 			
 			if (context.ScaleInterval.Scale == BarScale.Unknown) {
@@ -257,7 +259,14 @@ namespace Sq1.Gui.Forms {
 				if (context.DataRange == null) context.DataRange = new BarDataRange();
 				Bars barsClicked = barsAll.SelectRange(context.DataRange);
 				
+				if (this.Executor.Bars != null) {
+					this.Executor.Bars.DataSource.DataSourceEditedChartsDisplayedShouldRunBacktestAgain -=
+						new EventHandler<DataSourceEventArgs>(ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
+				}
 				this.Executor.SetBars(barsClicked);
+				this.Executor.Bars.DataSource.DataSourceEditedChartsDisplayedShouldRunBacktestAgain +=
+						new EventHandler<DataSourceEventArgs>(ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
+				
 				this.ChartForm.ChartControl.Initialize(barsClicked);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
 				this.ChartForm.PopulateBtnStreamingClickedAndText();
@@ -280,8 +289,11 @@ namespace Sq1.Gui.Forms {
 			this.Strategy.ScriptContextCurrent.PositionSize = this.Strategy.ScriptContextCurrent.PositionSize;
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 			
-			if (skipBacktest) return;
-			if (this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false) return;
+			bool wontBacktest = skipBacktest || this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false;
+			if (wontBacktest) {
+				this.Executor.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
+				return;
+			}
 			if (this.Strategy.Script == null) {
 				//this.StrategyCompileActivatePopulateSlidersShow();
 				string msg = "1) will compile it upstack in InitializeStrategyAfterDeserialization() or 2) compilation failed at Editor-F5";
@@ -289,6 +301,11 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			this.BacktesterRunSimulationRegular();
+		}
+		void ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain(object sender, DataSourceEventArgs e) {
+			if (this.Strategy.ScriptContextCurrent.BacktestOnDataSourceSaved == false) return;
+			this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(
+				"ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain", true, false);
 		}
 		public void BacktesterRunSimulationRegular() {
 			try {
@@ -299,6 +316,11 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		void afterBacktesterComplete() {
+			if (this.Executor.Bars == null) {
+				string msg = "DONT_RUN_BACKTEST_BEFORE_BARS_ARE_LOADED";
+				Assembler.PopupException(msg);
+				return;
+			}
 			if (this.ChartForm.InvokeRequired) {
 				this.ChartForm.BeginInvoke((MethodInvoker)delegate { this.afterBacktesterComplete(); });
 				return;
@@ -338,7 +360,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.InitializeWithStrategy(mainForm, strategyFound);
+			this.InitializeWithStrategy(mainForm, strategyFound, true);
 			this.StrategyFoundDuringDeserialization = true;
 			if (this.Executor.Bars == null) {
 				string msg = "TYRINIG_AVOID_BARS_NULL_EXCEPTION: FIXME InitializeWithStrategy() didn't load bars";

@@ -7,7 +7,7 @@ using Sq1.Core;
 namespace Sq1.Charting {
 	public partial class PanelNamedFolding {
 		void renderBarBackgrounds(Graphics g) {
-			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice;
+			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice - this.BarWidthIncludingPadding_cached;
 			int halfPadding = this.ChartControl.ChartSettings.BarPaddingRight / 2;
 			//halfPadding += 1;		// fixes 1-2px spaces between bars background
 			barX -= halfPadding;	// emulate bar having paddings from left and right
@@ -24,7 +24,6 @@ namespace Sq1.Charting {
 				ScriptExecutorObjects seo = this.ChartControl.ScriptExecutorObjects;
 				if (seo.BarBackgroundsByBar.ContainsKey(barIndex) == false) continue;
 				
-				barX -= this.BarWidthIncludingPadding_cached;
 				Rectangle barFullHeight = new Rectangle();
 				barFullHeight.X = barX;
 				barFullHeight.Width = this.BarWidthIncludingPadding_cached;
@@ -37,6 +36,7 @@ namespace Sq1.Charting {
 				using (Brush backBrush = new SolidBrush(backgroundMoreTransparent)) {
 					g.FillRectangle(backBrush, barFullHeight);
 				}
+				barX -= this.BarWidthIncludingPadding_cached;
 			}
 		}
 
@@ -50,12 +50,12 @@ namespace Sq1.Charting {
 			bool drawBackgroundRectangle = (colorBackground == Color.Empty) ? false : true;
 			//if (font == null) font = base.Font;
 			//SizeF measurements = g.MeasureString(msg, font);
-			int labelMeasuredWidth = (int) measurements.Width;
-			int labelMeasuredHeight = (int) measurements.Height; 
+			int labelWidthMeasured = (int) measurements.Width;
+			int labelHeightMeasured = (int) measurements.Height; 
 
-			int lineSpacing = (int) labelMeasuredHeight / 8;
+			int lineSpacing = (int) labelHeightMeasured / 8;
 			if (lineSpacing == 0) lineSpacing = 1; 
-			this.chartLabelsUpperLeftYincremental += labelMeasuredHeight + lineSpacing;
+			this.chartLabelsUpperLeftYincremental += labelHeightMeasured + lineSpacing;
 			if (drawBackgroundRectangle) {
 				this.chartLabelsUpperLeftYincremental += this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2;
 			}

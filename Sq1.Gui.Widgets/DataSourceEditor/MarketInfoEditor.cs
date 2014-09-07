@@ -5,6 +5,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Windows.Forms;
 
+using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Repositories;
@@ -132,7 +133,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				this.lnkMarketNameDelete.Enabled = (this.dataSourceRepository.UsedTimes(marketInfo) > 0) ? true : false;
 				this.dataSourceRepository.SerializeSingle(this.dataSource);
 			} catch (Exception ex) {
-				MessageBox.Show(ex.ToString(), marketInfo.Name);
+				Assembler.PopupException("dgMarketName_SelectionChanged", ex);
 			}
 		}
 		void lnkMarketNameDelete_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
@@ -146,7 +147,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 			string headerText = this.dgMarketName.Columns[e.ColumnIndex].HeaderText;
 			MarketInfo marketInfo = this.dgMarketName.Rows[e.RowIndex].Tag as MarketInfo;
 			if (marketInfo == null) {
-				MessageBox.Show("Rows[" + e.RowIndex + "].Tag=null (expecting MarketInfo)", headerText);
+				string msg = "Rows[" + e.RowIndex + "].Tag=null (expecting MarketInfo) " + headerText;
+				Assembler.PopupException(msg + " /dgMarketName_SelectionChanged");
 				return;
 			}
 			DataGridViewCell cell = this.dgMarketName[e.ColumnIndex, e.RowIndex];
@@ -170,7 +172,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			this.settingValueManuallyIgnoringEvent = false;
 			if (string.IsNullOrEmpty(errormsg) == false) {
-				MessageBox.Show(errormsg, headerText);
+				string msg = errormsg + headerText;
+				Assembler.PopupException(msg + " /dgMarketName_CellValueChanged");
 				return;
 			}
 			this.marketInfoRepository.Serialize();
@@ -191,7 +194,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 			string headerText = this.dgClearingTimespans.Columns[e.ColumnIndex].HeaderText;
 			MarketClearingTimespan clearingTimespan = this.dgClearingTimespans.Rows[e.RowIndex].Tag as MarketClearingTimespan;
 			if (clearingTimespan == null) {
-				MessageBox.Show("Rows[" + e.RowIndex + "].Tag=null (expecting RegularClosedHour)", headerText);
+				string msg = "Rows[" + e.RowIndex + "].Tag=null (expecting RegularClosedHour) " + headerText;
+				Assembler.PopupException(msg + " /dgClearingTimespans_CellValueChanged");
 				return;
 			}
 			DataGridViewCell cell = this.dgClearingTimespans[e.ColumnIndex, e.RowIndex];
@@ -221,7 +225,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 					break;
 				case "colClearingTimespansDaysOfWeek":
 					try {
-						List<DayOfWeek> dowsParsed = marketInfoRepository.parseDaysOfWeekCsv(cellValueAsString, ", ");
+						List<DayOfWeek> dowsParsed = RepositoryCustomMarketInfo.ParseDaysOfWeekCsv(cellValueAsString, ", ");
 						clearingTimespan.DaysOfWeekWhenClearingHappens = dowsParsed;
 					} catch (Exception ex) {
 						errormsg = columnNameChanged + ": cellValueAsString[" + cellValueAsString + "] " + ex.Message
@@ -235,7 +239,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			this.settingValueManuallyIgnoringEvent = false;
 			if (string.IsNullOrEmpty(errormsg) == false) {
-				MessageBox.Show(errormsg, headerText);
+				Assembler.PopupException(errormsg);
 			}
 			this.marketInfoRepository.Serialize();
 		}
@@ -261,7 +265,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			if (string.IsNullOrEmpty(this.cbxMarketTimeZone.Text)) return;
 			Dictionary<string, string> TimeZonesWithUTC = this.marketInfoRepository.TimeZonesWithUTC;
 			if (TimeZonesWithUTC.ContainsKey(this.cbxMarketTimeZone.Text) == false) {
-				MessageBox.Show("cbxMarketTimeZone.Text[" + this.cbxMarketTimeZone.Text + "] is not valid",
+				Assembler.PopupException("cbxMarketTimeZone.Text[" + this.cbxMarketTimeZone.Text + "] is not valid; " +
 					"Check your MicrosoftTimeZones.csv");
 				return;
 			}
@@ -280,13 +284,12 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.settingValueManuallyIgnoringEvent = true;
 			string cellValueAsString = this.txtMarketDaysOfWeek.Text;
 			try {
-				//List<DayOfWeek> dowsParsed = MarketInfoManager.parseDaysOfWeekCsv(cellValueAsString, ", ");
-				List<DayOfWeek> dowsParsed = new List<DayOfWeek>();
+				List<DayOfWeek> dowsParsed = RepositoryCustomMarketInfo.ParseDaysOfWeekCsv(cellValueAsString, ", ");
 				this.dataSource.MarketInfo.DaysOfWeekOpen = dowsParsed;
 			} catch (Exception ex) {
 				string errormsg = "InputAsString[" + cellValueAsString + "] " + ex.Message
 					+ ", back to old value [" + this.dataSource.MarketInfo.DaysOfWeekOpenAsString + "]";
-				MessageBox.Show(errormsg, "Market Days Of Weeks Open");
+				Assembler.PopupException(errormsg + " /txtMarketDaysOfWeek_Validating", ex);
 			}
 			this.txtMarketDaysOfWeek.Text = this.dataSource.MarketInfo.DaysOfWeekOpenAsString;
 			this.settingValueManuallyIgnoringEvent = false;
@@ -302,7 +305,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			} catch (Exception ex) {
 				string errormsg = "InputAsString[" + cellValueAsString + "] " + ex.Message
 					+ ", back to old value [" + this.dataSource.MarketInfo.MarketOpenServerTimeAsString + "]";
-				MessageBox.Show(errormsg, "Market Days Of Weeks Open");
+				Assembler.PopupException(errormsg + " /txtMarketServerClose_Validating", ex);
 			}
 			this.txtMarketServerClose.Text = this.dataSource.MarketInfo.MarketOpenServerTimeAsString;
 			this.settingValueManuallyIgnoringEvent = false;
@@ -318,7 +321,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			} catch (Exception ex) {
 				string errormsg = "InputAsString[" + cellValueAsString + "] " + ex.Message
 					+ ", back to old value [" + this.dataSource.MarketInfo.MarketCloseServerTimeAsString + "]";
-				MessageBox.Show(errormsg, "Market Days Of Weeks Open");
+				Assembler.PopupException(errormsg + " txtMarketServerOpen_Validating", ex);
 			}
 			this.txtMarketServerOpen.Text = this.dataSource.MarketInfo.MarketCloseServerTimeAsString;
 			this.settingValueManuallyIgnoringEvent = false;

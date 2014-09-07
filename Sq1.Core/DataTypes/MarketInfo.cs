@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using Newtonsoft.Json;
+
 namespace Sq1.Core.DataTypes {
 	[DataContract]
 	public class MarketInfo {
 		[DataMember] public string Name;
 		[DataMember] public string Description;
 		[DataMember] public DateTime MarketOpenServerTime;
-					 public string MarketOpenServerTimeAsString { get { return MarketCloseServerTime.ToString("HH:mm"); } }
+		[IgnoreDataMember] [JsonIgnore] public string MarketOpenServerTimeAsString { get { return MarketCloseServerTime.ToString("HH:mm"); } }
 		[DataMember] public DateTime MarketCloseServerTime;
-					 public string MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
+		[IgnoreDataMember] [JsonIgnore] public string MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
 		[DataMember] public List<DayOfWeek> DaysOfWeekOpen;
 		[DataMember] public string TimeZoneName;
 		public TimeZoneInfo TimeZoneInfo { get {
@@ -70,12 +72,12 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		public DateTime ServerTimeNow { get { return this.ConvertLocalTimeToServer(DateTime.Now); } }
-		public bool TodayIsTradingDay { get { return this.IsTradeableDayServerTime(this.ServerTimeNow); } }
-		public bool IsMarketOpenNow { get { return this.IsMarketOpenAtServerTime(this.ServerTimeNow); } }
-		public bool MarketIsAfterCloseNow { get { return this.isMarketAfterCloseServerTime(this.ServerTimeNow); } }
-		public DateTime MarketCloseLocalTime { get { return this.ConvertServerTimeToLocal(this.MarketCloseServerTime); } }
-		public DateTime LastTradingSessionEndedServerTime { get {
+		[IgnoreDataMember] [JsonIgnore] public DateTime ServerTimeNow { get { return this.ConvertLocalTimeToServer(DateTime.Now); } }
+		[IgnoreDataMember] [JsonIgnore] public bool TodayIsTradingDay { get { return this.IsTradeableDayServerTime(this.ServerTimeNow); } }
+		[IgnoreDataMember] [JsonIgnore] public bool IsMarketOpenNow { get { return this.IsMarketOpenAtServerTime(this.ServerTimeNow); } }
+		[IgnoreDataMember] [JsonIgnore] public bool MarketIsAfterCloseNow { get { return this.isMarketAfterCloseServerTime(this.ServerTimeNow); } }
+		[IgnoreDataMember] [JsonIgnore] public DateTime MarketCloseLocalTime { get { return this.ConvertServerTimeToLocal(this.MarketCloseServerTime); } }
+		[IgnoreDataMember] [JsonIgnore] public DateTime LastTradingSessionEndedServerTime { get {
 				DateTime dateTimeServer = ServerTimeNow;
 				if (this.IsTradeableDayServerTime(dateTimeServer)
 						&& this.isMarketAfterCloseServerTime(dateTimeServer) == false) {

@@ -110,10 +110,12 @@ namespace Sq1.Gui.Forms {
 			bool streamingNow = this.ChartFormManager.Executor.IsStreaming;
 			if (streamingNow) {
 				this.mniBacktestOnSelectorsChange.Enabled = false;
+				this.mniBacktestOnDataSourceSaved.Enabled = false;
 				this.mniBacktestNow.Enabled = false;
 				this.btnAutoSubmit.Enabled = true;
 			} else {
 				this.mniBacktestOnSelectorsChange.Enabled = true;
+				this.mniBacktestOnDataSourceSaved.Enabled = true;
 				this.mniBacktestNow.Enabled = true;
 				this.btnAutoSubmit.Enabled = false;
 			}
@@ -138,10 +140,12 @@ namespace Sq1.Gui.Forms {
 			// from btnStreaming_Click(); not related but visualises the last clicked state
 			if (this.btnStreaming.Checked) {
 				this.mniBacktestOnSelectorsChange.Enabled = false;
+				this.mniBacktestOnDataSourceSaved.Enabled = false;
 				this.mniBacktestNow.Enabled = false;
 				this.btnAutoSubmit.Enabled = true;
 			} else {
 				this.mniBacktestOnSelectorsChange.Enabled = true;
+				this.mniBacktestOnDataSourceSaved.Enabled = true;
 				this.mniBacktestNow.Enabled = true;
 				this.btnAutoSubmit.Enabled = false;
 			}

@@ -73,9 +73,10 @@ namespace Sq1.Core.Charting {
 		
 		
 #region there is no graphics-related (PositionArrows / LinesDrawnOnChart) DataSnapshot in Core; ChartControl knows how to handle your wishes in terms of Core objects
-		public virtual void PositionsClearBacktestStarting() {
+		public virtual void ClearAllScriptObjectsBeforeBacktest() {
 			throw new NotImplementedException();
 		}
+		
 		public virtual void PositionsBacktestAdd(List<Position> positionsMaster) {
 			throw new NotImplementedException();
 		}
@@ -83,9 +84,6 @@ namespace Sq1.Core.Charting {
 			throw new NotImplementedException();
 		}
 		
-		public virtual void PendingHistoryClearBacktestStarting() {
-			throw new NotImplementedException();
-		}
 		public virtual void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
 			throw new NotImplementedException();
 		}

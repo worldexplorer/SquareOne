@@ -79,6 +79,7 @@ namespace Sq1.Charting {
 		[DataMember] public int		ChartLabelsUpperLeftPlatePadding { get; set; }
 		[DataMember] public int		ChartLabelsUpperLeftIndicatorSquarePadding { get; set; }
 		[DataMember] public int		ChartLabelsUpperLeftIndicatorSquareSize { get; set; }
+		[DataMember] public int		OnChartBarAnnotationsVerticalAwayFromPositionArrows { get; set; }
 		
 		//!!!![JsonIgnore] is all down there because JSON.dll is .NET20 while [DataMember] is defined in .NET35's System.Runtime.Serialization
 
@@ -315,8 +316,8 @@ namespace Sq1.Charting {
 			ScrollNBarsPerOneDragMouseEvent = 3;
 			ScrollNBarsPerOneKeyPress = 1;
 			SqueezeVerticalPaddingPx = 0;
-			SqueezeVerticalPaddingStep = 1;		// in VerticalPixels (converted to Price differently for different symbols: priceRange/PanelHeight != const)
-			SqueezeHorizontalStep = 1;			// in BarWidthPixels
+			SqueezeVerticalPaddingStep = 10;	// in VerticalPixels (later converted using pixelsSqueezedToPriceDistance)
+			SqueezeHorizontalStep = 2;			// in BarWidthPixels
 			SqueezeHorizontalMouse1pxDistanceReceivedToOneStep = 5;
 			SqueezeHorizontalKeyOnePressReceivedToOneStep = 1;
 			TooltipPriceShow = true;
@@ -351,6 +352,7 @@ namespace Sq1.Charting {
 			ChartLabelsUpperLeftPlatePadding = 1;
 			ChartLabelsUpperLeftIndicatorSquarePadding = 4;
 			ChartLabelsUpperLeftIndicatorSquareSize = 5;
+			OnChartBarAnnotationsVerticalAwayFromPositionArrows = 3;
 		}
 		
 		public static Color ColorReverse(Color color) {

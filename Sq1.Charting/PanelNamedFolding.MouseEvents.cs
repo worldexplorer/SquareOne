@@ -68,6 +68,9 @@ namespace Sq1.Charting {
 		}
 		protected override void OnMouseUp(MouseEventArgs e) {
 			if (e.Button != MouseButtons.Left) return;
+			if (this.scrollingHorizontally || this.squeezingHorizontally || this.squeezingVertically) {
+				this.ChartControl.RaiseChartSettingsChangedContainerShouldSerialize();
+			}
 			this.dragButtonPressed = false;
 			this.scrollingHorizontally = false;
 			this.squeezingHorizontally = false;

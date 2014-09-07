@@ -35,7 +35,6 @@
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
     "SqueezeVerticalPaddingPx": 0,
-    "SqueezeVerticalPaddingStep": 1,
     "SqueezeHorizontalStep": 1,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
     "SqueezeHorizontalKeyOnePressReceivedToOneStep": 1,

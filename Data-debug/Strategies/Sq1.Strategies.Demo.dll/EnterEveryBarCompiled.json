@@ -23,6 +23,7 @@
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": true,
       "BacktestOnSelectorsChange": true,
+      "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
       },

@@ -57,7 +57,7 @@ namespace Sq1.Gui.Singletons {
 		}
 		ChartFormManager chartCreateShowPopulateSelectorsSlidersFromStrategy(Strategy strategy) {
 			ChartFormManager chartFormManager = new ChartFormManager();
-			chartFormManager.InitializeWithStrategy(this.mainForm, strategy);
+			chartFormManager.InitializeWithStrategy(this.mainForm, strategy, false);
 			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 			chartFormManager.ChartFormShow();
 			chartFormManager.StrategyCompileActivatePopulateSlidersShow();
@@ -76,7 +76,7 @@ namespace Sq1.Gui.Singletons {
 				//USELESS Assembler.PopupException("NO_ACTIVE_CHART_FORMS_IN_DOCUMENT_PANE_TO_LOAD_STRATEGY_INTO this.mainForm.ChartFormActive=null //StrategiesTree_OnStrategySelected(" + e.Strategy + ")");
 				return;
 			}
-			active.ChartFormManager.InitializeWithStrategy(this.mainForm, e.Strategy);
+			active.ChartFormManager.InitializeWithStrategy(this.mainForm, e.Strategy, false);
 		}
 		#endregion
 		
