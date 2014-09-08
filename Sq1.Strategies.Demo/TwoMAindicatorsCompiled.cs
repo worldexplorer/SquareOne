@@ -7,10 +7,12 @@ using Sq1.Core.StrategyBase;
 namespace Sq1.Strategies.Demo {
 	// REASON_TO_EXIST_NEW_FEATURE: pull indicator parameters onto ScriptContext's SteppingSliders
 	public class TwoMAindicatorsCompiled : Script {
+		// TODO: initialize MAslow.LineColor using an attribute? 
 		[IndicatorParameterAttribute(Name="Period",
 			ValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]
 		public IndicatorAverageMovingSimple MAslow { get; set; }
 
+		// TODO: show how to construct/tunnelParameters without Attribute
 		[IndicatorParameterAttribute(Name = "Period",
 			ValueCurrent = 15, ValueMin = 10, ValueMax = 20, ValueIncrement = 1)]
 		public IndicatorAverageMovingSimple MAfast { get; set; }
@@ -31,7 +33,7 @@ namespace Sq1.Strategies.Demo {
 			base.Executor.ChartShadow.BarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
 		}
 		void testBarAnnotations(Bar barStaticFormed) {
-			if (barStaticFormed.BarIndexAfterMidnightReceived == barStaticFormed.BarIndexAfterMarketOpenExpected) return; 
+			if (barStaticFormed.BarIndexAfterMidnightReceived == barStaticFormed.BarIndexExpectedSinceTodayMarketOpen) return; 
 			
 			int barIndex = barStaticFormed.ParentBarsIndex;
 			Font font = new Font("Arial", 7);
@@ -46,11 +48,11 @@ namespace Sq1.Strategies.Demo {
 			base.Executor.ChartShadow.BarAnnotationDrawModify(
 				barIndex, "annReceived" + barIndex, labelReceived, font, Color.Black, Color.Empty, evenAboveOddBelow);
 			
-			string labelExpAfterOpen = "ao" + barStaticFormed.BarIndexAfterMarketOpenExpected;
+			string labelExpAfterOpen = "ao" + barStaticFormed.BarIndexExpectedSinceTodayMarketOpen;
 			base.Executor.ChartShadow.BarAnnotationDrawModify(
 				barIndex, "annAfterOpen" + barIndex, labelExpAfterOpen, font, Color.Black, Color.Empty, evenAboveOddBelow);
 			
-			string labelExpBeforeClose = "bc" + barStaticFormed.BarIndexBeforeMarketCloseExpected;
+			string labelExpBeforeClose = "bc" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
 			base.Executor.ChartShadow.BarAnnotationDrawModify(
 				barIndex, "annBeforeClose" + barIndex, labelExpBeforeClose, font, Color.Black, Color.Empty, evenAboveOddBelow);
 		}

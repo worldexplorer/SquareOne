@@ -47,8 +47,7 @@ namespace Sq1.Core {
 		public bool MainFormDockFormsFullyDeserializedLayoutComplete = false;
 
 		private static Assembler instance = null;
-		public static Assembler InstanceInitialized {
-			get {
+		public static Assembler InstanceInitialized { get {
 				string usage = "; use Assembler.InstanceUninitialized.Initialize(MainForm); this singleton requires IStatusReporter to get fully initialized";
 				if (Assembler.instance == null) {
 					throw (new Exception("Assembler.instance=null" + usage));
@@ -57,27 +56,19 @@ namespace Sq1.Core {
 					throw (new Exception("Assembler.instance.StatusReporter=null" + usage));
 				}
 				return Assembler.instance;
-			}
-		}
+			} }
 		public static bool IsInitialized { get { return Assembler.instance.StatusReporter != null; } }
-
-		public static Assembler InstanceUninitialized {
-			get {
+		public static Assembler InstanceUninitialized { get {
 				if (Assembler.instance == null) {
 					Assembler.instance = new Assembler();
 				}
 				return instance;
-			}
-		}
-
-		public string AppStartupPath {
-			get {
+			} }
+		public string AppStartupPath { get {
 				string ret = Application.StartupPath;
 				if (ret.EndsWith(Path.DirectorySeparatorChar.ToString()) == false) ret += Path.DirectorySeparatorChar;
 				return ret;
-			}
-		}
-
+			} }
 #if DEBUG
 		// C:\Sq1\Data-debug
 		public readonly string DATA_FOLDER_DEBUG_RELEASE = ".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar
@@ -86,17 +77,12 @@ namespace Sq1.Core {
 		// C:\Sq1\Sq1.Gui\bin\Debug\Data
 		public readonly string DATA_FOLDER_DEBUG_RELEASE = "Data";
 #endif
-
-		public string AppDataPath {
-			get {
+		public string AppDataPath { get {
 				string ret = this.AppStartupPath + DATA_FOLDER_DEBUG_RELEASE;
 				//if (defined("DEBUG")) ret = Application.UserAppDataPath + "" + Path.DirectorySeparatorChar + "Data";
 				if (Directory.Exists(ret) == false) Directory.CreateDirectory(ret);
 				return ret;
-			}
-		}
-		
-		
+			} }
 //		[Obsolete("looks illogical, move IStatusReporter to Initialize() and use Assembler.InstanceInitialized instead of Assembler.Constructed")]
 //		protected Assembler(IStatusReporter mainForm) : this() {
 //			this.StatusReporter = mainForm;
@@ -122,12 +108,10 @@ namespace Sq1.Core {
 			this.AssemblerDataSnapshot = new AssemblerDataSnapshot();
 			this.AssemblerDataSnapshotSerializer = new Serializer<AssemblerDataSnapshot>();
 		}
-
 		public Assembler InitializedWithSame(IStatusReporter mainForm) {
 			if (this.StatusReporter == mainForm) return Assembler.InstanceInitialized;
 			return this.Initialize(mainForm);
 		}
-		
 		public Assembler Initialize(IStatusReporter mainForm) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
 				string msg = "Assembler.InstanceInitialized.StatusReporter[" + this.StatusReporter + "] != mainForm[" + mainForm + "]";
@@ -170,7 +154,6 @@ namespace Sq1.Core {
 			
 			return Assembler.InstanceInitialized;
 		}
-		
 		public static void PopupException(string msg, Exception ex = null) {
 			if (msg != null) ex = new Exception(msg, ex);
 			if (Assembler.InstanceInitialized == null) {

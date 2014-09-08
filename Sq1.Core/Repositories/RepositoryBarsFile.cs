@@ -138,14 +138,14 @@ namespace Sq1.Core.Repositories {
 			//allBars.DumpPartialInitFromStreamingBar(bar);
 
 			// this happens on a very first quote - this.pushBarToConsumers(StreamingBarFactory.LastBarFormed.Clone());
-			if (allBars.BarStaticLast.DateTimeOpen == barLastFormed.DateTimeOpen) return 0;
+			if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) return 0;
 
 			// not really needed to clone to save it in a file, but we became strict to eliminate other bugs
 			barLastFormed = barLastFormed.CloneDetached();
 
 			// SetParentForBackwardUpdateAutoindex used within Bar only()
 			//barLastFormed.SetParentForBackwardUpdateAutoindex(allBars);
-			if (allBars.BarStaticLast.DateTimeOpen == barLastFormed.DateTimeOpen) {
+			if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) {
 				return 0;
 			}
 

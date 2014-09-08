@@ -4,9 +4,9 @@
   "Name": "EnterEveryBarCompiled",
   "ScriptSourceCode": null,
   "DotNetReferences": null,
-  "DllPathIfNoSourceCode": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
+  "DllPathIfNoSourceCode": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
   "ExceptionsLimitToAbortBacktest": 10,
-  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json",
+  "StoredInJsonAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json",
   "ScriptContextCurrentName": "Default",
   "ScriptContextsByName": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
@@ -65,5 +65,28 @@
     }
   },
   "HasChartOnly": false,
-  "ScriptParametersByIdJSONcheck": "(verbose=0,test=0)"
+  "ScriptParametersByIdJSONcheck": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib",
+    "2": {
+      "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
+      "Id": 2,
+      "Name": "verbose",
+      "ReasonToExist": "",
+      "ValueMin": 0.0,
+      "ValueMax": 1.0,
+      "ValueIncrement": 1.0,
+      "ValueCurrent": 0.0
+    },
+    "1": {
+      "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
+      "Id": 1,
+      "Name": "test",
+      "ReasonToExist": "",
+      "ValueMin": 0.0,
+      "ValueMax": 10.0,
+      "ValueIncrement": 0.0,
+      "ValueCurrent": 0.0
+    }
+  },
+  "ScriptParametersAsStringByIdJSONcheck": "(verbose=0,test=0)"
 }

@@ -33,8 +33,7 @@ namespace Sq1.Core.DataTypes {
 		public Bar BarFirst { get { return (base.Count >= 1) ? this[0] : null; } }
 		public Bar BarLast { get { return (base.Count >= 1) ? this[this.Count - 1] : null; } }
 		public Bar BarPreLast { get { return (base.Count >= 2) ? this[this.Count - 2] : null; } }
-		public Bar this[int indexRequested] {
-			get {
+		public Bar this[int indexRequested] { get {
 				lock (this.LockBars) {
 					if (indexRequested < 0) return null;
 					if (indexRequested >= base.Count) return null;
@@ -55,8 +54,7 @@ namespace Sq1.Core.DataTypes {
 					if (string.IsNullOrEmpty(msg) == false) throw new Exception("BARS_UNSCALED[]_MUST_ALWAYS_RETURN_BAR_WITHOUT_NANS: " + msg);
 					return bar;
 				}
-			}
-		}
+			} }
 		protected object LockBars;
 		public BarsUnscaled(string symbol, string reasonToExist = "NOREASON") : base(new DateTimeAscending()) {
 			this.LockBars = new object();
@@ -82,14 +80,6 @@ namespace Sq1.Core.DataTypes {
 		public void RenameSymbol(string newSymbol) {
 			this.Symbol = newSymbol;
 		}
-//		protected virtual void BarCreateAppend(DateTime dateTime, double open, double high, double low, double close, double volume) {
-//			Bar barAdding = new Bar(this.Symbol, null, dateTime);
-//			this.BarAbsorbAppend(barAdding, open, high, low, close, volume);
-//		}
-//		protected virtual void BarAbsorbAppend(Bar barAdding, double open, double high, double low, double close, double volume) {
-//			barAdding.SetOHLCV(open, high, low, close, volume);
-//			this.BarAppend(barAdding);
-//		}
 		protected virtual void BarAppend(Bar barAdding) {
 			lock (this.LockBars) {
 				this.CheckThrowDateNotNullNotMinValue(barAdding);

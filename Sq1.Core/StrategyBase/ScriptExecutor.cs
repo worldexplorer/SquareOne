@@ -166,7 +166,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			} else {
 				try {
-					this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLast);
+					this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLastNullUnsafe);
 				} catch (Exception ex) {
 					string msig = " Script[" + this.Strategy.Script.GetType().Name + "].OnNewBarCallback(" + quote + "): ";
 					this.PopupException(ex.Message + msig, ex);
@@ -448,7 +448,7 @@ namespace Sq1.Core.StrategyBase {
 			List<Position> positionsClosedAfterAlertFilled = new List<Position>();
 
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerProvider knows to pass Bar here?...
-			Bar barFill = (this.IsStreaming) ? alertFilled.Bars.BarStreamingCloneReadonly : alertFilled.Bars.BarStaticLast;
+			Bar barFill = (this.IsStreaming) ? alertFilled.Bars.BarStreamingCloneReadonly : alertFilled.Bars.BarStaticLastNullUnsafe;
 			if (barFillRelno != barFill.ParentBarsIndex) {
 				string msg = "barFillRelno[" + barFillRelno + "] != barFill.ParentBarsIndex["
 					+ barFill.ParentBarsIndex + "]; barFill=[" + barFill + "]";
@@ -678,7 +678,7 @@ namespace Sq1.Core.StrategyBase {
 			//if (this.checkPositionCanBeClosed(alert, msig, checkPositionOpenNow) == false) return;
 
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerProvider knows to pass Bar here?...
-			Bar barFill = (this.IsStreaming) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLast;
+			Bar barFill = (this.IsStreaming) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingExitAlertClosePosition Forced";
 			// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR we can exit by TP or SL - position doesn't have an ExitAlert assigned until Position.EntryAlert was filled!!!
@@ -691,7 +691,7 @@ namespace Sq1.Core.StrategyBase {
 			string msig = "RemovePendingEntry(): ";
 
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerProvider knows to pass Bar here?...
-			Bar barFill = (this.IsStreaming) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLast;
+			Bar barFill = (this.IsStreaming) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingEntryAlertClosePosition Forced";
 		}
@@ -752,7 +752,7 @@ namespace Sq1.Core.StrategyBase {
 					return false;
 				}
 			} else {
-				Bar barFill = (this.IsStreaming) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLast;
+				Bar barFill = (this.IsStreaming) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
 				if (alert.PositionAffected.EntryFilledBarIndex != -1) {
 					string msg = "DUPE: can't do my job: alert.PositionAffected.EntryBar!=-1 for alert [" + alert + "]";
 					//throw new Exception(msig + msg);

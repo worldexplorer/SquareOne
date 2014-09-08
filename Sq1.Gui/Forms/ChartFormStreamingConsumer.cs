@@ -8,12 +8,15 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 
 namespace Sq1.Gui.Forms {
+	// ANY_STRATEGY_WILL_RUN_WITH_A_CHART_ITS_NOT_A_SERVER_APPLICATION
 	public class ChartFormStreamingConsumer : IStreamingConsumer {
 		//public event EventHandler<BarEventArgs> NewBar;
 		//public event EventHandler<QuoteEventArgs> NewQuote;
 		//public event EventHandler<BarsEventArgs> BarsLocked;
 		ChartFormManager chartFormManager;
 		string msigForNpExceptions = "Failed to StartStreaming(): ";
+
+		// CASCADED_INITIALIZATION_ALL_CHECKING_CONSISTENCY_FROM_ONE_METHOD begin
 		ChartFormManager ChartFormManager { get {
 				var ret = this.chartFormManager; 
 				this.actionForNullPointer(ret, "this.chartFormsManager=null");
@@ -54,11 +57,11 @@ namespace Sq1.Gui.Forms {
 				}
 				return ret;
 			} }
-		BarDataRange DataRange { get {
-				var ret = this.ScriptContextCurrent.DataRange;
-				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Strategy.ScriptContextCurrent.DataRange=null");
-				return ret;
-			} }
+//		BarDataRange DataRange { get {
+//				var ret = this.ScriptContextCurrent.DataRange;
+//				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Strategy.ScriptContextCurrent.DataRange=null");
+//				return ret;
+//			} }
 		DataSource DataSource { get {
 				var ret = this.Executor.DataSource;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource=null");
@@ -95,10 +98,12 @@ namespace Sq1.Gui.Forms {
 				return ret;
 			} }
 		Bar LastStaticBar { get {
-				var ret = this.Bars.BarStaticLast;
+				var ret = this.Bars.BarStaticLastNullUnsafe;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Bars.LastStaticBar=null");
 				return ret;
 			} }
+		// CASCADED_INITIALIZATION_ALL_CHECKING_CONSISTENCY_FROM_ONE_METHOD end
+		
 		void actionForNullPointer(object mustBeInstance, string msgIfNull) {
 			if (mustBeInstance != null) return;
 			this.action(msgIfNull);

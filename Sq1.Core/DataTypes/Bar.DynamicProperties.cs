@@ -14,15 +14,15 @@ namespace Sq1.Core.DataTypes {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsLastStaticBar: Bar[" + this + "].HasParentBars=false");
 				}
-				return this == this.ParentBars.BarStaticLast;
+				return this == this.ParentBars.BarStaticLastNullUnsafe;
 			} }
 		[JsonIgnore] public bool IsBarStaticFirst { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsFirstStaticBar: Bar[" + this + "].HasParentBars=false");
 				}
-				return this == this.ParentBars.BarStaticFirst;
+				return this == this.ParentBars.BarStaticFirstNullUnsafe;
 			} }
-		[JsonIgnore] public Bar BarPrevious { get {
+		[JsonIgnore] public Bar BarPreviousNullUnsafe { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
 				}
@@ -31,7 +31,7 @@ namespace Sq1.Core.DataTypes {
 				}
 				return this.ParentBars[this.ParentBarsIndex - 1];
 			} }
-		[JsonIgnore] public Bar BarNext { get {
+		[JsonIgnore] public Bar BarNextNullUnsafe { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarNext: Bar[" + this + "].HasParentBars=false");
 				}
@@ -40,98 +40,57 @@ namespace Sq1.Core.DataTypes {
 				}
 				return this.ParentBars[this.ParentBarsIndex + 1];
 			} }
-		[JsonIgnore] public Bar BarFirstForCurrentTradingDay { get {
-				return this.ParentBars.ScanBackwardsFindBarFirstForCurrentTradingDay(this);
+		[JsonIgnore] public DateTime DateTimeExpectedMarketOpenedTodayBasedOnMarketInfo { get {
+				if (this.HasParentBars == false) {
+					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
+				}
+				DateTime marketOpenServerTime = this.ParentBars.MarketInfo.MarketOpenServerTime;
+				if (marketOpenServerTime == DateTime.MinValue) return DateTime.MinValue;
+				DateTime todayMarketOpenServerTime = this.ParentBars.CombineBarDateWithMarketOpenTime(this.DateTimeOpen, marketOpenServerTime);
+				return todayMarketOpenServerTime;
+			} }
+		[JsonIgnore] public int BarIndexExpectedMarketOpenedTodayBasedOnMarketInfo { get {
+				if (this.HasParentBars == false) {
+					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
+				}
+				DateTime todayMarketOpenServerTime = this.DateTimeExpectedMarketOpenedTodayBasedOnMarketInfo;
+				return -1;
+			} }
+		[JsonIgnore] public Bar BarMarketOpenedTodayScanBackwardIgnoringMarketInfo { get {
+				// I_CAN_NOT_JUST_ADD_DATES_BECAUSE_MARKETINFO_HAS_MARKET_OPEN_TIME_BUT_BAR_MAY_NOT_EXIST
+				return this.ParentBars.ScanBackwardFindBarMarketOpenedToday(this);
+			} }
+		[JsonIgnore] public Bar BarMarketClosedTodayScanForwardIgnoringMarketInfo { get {
+				return this.ParentBars.ScanForwardFindBarMarketClosedToday(this);
+			} }
+		[JsonIgnore] public int BarIndexExpectedMarketClosesToday { get {
+				return this.ParentBars.SuggestBarIndexExpectedMarketClosesToday(this);
 			} }
 		[JsonIgnore] public int BarIndexAfterMidnightReceived { get {
-				return this.ParentBarsIndex - this.BarFirstForCurrentTradingDay.ParentBarsIndex;
+				return this.ParentBarsIndex - this.BarMarketOpenedTodayScanBackwardIgnoringMarketInfo.ParentBarsIndex;
 			} }
-		[JsonIgnore] public int BarIndexAfterMarketOpenExpected { get {
+		[JsonIgnore] public int BarIndexExpectedSinceTodayMarketOpen { get {
 				int ret = -1;
 				if (this.HasParentBars == false) return ret;
-				if (this.ParentBars.MarketInfo == null) return ret;
-				// v1: MarketInfo.MarketOpenServerTime may contain only Hour:Minute:Second and all the rest is 01-Jan-01 => use than ReplaceTimeOpenWith() 
-				//DateTime marketOpenServerTime = this.ParentBars.MarketInfo.MarketOpenServerTime;
-				//if (marketOpenServerTime == DateTime.MinValue) return ret;
-				//DateTime todayMarketOpenServerTime = marketOpenServerTime;
-				//todayMarketOpenServerTime.AddYears(this.DateTimeOpen.Year);
-				//todayMarketOpenServerTime.AddMonths(this.DateTimeOpen.Month);
-				//todayMarketOpenServerTime.AddDays(this.DateTimeOpen.Day);
-				//v2
-				// TODO: use Weekends, year-dependent irregular Holidays and MarketClosedForClearing hours
-				// TODO: this calculation is irrelevant for FOREX since it doesn't interrupt overnight
-				MarketInfo marketInfo = this.ParentBars.MarketInfo;
-				DateTime marketOpenServerTime = marketInfo.MarketOpenServerTime;
-				if (marketOpenServerTime == DateTime.MinValue) return ret;
-				DateTime todayMarketOpenServerTime = this.ReplaceTimeOpenWith(marketOpenServerTime);
-				if (this.DateTimeOpen < todayMarketOpenServerTime) {
-					string msg = "BAR_INVALID_MARKET_IS_NOT_OPEN_YET bar.DateTimeOpen[" + this.DateTimeOpen + 
-						"] while MarketInfo.MarketOpenServerTime[" + this.ParentBars.MarketInfo.MarketOpenServerTime + "]";
-					Assembler.PopupException(msg);
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					return ret;
-				}
-				//FIRST_BAR_WILL_BECOME_ZERO ret = 0;
-				TimeSpan distanceBetweenBars = this.ParentBars.ScaleInterval.AsTimeSpan;
-				int barsMaxDayCanFit = this.ParentBars.BarsMaxDayCanFit;
-				for (DateTime forwardFromMarketOpenToCurrentBar = todayMarketOpenServerTime;
-				     		  forwardFromMarketOpenToCurrentBar <= this.DateTimeOpen;
-				     		  forwardFromMarketOpenToCurrentBar = forwardFromMarketOpenToCurrentBar.Add(distanceBetweenBars)) {
-					if (ret > barsMaxDayCanFit) {
-						#if DEBUG
-						Debugger.Break();
-						#endif
-						return ret;
-					}
-					DateTime nextBarWillOpen = forwardFromMarketOpenToCurrentBar.Add(distanceBetweenBars);
-					if (marketInfo.IsMarketOpenDuringDateIntervalServerTime(forwardFromMarketOpenToCurrentBar, nextBarWillOpen) == false) continue;
-					ret++;	//FIRST_BAR_WILL_BECOME_ZERO
-				}
-				return ret;
+				ret = this.ParentBars.BarIndexSinceTodayMarketOpenSuggestForwardForDateEarlierOrEqual(this.DateTimeOpen);
+				return ret; 
 			} }
-		[JsonIgnore] public int BarIndexBeforeMarketCloseExpected { get {
+		[JsonIgnore] public int BarIndexExpectedMarketClosesTodaySinceMarketOpen { get {
 				int ret = -1;
 				if (this.HasParentBars == false) return ret;
-				if (this.ParentBars.MarketInfo == null) return ret;
-				// TODO: use Weekends, year-dependent irregular Holidays and MarketClosedForClearing hours
-				// TODO: this calculation is irrelevant for FOREX since it doesn't interrupt overnight 
-				MarketInfo marketInfo = this.ParentBars.MarketInfo;
-				DateTime marketCloseServerTime = marketInfo.MarketCloseServerTime;
-				if (marketCloseServerTime == DateTime.MinValue) return ret;
-				DateTime todayMarketCloseServerTime = this.ReplaceTimeOpenWith(marketCloseServerTime);
-				if (this.DateTimeOpen > todayMarketCloseServerTime) {
-					string msg = "BAR_INVALID_MARKET_IS_ALREADY_CLOSED bar.DateTimeOpen[" + this.DateTimeOpen + 
-						"] while MarketInfo.MarketCloseServerTime[" + this.ParentBars.MarketInfo.MarketCloseServerTime + "]";
-					Assembler.PopupException(msg);
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					return ret;
-				}
-				//FIRST_BAR_WILL_BECOME_ZERO ret = 0;
-				TimeSpan distanceBetweenBars = this.ParentBars.ScaleInterval.AsTimeSpan;
-				int barsMaxDayCanFit = this.ParentBars.BarsMaxDayCanFit;
-				for (DateTime backFromDayCloseToCurrentBar = todayMarketCloseServerTime;
-				     		  backFromDayCloseToCurrentBar > this.DateTimeOpen;
-				     		  backFromDayCloseToCurrentBar = backFromDayCloseToCurrentBar.Subtract(distanceBetweenBars)) {
-					if (ret > barsMaxDayCanFit) {
-						#if DEBUG
-						Debugger.Break();
-						#endif
-						return ret;
-					}
-					DateTime thisBarWillOpen = backFromDayCloseToCurrentBar.Subtract(distanceBetweenBars);
-					if (marketInfo.IsMarketOpenDuringDateIntervalServerTime(thisBarWillOpen, backFromDayCloseToCurrentBar) == false) continue;
-					ret++;	//FIRST_BAR_WILL_BECOME_ZERO
-				}
-				return ret;
-			} }
-		public DateTime ReplaceTimeOpenWith(DateTime marketOpenCloseIntradayTime) {
-			DateTime ret = new DateTime(this.DateTimeOpen.Year, this.DateTimeOpen.Month, this.DateTimeOpen.Day,
-				marketOpenCloseIntradayTime.Hour, marketOpenCloseIntradayTime.Minute, marketOpenCloseIntradayTime.Second);
-			return ret;
+				ret = this.ParentBars.BarIndexExpectedMarketClosesTodaySinceMarketOpenSuggestBackwardForDateLaterOrEqual(this.DateTimeOpen);
+				return ret; 
+			}}
+//		public DateTime ReplaceTimeOpenWith(DateTime marketOpenCloseIntradayTime) {
+//			DateTime ret = new DateTime(this.DateTimeOpen.Year, this.DateTimeOpen.Month, this.DateTimeOpen.Day,
+//				marketOpenCloseIntradayTime.Hour, marketOpenCloseIntradayTime.Minute, marketOpenCloseIntradayTime.Second);
+//			return ret;
+//		}
+		public DateTime AddBarIntervalsToDate(int howManyBarsToAdd) {
+			if (this.HasParentBars == false) {
+				throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
+			}
+			return this.ParentBars.AddBarIntervalsToDate(this.DateTimeOpen, howManyBarsToAdd);
 		}
 	}
 }

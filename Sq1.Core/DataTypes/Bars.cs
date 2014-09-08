@@ -6,7 +6,7 @@ using Sq1.Core.Repositories;
 
 namespace Sq1.Core.DataTypes {
 	[DataContract]	// prevents serialization in JSON of the underlying bars
-	public class Bars : BarsUnscaled {
+	public partial class Bars : BarsUnscaled {
 		public static int InstanceAbsno = 0;
 
 		public event EventHandler<BarEventArgs> BarStaticAdded;
@@ -23,8 +23,7 @@ namespace Sq1.Core.DataTypes {
 		public string SymbolIntervalScale { get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
 
 		public Bar BarStreaming { get; private set; }
-		public Bar BarStreamingCloneReadonly {
-			get {
+		public Bar BarStreamingCloneReadonly { get {
 				//v1
 //				Bar lastStatic = this.BarStaticLast;
 //				DateTime lastStaticOrServerNow = (lastStatic != null)
@@ -42,26 +41,7 @@ namespace Sq1.Core.DataTypes {
 				//v2
 				if (this.BarStreaming == null) return null;
 				return this.BarStreaming.Clone();
-			}
-		}
-		public Bar BarStaticFirst { get {
-				Bar last = base.BarFirst;
-				if (last == null) return null; 
-				if (last != this.BarStreaming) return last;
-				return null;
-				//throw new Exception("Bars.BarLast point to Bars.StreamingBar???");
 			} }
-		public Bar BarStaticLast { get {
-				Bar last = base.BarLast;
-				if (last == null) return null; 
-				if (last != this.BarStreaming) return last;
-				Bar preLast = base.BarPreLast;
-				if (preLast == null) return null;
-				if (preLast != this.BarStreaming) return preLast;
-				//return null;
-				throw new Exception("both Bars.BarLast and Bars.BarPreLast point to Bars.StreamingBar???");
-			}
-		}
 		private Bars(string symbol, string reasonToExist = "NOREASON") : base(symbol, reasonToExist) {
 			ScaleInterval = new BarScaleInterval(BarScale.Unknown, 0);
 			SymbolHumanReadable = "";
@@ -184,7 +164,6 @@ namespace Sq1.Core.DataTypes {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		
 		public void OverrideStreamingDOHLCVwith(Bar bar) {
 			if (bar == null) {
 				string msg = "I_DONT_ACCEPT_NULL_BARS_TO OverrideStreamingDOHLCVwith(" + bar + ")";
@@ -198,26 +177,11 @@ namespace Sq1.Core.DataTypes {
 			this.BarStreaming.AbsorbOHLCVfrom(bar);
 			this.RaiseBarStreamingUpdated(this.BarStreamingCloneReadonly);	// freeze changes in the clone so that subscribers get the same StreamingBar
 		}
-
-		public bool IsLastBarOfDay(int barNum) {
-			if (this.IsIntraday == false) return false;
-			if (barNum < base.Count - 1) {
-				return base[barNum].DateTimeOpen.Date != base[barNum + 1].DateTimeOpen.Date;
-			}
-			DateTime dateTime = base[barNum].DateTimeOpen;
-			for (int i = barNum - 1; i >= 0; i--) {
-				if (base[i].DateTimeOpen.Date != base[i + 1].DateTimeOpen.Date) {
-					DateTime dateTime2 = base[i].DateTimeOpen;
-					return dateTime2.Hour == dateTime.Hour && dateTime2.Minute == dateTime.Minute;
-				}
-			}
-			return false;
-		}
 		public override string ToString() {
 			string ret = this.SymbolIntervalScale + base.Count + "bars";
 			if (base.Count > 0) {
 				try {
-					Bar barLastStatic = this.BarStaticLast;
+					Bar barLastStatic = this.BarStaticLastNullUnsafe;
 					ret += " LastStaticClose=[" + this.ValueFormatted(barLastStatic.Close) + "] @[" + barLastStatic.DateTimeOpen + "]";
 				} catch (Exception e) {
 					ret += " BARS_STATIC[" + (base.Count - 1) + "]_EXCEPTION";
@@ -245,8 +209,8 @@ namespace Sq1.Core.DataTypes {
 				bars.Symbol == this.Symbol
 				&& bars.ScaleInterval == this.ScaleInterval
 				&& bars.Count == base.Count
-				&& bars.BarStaticFirst.ToString() == this.BarStaticFirst.ToString()
-				&& bars.BarStaticLast.ToString() == this.BarStaticLast.ToString()
+				&& bars.BarStaticFirstNullUnsafe.ToString() == this.BarStaticFirstNullUnsafe.ToString()
+				&& bars.BarStaticLastNullUnsafe.ToString() == this.BarStaticLastNullUnsafe.ToString()
 			);
 			return identicalContent;
 			//return (barsAsString == thisAsString);
@@ -354,30 +318,5 @@ namespace Sq1.Core.DataTypes {
 			}
 			return barsConverted;
 		}
-		public Bar ScanBackwardsFindBarFirstForCurrentTradingDay(Bar startScanFrom) {
-			Bar ret = startScanFrom;
-			if (this.ContainsKey(startScanFrom.DateTimeOpen) == false) {
-				#if DEBUG
-				string msg = "BARS_DOEST_CONTAIN_THE_DATEOPEN_OF_ITSOWN_BAR_ADDING_SHOULDVE_DONE_A_BETTER_JOB_AND_THROW_OR_ROUND";
-				Assembler.PopupException(msg);
-				#endif
-			}
-			int indexToStartScanningBackwards = this.IndexOfKey(startScanFrom.DateTimeOpen);
-			for (int i = indexToStartScanningBackwards; i >= 0; i--) {
-				Bar eachBarBackwards = this[i];
-				// stop scanning when we hit yesterday; then in RET we'll get lastKnownSameDayBar
-				if (eachBarBackwards.DateTimeOpen.Day	< startScanFrom.DateTimeOpen.Day) break;
-				if (eachBarBackwards.DateTimeOpen.Month	< startScanFrom.DateTimeOpen.Month) break;
-				if (eachBarBackwards.DateTimeOpen.Year	< startScanFrom.DateTimeOpen.Year) break;
-				ret = eachBarBackwards;
-			}
-			return ret;
-		}
-		public int BarsMaxDayCanFit { get {
-				int ret = 0;
-				TimeSpan wholeDay = new TimeSpan(24, 0, 0);
-				ret = (int) (wholeDay.TotalSeconds / this.ScaleInterval.AsTimeSpan.TotalSeconds);
-				return ret;
-			} }
 	}
 }

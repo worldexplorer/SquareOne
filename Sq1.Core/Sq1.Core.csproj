@@ -92,6 +92,9 @@
     <Compile Include="DataTypes\Bar.DynamicProperties.cs">
       <DependentUpon>Bar.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataTypes\Bars.DynamicProperties.cs">
+      <DependentUpon>Bars.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataTypes\BarsUnscaled.cs" />
     <Compile Include="DoubleBuffered\PanelDoubleBuffered.cs">
       <SubType>Component</SubType>

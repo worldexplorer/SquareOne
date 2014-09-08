@@ -14,21 +14,14 @@ namespace Sq1.Core.DataTypes {
 		public int IntraBarSerno;
 		//public int Absno { get { return AbsnoStaticCounter; } }		// I want a class var for furhter easy access despite it looks redundant
 		public int Absno;
-		[Obsolete]
-		protected static int AbsnoStaticCounter = 0;
+		[Obsolete] protected static int AbsnoStaticCounter = 0;
 
 		public Bar ParentStreamingBar { get; protected set; }
-		public bool HasParentBar {
-			get { return this.ParentStreamingBar != null; }
-		}
-		public string ParentBarIdent {
-			get { return (this.HasParentBar) ? this.ParentStreamingBar.ParentBarsIdent : "NO_PARENT_BAR"; }
-		}
+		public bool HasParentBar { get { return this.ParentStreamingBar != null; } }
+		public string ParentBarIdent { get { return (this.HasParentBar) ? this.ParentStreamingBar.ParentBarsIdent : "NO_PARENT_BAR"; } }
 
-		[Obsolete]
-		public double PreviousClose;
-		[Obsolete]
-		public double Open;
+		[Obsolete] public double PreviousClose;
+		[Obsolete] public double Open;
 
 		public static int IntraBarSernoShiftForGeneratedTowardsPendingFill = 100000;
 

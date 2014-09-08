@@ -24,14 +24,17 @@ namespace Sq1.Core.StrategyBase {
 				string substr = this.DllPathIfNoSourceCode.Substring(DllPathIfNoSourceCode.Length - 4);
 				return substr.ToUpper() == ".DLL";
 			} }
-		public bool HasChartOnly { get { return string.IsNullOrEmpty(this.StoredInFolderRelName); } }
+					 public bool HasChartOnly { get { return string.IsNullOrEmpty(this.StoredInFolderRelName); } }
 		[JsonIgnore] public Script Script;
-		public string ScriptParametersByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
-				if (this.Script == null) return null;
-				return this.Script.ParametersAsString;
-			} }
-		public string ScriptContextCurrentName;	// if you restrict SET, serializer won't be able to restore from JSON { get; private set; }
-		public Dictionary<string, ContextScript> ScriptContextsByName;
+					 public Dictionary<int, ScriptParameter> ScriptParametersByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+							return this.Script.ParametersById;
+						} }
+					 public string ScriptParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+							if (this.Script == null) return null;
+							return this.Script.ParametersAsString;
+						} }
+					 public string ScriptContextCurrentName;	// if you restrict SET, serializer won't be able to restore from JSON { get; private set; }
+					 public Dictionary<string, ContextScript> ScriptContextsByName;
 		[JsonIgnore] public ContextScript ScriptContextCurrent { get {
 				if (this.ScriptContextsByName.ContainsKey(ScriptContextCurrentName) == false)  {
 					string msg = "ScriptContextCurrentName[" + ScriptContextCurrentName + "] doesn't exist in Strategy[" + this + "]";

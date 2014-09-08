@@ -12,8 +12,8 @@ namespace Sq1.Core.Streaming {
 		Dictionary<IStreamingConsumer, StreamingEarlyBinder> earlyBinders;
 		List<IStreamingConsumer> consumersQuote;
 		List<IStreamingConsumer> consumersBar;
-		Object lockConsumersQuote = new Object();
-		Object lockConsumersBar = new Object();
+		object lockConsumersQuote = new Object();
+		object lockConsumersBar = new Object();
 		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval) {
 			Symbol = symbol;
 			ScaleInterval = scaleInterval;
@@ -83,8 +83,8 @@ namespace Sq1.Core.Streaming {
 					}
 				}
 				if (consumer.ConsumerBarsToAppendInto != null
-					&& consumer.ConsumerBarsToAppendInto.BarStaticLast != null
-					&& consumer.ConsumerBarsToAppendInto.BarStaticLast.DateTimeOpen == barStreamingUnattached.DateTimeOpen) {
+					&& consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe != null
+					&& consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe.DateTimeOpen == barStreamingUnattached.DateTimeOpen) {
 					string msg = "we are on 1st ever streaming quote: probably shouln't add it to avoid ALREADY_HAVE exception";
 					continue;
 				}
@@ -97,7 +97,7 @@ namespace Sq1.Core.Streaming {
 				//Assembler.PopupException(msg1);
 				try {
 					//NOPE_FRESH_STREAMING_CONTAINING_JUST_ONE_QUOTE_I_WILL_POKE_QUOTES_FROM_IT consumer.ConsumeBarLastFormed(barLastFormedBound);
-					consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(consumer.ConsumerBarsToAppendInto.BarStaticLast);
+					consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe);
 				} catch (Exception e) {
 					string msg = "BarConsumer " + nth + ": missed bar [" + barStreamingUnattached + "]: " + consumer;
 					throw new Exception(msg, e);

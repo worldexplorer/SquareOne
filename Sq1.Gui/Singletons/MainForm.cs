@@ -41,7 +41,6 @@ namespace Sq1.Gui.Singletons {
 			}
 		}
 
-
 		public MainForm() {
 			InitializeComponent();
 			try {

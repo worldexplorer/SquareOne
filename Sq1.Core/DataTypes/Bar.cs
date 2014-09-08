@@ -107,14 +107,6 @@ namespace Sq1.Core.DataTypes {
 			this.ParentBars = parentBars;
 			this.ParentBarsIndex = parentBarsIndex;
 		}
-		public void RoundDateDownInitTwoAuxDates(DateTime dateTimeOpen) {
-			this.DateTimeOpen = roundDateDownToMyInterval(dateTimeOpen);
-			///if (this.DateTimeOpen.CompareTo(dateTimeOpen) == 0) {
-			//	int a = 1;
-			//}
-			this.DateTimeNextBarOpenUnconditional = this.addIntervalsToDate(this.DateTimeOpen, 1);
-			this.DateTimePreviousBarOpenUnconditional = this.addIntervalsToDate(this.DateTimeOpen, -1);
-		}
 		public Bar Clone() {
 			return (Bar)this.MemberwiseClone();
 		}
@@ -181,9 +173,20 @@ namespace Sq1.Core.DataTypes {
 			msg = "lastStaticBar.DOHLCV=barAdding.DOHLCV";
 			return true;
 		}
-		DateTime addIntervalsToDate(DateTime dateTime1, int intervalMultiplier) {
+		#region THIS_ISNT_IN_BARS_BECAUSE_UNATTACHED_STREAMING_BAR_SHOULD_HAVE_ITS_OWN_BRAIN_BUT_OTHERWIZE_BARS_SHOULD_BE_BAR_FACTORY
+		// DataSeriesTimeBased contains this method, too
+		public void RoundDateDownInitTwoAuxDates(DateTime dateTimeOpen) {
+			this.DateTimeOpen = roundDateDownToMyInterval(dateTimeOpen);
+			///if (this.DateTimeOpen.CompareTo(dateTimeOpen) == 0) {
+			//	int a = 1;
+			//}
+			this.DateTimeNextBarOpenUnconditional = this.addIntervalsToDate(this.DateTimeOpen, 1);
+			this.DateTimePreviousBarOpenUnconditional = this.addIntervalsToDate(this.DateTimeOpen, -1);
+		}
+		// DataSeriesTimeBased contains this method, too
+		DateTime addIntervalsToDate(DateTime dateTimeToAddIntervalsTo, int intervalMultiplier) {
 			if (this.DateTimeOpen == DateTime.MinValue) return DateTime.MinValue;
-			DateTime dateTime = roundDateDownToMyInterval(dateTime1);
+			DateTime dateTime = roundDateDownToMyInterval(dateTimeToAddIntervalsTo);
 			int addTimeIntervals = this.ScaleInterval.Interval * intervalMultiplier;
 			switch (this.ScaleInterval.Scale) {
 				case BarScale.Tick:
@@ -218,9 +221,10 @@ namespace Sq1.Core.DataTypes {
 			}
 			return dateTime;
 		}
-		DateTime roundDateDownToMyInterval(DateTime dateTime1) {
-			if (this.ScaleInterval == null) throw new Exception("ScaleInterval=null in roundDateDownToInterval(" + dateTime1 + ")");
-			DateTime dateTime = new DateTime(dateTime1.Ticks);
+		// DataSeriesTimeBased contains this method, too
+		DateTime roundDateDownToMyInterval(DateTime dateTimeToRoundDown) {
+			if (this.ScaleInterval == null) throw new Exception("ScaleInterval=null in roundDateDownToInterval(" + dateTimeToRoundDown + ")");
+			DateTime dateTime = new DateTime(dateTimeToRoundDown.Ticks);
 			switch (this.ScaleInterval.Scale) {
 				case BarScale.Tick:
 					throw new ArgumentException("Tick scale is not supported");
@@ -258,6 +262,7 @@ namespace Sq1.Core.DataTypes {
 			}
 			return dateTime;
 		}
+		#endregion
 		public void MergeExpandHLCVwhileCompressingManyBarsToOne(Bar bar) {
 			if (bar.High > this.High) this.High = bar.High;
 			if (bar.Low < this.Low) this.Low = bar.Low;

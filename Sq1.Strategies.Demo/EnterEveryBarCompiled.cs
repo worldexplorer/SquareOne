@@ -69,7 +69,7 @@ namespace Sq1.Strategies.Demo {
 				Bar bar = quote.ParentStreamingBar;
 				int barNo = bar.ParentBarsIndex;
 				if (barNo == -1) return;
-				DateTime lastStaticBarDateTime = bar.ParentBars.BarStaticLast.DateTimeOpen;
+				DateTime lastStaticBarDateTime = bar.ParentBars.BarStaticLastNullUnsafe.DateTimeOpen;
 				DateTime streamingBarDateTime = bar.DateTimeOpen;
 				Bar barNormalizedDateTimes = new Bar(bar.Symbol, bar.ScaleInterval, quote.ServerTime);
 				DateTime thisBarDateTimeOpen = barNormalizedDateTimes.DateTimeOpen;
@@ -194,7 +194,7 @@ namespace Sq1.Strategies.Demo {
 			int barIndex = barStaticFormed.ParentBarsIndex;
 			string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
 			labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
-			labelText += barStaticFormed.BarIndexAfterMarketOpenExpected + ":" + barStaticFormed.BarIndexBeforeMarketCloseExpected;
+			labelText += barStaticFormed.BarIndexExpectedSinceTodayMarketOpen + ":" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
 			Font font = new Font("Consolas", 7);
 			//bool evenAboveOddBelow = true;
 			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;

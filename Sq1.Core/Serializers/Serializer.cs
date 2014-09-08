@@ -40,7 +40,7 @@ namespace Sq1.Core.Serializers {
 		public Action<T> ActionAfterDeserialized;
 
 		public Serializer(IStatusReporter statusReporter = null) {
-			this.Entity = new T();			
+			this.Entity = new T();
 			this.StatusReporter = statusReporter;
 		}
 		public bool Initialize(string rootPath, string relFname,

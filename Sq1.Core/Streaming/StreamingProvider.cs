@@ -29,16 +29,14 @@ namespace Sq1.Core.Streaming {
 		public StreamingDataSnapshot StreamingDataSnapshot { get; protected set; }
 		public virtual List<string> SymbolsUpstreamSubscribed { get; private set; }
 		protected Object SymbolsSubscribedLock = new Object();
-		public virtual string SymbolsUpstreamSubscribedAsString {
-			get {
+		public virtual string SymbolsUpstreamSubscribedAsString { get {
 				string ret = "";
 				lock (SymbolsSubscribedLock) {
 					foreach (string symbol in SymbolsUpstreamSubscribed) ret += symbol + ",";
 				}
 				ret = ret.TrimEnd(',');
 				return ret;
-			}
-		}
+			} }
 
 		protected Object BarsConsumersLock = new Object();
 
@@ -255,15 +253,15 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
-			if (streamingBar.DateTimeOpen != chartBars.BarStaticLast.DateTimeNextBarOpenUnconditional) {
-				if (streamingBar.DateTimeOpen == chartBars.BarStaticLast.DateTimeOpen) {
+			if (streamingBar.DateTimeOpen != chartBars.BarStaticLastNullUnsafe.DateTimeNextBarOpenUnconditional) {
+				if (streamingBar.DateTimeOpen == chartBars.BarStaticLastNullUnsafe.DateTimeOpen) {
 					string msg = "STREAMINGBAR_OVERWROTE_LASTBAR streamingBar.DateTimeOpen[" + streamingBar.DateTimeOpen
-						+ "] == this.LastStaticBar.DateTimeOpen[" + chartBars.BarStaticLast.DateTimeOpen + "] " + chartBars;
+						+ "] == this.LastStaticBar.DateTimeOpen[" + chartBars.BarStaticLastNullUnsafe.DateTimeOpen + "] " + chartBars;
 					//log.Error(msg);
 				} else {
 					string msg = "STREAMINGBAR_OUTDATED streamingBar.DateTimeOpen[" + streamingBar.DateTimeOpen
 						+ "] != chartBars.LastStaticBar.DateTimeNextBarOpenUnconditional["
-						+ chartBars.BarStaticLast.DateTimeNextBarOpenUnconditional + "] " + chartBars;
+						+ chartBars.BarStaticLastNullUnsafe.DateTimeNextBarOpenUnconditional + "] " + chartBars;
 					//log.Error(msg);
 				}
 			}

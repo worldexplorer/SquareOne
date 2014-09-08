@@ -65,7 +65,7 @@ namespace Sq1.Core.Repositories {
 				}
 				return ret;
 			} }
-		public RepositoryBarsSameScaleInterval(string dataSourceAbspath, BarScaleInterval scaleInterval, bool createNonExistingSubfolder = true, string extension = "BAR") {
+		public RepositoryBarsSameScaleInterval(string dataSourceAbspath, BarScaleInterval scaleInterval, bool createNonExistingSubfolder = true, string extension = "bar") {
 			this.DataSourceAbspath = dataSourceAbspath;
 			//if (this.FolderWithSymbolFiles.EndsWith(Path.DirectorySeparatorChar) == false) this.FolderWithSymbolFiles += Path.DirectorySeparatorChar;
 			if (Directory.Exists(this.DataSourceAbspath) == false) Directory.CreateDirectory(this.DataSourceAbspath);

@@ -89,7 +89,7 @@ namespace Sq1.Strategies.Demo {
 		}
 
 		void drawLinesSample(Bar barStaticFormed) {
-			Bar barFirstForCurrentTradingDay = barStaticFormed.BarFirstForCurrentTradingDay;
+			Bar barFirstForCurrentTradingDay = barStaticFormed.BarMarketOpenedTodayScanBackwardIgnoringMarketInfo;
 			double dayOpenedAtPrice = barFirstForCurrentTradingDay.Open;
 			
 			// one line is drawn across one day regardless of timeframe: just the date is enough to "address" the line 
@@ -126,8 +126,8 @@ namespace Sq1.Strategies.Demo {
 
 			if (base.Bars.Count == base.Executor.Backtester.BarsOriginal.Count) {
 				base.Executor.ChartShadow.LineDrawModify("acrossAllBars",
-					0, base.Bars.BarStaticFirst.Open,
-					base.Bars.BarStaticLast.ParentBarsIndex, base.Bars.BarStaticLast.Open,
+					0, base.Bars.BarStaticFirstNullUnsafe.Open,
+					base.Bars.BarStaticLastNullUnsafe.ParentBarsIndex, base.Bars.BarStaticLastNullUnsafe.Open,
 					Color.Goldenrod, 1);
 			}
 		}
@@ -139,7 +139,7 @@ namespace Sq1.Strategies.Demo {
 			int barIndex = barStaticFormed.ParentBarsIndex;
 			string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
 			labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
-			labelText += barStaticFormed.BarIndexAfterMarketOpenExpected + ":" + barStaticFormed.BarIndexBeforeMarketCloseExpected;
+			labelText += barStaticFormed.BarIndexExpectedSinceTodayMarketOpen + ":" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
 			Font font = new Font("Arial", 6);
 			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
 			base.Executor.ChartShadow.BarAnnotationDrawModify(
