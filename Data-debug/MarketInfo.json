@@ -5,7 +5,7 @@
     "Name": "MOCK",
     "Description": "23:59 hours open",
     "MarketOpenServerTime": "2014-09-07T00:00:00",
-    "MarketCloseServerTime": "2014-09-07T23:40:00",
+    "MarketCloseServerTime": "2014-09-07T23:59:00",
     "DaysOfWeekOpen": [
       1,
       2,
@@ -20,7 +20,7 @@
       {
         "$type": "Sq1.Core.DataTypes.MarketClearingTimespan, Sq1.Core",
         "SuspendServerTimeOfDay": "2013-04-17T14:00:00",
-        "ResumeServerTimeOfDay": "2013-04-17T14:03:00",
+        "ResumeServerTimeOfDay": "2014-09-07T14:03:00",
         "DaysOfWeekWhenClearingHappens": null,
         "SuspendServerTimeOfDayAsString": "14:00",
         "ResumeServerTimeOfDayAsString": "14:03",
@@ -95,7 +95,7 @@
     "Name": "FORTS",
     "Description": "RTS Index Futures and Options Market (RIM3)",
     "MarketOpenServerTime": "2013-04-17T10:00:00",
-    "MarketCloseServerTime": "2013-08-08T23:49:59",
+    "MarketCloseServerTime": "2014-09-07T23:50:00",
     "DaysOfWeekOpen": [
       1,
       2,

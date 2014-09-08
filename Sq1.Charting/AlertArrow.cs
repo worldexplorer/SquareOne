@@ -35,6 +35,11 @@ namespace Sq1.Charting {
 				} else {
 					ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.Low : this.Position.ExitBar.Low;
 				}
+//				if (this.AboveBar) {
+//					ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.BarPrevious.High : this.Position.ExitBar.BarPrevious.High;
+//				} else {
+//					ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.BarPrevious.Low : this.Position.ExitBar.BarPrevious.Low;
+//				}
 				return ret;
 			} }
 		

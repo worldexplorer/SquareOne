@@ -247,8 +247,15 @@ namespace Sq1.Gui.Forms {
 					break;
 			}
 
-			DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
-			StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormManager.Executor.Strategy);
+			if (this.ChartFormManager.MainForm.ChartFormActive == this) {
+				string msg = "WE_ARE_HERE_WHEN_WE_SWITCH_STRATEGY_FOR_CHART";
+				//Debugger.Break();
+				
+				//v1 DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
+				//v1 StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormManager.Executor.Strategy);
+				//v2
+				this.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+			}
 			this.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 		}
 		void TsiProgressBarETAClick(object sender, EventArgs e) {

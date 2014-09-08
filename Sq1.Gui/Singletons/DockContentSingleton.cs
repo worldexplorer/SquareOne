@@ -32,8 +32,7 @@ namespace Sq1.Gui.Singletons {
 
 		protected static bool instanceBeingConstructedUseForDesignMode { get; private set; }
 		protected static T instance;
-		public static T Instance {
-			get {
+		public static T Instance { get {
 				// without "where T : new()" in class declaration above, "new T()" below can not be compiled
 				if (DockContentSingleton<T>.instance == null) {
 					DockContentSingleton<T>.instanceBeingConstructedUseForDesignMode = true;
@@ -41,16 +40,13 @@ namespace Sq1.Gui.Singletons {
 					DockContentSingleton<T>.instanceBeingConstructedUseForDesignMode = false;
 				}
 				return DockContentSingleton<T>.instance;
-			}
-		}
-		
+			} }
 		public string OfWhat { get {
 				string ret = "UNKNOWN";
 				var args = this.GetType().GetGenericArguments();
 				if (args.Length > 0) ret = args[0].Name;
 				return ret;
 			} }
-		
 		public DockContentSingleton() : base() {
 			base.HideOnClose = true;
 			if (DockContentSingleton<T>.instance == null) return;

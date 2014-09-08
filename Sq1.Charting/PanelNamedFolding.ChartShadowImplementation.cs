@@ -7,7 +7,7 @@ using Sq1.Core;
 namespace Sq1.Charting {
 	public partial class PanelNamedFolding {
 		void renderBarBackgrounds(Graphics g) {
-			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice - this.BarWidthIncludingPadding_cached;
+			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice;
 			int halfPadding = this.ChartControl.ChartSettings.BarPaddingRight / 2;
 			//halfPadding += 1;		// fixes 1-2px spaces between bars background
 			barX -= halfPadding;	// emulate bar having paddings from left and right
@@ -21,6 +21,7 @@ namespace Sq1.Charting {
 					continue;
 				}
 				
+				barX -= this.BarWidthIncludingPadding_cached;
 				ScriptExecutorObjects seo = this.ChartControl.ScriptExecutorObjects;
 				if (seo.BarBackgroundsByBar.ContainsKey(barIndex) == false) continue;
 				
@@ -36,7 +37,6 @@ namespace Sq1.Charting {
 				using (Brush backBrush = new SolidBrush(backgroundMoreTransparent)) {
 					g.FillRectangle(backBrush, barFullHeight);
 				}
-				barX -= this.BarWidthIncludingPadding_cached;
 			}
 		}
 

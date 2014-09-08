@@ -124,6 +124,14 @@ namespace Sq1.Gui.Singletons {
 				chartFormClicked.ChartFormManager.EventManager.MainForm_ActivatedDocumentPane_WithChart(sender, e);
 				this.mainForm.GuiDataSnapshot.ChartSernoHasFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
 				this.mainForm.GuiDataSnapshotSerializer.Serialize();
+				
+				//v1: DOESNT_POPULATE_SYMBOL_AND_SCRIPT_PARAMETERS 
+				//if (chartFormClicked.ChartFormManager.Strategy == null) {
+				//	StrategiesForm.Instance.StrategiesTreeControl.UnSelectStrategy();
+				//} else {
+				//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(chartFormClicked.ChartFormManager.Strategy);
+				//}
+				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 			} catch (Exception ex) {
 				this.mainForm.PopupException(ex);
 			}

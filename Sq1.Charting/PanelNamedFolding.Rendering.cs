@@ -303,7 +303,7 @@ namespace Sq1.Charting {
 				indicator.DotsDrawnForCurrentSlidingWindow = 0;
 			}
 
-			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice - this.BarWidthIncludingPadding_cached;
+			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice;
 			// i > this.VisibleBarLeft_cached is enough because Indicator.Draw() takes previous bar
 			for (int i = this.VisibleBarRight_cached; i > this.VisibleBarLeft_cached; i--) {
 				Bar bar = this.ChartControl.Bars[i];
@@ -321,11 +321,11 @@ namespace Sq1.Charting {
 				candleBodyInverted.Y = barYHighInverted;					// drawing down, since Y grows down the screen from left upper corner (0:0)
 				candleBodyInverted.Height = candleBodyHeight;
 
+				barX -= this.BarWidthIncludingPadding_cached;
 				foreach (Indicator indicator in indicators.Values) {
 					if (indicator.HostPanelForIndicator != this) continue;
 					bool indicatorLegDrawn = indicator.DrawValue(graphics, bar, candleBodyInverted);
 				}
-				barX -= this.BarWidthIncludingPadding_cached;
 			}
 			foreach (Indicator indicator in indicators.Values) {
 				if (indicator.HostPanelForIndicator != this) continue;

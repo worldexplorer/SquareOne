@@ -14,9 +14,9 @@ namespace Sq1.Strategies.Demo {
 	[ScriptParameterAttribute(Id=2, Name="verbose", ValueMin=0, ValueMax=1, ValueCurrent=0, ValueIncrement=1, ReasonToExist="set to 0 if you don't want log() to spam your Exceptions window" )]
 	public class EnterEveryBarCompiled : Script {
 		
-		[IndicatorParameterAttribute(Name="Period",
-			ValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]
-		public IndicatorAverageMovingSimple MAslow { get; set; }
+		//[IndicatorParameterAttribute(Name="Period",
+		//	ValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]
+		//public IndicatorAverageMovingSimple MAslow { get; set; }
 
 		[IndicatorParameterAttribute(Name = "Period",
 			ValueCurrent = 15, ValueMin = 10, ValueMax = 20, ValueIncrement = 1)]
@@ -42,7 +42,7 @@ namespace Sq1.Strategies.Demo {
 			//this.MAslow.NotOnChartBarScaleInterval = new BarScaleInterval(BarScale.Hour, 1);
 			//this.MAslow.NotOnChartBarScaleInterval = new BarScaleInterval(BarScale.Minute, 15);
 			//this.MAslow.LineWidth = 2;
-			this.MAslow.LineColor = System.Drawing.Color.LightCoral;
+			//this.MAslow.LineColor = System.Drawing.Color.LightCoral;
 			this.MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
 			
 			testChartLabelDrawOnNextLineModify();
@@ -62,8 +62,8 @@ namespace Sq1.Strategies.Demo {
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 			//double slowStreaming = this.MAslow.BarClosesProxied.StreamingValue;
-			double slowStatic = this.MAslow.ClosesProxyEffective.LastStaticValue;
-			DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
+			//double slowStatic = this.MAslow.ClosesProxyEffective.LastStaticValue;
+			//DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
 
 			if (this.Executor.Backtester.IsBacktestingNow == false) {
 				Bar bar = quote.ParentStreamingBar;
@@ -84,7 +84,7 @@ namespace Sq1.Strategies.Demo {
 			}
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
-			this.testBarAnnotations(barStaticFormed);
+			//this.testBarAnnotations(barStaticFormed);
 			
 			Bar barStreaming = base.Bars.BarStreaming;
 			if (this.Executor.Backtester.IsBacktestingNow == false) {

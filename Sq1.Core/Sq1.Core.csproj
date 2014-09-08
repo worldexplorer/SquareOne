@@ -89,6 +89,9 @@
     <Compile Include="Charting\ScriptToChartCommunicator.cs" />
     <Compile Include="DataFeed\IDataSourceEditor.cs" />
     <Compile Include="DataFeed\NamedObjectJsonEventArgs.cs" />
+    <Compile Include="DataTypes\Bar.DynamicProperties.cs">
+      <DependentUpon>Bar.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataTypes\BarsUnscaled.cs" />
     <Compile Include="DoubleBuffered\PanelDoubleBuffered.cs">
       <SubType>Component</SubType>

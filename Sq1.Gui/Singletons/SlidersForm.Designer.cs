@@ -49,7 +49,7 @@
 			this.lblNoParametersDefined.Name = "lblNoParametersDefined";
 			this.lblNoParametersDefined.Size = new System.Drawing.Size(158, 13);
 			this.lblNoParametersDefined.TabIndex = 26;
-			this.lblNoParametersDefined.Text = "No parameters defined in Script:";
+			this.lblNoParametersDefined.Text = "No parameters/indicators(*) defined in Script:";
 			// 
 			// lblScriptName
 			// 

@@ -109,7 +109,7 @@ namespace Sq1.Core.StrategyBase {
 			try {
 				this.InitializeBacktest();
 			} catch (Exception ex) {
-				Assembler.PopupException("Script.Initialize()", ex);
+				Assembler.PopupException("Script.InitializeBacktestWithExecutorsBarsInstantiateIndicators()", ex);
 			}
 		}
 		public void IndicatorsInstantiateStoreInSnapshot() {

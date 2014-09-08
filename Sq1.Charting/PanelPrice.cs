@@ -39,8 +39,9 @@ namespace Sq1.Charting {
 			int ret = 0;
 			Dictionary<int, List<AlertArrow>> arrowListByBar = base.ChartControl.ScriptExecutorObjects.AlertArrowsListByBar;
 			
-			int barX = base.ChartControl.ChartWidthMinusGutterRightPrice - this.BarWidthIncludingPadding_cached;
+			int barX = base.ChartControl.ChartWidthMinusGutterRightPrice;
 			for (int i = base.VisibleBarRight_cached; i >= base.VisibleBarLeft_cached; i--) {
+				barX -= this.BarWidthIncludingPadding_cached;
 				if (arrowListByBar.ContainsKey(i) == false) continue;
 								
 				int shadowX = barX + this.BarShadowXoffset_cached;
@@ -69,7 +70,6 @@ namespace Sq1.Charting {
 					arrow.Ytransient += increment;
 					arrow.Ytransient = base.AdjustToPanelHeight(arrow.Ytransient);
 				}
-				barX -= this.BarWidthIncludingPadding_cached;
 			}
 			return ret;
 		}
@@ -77,7 +77,7 @@ namespace Sq1.Charting {
 			//for (int i = 0; i < base.ChartControl.BarsCanFitForCurrentWidth; i++) {
 			//	int barFromRight = base.ChartControl.BarsCanFitForCurrentWidth - i - 1;
 			//int barX = this.BarTotalWidthPx_localCache * barFromRight;
-			int barX = base.ChartControl.ChartWidthMinusGutterRightPrice - base.BarWidthIncludingPadding_cached;
+			int barX = base.ChartControl.ChartWidthMinusGutterRightPrice;
 
 			this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
@@ -91,6 +91,7 @@ namespace Sq1.Charting {
 					continue;
 				}
 				
+				barX -= base.BarWidthIncludingPadding_cached;
 				Bar bar = base.ChartControl.Bars[barIndex];
 				//bar.CheckOHLCVthrow();
 				int barYOpenInverted = base.ValueToYinverted(bar.Open);
@@ -107,7 +108,6 @@ namespace Sq1.Charting {
 				this.renderPendingAlertsIfExistForBar(barIndex, shadowX, g);
 				this.renderPositionArrowsLinesIfExistForBar(barIndex, shadowX, g);
 
-				barX -= base.BarWidthIncludingPadding_cached;
 				// TODO MOVE_IT_UPSTACK_AND_PLACE_AFTER_renderBarsPrice_SO_THAT_POSITION_LINES_SHOWUP_ON_TOP_OF_BARS 
 				AlertArrow arrow = this.ChartControl.TooltipPositionShownForAlertArrow;
 				if (arrow == null) continue;
@@ -337,7 +337,7 @@ namespace Sq1.Charting {
 			}
 			// DO_I_NEED_SIMILAR_CHECK_HERE???? MOST_LIKELY_I_DONT this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
-			int barXshadow = base.ChartControl.ChartWidthMinusGutterRightPrice - base.BarWidthIncludingPadding_cached + base.BarShadowXoffset_cached;
+			int barXshadow = base.ChartControl.ChartWidthMinusGutterRightPrice + base.BarShadowXoffset_cached;
 			ScriptExecutorObjects seo = this.ChartControl.ScriptExecutorObjects;
 
 			for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
@@ -350,6 +350,7 @@ namespace Sq1.Charting {
 					continue;
 				}
 				
+				barXshadow -= base.BarWidthIncludingPadding_cached;
 				if (seo.OnChartBarAnnotationsByBar.ContainsKey(barIndex) == false) continue;
 				
 				Bar bar = base.ChartControl.Bars[barIndex];
@@ -404,7 +405,6 @@ namespace Sq1.Charting {
 						yForLabelsBelow += labelHeightWithPadding;
 					}
 				}
-				barXshadow -= base.BarWidthIncludingPadding_cached;
 			}
 		}
 	}

@@ -60,6 +60,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TwoMAindicatorsCompiled.cs" />
     <Compile Include="TwoMAsCompiled.cs" />
     <Compile Include="StopLimitTestCompiled.cs" />
     <Compile Include="EnterEveryBarCompiled.cs" />

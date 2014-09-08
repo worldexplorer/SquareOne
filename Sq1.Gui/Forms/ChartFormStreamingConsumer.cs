@@ -14,148 +14,91 @@ namespace Sq1.Gui.Forms {
 		//public event EventHandler<BarsEventArgs> BarsLocked;
 		ChartFormManager chartFormManager;
 		string msigForNpExceptions = "Failed to StartStreaming(): ";
-		
-		ChartFormManager ChartFormManager {
-			get {
+		ChartFormManager ChartFormManager { get {
 				var ret = this.chartFormManager; 
 				this.actionForNullPointer(ret, "this.chartFormsManager=null");
 				return ret;
-			}
-		}
-
-		ScriptExecutor Executor {
-			get {
+			} }
+		ScriptExecutor Executor { get {
 				var ret = this.ChartFormManager.Executor;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor=null");
 				return ret;
-			}
-		}
-
-//		ScriptToChartCommunicator Renderer {
-//			get {
-//				var ret = this.Executor.ChartShadow.ScriptToChartCommunicator;
-//				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Renderer=null");
-//				return ret;
-//			}
-//		}
-
-		Strategy Strategy {
-			get {
+			} }
+		Strategy Strategy { get {
 				var ret = this.Executor.Strategy;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Strategy=null");
 				return ret;
-			}
-		}
-
-		ContextScript ScriptContextCurrent {
-			get {
+			} }
+		ContextScript ScriptContextCurrent { get {
 				var ret = this.Strategy.ScriptContextCurrent; 
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Strategy.ScriptContextCurrent=null");
 				return ret;
-			}
-		}
-
-		string Symbol {
-			get {
+			} }
+		string Symbol { get {
 				string symbol = this.ScriptContextCurrent.Symbol;
 				if (String.IsNullOrEmpty(symbol)) {
 					this.action("this.chartFormsManager.Executor.Strategy.ScriptContextCurrent.Symbol IsNullOrEmpty");
 				}
 				return symbol;
-			}
-		}
-
-		BarScaleInterval ScaleInterval {
-			get {
+			} }
+		BarScaleInterval ScaleInterval { get {
 				var ret = this.ScriptContextCurrent.ScaleInterval;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Strategy.ScriptContextCurrent.ScaleInterval=null");
 				return ret;
-			}
-		}
-
-		BarScale Scale {
-			get {
+			} }
+		BarScale Scale { get {
 				var ret = this.ScaleInterval.Scale;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Strategy.ScriptContextCurrent.ScaleInterval.Scale=null");
 				if (ret == BarScale.Unknown) {
 					this.action("this.chartFormsManager.Executor.Strategy.ScriptContextCurrent.ScaleInterval.Scale=Unknown");
 				}
 				return ret;
-			}
-		}
-
-		BarDataRange DataRange {
-			get {
+			} }
+		BarDataRange DataRange { get {
 				var ret = this.ScriptContextCurrent.DataRange;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Strategy.ScriptContextCurrent.DataRange=null");
 				return ret;
-			}
-		}
-
-		DataSource DataSource {
-			get {
+			} }
+		DataSource DataSource { get {
 				var ret = this.Executor.DataSource;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource=null");
 				return ret;
-			}
-		}
-
-		StaticProvider StaticProvider {
-			get {
+			} }
+		StaticProvider StaticProvider { get {
 				var ret = this.DataSource.StaticProvider;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource.StaticProvider=null");
 				return ret;
-			}
-		}
-
-		StreamingProvider StreamingProvider {
-			get {
+			} }
+		StreamingProvider StreamingProvider { get {
 				StreamingProvider ret = this.DataSource.StreamingProvider;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource.StreamingProvider=null");
 				return ret;
-			}
-		}
-
-		StreamingSolidifier StreamingSolidifierDeep {
-			get {
+			} }
+		StreamingSolidifier StreamingSolidifierDeep { get {
 				var ret = this.StreamingProvider.StreamingSolidifier;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource.StreamingProvider.StreamingSolidifier=null");
 				return ret;
-			}
-		}
-
-		ChartForm ChartForm {
-			get {
+			} }
+		ChartForm ChartForm { get {
 				var ret = this.ChartFormManager.ChartForm;
 				this.actionForNullPointer(ret, "this.chartFormsManager.ChartForm=null");
 				return ret;
-			}
-		}
-
-		Bars Bars {
-			get {
+			} }
+		Bars Bars { get {
 				var ret = this.Executor.Bars;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Bars=null");
 				return ret;
-			}
-		}
-
-		Bar StreamingBarSafeClone {
-			get {
+			} }
+		Bar StreamingBarSafeClone { get {
 				var ret = this.Bars.BarStreamingCloneReadonly;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Bars.StreamingBarSafeClone=null");
 				return ret;
-			}
-		}
-
-		Bar LastStaticBar {
-			get {
+			} }
+		Bar LastStaticBar { get {
 				var ret = this.Bars.BarStaticLast;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Bars.LastStaticBar=null");
 				return ret;
-			}
-		}
-		
+			} }
 		void actionForNullPointer(object mustBeInstance, string msgIfNull) {
 			if (mustBeInstance != null) return;
 			this.action(msgIfNull);
@@ -240,8 +183,9 @@ namespace Sq1.Gui.Forms {
 				}
 			}
 		}
-		// IStreamingConsumer
-		public void ConsumeBarLastStraticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed) {
+		#region IStreamingConsumer
+		Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { return this.chartFormManager.Executor.Bars; } }
+		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed) {
 			this.msigForNpExceptions = "ConsumeBarLastFormed(): ";
 			var barsSafe = this.Bars;
 			var chartFormSafe = this.ChartForm;
@@ -253,7 +197,7 @@ namespace Sq1.Gui.Forms {
 			executorSafe.ExecuteOnNewBarOrNewQuote(null);	//new Quote());
 			chartFormSafe.ChartControl.InvalidateAllPanelsFolding();
 		}
-		public void ConsumeQuoteOfStreamingBar(Quote quote) {
+		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Quote quote) {
 			this.msigForNpExceptions = "ConsumeFreshQuote(): ";
 			var barsSafe = this.Bars;
 			var streamingSafe = this.StreamingProvider;
@@ -262,7 +206,8 @@ namespace Sq1.Gui.Forms {
 			//var rendererSafe = this.Renderer;
 
 			try {
-				streamingSafe.InitializeStreamingOHLCVfromStreamingProvider(ConsumerBarsToAppendInto);
+				// COMPILATION_ERROR streamingSafe.InitializeStreamingOHLCVfromStreamingProvider(ConsumerBarsToAppendInto);
+				streamingSafe.InitializeStreamingOHLCVfromStreamingProvider(this.chartFormManager.Executor.Bars);
 			} catch (Exception e) {
 				Assembler.PopupException("didn't merge with Partial, continuing", e);
 			}
@@ -282,6 +227,7 @@ namespace Sq1.Gui.Forms {
 			chartFormSafe.ChartControl.InvalidateAllPanelsFolding();
 			//rendererSafe.DrawBidAskLines = true;
 		}
+		#endregion
 		public override string ToString() {
 			this.msigForNpExceptions = "ToString(): ";
 			if (this.chartFormManager == null) return "ChartStreamingConsumer::chartFormsManager=null";
@@ -296,9 +242,6 @@ namespace Sq1.Gui.Forms {
 //				//+ " chart[" + this.ChartContainer.Text + "]"
 //				+ " streaming[" + this.chartFormsManager.Executor.DataSource.StreamingProvider.Name + "]"
 //				+ " static[" + this.chartFormsManager.Executor.DataSource.StaticProvider.Name + "]";
-		}
-		public Bars ConsumerBarsToAppendInto {
-			get { return this.chartFormManager.Executor.Bars; }
 		}
 	}
 }

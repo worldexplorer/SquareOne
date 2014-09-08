@@ -34,8 +34,8 @@ namespace Sq1.Strategies.Demo {
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
 			this.drawLinesSample(barStaticFormed);
-			this.testBarBackground(barStaticFormed);
-			this.testBarAnnotations(barStaticFormed);
+			//this.testBarBackground(barStaticFormed);
+			//this.testBarAnnotations(barStaticFormed);
 			
 			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming;
 			if (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;

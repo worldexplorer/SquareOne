@@ -102,8 +102,12 @@ namespace Sq1.Core.DataTypes {
 			this.GetRegularOrShortDayOpenCloseMarketTimeForServerDate(dateTimeServer, out openTimeServer, out closeTimeServer);
 			bool isMarketAfterOpening = dateTimeServer.TimeOfDay >= openTimeServer.TimeOfDay;
 			bool isMarketBeforeClosing = dateTimeServer.TimeOfDay < closeTimeServer.TimeOfDay;
-			bool isMarketSuspendedForClearing = this.isMarketSuspendedForClearing(dateTimeServer);
-			return isMarketAfterOpening && isMarketBeforeClosing && (isMarketSuspendedForClearing == false);
+			bool isMarketSuspendedForClearing = this.IsMarketSuspendedForClearing(dateTimeServer);
+			bool marketIsOpen = isMarketAfterOpening && isMarketBeforeClosing && (isMarketSuspendedForClearing == false);
+			if (marketIsOpen == false) {
+				string msg = "breakpoint";
+			}
+			return marketIsOpen;
 		}
 		bool isMarketAfterCloseServerTime(DateTime dateTimeServer) {
 			DateTime GenericOrShortDayCloseTimeServer = this.MarketCloseServerTime;
@@ -346,11 +350,11 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		bool isMarketSuspendedForClearing(DateTime dateTimeServer) {
-			MarketClearingTimespan suspendedNow = getClearingTimespanIfMarketSuspended(dateTimeServer);
+		public bool IsMarketSuspendedForClearing(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan = false) {
+			MarketClearingTimespan suspendedNow = this.getClearingTimespanIfMarketSuspended(dateTimeServer, considerSuspendedIfFullBarIsWithinClearingTimespan);
 			return (suspendedNow != null) ? true : false;
 		}
-		MarketClearingTimespan getClearingTimespanIfMarketSuspended(DateTime dateTimeServer) {
+		MarketClearingTimespan getClearingTimespanIfMarketSuspended(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan = false) {
 			MarketClearingTimespan ret = null;
 			if (this.ClearingTimespans == null) return ret;
 			foreach (MarketClearingTimespan clearingTimespan in this.ClearingTimespans) {
@@ -369,6 +373,45 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
+		#region CANT_SET_DEFAULT_DATETIME_PARAMETER_TO_NULL_OR_MINIMALVALUE_SORRY_REDUNDANCY
+		public bool IsMarketOpenDuringDateIntervalServerTime(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+			if (this.IsTradeableDayServerTime(dateTimeServerBarOpen.Date) == false) return false;
+			DateTime openTimeServer;
+			DateTime closeTimeServer;
+			this.GetRegularOrShortDayOpenCloseMarketTimeForServerDate(dateTimeServerBarOpen, out openTimeServer, out closeTimeServer);
+			bool isMarketAfterOpening = dateTimeServerBarOpen.TimeOfDay >= openTimeServer.TimeOfDay;
+			bool isMarketBeforeClosing = dateTimeServerBarOpen.TimeOfDay < closeTimeServer.TimeOfDay;
+			bool isMarketSuspendedForClearing = this.IsMarketSuspendedForClearingDuringDateInterval(dateTimeServerBarOpen, dateTimeServerBarClose);
+			bool marketIsOpen = isMarketAfterOpening && isMarketBeforeClosing && (isMarketSuspendedForClearing == false);
+			if (marketIsOpen == false) {
+				string msg = "breakpoint";
+			}
+			return marketIsOpen;
+		}
+		public bool IsMarketSuspendedForClearingDuringDateInterval(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+			MarketClearingTimespan suspendedNow = this.getClearingTimespanIfMarketSuspendedDuringDateInterval(dateTimeServerBarOpen, dateTimeServerBarClose);
+			return (suspendedNow != null) ? true : false;
+		}
+		MarketClearingTimespan getClearingTimespanIfMarketSuspendedDuringDateInterval(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+			MarketClearingTimespan ret = null;
+			if (this.ClearingTimespans == null) return ret;
+			foreach (MarketClearingTimespan clearingTimespan in this.ClearingTimespans) {
+				if (clearingTimespan.SuspendServerTimeOfDay == DateTime.MinValue) continue;
+				if (clearingTimespan.ResumeServerTimeOfDay == DateTime.MinValue) continue;
+				if (clearingTimespan.ClearingHappensOnDayOfWeek(dateTimeServerBarOpen.DayOfWeek) == false) {
+					ret = null;
+					break;
+				}
+				bool afterSuspend = dateTimeServerBarOpen.TimeOfDay >= clearingTimespan.SuspendServerTimeOfDay.TimeOfDay;
+				bool beforeResume = dateTimeServerBarClose.TimeOfDay <=  clearingTimespan.ResumeServerTimeOfDay.TimeOfDay;
+				if (afterSuspend && beforeResume) {
+					ret = clearingTimespan;
+					break;
+				}
+			}
+			return ret;
+		}
+		#endregion
 
 		public DateTime getThisDayClose(Quote quote) {
 			return new DateTime(quote.ServerTime.Date.Year, quote.ServerTime.Date.Month, quote.ServerTime.Date.Day,

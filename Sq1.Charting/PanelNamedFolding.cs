@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DoubleBuffered;
-using Sq1.Core.Charting;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Charting {
 	public partial class PanelNamedFolding :
@@ -162,6 +164,16 @@ namespace Sq1.Charting {
 				return;
 			}
 			this.ChartControl.SyncHorizontalScrollToBarsCount();
+			
+			bool skipPaintingBeforeBacktestCompletes = false;		// AVOIDING_CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_BAR in this.RenderIndicators(); I don't need Executor.Backtester.BacktestIsRunning here 
+			Dictionary<string, Indicator> indicators = this.ChartControl.ScriptExecutorObjects.Indicators;	// if there's no indicators => I won't go to foreach () and won't skipPaintingBeforeBacktestCompletes 
+			foreach (Indicator indicator in indicators.Values) {
+				if (indicator.OwnValuesCalculated.Count > 0) continue;
+				skipPaintingBeforeBacktestCompletes = true;
+				break;
+			}
+			if (skipPaintingBeforeBacktestCompletes) return;
+			
 			if (this.ImPaintingForegroundNow) return;
 			try {
 				this.ImPaintingForegroundNow = true;
@@ -306,14 +318,45 @@ namespace Sq1.Charting {
 			}
 			return -3; // negative means ERROR
 		}
-		public int ValueToYinverted(double volume) {			//200
+		public int ValueToYinverted(double priceOrVolume) {			//200
 			if (this.ChartControl.BarsEmpty) return 666;
-			if (double.IsNaN(volume)) Debugger.Break();
+			if (double.IsNaN(priceOrVolume)) Debugger.Break();
 			double min = this.VisibleMinMinusTopSqueezer_cached;		//100
 			double max = this.VisibleMaxPlusBottomSqueezer_cached;		//250
 			double rangeMinMax = this.VisibleRangeWithTwoSqueezers_cached;			//150
+			
+			#region quickCheckFor *_cached variables; veeeeery slow in Debug; that's why *_cached exist
+			#if DEBUG_HEAVY
+			double min2 = this.VisibleMin;
+			double max2 = this.VisibleMax;
+
+			double pixelsSqueezedToPriceDistance = 0;
+			if (this.PaddingVerticalSqueeze > 0 && base.Height > 0) {
+				double priceDistanceInOnePixel = (max2 - min2) / base.Height;
+				pixelsSqueezedToPriceDistance = this.PaddingVerticalSqueeze * priceDistanceInOnePixel;
+			}
+			
+			min2 -= pixelsSqueezedToPriceDistance;
+			max2 += pixelsSqueezedToPriceDistance;
+			double range2 = max2 - min2;
+		
+			if (min != min2) {
+				//Debugger.Break();
+				min = min2;
+			}
+			if (max != max2) {
+				//Debugger.Break();
+				max = max2;
+			}
+			if (rangeMinMax != range2) {
+				//Debugger.Break();
+				rangeMinMax = range2;
+			}
+			#endif
+			#endregion
+			
 			if (rangeMinMax == 0) rangeMinMax = 1;
-			double distanceFromMin = volume - min;	//200 - 100 = 100
+			double distanceFromMin = priceOrVolume - min;	//200 - 100 = 100
 			double priceAsPartOfRange = distanceFromMin / rangeMinMax;	//100 / 150	 = 0.6
 			int ret = (int)Math.Round(this.PanelHeightMinusGutterBottomHeight_cached * priceAsPartOfRange);		// 600 * 0.6 = 360px UP
 			ret = this.yInverted(ret);

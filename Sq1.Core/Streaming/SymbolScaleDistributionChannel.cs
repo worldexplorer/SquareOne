@@ -97,7 +97,7 @@ namespace Sq1.Core.Streaming {
 				//Assembler.PopupException(msg1);
 				try {
 					//NOPE_FRESH_STREAMING_CONTAINING_JUST_ONE_QUOTE_I_WILL_POKE_QUOTES_FROM_IT consumer.ConsumeBarLastFormed(barLastFormedBound);
-					consumer.ConsumeBarLastStraticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(consumer.ConsumerBarsToAppendInto.BarStaticLast);
+					consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(consumer.ConsumerBarsToAppendInto.BarStaticLast);
 				} catch (Exception e) {
 					string msg = "BarConsumer " + nth + ": missed bar [" + barStreamingUnattached + "]: " + consumer;
 					throw new Exception(msg, e);

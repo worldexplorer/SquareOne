@@ -11,34 +11,27 @@ namespace Sq1.Core.Repositories {
 	public class RepositoryDllJsonStrategy {
 		public Dictionary<string, List<Strategy>> StrategiesInFolders { get; private set; }
 		public Dictionary<string, List<Script>> ScriptsInDlls { get; private set; }
-		public List<Strategy> AllStrategiesAvailable {
-			get {
+		public List<Strategy> AllStrategiesAvailable { get {
 				var ret = new List<Strategy>();
 				foreach (string folder in this.StrategiesInFolders.Keys) ret.AddRange(this.StrategiesInFolders[folder]);
 				//foreach (string key2 in this.ScriptsInDlls.Keys) ret.AddRange(this.ScriptsInDlls[key2]);
 				return ret;
-			}
-		}
-		public List<string> AllFoldersAvailable {
-			get {
+			} }
+		public List<string> AllFoldersAvailable { get {
 				var ret = new List<string>();
 				foreach (string folderJson in this.FoldersPurelyJson) ret.Add(folderJson);
 				foreach (string folderDllShadow in this.FoldersDllShadows) ret.Add(folderDllShadow);
 				return ret;
-			}
-		}
-		public List<string> FoldersPurelyJson {
-			get {
+			} }
+		public List<string> FoldersPurelyJson { get {
 				var ret = new List<string>();
 				foreach (string folder in this.StrategiesInFolders.Keys) {
 					if (folder.ToUpper().EndsWith(".DLL")) continue;
 					ret.Add(folder);
 				}
 				return ret;
-			}
-		}
-		public List<string> FoldersDllShadows { 
-			get {
+			} }
+		public List<string> FoldersDllShadows { get {
 				var ret = new List<string>();
 				foreach (string folder in this.StrategiesInFolders.Keys) {
 					if (folder.ToUpper().EndsWith(".DLL") == false) continue;
@@ -56,8 +49,7 @@ namespace Sq1.Core.Repositories {
 					ret.Add(folderPrefixed);
 				}
 				return ret;
-			}
-		}
+			} }
 
 		public string RootPath { get; private set; }
 		public string Subfolder;

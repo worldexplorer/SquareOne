@@ -32,7 +32,7 @@
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE;NON_DOUBLE_BUFFERED_is_default</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;NON_DOUBLE_BUFFERED_is_default;DEBUG_HEAVY_disabled</DefineConstants>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

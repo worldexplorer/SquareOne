@@ -38,8 +38,7 @@ namespace Sq1.Gui.Forms {
 		public bool ScriptEditedNeedsSaving;
 		public ChartFormStreamingConsumer ChartStreamingConsumer;
 		
-		public Dictionary<string, DockContent> FormsAllRelated {
-			get {
+		public Dictionary<string, DockContent> FormsAllRelated { get {
 				var ret = new Dictionary<string, DockContent>();
 				if (this.ChartForm != null) ret.Add("Chart", this.ChartForm);
 				if (this.ScriptEditorForm != null) ret.Add("Source Code", this.ScriptEditorForm);
@@ -47,8 +46,7 @@ namespace Sq1.Gui.Forms {
 					ret.Add(textForMenuItem, this.ReportersFormsManager.FormsAllRelated[textForMenuItem]);
 				}
 				return ret;
-			}
-		}
+			} }
 		public ChartFormManager(int charSernoDeserialized = -1) {
 			this.StrategyFoundDuringDeserialization = false;
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
@@ -206,6 +204,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg);
 				return;
 			}
+			this.PopulateWindowTitlesFromChartContextOrStrategy();
 			msig += (this.Strategy != null) ?
 				" << PopulateCurrentScriptContext(): Strategy[" + this.Strategy + "].ScriptContextCurrent[" + context.Name + "]"
 				:	" << PopulateCurrentScriptContext(): this.ChartForm[" + this.ChartForm.Text + "].ChartControl.ContextChart[" + context.Name + "]";
@@ -497,12 +496,24 @@ namespace Sq1.Gui.Forms {
 			this.PopulateSliders();
 		}
 		public void PopulateSliders() {
-			if (this.Strategy == null) return;
+			//CAN_HANDLE_NULL_IN_SlidersForm.Instance.Initialize()  if (this.Strategy == null) return;
 			SlidersForm.Instance.Initialize(this.Strategy);
-			SlidersForm.Instance.Show(this.dockPanel);
+			if (SlidersForm.Instance.Visible == false) {		// don't activate the tab if user has docked another Form on top of SlidersForm
+				SlidersForm.Instance.Show(this.dockPanel);
+			}
 		}
 		public override string ToString() {
 			return "Strategy[" + this.Strategy.Name + "], Chart [" + this.ChartForm.ToString() + "]";
+		}
+		public void PopulateMainFormSymbolStrategyTreesScriptParameters() {
+			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;
+			DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
+			if (this.Strategy != null) {
+				StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.Strategy);
+			} else {
+				StrategiesForm.Instance.StrategiesTreeControl.UnSelectStrategy();
+			}
+			this.PopulateSliders();
 		}
 	}
 }

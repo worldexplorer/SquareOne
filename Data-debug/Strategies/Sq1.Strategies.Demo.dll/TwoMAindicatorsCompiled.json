@@ -1,12 +1,12 @@
 {
   "$type": "Sq1.Core.StrategyBase.Strategy, Sq1.Core",
-  "Guid": "07e7825e-8e85-4e90-a852-bf04377cdc37",
-  "Name": "EnterEveryBarCompiled",
+  "Guid": "dacc92f4-092c-4d94-bfff-d8a5200ee9d6",
+  "Name": "TwoMAindicatorsCompiled",
   "ScriptSourceCode": null,
   "DotNetReferences": null,
   "DllPathIfNoSourceCode": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
   "ExceptionsLimitToAbortBacktest": 10,
-  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json",
+  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAindicatorsCompiled.json",
   "ScriptContextCurrentName": "Default",
   "ScriptContextsByName": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
@@ -18,7 +18,7 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": true,
+      "IsCurrent": false,
       "ChartAutoSubmitting": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": true,
@@ -42,28 +42,26 @@
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
-        "Interval": 10,
+        "Interval": 5,
         "IsIntraday": true,
-        "AsTimeSpanInSeconds": 600,
-        "AsTimeSpan": "00:10:00"
+        "AsTimeSpanInSeconds": 300,
+        "AsTimeSpan": "00:05:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
         "Range": 1,
         "StartDate": "0001-01-01T00:00:00",
         "EndDate": "9999-12-31T23:59:59.9999999",
-        "RecentBars": 1500,
+        "RecentBars": 500,
         "RecentTimeunits": 0
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
       "ParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "1": 0.0,
-        "2": 0.0
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
       }
     }
   },
   "HasChartOnly": false,
-  "ScriptParametersByIdJSONcheck": "(verbose=0,test=0)"
+  "ScriptParametersByIdJSONcheck": "(None)"
 }

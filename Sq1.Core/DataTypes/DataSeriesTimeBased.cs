@@ -5,6 +5,7 @@ namespace Sq1.Core.DataTypes {
 	public class DataSeriesTimeBased : DataSeriesBasic {
 		SortedList<DateTime, double> doublesByDate;
 		public virtual IList<DateTime> DateTimes { get { return this.doublesByDate.Keys; } }
+		public virtual IList<double> Values { get { return this.doublesByDate.Values; } }
 		public override int Count { get { return this.doublesByDate.Count; } }
 		public override int Capacity {
 			get { return this.doublesByDate.Capacity; }
@@ -21,11 +22,34 @@ namespace Sq1.Core.DataTypes {
 			this.Description = description;
 		}
 		public double this[DateTime dateTime] { get {
+				if (this.doublesByDate.ContainsKey(dateTime) == false) {
+					DateTime existingKeyFromBelow = FindExistingKeyFromBelow(dateTime);
+					DateTime existingKeyFromAbove = FindExistingKeyFromAbove(dateTime);
+					string msg = "KEY_NOT_FOUND[" + dateTime + "]_CLOSEST_[" + existingKeyFromBelow + "]_[" + existingKeyFromAbove + "]: " + this;
+					throw new ArgumentException(msg);
+				}
 				return this.doublesByDate[dateTime];
 			} }
+		public DateTime FindExistingKeyFromBelow(DateTime dateNonExistingRequested) {
+			DateTime ret = DateTime.MinValue;
+			foreach (DateTime each in this.doublesByDate.Keys) {
+				if (dateNonExistingRequested > each) continue;
+				if (ret <= each) ret = each;
+			}
+			return ret;
+		}
+		public DateTime FindExistingKeyFromAbove(DateTime dateNonExistingRequested) {
+			DateTime ret = DateTime.MaxValue;
+			foreach (DateTime each in this.doublesByDate.Keys) {
+				if (dateNonExistingRequested < each) continue;
+				if (ret >= each) ret = each;
+			}
+			return ret;
+		}
 		public bool ContainsKey(DateTime dateTime) {
 			return this.doublesByDate.ContainsKey(dateTime);
 		}
+		[Obsolete("USE_ONLY_DATETIME_KEYS")]
 		public override double this[int barIndex] {
 			get {
 				if (barIndex < 0 || barIndex > this.Count) {

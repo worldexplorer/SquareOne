@@ -143,10 +143,13 @@ namespace Sq1.Core.Backtesting {
 					//MAKE_EXCEPTIONS_FORM_INSERT_DELAYED!!! Application.DoEvents();	// otherwize UI becomes irresponsible;
 					Application.DoEvents();
 				}
+
+				// see Indicator.DrawValue() "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED"
+				// this.QuotesGenerator.InjectFakeQuoteInNonExistingNextBarToSolidifyLastStaticBar(this.Executor.Bars.BarStaticLast);
 			} catch (Exception e) {
-#if DEBUG
+				#if DEBUG
 				Debugger.Break();
-#endif
+				#endif
 				throw e;
 			} finally {
 				this.simulationPostBarsRestore();

@@ -17,10 +17,12 @@ namespace Sq1.Gui.Singletons {
 		public void Initialize(Strategy strategy) {
 			try {
 				base.SuspendLayout();
-				if (strategy.Script == null || strategy.Script.ParametersById.Count == 0) {
+				bool showEmptyStubWhenStrategyNullOrNoParameters = false;
+				if (strategy == null || strategy.Script == null || strategy.Script.ParametersById.Count == 0) showEmptyStubWhenStrategyNullOrNoParameters = true; 
+				if (showEmptyStubWhenStrategyNullOrNoParameters) {
 					this.SlidersAutoGrowControl.Hide();
 					this.pnlNoParametersInScript.Show();
-					this.lblScriptName.Text = (strategy.Script == null) ? "NO_SCRIPT" : strategy.Name;
+					this.lblScriptName.Text = (strategy == null || strategy.Script == null) ? "NO_SCRIPT" : strategy.Name;
 					this.Size = new Size(this.Size.Width, this.pnlNoParametersInScript.Height);
 					return;
 				}
