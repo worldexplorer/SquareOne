@@ -3,34 +3,24 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.StrategyBase {
 	public class ScriptParameter {
-		public int Id;
-		public string Name;
-		public string ReasonToExist;
-		public double ValueMin;
-		public double ValueMax;
-		public double ValueIncrement;
-		public double ValueCurrent;
-
-		[JsonIgnore]
-		public object OptimizerTag;
-		[JsonIgnore]
-		public bool IsInteger {
-			get {
+		[JsonProperty]	public int Id;
+		[JsonProperty]	public string Name;
+		[JsonProperty]	public string ReasonToExist;
+		[JsonProperty]	public double ValueMin;
+		[JsonProperty]	public double ValueMax;
+		[JsonProperty]	public double ValueIncrement;
+		[JsonProperty]	public double ValueCurrent;
+		[JsonIgnore]	public bool IsInteger { get {
 				return this.ValueMin == (double)((int)this.ValueMin)
 					&& this.ValueMax == (double)((int)this.ValueMax)
 					&& this.ValueIncrement == (double)((int)this.ValueIncrement)
 					&& this.ValueCurrent == (double)this.ValueCurrent;
-			}
-		}
-		[JsonIgnore]
-		public int NumberOfRuns {
-			get {
+			} }
+		[JsonIgnore]	public int NumberOfRuns { get {
 				if (this.ValueIncrement <= 0.0) return 1;
 				return (int)Math.Round(((this.ValueMax - this.ValueMin) / this.ValueIncrement) + 1.0);
-			}
-		}
-		public ScriptParameter() {
-		}
+			} }
+		private ScriptParameter() {}
 		public ScriptParameter(int id, string name, double current, double min, double max, double increment, string reasonToExist) : this() {
 			this.Id = id;
 			this.Name = name;

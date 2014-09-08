@@ -40,7 +40,7 @@ namespace Sq1.Core.Backtesting {
 					int decimalsVolume = bar.ParentBars.SymbolInfo.DecimalsVolume;
 					volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, decimalsVolume);
 					if (volumeOneQuarterOfBar == 0) {
-						Debugger.Break();
+						//TESTED Debugger.Break();
 						double minimalValue = Math.Pow(1, -decimalsVolume);		// 1^(-2) = 0.01
 						volumeOneQuarterOfBar = minimalValue;
 					}

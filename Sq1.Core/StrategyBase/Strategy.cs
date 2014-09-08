@@ -26,10 +26,10 @@ namespace Sq1.Core.StrategyBase {
 			} }
 					 public bool HasChartOnly { get { return string.IsNullOrEmpty(this.StoredInFolderRelName); } }
 		[JsonIgnore] public Script Script;
-					 public Dictionary<int, ScriptParameter> ScriptParametersByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
-							return this.Script.ParametersById;
-						} }
-					 public string ScriptParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+		//CANT_DESERIALIZE_JsonException public Dictionary<int, ScriptParameter> ScriptParametersByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+		//					return this.Script.ParametersById;
+		//				} }
+		[JsonIgnore] public string ScriptParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
 							if (this.Script == null) return null;
 							return this.Script.ParametersAsString;
 						} }
@@ -55,8 +55,9 @@ namespace Sq1.Core.StrategyBase {
 					} else {
 						this.ScriptContextCurrent.ParameterValuesById.Add(paramScript.Id, paramScript.ValueCurrent);
 						string msg = "added paramScript[Id=" + paramScript.Id + " value=" + paramScript.ValueCurrent + "]"
-							+ " into Script[" + this.Script.GetType().Name + "].ScriptContextCurrent[" + this.ScriptContextCurrent.Name + "]";
-						Assembler.PopupException(msg);
+							+ " into Script[" + this.Script.GetType().Name + "].ScriptContextCurrent[" + this.ScriptContextCurrent.Name + "]"
+							+ " /ScriptParametersMergedWithCurrentContext";
+						//Assembler.PopupException(msg);
 						storeStrategySinceParametersGottenFromScript = true;
 					}
 					ret.Add(paramMerged.Id, paramMerged);

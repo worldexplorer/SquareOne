@@ -12,10 +12,11 @@ namespace Sq1.Charting.OnChart {
 		public Color ColorForeground;
 		public Color ColorBackground;
 		public bool AboveBar;
+		public bool DebugStatus;
 		public bool ShouldDrawBackground { get { return this.ColorBackground != Color.Empty; } }
 		
 		public OnChartBarAnnotation(string barAnnotationId, string barAnnotationText,
-		                            Font font, Color colorForeground, Color colorBackground, bool aboveBar = true) {
+		                            Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, bool debugStatus = false) {
 			BarAnnotationId = barAnnotationId;
 			BarAnnotationText = barAnnotationText;
 			Font = font;
@@ -23,6 +24,7 @@ namespace Sq1.Charting.OnChart {
 			ColorBackground = colorBackground;
 			Status = OnChartObjectOperationStatus.OnChartObjectJustCreated;
 			AboveBar = aboveBar;
+			DebugStatus = debugStatus;
 		}
 
 		public override string ToString() {

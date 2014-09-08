@@ -89,7 +89,7 @@ namespace Sq1.Core.Repositories {
 			this.ScriptsInDlls.Clear();
 			
 			if (Directory.Exists(this.AbsPath) == false) Directory.CreateDirectory(this.AbsPath);
-			this.StrategiesInFolders = StrategiesScanFolders();
+			this.StrategiesInFolders = this.StrategiesScanFolders();
 			Dictionary<Assembly, List<Script>> strategiesScanDllsInitDeserializedFromRootPath = StrategiesScanDllsInitDeserialized(this.RootPath);
 			this.storeInScriptsInDlls(strategiesScanDllsInitDeserializedFromRootPath);
 			Dictionary<Assembly, List<Script>> strategiesScanDllsInitDeserializedFromAppStartupPath = StrategiesScanDllsInitDeserialized(this.AppStartupPath);

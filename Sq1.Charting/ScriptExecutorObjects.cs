@@ -270,7 +270,7 @@ namespace Sq1.Charting {
 			return labelToModify;
 		}
 		public OnChartBarAnnotation BarAnnotationAddOrModify(int barIndex, string barAnnotationId, string barAnnotationText,
-		                                                     Font font, Color colorFore, Color colorBack, bool aboveBar = true) {
+		                                                     Font font, Color colorFore, Color colorBack, bool aboveBar = true, bool debugStatus = false) {
 			//Add() candidate starts below
 			if (this.OnChartBarAnnotationsByBar.ContainsKey(barIndex) == false) {
 				this.OnChartBarAnnotationsByBar.Add(barIndex, new Dictionary<string, OnChartBarAnnotation>());
@@ -279,7 +279,7 @@ namespace Sq1.Charting {
 
 			if (annotationsForBar.ContainsKey(barAnnotationId) == false) {
 				OnChartBarAnnotation barAnnotationCreated = new OnChartBarAnnotation(
-					barAnnotationId, barAnnotationText, font, colorFore, colorBack, aboveBar);
+					barAnnotationId, barAnnotationText, font, colorFore, colorBack, aboveBar, debugStatus);
 				annotationsForBar.Add(barAnnotationId, barAnnotationCreated);
 				return barAnnotationCreated;
 			}
@@ -289,7 +289,9 @@ namespace Sq1.Charting {
 			if (		barAnnotationToModify.BarAnnotationText	== barAnnotationText	&& barAnnotationToModify.Font				== font
 			   		 && barAnnotationToModify.ColorForeground	== colorFore			&& barAnnotationToModify.ColorBackground	== colorBack) {
 				barAnnotationToModify.Status = OnChartObjectOperationStatus.OnChartObjectNotModifiedSinceParametersDidntChange;
-				Assembler.PopupException(barAnnotationToModify.ToString() + " //BarAnnotationAddOrModify()");
+				if (barAnnotationToModify.DebugStatus) {
+					Assembler.PopupException(barAnnotationToModify.ToString() + " //BarAnnotationAddOrModify()");
+				}
 				return barAnnotationToModify;
 			}
 			

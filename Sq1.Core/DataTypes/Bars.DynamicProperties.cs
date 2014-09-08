@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public partial class Bars {
@@ -40,6 +41,7 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
+		[Obsolete("WARNING_NOT_YET_IMPLEMENTED")]
 		public int SuggestBarIndexExpectedMarketClosesToday(Bar startScanFrom) {
 			return -1;
 		}
@@ -170,9 +172,20 @@ namespace Sq1.Core.DataTypes {
 					throw new Exception("this.ScaleInterval.Scale[" + this.ScaleInterval.Scale
 						+ "] is not supported");
 			}
+			if (howManyBarsToAdd < 0) {
+				string "CHECKING_1)_TimeSpan_CAN_BE_NEGATIVE_2)_DATE.ADD(NEGATIVE)_SHOULD_BE_REWRITTEN";
+				Debugger.Break();
+			}
 			TimeSpan totalTimeSpan = new TimeSpan(this.ScaleInterval.AsTimeSpan.Ticks * howManyBarsToAdd);
 			DateTime ret = dateTimeToAddIntervalsTo.Add(totalTimeSpan);
 			return ret;
 		}
+		[JsonIgnore] public int BarsExpectedDuringMarketOpenIncludingClearingIntervals { get {
+				int ret = -1;
+				if (this.MarketInfo == null) return ret;
+				long marketOpenDurationSeconds = (int)(this.MarketInfo.MarketCloseServerTime.Ticks/1000 - this.MarketInfo.MarketOpenServerTime.Ticks/1000);
+				ret = marketOpenDurationSeconds / this.ScaleInterval.AsTimeSpanInSeconds;
+				return ret;
+			} }
 	}
 }

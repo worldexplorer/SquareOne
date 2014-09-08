@@ -49,6 +49,15 @@ namespace Sq1.Core.DataTypes {
 				DateTime todayMarketOpenServerTime = this.ParentBars.CombineBarDateWithMarketOpenTime(this.DateTimeOpen, marketOpenServerTime);
 				return todayMarketOpenServerTime;
 			} }
+		[JsonIgnore] public DateTime DateTimeExpectedMarketClosesTodayBasedOnMarketInfo { get {
+				if (this.HasParentBars == false) {
+					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
+				}
+				DateTime marketCloseServerTime = this.ParentBars.MarketInfo.MarketCloseServerTime;
+				if (marketCloseServerTime == DateTime.MinValue) return DateTime.MinValue;
+				DateTime todayMarketCloseServerTime = this.ParentBars.CombineBarDateWithMarketOpenTime(this.DateTimeOpen, marketCloseServerTime);
+				return todayMarketCloseServerTime;
+			} }
 		[JsonIgnore] public int BarIndexExpectedMarketOpenedTodayBasedOnMarketInfo { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
@@ -63,6 +72,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore] public Bar BarMarketClosedTodayScanForwardIgnoringMarketInfo { get {
 				return this.ParentBars.ScanForwardFindBarMarketClosedToday(this);
 			} }
+		[Obsolete("WARNING_NOT_YET_IMPLEMENTED")]
 		[JsonIgnore] public int BarIndexExpectedMarketClosesToday { get {
 				return this.ParentBars.SuggestBarIndexExpectedMarketClosesToday(this);
 			} }
@@ -81,6 +91,13 @@ namespace Sq1.Core.DataTypes {
 				ret = this.ParentBars.BarIndexExpectedMarketClosesTodaySinceMarketOpenSuggestBackwardForDateLaterOrEqual(this.DateTimeOpen);
 				return ret; 
 			}}
+		[JsonIgnore] public int BarsDuringMarketOpenExpectedIncludingClearingIntervals { get {
+				int ret = -1;
+				if (this.HasParentBars == false) return ret;
+				ret = this.ParentBars.BarsExpectedDuringMarketOpenIncludingClearingIntervals;
+				return ret; 
+			} }
+		
 //		public DateTime ReplaceTimeOpenWith(DateTime marketOpenCloseIntradayTime) {
 //			DateTime ret = new DateTime(this.DateTimeOpen.Year, this.DateTimeOpen.Month, this.DateTimeOpen.Day,
 //				marketOpenCloseIntradayTime.Hour, marketOpenCloseIntradayTime.Minute, marketOpenCloseIntradayTime.Second);
