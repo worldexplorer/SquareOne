@@ -67,8 +67,8 @@ namespace Sq1.Charting {
 				: position.EntryAlert.PlacedBar.ParentBarsIndex;
 			this.scrollToBarSafely(bar);
 		}
-		public override void PositionsClearBacktestStarting() {
-			this.ScriptExecutorObjects.PositionsClearBacktestStarting();
+		public override void ClearAllScriptObjectsBeforeBacktest() {
+			this.ScriptExecutorObjects.ClearAllBeforeBacktest();
 		}
 		public override void PositionsBacktestAdd(List<Position> positionsMaster) {
 			this.ScriptExecutorObjects.PositionArrowsBacktestAdd(positionsMaster);
@@ -76,9 +76,9 @@ namespace Sq1.Charting {
 		public override void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) {
 			this.ScriptExecutorObjects.PositionArrowsRealtimeAdd(pokeUnit);
 		}
-		public override void PendingHistoryClearBacktestStarting() {
-			this.ScriptExecutorObjects.PendingHistoryClearBacktestStarting();
-		}
+//		public override void PendingHistoryClearBacktestStarting() {
+//			this.ScriptExecutorObjects.PendingHistoryClearBacktestStarting();
+//		}
 		public override void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
 			this.ScriptExecutorObjects.PendingHistoryBacktestAdd(alertsPendingHistorySafeCopy);
 		}
@@ -98,7 +98,7 @@ namespace Sq1.Charting {
 		public override void SetIndicators(Dictionary<string, Indicator> indicators) {
 			this.ScriptExecutorObjects.SetIndicators(indicators);
 		}
-		public override ChartOperationStatus LineDrawModify (
+		public override OnChartObjectOperationStatus LineDrawModify (
 					// parameters could be a class, but I didnt introduce class Sq1.Core.Line because:
 					// 1) I don't want Sq1.Charting to depend on Sq1.Core too much
 					// 		so that other developers could take only Sq1.ChartShadow and adapt it for another trading application
@@ -127,35 +127,69 @@ namespace Sq1.Charting {
 					string msg = "EXECUTOROBJECTS_DIDNT_EVEN_RETURN_LINE_SOMETHING_SERIOUS";
 					Assembler.PopupException(msg + " //LineAddOrModify()");
 				}
-				return ChartOperationStatus.Unknown;
+				return OnChartObjectOperationStatus.Unknown;
 			}
 			return line.Status;
 		}
-		public override bool BarBackgroundSet(int bar, Color color) {
+		public override bool BarBackgroundSet(int barIndex, Color color) {
 			bool ret = false;
 			try {
-				ret = this.ScriptExecutorObjects.BarBackgroundSet(bar, color);
+				ret = this.ScriptExecutorObjects.BarBackgroundSet(barIndex, color);
 			} catch (Exception ex) {
 				string msg = "EXECUTOROBJECTS_COULDNT_FIND_BAR";
 				Assembler.PopupException(msg + " //BarBackgroundSet()");
 			}
 			return ret;
 		}
-		public override Color BarBackgroundGet(int bar) {
-			return this.ScriptExecutorObjects.BarBackgroundGet(bar);
+		public override Color BarBackgroundGet(int barIndex) {
+			return this.ScriptExecutorObjects.BarBackgroundGet(barIndex);
 		}
-		public override bool BarForegroundSet(int bar, Color color) {
+		public override bool BarForegroundSet(int barIndex, Color color) {
 			bool ret = false;
 			try {
-				ret = this.ScriptExecutorObjects.BarForegroundSet(bar, color);
+				ret = this.ScriptExecutorObjects.BarForegroundSet(barIndex, color);
 			} catch (Exception ex) {
 				string msg = "EXECUTOROBJECTS_COULDNT_FIND_BAR";
 				Assembler.PopupException(msg + " //LineAddOrModify()");
 			}
 			return ret;
 		}
-		public override Color BarForegroundGet(int bar) {
-			return this.ScriptExecutorObjects.BarForegroundGet(bar);
+		public override Color BarForegroundGet(int barIndex) {
+			return this.ScriptExecutorObjects.BarForegroundGet(barIndex);
+		}
+		public override OnChartObjectOperationStatus ChartLabelDrawOnNextLineModify(
+				string labelId, string labelText, Font font, Color colorFore, Color colorBack) {
+			OnChartLabel label = null;
+			try {
+				label = this.ScriptExecutorObjects.ChartLabelAddOrModify(labelId, labelText, font, colorFore, colorBack);
+			} catch (Exception ex) {
+				if (label != null) {
+					Assembler.PopupException(label.ToString() + " //LabelDrawMofify()");
+				} else {
+					string msg = "EXECUTOROBJECTS_DIDNT_EVEN_RETURN_LINE_SOMETHING_SERIOUS";
+					Assembler.PopupException(msg + " //LabelDrawMofify()");
+				}
+				return OnChartObjectOperationStatus.Unknown;
+			}
+			return label.Status;
+		}
+		public override OnChartObjectOperationStatus BarAnnotationDrawModify(
+				int barIndex, string barAnnotationId, string barAnnotationText,
+				Font font, Color colorFore, Color colorBack, bool aboveBar = true) {
+			OnChartBarAnnotation barAnnotation = null;
+			try {
+				barAnnotation = this.ScriptExecutorObjects.BarAnnotationAddOrModify(
+					barIndex, barAnnotationId, barAnnotationText, font, colorFore, colorBack, aboveBar);
+			} catch (Exception ex) {
+				if (barAnnotation != null) {
+					Assembler.PopupException(barAnnotation.ToString() + " //BarAnnotationDrawMofify()");
+				} else {
+					string msg = "EXECUTOROBJECTS_DIDNT_EVEN_RETURN_LINE_SOMETHING_SERIOUS";
+					Assembler.PopupException(msg + " //BarAnnotationDrawMofify()");
+				}
+				return OnChartObjectOperationStatus.Unknown;
+			}
+			return barAnnotation.Status;
 		}
 	}
 }

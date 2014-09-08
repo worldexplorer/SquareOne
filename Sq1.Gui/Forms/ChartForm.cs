@@ -110,10 +110,12 @@ namespace Sq1.Gui.Forms {
 			bool streamingNow = this.ChartFormManager.Executor.IsStreaming;
 			if (streamingNow) {
 				this.mniBacktestOnSelectorsChange.Enabled = false;
+				this.mniBacktestOnDataSourceSaved.Enabled = false;
 				this.mniBacktestNow.Enabled = false;
 				this.btnAutoSubmit.Enabled = true;
 			} else {
 				this.mniBacktestOnSelectorsChange.Enabled = true;
+				this.mniBacktestOnDataSourceSaved.Enabled = true;
 				this.mniBacktestNow.Enabled = true;
 				this.btnAutoSubmit.Enabled = false;
 			}
@@ -138,10 +140,12 @@ namespace Sq1.Gui.Forms {
 			// from btnStreaming_Click(); not related but visualises the last clicked state
 			if (this.btnStreaming.Checked) {
 				this.mniBacktestOnSelectorsChange.Enabled = false;
+				this.mniBacktestOnDataSourceSaved.Enabled = false;
 				this.mniBacktestNow.Enabled = false;
 				this.btnAutoSubmit.Enabled = true;
 			} else {
 				this.mniBacktestOnSelectorsChange.Enabled = true;
+				this.mniBacktestOnDataSourceSaved.Enabled = true;
 				this.mniBacktestNow.Enabled = true;
 				this.btnAutoSubmit.Enabled = false;
 			}
@@ -215,6 +219,17 @@ namespace Sq1.Gui.Forms {
 			}
 			this.ChartControl.RangeBarCollapsed = !this.mniShowBarRange.Checked; 
 
+
+			if (ctxScript.PositionSize.Mode == PositionSizeMode.Unknown) {
+				ctxScript.PositionSize = new PositionSize(PositionSizeMode.SharesConstantEachTrade, 1);
+				string msg = "FIXED_POSITIONSIZE_TO_SHARE_1 strategy[" + this.ChartFormManager.Executor.Strategy
+					+ "].ScriptContextsByName[" + ctxScript.Name + "] had PositionSize.Mode=Unknown";
+				Assembler.PopupException(msg);
+				#if DEBUG
+				Debugger.Break();
+				#endif
+			}
+
 			switch (ctxScript.PositionSize.Mode) {
 				case PositionSizeMode.SharesConstantEachTrade:
 					this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldValue = ctxScript.PositionSize.SharesConstantEachTrade.ToString();
@@ -232,8 +247,15 @@ namespace Sq1.Gui.Forms {
 					break;
 			}
 
-			DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
-			StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormManager.Executor.Strategy);
+			if (this.ChartFormManager.MainForm.ChartFormActive == this) {
+				string msg = "WE_ARE_HERE_WHEN_WE_SWITCH_STRATEGY_FOR_CHART";
+				//Debugger.Break();
+				
+				//v1 DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
+				//v1 StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormManager.Executor.Strategy);
+				//v2
+				this.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+			}
 			this.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 		}
 		void TsiProgressBarETAClick(object sender, EventArgs e) {

@@ -47,25 +47,20 @@ namespace Sq1.Core.StrategyBase {
 		public bool ScriptIsExecuting { get; internal set; }
 
 		public Bars Bars { get; private set; }
-		public PositionSize PositionSize {
-			get {
+		public PositionSize PositionSize { get {
 				if (this.Strategy == null) {
 					string msg = "ScriptExecutor.PositionSize: you should not access PositionSize before you've set Strategy";
 					throw new Exception(msg);
 				}
 				return this.Strategy.ScriptContextCurrent.PositionSize;
-			}
-		}
-
-		public DataSource DataSource {
-			get {
+			} }
+		public DataSource DataSource { get {
 				if (this.Bars == null) {
 					string msg = "ScriptExecutor.DataSource: you should not access DataSource BEFORE you've set ScriptExecutor.Bars";
 					throw new Exception(msg);
 				}
 				return this.Bars.DataSource;
-			}
-		}
+			} }
 		#endregion
 
 		bool isStreamingWhenNoStrategyLoaded;
@@ -814,9 +809,9 @@ namespace Sq1.Core.StrategyBase {
 			} catch (Exception ex) {
 				string msg = "RUN_SIMULATION_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Bars + "]";
 				Assembler.PopupException(msg, ex);
-#if DEBUG
+				#if DEBUG
 				Debugger.Break();
-#endif
+				#endif
 			} finally {
 				this.Backtester.SetRunningFalseNotifyWaitingThreadsBacktestCompleted();
 			}
@@ -846,8 +841,7 @@ namespace Sq1.Core.StrategyBase {
 			//this.ChartForm.Chart.Renderer.InitializeBarsInvalidateChart(this.Executor);
 			//this.Executor.Renderer.InitializeBarsInvalidateChart(this.Executor);
 			//this.ChartShadow.ScriptToChartCommunicator.PositionsBacktestClearAfterChartPickedUp();
-			this.ChartShadow.PositionsClearBacktestStarting();
-			this.ChartShadow.PendingHistoryClearBacktestStarting();
+			this.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
 
 			//inNewThread = false;
 			if (inNewThread) {
@@ -914,6 +908,9 @@ namespace Sq1.Core.StrategyBase {
 			if (barsClicked == null) {
 				string msg = "don't feed Bars=null into the foodchain!";
 				throw new Exception(msg);
+			}
+			if (this.Bars == barsClicked) {
+				string msg = "DONT_SET_SAME_BARS";
 			}
 			if (this.Backtester.IsBacktestingNow) {
 				this.Backtester.AbortRunningBacktestWaitAborted("CLICKED_ON_OTHER_BARS_WHILE_BACKTESTING");

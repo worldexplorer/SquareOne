@@ -35,6 +35,11 @@ namespace Sq1.Charting {
 				} else {
 					ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.Low : this.Position.ExitBar.Low;
 				}
+//				if (this.AboveBar) {
+//					ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.BarPrevious.High : this.Position.ExitBar.BarPrevious.High;
+//				} else {
+//					ret = this.ArrowIsForPositionEntry ? this.Position.EntryBar.BarPrevious.Low : this.Position.ExitBar.BarPrevious.Low;
+//				}
 				return ret;
 			} }
 		
@@ -42,8 +47,7 @@ namespace Sq1.Charting {
 				return this.ArrowIsForPositionEntry
 					? this.Position.EntryFilledBarIndex
 					: this.Position.ExitFilledBarIndex; } }
-		public bool AboveBar {
-			get {
+		public bool AboveBar { get {
 				return
 					//this.AlertArrow.IsShort ? true : false;
 					this.Position.IsShort
@@ -83,8 +87,8 @@ namespace Sq1.Charting {
 				return bitmapTextureBrush_cached;
 			} }
 		public Rectangle ClientRectangle { get { return new Rectangle(this.Xtransient, this.Ytransient,
-																		(this.bitmap == null) ? 0: this.Width,
-																		(this.bitmap == null) ? 0: this.Height); } }
+																		(this.bitmap == null) ? 0 : this.Width,
+																		(this.bitmap == null) ? 0 : this.Height); } }
 		//public Rectangle ClientRectangle { get { return new Rectangle(this.Xtransient, this.Ytransient, 12, 12); } }
 		public Point Location { get { return new Point(this.Xtransient, this.Ytransient); } }
 

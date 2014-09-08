@@ -89,6 +89,10 @@ namespace Sq1.Widgets.StrategiesTree {
 			}
 			return ret;
 		}
+		public void UnSelectStrategy() {
+			//this.tree.SelectSelectObject(null);
+			this.tree.SelectedIndex = -1;
+		}
 		public void SelectStrategy(Strategy strategy) {
 			if (strategy == null) {
 				string msg = "why would you pass strategy[" + strategy+ "]=null???";

@@ -32,7 +32,7 @@
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE;NON_DOUBLE_BUFFERED_is_default</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;NON_DOUBLE_BUFFERED_is_default;DEBUG_HEAVY_disabled</DefineConstants>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -75,13 +75,24 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="OnChart\OnChartBarAnnotation.cs" />
+    <Compile Include="OnChart\OnChartLabel.cs" />
     <Compile Include="OnChart\OnChartLine.cs" />
+    <Compile Include="PanelNamedFolding.ChartShadowImplementation.cs">
+      <DependentUpon>PanelNamedFolding.cs</DependentUpon>
+    </Compile>
     <Compile Include="PanelNamedFolding.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="PanelNamedFolding.DynamicVariables.cs">
       <DependentUpon>PanelNamedFolding.cs</DependentUpon>
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PanelNamedFolding.MouseEvents.cs">
+      <DependentUpon>PanelNamedFolding.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PanelNamedFolding.Rendering.cs">
+      <DependentUpon>PanelNamedFolding.cs</DependentUpon>
     </Compile>
     <Compile Include="PanelPrice.cs">
       <SubType>Component</SubType>

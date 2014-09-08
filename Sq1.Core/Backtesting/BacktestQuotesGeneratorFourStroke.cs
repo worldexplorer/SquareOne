@@ -37,10 +37,16 @@ namespace Sq1.Core.Backtesting {
 				DateTime serverTime = bar.DateTimeOpen + interStrokeAdjustment;
 				double volumeOneQuarterOfBar = bar.Volume / 4;
 				if (bar.ParentBars != null && bar.ParentBars.SymbolInfo != null) {
-					volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, bar.ParentBars.SymbolInfo.DecimalsVolume);
+					int decimalsVolume = bar.ParentBars.SymbolInfo.DecimalsVolume;
+					volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, decimalsVolume);
+					if (volumeOneQuarterOfBar == 0) {
+						Debugger.Break();
+						double minimalValue = Math.Pow(1, -decimalsVolume);		// 1^(-2) = 0.01
+						volumeOneQuarterOfBar = minimalValue;
+					}
 				}
 				if (volumeOneQuarterOfBar == 0) {
-					// TESTED_FOR_BAR_VOLUME_3 Debugger.Break();
+					Debugger.Break();
 					volumeOneQuarterOfBar = 1;
 				}
 				Quote quote = base.generateNewQuoteChildrenHelper(stroke, "RunSimulationFourStrokeOHLC", bar.Symbol, serverTime, price, volumeOneQuarterOfBar);

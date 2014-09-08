@@ -16,24 +16,34 @@ namespace Sq1.Core.StrategyBase {
 		public ScriptExecutor Executor { get; private set; }
 		protected Bars Bars { get { return (Executor == null) ? null : Executor.Bars; } }
 		//Bars barsInitialContext;
-		public Dictionary<int, ScriptParameter> Parameters;
+		public Dictionary<int, ScriptParameter> ParametersById;
+		public Dictionary<string, ScriptParameter> ParametersByNameInlineCopy { get {
+				Dictionary<string, ScriptParameter> ret = new Dictionary<string, ScriptParameter>();
+				foreach (ScriptParameter param in ParametersById.Values) {
+					if (ret.ContainsKey(param.Name)) {
+						string msg = "PARAMETER_NAME_NOT_UNIQUE[" + param.Name + "], prev[" + ret[param.Name].ToString() + "] this[" + param.ToString() + "]";
+						Assembler.PopupException(msg + " //Script.ParametersByName");
+						continue;
+					}
+					ret.Add(param.Name, param);
+				}
+				return ret;
+			} }
 
 		public BacktestMode BacktestMode;
 		public Strategy Strategy { get { return this.Executor.Strategy; } }
 		public string StrategyName { get { return this.Executor.StrategyName; } }
 
 		public List<Position> Positions { get { return this.Executor.ExecutionDataSnapshot.PositionsMaster; } }
-		public string ParametersAsString {
-			get {
-				if (this.Parameters.Count == 0) return "(None)";
+		public string ParametersAsString { get {
+				if (this.ParametersById.Count == 0) return "(None)";
 				string ret = "";
-				foreach (int id in this.Parameters.Keys) {
-					ret += this.Parameters[id].Name + "=" + this.Parameters[id].ValueCurrent + ",";
+				foreach (int id in this.ParametersById.Keys) {
+					ret += this.ParametersById[id].Name + "=" + this.ParametersById[id].ValueCurrent + ",";
 				}
 				ret = ret.TrimEnd(",".ToCharArray());
 				return "(" + ret + ")";
-			}
-		}
+			} }
 		
 		public List<Position> PositionsOpenNow { get { return this.Executor.ExecutionDataSnapshot.PositionsOpenNow; } }
 		public bool IsLastPositionNotClosedYet { get {
@@ -57,7 +67,7 @@ namespace Sq1.Core.StrategyBase {
 		public bool HasPositionsOpenNow { get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
 
 		public Script() {
-			this.Parameters = new Dictionary<int, ScriptParameter>();
+			this.ParametersById = new Dictionary<int, ScriptParameter>();
 			Type myChild = this.GetType();
 			object[] attributes = myChild.GetCustomAttributes(typeof(ScriptParameterAttribute), true);
 			foreach (object attrObj in attributes) {
@@ -72,12 +82,12 @@ namespace Sq1.Core.StrategyBase {
 		public ScriptParameter ParameterCreateRegister(int id, string name, double value, double start, double stop, double step) {
 			this.checkThrowParameterAlreadyRegistered(id, name);
 			ScriptParameter strategyParameter = new ScriptParameter(id, name, value, start, stop, step);
-			this.Parameters.Add(id, strategyParameter);
+			this.ParametersById.Add(id, strategyParameter);
 			return strategyParameter;
 		}
 		protected void checkThrowParameterAlreadyRegistered(int id, string name) {
-			if (this.Parameters.ContainsKey(id) == false) return;
-			ScriptParameter param = this.Parameters[id];
+			if (this.ParametersById.ContainsKey(id) == false) return;
+			ScriptParameter param = this.ParametersById[id];
 			string msg = "Script[" + this.StrategyName + "] already had parameter {id[" + param.Id + "] name[" + param.Name + "]}"
 				+ " while adding {id[" + id + "] name[" + name + "]}; edit source code and make IDs unique for every parameter";
 			throw new Exception(msg);
@@ -99,7 +109,7 @@ namespace Sq1.Core.StrategyBase {
 			try {
 				this.InitializeBacktest();
 			} catch (Exception ex) {
-				Assembler.PopupException("Script.Initialize()", ex);
+				Assembler.PopupException("Script.InitializeBacktestWithExecutorsBarsInstantiateIndicators()", ex);
 			}
 		}
 		public void IndicatorsInstantiateStoreInSnapshot() {

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
+
+using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
@@ -11,16 +14,16 @@ namespace Sq1.Strategies.Demo {
 	[ScriptParameterAttribute(Id=2, Name="verbose", ValueMin=0, ValueMax=1, ValueCurrent=0, ValueIncrement=1, ReasonToExist="set to 0 if you don't want log() to spam your Exceptions window" )]
 	public class EnterEveryBarCompiled : Script {
 		
-		[IndicatorParameterAttribute(Name="Period",
-			ValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]
-		public IndicatorAverageMovingSimple MAslow { get; set; }
+		//[IndicatorParameterAttribute(Name="Period",
+		//	ValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]
+		//public IndicatorAverageMovingSimple MAslow { get; set; }
 
 		[IndicatorParameterAttribute(Name = "Period",
 			ValueCurrent = 15, ValueMin = 10, ValueMax = 20, ValueIncrement = 1)]
 		public IndicatorAverageMovingSimple MAfast { get; set; }
 
 		protected void log(string msg) {
-			if (this.Parameters[2].ValueCurrent == 0.0) {
+			if (this.ParametersById[2].ValueCurrent == 0.0) {
 				return;
 			}
 			string whereIam = "\n\r\n\rEnterEveryBar.cs now=[" + DateTime.Now.ToString("ddd dd-MMM-yyyy HH:mm:ss.fff") + "]";
@@ -39,13 +42,28 @@ namespace Sq1.Strategies.Demo {
 			//this.MAslow.NotOnChartBarScaleInterval = new BarScaleInterval(BarScale.Hour, 1);
 			//this.MAslow.NotOnChartBarScaleInterval = new BarScaleInterval(BarScale.Minute, 15);
 			//this.MAslow.LineWidth = 2;
-			this.MAslow.LineColor = System.Drawing.Color.LightCoral;
+			//this.MAslow.LineColor = System.Drawing.Color.LightCoral;
 			this.MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
+			
+			testChartLabelDrawOnNextLineModify();
+		}
+		void testChartLabelDrawOnNextLineModify() {
+			string parameterNameToLookup = "test";
+			if (base.ParametersByNameInlineCopy.ContainsKey(parameterNameToLookup) == false) {
+				string msg = "if you renamed parameter [" + parameterNameToLookup + "] please ajdust the name here as well";
+				Assembler.PopupException(msg);
+			}
+			ScriptParameter param = base.ParametersByNameInlineCopy[parameterNameToLookup];
+			double paramValue = param.ValueCurrent;
+			//Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
+			//base.Executor.ChartShadow.ChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);
+			Font font = new Font("Consolas", 8, FontStyle.Bold);
+			base.Executor.ChartShadow.ChartLabelDrawOnNextLineModify("labelTest", parameterNameToLookup + "[" + paramValue + "]", font, Color.Brown, Color.Beige);
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 			//double slowStreaming = this.MAslow.BarClosesProxied.StreamingValue;
-			double slowStatic = this.MAslow.ClosesProxyEffective.LastStaticValue;
-			DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
+			//double slowStatic = this.MAslow.ClosesProxyEffective.LastStaticValue;
+			//DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
 
 			if (this.Executor.Backtester.IsBacktestingNow == false) {
 				Bar bar = quote.ParentStreamingBar;
@@ -66,9 +84,11 @@ namespace Sq1.Strategies.Demo {
 			}
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
+			//this.testBarAnnotations(barStaticFormed);
+			
 			Bar barStreaming = base.Bars.BarStreaming;
 			if (this.Executor.Backtester.IsBacktestingNow == false) {
-				Debugger.Break();
+				//Debugger.Break();
 			}
 			if (barStaticFormed.ParentBarsIndex <= 2) return;
 			if (barStaticFormed.IsBarStreaming) {
@@ -169,6 +189,20 @@ namespace Sq1.Strategies.Demo {
 			if (positionClosed.EntryFilledBarIndex == 37) {
 				Debugger.Break();
 			}
+		}
+		void testBarAnnotations(Bar barStaticFormed) {
+			int barIndex = barStaticFormed.ParentBarsIndex;
+			string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
+			labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
+			labelText += barStaticFormed.BarIndexAfterMarketOpenExpected + ":" + barStaticFormed.BarIndexBeforeMarketCloseExpected;
+			Font font = new Font("Consolas", 7);
+			//bool evenAboveOddBelow = true;
+			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
+			base.Executor.ChartShadow.BarAnnotationDrawModify(
+				barIndex, "ann" + barIndex, labelText, font, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
+			// checking labels stacking next upon (underneath) the previous
+			base.Executor.ChartShadow.BarAnnotationDrawModify(
+				barIndex, "ann2" + barIndex, labelText, font, Color.ForestGreen, Color.LightGray, evenAboveOddBelow);
 		}
 	}
 }

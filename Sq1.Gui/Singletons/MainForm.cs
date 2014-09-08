@@ -127,7 +127,14 @@ namespace Sq1.Gui.Singletons {
 				//this.PropagateSelectorsForCurrentChart();
 				//WHY???this.MainFormEventManager.DockPanel_ActiveDocumentChanged(this, EventArgs.Empty);
 				if (this.ChartFormActive != null) {
-					this.ChartFormActive.ChartFormManager.PopulateSliders();
+					//v1
+					//this.ChartFormActive.ChartFormManager.PopulateSliders();
+					//if (this.ChartFormActive.ChartFormManager.Strategy == null) {
+					//	StrategiesForm.Instance.StrategiesTreeControl.UnSelectStrategy();
+					//} else {
+					//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormActive.ChartFormManager.Strategy);
+					//}
+					this.ChartFormActive.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 				}
 	
 				this.WorkspacesManager.SelectWorkspaceLoaded(workspaceToLoad);

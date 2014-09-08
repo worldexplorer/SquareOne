@@ -9,12 +9,9 @@ namespace Sq1.Core.Streaming {
 			this.DataSource = dataSource;
 		}
 		
-		Bars IStreamingConsumer.ConsumerBarsToAppendInto { get {
-				throw new NotImplementedException();
-			} }
-		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Sq1.Core.DataTypes.Quote quote) {
-		}
-		void IStreamingConsumer.ConsumeBarLastStraticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed) {
+		Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { throw new NotImplementedException(); } }
+		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Sq1.Core.DataTypes.Quote quote) { }
+		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed) {
 			if (this.DataSource == null) return;
 			int barsSaved = this.DataSource.BarAppend(barLastFormed);
 			string msg = "Saved [ " + barsSaved + "] bars; DataSource[" + this.DataSource.Name + "] received barLastFormed[" + barLastFormed + "] from streaming";

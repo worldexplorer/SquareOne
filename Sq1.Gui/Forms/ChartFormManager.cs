@@ -22,7 +22,7 @@ namespace Sq1.Gui.Forms {
 		public ChartFormDataSnapshot DataSnapshot;
 		public Serializer<ChartFormDataSnapshot> DataSnapshotSerializer;
 		
-		bool FOR_DEBUGGING_initializedWithStrategyAfterDeserialization;
+		public bool StrategyFoundDuringDeserialization { get; private set; }
 		// private shortcuts
 		DockPanel dockPanel { get { return this.MainForm.DockPanel; } }
 
@@ -38,8 +38,7 @@ namespace Sq1.Gui.Forms {
 		public bool ScriptEditedNeedsSaving;
 		public ChartFormStreamingConsumer ChartStreamingConsumer;
 		
-		public Dictionary<string, DockContent> FormsAllRelated {
-			get {
+		public Dictionary<string, DockContent> FormsAllRelated { get {
 				var ret = new Dictionary<string, DockContent>();
 				if (this.ChartForm != null) ret.Add("Chart", this.ChartForm);
 				if (this.ScriptEditorForm != null) ret.Add("Source Code", this.ScriptEditorForm);
@@ -47,9 +46,9 @@ namespace Sq1.Gui.Forms {
 					ret.Add(textForMenuItem, this.ReportersFormsManager.FormsAllRelated[textForMenuItem]);
 				}
 				return ret;
-			}
-		}
+			} }
 		public ChartFormManager(int charSernoDeserialized = -1) {
+			this.StrategyFoundDuringDeserialization = false;
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
 			this.ScriptEditedNeedsSaving = false;
 //			this.Executor = new ScriptExecutor(Assembler.InstanceInitialized.ScriptExecutorConfig
@@ -67,6 +66,9 @@ namespace Sq1.Gui.Forms {
 				"ChartFormDataSnapshot-" + charSernoDeserialized + ".json", "Workspaces",
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
+			if (this.DataSnapshot == null) {
+				Debugger.Break();
+			}
 			this.DataSnapshot.ChartSerno = charSernoDeserialized;
 			this.DataSnapshotSerializer.Serialize();
 		}
@@ -117,7 +119,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
-		public void InitializeWithStrategy(MainForm mainForm, Strategy strategy) {
+		public void InitializeWithStrategy(MainForm mainForm, Strategy strategy, bool skipBacktestDuringDeserialization = true) {
 			string msig = "ChartFormsManager.InitializeWithStrategy(" + strategy + "): ";
 
 			this.MainForm = mainForm;
@@ -179,31 +181,34 @@ namespace Sq1.Gui.Forms {
 
 			try {
 				//I'm here via Persist.Deserialize() (=> Reporters haven't been restored yet => backtest should be postponed); will backtest in InitializeStrategyAfterDeserialization
-				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
+				// STRATEGY_CLICK_TO_CHART_DOESNT_BACKTEST this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
+				// ALL_SORT_OF_STARTUP_ERRORS this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, false);
+				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, skipBacktestDuringDeserialization);
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
 				Assembler.PopupException(msg + msig, ex);
+				#if DEBUG
+				Debugger.Break();
+				#endif
 			}
 		}
-
-		
 		public ContextChart ContextCurrentChartOrStrategy { get {
 				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart;
 			} }
-
 		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(string msig, bool loadNewBars = true, bool skipBacktest = false) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
 			ContextChart context = this.ContextCurrentChartOrStrategy;
+			if (context == null) {
+				string msg = "WONT_POPULATE_NULL_CONTEXT: strategy JSON/DLL was removedBetweenRestart / deserializedWithExceptionDueToDataFormatChange" +
+					" + chart for strategy doesn't contain Context; expect also Bars=NULL exception";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.PopulateWindowTitlesFromChartContextOrStrategy();
 			msig += (this.Strategy != null) ?
 				" << PopulateCurrentScriptContext(): Strategy[" + this.Strategy + "].ScriptContextCurrent[" + context.Name + "]"
 				:	" << PopulateCurrentScriptContext(): this.ChartForm[" + this.ChartForm.Text + "].ChartControl.ContextChart[" + context.Name + "]";
 
-			//BarScaleInterval barScaleInterval = (contextToPopulate.ScaleInterval != null) ? contextToPopulate.ScaleInterval : new BarScaleInterval();
-			if (context.ScaleInterval.Scale == BarScale.Unknown) {
-				string msg = "contextToPopulate.ScaleInterval[" + context.ScaleInterval + "] has BarScale.Unknown #1" + "; WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
 			if (string.IsNullOrEmpty(context.DataSourceName)) {
 				string msg = "DataSourceName.IsNullOrEmpty; WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
 				Assembler.PopupException(msg + msig);
@@ -223,37 +228,47 @@ namespace Sq1.Gui.Forms {
 			string symbol = context.Symbol;
 			
 			if (context.ChartStreaming) {
-				string msg = "strategyToSave[" + this.Strategy + "].ScriptContextCurrent[].ChartStreaming=true"
+				string msg = "CHART_STREAMING_DISABLED_FORCIBLY_POSSIBLY_ENABLED_BY_OPENCHART ContextCurrentChartOrStrategy.ChartStreaming=true"
 					+ "; Selectors should've been Disable()d on chat[" + this.ChartForm + "].Activated() or StreamingOn()"
 					+ " in MainForm.PropagateSelectorsForCurrentChart()";
-				throw new Exception(msg + msig);
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				Assembler.PopupException(msg + msig);
+				context.ChartStreaming = false;
 			}
 			
-			BarScaleInterval barScaleInterval = context.ScaleInterval;
-			if (barScaleInterval.Scale == BarScale.Unknown) barScaleInterval = dataSource.ScaleInterval;
-			if (barScaleInterval.Scale == BarScale.Unknown) {
-				string msg = "barScaleInterval.ScaleInterval[" + barScaleInterval + "] has BarScale.Unknown #3"
-					+ "; WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
-				throw new Exception(msg + msig);
+			if (context.ScaleInterval.Scale == BarScale.Unknown) {
+				if (dataSource.ScaleInterval.Scale == BarScale.Unknown) {
+					string msg1 = "SCALE_INTERVAL_UNKNOWN_BOTH_CONTEXT_DATASOURCE WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
+					throw new Exception(msg1 + msig);
+				}
+				context.ScaleInterval = dataSource.ScaleInterval;
+				string msg2 = "CONTEXT_SCALE_INTERVAL_UNKNOWN_FIXED_TO_DATASOURCE contextToPopulate.ScaleInterval[" + context.ScaleInterval + "]";
+				Assembler.PopupException(msg2 + msig);
 			}
-			BarDataRange barRange = (context.DataRange != null) ? context.DataRange : new BarDataRange();
 			//PositionSize posSize = (contextToPopulate.PositionSize != null) ? contextToPopulate.PositionSize : new PositionSize();
 			
 			if (loadNewBars) {
-				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, barScaleInterval);
+				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, context.ScaleInterval);
 				if (barsAll.Count > 0) {
 					this.ChartForm.ChartControl.RangeBar.Initialize(barsAll, barsAll);
 				}
 
-				Bars barsClicked = barsAll.SelectRange(barRange);
+				if (context.DataRange == null) context.DataRange = new BarDataRange();
+				Bars barsClicked = barsAll.SelectRange(context.DataRange);
 				
+				if (this.Executor.Bars != null) {
+					this.Executor.Bars.DataSource.DataSourceEditedChartsDisplayedShouldRunBacktestAgain -=
+						new EventHandler<DataSourceEventArgs>(ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
+				}
 				this.Executor.SetBars(barsClicked);
+				this.Executor.Bars.DataSource.DataSourceEditedChartsDisplayedShouldRunBacktestAgain +=
+						new EventHandler<DataSourceEventArgs>(ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
+				
 				this.ChartForm.ChartControl.Initialize(barsClicked);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
 				this.ChartForm.PopulateBtnStreamingClickedAndText();
-
-				context.ScaleInterval = barScaleInterval;
-				context.DataRange = barRange;
 			}
 
 			// set original Streaming Icon before we lost in simulationPreBarsSubstitute() and launched backtester in another thread
@@ -273,8 +288,11 @@ namespace Sq1.Gui.Forms {
 			this.Strategy.ScriptContextCurrent.PositionSize = this.Strategy.ScriptContextCurrent.PositionSize;
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 			
-			if (skipBacktest) return;
-			if (this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false) return;
+			bool wontBacktest = skipBacktest || this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false;
+			if (wontBacktest) {
+				this.Executor.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
+				return;
+			}
 			if (this.Strategy.Script == null) {
 				//this.StrategyCompileActivatePopulateSlidersShow();
 				string msg = "1) will compile it upstack in InitializeStrategyAfterDeserialization() or 2) compilation failed at Editor-F5";
@@ -282,6 +300,11 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			this.BacktesterRunSimulationRegular();
+		}
+		void ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain(object sender, DataSourceEventArgs e) {
+			if (this.Strategy.ScriptContextCurrent.BacktestOnDataSourceSaved == false) return;
+			this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(
+				"ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain", true, false);
 		}
 		public void BacktesterRunSimulationRegular() {
 			try {
@@ -292,6 +315,11 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		void afterBacktesterComplete() {
+			if (this.Executor.Bars == null) {
+				string msg = "DONT_RUN_BACKTEST_BEFORE_BARS_ARE_LOADED";
+				Assembler.PopupException(msg);
+				return;
+			}
 			if (this.ChartForm.InvokeRequired) {
 				this.ChartForm.BeginInvoke((MethodInvoker)delegate { this.afterBacktesterComplete(); });
 				return;
@@ -318,15 +346,27 @@ namespace Sq1.Gui.Forms {
 			this.InitializeChartNoStrategy(mainForm, null);
 		}
 		public void InitializeStrategyAfterDeserialization(MainForm mainForm, string strategyGuid) {
+			this.StrategyFoundDuringDeserialization = false;
 			Strategy strategyFound = null;
 			if (String.IsNullOrEmpty(strategyGuid) == false) {
 				strategyFound = Assembler.InstanceInitialized.RepositoryDllJsonStrategy.LookupByGuid(strategyGuid); 	// can return NULL here
 			}
-			this.InitializeWithStrategy(mainForm, strategyFound);
-			this.FOR_DEBUGGING_initializedWithStrategyAfterDeserialization = true;
 			if (strategyFound == null) {
 				string msg = "STRATEGY_NOT_FOUND: RepositoryDllJsonStrategy.LookupByGuid(strategyGuid=" + strategyGuid + ")";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				Assembler.PopupException(msg);
+				return;
+			}
+			this.InitializeWithStrategy(mainForm, strategyFound, true);
+			this.StrategyFoundDuringDeserialization = true;
+			if (this.Executor.Bars == null) {
+				string msg = "TYRINIG_AVOID_BARS_NULL_EXCEPTION: FIXME InitializeWithStrategy() didn't load bars";
+				Assembler.PopupException(msg);
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				return;
 			}
 			// ALREADY_DONE_BY_InitializeWithStrategy()_ABOVE this.Strategy = strategyFound;
@@ -351,6 +391,7 @@ namespace Sq1.Gui.Forms {
 			// make sure so that reporters will get poked
 			this.Executor.BacktesterRunSimulationTrampoline(new Action(this.afterBacktesterCompleteOnceOnRestart), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
+			return;
 		}
 		public void ReportersDumpCurrentForSerialization() {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
@@ -455,12 +496,24 @@ namespace Sq1.Gui.Forms {
 			this.PopulateSliders();
 		}
 		public void PopulateSliders() {
-			if (this.Strategy == null) return;
+			//CAN_HANDLE_NULL_IN_SlidersForm.Instance.Initialize()  if (this.Strategy == null) return;
 			SlidersForm.Instance.Initialize(this.Strategy);
-			SlidersForm.Instance.Show(this.dockPanel);
+			if (SlidersForm.Instance.Visible == false) {		// don't activate the tab if user has docked another Form on top of SlidersForm
+				SlidersForm.Instance.Show(this.dockPanel);
+			}
 		}
 		public override string ToString() {
 			return "Strategy[" + this.Strategy.Name + "], Chart [" + this.ChartForm.ToString() + "]";
+		}
+		public void PopulateMainFormSymbolStrategyTreesScriptParameters() {
+			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;
+			DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
+			if (this.Strategy != null) {
+				StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.Strategy);
+			} else {
+				StrategiesForm.Instance.StrategiesTreeControl.UnSelectStrategy();
+			}
+			this.PopulateSliders();
 		}
 	}
 }

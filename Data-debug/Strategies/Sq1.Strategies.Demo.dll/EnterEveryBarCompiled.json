@@ -1,6 +1,6 @@
 {
   "$type": "Sq1.Core.StrategyBase.Strategy, Sq1.Core",
-  "Guid": "52119020-4619-4158-9295-2cca5fa24d8d",
+  "Guid": "07e7825e-8e85-4e90-a852-bf04377cdc37",
   "Name": "EnterEveryBarCompiled",
   "ScriptSourceCode": null,
   "DotNetReferences": null,
@@ -14,15 +14,16 @@
       "$type": "Sq1.Core.StrategyBase.ContextScript, Sq1.Core",
       "PositionSize": {
         "$type": "Sq1.Core.Execution.PositionSize, Sq1.Core",
-        "Mode": 0,
+        "Mode": 1,
         "DollarsConstantEachTrade": 0.0,
-        "SharesConstantEachTrade": 0.0
+        "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": false,
+      "IsCurrent": true,
       "ChartAutoSubmitting": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": true,
       "BacktestOnSelectorsChange": true,
+      "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
       },
@@ -36,52 +37,33 @@
       "SlippageTicks": 1,
       "PriceLevelSizeForBonds": 0,
       "Name": "Default",
-      "Symbol": "UNDEFINED",
-      "DataSourceName": "UNDEFINED",
+      "Symbol": "RIM3",
+      "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-        "Scale": 0,
-        "Interval": 0,
-        "IsIntraday": false,
-        "TimeSpanInSeconds": 0
+        "Scale": 3,
+        "Interval": 10,
+        "IsIntraday": true,
+        "AsTimeSpanInSeconds": 600,
+        "AsTimeSpan": "00:10:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
-        "Range": 0,
-        "StartDate": "2009-08-09T00:00:00-04:00",
-        "EndDate": "2014-08-09T00:00:00-04:00",
-        "RecentBars": 500,
-        "RecentTimeunits": 10
+        "Range": 1,
+        "StartDate": "0001-01-01T00:00:00",
+        "EndDate": "9999-12-31T23:59:59.9999999",
+        "RecentBars": 1500,
+        "RecentTimeunits": 0
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
       "ParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
+        "1": 0.0,
+        "2": 0.0
       }
     }
   },
   "HasChartOnly": false,
-  "ScriptParametersJSONcheck": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib",
-    "1": {
-      "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
-      "Id": 1,
-      "Name": "test",
-      "ReasonToExist": "",
-      "ValueMin": 0.0,
-      "ValueMax": 10.0,
-      "ValueIncrement": 0.0,
-      "ValueCurrent": 0.0
-    },
-    "2": {
-      "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
-      "Id": 2,
-      "Name": "verbose",
-      "ReasonToExist": "",
-      "ValueMin": 0.0,
-      "ValueMax": 1.0,
-      "ValueIncrement": 1.0,
-      "ValueCurrent": 0.0
-    }
-  }
+  "ScriptParametersByIdJSONcheck": "(verbose=0,test=0)"
 }

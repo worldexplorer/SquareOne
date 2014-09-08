@@ -2,25 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using Newtonsoft.Json;
+
 namespace Sq1.Core.DataTypes {
 	[DataContract]
 	public class MarketInfo {
-		[DataMember]
-		public string Name;
-		[DataMember]
-		public string Description;
-		[DataMember]
-		public DateTime MarketOpenServerTime;
-		public string MarketOpenServerTimeAsString { get { return MarketCloseServerTime.ToString("HH:mm"); } }
-		[DataMember]
-		public DateTime MarketCloseServerTime;
-		public string MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
-		[DataMember]
-		public List<DayOfWeek> DaysOfWeekOpen;
-		[DataMember]
-		public string TimeZoneName;
-		public TimeZoneInfo TimeZoneInfo {
-			get {
+		[DataMember] public string Name;
+		[DataMember] public string Description;
+		[DataMember] public DateTime MarketOpenServerTime;
+		[IgnoreDataMember] [JsonIgnore] public string MarketOpenServerTimeAsString { get { return MarketCloseServerTime.ToString("HH:mm"); } }
+		[DataMember] public DateTime MarketCloseServerTime;
+		[IgnoreDataMember] [JsonIgnore] public string MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
+		[DataMember] public List<DayOfWeek> DaysOfWeekOpen;
+		[DataMember] public string TimeZoneName;
+		public TimeZoneInfo TimeZoneInfo { get {
 				TimeZoneInfo ret = TimeZoneInfo.Local;
 				if (String.IsNullOrEmpty(this.TimeZoneName)) return ret;
 				try {
@@ -31,14 +26,10 @@ namespace Sq1.Core.DataTypes {
 					//throw;
 				}
 				return ret;
-			}
-		}
-		[DataMember]
-		public List<MarketClearingTimespan> ClearingTimespans;
-		[DataMember]
-		public List<DateTime> HolidaysYMD000;
-		[DataMember]
-		public List<MarketShortDay> ShortDays;
+			} }
+		[DataMember] public List<MarketClearingTimespan> ClearingTimespans;
+		[DataMember] public List<DateTime> HolidaysYMD000;
+		[DataMember] public List<MarketShortDay> ShortDays;
 
 		public MarketInfo() {
 			Name = "ERROR_DESERIALISING_JSON";
@@ -53,22 +44,18 @@ namespace Sq1.Core.DataTypes {
 			HolidaysYMD000 = new List<DateTime>();
 			ShortDays = new List<MarketShortDay>();
 		}
-		public string DaysOfWeekOpenAsString {
-			get {
+		public string DaysOfWeekOpenAsString { get {
 				if (DaysOfWeekOpen == null) return "Mon,Tue,Wed,Thu,Fri";
 				return DaysOfWeekAsString(DaysOfWeekOpen);
-			}
-		}
-		string clearingTimespansAsString {
-			get {
+			} }
+		string clearingTimespansAsString { get {
 				string closedHours = "";
 				foreach (MarketClearingTimespan closedHour in this.ClearingTimespans) {
 					closedHours += closedHour + ",";
 				}
 				closedHours = closedHours.TrimEnd(',');
 				return closedHours;
-			}
-		}
+			} }
 		public static string DaysOfWeekAsString(List<DayOfWeek> dows) {
 			string ret = "";
 			foreach (DayOfWeek dow in dows) {
@@ -85,21 +72,12 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		public DateTime ServerTimeNow { get { return this.ConvertLocalTimeToServer(DateTime.Now); } }
-		public bool TodayIsTradingDay {
-			get { return this.IsTradeableDayServerTime(this.ServerTimeNow); }
-		}
-		public bool IsMarketOpenNow {
-			get { return this.IsMarketOpenAtServerTime(this.ServerTimeNow); }
-		}
-		public bool MarketIsAfterCloseNow {
-			get { return this.isMarketAfterCloseServerTime(this.ServerTimeNow); }
-		}
-		public DateTime MarketCloseLocalTime {
-			get { return this.ConvertServerTimeToLocal(this.MarketCloseServerTime); }
-		}
-		public DateTime LastTradingSessionEndedServerTime {
-			get {
+		[IgnoreDataMember] [JsonIgnore] public DateTime ServerTimeNow { get { return this.ConvertLocalTimeToServer(DateTime.Now); } }
+		[IgnoreDataMember] [JsonIgnore] public bool TodayIsTradingDay { get { return this.IsTradeableDayServerTime(this.ServerTimeNow); } }
+		[IgnoreDataMember] [JsonIgnore] public bool IsMarketOpenNow { get { return this.IsMarketOpenAtServerTime(this.ServerTimeNow); } }
+		[IgnoreDataMember] [JsonIgnore] public bool MarketIsAfterCloseNow { get { return this.isMarketAfterCloseServerTime(this.ServerTimeNow); } }
+		[IgnoreDataMember] [JsonIgnore] public DateTime MarketCloseLocalTime { get { return this.ConvertServerTimeToLocal(this.MarketCloseServerTime); } }
+		[IgnoreDataMember] [JsonIgnore] public DateTime LastTradingSessionEndedServerTime { get {
 				DateTime dateTimeServer = ServerTimeNow;
 				if (this.IsTradeableDayServerTime(dateTimeServer)
 						&& this.isMarketAfterCloseServerTime(dateTimeServer) == false) {
@@ -111,8 +89,7 @@ namespace Sq1.Core.DataTypes {
 				dateTimeServer = new DateTime(dateTimeServer.Year, dateTimeServer.Month, dateTimeServer.Day,
 					this.MarketOpenServerTime.Hour, this.MarketOpenServerTime.Minute, 0);
 				return dateTimeServer;
-			}
-		}
+			} }
 		public bool IsTradeableDayServerTime(DateTime dateServer) {
 			bool isHoliday = this.isHoliday(dateServer);
 			bool isDayOfWeekOpen = this.isTradeableDayOfWeek(dateServer);
@@ -125,8 +102,12 @@ namespace Sq1.Core.DataTypes {
 			this.GetRegularOrShortDayOpenCloseMarketTimeForServerDate(dateTimeServer, out openTimeServer, out closeTimeServer);
 			bool isMarketAfterOpening = dateTimeServer.TimeOfDay >= openTimeServer.TimeOfDay;
 			bool isMarketBeforeClosing = dateTimeServer.TimeOfDay < closeTimeServer.TimeOfDay;
-			bool isMarketSuspendedForClearing = this.isMarketSuspendedForClearing(dateTimeServer);
-			return isMarketAfterOpening && isMarketBeforeClosing && (isMarketSuspendedForClearing == false);
+			bool isMarketSuspendedForClearing = this.IsMarketSuspendedForClearing(dateTimeServer);
+			bool marketIsOpen = isMarketAfterOpening && isMarketBeforeClosing && (isMarketSuspendedForClearing == false);
+			if (marketIsOpen == false) {
+				string msg = "breakpoint";
+			}
+			return marketIsOpen;
 		}
 		bool isMarketAfterCloseServerTime(DateTime dateTimeServer) {
 			DateTime GenericOrShortDayCloseTimeServer = this.MarketCloseServerTime;
@@ -369,11 +350,11 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		bool isMarketSuspendedForClearing(DateTime dateTimeServer) {
-			MarketClearingTimespan suspendedNow = getClearingTimespanIfMarketSuspended(dateTimeServer);
+		public bool IsMarketSuspendedForClearing(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan = false) {
+			MarketClearingTimespan suspendedNow = this.getClearingTimespanIfMarketSuspended(dateTimeServer, considerSuspendedIfFullBarIsWithinClearingTimespan);
 			return (suspendedNow != null) ? true : false;
 		}
-		MarketClearingTimespan getClearingTimespanIfMarketSuspended(DateTime dateTimeServer) {
+		MarketClearingTimespan getClearingTimespanIfMarketSuspended(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan = false) {
 			MarketClearingTimespan ret = null;
 			if (this.ClearingTimespans == null) return ret;
 			foreach (MarketClearingTimespan clearingTimespan in this.ClearingTimespans) {
@@ -392,6 +373,45 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
+		#region CANT_SET_DEFAULT_DATETIME_PARAMETER_TO_NULL_OR_MINIMALVALUE_SORRY_REDUNDANCY
+		public bool IsMarketOpenDuringDateIntervalServerTime(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+			if (this.IsTradeableDayServerTime(dateTimeServerBarOpen.Date) == false) return false;
+			DateTime openTimeServer;
+			DateTime closeTimeServer;
+			this.GetRegularOrShortDayOpenCloseMarketTimeForServerDate(dateTimeServerBarOpen, out openTimeServer, out closeTimeServer);
+			bool isMarketAfterOpening = dateTimeServerBarOpen.TimeOfDay >= openTimeServer.TimeOfDay;
+			bool isMarketBeforeClosing = dateTimeServerBarOpen.TimeOfDay < closeTimeServer.TimeOfDay;
+			bool isMarketSuspendedForClearing = this.IsMarketSuspendedForClearingDuringDateInterval(dateTimeServerBarOpen, dateTimeServerBarClose);
+			bool marketIsOpen = isMarketAfterOpening && isMarketBeforeClosing && (isMarketSuspendedForClearing == false);
+			if (marketIsOpen == false) {
+				string msg = "breakpoint";
+			}
+			return marketIsOpen;
+		}
+		public bool IsMarketSuspendedForClearingDuringDateInterval(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+			MarketClearingTimespan suspendedNow = this.getClearingTimespanIfMarketSuspendedDuringDateInterval(dateTimeServerBarOpen, dateTimeServerBarClose);
+			return (suspendedNow != null) ? true : false;
+		}
+		MarketClearingTimespan getClearingTimespanIfMarketSuspendedDuringDateInterval(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+			MarketClearingTimespan ret = null;
+			if (this.ClearingTimespans == null) return ret;
+			foreach (MarketClearingTimespan clearingTimespan in this.ClearingTimespans) {
+				if (clearingTimespan.SuspendServerTimeOfDay == DateTime.MinValue) continue;
+				if (clearingTimespan.ResumeServerTimeOfDay == DateTime.MinValue) continue;
+				if (clearingTimespan.ClearingHappensOnDayOfWeek(dateTimeServerBarOpen.DayOfWeek) == false) {
+					ret = null;
+					break;
+				}
+				bool afterSuspend = dateTimeServerBarOpen.TimeOfDay >= clearingTimespan.SuspendServerTimeOfDay.TimeOfDay;
+				bool beforeResume = dateTimeServerBarClose.TimeOfDay <=  clearingTimespan.ResumeServerTimeOfDay.TimeOfDay;
+				if (afterSuspend && beforeResume) {
+					ret = clearingTimespan;
+					break;
+				}
+			}
+			return ret;
+		}
+		#endregion
 
 		public DateTime getThisDayClose(Quote quote) {
 			return new DateTime(quote.ServerTime.Date.Year, quote.ServerTime.Date.Month, quote.ServerTime.Date.Day,

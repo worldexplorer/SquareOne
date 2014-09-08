@@ -22,6 +22,10 @@ namespace Sq1.Charting {
 
 		public Dictionary<int, Color> BarBackgroundsByBar { get; private set; }
 		public Dictionary<int, Color> BarForegroundsByBar { get; private set; }
+
+		public Dictionary<string, OnChartLabel> OnChartLabelsById { get; private set; }
+		public Dictionary<int, Dictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
+
 		
 		public ScriptExecutorObjects() {
 			AlertArrowsListByBar = new Dictionary<int, List<AlertArrow>>();
@@ -34,8 +38,11 @@ namespace Sq1.Charting {
 			
 			BarBackgroundsByBar = new Dictionary<int, Color>();
 			BarForegroundsByBar = new Dictionary<int, Color>();
+
+			OnChartLabelsById = new Dictionary<string, OnChartLabel>();
+			OnChartBarAnnotationsByBar = new Dictionary<int, Dictionary<string, OnChartBarAnnotation>>();
 		}
-		public void PositionsClearBacktestStarting() {
+		public void ClearAllBeforeBacktest() {
 			this.AlertArrowsListByBar.Clear();
 			this.Indicators.Clear();
 			this.AlertsPendingHistorySafeCopy.Clear();
@@ -46,6 +53,9 @@ namespace Sq1.Charting {
 			
 			this.BarBackgroundsByBar.Clear();
 			this.BarForegroundsByBar.Clear();
+
+			this.OnChartLabelsById.Clear();
+			this.OnChartBarAnnotationsByBar.Clear();
 		}
 		public void PositionArrowsBacktestAdd(List<Position> positionsMaster) {
 			foreach (Position pos in positionsMaster) {
@@ -104,10 +114,6 @@ namespace Sq1.Charting {
 				indicator.DotsDrawnForCurrentSlidingWindow = -1;
 			}
 		}
-		
-		public void PendingHistoryClearBacktestStarting() {
-			this.AlertsPendingHistorySafeCopy.Clear();
-		}
 		public void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
 			this.AlertsPendingHistorySafeCopy = alertsPendingHistorySafeCopy;
 		}
@@ -146,29 +152,29 @@ namespace Sq1.Charting {
 				return lineCreated;
 			}
 			
-			OnChartLine line = this.LinesById[lineId];
-			if (		line.BarLeft	== barLeft	&& line.PriceLeft	== priceLeft
-			   		 && line.BarRight	== barRight	&& line.PriceRight	== priceRight
-			   		 && line.Color		== color	&& line.Width		== width) {
-				line.Status = ChartOperationStatus.NotModifiedSinceParametersDidntChange;
-				Assembler.PopupException(line.ToString() + " //LineAddOrModify()");
-				return line;
+			OnChartLine lineToModify = this.LinesById[lineId];
+			if (		lineToModify.BarLeft	== barLeft	&& lineToModify.PriceLeft	== priceLeft
+			   		 && lineToModify.BarRight	== barRight	&& lineToModify.PriceRight	== priceRight
+			   		 && lineToModify.Color		== color	&& lineToModify.Width		== width) {
+				lineToModify.Status = OnChartObjectOperationStatus.OnChartObjectNotModifiedSinceParametersDidntChange;
+				Assembler.PopupException(lineToModify.ToString() + " //LineAddOrModify()");
+				return lineToModify;
 			}
 			
 			//LineModify() candidate starts below
-			line.Status = ChartOperationStatus.Modified;
+			lineToModify.Status = OnChartObjectOperationStatus.OnChartObjectModified;
 
-			if (line.PriceLeft != priceLeft) line.PriceLeft  = priceLeft;
-			if (line.PriceRight != priceRight) line.PriceRight  = priceRight;
+			if (lineToModify.PriceLeft != priceLeft) lineToModify.PriceLeft  = priceLeft;
+			if (lineToModify.PriceRight != priceRight) lineToModify.PriceRight  = priceRight;
 			
-			if (line.BarLeft != barLeft) {
+			if (lineToModify.BarLeft != barLeft) {
 				// lock (chartIsDrawingNow) {} !!! otherwize 2 threads will delete from different LinesByLeftBar[barLeft] 
-				List<OnChartLine> linesByLeftImMovingFrom = this.LinesByLeftBar[line.BarLeft];
+				List<OnChartLine> linesByLeftImMovingFrom = this.LinesByLeftBar[lineToModify.BarLeft];
 				if (this.LinesByLeftBar.ContainsKey(barLeft) == false) {
 					this.LinesByLeftBar.Add(barLeft, new List<OnChartLine>());
 				}
 				List<OnChartLine> linesByLeftImMovingTo	  = this.LinesByLeftBar[barLeft];
-				if (linesByLeftImMovingFrom.Contains(line) == false) {
+				if (linesByLeftImMovingFrom.Contains(lineToModify) == false) {
 					#if DEBUG
 					Debugger.Break();
 					#endif
@@ -176,19 +182,19 @@ namespace Sq1.Charting {
 						+ " LinesByLeftBar[" + barLeft + "].Count[" + linesByLeftImMovingTo.Count + "]";
 					Assembler.PopupException(msg);
 				} else {
-					linesByLeftImMovingFrom.Remove(line);
-					linesByLeftImMovingTo.Add(line);
-					line.BarLeft = barLeft;
+					linesByLeftImMovingFrom.Remove(lineToModify);
+					linesByLeftImMovingTo.Add(lineToModify);
+					lineToModify.BarLeft = barLeft;
 				}
 			}
-			if (line.BarRight != barRight) {
+			if (lineToModify.BarRight != barRight) {
 				// lock (chartIsDrawingNow) {} !!! otherwize 2 threads will delete from different LinesByRightBar[barRight]
-				List<OnChartLine> linesByRightImMovingFrom = this.LinesByRightBar[line.BarRight];
+				List<OnChartLine> linesByRightImMovingFrom = this.LinesByRightBar[lineToModify.BarRight];
 				if (this.LinesByRightBar.ContainsKey(barRight) == false) {
 					this.LinesByRightBar.Add(barRight, new List<OnChartLine>());
 				}
 				List<OnChartLine> linesByRightImMovingTo   = this.LinesByRightBar[barRight];
-				if (linesByRightImMovingFrom.Contains(line) == false) {
+				if (linesByRightImMovingFrom.Contains(lineToModify) == false) {
 					#if DEBUG
 					Debugger.Break();
 					#endif
@@ -196,12 +202,12 @@ namespace Sq1.Charting {
 						+ " LinesByRightBar[" + barRight + "].Count[" + linesByRightImMovingTo.Count + "]";
 					Assembler.PopupException(msg);
 				} else {
-					linesByRightImMovingFrom.Remove(line);
-					linesByRightImMovingTo.Add(line);
-					line.BarRight = barRight;
+					linesByRightImMovingFrom.Remove(lineToModify);
+					linesByRightImMovingTo.Add(lineToModify);
+					lineToModify.BarRight = barRight;
 				}
 			}
-			return line;
+			return lineToModify;
 		}
 		public bool BarBackgroundSet(int barIndex, Color color) {
 			bool createdFalseModifiedTrue = false;
@@ -236,6 +242,65 @@ namespace Sq1.Charting {
 				ret = this.BarForegroundsByBar[barIndex];
 			}
 			return ret;
+		}
+		public OnChartLabel ChartLabelAddOrModify(string labelId, string labelText, Font font, Color colorFore, Color colorBack) {
+			//Add() candidate starts below
+			if (this.OnChartLabelsById.ContainsKey(labelId) == false) {
+				OnChartLabel labelCreated = new OnChartLabel(labelId, labelText, font, colorFore, colorBack);
+				this.OnChartLabelsById.Add(labelId, labelCreated);
+				return labelCreated;
+			}
+			
+			//Modify() candidate starts below
+			OnChartLabel labelToModify = this.OnChartLabelsById[labelId];
+			if (		labelToModify.LabelText			== labelText	&& labelToModify.Font				== font
+			   		 && labelToModify.ColorForeground	== colorFore	&& labelToModify.ColorBackground	== colorBack) {
+				labelToModify.Status = OnChartObjectOperationStatus.OnChartObjectNotModifiedSinceParametersDidntChange;
+				Assembler.PopupException(labelToModify.ToString() + " //ChartLabelAddOrModify()");
+				return labelToModify;
+			}
+			
+			labelToModify.Status = OnChartObjectOperationStatus.OnChartObjectModified;
+
+			if (labelToModify.LabelText			!= labelText)	labelToModify.LabelText = labelText;
+			if (labelToModify.Font				!= font)		labelToModify.Font = font;
+			if (labelToModify.ColorForeground	!= colorFore)	labelToModify.ColorForeground = colorFore;
+			if (labelToModify.ColorBackground	!= colorBack)	labelToModify.ColorBackground = colorBack;
+
+			return labelToModify;
+		}
+		public OnChartBarAnnotation BarAnnotationAddOrModify(int barIndex, string barAnnotationId, string barAnnotationText,
+		                                                     Font font, Color colorFore, Color colorBack, bool aboveBar = true) {
+			//Add() candidate starts below
+			if (this.OnChartBarAnnotationsByBar.ContainsKey(barIndex) == false) {
+				this.OnChartBarAnnotationsByBar.Add(barIndex, new Dictionary<string, OnChartBarAnnotation>());
+			}
+			Dictionary<string, OnChartBarAnnotation> annotationsForBar = this.OnChartBarAnnotationsByBar[barIndex];
+
+			if (annotationsForBar.ContainsKey(barAnnotationId) == false) {
+				OnChartBarAnnotation barAnnotationCreated = new OnChartBarAnnotation(
+					barAnnotationId, barAnnotationText, font, colorFore, colorBack, aboveBar);
+				annotationsForBar.Add(barAnnotationId, barAnnotationCreated);
+				return barAnnotationCreated;
+			}
+			
+			//Modify() candidate starts below
+			OnChartBarAnnotation barAnnotationToModify = annotationsForBar[barAnnotationId];
+			if (		barAnnotationToModify.BarAnnotationText	== barAnnotationText	&& barAnnotationToModify.Font				== font
+			   		 && barAnnotationToModify.ColorForeground	== colorFore			&& barAnnotationToModify.ColorBackground	== colorBack) {
+				barAnnotationToModify.Status = OnChartObjectOperationStatus.OnChartObjectNotModifiedSinceParametersDidntChange;
+				Assembler.PopupException(barAnnotationToModify.ToString() + " //BarAnnotationAddOrModify()");
+				return barAnnotationToModify;
+			}
+			
+			barAnnotationToModify.Status = OnChartObjectOperationStatus.OnChartObjectModified;
+
+			if (barAnnotationToModify.BarAnnotationText	!= barAnnotationText)	barAnnotationToModify.BarAnnotationText = barAnnotationText;
+			if (barAnnotationToModify.Font				!= font)				barAnnotationToModify.Font = font;
+			if (barAnnotationToModify.ColorForeground	!= colorFore)			barAnnotationToModify.ColorForeground = colorFore;
+			if (barAnnotationToModify.ColorBackground	!= colorBack)			barAnnotationToModify.ColorBackground = colorBack;
+
+			return barAnnotationToModify;
 		}
 	}
 }

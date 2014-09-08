@@ -16,6 +16,7 @@ namespace Sq1.Core.StrategyBase {
 		[DataMember] public List<string> ReporterShortNamesUserInvokedJSONcheck;
 		[DataMember] public bool BacktestOnRestart;
 		[DataMember] public bool BacktestOnSelectorsChange;
+		[DataMember] public bool BacktestOnDataSourceSaved;
 		[DataMember] public Dictionary<string, object> ReportersSnapshots;
 		
 		[DataMember] public bool ApplyCommission;
@@ -42,6 +43,7 @@ namespace Sq1.Core.StrategyBase {
 			ChartAutoSubmitting = false;
 			BacktestOnRestart = true;
 			BacktestOnSelectorsChange = true;
+			BacktestOnDataSourceSaved = true;
 			ReporterShortNamesUserInvokedJSONcheck = new List<string>();
 			ReportersSnapshots = new Dictionary<string, object>();
 			
@@ -70,6 +72,7 @@ namespace Sq1.Core.StrategyBase {
 			this.ChartAutoSubmitting = found.ChartAutoSubmitting;
 			this.BacktestOnRestart = found.BacktestOnRestart;
 			this.BacktestOnSelectorsChange = found.BacktestOnSelectorsChange;
+			this.BacktestOnDataSourceSaved = found.BacktestOnDataSourceSaved;
 			this.ReporterShortNamesUserInvokedJSONcheck = new List<string>(found.ReporterShortNamesUserInvokedJSONcheck);
 		}
 		public new ContextScript MemberwiseCloneMadePublic() {

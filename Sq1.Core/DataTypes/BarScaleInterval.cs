@@ -158,10 +158,9 @@ namespace Sq1.Core.DataTypes {
 			ret.Scale = BarScale.Tick;
 			return ret;
 		}
-		public long TimeSpanInSeconds {
-			get {
-				long ret = -1;
-				long yearly = (365 + 1/4) * 24 * 60 * 60;
+		public int AsTimeSpanInSeconds { get {
+				int ret = -1;
+				int yearly = (365 + 1/4) * 24 * 60 * 60;
 				switch(this.Scale) {
 					case BarScale.Yearly:		ret = yearly;			break;
 					case BarScale.Quarterly:	ret = yearly / 4;		break;
@@ -179,8 +178,8 @@ namespace Sq1.Core.DataTypes {
 				}
 				ret *= this.Interval;
 				return ret;
-			}
-		}
+			} }
+		public TimeSpan AsTimeSpan { get { return new TimeSpan(0, 0, this.AsTimeSpanInSeconds); } }
 		public override string ToString() {
 			string str = "";
 			if (this.IsIntraday) {

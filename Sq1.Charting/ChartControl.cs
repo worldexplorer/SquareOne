@@ -180,7 +180,7 @@ namespace Sq1.Charting {
 		}
 
 		public void BarWidthIncrementAtKeyPressRate() {
-			if (this.ChartSettings.BarWidthIncludingPadding >= 50) return; 
+			if (this.ChartSettings.BarWidthIncludingPadding >= this.ChartSettings.BarWidthIncludingPaddingMax) return; 
 			this.ChartSettings.BarWidthIncludingPadding += this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep;
 			this.InvalidateAllPanelsFolding();
 			base.RaiseChartSettingsChangedContainerShouldSerialize();
@@ -198,14 +198,14 @@ namespace Sq1.Charting {
 //				return;
 //			}
 			this.panelPrice.Invalidate();
-			base.RaiseChartSettingsChangedContainerShouldSerialize();
+			//base.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 		public void DragUpUnsqueeze() {
 			if (this.ChartSettings.SqueezeVerticalPaddingPx < this.ChartSettings.SqueezeVerticalPaddingStep) return;
 			this.ChartSettings.SqueezeVerticalPaddingPx -= this.ChartSettings.SqueezeVerticalPaddingStep;
 //			this.BarWidthIncrement();
 			this.panelPrice.Invalidate();
-			base.RaiseChartSettingsChangedContainerShouldSerialize();
+			//base.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 		public void TooltipPriceShowAlone(Bar barToPopulate, Rectangle barWithShadowsRectangle) {
 			if (this.ChartSettings.TooltipPriceShow == false) return;
@@ -305,7 +305,6 @@ namespace Sq1.Charting {
 			this.InvalidateAllPanelsFolding();
 			return wasInvalidated;
 		}
-
 		
 		public void PropagateSettingSplitterDistancePriceVsVolume() {
 			if (this.ChartSettings.PriceVsVolumeSplitterDistance == 0) {

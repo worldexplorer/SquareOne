@@ -1,6 +1,6 @@
 {
   "$type": "Sq1.Core.StrategyBase.Strategy, Sq1.Core",
-  "Guid": "19422fe2-f4e6-42fc-a73b-be2fcbb97118",
+  "Guid": "d7062341-ab3a-423e-b2df-95b9391266c3",
   "Name": "TwoMAsCompiled",
   "ScriptSourceCode": null,
   "DotNetReferences": null,
@@ -18,27 +18,14 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": true,
+      "IsCurrent": false,
       "ChartAutoSubmitting": false,
-      "ReporterShortNamesUserInvokedJSONcheck": [
-        "Performance",
-        "Positions"
-      ],
+      "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": true,
       "BacktestOnSelectorsChange": true,
+      "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
-        "Performance": null,
-        "Positions": {
-          "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
-          "ShowEntriesExits": true,
-          "ShowPercentage": true,
-          "ShowBarsHeld": true,
-          "ShowMaeMfe": true,
-          "ShowSignals": true,
-          "ShowCommission": true,
-          "Colorify": true
-        }
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
       },
       "ApplyCommission": false,
       "EnableSlippage": false,
@@ -57,7 +44,8 @@
         "Scale": 3,
         "Interval": 5,
         "IsIntraday": true,
-        "TimeSpanInSeconds": 300
+        "AsTimeSpanInSeconds": 300,
+        "AsTimeSpan": "00:05:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -75,7 +63,5 @@
     }
   },
   "HasChartOnly": false,
-  "ScriptParametersJSONcheck": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-  }
+  "ScriptParametersByIdJSONcheck": "(None)"
 }

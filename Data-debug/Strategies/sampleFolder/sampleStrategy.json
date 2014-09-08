@@ -1,0 +1,64 @@
+{
+  "$type": "Sq1.Core.StrategyBase.Strategy, Sq1.Core",
+  "Guid": "8bc7f531-6a31-46c7-9f63-1ba6027c56b2",
+  "Name": "sampleStrategy",
+  "ScriptSourceCode": "namespace sample.Strategies {\r\npublic class MyScript : Script {\r\npublic override void ExecuteOnNewQuote(Quote quote) {\r\nlog(\"ExecuteOnNewQuote(): [\" + quote.ToString() + \"]\");\r\n}\r\n}\r\n}\r\n",
+  "DotNetReferences": null,
+  "DllPathIfNoSourceCode": null,
+  "ExceptionsLimitToAbortBacktest": 10,
+  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\sampleFolder\\sampleStrategy.json",
+  "ScriptContextCurrentName": "Default",
+  "ScriptContextsByName": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
+    "Default": {
+      "$type": "Sq1.Core.StrategyBase.ContextScript, Sq1.Core",
+      "PositionSize": {
+        "$type": "Sq1.Core.Execution.PositionSize, Sq1.Core",
+        "Mode": 1,
+        "DollarsConstantEachTrade": 0.0,
+        "SharesConstantEachTrade": 1.0
+      },
+      "IsCurrent": false,
+      "ChartAutoSubmitting": false,
+      "ReporterShortNamesUserInvokedJSONcheck": [],
+      "BacktestOnRestart": true,
+      "BacktestOnSelectorsChange": true,
+      "ReportersSnapshots": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
+      },
+      "ApplyCommission": false,
+      "EnableSlippage": false,
+      "LimitOrderSlippage": false,
+      "RoundEquityLots": false,
+      "RoundEquityLotsToUpperHundred": false,
+      "NoDecimalRoundingForLimitStopPrice": false,
+      "SlippageUnits": 1.0,
+      "SlippageTicks": 1,
+      "PriceLevelSizeForBonds": 0,
+      "Name": "Default",
+      "Symbol": "UNDEFINED",
+      "DataSourceName": "UNDEFINED",
+      "ScaleInterval": {
+        "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+        "Scale": 0,
+        "Interval": 0,
+        "IsIntraday": false,
+        "TimeSpanInSeconds": 0
+      },
+      "DataRange": {
+        "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
+        "Range": 1,
+        "StartDate": "0001-01-01T00:00:00",
+        "EndDate": "9999-12-31T23:59:59.9999999",
+        "RecentBars": 500,
+        "RecentTimeunits": 0
+      },
+      "ChartStreaming": false,
+      "ShowRangeBar": false,
+      "ParameterValuesById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
+      }
+    }
+  },
+  "HasChartOnly": false
+}

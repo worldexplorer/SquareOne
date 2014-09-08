@@ -13,67 +13,50 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.DataFeed {
 	public class DataSource : NamedObjectJsonSerializable {
+		public event EventHandler<DataSourceEventArgs> DataSourceEditedChartsDisplayedShouldRunBacktestAgain;
 		// MOVED_TO_PARENT_NamedObjectJsonSerializable [DataMember] public new string Name;
-		public string SymbolSelected;
-		public List<string> Symbols;
-		[JsonIgnore]
-		public string SymbolsCSV {
-			get {
+					 public string SymbolSelected;
+					 public List<string> Symbols;
+		[JsonIgnore] public string SymbolsCSV { get {
 				StringBuilder stringBuilder = new StringBuilder();
 				foreach (string current in Symbols) {
 					if (stringBuilder.Length > 0) stringBuilder.Append(",");
 					stringBuilder.Append(current);
 				}
 				return stringBuilder.ToString();
-			}
-		}
-		public BarScaleInterval ScaleInterval;
-		public StaticProvider StaticProvider;
-		public StreamingProvider StreamingProvider;
-		public BrokerProvider BrokerProvider;
-		public string MarketName;
-		[JsonIgnore]
-		public MarketInfo marketInfo;
-		[JsonIgnore]
-		public MarketInfo MarketInfo {
+			} }
+					 public BarScaleInterval ScaleInterval;
+					 public StaticProvider StaticProvider;
+					 public StreamingProvider StreamingProvider;
+					 public BrokerProvider BrokerProvider;
+					 public string MarketName;
+		[JsonIgnore] public MarketInfo marketInfo;
+		[JsonIgnore] public MarketInfo MarketInfo {
 			get { return this.marketInfo; }
 			set {
 				this.marketInfo = value;
 				MarketName = value.Name;
-			}
-		}
-		public string StaticProviderName {
-			get {
-				if (StaticProvider == null) return "STATIC_PROVIDER_NOT_INITIALIZED";
-				//return staticProvider.GetType().Name;
-				return StaticProvider.Name;
-			}
-		}
-		public string StreamingProviderName {
-			get {
-				if (StreamingProvider == null) return "STREAMING_PROVIDER_NOT_INITIALIZED";
-				//return staticProvider.GetType().Name;
-				return StreamingProvider.Name;
-			}
-		}
-		public string BrokerProviderName {
-			get {
-				if (BrokerProvider == null) return "BROKER_PROVIDER_NOT_INITIALIZED";
-				//return staticProvider.GetType().Name;
-				return BrokerProvider.Name;
-			}
-		}
-		[JsonIgnore]
-		public bool IsIntraday { get { return ScaleInterval.IsIntraday; } }
-
-		[JsonIgnore]
-		public RepositoryBarsSameScaleInterval BarsRepository { get; protected set; }
+			} }
+					 public string StaticProviderName { get {
+							if (StaticProvider == null) return "STATIC_PROVIDER_NOT_INITIALIZED";
+							//return staticProvider.GetType().Name;
+							return StaticProvider.Name;
+						} }
+					 public string StreamingProviderName { get {
+							if (StreamingProvider == null) return "STREAMING_PROVIDER_NOT_INITIALIZED";
+							//return staticProvider.GetType().Name;
+							return StreamingProvider.Name;
+						} }
+					 public string BrokerProviderName { get {
+							if (BrokerProvider == null) return "BROKER_PROVIDER_NOT_INITIALIZED";
+							//return staticProvider.GetType().Name;
+							return BrokerProvider.Name;
+						} }
+		[JsonIgnore] public bool IsIntraday { get { return ScaleInterval.IsIntraday; } }
+		[JsonIgnore] public RepositoryBarsSameScaleInterval BarsRepository { get; protected set; }
 		//public BarsFolder BarsFolderPerst { get; protected set; }
-
-		public string DataSourceAbspath { get; protected set; }
-		
-		[JsonIgnore]
-		public string DataSourcesAbspath;
+					 public string DataSourceAbspath { get; protected set; }
+		[JsonIgnore] public string DataSourcesAbspath;
 
 		// used only by JsonDeserialize()
 		public DataSource() {
@@ -256,6 +239,10 @@ namespace Sq1.Core.DataFeed {
 			//}
 			if (ret == null) ret = new Bars(symbol, this.ScaleInterval, "FILE_NOT_FOUND " + this.GetType().Name);
 			return ret;
+		}
+		public void RaiseDataSourceEditedChartsDisplayedShouldRunBacktestAgain() {
+			if (this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain == null) return;
+			this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain(this, new DataSourceEventArgs(this));
 		}
 	}
 }

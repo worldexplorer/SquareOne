@@ -9,12 +9,13 @@
     "Scale": 3,
     "Interval": 1,
     "IsIntraday": true,
-    "TimeSpanInSeconds": 60
+    "AsTimeSpanInSeconds": 60,
+    "AsTimeSpan": "00:01:00"
   },
   "StaticProvider": null,
   "StreamingProvider": null,
   "BrokerProvider": null,
-  "MarketName": "MOCK",
+  "MarketName": "FORTS",
   "Name": "MOCK",
   "StaticProviderName": "STATIC_PROVIDER_NOT_INITIALIZED",
   "StreamingProviderName": "STREAMING_PROVIDER_NOT_INITIALIZED",

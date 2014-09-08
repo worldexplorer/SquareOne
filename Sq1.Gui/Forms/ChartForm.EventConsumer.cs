@@ -69,6 +69,7 @@ namespace Sq1.Gui.Forms {
 				Strategy strategy = this.ChartFormManager.Executor.Strategy;
 				if (strategy == null) return;
 				strategy.ScriptContextCurrent.BacktestOnSelectorsChange = this.mniBacktestOnSelectorsChange.Checked;
+				strategy.ScriptContextCurrent.BacktestOnDataSourceSaved = this.mniBacktestOnDataSourceSaved.Checked;
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(strategy);
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestOnEveryChange_Click()", ex);

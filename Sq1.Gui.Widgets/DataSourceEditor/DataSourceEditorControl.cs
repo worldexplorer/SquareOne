@@ -44,7 +44,11 @@ namespace Sq1.Widgets.DataSourceEditor {
 				throw new Exception("DataSourceEditor can not create the DataSource; pass an existing datasource for editing, not NULL");
 			}
 			this.ds = dsEdit;
-			this.Text = ds.Name;
+			if (this.Parent != null) {
+				this.Parent.Text = ds.Name;
+			} else {
+				this.Text = ds.Name;
+			}
 			if (this.ds.Name != windowTitleDefault) {
 				this.txtDataSourceName.Text = this.ds.Name;
 			}
@@ -239,7 +243,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 		}
 		public void ApplyEditorsToDataSourceAndClose() {
 			if (this.txtDataSourceName.Text == "") {
-				MessageBox.Show("Please provide Name for this new DataSet");
+				string msg = "Please provide Name for this new DataSet";
+				Assembler.PopupException(msg);
 				this.txtDataSourceName.Focus();
 				return;
 			}
@@ -267,7 +272,9 @@ namespace Sq1.Widgets.DataSourceEditor {
 			// for DataSource, nothing changed, but providers were assigned by user clicks, so DS will Initialize() each
 			ds.Initialize(this.assemblerInstance.RepositoryJsonDataSource.AbsPath, this.assemblerInstance.OrderProcessor, this.assemblerInstance.StatusReporter);
 			this.assemblerInstance.RepositoryJsonDataSource.SerializeSingle(ds);
-			base.Hide();
+			// JITTERING_HERE_LOOKS_LIKE_STARTS_BACKTESTING_BEFORE_DSEDITOR_CLOSED
+			this.btnCancel_Click(this, null);
+			this.ds.RaiseDataSourceEditedChartsDisplayedShouldRunBacktestAgain();
 		}
 	}
 }

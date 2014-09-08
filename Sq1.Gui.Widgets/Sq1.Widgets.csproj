@@ -102,6 +102,9 @@
     <Compile Include="DataSourceEditor\MarketInfoEditor.Designer.cs">
       <DependentUpon>MarketInfoEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataSourceEditor\MarketInfoEditor.EventConsumer.cs">
+      <DependentUpon>MarketInfoEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataSourceTree\DataSourcesTreeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -16,8 +16,8 @@ namespace Sq1.Core.StrategyBase {
 		public int ExceptionsLimitToAbortBacktest;
 
 		public string StoredInJsonAbspath;
-		[JsonIgnore] public string StoredInFolderRelName	{ get { return Path.GetFileName(Path.GetDirectoryName(	this.StoredInJsonAbspath)); } }
-		[JsonIgnore] public string StoredInJsonRelName	{ get { return Path.GetFileName(		this.StoredInJsonAbspath); } }
+		[JsonIgnore] public string StoredInFolderRelName	{ get { return Path.GetFileName(Path.GetDirectoryName(this.StoredInJsonAbspath)); } }
+		[JsonIgnore] public string StoredInJsonRelName	{ get { return Path.GetFileName(this.StoredInJsonAbspath); } }
 		[JsonIgnore] public bool ActivatedFromDll { get {
 				if (string.IsNullOrEmpty(this.DllPathIfNoSourceCode)) return false;
 				if (this.DllPathIfNoSourceCode.Length <= 4) return false;
@@ -25,36 +25,25 @@ namespace Sq1.Core.StrategyBase {
 				return substr.ToUpper() == ".DLL";
 			} }
 		public bool HasChartOnly { get { return string.IsNullOrEmpty(this.StoredInFolderRelName); } }
-
 		[JsonIgnore] public Script Script;
-
-		// not for in-program use; for a human reading Strategy's JSON
-		public Dictionary<int, ScriptParameter> ScriptParametersJSONcheck {
-			get {
+		public string ScriptParametersByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
 				if (this.Script == null) return null;
-				return this.Script.Parameters;
-			}
-		}
-
+				return this.Script.ParametersAsString;
+			} }
 		public string ScriptContextCurrentName;	// if you restrict SET, serializer won't be able to restore from JSON { get; private set; }
 		public Dictionary<string, ContextScript> ScriptContextsByName;
-
-		[JsonIgnore] public ContextScript ScriptContextCurrent {
-			get {
+		[JsonIgnore] public ContextScript ScriptContextCurrent { get {
 				if (this.ScriptContextsByName.ContainsKey(ScriptContextCurrentName) == false)  {
 					string msg = "ScriptContextCurrentName[" + ScriptContextCurrentName + "] doesn't exist in Strategy[" + this + "]";
 					throw new Exception(msg);
 				}
 				return this.ScriptContextsByName[this.ScriptContextCurrentName];
-			}
-		}
-
-		[JsonIgnore] public Dictionary<int, ScriptParameter> ScriptParametersMergedWithCurrentContext {
-			get {
+			} }
+		[JsonIgnore] public Dictionary<int, ScriptParameter> ScriptParametersMergedWithCurrentContext { get {
 				Dictionary<int, ScriptParameter> ret = new Dictionary<int, ScriptParameter>();
 				if (this.Script == null) return ret;
 				bool storeStrategySinceParametersGottenFromScript = false;
-				foreach (ScriptParameter paramScript in this.Script.Parameters.Values) {
+				foreach (ScriptParameter paramScript in this.Script.ParametersById.Values) {
 					//ScriptParameter paramMerged = paramScript.Clone();
 					ScriptParameter paramMerged = paramScript;
 					if (this.ScriptContextCurrent.ParameterValuesById.ContainsKey(paramScript.Id)) {
@@ -73,13 +62,9 @@ namespace Sq1.Core.StrategyBase {
 					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 				}
 				return ret;
-			}
-		}
-
+			} }
 		[JsonIgnore] public ScriptCompiler ScriptCompiler;
-		
 		// I_DONT_WANT_TO_BRING_CHART_SETTINGS_TO_CORE public ChartSettings ChartSettings;
-
 
 		// programmer's constructor
 		public Strategy(string name) : this() {
@@ -169,7 +154,7 @@ namespace Sq1.Core.StrategyBase {
 			int paramId = scriptParameter.Id;
 			double valueNew = scriptParameter.ValueCurrent;
 			// merge them to ONE !! I hate proxies and facades...
-			this.Script.Parameters[paramId].ValueCurrent = valueNew;
+			this.Script.ParametersById[paramId].ValueCurrent = valueNew;
 			//double valueOld = this.ScriptContextCurrent.ParameterValuesById[paramId];
 			this.ScriptContextCurrent.ParameterValuesById[paramId] = valueNew;
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);

@@ -39,7 +39,7 @@ namespace Sq1.Core.Repositories {
 			this.trimHolidaysToYMD();
 			this.adjustIfClearingTimespanOutsideOpenClose();
 		}
-		private void trimHolidaysToYMD() {
+		void trimHolidaysToYMD() {
 			foreach (MarketInfo market in base.Entity.Values) {
 				if (market.HolidaysYMD000 == null) continue;
 				if (market.HolidaysYMD000.Count == 0) continue;
@@ -50,7 +50,7 @@ namespace Sq1.Core.Repositories {
 				market.HolidaysYMD000 = holidaysTrimmed;
 			}
 		}
-		private string adjustIfClearingTimespanOutsideOpenClose() {
+		string adjustIfClearingTimespanOutsideOpenClose() {
 			string ret = "";
 			foreach (MarketInfo market in base.Entity.Values) {
 				if (market.ClearingTimespans == null) continue;
@@ -85,7 +85,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return ret;
 		}
-		private string adjustIfClearingTimespansOverlap() {
+		string adjustIfClearingTimespansOverlap() {
 			return "";
 		}
 		public MarketInfo FindMarketInfo(string marketName) {
@@ -172,7 +172,7 @@ namespace Sq1.Core.Repositories {
 				return Entity[RepositoryCustomMarketInfo.MarketDefaultName];
 			}
 		}
-		public List<DayOfWeek> parseDaysOfWeekCsv(string csv, string separator) {
+		public static List<DayOfWeek> ParseDaysOfWeekCsv(string csv, string separator) {
 			List<DayOfWeek> ret = null;
 			if (string.IsNullOrEmpty(csv)) return ret;
 			if (string.IsNullOrEmpty(separator)) return ret;

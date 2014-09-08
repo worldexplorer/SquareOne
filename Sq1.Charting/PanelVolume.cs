@@ -32,13 +32,13 @@ namespace Sq1.Charting {
 					Assembler.PopupException("RenderBarsPrice(): " + msg);
 					continue;
 				}
+				barX -= base.BarWidthIncludingPadding_cached;
 				Bar bar = base.ChartControl.Bars[i];
 				//if (bar.IsStreamingBar) {	// NaNs are possible for all bars, not only for streaming bar
 					if (double.IsNaN(bar.Open)) continue;
 					if (double.IsNaN(bar.Close)) continue;
 					if (double.IsNaN(bar.Volume)) continue;
 				//}
-				barX -= base.BarWidthIncludingPadding_cached;
 				int barYVolume = base.ValueToYinverted(bar.Volume);
 				bool fillCandleBody = (bar.Open > bar.Close) ? true : false;
 				base.RenderBarHistogram(g, barX, barYVolume, fillCandleBody);

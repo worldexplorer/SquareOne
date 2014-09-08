@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics;
 using Newtonsoft.Json;
+
 //PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK using Perst;
 
 namespace Sq1.Core.DataTypes {
-	public class Bar {	//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK : TimeSeriesTick
+	public partial class Bar {	//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK : TimeSeriesTick
 		public string Symbol { get; protected set; }
 		//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK [Transient]
 		public BarScaleInterval ScaleInterval { get; protected set; }
@@ -37,24 +39,6 @@ namespace Sq1.Core.DataTypes {
 				if (this.IsBarStaticFirst) ret = "StaticBarFist";// +this.ParentBarsIndex;
 				ret += "#" + this.ParentBarsIndex + "/" + (this.ParentBars.Count-1);
 				return ret;
-			} }
-		[JsonIgnore] public bool IsBarStreaming { get {
-				if (this.HasParentBars == false) {
-					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsStreamingBar: Bar[" + this + "].HasParentBars=false");
-				}
-				return this == this.ParentBars.BarStreaming;
-			} }
-		[JsonIgnore] public bool IsBarStaticLast { get {
-				if (this.HasParentBars == false) {
-					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsLastStaticBar: Bar[" + this + "].HasParentBars=false");
-				}
-				return this == this.ParentBars.BarStaticLast;
-			} }
-		[JsonIgnore] public bool IsBarStaticFirst { get {
-				if (this.HasParentBars == false) {
-					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsFirstStaticBar: Bar[" + this + "].HasParentBars=false");
-				}
-				return this == this.ParentBars.BarStaticFirst;
 			} }
 		// Perst deserializer invokes default ctor()
 		public Bar() {
@@ -314,8 +298,5 @@ namespace Sq1.Core.DataTypes {
 //			if (entryFillPrice > this.High) return false;
 //			return true;
 //		}
-		public Bar BarFirstForCurrentTradingDay { get {
-				return this.ParentBars.ScanBackwardsFindBarFirstForCurrentTradingDay(this);
-			} }
 	}
 }

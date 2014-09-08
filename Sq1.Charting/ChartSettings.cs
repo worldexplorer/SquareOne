@@ -13,6 +13,7 @@ namespace Sq1.Charting {
 	public class ChartSettings {	//: Component {
 		[DataMember] public Color	ChartColorBackground { get; set; }
 		[DataMember] public int		BarWidthIncludingPadding { get; set; }
+		[DataMember] public int		BarWidthIncludingPaddingMax { get; set; }
 		[DataMember] public Font	PanelNameAndSymbolFont { get; set; }
 		[DataMember] public Color	PriceColorBarUp { get; set; }
 		[DataMember] public Color	PriceColorBarDown { get; set; }
@@ -73,7 +74,13 @@ namespace Sq1.Charting {
 		[DataMember] public bool	MousePositionTrackOnGutters { get; set; }
 		[DataMember] public Color	MousePositionTrackOnGuttersColor { get; set; }
 		[DataMember] public int		BarsBackgroundTransparencyAlfa { get; set; }
-
+		[DataMember] public int		ChartLabelsUpperLeftYstartTopmost { get; set; }
+		[DataMember] public int		ChartLabelsUpperLeftX { get; set; }
+		[DataMember] public int		ChartLabelsUpperLeftPlatePadding { get; set; }
+		[DataMember] public int		ChartLabelsUpperLeftIndicatorSquarePadding { get; set; }
+		[DataMember] public int		ChartLabelsUpperLeftIndicatorSquareSize { get; set; }
+		[DataMember] public int		OnChartBarAnnotationsVerticalAwayFromPositionArrows { get; set; }
+		
 		//!!!![JsonIgnore] is all down there because JSON.dll is .NET20 while [DataMember] is defined in .NET35's System.Runtime.Serialization
 
 		// DONE_IN_RenderBarsPrice_KISS cache them all until user edits this.BarTotalWidthPx so they won't be calculated again with the same result for each bar
@@ -280,6 +287,7 @@ namespace Sq1.Charting {
 		public ChartSettings()	{
 			ChartColorBackground = Color.White;
 			BarWidthIncludingPadding = 8;
+			BarWidthIncludingPaddingMax = 100;
 			PanelNameAndSymbolFont = new Font("Microsoft Sans Serif", 8.25f);
 			PriceColorBarUp = Color.RoyalBlue;
 			PriceColorBarDown = Color.IndianRed;
@@ -308,8 +316,8 @@ namespace Sq1.Charting {
 			ScrollNBarsPerOneDragMouseEvent = 3;
 			ScrollNBarsPerOneKeyPress = 1;
 			SqueezeVerticalPaddingPx = 0;
-			SqueezeVerticalPaddingStep = 1;		// in VerticalPixels (converted to Price differently for different symbols: priceRange/PanelHeight != const)
-			SqueezeHorizontalStep = 1;			// in BarWidthPixels
+			SqueezeVerticalPaddingStep = 10;	// in VerticalPixels (later converted using pixelsSqueezedToPriceDistance)
+			SqueezeHorizontalStep = 2;			// in BarWidthPixels
 			SqueezeHorizontalMouse1pxDistanceReceivedToOneStep = 5;
 			SqueezeHorizontalKeyOnePressReceivedToOneStep = 1;
 			TooltipPriceShow = true;
@@ -339,6 +347,12 @@ namespace Sq1.Charting {
 			MousePositionTrackOnGutters = true;
 			MousePositionTrackOnGuttersColor = Color.LightGray;
 			BarsBackgroundTransparencyAlfa = 32;
+			ChartLabelsUpperLeftYstartTopmost = 18;
+			ChartLabelsUpperLeftX = 5;
+			ChartLabelsUpperLeftPlatePadding = 1;
+			ChartLabelsUpperLeftIndicatorSquarePadding = 4;
+			ChartLabelsUpperLeftIndicatorSquareSize = 5;
+			OnChartBarAnnotationsVerticalAwayFromPositionArrows = 3;
 		}
 		
 		public static Color ColorReverse(Color color) {

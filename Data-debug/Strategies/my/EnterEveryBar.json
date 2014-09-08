@@ -126,28 +126,5 @@
       }
     }
   },
-  "HasChartOnly": false,
-  "ScriptParametersJSONcheck": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib",
-    "1": {
-      "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
-      "Id": 1,
-      "Name": "test",
-      "ReasonToExist": "",
-      "ValueMin": 0.0,
-      "ValueMax": 10.0,
-      "ValueIncrement": 0.0,
-      "ValueCurrent": 8.0
-    },
-    "2": {
-      "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
-      "Id": 2,
-      "Name": "verbose",
-      "ReasonToExist": "",
-      "ValueMin": 0.0,
-      "ValueMax": 1.0,
-      "ValueIncrement": 1.0,
-      "ValueCurrent": 1.0
-    }
-  }
+  "HasChartOnly": false
 }

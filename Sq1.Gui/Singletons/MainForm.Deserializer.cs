@@ -107,10 +107,14 @@ namespace Sq1.Gui.Singletons {
 						this.GuiDataSnapshot.AddChartFormsManagerJustDeserialized(chartFormsManagerDeserialized);
 					} else {
 						chartFormsManagerDeserialized.InitializeStrategyAfterDeserialization(this, strategyGuid);
-						this.GuiDataSnapshot.AddChartFormsManagerJustDeserialized(chartFormsManagerDeserialized);
-						if (chartFormsManagerDeserialized.Strategy.ActivatedFromDll == false) {
-							chartFormsManagerDeserialized.StrategyCompileActivateBeforeShow();	// if it was streaming at exit, we should have it ready
+						if (chartFormsManagerDeserialized.StrategyFoundDuringDeserialization) {
+							if (chartFormsManagerDeserialized.Strategy.ActivatedFromDll == false) {
+								chartFormsManagerDeserialized.StrategyCompileActivateBeforeShow();	// if it was streaming at exit, we should have it ready
+							}
+						} else {
+							chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization(this);
 						}
+						this.GuiDataSnapshot.AddChartFormsManagerJustDeserialized(chartFormsManagerDeserialized);
 					}
 					chartFormsManagerDeserialized.PopulateWindowTitlesFromChartContextOrStrategy();
 					ret = chartFormsManagerDeserialized.ChartForm;
@@ -119,6 +123,7 @@ namespace Sq1.Gui.Singletons {
 				case ("ReporterWrapped"):
 					// "Reporter:" + this.reporter.GetType().FullName + ",ChartSerno:" + this.reportersFormsManager.ChartFormsManager.ChartSerno;
 					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					if (parentChart.StrategyFoundDuringDeserialization == false) break;
 					string typeFullName = persistedParsedToHash["ReporterWrapped"];
 					ret = parentChart.ReportersFormsManager.ReporterActivateShowRegisterMniTick(typeFullName);
 					break;
@@ -126,6 +131,7 @@ namespace Sq1.Gui.Singletons {
 				case ("ScriptEditor"):
 					//return "ScriptEditor:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
 					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					if (parentChart.StrategyFoundDuringDeserialization == false) break;
 					ret = parentChart.ScriptEditorFormConditionalInstance;
 					break;
 

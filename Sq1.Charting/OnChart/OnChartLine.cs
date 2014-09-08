@@ -4,7 +4,7 @@ using Sq1.Core.Charting.OnChart;
 
 namespace Sq1.Charting.OnChart {
 	public class OnChartLine {
-		public ChartOperationStatus Status;
+		public OnChartObjectOperationStatus Status;
 		
 		public string LineId;
 		public int BarLeft;
@@ -23,11 +23,11 @@ namespace Sq1.Charting.OnChart {
 			PriceRight = priceRight;
 			Color = color;
 			Width = width;
-			Status = ChartOperationStatus.JustCreated;
+			Status = OnChartObjectOperationStatus.OnChartObjectJustCreated;
 		}
 
 		public override string ToString() {
-			string ret = "Status[" + Enum.GetName(typeof(ChartOperationStatus), this.Status) + "]"
+			string ret = "Status[" + Enum.GetName(typeof(OnChartObjectOperationStatus), this.Status) + "]"
 				+ " BarLeft[" + BarLeft + "]"
 				+ " PriceLeft[" + PriceLeft + "]"
 				+ " BarRight[" + BarRight + "]"

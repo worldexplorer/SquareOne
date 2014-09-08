@@ -1,7 +1,7 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "19422fe2-f4e6-42fc-a73b-be2fcbb97118",
-  "StrategyNameJsonCheck": "TwoMAsCompiled",
+  "StrategyGuidJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "StrategyNameJsonCheck": "EnterEveryBarCompiled",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -34,8 +34,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 38,
-    "SqueezeVerticalPaddingStep": 1,
+    "SqueezeVerticalPaddingPx": 0,
     "SqueezeHorizontalStep": 1,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
     "SqueezeHorizontalKeyOnePressReceivedToOneStep": 1,
@@ -60,13 +59,18 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 330,
+    "PriceVsVolumeSplitterDistance": 238,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
     "MousePositionTrackOnGutters": true,
     "MousePositionTrackOnGuttersColor": "LightGray",
-    "BarsBackgroundTransparencyAlfa": 32
+    "BarsBackgroundTransparencyAlfa": 32,
+    "ChartLabelsUpperLeftYstartTopmost": 18,
+    "ChartLabelsUpperLeftX": 5,
+    "ChartLabelsUpperLeftPlatePadding": 1,
+    "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
+    "ChartLabelsUpperLeftIndicatorSquareSize": 5
   },
   "ChartSerno": 11
 }
