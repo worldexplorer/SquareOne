@@ -11,7 +11,8 @@
     "Scale": 3,
     "Interval": 5,
     "IsIntraday": true,
-    "TimeSpanInSeconds": 300
+    "AsTimeSpanInSeconds": 300,
+    "AsTimeSpan": "00:05:00"
   },
   "StaticProvider": null,
   "StreamingProvider": null,

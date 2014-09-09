@@ -62,8 +62,20 @@ namespace Sq1.Core.DataTypes {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
 				}
+				int ret = -1;
 				DateTime todayMarketOpenServerTime = this.DateTimeExpectedMarketOpenedTodayBasedOnMarketInfo;
-				return -1;
+				Bar barFirstReceivedToday = this.BarMarketOpenedTodayScanBackwardIgnoringMarketInfo;
+				ret = barFirstReceivedToday.ParentBarsIndex;
+				DateTime dateBarFirstReceivedToday = barFirstReceivedToday.DateTimeOpen;
+				if (dateBarFirstReceivedToday == todayMarketOpenServerTime) {
+					return ret; 
+				}
+				TimeSpan betweenMarketOpenAndFirstBarOfDay = dateBarFirstReceivedToday.Subtract(todayMarketOpenServerTime);
+				int firstBarWasLateSeconds = (int) betweenMarketOpenAndFirstBarOfDay.TotalSeconds;
+				int secondsInOneBar = this.ScaleInterval.AsTimeSpanInSeconds;
+				int barsLate = (int)firstBarWasLateSeconds / secondsInOneBar;
+				ret += barsLate;
+				return ret;
 			} }
 		[JsonIgnore] public Bar BarMarketOpenedTodayScanBackwardIgnoringMarketInfo { get {
 				// I_CAN_NOT_JUST_ADD_DATES_BECAUSE_MARKETINFO_HAS_MARKET_OPEN_TIME_BUT_BAR_MAY_NOT_EXIST
@@ -94,7 +106,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore] public int BarsDuringMarketOpenExpectedIncludingClearingIntervals { get {
 				int ret = -1;
 				if (this.HasParentBars == false) return ret;
-				ret = this.ParentBars.BarsExpectedDuringMarketOpenIncludingClearingIntervals;
+				ret = this.ParentBars.BarsDuringMarketOpenExpectedIncludingClearingIntervals;
 				return ret; 
 			} }
 		

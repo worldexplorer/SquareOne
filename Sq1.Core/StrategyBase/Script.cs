@@ -216,9 +216,9 @@ namespace Sq1.Core.StrategyBase {
 		#endregion
 
 		#region Buy/Sell Short/Cover
-		public Position BuyAtClose(Bar bar, string signalName = "BOUGHT_AT_CLOSE") {
-			return this.Executor.BuyOrShortAlertCreateRegister(bar, 0, signalName, Direction.Buy, MarketLimitStop.AtClose);
-		}
+//		public Position BuyAtClose(Bar bar, string signalName = "BOUGHT_AT_CLOSE") {
+//			return this.Executor.BuyOrShortAlertCreateRegister(bar, 0, signalName, Direction.Buy, MarketLimitStop.AtClose);
+//		}
 		public Position BuyAtLimit(Bar bar, double limitPrice, string signalName = "BOUGHT_AT_LIMIT") {
 			return this.Executor.BuyOrShortAlertCreateRegister(bar, limitPrice, signalName, Direction.Buy, MarketLimitStop.Limit);
 		}
@@ -229,9 +229,9 @@ namespace Sq1.Core.StrategyBase {
 			return this.Executor.BuyOrShortAlertCreateRegister(bar, stopPrice, signalName, Direction.Buy, MarketLimitStop.Stop);
 		}
 		
-		public Alert CoverAtClose(Bar bar, Position position, string signalName = "COVERED_AT_CLOSE") {
-			return this.Executor.SellOrCoverAlertCreateRegister(bar, position, 0, signalName, Direction.Cover, MarketLimitStop.AtClose);
-		}
+//		public Alert CoverAtClose(Bar bar, Position position, string signalName = "COVERED_AT_CLOSE") {
+//			return this.Executor.SellOrCoverAlertCreateRegister(bar, position, 0, signalName, Direction.Cover, MarketLimitStop.AtClose);
+//		}
 		public Alert CoverAtLimit(Bar bar, Position position, double limitPrice, string signalName = "COVERED_AT_LIMIT") {
 			return this.Executor.SellOrCoverAlertCreateRegister(bar, position, limitPrice, signalName, Direction.Cover, MarketLimitStop.Limit);
 		}
@@ -242,9 +242,9 @@ namespace Sq1.Core.StrategyBase {
 			return this.Executor.SellOrCoverAlertCreateRegister(bar, position, stopPrice, signalName, Direction.Cover, MarketLimitStop.Stop);
 		}
 
-		public Alert SellAtClose(Bar bar, Position position, string signalName = "SOLD_AT_CLOSE") {
-			return this.Executor.SellOrCoverAlertCreateRegister(bar, position, 0, signalName, Direction.Sell, MarketLimitStop.AtClose);
-		}
+//		public Alert SellAtClose(Bar bar, Position position, string signalName = "SOLD_AT_CLOSE") {
+//			return this.Executor.SellOrCoverAlertCreateRegister(bar, position, 0, signalName, Direction.Sell, MarketLimitStop.AtClose);
+//		}
 		public Alert SellAtLimit(Bar bar, Position position, double limitPrice, string signalName = "SOLD_AT_LIMIT") {
 			return this.Executor.SellOrCoverAlertCreateRegister(bar, position, limitPrice, signalName, Direction.Sell, MarketLimitStop.Limit);
 		}
@@ -255,9 +255,9 @@ namespace Sq1.Core.StrategyBase {
 			return this.Executor.SellOrCoverAlertCreateRegister(bar, position, stopPrice, signalName, Direction.Sell, MarketLimitStop.Stop);
 		}
 		
-		public Position ShortAtClose(Bar bar, string signalName = "SHORTED_AT_CLOSE") {
-			return this.Executor.BuyOrShortAlertCreateRegister(bar, 0, signalName, Direction.Short, MarketLimitStop.AtClose);
-		}
+//		public Position ShortAtClose(Bar bar, string signalName = "SHORTED_AT_CLOSE") {
+//			return this.Executor.BuyOrShortAlertCreateRegister(bar, 0, signalName, Direction.Short, MarketLimitStop.AtClose);
+//		}
 		public Position ShortAtLimit(Bar bar, double limitPrice, string signalName = "SHORTED_AT_LIMIT") {
 			return this.Executor.BuyOrShortAlertCreateRegister(bar, limitPrice, signalName, Direction.Short, MarketLimitStop.Limit);
 		}
@@ -274,13 +274,13 @@ namespace Sq1.Core.StrategyBase {
 				return this.CoverAtMarket(bar, position, signalName);
 			}
 		}
-		public Alert ExitAtClose(Bar bar, Position position, string signalName = "EXITED_AT_CLOSE") {
-			if (position.PositionLongShort == PositionLongShort.Long) {
-				return this.SellAtClose(bar, position, signalName);
-			} else {
-				return this.CoverAtClose(bar, position, signalName);
-			}
-		}
+//		public Alert ExitAtClose(Bar bar, Position position, string signalName = "EXITED_AT_CLOSE") {
+//			if (position.PositionLongShort == PositionLongShort.Long) {
+//				return this.SellAtClose(bar, position, signalName);
+//			} else {
+//				return this.CoverAtClose(bar, position, signalName);
+//			}
+//		}
 		public Alert ExitAtLimit(Bar bar, Position position, double price, string signalName = "EXITED_AT_LIMIT") {
 			if (position.PositionLongShort == PositionLongShort.Long) {
 				return this.SellAtLimit(bar, position, price, signalName);

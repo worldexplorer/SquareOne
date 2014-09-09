@@ -20,6 +20,7 @@ namespace Sq1.Core.Execution {
 		public List<Position> PositionsOpenedAfterExec { get; private set; }
 		public List<Position> PositionsClosedAfterExec { get; private set; }
 		public List<Position> PositionsOpenNow { get; private set; }
+		public List<Position> PositionsOpenNowSafeCopy { get { return new List<Position>(this.PositionsOpenNow); } }
 		public List<Alert> AlertsPending { get; private set; }
 		public List<Alert> AlertsPendingSafeCopy { get { return new List<Alert>(this.AlertsPending); } }
 

@@ -178,6 +178,9 @@ namespace Sq1.Charting {
 				Font font, Color colorFore, Color colorBack, bool aboveBar = true, bool debugStatus = false) {
 			OnChartBarAnnotation barAnnotation = null;
 			try {
+				if (colorBack != Color.Empty) {
+					colorBack = Color.FromArgb(this.ChartSettings.BarsBackgroundTransparencyAlfa, colorBack);
+				}
 				barAnnotation = this.ScriptExecutorObjects.BarAnnotationAddOrModify(
 					barIndex, barAnnotationId, barAnnotationText, font, colorFore, colorBack, aboveBar, debugStatus);
 			} catch (Exception ex) {

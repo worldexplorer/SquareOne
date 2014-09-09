@@ -191,16 +191,14 @@
     "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",
     "Name": "BACKTEST",
     "Description": "BACKTEST_NO_RESTRICTIONS",
-    "MarketOpenServerTime": "2013-04-17T00:00:00",
-    "MarketCloseServerTime": "2013-08-08T23:49:59",
+    "MarketOpenServerTime": "2014-09-09T10:00:00",
+    "MarketCloseServerTime": "2014-09-09T23:45:00",
     "DaysOfWeekOpen": [
       1,
       2,
       3,
       4,
-      5,
-      6,
-      0
+      5
     ],
     "TimeZoneName": "Eastern Standard Time",
     "ClearingTimespans": [],
@@ -265,7 +263,7 @@
       ],
       "SupportsDaylightSavingTime": true
     },
-    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+    "DaysOfWeekOpenAsString": "Mon,Tue,Wed,Thu,Fri"
   },
   "US": {
     "$type": "Sq1.Core.DataTypes.MarketInfo, Sq1.Core",

@@ -23,21 +23,27 @@ namespace Sq1.Core.DataTypes {
 			}
 		}
 		public Bar ScanBackwardFindBarMarketOpenedToday(Bar startScanFrom) {
-			Bar ret = startScanFrom;
-			if (this.ContainsKey(startScanFrom.DateTimeOpen) == false) {
+			Bar ret = null;
+			DateTime dateFound = this.ScanBackwardFindDateTimeMarketOpenedToday(startScanFrom.DateTimeOpen);
+			ret = this[dateFound];
+			return ret;
+		}
+		public DateTime ScanBackwardFindDateTimeMarketOpenedToday(DateTime startScanFrom) {
+			DateTime ret = startScanFrom;
+			if (this.ContainsKey(startScanFrom) == false) {
 				#if DEBUG
 				string msg = "BARS_DOEST_CONTAIN_THE_DATEOPEN_OF_ITSOWN_BAR_ADDING_SHOULDVE_DONE_A_BETTER_JOB_AND_THROW_OR_ROUND";
 				Assembler.PopupException(msg);
 				#endif
 			}
-			int indexToStartScanningBackwards = this.IndexOfKey(startScanFrom.DateTimeOpen);
+			int indexToStartScanningBackwards = this.IndexOfKey(startScanFrom);
 			for (int i = indexToStartScanningBackwards; i >= 0; i--) {
 				Bar eachBarBackwards = this[i];
 				// stop scanning when we hit yesterday; then in RET we'll get lastKnownSameDayBar
-				if (eachBarBackwards.DateTimeOpen.Day	< startScanFrom.DateTimeOpen.Day) break;
-				if (eachBarBackwards.DateTimeOpen.Month	< startScanFrom.DateTimeOpen.Month) break;
-				if (eachBarBackwards.DateTimeOpen.Year	< startScanFrom.DateTimeOpen.Year) break;
-				ret = eachBarBackwards;
+				if (eachBarBackwards.DateTimeOpen.Day	< startScanFrom.Day) break;
+				if (eachBarBackwards.DateTimeOpen.Month	< startScanFrom.Month) break;
+				if (eachBarBackwards.DateTimeOpen.Year	< startScanFrom.Year) break;
+				ret = eachBarBackwards.DateTimeOpen;
 			}
 			return ret;
 		}
@@ -172,19 +178,46 @@ namespace Sq1.Core.DataTypes {
 					throw new Exception("this.ScaleInterval.Scale[" + this.ScaleInterval.Scale
 						+ "] is not supported");
 			}
-			if (howManyBarsToAdd < 0) {
-				string "CHECKING_1)_TimeSpan_CAN_BE_NEGATIVE_2)_DATE.ADD(NEGATIVE)_SHOULD_BE_REWRITTEN";
-				Debugger.Break();
-			}
+			//if (howManyBarsToAdd < 0) {
+			//TESTED:1yes2yes 	string msg = "CHECKING_1)_TimeSpan_CAN_BE_NEGATIVE_2)_DATE.ADD(NEGATIVE)_SHOULD_BE_REWRITTEN";
+			//	Debugger.Break();
+			//}
 			TimeSpan totalTimeSpan = new TimeSpan(this.ScaleInterval.AsTimeSpan.Ticks * howManyBarsToAdd);
 			DateTime ret = dateTimeToAddIntervalsTo.Add(totalTimeSpan);
 			return ret;
 		}
-		[JsonIgnore] public int BarsExpectedDuringMarketOpenIncludingClearingIntervals { get {
+		[JsonIgnore] public int BarsDuringMarketOpenExpectedIncludingClearingIntervals { get {
 				int ret = -1;
 				if (this.MarketInfo == null) return ret;
-				long marketOpenDurationSeconds = (int)(this.MarketInfo.MarketCloseServerTime.Ticks/1000 - this.MarketInfo.MarketOpenServerTime.Ticks/1000);
-				ret = marketOpenDurationSeconds / this.ScaleInterval.AsTimeSpanInSeconds;
+				if (this.ScaleInterval.Scale == BarScale.Unknown) {
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return ret;
+				}
+				int seconds = this.ScaleInterval.AsTimeSpanInSeconds;
+				if (seconds <= 0) {
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return ret;
+				}
+				TimeSpan duration = this.MarketInfo.MarketCloseServerTime.TimeOfDay.Subtract(this.MarketInfo.MarketOpenServerTime.TimeOfDay);
+				int marketOpenDurationSeconds = (int) duration.TotalSeconds;
+				#if DEBUG		//quickCheck
+				if (this.ScaleInterval == new BarScaleInterval(BarScale.Minute, 5)) {
+					string timeOpen = this.MarketInfo.MarketOpenServerTime.ToString("HH:mm");
+					string timeClose = this.MarketInfo.MarketCloseServerTime.ToString("HH:mm"); 
+					if (timeOpen == "10:00" && timeClose == "23:50") {
+						int secondsInFortsSession = (24-10) * 60 * 60;	// 10...24 in seconds
+						secondsInFortsSession -= 10 * 60;				// subtract 10 minutes from 23:50
+						if (marketOpenDurationSeconds != secondsInFortsSession) {
+							Debugger.Break();
+						}
+					}
+				}
+				#endif
+				ret = marketOpenDurationSeconds / seconds;
 				return ret;
 			} }
 	}

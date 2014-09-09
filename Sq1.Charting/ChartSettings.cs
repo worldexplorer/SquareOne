@@ -346,7 +346,7 @@ namespace Sq1.Charting {
 			AlertPendingEllipseWidth = 1;
 			MousePositionTrackOnGutters = true;
 			MousePositionTrackOnGuttersColor = Color.LightGray;
-			BarsBackgroundTransparencyAlfa = 32;
+			BarsBackgroundTransparencyAlfa = 128;
 			ChartLabelsUpperLeftYstartTopmost = 18;
 			ChartLabelsUpperLeftX = 5;
 			ChartLabelsUpperLeftPlatePadding = 1;
