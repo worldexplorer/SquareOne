@@ -112,5 +112,8 @@ namespace Sq1.Charting {
 			}
 			this.Size = new Size(this.Size.Width, this.initialStaticHeight);
 		}
+		void TooltipPrice_MouseMove(object sender, MouseEventArgs e) {
+			this.Visible = false;
+		}
 	}
 }

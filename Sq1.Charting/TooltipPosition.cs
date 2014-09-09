@@ -80,5 +80,8 @@ namespace Sq1.Charting {
 
 			this.lblSlippagesVal.Text = position.EntryFilledSlippage.ToString() + " / " + position.ExitFilledSlippage.ToString();
 		}
+		void TooltipPosition_MouseMove(object sender, MouseEventArgs e) {
+			this.Visible = false;
+		}
 	}
 }

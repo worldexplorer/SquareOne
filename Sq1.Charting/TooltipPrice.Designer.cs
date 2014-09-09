@@ -269,6 +269,7 @@ namespace Sq1.Charting {
 			this.ForeColor = System.Drawing.SystemColors.InfoText;
 			this.Name = "TooltipPrice";
 			this.Size = new System.Drawing.Size(115, 116);
+			this.MouseMove += new MouseEventHandler(TooltipPrice_MouseMove);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
