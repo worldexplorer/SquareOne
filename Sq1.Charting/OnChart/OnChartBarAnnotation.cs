@@ -12,19 +12,23 @@ namespace Sq1.Charting.OnChart {
 		public Color ColorForeground;
 		public Color ColorBackground;
 		public bool AboveBar;
-		public bool DebugStatus;
+		public bool ReportDidntChangeStatus;
+		public int VerticalPaddingPx;		// 0: stick to the Bar's Hi/Low; Int32.MaxValue: stick to Chart's top/bottom edge
+
 		public bool ShouldDrawBackground { get { return this.ColorBackground != Color.Empty; } }
 		
 		public OnChartBarAnnotation(string barAnnotationId, string barAnnotationText,
-		                            Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, bool debugStatus = false) {
+				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, 
+				int verticalPadding = 5, bool reportDidntChangeStatus = false) {
 			BarAnnotationId = barAnnotationId;
 			BarAnnotationText = barAnnotationText;
 			Font = font;
 			ColorForeground = colorForeground;
 			ColorBackground = colorBackground;
-			Status = OnChartObjectOperationStatus.OnChartObjectJustCreated;
 			AboveBar = aboveBar;
-			DebugStatus = debugStatus;
+			ReportDidntChangeStatus = reportDidntChangeStatus;
+			VerticalPaddingPx = verticalPadding;
+			Status = OnChartObjectOperationStatus.OnChartObjectJustCreated;
 		}
 
 		public override string ToString() {
@@ -32,7 +36,10 @@ namespace Sq1.Charting.OnChart {
 				+ " BarAnnotationText[" + BarAnnotationText + "]"
 				+ " Font[" + Font + "]"
 				+ " ColorFore[" + ColorForeground + "]"
-				+ " ColorBack[" + ColorBackground + "]";
+				+ " ColorBack[" + ColorBackground + "]"
+				+ " AboveBar[" + AboveBar + "]"
+				+ " VerticalPaddingPx[" + VerticalPaddingPx + "]"
+				;
 			return ret;
 		}
 

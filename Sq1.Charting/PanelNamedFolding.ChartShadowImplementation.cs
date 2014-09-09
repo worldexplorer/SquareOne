@@ -73,6 +73,11 @@ namespace Sq1.Charting {
 
 			if (x < 0) x = 0;
 			if (y < 0) y = 0;
+
+			// Y_BEYOUND_VISIBLE_DUE_TO_EXCEEDED_BAR_ANNOTATION_PADDING
+			if (y > this.PanelHeightMinusGutterBottomHeight_cached) {
+				x = this.PanelHeightMinusGutterBottomHeight_cached - labelMeasuredHeight;
+			}
 			
 			if (drawBackgroundRectangle) {
 				Rectangle labelPlate = new Rectangle();

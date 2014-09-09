@@ -26,19 +26,21 @@ namespace Sq1.Strategies.Demo {
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
 			this.testBarBackground(barStaticFormed);
-			this.testBarAnnotations(barStaticFormed);
+			this.testBarAnnotationsMarkBarsShiftedDueToMissedBar(barStaticFormed);
 		}
 		void testBarBackground(Bar barStaticFormed) {
 			Color bg = (barStaticFormed.Open > barStaticFormed.Close) ? Color.LightGreen : Color.LightSalmon;
 			base.Executor.ChartShadow.BarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
 		}
-		void testBarAnnotations(Bar barStaticFormed) {
+		void testBarAnnotationsMarkBarsShiftedDueToMissedBar(Bar barStaticFormed) {
 			if (barStaticFormed.BarIndexAfterMidnightReceived == barStaticFormed.BarIndexExpectedSinceTodayMarketOpen) return; 
 			
 			int barIndex = barStaticFormed.ParentBarsIndex;
 			Font font = new Font("Arial", 7);
 			//bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
 			bool evenAboveOddBelow = false;
+			int stickToHorizontalEdgesOfChart = 0;	//Int32.MaxValue
+			stickToHorizontalEdgesOfChart = Int32.MaxValue;
 			
 			//string labelTime = barStaticFormed.DateTimeOpen.ToString("HH:mm");
 			//base.Executor.ChartShadow.BarAnnotationDrawModify(
@@ -46,15 +48,18 @@ namespace Sq1.Strategies.Demo {
 
 			string labelReceived = "#" + barStaticFormed.BarIndexAfterMidnightReceived;
 			base.Executor.ChartShadow.BarAnnotationDrawModify(
-				barIndex, "annReceived" + barIndex, labelReceived, font, Color.Black, Color.Empty, evenAboveOddBelow);
+				barIndex, "annReceived" + barIndex, labelReceived, font,
+				Color.Black, Color.Empty, evenAboveOddBelow, stickToHorizontalEdgesOfChart);
 			
 			string labelExpAfterOpen = "ao" + barStaticFormed.BarIndexExpectedSinceTodayMarketOpen;
 			base.Executor.ChartShadow.BarAnnotationDrawModify(
-				barIndex, "annAfterOpen" + barIndex, labelExpAfterOpen, font, Color.Black, Color.Empty, evenAboveOddBelow);
+				barIndex, "annAfterOpen" + barIndex, labelExpAfterOpen,
+				font, Color.Black, Color.Empty, evenAboveOddBelow, stickToHorizontalEdgesOfChart);
 			
 			string labelExpBeforeClose = "bc" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
 			base.Executor.ChartShadow.BarAnnotationDrawModify(
-				barIndex, "annBeforeClose" + barIndex, labelExpBeforeClose, font, Color.Black, Color.Empty, evenAboveOddBelow);
+				barIndex, "annBeforeClose" + barIndex, labelExpBeforeClose,
+				font, Color.Black, Color.Empty, evenAboveOddBelow, stickToHorizontalEdgesOfChart);
 		}
 	}
 }

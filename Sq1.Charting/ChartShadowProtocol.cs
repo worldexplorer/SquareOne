@@ -173,16 +173,20 @@ namespace Sq1.Charting {
 			}
 			return label.Status;
 		}
+
 		public override OnChartObjectOperationStatus BarAnnotationDrawModify(
 				int barIndex, string barAnnotationId, string barAnnotationText,
-				Font font, Color colorFore, Color colorBack, bool aboveBar = true, bool debugStatus = false) {
+				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, 
+				int verticalPadding = 5, bool reportDidntChangeStatus = false) {
 			OnChartBarAnnotation barAnnotation = null;
 			try {
-				if (colorBack != Color.Empty) {
-					colorBack = Color.FromArgb(this.ChartSettings.BarsBackgroundTransparencyAlfa, colorBack);
+				if (colorBackground != Color.Empty) {
+					colorBackground = Color.FromArgb(this.ChartSettings.BarsBackgroundTransparencyAlfa, colorBackground);
 				}
 				barAnnotation = this.ScriptExecutorObjects.BarAnnotationAddOrModify(
-					barIndex, barAnnotationId, barAnnotationText, font, colorFore, colorBack, aboveBar, debugStatus);
+					barIndex, barAnnotationId, barAnnotationText,
+					font, colorForeground, colorBackground, aboveBar,
+					verticalPadding, reportDidntChangeStatus);
 			} catch (Exception ex) {
 				if (barAnnotation != null) {
 					Assembler.PopupException(barAnnotation.ToString() + " //BarAnnotationDrawModify()");
