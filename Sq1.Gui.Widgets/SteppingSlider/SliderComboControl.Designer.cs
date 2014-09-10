@@ -64,8 +64,8 @@
 			this.DomainUpDown.TabIndex = 0;
 			this.DomainUpDown.Text = "domainUpDown1";
 			this.DomainUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.DomainUpDown.onDomainUp += new System.EventHandler(this.domainUpDown_onDomainUp);
-			this.DomainUpDown.onDomainDown += new System.EventHandler(this.domainUpDown_onDomainDown);
+			this.DomainUpDown.OnArrowUpStepAdd += new System.EventHandler(this.domainUpDown_OnArrowUpStepAdd);
+			this.DomainUpDown.OnArrowDownStepSubstract += new System.EventHandler(this.domainUpDown_OnArrowDownStepSubstract);
 			this.DomainUpDown.Scroll += new System.Windows.Forms.ScrollEventHandler(this.domainUpDown_Scroll);
 			this.DomainUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.domainUpDown_KeyDown);
 			this.DomainUpDown.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.domainUpDown_PreviewKeyDown);

@@ -20,12 +20,12 @@ namespace Sq1.Widgets.SteppingSlider {
 				this.DomainUpDown.BackColor = Color.LightSalmon;
 				return;
 			}
-			if (parsed > this.ValueMax) {
-				parsed = this.ValueMax;
+			if (parsed > this.ValueMaxRtlSafe) {
+				parsed = this.ValueMaxRtlSafe;
 				this.DomainUpDown.BackColor = Color.LightSalmon;
 			}
-			if (parsed < this.ValueMin) {
-				parsed = this.ValueMin;
+			if (parsed < this.ValueMinRtlSafe) {
+				parsed = this.ValueMinRtlSafe;
 				this.DomainUpDown.BackColor = Color.LightSalmon;
 			}
 			this.DomainUpDown.BackColor = Color.White;
@@ -34,29 +34,29 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		void domainUpDown_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e) {
 			if (e.KeyCode == Keys.Up) {
-				this.domainUpDown_onDomainUp(sender, null);
+				this.domainUpDown_OnArrowUpStepAdd(sender, null);
 			}
 			if (e.KeyCode == Keys.Down) {
-				this.domainUpDown_onDomainDown(sender, null);
+				this.domainUpDown_OnArrowDownStepSubstract(sender, null);
 			}
 		}
-		void domainUpDown_onDomainDown(object sender, EventArgs e) {
+		void domainUpDown_OnArrowDownStepSubstract(object sender, EventArgs e) {
 			try {
 				decimal parsed = Decimal.Parse(this.DomainUpDown.Text);
 				this.DomainUpDown.BackColor = Color.White;
 				parsed -= this.ValueStep;
-				if (parsed < this.ValueMin) return;
+				if (parsed < this.ValueMinRtlSafe) return;
 				this.ValueCurrent = parsed;
 			} catch (Exception ex) {
 				this.DomainUpDown.BackColor = Color.LightSalmon;
 			}
 		}
-		void domainUpDown_onDomainUp(object sender, EventArgs e) {
+		void domainUpDown_OnArrowUpStepAdd(object sender, EventArgs e) {
 			try {
 				decimal parsed = Decimal.Parse(this.DomainUpDown.Text);
 				this.DomainUpDown.BackColor = Color.White;
 				parsed += this.ValueStep;
-				if (parsed > this.ValueMax) return;
+				if (parsed > this.ValueMaxRtlSafe) return;
 				this.ValueCurrent = parsed;
 			} catch (Exception ex) {
 				this.DomainUpDown.BackColor = Color.LightSalmon;
@@ -75,13 +75,13 @@ namespace Sq1.Widgets.SteppingSlider {
 					case "mniltbValueMin":			this.ValueMin		= parsed; break; 
 					case "mniltbValueMax":			this.ValueMax		= parsed; break; 
 					case "mniltbValueCurrent":
-						if (parsed < this.ValueMin) {
-							this.ValueCurrent = this.ValueMin;
+						if (parsed < this.ValueMinRtlSafe) {
+							this.ValueCurrent = this.ValueMinRtlSafe;
 							e.HighlightTextWithRed = true;
 							return;
 						}
-						if (parsed > this.ValueMax) {
-							this.ValueCurrent = this.ValueMax;
+						if (parsed > this.ValueMaxRtlSafe) {
+							this.ValueCurrent = this.ValueMaxRtlSafe;
 							e.HighlightTextWithRed = true;
 							return;
 						}

@@ -40,7 +40,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					msg += fromEmptyState
 						? "; most likely first time opened (from Empty State)"
 						: "; most likely after ScriptParametersForm->RightClick->Duplicate/CreateNewDefault";
-					Assembler.PopupException(msg);
+					//Assembler.PopupException(msg);
 					ContextScript scriptCtx = this.Strategy.ScriptContextsByName[ctxName];
 					ToolStripMenuItem mni = new ToolStripMenuItem();
 					mni.Text = ctxName;

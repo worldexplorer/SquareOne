@@ -223,9 +223,6 @@
     <Compile Include="SteppingSlider\DomainUpDownWithMouseEvents.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\MenuItemSlidersAutoGrowPreview.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="SteppingSlider\PanelFillSlider.cs">
       <SubType>Component</SubType>
     </Compile>
