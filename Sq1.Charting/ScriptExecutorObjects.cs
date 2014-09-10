@@ -24,7 +24,7 @@ namespace Sq1.Charting {
 		public Dictionary<int, Color> BarForegroundsByBar { get; private set; }
 
 		public Dictionary<string, OnChartLabel> OnChartLabelsById { get; private set; }
-		public Dictionary<int, Dictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
+		public Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
 
 		
 		public ScriptExecutorObjects() {
@@ -40,7 +40,7 @@ namespace Sq1.Charting {
 			BarForegroundsByBar = new Dictionary<int, Color>();
 
 			OnChartLabelsById = new Dictionary<string, OnChartLabel>();
-			OnChartBarAnnotationsByBar = new Dictionary<int, Dictionary<string, OnChartBarAnnotation>>();
+			OnChartBarAnnotationsByBar = new Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>>();
 		}
 		public void ClearAllBeforeBacktest() {
 			this.AlertArrowsListByBar.Clear();
@@ -275,9 +275,9 @@ namespace Sq1.Charting {
 				int verticalPadding = 5, bool reportDidntChangeStatus = false) {
 			//Add() candidate starts below
 			if (this.OnChartBarAnnotationsByBar.ContainsKey(barIndex) == false) {
-				this.OnChartBarAnnotationsByBar.Add(barIndex, new Dictionary<string, OnChartBarAnnotation>());
+				this.OnChartBarAnnotationsByBar.Add(barIndex, new SortedDictionary<string, OnChartBarAnnotation>());
 			}
-			Dictionary<string, OnChartBarAnnotation> annotationsForBar = this.OnChartBarAnnotationsByBar[barIndex];
+			SortedDictionary<string, OnChartBarAnnotation> annotationsForBar = this.OnChartBarAnnotationsByBar[barIndex];
 
 			if (annotationsForBar.ContainsKey(barAnnotationId) == false) {
 				OnChartBarAnnotation barAnnotationCreated = new OnChartBarAnnotation(

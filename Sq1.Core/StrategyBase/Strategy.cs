@@ -42,8 +42,8 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return this.ScriptContextsByName[this.ScriptContextCurrentName];
 			} }
-		[JsonIgnore] public Dictionary<int, ScriptParameter> ScriptParametersMergedWithCurrentContext { get {
-				Dictionary<int, ScriptParameter> ret = new Dictionary<int, ScriptParameter>();
+		[JsonIgnore] public SortedDictionary<int, ScriptParameter> ScriptParametersMergedWithCurrentContext { get {
+				SortedDictionary<int, ScriptParameter> ret = new SortedDictionary<int, ScriptParameter>();
 				if (this.Script == null) return ret;
 				bool storeStrategySinceParametersGottenFromScript = false;
 				foreach (ScriptParameter paramScript in this.Script.ParametersById.Values) {
