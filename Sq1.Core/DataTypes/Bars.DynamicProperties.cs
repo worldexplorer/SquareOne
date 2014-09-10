@@ -22,19 +22,104 @@ namespace Sq1.Core.DataTypes {
 				throw new Exception("both Bars.BarLast and Bars.BarPreLast point to Bars.StreamingBar???");
 			}
 		}
-		public Bar ScanBackwardFindBarMarketOpenedToday(Bar startScanFrom) {
+		public Bar BarMarketClosedTodayScanBackward(Bar barLastToday) {
 			Bar ret = null;
-			DateTime dateFound = this.ScanBackwardFindDateTimeMarketOpenedToday(startScanFrom.DateTimeOpen);
+			if (barLastToday == null) return ret;
+			if (this.MarketInfo == null) return ret;
+			#if DEBUG // TEST_EMBEDDED
+			if (barLastToday.IsAlignedToOwnScaleInterval == false) {
+				Debugger.Break();
+				return null;
+			}
+			#endif
+			DateTime dateExisting = this.DateTimeMarketWasClosedTodayScanBackwardMinValueUnsafe(barLastToday.DateTimeOpen);
+			if (dateExisting == DateTime.MinValue) {
+				string msg = "MARKETINFO_NULL_OR_MARKETCLOSESERVERTIME_NULL barLastToday["
+					+ barLastToday + "].ParentBars.MarketInfo[" + this.MarketInfo + "]";
+				Assembler.PopupException(msg);
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return ret;
+			}
+			ret = this[dateExisting];
+			return ret;
+		}
+		public DateTime DateTimeMarketWasClosedTodayScanBackwardMinValueUnsafe(DateTime dateStartScanBackwards) {
+			DateTime ret = DateTime.MinValue;
+			if (this.ContainsKey(dateStartScanBackwards) == false) {
+				string msg = "CANT_START_SCANNING_MUST_EXIST_IN_THIS_BARS dateStartScanBackwards[" + dateStartScanBackwards + "]"
+					+ " 1) applicable to bars APPENDED to THIS_BARS;"
+					+ " 2) use bar.IsAlignedToOwnScaleInterval before passing it to me;"
+					+ " 3) use Bar/DataSeriesTimeBased.roundDateDownToMyInterval() before passing it to me;"; 
+				Assembler.PopupException(msg);
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return ret;
+			}
+			if (this.MarketInfo == null) return ret;
+			// TODO: use Weekends, year-dependent irregular Holidays
+			// TODO: this calculation is irrelevant for FOREX since FOREX doesn't interrupt overnight 
+			DateTime marketCloseServerTime = this.MarketInfo.MarketCloseServerTime;
+			if (marketCloseServerTime == DateTime.MinValue) return ret;
+			DateTime todayMarketCloseServerTime = this.CombineBarDateWithMarketOpenTime(dateStartScanBackwards, marketCloseServerTime);
+			if (dateStartScanBackwards < todayMarketCloseServerTime) {
+				string msg = "BAR_INVALID_MARKET_IS_ALREADY_CLOSED startScanFrom[" + dateStartScanBackwards 
+					+ "] MarketInfo.MarketCloseServerTime[" + this.MarketInfo.MarketCloseServerTime
+					+ "] todayMarketCloseServerTime[" + todayMarketCloseServerTime + "]";
+				Assembler.PopupException(msg);
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return ret;
+			}
+			//FIRST_BAR_WILL_BECOME_ZERO ret = 0;
+			TimeSpan distanceBetweenBars = this.ScaleInterval.AsTimeSpan;
+			int barsMaxDayCanFit = this.BarsMaxOneDayCanFit;
+			int barsScanned = 0;
+			for (ret = dateStartScanBackwards; ret > todayMarketCloseServerTime; ret = ret.Subtract(distanceBetweenBars)) {
+				if (barsScanned > barsMaxDayCanFit) {
+					#if DEBUG	// TEST_EMBEDDED
+					Debugger.Break();
+					#endif
+					break;
+				}
+				barsScanned++;
+				
+				// I won't cry if we haven't received a bar between lastBarToday and an earlier barMarketClose
+				if (this.ContainsKey(ret) == false) continue;
+				#if DEBUG	// TEST_EMBEDDED
+				if (this.IsMarketOpenDuringWholeBar(this[ret]) == false) Debugger.Break();
+				#endif
+			}
+			// FOR ended when ret <= todayMarketCloseServerTime, ret=dateOfExistingBarPriorOrEqualToMarketClose
+			return ret;
+		}
+		
+		public bool IsMarketOpenDuringWholeBar(Bar bar) {
+			return this.MarketInfo.IsMarketOpenDuringDateIntervalServerTime(bar.DateTimeOpen, bar.DateTimeNextBarOpenUnconditional);
+		}
+		
+		
+		public Bar BarMarketOpenedTodayScanBackward(Bar startScanFrom) {
+			Bar ret = null;
+			DateTime dateFound = this.DateTimeBeforeDayDecreasedScanBackward(startScanFrom.DateTimeOpen);
 			ret = this[dateFound];
 			return ret;
 		}
-		public DateTime ScanBackwardFindDateTimeMarketOpenedToday(DateTime startScanFrom) {
+		public DateTime DateTimeBeforeDayDecreasedScanBackward(DateTime startScanFrom, bool scanForEarlier = false) {
 			DateTime ret = startScanFrom;
 			if (this.ContainsKey(startScanFrom) == false) {
-				#if DEBUG
-				string msg = "BARS_DOEST_CONTAIN_THE_DATEOPEN_OF_ITSOWN_BAR_ADDING_SHOULDVE_DONE_A_BETTER_JOB_AND_THROW_OR_ROUND";
+				//THIS_ISNT_EMBEDDED_TEST_BUT_YOU_EXPLAIN_TO_USER_HOW_TO_USE_THIS_METHOD
+				string msg = "BARS_DOEST_CONTAIN_DATEOPEN[" + startScanFrom + "]_RETURNING_UNMODIFIED Bars[" + this.ToString() + "]"
+					+ "; EXPECTING_BARS_WERE_APPENDED_WITHOUT_SCALEINTERVAL_CHANGE"
+					+ "; WILL_NOT_RETURN_EARLIER_DATE: implement scanForEarlier if you need to pass ScaleInterval-unaligned or non-existing Date to find an existing one";
 				Assembler.PopupException(msg);
+				#if DEBUG
+				Debugger.Break();
 				#endif
+				return ret;
 			}
 			int indexToStartScanningBackwards = this.IndexOfKey(startScanFrom);
 			for (int i = indexToStartScanningBackwards; i >= 0; i--) {
@@ -47,11 +132,7 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		[Obsolete("WARNING_NOT_YET_IMPLEMENTED")]
-		public int SuggestBarIndexExpectedMarketClosesToday(Bar startScanFrom) {
-			return -1;
-		}
-		public Bar ScanForwardFindBarMarketClosedToday(Bar startScanFrom) {
+		public Bar BarMarketClosedTodayScanForwardIgnoringMarketInfo(Bar startScanFrom) {
 			Bar ret = startScanFrom;
 			if (this.ContainsKey(startScanFrom.DateTimeOpen) == false) {
 				#if DEBUG
@@ -70,6 +151,10 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
+//		[Obsolete("WARNING_NOT_YET_IMPLEMENTED")]
+//		public int SuggestBarIndexExpectedMarketClosesToday(Bar startScanFrom) {
+//			return -1;
+//		}
 		public int BarsMaxOneDayCanFit { get {
 				int ret = 0;
 				TimeSpan wholeDay = new TimeSpan(24, 0, 0);

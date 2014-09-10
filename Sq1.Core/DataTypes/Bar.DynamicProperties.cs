@@ -40,7 +40,7 @@ namespace Sq1.Core.DataTypes {
 				}
 				return this.ParentBars[this.ParentBarsIndex + 1];
 			} }
-		[JsonIgnore] public DateTime DateTimeExpectedMarketOpenedTodayBasedOnMarketInfo { get {
+		[JsonIgnore] public DateTime DateTimeMarketOpenedTodayExpectedBasedOnMarketInfo { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
 				}
@@ -49,7 +49,7 @@ namespace Sq1.Core.DataTypes {
 				DateTime todayMarketOpenServerTime = this.ParentBars.CombineBarDateWithMarketOpenTime(this.DateTimeOpen, marketOpenServerTime);
 				return todayMarketOpenServerTime;
 			} }
-		[JsonIgnore] public DateTime DateTimeExpectedMarketClosesTodayBasedOnMarketInfo { get {
+		[JsonIgnore] public DateTime DateTimeMarketClosesTodayExpectedBasedOnMarketInfo { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
 				}
@@ -58,12 +58,12 @@ namespace Sq1.Core.DataTypes {
 				DateTime todayMarketCloseServerTime = this.ParentBars.CombineBarDateWithMarketOpenTime(this.DateTimeOpen, marketCloseServerTime);
 				return todayMarketCloseServerTime;
 			} }
-		[JsonIgnore] public int BarIndexExpectedMarketOpenedTodayBasedOnMarketInfo { get {
+		[JsonIgnore] public int BarIndexMarketOpenedTodayExpectedBasedOnMarketInfo { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
 				}
 				int ret = -1;
-				DateTime todayMarketOpenServerTime = this.DateTimeExpectedMarketOpenedTodayBasedOnMarketInfo;
+				DateTime todayMarketOpenServerTime = this.DateTimeMarketOpenedTodayExpectedBasedOnMarketInfo;
 				Bar barFirstReceivedToday = this.BarMarketOpenedTodayScanBackwardIgnoringMarketInfo;
 				ret = barFirstReceivedToday.ParentBarsIndex;
 				DateTime dateBarFirstReceivedToday = barFirstReceivedToday.DateTimeOpen;
@@ -77,17 +77,39 @@ namespace Sq1.Core.DataTypes {
 				ret += barsLate;
 				return ret;
 			} }
+		[JsonIgnore] public int BarIndexMarketClosesTodayExpectedBasedOnMarketInfo { get {
+				if (this.HasParentBars == false) {
+					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
+				}
+				int ret = -1;
+				DateTime todayMarketClosesServerTime = this.DateTimeMarketClosesTodayExpectedBasedOnMarketInfo;
+				Bar barFirstReceivedToday = this.BarMarketOpenedTodayScanBackwardIgnoringMarketInfo;
+				ret = barFirstReceivedToday.ParentBarsIndex;
+				DateTime dateBarFirstReceivedToday = barFirstReceivedToday.DateTimeOpen;
+				if (dateBarFirstReceivedToday == todayMarketClosesServerTime) {
+					return ret; 
+				}
+				TimeSpan betweenMarketOpenAndMarketClose = dateBarFirstReceivedToday.Subtract(todayMarketClosesServerTime);
+				int distanceSeconds = (int) betweenMarketOpenAndMarketClose.TotalSeconds;
+				int secondsInOneBar = this.ScaleInterval.AsTimeSpanInSeconds;
+				int distanceBars = (int)distanceSeconds / secondsInOneBar;
+				ret += distanceBars;
+				return ret;
+			} }
 		[JsonIgnore] public Bar BarMarketOpenedTodayScanBackwardIgnoringMarketInfo { get {
 				// I_CAN_NOT_JUST_ADD_DATES_BECAUSE_MARKETINFO_HAS_MARKET_OPEN_TIME_BUT_BAR_MAY_NOT_EXIST
-				return this.ParentBars.ScanBackwardFindBarMarketOpenedToday(this);
+				return this.ParentBars.BarMarketOpenedTodayScanBackward(this);
 			} }
 		[JsonIgnore] public Bar BarMarketClosedTodayScanForwardIgnoringMarketInfo { get {
-				return this.ParentBars.ScanForwardFindBarMarketClosedToday(this);
+				return this.ParentBars.BarMarketClosedTodayScanForwardIgnoringMarketInfo(this);
 			} }
-		[Obsolete("WARNING_NOT_YET_IMPLEMENTED")]
-		[JsonIgnore] public int BarIndexExpectedMarketClosesToday { get {
-				return this.ParentBars.SuggestBarIndexExpectedMarketClosesToday(this);
+		[JsonIgnore] public Bar BarMarketClosedTodayScanBackwardIgnoringMarketInfo { get {
+				return this.ParentBars.BarMarketClosedTodayScanBackward(this);
 			} }
+//		[Obsolete("WARNING_NOT_YET_IMPLEMENTED")]
+//		[JsonIgnore] public int BarIndexExpectedMarketClosesToday { get {
+//				return this.ParentBars.SuggestBarIndexExpectedMarketClosesToday(this);
+//			} }
 		[JsonIgnore] public int BarIndexAfterMidnightReceived { get {
 				return this.ParentBarsIndex - this.BarMarketOpenedTodayScanBackwardIgnoringMarketInfo.ParentBarsIndex;
 			} }
@@ -121,5 +143,9 @@ namespace Sq1.Core.DataTypes {
 			}
 			return this.ParentBars.AddBarIntervalsToDate(this.DateTimeOpen, howManyBarsToAdd);
 		}
+		[Obsolete("Redundant for a Bar added into Bars, but helps your maniacal disorder to slow down")]
+		[JsonIgnore] public bool IsAlignedToOwnScaleInterval { get {
+				return (this.DateTimeOpen == this.roundDateDownToMyInterval(this.DateTimeOpen)); } }
+
 	}
 }
