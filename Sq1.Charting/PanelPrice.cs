@@ -370,8 +370,9 @@ namespace Sq1.Charting {
 				}
 				// UNCLUTTER_ADD_POSITIONS_ARROWS_OFFSET end
 				
-				int verticalPaddingDueToManyStackedAnnotationsForSameBar = 0;
-				Dictionary<string, OnChartBarAnnotation> barAnnotationsById =  seo.OnChartBarAnnotationsByBar[barIndex];
+				int verticalPaddingDueToManyStackedAnnotationsAboveSameBar = 0;
+				int verticalPaddingDueToManyStackedAnnotationsBelowSameBar = 0;
+				SortedDictionary<string, OnChartBarAnnotation> barAnnotationsById =  seo.OnChartBarAnnotationsByBar[barIndex];
 				foreach (OnChartBarAnnotation barAnnotation in barAnnotationsById.Values) {
 					//DUPLICATION copypaste from DrawLabel
 					Font font = (barAnnotation.Font != null) ? barAnnotation.Font : base.Font;
@@ -385,27 +386,29 @@ namespace Sq1.Charting {
 					
 					int y = barAnnotation.AboveBar ? yForLabelsAbove - labelHeightMeasured : yForLabelsBelow;
 					
-					if (barAnnotation.VerticalPaddingPx == int.MaxValue) {
+					if (barAnnotation.VerticalPaddingPx == Int32.MaxValue) {
 						string msg = "PREVENT_Y_BEYOUND_VISIBLE_DUE_TO_EXCEEDED_BAR_ANNOTATION_PADDING (due to barAnnotation.VerticalPaddingPx = Int32.MaxValue)";
 						y = barAnnotation.AboveBar
-							? 0 + verticalPaddingDueToManyStackedAnnotationsForSameBar
-							: this.PanelHeightMinusGutterBottomHeight_cached - labelHeightMeasured - verticalPaddingDueToManyStackedAnnotationsForSameBar;
-						verticalPaddingDueToManyStackedAnnotationsForSameBar += labelHeightMeasured;
-					} else {
-						if (verticalPaddingDueToManyStackedAnnotationsForSameBar > 0) {
-							string msg = "TESTME_WHEN_REASONABLE_PADDING_MIXED_WITH_INT.MAXVALUE_FOR_SAME_BAR";
-							#if DEBUG
-							Debugger.Break();
-							#endif
-						}
+							? verticalPaddingDueToManyStackedAnnotationsAboveSameBar
+							: this.PanelHeightMinusGutterBottomHeight_cached - labelHeightMeasured - verticalPaddingDueToManyStackedAnnotationsBelowSameBar - 3;
+						if (barAnnotation.AboveBar) verticalPaddingDueToManyStackedAnnotationsAboveSameBar += labelHeightMeasured;
+						else						verticalPaddingDueToManyStackedAnnotationsBelowSameBar += labelHeightMeasured;
+//					} else {
+//						if (verticalPaddingDueToManyStackedAnnotationsAboveSameBar > 0) {
+//							string msg = "TESTME_WHEN_REASONABLE_PADDING_MIXED_WITH_INT.MAXVALUE_FOR_SAME_BAR";
+//							#if DEBUG
+//							Debugger.Break();
+//							#endif
+//						}
 					}
 					int yPadding = 0;
 					if (barAnnotation.ShouldDrawBackground) {
 						yPadding += barAnnotation.AboveBar ? -paddingFromSettings * 2 :  paddingFromSettings;
 					}
 					y += yPadding;
-					if (barAnnotation.VerticalPaddingPx == int.MaxValue) {
-						verticalPaddingDueToManyStackedAnnotationsForSameBar += yPadding; 
+					if (barAnnotation.VerticalPaddingPx == Int32.MaxValue) {
+						if (barAnnotation.AboveBar) verticalPaddingDueToManyStackedAnnotationsAboveSameBar += yPadding;
+						else						verticalPaddingDueToManyStackedAnnotationsBelowSameBar += yPadding;
 					}
 					base.DrawLabel(g, x, y,
 					               barAnnotation.BarAnnotationText, barAnnotation.Font,

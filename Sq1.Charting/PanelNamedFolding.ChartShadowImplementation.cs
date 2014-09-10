@@ -76,14 +76,18 @@ namespace Sq1.Charting {
 
 			// Y_BEYOUND_VISIBLE_DUE_TO_EXCEEDED_BAR_ANNOTATION_PADDING
 			if (y > this.PanelHeightMinusGutterBottomHeight_cached) {
+				y = this.PanelHeightMinusGutterBottomHeight_cached - labelMeasuredHeight;
+			}
+			if (x > this.PanelWidthMinusRightPriceGutter) {
 				x = this.PanelHeightMinusGutterBottomHeight_cached - labelMeasuredHeight;
 			}
 			
 			if (drawBackgroundRectangle) {
+				int makingHpaddingLookLikeVpadding = 2; 
 				Rectangle labelPlate = new Rectangle();
-				labelPlate.X = x - this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding;
+				labelPlate.X = x - this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding - makingHpaddingLookLikeVpadding;
 				labelPlate.Y = y - this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding;
-				labelPlate.Width = labelMeasuredWidth + this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2;
+				labelPlate.Width = labelMeasuredWidth + this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2 + makingHpaddingLookLikeVpadding * 2;
 				labelPlate.Height = labelMeasuredHeight + this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2;
 
 				if (labelPlate.X < 0) labelPlate.X = 0;
@@ -113,6 +117,7 @@ namespace Sq1.Charting {
 										 	  + this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding;
 					x += squareAndRightPadding;
 				}
+				y += 1;	// moving text label to align middle vertically for Consolas,8 and Arial,8 (Courier New or some other font looked exactly valign=middle but I won't use it) 
 				g.DrawString(msg, font, brushLabel, new Point(x, y));
 			}
 			return measurements;
