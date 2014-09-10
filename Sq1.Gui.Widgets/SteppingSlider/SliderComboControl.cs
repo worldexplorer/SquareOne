@@ -157,5 +157,10 @@ namespace Sq1.Widgets.SteppingSlider {
 			get { return base.Enabled; }
 			set { base.Enabled = value; base.Invalidate(); }
 		}
+		
+		//v2  SteppingSlider_RTL branch: SteppingSlider if Max < Min then draw filled part from right to left
+		public decimal ValueMinRtlSafe { get { return Math.Min(this.ValueMin, this.ValueMax); } }
+		public decimal ValueMaxRtlSafe { get { return Math.Max(this.ValueMin, this.ValueMax); } }
+
 	}
 }
