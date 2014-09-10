@@ -320,6 +320,17 @@ namespace Sq1.Charting {
 			rectangleBarWithShadows.Width = this.BarWidthIncludingPadding_cached;
 			rectangleBarWithShadows.Height = yLow - yHigh;	// due to upperLeft=(0:0), inverted yLow > yHigh
 			if (this.ChartControl.ChartSettings.TooltipPriceShowOnlyWhenMouseTouchesCandle) {
+// FAILED		hide the priceTooltip when mouse hovers <= chart drag is "blocked", mouse "cross" doesn't update (I want to see the price of current mouse position)  
+// WHY			TooltipPriceClientRectangleOrEmptyIfInvisible.Location is (always) 0:0, I'm lazy to offset TooltipPosition to parent's (ChartControl's) coordinates;
+// ALTERNATIVE	TooltipPrice.Designer.cs: ouseMove += new MouseEventHandler(TooltipPrice_MouseMove);
+//				Rectangle clientRectangle = this.ChartControl.TooltipPriceClientRectangleOrEmptyIfInvisible;
+//				if (clientRectangle != null) {
+//					bool mouseIsOverTooltipPriceRectangle = clientRectangle.Contains(e.X, e.Y);
+//					if (mouseIsOverTooltipPriceRectangle) {
+//						this.ChartControl.TooltipPriceHide();
+//						return;
+//					}
+//				}
 				//int verticalSensitivityIncreased = 4;	// doesn't cause flickering, keep TooltipSurfacePaddingFromBarLeftRightToAvoidMouseLeave > 2
 				int verticalSensitivityIncreased = 0;	//MOVE_TO_SETTINGS_SO_ARROWS_WONT_OVERLAP
 				bool mouseIsOverBarRectangle = e.Y >= rectangleBarWithShadows.Top - verticalSensitivityIncreased

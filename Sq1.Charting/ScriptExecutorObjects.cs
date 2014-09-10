@@ -24,7 +24,7 @@ namespace Sq1.Charting {
 		public Dictionary<int, Color> BarForegroundsByBar { get; private set; }
 
 		public Dictionary<string, OnChartLabel> OnChartLabelsById { get; private set; }
-		public Dictionary<int, Dictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
+		public Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
 
 		
 		public ScriptExecutorObjects() {
@@ -40,7 +40,7 @@ namespace Sq1.Charting {
 			BarForegroundsByBar = new Dictionary<int, Color>();
 
 			OnChartLabelsById = new Dictionary<string, OnChartLabel>();
-			OnChartBarAnnotationsByBar = new Dictionary<int, Dictionary<string, OnChartBarAnnotation>>();
+			OnChartBarAnnotationsByBar = new Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>>();
 		}
 		public void ClearAllBeforeBacktest() {
 			this.AlertArrowsListByBar.Clear();
@@ -269,27 +269,37 @@ namespace Sq1.Charting {
 
 			return labelToModify;
 		}
+
 		public OnChartBarAnnotation BarAnnotationAddOrModify(int barIndex, string barAnnotationId, string barAnnotationText,
-		                                                     Font font, Color colorFore, Color colorBack, bool aboveBar = true, bool debugStatus = false) {
+				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, 
+				int verticalPadding = 5, bool reportDidntChangeStatus = false) {
 			//Add() candidate starts below
 			if (this.OnChartBarAnnotationsByBar.ContainsKey(barIndex) == false) {
-				this.OnChartBarAnnotationsByBar.Add(barIndex, new Dictionary<string, OnChartBarAnnotation>());
+				this.OnChartBarAnnotationsByBar.Add(barIndex, new SortedDictionary<string, OnChartBarAnnotation>());
 			}
-			Dictionary<string, OnChartBarAnnotation> annotationsForBar = this.OnChartBarAnnotationsByBar[barIndex];
+			SortedDictionary<string, OnChartBarAnnotation> annotationsForBar = this.OnChartBarAnnotationsByBar[barIndex];
 
 			if (annotationsForBar.ContainsKey(barAnnotationId) == false) {
 				OnChartBarAnnotation barAnnotationCreated = new OnChartBarAnnotation(
-					barAnnotationId, barAnnotationText, font, colorFore, colorBack, aboveBar, debugStatus);
+					barAnnotationId, barAnnotationText, font, colorForeground, colorBackground,
+					aboveBar, verticalPadding, reportDidntChangeStatus);
 				annotationsForBar.Add(barAnnotationId, barAnnotationCreated);
+
 				return barAnnotationCreated;
 			}
 			
 			//Modify() candidate starts below
 			OnChartBarAnnotation barAnnotationToModify = annotationsForBar[barAnnotationId];
-			if (		barAnnotationToModify.BarAnnotationText	== barAnnotationText	&& barAnnotationToModify.Font				== font
-			   		 && barAnnotationToModify.ColorForeground	== colorFore			&& barAnnotationToModify.ColorBackground	== colorBack) {
+			if (	   barAnnotationToModify.BarAnnotationText			== barAnnotationText
+					&& barAnnotationToModify.Font						== font
+			   		&& barAnnotationToModify.ColorForeground			== colorForeground
+					&& barAnnotationToModify.ColorBackground			== colorBackground
+					&& barAnnotationToModify.AboveBar					== aboveBar
+					&& barAnnotationToModify.VerticalPaddingPx			== verticalPadding
+					//NOT_VALUABLE_PARAMETER_TO_HIDE_REPORTING && barAnnotationToModify.ReportDidntChangeStatus	== reportDidntChangeStatus
+				) {
 				barAnnotationToModify.Status = OnChartObjectOperationStatus.OnChartObjectNotModifiedSinceParametersDidntChange;
-				if (barAnnotationToModify.DebugStatus) {
+				if (barAnnotationToModify.ReportDidntChangeStatus) {
 					Assembler.PopupException(barAnnotationToModify.ToString() + " //BarAnnotationAddOrModify()");
 				}
 				return barAnnotationToModify;
@@ -297,10 +307,13 @@ namespace Sq1.Charting {
 			
 			barAnnotationToModify.Status = OnChartObjectOperationStatus.OnChartObjectModified;
 
-			if (barAnnotationToModify.BarAnnotationText	!= barAnnotationText)	barAnnotationToModify.BarAnnotationText = barAnnotationText;
-			if (barAnnotationToModify.Font				!= font)				barAnnotationToModify.Font = font;
-			if (barAnnotationToModify.ColorForeground	!= colorFore)			barAnnotationToModify.ColorForeground = colorFore;
-			if (barAnnotationToModify.ColorBackground	!= colorBack)			barAnnotationToModify.ColorBackground = colorBack;
+			if (barAnnotationToModify.BarAnnotationText			!= barAnnotationText)		barAnnotationToModify.BarAnnotationText			= barAnnotationText;
+			if (barAnnotationToModify.Font						!= font)					barAnnotationToModify.Font						= font;
+			if (barAnnotationToModify.ColorForeground			!= colorForeground)			barAnnotationToModify.ColorForeground			= colorForeground;
+			if (barAnnotationToModify.ColorBackground			!= colorBackground)			barAnnotationToModify.ColorBackground			= colorBackground;
+			if (barAnnotationToModify.AboveBar					!= aboveBar)				barAnnotationToModify.AboveBar					= aboveBar;
+			if (barAnnotationToModify.VerticalPaddingPx			!= verticalPadding)			barAnnotationToModify.VerticalPaddingPx			= verticalPadding;
+			if (barAnnotationToModify.ReportDidntChangeStatus	!= reportDidntChangeStatus)	barAnnotationToModify.ReportDidntChangeStatus	= reportDidntChangeStatus;
 
 			return barAnnotationToModify;
 		}

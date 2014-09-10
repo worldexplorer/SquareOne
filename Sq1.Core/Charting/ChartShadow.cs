@@ -115,7 +115,8 @@ namespace Sq1.Core.Charting {
 		}
 		public virtual OnChartObjectOperationStatus BarAnnotationDrawModify(
 				int barIndex, string barAnnotationId, string barAnnotationText,
-				Font font, Color colorFore, Color colorBack, bool aboveBar = true, bool debugStatus = false) {
+				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, 
+				int verticalPadding = 5, bool reportDidntChangeStatus = false) {
 			throw new NotImplementedException();
 		}
 #endregion

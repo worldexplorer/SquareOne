@@ -326,5 +326,10 @@ namespace Sq1.Charting {
 				ret = arrowNullIfNotDisplayed.BarIndexFilled;
 				return ret;
 			} }
+//		public Rectangle TooltipPriceClientRectangleOrEmptyIfInvisible { get {
+//				Rectangle ret = Rectangle.Empty;
+//				if (this.tooltipPrice.Visible == false) return ret;
+//				return this.tooltipPrice.ClientRectangle;
+//			} }
 	}
 }

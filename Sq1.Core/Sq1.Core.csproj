@@ -83,9 +83,8 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Charting\DictionaryManyToOne.cs" />
-    <Compile Include="Charting\LineStyle.cs" />
     <Compile Include="Charting\HostPanelForIndicator.cs" />
-    <Compile Include="Charting\OnChart\OnChartObjectOperationStatus.cs" />
+    <Compile Include="Charting\OnChartObjectOperationStatus.cs" />
     <Compile Include="Charting\ScriptToChartCommunicator.cs" />
     <Compile Include="DataFeed\IDataSourceEditor.cs" />
     <Compile Include="DataFeed\NamedObjectJsonEventArgs.cs" />
@@ -258,7 +257,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Charting\OnChart" />
     <Folder Include="Repositories" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
