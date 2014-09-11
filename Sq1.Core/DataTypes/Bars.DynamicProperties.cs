@@ -34,7 +34,7 @@ namespace Sq1.Core.DataTypes {
 			#endif
 			DateTime dateExisting = this.DateTimeMarketWasClosedTodayScanBackwardMinValueUnsafe(barLastToday.DateTimeOpen);
 			if (dateExisting == DateTime.MinValue) {
-				string msg = "MARKETINFO_NULL_OR_MARKETCLOSESERVERTIME_NULL barLastToday["
+				string msg = "YOU_SHOULD_SCAN_FORWARD_MARKET_CLOSES_LATER OR BAR_NOT_APPENDED OR MARKETINFO_NULL OR MARKETCLOSESERVERTIME_NULL barLastToday["
 					+ barLastToday + "].ParentBars.MarketInfo[" + this.MarketInfo + "]";
 				Assembler.PopupException(msg);
 				#if DEBUG
@@ -58,21 +58,25 @@ namespace Sq1.Core.DataTypes {
 				#endif
 				return ret;
 			}
-			if (this.MarketInfo == null) return ret;
+			if (this.MarketInfo == null) {
+				return ret;
+			}
 			// TODO: use Weekends, year-dependent irregular Holidays
 			// TODO: this calculation is irrelevant for FOREX since FOREX doesn't interrupt overnight 
 			DateTime marketCloseServerTime = this.MarketInfo.MarketCloseServerTime;
-			if (marketCloseServerTime == DateTime.MinValue) return ret;
+			if (marketCloseServerTime == DateTime.MinValue) {
+				return ret;
+			}
 			DateTime todayMarketCloseServerTime = this.CombineBarDateWithMarketOpenTime(dateStartScanBackwards, marketCloseServerTime);
 			if (dateStartScanBackwards < todayMarketCloseServerTime) {
-				string msg = "BAR_INVALID_MARKET_IS_ALREADY_CLOSED startScanFrom[" + dateStartScanBackwards 
+				string msg = "BAR_MISSING_MARKET_IS_ALREADY_CLOSED_RETURNING_ startScanFrom[" + dateStartScanBackwards 
 					+ "] MarketInfo.MarketCloseServerTime[" + this.MarketInfo.MarketCloseServerTime
 					+ "] todayMarketCloseServerTime[" + todayMarketCloseServerTime + "]";
 				Assembler.PopupException(msg);
 				#if DEBUG
 				Debugger.Break();
 				#endif
-				return ret;
+				return todayMarketCloseServerTime;
 			}
 			//FIRST_BAR_WILL_BECOME_ZERO ret = 0;
 			TimeSpan distanceBetweenBars = this.ScaleInterval.AsTimeSpan;
@@ -95,6 +99,28 @@ namespace Sq1.Core.DataTypes {
 			}
 			// FOR ended when ret <= todayMarketCloseServerTime, ret=dateOfExistingBarPriorOrEqualToMarketClose
 			return ret;
+		}
+		
+		public int DistanceInBarsWalkBackwardBasedOnMarketInfoExcludingClearing(DateTime dateStartScanBackwards, DateTime todayMarketCloseServerTime) {
+			TimeSpan distanceBetweenBars = this.ScaleInterval.AsTimeSpan;
+			int barsMaxDayCanFit = this.BarsMaxOneDayCanFit;
+			int barsScanned = 0;
+			for (DateTime eachBar = dateStartScanBackwards; eachBar > todayMarketCloseServerTime; eachBar = eachBar.Subtract(distanceBetweenBars)) {
+				if (barsScanned > barsMaxDayCanFit) {
+					#if DEBUG	// TEST_EMBEDDED
+					Debugger.Break();
+					#endif
+					break;
+				}
+				barsScanned++;
+				
+				// I won't cry if we haven't received a bar between lastBarToday and an earlier barMarketClose
+				//if (this.ContainsKey(eachBar) == false) continue;
+				//if (this.IsMarketOpenDuringWholeBar(this[eachBar]) == false) Debugger.Break();
+				if (this.MarketInfo.IsMarketOpenDuringDateIntervalServerTime(eachBar, eachBar.Add(distanceBetweenBars)) == false) continue;
+			}
+			// FOR ended when ret <= todayMarketCloseServerTime, ret=dateOfExistingBarPriorOrEqualToMarketClose
+			return barsScanned;
 		}
 		
 		public bool IsMarketOpenDuringWholeBar(Bar bar) {
@@ -161,7 +187,7 @@ namespace Sq1.Core.DataTypes {
 				ret = (int) (wholeDay.TotalSeconds / this.ScaleInterval.AsTimeSpan.TotalSeconds);
 				return ret;
 			} }
-		public int BarIndexSinceTodayMarketOpenSuggestForwardForDateEarlierOrEqual(DateTime dateTimeToFind) {
+		public int BarIndexSinceTodayMarketOpenSuggestForwardFor(DateTime dateTimeToFind) {
 			int ret = -1;
 			if (this.MarketInfo == null) return ret;
 			// v1: MarketInfo.MarketOpenServerTime may contain only Hour:Minute:Second and all the rest is 01-Jan-01 => use than ReplaceTimeOpenWith() 
@@ -303,6 +329,28 @@ namespace Sq1.Core.DataTypes {
 				}
 				#endif
 				ret = marketOpenDurationSeconds / seconds;
+				return ret;
+			} }
+		[JsonIgnore] public TimeSpan ClearingIntervalsStretchingWholeBarsTotalled { get {
+				TimeSpan ret = new TimeSpan();
+				if (this.MarketInfo == null) return ret;
+				if (this.ScaleInterval == null) {
+					string msg = "CAN_NOT_CALCULATE_ClearingIntervalsStretchingWholeBarsTotalled_FOR_BARS_WITH_EMPTY_BarScaleInterval this.ScaleInterval[" + this.ScaleInterval + "]";
+					Assembler.PopupException(msg);
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return ret;
+				}
+				if (this.ScaleInterval.Scale == BarScale.Unknown) {
+					string msg = "CAN_NOT_CALCULATE_ClearingIntervalsStretchingWholeBarsTotalled_FOR_BARS_WITH_UNKNOWN_BarScaleInterval this.ScaleInterval[" + this.ScaleInterval + "]";
+					Assembler.PopupException(msg);
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return ret;
+				}
+				ret = this.MarketInfo.ClearingIntervalsStretchingWholeBarsTotalled(this.ScaleInterval);
 				return ret;
 			} }
 	}

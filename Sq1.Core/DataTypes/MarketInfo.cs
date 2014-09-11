@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 
 using Newtonsoft.Json;
@@ -417,5 +418,69 @@ namespace Sq1.Core.DataTypes {
 			return new DateTime(quote.ServerTime.Date.Year, quote.ServerTime.Date.Month, quote.ServerTime.Date.Day,
 				this.MarketCloseServerTime.Hour, this.MarketCloseServerTime.Minute, this.MarketCloseServerTime.Second);
 		}
+		public TimeSpan ClearingIntervalsStretchingWholeBarsTotalled(BarScaleInterval oneFullBarLasts) {
+			TimeSpan ret = new TimeSpan();
+			if (oneFullBarLasts == null) {
+				string msg = "DONT_PASS_EMPTY_BarScaleInterval oneFullBarLasts[" + oneFullBarLasts + "]";
+				Assembler.PopupException(msg);
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return ret;
+			}
+			if (oneFullBarLasts.Scale == BarScale.Unknown) {
+				string msg = "DONT_PASS_UNKNOWN_BarScaleInterval oneFullBarLasts[" + oneFullBarLasts + "]";
+				Assembler.PopupException(msg);
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return ret;
+			}
+			foreach (MarketClearingTimespan clearingTimespan in this.ClearingTimespans) {
+				if (clearingTimespan.SuspendServerTimeOfDay == DateTime.MinValue) {
+					string msg = "CLEARING_INTERVAL_SUSPEND_TIME_MUST_BE_INITIALIZED clearingTimespan["
+						+ clearingTimespan.ToString() + "].SuspendServerTimeOfDay[" + clearingTimespan.SuspendServerTimeOfDay + "]";
+					Assembler.PopupException(msg);
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					continue;
+				}
+				if (clearingTimespan.ResumeServerTimeOfDay == DateTime.MinValue) {
+					string msg = "CLEARING_INTERVAL_RESUME_TIME_MUST_BE_INITIALIZED clearingTimespan["
+						+ clearingTimespan.ToString() + "].ResumeServerTimeOfDay[" + clearingTimespan.ResumeServerTimeOfDay + "]";
+					Assembler.PopupException(msg);
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					continue;
+				}
+				if (clearingTimespan.SuspendServerTimeOfDay.TimeOfDay <= clearingTimespan.ResumeServerTimeOfDay.TimeOfDay) {
+					string msg = "CLEARING_INTERVAL_MUST_BE_POSITIVE clearingTimespan[" + clearingTimespan.ToString()
+						+ "].ResumeServerTimeOfDay[" + clearingTimespan.ResumeServerTimeOfDay 
+						+ "] MUST_BE_GREATER_THAN .SuspendServerTimeOfDay[" + clearingTimespan.SuspendServerTimeOfDay + "]";
+					Assembler.PopupException(msg);
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					continue;
+				}
+
+				// TODO: CAN_BE_WRONG_APPROACH_BUT_FILTERING_CLEARING_INTERVALS_STRETCHING_BEYOND_MARKETOPEN_MARKETCLOSE_ACTUALLY_WORKS_HERE
+				DateTime suspendTime = clearingTimespan.SuspendServerTimeOfDay;
+				if (suspendTime.TimeOfDay < this.MarketOpenServerTime.TimeOfDay) suspendTime = this.MarketOpenServerTime; 
+				DateTime resumeTime = clearingTimespan.ResumeServerTimeOfDay;
+				if (resumeTime.TimeOfDay < this.MarketCloseServerTime.TimeOfDay) resumeTime = this.MarketCloseServerTime;
+				// TODO: CAN_BE_WRONG_APPROACH_BUT_FILTERING_CLEARING_INTERVALS_STRETCHING_BEYOND_MARKETOPEN_MARKETCLOSE_ACTUALLY_WORKS_HERE
+
+				TimeSpan clearingInterval = resumeTime.TimeOfDay.Subtract(suspendTime.TimeOfDay);
+				
+				int fullBars = (int)(clearingInterval.Seconds / oneFullBarLasts.AsTimeSpanInSeconds);
+				TimeSpan fullBarsAsTimeSpan = new TimeSpan(0, 0, fullBars * oneFullBarLasts.AsTimeSpanInSeconds);
+				ret.Add(fullBarsAsTimeSpan);
+			}
+			return ret;
+		}
+		
 	}
 }

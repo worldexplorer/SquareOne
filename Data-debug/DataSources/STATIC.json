@@ -17,7 +17,7 @@
   "StaticProvider": null,
   "StreamingProvider": null,
   "BrokerProvider": null,
-  "MarketName": "BACKTEST",
+  "MarketName": "FORTS",
   "Name": "STATIC",
   "StaticProviderName": "STATIC_PROVIDER_NOT_INITIALIZED",
   "StreamingProviderName": "STREAMING_PROVIDER_NOT_INITIALIZED",

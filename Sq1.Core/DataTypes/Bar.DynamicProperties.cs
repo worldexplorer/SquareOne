@@ -77,7 +77,7 @@ namespace Sq1.Core.DataTypes {
 				ret += barsLate;
 				return ret;
 			} }
-		[JsonIgnore] public int BarIndexMarketClosesTodayExpectedBasedOnMarketInfo { get {
+		[JsonIgnore] public int BarIndexMarketClosesTodayExpectedBasedOnMarketInfoIncludingClearing { get {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: BarPrevious: Bar[" + this + "].HasParentBars=false");
 				}
@@ -87,9 +87,19 @@ namespace Sq1.Core.DataTypes {
 				ret = barFirstReceivedToday.ParentBarsIndex;
 				DateTime dateBarFirstReceivedToday = barFirstReceivedToday.DateTimeOpen;
 				if (dateBarFirstReceivedToday == todayMarketClosesServerTime) {
-					return ret; 
+					return ret;
+				}
+				if (dateBarFirstReceivedToday < todayMarketClosesServerTime) {
+					// WALKING_FORWARD_SKIPPING_CLEARING_INTERVALS
+					int offset = this.ParentBars.DistanceInBarsWalkBackwardBasedOnMarketInfoExcludingClearing(dateBarFirstReceivedToday, todayMarketClosesServerTime);
+					ret -= offset; 
+					return ret;
 				}
 				TimeSpan betweenMarketOpenAndMarketClose = dateBarFirstReceivedToday.Subtract(todayMarketClosesServerTime);
+				// TODO: CAN_BE_WRONG_APPROACH_BUT_FILTERING_CLEARING_INTERVALS_STRETCHING_BEYOND_MARKETOPEN_MARKETCLOSE_ACTUALLY_WORKS_HERE
+				TimeSpan clearingWholeDayWholeBars = this.ParentBars.ClearingIntervalsStretchingWholeBarsTotalled;
+				betweenMarketOpenAndMarketClose = betweenMarketOpenAndMarketClose.Subtract(clearingWholeDayWholeBars);
+				
 				int distanceSeconds = (int) betweenMarketOpenAndMarketClose.TotalSeconds;
 				int secondsInOneBar = this.ScaleInterval.AsTimeSpanInSeconds;
 				int distanceBars = (int)distanceSeconds / secondsInOneBar;
@@ -116,7 +126,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore] public int BarIndexExpectedSinceTodayMarketOpen { get {
 				int ret = -1;
 				if (this.HasParentBars == false) return ret;
-				ret = this.ParentBars.BarIndexSinceTodayMarketOpenSuggestForwardForDateEarlierOrEqual(this.DateTimeOpen);
+				ret = this.ParentBars.BarIndexSinceTodayMarketOpenSuggestForwardFor(this.DateTimeOpen);
 				return ret; 
 			} }
 		[JsonIgnore] public int BarIndexExpectedMarketClosesTodaySinceMarketOpen { get {

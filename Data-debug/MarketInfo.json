@@ -192,7 +192,7 @@
     "Name": "BACKTEST",
     "Description": "BACKTEST_NO_RESTRICTIONS",
     "MarketOpenServerTime": "2014-09-09T10:00:00",
-    "MarketCloseServerTime": "2014-09-09T23:45:00",
+    "MarketCloseServerTime": "2014-09-10T23:50:00",
     "DaysOfWeekOpen": [
       1,
       2,
