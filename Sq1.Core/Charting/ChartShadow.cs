@@ -93,7 +93,7 @@ namespace Sq1.Core.Charting {
 		
 		public virtual OnChartObjectOperationStatus LineDrawModify(
 				string id, int barStart, double priceStart, int barEnd, double priceEnd,
-				Color color, int width) {
+				Color color, int width, bool debugParametersDidntChange = false) {
 			throw new NotImplementedException();
 		}
 		public virtual bool BarBackgroundSet(int barIndex, Color color) {

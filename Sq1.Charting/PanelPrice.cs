@@ -289,10 +289,10 @@ namespace Sq1.Charting {
 			    foreach (OnChartLine line in linesByRight) {
 			        if (line.BarLeft > base.VisibleBarRight_cached) continue;	// line will start after VisibleRight
 			        if (linesToDraw.Contains(line)) {
-#if DEBUG
+						#if DEBUG
 						string msg = "should never happen";
 						Debugger.Break();
-#endif
+						#endif
 						continue;
 					}
 			        linesToDraw.Add(line);
@@ -409,6 +409,8 @@ namespace Sq1.Charting {
 					if (barAnnotation.VerticalPaddingPx == Int32.MaxValue) {
 						if (barAnnotation.AboveBar) verticalOffsetForNextStackedAnnotationsAboveSameBar += yPadding;
 						else						verticalOffsetForMextStackedAnnotationsBelowSameBar += yPadding;
+					} else {
+						y += (barAnnotation.AboveBar) ? -barAnnotation.VerticalPaddingPx : barAnnotation.VerticalPaddingPx;
 					}
 					base.DrawLabel(g, x, y,
 					               barAnnotation.BarAnnotationText, barAnnotation.Font,

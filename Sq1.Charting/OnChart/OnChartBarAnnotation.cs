@@ -12,7 +12,7 @@ namespace Sq1.Charting.OnChart {
 		public Color ColorForeground;
 		public Color ColorBackground;
 		public bool AboveBar;
-		public bool ReportDidntChangeStatus;
+		public bool DebugParametersDidntChange;
 		public int VerticalPaddingPx;		// 0: stick to the Bar's Hi/Low; Int32.MaxValue: stick to Chart's top/bottom edge
 
 		public bool ShouldDrawBackground { get { return this.ColorBackground != Color.Empty; } }
@@ -26,7 +26,7 @@ namespace Sq1.Charting.OnChart {
 			ColorForeground = colorForeground;
 			ColorBackground = colorBackground;
 			AboveBar = aboveBar;
-			ReportDidntChangeStatus = reportDidntChangeStatus;
+			DebugParametersDidntChange = reportDidntChangeStatus;
 			VerticalPaddingPx = verticalPadding;
 			Status = OnChartObjectOperationStatus.OnChartObjectJustCreated;
 		}

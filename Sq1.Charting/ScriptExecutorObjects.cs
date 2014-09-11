@@ -132,7 +132,7 @@ namespace Sq1.Charting {
 		}
 		
 		public OnChartLine LineAddOrModify(string lineId, int barLeft, double priceLeft, int barRight, double priceRight,
-					Color color, int width = 1) {
+					Color color, int width = 1, bool debugParametersDidntChange = false) {
 			
 			//LineAdd() candidate starts below
 			if (this.LinesById.ContainsKey(lineId) == false) {
@@ -157,7 +157,9 @@ namespace Sq1.Charting {
 			   		 && lineToModify.BarRight	== barRight	&& lineToModify.PriceRight	== priceRight
 			   		 && lineToModify.Color		== color	&& lineToModify.Width		== width) {
 				lineToModify.Status = OnChartObjectOperationStatus.OnChartObjectNotModifiedSinceParametersDidntChange;
-				Assembler.PopupException(lineToModify.ToString() + " //LineAddOrModify()");
+				if (debugParametersDidntChange) {
+					Assembler.PopupException(lineToModify.ToString() + " //LineAddOrModify()");
+				}
 				return lineToModify;
 			}
 			
@@ -272,7 +274,7 @@ namespace Sq1.Charting {
 
 		public OnChartBarAnnotation BarAnnotationAddOrModify(int barIndex, string barAnnotationId, string barAnnotationText,
 				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, 
-				int verticalPadding = 5, bool reportDidntChangeStatus = false) {
+				int verticalPadding = 5, bool popupParametersDidntChange = false) {
 			//Add() candidate starts below
 			if (this.OnChartBarAnnotationsByBar.ContainsKey(barIndex) == false) {
 				this.OnChartBarAnnotationsByBar.Add(barIndex, new SortedDictionary<string, OnChartBarAnnotation>());
@@ -282,7 +284,7 @@ namespace Sq1.Charting {
 			if (annotationsForBar.ContainsKey(barAnnotationId) == false) {
 				OnChartBarAnnotation barAnnotationCreated = new OnChartBarAnnotation(
 					barAnnotationId, barAnnotationText, font, colorForeground, colorBackground,
-					aboveBar, verticalPadding, reportDidntChangeStatus);
+					aboveBar, verticalPadding, popupParametersDidntChange);
 				annotationsForBar.Add(barAnnotationId, barAnnotationCreated);
 
 				return barAnnotationCreated;
@@ -299,7 +301,7 @@ namespace Sq1.Charting {
 					//NOT_VALUABLE_PARAMETER_TO_HIDE_REPORTING && barAnnotationToModify.ReportDidntChangeStatus	== reportDidntChangeStatus
 				) {
 				barAnnotationToModify.Status = OnChartObjectOperationStatus.OnChartObjectNotModifiedSinceParametersDidntChange;
-				if (barAnnotationToModify.ReportDidntChangeStatus) {
+				if (barAnnotationToModify.DebugParametersDidntChange) {
 					Assembler.PopupException(barAnnotationToModify.ToString() + " //BarAnnotationAddOrModify()");
 				}
 				return barAnnotationToModify;
@@ -307,13 +309,13 @@ namespace Sq1.Charting {
 			
 			barAnnotationToModify.Status = OnChartObjectOperationStatus.OnChartObjectModified;
 
-			if (barAnnotationToModify.BarAnnotationText			!= barAnnotationText)		barAnnotationToModify.BarAnnotationText			= barAnnotationText;
-			if (barAnnotationToModify.Font						!= font)					barAnnotationToModify.Font						= font;
-			if (barAnnotationToModify.ColorForeground			!= colorForeground)			barAnnotationToModify.ColorForeground			= colorForeground;
-			if (barAnnotationToModify.ColorBackground			!= colorBackground)			barAnnotationToModify.ColorBackground			= colorBackground;
-			if (barAnnotationToModify.AboveBar					!= aboveBar)				barAnnotationToModify.AboveBar					= aboveBar;
-			if (barAnnotationToModify.VerticalPaddingPx			!= verticalPadding)			barAnnotationToModify.VerticalPaddingPx			= verticalPadding;
-			if (barAnnotationToModify.ReportDidntChangeStatus	!= reportDidntChangeStatus)	barAnnotationToModify.ReportDidntChangeStatus	= reportDidntChangeStatus;
+			if (barAnnotationToModify.BarAnnotationText			!= barAnnotationText)			barAnnotationToModify.BarAnnotationText				= barAnnotationText;
+			if (barAnnotationToModify.Font						!= font)						barAnnotationToModify.Font							= font;
+			if (barAnnotationToModify.ColorForeground			!= colorForeground)				barAnnotationToModify.ColorForeground				= colorForeground;
+			if (barAnnotationToModify.ColorBackground			!= colorBackground)				barAnnotationToModify.ColorBackground				= colorBackground;
+			if (barAnnotationToModify.AboveBar					!= aboveBar)					barAnnotationToModify.AboveBar						= aboveBar;
+			if (barAnnotationToModify.VerticalPaddingPx			!= verticalPadding)				barAnnotationToModify.VerticalPaddingPx				= verticalPadding;
+			if (barAnnotationToModify.DebugParametersDidntChange!= popupParametersDidntChange)	barAnnotationToModify.DebugParametersDidntChange	= popupParametersDidntChange;
 
 			return barAnnotationToModify;
 		}

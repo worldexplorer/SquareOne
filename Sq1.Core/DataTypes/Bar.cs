@@ -41,6 +41,7 @@ namespace Sq1.Core.DataTypes {
 				return ret;
 			} }
 		// Perst deserializer invokes default ctor()
+					 public int DaySerial;
 		public Bar() {
 			// ChartRenderer would update its max/min if NaN
 			this.ParentBarsIndex = -1;
@@ -106,6 +107,14 @@ namespace Sq1.Core.DataTypes {
 			}
 			this.ParentBars = parentBars;
 			this.ParentBarsIndex = parentBarsIndex;
+			
+			Bar barPrevious = this.BarPreviousNullUnsafe;
+			if (barPrevious != null) {
+				this.DaySerial = barPrevious.DaySerial;
+				if (this.DateTimeOpen.Date > barPrevious.DateTimeOpen.Date) {
+					this.DaySerial++;
+				}
+			}
 		}
 		public Bar Clone() {
 			return (Bar)this.MemberwiseClone();

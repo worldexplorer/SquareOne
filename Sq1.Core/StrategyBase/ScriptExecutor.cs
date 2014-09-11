@@ -788,6 +788,12 @@ namespace Sq1.Core.StrategyBase {
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 			this.IsStreaming = preBacktestIsStreaming;
 		}
+		public void BacktesterAbortIfRunningRestoreContext() {
+			if (this.Backtester.IsBacktestingNow == false) return;
+			// TODO INTRODUCE_NEW_MANUAL_RESET_SO_THAT_NEW_BACKTEST_WAITS_UNTIL_TERMINATION_OF_THIS_METHOD_TO_AVOID_BROKEN_DISTRIBUTION_CHANNELS
+			this.Backtester.AbortRunningBacktestWaitAborted("USER_CHANGED_SELECTORS_IN_GUI_NEW_BACKTEST_IS_ALMOST_TASK.SCHEDULED");
+			this.BacktestContextRestore();
+		}
 
 		public void BacktesterRunSimulation() {
 			try {

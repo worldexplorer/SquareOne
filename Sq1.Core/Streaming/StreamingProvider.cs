@@ -228,7 +228,7 @@ namespace Sq1.Core.Streaming {
 			try {
 				this.DataDistributor.PushQuoteToChannel(quote);
 			} catch (Exception e) {
-				string msg = "StreamingProvider.PushReceivedQuote()";
+				string msg = "StreamingProvider.PushQuoteReceived()";
 				Assembler.PopupException(msg, e);
 				//throw e;
 			}

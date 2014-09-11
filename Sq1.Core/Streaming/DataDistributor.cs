@@ -249,6 +249,12 @@ namespace Sq1.Core.Streaming {
 		public List<SymbolScaleDistributionChannel> GetDistributionChannelsFor(string symbol) {
 			List<SymbolScaleDistributionChannel> distributors = new List<SymbolScaleDistributionChannel>();
 			lock (lockConsumersBySymbol) {
+				#if DEBUG
+				if (this.DistributionChannels.ContainsKey(symbol) == false) {
+					string msg = "YOU_DIDNT_SUBSCRIBE_AFTER_DISTRIBUTION_CHANNELS_CLEAR symbol[" + symbol + "] MOST_LIKELY_YOU_ABORTED_BACKTEST_BY_CHANGING_SELECTORS_IN_GUI_FIX_HANDLERS";
+					return distributors;
+				}
+				#endif
 				distributors = new List<SymbolScaleDistributionChannel>(this.DistributionChannels[symbol].Values);
 			}
 			return distributors;

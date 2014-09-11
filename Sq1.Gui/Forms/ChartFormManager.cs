@@ -197,6 +197,8 @@ namespace Sq1.Gui.Forms {
 			} }
 		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(string msig, bool loadNewBars = true, bool skipBacktest = false) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
+			this.Executor.BacktesterAbortIfRunningRestoreContext();
+			
 			ContextChart context = this.ContextCurrentChartOrStrategy;
 			if (context == null) {
 				string msg = "WONT_POPULATE_NULL_CONTEXT: strategy JSON/DLL was removedBetweenRestart / deserializedWithExceptionDueToDataFormatChange" +
@@ -228,7 +230,7 @@ namespace Sq1.Gui.Forms {
 			string symbol = context.Symbol;
 			
 			if (context.ChartStreaming) {
-				string msg = "CHART_STREAMING_DISABLED_FORCIBLY_POSSIBLY_ENABLED_BY_OPENCHART ContextCurrentChartOrStrategy.ChartStreaming=true"
+				string msg = "CHART_STREAMING_DISABLED_FORCIBLY_POSSIBLY_ENABLED_BY_OPENCHART_OR_NOT_ABORTED_UNFINISHED_BACKTEST ContextCurrentChartOrStrategy.ChartStreaming=true"
 					+ "; Selectors should've been Disable()d on chat[" + this.ChartForm + "].Activated() or StreamingOn()"
 					+ " in MainForm.PropagateSelectorsForCurrentChart()";
 				#if DEBUG

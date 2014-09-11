@@ -111,7 +111,7 @@ namespace Sq1.Charting {
 					// 4) if the command to CreateOrModify succeeds => you have ChartOperationStatus; if it fails you have an Assembler.PopupException()
  					//		nothing else I want to do in Script with LineDrawModify() => KISS
 					string lineId, int barStart, double priceStart, int barEnd, double priceEnd,
-					Color color, int width) {
+					Color color, int width, bool debugParametersDidntChange = false) {
 			
 			// OnChartLine = {Chart's implementation detail}, that's why it's in ChartControl.dll and is not exposed to the Script;
 			// OnChartLine.Status = {AddOrModify's output}, so that the Script could base decisions upon status of the operation done to OnChartLine
@@ -119,7 +119,7 @@ namespace Sq1.Charting {
 			// TODO define what you want and how you distribute roles among DLLs before refactoring
 			OnChartLine line = null;
 			try {
-				line = this.ScriptExecutorObjects.LineAddOrModify(lineId, barStart, priceStart, barEnd, priceEnd, color, width);
+				line = this.ScriptExecutorObjects.LineAddOrModify(lineId, barStart, priceStart, barEnd, priceEnd, color, width, debugParametersDidntChange);
 			} catch (Exception ex) {
 				if (line != null) {
 					Assembler.PopupException(line.ToString() + " //LineAddOrModify()");
@@ -178,7 +178,7 @@ namespace Sq1.Charting {
 		public override OnChartObjectOperationStatus BarAnnotationDrawModify(
 				int barIndex, string barAnnotationId, string barAnnotationText,
 				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, 
-				int verticalPadding = 5, bool reportDidntChangeStatus = false) {
+				int verticalPadding = 5, bool popupParametersDidntChange = false) {
 			OnChartBarAnnotation barAnnotation = null;
 			try {
 				if (colorBackground != Color.Empty) {
@@ -187,7 +187,7 @@ namespace Sq1.Charting {
 				barAnnotation = this.ScriptExecutorObjects.BarAnnotationAddOrModify(
 					barIndex, barAnnotationId, barAnnotationText,
 					font, colorForeground, colorBackground, aboveBar,
-					verticalPadding, reportDidntChangeStatus);
+					verticalPadding, popupParametersDidntChange);
 			} catch (Exception ex) {
 				if (barAnnotation != null) {
 					Assembler.PopupException(barAnnotation.ToString() + " //BarAnnotationDrawModify()");
