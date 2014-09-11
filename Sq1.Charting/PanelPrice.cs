@@ -370,8 +370,8 @@ namespace Sq1.Charting {
 				}
 				// UNCLUTTER_ADD_POSITIONS_ARROWS_OFFSET end
 				
-				int verticalPaddingDueToManyStackedAnnotationsAboveSameBar = 0;
-				int verticalPaddingDueToManyStackedAnnotationsBelowSameBar = 0;
+				int verticalOffsetForNextStackedAnnotationsAboveSameBar = 0;
+				int verticalOffsetForMextStackedAnnotationsBelowSameBar = 0;
 				SortedDictionary<string, OnChartBarAnnotation> barAnnotationsById =  seo.OnChartBarAnnotationsByBar[barIndex];
 				foreach (OnChartBarAnnotation barAnnotation in barAnnotationsById.Values) {
 					//DUPLICATION copypaste from DrawLabel
@@ -389,10 +389,10 @@ namespace Sq1.Charting {
 					if (barAnnotation.VerticalPaddingPx == Int32.MaxValue) {
 						string msg = "PREVENT_Y_BEYOUND_VISIBLE_DUE_TO_EXCEEDED_BAR_ANNOTATION_PADDING (due to barAnnotation.VerticalPaddingPx = Int32.MaxValue)";
 						y = barAnnotation.AboveBar
-							? verticalPaddingDueToManyStackedAnnotationsAboveSameBar
-							: this.PanelHeightMinusGutterBottomHeight_cached - labelHeightMeasured - verticalPaddingDueToManyStackedAnnotationsBelowSameBar - 3;
-						if (barAnnotation.AboveBar) verticalPaddingDueToManyStackedAnnotationsAboveSameBar += labelHeightMeasured;
-						else						verticalPaddingDueToManyStackedAnnotationsBelowSameBar += labelHeightMeasured;
+							? verticalOffsetForNextStackedAnnotationsAboveSameBar
+							: this.PanelHeightMinusGutterBottomHeight_cached - labelHeightMeasured - verticalOffsetForMextStackedAnnotationsBelowSameBar - 3;
+						if (barAnnotation.AboveBar) verticalOffsetForNextStackedAnnotationsAboveSameBar += labelHeightMeasured;
+						else						verticalOffsetForMextStackedAnnotationsBelowSameBar += labelHeightMeasured;
 //					} else {
 //						if (verticalPaddingDueToManyStackedAnnotationsAboveSameBar > 0) {
 //							string msg = "TESTME_WHEN_REASONABLE_PADDING_MIXED_WITH_INT.MAXVALUE_FOR_SAME_BAR";
@@ -407,8 +407,8 @@ namespace Sq1.Charting {
 					}
 					y += yPadding;
 					if (barAnnotation.VerticalPaddingPx == Int32.MaxValue) {
-						if (barAnnotation.AboveBar) verticalPaddingDueToManyStackedAnnotationsAboveSameBar += yPadding;
-						else						verticalPaddingDueToManyStackedAnnotationsBelowSameBar += yPadding;
+						if (barAnnotation.AboveBar) verticalOffsetForNextStackedAnnotationsAboveSameBar += yPadding;
+						else						verticalOffsetForMextStackedAnnotationsBelowSameBar += yPadding;
 					}
 					base.DrawLabel(g, x, y,
 					               barAnnotation.BarAnnotationText, barAnnotation.Font,

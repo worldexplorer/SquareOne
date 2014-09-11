@@ -133,6 +133,7 @@ namespace Sq1.Charting {
 		}
 		public override bool BarBackgroundSet(int barIndex, Color color) {
 			bool ret = false;
+			if (color == Color.Empty) return ret; 
 			try {
 				ret = this.ScriptExecutorObjects.BarBackgroundSet(barIndex, color);
 			} catch (Exception ex) {
