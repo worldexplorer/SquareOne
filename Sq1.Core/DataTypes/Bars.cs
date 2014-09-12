@@ -12,6 +12,8 @@ namespace Sq1.Core.DataTypes {
 		public event EventHandler<BarEventArgs> BarStaticAdded;
 		public event EventHandler<BarEventArgs> BarStreamingAdded;
 		public event EventHandler<BarEventArgs> BarStreamingUpdatedMerged;
+		public event EventHandler<BarEventArgs> BarsRenamed;
+		DataSourceSymbolRenamedEventArgs
 		
 		public string SymbolHumanReadable;
 		public BarScaleInterval ScaleInterval { get; private set; }
@@ -175,7 +177,8 @@ namespace Sq1.Core.DataTypes {
 			}
 			//this.streamingBar.DateTimeOpen = bar.DateTimeOpen;
 			this.BarStreaming.AbsorbOHLCVfrom(bar);
-			this.RaiseBarStreamingUpdated(this.BarStreamingCloneReadonly);	// freeze changes in the clone so that subscribers get the same StreamingBar
+			// IMPORTANT!! this.BarStreamingCloneReadonly freezes changes in the clone so that subscribers get the same StreamingBar
+			this.RaiseBarStreamingUpdated(this.BarStreamingCloneReadonly);
 		}
 		public override string ToString() {
 			string ret = this.SymbolIntervalScale + base.Count + "bars";

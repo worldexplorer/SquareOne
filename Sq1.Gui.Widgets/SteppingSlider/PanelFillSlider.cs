@@ -6,7 +6,7 @@ using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public class PanelFillSlider : PanelDoubleBuffered {
-	    private SolidBrush brushBgValueCurrentEnabled = new SolidBrush(System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255))))));
+		private SolidBrush brushBgValueCurrentEnabled = new SolidBrush(System.Drawing.Color.FromArgb(192, 192, 255));
 	    private SolidBrush brushBgValueCurrentDisabled = new SolidBrush(Color.DarkGray);
 		private SolidBrush brushBgValueCurrent { get { return base.Enabled ? brushBgValueCurrentEnabled : brushBgValueCurrentDisabled; } }
 	    
@@ -272,24 +272,11 @@ namespace Sq1.Widgets.SteppingSlider {
 		
 		bool dontRound { get {
 				bool returnRaw = false;
-				// WHICH DATATYPE IS ROUND_SAFE? DOUBLE? FLOAT? comparing strings "6.0" to "6.0" because underlying decimals aren't exacly 6.0 before and after rounding 
-	//			if (Math.Truncate(this.ValueMin, 0).ToString("#.0") != this.ValueMin.ToString("#.0")) returnRaw = true;
-	//			if (Math.Truncate(this.ValueMax, 0).ToString("#.0") != this.ValueMax.ToString("#.0")) returnRaw = true;
-	//			if (Math.Truncate(this.ValueStep, 0).ToString("#.0") != this.ValueStep.ToString("#.0")) returnRaw = true;
-				//if (Math.Truncate(this.ValueCurrent, 0).ToString("#.0") != this.ValueCurrent.ToString("#.0")) returnRaw = true;
-				if (Math.Truncate(this.ValueMin) != this.ValueMin) {
-					returnRaw = true;
-				}
-				if (Math.Truncate(this.ValueMax) != this.ValueMax) {
-					returnRaw = true;
-				}
-				if (Math.Truncate(this.ValueStep) != this.ValueStep) {
-					returnRaw = true;
-				}
-	//			if (Math.Truncate(this.ValueCurrent) != this.ValueCurrent) returnRaw = true;
+				if (Math.Truncate(this.ValueMin) != this.ValueMin) returnRaw = true;
+				if (Math.Truncate(this.ValueMax) != this.ValueMax) returnRaw = true;
+				if (Math.Truncate(this.ValueStep) != this.ValueStep) returnRaw = true;
 				return returnRaw;
-			}
-		}
+			} }
 		public decimal RoundToClosestStepIfAnyValueHasDecimalPoint(decimal rawValue) {
 			if (this.dontRound) return rawValue;
 			
@@ -349,117 +336,3 @@ namespace Sq1.Widgets.SteppingSlider {
 
 	}
 }
-	
-	
-	
-	
-/*
-				if (this.LeftToRight) {		// INVERTED_SLIDER_ORIGINAL TODO: DO_PIXEL_PERFECT_REFACTORING
-					float partOfRange = (float)(this.ValueCurrent - this.ValueMin) / (float)range;
-					this.FilledPercentageCurrentValue = 100 * partOfRange;
-					int widthToFillCurrentValue = (int)Math.Round(widthMinusBorder * partOfRange);
-					
-					g.FillRectangle(brushBgValueCurrent, 0, 0, widthToFillCurrentValue, base.Height);
-
-					int widthToFillMouseOver = 0;
-					if (this.mouseOver) {
-						widthToFillMouseOver = (int)Math.Round((widthMinusBorder * this.FilledPercentageMouseOver / 100));
-						g.FillRectangle(brushBgMouseOver, 0, 0, widthToFillMouseOver, base.Height);
-					}
-	
-					int valueCurrentXpos = widthToFillCurrentValue - valueCurrentWidthMeasured - base.Padding.Right - paddingRight;
-					int valueMinEndsAt = valueMinWidthMeasured + base.Padding.Left;
-					bool currentOverlapsMin = valueCurrentXpos < valueMinEndsAt;
-					if (currentOverlapsMin == false) {
-						g.DrawString(this.ValueMin.ToString(this.ValueFormat), this.Font, this.brushFgText, base.Padding.Left, labelYposition);
-					}
-	
-					int labelTextXposition = base.Padding.Left + valueMinWidthMeasured + paddingLeft;
-					int valueMaxXpos = widthMinusBorder - valueMaxWidthMeasured - base.Padding.Right - paddingRight;
-					bool currentOverlapsMax = widthToFillCurrentValue > valueMaxXpos;
-					if (currentOverlapsMax == false || this.mouseOver == true) {
-						g.DrawString(this.ValueMax.ToString(this.ValueFormat), this.Font, this.brushFgText, valueMaxXpos, labelYposition);
-// LOOKS LIKE NONSENSE here in ORIGINAL LeftToRight version (TODO: comment out and observe the "missing")
-						if (labelTextXposition + labelTextWidthMeasured > valueMaxXpos) {
-							// paint bg under MAX label if it overlaps long labelText
-							if (brushBgControl == null) brushBgControl = new SolidBrush(base.BackColor);
-							g.FillRectangle(brushBgControl, valueMaxXpos - base.Padding.Left, 0, valueMaxXpos + base.Padding.Right, base.Height);
-						}
-					}
-	
-					if (this.mouseOver == true && this.ValueMouseOver > this.ValueMin) {	// && this.ValueMouseOver < this.ValueMax) {
-						g.DrawString(this.LabelText, this.Font, this.brushFgParameterLabel, labelTextXposition, labelYposition);
-	
-						int valueMouseOverXpos = widthToFillMouseOver - valueMouseOverWidthMeasured - base.Padding.Right - paddingRight;
-						if (valueMouseOverXpos < 0) valueMouseOverXpos = 0;
-	
-						int widthToOverlalNumbers = 5;	//WHATT??? "the language they speak in latin america?"....
-						int rectXpos = valueMouseOverXpos;	// -base.Padding.Left - paddingLeft;
-						int rectWidth = valueMouseOverWidthMeasured;
-						rectXpos -= widthToOverlalNumbers;
-						if (rectXpos < 0) rectXpos = 0;
-						rectWidth += widthToOverlalNumbers*2;
-						if (rectXpos + rectWidth > widthMinusBorder) rectWidth = widthMinusBorder - rectXpos;
-						g.FillRectangle(brushBgMouseOver, rectXpos, 0, rectWidth, base.Height);
-	
-						g.DrawString(this.ValueMouseOver.ToString(this.ValueFormat), this.Font, this.brushFgText, valueMouseOverXpos, labelYposition);
-					} else {
-						g.DrawString(this.LabelText, this.Font, this.brushFgParameterLabel, labelTextXposition, labelYposition);
-						g.DrawString(this.ValueCurrent.ToString(this.ValueFormat), this.Font, this.brushFgText, valueCurrentXpos, labelYposition);
-					}
-				} else {		// INVERTED_SLIDER_ORIGINAL_PORTED_BY_MIRRORRING; MAX and MIN INVERTED BELOW
-					float partOfRange = (float)(this.ValueCurrent - this.ValueMax) / (float)range;
-					this.FilledPercentageCurrentValue = 100 * partOfRange;
-					int widthToFillCurrentValue = (int)Math.Round(widthMinusBorder * partOfRange);
-
-					g.FillRectangle(brushBgValueCurrent, base.Width - widthToFillCurrentValue, 0, widthToFillCurrentValue, base.Height);
-	
-					int widthToFillMouseOver = 0;
-					if (this.mouseOver) {
-						widthToFillMouseOver = (int)Math.Round((widthMinusBorder * this.FilledPercentageMouseOver / 100));
-						g.FillRectangle(brushBgMouseOver, base.Width - this.Padding.Right - widthToFillMouseOver, 0, widthToFillMouseOver, base.Height);
-					}
-	
-					int valueRightXpos = widthMinusBorder - valueMinWidthMeasured - base.Padding.Right - paddingRight;
-					bool currentOverlapsRight = widthToFillCurrentValue > valueRightXpos;
-					if (currentOverlapsRight == false) {
-						g.DrawString(this.ValueMin.ToString(this.ValueFormat), this.Font, this.brushFgText, valueRightXpos, labelYposition);
-					}
-
-					int labelTextXposition = base.Padding.Left + valueMaxWidthMeasured + paddingLeft;
-					int valueCurrentXpos = base.Width - widthToFillCurrentValue + base.Padding.Left + paddingLeft;
-					if (this.mouseOver == true) {		// && this.ValueMouseOver > this.ValueMax
-						g.DrawString(this.LabelText, this.Font, this.brushFgParameterLabel, labelTextXposition, labelYposition);
-	
-						int fromLeftToMouseOver = base.Width - widthToFillMouseOver;
-						int valueMouseOverXpos = base.Width - widthToFillMouseOver + base.Padding.Left + paddingLeft;
-						if (valueMouseOverXpos > base.Width - valueMouseOverWidthMeasured) valueMouseOverXpos = base.Width - valueMouseOverWidthMeasured;
-	
-						//int paddingToOverlayMouseOverOverLeft = 5;
-						//int rectXpos = valueMouseOverXpos;	// -base.Padding.Left - paddingLeft;
-						//int rectWidth = valueMouseOverWidthMeasured;
-						//rectXpos -= paddingToOverlayMouseOverOverLeft;
-						//rectWidth += paddingToOverlayMouseOverOverLeft*2;
-						//if (rectXpos > base.Width - rectWidth) rectXpos = base.Width - rectWidth;
-						//if (rectXpos > widthMinusBorder - rectWidth) rectWidth = widthMinusBorder - rectXpos;
-						g.FillRectangle(brushBgMouseOver, valueMouseOverXpos, 0, valueMouseOverWidthMeasured, base.Height);
-	
-						g.DrawString(this.ValueMouseOver.ToString(this.ValueFormat), this.Font, this.brushFgText, valueMouseOverXpos, labelYposition);
-					} else {
-						g.DrawString(this.LabelText, this.Font, this.brushFgParameterLabel, labelTextXposition, labelYposition);
-						g.DrawString(this.ValueCurrent.ToString(this.ValueFormat), this.Font, this.brushFgText, valueCurrentXpos, labelYposition);
-					}
-
-					int valueLeftEndsAt = valueMaxWidthMeasured + base.Padding.Left + base.Padding.Right;
-					bool currentOverlapsLeft = valueCurrentXpos < valueLeftEndsAt;
-					if (currentOverlapsLeft == false || this.mouseOver == true) {
-						g.DrawString(this.ValueMax.ToString(this.ValueFormat), this.Font, this.brushFgText, base.Padding.Left, labelYposition);
-// NONSENSE, including ORIGINAL LeftToRight version
-//						if (labelLeftXposition < valueLeftEndsAt) {
-//							// paint bg under MIN label if it overlaps long labelText
-//							if (brushBgControl == null) brushBgControl = new SolidBrush(base.BackColor);
-//							g.FillRectangle(brushBgControl, labelLeftXposition - base.Padding.Left, 0, labelLeftXposition + base.Padding.Right, base.Height);
-//						}
-					}
-				}
-*/

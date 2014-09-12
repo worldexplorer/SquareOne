@@ -14,6 +14,8 @@ using Sq1.Core.Support;
 namespace Sq1.Core.DataFeed {
 	public class DataSource : NamedObjectJsonSerializable {
 		public event EventHandler<DataSourceEventArgs> DataSourceEditedChartsDisplayedShouldRunBacktestAgain;
+		public event EventHandler<DataSourceEventArgs> SymbolRenamedExecutorShouldRenameEachBarAndSave;
+		
 		// MOVED_TO_PARENT_NamedObjectJsonSerializable [DataMember] public new string Name;
 					 public string SymbolSelected;
 					 public List<string> Symbols;
@@ -139,6 +141,7 @@ namespace Sq1.Core.DataFeed {
 				replacement.Add(symbolCopy);
 			}
 			this.Symbols = replacement;
+			this.RaiseSymbolRenamedExecutorShouldRenameEachBarAndSave(oldSymbolName, newSymbolName);
 		}
 		// internal => use only RepositoryJsonDataSource.SymbolRemove() which will notify subscribers about remove operation
 		internal void SymbolRemove(string symbolToDelete) {
@@ -243,6 +246,10 @@ namespace Sq1.Core.DataFeed {
 		public void RaiseDataSourceEditedChartsDisplayedShouldRunBacktestAgain() {
 			if (this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain == null) return;
 			this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain(this, new DataSourceEventArgs(this));
+		}
+		public void RaiseSymbolRenamedExecutorShouldRenameEachBarAndSave(string oldSymbolName, string newSymbolName) {
+			if (this.SymbolRenamedExecutorShouldRenameEachBarAndSave == null) return;
+			this.SymbolRenamedExecutorShouldRenameEachBarAndSave(this, new DataSourceSymbolRenamedEventArgs(this, newSymbolName, oldSymbolName));
 		}
 	}
 }

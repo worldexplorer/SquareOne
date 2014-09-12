@@ -144,6 +144,29 @@ namespace Sq1.Core.StrategyBase {
 			// Executor.Bars are NULL in ScriptExecutor.ctor() and NOT NULL in SetBars
 			//this.Performance.Initialize();
 			this.MarketSimStreaming.Initialize();
+			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed += new EventHandler<DataSourceSymbolEventArgs>(Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed);
+		}
+
+		void Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed(object sender, DataSourceSymbolEventArgs e) {
+			// all ScriptExecutors receive same notification from DataSourcesRepository including irrelated ones;
+			if (this.Bars == null) {
+				string msg = "rare case since all Executors must be initialized  (may happen before ctor() and Initialize())";
+				return;
+			}
+			if (e.DataSource != this.Bars.DataSource) {
+				string msg = "two datasources may have same Symbol; ignore bars from DS I don't possess";
+				return;
+			}
+			if (e.Symbol == this.Bars.Symbol) {
+				string msg = "event that doesn't change anything should not happen";
+				return;
+			}
+			if (this.IsStreaming) {
+				string msg = "WARNING_RENAMING_STREAMING_BARS";
+				Assembler.PopupException(msg);
+			}
+			this.Bars.RenameSymbol(e.Symbol);
+			// CHART_WILL_BE_INVALIDATE_EVENTUALLY_AND_REDRAW_UPPER_LEFT_CORNER_WITH_CURRENT_SYMBOL this.ChartShadow.Invalidate();
 		}
 		public ReporterPokeUnit ExecuteOnNewBarOrNewQuote(Quote quote) {
 			if (this.Strategy.Script == null) return null;

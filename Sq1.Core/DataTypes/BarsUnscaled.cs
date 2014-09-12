@@ -77,8 +77,12 @@ namespace Sq1.Core.DataTypes {
 		public new void InsertAt(int bar) {
 			throw new Exception("UNSUPPORTED_AVOID_USING_BarsUnscaled.InsertAt(int bar): users rely on BarsUnscaled[index].ParentBarsIndex");
 		}
-		public void RenameSymbol(string newSymbol) {
-			this.Symbol = newSymbol;
+		public virtual void RenameSymbol(string newSymbol) {
+			// TODO test rename during streaming OR disable renaming feature in GUI while streaming
+			this.Symbol = symbolNew;
+			foreach (BarUnscaled barRegardlessScaledOrNot in this.Values) {
+				barRegardlessScaledOrNot.Symbol = symbolNew;
+			}
 		}
 		protected virtual void BarAppend(Bar barAdding) {
 			lock (this.LockBars) {
