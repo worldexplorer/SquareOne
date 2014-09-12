@@ -29,7 +29,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				this.DomainUpDown.BackColor = Color.LightSalmon;
 			}
 			this.DomainUpDown.BackColor = Color.White;
-			parsed = this.PanelFillSlider.RoundToClosestStep(parsed);
+			parsed = this.PanelFillSlider.RoundToClosestStepIfAnyValueHasDecimalPoint(parsed);
 			this.ValueCurrent = parsed;
 		}
 		void domainUpDown_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e) {

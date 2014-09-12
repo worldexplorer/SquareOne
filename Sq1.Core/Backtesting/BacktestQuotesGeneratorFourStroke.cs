@@ -37,12 +37,11 @@ namespace Sq1.Core.Backtesting {
 				DateTime serverTime = bar.DateTimeOpen + interStrokeAdjustment;
 				double volumeOneQuarterOfBar = bar.Volume / 4;
 				if (bar.ParentBars != null && bar.ParentBars.SymbolInfo != null) {
-					int decimalsVolume = bar.ParentBars.SymbolInfo.DecimalsVolume;
-					volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, decimalsVolume);
+					volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, bar.ParentBars.SymbolInfo.DecimalsVolume);
 					if (volumeOneQuarterOfBar == 0) {
 						//TESTED Debugger.Break();
-						double minimalValue = Math.Pow(1, -decimalsVolume);		// 1^(-2) = 0.01
-						volumeOneQuarterOfBar = minimalValue;
+						//double minimalValue = Math.Pow(1, -decimalsVolume);		// 1^(-2) = 0.01
+						volumeOneQuarterOfBar = bar.ParentBars.SymbolInfo.VolumeMinimalFromDecimal;
 					}
 				}
 				if (volumeOneQuarterOfBar == 0) {

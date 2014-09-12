@@ -262,11 +262,11 @@ namespace Sq1.Core.DataTypes {
 			dataRangeRq.FillStartEndDate(out startDate, out endDate);
 			if (startDate == DateTime.MinValue && endDate == DateTime.MaxValue && dataRangeRq.RecentBars == 0) return this;
 
-			string start = (startDate == DateTime.MinValue) ? "MIN" : startDate.ToString("dd-MMM-yyyy");
-			string end = (endDate == DateTime.MaxValue) ? "MAX" : endDate.ToString("dd-MMM-yyyy");
 			Bars ret = this.CloneNoBars(this.ReasonToExist + " [" + dataRangeRq.ToString() + "]", this.ScaleInterval);
+			int recentIndexStart = 0;
+			if (dataRangeRq.RecentBars > 0) recentIndexStart = this.Count - dataRangeRq.RecentBars;  
 			for (int i=0; i<this.Count; i++) {
-				if (dataRangeRq.RecentBars > 0 && i >= dataRangeRq.RecentBars) break; 
+				if (recentIndexStart > 0 && i < recentIndexStart) continue;
 				Bar barAdding = this[i];
 				bool skipThisBar = false;
 				if (startDate > DateTime.MinValue && barAdding.DateTimeOpen < startDate) skipThisBar = true; 

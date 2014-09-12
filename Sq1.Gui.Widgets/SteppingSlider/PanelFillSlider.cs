@@ -249,25 +249,50 @@ namespace Sq1.Widgets.SteppingSlider {
 //	filled:	24% / 100 = 0.24; 250px * 0.24 = 60px
 		protected override void OnMouseMove(MouseEventArgs e) {
 			float range = (float) Math.Abs(this.ValueMax - this.ValueMin);
+			decimal mouseRange;
 			if (this.LeftToRight) {
 				float partFilled = e.X / (float) base.Width;	//without (float) division of two ints is an int !!! (zero)
 				//this.ValueMouseOver = this.ValueMin + new decimal(partFilled * this.PixelsForOneValueUnit);
 				this.ValueMouseOver = this.ValueMin + new decimal(partFilled * range);
-				this.ValueMouseOver = this.RoundToClosestStep(this.ValueMouseOver);
-				this.FilledPercentageMouseOver = 100 * ((float)Math.Round(this.ValueMouseOver - this.ValueMin) / range);
+				this.ValueMouseOver = this.RoundToClosestStepIfAnyValueHasDecimalPoint(this.ValueMouseOver);
+				mouseRange = this.ValueMouseOver - this.ValueMin;
 			} else {
 				//float partFilled = (base.Width - e.X) / (float) base.Width;	//without (float) division of two ints is an int !!! (zero)
 				float partFilled = (base.Width - e.X) / (float) base.Width;	//without (float) division of two ints is an int !!! (zero)
 				//this.ValueMouseOver = this.ValueMax + new decimal(partFilled * this.PixelsForOneValueUnit);
 				this.ValueMouseOver = this.ValueMax + new decimal(partFilled * range);
-				this.ValueMouseOver = this.RoundToClosestStep(this.ValueMouseOver);
-				this.FilledPercentageMouseOver = 100 * ((float)Math.Round(this.ValueMouseOver - this.ValueMax) / range);
+				this.ValueMouseOver = this.RoundToClosestStepIfAnyValueHasDecimalPoint(this.ValueMouseOver);
+				mouseRange = this.ValueMouseOver - this.ValueMax;
 			}
+			if (this.dontRound == false) mouseRange = Math.Round(mouseRange);
+			this.FilledPercentageMouseOver = 100 * ((float)mouseRange / range);
 			base.Invalidate();
 			base.OnMouseMove(e);
 		}
 		
-		public decimal RoundToClosestStep(decimal rawValue) {
+		bool dontRound { get {
+				bool returnRaw = false;
+				// WHICH DATATYPE IS ROUND_SAFE? DOUBLE? FLOAT? comparing strings "6.0" to "6.0" because underlying decimals aren't exacly 6.0 before and after rounding 
+	//			if (Math.Truncate(this.ValueMin, 0).ToString("#.0") != this.ValueMin.ToString("#.0")) returnRaw = true;
+	//			if (Math.Truncate(this.ValueMax, 0).ToString("#.0") != this.ValueMax.ToString("#.0")) returnRaw = true;
+	//			if (Math.Truncate(this.ValueStep, 0).ToString("#.0") != this.ValueStep.ToString("#.0")) returnRaw = true;
+				//if (Math.Truncate(this.ValueCurrent, 0).ToString("#.0") != this.ValueCurrent.ToString("#.0")) returnRaw = true;
+				if (Math.Truncate(this.ValueMin) != this.ValueMin) {
+					returnRaw = true;
+				}
+				if (Math.Truncate(this.ValueMax) != this.ValueMax) {
+					returnRaw = true;
+				}
+				if (Math.Truncate(this.ValueStep) != this.ValueStep) {
+					returnRaw = true;
+				}
+	//			if (Math.Truncate(this.ValueCurrent) != this.ValueCurrent) returnRaw = true;
+				return returnRaw;
+			}
+		}
+		public decimal RoundToClosestStepIfAnyValueHasDecimalPoint(decimal rawValue) {
+			if (this.dontRound) return rawValue;
+			
 			decimal valueStepSafe = (this.ValueStep != 0) ? this.ValueStep : 1;
 			int fullSteps = (int)Math.Floor(rawValue / valueStepSafe);
 			decimal fullStepsReminder = rawValue % valueStepSafe;

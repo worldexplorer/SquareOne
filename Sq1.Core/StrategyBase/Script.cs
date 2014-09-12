@@ -45,7 +45,6 @@ namespace Sq1.Core.StrategyBase {
 				return "(" + ret + ")";
 			} }
 		
-		public List<Position> PositionsOpenNow { get { return this.Executor.ExecutionDataSnapshot.PositionsOpenNow; } }
 		public bool IsLastPositionNotClosedYet { get {
 				//v1 return LastPosition.Active;
 				Position pos = this.LastPosition;
@@ -53,7 +52,7 @@ namespace Sq1.Core.StrategyBase {
 				return (pos.ExitMarketLimitStop == MarketLimitStop.Unknown);
 			} }
 		public Position LastPositionOpenNow { get {
-				List<Position> positionsOpenNow = this.PositionsOpenNow;
+				List<Position> positionsOpenNow = this.Executor.ExecutionDataSnapshot.PositionsOpenNow;
 				if (positionsOpenNow.Count == 0) return null;
 				return positionsOpenNow[positionsOpenNow.Count - 1];
 			} }

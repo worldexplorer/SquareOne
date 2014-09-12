@@ -271,7 +271,7 @@ namespace Sq1.Core.StrategyBase {
 			alert.PositionAffected = pos;
 			return pos;
 		}
-		public Alert SellOrCoverAlertCreateDontRegister(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
+		public Alert SellOrCoverAlertCreateDontRegisterInNew(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
 		                                                Direction direction, MarketLimitStop exitMarketLimitStop) {
 			return this.SellOrCoverAlertCreateRegister(exitBar, position, stopOrLimitPrice, signalName,
 			                                           direction, exitMarketLimitStop, false);
@@ -433,11 +433,15 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 		public void CallbackAlertKilledInvokeScript(Alert alert) {
-			if (this.ExecutionDataSnapshot.AlertsPendingContains(alert) == false) {
-				string msg = "Alert wasn't found in snap.AlertsPending";
-				throw new Exception(msg);
+			if (this.ExecutionDataSnapshot.AlertsPendingContains(alert)) {
+				bool removed = this.ExecutionDataSnapshot.AlertsPendingRemove(alert);
+				if (removed) alert.IsKilled = true;
+			} else {
+				string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsPending DELETED_EARLIER_OR_NEVER_BEEN_ADDED;"
+					+ " PositionCloseImmediately() kills all PositionPrototype-based PendingAlerts => killing those using AlertKillPending() before/after PositionCloseImmediately() is wrong!";
+				//throw new Exception(msg);
+				Assembler.PopupException(msg);
 			}
-			bool removed = this.ExecutionDataSnapshot.AlertsPendingRemove(alert);
 			alert.Strategy.Script.OnAlertKilledCallback(alert);
 		}
 		public void CallbackAlertFilledMoveAroundInvokeScript(Alert alertFilled, Quote quote,
@@ -530,20 +534,21 @@ namespace Sq1.Core.StrategyBase {
 				// quick check: there must be {SL+TP} OR Annihilator
 				//this.BacktesterFacade.IsBacktestingNow == false &&
 				if (alertFilled.IsEntryAlert) {
-					if (proto.StopLossAlertForAnnihilation == null) {
-						string msg = "NONSENSE@Entry: proto.StopLossAlert is NULL???..";
-						throw new Exception(msg);
-					}
-					if (proto.TakeProfitAlertForAnnihilation == null) {
-						string msg = "NONSENSE@Entry: proto.TakeProfitAlert is NULL???..";
-						throw new Exception(msg);
-					}
-					if (alertsNewAfterAlertFilled.Count == 0) {
-						string msg = "NONSENSE@Entry: alertsNewSlAndTp.Count=0"
-							+ "; this.PositionPrototypeActivator.AlertFilledCreateSlTpOrAnnihilateCounterparty(alertFilled)"
-							+ " should return 2 alerts; I don't want to create new list from {proto.SL, proto.TP}";
-						throw new Exception(msg);
-					}
+					// DONT_SCREAM_SO_MUCH IF_OFFSETS_WERE_ZERO_OR_WRONG_POLARITY_NO_SL_TP_ARE_CREATED CreateStopLossFromPositionPrototype() CreateTakeProfitFromPositionPrototype()
+					//if (proto.StopLossAlertForAnnihilation == null) {
+					//	string msg = "NONSENSE@Entry: proto.StopLossAlert is NULL???..";
+					//	throw new Exception(msg);
+					//}
+					//if (proto.TakeProfitAlertForAnnihilation == null) {
+					//	string msg = "NONSENSE@Entry: proto.TakeProfitAlert is NULL???..";
+					//	throw new Exception(msg);
+					//}
+					//if (alertsNewAfterAlertFilled.Count == 0) {
+					//	string msg = "NONSENSE@Entry: alertsNewSlAndTp.Count=0"
+					//		+ "; this.PositionPrototypeActivator.AlertFilledCreateSlTpOrAnnihilateCounterparty(alertFilled)"
+					//		+ " should return 2 alerts; I don't want to create new list from {proto.SL, proto.TP}";
+					//	throw new Exception(msg);
+					//}
 				}
 				if (alertFilled.IsExitAlert) {
 					if (alertsNewAfterAlertFilled.Count > 0) {

@@ -533,6 +533,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		
 		public void SimulateAlertKillPending(Alert alert) {
+			alert.IsKilled = true;
 			this.executor.CallbackAlertKilledInvokeScript(alert);
 		}
 	}

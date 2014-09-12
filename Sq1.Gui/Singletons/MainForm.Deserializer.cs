@@ -60,9 +60,9 @@ namespace Sq1.Gui.Singletons {
 				}
 			} catch (Exception e) {
 				this.PopupException(e);
-#if DEBUG
+				#if DEBUG
 				Debugger.Break();
-#endif
+				#endif
 			}
 			if (ret == null) {
 				string msg = "returning null will confuse DockPanel; instead, return an instance and initialize it later";

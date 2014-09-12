@@ -315,5 +315,6 @@ namespace Sq1.Core.Execution {
 					? this.PositionAffected.IsEntryFilled
 					: this.PositionAffected.IsExitFilled;
 			} }
+		public bool IsKilled;
 	}
 }

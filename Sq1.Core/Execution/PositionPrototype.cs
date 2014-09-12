@@ -15,20 +15,25 @@ namespace Sq1.Core.Execution {
 
 		public Alert StopLossAlertForAnnihilation;
 		public Alert TakeProfitAlertForAnnihilation;
-		private PositionLongShort positionLongShort;
-		private double TP;
-		private double SL;
-		private double SLactivation;
+		
+		public string SignalEntry = "";
+		public string SignalStopLoss = "";
+		public string SignalTakeProfit = "";
 
 		public PositionPrototype(string symbol, PositionLongShort positionLongShort, double priceEntry,
 				double takeProfitPositiveOffset,
-				double stopLossNegativeOffset, double stopLossActivationNegativeOffset = 0) {
+				double stopLossNegativeOffset, double stopLossActivationNegativeOffset = 0,
+				string signalEntry = "", string signalStopLoss = "", string signalTakeProfit = "") {
 
 			this.Symbol = symbol;
 			this.LongShort = positionLongShort;
 			this.PriceEntry = priceEntry;
 			this.SetNewTakeProfitOffset(takeProfitPositiveOffset);
 			this.SetNewStopLossOffsets(stopLossNegativeOffset, stopLossActivationNegativeOffset);
+			
+			if (string.IsNullOrEmpty(signalEntry) == false)			this.SignalEntry = signalEntry;
+			if (string.IsNullOrEmpty(signalStopLoss) == false)		this.SignalStopLoss = signalStopLoss;
+			if (string.IsNullOrEmpty(signalTakeProfit) == false)	this.SignalTakeProfit = signalTakeProfit;
 		}
 
 		public void SetNewTakeProfitOffset(double newTakeProfitPositiveOffset) {
@@ -61,7 +66,8 @@ namespace Sq1.Core.Execution {
 					+ "; StopLossActivation[" + stopLossActivationNegativeOffset + "]"
 					+ " should be >= StopLoss[" + stopLossNegativeOffset + "]");
 			}
-		}		//public void checkThrowAbsorbed() {
+		}
+		//public void checkThrowAbsorbed() {
 		//	this.checkSlOffsetsThrowBeforeAbsorbing(this.TakeProfitPositiveOffset, this.StopLossNegativeOffset, this.StopLossActivationNegativeOffset);
 		//}
 		//internal void StopLossNegativeSameActivationDistanceOffsetSafeUpdate(double newStopLossNegativeOffset) {

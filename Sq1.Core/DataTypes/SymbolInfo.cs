@@ -21,6 +21,11 @@ namespace Sq1.Core.DataTypes {
 		public double PriceLevelSizeForBonds;
 		public int DecimalsPrice;
 		public int DecimalsVolume;
+
+		public double VolumeMinimalFromDecimal	{ get { return  Math.Pow(1, -this.DecimalsVolume);  } }		// 1^(-2) = 0.01
+		public double PriceMinimalFromDecimal	{ get { return  Math.Pow(1, -this.DecimalsPrice); } }		// 1^(-2) = 0.01
+		
+
 		public bool SameBarPolarCloseThenOpen;
 		public int SequencedOpeningAfterClosedDelayMillis;
 		public int EmergencyCloseDelayMillis;
@@ -209,6 +214,12 @@ namespace Sq1.Core.DataTypes {
 					}
 					return lowerLevel;
 			}
+		}
+		public double PriceRoundFractionsBeyondDecimals(double orderPrice) {
+			double decimalPointShifterBeforeRounding = Math.Pow(10, this.DecimalsPrice);		// 2 => 100
+			// assuming this.DecimalsPrice=2: orderPrice=156.633,27272 => 15.663.327,272 => 15.663.327 => 156.633,27[tailTruncated] 
+			double ret = Math.Round(orderPrice * decimalPointShifterBeforeRounding, 0) / decimalPointShifterBeforeRounding;
+			return ret;
 		}
 	}
 }

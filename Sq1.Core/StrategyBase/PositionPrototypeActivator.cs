@@ -20,8 +20,8 @@ namespace Sq1.Core.StrategyBase {
 			//bool a = this.executor.BacktesterFacade.IsBacktestingNow;
 
 			Position posWithAlert = executor.BuyOrShortAlertCreateRegister (
-				executor.Bars.BarStreaming,
-				proto.PriceEntry, "protoEntry@" + proto.PriceEntry,
+				executor.Bars.BarStreaming, proto.PriceEntry,
+				proto.SignalEntry + "protoEntry@" + proto.PriceEntry,
 				MarketConverter.EntryDirectionFromLongShort(proto.LongShort),
 				MarketConverter.EntryMarketLimitStopFromDirection(
 					executor.Bars.BarStreamingCloneReadonly.Close, proto.PriceEntry, proto.LongShort)
@@ -65,16 +65,20 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "I can not place SL and TP for an unopened position; alert[" + position.EntryAlert + "]";
 				throw new Exception(msg);
 			}
+			List<Alert> ret = new List<Alert>(); 
 			Alert SlPlaced = this.CreateStopLossFromPositionPrototype(position);
 			Alert TpPlaced = this.CreateTakeProfitFromPositionPrototype(position);
-			return new List<Alert>() { SlPlaced, TpPlaced };
+			if (SlPlaced != null) ret.Add(SlPlaced);
+			if (TpPlaced != null) ret.Add(TpPlaced);
+			return ret; 
 		}
 		public Alert CreateStopLossFromPositionPrototype(Position position) {
 			//if (this.executor.checkPrototypeAlreadyPlaced(position)) return;
 			PositionPrototype proto = position.Prototype;
-			if (proto.StopLossNegativeOffset == 0) {
-				string msg = "What should Activator do with proto.StopLossNegativeOffset=0?";
-				throw new Exception(msg);
+			if (proto.StopLossNegativeOffset > 0) {
+				string msg = "PROTOTYPE_STOPLOSS_NOT_CREATED STOPLOSS_OFFSET_MUST_BE_NEGATIVE(FOR_STOP_LOSS))_OR_ZERO(FOR_STOP)";
+				// DONT_SCREAM_SO_MUCH	throw new Exception(msg);
+				return null;
 			}
 
 			if (proto.StopLossNegativeOffset == 0) {
@@ -87,10 +91,10 @@ namespace Sq1.Core.StrategyBase {
 
 			MarketLimitStop simpleStopIfActivationZero = (proto.StopLossActivationNegativeOffset == 0) ? MarketLimitStop.Stop : MarketLimitStop.StopLimit;
 
-			Alert alertStopLoss = executor.SellOrCoverAlertCreateDontRegister (
+			Alert alertStopLoss = executor.SellOrCoverAlertCreateDontRegisterInNew (
 				executor.Bars.BarStreaming,
 				position, proto.PriceStopLoss,
-				"protoStopLossExit:" + proto.StopLossActivationNegativeOffset
+				proto.SignalStopLoss + "protoStopLossExit:" + proto.StopLossActivationNegativeOffset
 					+ "@" + proto.StopLossNegativeOffset + " for " + position.EntrySignal,
 				MarketConverter.ExitDirectionFromLongShort(proto.LongShort),
 				simpleStopIfActivationZero);
@@ -112,15 +116,16 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public Alert CreateTakeProfitFromPositionPrototype(Position position) {
 			PositionPrototype proto = position.Prototype;
-			if (proto.TakeProfitPositiveOffset == 0) {
-				string msg = "What should Activator do with proto.StopLossNegativeOffset=0?";
-				throw new Exception(msg);
+			if (proto.TakeProfitPositiveOffset <= 0) {
+				string msg = "PROTOTYPE_TAKEPROFIT_NOT_CREATED PROTOTYPE_TAKEPROFIT_OFFSET_MUST_BE_POSITIVE_NON_ZERO";
+				// DONT_SCREAM_SO_MUCH	throw new Exception(msg);
+				return null;
 			}
 
-			Alert alertTakeProfit = executor.SellOrCoverAlertCreateDontRegister (
+			Alert alertTakeProfit = executor.SellOrCoverAlertCreateDontRegisterInNew (
 				executor.Bars.BarStreaming,
 				position, proto.PriceTakeProfit,
-				"protoTakeProfitExit:" + proto.TakeProfitPositiveOffset
+				proto.SignalTakeProfit + "protoTakeProfitExit:" + proto.TakeProfitPositiveOffset
 					+ "@" + proto.PriceTakeProfit + " for " + position.EntrySignal,
 				MarketConverter.ExitDirectionFromLongShort(position.Prototype.LongShort),
 				MarketLimitStop.Limit);
