@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -14,7 +15,7 @@ using Sq1.Core.Support;
 namespace Sq1.Core.DataFeed {
 	public class DataSource : NamedObjectJsonSerializable {
 		public event EventHandler<DataSourceEventArgs> DataSourceEditedChartsDisplayedShouldRunBacktestAgain;
-		public event EventHandler<DataSourceEventArgs> SymbolRenamedExecutorShouldRenameEachBarAndSave;
+		public event EventHandler<DataSourceSymbolRenamedEventArgs> SymbolRenamedExecutorShouldRenameEachBarAndSave;
 		
 		// MOVED_TO_PARENT_NamedObjectJsonSerializable [DataMember] public new string Name;
 					 public string SymbolSelected;
@@ -131,16 +132,37 @@ namespace Sq1.Core.DataFeed {
 				throw new Exception("NEW_SYMBOL_ALREADY_EXISTS[" + newSymbolName + "] in [" + this.Name + "]");
 			}
 
-			var replacement = new List<string>();
-			foreach (var symbol in this.Symbols) {
-				var symbolCopy = symbol;
-				if (symbolCopy == oldSymbolName) {
-					symbolCopy = newSymbolName;
-					this.BarsRepository.SymbolDataFileRename(oldSymbolName, newSymbolName);
-				}
-				replacement.Add(symbolCopy);
+			//v1
+			//var replacement = new List<string>();
+			//foreach (var symbol in this.Symbols) {
+			//	var symbolCopy = symbol;
+			//	if (symbolCopy == oldSymbolName) {
+			//		symbolCopy = newSymbolName;
+			//	}
+			//	replacement.Add(symbolCopy);
+			//}
+			//this.Symbols = replacement;
+			
+			try {
+				//v2
+				bool executorProhibitedRenaming = this.RaiseSymbolRenamedExecutorShouldRenameEachBarAndSave(oldSymbolName, newSymbolName);
+				if (executorProhibitedRenaming) return;	// event handlers are responsible to Assembler.PopupException(), I reported MY errors above
+	
+				#if DEBUG
+				//TESTED Debugger.Break();
+				#endif
+				// TODO optimize file write time by seek to Bars.Symbol position &write FIXED-LENGTH string in header only => don't have to flush out 3Mb with bars' OHLCV;
+				Bars bars = this.RequestDataFromRepository(oldSymbolName);
+				this.BarsRepository.SymbolDataFileRename(oldSymbolName, newSymbolName);
+				bars.RenameSymbol(newSymbolName);
+				this.BarsSave(bars);
+				// TODO optimize end
+			} catch (Exception ex) {
+				Assembler.PopupException("DataSource.SymbolRename(" + oldSymbolName + "=>" + newSymbolName + ")", ex);
 			}
-			this.Symbols = replacement;
+
+			//re-read for DataSourceTree use (?)
+			this.Symbols = this.BarsRepository.SymbolsInFolder;
 			this.RaiseSymbolRenamedExecutorShouldRenameEachBarAndSave(oldSymbolName, newSymbolName);
 		}
 		// internal => use only RepositoryJsonDataSource.SymbolRemove() which will notify subscribers about remove operation
@@ -247,9 +269,13 @@ namespace Sq1.Core.DataFeed {
 			if (this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain == null) return;
 			this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain(this, new DataSourceEventArgs(this));
 		}
-		public void RaiseSymbolRenamedExecutorShouldRenameEachBarAndSave(string oldSymbolName, string newSymbolName) {
-			if (this.SymbolRenamedExecutorShouldRenameEachBarAndSave == null) return;
-			this.SymbolRenamedExecutorShouldRenameEachBarAndSave(this, new DataSourceSymbolRenamedEventArgs(this, newSymbolName, oldSymbolName));
+		public bool RaiseSymbolRenamedExecutorShouldRenameEachBarAndSave(string oldSymbolName, string newSymbolName) {
+			bool ret = false;	// No Obstacles by default; no charts open with oldSymbolName => cancel=true 
+			if (this.SymbolRenamedExecutorShouldRenameEachBarAndSave == null) return ret;
+			DataSourceSymbolRenamedEventArgs args = new DataSourceSymbolRenamedEventArgs(this, newSymbolName, oldSymbolName);
+			this.SymbolRenamedExecutorShouldRenameEachBarAndSave(this, args);
+			ret = args.CancelRepositoryRenameExecutorRefusedToRenameWasStreamingTheseBars;
+			return ret;
 		}
 	}
 }

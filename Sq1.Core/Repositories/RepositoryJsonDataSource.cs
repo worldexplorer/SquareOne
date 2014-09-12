@@ -96,6 +96,7 @@ namespace Sq1.Core.Repositories {
 			try {
 				dataSource.SymbolRename(oldSymbolName, newSymbolName);
 				base.SerializeSingle(dataSource);
+				// invoking the callback for DataSourcesTreeControl to repaint successfully renamed symbol
 				if (this.OnSymbolRenamed == null) return;
 				this.OnSymbolRenamed(sender, new DataSourceSymbolEventArgs(dataSource, newSymbolName));
 			} catch (Exception ex) {
@@ -139,9 +140,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return ret;
 		}
-		
-		public List<Account> AccountsFromUnderlyingBrokerProviders {
-			get {
+		public List<Account> AccountsFromUnderlyingBrokerProviders { get {
 				List<Account> ret = new List<Account>();
 				foreach (DataSource ds in base.ItemsAsList) {
 					if (ds.BrokerProvider == null) continue;
@@ -150,21 +149,16 @@ namespace Sq1.Core.Repositories {
 					ret.Add(ds.BrokerProvider.AccountAutoPropagate);
 				}
 				return ret;
-			}
-		}
-		public string AccountsFromUnderlyingBrokerProvidersAsString {
-			get {
+			} }
+		public string AccountsFromUnderlyingBrokerProvidersAsString { get {
 				string ret = "";
 				foreach (Account account in AccountsFromUnderlyingBrokerProviders) {
 					ret += "[" + account.ToString() + "] ";
 				}
 				ret.TrimEnd(' ');
 				return ret;
-			}
-		}
-		
-		public ToolStripMenuItem[] CtxAccountsAllCheckedFromUnderlyingBrokerProviders {
-			get {
+			} }
+		public ToolStripMenuItem[] CtxAccountsAllCheckedFromUnderlyingBrokerProviders { get {
 				List<Account> accts = this.AccountsFromUnderlyingBrokerProviders;
 				var ret = new List<ToolStripMenuItem>();
 				foreach (Account acct in accts) {
@@ -180,26 +174,21 @@ namespace Sq1.Core.Repositories {
 					ret.Add(mni);
 				}
 				return ret.ToArray();
-			}
-		}
-
-		public List<string> AccountNumbersFromUnderlyingBrokerProviders {
-			get {
+			} }
+		public List<string> AccountNumbersFromUnderlyingBrokerProviders { get {
 				List<string> ret = new List<string>();
 				foreach (Account account in AccountsFromUnderlyingBrokerProviders) {
 					if (ret.Contains(account.AccountNumber)) continue;
 					ret.Add(account.AccountNumber);
 				}
 				return ret;
-			}
-		}
+			} }
 		public Account FindAccount(string accountNumber) {
 			foreach (Account current in AccountsFromUnderlyingBrokerProviders) {
 				if (current.AccountNumber == accountNumber) return current;
 			}
 			return null;
 		}
-		
 		public int UsedTimes(MarketInfo marketInfo) {
 			int ret = 0;
 			foreach (DataSource ds in base.ItemsAsList) {

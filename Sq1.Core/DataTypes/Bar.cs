@@ -6,7 +6,8 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public partial class Bar {	//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK : TimeSeriesTick
-		public string Symbol { get; protected set; }
+		//I_WONT_POINT_BAR.SYMBOL_TO_PARENTBARS.SYMBOL_FOR_BAR_DETACHED_SUPPORT
+		public string Symbol { get; internal set; }		// protected=>internal so that BarsUnscaled can rename each bar
 		//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK [Transient]
 		public BarScaleInterval ScaleInterval { get; protected set; }
 		//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK [Transient]

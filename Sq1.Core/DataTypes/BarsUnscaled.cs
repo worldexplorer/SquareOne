@@ -16,6 +16,8 @@ namespace Sq1.Core.DataTypes {
 		}
 	}
 	public class BarsUnscaled : SortedList<DateTime, Bar> {		//SortedDictionary<DateTime, Bar> 
+		public event EventHandler<BarsUnscaledEventArgs> BarsRenamed_SEEMS_EXCESSIVE;
+		
 		public string Symbol { get; protected set; }
 		public string ReasonToExist;
 		public ICollection<DateTime> DateTimesCollection { get { return base.Keys; } }		// that's exactly why I inherited from SortedList<DateTime, Bar> 
@@ -77,12 +79,17 @@ namespace Sq1.Core.DataTypes {
 		public new void InsertAt(int bar) {
 			throw new Exception("UNSUPPORTED_AVOID_USING_BarsUnscaled.InsertAt(int bar): users rely on BarsUnscaled[index].ParentBarsIndex");
 		}
-		public virtual void RenameSymbol(string newSymbol) {
+		public virtual void RenameSymbol(string symbolNew) {
 			// TODO test rename during streaming OR disable renaming feature in GUI while streaming
 			this.Symbol = symbolNew;
-			foreach (BarUnscaled barRegardlessScaledOrNot in this.Values) {
+			foreach (Bar barRegardlessScaledOrNot in this.Values) {
 				barRegardlessScaledOrNot.Symbol = symbolNew;
 			}
+			this.RaiseBarsRenamed_SEEMS_EXCESSIVE();
+		}
+		public void RaiseBarsRenamed_SEEMS_EXCESSIVE() {
+			if (this.BarsRenamed_SEEMS_EXCESSIVE == null) return;
+			this.BarsRenamed_SEEMS_EXCESSIVE(this, new BarsUnscaledEventArgs(this));
 		}
 		protected virtual void BarAppend(Bar barAdding) {
 			lock (this.LockBars) {

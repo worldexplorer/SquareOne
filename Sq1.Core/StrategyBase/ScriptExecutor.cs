@@ -144,29 +144,10 @@ namespace Sq1.Core.StrategyBase {
 			// Executor.Bars are NULL in ScriptExecutor.ctor() and NOT NULL in SetBars
 			//this.Performance.Initialize();
 			this.MarketSimStreaming.Initialize();
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed += new EventHandler<DataSourceSymbolEventArgs>(Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed);
-		}
-
-		void Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed(object sender, DataSourceSymbolEventArgs e) {
-			// all ScriptExecutors receive same notification from DataSourcesRepository including irrelated ones;
-			if (this.Bars == null) {
-				string msg = "rare case since all Executors must be initialized  (may happen before ctor() and Initialize())";
-				return;
-			}
-			if (e.DataSource != this.Bars.DataSource) {
-				string msg = "two datasources may have same Symbol; ignore bars from DS I don't possess";
-				return;
-			}
-			if (e.Symbol == this.Bars.Symbol) {
-				string msg = "event that doesn't change anything should not happen";
-				return;
-			}
-			if (this.IsStreaming) {
-				string msg = "WARNING_RENAMING_STREAMING_BARS";
-				Assembler.PopupException(msg);
-			}
-			this.Bars.RenameSymbol(e.Symbol);
-			// CHART_WILL_BE_INVALIDATE_EVENTUALLY_AND_REDRAW_UPPER_LEFT_CORNER_WITH_CURRENT_SYMBOL this.ChartShadow.Invalidate();
+			//v1, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
+			// if I listen to DataSourceRepository, all ScriptExecutors receive same notification including irrelated to my Bars
+			// Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed +=
+			//	new EventHandler<DataSourceSymbolEventArgs>(Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed);
 		}
 		public ReporterPokeUnit ExecuteOnNewBarOrNewQuote(Quote quote) {
 			if (this.Strategy.Script == null) return null;
@@ -917,7 +898,6 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 		}
-
 		int getThreadPoolAvailablePercentage() {
 			int workerThreadsAvailable, completionPortThreadsAvailable = 0;
 			ThreadPool.GetAvailableThreads(out workerThreadsAvailable, out completionPortThreadsAvailable);
@@ -937,7 +917,6 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 		}
-
 		public void SetBars(Bars barsClicked) {
 			if (barsClicked == null) {
 				string msg = "don't feed Bars=null into the foodchain!";
@@ -950,7 +929,41 @@ namespace Sq1.Core.StrategyBase {
 				this.Backtester.AbortRunningBacktestWaitAborted("CLICKED_ON_OTHER_BARS_WHILE_BACKTESTING");
 			}
 
+			//v2, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
+			// DATASOURCE_WILL_NOT_RENAME_YOUR_INSTANTIATED_BARS_BUT_WILL_RENAME_BARFILE_AND_SYMBOL_IN_BARFILE_HEADER
+			if (this.Bars != null && this.Bars.DataSource != null) {
+				// unfollowing old Bars (so that it'll be only renaming .BAR file); most likely those Bars will be GarbageCollected
+				this.Bars.DataSource.SymbolRenamedExecutorShouldRenameEachBarAndSave -=
+					new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_SymbolRenamedExecutorShouldRenameEachBarDontSave);
+			}
 			this.Bars = barsClicked;
+			this.Bars.DataSource.SymbolRenamedExecutorShouldRenameEachBarAndSave +=
+				new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_SymbolRenamedExecutorShouldRenameEachBarDontSave);
+		}
+		void barDataSource_SymbolRenamedExecutorShouldRenameEachBarDontSave(object sender, DataSourceSymbolRenamedEventArgs e) {
+			if (this.Bars == null) {
+				string msg = "INITIALIZED_EXECUTOR_ALWAYS_HAVE_BARS MAKE_SURE_YOU_UNSUBSCRIBED_ME_FROM_PREVIOUS_BARS";
+				return;
+			}
+			if (e.DataSource != this.Bars.DataSource) {
+				string msg = "I_SHOULD_NOT_BE_NOTIFIED_ABOUT_OTHER_DATASOURCES";
+				return;
+			}
+			if (e.Symbol == this.Bars.Symbol) {
+				string msg = "I_SHOULD_NOT_BE_NOTIFIED_IF_SYMBOL_WAS_NOT_RENAMED";
+				return;
+			}
+			if (this.IsStreaming) {
+				string msg = "EXECUTOR_REFUSED_TO_RENAME_STREAMING_BARS"
+					+ " TO_CREATE_BACKUP_TURN_STREAMING_OFF_RENAME_STREAMING_BACK_ON"
+					+ " TO_RENAME_PERMANENTLY_IMPLMEMENT_SYMBOL_MAPPING_FOR_STREAMING_SYMBOLS";
+				Assembler.PopupException(msg);
+				e.CancelRepositoryRenameExecutorRefusedToRenameWasStreamingTheseBars = true;
+				return;
+			}
+			this.Bars.RenameSymbol(e.Symbol);
+			// CHART_WILL_BE_INVALIDATE_EVENTUALLY_AND_REDRAW_UPPER_LEFT_CORNER_WITH_CURRENT_SYMBOL this.ChartShadow.Invalidate();
+			// RE_BACKTESTING_WILL_REFILL_YOUR_REPORTERS_WHAT_ELSE?
 		}
 		public void AlertKillPending(Alert alert) {
 			if (this.Backtester.IsBacktestingNow) {

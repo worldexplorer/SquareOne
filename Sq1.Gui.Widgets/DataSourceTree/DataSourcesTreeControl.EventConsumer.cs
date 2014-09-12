@@ -214,9 +214,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 				Assembler.PopupException("mnitlbSymbolRenameTo_UserTyped(): this.DataSourceSelected=null");
 				return;
 			}
-			// repository has no idea who loaded the bars that are being renamed now but RepositoryJsonDataSource.OnSymbolRenamed() will notify Charts and Executors
+			// repository has no idea who loaded the bars that are being renamed now {BTABRN}
+			// but DataSource.SymbolRenamedExecutorShouldRenameEachBarAndSave() will notify Executors using BTABRN and their Chart will repaint after mouseover  
 			this.dataSourceRepository.SymbolRename(this.DataSourceSelected, this.SymbolSelected, e.StringUserTyped, this);
-			this.SelectSymbol(this.DataSourceSelected.Name, e.StringUserTyped);
+			//REPOSITORY_WILL_NOTIFY_ME_USING_EVENT this.SelectSymbol(this.DataSourceSelected.Name, e.StringUserTyped);
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 		}
 

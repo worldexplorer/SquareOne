@@ -12,8 +12,6 @@ namespace Sq1.Core.DataTypes {
 		public event EventHandler<BarEventArgs> BarStaticAdded;
 		public event EventHandler<BarEventArgs> BarStreamingAdded;
 		public event EventHandler<BarEventArgs> BarStreamingUpdatedMerged;
-		public event EventHandler<BarEventArgs> BarsRenamed;
-		DataSourceSymbolRenamedEventArgs
 		
 		public string SymbolHumanReadable;
 		public BarScaleInterval ScaleInterval { get; private set; }
