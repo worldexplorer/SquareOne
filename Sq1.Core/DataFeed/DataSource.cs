@@ -15,7 +15,7 @@ using Sq1.Core.Support;
 namespace Sq1.Core.DataFeed {
 	public class DataSource : NamedObjectJsonSerializable {
 		public event EventHandler<DataSourceEventArgs> DataSourceEditedChartsDisplayedShouldRunBacktestAgain;
-		public event EventHandler<DataSourceSymbolRenamedEventArgs> SymbolRenamedExecutorShouldRenameEachBarAndSave;
+		public event EventHandler<DataSourceSymbolRenamedEventArgs> SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars;
 		
 		// MOVED_TO_PARENT_NamedObjectJsonSerializable [DataMember] public new string Name;
 					 public string SymbolSelected;
@@ -145,7 +145,7 @@ namespace Sq1.Core.DataFeed {
 			
 			try {
 				//v2
-				bool executorProhibitedRenaming = this.RaiseSymbolRenamedExecutorShouldRenameEachBarAndSave(oldSymbolName, newSymbolName);
+				bool executorProhibitedRenaming = this.RaiseSymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(oldSymbolName, newSymbolName);
 				if (executorProhibitedRenaming) return;	// event handlers are responsible to Assembler.PopupException(), I reported MY errors above
 	
 				#if DEBUG
@@ -162,8 +162,10 @@ namespace Sq1.Core.DataFeed {
 			}
 
 			//re-read for DataSourceTree use (?)
-			this.Symbols = this.BarsRepository.SymbolsInFolder;
-			this.RaiseSymbolRenamedExecutorShouldRenameEachBarAndSave(oldSymbolName, newSymbolName);
+			this.Symbols = this.BarsRepository.SymbolsInScaleIntervalSubFolder;
+		}
+		public void SymbolsRebuildReadDataSourceSubFolderAfterDeserialization() {
+			this.Symbols = this.BarsRepository.SymbolsInScaleIntervalSubFolder;
 		}
 		// internal => use only RepositoryJsonDataSource.SymbolRemove() which will notify subscribers about remove operation
 		internal void SymbolRemove(string symbolToDelete) {
@@ -194,13 +196,13 @@ namespace Sq1.Core.DataFeed {
 		}
 
 		// Initialize() creates the folder, now create empty files for non-file-existing-symbols
-		internal int SyncDataFilesWithSymbols() {
+		internal int CreateDeleteBarFilesToSymbolsDeserialized() {
 			foreach (string symbolToAdd in this.Symbols) {
 				if (this.BarsRepository.DataFileExistsForSymbol(symbolToAdd)) continue;
 				this.BarsRepository.SymbolDataFileAdd(symbolToAdd);
 			}
 			List<string> symbolsToDelete = new List<string>();
-			foreach (string symbolWhateverCase in this.BarsRepository.SymbolsInFolder) {
+			foreach (string symbolWhateverCase in this.BarsRepository.SymbolsInScaleIntervalSubFolder) {
 				string symbol = symbolWhateverCase.ToUpper();
 				if (this.Symbols.Contains(symbol)) continue;
 				symbolsToDelete.Add(symbol);
@@ -269,11 +271,11 @@ namespace Sq1.Core.DataFeed {
 			if (this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain == null) return;
 			this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain(this, new DataSourceEventArgs(this));
 		}
-		public bool RaiseSymbolRenamedExecutorShouldRenameEachBarAndSave(string oldSymbolName, string newSymbolName) {
+		public bool RaiseSymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(string oldSymbolName, string newSymbolName) {
 			bool ret = false;	// No Obstacles by default; no charts open with oldSymbolName => cancel=true 
-			if (this.SymbolRenamedExecutorShouldRenameEachBarAndSave == null) return ret;
+			if (this.SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars == null) return ret;
 			DataSourceSymbolRenamedEventArgs args = new DataSourceSymbolRenamedEventArgs(this, newSymbolName, oldSymbolName);
-			this.SymbolRenamedExecutorShouldRenameEachBarAndSave(this, args);
+			this.SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(this, args);
 			ret = args.CancelRepositoryRenameExecutorRefusedToRenameWasStreamingTheseBars;
 			return ret;
 		}

@@ -199,5 +199,11 @@ namespace Sq1.Charting {
 			}
 			return barAnnotation.Status;
 		}
+		public override void SyncBarsIdentDueToSymbolRename() {
+			foreach (PanelNamedFolding panelFolding in this.panelsFolding) {	// at least PanelPrice and PanelVolume
+				panelFolding.InitializeWithNonEmptyBars(this);
+				panelFolding.Invalidate();
+			}
+		}
 	}
 }

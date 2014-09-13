@@ -80,6 +80,7 @@
     <Compile Include="OnChart\OnChartLine.cs" />
     <Compile Include="PanelNamedFolding.ChartShadowImplementation.cs">
       <DependentUpon>PanelNamedFolding.cs</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="PanelNamedFolding.cs">
       <SubType>Component</SubType>
@@ -90,9 +91,11 @@
     </Compile>
     <Compile Include="PanelNamedFolding.MouseEvents.cs">
       <DependentUpon>PanelNamedFolding.cs</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="PanelNamedFolding.Rendering.cs">
       <DependentUpon>PanelNamedFolding.cs</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="PanelPrice.cs">
       <SubType>Component</SubType>

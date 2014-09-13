@@ -104,6 +104,7 @@
     </Compile>
     <Compile Include="DataSourceEditor\MarketInfoEditor.EventConsumer.cs">
       <DependentUpon>MarketInfoEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DataSourceTree\DataSourcesTreeControl.cs">
       <SubType>UserControl</SubType>
@@ -387,8 +388,6 @@
   <ItemGroup>
     <None Include="Resources\TextFile.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ObjectListViewDemo" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -73,6 +73,7 @@ namespace Sq1.Core.Charting {
 		
 		
 #region there is no graphics-related (PositionArrows / LinesDrawnOnChart) DataSnapshot in Core; ChartControl knows how to handle your wishes in terms of Core objects
+		// "virtual" allows here to derive Control from ChartShadow and open it in Designer - it will be displayed without implementations; will start throwing in runtime and you'll see the stack then
 		public virtual void ClearAllScriptObjectsBeforeBacktest() {
 			throw new NotImplementedException();
 		}
@@ -117,6 +118,9 @@ namespace Sq1.Core.Charting {
 				int barIndex, string barAnnotationId, string barAnnotationText,
 				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, 
 				int verticalPadding = 5, bool reportDidntChangeStatus = false) {
+			throw new NotImplementedException();
+		}
+		public virtual void SyncBarsIdentDueToSymbolRename() {
 			throw new NotImplementedException();
 		}
 #endregion

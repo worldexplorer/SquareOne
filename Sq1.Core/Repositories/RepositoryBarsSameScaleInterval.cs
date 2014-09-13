@@ -10,12 +10,22 @@ namespace Sq1.Core.Repositories {
 		public string Extension { get; protected set; }
 		public BarScaleInterval ScaleInterval { get; protected set; }
 		
-		public List<string> SymbolsInFolder { get {
+		public List<string> SymbolsInScaleIntervalSubFolder { get {
 				List<string> ret = new List<string>();
-				string[] files = Directory.GetFiles(this.DataSourceAbspath);
+				//v1 string[] files = Directory.GetFiles(this.DataSourceAbspath);
+				string[] files = Directory.GetFiles(this.SubfolderAbspath);
 				for (int i = 0; i < files.Length; i++) {
 					string fileName = files[i];
-					string symbol = Path.GetFileNameWithoutExtension(fileName);
+					string symbol = Path.GetFileNameWithoutExtension(fileName);		// hopefully Extension is ".json"; rename to ".json1" and will still show up in the tree (is it bad?)
+					
+					string lastPartScaleInterval = "_" + this.SubfolderScaleInterval;
+					if (symbol.Contains(lastPartScaleInterval)) {
+						int lastSymbolsBeforeExtension = symbol.IndexOf(lastPartScaleInterval);
+						int positionExpected = symbol.Length - lastPartScaleInterval.Length; 
+						if (lastSymbolsBeforeExtension == positionExpected) {
+							symbol = symbol.Substring(0, lastSymbolsBeforeExtension);
+						}
+					}
 					ret.Add(symbol);
 				}
 	//			string[] folders = Directory.GetDirectories(this.RootFolder);
@@ -90,7 +100,7 @@ namespace Sq1.Core.Repositories {
 			return fileAbspath;
 		}
 		public string FileNameForSymbol(string symbol) {
-			symbol = symbol.ToUpper();
+			// WHEN_CAPITALIZED_HERE_CAN_NOT_BE_FOUND_AFTER_USER_RENAMED symbol = symbol.ToUpper();
 			// Data-debug\MockStaticProvider\Mock-debug\Minute-1\RIM3_Minute-1.BAR
 			return symbol + "_" + this.SubfolderScaleInterval + "." + this.Extension;
 		}
@@ -123,7 +133,7 @@ namespace Sq1.Core.Repositories {
 		}
 		public int DeleteAllDataFilesAllSymbols() {
 			int ret = 0;
-			foreach (string symbolToDelete in this.SymbolsInFolder) {
+			foreach (string symbolToDelete in this.SymbolsInScaleIntervalSubFolder) {
 				this.SymbolDataFileDelete(symbolToDelete);
 			}
 			this.createNonExistingSubfolder = false;

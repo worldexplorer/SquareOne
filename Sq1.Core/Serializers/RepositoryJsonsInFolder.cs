@@ -117,7 +117,9 @@ namespace Sq1.Core.Serializers {
 					continue;
 				}
 				string key = this.ExtractKeyFromJsonAbsname(fileName);
-				this.ItemsByName.Add(key, deserialized);
+				//v1 this.ItemsByName.Add(key, deserialized);
+				//v2
+				this.ItemAdd(deserialized);
 			}
 		}
 		public virtual DATASOURCE DeserializeSingle(string jsonAbsfile) {

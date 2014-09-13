@@ -11,6 +11,7 @@ using Sq1.Core.Serializers;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Repositories {
+	// the hackiest implementation in the whole project :(
 	public class RepositoryJsonDataSource : RepositoryJsonsInFolder<DataSource> {
 		public RepositoryCustomMarketInfo MarketInfoRepository;
 		public OrderProcessor OrderProcessor;
@@ -60,7 +61,9 @@ namespace Sq1.Core.Repositories {
 
 		public override void ItemAddCascade(DataSource itemCandidate, object sender = null) {
 			itemCandidate.Initialize(base.AbsPath, this.OrderProcessor, base.StatusReporter);
-			itemCandidate.SyncDataFilesWithSymbols();
+			//v1 WILL_DELETES_BAR_FILE_IF_RENAME_FAILS itemCandidate.CreateDeleteBarFilesToSymbolsDeserialized();
+			//v2 
+			itemCandidate.SymbolsRebuildReadDataSourceSubFolderAfterDeserialization();
 		}
 		public override void ItemDeleteCascade(DataSource itemStored, object sender = null) {
 			itemStored.DataSourceFolderDeleteWithSymbols();
@@ -98,7 +101,7 @@ namespace Sq1.Core.Repositories {
 				base.SerializeSingle(dataSource);
 				// invoking the callback for DataSourcesTreeControl to repaint successfully renamed symbol
 				if (this.OnSymbolRenamed == null) return;
-				this.OnSymbolRenamed(sender, new DataSourceSymbolEventArgs(dataSource, newSymbolName));
+				this.OnSymbolRenamed(sender, new DataSourceSymbolRenamedEventArgs(dataSource, newSymbolName, oldSymbolName));
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}

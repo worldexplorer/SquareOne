@@ -933,14 +933,14 @@ namespace Sq1.Core.StrategyBase {
 			// DATASOURCE_WILL_NOT_RENAME_YOUR_INSTANTIATED_BARS_BUT_WILL_RENAME_BARFILE_AND_SYMBOL_IN_BARFILE_HEADER
 			if (this.Bars != null && this.Bars.DataSource != null) {
 				// unfollowing old Bars (so that it'll be only renaming .BAR file); most likely those Bars will be GarbageCollected
-				this.Bars.DataSource.SymbolRenamedExecutorShouldRenameEachBarAndSave -=
-					new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_SymbolRenamedExecutorShouldRenameEachBarDontSave);
+				this.Bars.DataSource.SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars -=
+					new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars);
 			}
 			this.Bars = barsClicked;
-			this.Bars.DataSource.SymbolRenamedExecutorShouldRenameEachBarAndSave +=
-				new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_SymbolRenamedExecutorShouldRenameEachBarDontSave);
+			this.Bars.DataSource.SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars +=
+				new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars);
 		}
-		void barDataSource_SymbolRenamedExecutorShouldRenameEachBarDontSave(object sender, DataSourceSymbolRenamedEventArgs e) {
+		void barDataSource_SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(object sender, DataSourceSymbolRenamedEventArgs e) {
 			if (this.Bars == null) {
 				string msg = "INITIALIZED_EXECUTOR_ALWAYS_HAVE_BARS MAKE_SURE_YOU_UNSUBSCRIBED_ME_FROM_PREVIOUS_BARS";
 				return;
@@ -962,8 +962,13 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			this.Bars.RenameSymbol(e.Symbol);
-			// CHART_WILL_BE_INVALIDATE_EVENTUALLY_AND_REDRAW_UPPER_LEFT_CORNER_WITH_CURRENT_SYMBOL this.ChartShadow.Invalidate();
-			// RE_BACKTESTING_WILL_REFILL_YOUR_REPORTERS_WHAT_ELSE?
+			this.ChartShadow.SyncBarsIdentDueToSymbolRename();
+			
+			if (this.Strategy == null) return;
+			if (this.Strategy.ScriptContextCurrent.Symbol == this.Bars.Symbol) return;
+			this.Strategy.ScriptContextCurrent.Symbol  = this.Bars.Symbol;
+			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+
 		}
 		public void AlertKillPending(Alert alert) {
 			if (this.Backtester.IsBacktestingNow) {
