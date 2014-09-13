@@ -11,9 +11,14 @@ namespace Sq1.Core.Repositories {
 		public string Symbol { get; protected set; }
 		public string Abspath { get; protected set; }
 		public string Relpath { get { return RepositoryBarsFile.GetRelpathFromEnd(this.Abspath, 5); } }
-		double barFileCurrentVersion = 2;	// yeps double :) 8 bytes!
-		int symbolMaxLength = 64;
-		int symbolHRMaxLength = 128;
+		double barFileCurrentVersion = 3;	// yeps double :) 8 bytes!
+		int symbolMaxLength = 64;			// 32 UTF8 characters
+		int symbolHRMaxLength = 128;		// 64 UTF8 characters
+		private long headerSize;
+		private long oneBarSize;
+
+		Dictionary<double, int> headerSizesByVersion = new Dictionary<double, int>() { { 3, 212 } };	// got 212 in Debugger from this.headerSize while reading saved v3 file
+		Dictionary<double, int> barSizesByVersion = new Dictionary<double, int>() { { 3, 48 } };	// got 212 in Debugger from this.oneBarSize while reading saved v3 file
 		
 		public RepositoryBarsFile(RepositoryBarsSameScaleInterval barsFolder, string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
 			this.BarsRepository = barsFolder;
@@ -63,8 +68,8 @@ namespace Sq1.Core.Repositories {
 				fileStream = File.Open(this.Abspath, FileMode.Open, FileAccess.Read, FileShare.Read);
 				BinaryReader binaryReader = new BinaryReader(fileStream);
 
-				string symbol = "NOT_READ_FROM_FILE";
-				string symbolHumanReadable;
+				string symbol_IGNOREDv3 = "NOT_READ_FROM_FILE";
+				string symbolHumanReadable_IGNOREDv3;
 				
 				double version = binaryReader.ReadDouble();
 				#if DEBUG
@@ -73,36 +78,50 @@ namespace Sq1.Core.Repositories {
 				
 				if (version == 1) {
 					//Assembler.PopupException("LoadBars[" + this.Relpath + "]: version[" + version + "]");
-					symbol = binaryReader.ReadString();
-					symbolHumanReadable = binaryReader.ReadString();
+					symbol_IGNOREDv3 = binaryReader.ReadString();
+					symbolHumanReadable_IGNOREDv3 = binaryReader.ReadString();
 				} else if (version <= 2) {
 					byte[] bytesSymbol = new byte[this.symbolMaxLength];
 					binaryReader.Read(bytesSymbol, 0, this.symbolMaxLength);
-					symbol = this.byteArrayToString(bytesSymbol);
+					symbol_IGNOREDv3 = this.byteArrayToString(bytesSymbol);
 
 					byte[] bytesSymbolHR = new byte[this.symbolHRMaxLength];
 					binaryReader.Read(bytesSymbolHR, 0, this.symbolHRMaxLength);
-					symbolHumanReadable = this.byteArrayToString(bytesSymbolHR);
+					symbolHumanReadable_IGNOREDv3 = this.byteArrayToString(bytesSymbolHR);
+				} else if (version <= 3) {
+					// NO_SYMBOL_AND_HR_IS_PRESENT_IN_FILE
+					int a = 1;
 				}
 				BarScale barScale = (BarScale)binaryReader.ReadInt32();
 				int barInterval = binaryReader.ReadInt32();
+				int barsStored = binaryReader.ReadInt32();
+				#if DEBUG
+				this.headerSize = binaryReader.BaseStream.Position;
+				#endif
+
 				BarScaleInterval scaleInterval = new BarScaleInterval(barScale, barInterval);
 				//string shortFnameIneedMorePathParts = Path.GetFileName(this.Abspath);
 				//string shortFname = this.Abspath.Substring(this.Abspath.IndexOf("" + Path.DirectorySeparatorChar + "Data" + Path.DirectorySeparatorChar + "") + 6);
 				string shortFname = this.Relpath;
-				bars = new Bars(symbol, scaleInterval, shortFname);
-				int barsStored = binaryReader.ReadInt32();
-				//int securityType = binaryReader.ReadInt32();
-				//bars.SymbolInfo.SecurityType = (SecurityType)securityType;
-				for (int barsRead = 0; barsRead<barsStored; barsRead++) {
+				//v1,2 AFTER_IMPLEMENTING_FIXED_SYMBOL_WIDTH_IGNORING_WHAT_I_READ_FROM_FILE  bars = new Bars(symbol, scaleInterval, shortFname);
+				string v3ignoresSymbolFromFile = (this.barFileCurrentVersion <=2) ? symbol_IGNOREDv3 : this.Symbol;
+				bars = new Bars(v3ignoresSymbolFromFile, scaleInterval, shortFname);
+				//for (int barsRead = 0; barsRead<barsStored; barsRead++) {
+				while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length) {
 					DateTime dateTimeOpen = new DateTime(binaryReader.ReadInt64());
 					double open = binaryReader.ReadDouble();
 					double high = binaryReader.ReadDouble();
 					double low = binaryReader.ReadDouble();
 					double close = binaryReader.ReadDouble();
 					double volume = binaryReader.ReadDouble();
+					#if DEBUG
+					if (this.oneBarSize == 0) {
+						this.oneBarSize = binaryReader.BaseStream.Position - this.headerSize;
+					}
+					#endif
 					Bar barAdded = bars.BarCreateAppendBindStatic(dateTimeOpen, open, high, low, close, volume);
 				}
+				//Debugger.Break();
 			} catch (EndOfStreamException ex) {
 				Assembler.PopupException(ex.Message + msig, ex);
 			} finally {
@@ -127,12 +146,11 @@ namespace Sq1.Core.Repositories {
 				// TODO create header structure and have its length the same both for Read & Write
 				// HEADER BEGIN
 				BinaryWriter binaryWriter = new BinaryWriter(fileStream);
+				binaryWriter.Write((double)this.barFileCurrentVersion); // yes it was double :)
 				if (this.barFileCurrentVersion == 1) {
-					binaryWriter.Write((double)this.barFileCurrentVersion); // yes it was double :)
 					binaryWriter.Write(bars.Symbol);
 					binaryWriter.Write(bars.SymbolHumanReadable);
 				} else if (this.barFileCurrentVersion <= 2) {
-					binaryWriter.Write(this.barFileCurrentVersion);
 					byte[] byteBufferSymbol = this.stringToByteArray(bars.Symbol, this.symbolMaxLength);
 					#if DEBUG
 					//TESTED Debugger.Break();
@@ -140,6 +158,8 @@ namespace Sq1.Core.Repositories {
 					binaryWriter.Write(byteBufferSymbol);
 					byte[] byteBufferSymbolHR = this.stringToByteArray(bars.SymbolHumanReadable, this.symbolHRMaxLength);
 					binaryWriter.Write(byteBufferSymbolHR);
+				} else if (this.barFileCurrentVersion <= 3) {
+					// NO_SYMBOL_AND_HR_IS_PRESENT_IN_FILE
 				}
 				binaryWriter.Write((int)bars.ScaleInterval.Scale);
 				binaryWriter.Write(bars.ScaleInterval.Interval);
@@ -163,7 +183,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return barsSaved;
 		}
-		
+		#region v2-related fixed-width routines for Symbol and SymbolHR (useless for v3 but still invoked)
 		// http://stackoverflow.com/questions/472906/converting-a-string-to-byte-array
 		byte[] stringToByteArray(string symbol, int bufferLength) {
 			byte[] ret = new byte[bufferLength];
@@ -199,10 +219,8 @@ namespace Sq1.Core.Repositories {
 			string ret = this.reconstructFromByteArray(bytes);
 			return ret;
 		}
-
 		string reconstructFromByteArray(byte[] bytes) {
 			string reconstructed = System.Text.Encoding.UTF8.GetString(bytes);
-
 			char[] filtered = new char[bytes.Length];
 			int validDestIndex = 0;
 			foreach (char c in reconstructed.ToCharArray()) {
@@ -214,36 +232,64 @@ namespace Sq1.Core.Repositories {
 			for (int i = 0; i < final.Length; i++) {
 				final[i] = filtered[i];
 			}
-
-			//string ret = filtered.ToString();
 			string ret = new string(final);
-
 			return ret;
 		}
-		
-		//TODO : seek to the end, read last Bar, overwrite if same date or append if greater; 0.1ms instead of reading all - appending - writing all
+		#endregion
+
 		public int BarAppend(Bar barLastFormed) {
-			Bars allBars = this.BarsLoadAllThreadSafe();
-			if (allBars == null) {
-				allBars = new Bars(barLastFormed.Symbol, barLastFormed.ScaleInterval, "DUMMY: LoadBars()=null");
+			//v1
+			//Bars allBars = this.BarsLoadAllThreadSafe();
+			//if (allBars == null) {
+			//    allBars = new Bars(barLastFormed.Symbol, barLastFormed.ScaleInterval, "DUMMY: LoadBars()=null");
+			//}
+			////allBars.DumpPartialInitFromStreamingBar(bar);
+
+			//// this happens on a very first quote - this.pushBarToConsumers(StreamingBarFactory.LastBarFormed.Clone());
+			//if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) return 0;
+
+			//// not really needed to clone to save it in a file, but we became strict to eliminate other bugs
+			//barLastFormed = barLastFormed.CloneDetached();
+
+			//// SetParentForBackwardUpdateAutoindex used within Bar only()
+			////barLastFormed.SetParentForBackwardUpdateAutoindex(allBars);
+			//if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) {
+			//    return 0;
+			//}
+
+			//allBars.BarAppendBindStatic(barLastFormed);
+			//int barsSaved = this.BarsSaveThreadSafe(allBars);
+
+			//v2, starting from barFileCurrentVersion=3: seek to the end, read last Bar, overwrite if same date or append if greater; 0.1ms instead of reading all - appending - writing all
+			#if DEBUG
+			Debugger.Break();
+			#endif
+			FileStream fileStream = null;
+			try {
+				fileStream = File.Open(this.Abspath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+				BinaryWriter binaryWriter = new BinaryWriter(fileStream);
+				BinaryReader binaryReader = new BinaryReader(fileStream);
+				int barSize = this.barSizesByVersion[this.barFileCurrentVersion];
+				fileStream.Seek(barSize, SeekOrigin.End);
+				DateTime dateTimeOpen = new DateTime(binaryReader.ReadInt64());
+				if (dateTimeOpen >= barLastFormed.DateTimeOpen) {
+					fileStream.Seek(barSize, SeekOrigin.End);	// overwrite the last bar, apparently streaming has been solidified
+				} else {
+					fileStream.Seek(0, SeekOrigin.End);			// append barLastFormed to file since it's newer than last saved/read
+				}
+				binaryWriter.Write(barLastFormed.DateTimeOpen.Ticks);
+				binaryWriter.Write(barLastFormed.Open);
+				binaryWriter.Write(barLastFormed.High);
+				binaryWriter.Write(barLastFormed.Low);
+				binaryWriter.Write(barLastFormed.Close);
+				binaryWriter.Write(barLastFormed.Volume);
+			} catch (Exception ex) {
+				string msg = "Error while BarAppend()[" + this + "] into [" + this.Abspath + "]";
+				Assembler.PopupException(msg, ex);
+			} finally {
+				if (fileStream != null) fileStream.Close();
 			}
-			//allBars.DumpPartialInitFromStreamingBar(bar);
-
-			// this happens on a very first quote - this.pushBarToConsumers(StreamingBarFactory.LastBarFormed.Clone());
-			if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) return 0;
-
-			// not really needed to clone to save it in a file, but we became strict to eliminate other bugs
-			barLastFormed = barLastFormed.CloneDetached();
-
-			// SetParentForBackwardUpdateAutoindex used within Bar only()
-			//barLastFormed.SetParentForBackwardUpdateAutoindex(allBars);
-			if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) {
-				return 0;
-			}
-
-			allBars.BarAppendBindStatic(barLastFormed);
-			int barsSaved = this.BarsSaveThreadSafe(allBars);
-			return barsSaved;
+			return 1;
 		}
 		
 		public override string ToString() {

@@ -151,12 +151,12 @@ namespace Sq1.Core.DataFeed {
 				#if DEBUG
 				//TESTED Debugger.Break();
 				#endif
-				// TODO optimize file write time by seek to Bars.Symbol position &write FIXED-LENGTH string in header only => don't have to flush out 3Mb with bars' OHLCV;
-				Bars bars = this.RequestDataFromRepository(oldSymbolName);
+				//v3 SYMBOL_NOT_STORED_ANYMORE optimize file write time by seek to Bars.Symbol position &write FIXED-LENGTH string in header only => don't have to flush out 3Mb with bars' OHLCV;
+				//Bars bars = this.RequestDataFromRepository(oldSymbolName);
 				this.BarsRepository.SymbolDataFileRename(oldSymbolName, newSymbolName);
-				bars.RenameSymbol(newSymbolName);
-				this.BarsSave(bars);
-				// TODO optimize end
+				//bars.RenameSymbol(newSymbolName);
+				//this.BarsSave(bars);
+				//v3 SYMBOL_NOT_STORED_ANYMORE optimize end
 			} catch (Exception ex) {
 				Assembler.PopupException("DataSource.SymbolRename(" + oldSymbolName + "=>" + newSymbolName + ")", ex);
 			}
