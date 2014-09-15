@@ -221,7 +221,7 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		}
 
-		public void PushQuoteToChannel(Quote quote) {
+		public void PushQuoteToDistributionChannels(Quote quote) {
 			if (String.IsNullOrEmpty(quote.Symbol)) {
 				Assembler.PopupException("quote[" + quote + "]'se Symbol is null or empty, returning");
 				return;

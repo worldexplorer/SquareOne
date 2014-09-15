@@ -10,10 +10,10 @@ using System.Diagnostics;
 
 namespace Sq1.Core.Streaming {
 	[DataContract]
-	// it's not an abstract class because....
+	// TODO: it's not an abstract class because....
 	public class StreamingProvider {
 		public const string NO_STREAMING_PROVIDER = "--- No Streaming Provider ---";
-
+		// TODO: mark members with [JSONIgnore] explicitly; now it's a mess what's serialized and what's not
 		public string Name { get; protected set; }
 		public string Description { get; protected set; }
 		public Bitmap Icon { get; protected set; }
@@ -226,7 +226,7 @@ namespace Sq1.Core.Streaming {
 			//BacktestStreamingProvider.EnrichGeneratedQuoteSaveSpreadInStreaming has updated lastQuote alredy...
 			this.StreamingDataSnapshot.UpdateLastBidAskSnapFromQuote(quote);
 			try {
-				this.DataDistributor.PushQuoteToChannel(quote);
+				this.DataDistributor.PushQuoteToDistributionChannels(quote);
 			} catch (Exception e) {
 				string msg = "StreamingProvider.PushQuoteReceived()";
 				Assembler.PopupException(msg, e);

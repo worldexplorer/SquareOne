@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Sq1.Charting;
+using Sq1.Core;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Gui.Forms {
@@ -26,6 +27,15 @@ namespace Sq1.Gui.Forms {
 		}
 
 		public ContextChart ContextChart;
+		public string ContextChartCommentJsonCheck { get {
+				string ret = "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE";
+				
+				ContextScript contextScript = this.ContextChart as ContextScript;
+				if (contextScript == null) return ret;
+
+				ret = "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [" + this.StrategyNameJsonCheck + "], ScriptContextCurrentName[ScriptContextCurrentName]";
+				return ret;
+			} }
 		
 		//[JsonIgnore]	// not saved/restored yet; tune it up in ChartSettings.ChartSettings();
 		public ChartSettings ChartSettings;

@@ -260,5 +260,10 @@
   <ItemGroup>
     <Folder Include="Repositories" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="StrategyBase\ScriptExecutor-howSymbolRenameWorks.jpg">
+      <DependentUpon>ScriptExecutor.cs</DependentUpon>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
