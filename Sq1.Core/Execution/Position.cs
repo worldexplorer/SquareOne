@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 
@@ -371,42 +372,106 @@ namespace Sq1.Core.Execution {
 			return exitIsTheSame;
 		}
 		public override string ToString() {
-			string ret = "";
-			if (this.SernoAbs > 0) ret += "#" + this.SernoAbs;
-			ret += this.PositionLongShort + " " + Shares + "*" + this.Symbol + " Entry=[";
+//			string ret = "";
+//			if (this.SernoAbs > 0) ret += "#" + this.SernoAbs;
+//			//return ret;
+//			ret += this.PositionLongShort + " " + Shares + "*" + this.Symbol + " Entry=[";
+//			if (this.EntryFilledBarIndex != -1) {
+//				ret += EntryMarketLimitStop + "@" + EntryFilledPrice + "/bar" + EntryFilledBarIndex + ":";
+//				if (this.EntryAlert != null) {
+//					if (this.EntryAlert.OrderFollowed != null) {
+//						ret += this.EntryAlert.OrderFollowed.State;
+//					} else {
+//						ret += "NO_ENTRY_ORDER";
+//					}
+//				} else {
+//					ret += "NO_ENTRY_ALERT";
+//				}
+//			} else {
+//				ret += "ENTRY_BAR-1";
+//			}
+//			ret += "] Exit=[";
+//			if (this.ExitFilledBarIndex != -1) {
+//				ret += ExitMarketLimitStop + "@" + ExitFilledPrice + "/bar" + ExitFilledBarIndex + ":";
+//				if (this.ExitAlert != null) {
+//					if (this.ExitAlert.OrderFollowed != null) {
+//						ret += this.ExitAlert.OrderFollowed.State;
+//					} else {
+//						ret += "NO_EXIT_ORDER";
+//					}
+//				} else {
+//					ret += "NO_EXIT_ALERT";
+//				}
+//			} else {
+//				ret += "EXIT_BAR-1";
+//			}
+//			ret += "]";
+//			if (this.LastQuoteForMarketOrStopLimitImplicitPrice != 0) ret += " BasisPrice[" + this.LastQuoteForMarketOrStopLimitImplicitPrice + "]";
+//			if (this.Prototype != null) ret += " Proto" + this.Prototype;
+//			return ret;
+
+			StringBuilder msg = new StringBuilder();
+			if (this.SernoAbs > 0) {
+				msg.Append("#");
+				msg.Append(this.SernoAbs);
+			}
+			msg.Append(this.PositionLongShort);
+			msg.Append(" ");
+			msg.Append(Shares);
+			msg.Append("*");
+			msg.Append(this.Symbol);
+			msg.Append(" Entry=[");
 			if (this.EntryFilledBarIndex != -1) {
-				ret += EntryMarketLimitStop + "@" + EntryFilledPrice + "/bar" + EntryFilledBarIndex + ":";
+				msg.Append(EntryMarketLimitStop);
+				msg.Append("@");
+				msg.Append(EntryFilledPrice);
+				msg.Append("/bar");
+				msg.Append(EntryFilledBarIndex);
+				msg.Append(":");
 				if (this.EntryAlert != null) {
 					if (this.EntryAlert.OrderFollowed != null) {
-						ret += this.EntryAlert.OrderFollowed.State;
+						msg.Append(this.EntryAlert.OrderFollowed.State);
 					} else {
-						ret += "NO_ENTRY_ORDER";
+						msg.Append("NO_ENTRY_ORDER");
 					}
 				} else {
-					ret += "NO_ENTRY_ALERT";
+					msg.Append("NO_ENTRY_ALERT");
 				}
 			} else {
-				ret += "ENTRY_BAR-1";
+				msg.Append("ENTRY_BAR-1");
 			}
-			ret += "] Exit=[";
+			msg.Append("] Exit=[");
 			if (this.ExitFilledBarIndex != -1) {
-				ret += ExitMarketLimitStop + "@" + ExitFilledPrice + "/bar" + ExitFilledBarIndex + ":";
+				msg.Append(ExitMarketLimitStop);
+				msg.Append("@");
+				msg.Append(ExitFilledPrice);
+				msg.Append("/bar");
+				msg.Append(ExitFilledBarIndex);
+				msg.Append(":");
 				if (this.ExitAlert != null) {
 					if (this.ExitAlert.OrderFollowed != null) {
-						ret += this.ExitAlert.OrderFollowed.State;
+						msg.Append(this.ExitAlert.OrderFollowed.State);
 					} else {
-						ret += "NO_EXIT_ORDER";
+						msg.Append("NO_EXIT_ORDER");
 					}
 				} else {
-					ret += "NO_EXIT_ALERT";
+					msg.Append("NO_EXIT_ALERT");
 				}
 			} else {
-				ret += "EXIT_BAR-1";
+				msg.Append("EXIT_BAR-1");
 			}
-			ret += "]";
-			if (this.LastQuoteForMarketOrStopLimitImplicitPrice != 0) ret += " BasisPrice[" + this.LastQuoteForMarketOrStopLimitImplicitPrice + "]";
-			if (this.Prototype != null) ret += " Proto" + this.Prototype;
-			return ret;
+			msg.Append("]");
+			if (this.LastQuoteForMarketOrStopLimitImplicitPrice != 0) {
+				msg.Append(" BasisPrice[");
+				msg.Append(this.LastQuoteForMarketOrStopLimitImplicitPrice);
+				msg.Append("]");
+			}
+			if (this.Prototype != null) {
+				msg.Append(" Proto");
+				msg.Append(this.Prototype.ToString());
+			}
+			return msg.ToString();
+
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -226,21 +227,51 @@ namespace Sq1.Core.Execution {
 			return msg;
 		}
 		public override string ToString() {
-			string msg = "bar#" + this.PlacedBarIndex + ": "
-				//+ (this.isEntryAlert ? "entry" : "exit ")
-				+ Direction
-				// not Symbol coz stack overflow
-				+ " " + MarketLimitStop + " " + Qty + "*" + this.Symbol
-				+ "@" + PriceScript
-				//+ "/" + this.PriceFilledThroughPosition + "filled"
-				+ " on[" + AccountNumber + "]"
-				//+ " by[" + SignalName + "]"
-				;
-			msg += (null == this.FilledBar) ? ":UNFILLED" : ":FILLED@" + this.PriceFilledThroughPosition + "*" + this.QtyFilledThroughPosition;
-			if (this.PositionAffected != null) {
-				msg += "; PositionAffected=[" + this.PositionAffected + "]";
+			//v1 PROFILER_SAID_TOO_SLOW
+//			string msg = "bar#" + this.PlacedBarIndex + ": "
+//				//+ (this.isEntryAlert ? "entry" : "exit ")
+//				+ Direction
+//				// not Symbol coz stack overflow
+//				+ " " + MarketLimitStop + " " + Qty + "*" + this.Symbol
+//				+ "@" + PriceScript
+//				//+ "/" + this.PriceFilledThroughPosition + "filled"
+//				+ " on[" + AccountNumber + "]"
+//				//+ " by[" + SignalName + "]"
+//				;
+//			msg += (null == this.FilledBar) ? ":UNFILLED" : ":FILLED@" + this.PriceFilledThroughPosition + "*" + this.QtyFilledThroughPosition;
+//			if (this.PositionAffected != null) {
+//				msg += "; PositionAffected=[" + this.PositionAffected + "]";
+//			}
+			StringBuilder msg = new StringBuilder();
+			msg.Append("bar#");
+			//return msg.ToString();
+			msg.Append(this.PlacedBarIndex);
+			msg.Append(": ");
+			msg.Append(Direction);
+			msg.Append(" ");
+			msg.Append(MarketLimitStop);
+			msg.Append(" ");
+			msg.Append(Qty);
+			msg.Append("*");
+			msg.Append(this.Symbol);
+			msg.Append("@");
+			msg.Append(PriceScript);
+			msg.Append(" on[");
+			msg.Append(AccountNumber + "]");
+			if (null == this.FilledBar) {
+				msg.Append(":UNFILLED");
+			} else {
+				msg.Append(":FILLED@");
+				msg.Append(this.PriceFilledThroughPosition);
+				msg.Append("*");
+				msg.Append(this.QtyFilledThroughPosition);
 			}
-			return msg;
+			if (this.PositionAffected != null) {
+				msg.Append("; PositionAffected=[");
+				//msg.Append(this.PositionAffected.ToString());
+				msg.Append("]");
+			}
+			return msg.ToString();;
 		}
 		public bool IsIdenticalOrderlessPriceless(Alert alert) {
 			if (alert == null) {

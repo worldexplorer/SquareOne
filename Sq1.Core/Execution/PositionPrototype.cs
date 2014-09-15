@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Sq1.Core.Execution {
 	public class PositionPrototype {
@@ -114,8 +115,19 @@ namespace Sq1.Core.Execution {
 				&& this.StopLossActivationNegativeOffset == proto.StopLossActivationNegativeOffset;
 		}
 		public override string ToString() {
-			return this.LongShort + " Entry[" + this.PriceEntry + "]TP[" + this.TakeProfitPositiveOffset + "]SL["
-				+ this.StopLossNegativeOffset + "]SLA[" + this.StopLossActivationNegativeOffset + "]";
+//			return this.LongShort + " Entry[" + this.PriceEntry + "]TP[" + this.TakeProfitPositiveOffset + "]SL["
+//				+ this.StopLossNegativeOffset + "]SLA[" + this.StopLossActivationNegativeOffset + "]";
+			StringBuilder msg = new StringBuilder();
+			msg.Append(this.LongShort);
+			msg.Append(" Entry[");
+			msg.Append(this.PriceEntry);
+			msg.Append("]TP[");
+			msg.Append(this.TakeProfitPositiveOffset);
+			msg.Append("]SL[");
+			msg.Append(this.StopLossNegativeOffset);
+			msg.Append("]SLA[");
+			msg.Append(this.StopLossActivationNegativeOffset + "]");
+			return msg.ToString();
 		}
 	}
 }

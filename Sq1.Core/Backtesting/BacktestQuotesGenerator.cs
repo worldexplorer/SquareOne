@@ -183,7 +183,8 @@ namespace Sq1.Core.Backtesting {
 			string err;
 
 			Quote quoteModel = new Quote();
-			quoteModel.Source = "GENERATED_TO_FILL_" + alert.ToString();
+			//quoteModel.Source = "GENERATED_TO_FILL_" + alert.ToString();			// PROFILER_SAID_TOO_SLOW + alert.ToString();
+			quoteModel.Source = "GENERATED_TO_FILL_alert@bar#" + alert.PlacedBarIndex;
 			quoteModel.Size = alert.Qty;
 
 			double priceScriptAligned = this.backtester.Executor.AlignAlertPriceToPriceLevel(alert.Bars, alert.PriceScript, true,
