@@ -39,7 +39,7 @@ namespace Sq1.Core.Backtesting {
 			return quote;
 		}
 
-		public virtual int InjectQuotesToFillPendingAlerts(Quote quoteToReach) {
+		public virtual int InjectQuotesToFillPendingAlerts(Quote quoteToReach, Bar bar2simulate) {
 			int quotesInjected = 0;
 			int pendingsToFillInitially = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 			if (pendingsToFillInitially == 0) return quotesInjected;
@@ -51,6 +51,12 @@ namespace Sq1.Core.Backtesting {
 			//           closestOnOurWay  = this.generateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach)) {
 			Quote closestOnOurWay  = this.generateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach);
 			while (closestOnOurWay != null) {
+				// GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #2/2
+				if (bar2simulate.ContainsQuoteGenerated(closestOnOurWay) == false) {
+					Debugger.Break();
+					continue;
+				}
+
 				quotesInjected++;
 				closestOnOurWay.IntraBarSerno += quotesInjected;
 				this.backtester.BacktestDataSource.BacktestStreamingProvider.PushQuoteReceived(closestOnOurWay);
@@ -111,6 +117,8 @@ namespace Sq1.Core.Backtesting {
 				Quote quoteThatWillFillAlert = this.modelQuoteThatCouldFillAlert(alert);
 				if (quoteThatWillFillAlert == null) continue;
 
+
+				// trying to keep quote within the original simulated Bar (lazy to attach StreamingBar to Quote now)
 				if (scanningDown) {
 					if (quoteThatWillFillAlert.Bid > quotePrev.Bid) {
 						string msg = "IGNORING_QUOTE_HIGHER_THAN_PREVIOUS_WHILE_SCANNING_DOWN";
@@ -163,12 +171,6 @@ namespace Sq1.Core.Backtesting {
 				if (quoteClosest.Ask > quoteToReach.Ask) {
 					string msg = "WHILE_SCANNING_UP_RETURNING_QUOTE_HIGHER_THAN_TARGET_IS_WRONG";
 				}
-			}
-
-			//if (quotePrev.ParentStreamingBar.ParentBarsIndex == 185) {
-			if (this.backtester.Executor.Bars.Count == 185) {
-				//Debugger.Break();
-				int q = 1;
 			}
 
 			//I_WILL_SPOIL_STREAMING_BAR_IF_I_ATTACH_LIKE_THIS Quote quoteNextAttached = this.backtester.BacktestDataSource.BacktestStreamingProvider.(quoteToReach.Clone());

@@ -246,26 +246,28 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 		}
-		void generateQuotesForBarAndPokeStreaming(Bar bar) {
-			if (bar == null) return;
-			if (bar.IsBarStreaming && double.IsNaN(bar.Open)) {
-				string msg = "it's ok for Bars.LastBar from StaticProvider doesn't contain PartialValues;"
+		void generateQuotesForBarAndPokeStreaming(Bar bar2simulate) {
+			if (bar2simulate == null) return;
+			if (bar2simulate.IsBarStreaming && double.IsNaN(bar2simulate.Open)) {
+				string msg = "it's ok for Bars.LastBar from StaticProvider to have no PartialValues;"
 					+ " filled by Streaming, NA for Backtest, skipping LastBar";
 				//throw new Exception(msg);
 				return;
 			}
-			List<Quote> quotesGenerated = this.QuotesGenerator.GenerateQuotesFromBar(bar);
+			List<Quote> quotesGenerated = this.QuotesGenerator.GenerateQuotesFromBar(bar2simulate);
 			if (quotesGenerated == null) return;
 			for (int i = 0; i < quotesGenerated.Count; i++) {
 				Quote quote = quotesGenerated[i];
 				this.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GenerateFillBidAskSymmetricallyFromLastPrice(quote);
 
-				//if (this.Executor.Bars.Count == 186) {
-				//	Debugger.Break();
-				//}
+				// GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #1/2
+				if (bar2simulate.ContainsQuoteGenerated(quote) == false) {
+					Debugger.Break();
+					continue;
+				}
 
 				int pendingsToFillInitially = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-				int quotesInjected = this.QuotesGenerator.InjectQuotesToFillPendingAlerts(quote);
+				int quotesInjected = this.QuotesGenerator.InjectQuotesToFillPendingAlerts(quote, bar2simulate);
 				if (quotesInjected == 0) {
 					string msg = "SEEMS_ONLY_STOP_ALERTS_FAR_BEYOND_TARGET_ARE_ON_THE_WAY; pendingsToFillInitially[" + pendingsToFillInitially + "]"
 						+ "STOPS_ARE_TOO_FAR OR_WILL_BE_FILLED_NEXT_THING_UPSTACK";

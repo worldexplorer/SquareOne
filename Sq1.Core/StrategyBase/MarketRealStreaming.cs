@@ -35,7 +35,7 @@ namespace Sq1.Core.StrategyBase {
 				direction, entryMarketLimitStop, orderSpreadSide,
 				//this.executor.Script,
 				this.executor.Strategy);
-			alert.AbsorbFromExecutor(executor);
+			alert.AbsorbFromExecutorAfterCreatedByMarketReal(executor);
 
 			return alert;
 		}
@@ -59,7 +59,7 @@ namespace Sq1.Core.StrategyBase {
 				direction, exitMarketLimitStop, orderSpreadSide,
 				//this.executor.Script,
 				this.executor.Strategy);
-			alert.AbsorbFromExecutor(executor);
+			alert.AbsorbFromExecutorAfterCreatedByMarketReal(executor);
 			alert.PositionAffected = position;
 			// moved to CallbackAlertFilled - we can exit by TP or SL - and position has no clue which Alert was filled!!!
 			//position.ExitCopyFromAlert(alert);

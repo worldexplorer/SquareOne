@@ -124,8 +124,8 @@ namespace Sq1.Core.StrategyBase {
 						default:
 							throw new Exception("NYI: direction[" + entryAlert.Direction + "] is not Long or Short");
 					}
-					entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryPriceOut, true,
-						entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
+					//entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryPriceOut, true,
+					//	entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
 					break;
 				case MarketLimitStop.Market:
 				case MarketLimitStop.AtClose:
@@ -161,22 +161,27 @@ namespace Sq1.Core.StrategyBase {
 				default:
 					throw new Exception("NYI: marketLimitStop[" + entryAlert.MarketLimitStop + "] is not Limit or Stop");
 			}
-			entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryPriceOut, true,
-				entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
+			//entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryPriceOut, true,
+			//	entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
 			if (entryPriceOut <= 0) {
 				string msg = "entryPrice[" + entryPriceOut + "]<=0 what do you mean??? get Bars.LastBar.Close for Market...";
 				throw new Exception(msg);
 			}
-			// v1 BarStreaming with 1 quoteToReach (=> 0px height) won't contain any price you may check here;
+			// v1 BarStreaming with 1 quote (=> 0px height) won't contain any price you may check here;
 			// v1 REMOVED because MarketLimitStop.Market haven't been filled immediately and behaved like stop/limit entries/exits;
 			// v1 for Stop/Limit you already hit "return false" above; market should get whatever crazy bid/ask and get the fill at first attempt now
-			//if (alert.Bars.BarStreaming.ContainsPrice(priceScriptAligned) == false) {		// earlier version of same checkup as Position.FillEntryWith() 
-			//    string msg = "QUOTE_UNFILLABLE_ON_BAR_STREAMING quoteToReach[" + quoteToReach + "] => priceScriptAligned["
-			//        + priceScriptAligned + "] at alert.Bars.BarStreaming[" + alert.Bars.BarStreaming + "]";
+			// v1 INAPPROPRIATE_BECAUSE_MARKET_SIM_SHOULNT_KNOW_ANYTHING_ABOUT_ORIGINAL_SIMULATED_BAR_AND_STREAMING_IS_IN_PROGRESS
+			// v1 CHECK_IF_QUOTE_ISNT_BEYOND_BAR_EARLIER_UPSTACK alternative implementation: GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK
+			//if (entryAlert.Bars.BarStreaming.ContainsPrice(entryPriceOut) == false) {		// earlier version of same checkup as Position.FillEntryWith() 
+			//    string msg = "QUOTE_UNFILLABLE_ON_BAR_STREAMING quote[" + quote + "] => entryPriceOut["
+			//        + entryPriceOut + "] at entryAlert.Bars.BarStreaming[" + entryAlert.Bars.BarStreaming + "]";
 			//    //throw new Exception(msg);
+			//    #if DEBUG
+			//    //Debugger.Break();
+			//    #endif
 			//    return false;
 			//}
-			// /v1
+			//v1
 			return true;
 		}
 		public bool CheckExitAlertWillBeFilledByQuote(Alert exitAlert, Quote quote
@@ -331,20 +336,25 @@ namespace Sq1.Core.StrategyBase {
 					throw new Exception("NYI marketLimitStop[" + exitAlert.MarketLimitStop + "]");
 			}
 
-			exitPriceOut = this.executor.AlignAlertPriceToPriceLevel(exitAlert.Bars, exitPriceOut, false,
-				exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
+			//exitPriceOut = this.executor.AlignAlertPriceToPriceLevel(exitAlert.Bars, exitPriceOut, false,
+			//	exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 			if (exitPriceOut <= 0) {
 				string msg = "exitPriceOut[" + exitPriceOut + "]<=0 what do you mean??? get Bars.LastBar.Close for Market...";
 				throw new Exception(msg);
 			}
-			// v1 BarStreaming with 1 quoteToReach (=> 0px height) won't contain any price you may check here;
+			// v1 BarStreaming with 1 quote (=> 0px height) won't contain any price you may check here;
 			// v1 REMOVED because MarketLimitStop.Market haven't been filled immediately and behaved like stop/limit entries/exits;
 			// v1 for Stop/Limit you already hit "return false" above; market should get whatever crazy bid/ask and get the fill at first attempt now
+			// v1 INAPPROPRIATE_BECAUSE_MARKET_SIM_SHOULNT_KNOW_ANYTHING_ABOUT_ORIGINAL_SIMULATED_BAR_AND_STREAMING_IS_IN_PROGRESS
+			// v1 CHECK_IF_QUOTE_ISNT_BEYOND_BAR_EARLIER_UPSTACK alternative implementation: GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK
 			//if (exitAlert.Bars.BarStreaming.ContainsPrice(exitPriceOut) == false) {		// earlier version of same checkup as Position.FillEntryWith() 
-			//	string msg = "QUOTE_UNFILLABLE_ON_BAR_STREAMING quoteToReach[" + quoteToReach + "] => exitPriceOut["
-			//		+ exitPriceOut + "] at exitAlert.Bars.BarStreaming[" + exitAlert.Bars.BarStreaming + "]";
-			//	//throw new Exception(msg);
-			//	return false;
+			//    string msg = "QUOTE_GENERATED_UNFILLABLE_ON_BAR_STREAMING quote[" + quote + "] => exitPriceOut["
+			//        + exitPriceOut + "] at exitAlert.Bars.BarStreaming[" + exitAlert.Bars.BarStreaming + "]";
+			//    //throw new Exception(msg);
+			//    #if DEBUG
+			//    Debugger.Break();
+			//    #endif
+			//    return false;
 			//}
 			// /v1
 			return true;

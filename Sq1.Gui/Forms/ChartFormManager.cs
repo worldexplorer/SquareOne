@@ -87,7 +87,11 @@ namespace Sq1.Gui.Forms {
 			}
 
 			this.ChartForm = new ChartForm(this);
-			this.DataSnapshot.StrategyGuidJsonCheck = "NO_STRATEGY_CHART_ONLY";
+			this.DataSnapshot.StrategyGuidJsonCheck		= "NO_STRATEGY_CHART_ONLY";
+			this.DataSnapshot.StrategyNameJsonCheck		= "NO_STRATEGY_CHART_ONLY";
+			this.DataSnapshot.StrategyAbsPathJsonCheck	= "NO_STRATEGY_CHART_ONLY";
+
+
 			if (this.DataSnapshot.ChartSettings == null) {
 				// delete "ChartSettings": {} from JSON to reset to ChartControl>Design>ChartSettings>Properties
 				this.DataSnapshot.ChartSettings = this.ChartForm.ChartControl.ChartSettings;	// opening from Datasource => save
@@ -135,7 +139,8 @@ namespace Sq1.Gui.Forms {
 				this.DataSnapshot.ChartSerno = charSernoNext;
 			}
 			this.DataSnapshot.StrategyGuidJsonCheck = strategy.Guid.ToString();
-			this.DataSnapshot.StrategyNameJsonCheck = strategy.StoredInFolderRelName;
+			this.DataSnapshot.StrategyNameJsonCheck = strategy.Name;
+			this.DataSnapshot.StrategyAbsPathJsonCheck = strategy.StoredInJsonAbspath;
 			this.DataSnapshotSerializer.Serialize();
 			
 			if (this.ChartForm == null) {

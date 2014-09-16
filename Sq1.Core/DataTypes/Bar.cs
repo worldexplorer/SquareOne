@@ -308,10 +308,16 @@ namespace Sq1.Core.DataTypes {
 				+ "V[" + Math.Round(this.Volume,decimalsVolume).ToString(volumeFormat) + "]"
 				;
 		}
-//		public bool ContainsPrice(double entryFillPrice) {
-//			if (entryFillPrice < this.Low) return false; 
-//			if (entryFillPrice > this.High) return false;
-//			return true;
-//		}
+		public bool ContainsPrice(double entryFillPrice) {
+			if (entryFillPrice < this.Low) return false; 
+			if (entryFillPrice > this.High) return false;
+			return true;
+		}
+		public bool ContainsQuoteGenerated(Quote quote) {
+			if (quote.Ask < this.Low) return false;
+			if (quote.Bid > this.High) return false;
+			if (quote.Size > this.Volume) return false;
+			return true;
+		}
 	}
 }

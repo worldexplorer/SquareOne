@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Text;
 using System.Diagnostics;
-using System.Runtime.Serialization;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
+using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Execution {
-	[DataContract]
 	public class Alert {
-		public Bars Bars;
-		[DataMember] public Bar PlacedBar { get; protected set; }
-		[DataMember] public int PlacedBarIndex { get; protected set; }
-		[DataMember] public Bar FilledBar { get; protected set; }
-		[DataMember] public int FilledBarIndex { get; protected set; }
-		[DataMember] public DateTime PlacedDateTime { get {
+		[JsonIgnore]	public Bars Bars;
+		[JsonProperty]	public Bar PlacedBar { get; protected set; }
+		[JsonProperty]	public int PlacedBarIndex { get; protected set; }
+		[JsonProperty]	public Bar FilledBar { get; protected set; }
+		[JsonProperty]	public int FilledBarIndex { get; protected set; }
+		[JsonProperty]	public DateTime PlacedDateTime { get {
 				if (this.PlacedBar == null) return DateTime.MinValue;
 //				if (this.PlacedBarIndex == -1 || this.PlacedBarIndex > this.Bars.Count) return PlacedDateTime.MinValue;
 //				if (this.PlacedBarIndex == this.Bars.Count) {
@@ -26,15 +25,12 @@ namespace Sq1.Core.Execution {
 //				return this.Bars[this.PlacedBarIndex].DateTimeOpen;
 				return this.PlacedBar.DateTimeOpen;
 			} }
-		[DataMember] public DateTime QuoteCreatedThisAlertServerTime;	// EXECUTOR_ENRICHES_ALERT_WITH_QUOTE { get; protected set; }
-		[DataMember] public string Symbol;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC  { get; protected set; }
-		[DataMember] public string SymbolClass;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		[DataMember] public string AccountNumber;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-
-		// contains BrokerProvider for further {new Order(Alert)} execution
-		[DataMember] public string dataSourceName { get; protected set; }
-		//public DataSource dataSource;
-		public DataSource DataSource { get {
+		[JsonProperty]	public DateTime QuoteCreatedThisAlertServerTime;	// EXECUTOR_ENRICHES_ALERT_WITH_QUOTE { get; protected set; }
+		[JsonProperty]	public string Symbol;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC  { get; protected set; }
+		[JsonProperty]	public string SymbolClass;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonProperty]	public string AccountNumber;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonProperty]	public string dataSourceName { get; protected set; }		// contains BrokerProvider for further {new Order(Alert)} execution
+		[JsonIgnore]	public DataSource DataSource { get {
 				if (this.Bars == null) {
 					throw new Exception("alert.Bars=null for alert[" + this + "]");
 				}
@@ -42,26 +38,22 @@ namespace Sq1.Core.Execution {
 					throw new Exception("alert.Bars.DataSource=null for alert[" + this + "]");
 				}
 				dataSourceName = this.Bars.DataSource.Name;
-				//dataSource = this.Bars.DataSource;
 				return this.Bars.DataSource;
 			} }
-		
-		//doesn't contain Slippage
-		[DataMember] public double PriceScript;
-		[DataMember] public double PriceStopLimitActivation;
-		[DataMember] public double Qty;
-		[DataMember] public MarketLimitStop MarketLimitStop;	//BROKER_PROVIDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
-		[DataMember] public MarketOrderAs MarketOrderAs;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-
-		[DataMember] public Direction Direction;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC { get; protected set; }
-		public PositionLongShort PositionLongShortFromDirection { get { return MarketConverter.LongShortFromDirection(this.Direction); } }
-		public bool IsExitAlert { get { return !IsEntryAlert; } }
-		public bool IsEntryAlert { get { return MarketConverter.IsEntryFromDirection(this.Direction); } }
-		[DataMember] public string SignalName;	//ORDER_SETS_NAME_FOR_KILLER_ALERTS { get; protected set; }
-		[DataMember] public Guid StrategyID;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		[DataMember] public string StrategyName;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		public Strategy Strategy { get; protected set; }
-		public bool IsExecutorBacktestingNow { get {
+		[JsonProperty] public double PriceScript;				//doesn't contain Slippage
+		[JsonProperty] public double PriceStopLimitActivation;
+		[JsonProperty] public double Qty;
+		[JsonProperty] public MarketLimitStop MarketLimitStop;	//BROKER_PROVIDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
+		[JsonProperty] public MarketOrderAs MarketOrderAs;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonProperty] public Direction Direction;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC { get; protected set; }
+					 public PositionLongShort PositionLongShortFromDirection { get { return MarketConverter.LongShortFromDirection(this.Direction); } }
+					 public bool IsExitAlert { get { return !IsEntryAlert; } }
+					 public bool IsEntryAlert { get { return MarketConverter.IsEntryFromDirection(this.Direction); } }
+		[JsonProperty] public string SignalName;	//ORDER_SETS_NAME_FOR_KILLER_ALERTS { get; protected set; }
+		[JsonProperty] public Guid StrategyID;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonProperty] public string StrategyName;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+					 public Strategy Strategy { get; protected set; }
+					 public bool IsExecutorBacktestingNow { get {
 				if (this.Strategy.Script == null) {
 					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script=null for " + this);
 				}
@@ -73,24 +65,21 @@ namespace Sq1.Core.Execution {
 				}
 				return this.Strategy.Script.Executor.Backtester.IsBacktestingNow;
 			} }
-		[DataMember] public BarScaleInterval BarsScaleInterval { get; protected set; }
-		[DataMember] public OrderSpreadSide OrderSpreadSide;
-		[DataMember] public Quote QuoteCreatedThisAlert;
-		[DataMember] public Quote QuoteLastWhenThisAlertFilled;
-
-		public Position PositionAffected;
-		public DateTime PositionEntryDate { get {
+		[JsonProperty]	public BarScaleInterval BarsScaleInterval { get; protected set; }
+		[JsonProperty]	public OrderSpreadSide OrderSpreadSide;
+		[JsonProperty]	public Quote QuoteCreatedThisAlert;
+		[JsonProperty]	public Quote QuoteLastWhenThisAlertFilled;
+		[JsonIgnore]	public Position PositionAffected;
+		[JsonIgnore]	public DateTime PositionEntryDate { get {
 				if (this.PositionAffected != null) {
 					return this.PositionAffected.EntryDate;
 				}
 				return DateTime.MinValue;
 			} }
-
-		// set on Order(alert).executed;
-		public Order OrderFollowed;
-		public ManualResetEvent MreOrderFollowedIsNotNull { get; private set; }
-		[DataMember] public double PriceDeposited;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
-		public string IsAlertCreatedOnPreviousBar { get {
+		[JsonIgnore]	public Order OrderFollowed;			// set on Order(alert).executed;
+		[JsonIgnore]	public ManualResetEvent MreOrderFollowedIsNotNull { get; private set; }
+		[JsonProperty]	public double PriceDeposited;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
+		[JsonIgnore]	public string IsAlertCreatedOnPreviousBar { get {
 				string ret = "";
 				DateTime serverTimeNow = this.Bars.MarketInfo.ServerTimeNow;
 				DateTime nextBarOpen = this.PlacedBar.DateTimeNextBarOpenUnconditional;
@@ -175,22 +164,7 @@ namespace Sq1.Core.Execution {
 				return;
 			}
 		}
-		void initByFetchingForSerialization() {
-			string firstReadInits4Serialization;
-			//firstReadInits4Serialization = this.Symbol;
-			firstReadInits4Serialization = this.SymbolClass;
-			firstReadInits4Serialization = this.AccountNumber;
-		}
-		public string ToStringForOrder() {
-			string msg = Direction
-				+ " " + MarketLimitStop
-				// not Symbol coz stack overflow
-				+ " " + Symbol
-				// not SymbolClass coz stack overflow
-				+ "/" + SymbolClass;
-			return msg;
-		}
-		public double QtyFilledThroughPosition { get {
+		[JsonIgnore]	public double QtyFilledThroughPosition { get {
 				double ret = 0;
 				if (this.PositionAffected == null) return ret;
 				if (this.IsEntryAlert && this.PositionAffected.EntryAlert == this) {
@@ -201,7 +175,7 @@ namespace Sq1.Core.Execution {
 				}
 				return ret;
 			} }
-		public double PriceFilledThroughPosition { get {
+		[JsonIgnore]	public double PriceFilledThroughPosition { get {
 				double ret = 0;
 				if (this.PositionAffected == null) return ret;
 				if (this.IsEntryAlert && this.PositionAffected.EntryAlert == this) {
@@ -212,20 +186,6 @@ namespace Sq1.Core.Execution {
 				}
 				return ret;
 			} }
-		public string ToStringForTooltip() {
-			string longOrderType = (MarketLimitStop == MarketLimitStop.StopLimit) ? "" : "\t";
-
-			string msg = Direction
-				+ "\t" + MarketLimitStop
-				+ "\t" + longOrderType + Qty + "/" + this.QtyFilledThroughPosition + "filled*" + Symbol
-				+ "@" + PriceScript + "/" + this.PriceFilledThroughPosition + "filled"
-				;
-			if (this.PositionAffected != null && this.PositionAffected.Prototype != null) {
-				msg += "\tProto" + this.PositionAffected.Prototype;
-			}
-			msg += "\t[" + SignalName + "]";
-			return msg;
-		}
 		public override string ToString() {
 			//v1 PROFILER_SAID_TOO_SLOW
 //			string msg = "bar#" + this.PlacedBarIndex + ": "
@@ -271,7 +231,30 @@ namespace Sq1.Core.Execution {
 				//msg.Append(this.PositionAffected.ToString());
 				msg.Append("]");
 			}
-			return msg.ToString();;
+			return msg.ToString();
+		}
+		public string ToStringForTooltip() {
+			string longOrderType = (MarketLimitStop == MarketLimitStop.StopLimit) ? "" : "\t";
+
+			string msg = Direction
+				+ "\t" + MarketLimitStop
+				+ "\t" + longOrderType + Qty + "/" + this.QtyFilledThroughPosition + "filled*" + Symbol
+				+ "@" + PriceScript + "/" + this.PriceFilledThroughPosition + "filled"
+				;
+			if (this.PositionAffected != null && this.PositionAffected.Prototype != null) {
+				msg += "\tProto" + this.PositionAffected.Prototype;
+			}
+			msg += "\t[" + SignalName + "]";
+			return msg;
+		}
+		public string ToStringForOrder() {
+			string msg = Direction
+				+ " " + MarketLimitStop
+				// not Symbol coz stack overflow
+				+ " " + Symbol
+				// not SymbolClass coz stack overflow
+				+ "/" + SymbolClass;
+			return msg;
 		}
 		public bool IsIdenticalOrderlessPriceless(Alert alert) {
 			if (alert == null) {
@@ -311,7 +294,7 @@ namespace Sq1.Core.Execution {
 				;
 			return basic && streamingBarMayBeDifferent;
 		}
-		public virtual void AbsorbFromExecutor(ScriptExecutor executor) {
+		public virtual void AbsorbFromExecutorAfterCreatedByMarketReal(ScriptExecutor executor) {
 		}
 		public void FillPositionAffectedEntryOrExitRespectively(Bar barFill, int barFillRelno,
 				double priceFill, double qtyFill, double slippageFill, double commissionFill) {
@@ -340,12 +323,17 @@ namespace Sq1.Core.Execution {
 				this.PositionAffected.FillExitWith(barFill, priceFill, qtyFill, slippageFill, commissionFill);
 			}
 		}
-		public bool IsFilled { get {
+		[JsonProperty]	public bool IsFilled { get {
 				if (this.PositionAffected == null) return false;
 				return this.IsEntryAlert
 					? this.PositionAffected.IsEntryFilled
 					: this.PositionAffected.IsExitFilled;
 			} }
-		public bool IsKilled;
+		[JsonProperty]	public bool IsKilled;
+		[JsonProperty]	public bool IsOutsideBarFilled_DEBUG_CHECK { get {
+				if (this.FilledBar == null) return false;
+				bool insideBar = (this.PriceFilledThroughPosition >= this.FilledBar.Low && this.PriceFilledThroughPosition <= this.FilledBar.High);
+				return (insideBar == false);
+			} }
 	}
 }
