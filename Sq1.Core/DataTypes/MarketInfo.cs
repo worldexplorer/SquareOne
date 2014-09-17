@@ -173,7 +173,7 @@ namespace Sq1.Core.DataTypes {
 						serverDateTime.Hour, serverDateTime.Minute, valueCeiled);
 					if (addNextRank) ret = ret.AddMinutes(1);
 
-					clearingTimespan = getClearingTimespanIfMarketSuspended(ret);
+					clearingTimespan = GetClearingTimespanIfMarketSuspended(ret);
 					if (clearingTimespan != null) {
 						ret = this.AdvanceToWhenClearingResumes(ret, clearingTimespan);
 						//ret = ret.AddSeconds((double)scale.Interval);
@@ -194,7 +194,7 @@ namespace Sq1.Core.DataTypes {
 						serverDateTime.Hour, valueCeiled, 0);
 					if (addNextRank) ret = ret.AddHours(1);
 
-					clearingTimespan = getClearingTimespanIfMarketSuspended(ret);
+					clearingTimespan = GetClearingTimespanIfMarketSuspended(ret);
 					if (clearingTimespan != null) {
 						ret = this.AdvanceToWhenClearingResumes(ret, clearingTimespan);
 						//ret = ret.AddMinutes((double)scale.Interval);
@@ -221,7 +221,7 @@ namespace Sq1.Core.DataTypes {
 						serverDateTime.Hour, valueCeiled, 0);
 					if (addNextRank) ret = ret.AddDays(1);
 
-					clearingTimespan = getClearingTimespanIfMarketSuspended(ret);
+					clearingTimespan = GetClearingTimespanIfMarketSuspended(ret);
 					if (clearingTimespan != null) {
 						ret = this.AdvanceToWhenClearingResumes(ret, clearingTimespan);
 						//ret = ret.AddHours((double)scale.Interval);
@@ -351,11 +351,11 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		public bool IsMarketSuspendedForClearing(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan = false) {
-			MarketClearingTimespan suspendedNow = this.getClearingTimespanIfMarketSuspended(dateTimeServer, considerSuspendedIfFullBarIsWithinClearingTimespan);
+		public bool IsMarketSuspendedForClearing(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan_NYI = false) {
+			MarketClearingTimespan suspendedNow = this.GetClearingTimespanIfMarketSuspended(dateTimeServer, considerSuspendedIfFullBarIsWithinClearingTimespan_NYI);
 			return (suspendedNow != null) ? true : false;
 		}
-		MarketClearingTimespan getClearingTimespanIfMarketSuspended(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan = false) {
+		public MarketClearingTimespan GetClearingTimespanIfMarketSuspended(DateTime dateTimeServer, bool considerSuspendedIfFullBarIsWithinClearingTimespan_NYI = false) {
 			MarketClearingTimespan ret = null;
 			if (this.ClearingTimespans == null) return ret;
 			foreach (MarketClearingTimespan clearingTimespan in this.ClearingTimespans) {
@@ -382,18 +382,19 @@ namespace Sq1.Core.DataTypes {
 			this.GetRegularOrShortDayOpenCloseMarketTimeForServerDate(dateTimeServerBarOpen, out openTimeServer, out closeTimeServer);
 			bool isMarketAfterOpening = dateTimeServerBarOpen.TimeOfDay >= openTimeServer.TimeOfDay;
 			bool isMarketBeforeClosing = dateTimeServerBarOpen.TimeOfDay < closeTimeServer.TimeOfDay;
-			bool isMarketSuspendedForClearing = this.IsMarketSuspendedForClearingDuringDateInterval(dateTimeServerBarOpen, dateTimeServerBarClose);
+			bool isMarketSuspendedForClearing = this.IsMarketSuspendedForClearingDuringBar(dateTimeServerBarOpen, dateTimeServerBarClose);
 			bool marketIsOpen = isMarketAfterOpening && isMarketBeforeClosing && (isMarketSuspendedForClearing == false);
 			if (marketIsOpen == false) {
 				string msg = "breakpoint";
 			}
 			return marketIsOpen;
 		}
-		public bool IsMarketSuspendedForClearingDuringDateInterval(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
-			MarketClearingTimespan suspendedNow = this.GetClearingTimespanIfMarketSuspendedDuringDateInterval(dateTimeServerBarOpen, dateTimeServerBarClose);
+		public bool IsMarketSuspendedForClearingDuringBar(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+			MarketClearingTimespan suspendedNow = this.GetSingleClearingTimespanIfMarketSuspendedDuringBar(dateTimeServerBarOpen, dateTimeServerBarClose);
 			return (suspendedNow != null) ? true : false;
 		}
-		public MarketClearingTimespan GetClearingTimespanIfMarketSuspendedDuringDateInterval(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+		[Obsolete("ERRONEOUS_FOR_MULTIPLE_SHORT_CLEARINGS_DURING_LONG_BARS (when bar[4:00..4:30] and ClearingTimespans{[4:05..4:10],[4:15..4:20]}) combining multiple MarketTimeSpan to one is wrong solution, use two pinpointing methods from this class")]
+		public MarketClearingTimespan GetSingleClearingTimespanIfMarketSuspendedDuringBar(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
 			MarketClearingTimespan ret = null;
 			if (this.ClearingTimespans == null) return ret;
 			foreach (MarketClearingTimespan clearingTimespan in this.ClearingTimespans) {
@@ -481,6 +482,24 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		
+		public TimeSpan GetClearingResumesOffsetOrZeroSeconds(DateTime assumed) {
+		    TimeSpan ret = new TimeSpan(0);
+		    
+			MarketClearingTimespan clearingNow = this.GetClearingTimespanIfMarketSuspended(assumed);
+		    if (clearingNow == null) {
+		        return ret;
+		    }
+
+			DateTime clearingEndsDateTime = Bars.CombineBarDateWithMarketOpenTime(assumed, clearingNow.ResumeServerTimeOfDay);
+   		    
+		    ret = clearingEndsDateTime.Subtract(assumed);
+		    if (ret.TotalSeconds > 0) {
+		        string msg = "[" + this.Name + "]Market is CLEARING, resumes["
+		            + clearingEndsDateTime.ToString("HH:mm") + "], +[" + ret.TotalSeconds + "]sec for [" + assumed + "]";
+		        //TESTED Debugger.Break();
+		    }
+		    return ret;
+		}
+
 	}
 }

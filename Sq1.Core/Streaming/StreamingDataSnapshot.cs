@@ -60,7 +60,7 @@ namespace Sq1.Core.Streaming {
 				Debugger.Break();
 				return;
 			}
-			if (last.Absno > quote.Absno) {
+			if (last.Absno >= quote.Absno) {
 				string msg = "DONT_FEED_ME_WITH_OLD_QUOTES";
 				Debugger.Break();
 				return;

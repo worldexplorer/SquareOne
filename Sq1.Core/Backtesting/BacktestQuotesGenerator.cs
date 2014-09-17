@@ -6,13 +6,13 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Backtesting {
-	public abstract class BacktestQuotesGenerator {
+	public class BacktestQuotesGenerator {
 		Backtester backtester;
 		public readonly BacktestMode BacktestModeSuitsFor;
 		public readonly int QuotePerBarGenerates;
-		protected SortedList<int, QuoteGenerated> QuotesGeneratedForOneBar;
+		SortedList<int, QuoteGenerated> QuotesGeneratedForOneBar;
 
-		public abstract SortedList<int, QuoteGenerated> GenerateQuotesFromBar(Bar bar);
+		// IMPLEMENTED_BELOW_UNABSTRACTED_THIS_CLASS protected public abstract SortedList<int, QuoteGenerated> GenerateQuotesFromBarAvoidClearing(Bar bar);
 		public int QuoteAbsno;
 
 		protected BacktestQuotesGenerator(Backtester backtester, int quotesPerBar, BacktestMode mode) {
@@ -295,5 +295,89 @@ namespace Sq1.Core.Backtesting {
 
 			return quoteModel;
 		}
+		public virtual SortedList<int, QuoteGenerated> GenerateQuotesFromBarAvoidClearing(Bar barSimulated) {
+			this.QuotesGeneratedForOneBar.Clear();
+
+			double volumeOneQuarterOfBar = barSimulated.Volume / 4;
+			if (barSimulated.ParentBars != null && barSimulated.ParentBars.SymbolInfo != null) {
+				volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, barSimulated.ParentBars.SymbolInfo.DecimalsVolume);
+				if (volumeOneQuarterOfBar == 0) {
+					//TESTED Debugger.Break();
+					//double minimalValue = Math.Pow(1, -decimalsVolume);		// 1^(-2) = 0.01
+					volumeOneQuarterOfBar = barSimulated.ParentBars.SymbolInfo.VolumeMinimalFromDecimal;
+				}
+			}
+			if (volumeOneQuarterOfBar == 0) {
+				Debugger.Break();
+				volumeOneQuarterOfBar = 1;
+			}
+
+			DateTime barOpenOrResume = barSimulated.DateTimeOpen;
+			MarketInfo marketInfo = barSimulated.ParentBars.MarketInfo;
+			MarketClearingTimespan clearing = marketInfo.GetSingleClearingTimespanIfMarketSuspendedDuringBar(barSimulated.DateTimeOpen, barSimulated.DateTimeNextBarOpenUnconditional);
+			if (clearing != null) {
+				DateTime resumes = clearing.ResumeServerTimeOfDay;
+				barOpenOrResume = new DateTime(barOpenOrResume.Year, barOpenOrResume.Month, barOpenOrResume.Day,
+					resumes.Hour, resumes.Minute, resumes.Second);
+			}
+
+			TimeSpan leftTillNextBar = barSimulated.DateTimeNextBarOpenUnconditional - barOpenOrResume;
+			int incrementSeconds = ((int)(leftTillNextBar.TotalSeconds / this.QuotePerBarGenerates));	// WRONG -1 one second less to not have exactly next bar opening at last stroke but 4 seconds before
+			TimeSpan increment = new TimeSpan(0, 0, incrementSeconds);
+			TimeSpan incrementCumulative = new TimeSpan(0);
+			
+			for (int stroke = 0; stroke < this.QuotePerBarGenerates; stroke++) {
+				double price = 0;
+				switch (stroke) {
+					case 0: price =  barSimulated.Open; break;
+					case 1: price = (barSimulated.Close > barSimulated.Open) ? barSimulated.Low : barSimulated.High; break;
+					case 2: price = (barSimulated.Close > barSimulated.Open) ? barSimulated.High : barSimulated.Low; break;
+					case 3: price =  barSimulated.Close; break;
+					default: throw new Exception("Stroke[" + stroke + "] isn't supported in 4-stroke QuotesGenerator");
+				}
+
+				DateTime serverTime = barOpenOrResume + incrementCumulative;
+				TimeSpan clearingResumesOffset = marketInfo.GetClearingResumesOffsetOrZeroSeconds(serverTime);
+				if (clearingResumesOffset.TotalSeconds >= leftTillNextBar.TotalSeconds) {
+					string msg = "CLEARING_EXTENDS_BEOYND_SIMULATED_BAR I_STOP_GENERATING_HERE_AND_EXPECT_BAR_INCREASE_UPSTACK";
+				    Debugger.Break();
+				    break;
+				}
+				
+				if (clearingResumesOffset.TotalSeconds > 0) {
+					serverTime = serverTime + clearingResumesOffset;
+				}
+				
+				QuoteGenerated quote = this.generateNewQuoteChildrenHelper(stroke, "RunSimulationFourStrokeOHLC",
+					barSimulated.Symbol, serverTime, price, volumeOneQuarterOfBar, barSimulated);
+				this.QuotesGeneratedForOneBar.Add(stroke, quote);
+				
+				//if (stroke == this.QuotePerBarGenerates - 1) break;		// avoiding expensive time manipulation at last stroke 
+
+				// below goes "stroke++" brother
+				if (clearingResumesOffset.TotalSeconds == 0) {
+					incrementCumulative = incrementCumulative + increment;
+					continue;
+				}
+				string whereAmI = "GOT_INTRABAR_CLEARING RECALC_SHRINKEN_INCREMENT_FOR_NEXT_LOOPS";
+			    incrementCumulative = clearingResumesOffset;
+			    leftTillNextBar = barSimulated.DateTimeNextBarOpenUnconditional - (barSimulated.DateTimeOpen + incrementCumulative);
+			    int quotesLeft = this.QuotePerBarGenerates - stroke;
+			    increment = new TimeSpan(0, 0, ((int)(leftTillNextBar.TotalSeconds / quotesLeft)));
+			    // WRONG -1 one second less to not have exactly next bar opening at last stroke but 4 seconds before
+				// BAR_WITHOUT_INTRABAR_CLEARING	11:00
+			  	// stroke0 increment (5:00 / 4 = 1:15): 11:00:00
+			  	// stroke1 increment (5:00 / 4 = 1:15): 11:01:15
+			  	// stroke2 increment (5:00 / 4 = 1:15): 11:02:30
+			  	// stroke3 increment (5:00 / 4 = 1:15): 11:03:45 (next stroke4 would be 11:05:00 which next bar/invocation)
+				// BAR_WITH_INTRABAR_CLEARING    	[14:00...14:03]
+			  	// stroke0 increment (5:00 / 4 = 1:15): 14:00:00 => 14:03:00
+				// stroke1 increment (2:00 / 4 = 0:30): 14:03:30
+				// stroke2 increment (2:00 / 4 = 0:30): 14:04:00
+				// stroke3 increment (2:00 / 4 = 0:30): 14:04:30 (next stroke4 would be 14:05:00 which next bar/invocation)
+			}
+			return this.QuotesGeneratedForOneBar;
+		}
+
 	}
 }

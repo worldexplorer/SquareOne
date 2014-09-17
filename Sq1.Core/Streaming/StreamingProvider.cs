@@ -195,6 +195,7 @@ namespace Sq1.Core.Streaming {
 				this.UpdateConnectionStatus(503, msg);
 
 				// HACK
+				Debugger.Break();
 				this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
 				this.StreamingDataSnapshot.UpdateLastBidAskSnapFromQuote(quote);
 
