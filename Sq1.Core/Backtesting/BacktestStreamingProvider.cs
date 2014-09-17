@@ -17,12 +17,12 @@ namespace Sq1.Core.Backtesting {
 			this.SpreadModeler = new BacktestSpreadModelerConstant(10);
 		}
 
-		public void GeneratedQuoteEnrichSymmetricallyAndPush(Quote quote) {
+		public void GeneratedQuoteEnrichSymmetricallyAndPush(QuoteGenerated quote) {
 			if (this.SpreadModeler == null) {
 				string msg = "Don't leave quoteToReach.Bid and quoteToReach.Ask uninitialized!!!";
 				throw new Exception(msg);
 			}
-			this.SpreadModeler.GenerateFillBidAskSymmetricallyFromLastPrice(quote);
+			this.SpreadModeler.GeneratedQuoteFillBidAsk(quote);
 			base.PushQuoteReceived(quote);
 		}
 

@@ -65,7 +65,7 @@ namespace Sq1.Core.DataTypes {
 			if (ServerTime != null) ret += " SERVER[" + ServerTime.ToString("HH:mm:ss.fff") + "]";
 			ret += "[" + LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]LOCAL";
 			if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;
-			ret += " " + this.ParentBarIdent;
+			ret += " STR:" + this.ParentBarIdent;
 			return ret;
 		}
 		public bool SameBidAsk(Quote other) {

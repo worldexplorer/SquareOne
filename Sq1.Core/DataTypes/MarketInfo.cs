@@ -390,10 +390,10 @@ namespace Sq1.Core.DataTypes {
 			return marketIsOpen;
 		}
 		public bool IsMarketSuspendedForClearingDuringDateInterval(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
-			MarketClearingTimespan suspendedNow = this.getClearingTimespanIfMarketSuspendedDuringDateInterval(dateTimeServerBarOpen, dateTimeServerBarClose);
+			MarketClearingTimespan suspendedNow = this.GetClearingTimespanIfMarketSuspendedDuringDateInterval(dateTimeServerBarOpen, dateTimeServerBarClose);
 			return (suspendedNow != null) ? true : false;
 		}
-		MarketClearingTimespan getClearingTimespanIfMarketSuspendedDuringDateInterval(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
+		public MarketClearingTimespan GetClearingTimespanIfMarketSuspendedDuringDateInterval(DateTime dateTimeServerBarOpen, DateTime dateTimeServerBarClose) {
 			MarketClearingTimespan ret = null;
 			if (this.ClearingTimespans == null) return ret;
 			foreach (MarketClearingTimespan clearingTimespan in this.ClearingTimespans) {

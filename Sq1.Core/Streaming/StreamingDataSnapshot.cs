@@ -19,16 +19,14 @@ namespace Sq1.Core.Streaming {
 		protected Object LockBestBid = new Object();
 		protected Object LockBestAsk = new Object();
 
-		public string SymbolsSubscribedAndReceiving {
-			get {
+		public string SymbolsSubscribedAndReceiving { get {
 				string ret = "";
 				foreach (string symbol in LastQuotesReceived.Keys) {
 					if (ret.Length > 0) ret += ",";
 					ret += symbol + ":" + ((LastQuotesReceived[symbol] == null) ? "NULL" : LastQuotesReceived[symbol].Absno.ToString());
 				}
 				return ret;
-			}
-		}
+			} }
 		public StreamingDataSnapshot(StreamingProvider streamingProvider) {
 			this.streamingProvider = streamingProvider;
 			this.LastQuotesReceived = new Dictionary<string, Quote>();
@@ -52,8 +50,19 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		protected void LastQuoteUpdate(Quote quote) {
-			if (this.LastQuotesReceived[quote.Symbol] == quote) {
+			Quote last = this.LastQuotesReceived[quote.Symbol];
+			if (last == null) {
+				this.LastQuotesReceived[quote.Symbol] = quote;
+				return;
+			}
+			if (last == quote) {
 				string msg = "How come you update twice to the same quote?";
+				Debugger.Break();
+				return;
+			}
+			if (last.Absno > quote.Absno) {
+				string msg = "DONT_FEED_ME_WITH_OLD_QUOTES";
+				Debugger.Break();
 				return;
 			}
 			this.LastQuotesReceived[quote.Symbol] = quote;

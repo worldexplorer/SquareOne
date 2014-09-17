@@ -6,7 +6,7 @@ namespace Sq1.Core.Backtesting {
 		public abstract void GenerateFillAskBasedOnBid(Quote quote, double bidPrice);
 		public abstract void GenerateFillBidBasedOnAsk(Quote quote, double askPrice);
 
-		public void GenerateFillBidAskSymmetricallyFromLastPrice(Quote quote) {
+		public void GeneratedQuoteFillBidAsk(Quote quote) {
 			if (quote == null) return;
 			this.GenerateFillBidAskSymmetrically(quote, quote.PriceLastDeal);
 		}

@@ -74,6 +74,7 @@
     <Compile Include="Backtesting\BacktestQuotesGeneratorFourStroke.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Backtesting\QuoteGenerated.cs" />
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
     <Compile Include="Broker\OrderEventDistributor.cs" />
     <Compile Include="Broker\OrderProcessorEventDistributor.cs" />
@@ -257,9 +258,7 @@
       <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Repositories" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="StrategyBase\ScriptExecutor-howSymbolRenameWorks.jpg">
       <DependentUpon>ScriptExecutor.cs</DependentUpon>

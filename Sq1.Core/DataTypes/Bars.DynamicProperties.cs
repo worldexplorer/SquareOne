@@ -198,7 +198,7 @@ namespace Sq1.Core.DataTypes {
 			// TODO: this calculation is irrelevant for FOREX since FOREX doesn't interrupt overnight
 			DateTime marketOpenServerTime = this.MarketInfo.MarketOpenServerTime;
 			if (marketOpenServerTime == DateTime.MinValue) return ret;
-			DateTime todayMarketOpenServerTime = this.CombineBarDateWithMarketOpenTime(dateTimeToFind, marketOpenServerTime);
+			DateTime todayMarketOpenServerTime = Bars.CombineBarDateWithMarketOpenTime(dateTimeToFind, marketOpenServerTime);
 			if (dateTimeToFind < todayMarketOpenServerTime) {
 				string msg = "BAR_INVALID_MARKET_IS_NOT_OPEN_YET bar.DateTimeOpen[" + dateTimeToFind + 
 					"] while MarketInfo.MarketOpenServerTime[" + marketOpenServerTime + "]";
@@ -233,7 +233,7 @@ namespace Sq1.Core.DataTypes {
 			// TODO: this calculation is irrelevant for FOREX since FOREX doesn't interrupt overnight 
 			DateTime marketCloseServerTime = this.MarketInfo.MarketCloseServerTime;
 			if (marketCloseServerTime == DateTime.MinValue) return ret;
-			DateTime todayMarketCloseServerTime = this.CombineBarDateWithMarketOpenTime(dateTimeToFind, marketCloseServerTime);
+			DateTime todayMarketCloseServerTime = Bars.CombineBarDateWithMarketOpenTime(dateTimeToFind, marketCloseServerTime);
 			if (dateTimeToFind > todayMarketCloseServerTime) {
 				string msg = "BAR_INVALID_MARKET_IS_ALREADY_CLOSED bar.DateTimeOpen[" + dateTimeToFind + 
 					"] while MarketInfo.MarketCloseServerTime[" + this.MarketInfo.MarketCloseServerTime + "]";
@@ -261,7 +261,7 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		public DateTime CombineBarDateWithMarketOpenTime(DateTime barDateTimeOpen, DateTime marketOpenCloseIntradayTime) {
+		public static DateTime CombineBarDateWithMarketOpenTime(DateTime barDateTimeOpen, DateTime marketOpenCloseIntradayTime) {
 			DateTime ret = new DateTime(barDateTimeOpen.Year, barDateTimeOpen.Month, barDateTimeOpen.Day,
 				marketOpenCloseIntradayTime.Hour, marketOpenCloseIntradayTime.Minute, marketOpenCloseIntradayTime.Second);
 			return ret;

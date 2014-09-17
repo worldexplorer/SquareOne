@@ -193,6 +193,11 @@ namespace Sq1.Core.Streaming {
 				string msg = "[" + marketInfo.Name + "]Market " + reason + ", resumes["
 					+ dateTimeNextBarOpenConditional.ToString("HH:mm") + "]; ignoring quote[" + quote + "]";
 				this.UpdateConnectionStatus(503, msg);
+
+				// HACK
+				this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
+				this.StreamingDataSnapshot.UpdateLastBidAskSnapFromQuote(quote);
+
 				return;
 			} else {
 				int a = 1;
@@ -217,6 +222,9 @@ namespace Sq1.Core.Streaming {
 					Assembler.PopupException("WEIRD: upcoming quote.LocalTimeCreatedMillis[" + quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff")
 						+ "] <= lastQuoteReceived.Symbol." + quote.Symbol + "["
 						+ lastQuote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]: DDE lagged somewhere?...");
+				}
+				if (quote.Absno != lastQuote.Absno + 1) {
+					Debugger.Break();
 				}
 				quote.Absno = lastQuote.Absno + 1;
 			}

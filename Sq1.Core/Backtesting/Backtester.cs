@@ -81,7 +81,7 @@ namespace Sq1.Core.Backtesting {
 				//this.Initialize(BacktestMode.FourStrokeOHLC);
 			}
 			this.ExceptionsHappenedSinceBacktestStarted = 0;
-			this.SubstituteBarsAndRunSimulation();
+			this.substituteBarsAndRunSimulation();
 		}
 
 		public void AbortRunningBacktestWaitAborted(string whyAborted) {
@@ -115,7 +115,7 @@ namespace Sq1.Core.Backtesting {
 		}
 
 
-		public void SubstituteBarsAndRunSimulation() {
+		public void substituteBarsAndRunSimulation() {
 			if (null == this.Executor.Bars) {
 				Assembler.PopupException("EXECUTOR_LOST_ITS_BARS_NONSENSE null==this.Executor.Bars SubstituteBarsAndRunSimulation()");
 				return;
@@ -254,11 +254,29 @@ namespace Sq1.Core.Backtesting {
 				//throw new Exception(msg);
 				return;
 			}
-			List<Quote> quotesGenerated = this.QuotesGenerator.GenerateQuotesFromBar(bar2simulate);
+			if (bar2simulate.ParentBarsIndex == 12) {
+				Debugger.Break();
+			}
+			SortedList<int, QuoteGenerated> quotesGenerated = this.QuotesGenerator.GenerateQuotesFromBar(bar2simulate);
 			if (quotesGenerated == null) return;
 			for (int i = 0; i < quotesGenerated.Count; i++) {
-				Quote quote = quotesGenerated[i];
-				this.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GenerateFillBidAskSymmetricallyFromLastPrice(quote);
+				QuoteGenerated quote = quotesGenerated[i];
+				if (quote.ParentBarSimulated.ParentBarsIndex != bar2simulate.ParentBarsIndex) {
+					#if DEBUG
+					Debugger.Break();
+					#endif
+				}
+				QuoteGenerated quotePrev;
+				if (i > 0) {
+					quotePrev = quotesGenerated[i-1];
+					if (quote.Absno != quotePrev.Absno + 1) {
+						#if DEBUG
+						string msg = "IRRELEVANT since GenerateQuotesFromBar() has been upgraded to return SortedList<int, QuoteGenerated> instead of randomized List<QuoteGenerated>";
+						Debugger.Break();
+						#endif
+					}
+				}
+				this.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GeneratedQuoteFillBidAsk(quote);
 
 				// GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #1/2
 				if (bar2simulate.ContainsQuoteGenerated(quote) == false) {
@@ -288,7 +306,9 @@ namespace Sq1.Core.Backtesting {
 				int pendingsLeftAfterInjected = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 
 				this.BacktestDataSource.BacktestStreamingProvider.GeneratedQuoteEnrichSymmetricallyAndPush(quote);
-				int pendingsLeftAfterTargetQuote = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
+				quote.WentThroughStreamingToScript = true;
+
+				int pendingsLeftAfterTargetQuoteGenerated = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 
 				//stats, nothing poductive, only monitoring
 				if (pendingsToFillInitially == 0) {
@@ -299,7 +319,7 @@ namespace Sq1.Core.Backtesting {
 				if (pendingsFilledByInjected > 0) {
 					string msg = "SEEMS_LIKE_INJECTING_DOES_ITS_JOB; pendingsFilledByInjected[" + pendingsFilledByInjected + "]";
 				}
-				int targetQuoteIsntExpectedToFillAnything = pendingsLeftAfterTargetQuote - pendingsLeftAfterInjected;
+				int targetQuoteIsntExpectedToFillAnything = pendingsLeftAfterTargetQuoteGenerated - pendingsLeftAfterInjected;
 				if (targetQuoteIsntExpectedToFillAnything > 0) {
 					string msg = "SEEMS_LIKE_TARGET_QUOTE_HAD_OWN_FILL POSSIBLE_BUT_UNLIKELY";
 				}
