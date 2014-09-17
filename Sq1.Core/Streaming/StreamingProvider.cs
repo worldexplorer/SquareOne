@@ -224,7 +224,7 @@ namespace Sq1.Core.Streaming {
 						+ lastQuote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]: DDE lagged somewhere?...");
 				}
 				if (quote.Absno != lastQuote.Absno + 1) {
-					Debugger.Break();
+					//Debugger.Break();
 				}
 				quote.Absno = lastQuote.Absno + 1;
 			}

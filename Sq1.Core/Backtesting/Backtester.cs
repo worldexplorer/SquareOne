@@ -255,7 +255,7 @@ namespace Sq1.Core.Backtesting {
 				return;
 			}
 			if (bar2simulate.ParentBarsIndex == 12) {
-				Debugger.Break();
+				//Debugger.Break();
 			}
 			SortedList<int, QuoteGenerated> quotesGenerated = this.QuotesGenerator.GenerateQuotesFromBar(bar2simulate);
 			if (quotesGenerated == null) return;
@@ -272,7 +272,7 @@ namespace Sq1.Core.Backtesting {
 					if (quote.Absno != quotePrev.Absno + 1) {
 						#if DEBUG
 						string msg = "IRRELEVANT since GenerateQuotesFromBar() has been upgraded to return SortedList<int, QuoteGenerated> instead of randomized List<QuoteGenerated>";
-						Debugger.Break();
+						//Debugger.Break();
 						#endif
 					}
 				}

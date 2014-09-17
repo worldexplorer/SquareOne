@@ -26,7 +26,7 @@ namespace Sq1.Core.Backtesting {
 		protected QuoteGenerated generateNewQuoteChildrenHelper(int intraBarSerno, string source, string symbol, DateTime serverTime, double price, double volume, Bar barSimulated) {
 			QuoteGenerated ret = new QuoteGenerated();
 			if (barSimulated.ParentBarsIndex == 11) {
-				Debugger.Break();
+				//Debugger.Break();
 			}
 			ret.Absno = ++this.QuoteAbsno;
 			if (ret.Absno == 46) {
