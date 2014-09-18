@@ -1,7 +1,8 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
   "StrategyGuidJsonCheck": "NO_STRATEGY_CHART_ONLY",
-  "StrategyNameJsonCheck": "NOT_INITIALIZED ChartFormManager.Initialize()",
+  "StrategyNameJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "StrategyAbsPathJsonCheck": "NO_STRATEGY_CHART_ONLY",
   "ContextChart": {
     "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
     "Name": "CHART_GMKN",
@@ -84,7 +85,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 365,
+    "PriceVsVolumeSplitterDistance": 224,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
@@ -98,5 +99,6 @@
     "ChartLabelsUpperLeftIndicatorSquareSize": 5,
     "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
   },
-  "ChartSerno": 18
+  "ChartSerno": 18,
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
 }

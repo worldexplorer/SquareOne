@@ -129,8 +129,9 @@ namespace Sq1.Core.StrategyBase {
 
 		protected SystemPerformanceSlice() {
 			ReasonToExist = "NO_REASON_TO_EXIST";
-			EquityCurve = new DataSeriesTimeBased("Equity");
-			CashCurve = new DataSeriesTimeBased("Cash");
+			// LOOKS_STUPID_BUT_DONT_SUGGEST_BRINGING_EXECUTOR_HERE: new BarScaleInterval(BarScale.Unknown, 0)
+			EquityCurve = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), "Equity");
+			CashCurve = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), "Cash");
 			PositionsImTracking = new List<Position>();
 			PositionLongShortImTracking = PositionLongShort.Unknown;	// direction not specified => it means "both short and long" here
 		}

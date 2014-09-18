@@ -324,6 +324,7 @@ namespace Sq1.Charting {
 				barX -= this.BarWidthIncludingPadding_cached;
 				foreach (Indicator indicator in indicators.Values) {
 					if (indicator.HostPanelForIndicator != this) continue;
+					if (bar.ParentBarsIndex <= indicator.FirstValidBarIndex) continue;
 					bool indicatorLegDrawn = indicator.DrawValue(graphics, bar, candleBodyInverted);
 				}
 			}

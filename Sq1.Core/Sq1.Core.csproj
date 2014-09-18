@@ -36,7 +36,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
-    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED</DefineConstants>
+    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED;VERBOSE_STRINGS_SLOW_disabled</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <StartAction>Project</StartAction>
@@ -48,6 +48,7 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <DefineConstants>VERBOSE_STRINGS_SLOW_disabled</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
   </PropertyGroup>
@@ -258,7 +259,6 @@
       <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="StrategyBase\ScriptExecutor-howSymbolRenameWorks.jpg">
       <DependentUpon>ScriptExecutor.cs</DependentUpon>

@@ -28,7 +28,8 @@ namespace Sq1.Core.StrategyBase {
 		public MarketRealStreaming MarketRealStreaming { get; private set; }
 		public MarketSimStreaming MarketSimStreaming { get; private set; }
 		public ScriptExecutorEventGenerator EventGenerator { get; private set; }
-		public NotOnChartBarsHelper NotOnChartBarsHelper { get; private set; }
+		// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
+		//public NotOnChartBarsHelper NotOnChartBarsHelper { get; private set; }
 		public CommissionCalculator CommissionCalculator;
 		#endregion
 		
@@ -114,7 +115,8 @@ namespace Sq1.Core.StrategyBase {
 			this.MarketRealStreaming = new MarketRealStreaming(this);
 			this.MarketSimStreaming = new MarketSimStreaming(this);
 			this.EventGenerator = new ScriptExecutorEventGenerator(this);
-			this.NotOnChartBarsHelper = new NotOnChartBarsHelper(this);
+			// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
+			//this.NotOnChartBarsHelper = new NotOnChartBarsHelper(this);
 			this.CommissionCalculator = new CommissionCalculatorZero(this);
 		}
 

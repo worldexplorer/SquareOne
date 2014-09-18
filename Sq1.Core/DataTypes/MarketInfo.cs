@@ -482,24 +482,29 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		public TimeSpan GetClearingResumesOffsetOrZeroSeconds(DateTime assumed) {
-		    TimeSpan ret = new TimeSpan(0);
-		    
-			MarketClearingTimespan clearingNow = this.GetClearingTimespanIfMarketSuspended(assumed);
-		    if (clearingNow == null) {
-		        return ret;
-		    }
-
-			DateTime clearingEndsDateTime = Bars.CombineBarDateWithMarketOpenTime(assumed, clearingNow.ResumeServerTimeOfDay);
-   		    
-		    ret = clearingEndsDateTime.Subtract(assumed);
-		    if (ret.TotalSeconds > 0) {
-		        string msg = "[" + this.Name + "]Market is CLEARING, resumes["
-		            + clearingEndsDateTime.ToString("HH:mm") + "], +[" + ret.TotalSeconds + "]sec for [" + assumed + "]";
-		        //TESTED Debugger.Break();
-		    }
-		    return ret;
+		public DateTime GetClearingResumes(DateTime quoteTimeGuess) {
+		    DateTime ret = quoteTimeGuess;
+			MarketClearingTimespan clearingNow = this.GetClearingTimespanIfMarketSuspended(quoteTimeGuess);
+		    if (clearingNow == null) return ret;
+			ret = Bars.CombineBarDateWithMarketOpenTime(quoteTimeGuess, clearingNow.ResumeServerTimeOfDay);
+			//string msg = "[" + this.Name + "]Market is CLEARING, resumes["
+			//	+ ret.ToString("HH:mm") + "], +[" + (ret-quoteTimeGuess).TotalSeconds + "]sec for quoteTimeGuess[" + quoteTimeGuess + "]";
+			//TESTED Debugger.Break();
+			return ret;
 		}
-
+		[Obsolete("you pay too much for OFFSET; get DateTime adjusted instead! use GetClearingResumes()")]
+		public TimeSpan GetClearingResumesOffsetOrZeroSeconds(DateTime assumed) {
+			TimeSpan ret = new TimeSpan(0);
+			MarketClearingTimespan clearingNow = this.GetClearingTimespanIfMarketSuspended(assumed);
+			if (clearingNow == null) return ret;
+			DateTime clearingEndsDateTime = Bars.CombineBarDateWithMarketOpenTime(assumed, clearingNow.ResumeServerTimeOfDay);
+			ret = clearingEndsDateTime.Subtract(assumed);
+			//if (ret.TotalSeconds > 0) {
+			//	string msg = "[" + this.Name + "]Market is CLEARING, resumes["
+			//		+ clearingEndsDateTime.ToString("HH:mm") + "], +[" + ret.TotalSeconds + "]sec for [" + assumed + "]";
+			//TESTED	Debugger.Break();
+			//}
+			return ret;
+		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Sq1.Core.DataTypes {
 	public class Quote {
@@ -30,12 +31,18 @@ namespace Sq1.Core.DataTypes {
 			ServerTime = DateTime.MinValue;
 			LocalTimeCreatedMillis = DateTime.Now;
 			IntraBarSerno = -1;
+			Bid = double.NaN;
+			Ask = double.NaN;
+			Size = -1;
 		}
 		// TODO: don't be lazy and move to StreamingProvider.QuoteAbsnoForSymbol<string Symbol, int Absno> and init it on Backtester.RunSimulation
 		//public void AbsnoReset() { Quote.AbsnoStaticCounter = 0; }
 		public void SetParentBar(Bar parentBar) {
 			if (this.Symbol != parentBar.Symbol) {
 				string msg = "here is the problem for a streaming bar to carry another symbol!";
+				#if DEBUG
+				Debugger.Break();		//TEST_EMBEDDED
+				#endif
 			}
 			this.ParentStreamingBar = parentBar;
 		}

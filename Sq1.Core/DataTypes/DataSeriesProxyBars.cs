@@ -6,8 +6,9 @@ namespace Sq1.Core.DataTypes {
 	public class DataSeriesProxyBars : DataSeriesTimeBased {
 		readonly Bars barsBeingProxied;
 		readonly DataSeriesProxyableFromBars dataSeriesBeingExposed;
-		public DataSeriesProxyBars(Bars bars, DataSeriesProxyableFromBars dataSeriesBeingExposed) {
-			base.ScaleInterval = bars.ScaleInterval;
+
+		public DataSeriesProxyBars(Bars bars, DataSeriesProxyableFromBars dataSeriesBeingExposed) : base(bars.ScaleInterval, "WILL_INITIALIZE_LATER") {
+			//base.ScaleInterval = bars.ScaleInterval;
 			this.barsBeingProxied = bars;
 			this.dataSeriesBeingExposed = dataSeriesBeingExposed;
 			base.Description = this.dataSeriesBeingExposed + " for " + this.ToString();

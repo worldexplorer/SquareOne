@@ -13,12 +13,14 @@ namespace Sq1.Core.DataTypes {
 		}
 		public BarScaleInterval ScaleInterval;
 		public bool IsIntraday { get { return this.ScaleInterval.IsIntraday; } }
-		public DataSeriesTimeBased() {	// : base()
+
+		public DataSeriesTimeBased(BarScaleInterval scaleInterval) {	// : base()
 			this.doublesByDate = new SortedList<DateTime, double>();
 			this.firstValidValueIndex = 0;
 			this.StreamingValue = double.NaN;
+			this.ScaleInterval = scaleInterval;
 		}
-		public DataSeriesTimeBased(string description) : this() {
+		public DataSeriesTimeBased(BarScaleInterval scaleInterval, string description) : this(scaleInterval) {
 			this.Description = description;
 		}
 		public double this[DateTime dateTime] { get {
@@ -101,7 +103,7 @@ namespace Sq1.Core.DataTypes {
 		protected void CheckThrowDatePriorToLast(DateTime appending) {
 			if (this.DateTimes.Count == 0) return;
 			DateTime lastDateTime = this.LastStaticDate;
-			if (lastDateTime.ToBinary() < appending.ToBinary()) return;
+			if (lastDateTime.Ticks < appending.Ticks) return;
 
 			string msg = "#3 Can not append time[" + appending + "] should be > this.Date["
 				+ (this.DateTimes.Count - 1) + "]=[" + lastDateTime + "]";

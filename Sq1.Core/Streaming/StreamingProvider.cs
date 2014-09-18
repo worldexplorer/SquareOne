@@ -190,44 +190,49 @@ namespace Sq1.Core.Streaming {
 				DateTime dateTimeNextBarOpenConditional = marketInfo.GetNextMarketServerTimeStamp(
 					quote.ServerTime, this.DataSource.ScaleInterval, out clearingTimespanOut);
 				string reason = (clearingTimespanOut != null) ? "is CLEARING" : "CLOSED";
-				string msg = "[" + marketInfo.Name + "]Market " + reason + ", resumes["
+				string mainFormStatus = "[" + marketInfo.Name + "]Market " + reason + ", resumes["
 					+ dateTimeNextBarOpenConditional.ToString("HH:mm") + "]; ignoring quote[" + quote + "]";
-				this.UpdateConnectionStatus(503, msg);
+				this.UpdateConnectionStatus(503, mainFormStatus);
 
-				// HACK
+				string msg = "HACK!!! FILLING_LAST_BIDASK_FOR_DUPE_QUOTE_IS_UNJUSTIFIED: PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES Backtester.generateQuotesForBarAndPokeStreaming()";
+				#if DEBUG	// TEST_EMBEDDED
 				Debugger.Break();
+		    	#endif
+				Assembler.PopupException(msg);
 				this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
 				this.StreamingDataSnapshot.UpdateLastBidAskSnapFromQuote(quote);
 
 				return;
-			} else {
-				int a = 1;
 			}
 
 			Quote lastQuote = this.StreamingDataSnapshot.LastQuoteGetForSymbol(quote.Symbol);
 			if (lastQuote == null) {
-				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR symbol[" + quote.Symbol + "]";
+				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR symbol[" + quote.Symbol + "] NOTHING_TO_ADJUST_OR_TEST";
 				//Assembler.PopupException(msg);
 				//throw new Exception(msg);
 			} else {
-				//LESS PRECISE, HAS NO MILLISECONDS FROM QUIK if (quote.ServerTime > lastQuote.ServerTime) {
-				if (quote.ServerTime.Ticks > lastQuote.ServerTime.Ticks) {
-					//if (quote.IntraBarSerno < Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
-					//    quote.IntraBarSerno = lastQuote.IntraBarSerno + 1;
-					//    if (quote.IntraBarSerno > Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
-					//        string msg = "#3 bro, leave QUOTE unmodified!!!";
-					//        Debugger.Break();
-					//    }
-					//}
-				} else {
-					Assembler.PopupException("WEIRD: upcoming quote.LocalTimeCreatedMillis[" + quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff")
-						+ "] <= lastQuoteReceived.Symbol." + quote.Symbol + "["
-						+ lastQuote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]: DDE lagged somewhere?...");
-				}
 				if (quote.Absno != lastQuote.Absno + 1) {
-					//Debugger.Break();
+					string msg = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.Absno + "] != lastQuote.Absno[" + lastQuote.Absno + "] + 1";
+					#if DEBUG
+					//TESTED Debugger.Break();	// TEST_EMBEDDED
+			    	#endif
+					Assembler.PopupException(msg);
 				}
 				quote.Absno = lastQuote.Absno + 1;
+
+				//TODO WHAT_PRESICISION_DO_I_NEED_HERE?
+				//v1 HAS_NO_MILLISECONDS_FROM_QUIK if (quote.ServerTime > lastQuote.ServerTime) {
+				//v2 TOO_SENSITIVE_PRINTED_SAME_MILLISECONDS_BUT_STILL_DIFFERENT if (quote.ServerTime.Ticks > lastQuote.ServerTime.Ticks) {
+				string quoteMillis = quote.ServerTime.ToString("HH:mm:ss.fff");
+				string lastQuoteMillis = lastQuote.ServerTime.ToString("HH:mm:ss.fff");
+				if (quoteMillis == lastQuoteMillis) {
+					string msg = "DONT_FEED_ME_WITH_SAME_SERVER_TIME BACKTESTER_FORGOT_TO_INCREASE_SERVER_TIMESTAMP"
+						+ " upcoming quote.LocalTimeCreatedMillis[" + quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff")
+						+ "] <= lastQuoteReceived.Symbol." + quote.Symbol + "["
+						+ lastQuote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]: DDE lagged somewhere?...";
+					Debugger.Break();
+					Assembler.PopupException(msg);
+				}
 			}
 
 			this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);

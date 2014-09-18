@@ -141,7 +141,7 @@ namespace Sq1.Core.Backtesting {
 						this.Executor.EventGenerator.RaiseBacktesterSimulatedChunkStep3of4();
 					}
 					//MAKE_EXCEPTIONS_FORM_INSERT_DELAYED!!! Application.DoEvents();	// otherwize UI becomes irresponsible;
-					Application.DoEvents();
+					//COMMENTED_OUT_TO_SIMULATE_PROFILER_BEHAVIOUR MORE_EXCEPTIONS_DISPLAYED_IN_EXCEPTIONS_FORM_WOW Application.DoEvents();
 				}
 
 				// see Indicator.DrawValue() "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED"
@@ -252,41 +252,43 @@ namespace Sq1.Core.Backtesting {
 				string msg = "it's ok for Bars.LastBar from StaticProvider to have no PartialValues;"
 					+ " filled by Streaming, NA for Backtest, skipping LastBar";
 				//throw new Exception(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
-			if (bar2simulate.ParentBarsIndex == 12) {
-				//Debugger.Break();
-			}
+
 			SortedList<int, QuoteGenerated> quotesGenerated = this.QuotesGenerator.GenerateQuotesFromBarAvoidClearing(bar2simulate);
 			if (quotesGenerated == null) return;
 			for (int i = 0; i < quotesGenerated.Count; i++) {
 				QuoteGenerated quote = quotesGenerated[i];
+				
+				#if DEBUG //TEST_EMEDDED
 				if (quote.ParentBarSimulated.ParentBarsIndex != bar2simulate.ParentBarsIndex) {
-					#if DEBUG
 					Debugger.Break();
-					#endif
 				}
 				QuoteGenerated quotePrev;
 				if (i > 0) {
 					quotePrev = quotesGenerated[i-1];
 					if (quote.Absno != quotePrev.Absno + 1) {
-						#if DEBUG
 						//string msg = "IRRELEVANT since GenerateQuotesFromBar() has been upgraded to return SortedList<int, QuoteGenerated> instead of randomized List<QuoteGenerated>";
-						string msg = "STILL_RELEVANT FIXME";
+						string msg = "PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES STILL_RELEVANT FIXME";
 						Debugger.Break();
-						#endif
 					}
 				}
+				#endif
+				
 				this.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GeneratedQuoteFillBidAsk(quote);
 
-				// GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #1/2
-				if (bar2simulate.ContainsQuoteGenerated(quote) == false) {
+				#if DEBUG //TEST_EMEDDED GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #1/2
+				if (bar2simulate.ContainsBidAskForQuoteGenerated(quote) == false) {
 					Debugger.Break();
 					continue;
 				}
+				#endif
 
 				int pendingsToFillInitially = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				int quotesInjected = this.QuotesGenerator.InjectQuotesToFillPendingAlerts(quote, bar2simulate);
+				
+				#if DEBUG //TEST_EMEDDED
 				if (quotesInjected == 0) {
 					string msg = "SEEMS_ONLY_STOP_ALERTS_FAR_BEYOND_TARGET_ARE_ON_THE_WAY; pendingsToFillInitially[" + pendingsToFillInitially + "]"
 						+ "STOPS_ARE_TOO_FAR OR_WILL_BE_FILLED_NEXT_THING_UPSTACK";
@@ -303,18 +305,17 @@ namespace Sq1.Core.Backtesting {
 				if (pendingsStrategyJustGenerated < 0) {
 					string msg = "STOP_ALERTS_IGNORED_OTHERS_FILLED";
 				}
+				#endif
 
 				int pendingsLeftAfterInjected = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 
 				this.BacktestDataSource.BacktestStreamingProvider.GeneratedQuoteEnrichSymmetricallyAndPush(quote);
 				quote.WentThroughStreamingToScript = true;
 
+				//nothing poductive below, only breakpoint placeholders
+				#if DEBUG //TEST_EMEDDED
 				int pendingsLeftAfterTargetQuoteGenerated = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-
-				//stats, nothing poductive, only monitoring
-				if (pendingsToFillInitially == 0) {
-					continue;
-				}
+				if (pendingsToFillInitially == 0) continue;
 
 				int pendingsFilledByInjected = pendingsLeftAfterInjected - pendingsToFillInitially;
 				if (pendingsFilledByInjected > 0) {
@@ -324,6 +325,7 @@ namespace Sq1.Core.Backtesting {
 				if (targetQuoteIsntExpectedToFillAnything > 0) {
 					string msg = "SEEMS_LIKE_TARGET_QUOTE_HAD_OWN_FILL POSSIBLE_BUT_UNLIKELY";
 				}
+				#endif
 			}
 		}
 	}

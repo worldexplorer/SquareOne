@@ -7,28 +7,28 @@ using Newtonsoft.Json;
 namespace Sq1.Core.DataTypes {
 	public partial class Bar {	//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK : TimeSeriesTick
 		//I_WONT_POINT_BAR.SYMBOL_TO_PARENTBARS.SYMBOL_FOR_BAR_DETACHED_SUPPORT
-		public string Symbol { get; internal set; }		// protected=>internal so that BarsUnscaled can rename each bar
+		[JsonProperty]	public string Symbol { get; internal set; }		// protected=>internal so that BarsUnscaled can rename each bar
 		//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK [Transient]
-		public BarScaleInterval ScaleInterval { get; protected set; }
+		[JsonProperty]	public BarScaleInterval ScaleInterval { get; protected set; }
 		//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK [Transient]
-		public DateTime DateTimeOpen { get; protected set; }
+		[JsonProperty]	public DateTime DateTimeOpen { get; protected set; }
 		//[JsonIgnore]
 		//public long Time { get { return this.DateTimeOpen.ToBinary(); } }
 		//PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK [Transient]
-		public DateTime DateTimeNextBarOpenUnconditional { get; protected set; }
+		[JsonProperty]	public DateTime DateTimeNextBarOpenUnconditional { get; protected set; }
 		//[PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK Transient]
-		public DateTime DateTimePreviousBarOpenUnconditional { get; protected set; }
+		[JsonProperty]	public DateTime DateTimePreviousBarOpenUnconditional { get; protected set; }
 		
-		public double Open;
-		public double High;
-		public double Low;
-		public double Close;
-		public double Volume;
+		[JsonProperty]	public double Open;
+		[JsonProperty]	public double High;
+		[JsonProperty]	public double Low;
+		[JsonProperty]	public double Close;
+		[JsonProperty]	public double Volume;
 
-		[JsonIgnore] public Bars ParentBars { get; protected set; }
-		[JsonIgnore] public int ParentBarsIndex { get; protected set; }
-		[JsonIgnore] public bool HasParentBars { get { return this.ParentBars != null; } }
-		public string ParentBarsIdent { get {
+		[JsonIgnore]	public Bars ParentBars { get; protected set; }
+		[JsonIgnore]	public int ParentBarsIndex { get; protected set; }
+		[JsonIgnore]	public bool HasParentBars { get { return this.ParentBars != null; } }
+		[JsonProperty]	public string ParentBarsIdent { get {
 				if (this.HasParentBars == false) return "NO_PARENT_BARS";
 				string ret = "StaticBar";
 				//if (this.ParentBarsIndex <  this.ParentBars.Count - 1) ret = this.ParentBarsIndex.ToString();
@@ -42,7 +42,7 @@ namespace Sq1.Core.DataTypes {
 				return ret;
 			} }
 		// Perst deserializer invokes default ctor()
-					 public int DaySerial;
+		[JsonProperty]	public int DaySerial;
 		public Bar() {
 			// ChartRenderer would update its max/min if NaN
 			this.ParentBarsIndex = -1;
@@ -145,42 +145,54 @@ namespace Sq1.Core.DataTypes {
 			if (string.IsNullOrEmpty(msg)) return;
 			throw new Exception(msg);
 		}
-		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, out string msg) {
+		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, ref string msg) {
 			if (this.Symbol != bar.Symbol) {
+				#if VERBOSE_STRINGS_SLOW
 				msg = thisIdent + ".Symbol[" + this.Symbol + "] != " + barIdent + ".Symbol[" + bar.Symbol + "]";
+				#endif
 				return false;
 			}
 
 			if (this.ScaleInterval != bar.ScaleInterval) {
+				#if VERBOSE_STRINGS_SLOW
 				msg = thisIdent + ".ScaleInterval[" + this.ScaleInterval + "] != "
 					+ barIdent + ".ScaleInterval[" + bar.ScaleInterval + "]";
+				#endif
 				return false;
 			}
 
 			if (this.DateTimeOpen != bar.DateTimeOpen) {
+				#if VERBOSE_STRINGS_SLOW
 				msg = thisIdent + ".DateTimeOpen[" + this.DateTimeOpen + "] != " 
 					+ barIdent + ".DateTimeOpen[" + bar.DateTimeOpen + "]";
+				#endif
 				return false;
 			}
 
 			bool sameOHLCV = (this.Open == bar.Open && this.High == bar.High
 				&& this.Low == bar.Low && this.Close == bar.Close && this.Volume == bar.Volume);
 			if (sameOHLCV == false) {
+				#if VERBOSE_STRINGS_SLOW
 				msg = "OHLCV are different while DateTimeOpen is the same: "
 					+ thisIdent + "[" + this + "] != " + barIdent + "[" + bar + "]";
+				#endif
 				return false;
 			}
 
 			bool sameParent = (this.ParentBars == bar.ParentBars && this.ParentBarsIndex == bar.ParentBarsIndex);
 			if (sameParent == false) {
+				#if VERBOSE_STRINGS_SLOW
 				msg = "CAN_SKIP_PARENT_DIFFERENT:"
 					+ " " + thisIdent + ".ParentBars[" + this.ParentBarsIdent + "]"
 					+ " != " + bar + ".ParentBarsIndex[" + bar.ParentBarsIdent + "]"
 					+ " while lastStaticBar.DOHLCV=barAdding.DOHLCV";
+				#endif
 				return true;
 			}
 
+			#if VERBOSE_STRINGS_SLOW
 			msg = "lastStaticBar.DOHLCV=barAdding.DOHLCV";
+			#endif
 			return true;
 		}
 		#region THIS_ISNT_IN_BARS_BECAUSE_UNATTACHED_STREAMING_BAR_SHOULD_HAVE_ITS_OWN_BRAIN_BUT_OTHERWIZE_BARS_SHOULD_BE_BAR_FACTORY
@@ -313,7 +325,7 @@ namespace Sq1.Core.DataTypes {
 			if (entryFillPrice > this.High) return false;
 			return true;
 		}
-		public bool ContainsQuoteGenerated(Quote quote) {
+		public bool ContainsBidAskForQuoteGenerated(Quote quote) {
 			if (quote.Ask < this.Low) return false;
 			if (quote.Bid > this.High) return false;
 			if (quote.Size > this.Volume) return false;

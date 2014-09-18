@@ -121,16 +121,17 @@ namespace Sq1.Core.DataTypes {
 		public void CheckThrowDOHLCVasLast(Bar barAdding) {
 			Bar lastBar = this.BarLast;
 			if (lastBar == null) return;
-			string msg;
-			bool sameDOHLCV = lastBar.HasSameDOHLCVas(barAdding, "barAdding", "LastBar", out msg);
+			string msg = "NO_COMPLAINS";
+			bool sameDOHLCV = lastBar.HasSameDOHLCVas(barAdding, "barAdding", "LastBar", ref msg);
 			if (sameDOHLCV == false) return;
+			if (string.IsNullOrEmpty(msg)) msg = "PROJECT_SETTINGS_COMPILE_[VERBOSE_STRINGS_SLOW]_OPTION_ENABLE_TO_SEE_DETAILS";
 			string wonder = "WHO_ADDED? LastBar.DOHLCV[" + lastBar + "] = barAdding.DOHLCV[" + barAdding + "]; " + msg;
 			throw new Exception(msg);
 		}
 		public void CheckThrowDatePriorToLast(DateTime appending) {
 			if (this.Count == 0) return;
 			DateTime lastDateTime = this.BarLast.DateTimeOpen;
-			if (lastDateTime.ToBinary() < appending.ToBinary()) return;
+			if (lastDateTime.Ticks < appending.Ticks) return;
 
 			string msg = "#1 Can not append time[" + appending + "] should be > LastBar["
 				+ (this.Count - 1) + "].DateTimeOpen=[" + lastDateTime + "]: " + this;
