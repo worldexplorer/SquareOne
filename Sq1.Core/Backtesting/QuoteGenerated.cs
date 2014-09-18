@@ -8,9 +8,9 @@ namespace Sq1.Core.Backtesting {
 		public string ParentBarIdent { get { return (this.HasParentBarSimulated) ? this.ParentBarSimulated.ParentBarsIdent : "NO_PARENT_BAR_SIMULTED"; } }
 		public bool WentThroughStreamingToScript;
 
-		public QuoteGenerated Clone() {
-			return (QuoteGenerated)this.MemberwiseClone();
-		}
+		//public QuoteGenerated Clone() {
+		//    return (QuoteGenerated)this.MemberwiseClone();
+		//}
 		public QuoteGenerated DeriveIdenticalButFresh() {
 			QuoteGenerated identicalButFresh = new QuoteGenerated();
 			identicalButFresh.Symbol = this.Symbol;

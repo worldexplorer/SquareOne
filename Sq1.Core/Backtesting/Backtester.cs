@@ -265,20 +265,22 @@ namespace Sq1.Core.Backtesting {
 				if (quote.ParentBarSimulated.ParentBarsIndex != bar2simulate.ParentBarsIndex) {
 					Debugger.Break();
 				}
-				QuoteGenerated quotePrev;
-				if (i > 0) {
-					quotePrev = quotesGenerated[i-1];
-					if (quote.Absno != quotePrev.Absno + 1) {
-						//string msg = "IRRELEVANT since GenerateQuotesFromBar() has been upgraded to return SortedList<int, QuoteGenerated> instead of randomized List<QuoteGenerated>";
-						string msg = "PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES STILL_RELEVANT FIXME";
-						Debugger.Break();
-					}
-				}
+
+				// PREV_QUOTE_ABSNO_SHOULD_NOT_BE_LINEAR_CAN_CONTAIN_HOLES_DUE_TO_QUOTES_INJECTED_TO_FILL_ALERTS
+				//QuoteGenerated quotePrev;
+				//if (i > 0) {
+				//    quotePrev = quotesGenerated[i-1];
+				//    if (quote.Absno != quotePrev.Absno + 1) {
+				//        //string msg = "IRRELEVANT since GenerateQuotesFromBar() has been upgraded to return SortedList<int, QuoteGenerated> instead of randomized List<QuoteGenerated>";
+				//        string msg = "PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES STILL_RELEVANT FIXME";
+				//        //Debugger.Break();
+				//    }
+				//}
 				#endif
 				
 				this.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GeneratedQuoteFillBidAsk(quote);
 
-				#if DEBUG //TEST_EMEDDED GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #1/2
+				#if DEBUG //TEST_EMBEDDED GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #1/2
 				if (bar2simulate.ContainsBidAskForQuoteGenerated(quote) == false) {
 					Debugger.Break();
 					continue;
@@ -286,21 +288,31 @@ namespace Sq1.Core.Backtesting {
 				#endif
 
 				int pendingsToFillInitially = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-				int quotesInjected = this.QuotesGenerator.InjectQuotesToFillPendingAlerts(quote, bar2simulate);
+				List<QuoteGenerated> quotesInjected = this.QuotesGenerator.InjectQuotesToFillPendingAlerts(quote, bar2simulate);
+				if (quotesInjected.Count > 0 && quote.Absno != this.QuotesGenerator.QuoteAbsno) {
+					//DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
+					#if DEBUG //TEST_EMBEDDED
+					if (quotesInjected.Count != this.QuotesGenerator.QuoteAbsno - quote.Absno) {
+						string msg = "THEN_WHO_ELSE_INCREMENTED_QUOTE_ABSNO???";
+						Debugger.Break();
+					}
+					#endif
+					quote.Absno = this.QuotesGenerator.QuoteAbsno;
+				}
 				
 				#if DEBUG //TEST_EMEDDED
-				if (quotesInjected == 0) {
+				if (quotesInjected.Count == 0) {
 					string msg = "SEEMS_ONLY_STOP_ALERTS_FAR_BEYOND_TARGET_ARE_ON_THE_WAY; pendingsToFillInitially[" + pendingsToFillInitially + "]"
 						+ "STOPS_ARE_TOO_FAR OR_WILL_BE_FILLED_NEXT_THING_UPSTACK";
 				}
-				if (quotesInjected == pendingsToFillInitially) {
+				if (quotesInjected.Count == pendingsToFillInitially) {
 					int pendingsLeft = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 					string msg = "GENERATED_EXACTLY_AS_MANY_AS_PENDINGS; PENDINGS_UNFILLED_LEFT_" + pendingsLeft;
 				}
-				int pendingsStrategyJustGenerated = quotesInjected - pendingsToFillInitially;
+				int pendingsStrategyJustGenerated = quotesInjected.Count - pendingsToFillInitially;
 				if (pendingsStrategyJustGenerated > 0) {
 					string msg = "SEEMS_STRATEGY_GENERATED_NEW_ALERTS_ON_NEW_QUOTES"
-						+ "; quotesInjected[" + quotesInjected + "] > pendingsToFillInitially[" + pendingsToFillInitially + "]";
+						+ "; quotesInjected.Count[" + quotesInjected.Count + "] > pendingsToFillInitially[" + pendingsToFillInitially + "]";
 				}
 				if (pendingsStrategyJustGenerated < 0) {
 					string msg = "STOP_ALERTS_IGNORED_OTHERS_FILLED";

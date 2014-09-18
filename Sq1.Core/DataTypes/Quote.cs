@@ -49,21 +49,21 @@ namespace Sq1.Core.DataTypes {
 		public Quote Clone() {
 			return (Quote)this.MemberwiseClone();
 		}
-		public Quote DeriveIdenticalButFresh() {
-			Quote identicalButFresh = new Quote();
-			identicalButFresh.Symbol = this.Symbol;
-			identicalButFresh.SymbolClass = this.SymbolClass;
-			identicalButFresh.Source = this.Source;
-			identicalButFresh.ServerTime = this.ServerTime.AddMilliseconds(911);
-			identicalButFresh.LocalTimeCreatedMillis = this.LocalTimeCreatedMillis.AddMilliseconds(911);
-			identicalButFresh.PriceLastDeal = this.PriceLastDeal;
-			identicalButFresh.Bid = this.Bid;
-			identicalButFresh.Ask = this.Ask;
-			identicalButFresh.Size = this.Size;
-			identicalButFresh.IntraBarSerno = this.IntraBarSerno + Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill;
-			identicalButFresh.ParentStreamingBar = this.ParentStreamingBar;
-			return identicalButFresh;
-		}
+		//public Quote DeriveIdenticalButFresh() {
+		//    Quote identicalButFresh = new Quote();
+		//    identicalButFresh.Symbol = this.Symbol;
+		//    identicalButFresh.SymbolClass = this.SymbolClass;
+		//    identicalButFresh.Source = this.Source;
+		//    identicalButFresh.ServerTime = this.ServerTime.AddMilliseconds(911);
+		//    identicalButFresh.LocalTimeCreatedMillis = this.LocalTimeCreatedMillis.AddMilliseconds(911);
+		//    identicalButFresh.PriceLastDeal = this.PriceLastDeal;
+		//    identicalButFresh.Bid = this.Bid;
+		//    identicalButFresh.Ask = this.Ask;
+		//    identicalButFresh.Size = this.Size;
+		//    identicalButFresh.IntraBarSerno = this.IntraBarSerno + Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill;
+		//    identicalButFresh.ParentStreamingBar = this.ParentStreamingBar;
+		//    return identicalButFresh;
+		//}
 		public override string ToString() {
 			string ret = "#" + this.IntraBarSerno + "/" + this.Absno
 				+ " " + this.Symbol

@@ -214,7 +214,7 @@ namespace Sq1.Core.Streaming {
 				if (quote.Absno != lastQuote.Absno + 1) {
 					string msg = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.Absno + "] != lastQuote.Absno[" + lastQuote.Absno + "] + 1";
 					#if DEBUG
-					//TESTED Debugger.Break();	// TEST_EMBEDDED
+					Debugger.Break();	// TEST_EMBEDDED
 			    	#endif
 					Assembler.PopupException(msg);
 				}

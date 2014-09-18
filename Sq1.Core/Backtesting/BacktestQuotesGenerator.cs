@@ -40,12 +40,11 @@ namespace Sq1.Core.Backtesting {
 			return ret;
 		}
 
-		public virtual int InjectQuotesToFillPendingAlerts(QuoteGenerated quoteToReach, Bar bar2simulate) {
-			int quotesInjected = 0;
+		public virtual List<QuoteGenerated> InjectQuotesToFillPendingAlerts(QuoteGenerated quoteToReach, Bar bar2simulate, int iterationsLimit = 5) {
+			List<QuoteGenerated> ret = new List<QuoteGenerated>();
 			int pendingsToFillInitially = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-			if (pendingsToFillInitially == 0) return quotesInjected;
+			if (pendingsToFillInitially == 0) return ret;
 
-			int iterationsLimit = 5;
 			// hard to debug but I hate while(){} loops
 			//for (QuoteGenerated closestOnOurWay  = this.generateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach);
 			//           closestOnOurWay != null;
@@ -58,17 +57,20 @@ namespace Sq1.Core.Backtesting {
 					continue;
 				}
 
-				quotesInjected++;
-				closestOnOurWay.IntraBarSerno += quotesInjected;
+				closestOnOurWay.IntraBarSerno += ret.Count;
+				closestOnOurWay.Absno = ++this.QuoteAbsno;		//DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
+
 				this.backtester.BacktestDataSource.BacktestStreamingProvider.PushQuoteReceived(closestOnOurWay);
+				ret.Add(closestOnOurWay);
+
 				int pendingAfterInjected = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingsToFillInitially != pendingAfterInjected) {
 					string msg = "it looks like the quoteInjected triggered something";
 					//Debugger.Break();
 				}
-				if (quotesInjected > iterationsLimit) {
+				if (ret.Count > iterationsLimit) {
 					string msg = "InjectQuotesToFillPendingAlerts(): quotesInjected["
-						+ quotesInjected + "] > iterationsLimit[" + iterationsLimit + "]"
+						+ ret + "] > iterationsLimit[" + iterationsLimit + "]"
 						+ " pendingNow[" + this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count + "]"
 						+ " quoteToReach[" + quoteToReach + "]";
 					//throw new Exception(msg);
@@ -78,7 +80,7 @@ namespace Sq1.Core.Backtesting {
 				if (this.backtester.RequestingBacktestAbort.WaitOne(0)) break;
 				closestOnOurWay = this.GenerateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach);
 			}
-			return quotesInjected;
+			return ret;
 		}
 		public QuoteGenerated GenerateClosestQuoteForEachPendingAlertOnOurWayTo(QuoteGenerated quoteToReach) {
 			if (this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count == 0) {
