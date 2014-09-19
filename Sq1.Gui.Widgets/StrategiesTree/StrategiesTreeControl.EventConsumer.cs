@@ -28,10 +28,19 @@ namespace Sq1.Widgets.StrategiesTree {
 		void treeListView_CellClick(object sender, CellClickEventArgs e) {
 			if (e.RowIndex == -1) return;
 			this.syncFolderStrategySelectedFromRowIndexClicked(e.RowIndex);
-			if (this.StrategySelected != null) {
-				this.RaiseOnStrategySelected();
-			} else {
+			
+			// it's more expensive to provide notification sync from Repository to here, than just get the list 
+			bool folderWasSelectedOrExpandedOrCollapsed = true;
+			string mayBeFolder = e.Model as string;
+			if (mayBeFolder != null) {
+				List<string> folderPurelyJson = Assembler.InstanceInitialized.RepositoryDllJsonStrategy.FoldersPurelyJson;
+				folderWasSelectedOrExpandedOrCollapsed = folderPurelyJson.Contains(mayBeFolder);
+			}
+			if (folderWasSelectedOrExpandedOrCollapsed) {
+				if (mayBeFolder != this.FolderSelected) return;	//	folder was Just ExpandedOrCollapsed => don't invoke FolderSelected  
 				this.RaiseOnFolderSelected();
+			} else {
+				this.RaiseOnStrategySelected();
 			}
 //			???this.Tree.SelectObject(folderOrStrategy);
 		}
