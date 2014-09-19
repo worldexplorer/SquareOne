@@ -239,7 +239,7 @@ namespace Sq1.Gui.Forms {
 					+ "; Selectors should've been Disable()d on chat[" + this.ChartForm + "].Activated() or StreamingOn()"
 					+ " in MainForm.PropagateSelectorsForCurrentChart()";
 				#if DEBUG
-				Debugger.Break();
+				//Debugger.Break();
 				#endif
 				Assembler.PopupException(msg + msig);
 				context.ChartStreaming = false;

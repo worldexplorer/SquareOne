@@ -292,8 +292,10 @@ namespace Sq1.Core.DataTypes {
 			this.Volume += bar.Volume;
 		}
 		public void MergeExpandHLCVforStreamingBarUnattached(Quote quoteClone) {
-			if (quoteClone.PriceLastDeal > this.High) this.High = quoteClone.PriceLastDeal;
-			if (quoteClone.PriceLastDeal < this.Low) this.Low = quoteClone.PriceLastDeal;
+			//if (quoteClone.PriceLastDeal > this.High) this.High = quoteClone.PriceLastDeal;
+			//if (quoteClone.PriceLastDeal < this.Low) this.Low = quoteClone.PriceLastDeal;
+			if (quoteClone.Ask > this.High) this.High = quoteClone.Ask;
+			if (quoteClone.Bid < this.Low) this.Low = quoteClone.Bid;
 			this.Close = quoteClone.PriceLastDeal;
 			this.Volume += quoteClone.Size;
 		}
@@ -326,8 +328,15 @@ namespace Sq1.Core.DataTypes {
 			return true;
 		}
 		public bool ContainsBidAskForQuoteGenerated(Quote quote) {
-			if (quote.Ask < this.Low) return false;
-			if (quote.Bid > this.High) return false;
+			if (quote.Ask <= quote.Bid) {
+				Debugger.Break();
+			}
+			if (quote.Bid < this.Low) {
+				return false;
+			}
+			if (quote.Ask > this.High) {
+				return false;
+			}
 			if (quote.Size > this.Volume) return false;
 			return true;
 		}

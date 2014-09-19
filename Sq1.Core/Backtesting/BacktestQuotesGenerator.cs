@@ -187,6 +187,7 @@ namespace Sq1.Core.Backtesting {
 			QuoteGenerated ret = quotePrev.DeriveIdenticalButFresh();
 			ret.Bid = quoteClosest.Bid;
 			ret.Ask = quoteClosest.Ask;
+			ret.PriceLastDeal = (ret.Ask + ret.Bid) / 2;
 			ret.Size = quoteClosest.Size;
 			ret.Source = quoteClosest.Source;
 			return ret;

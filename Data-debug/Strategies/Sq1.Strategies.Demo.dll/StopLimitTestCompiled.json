@@ -20,12 +20,26 @@
       },
       "IsCurrent": true,
       "ChartAutoSubmitting": false,
-      "ReporterShortNamesUserInvokedJSONcheck": [],
+      "ReporterShortNamesUserInvokedJSONcheck": [
+        "Positions",
+        "Performance"
+      ],
       "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
+        "Positions": {
+          "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
+          "ShowEntriesExits": true,
+          "ShowPercentage": true,
+          "ShowBarsHeld": true,
+          "ShowMaeMfe": true,
+          "ShowSignals": true,
+          "ShowCommission": true,
+          "Colorify": true
+        },
+        "Performance": null
       },
       "ApplyCommission": false,
       "EnableSlippage": false,
@@ -37,8 +51,8 @@
       "SlippageTicks": 1,
       "PriceLevelSizeForBonds": 0,
       "Name": "Default",
-      "Symbol": "RIM3",
-      "DataSourceName": "MOCK",
+      "Symbol": "SPFB.RTS_2011may-2012may",
+      "DataSourceName": "STATIC",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
@@ -52,7 +66,7 @@
         "Range": 1,
         "StartDate": "0001-01-01T00:00:00",
         "EndDate": "9999-12-31T23:59:59.9999999",
-        "RecentBars": 500,
+        "RecentBars": 5000,
         "RecentTimeunits": 0
       },
       "ChartStreaming": false,

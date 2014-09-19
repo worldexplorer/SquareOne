@@ -196,7 +196,7 @@ namespace Sq1.Core.Streaming {
 
 				string msg = "HACK!!! FILLING_LAST_BIDASK_FOR_DUPE_QUOTE_IS_UNJUSTIFIED: PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES Backtester.generateQuotesForBarAndPokeStreaming()";
 				#if DEBUG	// TEST_EMBEDDED
-				Debugger.Break();
+				//Debugger.Break();
 		    	#endif
 				Assembler.PopupException(msg);
 				this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
@@ -214,9 +214,9 @@ namespace Sq1.Core.Streaming {
 				if (quote.Absno != lastQuote.Absno + 1) {
 					string msg = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.Absno + "] != lastQuote.Absno[" + lastQuote.Absno + "] + 1";
 					#if DEBUG
-					Debugger.Break();	// TEST_EMBEDDED
+					//Debugger.Break();	// TEST_EMBEDDED
 			    	#endif
-					Assembler.PopupException(msg);
+					//Assembler.PopupException(msg);
 				}
 				quote.Absno = lastQuote.Absno + 1;
 

@@ -140,8 +140,13 @@ namespace Sq1.Core.Backtesting {
 					if (this.BarsSimulatedSoFar % repaintableChunk == 0) {
 						this.Executor.EventGenerator.RaiseBacktesterSimulatedChunkStep3of4();
 					}
+					
 					//MAKE_EXCEPTIONS_FORM_INSERT_DELAYED!!! Application.DoEvents();	// otherwize UI becomes irresponsible;
 					//COMMENTED_OUT_TO_SIMULATE_PROFILER_BEHAVIOUR MORE_EXCEPTIONS_DISPLAYED_IN_EXCEPTIONS_FORM_WOW Application.DoEvents();
+					#if DEBUG
+					// UNCOMMENTED_FOR_SHARP_DEVELOP_TO_NOT_FREAK_OUT_FULLY_EXPAND_LOCAL_VARIABLES_AT_BREAKPOINTS_RANDOMLY_CONTINUE_ETC IRRELATED_TO_EXCEPTIONS_THERE_WAS_NONE
+					// COMMENTED_OUT_#DEVELOP_FREAKS_OUT_WHEN_YOU_MOVE_INNER_WINDOWS_SPLITTER Application.DoEvents();
+					#endif
 				}
 
 				// see Indicator.DrawValue() "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED"
@@ -278,7 +283,7 @@ namespace Sq1.Core.Backtesting {
 				//}
 				#endif
 				
-				this.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GeneratedQuoteFillBidAsk(quote);
+				this.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GeneratedQuoteFillBidAsk(quote, bar2simulate);
 
 				#if DEBUG //TEST_EMBEDDED GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #1/2
 				if (bar2simulate.ContainsBidAskForQuoteGenerated(quote) == false) {
@@ -293,8 +298,8 @@ namespace Sq1.Core.Backtesting {
 					//DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
 					#if DEBUG //TEST_EMBEDDED
 					if (quotesInjected.Count != this.QuotesGenerator.QuoteAbsno - quote.Absno) {
-						string msg = "THEN_WHO_ELSE_INCREMENTED_QUOTE_ABSNO???";
-						Debugger.Break();
+						string msg = "InjectQuotesToFillPendingAlerts()_INCREMENTED_QUOTE_ABSNO";
+						//Debugger.Break();
 					}
 					#endif
 					quote.Absno = this.QuotesGenerator.QuoteAbsno;
@@ -321,7 +326,7 @@ namespace Sq1.Core.Backtesting {
 
 				int pendingsLeftAfterInjected = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 
-				this.BacktestDataSource.BacktestStreamingProvider.GeneratedQuoteEnrichSymmetricallyAndPush(quote);
+				this.BacktestDataSource.BacktestStreamingProvider.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
 				quote.WentThroughStreamingToScript = true;
 
 				//nothing poductive below, only breakpoint placeholders
