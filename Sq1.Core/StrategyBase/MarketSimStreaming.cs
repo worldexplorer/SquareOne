@@ -182,6 +182,12 @@ namespace Sq1.Core.StrategyBase {
 			//    return false;
 			//}
 			//v1
+			
+			#if DEBUG
+			if (quote.PriceBetweenBidAsk(entryPriceOut) == false) {
+				Debugger.Break();
+			}
+			#endif
 			return true;
 		}
 		public bool CheckExitAlertWillBeFilledByQuote(Alert exitAlert, Quote quote
@@ -357,6 +363,12 @@ namespace Sq1.Core.StrategyBase {
 			//    return false;
 			//}
 			// /v1
+			
+			#if DEBUG
+			if (quote.PriceBetweenBidAsk(exitPriceOut) == false) {
+				Debugger.Break();
+			}
+			#endif
 			return true;
 		}
 
@@ -485,6 +497,9 @@ namespace Sq1.Core.StrategyBase {
 			int filledEntries = 0;
 			double priceFill = -1;
 			double slippageFill = -1;
+			if (quote.Absno == 523 && quote.IntraBarSerno == 100001) {
+				//Debugger.Break();
+			}
 			bool filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
 			if (filled) {
 				filledEntries++;

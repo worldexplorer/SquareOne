@@ -78,5 +78,9 @@ namespace Sq1.Core.DataTypes {
 		public bool SameBidAsk(Quote other) {
 			return (this.Bid == other.Bid && this.Ask == other.Ask);
 		}
+		public bool PriceBetweenBidAsk(double price) {
+			return (price >= this.Bid && price <= this.Ask);
+		}
+		public double Spread { get { return this.Ask - this.Bid; } } 
 	}
 }

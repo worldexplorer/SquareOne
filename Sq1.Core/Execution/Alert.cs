@@ -15,6 +15,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public Bar PlacedBar { get; protected set; }
 		[JsonProperty]	public int PlacedBarIndex { get; protected set; }
 		[JsonProperty]	public Bar FilledBar { get; protected set; }
+		[JsonProperty]	public Bar FilledBarSnapshotFrozenAtFill { get; protected set; }
 		[JsonProperty]	public int FilledBarIndex { get; protected set; }
 		[JsonProperty]	public DateTime PlacedDateTime { get {
 				if (this.PlacedBar == null) return DateTime.MinValue;
@@ -68,6 +69,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public BarScaleInterval BarsScaleInterval { get; protected set; }
 		[JsonProperty]	public OrderSpreadSide OrderSpreadSide;
 		[JsonProperty]	public Quote QuoteCreatedThisAlert;
+		[JsonProperty]	public Quote QuoteFilledThisAlert;
 		[JsonProperty]	public Quote QuoteLastWhenThisAlertFilled;
 		[JsonIgnore]	public Position PositionAffected;
 		[JsonIgnore]	public DateTime PositionEntryDate { get {
@@ -304,6 +306,7 @@ namespace Sq1.Core.Execution {
 						+ ", duplicateFill @[" + barFill + "]";
 				throw new Exception(msg);
 			}
+			this.FilledBarSnapshotFrozenAtFill = barFill.Clone();		//BarsStreaming#130 becomes BarStatic#130
 			this.FilledBar = barFill;
 			this.FilledBarIndex = barFillRelno;
 			if (this.PositionAffected == null) {
@@ -330,10 +333,52 @@ namespace Sq1.Core.Execution {
 					: this.PositionAffected.IsExitFilled;
 			} }
 		[JsonProperty]	public bool IsKilled;
-		[JsonProperty]	public bool IsOutsideBarFilled_DEBUG_CHECK { get {
-				if (this.FilledBar == null) return false;
-				bool insideBar = (this.PriceFilledThroughPosition >= this.FilledBar.Low && this.PriceFilledThroughPosition <= this.FilledBar.High);
-				return (insideBar == false);
+		[JsonProperty]	public bool IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK { get {
+				if (this.FilledBarSnapshotFrozenAtFill == null) return false;
+
+				double spreadSize = this.QuoteFilledThisAlert.Spread;
+				double zeroAtFirstSimulatedBarTick = this.FilledBarSnapshotFrozenAtFill.High - this.FilledBarSnapshotFrozenAtFill.Low;
+				if (zeroAtFirstSimulatedBarTick < spreadSize) {
+					double fillPriceAwayFromLow = Math.Abs(this.FilledBarSnapshotFrozenAtFill.Low - this.PriceFilledThroughPosition);
+					double fillPriceAwayFromHigh = Math.Abs(this.FilledBarSnapshotFrozenAtFill.High - this.PriceFilledThroughPosition);
+					bool withinQuoteSpread = fillPriceAwayFromLow < spreadSize && fillPriceAwayFromHigh < spreadSize;
+					if (withinQuoteSpread == false) {
+						Debugger.Break();
+					}
+					bool outsideQuote = !withinQuoteSpread;
+					return outsideQuote;
+				}
+
+				bool insideBar = (this.PriceFilledThroughPosition >= this.FilledBarSnapshotFrozenAtFill.Low && this.PriceFilledThroughPosition <= this.FilledBarSnapshotFrozenAtFill.High);
+				bool outsideBar = !insideBar; 
+				#if DEBUG
+				if (outsideBar) {
+					Debugger.Break();
+				}
+				#endif
+				return outsideBar;
+			} }
+		//[JsonProperty]	public bool IsFilledOutsideBar_DEBUG_CHECK { get {
+		//        if (this.FilledBar == null) return false;
+		//        bool insideBar = (this.PriceFilledThroughPosition >= this.FilledBar.Low && this.PriceFilledThroughPosition <= this.FilledBar.High);
+		//        bool outsideBar = !insideBar; 
+		//        #if DEBUG
+		//        if (outsideBar) {
+		//            Debugger.Break();
+		//        }
+		//        #endif
+		//        return outsideBar;
+		//    } }
+		[JsonProperty]	public bool IsFilledOutsideQuote_DEBUG_CHECK { get {
+				if (this.QuoteFilledThisAlert == null) return false;
+				bool insideQuote = (this.PriceFilledThroughPosition >= this.QuoteFilledThisAlert.Bid && this.PriceFilledThroughPosition <= this.QuoteFilledThisAlert.Ask);
+				bool outsideQuote = !insideQuote; 
+				#if DEBUG
+				if (outsideQuote) {
+					Debugger.Break();
+				}
+				#endif
+				return outsideQuote;
 			} }
 	}
 }
