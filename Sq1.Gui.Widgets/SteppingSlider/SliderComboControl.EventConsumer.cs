@@ -85,8 +85,9 @@ namespace Sq1.Widgets.SteppingSlider {
 							e.HighlightTextWithRed = true;
 							return;
 						}
+						// do you want to save the strategy??? Backtester is already backtesting now, Sliders all repainted by Sliders.Initialize(Strategy) 
 						this.ValueCurrent = parsed;
-						this.ValueCurrentChanged(this, EventArgs.Empty);
+						//YOU_STICK_TO_SETTING_VALUE_CURRENT_IT_WILL_RAISE_THE_SAME_EVENT this.ValueCurrentChanged(this, EventArgs.Empty);
 						this.ctxSlider_Opening(this, null);		// not sure how textbox gets multiline input inside!!! may be this will help as for ScriptContexts
 						break;
 					case "mniltbValueStep":			this.ValueStep		= parsed; break;

@@ -26,31 +26,24 @@ namespace Sq1.Core.Backtesting {
 		public ManualResetEvent BacktestCompletedQuotesCanGo = new ManualResetEvent(true);
 
 		public int BarsSimulatedSoFar { get; private set; }
-		public int QuotesTotalToGenerate {
-			get {
+		public int QuotesTotalToGenerate { get {
 				if (this.BarsOriginal == null) return -1;
 				return this.BarsOriginal.Count * this.QuotesGenerator.QuotePerBarGenerates;
-			}
-		}
+			} }
 		public int QuotesGeneratedSoFar { get { return BarsSimulatedSoFar * this.QuotesGenerator.QuotePerBarGenerates; } }
 		public BacktestMode BacktestMode { get; private set; }
 		public BacktestQuotesGenerator QuotesGenerator { get; private set; }
 
-		public string ProgressStats {
-			get {
+		public string ProgressStats { get {
 				if (QuotesGenerator == null) return "QuotesGenerator=null";
 				return this.QuotesGeneratedSoFar + " / " + this.QuotesTotalToGenerate;
-			}
-		}
+			} }
 		public bool IsBacktestingNow { get { return BacktestIsRunning.WaitOne(0); } }
-		public bool WasBacktestAborted {
-			get {
+		public bool WasBacktestAborted { get {
 				if (QuotesGenerator == null) return false;
 				bool signalled = this.BacktestAborted.WaitOne(0);
 				return signalled;
-			}
-		}
-
+			} }
 		public Backtester(ScriptExecutor executor) {
 			this.backtestQuoteBarConsumer = new BacktestQuoteBarConsumer(this);
 			this.Executor = executor;
@@ -58,7 +51,6 @@ namespace Sq1.Core.Backtesting {
 			if (this.Executor.Strategy.Script == null) return;
 			this.Initialize(this.Executor.Strategy.Script.BacktestMode);
 		}
-
 		public void Initialize(BacktestMode mode) {
 			this.BacktestMode = mode;
 			if (this.QuotesGenerator != null && this.QuotesGenerator.BacktestModeSuitsFor == mode) {
@@ -73,7 +65,6 @@ namespace Sq1.Core.Backtesting {
 					throw new Exception(msg);
 			}
 		}
-
 		public void RunSimulation() {
 			if (this.QuotesGenerator == null) {
 				string msg = "backtestQuotesGenerator is not chosen / instantiated";
@@ -83,7 +74,6 @@ namespace Sq1.Core.Backtesting {
 			this.ExceptionsHappenedSinceBacktestStarted = 0;
 			this.substituteBarsAndRunSimulation();
 		}
-
 		public void AbortRunningBacktestWaitAborted(string whyAborted) {
 			if (this.IsBacktestingNow == false) return;
 			this.RequestingBacktestAbort.Set();
@@ -105,7 +95,6 @@ namespace Sq1.Core.Backtesting {
 			// allowing any number of threads calling WaitOne to be let through
 			this.BacktestCompletedQuotesCanGo.Set();
 		}
-		
 		public int ExceptionsHappenedSinceBacktestStarted = 0;
 		public void AbortBacktestIfExceptionsLimitReached() {
 			if (this.IsBacktestingNow == false) return;
@@ -113,8 +102,6 @@ namespace Sq1.Core.Backtesting {
 			if (this.ExceptionsHappenedSinceBacktestStarted < this.Executor.Strategy.ExceptionsLimitToAbortBacktest) return;
 			this.AbortRunningBacktestWaitAborted("AbortBacktestIfExceptionsLimitReached[" + this.Executor.Strategy.ExceptionsLimitToAbortBacktest + "]");
 		}
-
-
 		public void substituteBarsAndRunSimulation() {
 			if (null == this.Executor.Bars) {
 				Assembler.PopupException("EXECUTOR_LOST_ITS_BARS_NONSENSE null==this.Executor.Bars SubstituteBarsAndRunSimulation()");
@@ -228,7 +215,6 @@ namespace Sq1.Core.Backtesting {
 				this.BacktestCompletedQuotesCanGo.Reset();
 			}
 		}
-
 		void simulationPostBarsRestore() {
 			try {
 				this.BacktestDataSource.StreamingProvider.ConsumerQuoteUnRegister(
@@ -305,7 +291,7 @@ namespace Sq1.Core.Backtesting {
 					quote.Absno = this.QuotesGenerator.QuoteAbsno;
 				}
 				
-				#if DEBUG //TEST_EMEDDED
+				#if DEBUG //TEST_EMBEDDED
 				if (quotesInjected.Count == 0) {
 					string msg = "SEEMS_ONLY_STOP_ALERTS_FAR_BEYOND_TARGET_ARE_ON_THE_WAY; pendingsToFillInitially[" + pendingsToFillInitially + "]"
 						+ "STOPS_ARE_TOO_FAR OR_WILL_BE_FILLED_NEXT_THING_UPSTACK";

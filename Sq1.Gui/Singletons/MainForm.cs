@@ -24,8 +24,7 @@ namespace Sq1.Gui.Singletons {
 		public Sq1.Core.Serializers.Serializer<Sq1.Gui.GuiDataSnapshot> GuiDataSnapshotSerializer;
 		public bool MainFormClosingSkipChartFormsRemoval;
 
-		public ChartForm ChartFormActive {
-			get {
+		public ChartForm ChartFormActive { get {
 				var ret = this.DockPanel.ActiveDocument as ChartForm;
 				if (ret == null) {
 					string msg = "MainForm.DockPanel.ActiveDocument is not a ChartForm; no charts open or drag your chart into DOCUMENT docking area";
@@ -38,8 +37,7 @@ namespace Sq1.Gui.Singletons {
 				string msg2 = "MainForm.DockPanel.ActiveDocument is [" + ret.ToString() + "] but it's not found among MainForm.ChartFormsManagers registry;"
 					+ "1) did you forget to add? 2) MainForm.ChartFormsManagers doesn't have DockContent-restored Forms added?";
 				throw new Exception(msg2);
-			}
-		}
+			} }
 
 		public MainForm() {
 			InitializeComponent();
