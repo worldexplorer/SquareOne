@@ -29,20 +29,25 @@ namespace Sq1.Widgets.StrategiesTree {
 			if (e.RowIndex == -1) return;
 			this.syncFolderStrategySelectedFromRowIndexClicked(e.RowIndex);
 			
-			// it's more expensive to provide notification sync from Repository to here, than just get the list 
-			bool folderWasSelectedOrExpandedOrCollapsed = true;
+			Strategy mayBeStrategy = e.Model as Strategy;
+			if (mayBeStrategy != null) {
+				this.RaiseOnStrategySelected();
+				return;
+			}
+
 			string mayBeFolder = e.Model as string;
 			if (mayBeFolder != null) {
+				bool folderWasSelectedOrExpandedOrCollapsed = true;
+				// it's more expensive to provide notification sync from Repository to here, than just get the list 
 				List<string> folderPurelyJson = Assembler.InstanceInitialized.RepositoryDllJsonStrategy.FoldersPurelyJson;
 				folderWasSelectedOrExpandedOrCollapsed = folderPurelyJson.Contains(mayBeFolder);
+
+				if (folderWasSelectedOrExpandedOrCollapsed) {
+					if (mayBeFolder != this.FolderSelected) return;	//	folder was Just ExpandedOrCollapsed => don't invoke FolderSelected  
+					this.RaiseOnFolderSelected();
+				}
+				return;
 			}
-			if (folderWasSelectedOrExpandedOrCollapsed) {
-				if (mayBeFolder != this.FolderSelected) return;	//	folder was Just ExpandedOrCollapsed => don't invoke FolderSelected  
-				this.RaiseOnFolderSelected();
-			} else {
-				this.RaiseOnStrategySelected();
-			}
-//			???this.Tree.SelectObject(folderOrStrategy);
 		}
 		void treeListView_CellRightClick(object sender, CellRightClickEventArgs e) {
 			if (e.RowIndex == -1) return;
