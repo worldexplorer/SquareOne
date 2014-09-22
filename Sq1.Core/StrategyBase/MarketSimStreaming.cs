@@ -185,7 +185,9 @@ namespace Sq1.Core.StrategyBase {
 			
 			#if DEBUG
 			if (quote.PriceBetweenBidAsk(entryPriceOut) == false) {
-				Debugger.Break();
+				string msg = "I_DONT_UNDERSTAND_HOW_I_DIDNT_DROP_THIS_QUOTE_BEFORE_BUT_I_HAVE_TO_DROP_IT_NOW";
+				//Debugger.Break();
+				return false;
 			}
 			#endif
 			return true;

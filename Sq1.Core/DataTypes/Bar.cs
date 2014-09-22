@@ -337,8 +337,34 @@ namespace Sq1.Core.DataTypes {
 			if (quote.Ask > this.High) {
 				return false;
 			}
-			if (quote.Size > this.Volume) return false;
+			if (quote.Size > this.Volume) {
+				return false;
+			}
 			return true;
 		}
+		public bool FillAtSlimBarIsWithinSpread(double priceFilledThroughPosition, double spreadMaxDeviated) {
+			// not testing here if priceFilledThroughPosition is within Low..High => use ContainsPrice() before calling me
+			//bool insideBar = this.ContainsPrice(priceFilledThroughPosition);
+
+			// this bar isn't slim, its height is at least Spread => use ContainsPrice() before calling me
+			double zeroAtFirstSimulatedBarTick = this.High - this.Low;
+			if (zeroAtFirstSimulatedBarTick >= spreadMaxDeviated) return true;
+
+			// not testing if the quote with spreadMaxDeviated is within Low..High => use ContainsBidAskForQuoteGenerated() before calling me
+			double fillPriceAwayFromLow = Math.Abs(this.Low - priceFilledThroughPosition);
+			double fillPriceAwayFromHigh = Math.Abs(this.High - priceFilledThroughPosition);
+			bool fillBelowLowAndSpread = fillPriceAwayFromLow > spreadMaxDeviated;
+			bool fillAboveHightAndSpread = fillPriceAwayFromHigh > spreadMaxDeviated;
+
+			bool outsideSpread = fillBelowLowAndSpread || fillBelowLowAndSpread;
+			if (outsideSpread) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+			}
+			return !outsideSpread;
+		}
+
+		public double HighLowDistance { get { return this.High - this.Low; } }
 	}
 }

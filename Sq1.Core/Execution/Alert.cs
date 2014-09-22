@@ -30,7 +30,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public string Symbol;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC  { get; protected set; }
 		[JsonProperty]	public string SymbolClass;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
 		[JsonProperty]	public string AccountNumber;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		[JsonProperty]	public string dataSourceName { get; protected set; }		// contains BrokerProvider for further {new Order(Alert)} execution
+		[JsonProperty]	public string dataSourceName { get; protected set; }		// containsBidAsk BrokerProvider for further {new Order(Alert)} execution
 		[JsonIgnore]	public DataSource DataSource { get {
 				if (this.Bars == null) {
 					throw new Exception("alert.Bars=null for alert[" + this + "]");
@@ -334,29 +334,45 @@ namespace Sq1.Core.Execution {
 			} }
 		[JsonProperty]	public bool IsKilled;
 		[JsonProperty]	public bool IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK { get {
-				if (this.FilledBarSnapshotFrozenAtFill == null) return false;
-
-				double spreadSize = this.QuoteFilledThisAlert.Spread;
-				double zeroAtFirstSimulatedBarTick = this.FilledBarSnapshotFrozenAtFill.High - this.FilledBarSnapshotFrozenAtFill.Low;
-				if (zeroAtFirstSimulatedBarTick < spreadSize) {
-					double fillPriceAwayFromLow = Math.Abs(this.FilledBarSnapshotFrozenAtFill.Low - this.PriceFilledThroughPosition);
-					double fillPriceAwayFromHigh = Math.Abs(this.FilledBarSnapshotFrozenAtFill.High - this.PriceFilledThroughPosition);
-					bool withinQuoteSpread = fillPriceAwayFromLow < spreadSize && fillPriceAwayFromHigh < spreadSize;
-					if (withinQuoteSpread == false) {
-						Debugger.Break();
-					}
-					bool outsideQuote = !withinQuoteSpread;
-					return outsideQuote;
-				}
-
-				bool insideBar = (this.PriceFilledThroughPosition >= this.FilledBarSnapshotFrozenAtFill.Low && this.PriceFilledThroughPosition <= this.FilledBarSnapshotFrozenAtFill.High);
-				bool outsideBar = !insideBar; 
+				bool notFilled = (this.FilledBarSnapshotFrozenAtFill == null);
 				#if DEBUG
-				if (outsideBar) {
+				if (notFilled) {
 					Debugger.Break();
 				}
 				#endif
-				return outsideBar;
+
+
+				bool fillAtSlimBarIsWithinSpread = this.FilledBarSnapshotFrozenAtFill.FillAtSlimBarIsWithinSpread(
+					this.PriceFilledThroughPosition, this.QuoteFilledThisAlert.Spread);
+				if (!fillAtSlimBarIsWithinSpread) {
+					Debugger.Break();
+				}
+
+				if (fillAtSlimBarIsWithinSpread == false) {
+					bool insideBar = this.FilledBarSnapshotFrozenAtFill.ContainsPrice(this.PriceFilledThroughPosition);
+					bool outsideBar = !insideBar;
+					#if DEBUG
+					if (outsideBar) {
+						Debugger.Break();
+					}
+					#endif
+
+					bool containsBidAsk = this.FilledBarSnapshotFrozenAtFill.ContainsBidAskForQuoteGenerated(this.QuoteFilledThisAlert);
+					#if DEBUG
+					if (!containsBidAsk && fillAtSlimBarIsWithinSpread) {
+						Debugger.Break();
+					}
+					#endif
+				}
+				
+				bool priceBetweenFilledQuotesBidAsk = this.QuoteFilledThisAlert.PriceBetweenBidAsk(this.PriceFilledThroughPosition);
+				#if DEBUG
+				if (!priceBetweenFilledQuotesBidAsk) {
+					Debugger.Break();
+				}
+				#endif
+
+				return false;	// false = ok, filledInsideBarShapshotFrozen
 			} }
 		//[JsonProperty]	public bool IsFilledOutsideBar_DEBUG_CHECK { get {
 		//        if (this.FilledBar == null) return false;
@@ -380,5 +396,9 @@ namespace Sq1.Core.Execution {
 				#endif
 				return outsideQuote;
 			} }
+
+		[JsonProperty]	public BidOrAsk BidOrAskWillFillMe{ get {
+				return MarketConverter.BidOrAskWillFillAlert(this);
+			}}
 	}
 }

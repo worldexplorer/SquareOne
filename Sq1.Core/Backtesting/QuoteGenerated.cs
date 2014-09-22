@@ -5,7 +5,7 @@ namespace Sq1.Core.Backtesting {
 	public class QuoteGenerated : Quote {
 		public Bar ParentBarSimulated;
 		public bool HasParentBarSimulated { get { return this.ParentBarSimulated != null; } }
-		public string ParentBarIdent { get { return (this.HasParentBarSimulated) ? this.ParentBarSimulated.ParentBarsIdent : "NO_PARENT_BAR_SIMULTED"; } }
+		public new string ParentBarIdent { get { return (this.HasParentBarSimulated) ? this.ParentBarSimulated.ParentBarsIdent : "NO_PARENT_BAR_SIMULTED"; } }
 		public bool WentThroughStreamingToScript;
 
 		//public QuoteGenerated Clone() {
@@ -18,7 +18,8 @@ namespace Sq1.Core.Backtesting {
 			identicalButFresh.Source = this.Source;
 			identicalButFresh.ServerTime = this.ServerTime.AddMilliseconds(911);
 			identicalButFresh.LocalTimeCreatedMillis = this.LocalTimeCreatedMillis.AddMilliseconds(911);
-			identicalButFresh.PriceLastDeal = this.PriceLastDeal;
+			//identicalButFresh.PriceLastDeal = this.PriceLastDeal;
+			identicalButFresh.ItriggeredFillAtBidOrAsk = this.ItriggeredFillAtBidOrAsk;
 			identicalButFresh.Bid = this.Bid;
 			identicalButFresh.Ask = this.Ask;
 			identicalButFresh.Size = this.Size;

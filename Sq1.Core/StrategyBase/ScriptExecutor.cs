@@ -498,6 +498,7 @@ namespace Sq1.Core.StrategyBase {
 
 			alertFilled.QuoteFilledThisAlert = quote.Clone();	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
 			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(quote.Symbol);
+			alertFilled.QuoteFilledThisAlert.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAskWillFillMe;
 			
 			try {
 				alertFilled.FillPositionAffectedEntryOrExitRespectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);

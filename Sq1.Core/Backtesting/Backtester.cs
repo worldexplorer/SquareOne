@@ -133,6 +133,8 @@ namespace Sq1.Core.Backtesting {
 					#if DEBUG
 					// UNCOMMENTED_FOR_SHARP_DEVELOP_TO_NOT_FREAK_OUT_FULLY_EXPAND_LOCAL_VARIABLES_AT_BREAKPOINTS_RANDOMLY_CONTINUE_ETC IRRELATED_TO_EXCEPTIONS_THERE_WAS_NONE
 					// COMMENTED_OUT_#DEVELOP_FREAKS_OUT_WHEN_YOU_MOVE_INNER_WINDOWS_SPLITTER Application.DoEvents();
+					// UNCOMMENTED_TO_KEEP_MOUSE_OVER_SLIDERS_RESPONSIVE
+					Application.DoEvents();
 					#endif
 				}
 
@@ -268,13 +270,11 @@ namespace Sq1.Core.Backtesting {
 				//    }
 				//}
 				#endif
-				
-				this.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GeneratedQuoteFillBidAsk(quote, bar2simulate);
 
 				#if DEBUG //TEST_EMBEDDED GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #1/2
-				if (bar2simulate.ContainsBidAskForQuoteGenerated(quote) == false) {
+				if (bar2simulate.HighLowDistance > 0 && bar2simulate.HighLowDistance > quote.Spread
+						&& i > 0 && bar2simulate.ContainsBidAskForQuoteGenerated(quote) == false) {
 					Debugger.Break();
-					continue;
 				}
 				#endif
 

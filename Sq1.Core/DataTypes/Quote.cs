@@ -8,14 +8,28 @@ namespace Sq1.Core.DataTypes {
 		public string Source;
 		public DateTime ServerTime;
 		public DateTime LocalTimeCreatedMillis;
-		public double PriceLastDeal;	// apparently must be PriceLastDeal==Bid || PriceLastDeal==Ask
+
 		public double Bid;
 		public double Ask;
 		public double Size;
+		public BidOrAsk ItriggeredFillAtBidOrAsk;
+		//MADE_READONLY_COZ_WRITING_IS_A_WRONG_CONCEPT public double PriceLastDeal;	// apparently must be PriceLastDeal==Bid || PriceLastDeal==Ask
+		public double PriceLastDeal { get {
+				if (this.ItriggeredFillAtBidOrAsk == BidOrAsk.UNKNOWN) {
+					//v1 return -1;
+					double median = (this.Ask + this.Bid) / 2;
+					return median;
+				}
+				return (this.ItriggeredFillAtBidOrAsk == BidOrAsk.Ask) ? this.Ask : this.Bid;
+			} }
+
+
 		public int IntraBarSerno;
 		//public int Absno { get { return AbsnoStaticCounter; } }		// I want a class var for furhter easy access despite it looks redundant
 		public int Absno;
-		[Obsolete] protected static int AbsnoStaticCounter = 0;
+
+		[Obsolete("used as a reference for a single-backtest environment; otherwize Backtester and StreamingProvider compete for correct this.Absno value")]
+		public static int AbsnoStaticCounter = 0;
 
 		public Bar ParentStreamingBar { get; protected set; }
 		public bool HasParentBar { get { return this.ParentStreamingBar != null; } }
@@ -34,6 +48,7 @@ namespace Sq1.Core.DataTypes {
 			Bid = double.NaN;
 			Ask = double.NaN;
 			Size = -1;
+			ItriggeredFillAtBidOrAsk = BidOrAsk.UNKNOWN;
 		}
 		// TODO: don't be lazy and move to StreamingProvider.QuoteAbsnoForSymbol<string Symbol, int Absno> and init it on Backtester.RunSimulation
 		//public void AbsnoReset() { Quote.AbsnoStaticCounter = 0; }

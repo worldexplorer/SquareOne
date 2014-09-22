@@ -11,13 +11,11 @@ namespace Sq1.Core.Backtesting {
 			quote.Ask = medianPrice + this.constant / 2;
 			quote.Bid = medianPrice - this.constant / 2;
 		}
-		public override void GenerateFillAskBasedOnBid(Quote quote, double bidPrice) {
-			quote.Ask = bidPrice + this.constant;
-			quote.Bid = bidPrice;
+		public override void GenerateFillAskBasedOnBid(Quote quote) {
+			quote.Ask = quote.Bid + this.constant;
 		}
-		public override void GenerateFillBidBasedOnAsk(Quote quote, double askPrice) {
-			quote.Ask = askPrice;
-			quote.Bid = askPrice - this.constant;
+		public override void GenerateFillBidBasedOnAsk(Quote quote) {
+			quote.Bid = quote.Ask - this.constant;
 		}
 	}
 }
