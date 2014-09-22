@@ -112,8 +112,14 @@ namespace Sq1.Core.Backtesting {
 					//throw new Exception(msg);
 					break;
 				}
-				if (this.backtester.BacktestAborted.WaitOne(0)) break;
-				if (this.backtester.RequestingBacktestAbort.WaitOne(0)) break;
+				bool abortRequested = this.backtester.RequestingBacktestAbort.WaitOne(0);
+				if (abortRequested) {
+					break;
+				}
+				bool backtestAborted = this.backtester.BacktestAborted.WaitOne(0);
+				if (backtestAborted) {
+					break;
+				}
 				closestOnOurWay = this.GenerateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach, bar2simulate);
 			}
 			return ret;

@@ -807,7 +807,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Backtester.IsBacktestingNow == false) return;
 			// TODO INTRODUCE_NEW_MANUAL_RESET_SO_THAT_NEW_BACKTEST_WAITS_UNTIL_TERMINATION_OF_THIS_METHOD_TO_AVOID_BROKEN_DISTRIBUTION_CHANNELS
 			this.Backtester.AbortRunningBacktestWaitAborted("USER_CHANGED_SELECTORS_IN_GUI_NEW_BACKTEST_IS_ALMOST_TASK.SCHEDULED");
-			this.BacktestContextRestore();
+			//ALREADY_RESTORED_BY_simulationPostBarsRestore() this.BacktestContextRestore();
 		}
 
 		public void BacktesterRunSimulation() {
@@ -890,11 +890,12 @@ namespace Sq1.Core.StrategyBase {
 				//}, TaskScheduler.FromCurrentSynchronizationContext());
 
 				//v3
-				Task started = new Task(this.BacktesterRunSimulation);
+				Task backtesterTask = new Task(this.BacktesterRunSimulation);
 				if (executeAfterSimulationEvenIfIFailed != null) {
-					started.ContinueWith((t) => { executeAfterSimulationEvenIfIFailed(); });
+					backtesterTask.ContinueWith((t) => { executeAfterSimulationEvenIfIFailed(); });
 				}
-				started.Start(TaskScheduler.FromCurrentSynchronizationContext());
+				//ON_REQUESTING_ABORT_TASK_DIES_WITHOUT_INVOKING_CONTINUE_WITH started.Start(TaskScheduler.FromCurrentSynchronizationContext());
+				backtesterTask.Start();
 			} else {
 				//this.Executor.BacktesterRunSimulation();
 				//this.ChartForm.Chart.DoInvalidate();

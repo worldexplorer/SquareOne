@@ -37,21 +37,24 @@
 			// 
 			// LabelETA
 			// 
+			this.LabelETA.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.LabelETA.BackColor = System.Drawing.SystemColors.Control;
 			this.LabelETA.Location = new System.Drawing.Point(103, 2);
 			this.LabelETA.Name = "LabelETA";
-			this.LabelETA.Size = new System.Drawing.Size(86, 13);
+			this.LabelETA.Size = new System.Drawing.Size(172, 13);
 			this.LabelETA.TabIndex = 1;
 			this.LabelETA.Text = "400/1600";
 			this.LabelETA.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// ProgressBarAndLabel
+			// ProgressBarAndLabelControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.LabelETA);
 			this.Controls.Add(this.ProgressBarETA);
-			this.Name = "ProgressBarAndLabel";
-			this.Size = new System.Drawing.Size(192, 18);
+			this.Name = "ProgressBarAndLabelControl";
+			this.Size = new System.Drawing.Size(278, 18);
 			this.ResumeLayout(false);
 
 		}

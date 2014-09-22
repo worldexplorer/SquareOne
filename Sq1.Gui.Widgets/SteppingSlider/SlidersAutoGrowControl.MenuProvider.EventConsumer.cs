@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
 using Sq1.Widgets.LabeledTextBox;
+using System.Diagnostics;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SlidersAutoGrowControl {
@@ -57,6 +58,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.ctxParameterBags.SuspendLayout();
 			try {
 				this.ctxParameterBags.Items.Clear();
+				//Debugger.Break();
 				this.ctxParameterBags.Items.AddRange(this.TsiDynamic);
 				if (sender == this && e == null) {
 					// after NewContext -> Delete, ctxOperations menu pane jumps on top of application window

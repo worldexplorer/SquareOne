@@ -133,7 +133,7 @@
 			this.mniHeaderNonHighlighted.BackColor = System.Drawing.Color.Transparent;
 			this.mniHeaderNonHighlighted.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.mniHeaderNonHighlighted.Name = "mniHeaderNonHighlighted";
-			this.mniHeaderNonHighlighted.Size = new System.Drawing.Size(100, 23);
+			this.mniHeaderNonHighlighted.Size = new System.Drawing.Size(200, 16);
 			this.mniHeaderNonHighlighted.Text = "Strategy Parameter Name444";
 			// 
 			// mniltbValueMin

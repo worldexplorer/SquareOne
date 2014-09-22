@@ -20,6 +20,7 @@ namespace Sq1.Gui.Forms {
 			this.chartFormManager.ChartForm.Load += ChartForm_Load;
 		}
 		void ChartForm_Load(object sender, EventArgs e) {
+			// ON_DESERIALIZATION_BACKTESTER_LAUNCHES_FASTER_THAN_CHART_FORM_GETS_LOADED; see ON_REQUESTING_ABORT_TASK_DIES_WITHOUT_INVOKING_CONTINUE_WITH
 			this.chartFormManager.Executor.EventGenerator.BacktesterContextInitializedStep2of4 += this.Executor_BacktesterContextInitializedStep2of4;
 			this.chartFormManager.Executor.EventGenerator.BacktesterSimulatedChunkStep3of4 += this.Executor_BacktesterChunkSimulatedStep3of4;
 			this.chartFormManager.Executor.EventGenerator.BacktesterSimulatedAllBarsStep4of4 += this.Executor_BacktesterSimulatedAllBarsStep4of4;
@@ -170,7 +171,7 @@ namespace Sq1.Gui.Forms {
 			// ETALabelText isn't refreshed fast enough; windows don't feel mouse clicks&moves, GUI freezes; REMOVE after backtester goes to its own thread!
 			////DEBUGGER_SHOWS_RECURSIVE_CALLS_TO_BuildOnceAllReports
 			/// uncommented to make GUI more responsive during backtests; GUI didn't fully unhalt, lagging.... FIXME  
-			Application.DoEvents();
+			//Application.DoEvents();
 		}
 		internal void Executor_BacktesterSimulatedAllBarsStep4of4(object sender, EventArgs e) {
 			if (this.chartFormManager.Executor == null) return;

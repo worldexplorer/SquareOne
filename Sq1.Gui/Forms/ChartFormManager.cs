@@ -406,8 +406,7 @@ namespace Sq1.Gui.Forms {
 			this.Strategy.ScriptContextCurrent.ReporterShortNamesUserInvokedJSONcheck =
 				new List<string>(this.ReportersFormsManager.ReporterShortNamesUserInvoked.Keys);
 		}
-		public ScriptEditorForm ScriptEditorFormConditionalInstance {
-			get {
+		public ScriptEditorForm ScriptEditorFormConditionalInstance { get {
 				if (this.formIsNullOrDisposed(this.ScriptEditorForm)) {
 					if (this.Strategy.ActivatedFromDll == true) return null;
 					this.scriptEditorFormFactory.CreateEditorFormAndSubscribeFactoryMethod(this);
@@ -416,11 +415,8 @@ namespace Sq1.Gui.Forms {
 					}
 				}
 				return this.ScriptEditorForm;
-			}
-		}
-		public bool EditorFormIsNotDisposed {
-			get { return this.formIsNullOrDisposed(this.ScriptEditorForm); }
-		}
+			} }
+		public bool EditorFormIsNotDisposed { get { return this.formIsNullOrDisposed(this.ScriptEditorForm); } }
 		bool formIsNullOrDisposed(Form form) {
 			if (form == null) return true;
 			if (form.IsDisposed) return true;

@@ -74,22 +74,27 @@ namespace Sq1.Core.Backtesting {
 			this.ExceptionsHappenedSinceBacktestStarted = 0;
 			this.substituteBarsAndRunSimulation();
 		}
-		public void AbortRunningBacktestWaitAborted(string whyAborted) {
+		public void AbortRunningBacktestWaitAborted(string whyAborted, int millisecondsToWait = 1000) {
 			if (this.IsBacktestingNow == false) return;
+
+			bool abortIsAlreadyRequested = this.RequestingBacktestAbort.WaitOne(0);
 			this.RequestingBacktestAbort.Set();
-			//isBacktesting = this.QuotesGenerator.BacktestIsRunning.WaitOne(0, true);
-			//if (isBacktesting == false) return;
-			bool aborted = this.BacktestAborted.WaitOne(0);
-			string msg = "BACKTEST_ABORTED whyAborted=[" + whyAborted + "]: Strategy[" + this.Executor.Strategy + "] on Bars[" + this.Executor.Bars + "]";
-			Assembler.PopupException(msg);
-			//throw new Exception(msg);
+			bool abortAlreadyRequestedNow = this.RequestingBacktestAbort.WaitOne(0);
+
+			string msig = " whyAborted=[" + whyAborted + "]: Strategy[" + this.Executor.Strategy + "] on Bars[" + this.Executor.Bars + "]";
+
+			string msg = "BACKTEST_ABORTING";
+			Assembler.PopupException(msg + msig);
+
+			bool aborted = this.BacktestAborted.WaitOne(millisecondsToWait);
+			msg = (aborted) ? "BACKTEST_ABORTED" : "BACKTESTER_DIDNT_ABORT_WITHIN_SECONDS[" + millisecondsToWait + "]";
+			Assembler.PopupException(msg + msig);
 		}
 		public void WaitUntilBacktestCompletes() {
 			if (this.IsBacktestingNow == false) return;
 			this.BacktestCompletedQuotesCanGo.WaitOne();
 		}
 		public void SetRunningFalseNotifyWaitingThreadsBacktestCompleted() {
-			//this.BacktestIsRunningBool = false;
 			this.BacktestIsRunning.Reset();
 			// Calling ManualResetEvent.Set opens the gate,
 			// allowing any number of threads calling WaitOne to be let through
@@ -134,7 +139,7 @@ namespace Sq1.Core.Backtesting {
 					// UNCOMMENTED_FOR_SHARP_DEVELOP_TO_NOT_FREAK_OUT_FULLY_EXPAND_LOCAL_VARIABLES_AT_BREAKPOINTS_RANDOMLY_CONTINUE_ETC IRRELATED_TO_EXCEPTIONS_THERE_WAS_NONE
 					// COMMENTED_OUT_#DEVELOP_FREAKS_OUT_WHEN_YOU_MOVE_INNER_WINDOWS_SPLITTER Application.DoEvents();
 					// UNCOMMENTED_TO_KEEP_MOUSE_OVER_SLIDERS_RESPONSIVE
-					Application.DoEvents();
+					// NOT_NEEDED_WHEN_BACKTESTER_STARTS_WITHOUT_PARAMETERS Application.DoEvents();
 					#endif
 				}
 
@@ -210,7 +215,6 @@ namespace Sq1.Core.Backtesting {
 				setBacktestAborted = false;
 				this.BacktestAborted.Reset();
 				this.RequestingBacktestAbort.Reset();
-				//this.BacktestIsRunningBool = true;
 				this.BacktestIsRunning.Set();
 				// Calling ManualResetEvent.Reset closes the gate.
 				// Threads that call WaitOne on a closed gate will block
