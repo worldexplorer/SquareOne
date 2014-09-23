@@ -40,7 +40,7 @@ namespace Sq1.Charting {
 			BarForegroundsByBar = new Dictionary<int, Color>();
 
 			OnChartLabelsById = new Dictionary<string, OnChartLabel>();
-			OnChartBarAnnotationsByBar = new Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>>();
+			OnChartBarAnnotationsByBar = new Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>>();		
 		}
 		public void ClearAllBeforeBacktest() {
 			this.AlertArrowsListByBar.Clear();

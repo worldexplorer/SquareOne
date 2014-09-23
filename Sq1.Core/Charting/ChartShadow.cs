@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 using Sq1.Core.Charting;
@@ -22,7 +23,13 @@ namespace Sq1.Core.Charting {
 		public event EventHandler<EventArgs> ChartSettingsChangedContainerShouldSerialize;
 		public event EventHandler<EventArgs> ContextScriptChangedContainerShouldSerialize;
 
+		// REASON_TO_EXIST: renderOnChartLines() was throwing "Dictionary.CopyTo target array wrong size" during backtest & chartMouseOver
+		// push-type notification from Backtester: ChartControl:ChartShadow doen't have access to Core.ScriptExecutor.BacktestIsRunning so Backtester mimics it here 
+		public ManualResetEvent BacktestIsRunning { get; private set; }
+		public bool IsBacktestingNow { get { return BacktestIsRunning.WaitOne(0); } }
+
 		public ChartShadow() : base() {
+			BacktestIsRunning = new ManualResetEvent(false);
 //			this.ScriptToChartCommunicator = new ScriptToChartCommunicator();
 			this.Register();
 		}

@@ -115,7 +115,7 @@ namespace Sq1.Charting {
 			
 			// OnChartLine = {Chart's implementation detail}, that's why it's in ChartControl.dll and is not exposed to the Script;
 			// OnChartLine.Status = {AddOrModify's output}, so that the Script could base decisions upon status of the operation done to OnChartLine
-			// HACK current implementation is based on responsibilities-s-DLLs distribution which might not be optimal; returning only Status should be enough
+			// HACK current implementation is based on responsibilities-vs-DLLs distribution which might not be optimal; returning only Status should be enough
 			// TODO define what you want and how you distribute roles among DLLs before refactoring
 			OnChartLine line = null;
 			try {

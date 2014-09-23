@@ -96,6 +96,7 @@ namespace Sq1.Core.Backtesting {
 		}
 		public void SetRunningFalseNotifyWaitingThreadsBacktestCompleted() {
 			this.BacktestIsRunning.Reset();
+			this.Executor.ChartShadow.BacktestIsRunning.Reset();
 			// Calling ManualResetEvent.Set opens the gate,
 			// allowing any number of threads calling WaitOne to be let through
 			this.BacktestCompletedQuotesCanGo.Set();
@@ -216,6 +217,7 @@ namespace Sq1.Core.Backtesting {
 				this.BacktestAborted.Reset();
 				this.RequestingBacktestAbort.Reset();
 				this.BacktestIsRunning.Set();
+				this.Executor.ChartShadow.BacktestIsRunning.Set();
 				// Calling ManualResetEvent.Reset closes the gate.
 				// Threads that call WaitOne on a closed gate will block
 				this.BacktestCompletedQuotesCanGo.Reset();

@@ -240,6 +240,9 @@ namespace Sq1.Charting {
 			};
 		}
 		void renderOnChartLines(Graphics g) {
+			// avoiding throwing "Dictionary.CopyTo target array wrong size" below during backtest & chartMouseOver
+			if (base.ChartControl.IsBacktestingNow) return;
+			
 			if (VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLines(): " + msg);
@@ -280,6 +283,7 @@ namespace Sq1.Charting {
 			//    linesToDraw.Add(line);
 			//}
 			//v3 - will work faster closer to right edge of Chart (fastest when StreamingBar is displayed); will display all lines that start AND end beoynd VisibleBars
+			// throwing "Dictionary.CopyTo target array wrong size" during backtest & chartMouseOver
 			List<int> lineRightEnds = new List<int>(this.ChartControl.ScriptExecutorObjects.LinesByRightBar.Keys);
 			lineRightEnds.Sort();
 			lineRightEnds.Reverse();

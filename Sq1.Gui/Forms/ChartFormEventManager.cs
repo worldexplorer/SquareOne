@@ -127,6 +127,8 @@ namespace Sq1.Gui.Forms {
 
 			this.chartFormManager.ChartForm.TsiProgressBarETA.ETALabelText = this.chartFormManager.Executor.Backtester.ProgressStats;
 
+			
+			// CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED BEGIN
 			int quotesTotal = this.chartFormManager.Executor.Backtester.QuotesTotalToGenerate;
 			if (quotesTotal == -1) {
 				string msg = "Executor_BacktesterSimulationStarted: Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
@@ -143,6 +145,7 @@ namespace Sq1.Gui.Forms {
 			this.chartFormManager.ChartForm.btnAutoSubmit.Visible = false;
 			this.chartFormManager.ChartForm.btnStreaming.Visible = false;
 			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
+			// CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END
 		}
 		internal void Executor_BacktesterChunkSimulatedStep3of4(object sender, EventArgs e) {
 			if (this.chartFormManager.Executor == null) {
@@ -163,6 +166,27 @@ namespace Sq1.Gui.Forms {
 			//	this.chartFormsManager.MainForm.PopupException(msg);
 			//	return;
 			//}
+			
+			
+			// HACK FOR CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED BEGIN COPYPASTE
+			if (this.chartFormManager.ChartForm.TsiProgressBarETA.Visible == false) {
+				int quotesTotal = this.chartFormManager.Executor.Backtester.QuotesTotalToGenerate;
+				if (quotesTotal == -1) {
+					string msg = "Executor_BacktesterSimulationStarted: Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
+					Assembler.PopupException(msg);
+					return;
+				}
+	
+				this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarMaximum = quotesTotal;
+	
+				this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;
+				
+				this.chartFormManager.ChartForm.btnAutoSubmit.Visible = false;
+				this.chartFormManager.ChartForm.btnStreaming.Visible = false;
+				this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
+			}
+			// HACK FOR CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END COPYPASTE
+			
 
 			int currentValue = this.chartFormManager.Executor.Backtester.QuotesGeneratedSoFar;
 			if (currentValue > this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarMaximum) return;
