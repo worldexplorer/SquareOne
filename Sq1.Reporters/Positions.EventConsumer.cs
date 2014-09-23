@@ -80,10 +80,29 @@ namespace Sq1.Reporters {
 		void olvPositions_DoubleClick(object sender, EventArgs e) {
 			try {
 				if (this.olvPositions.SelectedItems.Count == 0) return;
-				ListViewItem lvi = this.olvPositions.SelectedItems[0];
-				Position pos = lvi.Tag as Position;
+				//v1 prior to ObjectListView
+				//ListViewItem lvi = this.olvPositions.SelectedItems[0];
+				//Position pos = lvi.Tag as Position;
+				//if (pos == null) {
+				//	string msg = "POSITION_WASNT_STORED_IN_TAG for lvi[" + lvi + "]";
+				//	Assembler.PopupException(msg);
+				//	return;
+				//}
+				//v2
+				int selected = this.olvPositions.SelectedIndex;
+				if (selected < 0) {
+					string msg = "HOW_CAN_YOU_DOUBLE_CLICK_ON_SOMETHING_NOT_SELECTED??? olvPositions.SelectedIndex < 0";
+					Assembler.PopupException(msg);
+					return;
+				}
+				if (this.positionsAllReversedCached.Count < selected) {
+					string msg = "SELECTED_INDEX_OUT_OF_RANGE positionsAllReversedCached.Count[" + this.positionsAllReversedCached.Count + "] < selected[" + selected + "]";
+					Assembler.PopupException(msg);
+					return;
+				}
+				Position pos = this.positionsAllReversedCached[selected];
 				if (pos == null) {
-					string msg = "POSITION_WASNT_STORED_IN_TAG for lvi[" + lvi + "]";
+					string msg = "POSITION_STORED_IN_REVERSED_CACHED_AS_NULL positionsAllReversedCached[" + selected + "]=null";
 					Assembler.PopupException(msg);
 					return;
 				}

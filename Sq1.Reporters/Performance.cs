@@ -77,24 +77,24 @@ namespace Sq1.Reporters {
 			IList<Position> positionsAllReadOnly = slice.PositionsImTrackingReadOnly;  
 
 			this.AddCurrencyValue("Net Profit", slice.NetProfitForClosedPositionsBoth, Color.Empty, Color.Empty, this.GetItemColor(slice.NetProfitForClosedPositionsBoth), FontStyle.Bold, FontStyle.Regular);
-			this.AddCurrencyValue("Profit per Bar", slice.ProfitPerBarBoth, Color.Empty, Color.Empty, this.GetItemColor(slice.NetProfitForClosedPositionsBoth), FontStyle.Bold, FontStyle.Regular);
-			this.AddCurrencyValue("Commission", -slice.CommissionBoth, Color.Empty, Color.Empty, this.GetItemColor(-slice.CommissionBoth), FontStyle.Regular, FontStyle.Regular);
 			this.AddNumericValue("Profit Factor", slice.ProfitFactor, 2);
 			this.AddNumericValue("Recovery Factor", slice.RecoveryFactor, 2);
+			this.AddNumericValue("Win/Loss Ratio", slice.WinLossRatio, 2, Color.Empty, Color.Empty, this.GetItemColor(slice.WinLossRatio, 0.5), FontStyle.Regular, FontStyle.Regular);
 			this.AddNumericValue("Payoff Ratio", slice.PayoffRatio, 2);
-
-			this.AddCurrencyValue("Max Drawdown", slice.MaxDrawDown, Color.Empty, Color.Empty, this.GetItemColor(slice.MaxDrawDown), FontStyle.Regular, FontStyle.Regular);
-			this.AddDateTimeValue("Max Drawdown Date", slice.MaxDrawDownLastLossDate);
+			this.AddCurrencyValue("Commission", -slice.CommissionBoth, Color.Empty, Color.Empty, this.GetItemColor(-slice.CommissionBoth), FontStyle.Regular, FontStyle.Regular);
 
 			this.AddNumericValue("All Trades", slice.PositionsCountBoth, 0, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.AddCurrencyValue("Avg Profit", slice.AvgProfitBoth, Color.Empty, Color.Empty, this.GetItemColor(slice.AvgProfitBoth), FontStyle.Regular, FontStyle.Regular);
+			this.AddNumericValue("Avg Profit", slice.AvgProfitBoth, 2, Color.Empty, Color.Empty, this.GetItemColor(slice.AvgProfitBoth), FontStyle.Regular, FontStyle.Regular);
 			this.AddPercentValue("Avg Profit %", slice.AvgProfitPctBoth, 2, Color.Empty, Color.Empty, this.GetItemColor(slice.AvgProfitPctBoth), FontStyle.Regular, FontStyle.Regular);
 			this.AddNumericValue("Avg Bars Held", slice.AvgBarsHeldBoth, 2);
+			this.AddNumericValue("Profit per Bar", slice.ProfitPerBarBoth, 2, Color.Empty, Color.Empty, this.GetItemColor(slice.NetProfitForClosedPositionsBoth), FontStyle.Bold, FontStyle.Regular);
+			this.AddCurrencyValue("Max Drawdown", slice.MaxDrawDown, Color.Empty, Color.Empty, this.GetItemColor(slice.MaxDrawDown), FontStyle.Regular, FontStyle.Regular);
+			this.AddDateTimeValue("Max Drawdown Date", slice.MaxDrawDownLastLossDate);
 
 			this.AddNumericValue("Winners", (double)slice.PositionsCountWinners, 0, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
 			this.AddPercentValue("Win Rate", slice.WinRatePct, 2);
 			this.AddCurrencyValue("Net Profit", slice.NetProfitWinners, Color.Empty, Color.Empty, this.GetItemColor(slice.NetProfitWinners), FontStyle.Regular, FontStyle.Regular);
-			this.AddCurrencyValue("Avg Profit", slice.AvgProfitWinners, Color.Empty, Color.Empty, this.GetItemColor(slice.AvgProfitWinners), FontStyle.Regular, FontStyle.Regular);
+			this.AddNumericValue("Avg Profit", slice.AvgProfitWinners, 2, Color.Empty, Color.Empty, this.GetItemColor(slice.AvgProfitWinners), FontStyle.Regular, FontStyle.Regular);
 			this.AddPercentValue("Avg Profit %", slice.AvgProfitPctWinners, 2, Color.Empty, Color.Empty, this.GetItemColor(slice.AvgProfitPctWinners), FontStyle.Regular, FontStyle.Regular);
 			this.AddNumericValue("Avg Bars Held", slice.AvgBarsHeldWinners, 2);
 			this.AddNumericValue("Max Consecutive Winners", (double)slice.MaxConsecWinners, 0);
@@ -102,24 +102,27 @@ namespace Sq1.Reporters {
 			this.AddNumericValue("Losers", (double)slice.PositionsCountLosers, 0, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
 			this.AddPercentValue("Loss Rate", slice.LossRatePct, 2);
 			this.AddCurrencyValue("Net Loss", slice.NetLossLosers, Color.Empty, Color.Empty, this.GetItemColor(slice.NetLossLosers), FontStyle.Regular, FontStyle.Regular);
-			this.AddCurrencyValue("Avg Loss", slice.AvgLossLosers, Color.Empty, Color.Empty, this.GetItemColor(slice.AvgLossLosers), FontStyle.Regular, FontStyle.Regular);
+			this.AddNumericValue("Avg Loss", slice.AvgLossLosers, 2, Color.Empty, Color.Empty, this.GetItemColor(slice.AvgLossLosers), FontStyle.Regular, FontStyle.Regular);
 			this.AddPercentValue("Avg Loss %", slice.AvgLossPctLosers, 2, Color.Empty, Color.Empty, this.GetItemColor(slice.AvgLossPctLosers), FontStyle.Regular, FontStyle.Regular);
 			this.AddNumericValue("Avg Bars Held", slice.AvgBarsHeldLosers, 2);
 			this.AddNumericValue("Max Consecutive Losses", (double)slice.MaxConsecLosers, 0);
 		}
 		
-		protected Color GetItemColor(double value) {
-			if (value == 0.0) return this.ForeColor;
-			return (value > 0.0) ? Color.Blue : Color.Red;
+		protected Color GetItemColor(double value, double ethalonRedIfLessBlueIfGreater = 0.0) {
+			if (value == ethalonRedIfLessBlueIfGreater) return this.ForeColor;
+			return (value > ethalonRedIfLessBlueIfGreater) ? Color.Blue : Color.Red;
 		}
 		protected void AddCurrencyValue(string label, double value, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
-			this.RenderCell(label, value.ToString("C"), backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
+			int decimalPlaces = systemPerformance.Bars.SymbolInfo.DecimalsPrice;
+			string valueFormatted = value.ToString("N" + decimalPlaces);
+			this.RenderCell(label, valueFormatted, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
 		}
 		protected void AddNumericValue(string label, double value, int decimalPlaces) {
 			this.AddNumericValue(label, value, decimalPlaces, Color.Empty, Color.Empty, Color.Empty, FontStyle.Regular, FontStyle.Regular);
 		}
 		protected void AddNumericValue(string label, double value, int decimalPlaces, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
-			this.RenderCell(label, value.ToString("N" + decimalPlaces), backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
+			string valueFormatted = value.ToString("N" + decimalPlaces);
+			this.RenderCell(label, valueFormatted, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
 		}
 		protected void AddPercentValue(string label, double value, int decimalPlaces) {
 			this.AddPercentValue(label, value, decimalPlaces, Color.Empty, Color.Empty, Color.Empty, FontStyle.Regular, FontStyle.Regular);

@@ -155,7 +155,7 @@ namespace Sq1.Reporters {
 				if (position == null) return "clhCumProfitDollar.AspectGetter: position=null";
 				//double equityAtThisPositionClosed = this.systemPerformance.SlicesShortAndLong.EquityCurve.HOW_TO_FIND?
 				double equityAtThisPositionClosed = -1;
-				if (this.cumulativeProfitDollar.ContainsKey(position)) equityAtThisPositionClosed = this.cumulativeProfitPercent[position];
+				if (this.cumulativeProfitDollar.ContainsKey(position)) equityAtThisPositionClosed = this.cumulativeProfitDollar[position];
 				return equityAtThisPositionClosed.ToString("C");
 			};
 			this.olvcCumProfitPct.AspectGetter = delegate(object o) {

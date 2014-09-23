@@ -247,6 +247,7 @@ namespace Sq1.Charting {
 		}
 		public bool TooltipPositionShown;
 		bool handleTooltipsPositionAndPrice(MouseEventArgs e) {
+			// COPYPASTE_SOURCE=PanelNamedFolding.handleTooltipsPositionAndPrice()_DESTINATION=ChartShadowProtocol.SelectPosition() begin 
 			bool tooltipPositionShown = false;
 			if (this.ChartControl.ChartSettings.TooltipPositionShow == false) return tooltipPositionShown;
 
@@ -294,6 +295,7 @@ namespace Sq1.Charting {
 				this.ChartControl.TooltipPositionHide();
 				this.ChartControl.TooltipPriceHide();
 			}
+			// COPYPASTE_SOURCE=PanelNamedFolding.handleTooltipsPositionAndPrice()_DESTINATION=ChartShadowProtocol.SelectPosition() end 
 
 			return tooltipPositionShown;
 		}

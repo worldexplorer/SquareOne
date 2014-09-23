@@ -50,6 +50,12 @@ namespace Sq1.Core.StrategyBase {
 				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
 				return 100 * this.PositionsCountLosers / this.PositionsCountBoth;
 			} }
+		public double WinLossRatio  { get {
+				double ret = 1;
+				if (this.PositionsCountLosers == 0) return ret;
+				// I_HATE_IT 296/452 = 0 !!!! if you don't convert divider to (double)
+				return this.PositionsCountWinners / (double) this.PositionsCountLosers;
+			} }
 		public double PayoffRatio { get {
 			if (this.AvgLossPctLosers == 0) return 0;
 			return Math.Abs(this.AvgProfitPctBoth / this.AvgLossPctLosers);

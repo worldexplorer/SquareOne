@@ -40,9 +40,11 @@ namespace Sq1.Core.Charting {
 			Assembler.InstanceInitialized.AlertsForChart.Register(this);
 		}
 		
-		public virtual void SelectPosition(Position position) {
+		public virtual bool SelectPosition(Position position) {
 			string msg = "ChartShadow::SelectPosition() TODO: implement HIGHLIGHTING for a position[" + position + "]; chart[" + this + "]";
 			Assembler.PopupException(msg);
+			bool tooltipPositionShown = false;
+			return tooltipPositionShown;
 		}
 		
 		public virtual void SelectAlert(Alert alert) {

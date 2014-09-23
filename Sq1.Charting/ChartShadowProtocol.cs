@@ -52,7 +52,9 @@ namespace Sq1.Charting {
 			int bar = alert.PlacedBar.ParentBarsIndex;		
 			this.scrollToBarSafely(bar);
 		}		
-		public override void SelectPosition(Position position) {
+		public override bool SelectPosition(Position position) {
+			bool tooltipPositionShown = false;
+			
 			this.ActivateParentForm();
 			if (position == null) {
 				string msg = "DONT_PASS_NULL_POSITION_TO_CHART_SHADOW ChartControl.SelectPosition()";
@@ -60,12 +62,67 @@ namespace Sq1.Charting {
 				#if DEBUG
 				Debugger.Break();
 				#endif
-				return;
+				return tooltipPositionShown;
 			}
-			int bar = (position.ExitAlert != null)
-				? position.ExitAlert.PlacedBar.ParentBarsIndex
-				: position.EntryAlert.PlacedBar.ParentBarsIndex;
-			this.scrollToBarSafely(bar);
+			Bar barEntryOrExit = (position.ExitAlert != null) ? position.ExitAlert.PlacedBar : position.EntryAlert.PlacedBar;
+			int barIndex = barEntryOrExit.ParentBarsIndex;
+			//v1
+			this.scrollToBarSafely(barIndex);
+			//v2 TODO make whole position fit upon doubleclick
+			//this.scrollToFitPositionSafely(position);
+			
+			
+			// COPYPASTE_SOURCE=PanelNamedFolding.handleTooltipsPositionAndPrice()_DESTINATION=ChartShadowProtocol.SelectPosition() begin
+			if (this.ChartSettings.TooltipPositionShow == false) return tooltipPositionShown;
+
+			if (barIndex < this.VisibleBarLeft) return tooltipPositionShown;
+			if (barIndex > this.VisibleBarRight) return tooltipPositionShown;	//Debugger.Break();
+
+			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = this.ScriptExecutorObjects.AlertArrowsListByBar;
+			if (alertArrowsListByBar.ContainsKey(barIndex) == false) {
+				this.TooltipPositionHide();
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return tooltipPositionShown;
+			}
+
+			List<AlertArrow> arrowsForBar = alertArrowsListByBar[barIndex];
+			AlertArrow arrowFoundForPosition = null;
+			foreach (AlertArrow arrow in arrowsForBar) {
+				if (arrow.Position != position) continue;
+				arrowFoundForPosition = arrow;
+				break;
+			}
+			if (arrowFoundForPosition == null) {
+				this.TooltipPositionHide();
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return tooltipPositionShown;
+			}
+			Position positionToPopup = arrowFoundForPosition.Position;
+			bool placeAtLeft = arrowFoundForPosition.ArrowIsForPositionEntry;
+
+			if (this.panelPrice == null) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				string msg = "NEED_NON_NULL_PANEL_PRICE_TO_GET_X_OF_BAR this.panelPrice[" + this.panelPrice + "]";
+				return tooltipPositionShown;
+			}
+			
+			int barX = this.panelPrice.BarToX(barIndex);		// HACK NPE-vulnerable
+			Rectangle rectangleYarrowXbar = new Rectangle();
+			rectangleYarrowXbar.X		= barX;
+			rectangleYarrowXbar.Width	= this.ChartSettings.BarWidthIncludingPadding;		//arrowFoundForMouse.Width;
+			rectangleYarrowXbar.Y		= arrowFoundForPosition.Ytransient;
+			rectangleYarrowXbar.Height	= arrowFoundForPosition.Height;
+
+			this.TooltipPositionAndPriceShow(arrowFoundForPosition, barEntryOrExit, rectangleYarrowXbar);
+			// COPYPASTE_SOURCE=PanelNamedFolding.handleTooltipsPositionAndPrice()_DESTINATION=ChartShadowProtocol.SelectPosition() end
+			tooltipPositionShown = true;
+			return tooltipPositionShown; 
 		}
 		public override void ClearAllScriptObjectsBeforeBacktest() {
 			this.ScriptExecutorObjects.ClearAllBeforeBacktest();
