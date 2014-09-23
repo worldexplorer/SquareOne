@@ -173,7 +173,7 @@ namespace Sq1.Reporters {
 			// 
 			this.olvcPosition.CellPadding = null;
 			this.olvcPosition.Text = "Position";
-			this.olvcPosition.Width = 50;
+			this.olvcPosition.Width = 35;
 			// 
 			// olvcSerno
 			// 
@@ -181,13 +181,13 @@ namespace Sq1.Reporters {
 			this.olvcSerno.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcSerno.Text = "Serno";
 			this.olvcSerno.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcSerno.Width = 40;
+			this.olvcSerno.Width = 30;
 			// 
 			// olvcSymbol
 			// 
 			this.olvcSymbol.CellPadding = null;
 			this.olvcSymbol.Text = "Symbol";
-			this.olvcSymbol.Width = 20;
+			this.olvcSymbol.Width = 40;
 			// 
 			// olvcQuantity
 			// 
@@ -203,7 +203,7 @@ namespace Sq1.Reporters {
 			this.olvcEntryDate.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcEntryDate.Text = "Entry Date";
 			this.olvcEntryDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcEntryDate.Width = 110;
+			this.olvcEntryDate.Width = 108;
 			// 
 			// olvcEntryPrice
 			// 
@@ -211,13 +211,13 @@ namespace Sq1.Reporters {
 			this.olvcEntryPrice.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcEntryPrice.Text = "Entry Price";
 			this.olvcEntryPrice.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcEntryPrice.Width = 70;
+			this.olvcEntryPrice.Width = 55;
 			// 
 			// olvcEntryOrder
 			// 
 			this.olvcEntryOrder.CellPadding = null;
 			this.olvcEntryOrder.Text = "EntryOrder";
-			this.olvcEntryOrder.Width = 50;
+			this.olvcEntryOrder.Width = 35;
 			// 
 			// olvcExitDate
 			// 
@@ -225,7 +225,7 @@ namespace Sq1.Reporters {
 			this.olvcExitDate.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcExitDate.Text = "Exit Date";
 			this.olvcExitDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcExitDate.Width = 110;
+			this.olvcExitDate.Width = 108;
 			// 
 			// olvcExitPrice
 			// 
@@ -233,13 +233,13 @@ namespace Sq1.Reporters {
 			this.olvcExitPrice.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcExitPrice.Text = "Exit Price";
 			this.olvcExitPrice.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcExitPrice.Width = 70;
+			this.olvcExitPrice.Width = 55;
 			// 
 			// olvcExitOrder
 			// 
 			this.olvcExitOrder.CellPadding = null;
 			this.olvcExitOrder.Text = "ExitOrder";
-			this.olvcExitOrder.Width = 50;
+			this.olvcExitOrder.Width = 35;
 			// 
 			// olvcProfitPct
 			// 
@@ -255,7 +255,7 @@ namespace Sq1.Reporters {
 			this.olvcProfitDollar.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcProfitDollar.Text = "Profit $";
 			this.olvcProfitDollar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcProfitDollar.Width = 69;
+			this.olvcProfitDollar.Width = 45;
 			// 
 			// olvcBarsHeld
 			// 
@@ -271,7 +271,7 @@ namespace Sq1.Reporters {
 			this.olvcProfitPerBar.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcProfitPerBar.Text = "Profit per Bar";
 			this.olvcProfitPerBar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcProfitPerBar.Width = 60;
+			this.olvcProfitPerBar.Width = 40;
 			// 
 			// olvcEntrySignalName
 			// 
@@ -315,7 +315,7 @@ namespace Sq1.Reporters {
 			this.olvcCumProfitDollar.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcCumProfitDollar.Text = "$Profit Cumulative";
 			this.olvcCumProfitDollar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCumProfitDollar.Width = 76;
+			this.olvcCumProfitDollar.Width = 50;
 			// 
 			// olvcComission
 			// 

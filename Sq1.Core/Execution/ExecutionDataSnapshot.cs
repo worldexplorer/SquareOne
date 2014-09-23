@@ -234,7 +234,7 @@ namespace Sq1.Core.Execution {
 					ByBarDumpStatus dumped = this.AlertsPendingHistoryByBarAddNoDupe(alert);
 					switch (dumped) {
 						case ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd:
-							string msg1 = "ALERT_PREVIOUSLY_DUMPED_TO_HISTORY; DUPE while adding JUST CREATED alert[" + alert + "]";
+							string msg1 = "ALERT_PREVIOUSLY_DUMPED_TO_HISTORY; DUPE while adding JUST CREATED alert[" + alert.ToString() + "]";
 							//Debugger.Break();
 							//throw new Exception(msg1);
 							break;
@@ -243,7 +243,7 @@ namespace Sq1.Core.Execution {
 							break;
 						case ByBarDumpStatus.SequentialAlertAddedForExistingBarInHistory:
 							alertsDumpedForStreamingBar++;
-							string msg2 = "Here is the case when PrototypeActivator changed alert[" + alert + "]";
+							string msg2 = "Here is the case when PrototypeActivator changed alert[" + alert.ToString() + "]";
 							break;
 					}
 				}

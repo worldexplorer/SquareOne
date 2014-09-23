@@ -92,7 +92,7 @@ namespace Sq1.Reporters {
 			this.AddDateTimeValue("Max Drawdown Date", slice.MaxDrawDownLastLossDate);
 
 			this.AddNumericValue("Winners", (double)slice.PositionsCountWinners, 0, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.AddPercentValue("Win Rate", slice.WinRatePct, 2, this.GetItemColor(slice.ProfitFactor, 50));
+			this.AddPercentValue("Win Rate", slice.WinRatePct, 2, this.GetItemColor(slice.WinRatePct, 50));
 			this.AddCurrencyValue("Net Profit", slice.NetProfitWinners, this.GetItemColor(slice.NetProfitWinners));
 			this.AddNumericValue("Avg Profit", slice.AvgProfitWinners, 2, this.GetItemColor(slice.AvgProfitWinners));
 			this.AddPercentValue("Avg Profit %", slice.AvgProfitPctWinners, 2, this.GetItemColor(slice.AvgProfitPctWinners));
@@ -100,7 +100,7 @@ namespace Sq1.Reporters {
 			this.AddNumericValue("Max Consecutive Winners", (double)slice.MaxConsecWinners, 0);
 
 			this.AddNumericValue("Losers", (double)slice.PositionsCountLosers, 0, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.AddPercentValue("Loss Rate", slice.LossRatePct, 2, this.GetItemColor(slice.ProfitFactor, 50));
+			this.AddPercentValue("Loss Rate", slice.LossRatePct, 2, this.GetItemColor(slice.LossRatePct, 50));
 			this.AddCurrencyValue("Net Loss", slice.NetLossLosers, this.GetItemColor(slice.NetLossLosers));
 			this.AddNumericValue("Avg Loss", slice.AvgLossLosers, 2, this.GetItemColor(slice.AvgLossLosers));
 			this.AddPercentValue("Avg Loss %", slice.AvgLossPctLosers, 2, this.GetItemColor(slice.AvgLossPctLosers));
