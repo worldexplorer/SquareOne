@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace Sq1.Widgets.SteppingSlider {
 	partial class SlidersAutoGrowControl {
@@ -37,7 +38,9 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniParameterBag_test2 = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniltbParametersBagNewWithDefaults = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.resetToScriptDefaultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniAllParamsResetToScriptDefaults = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniAllParamsShowBorder = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniAllParamsShowNumeric = new System.Windows.Forms.ToolStripMenuItem();
 			this.templateSliderControl = new Sq1.Widgets.SteppingSlider.SliderComboControl();
 			this.ctxOperations.SuspendLayout();
 			this.ctxParameterBags.SuspendLayout();
@@ -99,7 +102,9 @@ namespace Sq1.Widgets.SteppingSlider {
 									this.mniParameterBag_test2,
 									this.mniltbParametersBagNewWithDefaults,
 									this.toolStripSeparator2,
-									this.resetToScriptDefaultsToolStripMenuItem});
+									this.mniAllParamsResetToScriptDefaults,
+									this.mniAllParamsShowBorder,
+									this.mniAllParamsShowNumeric});
 			this.ctxParameterBags.Name = "ctxParameterSets";
 			this.ctxParameterBags.Size = new System.Drawing.Size(226, 140);
 			this.ctxParameterBags.Opening += new System.ComponentModel.CancelEventHandler(this.ctxParameterBags_Opening);
@@ -145,11 +150,25 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(222, 6);
 			// 
-			// resetToScriptDefaultsToolStripMenuItem
+			// mniAllParamsResetToScriptDefaults
 			// 
-			this.resetToScriptDefaultsToolStripMenuItem.Name = "resetToScriptDefaultsToolStripMenuItem";
-			this.resetToScriptDefaultsToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
-			this.resetToScriptDefaultsToolStripMenuItem.Text = "All Params->Script Defaults";
+			this.mniAllParamsResetToScriptDefaults.Name = "mniAllParamsResetToScriptDefaults";
+			this.mniAllParamsResetToScriptDefaults.Size = new System.Drawing.Size(225, 22);
+			this.mniAllParamsResetToScriptDefaults.Text = "All Params -> Script Defaults";
+			// 
+			// mniAllParamsShowBorder
+			// 
+			this.mniAllParamsShowBorder.Name = "mniAllParamsShowBorder";
+			this.mniAllParamsShowBorder.Size = new System.Drawing.Size(225, 22);
+			this.mniAllParamsShowBorder.Text = "All Params -> ShowBorder";
+			this.mniAllParamsShowBorder.Click += new EventHandler(mniAllParamsShowBorder_Click);
+			// 
+			// mniAllParamsShowNumeric
+			// 
+			this.mniAllParamsShowNumeric.Name = "mniAllParamsShowNumeric";
+			this.mniAllParamsShowNumeric.Size = new System.Drawing.Size(225, 22);
+			this.mniAllParamsShowNumeric.Text = "All Params -> ShowNumeric";
+			this.mniAllParamsShowNumeric.Click += new EventHandler(mniAllParamsShowNumeric_Click);
 			// 
 			// templateSliderControl
 			// 
@@ -185,7 +204,7 @@ namespace Sq1.Widgets.SteppingSlider {
 									0,
 									0,
 									0});
-			this.templateSliderControl.ValueStep = new decimal(new int[] {
+			this.templateSliderControl.ValueIncrement = new decimal(new int[] {
 									100,
 									0,
 									0,
@@ -220,8 +239,10 @@ namespace Sq1.Widgets.SteppingSlider {
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbParametersBagNewWithDefaults;
 		private System.Windows.Forms.ToolStripMenuItem mniParameterBag_test1;
 		private System.Windows.Forms.ToolStripMenuItem mniParameterBag_test2;
-		private System.Windows.Forms.ToolStripMenuItem resetToScriptDefaultsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem mniAllParamsResetToScriptDefaults;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripMenuItem mniAllParamsShowBorder;
+		private System.Windows.Forms.ToolStripMenuItem mniAllParamsShowNumeric;
 
 	}
 }

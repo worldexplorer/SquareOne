@@ -24,13 +24,20 @@ namespace Sq1.Widgets.SteppingSlider {
 				foreach (UserControl control in base.Controls) ret += control.Height + this.VerticalSpaceBetweenSliders;
 				return ret;
 			} }
+		public List<SliderComboControl> SlidersScriptParameters { get {
+				List<SliderComboControl> ret = new List<SliderComboControl>();
+				foreach (Control mustBeSliderCombo in base.Controls) {
+					SliderComboControl slider = mustBeSliderCombo as SliderComboControl;
+					if (slider == null) continue;
+					ret.Add(slider);
+				}
+				return ret;
+			} }
 		public Dictionary<string, double> CurrentParametersFromChildSliders {
 			get {
 				if (base.DesignMode == true) return null;
 				Dictionary<string, double> ret = new Dictionary<string, double>();
-				foreach (Control mustBeSliderCombo in base.Controls) {
-					if ((mustBeSliderCombo is SliderComboControl) == false) continue;
-					SliderComboControl slider = mustBeSliderCombo as SliderComboControl;
+				foreach (SliderComboControl slider in this.SlidersScriptParameters) {
 					ScriptParameter parameter = slider.Tag as ScriptParameter;
 					ret.Add(parameter.Name, (double)slider.ValueCurrent);
 				}
@@ -54,8 +61,10 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 
 		public void Initialize(Strategy strategy) {
+			bool atLeastOneBorderShown = false;
+			bool atLeastOneNumericShown = false;
+
 			this.Strategy = strategy;
-			//this.InitializeParameterSetMenuItemsFromStrategyScriptContexts();
 
 			base.SuspendLayout();
 			foreach (UserControl control in base.Controls) control.Dispose();
@@ -67,12 +76,30 @@ namespace Sq1.Widgets.SteppingSlider {
 				// foreach (ScriptParameter parameter in this.Strategy.ScriptParametersMergedWithCurrentContext.Values) {
 				foreach (ScriptParameter parameter in this.Strategy.Script.ParametersById.Values) {
 					SliderComboControl slider = this.SliderComboFactory(parameter);
+					if (this.Strategy.SliderBordersShownByParameterId.ContainsKey(parameter.Id)) {
+						bool borderShown = this.Strategy.SliderBordersShownByParameterId[parameter.Id];
+						if (borderShown) {
+							slider.EnableBorder = borderShown;
+							atLeastOneBorderShown = true;
+						}
+					}
+					if (this.Strategy.SliderNumericUpdownsShownByParameterId.ContainsKey(parameter.Id)) {
+						bool numericUpdownShown = this.Strategy.SliderNumericUpdownsShownByParameterId[parameter.Id];
+						if (numericUpdownShown) {
+							slider.EnableNumeric = numericUpdownShown;
+							atLeastOneNumericShown = true;
+						}
+					}
+					slider.Tag = parameter;
 					base.Controls.Add(slider);
 				}
 			} finally {
 				base.Height = this.PreferredHeight;
 				base.ResumeLayout(true);
 			}
+
+			if (atLeastOneBorderShown) this.mniAllParamsShowBorder.Checked = true;
+			if (atLeastOneNumericShown) this.mniAllParamsShowNumeric.Checked = true;
 		}
 
 		private SliderComboControl SliderComboFactory(ScriptParameter parameter) {
@@ -113,7 +140,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			ret.ValueCurrent = new decimal(parameter.ValueCurrent);
 			ret.ValueMax = new decimal(parameter.ValueMax);
 			ret.ValueMin = new decimal(parameter.ValueMin);
-			ret.ValueStep = new decimal(parameter.ValueIncrement);
+			ret.ValueIncrement = new decimal(parameter.ValueIncrement);
 			ret.EnableBorder = this.AllSlidersHaveBorder;
 			ret.EnableNumeric = this.AllSlidersHaveNumeric;
 			//DOESNT_WORK?... ret.PanelFillSlider.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
@@ -122,6 +149,8 @@ namespace Sq1.Widgets.SteppingSlider {
 			ret.Size = new System.Drawing.Size(this.Width, ret.Size.Height);
 			ret.Tag = parameter;
 			ret.ValueCurrentChanged += slider_ValueCurrentChanged;
+			ret.ShowBorderChanged += slider_ShowBorderChanged;
+			ret.ShowNumericUpdownChanged += slider_ShowNumericUpdownChanged;
 			// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening
 			return ret;
 		}

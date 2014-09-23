@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -44,7 +45,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			try {
 				decimal parsed = Decimal.Parse(this.DomainUpDown.Text);
 				this.DomainUpDown.BackColor = Color.White;
-				parsed -= this.ValueStep;
+				parsed -= this.ValueIncrement;
 				if (parsed < this.ValueMinRtlSafe) return;
 				this.ValueCurrent = parsed;
 			} catch (Exception ex) {
@@ -55,7 +56,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			try {
 				decimal parsed = Decimal.Parse(this.DomainUpDown.Text);
 				this.DomainUpDown.BackColor = Color.White;
-				parsed += this.ValueStep;
+				parsed += this.ValueIncrement;
 				if (parsed > this.ValueMaxRtlSafe) return;
 				this.ValueCurrent = parsed;
 			} catch (Exception ex) {
@@ -64,7 +65,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 
 		void domainUpDown_Scroll(object sender, ScrollEventArgs e) {
-			int a = 1;
+			Debugger.Break();
 		}
 		void mnitlbAll_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string typed = e.StringUserTyped;
@@ -90,7 +91,7 @@ namespace Sq1.Widgets.SteppingSlider {
 						//YOU_STICK_TO_SETTING_VALUE_CURRENT_IT_WILL_RAISE_THE_SAME_EVENT this.ValueCurrentChanged(this, EventArgs.Empty);
 						this.ctxSlider_Opening(this, null);		// not sure how textbox gets multiline input inside!!! may be this will help as for ScriptContexts
 						break;
-					case "mniltbValueStep":			this.ValueStep		= parsed; break;
+					case "mniltbValueStep":			this.ValueIncrement		= parsed; break;
 					default:	Assembler.PopupException("mnitlbAll_UserTyped(): add handler for senderMinMaxCurrentStep.Name[" + senderMinMaxCurrentStep.Name + "]"); break;
 				}
 			} catch (Exception ex) {
@@ -102,7 +103,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			string valueClicked = this.PanelFillSlider.ValueCurrent.ToString(this.ValueFormat);
 			if (valueClicked == this.DomainUpDown.Text) return;
 			this.DomainUpDown.Text = valueClicked;
-			if (ValueCurrentChanged == null) return;
+			if (this.ValueCurrentChanged == null) return;
 			this.ValueCurrentChanged(this, EventArgs.Empty);
 		}
 
@@ -111,7 +112,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbValueCurrent.InputFieldValue = this.format(this.ValueCurrent);
 			this.mniltbValueMin.InputFieldValue = this.format(this.ValueMin);
 			this.mniltbValueMax.InputFieldValue = this.format(this.ValueMax);
-			this.mniltbValueStep.InputFieldValue = this.format(this.ValueStep);
+			this.mniltbValueStep.InputFieldValue = this.format(this.ValueIncrement);
 			this.mniHeaderNonHighlighted.Text = this.LabelText;
 		}
 
@@ -119,10 +120,12 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.ctxSlider.AutoClose = this.mniAutoClose.Checked; 
 		}
 		void mniShowBorder_Click(object sender, EventArgs e) {
-			this.EnableBorder = this.mniShowBorder.Checked; 
+			this.EnableBorder = this.mniShowBorder.Checked;
+			this.RaiseShowBorderChanged();
 		}
 		void mniShowNumeric_Click(object sender, EventArgs e) {
-			this.EnableNumeric = this.mniShowNumeric.Checked; 
+			this.EnableNumeric = this.mniShowNumeric.Checked;
+			this.RaiseShowNumericUpdownChanged();
 		}
 
 		void ctxSlider_Opening(object sender, CancelEventArgs e) {
@@ -145,6 +148,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					this.ctxSlider.Items.Add(mni);
 				}
 			} catch (Exception ex) {
+				Debugger.Break();
 				Assembler.PopupException("ctxSlider_Opening()", ex);
 			} finally {
 				this.ctxSlider.ResumeLayout(true);

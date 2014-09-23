@@ -27,7 +27,7 @@ namespace Sq1.Widgets.SteppingSlider {
 	
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		private decimal valueStep;
-		public decimal ValueStep {
+		public decimal ValueIncrement {
 			get { return valueStep; }
 			set { valueStep = value; this.Invalidate(); }
 		}
@@ -154,6 +154,9 @@ namespace Sq1.Widgets.SteppingSlider {
 					int widthToFillCurrentValue = (int)Math.Round(widthMinusBorder * partOfRange);
 					
 					g.FillRectangle(brushBgValueCurrent, 0, 0, widthToFillCurrentValue, base.Height);
+					using (Pen curPurple = new Pen(base.ForeColor)) {
+						g.DrawLine(curPurple, widthToFillCurrentValue, 0, widthToFillCurrentValue, base.Height);
+					}
 
 					int widthToFillMouseOver = 0;
 					if (this.mouseOver) {
@@ -199,6 +202,9 @@ namespace Sq1.Widgets.SteppingSlider {
 					int widthToFillCurrentValue = (int)Math.Round(widthMinusBorder * partOfRange);
 
 					g.FillRectangle(brushBgValueCurrent, base.Width - widthToFillCurrentValue, 0, widthToFillCurrentValue, base.Height);
+					using (Pen curPurple = new Pen(base.ForeColor)) {
+						g.DrawLine(curPurple, widthToFillCurrentValue, 0, widthToFillCurrentValue, base.Height);
+					}
 	
 					int widthToFillMouseOver = 0;
 					if (this.mouseOver) {
@@ -274,13 +280,13 @@ namespace Sq1.Widgets.SteppingSlider {
 				bool returnRaw = false;
 				if (Math.Truncate(this.ValueMin) != this.ValueMin) returnRaw = true;
 				if (Math.Truncate(this.ValueMax) != this.ValueMax) returnRaw = true;
-				if (Math.Truncate(this.ValueStep) != this.ValueStep) returnRaw = true;
+				if (Math.Truncate(this.ValueIncrement) != this.ValueIncrement) returnRaw = true;
 				return returnRaw;
 			} }
 		public decimal RoundToClosestStepIfAnyValueHasDecimalPoint(decimal rawValue) {
 			if (this.dontRound) return rawValue;
 			
-			decimal valueStepSafe = (this.ValueStep != 0) ? this.ValueStep : 1;
+			decimal valueStepSafe = (this.ValueIncrement != 0) ? this.ValueIncrement : 1;
 			int fullSteps = (int)Math.Floor(rawValue / valueStepSafe);
 			decimal fullStepsReminder = rawValue % valueStepSafe;
 			decimal halfStep = valueStepSafe / 2;

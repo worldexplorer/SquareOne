@@ -20,7 +20,9 @@ namespace Sq1.Core.StrategyBase {
 				if (this.ValueIncrement <= 0.0) return 1;
 				return (int)Math.Round(((this.ValueMax - this.ValueMin) / this.ValueIncrement) + 1.0);
 			} }
-		private ScriptParameter() {}
+		private ScriptParameter() {
+			string msg = "default initialization values for min/max/increment/current are located in ScriptParameterAttribute";
+		}
 		public ScriptParameter(int id, string name, double current, double min, double max, double increment, string reasonToExist) : this() {
 			this.Id = id;
 			this.Name = name;

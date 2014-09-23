@@ -52,7 +52,11 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		[JsonIgnore]	public ScriptCompiler ScriptCompiler;
 		// I_DONT_WANT_TO_BRING_CHART_SETTINGS_TO_CORE public ChartSettings ChartSettings;
+		
+		[JsonProperty]	public Dictionary<int, bool> SliderBordersShownByParameterId;
+		[JsonProperty]	public Dictionary<int, bool> SliderNumericUpdownsShownByParameterId;
 
+		
 		// programmer's constructor
 		public Strategy(string name) : this() {
 			this.Name = name;
@@ -65,6 +69,24 @@ namespace Sq1.Core.StrategyBase {
 			this.ScriptContextsByName.Add(this.ScriptContextCurrentName, new ContextScript(this.ScriptContextCurrentName));
 			this.ScriptCompiler = new ScriptCompiler();
 			this.ExceptionsLimitToAbortBacktest = 10;
+			this.SliderBordersShownByParameterId = new Dictionary<int, bool>();
+			this.SliderNumericUpdownsShownByParameterId = new Dictionary<int, bool>();
+		}
+		public void SetSliderBordersShownForParameterId(int paramId, bool shown) {
+			if (this.SliderBordersShownByParameterId.ContainsKey(paramId) == false) {
+				this.SliderBordersShownByParameterId.Add(paramId, shown);
+			} else {
+				this.SliderBordersShownByParameterId[paramId] = shown;
+			}
+			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+		}
+		public void SetSliderNumericUpdownShownForParameterId(int paramId, bool shown) {
+			if (this.SliderNumericUpdownsShownByParameterId.ContainsKey(paramId) == false) {
+				this.SliderNumericUpdownsShownByParameterId.Add(paramId, shown);
+			} else {
+				this.SliderNumericUpdownsShownByParameterId[paramId] = shown;
+			}
+			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 		}
 		public override string ToString() {
 			return this.Name;

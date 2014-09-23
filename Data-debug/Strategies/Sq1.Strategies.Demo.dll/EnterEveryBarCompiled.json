@@ -4,10 +4,10 @@
   "Name": "EnterEveryBarCompiled",
   "ScriptSourceCode": null,
   "DotNetReferences": null,
-  "DllPathIfNoSourceCode": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
+  "DllPathIfNoSourceCode": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
   "ExceptionsLimitToAbortBacktest": 10,
-  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json",
-  "ScriptContextCurrentName": "DDD",
+  "StoredInJsonAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json",
+  "ScriptContextCurrentName": "Default",
   "ScriptContextsByName": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
     "Default": {
@@ -18,13 +18,13 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": false,
+      "IsCurrent": true,
       "ChartAutoSubmitting": false,
       "ReporterShortNamesUserInvokedJSONcheck": [
         "Positions"
       ],
       "BacktestOnRestart": true,
-      "BacktestOnSelectorsChange": true,
+      "BacktestOnSelectorsChange": false,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
@@ -71,7 +71,7 @@
       "ShowRangeBar": false,
       "ParameterValuesById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "1": 8.0,
+        "1": 4.0,
         "2": 0.0
       }
     },
@@ -146,7 +146,7 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": true,
+      "IsCurrent": false,
       "ChartAutoSubmitting": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": true,
@@ -201,6 +201,16 @@
         "2": 0.0
       }
     }
+  },
+  "SliderBordersShownByParameterId": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib",
+    "1": false,
+    "2": true
+  },
+  "SliderNumericUpdownsShownByParameterId": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib",
+    "2": false,
+    "1": false
   },
   "HasChartOnly": false
 }

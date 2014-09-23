@@ -58,13 +58,14 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.ctxParameterBags.SuspendLayout();
 			try {
 				this.ctxParameterBags.Items.Clear();
-				//Debugger.Break();
 				this.ctxParameterBags.Items.AddRange(this.TsiDynamic);
 				if (sender == this && e == null) {
 					// after NewContext -> Delete, ctxOperations menu pane jumps on top of application window
 					this.ctxOperations.Hide();
 				}
 			} catch (Exception ex) {
+				Debugger.Break();
+				string msg = "DID_YOU_CHANGE_NUMERIC_UPDOWN?";
 				Assembler.PopupException("SlidersAutoGrow.EventConsumer.cs::ctxParameterBags_Opening()", ex);
 			} finally {
 				this.ctxParameterBags.ResumeLayout(true);

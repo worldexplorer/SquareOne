@@ -50,7 +50,7 @@
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.PanelFillSlider);
 			this.splitContainer1.Size = new System.Drawing.Size(236, 17);
-			this.splitContainer1.SplitterDistance = 60;
+			this.splitContainer1.SplitterDistance = 40;
 			this.splitContainer1.SplitterIncrement = 10;
 			this.splitContainer1.TabIndex = 2;
 			// 
@@ -60,7 +60,7 @@
 			this.DomainUpDown.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.DomainUpDown.Location = new System.Drawing.Point(0, 0);
 			this.DomainUpDown.Name = "DomainUpDown";
-			this.DomainUpDown.Size = new System.Drawing.Size(60, 20);
+			this.DomainUpDown.Size = new System.Drawing.Size(40, 20);
 			this.DomainUpDown.TabIndex = 0;
 			this.DomainUpDown.Text = "domainUpDown1";
 			this.DomainUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -85,7 +85,7 @@
 			this.PanelFillSlider.Location = new System.Drawing.Point(0, 0);
 			this.PanelFillSlider.Name = "PanelFillSlider";
 			this.PanelFillSlider.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.PanelFillSlider.Size = new System.Drawing.Size(172, 17);
+			this.PanelFillSlider.Size = new System.Drawing.Size(192, 17);
 			this.PanelFillSlider.TabIndex = 1;
 			this.PanelFillSlider.ValueCurrent = new decimal(new int[] {
 									200,
@@ -93,6 +93,11 @@
 									0,
 									0});
 			this.PanelFillSlider.ValueFormat = "0.#";
+			this.PanelFillSlider.ValueIncrement = new decimal(new int[] {
+									100,
+									0,
+									0,
+									0});
 			this.PanelFillSlider.ValueMax = new decimal(new int[] {
 									500,
 									0,
@@ -100,11 +105,6 @@
 									0});
 			this.PanelFillSlider.ValueMin = new decimal(new int[] {
 									10,
-									0,
-									0,
-									0});
-			this.PanelFillSlider.ValueStep = new decimal(new int[] {
-									100,
 									0,
 									0,
 									0});
@@ -133,7 +133,7 @@
 			this.mniHeaderNonHighlighted.BackColor = System.Drawing.Color.Transparent;
 			this.mniHeaderNonHighlighted.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.mniHeaderNonHighlighted.Name = "mniHeaderNonHighlighted";
-			this.mniHeaderNonHighlighted.Size = new System.Drawing.Size(200, 16);
+			this.mniHeaderNonHighlighted.Size = new System.Drawing.Size(100, 23);
 			this.mniHeaderNonHighlighted.Text = "Strategy Parameter Name444";
 			// 
 			// mniltbValueMin
@@ -141,7 +141,7 @@
 			this.mniltbValueMin.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbValueMin.InputFieldOffsetX = 80;
 			this.mniltbValueMin.InputFieldValue = "";
-			this.mniltbValueMin.InputFieldWidth = 52;
+			this.mniltbValueMin.InputFieldWidth = 51;
 			this.mniltbValueMin.Margin = new System.Windows.Forms.Padding(0);
 			this.mniltbValueMin.Name = "mniltbValueMin";
 			this.mniltbValueMin.Size = new System.Drawing.Size(164, 18);
@@ -154,7 +154,7 @@
 			this.mniltbValueCurrent.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbValueCurrent.InputFieldOffsetX = 80;
 			this.mniltbValueCurrent.InputFieldValue = "";
-			this.mniltbValueCurrent.InputFieldWidth = 52;
+			this.mniltbValueCurrent.InputFieldWidth = 51;
 			this.mniltbValueCurrent.Name = "mniltbValueCurrent";
 			this.mniltbValueCurrent.Size = new System.Drawing.Size(164, 18);
 			this.mniltbValueCurrent.Text = "Current";
@@ -166,7 +166,7 @@
 			this.mniltbValueMax.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbValueMax.InputFieldOffsetX = 80;
 			this.mniltbValueMax.InputFieldValue = "";
-			this.mniltbValueMax.InputFieldWidth = 52;
+			this.mniltbValueMax.InputFieldWidth = 51;
 			this.mniltbValueMax.Name = "mniltbValueMax";
 			this.mniltbValueMax.Size = new System.Drawing.Size(164, 18);
 			this.mniltbValueMax.Text = "Max";
@@ -178,7 +178,7 @@
 			this.mniltbValueStep.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbValueStep.InputFieldOffsetX = 80;
 			this.mniltbValueStep.InputFieldValue = "";
-			this.mniltbValueStep.InputFieldWidth = 52;
+			this.mniltbValueStep.InputFieldWidth = 51;
 			this.mniltbValueStep.Name = "mniltbValueStep";
 			this.mniltbValueStep.Size = new System.Drawing.Size(164, 18);
 			this.mniltbValueStep.Text = "Step";
@@ -226,14 +226,14 @@
 			this.mniSepAddContextScriptsAfter.Name = "mniSepAddContextScriptsAfter";
 			this.mniSepAddContextScriptsAfter.Size = new System.Drawing.Size(221, 6);
 			// 
-			// SliderCombo
+			// SliderComboControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ContextMenuStrip = this.ctxSlider;
 			this.Controls.Add(this.splitContainer1);
 			this.DoubleBuffered = true;
-			this.Name = "SliderCombo";
+			this.Name = "SliderComboControl";
 			this.Size = new System.Drawing.Size(236, 17);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);

@@ -78,9 +78,9 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		#region script parameters
-		public ScriptParameter ParameterCreateRegister(int id, string name, double value, double start, double stop, double step) {
+		public ScriptParameter ParameterCreateRegister(int id, string name, double value, double min, double max, double increment) {
 			this.checkThrowParameterAlreadyRegistered(id, name);
-			ScriptParameter strategyParameter = new ScriptParameter(id, name, value, start, stop, step);
+			ScriptParameter strategyParameter = new ScriptParameter(id, name, value, min, max, increment);
 			this.ParametersById.Add(id, strategyParameter);
 			return strategyParameter;
 		}

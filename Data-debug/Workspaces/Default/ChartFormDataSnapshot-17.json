@@ -2,7 +2,7 @@
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
   "StrategyGuidJsonCheck": "dacc92f4-092c-4d94-bfff-d8a5200ee9d6",
   "StrategyNameJsonCheck": "TwoMAindicatorsCompiled",
-  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAindicatorsCompiled.json",
+  "StrategyAbsPathJsonCheck": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAindicatorsCompiled.json",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",

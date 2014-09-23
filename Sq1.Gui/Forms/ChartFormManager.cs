@@ -292,8 +292,8 @@ namespace Sq1.Gui.Forms {
 				this.DataSnapshotSerializer.Serialize();
 				return;
 			}
-			this.Strategy.ScriptContextCurrent.PositionSize = this.Strategy.ScriptContextCurrent.PositionSize;
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+			// WTF this.Strategy.ScriptContextCurrent.PositionSize = this.Strategy.ScriptContextCurrent.PositionSize;
+			// WTF Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 			
 			bool wontBacktest = skipBacktest || this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false;
 			if (wontBacktest) {

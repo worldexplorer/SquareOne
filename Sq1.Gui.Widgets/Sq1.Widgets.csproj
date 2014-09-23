@@ -232,6 +232,9 @@
       <DependentUpon>SliderComboControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="SteppingSlider\SliderComboControl.EventGenerator.cs">
+      <DependentUpon>SliderComboControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="SteppingSlider\SlidersAutoGrowControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

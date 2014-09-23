@@ -7,8 +7,6 @@ using Sq1.Core;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SliderComboControl : UserControl {
-		public event EventHandler<EventArgs> ValueCurrentChanged;
-
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public decimal ValueMin {
 			get { return this.PanelFillSlider.ValueMin; }
@@ -16,9 +14,9 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
-		public decimal ValueStep {
-			get { return this.PanelFillSlider.ValueStep; }
-			set { this.PanelFillSlider.ValueStep = value; }
+		public decimal ValueIncrement {
+			get { return this.PanelFillSlider.ValueIncrement; }
+			set { this.PanelFillSlider.ValueIncrement = value; }
 		}
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
@@ -28,8 +26,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				this.PanelFillSlider.ValueCurrent = value;
 				this.mniltbValueCurrent.InputFieldValue = this.format(this.PanelFillSlider.ValueCurrent);
 				this.DomainUpDown.Text = this.format(this.PanelFillSlider.ValueCurrent);
-				if (this.ValueCurrentChanged == null) return;
-				this.ValueCurrentChanged(this, EventArgs.Empty);
+				this.RaiseValueChanged();
 			}
 		}
 		string format(decimal value) {

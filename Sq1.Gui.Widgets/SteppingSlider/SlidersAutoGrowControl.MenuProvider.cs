@@ -73,7 +73,9 @@ namespace Sq1.Widgets.SteppingSlider {
 				ret.AddRange(this.TsiScriptContextsDynamic);
 				ret.Add(this.mniltbParametersBagNewWithDefaults);
 				ret.Add(this.toolStripSeparator2);
-				ret.Add(this.resetToScriptDefaultsToolStripMenuItem);
+				ret.Add(this.mniAllParamsResetToScriptDefaults);
+				ret.Add(this.mniAllParamsShowBorder);
+				ret.Add(this.mniAllParamsShowNumeric);
 				return ret.ToArray();
 			} }
 		string stringEnteredInLabeledTextBox(string msig, object sender, KeyEventArgs e) {

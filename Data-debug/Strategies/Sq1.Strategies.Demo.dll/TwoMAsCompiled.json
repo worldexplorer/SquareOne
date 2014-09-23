@@ -4,9 +4,9 @@
   "Name": "TwoMAsCompiled",
   "ScriptSourceCode": null,
   "DotNetReferences": null,
-  "DllPathIfNoSourceCode": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
+  "DllPathIfNoSourceCode": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
   "ExceptionsLimitToAbortBacktest": 10,
-  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json",
+  "StoredInJsonAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json",
   "ScriptContextCurrentName": "Default",
   "ScriptContextsByName": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
@@ -61,6 +61,12 @@
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
       }
     }
+  },
+  "SliderBordersShownByParameterId": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib"
+  },
+  "SliderNumericUpdownsShownByParameterId": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib"
   },
   "HasChartOnly": false
 }

@@ -12,6 +12,13 @@ namespace Sq1.Core.StrategyBase {
 		public double ValueIncrement;
 		public double ValueCurrent;
 
+		public ScriptParameterAttribute() {
+			ValueMin = 0;
+			ValueMax = 10;
+			ValueIncrement = 1;
+			ValueCurrent = 5;
+		}
+		
 		public override string ToString() {
 			return this.Name + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
 		}
