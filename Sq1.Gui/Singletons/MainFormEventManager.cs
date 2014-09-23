@@ -192,7 +192,8 @@ namespace Sq1.Gui.Singletons {
 		internal void SlidersAutoGrow_OnScriptContextLoadClicked(object sender, StrategyEventArgs e) {
 			Strategy strategy = e.Strategy;
 			strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
-			SlidersForm.Instance.PopulateFormTitle(strategy);
+			//v1 SlidersForm.Instance.PopulateFormTitle(strategy);
+			//v2 WILLBEDONE_BY_PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy() SlidersForm.Instance.Initialize(strategy);
 			try {
 				this.mainForm.ChartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("StrategiesTree_OnScriptContextLoadClicked()");
 			} catch (Exception ex) {

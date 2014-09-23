@@ -12,11 +12,15 @@ namespace Sq1.Core.StrategyBase {
 		protected SystemPerformance SystemPerformance;
 		protected string FormatPrice { get { 
 				string ret = "C";
-				if (this.SystemPerformance == null) return ret;
-				if (this.SystemPerformance.Bars == null) return ret;
-				if (this.SystemPerformance.Bars.SymbolInfo == null) return ret;
-				ret = "N" + this.SystemPerformance.Bars.SymbolInfo.DecimalsPrice;
-				return ret;
+				if (	this.SystemPerformance == null
+				     || this.SystemPerformance.Bars == null
+				     || this.SystemPerformance.Bars.SymbolInfo == null) {
+					string msig = " " + this.GetType().FullName;
+					string msg = "DEVELOPER_OF_[" + msig + "], don't forget to do base.SystemPerformance=performance as first line of overriden BuildOnceAfterFullBlindBacktestFinished() so that Reporter.Format picks up DecimalsPrice";
+					Assembler.PopupException(msg);
+					return ret;
+				}
+				return this.SystemPerformance.Bars.SymbolInfo.FormatPrice;
 			} }
 
 

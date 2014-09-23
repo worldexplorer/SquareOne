@@ -133,10 +133,10 @@ namespace Sq1.Charting {
 		}
 		void hScrollBar_Scroll(object sender, ScrollEventArgs scrollEventArgs) {
 			if (this.Bars == null) {
-#if DEBUG
+				#if DEBUG
 				string msg = "POSSIBLY_DISABLE_SCROLLBAR_WHEN_CHART_HAS_NO_BARS? OR MAKE_CHART_ALWAYS_DISPLAY_BARS";
 				Debugger.Break();
-#endif
+				#endif
 				return;
 			}
 

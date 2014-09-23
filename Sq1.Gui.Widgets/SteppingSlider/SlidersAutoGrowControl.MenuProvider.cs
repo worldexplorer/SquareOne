@@ -67,8 +67,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				return new List<ToolStripMenuItem>(this.tsiScriptContextsDynamic.Values).ToArray();
 			}
 		}
-		public ToolStripItem[] TsiDynamic {
-			get {
+		public ToolStripItem[] TsiDynamic { get {
 				var ret = new List<ToolStripItem>();
 				ret.Add(this.mniParameterBagsNotHighlighted);
 				ret.AddRange(this.TsiScriptContextsDynamic);
@@ -76,8 +75,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				ret.Add(this.toolStripSeparator2);
 				ret.Add(this.resetToScriptDefaultsToolStripMenuItem);
 				return ret.ToArray();
-			}
-		}
+			} }
 		string stringEnteredInLabeledTextBox(string msig, object sender, KeyEventArgs e) {
 			if (this.Strategy == null) {
 				string msg = "you should keep your rightClickMenu disabled if current chart has no strategy";

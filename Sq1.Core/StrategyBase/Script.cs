@@ -106,8 +106,10 @@ namespace Sq1.Core.StrategyBase {
  
 			//this.executor.Backtester.Initialize(this.BacktestMode);
 
-			string msg = "DONT_UNCOMMENT_ITS_LIKE_METHOD_BUT_USED_IN_SLIDERS_AUTO_GROW_CONTROL_4_HOURS_DEBUGGING";
-			this.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
+			//MOVED_TO_ChartFormManager.InitializeStrategyAfterDeserialization() FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
+			//string msg = "DONT_UNCOMMENT_ITS_LIKE_METHOD_BUT_USED_IN_SLIDERS_AUTO_GROW_CONTROL_4_HOURS_DEBUGGING";
+			//this.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
+			
 			try {
 				this.InitializeBacktest();
 			} catch (Exception ex) {
@@ -118,6 +120,7 @@ namespace Sq1.Core.StrategyBase {
 				this.Executor.Backtester.RequestingBacktestAbort.Set();
 			}
 		}
+		//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
 		public void PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy() {
 			bool storeStrategySinceParametersGottenFromScript = false;
 			Dictionary<int, double> strategyParameters = this.Strategy.ScriptContextCurrent.ParameterValuesById;

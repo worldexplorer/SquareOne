@@ -3,7 +3,6 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.DataTypes {
 	public class SymbolInfo {
-		//public string MarketName;
 		public SecurityType SecurityType;
 		public string Symbol;
 		public string SymbolClass;
@@ -25,7 +24,6 @@ namespace Sq1.Core.DataTypes {
 		public double VolumeMinimalFromDecimal	{ get { return  Math.Pow(1, -this.DecimalsVolume);  } }		// 1^(-2) = 0.01
 		public double PriceMinimalFromDecimal	{ get { return  Math.Pow(1, -this.DecimalsPrice); } }		// 1^(-2) = 0.01
 		
-
 		public bool SameBarPolarCloseThenOpen;
 		public int SequencedOpeningAfterClosedDelayMillis;
 		public int EmergencyCloseDelayMillis;
@@ -36,12 +34,10 @@ namespace Sq1.Core.DataTypes {
 		public string SlippagesBuy;
 		public string SlippagesSell;
 		public MarketOrderAs MarketOrderAs;
-		public bool MarketZeroOrMinMax {
-			get {
+		public bool MarketZeroOrMinMax { get {
 				return this.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
 					|| this.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
-			}
-		}
+			} }
 		public bool ReplaceTidalWithCrossMarket;
 		public int ReplaceTidalMillis;
 		public bool SimBugOutOfBarStopsFill;
@@ -136,10 +132,8 @@ namespace Sq1.Core.DataTypes {
 		public SymbolInfo Clone() {
 			return (SymbolInfo)this.MemberwiseClone();
 		}
-		public string PriceToStringFormat {
-			get { return "N" + DecimalsPrice; }
-		}
-
+		public string FormatPrice { get { return "N" + this.DecimalsPrice; } }
+		public string FormatVolume { get { return "N" + this.DecimalsVolume; } }
 		public double AlignOrderPriceToPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
 			bool buyOrShort = true;
 			PositionLongShort positionLongShort = PositionLongShort.Long;

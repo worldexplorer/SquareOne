@@ -1,34 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
+using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
-	[DataContract]
 	public class ContextScript : ContextChart {
-		[DataMember] public PositionSize PositionSize;
-		[DataMember] public Dictionary<int, double> ParameterValuesById { get; set; }
-		[DataMember] public bool IsCurrent;
-		[DataMember] public bool ChartAutoSubmitting;
+		[JsonProperty]	public PositionSize PositionSize;
+		[JsonProperty]	public Dictionary<int, double> ParameterValuesById { get; set; }
+		[JsonProperty]	public bool IsCurrent;
+		[JsonProperty]	public bool ChartAutoSubmitting;
 
-		[DataMember] public List<string> ReporterShortNamesUserInvokedJSONcheck;
-		[DataMember] public bool BacktestOnRestart;
-		[DataMember] public bool BacktestOnSelectorsChange;
-		[DataMember] public bool BacktestOnDataSourceSaved;
-		[DataMember] public Dictionary<string, object> ReportersSnapshots;
+		[JsonProperty]	public List<string> ReporterShortNamesUserInvokedJSONcheck;
+		[JsonProperty]	public bool BacktestOnRestart;
+		[JsonProperty]	public bool BacktestOnSelectorsChange;
+		[JsonProperty]	public bool BacktestOnDataSourceSaved;
+		[JsonProperty]	public Dictionary<string, object> ReportersSnapshots;
 		
-		[DataMember] public bool ApplyCommission;
-		[DataMember] public bool EnableSlippage;
-		[DataMember] public bool LimitOrderSlippage;
-		[DataMember] public bool RoundEquityLots;
-		[DataMember] public bool RoundEquityLotsToUpperHundred;
-		[DataMember] public bool NoDecimalRoundingForLimitStopPrice;
-		[DataMember] public double SlippageUnits;
-		[DataMember] public int SlippageTicks;
-		[DataMember] public int PriceLevelSizeForBonds;
-
+		[JsonProperty]	public bool ApplyCommission;
+		[JsonProperty]	public bool EnableSlippage;
+		[JsonProperty]	public bool LimitOrderSlippage;
+		[JsonProperty]	public bool RoundEquityLots;
+		[JsonProperty]	public bool RoundEquityLotsToUpperHundred;
+		[JsonProperty]	public bool NoDecimalRoundingForLimitStopPrice;
+		[JsonProperty]	public double SlippageUnits;
+		[JsonProperty]	public int SlippageTicks;
+		[JsonProperty]	public int PriceLevelSizeForBonds;
 
 		public ContextScript(ContextChart upgradingFromSimpleChart = null, string name = "UNDEFINED") : this(name) {
 			base.AbsorbFrom(upgradingFromSimpleChart);

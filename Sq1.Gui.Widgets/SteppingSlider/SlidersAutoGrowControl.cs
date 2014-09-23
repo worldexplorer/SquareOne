@@ -19,13 +19,11 @@ namespace Sq1.Widgets.SteppingSlider {
 				foreach (Control child in base.Controls) child.Enabled = base.Enabled;
 			}
 		}
-		public int PreferredHeight {
-			get {
+		public int PreferredHeight { get {
 				int ret = 0;
 				foreach (UserControl control in base.Controls) ret += control.Height + this.VerticalSpaceBetweenSliders;
 				return ret;
-			}
-		}
+			} }
 		public Dictionary<string, double> CurrentParametersFromChildSliders {
 			get {
 				if (base.DesignMode == true) return null;

@@ -84,12 +84,16 @@ namespace Sq1.Widgets.SteppingSlider {
 					
 					this.mniParameterBagLoad.Enabled = false;
 					this.mniParameterBagLoad.Text = "Already Loaded [" + mniOpening.Text + "]";
-					
-					//this.mniltbParameterBagRenameTo.Enabled = false;
 				} else {
 					this.mniParameterBagDelete.Enabled = true;
 					this.mniParameterBagLoad.Enabled = true;
-					//this.mniltbParameterBagRenameTo.Enabled = true;
+				}
+				
+				if (mniOpening.Text == "Default") {
+					this.mniltbParameterBagRenameTo.Enabled = false;
+					this.mniParameterBagDelete.Enabled = false;
+				} else {
+					this.mniltbParameterBagRenameTo.Enabled = true;
 				}
 				
 				this.ctxOperations.Tag = (ContextScript) mniOpening.Tag;

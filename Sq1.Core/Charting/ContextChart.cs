@@ -1,20 +1,20 @@
 ﻿using System;
-using System.Runtime.Serialization;
+
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Newtonsoft.Json;
 
 namespace Sq1.Core.StrategyBase {
-	[DataContract]
 	public class ContextChart {
-		[DataMember] public string Name;
-		[DataMember] public string Symbol;
-		[DataMember] public string DataSourceName;
-		[DataMember] public BarScaleInterval ScaleInterval;
-		[DataMember] public BarDataRange DataRange;
+		[JsonProperty]	public string Name;
+		[JsonProperty]	public string Symbol;
+		[JsonProperty]	public string DataSourceName;
+		[JsonProperty]	public BarScaleInterval ScaleInterval;
+		[JsonProperty]	public BarDataRange DataRange;
 
 		//public int ChartBarSpacing;
-		[DataMember] public bool ChartStreaming;
-		[DataMember] public bool ShowRangeBar;
+		[JsonProperty]	public bool ChartStreaming;
+		[JsonProperty]	public bool ShowRangeBar;
 
 		public ContextChart(string name = "UNDEFINED") : this() {
 			Name = name;
@@ -45,7 +45,7 @@ namespace Sq1.Core.StrategyBase {
 //		}
 		public override string ToString() {
 			//return this.Name;
-			return this.DataSourceName + " :: " + this.Symbol;
+			return this.DataSourceName + " :: " + this.Symbol + " ctx/" + this.Name;
 		}
 	}
 }

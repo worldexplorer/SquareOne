@@ -28,13 +28,13 @@ namespace Sq1.Charting {
 			string titleBlue = barToPopulate.DateTimeOpen.ToString("HH:mm ") + " #" + barToPopulate.ParentBarsIndex;
 			this.lblHeaderVal.Text = titleBlue;
 			this.lblDateValue.Text = barToPopulate.DateTimeOpen.ToString("ddd dd-MMM-yyyy");
-			string formatPrice = "N" + barToPopulate.ParentBars.SymbolInfo.DecimalsPrice;
+			string formatPrice = barToPopulate.ParentBars.SymbolInfo.FormatPrice;
 			this.lblOpenVal.Text = barToPopulate.Open.ToString(formatPrice);
 			this.lblHighVal.Text = barToPopulate.High.ToString(formatPrice);
 			this.lblLowVal.Text = barToPopulate.Low.ToString(formatPrice);
 			this.lblCloseVal.Text = barToPopulate.Close.ToString(formatPrice);
 
-			string formatVolume = "N" + barToPopulate.ParentBars.SymbolInfo.DecimalsPrice;
+			string formatVolume = barToPopulate.ParentBars.SymbolInfo.FormatVolume;
 			this.lblVolumeVal.Text = barToPopulate.Volume.ToString(formatVolume);
 
 			string alertsAsString = "";

@@ -116,8 +116,8 @@ namespace Sq1.Reporters {
 			this.AddCurrencyValue(label, value, Color.Empty, Color.Empty, itemFontColor, FontStyle.Regular, FontStyle.Regular);
 		}
 		protected void AddCurrencyValue(string label, double value, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
-			int decimalPlaces = systemPerformance.Bars.SymbolInfo.DecimalsPrice;
-			string valueFormatted = value.ToString("N" + decimalPlaces);
+			string format = systemPerformance.Bars.SymbolInfo.FormatPrice;
+			string valueFormatted = value.ToString(format);
 			this.RenderCell(label, valueFormatted, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
 		}
 		protected void AddNumericValue(string label, double value, int decimalPlaces) {

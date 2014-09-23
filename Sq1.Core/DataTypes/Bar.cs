@@ -302,24 +302,24 @@ namespace Sq1.Core.DataTypes {
 		public override string ToString() {
 			string priceFormat = "N";
 			string volumeFormat = "N";
-			int decimalsPrice = 3;
-			int decimalsVolume = 3;
+			int priceDecimals = 3;
+			int volumeDecimals = 3;
 			
 			if (this.ParentBars != null && this.ParentBars.SymbolInfo != null) {
-				decimalsPrice = this.ParentBars.SymbolInfo.DecimalsPrice;
-				decimalsVolume = this.ParentBars.SymbolInfo.DecimalsVolume;
-				priceFormat = "N" + decimalsPrice;
-				volumeFormat = "N" + decimalsVolume;
+				priceDecimals	= this.ParentBars.SymbolInfo.DecimalsPrice;
+				volumeDecimals	= this.ParentBars.SymbolInfo.DecimalsVolume;
+				priceFormat		= this.ParentBars.SymbolInfo.FormatPrice;
+				volumeFormat	= this.ParentBars.SymbolInfo.FormatVolume;
 			}
 			
 			return this.ParentBarsIdent + ":"
 				+ Symbol + "(" + ScaleInterval + ") "
 				+ "T[" + DateTimeOpen + "]"
-				+ "O[" + Math.Round(this.Open,	decimalsPrice).ToString(priceFormat) + "]"
-				+ "H[" + Math.Round(this.High,	decimalsPrice).ToString(priceFormat) + "]"
-				+ "L[" + Math.Round(this.Low,	decimalsPrice).ToString(priceFormat) + "]"
-				+ "C[" + Math.Round(this.Close,	decimalsPrice).ToString(priceFormat) + "]"
-				+ "V[" + Math.Round(this.Volume,decimalsVolume).ToString(volumeFormat) + "]"
+				+ "O[" + Math.Round(this.Open,	priceDecimals).ToString(priceFormat) + "]"
+				+ "H[" + Math.Round(this.High,	priceDecimals).ToString(priceFormat) + "]"
+				+ "L[" + Math.Round(this.Low,	priceDecimals).ToString(priceFormat) + "]"
+				+ "C[" + Math.Round(this.Close,	priceDecimals).ToString(priceFormat) + "]"
+				+ "V[" + Math.Round(this.Volume,volumeDecimals).ToString(volumeFormat) + "]"
 				;
 		}
 		public bool ContainsPrice(double entryFillPrice) {
@@ -365,6 +365,6 @@ namespace Sq1.Core.DataTypes {
 			return !outsideSpread;
 		}
 
-		public double HighLowDistance { get { return this.High - this.Low; } }
+		[JsonIgnore]	public double HighLowDistance { get { return this.High - this.Low; } }
 	}
 }

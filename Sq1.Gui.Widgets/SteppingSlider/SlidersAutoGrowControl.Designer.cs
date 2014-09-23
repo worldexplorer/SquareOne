@@ -136,7 +136,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbParametersBagNewWithDefaults.InputFieldWidth = 85;
 			this.mniltbParametersBagNewWithDefaults.Name = "mniltbParametersBagNewWithDefaults";
 			this.mniltbParametersBagNewWithDefaults.Size = new System.Drawing.Size(165, 21);
-			this.mniltbParametersBagNewWithDefaults.Text = "New Default";
+			this.mniltbParametersBagNewWithDefaults.Text = "New clean";
 			this.mniltbParametersBagNewWithDefaults.TextRed = false;
 			this.mniltbParametersBagNewWithDefaults.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextNewWithDefaults_UserTyped);
 			// 
