@@ -69,8 +69,8 @@ namespace Sq1.Reporters {
 			this.olvcQuantity.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "clhPosition.clhQuantity: position=null";
-				string format = "N" + position.Bars.SymbolInfo.DecimalsVolume;
-				return position.Shares.ToString(format);
+				//string format = "N" + position.Bars.SymbolInfo.DecimalsVolume;
+				return position.Shares.ToString(base.FormatPrice);
 			};
 			this.olvcEntryDate.AspectGetter = delegate(object o) {
 				var position = o as Position;
@@ -81,8 +81,8 @@ namespace Sq1.Reporters {
 			this.olvcEntryPrice.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "clhPosition.clhEntryPrice: position=null";
-				string format = "N" + position.Bars.SymbolInfo.DecimalsPrice;
-				return position.EntryFilledPrice.ToString(format);
+				//string format = "N" + position.Bars.SymbolInfo.DecimalsPrice;
+				return position.EntryFilledPrice.ToString(base.FormatPrice);
 			};
 			this.olvcEntryOrder.AspectGetter = delegate(object o) {
 				var position = o as Position;
@@ -100,8 +100,8 @@ namespace Sq1.Reporters {
 				var position = o as Position;
 				if (position == null) return "clhPosition.clhExitPrice: position=null";
 				//if (position.ExitDate == DateTime.MinValue) return "STILL_OPEN"
-				string format = "N" + position.Bars.SymbolInfo.DecimalsPrice;
-				return position.ExitFilledPrice.ToString(format);
+				//string format = "N" + position.Bars.SymbolInfo.DecimalsPrice;
+				return position.ExitFilledPrice.ToString(base.FormatPrice);
 			};
 			this.olvcExitOrder.AspectGetter = delegate(object o) {
 				var position = o as Position;
@@ -117,7 +117,7 @@ namespace Sq1.Reporters {
 			this.olvcProfitDollar.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "clhPosition.clhProfitDollar: position=null";
-				return position.NetProfit.ToString("C");
+				return position.NetProfit.ToString(base.FormatPrice);
 			};
 			this.olvcBarsHeld.AspectGetter = delegate(object o) {
 				var position = o as Position;
@@ -127,7 +127,7 @@ namespace Sq1.Reporters {
 			this.olvcProfitPerBar.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "clhPosition.clhProfitPerBar: position=null";
-				return position.ProfitPerBar.ToString("C");
+				return position.ProfitPerBar.ToString(base.FormatPrice);
 			};
 			this.olvcEntrySignalName.AspectGetter = delegate(object o) {
 				var position = o as Position;
@@ -156,7 +156,7 @@ namespace Sq1.Reporters {
 				//double equityAtThisPositionClosed = this.systemPerformance.SlicesShortAndLong.EquityCurve.HOW_TO_FIND?
 				double equityAtThisPositionClosed = -1;
 				if (this.cumulativeProfitDollar.ContainsKey(position)) equityAtThisPositionClosed = this.cumulativeProfitDollar[position];
-				return equityAtThisPositionClosed.ToString("C");
+				return equityAtThisPositionClosed.ToString(base.FormatPrice);
 			};
 			this.olvcCumProfitPct.AspectGetter = delegate(object o) {
 				var position = o as Position;

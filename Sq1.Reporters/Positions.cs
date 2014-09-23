@@ -15,7 +15,6 @@ using Sq1.Support;
 
 namespace Sq1.Reporters {
 	public partial class Positions : Reporter {
-		SystemPerformance systemPerformance;
 		SaveFileDialog sfd;
 		Dictionary<ToolStripMenuItem, List<OLVColumn>> columnsByFilters;
 		PositionsDataSnapshot snap;
@@ -155,8 +154,8 @@ namespace Sq1.Reporters {
 		}
 		
 		public override void BuildOnceAfterFullBlindBacktestFinished(SystemPerformance performance) {
-			this.systemPerformance = performance;
-			if (this.systemPerformance.Bars.IsIntraday) {
+			base.SystemPerformance = performance;
+			if (base.SystemPerformance.Bars.IsIntraday) {
 				this.olvcEntryDate.Width = 120;
 				this.olvcExitDate.Width = 120;
 			} else {
@@ -174,10 +173,10 @@ namespace Sq1.Reporters {
 			double cumProfitPercent = 0;
 			this.cumulativeProfitDollar.Clear();
 			this.cumulativeProfitPercent.Clear();
-			//v1 this.positionsAllReversedCached = this.systemPerformance.SlicesShortAndLong.PositionsImTrackingReversed;
+			//v1 this.positionsAllReversedCached = base.SystemPerformance.SlicesShortAndLong.PositionsImTrackingReversed;
 			//v2
 			this.positionsAllReversedCached.Clear();
-			foreach (Position pos in this.systemPerformance.SlicesShortAndLong.PositionsImTrackingReadOnly) {
+			foreach (Position pos in base.SystemPerformance.SlicesShortAndLong.PositionsImTrackingReadOnly) {
 				cumProfitDollar += pos.NetProfit;
 				cumProfitPercent += pos.NetProfitPercent;
 				this.cumulativeProfitDollar.Add(pos, cumProfitDollar);
@@ -199,7 +198,7 @@ namespace Sq1.Reporters {
 				buffer.Append("\t");
 				buffer.Append(position.Shares.ToString("N0"));
 				buffer.Append("\t");
-				if (this.systemPerformance.Bars.IsIntraday) {
+				if (base.SystemPerformance.Bars.IsIntraday) {
 					buffer.Append(position.EntryDate.ToShortDateString() + " " + position.EntryDate.ToShortTimeString());
 					buffer.Append("\t");
 				} else {
@@ -214,7 +213,7 @@ namespace Sq1.Reporters {
 					buffer.Append("Open");
 					buffer.Append("\t");
 				} else {
-					if (this.systemPerformance.Bars.IsIntraday) {
+					if (base.SystemPerformance.Bars.IsIntraday) {
 						buffer.Append(position.ExitDate.ToShortDateString() + " " + position.ExitDate.ToShortTimeString());
 						buffer.Append("\t");
 					} else {

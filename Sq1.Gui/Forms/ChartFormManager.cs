@@ -376,9 +376,10 @@ namespace Sq1.Gui.Forms {
 				#endif
 				return;
 			}
-			// ALREADY_DONE_BY_InitializeWithStrategy()_ABOVE this.Strategy = strategyFound;
-			if (this.Strategy.ScriptContextCurrent.BacktestOnRestart == false) return;
-			
+			if (this.Strategy.ScriptContextCurrent.BacktestOnRestart == false) {
+				return;
+			}
+
 			this.Strategy.CompileInstantiate();	//this.Strategy is initialized in this.Initialize(); mess comes from StrategiesTree_OnStrategyOpenSavedClicked() (TODO: reduce multiple paths)
 			if (this.Strategy.Script == null) {
 				string msig = " InitializeStrategyAfterDeserialization(" + this.Strategy.ToString() + ")";
@@ -392,13 +393,13 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			if (this.Strategy.Script.Executor == null) {
-				//IM_GETTING_HERE_ON_STARTUP_AFTER_SUCCESFULL_COMPILATION_CHART_RELATED_STRATEGIES Debugger.Break();	// you should never get here; a compiled script should've been already linked to Executor (without bars on deserialization) 10 lines above in this.InitializeWithStrategy(mainForm, strategy);
+				//IM_GETTING_HERE_ON_STARTUP_AFTER_SUCCESFULL_COMPILATION_CHART_RELATED_STRATEGIES Debugger.Break();
+				string msg = "you should never get here; a compiled script should've been already linked to Executor (without bars on deserialization) 10 lines above in this.InitializeWithStrategy(mainForm, strategy);";
+				Debugger.Break();
 				this.Strategy.Script.Initialize(this.Executor);
 			}
-			// make sure so that reporters will get poked
 			this.Executor.BacktesterRunSimulationTrampoline(new Action(this.afterBacktesterCompleteOnceOnRestart), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
-			return;
 		}
 		public void ReportersDumpCurrentForSerialization() {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;

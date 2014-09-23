@@ -44,9 +44,6 @@ namespace Sq1.Core.StrategyBase {
 		#endregion
 
 		#region volatile Script is recompiled and replaced
-		public Script Script { get; private set; }
-		public bool ScriptIsExecuting { get; internal set; }
-
 		public Bars Bars { get; private set; }
 		public PositionSize PositionSize { get {
 				if (this.Strategy == null) {
@@ -154,7 +151,7 @@ namespace Sq1.Core.StrategyBase {
 		public ReporterPokeUnit ExecuteOnNewBarOrNewQuote(Quote quote) {
 			if (this.Strategy.Script == null) return null;
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quote);
-			this.ExecutionDataSnapshot.PreExecutionClear();
+			this.ExecutionDataSnapshot.PreExecutionOnNewBarOrNewQuoteClear();
 			int alertsDumpedForStreamingBar = -1;
 
 			if (quote != null) {
@@ -251,8 +248,8 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public Position BuyOrShortAlertCreateRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
 		                                              Direction direction, MarketLimitStop entryMarketLimitStop, bool registerInNew = true) {
-
-			this.CheckThrowAlertCanBeCreated(entryBar, "BARS.BARSTREAMING_OR_BARS.BARLASTSTATIC_IS_NULL_BuyOrShortAlertCreateRegister() ");
+			string msig = " //BuyOrShortAlertCreateRegister(stopOrLimitPrice[" + stopOrLimitPrice+ "], entrySignalName[" + entrySignalName + "], entryBar[" + entryBar + "])";
+			this.CheckThrowAlertCanBeCreated(entryBar, msig);
 
 			Alert alert = null;
 			// real-time streaming should create its own Position after an Order gets filled
@@ -262,10 +259,16 @@ namespace Sq1.Core.StrategyBase {
 			} else {
 				//alert = this.MarketSimStatic.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
 				//	direction, entryMarketLimitStop);
+				string msg = "BACKTESTS_MUST_RUN_IN_STREAMING_SINCE_MarketSimStatic_WAS_DEPRECATED_INFAVOROF_MarketRealStreaming";
+				#if DEBUG
 				Debugger.Break();
+				#endif
+				throw new Exception(msg);
 			}
 			Alert similar = this.ExecutionDataSnapshot.FindSimilarNotSamePendingAlert(alert);
 			if (similar != null) {
+				string msg = "DUPLICATE_ALERT_FOUND similar[" + similar + "]";
+				Assembler.PopupException(msg + msig);
 				return similar.PositionAffected;
 			}
 

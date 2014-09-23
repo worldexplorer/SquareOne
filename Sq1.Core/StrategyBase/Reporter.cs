@@ -9,6 +9,17 @@ namespace Sq1.Core.StrategyBase {
 		public string TabText;
 		protected ChartShadow Chart;
 
+		protected SystemPerformance SystemPerformance;
+		protected string FormatPrice { get { 
+				string ret = "C";
+				if (this.SystemPerformance == null) return ret;
+				if (this.SystemPerformance.Bars == null) return ret;
+				if (this.SystemPerformance.Bars.SymbolInfo == null) return ret;
+				ret = "N" + this.SystemPerformance.Bars.SymbolInfo.DecimalsPrice;
+				return ret;
+			} }
+
+
 		public Reporter() {
 			this.TabText = "UNKNOWN_REPORTER";
 		}
@@ -21,6 +32,7 @@ namespace Sq1.Core.StrategyBase {
 
 		public virtual void BuildOnceAfterFullBlindBacktestFinished(SystemPerformance performance) {
 			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildOnceAfterFullBlindBacktestFinished(SystemPerformance)" + this.TabText + "/" + this.GetType();
+			msg = "; don't forget to do base.SystemPerformance=performance so that Reporter.Format picks up DecimalsPrice";
 			throw new NotImplementedException(msg);
 		}
 		public virtual void BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit pokeUnit) {

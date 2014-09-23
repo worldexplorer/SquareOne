@@ -65,8 +65,9 @@ namespace Sq1.Widgets.SteppingSlider {
 			try {
 				if (this.Strategy == null) return;
 				if (this.Strategy.Script == null) return;
-				foreach (ScriptParameter parameter in
-						this.Strategy.ScriptParametersMergedWithCurrentContext.Values) {
+				//v1 TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
+				// foreach (ScriptParameter parameter in this.Strategy.ScriptParametersMergedWithCurrentContext.Values) {
+				foreach (ScriptParameter parameter in this.Strategy.Script.ParametersById.Values) {
 					SliderComboControl slider = this.SliderComboFactory(parameter);
 					base.Controls.Add(slider);
 				}

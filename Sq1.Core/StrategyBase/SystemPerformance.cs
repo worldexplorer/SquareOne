@@ -81,9 +81,9 @@ namespace Sq1.Core.StrategyBase {
 			List<Position> positionsClosed = new List<Position>(this.Executor.ExecutionDataSnapshot.PositionsMaster);
 			foreach (Position posOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow) {
 				if (positionsClosed.Contains(posOpen) == false) {
-#if DEBUG
+					#if DEBUG
 					Debugger.Break();
-#endif
+					#endif
 					continue;
 				}
 				positionsClosed.Remove(posOpen);

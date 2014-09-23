@@ -58,9 +58,6 @@ namespace Sq1.Core.Execution {
 
 			this.PositionsOpenedAfterExec.Clear();
 			this.PositionsClosedAfterExec.Clear();
-			if (this.PositionsOpenNow.Count > 0) {
-				int a = 1;
-			}
 			this.PositionsOpenNow.Clear();
 
 			this.AlertsMaster.Clear();
@@ -68,9 +65,8 @@ namespace Sq1.Core.Execution {
 			this.AlertsPending.Clear();
 			this.AlertsPendingHistoryByBar.Clear();
 		}
-
-		internal void PreExecutionClear() {
-			if (this.executor.ScriptIsExecuting) {
+		internal void PreExecutionOnNewBarOrNewQuoteClear() {
+			if (this.AlertsNewAfterExec.Count > 0) {
 				int a = 1;
 			}
 			this.AlertsNewAfterExec.Clear();
@@ -146,10 +142,9 @@ namespace Sq1.Core.Execution {
 			if (alert.Qty == 0.0) {
 				string msg = "alert[" + alert + "].Qty==0; hopefully will be displayed but not executed...";
 				throw new Exception(msg);
-				//log.Warn(msg);
 			}
 			if (alert.Strategy.Script == null) {
-				int a = 1;	//ok if submitted from mni
+				string msg = "TODO NYI alert submitted from mni / onChartTrading";
 			}
 			lock (alertsMasterLock) {
 				if (this.AlertsMasterContainsIdentical(alert)) {

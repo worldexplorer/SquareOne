@@ -42,31 +42,33 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return this.ScriptContextsByName[this.ScriptContextCurrentName];
 			} }
-		[JsonIgnore] public SortedDictionary<int, ScriptParameter> ScriptParametersMergedWithCurrentContext { get {
-				SortedDictionary<int, ScriptParameter> ret = new SortedDictionary<int, ScriptParameter>();
-				if (this.Script == null) return ret;
-				bool storeStrategySinceParametersGottenFromScript = false;
-				foreach (ScriptParameter paramScript in this.Script.ParametersById.Values) {
-					//ScriptParameter paramMerged = paramScript.Clone();
-					ScriptParameter paramMerged = paramScript;
-					if (this.ScriptContextCurrent.ParameterValuesById.ContainsKey(paramScript.Id)) {
-						double valueContext = this.ScriptContextCurrent.ParameterValuesById[paramScript.Id];
-						paramMerged.ValueCurrent = valueContext;
-					} else {
-						this.ScriptContextCurrent.ParameterValuesById.Add(paramScript.Id, paramScript.ValueCurrent);
-						string msg = "added paramScript[Id=" + paramScript.Id + " value=" + paramScript.ValueCurrent + "]"
-							+ " into Script[" + this.Script.GetType().Name + "].ScriptContextCurrent[" + this.ScriptContextCurrent.Name + "]"
-							+ " /ScriptParametersMergedWithCurrentContext";
-						//Assembler.PopupException(msg);
-						storeStrategySinceParametersGottenFromScript = true;
-					}
-					ret.Add(paramMerged.Id, paramMerged);
-				}
-				if (storeStrategySinceParametersGottenFromScript) {
-					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
-				}
-				return ret;
-			} }
+
+		// TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
+		//[JsonIgnore] public SortedDictionary<int, ScriptParameter> ScriptParametersMergedWithCurrentContext { get {
+		//		SortedDictionary<int, ScriptParameter> ret = new SortedDictionary<int, ScriptParameter>();
+		//		if (this.Script == null) return ret;
+		//		bool storeStrategySinceParametersGottenFromScript = false;
+		//		foreach (ScriptParameter paramScript in this.Script.ParametersById.Values) {
+		//			//ScriptParameter paramMerged = paramScript.Clone();
+		//			ScriptParameter paramMerged = paramScript;
+		//			if (this.ScriptContextCurrent.ParameterValuesById.ContainsKey(paramScript.Id)) {
+		//				double valueContext = this.ScriptContextCurrent.ParameterValuesById[paramScript.Id];
+		//				paramMerged.ValueCurrent = valueContext;
+		//			} else {
+		//				this.ScriptContextCurrent.ParameterValuesById.Add(paramScript.Id, paramScript.ValueCurrent);
+		//				string msg = "added paramScript[Id=" + paramScript.Id + " value=" + paramScript.ValueCurrent + "]"
+		//					+ " into Script[" + this.Script.GetType().Name + "].ScriptContextCurrent[" + this.ScriptContextCurrent.Name + "]"
+		//					+ " /ScriptParametersMergedWithCurrentContext";
+		//				//Assembler.PopupException(msg);
+		//				storeStrategySinceParametersGottenFromScript = true;
+		//			}
+		//			ret.Add(paramMerged.Id, paramMerged);
+		//		}
+		//		if (storeStrategySinceParametersGottenFromScript) {
+		//			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+		//		}
+		//		return ret;
+		//	} }
 		[JsonIgnore] public ScriptCompiler ScriptCompiler;
 		// I_DONT_WANT_TO_BRING_CHART_SETTINGS_TO_CORE public ChartSettings ChartSettings;
 

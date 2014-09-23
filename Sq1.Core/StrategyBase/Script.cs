@@ -16,7 +16,7 @@ namespace Sq1.Core.StrategyBase {
 		public ScriptExecutor Executor { get; private set; }
 		protected Bars Bars { get { return (Executor == null) ? null : Executor.Bars; } }
 		//Bars barsInitialContext;
-		public Dictionary<int, ScriptParameter> ParametersById;
+		public SortedDictionary<int, ScriptParameter> ParametersById;
 		public Dictionary<string, ScriptParameter> ParametersByNameInlineCopy { get {
 				Dictionary<string, ScriptParameter> ret = new Dictionary<string, ScriptParameter>();
 				foreach (ScriptParameter param in ParametersById.Values) {
@@ -66,7 +66,7 @@ namespace Sq1.Core.StrategyBase {
 		public bool HasPositionsOpenNow { get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
 
 		public Script() {
-			this.ParametersById = new Dictionary<int, ScriptParameter>();
+			this.ParametersById = new SortedDictionary<int, ScriptParameter>();
 			Type myChild = this.GetType();
 			object[] attributes = myChild.GetCustomAttributes(typeof(ScriptParameterAttribute), true);
 			foreach (object attrObj in attributes) {
@@ -105,12 +105,40 @@ namespace Sq1.Core.StrategyBase {
 			this.IndicatorsInstantiateStoreInSnapshot();
  
 			//this.executor.Backtester.Initialize(this.BacktestMode);
+
+			string msg = "DONT_UNCOMMENT_ITS_LIKE_METHOD_BUT_USED_IN_SLIDERS_AUTO_GROW_CONTROL_4_HOURS_DEBUGGING";
+			this.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
 			try {
 				this.InitializeBacktest();
 			} catch (Exception ex) {
-				Assembler.PopupException("Script.InitializeBacktestWithExecutorsBarsInstantiateIndicators()", ex);
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				Assembler.PopupException("FIX_YOUR_OVERRIDEN_METHOD Strategy[" + this.StrategyName + "].InitializeBacktest()", ex);
+				this.Executor.Backtester.RequestingBacktestAbort.Set();
 			}
 		}
+		public void PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy() {
+			bool storeStrategySinceParametersGottenFromScript = false;
+			Dictionary<int, double> strategyParameters = this.Strategy.ScriptContextCurrent.ParameterValuesById;
+			foreach (ScriptParameter paramScript in this.ParametersById.Values) {
+				if (strategyParameters.ContainsKey(paramScript.Id)) {
+					double valueContext = strategyParameters[paramScript.Id];
+					paramScript.ValueCurrent = valueContext;
+				} else {
+					strategyParameters.Add(paramScript.Id, paramScript.ValueCurrent);
+					string msg = "added paramScript[Id=" + paramScript.Id + " value=" + paramScript.ValueCurrent + "]"
+						+ " into Script[" + this.GetType().Name + "].Strategy.ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name + "]"
+						+ " /ScriptParametersMergedWithCurrentContext";
+					Assembler.PopupException(msg);
+					storeStrategySinceParametersGottenFromScript = true;
+				}
+			}
+			if (storeStrategySinceParametersGottenFromScript) {
+				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+			}
+		}
+
 		public void IndicatorsInstantiateStoreInSnapshot() {
 			this.Executor.ExecutionDataSnapshot.Indicators.Clear();
 			Type myChild = this.GetType();
