@@ -50,20 +50,25 @@ namespace Sq1.Widgets.SteppingSlider {
 		public int VerticalSpaceBetweenSliders { get; set; }
 
 		[Browsable(true)]
-		public bool AllSlidersHaveBorder { get; set; }
+		public bool AllSlidersBorderShownByDefault { get; set; }
 
 		[Browsable(true)]
-		public bool AllSlidersHaveNumeric { get; set; }
+		public bool AllSlidersNumericShownByDefault { get; set; }
 
 		public SlidersAutoGrowControl() {
 			InitializeComponent();
+			// JUST_IN_CASE_IF_DESIGNER_REMOVED_COMMENTED_LINES, v1 contained this.mniParameterBagLoad as well:
+			// IF_UNCOMMENT_DONT_FORGET_TO_CLEAN_AFTER_INITALIZE_COMPONENTS: this.ctxOperations.Items.Clear();
+			//this.ctxOperations.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			//						//FIRST_LEVEL_MNI_HAS_VISUAL_TICK this.mniParameterBagLoad,
+			//						this.mniltbParameterBagRenameTo,
+			//						this.mniltbParameterBagDuplicateTo,
+			//						this.mniParameterBagDelete});
+
 			//WindowsFormsUtils.SetDoubleBuffered(this);
 		}
 
 		public void Initialize(Strategy strategy) {
-			bool atLeastOneBorderShown = false;
-			bool atLeastOneNumericShown = false;
-
 			this.Strategy = strategy;
 
 			base.SuspendLayout();
@@ -76,30 +81,28 @@ namespace Sq1.Widgets.SteppingSlider {
 				// foreach (ScriptParameter parameter in this.Strategy.ScriptParametersMergedWithCurrentContext.Values) {
 				foreach (ScriptParameter parameter in this.Strategy.Script.ParametersById.Values) {
 					SliderComboControl slider = this.SliderComboFactory(parameter);
-					if (this.Strategy.SliderBordersShownByParameterId.ContainsKey(parameter.Id)) {
-						bool borderShown = this.Strategy.SliderBordersShownByParameterId[parameter.Id];
-						if (borderShown) {
-							slider.EnableBorder = borderShown;
-							atLeastOneBorderShown = true;
-						}
-					}
-					if (this.Strategy.SliderNumericUpdownsShownByParameterId.ContainsKey(parameter.Id)) {
-						bool numericUpdownShown = this.Strategy.SliderNumericUpdownsShownByParameterId[parameter.Id];
-						if (numericUpdownShown) {
-							slider.EnableNumeric = numericUpdownShown;
-							atLeastOneNumericShown = true;
-						}
-					}
-					slider.Tag = parameter;
-					base.Controls.Add(slider);
+					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				}
 			} finally {
 				base.Height = this.PreferredHeight;
 				base.ResumeLayout(true);
 			}
+		}
+		
+		private void syncMniAllParamsShowBorderAndNumeric() {
+			bool atLeastOneBorderShown = false;
+			bool atLeastOneNumericShown = false;
 
-			if (atLeastOneBorderShown) this.mniAllParamsShowBorder.Checked = true;
-			if (atLeastOneNumericShown) this.mniAllParamsShowNumeric.Checked = true;
+			foreach (SliderComboControl slider in this.SlidersScriptParameters) {
+				if (slider.EnableBorder) atLeastOneBorderShown = true;
+				if (slider.EnableNumeric) atLeastOneNumericShown = true;
+			}
+
+			this.mniAllParamsShowBorder.Checked = atLeastOneBorderShown;
+			this.mniAllParamsShowBorder.Text = atLeastOneBorderShown ? "All Params -> HideBorder" : "All Params -> ShowBorder";
+
+			this.mniAllParamsShowNumeric.Checked = atLeastOneNumericShown;
+			this.mniAllParamsShowNumeric.Text = atLeastOneNumericShown ? "All Params -> HideNumeric" : "All Params -> ShowNumeric";
 		}
 
 		private SliderComboControl SliderComboFactory(ScriptParameter parameter) {
@@ -141,17 +144,28 @@ namespace Sq1.Widgets.SteppingSlider {
 			ret.ValueMax = new decimal(parameter.ValueMax);
 			ret.ValueMin = new decimal(parameter.ValueMin);
 			ret.ValueIncrement = new decimal(parameter.ValueIncrement);
-			ret.EnableBorder = this.AllSlidersHaveBorder;
-			ret.EnableNumeric = this.AllSlidersHaveNumeric;
 			//DOESNT_WORK?... ret.PanelFillSlider.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			//ret.PaddingPanelSlider = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			ret.Location = new System.Drawing.Point(0, this.PreferredHeight + this.VerticalSpaceBetweenSliders);
 			ret.Size = new System.Drawing.Size(this.Width, ret.Size.Height);
 			ret.Tag = parameter;
 			ret.ValueCurrentChanged += slider_ValueCurrentChanged;
+			// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening
+			
+			if (this.Strategy.SliderBordersShownByParameterId.ContainsKey(parameter.Id)) {
+				ret.EnableBorder = this.Strategy.SliderBordersShownByParameterId[parameter.Id];
+			} else {
+				ret.EnableBorder = this.AllSlidersBorderShownByDefault;
+			}
+			if (this.Strategy.SliderNumericUpdownsShownByParameterId.ContainsKey(parameter.Id)) {
+				ret.EnableNumeric = this.Strategy.SliderNumericUpdownsShownByParameterId[parameter.Id];
+			} else {
+				ret.EnableNumeric = this.AllSlidersNumericShownByDefault;
+			}
+			
 			ret.ShowBorderChanged += slider_ShowBorderChanged;
 			ret.ShowNumericUpdownChanged += slider_ShowNumericUpdownChanged;
-			// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening
+			
 			return ret;
 		}
 	}

@@ -247,9 +247,6 @@
     <Compile Include="SteppingSlider\SliderComboControl.Designer.cs">
       <DependentUpon>SliderComboControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="SteppingSlider\MenuItemTrackBar.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="ProgressBacktestETA\ToolStripItemProgressBarETA.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -45,7 +45,11 @@ namespace Sq1.Core.StrategyBase {
 //		}
 		public override string ToString() {
 			//return this.Name;
-			return this.DataSourceName + " :: " + this.Symbol + " ctx/" + this.Name;
+			string ret = this.DataSourceName + " :: " + this.Symbol;
+			if (typeof(ContextChart) != this.GetType()) {	//append ContextScript name, not for ContextChart
+				ret += " ctx/" + this.Name;
+			}
+			return ret;
 		}
 	}
 }

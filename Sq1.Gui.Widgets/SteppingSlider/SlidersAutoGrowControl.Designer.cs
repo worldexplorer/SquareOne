@@ -49,7 +49,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			// ctxOperations
 			// 
 			this.ctxOperations.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.mniParameterBagLoad,
+									//FIRST_LEVEL_MNI_HAS_VISUAL_TICK this.mniParameterBagLoad,
 									this.mniltbParameterBagRenameTo,
 									this.mniltbParameterBagDuplicateTo,
 									this.mniParameterBagDelete});

@@ -12,10 +12,14 @@ namespace Sq1.Widgets.SteppingSlider {
 	public partial class SlidersAutoGrowControl {
 		void mniScriptContextLoad_Click(object sender, EventArgs e) {
 			ContextScript scriptContextToLoad = this.ScriptContextFromMniTag(sender);
+			if (scriptContextToLoad == null) {
+				Debugger.Break();
+				return;
+			}
 			if (this.Strategy.ScriptContextCurrent == scriptContextToLoad) {
-				string msg = "won't RaiseOnScriptContextLoad(scriptContextToLoad.Name[" + scriptContextToLoad.Name + "])"
+				string msg = "SCRIPT_CONTEXT_ALREADY_LOADED won't RaiseOnScriptContextLoad(scriptContextToLoad.Name[" + scriptContextToLoad.Name + "])"
 					+ ": GUI should disable the option to (re)load the same (current) ScriptContextCurrent.Name[" + this.Strategy.ScriptContextCurrent.Name + "]";
-				Assembler.PopupException(msg);
+				// FIRST_LEVEL_MNI_HAS_VISUAL_TICK_CANT_DISABLE_SINCE_SUBMENU_HAS_CLONE_RENAME_DELETE_SO_SHUT_UP Assembler.PopupException(msg);
 				return;
 			}
 			this.RaiseOnScriptContextLoadRequested(scriptContextToLoad.Name);
@@ -63,6 +67,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					// after NewContext -> Delete, ctxOperations menu pane jumps on top of application window
 					this.ctxOperations.Hide();
 				}
+				this.syncMniAllParamsShowBorderAndNumeric();
 			} catch (Exception ex) {
 				Debugger.Break();
 				string msg = "DID_YOU_CHANGE_NUMERIC_UPDOWN?";

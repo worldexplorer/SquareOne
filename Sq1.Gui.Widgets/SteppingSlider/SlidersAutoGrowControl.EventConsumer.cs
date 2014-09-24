@@ -49,8 +49,6 @@ namespace Sq1.Widgets.SteppingSlider {
 				// ouch N * StrategySave()...
 				this.Strategy.SetSliderNumericUpdownShownForParameterId(scriptParameterChanged.Id, borderShown);
 			}
-			this.mniAllParamsShowBorder.Text = borderShown ? "All Params -> HideBorder" : "All Params -> ShowBorder";
-			this.mniAllParamsShowBorder.Checked = borderShown;
 		}
 		void mniAllParamsShowNumeric_Click(object sender, EventArgs e) {
 			bool numericShown = this.mniAllParamsShowNumeric.Checked;
@@ -61,8 +59,6 @@ namespace Sq1.Widgets.SteppingSlider {
 				// ouch N * StrategySave()...
 				this.Strategy.SetSliderNumericUpdownShownForParameterId(scriptParameterChanged.Id, numericShown);
 			}
-			this.mniAllParamsShowNumeric.Text = numericShown ? "All Params -> HideNumeric" : "All Params -> ShowNumeric";
-			this.mniAllParamsShowNumeric.Checked = numericShown;
 		}
 
 	}

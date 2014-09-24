@@ -26,7 +26,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 				foreach (string ctxName in ctx2remove) {
 					ToolStripMenuItem mni = this.tsiScriptContextsDynamic[ctxName];
-					mni.DoubleClick -= this.mniScriptContextLoad_Click;
+					mni.Click -= this.mniScriptContextLoad_Click;
 					ToolStripMenuItem mniToRemove = mni as ToolStripMenuItem;
 					if (mniToRemove != null) {
 						mniToRemove.DropDownOpening -= this.mniScriptContext_DropDownOpening;
@@ -48,7 +48,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					//CHECKING_CURRENT_JUST_BELOW mni.Checked = (this.Strategy.ScriptContextCurrent == scriptCtx);
 					mni.Tag = scriptCtx;
 					mni.DropDown = this.ctxOperations;	// just to make triangle appear on first load; replaced in DropDownOpening()
-					mni.DoubleClick += new EventHandler(mniScriptContextLoad_Click);
+					mni.Click += new EventHandler(mniScriptContextLoad_Click);
 					mni.DropDownOpening += new EventHandler(mniScriptContext_DropDownOpening);
 					this.tsiScriptContextsDynamic.Add(ctxName, mni);
 					//this.tsiScriptContextsDynamic.Insert(indexToInsert++, mni);
@@ -74,8 +74,8 @@ namespace Sq1.Widgets.SteppingSlider {
 				ret.Add(this.mniltbParametersBagNewWithDefaults);
 				ret.Add(this.toolStripSeparator2);
 				ret.Add(this.mniAllParamsResetToScriptDefaults);
-				ret.Add(this.mniAllParamsShowBorder);
 				ret.Add(this.mniAllParamsShowNumeric);
+				ret.Add(this.mniAllParamsShowBorder);
 				return ret.ToArray();
 			} }
 		string stringEnteredInLabeledTextBox(string msig, object sender, KeyEventArgs e) {
@@ -106,13 +106,21 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		ContextScript ScriptContextFromMniTag(object sender) {
 			var mniOpening = sender as ToolStripItem;
+			ContextScript ctxToLoad = mniOpening.Tag as ContextScript;
+			if (ctxToLoad != null) {
+				string msg2 = "USER_CLICKED_ON_SCRIPT_CONTEXT_ITEM_SHORTCUT attached in SlidersAutoGrowControl.TsiScriptContextsDynamic_get";
+				return ctxToLoad;
+			}
+				
+			string msg = "USER_CLICKED_ON_LOAD_SUBMENU_ITEM attached in SlidersAutoGrowControl.InitializeComponent()";
 			ContextMenuStrip mniParent = mniOpening.Owner as ContextMenuStrip; 		// found in debugger
-			ContextScript ctxToLoad = mniParent.Tag as ContextScript;
+			ctxToLoad = mniParent.Tag as ContextScript;
 			if (ctxToLoad == null) {
-				string msg = "mniOpening[" + mniOpening.Name + "].Tag[" + mniOpening.Tag + "] is not a ScriptContext";
+				msg = "YOU_SHOULDVE_STORED_SCRIPT_CONTEXT_IN mniOpening[" + mniOpening.Name + "].Tag[" + mniOpening.Tag + "] is not a ScriptContext";
 				Assembler.PopupException(msg);
 				return null;
 			}
+			
 			return ctxToLoad;
 		}
 		ContextScript ScriptContextFromLabeledTextBoxTag(object sender) {
