@@ -41,7 +41,9 @@ namespace Sq1.Gui.Singletons {
 		}
 		internal void StrategiesTree_OnStrategyOpenNewChartClicked(object sender, StrategyEventArgs e) {
 			Strategy strategy = e.Strategy;
-			strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
+			if (strategy.Script.Executor != null) {		// WHEN_USER_OPENS_FROM_STRATEGIES_TREE strategy.Script.Executor=null
+				strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
+			}
 			this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
 		}
 		internal void StrategiesTree_OnStrategyRenamed(object sender, StrategyEventArgs e) {

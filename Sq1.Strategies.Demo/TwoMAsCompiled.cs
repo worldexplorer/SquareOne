@@ -14,11 +14,11 @@ namespace Sq1.Strategies.Demo {
 	public class TwoMAsCompiled : Script {
 		[IndicatorParameterAttribute(Name="Period",
 			ValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]
-		public IndicatorAverageMovingSimple MAslow { get; set; }
+		public IndicatorMovingAverageSimple MAslow { get; set; }
 
 		[IndicatorParameterAttribute(Name = "Period",
 			ValueCurrent = 15, ValueMin = 10, ValueMax = 20, ValueIncrement = 1)]
-		public IndicatorAverageMovingSimple MAfast { get; set; }
+		public IndicatorMovingAverageSimple MAfast { get; set; }
 		
 		public int PeriodLargestAmongMAs { get {
 				int ret = this.MAfast.Period;
@@ -27,8 +27,8 @@ namespace Sq1.Strategies.Demo {
 			} }
 
 		public override void InitializeBacktest() {
-			this.MAslow.LineColor = System.Drawing.Color.LightCoral;
-			this.MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
+			this.MAslow.LineColor = Color.LightCoral;
+			this.MAfast.LineColor = Color.LightSeaGreen;
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 		}

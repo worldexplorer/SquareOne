@@ -21,7 +21,7 @@ namespace Sq1.Strategies.Demo {
 
 		[IndicatorParameterAttribute(Name = "Period",
 			ValueCurrent = 15, ValueMin = 10, ValueMax = 20, ValueIncrement = 1)]
-		public IndicatorAverageMovingSimple MAfast { get; set; }
+		public IndicatorMovingAverageSimple MAfast { get; set; }
 
 		protected void log(string msg) {
 			if (this.ParametersById[2].ValueCurrent == 0.0) {

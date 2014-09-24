@@ -25,7 +25,7 @@
       "RecentTimeunits": 0
     },
     "ChartStreaming": false,
-    "ShowRangeBar": false
+    "ShowRangeBar": true
   },
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -35,7 +35,7 @@
     "GutterBottomDateFormatWeekly": "MMM-yy",
     "GutterBottomDateFormatYearly": "yyyy",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 8,
+    "BarWidthIncludingPadding": 17,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -69,7 +69,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 0,
+    "ScrollPositionAtBarIndex": 135,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -85,7 +85,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 404,
+    "PriceVsVolumeSplitterDistance": 263,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,

@@ -1,12 +1,12 @@
 {
   "$type": "Sq1.Core.StrategyBase.Strategy, Sq1.Core",
-  "Guid": "dacc92f4-092c-4d94-bfff-d8a5200ee9d6",
-  "Name": "TwoMAindicatorsCompiled",
+  "Guid": "b04c88a3-7886-4edd-b218-5feba0e435fc",
+  "Name": "ATRbandCompiled",
   "ScriptSourceCode": null,
   "DotNetReferences": null,
   "DllPathIfNoSourceCode": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
   "ExceptionsLimitToAbortBacktest": 10,
-  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAindicatorsCompiled.json",
+  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json",
   "ScriptContextCurrentName": "Default",
   "ScriptContextsByName": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
@@ -18,7 +18,7 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": true,
+      "IsCurrent": false,
       "ChartAutoSubmitting": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": true,
@@ -42,10 +42,10 @@
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
-        "Interval": 5,
+        "Interval": 1,
         "IsIntraday": true,
-        "AsTimeSpanInSeconds": 300,
-        "AsTimeSpan": "00:05:00"
+        "AsTimeSpanInSeconds": 60,
+        "AsTimeSpan": "00:01:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",

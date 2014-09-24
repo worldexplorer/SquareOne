@@ -10,12 +10,12 @@ namespace Sq1.Strategies.Demo {
 		// TODO: initialize MAslow.LineColor using an attribute? 
 		[IndicatorParameterAttribute(Name="Period",
 			ValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]
-		public IndicatorAverageMovingSimple MAslow { get; set; }
+		public IndicatorMovingAverageSimple MAslow { get; set; }
 
 		// TODO: show how to construct/tunnelParameters without Attribute
 		[IndicatorParameterAttribute(Name = "Period",
 			ValueCurrent = 15, ValueMin = 10, ValueMax = 20, ValueIncrement = 1)]
-		public IndicatorAverageMovingSimple MAfast { get; set; }
+		public IndicatorMovingAverageSimple MAfast { get; set; }
 		
 
 		//public TwoMAindicatorsCompiled() { }

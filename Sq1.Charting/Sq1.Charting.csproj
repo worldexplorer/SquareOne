@@ -78,6 +78,7 @@
     <Compile Include="OnChart\OnChartBarAnnotation.cs" />
     <Compile Include="OnChart\OnChartLabel.cs" />
     <Compile Include="OnChart\OnChartLine.cs" />
+    <Compile Include="PanelIndicator.cs" />
     <Compile Include="PanelNamedFolding.ChartShadowImplementation.cs">
       <DependentUpon>PanelNamedFolding.cs</DependentUpon>
       <SubType>Component</SubType>

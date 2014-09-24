@@ -5,7 +5,7 @@ namespace Sq1.Core.DataTypes {
 	public class DataSeriesTimeBased : DataSeriesBasic {
 		SortedList<DateTime, double> doublesByDate;
 		public virtual IList<DateTime> DateTimes { get { return this.doublesByDate.Keys; } }
-		public virtual IList<double> Values { get { return this.doublesByDate.Values; } }
+		public override IList<double> Values { get { return this.doublesByDate.Values; } }
 		public override int Count { get { return this.doublesByDate.Count; } }
 		public override int Capacity {
 			get { return this.doublesByDate.Capacity; }
@@ -51,7 +51,7 @@ namespace Sq1.Core.DataTypes {
 		public bool ContainsKey(DateTime dateTime) {
 			return this.doublesByDate.ContainsKey(dateTime);
 		}
-		[Obsolete("USE_ONLY_DATETIME_KEYS")]
+		[Obsolete("USE_DATETIME_KEYS_FOR_FASTER_ACCESS SortedList is a hash-based data structure")]
 		public override double this[int barIndex] {
 			get {
 				if (barIndex < 0 || barIndex > this.Count) {

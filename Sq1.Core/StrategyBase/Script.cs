@@ -225,7 +225,8 @@ namespace Sq1.Core.StrategyBase {
 		public virtual void OnNewQuoteOfStreamingBarCallback(Quote quoteNewArrived) {
 		}
 		public virtual void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barNewStaticArrived) {
-			throw new Exception("please overwrite OnNewBarCallback(Bar); Execute() is obsolete now");
+			string msg = "SCRIPT_DERIVED_MUST_IMPLEMENT Script[" + this.GetType().FullName + "]: public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar)";
+			throw new Exception(msg);
 		}
 		public virtual void OnAlertFilledCallback(Alert alertFilled) {
 		}

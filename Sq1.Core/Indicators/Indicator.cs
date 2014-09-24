@@ -302,11 +302,18 @@ namespace Sq1.Core.Indicators {
 			return null;
 		}
 		public virtual double CalculateOwnValueOnNewStaticBarFormed(Bar newStaticBar) {
+			if (this.OwnValuesCalculated.ContainsKey(newStaticBar.DateTimeOpen)) {
+				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				Assembler.PopupException(msg);
+			}
 			return double.NaN;
 		}
 		public virtual double CalculateOwnValueOnNewStreamingQuote(Quote newStreamingQuote) {
-			//return double.NaN;
-			return this.CalculateOwnValueOnNewStaticBarFormed(newStreamingQuote.ParentStreamingBar);
+			return double.NaN;
+			//PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW return this.CalculateOwnValueOnNewStaticBarFormed(newStreamingQuote.ParentStreamingBar);
 		}
 		public void OnNewStaticBarFormed(Bar newStaticBar) {
 			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) {
@@ -327,7 +334,7 @@ namespace Sq1.Core.Indicators {
 		public void OnNewStreamingQuote(Quote newStreamingQuote) {
 			int streamingBarIndex = newStreamingQuote.ParentStreamingBar.ParentBarsIndex;
 			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote(newStreamingQuote);
-			//this.OwnValuesCalculated.StreamingValue = derivedCalculated;
+			this.OwnValuesCalculated.StreamingValue = derivedCalculated;
 		}
 		
 		string format;
@@ -409,9 +416,15 @@ namespace Sq1.Core.Indicators {
 			this.DotsExistsForCurrentSlidingWindow++;
 			int x = this.HostPanelForIndicator.BarToX(bar.ParentBarsIndex) + this.HostPanelForIndicator.BarShadowOffset;
 			int y = this.HostPanelForIndicator.ValueToYinverted(calculated);
-			if (y == 0) return indicatorLegDrawn;
+			if (y == 0)  {
+				string msg = "INDICATOR_VALUE_TOO_SMALL SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
+				return indicatorLegDrawn;
+			}
 			int max = this.HostPanelForIndicator.ValueToYinverted(0);
-			if (y == max) return indicatorLegDrawn;
+			if (y == max) {
+				string msg = "INDICATOR_VALUE_TOO_BIG SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
+				return indicatorLegDrawn;
+			}
 
 			Point myDot = new Point(x, y);
 			

@@ -142,11 +142,25 @@ namespace Sq1.Charting {
 		public override void PendingRealtimeAdd(ReporterPokeUnit pokeUnit) {
 			this.ScriptExecutorObjects.PendingRealtimeAdd(pokeUnit);
 		}
+		
+		Dictionary<Indicator, PanelIndicator> PanelsByIndicator = new Dictionary<Indicator, PanelIndicator>();
 		public override HostPanelForIndicator GetHostPanelForIndicator(Indicator indicator) {
 			switch (indicator.ChartPanelType) {
 				case ChartPanelType.PanelPrice: return this.panelPrice;
 				case ChartPanelType.PanelVolume: return this.panelVolume;
 				case ChartPanelType.PanelIndicatorSingle:
+					PanelIndicator ret;
+					if (this.PanelsByIndicator.ContainsKey(indicator) == false) {
+						PanelIndicator panel = new PanelIndicator(indicator);
+						
+						panel.Initialize(this);		// WHICH_ONE_IS_APPROPRIATE??? ITS_LATE_INSTANTIATION_WE_MAY_ALREADY_HAVE_BARS_NOT_EMPTY
+						panel.InitializeWithNonEmptyBars(this);
+						
+						this.PanelsByIndicator.Add(indicator, panel);
+						this.panelsFolding.Add(panel);
+					}
+					ret = this.PanelsByIndicator[indicator];
+					return ret;
 				case ChartPanelType.PanelIndicatorMultiple: 
 				default:
 					throw new NotImplementedException();

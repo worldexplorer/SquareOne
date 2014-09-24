@@ -5,6 +5,7 @@ namespace Sq1.Core.DataTypes {
 	public class DataSeriesBasic {
 		public string Description;
 		List<double> doubleValues;
+		public virtual IList<double> Values { get { return this.doubleValues; } }
 		public virtual double StreamingValue { get; set; }
 		public virtual int Count { get { return this.doubleValues.Count; } }
 		public virtual double LastStaticValue {
@@ -95,25 +96,59 @@ namespace Sq1.Core.DataTypes {
 			return false;
 		}
 		
-		public bool TurnsDownAtBarIndex(int bar) {
-			if (bar <= 0) return false;
+		public bool TurnsDownAtBarIndex(int barIndex) {
+			if (barIndex <= 0) return false;
 			if (this.Count < 2) return false;
-			if (this[bar] >= this[bar - 1]) return false;
-			for (int i = bar - 1 ; i >= 1 ; i--) {
+			if (this[barIndex] >= this[barIndex - 1]) return false;
+			for (int i = barIndex - 1 ; i >= 1 ; i--) {
 				if (this[i] > this[i - 1]) return true;
 				if (this[i] < this[i - 1]) return false;
 			}
 			return false;
 		}
-		public bool TurnsUpAtBarIndex(int bar) {
-			if (bar <= 0) return false;
+		public bool TurnsUpAtBarIndex(int barIndex) {
+			if (barIndex <= 0) return false;
 			if (this.Count < 2) return false;
-			if (this[bar] <= this[bar - 1]) return false;
-			for (int i = bar - 1 ; i >= 1 ; i--) {
+			if (this[barIndex] <= this[barIndex - 1]) return false;
+			for (int i = barIndex - 1 ; i >= 1 ; i--) {
 				if (this[i] < this[i - 1]) return true;
 				if (this[i] > this[i - 1]) return false;
 			}
 			return false;
 		}
+		#region extracted from ChartControl.DynamicProperties.cs, from VisiblePriceMin,Max,VisibleVolumeMin,Max; re-used in PanelIndicator.ValueMin,Max  
+		public double MinValueBetweenIndexes(int indexLeft, int indexRight) {
+			double ret = double.NaN;
+			int indexMin = Math.Min(indexLeft, indexRight);
+			int indexMax = Math.Max(indexLeft, indexRight);
+			for (int i = indexMax; i >= indexMin; i--) {
+				if (i >= this.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					//Assembler.PopupException("VisibleVolumeMin(): " + msg);
+					continue;
+				}
+				double barCanBeStreamingWithNaNs = this[i];		// this[int] is virtual, for Indicator.OwnValuesCalculated this[int] is located in DataSeriesTimeBased.cs
+				if (double.IsNaN(barCanBeStreamingWithNaNs)) continue;
+				if (barCanBeStreamingWithNaNs < ret) ret = barCanBeStreamingWithNaNs;
+			}
+			return ret;
+		}
+		public double MaxValueBetweenIndexes(int indexLeft, int indexRight) {
+			double ret = double.NaN;
+			int indexMin = Math.Min(indexLeft, indexRight);
+			int indexMax = Math.Max(indexLeft, indexRight);
+			for (int i = indexMax; i >= indexMin; i--) {
+				if (i >= this.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					//Assembler.PopupException("VisibleVolumeMax(): " + msg);
+					continue;
+				}
+				double barCanBeStreamingWithNaNs = this[i];		// this[int] is virtual, for Indicator.OwnValuesCalculated this[int] is located in DataSeriesTimeBased.cs
+				if (double.IsNaN(barCanBeStreamingWithNaNs)) continue;
+				if (barCanBeStreamingWithNaNs > ret) ret = barCanBeStreamingWithNaNs;
+			}
+			return ret;
+		}
+		#endregion
 	}
 }
