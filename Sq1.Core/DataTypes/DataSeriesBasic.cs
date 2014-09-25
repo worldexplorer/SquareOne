@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Sq1.Core.DataTypes {
 	public class DataSeriesBasic {
@@ -118,7 +119,7 @@ namespace Sq1.Core.DataTypes {
 		}
 		#region extracted from ChartControl.DynamicProperties.cs, from VisiblePriceMin,Max,VisibleVolumeMin,Max; re-used in PanelIndicator.ValueMin,Max  
 		public double MinValueBetweenIndexes(int indexLeft, int indexRight) {
-			double ret = double.NaN;
+			double ret = double.MaxValue;
 			int indexMin = Math.Min(indexLeft, indexRight);
 			int indexMax = Math.Max(indexLeft, indexRight);
 			for (int i = indexMax; i >= indexMin; i--) {
@@ -131,10 +132,13 @@ namespace Sq1.Core.DataTypes {
 				if (double.IsNaN(barCanBeStreamingWithNaNs)) continue;
 				if (barCanBeStreamingWithNaNs < ret) ret = barCanBeStreamingWithNaNs;
 			}
+			#if DEBUG
+			if (ret == double.MaxValue) Debugger.Break();
+			#endif
 			return ret;
 		}
 		public double MaxValueBetweenIndexes(int indexLeft, int indexRight) {
-			double ret = double.NaN;
+			double ret = double.MinValue;
 			int indexMin = Math.Min(indexLeft, indexRight);
 			int indexMax = Math.Max(indexLeft, indexRight);
 			for (int i = indexMax; i >= indexMin; i--) {
@@ -148,6 +152,9 @@ namespace Sq1.Core.DataTypes {
 				if (barCanBeStreamingWithNaNs > ret) ret = barCanBeStreamingWithNaNs;
 			}
 			return ret;
+			#if DEBUG
+			if (ret == double.MinValue) Debugger.Break();
+			#endif
 		}
 		#endregion
 	}
