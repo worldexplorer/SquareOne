@@ -5,10 +5,10 @@ namespace Sq1.Core.Indicators {
 	public class IndicatorParameter {
 		public string Name;
 		
-		public float ValueCurrent;
-		public float ValueMin;
-		public float ValueMax;
-		public float ValueIncrement;
+		public double ValueCurrent;
+		public double ValueMin;
+		public double ValueMax;
+		public double ValueIncrement;
 		
 		//public string ValueString;
 		//public BarScaleInterval ValueBarScaleInterval;
@@ -24,21 +24,21 @@ namespace Sq1.Core.Indicators {
 			//    return;
 			//}
 			if (attr.ValueCurrent != null) {
-				this.ValueCurrent = attr.ValueCurrent;
-				this.ValueMin = attr.ValueMin;
-				this.ValueMax = attr.ValueMax;
-				this.ValueIncrement = attr.ValueIncrement;
+				ValueCurrent = attr.ValueCurrent;
+				ValueMin = attr.ValueMin;
+				ValueMax = attr.ValueMax;
+				ValueIncrement = attr.ValueIncrement;
 				return;
 			}
 		}
 		
 		public IndicatorParameter(string name = "NAME_NOT_INITIALIZED",
-				float valueCurrent = float.NaN, float valueMin = float.NaN, float valueMax = float.NaN, float valueIncrement = float.NaN) {
-			this.Name = name;
-			this.ValueCurrent = valueCurrent;
-			this.ValueMin = valueMin;
-			this.ValueMax = valueMax;
-			this.ValueIncrement = valueIncrement;
+				double valueCurrent = double.NaN, double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) {
+			Name = name;
+			ValueCurrent = valueCurrent;
+			ValueMin = valueMin;
+			ValueMax = valueMax;
+			ValueIncrement = valueIncrement;
 		}
 		//public IndicatorParameter(string name = "NAME_NOT_INITIALIZED", string value = "STRING_VALUE_NOT_INITIALIZED") {
 		//    this.Name = name;

@@ -211,7 +211,7 @@ namespace Sq1.Widgets.RangeBar {
 				//DOUBLEBUFFERED_PARENT_DID_THAT base.OnPaint(e);
 			} catch (Exception ex) {
 				string msg = "WindProc won't catch your exceptions; keep a breakpoint here";
-				System.Diagnostics.Debugger.Break();
+				Debugger.Break();
 				throw ex;
 			}
 		}

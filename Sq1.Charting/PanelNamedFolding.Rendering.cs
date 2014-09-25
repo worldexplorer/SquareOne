@@ -308,24 +308,25 @@ namespace Sq1.Charting {
 			for (int i = this.VisibleBarRight_cached; i > this.VisibleBarLeft_cached; i--) {
 				Bar bar = this.ChartControl.Bars[i];
 
-				int barYHighInverted = this.ValueToYinverted(bar.High);
-				int barYLowInverted = this.ValueToYinverted(bar.Low);
-
-				int candleBodyHeight = barYLowInverted - barYHighInverted;		// height is measured DOWN the screen from candleBodyInverted.Y, not UP
-				if (candleBodyHeight < 0) Debugger.Break();
-				if (candleBodyHeight == 0) candleBodyHeight = 1;
-
-				Rectangle candleBodyInverted = default(Rectangle);
-				candleBodyInverted.X = barX;
-				candleBodyInverted.Width = this.BarWidthMinusRightPadding_cached;
-				candleBodyInverted.Y = barYHighInverted;					// drawing down, since Y grows down the screen from left upper corner (0:0)
-				candleBodyInverted.Height = candleBodyHeight;
+//				int barYHighInverted = this.ValueToYinverted(bar.High);
+//				int barYLowInverted = this.ValueToYinverted(bar.Low);
+//
+//				int candleBodyHeight = barYLowInverted - barYHighInverted;		// height is measured DOWN the screen from candleBodyInverted.Y, not UP
+//				if (candleBodyHeight < 0) Debugger.Break();
+//				if (candleBodyHeight == 0) candleBodyHeight = 1;
+//
+//				Rectangle candleBodyInverted = default(Rectangle);
+//				candleBodyInverted.X = barX;
+//				candleBodyInverted.Width = this.BarWidthMinusRightPadding_cached;
+//				candleBodyInverted.Y = barYHighInverted;					// drawing down, since Y grows down the screen from left upper corner (0:0)
+//				candleBodyInverted.Height = candleBodyHeight;
 
 				barX -= this.BarWidthIncludingPadding_cached;
 				foreach (Indicator indicator in indicators.Values) {
 					if (indicator.HostPanelForIndicator != this) continue;
 					if (bar.ParentBarsIndex <= indicator.FirstValidBarIndex) continue;
-					bool indicatorLegDrawn = indicator.DrawValue(graphics, bar, candleBodyInverted);
+//					bool indicatorLegDrawn = indicator.DrawValueEntryPoint(graphics, bar, candleBodyInverted);
+					bool indicatorLegDrawn = indicator.DrawValueEntryPoint(graphics, bar);
 				}
 			}
 			foreach (Indicator indicator in indicators.Values) {

@@ -13,16 +13,18 @@ namespace Sq1.Strategies.Demo {
 		
 		[IndicatorParameterAttribute(Name="Period",
 			ValueCurrent=5, ValueMin=1, ValueMax=11, ValueIncrement=2)]
+		[IndicatorParameterAttribute(Name="Multiplier",
+			ValueCurrent=1.5, ValueMin=0.1, ValueMax=4, ValueIncrement=0.1)]
 		public IndicatorAverageTrueRange ATR { get; set; }
 
 		public ATRbandCompiled() {
 		}
 		
 		public override void InitializeBacktest() {
-			if (this.ATR == null) {
-				this.ATR = new IndicatorAverageTrueRange();
-				this.ATR.Period = 9;
-			}
+//			if (this.ATR == null) {
+//				this.ATR = new IndicatorAverageTrueRange();
+//				this.ATR.Period = 9;
+//			}
 			this.ATR.LineColor = Color.DarkOliveGreen;
 		}
 

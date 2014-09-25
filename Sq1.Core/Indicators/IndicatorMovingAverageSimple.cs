@@ -22,7 +22,7 @@ namespace Sq1.Core.Indicators {
 		
 		public IndicatorMovingAverageSimple() : base() {
 			base.Name = "MA";
-			base.ChartPanelType = ChartPanelType.PanelPrice;
+			// NOW DEFAULT base.ChartPanelType = ChartPanelType.PanelPrice;
 		}
 		
 		public override string BacktestStartingPreCheckErrors() {
@@ -52,7 +52,7 @@ namespace Sq1.Core.Indicators {
 			if (base.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) return double.NaN;
 			if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) return double.NaN;
 
-			double ret = this.smaSeries.CalculateAppendOwnValueForNewStaticBarFormed(newStaticBar);
+			double ret = this.smaSeries.CalculateAppendOwnValueForNewStaticBarFormedNanUnsafe(newStaticBar);
 
 			#region DELETEME_AFTER_COMPATIBILITY_TEST
 			#if TEST_COMPATIBILITY

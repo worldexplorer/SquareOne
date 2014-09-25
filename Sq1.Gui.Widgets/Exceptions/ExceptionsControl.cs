@@ -17,16 +17,12 @@ namespace Sq1.Widgets.Exceptions {
 
 		public List<Exception> Exceptions { get; protected set; }
 		public Dictionary<Exception, DateTime> ExceptionTimes  { get; protected set; }
-		public List<Exception> FirstExceptionAsList {
-			get {
-				var ret = new List<Exception>();
-				if (this.Exceptions.Count > 0) ret.Add(this.Exceptions[0]);
-				return ret;
-			}
-		}
-		Exception exceptionSelectedInTree {
-			get { return this.treeExceptions.SelectedObject as Exception; }
-		}
+//		public List<Exception> FirstExceptionAsList { get {
+//				var ret = new List<Exception>();
+//				if (this.Exceptions.Count > 0) ret.Add(this.Exceptions[0]);
+//				return ret;
+//			} }
+		Exception exceptionSelectedInTree { get { return this.treeExceptions.SelectedObject as Exception; } }
 
 		public ExceptionsControl() : base() {
 			this.Exceptions = new List<Exception>();
@@ -74,6 +70,10 @@ namespace Sq1.Widgets.Exceptions {
 			this.olvTime.Text = this.DataSnapshot.TreeShowsTimesInsteadOfMessages ? "Time" : "Message";
 		}
 		public void InsertException(Exception exception) {
+			if (exception == null) {
+				Debugger.Break();
+				return;
+			}
 			this.ExceptionTimes.Add(exception, DateTime.Now);
 			this.Exceptions.Insert(0, exception);
 			

@@ -11,7 +11,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Indicators {
-	public abstract class Indicator {
+	public abstract partial class Indicator {
 		public string Name;
 		public ChartPanelType ChartPanelType;
 
@@ -168,7 +168,7 @@ namespace Sq1.Core.Indicators {
 			this.Name = "INDICATOR_NAME_NOT_SET_IN_DERIVED_CONSTRUCTOR";
 			this.DataSeriesProxyFor = DataSeriesProxyableFromBars.Close;
 			this.ParametersByName = new Dictionary<string, IndicatorParameter>();
-			this.ChartPanelType = ChartPanelType.PanelIndicatorSingle;
+			this.ChartPanelType = ChartPanelType.PanelPrice;
 			// MOVED_TO_BacktestStarting();
 			//this.OwnValuesCalculated = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), this.Name);
 			this.LineColor = Color.Indigo;
@@ -277,8 +277,16 @@ namespace Sq1.Core.Indicators {
 				string msig2 = " Indicator[" + this.NameWithParameters + "].BacktestStartingPreCheck()";
 				Assembler.PopupException(indicatorSelfValidationErrors + msig2);
 			}
-			bool backtestCanStart = string.IsNullOrEmpty(paramerersAllValidatedErrors)
-								 && string.IsNullOrEmpty(indicatorSelfValidationErrors);
+			
+			bool backtestCanStart = true;
+			if (string.IsNullOrEmpty(paramerersAllValidatedErrors) == false) {
+				Assembler.PopupException(paramerersAllValidatedErrors);
+				backtestCanStart = false;
+			}
+			if (string.IsNullOrEmpty(indicatorSelfValidationErrors) == false) {
+				Assembler.PopupException(indicatorSelfValidationErrors);
+				backtestCanStart = false;
+			}
 			return backtestCanStart;
 		}
 		
@@ -387,117 +395,7 @@ namespace Sq1.Core.Indicators {
 			return ret;
 		}
 		
-		// DrawValue() isn't in Sq1.Charting.PanelNamedFolding so that one particular indicator may override and draw more than one line with labels;  
-		public virtual bool DrawValue(Graphics g, Bar bar, Rectangle barPlaceholder) {
-			bool indicatorLegDrawn = false;
-			// MOVED_UPSTACK if (bar.ParentBarsIndex <= this.FirstValidBarIndex) return indicatorLegDrawn;
-			if (Object.ReferenceEquals(this.OwnValuesCalculated, null)) return indicatorLegDrawn;
-			string msig = " Indicator[" + this.NameWithParameters + "].DrawValue(" + bar + ")";
-			//v1
-			//if (this.OwnValuesCalculated.Count < bar.ParentBarsIndex) {
-			//    string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_BAR bar[" + bar + "]";
-			//    //Assembler.PopupException(msg + msig);
-			//    return indicatorLegDrawn;
-			//}
-			//double calculated = this.OwnValuesCalculated[bar.ParentBarsIndex];
-			// v2-BEGIN
-			// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-			//if (null == this.NotOnChartBarScaleInterval && bar.ParentBarsIndex < this.FirstValidBarIndex) {
-			//    return indicatorLegDrawn;	// INVALID FOR INDICATOR BASED ON NON_CHART_BARS_SCALE_INTERVAL
-			//}
 
-			if (bar.IsBarStaticLast && this.Executor.IsStreaming == false) {
-				string msg = "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED";
-				//Assembler.PopupException(msg);
-				return indicatorLegDrawn;
-			}
-			if (this.OwnValuesCalculated.ContainsDate(bar.DateTimeOpen) == false) {
-				if (this.Executor.Backtester.IsBacktestingNow) {
-					return indicatorLegDrawn;
-				}
-				//string msg = "EDIT_DATASOURCE_EXTEND_MARKET_OPEN_CLOSE_HOURS";
-				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_BAR bar[" + bar.DateTimeOpen + "]";
-				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-				//if (this.OwnValuesCalculated.ScaleInterval == null) {
-				//    var scaleIntervalAutoInit = this.NotOnChartBarsKey;
-				//}
-				//if (this.OwnValuesCalculated.ScaleInterval != bar.ParentBars.ScaleInterval) {
-				//    msg += " OwnValuesCalculated.ScaleInterval[" + this.OwnValuesCalculated.ScaleInterval + "] != bar.ParentBars.ScaleInterval[" + bar.ParentBars.ScaleInterval + "]";
-				//}
-				#if DEBUG
-				//Debugger.Break();
-				#endif
-				Assembler.PopupException(msg + msig);
-				return indicatorLegDrawn;
-			}
-			double calculated = this.OwnValuesCalculated[bar.ParentBarsIndex];
-			// v2-END
-			if (double.IsNaN(calculated)) {
-				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NAN_FOR_BAR bar[" + bar + "]";
-				//INDICATORS_INCUBATION_PERIOD_NO_NEED_TO_REPORT Assembler.PopupException(msg + msig);
-				return indicatorLegDrawn;
-			}
-			this.DotsExistsForCurrentSlidingWindow++;
-			int x = this.HostPanelForIndicator.BarToX(bar.ParentBarsIndex) + this.HostPanelForIndicator.BarShadowOffset;
-			int y = this.HostPanelForIndicator.ValueToYinverted(calculated);
-			if (y == 0)  {
-				string msg = "INDICATOR_VALUE_TOO_BIG_INVERTED SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
-				#if DEBUG
-				//Debugger.Break();
-				#endif
-				//return indicatorLegDrawn;
-			}
-			int max = this.HostPanelForIndicator.ValueToYinverted(0);
-			if (y == max) {
-				string msg = "INDICATOR_VALUE_TOO_SMALL_INVERTED SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
-				#if DEBUG
-				//Debugger.Break();
-				#endif
-				//return indicatorLegDrawn;
-			}
-
-			Point myDot = new Point(x, y);
-			
-			int barIndexPrev = bar.ParentBarsIndex - 1;
-			Bar barPrev = bar.ParentBars[barIndexPrev];
-			if (barIndexPrev < 0 || barIndexPrev > this.OwnValuesCalculated.Count - 1) {
-				//string msg = "EDIT_DATASOURCE_EXTEND_MARKET_OPEN_CLOSE_HOURS";
-				string msg = "CAN_NOT_DRAW_INDICATOR_CANT_TAKE_VALUE_PREVIOUS_BAR_BEOYND_AVAILABLE barIndexPrev[" + barIndexPrev + "] OwnValuesCalculated.Count[" + this.OwnValuesCalculated.Count + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				Assembler.PopupException(msg + msig);
-				return indicatorLegDrawn;
-			}
-			
-			// EPIC_FAIL_HERE !!!! double calculatedPrev = this.OwnValuesCalculated[barIndexPrev];
-			if (this.OwnValuesCalculated.ContainsDate(barPrev.DateTimeOpen) == false) {
-				//string msg = "EDIT_DATASOURCE_EXTEND_MARKET_OPEN_CLOSE_HOURS";
-				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_PREVIOUS_BAR[" + barPrev.DateTimeOpen + "] " + this.ToString();
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				Assembler.PopupException(msg + msig);
-				return indicatorLegDrawn;
-			}
-			double calculatedPrev = this.OwnValuesCalculated[barIndexPrev];
-			
-			if (double.IsNaN(calculatedPrev)) {
-				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NAN_FOR_PREVBAR barIndexPrev[" + barIndexPrev + "]";
-				//INDICATORS_INCUBATION_PERIOD_NO_NEED_TO_REPORT Assembler.PopupException(msg + msig);
-				return indicatorLegDrawn;
-			}
-				
-			int yPrev = this.HostPanelForIndicator.ValueToYinverted(calculatedPrev);
-			int xPrev = this.HostPanelForIndicator.BarToX(barIndexPrev) + this.HostPanelForIndicator.BarShadowOffset;
-			Point myDotPrev = new Point(xPrev, yPrev);
-			
-			g.DrawLine(this.PenForeground, myDot, myDotPrev);
-			this.DotsDrawnForCurrentSlidingWindow++;
-			
-			indicatorLegDrawn = true;
-			return indicatorLegDrawn;
-		}
 		public override string ToString() {
 			return this.NameWithParameters;
 		}

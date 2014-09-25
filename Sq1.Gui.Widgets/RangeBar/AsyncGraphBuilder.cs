@@ -125,11 +125,11 @@ namespace Sq1.Widgets.RangeBar {
 							this.ValueYinvertedForGraphicsWidth[i] = yInverted;
 						} catch (Exception ex) {
 							continue;
-							//System.Diagnostics.Debugger.Break();
+							//Debugger.Break();
 						}
 					}
 				//} catch (Exception ex) {
-				//	System.Diagnostics.Debugger.Break();
+				//	Debugger.Break();
 				} finally {
 					this.IsCalculating = false;
 				}

@@ -2,25 +2,25 @@
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Indicators {
-	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
 	public class IndicatorParameterAttribute : Attribute {
 		public string Name;
 		
-		public float ValueCurrent;
-		public float ValueMin;
-		public float ValueMax;
-		public float ValueIncrement;
+		public double ValueCurrent;
+		public double ValueMin;
+		public double ValueMax;
+		public double ValueIncrement;
 		
 		//public string ValueString;
 		//public BarScaleInterval ValueBarScaleInterval;
 		
 		public IndicatorParameterAttribute(string name = "NAME_NOT_INITIALIZED",
-				float valueCurrent = float.NaN, float valueMin = float.NaN, float valueMax = float.NaN, float valueIncrement = float.NaN) {
-			this.Name = name;
-			this.ValueCurrent = valueCurrent;
-			this.ValueMin = valueMin;
-			this.ValueMax = valueMax;
-			this.ValueIncrement = valueIncrement;
+				double valueCurrent = double.NaN, double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) {
+			Name = name;
+			ValueCurrent = valueCurrent;
+			ValueMin = valueMin;
+			ValueMax = valueMax;
+			ValueIncrement = valueIncrement;
 		}
 		//public IndicatorParameterAttribute(string name = "NAME_NOT_INITIALIZED", string value = "STRING_VALUE_NOT_INITIALIZED") {
 		//    this.Name = name;

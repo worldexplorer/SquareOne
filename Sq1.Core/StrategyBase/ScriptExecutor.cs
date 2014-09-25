@@ -825,7 +825,8 @@ namespace Sq1.Core.StrategyBase {
 					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStarting(this);
 				}
 				if (indicatorsHaveNoErrorsCanStartBacktesting == false) {
-					throw new Exception("indicatorsHaveNoErrorsCanStartBacktesting=false");
+					// CATCH_IS_FOR_SIMULATION_EXCEPTIONS_NOT_FOR_YOU!!! throw new Exception("indicatorsHaveNoErrorsCanStartBacktesting=false");
+					return;
 				}
 				
 				this.Backtester.Initialize(this.Strategy.Script.BacktestMode);

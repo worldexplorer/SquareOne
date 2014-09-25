@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -58,7 +59,7 @@ namespace Sq1.Core.DoubleBuffered {
 				// now we spit BufferedGraphics into the screen
 				this.bufferedGraphics.Render(pe.Graphics);
 			} catch (Exception ex) {
-				System.Diagnostics.Debugger.Break();
+				Debugger.Break();
 			}
 		}
 		protected override void OnPaintBackground(PaintEventArgs pe) {

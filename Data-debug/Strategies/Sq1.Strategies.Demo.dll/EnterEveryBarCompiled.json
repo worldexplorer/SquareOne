@@ -24,7 +24,7 @@
         "Positions",
         "Performance"
       ],
-      "BacktestOnRestart": true,
+      "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {

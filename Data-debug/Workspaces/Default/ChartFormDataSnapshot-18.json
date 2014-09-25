@@ -25,7 +25,7 @@
       "RecentTimeunits": 0
     },
     "ChartStreaming": false,
-    "ShowRangeBar": true
+    "ShowRangeBar": false
   },
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -69,7 +69,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 135,
+    "ScrollPositionAtBarIndex": 403,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -85,7 +85,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 263,
+    "PriceVsVolumeSplitterDistance": 320,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
