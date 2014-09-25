@@ -36,7 +36,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
-    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED;VERBOSE_STRINGS_SLOW_disabled</DefineConstants>
+    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED;VERBOSE_STRINGS_SLOW_disabled;TEST_COMPATIBILITY_disabled</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <StartAction>Project</StartAction>
