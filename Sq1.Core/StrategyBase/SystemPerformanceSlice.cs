@@ -288,6 +288,11 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
+			if (barDateTime == DateTime.MinValue) {
+				string msg = "NO_POSITIONS_AFTER_FILTERING_WHAT_I_TRACK_LONG_OR_SHORT";
+				return positionsOpenAbsorbedBoth;
+			}
+			
 			this.CashAvailable += cashBalanceAtBar;
 			this.EquityCurve.SumupOrAppend(barDateTime, netProfitAtBarBoth);
 			this.CashCurve.SumupOrAppend(barDateTime, cashBalanceAtBar);

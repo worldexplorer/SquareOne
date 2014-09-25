@@ -94,8 +94,10 @@ namespace Sq1.Core.DataTypes {
 			try {
 				this.checkThrowDateAlreadyAdded(dateTimeAdding);
 				this.checkThrowDatePriorToLast(dateTimeAdding);
+				this.checkThrowLastStaticDateEqualsToAppended(dateTimeAdding);
 				base.Append(value);
 				this.doublesByDate.Add(dateTimeAdding, value);
+				this.LastDateAppended = dateTimeAdding;
 			} catch (Exception e) {
 				#if DEBUG
 				Debugger.Break();
