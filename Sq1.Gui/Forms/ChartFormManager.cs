@@ -395,7 +395,11 @@ namespace Sq1.Gui.Forms {
 			if (this.Strategy.Script.Executor == null) {
 				//IM_GETTING_HERE_ON_STARTUP_AFTER_SUCCESFULL_COMPILATION_CHART_RELATED_STRATEGIES Debugger.Break();
 				string msg = "you should never get here; a compiled script should've been already linked to Executor (without bars on deserialization) 10 lines above in this.InitializeWithStrategy(mainForm, strategy);";
-				Debugger.Break();
+				#if DEBUG
+				if (this.Strategy.ActivatedFromDll == true) {
+					Debugger.Break();
+				}
+				#endif
 				this.Strategy.Script.Initialize(this.Executor);
 			}
 

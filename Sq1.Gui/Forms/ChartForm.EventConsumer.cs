@@ -38,10 +38,10 @@ namespace Sq1.Gui.Forms {
 		}
 		void mniShowSourceCodeEditor_Click(object sender, System.EventArgs e) {
 			if (this.MniShowSourceCodeEditor.Checked) {
-				DockHelper.ToggleAutoHide(this.ChartFormManager.ScriptEditorFormConditionalInstance);
-			} else {
 				// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.EditorFormShow(false);
+			} else {
+				DockHelper.ToggleAutoHide(this.ChartFormManager.ScriptEditorFormConditionalInstance);
 			}
 			this.ChartFormManager.MainForm.MainFormSerialize();
 		}

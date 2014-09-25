@@ -273,20 +273,13 @@ namespace Sq1.Core.Indicators {
 			string indicatorSelfValidationErrors = this.BacktestStartingPreCheckErrors();
 			this.IndicatorErrorsOnBacktestStartingAppend(indicatorSelfValidationErrors);
 			
-			if (string.IsNullOrEmpty(indicatorSelfValidationErrors) == false) {
+			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) {
 				string msig2 = " Indicator[" + this.NameWithParameters + "].BacktestStartingPreCheck()";
-				Assembler.PopupException(indicatorSelfValidationErrors + msig2);
+				Assembler.PopupException(this.IndicatorErrorsOnBacktestStarting + msig2);
 			}
 			
-			bool backtestCanStart = true;
-			if (string.IsNullOrEmpty(paramerersAllValidatedErrors) == false) {
-				Assembler.PopupException(paramerersAllValidatedErrors);
-				backtestCanStart = false;
-			}
-			if (string.IsNullOrEmpty(indicatorSelfValidationErrors) == false) {
-				Assembler.PopupException(indicatorSelfValidationErrors);
-				backtestCanStart = false;
-			}
+			bool backtestCanStart = string.IsNullOrEmpty(paramerersAllValidatedErrors)
+								 && string.IsNullOrEmpty(indicatorSelfValidationErrors);
 			return backtestCanStart;
 		}
 		

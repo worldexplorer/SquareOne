@@ -21,7 +21,7 @@
       "IsCurrent": false,
       "ChartAutoSubmitting": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
-      "BacktestOnRestart": true,
+      "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {

@@ -41,6 +41,10 @@ namespace Sq1.Gui.Singletons {
 		}
 		internal void StrategiesTree_OnStrategyOpenNewChartClicked(object sender, StrategyEventArgs e) {
 			Strategy strategy = e.Strategy;
+			if (strategy.Script == null) {
+				string msg = "YOU_OPENED_A_STRATEGY_YOU_JUST_ADDED_TO_REPOSITORY ?";
+				return;
+			}
 			if (strategy.Script.Executor != null) {		// WHEN_USER_OPENS_FROM_STRATEGIES_TREE strategy.Script.Executor=null
 				strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
 			}

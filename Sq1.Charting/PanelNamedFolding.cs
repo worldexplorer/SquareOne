@@ -168,6 +168,12 @@ namespace Sq1.Charting {
 			bool skipPaintingBeforeBacktestCompletes = false;		// AVOIDING_CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_BAR in this.RenderIndicators(); I don't need Executor.Backtester.BacktestIsRunning here 
 			Dictionary<string, Indicator> indicators = this.ChartControl.ScriptExecutorObjects.Indicators;	// if there's no indicators => I won't go to foreach () and won't skipPaintingBeforeBacktestCompletes 
 			foreach (Indicator indicator in indicators.Values) {
+				if (indicator.OwnValuesCalculated == null) {
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					continue;
+				}
 				if (indicator.OwnValuesCalculated.Count > 0) continue;
 				skipPaintingBeforeBacktestCompletes = true;
 				break;

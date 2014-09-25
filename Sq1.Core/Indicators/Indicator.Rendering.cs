@@ -60,7 +60,7 @@ namespace Sq1.Core.Indicators {
 		protected bool DrawValueSingleLine(Graphics g, Bar bar, double calculated = double.NaN, double calculatedPrev = double.NaN) {
 			string msig = " Indicator[" + this.NameWithParameters + "].DrawValueSingleLine(" + bar + ")";
 			bool indicatorLegDrawn = false;
-			if (calculated == double.NaN) {
+			if (double.IsNaN(calculated)) {
 				calculated = this.OwnValuesCalculated[bar.ParentBarsIndex];
 			}
 			// v2-END

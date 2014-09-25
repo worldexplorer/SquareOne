@@ -95,12 +95,14 @@ namespace Sq1.Charting {
 			// 
 			// lblHeaderVal
 			// 
+			this.lblHeaderVal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.lblHeaderVal.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
 			this.lblHeaderVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblHeaderVal.Location = new System.Drawing.Point(0, 0);
 			this.lblHeaderVal.Name = "lblHeaderVal";
 			this.lblHeaderVal.Padding = new System.Windows.Forms.Padding(2);
-			this.lblHeaderVal.Size = new System.Drawing.Size(107, 16);
+			this.lblHeaderVal.Size = new System.Drawing.Size(116, 16);
 			this.lblHeaderVal.TabIndex = 7;
 			this.lblHeaderVal.Text = "16:50 #515123";
 			this.lblHeaderVal.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -167,7 +169,7 @@ namespace Sq1.Charting {
 			// lblDateValue
 			// 
 			this.lblDateValue.AutoSize = true;
-			this.lblDateValue.Location = new System.Drawing.Point(1, 18);
+			this.lblDateValue.Location = new System.Drawing.Point(3, 18);
 			this.lblDateValue.Name = "lblDateValue";
 			this.lblDateValue.Size = new System.Drawing.Size(84, 13);
 			this.lblDateValue.TabIndex = 17;
@@ -194,6 +196,7 @@ namespace Sq1.Charting {
 			this.lnkAlertsVal.TabStop = true;
 			this.lnkAlertsVal.Text = "12";
 			this.lnkAlertsVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.lnkAlertsVal.Visible = false;
 			// 
 			// lnkAlerts
 			// 
@@ -204,6 +207,7 @@ namespace Sq1.Charting {
 			this.lnkAlerts.TabIndex = 18;
 			this.lnkAlerts.TabStop = true;
 			this.lnkAlerts.Text = "Alerts";
+			this.lnkAlerts.Visible = false;
 			// 
 			// lblOrdersVal
 			// 
@@ -213,6 +217,7 @@ namespace Sq1.Charting {
 			this.lblOrdersVal.TabIndex = 21;
 			this.lblOrdersVal.Text = "13";
 			this.lblOrdersVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.lblOrdersVal.Visible = false;
 			// 
 			// lnkOrders
 			// 
@@ -223,6 +228,7 @@ namespace Sq1.Charting {
 			this.lnkOrders.TabIndex = 20;
 			this.lnkOrders.TabStop = true;
 			this.lnkOrders.Text = "Orders";
+			this.lnkOrders.Visible = false;
 			// 
 			// lblPositionsVal
 			// 
@@ -232,6 +238,7 @@ namespace Sq1.Charting {
 			this.lblPositionsVal.TabIndex = 23;
 			this.lblPositionsVal.Text = "2";
 			this.lblPositionsVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.lblPositionsVal.Visible = false;
 			// 
 			// lnkPositions
 			// 
@@ -242,6 +249,7 @@ namespace Sq1.Charting {
 			this.lnkPositions.TabIndex = 22;
 			this.lnkPositions.TabStop = true;
 			this.lnkPositions.Text = "Positions";
+			this.lnkPositions.Visible = false;
 			// 
 			// TooltipPrice
 			// 
@@ -269,7 +277,6 @@ namespace Sq1.Charting {
 			this.ForeColor = System.Drawing.SystemColors.InfoText;
 			this.Name = "TooltipPrice";
 			this.Size = new System.Drawing.Size(115, 116);
-			this.MouseMove += new MouseEventHandler(TooltipPrice_MouseMove);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}
