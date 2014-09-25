@@ -6,6 +6,7 @@ using Sq1.Core.Repositories;
 
 namespace Sq1.Core.DataTypes {
 	[DataContract]	// prevents serialization in JSON of the underlying bars
+	//v1 public partial class Bars : BarsUnscaledSortedList {
 	public partial class Bars : BarsUnscaled {
 		public static int InstanceAbsno = 0;
 
@@ -65,7 +66,7 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		public Bar CreateNewOrAbsorbIntoStreaming(Bar barToMergeToStreaming) {
-			lock (base.LockBars) {
+			lock (base.BarsLock) {
 				bool shouldAppend = this.BarLast == null || barToMergeToStreaming.DateTimeOpen >= this.BarLast.DateTimeNextBarOpenUnconditional; 
 				if (this.BarStreaming == null || shouldAppend) {	// if this.BarStreaming == null I'll have just one bar in Bars which will be streaming and no static 
 					this.BarStreaming = this.barCreateAppendBindStreaming(barToMergeToStreaming);
@@ -84,7 +85,7 @@ namespace Sq1.Core.DataTypes {
 			return this.barCreateAppendBindStreaming(bar.DateTimeOpen, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume);
 		}
 		private Bar barCreateAppendBindStreaming(DateTime dateTime, double open, double high, double low, double close, double volume) {
-			lock (base.LockBars) {
+			lock (base.BarsLock) {
 				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
 				barAdding.SetOHLCV(open, high, low, close, volume);
 				this.barAppendBindStreaming(barAdding);
@@ -92,14 +93,14 @@ namespace Sq1.Core.DataTypes {
 			}
 		}
 		private void barAppendBindStreaming(Bar barAdding) {
-			lock (base.LockBars) {
+			lock (base.BarsLock) {
 				this.BarAppendBind(barAdding);
 				this.BarStreaming = barAdding;
 				this.RaiseBarStreamingAdded(barAdding);
 			}
 		}
 		public Bar BarCreateAppendBindStatic(DateTime dateTime, double open, double high, double low, double close, double volume) {
-			lock (base.LockBars) {
+			lock (base.BarsLock) {
 				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
 				barAdding.SetOHLCV(open, high, low, close, volume);
 				this.BarAppendBindStatic(barAdding);
@@ -107,7 +108,7 @@ namespace Sq1.Core.DataTypes {
 			}
 		}
 		public void BarAppendBindStatic(Bar barAdding) {
-			lock (base.LockBars) {
+			lock (base.BarsLock) {
 				barAdding.CheckOHLCVthrow();
 				this.BarStreaming = null;
 				this.BarAppendBind(barAdding);
@@ -122,7 +123,7 @@ namespace Sq1.Core.DataTypes {
 				+ this.BarLast.DateTimeNextBarOpenUnconditional + "]");
 		}
 		protected void BarAppendBind(Bar barAdding) {
-			lock (base.LockBars) {
+			lock (base.BarsLock) {
 				try {
 					base.BarAppend(barAdding);
 				} catch (Exception e) {
