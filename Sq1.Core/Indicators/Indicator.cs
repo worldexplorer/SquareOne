@@ -302,7 +302,7 @@ namespace Sq1.Core.Indicators {
 			return null;
 		}
 		public virtual double CalculateOwnValueOnNewStaticBarFormed(Bar newStaticBar) {
-			if (this.OwnValuesCalculated.ContainsKey(newStaticBar.DateTimeOpen)) {
+			if (this.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) {
 				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
 				#if DEBUG
 				Debugger.Break();
@@ -318,23 +318,46 @@ namespace Sq1.Core.Indicators {
 		public void OnNewStaticBarFormed(Bar newStaticBar) {
 			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) {
 				return;
-				}
+			}
 				
+			double derivedCalculated = this.CalculateOwnValueOnNewStaticBarFormed(newStaticBar);
+
 			int newStaticBarIndex = newStaticBar.ParentBarsIndex;
-			 
-			if (newStaticBarIndex <= this.OwnValuesCalculated.Count - 1) {
-				double alreadyCalculated = this.OwnValuesCalculated[newStaticBarIndex];
-				string msg = "THERE_MUST_BE_NO_OWN_VALUE_PRIOR_TO_INVOCATION alreadyCalculated[" + alreadyCalculated + "]";
-				string msig = " OnNewStaticBarFormed(" + newStaticBar + ")";
+			int differenceMustNotBeMoreThanOne = newStaticBarIndex - this.OwnValuesCalculated.StreamingIndex;
+			if (differenceMustNotBeMoreThanOne > 1) {
+				string msig = " OnNewStaticBarFormed(" + newStaticBar.ToString() + ")";
+				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS[" + differenceMustNotBeMoreThanOne + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
-			double derivedCalculated = this.CalculateOwnValueOnNewStaticBarFormed(newStaticBar);
-			this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, derivedCalculated);
+			if (differenceMustNotBeMoreThanOne == 1) {
+				DateTime streamingBarDateTime = newStaticBar.DateTimeOpen;
+				this.OwnValuesCalculated.Append(streamingBarDateTime, derivedCalculated);
+			} else {
+				this.OwnValuesCalculated.StreamingValue = derivedCalculated;
+			}
 		}
 		public void OnNewStreamingQuote(Quote newStreamingQuote) {
-			int streamingBarIndex = newStreamingQuote.ParentStreamingBar.ParentBarsIndex;
 			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote(newStreamingQuote);
-			this.OwnValuesCalculated.StreamingValue = derivedCalculated;
+			
+			int streamingBarIndex = newStreamingQuote.ParentStreamingBar.ParentBarsIndex;
+			int differenceMustNotBeMoreThanOne = streamingBarIndex - this.OwnValuesCalculated.StreamingIndex;
+			if (differenceMustNotBeMoreThanOne > 1) {
+				string msig = " OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
+				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS[" + differenceMustNotBeMoreThanOne + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
+			}
+			if (differenceMustNotBeMoreThanOne == 1) {
+				DateTime streamingBarDateTime = newStreamingQuote.ParentStreamingBar.DateTimeOpen;
+				this.OwnValuesCalculated.Append(streamingBarDateTime, derivedCalculated);
+			} else {
+				this.OwnValuesCalculated.StreamingValue = derivedCalculated;
+			}
 		}
 		
 		string format;
@@ -351,11 +374,12 @@ namespace Sq1.Core.Indicators {
 		public string FormatValueForBar(Bar bar) {
 			string ret = "";
 			DateTime barDateTime = bar.DateTimeOpen;
-			if (this.OwnValuesCalculated.ContainsKey(barDateTime) == false) {
+			int barIndex = bar.ParentBarsIndex;
+			if (this.OwnValuesCalculated.ContainsDate(barDateTime) == false) {
 				ret = "!ex[" + barDateTime.ToString(Assembler.DateTimeFormatIndicatorHasNoValuesFor) + "]";
 				return ret;
 			}
-			double calculated = this.OwnValuesCalculated[barDateTime];
+			double calculated = this.OwnValuesCalculated[barIndex];
 			if (double.IsNaN(calculated)) {
 				ret = "NaN";
 			}
@@ -387,7 +411,7 @@ namespace Sq1.Core.Indicators {
 				//Assembler.PopupException(msg);
 				return indicatorLegDrawn;
 			}
-			if (this.OwnValuesCalculated.ContainsKey(bar.DateTimeOpen) == false) {
+			if (this.OwnValuesCalculated.ContainsDate(bar.DateTimeOpen) == false) {
 				if (this.Executor.Backtester.IsBacktestingNow) {
 					return indicatorLegDrawn;
 				}
@@ -406,7 +430,7 @@ namespace Sq1.Core.Indicators {
 				Assembler.PopupException(msg + msig);
 				return indicatorLegDrawn;
 			}
-			double calculated = this.OwnValuesCalculated[bar.DateTimeOpen];
+			double calculated = this.OwnValuesCalculated[bar.ParentBarsIndex];
 			// v2-END
 			if (double.IsNaN(calculated)) {
 				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NAN_FOR_BAR bar[" + bar + "]";
@@ -417,13 +441,19 @@ namespace Sq1.Core.Indicators {
 			int x = this.HostPanelForIndicator.BarToX(bar.ParentBarsIndex) + this.HostPanelForIndicator.BarShadowOffset;
 			int y = this.HostPanelForIndicator.ValueToYinverted(calculated);
 			if (y == 0)  {
-				string msg = "INDICATOR_VALUE_TOO_SMALL SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
-				return indicatorLegDrawn;
+				string msg = "INDICATOR_VALUE_TOO_BIG_INVERTED SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
+				#if DEBUG
+				//Debugger.Break();
+				#endif
+				//return indicatorLegDrawn;
 			}
 			int max = this.HostPanelForIndicator.ValueToYinverted(0);
 			if (y == max) {
-				string msg = "INDICATOR_VALUE_TOO_BIG SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
-				return indicatorLegDrawn;
+				string msg = "INDICATOR_VALUE_TOO_SMALL_INVERTED SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
+				#if DEBUG
+				//Debugger.Break();
+				#endif
+				//return indicatorLegDrawn;
 			}
 
 			Point myDot = new Point(x, y);
@@ -441,7 +471,7 @@ namespace Sq1.Core.Indicators {
 			}
 			
 			// EPIC_FAIL_HERE !!!! double calculatedPrev = this.OwnValuesCalculated[barIndexPrev];
-			if (this.OwnValuesCalculated.ContainsKey(barPrev.DateTimeOpen) == false) {
+			if (this.OwnValuesCalculated.ContainsDate(barPrev.DateTimeOpen) == false) {
 				//string msg = "EDIT_DATASOURCE_EXTEND_MARKET_OPEN_CLOSE_HOURS";
 				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_PREVIOUS_BAR[" + barPrev.DateTimeOpen + "] " + this.ToString();
 				#if DEBUG
@@ -450,7 +480,7 @@ namespace Sq1.Core.Indicators {
 				Assembler.PopupException(msg + msig);
 				return indicatorLegDrawn;
 			}
-			double calculatedPrev = this.OwnValuesCalculated[barPrev.DateTimeOpen];
+			double calculatedPrev = this.OwnValuesCalculated[barIndexPrev];
 			
 			if (double.IsNaN(calculatedPrev)) {
 				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NAN_FOR_PREVBAR barIndexPrev[" + barIndexPrev + "]";

@@ -13,16 +13,16 @@ namespace Sq1.Core.DataTypes {
 			this.dataSeriesBeingExposed = dataSeriesBeingExposed;
 			base.Description = this.dataSeriesBeingExposed + " for " + this.ToString();
 		}
-		public override double StreamingValue {
-			get {
-				return this[this.Count];
-			}
-			set {
-				if (Double.IsNaN(value)) return;
-				string msg = "Cannot set StreamingValue[" + value + "] for " + this.ToString();
-				throw new InvalidOperationException();
-			}
-		}
+//		public override double StreamingValue {
+//			get {
+//				return this[this.Count-1];
+//			}
+//			set {
+//				if (double.IsNaN(value)) return;
+//				string msg = "Cannot set StreamingValue[" + value + "] for " + this.ToString();
+//				throw new InvalidOperationException();
+//			}
+//		}
 		//public override IList<DateTime> DateTimes { get { return this.barsBeingProxied.DateTimes; } }
 		public override int Count { get { return this.barsBeingProxied.Count; } }
 		public override double this[int barIndex] {
@@ -32,8 +32,10 @@ namespace Sq1.Core.DataTypes {
 					return double.NaN;
 				}
 				if (barIndex >= this.barsBeingProxied.Count) {
+					string msg = "DEPRECATED_NOTATION this[this.Count]_get; STREAMING_VALUE_IS_NOW_AT_this[this.Count-1]";
 					Debugger.Break();
-					return double.NaN;
+					throw new Exception(msg);
+					//return double.NaN;
 				}
 				switch (this.dataSeriesBeingExposed) {
 						//case "DateTimeOpen": return this.barsBeingProxied[barIndex].DateTimeOpen;

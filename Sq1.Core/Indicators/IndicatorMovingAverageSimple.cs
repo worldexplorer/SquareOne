@@ -33,13 +33,18 @@ namespace Sq1.Core.Indicators {
 		
 		public override double CalculateOwnValueOnNewStaticBarFormed(Bar newStaticBar) {
 			#region DELETEME_AFTER_COMPATIBILITY_TEST
-			if (base.OwnValuesCalculated.ContainsKey(newStaticBar.DateTimeOpen)) {
-				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				Assembler.PopupException(msg);
-				return double.NaN;
+			if (base.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) {
+				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW";
+				if (base.OwnValuesCalculated.LastDateAppended > newStaticBar.DateTimeOpen) {
+					msg = "DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					Assembler.PopupException(msg);
+					return double.NaN;
+				} else {
+					msg = "DURING_INCUBATION_EACH_QUOTE_ADDS_NAN_SO_ON_STATIC_FORMED_THERE_IS_LEGITIMATE_VALUE ";
+				}
 			}
 			#endregion
 
@@ -47,7 +52,10 @@ namespace Sq1.Core.Indicators {
 			if (base.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) return double.NaN;
 			if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) return double.NaN;
 
+			double ret = this.smaSeries.CalculateAppendOwnValueForNewStaticBarFormed(newStaticBar);
+
 			#region DELETEME_AFTER_COMPATIBILITY_TEST
+			#if TEST_COMPATIBILITY
 			double sum = 0;
 			int slidingWindowRightBar = newStaticBar.ParentBarsIndex;
 			int slidingWindowLeftBar = slidingWindowRightBar - this.Period + 1;	// FirstValidBarIndex must be Period+1
@@ -64,17 +72,15 @@ namespace Sq1.Core.Indicators {
 			if (barsProcessedCheck != this.Period) {
 				Debugger.Break();
 			}
-			double ret = sum / this.Period;
-			#endregion
+			double retOld = sum / this.Period;
 			
-			double retNew = this.smaSeries.CalculateAppendOwnValueForNewStaticBarFormed(newStaticBar);
-			#if DEBUG
-			if (ret != retNew) {
+			if (retOld != ret) {
 				Debugger.Break();
 			} else {
 				//Debugger.Break();
 			}
 			#endif
+			#endregion
 
 			return ret;
 		}
