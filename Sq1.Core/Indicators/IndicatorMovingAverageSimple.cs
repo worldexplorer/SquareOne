@@ -72,7 +72,7 @@ namespace Sq1.Core.Indicators {
 			if (ret != retNew) {
 				Debugger.Break();
 			} else {
-				Debugger.Break();
+				//Debugger.Break();
 			}
 			#endif
 

@@ -127,12 +127,12 @@ namespace Sq1.Core.DataTypes {
 		public Bar BarMarketOpenedTodayScanBackward(Bar startScanFrom) {
 			Bar ret = null;
 			DateTime dateFound = this.DateTimeBeforeDayDecreasedScanBackward(startScanFrom.DateTimeOpen);
-			ret = this[dateFound];
+			ret = base[dateFound];
 			return ret;
 		}
 		public DateTime DateTimeBeforeDayDecreasedScanBackward(DateTime startScanFrom, bool scanForEarlier = false) {
 			DateTime ret = startScanFrom;
-			if (this.ContainsKey(startScanFrom) == false) {
+			if (base.ContainsDate(startScanFrom) == false) {
 				//THIS_ISNT_EMBEDDED_TEST_BUT_YOU_EXPLAIN_TO_USER_HOW_TO_USE_THIS_METHOD
 				string msg = "BARS_DOEST_CONTAIN_DATEOPEN[" + startScanFrom + "]_RETURNING_UNMODIFIED Bars[" + this.ToString() + "]"
 					+ "; EXPECTING_BARS_WERE_APPENDED_WITHOUT_SCALEINTERVAL_CHANGE"
@@ -143,7 +143,7 @@ namespace Sq1.Core.DataTypes {
 				#endif
 				return ret;
 			}
-			int indexToStartScanningBackwards = this.IndexOfKey(startScanFrom);
+			int indexToStartScanningBackwards = base.IndexOfDate(startScanFrom);
 			for (int i = indexToStartScanningBackwards; i >= 0; i--) {
 				Bar eachBarBackwards = this[i];
 				// stop scanning when we hit yesterday; then in RET we'll get lastKnownSameDayBar

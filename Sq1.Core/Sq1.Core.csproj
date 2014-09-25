@@ -97,7 +97,9 @@
       <DependentUpon>Bars.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\BarsUnscaled.cs" />
+    <Compile Include="DataTypes\BarsUnscaledSortedList.cs" />
     <Compile Include="DataTypes\BarsUnscaledEventArgs.cs" />
+    <Compile Include="DataTypes\BarsUnscaledList.cs" />
     <Compile Include="DoubleBuffered\PanelDoubleBuffered.cs">
       <SubType>Component</SubType>
     </Compile>

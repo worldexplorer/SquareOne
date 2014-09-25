@@ -23,7 +23,7 @@ namespace Sq1.Core.DataTypes {
 				throw new InvalidOperationException();
 			}
 		}
-		public override IList<DateTime> DateTimes { get { return this.barsBeingProxied.DateTimes; } }
+		//public override IList<DateTime> DateTimes { get { return this.barsBeingProxied.DateTimes; } }
 		public override int Count { get { return this.barsBeingProxied.Count; } }
 		public override double this[int barIndex] {
 			get {
@@ -32,7 +32,7 @@ namespace Sq1.Core.DataTypes {
 					return double.NaN;
 				}
 				if (barIndex >= this.barsBeingProxied.Count) {
-					//Debugger.Break();
+					Debugger.Break();
 					return double.NaN;
 				}
 				switch (this.dataSeriesBeingExposed) {
