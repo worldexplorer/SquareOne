@@ -80,7 +80,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 		}
-		public void SetSliderNumericUpdownShownForParameterId(int paramId, bool shown) {
+		public void SetSliderNumericUpdownShownForScriptParameterId(int paramId, bool shown) {
 			if (this.SliderNumericUpdownsShownByParameterId.ContainsKey(paramId) == false) {
 				this.SliderNumericUpdownsShownByParameterId.Add(paramId, shown);
 			} else {

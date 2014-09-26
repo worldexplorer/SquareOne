@@ -62,7 +62,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 320,
+    "PriceVsVolumeSplitterDistance": 5,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
@@ -77,5 +77,5 @@
     "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
   },
   "ChartSerno": 17,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAindicatorsCompiled.json], ScriptContextCurrentName[ScriptContextCurrentName]"
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAindicatorsCompiled.json], ScriptContextCurrentName[?Default?]"
 }

@@ -82,7 +82,7 @@ namespace Sq1.Core.StrategyBase {
 			foreach (object attrObj in indicatorParameterAttrs) {
 				IndicatorParameterAttribute indicatorAttr = attrObj as IndicatorParameterAttribute;
 				if (indicatorAttr == null) continue;
-				this.IndicatorParameterCreateRegister(indicatorAttr);
+				this.IndicatorParameterCreateRegister(indicatorAttr.Name, indicatorAttr.ValueCurrent, indicatorAttr.ValueMin, indicatorAttr.ValueMax, indicatorAttr.ValueIncrement);
 			}
 			
 			BacktestMode = BacktestMode.FourStrokeOHLC;
@@ -106,17 +106,18 @@ namespace Sq1.Core.StrategyBase {
 			throw new Exception(msg);
 		}
 
-		public IndicatorParameter IndicatorParameterCreateRegister(IndicatorParameterAttribute indicatorAttr) {
-			if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorAttr.Name)) {
-				IndicatorParameter param = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorAttr.Name];
+		public IndicatorParameter IndicatorParameterCreateRegister(string name, double valueCurrent, double valueMin, double valueMax, double valueIncrement) {
+			if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(name)) {
+				IndicatorParameter param = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[name];
 				string msg = "this.Strategy[" + this.Strategy.Name + "].ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name
-					+ "] already had IndicatorParameter[" + param.ToString() + "]; no need to double-register";
+					+ "] already had IndicatorParameter[" + param.ToString() + "]"
+					+ "; remove [IndicatorParameterAttribute] if you invoke Script.IndicatorParameterCreateRegister() in Script.ctor()";
 				#if DEBUG
 				Debugger.Break();
 				#endif
 				return param;
 			}
-			IndicatorParameter indicatorParameter = new IndicatorParameter(indicatorAttr);
+			IndicatorParameter indicatorParameter = new IndicatorParameter(name, valueCurrent, valueMin, valueMax, valueIncrement);
 			this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(indicatorParameter.Name, indicatorParameter);
 			return indicatorParameter;
 		}

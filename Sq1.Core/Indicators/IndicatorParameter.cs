@@ -24,7 +24,7 @@ namespace Sq1.Core.Indicators {
 		//public string ValueString;
 		//public BarScaleInterval ValueBarScaleInterval;
 		
-		public IndicatorParameter(IndicatorParameterAttribute attr) {
+		internal IndicatorParameter(IndicatorParameterAttribute attr) {
 			this.Name = attr.Name;
 			//if (attr.ValueBarScaleInterval != null) {
 			//    this.ValueBarScaleInterval = attr.ValueBarScaleInterval;

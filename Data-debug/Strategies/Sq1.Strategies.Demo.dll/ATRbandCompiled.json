@@ -58,7 +58,8 @@
       "ChartStreaming": false,
       "ShowRangeBar": false,
       "ParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
+        "1": 5.0
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib",
@@ -68,7 +69,7 @@
           "ValueMin": 0.1,
           "ValueMax": 4.0,
           "ValueIncrement": 0.1,
-          "ValueCurrent": 1.5
+          "ValueCurrent": 1.867066
         },
         "ATR:Period": {
           "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
@@ -76,7 +77,7 @@
           "ValueMin": 1.0,
           "ValueMax": 11.0,
           "ValueIncrement": 2.0,
-          "ValueCurrent": 5.0
+          "ValueCurrent": 2.0
         }
       }
     }

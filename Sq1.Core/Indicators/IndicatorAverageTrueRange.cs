@@ -14,6 +14,8 @@ namespace Sq1.Core.Indicators {
 		[IndicatorParameterAttribute(Name="Period",
 			ValueCurrent=5, ValueMin=1, ValueMax=11, ValueIncrement=2)]
 		public int Period { get; set; }
+		
+		// CLEANER_INDICATORS public IndicatorParameter ParamPeriod;
 
 		[IndicatorParameterAttribute(Name="Multiplier",
 			ValueCurrent=1, ValueMin=0.1, ValueMax=10, ValueIncrement=0.1)]

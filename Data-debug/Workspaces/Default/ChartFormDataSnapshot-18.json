@@ -85,7 +85,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 320,
+    "PriceVsVolumeSplitterDistance": 5,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
