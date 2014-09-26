@@ -28,7 +28,7 @@ namespace Sq1.Gui.Forms {
 
 		[JsonProperty]	public ContextChart ContextChart;
 		[JsonProperty]	public string ContextChartCommentJsonCheck { get {
-			string ret = "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [" + this.StrategyAbsPathJsonCheck + "], ScriptContextCurrentName[ScriptContextCurrentName]";
+			string ret = "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [" + this.StrategyAbsPathJsonCheck + "], ScriptContextCurrentName[?Default?]";
 
 				// KISS lazy to figure out if I assigned a derived-casted-to-parent-before-assignment - will AS work or I have to use GetType() / typeof....
 				//ContextScript contextScript = this.ContextChart as ContextScript;

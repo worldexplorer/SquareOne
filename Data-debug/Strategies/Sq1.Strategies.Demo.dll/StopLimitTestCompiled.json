@@ -73,6 +73,9 @@
       "ShowRangeBar": false,
       "ParameterValuesById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
+      },
+      "IndicatorParametersByName": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib"
       }
     }
   },

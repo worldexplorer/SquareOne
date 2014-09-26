@@ -41,7 +41,7 @@ namespace Sq1.Core.StrategyBase {
 				lock (this.ScriptContextCurrentName) {	// Monitor shouldn't care whether I change the variable that I use for exclusive access...
 				//v2 lock (this.scriptContextCurrentNameLock) {
 					if (this.ScriptContextsByName.ContainsKey(ScriptContextCurrentName) == false)  {
-						string msg = "ScriptContextCurrentName[" + ScriptContextCurrentName + "] doesn't exist in Strategy[" + this + "]";
+					string msg = "ScriptContextCurrentName[" + ScriptContextCurrentName + "] doesn't exist in Strategy[" + this.ToString() + "]";
 						#if DEBUG
 						Debugger.Break();
 						#endif

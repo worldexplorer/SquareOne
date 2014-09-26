@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.DoubleBuffered;
+using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Widgets.SteppingSlider {
@@ -24,7 +25,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				foreach (UserControl control in base.Controls) ret += control.Height + this.VerticalSpaceBetweenSliders;
 				return ret;
 			} }
-		public List<SliderComboControl> SlidersScriptParameters { get {
+		public List<SliderComboControl> SlidersScriptAndIndicatorParameters { get {
 				List<SliderComboControl> ret = new List<SliderComboControl>();
 				foreach (Control mustBeSliderCombo in base.Controls) {
 					SliderComboControl slider = mustBeSliderCombo as SliderComboControl;
@@ -37,7 +38,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			get {
 				if (base.DesignMode == true) return null;
 				Dictionary<string, double> ret = new Dictionary<string, double>();
-				foreach (SliderComboControl slider in this.SlidersScriptParameters) {
+				foreach (SliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
 					ScriptParameter parameter = slider.Tag as ScriptParameter;
 					ret.Add(parameter.Name, (double)slider.ValueCurrent);
 				}
@@ -83,17 +84,30 @@ namespace Sq1.Widgets.SteppingSlider {
 					SliderComboControl slider = this.SliderComboFactory(parameter);
 					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				}
+				if (this.Strategy.Script.ParametersById.Count > 0 && this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Count > 0) {
+					this.AddSpacingBeforeIndicatorParameters();
+				}
+				foreach (IndicatorParameter parameter in this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Values) {
+					SliderComboControl slider = this.SliderComboFactory(parameter);
+					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
+				}
 			} finally {
 				base.Height = this.PreferredHeight;
 				base.ResumeLayout(true);
 			}
+		}
+
+		private void AddSpacingBeforeIndicatorParameters() {
+			Panel ret = new Panel();
+			ret.Size = new System.Drawing.Size(this.Width, 8);
+			//base.Controls.Add(ret);
 		}
 		
 		private void syncMniAllParamsShowBorderAndNumeric() {
 			bool atLeastOneBorderShown = false;
 			bool atLeastOneNumericShown = false;
 
-			foreach (SliderComboControl slider in this.SlidersScriptParameters) {
+			foreach (SliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
 				if (slider.EnableBorder) atLeastOneBorderShown = true;
 				if (slider.EnableNumeric) atLeastOneNumericShown = true;
 			}
@@ -105,7 +119,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowNumeric.Text = atLeastOneNumericShown ? "All Params -> HideNumeric" : "All Params -> ShowNumeric";
 		}
 
-		private SliderComboControl SliderComboFactory(ScriptParameter parameter) {
+		private SliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptparameter) {
 			//v1 WOULD_BE_TOO_EASY ret = this.templateSliderControl.Clone();
 			//BEGIN merged with SlidersAutoGrow.Designer.cs:InitializeComponent()
 			SliderComboControl ret = new SliderComboControl();
@@ -138,29 +152,33 @@ namespace Sq1.Widgets.SteppingSlider {
 			ret.PaddingPanelSlider = this.templateSliderControl.PaddingPanelSlider;
 			//END merged
 
-			ret.LabelText = parameter.Name;
-			ret.Name = "parameter_" + parameter.Name;
-			ret.ValueCurrent = new decimal(parameter.ValueCurrent);
-			ret.ValueMax = new decimal(parameter.ValueMax);
-			ret.ValueMin = new decimal(parameter.ValueMin);
-			ret.ValueIncrement = new decimal(parameter.ValueIncrement);
+			ret.LabelText = indicatorOrScriptparameter.Name;
+			ret.Name = "parameter_" + indicatorOrScriptparameter.Name;
+			ret.ValueCurrent = new decimal(indicatorOrScriptparameter.ValueCurrent);
+			ret.ValueMax = new decimal(indicatorOrScriptparameter.ValueMax);
+			ret.ValueMin = new decimal(indicatorOrScriptparameter.ValueMin);
+			ret.ValueIncrement = new decimal(indicatorOrScriptparameter.ValueIncrement);
 			//DOESNT_WORK?... ret.PanelFillSlider.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			//ret.PaddingPanelSlider = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			ret.Location = new System.Drawing.Point(0, this.PreferredHeight + this.VerticalSpaceBetweenSliders);
 			ret.Size = new System.Drawing.Size(this.Width, ret.Size.Height);
-			ret.Tag = parameter;
+			ret.Tag = indicatorOrScriptparameter;
 			ret.ValueCurrentChanged += slider_ValueCurrentChanged;
 			// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening
 			
-			if (this.Strategy.SliderBordersShownByParameterId.ContainsKey(parameter.Id)) {
-				ret.EnableBorder = this.Strategy.SliderBordersShownByParameterId[parameter.Id];
-			} else {
-				ret.EnableBorder = this.AllSlidersBorderShownByDefault;
-			}
-			if (this.Strategy.SliderNumericUpdownsShownByParameterId.ContainsKey(parameter.Id)) {
-				ret.EnableNumeric = this.Strategy.SliderNumericUpdownsShownByParameterId[parameter.Id];
-			} else {
-				ret.EnableNumeric = this.AllSlidersNumericShownByDefault;
+			// TODO: unify ScriptParameter and IndicatorParameter in terms of SliderBordersShown and SliderNumericUpdownsShown
+			if (indicatorOrScriptparameter is ScriptParameter) {
+				ScriptParameter scriptParameter = indicatorOrScriptparameter as ScriptParameter; 
+				if (this.Strategy.SliderBordersShownByParameterId.ContainsKey(scriptParameter.Id)) {
+					ret.EnableBorder = this.Strategy.SliderBordersShownByParameterId[scriptParameter.Id];
+				} else {
+					ret.EnableBorder = this.AllSlidersBorderShownByDefault;
+				}
+				if (this.Strategy.SliderNumericUpdownsShownByParameterId.ContainsKey(scriptParameter.Id)) {
+					ret.EnableNumeric = this.Strategy.SliderNumericUpdownsShownByParameterId[scriptParameter.Id];
+				} else {
+					ret.EnableNumeric = this.AllSlidersNumericShownByDefault;
+				}
 			}
 			
 			ret.ShowBorderChanged += slider_ShowBorderChanged;

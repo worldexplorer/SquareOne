@@ -174,6 +174,7 @@ namespace Sq1.Core.Indicators {
 			this.LineColor = Color.Indigo;
 			this.LineWidth = 1;
 		}
+		// TODO: make it non-overwriting, introduce overridable Indicator.InitializeImplementationSpecific() and invoke it first 
 		protected void BuildParametersFromAttributes() {
 			this.ParametersByName.Clear();
 			Type myChild = this.GetType();

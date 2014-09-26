@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public class ContextScript : ContextChart {
 		[JsonProperty]	public PositionSize PositionSize;
 		[JsonProperty]	public Dictionary<int, double> ParameterValuesById { get; set; }
+		[JsonProperty]	public Dictionary<string, IndicatorParameter> IndicatorParametersByName { get; set; }	//  { get; set; } is needed for Json.Deserialize to really deserialize it
+		
 		[JsonProperty]	public bool IsCurrent;
 		[JsonProperty]	public bool ChartAutoSubmitting;
 
@@ -37,6 +39,8 @@ namespace Sq1.Core.StrategyBase {
 		protected ContextScript() : base() {
 			PositionSize = new PositionSize(PositionSizeMode.SharesConstantEachTrade, 1);
 			ParameterValuesById = new Dictionary<int, double>();
+			IndicatorParametersByName = new Dictionary<string, IndicatorParameter>();
+			
 			IsCurrent = false;
 			ChartAutoSubmitting = false;
 			BacktestOnRestart = true;
@@ -53,7 +57,7 @@ namespace Sq1.Core.StrategyBase {
 			SlippageTicks = 1;
 			SlippageUnits = 1.0;
 		}
-		public void AbsorbFrom(ContextScript found, bool absorbParams = false) {
+		public void AbsorbFrom(ContextScript found, bool absorbScriptAndIndicatorParams = false) {
 			if (found == null) return;
 			//KEEP_CLONE_UNDEFINED this.Name = found.Name;
 //			this.Symbol = found.Symbol;
@@ -65,7 +69,8 @@ namespace Sq1.Core.StrategyBase {
 			base.AbsorbFrom(found);
 			
 			this.PositionSize = found.PositionSize.Clone();
-			if (absorbParams) this.ParameterValuesById = new Dictionary<int, double>(found.ParameterValuesById);
+			if (absorbScriptAndIndicatorParams) this.ParameterValuesById = new Dictionary<int, double>(found.ParameterValuesById);
+			if (absorbScriptAndIndicatorParams) this.IndicatorParametersByName = new Dictionary<string, IndicatorParameter>(found.IndicatorParametersByName);
 			//this.ChartBarSpacing = found.ChartBarSpacing;
 			this.ChartAutoSubmitting = found.ChartAutoSubmitting;
 			this.BacktestOnRestart = found.BacktestOnRestart;

@@ -1,15 +1,26 @@
 ﻿using System;
+using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Indicators {
 	public class IndicatorParameter {
-		public string Name;
+		[JsonProperty]	public string Name;	// unlike user-editable ScriptParameter, IndicatorParameter.Name is compiled and remains constant (no need for Id)
+		[JsonProperty]	public double ValueMin;
+		[JsonProperty]	public double ValueMax;
+		[JsonProperty]	public double ValueIncrement;
+		[JsonProperty]	public double ValueCurrent;
 		
-		public double ValueCurrent;
-		public double ValueMin;
-		public double ValueMax;
-		public double ValueIncrement;
-		
+		[JsonIgnore]	public bool IsInteger { get {
+				return this.ValueMin == (double)((int)this.ValueMin)
+					&& this.ValueMax == (double)((int)this.ValueMax)
+					&& this.ValueIncrement == (double)((int)this.ValueIncrement)
+					&& this.ValueCurrent == (double)this.ValueCurrent;
+			} }
+		[JsonIgnore]	public int NumberOfRuns { get {
+				if (this.ValueIncrement <= 0.0) return 1;
+				return (int)Math.Round(((this.ValueMax - this.ValueMin) / this.ValueIncrement) + 1.0);
+			} }
+
 		//public string ValueString;
 		//public BarScaleInterval ValueBarScaleInterval;
 		

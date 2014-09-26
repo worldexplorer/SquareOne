@@ -16,6 +16,8 @@ namespace Sq1.Core.StrategyBase {
 		public ScriptExecutor Executor { get; private set; }
 		protected Bars Bars { get { return (Executor == null) ? null : Executor.Bars; } }
 		//Bars barsInitialContext;
+		
+		// TODO: move to Strategy; how does it survive restart now?...
 		public SortedDictionary<int, ScriptParameter> ParametersById;
 		public Dictionary<string, ScriptParameter> ParametersByNameInlineCopy { get {
 				Dictionary<string, ScriptParameter> ret = new Dictionary<string, ScriptParameter>();
@@ -68,28 +70,55 @@ namespace Sq1.Core.StrategyBase {
 		public Script() {
 			this.ParametersById = new SortedDictionary<int, ScriptParameter>();
 			Type myChild = this.GetType();
-			object[] attributes = myChild.GetCustomAttributes(typeof(ScriptParameterAttribute), true);
-			foreach (object attrObj in attributes) {
+			
+			object[] scriptParameterAttrs = myChild.GetCustomAttributes(typeof(ScriptParameterAttribute), true);
+			foreach (object attrObj in scriptParameterAttrs) {
 				ScriptParameterAttribute attr = attrObj as ScriptParameterAttribute;
 				if (attr == null) continue;
-				this.ParameterCreateRegister(attr.Id, attr.Name, attr.ValueCurrent, attr.ValueMin, attr.ValueMax, attr.ValueIncrement);
+				this.ScriptParameterCreateRegister(attr.Id, attr.Name, attr.ValueCurrent, attr.ValueMin, attr.ValueMax, attr.ValueIncrement);
 			}
+
+			object[] indicatorParameterAttrs = myChild.GetCustomAttributes(typeof(IndicatorParameterAttribute), true);
+			foreach (object attrObj in indicatorParameterAttrs) {
+				IndicatorParameterAttribute indicatorAttr = attrObj as IndicatorParameterAttribute;
+				if (indicatorAttr == null) continue;
+				this.IndicatorParameterCreateRegister(indicatorAttr);
+			}
+			
 			BacktestMode = BacktestMode.FourStrokeOHLC;
 		}
 
-		#region script parameters
-		public ScriptParameter ParameterCreateRegister(int id, string name, double value, double min, double max, double increment) {
-			this.checkThrowParameterAlreadyRegistered(id, name);
+		#region script parameters and indicator parameter userland-invokable helpers
+		public ScriptParameter ScriptParameterCreateRegister(int id, string name, double value, double min, double max, double increment) {
+			this.checkThrowScriptParameterAlreadyRegistered(id, name);
 			ScriptParameter strategyParameter = new ScriptParameter(id, name, value, min, max, increment);
 			this.ParametersById.Add(id, strategyParameter);
 			return strategyParameter;
 		}
-		protected void checkThrowParameterAlreadyRegistered(int id, string name) {
+		protected void checkThrowScriptParameterAlreadyRegistered(int id, string name) {
 			if (this.ParametersById.ContainsKey(id) == false) return;
 			ScriptParameter param = this.ParametersById[id];
 			string msg = "Script[" + this.StrategyName + "] already had parameter {id[" + param.Id + "] name[" + param.Name + "]}"
 				+ " while adding {id[" + id + "] name[" + name + "]}; edit source code and make IDs unique for every parameter";
+			#if DEBUG
+			Debugger.Break();
+			#endif
 			throw new Exception(msg);
+		}
+
+		public IndicatorParameter IndicatorParameterCreateRegister(IndicatorParameterAttribute indicatorAttr) {
+			if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorAttr.Name)) {
+				IndicatorParameter param = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorAttr.Name];
+				string msg = "this.Strategy[" + this.Strategy.Name + "].ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name
+					+ "] already had IndicatorParameter[" + param.ToString() + "]; no need to double-register";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return param;
+			}
+			IndicatorParameter indicatorParameter = new IndicatorParameter(indicatorAttr);
+			this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(indicatorParameter.Name, indicatorParameter);
+			return indicatorParameter;
 		}
 		#endregion
 
@@ -123,13 +152,12 @@ namespace Sq1.Core.StrategyBase {
 		//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
 		public void PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy() {
 			bool storeStrategySinceParametersGottenFromScript = false;
-			Dictionary<int, double> strategyParameters = this.Strategy.ScriptContextCurrent.ParameterValuesById;
 			foreach (ScriptParameter paramScript in this.ParametersById.Values) {
-				if (strategyParameters.ContainsKey(paramScript.Id)) {
-					double valueContext = strategyParameters[paramScript.Id];
+				if (this.Strategy.ScriptContextCurrent.ParameterValuesById.ContainsKey(paramScript.Id)) {
+					double valueContext = this.Strategy.ScriptContextCurrent.ParameterValuesById[paramScript.Id];
 					paramScript.ValueCurrent = valueContext;
 				} else {
-					strategyParameters.Add(paramScript.Id, paramScript.ValueCurrent);
+					this.Strategy.ScriptContextCurrent.ParameterValuesById.Add(paramScript.Id, paramScript.ValueCurrent);
 					string msg = "added paramScript[Id=" + paramScript.Id + " value=" + paramScript.ValueCurrent + "]"
 						+ " into Script[" + this.GetType().Name + "].Strategy.ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name + "]"
 						+ " /ScriptParametersMergedWithCurrentContext";
@@ -207,6 +235,18 @@ namespace Sq1.Core.StrategyBase {
 					if (propertyIndicatorFoundUnique.PropertyType.Name == "Int32") {
 						valueCurrentCasted = (int)Math.Round(param.ValueCurrent);
 					}
+
+					string key = propertyIndicator.Name + ":" + param.Name;
+					if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(key)) {
+						double valueRestored = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[key].ValueCurrent;
+						if (propertyIndicatorFoundUnique.PropertyType.Name == "Int32") {
+							valueCurrentCasted = (int)Math.Round(valueRestored);
+						}
+
+					} else {
+						this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(key, param);
+					}
+
 					propertyIndicatorFoundUnique.SetValue(indicatorInstance, valueCurrentCasted, null);
 					indicatorInstance.ParametersByName[param.Name] = param;
 				}

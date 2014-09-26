@@ -211,7 +211,7 @@ namespace Sq1.Gui.Singletons {
 			if (strategy.ScriptContextCurrentName != e.scriptContextName) return;	//refresh FormTitle only when renaming current context
 			SlidersForm.Instance.PopulateFormTitle(strategy);
 		}
-		internal void SlidersAutoGrow_SliderValueChanged(object sender, ScriptParameterEventArgs e) {
+		internal void SlidersAutoGrow_SliderValueChanged(object sender, EventArgs e) {		//ScriptParameterEventArgs
 			try {
 // MOVED_TO: SlidersAutoGrow.slider_ValueCurrentChanged
 //				// mainForm.ChartFormActive will already throw if Documents have no Charts selected; no need to check

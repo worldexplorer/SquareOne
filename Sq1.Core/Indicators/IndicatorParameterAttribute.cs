@@ -3,8 +3,8 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Indicators {
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
-	public class IndicatorParameterAttribute : Attribute {
-		public string Name;
+	public sealed class IndicatorParameterAttribute : Attribute {
+		public string Name;	// unlike user-editable ScriptParameter, IndicatorParameter.Name is compiled and remains constant
 		
 		public double ValueCurrent;
 		public double ValueMin;

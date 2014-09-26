@@ -18,10 +18,10 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": true,
+      "IsCurrent": false,
       "ChartAutoSubmitting": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
-      "BacktestOnRestart": false,
+      "BacktestOnRestart": true,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
@@ -59,6 +59,25 @@
       "ShowRangeBar": false,
       "ParameterValuesById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
+      },
+      "IndicatorParametersByName": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib",
+        "MAslow:Period": {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 88.0,
+          "ValueIncrement": 11.0,
+          "ValueCurrent": 55.0
+        },
+        "MAfast:Period": {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 1.0,
+          "ValueCurrent": 15.0
+        }
       }
     }
   },

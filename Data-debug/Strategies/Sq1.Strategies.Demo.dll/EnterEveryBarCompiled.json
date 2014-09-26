@@ -75,6 +75,9 @@
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
         "1": 5.0,
         "2": 0.0
+      },
+      "IndicatorParametersByName": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib"
       }
     },
     "10min500bars2shares": {
@@ -139,6 +142,9 @@
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
         "1": 5.0,
         "2": 1.0
+      },
+      "IndicatorParametersByName": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib"
       }
     },
     "DDD": {
@@ -203,6 +209,9 @@
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
         "1": 4.0,
         "2": 0.0
+      },
+      "IndicatorParametersByName": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib"
       }
     }
   },

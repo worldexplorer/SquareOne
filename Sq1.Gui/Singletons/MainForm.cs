@@ -173,7 +173,8 @@ namespace Sq1.Gui.Singletons {
 			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemRemovedDone += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceRemoved);
 			//DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceNewClicked += this.MainFormEventManager.DataSourcesTree_OnDataSourceNewClicked;
 
-			SlidersForm.Instance.SlidersAutoGrowControl.SliderValueChanged += this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged;
+			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedParameterValue += this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged;
+			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedIndicatorValue += this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged;
 			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextLoadRequestedSubscriberImplementsCurrentSwitch += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextLoadClicked;
 			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextRenamed += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextRenamed;
 		}

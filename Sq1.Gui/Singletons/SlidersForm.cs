@@ -18,7 +18,8 @@ namespace Sq1.Gui.Singletons {
 			try {
 				base.SuspendLayout();
 				bool showEmptyStubWhenStrategyNullOrNoParameters = false;
-				if (strategy == null || strategy.Script == null || strategy.Script.ParametersById.Count == 0) showEmptyStubWhenStrategyNullOrNoParameters = true; 
+				int parametersToShow = strategy.ScriptContextCurrent.IndicatorParametersByName.Count + strategy.Script.ParametersById.Count; 
+				if (strategy == null || strategy.Script == null || parametersToShow == 0) showEmptyStubWhenStrategyNullOrNoParameters = true; 
 				if (showEmptyStubWhenStrategyNullOrNoParameters) {
 					this.SlidersAutoGrowControl.Hide();
 					this.pnlNoParametersInScript.Show();
