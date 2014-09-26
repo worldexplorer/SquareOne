@@ -17,9 +17,11 @@ namespace Sq1.Gui.Singletons {
 		public void Initialize(Strategy strategy) {
 			try {
 				base.SuspendLayout();
-				bool showEmptyStubWhenStrategyNullOrNoParameters = false;
-				int parametersToShow = strategy.ScriptContextCurrent.IndicatorParametersByName.Count + strategy.Script.ParametersById.Count; 
-				if (strategy == null || strategy.Script == null || parametersToShow == 0) showEmptyStubWhenStrategyNullOrNoParameters = true; 
+				bool showEmptyStubWhenStrategyNullOrNoParameters = true;
+				if (strategy != null && strategy.Script != null) {
+					int parametersToShow = strategy.ScriptContextCurrent.IndicatorParametersByName.Values.Count + strategy.Script.ParametersById.Count; 
+					if (parametersToShow > 0) showEmptyStubWhenStrategyNullOrNoParameters = false;
+				}
 				if (showEmptyStubWhenStrategyNullOrNoParameters) {
 					this.SlidersAutoGrowControl.Hide();
 					this.pnlNoParametersInScript.Show();

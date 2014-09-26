@@ -224,5 +224,6 @@ namespace Sq1.Core.StrategyBase {
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msig);
 		}
+
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 
@@ -23,25 +24,7 @@ namespace Sq1.Core.Indicators {
 
 		//public string ValueString;
 		//public BarScaleInterval ValueBarScaleInterval;
-		
-		internal IndicatorParameter(IndicatorParameterAttribute attr) {
-			this.Name = attr.Name;
-			//if (attr.ValueBarScaleInterval != null) {
-			//    this.ValueBarScaleInterval = attr.ValueBarScaleInterval;
-			//    return;
-			//}
-			//if (attr.ValueString != null) {
-			//    this.ValueString = attr.ValueString;
-			//    return;
-			//}
-			if (attr.ValueCurrent != null) {
-				ValueCurrent = attr.ValueCurrent;
-				ValueMin = attr.ValueMin;
-				ValueMax = attr.ValueMax;
-				ValueIncrement = attr.ValueIncrement;
-				return;
-			}
-		}
+
 		
 		public IndicatorParameter(string name = "NAME_NOT_INITIALIZED",
 				double valueCurrent = double.NaN, double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) {
@@ -67,6 +50,27 @@ namespace Sq1.Core.Indicators {
 		}
 		public override string ToString() {
 			return this.Name + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
+		}
+		public void AbsorbCurrentFixBoundariesIfChanged(IndicatorParameter ctxParamToAbsorbCurrentAndFixBoundaries) {
+			this.ValueCurrent = ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent;
+			if (this.ValueCurrent < this.ValueMin || this.ValueCurrent > this.ValueMax)  {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				this.ValueCurrent = this.ValueMin;
+			}
+			if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueMin != this.ValueMin) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMin  = this.ValueMin;
+			}
+			if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueMax != this.ValueMax) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMax  = this.ValueMax;
+			}
 		}
 	}
 }

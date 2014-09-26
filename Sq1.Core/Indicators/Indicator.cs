@@ -117,20 +117,45 @@ namespace Sq1.Core.Indicators {
 			} }
 			
 		
-		public Dictionary<string, IndicatorParameter> ParametersByName;
+		public Dictionary<string, IndicatorParameter> ParametersByName { get {
+				Dictionary<string, IndicatorParameter> ret = new Dictionary<string, IndicatorParameter>();
+				Type myChild = this.GetType();
+				PropertyInfo[] lookingForIndicatorParameterProperties = myChild.GetProperties();
+				foreach (PropertyInfo indicatorParameterPropertyInfo in lookingForIndicatorParameterProperties) {
+					Type expectingIndicatorParameterType = indicatorParameterPropertyInfo.PropertyType;
+					bool isIndicatorParameterChild = typeof(IndicatorParameter).IsAssignableFrom(expectingIndicatorParameterType);
+					if (isIndicatorParameterChild == false) continue;
+					object expectingConstructedNonNull = indicatorParameterPropertyInfo.GetValue(this, null);
+					if (expectingConstructedNonNull == null) {
+						string msg = "INDICATOR_DEVELOPER,INITIALIZE_INDICATOR_PARAMETER_IN_INDICATOR_CONSTRUCTOR Indicator[" + this.Name + "].ctor()"
+							+ " { iParamFound = new new IndicatorParameter([" + indicatorParameterPropertyInfo.Name + "], cur, min, max, increment); }";
+						Assembler.PopupException(msg);
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						Assembler.PopupException(msg);
+						continue;
+					}
+					IndicatorParameter indicatorParameterInstance = expectingConstructedNonNull as IndicatorParameter; 
+					// NOPE_COZ_ATR.ParamPeriod=new IndicatorParameter("Period",..) indicatorParameterInstance.Name = indicatorParameterPropertyInfo.Name;
+					indicatorParameterInstance.ValidateSelf();
+					ret.Add(indicatorParameterInstance.Name, indicatorParameterInstance);
+				}
+				return ret;
+			} }
 		
-		public string parametersAsStringShort;
+		public string parametersAsStringShort_cached;
 		public string ParametersAsStringShort { get {
-				if (parametersAsStringShort == null) {
+				if (parametersAsStringShort_cached == null) {
 					StringBuilder sb = new StringBuilder();
 					foreach (string paramName in this.ParametersByName.Keys) {
 						IndicatorParameter param = this.ParametersByName[paramName];
 						if (sb.Length > 0) sb.Append(",");
-						sb.Append(param);
+						sb.Append(param.ToString());
 					}
-					this.parametersAsStringShort = sb.ToString();
+					this.parametersAsStringShort_cached = sb.ToString();
 				}
-				return this.parametersAsStringShort;
+				return this.parametersAsStringShort_cached;
 			} }
 //		public string ParametersAsStringLong { get ; }
 		
@@ -167,57 +192,17 @@ namespace Sq1.Core.Indicators {
 		public Indicator() {
 			this.Name = "INDICATOR_NAME_NOT_SET_IN_DERIVED_CONSTRUCTOR";
 			this.DataSeriesProxyFor = DataSeriesProxyableFromBars.Close;
-			this.ParametersByName = new Dictionary<string, IndicatorParameter>();
 			this.ChartPanelType = ChartPanelType.PanelPrice;
 			// MOVED_TO_BacktestStarting();
 			//this.OwnValuesCalculated = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), this.Name);
 			this.LineColor = Color.Indigo;
 			this.LineWidth = 1;
 		}
-		// TODO: make it non-overwriting, introduce overridable Indicator.InitializeImplementationSpecific() and invoke it first 
-		protected void BuildParametersFromAttributes() {
-			this.ParametersByName.Clear();
-			Type myChild = this.GetType();
-			PropertyInfo[] lookingForIndicatorParameters = myChild.GetProperties();
-			foreach (PropertyInfo property in lookingForIndicatorParameters) {
-				IndicatorParameterAttribute attrFoundUnique = null;
-				object[] attributes = property.GetCustomAttributes(typeof(IndicatorParameterAttribute), true);
-				foreach (object attrObj in attributes) {
-					IndicatorParameterAttribute attr = attrObj as IndicatorParameterAttribute;
-					if (attrFoundUnique != null) {
-						string msg = "ATTRIBUTE_INDICATOR_PARAMETER_SET_MULTIPLE_TIMES_MUST_BE_SINGLE attrFoundUnique[" + attrFoundUnique + "]";
-						Assembler.PopupException(msg);
-					}
-					attrFoundUnique = attr;
-				}
-				if (attrFoundUnique == null) continue;
-				IndicatorParameter param = new IndicatorParameter(attrFoundUnique);
-				
-				object valueCurrentCasted = param.ValueCurrent;
-				if (property.PropertyType.Name == "Int32") {
-					valueCurrentCasted = (int)Math.Round(param.ValueCurrent);
-				}
-				property.SetValue(this, valueCurrentCasted, null);
-				if (this.ParametersByName.ContainsKey(param.Name)) {
-					string msg = "INDICATOR_PARAMETER_ALREADY_ADDED_MUST_BE_UNIQUE param[" + param + "]";
-					Assembler.PopupException(msg);
-				}
-				// MOVED_TO_LATER_STAGE
-				//string validationError = param.ValidateSelf();
-				//if (string.IsNullOrEmpty(validationError) == false) {
-				//    string msg = "INDICATOR_SELF_VALIDATION_FAILED [" + validationError + "] for param[" + param + "]";
-				//    Assembler.PopupException(msg);
-				//}
-				this.ParametersByName.Add(param.Name, param);
-			}
-			// resetting it for fair recalculation to include parameters into this.NameWithParameters; it isn't redundant!
-			this.parametersAsStringShort = null;
-		}
+
 		public void Initialize(HostPanelForIndicator panelNamedFolding) {
 			this.HostPanelForIndicator = panelNamedFolding;
 			this.closesProxyEffective_cached = null;
 			this.barsEffective_cached = null;
-			this.BuildParametersFromAttributes();
 			//this.OwnValuesCalculated.Clear();
 			////this.OwnValuesCalculated.Description = this.Name;	//appears after .BuildParametersFromAttributes();
 			//this.OwnValuesCalculated.Description = this.NameWithParameters;
@@ -227,7 +212,7 @@ namespace Sq1.Core.Indicators {
 			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) msg += separator;
 			this.IndicatorErrorsOnBacktestStarting += msg;
 		}
-		public bool BacktestStarting(ScriptExecutor executor) {
+		public bool BacktestStartingConstructOwnValuesValidateParameters(ScriptExecutor executor) {
 			this.Executor = executor;
 			string msig = " Indicator[" + this.NameWithParameters + "].BacktestStarting()";
 
@@ -266,6 +251,7 @@ namespace Sq1.Core.Indicators {
 			//    }
 			//}
 
+			this.parametersAsStringShort_cached = null;
 			this.OwnValuesCalculated = new DataSeriesTimeBased(this.Executor.Bars.ScaleInterval, this.NameWithParameters);
 			
 			string paramerersAllValidatedErrors = this.ParametersAllValidate();

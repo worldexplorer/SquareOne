@@ -7,22 +7,23 @@ using Sq1.Core.StrategyBase;
 namespace Sq1.Strategies.Demo {
 	// REASON_TO_EXIST_NEW_FEATURE: pull indicator parameters onto ScriptContext's SteppingSliders
 	public class TwoMAindicatorsCompiled : Script {
-		// TODO: initialize MAslow.LineColor using an attribute? 
-		[IndicatorParameterAttribute(Name="Period",
-			ValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]
+
+		// if an indicator isn't a property it won't show up in Sliders
+		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
 		public IndicatorMovingAverageSimple MAslow { get; set; }
-
-		// TODO: show how to construct/tunnelParameters without Attribute
-		[IndicatorParameterAttribute(Name = "Period",
-			ValueCurrent = 15, ValueMin = 10, ValueMax = 20, ValueIncrement = 1)]
 		public IndicatorMovingAverageSimple MAfast { get; set; }
-		
 
-		//public TwoMAindicatorsCompiled() { }
+		public TwoMAindicatorsCompiled() {
+			MAfast = new IndicatorMovingAverageSimple();
+			MAfast.ParamPeriod = new IndicatorParameter("Period", 55, 11, 88, 11);
+			MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
+
+			MAslow = new IndicatorMovingAverageSimple();
+			MAslow.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 1);
+			MAslow.LineColor = System.Drawing.Color.LightCoral;
+		}
 
 		public override void InitializeBacktest() {
-			this.MAslow.LineColor = System.Drawing.Color.LightCoral;
-			this.MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
 			this.testBarBackground(barStaticFormed);

@@ -295,7 +295,7 @@ namespace Sq1.Charting {
 		protected void RenderIndicators(Graphics graphics) {
 			Dictionary<string, Indicator> indicators = this.ChartControl.ScriptExecutorObjects.Indicators;
 			if (indicators == null) return;
-			if (indicators.Values.Count == 0) return;
+			if (indicators.Count == 0) return;
 
 			foreach (Indicator indicator in indicators.Values) {
 				if (indicator.HostPanelForIndicator != this) continue;
@@ -346,7 +346,6 @@ namespace Sq1.Charting {
 					continue;
 				}
 				if (indicator.BarsEffective.BarLast == null) continue;
-				string indicatorLabel = indicator.NameWithParameters;
 				
 				// UNNECESSARY_BUT_HELPS_CATCH_BUGS begin
 				if (indicator.DotsDrawnForCurrentSlidingWindow <= 0) {
@@ -366,6 +365,7 @@ namespace Sq1.Charting {
 				}
 				// UNNECESSARY_BUT_HELPS_CATCH_BUGS end
 				
+				string indicatorLabel = indicator.NameWithParameters;
 				this.DrawLabelOnNextLine(graphics, indicatorLabel, null, indicator.LineColor, Color.Empty, true);
 			}
 		}

@@ -17,16 +17,32 @@ namespace Sq1.Widgets.SteppingSlider {
 				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;
 				
-				if (indicatorParameterChanged != null) {
-					// single instance, no need to synchronize
-					indicatorParameterChanged.ValueCurrent = (double) slider.ValueCurrent;
-					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
-					this.RaiseOnSliderChangedParameterValue(null);	// arg isn't processed downstack; I don't want IndicatorParameter to inherit from ScriptParameter
-				} else {
+				if (scriptParameterChanged != null) {		// check ScriptParameter first because it's derived (same as "catch most fine grained Exceptions first")
 					// multiple instances, synchronize
 					scriptParameterChanged.ValueCurrent = (double)slider.ValueCurrent;
 					this.Strategy.DropChangedValueToScriptAndCurrentContextAndSerialize(scriptParameterChanged);
 					this.RaiseOnSliderChangedParameterValue(scriptParameterChanged);
+				} else {
+					// single instance, no need to synchronize
+					indicatorParameterChanged.ValueCurrent = (double) slider.ValueCurrent;
+					
+					// NOPE_ITS_A_CLONE
+//					string indicatorName = slider.LabelText.Substring(0, slider.LabelText.IndexOf('.'));
+//					List<IndicatorParameter> list = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorName];
+//					foreach (IndicatorParameter each in list) {
+//						if (each.Name != indicatorParameterChanged.Name) continue; 
+//						each.ValueCurrent = (double) slider.ValueCurrent;
+//						#if DEBUG
+//						if (indicatorParameterChanged != each) {
+//							string msg = "CLONE_100%";
+//							Debugger.Break();
+//						}
+//						#endif
+//						break;
+//					}
+					
+					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+					this.RaiseOnSliderChangedParameterValue(null);	// arg isn't processed downstack; I don't want IndicatorParameter to inherit from ScriptParameter
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("slider_ValueCurrentChanged()", ex);
@@ -38,7 +54,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;
 				this.Strategy.SetSliderBordersShownForParameterId(scriptParameterChanged.Id, slider.EnableBorder);
 			} catch (Exception ex) {
-				Assembler.PopupException("slider_ValueCurrentChanged()", ex);
+				Assembler.PopupException("slider_ShowBorderChanged()", ex);
 			}
 		}
 		void slider_ShowNumericUpdownChanged(object sender, EventArgs e) {
@@ -47,7 +63,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;
 				this.Strategy.SetSliderNumericUpdownShownForScriptParameterId(scriptParameterChanged.Id, slider.EnableNumeric);
 			} catch (Exception ex) {
-				Assembler.PopupException("slider_ValueCurrentChanged()", ex);
+				Assembler.PopupException("slider_ShowNumericUpdownChanged()", ex);
 			}
 		}
 		

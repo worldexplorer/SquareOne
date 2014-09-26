@@ -120,7 +120,6 @@
     <Compile Include="Indicators\IndicatorAverageTrueRange.cs" />
     <Compile Include="Indicators\IndicatorMovingAverageSimple.cs" />
     <Compile Include="Indicators\IndicatorParameter.cs" />
-    <Compile Include="Indicators\IndicatorParameterAttribute.cs" />
     <Compile Include="Indicators\IndicatorParameterEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataFeed\NamedObjectJsonSerializable.cs" />

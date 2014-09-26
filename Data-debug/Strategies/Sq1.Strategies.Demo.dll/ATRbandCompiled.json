@@ -62,28 +62,31 @@
         "1": 5.0
       },
       "IndicatorParametersByName": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib",
-        "ATR:Multiplier": {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Multiplier",
-          "ValueMin": 0.1,
-          "ValueMax": 4.0,
-          "ValueIncrement": 0.1,
-          "ValueCurrent": 1.867066
-        },
-        "ATR:Period": {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 1.0,
-          "ValueMax": 11.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 2.0
-        }
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+        "ATR": [
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "Name": "Period",
+            "ValueMin": 5.0,
+            "ValueMax": 40.0,
+            "ValueIncrement": 5.0,
+            "ValueCurrent": 35.0
+          },
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "Name": "Multiplier",
+            "ValueMin": 0.1,
+            "ValueMax": 4.0,
+            "ValueIncrement": 0.1,
+            "ValueCurrent": 2.3875
+          }
+        ]
       }
     }
   },
   "SliderBordersShownByParameterId": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib"
+    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib",
+    "1": true
   },
   "SliderNumericUpdownsShownByParameterId": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib"

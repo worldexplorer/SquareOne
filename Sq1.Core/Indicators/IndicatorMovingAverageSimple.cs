@@ -9,25 +9,23 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Indicators {
 	public class IndicatorMovingAverageSimple : Indicator {
-
-		[IndicatorParameterAttribute(Name="Period",
-			ValueCurrent=55, ValueMin=11, ValueMax=99, ValueIncrement=11)]
-		public int Period { get; set; }
+		public IndicatorParameter ParamPeriod { get; set; }	// IndicatorParameter must be a property
 		private MovingAverageSimple smaSeries;
 		
 		public override int FirstValidBarIndex {
-			get { return this.Period; }		// Period = 15, 0..14 are NaN, index=15 has valueCalculated
+			get { return (int)this.ParamPeriod.ValueCurrent; }		// Period = 15, 0..14 are NaN, index=15 has valueCalculated
 			set { throw new Exception("I_DONT_ACCEPT_SETTING_OF_FirstValidBarIndex " + this.NameWithParameters); }
 		}
 		
 		public IndicatorMovingAverageSimple() : base() {
 			base.Name = "MA";
 			// NOW DEFAULT base.ChartPanelType = ChartPanelType.PanelPrice;
+			ParamPeriod = new IndicatorParameter("Period", 55, 11, 99, 11);
 		}
 		
 		public override string BacktestStartingPreCheckErrors() {
-			if (this.Period <= 0) return "Period[" + this.Period + "] MUST BE > 0";
-			this.smaSeries = new MovingAverageSimple(base.ClosesProxyEffective, this.Period, base.OwnValuesCalculated.ScaleInterval);
+			if (this.ParamPeriod.ValueCurrent <= 0) return "Period[" + this.ParamPeriod.ValueCurrent + "] MUST BE > 0";
+			this.smaSeries = new MovingAverageSimple(base.ClosesProxyEffective, (int)this.ParamPeriod.ValueCurrent, base.OwnValuesCalculated.ScaleInterval);
 			return null;
 		}
 		
@@ -48,7 +46,7 @@ namespace Sq1.Core.Indicators {
 			}
 			#endregion
 
-			if (this.Period <= 0) return double.NaN;
+			if (this.ParamPeriod.ValueCurrent <= 0) return double.NaN;
 			if (base.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) return double.NaN;
 			if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) return double.NaN;
 
@@ -58,7 +56,7 @@ namespace Sq1.Core.Indicators {
 			#if TEST_COMPATIBILITY
 			double sum = 0;
 			int slidingWindowRightBar = newStaticBar.ParentBarsIndex;
-			int slidingWindowLeftBar = slidingWindowRightBar - this.Period + 1;	// FirstValidBarIndex must be Period+1
+			int slidingWindowLeftBar = slidingWindowRightBar - this.ParamPeriod.ValueCurrent + 1;	// FirstValidBarIndex must be Period+1
 			int barsProcessedCheck = 0;
 			for (int i = slidingWindowLeftBar; i <= slidingWindowRightBar; i++) {
 				double eachBarCloses = base.ClosesProxyEffective[i];
@@ -69,10 +67,10 @@ namespace Sq1.Core.Indicators {
 				sum += eachBarCloses;
 				barsProcessedCheck++;
 			}
-			if (barsProcessedCheck != this.Period) {
+			if (barsProcessedCheck != this.ParamPeriod.ValueCurrent) {
 				Debugger.Break();
 			}
-			double retOld = sum / this.Period;
+			double retOld = sum / this.ParamPeriod.ValueCurrent;
 			
 			if (retOld != ret) {
 				Debugger.Break();

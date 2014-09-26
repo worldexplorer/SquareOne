@@ -14,15 +14,17 @@ namespace Sq1.Strategies.Demo {
 	[ScriptParameterAttribute(Id=2, Name="verbose", ValueMin=0, ValueMax=1, ValueIncrement=1,
 	                          ValueCurrent=0, ReasonToExist="set to 0 if you don't want log() to spam your Exceptions window" )]
 	public class EnterEveryBarCompiled : Script {
-		
-		//[IndicatorParameterAttribute(Name="Period",
-		//	ValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]
-		//public IndicatorAverageMovingSimple MAslow { get; set; }
-
-		[IndicatorParameterAttribute(Name = "Period",
-			ValueCurrent = 15, ValueMin = 10, ValueMax = 20, ValueIncrement = 1)]
+		// if an indicator isn't a property it won't show up in Sliders
+		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
 		public IndicatorMovingAverageSimple MAfast { get; set; }
 
+		public EnterEveryBarCompiled() {
+			MAfast = new IndicatorMovingAverageSimple();
+			MAfast.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 1);
+			MAfast.LineWidth = 2;
+			MAfast.LineColor = Color.LightSeaGreen;
+		}
+		
 		protected void log(string msg) {
 			if (this.ParametersById[2].ValueCurrent == 0.0) {
 				return;
@@ -44,7 +46,6 @@ namespace Sq1.Strategies.Demo {
 			//this.MAslow.NotOnChartBarScaleInterval = new BarScaleInterval(BarScale.Minute, 15);
 			//this.MAslow.LineWidth = 2;
 			//this.MAslow.LineColor = System.Drawing.Color.LightCoral;
-			this.MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
 			
 			testChartLabelDrawOnNextLineModify();
 		}

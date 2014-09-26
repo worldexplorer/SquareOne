@@ -286,7 +286,7 @@ namespace Sq1.Gui.Forms {
 
 			// v1 already in ChartRenderer.OnNewBarsInjected event - commented out DoInvalidate();
 			// v2 NOPE, during DataSourcesTree_OnSymbolSelected() we're invalidating it here! - uncommented back
-			this.ChartForm.ChartControl.InvalidateAllPanelsFolding();
+			//this.ChartForm.ChartControl.InvalidateAllPanelsFolding();	// WHEN_I_CHANGE_SMA_PERIOD_I_DONT_WANT_TO_SEE_CLEAR_CHART_BUT_REPAINTED_WITHOUT_2SEC_BLINK
 			
 			if (this.Strategy == null) {
 				this.DataSnapshotSerializer.Serialize();
@@ -406,6 +406,7 @@ namespace Sq1.Gui.Forms {
 			//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
 			string msg2 = "DONT_UNCOMMENT_ITS_LIKE_METHOD_BUT_USED_IN_SLIDERS_AUTO_GROW_CONTROL_4_HOURS_DEBUGGING";
 			this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
+			this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
 			
 			this.Executor.BacktesterRunSimulationTrampoline(new Action(this.afterBacktesterCompleteOnceOnRestart), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
@@ -506,6 +507,7 @@ namespace Sq1.Gui.Forms {
 		}
 		public void StrategyCompileActivatePopulateSlidersShow() {
 			if (this.Strategy.ActivatedFromDll == false) this.StrategyCompileActivateBeforeShow();
+			this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
 			this.PopulateSliders();
 		}
 		public void PopulateSliders() {

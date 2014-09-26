@@ -822,7 +822,7 @@ namespace Sq1.Core.StrategyBase {
 				this.ChartShadow.SetIndicators(this.ExecutionDataSnapshot.Indicators);
 				bool indicatorsHaveNoErrorsCanStartBacktesting = true;
 				foreach (Indicator indicator in this.ExecutionDataSnapshot.Indicators.Values) {
-					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStarting(this);
+					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStartingConstructOwnValuesValidateParameters(this);
 				}
 				if (indicatorsHaveNoErrorsCanStartBacktesting == false) {
 					// CATCH_IS_FOR_SIMULATION_EXCEPTIONS_NOT_FOR_YOU!!! throw new Exception("indicatorsHaveNoErrorsCanStartBacktesting=false");

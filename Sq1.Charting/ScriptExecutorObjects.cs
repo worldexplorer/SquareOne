@@ -44,7 +44,7 @@ namespace Sq1.Charting {
 		}
 		public void ClearAllBeforeBacktest() {
 			this.AlertArrowsListByBar.Clear();
-			this.Indicators.Clear();
+			//this.Indicators.Clear();
 			this.AlertsPendingHistorySafeCopy.Clear();
 			
 			this.LinesById.Clear();

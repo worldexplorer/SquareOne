@@ -78,13 +78,6 @@ namespace Sq1.Core.StrategyBase {
 				this.ScriptParameterCreateRegister(attr.Id, attr.Name, attr.ValueCurrent, attr.ValueMin, attr.ValueMax, attr.ValueIncrement);
 			}
 
-			object[] indicatorParameterAttrs = myChild.GetCustomAttributes(typeof(IndicatorParameterAttribute), true);
-			foreach (object attrObj in indicatorParameterAttrs) {
-				IndicatorParameterAttribute indicatorAttr = attrObj as IndicatorParameterAttribute;
-				if (indicatorAttr == null) continue;
-				this.IndicatorParameterCreateRegister(indicatorAttr.Name, indicatorAttr.ValueCurrent, indicatorAttr.ValueMin, indicatorAttr.ValueMax, indicatorAttr.ValueIncrement);
-			}
-			
 			BacktestMode = BacktestMode.FourStrokeOHLC;
 		}
 
@@ -106,21 +99,6 @@ namespace Sq1.Core.StrategyBase {
 			throw new Exception(msg);
 		}
 
-		public IndicatorParameter IndicatorParameterCreateRegister(string name, double valueCurrent, double valueMin, double valueMax, double valueIncrement) {
-			if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(name)) {
-				IndicatorParameter param = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[name];
-				string msg = "this.Strategy[" + this.Strategy.Name + "].ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name
-					+ "] already had IndicatorParameter[" + param.ToString() + "]"
-					+ "; remove [IndicatorParameterAttribute] if you invoke Script.IndicatorParameterCreateRegister() in Script.ctor()";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				return param;
-			}
-			IndicatorParameter indicatorParameter = new IndicatorParameter(name, valueCurrent, valueMin, valueMax, valueIncrement);
-			this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(indicatorParameter.Name, indicatorParameter);
-			return indicatorParameter;
-		}
 		#endregion
 
 		#region Initializers
@@ -132,7 +110,7 @@ namespace Sq1.Core.StrategyBase {
 			//this.barsInitialContext = this.Bars;
 			//this.CreateOHLCVproxies();
 			// ALLOWED_TO_REMOVE_IMPLICIT_INDICATOR_CTORS_FROM_SCRIPT this.ma = new IndicatorAverageMovingSimple();
-			this.IndicatorsInstantiateStoreInSnapshot();
+			// CLEANER_INDICATORS MOVED_TO_PushScriptIndicatorsParametersIntoCurrentContext() this.IndicatorsInstantiateStoreInSnapshot();
  
 			//this.executor.Backtester.Initialize(this.BacktestMode);
 
@@ -171,91 +149,80 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 
-		public void IndicatorsInstantiateStoreInSnapshot() {
-			this.Executor.ExecutionDataSnapshot.Indicators.Clear();
-			Type myChild = this.GetType();
-			PropertyInfo[] lookingForIndicators = myChild.GetProperties();
-			foreach (PropertyInfo propertyIndicator in lookingForIndicators) {
-				Type hopefullyIndicatorChildType = propertyIndicator.PropertyType;
-				bool isIndicatorChild = typeof(Indicator).IsAssignableFrom(hopefullyIndicatorChildType);
-				if (isIndicatorChild == false) continue;
-
-				Indicator indicatorInstance = null;
-				var expectingNull = propertyIndicator.GetValue(this, null);
-				if (expectingNull != null) {
-					indicatorInstance = expectingNull as Indicator;
-					//Debugger.Break();
-					//continue;
-				} else {
-					object indicatorInstanceUntyped = Activator.CreateInstance(hopefullyIndicatorChildType);
-					indicatorInstance = indicatorInstanceUntyped as Indicator;
-					if (indicatorInstance == null) {
-						Debugger.Break();
-						continue;
+		public Dictionary<string, IndicatorParameter> IndicatorsParametersForInitializedInDerivedConstructor { get {
+				Dictionary<string, IndicatorParameter> ret = new Dictionary<string, IndicatorParameter>();
+				foreach (Indicator indicator in IndicatorsInitializedInDerivedConstructor) {
+					Dictionary<string, IndicatorParameter> parametersByName = indicator.ParametersByName;	// dont make me calculate it twice 
+					foreach (string paramName in parametersByName.Keys) {									// #1
+						IndicatorParameter param = parametersByName[paramName];								// #2
+						ret.Add(indicator.Name + "." + param.Name, param);
 					}
 				}
-
-				indicatorInstance.Name = propertyIndicator.Name;
-				//MORE_EFFECTIVE_IN_Indicator.NotOnChartBarsKey_get()  indicatorInstance.OwnValuesCalculated.ScaleInterval = this.Bars.ScaleInterval;
-
-				//indicatorInstance.BuildParametersFromAttributes();	//indicatorInstance.Initialize() invokes BuildParametersFromAttributes();
+				return ret;
+			} }
+		
+		public List<Indicator> IndicatorsInitializedInDerivedConstructor { get {
+				List<Indicator> ret = new List<Indicator>();
+				
+				Type myChild = this.GetType();
+				PropertyInfo[] lookingForIndicators = myChild.GetProperties();
+				foreach (PropertyInfo propertyIndicator in lookingForIndicators) {
+					Type indicatorConcreteType = propertyIndicator.PropertyType;
+					bool isIndicatorChild = typeof(Indicator).IsAssignableFrom(indicatorConcreteType);
+					if (isIndicatorChild == false) continue;
+					Indicator indicatorInstance = null;
+					object expectingConstructedNonNull = propertyIndicator.GetValue(this, null);
+					if (expectingConstructedNonNull == null) {
+						string msg = "INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR Script[" + this.ToString();// + "].[" + variableIndicator.Name + "]";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						Assembler.PopupException(msg);
+						continue;
+					}
+					Indicator variableIndicator = expectingConstructedNonNull as Indicator;
+					variableIndicator.Name = propertyIndicator.Name;
+					ret.Add(variableIndicator);
+				}
+				return ret;
+			} }
+		
+		public void IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot() {
+			this.Executor.ExecutionDataSnapshot.Indicators.Clear();
+			foreach (Indicator indicatorInstance in this.IndicatorsInitializedInDerivedConstructor) {
 				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartShadow.GetHostPanelForIndicator(indicatorInstance);
 				indicatorInstance.Initialize(priceOrItsOwnPanel);
-
-				#region overwriting IndicatorParameters from Strategy attributes; similar to Indicator.BuildParametersFromAttributes()
-				object[] attributes = propertyIndicator.GetCustomAttributes(typeof(IndicatorParameterAttribute), true);
-				string attributesAllAvailable = "";
-				foreach (object attrObj in attributes) {
-					IndicatorParameterAttribute attr = attrObj as IndicatorParameterAttribute;
-					if (attributesAllAvailable.Length > 0) attributesAllAvailable += ",";
-					attributesAllAvailable += attr;
+				
+				if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorInstance.Name) == false) {
+					this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(indicatorInstance.Name, new List<IndicatorParameter>());
 				}
-				foreach (object attrObj in attributes) {
-					IndicatorParameterAttribute attr = attrObj as IndicatorParameterAttribute;
-					IndicatorParameter param = new IndicatorParameter(attr);
+				
+				List<IndicatorParameter> iParamsCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorInstance.Name];
 
-					if (indicatorInstance.ParametersByName.ContainsKey(param.Name) == false) {
-						string msg = "SCRIPT_SETS_ATTRIBUTE_FOR_INDICATOR_WHICH_IT_DOESNT_HAVE#1 param[" + param + "] attributesAllAvailable[" + attributesAllAvailable + "]";
-						Assembler.PopupException(msg);
-						continue;
-					}
-					// strategy has an Indicator and an attribute for that indicator; find matching property in the indicator & overwrite
-					PropertyInfo propertyIndicatorFoundUnique = null;
-					PropertyInfo[] lookingForIndicatorParameters = indicatorInstance.GetType().GetProperties();
-					foreach (PropertyInfo propertyIndicatorInstance in lookingForIndicatorParameters) {
-						if (propertyIndicatorInstance.Name != param.Name) continue;
-						propertyIndicatorFoundUnique = propertyIndicatorInstance;
+				foreach (IndicatorParameter iParamInstantiated in indicatorInstance.ParametersByName.Values) {
+					int iParamFoundCtxIndex = -1;
+					for (int i=0; i < iParamsCtx.Count; i++) {
+						IndicatorParameter each = iParamsCtx[i];
+						if (each.Name != iParamInstantiated.Name) continue; 
+						iParamFoundCtxIndex = i;
 						break;
 					}
-					if (propertyIndicatorFoundUnique == null) {
-						string msg = "SCRIPT_SETS_ATTRIBUTE_FOR_INDICATOR_WHICH_IT_DOESNT_HAVE#2 param[" + param + "] attributesAllAvailable[" + attributesAllAvailable + "]";
-						Assembler.PopupException(msg);
-						continue;
-					}
-					object valueCurrentCasted = param.ValueCurrent;
-					if (propertyIndicatorFoundUnique.PropertyType.Name == "Int32") {
-						valueCurrentCasted = (int)Math.Round(param.ValueCurrent);
-					}
-
-					string key = propertyIndicator.Name + ":" + param.Name;
-					if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(key)) {
-						double valueRestored = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[key].ValueCurrent;
-						if (propertyIndicatorFoundUnique.PropertyType.Name == "Int32") {
-							valueCurrentCasted = (int)Math.Round(valueRestored);
-						}
-
+					
+					if (iParamFoundCtxIndex == -1) {
+						iParamsCtx.Add(iParamInstantiated);
 					} else {
-						this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(key, param);
+						IndicatorParameter iParamFoundCtx = iParamsCtx[iParamFoundCtxIndex];
+						iParamInstantiated.AbsorbCurrentFixBoundariesIfChanged(iParamFoundCtx);
+						if (iParamInstantiated != iParamFoundCtx) {
+							#if DEBUG
+							//Debugger.Break();			//NOPE_ITS_A_CLONE
+							#endif
+							iParamsCtx.Remove(iParamFoundCtx);	// instead of JsonDeserialized,
+							iParamsCtx.Add(iParamInstantiated);	// ...put Instantiated into the Context
+						}
 					}
-
-					propertyIndicatorFoundUnique.SetValue(indicatorInstance, valueCurrentCasted, null);
-					indicatorInstance.ParametersByName[param.Name] = param;
 				}
-				// resetting it for fair recalculation to include parameters into this.NameWithParameters; it isn't redundant!
-				indicatorInstance.parametersAsStringShort = null;
-				#endregion
-				propertyIndicator.SetValue(this, indicatorInstance, null);
-				this.Executor.ExecutionDataSnapshot.Indicators.Add(propertyIndicator.Name, indicatorInstance);
+				this.Executor.ExecutionDataSnapshot.Indicators.Add(indicatorInstance.Name, indicatorInstance);
 			}
 		}
 		#endregion

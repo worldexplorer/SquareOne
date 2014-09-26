@@ -12,23 +12,28 @@ using Sq1.Core.Streaming;
 
 namespace Sq1.Strategies.Demo {
 	public class TwoMAsCompiled : Script {
-		[IndicatorParameterAttribute(Name="Period",
-			ValueCurrent=55, ValueMin=11, ValueMax=88, ValueIncrement=11)]
+		// if an indicator isn't a property it won't show up in Sliders
+		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
 		public IndicatorMovingAverageSimple MAslow { get; set; }
-
-		[IndicatorParameterAttribute(Name = "Period",
-			ValueCurrent = 15, ValueMin = 10, ValueMax = 20, ValueIncrement = 1)]
 		public IndicatorMovingAverageSimple MAfast { get; set; }
+
+		public TwoMAsCompiled() {
+			MAfast = new IndicatorMovingAverageSimple();
+			MAfast.ParamPeriod = new IndicatorParameter("Period", 55, 11, 88, 11);
+			MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
+
+			MAslow = new IndicatorMovingAverageSimple();
+			MAslow.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 1);
+			MAslow.LineColor = System.Drawing.Color.LightCoral;
+		}
 		
 		public int PeriodLargestAmongMAs { get {
-				int ret = this.MAfast.Period;
-				if (ret > this.MAslow.Period) ret = this.MAslow.Period; 
+				int ret = (int)this.MAfast.ParamPeriod.ValueCurrent;
+				if (ret > (int)this.MAslow.ParamPeriod.ValueCurrent) ret = (int)this.MAslow.ParamPeriod.ValueCurrent; 
 				return ret;
 			} }
 
 		public override void InitializeBacktest() {
-			this.MAslow.LineColor = Color.LightCoral;
-			this.MAfast.LineColor = Color.LightSeaGreen;
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 		}

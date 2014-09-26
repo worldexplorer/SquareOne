@@ -200,6 +200,8 @@ namespace Sq1.Gui.Forms {
 			//if (this.NewBar != null) this.NewBar(this, new BarEventArgs(barLastFormed));
 			//this.chartFormsManager.Executor.onNewBarEnqueueExecuteStrategyInNewThread(this, new BarEventArgs(barLastFormed));
 			executorSafe.ExecuteOnNewBarOrNewQuote(null);	//new Quote());
+
+			//if (this.Executor.Backtester.IsBacktestingNow) return;	// WRONG_CANDIDATE WHEN_I_CHANGE_SMA_PERIOD_I_DONT_WANT_TO_SEE_CLEAR_CHART_BUT_REPAINTED_WITHOUT_2SEC_BLINK
 			chartFormSafe.ChartControl.InvalidateAllPanelsFolding();
 		}
 		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Quote quote) {
@@ -228,7 +230,9 @@ namespace Sq1.Gui.Forms {
 			chartFormSafe.PrintQuoteTimestampsOnStreamingButtonBeforeExecution(quote);
 			// execute strategy in the thread of a StreamingProvider (DDE server for MockQuickProvider)
 			executorSafe.ExecuteOnNewBarOrNewQuote(quote);
+			
 			// trigger GUI to repaint the chart with new positions and bid/ask lines
+			//if (this.Executor.Backtester.IsBacktestingNow) return;	// WRONG_CANDIDATE WHEN_I_CHANGE_SMA_PERIOD_I_DONT_WANT_TO_SEE_CLEAR_CHART_BUT_REPAINTED_WITHOUT_2SEC_BLINK
 			chartFormSafe.ChartControl.InvalidateAllPanelsFolding();
 			//rendererSafe.DrawBidAskLines = true;
 		}

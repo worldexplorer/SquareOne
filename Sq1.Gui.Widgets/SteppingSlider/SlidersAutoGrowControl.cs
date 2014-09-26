@@ -87,8 +87,10 @@ namespace Sq1.Widgets.SteppingSlider {
 				if (this.Strategy.Script.ParametersById.Count > 0 && this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Count > 0) {
 					this.AddSpacingBeforeIndicatorParameters();
 				}
-				foreach (IndicatorParameter parameter in this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Values) {
-					SliderComboControl slider = this.SliderComboFactory(parameter);
+				Dictionary<string, IndicatorParameter> parametersByName = this.Strategy.Script.IndicatorsParametersForInitializedInDerivedConstructor;	// dont make me calculate it twice 
+				foreach (string indicatorNameDotParameterName in parametersByName.Keys) {																// #1
+					IndicatorParameter parameter = parametersByName[indicatorNameDotParameterName];														// #2
+					SliderComboControl slider = this.SliderComboFactory(parameter, indicatorNameDotParameterName);
 					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				}
 			} finally {
@@ -119,7 +121,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowNumeric.Text = atLeastOneNumericShown ? "All Params -> HideNumeric" : "All Params -> ShowNumeric";
 		}
 
-		private SliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptparameter) {
+		private SliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptparameter, string indicatorNameDotParameterName = null) {
 			//v1 WOULD_BE_TOO_EASY ret = this.templateSliderControl.Clone();
 			//BEGIN merged with SlidersAutoGrow.Designer.cs:InitializeComponent()
 			SliderComboControl ret = new SliderComboControl();
@@ -152,8 +154,10 @@ namespace Sq1.Widgets.SteppingSlider {
 			ret.PaddingPanelSlider = this.templateSliderControl.PaddingPanelSlider;
 			//END merged
 
-			ret.LabelText = indicatorOrScriptparameter.Name;
-			ret.Name = "parameter_" + indicatorOrScriptparameter.Name;
+			string nameForScriptDotSeparatedForIndicator = indicatorNameDotParameterName;
+			if (string.IsNullOrEmpty(nameForScriptDotSeparatedForIndicator)) nameForScriptDotSeparatedForIndicator = indicatorOrScriptparameter.Name; 
+			ret.LabelText = nameForScriptDotSeparatedForIndicator;
+			ret.Name = "parameter_" + nameForScriptDotSeparatedForIndicator;
 			ret.ValueCurrent = new decimal(indicatorOrScriptparameter.ValueCurrent);
 			ret.ValueMax = new decimal(indicatorOrScriptparameter.ValueMax);
 			ret.ValueMin = new decimal(indicatorOrScriptparameter.ValueMin);
