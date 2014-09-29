@@ -105,10 +105,6 @@
       <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
       <Name>Sq1.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Sq1.Gui.Widgets\Sq1.Widgets.csproj">
-      <Project>{E4E3D133-E335-4437-B85E-89D6738B3FA2}</Project>
-      <Name>Sq1.Widgets</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
