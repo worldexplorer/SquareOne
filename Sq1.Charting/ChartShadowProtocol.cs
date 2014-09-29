@@ -158,6 +158,7 @@ namespace Sq1.Charting {
 						
 						this.PanelsByIndicator.Add(indicator, panel);
 						this.panelsFolding.Add(panel);
+						this.multiSplitContainer.PanelAddSplitterCreateAdd(panel);
 					}
 					ret = this.PanelsByIndicator[indicator];
 					return ret;

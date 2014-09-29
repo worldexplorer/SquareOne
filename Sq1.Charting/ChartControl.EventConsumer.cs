@@ -82,8 +82,8 @@ namespace Sq1.Charting {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			//if (this.ChartSettings.PriceVsVolumeSplitterDistance == e.SplitY) return;
 			//this.ChartSettings.PriceVsVolumeSplitterDistance = e.SplitY;
-			if (this.ChartSettings.PriceVsVolumeSplitterDistance == this.splitContainerPriceVsVolume.SplitterDistance) return;
-			this.ChartSettings.PriceVsVolumeSplitterDistance = this.splitContainerPriceVsVolume.SplitterDistance;
+			//if (this.ChartSettings.PriceVsVolumeSplitterDistance == this.splitContainerPriceVsVolume.SplitterDistance) return;
+			//this.ChartSettings.PriceVsVolumeSplitterDistance = this.splitContainerPriceVsVolume.SplitterDistance;
 			this.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 	}

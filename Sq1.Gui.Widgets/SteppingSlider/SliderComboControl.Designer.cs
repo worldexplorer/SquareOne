@@ -50,8 +50,8 @@
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.PanelFillSlider);
 			this.splitContainer1.Size = new System.Drawing.Size(236, 17);
-			this.splitContainer1.SplitterDistance = 40;
-			this.splitContainer1.SplitterIncrement = 10;
+			this.splitContainer1.SplitterDistance = 41;		// exact size to fit "2.61"
+			this.splitContainer1.SplitterIncrement = 12;	// exact increment to fit "2.61" => "2.6172" => "2.617216" 
 			this.splitContainer1.TabIndex = 2;
 			// 
 			// DomainUpDown
@@ -60,7 +60,7 @@
 			this.DomainUpDown.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.DomainUpDown.Location = new System.Drawing.Point(0, 0);
 			this.DomainUpDown.Name = "DomainUpDown";
-			this.DomainUpDown.Size = new System.Drawing.Size(40, 20);
+			this.DomainUpDown.Size = new System.Drawing.Size(41, 20);
 			this.DomainUpDown.TabIndex = 0;
 			this.DomainUpDown.Text = "domainUpDown1";
 			this.DomainUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -85,7 +85,7 @@
 			this.PanelFillSlider.Location = new System.Drawing.Point(0, 0);
 			this.PanelFillSlider.Name = "PanelFillSlider";
 			this.PanelFillSlider.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.PanelFillSlider.Size = new System.Drawing.Size(192, 17);
+			this.PanelFillSlider.Size = new System.Drawing.Size(191, 17);
 			this.PanelFillSlider.TabIndex = 1;
 			this.PanelFillSlider.ValueCurrent = new decimal(new int[] {
 									200,
@@ -141,7 +141,7 @@
 			this.mniltbValueMin.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbValueMin.InputFieldOffsetX = 80;
 			this.mniltbValueMin.InputFieldValue = "";
-			this.mniltbValueMin.InputFieldWidth = 51;
+			this.mniltbValueMin.InputFieldWidth = 44;
 			this.mniltbValueMin.Margin = new System.Windows.Forms.Padding(0);
 			this.mniltbValueMin.Name = "mniltbValueMin";
 			this.mniltbValueMin.Size = new System.Drawing.Size(164, 18);
@@ -154,7 +154,7 @@
 			this.mniltbValueCurrent.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbValueCurrent.InputFieldOffsetX = 80;
 			this.mniltbValueCurrent.InputFieldValue = "";
-			this.mniltbValueCurrent.InputFieldWidth = 51;
+			this.mniltbValueCurrent.InputFieldWidth = 44;
 			this.mniltbValueCurrent.Name = "mniltbValueCurrent";
 			this.mniltbValueCurrent.Size = new System.Drawing.Size(164, 18);
 			this.mniltbValueCurrent.Text = "Current";
@@ -166,7 +166,7 @@
 			this.mniltbValueMax.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbValueMax.InputFieldOffsetX = 80;
 			this.mniltbValueMax.InputFieldValue = "";
-			this.mniltbValueMax.InputFieldWidth = 51;
+			this.mniltbValueMax.InputFieldWidth = 44;
 			this.mniltbValueMax.Name = "mniltbValueMax";
 			this.mniltbValueMax.Size = new System.Drawing.Size(164, 18);
 			this.mniltbValueMax.Text = "Max";
@@ -178,7 +178,7 @@
 			this.mniltbValueStep.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbValueStep.InputFieldOffsetX = 80;
 			this.mniltbValueStep.InputFieldValue = "";
-			this.mniltbValueStep.InputFieldWidth = 51;
+			this.mniltbValueStep.InputFieldWidth = 44;
 			this.mniltbValueStep.Name = "mniltbValueStep";
 			this.mniltbValueStep.Size = new System.Drawing.Size(164, 18);
 			this.mniltbValueStep.Text = "Step";

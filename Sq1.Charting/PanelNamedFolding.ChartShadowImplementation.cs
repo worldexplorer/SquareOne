@@ -41,7 +41,9 @@ namespace Sq1.Charting {
 		}
 
 		public void DrawLabelOnNextLine(Graphics g, string msg, Font font, Color colorForeground, Color colorBackground, bool drawIndicatorSquare = false) {
-			int x = this.ChartControl.ChartSettings.ChartLabelsUpperLeftX;
+			//if (this.DesignMode) return;
+			// if (base.DesignMode) this.ChartControl will be NULL
+			int x = (this.ChartControl != null) ? this.ChartControl.ChartSettings.ChartLabelsUpperLeftX : 5;
 			int y = this.chartLabelsUpperLeftYincremental;
 
 			SizeF measurements = this.DrawLabel(g, x, y, msg, font, colorForeground, colorBackground, drawIndicatorSquare);
@@ -57,7 +59,8 @@ namespace Sq1.Charting {
 			if (lineSpacing == 0) lineSpacing = 1; 
 			this.chartLabelsUpperLeftYincremental += labelHeightMeasured + lineSpacing;
 			if (drawBackgroundRectangle) {
-				this.chartLabelsUpperLeftYincremental += this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2;
+				// if (base.DesignMode) this.ChartControl will be NULL
+				this.chartLabelsUpperLeftYincremental += (this.ChartControl != null) ? this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2 : 15;
 			}
 		}
 		public SizeF DrawLabel(Graphics g, int x, int y, string msg,

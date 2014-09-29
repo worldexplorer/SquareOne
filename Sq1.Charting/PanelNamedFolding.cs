@@ -14,7 +14,7 @@ using Sq1.Core.Indicators;
 namespace Sq1.Charting {
 	public partial class PanelNamedFolding :
 		//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH #if NON_DOUBLE_BUFFERED
-		//	Panel
+		//Panel
 		//#else
 		PanelDoubleBuffered
 		//UserControlDoubleBuffered
@@ -28,7 +28,6 @@ namespace Sq1.Charting {
 		public bool CollapsedToName { get; set; }
 		public bool GutterRightDraw { get; set; }
 		public bool GutterBottomDraw { get; set; }
-		//public bool GridLinesHorizontalHowManyLinesToDraw { get; set; }
 		
 		public bool ImPaintingForegroundNow = false;
 		public bool ImPaintingBackgroundNow = false;
@@ -52,7 +51,8 @@ namespace Sq1.Charting {
 		[Browsable(false)]
 		private int PanelWidthMinusRightPriceGutter { get {
 				int ret = base.Width;
-				if (this.GutterRightDraw) ret -= this.ChartControl.GutterRightWidth_cached;
+				// if (base.DesignMode) this.ChartControl will be NULL
+				if (this.GutterRightDraw) ret -= (this.ChartControl != null) ? this.ChartControl.GutterRightWidth_cached : 60;
 				return ret;
 			} }
 		
@@ -121,7 +121,6 @@ namespace Sq1.Charting {
 			this.GutterBottomDraw = false;
 			this.AutoScroll = false;
 			this.HScroll = true;
-			//this.GridLinesHorizontalHowManyLinesToDraw = 10;
 			this.ThisPanelIsPricePanel = this.GetType() == typeof(PanelPrice);
 		}
 		public void Initialize(ChartControl chartControl, string barsIdent = "INITIALIZED_WITH_EMPTY_BARS_IDENT_PanelNamedFolding") {
@@ -137,15 +136,17 @@ namespace Sq1.Charting {
 			this.DrawLabelOnNextLine(g, msg, null, Color.Red, Color.Empty);
 		}
 		//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD #if NON_DOUBLE_BUFFERED
-//		protected override void OnResize(EventArgs e) {	//PanelDoubleBuffered does this already to DisposeAndNullify managed Graphics
-//		    base.Invalidate();	// SplitterMoved => repaint; Panel and UserControl don't have that (why?)
-//		    base.OnResize(e);	// empty inside but who knows what useful job it does?
-//		}
-//		protected override void OnPaint(PaintEventArgs e) {
-//			base.OnPaint(e);
+		//protected override void OnResize(EventArgs e) {	//PanelDoubleBuffered does this already to DisposeAndNullify managed Graphics
+		//	if (base.DesignMode) return;
+		//	base.OnResize(e);	// empty inside but who knows what useful job it does?
+		//	base.Invalidate();	// SplitterMoved => repaint; Panel and UserControl don't have that (why?)
+		//}
+		//protected override void OnPaint(PaintEventArgs e) {
+		//	base.OnPaint(e);
 		//#else
 		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
-			//#endif
+		//#endif
+		    if (this.DesignMode) return;
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 			
@@ -189,6 +190,7 @@ namespace Sq1.Charting {
 				if (this.Collapsible) {
 					if (this.PanelName != null) {
 						using (var brush = new SolidBrush(this.ForeColor)) {
+							// if (base.DesignMode) this.ChartControl will be NULL
 							Font font = (this.ChartControl != null) ? this.ChartControl.ChartSettings.PanelNameAndSymbolFont : this.Font;
 							e.Graphics.DrawString(this.PanelNameAndSymbol, font, brush, new Point(2, 2));
 						}
@@ -212,15 +214,14 @@ namespace Sq1.Charting {
 
 
 		//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD #if NON_DOUBLE_BUFFERED
-//		protected override void OnPaintBackground(PaintEventArgs e) {
-//		    base.OnPaintBackground(e);
+		//protected override void OnPaintBackground(PaintEventArgs e) {
+		//	base.OnPaintBackground(e);
 		//#else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
-			//#endif
+		//#endif
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
+			//if (this.DesignMode) return;
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
-			this.chartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
-			//if (this.ChartControl.BarsNotEmpty) {}
 			if (this.ImPaintingBackgroundNow) return;
 			if (this.ChartControl == null) {
 				//e.Graphics.Clear(SystemColors.Control);
@@ -237,6 +238,8 @@ namespace Sq1.Charting {
 				this.DrawError(e.Graphics, msig + msg);
 				return;
 			}
+			this.chartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
+			//if (this.ChartControl.BarsNotEmpty) {}
 			this.ChartControl.SyncHorizontalScrollToBarsCount();
 			this.ensureFontMetricsAreCalculated(e.Graphics);
 			try {

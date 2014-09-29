@@ -76,6 +76,14 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="MultiSplit\MultiSplitContainer.cs" />
+    <Compile Include="MultiSplit\MultiSplitContainer.EventConsumer.cs">
+      <DependentUpon>MultiSplitContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MultiSplit\MultiSplitContainer.EventGenerator.cs">
+      <DependentUpon>MultiSplitContainer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MultiSplit\MultiSplitter.cs" />
     <Compile Include="OnChart\OnChartBarAnnotation.cs" />
     <Compile Include="OnChart\OnChartLabel.cs" />
     <Compile Include="OnChart\OnChartLine.cs" />
@@ -191,6 +199,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="icons\45degrees3-ShortEntryUnknown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MultiSplit" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

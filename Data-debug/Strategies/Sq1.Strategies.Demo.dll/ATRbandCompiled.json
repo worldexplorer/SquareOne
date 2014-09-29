@@ -70,7 +70,7 @@
             "ValueMin": 5.0,
             "ValueMax": 40.0,
             "ValueIncrement": 5.0,
-            "ValueCurrent": 35.0
+            "ValueCurrent": 15.0
           },
           {
             "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
@@ -78,7 +78,7 @@
             "ValueMin": 0.1,
             "ValueMax": 4.0,
             "ValueIncrement": 0.1,
-            "ValueCurrent": 2.3875
+            "ValueCurrent": 2.170652
           }
         ]
       }

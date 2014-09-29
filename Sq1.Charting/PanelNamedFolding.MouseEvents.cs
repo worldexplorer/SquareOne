@@ -80,6 +80,9 @@ namespace Sq1.Charting {
 		}
 		protected override void OnMouseMove(MouseEventArgs e) {
 			try {
+				//if (this.DesignMode) return;				// so that Designer works
+				// if (base.DesignMode) this.ChartControl will be NULL
+				if (this.ChartControl == null) return;		// so that Designer works
 				if (this.ChartControl.BarsEmpty) return;	// finally {} will invoke base.OnMouseMove()
 				
 				if (this.dragButtonPressed == true
