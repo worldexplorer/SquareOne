@@ -145,6 +145,7 @@ namespace Sq1.Charting {
 		
 		Dictionary<Indicator, PanelIndicator> PanelsByIndicator = new Dictionary<Indicator, PanelIndicator>();
 		public override HostPanelForIndicator GetHostPanelForIndicator(Indicator indicator) {
+			bool needToReReadSplitterPositionsSinceIndicatorsWereAdded = false;
 			switch (indicator.ChartPanelType) {
 				case ChartPanelType.PanelPrice: return this.panelPrice;
 				case ChartPanelType.PanelVolume: return this.panelVolume;
@@ -158,7 +159,8 @@ namespace Sq1.Charting {
 						
 						this.PanelsByIndicator.Add(indicator, panel);
 						this.panelsFolding.Add(panel);
-						this.multiSplitContainer.PanelAddSplitterCreateAdd(panel);
+						this.multiSplitContainer.PanelAddSplitterCreateAdd(panel, true, this.ChartSettings.MultiSplitterPropertiesByPanelName);
+						needToReReadSplitterPositionsSinceIndicatorsWereAdded = true;
 					}
 					ret = this.PanelsByIndicator[indicator];
 					return ret;

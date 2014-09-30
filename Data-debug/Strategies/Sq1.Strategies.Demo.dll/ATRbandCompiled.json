@@ -59,7 +59,7 @@
       "ShowRangeBar": false,
       "ParameterValuesById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "1": 5.0
+        "1": 9.0
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
@@ -78,7 +78,7 @@
             "ValueMin": 0.1,
             "ValueMax": 4.0,
             "ValueIncrement": 0.1,
-            "ValueCurrent": 2.170652
+            "ValueCurrent": 2.0266
           }
         ]
       }

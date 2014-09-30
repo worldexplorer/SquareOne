@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Serialization;
 
-namespace Sq1.Charting.MultiSplit {
+namespace Sq1.Core.Charting {
 	public class MultiSplitterProperties {
 		//[JsonProperty]
 		public int ManualOrder;

@@ -15,7 +15,7 @@ namespace Sq1.Gui.Singletons {
 				this.PopupException(ex);
 			}
 			try {
-				this.initializeWorkspacesManagerTrampoline();
+				this.createWorkspacesManager();
 				this.WorkspaceLoad(Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName);
 			} catch (Exception ex) {
 				this.PopupException(ex);

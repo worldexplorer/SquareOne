@@ -411,6 +411,10 @@ namespace Sq1.Charting {
 				this.GutterBottomHeight_cached = this.GutterBottomFontHeight_cached + this.ChartControl.ChartSettings.GutterBottomPadding* 2;
 	 		}
 		}
-
+		public override string ToString() {
+			string ret = this.PanelName;
+			ret += ":" + this.Location.Y + "+" + this.Height + "=" + (this.Location.Y + this.Height);
+			return ret;
+		}
 	}
 }

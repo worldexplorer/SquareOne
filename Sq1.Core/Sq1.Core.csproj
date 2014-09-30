@@ -86,6 +86,7 @@
     </Compile>
     <Compile Include="Charting\DictionaryManyToOne.cs" />
     <Compile Include="Charting\HostPanelForIndicator.cs" />
+    <Compile Include="Charting\MultiSplitterProperties.cs" />
     <Compile Include="Charting\OnChartObjectOperationStatus.cs" />
     <Compile Include="DataFeed\DataSourceSymbolRenamedEventArgs.cs" />
     <Compile Include="DataFeed\IDataSourceEditor.cs" />

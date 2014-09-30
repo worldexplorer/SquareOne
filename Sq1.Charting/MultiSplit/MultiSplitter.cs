@@ -5,10 +5,14 @@ using System.Windows.Forms;
 
 namespace Sq1.Charting.MultiSplit {
 	public class MultiSplitter : UserControl {
+		public PanelNamedFolding PanelAbove;
+		public PanelNamedFolding PanelBelow;
+		public int ManualOrder;
+
 		int GrabHandleWidth;
 		Color ColorGrabHandle;
 		bool DebugSplitter;
-
+		
 		public MultiSplitter(int grabHandleWidth, Color colorGrabHandle, bool debugSplitter = false) {
 			GrabHandleWidth = grabHandleWidth;
 			ColorGrabHandle = colorGrabHandle;
@@ -51,21 +55,17 @@ namespace Sq1.Charting.MultiSplit {
 		    Point centerPoint = new Point(splitterRectangle.Left - 1 + splitterRectangle.Width / 2, splitterRectangle.Top - 1 + splitterRectangle.Height / 2);
 		    int dotSize = 2;
 		    //Rectangle dotRect = new Rectangle(dotSize, dotSize);
-//		    using (Brush myFore = new SolidBrush(this.ForeColor)) {
-//			    g.FillEllipse(myFore, centerPoint.X, centerPoint.Y, dotSize, dotSize);
-//		        g.FillEllipse(myFore, centerPoint.X - 10, centerPoint.Y, dotSize, dotSize);
-//		        g.FillEllipse(myFore, centerPoint.X + 10, centerPoint.Y, dotSize, dotSize);
-//		    }
+		    using (Brush myFore = new SolidBrush(this.ForeColor)) {
+			    g.FillEllipse(myFore, centerPoint.X, centerPoint.Y, dotSize, dotSize);
+		        g.FillEllipse(myFore, centerPoint.X - 10, centerPoint.Y, dotSize, dotSize);
+		        g.FillEllipse(myFore, centerPoint.X + 10, centerPoint.Y, dotSize, dotSize);
+		    }
 	    }
 		public override string ToString() {
-			string ret = base.Text;
-			try {
-				if (base.Tag == null) return ret;
-				Control panel = base.Tag as Control;
-				ret = panel.Text;
-			} catch (Exception ex) {
-				Debugger.Break();
-			}
+			string ret = "PANEL_BELOW_SPLITTER_IS_NULL";
+			if (this.PanelBelow == null) return ret;
+			ret = this.PanelBelow.PanelName;
+			ret += ":" + this.Location.Y + "+" + this.Height + "=" + (this.Location.Y + this.Height);
 			return ret;
 		}
 	}

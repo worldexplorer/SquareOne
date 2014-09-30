@@ -1,90 +1,92 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Runtime.Serialization;
 
 using Newtonsoft.Json;
+using Sq1.Charting.MultiSplit;
+using Sq1.Core.Charting;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Charting {
-	[DataContract]	// I don't want to JsonSerialize all member of base class Component
 	// why ChartSettings inherits Component? F4 on ChartSettings will allow you to edit colors visually
 	// REMOVE ": Component" when you're done with visual editing to stop Designer flooding ChartControl.Designer.cs
 	public class ChartSettings {	//: Component {
-		[DataMember] public Color	ChartColorBackground { get; set; }
-		[DataMember] public int		BarWidthIncludingPadding { get; set; }
-		[DataMember] public int		BarWidthIncludingPaddingMax { get; set; }
-		[DataMember] public Font	PanelNameAndSymbolFont { get; set; }
-		[DataMember] public Color	PriceColorBarUp { get; set; }
-		[DataMember] public Color	PriceColorBarDown { get; set; }
-		[DataMember] public Color	VolumeColorBarUp { get; set; }
-		[DataMember] public Color	VolumeColorBarDown { get; set; }
-		[DataMember] public Color	GutterRightColorBackground { get; set; }
-		[DataMember] public Color	GutterRightColorForeground { get; set; }
-		[DataMember] public int		GutterRightPadding { get; set; }
-		[DataMember] public Font	GutterRightFont { get; set; }
-		[DataMember] public Color	GutterBottomColorBackground { get; set; }
-		[DataMember] public Color	GutterBottomColorForeground { get; set; }
-		[DataMember] public Color	GutterBottomNewDateColorForeground { get; set; }
-		[DataMember] public int		GutterBottomPadding { get; set; }
-		[DataMember] public Font	GutterBottomFont { get; set; }
-		[DataMember] public string	GutterBottomDateFormatDayOpener;
-		[DataMember] public string	GutterBottomDateFormatIntraday;
-		[DataMember] public string	GutterBottomDateFormatDaily;
-		[DataMember] public string	GutterBottomDateFormatWeekly;
-		[DataMember] public string	GutterBottomDateFormatYearly;
-		[DataMember] public Color	GridlinesHorizontalColor { get; set; }
-		[DataMember] public Color	GridlinesVerticalColor { get; set; }
-		[DataMember] public Color	GridlinesVerticalNewDateColor { get; set; }
-		[DataMember] public bool	GridlinesHorizontalShow { get; set; }
-		[DataMember] public bool	GridlinesVerticalShow { get; set; }
-		[DataMember] public int		ScrollSqueezeMouseDragSensitivityPx { get; set; }
-		[DataMember] public int		ScrollNBarsPerOneDragMouseEvent { get; set; }
-		[DataMember] public int		ScrollNBarsPerOneKeyPress { get; set; }
-		[DataMember] public int		SqueezeVerticalPaddingPx { get; set; }
-		[DataMember] public int		SqueezeVerticalPaddingStep { get; set; }
-		[DataMember] public int		SqueezeHorizontalStep { get; set; }
-		[DataMember] public int		SqueezeHorizontalMouse1pxDistanceReceivedToOneStep { get; set; }
-		[DataMember] public int		SqueezeHorizontalKeyOnePressReceivedToOneStep { get; set; }
-		[DataMember] public bool	TooltipPriceShow { get; set; }
-		[DataMember] public bool	TooltipPriceShowOnlyWhenMouseTouchesCandle { get; set; }
-		[DataMember] public bool	TooltipPositionShow { get; set; }
-		[DataMember] public int		TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave { get; set; }
-		[DataMember] public int		PositionArrowPaddingVertical { get; set; }
-		[DataMember] public int		ScrollPositionAtBarIndex { get; set; }
-		[DataMember] public int		TooltipBordersMarginToKeepBordersVisible { get; set; }
-		[DataMember] public Color	PositionPlannedEllipseColor { get; set; }
-		[DataMember] public int		PositionPlannedEllipseColorAlpha { get; set; }
-		[DataMember] public int		PositionPlannedEllipseDiameter { get; set; }
-		[DataMember] public Color	PositionFilledDotColor { get; set; }
-		[DataMember] public int		PositionFilledDotColorAlpha { get; set; }
-		[DataMember] public int		PositionFilledDotDiameter { get; set; }
-		[DataMember] public int		PositionLineHighlightedWidth { get; set; }
-		[DataMember] public int		PositionLineHighlightedAlpha { get; set; }
-		[DataMember] public Color	PositionLineNoExitYetColor { get; set; }
-		[DataMember] public int		PositionLineNoExitYetColorAlpha { get; set; }
-		[DataMember] public Color	PositionLineProfitableColor { get; set; }
-		[DataMember] public int		PositionLineProfitableColorAlpha { get; set; }
-		[DataMember] public Color	PositionLineLossyColor { get; set; }
-		[DataMember] public int		PositionLineLossyColorAlpha { get; set; }
-		[DataMember] public int 	PriceVsVolumeSplitterDistance { get; set; }
-		[DataMember] public Color	AlertPendingEllipseColor { get; set; }
-		[DataMember] public int		AlertPendingEllipseColorAlpha { get; set; }
-		[DataMember] public int		AlertPendingEllipseWidth { get; set; }
-		[DataMember] public bool	MousePositionTrackOnGutters { get; set; }
-		[DataMember] public Color	MousePositionTrackOnGuttersColor { get; set; }
-		[DataMember] public int		BarsBackgroundTransparencyAlfa { get; set; }
-		[DataMember] public int		ChartLabelsUpperLeftYstartTopmost { get; set; }
-		[DataMember] public int		ChartLabelsUpperLeftX { get; set; }
-		[DataMember] public int		ChartLabelsUpperLeftPlatePadding { get; set; }
-		[DataMember] public int		ChartLabelsUpperLeftIndicatorSquarePadding { get; set; }
-		[DataMember] public int		ChartLabelsUpperLeftIndicatorSquareSize { get; set; }
-		[DataMember] public int		OnChartBarAnnotationsVerticalAwayFromPositionArrows { get; set; }
+		[JsonProperty]	public Color	ChartColorBackground { get; set; }
+		[JsonProperty]	public int		BarWidthIncludingPadding { get; set; }
+		[JsonProperty]	public int		BarWidthIncludingPaddingMax { get; set; }
+		[JsonProperty]	public Font		PanelNameAndSymbolFont { get; set; }
+		[JsonProperty]	public Color	PriceColorBarUp { get; set; }
+		[JsonProperty]	public Color	PriceColorBarDown { get; set; }
+		[JsonProperty]	public Color	VolumeColorBarUp { get; set; }
+		[JsonProperty]	public Color	VolumeColorBarDown { get; set; }
+		[JsonProperty]	public Color	GutterRightColorBackground { get; set; }
+		[JsonProperty]	public Color	GutterRightColorForeground { get; set; }
+		[JsonProperty]	public int		GutterRightPadding { get; set; }
+		[JsonProperty]	public Font		GutterRightFont { get; set; }
+		[JsonProperty]	public Color	GutterBottomColorBackground { get; set; }
+		[JsonProperty]	public Color	GutterBottomColorForeground { get; set; }
+		[JsonProperty]	public Color	GutterBottomNewDateColorForeground { get; set; }
+		[JsonProperty]	public int		GutterBottomPadding { get; set; }
+		[JsonProperty]	public Font		GutterBottomFont { get; set; }
+		[JsonProperty]	public string	GutterBottomDateFormatDayOpener;
+		[JsonProperty]	public string	GutterBottomDateFormatIntraday;
+		[JsonProperty]	public string	GutterBottomDateFormatDaily;
+		[JsonProperty]	public string	GutterBottomDateFormatWeekly;
+		[JsonProperty]	public string	GutterBottomDateFormatYearly;
+		[JsonProperty]	public Color	GridlinesHorizontalColor { get; set; }
+		[JsonProperty]	public Color	GridlinesVerticalColor { get; set; }
+		[JsonProperty]	public Color	GridlinesVerticalNewDateColor { get; set; }
+		[JsonProperty]	public bool		GridlinesHorizontalShow { get; set; }
+		[JsonProperty]	public bool		GridlinesVerticalShow { get; set; }
+		[JsonProperty]	public int		ScrollSqueezeMouseDragSensitivityPx { get; set; }
+		[JsonProperty]	public int		ScrollNBarsPerOneDragMouseEvent { get; set; }
+		[JsonProperty]	public int		ScrollNBarsPerOneKeyPress { get; set; }
+		[JsonProperty]	public int		SqueezeVerticalPaddingPx { get; set; }
+		[JsonProperty]	public int		SqueezeVerticalPaddingStep { get; set; }
+		[JsonProperty]	public int		SqueezeHorizontalStep { get; set; }
+		[JsonProperty]	public int		SqueezeHorizontalMouse1pxDistanceReceivedToOneStep { get; set; }
+		[JsonProperty]	public int		SqueezeHorizontalKeyOnePressReceivedToOneStep { get; set; }
+		[JsonProperty]	public bool		TooltipPriceShow { get; set; }
+		[JsonProperty]	public bool		TooltipPriceShowOnlyWhenMouseTouchesCandle { get; set; }
+		[JsonProperty]	public bool		TooltipPositionShow { get; set; }
+		[JsonProperty]	public int		TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave { get; set; }
+		[JsonProperty]	public int		PositionArrowPaddingVertical { get; set; }
+		[JsonProperty]	public int		ScrollPositionAtBarIndex { get; set; }
+		[JsonProperty]	public int		TooltipBordersMarginToKeepBordersVisible { get; set; }
+		[JsonProperty]	public Color	PositionPlannedEllipseColor { get; set; }
+		[JsonProperty]	public int		PositionPlannedEllipseColorAlpha { get; set; }
+		[JsonProperty]	public int		PositionPlannedEllipseDiameter { get; set; }
+		[JsonProperty]	public Color	PositionFilledDotColor { get; set; }
+		[JsonProperty]	public int		PositionFilledDotColorAlpha { get; set; }
+		[JsonProperty]	public int		PositionFilledDotDiameter { get; set; }
+		[JsonProperty]	public int		PositionLineHighlightedWidth { get; set; }
+		[JsonProperty]	public int		PositionLineHighlightedAlpha { get; set; }
+		[JsonProperty]	public Color	PositionLineNoExitYetColor { get; set; }
+		[JsonProperty]	public int		PositionLineNoExitYetColorAlpha { get; set; }
+		[JsonProperty]	public Color	PositionLineProfitableColor { get; set; }
+		[JsonProperty]	public int		PositionLineProfitableColorAlpha { get; set; }
+		[JsonProperty]	public Color	PositionLineLossyColor { get; set; }
+		[JsonProperty]	public int		PositionLineLossyColorAlpha { get; set; }
+		[JsonProperty]	public int 		PriceVsVolumeSplitterDistance { get; set; }
+		[JsonProperty]	public Color	AlertPendingEllipseColor { get; set; }
+		[JsonProperty]	public int		AlertPendingEllipseColorAlpha { get; set; }
+		[JsonProperty]	public int		AlertPendingEllipseWidth { get; set; }
+		[JsonProperty]	public bool		MousePositionTrackOnGutters { get; set; }
+		[JsonProperty]	public Color	MousePositionTrackOnGuttersColor { get; set; }
+		[JsonProperty]	public int		BarsBackgroundTransparencyAlfa { get; set; }
+		[JsonProperty]	public int		ChartLabelsUpperLeftYstartTopmost { get; set; }
+		[JsonProperty]	public int		ChartLabelsUpperLeftX { get; set; }
+		[JsonProperty]	public int		ChartLabelsUpperLeftPlatePadding { get; set; }
+		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquarePadding { get; set; }
+		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquareSize { get; set; }
+		[JsonProperty]	public int		OnChartBarAnnotationsVerticalAwayFromPositionArrows { get; set; }
 		
-		//!!!![JsonIgnore] is all down there because JSON.dll is .NET20 while [DataMember] is defined in .NET35's System.Runtime.Serialization
-
+		// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
+		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterPropertiesByPanelName;
+		
 		// DONE_IN_RenderBarsPrice_KISS cache them all until user edits this.BarTotalWidthPx so they won't be calculated again with the same result for each bar
-		[JsonIgnore] public int BarPaddingRight { get {
+		[JsonIgnore]	public int BarPaddingRight { get {
 			if (this.BarWidthIncludingPadding <= 3) return 0;
 			//int nominal = (int) (this.BarWidthIncludingPadding * 0.25F);
 			int nominal = 1;
@@ -94,190 +96,190 @@ namespace Sq1.Charting {
 			if (keepWidthOdd % 2 == 0) compensated++;	// increase padding to have 1px shadows right in the middle of a bar
 			return compensated;
 		} }
-		[JsonIgnore] public int BarWidthMinusRightPadding { get { return this.BarWidthIncludingPadding - this.BarPaddingRight; } }
-		[JsonIgnore] public int BarShadowXoffset { get { return this.BarWidthMinusRightPadding / 2; } }
+		[JsonIgnore]	public int BarWidthMinusRightPadding { get { return this.BarWidthIncludingPadding - this.BarPaddingRight; } }
+		[JsonIgnore]	public int BarShadowXoffset { get { return this.BarWidthMinusRightPadding / 2; } }
 		
-		[JsonIgnore] SolidBrush brushBackground;
+		[JsonIgnore]	SolidBrush brushBackground;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushBackground { get {
+		[JsonIgnore]	public SolidBrush BrushBackground { get {
 				if (this.brushBackground == null) this.brushBackground = new SolidBrush(this.ChartColorBackground);
 				return this.brushBackground;
 			} }
 
-		[JsonIgnore] SolidBrush brushBackgroundReversed;
+		[JsonIgnore]	SolidBrush brushBackgroundReversed;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushBackgroundReversed { get {
+		[JsonIgnore]	public SolidBrush BrushBackgroundReversed { get {
 				if (this.brushBackgroundReversed == null) this.brushBackgroundReversed = new SolidBrush(ColorReverse(this.ChartColorBackground));
 				return this.brushBackgroundReversed;
 			} }
 
-		[JsonIgnore] SolidBrush brushGutterRightBackground;
+		[JsonIgnore]	SolidBrush brushGutterRightBackground;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushGutterRightBackground { get {
+		[JsonIgnore]	public SolidBrush BrushGutterRightBackground { get {
 				if (this.brushGutterRightBackground == null) this.brushGutterRightBackground = new SolidBrush(this.GutterRightColorBackground);
 				return this.brushGutterRightBackground;
 			} }
 
-		[JsonIgnore] SolidBrush brushGutterRightForeground;
+		[JsonIgnore]	SolidBrush brushGutterRightForeground;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushGutterRightForeground { get {
+		[JsonIgnore]	public SolidBrush BrushGutterRightForeground { get {
 				if (this.brushGutterRightForeground == null) this.brushGutterRightForeground = new SolidBrush(this.GutterRightColorForeground);
 				return this.brushGutterRightForeground;
 			} }
 
-		[JsonIgnore] SolidBrush brushGutterBottomBackground;
+		[JsonIgnore]	SolidBrush brushGutterBottomBackground;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushGutterBottomBackground { get {
+		[JsonIgnore]	public SolidBrush BrushGutterBottomBackground { get {
 				if (this.brushGutterBottomBackground == null) this.brushGutterBottomBackground = new SolidBrush(this.GutterBottomColorBackground);
 				return this.brushGutterBottomBackground;
 			} }
 
-		[JsonIgnore] SolidBrush brushGutterBottomForeground;
+		[JsonIgnore]	SolidBrush brushGutterBottomForeground;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushGutterBottomForeground { get {
+		[JsonIgnore]	public SolidBrush BrushGutterBottomForeground { get {
 				if (this.brushGutterBottomForeground == null) this.brushGutterBottomForeground = new SolidBrush(this.GutterBottomColorForeground);
 				return this.brushGutterBottomForeground;
 			} }
 
-		[JsonIgnore] SolidBrush brushGutterBottomNewDateForeground;
+		[JsonIgnore]	SolidBrush brushGutterBottomNewDateForeground;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushGutterBottomNewDateForeground { get {
+		[JsonIgnore]	public SolidBrush BrushGutterBottomNewDateForeground { get {
 				if (this.brushGutterBottomNewDateForeground == null) this.brushGutterBottomNewDateForeground = new SolidBrush(this.GutterBottomNewDateColorForeground);
 				return this.brushGutterBottomNewDateForeground;
 			} }
 
-		[JsonIgnore] SolidBrush brushPriceBarUp;
+		[JsonIgnore]	SolidBrush brushPriceBarUp;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushPriceBarUp { get {
+		[JsonIgnore]	public SolidBrush BrushPriceBarUp { get {
 				if (this.brushPriceBarUp == null) this.brushPriceBarUp = 
 					new SolidBrush(this.PriceColorBarUp);
 				return this.brushPriceBarUp;
 			} }
 
-		[JsonIgnore] Pen penPriceBarUp;
+		[JsonIgnore]	Pen penPriceBarUp;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenPriceBarUp { get {
+		[JsonIgnore]	public Pen PenPriceBarUp { get {
 				if (this.penPriceBarUp == null) this.penPriceBarUp = 
 					new Pen(this.PriceColorBarUp);
 				return this.penPriceBarUp;
 			} }
 
-		[JsonIgnore] SolidBrush brushPriceBarDown;
+		[JsonIgnore]	SolidBrush brushPriceBarDown;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushPriceBarDown { get {
+		[JsonIgnore]	public SolidBrush BrushPriceBarDown { get {
 				if (this.brushPriceBarDown == null) this.brushPriceBarDown = 
 					new SolidBrush(this.PriceColorBarDown);
 				return this.brushPriceBarDown;
 			} }
 
-		[JsonIgnore] Pen penPriceBarDown;
+		[JsonIgnore]	Pen penPriceBarDown;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenPriceBarDown { get {
+		[JsonIgnore]	public Pen PenPriceBarDown { get {
 				if (this.penPriceBarDown == null) this.penPriceBarDown = 
 					new Pen(this.PriceColorBarDown);
 				return this.penPriceBarDown;
 			} }
 
-		[JsonIgnore] SolidBrush brushVolumeBarUp;
+		[JsonIgnore]	SolidBrush brushVolumeBarUp;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushVolumeBarUp { get {
+		[JsonIgnore]	public SolidBrush BrushVolumeBarUp { get {
 				if (this.brushVolumeBarUp == null) this.brushVolumeBarUp = 
 					new SolidBrush(this.VolumeColorBarUp);
 				return this.brushVolumeBarUp;
 			} }
 
-		[JsonIgnore] SolidBrush brushVolumeBarDown;
+		[JsonIgnore]	SolidBrush brushVolumeBarDown;
 		//[Browsable(false)]
-		[JsonIgnore] public SolidBrush BrushVolumeBarDown { get {
+		[JsonIgnore]	public SolidBrush BrushVolumeBarDown { get {
 				if (this.brushVolumeBarDown == null) this.brushVolumeBarDown = 
 					new SolidBrush(this.VolumeColorBarDown);
 				return this.brushVolumeBarDown;
 			} }
 
-		[JsonIgnore] Pen penGridlinesHorizontal;
+		[JsonIgnore]	Pen penGridlinesHorizontal;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenGridlinesHorizontal { get {
+		[JsonIgnore]	public Pen PenGridlinesHorizontal { get {
 				if (this.penGridlinesHorizontal == null) this.penGridlinesHorizontal = 
 					new Pen(this.GridlinesHorizontalColor);
 				return this.penGridlinesHorizontal;
 			} }
 
-		[JsonIgnore] Pen penGridlinesVertical;
+		[JsonIgnore]	Pen penGridlinesVertical;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenGridlinesVertical { get {
+		[JsonIgnore]	public Pen PenGridlinesVertical { get {
 				if (this.penGridlinesVertical == null) this.penGridlinesVertical = 
 					new Pen(this.GridlinesVerticalColor);
 				return this.penGridlinesVertical;
 			} }
 
-		[JsonIgnore] Pen penGridlinesVerticalNewDate;
+		[JsonIgnore]	Pen penGridlinesVerticalNewDate;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenGridlinesVerticalNewDate { get {
+		[JsonIgnore]	public Pen PenGridlinesVerticalNewDate { get {
 				if (this.penGridlinesVerticalNewDate == null) this.penGridlinesVerticalNewDate = 
 					new Pen(this.GridlinesVerticalNewDateColor);
 				return this.penGridlinesVerticalNewDate;
 			} }
 
 		
-		[JsonIgnore] Pen penPositionPlannedEllipse;
+		[JsonIgnore]	Pen penPositionPlannedEllipse;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenPositionPlannedEllipse { get {
+		[JsonIgnore]	public Pen PenPositionPlannedEllipse { get {
 				if (this.penPositionPlannedEllipse == null) this.penPositionPlannedEllipse =
 					new Pen(Color.FromArgb(this.PositionPlannedEllipseColorAlpha, this.PositionPlannedEllipseColor), this.PositionPlannedEllipseDiameter);
 				return this.penPositionPlannedEllipse;
 			} }
 
-		[JsonIgnore] Pen penPositionFilledDot;
+		[JsonIgnore]	Pen penPositionFilledDot;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenPositionFilledDot { get {
+		[JsonIgnore]	public Pen PenPositionFilledDot { get {
 				if (this.penPositionFilledDot == null) this.penPositionFilledDot =
 					new Pen(Color.FromArgb(this.PositionFilledDotColorAlpha, this.PositionFilledDotColor));
 				return this.penPositionFilledDot;
 			} }
 
-		[JsonIgnore] Brush brushPositionFilledDot;
+		[JsonIgnore]	Brush brushPositionFilledDot;
 		//[Browsable(false)]
-		[JsonIgnore] public Brush BrushPositionFilledDot { get {
+		[JsonIgnore]	public Brush BrushPositionFilledDot { get {
 				if (this.brushPositionFilledDot == null) this.brushPositionFilledDot = 
 					new SolidBrush(Color.FromArgb(this.PositionFilledDotColorAlpha, this.PositionFilledDotColor));
 				return this.brushPositionFilledDot;
 			} }
 
-		[JsonIgnore] Pen penPositionLineEntryExitConnectedUnknown;
+		[JsonIgnore]	Pen penPositionLineEntryExitConnectedUnknown;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenPositionLineEntryExitConnectedUnknown { get {
+		[JsonIgnore]	public Pen PenPositionLineEntryExitConnectedUnknown { get {
 				if (this.penPositionLineEntryExitConnectedUnknown == null) this.penPositionLineEntryExitConnectedUnknown =
 					new Pen(Color.FromArgb(this.PositionLineNoExitYetColorAlpha, this.PositionLineNoExitYetColor));
 				return this.penPositionLineEntryExitConnectedUnknown;
 			} }
-		[JsonIgnore] Pen penPositionLineEntryExitConnectedProfit;
+		[JsonIgnore]	Pen penPositionLineEntryExitConnectedProfit;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenPositionLineEntryExitConnectedProfit { get {
+		[JsonIgnore]	public Pen PenPositionLineEntryExitConnectedProfit { get {
 				if (this.penPositionLineEntryExitConnectedProfit == null) this.penPositionLineEntryExitConnectedProfit =
 					new Pen(Color.FromArgb(this.PositionLineProfitableColorAlpha, this.PositionLineProfitableColor));
 				return this.penPositionLineEntryExitConnectedProfit;
 			} }
 
 
-		[JsonIgnore] Pen penPositionLineEntryExitConnectedLoss;
+		[JsonIgnore]	Pen penPositionLineEntryExitConnectedLoss;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenPositionLineEntryExitConnectedLoss { get {
+		[JsonIgnore]	public Pen PenPositionLineEntryExitConnectedLoss { get {
 				if (this.penPositionLineEntryExitConnectedLoss == null) this.penPositionLineEntryExitConnectedLoss =
 					new Pen(Color.FromArgb(this.PositionLineLossyColorAlpha, this.PositionLineLossyColor));
 				return this.penPositionLineEntryExitConnectedLoss;
 			} }
 
-		[JsonIgnore] Pen penAlertPendingEllipse;
+		[JsonIgnore]	Pen penAlertPendingEllipse;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenAlertPendingEllipse { get {
+		[JsonIgnore]	public Pen PenAlertPendingEllipse { get {
 				if (this.penAlertPendingEllipse == null) this.penAlertPendingEllipse =
 					new Pen(Color.FromArgb(this.AlertPendingEllipseColorAlpha, this.AlertPendingEllipseColor), this.AlertPendingEllipseWidth);
 				return this.penAlertPendingEllipse;
 			} }
 
-		[JsonIgnore] Pen penMousePositionTrackOnGutters;
+		[JsonIgnore]	Pen penMousePositionTrackOnGutters;
 		//[Browsable(false)]
-		[JsonIgnore] public Pen PenMousePositionTrackOnGutters { get {
+		[JsonIgnore]	public Pen PenMousePositionTrackOnGutters { get {
 				if (this.penMousePositionTrackOnGutters == null) this.penMousePositionTrackOnGutters = 
 					new Pen(this.MousePositionTrackOnGuttersColor);
 				return this.penMousePositionTrackOnGutters;
@@ -353,6 +355,9 @@ namespace Sq1.Charting {
 			ChartLabelsUpperLeftIndicatorSquarePadding = 4;
 			ChartLabelsUpperLeftIndicatorSquareSize = 5;
 			OnChartBarAnnotationsVerticalAwayFromPositionArrows = 3;
+
+			// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
+			MultiSplitterPropertiesByPanelName = new Dictionary<string, MultiSplitterProperties>();
 		}
 		
 		public static Color ColorReverse(Color color) {

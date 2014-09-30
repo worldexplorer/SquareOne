@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -263,7 +264,12 @@ namespace Sq1.Widgets.Execution {
 		void SplitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {
 			if (this.DataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return;
+			}
 			if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
 				if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;
 				this.DataSnapshot.MessagePaneSplitDistanceHorizontal = e.SplitY;

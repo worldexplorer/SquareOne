@@ -45,6 +45,7 @@ namespace Sq1.Charting {
 			panelsFolding.Add(this.panelPrice);
 			panelsFolding.Add(this.panelVolume);
 			this.multiSplitContainer.InitializeCreateSplittersDistributeFor(panelsFolding);
+			// TOO_EARLY_MOVED_TO_PropagateSettingSplitterDistancePriceVsVolume this.multiSplitContainer.SplitterPositionsByManorder = this.ChartSettings.SplitterPositionsByManorder;
 			
 			this.panelPrice.Initialize(this);
 			this.panelVolume.Initialize(this);
@@ -307,12 +308,11 @@ namespace Sq1.Charting {
 			return wasInvalidated;
 		}
 		
-		public void PropagateSettingSplitterDistancePriceVsVolume() {
-//			if (this.ChartSettings.PriceVsVolumeSplitterDistance == 0) {
-//				this.ChartSettings.PriceVsVolumeSplitterDistance = this.splitContainerPriceVsVolume.SplitterDistance; 
-//			} else {
-//				this.splitContainerPriceVsVolume.SplitterDistance = this.ChartSettings.PriceVsVolumeSplitterDistance;
-//			}
+		public void PropagateSplitterManorderDistanceIfFullyDeserialized() {
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				return;
+			}
+			this.multiSplitContainer.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterPropertiesByPanelName);
 		}
 		public AlertArrow TooltipPositionShownForAlertArrow { get {
 				AlertArrow ret = null;

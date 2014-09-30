@@ -140,5 +140,6 @@ namespace Sq1.Core.Charting {
 		public virtual void SetIndicators(Dictionary<string, Indicator> indicators) {
 			throw new NotImplementedException();
 		}
+		
 	}	
 }

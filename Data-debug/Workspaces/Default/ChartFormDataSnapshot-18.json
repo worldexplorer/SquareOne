@@ -34,6 +34,19 @@
     "GutterBottomDateFormatDaily": "ddd dd-MMM",
     "GutterBottomDateFormatWeekly": "MMM-yy",
     "GutterBottomDateFormatYearly": "yyyy",
+    "MultiSplitterPropertiesByPanelName": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
+      "Volume": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 0,
+        "Distance": 0
+      },
+      "Price": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 8
+      }
+    },
     "ChartColorBackground": "White",
     "BarWidthIncludingPadding": 17,
     "BarWidthIncludingPaddingMax": 100,

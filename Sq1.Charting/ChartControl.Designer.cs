@@ -1,4 +1,6 @@
-﻿/*
+﻿using System;
+using Sq1.Charting.MultiSplit;
+/*
  * Created by SharpDevelop.
  * User: worldexplorer
  * Date: 01-Jul-14
@@ -43,7 +45,7 @@ namespace Sq1.Charting
 			this.lblWinFormDesignerComment = new System.Windows.Forms.Label();
 			this.panelVolume = new Sq1.Charting.PanelVolume();
 			this.panelPrice = new Sq1.Charting.PanelPrice();
-			this.multiSplitContainer = new Sq1.Charting.MultiSplit.MultiSplitContainer();
+			this.multiSplitContainer = new Sq1.Charting.MultiSplit.MultiSplitContainer<PanelNamedFolding>();
 			this.RangeBar = new Sq1.Widgets.RangeBar.RangeBarDateTime();
 			this.tooltipPosition = new Sq1.Charting.TooltipPosition();
 			this.tooltipPrice = new Sq1.Charting.TooltipPrice();
@@ -133,6 +135,9 @@ namespace Sq1.Charting
 			this.multiSplitContainer.Name = "multiSplitContainer";
 			this.multiSplitContainer.Size = new System.Drawing.Size(821, 289);
 			this.multiSplitContainer.TabIndex = 1;
+			this.multiSplitContainer.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitContainer.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitContainer.Resize += new EventHandler(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
 			// 
 			// RangeBar
 			// 
@@ -194,8 +199,9 @@ namespace Sq1.Charting
 			this.splitContainerChartVsRange.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+
 		private System.Windows.Forms.Label lblWinFormDesignerComment;
-		private Sq1.Charting.MultiSplit.MultiSplitContainer multiSplitContainer;
+		private Sq1.Charting.MultiSplit.MultiSplitContainer<PanelNamedFolding> multiSplitContainer;
 		private System.Windows.Forms.HScrollBar hScrollBar;
 		private PanelPrice panelPrice;
 		private System.Windows.Forms.SplitContainer splitContainerChartVsRange;

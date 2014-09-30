@@ -97,7 +97,7 @@ namespace Sq1.Gui.Forms {
 				this.DataSnapshot.ChartSettings = this.ChartForm.ChartControl.ChartSettings;	// opening from Datasource => save
 			} else {
 				this.ChartForm.ChartControl.ChartSettings = this.DataSnapshot.ChartSettings;	// otherwize JustDeserialized => propagate
-				this.ChartForm.ChartControl.PropagateSettingSplitterDistancePriceVsVolume();
+				this.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 			}
 			if (contextChart != null) {
 				// contextChart != null when opening from Datasource; contextChart == null when JustDeserialized
@@ -175,7 +175,7 @@ namespace Sq1.Gui.Forms {
 				this.DataSnapshot.ChartSettings = this.ChartForm.ChartControl.ChartSettings;	// opening from Datasource => save
 			} else {
 				this.ChartForm.ChartControl.ChartSettings = this.DataSnapshot.ChartSettings;	// otherwize JustDeserialized => propagate
-				this.ChartForm.ChartControl.PropagateSettingSplitterDistancePriceVsVolume();
+				this.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 			}
 
 			//this.ChartForm.CtxReporters.Enabled = true;
@@ -412,7 +412,12 @@ namespace Sq1.Gui.Forms {
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
 		}
 		public void ReportersDumpCurrentForSerialization() {
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				#if DEBUG
+				//Debugger.Break();
+				#endif
+				return;
+			}
 			if (this.Strategy == null) return;
 			this.Strategy.ScriptContextCurrent.ReporterShortNamesUserInvokedJSONcheck =
 				new List<string>(this.ReportersFormsManager.ReporterShortNamesUserInvoked.Keys);

@@ -85,6 +85,11 @@
     </Compile>
     <Compile Include="MultiSplit\MultiSplitterEventArgs.cs" />
     <Compile Include="MultiSplit\MultiSplitter.cs" />
+    <Compile Include="MultiSplit\MultiSplitTest.cs" />
+    <Compile Include="MultiSplit\MultiSplitTest.Designer.cs">
+      <DependentUpon>MultiSplitTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MultiSplit\Program.cs" />
     <Compile Include="OnChart\OnChartBarAnnotation.cs" />
     <Compile Include="OnChart\OnChartLabel.cs" />
     <Compile Include="OnChart\OnChartLine.cs" />
@@ -133,6 +138,9 @@
   <ItemGroup>
     <EmbeddedResource Include="ChartControl.resx">
       <DependentUpon>ChartControl.Designer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MultiSplit\MultiSplitTest.resx">
+      <DependentUpon>MultiSplitTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <DependentUpon>Resources.cs</DependentUpon>

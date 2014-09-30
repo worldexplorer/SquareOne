@@ -60,7 +60,7 @@ namespace Sq1.Gui.Singletons {
 			}
 		}
 
-		void initializeWorkspacesManagerTrampoline() {
+		void createWorkspacesManager() {
 			this.WorkspacesManager = new MainFormWorkspacesManager(this);
 			//this.CtxWorkspaces.Items.Clear();
 			this.CtxWorkspaces.Items.AddRange(this.WorkspacesManager.WorkspaceMenuItemsWithHandlers);
@@ -108,7 +108,6 @@ namespace Sq1.Gui.Singletons {
 					DeserializeDockContent deserializeDockContent = new DeserializeDockContent(this.PersistStringInstantiator);
 					this.DockPanel.LoadFromXml(LayoutXml, deserializeDockContent);
 				}
-				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 	
 //				this.mniExceptions.Checked = !ExceptionsForm.Instance.IsHidden;
 //				this.mniSymbols.Checked = !DataSourcesForm.Instance.IsHidden;
@@ -139,6 +138,11 @@ namespace Sq1.Gui.Singletons {
 				if (ExceptionsForm.Instance.ExceptionControl.Exceptions.Count > 0) {
 					ExceptionsForm.Instance.Show(this.DockPanel);
 					ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
+				}
+
+				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
+				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
+					cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 				}
 			} catch (Exception ex) {
 				#if DEBUG

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
+
+using Sq1.Charting.MultiSplit;
 using Sq1.Core;
 
 namespace Sq1.Charting {
@@ -73,18 +76,23 @@ namespace Sq1.Charting {
 			base.OnKeyDown(keyEventArgs);
 		}
 		#endregion		
-		void splitContainerPriceVsVolume_SplitterMoved(object sender, SplitterEventArgs e) {
+
+		// WHERE_IS_RESIZE_ENDED_IN_F_WINDOWS_FORMS?? SAVING_CHART_SETTINGS_ON_EACH_TINY_RESIZE_FOR_ALL_OPEN_CHARTS this.multiSplitContainer.Resize += new EventHandler(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
+		void multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {
 			//v1 this.ChartSettings.PriceVsVolumeSplitterDistance = this.splitContainerPriceVsVolume.SplitterDistance;
 			//v2
 			if (base.DesignMode) return;
-			if (this.ChartSettings == null) return;	// may be redundant
+			if (this.ChartSettings == null) return;	// MAY_BE_REDUNDANT
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-			//if (this.ChartSettings.PriceVsVolumeSplitterDistance == e.SplitY) return;
-			//this.ChartSettings.PriceVsVolumeSplitterDistance = e.SplitY;
-			//if (this.ChartSettings.PriceVsVolumeSplitterDistance == this.splitContainerPriceVsVolume.SplitterDistance) return;
-			//this.ChartSettings.PriceVsVolumeSplitterDistance = this.splitContainerPriceVsVolume.SplitterDistance;
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				#if DEBUG
+				//Debugger.Break();	// NOT_REDUNDANT_DUE_TO_500_RESIZES_AT_FORM_LOAD_BY_DOCK_CONTENT_LIBRARY MAY_BE_REDUNDANT
+				#endif
+				return;
+			}
+			this.ChartSettings.MultiSplitterPropertiesByPanelName = this.multiSplitContainer.SplitterPropertiesByPanelNameGet();
 			this.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
+
 	}
 }
