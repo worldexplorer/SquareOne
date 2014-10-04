@@ -22,7 +22,11 @@ namespace Sq1.Strategies.Demo {
 			// CLEANER_SCRIPT_PARAMETERS
 			// CLEANER_INDICATORS
 			this.ATR = new IndicatorAverageTrueRange();
-			this.ATR.ParamPeriod = new IndicatorParameter("Period", 5, 5, 40, 5);
+
+			// this.ATR.ParamPeriod = new IndicatorParameter("Period", 5, 5, 40, 5);
+			// Slider for IndicatorParameter("Period", 5, 1, 11, 2) has 2-4-6-8 instead of 1-3-5-7
+			this.ATR.ParamPeriod = new IndicatorParameter("Period", 5, 1, 11, 2);	// 1-3-5-7-9-11
+
 			this.ATR.ParamMultiplier = new IndicatorParameter("Multiplier", 1.5, 0.1, 4, 0.1);
 			// DEFAULT_PANEL_PRICE LEAVE_COMMENTED_OR_WONT_BE_DRAWN this.ATR.ChartPanelType = ChartPanelType.PanelIndicatorSingle;
 			this.ATR.DataSeriesProxyFor = DataSeriesProxyableFromBars.Close;
