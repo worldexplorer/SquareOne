@@ -67,10 +67,10 @@
           {
             "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
             "Name": "Period",
-            "ValueMin": 5.0,
-            "ValueMax": 40.0,
-            "ValueIncrement": 5.0,
-            "ValueCurrent": 15.0
+            "ValueMin": 1.0,
+            "ValueMax": 11.0,
+            "ValueIncrement": 2.0,
+            "ValueCurrent": 1.0
           },
           {
             "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
@@ -78,7 +78,7 @@
             "ValueMin": 0.1,
             "ValueMax": 4.0,
             "ValueIncrement": 0.1,
-            "ValueCurrent": 2.0266
+            "ValueCurrent": 2.6
           }
         ]
       }

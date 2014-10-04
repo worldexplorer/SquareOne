@@ -76,16 +76,24 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MultiSplit\MultiSplitContainer.cs" />
+    <Compile Include="MultiSplit\MultiSplitContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="MultiSplit\MultiSplitContainer.EventConsumer.cs">
       <DependentUpon>MultiSplitContainer.cs</DependentUpon>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="MultiSplit\MultiSplitContainer.EventGenerator.cs">
       <DependentUpon>MultiSplitContainer.cs</DependentUpon>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="MultiSplit\MultiSplitterEventArgs.cs" />
-    <Compile Include="MultiSplit\MultiSplitter.cs" />
-    <Compile Include="MultiSplit\MultiSplitTest.cs" />
+    <Compile Include="MultiSplit\MultiSplitter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MultiSplit\MultiSplitTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MultiSplit\MultiSplitTest.Designer.cs">
       <DependentUpon>MultiSplitTest.cs</DependentUpon>
     </Compile>
@@ -93,7 +101,9 @@
     <Compile Include="OnChart\OnChartBarAnnotation.cs" />
     <Compile Include="OnChart\OnChartLabel.cs" />
     <Compile Include="OnChart\OnChartLine.cs" />
-    <Compile Include="PanelIndicator.cs" />
+    <Compile Include="PanelIndicator.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="PanelNamedFolding.ChartShadowImplementation.cs">
       <DependentUpon>PanelNamedFolding.cs</DependentUpon>
       <SubType>Component</SubType>

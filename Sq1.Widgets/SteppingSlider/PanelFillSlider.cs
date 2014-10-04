@@ -301,15 +301,24 @@ namespace Sq1.Widgets.SteppingSlider {
 			}
 		}
 		public decimal RoundToClosestStep(decimal rawValue) {
-			decimal valueStepSafe = (this.ValueIncrement != 0) ? this.ValueIncrement : 1;
-			int fullSteps = (int)Math.Floor(rawValue / valueStepSafe);
-			decimal fullStepsReminder = rawValue % valueStepSafe;
-			decimal halfStep = valueStepSafe / 2;
-			if (fullStepsReminder < halfStep) {
-				return valueStepSafe * fullSteps;
-			} else {
-				return valueStepSafe * (fullSteps + 1);
-			}
+			// rawValue = 61, ValueMin=30, ValueIncrement=20
+			//rawValue = (decimal) 6.1;
+			decimal distFromMin = Math.Abs(rawValue - this.ValueMin);							// distFromMin = 61 - 30 = 31
+			decimal valueStepSafe = (this.ValueIncrement != 0) ? this.ValueIncrement : 1;		// valueStepSafe = 20
+			//int fullSteps = (int)Math.Floor(distFromMin / valueStepSafe);						// fullSteps = floor(31 / 20) = floor(1.55) = 1
+			//decimal ret = this.ValueMin + valueStepSafe * fullSteps;							// ret = 3 + 2 * 1 = 3 + 2 = 5
+
+			decimal stepsRounded = Math.Round(distFromMin / valueStepSafe);						// stepsRounded = round(31 / 20) = floor(1.55) = 2
+			decimal ret = this.ValueMin + valueStepSafe * (decimal)Math.Round(stepsRounded);	// ret = 3 + 2 * 1 = 3 + 2 = 5
+
+			//Rounding of 5.6 down to 5 in terms of levels 3-5-7 with step=2; rounding between 0...1 could've been done with Math.Round() which isn't the case
+			//decimal fullStepsRemainder = distFromMin % valueStepSafe;
+			//decimal halfStep = (decimal) ((double) valueStepSafe / (double) 2);	// THE_ONLY_THING_I_HATE_IN_DOT_NET
+
+			//if (fullStepsRemainder > halfStep) {
+			//	ret += this.ValueIncrement;
+			//}
+			return ret;
 		}
 		
 		private bool mouseOver = false;
