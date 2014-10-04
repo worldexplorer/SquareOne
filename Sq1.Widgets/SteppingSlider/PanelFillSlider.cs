@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+
 using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public class PanelFillSlider : PanelDoubleBuffered {
+	public partial class PanelFillSlider : PanelDoubleBuffered {
 		private SolidBrush brushBgValueCurrentEnabled = new SolidBrush(System.Drawing.Color.FromArgb(192, 192, 255));
 	    private SolidBrush brushBgValueCurrentDisabled = new SolidBrush(Color.DarkGray);
 		private SolidBrush brushBgValueCurrent { get { return base.Enabled ? brushBgValueCurrentEnabled : brushBgValueCurrentDisabled; } }
@@ -43,7 +45,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		private decimal valueCurrent;
 		public decimal ValueCurrent {
 			get { return valueCurrent; }
-			set { valueCurrent = value; this.Invalidate(); }
+			set { valueCurrent = value; this.RaiseValueCurrentChanged(); this.Invalidate(); }
 		}
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
@@ -61,7 +63,16 @@ namespace Sq1.Widgets.SteppingSlider {
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		private string valueFormat;
 		public string ValueFormat {
-			get { if (valueFormat == null) return "0.#";  return valueFormat; }
+			get {
+				if (valueFormat == null) {
+					valueFormat = "0.#"; 
+					if (this.ValueIncrement < 1) {
+						// FIXME log10(0.008) = -2.09691
+						valueFormat = "N" + Math.Round(Math.Abs(Math.Log10((double)this.ValueIncrement)));
+					}
+				}
+				return valueFormat;
+			}
 			set { this.valueFormat = value; }
 		}
 
@@ -254,38 +265,42 @@ namespace Sq1.Widgets.SteppingSlider {
 //	%%:		60px * 2px/unit = 120units; 120units / 500units = 0.24 * 100 = 24%
 //	filled:	24% / 100 = 0.24; 250px * 0.24 = 60px
 		protected override void OnMouseMove(MouseEventArgs e) {
+			base.OnMouseMove(e);
 			float range = (float) Math.Abs(this.ValueMax - this.ValueMin);
 			decimal mouseRange;
 			if (this.LeftToRight) {
 				float partFilled = e.X / (float) base.Width;	//without (float) division of two ints is an int !!! (zero)
 				//this.ValueMouseOver = this.ValueMin + new decimal(partFilled * this.PixelsForOneValueUnit);
 				this.ValueMouseOver = this.ValueMin + new decimal(partFilled * range);
-				this.ValueMouseOver = this.RoundToClosestStepIfAnyValueHasDecimalPoint(this.ValueMouseOver);
+				this.ValueMouseOver = this.RoundToClosestStep(this.ValueMouseOver);
 				mouseRange = this.ValueMouseOver - this.ValueMin;
 			} else {
 				//float partFilled = (base.Width - e.X) / (float) base.Width;	//without (float) division of two ints is an int !!! (zero)
 				float partFilled = (base.Width - e.X) / (float) base.Width;	//without (float) division of two ints is an int !!! (zero)
 				//this.ValueMouseOver = this.ValueMax + new decimal(partFilled * this.PixelsForOneValueUnit);
 				this.ValueMouseOver = this.ValueMax + new decimal(partFilled * range);
-				this.ValueMouseOver = this.RoundToClosestStepIfAnyValueHasDecimalPoint(this.ValueMouseOver);
+				this.ValueMouseOver = this.RoundToClosestStep(this.ValueMouseOver);
 				mouseRange = this.ValueMouseOver - this.ValueMax;
 			}
-			if (this.dontRound == false) mouseRange = Math.Round(mouseRange);
+			if (leftMouseButtonHeldDown) {	// I_HATE_HACKING_F_WINDOWS_FORMS
+				if (this.ValueCurrent != this.ValueMouseOver) {
+					//Debugger.Break();
+					this.ValueCurrent = this.ValueMouseOver;
+				}
+			}
 			this.FilledPercentageMouseOver = 100 * ((float)mouseRange / range);
 			base.Invalidate();
-			base.OnMouseMove(e);
 		}
-		
-		bool dontRound { get {
-				bool returnRaw = false;
-				if (Math.Truncate(this.ValueMin) != this.ValueMin) returnRaw = true;
-				if (Math.Truncate(this.ValueMax) != this.ValueMax) returnRaw = true;
-				if (Math.Truncate(this.ValueIncrement) != this.ValueIncrement) returnRaw = true;
-				return returnRaw;
-			} }
-		public decimal RoundToClosestStepIfAnyValueHasDecimalPoint(decimal rawValue) {
-			if (this.dontRound) return rawValue;
-			
+		// I_HATE_HACKING_F_WINDOWS_FORMS
+		protected override void OnDragOver(System.Windows.Forms.DragEventArgs e) {
+			base.OnDragOver(e);
+			this.OnMouseMove(new MouseEventArgs(MouseButtons.Left, 1, e.X, e.Y, 0));
+			if (this.ValueCurrent != this.ValueMouseOver) {
+				Debugger.Break();
+				this.ValueCurrent = this.ValueMouseOver;
+			}
+		}
+		public decimal RoundToClosestStep(decimal rawValue) {
 			decimal valueStepSafe = (this.ValueIncrement != 0) ? this.ValueIncrement : 1;
 			int fullSteps = (int)Math.Floor(rawValue / valueStepSafe);
 			decimal fullStepsReminder = rawValue % valueStepSafe;
@@ -299,32 +314,45 @@ namespace Sq1.Widgets.SteppingSlider {
 		
 		private bool mouseOver = false;
 		protected override void OnMouseEnter(EventArgs e) {
+			base.OnMouseEnter(e);
 			this.mouseOver = true;
 			base.Invalidate();
-			base.OnMouseEnter(e);
-		}
-		
+		}		
 		protected override void OnMouseLeave(EventArgs e) {
+			base.OnMouseLeave(e);
 			if (rightClickShouldKeepMouseOver == true) {
 				rightClickShouldKeepMouseOver = false;
-				base.OnMouseLeave(e);
 				return;
 			}
 			this.mouseOver = false;
+			this.leftMouseButtonHeldDown = false; 
 			base.Invalidate();
-			base.OnMouseLeave(e);
 		}
-
+		bool leftMouseButtonHeldDown = false;
+		protected override void OnMouseDown(MouseEventArgs e) {
+			base.OnMouseDown(e);
+			if (e.Button == MouseButtons.Left) {
+				leftMouseButtonHeldDown = true;	// I_HATE_HACKING_F_WINDOWS_FORMS
+			}
+			if (this.ValueCurrent != this.ValueMouseOver) {
+				this.ValueCurrent = this.ValueMouseOver;
+			}
+		}
 		bool rightClickShouldKeepMouseOver = false;
 		protected override void OnMouseUp(MouseEventArgs e) {
+			base.OnMouseUp(e);
+			if (e.Button == MouseButtons.Left) {
+				leftMouseButtonHeldDown = false; 
+			}
 			if (e.Button != MouseButtons.Left) {
 				rightClickShouldKeepMouseOver = true;
 				return;
 			}
 			//this.FilledPercentageCurrentValue = this.FilledPercentageMouseOver;
-			this.ValueCurrent = this.ValueMouseOver;
-			base.Invalidate();
-			base.OnMouseUp(e);
+			// we Raise on MouseDown and MouseDrag now
+//			if (this.ValueCurrent != this.ValueMouseOver && this.mouseOver) {
+//				this.ValueCurrent = this.ValueMouseOver;	// we Raise on MouseDown and MouseDrag now
+//			}
 		}
 
 		protected override void Dispose(bool disposing) {

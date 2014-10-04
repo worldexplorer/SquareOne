@@ -30,7 +30,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				this.DomainUpDown.BackColor = Color.LightSalmon;
 			}
 			this.DomainUpDown.BackColor = Color.White;
-			parsed = this.PanelFillSlider.RoundToClosestStepIfAnyValueHasDecimalPoint(parsed);
+			parsed = this.PanelFillSlider.RoundToClosestStep(parsed);
 			this.ValueCurrent = parsed;
 		}
 		void domainUpDown_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e) {
@@ -99,7 +99,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			}
 		}
 
-		void PanelFillSlider_MouseUp(object sender, MouseEventArgs e) {
+		void PanelFillSlider_ValueCurrentChanged(object sender, EventArgs e) {
 			string valueClicked = this.PanelFillSlider.ValueCurrent.ToString(this.ValueFormat);
 			if (valueClicked == this.DomainUpDown.Text) return;
 			this.DomainUpDown.Text = valueClicked;

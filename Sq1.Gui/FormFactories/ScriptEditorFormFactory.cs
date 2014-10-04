@@ -31,7 +31,7 @@ namespace Sq1.Gui.FormFactories {
 			set { this.chartFormManager.Strategy = value; }
 		}
 
-		public void CreateEditorFormAndSubscribeFactoryMethod(ChartFormManager chartFormsManager) {
+		public void CreateEditorFormSubscribePushToManager(ChartFormManager chartFormsManager) {
 			this.scriptEditorForm = new ScriptEditorForm(chartFormsManager);
 			this.scriptEditorForm.ScriptEditorControl.OnSave += ScriptEditorControl_OnSave;
 			this.scriptEditorForm.ScriptEditorControl.OnCompile += ScriptEditorControl_OnCompile;

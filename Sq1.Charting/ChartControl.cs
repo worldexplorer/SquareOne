@@ -35,7 +35,7 @@ namespace Sq1.Charting {
 			this.ChartSettings = new ChartSettings(); // was a component, used at InitializeComponent() (to draw SampleBars)
 			this.ScriptExecutorObjects = new ScriptExecutorObjects();
 			InitializeComponent();
-			//if (this.ChartSettings == null) 
+			if (base.DesignMode) return;
 
 			this.AutoScroll = false;
 			//this.HScroll = true;
@@ -50,7 +50,7 @@ namespace Sq1.Charting {
 			this.panelPrice.Initialize(this);
 			this.panelVolume.Initialize(this);
 
-			if (base.DesignMode == false) return;
+			if (base.DesignMode == false) return;		// yeps I saw the fake-generated bars in Design mode once...
 			//this.chartRenderer.Initialize(this);
 			BarScaleInterval chartShouldntCare = new BarScaleInterval(BarScale.Minute, 5);
 			//REFLECTION_FAILS_FOR_DESIGNER BarsBasic.GenerateRandom(chartShouldntCare)

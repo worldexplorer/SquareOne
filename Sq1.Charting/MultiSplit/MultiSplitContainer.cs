@@ -137,8 +137,10 @@ try {
 	        	if (i == this.splitters.Count-1) {
 	        		panelHeight = baseHeight - panelY;
 	        		if (panelHeight < 0) {
-		    			Debugger.Break();
-		        		return;		// WTF
+						#if DEBUG
+		    			Debugger.Break();	// YOU_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
+		    			#endif
+		        		return;
 	        		}
 		        	if (panelHeight < MinimumPanelSize) {
 		        		panelHeight = MinimumPanelSize;
@@ -179,6 +181,7 @@ try {
 		}
         
 		public void DistributePanelsAndSplittersVertically() {		//Dictionary<int, int> splitterPositionsByManorder = null) {
+			if (this.DesignMode) return;
 			int baseHeight = base.Height;
 			//baseHeight -= 4;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR diagnose by swapping with upper panel
 			
@@ -230,8 +233,10 @@ try {
 			
     		int panelHeight = baseHeight - MinimumPanelSize;
     		if (panelHeight < 0) {
-    			Debugger.Break();
-        		return;		// WTF
+    			#if DEBUG
+    			Debugger.Break();		// WTF
+    			#endif
+        		return;
     		}
 
     		// we need proportional vertical fill when 1) new panel added, 2) old panel removed, 3) Initialize(List<Panel>), 4) OnResize

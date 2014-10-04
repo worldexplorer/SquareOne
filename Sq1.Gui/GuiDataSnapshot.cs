@@ -21,7 +21,7 @@ namespace Sq1.Gui {
 		[JsonProperty]	public bool MainFormIsFullScreen;
 		[JsonProperty]	public int ChartSernoLastUsed;
 		[JsonIgnore]	public int ChartSernoNextAvailable { get { return ++this.ChartSernoLastUsed; } }
-		[JsonProperty]	public int ChartSernoHasFocus;
+		[JsonProperty]	public int ChartSernoLastKnownHadFocus;
 		[JsonIgnore]	public string ChartSernosInstantiatedAsString {
 			get {
 				string ret = "";

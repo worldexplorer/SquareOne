@@ -9,8 +9,8 @@ using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Widgets.SteppingSlider {
-	//public partial class SlidersAutoGrowControl : UserControlDoubleBuffered {
-	public partial class SlidersAutoGrowControl : UserControl {
+	public partial class SlidersAutoGrowControl : UserControlDoubleBuffered {
+	//public partial class SlidersAutoGrowControl : UserControl {
 		public Strategy Strategy { get; private set; }
 
 		[Browsable(true)]

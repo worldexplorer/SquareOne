@@ -91,27 +91,5 @@ namespace WeifenLuo.WinFormsUI.Docking {
 
 			return null;
 		}
-
-		public static void ActivateDockContentPopupAutoHidden(DockContent form, Boolean keepAutoHidden = true) {
-			if (DockHelper.IsDockStateAutoHide(form.DockState)) {
-				if (keepAutoHidden) {
-					// will fold back to the button after a delay; what for do you need to set Active then???
-					//form.DockPanel.ActiveAutoHideContent = form;
-				} else {
-					// will stay open because we change DockRightAutoHidde -> DockRight
-					DockHelper.ToggleAutoHide(form);
-				}
-			}
-			form.Activate();
-		}
-
-		public static void ToggleAutoHide(DockContent form) {
-			if (form.DockState == DockState.Unknown) return;
-			if (form.DockState == DockState.Document) return;
-			if (form.DockState == DockState.Float) return;
-			if (form.DockState == DockState.Hidden) return;
-			DockState newState = DockHelper.ToggleAutoHideState(form.Pane.DockState);
-			form.Pane.SetDockState(newState);
-		}
 	}
 }

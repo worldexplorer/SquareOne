@@ -77,7 +77,17 @@
         "2": 1.0
       },
       "IndicatorParametersByName": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib"
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+        "MAfast": [
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "Name": "Period",
+            "ValueMin": 10.0,
+            "ValueMax": 20.0,
+            "ValueIncrement": 1.0,
+            "ValueCurrent": 16.0
+          }
+        ]
       }
     },
     "10min500bars2shares": {

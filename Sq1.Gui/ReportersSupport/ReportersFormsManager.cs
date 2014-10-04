@@ -9,6 +9,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
 using Sq1.Gui.Forms;
+using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.ReportersSupport {
@@ -135,10 +136,11 @@ namespace Sq1.Gui.ReportersSupport {
 			this.MenuItemsProvider.FindMniByShortNameAndTick(reporterShortName, false);
 		}
 
-		public void ParentChart_OnActivated(object sender, EventArgs e) {
+		public void PopupReporters_OnParentChartActivated(object sender, EventArgs e) {
 			foreach (Reporter reporterToPopup in this.ReporterShortNamesUserInvoked.Values) {
 				DockContent form = reporterToPopup.Parent as DockContent;
-				form.Activate();
+				// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE form.Activate();
+				DockContentImproved.ActivateDockContentPopupAutoHidden(form, false, false);
 			}
 		}
 	}

@@ -42,6 +42,7 @@ namespace Sq1.Gui.Forms {
 				this.mnitlbYearly.Name};
 			this.GroupPositionSizeLabeledTextboxes = new List<string>() {
 				this.mnitlbPositionSizeDollarsEachTradeConstant.Name, this.mnitlbPositionSizeSharesConstantEachTrade.Name};
+			//OVERRODE_IN_CHART_CONTROL_DONT_CARE_HERE_NOW: override bool ProcessCmdKey //base.KeyPreview = true;
 		}
 		//programmer's constructor
 		public ChartForm(ChartFormManager chartFormManager) : this() {

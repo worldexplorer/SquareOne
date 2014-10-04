@@ -85,5 +85,30 @@ namespace Sq1.Widgets {
 			}
 			this.Show(dockPanel, DockState.Document);
 		}
+
+		// moved from modified WelfenLuoBlaBlaBla.DockHandler to restore release-state of DockContent library (not fully restored, though)
+		public static void ActivateDockContentPopupAutoHidden(DockContent form, bool keepAutoHidden = true, bool activate = true) {
+			if (DockHelper.IsDockStateAutoHide(form.DockState)) {
+				if (keepAutoHidden) {
+					// will fold back to the button after a delay; what for do you need to set Active then???
+					//form.DockPanel.ActiveAutoHideContent = form;
+				} else {
+					// will stay open because we change DockRightAutoHidde -> DockRight
+					DockContentImproved.ToggleAutoHide(form);
+				}
+			}
+			if (activate) {
+				form.Activate();
+			}
+		}
+
+		public static void ToggleAutoHide(DockContent form) {
+			if (form.DockState == DockState.Unknown) return;
+			if (form.DockState == DockState.Document) return;
+			if (form.DockState == DockState.Float) return;
+			if (form.DockState == DockState.Hidden) return;
+			DockState newState = DockHelper.ToggleAutoHideState(form.Pane.DockState);
+			form.Pane.SetDockState(newState);
+		}
 	}
 }

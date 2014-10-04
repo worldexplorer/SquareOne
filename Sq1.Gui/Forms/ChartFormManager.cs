@@ -14,6 +14,7 @@ using Sq1.Gui.FormFactories;
 using Sq1.Gui.Forms;
 using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
+using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
@@ -203,7 +204,7 @@ namespace Sq1.Gui.Forms {
 		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(string msig, bool loadNewBars = true, bool skipBacktest = false) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
 			this.Executor.BacktesterAbortIfRunningRestoreContext();
-			
+
 			ContextChart context = this.ContextCurrentChartOrStrategy;
 			if (context == null) {
 				string msg = "WONT_POPULATE_NULL_CONTEXT: strategy JSON/DLL was removedBetweenRestart / deserializedWithExceptionDueToDataFormatChange" +
@@ -301,9 +302,12 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			if (this.Strategy.Script == null) {
-				//this.StrategyCompileActivatePopulateSlidersShow();
+				// WRONG_PLACE_TO_FIX "EnterEveryBar doesn't draw MAfast" this.StrategyCompileActivatePopulateSlidersShow();
 				string msg = "1) will compile it upstack in InitializeStrategyAfterDeserialization() or 2) compilation failed at Editor-F5";
+				#if DEBUG
 				Debugger.Break();
+				#endif
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.BacktesterRunSimulationRegular();
@@ -425,7 +429,10 @@ namespace Sq1.Gui.Forms {
 		public ScriptEditorForm ScriptEditorFormConditionalInstance { get {
 				if (this.formIsNullOrDisposed(this.ScriptEditorForm)) {
 					if (this.Strategy.ActivatedFromDll == true) return null;
-					this.scriptEditorFormFactory.CreateEditorFormAndSubscribeFactoryMethod(this);
+					if (this.scriptEditorFormFactory == null) {
+						this.scriptEditorFormFactory = new ScriptEditorFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+					}
+					this.scriptEditorFormFactory.CreateEditorFormSubscribePushToManager(this);
 					if (this.ScriptEditorForm == null) {
 						throw new Exception("ScriptEditorFormFactory.CreateAndSubscribe() failed to create ScriptEditorForm in ChartFormsManager");
 					}
@@ -459,7 +466,7 @@ namespace Sq1.Gui.Forms {
 			}
 
 			this.ScriptEditorFormConditionalInstance.Show(mainPanelOranotherEditorsPanel);
-			DockHelper.ActivateDockContentPopupAutoHidden(this.ScriptEditorFormConditionalInstance, keepAutoHidden);
+			DockContentImproved.ActivateDockContentPopupAutoHidden(this.ScriptEditorFormConditionalInstance, keepAutoHidden);
 			//this.ScriptEditorFormConditionalInstance.Show(this.dockPanel, DockState.Document);
 			this.ChartForm.MniShowSourceCodeEditor.Checked = !keepAutoHidden;
 		}

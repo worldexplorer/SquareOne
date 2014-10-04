@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Windows.Forms;
-
 using Sq1.Core;
-using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
-using Sq1.Core.StrategyBase;
+using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
-using Sq1.Widgets.RangeBar;
+using Sq1.Core.StrategyBase;
 using Sq1.Gui.Singletons;
+using Sq1.Widgets;
+using Sq1.Widgets.RangeBar;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
@@ -92,7 +92,7 @@ namespace Sq1.Gui.Forms {
 //			}
 //		}
 
-		internal void MainForm_ActivatedDocumentPane_WithChart(object sender, EventArgs e) {
+		internal void MainForm_ActivateDockContent_WithChart(object sender, EventArgs e) {
 			//v1
 			//ScriptEditorForm  scriptEditorFormCorresponding = chartFormClicked.ChartFormsManager.ScriptEditorFormConditionalInstance;
 			//if (DockHelper.IsDockStateAutoHide(scriptEditorFormCorresponding.DockState)) {
@@ -102,7 +102,7 @@ namespace Sq1.Gui.Forms {
 			//scriptEditorFormCorresponding.Activate();
 			//v2
 			if (this.chartFormManager.Strategy != null && this.chartFormManager.Strategy.ActivatedFromDll == false) {
-				DockHelper.ActivateDockContentPopupAutoHidden(this.chartFormManager.ScriptEditorFormConditionalInstance);
+				DockContentImproved.ActivateDockContentPopupAutoHidden(this.chartFormManager.ScriptEditorFormConditionalInstance);
 			}
 			//during the update to the next DockContent version, copy&paste into DockHelper.cs:
 			//public static void ActivateDockContentPopupAutoHidden(DockContent form) {
@@ -113,7 +113,7 @@ namespace Sq1.Gui.Forms {
 			//	form.Activate();
 			//}
 
-			this.chartFormManager.ReportersFormsManager.ParentChart_OnActivated(sender, e);
+			this.chartFormManager.ReportersFormsManager.PopupReporters_OnParentChartActivated(sender, e);
 			this.chartFormManager.ChartForm.ChartControl.RangeBar.Enabled = false;
 		}
 		internal void Executor_BacktesterContextInitializedStep2of4(object sender, EventArgs e) {

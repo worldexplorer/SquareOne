@@ -1,4 +1,5 @@
-﻿namespace Sq1.Widgets.SteppingSlider {
+﻿using System;
+namespace Sq1.Widgets.SteppingSlider {
 	partial class SliderComboControl {
 		private System.ComponentModel.IContainer components = null;
 
@@ -108,7 +109,7 @@
 									0,
 									0,
 									0});
-			this.PanelFillSlider.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelFillSlider_MouseUp);
+			this.PanelFillSlider.ValueCurrentChanged += new EventHandler(this.PanelFillSlider_ValueCurrentChanged);
 			// 
 			// ctxSlider
 			// 

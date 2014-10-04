@@ -184,9 +184,9 @@ namespace Sq1.Gui.Singletons {
 		}
 		void mainFormEventManagerInitializeAfterDockingDeserialized() {
 			// too frequent
-			//this.DockPanel.ActiveContentChanged += this.MainFormEventManager.DockPanel_ActiveContentChanged;
+			this.DockPanel.ActiveContentChanged += this.MainFormEventManager.DockPanel_ActiveContentChanged;
 			// just as often as I needed!
-			this.DockPanel.ActiveDocumentChanged += this.MainFormEventManager.DockPanel_ActiveDocumentChanged;
+			//this.DockPanel.ActiveDocumentChanged += this.MainFormEventManager.DockPanel_ActiveDocumentChanged;
 		}
 
 		public void MainFormSerialize() {

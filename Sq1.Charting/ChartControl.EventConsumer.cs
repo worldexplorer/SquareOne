@@ -29,25 +29,41 @@ namespace Sq1.Charting {
 				this.ScrollOnePageRight();
 			}
 		}
-		#region IsInputKey is a filter OnKeyDown should go together
-		protected override bool IsInputKey(Keys keyData) {
-			switch (keyData) {
-				case Keys.Right:
-				case Keys.Left:
-				case Keys.Up:
-				case Keys.Down:
-					return true;
-//				case Keys.Shift | Keys.Right:
-//				case Keys.Shift | Keys.Left:
-//				case Keys.Shift | Keys.Up:
-//				case Keys.Shift | Keys.Down:
+		#region ProcessCmdKey is a filter OnKeyDown should go together
+//DUE_TO_STOPPED_WORKING_REPLACED_BY_ProcessCmdKey	BEGIN
+//		protected override bool IsInputKey(Keys keyData) {
+//			switch (keyData) {
+//				case Keys.Right:
+//				case Keys.Left:
+//				case Keys.Up:
+//				case Keys.Down:
 //					return true;
-			}
-			return base.IsInputKey(keyData);
+////				case Keys.Shift | Keys.Right:
+////				case Keys.Shift | Keys.Left:
+////				case Keys.Shift | Keys.Up:
+////				case Keys.Shift | Keys.Down:
+////					return true;
+//			}
+//			return base.IsInputKey(keyData);
+//		}
+//		protected override void OnKeyDown(KeyEventArgs keyEventArgs) {
+//			Debugger.Break();
+//			if (this.BarsEmpty) return;
+//			this.keysToReaction(keyEventArgs.KeyCode);
+//			base.OnKeyDown(keyEventArgs);
+//		}
+//		public void OnKeyDownPush(KeyEventArgs keyEventArgs) {
+//			this.OnKeyDown(keyEventArgs);
+//		}
+//DUE_TO_STOPPED_WORKING_REPLACED_BY_ProcessCmdKey	END
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
+			this.keysToReaction(keyData);
+			return base.ProcessCmdKey(ref msg, keyData);
 		}
-		protected override void OnKeyDown(KeyEventArgs keyEventArgs) {
-			if (this.BarsEmpty) return;
-			switch (keyEventArgs.KeyCode) {
+		
+		void keysToReaction(Keys keyData) {
+			//Debugger.Break();
+			switch (keyData) {
 				case Keys.Up:
 					this.BarWidthIncrementAtKeyPressRate();
 					break;
@@ -72,10 +88,11 @@ namespace Sq1.Charting {
 				case Keys.PageUp:
 					this.ScrollOnePageLeft();
 					break;
+				default:
+					break;
 			}
-			base.OnKeyDown(keyEventArgs);
 		}
-		#endregion		
+		#endregion
 
 		// WHERE_IS_RESIZE_ENDED_IN_F_WINDOWS_FORMS?? SAVING_CHART_SETTINGS_ON_EACH_TINY_RESIZE_FOR_ALL_OPEN_CHARTS this.multiSplitContainer.Resize += new EventHandler(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
 		void multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {

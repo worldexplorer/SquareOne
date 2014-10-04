@@ -228,6 +228,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SteppingSlider\PanelFillSlider.EventGenerator.cs">
+      <DependentUpon>PanelFillSlider.cs</DependentUpon>
+    </Compile>
     <Compile Include="SteppingSlider\SliderComboControl.EventConsumer.cs">
       <DependentUpon>SliderComboControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
@@ -332,9 +335,6 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="SteppingSlider\PanelFillSlider.resx">
-      <DependentUpon>PanelFillSlider.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SteppingSlider\SlidersAutoGrowControl.resx">
       <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>

@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Singletons {
@@ -160,9 +161,9 @@ namespace Sq1.Gui.Singletons {
 			var mniChild = sender as ToolStripMenuItem;
 			DockContent frmClicked = mniChild.Tag as DockContent;
 			if (mniChild.Checked) {
-				DockHelper.ToggleAutoHide(frmClicked);		// forms in Document should be ignored
+				DockContentImproved.ToggleAutoHide(frmClicked);		// forms in Document should be ignored
 			} else {
-				DockHelper.ActivateDockContentPopupAutoHidden(frmClicked, false);
+				DockContentImproved.ActivateDockContentPopupAutoHidden(frmClicked, false);
 			}
 		}
 	}

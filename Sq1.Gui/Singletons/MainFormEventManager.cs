@@ -110,33 +110,64 @@ namespace Sq1.Gui.Singletons {
 			}
 		}
 		#endregion
-
-		internal void DockPanel_ActiveDocumentChanged(object sender, EventArgs e) {
-			if (this.mainForm.MainFormClosingSkipChartFormsRemoval) {
-				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
-				return;
-			}
-
-			//DONT_FORGET_TO_RENAME_CHART2_TO_CHART_WHEN_REPLACING_SQ1.WIDGETS.CHARTING_<_SQ1.CHARTING
-			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveDocument as ChartForm;
+		//v1
+//		internal void DockPanel_ActiveDocumentChanged(object sender, EventArgs e) {
+//			if (this.mainForm.MainFormClosingSkipChartFormsRemoval) {
+//				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
+//				return;
+//			}
+//
+//			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveDocument as ChartForm;
+//			if (chartFormClicked == null) {
+//				this.mainForm.GuiDataSnapshot.ChartSernoHasFocus = -1;
+//				string msg = "focus might have moved away from a document to Docked Panel"
+//					+ "; I'm here after having focused on ExceptionsForm docked into Documents pane";
+//				return;
+//			}
+//			//if (chartFormClicked.IsActivated == false) return;	//NOUP ActiveDocumentChanged is invoked twice: 1) for a form loosing control, 2) for a form gaining control
+//			try {
+//				chartFormClicked.ChartFormManager.EventManager.MainForm_ActivatedDocumentPane_WithChart(sender, e);
+//				this.mainForm.GuiDataSnapshot.ChartSernoHasFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
+//				this.mainForm.GuiDataSnapshotSerializer.Serialize();
+//				
+//				//v1: DOESNT_POPULATE_SYMBOL_AND_SCRIPT_PARAMETERS 
+//				//if (chartFormClicked.ChartFormManager.Strategy == null) {
+//				//	StrategiesForm.Instance.StrategiesTreeControl.UnSelectStrategy();
+//				//} else {
+//				//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(chartFormClicked.ChartFormManager.Strategy);
+//				//}
+//				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+//				//chartFormClicked.Activate();	// I_GUESS_ITS_ALREADY_ACTIVE
+//				chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
+//			} catch (Exception ex) {
+//				this.mainForm.PopupException(ex);
+//			}
+//		}
+		//v2
+		internal void DockPanel_ActiveContentChanged(object sender, EventArgs e) {
+			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveContent as ChartForm;
 			if (chartFormClicked == null) {
-				this.mainForm.GuiDataSnapshot.ChartSernoHasFocus = -1;
-				string msg = "focus might have moved away from a document to Docked Panel"
-					+ "; I'm here after having focused on ExceptionsForm docked into Documents pane";
+				string msig = " DockPanel_ActiveContentChanged() is looking for mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus["
+					+ this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus + "]";
+				int lastKnownChartSerno = this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus;
+				ChartFormManager lastKnownChartFormManager = this.mainForm.GuiDataSnapshot.FindChartFormsManagerBySerno(lastKnownChartSerno, msig, false);
+				if (lastKnownChartFormManager == null) {
+					string msg = "DOCK_ACTIVE_CONTENT_CHANGED_BUT_CANT_FIND_LAST_CHART lastKnownChartSerno[" + lastKnownChartSerno + "]";
+					// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE Assembler.PopupException(msg + msig);
+					return;
+				}
+				ChartForm lastKnownChartForm = lastKnownChartFormManager.ChartForm;
+				chartFormClicked = lastKnownChartForm;
+			}
+			if (chartFormClicked == null) {
+				//this.mainForm.GuiDataSnapshot.ChartSernoHasFocus = -1;
+				string msg = "DockContent-derived activated by user isn't a ChartForm; I won't sync DataSourcesTree,StrategiesTree,Splitters to hightlight relevant";
 				return;
 			}
-			//if (chartFormClicked.IsActivated == false) return;	//NOUP ActiveDocumentChanged is invoked twice: 1) for a form loosing control, 2) for a form gaining control
 			try {
-				chartFormClicked.ChartFormManager.EventManager.MainForm_ActivatedDocumentPane_WithChart(sender, e);
-				this.mainForm.GuiDataSnapshot.ChartSernoHasFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
+				chartFormClicked.ChartFormManager.EventManager.MainForm_ActivateDockContent_WithChart(sender, e);
+				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
 				this.mainForm.GuiDataSnapshotSerializer.Serialize();
-				
-				//v1: DOESNT_POPULATE_SYMBOL_AND_SCRIPT_PARAMETERS 
-				//if (chartFormClicked.ChartFormManager.Strategy == null) {
-				//	StrategiesForm.Instance.StrategiesTreeControl.UnSelectStrategy();
-				//} else {
-				//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(chartFormClicked.ChartFormManager.Strategy);
-				//}
 				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 			} catch (Exception ex) {
 				this.mainForm.PopupException(ex);

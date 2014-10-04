@@ -8,6 +8,7 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
+using Sq1.Widgets;
 using Sq1.Widgets.LabeledTextBox;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -24,7 +25,7 @@ namespace Sq1.Gui.Forms {
 				this.ChartFormManager.EditorFormShow(false);
 			} else {
 				// I assume btn.Checked => EditorForm.NotAutoHidden synchronization
-				DockHelper.ToggleAutoHide(this.ChartFormManager.ScriptEditorFormConditionalInstance);
+				DockContentImproved.ToggleAutoHide(this.ChartFormManager.ScriptEditorFormConditionalInstance);
 				//public static void ToggleAutoHide(DockContent form) {
 				//	if (form.DockState == DockState.Unknown) return;
 				//	if (form.DockState == DockState.Document) return;
@@ -41,7 +42,7 @@ namespace Sq1.Gui.Forms {
 				// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.EditorFormShow(false);
 			} else {
-				DockHelper.ToggleAutoHide(this.ChartFormManager.ScriptEditorFormConditionalInstance);
+				DockContentImproved.ToggleAutoHide(this.ChartFormManager.ScriptEditorFormConditionalInstance);
 			}
 			this.ChartFormManager.MainForm.MainFormSerialize();
 		}
@@ -259,5 +260,43 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped()", ex);
 			}
 		}
+//NOT_INVOKED_FOR_FORM
+//		protected override bool IsInputKey(Keys keyData) {
+//			Debugger.Break();
+//			switch (keyData) {
+//				case (Keys.Left):
+//				case (Keys.Right):
+//				case (Keys.Up):
+//				case (Keys.Down):
+//					return true;
+//				default:
+//					return base.IsInputKey(keyData);
+//			}
+//		}
+//INVOKED_FOR_FORM_IF_CHARTFORM_CTOR_HAS_base.KeyPreview=true; BUT_OVERRIDING_ProcessCmdKey_IN_CHART_CONTROL_SCROLLS_CHART
+//		protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
+//			Debugger.Break();
+//			switch (keyData) {
+//				case (Keys.Left):
+//					this.ChartControl.ScrollOneBarLeftAtKeyPressRate();
+//					break;
+//				case (Keys.Right):
+//					this.ChartControl.ScrollOneBarRightAtKeyPressRate();
+//					break;
+////				case (Keys.Up):
+////					this.ChartControl.ScrollOneBarLeftAtKeyPressRate();
+////					break;
+////				case (Keys.Down):
+////					this.ChartControl.ScrollOneBarLeftAtKeyPressRate();
+////					break;
+//				default:
+//					//return base.ProcessCmdKey(ref msg, keyData);
+//					break;
+//			}
+//			return base.ProcessCmdKey(ref msg, keyData);
+//		}
+		//http://stackoverflow.com/questions/4378865/detect-arrow-key-keydown-for-the-whole-window
+		//http://msdn.microsoft.com/en-us/library/ms171535.aspx
+		//http://stackoverflow.com/questions/15091283/keydown-event-not-firing
 	}
 }

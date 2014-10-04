@@ -868,6 +868,11 @@ namespace Sq1.Core.StrategyBase {
 			//this.ChartShadow.ScriptToChartCommunicator.PositionsBacktestClearAfterChartPickedUp();
 			this.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
 
+			if (this.Strategy.ActivatedFromDll) {
+				// FIXED "EnterEveryBar doesn't draw MAfast"; editor-typed strategies already have indicators in SNAP after pre-backtest compilation
+				this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
+			}
+			
 			//inNewThread = false;
 			if (inNewThread) {
 				int ThreadPoolAvailablePercentageLimit = 20;
