@@ -45,7 +45,7 @@ namespace Sq1.Core.Indicators {
 		public string ValidateSelf() {
 			if (this.ValueMin > this.ValueMax)		return "ValueMin[" + this.ValueMin + "] > ValueMax[" + this.ValueMax + "]";
 			if (this.ValueCurrent > this.ValueMax)	return "ValueCurrent[" + this.ValueCurrent + "] > ValueMax[" + this.ValueMax + "]";
-			if (this.ValueCurrent < this.ValueMin)	return"ValueCurrent[" + this.ValueCurrent + "] < ValueMin[" + this.ValueMin + "]";
+			if (this.ValueCurrent < this.ValueMin)	return "ValueCurrent[" + this.ValueCurrent + "] < ValueMin[" + this.ValueMin + "]";
 			return null;
 		}
 		public override string ToString() {

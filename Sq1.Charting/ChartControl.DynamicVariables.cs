@@ -29,8 +29,16 @@ namespace Sq1.Charting {
 				return ret;
 			} }
 		public int VisibleBarLeft { get {
-				int ret = this.VisibleBarRight - this.BarsCanFitForCurrentWidth;
-				if (ret < 0) ret = 0;
+				int ret = this.VisibleBarRight - this.BarsCanFitForCurrentWidth;				
+				if (ret < 0) {
+					string msg = "RESIZING_WINDOW_WHEN_ON_FIRST_LEFT_BAR EXTENDING_SO_THAT_ONE_MORE_BAR_CAN_FIT";
+					//Debugger.Break();
+					ret = 0;
+				}
+				if (this.hScrollBar.Value == this.hScrollBar.Minimum && ret > 1) {
+					string msg = "VisibleBarLeft must be zero at ScrollBar.Minimum, doesn't it?...";
+					//Debugger.Break();
+				}
 				return ret;
 			} }
 		

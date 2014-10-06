@@ -92,7 +92,7 @@ namespace Sq1.Gui.Forms {
 //			}
 //		}
 
-		internal void MainForm_ActivateDockContent_WithChart(object sender, EventArgs e) {
+		internal void MainForm_ActivateDocumentPane_WithChart(object sender, EventArgs e) {
 			//v1
 			//ScriptEditorForm  scriptEditorFormCorresponding = chartFormClicked.ChartFormsManager.ScriptEditorFormConditionalInstance;
 			//if (DockHelper.IsDockStateAutoHide(scriptEditorFormCorresponding.DockState)) {

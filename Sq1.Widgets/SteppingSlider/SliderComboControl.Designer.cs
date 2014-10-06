@@ -88,14 +88,14 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.PanelFillSlider.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			this.PanelFillSlider.Size = new System.Drawing.Size(191, 17);
 			this.PanelFillSlider.TabIndex = 1;
-			this.PanelFillSlider.ValueCurrent = new decimal(new int[] {
-									200,
-									0,
-									0,
-									0});
 			this.PanelFillSlider.ValueFormat = "0.#";
 			this.PanelFillSlider.ValueIncrement = new decimal(new int[] {
 									100,
+									0,
+									0,
+									0});
+			this.PanelFillSlider.ValueMin = new decimal(new int[] {
+									0,
 									0,
 									0,
 									0});
@@ -104,8 +104,8 @@ namespace Sq1.Widgets.SteppingSlider {
 									0,
 									0,
 									0});
-			this.PanelFillSlider.ValueMin = new decimal(new int[] {
-									10,
+			this.PanelFillSlider.ValueCurrent = new decimal(new int[] {
+									200,
 									0,
 									0,
 									0});

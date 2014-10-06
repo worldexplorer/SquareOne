@@ -159,10 +159,13 @@ namespace Sq1.Widgets.SteppingSlider {
 			if (string.IsNullOrEmpty(nameForScriptDotSeparatedForIndicator)) nameForScriptDotSeparatedForIndicator = indicatorOrScriptparameter.Name; 
 			ret.LabelText = nameForScriptDotSeparatedForIndicator;
 			ret.Name = "parameter_" + nameForScriptDotSeparatedForIndicator;
-			ret.ValueCurrent = new decimal(indicatorOrScriptparameter.ValueCurrent);
-			ret.ValueMax = new decimal(indicatorOrScriptparameter.ValueMax);
-			ret.ValueMin = new decimal(indicatorOrScriptparameter.ValueMin);
+			
+			//sequence matters! ret.ValueCurrent checks that you didn't set it outside the boundaries AND within the Increment; fix manually designer-generated SliderComboControl.InitializeComponents() as well 
 			ret.ValueIncrement = new decimal(indicatorOrScriptparameter.ValueIncrement);
+			ret.ValueMin = new decimal(indicatorOrScriptparameter.ValueMin);
+			ret.ValueMax = new decimal(indicatorOrScriptparameter.ValueMax);
+			ret.ValueCurrent = new decimal(indicatorOrScriptparameter.ValueCurrent);
+			
 			//DOESNT_WORK?... ret.PanelFillSlider.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			//ret.PaddingPanelSlider = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			ret.Location = new System.Drawing.Point(0, this.PreferredHeight + this.VerticalSpaceBetweenSliders);

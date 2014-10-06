@@ -1,8 +1,8 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "dacc92f4-092c-4d94-bfff-d8a5200ee9d6",
-  "StrategyNameJsonCheck": "TwoMAindicatorsCompiled",
-  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAindicatorsCompiled.json",
+  "StrategyGuidJsonCheck": "d7062341-ab3a-423e-b2df-95b9391266c3",
+  "StrategyNameJsonCheck": "TwoMAsCompiled",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -21,7 +21,7 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 219
+        "Distance": 255
       }
     },
     "ChartColorBackground": "White",
@@ -35,12 +35,12 @@
     "GutterRightColorBackground": "Gainsboro",
     "GutterRightColorForeground": "Black",
     "GutterRightPadding": 5,
-    "GutterRightFont": "Consolas, 8pt",
+    "GutterRightFont": "Microsoft Sans Serif, 8pt",
     "GutterBottomColorBackground": "Gainsboro",
     "GutterBottomColorForeground": "Black",
     "GutterBottomNewDateColorForeground": "Green",
     "GutterBottomPadding": 2,
-    "GutterBottomFont": "Consolas, 8pt",
+    "GutterBottomFont": "Microsoft Sans Serif, 8pt",
     "GridlinesHorizontalColor": "WhiteSmoke",
     "GridlinesVerticalColor": "WhiteSmoke",
     "GridlinesVerticalNewDateColor": "Lime",
@@ -59,7 +59,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 2451,
+    "ScrollPositionAtBarIndex": 123,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -90,5 +90,5 @@
     "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
   },
   "ChartSerno": 17,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAindicatorsCompiled.json], ScriptContextCurrentName[?Default?]"
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json], ScriptContextCurrentName[?Default?]"
 }

@@ -81,7 +81,7 @@ namespace Sq1.Charting {
 
 			this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
-			for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
+			for (int barIndex = base.VisibleBarRight_cached; barIndex > base.VisibleBarLeft_cached; barIndex--) {
 				if (barIndex >= base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 					#if DEBUG
@@ -243,7 +243,7 @@ namespace Sq1.Charting {
 			// avoiding throwing "Dictionary.CopyTo target array wrong size" below during backtest & chartMouseOver
 			if (base.ChartControl.IsBacktestingNow) return;
 			
-			if (VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLines(): " + msg);
 				return;
@@ -256,7 +256,7 @@ namespace Sq1.Charting {
 			List<OnChartLine> linesToDraw = new List<OnChartLine>();		// helps to avoid drawing the same line twice
 
 			// v1 - buggy because it doesn't display lines started way before and ended way later the visible barWindow
-			//for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
+			//for (int barIndex = base.VisibleBarRight_cached; barIndex > base.VisibleBarLeft_cached; barIndex--) {
 			//    // 1. render the lines that end on each visible bar and stretch to the left
 			//    if (seo.LinesByRightBar.ContainsKey(barIndex)) {
 			//        List<OnChartLine> linesEndingHere = seo.LinesByRightBar[barIndex];
@@ -277,8 +277,8 @@ namespace Sq1.Charting {
 			// v2,v3: render the lines that start AND end beyond visible bars range
 			// v2 - very clean but I expect it to be very slow
 			//foreach (OnChartLine line in seo.LinesById.Values) {
-			//    if (line.BarLeft > VisibleBarRight_cached) continue;	//whole line is at right of visible bar window
-			//    if (line.BarRight < VisibleBarLeft_cached) continue;	//whole line is at  left of visible bar window
+			//    if (line.BarLeft > base.VisibleBarRight_cached) continue;	//whole line is at right of visible bar window
+			//    if (line.BarRight < base.VisibleBarLeft_cached) continue;	//whole line is at  left of visible bar window
 			//    if (linesToDraw.Contains(line)) continue;	// should never "continue"
 			//    linesToDraw.Add(line);
 			//}
@@ -320,7 +320,7 @@ namespace Sq1.Charting {
 			}
 		}
 		void renderOnChartLabels(Graphics g) {
-			if (VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLabels(): " + msg);
 				return;
@@ -334,7 +334,7 @@ namespace Sq1.Charting {
 		}
 		void renderOnChartBarAnnotations(Graphics g) {
 			// TODO remove dupes from render*, move loop upstack
-			if (VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLabels(): " + msg);
 				return;
@@ -344,7 +344,7 @@ namespace Sq1.Charting {
 			int barXshadow = base.ChartControl.ChartWidthMinusGutterRightPrice + base.BarShadowXoffset_cached;
 			ScriptExecutorObjects seo = this.ChartControl.ScriptExecutorObjects;
 
-			for (int barIndex = VisibleBarRight_cached; barIndex > VisibleBarLeft_cached; barIndex--) {
+			for (int barIndex = base.VisibleBarRight_cached; barIndex > base.VisibleBarLeft_cached; barIndex--) {
 				if (barIndex >= base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 					#if DEBUG

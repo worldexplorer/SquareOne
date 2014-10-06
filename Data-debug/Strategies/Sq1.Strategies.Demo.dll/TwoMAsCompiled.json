@@ -20,12 +20,26 @@
       },
       "IsCurrent": false,
       "ChartAutoSubmitting": false,
-      "ReporterShortNamesUserInvokedJSONcheck": [],
-      "BacktestOnRestart": true,
+      "ReporterShortNamesUserInvokedJSONcheck": [
+        "Positions",
+        "Performance"
+      ],
+      "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
+        "Positions": {
+          "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
+          "ShowEntriesExits": true,
+          "ShowPercentage": true,
+          "ShowBarsHeld": true,
+          "ShowMaeMfe": true,
+          "ShowSignals": true,
+          "ShowCommission": true,
+          "Colorify": true
+        },
+        "Performance": null
       },
       "ApplyCommission": false,
       "EnableSlippage": false,
@@ -52,7 +66,7 @@
         "Range": 1,
         "StartDate": "0001-01-01T00:00:00",
         "EndDate": "9999-12-31T23:59:59.9999999",
-        "RecentBars": 500,
+        "RecentBars": 50000,
         "RecentTimeunits": 0
       },
       "ChartStreaming": false,
@@ -61,7 +75,27 @@
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
       "IndicatorParametersByName": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib"
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+        "MAslow": [
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "Name": "Period",
+            "ValueMin": 10.0,
+            "ValueMax": 20.0,
+            "ValueIncrement": 1.0,
+            "ValueCurrent": 12.0
+          }
+        ],
+        "MAfast": [
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "Name": "Period",
+            "ValueMin": 11.0,
+            "ValueMax": 88.0,
+            "ValueIncrement": 11.0,
+            "ValueCurrent": 44.0
+          }
+        ]
       }
     }
   },

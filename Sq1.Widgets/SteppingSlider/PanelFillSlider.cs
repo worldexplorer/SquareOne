@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Sq1.Core;
 using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Widgets.SteppingSlider {
@@ -45,8 +46,36 @@ namespace Sq1.Widgets.SteppingSlider {
 		private decimal valueCurrent;
 		public decimal ValueCurrent {
 			get { return valueCurrent; }
-			set { valueCurrent = value; this.RaiseValueCurrentChanged(); this.Invalidate(); }
+			set {
+				if (value > this.ValueMax) {
+					Debugger.Break();
+					return;
+				}
+				if (value < this.ValueMin) {
+					Debugger.Break();
+					return;
+				}
+				if (value != this.RoundToClosestStep(value)) {
+					Debugger.Break();
+					return;
+				}
+				valueCurrent = value;
+				this.RaiseValueCurrentChanged();
+				this.Invalidate();
+			}
 		}
+		
+		// COPYPASTE from IndicatorParameter.cs BEGIN
+		public string ValidateSelf() {
+			if (this.ValueMin > this.ValueMax)		return "ValueMin[" + this.ValueMin + "] > ValueMax[" + this.ValueMax + "]";
+			if (this.ValueCurrent > this.ValueMax)	return "ValueCurrent[" + this.ValueCurrent + "] > ValueMax[" + this.ValueMax + "]";
+			if (this.ValueCurrent < this.ValueMin)	return "ValueCurrent[" + this.ValueCurrent + "] < ValueMin[" + this.ValueMin + "]";
+			return null;
+		}
+		public override string ToString() {
+			return this.Name + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
+		}
+		// COPYPASTE from IndicatorParameter.cs END
 		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public decimal ValueMouseOver {get; protected set;}
@@ -269,7 +298,12 @@ namespace Sq1.Widgets.SteppingSlider {
 			float range = (float) Math.Abs(this.ValueMax - this.ValueMin);
 			decimal mouseRange;
 			if (this.LeftToRight) {
-				float partFilled = e.X / (float) base.Width;	//without (float) division of two ints is an int !!! (zero)
+				float partFilled = e.X / (float)base.Width;	//without (float) division of two ints is an int !!! (zero)
+				if (partFilled > 1) {
+					string msg = "PART_FILLED_MUST_BE_LESS_THAN_1=e.X[" + e.X + "]/base.Width[" + base.Width + "] MOUSE_MOVE_FROM_ANOTHER_CONTROL?";
+					Assembler.PopupException(msg);
+					return;
+				}
 				//this.ValueMouseOver = this.ValueMin + new decimal(partFilled * this.PixelsForOneValueUnit);
 				this.ValueMouseOver = this.ValueMin + new decimal(partFilled * range);
 				this.ValueMouseOver = this.RoundToClosestStep(this.ValueMouseOver);
@@ -283,6 +317,9 @@ namespace Sq1.Widgets.SteppingSlider {
 				mouseRange = this.ValueMouseOver - this.ValueMax;
 			}
 			if (leftMouseButtonHeldDown) {	// I_HATE_HACKING_F_WINDOWS_FORMS
+				string msg = "DRAG_SIMULATION_AND_ON_DRAG_OVER_BOTH_DONT_WORK IF_YOU_SEE_THIS_SEND_A_SCREENSHOT_TO_DEVELOPER";
+				Assembler.PopupException(msg);
+				Debugger.Break();
 				if (this.ValueCurrent != this.ValueMouseOver) {
 					//Debugger.Break();
 					this.ValueCurrent = this.ValueMouseOver;
@@ -318,6 +355,15 @@ namespace Sq1.Widgets.SteppingSlider {
 			//if (fullStepsRemainder > halfStep) {
 			//	ret += this.ValueIncrement;
 			//}
+
+			if (ret > this.ValueMax) {
+				Debugger.Break();
+				return rawValue;
+			}
+			if (ret < this.ValueMin) {
+				Debugger.Break();
+				return rawValue;
+			}
 			return ret;
 		}
 		
@@ -343,7 +389,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			if (e.Button == MouseButtons.Left) {
 				leftMouseButtonHeldDown = true;	// I_HATE_HACKING_F_WINDOWS_FORMS
 			}
-			if (this.ValueCurrent != this.ValueMouseOver) {
+			if (this.ValueCurrent != this.ValueMouseOver && leftMouseButtonHeldDown) {
 				this.ValueCurrent = this.ValueMouseOver;
 			}
 		}

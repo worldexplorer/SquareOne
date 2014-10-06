@@ -30,7 +30,7 @@ namespace Sq1.Core.Indicators {
 			if (bar.IsBarStaticLast && this.Executor.IsStreaming == false) {
 				string msg = "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED";
 				//Assembler.PopupException(msg);
-				return indicatorLegDrawn;
+				//return indicatorLegDrawn;
 			}
 			if (this.OwnValuesCalculated.ContainsDate(bar.DateTimeOpen) == false) {
 				if (this.Executor.Backtester.IsBacktestingNow) {
@@ -137,59 +137,93 @@ namespace Sq1.Core.Indicators {
 			string msig = " Indicator[" + this.NameWithParameters + "].DrawValueBand(" + bar + ")";
 			bool indicatorLegDrawn = false;
 
-			double calculated = this.OwnValuesCalculated[bar.ParentBarsIndex];
+			int barIndex = bar.ParentBarsIndex;
+
+			double calculated = this.OwnValuesCalculated[barIndex];
 			if (double.IsNaN(calculated)) {
 				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NAN_FOR_BAR bar[" + bar + "]";
 				//INDICATORS_INCUBATION_PERIOD_NO_NEED_TO_REPORT Assembler.PopupException(msg + msig);
 				return indicatorLegDrawn;
 			}
 
-			
-			int barIndex = bar.ParentBarsIndex;
-			
-			if (bandLower.Count < 2) {
-				return indicatorLegDrawn;
-			}
-			int differenceMustBeNegative = barIndex - bandLower.Count + 2;
-			if (differenceMustBeNegative >= 0) {
-				string msg = "INDICATOR_DIDNT_CALCULATE_YET_BAND_LOWER[" + differenceMustBeNegative + "]";
-				#if DEBUG
-				//Debugger.Break();
-				#endif
-				//Assembler.PopupException(msg + msig);
-				return indicatorLegDrawn;
-			}
-			
-			if (bandUpper.Count < 2) {
-				return indicatorLegDrawn;
-			}
-			differenceMustBeNegative = barIndex - bandUpper.Count + 2;
-			if (differenceMustBeNegative >= 0) {
-				string msg = "INDICATOR_DIDNT_CALCULATE_YET_BAND_UPPER[" + differenceMustBeNegative + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				//Assembler.PopupException(msg + msig);
-				return indicatorLegDrawn;
-			}
-			
-			
+			bool willDrawLower = this.checkBandValue(barIndex, bandLower, "bandLower");
+			bool willDrawUpper = this.checkBandValue(barIndex, bandUpper, "bandUpper");
 			try {
-				double valueLower = bandLower[barIndex];
-				double  prevLower = bandLower[barIndex-1];
-				this.DrawValueSingleLine(g, bar, valueLower, prevLower);
-				
-				double valueUpper = bandUpper[barIndex];
-				double  prevUpper = bandUpper[barIndex-1];
-				this.DrawValueSingleLine(g, bar, valueUpper, prevUpper);
+				if (willDrawLower) {
+					double valueLower = bandLower[barIndex];
+					double prevLower = bandLower[barIndex - 1];
+					this.DrawValueSingleLine(g, bar, valueLower, prevLower);
+				}
+				if (willDrawUpper) {
+					double valueUpper = bandUpper[barIndex];
+					double  prevUpper = bandUpper[barIndex-1];
+					this.DrawValueSingleLine(g, bar, valueUpper, prevUpper);
+				}
 			} catch (Exception ex) {
 				#if DEBUG
 				Debugger.Break();
 				#endif
 			}
 			
-			indicatorLegDrawn = true;
+			if (willDrawLower || willDrawUpper) indicatorLegDrawn = true;
 			return indicatorLegDrawn;
 		}
+
+		bool checkBandValue(int barIndex, DataSeriesTimeBased bandLowerOrUpper, string bandSeriesName = "bandLower") {
+			bool ret = true;
+			if (bandLowerOrUpper.Count < 2) {
+				string msg = "INDICATOR_BAND_PREVIOUS_VALUE_DOESNT_EXIST " + bandSeriesName + ".Count=[" + bandLowerOrUpper.Count
+					+ "] must be >= 2";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				//Assembler.PopupException(msg + msig);
+				ret = false;
+			}
+	
+			if (bandLowerOrUpper.Count < this.FirstValidBarIndex) {
+				string msg = "INDICATOR_BAND_INCUBATOR_STATE " + bandSeriesName + ".Count=[" + bandLowerOrUpper.Count
+					+ "] must be > this.FirstValidBarIndex[" + this.FirstValidBarIndex + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				//Assembler.PopupException(msg + msig);
+				ret = false;
+			}
+
+			if (barIndex > bandLowerOrUpper.Count - 1) {
+				string msg = "INDICATOR_BAND_VALUE_REQUESTED_BEYOND_EXISTING barIndexRequested[" + barIndex
+					+ "] must be < " + bandSeriesName + ".Count=[" + bandLowerOrUpper.Count + "]";
+				#if DEBUG
+				//Debugger.Break();
+				#endif
+				//Assembler.PopupException(msg + msig);
+				ret = false;
+			}
+
+			double value = bandLowerOrUpper[barIndex];
+			double valuePrevious = bandLowerOrUpper[barIndex - 1];
+
+			if (double.IsNaN(value)) {
+				string msg = "INDICATOR_VALUE_IS_NAN " + bandSeriesName + "[" + barIndex + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				//Assembler.PopupException(msg + msig);
+				ret = false;
+			}
+
+			if (double.IsNaN(valuePrevious)) {
+				string msg = "INDICATOR_VALUE_PREVIOUS_IS_NAN " + bandSeriesName + "[" + (barIndex - 1) + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				//Assembler.PopupException(msg + msig);
+				ret = false;
+			}
+
+			return ret;
+		}
+	
 	}
 }
