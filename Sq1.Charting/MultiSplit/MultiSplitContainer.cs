@@ -63,7 +63,20 @@ namespace Sq1.Charting.MultiSplit {
 		}
 		public Dictionary<string, MultiSplitterProperties> SplitterPropertiesByPanelNameGet() {
 			Dictionary<string, MultiSplitterProperties> ret = new Dictionary<string, MultiSplitterProperties>();
-			foreach (MultiSplitter s in this.splitters){
+			foreach (MultiSplitter s in this.splitters) {
+				#region CANT_ACCESS_PANELS_FROM_SlidersAutoGrow_SliderValueChanged()__NEED_MultiSplitterPropertiesByPanelName_SYNCED_TO_RESTORE_AFTER_DESERIALIZATION
+				PanelIndicator panelIndicator = s.PanelBelow as PanelIndicator;  
+				if (panelIndicator != null) {
+					string candidateIndicatorClicked = panelIndicator.Indicator.ToString();
+					if (panelIndicator.PanelName != candidateIndicatorClicked) {
+						panelIndicator.PanelName  = candidateIndicatorClicked;
+					}
+				}
+				#endregion
+				if (s.ManualOrder == -1) {
+					string msg = "MUST_NEVER_HAPPEN";
+					Debugger.Break();
+				}
 				ret.Add(s.PanelBelow.PanelName, new MultiSplitterProperties(s.ManualOrder, s.Location.Y));
 			}
 			return ret;
@@ -112,14 +125,16 @@ try {
 					continue;
 				}
 				splitterFound.Location = new Point(splitterFound.Location.X, prop.Distance);
-		
 				int splitterFoundIndex = this.splitters.IndexOf(splitterFound);
 				if (splitterFoundIndex == prop.ManualOrder) {
 					continue;
 				}
-
 				this.splitters.Move(splitterFoundIndex, prop.ManualOrder);
 				this.panels.Move(splitterFoundIndex, prop.ManualOrder);
+
+				int tmp = this.splitters[splitterFoundIndex].ManualOrder;
+				this.splitters[splitterFoundIndex].ManualOrder = this.splitters[prop.ManualOrder].ManualOrder;
+				this.splitters[prop.ManualOrder].ManualOrder = tmp;
 			}
 			
 			// align panels to splitters; I need to know the prevSplitterLocationY to set panelHeight
@@ -127,6 +142,11 @@ try {
 			for (int i=this.splitters.Count-1; i>=0; i--) {
 	        	PANEL_NAMED_FOLDING panel = this.panels[i];
 	        	MultiSplitter splitter = this.splitters[i];
+	        	
+				//if (splitter.ManualOrder != i) {
+				//	splitter.ManualOrder  = i;
+				//}
+		
 
 				int panelY = splitter.Location.Y + splitter.Height;
 	        	if (panel.Location.Y != panelY) {
@@ -213,7 +233,14 @@ try {
 			        		splitter.PanelAbove = prevPanelNamedFolding;
 						}
 		        	}
-					splitter.ManualOrder = i;
+		        	if (splitter.ManualOrder == -1) {
+						splitter.ManualOrder  = i;
+		        	} else {
+		        		if (splitter.ManualOrder != i) {
+							// MOVED_FROM: Manorder shouldn't be "i"
+							// splitter.ManualOrder  = i;
+		        		}
+		        	}
 				}
 
 	        	//panel.Location = new Point(panel.Location.X, y);
@@ -292,8 +319,8 @@ try {
 			//base.Invalidate();
 		}
 
-		public void PanelAddSplitterCreateAdd(PANEL_NAMED_FOLDING panel, bool redistributeAfterAddingOneNotManyResistributeManual = true,
-		                                      Dictionary<string, MultiSplitterProperties> splitterPositionsByManorder = null) {
+		public void PanelAddSplitterCreateAdd(PANEL_NAMED_FOLDING panel, bool redistributeAfterAddingOneNotManyResistributeManual = true) {
+//		                                      , Dictionary<string, MultiSplitterProperties> splitterPositionsByManorder = null) {
 //			panel.Capture = true;	// NO_YOU_WONT will I have MouseEnter during dragging the splitter? I_HATE_HACKING_WINDOWS_FORMS
 //	       	panel.MouseEnter += new EventHandler(panel_MouseEnter);
 //	       	panel.MouseLeave += new EventHandler(panel_MouseLeave);

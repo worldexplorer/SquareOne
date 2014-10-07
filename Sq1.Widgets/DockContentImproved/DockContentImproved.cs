@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
+using Sq1.Core;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Widgets {
@@ -109,6 +110,22 @@ namespace Sq1.Widgets {
 			if (form.DockState == DockState.Hidden) return;
 			DockState newState = DockHelper.ToggleAutoHideState(form.Pane.DockState);
 			form.Pane.SetDockState(newState);
+		}
+		protected override void OnResize(EventArgs e) {
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
+				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
+				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
+				return;
+			}
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
+				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
+				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
+				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
+				// I want to avoid agonizing sizes to (ever) appear in ChartFormDataSnapshot 
+				return;
+			}
+			base.OnResize(e);
 		}
 	}
 }

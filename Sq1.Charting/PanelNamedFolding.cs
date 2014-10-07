@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -81,6 +81,9 @@ namespace Sq1.Charting {
 		#endregion
 		
 		public bool ThisPanelIsPricePanel;
+		public bool ThisPanelIsVolumePanel;
+		public bool ThisPanelIsIndicatorPanel;
+
 		[Browsable(false)] public virtual int PaddingVerticalSqueeze { get { return 0; } }
 
 		[Browsable(false)]
@@ -121,7 +124,9 @@ namespace Sq1.Charting {
 			this.GutterBottomDraw = false;
 			this.AutoScroll = false;
 			this.HScroll = true;
-			this.ThisPanelIsPricePanel = this.GetType() == typeof(PanelPrice);
+			this.ThisPanelIsPricePanel = this.GetType() == typeof(PanelPrice);		//panels don't change their type; hopefully a boolean calculated once will work faster than dynamic evaluation 
+			this.ThisPanelIsVolumePanel = this.GetType() == typeof(PanelVolume);
+			this.ThisPanelIsIndicatorPanel = this.GetType() == typeof(PanelIndicator);
 		}
 		public void Initialize(ChartControl chartControl, string barsIdent = "INITIALIZED_WITH_EMPTY_BARS_IDENT_PanelNamedFolding") {
 			this.ChartControl = chartControl;
@@ -186,16 +191,25 @@ namespace Sq1.Charting {
 				this.ImPaintingForegroundNow = true;
 				this.PaintWholeSurfaceBarsNotEmpty(e.Graphics);	// GOOD: we get here once per panel
 				this.RenderIndicators(e.Graphics);
+				
+				if (this.PanelName == null) {
+					this.DrawError(e.Graphics, "SET_TO_EMPTY_STRING_TO_HIDE: this.PanelName=null");
+					return;
+				}
 				// draw Panel Title on top of anything that the panel draws
-				if (this.Collapsible) {
-					if (this.PanelName != null) {
-						using (var brush = new SolidBrush(this.ForeColor)) {
-							// if (base.DesignMode) this.ChartControl will be NULL
-							Font font = (this.ChartControl != null) ? this.ChartControl.ChartSettings.PanelNameAndSymbolFont : this.Font;
-							e.Graphics.DrawString(this.PanelNameAndSymbol, font, brush, new Point(2, 2));
-						}
-					} else {
-						this.DrawError(e.Graphics, "SET_TO_EMPTY_STRING_TO_HIDE: this.PanelName=null");
+				if (this.ThisPanelIsIndicatorPanel) {
+					PanelIndicator meCasted = this as PanelIndicator;
+					//PanelIndicator should draw PanelName with Indicator.LineColor
+					using (var brush = new SolidBrush(meCasted.Indicator.LineColor)) {
+						// if (base.DesignMode) this.ChartControl will be NULL
+						Font font = (this.ChartControl != null) ? this.ChartControl.ChartSettings.PanelNameAndSymbolFont : this.Font;
+						e.Graphics.DrawString(this.PanelNameAndSymbol, font, brush, new Point(2, 2));
+					}
+				} else {
+					using (var brush = new SolidBrush(this.ForeColor)) {
+						// if (base.DesignMode) this.ChartControl will be NULL
+						Font font = (this.ChartControl != null) ? this.ChartControl.ChartSettings.PanelNameAndSymbolFont : this.Font;
+						e.Graphics.DrawString(this.PanelNameAndSymbol, font, brush, new Point(2, 2));
 					}
 				}
 			} catch (Exception ex) {
@@ -268,6 +282,9 @@ namespace Sq1.Charting {
 				this.VisibleMinMinusTopSqueezer_cached = this.VisibleMin_cached - pixelsSqueezedToPriceDistance;
 				this.VisibleMaxPlusBottomSqueezer_cached = this.VisibleMax_cached + pixelsSqueezedToPriceDistance;
 				this.VisibleRangeWithTwoSqueezers_cached = this.VisibleMaxPlusBottomSqueezer_cached - VisibleMinMinusTopSqueezer_cached;
+				if (double.IsNegativeInfinity(this.VisibleRangeWithTwoSqueezers_cached)) {
+					Debugger.Break();
+				}
 
 
 				

@@ -162,7 +162,7 @@ namespace Sq1.Core.Indicators {
 		public string NameWithParameters { get {
 				string parameters = this.ParametersAsStringShort;
 				if (string.IsNullOrEmpty(parameters)) parameters = "NOT_BUILT_YET_ParametersByName_DIDNT_INVOKE_BuildParametersFromAttributes()";
-				string ret = this.Name + " (" + parameters + ") ";
+				string ret = this.Name + " (" + parameters + ")";
 				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 				//string otherSymbolTimeframe = "";
 				//if (string.IsNullOrEmpty(this.NotOnChartSymbol)) {

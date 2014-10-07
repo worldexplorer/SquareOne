@@ -59,19 +59,11 @@
       "ShowRangeBar": false,
       "ParameterValuesById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "1": 2.0
+        "1": 6.0
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
         "ATR": [
-          {
-            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-            "Name": "Period",
-            "ValueMin": 1.0,
-            "ValueMax": 11.0,
-            "ValueIncrement": 2.0,
-            "ValueCurrent": 7.0
-          },
           {
             "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
             "Name": "Multiplier",
@@ -79,6 +71,24 @@
             "ValueMax": 4.0,
             "ValueIncrement": 0.1,
             "ValueCurrent": 2.3
+          },
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "Name": "Period",
+            "ValueMin": 1.0,
+            "ValueMax": 11.0,
+            "ValueIncrement": 2.0,
+            "ValueCurrent": 7.0
+          }
+        ],
+        "ATRband": [
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "Name": "Multiplier",
+            "ValueMin": 0.1,
+            "ValueMax": 10.0,
+            "ValueIncrement": 0.1,
+            "ValueCurrent": 2.5
           }
         ]
       }

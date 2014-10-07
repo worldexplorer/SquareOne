@@ -61,7 +61,7 @@ namespace Sq1.Core.DataTypes {
 		}
 		public virtual double this[int barIndex] {
 			get {
-				if (barIndex < 0 || barIndex > this.doubleValues.Count) {
+				if (barIndex < 0 || barIndex > this.doubleValues.Count - 1) {
 					string msg = this.Description + "[" + barIndex + "] is out of bounds: " 
 						+ this.Description + ".Count=" + this.doubleValues.Count;
 					throw new ArgumentOutOfRangeException(msg);
@@ -163,6 +163,7 @@ namespace Sq1.Core.DataTypes {
 				if (barCanBeStreamingWithNaNs < ret) ret = barCanBeStreamingWithNaNs;
 			}
 			#if DEBUG
+			// IndicatorAtrBand.OwnValuesCalculated are all NaNs; DONT_NORMALIZE_VERTICALLY_INDICATORS_DRAWING_ON_PRICE_PANEL
 			if (ret == double.MaxValue) Debugger.Break();
 			#endif
 			return ret;

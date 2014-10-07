@@ -52,7 +52,11 @@ namespace Sq1.Core.Indicators {
 			return this.Name + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
 		}
 		public void AbsorbCurrentFixBoundariesIfChanged(IndicatorParameter ctxParamToAbsorbCurrentAndFixBoundaries) {
-			this.ValueCurrent = ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent;
+			if (this.ValueCurrent != ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent) {
+				string msg = "we collapsed IndicatorParameters into a single instance thing; are we back to duplicates?...";
+				//Debugger.Break();
+				this.ValueCurrent = ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent;
+			}
 			if (this.ValueCurrent < this.ValueMin || this.ValueCurrent > this.ValueMax)  {
 				#if DEBUG
 				Debugger.Break();

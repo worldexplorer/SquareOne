@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Sq1.Core;
-using Sq1.Core.StrategyBase;
-using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
-using Sq1.Core.Support;
+using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Indicators;
+using Sq1.Core.StrategyBase;
+using Sq1.Core.Support;
 using Sq1.Gui.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -242,35 +243,23 @@ namespace Sq1.Gui.Singletons {
 			if (strategy.ScriptContextCurrentName != e.scriptContextName) return;	//refresh FormTitle only when renaming current context
 			SlidersForm.Instance.PopulateFormTitle(strategy);
 		}
-		internal void SlidersAutoGrow_SliderValueChanged(object sender, EventArgs e) {		//ScriptParameterEventArgs
+		internal void SlidersAutoGrow_SliderValueChanged(object sender, IndicatorParameterEventArgs e) {
 			try {
-// MOVED_TO: SlidersAutoGrow.slider_ValueCurrentChanged
-//				// mainForm.ChartFormActive will already throw if Documents have no Charts selected; no need to check
-//				Strategy strategyToSave = this.mainForm.ChartFormActive.ChartFormManager.Strategy;
-//				if (strategyToSave == null) {
-//					string msg = "You should rebuild SlidersForm on ChartFormActive switch"
-//						+ "; parameterless ChartFormActive[" + this.mainForm.ChartFormActive.Name + "] doesn't have a strategy and should not display ScriptParameters that user might click"
-//						+ "; if you see this exception then SlidersForm wasn't cleaned up and displays Sliders for another Chart";
-//					throw new Exception(msg);
-//				}
-//				strategyToSave.SetCurrentValueToCurrentContextAndScriptParameters(e.ScriptParameter);
-//				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.SaveStrategy(strategyToSave);
-// /MOVED_TO: SlidersAutoGrow.slider_ValueCurrentChanged
-// MOVED_FROM: SlidersAutoGrow.slider_ValueCurrentChanged
 				Strategy strategyToSaveAndRun = this.mainForm.ChartFormActive.ChartFormManager.Strategy;
 				if (strategyToSaveAndRun.Script.Executor == null) {
 					string msg = "slider_ValueCurrentChanged(): did you forget to assign Script.Executor after compilation?...";
 					Assembler.PopupException(msg);
 					return;
 				}
-				//v1 too little strategyToSaveAndRun.Script.Executor.BacktesterFacade.RunSimulation();
-				//v2 too little strategyToSaveAndRun.Script.Executor.BacktesterRunSimulation();
-				//v3 too little this.mainForm.ChartFormActive.ChartFormManager.BacktesterRunSimulationRegular();
-				//v4 merged into PopulateSelectors this.mainForm.ChartFormActive.ChartFormManager.EventManager.LoadNewBarsAndPassToExecutor(false);
 				this.mainForm.ChartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
-				//v5 REDUNDANT, ChartControl.Initialize() added to LoadNewBarsAndPassToExecutor() this.mainForm.ChartFormActive.ChartFormManager.PopulateCurrentChartOrScriptContext("SlidersAutoGrow_SliderValueChanged()");
-
-// /MOVED_FROM: SlidersAutoGrow.slider_ValueCurrentChanged
+				
+				ScriptParameterEventArgs demuxScriptParameterEventArgs = e as ScriptParameterEventArgs;   
+				if (demuxScriptParameterEventArgs == null) {
+					string msg = "MultiSplitterPropertiesByPanelName[ATR (Period:5[1..11/2]) ] key should be synchronized when user clicks Period 5=>7";
+					this.mainForm.ChartFormActive.ChartControl.SerializeSplitterDistanceOrPanelName();
+				} else {
+					string msg = "DO_NOTHING_ELSE_INDICATOR_PANEL_SPLITTER_POSITIONS_SHOULDNT_BE_SAVED_HERE";
+				}
 			} catch (Exception ex) {
 				Assembler.PopupException("SlidersAutoGrow_SliderValueChanged()", ex);
 			}

@@ -17,20 +17,21 @@ namespace Sq1.Strategies.Demo {
 		// if an indicator isn't a property it won't show up in Sliders
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
 		public IndicatorAverageTrueRange ATR { get; set; }
-
+		public IndicatorAtrBand ATRband { get; set; }
+		
 		public ATRbandCompiled() {
 			// CLEANER_SCRIPT_PARAMETERS
 			// CLEANER_INDICATORS
 			this.ATR = new IndicatorAverageTrueRange();
-
 			// this.ATR.ParamPeriod = new IndicatorParameter("Period", 5, 5, 40, 5);
-			// Slider for IndicatorParameter("Period", 5, 1, 11, 2) has 2-4-6-8 instead of 1-3-5-7
+			//TESTME Slider for IndicatorParameter("Period", 5, 1, 11, 2) has 2-4-6-8 instead of 1-3-5-7
 			this.ATR.ParamPeriod = new IndicatorParameter("Period", 5, 1, 11, 2);	// 1-3-5-7-9-11
-
-			this.ATR.ParamMultiplier = new IndicatorParameter("Multiplier", 1.5, 0.1, 4, 0.1);
-			// DEFAULT_PANEL_PRICE LEAVE_COMMENTED_OR_WONT_BE_DRAWN this.ATR.ChartPanelType = ChartPanelType.PanelIndicatorSingle;
+			this.ATR.ChartPanelType = ChartPanelType.PanelIndicatorSingle;
 			this.ATR.DataSeriesProxyFor = DataSeriesProxyableFromBars.Close;
-			this.ATR.LineColor = Color.DarkOliveGreen;
+			this.ATR.LineColor = Color.Olive;
+
+			this.ATRband = new IndicatorAtrBand(this.ATR);
+			// ALREADY_COPIED_FROM_ATR_BY_CTOR this.AtrBand.LineColor = Color.Olive;
 		}
 		public override void InitializeBacktest() {
 		}

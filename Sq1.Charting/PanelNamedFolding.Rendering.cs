@@ -33,6 +33,9 @@ namespace Sq1.Charting {
 		protected virtual void GutterGridLinesRightBottomDrawForeground(Graphics g) {
 			if (this.ChartControl.BarsEmpty) return;
 			if (this.VisibleMax_cached == 0) return;	//it's a cached version for once-per-render calculation
+			if (double.IsNegativeInfinity(this.VisibleRangeWithTwoSqueezers_cached)) {
+				return;
+			}
 			
 			bool mouseTrack = this.ChartControl.ChartSettings.MousePositionTrackOnGutters;
 			if (this.GutterRightDraw) {
@@ -52,12 +55,7 @@ namespace Sq1.Charting {
 				//int panelHeightPlusSqueezers = this.PanelHeightMinusGutterBottomHeight_cached + this.PaddingVerticalSqueeze * 2;
 				int panelHeightPlusSqueezers = this.PanelHeightMinusGutterBottomHeight_cached;
 				double howManyLinesWillFit = panelHeightPlusSqueezers / (double)minDistancePixels;
-				double gridStep = 0;
-				try {
-					gridStep = this.calculateOptimalVeritcalGridStep(this.VisibleRangeWithTwoSqueezers_cached, howManyLinesWillFit);
-				} catch (Exception e) {
-					Debugger.Break();
-				}
+				double gridStep = this.calculateOptimalVeritcalGridStep(this.VisibleRangeWithTwoSqueezers_cached, howManyLinesWillFit);
 				double extraOverFound = this.VisibleMinMinusTopSqueezer_cached % gridStep;	// 6447 % 50 = 47
 				double gridStart = this.VisibleMinMinusTopSqueezer_cached - extraOverFound + gridStep;
 				int stripesCanFit = (int)(this.VisibleRangeWithTwoSqueezers_cached / gridStep);
@@ -218,8 +216,8 @@ namespace Sq1.Charting {
 				Debugger.Break();
 				return 0;
 			}
+			
 			double magMsd = (int)(tempStep / magPow + 0.5);
-
 			// promote the MSD to either 1, 2, or 5
 			if (magMsd > 5.0) magMsd = 10.0f;
 			else if (magMsd > 2.0) magMsd = 5.0f;
@@ -365,6 +363,7 @@ namespace Sq1.Charting {
 				}
 				// UNNECESSARY_BUT_HELPS_CATCH_BUGS end
 				
+				if (this.ThisPanelIsIndicatorPanel) return;
 				string indicatorLabel = indicator.NameWithParameters;
 				this.DrawLabelOnNextLine(graphics, indicatorLabel, null, indicator.LineColor, Color.Empty, true);
 			}

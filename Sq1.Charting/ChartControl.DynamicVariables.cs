@@ -102,6 +102,9 @@ namespace Sq1.Charting {
 					//Debugger.Break();
 				}
 				#endif
+				if (Math.Abs(this.visiblePriceMinCurrent) > 1000000) {
+					Debugger.Break();
+				}
 				return this.visiblePriceMinCurrent;
 			} }
 		private double visibleVolumeMinCurrent;

@@ -159,7 +159,7 @@ namespace Sq1.Charting {
 						
 						this.PanelsByIndicator.Add(indicator, panel);
 						this.panelsFolding.Add(panel);
-						this.multiSplitContainer.PanelAddSplitterCreateAdd(panel, true, this.ChartSettings.MultiSplitterPropertiesByPanelName);
+						this.multiSplitContainer.PanelAddSplitterCreateAdd(panel, true);		//, this.ChartSettings.MultiSplitterPropertiesByPanelName);
 						needToReReadSplitterPositionsSinceIndicatorsWereAdded = true;
 					}
 					ret = this.PanelsByIndicator[indicator];

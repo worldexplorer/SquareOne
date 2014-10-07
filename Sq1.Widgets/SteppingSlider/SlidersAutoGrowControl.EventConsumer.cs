@@ -42,7 +42,7 @@ namespace Sq1.Widgets.SteppingSlider {
 //					}
 					
 					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
-					this.RaiseOnSliderChangedParameterValue(null);	// arg isn't processed downstack; I don't want IndicatorParameter to inherit from ScriptParameter
+					this.RaiseOnSliderChangedIndicatorValue(indicatorParameterChanged);
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("slider_ValueCurrentChanged()", ex);

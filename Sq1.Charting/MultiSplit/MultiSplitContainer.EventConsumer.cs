@@ -13,6 +13,9 @@ namespace Sq1.Charting.MultiSplit {
 			where PANEL_NAMED_FOLDING : Control {
 		protected override void OnResize(EventArgs e) {
 			base.OnResize(e);
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				return;
+			}
 			
 			if (this.panels.Count == 0) return;
 			this.DistributePanelsAndSplittersVertically();
@@ -48,8 +51,13 @@ namespace Sq1.Charting.MultiSplit {
 			if (base.DesignMode) return;
 			try {
 		        for (int i=0; i<this.panels.Count; i++) {
-		        	Control panel = this.panels[i];
+		        	//Control panel = this.panels[i];
 		        	//panel.Invalidate();	// base.OnPaint() did it already
+		        	
+		        	if (i >= this.splitters.Count) {
+		        		Debugger.Break();
+		        		continue;
+		        	}
 		        	MultiSplitter splitter = this.splitters[i];
 		        	
 		        	if (i == this.panelMouseIsOverNowIndexDropTarget) {
@@ -245,6 +253,12 @@ namespace Sq1.Charting.MultiSplit {
 	            	if (indexToMoveFrom != indexToMoveTo) {
 						this.panels.Move(indexToMoveFrom, indexToMoveTo);
 						this.splitters.Move(indexToMoveFrom, indexToMoveTo);
+
+						// MOVED_TO: Manorder shouldn't be "i"
+						int tmp = this.splitters[indexToMoveFrom].ManualOrder;
+						this.splitters[indexToMoveFrom].ManualOrder = this.splitters[indexToMoveTo].ManualOrder;
+						this.splitters[indexToMoveTo].ManualOrder = tmp;
+						
 						this.DistributePanelsAndSplittersVertically();
 	            	}
             	}

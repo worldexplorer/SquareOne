@@ -9,6 +9,7 @@ using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Indicators;
 using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Support;
@@ -142,8 +143,31 @@ namespace Sq1.Gui.Singletons {
 
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
+					if (cfmgr.ChartForm.ChartFormManager == null) continue;
+					Strategy chartStrategy = cfmgr.ChartForm.ChartFormManager.Executor.Strategy;
+					if (chartStrategy == null) continue;
+					if (chartStrategy.ActivatedFromDll == false) {
+						string msg = "IRRELEVANT_FOR_EDITABLE_STRATEGIES WILL_PROCEED_WITHPANELS_COMPILATION_ETC editor-typed strategies already have indicators in SNAP after pre-backtest compilation";
+						continue;
+					}
+					// need to instantiate all panels for all script indicators before distributing distances between them
+					// COPIED_FROM ScriptExecutor.BacktesterRunSimulationTrampoline() FIXED "EnterEveryBar doesn't draw MAfast";
+					chartStrategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
+
+					// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
+					// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
+					// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
+					//cfmgr.ChartForm.ResumeLayout(true);
+					//cfmgr.ChartForm.Refresh();
+
 					cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 				}
+				
+				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
+				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
+				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
+				//this.DockPanel.ResumeLayout(true);
+				//this.DockPanel.Invalidate();
 			} catch (Exception ex) {
 				#if DEBUG
 				Debugger.Break();
@@ -177,8 +201,9 @@ namespace Sq1.Gui.Singletons {
 			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemRemovedDone += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceRemoved);
 			//DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceNewClicked += this.MainFormEventManager.DataSourcesTree_OnDataSourceNewClicked;
 
-			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedParameterValue += this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged;
-			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedIndicatorValue += this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged;
+			// TYPE_MANGLING_INSIDE_WARNING
+			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedParameterValue += new EventHandler<ScriptParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
+			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedIndicatorValue += new EventHandler<IndicatorParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
 			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextLoadRequestedSubscriberImplementsCurrentSwitch += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextLoadClicked;
 			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextRenamed += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextRenamed;
 		}

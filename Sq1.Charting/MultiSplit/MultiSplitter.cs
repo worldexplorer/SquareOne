@@ -17,6 +17,7 @@ namespace Sq1.Charting.MultiSplit {
 			GrabHandleWidth = grabHandleWidth;
 			ColorGrabHandle = colorGrabHandle;
 			DebugSplitter = debugSplitter;
+			ManualOrder = -1;
 		}
 
 		protected override void OnPaint(PaintEventArgs e) {

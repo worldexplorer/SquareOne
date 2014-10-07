@@ -95,7 +95,7 @@ namespace Sq1.Charting {
 		#endregion
 
 		// WHERE_IS_RESIZE_ENDED_IN_F_WINDOWS_FORMS?? SAVING_CHART_SETTINGS_ON_EACH_TINY_RESIZE_FOR_ALL_OPEN_CHARTS this.multiSplitContainer.Resize += new EventHandler(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
-		void multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {
+		void multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {		//MultiSplitterEventArgs e
 			//v1 this.ChartSettings.PriceVsVolumeSplitterDistance = this.splitContainerPriceVsVolume.SplitterDistance;
 			//v2
 			if (base.DesignMode) return;
@@ -107,6 +107,9 @@ namespace Sq1.Charting {
 				#endif
 				return;
 			}
+			this.SerializeSplitterDistanceOrPanelName();
+		}
+		public void SerializeSplitterDistanceOrPanelName() {
 			this.ChartSettings.MultiSplitterPropertiesByPanelName = this.multiSplitContainer.SplitterPropertiesByPanelNameGet();
 			this.RaiseChartSettingsChangedContainerShouldSerialize();
 		}

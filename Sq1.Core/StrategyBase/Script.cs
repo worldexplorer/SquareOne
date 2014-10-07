@@ -190,15 +190,7 @@ namespace Sq1.Core.StrategyBase {
 		public void IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot() {
 			this.Executor.ExecutionDataSnapshot.Indicators.Clear();
 			foreach (Indicator indicatorInstance in this.IndicatorsInitializedInDerivedConstructor) {
-				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartShadow.GetHostPanelForIndicator(indicatorInstance);
-				indicatorInstance.Initialize(priceOrItsOwnPanel);
-				
-				if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorInstance.Name) == false) {
-					this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(indicatorInstance.Name, new List<IndicatorParameter>());
-				}
-				
 				List<IndicatorParameter> iParamsCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorInstance.Name];
-
 				foreach (IndicatorParameter iParamInstantiated in indicatorInstance.ParametersByName.Values) {
 					int iParamFoundCtxIndex = -1;
 					for (int i=0; i < iParamsCtx.Count; i++) {
@@ -223,6 +215,17 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 				this.Executor.ExecutionDataSnapshot.Indicators.Add(indicatorInstance.Name, indicatorInstance);
+				
+				// moved from upstairs coz: after absorbing all deserialized indicator parameters from ScriptContext, GetHostPanelForIndicator will return an pre-instantiated PanelIndicator
+				// otherwize GetHostPanelForIndicator created a new one for an indicator with default Indicator parameters;
+				// example: MultiSplitterPropertiesByPanelName["ATR (Period:9[1..11/2]) "] exists, while default Period for ATR is 5 => new PanelIndicator will be created
+				// final goal is to avoid (splitterPropertiesByPanelName.Count != this.panels.Count) in SplitterPropertiesByPanelNameSet() and (splitterFound == null)  
+				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartShadow.GetHostPanelForIndicator(indicatorInstance);
+				indicatorInstance.Initialize(priceOrItsOwnPanel);
+				
+				if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorInstance.Name) == false) {
+					this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(indicatorInstance.Name, new List<IndicatorParameter>());
+				}
 			}
 		}
 		#endregion
