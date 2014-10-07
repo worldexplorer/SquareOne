@@ -190,13 +190,14 @@ namespace Sq1.Core.Indicators {
 		public int DotsExistsForCurrentSlidingWindow;		// just because the object itself is the most convenient place to incapsulate it
 		
 		public Indicator() {
-			this.Name = "INDICATOR_NAME_NOT_SET_IN_DERIVED_CONSTRUCTOR";
-			this.DataSeriesProxyFor = DataSeriesProxyableFromBars.Close;
-			this.ChartPanelType = ChartPanelType.PanelPrice;
+			Name = "INDICATOR_NAME_NOT_SET_IN_DERIVED_CONSTRUCTOR";
+			DataSeriesProxyFor = DataSeriesProxyableFromBars.Close;
+			ChartPanelType = ChartPanelType.PanelPrice;
 			// MOVED_TO_BacktestStarting();
 			//this.OwnValuesCalculated = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), this.Name);
-			this.LineColor = Color.Indigo;
-			this.LineWidth = 1;
+			LineColor = Color.Indigo;
+			LineWidth = 1;
+			Decimals = 2;
 		}
 
 		public void Initialize(HostPanelForIndicator panelNamedFolding) {
@@ -348,30 +349,48 @@ namespace Sq1.Core.Indicators {
 			}
 		}
 		
-		string format;
-		public string Format {
-			get {
-				if (this.format == null) this.format = this.BarsEffective.Format; 
-				return this.format;
-			}
-			set { this.format = value; }
-		}
+		//v1
+		//string format;
+		//public string Format {
+		//	get {
+		//		if (this.format == null) this.format = this.BarsEffective.Format; 
+		//		return this.format;
+		//	}
+		//	set { this.format = value; }
+		//}
+		//v2 begin
+		public string FormatForcedDecimalsIndependent;
+		public int Decimals;
+		//v2 end
+		public string Format { get {
+				if (string.IsNullOrEmpty(this.FormatForcedDecimalsIndependent) == false) return this.FormatForcedDecimalsIndependent;
+				return "N" + this.Decimals;
+			} }
 		public string FormatValue(double value) {
 			return value.ToString(this.Format);
 		}
-		public string FormatValueForBar(Bar bar) {
+		public string FormatValueForBar(Bar bar, DataSeriesTimeBased ownValuesOrOverridenBandSeries = null) {
 			string ret = "";
+			if (ownValuesOrOverridenBandSeries == null) {
+				ownValuesOrOverridenBandSeries = this.OwnValuesCalculated;
+			}
+				
 			DateTime barDateTime = bar.DateTimeOpen;
 			int barIndex = bar.ParentBarsIndex;
-			if (this.OwnValuesCalculated.ContainsDate(barDateTime) == false) {
+			if (ownValuesOrOverridenBandSeries.ContainsDate(barDateTime) == false) {
 				ret = "!ex[" + barDateTime.ToString(Assembler.DateTimeFormatIndicatorHasNoValuesFor) + "]";
 				return ret;
 			}
-			double calculated = this.OwnValuesCalculated[barIndex];
+			double calculated = ownValuesOrOverridenBandSeries[barIndex];
 			if (double.IsNaN(calculated)) {
 				ret = "NaN";
 			}
 			ret = this.FormatValue(calculated);
+			return ret;
+		}
+		public virtual SortedDictionary<string, string> ValuesForTooltipPrice(Bar bar) {
+			SortedDictionary<string, string> ret = new SortedDictionary<string, string>();
+			ret.Add(this.Name, this.FormatValueForBar(bar));
 			return ret;
 		}
 		

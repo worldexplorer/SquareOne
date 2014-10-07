@@ -179,7 +179,7 @@ namespace Sq1.Charting
 			this.tooltipPrice.ForeColor = System.Drawing.SystemColors.InfoText;
 			this.tooltipPrice.Location = new System.Drawing.Point(22, 77);
 			this.tooltipPrice.Name = "tooltipPrice1";
-			this.tooltipPrice.Size = new System.Drawing.Size(115, 116);
+			//this.tooltipPrice.Size = new System.Drawing.Size(115, 116);
 			this.tooltipPrice.TabIndex = 1;
 			this.tooltipPrice.Visible = false;
 			// 

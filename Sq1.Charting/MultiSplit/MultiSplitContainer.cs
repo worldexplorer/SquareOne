@@ -73,11 +73,15 @@ namespace Sq1.Charting.MultiSplit {
 					}
 				}
 				#endregion
-				if (s.ManualOrder == -1) {
-					string msg = "MUST_NEVER_HAPPEN";
-					Debugger.Break();
-				}
-				ret.Add(s.PanelBelow.PanelName, new MultiSplitterProperties(s.ManualOrder, s.Location.Y));
+				//v1
+				//if (s.ManualOrder == -1) {
+				//	string msg = "MUST_NEVER_HAPPEN";
+				//	Debugger.Break();
+				//}
+				//ret.Add(s.PanelBelow.PanelName, new MultiSplitterProperties(s.ManualOrder, s.Location.Y));
+				//v2
+				int sernoFromObservable = this.splitters.IndexOf(s);
+				ret.Add(s.PanelBelow.PanelName, new MultiSplitterProperties(sernoFromObservable, s.Location.Y));
 			}
 			return ret;
 		}
@@ -129,13 +133,31 @@ try {
 				if (splitterFoundIndex == prop.ManualOrder) {
 					continue;
 				}
-				this.splitters.Move(splitterFoundIndex, prop.ManualOrder);
+				// very illogical way to sync-up; splitters may have holes and implies MultiSplitterPropertiesByPanelName.*.ManualOrder must have no holes/duplicates
 				this.panels.Move(splitterFoundIndex, prop.ManualOrder);
+				this.splitters.Move(splitterFoundIndex, prop.ManualOrder);
 
-				int tmp = this.splitters[splitterFoundIndex].ManualOrder;
-				this.splitters[splitterFoundIndex].ManualOrder = this.splitters[prop.ManualOrder].ManualOrder;
-				this.splitters[prop.ManualOrder].ManualOrder = tmp;
-			}
+				// I will not delete ManualOrder because: 1) Dictionary doesn't guarantee ordering so I can't fetch "prevSplitterLocationY" just by enumerating ChartSettings.MultiSplitterPropertiesByPanelName
+				//v1 DOUBTFUL
+				//int tmp = this.splitters[splitterFoundIndex].ManualOrder;
+				//this.splitters[splitterFoundIndex].ManualOrder = this.splitters[prop.ManualOrder].ManualOrder;
+				//this.splitters[prop.ManualOrder].ManualOrder = tmp;
+       		}
+			//v2 FIX_FOR_INLOOP_DOUBTFUL_ABOVE
+			//foreach (MultiSplitter each in this.splitters) {
+			//	if (each.ManualOrder != this.splitters.IndexOf(each)) {
+			//		Debugger.Break(); 
+			//	}
+			//	each.ManualOrder = this.splitters.IndexOf(each);
+			//}
+			//foreach (MultiSplitter each in this.splitters) {
+			//	string eachPanelName = each.PanelBelow.PanelName;
+			//	int manualOrderDeserialized = splitterPropertiesByPanelName[eachPanelName].ManualOrder;
+			//	if (each.ManualOrder == manualOrderDeserialized) continue;
+			//	string msg = "YOU_DIDT_SET_MANUAL_ORDER_AS_DESERIALIZED_DICTATES " + eachPanelName + ".ManualOrder[" + each.ManualOrder + "]!=manualOrderDeserialized[" + manualOrderDeserialized + "]";
+			//	Debugger.Break();
+			//	each.ManualOrder = manualOrderDeserialized;
+			//}
 			
 			// align panels to splitters; I need to know the prevSplitterLocationY to set panelHeight
 			int y = 0;
@@ -158,7 +180,7 @@ try {
 	        		panelHeight = baseHeight - panelY;
 	        		if (panelHeight < 0) {
 						#if DEBUG
-		    			Debugger.Break();	// YOU_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
+		    			Debugger.Break();	// AFTERDRAG_MANUAL_ORDER_WASNT_SYNCED YOUVE_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
 		    			#endif
 		        		return;
 	        		}
@@ -166,7 +188,7 @@ try {
 		        		panelHeight = MinimumPanelSize;
 		        	}
 	        	} else {
-	        		MultiSplitter lowerSplitter = this.splitters[i+1];
+	        		MultiSplitter lowerSplitter = this.splitters[i+1];		//prevSplitterLocationY
 	        		panelHeight = lowerSplitter.Location.Y - panelY;  
 		        	if (panelHeight < MinimumPanelSize) {
 		        		panelHeight = MinimumPanelSize;
@@ -233,14 +255,17 @@ try {
 			        		splitter.PanelAbove = prevPanelNamedFolding;
 						}
 		        	}
-		        	if (splitter.ManualOrder == -1) {
-						splitter.ManualOrder  = i;
-		        	} else {
-		        		if (splitter.ManualOrder != i) {
-							// MOVED_FROM: Manorder shouldn't be "i"
-							// splitter.ManualOrder  = i;
-		        		}
-		        	}
+		        	//if (splitter.ManualOrder == -1) {
+					//	splitter.ManualOrder  = i;
+		        	//} else {
+		        	//	if (splitter.ManualOrder != i) {
+		        	//		#if DEBUG
+		        	//		Debugger.Break();
+		        	//		#endif
+					//		// MOVED_FROM: Manorder shouldn't be "i"
+					//		// splitter.ManualOrder  = i;
+		        	//	}
+		        	//}
 				}
 
 	        	//panel.Location = new Point(panel.Location.X, y);
@@ -266,7 +291,7 @@ try {
         		return;
     		}
 
-    		// we need proportional vertical fill when 1) new panel added, 2) old panel removed, 3) Initialize(List<Panel>), 4) OnResize
+    		// we need proportional vertical fill when 1) a new panel was added, 2) an old panel was removed, 3) Initialize(List<Panel>), 4) OnResize
 			// SECOND_LOOP_RESIZES_EACH_HEIGHT_PROPORTIONALLY_TO_FILL_WHOLE_CONTAINER_SURFACE_VERTICALLY
 			int totalFixedHeight = this.SplitterHeight * this.panels.Count;
 			double fillVerticalK = (double) (baseHeight - totalFixedHeight) / (double) (y - totalFixedHeight);

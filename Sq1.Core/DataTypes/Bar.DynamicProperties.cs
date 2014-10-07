@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {

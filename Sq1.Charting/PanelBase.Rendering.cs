@@ -8,7 +8,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Charting {
-	public partial class PanelNamedFolding {
+	public partial class PanelBase {
 		// virtual will allow indicator panes to have their own backgrounds different to the price&volume backgrounds
 		protected virtual void GutterRightBottomDrawBackground(Graphics g) {
 			if (this.GutterRightDraw) {

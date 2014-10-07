@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 using Sq1.Core.DataTypes;
@@ -8,10 +9,10 @@ using Sq1.Core.Indicators.HelperSeries;
 namespace Sq1.Core.Indicators {
 	public class IndicatorAtrBand : Indicator {
 		public IndicatorParameter ParamMultiplier { get; set; }	// IndicatorParameter must be a property
-		private DataSeriesTimeBasedColorified bandLower;
-		private DataSeriesTimeBasedColorified bandUpper;
+		DataSeriesTimeBasedColorified bandLower;
+		DataSeriesTimeBasedColorified bandUpper;
 
-		private Indicator atr;
+		Indicator atr;
 
 		public override int FirstValidBarIndex {
 			get { return (int)this.atr.FirstValidBarIndex; }
@@ -23,6 +24,7 @@ namespace Sq1.Core.Indicators {
 			base.ChartPanelType = ChartPanelType.PanelPrice;
 			base.LineColor = atr.LineColor;
 			base.LineWidth = atr.LineWidth;
+			base.Decimals = 0;	// "156,752.66" is too long for TooltipPrice
 			this.atr = atr;
 			ParamMultiplier = new IndicatorParameter("Multiplier", 1, 0.1, 10, 0.1);
 		}
@@ -69,6 +71,13 @@ namespace Sq1.Core.Indicators {
 
 		protected override bool DrawValueIndicatorSpecific(Graphics g, Bar bar) {
 			return base.DrawValueBand(g, bar, this.bandLower, this.bandUpper);
+		}
+		public override SortedDictionary<string, string> ValuesForTooltipPrice(Bar bar) {
+			string suffix = atr.Name + "*" + this.ParamMultiplier.ValueCurrent;
+			SortedDictionary<string, string> ret = new SortedDictionary<string, string>();
+			ret.Add("C+" + suffix, this.FormatValueForBar(bar, this.bandUpper));
+			ret.Add("C-" + suffix, this.FormatValueForBar(bar, this.bandLower));
+			return ret;
 		}
 	}
 }

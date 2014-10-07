@@ -2,11 +2,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
-using Sq1.Core.StrategyBase;
 
 namespace Sq1.Charting {
 	public partial class TooltipPrice {
@@ -74,27 +72,34 @@ namespace Sq1.Charting {
 			int expandTooltipHeightBy = 0;
 
 			foreach (Indicator indicator in indicators.Values) {
-				Label lblIndicatorName = new Label();
-				lblIndicatorName.Name = dynamicItemPrefix + "_Name_" + indicator.NameWithParameters;
-				lblIndicatorName.Text = indicator.Name;	//indicator.NameWithParameters;
-				lblIndicatorName.Location = new Point(ethalonNameX, dynamicLabelY);
-				lblIndicatorName.Size = ethalonNameSize;
-				lblIndicatorName.AutoSize = true;
-				lblIndicatorName.ForeColor = indicator.LineColor;
-				
-				Label lblIndicatorValue = new Label();
-				lblIndicatorValue.Name = dynamicItemPrefix + "_Value_" + indicator.NameWithParameters;
-				lblIndicatorValue.Text = indicator.FormatValueForBar(barToPopulate);
-				lblIndicatorValue.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-				lblIndicatorValue.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
-				lblIndicatorValue.Location = new System.Drawing.Point(ethalonValueX, dynamicLabelY);
-				lblIndicatorValue.Size = ethalonValueSize;
+				SortedDictionary<string, string> indicatorValuesFormatted = indicator.ValuesForTooltipPrice(barToPopulate);
+				foreach (string valueName in indicatorValuesFormatted.Keys) {
+					string valueFormatted = indicatorValuesFormatted[valueName];
+					
+					Label lblIndicatorName = new Label();
+					lblIndicatorName.Name = dynamicItemPrefix + indicator.NameWithParameters + "_Name_" + valueName;
+					//lblIndicatorName.Text = indicator.Name;	//indicator.NameWithParameters;
+					lblIndicatorName.Text = valueName;
+					lblIndicatorName.Location = new Point(ethalonNameX, dynamicLabelY);
+					lblIndicatorName.Size = ethalonNameSize;
+					lblIndicatorName.AutoSize = true;
+					lblIndicatorName.ForeColor = indicator.LineColor;
+					
+					Label lblIndicatorValue = new Label();
+					lblIndicatorValue.Name = dynamicItemPrefix + indicator.NameWithParameters + "_Value_" + valueName;
+					//lblIndicatorValue.Text = indicator.FormatValueForBar(barToPopulate);
+					lblIndicatorValue.Text = valueFormatted;
+					lblIndicatorValue.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+					lblIndicatorValue.Anchor = ((AnchorStyles)((AnchorStyles.Top | AnchorStyles.Right)));
+					lblIndicatorValue.Location = new System.Drawing.Point(ethalonValueX, dynamicLabelY);
+					lblIndicatorValue.Size = ethalonValueSize;
+	
+					this.Controls.Add(lblIndicatorName);
+					this.Controls.Add(lblIndicatorValue);
 
-				this.Controls.Add(lblIndicatorName);
-				this.Controls.Add(lblIndicatorValue);
-
-				dynamicLabelY += this.lineIncrement;
-				expandTooltipHeightBy += this.lineIncrement; 
+					dynamicLabelY += this.lineIncrement;
+					expandTooltipHeightBy += this.lineIncrement; 
+				}
 			}
 			
 			if (expandTooltipHeightBy > 0) {

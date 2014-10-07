@@ -31,7 +31,7 @@ namespace Sq1.Strategies.Demo {
 			this.ATR.LineColor = Color.Olive;
 
 			this.ATRband = new IndicatorAtrBand(this.ATR);
-			// ALREADY_COPIED_FROM_ATR_BY_CTOR this.AtrBand.LineColor = Color.Olive;
+			// ALREADY_COPIED_FROM_ATR_BY_CTOR this.ATRband.LineColor = Color.RosyBrown;
 		}
 		public override void InitializeBacktest() {
 		}

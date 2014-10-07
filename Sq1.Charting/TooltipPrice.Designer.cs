@@ -96,13 +96,13 @@ namespace Sq1.Charting {
 			// lblHeaderVal
 			// 
 			this.lblHeaderVal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.lblHeaderVal.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
 			this.lblHeaderVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblHeaderVal.Location = new System.Drawing.Point(0, 0);
 			this.lblHeaderVal.Name = "lblHeaderVal";
 			this.lblHeaderVal.Padding = new System.Windows.Forms.Padding(2);
-			this.lblHeaderVal.Size = new System.Drawing.Size(116, 16);
+			this.lblHeaderVal.Size = new System.Drawing.Size(117, 16);
 			this.lblHeaderVal.TabIndex = 7;
 			this.lblHeaderVal.Text = "16:50 #515123";
 			this.lblHeaderVal.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -110,19 +110,19 @@ namespace Sq1.Charting {
 			// lblOpenVal
 			// 
 			this.lblOpenVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblOpenVal.Location = new System.Drawing.Point(46, 38);
+			this.lblOpenVal.Location = new System.Drawing.Point(65, 38);
 			this.lblOpenVal.Name = "lblOpenVal";
-			this.lblOpenVal.Size = new System.Drawing.Size(64, 13);
+			this.lblOpenVal.Size = new System.Drawing.Size(46, 13);
 			this.lblOpenVal.TabIndex = 8;
-			this.lblOpenVal.Text = "$12.34";
+			this.lblOpenVal.Text = "123,456";
 			this.lblOpenVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// lblHighVal
 			// 
 			this.lblHighVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblHighVal.Location = new System.Drawing.Point(46, 52);
+			this.lblHighVal.Location = new System.Drawing.Point(65, 52);
 			this.lblHighVal.Name = "lblHighVal";
-			this.lblHighVal.Size = new System.Drawing.Size(64, 13);
+			this.lblHighVal.Size = new System.Drawing.Size(46, 13);
 			this.lblHighVal.TabIndex = 9;
 			this.lblHighVal.Text = "$12.34";
 			this.lblHighVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -130,9 +130,9 @@ namespace Sq1.Charting {
 			// lblLowVal
 			// 
 			this.lblLowVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblLowVal.Location = new System.Drawing.Point(46, 64);
+			this.lblLowVal.Location = new System.Drawing.Point(65, 64);
 			this.lblLowVal.Name = "lblLowVal";
-			this.lblLowVal.Size = new System.Drawing.Size(64, 13);
+			this.lblLowVal.Size = new System.Drawing.Size(46, 13);
 			this.lblLowVal.TabIndex = 10;
 			this.lblLowVal.Text = "$12.34";
 			this.lblLowVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -140,9 +140,9 @@ namespace Sq1.Charting {
 			// lblCloseVal
 			// 
 			this.lblCloseVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblCloseVal.Location = new System.Drawing.Point(46, 77);
+			this.lblCloseVal.Location = new System.Drawing.Point(65, 77);
 			this.lblCloseVal.Name = "lblCloseVal";
-			this.lblCloseVal.Size = new System.Drawing.Size(64, 13);
+			this.lblCloseVal.Size = new System.Drawing.Size(46, 13);
 			this.lblCloseVal.TabIndex = 11;
 			this.lblCloseVal.Text = "$12.34";
 			this.lblCloseVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -150,9 +150,9 @@ namespace Sq1.Charting {
 			// lblVolumeVal
 			// 
 			this.lblVolumeVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblVolumeVal.Location = new System.Drawing.Point(46, 97);
+			this.lblVolumeVal.Location = new System.Drawing.Point(65, 97);
 			this.lblVolumeVal.Name = "lblVolumeVal";
-			this.lblVolumeVal.Size = new System.Drawing.Size(64, 13);
+			this.lblVolumeVal.Size = new System.Drawing.Size(46, 13);
 			this.lblVolumeVal.TabIndex = 15;
 			this.lblVolumeVal.Text = "12.34";
 			this.lblVolumeVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -189,7 +189,7 @@ namespace Sq1.Charting {
 			// 
 			this.lnkAlertsVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.lnkAlertsVal.BackColor = System.Drawing.SystemColors.ButtonFace;
-			this.lnkAlertsVal.Location = new System.Drawing.Point(96, 0);
+			this.lnkAlertsVal.Location = new System.Drawing.Point(97, 0);
 			this.lnkAlertsVal.Name = "lnkAlertsVal";
 			this.lnkAlertsVal.Size = new System.Drawing.Size(20, 16);
 			this.lnkAlertsVal.TabIndex = 19;
@@ -276,7 +276,7 @@ namespace Sq1.Charting {
 			this.Controls.Add(this.lblOpen);
 			this.ForeColor = System.Drawing.SystemColors.InfoText;
 			this.Name = "TooltipPrice";
-			this.Size = new System.Drawing.Size(115, 116);
+			this.Size = new System.Drawing.Size(116, 116);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}

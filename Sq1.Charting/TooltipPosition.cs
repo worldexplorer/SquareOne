@@ -1,9 +1,7 @@
-using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
-using System.Collections.Generic;
 
 namespace Sq1.Charting {
 	public partial class TooltipPosition {
