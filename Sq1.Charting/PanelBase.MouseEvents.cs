@@ -8,7 +8,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Charting {
-	public partial class PanelNamedFolding {
+	public partial class PanelBase {
 		
 		//protected bool	mouseOver;
 		protected bool	dragButtonPressed;

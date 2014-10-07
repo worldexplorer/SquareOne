@@ -6,7 +6,6 @@ using System.Drawing;
 using Sq1.Charting.OnChart;
 using Sq1.Core;
 using Sq1.Core.Charting.OnChart;
-using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 

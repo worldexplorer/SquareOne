@@ -10,9 +10,9 @@ using Sq1.Core.Charting;
 
 namespace Sq1.Charting.MultiSplit {
 	//LAZY_TO_MAKE_IT_ACCEPT_NESTED_PANELS_DROPPED_FOR_DESIGNER THIS_SOLVES_ANOTHER_PROBLEM http://stackoverflow.com/questions/2785376/how-to-enable-design-support-in-a-custom-control/2863807#2863807
-	// PanelNamedFolding can be replaced by Control if you want; it's an overkill to make it MultiSplitContainer<PANEL_NAMED_FOLDING> : UserControl where T : Control 
+	// PanelNamedFolding can be replaced by Control if you want; it's an overkill to make it MultiSplitContainer<PANEL_BASE> : UserControl where T : Control 
 	// did overkill for MultiSplitTest.cs ....  public partial class MultiSplitContainer {
-	 public partial class MultiSplitContainer<PANEL_NAMED_FOLDING> {
+	 public partial class MultiSplitContainer<PANEL_BASE> {
 		public int SplitterHeight;
 		public int GrabHandleWidth;
 		public int MinimumPanelSize;
@@ -23,13 +23,13 @@ namespace Sq1.Charting.MultiSplit {
         public bool DebugSplitter;
 		//public Dictionary<Control, int> initialHeights;
 		
-		ObservableCollection<PANEL_NAMED_FOLDING> panels;
+		ObservableCollection<PANEL_BASE> panels;
 		ObservableCollection<MultiSplitter> splitters;
 		
 		public MultiSplitContainer() : this(false) {
 		}
         public MultiSplitContainer(bool debugSplitter = false) {
-			panels = new ObservableCollection<PANEL_NAMED_FOLDING>();
+			panels = new ObservableCollection<PANEL_BASE>();
 			splitters = new ObservableCollection<MultiSplitter>();
 			SplitterHeight = 5;
 			GrabHandleWidth = 30;
@@ -43,19 +43,19 @@ namespace Sq1.Charting.MultiSplit {
 		}
 //		[Obsolete("pass panels implicitly to InitializeCreateSplittersDistributeFor() since you may have other controls in base.Controls, such as buttons with fixed position etc")]
 //		public void InitializeExtractPanelsFromBaseControlsCreateSplittersDistribute() {
-//			var list = new List<PANEL_NAMED_FOLDING>();
-//			foreach (PANEL_NAMED_FOLDING c in base.Controls) {
+//			var list = new List<PANEL_BASE>();
+//			foreach (PANEL_BASE c in base.Controls) {
 //				c.Text = c.Name;
 //				list.Add(c);
 //			}
 //			this.InitializeCreateSplittersDistributeFor(list);
 //		}
-		public void InitializeCreateSplittersDistributeFor(List<PANEL_NAMED_FOLDING> whatIadd) {
+		public void InitializeCreateSplittersDistributeFor(List<PANEL_BASE> whatIadd) {
 			//Debugger.Break();
 			this.panels.Clear();
 			this.splitters.Clear();
-			foreach (PANEL_NAMED_FOLDING c in whatIadd) {
-				PANEL_NAMED_FOLDING panel = c as PANEL_NAMED_FOLDING;
+			foreach (PANEL_BASE c in whatIadd) {
+				PANEL_BASE panel = c as PANEL_BASE;
 				if (panel == null) continue;
 				this.PanelAddSplitterCreateAdd(panel, false);
 			}
@@ -73,13 +73,6 @@ namespace Sq1.Charting.MultiSplit {
 					}
 				}
 				#endregion
-				//v1
-				//if (s.ManualOrder == -1) {
-				//	string msg = "MUST_NEVER_HAPPEN";
-				//	Debugger.Break();
-				//}
-				//ret.Add(s.PanelBelow.PanelName, new MultiSplitterProperties(s.ManualOrder, s.Location.Y));
-				//v2
 				int sernoFromObservable = this.splitters.IndexOf(s);
 				ret.Add(s.PanelBelow.PanelName, new MultiSplitterProperties(sernoFromObservable, s.Location.Y));
 			}
@@ -136,40 +129,14 @@ try {
 				// very illogical way to sync-up; splitters may have holes and implies MultiSplitterPropertiesByPanelName.*.ManualOrder must have no holes/duplicates
 				this.panels.Move(splitterFoundIndex, prop.ManualOrder);
 				this.splitters.Move(splitterFoundIndex, prop.ManualOrder);
-
-				// I will not delete ManualOrder because: 1) Dictionary doesn't guarantee ordering so I can't fetch "prevSplitterLocationY" just by enumerating ChartSettings.MultiSplitterPropertiesByPanelName
-				//v1 DOUBTFUL
-				//int tmp = this.splitters[splitterFoundIndex].ManualOrder;
-				//this.splitters[splitterFoundIndex].ManualOrder = this.splitters[prop.ManualOrder].ManualOrder;
-				//this.splitters[prop.ManualOrder].ManualOrder = tmp;
        		}
-			//v2 FIX_FOR_INLOOP_DOUBTFUL_ABOVE
-			//foreach (MultiSplitter each in this.splitters) {
-			//	if (each.ManualOrder != this.splitters.IndexOf(each)) {
-			//		Debugger.Break(); 
-			//	}
-			//	each.ManualOrder = this.splitters.IndexOf(each);
-			//}
-			//foreach (MultiSplitter each in this.splitters) {
-			//	string eachPanelName = each.PanelBelow.PanelName;
-			//	int manualOrderDeserialized = splitterPropertiesByPanelName[eachPanelName].ManualOrder;
-			//	if (each.ManualOrder == manualOrderDeserialized) continue;
-			//	string msg = "YOU_DIDT_SET_MANUAL_ORDER_AS_DESERIALIZED_DICTATES " + eachPanelName + ".ManualOrder[" + each.ManualOrder + "]!=manualOrderDeserialized[" + manualOrderDeserialized + "]";
-			//	Debugger.Break();
-			//	each.ManualOrder = manualOrderDeserialized;
-			//}
 			
 			// align panels to splitters; I need to know the prevSplitterLocationY to set panelHeight
 			int y = 0;
 			for (int i=this.splitters.Count-1; i>=0; i--) {
-	        	PANEL_NAMED_FOLDING panel = this.panels[i];
+	        	PANEL_BASE panel = this.panels[i];
 	        	MultiSplitter splitter = this.splitters[i];
 	        	
-				//if (splitter.ManualOrder != i) {
-				//	splitter.ManualOrder  = i;
-				//}
-		
-
 				int panelY = splitter.Location.Y + splitter.Height;
 	        	if (panel.Location.Y != panelY) {
 	        		panel.Location = new Point(panel.Location.X, panelY);
@@ -237,7 +204,7 @@ try {
 					break;
 				}
 	        	
-	        	PANEL_NAMED_FOLDING panel = this.panels[i];
+	        	PANEL_BASE panel = this.panels[i];
 	        	MultiSplitter splitter = this.splitters[i];
 
 	        	//splitter.Location = new Point(splitter.Location.X, y);
@@ -245,27 +212,16 @@ try {
 	        	y += splitter.Height;
 	        	
 				// SpliiterMovingEnded will need to know splitter.PanelBelow.Location to save it
-				PanelNamedFolding panelNamedFolding = panel as PanelNamedFolding;	// back from generics to real world
+				PanelBase panelNamedFolding = panel as PanelBase;	// back from generics to real world
 				if (panelNamedFolding != null) {
 		        	splitter.PanelBelow = panelNamedFolding;
 		        	if (i > 0) {
-		        		PANEL_NAMED_FOLDING prevPanel = this.panels[i - 1];
-						PanelNamedFolding prevPanelNamedFolding = prevPanel as PanelNamedFolding;	// back from generics to real world
+		        		PANEL_BASE prevPanel = this.panels[i - 1];
+						PanelBase prevPanelNamedFolding = prevPanel as PanelBase;	// back from generics to real world
 						if (panelNamedFolding != null) {
 			        		splitter.PanelAbove = prevPanelNamedFolding;
 						}
 		        	}
-		        	//if (splitter.ManualOrder == -1) {
-					//	splitter.ManualOrder  = i;
-		        	//} else {
-		        	//	if (splitter.ManualOrder != i) {
-		        	//		#if DEBUG
-		        	//		Debugger.Break();
-		        	//		#endif
-					//		// MOVED_FROM: Manorder shouldn't be "i"
-					//		// splitter.ManualOrder  = i;
-		        	//	}
-		        	//}
 				}
 
 	        	//panel.Location = new Point(panel.Location.X, y);
@@ -298,7 +254,7 @@ try {
 			
 			y = 0;
 			for (int i=0; i<this.panels.Count; i++) {
-	        	PANEL_NAMED_FOLDING panel = this.panels[i];
+	        	PANEL_BASE panel = this.panels[i];
 	        	MultiSplitter splitter = this.splitters[i];
 
 	        	if (i == this.panels.Count - 1) {
@@ -344,7 +300,7 @@ try {
 			//base.Invalidate();
 		}
 
-		public void PanelAddSplitterCreateAdd(PANEL_NAMED_FOLDING panel, bool redistributeAfterAddingOneNotManyResistributeManual = true) {
+		public void PanelAddSplitterCreateAdd(PANEL_BASE panel, bool redistributeAfterAddingOneNotManyResistributeManual = true) {
 //		                                      , Dictionary<string, MultiSplitterProperties> splitterPositionsByManorder = null) {
 //			panel.Capture = true;	// NO_YOU_WONT will I have MouseEnter during dragging the splitter? I_HATE_HACKING_WINDOWS_FORMS
 //	       	panel.MouseEnter += new EventHandler(panel_MouseEnter);
@@ -358,7 +314,7 @@ try {
 			if (redistributeAfterAddingOneNotManyResistributeManual == false) return;
 			this.DistributePanelsAndSplittersVertically();
 		}
-		public void PanelRemove(PANEL_NAMED_FOLDING panel) {
+		public void PanelRemove(PANEL_BASE panel) {
 			int panelIndex = this.panels.IndexOf(panel);
 			if (panelIndex == 0) return; 
 			MultiSplitter splitter = this.splitters[panelIndex];
@@ -369,7 +325,7 @@ try {
 			//initialHeights.Remove(panel);
 			this.DistributePanelsAndSplittersVertically();
 		}
-		public void splitterCreateAdd(PANEL_NAMED_FOLDING panel) {
+		public void splitterCreateAdd(PANEL_BASE panel) {
 			MultiSplitter splitter = new MultiSplitter(GrabHandleWidth, ColorGrabHandle);
         	splitter.Width = base.Width;
 			splitter.Height = SplitterHeight;

@@ -7,10 +7,10 @@ using Sq1.Core;
 using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Charting.MultiSplit {
-	public partial class MultiSplitContainer<PANEL_NAMED_FOLDING>
+	public partial class MultiSplitContainer<PANEL_BASE>
 			: UserControl
 			//: UserControlDoubleBuffered
-			where PANEL_NAMED_FOLDING : Control {
+			where PANEL_BASE : Control {
 		protected override void OnResize(EventArgs e) {
 			base.OnResize(e);
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
@@ -83,7 +83,7 @@ namespace Sq1.Charting.MultiSplit {
 		}
 		
 		string panelText { get { return this.panelMouseIsOverNow != null ? this.panelMouseIsOverNow.Text : "<none>"; } }
-		PANEL_NAMED_FOLDING panelMouseIsOverNow;
+		PANEL_BASE panelMouseIsOverNow;
 		int panelMouseIsOverNowIndexDropTarget = -1;
 		void panel_MouseEnter(object sender, EventArgs e) {
 			if (panelMouseIsOverNow == sender) return;
@@ -91,7 +91,7 @@ namespace Sq1.Charting.MultiSplit {
 				//Debugger.Break();
 				return;
 			}
-			PANEL_NAMED_FOLDING panel = sender as PANEL_NAMED_FOLDING;
+			PANEL_BASE panel = sender as PANEL_BASE;
 			if (panel == null) {
 				Debugger.Break();
 				return;
@@ -110,7 +110,7 @@ namespace Sq1.Charting.MultiSplit {
 			panelMouseIsOverNow = null;
 			panelMouseIsOverNowIndexDropTarget = -1;
 			
-			PANEL_NAMED_FOLDING panel = sender as PANEL_NAMED_FOLDING;
+			PANEL_BASE panel = sender as PANEL_BASE;
 			if (panel == null) {
 				Debugger.Break();
 				return;
@@ -253,18 +253,6 @@ namespace Sq1.Charting.MultiSplit {
 	            	if (indexToMoveFrom != indexToMoveTo) {
 						this.panels.Move(indexToMoveFrom, indexToMoveTo);
 						this.splitters.Move(indexToMoveFrom, indexToMoveTo);
-
-						// MOVED_TO: Manorder shouldn't be "i"
-						//v1 AFTERDRAG_MANUAL_ORDER_WASNT_SYNCED EPIC_FAIL: dragging bottom panel up doesn't switch ManualOrders between panels; all the panels sink down and must be re-iterated from top
-						// I will not delete ManualOrder because:
-						// 1) Dictionary doesn't guarantee ordering so I can't fetch "prevSplitterLocationY" just by enumerating ChartSettings.MultiSplitterPropertiesByPanelName
-						// 2) JsonDeserializer seems to be unable to serialize/deserialize SortedDictionary<T>
-						//int tmp = this.splitters[indexToMoveFrom].ManualOrder;
-						//this.splitters[indexToMoveFrom].ManualOrder = this.splitters[indexToMoveTo].ManualOrder;
-						//this.splitters[indexToMoveTo].ManualOrder = tmp;
-						//v2
-						//int manualOrderNew = 0; each.ManualOrder = manualOrderNew++;
-						//foreach (MultiSplitter each in this.splitters) each.ManualOrder = this.splitters.IndexOf(each);
 						this.DistributePanelsAndSplittersVertically();
 	            	}
             	}

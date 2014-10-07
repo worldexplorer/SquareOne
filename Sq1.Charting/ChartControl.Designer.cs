@@ -45,7 +45,7 @@ namespace Sq1.Charting
 			this.lblWinFormDesignerComment = new System.Windows.Forms.Label();
 			this.panelVolume = new Sq1.Charting.PanelVolume();
 			this.panelPrice = new Sq1.Charting.PanelPrice();
-			this.multiSplitContainer = new Sq1.Charting.MultiSplit.MultiSplitContainer<PanelNamedFolding>();
+			this.multiSplitContainer = new Sq1.Charting.MultiSplit.MultiSplitContainer<PanelBase>();
 			this.RangeBar = new Sq1.Widgets.RangeBar.RangeBarDateTime();
 			this.tooltipPosition = new Sq1.Charting.TooltipPosition();
 			this.tooltipPrice = new Sq1.Charting.TooltipPrice();
@@ -101,8 +101,6 @@ namespace Sq1.Charting
 			// panelVolume
 			// 
 			this.panelVolume.BarsIdent = "UNINITIALIZED_BARS_IDENT_PanelNamedFolding";
-			this.panelVolume.CollapsedToName = false;
-			this.panelVolume.Collapsible = true;
 			this.panelVolume.Font = new System.Drawing.Font("Consolas", 8.25F);
 			this.panelVolume.GutterBottomDraw = false;
 			this.panelVolume.GutterRightDraw = true;
@@ -116,8 +114,6 @@ namespace Sq1.Charting
 			// 
 			this.panelPrice.BackColor = System.Drawing.SystemColors.Window;
 			this.panelPrice.BarsIdent = "UNINITIALIZED_BARS_IDENT_PanelNamedFolding";
-			this.panelPrice.CollapsedToName = false;
-			this.panelPrice.Collapsible = true;
 			this.panelPrice.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.panelPrice.GutterBottomDraw = true;
 			this.panelPrice.GutterRightDraw = true;
@@ -201,7 +197,7 @@ namespace Sq1.Charting
 		}
 
 		private System.Windows.Forms.Label lblWinFormDesignerComment;
-		private Sq1.Charting.MultiSplit.MultiSplitContainer<PanelNamedFolding> multiSplitContainer;
+		private Sq1.Charting.MultiSplit.MultiSplitContainer<PanelBase> multiSplitContainer;
 		private System.Windows.Forms.HScrollBar hScrollBar;
 		private PanelPrice panelPrice;
 		private System.Windows.Forms.SplitContainer splitContainerChartVsRange;

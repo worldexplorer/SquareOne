@@ -17,7 +17,7 @@ namespace Sq1.Charting {
 		public bool BarsNotEmpty { get { return this.Bars != null && this.Bars.Count > 0; } }
 		public int BarsDecimalsPrice { get { return (this.Bars.SymbolInfo != null) ? this.Bars.SymbolInfo.DecimalsPrice : 5; } }
 		public int BarsDecimalsVolume { get { return (this.Bars.SymbolInfo != null) ? this.Bars.SymbolInfo.DecimalsVolume : 0; } }
-		List<PanelNamedFolding> panelsFolding;
+		List<PanelBase> panelsFolding;
 		public bool RangeBarCollapsed {
 			get { return this.splitContainerChartVsRange.Panel2Collapsed; }
 			set { this.splitContainerChartVsRange.Panel2Collapsed = value; }
@@ -41,7 +41,7 @@ namespace Sq1.Charting {
 			//this.HScroll = true;
 			this.hScrollBar.SmallChange = this.ChartSettings.ScrollNBarsPerOneKeyPress;
 
-			panelsFolding = new List<PanelNamedFolding>();
+			panelsFolding = new List<PanelBase>();
 			panelsFolding.Add(this.panelPrice);
 			panelsFolding.Add(this.panelVolume);
 			this.multiSplitContainer.InitializeCreateSplittersDistributeFor(panelsFolding);
@@ -74,7 +74,7 @@ namespace Sq1.Charting {
 					string msg = "HSCROLL_POSITION_VALUE_OUT_OF_RANGE; fix deserialization upstack";
 
 				}
-				foreach (PanelNamedFolding panelFolding in this.panelsFolding) {	// at least PanelPrice and PanelVolume
+				foreach (PanelBase panelFolding in this.panelsFolding) {	// at least PanelPrice and PanelVolume
 					panelFolding.InitializeWithNonEmptyBars(this);
 				}
 			}
@@ -95,7 +95,7 @@ namespace Sq1.Charting {
 				return;
 			}
 			this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
-			foreach (PanelNamedFolding panelFolding in this.panelsFolding) {
+			foreach (PanelBase panelFolding in this.panelsFolding) {
 				panelFolding.Invalidate();
 			}
 			this.TooltipPriceHide();

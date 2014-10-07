@@ -2,12 +2,11 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 
-using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Charting {
-	public class PanelIndicator : PanelNamedFolding, HostPanelForIndicator {
+	public class PanelIndicator : PanelBase, HostPanelForIndicator {
 		public Indicator Indicator;
 		public bool IndicatorEmpty { get {
 				if (this.Indicator == null) {

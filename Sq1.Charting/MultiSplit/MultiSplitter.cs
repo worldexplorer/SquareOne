@@ -5,9 +5,8 @@ using System.Windows.Forms;
 
 namespace Sq1.Charting.MultiSplit {
 	public class MultiSplitter : UserControl {
-		public PanelNamedFolding PanelAbove;
-		public PanelNamedFolding PanelBelow;
-		//public int ManualOrder;
+		public PanelBase PanelAbove;
+		public PanelBase PanelBelow;
 
 		int GrabHandleWidth;
 		Color ColorGrabHandle;
@@ -17,7 +16,6 @@ namespace Sq1.Charting.MultiSplit {
 			GrabHandleWidth = grabHandleWidth;
 			ColorGrabHandle = colorGrabHandle;
 			DebugSplitter = debugSplitter;
-			//ManualOrder = -1;
 		}
 
 		protected override void OnPaint(PaintEventArgs e) {

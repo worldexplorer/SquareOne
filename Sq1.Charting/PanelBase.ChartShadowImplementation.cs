@@ -5,7 +5,7 @@ using System.Drawing;
 using Sq1.Core;
 
 namespace Sq1.Charting {
-	public partial class PanelNamedFolding {
+	public partial class PanelBase {
 		void renderBarBackgrounds(Graphics g) {
 			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice;
 			int halfPadding = this.ChartControl.ChartSettings.BarPaddingRight / 2;

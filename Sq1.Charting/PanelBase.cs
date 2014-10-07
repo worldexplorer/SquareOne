@@ -12,7 +12,7 @@ using Sq1.Core.DoubleBuffered;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Charting {
-	public partial class PanelNamedFolding :
+	public partial class PanelBase :
 		//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH #if NON_DOUBLE_BUFFERED
 		//Panel
 		//#else
@@ -24,8 +24,6 @@ namespace Sq1.Charting {
 		//[Browsable(true), EditorBrowsable(EditorBrowsableState.Always)]
 		public string PanelName { get; set; }
 		[Browsable(false)] public string BarsIdent { get; set; }		//if a public field isn't a property, Designer will crash
-		public bool Collapsible { get; set; }
-		public bool CollapsedToName { get; set; }
 		public bool GutterRightDraw { get; set; }
 		public bool GutterBottomDraw { get; set; }
 		
@@ -115,11 +113,9 @@ namespace Sq1.Charting {
 			} }
 		public int BarShadowOffset { get { return this.ChartControl.ChartSettings.BarShadowXoffset; } }
 
-		public PanelNamedFolding() {
+		public PanelBase() {
 			this.PanelName = "UNINITIALIZED_PANEL_NAME_PanelNamedFolding";
 			this.BarsIdent = "UNINITIALIZED_BARS_IDENT_PanelNamedFolding";
-			this.Collapsible = true;
-			this.CollapsedToName = false;
 			this.GutterRightDraw = true;
 			this.GutterBottomDraw = false;
 			this.AutoScroll = false;

@@ -63,10 +63,7 @@
     <Compile Include="ChartControl.Designer.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ChartControl.DynamicVariables.cs">
-      <DependentUpon>ChartControl.cs</DependentUpon>
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="ChartControl.DynamicVariables.cs" />
     <Compile Include="ChartControl.EventConsumer.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
@@ -104,23 +101,19 @@
     <Compile Include="PanelIndicator.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="PanelNamedFolding.ChartShadowImplementation.cs">
-      <DependentUpon>PanelNamedFolding.cs</DependentUpon>
+    <Compile Include="PanelBase.ChartShadowImplementation.cs">
+      <DependentUpon>PanelBase.cs</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="PanelNamedFolding.cs">
+    <Compile Include="PanelBase.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="PanelNamedFolding.DynamicVariables.cs">
-      <DependentUpon>PanelNamedFolding.cs</DependentUpon>
+    <Compile Include="PanelBase.MouseEvents.cs">
+      <DependentUpon>PanelBase.cs</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="PanelNamedFolding.MouseEvents.cs">
-      <DependentUpon>PanelNamedFolding.cs</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="PanelNamedFolding.Rendering.cs">
-      <DependentUpon>PanelNamedFolding.cs</DependentUpon>
+    <Compile Include="PanelBase.Rendering.cs">
+      <DependentUpon>PanelBase.cs</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="PanelPrice.cs">

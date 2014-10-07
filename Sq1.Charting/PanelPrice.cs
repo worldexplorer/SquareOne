@@ -5,12 +5,11 @@ using System.Drawing;
 
 using Sq1.Charting.OnChart;
 using Sq1.Core;
-using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Charting {
-	public class PanelPrice : PanelNamedFolding {
+	public class PanelPrice : PanelBase {
 		List<Position> PositionLineAlreadyDrawnFromOneOfTheEnds;
 
 		public PanelPrice() : base() {
