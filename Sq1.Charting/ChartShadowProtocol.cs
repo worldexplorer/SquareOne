@@ -144,7 +144,14 @@ namespace Sq1.Charting {
 		}
 		
 		Dictionary<Indicator, PanelIndicator> PanelsByIndicator = new Dictionary<Indicator, PanelIndicator>();
-		public override HostPanelForIndicator GetHostPanelForIndicator(Indicator indicator) {
+		public override void HostPanelForIndicatorClear() {
+			foreach (PanelIndicator panel in this.PanelsByIndicator.Values) {
+				this.panels.Remove(panel);
+				this.multiSplitContainer.PanelRemove(panel);
+			}
+			this.PanelsByIndicator.Clear();
+		}
+		public override HostPanelForIndicator HostPanelForIndicatorGet(Indicator indicator) {
 			bool needToReReadSplitterPositionsSinceIndicatorsWereAdded = false;
 			switch (indicator.ChartPanelType) {
 				case ChartPanelType.PanelPrice: return this.panelPrice;

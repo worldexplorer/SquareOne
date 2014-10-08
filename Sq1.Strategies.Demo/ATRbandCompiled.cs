@@ -13,11 +13,9 @@ namespace Sq1.Strategies.Demo {
 	[ScriptParameterAttribute(Id=1, Name="test", ValueMin=0, ValueMax=10, ValueIncrement=1 )]
 
 	public class ATRbandCompiled : Script {
-
-		// if an indicator isn't a property it won't show up in Sliders
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
-		public IndicatorAverageTrueRange ATR { get; set; }
-		public IndicatorAtrBand ATRband { get; set; }
+		public IndicatorAverageTrueRange ATR;
+		public IndicatorAtrBand ATRband;
 		
 		public ATRbandCompiled() {
 			// CLEANER_SCRIPT_PARAMETERS

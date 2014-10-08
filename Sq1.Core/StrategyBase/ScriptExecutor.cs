@@ -870,8 +870,8 @@ namespace Sq1.Core.StrategyBase {
 
 			if (this.Strategy.ActivatedFromDll) {
 				// FIXED "EnterEveryBar doesn't draw MAfast"; editor-typed strategies already have indicators in SNAP after pre-backtest compilation
-				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true 
-				this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
+				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true
+				this.Strategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
 			}
 			
 			//inNewThread = false;

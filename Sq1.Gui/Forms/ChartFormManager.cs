@@ -319,6 +319,10 @@ namespace Sq1.Gui.Forms {
 		}
 		public void BacktesterRunSimulationRegular() {
 			try {
+				if (this.Executor.Strategy.ActivatedFromDll == false) {
+					// ONLY_TO_MAKE_CHARTFORM_BACKTEST_NOW_WORK__FOR_F5_ITS_A_DUPLICATE__LAZY_TO_ENMESS_CHART_FORM_MANAGER_WITH_SCRIPT_EDITOR_FUNCTIONALITY
+					this.StrategyCompileActivatePopulateSlidersShow();
+				}
 				this.Executor.BacktesterRunSimulationTrampoline(new Action(this.afterBacktesterComplete), true);
 			} catch (Exception ex) {
 				string msg = "RUN_SIMULATION_TRAMPOLINE_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Executor.Bars + "]";
@@ -516,10 +520,11 @@ namespace Sq1.Gui.Forms {
 			}
 			// moved to StrategyCompileActivatePopulateSlidersShow() because no need to PopulateSliders during Deserialization
 			//SlidersForm.Instance.Initialize(this.Strategy);
+			this.Executor.ChartShadow.HostPanelForIndicatorClear();		//non-DLL-strategy multiple F5s add PanelIndicator endlessly
 		}
 		public void StrategyCompileActivatePopulateSlidersShow() {
 			if (this.Strategy.ActivatedFromDll == false) this.StrategyCompileActivateBeforeShow();
-			this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
+			this.Strategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
 			this.PopulateSliders();
 		}
 		public void PopulateSliders() {

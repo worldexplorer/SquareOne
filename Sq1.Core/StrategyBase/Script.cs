@@ -165,13 +165,14 @@ namespace Sq1.Core.StrategyBase {
 				List<Indicator> ret = new List<Indicator>();
 				
 				Type myChild = this.GetType();
-				PropertyInfo[] lookingForIndicators = myChild.GetProperties();
-				foreach (PropertyInfo propertyIndicator in lookingForIndicators) {
-					Type indicatorConcreteType = propertyIndicator.PropertyType;
+				//PropertyInfo[] lookingForIndicators = myChild.GetProperties();
+				FieldInfo[] lookingForIndicators = myChild.GetFields();
+				foreach (FieldInfo indicatorCandidate in lookingForIndicators) {
+					Type indicatorConcreteType = indicatorCandidate.FieldType;
 					bool isIndicatorChild = typeof(Indicator).IsAssignableFrom(indicatorConcreteType);
 					if (isIndicatorChild == false) continue;
 					Indicator indicatorInstance = null;
-					object expectingConstructedNonNull = propertyIndicator.GetValue(this, null);
+					object expectingConstructedNonNull = indicatorCandidate.GetValue(this);
 					if (expectingConstructedNonNull == null) {
 						string msg = "INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR Script[" + this.ToString();// + "].[" + variableIndicator.Name + "]";
 						#if DEBUG
@@ -181,16 +182,19 @@ namespace Sq1.Core.StrategyBase {
 						continue;
 					}
 					Indicator variableIndicator = expectingConstructedNonNull as Indicator;
-					variableIndicator.Name = propertyIndicator.Name;
+					variableIndicator.Name = indicatorCandidate.Name;
 					ret.Add(variableIndicator);
 				}
 				return ret;
 			} }
 		
-		public void IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot() {
+		public void IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot() {
 			this.Executor.ExecutionDataSnapshot.Indicators.Clear();
 			foreach (Indicator indicatorInstance in this.IndicatorsInitializedInDerivedConstructor) {
-				List<IndicatorParameter> iParamsCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorInstance.Name];
+				List<IndicatorParameter> iParamsCtx = new List<IndicatorParameter>();
+				if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorInstance.Name)) {
+					iParamsCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorInstance.Name];
+				}
 				foreach (IndicatorParameter iParamInstantiated in indicatorInstance.ParametersByName.Values) {
 					int iParamFoundCtxIndex = -1;
 					for (int i=0; i < iParamsCtx.Count; i++) {
@@ -218,9 +222,9 @@ namespace Sq1.Core.StrategyBase {
 				
 				// moved from upstairs coz: after absorbing all deserialized indicator parameters from ScriptContext, GetHostPanelForIndicator will return an pre-instantiated PanelIndicator
 				// otherwize GetHostPanelForIndicator created a new one for an indicator with default Indicator parameters;
-				// example: MultiSplitterPropertiesByPanelName["ATR (Period:9[1..11/2]) "] exists, while default Period for ATR is 5 => new PanelIndicator will be created
+				// example: MultiSplitterPropertiesByPanelName["ATR (Period:9[1..11/2])"] exists, while default Period for ATR is 5 => new PanelIndicator will be created
 				// final goal is to avoid (splitterPropertiesByPanelName.Count != this.panels.Count) in SplitterPropertiesByPanelNameSet() and (splitterFound == null)  
-				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartShadow.GetHostPanelForIndicator(indicatorInstance);
+				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartShadow.HostPanelForIndicatorGet(indicatorInstance);
 				indicatorInstance.Initialize(priceOrItsOwnPanel);
 				
 				if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorInstance.Name) == false) {

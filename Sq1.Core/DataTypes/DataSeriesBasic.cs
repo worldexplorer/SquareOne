@@ -127,6 +127,18 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 	
+		public bool IsTrendingUpAtBarIndex(int barIndex) {
+			if (barIndex <= 0) return false;
+			if (this.Count < 2) return false;
+			if (this[barIndex] > this[barIndex - 1]) return true;
+			return false;
+		}
+		public bool IsTrendingDownAtBarIndex(int barIndex) {
+			if (barIndex <= 0) return false;
+			if (this.Count < 2) return false;
+			if (this[barIndex] < this[barIndex - 1]) return true;
+			return false;
+		}
 		public bool TurnsDownAtBarIndex(int barIndex) {
 			if (barIndex <= 0) return false;
 			if (this.Count < 2) return false;

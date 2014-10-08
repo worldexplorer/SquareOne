@@ -134,7 +134,10 @@ namespace Sq1.Core.Charting {
 		}
 #endregion
 		
-		public virtual HostPanelForIndicator GetHostPanelForIndicator(Indicator indicator) {
+		public virtual HostPanelForIndicator HostPanelForIndicatorGet(Indicator indicator) {
+			throw new NotImplementedException();
+		}
+		public virtual void HostPanelForIndicatorClear() {
 			throw new NotImplementedException();
 		}
 		public virtual void SetIndicators(Dictionary<string, Indicator> indicators) {

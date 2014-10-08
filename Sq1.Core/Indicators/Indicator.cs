@@ -329,6 +329,11 @@ namespace Sq1.Core.Indicators {
 			}
 		}
 		public void OnNewStreamingQuote(Quote newStreamingQuote) {
+			if (this.OwnValuesCalculated == null) {
+				string msg = "HAPPENS_DURING_REBACKTEST_AFTER_ABORTION";
+				return;
+			}
+			
 			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote(newStreamingQuote);
 			
 			int streamingBarIndex = newStreamingQuote.ParentStreamingBar.ParentBarsIndex;

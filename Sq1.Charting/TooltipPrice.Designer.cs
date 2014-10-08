@@ -96,7 +96,7 @@ namespace Sq1.Charting {
 			// lblHeaderVal
 			// 
 			this.lblHeaderVal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.lblHeaderVal.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
 			this.lblHeaderVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.lblHeaderVal.Location = new System.Drawing.Point(0, 0);
@@ -175,6 +175,7 @@ namespace Sq1.Charting {
 			this.lblDateValue.TabIndex = 17;
 			this.lblDateValue.Text = " Fri 16-Feb-2012";
 			this.lblDateValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.lblDateValue.Visible = false;
 			// 
 			// lblDate
 			// 
@@ -184,6 +185,7 @@ namespace Sq1.Charting {
 			this.lblDate.Size = new System.Drawing.Size(30, 13);
 			this.lblDate.TabIndex = 16;
 			this.lblDate.Text = "Date";
+			this.lblDate.Visible = false;
 			// 
 			// lnkAlertsVal
 			// 

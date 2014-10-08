@@ -14,9 +14,8 @@ namespace Sq1.Strategies.Demo {
 	[ScriptParameterAttribute(Id=2, Name="verbose", ValueMin=0, ValueMax=1, ValueIncrement=1,
 	                          ValueCurrent=0, ReasonToExist="set to 0 if you don't want log() to spam your Exceptions window" )]
 	public class EnterEveryBarCompiled : Script {
-		// if an indicator isn't a property it won't show up in Sliders
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
-		public IndicatorMovingAverageSimple MAfast { get; set; }
+		public IndicatorMovingAverageSimple MAfast;
 
 		public EnterEveryBarCompiled() {
 			MAfast = new IndicatorMovingAverageSimple();

@@ -158,7 +158,7 @@ namespace Sq1.Gui.Singletons {
 					if (chartStrategy.ScriptContextCurrent.BacktestOnRestart == false) {
 						// need to instantiate all panels for all script indicators before distributing distances between them
 						// COPIED_FROM ScriptExecutor.BacktesterRunSimulationTrampoline() FIXED "EnterEveryBar doesn't draw MAfast";
-						chartStrategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
+						chartStrategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
 					}
 
 					// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
