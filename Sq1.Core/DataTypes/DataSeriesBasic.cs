@@ -148,7 +148,7 @@ namespace Sq1.Core.DataTypes {
 			return false;
 		}
 		#region extracted from ChartControl.DynamicProperties.cs, from VisiblePriceMin,Max,VisibleVolumeMin,Max; re-used in PanelIndicator.ValueMin,Max  
-		public double MinValueBetweenIndexes(int indexLeft, int indexRight) {
+		public double MinValueBetweenIndexesDoubleMaxValueUnsafe(int indexLeft, int indexRight) {
 			double ret = double.MaxValue;
 			int indexMin = Math.Min(indexLeft, indexRight);
 			int indexMax = Math.Max(indexLeft, indexRight);
@@ -163,12 +163,14 @@ namespace Sq1.Core.DataTypes {
 				if (barCanBeStreamingWithNaNs < ret) ret = barCanBeStreamingWithNaNs;
 			}
 			#if DEBUG
-			// IndicatorAtrBand.OwnValuesCalculated are all NaNs; DONT_NORMALIZE_VERTICALLY_INDICATORS_DRAWING_ON_PRICE_PANEL
-			if (ret == double.MaxValue) Debugger.Break();
+			if (ret == double.MaxValue) {
+				// IndicatorAtrBand.OwnValuesCalculated are all NaNs; DONT_NORMALIZE_VERTICALLY_INDICATORS_DRAWING_ON_PRICE_PANEL
+				//Debugger.Break();
+			}
 			#endif
 			return ret;
 		}
-		public double MaxValueBetweenIndexes(int indexLeft, int indexRight) {
+		public double MaxValueBetweenIndexesDoubleMinValueUnsafe(int indexLeft, int indexRight) {
 			double ret = double.MinValue;
 			int indexMin = Math.Min(indexLeft, indexRight);
 			int indexMax = Math.Max(indexLeft, indexRight);
@@ -184,7 +186,9 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 			#if DEBUG
-			if (ret == double.MinValue) Debugger.Break();
+			if (ret == double.MinValue) {
+				//Debugger.Break();
+			}
 			#endif
 		}
 		#endregion

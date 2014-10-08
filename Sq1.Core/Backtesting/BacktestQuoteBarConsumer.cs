@@ -17,6 +17,8 @@ namespace Sq1.Core.Backtesting {
 			//Bar barLastFormed = quoteToReach.ParentStreamingBar;
 			ExecutionDataSnapshot snap = this.backtester.Executor.ExecutionDataSnapshot;
 
+			// INDICATORS_CLEARED_ADDED_AFTER_BACKTEST_STARTED "Collection was modified; enumeration operation may not execute."
+			// ALSO_OBSERVED_RELATED: INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS
 			foreach (Indicator indicator in snap.Indicators.Values) {
 				try {
 					indicator.OnNewStreamingQuote(quote);

@@ -1,21 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 
 using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
-	[DataContract]
 	public class MarketInfo {
-		[DataMember] public string Name;
-		[DataMember] public string Description;
-		[DataMember] public DateTime MarketOpenServerTime;
-		[IgnoreDataMember] [JsonIgnore] public string MarketOpenServerTimeAsString { get { return MarketCloseServerTime.ToString("HH:mm"); } }
-		[DataMember] public DateTime MarketCloseServerTime;
-		[IgnoreDataMember] [JsonIgnore] public string MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
-		[DataMember] public List<DayOfWeek> DaysOfWeekOpen;
-		[DataMember] public string TimeZoneName;
+		[JsonProperty]	public string Name;
+		[JsonProperty]	public string Description;
+		[JsonProperty]	public DateTime MarketOpenServerTime;
+		[JsonIgnore]	public string MarketOpenServerTimeAsString { get { return MarketCloseServerTime.ToString("HH:mm"); } }
+		[JsonProperty]	public DateTime MarketCloseServerTime;
+		[JsonIgnore]	public string MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
+		[JsonProperty]	public List<DayOfWeek> DaysOfWeekOpen;
+		[JsonProperty]	public string TimeZoneName;
 		public TimeZoneInfo TimeZoneInfo { get {
 				TimeZoneInfo ret = TimeZoneInfo.Local;
 				if (String.IsNullOrEmpty(this.TimeZoneName)) return ret;
@@ -28,9 +26,9 @@ namespace Sq1.Core.DataTypes {
 				}
 				return ret;
 			} }
-		[DataMember] public List<MarketClearingTimespan> ClearingTimespans;
-		[DataMember] public List<DateTime> HolidaysYMD000;
-		[DataMember] public List<MarketShortDay> ShortDays;
+		[JsonProperty]	public List<MarketClearingTimespan> ClearingTimespans;
+		[JsonProperty]	public List<DateTime> HolidaysYMD000;
+		[JsonProperty]	public List<MarketShortDay> ShortDays;
 
 		public MarketInfo() {
 			Name = "ERROR_DESERIALISING_JSON";
@@ -73,12 +71,12 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		[IgnoreDataMember] [JsonIgnore] public DateTime ServerTimeNow { get { return this.ConvertLocalTimeToServer(DateTime.Now); } }
-		[IgnoreDataMember] [JsonIgnore] public bool TodayIsTradingDay { get { return this.IsTradeableDayServerTime(this.ServerTimeNow); } }
-		[IgnoreDataMember] [JsonIgnore] public bool IsMarketOpenNow { get { return this.IsMarketOpenAtServerTime(this.ServerTimeNow); } }
-		[IgnoreDataMember] [JsonIgnore] public bool MarketIsAfterCloseNow { get { return this.isMarketAfterCloseServerTime(this.ServerTimeNow); } }
-		[IgnoreDataMember] [JsonIgnore] public DateTime MarketCloseLocalTime { get { return this.ConvertServerTimeToLocal(this.MarketCloseServerTime); } }
-		[IgnoreDataMember] [JsonIgnore] public DateTime LastTradingSessionEndedServerTime { get {
+		[JsonIgnore] public DateTime ServerTimeNow { get { return this.ConvertLocalTimeToServer(DateTime.Now); } }
+		[JsonIgnore] public bool TodayIsTradingDay { get { return this.IsTradeableDayServerTime(this.ServerTimeNow); } }
+		[JsonIgnore] public bool IsMarketOpenNow { get { return this.IsMarketOpenAtServerTime(this.ServerTimeNow); } }
+		[JsonIgnore] public bool MarketIsAfterCloseNow { get { return this.isMarketAfterCloseServerTime(this.ServerTimeNow); } }
+		[JsonIgnore] public DateTime MarketCloseLocalTime { get { return this.ConvertServerTimeToLocal(this.MarketCloseServerTime); } }
+		[JsonIgnore] public DateTime LastTradingSessionEndedServerTime { get {
 				DateTime dateTimeServer = ServerTimeNow;
 				if (this.IsTradeableDayServerTime(dateTimeServer)
 						&& this.isMarketAfterCloseServerTime(dateTimeServer) == false) {

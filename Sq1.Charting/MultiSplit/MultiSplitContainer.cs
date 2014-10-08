@@ -147,7 +147,7 @@ try {
 	        		panelHeight = baseHeight - panelY;
 	        		if (panelHeight < 0) {
 						#if DEBUG
-		    			Debugger.Break();	// AFTERDRAG_MANUAL_ORDER_WASNT_SYNCED YOUVE_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
+		    			//POSTPONE_WINDOWS_MAGIC Debugger.Break();	// AFTERDRAG_MANUAL_ORDER_WASNT_SYNCED YOUVE_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
 		    			#endif
 		        		return;
 	        		}
@@ -337,6 +337,22 @@ try {
         	splitter.MouseDown += new MouseEventHandler(splitter_MouseDown);
 			this.splitters.Add(splitter);
 			base.Controls.Add(splitter);	//make splitter receive OnPaint()
+		}
+		public override string ToString() {
+			string ret = "NO_PARENT_INFO";
+			SplitterPanel splitterBarRangeEtMoi = this.Parent as SplitterPanel;
+			if (splitterBarRangeEtMoi != null) {
+				SplitContainer splitContainer = splitterBarRangeEtMoi.Parent as SplitContainer;
+				if (splitContainer != null) {
+					ChartControl chartControl = splitContainer.Parent as ChartControl;
+					if (chartControl != null) {
+						ret = chartControl.ToString();
+					}
+				}
+			} else {
+				if (this.Parent != null) ret = "Parent[" + this.Parent.ToString() + "]";
+			}
+			return ret;
 		}
 	}
 }

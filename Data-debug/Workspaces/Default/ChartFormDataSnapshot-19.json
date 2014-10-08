@@ -18,15 +18,15 @@
         "ManualOrder": 0,
         "Distance": 0
       },
-      "Volume": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 1,
-        "Distance": 58
-      },
       "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 47
+      },
+      "Volume": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 2,
-        "Distance": 149
+        "Distance": 440
       }
     },
     "ChartColorBackground": "White",
@@ -54,7 +54,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 0,
+    "SqueezeVerticalPaddingPx": 230,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -64,7 +64,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 1219,
+    "ScrollPositionAtBarIndex": 4939,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,

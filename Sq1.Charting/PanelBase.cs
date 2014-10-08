@@ -265,8 +265,20 @@ namespace Sq1.Charting {
 				this.VisibleBarsCount_cached = VisibleBarRight_cached - VisibleBarLeft_cached;
 				if (this.VisibleBarsCount_cached == 0) return;
 				
-				this.VisibleMin_cached = this.VisibleMin;
-				this.VisibleMax_cached = this.VisibleMax;
+				double tmp = this.VisibleMin;
+				if (tmp == double.MaxValue) {
+					string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS NOT_SURE_IF_RETURN_IS_SOLUTION ";
+					return;
+				}
+				this.VisibleMin_cached = tmp; 
+
+				tmp = this.VisibleMax;
+				if (tmp == double.MinValue) {
+					string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS NOT_SURE_IF_RETURN_IS_SOLUTION ";
+					return;
+				}
+				this.VisibleMax_cached = tmp;
+
 				this.VisibleRange_cached = this.VisibleMax_cached - this.VisibleMin_cached;
 
 				double pixelsSqueezedToPriceDistance = 0;

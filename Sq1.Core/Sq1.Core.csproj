@@ -251,7 +251,6 @@
     <Compile Include="StrategyBase\Strategy.cs" />
     <Compile Include="StrategyBase\ScriptParameter.cs" />
     <Compile Include="DataTypes\SymbolInfo.cs" />
-    <Compile Include="DataTypes\SymbolLock.cs" />
     <Compile Include="StrategyBase\SystemPerformance.cs" />
     <Compile Include="StrategyBase\SystemPerformanceSlice.cs" />
     <Compile Include="Broker\OrderProcessor.cs" />

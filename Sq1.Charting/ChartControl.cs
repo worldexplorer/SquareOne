@@ -333,5 +333,16 @@ namespace Sq1.Charting {
 //				if (this.tooltipPrice.Visible == false) return ret;
 //				return this.tooltipPrice.ClientRectangle;
 //			} }
+		public override string ToString() {
+			string ret = "NO_PARENT_INFO";
+			Form parentForm = this.Parent as Form;
+			if (parentForm != null) {
+				ret = parentForm.Text;
+			} else {
+				if (this.Parent != null) ret = "Parent[" + this.Parent.ToString() + "]";
+			}
+			return ret;
+		}
+
 	}
 }

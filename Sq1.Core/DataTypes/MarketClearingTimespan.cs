@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+
+using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
-	[DataContract]
 	public class MarketClearingTimespan {
-		[DataMember] public DateTime SuspendServerTimeOfDay;
-					 public string SuspendServerTimeOfDayAsString { get { return SuspendServerTimeOfDay.ToString("HH:mm"); } }
-		[DataMember] public DateTime ResumeServerTimeOfDay;
-					 public string ResumeServerTimeOfDayAsString { get { return ResumeServerTimeOfDay.ToString("HH:mm"); } }
-		[DataMember] public List<DayOfWeek> DaysOfWeekWhenClearingHappens;
-					 public string DaysOfWeekWhenClosingNotHappensAsString { get {
+		[JsonProperty]	public DateTime SuspendServerTimeOfDay;
+		[JsonIgnore]	public string SuspendServerTimeOfDayAsString { get { return SuspendServerTimeOfDay.ToString("HH:mm"); } }
+		[JsonProperty]	public DateTime ResumeServerTimeOfDay;
+		[JsonIgnore]	public string ResumeServerTimeOfDayAsString { get { return ResumeServerTimeOfDay.ToString("HH:mm"); } }
+		[JsonProperty]	public List<DayOfWeek> DaysOfWeekWhenClearingHappens;
+		[JsonIgnore]	public string DaysOfWeekWhenClosingNotHappensAsString { get {
 				if (DaysOfWeekWhenClearingHappens == null) return "";
 				return MarketInfo.DaysOfWeekAsString(DaysOfWeekWhenClearingHappens);
 			} }

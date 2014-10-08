@@ -1,13 +1,15 @@
 using System;
+
+using Newtonsoft.Json;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.DataTypes {
 	public class SymbolInfo {
-		public SecurityType SecurityType;
-		public string Symbol;
-		public string SymbolClass;
-		double _Point2Dollar;
-		public double Point2Dollar {
+		[JsonProperty]	public SecurityType SecurityType;
+		[JsonProperty]	public string Symbol;
+		[JsonProperty]	public string SymbolClass;
+		[JsonProperty]		   double _Point2Dollar;
+		[JsonProperty]	public double Point2Dollar {
 			get { return this._Point2Dollar; }
 			set {
 				if (value <= 0.0) {
@@ -17,33 +19,33 @@ namespace Sq1.Core.DataTypes {
 				this._Point2Dollar = value;
 			}
 		}
-		public double PriceLevelSizeForBonds;
-		public int DecimalsPrice;
-		public int DecimalsVolume;
+		[JsonProperty]	public double PriceLevelSizeForBonds;
+		[JsonProperty]	public int DecimalsPrice;
+		[JsonProperty]	public int DecimalsVolume;
 
-		public double VolumeMinimalFromDecimal	{ get { return  Math.Pow(1, -this.DecimalsVolume);  } }		// 1^(-2) = 0.01
-		public double PriceMinimalFromDecimal	{ get { return  Math.Pow(1, -this.DecimalsPrice); } }		// 1^(-2) = 0.01
+		[JsonProperty]	public double VolumeMinimalFromDecimal	{ get { return  Math.Pow(1, -this.DecimalsVolume);  } }		// 1^(-2) = 0.01
+		[JsonProperty]	public double PriceMinimalFromDecimal	{ get { return  Math.Pow(1, -this.DecimalsPrice); } }		// 1^(-2) = 0.01
 		
-		public bool SameBarPolarCloseThenOpen;
-		public int SequencedOpeningAfterClosedDelayMillis;
-		public int EmergencyCloseDelayMillis;
-		public int EmergencyCloseAttemptsMax;
-		public bool ReSubmitRejected;
-		public bool ReSubmittedUsesNextSlippage;
-		public bool UseFirstSlippageForBacktest;
-		public string SlippagesBuy;
-		public string SlippagesSell;
-		public MarketOrderAs MarketOrderAs;
-		public bool MarketZeroOrMinMax { get {
+		[JsonProperty]	public bool SameBarPolarCloseThenOpen;
+		[JsonProperty]	public int SequencedOpeningAfterClosedDelayMillis;
+		[JsonProperty]	public int EmergencyCloseDelayMillis;
+		[JsonProperty]	public int EmergencyCloseAttemptsMax;
+		[JsonProperty]	public bool ReSubmitRejected;
+		[JsonProperty]	public bool ReSubmittedUsesNextSlippage;
+		[JsonProperty]	public bool UseFirstSlippageForBacktest;
+		[JsonProperty]	public string SlippagesBuy;
+		[JsonProperty]	public string SlippagesSell;
+		[JsonProperty]	public MarketOrderAs MarketOrderAs;
+		[JsonProperty]	public bool MarketZeroOrMinMax { get {
 				return this.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
 					|| this.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
 			} }
-		public bool ReplaceTidalWithCrossMarket;
-		public int ReplaceTidalMillis;
-		public bool SimBugOutOfBarStopsFill;
-		public bool SimBugOutOfBarLimitsFill;
-		double _Margin;
-		public double LeverageForFutures {
+		[JsonProperty]	public bool ReplaceTidalWithCrossMarket;
+		[JsonProperty]	public int ReplaceTidalMillis;
+		[JsonProperty]	public bool SimBugOutOfBarStopsFill;
+		[JsonProperty]	public bool SimBugOutOfBarLimitsFill;
+		[JsonProperty]		   double _Margin;
+		[JsonProperty]	public double LeverageForFutures {
 			get { return this._Margin; }
 			set {
 				if (value <= 0.0) {

@@ -219,7 +219,7 @@ namespace Sq1.Core.Indicators {
 			if (double.IsNaN(valuePrevious)) {
 				string msg = "INDICATOR_VALUE_PREVIOUS_IS_NAN " + bandSeriesName + "[" + (barIndex - 1) + "]";
 				#if DEBUG
-				Debugger.Break();
+				//Debugger.Break();
 				#endif
 				//Assembler.PopupException(msg + msig);
 				valueOk = false;

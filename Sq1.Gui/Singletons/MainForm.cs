@@ -142,6 +142,9 @@ namespace Sq1.Gui.Singletons {
 				}
 
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
+				//this.DockPanel.ResumeLayout(true);
+				//this.DockPanel.Size = this.ClientSize;
+				
 				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 					if (cfmgr.ChartForm.ChartFormManager == null) continue;
 					Strategy chartStrategy = cfmgr.ChartForm.ChartFormManager.Executor.Strategy;
@@ -150,15 +153,20 @@ namespace Sq1.Gui.Singletons {
 						string msg = "IRRELEVANT_FOR_EDITABLE_STRATEGIES WILL_PROCEED_WITHPANELS_COMPILATION_ETC editor-typed strategies already have indicators in SNAP after pre-backtest compilation";
 						continue;
 					}
-					// need to instantiate all panels for all script indicators before distributing distances between them
-					// COPIED_FROM ScriptExecutor.BacktesterRunSimulationTrampoline() FIXED "EnterEveryBar doesn't draw MAfast";
-					chartStrategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
+					
+					// INDICATORS_CLEARED_ADDED_AFTER_BACKTEST_STARTED "Collection was modified; enumeration operation may not execute."
+					if (chartStrategy.ScriptContextCurrent.BacktestOnRestart == false) {
+						// need to instantiate all panels for all script indicators before distributing distances between them
+						// COPIED_FROM ScriptExecutor.BacktesterRunSimulationTrampoline() FIXED "EnterEveryBar doesn't draw MAfast";
+						chartStrategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
+					}
 
 					// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
 					// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
 					// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
-					//cfmgr.ChartForm.ResumeLayout(true);
+					//DOESNT_TRIGGER_RIGHT_SIZE cfmgr.ChartForm.ResumeLayout(true);
 					//cfmgr.ChartForm.Refresh();
+					//NOPE_WRONG_MOVE cfmgr.ChartForm.Size = this.DockPanel.ClientSize;
 
 					cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 				}

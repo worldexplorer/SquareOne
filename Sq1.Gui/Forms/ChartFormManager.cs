@@ -410,7 +410,7 @@ namespace Sq1.Gui.Forms {
 			//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
 			string msg2 = "DONT_UNCOMMENT_ITS_LIKE_METHOD_BUT_USED_IN_SLIDERS_AUTO_GROW_CONTROL_4_HOURS_DEBUGGING";
 			this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
-			this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
+			// MOVED_TO_BacktesterRunSimulationTrampoline(), we definitely will be running it later due to BacktestOnRestart.true tested 20 lines above this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
 			
 			this.Executor.BacktesterRunSimulationTrampoline(new Action(this.afterBacktesterCompleteOnceOnRestart), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");

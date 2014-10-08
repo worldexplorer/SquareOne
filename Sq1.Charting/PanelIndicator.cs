@@ -51,7 +51,7 @@ namespace Sq1.Charting {
 				}
 				double ret = Double.MaxValue;
 				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
-				ret = this.Indicator.OwnValuesCalculated.MinValueBetweenIndexes(base.ChartControl.VisibleBarLeft, base.ChartControl.VisibleBarRight);
+				ret = this.Indicator.OwnValuesCalculated.MinValueBetweenIndexesDoubleMaxValueUnsafe(base.ChartControl.VisibleBarLeft, base.ChartControl.VisibleBarRight);
 				return ret;
 			} }
 
@@ -62,7 +62,7 @@ namespace Sq1.Charting {
 				}
 				double ret = Double.MinValue;
 				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
-				ret = this.Indicator.OwnValuesCalculated.MaxValueBetweenIndexes(base.ChartControl.VisibleBarLeft, base.ChartControl.VisibleBarRight);
+				ret = this.Indicator.OwnValuesCalculated.MaxValueBetweenIndexesDoubleMinValueUnsafe(base.ChartControl.VisibleBarLeft, base.ChartControl.VisibleBarRight);
 				return ret;
 			} }
 

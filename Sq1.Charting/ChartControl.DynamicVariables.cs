@@ -162,7 +162,7 @@ namespace Sq1.Charting {
 		public double VisiblePriceMinNew { get {
 				if (base.DesignMode || this.BarsEmpty) return 99;
 				DataSeriesProxyBars seriesLow = new DataSeriesProxyBars(this.Bars, DataSeriesProxyableFromBars.Low);
-				double ret = seriesLow.MinValueBetweenIndexes(this.VisibleBarLeft, this.VisibleBarRight);
+				double ret = seriesLow.MinValueBetweenIndexesDoubleMaxValueUnsafe(this.VisibleBarLeft, this.VisibleBarRight);
 				if (this.VisibleBarRight >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 					Assembler.PopupException("VisiblePriceMin(): " + msg);
@@ -171,8 +171,8 @@ namespace Sq1.Charting {
 			} }
 		public double VisiblePriceMaxNew { get {
 				if (base.DesignMode || this.BarsEmpty) return 999;
-				DataSeriesProxyBars seriesigh = new DataSeriesProxyBars(this.Bars, DataSeriesProxyableFromBars.High);
-				double ret = seriesigh.MaxValueBetweenIndexes(this.VisibleBarLeft, this.VisibleBarRight);
+				DataSeriesProxyBars seriesHigh = new DataSeriesProxyBars(this.Bars, DataSeriesProxyableFromBars.High);
+				double ret = seriesHigh.MaxValueBetweenIndexesDoubleMinValueUnsafe(this.VisibleBarLeft, this.VisibleBarRight);
 				if (this.VisibleBarRight >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 					Assembler.PopupException("VisiblePriceMax(): " + msg);
@@ -182,7 +182,7 @@ namespace Sq1.Charting {
 		public double VisibleVolumeMinNew { get {
 				if (base.DesignMode || this.BarsEmpty) return 99;
 				DataSeriesProxyBars seriesVolume = new DataSeriesProxyBars(this.Bars, DataSeriesProxyableFromBars.Volume);
-				double ret = seriesVolume.MinValueBetweenIndexes(this.VisibleBarLeft, this.VisibleBarRight);
+				double ret = seriesVolume.MinValueBetweenIndexesDoubleMaxValueUnsafe(this.VisibleBarLeft, this.VisibleBarRight);
 				if (this.VisibleBarRight >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 						Assembler.PopupException("VisibleVolumeMin(): " + msg);
@@ -192,7 +192,7 @@ namespace Sq1.Charting {
 		public double VisibleVolumeMaxNew { get {
 				if (base.DesignMode || this.BarsEmpty) return 658;
 				DataSeriesProxyBars seriesVolume = new DataSeriesProxyBars(this.Bars, DataSeriesProxyableFromBars.Volume);
-				double ret = seriesVolume.MaxValueBetweenIndexes(this.VisibleBarLeft, this.VisibleBarRight);
+				double ret = seriesVolume.MaxValueBetweenIndexesDoubleMinValueUnsafe(this.VisibleBarLeft, this.VisibleBarRight);
 				if (this.VisibleBarRight >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 					Assembler.PopupException("VisibleVolumeMax(): " + msg);
