@@ -33,6 +33,7 @@ namespace Sq1.Charting {
 			Indicator = indicator;
 			base.PanelName = indicator.ToString();
 			base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
+			base.ForeColor = indicator.LineColor;
 		}
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
 			base.PaintWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter foregrounds
@@ -65,6 +66,18 @@ namespace Sq1.Charting {
 				return ret;
 			} }
 
+		// PanelPrice		must return bars[barIndexMouseOvered].Close
+		// PanelVolume		must return bars[barIndexMouseOvered].Volume
+		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
+		public override double PanelValueForBarCurrentNaNunsafe { get {
+				double ret = double.NaN;
+				if (this.Indicator.OwnValuesCalculated == null) return ret;
+				if (base.ChartControl.BarCurrentMouseOveredNullUnsafe == null) return ret;
+				int barIndexMouseOvered = base.ChartControl.BarCurrentMouseOveredNullUnsafe.ParentBarsIndex; 
+				if (barIndexMouseOvered >= this.Indicator.OwnValuesCalculated.Count) return ret;
+				ret = this.Indicator.OwnValuesCalculated[barIndexMouseOvered];
+				return ret;
+			} }
 
 	}
 }

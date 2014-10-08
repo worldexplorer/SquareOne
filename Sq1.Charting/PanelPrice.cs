@@ -434,5 +434,15 @@ namespace Sq1.Charting {
 				}
 			}
 		}
+		
+		// PanelPrice		must return bars[barIndexMouseOvered].Close
+		// PanelVolume		must return bars[barIndexMouseOvered].Volume
+		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
+		public override double PanelValueForBarCurrentNaNunsafe { get {
+				double ret = double.NaN;
+				if (base.ChartControl.BarCurrentMouseOveredNullUnsafe == null) return ret;
+				ret = base.ChartControl.BarCurrentMouseOveredNullUnsafe.Close;
+				return ret;
+			} }
 	}
 }

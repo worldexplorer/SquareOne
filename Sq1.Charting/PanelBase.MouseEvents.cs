@@ -10,7 +10,9 @@ using Sq1.Core.Execution;
 namespace Sq1.Charting {
 	public partial class PanelBase {
 		
-		//protected bool	mouseOver;
+		protected bool	mouseOver;					// HELPS_DRAWING_INDICATOR_VALUE_ON_GUTTER_WHILE_HOVERING_PANEL_PRICE
+		protected int	barIndexMouseIsOverPrev;
+		
 		protected bool	dragButtonPressed;
 		
 		protected bool	scrollingHorizontally;
@@ -30,11 +32,13 @@ namespace Sq1.Charting {
 
 
 		protected override void OnMouseEnter(EventArgs e) {
-			//this.mouseOver = true;
+			base.OnMouseEnter(e);
 			this.scrollingHorizontally = false;
 			this.squeezingHorizontally = false;
 			this.squeezingVertically = false;
-			base.OnMouseEnter(e);
+
+			this.mouseOver = true;
+			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) this.ChartControl.InvalidateAllPanels();
 		}
 		protected override void OnMouseLeave(EventArgs e) {
 			//this.ChartControl.TooltipPrice.ClientRectangle.Contains(e.
@@ -46,16 +50,21 @@ namespace Sq1.Charting {
 			//	return;
 			//}
 			
-			//this.mouseOver = false;
 			this.scrollingHorizontally = false;
 			this.squeezingHorizontally = false;
 			this.squeezingVertically = false;
+
+			this.mouseOver = false;
+			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) this.ChartControl.InvalidateAllPanels();
+			
 			//this.ChartControl.TooltipPriceHide();
 			//this.ChartControl.TooltipPositionHide();
 			
 			// MouseTrack uses this to remove MouseLines from Panel Price & MousePositionLabels from Gutters
 			this.moveHorizontalXprev = -1;
 			this.moveHorizontalYprev = -1;
+
+			//this.ChartControl.BarCurrentMouseOveredNullUnsafe = null;
 
 			base.OnMouseLeave(e);
 		}
@@ -84,6 +93,12 @@ namespace Sq1.Charting {
 				// if (base.DesignMode) this.ChartControl will be NULL
 				if (this.ChartControl == null) return;		// so that Designer works
 				if (this.ChartControl.BarsEmpty) return;	// finally {} will invoke base.OnMouseMove()
+				
+				int barIndexMouseIsOverNow = this.XToBar(e.X);
+				this.ChartControl.BarCurrentMouseOveredNullUnsafe = null;
+				if (barIndexMouseIsOverNow >= 0 && barIndexMouseIsOverNow < this.ChartControl.Bars.Count) {
+					this.ChartControl.BarCurrentMouseOveredNullUnsafe = this.ChartControl.Bars[barIndexMouseIsOverNow];
+				}
 				
 				if (this.dragButtonPressed == true
 					    && this.scrollingHorizontally == false
@@ -223,9 +238,6 @@ namespace Sq1.Charting {
 					}
 				}
 				
-				if (this.ThisPanelIsPricePanel == false) return;
-				if (this.dragButtonPressed == true) return;
-
 				if (this.moveHorizontalXprev == e.X && this.moveHorizontalYprev == e.Y) {
 					return;
 				}
@@ -236,10 +248,16 @@ namespace Sq1.Charting {
 				if (mouseTrack) {
 					//base.Refresh();
 					base.Invalidate();
+					if (barIndexMouseIsOverPrev != barIndexMouseIsOverNow) {
+						barIndexMouseIsOverPrev = barIndexMouseIsOverNow;
+						this.ChartControl.InvalidateAllPanels();
+					}
 				}
 
-				this.TooltipPositionShown = this.handleTooltipsPositionAndPrice(e);
-				if (this.TooltipPositionShown == false) this.handleTooltipPrice(e);
+				if (this.ThisPanelIsPricePanel) {
+					this.TooltipPositionShown = this.handleTooltipsPositionAndPrice(e);
+					if (this.TooltipPositionShown == false) this.handleTooltipPrice(e);
+				}
 			} catch (Exception ex) {
 				string msg = "WindProc won't catch your exceptions; keep a breakpoint here";
 				//throw ex;

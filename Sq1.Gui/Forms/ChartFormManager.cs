@@ -338,7 +338,7 @@ namespace Sq1.Gui.Forms {
 			//this.clonePositionsForChartPickupBacktest(this.Executor.ExecutionDataSnapshot.PositionsMaster);
 			this.ChartForm.ChartControl.PositionsBacktestAdd(this.Executor.ExecutionDataSnapshot.PositionsMaster);
 			this.ChartForm.ChartControl.PendingHistoryBacktestAdd(this.Executor.ExecutionDataSnapshot.AlertsPendingHistorySafeCopy);
-			this.ChartForm.ChartControl.InvalidateAllPanelsFolding();
+			this.ChartForm.ChartControl.InvalidateAllPanels();
 			
 			this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);
 			this.ReportersFormsManager.BuildOnceAllReports(this.Executor.Performance);

@@ -158,7 +158,7 @@ namespace Sq1.Charting {
 						panel.InitializeWithNonEmptyBars(this);
 						
 						this.PanelsByIndicator.Add(indicator, panel);
-						this.panelsFolding.Add(panel);
+						this.panels.Add(panel);
 						this.multiSplitContainer.PanelAddSplitterCreateAdd(panel, true);		//, this.ChartSettings.MultiSplitterPropertiesByPanelName);
 						needToReReadSplitterPositionsSinceIndicatorsWereAdded = true;
 					}
@@ -274,7 +274,7 @@ namespace Sq1.Charting {
 			return barAnnotation.Status;
 		}
 		public override void SyncBarsIdentDueToSymbolRename() {
-			foreach (PanelBase panelFolding in this.panelsFolding) {	// at least PanelPrice and PanelVolume
+			foreach (PanelBase panelFolding in this.panels) {	// at least PanelPrice and PanelVolume
 				panelFolding.InitializeWithNonEmptyBars(this);
 				panelFolding.Invalidate();
 			}

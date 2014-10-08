@@ -202,7 +202,7 @@ namespace Sq1.Gui.Forms {
 			executorSafe.ExecuteOnNewBarOrNewQuote(null);	//new Quote());
 
 			//if (this.Executor.Backtester.IsBacktestingNow) return;	// WRONG_CANDIDATE WHEN_I_CHANGE_SMA_PERIOD_I_DONT_WANT_TO_SEE_CLEAR_CHART_BUT_REPAINTED_WITHOUT_2SEC_BLINK
-			chartFormSafe.ChartControl.InvalidateAllPanelsFolding();
+			chartFormSafe.ChartControl.InvalidateAllPanels();
 		}
 		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Quote quote) {
 			this.msigForNpExceptions = "ConsumeFreshQuote(): ";
@@ -233,7 +233,7 @@ namespace Sq1.Gui.Forms {
 			
 			// trigger GUI to repaint the chart with new positions and bid/ask lines
 			//if (this.Executor.Backtester.IsBacktestingNow) return;	// WRONG_CANDIDATE WHEN_I_CHANGE_SMA_PERIOD_I_DONT_WANT_TO_SEE_CLEAR_CHART_BUT_REPAINTED_WITHOUT_2SEC_BLINK
-			chartFormSafe.ChartControl.InvalidateAllPanelsFolding();
+			chartFormSafe.ChartControl.InvalidateAllPanels();
 			//rendererSafe.DrawBidAskLines = true;
 		}
 		#endregion

@@ -41,6 +41,16 @@ namespace Sq1.Charting {
 			}
 			
 			bool mouseTrack = this.ChartControl.ChartSettings.MousePositionTrackOnGutters;
+			if (mouseTrack) {		// && this.moveHorizontalYprev > -1
+				int mouseY = this.moveHorizontalYprev;
+				if (this.mouseOver == false || this.moveHorizontalYprev == -1) {
+					double panelValueForBarCurrent = this.PanelValueForBarCurrentNaNunsafe;
+					if (double.IsNaN(panelValueForBarCurrent) == false) {
+						mouseY = this.ValueToYinverted(panelValueForBarCurrent);
+					}
+				}
+				g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, 0, mouseY, base.Width, mouseY);
+			}
 			if (this.GutterRightDraw) {
 				if (this.GutterRightFontHeight_cached <= 0) {
 					string msg = "MUST_BE_POSITIVE_this.ChartControl.GutterRightFontHeight[" + this.GutterRightFontHeight_cached + "]";
@@ -77,10 +87,14 @@ namespace Sq1.Charting {
 					             this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
 				}
 				
-				if (mouseTrack && this.moveHorizontalYprev > -1) {
+				if (mouseTrack) {			// && this.moveHorizontalYprev > -1
 					int mouseY = this.moveHorizontalYprev;
-					g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, 0, mouseY, this.PanelWidthMinusRightPriceGutter+5, mouseY);
-					
+					if (this.mouseOver == false || this.moveHorizontalYprev == -1) {
+						double panelValueForBarCurrent = this.PanelValueForBarCurrentNaNunsafe;
+						if (double.IsNaN(panelValueForBarCurrent) == false) {
+							mouseY = this.ValueToYinverted(panelValueForBarCurrent);
+						}
+					}
 					double mousePrice = this.YinvertedToValue(mouseY);
 					int labelYadjustedUp = (int)mouseY - this.GutterRightFontHeightHalf_cached;
 					labelYadjustedUp = this.AdjustToPanelHeight(labelYadjustedUp);
@@ -89,17 +103,41 @@ namespace Sq1.Charting {
 					int labelHeight = (int)g.MeasureString(priceFormatted, this.ChartControl.ChartSettings.GutterRightFont).Height;
 					int labelXalignedRight = base.Width - this.ChartControl.ChartSettings.GutterRightPadding - labelWidth;
 					
-					Rectangle plate = new Rectangle(labelXalignedRight, labelYadjustedUp - 2, labelWidth, labelHeight + 2);
-					g.FillRectangle(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters.Brush, plate);
-					
-					g.DrawString(priceFormatted, this.ChartControl.ChartSettings.GutterRightFont,
-					             this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
+					Rectangle plate = new Rectangle(labelXalignedRight, labelYadjustedUp - 2, labelWidth + 1, labelHeight + 3);
+					if (base.ForeColor != Color.Empty) {
+						using (SolidBrush indicatorColorBrush = new SolidBrush(base.ForeColor)) {
+							g.FillRectangle(indicatorColorBrush, plate);
+						}
+						using (SolidBrush brushWhite = new SolidBrush(Color.White)) {
+							g.DrawString(priceFormatted, this.ChartControl.ChartSettings.GutterRightFont,
+							             brushWhite, labelXalignedRight, labelYadjustedUp);
+						}
+					} else {
+						g.FillRectangle(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters.Brush, plate);
+						g.DrawString(priceFormatted, this.ChartControl.ChartSettings.GutterRightFont,
+						             this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
+					}
 				}
 			}
 			
 			// before I draw vertical lines for date/time, I paint backgrounds for the bars if set from Script;
 			this.renderBarBackgrounds(g);
+
 			// now I draw vertical lines for date/time
+			if (mouseTrack) {	// && this.moveHorizontalXprev > -1
+				int mouseX = this.moveHorizontalXprev;
+				int mouseBarIndex = this.XToBar(mouseX);
+				int mouseBarX = this.BarToX(mouseBarIndex);
+				if (this.mouseOver == false || this.moveHorizontalXprev == -1) {
+					Bar barMouseOveredInOtherPanel = this.ChartControl.BarCurrentMouseOveredNullUnsafe;
+					if (barMouseOveredInOtherPanel != null) {
+						mouseBarX = this.BarToX(barMouseOveredInOtherPanel.ParentBarsIndex);
+					}
+				}
+
+				int mouseBarMiddleX = mouseBarX + this.BarShadowOffset;
+				g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, mouseBarMiddleX, 0, mouseBarMiddleX, base.Height);
+			}
 			if (this.GutterBottomDraw) {
 				if (this.GutterRightFontHeight_cached <= 0) return;	// not initialized yet
 				//this.ChartControl.ChartSettings.PenGridlinesVerticalNewDate.Width = 2f;
@@ -174,16 +212,12 @@ namespace Sq1.Charting {
 					barDateLabelsAlreadyDrawn.Add(proposal);
 				}
 
-				if (mouseTrack && this.moveHorizontalXprev > -1) {
+				if (mouseTrack) {	// && this.moveHorizontalXprev > -1
 					int mouseX = this.moveHorizontalXprev;
-					//bool adjustMouseTrackToBarShadow = true;
-					//if (adjustMouseTrackToBarShadow) {
-						int mouseBarIndex = this.XToBar(mouseX);
-						int mouseBarX = this.BarToX(mouseBarIndex);
-						int mouseBarMiddleX = mouseBarX + this.BarShadowOffset;
-					//}
-					g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, mouseBarMiddleX, 0, mouseBarMiddleX, this.PanelHeightMinusGutterBottomHeight_cached+5);
-
+					int mouseBarIndex = this.XToBar(mouseX);
+					int mouseBarX = this.BarToX(mouseBarIndex);
+					int mouseBarMiddleX = mouseBarX + this.BarShadowOffset;
+					
 					Bar mouseBar = this.ChartControl.Bars[mouseBarIndex];
 					if (null != mouseBar) {
 						string dateFormatted = mouseBar.DateTimeOpen.ToString(this.formatForBars);
@@ -254,7 +288,13 @@ namespace Sq1.Charting {
 				? this.ChartControl.ChartSettings.BrushVolumeBarDown
 				: this.ChartControl.ChartSettings.BrushVolumeBarUp;
 			//if (fillDownCandleBody) histogramBarInverted.Width--;	// SYNC_WITH_RenderBarCandle drawing using a pen produces 1px narrower rectangle that drawing using a brush???...
-			graphics.FillRectangle(brushDown, histogramBarInverted);
+			if (this.ForeColor != Color.Empty) {
+				using (SolidBrush brushNonVolume = new SolidBrush(this.ForeColor)) {
+					graphics.FillRectangle(brushNonVolume, histogramBarInverted);
+				}
+			} else {
+				graphics.FillRectangle(brushDown, histogramBarInverted);
+			}
 		}
 		protected void RenderBarCandle(Graphics graphics, int barX, int barYOpenInverted, int barYHighInverted, int barYLowInverted, int barYCloseInverted, bool fillDownCandleBody) {
 			int candleBodyLower = barYOpenInverted;	// assuming it is a white candle (rising price)

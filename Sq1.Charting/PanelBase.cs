@@ -429,5 +429,14 @@ namespace Sq1.Charting {
 			ret += ":" + this.Location.Y + "+" + this.Height + "=" + (this.Location.Y + this.Height);
 			return ret;
 		}
+		
+		// PanelPrice		must return bars[barIndexMouseOvered].Close
+		// PanelVolume		must return bars[barIndexMouseOvered].Volume
+		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
+		public virtual double PanelValueForBarCurrentNaNunsafe { get {
+				double ret = double.NaN;
+				return ret;
+			} }
+				
 	}
 }

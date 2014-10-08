@@ -11,6 +11,7 @@ namespace Sq1.Charting {
 		}
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
 			base.PaintWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter foregrounds
+			base.ForeColor = this.ChartControl.ChartSettings.VolumeColorBarDown;
 			this.renderBarsVolume(g);
 		}
 		protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
@@ -44,5 +45,15 @@ namespace Sq1.Charting {
 				base.RenderBarHistogram(g, barX, barYVolume, fillCandleBody);
 			}
 		}
+		
+		// PanelPrice		must return bars[barIndexMouseOvered].Close
+		// PanelVolume		must return bars[barIndexMouseOvered].Volume
+		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
+		public override double PanelValueForBarCurrentNaNunsafe { get {
+				double ret = double.NaN;
+				if (base.ChartControl.BarCurrentMouseOveredNullUnsafe == null) return ret;
+				ret = base.ChartControl.BarCurrentMouseOveredNullUnsafe.Volume;
+				return ret;
+			} }
 	}
 }

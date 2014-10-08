@@ -17,7 +17,7 @@ namespace Sq1.Charting {
 		public bool BarsNotEmpty { get { return this.Bars != null && this.Bars.Count > 0; } }
 		public int BarsDecimalsPrice { get { return (this.Bars.SymbolInfo != null) ? this.Bars.SymbolInfo.DecimalsPrice : 5; } }
 		public int BarsDecimalsVolume { get { return (this.Bars.SymbolInfo != null) ? this.Bars.SymbolInfo.DecimalsVolume : 0; } }
-		List<PanelBase> panelsFolding;
+		List<PanelBase> panels;
 		public bool RangeBarCollapsed {
 			get { return this.splitContainerChartVsRange.Panel2Collapsed; }
 			set { this.splitContainerChartVsRange.Panel2Collapsed = value; }
@@ -30,6 +30,7 @@ namespace Sq1.Charting {
 		public ScriptExecutorObjects ScriptExecutorObjects;
 
 		public int HeightMinusBottomHscrollbar { get { return base.Height - this.hScrollBar.Height; } }
+		public Bar BarCurrentMouseOveredNullUnsafe;
 
 		public ChartControl() {
 			this.ChartSettings = new ChartSettings(); // was a component, used at InitializeComponent() (to draw SampleBars)
@@ -41,10 +42,10 @@ namespace Sq1.Charting {
 			//this.HScroll = true;
 			this.hScrollBar.SmallChange = this.ChartSettings.ScrollNBarsPerOneKeyPress;
 
-			panelsFolding = new List<PanelBase>();
-			panelsFolding.Add(this.panelPrice);
-			panelsFolding.Add(this.panelVolume);
-			this.multiSplitContainer.InitializeCreateSplittersDistributeFor(panelsFolding);
+			panels = new List<PanelBase>();
+			panels.Add(this.panelPrice);
+			panels.Add(this.panelVolume);
+			this.multiSplitContainer.InitializeCreateSplittersDistributeFor(panels);
 			// TOO_EARLY_MOVED_TO_PropagateSettingSplitterDistancePriceVsVolume this.multiSplitContainer.SplitterPositionsByManorder = this.ChartSettings.SplitterPositionsByManorder;
 			
 			this.panelPrice.Initialize(this);
@@ -74,11 +75,11 @@ namespace Sq1.Charting {
 					string msg = "HSCROLL_POSITION_VALUE_OUT_OF_RANGE; fix deserialization upstack";
 
 				}
-				foreach (PanelBase panelFolding in this.panelsFolding) {	// at least PanelPrice and PanelVolume
-					panelFolding.InitializeWithNonEmptyBars(this);
+				foreach (PanelBase panel in this.panels) {	// at least PanelPrice and PanelVolume
+					panel.InitializeWithNonEmptyBars(this);
 				}
 			}
-			this.InvalidateAllPanelsFolding();
+			this.InvalidateAllPanels();
 		}
 		public void SyncHorizontalScrollToBarsCount() {
 			// this.HorizontalScroll represents the scrolling window for the content, useful in UserControl.Autoscroll when an innerPanel is wider or has Top|Left < 0 
@@ -89,14 +90,14 @@ namespace Sq1.Charting {
 			this.hScrollBar.Minimum = 0;						// index of first available Bar in this.Bars 
 			this.hScrollBar.Maximum = this.Bars.Count - 1;		// index of  last available Bar in this.Bars
 		}
-		public void InvalidateAllPanelsFolding() {
+		public void InvalidateAllPanels() {
 			if (base.InvokeRequired) {
-				base.BeginInvoke(new MethodInvoker(this.InvalidateAllPanelsFolding));
+				base.BeginInvoke(new MethodInvoker(this.InvalidateAllPanels));
 				return;
 			}
 			this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
-			foreach (PanelBase panelFolding in this.panelsFolding) {
-				panelFolding.Invalidate();
+			foreach (PanelBase panel in this.panels) {
+				panel.Invalidate();
 			}
 			this.TooltipPriceHide();
 			this.TooltipPositionHide();
@@ -107,7 +108,7 @@ namespace Sq1.Charting {
 			this.ChartSettings.ScrollPositionAtBarIndex = bar;
 			this.RaiseChartSettingsChangedContainerShouldSerialize();
 			this.hScrollBar.Value = bar;
-			this.InvalidateAllPanelsFolding();
+			this.InvalidateAllPanels();
 		}
 		public void ScrollOneBarLeftAtKeyPressRate() {
 			this.scrollToBarSafely(this.hScrollBar.Value - this.ChartSettings.ScrollNBarsPerOneKeyPress);
@@ -144,7 +145,7 @@ namespace Sq1.Charting {
 
 			if (this.hScrollBar.Value != scrollEventArgs.NewValue) {	// FILTER_OUT_UNNECESSARY_INVOCATIONS
 				//ALREADY_THERE_AFTER_EVENT_HANDLER_TERMINATES this.hScrollBar.Value = scrollEventArgs.NewValue;
-				this.InvalidateAllPanelsFolding();
+				this.InvalidateAllPanels();
 			}
 
 			if (scrollEventArgs.Type == ScrollEventType.ThumbPosition || scrollEventArgs.Type == ScrollEventType.ThumbTrack) {
@@ -177,20 +178,20 @@ namespace Sq1.Charting {
 //			}
 			if (this.VisibleBarRight != this.Bars.Count) return;	// move slider if only last bar is visible 
 			this.SyncHorizontalScrollToBarsCount();
-			this.InvalidateAllPanelsFolding();
+			this.InvalidateAllPanels();
 			this.RangeBar.Invalidate();
 		}
 
 		public void BarWidthIncrementAtKeyPressRate() {
 			if (this.ChartSettings.BarWidthIncludingPadding >= this.ChartSettings.BarWidthIncludingPaddingMax) return; 
 			this.ChartSettings.BarWidthIncludingPadding += this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep;
-			this.InvalidateAllPanelsFolding();
+			this.InvalidateAllPanels();
 			base.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 		public void BarWidthDecrementAtKeyPressRate() {
 			if (this.ChartSettings.BarWidthIncludingPadding <= this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep) return;	// <= since BarWidth mustn't be zero (ZeroDivException)
 			this.ChartSettings.BarWidthIncludingPadding -= this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep;
-			this.InvalidateAllPanelsFolding();
+			this.InvalidateAllPanels();
 			base.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 		public void DragDownSqueeze() {
@@ -295,7 +296,7 @@ namespace Sq1.Charting {
 			if (this.tooltipPrice.Visible == false) return wasInvalidated;	// DO_NOT_DELETE__HERE_WE_BREAK_INFINITE_LOOP
 			this.tooltipPrice.Visible = false;
 			wasInvalidated = true;
-			this.InvalidateAllPanelsFolding();
+			this.InvalidateAllPanels();
 			return wasInvalidated;
 		}
 		public bool TooltipPositionHide() {
@@ -304,7 +305,7 @@ namespace Sq1.Charting {
 			if (this.tooltipPosition.Visible == false) return wasInvalidated;	// DO_NOT_DELETE__HERE_WE_BREAK_INFINITE_LOOP
 			this.tooltipPosition.Visible = false;
 			wasInvalidated = true;
-			this.InvalidateAllPanelsFolding();
+			this.InvalidateAllPanels();
 			return wasInvalidated;
 		}
 		
