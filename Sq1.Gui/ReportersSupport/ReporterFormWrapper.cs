@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+
 using Sq1.Core.StrategyBase;
+using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.ReportersSupport {
-	public partial class ReporterFormWrapper : DockContent {
+	public partial class ReporterFormWrapper : DockContentImproved {
 		private Reporter reporter;
 		private ReportersFormsManager reportersFormsManager;
 

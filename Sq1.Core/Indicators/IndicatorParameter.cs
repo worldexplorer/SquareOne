@@ -25,6 +25,9 @@ namespace Sq1.Core.Indicators {
 		//public string ValueString;
 		//public BarScaleInterval ValueBarScaleInterval;
 
+		[JsonProperty]	public bool BorderShown;
+		[JsonProperty]	public bool NumericUpdownShown;
+
 		
 		public IndicatorParameter(string name = "NAME_NOT_INITIALIZED",
 				double valueCurrent = double.NaN, double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) {
@@ -33,6 +36,8 @@ namespace Sq1.Core.Indicators {
 			ValueMin = valueMin;
 			ValueMax = valueMax;
 			ValueIncrement = valueIncrement;
+			BorderShown = false;
+			NumericUpdownShown = true;
 		}
 		//public IndicatorParameter(string name = "NAME_NOT_INITIALIZED", string value = "STRING_VALUE_NOT_INITIALIZED") {
 		//    this.Name = name;

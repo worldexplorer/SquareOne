@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -87,29 +88,74 @@ namespace Sq1.Widgets {
 			this.Show(dockPanel, DockState.Document);
 		}
 
+		
+		public bool IsFloatingWindow { get { return this.DockState == DockState.Float; } }
+		public bool IsInDocumentArea { get { return this.DockState == DockState.Document; } }
+		public bool IsDocked { get { return DockHelper.IsDockWindowState(this.DockState); } }
+		public bool IsDockedAutoHide { get { return DockHelper.IsDockStateAutoHide(this.DockState); } }
+		public bool IsCoveredOrAutoHidden { get {
+				if (this.IsDockedAutoHide) return true;
+				if (this.IsDocked) {
+					string msg = "go find out if I'm covered by other forms docked into the same area"
+						+ " ; meanwhile I'll report I'm not covered so you can click ChartForm>HIDESourceCodeEditor";
+					#if DEBUG
+					//Debugger.Break();
+					#endif
+					return false;
+				}
+				if (this.IsFloatingWindow) {
+					string msg = "go find out if I'm covered by other forms floating in the same window"
+						+ " ; meanwhile I'll report I'm not covered so you can click ChartForm>HIDESourceCodeEditor";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return false;
+				}
+				if (this.DockState == DockState.Unknown) {
+					string msg = "I_WANNA_KNOW_WHEN_THIS_STATE_HAPPENS_TO_THE_FORM";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return true;
+				}
+				if (this.DockState == DockState.Hidden) {
+					string msg = "DESERIALIZED_AS_HIDDEN__NOT_REALLY_DOCKED_NOR_COVERED";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return true;
+				}
+				
+				string msg1 = "WHERE_AM_I,THEN???";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return true;
+			} }
+
 		// moved from modified WelfenLuoBlaBlaBla.DockHandler to restore release-state of DockContent library (not fully restored, though)
-		public static void ActivateDockContentPopupAutoHidden(DockContent form, bool keepAutoHidden = true, bool activate = true) {
-			if (DockHelper.IsDockStateAutoHide(form.DockState)) {
+		public void ActivateDockContentPopupAutoHidden(bool keepAutoHidden = true, bool activate = true) {
+			if (this.IsDocked || this.IsDockedAutoHide) {
 				if (keepAutoHidden) {
 					// will fold back to the button after a delay; what for do you need to set Active then???
 					//form.DockPanel.ActiveAutoHideContent = form;
 				} else {
 					// will stay open because we change DockRightAutoHidde -> DockRight
-					DockContentImproved.ToggleAutoHide(form);
+					this.ToggleAutoHide();
 				}
 			}
 			if (activate) {
-				form.Activate();
+				this.Activate();
 			}
 		}
 
-		public static void ToggleAutoHide(DockContent form) {
-			if (form.DockState == DockState.Unknown) return;
-			if (form.DockState == DockState.Document) return;
-			if (form.DockState == DockState.Float) return;
-			if (form.DockState == DockState.Hidden) return;
-			DockState newState = DockHelper.ToggleAutoHideState(form.Pane.DockState);
-			form.Pane.SetDockState(newState);
+		public void ToggleAutoHide() {
+			if (this.DockState == DockState.Unknown) return;
+			if (this.DockState == DockState.Document) return;
+			if (this.DockState == DockState.Float) return;
+			if (this.DockState == DockState.Hidden) return;
+			DockState newState = DockHelper.ToggleAutoHideState(this.Pane.DockState);
+			this.Pane.SetDockState(newState);
 		}
 		protected override void OnResize(EventArgs e) {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
@@ -126,6 +172,14 @@ namespace Sq1.Widgets {
 				return;
 			}
 			base.OnResize(e);
+		}
+		public bool NullOrDisposed { get { 
+				return DockContentImproved.IsNullOrDisposed(this);
+			}}
+		public static bool IsNullOrDisposed(Form form) {
+			if (form == null) return true;
+			if (form.IsDisposed) return true;
+			return false;	//!this.chartForm.IsHidden;
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -145,7 +146,7 @@ namespace Sq1.Gui.Singletons {
 			//v2
 			base.Close();
 		}
-		void ctxChartsOpening(object sender, System.ComponentModel.CancelEventArgs e) {
+		void ctxWindowsOpening(object sender, System.ComponentModel.CancelEventArgs e) {
 			this.ctxWindows.Items.Clear();
 			foreach (var mgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				var mniRoot = new ToolStripMenuItem();
@@ -153,28 +154,36 @@ namespace Sq1.Gui.Singletons {
 				var ctxChildrenForms = new ContextMenuStrip();
 				foreach (string textForMenu in mgr.FormsAllRelated.Keys) {
 					DockContent form = mgr.FormsAllRelated[textForMenu];
-					var mniChild = new ToolStripMenuItem();
-					mniChild.Text = textForMenu;
-					mniChild.Tag = form;
-					mniChild.Checked = form.Visible;
+					var mniChartForWindowsGrouped = new ToolStripMenuItem();
+					mniChartForWindowsGrouped.Text = textForMenu;
+					mniChartForWindowsGrouped.Tag = form;
+					mniChartForWindowsGrouped.Checked = form.Visible;
 					if (form.IsActivated) {
-						mniChild.Enabled = false;
+						mniChartForWindowsGrouped.Enabled = false;
 					} else {
-						mniChild.Click += new EventHandler(mniChildctxCharts_Click);
+						mniChartForWindowsGrouped.Click += new EventHandler(mniWindowsCtxCharts_Click);
 					}
-					ctxChildrenForms.Items.Add(mniChild);
+					ctxChildrenForms.Items.Add(mniChartForWindowsGrouped);
 				}
 				mniRoot.DropDown = ctxChildrenForms;
 				this.ctxWindows.Items.Add(mniRoot);
 			}
 		}
-		void mniChildctxCharts_Click(object sender, EventArgs e) {
-			var mniChild = sender as ToolStripMenuItem;
-			DockContent frmClicked = mniChild.Tag as DockContent;
-			if (mniChild.Checked) {
-				DockContentImproved.ToggleAutoHide(frmClicked);		// forms in Document should be ignored
+		void mniWindowsCtxCharts_Click(object sender, EventArgs e) {
+			var mniWindowChartAnyRelatedForm = sender as ToolStripMenuItem;
+			DockContentImproved anyAdressableForm = mniWindowChartAnyRelatedForm.Tag as DockContentImproved;
+			if (anyAdressableForm == null) {
+				string msg = "reporterToPopup.Parent IS_NOT DockContentImproved";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				Assembler.PopupException(msg + " //mniWindowsCtxCharts_Click()");
+				return;
+			}
+			if (mniWindowChartAnyRelatedForm.Checked) {
+				anyAdressableForm.ToggleAutoHide();		// forms in Document should be ignored
 			} else {
-				DockContentImproved.ActivateDockContentPopupAutoHidden(frmClicked, false);
+				anyAdressableForm.ActivateDockContentPopupAutoHidden(false);
 			}
 		}
 	}

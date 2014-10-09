@@ -8,7 +8,7 @@ using Sq1.Core.Indicators;
 namespace Sq1.Core.StrategyBase {
 	public class ContextScript : ContextChart {
 		[JsonProperty]	public PositionSize PositionSize;
-		[JsonProperty]	public Dictionary<int, double> ParameterValuesById { get; set; }
+		[JsonProperty]	public Dictionary<int, double> ScriptParameterValuesById { get; set; }
 		[JsonProperty]	public Dictionary<string, List<IndicatorParameter>> IndicatorParametersByName { get; set; }	//  { get; set; } is needed for Json.Deserialize to really deserialize it
 		
 		[JsonProperty]	public bool IsCurrent;
@@ -38,7 +38,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		protected ContextScript() : base() {
 			PositionSize = new PositionSize(PositionSizeMode.SharesConstantEachTrade, 1);
-			ParameterValuesById = new Dictionary<int, double>();
+			ScriptParameterValuesById = new Dictionary<int, double>();
 			IndicatorParametersByName = new Dictionary<string, List<IndicatorParameter>>();
 			
 			IsCurrent = false;
@@ -69,8 +69,10 @@ namespace Sq1.Core.StrategyBase {
 			base.AbsorbFrom(found);
 			
 			this.PositionSize = found.PositionSize.Clone();
-			if (absorbScriptAndIndicatorParams) this.ParameterValuesById = new Dictionary<int, double>(found.ParameterValuesById);
-			if (absorbScriptAndIndicatorParams) this.IndicatorParametersByName = new Dictionary<string, List<IndicatorParameter>>(found.IndicatorParametersByName);
+			if (absorbScriptAndIndicatorParams) {
+				this.ScriptParameterValuesById = new Dictionary<int, double>(found.ScriptParameterValuesById);
+				this.IndicatorParametersByName = new Dictionary<string, List<IndicatorParameter>>(found.IndicatorParametersByName);
+			}
 			//this.ChartBarSpacing = found.ChartBarSpacing;
 			this.ChartAutoSubmitting = found.ChartAutoSubmitting;
 			this.BacktestOnRestart = found.BacktestOnRestart;

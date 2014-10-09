@@ -70,8 +70,8 @@
         "RecentTimeunits": 0
       },
       "ChartStreaming": false,
-      "ShowRangeBar": false,
-      "ParameterValuesById": {
+      "ShowRangeBar": true,
+      "ScriptParameterValuesById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
       "IndicatorParametersByName": {
@@ -83,7 +83,9 @@
             "ValueMin": 10.0,
             "ValueMax": 20.0,
             "ValueIncrement": 1.0,
-            "ValueCurrent": 12.0
+            "ValueCurrent": 12.0,
+            "BorderShown": false,
+            "NumericUpdownShown": true
           }
         ],
         "MAfast": [
@@ -93,17 +95,13 @@
             "ValueMin": 11.0,
             "ValueMax": 88.0,
             "ValueIncrement": 11.0,
-            "ValueCurrent": 44.0
+            "ValueCurrent": 44.0,
+            "BorderShown": false,
+            "NumericUpdownShown": true
           }
         ]
       }
     }
-  },
-  "SliderBordersShownByParameterId": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib"
-  },
-  "SliderNumericUpdownsShownByParameterId": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib"
   },
   "HasChartOnly": false
 }

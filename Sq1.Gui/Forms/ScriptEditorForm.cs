@@ -1,8 +1,9 @@
 ﻿using System;
+using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
-	public partial class ScriptEditorForm : DockContent {
+	public partial class ScriptEditorForm : DockContentImproved {
 		private ChartFormManager chartFormManager;
 
 		// don't use this constuctor outside this class!

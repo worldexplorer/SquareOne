@@ -63,8 +63,6 @@
 			// 
 			// SlidersAutoGrow
 			// 
-			this.SlidersAutoGrowControl.AllSlidersBorderShownByDefault = false;
-			this.SlidersAutoGrowControl.AllSlidersNumericShownByDefault = false;
 			this.SlidersAutoGrowControl.BackColor = System.Drawing.SystemColors.Control;
 			this.SlidersAutoGrowControl.CurrentParametersFromChildSliders = null;
 			this.SlidersAutoGrowControl.Dock = System.Windows.Forms.DockStyle.Fill;

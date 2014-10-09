@@ -5,7 +5,7 @@ namespace Sq1.Core.StrategyBase {
 		public Strategy Strategy;
 		public string Folder;
 		public string scriptContextName;
-		public bool NoActiveChartFoundToAccomodateStrategy;
+
 		public StrategyEventArgs(string folder, Strategy strategy) {
 			this.Folder = folder;
 			this.Strategy = strategy;

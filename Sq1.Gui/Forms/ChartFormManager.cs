@@ -31,9 +31,39 @@ namespace Sq1.Gui.Forms {
 		public ScriptExecutor Executor;
 		public ReportersFormsManager ReportersFormsManager;
 
-		public ScriptEditorForm ScriptEditorForm;
 		public ChartForm ChartForm;
+		
+		
+		public ScriptEditorForm ScriptEditorForm;
+		public ScriptEditorForm ScriptEditorFormConditionalInstance { get {
+				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm)) {
+					if (this.Strategy.ActivatedFromDll == true) return null;
+					if (this.scriptEditorFormFactory == null) {
+						this.scriptEditorFormFactory = new ScriptEditorFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+					}
+					this.scriptEditorFormFactory.CreateEditorFormSubscribePushToManager(this);
+					if (this.ScriptEditorForm == null) {
+						throw new Exception("ScriptEditorFormFactory.CreateAndSubscribe() failed to create ScriptEditorForm in ChartFormsManager");
+					}
+				}
+				return this.ScriptEditorForm;
+			} }
+		public bool EditorFormIsNotDisposed { get { return (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false); } }
+		public bool ScriptEditorIsOnSurface { get {
+				bool editorMustBeActivated = true;
+				ScriptEditorForm editor = this.ScriptEditorForm;
+				bool editorNotInstantiated = DockContentImproved.IsNullOrDisposed(editor);
+				if (editorNotInstantiated) return editorMustBeActivated;
+				
+				//bool hidden = editor.IsHidden;
+				//SHOULD_INCLUDE_FLOATWINDOW_OR_DOCKED_BUT_COVERED_BY_OTHER_FELLAS bool undockToOpen = editor.IsDocked || editor.IsDockedAutoHide;
+				//for DockedRightAutoHide+Folded, Control.Active=true (seems illogical)
+				//for DockedRightAutoHide+Folded, DockContent.IsHidden=false (seems illogical)
+				editorMustBeActivated = editor.IsCoveredOrAutoHidden;
+				return !editorMustBeActivated;
+			} }
 
+		
 		ScriptEditorFormFactory scriptEditorFormFactory;
 		public ChartFormEventManager EventManager;
 		public bool ScriptEditedNeedsSaving;
@@ -186,6 +216,10 @@ namespace Sq1.Gui.Forms {
 			this.ChartForm.MniShowSourceCodeEditor.Enabled = !this.Strategy.ActivatedFromDll;
 
 			try {
+				// Click on strategy should open new chart,  
+				if (this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == true && this.Strategy.ActivatedFromDll == false && this.Strategy.Script == null) {
+					this.StrategyCompileActivatePopulateSlidersShow();
+				}
 				//I'm here via Persist.Deserialize() (=> Reporters haven't been restored yet => backtest should be postponed); will backtest in InitializeStrategyAfterDeserialization
 				// STRATEGY_CLICK_TO_CHART_DOESNT_BACKTEST this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
 				// ALL_SORT_OF_STARTUP_ERRORS this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, false);
@@ -303,7 +337,11 @@ namespace Sq1.Gui.Forms {
 			}
 			if (this.Strategy.Script == null) {
 				// WRONG_PLACE_TO_FIX "EnterEveryBar doesn't draw MAfast" this.StrategyCompileActivatePopulateSlidersShow();
-				string msg = "1) will compile it upstack in InitializeStrategyAfterDeserialization() or 2) compilation failed at Editor-F5";
+				string msg = "legitimate ways to get here:"
+					+ " 1) after compilation failed at Editor-F5;"
+					+ " 2) an existing strategy.BacktestOnSelectorsChange=true (opened in a new chartform) failed compile upstack;"
+					+ " 3) an exisitng strategy.BacktestOnSelectorsChange=true (loaded non-default ScriptContext) failed to compile upstack;"
+					;
 				#if DEBUG
 				Debugger.Break();
 				#endif
@@ -430,25 +468,7 @@ namespace Sq1.Gui.Forms {
 			this.Strategy.ScriptContextCurrent.ReporterShortNamesUserInvokedJSONcheck =
 				new List<string>(this.ReportersFormsManager.ReporterShortNamesUserInvoked.Keys);
 		}
-		public ScriptEditorForm ScriptEditorFormConditionalInstance { get {
-				if (this.formIsNullOrDisposed(this.ScriptEditorForm)) {
-					if (this.Strategy.ActivatedFromDll == true) return null;
-					if (this.scriptEditorFormFactory == null) {
-						this.scriptEditorFormFactory = new ScriptEditorFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
-					}
-					this.scriptEditorFormFactory.CreateEditorFormSubscribePushToManager(this);
-					if (this.ScriptEditorForm == null) {
-						throw new Exception("ScriptEditorFormFactory.CreateAndSubscribe() failed to create ScriptEditorForm in ChartFormsManager");
-					}
-				}
-				return this.ScriptEditorForm;
-			} }
-		public bool EditorFormIsNotDisposed { get { return this.formIsNullOrDisposed(this.ScriptEditorForm); } }
-		bool formIsNullOrDisposed(Form form) {
-			if (form == null) return true;
-			if (form.IsDisposed) return true;
-			return false;	//!this.chartForm.IsHidden;
-		}
+
 		public void ChartFormShow(string scriptContext = null) {
 			this.ChartForm.ShowAsDocumentTabNotPane(this.dockPanel);
 			if (this.Strategy != null) {
@@ -460,19 +480,20 @@ namespace Sq1.Gui.Forms {
 			if (this.Strategy.ActivatedFromDll == true) return;
 			this.ScriptEditorFormConditionalInstance.Initialize(this);
 
-			DockPanel mainPanelOranotherEditorsPanel = this.dockPanel;
+			DockPanel mainPanelOrAnotherEditorsPanel = this.dockPanel;
 			ScriptEditorForm anotherEditor = null;
 			foreach (DockContent form in this.dockPanel.Contents) {
 				anotherEditor = form as ScriptEditorForm;
 				if (anotherEditor == null) continue;
-				mainPanelOranotherEditorsPanel = anotherEditor.Pane.DockPanel;
+				mainPanelOrAnotherEditorsPanel = anotherEditor.Pane.DockPanel;
 				break;
 			}
 
-			this.ScriptEditorFormConditionalInstance.Show(mainPanelOranotherEditorsPanel);
-			DockContentImproved.ActivateDockContentPopupAutoHidden(this.ScriptEditorFormConditionalInstance, keepAutoHidden);
+			this.ScriptEditorFormConditionalInstance.Show(mainPanelOrAnotherEditorsPanel);
+			this.ScriptEditorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
 			//this.ScriptEditorFormConditionalInstance.Show(this.dockPanel, DockState.Document);
-			this.ChartForm.MniShowSourceCodeEditor.Checked = !keepAutoHidden;
+			//this.ChartForm.MniShowSourceCodeEditor.Checked = !keepAutoHidden;
+			this.ChartForm.MniShowSourceCodeEditor.Checked = this.ScriptEditorIsOnSurface;
 		}
 
 		const string prefixWhenNeedsToBeSaved = "* ";
@@ -547,5 +568,6 @@ namespace Sq1.Gui.Forms {
 			}
 			this.PopulateSliders();
 		}
+
 	}
 }

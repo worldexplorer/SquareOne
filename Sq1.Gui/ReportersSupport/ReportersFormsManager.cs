@@ -138,9 +138,17 @@ namespace Sq1.Gui.ReportersSupport {
 
 		public void PopupReporters_OnParentChartActivated(object sender, EventArgs e) {
 			foreach (Reporter reporterToPopup in this.ReporterShortNamesUserInvoked.Values) {
-				DockContent form = reporterToPopup.Parent as DockContent;
+				DockContentImproved dockContentImproved = reporterToPopup.Parent as DockContentImproved;
+				if (dockContentImproved == null) {
+					string msg = "reporterToPopup.Parent IS_NOT DockContentImproved";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					Assembler.PopupException(msg + " //PopupReporters_OnParentChartActivated()");
+					return;
+				}
 				// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE form.Activate();
-				DockContentImproved.ActivateDockContentPopupAutoHidden(form, false, false);
+				dockContentImproved.ActivateDockContentPopupAutoHidden(false, false);
 			}
 		}
 	}

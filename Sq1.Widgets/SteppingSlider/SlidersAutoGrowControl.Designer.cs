@@ -161,6 +161,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowBorder.Name = "mniAllParamsShowBorder";
 			this.mniAllParamsShowBorder.Size = new System.Drawing.Size(225, 22);
 			this.mniAllParamsShowBorder.Text = "All Params -> ShowBorder";
+			this.mniAllParamsShowBorder.CheckOnClick = true;
 			this.mniAllParamsShowBorder.Click += new EventHandler(mniAllParamsShowBorder_Click);
 			// 
 			// mniAllParamsShowNumeric
@@ -168,6 +169,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowNumeric.Name = "mniAllParamsShowNumeric";
 			this.mniAllParamsShowNumeric.Size = new System.Drawing.Size(225, 22);
 			this.mniAllParamsShowNumeric.Text = "All Params -> ShowNumeric";
+			this.mniAllParamsShowNumeric.CheckOnClick = true;
 			this.mniAllParamsShowNumeric.Click += new EventHandler(mniAllParamsShowNumeric_Click);
 			// 
 			// templateSliderControl

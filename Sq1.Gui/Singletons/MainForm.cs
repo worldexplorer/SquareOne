@@ -146,8 +146,16 @@ namespace Sq1.Gui.Singletons {
 				//this.DockPanel.Size = this.ClientSize;
 				
 				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
-					if (cfmgr.ChartForm.ChartFormManager == null) continue;
-					Strategy chartStrategy = cfmgr.ChartForm.ChartFormManager.Executor.Strategy;
+					if (cfmgr.ChartForm == null) continue;
+					cfmgr.ChartForm.MniShowSourceCodeEditor.Checked = cfmgr.ScriptEditorIsOnSurface; 
+					if (cfmgr.ChartForm.ChartFormManager != cfmgr) {
+						string msg = "WEIRD_POINTER_LOOP RESTORE COMMENT 5 lines below";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+					}
+					//WEIRD_POINTER_LOOP Strategy chartStrategy = cfmgr.ChartForm.ChartFormManager.Executor.Strategy;
+					Strategy chartStrategy = cfmgr.Executor.Strategy;
 					if (chartStrategy == null) continue;
 					if (chartStrategy.ActivatedFromDll == false) {
 						string msg = "IRRELEVANT_FOR_EDITABLE_STRATEGIES WILL_PROCEED_WITHPANELS_COMPILATION_ETC editor-typed strategies already have indicators in SNAP after pre-backtest compilation";
@@ -193,27 +201,28 @@ namespace Sq1.Gui.Singletons {
 
 			this.MainFormEventManager = new MainFormEventManager(this);
 
-			StrategiesForm.Instance.StrategiesTreeControl.OnStrategyOpenDefaultClicked += this.MainFormEventManager.StrategiesTree_OnStrategyOpenDefaultClicked;
-			StrategiesForm.Instance.StrategiesTreeControl.OnStrategyOpenSavedClicked += this.MainFormEventManager.StrategiesTree_OnStrategyOpenNewChartClicked;
-			StrategiesForm.Instance.StrategiesTreeControl.OnStrategyRenamed += this.MainFormEventManager.StrategiesTree_OnStrategyRenamed;
-			StrategiesForm.Instance.StrategiesTreeControl.OnStrategySelected += new EventHandler<StrategyEventArgs>(this.MainFormEventManager.StrategiesTree_OnStrategySelected);
+			StrategiesForm.Instance.StrategiesTreeControl.OnStrategyOpenDefaultClicked		+= this.MainFormEventManager.StrategiesTree_OnStrategyOpenDefaultClicked_NewChart;
+			StrategiesForm.Instance.StrategiesTreeControl.OnStrategyOpenSavedClicked		+= this.MainFormEventManager.StrategiesTree_OnStrategyLoadClicked;
+			StrategiesForm.Instance.StrategiesTreeControl.OnStrategyRenamed					+= this.MainFormEventManager.StrategiesTree_OnStrategyRenamed;
+			//StrategiesForm.Instance.StrategiesTreeControl.OnStrategySelected				+= this.MainFormEventManager.StrategiesTree_OnStrategySelected;
+			StrategiesForm.Instance.StrategiesTreeControl.OnStrategyDoubleClicked			+= this.MainFormEventManager.StrategiesTree_OnStrategyDoubleClicked_NewChart;
 
-			DataSourcesForm.Instance.DataSourcesTreeControl.OnSymbolSelected += this.MainFormEventManager.DataSourcesTree_OnSymbolSelected;
-			DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceSelected += this.MainFormEventManager.DataSourcesTree_OnDataSourceSelected;
-			DataSourcesForm.Instance.DataSourcesTreeControl.OnNewChartForSymbolClicked += this.MainFormEventManager.DataSourcesTree_OnNewChartForSymbolClicked;
-			DataSourcesForm.Instance.DataSourcesTreeControl.OnOpenStrategyForSymbolClicked += this.MainFormEventManager.DataSourcesTree_OnOpenStrategyForSymbolClicked;
-			DataSourcesForm.Instance.DataSourcesTreeControl.OnBarsAnalyzerClicked += this.MainFormEventManager.DataSourcesTree_OnBarsAnalyzerClicked;
-			DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceEditClicked += this.MainFormEventManager.DataSourcesTree_OnDataSourceEditClicked;
-			//DataSourcesForm.Instance.DataSourcesTree.OnDataSourceDeleteClicked += this.MainFormEventManager.DataSourcesTree_OnDataSourceDeletedClicked;
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemCanBeRemoved += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceCanBeRemoved);
-			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemRemovedDone += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceRemoved);
-			//DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceNewClicked += this.MainFormEventManager.DataSourcesTree_OnDataSourceNewClicked;
+			DataSourcesForm.Instance.DataSourcesTreeControl.OnSymbolSelected				+= this.MainFormEventManager.DataSourcesTree_OnSymbolSelected;
+			DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceSelected			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceSelected;
+			DataSourcesForm.Instance.DataSourcesTreeControl.OnNewChartForSymbolClicked		+= this.MainFormEventManager.DataSourcesTree_OnNewChartForSymbolClicked;
+			DataSourcesForm.Instance.DataSourcesTreeControl.OnOpenStrategyForSymbolClicked	+= this.MainFormEventManager.DataSourcesTree_OnOpenStrategyForSymbolClicked;
+			DataSourcesForm.Instance.DataSourcesTreeControl.OnBarsAnalyzerClicked			+= this.MainFormEventManager.DataSourcesTree_OnBarsAnalyzerClicked;
+			DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceEditClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceEditClicked;
+			//DataSourcesForm.Instance.DataSourcesTree.OnDataSourceDeleteClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceDeletedClicked;
+			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemCanBeRemoved		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceCanBeRemoved);
+			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemRemovedDone		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceRemoved);
+			//DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceNewClicked		+= this.MainFormEventManager.DataSourcesTree_OnDataSourceNewClicked;
 
 			// TYPE_MANGLING_INSIDE_WARNING
-			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedParameterValue += new EventHandler<ScriptParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
-			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedIndicatorValue += new EventHandler<IndicatorParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
+			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedParameterValue			+= new EventHandler<ScriptParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
+			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedIndicatorValue			+= new EventHandler<IndicatorParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
 			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextLoadRequestedSubscriberImplementsCurrentSwitch += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextLoadClicked;
-			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextRenamed += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextRenamed;
+			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextRenamed				+= this.MainFormEventManager.SlidersAutoGrow_OnScriptContextRenamed;
 		}
 		void mainFormEventManagerInitializeAfterDockingDeserialized() {
 			// too frequent

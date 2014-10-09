@@ -166,7 +166,8 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSourceCodeEditor.Name = "MniShowSourceCodeEditor";
 			this.MniShowSourceCodeEditor.Size = new System.Drawing.Size(226, 22);
 			this.MniShowSourceCodeEditor.Text = "Show Source Code Editor";
-			this.MniShowSourceCodeEditor.Click += new System.EventHandler(this.mniShowSourceCodeEditor_Click);
+			this.MniShowSourceCodeEditor.Click += new System.EventHandler(this.MniShowSourceCodeEditor_Click);
+			this.ctxStrategy.Opening += new System.ComponentModel.CancelEventHandler(ctxStrategy_Opening);
 			// 
 			// ctxStrategy
 			// 

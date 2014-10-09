@@ -71,10 +71,8 @@
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
-      "ParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "1": 7.0,
-        "2": 1.0
+      "ScriptParameterValuesById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
@@ -85,7 +83,9 @@
             "ValueMin": 10.0,
             "ValueMax": 20.0,
             "ValueIncrement": 1.0,
-            "ValueCurrent": 16.0
+            "ValueCurrent": 16.0,
+            "BorderShown": false,
+            "NumericUpdownShown": true
           }
         ]
       }
@@ -148,10 +148,8 @@
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
-      "ParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "1": 5.0,
-        "2": 1.0
+      "ScriptParameterValuesById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib"
@@ -215,25 +213,13 @@
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
-      "ParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "1": 4.0,
-        "2": 0.0
+      "ScriptParameterValuesById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib"
       }
     }
-  },
-  "SliderBordersShownByParameterId": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib",
-    "1": false,
-    "2": true
-  },
-  "SliderNumericUpdownsShownByParameterId": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib",
-    "2": false,
-    "1": false
   },
   "HasChartOnly": false
 }

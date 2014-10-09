@@ -51,12 +51,6 @@ namespace Sq1.Widgets.SteppingSlider {
 		[Browsable(true)]
 		public int VerticalSpaceBetweenSliders { get; set; }
 
-		[Browsable(true)]
-		public bool AllSlidersBorderShownByDefault { get; set; }
-
-		[Browsable(true)]
-		public bool AllSlidersNumericShownByDefault { get; set; }
-
 		public SlidersAutoGrowControl() {
 			InitializeComponent();
 			// JUST_IN_CASE_IF_DESIGNER_REMOVED_COMMENTED_LINES, v1 contained this.mniParameterBagLoad as well:
@@ -174,20 +168,8 @@ namespace Sq1.Widgets.SteppingSlider {
 			ret.ValueCurrentChanged += slider_ValueCurrentChanged;
 			// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening
 			
-			// TODO: unify ScriptParameter and IndicatorParameter in terms of SliderBordersShown and SliderNumericUpdownsShown
-			if (indicatorOrScriptparameter is ScriptParameter) {
-				ScriptParameter scriptParameter = indicatorOrScriptparameter as ScriptParameter; 
-				if (this.Strategy.SliderBordersShownByParameterId.ContainsKey(scriptParameter.Id)) {
-					ret.EnableBorder = this.Strategy.SliderBordersShownByParameterId[scriptParameter.Id];
-				} else {
-					ret.EnableBorder = this.AllSlidersBorderShownByDefault;
-				}
-				if (this.Strategy.SliderNumericUpdownsShownByParameterId.ContainsKey(scriptParameter.Id)) {
-					ret.EnableNumeric = this.Strategy.SliderNumericUpdownsShownByParameterId[scriptParameter.Id];
-				} else {
-					ret.EnableNumeric = this.AllSlidersNumericShownByDefault;
-				}
-			}
+			ret.EnableBorder = indicatorOrScriptparameter.BorderShown;
+			ret.EnableNumeric = indicatorOrScriptparameter.NumericUpdownShown;
 			
 			ret.ShowBorderChanged += slider_ShowBorderChanged;
 			ret.ShowNumericUpdownChanged += slider_ShowNumericUpdownChanged;

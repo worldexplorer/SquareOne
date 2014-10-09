@@ -37,6 +37,7 @@ namespace Sq1.Charting {
 			this.ScriptExecutorObjects = new ScriptExecutorObjects();
 			InitializeComponent();
 			if (base.DesignMode) return;
+			
 
 			this.AutoScroll = false;
 			//this.HScroll = true;
@@ -46,12 +47,18 @@ namespace Sq1.Charting {
 			panels.Add(this.panelPrice);
 			panels.Add(this.panelVolume);
 			this.multiSplitContainer.InitializeCreateSplittersDistributeFor(panels);
+
+			// Splitter might still notify them for Resize() during startup (while only multiSplitter's size should generate Resize in nested controls)  
+			// trying to leave only multiSplitter to react on Panel2.Collapsed = true/false;
+			//this.splitContainerChartVsRange.Panel1.Controls.Remove(this.panelVolume);
+			//this.splitContainerChartVsRange.Panel1.Controls.Remove(this.panelPrice);
+			this.splitContainerChartVsRange.Panel1.Controls.Remove(this.lblWinFormDesignerComment);
+
 			// TOO_EARLY_MOVED_TO_PropagateSettingSplitterDistancePriceVsVolume this.multiSplitContainer.SplitterPositionsByManorder = this.ChartSettings.SplitterPositionsByManorder;
 			
 			this.panelPrice.Initialize(this);
 			this.panelVolume.Initialize(this);
 
-			if (base.DesignMode == false) return;		// yeps I saw the fake-generated bars in Design mode once...
 			//this.chartRenderer.Initialize(this);
 			BarScaleInterval chartShouldntCare = new BarScaleInterval(BarScale.Minute, 5);
 			//REFLECTION_FAILS_FOR_DESIGNER BarsBasic.GenerateRandom(chartShouldntCare)

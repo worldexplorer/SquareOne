@@ -15,38 +15,23 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
 		void ctxChart_Opening(object sender, CancelEventArgs e) {
-			this.MniShowSourceCodeEditor.Checked = (this.ChartFormManager.EditorFormIsNotDisposed);
+			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
 			//this.editBarToolStripMenuItem.Enabled = this.AllowEditBarData;
 			//_preCalcPricesHandleTradeMenuItemsGuiThread();
 		}
-		void MniShowSourceCodeEditor_Click(object sender, EventArgs e) {
-			if (this.MniShowSourceCodeEditor.Checked) {
-				// if autohidden => popup and keepAutoHidden=false
-				this.ChartFormManager.EditorFormShow(false);
-			} else {
-				// I assume btn.Checked => EditorForm.NotAutoHidden synchronization
-				DockContentImproved.ToggleAutoHide(this.ChartFormManager.ScriptEditorFormConditionalInstance);
-				//public static void ToggleAutoHide(DockContent form) {
-				//	if (form.DockState == DockState.Unknown) return;
-				//	if (form.DockState == DockState.Document) return;
-				//	if (form.DockState == DockState.Float) return;
-				//	if (form.DockState == DockState.Hidden) return;
-				//	DockState newState = DockHelper.ToggleAutoHideState(form.Pane.DockState);
-				//	form.Pane.SetDockState(newState);
-				//}
-			}
-			this.ChartFormManager.MainForm.MainFormSerialize();
-		}
-		void mniShowSourceCodeEditor_Click(object sender, System.EventArgs e) {
-			if (this.MniShowSourceCodeEditor.Checked) {
-				// if autohidden => popup and keepAutoHidden=false
-				this.ChartFormManager.EditorFormShow(false);
-			} else {
-				DockContentImproved.ToggleAutoHide(this.ChartFormManager.ScriptEditorFormConditionalInstance);
-			}
-			this.ChartFormManager.MainForm.MainFormSerialize();
+		void ctxStrategy_Opening(object sender, CancelEventArgs e) {
+			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
 		}
 
+		void MniShowSourceCodeEditor_Click(object sender, System.EventArgs e) {
+			if (this.MniShowSourceCodeEditor.Checked) {
+				// if autohidden => popup and keepAutoHidden=false
+				this.ChartFormManager.EditorFormShow(false);
+			} else {
+				this.ChartFormManager.ScriptEditorFormConditionalInstance.ToggleAutoHide();
+			}
+			this.ChartFormManager.MainForm.MainFormSerialize();
+		}
 		void btnStreaming_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
 			try {

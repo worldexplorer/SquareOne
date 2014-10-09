@@ -1,8 +1,8 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "b04c88a3-7886-4edd-b218-5feba0e435fc",
-  "StrategyNameJsonCheck": "ATRbandCompiled",
-  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json",
+  "StrategyGuidJsonCheck": "4c7274f7-ab63-498b-b448-b7bc09f7263b",
+  "StrategyNameJsonCheck": "EnterEveryBar",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\my\\EnterEveryBar.json",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -13,20 +13,15 @@
     "GutterBottomDateFormatYearly": "yyyy",
     "MultiSplitterPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "ATR (Period:7[1..11/2])": {
+      "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0
       },
-      "Price": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 1,
-        "Distance": 7
-      },
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 2,
-        "Distance": 15
+        "ManualOrder": 1,
+        "Distance": 176
       }
     },
     "ChartColorBackground": "White",
@@ -40,12 +35,12 @@
     "GutterRightColorBackground": "Gainsboro",
     "GutterRightColorForeground": "Black",
     "GutterRightPadding": 5,
-    "GutterRightFont": "Microsoft Sans Serif, 8pt",
+    "GutterRightFont": "Consolas, 8pt",
     "GutterBottomColorBackground": "Gainsboro",
     "GutterBottomColorForeground": "Black",
     "GutterBottomNewDateColorForeground": "Green",
     "GutterBottomPadding": 2,
-    "GutterBottomFont": "Microsoft Sans Serif, 8pt",
+    "GutterBottomFont": "Consolas, 8pt",
     "GridlinesHorizontalColor": "WhiteSmoke",
     "GridlinesVerticalColor": "WhiteSmoke",
     "GridlinesVerticalNewDateColor": "Lime",
@@ -64,7 +59,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 4939,
+    "ScrollPositionAtBarIndex": 0,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -80,7 +75,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 477,
+    "PriceVsVolumeSplitterDistance": 0,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
@@ -94,6 +89,6 @@
     "ChartLabelsUpperLeftIndicatorSquareSize": 5,
     "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
   },
-  "ChartSerno": 19,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json], ScriptContextCurrentName[?Default?]"
+  "ChartSerno": 24,
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\my\\EnterEveryBar.json], ScriptContextCurrentName[?Default?]"
 }

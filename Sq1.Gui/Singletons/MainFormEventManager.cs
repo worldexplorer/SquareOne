@@ -28,7 +28,23 @@ namespace Sq1.Gui.Singletons {
 		}
 
 		#region StrategiesTree
-		internal void StrategiesTree_OnStrategyOpenDefaultClicked(object sender, StrategyEventArgs e) {
+		public void StrategiesTree_OnStrategyDoubleClicked_NewChart(object sender, StrategyEventArgs e) {
+			Strategy strategy = e.Strategy;
+			if (strategy.Script == null) {
+				string msg = "YES_OR_AFTER_RESTART YOU_OPENED_A_STRATEGY_YOU_JUST_ADDED_TO_REPOSITORY ?";
+				//Assembler.PopupException(msg);
+				//return;
+			} else {
+				if (strategy.Script.Executor == null) {
+					string msg = "OPENED_FROM_STRATEGIES_TREE strategy.Script.Executor=null";
+					Assembler.PopupException(msg);
+				} else {
+					strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
+				}
+			}
+			this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
+		}
+		internal void StrategiesTree_OnStrategyOpenDefaultClicked_NewChart(object sender, StrategyEventArgs e) {
 			//v1
 			//Strategy strategy = e.Strategy;
 			////strategy.ContextMarkNone();
@@ -38,18 +54,22 @@ namespace Sq1.Gui.Singletons {
 			//this.chartCreateShowPopulateSelectorsSliders(strategy);
 			//v2
 			e.scriptContextName = "Default";
-			this.StrategiesTree_OnStrategyOpenNewChartClicked(sender, e);
+			this.StrategiesTree_OnStrategyDoubleClicked_NewChart(sender, e);
 		}
-		internal void StrategiesTree_OnStrategyOpenNewChartClicked(object sender, StrategyEventArgs e) {
+		internal void StrategiesTree_OnStrategyLoadClicked(object sender, StrategyEventArgs e) {
 			Strategy strategy = e.Strategy;
-			if (strategy.Script == null) {
-				string msg = "YOU_OPENED_A_STRATEGY_YOU_JUST_ADDED_TO_REPOSITORY ?";
-				return;
+			ChartForm active = this.mainForm.ChartFormActive;
+			if (active == null) {
+				ChartFormManager msg = this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
+				active = msg.ChartForm;
 			}
-			if (strategy.Script.Executor != null) {		// WHEN_USER_OPENS_FROM_STRATEGIES_TREE strategy.Script.Executor=null
+			active.ChartFormManager.InitializeWithStrategy(this.mainForm, strategy, false);
+			if (strategy.Script != null && strategy.Script.Executor != null) {
 				strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
+			} else {
+				string msg = "CANT_SWITCH_CONTEXT_SCRIPT";
+				Assembler.PopupException(msg);
 			}
-			this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
 		}
 		internal void StrategiesTree_OnStrategyRenamed(object sender, StrategyEventArgs e) {
 			foreach (ChartFormManager chartFormsManager in this.mainForm.GuiDataSnapshot.ChartFormManagers.Values) {
@@ -75,15 +95,6 @@ namespace Sq1.Gui.Singletons {
 			chartFormManager.InitializeChartNoStrategy(this.mainForm, contextChart);
 			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 			chartFormManager.ChartFormShow();
-		}
-		public void StrategiesTree_OnStrategySelected(object sender, StrategyEventArgs e) {
-			ChartForm active = this.mainForm.ChartFormActive;
-			if (active == null) {
-				e.NoActiveChartFoundToAccomodateStrategy = true;
-				//USELESS Assembler.PopupException("NO_ACTIVE_CHART_FORMS_IN_DOCUMENT_PANE_TO_LOAD_STRATEGY_INTO this.mainForm.ChartFormActive=null //StrategiesTree_OnStrategySelected(" + e.Strategy + ")");
-				return;
-			}
-			active.ChartFormManager.InitializeWithStrategy(this.mainForm, e.Strategy, false);
 		}
 		#endregion
 		

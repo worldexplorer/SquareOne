@@ -131,13 +131,13 @@ namespace Sq1.Core.StrategyBase {
 		//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
 		public void PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy() {
 			bool storeStrategySinceParametersGottenFromScript = false;
-			foreach (ScriptParameter paramScript in this.ParametersById.Values) {
-				if (this.Strategy.ScriptContextCurrent.ParameterValuesById.ContainsKey(paramScript.Id)) {
-					double valueContext = this.Strategy.ScriptContextCurrent.ParameterValuesById[paramScript.Id];
-					paramScript.ValueCurrent = valueContext;
+			foreach (ScriptParameter scriptParam in this.ParametersById.Values) {
+				if (this.Strategy.ScriptContextCurrent.ScriptParameterValuesById.ContainsKey(scriptParam.Id)) {
+					double valueContext = this.Strategy.ScriptContextCurrent.ScriptParameterValuesById[scriptParam.Id];
+					scriptParam.ValueCurrent = valueContext;
 				} else {
-					this.Strategy.ScriptContextCurrent.ParameterValuesById.Add(paramScript.Id, paramScript.ValueCurrent);
-					string msg = "added paramScript[Id=" + paramScript.Id + " value=" + paramScript.ValueCurrent + "]"
+					this.Strategy.ScriptContextCurrent.ScriptParameterValuesById.Add(scriptParam.Id, scriptParam.ValueCurrent);
+					string msg = "added scriptParam[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "]"
 						+ " into Script[" + this.GetType().Name + "].Strategy.ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name + "]"
 						+ " /ScriptParametersMergedWithCurrentContext";
 					Assembler.PopupException(msg);

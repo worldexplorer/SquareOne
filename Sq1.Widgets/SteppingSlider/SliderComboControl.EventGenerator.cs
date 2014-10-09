@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using Sq1.Core;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SliderComboControl {
@@ -8,7 +10,14 @@ namespace Sq1.Widgets.SteppingSlider {
 		
 		public void RaiseValueChanged() {
 			if (this.ValueCurrentChanged == null) return;
-			this.ValueCurrentChanged(this, EventArgs.Empty);
+			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				this.ValueCurrentChanged(this, EventArgs.Empty);
+			} catch (Exception ex) {
+				Assembler.PopupException(null, ex);
+			}
 		}
 
 		public void RaiseShowBorderChanged() {

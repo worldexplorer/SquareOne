@@ -226,11 +226,11 @@
 			// 
 			// ctxWindows
 			// 
-			this.ctxWindows.Name = "ctxCharts";
+			this.ctxWindows.Name = "ctxWindows";
 			this.ctxWindows.OwnerItem = this.btnWindows;
 			this.ctxWindows.ShowImageMargin = false;
 			this.ctxWindows.Size = new System.Drawing.Size(36, 4);
-			this.ctxWindows.Opening += new System.ComponentModel.CancelEventHandler(this.ctxChartsOpening);
+			this.ctxWindows.Opening += new System.ComponentModel.CancelEventHandler(this.ctxWindowsOpening);
 			// 
 			// btnWorkSpaces
 			// 

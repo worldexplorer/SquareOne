@@ -51,8 +51,19 @@ namespace Sq1.Widgets.SteppingSlider {
 		void slider_ShowBorderChanged(object sender, EventArgs e) {
 			try {
 				SliderComboControl slider = sender as SliderComboControl;
-				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;
-				this.Strategy.SetSliderBordersShownForParameterId(scriptParameterChanged.Id, slider.EnableBorder);
+				bool userChoseEnableBorder = slider.EnableBorder;
+				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
+				if (indicatorParameterChanged == null) {
+					string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_SOMETHING_ELSE";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					Assembler.PopupException(msg);
+					return;
+				}
+
+				indicatorParameterChanged.BorderShown = userChoseEnableBorder;
+				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 			} catch (Exception ex) {
 				Assembler.PopupException("slider_ShowBorderChanged()", ex);
 			}
@@ -60,8 +71,19 @@ namespace Sq1.Widgets.SteppingSlider {
 		void slider_ShowNumericUpdownChanged(object sender, EventArgs e) {
 			try {
 				SliderComboControl slider = sender as SliderComboControl;
-				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;
-				this.Strategy.SetSliderNumericUpdownShownForScriptParameterId(scriptParameterChanged.Id, slider.EnableNumeric);
+				bool userChoseEnableNumeric = slider.EnableNumeric;
+				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
+				if (indicatorParameterChanged == null) {
+					string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_SOMETHING_ELSE";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					Assembler.PopupException(msg);
+					return;
+				}
+	
+				indicatorParameterChanged.NumericUpdownShown = userChoseEnableNumeric;
+				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 			} catch (Exception ex) {
 				Assembler.PopupException("slider_ShowNumericUpdownChanged()", ex);
 			}
@@ -69,75 +91,45 @@ namespace Sq1.Widgets.SteppingSlider {
 		
 		
 		void mniAllParamsShowBorder_Click(object sender, EventArgs e) {
-			bool borderShown = this.mniAllParamsShowBorder.Checked;
-			borderShown = !borderShown;
-			foreach (SliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
-				slider.EnableBorder = borderShown; 
-
-				if (slider.Tag == null) {
-					string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_NULL";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					return;
+			try {
+				bool borderShown = this.mniAllParamsShowBorder.Checked;
+				foreach (SliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
+					IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
+					if (indicatorParameterChanged == null) {
+						string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_SOMETHING_ELSE";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						Assembler.PopupException(msg);
+						continue;
+					}
+					slider.EnableBorder = borderShown;
+					indicatorParameterChanged.BorderShown = borderShown;
 				}
-
-				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
-				if (indicatorParameterChanged != null) {
-					// ouch N * StrategySave()...
-					//this.Strategy.SetSliderBorderShownForIndicatorParameterName(indicatorParameterChanged, numericShown);
-					string msg = "NYI SetSliderBorderShownForIndicatorParameterName(indicatorParameterChanged[" + indicatorParameterChanged.ToString() + "])";
-					Assembler.PopupException(msg);
-					return;
-				}
-
-				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;
-				if (scriptParameterChanged == null) {
-					string msg = "SLIDER_TAG_DIDN_CONTAIN_INDICATOR_NEIGHER_SCRIPT_PARAMETER [" + slider.Tag.GetType().FullName + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					return;
-				}
-
-				// ouch N * StrategySave()...
-				this.Strategy.SetSliderNumericUpdownShownForScriptParameterId(scriptParameterChanged.Id, borderShown);
+				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+			} catch (Exception ex) {
+				Assembler.PopupException("mniAllParamsShowBorder_Click()", ex);
 			}
 		}
 		void mniAllParamsShowNumeric_Click(object sender, EventArgs e) {
-			bool numericShown = this.mniAllParamsShowNumeric.Checked;
-			numericShown = !numericShown; 
-			foreach (SliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
-				slider.EnableNumeric = numericShown;
-				
-				if (slider.Tag == null) {
-					string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_NULL";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					return;
+			try {
+				bool numericShown = this.mniAllParamsShowNumeric.Checked;
+				foreach (SliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
+					IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
+					if (indicatorParameterChanged == null) {
+						string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_SOMETHING_ELSE";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						Assembler.PopupException(msg);
+						continue;
+					}
+					slider.EnableNumeric = numericShown;
+					indicatorParameterChanged.NumericUpdownShown = numericShown;
 				}
-
-				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
-				if (indicatorParameterChanged != null) {
-					// ouch N * StrategySave()...
-					//this.Strategy.SetSliderNumericUpdownShownForIndicatorParameterName(indicatorParameterChanged, numericShown);
-					string msg = "NYI SetSliderNumericUpdownShownForIndicatorParameterName(indicatorParameterChanged[" + indicatorParameterChanged.ToString() + "])";
-					Assembler.PopupException(msg);
-					return;
-				}
-
-				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;
-				if (scriptParameterChanged == null) {
-					string msg = "SLIDER_TAG_DIDN_CONTAIN_INDICATOR_NEIGHER_SCRIPT_PARAMETER [" + slider.Tag.GetType().FullName + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					return;
-				}
-
-				// ouch N * StrategySave()...
-				this.Strategy.SetSliderNumericUpdownShownForScriptParameterId(scriptParameterChanged.Id, numericShown);
+				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+			} catch (Exception ex) {
+				Assembler.PopupException("mniAllParamsShowNumeric_Click()", ex);
 			}
 		}
 

@@ -308,6 +308,13 @@ try {
 			//if (base.Controls.Contains(panel)) base.Controls.Remove(panel);
         	panel.Width = base.Width;
 			base.Controls.Add(panel);
+			#if DEBUG
+			if (base.Parent.Controls.Contains(panel)) {
+				string msg = "I expect panels be removed from miltisplitContainer.Parent"
+					+ " so that only miltisplitContainer.Size will trigger miltisplitContainer.Controls.*.Resize()";
+				Debugger.Break();
+			}
+			#endif
 			//this.initialHeights.Add(panel, panel.Height);
 			this.panels.Add(panel);
 			this.splitterCreateAdd(panel);

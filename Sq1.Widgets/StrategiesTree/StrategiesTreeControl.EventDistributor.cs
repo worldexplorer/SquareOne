@@ -1,5 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
+
+using Sq1.Core;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Widgets.StrategiesTree {
@@ -17,6 +20,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		// ctxStrategy
 		// event names ARE confusing: raised 1) as confirmation of the click or 2) after action has been performed?
 		// TODO: rename to clearly show the point in time when the event is raised
+		public event EventHandler<StrategyEventArgs> OnStrategyDoubleClicked;
 		public event EventHandler<StrategyEventArgs> OnStrategyOpenDefaultClicked;
 		public event EventHandler<StrategyEventArgs> OnStrategyOpenSavedClicked;
 		public event EventHandler<StrategyEventArgs> OnStrategyMovedToAnotherFolderClicked;		// 2) fired after action has been performed (already moved)
@@ -30,11 +34,22 @@ namespace Sq1.Widgets.StrategiesTree {
 			if (this.OnFolderSelected == null) return;
 			this.OnFolderSelected(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));
 		}
-
 		void RaiseOnStrategySelected() {
 			if (this.OnStrategySelected == null) return;
 			this.OnStrategySelected(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));
 		}
+		
+		void RaiseOnStrategyDoubleClicked() {
+			if (this.OnStrategySelected == null) return;
+			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
+				this.OnStrategyDoubleClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));
+			} catch (Exception ex) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				Assembler.PopupException(null, ex);
+			}
+		}		
 		void RaiseOnStrategyCreated(string msig = null) {
 			if (this.OnStrategyCreated == null) {
 				string msg = "event OnStrategyCreated: no subscribers";
@@ -57,7 +72,14 @@ namespace Sq1.Widgets.StrategiesTree {
 				statusReporter.PopupException(new Exception(msig + msg));
 				return;
 			}
-			this.OnStrategyOpenDefaultClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));
+			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
+				this.OnStrategyOpenDefaultClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));
+			} catch (Exception ex) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				Assembler.PopupException(null, ex);
+			}
 		}
 		void RaiseOnStrategyOpenSavedClicked(string msig, ToolStripMenuItem mniClicked) {
 			if (this.OnStrategyOpenSavedClicked == null) {
@@ -65,7 +87,14 @@ namespace Sq1.Widgets.StrategiesTree {
 				statusReporter.PopupException(new Exception(msig + msg));
 				return;
 			}
-			this.OnStrategyOpenSavedClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected, mniClicked.Name));
+			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				this.OnStrategyOpenSavedClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected, mniClicked.Name));
+			} catch (Exception ex) {
+				Assembler.PopupException(null, ex);
+			}
 		}
 		void RaiseOnStrategyMovedToAnotherFolderClicked(string msig, ToolStripMenuItem mniClicked) {
 			if (this.OnStrategyMovedToAnotherFolderClicked == null) {
