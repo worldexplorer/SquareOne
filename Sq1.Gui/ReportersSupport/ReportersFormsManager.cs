@@ -148,7 +148,7 @@ namespace Sq1.Gui.ReportersSupport {
 					return;
 				}
 				// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE form.Activate();
-				dockContentImproved.ActivateDockContentPopupAutoHidden(false, false);
+				dockContentImproved.ActivateDockContentPopupAutoHidden(false, true);
 			}
 		}
 	}

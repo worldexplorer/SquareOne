@@ -88,11 +88,11 @@ namespace Sq1.Widgets.StrategiesTree {
 				return;
 			}
 			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
+				this.OnStrategyOpenSavedClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected, mniClicked.Name));
+			} catch (Exception ex) {
 				#if DEBUG
 				Debugger.Break();
 				#endif
-				this.OnStrategyOpenSavedClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected, mniClicked.Name));
-			} catch (Exception ex) {
 				Assembler.PopupException(null, ex);
 			}
 		}

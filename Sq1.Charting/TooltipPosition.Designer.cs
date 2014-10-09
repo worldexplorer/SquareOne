@@ -241,7 +241,7 @@ namespace Sq1.Charting {
 			this.lblPriceLevelSize.Name = "lblPriceLevelSize";
 			this.lblPriceLevelSize.Size = new System.Drawing.Size(77, 13);
 			this.lblPriceLevelSize.TabIndex = 32;
-			this.lblPriceLevelSize.Text = "PriceLevelSize";
+			this.lblPriceLevelSize.Text = "PriceMinimalStep";
 			// 
 			// lblBasisPriceVal
 			// 

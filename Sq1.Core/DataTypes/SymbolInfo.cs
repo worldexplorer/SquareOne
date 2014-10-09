@@ -21,10 +21,11 @@ namespace Sq1.Core.DataTypes {
 		}
 		[JsonProperty]	public double PriceLevelSizeForBonds;
 		[JsonProperty]	public int DecimalsPrice;
-		[JsonProperty]	public int DecimalsVolume;
+		[JsonProperty]	public int DecimalsVolume;		// valid for partial Forex lots and Bitcoins; for stocks/options/futures its always (int)1
 
-		[JsonProperty]	public double VolumeMinimalFromDecimal	{ get { return  Math.Pow(1, -this.DecimalsVolume);  } }		// 1^(-2) = 0.01
-		[JsonProperty]	public double PriceMinimalFromDecimal	{ get { return  Math.Pow(1, -this.DecimalsPrice); } }		// 1^(-2) = 0.01
+		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
+		[JsonProperty]	public double PriceMinimalStepFromDecimal { get { return Math.Pow(10, -this.DecimalsPrice); } }			// 10^(-2) = 0.01
+		[JsonProperty]	public double VolumeMinimalStepFromDecimal { get { return Math.Pow(10, -this.DecimalsVolume); } }		// 10^(-2) = 0.01
 		
 		[JsonProperty]	public bool SameBarPolarCloseThenOpen;
 		[JsonProperty]	public int SequencedOpeningAfterClosedDelayMillis;
@@ -61,11 +62,9 @@ namespace Sq1.Core.DataTypes {
 			this.SecurityType = SecurityType.Stock;
 			this.SymbolClass = "";
 			this.Point2Dollar = 1.0;
-			//this.Decimals = DecimalsManager.Instance.Pricing;
 			this.DecimalsPrice = 2;
 			this.DecimalsVolume = 0;	// if your Forex Symbol uses lotMin=0.001, DecimalsVolume = 3 
 			this.PriceLevelSizeForBonds = 1.0;
-			//for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
 			this.SameBarPolarCloseThenOpen = true;
 			this.SequencedOpeningAfterClosedDelayMillis = 1000;
 			this.MarketOrderAs = MarketOrderAs.Unknown;
@@ -80,19 +79,17 @@ namespace Sq1.Core.DataTypes {
 			this.EmergencyCloseAttemptsMax = 5;
 			this.LeverageForFutures = 1;
 		}
-		public SymbolInfo(string symbol) : this () {
-			this.Symbol = symbol;
-		}
-		public SymbolInfo(string symbol, SecurityType securityType, double margin,
-				double point2Dollar, double priceLevelSize, int decimals, string ClassCode) {//,
-				//bool overrideMarketPriceToZero,
-				//bool reSubmitRejected, bool reSubmittedUsesNextSlippage) {
+		public SymbolInfo(string symbol, SecurityType securityType, int decimals) : this() {
 			this.Symbol = symbol;
 			this.SecurityType = securityType;
-			this.LeverageForFutures = margin;
-			this.Point2Dollar = point2Dollar;
-			this.PriceLevelSizeForBonds = priceLevelSize;
 			this.DecimalsPrice = decimals;
+		}
+		public SymbolInfo(string symbol, SecurityType securityType, int decimals, string ClassCode) : this(symbol, securityType, decimals) {
+				//,, double priceLevelSizeForBonds, double margin, double point2Dollar
+				//bool overrideMarketPriceToZero, //bool reSubmitRejected, bool reSubmittedUsesNextSlippage) {
+			//this.LeverageForFutures = margin;
+			//this.Point2Dollar = point2Dollar;
+			//this.PriceLevelSizeForBonds = priceLevelSizeForBonds;
 			this.SymbolClass = ClassCode;
 			//this.OverrideMarketPriceToZero = overrideMarketPriceToZero;
 			//this.ReSubmitRejected = reSubmitRejected;
@@ -162,10 +159,11 @@ namespace Sq1.Core.DataTypes {
 			return this.RoundAlertPriceToPriceLevel(orderPrice, buyOrShort, positionLongShort, marketLimitStop);
 		}
 		public double RoundAlertPriceToPriceLevel(double orderPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
-			double d = orderPrice / this.PriceLevelSizeForBonds;
-			string a = d.ToString("N6");
-			string b = Math.Truncate(d).ToString("N6");
-			if (a == b) return orderPrice;
+			//WHAT_IS_THIS_FOR?
+			//double d = orderPrice / this.PriceMinimalFromDecimal;
+			//string a = d.ToString("N6");
+			//string b = Math.Truncate(d).ToString("N6");
+			//if (a == b) return orderPrice;
 
 			PriceLevelRoundingMode rounding;
 			switch (marketLimitStop0) {
@@ -188,9 +186,9 @@ namespace Sq1.Core.DataTypes {
 					rounding = PriceLevelRoundingMode.DontRound;
 					break;
 			}
-			double lowerLevel = Math.Truncate(orderPrice / this.PriceLevelSizeForBonds);
-			lowerLevel *= this.PriceLevelSizeForBonds;
-			double upperLevel = lowerLevel + this.PriceLevelSizeForBonds;
+			double lowerLevel = Math.Truncate(orderPrice / this.PriceMinimalStepFromDecimal);
+			lowerLevel *= this.PriceMinimalStepFromDecimal;
+			double upperLevel = lowerLevel + this.PriceMinimalStepFromDecimal;
 			switch (rounding) {
 				case PriceLevelRoundingMode.RoundDown:
 					if (lowerLevel >= upperLevel) {
@@ -202,19 +200,28 @@ namespace Sq1.Core.DataTypes {
 						return upperLevel;
 					}
 					return lowerLevel;
+				case PriceLevelRoundingMode.DontRound:
+					return orderPrice;
+				//case PriceLevelRoundingMode.SimulateMathRound:
+				//    double distanceUp = Math.Abs(orderPrice - upperLevel);
+				//    double distanceDown = Math.Abs(orderPrice - lowerLevel);
+				//    if (distanceUp >= distanceDown) {
+				//        return upperLevel;
+				//    }
+				//    return lowerLevel;
 				default:
-					double distanceUp = Math.Abs(orderPrice - upperLevel);
-					double distanceDown = Math.Abs(orderPrice - lowerLevel);
-					if (distanceUp >= distanceDown) {
-						return upperLevel;
-					}
-					return lowerLevel;
+					throw new NotImplementedException("RoundAlertPriceToPriceLevel() for PriceLevelRoundingMode." + rounding);
 			}
 		}
 		public double PriceRoundFractionsBeyondDecimals(double orderPrice) {
 			double decimalPointShifterBeforeRounding = Math.Pow(10, this.DecimalsPrice);		// 2 => 100
 			// assuming this.DecimalsPrice=2: orderPrice=156.633,27272 => 15.663.327,272 => 15.663.327 => 156.633,27[tailTruncated] 
 			double ret = Math.Round(orderPrice * decimalPointShifterBeforeRounding, 0) / decimalPointShifterBeforeRounding;
+			return ret;
+		}
+		public override string ToString() {
+			string ret = this.Symbol + ":" + this.PriceMinimalStepFromDecimal;
+			ret += "(" + Enum.GetName(typeof(SecurityType), this.SecurityType) + ")";
 			return ret;
 		}
 	}

@@ -63,13 +63,16 @@
     <Compile Include="ChartControl.Designer.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ChartControl.DynamicVariables.cs" />
+    <Compile Include="ChartControl.DynamicVariables.cs">
+      <SubType>UserControl</SubType>
+      <DependentUpon>ChartControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ChartControl.EventConsumer.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ChartSettings.cs" />
-    <Compile Include="ChartShadowProtocol.cs">
+    <Compile Include="ChartControl.ChartShadowProtocol.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
@@ -212,8 +215,6 @@
   <ItemGroup>
     <None Include="icons\45degrees3-ShortEntryUnknown.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MultiSplit" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

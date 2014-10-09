@@ -127,31 +127,41 @@ namespace Sq1.Widgets.ScriptEditor {
 		}
 		public void PopulateCompilerSuccess() {
 			int distanceFromBottom = this.splitContainer1.Panel2MinSize;
+			//int distanceFromBottom = this.splitContainer1.SplitterIncrement;
 			this.txtCompilerErrors.Text = SCRIPT_COMPILED_OK;
 			this.txtCompilerErrors.BackColor = Color.LightGreen;
-			if (this.Height > 0) {
-				int distanceFromTop = this.Height - distanceFromBottom;
+			if (base.Height > 0) {
+				distanceFromBottom += 11;
+				//distanceFromBottom += this.splitContainer1.SplitterWidth;
+				int distanceFromTop = base.Height - distanceFromBottom;
 				this.splitContainer1.SplitterDistance = distanceFromTop;
 			}
 			if (this.splitContainer1.Panel2Collapsed) this.splitContainer1.Panel2Collapsed = false;
 		}
 		public void PopulateCompilerErrors(CompilerErrorCollection compilerErrorCollection) {
-			int showLines = (compilerErrorCollection.Count >= 5) ? 5 : compilerErrorCollection.Count;
-			int distanceFromBottom = this.splitContainer1.Panel2MinSize * showLines;
-			if (this.Height > 0) {
-				int distanceFromTop = this.Height - distanceFromBottom;
-				this.splitContainer1.SplitterDistance = distanceFromTop;
-			}
-			if (this.splitContainer1.Panel2Collapsed) this.splitContainer1.Panel2Collapsed = false;
-
+			int errorsIgnoreWarnings = 0;
 			string errorsPlainText = "";
 			foreach (var error in compilerErrorCollection) {
 				string errormsg = error.ToString();
+				if (errormsg.ToLower().IndexOf("warning ") == 0) continue;
+				errorsIgnoreWarnings++;
 				int indexLastSlash = errormsg.LastIndexOf(Path.DirectorySeparatorChar.ToString());
 				string noPath = errormsg.Substring(indexLastSlash + 14);
 				if (errorsPlainText.Length > 0) errorsPlainText += System.Environment.NewLine;
 				errorsPlainText += noPath;
 			}
+
+			//int showLines = (compilerErrorCollection.Count >= 5) ? 5 : compilerErrorCollection.Count;
+			//int showLines = (errorsIgnoreWarnings >= 5) ? 5 : errorsIgnoreWarnings;
+			int showLines = errorsIgnoreWarnings;
+			int distanceFromBottom = this.splitContainer1.Panel2MinSize * showLines;
+			//int distanceFromBottom = this.splitContainer1.SplitterIncrement * showLines;
+			if (base.Height > 0) {
+				distanceFromBottom += 11;
+				int distanceFromTop = base.Height - distanceFromBottom;
+				this.splitContainer1.SplitterDistance = distanceFromTop;
+			}
+			if (this.splitContainer1.Panel2Collapsed) this.splitContainer1.Panel2Collapsed = false;
 
 			this.txtCompilerErrors.Text = errorsPlainText;
 			//this.txtCompilerErrors.BackColor = Color.LightCoral;
@@ -197,7 +207,7 @@ namespace Sq1.Widgets.ScriptEditor {
 					break;
 			}
 		}
-		void txtCompilerErrors_MouseClick(object sender, MouseEventArgs e) {
+		void txtCompilerErrors_MouseUp(object sender, MouseEventArgs e) {
 			this.parseErrorAndSetEditorCaret();
 		}
 		void parseErrorAndSetEditorCaret() {
@@ -226,6 +236,7 @@ namespace Sq1.Widgets.ScriptEditor {
 				string msg = "regex[" + regex + "] didn't find matches for errorLine[" + errorLine + "]";
 			}
 
+			this.TextEditorControl.Focus();
 			Caret caret = this.TextEditorControl.ActiveTextAreaControl.Caret;
 			try {
 				caret.Position = new TextLocation(Int32.Parse(column) - 1, Int32.Parse(row) - 1);

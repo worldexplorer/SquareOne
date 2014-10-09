@@ -11,11 +11,11 @@ namespace Sq1.Widgets.SteppingSlider {
 		public void RaiseValueChanged() {
 			if (this.ValueCurrentChanged == null) return;
 			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
+				this.ValueCurrentChanged(this, EventArgs.Empty);
+			} catch (Exception ex) {
 				#if DEBUG
 				Debugger.Break();
 				#endif
-				this.ValueCurrentChanged(this, EventArgs.Empty);
-			} catch (Exception ex) {
 				Assembler.PopupException(null, ex);
 			}
 		}

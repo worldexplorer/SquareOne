@@ -112,9 +112,9 @@ namespace Sq1.Widgets {
 					return false;
 				}
 				if (this.DockState == DockState.Unknown) {
-					string msg = "I_WANNA_KNOW_WHEN_THIS_STATE_HAPPENS_TO_THE_FORM";
+					string msg = "EDITOR_WAS_CONDITIONALLY_INSTANTIATED_BUT_NOT_DOCKPANEL.SHOW()n";
 					#if DEBUG
-					Debugger.Break();
+					//Debugger.Break();
 					#endif
 					return true;
 				}
@@ -135,17 +135,14 @@ namespace Sq1.Widgets {
 
 		// moved from modified WelfenLuoBlaBlaBla.DockHandler to restore release-state of DockContent library (not fully restored, though)
 		public void ActivateDockContentPopupAutoHidden(bool keepAutoHidden = true, bool activate = true) {
-			if (this.IsDocked || this.IsDockedAutoHide) {
-				if (keepAutoHidden) {
-					// will fold back to the button after a delay; what for do you need to set Active then???
-					//form.DockPanel.ActiveAutoHideContent = form;
-				} else {
-					// will stay open because we change DockRightAutoHidde -> DockRight
+			if (this.IsDocked) {
+				if (activate) this.Activate();
+				//if (keepAutoHidden) this.ToggleAutoHide();
+			} else if (this.IsDockedAutoHide) {
+				if (keepAutoHidden == false) {
 					this.ToggleAutoHide();
 				}
-			}
-			if (activate) {
-				this.Activate();
+				if (activate) this.Activate();
 			}
 		}
 

@@ -102,7 +102,7 @@ namespace Sq1.Gui.Forms {
 			//scriptEditorFormCorresponding.Activate();
 			//v2
 			if (this.chartFormManager.Strategy != null && this.chartFormManager.Strategy.ActivatedFromDll == false) {
-				this.chartFormManager.ScriptEditorFormConditionalInstance.ActivateDockContentPopupAutoHidden();
+				this.chartFormManager.ScriptEditorFormConditionalInstance.ActivateDockContentPopupAutoHidden(true, true);
 			}
 			//during the update to the next DockContent version, copy&paste into DockHelper.cs:
 			//public static void ActivateDockContentPopupAutoHidden(DockContent form) {

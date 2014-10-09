@@ -270,6 +270,16 @@ namespace Sq1.Core.Backtesting {
 
 			double priceScriptAligned = this.backtester.Executor.AlignAlertPriceToPriceLevel(alert.Bars, alert.PriceScript, true,
 				alert.PositionLongShortFromDirection, alert.MarketLimitStop);
+			
+			//quick check
+			if (priceScriptAligned != alert.PriceScript) {
+				if (alert.MarketLimitStop == MarketLimitStop.Market) {
+					string msg = "WHY_YOU_DID_CHANGE_THE_PRICE__PRICE_SCRIPT_MUST_BE_ALREADY_GOOD";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+				}
+			}
 
 			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.BacktestStreamingProvider.StreamingDataSnapshot
 				.LastQuoteGetForSymbol(alert.Symbol);
@@ -375,7 +385,7 @@ namespace Sq1.Core.Backtesting {
 					//TESTED Debugger.Break();
 					//double minimalValue = Math.Pow(1, -decimalsVolume);		// 1^(-2) = 0.01
 				    #endif
-					volumeOneQuarterOfBar = barSimulated.ParentBars.SymbolInfo.VolumeMinimalFromDecimal;
+					volumeOneQuarterOfBar = barSimulated.ParentBars.SymbolInfo.VolumeMinimalStepFromDecimal;
 				}
 			}
 			if (volumeOneQuarterOfBar == 0) {

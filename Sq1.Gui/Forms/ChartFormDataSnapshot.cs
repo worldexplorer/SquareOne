@@ -20,7 +20,8 @@ namespace Sq1.Gui.Forms {
 					string msg = "this.chartSerno[" + this.chartSerno + "] => value[" + value + "]"
 						+ ": ChartSerno can be initialized only once in a lifetime"
 						+ "(init-once from ChartFormManager.Initialize() after deserialization)";
-					throw new Exception(msg);
+					//throw new Exception(msg);
+					Assembler.PopupException(msg);
 				}
 				this.chartSerno = value;
 			}

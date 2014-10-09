@@ -80,13 +80,13 @@
 			// ctxMain
 			// 
 			this.ctxMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniSave,
-            this.mniCompile,
-            this.mniRun,
-            this.mniDebug,
-            this.toolStripSeparator1,
-            this.mniEditing,
-            this.mniOptions});
+									this.mniSave,
+									this.mniCompile,
+									this.mniRun,
+									this.mniDebug,
+									this.toolStripSeparator1,
+									this.mniEditing,
+									this.mniOptions});
 			this.ctxMain.Name = "contextMenuStrip";
 			this.ctxMain.Size = new System.Drawing.Size(139, 142);
 			// 
@@ -137,14 +137,14 @@
 			// ctxEditing
 			// 
 			this.ctxEditing.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniUndo,
-            this.mniRedo,
-            this.toolStripSeparator5,
-            this.mniCut,
-            this.mniCopy,
-            this.mniPaste,
-            this.toolStripSeparator8,
-            this.mniSelectAll});
+									this.mniUndo,
+									this.mniRedo,
+									this.toolStripSeparator5,
+									this.mniCut,
+									this.mniCopy,
+									this.mniPaste,
+									this.toolStripSeparator8,
+									this.mniSelectAll});
 			this.ctxEditing.Name = "ctxEditing";
 			this.ctxEditing.OwnerItem = this.mniEditing;
 			this.ctxEditing.Size = new System.Drawing.Size(123, 148);
@@ -211,6 +211,7 @@
 			// splitContainer1
 			// 
 			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.splitContainer1.Location = new System.Drawing.Point(0, 0);
 			this.splitContainer1.Name = "splitContainer1";
 			this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -222,10 +223,10 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.txtCompilerErrors);
-			this.splitContainer1.Panel2MinSize = 22;
+			this.splitContainer1.Panel2MinSize = 12;
 			this.splitContainer1.Size = new System.Drawing.Size(401, 240);
 			this.splitContainer1.SplitterDistance = 211;
-			this.splitContainer1.SplitterIncrement = 22;
+			this.splitContainer1.SplitterIncrement = 12;
 			this.splitContainer1.TabIndex = 2;
 			// 
 			// txtCompilerErrors
@@ -240,14 +241,14 @@
 			this.txtCompilerErrors.Size = new System.Drawing.Size(401, 25);
 			this.txtCompilerErrors.TabIndex = 0;
 			this.txtCompilerErrors.WordWrap = false;
-			this.txtCompilerErrors.MouseClick += new System.Windows.Forms.MouseEventHandler(this.txtCompilerErrors_MouseClick);
 			this.txtCompilerErrors.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtCompilerErrors_KeyUp);
+			this.txtCompilerErrors.MouseUp += new System.Windows.Forms.MouseEventHandler(this.txtCompilerErrors_MouseUp);
 			// 
 			// ctxCompilerErrors
 			// 
 			this.ctxCompilerErrors.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniWordWrap,
-            this.mniHide});
+									this.mniWordWrap,
+									this.mniHide});
 			this.ctxCompilerErrors.Name = "ctxCompilerErrors";
 			this.ctxCompilerErrors.Size = new System.Drawing.Size(206, 48);
 			// 
@@ -287,7 +288,6 @@
 			this.splitContainer1.ResumeLayout(false);
 			this.ctxCompilerErrors.ResumeLayout(false);
 			this.ResumeLayout(false);
-
 		}
 		private System.Windows.Forms.Timer timer1;
 

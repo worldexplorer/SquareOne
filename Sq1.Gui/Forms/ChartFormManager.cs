@@ -534,9 +534,13 @@ namespace Sq1.Gui.Forms {
 			}
 			this.Strategy.CompileInstantiate();
 			if (this.Strategy.Script == null) {
-				this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerErrors(this.Strategy.ScriptCompiler.CompilerErrors);
+				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false) {
+					this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerErrors(this.Strategy.ScriptCompiler.CompilerErrors);
+				}
 			} else {
-				this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerSuccess();
+				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false) {
+					this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerSuccess();
+				}
 				this.Strategy.Script.Initialize(this.Executor);
 			}
 			// moved to StrategyCompileActivatePopulateSlidersShow() because no need to PopulateSliders during Deserialization
@@ -545,7 +549,9 @@ namespace Sq1.Gui.Forms {
 		}
 		public void StrategyCompileActivatePopulateSlidersShow() {
 			if (this.Strategy.ActivatedFromDll == false) this.StrategyCompileActivateBeforeShow();
-			this.Strategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
+			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
+				this.Strategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
+			}
 			this.PopulateSliders();
 		}
 		public void PopulateSliders() {
@@ -560,6 +566,12 @@ namespace Sq1.Gui.Forms {
 		}
 		public void PopulateMainFormSymbolStrategyTreesScriptParameters() {
 			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;
+			if (ctxScript == null) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return;
+			}
 			DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
 			if (this.Strategy != null) {
 				StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.Strategy);

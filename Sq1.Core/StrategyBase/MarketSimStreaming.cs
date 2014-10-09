@@ -183,13 +183,13 @@ namespace Sq1.Core.StrategyBase {
 			//}
 			//v1
 			
-			#if DEBUG
 			if (quote.PriceBetweenBidAsk(entryPriceOut) == false) {
+				#if DEBUG
 				string msg = "I_DONT_UNDERSTAND_HOW_I_DIDNT_DROP_THIS_QUOTE_BEFORE_BUT_I_HAVE_TO_DROP_IT_NOW";
-				//Debugger.Break();
+				Debugger.Break();
+				#endif
 				return false;
 			}
-			#endif
 			return true;
 		}
 		public bool CheckExitAlertWillBeFilledByQuote(Alert exitAlert, Quote quote
@@ -366,11 +366,13 @@ namespace Sq1.Core.StrategyBase {
 			//}
 			// /v1
 			
-			#if DEBUG
 			if (quote.PriceBetweenBidAsk(exitPriceOut) == false) {
-				Debugger.Break();
+				#if DEBUG
+				string msg = "this isn't enough: market orders are still executed outside the bar...";
+				Debugger.Break();	// we'll need to generate one more quote onTheWayTo exitPriceOut
+				#endif
+				return false;
 			}
-			#endif
 			return true;
 		}
 
@@ -416,6 +418,14 @@ namespace Sq1.Core.StrategyBase {
 				}
 				if (filled == 0) continue;
 				if (filled > 1) Debugger.Break();
+				if (filled == 1) {
+					if (alert.IsFilledOutsideQuote_DEBUG_CHECK) {
+						Debugger.Break();
+					}
+					if (alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK) {
+						Debugger.Break();
+					}
+				}
 
 				if (this.executor.ExecutionDataSnapshot.AlertsPendingContains(alert)) {
 					string msg = "normally, the filled alert already removed by CallbackAlertFilledMoveAroundInvokeScript()";

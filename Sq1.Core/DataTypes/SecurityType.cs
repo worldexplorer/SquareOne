@@ -1,8 +1,10 @@
 namespace Sq1.Core.DataTypes {
 	public enum SecurityType {
-		Stock,
-		Future,
-		Option,
-		Forex
+		Unknown = 0,
+		Stock = 1,
+		Future = 2,
+		Option = 3,
+		Forex = 4,
+		USBond = 5
 	}
 }

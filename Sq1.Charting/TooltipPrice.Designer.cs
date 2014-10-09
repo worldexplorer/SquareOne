@@ -175,7 +175,7 @@ namespace Sq1.Charting {
 			this.lblDateValue.TabIndex = 17;
 			this.lblDateValue.Text = " Fri 16-Feb-2012";
 			this.lblDateValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.lblDateValue.Visible = false;
+			this.lblDateValue.Visible = true;
 			// 
 			// lblDate
 			// 
