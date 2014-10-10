@@ -6,10 +6,6 @@ using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Strategies.Demo {
-	// REASON_TO_EXIST_NEW_FEATURE: test for ATR in separatePanel: ChartPanelType=ChartPanelType.PanelIndicatorSingle
-	// REASON_TO_EXIST_NEW_FEATURE: pull indicator parameters onto ScriptContext's SteppingSliders
-	// REASON_TO_EXIST_NEW_FEATURE: test for onPrice IndicatorDualBand(Bars.Close+-ATR)
-
 	[ScriptParameterAttribute(Id=1, Name="test", ValueMin=0, ValueMax=10, ValueIncrement=1 )]
 
 	public class ATRbandCompiled : Script {

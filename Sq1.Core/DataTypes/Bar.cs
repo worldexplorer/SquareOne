@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Text;
+
 using Newtonsoft.Json;
 
 //PERST_TOO_BULKY_TO_IMPLEMENT_FILES_TOO_BIG_FOR_NON_TICK using Perst;
@@ -312,15 +314,59 @@ namespace Sq1.Core.DataTypes {
 				volumeFormat	= this.ParentBars.SymbolInfo.FormatVolume;
 			}
 			
-			return this.ParentBarsIdent + ":"
-				+ Symbol + "(" + ScaleInterval + ") "
-				+ "T[" + DateTimeOpen + "]"
-				+ "O[" + Math.Round(this.Open,	priceDecimals).ToString(priceFormat) + "]"
-				+ "H[" + Math.Round(this.High,	priceDecimals).ToString(priceFormat) + "]"
-				+ "L[" + Math.Round(this.Low,	priceDecimals).ToString(priceFormat) + "]"
-				+ "C[" + Math.Round(this.Close,	priceDecimals).ToString(priceFormat) + "]"
-				+ "V[" + Math.Round(this.Volume,volumeDecimals).ToString(volumeFormat) + "]"
-				;
+//			return this.ParentBarsIdent + ":"
+//				+ Symbol + "(" + ScaleInterval + ") "
+//				+ "T[" + DateTimeOpen + "]"
+//				+ "O[" + Math.Round(this.Open,	priceDecimals).ToString(priceFormat) + "]"
+//				+ "H[" + Math.Round(this.High,	priceDecimals).ToString(priceFormat) + "]"
+//				+ "L[" + Math.Round(this.Low,	priceDecimals).ToString(priceFormat) + "]"
+//				+ "C[" + Math.Round(this.Close,	priceDecimals).ToString(priceFormat) + "]"
+//				+ "V[" + Math.Round(this.Volume,volumeDecimals).ToString(volumeFormat) + "]"
+//				;
+
+			#if DEBUG
+			if (this.Open.ToString(priceFormat) != Math.Round(this.Open,	priceDecimals).ToString(priceFormat)) {
+				string msg = "Double.ToString() doesn't invoke Math.Round!";
+			}
+			#endif
+			
+			StringBuilder sb = new StringBuilder();
+			sb.Append(this.ParentBarsIdent);
+			sb.Append(":");
+			sb.Append(Symbol);
+			sb.Append("(");
+			sb.Append(ScaleInterval.ToString());
+			sb.Append(") ");
+			
+			sb.Append("T[");
+			sb.Append(DateTimeOpen.ToString());
+			sb.Append("]");
+
+			sb.Append("O[");
+			//sb.Append(this.Open.ToString(priceFormat));
+			sb.Append(Math.Round(this.Open,	priceDecimals).ToString(priceFormat));
+			sb.Append("]");
+
+			sb.Append("H[");
+			//sb.Append(this.High.ToString(priceFormat));
+			sb.Append(Math.Round(this.High,	priceDecimals).ToString(priceFormat));
+			sb.Append("]");
+
+			sb.Append("L[");
+			//sb.Append(this.Low.ToString(priceFormat));
+			sb.Append(Math.Round(this.Low,	priceDecimals).ToString(priceFormat));
+			sb.Append("]");
+
+			sb.Append("C[");
+			//sb.Append(this.Close.ToString(priceFormat));
+			sb.Append(Math.Round(this.Close,	priceDecimals).ToString(priceFormat));
+			sb.Append("]");
+
+			sb.Append("V[");
+			sb.Append(this.Volume.ToString(priceFormat));
+			sb.Append("]");
+
+			return sb.ToString();
 		}
 		public bool ContainsPrice(double entryFillPrice) {
 			if (entryFillPrice < this.Low) return false; 

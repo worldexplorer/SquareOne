@@ -11,17 +11,126 @@ using Sq1.Core.Execution;
 namespace Sq1.Charting {
 	public class PanelPrice : PanelBase {
 		List<Position> PositionLineAlreadyDrawnFromOneOfTheEnds;
+		
+		#if USE_DATASERIES_MINMAX
+		public override double VisibleMinDoubleMaxValueUnsafe { get { return this.VisiblePriceMinNew; } }
+		public override double VisibleMaxDoubleMinValueUnsafe { get { return this.VisiblePriceMaxNew; } }
+		#else
+		public override double VisibleMinDoubleMaxValueUnsafe { get { return this.VisiblePriceMinOld; } }
+		public override double VisibleMaxDoubleMinValueUnsafe { get { return this.VisiblePriceMaxOld; } }
+		#endif
+		
+		#region DELETEME_AFTER_COMPATIBILITY_TEST
+		private double visiblePriceMaxCurrent;
+		public double VisiblePriceMaxOld { get {
+				if (base.DesignMode || this.ChartControl.BarsEmpty) return 999;
+				this.visiblePriceMaxCurrent = Double.MinValue;
+				for (int i = this.VisibleBarRight_cached; i >= this.VisibleBarLeft_cached; i--) {
+					if (i >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						Assembler.PopupException("VisiblePriceMax(): " + msg);
+						continue;
+					}
+					Bar barCanBeStreamingWithNaNs = this.ChartControl.Bars[i];
+					double high = barCanBeStreamingWithNaNs.High;
+					if (double.IsNaN(high)) continue;
+					if (high > this.visiblePriceMaxCurrent) this.visiblePriceMaxCurrent = high;
+				}
+				#if TEST_COMPATIBILITY
+				if (this.visiblePriceMaxCurrent != this.VisiblePriceMaxNew) {
+					Debugger.Break();
+				} else {
+					//Debugger.Break();
+				}
+				#endif
+				return this.visiblePriceMaxCurrent;
+			} }
+		private double visiblePriceMinCurrent;
+		public double VisiblePriceMinOld { get {
+				if (base.DesignMode || this.ChartControl.BarsEmpty) return 98;
+				this.visiblePriceMinCurrent = Double.MaxValue;
+				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
+				for (int i = this.VisibleBarRight_cached; i >= this.VisibleBarLeft_cached; i--) {
+					if (i >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						Assembler.PopupException("VisiblePriceMin(): " + msg);
+						continue;
+					}
+					Bar barCanBeStreamingWithNaNs = this.ChartControl.Bars[i];
+					double low = barCanBeStreamingWithNaNs.Low;
+					if (double.IsNaN(low)) continue;
+					if (low < this.visiblePriceMinCurrent) this.visiblePriceMinCurrent = low;
+				}
+				#if TEST_COMPATIBILITY
+				if (this.visiblePriceMinCurrent != this.VisiblePriceMinNew) {
+					Debugger.Break();
+				} else {
+					//Debugger.Break();
+				}
+				#endif
+				if (Math.Abs(this.visiblePriceMinCurrent) > 1000000) {
+					string msg = "this.VisibleBarLeft_cached > this.VisibleBarRight_cached ?";
+					Debugger.Break();
+				}
+				return this.visiblePriceMinCurrent;
+			} }
+		#endregion
+		
+		public double VisiblePriceMinNew { get {
+				if (base.DesignMode || this.ChartControl.BarsEmpty) return 99;
+				DataSeriesProxyBars seriesLow = new DataSeriesProxyBars(this.ChartControl.Bars, DataSeriesProxyableFromBars.Low);
+				double ret = seriesLow.MinValueBetweenIndexesDoubleMaxValueUnsafe(this.VisibleBarLeft_cached, this.VisibleBarRight_cached);
+				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					Assembler.PopupException("VisiblePriceMin(): " + msg);
+				}
+				return ret;
+			} }
+		public double VisiblePriceMaxNew { get {
+				if (base.DesignMode || this.ChartControl.BarsEmpty) return 999;
+				DataSeriesProxyBars seriesHigh = new DataSeriesProxyBars(this.ChartControl.Bars, DataSeriesProxyableFromBars.High);
+				double ret = seriesHigh.MaxValueBetweenIndexesDoubleMinValueUnsafe(this.VisibleBarLeft_cached, this.VisibleBarRight_cached);
+				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					Assembler.PopupException("VisiblePriceMax(): " + msg);
+				}
+				return ret;
+			} }
 
+		
 		public PanelPrice() : base() {
 			this.PositionLineAlreadyDrawnFromOneOfTheEnds = new List<Position>();
 			base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
+			// startup with narrow AppFormHeight makes PanelPrice.Height too small => gutter disappears => EXCEPTION "Price-PANEL_HEIGHT_MUST_BE_POSITIVE"   
+			base.MinimumSize = new Size(20, 25);	// only height matters for MultiSplitContainer
 		}
 
 		private int howManyPositionArrowsBeyondPriceBoundaries = 0; 
 		public override int PaddingVerticalSqueeze { get { return this.ChartControl.ChartSettings.SqueezeVerticalPaddingPx; } }
 		
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
-			base.PaintWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter foregrounds
+			if (this.VisibleMinDoubleMaxValueUnsafe == double.MaxValue) {
+				string msg = "this.VisibleBarLeft_cached > this.VisibleBarRight_cached";
+				return;
+			}
+			
+			// 1) uses here-defined VisibleMinDoubleMaxValueUnsafe,VisibleMaxDoubleMinValueUnsafe to set:
+			//		base.VisibleMin,Max,Range_cached,
+			//		base.VisibleMinMinusTopSqueezer_cached, this.VisibleMaxPlusBottomSqueezer_cached, this.VisibleRangeWithTwoSqueezers_cached
+			// 2) paints Right and Bottom gutter foregrounds;
+			base.PaintWholeSurfaceBarsNotEmpty(g);
 			howManyPositionArrowsBeyondPriceBoundaries = this.alignVisiblePositionArrowsAndCountMaxOutstanding();
 			this.renderBarsPrice(g);
 			// TODO MOVE_IT_UPSTACK_AND_PLACE_AFTER_renderBarsPrice_SO_THAT_POSITION_LINES_SHOWUP_ON_TOP_OF_BARS 
@@ -32,9 +141,9 @@ namespace Sq1.Charting {
 			//this.RenderBidAsk(g);
 			//this.RenderPositions(g);
 		}
-		protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
-			base.PaintBackgroundWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter backgrounds
-		}
+		//protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
+		//	base.PaintBackgroundWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter backgrounds
+		//}
 		int alignVisiblePositionArrowsAndCountMaxOutstanding() {
 			int ret = 0;
 			Dictionary<int, List<AlertArrow>> arrowListByBar = base.ChartControl.ScriptExecutorObjects.AlertArrowsListByBar;
@@ -245,6 +354,9 @@ namespace Sq1.Charting {
 			
 			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLines(): " + msg);
 				return;
 			}
@@ -322,6 +434,9 @@ namespace Sq1.Charting {
 		void renderOnChartLabels(Graphics g) {
 			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLabels(): " + msg);
 				return;
 			}
@@ -336,6 +451,9 @@ namespace Sq1.Charting {
 			// TODO remove dupes from render*, move loop upstack
 			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLabels(): " + msg);
 				return;
 			}
@@ -435,20 +553,12 @@ namespace Sq1.Charting {
 			}
 		}
 		
-		// PanelPrice		must return bars[barIndexMouseOvered].Close
-		// PanelVolume		must return bars[barIndexMouseOvered].Volume
-		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
-		public override double PanelValueForBarCurrentNaNunsafe { get {
-				double ret = double.NaN;
-				if (base.ChartControl.BarCurrentMouseOveredNullUnsafe == null) return ret;
-				ret = base.ChartControl.BarCurrentMouseOveredNullUnsafe.Close;
-				return ret;
-			} }
 		public override double ValueGetNaNunsafe(int barIndex) {
 			if (barIndex < 0) return double.NaN;
 			if (barIndex >= base.ChartControl.Bars.Count) return double.NaN; 
 			Bar bar = base.ChartControl.Bars[barIndex];
 			return bar.Close;
 		}
+		public override int Decimals { get { return (base.ChartControl.Bars.SymbolInfo != null) ? base.ChartControl.Bars.SymbolInfo.DecimalsPrice : 5; } }
 	}
 }

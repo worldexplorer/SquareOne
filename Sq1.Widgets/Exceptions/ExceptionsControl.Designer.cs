@@ -62,7 +62,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.treeExceptions.ShowCommandMenuOnRightClick = true;
 			this.treeExceptions.ShowGroups = false;
 			this.treeExceptions.ShowItemToolTips = true;
-			this.treeExceptions.Size = new System.Drawing.Size(383, 353);
+			this.treeExceptions.Size = new System.Drawing.Size(111, 353);
 			this.treeExceptions.TabIndex = 3;
 			this.treeExceptions.TintSortColumn = true;
 			this.treeExceptions.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -116,9 +116,9 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniltbDelay.Enabled = false;
 			this.mniltbDelay.InputFieldOffsetX = 80;
 			this.mniltbDelay.InputFieldValue = "";
-			this.mniltbDelay.InputFieldWidth = 12;
+			this.mniltbDelay.InputFieldWidth = 0;
 			this.mniltbDelay.Name = "mniltbDelay";
-			this.mniltbDelay.Size = new System.Drawing.Size(162, 21);
+			this.mniltbDelay.Size = new System.Drawing.Size(165, 21);
 			this.mniltbDelay.Text = "Delay, msec:";
 			this.mniltbDelay.TextRed = false;
 			this.mniltbDelay.Visible = false;
@@ -159,9 +159,11 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			// splitContainerVertical.Panel2
 			// 
+			this.splitContainerVertical.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainerVertical.Panel2.Controls.Add(this.splitContainerHorizontal);
 			this.splitContainerVertical.Size = new System.Drawing.Size(506, 353);
-			this.splitContainerVertical.SplitterDistance = 383;
+			this.splitContainerVertical.SplitterDistance = 111;
+			this.splitContainerVertical.SplitterWidth = 5;
 			this.splitContainerVertical.TabIndex = 6;
 			// 
 			// splitContainerHorizontal
@@ -179,8 +181,9 @@ namespace Sq1.Widgets.Exceptions {
 			// splitContainerHorizontal.Panel2
 			// 
 			this.splitContainerHorizontal.Panel2.Controls.Add(this.lvStackTrace);
-			this.splitContainerHorizontal.Size = new System.Drawing.Size(119, 353);
-			this.splitContainerHorizontal.SplitterDistance = 150;
+			this.splitContainerHorizontal.Size = new System.Drawing.Size(390, 353);
+			this.splitContainerHorizontal.SplitterDistance = 148;
+			this.splitContainerHorizontal.SplitterWidth = 5;
 			this.splitContainerHorizontal.TabIndex = 15;
 			// 
 			// txtExceptionMessage
@@ -190,7 +193,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.txtExceptionMessage.Location = new System.Drawing.Point(0, 0);
 			this.txtExceptionMessage.Multiline = true;
 			this.txtExceptionMessage.Name = "txtExceptionMessage";
-			this.txtExceptionMessage.Size = new System.Drawing.Size(119, 150);
+			this.txtExceptionMessage.Size = new System.Drawing.Size(390, 148);
 			this.txtExceptionMessage.TabIndex = 1;
 			this.txtExceptionMessage.TabStop = false;
 			this.txtExceptionMessage.Text = "ghdfg hdfg\r\ndfghdfg hdfgh\r\n9999";
@@ -213,7 +216,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.lvStackTrace.Name = "lvStackTrace";
 			this.lvStackTrace.Scrollable = false;
 			this.lvStackTrace.ShowItemToolTips = true;
-			this.lvStackTrace.Size = new System.Drawing.Size(119, 199);
+			this.lvStackTrace.Size = new System.Drawing.Size(390, 200);
 			this.lvStackTrace.TabIndex = 12;
 			this.lvStackTrace.UseCompatibleStateImageBehavior = false;
 			this.lvStackTrace.View = System.Windows.Forms.View.Details;
@@ -255,6 +258,7 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			// ExceptionsControl
 			// 
+			this.BackColor = System.Drawing.SystemColors.MenuHighlight;
 			this.Controls.Add(this.splitContainerVertical);
 			this.Name = "ExceptionsControl";
 			this.Size = new System.Drawing.Size(506, 353);

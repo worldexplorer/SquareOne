@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -155,6 +155,10 @@ namespace Sq1.Widgets {
 			this.Pane.SetDockState(newState);
 		}
 		protected override void OnResize(EventArgs e) {
+			if (base.DesignMode) {
+				base.OnResize(e);
+				return;
+			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
 				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
@@ -168,6 +172,14 @@ namespace Sq1.Widgets {
 				// I want to avoid agonizing sizes to (ever) appear in ChartFormDataSnapshot 
 				return;
 			}
+			#if DEBUG
+			string thisName = this.GetType().Name;
+			if (thisName == "ExceptionsForm") {
+				if (base.Width != base.Parent.Width) {
+					string msg = "PLACED_EXCEPTION_TEXTAREA_TO_HORIZONTAL_SPLITTER_TOP_PANEL reason for unsused space on the right before the form edge?";
+				}
+			}
+			#endif
 			base.OnResize(e);
 		}
 		public bool NullOrDisposed { get { 

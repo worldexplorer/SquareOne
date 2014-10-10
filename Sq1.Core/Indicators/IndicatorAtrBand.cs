@@ -40,29 +40,33 @@ namespace Sq1.Core.Indicators {
 			double atrValue = double.NaN;
 			bool addNan = false;
 			
-			if (addNan = false && newStaticBar.ParentBarsIndex < this.FirstValidBarIndex) {
-				addNan = true;
+			if (addNan == false && newStaticBar.ParentBarsIndex < this.FirstValidBarIndex) {
+				addNan  = true;
 			}
-			if (addNan = false && newStaticBar.ParentBarsIndex > this.atr.OwnValuesCalculated.Count - 1) {
-				addNan = true;
+			if (addNan == false && newStaticBar.ParentBarsIndex > this.atr.OwnValuesCalculated.Count - 1) {
+				addNan  = true;
 			} else {
 				atrValue = this.atr.OwnValuesCalculated[newStaticBar.ParentBarsIndex];
 			}
-			if (addNan = false &&  double.IsNaN(atrValue)) {
-				addNan = true;
+			if (addNan == false && double.IsNaN(atrValue)) {
+				addNan  = true;
 			}
 			
 			if (addNan) {
-				this.bandLower.Append(newStaticBar.DateTimeOpen, double.NaN);
-				this.bandUpper.Append(newStaticBar.DateTimeOpen, double.NaN);
+				//this.bandLower.Append(newStaticBar.DateTimeOpen, double.NaN);
+				//this.bandUpper.Append(newStaticBar.DateTimeOpen, double.NaN);
+				this.bandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, double.NaN, newStaticBar);
+				this.bandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, double.NaN, newStaticBar);
 				return double.NaN;
 			}
 
 			// EPIC_FAIL double lastClose = base.ClosesProxyEffective.StreamingValue;
 			double lastClose = newStaticBar.Close;
 			double retMultiplied = atrValue * this.ParamMultiplier.ValueCurrent;	// I_WONT_CHECK_ZERO_RESULT_WILL_BE_DRAWN_AS_WEIRD_1PX_LINE_AT_BOTTOM_CHART
-			this.bandLower.Append(newStaticBar.DateTimeOpen, lastClose - retMultiplied);
-			this.bandUpper.Append(newStaticBar.DateTimeOpen, lastClose + retMultiplied);
+			//this.bandLower.Append(newStaticBar.DateTimeOpen, lastClose - retMultiplied);
+			//this.bandUpper.Append(newStaticBar.DateTimeOpen, lastClose + retMultiplied);
+			this.bandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, lastClose - retMultiplied, newStaticBar);
+			this.bandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, lastClose + retMultiplied, newStaticBar);
 			
 			// base.OwnValuesCalculated will all be NaNs, because I keep my data in this.bandLower and this.bandUpper;
 			// TODO make sure OnPaint will invoke my DrawValueIndicatorSpecific() despite each OwnValue is NaN and it looks like there is nothing to draw

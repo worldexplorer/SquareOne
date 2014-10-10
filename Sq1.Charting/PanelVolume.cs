@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 
 using Sq1.Core;
@@ -8,20 +9,117 @@ namespace Sq1.Charting {
 	public class PanelVolume : PanelBase {
 		public PanelVolume() : base() {
 			base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
+			base.MinimumSize = new Size(20, 15);	// only height matters for MultiSplitContainer
 		}
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
-			base.PaintWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter foregrounds
+			// 1) uses here-defined VisibleMinDoubleMaxValueUnsafe,VisibleMaxDoubleMinValueUnsafe to set:
+			//		base.VisibleMin,Max,Range_cached,
+			//		base.VisibleMinMinusTopSqueezer_cached, this.VisibleMaxPlusBottomSqueezer_cached, this.VisibleRangeWithTwoSqueezers_cached
+			// 2) paints Right and Bottom gutter foregrounds;
+			base.PaintWholeSurfaceBarsNotEmpty(g);
 			base.ForeColor = this.ChartControl.ChartSettings.VolumeColorBarDown;
 			this.renderBarsVolume(g);
 		}
-		protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
-			base.PaintBackgroundWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter backgrounds
-			//this.PaintRightVolumeGutterAndGridLines(g);
-		}
+		//protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
+		//	base.PaintBackgroundWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter backgrounds
+		//	//this.PaintRightVolumeGutterAndGridLines(g);
+		//}
 		
-		public override double VisibleMinDoubleMaxValueUnsafe { get { return base.ChartControl.VisibleVolumeMin; } }
-		public override double VisibleMaxDoubleMinValueUnsafe { get { return base.ChartControl.VisibleVolumeMax; } }
-
+		#if USE_DATASERIES_MINMAX
+		public override double VisibleMinDoubleMaxValueUnsafe { get { return this.VisibleVolumeMinNew; } }
+		public override double VisibleMaxDoubleMinValueUnsafe { get { return this.VisibleVolumeMaxNew; } }
+		#else
+		public override double VisibleMinDoubleMaxValueUnsafe { get { return this.VisibleVolumeMinOld; } }
+		public override double VisibleMaxDoubleMinValueUnsafe { get { return this.VisibleVolumeMaxOld; } }
+		#endif
+		
+		#region DELETEME_AFTER_COMPATIBILITY_TEST
+		private double visibleVolumeMinCurrent;
+		public double VisibleVolumeMinOld { get {
+				if (base.DesignMode || this.ChartControl.BarsEmpty) return 99;
+				this.visibleVolumeMinCurrent = Double.MaxValue;
+				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
+				for (int i = this.VisibleBarRight_cached; i >= this.VisibleBarLeft_cached; i--) {
+					if (i >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						Assembler.PopupException("VisibleVolumeMin(): " + msg);
+						continue;
+					}
+					Bar barCanBeStreamingWithNaNs = this.ChartControl.Bars[i];
+					double volume = barCanBeStreamingWithNaNs.Volume;
+					if (double.IsNaN(volume)) continue;
+					if (volume < this.visibleVolumeMinCurrent) this.visibleVolumeMinCurrent = volume;
+				}
+				#if TEST_COMPATIBILITY
+				if (this.visibleVolumeMinCurrent != this.VisibleVolumeMinNew) {
+					Debugger.Break();
+				} else {
+					//Debugger.Break();
+				}
+				#endif
+				return this.visibleVolumeMinCurrent;
+			} }
+		private double visibleVolumeMaxCurrent;
+		public double VisibleVolumeMaxOld { get {
+				if (base.DesignMode || this.ChartControl.BarsEmpty) return 658;
+				this.visibleVolumeMaxCurrent = Double.MinValue;
+				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
+				for (int i = this.VisibleBarRight_cached; i >= this.VisibleBarLeft_cached; i--) {
+					if (i >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						Assembler.PopupException("VisibleVolumeMax(): " + msg);
+						continue;
+					}
+					Bar barCanBeStreamingWithNaNs = this.ChartControl.Bars[i];
+					double volume = barCanBeStreamingWithNaNs.Volume;
+					if (double.IsNaN(volume)) continue;
+					if (volume > this.visibleVolumeMaxCurrent) this.visibleVolumeMaxCurrent = volume;
+				}
+				#if TEST_COMPATIBILITY
+				if (this.visibleVolumeMaxCurrent != this.VisibleVolumeMaxNew) {
+					Debugger.Break();
+				} else {
+					//Debugger.Break();
+				}
+				#endif
+				return this.visibleVolumeMaxCurrent;
+			} }
+		#endregion
+		
+		public double VisibleVolumeMinNew { get {
+				if (base.DesignMode || this.ChartControl.BarsEmpty) return 99;
+				DataSeriesProxyBars seriesVolume = new DataSeriesProxyBars(this.ChartControl.Bars, DataSeriesProxyableFromBars.Volume);
+				double ret = seriesVolume.MinValueBetweenIndexesDoubleMaxValueUnsafe(this.VisibleBarLeft_cached, this.VisibleBarRight_cached);
+				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						Assembler.PopupException("VisibleVolumeMin(): " + msg);
+				}
+				return ret;
+			} }
+		public double VisibleVolumeMaxNew { get {
+				if (base.DesignMode || this.ChartControl.BarsEmpty) return 658;
+				DataSeriesProxyBars seriesVolume = new DataSeriesProxyBars(this.ChartControl.Bars, DataSeriesProxyableFromBars.Volume);
+				double ret = seriesVolume.MaxValueBetweenIndexesDoubleMinValueUnsafe(this.VisibleBarLeft_cached, this.VisibleBarRight_cached);
+				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					Assembler.PopupException("VisibleVolumeMax(): " + msg);
+				}
+				return ret;
+			} }
+		
+		
 		void renderBarsVolume(Graphics g) {
 			//for (int i = 0; i < base.ChartControl.BarsCanFitForCurrentWidth; i++) {
 			//	int barFromRight = base.ChartControl.BarsCanFitForCurrentWidth - i - 1;
@@ -30,6 +128,9 @@ namespace Sq1.Charting {
 			for (int i = base.VisibleBarRight_cached; i > base.VisibleBarLeft_cached; i--) {
 				if (i > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					Assembler.PopupException("RenderBarsPrice(): " + msg);
 					continue;
 				}
@@ -46,20 +147,13 @@ namespace Sq1.Charting {
 			}
 		}
 		
-		// PanelPrice		must return bars[barIndexMouseOvered].Close
-		// PanelVolume		must return bars[barIndexMouseOvered].Volume
-		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
-		public override double PanelValueForBarCurrentNaNunsafe { get {
-				double ret = double.NaN;
-				if (base.ChartControl.BarCurrentMouseOveredNullUnsafe == null) return ret;
-				ret = base.ChartControl.BarCurrentMouseOveredNullUnsafe.Volume;
-				return ret;
-			} }
 		public override double ValueGetNaNunsafe(int barIndex) {
 			if (barIndex < 0) return double.NaN;
 			if (barIndex >= base.ChartControl.Bars.Count) return double.NaN; 
 			Bar bar = base.ChartControl.Bars[barIndex];
 			return bar.Volume;
 		}
+
+		public override int Decimals { get { return (base.ChartControl.Bars.SymbolInfo != null) ? base.ChartControl.Bars.SymbolInfo.DecimalsVolume : 0; } }
 	}
 }

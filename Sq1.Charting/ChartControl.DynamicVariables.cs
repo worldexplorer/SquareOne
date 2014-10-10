@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
+
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 
@@ -41,188 +43,44 @@ namespace Sq1.Charting {
 				}
 				return ret;
 			} }
-		
-		#if USE_DATASERIES_MINMAX
-		public double VisiblePriceMin { get { return this.VisiblePriceMinNew; } }
-		public double VisiblePriceMax { get { return this.VisiblePriceMaxNew; } }
-		public double VisibleVolumeMin { get { return this.VisibleVolumeMinNew; } }
-		public double VisibleVolumeMax { get { return this.VisibleVolumeMaxNew; } }
-		#else
-		public double VisiblePriceMin { get { return this.VisiblePriceMinOld; } }
-		public double VisiblePriceMax { get { return this.VisiblePriceMaxOld; } }
-		public double VisibleVolumeMin { get { return this.VisibleVolumeMinOld; } }
-		public double VisibleVolumeMax { get { return this.VisibleVolumeMaxOld; } }
-		#endif
-		
-		#region DELETEME_AFTER_COMPATIBILITY_TEST
-		private double visiblePriceMaxCurrent;
-		public double VisiblePriceMaxOld { get {
-				if (base.DesignMode || this.BarsEmpty) return 999;
-				this.visiblePriceMaxCurrent = Double.MinValue;
-				for (int i = this.VisibleBarRight; i >= this.VisibleBarLeft; i--) {
-					if (i >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
-						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-						Assembler.PopupException("VisiblePriceMax(): " + msg);
-						continue;
-					}
-					Bar barCanBeStreamingWithNaNs = this.Bars[i];
-					double high = barCanBeStreamingWithNaNs.High;
-					if (double.IsNaN(high)) continue;
-					if (high > this.visiblePriceMaxCurrent) this.visiblePriceMaxCurrent = high;
+
+		public int CalculateGutterWidthNecessaryToFitPriceVolumeLabels(Graphics g) {
+//v1
+//			string visiblePriceMaxFormatted = this.ValueFormattedToSymbolInfoDecimalsOr5(this.panelPrice.VisibleMaxDoubleMinValueUnsafe);
+//			int maxPrice = (int)g.MeasureString(visiblePriceMaxFormatted, this.ChartSettings.GutterRightFont).Width;
+//			
+//			string visibleVolumeMaxFormatted = this.ValueFormattedToSymbolInfoDecimalsOr5(this.panelPrice.VisibleMaxDoubleMinValueUnsafe, false);
+//			int maxVolume = (int)g.MeasureString(visibleVolumeMaxFormatted, this.ChartSettings.GutterRightFont).Width;
+//			
+//			int ret = Math.Max(maxPrice, maxVolume);
+
+			int ret = 0;
+			foreach (PanelBase panel in this.panels) {
+				double panelMax = panel.VisibleMaxDoubleMinValueUnsafe;
+				if (double.IsNaN(panelMax)) continue;
+				//if (double.IsPositiveInfinity(panelMax)) continue;
+				//if (double.IsNegativeInfinity(panelMax)) continue; 
+				PanelIndicator panelIndicator = panel as PanelIndicator; 
+				if (panelIndicator != null && panelMax == double.MinValue) {
+					#if DEBUG
+					string msg = "VISIBLE_WINDOW_NOT_CALCULATED_YET OwnValuesCalculated.Count=" + panelIndicator.Indicator.OwnValuesCalculated.Count
+						+ " while VisibleBarLeft[" + this.VisibleBarLeft + "] VisibleBarRight[" + this.VisibleBarRight + "]";
+					#endif
+					continue;
 				}
-				#if TEST_COMPATIBILITY
-				if (this.visiblePriceMaxCurrent != this.VisiblePriceMaxNew) {
+				string visibleMaxFormatted = panel.FormatValue(panelMax);
+				int panelValueFormatted = (int)g.MeasureString(visibleMaxFormatted, this.ChartSettings.GutterRightFont).Width;
+				if (panelValueFormatted > base.Width) {
 					Debugger.Break();
-				} else {
-					//Debugger.Break();
+					double f11intoit = panel.VisibleMaxDoubleMinValueUnsafe;
+					continue;
 				}
-				#endif
-				return this.visiblePriceMaxCurrent;
-			} }
-		private double visiblePriceMinCurrent;
-		public double VisiblePriceMinOld { get {
-				if (base.DesignMode || this.BarsEmpty) return 98;
-				this.visiblePriceMinCurrent = Double.MaxValue;
-				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
-				for (int i = this.VisibleBarRight; i >= this.VisibleBarLeft; i--) {
-					if (i >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
-						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-						Assembler.PopupException("VisiblePriceMin(): " + msg);
-						continue;
-					}
-					Bar barCanBeStreamingWithNaNs = this.Bars[i];
-					double low = barCanBeStreamingWithNaNs.Low;
-					if (double.IsNaN(low)) continue;
-					if (low < this.visiblePriceMinCurrent) this.visiblePriceMinCurrent = low;
-				}
-				#if TEST_COMPATIBILITY
-				if (this.visiblePriceMinCurrent != this.VisiblePriceMinNew) {
-					Debugger.Break();
-				} else {
-					//Debugger.Break();
-				}
-				#endif
-				if (Math.Abs(this.visiblePriceMinCurrent) > 1000000) {
-					Debugger.Break();
-				}
-				return this.visiblePriceMinCurrent;
-			} }
-		private double visibleVolumeMinCurrent;
-		public double VisibleVolumeMinOld { get {
-				if (base.DesignMode || this.BarsEmpty) return 99;
-				this.visibleVolumeMinCurrent = Double.MaxValue;
-				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
-				for (int i = this.VisibleBarRight; i >= this.VisibleBarLeft; i--) {
-					if (i >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
-						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-						Assembler.PopupException("VisibleVolumeMin(): " + msg);
-						continue;
-					}
-					Bar barCanBeStreamingWithNaNs = this.Bars[i];
-					double volume = barCanBeStreamingWithNaNs.Volume;
-					if (double.IsNaN(volume)) continue;
-					if (volume < this.visibleVolumeMinCurrent) this.visibleVolumeMinCurrent = volume;
-				}
-				#if TEST_COMPATIBILITY
-				if (this.visibleVolumeMinCurrent != this.VisibleVolumeMinNew) {
-					Debugger.Break();
-				} else {
-					//Debugger.Break();
-				}
-				#endif
-				return this.visibleVolumeMinCurrent;
-			} }
-		private double visibleVolumeMaxCurrent;
-		public double VisibleVolumeMaxOld { get {
-				if (base.DesignMode || this.BarsEmpty) return 658;
-				this.visibleVolumeMaxCurrent = Double.MinValue;
-				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
-				for (int i = this.VisibleBarRight; i >= this.VisibleBarLeft; i--) {
-					if (i >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
-						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-						Assembler.PopupException("VisibleVolumeMax(): " + msg);
-						continue;
-					}
-					Bar barCanBeStreamingWithNaNs = this.Bars[i];
-					double volume = barCanBeStreamingWithNaNs.Volume;
-					if (double.IsNaN(volume)) continue;
-					if (volume > this.visibleVolumeMaxCurrent) this.visibleVolumeMaxCurrent = volume;
-				}
-				#if TEST_COMPATIBILITY
-				if (this.visibleVolumeMaxCurrent != this.VisibleVolumeMaxNew) {
-					Debugger.Break();
-				} else {
-					//Debugger.Break();
-				}
-				#endif
-				return this.visibleVolumeMaxCurrent;
-			} }
-		#endregion
-		
-		public double VisiblePriceMinNew { get {
-				if (base.DesignMode || this.BarsEmpty) return 99;
-				DataSeriesProxyBars seriesLow = new DataSeriesProxyBars(this.Bars, DataSeriesProxyableFromBars.Low);
-				double ret = seriesLow.MinValueBetweenIndexesDoubleMaxValueUnsafe(this.VisibleBarLeft, this.VisibleBarRight);
-				if (this.VisibleBarRight >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
-					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					Assembler.PopupException("VisiblePriceMin(): " + msg);
-				}
-				return ret;
-			} }
-		public double VisiblePriceMaxNew { get {
-				if (base.DesignMode || this.BarsEmpty) return 999;
-				DataSeriesProxyBars seriesHigh = new DataSeriesProxyBars(this.Bars, DataSeriesProxyableFromBars.High);
-				double ret = seriesHigh.MaxValueBetweenIndexesDoubleMinValueUnsafe(this.VisibleBarLeft, this.VisibleBarRight);
-				if (this.VisibleBarRight >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
-					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					Assembler.PopupException("VisiblePriceMax(): " + msg);
-				}
-				return ret;
-			} }
-		public double VisibleVolumeMinNew { get {
-				if (base.DesignMode || this.BarsEmpty) return 99;
-				DataSeriesProxyBars seriesVolume = new DataSeriesProxyBars(this.Bars, DataSeriesProxyableFromBars.Volume);
-				double ret = seriesVolume.MinValueBetweenIndexesDoubleMaxValueUnsafe(this.VisibleBarLeft, this.VisibleBarRight);
-				if (this.VisibleBarRight >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
-						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-						Assembler.PopupException("VisibleVolumeMin(): " + msg);
-				}
-				return ret;
-			} }
-		public double VisibleVolumeMaxNew { get {
-				if (base.DesignMode || this.BarsEmpty) return 658;
-				DataSeriesProxyBars seriesVolume = new DataSeriesProxyBars(this.Bars, DataSeriesProxyableFromBars.Volume);
-				double ret = seriesVolume.MaxValueBetweenIndexesDoubleMinValueUnsafe(this.VisibleBarLeft, this.VisibleBarRight);
-				if (this.VisibleBarRight >= this.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
-					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					Assembler.PopupException("VisibleVolumeMax(): " + msg);
-				}
-				return ret;
-			} }
-		
-		public string ValueFormattedToSymbolInfoDecimalsOr5(double value, bool useFormatForPrice = true) {
-			string format = "N" + (useFormatForPrice ? this.BarsDecimalsPrice : this.BarsDecimalsVolume);
-			if (useFormatForPrice) {
-				return value.ToString(format);
+				if (ret >= panelValueFormatted) continue;
+				ret = panelValueFormatted;
 			}
-			double num = Math.Abs(value);
-			if (num >= 1000000000000.0) {
-				value /= 1000000000000.0;
-				return value.ToString(format) + "T";
-			}
-			if (num >= 1000000000.0) {
-				value /= 1000000000.0;
-				return value.ToString(format) + "B";
-			}
-			if (num >= 1000000.0) {
-				value /= 1000000.0;
-				return value.ToString(format) + "M";
-			}
-			if (num >= 10000.0) {
-				value /= 1000.0;
-				return value.ToString(format) + "K";
-			}
-			return value.ToString(format);
+			ret += this.ChartSettings.GutterRightPadding * 2;
+			return ret;
 		}
+
 	}
 }

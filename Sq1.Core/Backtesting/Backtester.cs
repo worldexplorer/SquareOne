@@ -257,7 +257,7 @@ namespace Sq1.Core.Backtesting {
 				return;
 			}
 
-			SortedList<int, QuoteGenerated> quotesGenerated = this.QuotesGenerator.GenerateQuotesFromBarAvoidClearing(bar2simulate);
+			List<QuoteGenerated> quotesGenerated = this.QuotesGenerator.GenerateQuotesFromBarAvoidClearing(bar2simulate);
 			if (quotesGenerated == null) return;
 			for (int i = 0; i < quotesGenerated.Count; i++) {
 				QuoteGenerated quote = quotesGenerated[i];

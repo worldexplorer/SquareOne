@@ -9,9 +9,9 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Charting {
 	public partial class PanelBase {
-		
 		protected bool	mouseOver;					// HELPS_DRAWING_INDICATOR_VALUE_ON_GUTTER_WHILE_HOVERING_PANEL_PRICE
 		protected int	barIndexMouseIsOverPrev;
+		public	  int	BarIndexMouseIsOverNow; 
 		
 		protected bool	dragButtonPressed;
 		
@@ -29,7 +29,6 @@ namespace Sq1.Charting {
 		
 		protected int	moveHorizontalXprev;
 		protected int	moveHorizontalYprev;
-
 
 		protected override void OnMouseEnter(EventArgs e) {
 			base.OnMouseEnter(e);
@@ -60,13 +59,16 @@ namespace Sq1.Charting {
 			// MouseTrack uses this to remove MouseLines from Panel Price & MousePositionLabels from Gutters
 			this.moveHorizontalXprev = -1;
 			this.moveHorizontalYprev = -1;
-			//this.ChartControl.BarCurrentMouseOveredNullUnsafe = null;
-
+			
 			this.mouseOver = false;
 			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
 				this.ChartControl.InvalidateAllPanels();
 			}
 			
+			barIndexMouseIsOverPrev = -1;
+			BarIndexMouseIsOverNow = -1;
+			this.ChartControl.BarIndexMouseIsOverNow = -1;
+
 			//this.ChartControl.TooltipPriceHide();
 			//this.ChartControl.TooltipPositionHide();
 		}
@@ -97,11 +99,8 @@ namespace Sq1.Charting {
 				if (this.ChartControl == null) return;		// so that Designer works
 				if (this.ChartControl.BarsEmpty) return;	// finally {} will invoke base.OnMouseMove()
 				
-				int barIndexMouseIsOverNow = this.XToBar(e.X);
-				this.ChartControl.BarCurrentMouseOveredNullUnsafe = null;
-				if (barIndexMouseIsOverNow >= 0 && barIndexMouseIsOverNow < this.ChartControl.Bars.Count) {
-					this.ChartControl.BarCurrentMouseOveredNullUnsafe = this.ChartControl.Bars[barIndexMouseIsOverNow];
-				}
+				BarIndexMouseIsOverNow = this.XToBar(e.X);
+				this.ChartControl.BarIndexMouseIsOverNow = BarIndexMouseIsOverNow; 
 				
 				if (this.dragButtonPressed == true
 					    && this.scrollingHorizontally == false
@@ -233,11 +232,11 @@ namespace Sq1.Charting {
 					}
 					this.squeezeVerticalYprev = YnotBeyond0height;	// continue scrolling since we are still dragging to the same direction as for event-received-previously
 					if (draggingUp) {
-						this.Cursor = Cursors.PanNorth;
-						this.ChartControl.DragUpUnsqueeze();
-					} else {
 						this.Cursor = Cursors.PanSouth;
 						this.ChartControl.DragDownSqueeze();
+					} else {
+						this.Cursor = Cursors.PanNorth;
+						this.ChartControl.DragUpUnsqueeze();
 					}
 				}
 				
@@ -250,8 +249,9 @@ namespace Sq1.Charting {
 				if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
 					//base.Refresh();
 					base.Invalidate();
-					if (barIndexMouseIsOverPrev != barIndexMouseIsOverNow) {
-						barIndexMouseIsOverPrev = barIndexMouseIsOverNow;
+					if (barIndexMouseIsOverPrev != this.BarIndexMouseIsOverNow) {
+						barIndexMouseIsOverPrev  = this.BarIndexMouseIsOverNow;
+						this.ChartControl.BarIndexMouseIsOverNow = this.BarIndexMouseIsOverNow;
 						this.ChartControl.InvalidateAllPanels();
 					}
 				}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -324,6 +324,8 @@ namespace Sq1.Charting.MultiSplit {
 			
 			Control panelBelow = this.panels[splitterIndex];
 			Control panelAbove = this.panels[splitterIndex-1];
+			
+			// mouseMovingUp CAN BE NEGATIVE
 			int mouseMovingUp = this.splitterStartedResizeOrDragPoint.Y - mousePositionFromSplitContainerUpperLeft.Y;
 
 			if (mouseMovingUp > 0 && panelAbove.Height <= 5) return;
@@ -335,6 +337,27 @@ namespace Sq1.Charting.MultiSplit {
 				}
 			}
 
+			int panelAboveMinimumHeight = this.MinimumPanelHeight;
+			if (panelAbove.MinimumSize != default(Size)) {
+				panelAboveMinimumHeight = panelAbove.MinimumSize.Height;
+			}
+			int panelAboveHeightProjected = panelAbove.Height - mouseMovingUp; 
+			if (panelAboveHeightProjected < panelAboveMinimumHeight) {
+				Cursor.Current = Cursors.No;
+				return;
+			}
+			
+			int panelBelowMinimumHeight = this.MinimumPanelHeight;
+			if (panelBelow.MinimumSize != default(Size)) {
+				panelBelowMinimumHeight = panelBelow.MinimumSize.Height;
+			}
+			int panelBelowHeightProjected = panelBelow.Height + mouseMovingUp;
+			if (panelBelowHeightProjected < panelBelowMinimumHeight) {
+				Cursor.Current = Cursors.No;
+				return;
+			}
+			
+			Cursor.Current = Cursors.HSplit;
 			//SAME_DOWN if (mouseMovingUp > 0) {
 				panelBelow.Height += mouseMovingUp;
 				panelAbove.Height -= mouseMovingUp;

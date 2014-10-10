@@ -167,7 +167,10 @@ namespace Sq1.Core.DataTypes {
 			for (int i = indexMax; i >= indexMin; i--) {
 				if (i >= this.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					//Assembler.PopupException("VisibleVolumeMin(): " + msg);
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					Assembler.PopupException("VisibleVolumeMin(): " + msg);
 					continue;
 				}
 				double barCanBeStreamingWithNaNs = this[i];		// this[int] is virtual, for Indicator.OwnValuesCalculated this[int] is located in DataSeriesTimeBased.cs
@@ -189,7 +192,10 @@ namespace Sq1.Core.DataTypes {
 			for (int i = indexMax; i >= indexMin; i--) {
 				if (i >= this.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					//Assembler.PopupException("VisibleVolumeMax(): " + msg);
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					Assembler.PopupException("VisibleVolumeMax(): " + msg);
 					continue;
 				}
 				double barCanBeStreamingWithNaNs = this[i];		// this[int] is virtual, for Indicator.OwnValuesCalculated this[int] is located in DataSeriesTimeBased.cs

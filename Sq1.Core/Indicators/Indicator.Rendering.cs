@@ -164,6 +164,20 @@ namespace Sq1.Core.Indicators {
 					double  prevUpper = bandUpper[barIndex-1];
 					this.DrawValueSingleLine(g, bar, valueUpper, prevUpper);
 				}
+				#if DEBUG
+				if (willDrawLower && willDrawUpper) {
+					double valueLower = bandLower[barIndex];
+					double valueUpper = bandUpper[barIndex];
+					double diffCloseToLower = bar.Close - valueLower;
+					double diffCloseToUpper = valueUpper - bar.Close;
+					if (diffCloseToLower != diffCloseToUpper) {
+						string msg = "diffCloseToLower[" + diffCloseToLower + "] != diffCloseToUpper[" + diffCloseToUpper + "]"
+							+ " for bar.Close[" + bandLower.ParentBarsByDate[bar.DateTimeOpen].Close + "]";
+						int a = 1;
+						Debugger.Break();
+					}
+				}
+				#endif
 			} catch (Exception ex) {
 				#if DEBUG
 				Debugger.Break();

@@ -37,8 +37,8 @@
       "SlippageTicks": 1,
       "PriceLevelSizeForBonds": 0,
       "Name": "Default",
-      "Symbol": "RIM3",
-      "DataSourceName": "MOCK",
+      "Symbol": "SBER",
+      "DataSourceName": "STATIC",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
@@ -52,7 +52,7 @@
         "Range": 1,
         "StartDate": "0001-01-01T00:00:00",
         "EndDate": "9999-12-31T23:59:59.9999999",
-        "RecentBars": 5000,
+        "RecentBars": 100,
         "RecentTimeunits": 0
       },
       "ChartStreaming": false,
@@ -80,7 +80,7 @@
             "ValueMin": 1.0,
             "ValueMax": 11.0,
             "ValueIncrement": 2.0,
-            "ValueCurrent": 3.0,
+            "ValueCurrent": 7.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }
@@ -92,7 +92,7 @@
             "ValueMin": 0.1,
             "ValueMax": 10.0,
             "ValueIncrement": 0.1,
-            "ValueCurrent": 2.2,
+            "ValueCurrent": 1.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }

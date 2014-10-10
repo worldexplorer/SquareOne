@@ -15,7 +15,7 @@ namespace Sq1.Charting.MultiSplit {
 	 public partial class MultiSplitContainer<PANEL_BASE> {
 		public int SplitterHeight;
 		public int GrabHandleWidth;
-		public int MinimumPanelSize;
+		public int MinimumPanelHeight;
 		public Color ColorGrabHandle;
 		public Color ColorBackgroundSliderDroppingTarget;
 		public Color ColorBackgroundSliderRegular;
@@ -33,7 +33,7 @@ namespace Sq1.Charting.MultiSplit {
 			splitters = new ObservableCollection<MultiSplitter>();
 			SplitterHeight = 5;
 			GrabHandleWidth = 30;
-			MinimumPanelSize = 5;
+			MinimumPanelHeight = 5;
 			ColorGrabHandle = Color.Orange;
 			ColorBackgroundSliderDroppingTarget = Color.Red;
 			ColorBackgroundSliderRegular = Color.DarkGray;
@@ -137,6 +137,12 @@ try {
 	        	PANEL_BASE panel = this.panels[i];
 	        	MultiSplitter splitter = this.splitters[i];
 	        	
+	        	int minimumPanelSize = MinimumPanelHeight;
+	        	var panelControl = panel as Control;
+				if (panelControl != null) {
+					minimumPanelSize = panelControl.MinimumSize.Height;
+				}
+
 				int panelY = splitter.Location.Y + splitter.Height;
 	        	if (panel.Location.Y != panelY) {
 	        		panel.Location = new Point(panel.Location.X, panelY);
@@ -151,14 +157,14 @@ try {
 		    			#endif
 		        		return;
 	        		}
-		        	if (panelHeight < MinimumPanelSize) {
-		        		panelHeight = MinimumPanelSize;
+		        	if (panelHeight < minimumPanelSize) {
+		        		panelHeight = minimumPanelSize;
 		        	}
 	        	} else {
 	        		MultiSplitter lowerSplitter = this.splitters[i+1];		//prevSplitterLocationY
 	        		panelHeight = lowerSplitter.Location.Y - panelY;  
-		        	if (panelHeight < MinimumPanelSize) {
-		        		panelHeight = MinimumPanelSize;
+		        	if (panelHeight < minimumPanelSize) {
+		        		panelHeight = minimumPanelSize;
 		        	}
 	        	}
 
@@ -239,7 +245,7 @@ try {
 				return;			// we don't need proportional vertical fill when 1) splitterMoved, 2) splitterDragged, 3) splitterPositionsByManorder.Count==this.panels.Count
 			}
 			
-    		int panelHeight = baseHeight - MinimumPanelSize;
+    		int panelHeight = baseHeight - MinimumPanelHeight;
     		if (panelHeight < 0) {
     			#if DEBUG
     			Debugger.Break();		// WTF
@@ -256,9 +262,16 @@ try {
 			for (int i=0; i<this.panels.Count; i++) {
 	        	PANEL_BASE panel = this.panels[i];
 	        	MultiSplitter splitter = this.splitters[i];
+	        	
+	        	int minimumPanelSize = MinimumPanelHeight;
+	        	var panelControl = panel as Control;
+	        	Size defaultSize = default(Size);
+	        	if (panelControl != null && panelControl.MinimumSize != null && panelControl.MinimumSize != defaultSize) {
+					minimumPanelSize = panelControl.MinimumSize.Height;
+				}
 
 	        	if (i == this.panels.Count - 1) {
-	        		int lastSplitterMaxY = baseHeight - (splitter.Height + MinimumPanelSize);
+	        		int lastSplitterMaxY = baseHeight - (splitter.Height + minimumPanelSize);
 	        		if (y > lastSplitterMaxY) {
 		        		y = lastSplitterMaxY; 
 	        		}
@@ -270,8 +283,8 @@ try {
 	        	panel.Location = new Point(0, y);
 	        	panel.Height = (int)(Math.Round(panel.Height * fillVerticalK, 0));
 	        	if (i == this.panels.Count - 1) {
-		        	if (panel.Height < MinimumPanelSize) {
-		        		panel.Height = MinimumPanelSize;
+		        	if (panel.Height < minimumPanelSize) {
+		        		panel.Height = minimumPanelSize;
 		        	}
 
 	        		if (y + panel.Height > baseHeight) {

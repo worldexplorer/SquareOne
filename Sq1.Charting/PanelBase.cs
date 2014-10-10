@@ -34,9 +34,9 @@ namespace Sq1.Charting {
 		[Browsable(false)] public ChartControl ChartControl;	//{ get { return base.Parent as ChartControl; } }
 		int chartLabelsUpperLeftYincremental;
 		
-		// price, volume or indicator-calculated
-		[Browsable(false)] public virtual double VisibleMinDoubleMaxValueUnsafe { get { return this.ChartControl.VisiblePriceMin; } }
-		[Browsable(false)] public virtual double VisibleMaxDoubleMinValueUnsafe { get { return this.ChartControl.VisiblePriceMax; } }
+		// price, volume or indicator-calculated; not abstract for Designer to throw less exceptions
+		[Browsable(false)] public virtual double VisibleMinDoubleMaxValueUnsafe { get { Debugger.Break(); throw new NotImplementedException(); } }
+		[Browsable(false)] public virtual double VisibleMaxDoubleMinValueUnsafe { get { Debugger.Break(); throw new NotImplementedException(); } }
 		// USE_CACHED_VARIABLE_INSTEAD [Browsable(false)] public virtual double VisibleRange { get { return this.VisibleMax - this.VisibleMin; } }
 		[Browsable(false)] public virtual double FirstNonNanBetweenLeftRight { get {
 				double ret = double.NaN;
@@ -48,6 +48,15 @@ namespace Sq1.Charting {
 				return ret;
 			} }
 
+		// PanelPrice		must return bars[barIndexMouseOvered].Close
+		// PanelVolume		must return bars[barIndexMouseOvered].Volume
+		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
+		public virtual double PanelValueForBarCurrentNaNunsafe { get {
+				double ret = double.NaN;
+				if (this.ChartControl.BarIndexMouseIsOverNow == -1) return ret;
+				ret = this.ValueGetNaNunsafe(this.ChartControl.BarIndexMouseIsOverNow);
+				return ret;
+			} }
 		public virtual double ValueGetNaNunsafe(int barIndex) {
 			throw new NotImplementedException();
 		}
@@ -160,6 +169,7 @@ namespace Sq1.Charting {
 		//#else
 		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
 		//#endif
+			string msig = " " + this.PanelName + ".OnPaintDoubleBuffered()";
 		    if (this.DesignMode) return;
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
@@ -171,7 +181,6 @@ namespace Sq1.Charting {
 				return;
 			}
 			if (this.ChartControl.BarsEmpty) {
-				string msig = this.Name + ".OnPaintDoubleBuffered() ";
 				string msg = "CHART_CONTROL_BARS_NULL_OR_EMPTY: this.ChartControl.BarsEmpty ";
 				//if (this.ChartControl.Bars != null) msg = "BUG: bars=[" + this.ChartControl.Bars + "]";
 				//Debugger.Break();
@@ -179,10 +188,18 @@ namespace Sq1.Charting {
 				return;
 			}
 			this.ChartControl.SyncHorizontalScrollToBarsCount();
+
+
+//			if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
+//				string msg = "MUST_BE_POSITIVE#2_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
+//				Assembler.PopupException(msg + msig);
+//				return;
+//			}
 			
 			if (this.ImPaintingForegroundNow) return;
 			try {
 				this.ImPaintingForegroundNow = true;
+				
 				this.PaintWholeSurfaceBarsNotEmpty(e.Graphics);	// GOOD: we get here once per panel
 				// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
 				this.RenderIndicators(e.Graphics); 
@@ -217,7 +234,47 @@ namespace Sq1.Charting {
 			}
 		}
 		protected virtual void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
-			//this.PaintError(g, "YOU_DIDNT_OVERRIDE_IN_DERIVED[" + this.PanelName + "]: protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g)");
+			// while overriding, include base.PaintWholeSurfaceBarsNotEmpty(g) as first line in derived's implementation
+			// 1) uses derived's (PanelPrice,Volume) VisibleMinDoubleMaxValueUnsafe,VisibleMaxDoubleMinValueUnsafe to set:
+			//		base.VisibleMin,Max,Range_cached,
+			//		base.VisibleMinMinusTopSqueezer_cached, this.VisibleMaxPlusBottomSqueezer_cached, this.VisibleRangeWithTwoSqueezers_cached
+			// 2) paints Right and Bottom gutter foregrounds;
+
+			string msig = " " + this.PanelName + ".PanelPrice,Volume.PaintWholeSurfaceBarsNotEmpty()";
+			this.VisibleMin_cached = this.VisibleMinDoubleMaxValueUnsafe;
+			this.VisibleMax_cached = this.VisibleMaxDoubleMinValueUnsafe;
+			this.VisibleRange_cached = this.VisibleMax_cached - this.VisibleMin_cached;
+
+			double pixelsSqueezedToPriceDistance = 0;
+			if (this.PaddingVerticalSqueeze > 0 && base.Height > 0) {
+				double priceDistanceInOnePixel = this.VisibleRange_cached / base.Height;
+				pixelsSqueezedToPriceDistance = this.PaddingVerticalSqueeze * priceDistanceInOnePixel;
+			}
+			
+			this.VisibleMinMinusTopSqueezer_cached = this.VisibleMin_cached - pixelsSqueezedToPriceDistance;
+			this.VisibleMaxPlusBottomSqueezer_cached = this.VisibleMax_cached + pixelsSqueezedToPriceDistance;
+			// min-Top=10-10=0; max+Bottom=20+10=30; 20+10-(10-10) = 30-0; = max-min+padding*2=20-10+10*2 = 30 
+			this.VisibleRangeWithTwoSqueezers_cached = this.VisibleMaxPlusBottomSqueezer_cached - VisibleMinMinusTopSqueezer_cached;
+			if (double.IsNegativeInfinity(this.VisibleRangeWithTwoSqueezers_cached)) {
+				string msg = "[" + this.PanelName + "]-RANGE_MUST_BE_NON_NEGATIVE_INFINITY_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]";
+				//Debugger.Break();
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (double.IsNaN(this.VisibleRangeWithTwoSqueezers_cached)) {
+				string msg = "[" + this.PanelName + "]-RANGE_MUST_BE_NON_NAN_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]";
+				Debugger.Break();
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
+				// gridStep will throw an ArithmeticException
+				string msg = "[" + this.PanelName + "]-RANGE_MUST_BE_POSITIVE_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]";
+				Debugger.Break();
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			
 			this.GutterGridLinesRightBottomDrawForeground(g);
 		}
 
@@ -228,6 +285,7 @@ namespace Sq1.Charting {
 		//#else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
 		//#endif
+			string msig = " " + this.PanelName + ".OnPaintBackgroundDoubleBuffered()";
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			//if (this.DesignMode) return;
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
@@ -239,12 +297,19 @@ namespace Sq1.Charting {
 				return;
 			}
 			if (this.ChartControl.BarsEmpty) {
-				string msig = this.Name + ".OnPaintBackgroundDoubleBuffered() ";
 				string msg = "CHART_CONTROL_BARS_NULL_OR_EMPTY: this.ChartControl.BarsEmpty ";
 				//if (this.ChartControl.Bars != null) msg = "BUG: bars=[" + this.ChartControl.Bars + "]";
 				//e.Graphics.Clear(SystemColors.Control);
 				e.Graphics.Clear(base.BackColor);
 				this.DrawError(e.Graphics, msig + msg);
+				return;
+			}
+			
+			if (this.ChartControl.BarsCanFitForCurrentWidth <= 0) {
+				string msg = "still resizing?...";
+				e.Graphics.Clear(base.BackColor);
+				this.DrawError(e.Graphics, msig + msg);
+				//Debugger.Break();
 				return;
 			}
 			this.chartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
@@ -262,54 +327,12 @@ namespace Sq1.Charting {
 				}
 				this.VisibleBarLeft_cached = this.ChartControl.VisibleBarLeft;
 				this.VisibleBarsCount_cached = this.VisibleBarRight_cached - this.VisibleBarLeft_cached;
-				if (this.VisibleBarsCount_cached == 0) return;
-				
-				double visibleMinCandidate = this.VisibleMinDoubleMaxValueUnsafe;
-				double visibleMaxCandidate = this.VisibleMaxDoubleMinValueUnsafe;
-				
-				bool valuesAreConstantOrNaN = visibleMinCandidate == double.MaxValue && visibleMaxCandidate == double.MinValue;
-				double firstNonNan = this.FirstNonNanBetweenLeftRight;
-				if (valuesAreConstantOrNaN && double.IsNaN(firstNonNan) != false) {
-					visibleMinCandidate = firstNonNan - 10;
-					visibleMaxCandidate = firstNonNan + 10;
-				} else {
-					if (visibleMinCandidate == double.MaxValue) {
-						string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS NOT_SURE_IF_RETURN_IS_SOLUTION ";
-						#if DEBUG
-						Debugger.Break();
-						#endif
-						return;
-					}
-					if (visibleMaxCandidate == double.MinValue) {
-						string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS NOT_SURE_IF_RETURN_IS_SOLUTION ";
-						#if DEBUG
-						Debugger.Break();
-						#endif
-						return;
-					}
-				}
-
-				this.VisibleMin_cached = visibleMinCandidate;
-				this.VisibleMax_cached = visibleMaxCandidate;
-
-				this.VisibleRange_cached = this.VisibleMax_cached - this.VisibleMin_cached;
-
-				double pixelsSqueezedToPriceDistance = 0;
-				if (this.PaddingVerticalSqueeze > 0 && base.Height > 0) {
-					double priceDistanceInOnePixel = this.VisibleRange_cached / base.Height;
-					pixelsSqueezedToPriceDistance = this.PaddingVerticalSqueeze * priceDistanceInOnePixel;
-				}
-				
-				this.VisibleMinMinusTopSqueezer_cached = this.VisibleMin_cached - pixelsSqueezedToPriceDistance;
-				this.VisibleMaxPlusBottomSqueezer_cached = this.VisibleMax_cached + pixelsSqueezedToPriceDistance;
-				this.VisibleRangeWithTwoSqueezers_cached = this.VisibleMaxPlusBottomSqueezer_cached - VisibleMinMinusTopSqueezer_cached;
-				if (double.IsNegativeInfinity(this.VisibleRangeWithTwoSqueezers_cached)) {
+				if (this.VisibleBarsCount_cached <= 0) {
+					string msg = "already checked this.BarsCanFitForCurrentWidth <= 0";
 					Debugger.Break();
+					return;
 				}
-				if (this.VisibleRangeWithTwoSqueezers_cached == 0) {
-					// gridStep will throw an ArithmeticException Debugger.Break();
-				}
-				
+	
 				this.BarWidthIncludingPadding_cached = this.ChartControl.ChartSettings.BarWidthIncludingPadding;
 				this.BarWidthMinusRightPadding_cached = this.ChartControl.ChartSettings.BarWidthMinusRightPadding;
 				this.BarShadowXoffset_cached = this.ChartControl.ChartSettings.BarShadowXoffset;
@@ -455,14 +478,29 @@ namespace Sq1.Charting {
 			ret += ":" + this.Location.Y + "+" + this.Height + "=" + (this.Location.Y + this.Height);
 			return ret;
 		}
-		
-		// PanelPrice		must return bars[barIndexMouseOvered].Close
-		// PanelVolume		must return bars[barIndexMouseOvered].Volume
-		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
-		public virtual double PanelValueForBarCurrentNaNunsafe { get {
-				double ret = double.NaN;
-				return ret;
-			} }
-				
+
+		// REASON_TO_EXIST: for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
+		public virtual int Decimals { get { Debugger.Break(); throw new NotImplementedException(); } }
+		public string Format { get { return "N" + this.Decimals; } }
+		public string FormatValue(double value) {
+			double num = Math.Abs(value);
+			if (num >= 1000000000000.0) {
+				value /= 1000000000000.0;
+				return value.ToString(this.Format) + "T";
+			}
+			if (num >= 1000000000.0) {
+				value /= 1000000000.0;
+				return value.ToString(this.Format) + "B";
+			}
+			if (num >= 1000000.0) {
+				value /= 1000000.0;
+				return value.ToString(this.Format) + "M";
+			}
+			if (num >= 10000.0) {
+				value /= 1000.0;
+				return value.ToString(this.Format) + "K";
+			}
+			return value.ToString(this.Format);
+		}
 	}
 }

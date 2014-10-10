@@ -35,15 +35,14 @@ namespace Sq1.Core.DataTypes {
 		public bool HasParentBar { get { return this.ParentStreamingBar != null; } }
 		public string ParentBarIdent { get { return (this.HasParentBar) ? this.ParentStreamingBar.ParentBarsIdent : "NO_PARENT_BAR"; } }
 
-		[Obsolete] public double PreviousClose;
-		[Obsolete] public double Open;
-
 		public static int IntraBarSernoShiftForGeneratedTowardsPendingFill = 100000;
 
-		public Quote() {
+		public Quote(DateTime localTimeEqualsToServerTimeForGenerated) {
 			++AbsnoStaticCounter;
 			ServerTime = DateTime.MinValue;
-			LocalTimeCreatedMillis = DateTime.Now;
+			// PROFILER_SAID_DATETIME.NOW_IS_SLOW__I_DONT_NEED_IT_FOR_BACKTEST_ANYWAY
+			LocalTimeCreatedMillis = (localTimeEqualsToServerTimeForGenerated != DateTime.MinValue)
+				? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
 			IntraBarSerno = -1;
 			Bid = double.NaN;
 			Ask = double.NaN;

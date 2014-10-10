@@ -15,8 +15,6 @@ namespace Sq1.Charting {
 		public Bars Bars { get; private set; }
 		public bool BarsEmpty { get { return this.Bars == null || this.Bars.Count == 0; } }
 		public bool BarsNotEmpty { get { return this.Bars != null && this.Bars.Count > 0; } }
-		public int BarsDecimalsPrice { get { return (this.Bars.SymbolInfo != null) ? this.Bars.SymbolInfo.DecimalsPrice : 5; } }
-		public int BarsDecimalsVolume { get { return (this.Bars.SymbolInfo != null) ? this.Bars.SymbolInfo.DecimalsVolume : 0; } }
 		List<PanelBase> panels;
 		public bool RangeBarCollapsed {
 			get { return this.splitContainerChartVsRange.Panel2Collapsed; }
@@ -30,7 +28,7 @@ namespace Sq1.Charting {
 		public ScriptExecutorObjects ScriptExecutorObjects;
 
 		public int HeightMinusBottomHscrollbar { get { return base.Height - this.hScrollBar.Height; } }
-		public Bar BarCurrentMouseOveredNullUnsafe;
+		public int BarIndexMouseIsOverNow;
 
 		public ChartControl() {
 			this.ChartSettings = new ChartSettings(); // was a component, used at InitializeComponent() (to draw SampleBars)

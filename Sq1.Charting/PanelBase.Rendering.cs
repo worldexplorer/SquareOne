@@ -12,7 +12,7 @@ namespace Sq1.Charting {
 		// virtual will allow indicator panes to have their own backgrounds different to the price&volume backgrounds
 		protected virtual void GutterRightBottomDrawBackground(Graphics g) {
 			if (this.GutterRightDraw) {
-				this.ChartControl.GutterRightWidth_cached = this.calculateGutterWidthNecessaryToFitPriceVolumeLabels(g);
+				this.ChartControl.GutterRightWidth_cached = this.ChartControl.CalculateGutterWidthNecessaryToFitPriceVolumeLabels(g);
 				Rectangle gutterRightRect = default(Rectangle);
 				gutterRightRect.X = this.PanelWidthMinusRightPriceGutter;
 				gutterRightRect.Width = this.ChartControl.GutterRightWidth_cached;
@@ -39,12 +39,22 @@ namespace Sq1.Charting {
 				Debugger.Break();
 				return;
 			}
+			if (this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
+				string msg = "[" + this.PanelName + "]-PANEL_HEIGHT_MUST_BE_POSITIVE_this.ChartControl.PanelHeightMinusGutterBottomHeight_cached[" + this.PanelHeightMinusGutterBottomHeight_cached + "]";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (this.GutterRightFontHeight_cached <= 0) {
+				string msg = "[" + this.PanelName + "]-GUTTER_FONT_HEIGHT_MUST_BE_POSITIVE_this.ChartControl.GutterRightFontHeight[" + this.GutterRightFontHeight_cached + "]]";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
 			
+			double panelValueForBarCurrent = this.PanelValueForBarCurrentNaNunsafe;
 			bool mouseTrack = this.ChartControl.ChartSettings.MousePositionTrackOnGutters;
 			if (mouseTrack) {		// && this.moveHorizontalYprev > -1
 				int mouseY = this.moveHorizontalYprev;
 				if (this.mouseOver == false || this.moveHorizontalYprev == -1) {
-					double panelValueForBarCurrent = this.PanelValueForBarCurrentNaNunsafe;
 					if (double.IsNaN(panelValueForBarCurrent) == false) {
 						mouseY = this.ValueToYinverted(panelValueForBarCurrent);
 					}
@@ -52,27 +62,6 @@ namespace Sq1.Charting {
 				g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, 0, mouseY, base.Width, mouseY);
 			}
 			if (this.GutterRightDraw) {
-				if (this.GutterRightFontHeight_cached <= 0) {
-					string msg = "MUST_BE_POSITIVE_this.ChartControl.GutterRightFontHeight[" + this.GutterRightFontHeight_cached + "] panel[" + this.ToString() + "]";
-					Assembler.PopupException(msg + msig);
-					return;
-				}
-				if (this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
-					string msg = "MUST_BE_POSITIVE_this.ChartControl.PanelHeightMinusGutterBottomHeight_cached[" + this.PanelHeightMinusGutterBottomHeight_cached + "] panel[" + this.ToString() + "]";
-					Assembler.PopupException(msg + msig);
-					return;
-				}
-				if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
-					string msg = "MUST_BE_POSITIVE_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
-					Assembler.PopupException(msg + msig);
-					return;
-				}
-				if (double.IsNaN(this.VisibleRangeWithTwoSqueezers_cached)) {
-					string msg = "MUST_BE_NON_NAN_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
-					Assembler.PopupException(msg + msig);
-					return;
-				}
-				
 				int minDistanceInFontHeights = this.ThisPanelIsPricePanel ? 3 : 2;
 				int minDistancePixels = minDistanceInFontHeights * this.GutterRightFontHeight_cached;
 				//int panelHeightPlusSqueezers = this.PanelHeightMinusGutterBottomHeight_cached + this.PaddingVerticalSqueeze * 2;
@@ -90,17 +79,18 @@ namespace Sq1.Charting {
 					g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesHorizontal, 0, gridY, this.PanelWidthMinusRightPriceGutter-1, gridY);
 					int labelYadjustedUp = (int)gridY - this.GutterRightFontHeightHalf_cached;
 					labelYadjustedUp = this.AdjustToPanelHeight(labelYadjustedUp);
-					string priceFormatted = this.ChartControl.ValueFormattedToSymbolInfoDecimalsOr5(gridPrice, this.ThisPanelIsPricePanel);
-					int labelWidth = (int)g.MeasureString(priceFormatted, this.ChartControl.ChartSettings.GutterRightFont).Width;
+					//v1 string priceFormatted = this.ChartControl.ValueFormattedToSymbolInfoDecimalsOr5(gridPrice, this.ThisPanelIsPricePanel);
+					//v2 can be price, volume or indicator
+					string panelValueFormatted = this.FormatValue(gridPrice);
+					int labelWidth = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont).Width;
 					int labelXalignedRight = base.Width - this.ChartControl.ChartSettings.GutterRightPadding - labelWidth;
-					g.DrawString(priceFormatted, this.ChartControl.ChartSettings.GutterRightFont,
+					g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
 					             this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
 				}
 				
 				if (mouseTrack) {			// && this.moveHorizontalYprev > -1
 					int mouseY = this.moveHorizontalYprev;
 					if (this.mouseOver == false || this.moveHorizontalYprev == -1) {
-						double panelValueForBarCurrent = this.PanelValueForBarCurrentNaNunsafe;
 						if (double.IsNaN(panelValueForBarCurrent) == false) {
 							mouseY = this.ValueToYinverted(panelValueForBarCurrent);
 						}
@@ -108,9 +98,11 @@ namespace Sq1.Charting {
 					double mousePrice = this.YinvertedToValue(mouseY);
 					int labelYadjustedUp = (int)mouseY - this.GutterRightFontHeightHalf_cached;
 					labelYadjustedUp = this.AdjustToPanelHeight(labelYadjustedUp);
-					string priceFormatted = this.ChartControl.ValueFormattedToSymbolInfoDecimalsOr5(mousePrice, this.ThisPanelIsPricePanel);
-					int labelWidth = (int)g.MeasureString(priceFormatted, this.ChartControl.ChartSettings.GutterRightFont).Width;
-					int labelHeight = (int)g.MeasureString(priceFormatted, this.ChartControl.ChartSettings.GutterRightFont).Height;
+					//v1 string priceFormatted = this.ChartControl.ValueFormattedToSymbolInfoDecimalsOr5(mousePrice, this.ThisPanelIsPricePanel);
+					//v2 can be price, volume or indicator
+					string panelValueFormatted = this.FormatValue(mousePrice);
+					int labelWidth = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont).Width;
+					int labelHeight = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont).Height;
 					int labelXalignedRight = base.Width - this.ChartControl.ChartSettings.GutterRightPadding - labelWidth;
 					
 					Rectangle plate = new Rectangle(labelXalignedRight, labelYadjustedUp - 2, labelWidth + 1, labelHeight + 3);
@@ -119,12 +111,12 @@ namespace Sq1.Charting {
 							g.FillRectangle(indicatorColorBrush, plate);
 						}
 						using (SolidBrush brushWhite = new SolidBrush(Color.White)) {
-							g.DrawString(priceFormatted, this.ChartControl.ChartSettings.GutterRightFont,
+							g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
 							             brushWhite, labelXalignedRight, labelYadjustedUp);
 						}
 					} else {
 						g.FillRectangle(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters.Brush, plate);
-						g.DrawString(priceFormatted, this.ChartControl.ChartSettings.GutterRightFont,
+						g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
 						             this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
 					}
 				}
@@ -139,9 +131,8 @@ namespace Sq1.Charting {
 				int mouseBarIndex = this.XToBar(mouseX);
 				int mouseBarX = this.BarToX(mouseBarIndex);
 				if (this.mouseOver == false || this.moveHorizontalXprev == -1) {
-					Bar barMouseOveredInOtherPanel = this.ChartControl.BarCurrentMouseOveredNullUnsafe;
-					if (barMouseOveredInOtherPanel != null) {
-						mouseBarX = this.BarToX(barMouseOveredInOtherPanel.ParentBarsIndex);
+					if (this.ChartControl.BarIndexMouseIsOverNow != -1) {
+						mouseBarX = this.BarToX(this.ChartControl.BarIndexMouseIsOverNow);
 					}
 				}
 
@@ -277,17 +268,6 @@ namespace Sq1.Charting {
 			else if (magMsd > 1.0) magMsd = 2.0f;
 
 			return magMsd * magPow;
-		}
-		int calculateGutterWidthNecessaryToFitPriceVolumeLabels(Graphics g) {
-			string visiblePriceMaxFormatted = this.ChartControl.ValueFormattedToSymbolInfoDecimalsOr5(this.ChartControl.VisiblePriceMax);
-			int maxPrice = (int)g.MeasureString(visiblePriceMaxFormatted, this.ChartControl.ChartSettings.GutterRightFont).Width;
-			
-			string visibleVolumeMaxFormatted = this.ChartControl.ValueFormattedToSymbolInfoDecimalsOr5(this.ChartControl.VisibleVolumeMax, false);
-			int maxVolume = (int)g.MeasureString(visibleVolumeMaxFormatted, this.ChartControl.ChartSettings.GutterRightFont).Width;
-			
-			int ret = Math.Max(maxPrice, maxVolume);
-			ret += this.ChartControl.ChartSettings.GutterRightPadding * 2;
-			return ret;
 		}
 		protected void RenderBarHistogram(Graphics graphics, int barX, int barYVolumeInverted, bool fillDownCandleBody) {
 			int histogramBarHeight = this.PanelHeightMinusGutterBottomHeight_cached - barYVolumeInverted;		// height is measured DOWN the screen from candleBodyInverted.Y, not UP

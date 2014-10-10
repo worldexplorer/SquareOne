@@ -7,12 +7,15 @@ namespace Sq1.Core.Backtesting {
 		public bool HasParentBarSimulated { get { return this.ParentBarSimulated != null; } }
 		public new string ParentBarIdent { get { return (this.HasParentBarSimulated) ? this.ParentBarSimulated.ParentBarsIdent : "NO_PARENT_BAR_SIMULTED"; } }
 		public bool WentThroughStreamingToScript;
+		
+		public QuoteGenerated(DateTime localTimeEqualsToServerTimeForGenerated) : base(localTimeEqualsToServerTimeForGenerated) {
+		}
 
 		//public QuoteGenerated Clone() {
 		//    return (QuoteGenerated)this.MemberwiseClone();
 		//}
 		public QuoteGenerated DeriveIdenticalButFresh() {
-			QuoteGenerated identicalButFresh = new QuoteGenerated();
+			QuoteGenerated identicalButFresh = new QuoteGenerated(this.ServerTime);
 			identicalButFresh.Symbol = this.Symbol;
 			identicalButFresh.SymbolClass = this.SymbolClass;
 			identicalButFresh.Source = this.Source;

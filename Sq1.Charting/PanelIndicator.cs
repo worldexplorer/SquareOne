@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 
+using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.Indicators;
 
@@ -18,11 +19,11 @@ namespace Sq1.Charting {
 				}
 				if (this.Indicator.OwnValuesCalculated == null) {
 					string msg = "I_JUST_RESTORED_THE_PANEL_WHILE_BACKTEST_HASNT_RUN_YET";
-//					string msg = "CATCH_IT_EARLIER!!! this.Indicator.OwnValuesCalculated is created in"
-//						+ " Indicator.BacktestStartingConstructOwnValuesValidateParameters()"
-//						+ " to assure Executor's freedom to feed any bars during backtest; Indicator itself lives a longer life";
+					//string msg = "CATCH_IT_EARLIER!!! this.Indicator.OwnValuesCalculated is created in"
+					//	+ " Indicator.BacktestStartingConstructOwnValuesValidateParameters()"
+					//	+ " to assure Executor's freedom to feed any bars during backtest; Indicator itself lives a longer life";
 					#if DEBUG
-//					Debugger.Break();
+					//Debugger.Break();
 					#endif
 					return true;
 				}
@@ -34,16 +35,82 @@ namespace Sq1.Charting {
 			base.PanelName = indicator.ToString();
 			base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
 			base.ForeColor = indicator.LineColor;
+			base.MinimumSize = new Size(20, 15);	// only height matters for MultiSplitContainer
 		}
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
-			base.PaintWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter foregrounds
 			// PanelIndicator should not append "ATR (Period:5[1..11/2]) " twice (?) below PanelName 
 			// EACH_RENDERS_ITSELF__HAD_OLIVE_INDICATOR_NAME_DRAWN_TWICE_ON_ATR_OWN_PANEL base.RenderIndicators(g);
+			// 1) uses here-defined VisibleMinDoubleMaxValueUnsafe,VisibleMaxDoubleMinValueUnsafe to set:
+			//		base.VisibleMin,Max,Range_cached,
+			//		base.VisibleMinMinusTopSqueezer_cached, this.VisibleMaxPlusBottomSqueezer_cached, this.VisibleRangeWithTwoSqueezers_cached
+			// 2) paints Right and Bottom gutter foregrounds;
+			//base.PaintWholeSurfaceBarsNotEmpty(g);
+			
+			string msig = " " + this.PanelName + ".PanelIndicator.PaintWholeSurfaceBarsNotEmpty()";
+			double visibleMinCandidateMaxUnsafe = this.VisibleMinDoubleMaxValueUnsafe;
+			double visibleMaxCandidateMinUnsafe = this.VisibleMaxDoubleMinValueUnsafe;
+			
+			bool valuesAreConstantOrNaN = (visibleMinCandidateMaxUnsafe == double.MaxValue && visibleMaxCandidateMinUnsafe == double.MinValue)
+				|| visibleMinCandidateMaxUnsafe == visibleMaxCandidateMinUnsafe;
+			double firstNonNan = this.FirstNonNanBetweenLeftRight;
+			if (valuesAreConstantOrNaN && double.IsNaN(firstNonNan) == false) {
+				visibleMinCandidateMaxUnsafe = firstNonNan - firstNonNan * 0.1;		// bandLower: -10% 
+				visibleMaxCandidateMinUnsafe = firstNonNan + firstNonNan * 0.1;		// bandUpper: +10%
+			} else {
+				if (visibleMinCandidateMaxUnsafe == double.MaxValue) {
+					string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS";
+					#if DEBUG
+					//Debugger.Break();
+					#endif
+					return;
+				}
+				if (visibleMaxCandidateMinUnsafe == double.MinValue) {
+					string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS";
+					#if DEBUG
+					//Debugger.Break();
+					#endif
+					return;
+				}
+			}
+
+			this.VisibleMin_cached = visibleMinCandidateMaxUnsafe;
+			this.VisibleMax_cached = visibleMaxCandidateMinUnsafe;
+
+			this.VisibleRange_cached = this.VisibleMax_cached - this.VisibleMin_cached;
+
+			double pixelsSqueezedToPriceDistance = 0;
+			if (this.PaddingVerticalSqueeze > 0 && base.Height > 0) {
+				double priceDistanceInOnePixel = this.VisibleRange_cached / base.Height;
+				pixelsSqueezedToPriceDistance = this.PaddingVerticalSqueeze * priceDistanceInOnePixel;
+			}
+			
+			this.VisibleMinMinusTopSqueezer_cached = this.VisibleMin_cached - pixelsSqueezedToPriceDistance;
+			this.VisibleMaxPlusBottomSqueezer_cached = this.VisibleMax_cached + pixelsSqueezedToPriceDistance;
+			
+			// min-Top=10-10=0; max+Bottom=20+10=30; 20+10-(10-10) = 30-0; = max-min+padding*2=20-10+10*2 = 30 
+			this.VisibleRangeWithTwoSqueezers_cached = this.VisibleMaxPlusBottomSqueezer_cached - VisibleMinMinusTopSqueezer_cached;
+			if (double.IsNegativeInfinity(this.VisibleRangeWithTwoSqueezers_cached)) {
+				Debugger.Break();
+			}
+			if (double.IsNaN(this.VisibleRangeWithTwoSqueezers_cached)) {
+				string msg = "[" + this.ToString() + "]-INDICATOR_RANGE_MUST_BE_NON_NAN_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]";
+				//Debugger.Break();
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
+				// gridStep will throw an ArithmeticException
+				string msg = "[" + this.ToString() + "]-INDICATOR_RANGE_MUST_BE_POSITIVE_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]";
+				//Debugger.Break();
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			base.GutterGridLinesRightBottomDrawForeground(g);
 		}
-		protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
-			base.PaintBackgroundWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter backgrounds
-			//this.PaintRightVolumeGutterAndGridLines(g);
-		}
+		//protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
+		//	base.PaintBackgroundWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter backgrounds
+		//	//this.PaintRightVolumeGutterAndGridLines(g);
+		//}
 		
 		public override double VisibleMinDoubleMaxValueUnsafe { get {
 				if (base.DesignMode || this.IndicatorEmpty) {
@@ -55,8 +122,6 @@ namespace Sq1.Charting {
 				ret = this.Indicator.OwnValuesCalculated.MinValueBetweenIndexesDoubleMaxValueUnsafe(base.VisibleBarLeft_cached, base.VisibleBarRight_cached);
 				return ret;
 			} }
-
-		private double visibleMax;
 		public override double VisibleMaxDoubleMinValueUnsafe { get {
 				if (base.DesignMode || this.IndicatorEmpty) {
 					return 658;	// random value; set breakpoint to see why the number doesn't matter
@@ -67,20 +132,6 @@ namespace Sq1.Charting {
 				ret = this.Indicator.OwnValuesCalculated.MaxValueBetweenIndexesDoubleMinValueUnsafe(base.VisibleBarLeft_cached, base.VisibleBarRight_cached);
 				return ret;
 			} }
-
-		// PanelPrice		must return bars[barIndexMouseOvered].Close
-		// PanelVolume		must return bars[barIndexMouseOvered].Volume
-		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
-		public override double PanelValueForBarCurrentNaNunsafe { get {
-				double ret = double.NaN;
-				if (this.Indicator.OwnValuesCalculated == null) return ret;
-				if (base.ChartControl.BarCurrentMouseOveredNullUnsafe == null) return ret;
-				int barIndexMouseOvered = base.ChartControl.BarCurrentMouseOveredNullUnsafe.ParentBarsIndex; 
-				if (barIndexMouseOvered >= this.Indicator.OwnValuesCalculated.Count) return ret;
-				ret = this.Indicator.OwnValuesCalculated[barIndexMouseOvered];
-				return ret;
-			} }
-
 		public override double ValueGetNaNunsafe(int barIndex) {
 			if (this.Indicator == null) return double.NaN; 
 			if (this.Indicator.OwnValuesCalculated == null) return double.NaN; 
@@ -89,5 +140,6 @@ namespace Sq1.Charting {
 			double indicatorValue = this.Indicator.OwnValuesCalculated[barIndex];
 			return indicatorValue;
 		}
+		public override int Decimals { get { return this.Indicator.Decimals; } }
 	}
 }

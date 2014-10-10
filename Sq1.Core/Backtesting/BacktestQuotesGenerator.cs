@@ -10,7 +10,7 @@ namespace Sq1.Core.Backtesting {
 		Backtester backtester;
 		public readonly BacktestMode BacktestModeSuitsFor;
 		public readonly int QuotePerBarGenerates;
-		SortedList<int, QuoteGenerated> QuotesGeneratedForOneBar;
+		List<QuoteGenerated> QuotesGeneratedForOneBar;
 
 		// IMPLEMENTED_BELOW_UNABSTRACTED_THIS_CLASS protected public abstract SortedList<int, QuoteGenerated> GenerateQuotesFromBarAvoidClearing(Bar bar);
 		public int QuoteAbsno;
@@ -19,13 +19,13 @@ namespace Sq1.Core.Backtesting {
 			this.backtester = backtester;
 			this.QuotePerBarGenerates = quotesPerBar;
 			this.BacktestModeSuitsFor = mode;
-			this.QuotesGeneratedForOneBar = new SortedList<int, QuoteGenerated>();
+			this.QuotesGeneratedForOneBar = new List<QuoteGenerated>();
 			this.QuoteAbsno = 0;
 		}
 
 		protected QuoteGenerated generateNewQuoteChildrenHelper(int intraBarSerno, string source, string symbol, DateTime serverTime,
 				BidOrAsk bidOrAsk, double price, double volume, Bar barSimulated) {
-			QuoteGenerated ret = new QuoteGenerated();
+			QuoteGenerated ret = new QuoteGenerated(serverTime);
 			ret.Absno = ++this.QuoteAbsno;
 			ret.ServerTime = serverTime;
 			ret.IntraBarSerno = intraBarSerno;
@@ -177,7 +177,7 @@ namespace Sq1.Core.Backtesting {
 				//    bool executedAtBid = alert.Direction == Direction.Short || alert.Direction == Direction.Sell;
 				//    if (executedAtBid && alert.MarketLimitStop == MarketLimitStop.Stop) continue;
 				//}
-				QuoteGenerated quoteThatWillFillAlert = this.modelQuoteThatCouldFillAlert(alert);
+				QuoteGenerated quoteThatWillFillAlert = this.modelQuoteThatCouldFillAlert(alert, new DateTime(quoteToReach.LocalTimeCreatedMillis.Ticks-911));
 				if (quoteThatWillFillAlert == null) continue;
 
 
@@ -259,10 +259,10 @@ namespace Sq1.Core.Backtesting {
 			ret.Source = quoteClosest.Source;
 			return ret;
 		}
-		QuoteGenerated modelQuoteThatCouldFillAlert(Alert alert) {
+		QuoteGenerated modelQuoteThatCouldFillAlert(Alert alert, DateTime localDateTimeBasedOnServerForBacktest) {
 			string err;
 
-			QuoteGenerated ret = new QuoteGenerated();
+			QuoteGenerated ret = new QuoteGenerated(localDateTimeBasedOnServerForBacktest);
 			//ret.Source = "GENERATED_TO_FILL_" + alert.ToString();			// PROFILER_SAID_TOO_SLOW + alert.ToString();
 			ret.Source = "GENERATED_TO_FILL_alert@bar#" + alert.PlacedBarIndex;
 			ret.Size = alert.Qty;
@@ -374,7 +374,7 @@ namespace Sq1.Core.Backtesting {
 
 			return ret;
 		}
-		public virtual SortedList<int, QuoteGenerated> GenerateQuotesFromBarAvoidClearing(Bar barSimulated) {
+		public virtual List<QuoteGenerated> GenerateQuotesFromBarAvoidClearing(Bar barSimulated) {
 			this.QuotesGeneratedForOneBar.Clear();
 
 			double volumeOneQuarterOfBar = barSimulated.Volume / 4;
@@ -446,7 +446,7 @@ namespace Sq1.Core.Backtesting {
 				
 				QuoteGenerated quote = this.generateNewQuoteChildrenHelper(stroke, "RunSimulationFourStrokeOHLC",
 					barSimulated.Symbol, serverTime, bidOrAsk, price, volumeOneQuarterOfBar, barSimulated);
-				this.QuotesGeneratedForOneBar.Add(stroke, quote);
+				this.QuotesGeneratedForOneBar.Add(quote);
 				
 				if (stroke == this.QuotePerBarGenerates - 1) break;		// avoiding expensive {cumulativeOffset += increment} at last stroke 
 
