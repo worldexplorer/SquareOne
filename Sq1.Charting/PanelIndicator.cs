@@ -45,24 +45,26 @@ namespace Sq1.Charting {
 			//this.PaintRightVolumeGutterAndGridLines(g);
 		}
 		
-		public override double VisibleMin { get {
+		public override double VisibleMinDoubleMaxValueUnsafe { get {
 				if (base.DesignMode || this.IndicatorEmpty) {
 					return 99;	// random value; set breakpoint to see why the number doesn't matter
 				}
 				double ret = Double.MaxValue;
 				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
-				ret = this.Indicator.OwnValuesCalculated.MinValueBetweenIndexesDoubleMaxValueUnsafe(base.ChartControl.VisibleBarLeft, base.ChartControl.VisibleBarRight);
+				//ret = this.Indicator.OwnValuesCalculated.MinValueBetweenIndexesDoubleMaxValueUnsafe(base.ChartControl.VisibleBarLeft, base.ChartControl.VisibleBarRight);
+				ret = this.Indicator.OwnValuesCalculated.MinValueBetweenIndexesDoubleMaxValueUnsafe(base.VisibleBarLeft_cached, base.VisibleBarRight_cached);
 				return ret;
 			} }
 
 		private double visibleMax;
-		public override double VisibleMax { get {
+		public override double VisibleMaxDoubleMinValueUnsafe { get {
 				if (base.DesignMode || this.IndicatorEmpty) {
 					return 658;	// random value; set breakpoint to see why the number doesn't matter
 				}
 				double ret = Double.MinValue;
 				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
-				ret = this.Indicator.OwnValuesCalculated.MaxValueBetweenIndexesDoubleMinValueUnsafe(base.ChartControl.VisibleBarLeft, base.ChartControl.VisibleBarRight);
+				//ret = this.Indicator.OwnValuesCalculated.MaxValueBetweenIndexesDoubleMinValueUnsafe(base.ChartControl.VisibleBarLeft, base.ChartControl.VisibleBarRight);
+				ret = this.Indicator.OwnValuesCalculated.MaxValueBetweenIndexesDoubleMinValueUnsafe(base.VisibleBarLeft_cached, base.VisibleBarRight_cached);
 				return ret;
 			} }
 
@@ -79,5 +81,13 @@ namespace Sq1.Charting {
 				return ret;
 			} }
 
+		public override double ValueGetNaNunsafe(int barIndex) {
+			if (this.Indicator == null) return double.NaN; 
+			if (this.Indicator.OwnValuesCalculated == null) return double.NaN; 
+			if (barIndex < 0) return double.NaN;
+			if (barIndex >= this.Indicator.OwnValuesCalculated.Count) return double.NaN; 
+			double indicatorValue = this.Indicator.OwnValuesCalculated[barIndex];
+			return indicatorValue;
+		}
 	}
 }

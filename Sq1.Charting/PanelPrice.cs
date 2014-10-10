@@ -444,5 +444,11 @@ namespace Sq1.Charting {
 				ret = base.ChartControl.BarCurrentMouseOveredNullUnsafe.Close;
 				return ret;
 			} }
+		public override double ValueGetNaNunsafe(int barIndex) {
+			if (barIndex < 0) return double.NaN;
+			if (barIndex >= base.ChartControl.Bars.Count) return double.NaN; 
+			Bar bar = base.ChartControl.Bars[barIndex];
+			return bar.Close;
+		}
 	}
 }

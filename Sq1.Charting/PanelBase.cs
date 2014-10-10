@@ -35,10 +35,23 @@ namespace Sq1.Charting {
 		int chartLabelsUpperLeftYincremental;
 		
 		// price, volume or indicator-calculated
-		[Browsable(false)] public virtual double VisibleMin { get { return this.ChartControl.VisiblePriceMin; } }
-		[Browsable(false)] public virtual double VisibleMax { get { return this.ChartControl.VisiblePriceMax; } }
+		[Browsable(false)] public virtual double VisibleMinDoubleMaxValueUnsafe { get { return this.ChartControl.VisiblePriceMin; } }
+		[Browsable(false)] public virtual double VisibleMaxDoubleMinValueUnsafe { get { return this.ChartControl.VisiblePriceMax; } }
 		// USE_CACHED_VARIABLE_INSTEAD [Browsable(false)] public virtual double VisibleRange { get { return this.VisibleMax - this.VisibleMin; } }
+		[Browsable(false)] public virtual double FirstNonNanBetweenLeftRight { get {
+				double ret = double.NaN;
+				for (int i=this.VisibleBarLeft_cached; i<this.VisibleBarRight_cached; i++) {
+					ret = this.ValueGetNaNunsafe(i);
+					if (double.IsNaN(ret)) continue;
+					break;
+				}
+				return ret;
+			} }
 
+		public virtual double ValueGetNaNunsafe(int barIndex) {
+			throw new NotImplementedException();
+		}
+		
 		#region Panel.Width and Panel.Height - dependant (cache and recalculate once per Resize/Paint))
 		[Browsable(false)]
 		public int PanelHeightMinusGutterBottomHeight { get {
@@ -248,22 +261,36 @@ namespace Sq1.Charting {
 					Debugger.Break();
 				}
 				this.VisibleBarLeft_cached = this.ChartControl.VisibleBarLeft;
-				this.VisibleBarsCount_cached = VisibleBarRight_cached - VisibleBarLeft_cached;
+				this.VisibleBarsCount_cached = this.VisibleBarRight_cached - this.VisibleBarLeft_cached;
 				if (this.VisibleBarsCount_cached == 0) return;
 				
-				double tmp = this.VisibleMin;
-				if (tmp == double.MaxValue) {
-					string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS NOT_SURE_IF_RETURN_IS_SOLUTION ";
-					return;
+				double visibleMinCandidate = this.VisibleMinDoubleMaxValueUnsafe;
+				double visibleMaxCandidate = this.VisibleMaxDoubleMinValueUnsafe;
+				
+				bool valuesAreConstantOrNaN = visibleMinCandidate == double.MaxValue && visibleMaxCandidate == double.MinValue;
+				double firstNonNan = this.FirstNonNanBetweenLeftRight;
+				if (valuesAreConstantOrNaN && double.IsNaN(firstNonNan) != false) {
+					visibleMinCandidate = firstNonNan - 10;
+					visibleMaxCandidate = firstNonNan + 10;
+				} else {
+					if (visibleMinCandidate == double.MaxValue) {
+						string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS NOT_SURE_IF_RETURN_IS_SOLUTION ";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						return;
+					}
+					if (visibleMaxCandidate == double.MinValue) {
+						string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS NOT_SURE_IF_RETURN_IS_SOLUTION ";
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						return;
+					}
 				}
-				this.VisibleMin_cached = tmp; 
 
-				tmp = this.VisibleMax;
-				if (tmp == double.MinValue) {
-					string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS NOT_SURE_IF_RETURN_IS_SOLUTION ";
-					return;
-				}
-				this.VisibleMax_cached = tmp;
+				this.VisibleMin_cached = visibleMinCandidate;
+				this.VisibleMax_cached = visibleMaxCandidate;
 
 				this.VisibleRange_cached = this.VisibleMax_cached - this.VisibleMin_cached;
 
@@ -279,8 +306,9 @@ namespace Sq1.Charting {
 				if (double.IsNegativeInfinity(this.VisibleRangeWithTwoSqueezers_cached)) {
 					Debugger.Break();
 				}
-
-
+				if (this.VisibleRangeWithTwoSqueezers_cached == 0) {
+					// gridStep will throw an ArithmeticException Debugger.Break();
+				}
 				
 				this.BarWidthIncludingPadding_cached = this.ChartControl.ChartSettings.BarWidthIncludingPadding;
 				this.BarWidthMinusRightPadding_cached = this.ChartControl.ChartSettings.BarWidthMinusRightPadding;
@@ -347,8 +375,8 @@ namespace Sq1.Charting {
 			
 			#region quickCheckFor *_cached variables; veeeeery slow in Debug; that's why *_cached exist
 			#if DEBUG_HEAVY
-			double min2 = this.VisibleMin;
-			double max2 = this.VisibleMax;
+			double min2 = this.VisibleMinDoubleMaxValueUnsafe;
+			double max2 = this.VisibleMaxDoubleMinValueUnsafe;
 
 			double pixelsSqueezedToPriceDistance = 0;
 			if (this.PaddingVerticalSqueeze > 0 && base.Height > 0) {

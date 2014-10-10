@@ -19,8 +19,8 @@ namespace Sq1.Charting {
 			//this.PaintRightVolumeGutterAndGridLines(g);
 		}
 		
-		public override double VisibleMin { get { return base.ChartControl.VisibleVolumeMin; } }
-		public override double VisibleMax { get { return base.ChartControl.VisibleVolumeMax; } }
+		public override double VisibleMinDoubleMaxValueUnsafe { get { return base.ChartControl.VisibleVolumeMin; } }
+		public override double VisibleMaxDoubleMinValueUnsafe { get { return base.ChartControl.VisibleVolumeMax; } }
 
 		void renderBarsVolume(Graphics g) {
 			//for (int i = 0; i < base.ChartControl.BarsCanFitForCurrentWidth; i++) {
@@ -55,5 +55,11 @@ namespace Sq1.Charting {
 				ret = base.ChartControl.BarCurrentMouseOveredNullUnsafe.Volume;
 				return ret;
 			} }
+		public override double ValueGetNaNunsafe(int barIndex) {
+			if (barIndex < 0) return double.NaN;
+			if (barIndex >= base.ChartControl.Bars.Count) return double.NaN; 
+			Bar bar = base.ChartControl.Bars[barIndex];
+			return bar.Volume;
+		}
 	}
 }

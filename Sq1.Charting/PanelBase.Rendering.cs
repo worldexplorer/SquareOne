@@ -53,13 +53,23 @@ namespace Sq1.Charting {
 			}
 			if (this.GutterRightDraw) {
 				if (this.GutterRightFontHeight_cached <= 0) {
-					string msg = "MUST_BE_POSITIVE_this.ChartControl.GutterRightFontHeight[" + this.GutterRightFontHeight_cached + "]";
+					string msg = "MUST_BE_POSITIVE_this.ChartControl.GutterRightFontHeight[" + this.GutterRightFontHeight_cached + "] panel[" + this.ToString() + "]";
 					Assembler.PopupException(msg + msig);
 					return;
 				}
 				if (this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
-					string msg = "MUST_BE_POSITIVE_this.ChartControl.PanelHeightMinusGutterBottomHeight_cached[" + this.PanelHeightMinusGutterBottomHeight_cached + "]";
-					//Assembler.PopupException(msg + msig);
+					string msg = "MUST_BE_POSITIVE_this.ChartControl.PanelHeightMinusGutterBottomHeight_cached[" + this.PanelHeightMinusGutterBottomHeight_cached + "] panel[" + this.ToString() + "]";
+					Assembler.PopupException(msg + msig);
+					return;
+				}
+				if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
+					string msg = "MUST_BE_POSITIVE_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
+					Assembler.PopupException(msg + msig);
+					return;
+				}
+				if (double.IsNaN(this.VisibleRangeWithTwoSqueezers_cached)) {
+					string msg = "MUST_BE_NON_NAN_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
+					Assembler.PopupException(msg + msig);
 					return;
 				}
 				
@@ -254,7 +264,13 @@ namespace Sq1.Charting {
 				return 0;
 			}
 			
-			double magMsd = (int)(tempStep / magPow + 0.5);
+			double magMsd = 0;
+			try {
+				magMsd = (int)(tempStep / magPow + 0.5);
+			} catch (Exception ex) {
+				Debugger.Break();
+				return 10;
+			}
 			// promote the MSD to either 1, 2, or 5
 			if (magMsd > 5.0) magMsd = 10.0f;
 			else if (magMsd > 2.0) magMsd = 5.0f;
