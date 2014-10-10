@@ -34,6 +34,10 @@ namespace Sq1.Core.Indicators {
 			}
 			if (this.OwnValuesCalculated.ContainsDate(bar.DateTimeOpen) == false) {
 				if (this.Executor.Backtester.IsBacktestingNow) {
+					return indicatorLegDrawn;		// DONT_DELETE_ME
+				}
+				if (this.Executor.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false) {
+					string msg2 = "YOU_HAD_BACKTESTONSELECTORS_OFF_AND_CLICKED_ANOTHER_SYMBOL? SKIPPING_RENDERING BUT_BETTER_TO_SET_OWN_VALUES_TO_NULL_AT_SYMBOL_CHANGE";
 					return indicatorLegDrawn;
 				}
 				//string msg = "EDIT_DATASOURCE_EXTEND_MARKET_OPEN_CLOSE_HOURS";
@@ -46,7 +50,7 @@ namespace Sq1.Core.Indicators {
 				//    msg += " OwnValuesCalculated.ScaleInterval[" + this.OwnValuesCalculated.ScaleInterval + "] != bar.ParentBars.ScaleInterval[" + bar.ParentBars.ScaleInterval + "]";
 				//}
 				#if DEBUG
-				//Debugger.Break();
+				Debugger.Break();
 				#endif
 				Assembler.PopupException(msg + msig);
 				return indicatorLegDrawn;

@@ -167,26 +167,12 @@ namespace Sq1.Charting {
 			}
 			this.ChartControl.SyncHorizontalScrollToBarsCount();
 			
-			bool skipPaintingBeforeBacktestCompletes = false;		// AVOIDING_CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_BAR in this.RenderIndicators(); I don't need Executor.Backtester.BacktestIsRunning here 
-			Dictionary<string, Indicator> indicators = this.ChartControl.ScriptExecutorObjects.Indicators;	// if there's no indicators => I won't go to foreach () and won't skipPaintingBeforeBacktestCompletes 
-			foreach (Indicator indicator in indicators.Values) {
-				if (indicator.OwnValuesCalculated == null) {
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					continue;
-				}
-				if (indicator.OwnValuesCalculated.Count > 0) continue;
-				skipPaintingBeforeBacktestCompletes = true;
-				break;
-			}
-			if (skipPaintingBeforeBacktestCompletes) return;
-			
 			if (this.ImPaintingForegroundNow) return;
 			try {
 				this.ImPaintingForegroundNow = true;
 				this.PaintWholeSurfaceBarsNotEmpty(e.Graphics);	// GOOD: we get here once per panel
-				this.RenderIndicators(e.Graphics);
+				// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
+				this.RenderIndicators(e.Graphics); 
 				
 				if (this.PanelName == null) {
 					this.DrawError(e.Graphics, "SET_TO_EMPTY_STRING_TO_HIDE: this.PanelName=null");

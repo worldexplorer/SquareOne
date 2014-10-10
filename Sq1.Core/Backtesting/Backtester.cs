@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
@@ -217,6 +217,8 @@ namespace Sq1.Core.Backtesting {
 				this.BacktestAborted.Reset();
 				this.RequestingBacktestAbort.Reset();
 				this.BacktestIsRunning.Set();
+				//COPIED_UPSTACK_FOR_BLOCKING_MOUSEMOVE_AFTER_BACKTEST_NOW_CLICK__BUT_ALSO_STAYS_HERE_FOR_SLIDER_CHANGE_NON_INVALIDATION
+				//WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
 				this.Executor.ChartShadow.BacktestIsRunning.Set();
 				// Calling ManualResetEvent.Reset closes the gate.
 				// Threads that call WaitOne on a closed gate will block

@@ -15,11 +15,13 @@ using WeifenLuo.WinFormsUI.Docking;
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
 		void ctxChart_Opening(object sender, CancelEventArgs e) {
+			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
 			//this.editBarToolStripMenuItem.Enabled = this.AllowEditBarData;
 			//_preCalcPricesHandleTradeMenuItemsGuiThread();
 		}
 		void ctxStrategy_Opening(object sender, CancelEventArgs e) {
+			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
 		}
 

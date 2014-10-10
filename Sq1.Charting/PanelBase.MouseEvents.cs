@@ -36,11 +36,14 @@ namespace Sq1.Charting {
 			this.scrollingHorizontally = false;
 			this.squeezingHorizontally = false;
 			this.squeezingVertically = false;
-
 			this.mouseOver = true;
-			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) this.ChartControl.InvalidateAllPanels();
+			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
+				this.ChartControl.InvalidateAllPanels();
+			}
 		}
 		protected override void OnMouseLeave(EventArgs e) {
+			base.OnMouseLeave(e);
+			
 			//this.ChartControl.TooltipPrice.ClientRectangle.Contains(e.
 			//if (this.ChartControl.TooltipPriceShown && ) {
 			//if (this.ChartControl.TooltipPriceShownAndMouseOverIt == true) {
@@ -54,19 +57,18 @@ namespace Sq1.Charting {
 			this.squeezingHorizontally = false;
 			this.squeezingVertically = false;
 
-			this.mouseOver = false;
-			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) this.ChartControl.InvalidateAllPanels();
-			
-			//this.ChartControl.TooltipPriceHide();
-			//this.ChartControl.TooltipPositionHide();
-			
 			// MouseTrack uses this to remove MouseLines from Panel Price & MousePositionLabels from Gutters
 			this.moveHorizontalXprev = -1;
 			this.moveHorizontalYprev = -1;
-
 			//this.ChartControl.BarCurrentMouseOveredNullUnsafe = null;
 
-			base.OnMouseLeave(e);
+			this.mouseOver = false;
+			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
+				this.ChartControl.InvalidateAllPanels();
+			}
+			
+			//this.ChartControl.TooltipPriceHide();
+			//this.ChartControl.TooltipPositionHide();
 		}
 		protected override void OnMouseDown(MouseEventArgs e) {
 			if (e.Button != MouseButtons.Left) return;
@@ -88,6 +90,7 @@ namespace Sq1.Charting {
 			base.OnMouseUp(e);
 		}
 		protected override void OnMouseMove(MouseEventArgs e) {
+			if (this.ChartControl.IsBacktestingNow) return;
 			try {
 				//if (this.DesignMode) return;				// so that Designer works
 				// if (base.DesignMode) this.ChartControl will be NULL
@@ -244,8 +247,7 @@ namespace Sq1.Charting {
 				this.moveHorizontalXprev = e.X;
 				this.moveHorizontalYprev = e.Y;
 
-				bool mouseTrack = this.ChartControl.ChartSettings.MousePositionTrackOnGutters;
-				if (mouseTrack) {
+				if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
 					//base.Refresh();
 					base.Invalidate();
 					if (barIndexMouseIsOverPrev != barIndexMouseIsOverNow) {

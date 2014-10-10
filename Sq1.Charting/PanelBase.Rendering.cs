@@ -334,15 +334,13 @@ namespace Sq1.Charting {
 		}
 
 		protected void RenderIndicators(Graphics graphics) {
-			Dictionary<string, Indicator> indicators = this.ChartControl.ScriptExecutorObjects.Indicators;
-			if (indicators == null) return;
-			if (indicators.Count == 0) return;
-
-			foreach (Indicator indicator in indicators.Values) {
-				if (indicator.HostPanelForIndicator != this) continue;
-				indicator.DotsExistsForCurrentSlidingWindow = 0;
-				indicator.DotsDrawnForCurrentSlidingWindow = 0;
+			// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
+			bool skipPaintingIndicatorsBacktestDidntRunOrIncomplete = this.ChartControl.ScriptExecutorObjects.IndicatorsAllHaveNoOwnValues;
+			if (skipPaintingIndicatorsBacktestDidntRunOrIncomplete) {
+				return;
 			}
+			// ALREADY_CHECKED_FOR_NULL_OR_EMPTY
+			Dictionary<string, Indicator> indicators = this.ChartControl.ScriptExecutorObjects.Indicators;
 
 			int barX = this.ChartControl.ChartWidthMinusGutterRightPrice;
 			// i > this.VisibleBarLeft_cached is enough because Indicator.Draw() takes previous bar

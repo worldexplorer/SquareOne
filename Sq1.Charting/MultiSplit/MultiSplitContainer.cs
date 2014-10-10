@@ -176,7 +176,7 @@ try {
 			}
 			baseHeight = base.Height;
 			int roundingError = Math.Abs(y - baseHeight);
-			if (roundingError > 1) {
+			if (roundingError > 10) {
 				Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 			}
 			#endif

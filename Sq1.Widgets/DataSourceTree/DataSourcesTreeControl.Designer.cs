@@ -248,6 +248,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(130, 27);
 			this.tableLayoutPanel1.TabIndex = 5;
+			this.tableLayoutPanel1.Visible = false;
 			// 
 			// tree
 			// 
@@ -263,11 +264,12 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.tree.Cursor = System.Windows.Forms.Cursors.Arrow;
 			this.tree.EmptyListMsg = "Right Click To Create";
 			this.tree.FullRowSelect = true;
+			this.tree.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.tree.HeaderUsesThemes = false;
 			this.tree.HideSelection = false;
 			this.tree.Location = new System.Drawing.Point(0, 0);
 			this.tree.MultiSelect = false;
-			this.tree.Name = "DataSourcesTree";
+			this.tree.Name = "tree";
 			this.tree.OwnerDraw = true;
 			this.tree.SelectAllOnControlA = false;
 			this.tree.SelectColumnsMenuStaysOpen = false;
@@ -275,7 +277,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.tree.SelectColumnsOnRightClickBehaviour = BrightIdeasSoftware.ObjectListView.ColumnSelectBehaviour.None;
 			this.tree.ShowCommandMenuOnRightClick = true;
 			this.tree.ShowGroups = false;
-			this.tree.Size = new System.Drawing.Size(130, 210);
+			this.tree.Size = new System.Drawing.Size(130, 237);
 			this.tree.SmallImageList = this.imageList;
 			this.tree.TabIndex = 2;
 			this.tree.TintSortColumn = true;

@@ -357,6 +357,7 @@ namespace Sq1.Gui.Forms {
 		}
 		public void BacktesterRunSimulationRegular() {
 			try {
+				this.Executor.ChartShadow.BacktestIsRunning.Set();	//WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
 				if (this.Executor.Strategy.ActivatedFromDll == false) {
 					// ONLY_TO_MAKE_CHARTFORM_BACKTEST_NOW_WORK__FOR_F5_ITS_A_DUPLICATE__LAZY_TO_ENMESS_CHART_FORM_MANAGER_WITH_SCRIPT_EDITOR_FUNCTIONALITY
 					this.StrategyCompileActivatePopulateSlidersShow();
@@ -492,8 +493,7 @@ namespace Sq1.Gui.Forms {
 			this.ScriptEditorFormConditionalInstance.Show(mainPanelOrAnotherEditorsPanel);
 			this.ScriptEditorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
 			//this.ScriptEditorFormConditionalInstance.Show(this.dockPanel, DockState.Document);
-			//this.ChartForm.MniShowSourceCodeEditor.Checked = !keepAutoHidden;
-			this.ChartForm.MniShowSourceCodeEditor.Checked = this.ScriptEditorIsOnSurface;
+			//useless: will be re-calculated in ctxStrategy_Opening(); this.ChartForm.MniShowSourceCodeEditor.Checked = this.ScriptEditorIsOnSurface;
 		}
 
 		const string prefixWhenNeedsToBeSaved = "* ";

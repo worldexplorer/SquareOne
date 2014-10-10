@@ -196,12 +196,12 @@ namespace Sq1.Core.DataTypes {
 				if (double.IsNaN(barCanBeStreamingWithNaNs)) continue;
 				if (barCanBeStreamingWithNaNs > ret) ret = barCanBeStreamingWithNaNs;
 			}
-			return ret;
 			#if DEBUG
 			if (ret == double.MinValue) {
 				//Debugger.Break();
 			}
 			#endif
+			return ret;
 		}
 		#endregion
 	}

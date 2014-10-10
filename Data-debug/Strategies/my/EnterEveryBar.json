@@ -22,7 +22,7 @@
       "ChartAutoSubmitting": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": false,
-      "BacktestOnSelectorsChange": true,
+      "BacktestOnSelectorsChange": false,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
@@ -48,8 +48,8 @@
       "SlippageTicks": 1,
       "PriceLevelSizeForBonds": 0,
       "Name": "Default",
-      "Symbol": "RIM3",
-      "DataSourceName": "MOCK",
+      "Symbol": "LKOH",
+      "DataSourceName": "STATIC",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
@@ -68,10 +68,8 @@
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
-      "ParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "1": 8.0,
-        "2": 1.0
+      "ScriptParameterValuesById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
@@ -82,7 +80,9 @@
             "ValueMin": 10.0,
             "ValueMax": 20.0,
             "ValueIncrement": 1.0,
-            "ValueCurrent": 15.0
+            "ValueCurrent": 15.0,
+            "BorderShown": false,
+            "NumericUpdownShown": true
           }
         ]
       }
@@ -136,21 +136,13 @@
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
-      "ParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "1": 1.0,
-        "2": 0.0
+      "ScriptParameterValuesById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib"
       }
     }
-  },
-  "SliderBordersShownByParameterId": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib"
-  },
-  "SliderNumericUpdownsShownByParameterId": {
-    "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Boolean, mscorlib]], mscorlib"
   },
   "HasChartOnly": false
 }

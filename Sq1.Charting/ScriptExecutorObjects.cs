@@ -25,6 +25,24 @@ namespace Sq1.Charting {
 		public Dictionary<string, OnChartLabel> OnChartLabelsById { get; private set; }
 		public Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
 
+		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
+		public bool IndicatorsAllHaveNoOwnValues { get {
+				bool ret = false;
+				if (this.Indicators == null) return ret;
+				if (this.Indicators.Count == 0) return ret;
+				foreach (Indicator indicator in this.Indicators.Values) {
+					if (indicator.OwnValuesCalculated == null) {
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						continue;
+					}
+					if (indicator.OwnValuesCalculated.Count > 0) continue;
+					ret = true;
+					break;
+				}
+				return ret;
+			} }
 		
 		public ScriptExecutorObjects() {
 			AlertArrowsListByBar = new Dictionary<int, List<AlertArrow>>();
@@ -44,6 +62,10 @@ namespace Sq1.Charting {
 		public void ClearAllBeforeBacktest() {
 			this.AlertArrowsListByBar.Clear();
 			//this.Indicators.Clear();
+			foreach (Indicator each in this.Indicators.Values) {
+				each.OwnValuesCalculated.Clear();		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
+			}
+			
 			this.AlertsPendingHistorySafeCopy.Clear();
 			
 			this.LinesById.Clear();

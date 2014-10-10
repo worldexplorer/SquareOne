@@ -254,25 +254,22 @@ namespace Sq1.Gui.Singletons {
 			if (strategy.ScriptContextCurrentName != e.scriptContextName) return;	//refresh FormTitle only when renaming current context
 			SlidersForm.Instance.PopulateFormTitle(strategy);
 		}
+		// TYPE_MANGLING_INSIDE_WARNING NOTICE_THAT_BOTH_PARAMETER_SCRIPT_AND_INDICATOR_VALUE_CHANGED_EVENTS_ARE_HANDLED_BY_SINGLE_HANDLER
 		internal void SlidersAutoGrow_SliderValueChanged(object sender, IndicatorParameterEventArgs e) {
-			try {
-				Strategy strategyToSaveAndRun = this.mainForm.ChartFormActive.ChartFormManager.Strategy;
-				if (strategyToSaveAndRun.Script.Executor == null) {
-					string msg = "slider_ValueCurrentChanged(): did you forget to assign Script.Executor after compilation?...";
-					Assembler.PopupException(msg);
-					return;
-				}
-				this.mainForm.ChartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
-				
-				ScriptParameterEventArgs demuxScriptParameterEventArgs = e as ScriptParameterEventArgs;   
-				if (demuxScriptParameterEventArgs == null) {
-					string msg = "MultiSplitterPropertiesByPanelName[ATR (Period:5[1..11/2]) ] key should be synchronized when user clicks Period 5=>7";
-					this.mainForm.ChartFormActive.ChartControl.SerializeSplitterDistanceOrPanelName();
-				} else {
-					string msg = "DO_NOTHING_ELSE_INDICATOR_PANEL_SPLITTER_POSITIONS_SHOULDNT_BE_SAVED_HERE";
-				}
-			} catch (Exception ex) {
-				Assembler.PopupException("SlidersAutoGrow_SliderValueChanged()", ex);
+			Strategy strategyToSaveAndRun = this.mainForm.ChartFormActive.ChartFormManager.Strategy;
+			if (strategyToSaveAndRun.Script.Executor == null) {
+				string msg = "slider_ValueCurrentChanged(): did you forget to assign Script.Executor after compilation?...";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.mainForm.ChartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
+			
+			ScriptParameterEventArgs demuxScriptParameterEventArgs = e as ScriptParameterEventArgs;   
+			if (demuxScriptParameterEventArgs == null) {
+				string msg = "MultiSplitterPropertiesByPanelName[ATR (Period:5[1..11/2]) ] key should be synchronized when user clicks Period 5=>7";
+				this.mainForm.ChartFormActive.ChartControl.SerializeSplitterDistanceOrPanelName();
+			} else {
+				string msg = "DO_NOTHING_ELSE_INDICATOR_PANEL_SPLITTER_POSITIONS_SHOULDNT_BE_SAVED_HERE";
 			}
 		}
 		#endregion SlidersForm.Instance.SlidersAutoGrow

@@ -301,6 +301,9 @@ namespace Sq1.Widgets.SteppingSlider {
 				float partFilled = e.X / (float)base.Width;	//without (float) division of two ints is an int !!! (zero)
 				if (partFilled > 1) {
 					string msg = "PART_FILLED_MUST_BE_LESS_THAN_1=e.X[" + e.X + "]/base.Width[" + base.Width + "] MOUSE_MOVE_FROM_ANOTHER_CONTROL?";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					Assembler.PopupException(msg);
 					return;
 				}

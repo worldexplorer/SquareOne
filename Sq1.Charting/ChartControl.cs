@@ -102,6 +102,8 @@ namespace Sq1.Charting {
 				base.BeginInvoke(new MethodInvoker(this.InvalidateAllPanels));
 				return;
 			}
+			if (this.IsBacktestingNow) return;
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
 			foreach (PanelBase panel in this.panels) {
 				panel.Invalidate();
