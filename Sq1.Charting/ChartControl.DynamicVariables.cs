@@ -9,8 +9,13 @@ namespace Sq1.Charting {
 	public partial class ChartControl  {
 		// cache them all until base.Width/Height changes so they won't be calculated again with the same result for each bar
 		public int ChartWidthMinusGutterRightPrice { get {
-				if (base.Width <= 0) return 0;	// HAPPENS_WHEN_WINDOW_IS_MINIMIZED... how to disable any OnPaint when app isn't visible?... 
-				return base.Width - this.GutterRightWidth_cached; } }
+				if (base.Width <= 0) return 0;						// HAPPENS_WHEN_WINDOW_IS_MINIMIZED... how to disable any OnPaint when app isn't visible?... 
+				if (this.GutterRightWidth_cached == -1) {
+					//DONT_RETURN_ZERO return 0;	// BEFORE_FIRST_PAINT_SETS_GUTTER_WIDTH ONLY_WHEN_BACKTEST_ON_RESTART_BUT_HOW???
+				}
+				int ret = base.Width - this.GutterRightWidth_cached;
+				return ret;
+			} }
 		public int BarsCanFitForCurrentWidth { get { return this.ChartWidthMinusGutterRightPrice / this.ChartSettings.BarWidthIncludingPadding; } }
 		public int ScrollLargeChange { get { return (int)(this.BarsCanFitForCurrentWidth * 0.9f); } }
 		public int VisibleBarRight { get {
@@ -19,15 +24,23 @@ namespace Sq1.Charting {
 				//v2
 				// http://stackoverflow.com/questions/2882789/net-vertical-scrollbar-not-respecting-maximum-property
 				float physicalMax = this.hScrollBar.Maximum - this.hScrollBar.LargeChange + 1;
-				if (physicalMax < 0) {
+				if (physicalMax <= 0) {
+					string msg = "ALL_BARS_CAN_FIT_WITHOUT_SCROLLING ex: 10bars on FullScreen";
+					this.hScrollBar.Visible = false;	// LAZY if u change this.hScrollBar.Visible u must trigger Resize() once again (ReLayout somehow otherwize MultiSplitter doesn't get the space freed)  
 					#if DEBUG
-					Debugger.Break();
+					//Debugger.Break();
 					#endif
-					return ret;
+					return this.Bars.Count - 1;
 				}
+				this.hScrollBar.Visible = true;			// LAZY u chang this.hScrollBar.Visible u must trigger Resize() once again
 				float part0to1 = this.hScrollBar.Value / physicalMax;
 				if (part0to1 > 1) part0to1 = 1;	//	NONSENSE: this.hScrollBar.Value=432, physicalMax=423 - am I still resizing?...
-				ret = (int)(part0to1 * (this.Bars.Count - 1));
+				try {
+					ret = (int)(part0to1 * (this.Bars.Count - 1));
+				} catch (Exception ex) {
+					string msg = "OVERFLOW???";
+					Debugger.Break();
+				}
 				return ret;
 			} }
 		public int VisibleBarLeft { get {

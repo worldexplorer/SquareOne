@@ -444,7 +444,7 @@ namespace Sq1.Core.Backtesting {
 					recalcShrunkenIncrement = true;
 				}
 				
-				QuoteGenerated quote = this.generateNewQuoteChildrenHelper(stroke, "RunSimulationFourStrokeOHLC",
+				QuoteGenerated quote = this.generateNewQuoteChildrenHelper(stroke, Enum.GetName(typeof(BacktestMode), this.BacktestModeSuitsFor),		//"RunSimulationFourStrokeOHLC"
 					barSimulated.Symbol, serverTime, bidOrAsk, price, volumeOneQuarterOfBar, barSimulated);
 				this.QuotesGeneratedForOneBar.Add(quote);
 				

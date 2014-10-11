@@ -9,7 +9,7 @@ namespace Sq1.Charting {
 	public partial class ChartControl	{
 		protected override void OnResize(EventArgs e) {
 			if (this.ScrollLargeChange <= 0) {
-				//Debugger.Break();	// HAPPENS_WHEN_WINDOW_IS_MINIMIZED... how to disable any OnPaint when app isn't visible?...
+				//Debugger.Break();	// HAPPENS_WHEN_WINDOW_IS_MINIMIZED OR BEFORE_FIRST_PAINT_SETS_GutterRightWidth_cached... how to disable any OnPaint when app isn't visible?... 
 				return;
 			}
 		    this.hScrollBar.LargeChange = this.ScrollLargeChange;

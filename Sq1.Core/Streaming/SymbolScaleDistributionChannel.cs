@@ -7,13 +7,13 @@ namespace Sq1.Core.Streaming {
 	public class SymbolScaleDistributionChannel {
 		public string Symbol { get; protected set; }
 		public BarScaleInterval ScaleInterval { get; protected set; }
-
 		public StreamingBarFactoryUnattached StreamingBarFactoryUnattached { get; protected set; }
 		Dictionary<IStreamingConsumer, StreamingEarlyBinder> earlyBinders;
 		List<IStreamingConsumer> consumersQuote;
 		List<IStreamingConsumer> consumersBar;
 		object lockConsumersQuote = new Object();
 		object lockConsumersBar = new Object();
+		
 		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval) {
 			Symbol = symbol;
 			ScaleInterval = scaleInterval;

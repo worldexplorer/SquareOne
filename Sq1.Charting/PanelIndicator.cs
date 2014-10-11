@@ -89,18 +89,21 @@ namespace Sq1.Charting {
 			
 			// min-Top=10-10=0; max+Bottom=20+10=30; 20+10-(10-10) = 30-0; = max-min+padding*2=20-10+10*2 = 30 
 			this.VisibleRangeWithTwoSqueezers_cached = this.VisibleMaxPlusBottomSqueezer_cached - VisibleMinMinusTopSqueezer_cached;
+
+			msig = " this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]:"
+				+ " [" + this.VisibleMinMinusTopSqueezer_cached + "]...[" + this.VisibleMaxPlusBottomSqueezer_cached + "]" + msig;
 			if (double.IsNegativeInfinity(this.VisibleRangeWithTwoSqueezers_cached)) {
 				Debugger.Break();
 			}
 			if (double.IsNaN(this.VisibleRangeWithTwoSqueezers_cached)) {
-				string msg = "[" + this.ToString() + "]-INDICATOR_RANGE_MUST_BE_NON_NAN_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]";
+				string msg = "[" + this.ToString() + "]-INDICATOR_RANGE_MUST_BE_NON_NAN";
 				//Debugger.Break();
 				Assembler.PopupException(msg + msig);
 				return;
 			}
 			if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
 				// gridStep will throw an ArithmeticException
-				string msg = "[" + this.ToString() + "]-INDICATOR_RANGE_MUST_BE_POSITIVE_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]";
+				string msg = "[" + this.ToString() + "]-INDICATOR_RANGE_MUST_BE_POSITIVE";
 				//Debugger.Break();
 				Assembler.PopupException(msg + msig);
 				return;

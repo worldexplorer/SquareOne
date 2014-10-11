@@ -341,7 +341,7 @@ namespace Sq1.Charting {
 //				return this.tooltipPrice.ClientRectangle;
 //			} }
 		public override string ToString() {
-			string ret = "NO_PARENT_INFO";
+			string ret = "NO_PARENT_INFO for " + this.Name;
 			Form parentForm = this.Parent as Form;
 			if (parentForm != null) {
 				ret = parentForm.Text;

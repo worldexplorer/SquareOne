@@ -171,10 +171,15 @@ namespace Sq1.Core.Indicators {
 					double diffCloseToLower = bar.Close - valueLower;
 					double diffCloseToUpper = valueUpper - bar.Close;
 					if (diffCloseToLower != diffCloseToUpper) {
-						string msg = "diffCloseToLower[" + diffCloseToLower + "] != diffCloseToUpper[" + diffCloseToUpper + "]"
-							+ " for bar.Close[" + bandLower.ParentBarsByDate[bar.DateTimeOpen].Close + "]";
-						int a = 1;
-						Debugger.Break();
+						//greater than BacktestSpreadModelerPercentageOfMedian(0.01) will make ATRband inconsistent! you'll see in TooltipPrice (Close+ATR != C+Upper) & SPREAD_MODELER_SHOULD_GENERATE_TIGHTER_SPREADS
+						string msg = "SPREAD_MODELER_SHOULD_GENERATE_TIGHTER_SPREADS"
+							+ " diffCloseToLower[" + this.FormatValue(diffCloseToLower) + "] != diffCloseToUpper[" + this.FormatValue(diffCloseToUpper) + "]"
+							+ " for bar.Close[" + this.FormatValue(bandLower.ParentBarsByDate[bar.DateTimeOpen].Close) + "]"
+							+ " " + this.Executor.Backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.ToString()
+							;
+						//int a = 1;
+						//Debugger.Break();
+						Assembler.PopupException(msg);
 					}
 				}
 				#endif

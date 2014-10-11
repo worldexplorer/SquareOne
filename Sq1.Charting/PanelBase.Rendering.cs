@@ -40,12 +40,12 @@ namespace Sq1.Charting {
 				return;
 			}
 			if (this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
-				string msg = "[" + this.PanelName + "]-PANEL_HEIGHT_MUST_BE_POSITIVE_this.ChartControl.PanelHeightMinusGutterBottomHeight_cached[" + this.PanelHeightMinusGutterBottomHeight_cached + "]";
+				string msg = "[" + this.PanelName + "]-PANEL_HEIGHT_MUST_BE_POSITIVE_this.PanelHeightMinusGutterBottomHeight_cached[" + this.PanelHeightMinusGutterBottomHeight_cached + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
 			if (this.GutterRightFontHeight_cached <= 0) {
-				string msg = "[" + this.PanelName + "]-GUTTER_FONT_HEIGHT_MUST_BE_POSITIVE_this.ChartControl.GutterRightFontHeight[" + this.GutterRightFontHeight_cached + "]]";
+				string msg = "[" + this.PanelName + "]-GUTTER_FONT_HEIGHT_MUST_BE_POSITIVE_this.GutterRightFontHeight_cached[" + this.GutterRightFontHeight_cached + "]]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
