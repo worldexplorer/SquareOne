@@ -82,7 +82,7 @@ namespace Sq1.Charting {
 			if (alertArrowsListByBar.ContainsKey(barIndex) == false) {
 				this.TooltipPositionHide();
 				#if DEBUG
-				Debugger.Break();
+				//Debugger.Break();
 				#endif
 				return tooltipPositionShown;
 			}
@@ -97,7 +97,7 @@ namespace Sq1.Charting {
 			if (arrowFoundForPosition == null) {
 				this.TooltipPositionHide();
 				#if DEBUG
-				Debugger.Break();
+				//Debugger.Break();
 				#endif
 				return tooltipPositionShown;
 			}

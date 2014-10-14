@@ -10,8 +10,8 @@ using Sq1.Core.Indicators.HelperSeries;
 namespace Sq1.Core.Indicators {
 	public class IndicatorAtrBand : Indicator {
 		public IndicatorParameter ParamMultiplier { get; set; }	// IndicatorParameter must be a property
-		DataSeriesTimeBasedColorified bandLower;
-		DataSeriesTimeBasedColorified bandUpper;
+		public DataSeriesTimeBasedColorified BandLower;
+		public DataSeriesTimeBasedColorified BandUpper;
 
 		Indicator atr;
 
@@ -32,8 +32,8 @@ namespace Sq1.Core.Indicators {
 		
 		public override string BacktestStartingPreCheckErrors() {
 			if (this.ParamMultiplier.ValueCurrent <= 0) return "Multiplier[" + this.ParamMultiplier.ValueCurrent + "] MUST BE > 0";
-			this.bandLower = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, base.LineColor);
-			this.bandUpper = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, base.LineColor);
+			this.BandLower = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, base.LineColor);
+			this.BandUpper = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, base.LineColor);
 			return null;
 		}
 		
@@ -56,8 +56,8 @@ namespace Sq1.Core.Indicators {
 			if (addNan) {
 				//this.bandLower.Append(newStaticBar.DateTimeOpen, double.NaN);
 				//this.bandUpper.Append(newStaticBar.DateTimeOpen, double.NaN);
-				this.bandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, double.NaN, newStaticBar);
-				this.bandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, double.NaN, newStaticBar);
+				this.BandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, double.NaN, newStaticBar);
+				this.BandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, double.NaN, newStaticBar);
 				return double.NaN;
 			}
 
@@ -80,13 +80,13 @@ namespace Sq1.Core.Indicators {
 			double lowerAligned = Math.Round(lower, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
 			double upperAligned = Math.Round(upper, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
 			
-			this.bandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, lowerAligned, newStaticBar);
-			this.bandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, upperAligned, newStaticBar);
+			this.BandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, lowerAligned, newStaticBar);
+			this.BandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, upperAligned, newStaticBar);
 
 			
 			#if DEBUG
-			double valueLower = bandLower[newStaticBar.ParentBarsIndex];
-			double valueUpper = bandUpper[newStaticBar.ParentBarsIndex];
+			double valueLower = BandLower[newStaticBar.ParentBarsIndex];
+			double valueUpper = BandUpper[newStaticBar.ParentBarsIndex];
 			double diffCloseToLower = newStaticBar.Close - valueLower;
 			double diffCloseToUpper = valueUpper - newStaticBar.Close;
 			
@@ -101,7 +101,7 @@ namespace Sq1.Core.Indicators {
 				//greater than BacktestSpreadModelerPercentageOfMedian(0.01) will make ATRband inconsistent! you'll see in TooltipPrice (Close+ATR != C+Upper) & SPREAD_MODELER_SHOULD_GENERATE_TIGHTER_SPREADS
 				string msg = "INDICATOR_SHOULD_STORE_UPPER_LOWER_ROUNDED_SYMMETRICAL"
 					+ " diffCloseToLower[" + diffCloseToLower + "] != diffCloseToUpper[" + diffCloseToUpper + "]"
-					+ " for bar.Close[" + bandLower.ParentBarsByDate[newStaticBar.DateTimeOpen].Close + "]"
+					+ " for bar.Close[" + BandLower.ParentBarsByDate[newStaticBar.DateTimeOpen].Close + "]"
 					+ " " + this.Executor.Backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.ToString()
 					;
 				int a = 1;
@@ -117,13 +117,13 @@ namespace Sq1.Core.Indicators {
 		}
 
 		protected override bool DrawValueIndicatorSpecific(Graphics g, Bar bar) {
-			return base.DrawValueBand(g, bar, this.bandLower, this.bandUpper);
+			return base.DrawValueBand(g, bar, this.BandLower, this.BandUpper);
 		}
 		public override SortedDictionary<string, string> ValuesForTooltipPrice(Bar bar) {
 			string suffix = atr.Name + "*" + this.ParamMultiplier.ValueCurrent;
 			SortedDictionary<string, string> ret = new SortedDictionary<string, string>();
-			ret.Add("C+" + suffix, this.FormatValueForBar(bar, this.bandUpper));
-			ret.Add("C-" + suffix, this.FormatValueForBar(bar, this.bandLower));
+			ret.Add("C+" + suffix, this.FormatValueForBar(bar, this.BandUpper));
+			ret.Add("C-" + suffix, this.FormatValueForBar(bar, this.BandLower));
 			return ret;
 		}
 	}

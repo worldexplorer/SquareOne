@@ -140,7 +140,7 @@
     "Symbol": "LKOH",
     "SymbolClass": "EQBR",
     "PriceLevelSizeForBonds": 0.1,
-    "DecimalsPrice": 2,
+    "DecimalsPrice": 1,
     "DecimalsVolume": 0,
     "SameBarPolarCloseThenOpen": true,
     "SequencedOpeningAfterClosedDelayMillis": 0,

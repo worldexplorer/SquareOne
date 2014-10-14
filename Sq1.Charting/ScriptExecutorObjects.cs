@@ -63,6 +63,7 @@ namespace Sq1.Charting {
 			this.AlertArrowsListByBar.Clear();
 			//this.Indicators.Clear();
 			foreach (Indicator each in this.Indicators.Values) {
+				if (each.OwnValuesCalculated == null) continue;
 				each.OwnValuesCalculated.Clear();		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
 			}
 			

@@ -140,7 +140,7 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "added scriptParam[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "]"
 						+ " into Script[" + this.GetType().Name + "].Strategy.ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name + "]"
 						+ " /ScriptParametersMergedWithCurrentContext";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 					storeStrategySinceParametersGottenFromScript = true;
 				}
 			}

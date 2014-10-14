@@ -198,7 +198,7 @@ namespace Sq1.Core.Streaming {
 				#if DEBUG	// TEST_EMBEDDED
 				//Debugger.Break();
 		    	#endif
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
 				this.StreamingDataSnapshot.UpdateLastBidAskSnapFromQuote(quote);
 

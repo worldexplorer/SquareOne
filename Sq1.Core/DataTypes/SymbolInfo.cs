@@ -182,6 +182,9 @@ namespace Sq1.Core.DataTypes {
 						roundingMode = (buyOrShort ? PriceLevelRoundingMode.RoundDown : PriceLevelRoundingMode.RoundUp);
 					}
 					break;
+				case MarketLimitStop.Market:
+					roundingMode = PriceLevelRoundingMode.SimulateMathRound;
+					break;
 				default:
 					roundingMode = PriceLevelRoundingMode.DontRound;
 					break;

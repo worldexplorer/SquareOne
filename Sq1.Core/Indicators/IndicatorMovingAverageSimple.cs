@@ -35,9 +35,6 @@ namespace Sq1.Core.Indicators {
 				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW";
 				if (base.OwnValuesCalculated.LastDateAppended > newStaticBar.DateTimeOpen) {
 					msg = "DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException(msg);
 					return double.NaN;
 				} else {

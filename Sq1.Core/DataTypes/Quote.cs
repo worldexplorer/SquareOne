@@ -102,7 +102,22 @@ namespace Sq1.Core.DataTypes {
 			return (this.Bid == other.Bid && this.Ask == other.Ask);
 		}
 		public bool PriceBetweenBidAsk(double price) {
-			return (price >= this.Bid && price <= this.Ask);
+			//return (price >= this.Bid && price <= this.Ask);
+			double diffUp = this.Ask - price;						// WTF 1760.2-1706.2=-2.27E-13
+			double diffDn = price - this.Bid;
+			bool ret = diffUp >= 0 && diffDn >= 0;
+
+			if (ret == false) {
+				//Debugger.Break();									// WTF 1760.2-1706.2=-2.27E-13
+				double diffUpRounded = Math.Round(diffUp, 5);		// WTF 1760.2-1706.2=-2.27E-13
+				double diffDnRounded = Math.Round(diffDn, 5);
+				ret = diffUpRounded >= 0 && diffDnRounded >= 0;
+	
+				if (ret == false) {
+					Debugger.Break();
+				}
+			}
+			return ret;
 		}
 		public double Spread { get { return this.Ask - this.Bid; } } 
 	}

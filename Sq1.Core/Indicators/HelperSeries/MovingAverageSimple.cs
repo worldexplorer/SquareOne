@@ -15,9 +15,6 @@ namespace Sq1.Core.Indicators.HelperSeries {
 		public double CalculateAppendOwnValueForNewStaticBarFormedNanUnsafe(Bar newStaticBar) {
 			if (base.ContainsDate(newStaticBar.DateTimeOpen)) {
 				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(msg);
 				return double.NaN;
 			}

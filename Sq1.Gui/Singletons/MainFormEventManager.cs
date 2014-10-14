@@ -37,7 +37,7 @@ namespace Sq1.Gui.Singletons {
 			} else {
 				if (strategy.Script.Executor == null) {
 					string msg = "OPENED_FROM_STRATEGIES_TREE strategy.Script.Executor=null";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 				} else {
 					strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
 				}

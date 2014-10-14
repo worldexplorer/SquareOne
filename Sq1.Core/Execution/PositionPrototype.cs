@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Sq1.Core.Execution {
@@ -48,24 +49,40 @@ namespace Sq1.Core.Execution {
 		}
 		public void checkTPOffsetThrowBeforeAbsorbing(double takeProfitPositiveOffset) {
 			if (takeProfitPositiveOffset < 0) {
-				throw new Exception("WRONG USAGE OF PositionPrototype.ctor()!"
-					+ " PositionPrototype should contain positive offset for TakeProfit");
+				string msg = "WRONG USAGE OF PositionPrototype.ctor()!"
+					+ " PositionPrototype should contain positive offset for TakeProfit";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
 			}
 		}
 		public void checkSLOffsetsThrowBeforeAbsorbing(double stopLossNegativeOffset, double stopLossActivationNegativeOffset) {
 			if (stopLossNegativeOffset > 0) {
-				throw new Exception("WRONG USAGE OF PositionPrototype.ctor()!"
-					+ " PositionPrototype should contain negative offset for StopLoss");
+				string msg = "WRONG USAGE OF PositionPrototype.ctor()!"
+					+ " PositionPrototype should contain negative offset for StopLoss";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
 			}
 			if (stopLossActivationNegativeOffset > 0) {
-				throw new Exception("WRONG USAGE OF PositionPrototype.ctor()!"
-					+ " PositionPrototype should contain negative offset for StopLossActivation");
+				string msg = "WRONG USAGE OF PositionPrototype.ctor()!"
+					+ " PositionPrototype should contain negative offset for StopLossActivation";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
 			}
 			if (stopLossActivationNegativeOffset == 0) return;
 			if (stopLossActivationNegativeOffset <= stopLossNegativeOffset) {
-				throw new Exception("USAGE: PositionPrototype(Long, Entry=100, TP=150, SL=-50, SLa=-40)"
+				string msg = "USAGE: PositionPrototype(Long, Entry=100, TP=150, SL=-50, SLa=-40)"
 					+ "; StopLossActivation[" + stopLossActivationNegativeOffset + "]"
-					+ " should be >= StopLoss[" + stopLossNegativeOffset + "]");
+					+ " should be >= StopLoss[" + stopLossNegativeOffset + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
 			}
 		}
 		//public void checkThrowAbsorbed() {
@@ -99,6 +116,9 @@ namespace Sq1.Core.Execution {
 				default:
 					string msg = "OffsetToPrice(): No PositionLongShort[" + this.LongShort + "] handler "
 						+ "; must be one of those: Long/Short";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 			}
 			return priceFromOffset;
