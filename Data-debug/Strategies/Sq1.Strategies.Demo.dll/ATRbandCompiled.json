@@ -37,8 +37,8 @@
       "SlippageTicks": 1,
       "PriceLevelSizeForBonds": 0,
       "Name": "Default",
-      "Symbol": "SBER",
-      "DataSourceName": "STATIC",
+      "Symbol": "RIM3",
+      "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
@@ -92,7 +92,7 @@
             "ValueMin": 0.1,
             "ValueMax": 10.0,
             "ValueIncrement": 0.1,
-            "ValueCurrent": 1.5,
+            "ValueCurrent": 4.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }

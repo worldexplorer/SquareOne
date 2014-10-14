@@ -38,16 +38,13 @@ namespace Sq1.Charting {
 		public double VisibleVolumeMinOld { get {
 				if (base.DesignMode || this.ChartControl.BarsEmpty) return 99;
 				this.visibleVolumeMinCurrent = Double.MaxValue;
+				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					Assembler.PopupException("VisibleVolumeMin(): " + msg);
+					return this.visibleVolumeMaxCurrent;
+				}
 				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
 				for (int i = this.VisibleBarRight_cached; i >= this.VisibleBarLeft_cached; i--) {
-					if (i >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
-						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-						#if DEBUG
-						Debugger.Break();
-						#endif
-						Assembler.PopupException("VisibleVolumeMin(): " + msg);
-						continue;
-					}
 					Bar barCanBeStreamingWithNaNs = this.ChartControl.Bars[i];
 					double volume = barCanBeStreamingWithNaNs.Volume;
 					if (double.IsNaN(volume)) continue;
@@ -66,16 +63,14 @@ namespace Sq1.Charting {
 		public double VisibleVolumeMaxOld { get {
 				if (base.DesignMode || this.ChartControl.BarsEmpty) return 658;
 				this.visibleVolumeMaxCurrent = Double.MinValue;
+				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
+					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
+					Assembler.PopupException("VisibleVolumeMax(): " + msg);
+					return this.visibleVolumeMaxCurrent;
+				}
+
 				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
 				for (int i = this.VisibleBarRight_cached; i >= this.VisibleBarLeft_cached; i--) {
-					if (i >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
-						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-						#if DEBUG
-						Debugger.Break();
-						#endif
-						Assembler.PopupException("VisibleVolumeMax(): " + msg);
-						continue;
-					}
 					Bar barCanBeStreamingWithNaNs = this.ChartControl.Bars[i];
 					double volume = barCanBeStreamingWithNaNs.Volume;
 					if (double.IsNaN(volume)) continue;

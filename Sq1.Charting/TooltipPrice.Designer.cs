@@ -110,9 +110,9 @@ namespace Sq1.Charting {
 			// lblOpenVal
 			// 
 			this.lblOpenVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblOpenVal.Location = new System.Drawing.Point(65, 38);
+			this.lblOpenVal.Location = new System.Drawing.Point(54, 38);
 			this.lblOpenVal.Name = "lblOpenVal";
-			this.lblOpenVal.Size = new System.Drawing.Size(46, 13);
+			this.lblOpenVal.Size = new System.Drawing.Size(57, 13);
 			this.lblOpenVal.TabIndex = 8;
 			this.lblOpenVal.Text = "123,456";
 			this.lblOpenVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -120,9 +120,9 @@ namespace Sq1.Charting {
 			// lblHighVal
 			// 
 			this.lblHighVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblHighVal.Location = new System.Drawing.Point(65, 52);
+			this.lblHighVal.Location = new System.Drawing.Point(54, 52);
 			this.lblHighVal.Name = "lblHighVal";
-			this.lblHighVal.Size = new System.Drawing.Size(46, 13);
+			this.lblHighVal.Size = new System.Drawing.Size(57, 13);
 			this.lblHighVal.TabIndex = 9;
 			this.lblHighVal.Text = "$12.34";
 			this.lblHighVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -130,9 +130,9 @@ namespace Sq1.Charting {
 			// lblLowVal
 			// 
 			this.lblLowVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblLowVal.Location = new System.Drawing.Point(65, 64);
+			this.lblLowVal.Location = new System.Drawing.Point(54, 64);
 			this.lblLowVal.Name = "lblLowVal";
-			this.lblLowVal.Size = new System.Drawing.Size(46, 13);
+			this.lblLowVal.Size = new System.Drawing.Size(57, 13);
 			this.lblLowVal.TabIndex = 10;
 			this.lblLowVal.Text = "$12.34";
 			this.lblLowVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -140,9 +140,9 @@ namespace Sq1.Charting {
 			// lblCloseVal
 			// 
 			this.lblCloseVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblCloseVal.Location = new System.Drawing.Point(65, 77);
+			this.lblCloseVal.Location = new System.Drawing.Point(54, 77);
 			this.lblCloseVal.Name = "lblCloseVal";
-			this.lblCloseVal.Size = new System.Drawing.Size(46, 13);
+			this.lblCloseVal.Size = new System.Drawing.Size(57, 13);
 			this.lblCloseVal.TabIndex = 11;
 			this.lblCloseVal.Text = "$12.34";
 			this.lblCloseVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -150,9 +150,9 @@ namespace Sq1.Charting {
 			// lblVolumeVal
 			// 
 			this.lblVolumeVal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblVolumeVal.Location = new System.Drawing.Point(65, 97);
+			this.lblVolumeVal.Location = new System.Drawing.Point(54, 97);
 			this.lblVolumeVal.Name = "lblVolumeVal";
-			this.lblVolumeVal.Size = new System.Drawing.Size(46, 13);
+			this.lblVolumeVal.Size = new System.Drawing.Size(57, 13);
 			this.lblVolumeVal.TabIndex = 15;
 			this.lblVolumeVal.Text = "12.34";
 			this.lblVolumeVal.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -175,7 +175,6 @@ namespace Sq1.Charting {
 			this.lblDateValue.TabIndex = 17;
 			this.lblDateValue.Text = " Fri 16-Feb-2012";
 			this.lblDateValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.lblDateValue.Visible = true;
 			// 
 			// lblDate
 			// 

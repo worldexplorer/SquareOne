@@ -353,6 +353,10 @@ namespace Sq1.Charting {
 		}
 
 		protected virtual void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
+			if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {
+				return;
+			}
+
 			//this.PaintError(g, "YOU_DIDNT_OVERRIDE_IN_DERIVED[" + this.PanelName + "]: protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g)");
 			this.GutterRightBottomDrawBackground(g);
 		}
@@ -485,23 +489,25 @@ namespace Sq1.Charting {
 		// REASON_TO_EXIST: for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
 		public virtual int Decimals { get { Debugger.Break(); throw new NotImplementedException(); } }
 		public string Format { get { return "N" + this.Decimals; } }
-		public string FormatValue(double value) {
-			double num = Math.Abs(value);
-			if (num >= 1000000000000.0) {
-				value /= 1000000000000.0;
-				return value.ToString(this.Format) + "T";
-			}
-			if (num >= 1000000000.0) {
-				value /= 1000000000.0;
-				return value.ToString(this.Format) + "B";
-			}
-			if (num >= 1000000.0) {
-				value /= 1000000.0;
-				return value.ToString(this.Format) + "M";
-			}
-			if (num >= 10000.0) {
-				value /= 1000.0;
-				return value.ToString(this.Format) + "K";
+		public string FormatValue(double value, bool shorten = false) {
+			if (shorten) {
+				double num = Math.Abs(value);
+				if (num >= 1000000000000.0) {
+					value /= 1000000000000.0;
+					return value.ToString(this.Format) + "T";
+				}
+				if (num >= 1000000000.0) {
+					value /= 1000000000.0;
+					return value.ToString(this.Format) + "B";
+				}
+				if (num >= 1000000.0) {
+					value /= 1000000.0;
+					return value.ToString(this.Format) + "M";
+				}
+				if (num >= 10000.0) {
+					value /= 1000.0;
+					return value.ToString(this.Format) + "K";
+				}
 			}
 			return value.ToString(this.Format);
 		}

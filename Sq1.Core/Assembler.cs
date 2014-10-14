@@ -58,7 +58,7 @@ namespace Sq1.Core {
 				}
 				return Assembler.instance;
 			} }
-		public static bool IsInitialized { get { return Assembler.instance.StatusReporter != null; } }
+		public static bool IsInitialized { get { return Assembler.instance != null && Assembler.instance.StatusReporter != null; } }
 		public static Assembler InstanceUninitialized { get {
 				if (Assembler.instance == null) {
 					Assembler.instance = new Assembler();

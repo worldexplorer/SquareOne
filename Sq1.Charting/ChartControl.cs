@@ -35,7 +35,7 @@ namespace Sq1.Charting {
 			this.ScriptExecutorObjects = new ScriptExecutorObjects();
 			InitializeComponent();
 			if (base.DesignMode) return;
-			
+			//when previous line doesn't help and Designer still throws exceptions return;
 
 			this.AutoScroll = false;
 			//this.HScroll = true;
@@ -68,21 +68,24 @@ namespace Sq1.Charting {
 		public void Initialize(Bars barsNotNull) {
 			this.barEventsDetach();
 			this.Bars = barsNotNull;
-			if (this.BarsNotEmpty) {
-				this.barEventsAttach();
-				this.SyncHorizontalScrollToBarsCount();
-				//this.hScrollBar.ValueCurrent = this.hScrollBar.Maximum;	// I just sync'ed this.hScrollBar.Maximum = this.Bars.Count - 1
-				// after I reduced BarRange{500bars => 100bars} in MainForm, don't set this.hScrollBar.Value here, I'll invoke ScrollToLastBarRight() upstack
-				if (this.ChartSettings.ScrollPositionAtBarIndex >= this.hScrollBar.Minimum && this.ChartSettings.ScrollPositionAtBarIndex <= this.hScrollBar.Maximum) {
-					// I'm here 1) at ChartControl startup; 2) after I changed BarRange in MainForm 
-					this.hScrollBar.Value = this.ChartSettings.ScrollPositionAtBarIndex;
-				} else {
-					string msg = "HSCROLL_POSITION_VALUE_OUT_OF_RANGE; fix deserialization upstack";
+			if (this.BarsNotEmpty == false) {
+				string msg = "DONT_PASS_EMPTY_BARS_TO_CHART_CONTROL";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.barEventsAttach();
+			this.SyncHorizontalScrollToBarsCount();
+			//this.hScrollBar.ValueCurrent = this.hScrollBar.Maximum;	// I just sync'ed this.hScrollBar.Maximum = this.Bars.Count - 1
+			// after I reduced BarRange{500bars => 100bars} in MainForm, don't set this.hScrollBar.Value here, I'll invoke ScrollToLastBarRight() upstack
+			if (this.ChartSettings.ScrollPositionAtBarIndex >= this.hScrollBar.Minimum && this.ChartSettings.ScrollPositionAtBarIndex <= this.hScrollBar.Maximum) {
+				// I'm here 1) at ChartControl startup; 2) after I changed BarRange in MainForm 
+				this.hScrollBar.Value = this.ChartSettings.ScrollPositionAtBarIndex;
+			} else {
+				string msg = "HSCROLL_POSITION_VALUE_OUT_OF_RANGE; fix deserialization upstack";
 
-				}
-				foreach (PanelBase panel in this.panels) {	// at least PanelPrice and PanelVolume
-					panel.InitializeWithNonEmptyBars(this);
-				}
+			}
+			foreach (PanelBase panel in this.panels) {	// at least PanelPrice and PanelVolume
+				panel.InitializeWithNonEmptyBars(this);
 			}
 			this.InvalidateAllPanels();
 		}

@@ -13,6 +13,8 @@ namespace Sq1.Charting.MultiSplit {
 			where PANEL_BASE : Control {
 		protected override void OnResize(EventArgs e) {
 			base.OnResize(e);
+			if (this.DesignMode) return;
+			if (Assembler.IsInitialized == false) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 				return;
 			}

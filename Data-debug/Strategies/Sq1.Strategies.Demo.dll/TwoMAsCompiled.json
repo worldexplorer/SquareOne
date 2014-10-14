@@ -70,7 +70,7 @@
         "RecentTimeunits": 0
       },
       "ChartStreaming": false,
-      "ShowRangeBar": true,
+      "ShowRangeBar": false,
       "ScriptParameterValuesById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
