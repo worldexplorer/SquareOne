@@ -131,9 +131,9 @@ namespace Sq1.Core.DataTypes {
 		public SymbolInfo Clone() {
 			return (SymbolInfo)this.MemberwiseClone();
 		}
-		public string FormatPrice { get { return "N" + this.DecimalsPrice; } }
-		public string FormatVolume { get { return "N" + this.DecimalsVolume; } }
-		public double AlignOrderPriceToPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
+		public string FormatPrice { get { return "N" + (this.DecimalsPrice + 1); } }
+		public string FormatVolume { get { return "N" + (this.DecimalsVolume + 1); } }
+		public double AlignOrderToPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
 			bool buyOrShort = true;
 			PositionLongShort positionLongShort = PositionLongShort.Long;
 			switch (direction) {
@@ -156,62 +156,70 @@ namespace Sq1.Core.DataTypes {
 				default:
 					throw new Exception("add new handler for new Direction[" + direction + "] besides {Buy,Sell,Cover,Short}");
 			}
-			return this.RoundAlertPriceToPriceLevel(orderPrice, buyOrShort, positionLongShort, marketLimitStop);
+			return this.AlignAlertToPriceLevel(orderPrice, buyOrShort, positionLongShort, marketLimitStop);
 		}
-		public double RoundAlertPriceToPriceLevel(double orderPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
+		public double AlignAlertToPriceLevel(double alertPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
 			//WHAT_IS_THIS_FOR?
 			//double d = orderPrice / this.PriceMinimalFromDecimal;
 			//string a = d.ToString("N6");
 			//string b = Math.Truncate(d).ToString("N6");
 			//if (a == b) return orderPrice;
 
-			PriceLevelRoundingMode rounding;
+			PriceLevelRoundingMode roundingMode;
 			switch (marketLimitStop0) {
 				case MarketLimitStop.Limit:
 					if (positionLongShort0 == PositionLongShort.Long) {
-						rounding = (buyOrShort ? PriceLevelRoundingMode.RoundDown : PriceLevelRoundingMode.RoundUp);
+						roundingMode = (buyOrShort ? PriceLevelRoundingMode.RoundDown : PriceLevelRoundingMode.RoundUp);
 					} else {
-						rounding = (buyOrShort ? PriceLevelRoundingMode.RoundUp : PriceLevelRoundingMode.RoundDown);
+						roundingMode = (buyOrShort ? PriceLevelRoundingMode.RoundUp : PriceLevelRoundingMode.RoundDown);
 					}
 					break;
 				case MarketLimitStop.Stop:
 				case MarketLimitStop.StopLimit:
 					if (positionLongShort0 == PositionLongShort.Long) {
-						rounding = (buyOrShort ? PriceLevelRoundingMode.RoundUp : PriceLevelRoundingMode.RoundDown);
+						roundingMode = (buyOrShort ? PriceLevelRoundingMode.RoundUp : PriceLevelRoundingMode.RoundDown);
 					} else {
-						rounding = (buyOrShort ? PriceLevelRoundingMode.RoundDown : PriceLevelRoundingMode.RoundUp);
+						roundingMode = (buyOrShort ? PriceLevelRoundingMode.RoundDown : PriceLevelRoundingMode.RoundUp);
 					}
 					break;
 				default:
-					rounding = PriceLevelRoundingMode.DontRound;
+					roundingMode = PriceLevelRoundingMode.DontRound;
 					break;
 			}
-			double lowerLevel = Math.Truncate(orderPrice / this.PriceMinimalStepFromDecimal);
+			return this.AlignToPriceLevel(alertPrice, roundingMode);
+		}
+		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.DontRound, double priceReference = double.NaN) {
+			double ret = -1;
+			double lowerLevel = Math.Truncate(price / this.PriceMinimalStepFromDecimal);
 			lowerLevel *= this.PriceMinimalStepFromDecimal;
 			double upperLevel = lowerLevel + this.PriceMinimalStepFromDecimal;
-			switch (rounding) {
-				case PriceLevelRoundingMode.RoundDown:
-					if (lowerLevel >= upperLevel) {
-						return upperLevel;
-					}
-					return lowerLevel;
-				case PriceLevelRoundingMode.RoundUp:
-					if (lowerLevel <= upperLevel) {
-						return upperLevel;
-					}
-					return lowerLevel;
+			switch (upOrDown) {
 				case PriceLevelRoundingMode.DontRound:
-					return orderPrice;
-				//case PriceLevelRoundingMode.SimulateMathRound:
-				//    double distanceUp = Math.Abs(orderPrice - upperLevel);
-				//    double distanceDown = Math.Abs(orderPrice - lowerLevel);
-				//    if (distanceUp >= distanceDown) {
-				//        return upperLevel;
-				//    }
-				//    return lowerLevel;
+					string msg = "DontRound=>returning[" + price + "] lowerLevel[" + lowerLevel + "] upperLevel[" + upperLevel + "] ";
+					Assembler.PopupException(msg);
+					return price;
+				case PriceLevelRoundingMode.RoundDown:
+					ret = (lowerLevel >= upperLevel) ? upperLevel : lowerLevel;
+					break;
+				case PriceLevelRoundingMode.RoundUp:
+					ret = (lowerLevel <= upperLevel) ? upperLevel : lowerLevel;
+					break;
+				case PriceLevelRoundingMode.SimulateMathRound:
+					if (double.IsNaN(priceReference) == false) {
+					    double distanceUp = Math.Abs(priceReference - upperLevel);
+					    double distanceDown = Math.Abs(priceReference - lowerLevel);
+					    ret = (distanceUp <= distanceDown) ? upperLevel : lowerLevel;
+					} else {
+					    double distanceUp = Math.Abs(price - upperLevel);
+					    double distanceDown = Math.Abs(price - lowerLevel);
+					    ret = (distanceUp <= distanceDown) ? upperLevel : lowerLevel;
+					}
+					break;
 				default:
-					throw new NotImplementedException("RoundAlertPriceToPriceLevel() for PriceLevelRoundingMode." + rounding);
+					throw new NotImplementedException("RoundAlertPriceToPriceLevel() for PriceLevelRoundingMode." + upOrDown);
 			}
+			ret = Math.Round(ret, this.DecimalsPrice);
+			return ret;
 		}
 		public double PriceRoundFractionsBeyondDecimals(double orderPrice) {
 			double decimalPointShifterBeforeRounding = Math.Pow(10, this.DecimalsPrice);		// 2 => 100

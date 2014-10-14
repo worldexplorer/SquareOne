@@ -98,7 +98,6 @@
       <DependentUpon>Bars.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\BarsUnscaled.cs" />
-    <Compile Include="DataTypes\BarsUnscaledSortedList.cs" />
     <Compile Include="DataTypes\BarsUnscaledEventArgs.cs" />
     <Compile Include="DataTypes\BarsUnscaledList.cs" />
     <Compile Include="DoubleBuffered\PanelDoubleBuffered.cs">
@@ -211,7 +210,7 @@
     <Compile Include="Broker\OrderPostProcessorRejected.cs" />
     <Compile Include="Backtesting\BacktestMode.cs" />
     <Compile Include="Backtesting\BacktestSpreadModeler.cs" />
-    <Compile Include="Backtesting\BacktestSpreadModelerPercentageOfMedian.cs" />
+    <Compile Include="Backtesting\BacktestSpreadModelerPercentage.cs" />
     <Compile Include="Backtesting\BacktestQuotesGenerator.cs" />
     <Compile Include="Streaming\IStreamingConsumer.cs" />
     <Compile Include="Streaming\DataDistributor.cs" />

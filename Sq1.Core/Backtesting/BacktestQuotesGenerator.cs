@@ -15,57 +15,67 @@ namespace Sq1.Core.Backtesting {
 		// IMPLEMENTED_BELOW_UNABSTRACTED_THIS_CLASS protected public abstract SortedList<int, QuoteGenerated> GenerateQuotesFromBarAvoidClearing(Bar bar);
 		public int QuoteAbsno;
 
+		protected string GeneratorName;
+
 		protected BacktestQuotesGenerator(Backtester backtester, int quotesPerBar, BacktestMode mode) {
 			this.backtester = backtester;
 			this.QuotePerBarGenerates = quotesPerBar;
 			this.BacktestModeSuitsFor = mode;
 			this.QuotesGeneratedForOneBar = new List<QuoteGenerated>();
 			this.QuoteAbsno = 0;
+			this.GeneratorName = this.GetType().Name;
 		}
 
-		protected QuoteGenerated generateNewQuoteChildrenHelper(int intraBarSerno, string source, string symbol, DateTime serverTime,
-				BidOrAsk bidOrAsk, double price, double volume, Bar barSimulated) {
-			QuoteGenerated ret = new QuoteGenerated(serverTime);
-			ret.Absno = ++this.QuoteAbsno;
-			ret.ServerTime = serverTime;
-			ret.IntraBarSerno = intraBarSerno;
-			ret.Source = source;
-			ret.Symbol = symbol;
-			ret.SymbolClass = this.backtester.BarsOriginal.SymbolInfo.SymbolClass;
-			ret.Size = volume;
+		protected QuoteGenerated generateNewQuoteChildrenHelper(int intraBarSerno, string whoGenerated, string symbol, DateTime serverTime,
+				BidOrAsk bidOrAsk, double priceFromAlignedBar, double volume, Bar barSimulated) {
+			QuoteGenerated quote = new QuoteGenerated(serverTime);
+			quote.Absno = ++this.QuoteAbsno;
+			quote.ServerTime = serverTime;
+			quote.IntraBarSerno = intraBarSerno;
+			quote.Source = whoGenerated;
+			quote.Symbol = symbol;
+			quote.SymbolClass = this.backtester.BarsOriginal.SymbolInfo.SymbolClass;
+			quote.Size = volume;
+			quote.ParentBarSimulated = barSimulated;
 			//v1 ret.PriceLastDeal = price;
 			switch (bidOrAsk) {
 				case BidOrAsk.Bid:
-					ret.Bid = price;
-					this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GenerateFillAskBasedOnBid(ret);
+					quote.Bid = priceFromAlignedBar;
+					this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GenerateFillAskBasedOnBid(quote);
+					if (quote.Spread == 0) {
+						Debugger.Break();
+					}
 					break;
 				case BidOrAsk.Ask:
-					ret.Ask = price;
-					this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GenerateFillBidBasedOnAsk(ret);
+					quote.Ask = priceFromAlignedBar;
+					this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GenerateFillBidBasedOnAsk(quote);
+					if (quote.Spread == 0) {
+						Debugger.Break();
+					}
 					break;
 				case BidOrAsk.UNKNOWN:
-					this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GeneratedQuoteFillBidAsk(ret, barSimulated, price);
+					this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GeneratedQuoteFillBidAsk(quote, barSimulated, priceFromAlignedBar);
+					if (quote.Spread == 0) {
+						Debugger.Break();
+					}
 					break;
 			}
 
+			// 1) replaced by BacktestQuoteGenerator.AlignBidAskToPriceLevel
+			// 2) irrelevant after barSimulated.OHLC <= barOriginalOHLC, which got aligned during BAR file is read 
+			// 3) should be done only for strokes 2 and 3
+			//if (ret.Ask > barSimulated.High) {
+			//	double pushDown = ret.Ask - barSimulated.High;
+			//	ret.Ask -= pushDown;
+			//	ret.Bid -= pushDown;
+			//}
+			//if (ret.Bid < barSimulated.Low) {
+			//	double pushUp = barSimulated.Low - ret.Bid;
+			//	ret.Ask += pushUp;
+			//	ret.Bid += pushUp;
+			//}
 
-			if (ret.Ask > barSimulated.High) {
-				double pushDown = ret.Ask - barSimulated.High;
-				ret.Ask -= pushDown;
-				ret.Bid -= pushDown;
-			}
-			if (ret.Bid < barSimulated.Low) {
-				double pushUp = barSimulated.Low - ret.Bid;
-				ret.Ask += pushUp;
-				ret.Bid += pushUp;
-			}
-
-
-			// moved to BacktestQuoteModeler
-			//quote.Bid = quote.PriceLastDeal - 10;
-			//quote.Ask = quote.PriceLastDeal + 10;
-			ret.ParentBarSimulated = barSimulated;
-			return ret;
+			return quote;
 		}
 
 		public virtual List<QuoteGenerated> InjectQuotesToFillPendingAlerts(QuoteGenerated quoteToReach, Bar bar2simulate, int iterationsLimit = 5) {
@@ -377,7 +387,7 @@ namespace Sq1.Core.Backtesting {
 		public virtual List<QuoteGenerated> GenerateQuotesFromBarAvoidClearing(Bar barSimulated) {
 			this.QuotesGeneratedForOneBar.Clear();
 
-			double volumeOneQuarterOfBar = barSimulated.Volume / 4;
+			double volumeOneQuarterOfBar = barSimulated.Volume / this.QuotePerBarGenerates;
 			if (barSimulated.ParentBars != null && barSimulated.ParentBars.SymbolInfo != null) {
 				volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, barSimulated.ParentBars.SymbolInfo.DecimalsVolume);
 				if (volumeOneQuarterOfBar == 0) {
@@ -410,22 +420,34 @@ namespace Sq1.Core.Backtesting {
 			TimeSpan cumulativeOffset = new TimeSpan(0);
 			
 			for (int stroke = 0; stroke < this.QuotePerBarGenerates; stroke++) {
+				bool whiteCandle = barSimulated.Close > barSimulated.Open;
 				double price = 0;
-				switch (stroke) {
-					case 0: price =  barSimulated.Open; break;
-					case 1: price = (barSimulated.Close > barSimulated.Open) ? barSimulated.Low : barSimulated.High; break;
-					case 2: price = (barSimulated.Close > barSimulated.Open) ? barSimulated.High : barSimulated.Low; break;
-					case 3: price =  barSimulated.Close; break;
-					default: throw new Exception("Stroke[" + stroke + "] isn't supported in 4-stroke QuotesGenerator");
-				}
-
 				BidOrAsk bidOrAsk = BidOrAsk.UNKNOWN;
 				switch (stroke) {
-					case 0: bidOrAsk = BidOrAsk.UNKNOWN; break;
-					case 1: bidOrAsk = (barSimulated.Close > barSimulated.Open) ? BidOrAsk.Bid : BidOrAsk.Ask; break;
-					case 2: bidOrAsk = (barSimulated.Close > barSimulated.Open) ? BidOrAsk.Ask : BidOrAsk.Bid; break;
-					case 3: bidOrAsk = BidOrAsk.UNKNOWN; break;
-					default: throw new Exception("Stroke[" + stroke + "] isn't supported in 4-stroke QuotesGenerator");
+					case 0:
+						price		= barSimulated.Open;
+						bidOrAsk	= BidOrAsk.UNKNOWN;
+						// don't fail Bar.ContainsBidAskForQuoteGenerated() check
+						if (barSimulated.Open == barSimulated.Low)		bidOrAsk = BidOrAsk.Bid; 
+						if (barSimulated.Open == barSimulated.High)		bidOrAsk = BidOrAsk.Ask; 
+						break;
+					case 1:
+						price		= whiteCandle ? barSimulated.Low : barSimulated.High;
+						bidOrAsk	= whiteCandle ? BidOrAsk.Bid : BidOrAsk.Ask;
+						break;
+					case 2:
+						price		= whiteCandle ? barSimulated.High : barSimulated.Low;
+						bidOrAsk	= whiteCandle ? BidOrAsk.Ask : BidOrAsk.Bid;
+						break;
+					case 3:
+						price		= barSimulated.Close;
+						bidOrAsk	= BidOrAsk.UNKNOWN;
+						// don't fail Bar.ContainsBidAskForQuoteGenerated() check
+						if (barSimulated.Close == barSimulated.Low)		bidOrAsk = BidOrAsk.Bid;
+						if (barSimulated.Close == barSimulated.High)	bidOrAsk = BidOrAsk.Ask; 
+						break;
+					default:
+						throw new Exception("Stroke[" + stroke + "] isn't supported in 4-stroke QuotesGenerator");
 				}
 
 				DateTime serverTime = barOpenOrResume + cumulativeOffset;
@@ -444,7 +466,8 @@ namespace Sq1.Core.Backtesting {
 					recalcShrunkenIncrement = true;
 				}
 				
-				QuoteGenerated quote = this.generateNewQuoteChildrenHelper(stroke, Enum.GetName(typeof(BacktestMode), this.BacktestModeSuitsFor),		//"RunSimulationFourStrokeOHLC"
+				string generatorName = Enum.GetName(typeof(BacktestMode), this.BacktestModeSuitsFor);		//"RunSimulationFourStrokeOHLC";
+				QuoteGenerated quote = this.generateNewQuoteChildrenHelper(stroke, generatorName,
 					barSimulated.Symbol, serverTime, bidOrAsk, price, volumeOneQuarterOfBar, barSimulated);
 				this.QuotesGeneratedForOneBar.Add(quote);
 				

@@ -65,19 +65,33 @@ namespace Sq1.Core.DataTypes {
 				this.RoundDateDownInitTwoAuxDates(dateTimeOpen);
 			}
 		}
-		public void SetOHLCV(double open, double high, double low, double close, double volume) {
+		public void SetOHLCValigned(double open, double high, double low, double close, double volume, SymbolInfo symbolInfo = null) {
 			this.Open = open;
 			this.High = high;
 			this.Low = low;
 			this.Close = close;
 			this.Volume = volume;
+			if (symbolInfo != null) {
+				this.Open	= Math.Round(this.Open,		symbolInfo.DecimalsPrice);
+				this.High	= Math.Round(this.High,		symbolInfo.DecimalsPrice);
+				this.Low	= Math.Round(this.Low,		symbolInfo.DecimalsPrice);
+				this.Close	= Math.Round(this.Close,	symbolInfo.DecimalsPrice);
+				this.Volume	= Math.Round(this.Volume,	symbolInfo.DecimalsVolume);
+
+				//this.Open = symbolInfo.AlignToPriceLevel(this.Open, PriceLevelRoundingMode.SimulateMathRound);
+				//this.High = symbolInfo.AlignToPriceLevel(this.High, PriceLevelRoundingMode.SimulateMathRound);
+				//this.Low  = symbolInfo.AlignToPriceLevel(this.Low, PriceLevelRoundingMode.SimulateMathRound);
+				//this.Close  = symbolInfo.AlignToPriceLevel(this.Close, PriceLevelRoundingMode.SimulateMathRound);
+				//this.Volume = Math.Round(this.Volume, symbolInfo.DecimalsVolume);
+			} else {
+				string msg = "OHLC_IS_NOT_ALIGNED_TRY_TO_AVOID_IT";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+			}
 		}
 		public void AbsorbOHLCVfrom(Bar bar) {
-			this.Open = bar.Open;
-			this.High = bar.High;
-			this.Low = bar.Low;
-			this.Close = bar.Close;
-			this.Volume = bar.Volume;
+			this.SetOHLCValigned(bar.Open, bar.High, bar.Low, bar.Close, bar.Volume, bar.ParentBars.SymbolInfo);
 		}
 		public void SetParentForBackwardUpdate(Bars parentBars, int parentBarsIndex) {
 			if (this.ParentBars == parentBars) {
@@ -139,12 +153,24 @@ namespace Sq1.Core.DataTypes {
 		}
 		public void CheckOHLCVthrow() {
 			string msg = "";
-			if (this.Open <= 0) msg = "Open[" + this.Open + "] <= 0";
-			if (this.High <= 0) msg = "High[" + this.High + "] <= 0";
-			if (this.Low <= 0) msg = "Low[" + this.Low + "] <= 0";
-			if (this.Close <= 0) msg = "Close[" + this.Close + "] <= 0";
-			//if (this.Volume <= 0) msg = "Volume[" + this.Volume + "] <= 0";
+			
+			if (this.Open <= 0)			msg += "Open[" + this.Open + "] <= 0";
+			if (this.High <= 0)			msg += "High[" + this.High + "] <= 0";
+			if (this.Low <= 0)			msg += "Low[" + this.Low + "] <= 0";
+			if (this.Close <= 0)		msg += "Close[" + this.Close + "] <= 0";
+			//if (this.Volume <= 0)		msg += "Volume[" + this.Volume + "] <= 0";
+			
+			if (this.High < this.Low)	msg += "High[" + this.High + "] < Low[" + this.High + "]";
+			if (this.Low <= 0)			msg += "Low[" + this.Low + "] <= 0";
+			
+			if (this.Close > this.High)	msg += "Close[" + this.Close + "] > High[" + this.High + "]";
+			if (this.Close < this.Low)	msg += "Close[" + this.Close + "] < Low[" + this.High + "]";
+			
+			if (this.Open > this.High)	msg += "Open[" + this.Open + "] > High[" + this.High + "]";
+			if (this.Open < this.Low)	msg += "Open[" + this.Open + "] < Low[" + this.High + "]";
+			
 			if (string.IsNullOrEmpty(msg)) return;
+			Debugger.Break();
 			throw new Exception(msg);
 		}
 		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, ref string msg) {
@@ -302,6 +328,8 @@ namespace Sq1.Core.DataTypes {
 			this.Volume += quoteClone.Size;
 		}
 		public override string ToString() {
+			bool formatValues = false;
+			
 			string priceFormat = "N";
 			string volumeFormat = "N";
 			int priceDecimals = 3;
@@ -344,27 +372,23 @@ namespace Sq1.Core.DataTypes {
 			sb.Append("]");
 
 			sb.Append("O[");
-			//sb.Append(this.Open.ToString(priceFormat));
-			sb.Append(Math.Round(this.Open,	priceDecimals).ToString(priceFormat));
+			sb.Append(formatValues ? this.Open.ToString(priceFormat) : this.Open.ToString());
 			sb.Append("]");
 
 			sb.Append("H[");
-			//sb.Append(this.High.ToString(priceFormat));
-			sb.Append(Math.Round(this.High,	priceDecimals).ToString(priceFormat));
+			sb.Append(formatValues ? this.High.ToString(priceFormat) : this.High.ToString());
 			sb.Append("]");
 
 			sb.Append("L[");
-			//sb.Append(this.Low.ToString(priceFormat));
-			sb.Append(Math.Round(this.Low,	priceDecimals).ToString(priceFormat));
+			sb.Append(formatValues ? this.Low.ToString(priceFormat) : this.Low.ToString());
 			sb.Append("]");
 
 			sb.Append("C[");
-			//sb.Append(this.Close.ToString(priceFormat));
-			sb.Append(Math.Round(this.Close,	priceDecimals).ToString(priceFormat));
+			sb.Append(formatValues ? this.Close.ToString(priceFormat) : this.Close.ToString());
 			sb.Append("]");
 
 			sb.Append("V[");
-			sb.Append(this.Volume.ToString(priceFormat));
+			sb.Append(formatValues ?  this.Volume.ToString(volumeFormat) : this.Volume.ToString());
 			sb.Append("]");
 
 			return sb.ToString();
@@ -375,16 +399,40 @@ namespace Sq1.Core.DataTypes {
 			return true;
 		}
 		public bool ContainsBidAskForQuoteGenerated(Quote quote) {
-			if (quote.Ask <= quote.Bid) {
+			if (quote.Spread > this.HighLowDistance) {
 				Debugger.Break();
-			}
-			if (quote.Bid < this.Low) {
 				return false;
 			}
-			if (quote.Ask > this.High) {
+			
+			if (quote.Ask == quote.Bid) {
+				Debugger.Break();
 				return false;
 			}
+			if (quote.Ask < quote.Bid) {
+				Debugger.Break();
+				return false;
+			}
+			
+			// 81.41 > 81.41 ???? introducing Rounding
+			double lowRounded = Math.Round(this.Low, this.ParentBars.SymbolInfo.DecimalsPrice);
+			double highRounded = Math.Round(this.High, this.ParentBars.SymbolInfo.DecimalsPrice);
+			double bidRounded = Math.Round(quote.Bid, this.ParentBars.SymbolInfo.DecimalsPrice);
+			double askRounded = Math.Round(quote.Ask, this.ParentBars.SymbolInfo.DecimalsPrice);
+			
+			//if (quote.Bid < this.Low) {
+			if (bidRounded < lowRounded) {
+				Debugger.Break();
+				return false;
+			}
+			// 81.41 > 81.41 ???? introducing Rounding
+			//if (quote.Ask > this.High) {
+			if (askRounded > highRounded) {
+				Debugger.Break();
+				return false;
+			}
+			
 			if (quote.Size > this.Volume) {
+				Debugger.Break();
 				return false;
 			}
 			return true;

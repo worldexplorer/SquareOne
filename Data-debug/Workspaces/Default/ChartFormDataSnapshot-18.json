@@ -44,11 +44,11 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 243
+        "Distance": 553
       }
     },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 17,
+    "BarWidthIncludingPadding": 16,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",

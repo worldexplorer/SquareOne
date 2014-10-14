@@ -228,7 +228,7 @@ namespace Sq1.Core.Streaming {
 				Debugger.Break();
 			}
 			symbolInfo = Assembler.InstanceInitialized.RepositoryCustomSymbolInfo.FindSymbolInfoOrNew(symbol);
-			price = symbolInfo.AlignOrderPriceToPriceLevel(price, direction, MarketLimitStop.Market);
+			price = symbolInfo.AlignOrderToPriceLevel(price, direction, MarketLimitStop.Market);
 			return price;
 		}
 	}

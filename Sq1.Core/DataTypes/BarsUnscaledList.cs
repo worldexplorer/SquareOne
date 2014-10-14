@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Sq1.Core.DataTypes {
 	// REASON_TO_EXIST: get a faster this[] comparing to BarsUnscaledSortedList
@@ -55,7 +56,12 @@ namespace Sq1.Core.DataTypes {
 					if (double.IsNaN(bar.High)) msg += "bar.High[NaN] ";
 					if (double.IsNaN(bar.Close)) msg += "bar.Close[NaN] ";
 					if (double.IsNaN(bar.Volume)) msg += "bar.Volume[NaN] ";
-					if (string.IsNullOrEmpty(msg) == false) throw new Exception("BARS_UNSCALED[]_MUST_ALWAYS_RETURN_BAR_WITHOUT_NANS: " + msg);
+					if (string.IsNullOrEmpty(msg) == false) {
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						throw new Exception("BARS_UNSCALED[]_MUST_ALWAYS_RETURN_BAR_WITHOUT_NANS: " + msg);
+					}
 					return bar;
 				}
 			} }
@@ -76,7 +82,12 @@ namespace Sq1.Core.DataTypes {
 					if (double.IsNaN(bar.High)) msg += "bar.High[NaN] ";
 					if (double.IsNaN(bar.Close)) msg += "bar.Close[NaN] ";
 					if (double.IsNaN(bar.Volume)) msg += "bar.Volume[NaN] ";
-					if (string.IsNullOrEmpty(msg) == false) throw new Exception("BARS_UNSCALED[]_MUST_ALWAYS_RETURN_BAR_WITHOUT_NANS: " + msg);
+					if (string.IsNullOrEmpty(msg) == false) {
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						throw new Exception("BARS_UNSCALED[]_MUST_ALWAYS_RETURN_BAR_WITHOUT_NANS: " + msg);
+					}
 					return bar;
 				}
 			} }

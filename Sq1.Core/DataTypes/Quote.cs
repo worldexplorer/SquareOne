@@ -18,6 +18,9 @@ namespace Sq1.Core.DataTypes {
 				if (this.ItriggeredFillAtBidOrAsk == BidOrAsk.UNKNOWN) {
 					//v1 return -1;
 					double median = (this.Ask + this.Bid) / 2;
+					if (double.IsNaN(median)) {
+						Debugger.Break();
+					}
 					return median;
 				}
 				return (this.ItriggeredFillAtBidOrAsk == BidOrAsk.Ask) ? this.Ask : this.Bid;
@@ -79,14 +82,20 @@ namespace Sq1.Core.DataTypes {
 		//    return identicalButFresh;
 		//}
 		public override string ToString() {
-			string ret = "#" + this.IntraBarSerno + "/" + this.Absno
-				+ " " + this.Symbol
-				+ " bid{" + Math.Round(this.Bid, 3) + "-" + Math.Round(this.Ask, 3) + "}ask"
-				+ " size{" + this.Size + "@" + Math.Round(this.PriceLastDeal, 3) + "}lastDeal";
+			string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol;
+			//ret += " bid{" + Math.Round(this.Bid, 3) + "-" + Math.Round(this.Ask, 3) + "}ask"
+			//ret += " size{" + this.Size + "@" + Math.Round(this.PriceLastDeal, 3) + "}lastDeal";
+			ret += " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "@" + this.PriceLastDeal + "}lastDeal";
 			if (ServerTime != null) ret += " SERVER[" + ServerTime.ToString("HH:mm:ss.fff") + "]";
 			ret += "[" + LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]LOCAL";
 			if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;
 			ret += " STR:" + this.ParentBarIdent;
+			return ret;
+		}
+		public string ToStringShort() {
+			string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol
+				+ " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "}"
+				+ ": " + this.ParentBarIdent;
 			return ret;
 		}
 		public bool SameBidAsk(Quote other) {

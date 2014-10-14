@@ -65,7 +65,7 @@ namespace Sq1.Widgets.CsvImporter {
 				this.olvCsvParsedRaw.Reset();
 				this.olvCsvParsedRaw.EmptyListMsg = "step1parseFileInfo\r\n[" + ex.Message + "]"
 					+ "\r\nin new ImportSourcePathInfo(new FileInfo(" + this.dataSnapshot.FileSelected + "))";
-				Assembler.PopupException("step1parseFileInfo()", ex);
+				//Assembler.PopupException("step1parseFileInfo()", ex);
 				this.olvParsedByFormat.SetObjects(null);
 				this.olvParsedByFormat.EmptyListMsg = "";
 				this.disableRangeBarAndBtnImport();

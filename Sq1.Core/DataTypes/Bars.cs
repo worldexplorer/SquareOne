@@ -87,7 +87,7 @@ namespace Sq1.Core.DataTypes {
 		private Bar barCreateAppendBindStreaming(DateTime dateTime, double open, double high, double low, double close, double volume) {
 			lock (base.BarsLock) {
 				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
-				barAdding.SetOHLCV(open, high, low, close, volume);
+				barAdding.SetOHLCValigned(open, high, low, close, volume, this.SymbolInfo);
 				this.barAppendBindStreaming(barAdding);
 				return barAdding;
 			}
@@ -102,7 +102,7 @@ namespace Sq1.Core.DataTypes {
 		public Bar BarCreateAppendBindStatic(DateTime dateTime, double open, double high, double low, double close, double volume) {
 			lock (base.BarsLock) {
 				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
-				barAdding.SetOHLCV(open, high, low, close, volume);
+				barAdding.SetOHLCValigned(open, high, low, close, volume, this.SymbolInfo);
 				this.BarAppendBindStatic(barAdding);
 				return barAdding;
 			}

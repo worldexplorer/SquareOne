@@ -26,7 +26,7 @@ namespace Sq1.Core.StrategyBase {
 
 			PositionLongShort longShortFromDirection = MarketConverter.LongShortFromDirection(direction);
 			// ALREADY_ALIGNED_AFTER GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming
-			double entryPriceScript = entryBar.ParentBars.SymbolInfo.RoundAlertPriceToPriceLevel(
+			double entryPriceScript = entryBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(
 				priceScriptOrStreaming, true, longShortFromDirection, entryMarketLimitStop);
 
 			double shares = this.executor.PositionSizeCalculate(entryBar, entryPriceScript);
@@ -52,7 +52,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			PositionLongShort longShortFromDirection = MarketConverter.LongShortFromDirection(direction);
-			double exitPriceScript = exitBar.ParentBars.SymbolInfo.RoundAlertPriceToPriceLevel(
+			double exitPriceScript = exitBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(
 				priceScriptOrStreaming, true, longShortFromDirection, exitMarketLimitStop);
 
 			Alert alert = new Alert(exitBar, position.Shares, exitPriceScript, signalName,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
@@ -154,7 +155,13 @@ namespace Sq1.Core {
 			
 			return Assembler.InstanceInitialized;
 		}
-		public static void PopupException(string msg, Exception ex = null) {
+		public static void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
+			#if DEBUG
+			if (debuggingBreak) {
+				Debugger.Break();
+			}
+			#endif
+
 			if (msg != null) ex = new Exception(msg, ex);
 			if (Assembler.InstanceInitialized == null) {
 				MessageBox.Show(ex.Message, "Assembler.InstanceInitialized=null");

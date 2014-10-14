@@ -371,7 +371,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return orderPrice;
 			}
-			orderPrice = bars.SymbolInfo.RoundAlertPriceToPriceLevel(orderPrice, buyOrShort, positionLongShort0, marketLimitStop0);
+			orderPrice = bars.SymbolInfo.AlignAlertToPriceLevel(orderPrice, buyOrShort, positionLongShort0, marketLimitStop0);
 			return orderPrice;
 		}
 		
