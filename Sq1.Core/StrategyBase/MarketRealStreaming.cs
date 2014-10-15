@@ -28,6 +28,7 @@ namespace Sq1.Core.StrategyBase {
 			// ALREADY_ALIGNED_AFTER GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming
 			double entryPriceScript = entryBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(
 				priceScriptOrStreaming, true, longShortFromDirection, entryMarketLimitStop);
+			
 
 			double shares = this.executor.PositionSizeCalculate(entryBar, entryPriceScript);
 
@@ -36,6 +37,16 @@ namespace Sq1.Core.StrategyBase {
 				//this.executor.Script,
 				this.executor.Strategy);
 			alert.AbsorbFromExecutorAfterCreatedByMarketReal(executor);
+
+			
+			if (entryPriceScript != alert.PriceScriptAligned) {
+				string msg = "FIX_Alert.PriceScriptAligned";
+				Debugger.Break();
+			} else {
+				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+			}
+
+
 
 			return alert;
 		}

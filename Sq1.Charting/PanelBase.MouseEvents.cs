@@ -92,7 +92,11 @@ namespace Sq1.Charting {
 			base.OnMouseUp(e);
 		}
 		protected override void OnMouseMove(MouseEventArgs e) {
-			if (this.ChartControl.IsBacktestingNow) return;
+			if (this.ChartControl.IsBacktestingNow) {
+				this.Cursor = Cursors.WaitCursor;
+				return;
+			}
+			if (this.Cursor == Cursors.WaitCursor) this.Cursor = Cursors.Default;
 			try {
 				//if (this.DesignMode) return;				// so that Designer works
 				// if (base.DesignMode) this.ChartControl will be NULL
@@ -232,10 +236,10 @@ namespace Sq1.Charting {
 					}
 					this.squeezeVerticalYprev = YnotBeyond0height;	// continue scrolling since we are still dragging to the same direction as for event-received-previously
 					if (draggingUp) {
-						this.Cursor = Cursors.PanSouth;
+						this.Cursor = Cursors.PanNorth;
 						this.ChartControl.DragDownSqueeze();
 					} else {
-						this.Cursor = Cursors.PanNorth;
+						this.Cursor = Cursors.PanSouth;
 						this.ChartControl.DragUpUnsqueeze();
 					}
 				}

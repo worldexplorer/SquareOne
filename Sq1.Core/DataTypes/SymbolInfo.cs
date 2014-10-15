@@ -1,5 +1,5 @@
 using System;
-
+using System.Diagnostics;
 using Newtonsoft.Json;
 using Sq1.Core.Execution;
 
@@ -133,38 +133,39 @@ namespace Sq1.Core.DataTypes {
 		}
 		public string FormatPrice { get { return "N" + (this.DecimalsPrice + 1); } }
 		public string FormatVolume { get { return "N" + (this.DecimalsVolume + 1); } }
+		[Obsolete("used only in tidal calculations")]
 		public double AlignOrderToPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
-			bool buyOrShort = true;
-			PositionLongShort positionLongShort = PositionLongShort.Long;
+			bool entryNotExit = true;
+			PositionLongShort positionLongShortV1 = PositionLongShort.Long;
 			switch (direction) {
 				case Direction.Buy:
-					buyOrShort = true;
-					positionLongShort = PositionLongShort.Long;
+					entryNotExit = true;
+					positionLongShortV1 = PositionLongShort.Long;
 					break;
 				case Direction.Sell:
-					buyOrShort = false;
-					positionLongShort = PositionLongShort.Long;
+					entryNotExit = false;
+					positionLongShortV1 = PositionLongShort.Long;
 					break;
 				case Direction.Short:
-					buyOrShort = true;
-					positionLongShort = PositionLongShort.Short;
+					entryNotExit = true;
+					positionLongShortV1 = PositionLongShort.Short;
 					break;
 				case Direction.Cover:
-					buyOrShort = false;
-					positionLongShort = PositionLongShort.Short;
+					entryNotExit = false;
+					positionLongShortV1 = PositionLongShort.Short;
 					break;
 				default:
 					throw new Exception("add new handler for new Direction[" + direction + "] besides {Buy,Sell,Cover,Short}");
 			}
-			return this.AlignAlertToPriceLevel(orderPrice, buyOrShort, positionLongShort, marketLimitStop);
+			PositionLongShort positionLongShort = MarketConverter.LongShortFromDirection(direction); 
+			if (positionLongShortV1 != positionLongShort) {
+				string msg = "DEFINITELY_DIFFERENT_POSTPONE_TILL_ORDER_EXECUTOR_BACK_FOR_QUIK_BROKER";
+				//Debugger.Break();
+			}
+
+			return this.AlignAlertToPriceLevel(orderPrice, entryNotExit, positionLongShortV1, marketLimitStop);
 		}
 		public double AlignAlertToPriceLevel(double alertPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
-			//WHAT_IS_THIS_FOR?
-			//double d = orderPrice / this.PriceMinimalFromDecimal;
-			//string a = d.ToString("N6");
-			//string b = Math.Truncate(d).ToString("N6");
-			//if (a == b) return orderPrice;
-
 			PriceLevelRoundingMode roundingMode;
 			switch (marketLimitStop0) {
 				case MarketLimitStop.Limit:
@@ -191,37 +192,74 @@ namespace Sq1.Core.DataTypes {
 			}
 			return this.AlignToPriceLevel(alertPrice, roundingMode);
 		}
-		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.DontRound, double priceReference = double.NaN) {
+		public double AlignAlertToPriceLevelSimplified(double alertPrice, Direction direction, MarketLimitStop marketLimitStop) {
+			PriceLevelRoundingMode roundingMode = PriceLevelRoundingMode.DontRound;
+			switch (marketLimitStop) {
+				case MarketLimitStop.Limit:
+					switch (direction) {
+						case Direction.Buy:		roundingMode = PriceLevelRoundingMode.RoundDown;	break;
+						case Direction.Sell:	roundingMode = PriceLevelRoundingMode.RoundUp;		break;
+						case Direction.Short:	roundingMode = PriceLevelRoundingMode.RoundUp;		break;
+						case Direction.Cover:	roundingMode = PriceLevelRoundingMode.RoundDown;	break;
+						default: throw new Exception("add new handler for new Direction[" + direction + "] besides {Buy,Sell,Cover,Short}");
+					}
+					break;
+				case MarketLimitStop.Stop:
+				case MarketLimitStop.StopLimit:
+					switch (direction) {
+						case Direction.Buy:		roundingMode = PriceLevelRoundingMode.RoundUp;		break;
+						case Direction.Sell:	roundingMode = PriceLevelRoundingMode.RoundDown;	break;
+						case Direction.Short:	roundingMode = PriceLevelRoundingMode.RoundDown;	break;
+						case Direction.Cover:	roundingMode = PriceLevelRoundingMode.RoundUp;		break;
+						default: throw new Exception("add new handler for new Direction[" + direction + "] besides {Buy,Sell,Cover,Short}");
+					}
+					break;
+				case MarketLimitStop.Market:
+					roundingMode = PriceLevelRoundingMode.SimulateMathRound;
+					break;
+				default:
+					roundingMode = PriceLevelRoundingMode.DontRound;
+					break;
+			}
+			return this.AlignToPriceLevel(alertPrice, roundingMode);
+		}
+		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.SimulateMathRound, double priceReference = double.NaN) {
 			double ret = -1;
 			double lowerLevel = Math.Truncate(price / this.PriceMinimalStepFromDecimal);
 			lowerLevel *= this.PriceMinimalStepFromDecimal;
-			double upperLevel = lowerLevel + this.PriceMinimalStepFromDecimal;
+			double upperLevel = (price == lowerLevel) ? lowerLevel : lowerLevel + this.PriceMinimalStepFromDecimal;
+			lowerLevel = Math.Round(lowerLevel, this.DecimalsPrice);	// getting rid of Double's compound rounding error
+			upperLevel = Math.Round(upperLevel, this.DecimalsPrice);	// getting rid of Double's compound rounding error
+
 			switch (upOrDown) {
+				case PriceLevelRoundingMode.RoundDown:		ret = lowerLevel;		break;
+				case PriceLevelRoundingMode.RoundUp:		ret = upperLevel;		break;
+				case PriceLevelRoundingMode.SimulateMathRound:
+					double priceOrRef	= double.IsNaN(priceReference) ? price : priceReference;
+					double distanceUp	= Math.Abs(priceOrRef - upperLevel);
+					double distanceDown	= Math.Abs(priceOrRef - lowerLevel);
+				    ret = (distanceUp <= distanceDown) ? upperLevel : lowerLevel;
+					ret = Math.Round(ret, this.DecimalsPrice);			// getting rid of Double's compound rounding error
+
+					#if DEBUG
+					double mathRound = Math.Round(priceOrRef, this.DecimalsPrice);
+					string msg1 = "price[" + price.ToString("R") + "]=>aligned[" + ret.ToString("R") + "] mathRound[" + mathRound + "]";
+					if (this.DecimalsPrice > 0 && ret != mathRound) {
+						Debugger.Break();
+					}
+					#endif
+
+					break;
 				case PriceLevelRoundingMode.DontRound:
 					string msg = "DontRound=>returning[" + price + "] lowerLevel[" + lowerLevel + "] upperLevel[" + upperLevel + "] ";
 					Assembler.PopupException(msg);
 					return price;
-				case PriceLevelRoundingMode.RoundDown:
-					ret = (lowerLevel >= upperLevel) ? upperLevel : lowerLevel;
-					break;
-				case PriceLevelRoundingMode.RoundUp:
-					ret = (lowerLevel <= upperLevel) ? upperLevel : lowerLevel;
-					break;
-				case PriceLevelRoundingMode.SimulateMathRound:
-					if (double.IsNaN(priceReference) == false) {
-					    double distanceUp = Math.Abs(priceReference - upperLevel);
-					    double distanceDown = Math.Abs(priceReference - lowerLevel);
-					    ret = (distanceUp <= distanceDown) ? upperLevel : lowerLevel;
-					} else {
-					    double distanceUp = Math.Abs(price - upperLevel);
-					    double distanceDown = Math.Abs(price - lowerLevel);
-					    ret = (distanceUp <= distanceDown) ? upperLevel : lowerLevel;
-					}
-					break;
 				default:
 					throw new NotImplementedException("RoundAlertPriceToPriceLevel() for PriceLevelRoundingMode." + upOrDown);
 			}
-			ret = Math.Round(ret, this.DecimalsPrice);
+			#if DEBUG
+			string msg2 = "price[" + price.ToString("R") + "]=>aligned[" + ret.ToString("R") + "]";
+			#endif
 			return ret;
 		}
 		public double PriceRoundFractionsBeyondDecimals(double orderPrice) {

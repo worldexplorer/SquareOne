@@ -295,6 +295,8 @@ namespace Sq1.Widgets.SteppingSlider {
 //	filled:	24% / 100 = 0.24; 250px * 0.24 = 60px
 		protected override void OnMouseMove(MouseEventArgs e) {
 			base.OnMouseMove(e);
+			if (e.X > base.Width) return;
+
 			float range = (float) Math.Abs(this.ValueMax - this.ValueMin);
 			decimal mouseRange;
 			if (this.LeftToRight) {
@@ -302,7 +304,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				if (partFilled > 1) {
 					string msg = "PART_FILLED_MUST_BE_LESS_THAN_1=e.X[" + e.X + "]/base.Width[" + base.Width + "] MOUSE_MOVE_FROM_ANOTHER_CONTROL?";
 					#if DEBUG
-					//Debugger.Break();
+					Debugger.Break();
 					#endif
 					Assembler.PopupException(msg, null, false);
 					return;

@@ -41,8 +41,12 @@ namespace Sq1.Core.Execution {
 				dataSourceName = this.Bars.DataSource.Name;
 				return this.Bars.DataSource;
 			} }
-		[JsonProperty] public double PriceScript;				//doesn't contain Slippage
+		[JsonProperty] public double PriceScript { get; protected set; }				//doesn't contain Slippage
+		[JsonProperty] public double PriceScriptAligned { get; protected set; }
+		
 		[JsonProperty] public double PriceStopLimitActivation;
+		//[JsonProperty] public double PriceStopLimitActivationAligned { get; protected set; }
+		
 		[JsonProperty] public double Qty;
 		[JsonProperty] public MarketLimitStop MarketLimitStop;	//BROKER_PROVIDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
 		[JsonProperty] public MarketOrderAs MarketOrderAs;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
@@ -161,9 +165,16 @@ namespace Sq1.Core.Execution {
 				this.StrategyName = this.Strategy.Name;
 			}
 			
-			if (this.Strategy.Script != null) {
-				string msg = "Looks like a manual Order submitted from the Chart";
-				return;
+			//if (this.Strategy.Script != null) {
+			//    string msg = "Looks like a manual Order submitted from the Chart";
+			//    Assembler.PopupException(msg, null, false);
+			//}
+
+			if (this.Bars.SymbolInfo == null) {
+				string msg = "ATTACH_SYMBOL_INFO_TO_BARS__TO_CALCULATE_PRICE_SCRIPT_ALIGNED";
+				Assembler.PopupException(msg);
+			} else {
+				this.PriceScriptAligned = this.Bars.SymbolInfo.AlignAlertToPriceLevelSimplified(this.PriceScript, this.Direction, this.MarketLimitStop);
 			}
 		}
 		[JsonIgnore]	public double QtyFilledThroughPosition { get {
@@ -400,5 +411,6 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public BidOrAsk BidOrAskWillFillMe{ get {
 				return MarketConverter.BidOrAskWillFillAlert(this);
 			}}
+		
 	}
 }

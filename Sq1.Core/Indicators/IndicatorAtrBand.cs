@@ -27,7 +27,7 @@ namespace Sq1.Core.Indicators {
 			base.LineWidth = atr.LineWidth;
 			base.Decimals = 0;	// "156,752.66" is too long for TooltipPrice
 			this.atr = atr;
-			ParamMultiplier = new IndicatorParameter("Multiplier", 1, 0.1, 10, 0.1);
+			this.ParamMultiplier = new IndicatorParameter("Multiplier", 1, 0.1, 10, 0.1);
 		}
 		
 		public override string BacktestStartingPreCheckErrors() {
@@ -73,12 +73,12 @@ namespace Sq1.Core.Indicators {
 			double upper = lastClose + atrMultipliedAligned;
 			//this.bandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, lower, newStaticBar);
 			//this.bandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, upper, newStaticBar);
-			//v3
-			//double lowerAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(lower, PriceLevelRoundingMode.SimulateMathRound);
-			//double upperAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(upper, PriceLevelRoundingMode.SimulateMathRound);
+			//v3 BACK_FROM_V4_AFTER_SIMULATE_ROUND_WAS_FIXED
+			double lowerAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(lower, PriceLevelRoundingMode.SimulateMathRound);
+			double upperAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(upper, PriceLevelRoundingMode.SimulateMathRound);
 			//v4
-			double lowerAligned = Math.Round(lower, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
-			double upperAligned = Math.Round(upper, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
+			//double lowerAligned = Math.Round(lower, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
+			//double upperAligned = Math.Round(upper, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
 			
 			this.BandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, lowerAligned, newStaticBar);
 			this.BandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, upperAligned, newStaticBar);

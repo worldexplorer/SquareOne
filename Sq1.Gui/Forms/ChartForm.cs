@@ -76,6 +76,10 @@ namespace Sq1.Gui.Forms {
 		protected override string GetPersistString() {
 			string ret = "Chart:" + this.GetType().FullName + ",ChartSerno:" + this.ChartFormManager.DataSnapshot.ChartSerno;
 			if (this.ChartFormManager.Strategy != null) {
+				string strategyName = this.ChartFormManager.Strategy.Name;
+				strategyName.Replace(',', '_');
+				strategyName.Replace(':', '-');
+				ret += ",StrategyName:" + strategyName;
 				ret += ",StrategyGuid:" + this.ChartFormManager.Strategy.Guid;
 				if (this.ChartFormManager.Strategy.ScriptContextCurrent != null) {
 					ret += ",StrategyScriptContextName:" + this.ChartFormManager.Strategy.ScriptContextCurrent.Name;

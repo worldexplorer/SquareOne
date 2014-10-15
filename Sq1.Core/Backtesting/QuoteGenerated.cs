@@ -35,13 +35,14 @@ namespace Sq1.Core.Backtesting {
 			identicalButFresh.Source = this.Source;
 			identicalButFresh.ServerTime = this.ServerTime.AddMilliseconds(911);
 			identicalButFresh.LocalTimeCreatedMillis = this.LocalTimeCreatedMillis.AddMilliseconds(911);
-			//identicalButFresh.PriceLastDeal = this.PriceLastDeal;
+			identicalButFresh.LastDealBidOrAsk = this.LastDealBidOrAsk;
 			identicalButFresh.ItriggeredFillAtBidOrAsk = this.ItriggeredFillAtBidOrAsk;
 			identicalButFresh.Bid = this.Bid;
 			identicalButFresh.Ask = this.Ask;
 			identicalButFresh.Size = this.Size;
 			identicalButFresh.IntraBarSerno = this.IntraBarSerno + Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill;
-			identicalButFresh.ParentBarSimulated = this.ParentBarSimulated;
+			identicalButFresh.ParentBarSimulated = this.ParentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
+			identicalButFresh.ParentStreamingBar = this.ParentStreamingBar;	// this may fix it injected quotes don't seem to have ParentBarSimulated
 			return identicalButFresh;
 		}
 		public override string ToString() {
@@ -56,7 +57,7 @@ namespace Sq1.Core.Backtesting {
 		public string ToStringLong() {
 			string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol
 				+ " bid{" + Math.Round(this.Bid, 3) + "-" + Math.Round(this.Ask, 3) + "}ask"
-				+ " size{" + this.Size + "@" + Math.Round(this.PriceLastDeal, 3) + "}lastDeal";
+				+ " size{" + this.Size + "@" + Math.Round(this.LastDealPrice, 3) + "}lastDeal";
 			if (ServerTime != null) ret += " SERVER[" + ServerTime.ToString("HH:mm:ss.fff") + "]";
 			ret += "[" + LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]LOCAL";
 			if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;

@@ -81,8 +81,15 @@ namespace Sq1.Core.StrategyBase {
 			// if entry is triggered, call position.EnterFinalize(entryPrice, entrySlippage, entryCommission);
 			entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryAlert.PriceScript, true,
 				entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
-			entrySlippageOutNotUsed = 0;
+			
+			if (entryPriceOut != entryAlert.PriceScriptAligned) {
+				string msg = "FIX_Alert.PriceScriptAligned";
+				Debugger.Break();
+			} else {
+				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+			}
 
+			entrySlippageOutNotUsed = 0;
 			//Direction directionPositionClose = MarketConverter.ExitDirectionFromLongShort(alert.PositionLongShortFromDirection);
 			//double slippageLimit = this.executor.getSlippage(
 			//	alert.PriceScript, alert.Direction, 0, this.executor.IsStreaming, true);
@@ -185,7 +192,8 @@ namespace Sq1.Core.StrategyBase {
 			
 			if (quote.PriceBetweenBidAsk(entryPriceOut) == false) {
 				#if DEBUG
-				string msg = "I_DONT_UNDERSTAND_HOW_I_DIDNT_DROP_THIS_QUOTE_BEFORE_BUT_I_HAVE_TO_DROP_IT_NOW";
+				string msg = "I_DONT_UNDERSTAND_HOW_I_DIDNT_DROP_THIS_QUOTE_BEFORE_BUT_I_HAVE_TO_DROP_IT_NOW"
+					+ " MUST_BE_BETWEEN: [" + quote.Bid + "] < [" + entryPriceOut + "] < [" + quote.Ask + "]";
 				Debugger.Break();
 				#endif
 				return false;
@@ -198,8 +206,15 @@ namespace Sq1.Core.StrategyBase {
 			exitPriceOut = this.executor.AlignAlertPriceToPriceLevel(
 				exitAlert.Bars, exitAlert.PriceScript, false,
 				exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
+			
+			if (exitPriceOut != exitAlert.PriceScriptAligned) {
+				string msg = "FIX_Alert.PriceScriptAligned";
+				Debugger.Break();
+			} else {
+				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+			}
+			
 			exitSlippageOut = 0;
-
 			//double slippageLimit = this.executor.getSlippage(exitAlert.PriceScript
 			//	, exitAlert.Direction, 0, this.executor.IsStreaming, true);
 			//double slippageNonLimit = this.executor.getSlippage(exitAlert.PriceScript
@@ -248,9 +263,18 @@ namespace Sq1.Core.StrategyBase {
 						if (quote.ParentStreamingBar.ParentBarsIndex == 133) Debugger.Break();
 					}
 
+					// we aligned priceStopActivation before we stored it in exitAlert  
 					double priceStopActivationAligned = this.executor.AlignAlertPriceToPriceLevel(
 						exitAlert.Bars, exitAlert.PriceStopLimitActivation, false,
 						exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
+
+					if (priceStopActivationAligned != exitAlert.PriceStopLimitActivation) {
+						string msg = "FIX_Alert.PriceStopLimitActivation";
+						Debugger.Break();
+					} else {
+						string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+					}
+
 					switch (exitAlert.Direction) {
 						case Direction.Sell:
 							if (exitPriceOut < priceStopActivationAligned) {

@@ -107,8 +107,8 @@ namespace Sq1.Widgets.Exceptions {
 					string fileName = stackFrame.GetFileName();
 					string lineNumber = stackFrame.GetFileLineNumber().ToString();
 					ListViewItem item = new ListViewItem();
-					item.Text = declaringType;
-					item.SubItems.Add(methodName);
+					item.Text = methodName;
+					item.SubItems.Add(declaringType);
 					item.SubItems.Add(lineNumber);
 					item.SubItems.Add(fileName);
 					this.lvStackTrace.Items.Add(item);

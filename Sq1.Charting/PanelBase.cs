@@ -40,6 +40,7 @@ namespace Sq1.Charting {
 		// USE_CACHED_VARIABLE_INSTEAD [Browsable(false)] public virtual double VisibleRange { get { return this.VisibleMax - this.VisibleMin; } }
 		[Browsable(false)] public virtual double FirstNonNanBetweenLeftRight { get {
 				double ret = double.NaN;
+				if (this.VisibleBarRight_cached > this.ValueLastAvailableIndexMinusOneUnsafe) return ret;
 				for (int i=this.VisibleBarLeft_cached; i<this.VisibleBarRight_cached; i++) {
 					ret = this.ValueGetNaNunsafe(i);
 					if (double.IsNaN(ret)) continue;
@@ -60,6 +61,12 @@ namespace Sq1.Charting {
 		public virtual double ValueGetNaNunsafe(int barIndex) {
 			throw new NotImplementedException();
 		}
+		// REASON_TO_EXIST: for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
+		public virtual int Decimals { get { Debugger.Break(); throw new NotImplementedException(); } }
+		public string Format { get { return "N" + this.Decimals; } }
+		public virtual int ValueLastAvailableIndexMinusOneUnsafe { get {
+				throw new NotImplementedException();
+			} }
 		
 		#region Panel.Width and Panel.Height - dependant (cache and recalculate once per Resize/Paint))
 		[Browsable(false)]
@@ -240,6 +247,7 @@ namespace Sq1.Charting {
 			//		base.VisibleMinMinusTopSqueezer_cached, this.VisibleMaxPlusBottomSqueezer_cached, this.VisibleRangeWithTwoSqueezers_cached
 			// 2) paints Right and Bottom gutter foregrounds;
 
+			
 			string msig = " " + this.PanelName + ".PanelPrice,Volume.PaintWholeSurfaceBarsNotEmpty()";
 			this.VisibleMin_cached = this.VisibleMinDoubleMaxValueUnsafe;
 			this.VisibleMax_cached = this.VisibleMaxDoubleMinValueUnsafe;
@@ -318,7 +326,7 @@ namespace Sq1.Charting {
 			this.chartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
 			//if (this.ChartControl.BarsNotEmpty) {}
 			this.ChartControl.SyncHorizontalScrollToBarsCount();
-			this.ensureFontMetricsAreCalculated(e.Graphics);
+			
 			try {
 				this.ImPaintingBackgroundNow = true;
 				e.Graphics.Clear(this.ChartControl.ChartSettings.ChartColorBackground);
@@ -328,6 +336,12 @@ namespace Sq1.Charting {
 				if (this.VisibleBarRight_cached < 0) {
 					Debugger.Break();
 				}
+				if (this.VisibleBarRight_cached > this.ValueLastAvailableIndexMinusOneUnsafe) {
+					string msg = "used index instead of scanning for non-NaNs";
+					Debugger.Break();
+					return;
+				}
+
 				this.VisibleBarLeft_cached = this.ChartControl.VisibleBarLeft;
 				this.VisibleBarsCount_cached = this.VisibleBarRight_cached - this.VisibleBarLeft_cached;
 				if (this.VisibleBarsCount_cached <= 0) {
@@ -486,9 +500,6 @@ namespace Sq1.Charting {
 			return ret;
 		}
 
-		// REASON_TO_EXIST: for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
-		public virtual int Decimals { get { Debugger.Break(); throw new NotImplementedException(); } }
-		public string Format { get { return "N" + this.Decimals; } }
 		public string FormatValue(double value, bool shorten = false) {
 			if (shorten) {
 				double num = Math.Abs(value);

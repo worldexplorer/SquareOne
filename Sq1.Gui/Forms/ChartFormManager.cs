@@ -399,7 +399,7 @@ namespace Sq1.Gui.Forms {
 		public void InitializeChartNoStrategyAfterDeserialization(MainForm mainForm) {
 			this.InitializeChartNoStrategy(mainForm, null);
 		}
-		public void InitializeStrategyAfterDeserialization(MainForm mainForm, string strategyGuid) {
+		public void InitializeStrategyAfterDeserialization(MainForm mainForm, string strategyGuid, string strategyName = "PLEASE_SUPPLY_FOR_USERS_CONVENIENCE") {
 			this.StrategyFoundDuringDeserialization = false;
 			Strategy strategyFound = null;
 			if (String.IsNullOrEmpty(strategyGuid) == false) {
@@ -424,6 +424,10 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			if (this.Strategy.ScriptContextCurrent.BacktestOnRestart == false) {
+				// COPYFROM_StrategyCompileActivatePopulateSlidersShow()
+				if (this.Strategy.Script != null && this.Strategy.ActivatedFromDll) {
+					this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
+				}
 				return;
 			}
 
@@ -452,8 +456,9 @@ namespace Sq1.Gui.Forms {
 
 			//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
 			string msg2 = "DONT_UNCOMMENT_ITS_LIKE_METHOD_BUT_USED_IN_SLIDERS_AUTO_GROW_CONTROL_4_HOURS_DEBUGGING";
-			this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
-			// MOVED_TO_BacktesterRunSimulationTrampoline(), we definitely will be running it later due to BacktestOnRestart.true tested 20 lines above this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
+			// MOVED_TO_StrategyCompileActivatePopulateSlidersShow() this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
+
+			// MOVED_TO_StrategyCompileActivatePopulateSlidersShow(), we definitely will be running it later due to BacktestOnRestart.true tested 20 lines above this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
 			
 			this.Executor.BacktesterRunSimulationTrampoline(new Action(this.afterBacktesterCompleteOnceOnRestart), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
@@ -551,6 +556,7 @@ namespace Sq1.Gui.Forms {
 			if (this.Strategy.ActivatedFromDll == false) this.StrategyCompileActivateBeforeShow();
 			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
 				this.Strategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
+				this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
 			}
 			this.PopulateSliders();
 		}

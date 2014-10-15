@@ -46,7 +46,7 @@ namespace Sq1.Gui.Singletons {
 		}
 		public void PopulateFormTitle(Strategy strategy) {
 			if (strategy.ScriptContextCurrent == null) return;
-			base.Text = "[" + strategy.ScriptContextCurrent.Name + "] ScriptContext";
+			base.Text = "[" + strategy.ScriptContextCurrent.Name + "] [" + strategy.Name + "] ScriptContext";
 		}
 	}
 }

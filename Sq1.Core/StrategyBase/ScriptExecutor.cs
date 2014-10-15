@@ -873,6 +873,7 @@ namespace Sq1.Core.StrategyBase {
 				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true
 				this.Strategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
 			}
+			this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
 			
 			//inNewThread = false;
 			if (inNewThread) {

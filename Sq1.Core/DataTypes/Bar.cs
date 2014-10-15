@@ -324,7 +324,10 @@ namespace Sq1.Core.DataTypes {
 			//if (quoteClone.PriceLastDeal < this.Low) this.Low = quoteClone.PriceLastDeal;
 			if (quoteClone.Ask > this.High) this.High = quoteClone.Ask;
 			if (quoteClone.Bid < this.Low) this.Low = quoteClone.Bid;
-			this.Close = quoteClone.PriceLastDeal;
+			if (double.IsNaN(quoteClone.LastDealPrice)) {
+				Debugger.Break();
+			}
+			this.Close = quoteClone.LastDealPrice;
 			this.Volume += quoteClone.Size;
 		}
 		public override string ToString() {
@@ -398,7 +401,7 @@ namespace Sq1.Core.DataTypes {
 			if (entryFillPrice > this.High) return false;
 			return true;
 		}
-		public bool ContainsBidAskForQuoteGenerated(Quote quote) {
+		public bool ContainsBidAskForQuoteGenerated(Quote quote, bool feedingGarbageAndIknowItDontBreak = false) {
 			if (quote.Spread > this.HighLowDistance) {
 				Debugger.Break();
 				return false;
@@ -421,13 +424,19 @@ namespace Sq1.Core.DataTypes {
 			
 			//if (quote.Bid < this.Low) {
 			if (bidRounded < lowRounded) {
-				Debugger.Break();
+				// MOSTLY_FROM_SCANNING_UP_GenerateClosestQuoteForEachPendingAlertOnOurWayTo() 
+				if (feedingGarbageAndIknowItDontBreak == false) {
+					Debugger.Break();
+				}
 				return false;
 			}
 			// 81.41 > 81.41 ???? introducing Rounding
 			//if (quote.Ask > this.High) {
 			if (askRounded > highRounded) {
-				Debugger.Break();
+				// MOSTLY_FROM_SCANNING_UP_GenerateClosestQuoteForEachPendingAlertOnOurWayTo()
+				if (feedingGarbageAndIknowItDontBreak == false) {
+					Debugger.Break();
+				}
 				return false;
 			}
 			

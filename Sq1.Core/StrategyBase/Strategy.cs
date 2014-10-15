@@ -128,9 +128,13 @@ namespace Sq1.Core.StrategyBase {
 		public void DropChangedValueToScriptAndCurrentContextAndSerialize(ScriptParameter scriptParameter) {
 			int paramId = scriptParameter.Id;
 			double valueNew = scriptParameter.ValueCurrent;
-			// merge them to ONE !! I hate proxies and facades...
-			this.Script.ParametersById[paramId].ValueCurrent = valueNew;
-			//double valueOld = this.ScriptContextCurrent.ParameterValuesById[paramId];
+			if (scriptParameter != this.Script.ParametersById[paramId]) {
+				string msg = "merge them to ONE !! I hate proxies and facades...";
+				Debugger.Break();
+				this.Script.ParametersById[paramId].ValueCurrent = valueNew;
+			}
+			double valueOld = this.ScriptContextCurrent.ScriptParameterValuesById[paramId];
+			if (valueOld == valueNew) return;
 			this.ScriptContextCurrent.ScriptParameterValuesById[paramId] = valueNew;
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 		}

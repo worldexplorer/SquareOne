@@ -137,6 +137,12 @@ namespace Sq1.Charting {
 				ret = this.Indicator.OwnValuesCalculated.MaxValueBetweenIndexesDoubleMinValueUnsafe(base.VisibleBarLeft_cached, base.VisibleBarRight_cached);
 				return ret;
 			} }
+		
+		public override int ValueLastAvailableIndexMinusOneUnsafe { get {
+				if (this.Indicator == null) return -1; 
+				if (this.Indicator.OwnValuesCalculated == null) return -1; 
+				return this.Indicator.OwnValuesCalculated.Count - 1; 
+			} }
 		public override double ValueGetNaNunsafe(int barIndex) {
 			if (this.Indicator == null) return double.NaN; 
 			if (this.Indicator.OwnValuesCalculated == null) return double.NaN; 

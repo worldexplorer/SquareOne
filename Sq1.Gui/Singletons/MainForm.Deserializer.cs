@@ -106,7 +106,15 @@ namespace Sq1.Gui.Singletons {
 						chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization(this);
 						this.GuiDataSnapshot.AddChartFormsManagerJustDeserialized(chartFormsManagerDeserialized);
 					} else {
-						chartFormsManagerDeserialized.InitializeStrategyAfterDeserialization(this, strategyGuid);
+						string strategyName;
+						bool existsName = persistedParsedToHash.TryGetValue("StrategyName", out strategyName);
+						if (existsName == false) {
+							#if DEBUG
+							Debugger.Break();
+							#endif
+							strategyName = "STRATEGY_NAME_HAVENT_BEEN_SERIALIZED";
+						}
+						chartFormsManagerDeserialized.InitializeStrategyAfterDeserialization(this, strategyGuid, strategyName);
 						if (chartFormsManagerDeserialized.StrategyFoundDuringDeserialization) {
 							if (chartFormsManagerDeserialized.Strategy.ActivatedFromDll == false) {
 								chartFormsManagerDeserialized.StrategyCompileActivateBeforeShow();	// if it was streaming at exit, we should have it ready

@@ -76,7 +76,11 @@ namespace Sq1.Core.Streaming {
 		public double LastQuoteGetPriceForMarketOrder(string Symbol) {
 			Quote lastQuote = LastQuoteGetForSymbol(Symbol);
 			if (lastQuote == null) return 0;
-			return lastQuote.PriceLastDeal;
+			if (lastQuote.LastDealBidOrAsk == BidOrAsk.UNKNOWN) {
+				Debugger.Break();
+				return 0;
+			}
+			return lastQuote.LastDealPrice;
 		}
 
 		public virtual void UpdateLastBidAskSnapFromQuote(Quote quote) {

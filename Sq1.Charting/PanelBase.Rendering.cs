@@ -32,6 +32,8 @@ namespace Sq1.Charting {
 		// virtual will allow indicator panes to have their own backgrounds different to the price&volume backgrounds
 		protected virtual void GutterGridLinesRightBottomDrawForeground(Graphics g) {
 			string msig = " GutterGridLinesRightBottomDrawForeground()";
+
+			this.ensureFontMetricsAreCalculated(g);
 			
 			if (this.ChartControl.BarsEmpty) return;
 			if (this.VisibleMax_cached == 0) return;	//it's a cached version for once-per-render calculation

@@ -81,15 +81,15 @@ namespace Sq1.Core.StrategyBase {
 				return null;
 			}
 
+			MarketLimitStop simpleStopIfActivationZero = (proto.StopLossActivationNegativeOffset == 0) ? MarketLimitStop.Stop : MarketLimitStop.StopLimit;
+
 			if (proto.StopLossNegativeOffset == 0) {
-				string msg = this.ReasonWhyNewStopLossOffsetDoesntMakeSense(position, proto.StopLossNegativeOffset);
+				string msg = this.ReasonWhyNewStopLossOffsetDoesntMakeSense(position, proto.StopLossNegativeOffset, simpleStopIfActivationZero);
 				if (String.IsNullOrEmpty(msg) == false) {
 					string msg2 = "What should Activator do with sense-less proto.StopLossNegativeOffset[" + proto.StopLossNegativeOffset + "], ";
 					throw new Exception(msg2, new Exception(msg));
 				}
 			}
-
-			MarketLimitStop simpleStopIfActivationZero = (proto.StopLossActivationNegativeOffset == 0) ? MarketLimitStop.Stop : MarketLimitStop.StopLimit;
 
 			Alert alertStopLoss = executor.SellOrCoverAlertCreateDontRegisterInNew (
 				executor.Bars.BarStreaming,
@@ -324,7 +324,8 @@ namespace Sq1.Core.StrategyBase {
 			return msg;
 		}
 
-		public string ReasonWhyNewStopLossOffsetDoesntMakeSense(Position position, double newStopLossNegativeOffset, bool internalCallee = false) {
+		public string ReasonWhyNewStopLossOffsetDoesntMakeSense(Position position, double newStopLossNegativeOffset,
+				MarketLimitStop marketLimitStopPlanned = MarketLimitStop.Unknown, bool internalCallee = false) {
 			PositionPrototype proto = position.Prototype;
 			if (position.Symbol != proto.Symbol) {
 				string msg1 = "NotYetImplemented: your script changes StopLossOffset for a proto.Symbol[" + proto.Symbol + "]!=position.Symbol[" + position.Symbol + "]";
@@ -339,7 +340,8 @@ namespace Sq1.Core.StrategyBase {
 			string msg = "";
 			double priceBestBidAsk = executor.DataSource.StreamingProvider.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
 			double newStopLossPrice = proto.OffsetToPrice(newStopLossNegativeOffset);
-			switch (proto.StopLossAlertForAnnihilation.MarketLimitStop) {
+			//switch (proto.StopLossAlertForAnnihilation.MarketLimitStop) {
+			switch (marketLimitStopPlanned) {
 				#region StopLimits are considered NYI; mess v1 implementation
 				case MarketLimitStop.StopLimit:
 					double newActivationOffset = proto.CalcActivationOffsetForNewClosing(newStopLossNegativeOffset);

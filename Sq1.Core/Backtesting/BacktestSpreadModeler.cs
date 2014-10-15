@@ -40,6 +40,8 @@ namespace Sq1.Core.Backtesting {
 				//Assembler.PopupException(msg);
 				
 				double spreadAligned = this.GenerateFillBidAskSymmetrically(quote, priceFromAlignedBarForSymmetricFillAtOpenOrClose, barSimulated);
+				
+				// QUOTEGEN_PROBLEM#2 : at Open/Close, when they are == to Low/High, the Symmetrical quote will go beoynd bar boundaries => MarketSim will freak out
 				if (quote.Ask > barSimulated.High) {
 					double pushDown = quote.Ask - barSimulated.High;
 					double pushDownAligned = barSimulated.ParentBars.SymbolInfo.AlignToPriceLevel(pushDown, PriceLevelRoundingMode.SimulateMathRound);
@@ -143,18 +145,30 @@ namespace Sq1.Core.Backtesting {
 		protected SymbolInfo CheckThrowCanReachSymbolInfo(QuoteGenerated quote) {
 			if (quote == null) {
 				string msg = "REFUSE_TO_ALIGN: DONT_PASS_QUOTE_NULL";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (quote.ParentBarSimulated == null) {
 				string msg = "REFUSE_TO_ALIGN: quote.ParentBarSimulated=null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (quote.ParentBarSimulated.ParentBars == null) {
 				string msg = "REFUSE_TO_ALIGN: quote.ParentBarSimulated.ParentBars=null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (quote.ParentBarSimulated.ParentBars.SymbolInfo == null) {
 				string msg = "REFUSE_TO_ALIGN: quote.ParentBarSimulated.ParentBars.SymbolInfo=null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			SymbolInfo ret = quote.ParentBarSimulated.ParentBars.SymbolInfo;

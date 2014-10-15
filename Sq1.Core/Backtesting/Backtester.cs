@@ -96,6 +96,11 @@ namespace Sq1.Core.Backtesting {
 		}
 		public void SetRunningFalseNotifyWaitingThreadsBacktestCompleted() {
 			this.BacktestIsRunning.Reset();
+			//if (this.IsBacktestingNow) {
+			//	string msg = "IN_ORDER_TO_SIGNAL_FLAGGED_I_HAVE_TO_SET_INSTEAD_OF_RESET";
+			//	Debugger.Break();
+			//}
+
 			this.Executor.ChartShadow.BacktestIsRunning.Reset();
 			// Calling ManualResetEvent.Set opens the gate,
 			// allowing any number of threads calling WaitOne to be let through
@@ -217,6 +222,11 @@ namespace Sq1.Core.Backtesting {
 				this.BacktestAborted.Reset();
 				this.RequestingBacktestAbort.Reset();
 				this.BacktestIsRunning.Set();
+				//if (this.IsBacktestingNow == false) {
+				//	string msg = "IN_ORDER_TO_SIGNAL_UNFLAGGED_I_HAVE_TO_RESET_INSTEAD_OF_SET";
+				//	Debugger.Break();
+				//}
+
 				//COPIED_UPSTACK_FOR_BLOCKING_MOUSEMOVE_AFTER_BACKTEST_NOW_CLICK__BUT_ALSO_STAYS_HERE_FOR_SLIDER_CHANGE_NON_INVALIDATION
 				//WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
 				this.Executor.ChartShadow.BacktestIsRunning.Set();

@@ -13,8 +13,8 @@ namespace Sq1.Core.DataTypes {
 		public double Ask;
 		public double Size;
 		public BidOrAsk ItriggeredFillAtBidOrAsk;
-		//MADE_READONLY_COZ_WRITING_IS_A_WRONG_CONCEPT public double PriceLastDeal;	// apparently must be PriceLastDeal==Bid || PriceLastDeal==Ask
-		public double PriceLastDeal { get {
+		//WRITTEN_ONLY_BY_QUOTE_GENERATOR MADE_READONLY_COZ_WRITING_IS_A_WRONG_CONCEPT
+		/* must be PriceLastDeal==Bid || PriceLastDeal==Ask NOT_HALF public double PriceLastDeal { get {
 				if (this.ItriggeredFillAtBidOrAsk == BidOrAsk.UNKNOWN) {
 					//v1 return -1;
 					double median = (this.Ask + this.Bid) / 2;
@@ -24,7 +24,12 @@ namespace Sq1.Core.DataTypes {
 					return median;
 				}
 				return (this.ItriggeredFillAtBidOrAsk == BidOrAsk.Ask) ? this.Ask : this.Bid;
-			} }
+			} }*/
+		public BidOrAsk LastDealBidOrAsk;
+		public double LastDealPrice { get {
+			if (this.LastDealBidOrAsk == BidOrAsk.UNKNOWN) return double.NaN;
+			return (this.LastDealBidOrAsk == BidOrAsk.Bid) ? this.Bid : this.Ask;
+		} }
 
 
 		public int IntraBarSerno;
@@ -51,6 +56,7 @@ namespace Sq1.Core.DataTypes {
 			Ask = double.NaN;
 			Size = -1;
 			ItriggeredFillAtBidOrAsk = BidOrAsk.UNKNOWN;
+			LastDealBidOrAsk = BidOrAsk.UNKNOWN;
 		}
 		// TODO: don't be lazy and move to StreamingProvider.QuoteAbsnoForSymbol<string Symbol, int Absno> and init it on Backtester.RunSimulation
 		//public void AbsnoReset() { Quote.AbsnoStaticCounter = 0; }
@@ -85,7 +91,7 @@ namespace Sq1.Core.DataTypes {
 			string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol;
 			//ret += " bid{" + Math.Round(this.Bid, 3) + "-" + Math.Round(this.Ask, 3) + "}ask"
 			//ret += " size{" + this.Size + "@" + Math.Round(this.PriceLastDeal, 3) + "}lastDeal";
-			ret += " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "@" + this.PriceLastDeal + "}lastDeal";
+			ret += " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "@" + this.LastDealPrice + "}lastDeal";
 			if (ServerTime != null) ret += " SERVER[" + ServerTime.ToString("HH:mm:ss.fff") + "]";
 			ret += "[" + LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]LOCAL";
 			if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;

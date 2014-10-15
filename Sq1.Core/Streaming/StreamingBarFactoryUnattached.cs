@@ -20,9 +20,10 @@ namespace Sq1.Core.Streaming {
 			IntraBarSerno = 0;
 		}
 		public virtual Quote EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar(Quote quoteClone) {
-			if (quoteClone.PriceLastDeal == 0) {
-				string msg = "quote.PriceLastDeal[" + quoteClone.PriceLastDeal + "] == 0;"
+			if (quoteClone.LastDealBidOrAsk == BidOrAsk.UNKNOWN) {
+				string msg = "CANT_FILL_STREAMING_CLOSE_FROM_BID_OR_ASK_UNKNOWN quote.PriceLastDeal[" + quoteClone.LastDealPrice + "];"
 					+ "what kind of quote is that?... (" + quoteClone + ")";
+				Debugger.Break();
 				throw new Exception(msg);
 				//return;
 			}
@@ -42,7 +43,7 @@ namespace Sq1.Core.Streaming {
 
 			if (quoteClone.ServerTime >= this.StreamingBarUnattached.DateTimeNextBarOpenUnconditional) {
 				this.LastBarFormedUnattached = this.StreamingBarUnattached.Clone();	//beware! on very first quote LastBarFormed.DateTimeOpen == DateTime.MinValue
-				this.initStreamingBarResetIntraBarSerno(quoteClone.ServerTime, quoteClone.PriceLastDeal, quoteClone.Size);
+				this.initStreamingBarResetIntraBarSerno(quoteClone.ServerTime, quoteClone.LastDealPrice, quoteClone.Size);
 
 				// quoteClone.IntraBarSerno doesn't feel new Bar; can contain 100004 for generatedQuotes;
 				// I only want to reset to 0 when it's attributed to a new Bar; it's unlikely to face a new bar here for generatedQuotes;
