@@ -133,7 +133,8 @@ namespace Sq1.Core.DataTypes {
 		}
 		public string FormatPrice { get { return "N" + (this.DecimalsPrice + 1); } }
 		public string FormatVolume { get { return "N" + (this.DecimalsVolume + 1); } }
-		[Obsolete("used only in tidal calculations")]
+
+		[Obsolete("REMOVE_ONCE_NEW_ALIGNMENT_MATURES_DECEMBER_15TH_2014 used only in tidal calculations")]
 		public double AlignOrderToPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
 			bool entryNotExit = true;
 			PositionLongShort positionLongShortV1 = PositionLongShort.Long;
@@ -157,12 +158,11 @@ namespace Sq1.Core.DataTypes {
 				default:
 					throw new Exception("add new handler for new Direction[" + direction + "] besides {Buy,Sell,Cover,Short}");
 			}
-			PositionLongShort positionLongShort = MarketConverter.LongShortFromDirection(direction); 
+			PositionLongShort positionLongShort = MarketConverter.LongShortFromDirection(direction);
 			if (positionLongShortV1 != positionLongShort) {
 				string msg = "DEFINITELY_DIFFERENT_POSTPONE_TILL_ORDER_EXECUTOR_BACK_FOR_QUIK_BROKER";
 				//Debugger.Break();
 			}
-
 			return this.AlignAlertToPriceLevel(orderPrice, entryNotExit, positionLongShortV1, marketLimitStop);
 		}
 		public double AlignAlertToPriceLevel(double alertPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
@@ -184,16 +184,16 @@ namespace Sq1.Core.DataTypes {
 					}
 					break;
 				case MarketLimitStop.Market:
-					roundingMode = PriceLevelRoundingMode.SimulateMathRound;
+					roundingMode = PriceLevelRoundingMode.RoundToClosest;
 					break;
 				default:
-					roundingMode = PriceLevelRoundingMode.DontRound;
+					roundingMode = PriceLevelRoundingMode.DontRoundPrintLowerUpper;
 					break;
 			}
 			return this.AlignToPriceLevel(alertPrice, roundingMode);
 		}
 		public double AlignAlertToPriceLevelSimplified(double alertPrice, Direction direction, MarketLimitStop marketLimitStop) {
-			PriceLevelRoundingMode roundingMode = PriceLevelRoundingMode.DontRound;
+			PriceLevelRoundingMode roundingMode = PriceLevelRoundingMode.DontRoundPrintLowerUpper;
 			switch (marketLimitStop) {
 				case MarketLimitStop.Limit:
 					switch (direction) {
@@ -215,26 +215,34 @@ namespace Sq1.Core.DataTypes {
 					}
 					break;
 				case MarketLimitStop.Market:
-					roundingMode = PriceLevelRoundingMode.SimulateMathRound;
+					roundingMode = PriceLevelRoundingMode.RoundToClosest;
 					break;
 				default:
-					roundingMode = PriceLevelRoundingMode.DontRound;
+					roundingMode = PriceLevelRoundingMode.DontRoundPrintLowerUpper;
 					break;
 			}
 			return this.AlignToPriceLevel(alertPrice, roundingMode);
 		}
-		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.SimulateMathRound, double priceReference = double.NaN) {
+		
+		#if USE_CUSTOM_ROUNDING
+		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest, double priceReference = double.NaN) {
 			double ret = -1;
 			double lowerLevel = Math.Truncate(price / this.PriceMinimalStepFromDecimal);
 			lowerLevel *= this.PriceMinimalStepFromDecimal;
-			double upperLevel = (price == lowerLevel) ? lowerLevel : lowerLevel + this.PriceMinimalStepFromDecimal;
+			//double upperLevel = (price == lowerLevel) ? lowerLevel : lowerLevel + this.PriceMinimalStepFromDecimal;
+			if (price == lowerLevel) {
+				string msg = "ALREADY_ROUNDED_NO_REMAINDER_AFTER_DIVISION_TO_STEPS";
+				Debugger.Break();
+				return price;
+			}
+			double upperLevel = lowerLevel + this.PriceMinimalStepFromDecimal;
 			lowerLevel = Math.Round(lowerLevel, this.DecimalsPrice);	// getting rid of Double's compound rounding error
 			upperLevel = Math.Round(upperLevel, this.DecimalsPrice);	// getting rid of Double's compound rounding error
 
 			switch (upOrDown) {
 				case PriceLevelRoundingMode.RoundDown:		ret = lowerLevel;		break;
 				case PriceLevelRoundingMode.RoundUp:		ret = upperLevel;		break;
-				case PriceLevelRoundingMode.SimulateMathRound:
+				case PriceLevelRoundingMode.RoundToClosest:
 					double priceOrRef	= double.IsNaN(priceReference) ? price : priceReference;
 					double distanceUp	= Math.Abs(priceOrRef - upperLevel);
 					double distanceDown	= Math.Abs(priceOrRef - lowerLevel);
@@ -250,7 +258,7 @@ namespace Sq1.Core.DataTypes {
 					#endif
 
 					break;
-				case PriceLevelRoundingMode.DontRound:
+				case PriceLevelRoundingMode.DontRoundPrintLowerUpper:
 					string msg = "DontRound=>returning[" + price + "] lowerLevel[" + lowerLevel + "] upperLevel[" + upperLevel + "] ";
 					Assembler.PopupException(msg);
 					return price;
@@ -262,6 +270,27 @@ namespace Sq1.Core.DataTypes {
 			#endif
 			return ret;
 		}
+		#else
+		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
+			int integefier = (int)Math.Pow(10, this.DecimalsPrice);		// 10 ^ 2 = 100;
+			decimal ret = (decimal) price * integefier; 							// 90.145 => 9014.5
+			switch (upOrDown) {
+				case PriceLevelRoundingMode.RoundDown:		ret = Math.Floor(ret);		break;		// 9014.5 => 9014.0
+				case PriceLevelRoundingMode.RoundUp:		ret = Math.Ceiling(ret);	break;		// 9014.5 => 9015.0
+				case PriceLevelRoundingMode.RoundToClosest:	ret = Math.Round(ret);		break;		// 9014.5 => 9015.0
+				case PriceLevelRoundingMode.DontRoundPrintLowerUpper:
+					double lowerLevel = this.AlignToPriceLevel(price, PriceLevelRoundingMode.RoundDown);
+					double upperLevel = this.AlignToPriceLevel(price, PriceLevelRoundingMode.RoundUp);
+					string msg = "DontRound=>returning[" + price + "] RoundDown[" + lowerLevel + "] RoundUp[" + upperLevel + "] ";
+					Assembler.PopupException(msg);
+					return price;
+				default:
+					throw new NotImplementedException("RoundAlertPriceToPriceLevel() for PriceLevelRoundingMode." + upOrDown);
+			}
+			ret /= integefier;	// 9015.0 => 90.15
+			return (double)ret;
+		}
+		#endif
 		public double PriceRoundFractionsBeyondDecimals(double orderPrice) {
 			double decimalPointShifterBeforeRounding = Math.Pow(10, this.DecimalsPrice);		// 2 => 100
 			// assuming this.DecimalsPrice=2: orderPrice=156.633,27272 => 15.663.327,272 => 15.663.327 => 156.633,27[tailTruncated] 

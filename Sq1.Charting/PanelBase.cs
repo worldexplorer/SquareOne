@@ -58,6 +58,16 @@ namespace Sq1.Charting {
 				ret = this.ValueGetNaNunsafe(this.ChartControl.BarIndexMouseIsOverNow);
 				return ret;
 			} }
+		public virtual bool PanelHasValuesForVisibleBarWindow { get {
+				bool ret = false;
+				if (this.VisibleBarRight_cached == -1) {
+					string msg = "VISIBLE_RIGHT_MUST_BE_POSITIVE CHECK_UPSTACK_INVALID_STATE";
+					Debugger.Break();
+					return ret;
+				}
+				ret = this.VisibleBarRight_cached <= this.ValueLastAvailableIndexMinusOneUnsafe;
+				return ret;
+			} }
 		public virtual double ValueGetNaNunsafe(int barIndex) {
 			throw new NotImplementedException();
 		}
@@ -207,6 +217,12 @@ namespace Sq1.Charting {
 			try {
 				this.ImPaintingForegroundNow = true;
 				
+				if (this.PanelHasValuesForVisibleBarWindow == false) {
+					string msg = "PANEL_BASE_PAINT_ENTRY_POINT_PROTECTS_DERIVED_FROM_INVOKING_PaintWholeSurfaceBarsNotEmpty()";
+					Debugger.Break();	// moving beyond right bar makes all panels blank
+					return;
+				}
+				
 				this.PaintWholeSurfaceBarsNotEmpty(e.Graphics);	// GOOD: we get here once per panel
 				// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
 				this.RenderIndicators(e.Graphics); 
@@ -336,10 +352,14 @@ namespace Sq1.Charting {
 				if (this.VisibleBarRight_cached < 0) {
 					Debugger.Break();
 				}
+				//v1
 				if (this.VisibleBarRight_cached > this.ValueLastAvailableIndexMinusOneUnsafe) {
-					string msg = "used index instead of scanning for non-NaNs";
-					Debugger.Break();
 					return;
+				}
+				//v2
+				if (this.PanelHasValuesForVisibleBarWindow == false) {
+					//Debugger.Break();
+				    return;
 				}
 
 				this.VisibleBarLeft_cached = this.ChartControl.VisibleBarLeft;
@@ -368,6 +388,9 @@ namespace Sq1.Charting {
 
 		protected virtual void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
 			if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {
+				return;
+			}
+			if (this.PanelHasValuesForVisibleBarWindow == false) {
 				return;
 			}
 

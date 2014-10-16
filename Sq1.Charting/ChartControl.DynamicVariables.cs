@@ -69,10 +69,25 @@ namespace Sq1.Charting {
 
 			int ret = 0;
 			foreach (PanelBase panel in this.panels) {
+				if (panel.PanelHasValuesForVisibleBarWindow == false) continue;
 				double panelMax = panel.VisibleMaxDoubleMinValueUnsafe;
-				if (double.IsNaN(panelMax)) continue;
-				//if (double.IsPositiveInfinity(panelMax)) continue;
-				//if (double.IsNegativeInfinity(panelMax)) continue; 
+				
+				#if DEBUG
+				//REDUNDANT_ALREADY_CHECKED_2_LINES_ABOVE 
+				if (double.IsNaN(panelMax)) {
+					Debugger.Break();
+					continue;
+				}
+				if (double.IsPositiveInfinity(panelMax)) {
+					Debugger.Break();
+					continue;
+				}
+				if (double.IsNegativeInfinity(panelMax)) {
+					Debugger.Break();
+					continue;
+				}
+				#endif
+				
 				PanelIndicator panelIndicator = panel as PanelIndicator; 
 				if (panelIndicator != null && panelMax == double.MinValue) {
 					#if DEBUG

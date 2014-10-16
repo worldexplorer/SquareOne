@@ -22,7 +22,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			double spread = openOrClosePrice * this.PartOfPrice;
-			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.SimulateMathRound);	//changed to SimulateMathRound and checking below; RoundUp so I wont' get spread = 0
+			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to SimulateMathRound and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
 				string msg = "you can't use RoundDown here";
 				Debugger.Break();
@@ -46,7 +46,7 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 
-			this.AlignBidAskToPriceLevel(quote, PriceLevelRoundingMode.SimulateMathRound, spreadAligned);
+			this.AlignBidAskToPriceLevel(quote, PriceLevelRoundingMode.RoundToClosest, spreadAligned);
 			if (double.IsNaN(quote.Spread)) {
 				Debugger.Break();
 			}
@@ -66,7 +66,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			double spread = quote.Bid * this.PartOfPrice;
-			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.SimulateMathRound);	//changed to SimulateMathRound and checking below; RoundUp so I wont' get spread = 0
+			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to SimulateMathRound and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
 				string msg = "you can't use RoundDown here";
 				Debugger.Break();
@@ -89,7 +89,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			double spread = quote.Ask * this.PartOfPrice;
-			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.SimulateMathRound);	//changed to SimulateMathRound and checking below; RoundUp so I wont' get spread = 0
+			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to SimulateMathRound and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
 				string msg = "you can't use RoundDown here";
 				Debugger.Break();

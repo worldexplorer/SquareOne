@@ -121,11 +121,17 @@ namespace Sq1.Charting {
 		public override int PaddingVerticalSqueeze { get { return this.ChartControl.ChartSettings.SqueezeVerticalPaddingPx; } }
 		
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
-			if (this.VisibleMinDoubleMaxValueUnsafe == double.MaxValue) {
-				string msg = "this.VisibleBarLeft_cached > this.VisibleBarRight_cached";
+			//v1
+			//if (this.VisibleMinDoubleMaxValueUnsafe == double.MaxValue) {
+			//	string msg = "this.VisibleBarLeft_cached > this.VisibleBarRight_cached";
+			//	return;
+			//}
+			//v2
+			if (this.PanelHasValuesForVisibleBarWindow == false) {
+				Debugger.Break();
 				return;
 			}
-			
+
 			// 1) uses here-defined VisibleMinDoubleMaxValueUnsafe,VisibleMaxDoubleMinValueUnsafe to set:
 			//		base.VisibleMin,Max,Range_cached,
 			//		base.VisibleMinMinusTopSqueezer_cached, this.VisibleMaxPlusBottomSqueezer_cached, this.VisibleRangeWithTwoSqueezers_cached

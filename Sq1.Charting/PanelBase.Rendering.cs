@@ -12,7 +12,11 @@ namespace Sq1.Charting {
 		// virtual will allow indicator panes to have their own backgrounds different to the price&volume backgrounds
 		protected virtual void GutterRightBottomDrawBackground(Graphics g) {
 			if (this.GutterRightDraw) {
-				this.ChartControl.GutterRightWidth_cached = this.ChartControl.CalculateGutterWidthNecessaryToFitPriceVolumeLabels(g);
+				int catchingZero = this.ChartControl.CalculateGutterWidthNecessaryToFitPriceVolumeLabels(g);
+				if (catchingZero == 0) {
+					return;
+				}
+				this.ChartControl.GutterRightWidth_cached = catchingZero; 
 				Rectangle gutterRightRect = default(Rectangle);
 				gutterRightRect.X = this.PanelWidthMinusRightPriceGutter;
 				gutterRightRect.Width = this.ChartControl.GutterRightWidth_cached;

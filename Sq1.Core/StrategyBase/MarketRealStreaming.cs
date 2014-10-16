@@ -24,10 +24,21 @@ namespace Sq1.Core.StrategyBase {
 				priceScriptOrStreaming = this.getStreamingPriceForMarketOrder(entryMarketLimitStop, direction, out orderSpreadSide);
 			}
 
-			PositionLongShort longShortFromDirection = MarketConverter.LongShortFromDirection(direction);
 			// ALREADY_ALIGNED_AFTER GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming
-			double entryPriceScript = entryBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(
-				priceScriptOrStreaming, true, longShortFromDirection, entryMarketLimitStop);
+			//v2
+			double entryPriceScript = entryBar.ParentBars.SymbolInfo.AlignAlertToPriceLevelSimplified(priceScriptOrStreaming, direction, entryMarketLimitStop);
+
+			//#if DEBUG
+			////v1
+			//PositionLongShort longShortFromDirection = MarketConverter.LongShortFromDirection(direction);
+			//double entryPriceScript1 = entryBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(priceScriptOrStreaming, true, longShortFromDirection, entryMarketLimitStop);
+			//if (entryPriceScript1 != entryPriceScript) {
+			//    string msg = "FIX_Alert.entryPriceScript";
+			//    Debugger.Break();
+			//} else {
+			//    string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertToPriceLevel()";
+			//}
+			//#endif
 			
 
 			double shares = this.executor.PositionSizeCalculate(entryBar, entryPriceScript);
@@ -39,12 +50,14 @@ namespace Sq1.Core.StrategyBase {
 			alert.AbsorbFromExecutorAfterCreatedByMarketReal(executor);
 
 			
+			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 			if (entryPriceScript != alert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
 				Debugger.Break();
 			} else {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 			}
+			#endif
 
 
 
@@ -62,10 +75,22 @@ namespace Sq1.Core.StrategyBase {
 				priceScriptOrStreaming = this.getStreamingPriceForMarketOrder(exitMarketLimitStop, direction, out orderSpreadSide);
 			}
 
-			PositionLongShort longShortFromDirection = MarketConverter.LongShortFromDirection(direction);
-			double exitPriceScript = exitBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(
-				priceScriptOrStreaming, true, longShortFromDirection, exitMarketLimitStop);
+			//v2
+			double exitPriceScript = exitBar.ParentBars.SymbolInfo.AlignAlertToPriceLevelSimplified(priceScriptOrStreaming, direction, exitMarketLimitStop);
 
+			//#if DEBUG
+			////v1
+			//PositionLongShort longShortFromDirection = MarketConverter.LongShortFromDirection(direction);
+			//double exitPriceScript1 = exitBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(priceScriptOrStreaming, true, longShortFromDirection, exitMarketLimitStop);
+			//if (exitPriceScript1 != exitPriceScript) {
+			//    string msg = "FIX_Alert.entryPriceScript";
+			//    Debugger.Break();
+			//} else {
+			//    string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertToPriceLevel()";
+			//}
+			//#endif
+
+	
 			Alert alert = new Alert(exitBar, position.Shares, exitPriceScript, signalName,
 				direction, exitMarketLimitStop, orderSpreadSide,
 				//this.executor.Script,

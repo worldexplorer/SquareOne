@@ -287,19 +287,20 @@ namespace Sq1.Core.Backtesting {
 			ret.Size = alert.Qty;
 			ret.ParentBarSimulated = bar2simulate;
 
-			double priceScriptAligned = this.backtester.Executor.AlignAlertPriceToPriceLevel(alert.Bars, alert.PriceScript, true,
+			//v2
+			double priceScriptAligned = alert.PriceScriptAligned;
+
+			#if DEBUG
+			//v1
+			double priceScriptAligned1 = this.backtester.Executor.AlignAlertPriceToPriceLevel(alert.Bars, alert.PriceScript, true,
 				alert.PositionLongShortFromDirection, alert.MarketLimitStop);
-			
 			//quick check
-			if (priceScriptAligned != alert.PriceScript) {
+			if (priceScriptAligned1 != alert.PriceScript) {
 				if (alert.MarketLimitStop == MarketLimitStop.Market) {
 					string msg = "WHY_YOU_DID_CHANGE_THE_PRICE__PRICE_SCRIPT_MUST_BE_ALREADY_GOOD";
-					#if DEBUG
 					Debugger.Break();
-					#endif
 				}
 			}
-
 			//long check, switch marketSim calculations to alert.PriceScriptAligned 
 			if (priceScriptAligned != alert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
@@ -307,6 +308,7 @@ namespace Sq1.Core.Backtesting {
 			} else {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 			}
+			#endif
 
 
 			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.BacktestStreamingProvider.StreamingDataSnapshot

@@ -12,6 +12,11 @@ namespace Sq1.Charting {
 			base.MinimumSize = new Size(20, 15);	// only height matters for MultiSplitContainer
 		}
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
+			if (base.PanelHasValuesForVisibleBarWindow == false) {
+				Debugger.Break();
+				return;
+			}
+				
 			// 1) uses here-defined VisibleMinDoubleMaxValueUnsafe,VisibleMaxDoubleMinValueUnsafe to set:
 			//		base.VisibleMin,Max,Range_cached,
 			//		base.VisibleMinMinusTopSqueezer_cached, this.VisibleMaxPlusBottomSqueezer_cached, this.VisibleRangeWithTwoSqueezers_cached

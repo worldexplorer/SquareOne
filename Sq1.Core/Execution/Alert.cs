@@ -43,9 +43,26 @@ namespace Sq1.Core.Execution {
 			} }
 		[JsonProperty] public double PriceScript { get; protected set; }				//doesn't contain Slippage
 		[JsonProperty] public double PriceScriptAligned { get; protected set; }
-		
-		[JsonProperty] public double PriceStopLimitActivation;
-		//[JsonProperty] public double PriceStopLimitActivationAligned { get; protected set; }
+
+		double priceStopLimitActivation;
+		[JsonProperty] public double PriceStopLimitActivation {
+			get { return this.priceStopLimitActivation; }
+			set {
+				this.priceStopLimitActivation = value;
+				if (this.Bars == null) {
+					string msg = "DONT_FORGET_TO_GENERATE_PriceStopLimitActivationAligned_AFTER_JSON_DESERIALIZATION";
+					Assembler.PopupException(msg);
+					return;
+				}
+				if (this.Bars.SymbolInfo == null) {
+					string msg = "ATTACH_SYMBOL_INFO_TO_BARS__TO_CALCULATE_PRICE_SCRIPT_ALIGNED";
+					Assembler.PopupException(msg);
+					return;
+				}
+				this.PriceStopLimitActivationAligned = this.Bars.SymbolInfo.AlignAlertToPriceLevelSimplified(this.priceStopLimitActivation, this.Direction, this.MarketLimitStop);
+			}
+		}
+		[JsonProperty] public double PriceStopLimitActivationAligned { get; protected set; }
 		
 		[JsonProperty] public double Qty;
 		[JsonProperty] public MarketLimitStop MarketLimitStop;	//BROKER_PROVIDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }

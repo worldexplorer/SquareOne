@@ -232,7 +232,18 @@ namespace Sq1.Core.Streaming {
 				Debugger.Break();
 			}
 			symbolInfo = Assembler.InstanceInitialized.RepositoryCustomSymbolInfo.FindSymbolInfoOrNew(symbol);
-			price = symbolInfo.AlignOrderToPriceLevel(price, direction, MarketLimitStop.Market);
+			//v2
+			price = symbolInfo.AlignAlertToPriceLevelSimplified(price, direction, MarketLimitStop.Market);
+
+			//v1
+			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_DECEMBER_15TH_2014
+			double price1 = symbolInfo.AlignOrderToPriceLevel(price, direction, MarketLimitStop.Market);
+			if (price1 != price) {
+				string msg3 = "FIX_DEFINITELY_DIFFERENT_POSTPONE_TILL_ORDER_EXECUTOR_BACK_FOR_QUIK_BROKER";
+				Debugger.Break();
+			}
+			#endif
+			
 			return price;
 		}
 	}

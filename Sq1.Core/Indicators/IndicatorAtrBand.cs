@@ -74,8 +74,8 @@ namespace Sq1.Core.Indicators {
 			//this.bandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, lower, newStaticBar);
 			//this.bandUpper.AppendWithParentBar(newStaticBar.DateTimeOpen, upper, newStaticBar);
 			//v3 BACK_FROM_V4_AFTER_SIMULATE_ROUND_WAS_FIXED
-			double lowerAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(lower, PriceLevelRoundingMode.SimulateMathRound);
-			double upperAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(upper, PriceLevelRoundingMode.SimulateMathRound);
+			double lowerAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(lower, PriceLevelRoundingMode.RoundToClosest);
+			double upperAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(upper, PriceLevelRoundingMode.RoundToClosest);
 			//v4
 			//double lowerAligned = Math.Round(lower, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
 			//double upperAligned = Math.Round(upper, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);

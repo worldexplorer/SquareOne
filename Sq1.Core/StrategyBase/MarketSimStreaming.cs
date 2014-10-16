@@ -79,15 +79,20 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public bool CheckEntryAlertWillBeFilledByQuote(Alert entryAlert, Quote quote, out double entryPriceOut, out double entrySlippageOutNotUsed) {
 			// if entry is triggered, call position.EnterFinalize(entryPrice, entrySlippage, entryCommission);
+			//v2
+			entryPriceOut = entryAlert.PriceScriptAligned;
+
+			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
+			//v1
 			entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryAlert.PriceScript, true,
 				entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
-			
 			if (entryPriceOut != entryAlert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
 				Debugger.Break();
 			} else {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 			}
+			#endif
 
 			entrySlippageOutNotUsed = 0;
 			//Direction directionPositionClose = MarketConverter.ExitDirectionFromLongShort(alert.PositionLongShortFromDirection);
@@ -203,16 +208,21 @@ namespace Sq1.Core.StrategyBase {
 		public bool CheckExitAlertWillBeFilledByQuote(Alert exitAlert, Quote quote
 				, out double exitPriceOut, out double exitSlippageOut) {
 
+			//v2
+			exitPriceOut = exitAlert.PriceScriptAligned;
+
+			//v1
+			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 			exitPriceOut = this.executor.AlignAlertPriceToPriceLevel(
-				exitAlert.Bars, exitAlert.PriceScript, false,
-				exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
-			
+			    exitAlert.Bars, exitAlert.PriceScript, false,
+			    exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 			if (exitPriceOut != exitAlert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
 				Debugger.Break();
 			} else {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 			}
+			#endif
 			
 			exitSlippageOut = 0;
 			//double slippageLimit = this.executor.getSlippage(exitAlert.PriceScript
@@ -263,17 +273,22 @@ namespace Sq1.Core.StrategyBase {
 						if (quote.ParentStreamingBar.ParentBarsIndex == 133) Debugger.Break();
 					}
 
-					// we aligned priceStopActivation before we stored it in exitAlert  
-					double priceStopActivationAligned = this.executor.AlignAlertPriceToPriceLevel(
-						exitAlert.Bars, exitAlert.PriceStopLimitActivation, false,
-						exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
+					//v2
+					double priceStopActivationAligned = exitAlert.PriceStopLimitActivationAligned;
 
-					if (priceStopActivationAligned != exitAlert.PriceStopLimitActivation) {
-						string msg = "FIX_Alert.PriceStopLimitActivation";
-						Debugger.Break();
+					//v1
+					#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
+					// we aligned priceStopActivation before we stored it in exitAlert  
+					double priceStopActivationAligned1 = this.executor.AlignAlertPriceToPriceLevel(
+					    exitAlert.Bars, exitAlert.PriceStopLimitActivation, false,
+					    exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
+					if (priceStopActivationAligned1 != exitAlert.PriceStopLimitActivationAligned) {
+					    string msg = "FIX_Alert.PriceStopLimitActivation";
+					    Debugger.Break();
 					} else {
-						string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+					    string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 					}
+					#endif
 
 					switch (exitAlert.Direction) {
 						case Direction.Sell:
