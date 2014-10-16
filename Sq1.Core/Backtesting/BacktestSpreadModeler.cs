@@ -104,10 +104,11 @@ namespace Sq1.Core.Backtesting {
 			if (spreadAlignedToMaintain != -1) {
 				double spreadAligned = spreadAlignedToMaintain;
 				// DONT_ROUND_UP_ALREADY_ALIGNED_UPSTACK
-				spreadAligned = symbolInfo.AlignToPriceLevel(spreadAlignedToMaintain, PriceLevelRoundingMode.RoundToClosest);	//changed to SimulateMathRound and checking below; RoundUp so I wont' get spread = 0
+				spreadAligned = symbolInfo.AlignToPriceLevel(spreadAlignedToMaintain, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 				if (spreadAligned == 0) {
-					string msg = "you can't use RoundDown here";
-					Debugger.Break();
+					//string msg = "you can't use RoundDown here";
+					//Debugger.Break();
+					spreadAligned = symbolInfo.PriceMinimalStepFromDecimal;
 				}
 				if (quote.SpreadAligned < spreadAligned) {
 					switch(upOrDown) {

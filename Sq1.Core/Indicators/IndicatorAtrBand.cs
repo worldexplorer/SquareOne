@@ -68,7 +68,7 @@ namespace Sq1.Core.Indicators {
 			//this.bandLower.Append(newStaticBar.DateTimeOpen, lastClose - atrMultiplied);
 			//this.bandUpper.Append(newStaticBar.DateTimeOpen, lastClose + atrMultiplied);
 			//v2
-			double atrMultipliedAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(atrMultiplied, PriceLevelRoundingMode.RoundUp);
+			double atrMultipliedAligned = newStaticBar.ParentBars.SymbolInfo.AlignToPriceLevel(atrMultiplied, PriceLevelRoundingMode.RoundToClosest);
 			double lower = lastClose - atrMultipliedAligned;
 			double upper = lastClose + atrMultipliedAligned;
 			//this.bandLower.AppendWithParentBar(newStaticBar.DateTimeOpen, lower, newStaticBar);

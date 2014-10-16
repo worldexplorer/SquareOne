@@ -74,7 +74,7 @@ namespace Sq1.Charting {
 		[JsonProperty]	public int		AlertPendingEllipseWidth { get; set; }
 		[JsonProperty]	public bool		MousePositionTrackOnGutters { get; set; }
 		[JsonProperty]	public Color	MousePositionTrackOnGuttersColor { get; set; }
-		[JsonProperty]	public int		BarsBackgroundTransparencyAlfa { get; set; }
+		[JsonProperty]	public int		BarsBackgroundTransparencyAlpha { get; set; }
 		[JsonProperty]	public int		ChartLabelsUpperLeftYstartTopmost { get; set; }
 		[JsonProperty]	public int		ChartLabelsUpperLeftX { get; set; }
 		[JsonProperty]	public int		ChartLabelsUpperLeftPlatePadding { get; set; }
@@ -348,7 +348,7 @@ namespace Sq1.Charting {
 			AlertPendingEllipseWidth = 1;
 			MousePositionTrackOnGutters = true;
 			MousePositionTrackOnGuttersColor = Color.LightGray;
-			BarsBackgroundTransparencyAlfa = 128;
+			BarsBackgroundTransparencyAlpha = 128;
 			ChartLabelsUpperLeftYstartTopmost = 18;
 			ChartLabelsUpperLeftX = 5;
 			ChartLabelsUpperLeftPlatePadding = 1;

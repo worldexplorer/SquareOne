@@ -8,7 +8,7 @@ namespace Sq1.Core.Execution {
 		public readonly string Symbol;
 		public readonly PositionLongShort LongShort;
 		public double PriceEntry { get; protected set; }
-		public double StopLossNegativeOffset { get; protected set; }
+		public double StopLossNegativeOffset;	// { get; protected set; }
 		public double StopLossActivationNegativeOffset { get; protected set; }
 		public double TakeProfitPositiveOffset { get; protected set; }
 		public double PriceStopLossActivation { get { return this.OffsetToPrice(this.StopLossActivationNegativeOffset); } }
@@ -148,6 +148,10 @@ namespace Sq1.Core.Execution {
 			msg.Append("]SLA[");
 			msg.Append(this.StopLossActivationNegativeOffset + "]");
 			return msg.ToString();
+		}
+
+		public void PriceEntryAbsorb(double priceEntryAlertFilled) {
+			this.PriceEntry = priceEntryAlertFilled;
 		}
 	}
 }

@@ -263,7 +263,7 @@ namespace Sq1.Charting {
 			OnChartBarAnnotation barAnnotation = null;
 			try {
 				if (colorBackground != Color.Empty) {
-					colorBackground = Color.FromArgb(this.ChartSettings.BarsBackgroundTransparencyAlfa, colorBackground);
+					colorBackground = Color.FromArgb(this.ChartSettings.BarsBackgroundTransparencyAlpha, colorBackground);
 				}
 				barAnnotation = this.ScriptExecutorObjects.BarAnnotationAddOrModify(
 					barIndex, barAnnotationId, barAnnotationText,

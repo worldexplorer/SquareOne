@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
+using System.Diagnostics;
 
 namespace Sq1.Core.Execution {
 	public partial class Position {
@@ -160,9 +161,15 @@ namespace Sq1.Core.Execution {
 			} }
 		protected void checkThrowPrototypeNotNullAndIsExitFilled() {
 			if (this.Prototype == null) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception("this.Prototype=null, check IsPrototypeNull first");
 			}
 			if (this.IsExitFilled == false) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception("position isn't closed yet, ExitFilled=false");
 			}
 		}
@@ -180,6 +187,9 @@ namespace Sq1.Core.Execution {
 				if (this.IsExitFilledByPrototypedTakeProfit) return this.Prototype.StopLossAlertForAnnihilation;
 				if (this.IsExitFilledByPrototypedStopLoss) return this.Prototype.TakeProfitAlertForAnnihilation;
 				string msg = "Prototyped position closed by some prototype-unrelated alert[" + this.ExitAlert + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			} }
 		public Position() {
@@ -220,18 +230,27 @@ namespace Sq1.Core.Execution {
 			if (this.Prototype == null) {
 				if (this.ExitAlert != null) {
 					string msg = "POSITION_WAS_ALREADY_ATTCHED_TO_EXIT_ALERT ExitAlert[" + this.ExitAlert + "] ";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 				if (this.ExitMarketLimitStop != MarketLimitStop.Unknown) {
-					string msg = "POSITION_WAS_ALREADY_SYNCHED_WITH_FILLED_ALERT_ON_ALERT_FILLED_CALLBACK: ExitPriceScript[" + this.ExitPriceScript + "]";
+					string msg = "POSITION_WAS_ALREADY_SYNCHED_WITH_FILLED_ALERT_ON_ALERT_FILLED_CALLBACK: ExitPriceScript["
+						+ this.ExitPriceScript + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 			} else {
 				if (this.ExitAlert != null) {
 					if (alertExit.IsFilled == false) {
-						string msg = "REPLACING_FIRST_CREATED_STOPLOSS_WITH_SECOND_CREATED_TAKEPROFIT ExitAlert[" + this.ExitAlert.SignalName + "] shouldBeTakeprofit[" + alertExit.SignalName + "]";
+						string msg = "REPLACING_FIRST_CREATED_STOPLOSS_WITH_SECOND_CREATED_TAKEPROFIT ExitAlert[" 
+							+ this.ExitAlert.SignalName + "] shouldBeTakeprofit[" + alertExit.SignalName + "]";
 					} else {
-						string msg = "REPLACING_EXIT_ALERT_WITH_PROTOTYPED_TP_OR_SL_WHICHEVER_FILLED_FIRST ExitAlert[" + this.ExitAlert + "] filledFirst[" + alertExit + "]";
+						string msg = "REPLACING_EXIT_ALERT_WITH_PROTOTYPED_TP_OR_SL_WHICHEVER_FILLED_FIRST ExitAlert["
+							+ this.ExitAlert + "] filledFirst[" + alertExit + "]";
 					}
 				}
 			}
@@ -250,21 +269,37 @@ namespace Sq1.Core.Execution {
 			//	throw new Exception(msg + msig);
 			//}
 			if (entryBar.Volume < entryFillQty) {
-				string msg = "VOLUME_FILLED_POSITION_ENTRY_NEVER_TRADED_DURING_THE_ENTRYBAR entryFilledQty[" + entryFillQty + "] entryBar.Volume[" + entryBar.Volume + "]";
+				string msg = "VOLUME_FILLED_POSITION_ENTRY_NEVER_TRADED_DURING_THE_ENTRYBAR entryFilledQty["
+					+ entryFillQty + "] entryBar.Volume[" + entryBar.Volume + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
 			if (this.EntryFilledBarIndex != -1) {
 				string msg = "PositionEntry was already filled earlier @EntryBar[" + this.EntryFilledBarIndex + "]"
-						+ ", you can't override it with [" + entryBar + "]; alertOpenedThisPosition[" + alertOpenedThisPosition + "]";
+						+ ", you can't override it with [" + entryBar + "]; alertOpenedThisPosition["
+						+ alertOpenedThisPosition + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
 			this.EntryFilledBarIndex = entryBar.ParentBarsIndex;
 			if (this.EntryBar == null) {
-				string msg = "BARINDEX_FILLED_POSITION_ENTRY_DOESNT_BELONG_TO_ITS_OWN_PARENT_CHECK_Position.EntryBar_PROPERTY entryBar[" + entryBar + "] this.Bars[" + this.Bars + "]";
+				string msg = "BARINDEX_FILLED_POSITION_ENTRY_DOESNT_BELONG_TO_ITS_OWN_PARENT_CHECK_Position.EntryBar_PROPERTY entryBar["
+					+ entryBar + "] this.Bars[" + this.Bars + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
 			if (entryBar.Open != this.EntryBar.Open) {
-				string msg = "BAR_FILLED_POSITION_ENTRY_DOESNT_HAVE_SAME_OPEN_CHECK_Position.EntryBar_PROPERTY entryBar.Open[" + entryBar.Open + "] this.Bars[" + this.EntryFilledBarIndex + "].Open[" + entryBar.Open + "]";
+				string msg = "BAR_FILLED_POSITION_ENTRY_DOESNT_HAVE_SAME_OPEN_CHECK_Position.EntryBar_PROPERTY entryBar.Open["
+					+ entryBar.Open + "] this.Bars[" + this.EntryFilledBarIndex + "].Open[" + entryBar.Open + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
 			this.EntryFilledPrice = entryFillPrice;
@@ -281,34 +316,60 @@ namespace Sq1.Core.Execution {
 			//	throw new Exception(msg + msig);
 			//}
 			if (exitBar.Volume < exitFillQty) {
-				string msg = "VOLUME_FILLED_POSITION_EXIT_NEVER_TRADED_DURING_THE_EXITBAR exitFilledQty[" + exitFillQty + "] exitBar.Volume[" + exitBar.Volume + "]";
+				string msg = "VOLUME_FILLED_POSITION_EXIT_NEVER_TRADED_DURING_THE_EXITBAR exitFilledQty["
+					+ exitFillQty + "] exitBar.Volume[" + exitBar.Volume + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
 			if (this.EntryFilledBarIndex == -1) {
 				string msg = "ATTEMPT_TO_CLOSE_NON_OPENED_POSITION this.EntryBarIndex=-1 " + this;
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
 			if (this.EntryFilledBarIndex > exitBar.ParentBarsIndex) {
-				string msg = "ATTEMPT_TO_CLOSE_POSITION_AT_BAR_EARLIER_THAN_POSITION_WAS_OPENED this.EntryBarIndex[" + this.EntryFilledBarIndex + "] > exitBar.ParentBarsIndex[" + exitBar.ParentBarsIndex + "]";
+				string msg = "ATTEMPT_TO_CLOSE_POSITION_AT_BAR_EARLIER_THAN_POSITION_WAS_OPENED this.EntryBarIndex["
+					+ this.EntryFilledBarIndex + "] > exitBar.ParentBarsIndex[" + exitBar.ParentBarsIndex + "]";
+				#if DEBUG
+				//I_FORGIVE_YOU_WERE_IGNORANT_closePositionsLeftOpenAfterBacktest  Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
 			if (this.ExitFilledBarIndex != -1) {
 				string alertClosedThisPosition = (this.ExitAlert == null) ? "NO_EXIT_ALERT" : this.ExitAlert.ToString();
 				string msg = "PositionExit was already filled earlier @ExitBar[" + this.ExitFilledBarIndex + "]"
 						+ ", you can't override it with [" + exitBar + "]; alertClosedThisPosition[" + alertClosedThisPosition + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			this.ExitFilledBarIndex = exitBar.ParentBarsIndex;
 			if (this.ExitBar == null) {
-				string msg = "BARINDEX_FILLED_POSITION_EXIT_DOESNT_BELONG_TO_ITS_OWN_PARENT_BARS_CHECK_Position.EntryBar_PROPERTY exitBar[" + exitBar + "] this.Bars[" + this.Bars + "]";
+				string msg = "BARINDEX_FILLED_POSITION_EXIT_DOESNT_BELONG_TO_ITS_OWN_PARENT_BARS_CHECK_Position.EntryBar_PROPERTY exitBar["
+					+ exitBar + "] this.Bars[" + this.Bars + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
 			if (exitBar.Open != this.ExitBar.Open) {
-				string msg = "BAR_FILLED_POSITION_EXIT_DOESNT_HAVE_SAME_OPEN_CHECK_Position.EntryBar_PROPERTY exitBar.Open[" + exitBar.Open + "] this.Bars[" + this.ExitFilledBarIndex + "].Open[" + exitBar.Open + "]";
+				string msg = "BAR_FILLED_POSITION_EXIT_DOESNT_HAVE_SAME_OPEN_CHECK_Position.EntryBar_PROPERTY exitBar.Open["
+					+ exitBar.Open + "] this.Bars[" + this.ExitFilledBarIndex + "].Open[" + exitBar.Open + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
 			if (exitBar.ParentBars != this.EntryBar.ParentBars) {
-				string msg = "PARENTS_OF_BAR_FILLED_POSITION_EXIT_MUST_BE_SAME_AS_ENTRY_BAR_PARENTS exitBar.ParentBars[" + exitBar.ParentBars + "] != this.EntryBar.ParentBars[" + this.EntryBar.ParentBars + "]";
+				string msg = "PARENTS_OF_BAR_FILLED_POSITION_EXIT_MUST_BE_SAME_AS_ENTRY_BAR_PARENTS exitBar.ParentBars["
+					+ exitBar.ParentBars + "] != this.EntryBar.ParentBars[" + this.EntryBar.ParentBars + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg + msig);
 			}
 			this.ExitFilledPrice = exitFillPrice;

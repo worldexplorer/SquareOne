@@ -62,12 +62,18 @@ namespace Sq1.Core.Backtesting {
 					break;
 				default:
 					string msg = "NYI: [" + this.Executor.Strategy.Script.BacktestMode + "]RunSimulation";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 			}
 		}
 		public void RunSimulation() {
 			if (this.QuotesGenerator == null) {
 				string msg = "backtestQuotesGenerator is not chosen / instantiated";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 				//this.Initialize(BacktestMode.FourStrokeOHLC);
 			}
@@ -166,25 +172,57 @@ namespace Sq1.Core.Backtesting {
 			List<Alert> alertsPending = new List<Alert>(this.Executor.ExecutionDataSnapshot.AlertsPending);
 			foreach (Alert alertPending in alertsPending) {
 				try {
-					if (alertPending.IsEntryAlert) {
-						this.Executor.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
-					} else {
-						string msg = "checkPositionCanBeClosed() will later interrupt the flow saying {Sorry I don't serve alerts.IsExitAlert=true}";
-						this.Executor.RemovePendingExitAlertPastDueClosePosition(alertPending);
-					}
-					bool removed = this.Executor.ExecutionDataSnapshot.AlertsPendingRemove(alertPending);
+					//if (alertPending.IsEntryAlert) {
+					//    this.Executor.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
+					//} else {
+					//    string msg = "checkPositionCanBeClosed() will later interrupt the flow saying {Sorry I don't serve alerts.IsExitAlert=true}";
+					//    this.Executor.RemovePendingExitAlertPastDueClosePosition(alertPending);
+					//}
+					//bool removed = this.Executor.ExecutionDataSnapshot.AlertsPendingRemove(alertPending);
+					this.Executor.AlertKillPending(alertPending);
 				} catch (Exception e) {
 					string msg = "NOT_AN_ERROR BACKTEST_POSITION_FINALIZER: check innerException: most likely you got POSITION_ALREADY_CLOSED on counterparty alert's force-close?";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					this.Executor.PopupException(msg, e);
 				}
 			}
 			if (this.Executor.ExecutionDataSnapshot.AlertsPending.Count > 0) {
-				string msg = "snap.AlertsPending.Count[" + this.Executor.ExecutionDataSnapshot.AlertsPending.Count + "] should be ZERO before we enter Streaming";
+				string msg = "KILLING_LEFTOVER_ALERTS_DIDNT_WORK_OUT snap.AlertsPending.Count["
+					+ this.Executor.ExecutionDataSnapshot.AlertsPending.Count + "] should be ZERO";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
+
+			foreach (Position positionOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNowSafeCopy) {
+				//v1
+				//List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionCloseImmediately(positionOpen, );
+				//v2
+				//this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStaticLastNullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				// BETTER WOULD BE KILL PREVIOUS PENDING ALERT FROM A CALBACK AFTER MARKET EXIT ORDER GETS FILLED, IT'S UNRELIABLE EXIT IF WE KILL IT HERE
+				// LOOK AT EMERGENCY CLASSES, SOLUTION MIGHT BE THERE ALREADY
+				//List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionKillExitAlert(positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				//v3
+				//this.Executor.ExecutionDataSnapshot.MovePositionOpenToClosed(positionOpen);
+				//v4
+				if (positionOpen.ExitAlert == null) continue;
+				try {
+					this.Executor.RemovePendingExitAlertPastDueClosePosition(positionOpen.ExitAlert);
+				} catch (Exception ex) {
+					Assembler.PopupException("closePositionsLeftOpenAfterBacktest()", ex, false);
+				}
+			}
 			if (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0) {
-				string msg = "snap.PositionsOpenNow.Count[" + this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count + "] should be ZERO before we enter Streaming";
-				throw new Exception(msg);
+				string msg = "CLOSING_LEFTOVER_POSITIONS_DIDNT_WORK_OUT snap.PositionsOpenNow.Count["
+					+ this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count + "]";
+				//#if DEBUG
+				//Debugger.Break();
+				//#endif
+				//throw new Exception(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 		}		
 		void simulationPreBarsSubstitute() {
@@ -245,6 +283,9 @@ namespace Sq1.Core.Backtesting {
 				this.Executor.BacktestContextRestore();
 				this.Executor.EventGenerator.RaiseBacktesterSimulatedAllBarsStep4of4();
 			} catch (Exception e) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw e;
 			} finally {
 				// Calling ManualResetEvent.Set opens the gate,

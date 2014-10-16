@@ -218,8 +218,9 @@ namespace Sq1.Charting {
 				this.ImPaintingForegroundNow = true;
 				
 				if (this.PanelHasValuesForVisibleBarWindow == false) {
-					string msg = "PANEL_BASE_PAINT_ENTRY_POINT_PROTECTS_DERIVED_FROM_INVOKING_PaintWholeSurfaceBarsNotEmpty()";
-					Debugger.Break();	// moving beyond right bar makes all panels blank
+					string msg = "PANEL_BASE_PAINT_ENTRY_POINT_PROTECTS_DERIVED_FROM_INVOKING_PaintWholeSurfaceBarsNotEmpty()"
+						+ " occurs for JSON-Scripted Strategies with PanelIndicator* open without indicator's data";
+					//Debugger.Break();	// moving beyond right bar makes all panels blank
 					return;
 				}
 				
@@ -349,6 +350,9 @@ namespace Sq1.Charting {
 				// TODO: we get here 4 times per Panel: DockContentHandler.SetVisible, set_FlagClipWindow, WndProc * 2
 				
 				this.VisibleBarRight_cached = this.ChartControl.VisibleBarRight;
+				if (this.VisibleBarRight_cached == 0) {
+					return;
+				}
 				if (this.VisibleBarRight_cached < 0) {
 					Debugger.Break();
 				}

@@ -48,6 +48,9 @@ namespace Sq1.Core.StrategyBase {
 		public PositionSize PositionSize { get {
 				if (this.Strategy == null) {
 					string msg = "ScriptExecutor.PositionSize: you should not access PositionSize before you've set Strategy";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 				return this.Strategy.ScriptContextCurrent.PositionSize;
@@ -55,6 +58,9 @@ namespace Sq1.Core.StrategyBase {
 		public DataSource DataSource { get {
 				if (this.Bars == null) {
 					string msg = "ScriptExecutor.DataSource: you should not access DataSource BEFORE you've set ScriptExecutor.Bars";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 				return this.Bars.DataSource;
@@ -240,9 +246,15 @@ namespace Sq1.Core.StrategyBase {
 		public void CheckThrowAlertCanBeCreated(Bar entryBar, string msig) {
 			string invoker = (new StackFrame(3, true).GetMethod().Name) + "(): ";
 			if (this.Bars == null) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msig + " this.Bars=[null] " + invoker);
 			}
 			if (entryBar == null) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msig + " for Bars=[" + this.Bars + "]" + invoker);
 			}
 		}
@@ -289,7 +301,12 @@ namespace Sq1.Core.StrategyBase {
 		                                            Direction direction, MarketLimitStop exitMarketLimitStop, bool registerInNewAfterExec = true) {
 
 			this.CheckThrowAlertCanBeCreated(exitBar, "BARS.BARSTREAMING_OR_BARS.BARLASTSTATIC_IS_NULL_SellOrCoverAlertCreateRegister() ");
-			if (position == null) throw new Exception("POSITION_CAN_NOT_BE_NULL_SellOrCoverAlertCreateRegister()");
+			if (position == null) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception("POSITION_CAN_NOT_BE_NULL_SellOrCoverAlertCreateRegister()");
+			}
 
 			Alert alert = null;
 			if (position.Prototype != null) {
@@ -344,6 +361,9 @@ namespace Sq1.Core.StrategyBase {
 		public bool AnnihilateCounterpartyAlertDispatched(Alert alert) {
 			if (alert == null) {
 				string msg = "don't invoke KillAlert with alert=null; check for TP=0 or SL=0 prior to invocation";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			bool killed = false;
@@ -472,15 +492,24 @@ namespace Sq1.Core.StrategyBase {
 			}
 			if (priceFill == -1) {
 				string msg = "won't set priceFill=-1 for alert [" + alertFilled + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (alertFilled.PositionAffected == null) {
 				string msg = "CallbackAlertFilled can't do its job: alert.PositionAffected=null for alert [" + alertFilled + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (alertFilled.IsEntryAlert) {
 				if (alertFilled.PositionAffected.EntryFilledBarIndex != -1) {
 					string msg = "DUPE: CallbackAlertFilled can't do its job: alert.PositionAffected.EntryBar!=-1 for alert [" + alertFilled + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				} else {
 					string msg = "initializing EntryBar=[" + barFill + "] on AlertFilled";
@@ -488,6 +517,9 @@ namespace Sq1.Core.StrategyBase {
 			} else {
 				if (alertFilled.PositionAffected.ExitFilledBarIndex != -1) {
 					string msg = "DUPE: CallbackAlertFilled can't do its job: alert.PositionAffected.ExitBar!=-1 for alert [" + alertFilled + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 					return;
 				} else {
@@ -569,6 +601,9 @@ namespace Sq1.Core.StrategyBase {
 				if (alertFilled.IsExitAlert) {
 					if (alertsNewAfterAlertFilled.Count > 0) {
 						string msg = "NONSENSE@Exit: there must be no alerts (got " + alertsNewAfterAlertFilled.Count + "): killer works silently";
+						#if DEBUG
+						Debugger.Break();
+						#endif
 						throw new Exception(msg);
 					}
 				}
@@ -685,6 +720,9 @@ namespace Sq1.Core.StrategyBase {
 			if (alert.OrderFollowed == null) {
 				if (this.Backtester.IsBacktestingNow == false) {
 					msg = "RealTime alerts should NOT have OrderFollowed=null; " + msg;
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 				return;
@@ -837,9 +875,6 @@ namespace Sq1.Core.StrategyBase {
 			} catch (Exception ex) {
 				string msg = "RUN_SIMULATION_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Bars + "]";
 				Assembler.PopupException(msg, ex);
-				#if DEBUG
-				Debugger.Break();
-				#endif
 			} finally {
 				this.Backtester.SetRunningFalseNotifyWaitingThreadsBacktestCompleted();
 			}
@@ -847,14 +882,23 @@ namespace Sq1.Core.StrategyBase {
 		public void BacktesterRunSimulationTrampoline(Action executeAfterSimulationEvenIfIFailed = null, bool inNewThread = true) {
 			if (this.Strategy == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Executor.Strategy=null; " + this;
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (this.Strategy.Script == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Executor.Strategy.Script=null, didn't compile; " + this;
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (this.Bars == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Bars=null; select 1) TimeFrame 2) Range 3) PositionSize - for corresponding Chart; " + this;
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 
@@ -886,6 +930,9 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "NOT_SCHEDULING_RUN_SIMULATION QueueUserWorkItem(backtesterRunSimulationThreadEntryPoint)"
 						+ " because threadPoolAvailablePercentage[" + threadPoolAvailablePercentage
 						+ "]<" + ThreadPoolAvailablePercentageLimit + "%";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 				//this.MainForm.PopupException("SCHEDULING_RUN_SIMULATION for Strategy[" + this.Executor.Strategy + "] on Bars[" + this.Executor.Bars + "]");
@@ -941,6 +988,9 @@ namespace Sq1.Core.StrategyBase {
 		public void SetBars(Bars barsClicked) {
 			if (barsClicked == null) {
 				string msg = "don't feed Bars=null into the foodchain!";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (this.Bars == barsClicked) {
@@ -1002,6 +1052,9 @@ namespace Sq1.Core.StrategyBase {
 			double ret = 1;
 			SymbolInfo symbolInfo = bar.ParentBars.SymbolInfo;
 			if (symbolInfo.SecurityType == SecurityType.Future && symbolInfo.LeverageForFutures <= 0.0) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new ArgumentException("Margin must be greater than zero");
 			}
 			//double currentEquity = this.Performance.SlicesShortAndLong.CurrentEquityForPosSizeCalculator;
@@ -1018,6 +1071,9 @@ namespace Sq1.Core.StrategyBase {
 					break;
 				default:
 					string msg = "RETURNING_ONE_SHARE_UNSUPPORED_PositionSizeMode [" + this.PositionSize.Mode + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new NotImplementedException();
 			}
 			if (ret == 0.0) return ret;

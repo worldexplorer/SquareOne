@@ -22,10 +22,11 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			double spread = openOrClosePrice * this.PartOfPrice;
-			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to SimulateMathRound and checking below; RoundUp so I wont' get spread = 0
+			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
-				string msg = "you can't use RoundDown here";
-				Debugger.Break();
+				//string msg = "you can't use RoundDown here";
+				//Debugger.Break();
+				spreadAligned = symbolInfo.PriceMinimalStepFromDecimal;
 			}
 			
 			if (barSimulated.HighLowDistance < spreadAligned) {
@@ -66,10 +67,11 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			double spread = quote.Bid * this.PartOfPrice;
-			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to SimulateMathRound and checking below; RoundUp so I wont' get spread = 0
+			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
 				string msg = "you can't use RoundDown here";
-				Debugger.Break();
+				//Debugger.Break();
+				spreadAligned = symbolInfo.PriceMinimalStepFromDecimal;
 			}
 			
 			quote.Ask = quote.Bid + spreadAligned;
@@ -89,10 +91,11 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			double spread = quote.Ask * this.PartOfPrice;
-			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to SimulateMathRound and checking below; RoundUp so I wont' get spread = 0
+			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
-				string msg = "you can't use RoundDown here";
-				Debugger.Break();
+				//string msg = "you can't use RoundDown here";
+				//Debugger.Break();
+				spreadAligned = symbolInfo.PriceMinimalStepFromDecimal;
 			}
 			
 			quote.Bid = quote.Ask - spreadAligned;

@@ -150,6 +150,13 @@ namespace Sq1.Core.Execution {
 				string msg = "ALERT_CTOR_PARENT_BARS_MUST_NOT_BE_NULL: when creating an Alert, bar.ParentBars can't be null";
 				throw new Exception(msg);
 			}
+			if (priceScript < 0) {
+				string msg = "ALERT_CTOR_PRICE_SCRIPT_CANT_BE_NEGATIVE";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
+			}
 			this.Bars = bar.ParentBars;
 			this.PlacedBar = bar;
 			this.PlacedBarIndex = bar.ParentBarsIndex;
@@ -193,7 +200,15 @@ namespace Sq1.Core.Execution {
 			} else {
 				this.PriceScriptAligned = this.Bars.SymbolInfo.AlignAlertToPriceLevelSimplified(this.PriceScript, this.Direction, this.MarketLimitStop);
 			}
-		}
+
+			if (this.PriceScriptAligned < 0) {
+				string msg = "ALERT_CTOR_PRICE_SCRIPT_CANT_BE_NEGATIVE";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
+			}
+	}
 		[JsonIgnore]	public double QtyFilledThroughPosition { get {
 				double ret = 0;
 				if (this.PositionAffected == null) return ret;

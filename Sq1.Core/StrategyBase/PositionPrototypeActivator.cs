@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
+using System.Diagnostics;
 
 namespace Sq1.Core.StrategyBase {
 	public class PositionPrototypeActivator {
@@ -11,7 +12,8 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void PlaceOnce(PositionPrototype proto) {
 			if (proto.PriceEntry == 0) {
-				string msg = "market orders can't be found in OrdersPending";
+				//v1 string msg = "market orders can't be found in OrdersPending";
+				string msg = "EntryMarketLimitStopFromDirection(XX, priceExecutionDesired=0, XX) will return MarketLimitStop.Market";
 			}
 			if (this.checkPrototypeAlreadyPlaced(proto)) return;
 			//this.checkThrowPlacingProtoMakesSense(proto);
@@ -28,12 +30,18 @@ namespace Sq1.Core.StrategyBase {
 				);
 			if (posWithAlert == null) {
 				string msg = "man I don't understand this null; out-of-bar limit should still leave a pending Alert.PositionAffected";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (posWithAlert.Prototype != null) {
 				string msg = "CLEANUP: I was trying to catch MoveStopLoss::if(proto.StopLossAlertForAnnihilation==null)"
 					+ " so I thought there is a new prototype assigned to a position,"
 					+ " since we never put null directly proto.StopLossAlertForAnnihilation";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			posWithAlert.Prototype = proto;
@@ -63,6 +71,9 @@ namespace Sq1.Core.StrategyBase {
 		public List<Alert> CreateStopLossAndTakeProfitAlertsFromPositionPrototype(Position position) {
 			if (position.IsEntryFilled == false) {
 				string msg = "I can not place SL and TP for an unopened position; alert[" + position.EntryAlert + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			List<Alert> ret = new List<Alert>(); 
@@ -78,7 +89,7 @@ namespace Sq1.Core.StrategyBase {
 			if (proto.StopLossNegativeOffset > 0) {
 				string msg = "PROTOTYPE_STOPLOSS_NOT_CREATED STOPLOSS_OFFSET_MUST_BE_NEGATIVE(FOR_STOP_LOSS))_OR_ZERO(FOR_STOP)";
 				// DONT_SCREAM_SO_MUCH	throw new Exception(msg);
-				return null;
+				// ALLOW_POSITIVE_OFFSET_FROM_PRICE_ENTRY_TO_TIGHTEN_SL_ACROSS_PRICE_ENTRY_LEVEL return null;
 			}
 
 			MarketLimitStop simpleStopIfActivationZero = (proto.StopLossActivationNegativeOffset == 0) ? MarketLimitStop.Stop : MarketLimitStop.StopLimit;
@@ -87,10 +98,17 @@ namespace Sq1.Core.StrategyBase {
 				string msg = this.ReasonWhyNewStopLossOffsetDoesntMakeSense(position, proto.StopLossNegativeOffset, simpleStopIfActivationZero);
 				if (String.IsNullOrEmpty(msg) == false) {
 					string msg2 = "What should Activator do with sense-less proto.StopLossNegativeOffset[" + proto.StopLossNegativeOffset + "], ";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg2, new Exception(msg));
 				}
 			}
 
+			if (proto.PriceEntry == 0) {
+				string msg = "POSITION_PROTOTYPE_SUPPORTS_MARKET_ENTRY";
+				proto.PriceEntryAbsorb(position.EntryFilledPrice);
+			}
 			Alert alertStopLoss = executor.SellOrCoverAlertCreateDontRegisterInNew (
 				executor.Bars.BarStreaming,
 				position, proto.PriceStopLoss,
@@ -100,6 +118,9 @@ namespace Sq1.Core.StrategyBase {
 				simpleStopIfActivationZero);
 			if (alertStopLoss == null) {
 				string msg = "alertStopLoss should NOT be null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			alertStopLoss.PriceStopLimitActivation = 0;
@@ -108,6 +129,9 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "CLEANUP: I was trying to catch MoveStopLoss::if(proto.StopLossAlertForAnnihilation==null)"
 					+ " so I thought there is a new prototype assigned to a position,"
 					+ " since we never put null directly proto.StopLossAlertForAnnihilation";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 
@@ -131,6 +155,9 @@ namespace Sq1.Core.StrategyBase {
 				MarketLimitStop.Limit);
 			if (alertTakeProfit == null) {
 				string msg = "alertTakeProfit should NOT be null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			proto.TakeProfitAlertForAnnihilation = alertTakeProfit;
@@ -140,15 +167,24 @@ namespace Sq1.Core.StrategyBase {
 			bool killed = false;
 			if (position.IsExitFilled == false) {
 				string msg = "I refuse to AnnihilateCounterpartyForClosedPosition: position.IsExitFilled=false for position=[" + position + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (position.Prototype == null) {
 				string msg = "I refuse to AnnihilateCounterpartyForClosedPosition: position.Prototype=null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
-			if (position.IsExitFilledByPrototypedTakeProfit) {
+			if (position.IsExitFilledByPrototypedTakeProfit && position.Prototype.StopLossNegativeOffset < 0) {
 				if (position.Prototype.StopLossAlertForAnnihilation == null) {
 					string msg = "FAILED_ANNIHILATE_STOPLOSS Prototype.StopLossAlertForAnnihilation=null for position[" + position + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 				killed = executor.AnnihilateCounterpartyAlertDispatched(position.Prototype.StopLossAlertForAnnihilation);
@@ -159,12 +195,18 @@ namespace Sq1.Core.StrategyBase {
 				if (killed == false) {
 					string msg = "position.ClosedByTakeProfit but StopLoss wasn't annihilated"
 						+ " or DUPE annihilation of a previously annihilated StopLoss";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 			}
-			if (position.IsExitFilledByPrototypedStopLoss) {
+			if (position.IsExitFilledByPrototypedStopLoss && position.Prototype.TakeProfitPositiveOffset > 0) {
 				if (position.Prototype.TakeProfitAlertForAnnihilation == null) {
 					string msg = "FAILED_ANNIHILATE_TAKEPROFIT Prototype.TakeProfitAlertForAnnihilation=null for position[" + position + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 				killed = executor.AnnihilateCounterpartyAlertDispatched(position.Prototype.TakeProfitAlertForAnnihilation);
@@ -175,6 +217,9 @@ namespace Sq1.Core.StrategyBase {
 				if (killed == false) {
 					string msg = "position.ClosedByStopLoss but TakeProfit wasn't annihilated"
 						+ " or DUPE annihilation of a previously annihilated TakeProfit";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 			}
@@ -183,10 +228,16 @@ namespace Sq1.Core.StrategyBase {
 		void appendMessageToStopLossOrder(Position position, string msgOrder) {
 			if (position.Prototype.StopLossAlertForAnnihilation == null) {
 				string msg = "Can't AppendMessageToTakeProfitOrder: position.Prototype.StopLossAlertForAnnihilation=null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (position.Prototype.StopLossAlertForAnnihilation.OrderFollowed == null) {
 				string msg = "Can't AppendMessageToTakeProfitOrder: position.Prototype.StopLossAlertForAnnihilation.OrderFollowed=null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			position.Prototype.StopLossAlertForAnnihilation.OrderFollowed.AppendMessage(msgOrder);
@@ -194,10 +245,16 @@ namespace Sq1.Core.StrategyBase {
 		void appendMessageToTakeProfitOrder(Position position, string msgOrder) {
 			if (position.Prototype.TakeProfitAlertForAnnihilation == null) {
 				string msg = "Can't AppendMessageToTakeProfitOrder: position.Prototype.TakeProfitAlertForAnnihilation=null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (position.Prototype.TakeProfitAlertForAnnihilation.OrderFollowed == null) {
 				string msg = "Can't AppendMessageToTakeProfitOrder: position.Prototype.TakeProfitAlertForAnnihilation.OrderFollowed=null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			position.Prototype.TakeProfitAlertForAnnihilation.OrderFollowed.AppendMessage(msgOrder);
@@ -218,9 +275,18 @@ namespace Sq1.Core.StrategyBase {
 			PositionPrototype proto = position.Prototype;
 			if (proto == null) {
 				string msg = "StopLossNewNegativeOffsetUpdateActivate() can't update StopLoss for a position.Prototype=null: position=[" + position + "]";
-				throw new Exception(msg);
+				//#if DEBUG
+				//Debugger.Break();
+				//#endif
+				//throw new Exception(msg);
+				Assembler.PopupException(msg, null, false);
 			}
-			this.checkThrowNewStopLossOffsetMakesSense(position, newStopLossNegativeOffset);
+			try {
+				this.checkThrowNewStopLossOffsetMakesSense(position, newStopLossNegativeOffset);
+			} catch (Exception ex) {
+				Assembler.PopupException("REFUSED_StopLossNewNegativeOffsetUpdateActivate()", ex, false);
+				return;
+			}
 			double newActivationOffset = proto.CalcActivationOffsetForNewClosing(newStopLossNegativeOffset);
 			switch (proto.StopLossAlertForAnnihilation.MarketLimitStop) {
 				case MarketLimitStop.StopLimit:
@@ -249,7 +315,11 @@ namespace Sq1.Core.StrategyBase {
 					}
 					break;
 				default:
-					string msg = "UNSUPPORTED_STOP_LOSS_CANT_MOVE [" + proto.StopLossAlertForAnnihilation.MarketLimitStop + "] must be Stop or StopLimit(weak support now, almost NYI)";
+					string msg = "UNSUPPORTED_STOP_LOSS_CANT_MOVE [" + proto.StopLossAlertForAnnihilation.MarketLimitStop
+						+ "] must be Stop or StopLimit(weak support now, almost NYI)";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg + msig);
 			}
 		}
@@ -257,6 +327,9 @@ namespace Sq1.Core.StrategyBase {
 			PositionPrototype proto = position.Prototype;
 			if (proto == null) {
 				string msg = "TakeProfitNewPositiveOffsetUpdateActivate() can't update TakeProfit for a position.Prototype=null: position=[" + position + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			this.checkThrowNewTakeProfitOffsetMakesSense(position, newTakeProfitPositiveOffset);
@@ -274,15 +347,30 @@ namespace Sq1.Core.StrategyBase {
 		}
 		void checkThrowPlacingProtoMakesSense(PositionPrototype proto) {
 			string msg = this.ReasonWhyPlacingProtoDoesntMakeSense(proto);
-			if (String.IsNullOrEmpty(msg) == false) throw new Exception(msg);
+			if (String.IsNullOrEmpty(msg) == false) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
+			}
 		}
 		void checkThrowNewStopLossOffsetMakesSense(Position position, double newStopLossNegativeOffset) {
-			string msg = this.ReasonWhyNewStopLossOffsetDoesntMakeSense(position, newStopLossNegativeOffset);
-			if (String.IsNullOrEmpty(msg) == false) throw new Exception(msg);
+			string msg = this.ReasonWhyNewStopLossOffsetDoesntMakeSense(position, newStopLossNegativeOffset, position.ExitAlert.MarketLimitStop);
+			if (String.IsNullOrEmpty(msg) == false) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
+			}
 		}
 		void checkThrowNewTakeProfitOffsetMakesSense(Position position, double newTakeProfitPositiveOffset) {
 			string msg = this.ReasonWhyNewTakeProfitOffsetDoesntMakeSense(position, newTakeProfitPositiveOffset);
-			if (String.IsNullOrEmpty(msg) == false) throw new Exception(msg);
+			if (String.IsNullOrEmpty(msg) == false) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
+			}
 		}
 
 		public string ReasonWhyPlacingProtoDoesntMakeSense(PositionPrototype proto, bool internalCallee = false) {
@@ -329,11 +417,17 @@ namespace Sq1.Core.StrategyBase {
 			PositionPrototype proto = position.Prototype;
 			if (position.Symbol != proto.Symbol) {
 				string msg1 = "NotYetImplemented: your script changes StopLossOffset for a proto.Symbol[" + proto.Symbol + "]!=position.Symbol[" + position.Symbol + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg1);
 			}
 			Direction dir = MarketConverter.EntryDirectionFromLongShort(proto.LongShort);
 			if (position.EntryAlert.Direction != dir) {
 				string msg1 = "NotYetImplemented: Crazy check here";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg1);
 			}
 
@@ -388,7 +482,7 @@ namespace Sq1.Core.StrategyBase {
 							break;
 						case Direction.Cover:
 							double bid = executor.DataSource.StreamingProvider.StreamingDataSnapshot.BestBidGetForMarketOrder(proto.Symbol);
-							if (newStopLossPrice > bid) {
+							if (newStopLossPrice < bid) {
 								msg = "NEW_STOP_PRICE_ABOVE_BID_WILL_BE_REJECTED_BY_MARKET"
 									+ " newStopLossPrice[" + newStopLossPrice + "] > Bid[" + bid + "] " + ident2
 									+ " //position[" + position + "]";
@@ -402,7 +496,11 @@ namespace Sq1.Core.StrategyBase {
 					break;
 				default:
 					msg = "STOP_LOSS_ALERT_TYPE_NOT_SUPPORTED [" + proto.StopLossAlertForAnnihilation.MarketLimitStop + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
+					break;
 			}
 			if (internalCallee == true) {
 				msg += " (Script is strongly recommented to check SL price first so we don't pass unexpected position closures to the Market)";
@@ -413,11 +511,17 @@ namespace Sq1.Core.StrategyBase {
 			PositionPrototype proto = position.Prototype;
 			if (position.Symbol != proto.Symbol) {
 				string msg1 = "NotYetImplemented: your script changes TakeProfitOffset for a proto.Symbol[" + proto.Symbol + "]!=position.Symbol[" + position.Symbol + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg1);
 			}
 			Direction dir = MarketConverter.EntryDirectionFromLongShort(proto.LongShort);
 			if (position.EntryAlert.Direction != dir) {
 				string msg1 = "NotYetImplemented: Crazy check here";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg1);
 			}
 			Quote quote = executor.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(proto.Symbol);
@@ -450,6 +554,44 @@ namespace Sq1.Core.StrategyBase {
 				msg += " (Script is strongly recommented to check TP price first so we don't pass unexpected position closures to the Market)";
 			}
 			return msg;
+		}
+		public double StopLossCurrentGetNaNunsafe(PositionPrototype proto) {
+			if (proto.StopLossNegativeOffset == 0) return double.NaN;
+			Alert SLalert = proto.StopLossAlertForAnnihilation;
+			if (SLalert == null) {
+				string msg = "WHEN?";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return double.NaN;
+			}
+			if (SLalert.MarketLimitStop != MarketLimitStop.Stop && SLalert.MarketLimitStop != MarketLimitStop.StopLimit) {
+				string msg = "WHEN?";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return double.NaN;
+			}
+			return SLalert.PriceScriptAligned;
+		}
+		[Obsolete("USELESS & UNTESTED")]
+		public double StopLossCurrentNegativeOffsetGetNaNunsafe(PositionPrototype proto) {
+			double SL = this.StopLossCurrentGetNaNunsafe(proto);
+			if (double.IsNaN(SL)) return SL;
+
+			Bar bar = this.executor.Bars.BarStreamingCloneReadonly;
+			if (bar == null) {
+				string msg = "WHEN?";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return double.NaN;
+			}
+			// long has SLalert.PriceScriptAligned < bar.Close; we need NEGATIVE
+			double ret = SL - bar.Close;
+			Alert SLalert = proto.StopLossAlertForAnnihilation;
+			if (SLalert.Direction == Direction.Cover) ret = -ret;
+			return ret;
 		}
 	}
 }

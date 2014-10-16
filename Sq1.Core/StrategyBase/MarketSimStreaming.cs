@@ -84,9 +84,9 @@ namespace Sq1.Core.StrategyBase {
 
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 			//v1
-			entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryAlert.PriceScript, true,
+			double entryPriceOut1 = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryAlert.PriceScript, true,
 				entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
-			if (entryPriceOut != entryAlert.PriceScriptAligned) {
+			if (entryPriceOut1 != entryAlert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
 				Debugger.Break();
 			} else {
@@ -213,10 +213,10 @@ namespace Sq1.Core.StrategyBase {
 
 			//v1
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
-			exitPriceOut = this.executor.AlignAlertPriceToPriceLevel(
+			double exitPriceOut1 = this.executor.AlignAlertPriceToPriceLevel(
 			    exitAlert.Bars, exitAlert.PriceScript, false,
 			    exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
-			if (exitPriceOut != exitAlert.PriceScriptAligned) {
+			if (exitPriceOut1 != exitAlert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
 				Debugger.Break();
 			} else {

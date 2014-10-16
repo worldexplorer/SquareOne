@@ -32,7 +32,7 @@ namespace Sq1.Charting {
 				barFullHeight.Height = this.PanelHeightMinusGutterBottomHeight;
 
 				Color backgroundSetByScript = seo.BarBackgroundsByBar[barIndex];
-				Color backgroundMoreTransparent = Color.FromArgb(this.ChartControl.ChartSettings.BarsBackgroundTransparencyAlfa, backgroundSetByScript);
+				Color backgroundMoreTransparent = Color.FromArgb(this.ChartControl.ChartSettings.BarsBackgroundTransparencyAlpha, backgroundSetByScript);
 
 				using (Brush backBrush = new SolidBrush(backgroundMoreTransparent)) {
 					g.FillRectangle(backBrush, barFullHeight);

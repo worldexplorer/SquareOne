@@ -323,8 +323,8 @@ namespace Sq1.Widgets.SteppingSlider {
 			}
 			if (leftMouseButtonHeldDown) {	// I_HATE_HACKING_F_WINDOWS_FORMS
 				string msg = "DRAG_SIMULATION_AND_ON_DRAG_OVER_BOTH_DONT_WORK IF_YOU_SEE_THIS_SEND_A_SCREENSHOT_TO_DEVELOPER";
+				//Debugger.Break();
 				Assembler.PopupException(msg);
-				Debugger.Break();
 				if (this.ValueCurrent != this.ValueMouseOver) {
 					//Debugger.Break();
 					this.ValueCurrent = this.ValueMouseOver;

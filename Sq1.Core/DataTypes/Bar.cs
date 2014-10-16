@@ -78,10 +78,10 @@ namespace Sq1.Core.DataTypes {
 				this.Close	= Math.Round(this.Close,	symbolInfo.DecimalsPrice);
 				this.Volume	= Math.Round(this.Volume,	symbolInfo.DecimalsVolume);
 
-				//this.Open = symbolInfo.AlignToPriceLevel(this.Open, PriceLevelRoundingMode.SimulateMathRound);
-				//this.High = symbolInfo.AlignToPriceLevel(this.High, PriceLevelRoundingMode.SimulateMathRound);
-				//this.Low  = symbolInfo.AlignToPriceLevel(this.Low, PriceLevelRoundingMode.SimulateMathRound);
-				//this.Close  = symbolInfo.AlignToPriceLevel(this.Close, PriceLevelRoundingMode.SimulateMathRound);
+				//this.Open = symbolInfo.AlignToPriceLevel(this.Open, PriceLevelRoundingMode.RoundToClosest);
+				//this.High = symbolInfo.AlignToPriceLevel(this.High, PriceLevelRoundingMode.RoundToClosest);
+				//this.Low  = symbolInfo.AlignToPriceLevel(this.Low, PriceLevelRoundingMode.RoundToClosest);
+				//this.Close  = symbolInfo.AlignToPriceLevel(this.Close, PriceLevelRoundingMode.RoundToClosest);
 				//this.Volume = Math.Round(this.Volume, symbolInfo.DecimalsVolume);
 			} else {
 				string msg = "OHLC_IS_NOT_ALIGNED_TRY_TO_AVOID_IT";

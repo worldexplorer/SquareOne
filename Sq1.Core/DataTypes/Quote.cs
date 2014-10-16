@@ -120,7 +120,9 @@ namespace Sq1.Core.DataTypes {
 				ret = diffUpRounded >= 0 && diffDnRounded >= 0;
 	
 				if (ret == false) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 				}
 			}
 			return ret;
