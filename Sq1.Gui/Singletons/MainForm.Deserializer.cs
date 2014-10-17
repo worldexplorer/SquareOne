@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
+using Sq1.Core;
 using Sq1.Gui.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -59,10 +60,7 @@ namespace Sq1.Gui.Singletons {
 					return dummyDoc;*/
 				}
 			} catch (Exception e) {
-				this.PopupException(e);
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				this.PopupException("PersistStringInstantiator", e);
 			}
 			if (ret == null) {
 				string msg = "returning null will confuse DockPanel; instead, return an instance and initialize it later";

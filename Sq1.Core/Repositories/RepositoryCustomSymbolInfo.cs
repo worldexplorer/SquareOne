@@ -5,9 +5,7 @@ using Sq1.Core.Serializers;
 
 namespace Sq1.Core.Repositories {
 	public class RepositoryCustomSymbolInfo : Serializer<List<SymbolInfo>> {
-		public RepositoryCustomSymbolInfo() {
-		}
-
+		public RepositoryCustomSymbolInfo() {}
 		public SymbolInfo FindSymbolInfo(string symbol) {
 			if (string.IsNullOrEmpty(symbol)) return null;
 			foreach (SymbolInfo current in base.Entity) {

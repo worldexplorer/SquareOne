@@ -14,7 +14,7 @@ namespace Sq1.Gui.Singletons {
 				// separate try {} for MONO: Reflection bla-bla-bla exception
 				this.MainFormEventManagerInitializeWhenDockingIsNotNullAnymore();
 			} catch (Exception ex) {
-				this.PopupException(ex);
+				this.PopupException("MainFormEventManagerInitializeWhenDockingIsNotNullAnymore()", ex);
 			}
 			try {
 				this.createWorkspacesManager();
@@ -31,7 +31,7 @@ namespace Sq1.Gui.Singletons {
 				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
 				this.ResumeLayout(true);
 			} catch (Exception ex) {
-				this.PopupException(ex);
+				this.PopupException("mainForm_Load()", ex);
 			}
 		}
 
@@ -58,7 +58,7 @@ namespace Sq1.Gui.Singletons {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException(ex);
+				this.PopupException("mniExceptions_Click()", ex);
 			}
 		}
 		void mniSymbols_Click(object sender, EventArgs e) {
@@ -70,7 +70,7 @@ namespace Sq1.Gui.Singletons {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException(ex);
+				this.PopupException("mniSymbols_Click()", ex);
 			}
 		}
 		void mniSliders_Click(object sender, EventArgs e) {
@@ -82,7 +82,7 @@ namespace Sq1.Gui.Singletons {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException(ex);
+				this.PopupException("mniSliders_Click()", ex);
 			}
 		}
 		void mniStrategies_Click(object sender, EventArgs e) {
@@ -94,7 +94,7 @@ namespace Sq1.Gui.Singletons {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException(ex);
+				this.PopupException("mniStrategies_Click()", ex);
 			}
 		}
 		void mniExecution_Click(object sender, EventArgs e) {
@@ -107,7 +107,7 @@ namespace Sq1.Gui.Singletons {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException(ex);
+				this.PopupException("mniExecution_Click()", ex);
 			}
 		}
 		void mniCsvImporter_Click(object sender, System.EventArgs e) {
@@ -119,7 +119,7 @@ namespace Sq1.Gui.Singletons {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException(ex);
+				this.PopupException("mniCsvImporter_Click()", ex);
 			}
 		}
 		

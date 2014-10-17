@@ -311,7 +311,7 @@ namespace Sq1.Core.Broker {
 
 		public void PopupException(Exception exception) {
 			if (this.StatusReporter == null) return;
-			this.StatusReporter.PopupException(exception);
+			this.StatusReporter.PopupException(null, exception);
 		}
 
 		public Order CreateKillerOrder(Order victimOrder) {

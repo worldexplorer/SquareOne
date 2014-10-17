@@ -237,7 +237,7 @@ namespace Sq1.Core.Streaming {
 							+ " StreamingBar (" + streamingBar.DateTimeOpen + " .. " + streamingBar.DateTimeNextBarOpenUnconditional + "];"
 							+ " quote=[" + quote + "]";
 						Assembler.PopupException(msg);
-						this.StreamingProvider.StatusReporter.PopupException(new Exception(msg));
+						this.StreamingProvider.StatusReporter.PopupException(msg);
 						continue;
 					}
 				}

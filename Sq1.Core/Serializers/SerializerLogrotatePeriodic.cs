@@ -5,12 +5,8 @@ using Sq1.Core.Serializers;
 
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotatePeriodic<T> : SerializerLogrotate<T> {
-		public new string OfWhat { get {
-				string ret = "UNKNOWN";
-				var args = this.GetType().GetGenericArguments();
-				if (args.Length > 0) ret = args[0].Name;
-				return ret;
-			} }
+		public string OfWhat { get { return typeof(T).Name; } }
+		
 		private System.Threading.Timer timer;
 		private int periodMillis;
 

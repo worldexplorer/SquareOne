@@ -44,7 +44,7 @@ namespace Sq1.Core.Repositories {
 					if (dll_not_found_for_existing_folder) {
 						folderPrefixed = "DLL_NOT_FOUND: " + folderPrefixed;
 						string msg = folderPrefixed + " STRATEGIES_FOLDER_CONTAINS_SHADOW_FOR_DLL_REMOVED_FROM_APPROOT_OR_STRATEGIES_FOLDER";
-						Assembler.PopupException(msg);
+						Assembler.PopupException(null, new Exception(msg));
 					}
 					ret.Add(folderPrefixed);
 				}
@@ -55,6 +55,12 @@ namespace Sq1.Core.Repositories {
 		public string Subfolder;
 		public string PathMask;
 		public string AbsPath { get { return Path.Combine(this.RootPath, Subfolder); } }
+		public List<Exception> ExceptionsWhileInstantiating { get {
+				List<Exception> ret = new List<Exception>();
+				ret.AddRange(this.ScriptRepositoryFoundInFolderDataStrategies.ExceptionsWhileScanning);
+				ret.AddRange(this.ScriptRepositoryFoundInFolderAppStartup.ExceptionsWhileScanning);
+				return ret;
+			} }
 
 		public ScriptRepository ScriptRepositoryFoundInFolderDataStrategies;
 		public ScriptRepository ScriptRepositoryFoundInFolderAppStartup;

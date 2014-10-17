@@ -26,11 +26,17 @@ namespace Sq1.Core.StrategyBase {
 					+ "; here you have MOCK Realtime Streaming and Broker,"
 					+ " it's not a time-insensitive QuotesFromBar-generated Streaming Backtest"
 					+ " (both are routed to here, MarketSim, hypothetical order execution)";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 
 			if (alert.PositionAffected == null) {
 				string msg = "alertToBeKilled always has a PositionAffected, even for OnChartManual Buy/Short Market/Stop/Limit";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 
@@ -53,6 +59,9 @@ namespace Sq1.Core.StrategyBase {
 			} else {
 				if (alert.PositionAffected.IsEntryFilled == false) {
 					string msg = "I refuse to tryFill an ExitOrder because ExitOrder.Alert.PositionAffected.EntryFilled=false";
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 				}
 				if (alert.PositionAffected.IsExitFilled) {
@@ -72,7 +81,9 @@ namespace Sq1.Core.StrategyBase {
 				try {
 					filled = this.CheckExitAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
 				} catch (Exception e) {
-					int a = 1;
+					#if DEBUG
+					Debugger.Break();
+					#endif
 				}
 			}
 			return filled;
@@ -118,6 +129,9 @@ namespace Sq1.Core.StrategyBase {
 							if (entryPriceOut > quote.Ask) return false;
 							break;
 						default:
+							#if DEBUG
+							Debugger.Break();
+							#endif
 							throw new Exception("NYI: direction[" + entryAlert.Direction + "] is not Long or Short");
 					}
 					break;
@@ -134,6 +148,9 @@ namespace Sq1.Core.StrategyBase {
 							//priceScriptAligned += entrySlippageOutNotUsed;
 							break;
 						default:
+							#if DEBUG
+							Debugger.Break();
+							#endif
 							throw new Exception("NYI: direction[" + entryAlert.Direction + "] is not Long or Short");
 					}
 					//entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryPriceOut, true,
@@ -167,16 +184,25 @@ namespace Sq1.Core.StrategyBase {
 							//priceScriptAligned += entrySlippageOutNotUsed;
 							break;
 						default:
+							#if DEBUG
+							Debugger.Break();
+							#endif
 							throw new Exception("CheckEntry() NYI direction[" + entryAlert.Direction + "] for [" + entryAlert + "]");
 					}
 					break;
 				default:
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception("NYI: marketLimitStop[" + entryAlert.MarketLimitStop + "] is not Limit or Stop");
 			}
 			//entryPriceOut = this.executor.AlignAlertPriceToPriceLevel(entryAlert.Bars, entryPriceOut, true,
 			//	entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
 			if (entryPriceOut <= 0) {
 				string msg = "entryPrice[" + entryPriceOut + "]<=0 what do you mean??? get Bars.LastBar.Close for Market...";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			// v1 BarStreaming with 1 quote (=> 0px height) won't contain any price you may check here;
@@ -196,9 +222,9 @@ namespace Sq1.Core.StrategyBase {
 			//v1
 			
 			if (quote.PriceBetweenBidAsk(entryPriceOut) == false) {
-				#if DEBUG
 				string msg = "I_DONT_UNDERSTAND_HOW_I_DIDNT_DROP_THIS_QUOTE_BEFORE_BUT_I_HAVE_TO_DROP_IT_NOW"
 					+ " MUST_BE_BETWEEN: [" + quote.Bid + "] < [" + entryPriceOut + "] < [" + quote.Ask + "]";
+				#if DEBUG
 				Debugger.Break();
 				#endif
 				return false;
@@ -246,6 +272,9 @@ namespace Sq1.Core.StrategyBase {
 							if (exitPriceOut < quote.Bid) return false;
 							break;
 						default:
+							#if DEBUG
+							Debugger.Break();
+							#endif
 							throw new Exception("CheckExit() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
 					}
 					break;
@@ -262,6 +291,9 @@ namespace Sq1.Core.StrategyBase {
 							//exitPriceOut += exitSlippageOut;
 							break;
 						default:
+							#if DEBUG
+							Debugger.Break();
+							#endif
 							throw new Exception("CheckExit() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
 					}
 					break;
@@ -321,6 +353,9 @@ namespace Sq1.Core.StrategyBase {
 							}
 							if (this.stopLossesActivatedOnPreviousQuotes.Contains(exitAlert) == false) {
 								string msg = "DUPE simulateFillExit has previously completely filled Sell StopLimit (StopActivated+Limit) " + exitAlert;
+								#if DEBUG
+								Debugger.Break();
+								#endif
 								throw new Exception(msg);
 							}
 							this.stopLossesActivatedOnPreviousQuotes.Remove(exitAlert);
@@ -363,11 +398,21 @@ namespace Sq1.Core.StrategyBase {
 							this.stopLossesActivatedOnPreviousQuotes.Remove(exitAlert);
 							break;
 						default:
+							#if DEBUG
+							Debugger.Break();
+							#endif
 							throw new Exception("CheckExit() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
 					}
 					break;
 				case MarketLimitStop.Market:
 				case MarketLimitStop.AtClose:
+					if (quote.PriceBetweenBidAsk(exitPriceOut) == false) {
+						#if DEBUG
+						string msg = "this isn't enough: market orders are still executed outside the bar...";
+						Debugger.Break();	// we'll need to generate one more quote onTheWayTo exitPriceOut
+						#endif
+						return false;
+					}
 					switch (exitAlert.Direction) {
 						case Direction.Sell:
 							//exitPriceOut -= slippageNonLimit;
@@ -376,10 +421,16 @@ namespace Sq1.Core.StrategyBase {
 							//exitPriceOut += slippageNonLimit;
 							break;
 						default:
+							#if DEBUG
+							Debugger.Break();
+							#endif
 							throw new Exception("CheckExit() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
 					}
 					break;
 				default:
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new Exception("NYI marketLimitStop[" + exitAlert.MarketLimitStop + "]");
 			}
 
@@ -387,6 +438,9 @@ namespace Sq1.Core.StrategyBase {
 			//	exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 			if (exitPriceOut <= 0) {
 				string msg = "exitPriceOut[" + exitPriceOut + "]<=0 what do you mean??? get Bars.LastBar.Close for Market...";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			// v1 BarStreaming with 1 quote (=> 0px height) won't contain any price you may check here;
@@ -405,13 +459,6 @@ namespace Sq1.Core.StrategyBase {
 			//}
 			// /v1
 			
-			if (quote.PriceBetweenBidAsk(exitPriceOut) == false) {
-				#if DEBUG
-				string msg = "this isn't enough: market orders are still executed outside the bar...";
-				Debugger.Break();	// we'll need to generate one more quote onTheWayTo exitPriceOut
-				#endif
-				return false;
-			}
 			return true;
 		}
 
@@ -456,21 +503,19 @@ namespace Sq1.Core.StrategyBase {
 					exitsFilled += filled;
 				}
 				if (filled == 0) continue;
-				if (filled > 1) Debugger.Break();
+				if (filled > 1) {
+					string msg = "ONE_ALERT_FILLED_REPORTED_MANY_WAS_FILLED SHOULD_NEVER_HAPPEN";
+					Assembler.PopupException(msg);
+				}
 				if (filled == 1) {
-					if (alert.IsFilledOutsideQuote_DEBUG_CHECK) {
-						Debugger.Break();
-					}
-					if (alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK) {
-						Debugger.Break();
-					}
+					bool isFilledOutsideQuote	= alert.IsFilledOutsideQuote_DEBUG_CHECK;
+					bool isFilledOutsideBar		 = alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK;
 				}
 
 				if (this.executor.ExecutionDataSnapshot.AlertsPendingContains(alert)) {
 					string msg = "normally, the filled alert already removed by CallbackAlertFilledMoveAroundInvokeScript()";
 					bool removed = this.executor.ExecutionDataSnapshot.AlertsPendingRemove(alert);
 					Assembler.PopupException(msg + " SimulatePendingFill(" + quote + ")");
-					Debugger.Break();
 				} else {
 					//Debugger.Break();
 				}
@@ -527,15 +572,24 @@ namespace Sq1.Core.StrategyBase {
 			if (this.executor.Backtester.IsBacktestingNow == false) {
 				string msg = "SimulateBacktest*() should not be used for RealTime BrokerProviders and RealTime Mocks!"
 					+ " make sure you invoked executor.CallbackAlertFilledInvokeScript() from where you are now";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (this.executor.ExecutionDataSnapshot.AlertsPending.Count == 0) {
 				string msg = "Before you call me, Please check executor.ExecutionDataSnapshot.AlertsPending.Count!=0";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 				//return 0;
 			}
 			if (quote.ParentStreamingBar == null) {
 				string msg = "I refuse to serve this quoteToReach.ParentStreamingBar=null";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 			if (quote.ParentStreamingBar.ParentBarsIndex != this.executor.Bars.Count - 1) {

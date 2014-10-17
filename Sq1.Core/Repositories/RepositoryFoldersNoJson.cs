@@ -9,8 +9,7 @@ namespace Sq1.Core.Repositories {
 		protected IStatusReporter StatusReporter;
 		public string RootPath { get; protected set; }
 		public string Subfolder { get; protected set; }
-		public string AbsPath {
-			get {
+		public string AbsPath { get {
 				//string ret = this.RootPath + this.Subfolder + this.WorkspaceName + Path.DirectorySeparatorChar;
 				string ret = this.RootPath;
 				if (String.IsNullOrEmpty(this.Subfolder) == false) {
@@ -18,12 +17,9 @@ namespace Sq1.Core.Repositories {
 				}
 				//if (ret.EndsWith(Path.DirectorySeparatorChar).ToString() == false) ret += Path.DirectorySeparatorChar;
 				return ret;
-			}
-		}
+			} }
 		public List<string> FoldersWithin { get; protected set; }
-		public RepositoryFoldersNoJson() {
-			this.FoldersWithin = new List<string>();
-		}
+		public RepositoryFoldersNoJson() { this.FoldersWithin = new List<string>(); }
 		public void Initialize(string rootPath,
 		            string subfolder = "DataSources",
 		            IStatusReporter statusReporter = null,
@@ -77,7 +73,7 @@ namespace Sq1.Core.Repositories {
 			if (this.StatusReporter == null) {
 				throw ex;
 			}
-			this.StatusReporter.PopupException(ex);
+			this.StatusReporter.PopupException(msg, ex);
 		}
 	}
 }

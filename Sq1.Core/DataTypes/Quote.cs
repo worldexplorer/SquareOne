@@ -121,7 +121,7 @@ namespace Sq1.Core.DataTypes {
 	
 				if (ret == false) {
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Break();	// ENABLE_BREAK_UPSTACK_IF_YOU_COMMENT_IT_OUT_HERE
 					#endif
 				}
 			}

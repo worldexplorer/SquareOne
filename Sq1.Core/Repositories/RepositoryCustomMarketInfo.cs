@@ -14,9 +14,7 @@ namespace Sq1.Core.Repositories {
 		public string AbsFilenameTimeZonesCsv { get { return base.RootPath + Path.DirectorySeparatorChar + fnameTimeZonesCsv; } }
 		public Dictionary<string, string> TimeZonesWithUTC { get; protected set; }
 
-		public RepositoryCustomMarketInfo() : base() {
-		}
-		
+		public RepositoryCustomMarketInfo() : base() {}
 		public new bool Initialize(string rootPath, string relFname,
 		            string subfolder = "Workspaces", string workspaceName = "Default",
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {

@@ -403,16 +403,22 @@ namespace Sq1.Core.DataTypes {
 		}
 		public bool ContainsBidAskForQuoteGenerated(Quote quote, bool feedingGarbageAndIknowItDontBreak = false) {
 			if (quote.Spread > this.HighLowDistance) {
+				#if DEBUG
 				Debugger.Break();
+				#endif
 				return false;
 			}
 			
 			if (quote.Ask == quote.Bid) {
+				#if DEBUG
 				Debugger.Break();
+				#endif
 				return false;
 			}
 			if (quote.Ask < quote.Bid) {
+				#if DEBUG
 				Debugger.Break();
+				#endif
 				return false;
 			}
 			
@@ -426,7 +432,9 @@ namespace Sq1.Core.DataTypes {
 			if (bidRounded < lowRounded) {
 				// MOSTLY_FROM_SCANNING_UP_GenerateClosestQuoteForEachPendingAlertOnOurWayTo() 
 				if (feedingGarbageAndIknowItDontBreak == false) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 				}
 				return false;
 			}
@@ -435,7 +443,9 @@ namespace Sq1.Core.DataTypes {
 			if (askRounded > highRounded) {
 				// MOSTLY_FROM_SCANNING_UP_GenerateClosestQuoteForEachPendingAlertOnOurWayTo()
 				if (feedingGarbageAndIknowItDontBreak == false) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 				}
 				return false;
 			}

@@ -8,13 +8,7 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Serializers {
 	public class RepositoryJsonsInFolder<DATASOURCE>  /* hack for ItemRename() */ where DATASOURCE : NamedObjectJsonSerializable {
-		public string OfWhat { get {
-				string ret = "UNKNOWN";
-				var type = this.GetType();
-				var args = this.GetType().GetGenericArguments();
-				if (args.Length > 0) ret = args[0].Name;
-				return ret;
-			} }
+		public string OfWhat { get { return typeof(DATASOURCE).Name; } }
 
 		public event EventHandler<NamedObjectJsonEventArgs<DATASOURCE>> OnItemAdded;
 		public event EventHandler<NamedObjectJsonEventArgs<DATASOURCE>> OnItemCanBeRemoved;

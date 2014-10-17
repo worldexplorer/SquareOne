@@ -399,9 +399,8 @@ namespace Sq1.Core.StrategyBase {
 		}
 		
 		public void PopupException(string msg, Exception ex = null) {
-			ex = new Exception(msg, ex);
 			if (this.StatusReporter == null) return;
-			this.StatusReporter.PopupException(ex);
+			this.StatusReporter.PopupException(msg, ex);
 			this.Backtester.AbortBacktestIfExceptionsLimitReached();
 		}
 

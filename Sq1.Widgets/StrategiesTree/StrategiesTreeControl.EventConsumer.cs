@@ -109,7 +109,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			try {
 				this.syncFolderStrategySelectedFromRowIndexClicked(e.ItemIndex);
 			} catch (Exception ex) {
-				statusReporter.PopupException(ex);
+				statusReporter.PopupException(null, ex);
 			}
 		}
 
@@ -118,7 +118,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			string msig = "StrategiesTree.mniFolderCreateStrategy_Click(): ";
 			if (this.FolderSelected == null) {
 				string msg = "this.FolderSelected==null; please set mniFolderCreate.Enabled=false when right-clicked not on the folder";
-				statusReporter.PopupException(new Exception(msig + msg));
+				statusReporter.PopupException(msg + msig);
 				return;
 			}
 			Strategy strategyNew = null;
@@ -126,7 +126,7 @@ namespace Sq1.Widgets.StrategiesTree {
 				string strategyNameGenerated = strategyRepository.GenerateStrategyName();
 				strategyNew = new Strategy(strategyNameGenerated);
 			} catch (Exception ex) {
-				statusReporter.PopupException(ex);
+				statusReporter.PopupException(msig, ex);
 				return;
 			}
 
@@ -146,7 +146,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			string msig = "StrategiesTree.mniltbStrategyCreate_UserTyped(): ";
 			if (this.FolderSelected == null) {
 				string msg = "this.FolderSelected==null; please set mniFolderCreate.Enabled=false when right-clicked not on the folder";
-				statusReporter.PopupException(new Exception(msig + msg));
+				statusReporter.PopupException(msg + msig);
 				return;
 			}
 			Strategy strategyNew = null;
@@ -155,7 +155,7 @@ namespace Sq1.Widgets.StrategiesTree {
 				if (string.IsNullOrEmpty(strategyNameGenerated)) strategyNameGenerated = strategyRepository.GenerateStrategyName();
 				strategyNew = new Strategy(strategyNameGenerated);
 			} catch (Exception ex) {
-				statusReporter.PopupException(ex);
+				statusReporter.PopupException(null, ex);
 				return;
 			}
 
@@ -189,7 +189,7 @@ namespace Sq1.Widgets.StrategiesTree {
 				e.RootHandlerShouldCloseParentContextMenuStrip = true;
 			} catch (Exception ex1) {
 				e.HighlightTextWithRed = true;
-				this.statusReporter.PopupException(ex1);
+				statusReporter.PopupException(null, ex1);
 			}
 		}
 		void treeListView_CellEditValidating(object sender, CellEditEventArgs e) {
@@ -221,7 +221,7 @@ namespace Sq1.Widgets.StrategiesTree {
 					//this.treeListView.SelectObject(strategyEditedName, true); // doesnt work, same item highlighted, but keyboard position jumps to index=0
 				} catch (Exception ex1) {
 					e.Cancel = true;
-					this.statusReporter.PopupException(ex1);
+					statusReporter.PopupException(null, ex1);
 				}
 				return;
 			} else {
@@ -235,7 +235,7 @@ namespace Sq1.Widgets.StrategiesTree {
 					//this.tree.RebuildAll(true);
 				} catch (Exception ex1) {
 					e.Cancel = true;
-					this.statusReporter.PopupException(ex1);
+					statusReporter.PopupException(null, ex1);
 				}
 			}
 		}
@@ -246,7 +246,7 @@ namespace Sq1.Widgets.StrategiesTree {
 				folderNew = strategyRepository.GenerateFolderName();
 				strategyRepository.FolderAdd(folderNew, false);
 			} catch (Exception ex) {
-				statusReporter.PopupException(ex);
+				statusReporter.PopupException(msig, ex);
 				return;
 			}
 
@@ -267,7 +267,7 @@ namespace Sq1.Widgets.StrategiesTree {
 				strategyRepository.FolderAdd(folderNew, false);
 				e.RootHandlerShouldCloseParentContextMenuStrip = true;
 			} catch (Exception ex) {
-				statusReporter.PopupException(ex);
+				statusReporter.PopupException(msig, ex);
 				return;
 			}
 
@@ -309,7 +309,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			var mniClicked = sender as ToolStripMenuItem;
 			if (mniClicked == null) {
 				string msg = "Can not fire OnStrategyOpenSavedClicked() because sender is not ToolStripMenuItem";
-				statusReporter.PopupException(new Exception(msig + msg));
+				statusReporter.PopupException(msg + msig);
 				return;
 			}
 			this.RaiseOnStrategyOpenSavedClicked(msig, mniClicked);
@@ -319,7 +319,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			var mniClicked = sender as ToolStripMenuItem;
 			if (mniClicked == null) {
 				string msg = "Can not fire mniStrategyMoveToAnotherFolder_Click() because sender is not ToolStripMenuItem";
-				statusReporter.PopupException(new Exception(msig + msg));
+				statusReporter.PopupException(msg + msig);
 				return;
 			}
 			this.strategyRepository.StrategyMoveToFolder(this.StrategySelected, mniClicked.Text);
@@ -345,12 +345,12 @@ namespace Sq1.Widgets.StrategiesTree {
 			string msig = "StrategiesTree.mniltbStrategyRenameTo_UserTyped(): ";
 			if (this.FolderSelected == null) {
 				string msg = "this.FolderSelected==null; please set mniFolderCreate.Enabled=false when right-clicked not on the folder";
-				statusReporter.PopupException(new Exception(msig + msg));
+				statusReporter.PopupException(msg + msig);
 				return;
 			}
 			if (this.StrategySelected == null) {
 				string msg = "this.StrategySelected==null";
-				statusReporter.PopupException(new Exception(msig + msg));
+				statusReporter.PopupException(msg + msig);
 				return;
 			}
 
@@ -359,7 +359,7 @@ namespace Sq1.Widgets.StrategiesTree {
 				string strategyNameSucceeded = strategyRepository.StrategyRenameModifyNameTillNoException(this.StrategySelected, strategyNameUserTyped);
 				strategyRepository.StrategyRename(this.StrategySelected, strategyNameSucceeded);
 			} catch (Exception ex) {
-				statusReporter.PopupException(ex);
+				statusReporter.PopupException(msig, ex);
 				return;
 			} finally {
 				this.tree.SetObjects(this.strategyRepository.AllFoldersAvailable);
@@ -379,12 +379,12 @@ namespace Sq1.Widgets.StrategiesTree {
 			string msig = "StrategiesTree.mniStrategyDuplicate_Click(): ";
 			if (this.FolderSelected == null) {
 				string msg = "this.FolderSelected==null; please set mniFolderCreate.Enabled=false when right-clicked not on the folder";
-				statusReporter.PopupException(new Exception(msig + msg));
+				statusReporter.PopupException(msg + msig);
 				return;
 			}
 			if (this.StrategySelected == null) {
 				string msg = "this.StrategySelected==null";
-				statusReporter.PopupException(new Exception(msig + msg));
+				statusReporter.PopupException(msg + msig);
 				return;
 			}
 
@@ -392,7 +392,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			try {
 				strategyNew = strategyRepository.StrategyDuplicate(this.StrategySelected);
 			} catch (Exception ex) {
-				statusReporter.PopupException(ex);
+				statusReporter.PopupException(msig, ex);
 				return;
 			} finally {
 				this.tree.RebuildAll(true);
@@ -410,12 +410,12 @@ namespace Sq1.Widgets.StrategiesTree {
 			string msig = "StrategiesTree.mniStrategyDuplicate_Click(): ";
 			if (this.FolderSelected == null) {
 				string msg = "this.FolderSelected==null; please set mniFolderCreate.Enabled=false when right-clicked not on the folder";
-				statusReporter.PopupException(new Exception(msig + msg));
+				statusReporter.PopupException(msg + msig);
 				return;
 			}
 			if (this.StrategySelected == null) {
 				string msg = "this.StrategySelected==null";
-				statusReporter.PopupException(new Exception(msig + msg));
+				statusReporter.PopupException(msg + msig);
 				return;
 			}
 
@@ -424,7 +424,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			try {
 				strategyNew = strategyRepository.StrategyDuplicate(this.StrategySelected, strategyNameUserTyped);
 			} catch (Exception ex) {
-				statusReporter.PopupException(ex);
+				statusReporter.PopupException(msig, ex);
 				return;
 			} finally {
 				this.tree.RebuildAll(true);
@@ -451,7 +451,7 @@ namespace Sq1.Widgets.StrategiesTree {
 				this.strategyRepository.StrategyDelete(strategy);
 				this.RaiseOnStrategyDeleteClicked();
 			} catch (Exception ex) {
-				statusReporter.PopupException(ex);
+				statusReporter.PopupException(null, ex);
 				//continue;
 			} finally {
 				this.tree.RebuildAll(true);
@@ -490,7 +490,7 @@ namespace Sq1.Widgets.StrategiesTree {
 					this.strategyRepository.StrategyMoveToFolder(strategyDropped, folderTo);
 				} catch (Exception ex) {
 					string msg = "Looks like folderTo[" + folderTo + "] has a strategy with the same name[" + strategyDropped.Name + "]";
-					this.statusReporter.PopupException(new Exception(msg, ex));
+					this.statusReporter.PopupException(msg, ex);
 					continue;
 				}
 			}

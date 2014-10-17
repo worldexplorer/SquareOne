@@ -147,7 +147,7 @@ namespace Sq1.Core.Broker {
 					Assembler.PopupException(msg, e);
 					return;
 				}
-				this.StatusReporter.PopupException(new Exception(msg, e));
+				this.StatusReporter.PopupException(msg, e);
 			}
 		}
 		public virtual void SubmitOrders(IList<Order> orders) {
@@ -484,12 +484,12 @@ namespace Sq1.Core.Broker {
 				}
 				this.RemoveOrdersPendingOnFilledCallback(orderWithNewState, msig);
 			} catch (Exception e) {
-				this.StatusReporter.PopupException(e);
+				this.StatusReporter.PopupException(msig, e);
 			}
 			try {
 				this.OrderProcessor.InvokeHooksAndSubmitNewAlertsBackToBrokerProvider(orderWithNewState);
 			} catch (Exception e) {
-				this.StatusReporter.PopupException(e);
+				this.StatusReporter.PopupException("InvokeHooksAndSubmitNewAlertsBackToBrokerProvider()" + msig, e);
 			}
 		}
 

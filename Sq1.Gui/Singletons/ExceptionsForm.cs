@@ -1,5 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
+
+using Sq1.Core;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Singletons {
@@ -23,10 +26,20 @@ namespace Sq1.Gui.Singletons {
 			
 			this.ExceptionControl.Initialize();
 		}
-		public void PopupException(Exception exception) {
+		public void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
+			#if DEBUG
+			if (debuggingBreak) {
+				Debugger.Break();
+			}
+			#endif
+
+			if (msg != null) ex = new Exception(msg, ex);
+			this.popupException(ex);
+		}
+		void popupException(Exception exception) {
 			if (base.IsDisposed) return;
 			if (base.InvokeRequired == true) {
-				base.BeginInvoke((MethodInvoker)delegate { this.PopupException(exception); });
+				base.BeginInvoke((MethodInvoker)delegate { this.popupException(exception); });
 				return;
 			}
 			this.ExceptionControl.InsertException(exception);
@@ -49,5 +62,10 @@ namespace Sq1.Gui.Singletons {
 //		public override void VisibleChanged(object sender, EventArgs e) {
 //			int a = 1;
 //		}
+		protected override void OnLoad(EventArgs e) {
+			foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {
+				this.PopupException(null, beforeFormInstantiated, false);
+			}
+		}
 	}
 }

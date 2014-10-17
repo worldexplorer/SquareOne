@@ -57,7 +57,7 @@ namespace Sq1.Gui.Singletons {
 				ExecutionForm.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor, this as IStatusReporter, this.DockPanel);
 				CsvImporterForm.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource, this as IStatusReporter, this.DockPanel);
 			} catch (Exception ex) {
-				this.PopupException(ex);
+				this.PopupException("MainForm()", ex);
 			}
 		}
 
@@ -163,6 +163,10 @@ namespace Sq1.Gui.Singletons {
 						string msg = "IRRELEVANT_FOR_EDITABLE_STRATEGIES WILL_PROCEED_WITHPANELS_COMPILATION_ETC editor-typed strategies already have indicators in SNAP after pre-backtest compilation";
 						continue;
 					}
+					if (chartStrategy.Script == null) {
+						string msg = "SCRIPT_COMPILES_OK_BUT_CTOR_THROWN_EXCEPTION_DURING_ACTIVATION_IN_RepositoryDllScanner<Script>.ScanDlls():107";
+						continue;
+					}
 					
 					// INDICATORS_CLEARED_ADDED_AFTER_BACKTEST_STARTED "Collection was modified; enumeration operation may not execute."
 					if (chartStrategy.ScriptContextCurrent.BacktestOnRestart == false) {
@@ -187,10 +191,7 @@ namespace Sq1.Gui.Singletons {
 				//this.DockPanel.ResumeLayout(true);
 				//this.DockPanel.Invalidate();
 			} catch (Exception ex) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				this.PopupException(ex);
+				this.PopupException("WorkspaceLoad()", ex);
 			}
 		}
 		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {

@@ -70,6 +70,15 @@ namespace Sq1.Core {
 				if (ret.EndsWith(Path.DirectorySeparatorChar.ToString()) == false) ret += Path.DirectorySeparatorChar;
 				return ret;
 			} }
+		public List<Exception> ExceptionsWhileInstantiating { get {
+				List<Exception> ret = new List<Exception>();
+				ret.AddRange(this.RepositoryDllStaticProvider.ExceptionsWhileScanning);
+				ret.AddRange(this.RepositoryDllStreamingProvider.ExceptionsWhileScanning);
+				ret.AddRange(this.RepositoryDllBrokerProvider.ExceptionsWhileScanning);
+				ret.AddRange(this.RepositoryDllReporters.ExceptionsWhileScanning);
+				ret.AddRange(this.RepositoryDllJsonStrategy.ExceptionsWhileInstantiating);
+				return ret;
+			} }
 #if DEBUG
 		// C:\Sq1\Data-debug
 		public readonly string DATA_FOLDER_DEBUG_RELEASE = ".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar
@@ -156,12 +165,6 @@ namespace Sq1.Core {
 			return Assembler.InstanceInitialized;
 		}
 		public static void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
-			#if DEBUG
-			if (debuggingBreak) {
-				Debugger.Break();
-			}
-			#endif
-
 			if (msg != null) ex = new Exception(msg, ex);
 			if (Assembler.InstanceInitialized == null) {
 				MessageBox.Show(ex.Message, "Assembler.InstanceInitialized=null");
@@ -186,7 +189,7 @@ namespace Sq1.Core {
 				string msg2 = "ExceptionForm.Visible=false"
 					+ "; but .PopupException() will insert your exception into the tree and display OnLoad()";
 			}
-			Assembler.InstanceInitialized.StatusReporter.PopupException(ex);
+			Assembler.InstanceInitialized.StatusReporter.PopupException(msg, ex, debuggingBreak);
 		}
 	}
 }

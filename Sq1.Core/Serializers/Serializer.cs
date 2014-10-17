@@ -6,12 +6,8 @@ using Sq1.Core.Support;
 namespace Sq1.Core.Serializers {
 	// http://stackoverflow.com/questions/1727346/what-is-the-use-of-default-keyword-in-c
 	public class Serializer<T> where T : new() {
-		public string OfWhat { get {
-				string ret = "UNKNOWN";
-				var args = this.GetType().GetGenericArguments();
-				if (args.Length > 0) ret = args[0].Name;
-				return ret;
-			} }
+		public string OfWhat { get { return typeof(T).Name; } }
+		
 		private IStatusReporter StatusReporter;
 		public string RootPath { get; protected set; }
 		public string Subfolder { get; protected set; }
@@ -144,7 +140,7 @@ namespace Sq1.Core.Serializers {
 			if (this.StatusReporter == null) {
 				throw ex;
 			}
-			this.StatusReporter.PopupException(ex);
+			this.StatusReporter.PopupException(msg, ex);
 		}
 	}
 }

@@ -152,7 +152,7 @@ namespace Sq1.Gui.Singletons {
 				//chartFormClicked.Activate();	// I_GUESS_ITS_ALREADY_ACTIVE
 				chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
 			} catch (Exception ex) {
-				this.mainForm.PopupException(ex);
+				this.mainForm.PopupException("DockPanel_ActiveDocumentChanged()", ex);
 			}
 		}
 		//v2
@@ -182,7 +182,7 @@ namespace Sq1.Gui.Singletons {
 				this.mainForm.GuiDataSnapshotSerializer.Serialize();
 				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 			} catch (Exception ex) {
-				this.mainForm.PopupException(ex);
+				this.mainForm.PopupException("DockPanel_ActiveContentChanged()", ex);
 			}
 		}
 
@@ -205,7 +205,7 @@ namespace Sq1.Gui.Singletons {
 				DataSourceEditorForm.Instance.ShowAsDocumentTabNotPane(this.mainForm.DockPanel);
 			} catch (Exception exc) {
 				string msg = "DataSourceEditorForm(DataSource[" + e.DataSource + "]): internal Exception";
-				this.statusReporter.PopupException(new Exception(msg, exc));
+				this.statusReporter.PopupException(msg, exc);
 				return;
 			}
 		}
@@ -231,7 +231,7 @@ namespace Sq1.Gui.Singletons {
 				// mainForm.ChartFormActive will already throw if Documents have no Charts selected; no need to check
 				this.mainForm.ChartFormActive.ChartFormManager.EventManager.DataSourcesTree_OnSymbolSelected(sender, e);
 			} catch (Exception ex) {
-				this.mainForm.PopupException(ex);
+				this.mainForm.PopupException(null, ex);
 			}
 		}
 		#endregion DataSourcesTree

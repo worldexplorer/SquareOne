@@ -272,6 +272,12 @@ namespace Sq1.Core.DataTypes {
 		}
 		#else
 		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
+			if (this.DecimalsPrice < 0) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new NotImplementedException();
+			}
 			int integefier = (int)Math.Pow(10, this.DecimalsPrice);		// 10 ^ 2 = 100;
 			decimal ret = (decimal) price * integefier; 							// 90.145 => 9014.5
 			switch (upOrDown) {
@@ -288,6 +294,7 @@ namespace Sq1.Core.DataTypes {
 					throw new NotImplementedException("RoundAlertPriceToPriceLevel() for PriceLevelRoundingMode." + upOrDown);
 			}
 			ret /= integefier;	// 9015.0 => 90.15
+			ret = Math.Round(ret, this.DecimalsPrice);
 			return (double)ret;
 		}
 		#endif

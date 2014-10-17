@@ -89,7 +89,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public string LabelText {get; set;}
 
-		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		//[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		private string valueFormat;
 		public string ValueFormat {
 			get {
@@ -102,7 +102,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 				return valueFormat;
 			}
-			set { this.valueFormat = value; }
+			//set { this.valueFormat = value; }
 		}
 
 		private bool borderOn;

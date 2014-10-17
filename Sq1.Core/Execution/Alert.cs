@@ -68,7 +68,11 @@ namespace Sq1.Core.Execution {
 		[JsonProperty] public MarketLimitStop MarketLimitStop;	//BROKER_PROVIDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
 		[JsonProperty] public MarketOrderAs MarketOrderAs;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
 		[JsonProperty] public Direction Direction;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC { get; protected set; }
-					 public PositionLongShort PositionLongShortFromDirection { get { return MarketConverter.LongShortFromDirection(this.Direction); } }
+
+						public string DirectionAsString;
+						public string MarketLimitStopAsString;
+
+					public PositionLongShort PositionLongShortFromDirection { get { return MarketConverter.LongShortFromDirection(this.Direction); } }
 					 public bool IsExitAlert { get { return !IsEntryAlert; } }
 					 public bool IsEntryAlert { get { return MarketConverter.IsEntryFromDirection(this.Direction); } }
 		[JsonProperty] public string SignalName;	//ORDER_SETS_NAME_FOR_KILLER_ALERTS { get; protected set; }
@@ -180,7 +184,9 @@ namespace Sq1.Core.Execution {
 			this.PriceScript = priceScript;
 			this.SignalName = signalName;
 			this.Direction = direction;
+			this.DirectionAsString = this.Direction.ToString();
 			this.MarketLimitStop = marketLimitStop;
+			this.MarketLimitStopAsString = this.Direction.ToString();
 			this.OrderSpreadSide = orderSpreadSide;
 
 			this.Strategy = strategy;
@@ -208,7 +214,7 @@ namespace Sq1.Core.Execution {
 				#endif
 				throw new Exception(msg);
 			}
-	}
+		}
 		[JsonIgnore]	public double QtyFilledThroughPosition { get {
 				double ret = 0;
 				if (this.PositionAffected == null) return ret;
@@ -252,17 +258,17 @@ namespace Sq1.Core.Execution {
 			//return msg.ToString();
 			msg.Append(this.PlacedBarIndex);
 			msg.Append(": ");
-			msg.Append(Direction);
+			msg.Append(this.DirectionAsString);
 			msg.Append(" ");
-			msg.Append(MarketLimitStop);
+			msg.Append(this.MarketLimitStopAsString);
 			msg.Append(" ");
 			msg.Append(Qty);
 			msg.Append("*");
 			msg.Append(this.Symbol);
 			msg.Append("@");
-			msg.Append(PriceScript);
-			msg.Append(" on[");
-			msg.Append(AccountNumber + "]");
+			msg.Append(this.PriceScript);
+			//msg.Append(" on[");
+			//msg.Append(this.AccountNumber + "]");
 			if (null == this.FilledBar) {
 				msg.Append(":UNFILLED");
 			} else {
@@ -281,8 +287,8 @@ namespace Sq1.Core.Execution {
 		public string ToStringForTooltip() {
 			string longOrderType = (MarketLimitStop == MarketLimitStop.StopLimit) ? "" : "\t";
 
-			string msg = Direction
-				+ "\t" + MarketLimitStop
+			string msg = DirectionAsString
+				+ "\t" + MarketLimitStopAsString
 				+ "\t" + longOrderType + Qty + "/" + this.QtyFilledThroughPosition + "filled*" + Symbol
 				+ "@" + PriceScript + "/" + this.PriceFilledThroughPosition + "filled"
 				;
@@ -387,9 +393,11 @@ namespace Sq1.Core.Execution {
 
 				bool fillAtSlimBarIsWithinSpread = this.FilledBarSnapshotFrozenAtFill.FillAtSlimBarIsWithinSpread(
 					this.PriceFilledThroughPosition, this.QuoteFilledThisAlert.Spread);
+				#if DEBUG
 				if (!fillAtSlimBarIsWithinSpread) {
 					Debugger.Break();
 				}
+				#endif
 
 				if (fillAtSlimBarIsWithinSpread == false) {
 					bool insideBar = this.FilledBarSnapshotFrozenAtFill.ContainsPrice(this.PriceFilledThroughPosition);
@@ -409,11 +417,11 @@ namespace Sq1.Core.Execution {
 				}
 				
 				bool priceBetweenFilledQuotesBidAsk = this.QuoteFilledThisAlert.PriceBetweenBidAsk(this.PriceFilledThroughPosition);
-				#if DEBUG
-				if (!priceBetweenFilledQuotesBidAsk) {
-					Debugger.Break();
-				}
-				#endif
+				//#if DEBUG
+				//if (!priceBetweenFilledQuotesBidAsk) {
+				//	Debugger.Break();
+				//}
+				//#endif
 
 				return false;	// false = ok, filledInsideBarShapshotFrozen
 			} }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -7,20 +8,29 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Repositories {
 	public class RepositoryDllScanner<T> {
+		public string OfWhat { get { return typeof(T).Name; } }
+		
 		public List<Type> TypesFound;
 		public Dictionary<string, T> CloneableInstanceByClassName;
 		public Dictionary<Assembly, List<T>> CloneableInstancesByAssemblies;
-		public List<string> NonEmptyDllsScanned;
-		public string NonEmptyDllsScannedAsString {
-			get {
+		public string AssembliesWithCloneableTypesFoundAsString { get {
 				string ret = "";
-				foreach (string dllPath in NonEmptyDllsScanned) {
-					ret += "{" + dllPath + "}, ";
+				foreach (Assembly asm in this.CloneableInstancesByAssemblies.Keys) {
+					ret += "{" + Path.GetFileName(asm.Location) + "}, ";
 				}
 				ret = ret.TrimEnd(", ".ToCharArray());
 				return "[" + ret + "]";
-			}
-		}
+			} }
+
+		public List<string> NonEmptyDllsScanned;
+		public string NonEmptyDllsScannedAsString { get {
+				string ret = "";
+				foreach (string dllPath in this.NonEmptyDllsScanned) {
+					ret += "{" + Path.GetFileName(dllPath) + "}, ";
+				}
+				ret = ret.TrimEnd(", ".ToCharArray());
+				return "[" + ret + "]";
+			} }
 		public List<Exception> ExceptionsWhileScanning;
 		public string RootPath { get; protected set; }
 		public string Subfolder;
@@ -64,6 +74,7 @@ namespace Sq1.Core.Repositories {
 				Type[] types;
 				string dllAbsPath = Path.Combine(directoryInfo.FullName, fileInfo.Name);
 				Assembly assembly;
+				string msig = " Assembly.LoadFile(" + dllAbsPath + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanDlls()";
 				try {
 					assembly = Assembly.LoadFile(dllAbsPath);
 					if (assembly == null) continue;
@@ -71,15 +82,23 @@ namespace Sq1.Core.Repositories {
 					if (types == null) continue;
 				} catch (ReflectionTypeLoadException ex) {
 					foreach (var loaderEx in ex.LoaderExceptions) {
-						// debugger-friendly
-						string msg = loaderEx.ToString();
+						string msg = "ReflectionTypeLoadException/LOADFILE_FAILED";
 						// add topStack and continue
-						this.ExceptionsWhileScanning.Add(loaderEx);
+						//this.ExceptionsWhileScanning.Add(loaderEx);
+						//#if DEBUG
+						//Debugger.Break();
+						//#endif
+						Assembler.PopupException(msg + msig, loaderEx);
 						break;
 					}
 					continue;
-				} catch (Exception e) {
-					this.ExceptionsWhileScanning.Add(e);
+				} catch (Exception ex) {
+					//this.ExceptionsWhileScanning.Add(ex);
+					//#if DEBUG
+					//Debugger.Break();
+					//#endif
+					string msg = "Exception/LOADFILE_FAILED";
+					Assembler.PopupException(msg + msig, ex);
 					continue;
 				}
 				this.NonEmptyDllsScanned.Add(dllAbsPath);
@@ -108,11 +127,15 @@ namespace Sq1.Core.Repositories {
 						List<T> cloneableInstancesForAssembly = this.CloneableInstancesByAssemblies[assembly];
 						cloneableInstancesForAssembly.Add(classCastedInstance);
 					} catch (Exception ex) {
-						string msig = "RepositoryDllScanner<" + typeof(T) + ">.ScanDlls(" + denyDuplicateShortNamesAndPreInstantiateToClone
-							+ ", [" + dllAbsPath + "]): Activator.CreateInstance(" + type + "): ";
-						string msg = "activation failed, or the instance can not be casted, or the duplicate found in another DLL";
-						Exception dontThrowButLog = new Exception(msig + msg, ex);
-						this.ExceptionsWhileScanning.Add(dontThrowButLog);
+						msig = " Activator.CreateInstance(" + type + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanDlls(" + denyDuplicateShortNamesAndPreInstantiateToClone
+							+ ", [" + dllAbsPath + "])";
+						string msg = "ACTIVATION_FAILED_/_INSTANCE_CANT_BE_CASTED_/_DUPLICATE_FOUND_IN_ANOTHER_DLL";
+						//Exception dontThrowButLog = new Exception(msig + msg, ex);
+						//this.ExceptionsWhileScanning.Add(dontThrowButLog);
+						//#if DEBUG
+						//Debugger.Break();
+						//#endif
+						Assembler.PopupException(msg + msig, ex);
 						continue;
 					}
 				}
@@ -126,7 +149,11 @@ namespace Sq1.Core.Repositories {
 			string dllNames = this.dllNamesForTypes(alreadyFound);
 			string msg = "typeNameShort[" + typeNameShort + "] has duplicates "
 				+ " containing in dllNames[" + dllNames + "]";
-			this.ExceptionsWhileScanning.Add(new Exception(msg));
+			//this.ExceptionsWhileScanning.Add(new Exception(msg));
+			//#if DEBUG
+			//Debugger.Break();
+			//#endif
+			Assembler.PopupException(msg);
 			return true;
 		}
 		protected string dllNamesForTypes(List<Type> types) {
@@ -216,5 +243,8 @@ namespace Sq1.Core.Repositories {
 			}
 			return typeNameShort;
 		}
-	}
+		public override string ToString() {
+			return "RepositoryDllScanner<" + this.OfWhat + ">(" + this.RootPath + "): " + this.AssembliesWithCloneableTypesFoundAsString;
+		}
+ 	}
 }

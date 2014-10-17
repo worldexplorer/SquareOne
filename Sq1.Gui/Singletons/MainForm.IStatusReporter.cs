@@ -13,15 +13,15 @@ namespace Sq1.Gui.Singletons {
 		}
 
 		public void DisplayStatusConnected(bool reconnect) {
-			ExceptionsForm.Instance.PopupException(new NotImplementedException("DisplayStatusConnected"));
+			ExceptionsForm.Instance.PopupException(null, new NotImplementedException("DisplayStatusConnected"));
 		}
 
 		public void DisplayStatusConnected() {
-			ExceptionsForm.Instance.PopupException(new NotImplementedException("DisplayStatusConnected"));
+			ExceptionsForm.Instance.PopupException(null, new NotImplementedException("DisplayStatusConnected"));
 		}
 
 		public void DisplayStatusDisconnected() {
-			ExceptionsForm.Instance.PopupException(new NotImplementedException("DisplayStatusDisconnected"));
+			ExceptionsForm.Instance.PopupException(null, new NotImplementedException("DisplayStatusDisconnected"));
 		}
 
 		public void UpdateConnectionStatus(ConnectionState status, int StatusCode, string Message) {
@@ -30,7 +30,7 @@ namespace Sq1.Gui.Singletons {
 
 		List<Exception> ExceptionsDuringApplicationShutdown;
 		Serializer<List<Exception>> ExceptionsDuringApplicationShutdownSerializer;
-		public void PopupException(Exception exc) {
+		public void PopupException(string msg, Exception exc = null, bool debuggingBreak = true) {
 			//if (this.DockPanel == null) return;
 //			if (ExceptionsForm.Instance.Visible == false) {
 //				ExceptionsForm.Instance.ExceptionControl.InsertException(exc);
@@ -50,14 +50,11 @@ namespace Sq1.Gui.Singletons {
 				this.ExceptionsDuringApplicationShutdownSerializer.Serialize();
 			}
 			try {
-				ExceptionsForm.Instance.PopupException(exc);
+				ExceptionsForm.Instance.PopupException(msg, exc, debuggingBreak);
 			} catch (Exception ex) {
 				//Assembler.PopupException(null, exc);
 				throw (ex);
 			}
-		}
-		public void PopupException(string msg) {
-			this.PopupException(new Exception(msg));
 		}
 	}
 }

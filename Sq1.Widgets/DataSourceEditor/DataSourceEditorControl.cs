@@ -116,7 +116,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 					}
 					this.lvStaticProviders.Items.Add(lvi);
 				} catch (Exception e) {
-					this.assemblerInstance.StatusReporter.PopupException(e);
+					this.assemblerInstance.StatusReporter.PopupException(null, e);
 					return;
 				}
 			}
@@ -143,7 +143,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 							streamingProviderInstance.StreamingEditorInitialize(this);
 						} catch (Exception e) {
 							string msg = "can't initialize streamingProviderInstance[" + streamingProviderInstance + "]";
-							this.assemblerInstance.StatusReporter.PopupException(new Exception(msg, e));
+							this.assemblerInstance.StatusReporter.PopupException(msg, e);
 							return;
 						}
 					}
@@ -159,7 +159,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 					}
 					this.lvStreamingProviders.Items.Add(lvi);
 				} catch (Exception e) {
-					this.assemblerInstance.StatusReporter.PopupException(e);
+					this.assemblerInstance.StatusReporter.PopupException(null, e);
 					return;
 				}
 			}
@@ -186,7 +186,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 							brokerProviderInstance.BrokerEditorInitialize(this);
 						} catch (Exception e) {
 							string msg = "can't initialize brokerProviderInstance[" + brokerProviderInstance + "]";
-							this.assemblerInstance.StatusReporter.PopupException(new Exception(msg, e));
+							this.assemblerInstance.StatusReporter.PopupException(msg, e);
 							return;
 						}
 					}
@@ -206,7 +206,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 					}
 					this.lvBrokerProviders.Items.Add(lvi);
 				} catch (Exception e) {
-					this.assemblerInstance.StatusReporter.PopupException(e);
+					this.assemblerInstance.StatusReporter.PopupException(null, e);
 					return;
 				}
 			}

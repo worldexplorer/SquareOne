@@ -8,7 +8,6 @@ namespace Sq1.Core.Support {
 		void DisplayStatusConnected();
 		void DisplayStatusDisconnected();
 		void UpdateConnectionStatus(ConnectionState status, int StatusCode, string Message);
-		void PopupException(Exception exc);
-		void PopupException(string msg);
+		void PopupException(string msg, Exception exc = null, bool debuggingBreak = true);
 	}
 }
