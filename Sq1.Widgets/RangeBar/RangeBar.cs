@@ -478,16 +478,16 @@ namespace Sq1.Widgets.RangeBar {
 		}
 		private RangeArgs<T> CreateEventArgsSnapshot() {
 			return new RangeArgs<T>(this.RangeMin, this.RangeMinFormatted,
-			                 		this.RangeMax, this.RangeMaxFormatted,
-			                 		this.ValueMin, this.ValueMinFormatted,
-			                 		this.ValueMax, this.ValueMaxFormatted,
+							 		this.RangeMax, this.RangeMaxFormatted,
+							 		this.ValueMin, this.ValueMinFormatted,
+							 		this.ValueMax, this.ValueMaxFormatted,
 									this.ValueMouseOverFromRangePercentage, this.ValueMouseOverFormatted);
 		}
 
 		//public abstract T XonGraphicsToValue(int currentXposition);
 		//public T RangeWidth { get { return base.RangeMax - base.RangeMin; } }
 		//public virtual T XonGraphicsToValue(int currentXposition) {
-		//    return this.RoundInt(this.RangeMin + currentXposition*this.RangeWidth);
+		//	return this.RoundInt(this.RangeMin + currentXposition*this.RangeWidth);
 		//}
 
 		/*ABSTRACT_COZ_T_DOESNT_ALLOW_ARITHMETICS public void checkThrow() {

@@ -45,7 +45,7 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			this.treeExceptions.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.treeExceptions.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvTime});
+			this.olvTime});
 			this.treeExceptions.ContextMenuStrip = this.ctxTree;
 			this.treeExceptions.CopySelectionOnControlC = false;
 			this.treeExceptions.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -84,12 +84,12 @@ namespace Sq1.Widgets.Exceptions {
 			// ctxTree
 			// 
 			this.ctxTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniRecentAlwaysSelected,
-            this.mniTreeShowsTimesInsteadOfMessages,
-            this.mniltbDelay,
-            this.toolStripSeparator1,
-            this.mniCopy,
-            this.mniClear});
+			this.mniRecentAlwaysSelected,
+			this.mniTreeShowsTimesInsteadOfMessages,
+			this.mniltbDelay,
+			this.toolStripSeparator1,
+			this.mniCopy,
+			this.mniClear});
 			this.ctxTree.Name = "ctx";
 			this.ctxTree.Size = new System.Drawing.Size(255, 122);
 			// 
@@ -203,10 +203,10 @@ namespace Sq1.Widgets.Exceptions {
 			this.lvStackTrace.Activation = System.Windows.Forms.ItemActivation.OneClick;
 			this.lvStackTrace.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.lvStackTrace.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.lvhMethod,
-            this.lvhDeclaringClass,
-            this.lvhLine,
-            this.lvhFile});
+			this.lvhMethod,
+			this.lvhDeclaringClass,
+			this.lvhLine,
+			this.lvhFile});
 			this.lvStackTrace.ContextMenuStrip = this.ctxCallStack;
 			this.lvStackTrace.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.lvStackTrace.FullRowSelect = true;
@@ -244,7 +244,7 @@ namespace Sq1.Widgets.Exceptions {
 			// ctxCallStack
 			// 
 			this.ctxCallStack.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniCopyStackPosition});
+			this.mniCopyStackPosition});
 			this.ctxCallStack.Name = "ctxCallStack";
 			this.ctxCallStack.Size = new System.Drawing.Size(145, 26);
 			// 

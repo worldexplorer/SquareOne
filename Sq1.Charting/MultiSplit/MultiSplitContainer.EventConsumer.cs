@@ -22,13 +22,13 @@ namespace Sq1.Charting.MultiSplit {
 			if (this.panels.Count == 0) return;
 			this.DistributePanelsAndSplittersVertically();
 			
-		    foreach (MultiSplitter splitter in this.splitters) {
-	       		splitter.Width = base.Width;
-	       		splitter.Invalidate();	// base.Invalidate() below doesn't reposition the dots
+			foreach (MultiSplitter splitter in this.splitters) {
+		   		splitter.Width = base.Width;
+		   		splitter.Invalidate();	// base.Invalidate() below doesn't reposition the dots
 			}
-		    foreach (Control panel in this.panels) {
-	       		panel.Width = base.Width;
-	       		//TESTME panel.Invalidate();
+			foreach (Control panel in this.panels) {
+		   		panel.Width = base.Width;
+		   		//TESTME panel.Invalidate();
 			}
 			base.Invalidate();
 		}
@@ -38,9 +38,9 @@ namespace Sq1.Charting.MultiSplit {
 //WHEN_INHERITED_FROM_USERCONTROL_DOUBLEBUFFERED		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
 			if (base.DesignMode) return;
 			try {
-		        for (int i=0; i<this.panels.Count; i++) {
-		        	Control panel = this.panels[i];
-		        	//panel.Invalidate();	// base.OnPaint() did it already
+				for (int i=0; i<this.panels.Count; i++) {
+					Control panel = this.panels[i];
+					//panel.Invalidate();	// base.OnPaint() did it already
 				}
 			} catch (Exception ex) {
 				Debugger.Break();
@@ -52,23 +52,23 @@ namespace Sq1.Charting.MultiSplit {
 //WHEN_INHERITED_FROM_USERCONTROL_DOUBLEBUFFERED		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
 			if (base.DesignMode) return;
 			try {
-		        for (int i=0; i<this.panels.Count; i++) {
-		        	//Control panel = this.panels[i];
-		        	//panel.Invalidate();	// base.OnPaint() did it already
-		        	
-		        	if (i >= this.splitters.Count) {
-		        		Debugger.Break();
-		        		continue;
-		        	}
-		        	MultiSplitter splitter = this.splitters[i];
-		        	
-		        	if (i == this.panelMouseIsOverNowIndexDropTarget) {
-		        		splitter.BackColor = ColorBackgroundSliderDroppingTarget;
-		        	} else {
-			        	splitter.BackColor = ColorBackgroundSliderRegular;
-		        	}
-		        	//splitter.Invalidate();
-		        }
+				for (int i=0; i<this.panels.Count; i++) {
+					//Control panel = this.panels[i];
+					//panel.Invalidate();	// base.OnPaint() did it already
+					
+					if (i >= this.splitters.Count) {
+						Debugger.Break();
+						continue;
+					}
+					MultiSplitter splitter = this.splitters[i];
+					
+					if (i == this.panelMouseIsOverNowIndexDropTarget) {
+						splitter.BackColor = ColorBackgroundSliderDroppingTarget;
+					} else {
+						splitter.BackColor = ColorBackgroundSliderRegular;
+					}
+					//splitter.Invalidate();
+				}
 				//Point location = new Point(0, 0);
 				//e.Graphics.DrawString(this.panelText, this.Font, SystemBrushes.ControlText, location);
 			} catch (Exception ex) {
@@ -235,29 +235,29 @@ namespace Sq1.Charting.MultiSplit {
 			}
 		}
 		void splitter_MouseUp(object sender, MouseEventArgs e) {
-            MultiSplitter splitter = sender as MultiSplitter;
-            if (splitter == null) {
-          		#if DEBUG
-          		Debugger.Break();
+			MultiSplitter splitter = sender as MultiSplitter;
+			if (splitter == null) {
+		  		#if DEBUG
+		  		Debugger.Break();
 				#endif
 				return;
-            }
-            if (splitterIsDraggingNow) {
-            	if (panelMouseIsOverNow == null) {
-            		string msg = "HAPPENED_ONCE_NO_CLUE";
-            		#if DEBUG
-            		Debugger.Break();
-            		#endif
-            		return;
-            	} else {
+			}
+			if (splitterIsDraggingNow) {
+				if (panelMouseIsOverNow == null) {
+					string msg = "HAPPENED_ONCE_NO_CLUE";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return;
+				} else {
 					int indexToMoveFrom = this.splitters.IndexOf(splitterStartedResizeOrDrag);
 					int indexToMoveTo   = this.panels.IndexOf(panelMouseIsOverNow);
-	            	if (indexToMoveFrom != indexToMoveTo) {
+					if (indexToMoveFrom != indexToMoveTo) {
 						this.panels.Move(indexToMoveFrom, indexToMoveTo);
 						this.splitters.Move(indexToMoveFrom, indexToMoveTo);
 						this.DistributePanelsAndSplittersVertically();
-	            	}
-            	}
+					}
+				}
 			}
 
 			splitterStartedResizeOrDrag = null;
@@ -287,7 +287,7 @@ namespace Sq1.Charting.MultiSplit {
 				Control panel = this.panels[i];
 				MultiSplitter splitterAbove = this.splitters[i];
 				Point offsetted = new Point(mousePositionFromSplitContainerUpperLeft.X - panel.Location.X,
-                                  mousePositionFromSplitContainerUpperLeft.Y - panel.Location.Y);
+								  mousePositionFromSplitContainerUpperLeft.Y - panel.Location.Y);
 				bool beyondUpperLeft = offsetted.X < 0 || offsetted.Y < 0;
 				Rectangle panelAndSplitterRect = new Rectangle(0, 0, panel.Width, panel.Height + splitterAbove.Height);
 				bool doesntContain = (beyondUpperLeft) ? true : (panelAndSplitterRect.Contains(offsetted) == false);

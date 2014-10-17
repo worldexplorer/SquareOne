@@ -27,32 +27,32 @@ namespace Sq1.Core.Indicators {
 		//public string NotOnChartSymbol;						//empty means the same as on the chart
 		//public BarScaleInterval NotOnChartBarScaleInterval;	//null  means the same as on the chart
 		//public NotOnChartBarsKey NotOnChartBarsKey { get {
-		//        if (string.IsNullOrEmpty(this.NotOnChartSymbol)
-		//            //HACK SUBSTITUTED_DURING_BACKTEST_FROM_BACKTESTDATASOURCE_TO_MOCK && string.IsNullOrEmpty(this.NotOnChartDataSourceName)
-		//            && this.NotOnChartBarScaleInterval == null) {
-		//            return null;
-		//        }
-		//        //if (this.Executor == null) {
-		//        //    // BactestStarting 
-		//        //    return null;
-		//        //}
-		//        try {
-		//            string symbol = string.IsNullOrEmpty(this.NotOnChartSymbol)
-		//                            ? this.Executor.Bars.Symbol : this.NotOnChartSymbol;
-		//            string dataSourceName = string.IsNullOrEmpty(this.NotOnChartDataSourceName)
-		//                            ? this.Executor.Bars.DataSource.Name : this.NotOnChartDataSourceName;
-		//            BarScaleInterval scaleInterval = this.NotOnChartBarScaleInterval == null
-		//                            ? this.Executor.Bars.ScaleInterval : this.NotOnChartBarScaleInterval;
-		//            // by saying {this.OwnValuesCalculated.ScaleInterval == scaleInterval } you invoke BarScaleInterval.{static bool operator ==} - UNDEBUGGABLE
-		//            if (scaleInterval != null && scaleInterval.Equals(this.OwnValuesCalculated.ScaleInterval) == false) {
-		//                this.OwnValuesCalculated.ScaleInterval = scaleInterval;
-		//            }
-		//            return new NotOnChartBarsKey(scaleInterval, symbol, dataSourceName);
-		//        } catch (Exception ex) {
-		//            Assembler.PopupException("Indicator.NotOnChartBarsKey_get()", ex);
-		//            return null;
-		//        }
-		//    } }
+		//		if (string.IsNullOrEmpty(this.NotOnChartSymbol)
+		//			//HACK SUBSTITUTED_DURING_BACKTEST_FROM_BACKTESTDATASOURCE_TO_MOCK && string.IsNullOrEmpty(this.NotOnChartDataSourceName)
+		//			&& this.NotOnChartBarScaleInterval == null) {
+		//			return null;
+		//		}
+		//		//if (this.Executor == null) {
+		//		//	// BactestStarting 
+		//		//	return null;
+		//		//}
+		//		try {
+		//			string symbol = string.IsNullOrEmpty(this.NotOnChartSymbol)
+		//							? this.Executor.Bars.Symbol : this.NotOnChartSymbol;
+		//			string dataSourceName = string.IsNullOrEmpty(this.NotOnChartDataSourceName)
+		//							? this.Executor.Bars.DataSource.Name : this.NotOnChartDataSourceName;
+		//			BarScaleInterval scaleInterval = this.NotOnChartBarScaleInterval == null
+		//							? this.Executor.Bars.ScaleInterval : this.NotOnChartBarScaleInterval;
+		//			// by saying {this.OwnValuesCalculated.ScaleInterval == scaleInterval } you invoke BarScaleInterval.{static bool operator ==} - UNDEBUGGABLE
+		//			if (scaleInterval != null && scaleInterval.Equals(this.OwnValuesCalculated.ScaleInterval) == false) {
+		//				this.OwnValuesCalculated.ScaleInterval = scaleInterval;
+		//			}
+		//			return new NotOnChartBarsKey(scaleInterval, symbol, dataSourceName);
+		//		} catch (Exception ex) {
+		//			Assembler.PopupException("Indicator.NotOnChartBarsKey_get()", ex);
+		//			return null;
+		//		}
+		//	} }
 		
 		private Bars barsEffective_cached;
 		public Bars BarsEffective { get {
@@ -64,18 +64,18 @@ namespace Sq1.Core.Indicators {
 				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 				//this.barsEffective_cached = null;
 				////if (this.barsEffective_cached == null) {
-				//    NotOnChartBarsKey key = this.NotOnChartBarsKey;
-				//    if (key != null) {
-				//        this.barsEffective_cached = this.Executor.NotOnChartBarsHelper.RescaledBarsGetRegisteredFor(key);
-				//        bool barsEffective_cachedNull = ReferenceEquals(this.barsEffective_cached, null);
-				//        if (barsEffective_cachedNull) {
-				//            this.barsEffective_cached = this.Executor.NotOnChartBarsHelper.RescaleBarsAndRegister(key);
-				//        }
-				//    }
-				//    bool barsEffective_cachedNull2 = ReferenceEquals(this.barsEffective_cached, null);
-				//    if (barsEffective_cachedNull2) {
-				//        this.barsEffective_cached = this.Executor.Bars;
-				//    }
+				//	NotOnChartBarsKey key = this.NotOnChartBarsKey;
+				//	if (key != null) {
+				//		this.barsEffective_cached = this.Executor.NotOnChartBarsHelper.RescaledBarsGetRegisteredFor(key);
+				//		bool barsEffective_cachedNull = ReferenceEquals(this.barsEffective_cached, null);
+				//		if (barsEffective_cachedNull) {
+				//			this.barsEffective_cached = this.Executor.NotOnChartBarsHelper.RescaleBarsAndRegister(key);
+				//		}
+				//	}
+				//	bool barsEffective_cachedNull2 = ReferenceEquals(this.barsEffective_cached, null);
+				//	if (barsEffective_cachedNull2) {
+				//		this.barsEffective_cached = this.Executor.Bars;
+				//	}
 				////}
 				//return this.barsEffective_cached;
 				return this.Executor.Bars;
@@ -166,19 +166,19 @@ namespace Sq1.Core.Indicators {
 				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 				//string otherSymbolTimeframe = "";
 				//if (string.IsNullOrEmpty(this.NotOnChartSymbol)) {
-				//    //if (this.NotOnChartBarScaleInterval != null) otherSymbolTimeframe += "~";			// "timeframe converted"
-				//    if (Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) == false) otherSymbolTimeframe += "~";			// "timeframe converted"
-				//    //otherSymbolTimeframe += (this.barsEffective_cached != null) ? this.barsEffective_cached.SymbolIntervalScale : "NULL";
-				//    //otherSymbolTimeframe += (this.BarsEffective != null) ? this.BarsEffective.SymbolIntervalScale : "NULL";
-				//    if (Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) == false) otherSymbolTimeframe += this.BarsEffective.SymbolIntervalScale;
+				//	//if (this.NotOnChartBarScaleInterval != null) otherSymbolTimeframe += "~";			// "timeframe converted"
+				//	if (Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) == false) otherSymbolTimeframe += "~";			// "timeframe converted"
+				//	//otherSymbolTimeframe += (this.barsEffective_cached != null) ? this.barsEffective_cached.SymbolIntervalScale : "NULL";
+				//	//otherSymbolTimeframe += (this.BarsEffective != null) ? this.BarsEffective.SymbolIntervalScale : "NULL";
+				//	if (Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) == false) otherSymbolTimeframe += this.BarsEffective.SymbolIntervalScale;
 				//} else {
-				//    otherSymbolTimeframe += "(" + this.NotOnChartSymbol;
-				//    //if (this.NotOnChartBarScaleInterval != null) otherSymbolTimeframe += ":" + this.NotOnChartBarScaleInterval;
-				//    if (Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) == false) otherSymbolTimeframe += ":" + this.NotOnChartBarScaleInterval;
-				//    otherSymbolTimeframe += ")!";								// "Symbol is not from the chart"
-				//    //otherSymbolTimeframe += (this.NotOnChartBarScaleInterval == null) ? "=" : "~";		// "timeframe converted"
-				//    otherSymbolTimeframe += Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) ? "=" : "~";		// "timeframe converted"
-				//    otherSymbolTimeframe += (this.barsEffective_cached != null) ? this.barsEffective_cached.SymbolIntervalScale : "NULL";
+				//	otherSymbolTimeframe += "(" + this.NotOnChartSymbol;
+				//	//if (this.NotOnChartBarScaleInterval != null) otherSymbolTimeframe += ":" + this.NotOnChartBarScaleInterval;
+				//	if (Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) == false) otherSymbolTimeframe += ":" + this.NotOnChartBarScaleInterval;
+				//	otherSymbolTimeframe += ")!";								// "Symbol is not from the chart"
+				//	//otherSymbolTimeframe += (this.NotOnChartBarScaleInterval == null) ? "=" : "~";		// "timeframe converted"
+				//	otherSymbolTimeframe += Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) ? "=" : "~";		// "timeframe converted"
+				//	otherSymbolTimeframe += (this.barsEffective_cached != null) ? this.barsEffective_cached.SymbolIntervalScale : "NULL";
 				//}
 				//ret += otherSymbolTimeframe;
 				return ret;
@@ -224,32 +224,32 @@ namespace Sq1.Core.Indicators {
 			//this.NotOnChartDataSourceName = executor.Bars.DataSource.Name;
 			//NotOnChartBarsKey key = this.NotOnChartBarsKey;
 			//if (string.IsNullOrEmpty(this.NotOnChartSymbol) == false) {
-			//    this.Executor.NotOnChartBarsHelper.FindNonChartBarsSubscribeRegisterForIndicator(key);
-			//    if (this.BarsEffective == null) {
-			//        string msg = "NOT_ON_CHART_BARS_HELPER_DOESNT_HAVE_BARS_REGISTERED[" + this.NotOnChartSymbol + "]";
-			//        this.IndicatorErrorsOnBacktestStartingAppend(msg);
-			//        Assembler.PopupException(msg + msig);
-			//    }
+			//	this.Executor.NotOnChartBarsHelper.FindNonChartBarsSubscribeRegisterForIndicator(key);
+			//	if (this.BarsEffective == null) {
+			//		string msg = "NOT_ON_CHART_BARS_HELPER_DOESNT_HAVE_BARS_REGISTERED[" + this.NotOnChartSymbol + "]";
+			//		this.IndicatorErrorsOnBacktestStartingAppend(msg);
+			//		Assembler.PopupException(msg + msig);
+			//	}
 			//} else {
-			//    if (this.NotOnChartBarScaleInterval != null) {
-			//        if (this.NotOnChartBarScaleInterval.Scale == BarScale.Unknown
-			//            && this.NotOnChartBarScaleInterval == this.Executor.Bars.ScaleInterval) {
-			//            string msg = "SET_TO_NULL_IF_SAME_AS_EXECUTORS_BARS";
-			//            this.IndicatorErrorsOnBacktestStartingAppend(msg);
-			//            Assembler.PopupException(msg + msig);
-			//        }
-			//        // v2 self-registered earlier
-			//        Bars rescaled = this.Executor.NotOnChartBarsHelper.RescaledBarsGetRegisteredFor(key);
-			//        if (rescaled == null) {
-			//            // v1
-			//            rescaled = this.Executor.NotOnChartBarsHelper.RescaleBarsAndRegister(key);
-			//        }
-			//        if (rescaled == null) {
-			//            string msg = "BARS_NOT_RESCALABLE[" + this.Executor.Bars.SymbolIntervalScale + "]>[" + key + "]";
-			//            this.IndicatorErrorsOnBacktestStartingAppend(msg);
-			//            Assembler.PopupException(msg + msig);
-			//        }
-			//    }
+			//	if (this.NotOnChartBarScaleInterval != null) {
+			//		if (this.NotOnChartBarScaleInterval.Scale == BarScale.Unknown
+			//			&& this.NotOnChartBarScaleInterval == this.Executor.Bars.ScaleInterval) {
+			//			string msg = "SET_TO_NULL_IF_SAME_AS_EXECUTORS_BARS";
+			//			this.IndicatorErrorsOnBacktestStartingAppend(msg);
+			//			Assembler.PopupException(msg + msig);
+			//		}
+			//		// v2 self-registered earlier
+			//		Bars rescaled = this.Executor.NotOnChartBarsHelper.RescaledBarsGetRegisteredFor(key);
+			//		if (rescaled == null) {
+			//			// v1
+			//			rescaled = this.Executor.NotOnChartBarsHelper.RescaleBarsAndRegister(key);
+			//		}
+			//		if (rescaled == null) {
+			//			string msg = "BARS_NOT_RESCALABLE[" + this.Executor.Bars.SymbolIntervalScale + "]>[" + key + "]";
+			//			this.IndicatorErrorsOnBacktestStartingAppend(msg);
+			//			Assembler.PopupException(msg + msig);
+			//		}
+			//	}
 			//}
 
 			this.parametersAsStringShort_cached = null;

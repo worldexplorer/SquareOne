@@ -16,10 +16,10 @@ namespace Sq1.Widgets.RangeBar {
 		public string ValueMouseOverFormatted;
 		
 		public RangeArgs(T rangeMin, string rangeMinFormatted,
-		                 T rangeMax, string rangeMaxFormatted,
-		                 T valueMin, string valueMinFormatted,
-		                 T valueMax, string valueMaxFormatted,
-		                 T valueMouseOver, string valueMouseOverFormatted) {
+						 T rangeMax, string rangeMaxFormatted,
+						 T valueMin, string valueMinFormatted,
+						 T valueMax, string valueMaxFormatted,
+						 T valueMouseOver, string valueMouseOverFormatted) {
 			
 			this.RangeMin = rangeMin;
 			this.RangeMinFormatted = rangeMinFormatted;

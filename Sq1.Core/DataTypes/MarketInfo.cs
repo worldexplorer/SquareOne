@@ -481,9 +481,9 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		public DateTime GetClearingResumes(DateTime quoteTimeGuess) {
-		    DateTime ret = quoteTimeGuess;
+			DateTime ret = quoteTimeGuess;
 			MarketClearingTimespan clearingNow = this.GetClearingTimespanIfMarketSuspended(quoteTimeGuess);
-		    if (clearingNow == null) return ret;
+			if (clearingNow == null) return ret;
 			ret = Bars.CombineBarDateWithMarketOpenTime(quoteTimeGuess, clearingNow.ResumeServerTimeOfDay);
 			//string msg = "[" + this.Name + "]Market is CLEARING, resumes["
 			//	+ ret.ToString("HH:mm") + "], +[" + (ret-quoteTimeGuess).TotalSeconds + "]sec for quoteTimeGuess[" + quoteTimeGuess + "]";

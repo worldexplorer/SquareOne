@@ -46,8 +46,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 				//if (imageIndex == -1) return;
 				//Image providerIcon = this.tree.SmallImageList.Images[imageIndex];
 				//if (providerIcon != null) {
-				//    this.mniNewChartSymbol.Image = providerIcon;
-				//    this.mniOpenStrategySymbol.Image = providerIcon;
+				//	this.mniNewChartSymbol.Image = providerIcon;
+				//	this.mniOpenStrategySymbol.Image = providerIcon;
 				//}
 			} else {
 				NamedObjectJsonEventArgs<DataSource> subscribersPolled =
@@ -161,9 +161,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.toolTip1.SetToolTip(this.textBoxFilterTree, msg);
 			} else {
 				string msg = String.Format("Filtered {0} items down to {1} items in {2}ms",
-				                           objects.Count,
-				                           olv.Items.Count,
-				                           stopWatch.ElapsedMilliseconds);
+										   objects.Count,
+										   olv.Items.Count,
+										   stopWatch.ElapsedMilliseconds);
 				this.toolTip1.SetToolTip(this.textBoxFilterTree, msg);
 			}
 		}

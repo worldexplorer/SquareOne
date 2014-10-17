@@ -175,7 +175,7 @@ namespace Sq1.Core.Execution {
 			
 			this.AccountNumber = "UNKNOWN_ACCOUNT";
 			if (this.DataSource.BrokerProvider != null && this.DataSource.BrokerProvider.AccountAutoPropagate != null
-			    && string.IsNullOrEmpty(this.Bars.DataSource.BrokerProvider.AccountAutoPropagate.AccountNumber) != false) {
+				&& string.IsNullOrEmpty(this.Bars.DataSource.BrokerProvider.AccountAutoPropagate.AccountNumber) != false) {
 				this.AccountNumber = this.Bars.DataSource.BrokerProvider.AccountAutoPropagate.AccountNumber;
 			}
 			
@@ -196,8 +196,8 @@ namespace Sq1.Core.Execution {
 			}
 			
 			//if (this.Strategy.Script != null) {
-			//    string msg = "Looks like a manual Order submitted from the Chart";
-			//    Assembler.PopupException(msg, null, false);
+			//	string msg = "Looks like a manual Order submitted from the Chart";
+			//	Assembler.PopupException(msg, null, false);
 			//}
 
 			if (this.Bars.SymbolInfo == null) {
@@ -426,16 +426,16 @@ namespace Sq1.Core.Execution {
 				return false;	// false = ok, filledInsideBarShapshotFrozen
 			} }
 		//[JsonProperty]	public bool IsFilledOutsideBar_DEBUG_CHECK { get {
-		//        if (this.FilledBar == null) return false;
-		//        bool insideBar = (this.PriceFilledThroughPosition >= this.FilledBar.Low && this.PriceFilledThroughPosition <= this.FilledBar.High);
-		//        bool outsideBar = !insideBar; 
-		//        #if DEBUG
-		//        if (outsideBar) {
-		//            Debugger.Break();
-		//        }
-		//        #endif
-		//        return outsideBar;
-		//    } }
+		//		if (this.FilledBar == null) return false;
+		//		bool insideBar = (this.PriceFilledThroughPosition >= this.FilledBar.Low && this.PriceFilledThroughPosition <= this.FilledBar.High);
+		//		bool outsideBar = !insideBar; 
+		//		#if DEBUG
+		//		if (outsideBar) {
+		//			Debugger.Break();
+		//		}
+		//		#endif
+		//		return outsideBar;
+		//	} }
 		[JsonProperty]	public bool IsFilledOutsideQuote_DEBUG_CHECK { get {
 				if (this.QuoteFilledThisAlert == null) return false;
 				bool insideQuote = (this.PriceFilledThroughPosition >= this.QuoteFilledThisAlert.Bid && this.PriceFilledThroughPosition <= this.QuoteFilledThisAlert.Ask);

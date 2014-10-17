@@ -33,10 +33,10 @@ namespace Sq1.Core.StrategyBase {
 			//PositionLongShort longShortFromDirection = MarketConverter.LongShortFromDirection(direction);
 			//double entryPriceScript1 = entryBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(priceScriptOrStreaming, true, longShortFromDirection, entryMarketLimitStop);
 			//if (entryPriceScript1 != entryPriceScript) {
-			//    string msg = "FIX_Alert.entryPriceScript";
-			//    Debugger.Break();
+			//	string msg = "FIX_Alert.entryPriceScript";
+			//	Debugger.Break();
 			//} else {
-			//    string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertToPriceLevel()";
+			//	string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertToPriceLevel()";
 			//}
 			//#endif
 			
@@ -83,10 +83,10 @@ namespace Sq1.Core.StrategyBase {
 			//PositionLongShort longShortFromDirection = MarketConverter.LongShortFromDirection(direction);
 			//double exitPriceScript1 = exitBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(priceScriptOrStreaming, true, longShortFromDirection, exitMarketLimitStop);
 			//if (exitPriceScript1 != exitPriceScript) {
-			//    string msg = "FIX_Alert.entryPriceScript";
-			//    Debugger.Break();
+			//	string msg = "FIX_Alert.entryPriceScript";
+			//	Debugger.Break();
 			//} else {
-			//    string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertToPriceLevel()";
+			//	string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertToPriceLevel()";
 			//}
 			//#endif
 

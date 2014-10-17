@@ -375,30 +375,30 @@ namespace Sq1.Charting {
 
 			// v1 - buggy because it doesn't display lines started way before and ended way later the visible barWindow
 			//for (int barIndex = base.VisibleBarRight_cached; barIndex > base.VisibleBarLeft_cached; barIndex--) {
-			//    // 1. render the lines that end on each visible bar and stretch to the left
-			//    if (seo.LinesByRightBar.ContainsKey(barIndex)) {
-			//        List<OnChartLine> linesEndingHere = seo.LinesByRightBar[barIndex];
-			//        foreach (OnChartLine line in linesEndingHere) {
-			//            if (linesToDraw.Contains(line)) continue;
-			//            linesToDraw.Add(line);
-			//        }
-			//    }
-			//    // 2. render the lines that start from each visible bar and stretch to the right
-			//    if (seo.LinesByLeftBar.ContainsKey(barIndex)) {
-			//        List<OnChartLine> linesStartingHere = seo.LinesByLeftBar[barIndex];
-			//        foreach (OnChartLine line in linesStartingHere) {
-			//            if (linesToDraw.Contains(line)) continue;
-			//            linesToDraw.Add(line);
-			//        }
-			//    }
+			//	// 1. render the lines that end on each visible bar and stretch to the left
+			//	if (seo.LinesByRightBar.ContainsKey(barIndex)) {
+			//		List<OnChartLine> linesEndingHere = seo.LinesByRightBar[barIndex];
+			//		foreach (OnChartLine line in linesEndingHere) {
+			//			if (linesToDraw.Contains(line)) continue;
+			//			linesToDraw.Add(line);
+			//		}
+			//	}
+			//	// 2. render the lines that start from each visible bar and stretch to the right
+			//	if (seo.LinesByLeftBar.ContainsKey(barIndex)) {
+			//		List<OnChartLine> linesStartingHere = seo.LinesByLeftBar[barIndex];
+			//		foreach (OnChartLine line in linesStartingHere) {
+			//			if (linesToDraw.Contains(line)) continue;
+			//			linesToDraw.Add(line);
+			//		}
+			//	}
 			//}
 			// v2,v3: render the lines that start AND end beyond visible bars range
 			// v2 - very clean but I expect it to be very slow
 			//foreach (OnChartLine line in seo.LinesById.Values) {
-			//    if (line.BarLeft > base.VisibleBarRight_cached) continue;	//whole line is at right of visible bar window
-			//    if (line.BarRight < base.VisibleBarLeft_cached) continue;	//whole line is at  left of visible bar window
-			//    if (linesToDraw.Contains(line)) continue;	// should never "continue"
-			//    linesToDraw.Add(line);
+			//	if (line.BarLeft > base.VisibleBarRight_cached) continue;	//whole line is at right of visible bar window
+			//	if (line.BarRight < base.VisibleBarLeft_cached) continue;	//whole line is at  left of visible bar window
+			//	if (linesToDraw.Contains(line)) continue;	// should never "continue"
+			//	linesToDraw.Add(line);
 			//}
 			//v3 - will work faster closer to right edge of Chart (fastest when StreamingBar is displayed); will display all lines that start AND end beoynd VisibleBars
 			// throwing "Dictionary.CopyTo target array wrong size" during backtest & chartMouseOver
@@ -407,18 +407,18 @@ namespace Sq1.Charting {
 			lineRightEnds.Reverse();
 			foreach (int index in lineRightEnds) {				// 5,3,2,0 (sorted & reversed enforced: max => min)
 				if (index < base.VisibleBarLeft_cached) break;	// if our VisibleLeft is 3 we should ignore all lines ending at 2 
-			    List<OnChartLine> linesByRight = seo.LinesByRightBar[index];
-			    foreach (OnChartLine line in linesByRight) {
-			        if (line.BarLeft > base.VisibleBarRight_cached) continue;	// line will start after VisibleRight
-			        if (linesToDraw.Contains(line)) {
+				List<OnChartLine> linesByRight = seo.LinesByRightBar[index];
+				foreach (OnChartLine line in linesByRight) {
+					if (line.BarLeft > base.VisibleBarRight_cached) continue;	// line will start after VisibleRight
+					if (linesToDraw.Contains(line)) {
 						#if DEBUG
 						string msg = "should never happen";
 						Debugger.Break();
 						#endif
 						continue;
 					}
-			        linesToDraw.Add(line);
-			    }
+					linesToDraw.Add(line);
+				}
 			}
 
 			foreach (OnChartLine line in linesToDraw) {
@@ -541,8 +541,8 @@ namespace Sq1.Charting {
 						y += (barAnnotation.AboveBar) ? -barAnnotation.VerticalPaddingPx : barAnnotation.VerticalPaddingPx;
 					}
 					base.DrawLabel(g, x, y,
-					               barAnnotation.BarAnnotationText, barAnnotation.Font,
-					               barAnnotation.ColorForeground, barAnnotation.ColorBackground, false);
+								   barAnnotation.BarAnnotationText, barAnnotation.Font,
+								   barAnnotation.ColorForeground, barAnnotation.ColorBackground, false);
 
 				
 					int labelHeightWithPadding = labelHeightMeasured;

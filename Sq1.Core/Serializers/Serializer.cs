@@ -40,7 +40,7 @@ namespace Sq1.Core.Serializers {
 			this.StatusReporter = statusReporter;
 		}
 		public bool Initialize(string rootPath, string relFname,
-		            string subfolder = "Workspaces", string workspaceName = "Default",
+					string subfolder = "Workspaces", string workspaceName = "Default",
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {
 			
 			bool createdNewEmptyFile = false;

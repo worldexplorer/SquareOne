@@ -48,10 +48,10 @@ namespace Sq1.Core.Serializers {
 			this.ItemsByName = new Dictionary<string, DATASOURCE>();			
 		}
 		public void Initialize(string rootPath,
-		            string subfolder = "DataSources",
-		            IStatusReporter statusReporter = null,
-		            Func<string, DATASOURCE, bool> checkIfValidAndShouldBeAddedAfterDeserialized = null,
-		            string mask = "*.json",
+					string subfolder = "DataSources",
+					IStatusReporter statusReporter = null,
+					Func<string, DATASOURCE, bool> checkIfValidAndShouldBeAddedAfterDeserialized = null,
+					string mask = "*.json",
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {
 			
 			this.StatusReporter = statusReporter;

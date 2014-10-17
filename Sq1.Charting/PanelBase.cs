@@ -187,7 +187,7 @@ namespace Sq1.Charting {
 		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
 		//#endif
 			string msig = " " + this.PanelName + ".OnPaintDoubleBuffered()";
-		    if (this.DesignMode) return;
+			if (this.DesignMode) return;
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 			
@@ -363,7 +363,7 @@ namespace Sq1.Charting {
 				//v2
 				if (this.PanelHasValuesForVisibleBarWindow == false) {
 					//Debugger.Break();
-				    return;
+					return;
 				}
 
 				this.VisibleBarLeft_cached = this.ChartControl.VisibleBarLeft;
@@ -432,7 +432,7 @@ namespace Sq1.Charting {
 			if (xMouseOver > this.PanelWidthMinusRightPriceGutter) return -2;
 			int offsetFromRight = this.PanelWidthMinusRightPriceGutter - this.BarWidthIncludingPadding_cached;
 			for (int i = this.VisibleBarRightExisting; i >= this.VisibleBarLeftExisting;
-				     i--, offsetFromRight -= this.BarWidthIncludingPadding_cached) {
+					 i--, offsetFromRight -= this.BarWidthIncludingPadding_cached) {
 				if (xMouseOver > offsetFromRight) return i;
 			}
 			return -3; // negative means ERROR

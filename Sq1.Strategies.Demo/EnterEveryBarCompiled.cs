@@ -12,7 +12,7 @@ using Sq1.Core.Streaming;
 namespace Sq1.Strategies.Demo {
 	[ScriptParameterAttribute(Id=1, Name="test", ValueMin=0, ValueMax=10, ValueIncrement=1 )]
 	[ScriptParameterAttribute(Id=2, Name="verbose", ValueMin=0, ValueMax=1, ValueIncrement=1,
-	                          ValueCurrent=0, ReasonToExist="set to 0 if you don't want log() to spam your Exceptions window" )]
+							  ValueCurrent=0, ReasonToExist="set to 0 if you don't want log() to spam your Exceptions window" )]
 	public class EnterEveryBarCompiled : Script {
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
 		public IndicatorMovingAverageSimple MAfast;

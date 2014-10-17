@@ -44,7 +44,7 @@ namespace Sq1.Core.Repositories {
 			Bars barsAll = this.BarsLoadAllThreadSafe();
 			//Assembler.PopupException("Loaded [ " + bars.Count + "] bars; symbol[" + this.Symbol + "] scaleInterval[" + this.BarsFolder.ScaleInterval + "]");
 			if (startDate == DateTime.MinValue && endDate == DateTime.MaxValue && maxBars == 0) return barsAll;
-				              
+							  
 			string start = (startDate == DateTime.MinValue) ? "MIN" : startDate.ToString("dd-MMM-yyyy");
 			string end = (endDate == DateTime.MaxValue) ? "MAX" : endDate.ToString("dd-MMM-yyyy");
 			Bars bars = new Bars(barsAll.Symbol, barsAll.ScaleInterval, barsAll.ReasonToExist + " [" + start + "..." + end + "]max[" + maxBars + "]");
@@ -190,11 +190,11 @@ namespace Sq1.Core.Repositories {
 			//v1
 			//string symbolTruncated = symbol;
 			//if (symbolTruncated.Length > byteBuffer.Length) {
-			//    symbolTruncated = symbolTruncated.Substring(0, byteBuffer.Length);
-			//    string msg = "";
-			//    Assembler.PopupException("TRUNCATED_SYMBOL_TO_FIT_BARFILE_HEADER v[" + this.barFileCurrentVersion + "](" + bufferLength+ ")bytes [" + symbol + "]=>[" + symbolTruncated + "]");
+			//	symbolTruncated = symbolTruncated.Substring(0, byteBuffer.Length);
+			//	string msg = "";
+			//	Assembler.PopupException("TRUNCATED_SYMBOL_TO_FIT_BARFILE_HEADER v[" + this.barFileCurrentVersion + "](" + bufferLength+ ")bytes [" + symbol + "]=>[" + symbolTruncated + "]");
 			//}
-		    //System.Buffer.BlockCopy(symbolTruncated.ToCharArray(), 0, byteBuffer, 0, symbolTruncated.Length);
+			//System.Buffer.BlockCopy(symbolTruncated.ToCharArray(), 0, byteBuffer, 0, symbolTruncated.Length);
 			//v2
 			byte[] utf8 = System.Text.Encoding.UTF8.GetBytes(symbol);
 			int min = Math.Min(utf8.Length, ret.Length);
@@ -202,7 +202,7 @@ namespace Sq1.Core.Repositories {
 			string reconstructed = this.reconstructFromByteArray(ret);
 			if (reconstructed.Length != symbol.Length) {
 				string msg = "TRUNCATED_SYMBOL_TO_FIT_BARFILE_HEADER v[" + this.barFileCurrentVersion + "](" + bufferLength + ")bytes [" + symbol + "]=>[" + reconstructed + "]";
-			    Assembler.PopupException(msg);
+				Assembler.PopupException(msg);
 			}
 			return ret;
 		}
@@ -211,8 +211,8 @@ namespace Sq1.Core.Repositories {
 			//v1 System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
 			//v2
 			//for (int i = 0; i < chars.Length; i++) {
-			//    if (chars[i] == 0) break;	// want to avoid "RIM3\0\0\0\0\0\0"
-			//    System.Buffer.BlockCopy(bytes, i, chars, i, 1);
+			//	if (chars[i] == 0) break;	// want to avoid "RIM3\0\0\0\0\0\0"
+			//	System.Buffer.BlockCopy(bytes, i, chars, i, 1);
 			//}
 			//string ret = new string(chars);
 
@@ -241,7 +241,7 @@ namespace Sq1.Core.Repositories {
 			//v1
 			//Bars allBars = this.BarsLoadAllThreadSafe();
 			//if (allBars == null) {
-			//    allBars = new Bars(barLastFormed.Symbol, barLastFormed.ScaleInterval, "DUMMY: LoadBars()=null");
+			//	allBars = new Bars(barLastFormed.Symbol, barLastFormed.ScaleInterval, "DUMMY: LoadBars()=null");
 			//}
 			////allBars.DumpPartialInitFromStreamingBar(bar);
 
@@ -254,7 +254,7 @@ namespace Sq1.Core.Repositories {
 			//// SetParentForBackwardUpdateAutoindex used within Bar only()
 			////barLastFormed.SetParentForBackwardUpdateAutoindex(allBars);
 			//if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) {
-			//    return 0;
+			//	return 0;
 			//}
 
 			//allBars.BarAppendBindStatic(barLastFormed);

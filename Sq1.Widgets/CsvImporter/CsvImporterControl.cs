@@ -29,14 +29,14 @@ namespace Sq1.Widgets.CsvImporter {
 			this.olvColGenFieldSetup = new Dictionary<OLVColumn, ColumnCatcher>();
 			this.dataSnapshotSerializer = new Serializer<CsvImporterDataSnapshot>();
 			LinkLabel.Link link = new LinkLabel.Link();
-	    	link.LinkData = "http://www.finam.ru/analysis/profile0000300007/";
-	    	this.lnkDownload.Links.Add(link);				
+			link.LinkData = "http://www.finam.ru/analysis/profile0000300007/";
+			this.lnkDownload.Links.Add(link);				
 		}
 		public void Initialize(RepositoryJsonDataSource dataSourceRepository) {
 			this.DataSourceRepository = dataSourceRepository;
 			bool createdNewFile = this.dataSnapshotSerializer.Initialize(this.DataSourceRepository.RootPath,
-			                                       "Sq1.Widgets.CsvImporter.CsvImporterDataSnapshot.json", "Workspaces",
-			                                       Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
+												   "Sq1.Widgets.CsvImporter.CsvImporterDataSnapshot.json", "Workspaces",
+												   Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
 
 			//this.dataSnapshot = new CsvImporterDataSnapshot();
 			this.dataSnapshot = this.dataSnapshotSerializer.Deserialize();

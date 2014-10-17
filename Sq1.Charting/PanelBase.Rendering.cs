@@ -93,7 +93,7 @@ namespace Sq1.Charting {
 					int labelWidth = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont).Width;
 					int labelXalignedRight = base.Width - this.ChartControl.ChartSettings.GutterRightPadding - labelWidth;
 					g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
-					             this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
+								 this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
 				}
 				
 				if (mouseTrack) {			// && this.moveHorizontalYprev > -1
@@ -120,12 +120,12 @@ namespace Sq1.Charting {
 						}
 						using (SolidBrush brushWhite = new SolidBrush(Color.White)) {
 							g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
-							             brushWhite, labelXalignedRight, labelYadjustedUp);
+										 brushWhite, labelXalignedRight, labelYadjustedUp);
 						}
 					} else {
 						g.FillRectangle(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters.Brush, plate);
 						g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
-						             this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
+									 this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
 					}
 				}
 			}

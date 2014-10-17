@@ -12,8 +12,8 @@ namespace Sq1.Charting {
 				//Debugger.Break();	// HAPPENS_WHEN_WINDOW_IS_MINIMIZED OR BEFORE_FIRST_PAINT_SETS_GutterRightWidth_cached... how to disable any OnPaint when app isn't visible?... 
 				return;
 			}
-		    this.hScrollBar.LargeChange = this.ScrollLargeChange;
-		    base.OnResize(e);	// will invoke UserControlDoubleBuffered.OnResize() if you inherited so here you are DoubleBuffer-safe
+			this.hScrollBar.LargeChange = this.ScrollLargeChange;
+			base.OnResize(e);	// will invoke UserControlDoubleBuffered.OnResize() if you inherited so here you are DoubleBuffer-safe
 		}
 		
 		protected override void OnMouseMove(MouseEventArgs e) {

@@ -51,15 +51,15 @@ namespace Sq1.Charting.MultiSplit {
 
 		public void DrawGripForSplitter(Graphics g) {
 			Rectangle splitterRectangle = base.ClientRectangle;
-		    Point centerPoint = new Point(splitterRectangle.Left - 1 + splitterRectangle.Width / 2, splitterRectangle.Top - 1 + splitterRectangle.Height / 2);
-		    int dotSize = 2;
-		    //Rectangle dotRect = new Rectangle(dotSize, dotSize);
-		    using (Brush myFore = new SolidBrush(this.ForeColor)) {
-			    g.FillEllipse(myFore, centerPoint.X, centerPoint.Y, dotSize, dotSize);
-		        g.FillEllipse(myFore, centerPoint.X - 10, centerPoint.Y, dotSize, dotSize);
-		        g.FillEllipse(myFore, centerPoint.X + 10, centerPoint.Y, dotSize, dotSize);
-		    }
-	    }
+			Point centerPoint = new Point(splitterRectangle.Left - 1 + splitterRectangle.Width / 2, splitterRectangle.Top - 1 + splitterRectangle.Height / 2);
+			int dotSize = 2;
+			//Rectangle dotRect = new Rectangle(dotSize, dotSize);
+			using (Brush myFore = new SolidBrush(this.ForeColor)) {
+				g.FillEllipse(myFore, centerPoint.X, centerPoint.Y, dotSize, dotSize);
+				g.FillEllipse(myFore, centerPoint.X - 10, centerPoint.Y, dotSize, dotSize);
+				g.FillEllipse(myFore, centerPoint.X + 10, centerPoint.Y, dotSize, dotSize);
+			}
+		}
 		public override string ToString() {
 			string ret = "PANEL_BELOW_SPLITTER_IS_NULL";
 			if (this.PanelBelow == null) return ret;

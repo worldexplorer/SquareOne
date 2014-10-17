@@ -8,7 +8,7 @@ namespace Sq1.Gui.Singletons {
 		//!!!!!!!!!
 		// DataSourceEditorForm.HideOnClose=true since on Close() we loose *ProvidersByName Dictionaries
 		//!!!!!!!!!
-		// 1) you specify HideOnClose=true  and do not override OnFormClosing(); OnClose: <Content IsHidden="True"> will     be added into Layout.xml
+		// 1) you specify HideOnClose=true  and do not override OnFormClosing(); OnClose: <Content IsHidden="True"> will	 be added into Layout.xml
 		// 2) you specify HideOnClose=false and  you   override OnFormClosing(); OnClose: <Content IsHidden="True"> will NOT be added into Layout.xml
 		// by HideOnClose=false and overriding with hide-cancelTrue-OnFormClosing-cancelFalse, I achieved:
 		// onDockedMinimize - stay minimized after restart, onClose - removed from Layout.xml

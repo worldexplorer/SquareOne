@@ -211,13 +211,13 @@ namespace Sq1.Core.StrategyBase {
 			// v1 INAPPROPRIATE_BECAUSE_MARKET_SIM_SHOULNT_KNOW_ANYTHING_ABOUT_ORIGINAL_SIMULATED_BAR_AND_STREAMING_IS_IN_PROGRESS
 			// v1 CHECK_IF_QUOTE_ISNT_BEYOND_BAR_EARLIER_UPSTACK alternative implementation: GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK
 			//if (entryAlert.Bars.BarStreaming.ContainsPrice(entryPriceOut) == false) {		// earlier version of same checkup as Position.FillEntryWith() 
-			//    string msg = "QUOTE_UNFILLABLE_ON_BAR_STREAMING quote[" + quote + "] => entryPriceOut["
-			//        + entryPriceOut + "] at entryAlert.Bars.BarStreaming[" + entryAlert.Bars.BarStreaming + "]";
-			//    //throw new Exception(msg);
-			//    #if DEBUG
-			//    //Debugger.Break();
-			//    #endif
-			//    return false;
+			//	string msg = "QUOTE_UNFILLABLE_ON_BAR_STREAMING quote[" + quote + "] => entryPriceOut["
+			//		+ entryPriceOut + "] at entryAlert.Bars.BarStreaming[" + entryAlert.Bars.BarStreaming + "]";
+			//	//throw new Exception(msg);
+			//	#if DEBUG
+			//	//Debugger.Break();
+			//	#endif
+			//	return false;
 			//}
 			//v1
 			
@@ -240,8 +240,8 @@ namespace Sq1.Core.StrategyBase {
 			//v1
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 			double exitPriceOut1 = this.executor.AlignAlertPriceToPriceLevel(
-			    exitAlert.Bars, exitAlert.PriceScript, false,
-			    exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
+				exitAlert.Bars, exitAlert.PriceScript, false,
+				exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 			if (exitPriceOut1 != exitAlert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
 				Debugger.Break();
@@ -312,13 +312,13 @@ namespace Sq1.Core.StrategyBase {
 					#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 					// we aligned priceStopActivation before we stored it in exitAlert  
 					double priceStopActivationAligned1 = this.executor.AlignAlertPriceToPriceLevel(
-					    exitAlert.Bars, exitAlert.PriceStopLimitActivation, false,
-					    exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
+						exitAlert.Bars, exitAlert.PriceStopLimitActivation, false,
+						exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 					if (priceStopActivationAligned1 != exitAlert.PriceStopLimitActivationAligned) {
-					    string msg = "FIX_Alert.PriceStopLimitActivation";
-					    Debugger.Break();
+						string msg = "FIX_Alert.PriceStopLimitActivation";
+						Debugger.Break();
 					} else {
-					    string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+						string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 					}
 					#endif
 
@@ -449,13 +449,13 @@ namespace Sq1.Core.StrategyBase {
 			// v1 INAPPROPRIATE_BECAUSE_MARKET_SIM_SHOULNT_KNOW_ANYTHING_ABOUT_ORIGINAL_SIMULATED_BAR_AND_STREAMING_IS_IN_PROGRESS
 			// v1 CHECK_IF_QUOTE_ISNT_BEYOND_BAR_EARLIER_UPSTACK alternative implementation: GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK
 			//if (exitAlert.Bars.BarStreaming.ContainsPrice(exitPriceOut) == false) {		// earlier version of same checkup as Position.FillEntryWith() 
-			//    string msg = "QUOTE_GENERATED_UNFILLABLE_ON_BAR_STREAMING quote[" + quote + "] => exitPriceOut["
-			//        + exitPriceOut + "] at exitAlert.Bars.BarStreaming[" + exitAlert.Bars.BarStreaming + "]";
-			//    //throw new Exception(msg);
-			//    #if DEBUG
-			//    Debugger.Break();
-			//    #endif
-			//    return false;
+			//	string msg = "QUOTE_GENERATED_UNFILLABLE_ON_BAR_STREAMING quote[" + quote + "] => exitPriceOut["
+			//		+ exitPriceOut + "] at exitAlert.Bars.BarStreaming[" + exitAlert.Bars.BarStreaming + "]";
+			//	//throw new Exception(msg);
+			//	#if DEBUG
+			//	Debugger.Break();
+			//	#endif
+			//	return false;
 			//}
 			// /v1
 			

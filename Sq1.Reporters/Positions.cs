@@ -45,7 +45,7 @@ namespace Sq1.Reporters {
 			//this.tradeTypes.Images.SetKeyName(5, "45degrees3-ShortEntryLoss.png");
 			
 //			this.olvPositions.AllColumns.Add(this.olvcPosition);
-//	        this.olvPositions.AllColumns.Add(this.olvcSerno);
+//			this.olvPositions.AllColumns.Add(this.olvcSerno);
 //			this.olvPositions.AllColumns.Add(this.olvcSymbol);
 //			this.olvPositions.AllColumns.Add(this.olvcQuantity);
 //			this.olvPositions.AllColumns.Add(this.olvcEntryDate);

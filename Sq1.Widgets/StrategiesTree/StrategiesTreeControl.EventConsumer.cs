@@ -547,9 +547,9 @@ namespace Sq1.Widgets.StrategiesTree {
 				this.toolTip1.SetToolTip(this.textBoxFilterTree, msg);
 			} else {
 				string msg = String.Format("Filtered {0} items down to {1} items in {2}ms",
-				                           objects.Count,
-				                           olv.Items.Count,
-				                           stopWatch.ElapsedMilliseconds);
+										   objects.Count,
+										   olv.Items.Count,
+										   stopWatch.ElapsedMilliseconds);
 				this.toolTip1.SetToolTip(this.textBoxFilterTree, msg);
 			}
 		}

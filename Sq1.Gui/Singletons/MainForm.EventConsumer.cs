@@ -37,8 +37,8 @@ namespace Sq1.Gui.Singletons {
 
 		protected override void WndProc(ref Message m) {
 			//http://stackoverflow.com/questions/3155782/what-is-the-difference-between-wm-quit-wm-close-and-wm-destroy-in-a-windows-pr
-//		    public enum Msgs {
-//		        ...WM_CLOSE                  = 0x0010,...
+//			public enum Msgs {
+//				...WM_CLOSE				  = 0x0010,...
 //			}
 			if (m.Msg == (int)WeifenLuo.WinFormsUI.Docking.Win32.Msgs.WM_CLOSE) {
 				Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms = true;

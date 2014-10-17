@@ -74,7 +74,7 @@ namespace Sq1.Core.Backtesting {
 			}			
 		}
 		public void AlignBidAskToPriceLevel(QuoteGenerated quote, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.DontRoundPrintLowerUpper,
-		                                    double spreadAlignedToMaintain = -1, double dontGoBeyond = -1) {
+											double spreadAlignedToMaintain = -1, double dontGoBeyond = -1) {
 			string msig = " " + this.GetType().Name + ".AlignBidAskToPriceLevel(" + quote.ToString() + ")";
 			try {
 				CheckThrowCanReachSymbolInfo(quote);

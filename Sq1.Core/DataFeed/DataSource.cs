@@ -84,7 +84,7 @@ namespace Sq1.Core.DataFeed {
 		}
 		public void Initialize(string dataSourcesAbspath, OrderProcessor orderProcessor, IStatusReporter statusReporter) {
 			//if (this.HasBarDataStore) {
-			//    this.BarsFile = new BarsFile(FolderForBarDataStore);
+			//	this.BarsFile = new BarsFile(FolderForBarDataStore);
 			//}
 			this.DataSourcesAbspath = dataSourcesAbspath;
 			this.DataSourceAbspath = Path.Combine(this.DataSourcesAbspath, this.Name);
@@ -120,9 +120,9 @@ namespace Sq1.Core.DataFeed {
 		internal void SymbolRename(string oldSymbolName, string newSymbolName) {
 			// nope StaticProvider can subscribe to dataSourceRepository_OnSymbolRenamed() as well and do 
 			//if (this.StaticProvider != null) {
-			//    this.StaticProvider.SymbolRename(oldSymbolName, newSymbolName);
-			//    this.Symbols = this.StaticProvider.SymbolsStored;
-			//    return;
+			//	this.StaticProvider.SymbolRename(oldSymbolName, newSymbolName);
+			//	this.Symbols = this.StaticProvider.SymbolsStored;
+			//	return;
 			//}
 
 			if (this.Symbols.Contains(oldSymbolName) == false) {

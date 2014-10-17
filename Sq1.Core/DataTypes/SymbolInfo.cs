@@ -246,7 +246,7 @@ namespace Sq1.Core.DataTypes {
 					double priceOrRef	= double.IsNaN(priceReference) ? price : priceReference;
 					double distanceUp	= Math.Abs(priceOrRef - upperLevel);
 					double distanceDown	= Math.Abs(priceOrRef - lowerLevel);
-				    ret = (distanceUp <= distanceDown) ? upperLevel : lowerLevel;
+					ret = (distanceUp <= distanceDown) ? upperLevel : lowerLevel;
 					ret = Math.Round(ret, this.DecimalsPrice);			// getting rid of Double's compound rounding error
 
 					#if DEBUG

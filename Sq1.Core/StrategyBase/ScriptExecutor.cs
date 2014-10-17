@@ -104,7 +104,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		protected ScriptExecutor(ChartShadow chartShadow, Strategy strategy, 
-		                         OrderProcessor orderProcessor, IStatusReporter statusReporter) : this() {
+								 OrderProcessor orderProcessor, IStatusReporter statusReporter) : this() {
 			this.Initialize(chartShadow, strategy, orderProcessor, statusReporter);
 		}
 		public ScriptExecutor() {
@@ -124,7 +124,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		public void Initialize(ChartShadow chartShadow,
-		                       Strategy strategy, OrderProcessor orderProcessor, IStatusReporter statusReporter) {
+							   Strategy strategy, OrderProcessor orderProcessor, IStatusReporter statusReporter) {
 
 			string msg = " at this time, FOR SURE this.Bars==null, strategy.Script?=null";
 			this.ChartShadow = chartShadow;
@@ -239,9 +239,9 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 		public Position BuyOrShortAlertCreateDontRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
-		                                                  Direction direction, MarketLimitStop entryMarketLimitStop) {
+														  Direction direction, MarketLimitStop entryMarketLimitStop) {
 			return BuyOrShortAlertCreateRegister(entryBar, stopOrLimitPrice, entrySignalName,
-			                                     direction, entryMarketLimitStop, false);
+												 direction, entryMarketLimitStop, false);
 		}
 		public void CheckThrowAlertCanBeCreated(Bar entryBar, string msig) {
 			string invoker = (new StackFrame(3, true).GetMethod().Name) + "(): ";
@@ -259,7 +259,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 		public Position BuyOrShortAlertCreateRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
-		                                              Direction direction, MarketLimitStop entryMarketLimitStop, bool registerInNew = true) {
+													  Direction direction, MarketLimitStop entryMarketLimitStop, bool registerInNew = true) {
 			string msig = " //BuyOrShortAlertCreateRegister(stopOrLimitPrice[" + stopOrLimitPrice+ "], entrySignalName[" + entrySignalName + "], entryBar[" + entryBar + "])";
 			this.CheckThrowAlertCanBeCreated(entryBar, msig);
 
@@ -267,7 +267,7 @@ namespace Sq1.Core.StrategyBase {
 			// real-time streaming should create its own Position after an Order gets filled
 			if (this.IsStreaming) {
 				alert = this.MarketRealStreaming.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
-				                                                  direction, entryMarketLimitStop);
+																  direction, entryMarketLimitStop);
 			} else {
 				//alert = this.MarketSimStatic.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
 				//	direction, entryMarketLimitStop);
@@ -293,12 +293,12 @@ namespace Sq1.Core.StrategyBase {
 			return pos;
 		}
 		public Alert SellOrCoverAlertCreateDontRegisterInNew(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
-		                                                Direction direction, MarketLimitStop exitMarketLimitStop) {
+														Direction direction, MarketLimitStop exitMarketLimitStop) {
 			return this.SellOrCoverAlertCreateRegister(exitBar, position, stopOrLimitPrice, signalName,
-			                                           direction, exitMarketLimitStop, false);
+													   direction, exitMarketLimitStop, false);
 		}
 		public Alert SellOrCoverAlertCreateRegister(Bar exitBar, Position position, double stopOrLimitPrice, string signalName,
-		                                            Direction direction, MarketLimitStop exitMarketLimitStop, bool registerInNewAfterExec = true) {
+													Direction direction, MarketLimitStop exitMarketLimitStop, bool registerInNewAfterExec = true) {
 
 			this.CheckThrowAlertCanBeCreated(exitBar, "BARS.BARSTREAMING_OR_BARS.BARLASTSTATIC_IS_NULL_SellOrCoverAlertCreateRegister() ");
 			if (position == null) {
@@ -311,8 +311,8 @@ namespace Sq1.Core.StrategyBase {
 			Alert alert = null;
 			if (position.Prototype != null) {
 				if (signalName.Contains("protoTakeProfitExit")
-				    && position.Prototype.TakeProfitAlertForAnnihilation != null
-				    && this.Backtester.IsBacktestingNow == false) {
+					&& position.Prototype.TakeProfitAlertForAnnihilation != null
+					&& this.Backtester.IsBacktestingNow == false) {
 					string msg = "I won't create another protoTakeProfitExit because"
 						+ " position.Prototype.TakeProfitAlertForAnnihilation != null"
 						+ " position[" + position + "]";
@@ -320,8 +320,8 @@ namespace Sq1.Core.StrategyBase {
 					return position.ExitAlert;
 				}
 				if (signalName.Contains("protoStopLossExit")
-				    && position.Prototype.StopLossAlertForAnnihilation != null
-				    && this.Backtester.IsBacktestingNow == false) {
+					&& position.Prototype.StopLossAlertForAnnihilation != null
+					&& this.Backtester.IsBacktestingNow == false) {
 					string msg = "I won't create another protoStopLossExit because"
 						+ " position.Prototype.StopLossAlertForAnnihilation != null"
 						+ " position[" + position + "]";
@@ -347,7 +347,7 @@ namespace Sq1.Core.StrategyBase {
 
 			if (this.IsStreaming) {
 				alert = this.MarketRealStreaming.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
-				                                                 direction, exitMarketLimitStop);
+																 direction, exitMarketLimitStop);
 			} else {
 				//alert = this.MarketSimStatic.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
 				//	  direction, exitMarketLimitStop);
@@ -942,11 +942,11 @@ namespace Sq1.Core.StrategyBase {
 				//v2
 				//http://stackoverflow.com/questions/7582853/what-wpf-threading-approach-should-i-go-with/7584422#7584422
 				//Task.Factory.StartNew(() => {
-				//    // Background work
-				//    this.backtesterRunSimulationThreadEntryPoint();
+				//	// Background work
+				//	this.backtesterRunSimulationThreadEntryPoint();
 				//}).ContinueWith((t) => {
-				//    // Update UI thread
-				//    executeAfterSimulation();
+				//	// Update UI thread
+				//	executeAfterSimulation();
 				//}, TaskScheduler.FromCurrentSynchronizationContext());
 
 				//v3

@@ -26,7 +26,7 @@ namespace Sq1.Core.Backtesting {
 		}
 
 		//public QuoteGenerated Clone() {
-		//    return (QuoteGenerated)this.MemberwiseClone();
+		//	return (QuoteGenerated)this.MemberwiseClone();
 		//}
 		public QuoteGenerated DeriveIdenticalButFresh() {
 			QuoteGenerated identicalButFresh = new QuoteGenerated(this.ServerTime);

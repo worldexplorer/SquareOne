@@ -13,8 +13,8 @@ namespace Sq1.Core.StrategyBase {
 		protected string FormatPrice { get { 
 				string ret = "C";
 				if (	this.SystemPerformance == null
-				     || this.SystemPerformance.Bars == null
-				     || this.SystemPerformance.Bars.SymbolInfo == null) {
+					 || this.SystemPerformance.Bars == null
+					 || this.SystemPerformance.Bars.SymbolInfo == null) {
 					string msig = " " + this.GetType().FullName;
 					string msg = "DEVELOPER_OF_[" + msig + "], don't forget to do base.SystemPerformance=performance as first line of overriden BuildOnceAfterFullBlindBacktestFinished() so that Reporter.Format picks up DecimalsPrice";
 					Assembler.PopupException(msg);

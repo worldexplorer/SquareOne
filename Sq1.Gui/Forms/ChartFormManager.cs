@@ -180,8 +180,8 @@ namespace Sq1.Gui.Forms {
 				this.ChartForm.FormClosed += this.MainForm.MainFormEventManager.ChartForm_FormClosed;
 				// 2. create Executor with Renderer
 				this.Executor.Initialize(this.ChartForm.ChartControl as ChartShadow,
-				                         this.Strategy, Assembler.InstanceInitialized.OrderProcessor,
-				                         Assembler.InstanceInitialized.StatusReporter);
+										 this.Strategy, Assembler.InstanceInitialized.OrderProcessor,
+										 Assembler.InstanceInitialized.StatusReporter);
 				// 3. initialize Chart with Executor (I don't know why it should be so crazy)
 				//this.ChartForm.Chart.Initialize(this.Executor);
 				//ScriptExecutor.DataSource: you should not access DataSource before you've set Bars
@@ -195,8 +195,8 @@ namespace Sq1.Gui.Forms {
 			} else {
 				// we had chart already opened with bars loaded; then we clicked on a strategy and we want strategy to be backtested on these bars
 				this.Executor.Initialize(this.ChartForm.ChartControl as ChartShadow,
-				                         this.Strategy, Assembler.InstanceInitialized.OrderProcessor,
-				                         Assembler.InstanceInitialized.StatusReporter);
+										 this.Strategy, Assembler.InstanceInitialized.OrderProcessor,
+										 Assembler.InstanceInitialized.StatusReporter);
 				if (this.ChartForm.CtxReporters.Items.Count == 0) {
 					this.ChartForm.CtxReporters.Items.AddRange(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
 				}

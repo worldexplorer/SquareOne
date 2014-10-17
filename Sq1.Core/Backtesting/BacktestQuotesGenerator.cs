@@ -90,8 +90,8 @@ namespace Sq1.Core.Backtesting {
 
 			// hard to debug but I hate while(){} loops
 			//for (QuoteGenerated closestOnOurWay  = this.generateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach);
-			//           closestOnOurWay != null;
-			//           closestOnOurWay  = this.generateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach)) {
+			//		   closestOnOurWay != null;
+			//		   closestOnOurWay  = this.generateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach)) {
 
 			if (bar2simulate.HighLowDistance == 0) {
 				string msg = "WEIRD_BAR_SHOULDNT_FAIL_FOLLOWING_QUOTE_CHECK ContainsBidAskForQuoteGenerated(quoteToReach)";
@@ -189,13 +189,13 @@ namespace Sq1.Core.Backtesting {
 			foreach (Alert alert in alertsPendingSafeCopy) {
 				// DONT_EXPECT_THEM_TO_BE_FILLED_YOU_SHOULD_FILL_ALL_RELEVANT_NOW
 				//if (scanningDown) {
-				//    // while GEN'ing down, all BUY/COVER STOPs pending were already triggered & executed
-				//    bool executedAtAsk = alert.Direction == Direction.Buy || alert.Direction == Direction.Cover;
-				//    if (executedAtAsk && alert.MarketLimitStop == MarketLimitStop.Stop) continue;
+				//	// while GEN'ing down, all BUY/COVER STOPs pending were already triggered & executed
+				//	bool executedAtAsk = alert.Direction == Direction.Buy || alert.Direction == Direction.Cover;
+				//	if (executedAtAsk && alert.MarketLimitStop == MarketLimitStop.Stop) continue;
 				//} else {
-				//    // while GEN'ing up, all SHORT/SELL STOPs pending were already triggered & executed
-				//    bool executedAtBid = alert.Direction == Direction.Short || alert.Direction == Direction.Sell;
-				//    if (executedAtBid && alert.MarketLimitStop == MarketLimitStop.Stop) continue;
+				//	// while GEN'ing up, all SHORT/SELL STOPs pending were already triggered & executed
+				//	bool executedAtBid = alert.Direction == Direction.Short || alert.Direction == Direction.Sell;
+				//	if (executedAtBid && alert.MarketLimitStop == MarketLimitStop.Stop) continue;
 				//}
 				QuoteGenerated quoteThatWillFillAlert = this.modelQuoteThatCouldFillAlert(alert, new DateTime(quoteToReach.LocalTimeCreatedMillis.Ticks - 911), bar2simulate);
 				if (quoteThatWillFillAlert == null) continue;
@@ -420,7 +420,7 @@ namespace Sq1.Core.Backtesting {
 					#if DEBUG	// TEST_EMBEDDED
 					//TESTED Debugger.Break();
 					//double minimalValue = Math.Pow(1, -decimalsVolume);		// 1^(-2) = 0.01
-				    #endif
+					#endif
 					volumeOneQuarterOfBar = barSimulated.ParentBars.SymbolInfo.VolumeMinimalStepFromDecimal;
 				}
 			}
@@ -483,9 +483,9 @@ namespace Sq1.Core.Backtesting {
 				if (clearingResumes >= barOpenNext) {	// NO_NEED_TO_BIND_CLEARING_TO_BARS
 					#if DEBUG	// TEST_EMBEDDED
 					string msg = "CLEARING_EXTENDS_BEOYND_SIMULATED_BAR I_STOP_GENERATING_HERE_AND_EXPECT_BAR_INCREASE_UPSTACK";
-				    //TESTED Debugger.Break();
-				    #endif
-				    break;
+					//TESTED Debugger.Break();
+					#endif
+					break;
 				}
 				
 				bool recalcShrunkenIncrement = false;
@@ -506,26 +506,26 @@ namespace Sq1.Core.Backtesting {
 					cumulativeOffset += increment;
 					continue;
 				}
-			    
+				
 				#if DEBUG	// TEST_EMBEDDED
 				//string whereAmI = "GOT_INTRABAR_CLEARING RECALC_SHRINKEN_INCREMENT_FOR_NEXT_LOOPS";
 				//TESTED Debugger.Break();
-			    #endif
+				#endif
 				
-			    leftTillNextBar = barOpenNext - clearingResumes;
-			    int quotesLeft = this.QuotePerBarGenerates - stroke;
-			    increment = new TimeSpan(0, 0, ((int)(leftTillNextBar.TotalSeconds / quotesLeft)));
-			    
-			    TimeSpan clearingResumesOffset = clearingResumes - barOpenOrResume;
-			    cumulativeOffset = clearingResumesOffset + increment;
-			    
-			    // WRONG -1 one second less to not have exactly next bar opening at last stroke but 4 seconds before
+				leftTillNextBar = barOpenNext - clearingResumes;
+				int quotesLeft = this.QuotePerBarGenerates - stroke;
+				increment = new TimeSpan(0, 0, ((int)(leftTillNextBar.TotalSeconds / quotesLeft)));
+				
+				TimeSpan clearingResumesOffset = clearingResumes - barOpenOrResume;
+				cumulativeOffset = clearingResumesOffset + increment;
+				
+				// WRONG -1 one second less to not have exactly next bar opening at last stroke but 4 seconds before
 				// BAR_WITHOUT_INTRABAR_CLEARING	11:00
 			  	// stroke0 increment (5:00 / 4 = 1:15): 11:00:00
 			  	// stroke1 increment (5:00 / 4 = 1:15): 11:01:15
 			  	// stroke2 increment (5:00 / 4 = 1:15): 11:02:30
 			  	// stroke3 increment (5:00 / 4 = 1:15): 11:03:45 (next stroke4 would be 11:05:00 which next bar/invocation)
-				// BAR_WITH_INTRABAR_CLEARING    	[14:00...14:03]
+				// BAR_WITH_INTRABAR_CLEARING		[14:00...14:03]
 			  	// stroke0 increment (5:00 / 4 = 1:15): 14:00:00 => 14:03:00
 				// stroke1 increment (2:00 / 4 = 0:30): 14:03:30
 				// stroke2 increment (2:00 / 4 = 0:30): 14:04:00

@@ -212,8 +212,8 @@ namespace Sq1.Core.DataTypes {
 			TimeSpan distanceBetweenBars = this.ScaleInterval.AsTimeSpan;
 			int barsMaxDayCanFit = this.BarsMaxOneDayCanFit;
 			for (DateTime forwardFromMarketOpenToCurrentBar = todayMarketOpenServerTime;
-			     		  forwardFromMarketOpenToCurrentBar <= dateTimeToFind;
-			     		  forwardFromMarketOpenToCurrentBar = forwardFromMarketOpenToCurrentBar.Add(distanceBetweenBars)) {
+				 		  forwardFromMarketOpenToCurrentBar <= dateTimeToFind;
+				 		  forwardFromMarketOpenToCurrentBar = forwardFromMarketOpenToCurrentBar.Add(distanceBetweenBars)) {
 				if (ret > barsMaxDayCanFit) {
 					#if DEBUG
 					Debugger.Break();
@@ -247,8 +247,8 @@ namespace Sq1.Core.DataTypes {
 			TimeSpan distanceBetweenBars = this.ScaleInterval.AsTimeSpan;
 			int barsMaxDayCanFit = this.BarsMaxOneDayCanFit;
 			for (DateTime backFromDayCloseToCurrentBar = todayMarketCloseServerTime;
-			     		  backFromDayCloseToCurrentBar > dateTimeToFind;
-			     		  backFromDayCloseToCurrentBar = backFromDayCloseToCurrentBar.Subtract(distanceBetweenBars)) {
+				 		  backFromDayCloseToCurrentBar > dateTimeToFind;
+				 		  backFromDayCloseToCurrentBar = backFromDayCloseToCurrentBar.Subtract(distanceBetweenBars)) {
 				if (ret > barsMaxDayCanFit) {
 					#if DEBUG
 					Debugger.Break();

@@ -60,7 +60,7 @@ namespace Sq1.Core.DataTypes {
 					}
 					ret += " ... ";
 					//if (this.IsStreaming) {
-					//    ret += "NOW";
+					//	ret += "NOW";
 					//} else {
 						ret += this.EndDate.ToString("dd MMM yyyy");
 					//}

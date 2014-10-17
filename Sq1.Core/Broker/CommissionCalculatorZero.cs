@@ -8,7 +8,7 @@ namespace Sq1.Core.Broker {
 		public CommissionCalculatorZero(ScriptExecutor scriptExecutor) : base(scriptExecutor) { }
 		public override string Description { get { return "ALWAYS_RETURN_ZERO_COMMISSION"; } }
 		public override double CalculateCommission(Direction direction, MarketLimitStop marketLimitStop,
-		                                           double orderPrice, double shares, Bars bars) {
+												   double orderPrice, double shares, Bars bars) {
 			return 0;
 		}
 	}

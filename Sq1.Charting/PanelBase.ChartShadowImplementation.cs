@@ -64,7 +64,7 @@ namespace Sq1.Charting {
 			}
 		}
 		public SizeF DrawLabel(Graphics g, int x, int y, string msg,
-		                      Font font, Color colorForeground, Color colorBackground, bool drawIndicatorSquare = false) {
+							  Font font, Color colorForeground, Color colorBackground, bool drawIndicatorSquare = false) {
 			if (colorForeground == Color.Empty) colorForeground = Color.Red;	// error
 			
 			//DUPLICATION original for DrawLabelOnNextLine()

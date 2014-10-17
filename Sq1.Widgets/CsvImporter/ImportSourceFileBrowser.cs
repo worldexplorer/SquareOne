@@ -22,7 +22,7 @@ namespace Sq1.Widgets.CsvImporter {
 			sysImgHelper = new SysImageListHelper(this.olvFiles);
 			this.olvFilesCustomize();
 		}
-        void olvFilesCustomize() {
+		void olvFilesCustomize() {
 //			this.olvFiles.AllColumns.AddRange(this.olvFiles.Columns);
 			List<OLVColumn> allColumns = new List<OLVColumn>();
 			foreach (ColumnHeader columnHeader in this.olvFiles.Columns) {
@@ -39,38 +39,38 @@ namespace Sq1.Widgets.CsvImporter {
 			this.olvFiles.RebuildColumns();
 
 			this.olvColumnFileName.AspectGetter = delegate(object x) {
-			    var pi = x as ImportSourcePathInfo;
+				var pi = x as ImportSourcePathInfo;
 				return pi.Name;
 			};
-            // Draw the system icon next to the name
-            this.olvColumnFileName.ImageGetter += new ImageGetterDelegate(olvColumnFileName_imageGetter);
-//            = delegate(object x) {
+			// Draw the system icon next to the name
+			this.olvColumnFileName.ImageGetter += new ImageGetterDelegate(olvColumnFileName_imageGetter);
+//			= delegate(object x) {
 //				return null;
-//                //return helper.GetImageIndex(((FileSystemInfo)x).FullName);
-//            };
+//				//return helper.GetImageIndex(((FileSystemInfo)x).FullName);
+//			};
 
-            // Show the size of files as GB, MB and KBs. Also, group them by some meaningless divisions
+			// Show the size of files as GB, MB and KBs. Also, group them by some meaningless divisions
 			//this.olvColumnSize.AspectGetter = delegate(object x) {
-			//    if (x is DirectoryInfo) return (long)-1;
-			//    try {
-			//        return ((FileInfo)x).Length;
-			//    } catch (System.IO.FileNotFoundException) {
-			//        return (long)-2;	 // Mono 1.2.6 throws this for hidden files
-			//    }
+			//	if (x is DirectoryInfo) return (long)-1;
+			//	try {
+			//		return ((FileInfo)x).Length;
+			//	} catch (System.IO.FileNotFoundException) {
+			//		return (long)-2;	 // Mono 1.2.6 throws this for hidden files
+			//	}
 			//};
 			//this.olvColumnSize.AspectToStringConverter = delegate(object x) {
-			//    if ((long)x == -1) return ""; // folder
-			//    return this.FormatFileSize((long)x);
+			//	if ((long)x == -1) return ""; // folder
+			//	return this.FormatFileSize((long)x);
 			//};
 			//this.olvColumnSize.MakeGroupies(new long[] { 0, 1024 * 1024, 512 * 1024 * 1024 },
-			//    new string[] { "Folders", "Small", "Big", "Disk space chewer" });
-            // Group by month-year, rather than date
+			//	new string[] { "Folders", "Small", "Big", "Disk space chewer" });
+			// Group by month-year, rather than date
 			//this.olvColumnFileModified.GroupKeyGetter = delegate(object x) {
-			//    DateTime dt = ((FileSystemInfo)x).LastWriteTime;
-			//    return new DateTime(dt.Year, dt.Month, 1);
+			//	DateTime dt = ((FileSystemInfo)x).LastWriteTime;
+			//	return new DateTime(dt.Year, dt.Month, 1);
 			//};
 			//this.olvColumnFileModified.GroupKeyToTitleConverter = delegate(object x) {
-			//    return ((DateTime)x).ToString("MMMM yyyy");
+			//	return ((DateTime)x).ToString("MMMM yyyy");
 			//};
 		}
 
@@ -91,7 +91,7 @@ namespace Sq1.Widgets.CsvImporter {
 				Assembler.PopupException("didn't populate: pathCsv can't be null PopulateListFromCsvPath(pathCsv[null])");
 				return;
 			}
-            DirectoryInfo pathInfo = new DirectoryInfo(pathCsv);
+			DirectoryInfo pathInfo = new DirectoryInfo(pathCsv);
 			if (!pathInfo.Exists) {
 				this.olvColumnFileName.FillsFreeSpace = false;	// 100%CPU trying to resize; moved it here from Designer.cs
 				return;
@@ -101,7 +101,7 @@ namespace Sq1.Widgets.CsvImporter {
 			if (this.OnDirectoryChanged != null) {
 				this.OnDirectoryChanged(this, new DirectoryInfoEventArgs(pathInfo));
 			}
-            Cursor.Current = Cursors.WaitCursor;
+			Cursor.Current = Cursors.WaitCursor;
 			var fsis = pathInfo.GetFileSystemInfos();
 			var fsisExtendedFolders = new List<ImportSourcePathInfo>();
 			var fsisExtendedFiles = new List<ImportSourcePathInfo>();
@@ -115,44 +115,44 @@ namespace Sq1.Widgets.CsvImporter {
 			List<ImportSourcePathInfo> foldersThenFiles = new List<ImportSourcePathInfo>(fsisExtendedFolders);
 			foldersThenFiles.AddRange(fsisExtendedFiles);
 			DirectoryInfo di = Directory.GetParent(pathCsv);
-            if (di != null) {
+			if (di != null) {
 				ImportSourcePathInfo parentFolder = new ImportSourcePathInfo(new DirectoryInfo(Path.Combine(pathCsv, "..")));
 				parentFolder.Name = "..";
 				foldersThenFiles.Insert(0, parentFolder);
-            }
+			}
 			this.olvFiles.SetObjects(foldersThenFiles);
 			this.olvFiles.EnsureVisible(0);
 			//this.olvFiles.SelectedIndex = 0;
 			this.olvFiles.SelectObject("..", true);	// weird but no focus on ".."
-            Cursor.Current = Cursors.Default;
-        }
+			Cursor.Current = Cursors.Default;
+		}
 		void txtFolder_TextChanged(object sender, System.EventArgs e) {
-            if (Directory.Exists(this.txtFolder.Text)) {
-                this.txtFolder.ForeColor = Color.Black;
-                this.mniGo.Enabled = true;
-                this.mniUp.Enabled = true;
-            } else {
-                this.txtFolder.ForeColor = Color.Red;
-                this.mniGo.Enabled = false;
-                this.mniUp.Enabled = false;
-            }
+			if (Directory.Exists(this.txtFolder.Text)) {
+				this.txtFolder.ForeColor = Color.Black;
+				this.mniGo.Enabled = true;
+				this.mniUp.Enabled = true;
+			} else {
+				this.txtFolder.ForeColor = Color.Red;
+				this.mniGo.Enabled = false;
+				this.mniUp.Enabled = false;
+			}
 		}
 		void mniGo_Click(object sender, EventArgs e) {
-            try {
-            	this.PopulateListFromCsvPath(this.txtFolder.Text);
-            } catch (Exception ex) {
-                this.txtFolder.ForeColor = Color.Red;
-            }
+			try {
+				this.PopulateListFromCsvPath(this.txtFolder.Text);
+			} catch (Exception ex) {
+				this.txtFolder.ForeColor = Color.Red;
+			}
 		}
 		void mniUp_Click(object sender, System.EventArgs e) {
-            DirectoryInfo di = Directory.GetParent(this.txtFolder.Text);
-            if (di == null) {
-                System.Media.SystemSounds.Asterisk.Play();
-            } else {
-                this.txtFolder.Text = di.FullName;
-                //this.btnGo.PerformClick();
+			DirectoryInfo di = Directory.GetParent(this.txtFolder.Text);
+			if (di == null) {
+				System.Media.SystemSounds.Asterisk.Play();
+			} else {
+				this.txtFolder.Text = di.FullName;
+				//this.btnGo.PerformClick();
 				this.mniGo_Click(this, null);
-            }
+			}
 		}
 		void olvFilesItem_Activate(object sender, EventArgs e) {
 			Object rowObject = this.olvFiles.SelectedObject;

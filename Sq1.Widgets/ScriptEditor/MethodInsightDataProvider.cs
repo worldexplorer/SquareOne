@@ -5,7 +5,7 @@ using DigitalRune.Windows.TextEditor.Insight;
 namespace Sq1.Widgets.ScriptEditor {
 	class MethodInsightDataProvider : AbstractInsightDataProvider {
 		int _argumentStartOffset;   // The offset where the method arguments starts.
-		string[] _insightText;      // The insight information.
+		string[] _insightText;	  // The insight information.
 
 		protected override int ArgumentStartOffset { get { return _argumentStartOffset; } }
 		public override int InsightDataCount { get { return (_insightText != null) ? _insightText.Length : 0; } }

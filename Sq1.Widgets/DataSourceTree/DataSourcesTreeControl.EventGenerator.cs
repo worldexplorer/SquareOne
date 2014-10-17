@@ -60,9 +60,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void RaiseOnDataSourceDeleteClicked() {
 			this.dataSourceRepository.ItemDelete(this.DataSourceSelected, this);
 			//if (this.OnDataSourceDeleteClicked == null) {
-			//    string msg = "DataSourcesTree.mniDeleteDS_Click(): event OnDataSourceDeleted: no subscribers";
-			//    statusReporter.PopupException(msg);
-			//    return;
+			//	string msg = "DataSourcesTree.mniDeleteDS_Click(): event OnDataSourceDeleted: no subscribers";
+			//	statusReporter.PopupException(msg);
+			//	return;
 			//}
 			//this.OnDataSourceDeleteClicked(this, new DataSourceEventArgs(this.DataSourceSelected));
 		}

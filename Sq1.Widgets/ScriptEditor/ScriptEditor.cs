@@ -58,23 +58,23 @@ namespace Sq1.Widgets.ScriptEditor {
 
 			// Try to set font "Consolas", because it's a lot prettier:
 			Font consolasFont = new Font("Consolas", 9.75f);
-			if (consolasFont.Name == "Consolas")        // Set font if it is available on this machine.
+			if (consolasFont.Name == "Consolas")		// Set font if it is available on this machine.
 				this.TextEditorControl.Font = consolasFont;
 			// taken_from_END
 		}
 		
 		// taken_from_BEGIN DigitalRune.Windows.Editor
-	    void TextEditorControl_UpdateFoldings(object sender, EventArgs e) {
-	      // The foldings needs to be manually updated:
-	      // In this example a timer updates the foldings every 2 seconds.
-	      // You should manually update the foldings when
-	      // - a new document is loaded
-	      // - content is added (paste)
-	      // - the parse-info is updated
-	      // - etc.
-	      if (base.Visible == false) return;
-	      this.TextEditorControl.Document.FoldingManager.UpdateFolds(null, null);
-	    }
+		void TextEditorControl_UpdateFoldings(object sender, EventArgs e) {
+		  // The foldings needs to be manually updated:
+		  // In this example a timer updates the foldings every 2 seconds.
+		  // You should manually update the foldings when
+		  // - a new document is loaded
+		  // - content is added (paste)
+		  // - the parse-info is updated
+		  // - etc.
+		  if (base.Visible == false) return;
+		  this.TextEditorControl.Document.FoldingManager.UpdateFolds(null, null);
+		}
 		void TextEditorControl_CompletionRequest(object sender, CompletionEventArgs e) {
 			if (this.TextEditorControl.CompletionWindowVisible) return;
 			// e.Key contains the key that the user wants to insert and which triggered

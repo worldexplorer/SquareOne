@@ -183,10 +183,10 @@ namespace Sq1.Widgets.CsvImporter {
 		}
 		void lnkDownload_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
 			//http://stackoverflow.com/questions/4261234/hyperlink-a-email-address-using-linklabel-in-c-sharp
-	        //this.lnkDownload.Links[this.lnkDownload.Links.IndexOf(e.Link)].Visited = true;
-	        this.lnkDownload.LinkVisited = true;
-	        string target = e.Link.LinkData as string;
-	        System.Diagnostics.Process.Start(target);
+			//this.lnkDownload.Links[this.lnkDownload.Links.IndexOf(e.Link)].Visited = true;
+			this.lnkDownload.LinkVisited = true;
+			string target = e.Link.LinkData as string;
+			System.Diagnostics.Process.Start(target);
 		}
 	}
 }

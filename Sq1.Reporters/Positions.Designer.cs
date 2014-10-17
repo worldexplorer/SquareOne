@@ -102,29 +102,29 @@ namespace Sq1.Reporters {
 			this.olvPositions.BackColor = System.Drawing.SystemColors.Window;
 			this.olvPositions.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvPositions.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-	            this.olvcPosition,
-	            this.olvcSerno,
-	            this.olvcSymbol,
-	            this.olvcQuantity,
-	            this.olvcEntryDate,
-	            this.olvcEntryPrice,
-	            this.olvcEntryOrder,
-	            this.olvcExitDate,
-	            this.olvcExitPrice,
-	            this.olvcExitOrder,
-	            this.olvcProfitPct,
-	            this.olvcProfitDollar,
-	            this.olvcBarsHeld,
-	            this.olvcProfitPerBar,
-	            this.olvcEntrySignalName,
-	            this.olvcExitSignalName,
-	            this.olvcMaePct,
-	            this.olvcMfePct,
-	            this.olvcCumProfitPct,
-	            this.olvcCumProfitDollar,
-	            this.olvcComission});
+				this.olvcPosition,
+				this.olvcSerno,
+				this.olvcSymbol,
+				this.olvcQuantity,
+				this.olvcEntryDate,
+				this.olvcEntryPrice,
+				this.olvcEntryOrder,
+				this.olvcExitDate,
+				this.olvcExitPrice,
+				this.olvcExitOrder,
+				this.olvcProfitPct,
+				this.olvcProfitDollar,
+				this.olvcBarsHeld,
+				this.olvcProfitPerBar,
+				this.olvcEntrySignalName,
+				this.olvcExitSignalName,
+				this.olvcMaePct,
+				this.olvcMfePct,
+				this.olvcCumProfitPct,
+				this.olvcCumProfitDollar,
+				this.olvcComission});
 			this.olvPositions.AllColumns.Add(this.olvcPosition);
-	        this.olvPositions.AllColumns.Add(this.olvcSerno);
+			this.olvPositions.AllColumns.Add(this.olvcSerno);
 			this.olvPositions.AllColumns.Add(this.olvcSymbol);
 			this.olvPositions.AllColumns.Add(this.olvcQuantity);
 			this.olvPositions.AllColumns.Add(this.olvcEntryDate);
@@ -328,17 +328,17 @@ namespace Sq1.Reporters {
 			// ctxPopup
 			// 
 			this.ctxPopup.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-	            this.mniShowEntriesExits,
-	            this.mniShowPercentage,
-	            this.mniShowBarsHeld,
-	            this.mniShowMaeMfe,
-	            this.mniShowSignals,
-	            this.mniShowCommission,
-	            this.toolStripSeparator2,
-	            this.mniColorify,
-	            this.toolStripSeparator1,
-	            this.mniCopyToClipboard,
-	            this.mniSaveToFile});
+				this.mniShowEntriesExits,
+				this.mniShowPercentage,
+				this.mniShowBarsHeld,
+				this.mniShowMaeMfe,
+				this.mniShowSignals,
+				this.mniShowCommission,
+				this.toolStripSeparator2,
+				this.mniColorify,
+				this.toolStripSeparator1,
+				this.mniCopyToClipboard,
+				this.mniSaveToFile});
 			this.ctxPopup.Name = "contextMenuStrip1";
 			this.ctxPopup.Size = new System.Drawing.Size(183, 208);
 			// 

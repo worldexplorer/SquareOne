@@ -103,15 +103,15 @@ namespace Sq1.Widgets.CsvImporter {
 		
 		public ComboBox CreateEditorTypesAvailable() {
 			ComboBox cb = new ComboBox();	//http://sourceforge.net/p/objectlistview/discussion/812922/thread/b2c57809
-            List<ComboBoxItem> values = new List<ComboBoxItem>();
+			List<ComboBoxItem> values = new List<ComboBoxItem>();
 			foreach (object value in Enum.GetValues(typeof(CsvFieldType))) {
-                values.Add(new ComboBoxItem(value, Enum.GetName(typeof(CsvFieldType), value)));
+				values.Add(new ComboBoxItem(value, Enum.GetName(typeof(CsvFieldType), value)));
 			}
-            cb.Items.AddRange(values.ToArray());
+			cb.Items.AddRange(values.ToArray());
 			try {
 				int index1 = (int) this.Parser.CsvType;
 				//int index2 = cb.Items.IndexOf(this.CsvTypeContentSuggested);
-            	cb.SelectedIndex = index1;
+				cb.SelectedIndex = index1;
 			} catch (Exception ex) {
 				Assembler.PopupException("olvFieldSetup_CellEditStarting(): cb.SelectedIndex=[" + this.Parser.CsvType + "] failed");
 			}
@@ -119,14 +119,14 @@ namespace Sq1.Widgets.CsvImporter {
 		}
 		public ComboBox CreateEditorFormatsAvailable() {
 			ComboBox cb = new ComboBox();	//http://sourceforge.net/p/objectlistview/discussion/812922/thread/b2c57809
-            List<string> values = this.DataSnapshot.FormatsAvailableForType(this.Parser.CsvType);
-            cb.Items.AddRange(values.ToArray());
+			List<string> values = this.DataSnapshot.FormatsAvailableForType(this.Parser.CsvType);
+			cb.Items.AddRange(values.ToArray());
 			try {
-            	string fmt = this.Parser.CsvTypeFormat;
-            	if (string.IsNullOrEmpty(fmt)) fmt = CsvTypeParser.FORMAT_VISUALIZE_EMPTY_STRING;
+				string fmt = this.Parser.CsvTypeFormat;
+				if (string.IsNullOrEmpty(fmt)) fmt = CsvTypeParser.FORMAT_VISUALIZE_EMPTY_STRING;
 				int indexToHighlight = values.IndexOf(fmt);
 				if (indexToHighlight != -1) {
-	            	cb.SelectedIndex = indexToHighlight;
+					cb.SelectedIndex = indexToHighlight;
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("olvFieldSetup_CellEditStarting(): cb.SelectedIndex=[" + this.Parser.CsvType + "] failed");

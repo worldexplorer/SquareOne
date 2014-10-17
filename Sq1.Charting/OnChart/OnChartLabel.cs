@@ -13,7 +13,7 @@ namespace Sq1.Charting.OnChart {
 		public Color ColorBackground;
 		
 		public OnChartLabel(string labelId, string labelText,
-		                    Font font, Color colorForeground, Color colorBackground) {
+							Font font, Color colorForeground, Color colorBackground) {
 			LabelId = labelId;
 			LabelText = labelText;
 			Font = font;

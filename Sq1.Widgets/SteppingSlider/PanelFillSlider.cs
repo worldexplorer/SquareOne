@@ -10,17 +10,17 @@ using Sq1.Core.DoubleBuffered;
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class PanelFillSlider : PanelDoubleBuffered {
 		private SolidBrush brushBgValueCurrentEnabled = new SolidBrush(System.Drawing.Color.FromArgb(192, 192, 255));
-	    private SolidBrush brushBgValueCurrentDisabled = new SolidBrush(Color.DarkGray);
+		private SolidBrush brushBgValueCurrentDisabled = new SolidBrush(Color.DarkGray);
 		private SolidBrush brushBgValueCurrent { get { return base.Enabled ? brushBgValueCurrentEnabled : brushBgValueCurrentDisabled; } }
-	    
-	    private SolidBrush brushBgMouseOverEnabled = new SolidBrush(Color.LightGreen);
-	    private SolidBrush brushBgMouseOverDisabled = new SolidBrush(Color.DarkGreen);
+		
+		private SolidBrush brushBgMouseOverEnabled = new SolidBrush(Color.LightGreen);
+		private SolidBrush brushBgMouseOverDisabled = new SolidBrush(Color.DarkGreen);
 		private SolidBrush brushBgMouseOver { get { return base.Enabled ? brushBgMouseOverEnabled : brushBgMouseOverDisabled; } }
 
-	    private SolidBrush brushFgParameterLabel = new SolidBrush(Color.White);
+		private SolidBrush brushFgParameterLabel = new SolidBrush(Color.White);
 		private SolidBrush brushFgText;
 		private SolidBrush brushBgControl;
-	    
+		
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		private decimal valueMin;
 		public decimal ValueMin {
@@ -149,15 +149,15 @@ namespace Sq1.Widgets.SteppingSlider {
 		
 		protected override CreateParams CreateParams { get {
 				CreateParams cp = base.CreateParams;
-	            cp.ExStyle |= 0x00000020; //WS_EX_TRANSPARENT
+				cp.ExStyle |= 0x00000020; //WS_EX_TRANSPARENT
 				return cp;
 			} }
 		
 		public bool LeftToRight { get { return (this.ValueMin < this.ValueMax); } }
 
 		public PanelFillSlider() : base() {
-        	//SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.SupportsTransparentBackColor, true);
-	        //base.BackColor = Color.FromArgb(0, 0, 0, 0);//Added this because image wasnt redrawn when resizing form
+			//SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.SupportsTransparentBackColor, true);
+			//base.BackColor = Color.FromArgb(0, 0, 0, 0);//Added this because image wasnt redrawn when resizing form
 			this.SetStyle(
 				ControlStyles.UserPaint |
 				ControlStyles.AllPaintingInWmPaint |

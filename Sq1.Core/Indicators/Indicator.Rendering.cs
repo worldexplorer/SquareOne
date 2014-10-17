@@ -16,15 +16,15 @@ namespace Sq1.Core.Indicators {
 			string msig = " Indicator[" + this.NameWithParameters + "].DrawValueEntryPoint(" + bar + ")";
 			//v1
 			//if (this.OwnValuesCalculated.Count < bar.ParentBarsIndex) {
-			//    string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_BAR bar[" + bar + "]";
-			//    //Assembler.PopupException(msg + msig);
-			//    return indicatorLegDrawn;
+			//	string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_BAR bar[" + bar + "]";
+			//	//Assembler.PopupException(msg + msig);
+			//	return indicatorLegDrawn;
 			//}
 			//double calculated = this.OwnValuesCalculated[bar.ParentBarsIndex];
 			// v2-BEGIN
 			// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 			//if (null == this.NotOnChartBarScaleInterval && bar.ParentBarsIndex < this.FirstValidBarIndex) {
-			//    return indicatorLegDrawn;	// INVALID FOR INDICATOR BASED ON NON_CHART_BARS_SCALE_INTERVAL
+			//	return indicatorLegDrawn;	// INVALID FOR INDICATOR BASED ON NON_CHART_BARS_SCALE_INTERVAL
 			//}
 
 			if (bar.IsBarStaticLast && this.Executor.IsStreaming == false) {
@@ -44,10 +44,10 @@ namespace Sq1.Core.Indicators {
 				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_BAR bar[" + bar.DateTimeOpen + "]";
 				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 				//if (this.OwnValuesCalculated.ScaleInterval == null) {
-				//    var scaleIntervalAutoInit = this.NotOnChartBarsKey;
+				//	var scaleIntervalAutoInit = this.NotOnChartBarsKey;
 				//}
 				//if (this.OwnValuesCalculated.ScaleInterval != bar.ParentBars.ScaleInterval) {
-				//    msg += " OwnValuesCalculated.ScaleInterval[" + this.OwnValuesCalculated.ScaleInterval + "] != bar.ParentBars.ScaleInterval[" + bar.ParentBars.ScaleInterval + "]";
+				//	msg += " OwnValuesCalculated.ScaleInterval[" + this.OwnValuesCalculated.ScaleInterval + "] != bar.ParentBars.ScaleInterval[" + bar.ParentBars.ScaleInterval + "]";
 				//}
 				#if DEBUG
 				Debugger.Break();

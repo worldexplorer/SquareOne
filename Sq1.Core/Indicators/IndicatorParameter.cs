@@ -40,12 +40,12 @@ namespace Sq1.Core.Indicators {
 			NumericUpdownShown = true;
 		}
 		//public IndicatorParameter(string name = "NAME_NOT_INITIALIZED", string value = "STRING_VALUE_NOT_INITIALIZED") {
-		//    this.Name = name;
-		//    this.ValueString = value;
+		//	this.Name = name;
+		//	this.ValueString = value;
 		//}
 		//public IndicatorParameter(string name = "NAME_NOT_INITIALIZED", BarScaleInterval value = null) {
-		//    this.Name = name;
-		//    this.ValueBarScaleInterval = value;
+		//	this.Name = name;
+		//	this.ValueBarScaleInterval = value;
 		//}
 		public string ValidateSelf() {
 			if (this.ValueMin > this.ValueMax)		return "ValueMin[" + this.ValueMin + "] > ValueMax[" + this.ValueMax + "]";

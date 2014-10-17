@@ -107,9 +107,9 @@ namespace Sq1.Charting {
 				this.ChartControl.BarIndexMouseIsOverNow = BarIndexMouseIsOverNow; 
 				
 				if (this.dragButtonPressed == true
-					    && this.scrollingHorizontally == false
-					    && this.squeezingHorizontally == false
-					    && this.squeezingVertically == false) {
+						&& this.scrollingHorizontally == false
+						&& this.squeezingHorizontally == false
+						&& this.squeezingVertically == false) {
 					// coordinates inverted: (x=0;y=0) is upper left corner
 					if (e.X > this.PanelWidthMinusRightPriceGutter) {
 						// first move after this.mousePressed means DRAG!! wasn't in UserControl due to ambiguity between OnMouseMove and OnMouseDrag, probably
@@ -134,7 +134,7 @@ namespace Sq1.Charting {
 				if (this.scrollingHorizontally) {
 					// should drag a little for me to consider the user is really dragging anything
 					if (Math.Abs(this.scrollHorizontalXstarted - e.X) <=
-					    this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
+						this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
 					
 					int XnotBeyond0width = e.X;
 					//COMMENTED_OUT_TO_ALLOW_SCROLL_BEYOND_CONTROL/APPLICATION_VISIBLE_SURFACE_AREA
@@ -174,14 +174,14 @@ namespace Sq1.Charting {
 					if (this.ThisPanelIsPricePanel == false) return;
 					// should drag a little for me to consider the user is really dragging anything
 					if (Math.Abs(this.squeezeHorizontalXstarted - e.X) <=
-					    this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
+						this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
 					
 					int XnotBeyond0height = e.X;
 					//COMMENTED_OUT_TO_ALLOW_SCROLL_BEXOND_CONTROL/APPLICATION_VISIBLE_SURFACE_AREA
 					//if (e.X < 0) XnotBeyond0height = 0;
 					//if (e.X > base.Height) XnotBeyond0height = base.Height;
 					if (Math.Abs(this.squeezeHorizontalXprev - XnotBeyond0height) <
-					    this.ChartControl.ChartSettings.SqueezeHorizontalMouse1pxDistanceReceivedToOneStep) return;
+						this.ChartControl.ChartSettings.SqueezeHorizontalMouse1pxDistanceReceivedToOneStep) return;
 
 					if (this.squeezeHorizontalXprev == XnotBeyond0height) return;		// ignore vertical mouse movements while dragging (and all other 1-sec-frequency garbage events)
 					bool squeezingToTheLeft = (this.squeezeHorizontalXstarted > XnotBeyond0height) ? true : false;
@@ -212,7 +212,7 @@ namespace Sq1.Charting {
 					if (this.ThisPanelIsPricePanel == false) return;
 					// should drag a little for me to consider the user is really dragging anything
 					if (Math.Abs(this.squeezeVerticalYstarted - e.Y) <=
-					    this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
+						this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
 					
 					int YnotBeyond0height = e.Y;
 					//COMMENTED_OUT_TO_ALLOW_SCROLL_BEYOND_CONTROL/APPLICATION_VISIBLE_SURFACE_AREA

@@ -173,10 +173,10 @@ namespace Sq1.Core.Backtesting {
 			foreach (Alert alertPending in alertsPending) {
 				try {
 					//if (alertPending.IsEntryAlert) {
-					//    this.Executor.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
+					//	this.Executor.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
 					//} else {
-					//    string msg = "checkPositionCanBeClosed() will later interrupt the flow saying {Sorry I don't serve alerts.IsExitAlert=true}";
-					//    this.Executor.RemovePendingExitAlertPastDueClosePosition(alertPending);
+					//	string msg = "checkPositionCanBeClosed() will later interrupt the flow saying {Sorry I don't serve alerts.IsExitAlert=true}";
+					//	this.Executor.RemovePendingExitAlertPastDueClosePosition(alertPending);
 					//}
 					//bool removed = this.Executor.ExecutionDataSnapshot.AlertsPendingRemove(alertPending);
 					this.Executor.AlertKillPending(alertPending);
@@ -321,12 +321,12 @@ namespace Sq1.Core.Backtesting {
 				// PREV_QUOTE_ABSNO_SHOULD_NOT_BE_LINEAR_CAN_CONTAIN_HOLES_DUE_TO_QUOTES_INJECTED_TO_FILL_ALERTS
 				//QuoteGenerated quotePrev;
 				//if (i > 0) {
-				//    quotePrev = quotesGenerated[i-1];
-				//    if (quote.Absno != quotePrev.Absno + 1) {
-				//        //string msg = "IRRELEVANT since GenerateQuotesFromBar() has been upgraded to return SortedList<int, QuoteGenerated> instead of randomized List<QuoteGenerated>";
-				//        string msg = "PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES STILL_RELEVANT FIXME";
-				//        //Debugger.Break();
-				//    }
+				//	quotePrev = quotesGenerated[i-1];
+				//	if (quote.Absno != quotePrev.Absno + 1) {
+				//		//string msg = "IRRELEVANT since GenerateQuotesFromBar() has been upgraded to return SortedList<int, QuoteGenerated> instead of randomized List<QuoteGenerated>";
+				//		string msg = "PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES STILL_RELEVANT FIXME";
+				//		//Debugger.Break();
+				//	}
 				//}
 				#endif
 

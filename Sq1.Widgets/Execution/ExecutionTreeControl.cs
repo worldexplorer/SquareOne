@@ -115,7 +115,7 @@ namespace Sq1.Widgets.Execution {
 			} else {
 				if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
 					if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal > 0
-						    && this.splitContainerMessagePane.SplitterDistance != this.DataSnapshot.MessagePaneSplitDistanceHorizontal) {
+							&& this.splitContainerMessagePane.SplitterDistance != this.DataSnapshot.MessagePaneSplitDistanceHorizontal) {
 						this.splitContainerMessagePane.SplitterDistance = this.DataSnapshot.MessagePaneSplitDistanceHorizontal;
 					}
 				} else {

@@ -31,11 +31,11 @@ namespace Sq1.Widgets.ScriptEditor {
 			};
 			// Add some snippets (text templates).
 			List<Snippet> snippets = new List<Snippet> {
-		        new Snippet("for", "for (|;;)\n{\n}", "for loop"),
-		        new Snippet("if", "if (|)\n{\n}", "if statement"),
-		        new Snippet("ifel", "if (|)\n{\n}\nelse\n{\n}", "if-else statement"),
-		        new Snippet("while", "while (|)\n{\n}", "while loop"),
-		        new Snippet("dr", "Visit http://www.digitalrune.com/", "The URL of DigitalRune Software.")
+				new Snippet("for", "for (|;;)\n{\n}", "for loop"),
+				new Snippet("if", "if (|)\n{\n}", "if statement"),
+				new Snippet("ifel", "if (|)\n{\n}\nelse\n{\n}", "if-else statement"),
+				new Snippet("while", "while (|)\n{\n}", "while loop"),
+				new Snippet("dr", "Visit http://www.digitalrune.com/", "The URL of DigitalRune Software.")
 			};
 			// Add the snippets to the completion data
 			foreach (Snippet snippet in snippets) {

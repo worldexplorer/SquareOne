@@ -16,7 +16,7 @@ namespace Sq1.Core.Repositories {
 
 		public RepositoryCustomMarketInfo() : base() {}
 		public new bool Initialize(string rootPath, string relFname,
-		            string subfolder = "Workspaces", string workspaceName = "Default",
+					string subfolder = "Workspaces", string workspaceName = "Default",
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {
 			bool createdNewFile = base.Initialize(rootPath, relFname, subfolder, workspaceName, createNonExistingPath, createNonExistingFile);
 			this.TimeZonesWithUTC = parseCsv(this.AbsFilenameTimeZonesCsv, ",");

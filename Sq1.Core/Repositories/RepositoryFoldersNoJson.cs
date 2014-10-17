@@ -21,8 +21,8 @@ namespace Sq1.Core.Repositories {
 		public List<string> FoldersWithin { get; protected set; }
 		public RepositoryFoldersNoJson() { this.FoldersWithin = new List<string>(); }
 		public void Initialize(string rootPath,
-		            string subfolder = "DataSources",
-		            IStatusReporter statusReporter = null,
+					string subfolder = "DataSources",
+					IStatusReporter statusReporter = null,
 					bool createNonExistingPath = true) {
 			
 			this.StatusReporter = statusReporter;

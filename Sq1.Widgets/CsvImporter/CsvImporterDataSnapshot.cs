@@ -120,66 +120,66 @@ namespace Sq1.Widgets.CsvImporter {
 
 /*
   "CsvConfiguration": {
-    "$type": "CsvHelper.Configuration.CsvConfiguration, CsvHelper",
-    "Maps": {
-      "$type": "CsvHelper.Configuration.CsvClassMapCollection, CsvHelper"
-    },
-    "PropertyBindingFlags": 20,
-    "HasHeaderRecord": true,
-    "HasExcelSeparator": false,
-    "WillThrowOnMissingField": true,
-    "DetectColumnCountChanges": false,
-    "IsHeaderCaseSensitive": true,
-    "IgnoreHeaderWhiteSpace": false,
-    "IgnoreReferences": false,
-    "TrimHeaders": false,
-    "TrimFields": true,
-    "Delimiter": ",",
-    "Quote": "\"",
-    "QuoteString": "\"",
-    "DoubleQuoteString": "\"\"",
-    "QuoteRequiredChars": [
-      "\r",
-      "\n",
-      ","
-    ],
-    "Comment": "#",
-    "AllowComments": true,
-    "BufferSize": 2048,
-    "QuoteAllFields": false,
-    "QuoteNoFields": false,
-    "CountBytes": false,
-    "Encoding": {
-      "$type": "System.Text.UTF8Encoding, mscorlib",
-      "BodyName": "utf-8",
-      "EncodingName": "Unicode (UTF-8)",
-      "HeaderName": "utf-8",
-      "WebName": "utf-8",
-      "WindowsCodePage": 1200,
-      "IsBrowserDisplay": true,
-      "IsBrowserSave": true,
-      "IsMailNewsDisplay": true,
-      "IsMailNewsSave": true,
-      "IsSingleByte": false,
-      "EncoderFallback": {
-        "$type": "System.Text.EncoderReplacementFallback, mscorlib",
-        "DefaultString": "�",
-        "MaxCharCount": 1
-      },
-      "DecoderFallback": {
-        "$type": "System.Text.DecoderReplacementFallback, mscorlib",
-        "DefaultString": "�",
-        "MaxCharCount": 1
-      },
-      "IsReadOnly": true,
-      "CodePage": 65001
-    },
-    "SkipEmptyRecords": false,
-    "IgnoreQuotes": false,
-    "IgnorePrivateAccessor": false,
-    "IgnoreBlankLines": true,
-    "PrefixReferenceHeaders": false,
-    "IgnoreReadingExceptions": false,
-    "ReadingExceptionCallback": null
+	"$type": "CsvHelper.Configuration.CsvConfiguration, CsvHelper",
+	"Maps": {
+	  "$type": "CsvHelper.Configuration.CsvClassMapCollection, CsvHelper"
+	},
+	"PropertyBindingFlags": 20,
+	"HasHeaderRecord": true,
+	"HasExcelSeparator": false,
+	"WillThrowOnMissingField": true,
+	"DetectColumnCountChanges": false,
+	"IsHeaderCaseSensitive": true,
+	"IgnoreHeaderWhiteSpace": false,
+	"IgnoreReferences": false,
+	"TrimHeaders": false,
+	"TrimFields": true,
+	"Delimiter": ",",
+	"Quote": "\"",
+	"QuoteString": "\"",
+	"DoubleQuoteString": "\"\"",
+	"QuoteRequiredChars": [
+	  "\r",
+	  "\n",
+	  ","
+	],
+	"Comment": "#",
+	"AllowComments": true,
+	"BufferSize": 2048,
+	"QuoteAllFields": false,
+	"QuoteNoFields": false,
+	"CountBytes": false,
+	"Encoding": {
+	  "$type": "System.Text.UTF8Encoding, mscorlib",
+	  "BodyName": "utf-8",
+	  "EncodingName": "Unicode (UTF-8)",
+	  "HeaderName": "utf-8",
+	  "WebName": "utf-8",
+	  "WindowsCodePage": 1200,
+	  "IsBrowserDisplay": true,
+	  "IsBrowserSave": true,
+	  "IsMailNewsDisplay": true,
+	  "IsMailNewsSave": true,
+	  "IsSingleByte": false,
+	  "EncoderFallback": {
+		"$type": "System.Text.EncoderReplacementFallback, mscorlib",
+		"DefaultString": "�",
+		"MaxCharCount": 1
+	  },
+	  "DecoderFallback": {
+		"$type": "System.Text.DecoderReplacementFallback, mscorlib",
+		"DefaultString": "�",
+		"MaxCharCount": 1
+	  },
+	  "IsReadOnly": true,
+	  "CodePage": 65001
+	},
+	"SkipEmptyRecords": false,
+	"IgnoreQuotes": false,
+	"IgnorePrivateAccessor": false,
+	"IgnoreBlankLines": true,
+	"PrefixReferenceHeaders": false,
+	"IgnoreReadingExceptions": false,
+	"ReadingExceptionCallback": null
   },
 */
