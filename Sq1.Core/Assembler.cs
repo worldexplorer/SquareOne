@@ -165,7 +165,6 @@ namespace Sq1.Core {
 			return Assembler.InstanceInitialized;
 		}
 		public static void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
-			if (msg != null) ex = new Exception(msg, ex);
 			if (Assembler.InstanceInitialized == null) {
 				MessageBox.Show(ex.Message, "Assembler.InstanceInitialized=null");
 				//throw ex;

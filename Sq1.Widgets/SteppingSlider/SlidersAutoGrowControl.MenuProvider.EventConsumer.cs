@@ -11,6 +11,9 @@ using System.Diagnostics;
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SlidersAutoGrowControl {
 		void mniScriptContextLoad_Click(object sender, EventArgs e) {
+			// otherwize crash on slider change while "Parameter Bags" CTX is open this.ctxParameterBags_Opening(this, null);
+			this.ctxParameterBags.Hide();
+
 			ContextScript scriptContextToLoad = this.ScriptContextFromMniTag(sender);
 			if (scriptContextToLoad == null) {
 				Debugger.Break();
@@ -23,7 +26,6 @@ namespace Sq1.Widgets.SteppingSlider {
 				return;
 			}
 			this.RaiseOnScriptContextLoadRequested(scriptContextToLoad.Name);
-			this.ctxParameterBags_Opening(this, null);
 		}
 		void mniltbScriptContextNewWithDefaults_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string newScriptContextName = e.StringUserTyped;
@@ -69,7 +71,6 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 				this.syncMniAllParamsShowBorderAndNumeric();
 			} catch (Exception ex) {
-				Debugger.Break();
 				string msg = "DID_YOU_CHANGE_NUMERIC_UPDOWN?";
 				Assembler.PopupException("SlidersAutoGrow.EventConsumer.cs::ctxParameterBags_Opening()", ex);
 			} finally {

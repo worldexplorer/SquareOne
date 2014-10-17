@@ -145,6 +145,9 @@ namespace Sq1.Widgets.SteppingSlider {
 				//foreach (var mni in slidersAutoGrow.TsiScriptContextsDynamic) {
 				foreach (var mni in slidersAutoGrow.TsiDynamic) {
 					//this.ctxSlider.Items.Insert(indexToInsert++, mni);
+					if (mni.IsDisposed) {
+						continue;
+					}
 					this.ctxSlider.Items.Add(mni);
 				}
 			} catch (Exception ex) {

@@ -14,18 +14,21 @@ namespace Sq1.Widgets.SteppingSlider {
 		// http://stackoverflow.com/questions/6275120/toolstripmenuitem-added-to-several-places?rq=1
 		// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening first time opened we locate common menu items from GrandParent, then we move them to the current slider; cool?
 		private Dictionary<string, ToolStripMenuItem> tsiScriptContextsDynamic = new Dictionary<string, ToolStripMenuItem>();
-		public ToolStripItem[] TsiScriptContextsDynamic {
-			get {
+		public ToolStripItem[] TsiScriptContextsDynamic { get {
 				List<string> ctx2remove = new List<string>();
 				foreach (string ctxName in this.tsiScriptContextsDynamic.Keys) {
 					if (this.Strategy.ScriptContextsByName.ContainsKey(ctxName)) continue;
 					string msg = "removing mni<=>scriptContext[" + ctxName + "],"
 						+ " most likely afterScriptParametersForm->RightClick->DELETE";
-					Assembler.PopupException(msg);
+					//Assembler.PopupException(msg);
 					ctx2remove.Add(ctxName);	// can't enumerate and remove!!!
 				}
 				foreach (string ctxName in ctx2remove) {
 					ToolStripMenuItem mni = this.tsiScriptContextsDynamic[ctxName];
+					if (mni.IsDisposed) {
+						string msg = "AVOIDING_NPE";
+						continue;
+					}
 					mni.Click -= this.mniScriptContextLoad_Click;
 					ToolStripMenuItem mniToRemove = mni as ToolStripMenuItem;
 					if (mniToRemove != null) {
@@ -33,6 +36,8 @@ namespace Sq1.Widgets.SteppingSlider {
 					}
 					this.tsiScriptContextsDynamic.Remove(ctxName);	// two-steps removal to avoid CollectionModified;
 				}
+
+				//this.tsiScriptContextsDynamic.Clear();
 				bool fromEmptyState = this.tsiScriptContextsDynamic.Keys.Count == 0;
 				foreach (string ctxName in this.Strategy.ScriptContextsByName.Keys) {
 					if (this.tsiScriptContextsDynamic.ContainsKey(ctxName)) continue;
@@ -56,6 +61,10 @@ namespace Sq1.Widgets.SteppingSlider {
 				bool currentFound = false;
 				foreach (string ctxName in this.tsiScriptContextsDynamic.Keys) {
 					ToolStripMenuItem mni = this.tsiScriptContextsDynamic[ctxName];
+					if (mni.IsDisposed) {
+						string msg = "THIS_MNI_WILL_CAUSE_PROBLEMS_LATER";
+						continue;
+					}
 					mni.Checked = (this.Strategy.ScriptContextCurrent.Name == ctxName);
 					if (mni.Checked) currentFound = true;
 				}
@@ -65,8 +74,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					Assembler.PopupException(msg);
 				}
 				return new List<ToolStripMenuItem>(this.tsiScriptContextsDynamic.Values).ToArray();
-			}
-		}
+			} }
 		public ToolStripItem[] TsiDynamic { get {
 				var ret = new List<ToolStripItem>();
 				ret.Add(this.mniParameterBagsNotHighlighted);
