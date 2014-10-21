@@ -103,8 +103,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			string valueClicked = this.PanelFillSlider.ValueCurrent.ToString(this.ValueFormat);
 			if (valueClicked == this.DomainUpDown.Text) return;
 			this.DomainUpDown.Text = valueClicked;
-			if (this.ValueCurrentChanged == null) return;
-			this.ValueCurrentChanged(this, EventArgs.Empty);
+			this.RaiseValueChanged();
 		}
 
 		protected override void OnLoad(EventArgs e) {

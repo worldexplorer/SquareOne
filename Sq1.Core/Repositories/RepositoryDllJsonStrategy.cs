@@ -176,7 +176,7 @@ namespace Sq1.Core.Repositories {
 					}
 					strategyFound.Script = script;
 					strategyFound.DllPathIfNoSourceCode = assembly.Location;
-					this.StrategySave(strategyFound);
+					// NO_POINT_FOR_SAVING_ONLY_StoredInJsonAbspath this.StrategySave(strategyFound);
 				}
 			}
 			return ret;

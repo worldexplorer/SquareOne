@@ -19,7 +19,7 @@ namespace Sq1.Core.Backtesting {
 
 			// INDICATORS_CLEARED_ADDED_AFTER_BACKTEST_STARTED "Collection was modified; enumeration operation may not execute."
 			// ALSO_OBSERVED_RELATED: INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS
-			foreach (Indicator indicator in snap.Indicators.Values) {
+			foreach (Indicator indicator in snap.IndicatorsReflectedScriptInstances.Values) {
 				try {
 					indicator.OnNewStreamingQuote(quote);
 				} catch (Exception ex) {
@@ -55,7 +55,7 @@ namespace Sq1.Core.Backtesting {
 			}
 			//INVOCATION_WONT_DO_ANY_JOB this.simulatePendingFillPreExecuteEveryTick(null);
 			ExecutionDataSnapshot snap = this.backtester.Executor.ExecutionDataSnapshot;
-			foreach (Indicator indicator in snap.Indicators.Values) {
+			foreach (Indicator indicator in snap.IndicatorsReflectedScriptInstances.Values) {
 				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 				//if (indicator.NotOnChartBarsKey != null) {
 				//	string msg = "Generate quotes for the Non-Chart-Bars and feed them into your indicators!";

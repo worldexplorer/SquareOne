@@ -859,9 +859,9 @@ namespace Sq1.Core.StrategyBase {
 				this.Performance.Initialize();
 				this.Strategy.Script.InitializeBacktestWithExecutorsBarsInstantiateIndicators();
 
-				this.ChartShadow.SetIndicators(this.ExecutionDataSnapshot.Indicators);
+				this.ChartShadow.SetIndicators(this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances);
 				bool indicatorsHaveNoErrorsCanStartBacktesting = true;
-				foreach (Indicator indicator in this.ExecutionDataSnapshot.Indicators.Values) {
+				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
 					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStartingConstructOwnValuesValidateParameters(this);
 				}
 				if (indicatorsHaveNoErrorsCanStartBacktesting == false) {
@@ -917,9 +917,9 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Strategy.ActivatedFromDll) {
 				// FIXED "EnterEveryBar doesn't draw MAfast"; editor-typed strategies already have indicators in SNAP after pre-backtest compilation
 				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true
-				this.Strategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
+				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
 			}
-			this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
+			this.Strategy.Script.PullParametersFromCurrentContextSaveStrategy();
 			
 			//inNewThread = false;
 			if (inNewThread) {

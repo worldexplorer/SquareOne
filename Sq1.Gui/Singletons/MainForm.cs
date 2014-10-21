@@ -25,7 +25,7 @@ namespace Sq1.Gui.Singletons {
 		public Sq1.Core.Serializers.Serializer<Sq1.Gui.GuiDataSnapshot> GuiDataSnapshotSerializer;
 		public bool MainFormClosingSkipChartFormsRemoval;
 
-		public ChartForm ChartFormActive { get {
+		public ChartForm ChartFormActiveNullUnsafe { get {
 				var ret = this.DockPanel.ActiveDocument as ChartForm;
 				if (ret == null) {
 					string msg = "MainForm.DockPanel.ActiveDocument is not a ChartForm; no charts open or drag your chart into DOCUMENT docking area";
@@ -123,7 +123,7 @@ namespace Sq1.Gui.Singletons {
 	
 				//this.PropagateSelectorsForCurrentChart();
 				//WHY???this.MainFormEventManager.DockPanel_ActiveDocumentChanged(this, EventArgs.Empty);
-				if (this.ChartFormActive != null) {
+				if (this.ChartFormActiveNullUnsafe != null) {
 					//v1
 					//this.ChartFormActive.ChartFormManager.PopulateSliders();
 					//if (this.ChartFormActive.ChartFormManager.Strategy == null) {
@@ -131,7 +131,7 @@ namespace Sq1.Gui.Singletons {
 					//} else {
 					//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormActive.ChartFormManager.Strategy);
 					//}
-					this.ChartFormActive.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+					this.ChartFormActiveNullUnsafe.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 				}
 	
 				this.WorkspacesManager.SelectWorkspaceLoaded(workspaceToLoad);
@@ -168,12 +168,21 @@ namespace Sq1.Gui.Singletons {
 						continue;
 					}
 					
+					//v1
 					// INDICATORS_CLEARED_ADDED_AFTER_BACKTEST_STARTED "Collection was modified; enumeration operation may not execute."
-					if (chartStrategy.ScriptContextCurrent.BacktestOnRestart == false) {
-						// need to instantiate all panels for all script indicators before distributing distances between them
-						// COPIED_FROM ScriptExecutor.BacktesterRunSimulationTrampoline() FIXED "EnterEveryBar doesn't draw MAfast";
-						chartStrategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
+					//if (chartStrategy.ScriptContextCurrent.BacktestOnRestart == false) {
+					//	// need to instantiate all panels for all script indicators before distributing distances between them
+					//	// COPIED_FROM ScriptExecutor.BacktesterRunSimulationTrampoline() FIXED "EnterEveryBar doesn't draw MAfast";
+					//	chartStrategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
+					//}
+					//v2
+					#if DEBUG
+					bool mergedIfAny = chartStrategy.Script.IndicatorsInitializedInDerivedConstructor.Count > 0
+						&& chartStrategy.ScriptContextCurrent.IndicatorParametersByName.Count == chartStrategy.Script.IndicatorsInitializedInDerivedConstructor.Count;
+					if (mergedIfAny == false) {
+						Debugger.Break();
 					}
+					#endif
 
 					// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
 					// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer

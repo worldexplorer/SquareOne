@@ -12,7 +12,7 @@ namespace Sq1.Widgets.SteppingSlider {
 	public partial class SlidersAutoGrowControl {
 		void mniScriptContextLoad_Click(object sender, EventArgs e) {
 			// otherwize crash on slider change while "Parameter Bags" CTX is open this.ctxParameterBags_Opening(this, null);
-			this.ctxParameterBags.Hide();
+			//this.ctxParameterBags.Hide();
 
 			ContextScript scriptContextToLoad = this.ScriptContextFromMniTag(sender);
 			if (scriptContextToLoad == null) {
@@ -26,6 +26,8 @@ namespace Sq1.Widgets.SteppingSlider {
 				return;
 			}
 			this.RaiseOnScriptContextLoadRequested(scriptContextToLoad.Name);
+			// otherwize crash on slider change while "Parameter Bags" CTX is open
+			this.ctxParameterBags_Opening(this, null);
 		}
 		void mniltbScriptContextNewWithDefaults_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string newScriptContextName = e.StringUserTyped;
@@ -64,7 +66,15 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.ctxParameterBags.SuspendLayout();
 			try {
 				this.ctxParameterBags.Items.Clear();
-				this.ctxParameterBags.Items.AddRange(this.TsiDynamic);
+				var newMnis = this.TsiDynamic;
+				//this.ctxParameterBags.Items.AddRange(newMnis);
+				foreach (var mni in newMnis) {
+					try {
+						this.ctxParameterBags.Items.Add(mni);
+					} catch (Exception ex) {
+						throw;
+					}
+				}
 				if (sender == this && e == null) {
 					// after NewContext -> Delete, ctxOperations menu pane jumps on top of application window
 					this.ctxOperations.Hide();

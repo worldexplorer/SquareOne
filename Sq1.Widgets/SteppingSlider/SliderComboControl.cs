@@ -160,5 +160,10 @@ namespace Sq1.Widgets.SteppingSlider {
 		public decimal ValueMinRtlSafe { get { return Math.Min(this.ValueMin, this.ValueMax); } }
 		public decimal ValueMaxRtlSafe { get { return Math.Max(this.ValueMin, this.ValueMax); } }
 
+		public override string ToString() {
+			string ret = "UNDERLYING_PANEL_FILL_SLIDER_NOT_YET_INITIALIZED";
+			if (this.PanelFillSlider == null) return ret;
+			return this.PanelFillSlider.ToString();
+		}
 	}
 }

@@ -174,30 +174,29 @@ namespace Sq1.Gui.Forms {
 		}
 		
 		public void PropagateContextScriptToLTB(ContextScript ctxScript) {
-			if (ctxScript.ScaleInterval.Scale == BarScale.Unknown) {
-				string msg = "TODO: figure out why deserialized / userSelected strategyClicked[" + this.ChartFormManager.Executor.Strategy
-					+ "].ScriptContextCurrent.ScaleInterval[" + ctxScript.ScaleInterval + "] has BarScale.Unknown #4";
-				Assembler.PopupException(msg);
-			} else {
-				MenuItemLabeledTextBox mnitlbForScale = null;
-				switch (ctxScript.ScaleInterval.Scale) {
-					case BarScale.Minute:		mnitlbForScale = this.mnitlbMinutes; break; 
-					case BarScale.Hour:			mnitlbForScale = this.mnitlbDaily; break; 
-					case BarScale.Daily:		mnitlbForScale = this.mnitlbHourly; break; 
-					case BarScale.Weekly:		mnitlbForScale = this.mnitlbWeekly; break; 
-					case BarScale.Monthly:		mnitlbForScale = this.mnitlbMonthly; break; 
-					//case BarScale.Quarterly		mnitlbForScale = this.mnitlbQuarterly; break; 
-					case BarScale.Yearly:		mnitlbForScale = this.mnitlbYearly; break;
-					default:
-						string msg = "SCALE_UNHANDLED_NO_TEXTBOX_TO_POPULATE " + ctxScript.ScaleInterval.Scale;
-						Assembler.PopupException(msg);
-						break;
-				}
+			MenuItemLabeledTextBox mnitlbForScale = null;
+			switch (ctxScript.ScaleInterval.Scale) {
+				case BarScale.Minute:		mnitlbForScale = this.mnitlbMinutes; break; 
+				case BarScale.Hour:			mnitlbForScale = this.mnitlbDaily; break; 
+				case BarScale.Daily:		mnitlbForScale = this.mnitlbHourly; break; 
+				case BarScale.Weekly:		mnitlbForScale = this.mnitlbWeekly; break; 
+				case BarScale.Monthly:		mnitlbForScale = this.mnitlbMonthly; break; 
+				//case BarScale.Quarterly		mnitlbForScale = this.mnitlbQuarterly; break;
+				case BarScale.Yearly:		mnitlbForScale = this.mnitlbYearly; break;
+				case BarScale.Unknown: 
+					string msg = "TODO: figure out why deserialized / userSelected strategyClicked[" + this.ChartFormManager.Executor.Strategy
+						+ "].ScriptContextCurrent.ScaleInterval[" + ctxScript.ScaleInterval + "] has BarScale.Unknown #4";
+					Assembler.PopupException(msg);
+					break;
+				default:
+					string msg2 = "SCALE_UNHANDLED_NO_TEXTBOX_TO_POPULATE " + ctxScript.ScaleInterval.Scale;
+					Assembler.PopupException(msg2);
+					break;
+			}
 				
-				if (mnitlbForScale != null) {
-					mnitlbForScale.InputFieldValue = ctxScript.ScaleInterval.Interval.ToString();
-					mnitlbForScale.BackColor = Color.Gainsboro;
-				}
+			if (mnitlbForScale != null) {
+				mnitlbForScale.InputFieldValue = ctxScript.ScaleInterval.Interval.ToString();
+				mnitlbForScale.BackColor = Color.Gainsboro;
 			}
 
 			this.mniShowBarRange.Checked = ctxScript.ShowRangeBar;
@@ -230,9 +229,6 @@ namespace Sq1.Gui.Forms {
 				string msg = "FIXED_POSITIONSIZE_TO_SHARE_1 strategy[" + this.ChartFormManager.Executor.Strategy
 					+ "].ScriptContextsByName[" + ctxScript.Name + "] had PositionSize.Mode=Unknown";
 				Assembler.PopupException(msg);
-				#if DEBUG
-				Debugger.Break();
-				#endif
 			}
 
 			switch (ctxScript.PositionSize.Mode) {
@@ -252,7 +248,7 @@ namespace Sq1.Gui.Forms {
 					break;
 			}
 
-			if (this.ChartFormManager.MainForm.ChartFormActive == this) {
+			if (this.ChartFormManager.MainForm.ChartFormActiveNullUnsafe == this) {
 				string msg = "WE_ARE_HERE_WHEN_WE_SWITCH_STRATEGY_FOR_CHART";
 				//Debugger.Break();
 				

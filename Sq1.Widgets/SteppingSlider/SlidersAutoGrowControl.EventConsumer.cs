@@ -13,6 +13,8 @@ namespace Sq1.Widgets.SteppingSlider {
 	public partial class SlidersAutoGrowControl {
 		void slider_ValueCurrentChanged(object sender, EventArgs e) {
 			try {
+				//PanelFillSlider panel = sender as PanelFillSlider;
+				//SliderComboControl slider = panel.Parent.Parent.Parent as SliderComboControl;
 				SliderComboControl slider = sender as SliderComboControl;
 				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;

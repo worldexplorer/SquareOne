@@ -111,7 +111,7 @@ namespace Sq1.Core.StrategyBase {
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 			this.ContextMarkCurrentInListByName(scriptContextName);
 			if (this.Script != null) {
-				this.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
+				this.Script.PullParametersFromCurrentContextSaveStrategy();
 			}
 		}
 		public void ContextMarkCurrentInListByName(string scriptContextName) {
@@ -133,9 +133,9 @@ namespace Sq1.Core.StrategyBase {
 				Debugger.Break();
 				this.Script.ParametersById[paramId].ValueCurrent = valueNew;
 			}
-			double valueOld = this.ScriptContextCurrent.ScriptParameterValuesById[paramId];
+			double valueOld = this.ScriptContextCurrent.ScriptParametersById[paramId].ValueCurrent;
 			if (valueOld == valueNew) return;
-			this.ScriptContextCurrent.ScriptParameterValuesById[paramId] = valueNew;
+			this.ScriptContextCurrent.ScriptParametersById[paramId].ValueCurrent = valueNew;
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 		}
 		public void ScriptContextAdd(string newScriptContextName, ContextScript absorbParamsFrom = null) {

@@ -79,15 +79,21 @@ namespace Sq1.Widgets.SteppingSlider {
 					SliderComboControl slider = this.SliderComboFactory(parameter);
 					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				}
-				if (this.Strategy.Script.ParametersById.Count > 0 && this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Count > 0) {
+
+				// switching ScriptContext still overwrites its {ValueCurrent}s to the previous visible
+				//SWITCHED_TO_PUSH this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
+				Dictionary<string, IndicatorParameter> parametersByName = this.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;	// dont make me calculate it twice 
+				if (parametersByName.Count > 0) {
 					this.AddSpacingBeforeIndicatorParameters();
 				}
-				Dictionary<string, IndicatorParameter> parametersByName = this.Strategy.Script.IndicatorsParametersForInitializedInDerivedConstructor;	// dont make me calculate it twice 
 				foreach (string indicatorNameDotParameterName in parametersByName.Keys) {																// #1
 					IndicatorParameter parameter = parametersByName[indicatorNameDotParameterName];														// #2
+					parameter.IndicatorName = indicatorNameDotParameterName.Substring(0, indicatorNameDotParameterName.IndexOf('.'));
 					SliderComboControl slider = this.SliderComboFactory(parameter, indicatorNameDotParameterName);
 					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				}
+				// while switching ActiveDocument (ChartForm), tsiScriptContextsDynamic.Clear() and don't complain about missing ScriptContexts
+				this.tsiScriptContextsDynamic.Clear();
 			} finally {
 				base.Height = this.PreferredHeight;
 				base.ResumeLayout(true);

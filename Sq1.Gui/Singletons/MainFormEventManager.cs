@@ -11,6 +11,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Support;
 using Sq1.Gui.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+using Sq1.Widgets.SteppingSlider;
 
 namespace Sq1.Gui.Singletons {
 	public class MainFormEventManager {
@@ -58,7 +59,7 @@ namespace Sq1.Gui.Singletons {
 		}
 		internal void StrategiesTree_OnStrategyLoadClicked(object sender, StrategyEventArgs e) {
 			Strategy strategy = e.Strategy;
-			ChartForm active = this.mainForm.ChartFormActive;
+			ChartForm active = this.mainForm.ChartFormActiveNullUnsafe;
 			if (active == null) {
 				ChartFormManager msg = this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
 				active = msg.ChartForm;
@@ -229,7 +230,7 @@ namespace Sq1.Gui.Singletons {
 					return;
 				}
 				// mainForm.ChartFormActive will already throw if Documents have no Charts selected; no need to check
-				this.mainForm.ChartFormActive.ChartFormManager.EventManager.DataSourcesTree_OnSymbolSelected(sender, e);
+				this.mainForm.ChartFormActiveNullUnsafe.ChartFormManager.EventManager.DataSourcesTree_OnSymbolSelected(sender, e);
 			} catch (Exception ex) {
 				this.mainForm.PopupException(null, ex);
 			}
@@ -244,7 +245,7 @@ namespace Sq1.Gui.Singletons {
 			//v1 SlidersForm.Instance.PopulateFormTitle(strategy);
 			//v2 WILLBEDONE_BY_PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy() SlidersForm.Instance.Initialize(strategy);
 			try {
-				this.mainForm.ChartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("StrategiesTree_OnScriptContextLoadClicked()");
+				this.mainForm.ChartFormActiveNullUnsafe.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("StrategiesTree_OnScriptContextLoadClicked()");
 			} catch (Exception ex) {
 				Assembler.PopupException("StrategiesTree_OnScriptContextLoadClicked()", ex);
 			}
@@ -256,18 +257,46 @@ namespace Sq1.Gui.Singletons {
 		}
 		// TYPE_MANGLING_INSIDE_WARNING NOTICE_THAT_BOTH_PARAMETER_SCRIPT_AND_INDICATOR_VALUE_CHANGED_EVENTS_ARE_HANDLED_BY_SINGLE_HANDLER
 		internal void SlidersAutoGrow_SliderValueChanged(object sender, IndicatorParameterEventArgs e) {
-			Strategy strategyToSaveAndRun = this.mainForm.ChartFormActive.ChartFormManager.Strategy;
+			ChartForm chartFormActive = this.mainForm.ChartFormActiveNullUnsafe;
+			if (chartFormActive == null) {
+				string msg = "DRAG_CHART_INTO_DOCUMENT_AREA";
+				Assembler.PopupException(msg);
+				return;
+			}
+			Strategy strategyToSaveAndRun = chartFormActive.ChartFormManager.Strategy;
 			if (strategyToSaveAndRun.Script.Executor == null) {
 				string msg = "slider_ValueCurrentChanged(): did you forget to assign Script.Executor after compilation?...";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.mainForm.ChartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
+
+			ScriptParameterEventArgs scripParamChanged = e as ScriptParameterEventArgs;
+			if (scripParamChanged != null) {
+			} else {
+				IndicatorParameter iParamChangedCtx = e.IndicatorParameter;
+				string indicatorName = iParamChangedCtx.IndicatorName;
+				string indicatorParameterName = e.IndicatorParameter.Name;
+				Dictionary<string, Indicator> indicatorsByName = chartFormActive.ChartFormManager.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances;
+				if (indicatorsByName.ContainsKey(indicatorName)) {
+					Indicator indicatorInstantiated = indicatorsByName[indicatorName];
+					if (indicatorInstantiated.ParametersByName.ContainsKey(indicatorParameterName)) {
+						IndicatorParameter iParamInstantiated = indicatorInstantiated.ParametersByName[indicatorParameterName];
+						iParamInstantiated.AbsorbCurrentFixBoundariesIfChanged(iParamChangedCtx);
+					} else {
+						string msg = "INDICATOR_PARAMETER_NOT_FOUND_FOR_INDICATOR_REFLECTED_FOUND: " + e.IndicatorParameter;
+						Assembler.PopupException(msg);
+					}
+				} else {
+					string msg = "WILL_PICK_UP_ON_BACKTEST__INDICATOR_NOT_FOUND_IN_INDICATORS_REFLECTED: " + e.IndicatorParameter;
+					Assembler.PopupException(msg);
+				}
+			}
+			chartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
 			
 			ScriptParameterEventArgs demuxScriptParameterEventArgs = e as ScriptParameterEventArgs;   
 			if (demuxScriptParameterEventArgs == null) {
 				string msg = "MultiSplitterPropertiesByPanelName[ATR (Period:5[1..11/2]) ] key should be synchronized when user clicks Period 5=>7";
-				this.mainForm.ChartFormActive.ChartControl.SerializeSplitterDistanceOrPanelName();
+				chartFormActive.ChartControl.SerializeSplitterDistanceOrPanelName();
 			} else {
 				string msg = "DO_NOTHING_ELSE_INDICATOR_PANEL_SPLITTER_POSITIONS_SHOULDNT_BE_SAVED_HERE";
 			}

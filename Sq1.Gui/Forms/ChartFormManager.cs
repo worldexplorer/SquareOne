@@ -342,9 +342,6 @@ namespace Sq1.Gui.Forms {
 					+ " 2) an existing strategy.BacktestOnSelectorsChange=true (opened in a new chartform) failed compile upstack;"
 					+ " 3) an exisitng strategy.BacktestOnSelectorsChange=true (loaded non-default ScriptContext) failed to compile upstack;"
 					;
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -393,7 +390,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException("this should never happen this.Strategy=null in afterBacktesterCompleteOnceOnRestart()");
 				return;
 			}
-			this.ChartForm.PropagateContextChartOrScriptToLTB(this.Strategy.ScriptContextCurrent);
+			//ONLY_ON_WORKSPACE_RESTORE??? this.ChartForm.PropagateContextChartOrScriptToLTB(this.Strategy.ScriptContextCurrent);
 			if (this.Strategy.ScriptContextCurrent.ChartStreaming) this.ChartStreamingConsumer.StartStreaming();
 		}
 		public void InitializeChartNoStrategyAfterDeserialization(MainForm mainForm) {
@@ -426,7 +423,7 @@ namespace Sq1.Gui.Forms {
 			if (this.Strategy.ScriptContextCurrent.BacktestOnRestart == false) {
 				// COPYFROM_StrategyCompileActivatePopulateSlidersShow()
 				if (this.Strategy.Script != null && this.Strategy.ActivatedFromDll) {
-					this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
+					this.Strategy.Script.PullParametersFromCurrentContextSaveStrategy();
 				}
 				return;
 			}
@@ -554,10 +551,13 @@ namespace Sq1.Gui.Forms {
 		}
 		public void StrategyCompileActivatePopulateSlidersShow() {
 			if (this.Strategy.ActivatedFromDll == false) this.StrategyCompileActivateBeforeShow();
+			else Debugger.Break();
+
 			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
-				this.Strategy.Script.IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot();
-				this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
+				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
+				this.Strategy.Script.PullParametersFromCurrentContextSaveStrategy();
 			}
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.PopulateSliders();
 		}
 		public void PopulateSliders() {

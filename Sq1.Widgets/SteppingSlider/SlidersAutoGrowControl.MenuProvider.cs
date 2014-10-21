@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
 using Sq1.Widgets.LabeledTextBox;
+using System.Diagnostics;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SlidersAutoGrowControl {
@@ -21,7 +22,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					string msg = "removing mni<=>scriptContext[" + ctxName + "],"
 						+ " most likely afterScriptParametersForm->RightClick->DELETE";
 					//Assembler.PopupException(msg);
-					ctx2remove.Add(ctxName);	// can't enumerate and remove!!!
+					ctx2remove.Add(ctxName);	// can't enumerate and remove!!! two-steps removal to avoid CollectionModified;
 				}
 				foreach (string ctxName in ctx2remove) {
 					ToolStripMenuItem mni = this.tsiScriptContextsDynamic[ctxName];
@@ -73,17 +74,35 @@ namespace Sq1.Widgets.SteppingSlider {
 						+ " not found among this.tsiScriptContextsDynamic.Keys.Count[" + this.tsiScriptContextsDynamic.Keys.Count + "]";
 					Assembler.PopupException(msg);
 				}
+				foreach (ToolStripMenuItem mni in this.tsiScriptContextsDynamic.Values) {
+					if (mni.IsDisposed) System.Diagnostics.Debugger.Break();
+				}
+
 				return new List<ToolStripMenuItem>(this.tsiScriptContextsDynamic.Values).ToArray();
 			} }
 		public ToolStripItem[] TsiDynamic { get {
 				var ret = new List<ToolStripItem>();
-				ret.Add(this.mniParameterBagsNotHighlighted);
+
+				if (this.mniParameterBagsNotHighlighted.IsDisposed == false) ret.Add(this.mniParameterBagsNotHighlighted);
+				else Debugger.Break();
+
 				ret.AddRange(this.TsiScriptContextsDynamic);
-				ret.Add(this.mniltbParametersBagNewWithDefaults);
-				ret.Add(this.toolStripSeparator2);
-				ret.Add(this.mniAllParamsResetToScriptDefaults);
-				ret.Add(this.mniAllParamsShowNumeric);
-				ret.Add(this.mniAllParamsShowBorder);
+
+				if (this.mniltbParametersBagNewWithDefaults.IsDisposed == false) ret.Add(this.mniltbParametersBagNewWithDefaults);
+				else Debugger.Break();
+
+				if (this.toolStripSeparator2.IsDisposed == false) ret.Add(this.toolStripSeparator2);
+				else Debugger.Break();
+
+				if (this.mniAllParamsResetToScriptDefaults.IsDisposed == false) ret.Add(this.mniAllParamsResetToScriptDefaults);
+				else Debugger.Break();
+
+				if (this.mniAllParamsShowNumeric.IsDisposed == false) ret.Add(this.mniAllParamsShowNumeric);
+				else Debugger.Break();
+
+				if (this.mniAllParamsShowBorder.IsDisposed == false) ret.Add(this.mniAllParamsShowBorder);
+				else Debugger.Break();
+
 				return ret.ToArray();
 			} }
 		string stringEnteredInLabeledTextBox(string msig, object sender, KeyEventArgs e) {

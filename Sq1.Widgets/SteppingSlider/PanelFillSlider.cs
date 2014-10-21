@@ -73,7 +73,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			return null;
 		}
 		public override string ToString() {
-			return this.Name + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
+			return this.LabelText + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
 		}
 		// COPYPASTE from IndicatorParameter.cs END
 		
@@ -321,15 +321,19 @@ namespace Sq1.Widgets.SteppingSlider {
 				this.ValueMouseOver = this.RoundToClosestStep(this.ValueMouseOver);
 				mouseRange = this.ValueMouseOver - this.ValueMax;
 			}
-			if (leftMouseButtonHeldDown) {	// I_HATE_HACKING_F_WINDOWS_FORMS
-				string msg = "DRAG_SIMULATION_AND_ON_DRAG_OVER_BOTH_DONT_WORK IF_YOU_SEE_THIS_SEND_A_SCREENSHOT_TO_DEVELOPER";
-				//Debugger.Break();
-				Assembler.PopupException(msg);
-				if (this.ValueCurrent != this.ValueMouseOver) {
-					//Debugger.Break();
-					this.ValueCurrent = this.ValueMouseOver;
-				}
-			}
+			
+			//COMMENTED_TO_FIX_BEGIN crash on slider change while "Parameter Bags" CTX is open
+			//if (leftMouseButtonHeldDown) {	// I_HATE_HACKING_F_WINDOWS_FORMS
+			//	string msg = "DRAG_SIMULATION_AND_ON_DRAG_OVER_BOTH_DONT_WORK IF_YOU_SEE_THIS_SEND_A_SCREENSHOT_TO_DEVELOPER";
+			//	//Debugger.Break();
+			//	Assembler.PopupException(msg);
+			//	if (this.ValueCurrent != this.ValueMouseOver) {
+			//		//Debugger.Break();
+			//		this.ValueCurrent = this.ValueMouseOver;
+			//	}
+			//}
+			//COMMENTED_TO_FIX_END
+			
 			this.FilledPercentageMouseOver = 100 * ((float)mouseRange / range);
 			base.Invalidate();
 		}

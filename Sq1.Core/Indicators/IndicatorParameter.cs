@@ -5,6 +5,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Indicators {
 	public class IndicatorParameter {
+		[JsonIgnore]	public string IndicatorName;
 		[JsonProperty]	public string Name;	// unlike user-editable ScriptParameter, IndicatorParameter.Name is compiled and remains constant (no need for Id)
 		[JsonProperty]	public double ValueMin;
 		[JsonProperty]	public double ValueMax;
@@ -80,6 +81,10 @@ namespace Sq1.Core.Indicators {
 				#endif
 				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMax  = this.ValueMax;
 			}
+		}
+		// USED_TO_SEPARATE_LONG_LIVING_SCRIPT_INDICATOR_PARAMETER_INSTANCE__FROM_SWITCHING_CONTEXT_INDICATOR_SETTINGS
+		public IndicatorParameter Clone() {
+			return (IndicatorParameter) base.MemberwiseClone();
 		}
 	}
 }

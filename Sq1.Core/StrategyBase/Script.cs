@@ -121,22 +121,19 @@ namespace Sq1.Core.StrategyBase {
 			try {
 				this.InitializeBacktest();
 			} catch (Exception ex) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException("FIX_YOUR_OVERRIDEN_METHOD Strategy[" + this.StrategyName + "].InitializeBacktest()", ex);
 				this.Executor.Backtester.RequestingBacktestAbort.Set();
 			}
 		}
 		//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
-		public void PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy() {
+		public void PullParametersFromCurrentContextSaveStrategy() {
 			bool storeStrategySinceParametersGottenFromScript = false;
 			foreach (ScriptParameter scriptParam in this.ParametersById.Values) {
-				if (this.Strategy.ScriptContextCurrent.ScriptParameterValuesById.ContainsKey(scriptParam.Id)) {
-					double valueContext = this.Strategy.ScriptContextCurrent.ScriptParameterValuesById[scriptParam.Id];
+				if (this.Strategy.ScriptContextCurrent.ScriptParametersById.ContainsKey(scriptParam.Id)) {
+					double valueContext = this.Strategy.ScriptContextCurrent.ScriptParametersById[scriptParam.Id].ValueCurrent;
 					scriptParam.ValueCurrent = valueContext;
 				} else {
-					this.Strategy.ScriptContextCurrent.ScriptParameterValuesById.Add(scriptParam.Id, scriptParam.ValueCurrent);
+					this.Strategy.ScriptContextCurrent.ScriptParametersById.Add(scriptParam.Id, scriptParam);
 					string msg = "added scriptParam[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "]"
 						+ " into Script[" + this.GetType().Name + "].Strategy.ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name + "]"
 						+ " /ScriptParametersMergedWithCurrentContext";
@@ -149,13 +146,38 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 
-		public Dictionary<string, IndicatorParameter> IndicatorsParametersForInitializedInDerivedConstructor { get {
+		public Dictionary<string, IndicatorParameter> IndicatorsParametersInitializedInDerivedConstructorByNameForSliders { get {
 				Dictionary<string, IndicatorParameter> ret = new Dictionary<string, IndicatorParameter>();
-				foreach (Indicator indicator in IndicatorsInitializedInDerivedConstructor) {
-					Dictionary<string, IndicatorParameter> parametersByName = indicator.ParametersByName;	// dont make me calculate it twice 
-					foreach (string paramName in parametersByName.Keys) {									// #1
-						IndicatorParameter param = parametersByName[paramName];								// #2
-						ret.Add(indicator.Name + "." + param.Name, param);
+				//v1 [Obsolete("THIS_IS_UNMERGED_WITH_SCRIPT_CONTEXT_USE_Strategy.ScriptContextCurrent.IndicatorParametersByNameConstructedMergedWithJson")]
+				//foreach (Indicator indicator in this.IndicatorsInitializedInDerivedConstructor) {
+				//	Dictionary<string, IndicatorParameter> parametersByName = indicator.ParametersByName;	// dont make me calculate it twice 
+				//	foreach (string paramName in parametersByName.Keys) {									// #1
+				//		IndicatorParameter param = parametersByName[paramName];								// #2
+				//		ret.Add(indicator.Name + "." + param.Name, param);
+				//	}
+				//}
+				//v2
+				Dictionary<string, List<IndicatorParameter>> parametersByIndicatorName = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
+
+				bool mustBeMergedIfAny = this.Strategy.Script.IndicatorsInitializedInDerivedConstructor.Count > 0 && parametersByIndicatorName.Count == 0;
+				if (mustBeMergedIfAny) {
+					#if DEBUG
+					Debugger.Break();
+					this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
+					parametersByIndicatorName = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
+					#endif
+					if (parametersByIndicatorName.Count == 0) {
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						return ret;
+					}
+				}
+				foreach (string indicatorName in parametersByIndicatorName.Keys) {
+					List<IndicatorParameter> indicatorParameters = parametersByIndicatorName[indicatorName];
+					foreach (IndicatorParameter indicatorParameter in indicatorParameters) {
+						string indicatorDotParameterName = indicatorName + "." + indicatorParameter.Name;
+						ret.Add(indicatorDotParameterName, indicatorParameter);
 					}
 				}
 				return ret;
@@ -188,37 +210,43 @@ namespace Sq1.Core.StrategyBase {
 				return ret;
 			} }
 		
-		public void IndicatorsInitializeMergeParamsFromJsonStoreInSnapshot() {
-			this.Executor.ExecutionDataSnapshot.Indicators.Clear();
+		public void IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot() {
+			this.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Clear();
 			foreach (Indicator indicatorInstance in this.IndicatorsInitializedInDerivedConstructor) {
-				List<IndicatorParameter> iParamsCtx = new List<IndicatorParameter>();
 				if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorInstance.Name)) {
-					iParamsCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorInstance.Name];
-				}
-				foreach (IndicatorParameter iParamInstantiated in indicatorInstance.ParametersByName.Values) {
-					int iParamFoundCtxIndex = -1;
-					for (int i=0; i < iParamsCtx.Count; i++) {
-						IndicatorParameter each = iParamsCtx[i];
-						if (each.Name != iParamInstantiated.Name) continue; 
-						iParamFoundCtxIndex = i;
-						break;
-					}
-					
-					if (iParamFoundCtxIndex == -1) {
-						iParamsCtx.Add(iParamInstantiated);
-					} else {
-						IndicatorParameter iParamFoundCtx = iParamsCtx[iParamFoundCtxIndex];
+					string msg = "IndicatorsInitializedInDerivedConstructor are getting initialized from ContextCurrent and will be kept in sync with user clicks"
+						+ "; ScriptContextCurrent.IndicatorParametersByName are assigned to PanelSlider.Tag and click will save to JSON by StrategyRepo.Save(Strategy)";
+					List<IndicatorParameter> iParamsCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorInstance.Name];
+					Dictionary<string, IndicatorParameter> iParamsCtxLookup = new Dictionary<string, IndicatorParameter>();
+					foreach (IndicatorParameter iParamCtx in iParamsCtx) iParamsCtxLookup.Add(iParamCtx.Name, iParamCtx);
+
+					foreach (IndicatorParameter iParamInstantiated in indicatorInstance.ParametersByName.Values) {
+						if (iParamsCtxLookup.ContainsKey(iParamInstantiated.Name) == false) {
+							msg = "JSONStrategy_UNCHANGED_BUT_INDICATOR_EVOLVED_AND_INRODUCED_NEW_PARAMETER__APPARENTLY_STORING_DEFAULT_VALUE_IN_CURRENT_CONTEXT"
+								+ "; CLONE_OF_INSTANTIATED_GOES_TO_CONTEXT_AND_TO_SLIDER__THIS_CLONE_HAS_SHORTER_LIFECYCLE_WILL_REMAIN_IN_SYNC_FROM_WITHIN_CLICK_HANLDER";
+							iParamsCtx.Add(iParamInstantiated.Clone());
+							continue;
+						}
+						msg = "ABSORBING_CONTEXT_INDICATOR_VALUE_INTO_INSTANTIATED_INDICATOR_PARAMETER";
+						IndicatorParameter iParamFoundCtx = iParamsCtxLookup[iParamInstantiated.Name];
 						iParamInstantiated.AbsorbCurrentFixBoundariesIfChanged(iParamFoundCtx);
-						if (iParamInstantiated != iParamFoundCtx) {
+
+						//WRONG_CONTEXT_AND_SLIDER_ARE_SAME__KEEPING_INSTANTIATED_CHANGING_SEPARATELY 
+						/*if (iParamInstantiated != iParamFoundCtx) {
 							#if DEBUG
-							//Debugger.Break();			//NOPE_ITS_A_CLONE
+							Debugger.Break();			//NOPE_ITS_A_CLONE
 							#endif
 							iParamsCtx.Remove(iParamFoundCtx);	// instead of JsonDeserialized,
 							iParamsCtx.Add(iParamInstantiated);	// ...put Instantiated into the Context
-						}
+						} */
 					}
+				} else {
+					string msg = "JSONStrategy_JUST_ADDED_NEW_INDICATOR_WITH_ITS_NEW_PARAMETERS[" + indicatorInstance.Name + "]";
+					Assembler.PopupException(msg);
+					this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(indicatorInstance.Name, new List<IndicatorParameter>(indicatorInstance.ParametersByName.Values));
 				}
-				this.Executor.ExecutionDataSnapshot.Indicators.Add(indicatorInstance.Name, indicatorInstance);
+
+				this.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Add(indicatorInstance.Name, indicatorInstance);
 				
 				// moved from upstairs coz: after absorbing all deserialized indicator parameters from ScriptContext, GetHostPanelForIndicator will return an pre-instantiated PanelIndicator
 				// otherwize GetHostPanelForIndicator created a new one for an indicator with default Indicator parameters;
@@ -226,10 +254,6 @@ namespace Sq1.Core.StrategyBase {
 				// final goal is to avoid (splitterPropertiesByPanelName.Count != this.panels.Count) in SplitterPropertiesByPanelNameSet() and (splitterFound == null)  
 				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartShadow.HostPanelForIndicatorGet(indicatorInstance);
 				indicatorInstance.Initialize(priceOrItsOwnPanel);
-				
-				if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorInstance.Name) == false) {
-					this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(indicatorInstance.Name, new List<IndicatorParameter>());
-				}
 			}
 		}
 		#endregion

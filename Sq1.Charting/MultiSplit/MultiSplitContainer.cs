@@ -183,7 +183,7 @@ try {
 			baseHeight = base.Height;
 			int roundingError = Math.Abs(y - baseHeight);
 			if (roundingError > 10) {
-				Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
+				//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 			}
 			#endif
 			

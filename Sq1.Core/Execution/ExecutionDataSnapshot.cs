@@ -30,7 +30,7 @@ namespace Sq1.Core.Execution {
 
 		public List<Alert> AlertsMaster { get; private set; }
 		public List<Alert> AlertsNewAfterExec { get; private set; }
-		public Dictionary<string, Indicator> Indicators { get; set; }
+		public Dictionary<string, Indicator> IndicatorsReflectedScriptInstances { get; set; }
 
 		public ExecutionDataSnapshot(ScriptExecutor strategyExecutor) {
 			this.executor = strategyExecutor;
@@ -46,7 +46,7 @@ namespace Sq1.Core.Execution {
 			this.positionSernoAbs = 0;
 			this.PositionsOpenedAfterExec = new List<Position>();
 			this.PositionsClosedAfterExec = new List<Position>();
-			this.Indicators = new Dictionary<string, Indicator>();
+			this.IndicatorsReflectedScriptInstances = new Dictionary<string, Indicator>();
 		}
 
 		public void Initialize() {
