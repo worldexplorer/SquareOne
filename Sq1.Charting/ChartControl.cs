@@ -65,7 +65,7 @@ namespace Sq1.Charting {
 			generated.GenerateAppend();
 			this.Initialize(generated);
 		}
-		public void Initialize(Bars barsNotNull) {
+		public void Initialize(Bars barsNotNull, bool invalidateAllPanels = true) {
 			this.barEventsDetach();
 			this.Bars = barsNotNull;
 			if (this.BarsNotEmpty == false) {
@@ -87,6 +87,7 @@ namespace Sq1.Charting {
 			foreach (PanelBase panel in this.panels) {	// at least PanelPrice and PanelVolume
 				panel.InitializeWithNonEmptyBars(this);
 			}
+			if (invalidateAllPanels == false) return;
 			this.InvalidateAllPanels();
 		}
 		public void SyncHorizontalScrollToBarsCount() {

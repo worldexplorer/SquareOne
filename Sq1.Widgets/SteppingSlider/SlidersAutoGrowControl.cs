@@ -75,12 +75,12 @@ namespace Sq1.Widgets.SteppingSlider {
 				if (this.Strategy.Script == null) return;
 				//v1 TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
 				// foreach (ScriptParameter parameter in this.Strategy.ScriptParametersMergedWithCurrentContext.Values) {
-				foreach (ScriptParameter parameter in this.Strategy.Script.ParametersById.Values) {
+				//foreach (ScriptParameter parameter in this.Strategy.Script.ParametersById.Values) {
+				foreach (ScriptParameter parameter in this.Strategy.ScriptContextCurrent.ScriptParametersById.Values) {
 					SliderComboControl slider = this.SliderComboFactory(parameter);
 					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				}
 
-				// switching ScriptContext still overwrites its {ValueCurrent}s to the previous visible
 				//SWITCHED_TO_PUSH this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
 				Dictionary<string, IndicatorParameter> parametersByName = this.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;	// dont make me calculate it twice 
 				if (parametersByName.Count > 0) {

@@ -149,7 +149,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="StrategyBase\ScriptParameterEventArgs.cs" />
-    <Compile Include="StrategyBase\ScriptParameterAttribute.cs" />
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
     <Compile Include="Streaming\StreamingEarlyBinder.cs" />
     <Compile Include="Streaming\StreamingSolidifier.cs" />
@@ -273,8 +272,6 @@
       <DependentUpon>ScriptExecutor.cs</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Indicators\HelperSeries" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

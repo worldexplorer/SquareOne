@@ -37,8 +37,8 @@ namespace Sq1.Core.StrategyBase {
 		public string StrategyName { get { return this.Executor.StrategyName; } }
 
 		public List<Position> Positions { get { return this.Executor.ExecutionDataSnapshot.PositionsMaster; } }
-		public string ParametersAsString { get {
-				if (this.ParametersById.Count == 0) return "(None)";
+		public string ScriptParametersAsString { get {
+				if (this.ParametersById.Count == 0) return "(NoScriptParameters)";
 				string ret = "";
 				foreach (int id in this.ParametersById.Keys) {
 					ret += this.ParametersById[id].Name + "=" + this.ParametersById[id].ValueCurrent + ",";
@@ -46,7 +46,17 @@ namespace Sq1.Core.StrategyBase {
 				ret = ret.TrimEnd(",".ToCharArray());
 				return "(" + ret + ")";
 			} }
-		
+		public string IndicatorParametersAsString { get {
+				if (this.Executor == null) return "(NoExecutorAssignedYetJustInstantiatedFromDll)";
+				Dictionary<string, IndicatorParameter> merged = this.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
+				if (merged.Count == 0) return "(NoIndicatorParameters)";
+				string ret = "";
+				foreach (string indicatorDotParameter in merged.Keys) {
+					ret += indicatorDotParameter + "=" + merged[indicatorDotParameter].ValueCurrent + ",";
+				}
+				ret = ret.TrimEnd(",".ToCharArray());
+				return "(" + ret + ")";
+			} }		
 		public bool IsLastPositionNotClosedYet { get {
 				//v1 return LastPosition.Active;
 				Position pos = this.LastPosition;
@@ -68,23 +78,23 @@ namespace Sq1.Core.StrategyBase {
 		public bool HasPositionsOpenNow { get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
 
 		public Script() {
-			this.ParametersById = new SortedDictionary<int, ScriptParameter>();
-			Type myChild = this.GetType();
-			
-			object[] scriptParameterAttrs = myChild.GetCustomAttributes(typeof(ScriptParameterAttribute), true);
-			foreach (object attrObj in scriptParameterAttrs) {
-				ScriptParameterAttribute attr = attrObj as ScriptParameterAttribute;
-				if (attr == null) continue;
-				this.ScriptParameterCreateRegister(attr.Id, attr.Name, attr.ValueCurrent, attr.ValueMin, attr.ValueMax, attr.ValueIncrement);
-			}
-
 			BacktestMode = BacktestMode.FourStrokeOHLC;
+			ParametersById = new SortedDictionary<int, ScriptParameter>();
+
+			//last architectural evil to uproot: remove ScriptParameterAttributes from the loop and move to strategies.ctor
+			//Type myChild = this.GetType();
+			//object[] scriptParameterAttrs = myChild.GetCustomAttributes(typeof(ScriptParameterAttribute), true);
+			//foreach (object attrObj in scriptParameterAttrs) {
+			//    ScriptParameterAttribute attr = attrObj as ScriptParameterAttribute;
+			//    if (attr == null) continue;
+			//    this.ScriptParameterCreateRegister(attr.Id, attr.Name, attr.ValueCurrent, attr.ValueMin, attr.ValueMax, attr.ValueIncrement);
+			//}
 		}
 
 		#region script parameters and indicator parameter userland-invokable helpers
-		public ScriptParameter ScriptParameterCreateRegister(int id, string name, double value, double min, double max, double increment) {
+		public ScriptParameter ScriptParameterCreateRegister(int id, string name, double value, double min, double max, double increment, string reasonToExist="NO_REASON_TO_EXIST") {
 			this.checkThrowScriptParameterAlreadyRegistered(id, name);
-			ScriptParameter strategyParameter = new ScriptParameter(id, name, value, min, max, increment);
+			ScriptParameter strategyParameter = new ScriptParameter(id, name, value, min, max, increment, reasonToExist);
 			this.ParametersById.Add(id, strategyParameter);
 			return strategyParameter;
 		}
@@ -159,7 +169,7 @@ namespace Sq1.Core.StrategyBase {
 				//v2
 				Dictionary<string, List<IndicatorParameter>> parametersByIndicatorName = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
 
-				bool mustBeMergedIfAny = this.Strategy.Script.IndicatorsInitializedInDerivedConstructor.Count > 0 && parametersByIndicatorName.Count == 0;
+				bool mustBeMergedIfAny = this.IndicatorsInitializedInDerivedConstructor.Count > 0 && parametersByIndicatorName.Count == 0;
 				if (mustBeMergedIfAny) {
 					#if DEBUG
 					Debugger.Break();
@@ -377,7 +387,6 @@ namespace Sq1.Core.StrategyBase {
 		}
 		#endregion
 
-
 		#region Kill pending alert
 		public void AlertKillPending(Alert alert) {
 			this.Executor.AlertKillPending(alert);
@@ -424,5 +433,61 @@ namespace Sq1.Core.StrategyBase {
 		}
 		#endregion
 
+		public void AbsorbScriptAndIndicatorParametersFromSelfCloneConstructed() {
+			object selfCloneConstructed = Activator.CreateInstance(this.GetType());	//default ctor invoked where developer is supposed to add ScriptAndIndicatorParameters into new This
+			Script clone = selfCloneConstructed as Script;
+			if (clone == null) {
+				string msg = "Activator.CreateInstance(" + this.GetType().ToString() + " as Script == null";
+				Assembler.PopupException(msg);
+				return;
+			}
+
+			// first half of the job
+			SortedDictionary<int, ScriptParameter> cloneScriptParametersFrom = clone.ParametersById;
+			Dictionary<int, ScriptParameter>	   myctxScriptParametersTo	 = this.Strategy.ScriptContextCurrent.ScriptParametersById;
+			foreach (int cloneSPindex in cloneScriptParametersFrom.Keys) {
+				ScriptParameter cloneSparam = cloneScriptParametersFrom[cloneSPindex];
+				if (myctxScriptParametersTo.ContainsKey(cloneSPindex) == false) {
+					string msg = "myctxScriptParametersTo.ContainsKey(" + cloneSPindex + ") == false; Script.ScriptParametersAsString=" + this.ScriptParametersAsString;
+					Assembler.PopupException(msg);
+					//continue;
+					myctxScriptParametersTo.Add(cloneSPindex, cloneSparam.Clone());
+				} else {
+					myctxScriptParametersTo[cloneSPindex].AbsorbCurrentFixBoundariesIfChanged(cloneSparam);
+				}
+			}
+
+			// second half of the job
+			List<Indicator> cloneIndicators = clone.IndicatorsInitializedInDerivedConstructor;
+			Dictionary<string, List<IndicatorParameter>> cloneIndicatorsFrom = new Dictionary<string, List<IndicatorParameter>>();
+			foreach (Indicator cloneI in cloneIndicators) cloneIndicatorsFrom.Add(cloneI.Name, new List<IndicatorParameter>(cloneI.ParametersByName.Values));
+
+			Dictionary<string, List<IndicatorParameter>> myctxIndicatorsTo	= this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
+			foreach (string cloneIname in cloneIndicatorsFrom.Keys) {
+				List<IndicatorParameter> cloneIparams = cloneIndicatorsFrom[cloneIname];
+				if (myctxIndicatorsTo.ContainsKey(cloneIname) == false) {
+					string msg = "myctxIndicatorsTo.ContainsKey(" + cloneIname + ") == false; Script.IndicatorParametersAsString=" + this.IndicatorParametersAsString;
+					Assembler.PopupException(msg);
+					//continue;
+					myctxIndicatorsTo.Add(cloneIname, new List<IndicatorParameter>());
+				}
+				List<IndicatorParameter> myctxIparams = myctxIndicatorsTo[cloneIname];
+				Dictionary<string, IndicatorParameter> myctxIparamsLookup = new Dictionary<string, IndicatorParameter>();
+				foreach (IndicatorParameter myctxIparam in myctxIparams) myctxIparamsLookup.Add(myctxIparam.Name, myctxIparam);
+				foreach (IndicatorParameter cloneIparam in cloneIparams) {
+					if (myctxIparamsLookup.ContainsKey(cloneIparam.Name) == false) {
+						string msg = "myctxIparamsLookup.ContainsKey(" + cloneIparam.Name + ") == false";
+						Assembler.PopupException(msg);
+						//continue;
+						myctxIparams.Add(cloneIparam.Clone());
+					} else {
+						IndicatorParameter myctxIparam = myctxIparamsLookup[cloneIparam.Name];
+						myctxIparam.AbsorbCurrentFixBoundariesIfChanged(cloneIparam);
+					}
+				}
+			}
+			this.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
+		}
 	}
+
 }

@@ -843,8 +843,9 @@ namespace Sq1.Core.StrategyBase {
 		internal void BacktestContextRestore() {
 			this.Bars = this.preBacktestBars;
 			//this.DataSource = this.preDataSource;
-			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 			this.IsStreaming = preBacktestIsStreaming;
+			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
+			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 		}
 		public void BacktesterAbortIfRunningRestoreContext() {
 			if (this.Backtester.IsBacktestingNow == false) return;

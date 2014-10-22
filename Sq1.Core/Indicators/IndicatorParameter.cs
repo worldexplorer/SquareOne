@@ -12,16 +12,17 @@ namespace Sq1.Core.Indicators {
 		[JsonProperty]	public double ValueIncrement;
 		[JsonProperty]	public double ValueCurrent;
 		
-		[JsonIgnore]	public bool IsInteger { get {
-				return this.ValueMin == (double)((int)this.ValueMin)
-					&& this.ValueMax == (double)((int)this.ValueMax)
-					&& this.ValueIncrement == (double)((int)this.ValueIncrement)
-					&& this.ValueCurrent == (double)this.ValueCurrent;
-			} }
-		[JsonIgnore]	public int NumberOfRuns { get {
-				if (this.ValueIncrement <= 0.0) return 1;
-				return (int)Math.Round(((this.ValueMax - this.ValueMin) / this.ValueIncrement) + 1.0);
-			} }
+		// NOT_USED_YET; waiting for optimizer
+//		[JsonIgnore]	public bool IsInteger { get {
+//				return this.ValueMin == (double)((int)this.ValueMin)
+//					&& this.ValueMax == (double)((int)this.ValueMax)
+//					&& this.ValueIncrement == (double)((int)this.ValueIncrement)
+//					&& this.ValueCurrent == (double)this.ValueCurrent;
+//			} }
+//		[JsonIgnore]	public int NumberOfRuns { get {
+//				if (this.ValueIncrement <= 0.0) return 1;
+//				return (int)Math.Round(((this.ValueMax - this.ValueMin) / this.ValueIncrement) + 1.0);
+//			} }
 
 		//public string ValueString;
 		//public BarScaleInterval ValueBarScaleInterval;
@@ -29,16 +30,18 @@ namespace Sq1.Core.Indicators {
 		[JsonProperty]	public bool BorderShown;
 		[JsonProperty]	public bool NumericUpdownShown;
 
-		
+		// DESPITE_NOT_INVOKED_EXPLICITLY__I_GUESS_INITIALIZING_VALUES_USING_OTHER_CONSTRUCTOR_MAY_CORRUPT_JSON_DESERIALIZATION
+		public IndicatorParameter() {
+			BorderShown = false;
+			NumericUpdownShown = true;
+		}
 		public IndicatorParameter(string name = "NAME_NOT_INITIALIZED",
-				double valueCurrent = double.NaN, double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) {
+		                          double valueCurrent = double.NaN, double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) : this() {
 			Name = name;
 			ValueCurrent = valueCurrent;
 			ValueMin = valueMin;
 			ValueMax = valueMax;
 			ValueIncrement = valueIncrement;
-			BorderShown = false;
-			NumericUpdownShown = true;
 		}
 		//public IndicatorParameter(string name = "NAME_NOT_INITIALIZED", string value = "STRING_VALUE_NOT_INITIALIZED") {
 		//	this.Name = name;
@@ -84,7 +87,7 @@ namespace Sq1.Core.Indicators {
 		}
 		// USED_TO_SEPARATE_LONG_LIVING_SCRIPT_INDICATOR_PARAMETER_INSTANCE__FROM_SWITCHING_CONTEXT_INDICATOR_SETTINGS
 		public IndicatorParameter Clone() {
-			return (IndicatorParameter) base.MemberwiseClone();
+			return (IndicatorParameter)base.MemberwiseClone();
 		}
 	}
 }

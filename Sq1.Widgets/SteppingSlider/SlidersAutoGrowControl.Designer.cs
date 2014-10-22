@@ -154,7 +154,8 @@ namespace Sq1.Widgets.SteppingSlider {
 			// 
 			this.mniAllParamsResetToScriptDefaults.Name = "mniAllParamsResetToScriptDefaults";
 			this.mniAllParamsResetToScriptDefaults.Size = new System.Drawing.Size(225, 22);
-			this.mniAllParamsResetToScriptDefaults.Text = "All Params -> Script Defaults";
+			this.mniAllParamsResetToScriptDefaults.Text = "All Params -> Reset To Script Defaults";
+			this.mniAllParamsResetToScriptDefaults.Click += new EventHandler(mniAllParamsResetToScriptDefaults_Click);
 			// 
 			// mniAllParamsShowBorder
 			// 

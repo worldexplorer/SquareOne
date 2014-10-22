@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Drawing;
+
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Strategies.Demo {
-	[ScriptParameterAttribute(Id=1, Name="test", ValueMin=0, ValueMax=10, ValueIncrement=1 )]
-
 	public class ATRbandCompiled : Script {
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
 		public IndicatorAverageTrueRange ATR;
@@ -26,6 +25,8 @@ namespace Sq1.Strategies.Demo {
 
 			this.ATRband = new IndicatorAtrBand(this.ATR);
 			// ALREADY_COPIED_FROM_ATR_BY_CTOR this.ATRband.LineColor = Color.RosyBrown;
+
+			base.ScriptParameterCreateRegister(1, "test", 0, 0, 10, 1);
 		}
 		public override void InitializeBacktest() {
 		}

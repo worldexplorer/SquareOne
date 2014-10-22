@@ -9,20 +9,20 @@ namespace Sq1.Widgets.SteppingSlider {
 		public event EventHandler<IndicatorParameterEventArgs> SliderChangedIndicatorValue;
 		public event EventHandler<EventArgs> ControlHeightChangedDueToNumberOfSliders;
 		
-		void RaiseOnSliderChangedParameterValue(ScriptParameter parameter) {
+		void RaiseOnSliderChangedScriptParameterValue(ScriptParameter parameter) {
 			if (this.SliderChangedParameterValue == null) return;
 			try {
 				this.SliderChangedParameterValue(this, new ScriptParameterEventArgs(parameter));
 			} catch (Exception ex) {
-				Assembler.PopupException("RaiseOnSliderChangedParameterValue()>>SlidersAutoGrow_SliderValueChanged()", ex);
+				Assembler.PopupException("RaiseOnSliderChangedScriptParameterValue()<SlidersAutoGrow_SliderValueChanged()", ex);
 			}
 		}
-		void RaiseOnSliderChangedIndicatorValue(IndicatorParameter parameter) {
+		void RaiseOnSliderChangedIndicatorParametersValue(IndicatorParameter parameter) {
 			if (this.SliderChangedIndicatorValue == null) return;
 			try {
 				this.SliderChangedIndicatorValue(this, new IndicatorParameterEventArgs(parameter));
 			} catch (Exception ex) {
-				Assembler.PopupException("RaiseOnSliderChangedIndicatorValue()>>SlidersAutoGrow_SliderValueChanged()", ex);
+				Assembler.PopupException("RaiseOnSliderChangedIndicatorParametersValue()<SlidersAutoGrow_SliderValueChanged()", ex);
 			}
 		}
 	}

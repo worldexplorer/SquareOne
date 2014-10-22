@@ -37,6 +37,7 @@ namespace Sq1.Gui.Forms {
 		public ScriptEditorForm ScriptEditorForm;
 		public ScriptEditorForm ScriptEditorFormConditionalInstance { get {
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm)) {
+					if (this.Strategy == null) return null;
 					if (this.Strategy.ActivatedFromDll == true) return null;
 					if (this.scriptEditorFormFactory == null) {
 						this.scriptEditorFormFactory = new ScriptEditorFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
@@ -289,8 +290,9 @@ namespace Sq1.Gui.Forms {
 				string msg2 = "CONTEXT_SCALE_INTERVAL_UNKNOWN_FIXED_TO_DATASOURCE contextToPopulate.ScaleInterval[" + context.ScaleInterval + "]";
 				Assembler.PopupException(msg2 + msig);
 			}
-			//PositionSize posSize = (contextToPopulate.PositionSize != null) ? contextToPopulate.PositionSize : new PositionSize();
-			
+
+			bool wontBacktest = skipBacktest || (this.Strategy != null && this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false);
+			bool willBacktest = !wontBacktest;
 			if (loadNewBars) {
 				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, context.ScaleInterval);
 				if (barsAll.Count > 0) {
@@ -307,8 +309,9 @@ namespace Sq1.Gui.Forms {
 				this.Executor.SetBars(barsClicked);
 				this.Executor.Bars.DataSource.DataSourceEditedChartsDisplayedShouldRunBacktestAgain +=
 						new EventHandler<DataSourceEventArgs>(ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
-				
-				this.ChartForm.ChartControl.Initialize(barsClicked);
+
+				bool invalidateAllPanels = wontBacktest;
+				this.ChartForm.ChartControl.Initialize(barsClicked, invalidateAllPanels);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
 				this.ChartForm.PopulateBtnStreamingClickedAndText();
 			}
@@ -327,11 +330,9 @@ namespace Sq1.Gui.Forms {
 				this.DataSnapshotSerializer.Serialize();
 				return;
 			}
-			// WTF this.Strategy.ScriptContextCurrent.PositionSize = this.Strategy.ScriptContextCurrent.PositionSize;
-			// WTF Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
-			
-			bool wontBacktest = skipBacktest || this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false;
-			if (wontBacktest) {
+
+			//bool wontBacktest = skipBacktest || this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false;
+			if (willBacktest == false) {
 				this.Executor.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
 				return;
 			}

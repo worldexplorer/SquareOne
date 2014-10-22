@@ -21,12 +21,7 @@
       "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 64
-      },
-      "ATR (Period:7[1..11/2])": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 2,
-        "Distance": 382
+        "Distance": 121
       }
     },
     "ChartColorBackground": "White",
@@ -86,7 +81,7 @@
     "AlertPendingEllipseWidth": 1,
     "MousePositionTrackOnGutters": true,
     "MousePositionTrackOnGuttersColor": "LightGray",
-    "BarsBackgroundTransparencyAlfa": 128,
+    "BarsBackgroundTransparencyAlpha": 24,
     "ChartLabelsUpperLeftYstartTopmost": 18,
     "ChartLabelsUpperLeftX": 5,
     "ChartLabelsUpperLeftPlatePadding": 1,

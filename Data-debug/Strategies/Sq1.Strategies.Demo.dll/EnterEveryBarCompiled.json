@@ -71,8 +71,32 @@
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
-      "ScriptParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
+      "ScriptParametersById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib",
+        "1": {
+          "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
+          "Id": 1,
+          "ReasonToExist": "NO_REASON_TO_EXIST",
+          "Name": "test",
+          "ValueMin": 0.0,
+          "ValueMax": 10.0,
+          "ValueIncrement": 1.0,
+          "ValueCurrent": 0.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true
+        },
+        "2": {
+          "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
+          "Id": 2,
+          "ReasonToExist": "set to 0 if you don't want log() to spam your Exceptions window",
+          "Name": "verbose",
+          "ValueMin": 0.0,
+          "ValueMax": 1.0,
+          "ValueIncrement": 1.0,
+          "ValueCurrent": 0.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true
+        }
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
@@ -148,8 +172,8 @@
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
-      "ScriptParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
+      "ScriptParametersById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib"
@@ -213,8 +237,8 @@
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
-      "ScriptParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
+      "ScriptParametersById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib"

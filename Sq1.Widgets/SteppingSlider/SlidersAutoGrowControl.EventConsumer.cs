@@ -20,31 +20,15 @@ namespace Sq1.Widgets.SteppingSlider {
 				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;
 				
 				if (scriptParameterChanged != null) {		// check ScriptParameter first because it's derived (same as "catch most fine grained Exceptions first")
-					// multiple instances, synchronize
+					// single instance, no need to synchronize between Slider and ScriptContext
 					scriptParameterChanged.ValueCurrent = (double)slider.ValueCurrent;
-					this.Strategy.DropChangedValueToScriptAndCurrentContextAndSerialize(scriptParameterChanged);
-					this.RaiseOnSliderChangedParameterValue(scriptParameterChanged);
-				} else {
-					// single instance, no need to synchronize
-					indicatorParameterChanged.ValueCurrent = (double) slider.ValueCurrent;
-					
-					// NOPE_ITS_A_CLONE
-//					string indicatorName = slider.LabelText.Substring(0, slider.LabelText.IndexOf('.'));
-//					List<IndicatorParameter> list = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorName];
-//					foreach (IndicatorParameter each in list) {
-//						if (each.Name != indicatorParameterChanged.Name) continue; 
-//						each.ValueCurrent = (double) slider.ValueCurrent;
-//						#if DEBUG
-//						if (indicatorParameterChanged != each) {
-//							string msg = "CLONE_100%";
-//							Debugger.Break();
-//						}
-//						#endif
-//						break;
-//					}
-					
 					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
-					this.RaiseOnSliderChangedIndicatorValue(indicatorParameterChanged);
+					this.RaiseOnSliderChangedScriptParameterValue(scriptParameterChanged);
+				} else {
+					// single instance, no need to synchronize between Slider and ScriptContext
+					indicatorParameterChanged.ValueCurrent = (double) slider.ValueCurrent;
+					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+					this.RaiseOnSliderChangedIndicatorParametersValue(indicatorParameterChanged);
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("slider_ValueCurrentChanged()", ex);
@@ -57,9 +41,6 @@ namespace Sq1.Widgets.SteppingSlider {
 				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 				if (indicatorParameterChanged == null) {
 					string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_SOMETHING_ELSE";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException(msg);
 					return;
 				}
@@ -77,9 +58,6 @@ namespace Sq1.Widgets.SteppingSlider {
 				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 				if (indicatorParameterChanged == null) {
 					string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_SOMETHING_ELSE";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException(msg);
 					return;
 				}
@@ -99,9 +77,6 @@ namespace Sq1.Widgets.SteppingSlider {
 					IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 					if (indicatorParameterChanged == null) {
 						string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_SOMETHING_ELSE";
-						#if DEBUG
-						Debugger.Break();
-						#endif
 						Assembler.PopupException(msg);
 						continue;
 					}
@@ -120,9 +95,6 @@ namespace Sq1.Widgets.SteppingSlider {
 					IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 					if (indicatorParameterChanged == null) {
 						string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_SOMETHING_ELSE";
-						#if DEBUG
-						Debugger.Break();
-						#endif
 						Assembler.PopupException(msg);
 						continue;
 					}
@@ -134,6 +106,13 @@ namespace Sq1.Widgets.SteppingSlider {
 				Assembler.PopupException("mniAllParamsShowNumeric_Click()", ex);
 			}
 		}
-
+		void mniAllParamsResetToScriptDefaults_Click(object sender, EventArgs e) {
+			try {
+				this.Strategy.ResetScriptAndIndicatorParametersInCurrentContextToScriptDefaultsAndSave();
+				this.Initialize(this.Strategy);
+			} catch (Exception ex) {
+				Assembler.PopupException("mniAllParamsResetToScriptDefaults_Click()", ex);
+			}
+		}
 	}
 }

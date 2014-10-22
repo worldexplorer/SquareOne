@@ -84,24 +84,24 @@ namespace Sq1.Widgets.SteppingSlider {
 				var ret = new List<ToolStripItem>();
 
 				if (this.mniParameterBagsNotHighlighted.IsDisposed == false) ret.Add(this.mniParameterBagsNotHighlighted);
-				else Debugger.Break();
+				//else Debugger.Break();
 
 				ret.AddRange(this.TsiScriptContextsDynamic);
 
 				if (this.mniltbParametersBagNewWithDefaults.IsDisposed == false) ret.Add(this.mniltbParametersBagNewWithDefaults);
-				else Debugger.Break();
+				//else Debugger.Break();
 
 				if (this.toolStripSeparator2.IsDisposed == false) ret.Add(this.toolStripSeparator2);
-				else Debugger.Break();
+				//else Debugger.Break();
 
 				if (this.mniAllParamsResetToScriptDefaults.IsDisposed == false) ret.Add(this.mniAllParamsResetToScriptDefaults);
-				else Debugger.Break();
+				//else Debugger.Break();
 
 				if (this.mniAllParamsShowNumeric.IsDisposed == false) ret.Add(this.mniAllParamsShowNumeric);
-				else Debugger.Break();
+				//else Debugger.Break();
 
 				if (this.mniAllParamsShowBorder.IsDisposed == false) ret.Add(this.mniAllParamsShowBorder);
-				else Debugger.Break();
+				//else Debugger.Break();
 
 				return ret.ToArray();
 			} }

@@ -27,7 +27,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				this.PanelFillSlider.ValueCurrent = value;
 				this.mniltbValueCurrent.InputFieldValue = this.format(this.PanelFillSlider.ValueCurrent);
 				this.DomainUpDown.Text = this.format(this.PanelFillSlider.ValueCurrent);
-				this.RaiseValueChanged();
+				// numericUpDown clicked causes double backtest and Disposes TSI menu items this.RaiseValueChanged();
 			}
 		}
 		string format(decimal value) {

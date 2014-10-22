@@ -13,9 +13,6 @@ namespace Sq1.Widgets.SteppingSlider {
 			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
 				this.ValueCurrentChanged(this, EventArgs.Empty);
 			} catch (Exception ex) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(null, ex);
 			}
 		}

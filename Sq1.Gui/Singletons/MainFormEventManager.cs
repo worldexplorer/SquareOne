@@ -245,7 +245,8 @@ namespace Sq1.Gui.Singletons {
 			//v1 SlidersForm.Instance.PopulateFormTitle(strategy);
 			//v2 WILLBEDONE_BY_PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy() SlidersForm.Instance.Initialize(strategy);
 			try {
-				this.mainForm.ChartFormActiveNullUnsafe.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("StrategiesTree_OnScriptContextLoadClicked()");
+				this.mainForm.ChartFormActiveNullUnsafe.ChartFormManager
+					.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("StrategiesTree_OnScriptContextLoadClicked()");
 			} catch (Exception ex) {
 				Assembler.PopupException("StrategiesTree_OnScriptContextLoadClicked()", ex);
 			}
@@ -272,24 +273,9 @@ namespace Sq1.Gui.Singletons {
 
 			ScriptParameterEventArgs scripParamChanged = e as ScriptParameterEventArgs;
 			if (scripParamChanged != null) {
+				strategyToSaveAndRun.PushChangedScriptParameterValueToScriptAndSerialize(scripParamChanged.ScriptParameter);
 			} else {
-				IndicatorParameter iParamChangedCtx = e.IndicatorParameter;
-				string indicatorName = iParamChangedCtx.IndicatorName;
-				string indicatorParameterName = e.IndicatorParameter.Name;
-				Dictionary<string, Indicator> indicatorsByName = chartFormActive.ChartFormManager.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances;
-				if (indicatorsByName.ContainsKey(indicatorName)) {
-					Indicator indicatorInstantiated = indicatorsByName[indicatorName];
-					if (indicatorInstantiated.ParametersByName.ContainsKey(indicatorParameterName)) {
-						IndicatorParameter iParamInstantiated = indicatorInstantiated.ParametersByName[indicatorParameterName];
-						iParamInstantiated.AbsorbCurrentFixBoundariesIfChanged(iParamChangedCtx);
-					} else {
-						string msg = "INDICATOR_PARAMETER_NOT_FOUND_FOR_INDICATOR_REFLECTED_FOUND: " + e.IndicatorParameter;
-						Assembler.PopupException(msg);
-					}
-				} else {
-					string msg = "WILL_PICK_UP_ON_BACKTEST__INDICATOR_NOT_FOUND_IN_INDICATORS_REFLECTED: " + e.IndicatorParameter;
-					Assembler.PopupException(msg);
-				}
+				strategyToSaveAndRun.PushChangedIndicatorParameterValueToScriptAndSerialize(e.IndicatorParameter);
 			}
 			chartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
 			

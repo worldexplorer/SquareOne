@@ -7,10 +7,12 @@ namespace Sq1.Widgets.SteppingSlider {
 		public event EventHandler OnArrowDownStepSubstract;
 
 		public override void UpButton() {
+			base.UpButton();
 			if (this.OnArrowUpStepAdd == null) return;
 			this.OnArrowUpStepAdd(this, null);
 		}
 		public override void DownButton() {
+			base.DownButton();
 			if (this.OnArrowDownStepSubstract == null) return;
 			this.OnArrowDownStepSubstract(this, null);
 		}

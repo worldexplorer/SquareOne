@@ -14,9 +14,9 @@ using Sq1.Core.Indicators;
 namespace Sq1.Core.Charting {
 	public class ChartShadow : 
 //COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH #if !NON_DOUBLE_BUFFERED_reverted_to_compulsory_UserControl_no_buffering
-//	UserControlDoubleBuffered
+	UserControlDoubleBuffered
 //#else
-	UserControl
+//	UserControl
 //#endif
 	{
 		//REPLACED_BY_ScriptExecutorObjects public ScriptToChartCommunicator ScriptToChartCommunicator { get; protected set; }

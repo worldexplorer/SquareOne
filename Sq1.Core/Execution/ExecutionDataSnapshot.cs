@@ -284,9 +284,7 @@ namespace Sq1.Core.Execution {
 			}
 			return similar;
 		}
-		public Dictionary<int, List<Alert>> AlertsPendingHistorySafeCopy {
-			get { return this.AlertsPendingHistorySafeCopyForRenderer(0, -1); }
-		}
+		public Dictionary<int, List<Alert>> AlertsPendingHistorySafeCopy { get { return this.AlertsPendingHistorySafeCopyForRenderer(0, -1); } }
 		public Dictionary<int, List<Alert>> AlertsPendingHistorySafeCopyForRenderer(int barNoLeftVisible, int barNoRightVisible) {
 			if (barNoRightVisible == -1) barNoRightVisible = this.executor.Bars.Count;
 			Dictionary<int, List<Alert>> ret = new Dictionary<int, List<Alert>>();
@@ -317,8 +315,7 @@ namespace Sq1.Core.Execution {
 				return removed;
 			}
 		}
-		public Dictionary<int, List<Position>> PositionsMasterByEntryBarSafeCopy {
-			get {
+		public Dictionary<int, List<Position>> PositionsMasterByEntryBarSafeCopy { get {
 				Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
 				lock (this.PositionsMasterByEntryBarLock) {
 					foreach (int bar in this.PositionsMasterByEntryBar.Keys) {
@@ -326,10 +323,8 @@ namespace Sq1.Core.Execution {
 					}
 				}
 				return ret;
-			}
-		}
-		public Dictionary<int, List<Position>> PositionsMasterByExitBarSafeCopy {
-			get {
+			} }
+		public Dictionary<int, List<Position>> PositionsMasterByExitBarSafeCopy { get {
 				Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
 				lock (this.PositionsMasterByExitBarLock) {
 					foreach (int bar in this.PositionsMasterByExitBar.Keys) {
@@ -337,28 +332,21 @@ namespace Sq1.Core.Execution {
 					}
 				}
 				return ret;
-			}
-		}
-		public List<Position> PositionsOpenedAfterExecSafeCopy {
-			get {
+			} }
+		public List<Position> PositionsOpenedAfterExecSafeCopy { get {
 				lock (this.PositionsOpenedAfterExec) {
 					return new List<Position>(this.PositionsOpenedAfterExec);
 				}
-			}
-		}
-		public List<Position> PositionsClosedAfterExecSafeCopy {
-			get {
+			} }
+		public List<Position> PositionsClosedAfterExecSafeCopy { get {
 				lock (this.PositionsClosedAfterExec) {
 					return new List<Position>(this.PositionsClosedAfterExec);
 				}
-			}
-		}
-		public List<Alert> AlertsNewAfterExecSafeCopy {
-			get {
+			} }
+		public List<Alert> AlertsNewAfterExecSafeCopy { get {
 				lock (this.AlertsNewAfterExec) {
 					return new List<Alert>(this.AlertsNewAfterExec);
 				}
-			}
-		}
+			} }
 	}
 }

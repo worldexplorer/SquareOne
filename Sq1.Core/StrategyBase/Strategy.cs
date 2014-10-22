@@ -6,6 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public class Strategy {
@@ -33,7 +34,11 @@ namespace Sq1.Core.StrategyBase {
 		//				} }
 		[JsonIgnore]	public string ScriptParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
 							if (this.Script == null) return null;
-							return this.Script.ParametersAsString;
+							return this.Script.ScriptParametersAsString;
+						} }
+		[JsonIgnore]	public string IndicatorParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+							if (this.Script == null) return null;
+							return this.Script.IndicatorParametersAsString;
 						} }
 		[JsonProperty]	public string ScriptContextCurrentName;	// if you restrict SET, serializer won't be able to restore from JSON { get; private set; }
 		[JsonProperty]	public Dictionary<string, ContextScript> ScriptContextsByName;
@@ -67,7 +72,10 @@ namespace Sq1.Core.StrategyBase {
 			this.ExceptionsLimitToAbortBacktest = 10;
 		}
 		public override string ToString() {
-			return this.Name;
+			string ret = this.Name;
+			if (this.ScriptContextCurrent != null) ret += "[" + this.ScriptContextCurrent.ToString() + "]";
+			ret += this.ScriptParametersAsStringByIdJSONcheck + this.IndicatorParametersAsStringByIdJSONcheck;
+			return ret;
 		}
 		public void CompileInstantiate() {
 			if (this.ActivatedFromDll) return;
@@ -125,18 +133,49 @@ namespace Sq1.Core.StrategyBase {
 			ret.Guid = Guid.NewGuid();
 			return ret;
 		}
-		public void DropChangedValueToScriptAndCurrentContextAndSerialize(ScriptParameter scriptParameter) {
+		public void PushChangedScriptParameterValueToScriptAndSerialize(ScriptParameter scriptParameter) {
+			//ScriptParameters are only identical objects between script context and sliders.tags, while every click-change is pushed into Script.ParametersByID)
 			int paramId = scriptParameter.Id;
 			double valueNew = scriptParameter.ValueCurrent;
-			if (scriptParameter != this.Script.ParametersById[paramId]) {
-				string msg = "merge them to ONE !! I hate proxies and facades...";
-				Debugger.Break();
-				this.Script.ParametersById[paramId].ValueCurrent = valueNew;
+			if (this.Script.ParametersById.ContainsKey(paramId) == false) {
+				string msg = "YOU_CHANGED_SCRIPT_PARAMETER_WHICH_NO_LONGER_EXISTS_IN_SCRIPT";
+				Assembler.PopupException(msg);
+				return;
 			}
-			double valueOld = this.ScriptContextCurrent.ScriptParametersById[paramId].ValueCurrent;
-			if (valueOld == valueNew) return;
-			this.ScriptContextCurrent.ScriptParametersById[paramId].ValueCurrent = valueNew;
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+
+			double valueOld = this.Script.ParametersById[paramId].ValueCurrent;
+			if (valueOld == valueNew) {
+				string msg = "SLIDER_CHANGED_TO_VALUE_SCRIPT_PARAMETER_ALREADY_HAD [" + valueOld + "]=[" + valueNew + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.Script.ParametersById[paramId].ValueCurrent = valueNew;
+		}
+		public void PushChangedIndicatorParameterValueToScriptAndSerialize(IndicatorParameter iParamChangedCtx) {
+			//new concept that IndicatorParameters are only identical objects between script context and sliders.tags, while every click-change is absorbed by snapshot.IndicatorsInstancesReflected
+			string indicatorName = iParamChangedCtx.IndicatorName;
+			string indicatorParameterName = iParamChangedCtx.Name;
+			Dictionary<string, Indicator> indicatorsByName = this.Script.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances;
+			if (indicatorsByName.ContainsKey(indicatorName) == false) {
+				string msg = "WILL_PICK_UP_ON_BACKTEST__INDICATOR_NOT_FOUND_IN_INDICATORS_REFLECTED: " + indicatorName;
+				Assembler.PopupException(msg);
+				return;
+			}
+			Indicator indicatorInstantiated = indicatorsByName[indicatorName];
+			if (indicatorInstantiated.ParametersByName.ContainsKey(indicatorParameterName) == false) {
+				string msg = "INDICATOR_PARAMETER_NOT_FOUND_FOR_INDICATOR_REFLECTED_FOUND: " + indicatorParameterName;
+				Assembler.PopupException(msg);
+				return;
+			}
+			IndicatorParameter iParamInstantiated = indicatorInstantiated.ParametersByName[indicatorParameterName];
+			double valueNew = iParamChangedCtx.ValueCurrent;
+			double valueOld = iParamInstantiated.ValueCurrent;
+			if (valueOld == valueNew) {
+				string msg = "SLIDER_CHANGED_TO_VALUE_INDICATOR_PARAMETER_ALREADY_HAD [" + valueOld + "]=[" + valueNew + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			iParamInstantiated.AbsorbCurrentFixBoundariesIfChanged(iParamChangedCtx);
 		}
 		public void ScriptContextAdd(string newScriptContextName, ContextScript absorbParamsFrom = null) {
 			if (this.ScriptContextsByName.ContainsKey(newScriptContextName)) {
@@ -206,6 +245,20 @@ namespace Sq1.Core.StrategyBase {
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msig);
 		}
-
+		public void ResetScriptAndIndicatorParametersInCurrentContextToScriptDefaultsAndSave() {
+			if (this.Script == null) {
+				string msg = "SCRIPT_IS_NULL_CAN_NOT_RESET_PARAMETERS_TO_CLONE_CONSTRUCTED";
+				Assembler.PopupException(msg);
+				return;
+			}
+			try {
+				this.Script.AbsorbScriptAndIndicatorParametersFromSelfCloneConstructed();
+				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+				string msg = "Successfully reset ScriptContextCurrentName[" + this.ScriptContextCurrentName + "] for strategy[" + this + "]";
+				Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+			} catch (Exception ex) {
+				Assembler.PopupException("ResetScriptAndIndicatorParametersToScriptDefaults()", ex);
+			}
+		}
 	}
 }

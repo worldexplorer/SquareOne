@@ -13,7 +13,7 @@ namespace Sq1.Core.StrategyBase {
 				: base(name, current, min, max, increment) {
 			this.Id = id;
 			this.ReasonToExist = reasonToExist;
-
+			base.IndicatorName = "THIS_IS_A_STRATEGY_PARAMETER";
 		}
 		public ScriptParameter(int id, string name, double current, double min, double max, double increment)
 			: this(id, name, current, min, max, increment, "") {
