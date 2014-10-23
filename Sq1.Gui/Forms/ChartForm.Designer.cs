@@ -21,11 +21,13 @@ namespace Sq1.Gui.Forms {
 			this.mniBacktestOnDataSourceSaved = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBacktestNow = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnitlbPositionSizeSharesConstantEachTrade = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mnitlbPositionSizeDollarsEachTradeConstant = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.DdbBacktest = new System.Windows.Forms.ToolStripDropDownButton();
 			this.mniStrategyRemove = new System.Windows.Forms.ToolStripMenuItem();
 			this.MniShowSourceCodeEditor = new System.Windows.Forms.ToolStripMenuItem();
+			this.MniShowOptimizer = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxStrategy = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniStrategyContextLoad = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniStrategyOptimize = new System.Windows.Forms.ToolStripMenuItem();
@@ -67,6 +69,8 @@ namespace Sq1.Gui.Forms {
 			// ctxBacktest
 			// 
 			this.ctxBacktest.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+									this.MniShowOptimizer,
+									this.toolStripSeparator3,
 									this.mniBacktestOnDataSourceSaved,
 									this.mniBacktestOnRestart,
 									this.mniBacktestOnSelectorsChange,
@@ -121,6 +125,11 @@ namespace Sq1.Gui.Forms {
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(228, 6);
 			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator1";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(228, 6);
+			// 
 			// mniSharesConstant
 			// 
 			this.mnitlbPositionSizeSharesConstantEachTrade.BackColor = System.Drawing.Color.Transparent;
@@ -167,7 +176,14 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSourceCodeEditor.Size = new System.Drawing.Size(226, 22);
 			this.MniShowSourceCodeEditor.Text = "Show Source Code Editor";
 			this.MniShowSourceCodeEditor.Click += new System.EventHandler(this.MniShowSourceCodeEditor_Click);
-			this.ctxStrategy.Opening += new System.ComponentModel.CancelEventHandler(ctxStrategy_Opening);
+			// 
+			// MniOptimizer
+			// 
+			this.MniShowOptimizer.CheckOnClick = true;
+			this.MniShowOptimizer.Name = "MniOptimizer";
+			this.MniShowOptimizer.Size = new System.Drawing.Size(226, 22);
+			this.MniShowOptimizer.Text = "Show Optimizer";
+			this.MniShowOptimizer.Click += new System.EventHandler(this.MniShowOptimizer_Click);
 			// 
 			// ctxStrategy
 			// 
@@ -178,6 +194,7 @@ namespace Sq1.Gui.Forms {
 									this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
 			this.ctxStrategy.Size = new System.Drawing.Size(227, 92);
+			this.ctxStrategy.Opening += new System.ComponentModel.CancelEventHandler(ctxStrategy_Opening);
 			// 
 			// mniStrategyContextLoad
 			// 
@@ -418,6 +435,8 @@ namespace Sq1.Gui.Forms {
 		private System.Windows.Forms.ToolStripMenuItem mniStrategyOptimize;
 		private System.Windows.Forms.ToolStripMenuItem mniStrategyContextLoad;
 		public System.Windows.Forms.ToolStripMenuItem MniShowSourceCodeEditor;
+		public System.Windows.Forms.ToolStripMenuItem MniShowOptimizer;
+		private  System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripMenuItem mniStrategyRemove;
 		private System.Windows.Forms.ToolStripMenuItem mniShowBarRange;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mnitlbMinutes;

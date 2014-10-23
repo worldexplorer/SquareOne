@@ -90,6 +90,12 @@
     <Compile Include="Forms\ChartFormManager.cs" />
     <Compile Include="Forms\ChartFormEventManager.cs" />
     <Compile Include="Forms\ChartFormStreamingConsumer.cs" />
+    <Compile Include="Forms\OptimizerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\OptimizerForm.Designer.cs">
+      <DependentUpon>OptimizerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ScriptEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -183,6 +189,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\ChartForm.resx">
       <DependentUpon>ChartForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\OptimizerForm.resx">
+      <DependentUpon>OptimizerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ScriptEditorForm.resx">
       <DependentUpon>ScriptEditorForm.cs</DependentUpon>

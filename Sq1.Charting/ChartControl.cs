@@ -33,8 +33,8 @@ namespace Sq1.Charting {
 		public ChartControl() {
 			this.ChartSettings = new ChartSettings(); // was a component, used at InitializeComponent() (to draw SampleBars)
 			this.ScriptExecutorObjects = new ScriptExecutorObjects();
-			InitializeComponent();
 			if (base.DesignMode) return;
+			InitializeComponent();
 			//when previous line doesn't help and Designer still throws exceptions return;
 
 			this.AutoScroll = false;

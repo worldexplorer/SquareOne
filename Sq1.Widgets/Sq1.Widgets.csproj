@@ -176,6 +176,24 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ObjectListViewDemo\ShellUtilities.cs" />
+    <Compile Include="Optimizer\OptimizerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Optimizer\OptimizerControl.Customizer.cs">
+      <DependentUpon>OptimizerControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Optimizer\OptimizerControl.Designer.cs">
+      <DependentUpon>OptimizerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Optimizer\OptimizerControl.EventConsumer.cs">
+      <DependentUpon>OptimizerControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Optimizer\OptimizerControl.EventGenerator.cs">
+      <DependentUpon>OptimizerControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="ProgressBacktestETA\ProgressBarAndLabel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -323,6 +341,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LabeledTextBox\LabeledTextBoxControl.resx">
       <DependentUpon>LabeledTextBoxControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Optimizer\OptimizerControl.resx">
+      <DependentUpon>OptimizerControl.Designer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProgressBacktestETA\ProgressBarAndLabel.resx">
       <DependentUpon>ProgressBarAndLabel.cs</DependentUpon>

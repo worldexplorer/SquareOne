@@ -71,8 +71,8 @@
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,
-      "ScriptParameterValuesById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[System.Double, mscorlib]], mscorlib"
+      "ScriptParametersById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
@@ -83,7 +83,7 @@
             "ValueMin": 10.0,
             "ValueMax": 20.0,
             "ValueIncrement": 1.0,
-            "ValueCurrent": 12.0,
+            "ValueCurrent": 13.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }

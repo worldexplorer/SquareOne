@@ -63,9 +63,27 @@ namespace Sq1.Gui.Forms {
 				editorMustBeActivated = editor.IsCoveredOrAutoHidden;
 				return !editorMustBeActivated;
 			} }
-
-		
 		ScriptEditorFormFactory scriptEditorFormFactory;
+		
+		
+		public OptimizerForm OptimizerForm;
+		public OptimizerForm OptimizerFormConditionalInstance { get {
+				if (DockContentImproved.IsNullOrDisposed(this.OptimizerForm)) {
+					if (this.Strategy == null) return null;
+					this.OptimizerForm = new OptimizerForm(this);
+				}
+				return this.OptimizerForm;
+			} }
+		public bool OptimizerFormIsNotDisposed { get { return (DockContentImproved.IsNullOrDisposed(this.OptimizerForm) == false); } }
+		public bool OptimizerIsOnSurface { get {
+				bool optimizerMustBeActivated = true;
+				OptimizerForm optimizer = this.OptimizerForm;
+				bool optimizerNotInstantiated = DockContentImproved.IsNullOrDisposed(optimizer);
+				if (optimizerNotInstantiated) return optimizerMustBeActivated;
+				optimizerMustBeActivated = optimizer.IsCoveredOrAutoHidden;
+				return !optimizerMustBeActivated;
+			} }
+		
 		public ChartFormEventManager EventManager;
 		public bool ScriptEditedNeedsSaving;
 		public ChartFormStreamingConsumer ChartStreamingConsumer;
@@ -381,7 +399,8 @@ namespace Sq1.Gui.Forms {
 			this.ChartForm.ChartControl.PendingHistoryBacktestAdd(this.Executor.ExecutionDataSnapshot.AlertsPendingHistorySafeCopy);
 			this.ChartForm.ChartControl.InvalidateAllPanels();
 			
-			this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);
+			//this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);
+			this.Executor.Performance.BuildStatsOnBacktestFinished();
 			this.ReportersFormsManager.BuildOnceAllReports(this.Executor.Performance);
 		}
 		void afterBacktesterCompleteOnceOnRestart() {
@@ -498,7 +517,21 @@ namespace Sq1.Gui.Forms {
 			//this.ScriptEditorFormConditionalInstance.Show(this.dockPanel, DockState.Document);
 			//useless: will be re-calculated in ctxStrategy_Opening(); this.ChartForm.MniShowSourceCodeEditor.Checked = this.ScriptEditorIsOnSurface;
 		}
+		public void OptimizerFormShow(bool keepAutoHidden = true) {
+			this.OptimizerFormConditionalInstance.Initialize(this);
 
+			DockPanel mainPanelOrAnotherOptimizersPanel = this.dockPanel;
+			OptimizerForm anotherOptimizer = null;
+			foreach (DockContent form in this.dockPanel.Contents) {
+				anotherOptimizer = form as OptimizerForm;
+				if (anotherOptimizer == null) continue;
+				mainPanelOrAnotherOptimizersPanel = anotherOptimizer.Pane.DockPanel;
+				break;
+			}
+			this.OptimizerFormConditionalInstance.Show(mainPanelOrAnotherOptimizersPanel);
+			this.OptimizerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+		}
+		
 		const string prefixWhenNeedsToBeSaved = "* ";
 		internal void PopulateWindowTitlesFromChartContextOrStrategy() {
 			if (this.Strategy == null) {

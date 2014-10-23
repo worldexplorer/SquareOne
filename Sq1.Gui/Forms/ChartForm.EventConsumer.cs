@@ -34,6 +34,15 @@ namespace Sq1.Gui.Forms {
 			}
 			this.ChartFormManager.MainForm.MainFormSerialize();
 		}
+		void MniShowOptimizer_Click(object sender, System.EventArgs e) {
+			if (this.MniShowOptimizer.Checked) {
+				// if autohidden => popup and keepAutoHidden=false
+				this.ChartFormManager.OptimizerFormShow(false);
+			} else {
+				this.ChartFormManager.OptimizerFormConditionalInstance.ToggleAutoHide();
+			}
+			this.ChartFormManager.MainForm.MainFormSerialize();
+		}
 		void btnStreaming_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
 			try {

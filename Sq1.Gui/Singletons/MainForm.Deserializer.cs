@@ -141,6 +141,13 @@ namespace Sq1.Gui.Singletons {
 					ret = parentChart.ScriptEditorFormConditionalInstance;
 					break;
 
+				case ("Optimizer"):
+					//return "Optimizer:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
+					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					if (parentChart.StrategyFoundDuringDeserialization == false) break;
+					ret = parentChart.OptimizerFormConditionalInstance;
+					break;
+
 				default:
 					string msg2 = "please add switch->case for managedFormCase[" + managedFormCase + "]";
 					throw new Exception(msig + msg2);

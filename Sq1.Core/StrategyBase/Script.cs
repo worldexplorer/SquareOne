@@ -234,7 +234,7 @@ namespace Sq1.Core.StrategyBase {
 						if (iParamsCtxLookup.ContainsKey(iParamInstantiated.Name) == false) {
 							msg = "JSONStrategy_UNCHANGED_BUT_INDICATOR_EVOLVED_AND_INRODUCED_NEW_PARAMETER__APPARENTLY_STORING_DEFAULT_VALUE_IN_CURRENT_CONTEXT"
 								+ "; CLONE_OF_INSTANTIATED_GOES_TO_CONTEXT_AND_TO_SLIDER__THIS_CLONE_HAS_SHORTER_LIFECYCLE_WILL_REMAIN_IN_SYNC_FROM_WITHIN_CLICK_HANLDER";
-							iParamsCtx.Add(iParamInstantiated.Clone());
+							iParamsCtx.Add(iParamInstantiated.Clone);
 							continue;
 						}
 						msg = "ABSORBING_CONTEXT_INDICATOR_VALUE_INTO_INSTANTIATED_INDICATOR_PARAMETER";
@@ -451,7 +451,7 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "myctxScriptParametersTo.ContainsKey(" + cloneSPindex + ") == false; Script.ScriptParametersAsString=" + this.ScriptParametersAsString;
 					Assembler.PopupException(msg);
 					//continue;
-					myctxScriptParametersTo.Add(cloneSPindex, cloneSparam.Clone());
+					myctxScriptParametersTo.Add(cloneSPindex, cloneSparam.Clone);
 				} else {
 					myctxScriptParametersTo[cloneSPindex].AbsorbCurrentFixBoundariesIfChanged(cloneSparam);
 				}
@@ -479,7 +479,7 @@ namespace Sq1.Core.StrategyBase {
 						string msg = "myctxIparamsLookup.ContainsKey(" + cloneIparam.Name + ") == false";
 						Assembler.PopupException(msg);
 						//continue;
-						myctxIparams.Add(cloneIparam.Clone());
+						myctxIparams.Add(cloneIparam.Clone);
 					} else {
 						IndicatorParameter myctxIparam = myctxIparamsLookup[cloneIparam.Name];
 						myctxIparam.AbsorbCurrentFixBoundariesIfChanged(cloneIparam);

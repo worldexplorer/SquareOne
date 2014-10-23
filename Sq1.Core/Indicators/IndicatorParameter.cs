@@ -6,6 +6,8 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Indicators {
 	public class IndicatorParameter {
 		[JsonIgnore]	public string IndicatorName;
+		[JsonIgnore]	public virtual string FullName { get { return this.IndicatorName + "." + this.Name; } } // "MAslow.Period" for indicators, plain Name for StrategyParams
+		
 		[JsonProperty]	public string Name;	// unlike user-editable ScriptParameter, IndicatorParameter.Name is compiled and remains constant (no need for Id)
 		[JsonProperty]	public double ValueMin;
 		[JsonProperty]	public double ValueMax;
@@ -19,10 +21,10 @@ namespace Sq1.Core.Indicators {
 //					&& this.ValueIncrement == (double)((int)this.ValueIncrement)
 //					&& this.ValueCurrent == (double)this.ValueCurrent;
 //			} }
-//		[JsonIgnore]	public int NumberOfRuns { get {
-//				if (this.ValueIncrement <= 0.0) return 1;
-//				return (int)Math.Round(((this.ValueMax - this.ValueMin) / this.ValueIncrement) + 1.0);
-//			} }
+		[JsonIgnore]	public int NumberOfRuns { get {
+				if (this.ValueIncrement <= 0.0) return 1;
+				return (int)Math.Round(((this.ValueMax - this.ValueMin) / this.ValueIncrement) + 1.0);
+			} }
 
 		//public string ValueString;
 		//public BarScaleInterval ValueBarScaleInterval;
@@ -86,8 +88,6 @@ namespace Sq1.Core.Indicators {
 			}
 		}
 		// USED_TO_SEPARATE_LONG_LIVING_SCRIPT_INDICATOR_PARAMETER_INSTANCE__FROM_SWITCHING_CONTEXT_INDICATOR_SETTINGS
-		public IndicatorParameter Clone() {
-			return (IndicatorParameter)base.MemberwiseClone();
-		}
+		public IndicatorParameter Clone { get { return (IndicatorParameter)base.MemberwiseClone(); } }
 	}
 }
