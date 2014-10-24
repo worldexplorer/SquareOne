@@ -141,18 +141,21 @@ namespace Sq1.Core.StrategyBase {
 			ret.Guid = Guid.NewGuid();
 			return ret;
 		}
-		public Strategy CloneWithNewScriptInstanceResetContextsToSingle(ContextScript ctxNext) {
+		public Strategy CloneWithNewScriptInstanceResetContextsToSingle(ContextScript ctxNext, ScriptExecutor executorCloneForOptimizer) {
 			var ret = (Strategy)base.MemberwiseClone();
 			if (ret.Script != null) {
+				//WILL_THROW: public Strategy Strategy { get { return this.Executor.Strategy } }
 				ret.Script = (Script) Activator.CreateInstance(ret.Script.GetType());
+				//ret.Script = ret.Script.Clo);
+				ret.Script.Initialize(executorCloneForOptimizer);
 			}
 			//Debugger.Break();
-			ret.ScriptContextsByName = new Dictionary<string, ContextScript>();
-			if (ret.ScriptContextsByName.Count == this.ScriptContextsByName.Count) {
-				Debugger.Break();
-			}
-			ret.ScriptContextAdd(ctxNext.Name, ctxNext, true);
-			ret.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);
+			//ret.ScriptContextsByName = new Dictionary<string, ContextScript>();
+			//if (ret.ScriptContextsByName.Count == this.ScriptContextsByName.Count) {
+			//    Debugger.Break();
+			//}
+			//ret.ScriptContextAdd(ctxNext.Name, ctxNext, true);
+			//MOVED_UPSTACK ret.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);
 			return ret;
 		}
 		public void PushChangedScriptParameterValueToScriptAndSerialize(ScriptParameter scriptParameter) {

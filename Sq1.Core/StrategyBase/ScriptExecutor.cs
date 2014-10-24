@@ -1103,14 +1103,20 @@ namespace Sq1.Core.StrategyBase {
 		public ScriptExecutor CloneForOptimizer(ContextScript ctxNext) {
 			//ScriptExecutor clone = base.MemberwiseClone();
 			// detach the chart clone.On
-			ScriptExecutor clone = new ScriptExecutor();
-			clone.Bars = this.Bars;
-			Strategy strategyClone = this.Strategy.CloneWithNewScriptInstanceResetContextsToSingle(ctxNext);
+			ScriptExecutor executorClone = new ScriptExecutor();
+			executorClone.Bars = this.Bars;
+			Strategy strategyClone = this.Strategy.CloneWithNewScriptInstanceResetContextsToSingle(ctxNext, executorClone);
 			if (strategyClone == this.Strategy) {
 				Debugger.Break();
 			}
-			clone.Initialize(null, strategyClone, null, this.StatusReporter);
-			return clone;
+			strategyClone.Script.Initialize(executorClone);
+			executorClone.Initialize(null, strategyClone, null, this.StatusReporter);
+			//KEEP_DOWNSTACK strategyClone.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);
+
+			strategyClone.ScriptContextsByName = new Dictionary<string, ContextScript>();
+			strategyClone.ScriptContextAdd(ctxNext.Name, ctxNext, true);
+
+			return executorClone;
 		}
 	}
 }
