@@ -155,6 +155,9 @@ namespace Sq1.Reporters {
 		
 		public override void BuildOnceAfterFullBlindBacktestFinished(SystemPerformance performance) {
 			base.SystemPerformance = performance;
+			if (base.SystemPerformance.Bars == null) {
+				Debugger.Break();
+			}
 			if (base.SystemPerformance.Bars.IsIntraday) {
 				this.olvcEntryDate.Width = 120;
 				this.olvcExitDate.Width = 120;

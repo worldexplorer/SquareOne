@@ -90,11 +90,11 @@ namespace Sq1.Core.Backtesting {
 			string msig = " whyAborted=[" + whyAborted + "]: Strategy[" + this.Executor.Strategy + "] on Bars[" + this.Executor.Bars + "]";
 
 			string msg = "BACKTEST_ABORTING";
-			Assembler.PopupException(msg + msig);
+			Assembler.PopupException(msg + msig, null, false);
 
 			bool aborted = this.BacktestAborted.WaitOne(millisecondsToWait);
 			msg = (aborted) ? "BACKTEST_ABORTED" : "BACKTESTER_DIDNT_ABORT_WITHIN_SECONDS[" + millisecondsToWait + "]";
-			Assembler.PopupException(msg + msig);
+			Assembler.PopupException(msg + msig, null, false);
 		}
 		public void WaitUntilBacktestCompletes() {
 			if (this.IsBacktestingNow == false) return;
@@ -107,7 +107,7 @@ namespace Sq1.Core.Backtesting {
 			//	Debugger.Break();
 			//}
 
-			this.Executor.ChartShadow.BacktestIsRunning.Reset();
+			if (this.Executor.ChartShadow != null) this.Executor.ChartShadow.BacktestIsRunning.Reset();
 			// Calling ManualResetEvent.Set opens the gate,
 			// allowing any number of threads calling WaitOne to be let through
 			this.BacktestCompletedQuotesCanGo.Set();
@@ -119,7 +119,7 @@ namespace Sq1.Core.Backtesting {
 			if (this.ExceptionsHappenedSinceBacktestStarted < this.Executor.Strategy.ExceptionsLimitToAbortBacktest) return;
 			this.AbortRunningBacktestWaitAborted("AbortBacktestIfExceptionsLimitReached[" + this.Executor.Strategy.ExceptionsLimitToAbortBacktest + "]");
 		}
-		public void substituteBarsAndRunSimulation() {
+		void substituteBarsAndRunSimulation() {
 			if (null == this.Executor.Bars) {
 				Assembler.PopupException("EXECUTOR_LOST_ITS_BARS_NONSENSE null==this.Executor.Bars SubstituteBarsAndRunSimulation()");
 				return;
@@ -267,7 +267,7 @@ namespace Sq1.Core.Backtesting {
 
 				//COPIED_UPSTACK_FOR_BLOCKING_MOUSEMOVE_AFTER_BACKTEST_NOW_CLICK__BUT_ALSO_STAYS_HERE_FOR_SLIDER_CHANGE_NON_INVALIDATION
 				//WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
-				this.Executor.ChartShadow.BacktestIsRunning.Set();
+				if (this.Executor.ChartShadow != null) this.Executor.ChartShadow.BacktestIsRunning.Set();
 				// Calling ManualResetEvent.Reset closes the gate.
 				// Threads that call WaitOne on a closed gate will block
 				this.BacktestCompletedQuotesCanGo.Reset();

@@ -10,7 +10,7 @@
 			base.Dispose(disposing);
 		}
 		private void InitializeComponent() {
-			this.optimizerControl = new Sq1.Widgets.Optimizer.OptimizerControl();
+			this.optimizerControl = new Sq1.Widgets.Optimization.OptimizerControl();
 			this.SuspendLayout();
 			// 
 			// optimizerControl1
@@ -33,6 +33,6 @@
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRightAutoHide;
 			this.ResumeLayout(false);
 		}
-		private Sq1.Widgets.Optimizer.OptimizerControl optimizerControl;
+		private Sq1.Widgets.Optimization.OptimizerControl optimizerControl;
 	}
 }

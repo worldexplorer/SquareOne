@@ -583,7 +583,7 @@ namespace Sq1.Core.Repositories {
 
 		public Strategy StrategyDuplicate(Strategy strategy, string strategyNameUserTyped = "") {
 			//string nameToRestore = strategy.Name;
-			Strategy strategyShallowCopy = strategy.Clone();
+			Strategy strategyShallowCopy = strategy.CloneWithNewGuid();
 			//strategyShallowCopy.Name = "$$$STRATEGY_DUNNY_NAME_TO_BE_RENAMED";
 			//strategyShallowCopy.Name = this.StrategyRenameModifyNameTillNoException(strategyShallowCopy, strategy.Name);
 			if (string.IsNullOrEmpty(strategyNameUserTyped)) strategyNameUserTyped = strategy.Name;

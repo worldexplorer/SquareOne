@@ -70,8 +70,11 @@ namespace Sq1.Core.StrategyBase {
 			
 			this.PositionSize = found.PositionSize.Clone();
 			if (absorbScriptAndIndicatorParams) {
-				this.ScriptParametersById = new Dictionary<int, ScriptParameter>(found.ScriptParametersById);
-				this.IndicatorParametersByName = new Dictionary<string, List<IndicatorParameter>>(found.IndicatorParametersByName);
+				//this.ScriptParametersById = new Dictionary<int, ScriptParameter>(found.ScriptParametersById);
+				//this.IndicatorParametersByName = new Dictionary<string, List<IndicatorParameter>>(found.IndicatorParametersByName);
+				this.ScriptParametersById = found.ScriptParametersById;
+				this.IndicatorParametersByName = found.IndicatorParametersByName;
+				this.CloneReferenceTypes(false);
 			}
 			//this.ChartBarSpacing = found.ChartBarSpacing;
 			this.ChartAutoSubmitting = found.ChartAutoSubmitting;
@@ -82,6 +85,34 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public new ContextScript MemberwiseCloneMadePublic() {
 			return (ContextScript)base.MemberwiseClone();
+		}
+		public ContextScript CloneResetAllToMinForOptimizer() {
+			ContextScript ret = (ContextScript)base.MemberwiseClone();
+			ret.CloneReferenceTypes();
+			return ret;
+		}
+		public void CloneReferenceTypes(bool resetAllToMin = true) {
+			Dictionary<int, ScriptParameter> scriptParametersByIdClonedReset = new Dictionary<int, ScriptParameter>();
+			foreach (int id in this.ScriptParametersById.Keys) {
+				ScriptParameter sp = this.ScriptParametersById[id];
+				ScriptParameter spClone = sp.Clone();
+				if (resetAllToMin) spClone.ValueCurrent = spClone.ValueMin;
+				scriptParametersByIdClonedReset.Add(id, spClone);
+			}
+			this.ScriptParametersById = scriptParametersByIdClonedReset;
+
+			Dictionary<string, List<IndicatorParameter>> indicatorParametersByNameClonedReset = new Dictionary<string, List<IndicatorParameter>>();
+			foreach (string indicatorName in this.IndicatorParametersByName.Keys) {
+				List<IndicatorParameter> iParams = this.IndicatorParametersByName[indicatorName];
+				List<IndicatorParameter> iParamsCloned = new List<IndicatorParameter>();
+				indicatorParametersByNameClonedReset.Add(indicatorName, iParamsCloned);
+				foreach (IndicatorParameter iParam in iParams) {
+					IndicatorParameter ipClone = iParam.Clone();
+					if (resetAllToMin) ipClone.ValueCurrent = ipClone.ValueMin;
+					iParamsCloned.Add(ipClone);
+				}
+			}
+			this.IndicatorParametersByName = indicatorParametersByNameClonedReset;
 		}
 		public object FindOrCreateReportersSnapshot(Reporter reporterActivated) {
 			string reporterName = reporterActivated.TabText;

@@ -25,7 +25,7 @@
       }
     },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 9,
+    "BarWidthIncludingPadding": 1,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -59,7 +59,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 107,
+    "ScrollPositionAtBarIndex": 4052,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,

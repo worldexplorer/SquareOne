@@ -56,9 +56,9 @@ namespace Sq1.Strategies.Demo {
 			ScriptParameter param = base.ParametersByNameInlineCopy[parameterNameToLookup];
 			double paramValue = param.ValueCurrent;
 			//Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
-			//base.Executor.ChartShadow.ChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);
+			//base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);
 			Font font = new Font("Consolas", 8, FontStyle.Bold);
-			base.Executor.ChartShadow.ChartLabelDrawOnNextLineModify("labelTest", parameterNameToLookup + "[" + paramValue + "]", font, Color.Brown, Color.Beige);
+			base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", parameterNameToLookup + "[" + paramValue + "]", font, Color.Brown, Color.Beige);
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 			//double slowStreaming = this.MAslow.BarClosesProxied.StreamingValue;
@@ -164,7 +164,7 @@ namespace Sq1.Strategies.Demo {
 				Position shortPlaced = ShortAtMarket(barStreaming, msg);
 				//Debugger.Break();
 			}
-			//base.Executor.ChartShadow.LineDrawModify(...);
+			//base.Executor.ChartConditionalLineDrawModify(...);
 		}
 		public override void OnAlertFilledCallback(Alert alertFilled) {
 			if (alertFilled.FilledBarIndex == 12) {
@@ -198,10 +198,10 @@ namespace Sq1.Strategies.Demo {
 			Font font = new Font("Consolas", 7);
 			//bool evenAboveOddBelow = true;
 			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
-			base.Executor.ChartShadow.BarAnnotationDrawModify(
+			base.Executor.ChartConditionalBarAnnotationDrawModify(
 				barIndex, "ann" + barIndex, labelText, font, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
 			// checking labels stacking next upon (underneath) the previous
-			base.Executor.ChartShadow.BarAnnotationDrawModify(
+			base.Executor.ChartConditionalBarAnnotationDrawModify(
 				barIndex, "ann2" + barIndex, labelText, font, Color.ForestGreen, Color.LightGray, evenAboveOddBelow);
 		}
 	}

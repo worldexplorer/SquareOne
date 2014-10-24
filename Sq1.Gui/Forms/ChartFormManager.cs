@@ -71,6 +71,11 @@ namespace Sq1.Gui.Forms {
 				if (DockContentImproved.IsNullOrDisposed(this.OptimizerForm)) {
 					if (this.Strategy == null) return null;
 					this.OptimizerForm = new OptimizerForm(this);
+					this.OptimizerForm.Disposed += delegate(object sender, EventArgs e) { 
+						// both at FormCloseByX and MainForm.onClose()
+						this.ChartForm.MniShowOptimizer.Checked = false;
+						this.OptimizerForm = null;
+					};
 				}
 				return this.OptimizerForm;
 			} }
@@ -92,6 +97,7 @@ namespace Sq1.Gui.Forms {
 				var ret = new Dictionary<string, DockContent>();
 				if (this.ChartForm != null) ret.Add("Chart", this.ChartForm);
 				if (this.ScriptEditorForm != null) ret.Add("Source Code", this.ScriptEditorForm);
+				if (this.OptimizerForm != null) ret.Add("Optimizer", this.OptimizerForm);
 				foreach (string textForMenuItem in this.ReportersFormsManager.FormsAllRelated.Keys) {
 					ret.Add(textForMenuItem, this.ReportersFormsManager.FormsAllRelated[textForMenuItem]);
 				}
@@ -267,7 +273,7 @@ namespace Sq1.Gui.Forms {
 			}
 			this.PopulateWindowTitlesFromChartContextOrStrategy();
 			msig += (this.Strategy != null) ?
-				" << PopulateCurrentScriptContext(): Strategy[" + this.Strategy + "].ScriptContextCurrent[" + context.Name + "]"
+				" << PopulateCurrentScriptContext(): Strategy[" + this.Strategy.ToString() + "].ScriptContextCurrent[" + context.Name + "]"
 				:	" << PopulateCurrentScriptContext(): this.ChartForm[" + this.ChartForm.Text + "].ChartControl.ContextChart[" + context.Name + "]";
 
 			if (string.IsNullOrEmpty(context.DataSourceName)) {
@@ -378,20 +384,20 @@ namespace Sq1.Gui.Forms {
 					// ONLY_TO_MAKE_CHARTFORM_BACKTEST_NOW_WORK__FOR_F5_ITS_A_DUPLICATE__LAZY_TO_ENMESS_CHART_FORM_MANAGER_WITH_SCRIPT_EDITOR_FUNCTIONALITY
 					this.StrategyCompileActivatePopulateSlidersShow();
 				}
-				this.Executor.BacktesterRunSimulationTrampoline(new Action(this.afterBacktesterComplete), true);
+				this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
 			} catch (Exception ex) {
 				string msg = "RUN_SIMULATION_TRAMPOLINE_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Executor.Bars + "]";
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		void afterBacktesterComplete() {
+		void afterBacktesterComplete(ScriptExecutor myOwnExecutorIgnoring) {
 			if (this.Executor.Bars == null) {
 				string msg = "DONT_RUN_BACKTEST_BEFORE_BARS_ARE_LOADED";
 				Assembler.PopupException(msg);
 				return;
 			}
 			if (this.ChartForm.InvokeRequired) {
-				this.ChartForm.BeginInvoke((MethodInvoker)delegate { this.afterBacktesterComplete(); });
+				this.ChartForm.BeginInvoke((MethodInvoker)delegate { this.afterBacktesterComplete(myOwnExecutorIgnoring); });
 				return;
 			}
 			//this.clonePositionsForChartPickupBacktest(this.Executor.ExecutionDataSnapshot.PositionsMaster);
@@ -400,11 +406,11 @@ namespace Sq1.Gui.Forms {
 			this.ChartForm.ChartControl.InvalidateAllPanels();
 			
 			//this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);
-			this.Executor.Performance.BuildStatsOnBacktestFinished();
+			// MOVED_TO_BacktesterRunSimulation() this.Executor.Performance.BuildStatsOnBacktestFinished();
 			this.ReportersFormsManager.BuildOnceAllReports(this.Executor.Performance);
 		}
-		void afterBacktesterCompleteOnceOnRestart() {
-			this.afterBacktesterComplete();
+		void afterBacktesterCompleteOnceOnRestart(ScriptExecutor myOwnExecutorIgnoring) {
+			this.afterBacktesterComplete(myOwnExecutorIgnoring);
 			
 			if (this.Strategy == null) {
 				Assembler.PopupException("this should never happen this.Strategy=null in afterBacktesterCompleteOnceOnRestart()");
@@ -443,7 +449,7 @@ namespace Sq1.Gui.Forms {
 			if (this.Strategy.ScriptContextCurrent.BacktestOnRestart == false) {
 				// COPYFROM_StrategyCompileActivatePopulateSlidersShow()
 				if (this.Strategy.Script != null && this.Strategy.ActivatedFromDll) {
-					this.Strategy.Script.PullParametersFromCurrentContextSaveStrategy();
+					this.Strategy.Script.PullParametersFromCurrentContextSaveStrategyIfAbsorbedFromScript();
 				}
 				return;
 			}
@@ -477,7 +483,7 @@ namespace Sq1.Gui.Forms {
 
 			// MOVED_TO_StrategyCompileActivatePopulateSlidersShow(), we definitely will be running it later due to BacktestOnRestart.true tested 20 lines above this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
 			
-			this.Executor.BacktesterRunSimulationTrampoline(new Action(this.afterBacktesterCompleteOnceOnRestart), true);
+			this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterCompleteOnceOnRestart), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
 		}
 		public void ReportersDumpCurrentForSerialization() {
@@ -525,6 +531,7 @@ namespace Sq1.Gui.Forms {
 			foreach (DockContent form in this.dockPanel.Contents) {
 				anotherOptimizer = form as OptimizerForm;
 				if (anotherOptimizer == null) continue;
+				if (anotherOptimizer.Pane == null) continue;
 				mainPanelOrAnotherOptimizersPanel = anotherOptimizer.Pane.DockPanel;
 				break;
 			}
@@ -589,7 +596,7 @@ namespace Sq1.Gui.Forms {
 
 			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
 				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
-				this.Strategy.Script.PullParametersFromCurrentContextSaveStrategy();
+				this.Strategy.Script.PullParametersFromCurrentContextSaveStrategyIfAbsorbedFromScript();
 			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.PopulateSliders();

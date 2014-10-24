@@ -7,10 +7,11 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Backtesting;
 
-namespace Sq1.Widgets.Optimizer {
+namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl : UserControl {
-		ScriptExecutor executor;
+		Optimizer optimizer;
 		List<string> colMetricsShouldStay;
 		List<SystemPerformance> backtests;
 		List<OLVColumn> columnsDynParam;
@@ -53,49 +54,50 @@ namespace Sq1.Widgets.Optimizer {
 			columnsDynParam = new List<OLVColumn>();
 		}
 
-		public void Initialize(ScriptExecutor executor) {
-			this.executor = executor;
-			if (this.executor == null) {
-				this.olvBacktests.EmptyListMsg = "this.executor == null";
+		public void Initialize(Optimizer optimizer) {
+			this.optimizer = optimizer;
+			if (this.optimizer == null) {
+				this.olvBacktests.EmptyListMsg = "this.optimizer == null";
 				return;
 			}
-			if (this.executor.Strategy == null) {
-				this.olvBacktests.EmptyListMsg = "this.executor.Strategy == null";
+			if (this.optimizer.InitializedProperly == false) {
+				this.olvBacktests.EmptyListMsg = "this.optimizerInitializedProperly == false";
 				return;
 			}
-			this.olvBacktests.EmptyListMsg = "";
 
-			Strategy strategy = this.executor.Strategy;
-			this.txtDataRange.Text = strategy.ScriptContextCurrent.DataRange.ToString();
-			this.txtPositionSize.Text = strategy.ScriptContextCurrent.PositionSize.ToString();
-			this.txtStrategy.Text = strategy.Name + "   " + strategy.ScriptParametersAsStringByIdJSONcheck + strategy.IndicatorParametersAsStringByIdJSONcheck;
-			this.txtSymbol.Text = strategy.ScriptContextCurrent.DataSourceName + " :: " + strategy.ScriptContextCurrent.Symbol;
-
-			int scriptParametersTotalNr = 0;
-			foreach (ScriptParameter sp in executor.Strategy.Script.ParametersById.Values) {
-				scriptParametersTotalNr += sp.NumberOfRuns;
-			}
-			this.txtScriptParameterTotalNr.Text = scriptParametersTotalNr.ToString();
+			// removing to avoid reception of same SystemResults reception due to multiple Initializations by OptimizerControl.Initialize() 
+			this.optimizer.OnBacktestComplete -= new EventHandler<SystemPerformanceEventArgs>(this.Optimizer_OnBacktestComplete);
+			// since Optimizer.backtests is multithreaded list, I keep own copy here OptimizerControl.backtests for ObjectListView to freely crawl over it without interference (instead of providing Optimizer.BacktestsThreadSafeCopy)  
+			this.optimizer.OnBacktestComplete += new EventHandler<SystemPerformanceEventArgs>(this.Optimizer_OnBacktestComplete);
 			
-			int indicatorParameterTotalNr = 0;
-			//foreach (Indicator i in executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {	//looks empty on Deserialization
-			foreach (IndicatorParameter ip in executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
-				indicatorParameterTotalNr += ip.NumberOfRuns;
-			}
-			this.txtIndicatorParameterTotalNr.Text = indicatorParameterTotalNr.ToString();
+			this.optimizer.OnOptimizationComplete -= new EventHandler<EventArgs>(Optimizer_OnOptimizationComplete);
+			this.optimizer.OnOptimizationComplete += new EventHandler<EventArgs>(Optimizer_OnOptimizationComplete);
+			
+			this.optimizer.OnOptimizationAborted -= new EventHandler<EventArgs>(Optimizer_OnOptimizationAborted);
+			this.optimizer.OnOptimizationAborted += new EventHandler<EventArgs>(Optimizer_OnOptimizationAborted);
 
-			int totalBacktests = (int)Math.Pow(scriptParametersTotalNr + indicatorParameterTotalNr, 2);
-			this.btnRunCancel.Enabled = true;
-			this.btnRunCancel.Text = "Run " + totalBacktests + " backtests";
-			this.lblStats.Text = "0% complete; 0/" + totalBacktests;
+			this.txtDataRange.Text = this.optimizer.DataRangeAsString;
+			this.txtPositionSize.Text = this.optimizer.PositionSizeAsString;
+			this.txtStrategy.Text = this.optimizer.StrategyAsString;
+			this.txtSymbol.Text = this.optimizer.SymbolAsString;
+			this.txtScriptParameterTotalNr.Text = this.optimizer.ScriptParametersTotalNr.ToString();
+			this.txtIndicatorParameterTotalNr.Text = this.optimizer.IndicatorParameterTotalNr.ToString();
+
+			int backtestsTotal = this.optimizer.BacktestsTotal;
+			this.btnRunCancel.Text = "Run " + backtestsTotal + " backtests";
+			this.lblStats.Text = "0% complete    0/" + backtestsTotal;
 			this.progressBar1.Value = 0;
-			this.progressBar1.Maximum = totalBacktests;
-			btnRunCancel.Enabled = true;
+			this.progressBar1.Maximum = backtestsTotal;
+			
+			this.nudThreadsToRun.Value = this.optimizer.CpuCoresToUse;
+			
+			this.btnRunCancel.Enabled = true;
+			this.btnPauseResume.Enabled = false;
 			
 			this.populateColumns();
 			this.objectListViewCustomize();
 		}
-		
+
 		void populateColumns() {
 			this.olvBacktests.Items.Clear();
 			this.columnsDynParam.Clear();
@@ -111,23 +113,21 @@ namespace Sq1.Widgets.Optimizer {
 			}
 			
 			
-			if (this.executor == null) {
-				this.olvBacktests.EmptyListMsg = "this.executor == null";
+			if (this.optimizer == null) {
+				this.olvBacktests.EmptyListMsg = "this.optimizer == null";
 				return;
 			}
-			if (this.executor.Strategy == null) {
-				this.olvBacktests.EmptyListMsg = "this.executor.Strategy == null";
+			if (this.optimizer.ParametersById == null) {
+				this.olvBacktests.EmptyListMsg = "this.optimizer.ParametersById == null";
 				return;
 			}
-			if (this.executor.Strategy.Script == null) {
-				this.olvBacktests.EmptyListMsg = "this.executor.Strategy.Script == null";
+			
+			var sparams = this.optimizer.ParametersById;
+			if (sparams == null) {
+				this.olvBacktests.EmptyListMsg = "this.optimizer.ParametersById == null";
 				return;
 			}
-			if (this.executor.Strategy.Script.ParametersById == null) {
-				this.olvBacktests.EmptyListMsg = "this.executor.Strategy.Script.ParametersById == null";
-				return;
-			}
-			foreach (ScriptParameter sp in this.executor.Strategy.Script.ParametersById.Values) {
+			foreach (ScriptParameter sp in sparams.Values) {
 				OLVColumn olvcSP = new OLVColumn();
 				olvcSP.Name = sp.Name;
 				olvcSP.Text = sp.Name;
@@ -138,21 +138,13 @@ namespace Sq1.Widgets.Optimizer {
 				this.columnsDynParam.Add(olvcSP);
 			}
 			
-
-			if (this.executor.ExecutionDataSnapshot == null) {
-				this.olvBacktests.EmptyListMsg = "this.executor.ExecutionDataSnapshot == null";
-				return;
-			}
-//			if (this.executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances == null) {
-//				this.olvBacktests.EmptyListMsg = "this.executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances == null";
-//				return;
-//			}
-			if (this.executor.Strategy.ScriptContextCurrent.IndicatorParametersByName == null) {
-				this.olvBacktests.EmptyListMsg = "this.executor.Strategy.ScriptContextCurrent.IndicatorParametersByName == null";
+			var iparams = this.optimizer.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
+			if (iparams == null) {
+				this.olvBacktests.EmptyListMsg = "this.optimizer.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders == null";
 				return;
 			}
 			
-			foreach (string indicatorDotParameter in this.executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Keys) {
+			foreach (string indicatorDotParameter in iparams.Keys) {
 				OLVColumn olvcIP = new OLVColumn();
 				olvcIP.Name = indicatorDotParameter;
 				olvcIP.Text = indicatorDotParameter;

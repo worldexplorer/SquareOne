@@ -75,6 +75,8 @@
     <Compile Include="Backtesting\BacktestQuotesGeneratorFourStroke.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Backtesting\Optimizer.cs" />
+    <Compile Include="Backtesting\OptimizerParametersSequencer.cs" />
     <Compile Include="Backtesting\QuoteGenerated.cs" />
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
     <Compile Include="Broker\OrderEventDistributor.cs" />
@@ -148,7 +150,11 @@
     <Compile Include="StrategyBase\Reporter.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="StrategyBase\ScriptExecutor.ChartConditional.cs">
+      <DependentUpon>ScriptExecutor.cs</DependentUpon>
+    </Compile>
     <Compile Include="StrategyBase\ScriptParameterEventArgs.cs" />
+    <Compile Include="StrategyBase\SystemPerformanceEventArgs.cs" />
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
     <Compile Include="Streaming\StreamingEarlyBinder.cs" />
     <Compile Include="Streaming\StreamingSolidifier.cs" />

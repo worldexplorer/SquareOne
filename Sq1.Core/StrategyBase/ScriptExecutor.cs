@@ -18,7 +18,7 @@ using Sq1.Core.Support;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
-	public class ScriptExecutor {
+	public partial class ScriptExecutor {
 		#region constructed (my own data)
 		public ExecutionDataSnapshot ExecutionDataSnapshot { get; protected set; }
 		public SystemPerformance Performance { get; protected set; }
@@ -31,6 +31,7 @@ namespace Sq1.Core.StrategyBase {
 		// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 		//public NotOnChartBarsHelper NotOnChartBarsHelper { get; private set; }
 		public CommissionCalculator CommissionCalculator;
+		public Optimizer Optimizer { get; protected set; }
 		#endregion
 		
 		#region initialized (sort of Dependency Injection)
@@ -112,7 +113,7 @@ namespace Sq1.Core.StrategyBase {
 			this.IsAutoSubmitting = false;
 
 			this.ExecutionDataSnapshot = new ExecutionDataSnapshot(this);
-			this.Performance = new SystemPerformance(this);
+			//NOW_IRRELEVANT_MOVED_TO_BacktesterRunSimulation this.Performance = new SystemPerformance(this);
 			this.Backtester = new Backtester(this);
 			this.PositionPrototypeActivator = new PositionPrototypeActivator(this);
 			this.MarketRealStreaming = new MarketRealStreaming(this);
@@ -121,6 +122,7 @@ namespace Sq1.Core.StrategyBase {
 			// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 			//this.NotOnChartBarsHelper = new NotOnChartBarsHelper(this);
 			this.CommissionCalculator = new CommissionCalculatorZero(this);
+			this.Optimizer = new Optimizer(this);
 		}
 
 		public void Initialize(ChartShadow chartShadow,
@@ -131,6 +133,8 @@ namespace Sq1.Core.StrategyBase {
 			this.Strategy = strategy;
 			this.OrderProcessor = orderProcessor;
 			this.StatusReporter = statusReporter;
+			
+			this.Optimizer.InitializedProperly = false;
 
 			if (this.Strategy != null) {
 				if (this.Bars != null) {
@@ -143,6 +147,7 @@ namespace Sq1.Core.StrategyBase {
 					//	msg = "InitializeStrategyAfterDeserialization will Script.Initialize(this) later with bars";
 				} else {
 					this.Strategy.Script.Initialize(this);
+					this.Optimizer.Initialize();	//otherwize this.Optimizer.InitializedProperly = false; => can't optimize anything
 				}
 			}
 			this.ExecutionDataSnapshot.Initialize();
@@ -857,10 +862,13 @@ namespace Sq1.Core.StrategyBase {
 		public void BacktesterRunSimulation() {
 			try {
 				this.ExecutionDataSnapshot.Initialize();
+				this.Performance = new SystemPerformance(this);
 				this.Performance.Initialize();
 				this.Strategy.Script.InitializeBacktestWithExecutorsBarsInstantiateIndicators();
 
-				this.ChartShadow.SetIndicators(this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances);
+				if (this.ChartShadow != null) {
+					this.ChartShadow.SetIndicators(this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances);
+				}
 				bool indicatorsHaveNoErrorsCanStartBacktesting = true;
 				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
 					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStartingConstructOwnValuesValidateParameters(this);
@@ -872,6 +880,7 @@ namespace Sq1.Core.StrategyBase {
 				
 				this.Backtester.Initialize(this.Strategy.Script.BacktestMode);
 				this.Backtester.RunSimulation();
+				this.Performance.BuildStatsOnBacktestFinished();
 			} catch (Exception ex) {
 				string msg = "RUN_SIMULATION_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Bars + "]";
 				Assembler.PopupException(msg, ex);
@@ -879,7 +888,7 @@ namespace Sq1.Core.StrategyBase {
 				this.Backtester.SetRunningFalseNotifyWaitingThreadsBacktestCompleted();
 			}
 		}
-		public void BacktesterRunSimulationTrampoline(Action executeAfterSimulationEvenIfIFailed = null, bool inNewThread = true) {
+		public void BacktesterRunSimulationTrampoline(Action<ScriptExecutor> executeAfterSimulationEvenIfIFailed = null, bool inNewThread = true) {
 			if (this.Strategy == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Executor.Strategy=null; " + this;
 				#if DEBUG
@@ -913,14 +922,14 @@ namespace Sq1.Core.StrategyBase {
 			//this.ChartForm.Chart.Renderer.InitializeBarsInvalidateChart(this.Executor);
 			//this.Executor.Renderer.InitializeBarsInvalidateChart(this.Executor);
 			//this.ChartShadow.ScriptToChartCommunicator.PositionsBacktestClearAfterChartPickedUp();
-			this.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
+			if (this.ChartShadow != null) this.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
 
 			if (this.Strategy.ActivatedFromDll) {
 				// FIXED "EnterEveryBar doesn't draw MAfast"; editor-typed strategies already have indicators in SNAP after pre-backtest compilation
 				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true
 				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
 			}
-			this.Strategy.Script.PullParametersFromCurrentContextSaveStrategy();
+			this.Strategy.Script.PullParametersFromCurrentContextSaveStrategyIfAbsorbedFromScript();
 			
 			//inNewThread = false;
 			if (inNewThread) {
@@ -953,7 +962,7 @@ namespace Sq1.Core.StrategyBase {
 				//v3
 				Task backtesterTask = new Task(this.BacktesterRunSimulation);
 				if (executeAfterSimulationEvenIfIFailed != null) {
-					backtesterTask.ContinueWith((t) => { executeAfterSimulationEvenIfIFailed(); });
+					backtesterTask.ContinueWith((t) => { executeAfterSimulationEvenIfIFailed(this); });
 				}
 				//ON_REQUESTING_ABORT_TASK_DIES_WITHOUT_INVOKING_CONTINUE_WITH started.Start(TaskScheduler.FromCurrentSynchronizationContext());
 				backtesterTask.Start();
@@ -962,7 +971,7 @@ namespace Sq1.Core.StrategyBase {
 				//this.ChartForm.Chart.DoInvalidate();
 				this.BacktesterRunSimulation();
 				if (executeAfterSimulationEvenIfIFailed != null) {
-					executeAfterSimulationEvenIfIFailed();
+					executeAfterSimulationEvenIfIFailed(this);
 				}
 			}
 		}
@@ -1090,6 +1099,18 @@ namespace Sq1.Core.StrategyBase {
 				ret = roundedLots100;
 			}
 			return ret;
+		}
+		public ScriptExecutor CloneForOptimizer(ContextScript ctxNext) {
+			//ScriptExecutor clone = base.MemberwiseClone();
+			// detach the chart clone.On
+			ScriptExecutor clone = new ScriptExecutor();
+			clone.Bars = this.Bars;
+			Strategy strategyClone = this.Strategy.CloneWithNewScriptInstanceResetContextsToSingle(ctxNext);
+			if (strategyClone == this.Strategy) {
+				Debugger.Break();
+			}
+			clone.Initialize(null, strategyClone, null, this.StatusReporter);
+			return clone;
 		}
 	}
 }

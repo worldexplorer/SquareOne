@@ -80,6 +80,7 @@ namespace Sq1.Gui.Forms {
 									this.mnitlbPositionSizeDollarsEachTradeConstant});
 			this.ctxBacktest.Name = "ctxBacktest";
 			this.ctxBacktest.Size = new System.Drawing.Size(232, 124);
+			this.ctxBacktest.Opening += new System.ComponentModel.CancelEventHandler(ctxBacktest_Opening);
 			// 
 			// mniBacktestOnRestart
 			// 

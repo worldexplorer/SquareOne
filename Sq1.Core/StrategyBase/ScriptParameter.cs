@@ -23,6 +23,8 @@ namespace Sq1.Core.StrategyBase {
 //		public override string ToString() {
 //			return this.Name + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
 //		}
-		public ScriptParameter Clone { get { return (ScriptParameter)base.MemberwiseClone(); } }
+		public ScriptParameter Clone() {
+			return (ScriptParameter)base.MemberwiseClone();
+		}
 	}
 }

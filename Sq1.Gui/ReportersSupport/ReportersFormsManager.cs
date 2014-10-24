@@ -108,7 +108,9 @@ namespace Sq1.Gui.ReportersSupport {
 			this.ReporterShortNamesUserInvoked.Add(typeNameShort, reporterActivated);
 			this.ChartFormManager.ReportersDumpCurrentForSerialization();
 			this.MenuItemsProvider.FindMniByShortNameAndTick(typeNameShort);
-			reporterActivated.BuildOnceAfterFullBlindBacktestFinished(this.ChartFormManager.Executor.Performance);
+			if (this.ChartFormManager.Executor.Performance != null) {
+				reporterActivated.BuildOnceAfterFullBlindBacktestFinished(this.ChartFormManager.Executor.Performance);
+			}
 			return ret;
 		}
 		object FindOrCreateReportersSnapshot(Reporter reporterActivated) {

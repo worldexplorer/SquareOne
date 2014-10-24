@@ -1,4 +1,5 @@
-﻿namespace Sq1.Widgets.Optimizer {
+﻿using System;
+namespace Sq1.Widgets.Optimization {
 	partial class OptimizerControl {
 		private System.ComponentModel.IContainer components = null;
 		protected override void Dispose(bool disposing){
@@ -43,8 +44,8 @@
 			this.olvcMaxConsecutiveWinners = new BrightIdeasSoftware.OLVColumn();
 			this.olvcMaxConsecutiveLosers = new BrightIdeasSoftware.OLVColumn();
 			this.ctxOneBacktestResult = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniCopyToDefaultCtxBacktest = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniCopyToDefaultCtx = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -114,6 +115,7 @@
 									0,
 									0,
 									0});
+			this.nudThreadsToRun.ValueChanged += new EventHandler(this.nudCpuCoresToUse_ValueChanged);
 			// 
 			// lblIndicatorParameterTotalNr
 			// 
@@ -250,7 +252,7 @@
 			this.btnRunCancel.TabIndex = 19;
 			this.btnRunCancel.Text = "Cancel 529832 backtests";
 			this.btnRunCancel.UseVisualStyleBackColor = true;
-			this.btnRunCancel.Click += new System.EventHandler(this.BtnRunCancelClick);
+			this.btnRunCancel.Click += new System.EventHandler(this.btnRunCancel_Click);
 			// 
 			// lblStats
 			// 
@@ -259,7 +261,7 @@
 			this.lblStats.Name = "lblStats";
 			this.lblStats.Size = new System.Drawing.Size(150, 16);
 			this.lblStats.TabIndex = 35;
-			this.lblStats.Text = "48% complete; 450044/18900";
+			this.lblStats.Text = "48% complete    450044/18900";
 			// 
 			// progressBar1
 			// 
@@ -404,23 +406,25 @@
 			// ctxOneBacktestResult
 			// 
 			this.ctxOneBacktestResult.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.toolStripMenuItem2,
-									this.toolStripMenuItem1,
+									this.mniCopyToDefaultCtxBacktest,
+									this.mniCopyToDefaultCtx,
 									this.toolStripMenuItem3});
 			this.ctxOneBacktestResult.Name = "ctxOneBacktestResult";
-			this.ctxOneBacktestResult.Size = new System.Drawing.Size(263, 70);
+			this.ctxOneBacktestResult.Size = new System.Drawing.Size(263, 92);
 			// 
-			// toolStripMenuItem2
+			// mniCopyToDefaultBacktest
 			// 
-			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(262, 22);
-			this.toolStripMenuItem2.Text = "Copy To Default + Backtest";
+			this.mniCopyToDefaultCtxBacktest.Name = "mniCopyToDefaultBacktest";
+			this.mniCopyToDefaultCtxBacktest.Size = new System.Drawing.Size(262, 22);
+			this.mniCopyToDefaultCtxBacktest.Text = "Copy To Default + Backtest";
+			this.mniCopyToDefaultCtxBacktest.Click += new System.EventHandler(this.mniCopyToDefaultCtxBacktest_Click);
 			// 
-			// toolStripMenuItem1
+			// mniCopyToDefaultCtx
 			// 
-			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(262, 22);
-			this.toolStripMenuItem1.Text = "Copy To Default Context";
+			this.mniCopyToDefaultCtx.Name = "mniCopyToDefaultCtx";
+			this.mniCopyToDefaultCtx.Size = new System.Drawing.Size(262, 22);
+			this.mniCopyToDefaultCtx.Text = "Copy To Default Context";
+			this.mniCopyToDefaultCtx.Click += new System.EventHandler(this.mniCopyToDefaultCtx_Click);
 			// 
 			// toolStripMenuItem3
 			// 
@@ -446,9 +450,10 @@
 			this.ctxOneBacktestResult.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+		private System.Windows.Forms.ToolStripMenuItem mniCopyToDefaultCtx;
+		private System.Windows.Forms.ToolStripMenuItem mniCopyToDefaultCtxBacktest;
 		private BrightIdeasSoftware.OLVColumn olvcSerno;
 		private BrightIdeasSoftware.OLVColumn olvcAverageProfit;
 		private BrightIdeasSoftware.OLVColumn olvcMaxConsecutiveLosers;

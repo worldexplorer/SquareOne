@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 
 using Newtonsoft.Json;
+using Sq1.Core.Backtesting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
@@ -73,8 +74,13 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public override string ToString() {
 			string ret = this.Name;
-			if (this.ScriptContextCurrent != null) ret += "[" + this.ScriptContextCurrent.ToString() + "]";
-			ret += this.ScriptParametersAsStringByIdJSONcheck + this.IndicatorParametersAsStringByIdJSONcheck;
+			//v1, infinite recursion if (this.ScriptContextCurrent != null) {
+			if (this.ScriptContextsByName.ContainsKey(this.ScriptContextCurrentName) == false) {
+				ret += "NOT_FOUND_ScriptContextCurrentName[" + this.ScriptContextCurrentName + "]";
+				return ret;
+			}
+			ret += "[" + this.ScriptContextCurrent.ToString() + "]";
+			//ret += this.ScriptParametersAsStringByIdJSONcheck + this.IndicatorParametersAsStringByIdJSONcheck;
 			return ret;
 		}
 		public void CompileInstantiate() {
@@ -109,17 +115,19 @@ namespace Sq1.Core.StrategyBase {
 			this.ContextMarkCurrentInListByName(scriptContextNameNew);
 			return clone;
 		}
-		public void ContextSwitchCurrentToNamedAndSerialize(string scriptContextName) {
+		public void ContextSwitchCurrentToNamedAndSerialize(string scriptContextName, bool shouldSave = true) {
 			lock (this.ScriptContextCurrentName) {	// Monitor shouldn't care whether I change the variable that I use for exclusive access...
 			//v2 lock (this.scriptContextCurrentNameLock) {
 				this.checkThrowContextNameShouldExist(scriptContextName);
 				ContextScript found = this.ScriptContextsByName[scriptContextName];
 				this.ScriptContextCurrentName = found.Name;
 			}
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+			if (shouldSave) {
+				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+			}
 			this.ContextMarkCurrentInListByName(scriptContextName);
 			if (this.Script != null) {
-				this.Script.PullParametersFromCurrentContextSaveStrategy();
+				this.Script.PullParametersFromCurrentContextSaveStrategyIfAbsorbedFromScript();
 			}
 		}
 		public void ContextMarkCurrentInListByName(string scriptContextName) {
@@ -128,9 +136,23 @@ namespace Sq1.Core.StrategyBase {
 				ctx.IsCurrent = (ctx.Name == scriptContextName) ? true : false;
 			}
 		}
-		public Strategy Clone() {
+		public Strategy CloneWithNewGuid() {
 			var ret = (Strategy)base.MemberwiseClone();
 			ret.Guid = Guid.NewGuid();
+			return ret;
+		}
+		public Strategy CloneWithNewScriptInstanceResetContextsToSingle(ContextScript ctxNext) {
+			var ret = (Strategy)base.MemberwiseClone();
+			if (ret.Script != null) {
+				ret.Script = (Script) Activator.CreateInstance(ret.Script.GetType());
+			}
+			//Debugger.Break();
+			ret.ScriptContextsByName = new Dictionary<string, ContextScript>();
+			if (ret.ScriptContextsByName.Count == this.ScriptContextsByName.Count) {
+				Debugger.Break();
+			}
+			ret.ScriptContextAdd(ctxNext.Name, ctxNext, true);
+			ret.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);
 			return ret;
 		}
 		public void PushChangedScriptParameterValueToScriptAndSerialize(ScriptParameter scriptParameter) {
@@ -177,7 +199,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			iParamInstantiated.AbsorbCurrentFixBoundariesIfChanged(iParamChangedCtx);
 		}
-		public void ScriptContextAdd(string newScriptContextName, ContextScript absorbParamsFrom = null) {
+		public void ScriptContextAdd(string newScriptContextName, ContextScript absorbParamsFrom = null, bool setAddedAsCurrent = false) {
 			if (this.ScriptContextsByName.ContainsKey(newScriptContextName)) {
 				string msg = "CANT_ADD_EXISTING scriptContextName[" + newScriptContextName + "] already exists for strategy[" + this + "]";
 				Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
@@ -195,6 +217,15 @@ namespace Sq1.Core.StrategyBase {
 			}
 			//ABSORBS_TO_CURRENT_INSTEAD_OF_NEW var forceParametersFillScriptContext = this.ScriptParametersMergedWithCurrentContext;
 			this.ScriptContextsByName.Add(newScriptContextName, newScriptContext);
+
+			bool dontSaveWeOptimize = newScriptContextName.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
+			bool shouldSave = !dontSaveWeOptimize; 
+			if (setAddedAsCurrent) {
+				this.ContextSwitchCurrentToNamedAndSerialize(newScriptContextName, shouldSave);
+			}
+			if (dontSaveWeOptimize) {
+				return;
+			}
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 			string msg2 = "scriptContextName[" + newScriptContextName + "] added for strategy[" + this + "]";
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg2);

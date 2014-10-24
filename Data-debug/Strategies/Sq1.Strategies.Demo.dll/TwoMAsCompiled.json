@@ -18,14 +18,11 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": false,
+      "IsCurrent": true,
       "ChartAutoSubmitting": false,
-      "ReporterShortNamesUserInvokedJSONcheck": [
-        "Positions",
-        "Performance"
-      ],
+      "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": false,
-      "BacktestOnSelectorsChange": true,
+      "BacktestOnSelectorsChange": false,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
@@ -82,8 +79,8 @@
             "Name": "Period",
             "ValueMin": 10.0,
             "ValueMax": 20.0,
-            "ValueIncrement": 1.0,
-            "ValueCurrent": 13.0,
+            "ValueIncrement": 5.0,
+            "ValueCurrent": 15.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }
@@ -93,9 +90,9 @@
             "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
             "Name": "Period",
             "ValueMin": 11.0,
-            "ValueMax": 88.0,
+            "ValueMax": 33.0,
             "ValueIncrement": 11.0,
-            "ValueCurrent": 44.0,
+            "ValueCurrent": 22.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }

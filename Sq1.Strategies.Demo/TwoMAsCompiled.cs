@@ -18,11 +18,11 @@ namespace Sq1.Strategies.Demo {
 
 		public TwoMAsCompiled() {
 			MAfast = new IndicatorMovingAverageSimple();
-			MAfast.ParamPeriod = new IndicatorParameter("Period", 55, 11, 88, 11);
+			MAfast.ParamPeriod = new IndicatorParameter("Period", 22, 11, 33, 11);
 			MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
 
 			MAslow = new IndicatorMovingAverageSimple();
-			MAslow.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 1);
+			MAslow.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 5);
 			MAslow.LineColor = System.Drawing.Color.LightCoral;
 		}
 		
@@ -99,7 +99,7 @@ namespace Sq1.Strategies.Demo {
 			// one line is drawn across one day regardless of timeframe: just the date is enough to "address" the line 
 			string lineId = barFirstForCurrentTradingDay.DateTimeOpen.ToString("yyyy-MMM-dd");
 			//Debugger.Break();
-			base.Executor.ChartShadow.LineDrawModify(lineId,
+			base.Executor.ChartConditionalLineDrawModify(lineId,
 				barFirstForCurrentTradingDay.ParentBarsIndex, dayOpenedAtPrice,
 				barStaticFormed.ParentBarsIndex, dayOpenedAtPrice,
 				Color.Blue, 1);
@@ -108,18 +108,18 @@ namespace Sq1.Strategies.Demo {
 			double upperLimit = dayOpenedAtPrice + dayOpenedAtPrice * 0.005;	//143.200 + 716 = 143.916 - most likely visible on the chart, not beoynd
 			double lowerLimit = dayOpenedAtPrice - dayOpenedAtPrice * 0.005;
 			
-			base.Executor.ChartShadow.LineDrawModify(lineId + "_red",
+			base.Executor.ChartConditionalLineDrawModify(lineId + "_red",
 				barFirstForCurrentTradingDay.ParentBarsIndex, upperLimit,
 				barStaticFormed.ParentBarsIndex, upperLimit,
 				Color.Red, 2);
-			base.Executor.ChartShadow.LineDrawModify(lineId + "_green",
+			base.Executor.ChartConditionalLineDrawModify(lineId + "_green",
 				barFirstForCurrentTradingDay.ParentBarsIndex, lowerLimit,
 				barStaticFormed.ParentBarsIndex, lowerLimit,
 				Color.Green, 2);
 			
 			
 			if (barStaticFormed == barFirstForCurrentTradingDay) {
-				OnChartObjectOperationStatus status = base.Executor.ChartShadow.LineDrawModify(lineId + "_brown",
+				OnChartObjectOperationStatus status = base.Executor.ChartConditionalLineDrawModify(lineId + "_brown",
 					barStaticFormed.ParentBarsIndex, lowerLimit,
 					barStaticFormed.ParentBarsIndex, upperLimit,
 					Color.Brown, 3);
@@ -129,7 +129,7 @@ namespace Sq1.Strategies.Demo {
 			}
 
 			if (base.Bars.Count == base.Executor.Backtester.BarsOriginal.Count) {
-				base.Executor.ChartShadow.LineDrawModify("acrossAllBars",
+				base.Executor.ChartConditionalLineDrawModify("acrossAllBars",
 					0, base.Bars.BarStaticFirstNullUnsafe.Open,
 					base.Bars.BarStaticLastNullUnsafe.ParentBarsIndex, base.Bars.BarStaticLastNullUnsafe.Open,
 					Color.Goldenrod, 1);
@@ -137,7 +137,7 @@ namespace Sq1.Strategies.Demo {
 		}
 		void testBarBackground(Bar barStaticFormed) {
 			Color bg = (barStaticFormed.Open > barStaticFormed.Close) ? Color.LightGreen : Color.LightSalmon;
-			base.Executor.ChartShadow.BarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
+			base.Executor.ChartConditionalBarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
 		}
 		void testBarAnnotations(Bar barStaticFormed) {
 			int barIndex = barStaticFormed.ParentBarsIndex;
@@ -146,7 +146,7 @@ namespace Sq1.Strategies.Demo {
 			labelText += barStaticFormed.BarIndexExpectedSinceTodayMarketOpen + ":" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
 			Font font = new Font("Arial", 6);
 			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
-			base.Executor.ChartShadow.BarAnnotationDrawModify(
+			base.Executor.ChartConditionalBarAnnotationDrawModify(
 				barIndex, "ann" + barIndex, labelText, font, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
 		}
 	}

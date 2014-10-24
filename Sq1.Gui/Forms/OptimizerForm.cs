@@ -25,7 +25,7 @@ namespace Sq1.Gui.Forms {
 		internal void Initialize(ChartFormManager chartFormManager) {
 			this.chartFormManager = chartFormManager;
 			this.Text = "Optimizer :: " + this.chartFormManager.Strategy.Name;
-			this.optimizerControl.Initialize(this.chartFormManager.Executor);
+			this.optimizerControl.Initialize(this.chartFormManager.Executor.Optimizer);
 		}
 	}
 }

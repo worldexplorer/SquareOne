@@ -6,8 +6,9 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
+using System.Diagnostics;
 
-namespace Sq1.Widgets.Optimizer {
+namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl {
 		Color colorBackgroundRed;
 		Color colorBackgroundGreen;
@@ -92,13 +93,19 @@ namespace Sq1.Widgets.Optimizer {
 			};
 			
 			foreach (OLVColumn colDynParam in this.columnsDynParam) {
+				string colDynParamNameStatic = colDynParam.Name;
 				colDynParam.AspectGetter = delegate(object o) {
-					SystemPerformance systemPerformance = o as SystemPerformance;
-					if (systemPerformance == null) return colDynParam.Name + ".AspectGetter: systemPerformance=null";
-					if (systemPerformance.ScriptAndIndicatorParameterClonesByName.ContainsKey(colDynParam.Name) == false) {
-						return colDynParam.Name + ".AspectGetter: !systemPerformance.ScriptAndIndicatorParametersByName[" + colDynParam.Name + "]";
+					string colDynParamNameStatic2 = colDynParam.Name;
+					if (colDynParamNameStatic2 != colDynParamNameStatic) {
+						//Debugger.Break();	// THIS_IS_WHY_I_HATE_LAMBDAS
 					}
-					IndicatorParameter param = systemPerformance.ScriptAndIndicatorParameterClonesByName[colDynParam.Name];
+
+					SystemPerformance systemPerformance = o as SystemPerformance;
+					if (systemPerformance == null) return colDynParamNameStatic + ".AspectGetter: systemPerformance=null";
+					if (systemPerformance.ScriptAndIndicatorParameterClonesByName.ContainsKey(colDynParamNameStatic) == false) {
+						return colDynParamNameStatic + ".AspectGetter: !systemPerformance.ScriptAndIndicatorParametersByName[" + colDynParamNameStatic + "]";
+					}
+					IndicatorParameter param = systemPerformance.ScriptAndIndicatorParameterClonesByName[colDynParamNameStatic];
 					return param.ValueCurrent.ToString();
 				};
 			}

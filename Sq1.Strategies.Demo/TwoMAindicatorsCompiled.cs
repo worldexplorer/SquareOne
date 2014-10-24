@@ -29,7 +29,7 @@ namespace Sq1.Strategies.Demo {
 		}
 		void testBarBackground(Bar barStaticFormed) {
 			Color bg = (barStaticFormed.Open > barStaticFormed.Close) ? Color.LightGreen : Color.LightSalmon;
-			base.Executor.ChartShadow.BarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
+			base.Executor.ChartConditionalBarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
 		}
 		void testBarAnnotationsMarkBarsShiftedDueToMissedBar(Bar barStaticFormed) {
 			if (barStaticFormed.BarIndexAfterMidnightReceived == barStaticFormed.BarIndexExpectedSinceTodayMarketOpen) return; 
@@ -42,21 +42,21 @@ namespace Sq1.Strategies.Demo {
 			stickToHorizontalEdgesOfChart = Int32.MaxValue;
 			
 			//string labelTime = barStaticFormed.DateTimeOpen.ToString("HH:mm");
-			//base.Executor.ChartShadow.BarAnnotationDrawModify(
+			//base.Executor.ChartConditionalBarAnnotationDrawModify(
 			//	barIndex, "ann1" + barIndex, labelTime, font, Color.Black, Color.Empty, evenAboveOddBelow);
 
 			string labelReceived = "#" + barStaticFormed.BarIndexAfterMidnightReceived;
-			base.Executor.ChartShadow.BarAnnotationDrawModify(
+			base.Executor.ChartConditionalBarAnnotationDrawModify(
 				barIndex, "annReceived" + barIndex, labelReceived, font,
 				Color.Black, Color.Empty, evenAboveOddBelow, stickToHorizontalEdgesOfChart);
 			
 			string labelExpAfterOpen = "ao" + barStaticFormed.BarIndexExpectedSinceTodayMarketOpen;
-			base.Executor.ChartShadow.BarAnnotationDrawModify(
+			base.Executor.ChartConditionalBarAnnotationDrawModify(
 				barIndex, "annAfterOpen" + barIndex, labelExpAfterOpen,
 				font, Color.Black, Color.Empty, evenAboveOddBelow, stickToHorizontalEdgesOfChart);
 			
 			string labelExpBeforeClose = "bc" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
-			base.Executor.ChartShadow.BarAnnotationDrawModify(
+			base.Executor.ChartConditionalBarAnnotationDrawModify(
 				barIndex, "annBeforeClose" + barIndex, labelExpBeforeClose,
 				font, Color.Black, Color.Empty, evenAboveOddBelow, stickToHorizontalEdgesOfChart);
 		}

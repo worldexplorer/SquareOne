@@ -42,7 +42,7 @@ namespace Sq1.Core.StrategyBase {
 			this.SlicesShortAndLong	= new SystemPerformanceSlice(this, PositionLongShort.Unknown,	"StatsForShortAndLongPositions");
 			this.SliceBuyHold		= new SystemPerformanceSlice(this, PositionLongShort.Unknown,	"StatsForBuyHold");
 			
-			ScriptAndIndicatorParameterClonesByName = new SortedDictionary<string, IndicatorParameter>();
+			//ScriptAndIndicatorParameterClonesByName = new SortedDictionary<string, IndicatorParameter>();
 		}
 		public void Initialize() {
 			if (this.Executor.Bars == null) {
@@ -114,12 +114,14 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.ScriptAndIndicatorParameterClonesByName.Clear();
+			//WRONG this.ScriptAndIndicatorParameterClonesByName.Clear();
+			this.ScriptAndIndicatorParameterClonesByName = new SortedDictionary<string, IndicatorParameter>();
 			foreach (ScriptParameter sp in this.Executor.Strategy.Script.ParametersById.Values) {
-				this.ScriptAndIndicatorParameterClonesByName.Add(sp.Name, sp.Clone);
+				this.ScriptAndIndicatorParameterClonesByName.Add(sp.Name, sp.Clone());
 			}
+			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
 			foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
-				this.ScriptAndIndicatorParameterClonesByName.Add(ip.FullName, ip.Clone);
+				this.ScriptAndIndicatorParameterClonesByName.Add(ip.FullName, ip.Clone());
 			}
 		}
 		// Optimizer takes Clone with Slices ready to use; same (parent) SystemPerformance.Initialize() overwrites with new Slices, while clone keeps pointers to old Slices => Optimizer is happy   

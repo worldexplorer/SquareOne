@@ -88,6 +88,8 @@ namespace Sq1.Core.Indicators {
 			}
 		}
 		// USED_TO_SEPARATE_LONG_LIVING_SCRIPT_INDICATOR_PARAMETER_INSTANCE__FROM_SWITCHING_CONTEXT_INDICATOR_SETTINGS
-		public IndicatorParameter Clone { get { return (IndicatorParameter)base.MemberwiseClone(); } }
+		public IndicatorParameter Clone() {
+			return (IndicatorParameter)base.MemberwiseClone();
+		}
 	}
 }

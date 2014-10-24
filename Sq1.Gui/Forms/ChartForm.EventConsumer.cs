@@ -24,6 +24,9 @@ namespace Sq1.Gui.Forms {
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
 		}
+		void ctxBacktest_Opening(object sender, CancelEventArgs e) {
+			this.MniShowOptimizer.Checked = this.ChartFormManager.OptimizerIsOnSurface;
+		}
 
 		void MniShowSourceCodeEditor_Click(object sender, System.EventArgs e) {
 			if (this.MniShowSourceCodeEditor.Checked) {
