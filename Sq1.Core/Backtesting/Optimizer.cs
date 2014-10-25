@@ -32,17 +32,21 @@ namespace Sq1.Core.Backtesting {
 			} }
 		
 		public int ScriptParametersTotalNr { get {
-				int ret = 1;
+				int ret = 0;
 				foreach (ScriptParameter sp in executor.Strategy.Script.ParametersById.Values) {
+					if (sp.NumberOfRuns == 0) continue;
+					if (ret == 0) ret = 1;
 					ret *= sp.NumberOfRuns;
 				}
 				return ret;
 			} }
 			
 		public int IndicatorParameterTotalNr { get {
-				int ret = 1;
+				int ret = 0;
 				//foreach (Indicator i in executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {	//looks empty on Deserialization
 				foreach (IndicatorParameter ip in executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+					if (ip.NumberOfRuns == 0) continue;
+					if (ret == 0) ret = 1;
 					ret *= ip.NumberOfRuns;
 				}
 				return ret;
@@ -52,10 +56,14 @@ namespace Sq1.Core.Backtesting {
 		public int BacktestsRemaining { get { return this.BacktestsTotal - this.BacktestsCompleted; } }
 		public int BacktestsScheduled;
 		public int BacktestsCompleted;
+		public float BacktestsSecondsElapsed;
 
 		bool inNewThread;
-		public int CpuCoresToUse;
+		public int CpuCoresAvailable;
+		public int ThreadsToUse;
 		public bool InitializedProperly;
+		
+		public Stopwatch stopWatch;
 		
 		public Optimizer(ScriptExecutor executor) {
 			this.executor = executor;
@@ -64,7 +72,9 @@ namespace Sq1.Core.Backtesting {
 			backtestsLock = new object();
 			executorPoolLock = new object();
 			inNewThread = true;
-			CpuCoresToUse = inNewThread ? 4 : 1;
+			CpuCoresAvailable = inNewThread ? Environment.ProcessorCount : 1;
+			ThreadsToUse = CpuCoresAvailable;
+			stopWatch = new Stopwatch();
 		}
 		
 		public SortedDictionary<int, ScriptParameter> ParametersById;
@@ -108,7 +118,18 @@ namespace Sq1.Core.Backtesting {
 			}
 			this.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders = this.executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
 			this.InitializedProperly = true;
-			this.BacktestsTotal = this.ScriptParametersTotalNr * this.IndicatorParameterTotalNr;
+
+			int scriptParametersTotalNr = this.ScriptParametersTotalNr;
+			int indicatorParameterTotalNr = this.IndicatorParameterTotalNr;
+			if (scriptParametersTotalNr == 0) {
+				this.BacktestsTotal = indicatorParameterTotalNr;
+			}
+			if (indicatorParameterTotalNr == 0) {
+				this.BacktestsTotal = scriptParametersTotalNr;
+			}
+			if (scriptParametersTotalNr > 0 && indicatorParameterTotalNr > 0) {
+				this.BacktestsTotal = scriptParametersTotalNr * indicatorParameterTotalNr;
+			}
 		}
 		
 		object backtestsLock;
@@ -139,7 +160,7 @@ namespace Sq1.Core.Backtesting {
 				this.IsRunningNow = true;
 				//this.BacktestsRemaining = this.BacktestsTotal;
 				this.executorPool.Clear();
-				for(int i=0; i<this.CpuCoresToUse; i++) {
+				for(int i=0; i<this.ThreadsToUse; i++) {
 					//this.BacktestsRemaining--;
 					if (this.BacktestsScheduled >= this.BacktestsTotal) break;
 					string ctxName = OPTIMIZATION_CONTEXT_PREFIX + " " + (this.BacktestsScheduled + 1) + "/" + this.BacktestsTotal;
@@ -153,10 +174,11 @@ namespace Sq1.Core.Backtesting {
 					if (this.inNewThread == false) break;
 				}
 			}
+			stopWatch.Start();
 			return this.BacktestsScheduled;
 		}
 		void afterBacktesterComplete(ScriptExecutor executorCompletePooled) {
-			//#if DEBUG
+			#if DEBUG
 			string dbg = "complete: " + executorCompletePooled.Strategy.ScriptContextCurrent.Name + " "
 				+ executorCompletePooled.Strategy.Script.IndicatorParametersAsString;
 			string dbg2 = "";
@@ -165,7 +187,7 @@ namespace Sq1.Core.Backtesting {
 				dbg2 += iName + "[" + ip.ValueCurrent + "]";
 			}
 			Assembler.PopupException(dbg + dbg2, null, false);
-			//#endif
+			#endif
 
 			if (executorCompletePooled == null) {
 				Debugger.Break();
@@ -186,9 +208,9 @@ namespace Sq1.Core.Backtesting {
 					//}
 					//lock(this.executorPoolLock) {	// helps also with atomic BacktestsRemaining operations
 					//this.BacktestsRemaining--;
-					int moreToAdd = this.CpuCoresToUse - this.executorPool.Count;
+					int moreToAdd = this.ThreadsToUse - this.executorPool.Count;
 					if (moreToAdd > 0) {
-						for (int i = moreToAdd; i <= this.CpuCoresToUse; i++) {
+						for (int i = moreToAdd; i <= this.ThreadsToUse; i++) {
 							if (this.BacktestsScheduled >= this.BacktestsTotal) break;
 							if (this.AbortedDontScheduleNewBacktests) break;
 							string ctxName1 = OPTIMIZATION_CONTEXT_PREFIX + " " + (this.BacktestsScheduled + 1 + i) + "/" + this.BacktestsTotal;
@@ -233,6 +255,7 @@ namespace Sq1.Core.Backtesting {
 				return;
 			}
 			try {
+				this.BacktestsSecondsElapsed = (float) Math.Round(stopWatch.ElapsedMilliseconds / 1000d, 1);
 				this.OnBacktestComplete(this, new SystemPerformanceEventArgs(clone));
 			} catch (Exception ex) {
 				string msg = "OPTIMIZER_CONTROL_THREW_ON_BACKTEST_COMPLETE";
@@ -246,6 +269,8 @@ namespace Sq1.Core.Backtesting {
 				return;
 			}
 			try {
+				stopWatch.Stop();
+				this.BacktestsSecondsElapsed = (float) Math.Round(stopWatch.ElapsedMilliseconds / 1000d, 1);
 				this.OnOptimizationComplete(this, EventArgs.Empty);
 			} catch (Exception ex) {
 				string msg = "OPTIMIZER_CONTROL_THREW_ON_OPTIMIZATION_COMPLETE";

@@ -72,6 +72,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormFactories\OptimizerFormFactory.cs" />
     <Compile Include="Forms\ChartForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -230,6 +231,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
+      <Project>{82541DA4-EE4A-4078-BF05-63B48A8AA51E}</Project>
+      <Name>CsvHelper35</Name>
+    </ProjectReference>
     <ProjectReference Include="..\dockpanelsuite290-master\WinFormsUI\WinFormsUI.csproj">
       <Project>{E580A3F0-6BED-4649-A159-58998CC077F3}</Project>
       <Name>WinFormsUI</Name>

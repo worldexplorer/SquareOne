@@ -39,6 +39,9 @@ namespace Sq1.Gui.Forms {
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm)) {
 					if (this.Strategy == null) return null;
 					if (this.Strategy.ActivatedFromDll == true) return null;
+						#if DEBUG
+						//Debugger.Break();
+						#endif
 					if (this.scriptEditorFormFactory == null) {
 						this.scriptEditorFormFactory = new ScriptEditorFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
 					}
@@ -66,16 +69,22 @@ namespace Sq1.Gui.Forms {
 		ScriptEditorFormFactory scriptEditorFormFactory;
 		
 		
+		OptimizerFormFactory optimizerFormFactory;
 		public OptimizerForm OptimizerForm;
 		public OptimizerForm OptimizerFormConditionalInstance { get {
 				if (DockContentImproved.IsNullOrDisposed(this.OptimizerForm)) {
 					if (this.Strategy == null) return null;
-					this.OptimizerForm = new OptimizerForm(this);
-					this.OptimizerForm.Disposed += delegate(object sender, EventArgs e) { 
-						// both at FormCloseByX and MainForm.onClose()
-						this.ChartForm.MniShowOptimizer.Checked = false;
-						this.OptimizerForm = null;
-					};
+					if (this.optimizerFormFactory == null) {
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						this.optimizerFormFactory = new OptimizerFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+					}
+
+					this.optimizerFormFactory.CreateOptimizerFormSubscribePushToManager(this);
+					if (this.OptimizerForm == null) {
+						throw new Exception("OptimizerFormFactory.CreateAndSubscribe() failed to create OptimizerForm in ChartFormsManager");
+					}
 				}
 				return this.OptimizerForm;
 			} }
@@ -213,6 +222,7 @@ namespace Sq1.Gui.Forms {
 				//this.ChartForm.ChartStreamingConsumer.Initialize(this);
 				
 				this.scriptEditorFormFactory = new ScriptEditorFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+				this.optimizerFormFactory = new OptimizerFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
 				this.ChartForm.CtxReporters.Items.AddRange(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
 				
 				this.EventManager = new ChartFormEventManager(this);

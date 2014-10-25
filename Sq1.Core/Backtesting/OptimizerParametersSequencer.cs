@@ -17,11 +17,14 @@ namespace Sq1.Core.Backtesting {
 		public OptimizerParametersSequencer(ContextScript contextScript) {
 			getNextLock = new object();
 			ContextScriptIterated = contextScript.CloneResetAllToMinForOptimizer();
-			paramsMerged = new List<IndicatorParameter>();
-			paramsMerged.AddRange(this.ContextScriptIterated.ScriptParametersById.Values);
-			foreach (List<IndicatorParameter> iParams in this.ContextScriptIterated.IndicatorParametersByName.Values) {
-				paramsMerged.AddRange(iParams);
-			}
+			//v1
+			//paramsMerged = new List<IndicatorParameter>();
+			//paramsMerged.AddRange(this.ContextScriptIterated.ScriptParametersById.Values);
+			//foreach (List<IndicatorParameter> iParams in this.ContextScriptIterated.IndicatorParametersByName.Values) {
+			//    paramsMerged.AddRange(iParams);
+			//}
+			//v2 moved to ContextScript.ParametersMerged; Sq1.Widgets.SlidersAutoGrowControl.MenuProvider.EventConsumer.DumpScriptIndicatorParametersToMenuItems() uses the same mechanism
+			paramsMerged = ContextScriptIterated.ParametersMerged;
 			slowIndex = 0; 
 			fastIndex = 0;
 			log = "";
@@ -30,7 +33,7 @@ namespace Sq1.Core.Backtesting {
 			lock (this.getNextLock) {
 				ContextScript ret = new ContextScript(ctxName);
 				this.logDump(ctxName);
-				ret.AbsorbFrom(this.ContextScriptIterated, true);
+				ret.AbsorbFrom(this.ContextScriptIterated);
 				return ret;
 			}
 		}
@@ -39,7 +42,7 @@ namespace Sq1.Core.Backtesting {
 				ContextScript ret = new ContextScript(ctxName);
 				this.nextMerged();
 				this.logDump(ctxName);
-				ret.AbsorbFrom(this.ContextScriptIterated, true);
+				ret.AbsorbFrom(this.ContextScriptIterated);
 				return ret;
 			}
 		}

@@ -145,6 +145,7 @@
     <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="Charting\ContextChart.cs" />
     <Compile Include="StrategyBase\ContextScript.cs" />
+    <Compile Include="StrategyBase\ContextScriptEventArgs.cs" />
     <Compile Include="StrategyBase\NotOnChartBarsHelper.cs" />
     <Compile Include="StrategyBase\NotOnChartBarsKey.cs" />
     <Compile Include="StrategyBase\Reporter.cs">

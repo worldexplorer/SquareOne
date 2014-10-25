@@ -28,11 +28,11 @@ namespace Sq1.Widgets.SteppingSlider {
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.ctxOperations = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.mniParameterBagLoad = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniltbParameterBagRenameTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniltbParameterBagDuplicateTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniParameterBagDelete = new System.Windows.Forms.ToolStripMenuItem();
-			this.ctxParameterBags = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.mniParameterBagLoad = new System.Windows.Forms.ToolStripMenuItem();
+			this.ctxScriptContexts = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniParameterBagsNotHighlighted = new Sq1.Widgets.LabeledTextBox.MenuItemLabel();
 			this.mniParameterBag_test1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniParameterBag_test2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,26 +42,20 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowBorder = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniAllParamsShowNumeric = new System.Windows.Forms.ToolStripMenuItem();
 			this.templateSliderControl = new Sq1.Widgets.SteppingSlider.SliderComboControl();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.ctxOperations.SuspendLayout();
-			this.ctxParameterBags.SuspendLayout();
+			this.ctxScriptContexts.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ctxOperations
 			// 
 			this.ctxOperations.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									//FIRST_LEVEL_MNI_HAS_VISUAL_TICK this.mniParameterBagLoad,
-									this.mniltbParameterBagRenameTo,
-									this.mniltbParameterBagDuplicateTo,
-									this.mniParameterBagDelete});
-			this.ctxOperations.Name = "contextMenuStrip1";
-			this.ctxOperations.Size = new System.Drawing.Size(241, 96);
-			// 
-			// mniParameterBagLoad
-			// 
-			this.mniParameterBagLoad.Name = "mniParameterBagLoad";
-			this.mniParameterBagLoad.Size = new System.Drawing.Size(240, 22);
-			this.mniParameterBagLoad.Text = "Load [REPLACE_WITH_NAME]";
-			this.mniParameterBagLoad.Click += new System.EventHandler(this.mniScriptContextLoad_Click);
+            this.toolStripSeparator1,
+            this.mniltbParameterBagRenameTo,
+            this.mniltbParameterBagDuplicateTo,
+            this.mniParameterBagDelete});
+			this.ctxOperations.Name = "ctxOperations";
+			this.ctxOperations.Size = new System.Drawing.Size(241, 102);
 			// 
 			// mniltbParameterBagRenameTo
 			// 
@@ -70,7 +64,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbParameterBagRenameTo.InputFieldValue = "";
 			this.mniltbParameterBagRenameTo.InputFieldWidth = 85;
 			this.mniltbParameterBagRenameTo.Name = "mniltbParameterBagRenameTo";
-			this.mniltbParameterBagRenameTo.Size = new System.Drawing.Size(165, 21);
+			this.mniltbParameterBagRenameTo.Size = new System.Drawing.Size(168, 21);
 			this.mniltbParameterBagRenameTo.Text = "Rename To:";
 			this.mniltbParameterBagRenameTo.TextRed = false;
 			this.mniltbParameterBagRenameTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextRenameTo_UserTyped);
@@ -82,7 +76,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbParameterBagDuplicateTo.InputFieldValue = "";
 			this.mniltbParameterBagDuplicateTo.InputFieldWidth = 85;
 			this.mniltbParameterBagDuplicateTo.Name = "mniltbParameterBagDuplicateTo";
-			this.mniltbParameterBagDuplicateTo.Size = new System.Drawing.Size(165, 21);
+			this.mniltbParameterBagDuplicateTo.Size = new System.Drawing.Size(168, 21);
 			this.mniltbParameterBagDuplicateTo.Text = "Duplicate To:";
 			this.mniltbParameterBagDuplicateTo.TextRed = false;
 			this.mniltbParameterBagDuplicateTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextDuplicateTo_UserTyped);
@@ -94,35 +88,42 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniParameterBagDelete.Text = "Delete [REPLACE_WITH_NAME]";
 			this.mniParameterBagDelete.Click += new System.EventHandler(this.mniScriptContextDelete_Click);
 			// 
-			// ctxParameterBags
+			// mniParameterBagLoad
 			// 
-			this.ctxParameterBags.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.mniParameterBagsNotHighlighted,
-									this.mniParameterBag_test1,
-									this.mniParameterBag_test2,
-									this.mniltbParametersBagNewWithDefaults,
-									this.toolStripSeparator2,
-									this.mniAllParamsResetToScriptDefaults,
-									this.mniAllParamsShowBorder,
-									this.mniAllParamsShowNumeric});
-			this.ctxParameterBags.Name = "ctxParameterSets";
-			this.ctxParameterBags.Size = new System.Drawing.Size(226, 140);
-			this.ctxParameterBags.Opening += new System.ComponentModel.CancelEventHandler(this.ctxParameterBags_Opening);
+			this.mniParameterBagLoad.Name = "mniParameterBagLoad";
+			this.mniParameterBagLoad.Size = new System.Drawing.Size(240, 22);
+			this.mniParameterBagLoad.Text = "Load [REPLACE_WITH_NAME]";
+			this.mniParameterBagLoad.Click += new System.EventHandler(this.mniScriptContextLoad_Click);
+			// 
+			// ctxScriptContexts
+			// 
+			this.ctxScriptContexts.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mniParameterBagsNotHighlighted,
+            this.mniParameterBag_test1,
+            this.mniParameterBag_test2,
+            this.mniltbParametersBagNewWithDefaults,
+            this.toolStripSeparator2,
+            this.mniAllParamsResetToScriptDefaults,
+            this.mniAllParamsShowBorder,
+            this.mniAllParamsShowNumeric});
+			this.ctxScriptContexts.Name = "ctxScriptContexts";
+			this.ctxScriptContexts.Size = new System.Drawing.Size(274, 162);
+			this.ctxScriptContexts.Opening += new System.ComponentModel.CancelEventHandler(this.ctxScriptContexts_Opening);
 			// 
 			// mniParameterBagsNotHighlighted
 			// 
 			this.mniParameterBagsNotHighlighted.BackColor = System.Drawing.Color.Transparent;
 			this.mniParameterBagsNotHighlighted.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.mniParameterBagsNotHighlighted.Name = "mniParameterBagsNotHighlighted";
-			this.mniParameterBagsNotHighlighted.Size = new System.Drawing.Size(95, 15);
-			this.mniParameterBagsNotHighlighted.Text = "Parameter Bags";
+			this.mniParameterBagsNotHighlighted.Size = new System.Drawing.Size(100, 23);
+			this.mniParameterBagsNotHighlighted.Text = "Script Contexts";
 			// 
 			// mniParameterBag_test1
 			// 
 			this.mniParameterBag_test1.CheckOnClick = true;
 			this.mniParameterBag_test1.Enabled = false;
 			this.mniParameterBag_test1.Name = "mniParameterBag_test1";
-			this.mniParameterBag_test1.Size = new System.Drawing.Size(225, 22);
+			this.mniParameterBag_test1.Size = new System.Drawing.Size(273, 22);
 			this.mniParameterBag_test1.Text = "RIZ-15min-100Bars-1share";
 			// 
 			// mniParameterBag_test2
@@ -130,7 +131,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniParameterBag_test2.CheckOnClick = true;
 			this.mniParameterBag_test2.Enabled = false;
 			this.mniParameterBag_test2.Name = "mniParameterBag_test2";
-			this.mniParameterBag_test2.Size = new System.Drawing.Size(225, 22);
+			this.mniParameterBag_test2.Size = new System.Drawing.Size(273, 22);
 			this.mniParameterBag_test2.Text = "RIM-5min-All-$5000";
 			// 
 			// mniltbParametersBagNewWithDefaults
@@ -140,7 +141,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbParametersBagNewWithDefaults.InputFieldValue = "";
 			this.mniltbParametersBagNewWithDefaults.InputFieldWidth = 85;
 			this.mniltbParametersBagNewWithDefaults.Name = "mniltbParametersBagNewWithDefaults";
-			this.mniltbParametersBagNewWithDefaults.Size = new System.Drawing.Size(165, 21);
+			this.mniltbParametersBagNewWithDefaults.Size = new System.Drawing.Size(168, 21);
 			this.mniltbParametersBagNewWithDefaults.Text = "New clean";
 			this.mniltbParametersBagNewWithDefaults.TextRed = false;
 			this.mniltbParametersBagNewWithDefaults.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextNewWithDefaults_UserTyped);
@@ -148,35 +149,35 @@ namespace Sq1.Widgets.SteppingSlider {
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(222, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(270, 6);
 			// 
 			// mniAllParamsResetToScriptDefaults
 			// 
 			this.mniAllParamsResetToScriptDefaults.Name = "mniAllParamsResetToScriptDefaults";
-			this.mniAllParamsResetToScriptDefaults.Size = new System.Drawing.Size(225, 22);
+			this.mniAllParamsResetToScriptDefaults.Size = new System.Drawing.Size(273, 22);
 			this.mniAllParamsResetToScriptDefaults.Text = "All Params -> Reset To Script Defaults";
-			this.mniAllParamsResetToScriptDefaults.Click += new EventHandler(mniAllParamsResetToScriptDefaults_Click);
+			this.mniAllParamsResetToScriptDefaults.Click += new System.EventHandler(this.mniAllParamsResetToScriptDefaults_Click);
 			// 
 			// mniAllParamsShowBorder
 			// 
-			this.mniAllParamsShowBorder.Name = "mniAllParamsShowBorder";
-			this.mniAllParamsShowBorder.Size = new System.Drawing.Size(225, 22);
-			this.mniAllParamsShowBorder.Text = "All Params -> ShowBorder";
 			this.mniAllParamsShowBorder.CheckOnClick = true;
-			this.mniAllParamsShowBorder.Click += new EventHandler(mniAllParamsShowBorder_Click);
+			this.mniAllParamsShowBorder.Name = "mniAllParamsShowBorder";
+			this.mniAllParamsShowBorder.Size = new System.Drawing.Size(273, 22);
+			this.mniAllParamsShowBorder.Text = "All Params -> ShowBorder";
+			this.mniAllParamsShowBorder.Click += new System.EventHandler(this.mniAllParamsShowBorder_Click);
 			// 
 			// mniAllParamsShowNumeric
 			// 
-			this.mniAllParamsShowNumeric.Name = "mniAllParamsShowNumeric";
-			this.mniAllParamsShowNumeric.Size = new System.Drawing.Size(225, 22);
-			this.mniAllParamsShowNumeric.Text = "All Params -> ShowNumeric";
 			this.mniAllParamsShowNumeric.CheckOnClick = true;
-			this.mniAllParamsShowNumeric.Click += new EventHandler(mniAllParamsShowNumeric_Click);
+			this.mniAllParamsShowNumeric.Name = "mniAllParamsShowNumeric";
+			this.mniAllParamsShowNumeric.Size = new System.Drawing.Size(273, 22);
+			this.mniAllParamsShowNumeric.Text = "All Params -> ShowNumeric";
+			this.mniAllParamsShowNumeric.Click += new System.EventHandler(this.mniAllParamsShowNumeric_Click);
 			// 
 			// templateSliderControl
 			// 
 			this.templateSliderControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.templateSliderControl.ColorBgMouseOverEnabled = System.Drawing.Color.YellowGreen;
 			this.templateSliderControl.ColorBgValueCurrent = System.Drawing.Color.LightSteelBlue;
 			this.templateSliderControl.ColorFgParameterLabel = System.Drawing.Color.White;
@@ -193,39 +194,45 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.templateSliderControl.Size = new System.Drawing.Size(245, 17);
 			this.templateSliderControl.TabIndex = 0;
 			this.templateSliderControl.ValueCurrent = new decimal(new int[] {
-									200,
-									0,
-									0,
-									0});
-			this.templateSliderControl.ValueMax = new decimal(new int[] {
-									500,
-									0,
-									0,
-									0});
-			this.templateSliderControl.ValueMin = new decimal(new int[] {
-									10,
-									0,
-									0,
-									0});
+            200,
+            0,
+            0,
+            0});
 			this.templateSliderControl.ValueIncrement = new decimal(new int[] {
-									100,
-									0,
-									0,
-									0});
+            100,
+            0,
+            0,
+            0});
+			this.templateSliderControl.ValueMax = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+			this.templateSliderControl.ValueMin = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
 			// 
-			// SlidersAutoGrow
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(237, 6);
+			// 
+			// SlidersAutoGrowControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.SystemColors.Control;
-			this.ContextMenuStrip = this.ctxParameterBags;
+			this.ContextMenuStrip = this.ctxScriptContexts;
 			this.Controls.Add(this.templateSliderControl);
-			this.Name = "SlidersAutoGrow";
+			this.Name = "SlidersAutoGrowControl";
 			this.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.Size = new System.Drawing.Size(245, 61);
 			this.ctxOperations.ResumeLayout(false);
-			this.ctxParameterBags.ResumeLayout(false);
+			this.ctxScriptContexts.ResumeLayout(false);
 			this.ResumeLayout(false);
+
 		}
 
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbParameterBagDuplicateTo;
@@ -237,7 +244,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		private System.Windows.Forms.ContextMenuStrip ctxOperations;
 		private System.Windows.Forms.ToolStripMenuItem mniParameterBagLoad;
 		private System.Windows.Forms.ToolStripMenuItem mniParameterBagDelete;
-		private System.Windows.Forms.ContextMenuStrip ctxParameterBags;
+		private System.Windows.Forms.ContextMenuStrip ctxScriptContexts;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbParameterBagRenameTo;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbParametersBagNewWithDefaults;
 		private System.Windows.Forms.ToolStripMenuItem mniParameterBag_test1;
@@ -246,6 +253,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem mniAllParamsShowBorder;
 		private System.Windows.Forms.ToolStripMenuItem mniAllParamsShowNumeric;
+		private ToolStripSeparator toolStripSeparator1;
 
 	}
 }

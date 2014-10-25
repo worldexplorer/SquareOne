@@ -9,8 +9,8 @@ using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public partial class SlidersAutoGrowControl : UserControlDoubleBuffered {
-	//public partial class SlidersAutoGrowControl : UserControl {
+	//public partial class SlidersAutoGrowControl : UserControlDoubleBuffered {
+	public partial class SlidersAutoGrowControl : UserControl {
 		public Strategy Strategy { get; private set; }
 
 		[Browsable(true)]
@@ -181,6 +181,20 @@ namespace Sq1.Widgets.SteppingSlider {
 			ret.ShowNumericUpdownChanged += slider_ShowNumericUpdownChanged;
 			
 			return ret;
+		}
+		public void PopupScriptContextsToConfirmAddedOptimized(string scriptContextNameToExpand = null) {
+			this.ctxScriptContexts_Opening(this, null);
+			//this.ctxParameterBags.Visible = true;
+			this.ctxScriptContexts.Show(this, new System.Drawing.Point(20, 20));
+			if (string.IsNullOrEmpty(scriptContextNameToExpand)) return;
+			foreach (var item in this.ctxScriptContexts.Items) {
+				ToolStripMenuItem mni = item as ToolStripMenuItem;
+				if (mni == null) continue;
+				if (mni.Text != scriptContextNameToExpand) continue;
+				mni.Select();
+				mni.ShowDropDown();
+				break;
+			}
 		}
 	}
 }

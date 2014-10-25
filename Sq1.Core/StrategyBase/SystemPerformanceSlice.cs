@@ -36,29 +36,29 @@ namespace Sq1.Core.StrategyBase {
 
 		public double ProfitFactor { get {
 				if (this.NetLossLosers == 0) return double.PositiveInfinity;
-				return this.NetProfitWinners / Math.Abs(this.NetLossLosers);
+				return Math.Round(this.NetProfitWinners / Math.Abs(this.NetLossLosers), 2);
 			} }
 		public double RecoveryFactor { get {
 				if (this.MaxDrawDown == 0) return double.PositiveInfinity;
-				return Math.Abs(this.NetProfitForClosedPositionsBoth / this.MaxDrawDown);
+				return Math.Round(Math.Abs(this.NetProfitForClosedPositionsBoth / this.MaxDrawDown), 2);
 			} }
 		public double WinRatePct { get {
 				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
-				return 100 * this.PositionsCountWinners / this.PositionsCountBoth;
+				return Math.Round(100 * this.PositionsCountWinners / (double)this.PositionsCountBoth, 2);
 			} }
 		public double LossRatePct { get {
 				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
-				return 100 * this.PositionsCountLosers / this.PositionsCountBoth;
+				return Math.Round(100 * this.PositionsCountLosers / (double)this.PositionsCountBoth, 2);
 			} }
 		public double WinLossRatio  { get {
 				double ret = double.NaN;
 				if (this.PositionsCountLosers == 0) return ret;
 				// I_HATE_IT 296/452 = 0 !!!! if you don't convert divider to (double)
-				return this.PositionsCountWinners / (double) this.PositionsCountLosers;
+				return Math.Round(this.PositionsCountWinners / (double)this.PositionsCountLosers, 2);
 			} }
 		public double PayoffRatio { get {
 			if (this.AvgLossPctLosers == 0) return 0;
-			return Math.Abs(this.AvgProfitPctBoth / this.AvgLossPctLosers);
+			return Math.Round(Math.Abs(this.AvgProfitPctBoth / this.AvgLossPctLosers), 2);
 			} }
 
 		#region AllTrades
@@ -73,15 +73,15 @@ namespace Sq1.Core.StrategyBase {
 		public int PositionsCountBoth;
 		public double AvgProfitBoth { get {
 			if (this.PositionsCountBoth == 0) return 0;
-			return this.NetProfitForClosedPositionsBoth / this.PositionsCountBoth;
+			return this.NetProfitForClosedPositionsBoth / (double)this.PositionsCountBoth;
 		} }
 		public double AvgProfitPctBoth { get {
 			if (this.PositionsCountBoth == 0) return 0;
-			return this.NetProfitPctForClosedPositionsBoth / this.PositionsCountBoth;
+			return this.NetProfitPctForClosedPositionsBoth / (double)this.PositionsCountBoth;
 		} }
 		public double AvgBarsHeldBoth { get {
 			if (this.PositionsCountBoth == 0) return 0;
-			return this.BarsHeldTotalForClosedPositionsBoth / this.PositionsCountBoth;
+			return this.BarsHeldTotalForClosedPositionsBoth / (double)this.PositionsCountBoth;
 		} }
 		#endregion
 

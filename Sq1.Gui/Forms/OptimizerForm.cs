@@ -19,13 +19,13 @@ namespace Sq1.Gui.Forms {
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos
 		// using ":" since "=" leads to an exception in DockPanelPersistor.cs
 		protected override string GetPersistString() {
-			return "Optimizer:" + this.optimizerControl.GetType().FullName + ",ChartSerno:" + this.chartFormManager.DataSnapshot.ChartSerno;
+			return "Optimizer:" + this.OptimizerControl.GetType().FullName + ",ChartSerno:" + this.chartFormManager.DataSnapshot.ChartSerno;
 		}
 
 		internal void Initialize(ChartFormManager chartFormManager) {
 			this.chartFormManager = chartFormManager;
 			this.Text = "Optimizer :: " + this.chartFormManager.Strategy.Name;
-			this.optimizerControl.Initialize(this.chartFormManager.Executor.Optimizer);
+			this.OptimizerControl.Initialize(this.chartFormManager.Executor.Optimizer);
 		}
 	}
 }

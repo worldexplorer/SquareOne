@@ -57,7 +57,7 @@ namespace Sq1.Core.StrategyBase {
 			SlippageTicks = 1;
 			SlippageUnits = 1.0;
 		}
-		public void AbsorbFrom(ContextScript found, bool absorbScriptAndIndicatorParams = false) {
+		public void AbsorbFrom(ContextScript found, bool absorbScriptAndIndicatorParams = true) {
 			if (found == null) return;
 			//KEEP_CLONE_UNDEFINED this.Name = found.Name;
 //			this.Symbol = found.Symbol;
@@ -91,6 +91,11 @@ namespace Sq1.Core.StrategyBase {
 			ret.CloneReferenceTypes();
 			return ret;
 		}
+		public ContextScript CloneGoingFromOptimizerToStrategy(string scriptContextNewName) {
+			ContextScript ret = new ContextScript(scriptContextNewName);
+			ret.AbsorbFrom(this);
+			return ret;
+		}
 		public void CloneReferenceTypes(bool resetAllToMin = true) {
 			Dictionary<int, ScriptParameter> scriptParametersByIdClonedReset = new Dictionary<int, ScriptParameter>();
 			foreach (int id in this.ScriptParametersById.Keys) {
@@ -120,6 +125,26 @@ namespace Sq1.Core.StrategyBase {
 				this.ReportersSnapshots.Add(reporterName, reporterActivated.CreateSnapshotToStoreInScriptContext());
 			}
 			return this.ReportersSnapshots[reporterName];
+		}
+		public string ToStringEssentialsForScriptContextNewName() {
+			string ret = this.Symbol + " " + this.ScaleInterval + " " + this.DataRange;
+			return ret;
+		}
+
+		[JsonIgnore] public List<IndicatorParameter> ParametersMerged { get {
+			// MAKE_SURE_YOU_DONT_KEEP_THE_REFERENCE; use ParametersMergedCloned otherwize
+			List<IndicatorParameter> ret = new List<IndicatorParameter>();
+			ret.AddRange(this.ScriptParametersById.Values);
+			foreach (List<IndicatorParameter> iParams in this.IndicatorParametersByName.Values) {
+				ret.AddRange(iParams);
+			}
+			return ret;
+		} }
+		[JsonIgnore] public List<IndicatorParameter> ParametersMergedCloned { get {
+				List<IndicatorParameter> ret = new List<IndicatorParameter>();
+				foreach (IndicatorParameter iParam in this.ParametersMerged) ret.Add(iParam.Clone());
+				return ret;
+			}
 		}
 	}
 }

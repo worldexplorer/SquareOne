@@ -40,15 +40,15 @@ namespace Sq1.Widgets.Optimization {
 //				this.olvcMaxDrawdown,
 //				this.olvcMaxConsecutiveWinners,
 //				this.olvcMaxConsecutiveLosers});
-			this.olvBacktests.AllColumns.Add(this.olvcNetProfit);
-			this.olvBacktests.AllColumns.Add(this.olvcWinLoss);
-			this.olvBacktests.AllColumns.Add(this.olvcProfitFactor);
-			this.olvBacktests.AllColumns.Add(this.olvcRecoveryFactor);
-			this.olvBacktests.AllColumns.Add(this.olvcTotalTrades);
-			this.olvBacktests.AllColumns.Add(this.olvcAverageProfit);
-			this.olvBacktests.AllColumns.Add(this.olvcMaxDrawdown);
-			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveWinners);
-			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveLosers);
+//			this.olvBacktests.AllColumns.Add(this.olvcNetProfit);
+//			this.olvBacktests.AllColumns.Add(this.olvcWinLoss);
+//			this.olvBacktests.AllColumns.Add(this.olvcProfitFactor);
+//			this.olvBacktests.AllColumns.Add(this.olvcRecoveryFactor);
+//			this.olvBacktests.AllColumns.Add(this.olvcTotalTrades);
+//			this.olvBacktests.AllColumns.Add(this.olvcAverageProfit);
+//			this.olvBacktests.AllColumns.Add(this.olvcMaxDrawdown);
+//			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveWinners);
+//			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveLosers);
 
 			backtests = new List<SystemPerformance>();
 			columnsDynParam = new List<OLVColumn>();
@@ -89,7 +89,7 @@ namespace Sq1.Widgets.Optimization {
 			this.progressBar1.Value = 0;
 			this.progressBar1.Maximum = backtestsTotal;
 			
-			this.nudThreadsToRun.Value = this.optimizer.CpuCoresToUse;
+			this.nudThreadsToRun.Value = this.optimizer.ThreadsToUse;
 			
 			this.btnRunCancel.Enabled = true;
 			this.btnPauseResume.Enabled = false;

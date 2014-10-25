@@ -126,5 +126,9 @@ namespace Sq1.Core.StrategyBase {
 		}
 		// Optimizer takes Clone with Slices ready to use; same (parent) SystemPerformance.Initialize() overwrites with new Slices, while clone keeps pointers to old Slices => Optimizer is happy   
 		public SystemPerformance CloneForOptimizer { get { return (SystemPerformance)base.MemberwiseClone(); } }
+		public string EssentialsForScriptContextNewName { get { return "Net[" + this.SlicesShortAndLong.NetProfitForClosedPositionsBoth + "]"
+				+ " PF[" + this.SlicesShortAndLong.ProfitFactor + "]"
+				+ " RF[" + this.SlicesShortAndLong.RecoveryFactor + "]";
+			} }
 	}
 }

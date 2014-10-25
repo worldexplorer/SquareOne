@@ -6,6 +6,8 @@ using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
+using Sq1.Widgets.LabeledTextBox;
+using BrightIdeasSoftware;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl {
@@ -15,7 +17,7 @@ namespace Sq1.Widgets.Optimization {
 				this.btnPauseResume.Enabled = false;
 			} else {
 				this.backtests.Clear();
-				this.olvBacktests.SetObjects(this.backtests);
+				this.olvBacktests.SetObjects(this.backtests, true);
 				int threadsLaunched = this.optimizer.OptimizationRun();
 				this.btnRunCancel.Text = "Cancel " + this.optimizer.BacktestsRemaining + " backtests";
 				//this.btnPauseResume.Enabled = true;
@@ -29,7 +31,7 @@ namespace Sq1.Widgets.Optimization {
 				return;
 			}
 			this.backtests.Add(e.SystemPerformance);
-			this.olvBacktests.SetObjects(this.backtests);
+			this.olvBacktests.SetObjects(this.backtests, true); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
 			//this.olvBacktests.Refresh();
 			
 			int backtestsRemaninig	= this.optimizer.BacktestsRemaining;
@@ -41,6 +43,7 @@ namespace Sq1.Widgets.Optimization {
 			if (backtestsCompleted >= this.progressBar1.Minimum && backtestsCompleted <= this.progressBar1.Maximum) {
 				this.progressBar1.Value = backtestsCompleted;
 			}
+			this.btnPauseResume.Text = this.optimizer.BacktestsSecondsElapsed + " seconds elapsed";
 		}
 		void Optimizer_OnOptimizationComplete(object sender, EventArgs e) {
 			if (base.InvokeRequired) {
@@ -54,6 +57,7 @@ namespace Sq1.Widgets.Optimization {
 			//this.lblStats.Text = "0% complete   0/" + totalBacktests;
 			//this.progressBar1.Value = 0;
 			//this.olvBacktests.UseWaitCursor = false;
+			this.btnPauseResume.Text = this.optimizer.BacktestsSecondsElapsed + " seconds elapsed";
 		}
 		void Optimizer_OnOptimizationAborted(object sender, EventArgs e) {
 			this.Optimizer_OnOptimizationComplete(sender, e);
@@ -62,13 +66,122 @@ namespace Sq1.Widgets.Optimization {
 			Assembler.PopupException(null, new NotImplementedException());
 		}
 		void nudCpuCoresToUse_ValueChanged(object sender, EventArgs e) {
-			this.optimizer.CpuCoresToUse = (int)this.nudThreadsToRun.Value;
+			int newValue = (int)this.nudThreadsToRun.Value;
+			int valueMin = 1;
+			int valueMax = this.optimizer.CpuCoresAvailable * 2;
+			if (newValue < valueMin) {
+				newValue = valueMin;
+				this.nudThreadsToRun.Value = newValue;
+			}
+			if (newValue > valueMax) {
+				newValue = valueMax;
+				this.nudThreadsToRun.Value = valueMax;
+			}
+			this.optimizer.ThreadsToUse = newValue;
 		}
 		void mniCopyToDefaultCtxBacktest_Click(object sender, EventArgs e) {
-			throw new NotImplementedException();
+			string msig = " /mniCopyToDefaultCtxBacktest_Click()";
+			SystemPerformance perf = (SystemPerformance)this.olvBacktests.SelectedObject;
+			if (perf == null) {
+				string msg = "IS_NULL (SystemPerformance)this.olvBacktests.SelectedObject";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			ContextScript selected = perf.Executor.Strategy.ScriptContextCurrent;
+			if (selected == null) {
+				string msg = "IS_NULL (ContextScript) this.olvBacktests.SelectedObject";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			ContextScript selectedClone = selected.CloneGoingFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
+			this.RaiseOnCopyToContextDefaultBacktest(selectedClone);
 		}
 		void mniCopyToDefaultCtx_Click(object sender, EventArgs e) {
-			throw new NotImplementedException();
+			string msig = " /mniCopyToDefaultCtx_Click()";
+			SystemPerformance perf = (SystemPerformance)this.olvBacktests.SelectedObject;
+			if (perf == null) {
+				string msg = "IS_NULL (SystemPerformance)this.olvBacktests.SelectedObject";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			ContextScript selected = perf.Executor.Strategy.ScriptContextCurrent;
+			if (selected == null) {
+				string msg = "IS_NULL (ContextScript) this.olvBacktests.SelectedObject";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			ContextScript selectedClone = selected.CloneGoingFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
+			this.RaiseOnCopyToContextDefault(selectedClone);
+		}
+		void mniltbCopyToNewContext_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string scriptContextNewName = e.StringUserTyped;
+			string msig = " /mniltbCopyToNewContext_UserTyped() scriptContextNewName[" + scriptContextNewName + "]";
+
+			SystemPerformance perf = (SystemPerformance)this.olvBacktests.SelectedObject;
+			if (perf == null) {
+				string msg = "IS_NULL (SystemPerformance)this.olvBacktests.SelectedObject";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			ContextScript selected = perf.Executor.Strategy.ScriptContextCurrent;
+			if (selected == null) {
+				string msg = "IS_NULL (ContextScript) this.olvBacktests.SelectedObject";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			ContextScript selectedClone = selected.CloneGoingFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
+			this.RaiseOnCopyToContextNew(selectedClone);
+		}
+		void mniltbCopyToNewContextBacktest_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string scriptContextNewName = e.StringUserTyped;
+			string msig = " /mniltbCopyToNewContextBacktest_UserTyped() scriptContextNewName[" + scriptContextNewName + "]";
+
+			SystemPerformance perf = (SystemPerformance)this.olvBacktests.SelectedObject;
+			if (perf == null) {
+				string msg = "IS_NULL (SystemPerformance)this.olvBacktests.SelectedObject";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			ContextScript selected = perf.Executor.Strategy.ScriptContextCurrent;
+			if (selected == null) {
+				string msg = "IS_NULL (ContextScript) this.olvBacktests.SelectedObject";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			ContextScript selectedClone = selected.CloneGoingFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
+			this.RaiseOnCopyToContextNewBacktest(selectedClone);
+		}
+		void olvBacktests_CellClick(object sender, CellClickEventArgs e) {
+		}
+		void olvBacktests_CellRightClick(object sender, CellRightClickEventArgs e) {
+			if (e.RowIndex == -1) return;	// right click on the blank space (not on a row with data)
+			e.MenuStrip = this.ctxOneBacktestResult;
+		}
+		private void mniCopyToClipboard_Click(object sender, EventArgs e) {
+		}
+		private void mniSaveCsv_Click(object sender, EventArgs e) {
+		}
+		void ctxOneBacktestResult_Opening(object sender, CancelEventArgs e) {
+			string msig = " /ctxOneBacktestResult_Opening()";
+			SystemPerformance perf = (SystemPerformance)this.olvBacktests.SelectedObject;
+			if (perf == null) {
+				string msg = "IS_NULL (SystemPerformance)this.olvBacktests.SelectedObject";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			string stratIdent = perf.Executor.StrategyName;
+			ContextScript selected = perf.Executor.Strategy.ScriptContextCurrent;
+			if (selected == null) {
+				string msg = "IS_NULL (ContextScript) this.olvBacktests.SelectedObject";
+				Assembler.PopupException(msg + msig);
+				//return;
+			} else {
+				stratIdent += " " + selected.ToStringEssentialsForScriptContextNewName();
+			}
+			string ident = perf.EssentialsForScriptContextNewName;
+			this.mniInfo.Text = ident + " => " + stratIdent;
+			this.mniltbCopyToNewContext.InputFieldValue = ident;
+			this.mniltbCopyToNewContextBacktest.InputFieldValue = ident;
 		}
 	}
 }

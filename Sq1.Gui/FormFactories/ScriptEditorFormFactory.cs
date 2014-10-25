@@ -11,7 +11,7 @@ using Sq1.Widgets;
 using Sq1.Widgets.ScriptEditor;
 
 namespace Sq1.Gui.FormFactories {
-	public class ScriptEditorFormFactory {
+	public class ScriptEditorFormFactory {	// REASON_TO_EXIST: allows to run backtest in ChartForm context, stores Strategy.SourceCode in JSON, bridges Sq1.Widgets.dll and Sq1.Core.dll
 		private const string prefixWhenNeedsToBeSaved = "* ";
 		private RepositoryDllJsonStrategy strategyRepository;
 		private ChartFormManager chartFormManager;

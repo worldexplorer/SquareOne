@@ -32,23 +32,23 @@
 			this.Label.AutoSize = true;
 			this.Label.Location = new System.Drawing.Point(0, 2);
 			this.Label.Name = "Label";
-			this.Label.Size = new System.Drawing.Size(71, 13);
+			this.Label.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.Label.Size = new System.Drawing.Size(74, 13);
 			this.Label.TabIndex = 0;
 			this.Label.Text = "Duplicate To:";
 			// 
 			// TextBox
 			// 
-			this.TextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.TextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
 			this.TextBox.BackColor = System.Drawing.SystemColors.Info;
-			this.TextBox.Location = new System.Drawing.Point(80, 0);
+			this.TextBox.Location = new System.Drawing.Point(90, 0);
 			this.TextBox.Multiline = true;
 			this.TextBox.Name = "TextBox";
-			this.TextBox.Size = new System.Drawing.Size(85, 21);
+			this.TextBox.Size = new System.Drawing.Size(117, 19);
 			this.TextBox.TabIndex = 1;
 			// 
-			// LabeledTextBox
+			// LabeledTextBoxControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -56,10 +56,11 @@
 			this.Controls.Add(this.TextBox);
 			this.Controls.Add(this.Label);
 			this.Margin = new System.Windows.Forms.Padding(0);
-			this.Name = "LabeledTextBox";
-			this.Size = new System.Drawing.Size(165, 21);
+			this.Name = "LabeledTextBoxControl";
+			this.Size = new System.Drawing.Size(210, 21);
 			this.ResumeLayout(false);
 			this.PerformLayout();
+
 		}
 
 		#endregion

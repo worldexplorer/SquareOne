@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SlidersAutoGrowControl {
-		public const string MNI_PREFIX = "mniParameterBag_";
+		public const string MNI_PREFIX = "mniScriptContext_";
 		// http://stackoverflow.com/questions/8307959/toolstripmenuitem-for-multiple-contextmenustrip?rq=1
 		// http://stackoverflow.com/questions/6275120/toolstripmenuitem-added-to-several-places?rq=1
 		// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening first time opened we locate common menu items from GrandParent, then we move them to the current slider; cool?
@@ -83,25 +83,85 @@ namespace Sq1.Widgets.SteppingSlider {
 		public ToolStripItem[] TsiDynamic { get {
 				var ret = new List<ToolStripItem>();
 
-				if (this.mniParameterBagsNotHighlighted.IsDisposed == false) ret.Add(this.mniParameterBagsNotHighlighted);
-				//else Debugger.Break();
+				if (this.mniParameterBagsNotHighlighted.IsDisposed) {
+					//Debugger.Break();
+					this.mniParameterBagsNotHighlighted = new Sq1.Widgets.LabeledTextBox.MenuItemLabel();
+					// 
+					// mniParameterBagsNotHighlighted
+					// 
+					this.mniParameterBagsNotHighlighted.BackColor = System.Drawing.Color.Transparent;
+					this.mniParameterBagsNotHighlighted.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+					this.mniParameterBagsNotHighlighted.Name = "mniParameterBagsNotHighlighted";
+					this.mniParameterBagsNotHighlighted.Size = new System.Drawing.Size(100, 23);
+					this.mniParameterBagsNotHighlighted.Text = "Script Contexts";
+				}
+				ret.Add(this.mniParameterBagsNotHighlighted);
 
 				ret.AddRange(this.TsiScriptContextsDynamic);
 
-				if (this.mniltbParametersBagNewWithDefaults.IsDisposed == false) ret.Add(this.mniltbParametersBagNewWithDefaults);
-				//else Debugger.Break();
+				if (this.mniltbParametersBagNewWithDefaults.IsDisposed) {
+					//Debugger.Break();
+					this.mniltbParametersBagNewWithDefaults = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+					// 
+					// mniltbParametersBagNewWithDefaults
+					// 
+					this.mniltbParametersBagNewWithDefaults.BackColor = System.Drawing.Color.Transparent;
+					this.mniltbParametersBagNewWithDefaults.InputFieldOffsetX = 80;
+					this.mniltbParametersBagNewWithDefaults.InputFieldValue = "";
+					this.mniltbParametersBagNewWithDefaults.InputFieldWidth = 85;
+					this.mniltbParametersBagNewWithDefaults.Name = "mniltbParametersBagNewWithDefaults";
+					this.mniltbParametersBagNewWithDefaults.Size = new System.Drawing.Size(168, 21);
+					this.mniltbParametersBagNewWithDefaults.Text = "New clean";
+					this.mniltbParametersBagNewWithDefaults.TextRed = false;
+					this.mniltbParametersBagNewWithDefaults.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextNewWithDefaults_UserTyped);
+				}
+				ret.Add(this.mniltbParametersBagNewWithDefaults);
 
-				if (this.toolStripSeparator2.IsDisposed == false) ret.Add(this.toolStripSeparator2);
-				//else Debugger.Break();
+				if (this.toolStripSeparator2.IsDisposed) {
+					Debugger.Break();
+				}
+				ret.Add(this.toolStripSeparator2);
 
-				if (this.mniAllParamsResetToScriptDefaults.IsDisposed == false) ret.Add(this.mniAllParamsResetToScriptDefaults);
-				//else Debugger.Break();
+				if (this.mniAllParamsResetToScriptDefaults.IsDisposed) {
+					//Debugger.Break();
+					this.mniAllParamsResetToScriptDefaults = new System.Windows.Forms.ToolStripMenuItem();
+					// 
+					// mniAllParamsResetToScriptDefaults
+					// 
+					this.mniAllParamsResetToScriptDefaults.Name = "mniAllParamsResetToScriptDefaults";
+					this.mniAllParamsResetToScriptDefaults.Size = new System.Drawing.Size(273, 22);
+					this.mniAllParamsResetToScriptDefaults.Text = "All Params -> Reset To Script Defaults";
+					this.mniAllParamsResetToScriptDefaults.Click += new System.EventHandler(this.mniAllParamsResetToScriptDefaults_Click);
+				}
+				ret.Add(this.mniAllParamsResetToScriptDefaults);
 
-				if (this.mniAllParamsShowNumeric.IsDisposed == false) ret.Add(this.mniAllParamsShowNumeric);
-				//else Debugger.Break();
+				if (this.mniAllParamsShowNumeric.IsDisposed) {
+					//Debugger.Break();
+					this.mniAllParamsShowNumeric = new System.Windows.Forms.ToolStripMenuItem();
+					// 
+					// mniAllParamsShowNumeric
+					// 
+					this.mniAllParamsShowNumeric.CheckOnClick = true;
+					this.mniAllParamsShowNumeric.Name = "mniAllParamsShowNumeric";
+					this.mniAllParamsShowNumeric.Size = new System.Drawing.Size(273, 22);
+					this.mniAllParamsShowNumeric.Text = "All Params -> ShowNumeric";
+					this.mniAllParamsShowNumeric.Click += new System.EventHandler(this.mniAllParamsShowNumeric_Click);
+				}
+				ret.Add(this.mniAllParamsShowNumeric);
 
-				if (this.mniAllParamsShowBorder.IsDisposed == false) ret.Add(this.mniAllParamsShowBorder);
-				//else Debugger.Break();
+				if (this.mniAllParamsShowBorder.IsDisposed) {
+					//Debugger.Break();
+					this.mniAllParamsShowBorder = new System.Windows.Forms.ToolStripMenuItem();
+					// 
+					// mniAllParamsShowBorder
+					// 
+					this.mniAllParamsShowBorder.CheckOnClick = true;
+					this.mniAllParamsShowBorder.Name = "mniAllParamsShowBorder";
+					this.mniAllParamsShowBorder.Size = new System.Drawing.Size(273, 22);
+					this.mniAllParamsShowBorder.Text = "All Params -> ShowBorder";
+					this.mniAllParamsShowBorder.Click += new System.EventHandler(this.mniAllParamsShowBorder_Click);
+				}
+				ret.Add(this.mniAllParamsShowBorder);
 
 				return ret.ToArray();
 			} }

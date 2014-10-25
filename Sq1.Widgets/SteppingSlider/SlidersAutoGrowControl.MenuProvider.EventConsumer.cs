@@ -7,6 +7,7 @@ using Sq1.Core;
 using Sq1.Core.StrategyBase;
 using Sq1.Widgets.LabeledTextBox;
 using System.Diagnostics;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SlidersAutoGrowControl {
@@ -27,27 +28,27 @@ namespace Sq1.Widgets.SteppingSlider {
 			}
 			this.RaiseOnScriptContextLoadRequested(scriptContextToLoad.Name);
 			// otherwize crash on slider change while "Parameter Bags" CTX is open
-			this.ctxParameterBags_Opening(this, null);
+			this.ctxScriptContexts_Opening(this, null);
 		}
 		void mniltbScriptContextNewWithDefaults_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string newScriptContextName = e.StringUserTyped;
 			this.Strategy.ScriptContextAdd(newScriptContextName);
 			this.RaiseOnScriptContextCreated(newScriptContextName);
-			this.ctxParameterBags_Opening(this, null);
+			this.ctxScriptContexts_Opening(this, null);
 		}
 		void mniltbScriptContextDuplicateTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string dupeScriptContextName = e.StringUserTyped;
 			ContextScript scriptContextToDuplicate = this.ScriptContextFromMniTag(sender);
 			this.Strategy.ScriptContextAdd(dupeScriptContextName, scriptContextToDuplicate);
 			this.RaiseOnScriptContextDuplicated(dupeScriptContextName);
-			this.ctxParameterBags_Opening(this, null);
+			this.ctxScriptContexts_Opening(this, null);
 		}
 		void mniltbScriptContextRenameTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string scriptContextNewName = e.StringUserTyped;
 			ContextScript scriptContextToRename = this.ScriptContextFromMniTag(sender);
 			this.Strategy.ScriptContextRename(scriptContextToRename, scriptContextNewName);
 			this.RaiseOnScriptContextRenamed(scriptContextNewName);
-			this.ctxParameterBags_Opening(this, null);
+			this.ctxScriptContexts_Opening(this, null);
 		}
 		void mniScriptContextDelete_Click(object sender, EventArgs e) {
 			string msig = "mniParameterBagDelete_Click() ";
@@ -60,17 +61,17 @@ namespace Sq1.Widgets.SteppingSlider {
 			if (scriptContextToDelete == null) return;
 			this.Strategy.ScriptContextDelete(scriptContextToDelete.Name);
 			this.RaiseOnScriptContextDeleted(scriptContextToDelete.Name);
-			this.ctxParameterBags_Opening(this, null);
+			this.ctxScriptContexts_Opening(this, null);
 		}
-		void ctxParameterBags_Opening(object sender, CancelEventArgs e) {
-			this.ctxParameterBags.SuspendLayout();
+		void ctxScriptContexts_Opening(object sender, CancelEventArgs e) {
+			this.ctxScriptContexts.SuspendLayout();
 			try {
-				this.ctxParameterBags.Items.Clear();
+				this.ctxScriptContexts.Items.Clear();
 				var newMnis = this.TsiDynamic;
 				//this.ctxParameterBags.Items.AddRange(newMnis);
 				foreach (var mni in newMnis) {
 					try {
-						this.ctxParameterBags.Items.Add(mni);
+						this.ctxScriptContexts.Items.Add(mni);
 					} catch (Exception ex) {
 						throw;
 					}
@@ -84,11 +85,12 @@ namespace Sq1.Widgets.SteppingSlider {
 				string msg = "DID_YOU_CHANGE_NUMERIC_UPDOWN?";
 				Assembler.PopupException("SlidersAutoGrow.EventConsumer.cs::ctxParameterBags_Opening()", ex);
 			} finally {
-				this.ctxParameterBags.ResumeLayout(true);
+				this.ctxScriptContexts.ResumeLayout(true);
 			}
 		}
 		void mniScriptContext_DropDownOpening(object sender, EventArgs e) {
 			try {
+				// part#1/2 make operations relevant to current contextSript mouseovered
 				var mniOpening = sender as ToolStripMenuItem;
 				mniOpening.DropDown = this.ctxOperations;
 				//this.ctxOperations.OwnerItem = mniOpening;	// will help to reach mniOpening.Tag as ScriptContext, from ctxOperations.Items[TextLabelBox]
@@ -97,7 +99,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				
 				if (this.Strategy.ScriptContextCurrent.Name == mniOpening.Text) {
 					this.mniParameterBagDelete.Enabled = false;
-					this.mniParameterBagDelete.Text += " [load next bag NYI]";
+					this.mniParameterBagDelete.Text += " [load next ctx NYI]";
 					
 					this.mniParameterBagLoad.Enabled = false;
 					this.mniParameterBagLoad.Text = "Already Loaded [" + mniOpening.Text + "]";
@@ -114,6 +116,44 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 				
 				this.ctxOperations.Tag = (ContextScript) mniOpening.Tag;
+
+				// part#2/2 rebuild ctxOperations to display all the ContextScript parameter values;
+				ContextScript ctx = (ContextScript)this.ctxOperations.Tag;
+				if (ctx == null) {
+					string msg = "mniOpening.Tag[" + mniOpening.Tag + "] must inject ContextScript into ctxOperations.Tag[" + this.ctxOperations.Tag + "]";
+					Assembler.PopupException(msg);
+					return;
+				}
+
+				this.ctxOperations.SuspendLayout();
+				this.ctxOperations.Items.Clear();
+
+				foreach (IndicatorParameter param in ctx.ParametersMerged) {
+					//v1
+					//ToolStripMenuItem mni = new ToolStripMenuItem();
+					//mni.CheckOnClick = false;
+					//mni.Text = param.ToString();
+
+					//v2
+					MenuItemLabeledTextBox mni = new MenuItemLabeledTextBox();
+					mni.Text = param.FullName;
+					mni.TextOffsetX = 42;
+					//mni.TextWidth = 200;
+					//TODO MAKE_IT_STRETCH mni.TextAutoSize = true;
+					mni.InputFieldValue = param.ValueCurrent.ToString();
+					mni.InputFieldOffsetX = 0;
+					mni.InputFieldWidth = 40;
+					mni.InputFieldEditable = false;
+					this.ctxOperations.Items.Add(mni);
+				}
+
+				this.ctxOperations.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+		            this.toolStripSeparator1,
+					this.mniltbParameterBagRenameTo,
+					this.mniltbParameterBagDuplicateTo,
+					this.mniParameterBagDelete});
+				this.ctxOperations.ResumeLayout(true);
+
 			} catch (Exception ex) {
 				Assembler.PopupException("mni[" + sender + "].DropDownOpening()", ex);
 			}

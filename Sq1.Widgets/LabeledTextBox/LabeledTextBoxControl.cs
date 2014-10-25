@@ -16,11 +16,11 @@ namespace Sq1.Widgets.LabeledTextBox {
 //			get { return new Size(base.Size.Width, base.Size.Height - 2); }
 //			set { base.Size = new Size(value.Width, value.Height + 2); }
 //		}
-		[Browsable(true)]
-		public TextBox InternalTextBox {
-			get { return this.TextBox; }
-			set { this.TextBox = value; }
-		}
+		//[Browsable(true)]
+		//public TextBox InternalTextBox {
+		//    get { return this.TextBox; }
+		//    set { this.TextBox = value; }
+		//}
 //		[Browsable(true)]
 //		public Label InternalLabel {
 //			get { return this.Label; }
@@ -36,6 +36,21 @@ namespace Sq1.Widgets.LabeledTextBox {
 			get { return this.Label.ForeColor == Color.Red; }
 			set { this.Label.ForeColor = value ? Color.Red : Color.Black; }
 		}
+		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		public int TextOffsetX {
+			get { return this.Label.Location.X; }
+			set { this.Label.Location = new Point(value, this.Label.Location.Y); }
+		}
+		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		public int TextWidth {
+			get { return this.Label.Width; }
+			set { this.Label.Width = value; }
+		}
+		//[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		//public bool TextAutoSize {
+		//    get { return this.Label.AutoSize; }
+		//    set { this.Label.AutoSize = value; }
+		//}
 		[Browsable(true)]
 		public string InputFieldValue {
 			get { return this.TextBox.Text; }
@@ -50,6 +65,11 @@ namespace Sq1.Widgets.LabeledTextBox {
 		public int InputFieldWidth {
 			get { return this.TextBox.Width; }
 			set { this.TextBox.Width = value; }
+		}
+		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		public bool InputFieldEditable {
+			get { return this.TextBox.Enabled; }
+			set { this.TextBox.Enabled = value; }
 		}
 		public ToolStripControlHost ParentToolStripControlHost;
 	}

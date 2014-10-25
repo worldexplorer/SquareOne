@@ -36,9 +36,29 @@ namespace Sq1.Widgets.LabeledTextBox {
 			set { this.LabeledTextBoxControl.InputFieldOffsetX = value; }
 		}
 		[Browsable(true)]
+		public int TextOffsetX {
+			get { return this.LabeledTextBoxControl.TextOffsetX; }
+			set { this.LabeledTextBoxControl.TextOffsetX = value; }
+		}
+		[Browsable(true)]
+		public int TextWidth {
+			get { return this.LabeledTextBoxControl.TextWidth; }
+			set { this.LabeledTextBoxControl.TextWidth = value; }
+		}
+		//[Browsable(true)]
+		//public bool TextAutoSize {
+		//    get { return this.LabeledTextBoxControl.TextAutoSize; }
+		//    set { this.LabeledTextBoxControl.TextAutoSize = value; }
+		//}
+		[Browsable(true)]
 		public int InputFieldWidth {
 			get { return this.LabeledTextBoxControl.InputFieldWidth; }
 			set { this.LabeledTextBoxControl.InputFieldWidth = value; }
+		}
+		[Browsable(true)]
+		public bool InputFieldEditable {
+			get { return this.LabeledTextBoxControl.InputFieldEditable; }
+			set { this.LabeledTextBoxControl.InputFieldEditable = value; }
 		}
 		void TextBox_KeyDown(object sender, KeyEventArgs e) {
 			if (e.KeyCode != Keys.Enter) return;
