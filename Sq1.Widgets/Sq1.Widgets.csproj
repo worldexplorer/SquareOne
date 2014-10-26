@@ -387,8 +387,8 @@
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ObjectListView_260-src\ObjectListView2010.csproj">
-      <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
+    <ProjectReference Include="..\ObjectListView_280-src\ObjectListView2010.csproj">
+      <Project>4D212185-B8CA-41A5-B7F0-A764A1EE27C7</Project>
       <Name>ObjectListView2010</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
