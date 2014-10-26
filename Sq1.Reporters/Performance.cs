@@ -24,7 +24,7 @@ namespace Sq1.Reporters {
 			base.TabText = "Performance";
 			this.InitializeComponent();
 			this.fontsByStyle = new Dictionary<FontStyle, Font>();
-			WindowsFormsUtils.SetDoubleBuffered(this.olvReport);
+			WindowsFormsUtils.SetDoubleBuffered(this.lvPerformance);
 			this.objectListViewCustomize();
 		}
 		public override void BuildOnceAfterFullBlindBacktestFinished(SystemPerformance performance) {
@@ -36,8 +36,8 @@ namespace Sq1.Reporters {
 			this.fontsByStyle.Clear();
 			this.fontsByStyle.Add(this.Font.Style, this.Font);
 			try {
-				this.olvReport.BeginUpdate();
-				this.olvReport.Items.Clear();
+				this.lvPerformance.BeginUpdate();
+				this.lvPerformance.Items.Clear();
 				
 				this.currentColumn = 0;
 				this.currentRow = 0;
@@ -64,12 +64,12 @@ namespace Sq1.Reporters {
 				}
 				//AdjustColumnSize();
 			} finally {
-				this.olvReport.EndUpdate();
+				this.lvPerformance.EndUpdate();
 			}
 		}
 
 		void AdjustColumnSize() {
-			foreach (ColumnHeader colHeader in this.olvReport.Columns) {
+			foreach (ColumnHeader colHeader in this.lvPerformance.Columns) {
 				colHeader.Width = -1;
 			}
 		}
@@ -148,7 +148,7 @@ namespace Sq1.Reporters {
 		void RenderCell(string label, string value, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
 			ListViewItem lvi;
 			if (this.currentColumn == 0) {
-				lvi = this.olvReport.Items.Add(label);
+				lvi = this.lvPerformance.Items.Add(label);
 				lvi.UseItemStyleForSubItems = false;
 				lvi.ForeColor = labelFontColor;
 				if (backColor != Color.Empty) {
@@ -162,11 +162,11 @@ namespace Sq1.Reporters {
 					lvi.Font = font;
 				}
 			} else {
-				if (this.currentRow >= this.olvReport.Items.Count) {
+				if (this.currentRow >= this.lvPerformance.Items.Count) {
 					//Debugger.Break();
 					return;
 				}
-				lvi = this.olvReport.Items[this.currentRow];
+				lvi = this.lvPerformance.Items[this.currentRow];
 				this.currentRow++;
 			}
 			lvi.SubItems.Add(value);
@@ -183,8 +183,8 @@ namespace Sq1.Reporters {
 			lvi.SubItems[lvi.SubItems.Count - 1].Font = this.fontsByStyle[itemFontStyle];
 		}
 		void lvReport_SelectedIndexChanged(object sender, EventArgs e) {
-			if (this.olvReport.SelectedItems.Count != 1) return;
-			ListViewItem listViewItem = this.olvReport.SelectedItems[0];
+			if (this.lvPerformance.SelectedItems.Count != 1) return;
+			ListViewItem listViewItem = this.lvPerformance.SelectedItems[0];
 			string text = listViewItem.Text;
 			text = text.Trim();
 			listViewItem.ToolTipText = this.GetItemDescription(text);
