@@ -175,7 +175,7 @@ namespace Sq1.Core.Backtesting {
 					if (this.inNewThread == false) break;
 				}
 			}
-			stopWatch.Start();
+			stopWatch.Restart();
 			return this.BacktestsScheduled;
 		}
 		void afterBacktesterComplete(ScriptExecutor executorCompletePooled) {
