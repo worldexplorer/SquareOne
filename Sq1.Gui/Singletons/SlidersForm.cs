@@ -3,16 +3,13 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core.StrategyBase;
+using Sq1.Support;
 
 namespace Sq1.Gui.Singletons {
 	public partial class SlidersForm : DockContentSingleton<SlidersForm> {
 		public SlidersForm() {
 			InitializeComponent();
-//			WindowsFormsUtils.SetDoubleBuffered(this);
-//			this.SetStyle(
-//				ControlStyles.UserPaint |
-//				ControlStyles.AllPaintingInWmPaint |
-//				ControlStyles.OptimizedDoubleBuffer, true);
+			WindowsFormsUtils.SetDoubleBuffered(this);
 		}
 		public void Initialize(Strategy strategy) {
 			try {

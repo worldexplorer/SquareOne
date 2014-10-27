@@ -8,6 +8,7 @@ using Sq1.Core;
 using Sq1.Core.StrategyBase;
 using Sq1.Widgets.LabeledTextBox;
 using BrightIdeasSoftware;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl {
@@ -110,6 +111,27 @@ namespace Sq1.Widgets.Optimization {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
+			#if DEBUG	// inline unittest
+			foreach (OLVColumn olvc in this.columnsDynParam) {
+				string iParamName = olvc.Text;
+
+				var iDisplayedByName = this.optimizer.ScriptAndIndicatorParametersMergedByName;
+				if (iDisplayedByName.ContainsKey(iParamName) == false) {
+					Debugger.Break();
+				}
+				IndicatorParameter iDisplayed = iDisplayedByName[iParamName];
+
+				var iPropagatingByName = selected.ParametersMergedByName;
+				if (iPropagatingByName.ContainsKey(iParamName) == false) {
+					Debugger.Break();
+				}
+				IndicatorParameter iPropagating = iPropagatingByName[iParamName];
+
+				if (iDisplayed.ValueCurrent != iPropagating.ValueCurrent) {
+					Debugger.Break();	// both are wrong; I clicked on MaSlow=20,MaFast=11; iDisplayed=MaFast=33, iPropagating=MaFast=22; replacing executorPool with newExecutor() each backtest
+				}
+			}
+			#endif
 			ContextScript selectedClone = selected.CloneGoingFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
 			this.RaiseOnCopyToContextDefault(selectedClone);
 		}

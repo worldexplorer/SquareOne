@@ -132,19 +132,23 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		[JsonIgnore] public List<IndicatorParameter> ParametersMerged { get {
-			// MAKE_SURE_YOU_DONT_KEEP_THE_REFERENCE; use ParametersMergedCloned otherwize
-			List<IndicatorParameter> ret = new List<IndicatorParameter>();
-			ret.AddRange(this.ScriptParametersById.Values);
-			foreach (List<IndicatorParameter> iParams in this.IndicatorParametersByName.Values) {
-				ret.AddRange(iParams);
-			}
-			return ret;
-		} }
+				// MAKE_SURE_YOU_DONT_KEEP_THE_REFERENCE; use ParametersMergedCloned otherwize
+				List<IndicatorParameter> ret = new List<IndicatorParameter>();
+				ret.AddRange(this.ScriptParametersById.Values);
+				foreach (List<IndicatorParameter> iParams in this.IndicatorParametersByName.Values) {
+					ret.AddRange(iParams);
+				}
+				return ret;
+			} }
 		[JsonIgnore] public List<IndicatorParameter> ParametersMergedCloned { get {
 				List<IndicatorParameter> ret = new List<IndicatorParameter>();
 				foreach (IndicatorParameter iParam in this.ParametersMerged) ret.Add(iParam.Clone());
 				return ret;
-			}
-		}
+			} }
+		[JsonIgnore] public SortedDictionary<string, IndicatorParameter> ParametersMergedByName { get {
+				SortedDictionary<string, IndicatorParameter> ret = new SortedDictionary<string, IndicatorParameter>();
+				foreach (IndicatorParameter iParam in this.ParametersMerged) ret.Add(iParam.FullName, iParam);
+				return ret;
+			} }
 	}
 }

@@ -134,7 +134,7 @@ namespace Sq1.Widgets.Optimization {
 				olvcSP.Width = 85;
 				olvcSP.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 				this.olvBacktests.Columns.Add(olvcSP);
-				this.olvBacktests.AllColumns.Add(olvcSP);
+				//this.olvBacktests.AllColumns.Add(olvcSP);
 				this.columnsDynParam.Add(olvcSP);
 			}
 			
@@ -151,7 +151,7 @@ namespace Sq1.Widgets.Optimization {
 				olvcIP.Width = 85;
 				olvcIP.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 				this.olvBacktests.Columns.Add(olvcIP);
-				this.olvBacktests.AllColumns.Add(olvcIP);
+				//this.olvBacktests.AllColumns.Add(olvcIP);
 				this.columnsDynParam.Add(olvcIP);
 			}
 		}

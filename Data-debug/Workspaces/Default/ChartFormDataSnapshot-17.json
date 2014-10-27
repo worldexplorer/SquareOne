@@ -21,11 +21,11 @@
       "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 37
+        "Distance": 24
       }
     },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 1,
+    "BarWidthIncludingPadding": 8,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",

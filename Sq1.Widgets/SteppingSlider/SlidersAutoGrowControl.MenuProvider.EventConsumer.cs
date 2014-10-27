@@ -79,6 +79,9 @@ namespace Sq1.Widgets.SteppingSlider {
 				if (sender == this && e == null) {
 					// after NewContext -> Delete, ctxOperations menu pane jumps on top of application window
 					this.ctxOperations.Hide();
+					if (this.ctxScriptContexts.Visible == false) {
+						this.ctxScriptContexts.Visible = true;
+					}
 				}
 				this.syncMniAllParamsShowBorderAndNumeric();
 			} catch (Exception ex) {

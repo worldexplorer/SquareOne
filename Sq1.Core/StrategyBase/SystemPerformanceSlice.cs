@@ -44,7 +44,7 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		public double WinRatePct { get {
 				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
-				return Math.Round(100 * this.PositionsCountWinners / (double)this.PositionsCountBoth, 2);
+				return Math.Round(100 * this.PositionsCountWinners / (double)this.PositionsCountBoth, 1);
 			} }
 		public double LossRatePct { get {
 				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
@@ -57,8 +57,8 @@ namespace Sq1.Core.StrategyBase {
 				return Math.Round(this.PositionsCountWinners / (double)this.PositionsCountLosers, 2);
 			} }
 		public double PayoffRatio { get {
-			if (this.AvgLossPctLosers == 0) return 0;
-			return Math.Round(Math.Abs(this.AvgProfitPctBoth / this.AvgLossPctLosers), 2);
+				if (this.AvgLossPctLosers == 0) return 0;
+				return Math.Round(Math.Abs(this.AvgProfitPctBoth / (double)this.AvgLossPctLosers), 2);
 			} }
 
 		#region AllTrades
@@ -67,22 +67,22 @@ namespace Sq1.Core.StrategyBase {
 		public double NetProfitForClosedPositionsBoth;
 		public int BarsHeldTotalForClosedPositionsBoth;
 		public double ProfitPerBarBoth { get {
-			if (this.BarsHeldTotalForClosedPositionsBoth == 0) return 0;
-				return this.NetProfitForClosedPositionsBoth / (double)this.BarsHeldTotalForClosedPositionsBoth;
+				if (this.BarsHeldTotalForClosedPositionsBoth == 0) return 0;
+				return Math.Round(this.NetProfitForClosedPositionsBoth / (double)this.BarsHeldTotalForClosedPositionsBoth, 2);
 			} }
 		public int PositionsCountBoth;
 		public double AvgProfitBoth { get {
-			if (this.PositionsCountBoth == 0) return 0;
-			return this.NetProfitForClosedPositionsBoth / (double)this.PositionsCountBoth;
-		} }
+				if (this.PositionsCountBoth == 0) return 0;
+				return Math.Round(this.NetProfitForClosedPositionsBoth / (double)this.PositionsCountBoth, 2);
+			} }
 		public double AvgProfitPctBoth { get {
-			if (this.PositionsCountBoth == 0) return 0;
-			return this.NetProfitPctForClosedPositionsBoth / (double)this.PositionsCountBoth;
-		} }
+				if (this.PositionsCountBoth == 0) return 0;
+				return Math.Round(this.NetProfitPctForClosedPositionsBoth / (double)this.PositionsCountBoth, 2);
+			} }
 		public double AvgBarsHeldBoth { get {
-			if (this.PositionsCountBoth == 0) return 0;
-			return this.BarsHeldTotalForClosedPositionsBoth / (double)this.PositionsCountBoth;
-		} }
+				if (this.PositionsCountBoth == 0) return 0;
+				return Math.Round(this.BarsHeldTotalForClosedPositionsBoth / (double)this.PositionsCountBoth, 1);
+			} }
 		#endregion
 
 		#region Winners
@@ -92,20 +92,20 @@ namespace Sq1.Core.StrategyBase {
 		public int BarsHeldTotalForClosedPositionsWinners;
 		public double ProfitPerBarLong { get {
 				if (this.BarsHeldTotalForClosedPositionsWinners == 0) return 0;
-				return this.NetProfitWinners / (double)this.BarsHeldTotalForClosedPositionsWinners;
+				return Math.Round(this.NetProfitWinners / (double)this.BarsHeldTotalForClosedPositionsWinners, 2);
 			} }
 		public int PositionsCountWinners;
 		public double AvgProfitWinners { get {
 				if (this.PositionsCountWinners == 0) return 0;
-				return this.NetProfitWinners / this.PositionsCountWinners;
+				return Math.Round(this.NetProfitWinners / (double)this.PositionsCountWinners, 2);
 			} }
 		public double AvgProfitPctWinners { get {
 				if (this.PositionsCountWinners == 0) return 0;
-				return this.NetProfitPctForClosedPositionsLong / this.PositionsCountWinners;
+				return Math.Round(this.NetProfitPctForClosedPositionsLong / (double)this.PositionsCountWinners, 2);
 			} }
 		public double AvgBarsHeldWinners { get {
 				if (this.PositionsCountWinners == 0) return 0;
-				return this.BarsHeldTotalForClosedPositionsWinners / this.PositionsCountWinners;
+				return Math.Round(this.BarsHeldTotalForClosedPositionsWinners / (double)this.PositionsCountWinners, 1);
 			} }
 		#endregion
 
@@ -116,20 +116,20 @@ namespace Sq1.Core.StrategyBase {
 		public int BarsHeldTotalForClosedPositionsLosers;
 		public double ProfitPerBarLosers { get {
 				if (this.BarsHeldTotalForClosedPositionsLosers == 0) return 0;
-				return this.NetLossLosers / (double)this.BarsHeldTotalForClosedPositionsLosers;
+				return Math.Round(this.NetLossLosers / (double)this.BarsHeldTotalForClosedPositionsLosers, 2);
 			} }
 		public int PositionsCountLosers;
 		public double AvgLossLosers { get {
 				if (this.PositionsCountLosers == 0) return 0;
-				return this.NetLossLosers / this.PositionsCountLosers;
+				return Math.Round(this.NetLossLosers / (double)this.PositionsCountLosers, 2);
 			} }
 		public double AvgLossPctLosers { get {
 				if (this.PositionsCountLosers == 0) return 0;
-				return this.NetProfitPctForClosedPositionsLosers / this.PositionsCountLosers;
+				return Math.Round(this.NetProfitPctForClosedPositionsLosers / (double)this.PositionsCountLosers, 2);
 			} }
 		public double AvgBarsHeldLosers { get {
 				if (this.PositionsCountLosers == 0) return 0;
-				return this.BarsHeldTotalForClosedPositionsLosers / this.PositionsCountLosers;
+				return Math.Round(this.BarsHeldTotalForClosedPositionsLosers / (double)this.PositionsCountLosers, 1);
 			} }
 		#endregion
 

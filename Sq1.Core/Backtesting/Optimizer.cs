@@ -51,6 +51,7 @@ namespace Sq1.Core.Backtesting {
 				}
 				return ret;
 			} }
+		public SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParametersMergedByName { get { return this.executor.Strategy.ScriptContextCurrent.ParametersMergedByName; } }
 
 		public int BacktestsTotal;
 		public int BacktestsRemaining { get { return this.BacktestsTotal - this.BacktestsCompleted; } }
@@ -68,7 +69,7 @@ namespace Sq1.Core.Backtesting {
 		public Optimizer(ScriptExecutor executor) {
 			this.executor = executor;
 			backtests = new List<SystemPerformance>();
-			executorPool = new List<ScriptExecutor>();
+			executorsRunning = new List<ScriptExecutor>();
 			backtestsLock = new object();
 			executorPoolLock = new object();
 			inNewThread = true;
@@ -135,14 +136,14 @@ namespace Sq1.Core.Backtesting {
 		object backtestsLock;
 		object executorPoolLock;
 		List<SystemPerformance> backtests;
-		List<ScriptExecutor> executorPool;
+		List<ScriptExecutor> executorsRunning;
 		public bool IsRunningNow;
 		public bool AbortedDontScheduleNewBacktests;
 		public void OptimizationAbort() {
 			this.AbortedDontScheduleNewBacktests = true;
 			lock(executorPoolLock) {
-				foreach (var ex in executorPool) {
-					string msg = "OPTIMIZER_CANCELLED " + this.executorPool.IndexOf(ex) + "/" + this.executorPool.Count;
+				foreach (var ex in executorsRunning) {
+					string msg = "OPTIMIZER_CANCELLED " + this.executorsRunning.IndexOf(ex) + "/" + this.executorsRunning.Count;
 					ex.Backtester.AbortRunningBacktestWaitAborted(msg, 0);
 				}
 			}
@@ -159,7 +160,7 @@ namespace Sq1.Core.Backtesting {
 				this.AbortedDontScheduleNewBacktests = false;
 				this.IsRunningNow = true;
 				//this.BacktestsRemaining = this.BacktestsTotal;
-				this.executorPool.Clear();
+				this.executorsRunning.Clear();
 				for(int i=0; i<this.ThreadsToUse; i++) {
 					//this.BacktestsRemaining--;
 					if (this.BacktestsScheduled >= this.BacktestsTotal) break;
@@ -168,7 +169,7 @@ namespace Sq1.Core.Backtesting {
 						? this.parametersSequencer.GetFirstScriptContext(ctxName)
 						: this.parametersSequencer.GetNextScriptContextSequenced(ctxName);
 					ScriptExecutor ex = this.executor.CloneForOptimizer(ctxNext);
-					this.executorPool.Add(ex);
+					this.executorsRunning.Add(ex);
 					ex.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
 					this.BacktestsScheduled++;
 					if (this.inNewThread == false) break;
@@ -186,7 +187,7 @@ namespace Sq1.Core.Backtesting {
 				IndicatorParameter ip = executorCompletePooled.Performance.ScriptAndIndicatorParameterClonesByName[iName];
 				dbg2 += iName + "[" + ip.ValueCurrent + "]";
 			}
-			Assembler.PopupException(dbg + dbg2, null, false);
+			//Assembler.PopupException(dbg + dbg2, null, false);
 			#endif
 
 			if (executorCompletePooled == null) {
@@ -205,24 +206,27 @@ namespace Sq1.Core.Backtesting {
 				lock (this.backtestsLock) {	// helps also with atomic BacktestsCompleted operations
 					this.backtests.Add(executorCompletePooled.Performance);
 					this.BacktestsCompleted++;	//Optimizer_OnBacktestComplete() will display it
+					//v2 
+					this.executorsRunning.Remove(executorCompletePooled);
+
 					//}
 					//lock(this.executorPoolLock) {	// helps also with atomic BacktestsRemaining operations
 					//this.BacktestsRemaining--;
-					int moreToAdd = this.ThreadsToUse - this.executorPool.Count;
+					int moreToAdd = this.ThreadsToUse - this.executorsRunning.Count;
 					if (moreToAdd > 0) {
 						for (int i = moreToAdd; i <= this.ThreadsToUse; i++) {
 							if (this.BacktestsScheduled >= this.BacktestsTotal) break;
 							if (this.AbortedDontScheduleNewBacktests) break;
 							string ctxName1 = OPTIMIZATION_CONTEXT_PREFIX + " " + (this.BacktestsScheduled + 1 + i) + "/" + this.BacktestsTotal;
 							ContextScript ctxNext1 = this.parametersSequencer.GetNextScriptContextSequenced(ctxName1);
-							ScriptExecutor ex = this.executor.CloneForOptimizer(ctxNext1);
-							this.executorPool.Add(ex);
+							ScriptExecutor ex1 = this.executor.CloneForOptimizer(ctxNext1);
+							this.executorsRunning.Add(ex1);
 							this.BacktestsScheduled++;
-							executorCompletePooled.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
+							ex1.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
 						}
 					}
 					if (moreToAdd < 0) {
-						this.executorPool.Remove(executorCompletePooled);
+						//this.executorsRunning.Remove(executorCompletePooled);
 						return;
 					}
 					if (this.BacktestsScheduled >= this.BacktestsTotal) {
@@ -233,16 +237,29 @@ namespace Sq1.Core.Backtesting {
 					if (this.AbortedDontScheduleNewBacktests) return;
 					if (this.inNewThread == false && this.BacktestsScheduled + 1 >= this.BacktestsTotal) return;
 					string ctxName = OPTIMIZATION_CONTEXT_PREFIX + " " + (this.BacktestsScheduled + 1) + "/" + this.BacktestsTotal;
-					executorCompletePooled.Strategy.ScriptContextsByName.Clear();
-					executorCompletePooled.Strategy.ScriptContextAdd(ctxName, this.parametersSequencer.GetNextScriptContextSequenced(ctxName), true);
+					//v1 - only last 4 backtests in optimization are truly unique; previous are pointing to these 4 (4 threads)
+					//executorCompletePooled.Strategy.ScriptContextsByName.Clear();
+					//executorCompletePooled.Strategy.ScriptContextAdd(ctxName, this.parametersSequencer.GetNextScriptContextSequenced(ctxName), true);
+					//this.BacktestsScheduled++;
+					//executorCompletePooled.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
+					//v2 
+					//WENT_UP this.executorsRunning.Remove(executorCompletePooled);
+					ContextScript ctxNext = this.parametersSequencer.GetNextScriptContextSequenced(ctxName);
+					ScriptExecutor ex = this.executor.CloneForOptimizer(ctxNext);
+					this.executorsRunning.Add(ex);
 					this.BacktestsScheduled++;
-					executorCompletePooled.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
+					ex.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException(dbg + dbg2, ex);
 			} finally {
 				this.RaiseOnBacktestComplete(executorCompletePooled.Performance);
 				if (this.BacktestsCompleted >= this.BacktestsTotal) {
+					#if DEBUG
+					if (this.executorsRunning.Count > 0) {
+						Debugger.Break();
+					}
+					#endif
 					this.RaiseOnOptimizationComplete();
 				}
 			}

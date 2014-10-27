@@ -205,7 +205,8 @@ namespace Sq1.Core.StrategyBase {
 		public void ScriptContextAdd(string newScriptContextName, ContextScript absorbParamsFrom = null, bool setAddedAsCurrent = false) {
 			if (this.ScriptContextsByName.ContainsKey(newScriptContextName)) {
 				string msg = "CANT_ADD_EXISTING scriptContextName[" + newScriptContextName + "] already exists for strategy[" + this + "]";
-				Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+				//Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+				Assembler.PopupException(msg, null, false);
 				return;
 				//e.Cancel = true;
 			}
@@ -236,13 +237,15 @@ namespace Sq1.Core.StrategyBase {
 		public void ScriptContextDelete(string scriptContextName) {
 			if (this.ScriptContextsByName.ContainsKey(scriptContextName) == false) {
 				string msg = "CANT_DELETE_NON_EXISITNG scriptContextName[" + scriptContextName + "] doesn't exist for strategy[" + this + "]";
-				Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+				//Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+				Assembler.PopupException(msg);
 				return;
 				//e.Cancel = true;
 			}
 			if (this.ScriptContextCurrent.Name == scriptContextName) {
 				string msg = "CANT_DELETE_CURRENT_LOAD_NEXT_NYI scriptContextName[" + scriptContextName + "] is the current one; load another one first and then delete [" + scriptContextName + "]";
-				Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+				//Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+				Assembler.PopupException(msg);
 				return;
 				//e.Cancel = true;
 			}
@@ -258,13 +261,15 @@ namespace Sq1.Core.StrategyBase {
 			//v2 lock (this.scriptContextCurrentNameLock) {
 				if (scriptContextToRename.Name == scriptContextNewName) {
 					string msg = "WONT_RENAME_TO_SAME_NAME scriptContextNewName[" + scriptContextNewName + "]=scriptContextToRename.Name[" + scriptContextToRename.Name + "], type another name";
-					Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+					//Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+					Assembler.PopupException(msg);
 					return;
 					//e.Cancel = true;
 				}
 				if (this.ScriptContextsByName.ContainsKey(scriptContextNewName)) {
 					string msg = "CANT_RENAME_NAME_ALREADY_EXISTS scriptContextNewName[" + scriptContextNewName + "] already exists for strategy[" + this + "]";
-					Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+					//Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+					Assembler.PopupException(msg);
 					return;
 					//e.Cancel = true;
 				}

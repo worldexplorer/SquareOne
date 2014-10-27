@@ -83,8 +83,9 @@ namespace Sq1.Widgets.SteppingSlider {
 		public ToolStripItem[] TsiDynamic { get {
 				var ret = new List<ToolStripItem>();
 
+				#if DEBUG
 				if (this.mniParameterBagsNotHighlighted.IsDisposed) {
-					//Debugger.Break();
+					Debugger.Break();
 					this.mniParameterBagsNotHighlighted = new Sq1.Widgets.LabeledTextBox.MenuItemLabel();
 					// 
 					// mniParameterBagsNotHighlighted
@@ -95,12 +96,14 @@ namespace Sq1.Widgets.SteppingSlider {
 					this.mniParameterBagsNotHighlighted.Size = new System.Drawing.Size(100, 23);
 					this.mniParameterBagsNotHighlighted.Text = "Script Contexts";
 				}
+				#endif
 				ret.Add(this.mniParameterBagsNotHighlighted);
 
 				ret.AddRange(this.TsiScriptContextsDynamic);
 
+				#if DEBUG
 				if (this.mniltbParametersBagNewWithDefaults.IsDisposed) {
-					//Debugger.Break();
+					Debugger.Break();
 					this.mniltbParametersBagNewWithDefaults = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 					// 
 					// mniltbParametersBagNewWithDefaults
@@ -115,6 +118,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					this.mniltbParametersBagNewWithDefaults.TextRed = false;
 					this.mniltbParametersBagNewWithDefaults.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextNewWithDefaults_UserTyped);
 				}
+				#endif
 				ret.Add(this.mniltbParametersBagNewWithDefaults);
 
 				if (this.toolStripSeparator2.IsDisposed) {
@@ -122,8 +126,9 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 				ret.Add(this.toolStripSeparator2);
 
+				#if DEBUG
 				if (this.mniAllParamsResetToScriptDefaults.IsDisposed) {
-					//Debugger.Break();
+					Debugger.Break();
 					this.mniAllParamsResetToScriptDefaults = new System.Windows.Forms.ToolStripMenuItem();
 					// 
 					// mniAllParamsResetToScriptDefaults
@@ -133,10 +138,12 @@ namespace Sq1.Widgets.SteppingSlider {
 					this.mniAllParamsResetToScriptDefaults.Text = "All Params -> Reset To Script Defaults";
 					this.mniAllParamsResetToScriptDefaults.Click += new System.EventHandler(this.mniAllParamsResetToScriptDefaults_Click);
 				}
+				#endif
 				ret.Add(this.mniAllParamsResetToScriptDefaults);
 
+				#if DEBUG
 				if (this.mniAllParamsShowNumeric.IsDisposed) {
-					//Debugger.Break();
+					Debugger.Break();
 					this.mniAllParamsShowNumeric = new System.Windows.Forms.ToolStripMenuItem();
 					// 
 					// mniAllParamsShowNumeric
@@ -147,10 +154,12 @@ namespace Sq1.Widgets.SteppingSlider {
 					this.mniAllParamsShowNumeric.Text = "All Params -> ShowNumeric";
 					this.mniAllParamsShowNumeric.Click += new System.EventHandler(this.mniAllParamsShowNumeric_Click);
 				}
+				#endif
 				ret.Add(this.mniAllParamsShowNumeric);
 
+				#if DEBUG
 				if (this.mniAllParamsShowBorder.IsDisposed) {
-					//Debugger.Break();
+					Debugger.Break();
 					this.mniAllParamsShowBorder = new System.Windows.Forms.ToolStripMenuItem();
 					// 
 					// mniAllParamsShowBorder
@@ -161,6 +170,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					this.mniAllParamsShowBorder.Text = "All Params -> ShowBorder";
 					this.mniAllParamsShowBorder.Click += new System.EventHandler(this.mniAllParamsShowBorder_Click);
 				}
+				#endif
 				ret.Add(this.mniAllParamsShowBorder);
 
 				return ret.ToArray();

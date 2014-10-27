@@ -64,22 +64,23 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcWinLoss.AspectGetter = delegate(object o) {
 				SystemPerformance systemPerformance = o as SystemPerformance;
 				if (systemPerformance == null) return "olvcWinLoss.AspectGetter: systemPerformance=null";
-				return systemPerformance.SlicesShortAndLong.WinLossRatio.ToString("N2");
+				return systemPerformance.SlicesShortAndLong.WinLossRatio.ToString();
 			};
 			this.olvcProfitFactor.AspectGetter = delegate(object o) {
 				SystemPerformance systemPerformance = o as SystemPerformance;
 				if (systemPerformance == null) return "olvcProfitFactor.AspectGetter: systemPerformance=null";
-				return systemPerformance.SlicesShortAndLong.ProfitFactor.ToString("N2");
+				return systemPerformance.SlicesShortAndLong.ProfitFactor.ToString();
 			};
 			this.olvcRecoveryFactor.AspectGetter = delegate(object o) {
 				SystemPerformance systemPerformance = o as SystemPerformance;
 				if (systemPerformance == null) return "olvcRecoveryFactor.AspectGetter: systemPerformance=null";
-				return systemPerformance.SlicesShortAndLong.RecoveryFactor.ToString("N2");
+				return systemPerformance.SlicesShortAndLong.RecoveryFactor.ToString();
 			};
 			this.olvcMaxDrawdown.AspectGetter = delegate(object o) {
 				SystemPerformance systemPerformance = o as SystemPerformance;
 				if (systemPerformance == null) return "olvcMaxDrawdown.AspectGetter: systemPerformance=null";
-				return systemPerformance.SlicesShortAndLong.MaxDrawDown.ToString();
+				string format = systemPerformance.Bars.SymbolInfo.FormatPrice;
+				return systemPerformance.SlicesShortAndLong.MaxDrawDown.ToString(format);
 			};
 			this.olvcMaxConsecutiveWinners.AspectGetter = delegate(object o) {
 				SystemPerformance systemPerformance = o as SystemPerformance;
@@ -93,22 +94,43 @@ namespace Sq1.Widgets.Optimization {
 			};
 			
 			foreach (OLVColumn colDynParam in this.columnsDynParam) {
-				string colDynParamNameStatic = colDynParam.Name;
-				colDynParam.AspectGetter = delegate(object o) {
-					string colDynParamNameStatic2 = colDynParam.Name;
-					if (colDynParamNameStatic2 != colDynParamNameStatic) {
-						//Debugger.Break();	// THIS_IS_WHY_I_HATE_LAMBDAS
-					}
+				//v1
+				//AspectGetterDelegateWrapper individualDelgateForEachColumn = new AspectGetterDelegateWrapper(colDynParam.Name);
+				//colDynParam.AspectGetter = individualDelgateForEachColumn
+				//string colDynParamNameStatic = colDynParam.Name;
+				//colDynParam.AspectGetter = new AspectGetterDelegate(object o) {
+				//    string colDynParamNameStatic2 = colDynParam.Name;
+				//    if (colDynParamNameStatic2 != colDynParamNameStatic) {
+				//        //Debugger.Break();	// THIS_IS_WHY_I_HATE_LAMBDAS
+				//    }
 
-					SystemPerformance systemPerformance = o as SystemPerformance;
-					if (systemPerformance == null) return colDynParamNameStatic + ".AspectGetter: systemPerformance=null";
-					if (systemPerformance.ScriptAndIndicatorParameterClonesByName.ContainsKey(colDynParamNameStatic) == false) {
-						return colDynParamNameStatic + ".AspectGetter: !systemPerformance.ScriptAndIndicatorParametersByName[" + colDynParamNameStatic + "]";
-					}
-					IndicatorParameter param = systemPerformance.ScriptAndIndicatorParameterClonesByName[colDynParamNameStatic];
-					return param.ValueCurrent.ToString();
-				};
+				//    SystemPerformance systemPerformance = o as SystemPerformance;
+				//    if (systemPerformance == null) return colDynParamNameStatic + ".AspectGetter: systemPerformance=null";
+				//    if (systemPerformance.ScriptAndIndicatorParameterClonesByName.ContainsKey(colDynParamNameStatic) == false) {
+				//        return colDynParamNameStatic + ".AspectGetter: !systemPerformance.ScriptAndIndicatorParametersByName[" + colDynParamNameStatic + "]";
+				//    }
+				//    IndicatorParameter param = systemPerformance.ScriptAndIndicatorParameterClonesByName[colDynParamNameStatic];
+				//    return param.ValueCurrent.ToString();
+				//};
+				// v2: cool but it didn't help
+				AspectGetterDelegateWrapper individualDelgateForEachColumn = new AspectGetterDelegateWrapper(colDynParam.Name);
+				colDynParam.AspectGetter = (AspectGetterDelegate) individualDelgateForEachColumn.AspectGetterDelegateImplementor;
 			}
+		}
+	}
+	class AspectGetterDelegateWrapper {
+		string colDynParamName;
+		public AspectGetterDelegateWrapper(string colDynParamName) {
+			this.colDynParamName = colDynParamName;
+		}
+		public string AspectGetterDelegateImplementor(object o) {
+			SystemPerformance systemPerformance = o as SystemPerformance;
+			if (systemPerformance == null) return colDynParamName + ".AspectGetter: systemPerformance=null";
+			if (systemPerformance.ScriptAndIndicatorParameterClonesByName.ContainsKey(colDynParamName) == false) {
+				return colDynParamName + ".AspectGetter: !systemPerformance.ScriptAndIndicatorParametersByName[" + colDynParamName + "]";
+			}
+			IndicatorParameter param = systemPerformance.ScriptAndIndicatorParameterClonesByName[colDynParamName];
+			return param.ValueCurrent.ToString();
 		}
 	}
 }

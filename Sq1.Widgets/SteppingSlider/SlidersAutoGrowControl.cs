@@ -68,7 +68,15 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.Strategy = strategy;
 
 			base.SuspendLayout();
-			foreach (UserControl control in base.Controls) control.Dispose();
+			foreach (UserControl control in base.Controls) {
+				SliderComboControl  slider = control as SliderComboControl;
+				if (slider == null) {
+					string msg = "let context menus with items live; dispose only the sliders since you're going to rebuild them"
+						+ "; remember you blew up on this.mniAllParamsResetToScriptDefaults.IsDisposed in TsiDynamic {get{}} in commit fb4c86e31ab6d67fa8b9aad2756e0f4b9c14d4db ?...";
+					continue;
+				}
+				slider.Dispose();
+			}
 			base.Controls.Clear();
 			try {
 				if (this.Strategy == null) return;

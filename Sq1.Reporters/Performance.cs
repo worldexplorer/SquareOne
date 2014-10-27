@@ -76,76 +76,71 @@ namespace Sq1.Reporters {
 		protected virtual void GenerateReportForOneColumn(SystemPerformanceSlice slice) {
 			IList<Position> positionsAllReadOnly = slice.PositionsImTrackingReadOnly;  
 
-			this.AddCurrencyValue("Net Profit", slice.NetProfitForClosedPositionsBoth, Color.Empty, Color.Empty, this.GetItemColor(slice.NetProfitForClosedPositionsBoth), FontStyle.Bold, FontStyle.Regular);
-			this.AddNumericValue("Win/Loss Ratio", slice.WinLossRatio, 2, this.GetItemColor(slice.WinLossRatio, 1));
-			this.AddNumericValue("Profit Factor", slice.ProfitFactor, 2, this.GetItemColor(slice.ProfitFactor, 1));
-			this.AddNumericValue("Recovery Factor", slice.RecoveryFactor, 2, this.GetItemColor(slice.ProfitFactor, 1));
-			this.AddNumericValue("Payoff Ratio", slice.PayoffRatio, 2, this.GetItemColor(slice.ProfitFactor, 1));
-			this.AddCurrencyValue("Commission", -slice.CommissionBoth, this.GetItemColor(-slice.CommissionBoth));
+			// NO_FORMATTING_PRINT_AS_IT_IS !!!! YOULL_NEVER_FIND_ROUNDING_ERROR_IF_YOU_ROUND_JUST_BEFORE_PRINTING
+			this.addCurrency("Net Profit", slice.NetProfitForClosedPositionsBoth, Color.Empty, Color.Empty, this.getLviForeColor(slice.NetProfitForClosedPositionsBoth), FontStyle.Bold, FontStyle.Regular);
+			this.addNumeric("Win/Loss Ratio", slice.WinLossRatio, this.getLviForeColor(slice.WinLossRatio, 1));
+			this.addNumeric("Profit Factor", slice.ProfitFactor, this.getLviForeColor(slice.ProfitFactor, 1));
+			this.addNumeric("Recovery Factor", slice.RecoveryFactor, this.getLviForeColor(slice.ProfitFactor, 1));
+			this.addNumeric("Payoff Ratio", slice.PayoffRatio, this.getLviForeColor(slice.ProfitFactor, 1));
+			this.addCurrency("Commission", -slice.CommissionBoth, this.getLviForeColor(-slice.CommissionBoth));
 
-			this.AddNumericValue("All Trades", slice.PositionsCountBoth, 0, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.AddNumericValue("Avg Profit", slice.AvgProfitBoth, 2, this.GetItemColor(slice.AvgProfitBoth));
-			this.AddPercentValue("Avg Profit %", slice.AvgProfitPctBoth, 2, this.GetItemColor(slice.AvgProfitPctBoth));
-			this.AddNumericValue("Avg Bars Held", slice.AvgBarsHeldBoth, 2);
-			this.AddNumericValue("Profit per Bar", slice.ProfitPerBarBoth, 2, this.GetItemColor(slice.NetProfitForClosedPositionsBoth));
-			this.AddCurrencyValue("Max Drawdown", slice.MaxDrawDown, Color.Empty, Color.Empty, this.GetItemColor(slice.MaxDrawDown), FontStyle.Regular, FontStyle.Regular);
-			this.AddDateTimeValue("Max Drawdown Date", slice.MaxDrawDownLastLossDate);
+			this.addNumeric("All Trades", slice.PositionsCountBoth, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
+			this.addNumeric("Avg Profit", slice.AvgProfitBoth, this.getLviForeColor(slice.AvgProfitBoth));
+			this.addPercent("Avg Profit %", slice.AvgProfitPctBoth, this.getLviForeColor(slice.AvgProfitPctBoth));
+			this.addNumeric("Avg Bars Held", slice.AvgBarsHeldBoth);
+			this.addNumeric("Profit per Bar", slice.ProfitPerBarBoth, this.getLviForeColor(slice.NetProfitForClosedPositionsBoth));
+			this.addCurrency("Max Drawdown", slice.MaxDrawDown, Color.Empty, Color.Empty, this.getLviForeColor(slice.MaxDrawDown));
+			this.addDateTime("Max Drawdown Date", slice.MaxDrawDownLastLossDate);
 
-			this.AddNumericValue("Winners", (double)slice.PositionsCountWinners, 0, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.AddPercentValue("Win Rate", slice.WinRatePct, 2, this.GetItemColor(slice.WinRatePct, 50));
-			this.AddCurrencyValue("Net Profit", slice.NetProfitWinners, this.GetItemColor(slice.NetProfitWinners));
-			this.AddNumericValue("Avg Profit", slice.AvgProfitWinners, 2, this.GetItemColor(slice.AvgProfitWinners));
-			this.AddPercentValue("Avg Profit %", slice.AvgProfitPctWinners, 2, this.GetItemColor(slice.AvgProfitPctWinners));
-			this.AddNumericValue("Avg Bars Held", slice.AvgBarsHeldWinners, 2);
-			this.AddNumericValue("Max Consecutive Winners", (double)slice.MaxConsecWinners, 0);
+			this.addNumeric("Winners", (double)slice.PositionsCountWinners, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
+			this.addNumeric("Win Rate", slice.WinRatePct, this.getLviForeColor(slice.WinRatePct, 50));
+			this.addCurrency("Net Profit", slice.NetProfitWinners, this.getLviForeColor(slice.NetProfitWinners));
+			this.addNumeric("Avg Profit", slice.AvgProfitWinners, this.getLviForeColor(slice.AvgProfitWinners));
+			this.addPercent("Avg Profit %", slice.AvgProfitPctWinners, this.getLviForeColor(slice.AvgProfitPctWinners));
+			this.addNumeric("Avg Bars Held", slice.AvgBarsHeldWinners);
+			this.addNumeric("Max Consecutive Winners", (double)slice.MaxConsecWinners);
 
-			this.AddNumericValue("Losers", (double)slice.PositionsCountLosers, 0, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.AddPercentValue("Loss Rate", slice.LossRatePct, 2, this.GetItemColor(slice.LossRatePct, 50));
-			this.AddCurrencyValue("Net Loss", slice.NetLossLosers, this.GetItemColor(slice.NetLossLosers));
-			this.AddNumericValue("Avg Loss", slice.AvgLossLosers, 2, this.GetItemColor(slice.AvgLossLosers));
-			this.AddPercentValue("Avg Loss %", slice.AvgLossPctLosers, 2, this.GetItemColor(slice.AvgLossPctLosers));
-			this.AddNumericValue("Avg Bars Held", slice.AvgBarsHeldLosers, 2);
-			this.AddNumericValue("Max Consecutive Losses", (double)slice.MaxConsecLosers, 0);
+			this.addNumeric("Losers", (double)slice.PositionsCountLosers, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
+			this.addNumeric("Loss Rate", slice.LossRatePct, this.getLviForeColor(slice.LossRatePct, 50));
+			this.addCurrency("Net Loss", slice.NetLossLosers, this.getLviForeColor(slice.NetLossLosers));
+			this.addNumeric("Avg Loss", slice.AvgLossLosers, this.getLviForeColor(slice.AvgLossLosers));
+			this.addPercent("Avg Loss %", slice.AvgLossPctLosers, this.getLviForeColor(slice.AvgLossPctLosers));
+			this.addNumeric("Avg Bars Held", slice.AvgBarsHeldLosers);
+			this.addNumeric("Max Consecutive Losses", (double)slice.MaxConsecLosers);
 		}
 		
-		protected Color GetItemColor(double value, double ethalonRedIfLessBlueIfGreater = 0.0) {
+		Color getLviForeColor(double value, double ethalonRedIfLessBlueIfGreater = 0.0) {
 			if (value == ethalonRedIfLessBlueIfGreater) return this.ForeColor;
 			return (value > ethalonRedIfLessBlueIfGreater) ? Color.Blue : Color.Red;
 		}
-		protected void AddCurrencyValue(string label, double value, Color itemFontColor) {
-			this.AddCurrencyValue(label, value, Color.Empty, Color.Empty, itemFontColor, FontStyle.Regular, FontStyle.Regular);
+		void addCurrency(string label, double value, Color itemFontColor) {
+			this.addCurrency(label, value, Color.Empty, Color.Empty, itemFontColor);
 		}
-		protected void AddCurrencyValue(string label, double value, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
+		void addCurrency(string label, double value,
+				Color backColor, Color labelFontColor, Color itemFontColor,
+				FontStyle labelFontStyle = FontStyle.Regular, FontStyle itemFontStyle = FontStyle.Regular) {
 			string format = systemPerformance.Bars.SymbolInfo.FormatPrice;
 			string valueFormatted = value.ToString(format);
 			this.RenderCell(label, valueFormatted, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
 		}
-		protected void AddNumericValue(string label, double value, int decimalPlaces) {
-			this.AddNumericValue(label, value, decimalPlaces, Color.Empty, Color.Empty, Color.Empty, FontStyle.Regular, FontStyle.Regular);
+		void addNumeric(string label, double value) {
+			this.RenderCell(label, value.ToString(), Color.Empty, Color.Empty, Color.Empty);
 		}
-		protected void AddNumericValue(string label, double value, int decimalPlaces, Color itemFontColor) {
-			this.AddNumericValue(label, value, decimalPlaces, Color.Empty, Color.Empty, itemFontColor, FontStyle.Regular, FontStyle.Regular);
+		void addNumeric(string label, double value, Color itemFontColor) {
+			this.RenderCell(label, value.ToString(), Color.Empty, Color.Empty, itemFontColor);
 		}
-		protected void AddNumericValue(string label, double value, int decimalPlaces, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
-			string valueFormatted = value.ToString("N" + decimalPlaces);
-			this.RenderCell(label, valueFormatted, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
+		void addNumeric(string label, double value, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
+			this.RenderCell(label, value.ToString(), backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
 		}
-		protected void AddPercentValue(string label, double value, int decimalPlaces) {
-			this.AddPercentValue(label, value, decimalPlaces, Color.Empty, Color.Empty, Color.Empty, FontStyle.Regular, FontStyle.Regular);
+		void addPercent(string label, double value, Color itemFontColor) {
+			this.RenderCell(label, value.ToString(), Color.Empty, Color.Empty, itemFontColor);
 		}
-		protected void AddPercentValue(string label, double value, int decimalPlaces, Color itemFontColor) {
-			this.AddPercentValue(label, value, decimalPlaces, Color.Empty, Color.Empty, itemFontColor, FontStyle.Regular, FontStyle.Regular);
+		void addDateTime(string label, DateTime value) {
+			this.RenderCell(label, value.ToShortDateString() + " " + value.ToShortTimeString(), Color.Empty, Color.Empty, Color.Empty);
 		}
-		protected void AddPercentValue(string label, double value, int decimalPlaces, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
-			this.RenderCell(label, value.ToString("N" + decimalPlaces) + "%", backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
-		}
-		protected void AddDateTimeValue(string label, DateTime value) {
-			this.AddDateTimeValue(label, value, Color.Empty, Color.Empty, Color.Empty, FontStyle.Regular, FontStyle.Regular);
-		}
-		protected void AddDateTimeValue(string label, DateTime value, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
-			this.RenderCell(label, value.ToShortDateString() + " " + value.ToShortTimeString(), backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
-		}
-		void RenderCell(string label, string value, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
+		void RenderCell(string label, string valueAlreadyFormatted,
+				Color backColor, Color labelFontColor, Color itemFontColor,
+				FontStyle labelFontStyle = FontStyle.Regular, FontStyle itemFontStyle = FontStyle.Regular) {
 			ListViewItem lvi;
 			if (this.currentColumn == 0) {
 				lvi = this.lvPerformance.Items.Add(label);
@@ -169,7 +164,7 @@ namespace Sq1.Reporters {
 				lvi = this.lvPerformance.Items[this.currentRow];
 				this.currentRow++;
 			}
-			lvi.SubItems.Add(value);
+			lvi.SubItems.Add(valueAlreadyFormatted);
 			if (backColor != Color.Empty) {
 				lvi.SubItems[lvi.SubItems.Count - 1].BackColor = backColor;
 			}
@@ -189,7 +184,7 @@ namespace Sq1.Reporters {
 			text = text.Trim();
 			listViewItem.ToolTipText = this.GetItemDescription(text);
 		}
-		protected virtual string GetItemDescription(string itemName) {
+		string GetItemDescription(string itemName) {
 			//int num = Performance.string_0.IndexOf(itemName + "=");
 			//string text = Performance.string_0.Substring(num + itemName.Length + 1);
 			//num = text.IndexOf('\n');
