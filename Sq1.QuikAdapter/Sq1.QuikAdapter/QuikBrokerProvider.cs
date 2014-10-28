@@ -120,7 +120,7 @@ namespace Sq1.QuikAdapter {
 					}
 				}
 			} catch (Exception exc) {
-				base.StatusReporter.PopupException(exc);
+				base.StatusReporter.PopupException(null, exc);
 			}
 		}
 		public void CallbackOrderStateReceivedQuik(OrderState orderState, string GUID, long SernoExchange,
@@ -154,7 +154,7 @@ namespace Sq1.QuikAdapter {
 				base.OrderProcessor.UpdateOrderStateAndPostProcess(orderExecuted, omsg, fillPrice, fillQnty);
 				//base.TradeManager.appendMessageAndPropagate(orderExecuted, newOrderState);
 			} catch (Exception exc) {
-				base.StatusReporter.PopupException(exc);
+				base.StatusReporter.PopupException(null, exc);
 			}
 			base.CallbackOrderStateReceived(orderExecuted);
 		}

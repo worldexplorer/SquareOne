@@ -35,13 +35,13 @@ namespace Sq1.QuikAdapter.StreamingDdeApi {
 			//if (rowParsed["SHORTNAME"] == "LKOH") {
 			//	int a = 1;
 			//}
-			QuikQuote quikQuote = new QuikQuote();
+			QuikQuote quikQuote = new QuikQuote(DateTime.Now);
 			quikQuote.Source = this.quoteSource + " Topic[" + base.Topic + "]";
 			quikQuote.Symbol = (string)rowParsed["SHORTNAME"];
 			quikQuote.SymbolClass = (string)rowParsed["CLASS_CODE"];
 			quikQuote.Bid = (double)rowParsed["bid"];
 			quikQuote.Ask = (double)rowParsed["offer"];
-			quikQuote.PriceLastDeal = (double)rowParsed["last"];
+			//quikQuote.PriceLastDeal = (double)rowParsed["last"];
 			quikQuote.FortsDepositBuy = (double)rowParsed["buydepo"];
 			quikQuote.FortsDepositSell = (double)rowParsed["selldepo"];
 			quikQuote.FortsPriceMin = (double)rowParsed["pricemin"];

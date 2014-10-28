@@ -171,10 +171,10 @@ namespace Sq1.QuikAdapter {
 		public void PropagateGeneratedQuoteCallback(Quote quote) {
 			if (this.GenerateOnlySymbols.Count > 0 && this.GenerateOnlySymbols.Contains(quote.Symbol) == false) return;
 			quote.Source = "MockQuik";
-			if (quote.PriceLastDeal == 0) {
-				Assembler.PopupException("this.ConsumeDdeDeliveredQuote(" + quote.Symbol + "): returning since CHARTS will screw up painting it; price=0: quote=[" + quote + "]");
-				return;
-			}
+			//if (quote.PriceLastDeal == 0) {
+			//	Assembler.PopupException("this.ConsumeDdeDeliveredQuote(" + quote.Symbol + "): returning since CHARTS will screw up painting it; price=0: quote=[" + quote + "]");
+			//	return;
+			//}
 			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik";
 			base.PushQuoteReceived(quote);
 		}

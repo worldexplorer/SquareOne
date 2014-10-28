@@ -382,7 +382,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			//Assembler.PopupException(msgDebug);
 			if (nMode == 1) return;
 			if (orderExecuted == null) {
-				quikBrokerProvider.StatusReporter.PopupException(new Exception(msgError));
+				quikBrokerProvider.StatusReporter.PopupException(msgError);
 				return;
 			}
 			if (string.IsNullOrEmpty(msgError) == false) {
@@ -450,7 +450,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 					+ orders.SessionSernos
 					+ "] Count=[" + orders.Count + "]";
 				Assembler.PopupException(msg);
-				quikBrokerProvider.StatusReporter.PopupException(new Exception(msg));
+				quikBrokerProvider.StatusReporter.PopupException(msg);
 				return;
 			}
 			//TradeManager.AppendMessageAndPropagate(orderSubmitting, msg);
@@ -585,7 +585,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 				} catch (Exception e) {
 					msgSumbitted = msig + "Couldn't Subscribe(" + SecCode + ", " + ClassCode + "), NOT going to Trans2Quik.SEND_ASYNC_TRANSACTION()";
 					//Assembler.PopupException(msgSumbitted, e);
-					this.quikBrokerProvider.StatusReporter.PopupException(new Exception(msgSumbitted, e));
+					this.quikBrokerProvider.StatusReporter.PopupException(msgSumbitted, e);
 					SernoSession = -999;
 					orderState = OrderState.Error;
 					return;

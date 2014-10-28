@@ -163,16 +163,15 @@ namespace Sq1.QuikAdapter {
 					+ " quote.ServerTime[" + quote.ServerTime + "].AddSeconds(1) >= thisDayClose[" + thisDayClose + "]"
 					+ " quote=[" + quote + "]";
 				Assembler.PopupException(msg);
-				this.StatusReporter.PopupException(new Exception(msg));
 				return;
 			}
-			if (quote.PriceLastDeal == 0) {
-				string msg = "skipping pre-market quote since CHARTS will screw up painting price=0;"
-					+ " quote=[" + quote + "]";
-				Assembler.PopupException(msg);
-				this.StatusReporter.PopupException(new Exception(msg));
-				return;
-			}
+//			if (quote.PriceLastDeal == 0) {
+//				string msg = "skipping pre-market quote since CHARTS will screw up painting price=0;"
+//					+ " quote=[" + quote + "]";
+//				Assembler.PopupException(msg);
+//				this.StatusReporter.PopupException(new Exception(msg));
+//				return;
+//			}
 			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik";
 			base.PushQuoteReceived(quote);
 		}

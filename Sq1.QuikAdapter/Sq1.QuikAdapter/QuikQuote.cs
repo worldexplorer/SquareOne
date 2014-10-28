@@ -9,7 +9,7 @@ namespace Sq1.QuikAdapter {
 		public double FortsPriceMax;
 		public double FortsPriceMin;
 
-		public QuikQuote() : base() {
+		public QuikQuote(DateTime quoteDate) : base(quoteDate) {
 		}
 
 		public void EnrichFromQuikStreamingDataSnapshot(QuikStreamingDataSnapshot quikStreamingDataSnapshot) {

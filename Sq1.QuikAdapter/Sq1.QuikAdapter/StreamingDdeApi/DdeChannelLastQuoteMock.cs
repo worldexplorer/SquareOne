@@ -126,7 +126,7 @@ namespace Sq1.QuikAdapter.StreamingDdeApi {
 				return;
 			}
 			//Assembler.PopupException("pokeWithNewQuote(" + pokesDone + "/" + pokesLimit + "): generating new bar");
-			QuikQuote quikQuote = new QuikQuote();
+			QuikQuote quikQuote = new QuikQuote(DateTime.Now);
 			quikQuote.Source = quoteSource;
 			quikQuote.Symbol = symbol;
 			//quote.SymbolClass = providerMock.SettingsManager.Get("QuikStreamingProvider.SymbolClass", "SPBFUT");
@@ -148,15 +148,15 @@ namespace Sq1.QuikAdapter.StreamingDdeApi {
 			priceStartFrom = (priceIncrement > 0)
 				? Math.Ceiling(priceStartFrom / tickSize) * tickSize
 				: Math.Floor(priceStartFrom / tickSize) * tickSize;
-			quikQuote.PriceLastDeal = priceStartFrom;
+			//quikQuote.PriceLastDeal = priceStartFrom;
 
 			quikQuote.Size = volumeIncrement;
 			if (quikQuote.Absno == this.QuoteAbsnoPriceMutatedToZero && quikQuote.Source == "QUIK_DDE_MOCK") {
-				quikQuote.PriceLastDeal = 0;
+				//quikQuote.PriceLastDeal = 0;
 				Assembler.PopupException("MOCK_TEST_ONCE: setting Price=0 for quote[" + quikQuote + "]; watch CHART skipping it and ORDER with an ERROR");
 			}
-			quikQuote.Bid = quikQuote.PriceLastDeal - spread / 2;
-			quikQuote.Ask = quikQuote.PriceLastDeal + spread / 2;
+			//quikQuote.Bid = quikQuote.PriceLastDeal - spread / 2;
+			//quikQuote.Ask = quikQuote.PriceLastDeal + spread / 2;
 			this.providerMock.PropagateGeneratedQuoteCallback(quikQuote);
 			//streamingProvider.putBestBidAskForSymbol(symbol, quote.Price - spread / 2, quote.Price + spread / 2);
 

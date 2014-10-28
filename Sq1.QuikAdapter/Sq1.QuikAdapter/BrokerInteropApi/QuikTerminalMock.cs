@@ -133,7 +133,7 @@ namespace Sq1.QuikAdapter.BrokerInteropApi {
 								msg = "SimulateRealtimeOrderFill() THREAD_TERMINATING_EXCEPTION: [" + order.State + "]"
 									+ ": " + e.ToString();
 								base.quikBrokerProvider.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-								order.Alert.DataSource.BrokerProvider.StatusReporter.PopupException(e);
+								order.Alert.DataSource.BrokerProvider.StatusReporter.PopupException(msg, e);
 								return;
 							}
 							if (abortTryFill == true) {
@@ -151,7 +151,7 @@ namespace Sq1.QuikAdapter.BrokerInteropApi {
 									msg = "OrderFilledNotifyLikeTerminalCallback(): THREAD_TERMINATING_EXCEPTION: [" + order.State + "]"
 										+ ": " + e.ToString();
 									base.quikBrokerProvider.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-									order.Alert.DataSource.BrokerProvider.StatusReporter.PopupException(e);
+									order.Alert.DataSource.BrokerProvider.StatusReporter.PopupException(msg, e);
 									return;
 								}
 								return;
