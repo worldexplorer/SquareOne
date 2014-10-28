@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="2.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D77772F9-3D3D-40BA-B95F-05C45878078F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NDde</RootNamespace>
+    <AssemblyName>NDde</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <SignAssembly>False</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\PChuchkalov\AppData\Roaming\ICSharpCode/SharpDevelop4\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputPath>bin\Debug\</OutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <StartAction>Project</StartAction>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
+    <Optimize>false</Optimize>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputPath>bin\Release\</OutputPath>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <StartAction>Project</StartAction>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugType>Full</DebugType>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Internal\Advanced\Monitor\DdemlActivityEventArgs.cs" />
+    <Compile Include="Internal\Advanced\Monitor\DdemlMessageActivityEventArgs.cs" />
+    <Compile Include="Internal\Advanced\Monitor\DdemlLinkActivityEventArgs.cs" />
+    <Compile Include="Internal\DdemlEventArgs.cs" />
+    <Compile Include="Internal\Advanced\Monitor\DdemlStringActivityEventArgs.cs" />
+    <Compile Include="Internal\Advanced\Monitor\DdemlErrorActivityEventArgs.cs" />
+    <Compile Include="Internal\Advanced\Monitor\DdemlConversationActivityEventArgs.cs" />
+    <Compile Include="Internal\Advanced\Monitor\DdemlCallbackActivityEventArgs.cs" />
+    <Compile Include="Internal\Server\DdemlConversation.cs" />
+    <Compile Include="Public\Advanced\DdeMessageLoop.cs">
+    </Compile>
+    <Compile Include="Public\Advanced\DdeTransaction.cs" />
+    <Compile Include="Public\Advanced\IDdeTransactionFilter.cs" />
+    <Compile Include="Public\Advanced\Monitor\DdeCallbackActivityEventArgs.cs" />
+    <Compile Include="Public\Advanced\Monitor\DdeConversationActivityEventArgs.cs" />
+    <Compile Include="Public\Advanced\Monitor\DdeErrorActivityEventArgs.cs" />
+    <Compile Include="Public\Advanced\Monitor\DdeLinkActivityEventArgs.cs" />
+    <Compile Include="Public\Advanced\Monitor\DdeMessageActivityEventArgs.cs" />
+    <Compile Include="Public\Advanced\Monitor\DdeActivityEventArgs.cs" />
+    <Compile Include="Public\Advanced\Monitor\DdeMonitor.cs" />
+    <None Include="Public\Advanced\Monitor\DdeStringActivityEventArgs.cs" />
+    <Compile Include="Public\Client\DdeClient.cs" />
+    <Compile Include="Public\Advanced\DdeContext.cs">
+    </Compile>
+    <Compile Include="Public\DdeEventArgs.cs" />
+    <Compile Include="Public\Server\DdeConversation.cs" />
+    <Compile Include="Public\DdeException.cs" />
+    <Compile Include="Public\Client\DdeAdviseEventArgs.cs" />
+    <Compile Include="Public\Client\DdeDisconnectedEventArgs.cs" />
+    <Compile Include="Internal\Advanced\IDdemlTransactionFilter.cs" />
+    <Compile Include="Internal\Advanced\DdemlTransaction.cs" />
+    <Compile Include="Public\Advanced\DdeRegistrationEventArgs.cs" />
+    <Compile Include="Internal\Advanced\DdemlRegistrationEventArgs.cs" />
+    <Compile Include="Internal\Client\DdemlDisconnectedEventArgs.cs" />
+    <Compile Include="Internal\Ddeml.cs" />
+    <Compile Include="Internal\Client\DdemlAdviseEventArgs.cs" />
+    <Compile Include="Internal\Client\DdemlClient.cs" />
+    <Compile Include="Internal\Advanced\DdemlContext.cs" />
+    <Compile Include="Internal\DdemlException.cs" />
+    <Compile Include="Internal\Advanced\Monitor\DdemlMonitor.cs" />
+    <Compile Include="Internal\Server\DdemlServer.cs" />
+    <Compile Include="Public\Server\DdeServer.cs" />
+    <Compile Include="Documentation\NamespaceDoc.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Internal\Utility\WeakReferenceDictionary.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Documentation\Examples.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

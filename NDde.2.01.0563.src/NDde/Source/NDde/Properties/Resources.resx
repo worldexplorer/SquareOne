@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="StringParameterInvalidMessage" xml:space="preserve">
+    <value>The parameter must be &lt;= 255 characters.</value>
+  </data>
+  <data name="ConnectFailedMessage" xml:space="preserve">
+    <value>The client failed to connect to "${service}|${topic}".  Make sure the server application is running and that it supports the specified service name and topic name pair.</value>
+  </data>
+  <data name="NotConnectedMessage" xml:space="preserve">
+    <value>The client is not connected.</value>
+  </data>
+  <data name="TimeoutParameterInvalidMessage" xml:space="preserve">
+    <value>The parameter must be &gt; 0.</value>
+  </data>
+  <data name="ExecuteFailedMessage" xml:space="preserve">
+    <value>The client failed to execute "${command}".</value>
+  </data>
+  <data name="PokeFailedMessage" xml:space="preserve">
+    <value>The client failed to poke "${service}|${topic}!${item}".</value>
+  </data>
+  <data name="RequestFailedMessage" xml:space="preserve">
+    <value>The client failed to request "${service}|${topic}!${item}".</value>
+  </data>
+  <data name="AsyncResultParameterInvalidMessage" xml:space="preserve">
+    <value>The IAsyncResult must have been returned by a call to ${method}.</value>
+  </data>
+  <data name="AlreadyBeingAdvisedMessage" xml:space="preserve">
+    <value>An advise loop for "${service}|${topic}!${item}" already exists.</value>
+  </data>
+  <data name="StartAdviseFailedMessage" xml:space="preserve">
+    <value>The client failed to initiate an advise loop for "${service}|${topic}!${item}".</value>
+  </data>
+  <data name="NotBeingAdvisedMessage" xml:space="preserve">
+    <value>An advise loop for "${service}|${topic}!${item}" does not exist.</value>
+  </data>
+  <data name="StopAdviseFailedMessage" xml:space="preserve">
+    <value>The client failed to terminate the advise loop for "${service}|${topic}!${item}".</value>
+  </data>
+  <data name="InitializeFailedMessage" xml:space="preserve">
+    <value>The context failed to initialize.</value>
+  </data>
+  <data name="RegisterFailedMessage" xml:space="preserve">
+    <value>The server failed to register "${service}".</value>
+  </data>
+  <data name="AdviseFailedMessage" xml:space="preserve">
+    <value>The server failed to advise "${service}|${topic}!${item}".</value>
+  </data>
+  <data name="ClientPauseFailedMessage" xml:space="preserve">
+    <value>The client failed to pause the conversation.</value>
+  </data>
+  <data name="ClientResumeFailedMessage" xml:space="preserve">
+    <value>The client failed to resume the conversation.</value>
+  </data>
+  <data name="ServerPauseFailedMessage" xml:space="preserve">
+    <value>The server failed to pause the specified conversation.</value>
+  </data>
+  <data name="ServerResumeFailedMessage" xml:space="preserve">
+    <value>The server failed to resume the specified conversation.</value>
+  </data>
+  <data name="ServerPauseAllFailedMessage" xml:space="preserve">
+    <value>The server failed to pause all conversations.</value>
+  </data>
+  <data name="ServerResumeAllFailedMessage" xml:space="preserve">
+    <value>The server failed to resume all conversations.</value>
+  </data>
+  <data name="AlreadyPausedMessage" xml:space="preserve">
+    <value>The specified conversation is already paused.</value>
+  </data>
+  <data name="NotPausedMessage" xml:space="preserve">
+    <value>The specified conversation is not paused.</value>
+  </data>
+  <data name="AlreadyConnectedMessage" xml:space="preserve">
+    <value>The client is already connected.</value>
+  </data>
+  <data name="NotRegisteredMessage" xml:space="preserve">
+    <value>The service is not registered.</value>
+  </data>
+  <data name="AlreadyRegisteredMessage" xml:space="preserve">
+    <value>The service is already registered.</value>
+  </data>
+  <data name="FilterNotAddedMessage" xml:space="preserve">
+    <value>The transaction filter has not been added.</value>
+  </data>
+  <data name="FilterAlreadyAddedMessage" xml:space="preserve">
+    <value>The transaction filter has already been added.</value>
+  </data>
+  <data name="NotInitializedMessage" xml:space="preserve">
+    <value>The context is not initialized.</value>
+  </data>
+  <data name="NoMessageLoopMessage" xml:space="preserve">
+    <value>The context is not hosted on a thread with a message loop.</value>
+  </data>
+  <data name="AlreadyInitializedMessage" xml:space="preserve">
+    <value>The context is already intialized.</value>
+  </data>
+  <data name="MarshalTimeoutMessage" xml:space="preserve">
+    <value>The context timed out attempting to marshal the operation.</value>
+  </data>
+  <data name="UnknownErrorMessage" xml:space="preserve">
+    <value>An unknown error occurred.</value>
+  </data>
+</root>
