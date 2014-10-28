@@ -53,7 +53,6 @@ namespace Sq1.Widgets.Optimization {
 			backtests = new List<SystemPerformance>();
 			columnsDynParam = new List<OLVColumn>();
 		}
-
 		public void Initialize(Optimizer optimizer) {
 			this.optimizer = optimizer;
 			if (this.optimizer == null) {
@@ -75,6 +74,9 @@ namespace Sq1.Widgets.Optimization {
 			
 			this.optimizer.OnOptimizationAborted -= new EventHandler<EventArgs>(Optimizer_OnOptimizationAborted);
 			this.optimizer.OnOptimizationAborted += new EventHandler<EventArgs>(Optimizer_OnOptimizationAborted);
+
+            this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild -= new EventHandler<EventArgs>(Optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
+            this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild += new EventHandler<EventArgs>(Optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
 
 			this.txtDataRange.Text = this.optimizer.DataRangeAsString;
 			this.txtPositionSize.Text = this.optimizer.PositionSizeAsString;

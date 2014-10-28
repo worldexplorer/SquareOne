@@ -23,7 +23,8 @@ namespace Sq1.Core.Indicators {
 //			} }
 		[JsonIgnore]	public int NumberOfRuns { get {
 				if (this.ValueIncrement <= 0.0) return 1;
-				return (int)Math.Round(((this.ValueMax - this.ValueMin) / this.ValueIncrement) + 1.0);
+				int ret = (int)Math.Floor((this.ValueMax - this.ValueMin) / this.ValueIncrement) + 1;
+                return ret;
 			} }
 
 		//public string ValueString;
@@ -85,6 +86,12 @@ namespace Sq1.Core.Indicators {
 				Debugger.Break();
 				#endif
 				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMax  = this.ValueMax;
+			}
+            if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement != this.ValueIncrement) {
+				#if DEBUG
+				//Debugger.Break();
+				#endif
+                ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement = this.ValueIncrement;
 			}
 		}
 		// USED_TO_SEPARATE_LONG_LIVING_SCRIPT_INDICATOR_PARAMETER_INSTANCE__FROM_SWITCHING_CONTEXT_INDICATOR_SETTINGS

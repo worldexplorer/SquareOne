@@ -55,11 +55,11 @@ namespace Sq1.Widgets.SteppingSlider {
 					Debugger.Break();
 					return;
 				}
-				if (value != this.RoundToClosestStep(value)) {
-					Debugger.Break();
-					return;
+                decimal roundedChangesSliders = this.RoundToClosestStep(value);
+                if (value != roundedChangesSliders) {
+					//Debugger.Break();
 				}
-				valueCurrent = value;
+                valueCurrent = roundedChangesSliders;
 				this.RaiseValueCurrentChanged();
 				this.Invalidate();
 			}

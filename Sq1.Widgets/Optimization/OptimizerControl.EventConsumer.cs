@@ -63,6 +63,12 @@ namespace Sq1.Widgets.Optimization {
 		void Optimizer_OnOptimizationAborted(object sender, EventArgs e) {
 			this.Optimizer_OnOptimizationComplete(sender, e);
 		}
+        void Optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild(object sender, EventArgs e) {
+            this.txtScriptParameterTotalNr.Text = this.optimizer.ScriptParametersTotalNr.ToString();
+            this.txtIndicatorParameterTotalNr.Text = this.optimizer.IndicatorParameterTotalNr.ToString();
+            int backtestsTotal = this.optimizer.BacktestsTotal;
+            this.btnRunCancel.Text = "Run " + backtestsTotal + " backtests";
+        }
 		void btnPauseResume_Click(object sender, EventArgs e) {
 			Assembler.PopupException(null, new NotImplementedException());
 		}

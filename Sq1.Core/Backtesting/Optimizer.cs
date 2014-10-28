@@ -307,6 +307,27 @@ namespace Sq1.Core.Backtesting {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		
-	}
+
+        public EventHandler<EventArgs> OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild;
+
+        public bool ScriptRecompiledColumnsRebuildPostponed;
+        public void RaiseScriptRecompiledUpdateHeaderPostponeColumnsRebuild() {
+            this.ScriptRecompiledColumnsRebuildPostponed = true;
+
+            int scriptParametersTotalNr = this.ScriptParametersTotalNr;
+            int indicatorParameterTotalNr = this.IndicatorParameterTotalNr;
+            if (scriptParametersTotalNr == 0) {
+                this.BacktestsTotal = indicatorParameterTotalNr;
+            }
+            if (indicatorParameterTotalNr == 0) {
+                this.BacktestsTotal = scriptParametersTotalNr;
+            }
+            if (scriptParametersTotalNr > 0 && indicatorParameterTotalNr > 0) {
+                this.BacktestsTotal = scriptParametersTotalNr * indicatorParameterTotalNr;
+            }
+
+            if (this.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild == null) return;
+            this.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild(this, null);
+        }
+    }
 }

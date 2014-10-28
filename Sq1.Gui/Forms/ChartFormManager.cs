@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -524,6 +524,7 @@ namespace Sq1.Gui.Forms {
 			foreach (DockContent form in this.dockPanel.Contents) {
 				anotherEditor = form as ScriptEditorForm;
 				if (anotherEditor == null) continue;
+				if (anotherEditor.Pane == null) continue;
 				mainPanelOrAnotherEditorsPanel = anotherEditor.Pane.DockPanel;
 				break;
 			}
@@ -595,6 +596,7 @@ namespace Sq1.Gui.Forms {
 					this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerSuccess();
 				}
 				this.Strategy.Script.Initialize(this.Executor);
+                this.Executor.Optimizer.RaiseScriptRecompiledUpdateHeaderPostponeColumnsRebuild();
 			}
 			// moved to StrategyCompileActivatePopulateSlidersShow() because no need to PopulateSliders during Deserialization
 			//SlidersForm.Instance.Initialize(this.Strategy);

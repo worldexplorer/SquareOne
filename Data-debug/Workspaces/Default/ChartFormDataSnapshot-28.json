@@ -1,8 +1,8 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "07e7825e-8e85-4e90-a852-bf04377cdc37",
-  "StrategyNameJsonCheck": "EnterEveryBarCompiled",
-  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json",
+  "StrategyGuidJsonCheck": "4c7274f7-ab63-498b-b448-b7bc09f7263b",
+  "StrategyNameJsonCheck": "EnterEveryBar",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\my\\EnterEveryBar.json",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -21,11 +21,11 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 30
+        "Distance": 216
       }
     },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 1,
+    "BarWidthIncludingPadding": 8,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -35,12 +35,12 @@
     "GutterRightColorBackground": "Gainsboro",
     "GutterRightColorForeground": "Black",
     "GutterRightPadding": 5,
-    "GutterRightFont": "Microsoft Sans Serif, 8pt",
+    "GutterRightFont": "Consolas, 8pt",
     "GutterBottomColorBackground": "Gainsboro",
     "GutterBottomColorForeground": "Black",
     "GutterBottomNewDateColorForeground": "Green",
     "GutterBottomPadding": 2,
-    "GutterBottomFont": "Microsoft Sans Serif, 8pt",
+    "GutterBottomFont": "Consolas, 8pt",
     "GridlinesHorizontalColor": "WhiteSmoke",
     "GridlinesVerticalColor": "WhiteSmoke",
     "GridlinesVerticalNewDateColor": "Lime",
@@ -59,7 +59,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 566,
+    "ScrollPositionAtBarIndex": 582,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -75,7 +75,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 477,
+    "PriceVsVolumeSplitterDistance": 0,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
@@ -84,11 +84,11 @@
     "BarsBackgroundTransparencyAlpha": 24,
     "ChartLabelsUpperLeftYstartTopmost": 18,
     "ChartLabelsUpperLeftX": 5,
-    "ChartLabelsUpperLeftPlatePadding": 3,
+    "ChartLabelsUpperLeftPlatePadding": 1,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
     "ChartLabelsUpperLeftIndicatorSquareSize": 5,
     "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
   },
-  "ChartSerno": 15,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json], ScriptContextCurrentName[?Default?]"
+  "ChartSerno": 28,
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\my\\EnterEveryBar.json], ScriptContextCurrentName[?Default?]"
 }
