@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{32CE7489-6617-4157-83A6-2CFDF054CE77}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Sq1.QuikAdapter</RootNamespace>
+    <AssemblyName>Sq1.Adapters.Quik</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>4096</FileAlignment>
+    <TargetFrameworkProfile />
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <SignAssembly>False</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputPath>..\Sq1.Gui\bin\Debug\</OutputPath>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <Optimize>false</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputPath>..\Sq1.Gui\bin\Release\</OutputPath>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <OutputPath>..\Sq1.Gui\bin\Release\</OutputPath>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants />
+    <OutputPath>..\Sq1.Gui\bin\Debug\</OutputPath>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataFeed\Dde\DdeChannelDepth.cs" />
+    <Compile Include="DataFeed\Dde\DdeChannelLastQuote.cs" />
+    <Compile Include="DataFeed\Dde\DdeChannels.cs" />
+    <Compile Include="DataFeed\Dde\DdeChannelTrades.cs" />
+    <Compile Include="DataFeed\Dde\DdeQuote.cs" />
+    <Compile Include="DataFeed\Dde\DdeQuoteType.cs" />
+    <Compile Include="DataFeed\Dde\DdeTrade.cs" />
+    <Compile Include="DataFeed\Dde\DdeTradeOp.cs" />
+    <Compile Include="DataFeed\Dde\XlDde\XlColumn.cs" />
+    <Compile Include="DataFeed\Dde\XlDde\XlDdeChannel.cs" />
+    <Compile Include="DataFeed\Dde\XlDde\XlDdeServer.cs" />
+    <Compile Include="DataFeed\Dde\XlDde\XlRowParsed.cs" />
+    <Compile Include="DataFeed\Dde\XlDde\XlTable.cs" />
+    <Compile Include="DataFeed\QuoteQuik.cs" />
+    <Compile Include="DataFeed\StaticQuikEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataFeed\StaticQuik.cs" />
+    <Compile Include="DataFeed\StreamingDataSnapshotQuik.cs" />
+    <Compile Include="DataFeed\StreamingQuikEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataFeed\StreamingQuik.cs" />
+    <Compile Include="OrderExecution\BrokerQuikEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OrderExecution\BrokerQuik.cs" />
+    <Compile Include="OrderExecution\OrderCallbackDupesCheckerQuik.cs" />
+    <Compile Include="OrderExecution\Terminal\QuikConnectionState.cs" />
+    <Compile Include="OrderExecution\Terminal\QuikTerminal.cs" />
+    <Compile Include="OrderExecution\Terminal\Trans2Quik.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NDde.2.01.0563.src\NDde\Source\NDde\NDde.csproj">
+      <Project>{D77772F9-3D3D-40BA-B95F-05C45878078F}</Project>
+      <Name>NDde</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
+      <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
+      <Name>Sq1.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DataFeed\StaticQuikEditor.resx">
+      <DependentUpon>StaticQuikEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DataFeed\StreamingQuikEditor.resx">
+      <DependentUpon>StreamingQuikEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OrderExecution\BrokerQuikEditor.resx">
+      <DependentUpon>BrokerQuikEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\imgQuikStaticProvider.bmp" />
+    <Content Include="Resources\imgQuikStreamingProvider.bmp" />
+    <None Include="OrderExecution\Terminal\TRANS2QUIK-1.1.0.10.dll.copy" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DataFeed\Dde" />
+    <Folder Include="DataFeed\Dde\XlDde" />
+    <Folder Include="DataFeed" />
+    <Folder Include="OrderExecution" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
