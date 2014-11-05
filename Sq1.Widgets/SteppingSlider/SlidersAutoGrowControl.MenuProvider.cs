@@ -123,6 +123,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				if (this.toolStripSeparator2.IsDisposed) {
 					Debugger.Break();
+					this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 				}
 				ret.Add(this.toolStripSeparator2);
 

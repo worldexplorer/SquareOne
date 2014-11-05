@@ -601,10 +601,15 @@ namespace Sq1.Gui.Forms {
 			// moved to StrategyCompileActivatePopulateSlidersShow() because no need to PopulateSliders during Deserialization
 			//SlidersForm.Instance.Initialize(this.Strategy);
 			this.Executor.ChartShadow.HostPanelForIndicatorClear();		//non-DLL-strategy multiple F5s add PanelIndicator endlessly
+			this.Executor.Optimizer.Initialize();						// removes "optimizerInitializedProperly == false" on app restart => Optimizer fills up with Script&Indicator Prarmeters for a JSON-based strategy
 		}
 		public void StrategyCompileActivatePopulateSlidersShow() {
 			if (this.Strategy.ActivatedFromDll == false) this.StrategyCompileActivateBeforeShow();
 			else Debugger.Break();
+
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) {
+				this.OptimizerFormShow(false);			// OptimizerForm gets Initialize()d on Symbol / DataRange / PositionSize change as well
+			}
 
 			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
 				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
