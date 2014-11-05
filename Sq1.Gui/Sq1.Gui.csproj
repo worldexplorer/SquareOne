@@ -239,8 +239,8 @@
       <Project>{E580A3F0-6BED-4649-A159-58998CC077F3}</Project>
       <Name>WinFormsUI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Json45r11\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3</Project>
       <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
     <ProjectReference Include="..\ObjectListView_280-src\ObjectListView2010.csproj">
