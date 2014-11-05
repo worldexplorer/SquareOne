@@ -21,8 +21,8 @@
       "IsCurrent": true,
       "ChartAutoSubmitting": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
-      "BacktestOnRestart": false,
-      "BacktestOnSelectorsChange": false,
+      "BacktestOnRestart": true,
+      "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
@@ -48,8 +48,8 @@
       "SlippageTicks": 1,
       "PriceLevelSizeForBonds": 0,
       "Name": "Default",
-      "Symbol": "LKOH",
-      "DataSourceName": "STATIC",
+      "Symbol": "RIM3",
+      "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
