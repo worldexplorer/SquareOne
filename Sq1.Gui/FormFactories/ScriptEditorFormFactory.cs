@@ -15,22 +15,18 @@ namespace Sq1.Gui.FormFactories {
 		private const string prefixWhenNeedsToBeSaved = "* ";
 		private RepositoryDllJsonStrategy strategyRepository;
 		private ChartFormManager chartFormManager;
-
-		public ScriptEditorFormFactory(ChartFormManager chartFormsManager, RepositoryDllJsonStrategy strategyRepository) {
-			this.chartFormManager = chartFormsManager;
-			this.strategyRepository = strategyRepository;
-		}
-
 		private ScriptEditorForm scriptEditorForm {
 			get { return this.chartFormManager.ScriptEditorFormConditionalInstance; }
 			set { this.chartFormManager.ScriptEditorForm = value; }
 		}
-
 		private Strategy strategy {
 			get { return this.chartFormManager.Strategy; }
 			set { this.chartFormManager.Strategy = value; }
 		}
-
+		public ScriptEditorFormFactory(ChartFormManager chartFormsManager, RepositoryDllJsonStrategy strategyRepository) {
+			this.chartFormManager = chartFormsManager;
+			this.strategyRepository = strategyRepository;
+		}
 		public void CreateEditorFormSubscribePushToManager(ChartFormManager chartFormsManager) {
 			this.scriptEditorForm = new ScriptEditorForm(chartFormsManager);
 			this.scriptEditorForm.ScriptEditorControl.OnSave += ScriptEditorControl_OnSave;
@@ -40,7 +36,6 @@ namespace Sq1.Gui.FormFactories {
 			this.scriptEditorForm.ScriptEditorControl.OnTextNotSaved += ScriptEditorControl_OnTextNotSaved;
 			this.scriptEditorForm.Disposed += editorForm_Disposed;
 		}
-
 		void ScriptEditorControl_OnTextNotSaved(object sender, ScriptEditorEventArgs e) {
 			try {
 				if (this.chartFormManager.ScriptEditedNeedsSaving) return;
@@ -69,6 +64,7 @@ namespace Sq1.Gui.FormFactories {
 			}
 			try {
 				this.chartFormManager.StrategyCompileActivatePopulateSlidersShow();
+				this.chartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 			} catch (Exception ex) {
 				Assembler.PopupException("COMPILING_STRATEGY_SOURCE_CODE_FAILED //ScriptEditorControl_OnCompile() << StrategyCompileActivatePopulateSlidersShow() has thrown", ex);
 			}

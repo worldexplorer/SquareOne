@@ -30,7 +30,6 @@ namespace Sq1.Gui.Forms {
 			this.MniShowOptimizer = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxStrategy = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniStrategyContextLoad = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniStrategyOptimize = new System.Windows.Forms.ToolStripMenuItem();
 			this.DdbStrategy = new System.Windows.Forms.ToolStripDropDownButton();
 			this.CtxReporters = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.DdbReporters = new System.Windows.Forms.ToolStripDropDownButton();
@@ -69,8 +68,6 @@ namespace Sq1.Gui.Forms {
 			// ctxBacktest
 			// 
 			this.ctxBacktest.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.MniShowOptimizer,
-									this.toolStripSeparator3,
 									this.mniBacktestOnDataSourceSaved,
 									this.mniBacktestOnRestart,
 									this.mniBacktestOnSelectorsChange,
@@ -167,7 +164,7 @@ namespace Sq1.Gui.Forms {
 			// 
 			this.mniStrategyRemove.Name = "mniStrategyRemove";
 			this.mniStrategyRemove.Size = new System.Drawing.Size(226, 22);
-			this.mniStrategyRemove.Text = "Remove Strategy From Chart";
+			this.mniStrategyRemove.Text = "NYI Remove Strategy From Chart";
 			this.mniStrategyRemove.Enabled = false;
 			// 
 			// MniShowSourceCodeEditor
@@ -190,8 +187,9 @@ namespace Sq1.Gui.Forms {
 			// 
 			this.ctxStrategy.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 									this.mniStrategyContextLoad,
-									this.mniStrategyOptimize,
 									this.mniStrategyRemove,
+									this.toolStripSeparator3,
+									this.MniShowOptimizer,
 									this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
 			this.ctxStrategy.Size = new System.Drawing.Size(227, 92);
@@ -202,14 +200,7 @@ namespace Sq1.Gui.Forms {
 			this.mniStrategyContextLoad.Enabled = false;
 			this.mniStrategyContextLoad.Name = "mniStrategyContextLoad";
 			this.mniStrategyContextLoad.Size = new System.Drawing.Size(226, 22);
-			this.mniStrategyContextLoad.Text = "Load Context...";
-			// 
-			// mniStrategyOptimize
-			// 
-			this.mniStrategyOptimize.Enabled = false;
-			this.mniStrategyOptimize.Name = "mniStrategyOptimize";
-			this.mniStrategyOptimize.Size = new System.Drawing.Size(226, 22);
-			this.mniStrategyOptimize.Text = "Optimize...";
+			this.mniStrategyContextLoad.Text = "NYI Load Script Context...";
 			// 
 			// DdbStrategy
 			// 
@@ -370,7 +361,7 @@ namespace Sq1.Gui.Forms {
 			this.mniShowBarRange.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniShowBarRange.Name = "mniShowBarRange";
 			this.mniShowBarRange.Size = new System.Drawing.Size(225, 22);
-			this.mniShowBarRange.Text = "Show Range Selector";
+			this.mniShowBarRange.Text = "Show Bars Range Selector";
 			this.mniShowBarRange.Click += new System.EventHandler(this.mniShowBarRange_Click);
 			// 
 			// TsiProgressBarETA

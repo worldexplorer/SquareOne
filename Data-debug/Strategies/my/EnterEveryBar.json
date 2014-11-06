@@ -21,8 +21,8 @@
       "IsCurrent": true,
       "ChartAutoSubmitting": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
-      "BacktestOnRestart": true,
-      "BacktestOnSelectorsChange": true,
+      "BacktestOnRestart": false,
+      "BacktestOnSelectorsChange": false,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
@@ -61,10 +61,10 @@
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
         "Range": 1,
-        "StartDate": "2009-08-07T00:00:00-04:00",
-        "EndDate": "2014-08-07T00:00:00-04:00",
-        "RecentBars": 900,
-        "RecentTimeunits": 10
+        "StartDate": "0001-01-01T00:00:00",
+        "EndDate": "9999-12-31T23:59:59.9999999",
+        "RecentBars": 800,
+        "RecentTimeunits": 0
       },
       "ChartStreaming": false,
       "ShowRangeBar": false,

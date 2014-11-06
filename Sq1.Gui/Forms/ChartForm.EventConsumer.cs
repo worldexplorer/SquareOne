@@ -21,11 +21,11 @@ namespace Sq1.Gui.Forms {
 			//_preCalcPricesHandleTradeMenuItemsGuiThread();
 		}
 		void ctxStrategy_Opening(object sender, CancelEventArgs e) {
+			this.MniShowOptimizer.Checked = this.ChartFormManager.OptimizerIsOnSurface;
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
 		}
 		void ctxBacktest_Opening(object sender, CancelEventArgs e) {
-			this.MniShowOptimizer.Checked = this.ChartFormManager.OptimizerIsOnSurface;
 		}
 
 		void MniShowSourceCodeEditor_Click(object sender, System.EventArgs e) {
@@ -139,6 +139,7 @@ namespace Sq1.Gui.Forms {
 				ContextChart context = this.ChartFormManager.ContextCurrentChartOrStrategy;
 				context.ScaleInterval = scaleIntervalUserEntered;
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mniltbAll_UserTyped");
+				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniltbMinutes_UserTyped()", ex);
 			}
@@ -188,6 +189,7 @@ namespace Sq1.Gui.Forms {
 				this.mniShowBarRange_Click(sender, null);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbShowLastBars_UserTyped");
+				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbShowLastBars_UserTyped()", ex);
 			}
@@ -231,6 +233,7 @@ namespace Sq1.Gui.Forms {
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbPositionSizeSharesConstant_UserTyped");
+				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeSharesConstant_UserTyped()", ex);
 			}
@@ -255,6 +258,7 @@ namespace Sq1.Gui.Forms {
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped");
+				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped()", ex);
 			}

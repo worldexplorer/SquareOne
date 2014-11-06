@@ -14,6 +14,8 @@ namespace Sq1.Widgets.Optimization {
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+			this.lblStaleReason = new System.Windows.Forms.Label();
+			this.txtStaleReason = new System.Windows.Forms.TextBox();
 			this.btnPauseResume = new System.Windows.Forms.Button();
 			this.nudThreadsToRun = new System.Windows.Forms.NumericUpDown();
 			this.lblIndicatorParameterTotalNr = new System.Windows.Forms.Label();
@@ -73,6 +75,8 @@ namespace Sq1.Widgets.Optimization {
 			// splitContainer1.Panel1
 			// 
 			this.splitContainer1.Panel1.BackColor = System.Drawing.SystemColors.Control;
+			this.splitContainer1.Panel1.Controls.Add(this.lblStaleReason);
+			this.splitContainer1.Panel1.Controls.Add(this.txtStaleReason);
 			this.splitContainer1.Panel1.Controls.Add(this.btnPauseResume);
 			this.splitContainer1.Panel1.Controls.Add(this.nudThreadsToRun);
 			this.splitContainer1.Panel1.Controls.Add(this.lblIndicatorParameterTotalNr);
@@ -91,15 +95,35 @@ namespace Sq1.Widgets.Optimization {
 			this.splitContainer1.Panel1.Controls.Add(this.btnRunCancel);
 			this.splitContainer1.Panel1.Controls.Add(this.lblStats);
 			this.splitContainer1.Panel1.Controls.Add(this.progressBar1);
+			this.splitContainer1.Panel1MinSize = 27;
 			// 
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer1.Panel2.Controls.Add(this.olvBacktests);
 			this.splitContainer1.Size = new System.Drawing.Size(685, 671);
-			this.splitContainer1.SplitterDistance = 27;
+			this.splitContainer1.SplitterDistance = 135;
 			this.splitContainer1.SplitterIncrement = 27;
 			this.splitContainer1.TabIndex = 0;
+			// 
+			// lblStaleReason
+			// 
+			this.lblStaleReason.Location = new System.Drawing.Point(5, 120);
+			this.lblStaleReason.Name = "lblStaleReason";
+			this.lblStaleReason.Size = new System.Drawing.Size(105, 17);
+			this.lblStaleReason.TabIndex = 38;
+			this.lblStaleReason.Text = "Stale Reason";
+			this.lblStaleReason.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// txtStaleReason
+			// 
+			this.txtStaleReason.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtStaleReason.Enabled = false;
+			this.txtStaleReason.Location = new System.Drawing.Point(116, 117);
+			this.txtStaleReason.Name = "txtStaleReason";
+			this.txtStaleReason.Size = new System.Drawing.Size(564, 20);
+			this.txtStaleReason.TabIndex = 37;
 			// 
 			// btnPauseResume
 			// 
@@ -310,7 +334,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvBacktests.SelectColumnsOnRightClickBehaviour = BrightIdeasSoftware.ObjectListView.ColumnSelectBehaviour.None;
 			this.olvBacktests.ShowCommandMenuOnRightClick = true;
 			this.olvBacktests.ShowGroups = false;
-			this.olvBacktests.Size = new System.Drawing.Size(685, 640);
+			this.olvBacktests.Size = new System.Drawing.Size(685, 532);
 			this.olvBacktests.TabIndex = 0;
 			this.olvBacktests.TintSortColumn = true;
 			this.olvBacktests.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.HotTrack;
@@ -331,6 +355,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcSerno.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcSerno.Text = "#";
 			this.olvcSerno.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcSerno.ToolTipText = "Backtest's serial number";
 			this.olvcSerno.Width = 25;
 			// 
 			// olvcTotalTrades
@@ -338,7 +363,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcTotalTrades.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcTotalTrades.Text = "#Pos";
 			this.olvcTotalTrades.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcTotalTrades.ToolTipText = "TotalTrades";
+			this.olvcTotalTrades.ToolTipText = "TotalPositions generated";
 			this.olvcTotalTrades.Width = 41;
 			// 
 			// olvcAverageProfit
@@ -346,7 +371,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcAverageProfit.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcAverageProfit.Text = "Avg";
 			this.olvcAverageProfit.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcAverageProfit.ToolTipText = "AverageProfit";
+			this.olvcAverageProfit.ToolTipText = "AverageProfit per Position Closed";
 			this.olvcAverageProfit.Width = 50;
 			// 
 			// olvcNetProfit
@@ -362,7 +387,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcWinLoss.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcWinLoss.Text = "WL";
 			this.olvcWinLoss.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcWinLoss.ToolTipText = "WinLoss";
+			this.olvcWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss";
 			this.olvcWinLoss.Width = 35;
 			// 
 			// olvcProfitFactor
@@ -370,7 +395,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcProfitFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcProfitFactor.Text = "PF";
 			this.olvcProfitFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcProfitFactor.ToolTipText = "ProfitFactor";
+			this.olvcProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost";
 			this.olvcProfitFactor.Width = 32;
 			// 
 			// olvcRecoveryFactor
@@ -378,7 +403,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcRecoveryFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcRecoveryFactor.Text = "RF";
 			this.olvcRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcRecoveryFactor.ToolTipText = "RecoveryFactor";
+			this.olvcRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown";
 			this.olvcRecoveryFactor.Width = 32;
 			// 
 			// olvcMaxDrawdown
@@ -386,7 +411,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcMaxDrawdown.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMaxDrawdown.Text = "DD";
 			this.olvcMaxDrawdown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMaxDrawdown.ToolTipText = "MaxDrawdown";
+			this.olvcMaxDrawdown.ToolTipText = "MaxDrawdown, $";
 			this.olvcMaxDrawdown.Width = 63;
 			// 
 			// olvcMaxConsecutiveWinners
@@ -418,32 +443,32 @@ namespace Sq1.Widgets.Optimization {
 									this.mniCopyToClipboard,
 									this.mniSaveCsv});
 			this.ctxOneBacktestResult.Name = "ctxOneBacktestResult";
-			this.ctxOneBacktestResult.Size = new System.Drawing.Size(407, 176);
+			this.ctxOneBacktestResult.Size = new System.Drawing.Size(444, 176);
 			this.ctxOneBacktestResult.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOneBacktestResult_Opening);
 			// 
 			// mniInfo
 			// 
 			this.mniInfo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.mniInfo.Name = "mniInfo";
-			this.mniInfo.Size = new System.Drawing.Size(406, 22);
+			this.mniInfo.Size = new System.Drawing.Size(443, 22);
 			this.mniInfo.Text = "Net(-33,5415.00)PF(2.3)RF(5.6) > MA_ATRcompiled-DLL aaa";
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(403, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(440, 6);
 			// 
 			// mniCopyToDefaultCtxBacktest
 			// 
 			this.mniCopyToDefaultCtxBacktest.Name = "mniCopyToDefaultCtxBacktest";
-			this.mniCopyToDefaultCtxBacktest.Size = new System.Drawing.Size(406, 22);
+			this.mniCopyToDefaultCtxBacktest.Size = new System.Drawing.Size(443, 22);
 			this.mniCopyToDefaultCtxBacktest.Text = "Copy To Default Context, Backtest";
 			this.mniCopyToDefaultCtxBacktest.Click += new System.EventHandler(this.mniCopyToDefaultCtxBacktest_Click);
 			// 
 			// mniCopyToDefaultCtx
 			// 
 			this.mniCopyToDefaultCtx.Name = "mniCopyToDefaultCtx";
-			this.mniCopyToDefaultCtx.Size = new System.Drawing.Size(406, 22);
+			this.mniCopyToDefaultCtx.Size = new System.Drawing.Size(443, 22);
 			this.mniCopyToDefaultCtx.Text = "Copy To Default Context";
 			this.mniCopyToDefaultCtx.Click += new System.EventHandler(this.mniCopyToDefaultCtx_Click);
 			// 
@@ -459,7 +484,7 @@ namespace Sq1.Widgets.Optimization {
 			this.mniltbCopyToNewContextBacktest.Text = "Copy To New Context, Backtest:";
 			this.mniltbCopyToNewContextBacktest.TextOffsetX = 0;
 			this.mniltbCopyToNewContextBacktest.TextRed = false;
-			this.mniltbCopyToNewContextBacktest.TextWidth = 179;
+			this.mniltbCopyToNewContextBacktest.TextWidth = 165;
 			this.mniltbCopyToNewContextBacktest.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContextBacktest_UserTyped);
 			// 
 			// mniltbCopyToNewContext
@@ -474,19 +499,19 @@ namespace Sq1.Widgets.Optimization {
 			this.mniltbCopyToNewContext.Text = "Copy To New Context:";
 			this.mniltbCopyToNewContext.TextOffsetX = 0;
 			this.mniltbCopyToNewContext.TextRed = false;
-			this.mniltbCopyToNewContext.TextWidth = 129;
+			this.mniltbCopyToNewContext.TextWidth = 117;
 			this.mniltbCopyToNewContext.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContext_UserTyped);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(403, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(440, 6);
 			// 
 			// mniCopyToClipboard
 			// 
 			this.mniCopyToClipboard.Enabled = false;
 			this.mniCopyToClipboard.Name = "mniCopyToClipboard";
-			this.mniCopyToClipboard.Size = new System.Drawing.Size(406, 22);
+			this.mniCopyToClipboard.Size = new System.Drawing.Size(443, 22);
 			this.mniCopyToClipboard.Text = "Copy To Clipboard (Paste-able to Excel)";
 			this.mniCopyToClipboard.Click += new System.EventHandler(this.mniCopyToClipboard_Click);
 			// 
@@ -494,7 +519,7 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			this.mniSaveCsv.Enabled = false;
 			this.mniSaveCsv.Name = "mniSaveCsv";
-			this.mniSaveCsv.Size = new System.Drawing.Size(406, 22);
+			this.mniSaveCsv.Size = new System.Drawing.Size(443, 22);
 			this.mniSaveCsv.Text = "Save as CSV...";
 			this.mniSaveCsv.Click += new System.EventHandler(this.mniSaveCsv_Click);
 			// 
@@ -516,6 +541,8 @@ namespace Sq1.Widgets.Optimization {
 			this.ctxOneBacktestResult.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.TextBox txtStaleReason;
+		private System.Windows.Forms.Label lblStaleReason;
 
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbCopyToNewContext;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbCopyToNewContextBacktest;

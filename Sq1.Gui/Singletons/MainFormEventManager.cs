@@ -54,7 +54,7 @@ namespace Sq1.Gui.Singletons {
 			//strategy.ScriptContextCurrent.PositionSize = SelectorsForm.Instance.PositionSizeSelector.Popup.PositionSize;
 			//this.chartCreateShowPopulateSelectorsSliders(strategy);
 			//v2
-			e.scriptContextName = "Default";
+			e.scriptContextName = ContextScript.DEFAULT_NAME;
 			this.StrategiesTree_OnStrategyDoubleClicked_NewChart(sender, e);
 		}
 		internal void StrategiesTree_OnStrategyLoadClicked(object sender, StrategyEventArgs e) {

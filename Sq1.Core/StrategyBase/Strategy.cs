@@ -66,7 +66,7 @@ namespace Sq1.Core.StrategyBase {
 		// deserializer's constructor
 		public Strategy() {
 			this.Guid = Guid.NewGuid();
-			this.ScriptContextCurrentName = "Default";
+			this.ScriptContextCurrentName = ContextScript.DEFAULT_NAME;
 			this.ScriptContextsByName = new Dictionary<string, ContextScript>();
 			this.ScriptContextsByName.Add(this.ScriptContextCurrentName, new ContextScript(this.ScriptContextCurrentName));
 			this.ScriptCompiler = new ScriptCompiler();

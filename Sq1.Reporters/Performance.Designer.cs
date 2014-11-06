@@ -49,7 +49,6 @@ namespace Sq1.Reporters {
 			this.lvPerformance.TabIndex = 3;
 			this.lvPerformance.UseCompatibleStateImageBehavior = false;
 			this.lvPerformance.View = System.Windows.Forms.View.Details;
-			this.lvPerformance.SelectedIndexChanged += new System.EventHandler(this.lvReport_SelectedIndexChanged);
 			// 
 			// colKpiTitles
 			// 

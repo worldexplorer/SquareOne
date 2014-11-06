@@ -16,19 +16,40 @@ namespace Sq1.Widgets.Optimization {
 			if (this.optimizer.IsRunningNow) {
 				this.optimizer.OptimizationAbort();
 				this.btnPauseResume.Enabled = false;
-			} else {
+				return;
+			}
+			
+			string staleReason = this.optimizer.StaleReason;
+			bool clickedToClearAndPrepareForNewOptimization = string.IsNullOrEmpty(staleReason) == false;
+			if (clickedToClearAndPrepareForNewOptimization) {
 				this.backtests.Clear();
 				this.olvBacktests.SetObjects(this.backtests, true);
-				int threadsLaunched = this.optimizer.OptimizationRun();
-				this.btnRunCancel.Text = "Cancel " + this.optimizer.BacktestsRemaining + " backtests";
-				//this.btnPauseResume.Enabled = true;
-				this.olvBacktests.EmptyListMsg = threadsLaunched + " threads launched";
-				//this.olvBacktests.UseWaitCursor = true;
+				this.optimizer.ClearIWasRunFor();
+				this.PopulateTextboxesFromExecutorsState();
+				this.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
+				this.btnPauseResume.Text = "Pause/Resume";
+				return;
 			}
+			
+			this.backtests.Clear();
+			this.olvBacktests.SetObjects(this.backtests, true);
+			int threadsLaunched = this.optimizer.OptimizationRun();
+			this.btnRunCancel.Text = "Cancel " + this.optimizer.BacktestsRemaining + " backtests";
+			//this.btnPauseResume.Enabled = true;
+			this.olvBacktests.EmptyListMsg = threadsLaunched + " threads launched";
+			//this.olvBacktests.UseWaitCursor = true;
+			this.splitContainer1.SplitterDistance = this.heightCollapsed;
 		}
-		void Optimizer_OnBacktestComplete(object sender, SystemPerformanceEventArgs e) {
+//		void optimizer_OnBacktestStarted(object sender, EventArgs e) {
+//			if (base.InvokeRequired) {
+//				base.BeginInvoke((MethodInvoker)delegate { this.optimizer_OnBacktestStarted(sender, e); });
+//				return;
+//			}
+//			this.splitContainer1.SplitterDistance = heightCollapsed;
+//		}
+		void optimizer_OnBacktestComplete(object sender, SystemPerformanceEventArgs e) {
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.Optimizer_OnBacktestComplete(sender, e); });
+				base.BeginInvoke((MethodInvoker)delegate { this.optimizer_OnBacktestComplete(sender, e); });
 				return;
 			}
 			this.backtests.Add(e.SystemPerformance);

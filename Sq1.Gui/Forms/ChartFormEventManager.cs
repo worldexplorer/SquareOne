@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
@@ -60,38 +61,11 @@ namespace Sq1.Gui.Forms {
 				if (contextChart.DataSourceName != e.DataSource.Name)	contextChart.DataSourceName = e.DataSource.Name; 
 				if (contextChart.Symbol			!= e.Symbol) 			contextChart.Symbol 		= e.Symbol;
 				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("DataSourcesTree_OnSymbolSelected");
+				this.chartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 			} catch (Exception ex) {
 				Assembler.PopupException("DataSourcesTree_OnSymbolSelected()", ex);
 			}
 		}
-//		internal void BarScaleIntervalSelector_OnBarDataScaleChangedUserMouse(object sender, BarScaleIntervalEventArgs e) {
-//			try {
-//				ContextChart context = this.chartFormManager.ContextCurrentChartOrStrategy;
-//				context.ScaleInterval = e.BarScaleInterval;
-//				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("BarScaleIntervalSelector_OnBarDataScaleChangedUserMouse");
-//			} catch (Exception ex) {
-//				Assembler.PopupException("BarScaleIntervalSelector_OnBarDataScaleChangedUserMouse", ex);
-//			}
-//		}
-//		internal void BarDataRangeSelector_OnBarDataRangeChangedUserMouse(object sender, BarDataRangeEventArgs e) {
-//			try {
-//				ContextChart context = this.chartFormManager.ContextCurrentChartOrStrategy;
-//				context.DataRange = e.BarDataRange;
-//				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("BarDataRangeSelector_OnBarDataRangeChangedUserMouse");
-//			} catch (Exception ex) {
-//				Assembler.PopupException("BarDataRangeSelector_OnBarDataRangeChangedUserMouse", ex);
-//			}
-//		}
-//		internal void PositionSizeSelector_OnPositionChangedUserMouse(object sender, PositionSizeEventArgs e) {
-//			try {
-//				ContextChart context = this.chartFormManager.ContextCurrentChartOrStrategy;
-//				context.PositionSize = e.PositionSize;
-//				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("PositionSizeSelector_OnPositionChangedUserMouse", false);
-//			} catch (Exception ex) {
-//				Assembler.PopupException("PositionSizeSelector_OnPositionChangedUserMouse", ex);
-//			}
-//		}
-
 		internal void MainForm_ActivateDocumentPane_WithChart(object sender, EventArgs e) {
 			//v1
 			//ScriptEditorForm  scriptEditorFormCorresponding = chartFormClicked.ChartFormsManager.ScriptEditorFormConditionalInstance;
@@ -115,6 +89,12 @@ namespace Sq1.Gui.Forms {
 
 			this.chartFormManager.ReportersFormsManager.PopupReporters_OnParentChartActivated(sender, e);
 			this.chartFormManager.ChartForm.ChartControl.RangeBar.Enabled = false;
+			
+			if (this.chartFormManager.OptimizerForm == null) {
+				string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
+			} else {
+				this.chartFormManager.OptimizerFormShow(false);
+			}
 		}
 		internal void Executor_BacktesterContextInitializedStep2of4(object sender, EventArgs e) {
 			if (this.chartFormManager.ChartForm == null) return;
@@ -217,6 +197,7 @@ namespace Sq1.Gui.Forms {
 			BarDataRange newRange = new BarDataRange(e.ValueMin.Date, e.ValueMax.Date);
 			try {
 				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("ChartRangeBar_AnyValueChanged");
+				this.chartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 			} catch (Exception ex) {
 				Assembler.PopupException("ChartRangeBar_AnyValueChanged", ex);
 			}
