@@ -1,9 +1,10 @@
 ﻿using System;
+
+using Sq1.Core;
 using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
-using Sq1.Core;
 
 namespace Sq1.Gui.FormFactories {
 	public class OptimizerFormFactory {	// REASON_TO_EXIST: way to refresh Sliders and run Chart.Backtest() for added ContextScript from Sq1.Widgets.dll:OptimizationControl
@@ -50,15 +51,15 @@ namespace Sq1.Gui.FormFactories {
 		void optimizerControl_OnCopyToContextDefault(object sender, ContextScriptEventArgs e) {
 			ContextScript ctxAdding = e.ContextScript;
 			Strategy strategyOnChart = this.chartFormManager.Strategy;
-			if (strategyOnChart.ScriptContextsByName.ContainsKey("Default") == false) {
+			if (strategyOnChart.ScriptContextsByName.ContainsKey(ContextScript.DEFAULT_NAME) == false) {
 				string msg = "strategyOnChart.ScriptContextsByName.ContainsKey(Default) == false";
 				Assembler.PopupException(msg);
 				return;
 			}
-			strategyOnChart.ScriptContextsByName["Default"].AbsorbFrom(ctxAdding);
+			strategyOnChart.ScriptContextsByName[ContextScript.DEFAULT_NAME].AbsorbFrom(ctxAdding);
 			SlidersForm.Instance.Show();
 			SlidersForm.Instance.Initialize(SlidersForm.Instance.SlidersAutoGrowControl.Strategy);
-			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized("Default");
+			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(ContextScript.DEFAULT_NAME);
 		}
 		void optimizerForm_Disposed(object sender, EventArgs e) {
 			// both at FormCloseByX and MainForm.onClose()

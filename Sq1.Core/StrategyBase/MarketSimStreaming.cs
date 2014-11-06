@@ -507,10 +507,12 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "ONE_ALERT_FILLED_REPORTED_MANY_WAS_FILLED SHOULD_NEVER_HAPPEN";
 					Assembler.PopupException(msg);
 				}
+				#if OUT_OF_SPREAD_PARANOID_CHECK
 				if (filled == 1) {
 					bool isFilledOutsideQuote	= alert.IsFilledOutsideQuote_DEBUG_CHECK;
-					bool isFilledOutsideBar		 = alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK;
+					bool isFilledOutsideBar		= alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK;
 				}
+				#endif
 
 				if (this.executor.ExecutionDataSnapshot.AlertsPendingContains(alert)) {
 					string msg = "normally, the filled alert already removed by CallbackAlertFilledMoveAroundInvokeScript()";

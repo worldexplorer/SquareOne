@@ -21,8 +21,7 @@ namespace Sq1.Gui.ReportersSupport {
 		public MenuItemsProvider MenuItemsProvider;
 		public int deserializeIndex = 0;
 		
-		public Dictionary<string, DockContent> FormsAllRelated {
-			get {
+		public Dictionary<string, DockContent> FormsAllRelated { get {
 				var ret = new Dictionary<string, DockContent>();
 				foreach (string reporterName in this.ReporterShortNamesUserInvoked.Keys) {
 					Reporter reporter = this.ReporterShortNamesUserInvoked[reporterName];
@@ -35,10 +34,7 @@ namespace Sq1.Gui.ReportersSupport {
 					ret.Add(reporterName, parentForm);
 				}
 				return ret;
-			}
-		}
-
-
+			} }
 
 		public ReportersFormsManager(ChartFormManager chartFormManager, RepositoryDllReporters repository) {
 			this.ChartFormManager = chartFormManager;
@@ -99,7 +95,7 @@ namespace Sq1.Gui.ReportersSupport {
 		public ReporterFormWrapper ReporterActivateShowRegisterMniTick(string typeNameShortOrFullAutodetect, bool show=true) {
 			string typeNameShort = this.repository.ShrinkTypeName(typeNameShortOrFullAutodetect);
 			Reporter reporterActivated = this.repository.ActivateFromTypeName(typeNameShortOrFullAutodetect);
-			object reportersSnapshot = this.FindOrCreateReportersSnapshot(reporterActivated);
+			object reportersSnapshot = this.findOrCreateReportersSnapshot(reporterActivated);
 			reporterActivated.Initialize(this.ChartFormManager.ChartForm.ChartControl as ChartShadow, reportersSnapshot);
 			var ret = new ReporterFormWrapper(this, reporterActivated);
 			//ret.Text = reporterActivated.TabText + " :: " + this.ChartFormsManager.Strategy.Name;
@@ -113,7 +109,7 @@ namespace Sq1.Gui.ReportersSupport {
 			}
 			return ret;
 		}
-		object FindOrCreateReportersSnapshot(Reporter reporterActivated) {
+		object findOrCreateReportersSnapshot(Reporter reporterActivated) {
 			Strategy strategy = this.ChartFormManager.Executor.Strategy;
 			if (strategy == null) {
 				string msg = "STRATEGY_MUST_NOT_BE_NULL ChartFormManager.Executor.Strategy";

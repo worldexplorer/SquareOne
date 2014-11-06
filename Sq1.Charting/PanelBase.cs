@@ -265,7 +265,8 @@ namespace Sq1.Charting {
 			// 2) paints Right and Bottom gutter foregrounds;
 
 			
-			string msig = " " + this.PanelName + ".PanelPrice,Volume.PaintWholeSurfaceBarsNotEmpty()";
+			string msig = " " + this.PanelName + ".PanelPrice,Volume.PaintWholeSurfaceBarsNotEmpty() "
+				+ this.BarsIdent + " " + this.Parent.ToString();
 			this.VisibleMin_cached = this.VisibleMinDoubleMaxValueUnsafe;
 			this.VisibleMax_cached = this.VisibleMaxDoubleMinValueUnsafe;
 			this.VisibleRange_cached = this.VisibleMax_cached - this.VisibleMin_cached;
@@ -299,7 +300,7 @@ namespace Sq1.Charting {
 				// gridStep will throw an ArithmeticException
 				string msg = "[" + this.PanelName + "]-RANGE_MUST_BE_POSITIVE";
 				//Debugger.Break();
-				Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
 			

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
+using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core;
@@ -13,14 +13,8 @@ namespace Sq1.Gui.Singletons {
 	public partial class MainForm {
 		private const string dockContentLayoutXml = "Sq1.Gui.Layout.xml";
 		private const string dockContentLayoutXmlInitial = "Sq1.Gui.Layout.Initial.xml";
-
-		public string LayoutXml {
-			get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXml); }
-		}
-		public string LayoutXmlInitial {
-			get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXmlInitial); }
-		}
-
+		public string LayoutXml { get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXml); } }
+		public string LayoutXmlInitial { get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXmlInitial); } }
 		ChartFormManager chartFormManagerDeserialized;
 	
 		private IDockContent PersistStringInstantiator(string persistedTypeFullName) {
@@ -67,7 +61,6 @@ namespace Sq1.Gui.Singletons {
 			}
 			return ret;
 		}
-
 		private IDockContent handleClassesWithGetPersistStringOverridden(string persistedSpecialString) {
 			string msig = "handleClassesWithGetPersistStringOverridden(" + persistedSpecialString + "): ";
 			IDockContent ret = null;

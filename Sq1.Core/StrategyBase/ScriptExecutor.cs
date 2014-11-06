@@ -487,7 +487,6 @@ namespace Sq1.Core.StrategyBase {
 			List<Position> positionsOpenedAfterAlertFilled = new List<Position>();
 			List<Position> positionsClosedAfterAlertFilled = new List<Position>();
 
-			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerProvider knows to pass Bar here?...
 			Bar barFill = (this.IsStreaming) ? alertFilled.Bars.BarStreamingCloneReadonly : alertFilled.Bars.BarStaticLastNullUnsafe;
 			if (barFillRelno != barFill.ParentBarsIndex) {
 				string msg = "barFillRelno[" + barFillRelno + "] != barFill.ParentBarsIndex["

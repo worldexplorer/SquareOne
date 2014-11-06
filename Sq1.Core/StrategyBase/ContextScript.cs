@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public class ContextScript : ContextChart {
+		[JsonIgnore]	public const string DEFAULT_NAME = "Default";
+		
 		[JsonProperty]	public PositionSize PositionSize;
 		[JsonProperty]	public Dictionary<int, ScriptParameter> ScriptParametersById { get; set; }
 		[JsonProperty]	public Dictionary<string, List<IndicatorParameter>> IndicatorParametersByName { get; set; }	//  { get; set; } is needed for Json.Deserialize to really deserialize it

@@ -259,6 +259,9 @@ namespace Sq1.Gui.Forms {
 				// STRATEGY_CLICK_TO_CHART_DOESNT_BACKTEST this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
 				// ALL_SORT_OF_STARTUP_ERRORS this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, false);
 				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, skipBacktestDuringDeserialization);
+				if (skipBacktestDuringDeserialization == false) {
+					this.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
 				Assembler.PopupException(msg + msig, ex);
@@ -495,6 +498,12 @@ namespace Sq1.Gui.Forms {
 			
 			this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterCompleteOnceOnRestart), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
+
+			//NOT_SURE
+			Debugger.Break();
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) {
+				this.OptimizerFormShow(false);
+			}
 		}
 		public void ReportersDumpCurrentForSerialization() {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
@@ -548,6 +557,7 @@ namespace Sq1.Gui.Forms {
 			}
 			this.OptimizerFormConditionalInstance.Show(mainPanelOrAnotherOptimizersPanel);
 			this.OptimizerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+			this.OptimizerFormConditionalInstance.OptimizerControl.Refresh();	// olvBacktest doens't repaint while having results?...
 		}
 		
 		const string prefixWhenNeedsToBeSaved = "* ";
@@ -607,10 +617,6 @@ namespace Sq1.Gui.Forms {
 			if (this.Strategy.ActivatedFromDll == false) this.StrategyCompileActivateBeforeShow();
 			else Debugger.Break();
 
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) {
-				this.OptimizerFormShow(false);			// OptimizerForm gets Initialize()d on Symbol / DataRange / PositionSize change as well
-			}
-
 			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
 				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
 				this.Strategy.Script.PullParametersFromCurrentContextSaveStrategyIfAbsorbedFromScript();
@@ -645,5 +651,26 @@ namespace Sq1.Gui.Forms {
 			this.PopulateSliders();
 		}
 
+		
+		public void OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults() {
+			if (this.OptimizerForm == null) {
+				string msg = "ADDED_CONDITION_UPSTACK_TO_AVOID JUST_WANNA_KNOW_IF_I_EVER_CHECK_FOR_STALE_BEFORE_FORM_IS_CREATED";
+				#if DEBUG
+				//Assembler.PopupException(msg);
+				#endif
+				return;
+			}
+			
+			string staleReason = null;
+			staleReason = this.OptimizerFormConditionalInstance.OptimizerControl.PopulateTextboxesFromExecutorsState();
+			
+			bool clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize = string.IsNullOrEmpty(staleReason) == false;
+			if (clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize == false) {
+				int a = 1;
+				//return;
+			}
+			this.OptimizerFormConditionalInstance.OptimizerControl
+				.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
+		}
 	}
 }

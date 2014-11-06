@@ -11,6 +11,7 @@ namespace Sq1.Core.Backtesting {
 		ScriptExecutor executor;
 		OptimizerParametersSequencer parametersSequencer;
 
+		public event EventHandler<EventArgs>					OnBacktestStarted;
 		// since Optimizer.backtests is multithreaded list, I imply OptimizerControl.backtests to keep its own copy for ObjectListView to freely crawl over it without interference (instead of providing Optimizer.BacktestsThreadSafeCopy)  
 		public event EventHandler<SystemPerformanceEventArgs>	OnBacktestComplete;
 		public event EventHandler<EventArgs>					OnOptimizationComplete;
@@ -24,7 +25,7 @@ namespace Sq1.Core.Backtesting {
 					//+ executor.Strategy.IndicatorParametersAsStringByIdJSONcheck
 				;
 			} }
-		public string SymbolAsString { get {
+		public string SymbolScaleIntervalAsString { get {
 				ContextScript ctx = this.executor.Strategy.ScriptContextCurrent;
 				return ctx.DataSourceName
 					+ " :: " + ctx.Symbol
@@ -66,12 +67,43 @@ namespace Sq1.Core.Backtesting {
 		
 		public Stopwatch stopWatch;
 		
+		string iWasRunForSymbolScaleIntervalAsString;
+		string iWasRunForDataRangeAsString;
+		string iWasRunForPositionSizeAsString;
+		
+		public string StaleReason { get {
+				if (this.backtests.Count == 0) {
+					return null;	//optimization hasn't started yet => it isn't stale, nothing to make red;
+				}
+				if (this.iWasRunForSymbolScaleIntervalAsString != this.SymbolScaleIntervalAsString) {
+					string msg = "iWasRunFor[" + this.iWasRunForSymbolScaleIntervalAsString
+						+ "] != [" + this.SymbolScaleIntervalAsString + "]ScriptContextCurrent.Symbol+ScaleInterval";
+					return msg;
+				}
+				if (this.iWasRunForDataRangeAsString != this.DataRangeAsString) {
+					string msg = "iWasRunFor[" + this.iWasRunForDataRangeAsString
+						+ "] != [" + this.DataRangeAsString + "]ScriptContextCurrent.DataRange";
+					return msg;
+				}
+				if (this.iWasRunForPositionSizeAsString != this.PositionSizeAsString) {
+					string msg = "iWasRunFor[" + this.iWasRunForPositionSizeAsString
+						+ "] != [" + this.PositionSizeAsString + "]ScriptContextCurrent.PositionSize";
+					return msg;
+				}
+				return null;
+			} }
+		public void ClearIWasRunFor() {
+			this.iWasRunForSymbolScaleIntervalAsString = null;
+			this.iWasRunForDataRangeAsString = null;
+			this.iWasRunForPositionSizeAsString = null;
+			this.backtests.Clear();
+		}
+		
 		public Optimizer(ScriptExecutor executor) {
 			this.executor = executor;
 			backtests = new List<SystemPerformance>();
 			executorsRunning = new List<ScriptExecutor>();
 			backtestsLock = new object();
-			executorPoolLock = new object();
 			inNewThread = true;
 			CpuCoresAvailable = inNewThread ? Environment.ProcessorCount : 1;
 			ThreadsToUse = CpuCoresAvailable;
@@ -134,15 +166,14 @@ namespace Sq1.Core.Backtesting {
 		}
 		
 		object backtestsLock;
-		object executorPoolLock;
 		List<SystemPerformance> backtests;
 		List<ScriptExecutor> executorsRunning;
 		public bool IsRunningNow;
 		public bool AbortedDontScheduleNewBacktests;
 		public void OptimizationAbort() {
 			this.AbortedDontScheduleNewBacktests = true;
-			lock(executorPoolLock) {
-				foreach (var ex in executorsRunning) {
+			lock (this.backtestsLock) {
+				foreach (var ex in this.executorsRunning) {
 					string msg = "OPTIMIZER_CANCELLED " + this.executorsRunning.IndexOf(ex) + "/" + this.executorsRunning.Count;
 					ex.Backtester.AbortRunningBacktestWaitAborted(msg, 0);
 				}
@@ -155,7 +186,6 @@ namespace Sq1.Core.Backtesting {
 			this.parametersSequencer = new OptimizerParametersSequencer(this.executor.Strategy.ScriptContextCurrent);
 			this.BacktestsCompleted = 0;
 			this.BacktestsScheduled = 0;
-			//lock(executorPoolLock) {
 			lock(this.backtestsLock) {
 				this.AbortedDontScheduleNewBacktests = false;
 				this.IsRunningNow = true;
@@ -176,6 +206,12 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 			stopWatch.Restart();
+
+			this.iWasRunForSymbolScaleIntervalAsString	= this.SymbolScaleIntervalAsString;
+			this.iWasRunForDataRangeAsString			= this.DataRangeAsString;
+			this.iWasRunForPositionSizeAsString			= this.PositionSizeAsString;
+			this.RaiseOnBacktestStarted();
+
 			return this.BacktestsScheduled;
 		}
 		void afterBacktesterComplete(ScriptExecutor executorCompletePooled) {
@@ -210,7 +246,6 @@ namespace Sq1.Core.Backtesting {
 					this.executorsRunning.Remove(executorCompletePooled);
 
 					//}
-					//lock(this.executorPoolLock) {	// helps also with atomic BacktestsRemaining operations
 					//this.BacktestsRemaining--;
 					int moreToAdd = this.ThreadsToUse - this.executorsRunning.Count;
 					if (moreToAdd > 0) {
@@ -262,6 +297,20 @@ namespace Sq1.Core.Backtesting {
 					#endif
 					this.RaiseOnOptimizationComplete();
 				}
+			}
+		}
+		public void RaiseOnBacktestStarted() {
+			if (this.AbortedDontScheduleNewBacktests) return;
+			if (this.OnBacktestStarted == null) {
+				string msg = "OPTIMIZER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_BACKTEST_STARTED";
+				//SETTING_COLLAPSED_FROM_BTN_RUN_CLICK  Assembler.PopupException(msg);
+				return;
+			}
+			try {
+				this.OnBacktestStarted(this, EventArgs.Empty);
+			} catch (Exception ex) {
+				string msg = "OPTIMIZER_CONTROL_THREW_ON_BACKTEST_STARTED";
+				Assembler.PopupException(msg, ex);
 			}
 		}
 		public void RaiseOnBacktestComplete(SystemPerformance clone) {
