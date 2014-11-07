@@ -1,0 +1,80 @@
+{
+  "$type": "Sq1.Core.DataFeed.DataSource, Sq1.Core",
+  "SymbolSelected": "",
+  "Symbols": [
+    "autogen"
+  ],
+  "ScaleInterval": {
+    "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+    "Scale": 3,
+    "Interval": 5,
+    "IsIntraday": true,
+    "AsTimeSpanInSeconds": 300,
+    "AsTimeSpan": "00:05:00"
+  },
+  "StaticProvider": {
+    "$type": "Sq1.Adapters.QuikMock.StaticMock, Sq1.Adapters.QuikMock"
+  },
+  "StreamingProvider": {
+    "$type": "Sq1.Adapters.QuikMock.StreamingMock, Sq1.Adapters.QuikMock",
+    "QuoteDelay": 1000,
+    "GenerateOnlySymbols": [],
+    "StreamingDataSnapshot": {
+      "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
+      "FortsDepositSell": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
+      },
+      "FortsDepositBuy": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
+      },
+      "FortsPriceMin": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
+      },
+      "FortsPriceMax": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
+      },
+      "BestBid": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
+        "autogen": 158015.0
+      },
+      "BestAsk": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
+        "autogen": 158035.0
+      },
+      "LastQuotesReceived": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
+        "RIMg": null,
+        "autogen": null
+      }
+    }
+  },
+  "BrokerProvider": {
+    "$type": "Sq1.Adapters.QuikMock.BrokerMock, Sq1.Adapters.QuikMock",
+    "Account": {
+      "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
+      "AccountNumber": "ACCTNR_NOT_SET",
+      "CashAvailable": -1000.0,
+      "AccountValueTimeStamp": "0001-01-01T00:00:00"
+    },
+    "AccountMicex": {
+      "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
+      "AccountNumber": "ACCTNR_NOT_SET",
+      "CashAvailable": -1001.0,
+      "AccountValueTimeStamp": "0001-01-01T00:00:00"
+    },
+    "ExecutionDelayMillis": 1000,
+    "RejectFirstNOrders": 5,
+    "RejectRandomly": true,
+    "RejectAllUpcoming": false,
+    "QuikFolder": null,
+    "QuikDllName": "TRANS2QUIK.DLL",
+    "QuikClientCode": null,
+    "ReconnectTimeoutMillis": 0
+  },
+  "MarketName": "MOCK",
+  "Name": "Qmock",
+  "StaticProviderName": "Mock StaticProvider",
+  "StreamingProviderName": "Mock StreamingProvider",
+  "BrokerProviderName": "Mock BrokerProvider",
+  "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
+}

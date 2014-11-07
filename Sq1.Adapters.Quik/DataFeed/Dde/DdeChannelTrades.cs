@@ -16,6 +16,7 @@ namespace Sq1.Adapters.Quik.Dde {
 		const string cnOperation = "BUYSELL";
 		const string strBuyOp = "BUY";
 		const string strSellOp = "SELL";
+		
 		StreamingQuik quikStreamingProvider;
 		int cDate;
 		int cTime;
@@ -31,9 +32,7 @@ namespace Sq1.Adapters.Quik.Dde {
 			columnsUnknown = true;
 		}
 		public override bool IsConnected {
-			get {
-				return base.IsConnected;
-			}
+			get { return base.IsConnected; }
 			set {
 				columnsUnknown = true;
 				base.IsConnected = value;
@@ -149,20 +148,18 @@ namespace Sq1.Adapters.Quik.Dde {
 					}
 				}
 
-				//if (secCode == cfg.u.SecCode && classCode == cfg.u.ClassCode)
-					if (DateTime.TryParse(date + " " + time, out t.DateTime)) {
-						t.IntPrice = (int) t.RawPrice;
-						//BrokerQuik.PutLastPrice(tp.IntPrice);
-					} else
+				if (DateTime.TryParse(date + " " + time, out t.DateTime)) {
+					t.IntPrice = (int) t.RawPrice;
+					//BrokerQuik.PutLastPrice(tp.IntPrice);
+				} else {
 						rowCorrect = false;
-
-				if (rowCorrect)
+				}
+				if (rowCorrect) {
 					quikStreamingProvider.TradeDeliveredDdeCallback(secCode + classCode, t);
-				else
+				} else {
 					IsError = true;
+				}
 			}
 		}
-
-		
 	}
 }

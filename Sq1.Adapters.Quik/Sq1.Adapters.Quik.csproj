@@ -8,7 +8,7 @@
     <ProjectGuid>{32CE7489-6617-4157-83A6-2CFDF054CE77}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Sq1.QuikAdapter</RootNamespace>
+    <RootNamespace>Sq1.Adapters.Quik</RootNamespace>
     <AssemblyName>Sq1.Adapters.Quik</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>4096</FileAlignment>
@@ -108,10 +108,19 @@
     <Compile Include="OrderExecution\Terminal\QuikTerminal.cs" />
     <Compile Include="OrderExecution\Terminal\Trans2Quik.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
       <Project>81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3</Project>
+      <Name>Newtonsoft.Json.Net20</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
     <ProjectReference Include="..\NDde.2.01.0563.src\NDde\Source\NDde\NDde.csproj">
@@ -133,19 +142,17 @@
     <EmbeddedResource Include="OrderExecution\BrokerQuikEditor.resx">
       <DependentUpon>BrokerQuikEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\imgQuikStaticProvider.bmp" />
     <Content Include="Resources\imgQuikStreamingProvider.bmp" />
     <None Include="OrderExecution\Terminal\TRANS2QUIK-1.1.0.10.dll.copy" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DataFeed\Dde" />
-    <Folder Include="DataFeed\Dde\XlDde" />
-    <Folder Include="DataFeed" />
-    <Folder Include="OrderExecution" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

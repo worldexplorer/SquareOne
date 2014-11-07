@@ -12,7 +12,7 @@ namespace Sq1.Adapters.Quik {
 		public StaticQuik() : base () {
 			base.Name = "Quik StaticDummy";
 			base.Description = "QuikStatic DOESNT_GET_STATIC_HISTORICAL_BARS_FROM_QUIK_YET";
-			//base.Icon = (Bitmap)QuikAdapter.Properties.Resources.imgQuikStreamingProvider;
+			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingProvider;
 			base.PreferredDataSourceName = "Quik";
 			base.PreferredStreamingProviderTypeName = "QuikStreamingProvider";
 			base.PreferredBrokerProviderTypeName = "BrokerQuik";

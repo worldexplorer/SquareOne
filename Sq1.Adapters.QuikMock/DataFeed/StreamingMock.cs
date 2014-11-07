@@ -63,7 +63,7 @@ namespace Sq1.Adapters.QuikMock {
 			this.GenerateOnlySymbols = new List<string>();
 			base.Name = "Mock StreamingDummy";
 			base.Description = "MOCK generating quotes, QuikTerminalMock is still used";
-			//base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockStaticProvider;
+			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStaticProvider;
 			base.PreferredStaticProviderName = "MockStaticProvider";
 			base.StreamingDataSnapshot = new StreamingDataSnapshotQuik(this);
 			StreamingDataSnapshotQuik throwAtEarlyStage = this.StreamingDataSnapshotQuik;
@@ -184,7 +184,8 @@ namespace Sq1.Adapters.QuikMock {
 			base.PushQuoteReceived(quote);
 		}
 		public override string ToString() {
-			return "StreamingMock: Symbols[" + this.SymbolsUpstreamSubscribedAsString + "]/only[" + this.GenerateOnlySymbolsAsString + "]"
+			return "StreamingMock: SymbolsSubscribed[" + this.SymbolsUpstreamSubscribedAsString + "]"
+				+ "/SymbolsGenerating[" + this.GenerateOnlySymbolsAsString + "]"
 				+ " DDE[" + this.DdeChannelsEstablished + "]";
 		}
 	}

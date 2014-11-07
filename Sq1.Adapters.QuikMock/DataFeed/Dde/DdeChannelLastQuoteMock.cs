@@ -2,6 +2,7 @@
 using System.Threading;
 using Sq1.Adapters.Quik;
 using Sq1.Core;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Adapters.QuikMock.Dde {
 	public class DdeChannelLastQuoteMock {	//: DdeChannelLastQuote
@@ -149,15 +150,20 @@ namespace Sq1.Adapters.QuikMock.Dde {
 			priceStartFrom = (priceIncrement > 0)
 				? Math.Ceiling(priceStartFrom / tickSize) * tickSize
 				: Math.Floor(priceStartFrom / tickSize) * tickSize;
-			//quikQuote.PriceLastDeal = priceStartFrom;
+
+			//v1 quikQuote.PriceLastDeal = priceStartFrom;
+			//quikQuote.Bid = quikQuote.PriceLastDeal - spread / 2;
+			//quikQuote.Ask = quikQuote.PriceLastDeal + spread / 2;
+			//v2
+			quikQuote.LastDealBidOrAsk = BidOrAsk.Bid;
+			quikQuote.Bid = priceStartFrom;
+			quikQuote.Ask = quikQuote.Bid + this.spread;
 
 			quikQuote.Size = volumeIncrement;
 			if (quikQuote.Absno == this.QuoteAbsnoPriceMutatedToZero && quikQuote.Source == "QUIK_DDE_MOCK") {
 				//quikQuote.PriceLastDeal = 0;
 				Assembler.PopupException("MOCK_TEST_ONCE: setting Price=0 for quote[" + quikQuote + "]; watch CHART skipping it and ORDER with an ERROR");
 			}
-			//quikQuote.Bid = quikQuote.PriceLastDeal - spread / 2;
-			//quikQuote.Ask = quikQuote.PriceLastDeal + spread / 2;
 			this.providerMock.PropagateGeneratedQuoteCallback(quikQuote);
 			//streamingProvider.putBestBidAskForSymbol(symbol, quote.Price - spread / 2, quote.Price + spread / 2);
 

@@ -5,23 +5,34 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>Sq1.Adapters.QuickMock</RootNamespace>
+    <RootNamespace>Sq1.Adapters.QuikMock</RootNamespace>
     <AssemblyName>Sq1.Adapters.QuikMock</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\Sq1.Gui\bin\Debug\</OutputPath>
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -54,6 +65,11 @@
     <Compile Include="OrderExecution\Terminal\QuikTerminalMock.cs" />
     <Compile Include="OrderExecution\Terminal\QuikTerminalMockThreadParam.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="DataFeed\StreamingMockEditor.resx">
@@ -62,18 +78,19 @@
     <EmbeddedResource Include="OrderExecution\BrokerMockEditor.resx">
       <DependentUpon>BrokerMockEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DataFeed" />
-    <Folder Include="DataFeed\Dde" />
-    <Folder Include="OrderExecution" />
-    <Folder Include="OrderExecution\Terminal" />
-    <Folder Include="Resources" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
       <Project>81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3</Project>
+      <Name>Newtonsoft.Json.Net20</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sq1.Adapters.Quik\Sq1.Adapters.Quik.csproj">

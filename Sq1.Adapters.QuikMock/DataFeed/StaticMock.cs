@@ -8,7 +8,7 @@ namespace Sq1.Adapters.QuikMock {
 		public StaticMock() : base() {
 			base.Name = "Mock StaticDummy";
 			base.Description = "MockStatic Automatically stores QuikStreamingMock-generated quotes, and QuikStreamingMOCK will only start for QuikStaticMOCK datasources";
-			//base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStaticProvider;
+			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStaticProvider;
 			base.PreferredDataSourceName = "Mock";
 			base.PreferredStreamingProviderTypeName = "StreamingMock";
 			base.PreferredBrokerProviderTypeName = "BrokerMock";

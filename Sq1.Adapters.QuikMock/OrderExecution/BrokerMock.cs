@@ -22,7 +22,7 @@ namespace Sq1.Adapters.QuikMock {
 
 		public BrokerMock() : base() {
 			base.Name = "Mock BrokerDummy";
-			//base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStreamingProvider;
+			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStreamingProvider;
 			base.QuikTerminal = new QuikTerminalMock(this);
 			this.ExecutionDelayMillis = 1000;
 			this.RejectFirstNOrders = 5;

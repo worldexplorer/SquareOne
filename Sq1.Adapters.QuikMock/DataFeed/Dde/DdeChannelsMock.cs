@@ -16,10 +16,11 @@ namespace Sq1.Adapters.QuikMock.Dde {
 		}
 		public void StartDdeServer() {
 			if (ChannelQuote is DdeChannelLastQuoteMock) {
-				Assembler.PopupException("MOCK: will generate quotes for symbol[" + Symbol + "]"
+				string msg = "MOCK: will generate quotes for symbol[" + Symbol + "]"
 					+ " every [" + ChannelQuote.nextQuoteDelayMs + "]ms"
 					+ " for " + ChannelQuote + "]"
-					+ " instead of registering real DDE server");
+					+ " instead of registering real DDE server";
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 		}

@@ -35,7 +35,7 @@ namespace Sq1.Adapters.Quik {
 
 		public BrokerQuik() : base() {		// base() will be invoked anyways by .NET, just wanna make it obvious (reminder)
 			base.Name = "Quik BrokerDummy";
-			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingProvider;
+			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingProvider;
 			this.QuikTerminal = new QuikTerminal(this);
 			this.QuikDllName = this.QuikTerminal.DllName;
 
