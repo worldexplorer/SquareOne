@@ -160,6 +160,11 @@ namespace Sq1.Core.StrategyBase {
 			//	new EventHandler<DataSourceSymbolEventArgs>(Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed);
 		}
 		public ReporterPokeUnit ExecuteOnNewBarOrNewQuote(Quote quote) {
+			if (this.Strategy == null) {
+				string msg1 = "I_REFUSE_TO_EXECUTE_SCRIPT YOU_DIDNT_CHECK_MY_STRATEGY_IS_NULL";
+				Assembler.PopupException(msg1);
+				return null;
+			}
 			if (this.Strategy.Script == null) return null;
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quote);
 			this.ExecutionDataSnapshot.PreExecutionOnNewBarOrNewQuoteClear();

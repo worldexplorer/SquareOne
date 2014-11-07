@@ -138,7 +138,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(318, 3);
+			this.btnCancel.Location = new System.Drawing.Point(311, 3);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(74, 23);
 			this.btnCancel.TabIndex = 3;
@@ -150,7 +150,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			// 
 			this.btnPrevious.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnPrevious.Enabled = false;
-			this.btnPrevious.Location = new System.Drawing.Point(407, 3);
+			this.btnPrevious.Location = new System.Drawing.Point(408, 3);
 			this.btnPrevious.Name = "btnPrevious";
 			this.btnPrevious.Size = new System.Drawing.Size(74, 23);
 			this.btnPrevious.TabIndex = 2;
@@ -173,7 +173,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			// btnSave
 			// 
 			this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnSave.Location = new System.Drawing.Point(578, 3);
+			this.btnSave.Location = new System.Drawing.Point(588, 3);
 			this.btnSave.Name = "btnSave";
 			this.btnSave.Size = new System.Drawing.Size(74, 23);
 			this.btnSave.TabIndex = 0;
@@ -187,7 +187,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.pnlIntro.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlIntro.Location = new System.Drawing.Point(0, 0);
 			this.pnlIntro.Name = "pnlIntro";
-			this.pnlIntro.Size = new System.Drawing.Size(506, 394);
+			this.pnlIntro.Size = new System.Drawing.Size(510, 394);
 			this.pnlIntro.TabIndex = 0;
 			// 
 			// splitContainer3
@@ -207,8 +207,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			// 
 			this.splitContainer3.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer3.Panel2.Controls.Add(this.marketInfoEditor);
-			this.splitContainer3.Panel2.Padding = new System.Windows.Forms.Padding(5, 0, 8, 8);
-			this.splitContainer3.Size = new System.Drawing.Size(506, 394);
+			this.splitContainer3.Size = new System.Drawing.Size(510, 394);
 			this.splitContainer3.SplitterDistance = 237;
 			this.splitContainer3.TabIndex = 12;
 			// 
@@ -228,8 +227,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 			// 
 			this.splitContainer2.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer2.Panel2.Controls.Add(this.splitContainer5);
-			this.splitContainer2.Size = new System.Drawing.Size(506, 237);
-			this.splitContainer2.SplitterDistance = 223;
+			this.splitContainer2.Size = new System.Drawing.Size(510, 237);
+			this.splitContainer2.SplitterDistance = 245;
 			this.splitContainer2.TabIndex = 11;
 			// 
 			// splitContainer4
@@ -250,8 +249,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 			// 
 			this.splitContainer4.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer4.Panel2.Controls.Add(this.grpStreaming);
-			this.splitContainer4.Size = new System.Drawing.Size(223, 237);
-			this.splitContainer4.SplitterDistance = 143;
+			this.splitContainer4.Size = new System.Drawing.Size(245, 237);
+			this.splitContainer4.SplitterDistance = 124;
 			this.splitContainer4.TabIndex = 7;
 			// 
 			// lblStreaming
@@ -272,7 +271,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.lvStreamingProviders.Location = new System.Drawing.Point(5, 17);
 			this.lvStreamingProviders.MultiSelect = false;
 			this.lvStreamingProviders.Name = "lvStreamingProviders";
-			this.lvStreamingProviders.Size = new System.Drawing.Size(215, 123);
+			this.lvStreamingProviders.Size = new System.Drawing.Size(237, 104);
 			this.lvStreamingProviders.SmallImageList = this.imglStreamingProviders;
 			this.lvStreamingProviders.TabIndex = 5;
 			this.lvStreamingProviders.UseCompatibleStateImageBehavior = false;
@@ -293,7 +292,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.grpStreaming.Controls.Add(this.pnlStreaming);
 			this.grpStreaming.Location = new System.Drawing.Point(5, 3);
 			this.grpStreaming.Name = "grpStreaming";
-			this.grpStreaming.Size = new System.Drawing.Size(215, 87);
+			this.grpStreaming.Size = new System.Drawing.Size(237, 106);
 			this.grpStreaming.TabIndex = 8;
 			this.grpStreaming.TabStop = false;
 			this.grpStreaming.Text = "Streaming Settings";
@@ -305,7 +304,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.pnlStreaming.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlStreaming.Location = new System.Drawing.Point(3, 16);
 			this.pnlStreaming.Name = "pnlStreaming";
-			this.pnlStreaming.Size = new System.Drawing.Size(209, 68);
+			this.pnlStreaming.Size = new System.Drawing.Size(231, 87);
 			this.pnlStreaming.TabIndex = 7;
 			// 
 			// splitContainer5
@@ -326,8 +325,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 			// 
 			this.splitContainer5.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer5.Panel2.Controls.Add(this.grpExecution);
-			this.splitContainer5.Size = new System.Drawing.Size(279, 237);
-			this.splitContainer5.SplitterDistance = 143;
+			this.splitContainer5.Size = new System.Drawing.Size(261, 237);
+			this.splitContainer5.SplitterDistance = 124;
 			this.splitContainer5.TabIndex = 11;
 			// 
 			// lblExecution
@@ -348,7 +347,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.lvBrokerProviders.Location = new System.Drawing.Point(3, 19);
 			this.lvBrokerProviders.MultiSelect = false;
 			this.lvBrokerProviders.Name = "lvBrokerProviders";
-			this.lvBrokerProviders.Size = new System.Drawing.Size(261, 121);
+			this.lvBrokerProviders.Size = new System.Drawing.Size(252, 102);
 			this.lvBrokerProviders.SmallImageList = this.imglBrokerProviders;
 			this.lvBrokerProviders.TabIndex = 10;
 			this.lvBrokerProviders.UseCompatibleStateImageBehavior = false;
@@ -369,7 +368,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.grpExecution.Controls.Add(this.pnlExecution);
 			this.grpExecution.Location = new System.Drawing.Point(3, 3);
 			this.grpExecution.Name = "grpExecution";
-			this.grpExecution.Size = new System.Drawing.Size(261, 87);
+			this.grpExecution.Size = new System.Drawing.Size(255, 106);
 			this.grpExecution.TabIndex = 10;
 			this.grpExecution.TabStop = false;
 			this.grpExecution.Text = "Broker Settings";
@@ -382,7 +381,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.pnlExecution.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlExecution.Location = new System.Drawing.Point(3, 16);
 			this.pnlExecution.Name = "pnlExecution";
-			this.pnlExecution.Size = new System.Drawing.Size(255, 68);
+			this.pnlExecution.Size = new System.Drawing.Size(249, 87);
 			this.pnlExecution.TabIndex = 9;
 			// 
 			// marketInfoEditor
@@ -390,9 +389,9 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.marketInfoEditor.AutoSize = true;
 			this.marketInfoEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.marketInfoEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.marketInfoEditor.Location = new System.Drawing.Point(5, 0);
+			this.marketInfoEditor.Location = new System.Drawing.Point(0, 0);
 			this.marketInfoEditor.Name = "marketInfoEditor";
-			this.marketInfoEditor.Size = new System.Drawing.Size(493, 145);
+			this.marketInfoEditor.Size = new System.Drawing.Size(510, 153);
 			this.marketInfoEditor.TabIndex = 0;
 			// 
 			// imglStaticProviders
@@ -410,7 +409,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.lvStaticProviders.Location = new System.Drawing.Point(6, 16);
 			this.lvStaticProviders.MultiSelect = false;
 			this.lvStaticProviders.Name = "lvStaticProviders";
-			this.lvStaticProviders.Size = new System.Drawing.Size(147, 143);
+			this.lvStaticProviders.Size = new System.Drawing.Size(143, 119);
 			this.lvStaticProviders.SmallImageList = this.imglStaticProviders;
 			this.lvStaticProviders.TabIndex = 0;
 			this.lvStaticProviders.UseCompatibleStateImageBehavior = false;
@@ -424,7 +423,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtDataSourceName.Location = new System.Drawing.Point(6, 25);
 			this.txtDataSourceName.Name = "txtDataSourceName";
-			this.txtDataSourceName.Size = new System.Drawing.Size(147, 20);
+			this.txtDataSourceName.Size = new System.Drawing.Size(143, 20);
 			this.txtDataSourceName.TabIndex = 1;
 			// 
 			// pnlContent
@@ -435,7 +434,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.pnlContent.Location = new System.Drawing.Point(0, 0);
 			this.pnlContent.Name = "pnlContent";
-			this.pnlContent.Size = new System.Drawing.Size(506, 394);
+			this.pnlContent.Size = new System.Drawing.Size(510, 394);
 			this.pnlContent.TabIndex = 3;
 			// 
 			// lblStatic
@@ -468,7 +467,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.splitContainer1.Panel2.Controls.Add(this.pnlIntro);
 			this.splitContainer1.Panel2.Controls.Add(this.pnlContent);
 			this.splitContainer1.Size = new System.Drawing.Size(669, 394);
-			this.splitContainer1.SplitterDistance = 159;
+			this.splitContainer1.SplitterDistance = 155;
 			this.splitContainer1.TabIndex = 4;
 			// 
 			// splitContainer6
@@ -496,8 +495,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.splitContainer6.Panel2.Controls.Add(this.cmbScale);
 			this.splitContainer6.Panel2.Controls.Add(this.lblSymbols);
 			this.splitContainer6.Panel2.Controls.Add(this.lblInterval);
-			this.splitContainer6.Size = new System.Drawing.Size(162, 343);
-			this.splitContainer6.SplitterDistance = 162;
+			this.splitContainer6.Size = new System.Drawing.Size(158, 343);
+			this.splitContainer6.SplitterDistance = 138;
 			this.splitContainer6.TabIndex = 8;
 			// 
 			// lblScale
@@ -520,7 +519,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 									0,
 									0});
 			this.nmrInterval.Name = "nmrInterval";
-			this.nmrInterval.Size = new System.Drawing.Size(81, 20);
+			this.nmrInterval.Size = new System.Drawing.Size(77, 20);
 			this.nmrInterval.TabIndex = 2;
 			this.nmrInterval.Value = new decimal(new int[] {
 									5,
@@ -537,7 +536,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.txtSymbols.Location = new System.Drawing.Point(6, 76);
 			this.txtSymbols.Multiline = true;
 			this.txtSymbols.Name = "txtSymbols";
-			this.txtSymbols.Size = new System.Drawing.Size(147, 95);
+			this.txtSymbols.Size = new System.Drawing.Size(143, 119);
 			this.txtSymbols.TabIndex = 6;
 			this.txtSymbols.Text = "RIZ2,RIH3";
 			// 
@@ -559,7 +558,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 									"Yearly"});
 			this.cmbScale.Location = new System.Drawing.Point(72, 8);
 			this.cmbScale.Name = "cmbScale";
-			this.cmbScale.Size = new System.Drawing.Size(81, 21);
+			this.cmbScale.Size = new System.Drawing.Size(77, 21);
 			this.cmbScale.TabIndex = 1;
 			this.cmbScale.SelectedIndexChanged += new System.EventHandler(this.cmbScale_SelectedIndexChanged);
 			// 
@@ -585,7 +584,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			// 
 			this.lnkStaticDetails.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.lnkStaticDetails.AutoSize = true;
-			this.lnkStaticDetails.Location = new System.Drawing.Point(204, 47);
+			this.lnkStaticDetails.Location = new System.Drawing.Point(200, 47);
 			this.lnkStaticDetails.Name = "lnkStaticDetails";
 			this.lnkStaticDetails.Size = new System.Drawing.Size(39, 13);
 			this.lnkStaticDetails.TabIndex = 5;

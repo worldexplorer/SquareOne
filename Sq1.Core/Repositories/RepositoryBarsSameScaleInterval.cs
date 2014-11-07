@@ -91,7 +91,9 @@ namespace Sq1.Core.Repositories {
 			if (String.IsNullOrEmpty(symbol)) throw new ArgumentException("Symbol must not be blank");
 			string fileAbspath = Path.Combine(this.SubfolderAbspath, this.FileNameForSymbol(symbol));
 			if (File.Exists(fileAbspath) == false && createIfDoesntExist) {
-				Directory.CreateDirectory(fileAbspath);
+				FileStream fs = File.Create(fileAbspath);
+				fs.Close();
+				Assembler.PopupException("CREATED_NON_EXISTING_BAR_FILE [" + fileAbspath + "]", null, false);
 			}
 			if (File.Exists(fileAbspath) == false && throwIfDoesntExist) {
 				string msg = "AbspathForSymbol(" + symbol + "): File.Exists(" + fileAbspath + ")=false";
@@ -140,8 +142,8 @@ namespace Sq1.Core.Repositories {
 			Directory.Delete(this.SubfolderAbspath);
 			return ret;
 		}
-		public RepositoryBarsFile DataFileForSymbol(string symbol, bool throwIfDoesntExist = true) {
-			RepositoryBarsFile barsFile = new RepositoryBarsFile(this, symbol, throwIfDoesntExist);
+		public RepositoryBarsFile DataFileForSymbol(string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
+			RepositoryBarsFile barsFile = new RepositoryBarsFile(this, symbol, throwIfDoesntExist, createIfDoesntExist);
 			return barsFile;
 		}
 	}

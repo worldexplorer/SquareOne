@@ -8,11 +8,6 @@ namespace Sq1.Core.DataTypes {
 	//v1 public partial class Bars : BarsUnscaledSortedList {
 	public partial class Bars : BarsUnscaled {
 		[JsonIgnore]	public static int InstanceAbsno = 0;
-
-		// IObservable emulated?...
-		public event EventHandler<BarEventArgs> BarStaticAdded;
-		public event EventHandler<BarEventArgs> BarStreamingAdded;
-		public event EventHandler<BarEventArgs> BarStreamingUpdatedMerged;
 		
 		[JsonIgnore]	public string SymbolHumanReadable;
 		[JsonIgnore]	public BarScaleInterval ScaleInterval { get; private set; }
@@ -136,33 +131,6 @@ namespace Sq1.Core.DataTypes {
 					string msg = "BACKWARD_UPDATE_FAILED adding bar[" + barAdding + "] to " + this;
 					throw (new Exception(msg, e));
 				}
-			}
-		}
-		public void RaiseBarStaticAdded(Bar barAdding) {
-			if (this.BarStaticAdded == null) return;
-			try {
-				this.BarStaticAdded(this, new BarEventArgs(barAdding));
-			} catch (Exception ex) {
-				string msg = "BarsBasic.BarStaticAdded(bar[" + barAdding + "])";
-				Assembler.PopupException(msg, ex);
-			}
-		}
-		public void RaiseBarStreamingAdded(Bar barAdding) {
-			if (this.BarStreamingAdded == null) return;
-			try {
-				this.BarStreamingAdded(this, new BarEventArgs(barAdding));
-			} catch (Exception ex) {
-				string msg = "BarsBasic.BarStreamingAdded(bar[" + barAdding + "])";
-				Assembler.PopupException(msg, ex);
-			}
-		}
-		public void RaiseBarStreamingUpdated(Bar barUpdated) {
-			if (this.BarStreamingUpdatedMerged == null) return;
-			try {
-				this.BarStreamingUpdatedMerged(this, new BarEventArgs(barUpdated));
-			} catch (Exception ex) {
-				string msg = "BarsBasic.BarStreamingUpdated(bar[" + barUpdated + "])";
-				Assembler.PopupException(msg, ex);
 			}
 		}
 		public void OverrideStreamingDOHLCVwith(Bar bar) {

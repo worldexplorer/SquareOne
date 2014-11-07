@@ -172,7 +172,7 @@ namespace Sq1.Core.Serializers {
 				if (this.ItemsByName.ContainsKey(itemCandidate.Name)) {
 					throw new Exception("ALREADY_EXISTS[" + itemCandidate.Name + "]");
 				}
-				this.ItemAddCascade(itemCandidate, sender);
+				//this.ItemAddCascade(itemCandidate, sender);
 				this.ItemsByName.Add(itemCandidate.Name, itemCandidate);
 				this.SerializeSingle(itemCandidate);
 				if (this.OnItemAdded == null) return;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Static;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Streaming {
 	public class SymbolScaleDistributionChannel {
@@ -36,7 +37,7 @@ namespace Sq1.Core.Streaming {
 				EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar(quote2bClonedForEachConsumer);
 			if (quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == 0) {
 				if (StreamingBarFactoryUnattached.LastBarFormedUnattached != null
-						//&& Double.IsNaN(StreamingBarFactoryUnattached.LastBarFormedUnattached.Close) == true
+						//&& double.IsNaN(StreamingBarFactoryUnattached.LastBarFormedUnattached.Close) == true
 						&& StreamingBarFactoryUnattached.LastBarFormedUnattached.DateTimeOpen != DateTime.MinValue
 					) {
 					lock (lockConsumersBar) {
@@ -71,7 +72,7 @@ namespace Sq1.Core.Streaming {
 			int backtestProvidersPoked = 0;
 			foreach (IStreamingConsumer consumer in consumersBar) {
 				string nth = "#" + (consumerSerno++) + "/" + consumersBar.Count;
-				if (consumer is Sq1.Core.Backtesting.BacktestQuoteBarConsumer) {
+				if (consumer is BacktestQuoteBarConsumer) {
 					backtestProvidersPoked++;
 				}
 				if (consumer is StreamingSolidifier) {
@@ -79,6 +80,18 @@ namespace Sq1.Core.Streaming {
 					if (streamingSolidifiersPoked > 1) {
 						string msg = "two streaming charts open with same Symbol/Interval, both with their StreamingSolidifiers subscribed"
 							+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingProvider?...";
+						Assembler.PopupException(msg);
+						continue;
+					}
+					if (consumer.ConsumerBarsToAppendInto == null) {
+						string msg = "SOLIDIFIER_HAD_NO_BARS_TO_BIND_AS_PARENT JUST_SAVING_FIRST_EVER_BAR";
+						try {
+							//NOPE_FRESH_STREAMING_CONTAINING_JUST_ONE_QUOTE_I_WILL_POKE_QUOTES_FROM_IT consumer.ConsumeBarLastFormed(barLastFormedBound);
+							consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStreamingUnattached);
+						} catch (Exception e) {
+							msg += "BarConsumer " + nth + ": missed bar [" + barStreamingUnattached + "]: " + consumer.ToString();
+							Assembler.PopupException(msg, e);
+						}
 						continue;
 					}
 				}
@@ -91,7 +104,7 @@ namespace Sq1.Core.Streaming {
 
 				StreamingEarlyBinder binder = this.earlyBinders[consumer];
 				Bar barLastFormedBound = binder.BindBarToConsumerBarsAndAppend(barStreamingUnattached);
-				string msg1 = "barLastFormedBound[" + barLastFormedBound + "] pushing to " + nth + ": " + consumer
+				string msg1 = "barLastFormedBound[" + barLastFormedBound + "] pushing to " + nth + ": " + consumer.ToString()
 					//+ " <= barLastFormedUnattached[" + barLastFormedUnattached + "]"
 					;
 				//Assembler.PopupException(msg1);
@@ -99,14 +112,16 @@ namespace Sq1.Core.Streaming {
 					//NOPE_FRESH_STREAMING_CONTAINING_JUST_ONE_QUOTE_I_WILL_POKE_QUOTES_FROM_IT consumer.ConsumeBarLastFormed(barLastFormedBound);
 					consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe);
 				} catch (Exception e) {
-					string msg = "BarConsumer " + nth + ": missed bar [" + barStreamingUnattached + "]: " + consumer;
-					throw new Exception(msg, e);
+					string msg = "BarConsumer " + nth + ": missed bar [" + barStreamingUnattached + "]: " + consumer.ToString();
+					//throw new Exception(msg, e);
+					Assembler.PopupException(msg, e);
 				}
 			}
 			if (backtestProvidersPoked == 0 && streamingSolidifiersPoked == 0
 					&& barStreamingUnattached.ScaleInterval == new BarScaleInterval(BarScale.Minute, 1)) {
-				string msg = "this bar wasn't saved in StaticProvider!!!";
-				throw new Exception(msg);
+				string msg = "this bar wasn't saved in Solidifier!!!";		//"in StaticProvider"
+				//throw new Exception(msg);
+				Assembler.PopupException(msg);
 			}
 		}
 		void bindStreamingBarForQuoteAndPushQuoteToConsumers(Quote quoteSernoEnrichedWithUnboundStreamingBar) {

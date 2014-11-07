@@ -33,7 +33,7 @@ namespace Sq1.Core.Repositories {
 			this.OrderProcessor = orderProcessor;
 		}
 		
-		private bool dataSourceDeserializedInitializePriorToAdding(string thisOne, DataSource dsDeserialized) {
+		bool dataSourceDeserializedInitializePriorToAdding(string thisOne, DataSource dsDeserialized) {
 			if (dsDeserialized.MarketInfo == null && string.IsNullOrEmpty(dsDeserialized.MarketName) == false) {
 				dsDeserialized.MarketInfo = MarketInfoRepository.FindMarketInfoOrNew(dsDeserialized.MarketName);
 			}

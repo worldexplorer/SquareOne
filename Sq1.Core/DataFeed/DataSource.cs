@@ -13,13 +13,10 @@ using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.DataFeed {
-	public class DataSource : NamedObjectJsonSerializable {
-		public event EventHandler<DataSourceEventArgs> DataSourceEditedChartsDisplayedShouldRunBacktestAgain;
-		public event EventHandler<DataSourceSymbolRenamedEventArgs> SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars;
-		
+	public partial class DataSource : NamedObjectJsonSerializable {
 		// MOVED_TO_PARENT_NamedObjectJsonSerializable [DataMember] public new string Name;
 		[JsonProperty]	public string SymbolSelected;
-					 public List<string> Symbols;
+		[JsonProperty]	public List<string> Symbols;
 		[JsonIgnore]	public string SymbolsCSV { get {
 				StringBuilder stringBuilder = new StringBuilder();
 				foreach (string current in Symbols) {
@@ -28,11 +25,11 @@ namespace Sq1.Core.DataFeed {
 				}
 				return stringBuilder.ToString();
 			} }
-					 public BarScaleInterval ScaleInterval;
-					 public StaticProvider StaticProvider;
-					 public StreamingProvider StreamingProvider;
-					 public BrokerProvider BrokerProvider;
-					 public string MarketName;
+		[JsonProperty]	public BarScaleInterval ScaleInterval;
+		[JsonProperty]	public StaticProvider StaticProvider;
+		[JsonProperty]	public StreamingProvider StreamingProvider;
+		[JsonProperty]	public BrokerProvider BrokerProvider;
+		[JsonProperty]	public string MarketName;
 		[JsonIgnore]	public MarketInfo marketInfo;
 		[JsonIgnore]	public MarketInfo MarketInfo {
 			get { return this.marketInfo; }
@@ -40,17 +37,17 @@ namespace Sq1.Core.DataFeed {
 				this.marketInfo = value;
 				MarketName = value.Name;
 			} }
-					 public string StaticProviderName { get {
+		[JsonProperty]	public string StaticProviderName { get {
 							if (StaticProvider == null) return "STATIC_PROVIDER_NOT_INITIALIZED";
 							//return staticProvider.GetType().Name;
 							return StaticProvider.Name;
 						} }
-					 public string StreamingProviderName { get {
+		[JsonProperty]	public string StreamingProviderName { get {
 							if (StreamingProvider == null) return "STREAMING_PROVIDER_NOT_INITIALIZED";
 							//return staticProvider.GetType().Name;
 							return StreamingProvider.Name;
 						} }
-					 public string BrokerProviderName { get {
+		[JsonProperty]	public string BrokerProviderName { get {
 							if (BrokerProvider == null) return "BROKER_PROVIDER_NOT_INITIALIZED";
 							//return staticProvider.GetType().Name;
 							return BrokerProvider.Name;
@@ -83,12 +80,16 @@ namespace Sq1.Core.DataFeed {
 			this.MarketInfo = marketInfo; 
 		}
 		public void Initialize(string dataSourcesAbspath, OrderProcessor orderProcessor, IStatusReporter statusReporter) {
-			//if (this.HasBarDataStore) {
-			//	this.BarsFile = new BarsFile(FolderForBarDataStore);
-			//}
 			this.DataSourcesAbspath = dataSourcesAbspath;
 			this.DataSourceAbspath = Path.Combine(this.DataSourcesAbspath, this.Name);
 			this.BarsRepository = new RepositoryBarsSameScaleInterval(this.DataSourceAbspath, this.ScaleInterval, true);
+
+			foreach (string symbol in this.Symbols) {
+				if (this.BarsRepository.DataFileExistsForSymbol(symbol)) continue;
+				Bars barsEmpty = new Bars(symbol, this.ScaleInterval, "DISCOVERED_NON_EXISTING");
+				int mustBeZero = this.BarsSave(barsEmpty, true);
+				Assembler.PopupException("BARS_INITIALIZED_EMPTY[" + mustBeZero + "] " + barsEmpty.ToString());
+			}
 			
 			//this.BarsFolderPerst = new BarsFolder(this.FolderForBarDataStore, this.ScaleInterval, true, "dts");
 
@@ -183,8 +184,8 @@ namespace Sq1.Core.DataFeed {
 			ret = this.BarsRepository.DataFileForSymbol(barLastFormed.Symbol).BarAppend(barLastFormed);
 			return ret;
 		}
-		public int BarsSave(Bars bars) {
-			RepositoryBarsFile barsFile = this.BarsRepository.DataFileForSymbol(bars.Symbol, false);
+		public int BarsSave(Bars bars, bool createIfDoesntExist = false) {
+			RepositoryBarsFile barsFile = this.BarsRepository.DataFileForSymbol(bars.Symbol, false, createIfDoesntExist);
 			int barsSaved = barsFile.BarsSaveThreadSafe(bars);
 			string msg = "Saved [ " + barsSaved + "] bars; static[" + this.Name + "]";
 
@@ -264,19 +265,7 @@ namespace Sq1.Core.DataFeed {
 			RepositoryBarsFile barsFile = this.BarsRepository.DataFileForSymbol(symbol);
 			ret = barsFile.BarsLoadAllThreadSafe();
 			//}
-			if (ret == null) ret = new Bars(symbol, this.ScaleInterval, "FILE_NOT_FOUND " + this.GetType().Name);
-			return ret;
-		}
-		public void RaiseDataSourceEditedChartsDisplayedShouldRunBacktestAgain() {
-			if (this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain == null) return;
-			this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain(this, new DataSourceEventArgs(this));
-		}
-		public bool RaiseSymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(string oldSymbolName, string newSymbolName) {
-			bool ret = false;	// No Obstacles by default; no charts open with oldSymbolName => cancel=true 
-			if (this.SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars == null) return ret;
-			DataSourceSymbolRenamedEventArgs args = new DataSourceSymbolRenamedEventArgs(this, newSymbolName, oldSymbolName);
-			this.SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(this, args);
-			ret = args.CancelRepositoryRenameExecutorRefusedToRenameWasStreamingTheseBars;
+			if (ret == null) ret = new Bars(symbol, this.ScaleInterval, "FILE_NOT_FOUND_OR_EMPTY " + this.GetType().Name);
 			return ret;
 		}
 	}

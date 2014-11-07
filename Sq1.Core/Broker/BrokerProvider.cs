@@ -13,7 +13,7 @@ using Sq1.Core.Support;
 using Newtonsoft.Json;
 
 namespace Sq1.Core.Broker {
-	public class BrokerProvider {
+	public partial class BrokerProvider {
 		public const string NO_BROKER_PROVIDER = "--- No Broker Provider ---";
 
 		[JsonIgnore]	private object lockSubmitOrders;
@@ -239,36 +239,6 @@ namespace Sq1.Core.Broker {
 			this.OrderKillSubmit(killerOrder.VictimToBeKilled);
 		}
 
-
-		protected IDataSourceEditor dataSourceEditor;
-		protected BrokerEditor brokerEditorInstance;
-		public virtual bool EditorInstanceInitialized {
-			get { return (brokerEditorInstance != null); }
-		}
-		public virtual BrokerEditor EditorInstance {
-			get {
-				if (brokerEditorInstance == null) {
-					string msg = "you didn't invoke BrokerEditorInitialize() prior to accessing EditorInstance property";
-					throw new Exception(msg);
-				}
-				return brokerEditorInstance;
-			}
-		}
-		public virtual BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
-			throw new Exception("please override BrokerProvider::BrokerEditorInitialize() for [" + this + "]:"
-				+ " 1) use base.BrokerEditorInitializeHelper()"
-				+ " 2) do base.BrokerEditorInstance=new FoobarBrokerEditor()");
-		}
-		public void BrokerEditorInitializeHelper(IDataSourceEditor dataSourceEditor) {
-			if (this.dataSourceEditor != null) {
-				if (this.dataSourceEditor == dataSourceEditor) return;
-				string msg = "this.dataSourceEditor!=null, already initialized; should I overwrite it with another instance you provided?...";
-				throw new Exception(msg);
-			}
-			this.dataSourceEditor = dataSourceEditor;
-		}
-
-	
 		public virtual void OrderPreSubmitEnrichBrokerSpecificInjection(Order order) {
 		}
 		public virtual void OrderPreSubmitEnrichCheckThrow(Order order) {

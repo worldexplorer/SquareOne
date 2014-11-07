@@ -93,7 +93,7 @@ namespace Sq1.Gui.Forms {
 			if (this.chartFormManager.OptimizerForm == null) {
 				string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
 			} else {
-				this.chartFormManager.OptimizerFormShow(false);
+				this.chartFormManager.OptimizerFormShow(true);
 			}
 		}
 		internal void Executor_BacktesterContextInitializedStep2of4(object sender, EventArgs e) {
