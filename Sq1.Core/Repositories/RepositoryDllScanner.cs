@@ -37,7 +37,7 @@ namespace Sq1.Core.Repositories {
 		public string PathMask;
 		public string AbsPath { get { return this.RootPath + Subfolder; } }
 		public List<string> skipDlls = new List<string>() {
-				"CsvHelper.dll", "DigitalRune.Windows.TextEditor.dll", "NDde.dll", "Newtonsoft.Json.dll",		//"log4net.dll", 
+				"CsvHelper35.dll", "DigitalRune.Windows.TextEditor.dll", "NDde.dll", "Newtonsoft.Json.dll",		//"log4net.dll", 
 				"ObjectListView.dll", "Sq1.Charting.dll", "Sq1.Core.dll", "Sq1.Gui.dll", "Sq1.Widgets.dll",
 				"WeifenLuo.WinFormsUI.Docking.dll"};
 

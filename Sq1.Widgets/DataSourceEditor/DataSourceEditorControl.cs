@@ -277,7 +277,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			ds.Initialize(this.assemblerInstance.RepositoryJsonDataSource.AbsPath, this.assemblerInstance.OrderProcessor, this.assemblerInstance.StatusReporter);
 			this.assemblerInstance.RepositoryJsonDataSource.SerializeSingle(ds);
 			// JITTERING_HERE_LOOKS_LIKE_STARTS_BACKTESTING_BEFORE_DSEDITOR_CLOSED
-			this.btnCancel_Click(this, null);
+			//USER_HAS_X_TO_CLOSE_THIS_WINDOW this.btnCancel_Click(this, null);
 			this.ds.RaiseDataSourceEditedChartsDisplayedShouldRunBacktestAgain();
 		}
 	}

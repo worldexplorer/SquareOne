@@ -130,7 +130,7 @@ namespace Sq1.Core.Repositories {
 			return bars;
 		}
 		public int BarsSaveThreadSafe(Bars bars) {
-			if (bars.Count == 0) return 0;
+			//BARS_INITIALIZED_EMPTY if (bars.Count == 0) return 0;
 			int barsSaved = -1;
 			lock (this) {
 				barsSaved = BarsSave(bars);
@@ -264,28 +264,57 @@ namespace Sq1.Core.Repositories {
 			#if DEBUG
 			Debugger.Break();
 			#endif
+
+			string msig = " Error while BarAppend()[" + this + "] into [" + this.Abspath + "]";
 			FileStream fileStream = null;
 			try {
 				fileStream = File.Open(this.Abspath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+			} catch (Exception ex) {
+				string msg = "1/4_FILE_OPEN_THROWN";
+				Assembler.PopupException(msg + msig, ex);
+				return 0;
+			}
+			try {
 				BinaryWriter binaryWriter = new BinaryWriter(fileStream);
 				BinaryReader binaryReader = new BinaryReader(fileStream);
 				int barSize = this.barSizesByVersion[this.barFileCurrentVersion];
-				fileStream.Seek(barSize, SeekOrigin.End);
+				try {
+					fileStream.Seek(barSize, SeekOrigin.End);
+				} catch (Exception ex) {
+					string msg = "2/4_FILESTREAM_SEEK_END_THROWN barSize[" + barSize + "]";
+					Assembler.PopupException(msg + msig, ex);
+					return 0;
+				}
 				DateTime dateTimeOpen = new DateTime(binaryReader.ReadInt64());
 				if (dateTimeOpen >= barLastFormed.DateTimeOpen) {
-					fileStream.Seek(barSize, SeekOrigin.End);	// overwrite the last bar, apparently streaming has been solidified
+					try {
+						fileStream.Seek(barSize, SeekOrigin.End);	// overwrite the last bar, apparently streaming has been solidified
+					} catch (Exception ex) {
+						string msg = "3/4_FILESTREAM_SEEK_END_THROWN barSize[" + barSize + "]";
+						Assembler.PopupException(msg + msig, ex);
+						return 0;
+					}
 				} else {
-					fileStream.Seek(0, SeekOrigin.End);			// append barLastFormed to file since it's newer than last saved/read
+					try {
+						fileStream.Seek(0, SeekOrigin.End);			// append barLastFormed to file since it's newer than last saved/read
+					} catch (Exception ex) {
+						string msg = "3/4_FILESTREAM_SEEK_0_THROWN";
+						Assembler.PopupException(msg + msig, ex);
+						return 0;
+					}
 				}
-				binaryWriter.Write(barLastFormed.DateTimeOpen.Ticks);
-				binaryWriter.Write(barLastFormed.Open);
-				binaryWriter.Write(barLastFormed.High);
-				binaryWriter.Write(barLastFormed.Low);
-				binaryWriter.Write(barLastFormed.Close);
-				binaryWriter.Write(barLastFormed.Volume);
-			} catch (Exception ex) {
-				string msg = "Error while BarAppend()[" + this + "] into [" + this.Abspath + "]";
-				Assembler.PopupException(msg, ex);
+				try {
+					binaryWriter.Write(barLastFormed.DateTimeOpen.Ticks);
+					binaryWriter.Write(barLastFormed.Open);
+					binaryWriter.Write(barLastFormed.High);
+					binaryWriter.Write(barLastFormed.Low);
+					binaryWriter.Write(barLastFormed.Close);
+					binaryWriter.Write(barLastFormed.Volume);
+				} catch (Exception ex) {
+					string msg = "4/4_BINARYWRITER_WRITER_THROWN";
+					Assembler.PopupException(msg + msig, ex);
+					return 0;
+				}
 			} finally {
 				if (fileStream != null) fileStream.Close();
 			}

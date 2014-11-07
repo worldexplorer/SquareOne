@@ -69,9 +69,9 @@ namespace Sq1.Charting {
 			this.barEventsDetach();
 			this.Bars = barsNotNull;
 			if (this.BarsNotEmpty == false) {
-				string msg = "DONT_PASS_EMPTY_BARS_TO_CHART_CONTROL";
+				string msg = "DONT_PASS_EMPTY_BARS_TO_CHART_CONTROL ATTACHING_EVENTS_THOUGH";
 				Assembler.PopupException(msg);
-				return;
+				//return;
 			}
 			this.barEventsAttach();
 			this.SyncHorizontalScrollToBarsCount();

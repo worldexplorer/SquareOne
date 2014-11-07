@@ -386,6 +386,7 @@ namespace Sq1.Gui.Forms {
 			this.BacktesterRunSimulationRegular();
 		}
 		void ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain(object sender, DataSourceEventArgs e) {
+			if (this.Strategy == null) return;
 			if (this.Strategy.ScriptContextCurrent.BacktestOnDataSourceSaved == false) return;
 			this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(
 				"ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain", true, false);

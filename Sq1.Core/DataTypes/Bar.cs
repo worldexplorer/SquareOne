@@ -85,13 +85,18 @@ namespace Sq1.Core.DataTypes {
 				//this.Volume = Math.Round(this.Volume, symbolInfo.DecimalsVolume);
 			} else {
 				string msg = "OHLC_IS_NOT_ALIGNED_TRY_TO_AVOID_IT";
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				Assembler.PopupException(msg, null, false);
 			}
 		}
 		public void AbsorbOHLCVfrom(Bar bar) {
-			this.SetOHLCValigned(bar.Open, bar.High, bar.Low, bar.Close, bar.Volume, bar.ParentBars.SymbolInfo);
+			SymbolInfo symbolInfo = null;
+			if (bar.ParentBars != null) {
+				symbolInfo = bar.ParentBars.SymbolInfo;
+			} else {
+				string msg = "WONT_ROUND_ABSORBED_OHLC it's null for first ever bar of freshly added symbol for Sq1.Adapters.QuikMock.StreamingMock";
+				Assembler.PopupException(msg, null, false);
+			}
+			this.SetOHLCValigned(bar.Open, bar.High, bar.Low, bar.Close, bar.Volume, symbolInfo);
 		}
 		public void SetParentForBackwardUpdate(Bars parentBars, int parentBarsIndex) {
 			if (this.ParentBars == parentBars) {

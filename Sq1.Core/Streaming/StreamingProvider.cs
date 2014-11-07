@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace Sq1.Core.Streaming {
 	// TODO: it's not an abstract class because....
-	public class StreamingProvider {
+	public partial class StreamingProvider {
 		public const string NO_STREAMING_PROVIDER = "--- No Streaming Provider ---";
 		
 		[JsonIgnore]	public string Name { get; protected set; }
@@ -21,7 +21,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public string PreferredStaticProviderName { get; protected set; }
 		[JsonIgnore]	public StreamingSolidifier StreamingSolidifier { get; protected set; }
 		[JsonIgnore]	public DataSource DataSource;
-		[JsonProperty]	public string marketName { get { return this.DataSource.MarketInfo.Name; } }
+		[JsonIgnore]	public string marketName { get { return this.DataSource.MarketInfo.Name; } }
 		[JsonIgnore]	public IStatusReporter StatusReporter { get; protected set; }
 		[JsonIgnore]	public DataDistributor DataDistributor { get; protected set; }
 		[JsonProperty]	public StreamingDataSnapshot StreamingDataSnapshot { get; protected set; }
@@ -58,20 +58,24 @@ namespace Sq1.Core.Streaming {
 			if (this.DataSource.StaticProvider == null) return;
 			this.StreamingSolidifier = new StreamingSolidifier(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
+				string ident = "[" + this.StreamingSolidifier.ToString()
+					+ "] <= " + this.DataSource.Name + " :: " + symbol + " (" + this.DataSource.ScaleInterval + ")";
+
 				if (this.ConsumerBarIsRegistered(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
-					Assembler.PopupException("ALREADY BarSubscribed static[" + this.StreamingSolidifier + "] to symbol[" + symbol + "] + DS["
-						+ this.DataSource.Name + "]'s (" + this.DataSource.ScaleInterval + ")} (that must be the only spot where we register!!!)");
+					string msg = "DUPLICATE_SUBSCRIPTION_BARS " + ident;
+					Assembler.PopupException(msg, null, false);
 				} else {
-					Assembler.PopupException("Streaming is BarSubscribing static[" + this.StreamingSolidifier + "] to symbol[" + symbol + "] + DS["
-						+ this.DataSource.Name + "]'s (" + this.DataSource.ScaleInterval + ")} (wasn't registered)");
+					string msg = "FIRST_SUBSCRIPTION_BARS " + ident;
+					Assembler.PopupException(msg, null, false);
 					this.ConsumerBarRegister(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
 				}
+
 				if (this.ConsumerQuoteIsRegistered(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
-					Assembler.PopupException("ALREADY QuoteSubscribed static[" + this.StreamingSolidifier + "] to symbol[" + symbol + "] + DS["
-						+ this.DataSource.Name + "]'s (" + this.DataSource.ScaleInterval + ")} (that must be the only spot where we register!!!)");
+					string msg = "DUPLICATE_SUBSCRIPTION_QUOTE " + ident;
+					Assembler.PopupException(msg, null, false);
 				} else {
-					Assembler.PopupException("Streaming is QuoteSubscribing static[" + this.StreamingSolidifier + "] to symbol[" + symbol + "] + DS["
-						+ this.DataSource.Name + "]'s (" + this.DataSource.ScaleInterval + ")} (wasn't registered)");
+					string msg = "FIRST_SUBSCRIPTION_QUOTE " + ident;
+					Assembler.PopupException(msg, null, false);
 					this.ConsumerQuoteRegister(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
 				}
 			}
@@ -276,38 +280,11 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 			chartBars.OverrideStreamingDOHLCVwith(streamingBar);
-			Assembler.PopupException("StreamingOHLCV Overwritten: Bars.StreamingBar[" + chartBars.BarStreamingCloneReadonly + "] taken from streamingBar[" + streamingBar + "]");
+			string msg1 = "StreamingOHLCV Overwritten: Bars.StreamingBar[" + chartBars.BarStreamingCloneReadonly + "] taken from streamingBar[" + streamingBar + "]";
+			Assembler.PopupException(msg1, null, false);
 		}
 		public virtual void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
 			// in Market-dependant StreamingProviders, put in the Quote-derived quote anything like QuikQuote.FortsDepositBuy ;
-		}
-
-		protected IDataSourceEditor dataSourceEditor;
-		protected StreamingEditor streamingEditorInstance;
-		public virtual bool EditorInstanceInitialized {
-			get { return (streamingEditorInstance != null); }
-		}
-		public virtual StreamingEditor EditorInstance {
-			get {
-				if (streamingEditorInstance == null) {
-					string msg = "you didn't invoke StreamingEditorInitialize() prior to accessing EditorInstance property";
-					throw new Exception(msg);
-				}
-				return streamingEditorInstance;
-			}
-		}
-		public virtual StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
-			throw new Exception("please override StreamingProvider::StreamingEditorInitialize():"
-				+ " 1) use base.StreamingEditorInitializeHelper()"
-				+ " 2) do base.streamingEditorInstance=new FoobarStreamingEditor()");
-		}
-		public void StreamingEditorInitializeHelper(IDataSourceEditor dataSourceEditor) {
-			if (this.dataSourceEditor != null) {
-				if (this.dataSourceEditor == dataSourceEditor) return;
-				string msg = "this.dataSourceEditor!=null, already initialized; should I overwrite it with another instance you provided?...";
-				throw new Exception(msg);
-			}
-			this.dataSourceEditor = dataSourceEditor;
 		}
 
 		public override string ToString() {

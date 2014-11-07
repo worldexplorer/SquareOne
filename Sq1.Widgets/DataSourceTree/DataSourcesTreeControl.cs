@@ -142,6 +142,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.SymbolSelected = symbol;
 		}
 		public void SelectSymbol(string dataSourceName, string symbol) {
+			string msig = " SelectSymbol([" + dataSourceName + "], [" + symbol + "])";
+
 			DataSource dataSourceFound = null;
 			int indexForDataSource = 0;
 			int indexForSymbol = -1;
@@ -183,8 +185,12 @@ namespace Sq1.Widgets.DataSourcesTree {
 			//DOESNT_WORK_FOR_SAME_SYMBOLS_FOUND_IN_TWO_DATASOURCES this.tree.EnsureModelVisible(symbolFound);
 			//DOESNT_WORK_FOR_SAME_SYMBOLS_FOUND_IN_TWO_DATASOURCES this.tree.SelectObject(symbolFound);
 			int indexToSelect = indexForDataSource + indexForSymbol + 1;
-			this.tree.EnsureVisible(indexToSelect);
-			this.tree.SelectedIndex = indexToSelect;
+			try {
+				this.tree.EnsureVisible(indexToSelect);
+				this.tree.SelectedIndex = indexToSelect;
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex, false);
+			}
 
 			this.DataSourceSelected = dataSourceFound;
 			this.SymbolSelected = symbol;

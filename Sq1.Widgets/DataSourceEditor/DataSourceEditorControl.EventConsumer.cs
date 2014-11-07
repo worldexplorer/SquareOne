@@ -9,7 +9,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Widgets.DataSourceEditor {
 	public partial class DataSourceEditorControl {
-		private void lvStaticProviders_SelectedIndexChanged(object sender, EventArgs e) {
+		void lvStaticProviders_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.lvStaticProviders.SelectedItems.Count == 0) {
 				this.btnNext.Enabled = false;
 				//this.btnSave.Enabled = false;
@@ -45,7 +45,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				txtSymbols.Enabled = false;
 			}
 		}
-		private void lvStreamingProviders_SelectedIndexChanged(object sender, EventArgs e) {
+		void lvStreamingProviders_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.lvStreamingProviders.SelectedItems.Count == 0) {
 				//this.btnNext.Enabled = false;
 				//this.btnFinished.Enabled = false;
@@ -65,7 +65,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.pnlStreaming.Controls.Add(ds.StreamingProvider.EditorInstance);
 			this.grpStreaming.Text = ds.StreamingProvider.Name + " Settings";
 		}
-		private void lvBrokerProviders_SelectedIndexChanged(object sender, EventArgs e) {
+		void lvBrokerProviders_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.lvBrokerProviders.SelectedItems.Count == 0) {
 				//this.btnNext.Enabled = false;
 				//this.btnFinished.Enabled = false;
@@ -85,11 +85,11 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.pnlExecution.Controls.Add(ds.BrokerProvider.EditorInstance);
 			this.grpExecution.Text = ds.BrokerProvider.Name + " Settings";
 		}
-		private void lnkStaticDetails_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
+		void lnkStaticDetails_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
 			if (ds.StaticProvider == null) return;
 			//new StaticProviderDetailsForm(ds.StaticProvider).Show();
 		}
-		private void btnCancel_Click(object sender, EventArgs e) {
+		void btnCancel_Click(object sender, EventArgs e) {
 			if (this.Parent != null) {
 				DockContent parentAsDock = this.Parent as DockContent;  
 				if (parentAsDock != null) {
@@ -103,16 +103,16 @@ namespace Sq1.Widgets.DataSourceEditor {
 				base.Hide();
 			}
 		}
-		private void btnNext_Click(object sender, EventArgs e) { }
-		private void btnPrevious_Click(object sender, EventArgs e) { }
-		private void btnSave_Click(object sender, EventArgs e) {
+		void btnNext_Click(object sender, EventArgs e) { }
+		void btnPrevious_Click(object sender, EventArgs e) { }
+		void btnSave_Click(object sender, EventArgs e) {
 			try {
 				this.ApplyEditorsToDataSourceAndClose();
 			} catch (Exception exc) {
 				Assembler.PopupException("btnSave_Click()", exc);
 			}
 		}
-		private void cmbScale_SelectedIndexChanged(object sender, EventArgs e) {
+		void cmbScale_SelectedIndexChanged(object sender, EventArgs e) {
 			int i = 0;
 			foreach (BarScale barScale in Enum.GetValues(typeof(BarScale))) {
 				if (i == this.cmbScale.SelectedIndex) {
@@ -130,7 +130,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.lblInterval.Enabled = true;
 			this.nmrInterval.Enabled = true;
 		}
-		private void nmrInterval_ValueChanged(object sender, EventArgs e) {
+		void nmrInterval_ValueChanged(object sender, EventArgs e) {
 			ds.ScaleInterval.Interval = (int)this.nmrInterval.Value;
 		}
 	}

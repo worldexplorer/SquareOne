@@ -63,14 +63,16 @@ namespace Sq1.Core.Streaming {
 					Debugger.Break();
 				}
 			} else {
-				if (Double.IsNaN(this.StreamingBarUnattached.Open) || this.StreamingBarUnattached.Open == 0.0) {
-					throw new Exception("nonsense! we should've had StreamingBar already initialized with first quote of a bar");
-					//log.Warn("Initializing OHL as quote.PriceLastDeal[" + quoteClone.PriceLastDeal + "];"
-					//	+ " following previous InitWithStreamingBarInsteadOfEmpty message"
-					//	+ " (if absent then never initialized)");
-					//StreamingBar.Open = quoteClone.PriceLastDeal;
-					//StreamingBar.High = quoteClone.PriceLastDeal;
-					//StreamingBar.Low = quoteClone.PriceLastDeal;
+				if (double.IsNaN(this.StreamingBarUnattached.Open) || this.StreamingBarUnattached.Open == 0.0) {
+					string msg = "we should've had StreamingBar already initialized with first quote of a bar"
+						+ "; should only happen on first quote of first bar ever of a symbol freshly added to DataSource";
+					if (double.IsNaN(quoteClone.LastDealPrice)) {
+						msg = "INITIALIZED_OPEN_WITH_NAN_FROM_quoteClone.LastDealPrice " + msg;
+					}
+					Assembler.PopupException(msg, null, false);
+					this.StreamingBarUnattached.Open = quoteClone.LastDealPrice;
+					//this.StreamingBarUnattached.High = quoteClone.LastDealPrice;
+					//this.StreamingBarUnattached.Low = quoteClone.LastDealPrice;
 				}
 				this.StreamingBarUnattached.MergeExpandHLCVforStreamingBarUnattached(quoteClone);
 				this.IntraBarSerno++;
