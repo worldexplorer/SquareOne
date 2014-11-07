@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 using System.Text;
 
+using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Streaming {
-	[DataContract]
 	public class StreamingDataSnapshot {
-		private StreamingProvider streamingProvider;
-		[DataMember] protected Dictionary<string, double> BestBid { get; private set; }
-		[DataMember] protected Dictionary<string, double> BestAsk { get; private set; }
-		[DataMember] protected Dictionary<string, Quote> LastQuotesReceived { get; private set; }
+		[JsonIgnore]	StreamingProvider streamingProvider;
+		[JsonProperty]	protected Dictionary<string, double> BestBid { get; private set; }
+		[JsonProperty]	protected Dictionary<string, double> BestAsk { get; private set; }
+		[JsonProperty]	protected Dictionary<string, Quote> LastQuotesReceived { get; private set; }
 
-		protected Object LockLastQuote = new Object();
-		protected Object LockBestBid = new Object();
-		protected Object LockBestAsk = new Object();
+		[JsonIgnore]	protected Object LockLastQuote = new Object();
+		[JsonIgnore]	protected Object LockBestBid = new Object();
+		[JsonIgnore]	protected Object LockBestAsk = new Object();
 
-		public string SymbolsSubscribedAndReceiving { get {
+		[JsonIgnore]	public string SymbolsSubscribedAndReceiving { get {
 				string ret = "";
 				foreach (string symbol in LastQuotesReceived.Keys) {
 					if (ret.Length > 0) ret += ",";

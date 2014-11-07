@@ -14,7 +14,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public string MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
 		[JsonProperty]	public List<DayOfWeek> DaysOfWeekOpen;
 		[JsonProperty]	public string TimeZoneName;
-		public TimeZoneInfo TimeZoneInfo { get {
+		[JsonProperty]	public TimeZoneInfo TimeZoneInfo { get {
 				TimeZoneInfo ret = TimeZoneInfo.Local;
 				if (String.IsNullOrEmpty(this.TimeZoneName)) return ret;
 				try {
@@ -71,12 +71,14 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		[JsonIgnore] public DateTime ServerTimeNow { get { return this.ConvertLocalTimeToServer(DateTime.Now); } }
-		[JsonIgnore] public bool TodayIsTradingDay { get { return this.IsTradeableDayServerTime(this.ServerTimeNow); } }
-		[JsonIgnore] public bool IsMarketOpenNow { get { return this.IsMarketOpenAtServerTime(this.ServerTimeNow); } }
-		[JsonIgnore] public bool MarketIsAfterCloseNow { get { return this.isMarketAfterCloseServerTime(this.ServerTimeNow); } }
-		[JsonIgnore] public DateTime MarketCloseLocalTime { get { return this.ConvertServerTimeToLocal(this.MarketCloseServerTime); } }
-		[JsonIgnore] public DateTime LastTradingSessionEndedServerTime { get {
+		
+		// wanna put it in separate file?... partial?..
+		[JsonIgnore]	public DateTime ServerTimeNow { get { return this.ConvertLocalTimeToServer(DateTime.Now); } }
+		[JsonIgnore]	public bool TodayIsTradingDay { get { return this.IsTradeableDayServerTime(this.ServerTimeNow); } }
+		[JsonIgnore]	public bool IsMarketOpenNow { get { return this.IsMarketOpenAtServerTime(this.ServerTimeNow); } }
+		[JsonIgnore]	public bool MarketIsAfterCloseNow { get { return this.isMarketAfterCloseServerTime(this.ServerTimeNow); } }
+		[JsonIgnore]	public DateTime MarketCloseLocalTime { get { return this.ConvertServerTimeToLocal(this.MarketCloseServerTime); } }
+		[JsonIgnore]	public DateTime LastTradingSessionEndedServerTime { get {
 				DateTime dateTimeServer = ServerTimeNow;
 				if (this.IsTradeableDayServerTime(dateTimeServer)
 						&& this.isMarketAfterCloseServerTime(dateTimeServer) == false) {

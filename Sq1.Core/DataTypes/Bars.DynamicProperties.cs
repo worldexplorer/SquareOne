@@ -4,14 +4,14 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public partial class Bars {
-		public Bar BarStaticFirstNullUnsafe { get {
+		[JsonIgnore]	public Bar BarStaticFirstNullUnsafe { get {
 				Bar last = base.BarFirst;
 				if (last == null) return null; 
 				if (last != this.BarStreaming) return last;
 				return null;
 				//throw new Exception("Bars.BarLast point to Bars.StreamingBar???");
 			} }
-		public Bar BarStaticLastNullUnsafe { get {
+		[JsonIgnore]	public Bar BarStaticLastNullUnsafe { get {
 				Bar last = base.BarLast;
 				if (last == null) return null; 
 				if (last != this.BarStreaming) return last;
@@ -177,7 +177,7 @@ namespace Sq1.Core.DataTypes {
 //		public int SuggestBarIndexExpectedMarketClosesToday(Bar startScanFrom) {
 //			return -1;
 //		}
-		public int BarsMaxOneDayCanFit { get {
+		[JsonIgnore]	public int BarsMaxOneDayCanFit { get {
 				int ret = 0;
 				TimeSpan wholeDay = new TimeSpan(24, 0, 0);
 				ret = (int) (wholeDay.TotalSeconds / this.ScaleInterval.AsTimeSpan.TotalSeconds);
@@ -293,7 +293,7 @@ namespace Sq1.Core.DataTypes {
 //			DateTime ret = dateTimeToAddIntervalsTo.Add(totalTimeSpan);
 //			return ret;
 //		}
-//		[JsonIgnore] public int BarsDuringMarketOpenExpectedIncludingClearingIntervals { get {
+//		[JsonIgnore]	public int BarsDuringMarketOpenExpectedIncludingClearingIntervals { get {
 //				int ret = -1;
 //				if (this.MarketInfo == null) return ret;
 //				if (this.ScaleInterval.Scale == BarScale.Unknown) {
@@ -327,7 +327,7 @@ namespace Sq1.Core.DataTypes {
 //				ret = marketOpenDurationSeconds / seconds;
 //				return ret;
 //			} }
-//		[JsonIgnore] public TimeSpan ClearingIntervalsStretchingWholeBarsTotalled { get {
+//		[JsonIgnore]	public TimeSpan ClearingIntervalsStretchingWholeBarsTotalled { get {
 //				TimeSpan ret = new TimeSpan();
 //				if (this.MarketInfo == null) return ret;
 //				if (this.ScaleInterval == null) {

@@ -53,7 +53,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		void RaiseOnStrategyCreated(string msig = null) {
 			if (this.OnStrategyCreated == null) {
 				string msg = "event OnStrategyCreated: no subscribers";
-				statusReporter.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			this.OnStrategyCreated(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));
@@ -61,7 +61,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		void RaiseOnFolderCreated(string msig = null) {
 			if (this.OnFolderCreated == null) {
 				string msg = "event OnFolderCreated: no subscribers";
-				statusReporter.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			this.OnFolderCreated(this, new StrategyEventArgs(this.FolderSelected, null));
@@ -69,7 +69,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		void RaiseOnStrategyOpenClicked(string msig = null) {
 			if (this.OnStrategyOpenDefaultClicked == null) {
 				string msg = "event OnStrategyOpenClicked: no subscribers";
-				statusReporter.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
@@ -84,7 +84,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		void RaiseOnStrategyOpenSavedClicked(string msig, ToolStripMenuItem mniClicked) {
 			if (this.OnStrategyOpenSavedClicked == null) {
 				string msg = "event OnStrategyOpenSavedClicked: no subscribers";
-				statusReporter.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
@@ -99,7 +99,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		void RaiseOnStrategyMovedToAnotherFolderClicked(string msig, ToolStripMenuItem mniClicked) {
 			if (this.OnStrategyMovedToAnotherFolderClicked == null) {
 				string msg = "event OnStrategyMovedToAnotherFolderClicked: no subscribers";
-				statusReporter.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			string folderPriorToMove = this.FolderSelected;
@@ -109,7 +109,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		void RaiseOnStrategyEditClicked(string msig) {
 			if (this.OnStrategyEditClicked == null) {
 				string msg = "event OnStrategyEditClicked: no subscribers";
-				statusReporter.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			this.OnStrategyEditClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));
@@ -121,7 +121,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		void RaiseOnStrategyDuplicated(string msig) {
 			if (this.OnStrategyDuplicated == null) {
 				string msg = "event OnStrategyDuplicated: no subscribers";
-				statusReporter.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			this.OnStrategyDuplicated(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));
@@ -129,7 +129,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		void RaiseOnStrategyDeleteClicked() {
 			if (this.OnStrategyDeleteClicked == null) {
 				string msg = "StrategiesTree.mniStrategyDelete_Click(): event OnStrategyDeleted: no subscribers";
-				statusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.OnStrategyDeleteClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));

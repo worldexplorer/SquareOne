@@ -12,9 +12,8 @@ using Sq1.Core.Support;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl : UserControl {
-		private RepositoryJsonDataSource dataSourceRepository;
-		private IStatusReporter statusReporter;
-		private Dictionary<Type, int> imageIndexByStaticProviderType = new Dictionary<Type, int>();
+		RepositoryJsonDataSource dataSourceRepository;
+		Dictionary<Type, int> imageIndexByStaticProviderType = new Dictionary<Type, int>();
 
 		public DataSource DataSourceSelected;
 		public string SymbolSelected;
@@ -41,9 +40,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.tree.Collapsed += new EventHandler<TreeBranchCollapsedEventArgs>(tree_Collapsed);
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;
 		}
-		public void Initialize(RepositoryJsonDataSource dataSourceRepository, IStatusReporter statusReporter) {
+		public void Initialize(RepositoryJsonDataSource dataSourceRepository) {
 			this.dataSourceRepository = dataSourceRepository;
-			this.statusReporter = statusReporter;
 
 			try {
 				bool createdNewFile = this.dataSnapshotSerializer.Initialize(this.dataSourceRepository.RootPath,

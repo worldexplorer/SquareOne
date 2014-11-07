@@ -1,53 +1,50 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Windows.Forms;
 
-//using Microsoft.VisualBasic.Logging;
 using Newtonsoft.Json;
 using Sq1.Core.Accounting;
 
 namespace Sq1.Core.Execution {
-	[DataContract]
 	public class Order {
 		//public string GUID = Guid.NewGuid().ToString();
-		[DataMember] public DateTime TimeCreatedBroker;
-		[DataMember] public double PriceRequested;
-		[DataMember] public double PriceFill;
-		[DataMember] public double QtyRequested;
-		[DataMember] public double QtyFill;
+		[JsonProperty]	public DateTime TimeCreatedBroker;
+		[JsonProperty]	public double PriceRequested;
+		[JsonProperty]	public double PriceFill;
+		[JsonProperty]	public double QtyRequested;
+		[JsonProperty]	public double QtyFill;
 
-		[DataMember] public string GUID;
-		[DataMember] public OrderState State;
-		[DataMember] public DateTime StateUpdateLastTimeLocal;
-		[DataMember] public int SernoSession;
-		[DataMember] public long SernoExchange;
+		[JsonProperty]	public string GUID;
+		[JsonProperty]	public OrderState State;
+		[JsonProperty]	public DateTime StateUpdateLastTimeLocal;
+		[JsonProperty]	public int SernoSession;
+		[JsonProperty]	public long SernoExchange;
 
-		[DataMember] public bool IsReplacement;
-		[DataMember] public string ReplacementForGUID;
-		[DataMember] public string ReplacedByGUID;
+		[JsonProperty]	public bool IsReplacement;
+		[JsonProperty]	public string ReplacementForGUID;
+		[JsonProperty]	public string ReplacedByGUID;
 
-		[DataMember] public bool IsEmergencyClose;
-		[DataMember] public int EmergencyCloseAttemptSerno;
-		[DataMember] public string EmergencyReplacementForGUID;
-		[DataMember] public string EmergencyReplacedByGUID;
+		[JsonProperty]	public bool IsEmergencyClose;
+		[JsonProperty]	public int EmergencyCloseAttemptSerno;
+		[JsonProperty]	public string EmergencyReplacementForGUID;
+		[JsonProperty]	public string EmergencyReplacedByGUID;
 
-		[DataMember] public bool IsKiller;
-		[DataMember] public string VictimGUID;
-		[JsonIgnore] public Order VictimToBeKilled;
-		[DataMember] public string KillerGUID;
-		[JsonIgnore] public Order KillerOrder;
+		[JsonProperty]	public bool IsKiller;
+		[JsonProperty]	public string VictimGUID;
+		[JsonIgnore]	public Order VictimToBeKilled;
+		[JsonProperty]	public string KillerGUID;
+		[JsonIgnore]	public Order KillerOrder;
 
-		[DataMember] public DateTime DateServerLastFillUpdate;
-		[DataMember] public bool FromAutoTrading { get; private set; }
-		[DataMember] public double SlippageFill;
-		[DataMember] public int SlippageIndex;
-		[DataMember] public double CurrentAsk;
-		[DataMember] public double CurrentBid;		// json.deserialize will put NULL when { get; private set; }
-		[DataMember] public OrderSpreadSide SpreadSide;
-		[DataMember] public string PriceSpreadSideAsString { get {
+		[JsonProperty]	public DateTime DateServerLastFillUpdate;
+		[JsonProperty]	public bool FromAutoTrading { get; private set; }
+		[JsonProperty]	public double SlippageFill;
+		[JsonProperty]	public int SlippageIndex;
+		[JsonProperty]	public double CurrentAsk;
+		[JsonProperty]	public double CurrentBid;		// json.deserialize will put NULL when { get; private set; }
+		[JsonProperty]	public OrderSpreadSide SpreadSide;
+		[JsonProperty]	public string PriceSpreadSideAsString { get {
 				string ret = "";
 				switch (this.SpreadSide) {
 					case OrderSpreadSide.AskCrossed:
@@ -65,7 +62,7 @@ namespace Sq1.Core.Execution {
 				return ret;
 			} }
 		//[JsonIgnore]
-		[DataMember] public Alert Alert;		// json.deserialize will put NULL when { get; private set; }
+		[JsonProperty]	public Alert Alert;		// json.deserialize will put NULL when { get; private set; }
 		
 		[JsonIgnore]
 		// why Concurrent: OrderProcessor adds while GUI reads (a copy); why Stack: ExecutionTree displays Messages RecentOnTop;
@@ -77,41 +74,39 @@ namespace Sq1.Core.Execution {
 		
 		//[JsonIgnore]
 		// List because Json.Net doesn't serialize ConcurrentQueue as []; I wanted deserialization compability
-		[DataMember] public List<OrderStateMessage> MessagesSerializationProxy {
+		[JsonProperty]	public List<OrderStateMessage> MessagesSerializationProxy {
 			get {
 				// don't return {new List(empty)} as the next line; if JsonConvert.DeserializeObject gets NULL it'll SET a deserialized list  
 				if (this.messages.Count == 0) return null; 
 				return new List<OrderStateMessage>(this.messages);
 				//string msg = "JsonConvert.DeserializeObject gets the deserialized Messages exactly once and it should get NULL"
 				//	+ "; never access MessagesSafeCopy.set manually"
-				//	+ "; it's a [DataMember] used by LogrotateSerializer<Order>.Deserialize() and .Serialize()";
+				//	+ "; it's a [JsonProperty]	used by LogrotateSerializer<Order>.Deserialize() and .Serialize()";
 				//throw new Exception(msg);
 			}
 			set {
 				if (this.messages.Count > 0) {
 					string msg = "JsonConvert.DeserializeObject sets the deserialized Messages exactly once"
 						+ "; never access MessagesSafeCopy.set manually"
-						+ "; it's a [DataMember] used by LogrotateSerializer<Order>.Deserialize() and .Serialize()";
+						+ "; it's a [JsonProperty]	used by LogrotateSerializer<Order>.Deserialize() and .Serialize()";
 					throw new Exception(msg);
 					//return;
 				}
 				this.messages = new ConcurrentQueue<OrderStateMessage>(value);
 			}
 		}
-		public ConcurrentQueue<OrderStateMessage> MessagesSafeCopy {
-			get { return new ConcurrentQueue<OrderStateMessage>(this.messages); }
-		}
+		[JsonIgnore]	public ConcurrentQueue<OrderStateMessage> MessagesSafeCopy { get { return new ConcurrentQueue<OrderStateMessage>(this.messages); } }
 
 		//public Position PositionFollowed;
 		//public AccountPosition AccountPositionFollowed;
 
 		// no search among lvOrders.Items[] is required to populate the order update
-		public ListViewItem ListViewItemInExecutionForm;
-		public int StateImageIndex;
+		[JsonIgnore]	public ListViewItem ListViewItemInExecutionForm;
+		[JsonIgnore]	public int StateImageIndex;
 		
-		public List<Order> DerivedOrders;
+		[JsonIgnore]	public List<Order> DerivedOrders;
 		
-		[DataMember] public List<string> DerivedOrdersGuids;/* {
+		[JsonProperty]	public List<string> DerivedOrdersGuids;/* {
 			get {
 				if (this.derivedOrdersGuids == null) return null;
 				var ret = new List<string>();
@@ -127,7 +122,7 @@ namespace Sq1.Core.Execution {
 		}
 		private List<string> derivedOrdersGuids;*/
 		
-		public Order DerivedFrom;
+		[JsonProperty]	public Order DerivedFrom;
 
 		public bool RebuildDerivedOrdersGuids() {
 			List<string> backup = this.DerivedOrdersGuids;

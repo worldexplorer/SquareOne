@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.Serialization;
+
+using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Static;
@@ -9,27 +10,24 @@ using Sq1.Core.Support;
 using System.Diagnostics;
 
 namespace Sq1.Core.Streaming {
-	[DataContract]
 	// TODO: it's not an abstract class because....
 	public class StreamingProvider {
 		public const string NO_STREAMING_PROVIDER = "--- No Streaming Provider ---";
-		// TODO: mark members with [JSONIgnore] explicitly; now it's a mess what's serialized and what's not
-		public string Name { get; protected set; }
-		public string Description { get; protected set; }
-		public Bitmap Icon { get; protected set; }
-		public bool IsConnected { get; protected set; }
-		public string PreferredStaticProviderName { get; protected set; }
-		public StreamingSolidifier StreamingSolidifier { get; protected set; }
-		public DataSource DataSource;
-		[DataMember]
-		public string marketName { get { return this.DataSource.MarketInfo.Name; } }
-		public IStatusReporter StatusReporter { get; protected set; }
-		public DataDistributor DataDistributor { get; protected set; }
-		[DataMember]
-		public StreamingDataSnapshot StreamingDataSnapshot { get; protected set; }
-		public virtual List<string> SymbolsUpstreamSubscribed { get; private set; }
-		protected Object SymbolsSubscribedLock = new Object();
-		public virtual string SymbolsUpstreamSubscribedAsString { get {
+		
+		[JsonIgnore]	public string Name { get; protected set; }
+		[JsonIgnore]	public string Description { get; protected set; }
+		[JsonIgnore]	public Bitmap Icon { get; protected set; }
+		[JsonIgnore]	public bool IsConnected { get; protected set; }
+		[JsonIgnore]	public string PreferredStaticProviderName { get; protected set; }
+		[JsonIgnore]	public StreamingSolidifier StreamingSolidifier { get; protected set; }
+		[JsonIgnore]	public DataSource DataSource;
+		[JsonProperty]	public string marketName { get { return this.DataSource.MarketInfo.Name; } }
+		[JsonIgnore]	public IStatusReporter StatusReporter { get; protected set; }
+		[JsonIgnore]	public DataDistributor DataDistributor { get; protected set; }
+		[JsonProperty]	public StreamingDataSnapshot StreamingDataSnapshot { get; protected set; }
+		[JsonIgnore]	public virtual List<string> SymbolsUpstreamSubscribed { get; private set; }
+		[JsonIgnore]	protected Object SymbolsSubscribedLock = new Object();
+		[JsonIgnore]	public virtual string SymbolsUpstreamSubscribedAsString { get {
 				string ret = "";
 				lock (SymbolsSubscribedLock) {
 					foreach (string symbol in SymbolsUpstreamSubscribed) ret += symbol + ",";
@@ -37,11 +35,9 @@ namespace Sq1.Core.Streaming {
 				ret = ret.TrimEnd(',');
 				return ret;
 			} }
-
-		protected Object BarsConsumersLock = new Object();
-
-		public bool SaveToStatic;
-		public ConnectionState ConnectionState { get; protected set; }
+		[JsonIgnore]	protected Object BarsConsumersLock = new Object();
+		[JsonIgnore]	public bool SaveToStatic;
+		[JsonIgnore]	public ConnectionState ConnectionState { get; protected set; }
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingProvider() {

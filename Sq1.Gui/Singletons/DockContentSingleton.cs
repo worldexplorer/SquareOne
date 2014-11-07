@@ -58,13 +58,13 @@ namespace Sq1.Gui.Singletons {
 			throw new Exception(msg);
 		}
 
-		protected DockPanel mainFormDockPanel;
-		protected IStatusReporter statusReporter;
-
-		public virtual void Initialize(IStatusReporter statusReporter, DockPanel mainFormDockPanel) {
-			this.mainFormDockPanel = mainFormDockPanel;
-			this.statusReporter = statusReporter;
-		}
+//		protected DockPanel mainFormDockPanel;
+//		protected IStatusReporter statusReporter;
+//
+//		public virtual void Initialize(IStatusReporter statusReporter, DockPanel mainFormDockPanel) {
+//			this.mainFormDockPanel = mainFormDockPanel;
+//			this.statusReporter = statusReporter;
+//		}
 
 		// 1) you specify HideOnClose=true  and do not override OnFormClosing(); OnClose: <Content IsHidden="True"> will	 be added into Layout.xml
 		// 2) you specify HideOnClose=false and  you   override OnFormClosing(); OnClose: <Content IsHidden="True"> will NOT be added into Layout.xml

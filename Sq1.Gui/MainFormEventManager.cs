@@ -10,19 +10,15 @@ using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Support;
 using Sq1.Gui.Forms;
-using WeifenLuo.WinFormsUI.Docking;
+using Sq1.Gui.Singletons;
 using Sq1.Widgets.SteppingSlider;
+using WeifenLuo.WinFormsUI.Docking;
 
-namespace Sq1.Gui.Singletons {
+namespace Sq1.Gui {
 	public class MainFormEventManager {
 		private MainForm mainForm;
 
-		private DockPanel dockPanel {
-			get { return this.mainForm.DockPanel; }
-		}
-		private IStatusReporter statusReporter {
-			get { return this.mainForm as IStatusReporter; }
-		}
+		private IStatusReporter statusReporter { get { return this.mainForm as IStatusReporter; } }
 
 		public MainFormEventManager(MainForm mainForm) {
 			this.mainForm = mainForm;
@@ -201,7 +197,8 @@ namespace Sq1.Gui.Singletons {
 			//if a running optimizer / backtester / streaming chart had DataSource, possibly shut them down?
 		}
 		internal void DataSourcesTree_OnDataSourceEditClicked(object sender, DataSourceEventArgs e) {
-			DataSourceEditorForm.Instance.DataSourceEditorControl.Initialize(e.DataSource);
+			//DataSourceEditorForm.Instance.DataSourceEditorControl.Initialize(e.DataSource);
+			DataSourceEditorForm.Instance.Initialize(e.DataSource.Name);
 			try {
 				DataSourceEditorForm.Instance.ShowAsDocumentTabNotPane(this.mainForm.DockPanel);
 			} catch (Exception exc) {

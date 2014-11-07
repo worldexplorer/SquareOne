@@ -15,6 +15,10 @@ using Sq1.Core.Support;
 namespace Sq1.Widgets.DataSourceEditor {
 	public partial class DataSourceEditorControl : UserControl, IDataSourceEditor {
 		DataSource ds;
+		public string DataSourceName { get {
+				if (this.ds == null) return "NO_DATASOURCE_LOADED_FOR_EDITING";
+				return this.ds.Name;
+			} }
 		public Dictionary<string, StaticProvider> StaticProvidersByName { get; private set; }
 		public Dictionary<string, StreamingProvider> StreamingProvidersByName { get; private set; }
 		public Dictionary<string, BrokerProvider> BrokerProvidersByName { get; private set; }

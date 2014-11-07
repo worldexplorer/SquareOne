@@ -22,14 +22,12 @@ namespace Sq1.Gui {
 		[JsonProperty]	public int ChartSernoLastUsed;
 		[JsonIgnore]	public int ChartSernoNextAvailable { get { return ++this.ChartSernoLastUsed; } }
 		[JsonProperty]	public int ChartSernoLastKnownHadFocus;
-		[JsonIgnore]	public string ChartSernosInstantiatedAsString {
-			get {
+		[JsonIgnore]	public string ChartSernosInstantiatedAsString { get {
 				string ret = "";
 				foreach (int chartSerno in this.ChartFormManagers.Keys) ret += chartSerno + ",";
 				ret = ret.TrimEnd(",".ToCharArray());
 				return ret;
-			}
-		}
+			} }
 
 		public GuiDataSnapshot() {
 			this.ChartFormManagers = new Dictionary<int, ChartFormManager>();

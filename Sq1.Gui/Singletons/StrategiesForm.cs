@@ -19,9 +19,8 @@ namespace Sq1.Gui.Singletons {
 			InitializeComponent();
 		}
 
-		public void Initialize(RepositoryDllJsonStrategy strategyRepository, IStatusReporter statusReporter, DockPanel mainFormDockPanel) {
-			base.Initialize(statusReporter, mainFormDockPanel);
-			StrategiesForm.Instance.StrategiesTreeControl.Initialize(strategyRepository, statusReporter);
+		public void Initialize(RepositoryDllJsonStrategy strategyRepository) {
+			StrategiesForm.Instance.StrategiesTreeControl.Initialize(strategyRepository);
 		}
 	}
 }

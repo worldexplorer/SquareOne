@@ -164,16 +164,21 @@ namespace Sq1.Core {
 			
 			return Assembler.InstanceInitialized;
 		}
-		public static void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
-			if (Assembler.InstanceInitialized == null) {
-				MessageBox.Show(ex.Message, "Assembler.InstanceInitialized=null");
-				//throw ex;
-			}
+		
+		public void checkThrowIfNotInitializedStaticHelper(Exception ex = null) {
+//			if (Assembler.InstanceInitialized == null) {
+//				MessageBox.Show(ex.Message, "Assembler.InstanceInitialized=null");
+//				//throw ex;
+//			}
 			if (Assembler.InstanceInitialized.StatusReporter == null) {
 				string msg2 = "Assembler.InstanceInitialized.StatusReporter=null";
 				//MessageBox.Show(ex.Message, msg);
 				throw new Exception(msg2, ex);
 			}
+		}
+		
+		public static void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
+			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
 			Form exceptionsForm = Assembler.InstanceInitialized.StatusReporter as Form;
 			if (exceptionsForm == null) {
 				string msg2 = "Assembler.InstanceInitialized.StatusReporter is not a Form";
@@ -189,6 +194,10 @@ namespace Sq1.Core {
 					+ "; but .PopupException() will insert your exception into the tree and display OnLoad()";
 			}
 			Assembler.InstanceInitialized.StatusReporter.PopupException(msg, ex, debuggingBreak);
+		}
+		public static void DisplayStatus(string msg) {
+			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
+			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
 		}
 	}
 }

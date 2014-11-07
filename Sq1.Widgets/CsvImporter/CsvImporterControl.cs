@@ -51,7 +51,7 @@ namespace Sq1.Widgets.CsvImporter {
 				this.stepsAllparseFromDataSnapshot();
 				this.importSourceFileBrowser1.SelectFile(this.dataSnapshot.FileSelected);
 			}
-			this.dataSourcesTree1.Initialize(this.DataSourceRepository, Assembler.InstanceInitialized.StatusReporter);
+			this.dataSourcesTree1.Initialize(this.DataSourceRepository);
 			this.dataSourcesTree1.TreeFirstColumnNameText = "Import To (Symbol / DataSource):";
 		}
 

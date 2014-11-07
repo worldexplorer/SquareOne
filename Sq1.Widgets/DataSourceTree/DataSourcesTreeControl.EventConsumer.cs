@@ -75,7 +75,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void mniDataSourceDelete_Click(object sender, EventArgs e) {
 			if (this.DataSourceSelected == null) {
 				string msg = "DataSourcesTree.mniRemoveSymbol_Click(): event OnDataSourceNewClicked: no subscribers";
-				statusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.dataSourceRepository.ItemDelete(this.DataSourceSelected, this);
@@ -83,7 +83,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void mniRemoveSymbol_Click(object sender, EventArgs e) {
 			if (this.DataSourceSelected == null) {
 				string msg = "DataSourcesTree.ctxDataSource_Opening(): this.DataSourceSelected = null";
-				statusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			if (this.SymbolSelected == "") return;

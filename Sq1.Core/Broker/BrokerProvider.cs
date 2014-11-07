@@ -1,48 +1,40 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Windows.Forms;
+
 using Sq1.Core.Accounting;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
+using Newtonsoft.Json;
 
 namespace Sq1.Core.Broker {
-	[DataContract]
 	public class BrokerProvider {
 		public const string NO_BROKER_PROVIDER = "--- No Broker Provider ---";
 
-		private object lockSubmitOrders;
-		public string Name { get; protected set; }
-		public bool HasMockInName {
-			get { return Name.Contains("Mock"); }
-		}
-		public bool HasBacktestInName {
-			get { return Name.Contains("Backtest"); }
-		}
-		public Bitmap Icon { get; protected set; }
-		public DataSource DataSource { get; protected set; }
-		public OrderProcessor OrderProcessor { get; protected set; }
-		public StreamingProvider StreamingProvider;
-		public IStatusReporter StatusReporter { get; protected set; }
-//		public List<Account> Accounts { get; protected set; }
-		[DataMember]
-		public Account Account;
-		public Account AccountAutoPropagate {
-			get {
-				return this.Account;
-			}
+		[JsonIgnore]	private object lockSubmitOrders;
+		[JsonIgnore]	public string Name { get; protected set; }
+		[JsonIgnore]	public bool HasMockInName { get { return Name.Contains("Mock"); } }
+		[JsonIgnore]	public bool HasBacktestInName { get { return Name.Contains("Backtest"); } }
+		[JsonIgnore]	public Bitmap Icon { get; protected set; }
+		[JsonIgnore]	public DataSource DataSource { get; protected set; }
+		[JsonIgnore]	public OrderProcessor OrderProcessor { get; protected set; }
+		[JsonIgnore]	public StreamingProvider StreamingProvider;
+		[JsonIgnore]	public IStatusReporter StatusReporter { get; protected set; }
+//		[JsonIgnore]	public List<Account> Accounts { get; protected set; }
+		[JsonProperty]	public Account Account;
+		[JsonIgnore]	public Account AccountAutoPropagate {
+			get { return this.Account; }
 			set {
 				this.Account = value;
 				this.Account.Initialize(this);
 			}
 		}
-//		public virtual string AccountsAsString {
-//			get {
+//		public virtual string AccountsAsString { get {
 //				string ret = "";
 //				foreach (Account account in this.Accounts) {
 //					ret += account.AccountNumber + ":" + account.Positions.Count + "positions,";
@@ -52,11 +44,10 @@ namespace Sq1.Core.Broker {
 //					ret = "NO_ACCOUNTS";
 //				}
 //				return ret;
-//			}
-//		}
+//			} }
 
-		public OrderCallbackDupesChecker OrderCallbackDupesChecker { get; protected set; }
-		public bool SignalToTerminateAllOrderTryFillLoopsInAllMocks = false;
+		[JsonIgnore]	public OrderCallbackDupesChecker OrderCallbackDupesChecker { get; protected set; }
+		[JsonIgnore]	public bool SignalToTerminateAllOrderTryFillLoopsInAllMocks = false;
 
 		public BrokerProvider() {
 			//Accounts = new List<Account>();

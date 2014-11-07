@@ -113,11 +113,35 @@ namespace Sq1.Core.Repositories {
 
 					if (denyDuplicateShortNamesAndPreInstantiateToClone == false) continue;
 					if (SkipInstantiationAtAttribute.AtStartup(type) == true) continue;
+					
+					msig = " Activator.CreateInstance(" + type + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanDlls("
+						+ denyDuplicateShortNamesAndPreInstantiateToClone + ", [" + dllAbsPath + "])";
+						
+					// 1/3
+					object instance;
 					try {
-						object instance = Activator.CreateInstance(type);	// Type.Assembly points to where the Type "lives"
-						if (instance == null) continue;
-						T classCastedInstance = (T)instance;
+						instance = Activator.CreateInstance(type);	// Type.Assembly points to where the Type "lives"
+						if (instance == null) throw new Exception("INSTANCE_RETURNED_IS_NULL");
+					} catch (Exception ex) {
+						string msg = "ACTIVATION_FAILED";
+						Assembler.PopupException(msg + msig, ex);
+						continue;
+					}
+					
+					// 2/3
+					T classCastedInstance;
+					try {
+						classCastedInstance = (T)instance;
 						//if (classCastedInstance.Name == null) continue;
+						if (classCastedInstance == null) throw new Exception("CLASSCASTEDINSTANCE_IS_NULL");
+					} catch (Exception ex) {
+						string msg = "INSTANCE_CANT_BE_CASTED";	 //this check is redundant due to if (typeof(T).IsAssignableFrom(type) == false) continue;
+						Assembler.PopupException(msg + msig, ex);
+						continue;
+					}
+					
+					// 3/3
+					try {
 						//this.CloneableInstanceByClassName.Add(classCastedInstance.Name, classCastedInstance);
 						this.CloneableInstanceByClassName.Add(type.Name, classCastedInstance);
 
@@ -127,14 +151,7 @@ namespace Sq1.Core.Repositories {
 						List<T> cloneableInstancesForAssembly = this.CloneableInstancesByAssemblies[assembly];
 						cloneableInstancesForAssembly.Add(classCastedInstance);
 					} catch (Exception ex) {
-						msig = " Activator.CreateInstance(" + type + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanDlls(" + denyDuplicateShortNamesAndPreInstantiateToClone
-							+ ", [" + dllAbsPath + "])";
-						string msg = "ACTIVATION_FAILED_/_INSTANCE_CANT_BE_CASTED_/_DUPLICATE_FOUND_IN_ANOTHER_DLL";
-						//Exception dontThrowButLog = new Exception(msig + msg, ex);
-						//this.ExceptionsWhileScanning.Add(dontThrowButLog);
-						//#if DEBUG
-						//Debugger.Break();
-						//#endif
+						string msg = "DUPLICATE_FOUND_IN_ANOTHER_DLL";
 						Assembler.PopupException(msg + msig, ex);
 						continue;
 					}
