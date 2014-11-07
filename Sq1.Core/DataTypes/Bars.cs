@@ -1,30 +1,30 @@
 using System;
-using System.Runtime.Serialization;
 
+using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Repositories;
 
 namespace Sq1.Core.DataTypes {
-	[DataContract]	// prevents serialization in JSON of the underlying bars
 	//v1 public partial class Bars : BarsUnscaledSortedList {
 	public partial class Bars : BarsUnscaled {
-		public static int InstanceAbsno = 0;
+		[JsonIgnore]	public static int InstanceAbsno = 0;
 
+		// IObservable emulated?...
 		public event EventHandler<BarEventArgs> BarStaticAdded;
 		public event EventHandler<BarEventArgs> BarStreamingAdded;
 		public event EventHandler<BarEventArgs> BarStreamingUpdatedMerged;
 		
-		public string SymbolHumanReadable;
-		public BarScaleInterval ScaleInterval { get; private set; }
+		[JsonIgnore]	public string SymbolHumanReadable;
+		[JsonIgnore]	public BarScaleInterval ScaleInterval { get; private set; }
 
-		public MarketInfo MarketInfo;
-		public DataSource DataSource;
+		[JsonIgnore]	public MarketInfo MarketInfo;
+		[JsonIgnore]	public DataSource DataSource;
 
-		public bool IsIntraday { get { return this.ScaleInterval.IsIntraday; } }
-		public string SymbolIntervalScale { get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
+		[JsonIgnore]	public bool IsIntraday { get { return this.ScaleInterval.IsIntraday; } }
+		[JsonIgnore]	public string SymbolIntervalScale { get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
 
-		public Bar BarStreaming { get; private set; }
-		public Bar BarStreamingCloneReadonly { get {
+		[JsonIgnore]	public Bar BarStreaming { get; private set; }
+		[JsonIgnore]	public Bar BarStreamingCloneReadonly { get {
 				//v1
 //				Bar lastStatic = this.BarStaticLast;
 //				DateTime lastStaticOrServerNow = (lastStatic != null)
@@ -81,10 +81,10 @@ namespace Sq1.Core.DataTypes {
 				return this.BarStreaming;
 			}
 		}
-		private Bar barCreateAppendBindStreaming(Bar bar) {
+		Bar barCreateAppendBindStreaming(Bar bar) {
 			return this.barCreateAppendBindStreaming(bar.DateTimeOpen, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume);
 		}
-		private Bar barCreateAppendBindStreaming(DateTime dateTime, double open, double high, double low, double close, double volume) {
+		Bar barCreateAppendBindStreaming(DateTime dateTime, double open, double high, double low, double close, double volume) {
 			lock (base.BarsLock) {
 				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
 				barAdding.SetOHLCValigned(open, high, low, close, volume, this.SymbolInfo);
@@ -92,7 +92,7 @@ namespace Sq1.Core.DataTypes {
 				return barAdding;
 			}
 		}
-		private void barAppendBindStreaming(Bar barAdding) {
+		void barAppendBindStreaming(Bar barAdding) {
 			lock (base.BarsLock) {
 				this.BarAppendBind(barAdding);
 				this.BarStreaming = barAdding;

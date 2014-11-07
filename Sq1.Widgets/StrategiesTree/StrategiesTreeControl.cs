@@ -30,9 +30,8 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.tree.Collapsed += new EventHandler<TreeBranchCollapsedEventArgs>(tree_Collapsed);
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;
 		}
-		public void Initialize(RepositoryDllJsonStrategy strategyRepository, IStatusReporter statusReporter) {
+		public void Initialize(RepositoryDllJsonStrategy strategyRepository) {
 			this.strategyRepository = strategyRepository;
-			this.statusReporter = statusReporter;
 			
 			bool createdNewFile = this.dataSnapshotSerializer.Initialize(this.strategyRepository.RootPath,
 				"Sq1.Widgets.StrategiesTree.StrategiesTreeDataSnapshot.json", "Workspaces",

@@ -4,10 +4,11 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Gui.Singletons;
 using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Sq1.Gui.Singletons {
+namespace Sq1.Gui {
 	public partial class MainForm {
 		void mainForm_Load(object sender, System.EventArgs e) {
 			try {

@@ -294,7 +294,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			DataSource dataSource = Assembler.InstanceInitialized.RepositoryJsonDataSource.DataSourceFind(context.DataSourceName);
+			DataSource dataSource = Assembler.InstanceInitialized.RepositoryJsonDataSource.DataSourceFindNullUnsafe(context.DataSourceName);
 			if (dataSource == null) {
 				string msg = "DataSourceName[" + context.DataSourceName + "] not found; WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
 				Assembler.PopupException(msg + msig);

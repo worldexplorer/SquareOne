@@ -18,9 +18,9 @@ namespace Sq1.Core.DataFeed {
 		public event EventHandler<DataSourceSymbolRenamedEventArgs> SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars;
 		
 		// MOVED_TO_PARENT_NamedObjectJsonSerializable [DataMember] public new string Name;
-					 public string SymbolSelected;
+		[JsonProperty]	public string SymbolSelected;
 					 public List<string> Symbols;
-		[JsonIgnore] public string SymbolsCSV { get {
+		[JsonIgnore]	public string SymbolsCSV { get {
 				StringBuilder stringBuilder = new StringBuilder();
 				foreach (string current in Symbols) {
 					if (stringBuilder.Length > 0) stringBuilder.Append(",");
@@ -33,8 +33,8 @@ namespace Sq1.Core.DataFeed {
 					 public StreamingProvider StreamingProvider;
 					 public BrokerProvider BrokerProvider;
 					 public string MarketName;
-		[JsonIgnore] public MarketInfo marketInfo;
-		[JsonIgnore] public MarketInfo MarketInfo {
+		[JsonIgnore]	public MarketInfo marketInfo;
+		[JsonIgnore]	public MarketInfo MarketInfo {
 			get { return this.marketInfo; }
 			set {
 				this.marketInfo = value;
@@ -55,11 +55,11 @@ namespace Sq1.Core.DataFeed {
 							//return staticProvider.GetType().Name;
 							return BrokerProvider.Name;
 						} }
-		[JsonIgnore] public bool IsIntraday { get { return ScaleInterval.IsIntraday; } }
-		[JsonIgnore] public RepositoryBarsSameScaleInterval BarsRepository { get; protected set; }
+		[JsonIgnore]	public bool IsIntraday { get { return ScaleInterval.IsIntraday; } }
+		[JsonIgnore]	public RepositoryBarsSameScaleInterval BarsRepository { get; protected set; }
 		//public BarsFolder BarsFolderPerst { get; protected set; }
 					 public string DataSourceAbspath { get; protected set; }
-		[JsonIgnore] public string DataSourcesAbspath;
+		[JsonIgnore]	public string DataSourcesAbspath;
 
 		// used only by JsonDeserialize()
 		public DataSource() {

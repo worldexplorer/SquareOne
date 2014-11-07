@@ -133,8 +133,7 @@ namespace Sq1.Core.Repositories {
 				Assembler.PopupException(msig, ex);
 			}
 		}
-		[Obsolete("used only in Widgets.Demo for finding just some Bars to create new Order(new Alert(Bars))")]
-		public DataSource DataSourceFind(string name) {
+		public DataSource DataSourceFindNullUnsafe(string name) {
 			DataSource ret = null;
 			string nameUpper = name.ToUpper();
 			foreach (DataSource current in base.ItemsAsList) {

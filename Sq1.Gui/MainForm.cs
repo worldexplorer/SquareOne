@@ -14,10 +14,11 @@ using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Support;
 using Sq1.Gui.Forms;
+using Sq1.Gui.Singletons;
 using Sq1.Widgets.LabeledTextBox;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Sq1.Gui.Singletons {
+namespace Sq1.Gui {
 	public partial class MainForm : Form {
 		public MainFormEventManager MainFormEventManager;
 		public MainFormWorkspacesManager WorkspacesManager;
@@ -52,10 +53,10 @@ namespace Sq1.Gui.Singletons {
 					Assembler.InstanceInitialized.RepositoryDllStreamingProvider.CloneableInstanceByClassName,
 					Assembler.InstanceInitialized.RepositoryDllBrokerProvider.CloneableInstanceByClassName);
 	
-				DataSourcesForm.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource, this as IStatusReporter, this.DockPanel);
-				StrategiesForm.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy, this as IStatusReporter, this.DockPanel);
-				ExecutionForm.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor, this as IStatusReporter, this.DockPanel);
-				CsvImporterForm.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource, this as IStatusReporter, this.DockPanel);
+				DataSourcesForm.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				StrategiesForm.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+				ExecutionForm.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
+				CsvImporterForm.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
 			} catch (Exception ex) {
 				this.PopupException("MainForm()", ex);
 			}
@@ -106,7 +107,7 @@ namespace Sq1.Gui.Singletons {
 				string file = this.LayoutXml;
 				if (File.Exists(file) == false) file = this.LayoutXmlInitial;
 				if (File.Exists(file)) {
-					DeserializeDockContent deserializeDockContent = new DeserializeDockContent(this.PersistStringInstantiator);
+					DeserializeDockContent deserializeDockContent = new DeserializeDockContent(this.persistStringInstantiator);
 					this.DockPanel.LoadFromXml(LayoutXml, deserializeDockContent);
 				}
 	

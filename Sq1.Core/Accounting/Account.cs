@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+
+using Newtonsoft.Json;
 using Sq1.Core.Broker;
 
 namespace Sq1.Core.Accounting {
-	[DataContract]
 	public class Account {
-		[DataMember] public string AccountNumber;
-		[DataMember] public double CashAvailable;
-		[DataMember] public DateTime AccountValueTimeStamp;
-		public bool IsDdeAccount;
-		public BrokerProvider BrokerProvider { get; private set; }
+		[JsonProperty]	public string AccountNumber;
+		[JsonProperty]	public double CashAvailable;
+		[JsonProperty]	public DateTime AccountValueTimeStamp;
+		[JsonIgnore]	public bool IsDdeAccount;
+		[JsonIgnore]	public BrokerProvider BrokerProvider { get; private set; }
+		
 		public Account() {
 			AccountNumber = "";
 			AccountValueTimeStamp = DateTime.MinValue;

@@ -1,14 +1,10 @@
 using System;
-using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
-	[DataContract]
 	public class MarketShortDay {
-		[DataMember]
-		public DateTime Date;
-		[DataMember]
-		public DateTime ServerTimeOpening;
-		[DataMember]
-		public DateTime ServerTimeClosing;
+		[JsonProperty]	public DateTime Date;
+		[JsonProperty]	public DateTime ServerTimeOpening;
+		[JsonProperty]	public DateTime ServerTimeClosing;
 	}
 }

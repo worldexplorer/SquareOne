@@ -25,10 +25,8 @@ namespace Sq1.Core.StrategyBase {
 			return this.Registry[symbolScaleInterval];
 		}
 		public Bars RescaleBarsAndRegister(NotOnChartBarsKey symbolScaleInterval) {
-			DataSource ds = Assembler.InstanceInitialized.RepositoryJsonDataSource.DataSourceFind(symbolScaleInterval.DataSourceName);
-
+			DataSource ds = Assembler.InstanceInitialized.RepositoryJsonDataSource.DataSourceFindNullUnsafe(symbolScaleInterval.DataSourceName);
 			BarDataRange range = new BarDataRange(this.ScriptExecutor.Bars.BarFirst.DateTimeOpen, this.ScriptExecutor.Bars.BarLast.DateTimeOpen);
-
 			Bars bars = null;
 			try {
 				Bars barsAll = ds.BarsLoadAndCompress(symbolScaleInterval.Symbol, symbolScaleInterval.BarScaleInterval);

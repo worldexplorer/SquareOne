@@ -1,4 +1,4 @@
-﻿namespace Sq1.Gui.Singletons {
+﻿namespace Sq1.Gui {
 	partial class MainForm {
 		private System.ComponentModel.IContainer components = null;
 

@@ -1,23 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Gui.Forms;
+using Sq1.Gui.Singletons;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Sq1.Gui.Singletons {
+namespace Sq1.Gui {
 	public partial class MainForm {
-		private const string dockContentLayoutXml = "Sq1.Gui.Layout.xml";
-		private const string dockContentLayoutXmlInitial = "Sq1.Gui.Layout.Initial.xml";
+		const string dockContentLayoutXml = "Sq1.Gui.Layout.xml";
+		const string dockContentLayoutXmlInitial = "Sq1.Gui.Layout.Initial.xml";
 		public string LayoutXml { get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXml); } }
 		public string LayoutXmlInitial { get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXmlInitial); } }
 		ChartFormManager chartFormManagerDeserialized;
 	
-		private IDockContent PersistStringInstantiator(string persistedTypeFullName) {
+		IDockContent persistStringInstantiator(string persistedTypeFullName) {
 			IDockContent ret = null;
 			try {
 				if (persistedTypeFullName == typeof(ExceptionsForm).ToString()) {
@@ -28,8 +29,8 @@ namespace Sq1.Gui.Singletons {
 					ret = StrategiesForm.Instance;
 				} else if (persistedTypeFullName == typeof(SlidersForm).ToString()) {
 					ret = SlidersForm.Instance;
-				} else if (persistedTypeFullName == typeof(DataSourceEditorForm).ToString()) {
-					//ret = DataSourceEditorForm.Instance;
+				//} else if (persistedTypeFullName == typeof(DataSourceEditorForm).ToString()) {
+				//	ret = DataSourceEditorForm.Instance;
 				} else if (persistedTypeFullName == typeof(ExecutionForm).ToString()) {
 					ret = ExecutionForm.Instance;
 				} else if (persistedTypeFullName == typeof(CsvImporterForm).ToString()) {
@@ -61,7 +62,7 @@ namespace Sq1.Gui.Singletons {
 			}
 			return ret;
 		}
-		private IDockContent handleClassesWithGetPersistStringOverridden(string persistedSpecialString) {
+		IDockContent handleClassesWithGetPersistStringOverridden(string persistedSpecialString) {
 			string msig = "handleClassesWithGetPersistStringOverridden(" + persistedSpecialString + "): ";
 			IDockContent ret = null;
 			//CsvImporter doesn't contain COMMAS if (persistedSpecialString.Contains(",") == false) return ret;
@@ -141,9 +142,19 @@ namespace Sq1.Gui.Singletons {
 					ret = parentChart.OptimizerFormConditionalInstance;
 					break;
 
+				case ("DataSourceEditor"):
+					//Assembler.PopupException("DataSourceEditorForm: initializing with datasource[" + persistedParsedToHash["DataSourceEditing"] + "]");
+					DataSourceEditorForm instance = DataSourceEditorForm.Instance;
+					string dsName = persistedParsedToHash["DataSourceEditing"];
+					instance.Initialize(dsName);
+					ret = instance; 
+					break;
+
 				default:
 					string msg2 = "please add switch->case for managedFormCase[" + managedFormCase + "]";
-					throw new Exception(msig + msg2);
+					//throw new Exception(msig + msg2);
+					Assembler.PopupException(msg2);
+					break;
 			}
 			return ret;
 		}
@@ -159,6 +170,7 @@ namespace Sq1.Gui.Singletons {
 					key = key.TrimEnd(keyValueSeparator.ToCharArray());
 					ret.Add(key, value);
 				} catch (Exception e) {
+					Assembler.PopupException("parseAsHash(" + input + ")", e);
 					throw e;
 				}
 			}

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Serializers;
 using Sq1.Core.Support;
+using Sq1.Gui.Singletons;
 
-namespace Sq1.Gui.Singletons {
+namespace Sq1.Gui {
 	public partial class MainForm : IStatusReporter {
 	
 		public void DisplayStatus(string Message) {

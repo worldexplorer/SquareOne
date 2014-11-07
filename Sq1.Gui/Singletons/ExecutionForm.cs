@@ -16,8 +16,7 @@ namespace Sq1.Gui.Singletons {
 			this.InitializeComponent();
 		}
 		
-		public void Initialize(OrderProcessor orderProcessor, IStatusReporter statusReporter, DockPanel mainFormDockPanel) {
-			base.Initialize(statusReporter, mainFormDockPanel);
+		public void Initialize(OrderProcessor orderProcessor) {
 			this.orderProcessor = orderProcessor;
 			
 			//this.executionTree.Initialize(this.orderProcessor.DataSnapshot.OrdersAll.SafeCopy);
@@ -146,7 +145,7 @@ namespace Sq1.Gui.Singletons {
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderStateChangedExecutionFormNotification -= this.orderProcessor_OrderStateChanged;
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderMessageAddedExecutionFormNotification -= this.orderProcessor_OrderMessageAdded;
 			string msg = "ExecutionForm_Closed(): unsubscribed from orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderAddedExecutionFormNotification";
-			this.statusReporter.PopupException(msg);
+			Assembler.PopupException(msg);
 		}
 
 	}

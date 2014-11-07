@@ -1,4 +1,5 @@
 using System;
+using Sq1.Core;
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Widgets.DataSourcesTree {
@@ -18,7 +19,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void RaiseOnDataSourceSelected() {
 			if (this.OnDataSourceSelected == null) {
 				string msg = "DataSourcesTree.treeListView_CellClick(): event OnDataSourceSelected: no subscribers";
-				statusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.OnDataSourceSelected(this, new DataSourceEventArgs(this.DataSourceSelected));
@@ -26,7 +27,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void RaiseOnSymbolSelected() {
 			if (this.OnSymbolSelected == null) {
 				string msg = "DataSourcesTree.treeListView_CellClick(): event OnSymbolSelected: no subscribers";
-				statusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.OnSymbolSelected(this, new DataSourceSymbolEventArgs(this.DataSourceSelected, this.SymbolSelected));
@@ -35,7 +36,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void RaiseOnNewChartForSymbolClicked() {
 			if (this.OnNewChartForSymbolClicked == null) {
 				string msg = "DataSourcesTree.mniNewChartSymbol_Click(): event OnNewChartForSymbolClicked: no subscribers";
-				statusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.OnNewChartForSymbolClicked(this, new DataSourceSymbolEventArgs(this.DataSourceSelected, this.SymbolSelected));
@@ -43,7 +44,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void RaiseOnBarsAnalyzerClicked() {
 			if (this.OnBarsAnalyzerClicked == null) {
 				string msg = "DataSourcesTree.mniBarsAnalyzerSymbol_Click(): event OnBarsAnalyzerClicked: no subscribers";
-				statusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			OnBarsAnalyzerClicked(this, new DataSourceSymbolEventArgs(this.DataSourceSelected, this.SymbolSelected));
@@ -51,7 +52,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void RaiseOnOpenStrategyForSymbolClicked() {
 			if (this.OnOpenStrategyForSymbolClicked == null) {
 				string msg = "DataSourcesTree.mniOpenStrategySymbol_Click(): event OnOpenStrategyForSymbolClicked: no subscribers";
-				statusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.OnOpenStrategyForSymbolClicked(this, new DataSourceSymbolEventArgs(this.DataSourceSelected, this.SymbolSelected));
@@ -61,7 +62,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.dataSourceRepository.ItemDelete(this.DataSourceSelected, this);
 			//if (this.OnDataSourceDeleteClicked == null) {
 			//	string msg = "DataSourcesTree.mniDeleteDS_Click(): event OnDataSourceDeleted: no subscribers";
-			//	statusReporter.PopupException(msg);
+			//	Assembler.PopupException(msg);
 			//	return;
 			//}
 			//this.OnDataSourceDeleteClicked(this, new DataSourceEventArgs(this.DataSourceSelected));
@@ -69,7 +70,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 //		void RaiseOnDataSourceCreateClicked() {
 //			if (this.OnDataSourceNewClicked == null) {
 //				string msg = "DataSourcesTree.mniNewDataSource_Click(): event OnDataSourceNewClicked: no subscribers";
-//				statusReporter.PopupException(msg);
+//				Assembler.PopupException(msg);
 //				return;
 //			}
 //			this.OnDataSourceNewClicked(this, EventArgs.Empty);
@@ -77,7 +78,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void RaiseOnDataSourceEditClicked(DataSource foundWithSameName = null) {
 			if (this.OnDataSourceEditClicked == null) {
 				string msg = "DataSourcesTree.mniEditDataSource_Click(): event OnDataSourceEditClicked: no subscribers";
-				statusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			if (foundWithSameName == null) {

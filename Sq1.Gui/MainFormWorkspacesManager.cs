@@ -5,12 +5,12 @@ using System.Windows.Forms;
 using Sq1.Core;
 using Sq1.Widgets.LabeledTextBox;
 
-namespace Sq1.Gui.Singletons {
+namespace Sq1.Gui {
 	public class MainFormWorkspacesManager {
 		private const string prefix = "workspace_";
 		private MainForm mainForm;
 
-		public string WorkspaceCurrentName {get { return this.WorkspaceCurrentMni.Text; } }
+		public string WorkspaceCurrentName { get { return this.WorkspaceCurrentMni.Text; } }
 		public ToolStripMenuItem WorkspaceCurrentMni { get; protected set; }
 
 		private List<ToolStripMenuItem> workspaceMenuItems;
