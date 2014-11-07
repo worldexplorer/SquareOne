@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
+
+using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik {
-	[DataContract]
 	public class StreamingDataSnapshotQuik : StreamingDataSnapshot {
-		[DataMember]
-		protected Dictionary<string, double> FortsDepositSell { get; private set; }
-		[DataMember]
-		protected Dictionary<string, double> FortsDepositBuy { get; private set; }
-		[DataMember]
-		protected Dictionary<string, double> FortsPriceMin { get; private set; }
-		[DataMember]
-		protected Dictionary<string, double> FortsPriceMax { get; private set; }
+		[JsonProperty]	protected Dictionary<string, double> FortsDepositSell { get; private set; }
+		[JsonProperty]	protected Dictionary<string, double> FortsDepositBuy { get; private set; }
+		[JsonProperty]	protected Dictionary<string, double> FortsPriceMin { get; private set; }
+		[JsonProperty]	protected Dictionary<string, double> FortsPriceMax { get; private set; }
 
 		public StreamingDataSnapshotQuik(StreamingProvider streamingProvider) : base(streamingProvider) {
 			this.FortsDepositBuy = new Dictionary<string, double>();

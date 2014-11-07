@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Reflection;
-using System.Runtime.Serialization;
 
+using Newtonsoft.Json;
 using Sq1.Adapters.Quik;
 using Sq1.Adapters.QuikMock.Dde;
 using Sq1.Core;
@@ -13,12 +13,10 @@ using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 
 namespace Sq1.Adapters.QuikMock {
-	[DataContract]
 	public class StreamingMock : StreamingProvider {
-		protected Dictionary<string, DdeChannelsMock> MockProvidersBySymbol = new Dictionary<string, DdeChannelsMock>();
-		[DataMember]
-		private int QuoteDelay;
-		public int QuoteDelayAutoPropagate {
+		[JsonIgnore]	protected Dictionary<string, DdeChannelsMock> MockProvidersBySymbol = new Dictionary<string, DdeChannelsMock>();
+		[JsonProperty]	private int QuoteDelay;
+		[JsonIgnore]	public int QuoteDelayAutoPropagate {
 			get { return this.QuoteDelay; }
 			internal set {
 				this.QuoteDelay = value;
@@ -29,18 +27,14 @@ namespace Sq1.Adapters.QuikMock {
 				}
 			}
 		}
-		[DataMember]
-		public List<string> GenerateOnlySymbols { get; internal set; }
-		private string GenerateOnlySymbolsAsString {
-			get {
+		[JsonProperty]	public List<string> GenerateOnlySymbols { get; internal set; }
+		[JsonIgnore]	private string GenerateOnlySymbolsAsString { get {
 				string ret = "";
 				foreach (string symbol in GenerateOnlySymbols) ret += symbol + ",";
 				ret = ret.TrimEnd(',');
 				return ret;
-			}
-		}
-		public StreamingDataSnapshotQuik StreamingDataSnapshotQuik {
-			get {
+			} }
+		[JsonIgnore]	public StreamingDataSnapshotQuik StreamingDataSnapshotQuik { get {
 				if (base.StreamingDataSnapshot is StreamingDataSnapshotQuik == false) {
 					string msg = "base.StreamingDataSnapshot[" + base.StreamingDataSnapshot
 						+ "] got modified while should remain of type StreamingDataSnapshotQuik"
@@ -48,8 +42,17 @@ namespace Sq1.Adapters.QuikMock {
 					throw new Exception(msg);
 				}
 				return base.StreamingDataSnapshot as StreamingDataSnapshotQuik;
-			}
-		}
+			} }
+		[JsonIgnore]	public string DdeChannelsEstablished { get {
+				string ret = "";
+				lock (MockProvidersBySymbol) {
+					foreach (string DdeChannelName in MockProvidersBySymbol.Keys) {
+						if (ret != "") ret += " ";
+						ret += DdeChannelName;
+					}
+				}
+				return ret;
+			} }
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.StreamingEditorInitializeHelper(dataSourceEditor);
 			base.streamingEditorInstance = new StreamingMockEditor(this, dataSourceEditor);
@@ -183,18 +186,6 @@ namespace Sq1.Adapters.QuikMock {
 		public override string ToString() {
 			return "StreamingMock: Symbols[" + this.SymbolsUpstreamSubscribedAsString + "]/only[" + this.GenerateOnlySymbolsAsString + "]"
 				+ " DDE[" + this.DdeChannelsEstablished + "]";
-		}
-		public string DdeChannelsEstablished {
-			get {
-				string ret = "";
-				lock (MockProvidersBySymbol) {
-					foreach (string DdeChannelName in MockProvidersBySymbol.Keys) {
-						if (ret != "") ret += " ";
-						ret += DdeChannelName;
-					}
-				}
-				return ret;
-			}
 		}
 	}
 }

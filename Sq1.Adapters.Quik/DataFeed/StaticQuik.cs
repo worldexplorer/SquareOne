@@ -8,7 +8,6 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Static;
 
 namespace Sq1.Adapters.Quik {
-	[DataContract]
 	public class StaticQuik : StaticProvider {
 		public StaticQuik() : base () {
 			base.Name = "Quik StaticDummy";

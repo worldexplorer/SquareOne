@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {

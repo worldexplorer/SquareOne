@@ -73,9 +73,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
@@ -110,14 +107,13 @@
     <Compile Include="OrderExecution\Terminal\QuikConnectionState.cs" />
     <Compile Include="OrderExecution\Terminal\QuikTerminal.cs" />
     <Compile Include="OrderExecution\Terminal\Trans2Quik.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3</Project>
+      <Name>Newtonsoft.Json.Net20</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NDde.2.01.0563.src\NDde\Source\NDde\NDde.csproj">
       <Project>{D77772F9-3D3D-40BA-B95F-05C45878078F}</Project>
       <Name>NDde</Name>
@@ -137,11 +133,7 @@
     <EmbeddedResource Include="OrderExecution\BrokerQuikEditor.resx">
       <DependentUpon>BrokerQuikEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\imgQuikStaticProvider.bmp" />

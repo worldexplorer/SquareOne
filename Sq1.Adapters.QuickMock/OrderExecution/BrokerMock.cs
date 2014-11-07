@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Drawing;
-using System.Runtime.Serialization;
 
-using Sq1.Adapters.Quik;
-using Sq1.Adapters.QuikMock.Terminal;
+using Newtonsoft.Json;
 using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.DataFeed;
@@ -11,23 +9,20 @@ using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 
-namespace Sq1.Adapters.QuikMock {
-	[DataContract]
-	public class BrokerMock : BrokerQuik {
-		public QuikTerminalMock MockTerminal;
+using Sq1.Adapters.Quik;
+using Sq1.Adapters.QuikMock.Terminal;
 
-		[DataMember]
-		public int ExecutionDelayMillis { get; internal set; }
-		[DataMember]
-		public int RejectFirstNOrders { get; internal set; }
-		[DataMember]
-		public bool RejectRandomly { get; internal set; }
-		[DataMember]
-		public bool RejectAllUpcoming { get; internal set; }
+namespace Sq1.Adapters.QuikMock {
+	public class BrokerMock : BrokerQuik {
+		[JsonIgnore]	public QuikTerminalMock MockTerminal;
+		[JsonProperty]	public int ExecutionDelayMillis { get; internal set; }
+		[JsonProperty]	public int RejectFirstNOrders { get; internal set; }
+		[JsonProperty]	public bool RejectRandomly { get; internal set; }
+		[JsonProperty]	public bool RejectAllUpcoming { get; internal set; }
 
 		public BrokerMock() : base() {
 			base.Name = "Mock BrokerDummy";
-			base.Icon = (Bitmap)Sq1.Adapters.QuickMock.Properties.Resources.imgMockQuikStreamingProvider;
+			//base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStreamingProvider;
 			base.QuikTerminal = new QuikTerminalMock(this);
 			this.ExecutionDelayMillis = 1000;
 			this.RejectFirstNOrders = 5;

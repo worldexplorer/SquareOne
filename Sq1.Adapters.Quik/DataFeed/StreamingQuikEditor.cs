@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+
 using Sq1.Core.Streaming;
 using Sq1.Core.DataFeed;
 

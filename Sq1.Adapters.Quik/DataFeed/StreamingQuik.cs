@@ -1,35 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.Serialization;
 
+using Newtonsoft.Json;
+using Sq1.Adapters.Quik.Dde;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
-using Sq1.Adapters.Quik.Dde;
 
 namespace Sq1.Adapters.Quik {
-	[DataContract]
 	public class StreamingQuik : StreamingProvider {
-		private DdeChannels DdeChannels;
-		[DataMember]
-		public string DdeServerPrefix { get; internal set; }
-		[DataMember]
-		public string DdeTopicQuotes { get; internal set; }
-		[DataMember]
-		public string DdeTopicTrades { get; internal set; }
-		[DataMember]
-		public string DdeTopicPrefixDom { get; internal set; }
+		[JsonIgnore]	DdeChannels DdeChannels;
+		[JsonProperty]	public string DdeServerPrefix { get; internal set; }
+		[JsonProperty]	public string DdeTopicQuotes { get; internal set; }
+		[JsonProperty]	public string DdeTopicTrades { get; internal set; }
+		[JsonProperty]	public string DdeTopicPrefixDom { get; internal set; }
+		
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.StreamingEditorInitializeHelper(dataSourceEditor);
 			base.streamingEditorInstance = new StreamingQuikEditor(this, dataSourceEditor);
 			return base.streamingEditorInstance;
 		}
-
-		public StreamingDataSnapshotQuik StreamingDataSnapshotQuik {
-			get {
+		public StreamingDataSnapshotQuik StreamingDataSnapshotQuik { get {
 				if (base.StreamingDataSnapshot is StreamingDataSnapshotQuik == false) {
 					string msg = "base.StreamingDataSnapshot[" + base.StreamingDataSnapshot
 						+ "] got modified while should remain of type StreamingDataSnapshotQuik"
@@ -37,13 +31,8 @@ namespace Sq1.Adapters.Quik {
 					throw new Exception(msg);
 				}
 				return base.StreamingDataSnapshot as StreamingDataSnapshotQuik;
-			}
-		}
-
-		public override List<string> SymbolsUpstreamSubscribed {
-			get { return this.DdeChannels.SymbolsHavingIndividualChannels; }
-		}
-
+			} }
+		public override List<string> SymbolsUpstreamSubscribed { get { return this.DdeChannels.SymbolsHavingIndividualChannels; } }
 		public StreamingQuik() : base() {
 			base.Name = "Quik StreamingDummy";
 			base.Description = ""
@@ -57,7 +46,7 @@ namespace Sq1.Adapters.Quik {
 				+ "3. WealthLab: создать в DataManager новый QuickStaticDataProvider DataSet, впечатать RIU2, открыть RIU2 чарт, нажать Stream в правом нижнем углу - запустится DDE сервер myWLD-RIU2\n"
 				+ "4. кнопка НАЧАТЬ ВЫВОД пункта 2 - рилтайм квоты RIU2 прольются в канал quotes и бары запрыгают в WealthLab\n"
 				+ "5. новый QuickStaticDataProvider DataSet GAZP в WealthLab создаст новый DDE сервер myWLD-GAZP с рабочей книгой quotes, останется создать новую таблицу параметров, настроить как в 1 и запустить экспорт DDE в сервер myWLD-GAZP книгу quotes. Enjoy!";
-			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingProvider;
+			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingProvider;
 			base.PreferredStaticProviderName = "QuikStaticProvider";
 			this.DdeServerPrefix = "myWLD";
 			this.DdeTopicQuotes = "quotes";

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
-using System.Runtime.Serialization;
 
+using Newtonsoft.Json;
+using Sq1.Adapters.Quik.Terminal;
 using Sq1.Core;
 using Sq1.Core.Accounting;
 using Sq1.Core.Broker;
@@ -12,31 +12,21 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
-using Sq1.Adapters.Quik.Terminal;
 
 namespace Sq1.Adapters.Quik {
-	[DataContract]
 	public class BrokerQuik : BrokerProvider {
-		BrokerQuikEditor editor;
-		public QuikTerminal QuikTerminal { get; protected set; }
-		public int AskPrice { get; protected set; }
-		public int BidPrice { get; protected set; }
-
-		[DataMember]
-		public string QuikFolder { get; internal set; }
-		[DataMember]
-		public string QuikDllName { get; internal set; }
-		public string QuikDllAbsPath { get {return Path.Combine(this.QuikFolder, this.QuikDllName);} }
-		//[DataMember]
-		public string QuikClientCode { get; internal set; }
-		[DataMember]
-		public int ReconnectTimeoutMillis { get; internal set; }
-		[DataMember]
-		private Account AccountMicex;
-		public Account AccountMicexAutoPopulated {
-			get {
-				return AccountMicex;
-			}
+		//[JsonIgnore]	BrokerQuikEditor editor;
+		[JsonIgnore]	public QuikTerminal QuikTerminal { get; protected set; }
+		[JsonIgnore]	public int AskPrice { get; protected set; }
+		[JsonIgnore]	public int BidPrice { get; protected set; }
+		[JsonProperty]	public string QuikFolder { get; internal set; }
+		[JsonProperty]	public string QuikDllName { get; internal set; }
+		[JsonIgnore]	public string QuikDllAbsPath { get {return Path.Combine(this.QuikFolder, this.QuikDllName);} }
+		[JsonProperty]	public string QuikClientCode { get; internal set; }
+		[JsonProperty]	public int ReconnectTimeoutMillis { get; internal set; }
+		[JsonProperty]	private Account AccountMicex;
+		[JsonIgnore]	public Account AccountMicexAutoPopulated {
+			get { return AccountMicex; }
 			internal set {
 				this.AccountMicex = value;
 				this.AccountMicex.Initialize(this);
@@ -45,7 +35,7 @@ namespace Sq1.Adapters.Quik {
 
 		public BrokerQuik() : base() {		// base() will be invoked anyways by .NET, just wanna make it obvious (reminder)
 			base.Name = "Quik BrokerDummy";
-			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingProvider;
+			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingProvider;
 			this.QuikTerminal = new QuikTerminal(this);
 			this.QuikDllName = this.QuikTerminal.DllName;
 
