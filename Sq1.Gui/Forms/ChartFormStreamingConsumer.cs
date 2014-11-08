@@ -129,6 +129,9 @@ namespace Sq1.Gui.Forms {
 
 			executorSafe.IsStreaming = false;
 			streamingSafe.ConsumerUnregisterDead(this);
+
+			var chartFormSafe = this.ChartForm;
+			chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = null;
 		}
 		bool canStartStreaming() {
 			try {
@@ -161,6 +164,11 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
+			if (executorSafe.IsStreaming == true) {
+				Assembler.PopupException("ALREADY_STREAMING_OR_FORGOT_TO_DISCONNECT executorSafe.IsStreaming=true " + plug);
+				return;
+			}
+
 			executorSafe.IsStreaming = true;
 
 			if (streamingSafe.ConsumerQuoteIsRegistered(symbolSafe, scaleIntervalSafe, this) == true) {
@@ -188,6 +196,12 @@ namespace Sq1.Gui.Forms {
 					}
 				}
 			}
+			#if DEBUG
+			if (chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast != null) {
+				string msg = "SHOULD_I_CLEANUP_QUOTE_LAST?";
+				Assembler.PopupException(msg);
+			}
+			#endif
 		}
 		#region IStreamingConsumer
 		Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { return this.chartFormManager.Executor.Bars; } }
@@ -229,6 +243,8 @@ namespace Sq1.Gui.Forms {
 
 			// launch update in GUI thread
 			chartFormSafe.PrintQuoteTimestampsOnStreamingButtonBeforeExecution(quote);
+			chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = quote.Clone();
+
 			// execute strategy in the thread of a StreamingProvider (DDE server for MockQuickProvider)
 			if (this.Executor.Strategy != null) executorSafe.ExecuteOnNewBarOrNewQuote(quote);
 

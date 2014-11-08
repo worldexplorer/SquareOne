@@ -86,8 +86,12 @@ namespace Sq1.Core.DataFeed {
 			foreach (string symbol in this.Symbols) {
 				if (this.BarsRepository.DataFileExistsForSymbol(symbol)) continue;
 				Bars barsEmpty = new Bars(symbol, this.ScaleInterval, "DISCOVERED_NON_EXISTING");
+				// FAILED_FIXING_IN_DataDistributor BarStaticLastNullUnsafe=null for freshly added Symbol
+				//barsEmpty.BarAppendBindStatic(new Bar(symbol, this.ScaleInterval, DateTime.Now));
+				//barsEmpty.BarCreateAppendBindStatic(DateTime.Now, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN);
+
 				int mustBeZero = this.BarsSave(barsEmpty, true);
-				Assembler.PopupException("BARS_INITIALIZED_EMPTY[" + mustBeZero + "] " + barsEmpty.ToString());
+				Assembler.PopupException("BARS_INITIALIZED_EMPTY[" + mustBeZero + "] " + barsEmpty.ToString(), null, false);
 			}
 			
 			//this.BarsFolderPerst = new BarsFolder(this.FolderForBarDataStore, this.ScaleInterval, true, "dts");
@@ -180,7 +184,7 @@ namespace Sq1.Core.DataFeed {
 			if (this.ScaleInterval != barLastFormed.ScaleInterval) return ret;
 			if (this.Symbols.Contains(barLastFormed.Symbol) == false) return ret;
 			if (this.BarsRepository == null) return ret;
-			ret = this.BarsRepository.DataFileForSymbol(barLastFormed.Symbol).BarAppend(barLastFormed);
+			ret = this.BarsRepository.DataFileForSymbol(barLastFormed.Symbol).BarsAppendThreadSafe(barLastFormed);
 			return ret;
 		}
 		public int BarsSave(Bars bars, bool createIfDoesntExist = false) {

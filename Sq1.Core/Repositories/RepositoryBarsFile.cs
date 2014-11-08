@@ -14,13 +14,15 @@ namespace Sq1.Core.Repositories {
 		double barFileCurrentVersion = 3;	// yeps double :) 8 bytes!
 		int symbolMaxLength = 64;			// 32 UTF8 characters
 		int symbolHRMaxLength = 128;		// 64 UTF8 characters
-		private long headerSize;
-		private long oneBarSize;
+		long headerSize;
+		long oneBarSize;
+		object sequentialLock;
 
 		Dictionary<double, int> headerSizesByVersion = new Dictionary<double, int>() { { 3, 212 } };	// got 212 in Debugger from this.headerSize while reading saved v3 file
 		Dictionary<double, int> barSizesByVersion = new Dictionary<double, int>() { { 3, 48 } };	// got 212 in Debugger from this.oneBarSize while reading saved v3 file
 		
 		public RepositoryBarsFile(RepositoryBarsSameScaleInterval barsFolder, string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
+			sequentialLock = new object();
 			this.BarsRepository = barsFolder;
 			this.Symbol = symbol;
 			this.Abspath = this.BarsRepository.AbspathForSymbol(this.Symbol, throwIfDoesntExist, createIfDoesntExist);
@@ -28,7 +30,7 @@ namespace Sq1.Core.Repositories {
 
 		public Bars BarsLoadAllThreadSafe() {
 			Bars bars = null;
-			lock(this) {
+			lock(this.sequentialLock) {
 				if (File.Exists(this.Abspath) == false) {
 					string msg = "LoadBarsThreadSafe(): File doesn't exist [" + this.Abspath + "]";
 					//Assembler.PopupException(msg);
@@ -132,8 +134,8 @@ namespace Sq1.Core.Repositories {
 		public int BarsSaveThreadSafe(Bars bars) {
 			//BARS_INITIALIZED_EMPTY if (bars.Count == 0) return 0;
 			int barsSaved = -1;
-			lock (this) {
-				barsSaved = BarsSave(bars);
+			lock (this.sequentialLock) {
+				barsSaved = this.BarsSave(bars);
 				//Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
 			}
 			return barsSaved;
@@ -237,7 +239,16 @@ namespace Sq1.Core.Repositories {
 		}
 		#endregion
 
-		public int BarAppend(Bar barLastFormed) {
+		public int BarsAppendThreadSafe(Bar barLastFormed) {
+			//BARS_INITIALIZED_EMPTY if (bars.Count == 0) return 0;
+			int barsAppended = -1;
+			lock (this.sequentialLock) {
+				barsAppended = this.BarAppend(barLastFormed);
+				//Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
+			}
+			return barsAppended;
+		}
+		protected int BarAppend(Bar barLastFormed) {
 			//v1
 			//Bars allBars = this.BarsLoadAllThreadSafe();
 			//if (allBars == null) {
@@ -262,10 +273,10 @@ namespace Sq1.Core.Repositories {
 
 			//v2, starting from barFileCurrentVersion=3: seek to the end, read last Bar, overwrite if same date or append if greater; 0.1ms instead of reading all - appending - writing all
 			#if DEBUG
-			Debugger.Break();
+			//Debugger.Break();
 			#endif
 
-			string msig = " Error while BarAppend()[" + this + "] into [" + this.Abspath + "]";
+			string msig = " BarAppend(" + barLastFormed + ")=>[" + this.Abspath + "]";
 			FileStream fileStream = null;
 			try {
 				fileStream = File.Open(this.Abspath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
@@ -285,24 +296,24 @@ namespace Sq1.Core.Repositories {
 					Assembler.PopupException(msg + msig, ex);
 					return 0;
 				}
-				DateTime dateTimeOpen = new DateTime(binaryReader.ReadInt64());
-				if (dateTimeOpen >= barLastFormed.DateTimeOpen) {
-					try {
-						fileStream.Seek(barSize, SeekOrigin.End);	// overwrite the last bar, apparently streaming has been solidified
-					} catch (Exception ex) {
-						string msg = "3/4_FILESTREAM_SEEK_END_THROWN barSize[" + barSize + "]";
-						Assembler.PopupException(msg + msig, ex);
-						return 0;
-					}
-				} else {
-					try {
-						fileStream.Seek(0, SeekOrigin.End);			// append barLastFormed to file since it's newer than last saved/read
-					} catch (Exception ex) {
-						string msg = "3/4_FILESTREAM_SEEK_0_THROWN";
-						Assembler.PopupException(msg + msig, ex);
-						return 0;
-					}
-				}
+				//DateTime dateTimeOpen = new DateTime(binaryReader.ReadInt64());
+				//if (dateTimeOpen >= barLastFormed.DateTimeOpen) {
+				//    try {
+				//        fileStream.Seek(barSize, SeekOrigin.End);	// overwrite the last bar, apparently streaming has been solidified
+				//    } catch (Exception ex) {
+				//        string msg = "3/4_FILESTREAM_SEEK_END_THROWN barSize[" + barSize + "]";
+				//        Assembler.PopupException(msg + msig, ex);
+				//        return 0;
+				//    }
+				//} else {
+				//    try {
+				//        fileStream.Seek(0, SeekOrigin.End);			// append barLastFormed to file since it's newer than last saved/read
+				//    } catch (Exception ex) {
+				//        string msg = "3/4_FILESTREAM_SEEK_0_THROWN";
+				//        Assembler.PopupException(msg + msig, ex);
+				//        return 0;
+				//    }
+				//}
 				try {
 					binaryWriter.Write(barLastFormed.DateTimeOpen.Ticks);
 					binaryWriter.Write(barLastFormed.Open);

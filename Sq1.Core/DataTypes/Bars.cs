@@ -103,7 +103,11 @@ namespace Sq1.Core.DataTypes {
 		}
 		public void BarAppendBindStatic(Bar barAdding) {
 			lock (base.BarsLock) {
-				barAdding.CheckOHLCVthrow();
+				try {
+					barAdding.CheckOHLCVthrow();
+				} catch (Exception ex) {
+					return;
+				}
 				this.BarStreaming = null;
 				this.BarAppendBind(barAdding);
 				this.RaiseBarStaticAdded(barAdding);

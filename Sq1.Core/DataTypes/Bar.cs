@@ -84,8 +84,8 @@ namespace Sq1.Core.DataTypes {
 				//this.Close  = symbolInfo.AlignToPriceLevel(this.Close, PriceLevelRoundingMode.RoundToClosest);
 				//this.Volume = Math.Round(this.Volume, symbolInfo.DecimalsVolume);
 			} else {
-				string msg = "OHLC_IS_NOT_ALIGNED_TRY_TO_AVOID_IT";
-				Assembler.PopupException(msg, null, false);
+				string msg = "PARENT_BARS_NOT_ACCESSIBLE OHLC_IS_NOT_ALIGNED_TRY_TO_AVOID_IT";
+				Assembler.PopupException(msg, null);
 			}
 		}
 		public void AbsorbOHLCVfrom(Bar bar) {
@@ -93,8 +93,15 @@ namespace Sq1.Core.DataTypes {
 			if (bar.ParentBars != null) {
 				symbolInfo = bar.ParentBars.SymbolInfo;
 			} else {
-				string msg = "WONT_ROUND_ABSORBED_OHLC it's null for first ever bar of freshly added symbol for Sq1.Adapters.QuikMock.StreamingMock";
-				Assembler.PopupException(msg, null, false);
+				if (this.ParentBars != null) {
+					symbolInfo = this.ParentBars.SymbolInfo;
+				}
+			}
+			if (symbolInfo == null) {
+				string msg = "PARENT_BARS_NOT_ACCESSIBLE WONT_ROUND_ABSORBED_OHLC"
+					//+ "; it's null for first ever bar of freshly added symbol for Sq1.Adapters.QuikMock.StreamingMock"
+					;
+				Assembler.PopupException(msg, null);
 			}
 			this.SetOHLCValigned(bar.Open, bar.High, bar.Low, bar.Close, bar.Volume, symbolInfo);
 		}
@@ -159,23 +166,23 @@ namespace Sq1.Core.DataTypes {
 		public void CheckOHLCVthrow() {
 			string msg = "";
 			
-			if (this.Open <= 0)			msg += "Open[" + this.Open + "] <= 0";
-			if (this.High <= 0)			msg += "High[" + this.High + "] <= 0";
-			if (this.Low <= 0)			msg += "Low[" + this.Low + "] <= 0";
-			if (this.Close <= 0)		msg += "Close[" + this.Close + "] <= 0";
-			//if (this.Volume <= 0)		msg += "Volume[" + this.Volume + "] <= 0";
+			if (this.Open <= 0)			msg += "Open[" + this.Open + "]<=0 ";
+			if (this.High <= 0)			msg += "High[" + this.High + "]<=0 ";
+			if (this.Low <= 0)			msg += "Low[" + this.Low + "]<=0 ";
+			if (this.Close <= 0)		msg += "Close[" + this.Close + "]<=0 ";
+			//if (this.Volume <= 0)		msg += "Volume[" + this.Volume + "]<=0 ";
 			
-			if (this.High < this.Low)	msg += "High[" + this.High + "] < Low[" + this.High + "]";
-			if (this.Low <= 0)			msg += "Low[" + this.Low + "] <= 0";
+			if (this.High < this.Low)	msg += "High[" + this.High + "]<Low[" + this.High + "] ";
+			if (this.Low <= 0)			msg += "Low[" + this.Low + "]<=0 ";
 			
-			if (this.Close > this.High)	msg += "Close[" + this.Close + "] > High[" + this.High + "]";
-			if (this.Close < this.Low)	msg += "Close[" + this.Close + "] < Low[" + this.High + "]";
+			if (this.Close > this.High)	msg += "Close[" + this.Close + "]>High[" + this.High + "] ";
+			if (this.Close < this.Low)	msg += "Close[" + this.Close + "]<Low[" + this.High + "] ";
 			
-			if (this.Open > this.High)	msg += "Open[" + this.Open + "] > High[" + this.High + "]";
-			if (this.Open < this.Low)	msg += "Open[" + this.Open + "] < Low[" + this.High + "]";
+			if (this.Open > this.High)	msg += "Open[" + this.Open + "]>High[" + this.High + "] ";
+			if (this.Open < this.Low)	msg += "Open[" + this.Open + "]<Low[" + this.High + "] ";
 			
 			if (string.IsNullOrEmpty(msg)) return;
-			Debugger.Break();
+			//Debugger.Break();
 			throw new Exception(msg);
 		}
 		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, ref string msg) {

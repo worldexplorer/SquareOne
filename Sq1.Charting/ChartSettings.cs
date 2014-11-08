@@ -78,7 +78,17 @@ namespace Sq1.Charting {
 		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquarePadding { get; set; }
 		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquareSize { get; set; }
 		[JsonProperty]	public int		OnChartBarAnnotationsVerticalAwayFromPositionArrows { get; set; }
-		
+
+		[JsonProperty]	public Color	SpreadBidLineColor { get; set; }
+		[JsonProperty]	public int		SpreadBidLineColorAlpha { get; set; }
+		[JsonProperty]	public int		SpreadBidLineWidth { get; set; }
+		[JsonProperty]	public Color	SpreadAskLineColor { get; set; }
+		[JsonProperty]	public int		SpreadAskLineColorAlpha { get; set; }
+		[JsonProperty]	public int		SpreadAskLineWidth { get; set; }
+		[JsonProperty]	public Font		SpreadLabelFont { get; set; }
+		[JsonProperty]	public Color	SpreadLabelColor { get; set; }
+
+
 		// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
 		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterPropertiesByPanelName;
 		
@@ -282,6 +292,25 @@ namespace Sq1.Charting {
 				return this.penMousePositionTrackOnGutters;
 			} }
 
+		[JsonIgnore]	Pen penSpreadBid;
+		[JsonIgnore]	public Pen PenSpreadBid { get {
+				if (this.penSpreadBid == null) this.penSpreadBid =
+					new Pen(Color.FromArgb(this.SpreadBidLineColorAlpha, this.SpreadBidLineColor), this.SpreadAskLineWidth);
+				return this.penSpreadBid;
+			} }
+
+		[JsonIgnore]	Pen penSpreadAsk;
+		[JsonIgnore]	public Pen PenSpreadAsk { get {
+				if (this.penSpreadAsk == null) this.penSpreadAsk =
+					new Pen(Color.FromArgb(this.SpreadAskLineColorAlpha, this.SpreadAskLineColor), this.SpreadAskLineWidth);
+				return this.penSpreadAsk;
+			} }
+
+		[JsonIgnore]	Brush spreadLabelBrush;
+		[JsonIgnore]	public Brush SpreadLabelBrush { get {
+				if (this.spreadLabelBrush == null) this.spreadLabelBrush = new SolidBrush(this.SpreadLabelColor);
+				return this.spreadLabelBrush;
+			} }
 		
 		public ChartSettings()	{
 			ChartColorBackground = Color.White;
@@ -355,6 +384,15 @@ namespace Sq1.Charting {
 
 			// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
 			MultiSplitterPropertiesByPanelName = new Dictionary<string, MultiSplitterProperties>();
+
+			SpreadBidLineColor = Color.Gray;
+			SpreadBidLineColorAlpha = 64;
+			SpreadBidLineWidth = 1;
+			SpreadAskLineColor = Color.Orange;
+			SpreadAskLineColorAlpha = 64;
+			SpreadAskLineWidth = 1;
+			SpreadLabelFont = new Font("Consolas", 8f);
+			SpreadLabelColor = Color.DarkGray;
 		}
 		
 		public static Color ColorReverse(Color color) {

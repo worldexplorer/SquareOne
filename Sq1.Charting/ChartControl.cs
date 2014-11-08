@@ -170,22 +170,22 @@ namespace Sq1.Charting {
 		}
 		void barEventsAttach() {
 			if (this.Bars == null) return; 
-			this.Bars.BarStaticAdded			+= new EventHandler<BarEventArgs>(ChartControl_BarAddedUpdated_ShouldTriggerRepaint);		// quite useless since I don't plan to append-statically to displayed-bars 
-			this.Bars.BarStreamingAdded			+= new EventHandler<BarEventArgs>(ChartControl_BarAddedUpdated_ShouldTriggerRepaint); 
-			this.Bars.BarStreamingUpdatedMerged	+= new EventHandler<BarEventArgs>(ChartControl_BarAddedUpdated_ShouldTriggerRepaint);  
+			this.Bars.BarStaticAdded			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);		// quite useless since I don't plan to append-statically to displayed-bars 
+			this.Bars.BarStreamingAdded			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint); 
+			this.Bars.BarStreamingUpdatedMerged	+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);  
 		}
 		void barEventsDetach() {
 			if (this.Bars == null) return; 
-			this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(ChartControl_BarAddedUpdated_ShouldTriggerRepaint);  
-			this.Bars.BarStreamingAdded			-= new EventHandler<BarEventArgs>(ChartControl_BarAddedUpdated_ShouldTriggerRepaint);  
-			this.Bars.BarStaticAdded			-= new EventHandler<BarEventArgs>(ChartControl_BarAddedUpdated_ShouldTriggerRepaint); 
+			this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);  
+			this.Bars.BarStreamingAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);  
+			this.Bars.BarStaticAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint); 
 		}
-		void ChartControl_BarAddedUpdated_ShouldTriggerRepaint(object sender, BarEventArgs e) {
+		void chartControl_BarAddedUpdated_ShouldTriggerRepaint(object sender, BarEventArgs e) {
 			// if I was designing events for WinForms, I would switch to GUI thread automatically
-//			if (InvokeRequired) {
-//				BeginInvoke(new MethodInvoker(UpdateHorizontalScrollMaximumAfterBarAdd));
-//				return;
-//			}
+			if (base.InvokeRequired == true) {
+				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarAddedUpdated_ShouldTriggerRepaint(sender, e); });
+				return;
+			}
 			if (this.VisibleBarRight != this.Bars.Count) return;	// move slider if only last bar is visible 
 			this.SyncHorizontalScrollToBarsCount();
 			this.InvalidateAllPanels();
