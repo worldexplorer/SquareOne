@@ -15,14 +15,12 @@ namespace Sq1.Adapters.QuikMock.Dde {
 			this.ConnectionStatus = ConnectionStatus;
 		}
 		public void StartDdeServer() {
-			if (ChannelQuote is DdeChannelLastQuoteMock) {
-				string msg = "MOCK: will generate quotes for symbol[" + Symbol + "]"
-					+ " every [" + ChannelQuote.nextQuoteDelayMs + "]ms"
-					+ " for " + ChannelQuote + "]"
-					+ " instead of registering real DDE server";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
+			if ((ChannelQuote is DdeChannelLastQuoteMock) == false) return;
+			string msg = "MOCK: will generate quotes for symbol[" + Symbol + "]"
+				+ " every [" + ChannelQuote.nextQuoteDelayMs + "]ms"
+				+ " for " + ChannelQuote + "]"
+				+ " instead of registering real DDE server";
+			Assembler.PopupException(msg, null, false);
 		}
 	}
 }

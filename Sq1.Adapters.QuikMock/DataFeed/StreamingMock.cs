@@ -87,7 +87,7 @@ namespace Sq1.Adapters.QuikMock {
 			base.IsConnected = false;
 		}
 
-		private string subscribeAllSymbols() {
+		string subscribeAllSymbols() {
 			string ret = "";
 			lock (base.SymbolsSubscribedLock) {
 				foreach (string symbol in base.DataSource.Symbols) {
@@ -109,7 +109,7 @@ namespace Sq1.Adapters.QuikMock {
 			}
 			return ret;
 		}
-		private string unsubscribeAllSymbols() {
+		string unsubscribeAllSymbols() {
 			lock (base.SymbolsSubscribedLock) {
 				string ret = "";
 				foreach (string symbol in base.DataSource.Symbols) {
@@ -134,7 +134,7 @@ namespace Sq1.Adapters.QuikMock {
 				string DdeChannelName = symbol;
 				if (this.MockProvidersBySymbol.ContainsKey(DdeChannelName)) {
 					String msg = "already started DdeServer[" + DdeChannelName + "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 					this.StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorSymbolSubscribing, 1, msg);
 					return;
 				}
@@ -153,7 +153,7 @@ namespace Sq1.Adapters.QuikMock {
 				string DdeChannelName = symbol;
 				if (this.MockProvidersBySymbol.ContainsKey(DdeChannelName)) {
 					string msg = "UnSubscribe(" + symbol + "): won't StopDdeServer[" + DdeChannelName + "] coz we need to press CTRL+SHIFT+L in QUIK again";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 					this.StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorSymbolUnsubscribing, 1, msg);
 					return;
 				}

@@ -21,7 +21,7 @@
       "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 384
+        "Distance": 276
       }
     },
     "ChartColorBackground": "White",
@@ -87,7 +87,15 @@
     "ChartLabelsUpperLeftPlatePadding": 1,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
     "ChartLabelsUpperLeftIndicatorSquareSize": 5,
-    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
+    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3,
+    "SpreadBidLineColor": "Orange",
+    "SpreadBidLineColorAlpha": 64,
+    "SpreadBidLineWidth": 1,
+    "SpreadAskLineColor": "Gray",
+    "SpreadAskLineColorAlpha": 64,
+    "SpreadAskLineWidth": 1,
+    "SpreadLabelFont": "Consolas, 6pt",
+    "SpreadLabelColor": "DarkGray"
   },
   "ChartSerno": 17,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json], ScriptContextCurrentName[?Default?]"

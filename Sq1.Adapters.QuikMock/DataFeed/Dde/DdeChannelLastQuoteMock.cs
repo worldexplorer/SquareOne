@@ -95,25 +95,26 @@ namespace Sq1.Adapters.QuikMock.Dde {
 
 		public void setNextQuoteDelayMs(int nextQuoteDelayMs) {
 			if (nextQuoteDelayMs == 0) {
-				Assembler.PopupException("Can't set nextQuoteDelayMs[" + nextQuoteDelayMs + "], most likely Covert.ToInt32 returned 0 for an unparseable string; this.nextQuoteDelayMs[" + this.nextQuoteDelayMs + "], still");
+				Assembler.PopupException("Can't set nextQuoteDelayMs[" + nextQuoteDelayMs
+					+ "], most likely Covert.ToInt32 returned 0 for an unparseable string; this.nextQuoteDelayMs[" + this.nextQuoteDelayMs + "], still");
 				return;
 			}
 			this.nextQuoteDelayMs = nextQuoteDelayMs;
 		}
 
-		public void startMock() {
+		void startMock() {
 			//Assembler.PopupException("startMock(" + pokesDone + "/" + pokesLimit + "): starting timer nextQuoteDelayMs=" + nextQuoteDelayMs + " period=0...");
 			Timer t = new Timer(new TimerCallback(pokeWithNewQuote));
 			t.Change(nextQuoteDelayMs, 0);
 			this.running = true;
 		}
 
-		public void stopMock() {
+		void stopMock() {
 			if (running == false) return;
 			running = false;
 		}
 
-		public void pokeWithNewQuote(object state) {
+		void pokeWithNewQuote(object state) {
 			if (Thread.CurrentThread.Name != "DdeChannelQuoteMock::pokeWithNewQuote") Thread.CurrentThread.Name = "DdeChannelQuoteMock::pokeWithNewQuote";
 			Timer t = (Timer)state;
 			if (pokesLimit > 0 && pokesDone++ > pokesLimit) {

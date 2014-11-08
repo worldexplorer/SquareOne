@@ -44,7 +44,7 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 243
+        "Distance": 300
       }
     },
     "ChartColorBackground": "White",
@@ -110,7 +110,15 @@
     "ChartLabelsUpperLeftPlatePadding": 1,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
     "ChartLabelsUpperLeftIndicatorSquareSize": 5,
-    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
+    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3,
+    "SpreadBidLineColor": "Orange",
+    "SpreadBidLineColorAlpha": 64,
+    "SpreadBidLineWidth": 1,
+    "SpreadAskLineColor": "Gray",
+    "SpreadAskLineColorAlpha": 64,
+    "SpreadAskLineWidth": 1,
+    "SpreadLabelFont": "Consolas, 6pt",
+    "SpreadLabelColor": "DarkGray"
   },
   "ChartSerno": 18,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
