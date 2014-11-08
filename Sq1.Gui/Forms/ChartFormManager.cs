@@ -214,8 +214,7 @@ namespace Sq1.Gui.Forms {
 				this.ChartForm.FormClosed += this.MainForm.MainFormEventManager.ChartForm_FormClosed;
 				// 2. create Executor with Renderer
 				this.Executor.Initialize(this.ChartForm.ChartControl as ChartShadow,
-										 this.Strategy, Assembler.InstanceInitialized.OrderProcessor,
-										 Assembler.InstanceInitialized.StatusReporter);
+										 this.Strategy, Assembler.InstanceInitialized.OrderProcessor);
 				// 3. initialize Chart with Executor (I don't know why it should be so crazy)
 				//this.ChartForm.Chart.Initialize(this.Executor);
 				//ScriptExecutor.DataSource: you should not access DataSource before you've set Bars
@@ -230,8 +229,7 @@ namespace Sq1.Gui.Forms {
 			} else {
 				// we had chart already opened with bars loaded; then we clicked on a strategy and we want strategy to be backtested on these bars
 				this.Executor.Initialize(this.ChartForm.ChartControl as ChartShadow,
-										 this.Strategy, Assembler.InstanceInitialized.OrderProcessor,
-										 Assembler.InstanceInitialized.StatusReporter);
+										 this.Strategy, Assembler.InstanceInitialized.OrderProcessor);
 				if (this.ChartForm.CtxReporters.Items.Count == 0) {
 					this.ChartForm.CtxReporters.Items.AddRange(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
 				}
@@ -627,9 +625,12 @@ namespace Sq1.Gui.Forms {
 		}
 		public void PopulateSliders() {
 			//CAN_HANDLE_NULL_IN_SlidersForm.Instance.Initialize()  if (this.Strategy == null) return;
-			SlidersForm.Instance.Initialize(this.Strategy);
+			// if you are tired of seeing "CHART_NO_STRATEGY" if (this.Strategy == null) return;
+			SlidersForm.Instance.Initialize(this.Strategy);		
 			if (SlidersForm.Instance.Visible == false) {		// don't activate the tab if user has docked another Form on top of SlidersForm
-				SlidersForm.Instance.Show(this.dockPanel);
+				//FOR_CHART_NO_STRATEGY_BRINGS_EMPTY_SLIDERS_UP SlidersForm.Instance.Show(this.dockPanel);
+				bool bringUp = this.Strategy != null;
+				SlidersForm.Instance.ActivateDockContentPopupAutoHidden(!bringUp, bringUp);
 			}
 		}
 		public override string ToString() {

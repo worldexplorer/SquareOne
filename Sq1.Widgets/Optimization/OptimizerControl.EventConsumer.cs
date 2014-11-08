@@ -1,14 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Windows.Forms;
 
+using BrightIdeasSoftware;
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
-using Sq1.Widgets.LabeledTextBox;
-using BrightIdeasSoftware;
 using Sq1.Core.Indicators;
+using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl {

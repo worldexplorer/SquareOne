@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.ComponentModel;
+
 using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Widgets.RangeBar {

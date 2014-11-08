@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core;
@@ -71,7 +69,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			if (this.ds.BrokerProvider != null) HighlightBrokerByName(this.ds.BrokerProvider.GetType().Name);
 			else HighlightBrokerByName(BrokerProvider.NO_BROKER_PROVIDER);
 
-			this.marketInfoEditor.Initialize(ds, this.assemblerInstance.RepositoryJsonDataSource, this.assemblerInstance.MarketInfoRepository);
+			this.marketInfoEditor.Initialize(ds, this.assemblerInstance.RepositoryJsonDataSource, this.assemblerInstance.RepositoryMarketInfo);
 		}
 		public void PopulateScaleIntervalFromDataSource() {
 			this.cmbScale.Items.Clear();

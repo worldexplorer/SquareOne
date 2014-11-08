@@ -6,20 +6,14 @@ using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Support;
 
-namespace Sq1.Core.Serializers {
-	public class RepositoryJsonsInFolder<DATASOURCE>  /* hack for ItemRename() */ where DATASOURCE : NamedObjectJsonSerializable {
+namespace Sq1.Core.Repositories {
+	public partial class RepositoryJsonsInFolder<DATASOURCE>  /* hack for ItemRename() */ where DATASOURCE : NamedObjectJsonSerializable {
 		public string OfWhat { get { return typeof(DATASOURCE).Name; } }
-
-		public event EventHandler<NamedObjectJsonEventArgs<DATASOURCE>> OnItemAdded;
-		public event EventHandler<NamedObjectJsonEventArgs<DATASOURCE>> OnItemCanBeRemoved;
-		public event EventHandler<NamedObjectJsonEventArgs<DATASOURCE>> OnItemRemovedDone;
-		public event EventHandler<NamedObjectJsonEventArgs<DATASOURCE>> OnItemRenamed;
 
 		protected IStatusReporter StatusReporter;
 		public string RootPath { get; protected set; }
 		public string Subfolder { get; protected set; }
-		public string AbsPath {
-			get {
+		public string AbsPath { get {
 				//string ret = this.RootPath + this.Subfolder + this.WorkspaceName + Path.DirectorySeparatorChar;
 				string ret = this.RootPath;
 				if (String.IsNullOrEmpty(this.Subfolder) == false) {
@@ -27,15 +21,10 @@ namespace Sq1.Core.Serializers {
 				}
 				//if (ret.EndsWith(Path.DirectorySeparatorChar) == false) ret += Path.DirectorySeparatorChar;
 				return ret;
-			}
-		}
+			} }
 		public string Mask { get; protected set; }
-		public string MaskRel {
-			get { return Path.Combine(this.Subfolder, Mask); }
-		}
-		public string MaskAbs {
-			get { return Path.Combine(this.AbsPath, Mask); }
-		}
+		public string MaskRel { get { return Path.Combine(this.Subfolder, Mask); } }
+		public string MaskAbs { get { return Path.Combine(this.AbsPath, Mask); } }
 		
 		protected Dictionary<string, DATASOURCE> ItemsByName;
 		public List<DATASOURCE> ItemsAsList { get {
@@ -56,7 +45,7 @@ namespace Sq1.Core.Serializers {
 			
 			this.StatusReporter = statusReporter;
 			
-			string msig = "RepositoryJsonsInFolder<" + OfWhat + ">::Initialize("
+			string msig = "RepositoryJsonsInFolder<" + this.OfWhat + ">::Initialize("
 					+ "rootPath=[" + rootPath + "], subfolder=[" + subfolder + "],"
 					+ " mask=[" + mask + "],"
 					+ " createNonExistingPath=[" + createNonExistingPath + "],"
@@ -130,7 +119,7 @@ namespace Sq1.Core.Serializers {
 					if (!valid) return null;
 				}
 			} catch (Exception ex) {
-				string msig = " RepositoryJsonsInFolder<" + OfWhat + ">::DeserializeSingle(): ";
+				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::DeserializeSingle(): ";
 				string msg = "FAILED_DeserializeSingle_WITH_jsonAbsfile[" + jsonAbsfile + "]";
 				Assembler.PopupException(msg + msig, ex);
 				return ret;
@@ -147,7 +136,7 @@ namespace Sq1.Core.Serializers {
 					});
 				File.WriteAllText(jsonAbsname, json);
 			} catch (Exception ex) {
-				string msig = " RepositoryJsonsInFolder<" + OfWhat + ">::SerializeSingle(): ";
+				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeSingle(): ";
 				string msg = "FAILED_SerializeSingle_WITH_this.jsonAbsname[" + jsonAbsname + "]";
 				Assembler.PopupException(msg + msig, ex);
 				return;
@@ -167,7 +156,7 @@ namespace Sq1.Core.Serializers {
 		}
 		public void ItemAdd(DATASOURCE itemCandidate, object sender = null) {
 			if (sender == null) sender = this;
-			string msig = " RepositoryJsonsInFolder<" + OfWhat + ">::ItemAdd(" + itemCandidate.Name + "): ";
+			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemAdd(" + itemCandidate.Name + "): ";
 			try {
 				if (this.ItemsByName.ContainsKey(itemCandidate.Name)) {
 					throw new Exception("ALREADY_EXISTS[" + itemCandidate.Name + "]");
@@ -175,9 +164,7 @@ namespace Sq1.Core.Serializers {
 				//this.ItemAddCascade(itemCandidate, sender);
 				this.ItemsByName.Add(itemCandidate.Name, itemCandidate);
 				this.SerializeSingle(itemCandidate);
-				if (this.OnItemAdded == null) return;
-				//this.OnItemAdded(this, new DataSourceEventArgs(itemCandidate));
-				this.OnItemAdded(sender, new NamedObjectJsonEventArgs<DATASOURCE>(itemCandidate));
+				this.RaiseOnItemAdded(sender, itemCandidate);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}
@@ -186,7 +173,7 @@ namespace Sq1.Core.Serializers {
 		}
 		public void ItemDelete(DATASOURCE itemStored, object sender = null) {
 			if (sender == null) sender = this;
-			string msig = " RepositoryJsonsInFolder<" + OfWhat + ">::ItemDelete(" + itemStored.Name + "): ";
+			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemDelete(" + itemStored.Name + "): ";
 			try {
 				if (this.ItemsByName.ContainsKey(itemStored.Name) == false) {
 					throw new Exception("ALREADY_DELETED[" + itemStored.Name + "]");
@@ -199,10 +186,7 @@ namespace Sq1.Core.Serializers {
 				this.ItemDeleteCascade(itemStored, sender);
 				this.ItemsByName.Remove(itemStored.Name);
 				this.JsonDeleteItem(itemStored);
-				if (this.OnItemRemovedDone == null) return;
-				// since you answered DataSourceEventArgs.DoNotDeleteThisDataSourceBecauseItsUsedElsewhere=false,
-				// you were aware that OnItemRemovedDone is invoked on a detached object
-				this.OnItemRemovedDone(sender, args);
+				this.RaiseOnItemRemovedDone(sender, args);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}
@@ -212,8 +196,7 @@ namespace Sq1.Core.Serializers {
 		public NamedObjectJsonEventArgs<DATASOURCE> ItemCanBeDeleted(DATASOURCE itemStored, object sender = null) {
 			if (sender == null) sender = this;
 			var args = new NamedObjectJsonEventArgs<DATASOURCE>(itemStored);
-			if (this.OnItemCanBeRemoved == null) return args;
-			this.OnItemCanBeRemoved(sender, args);
+			this.RaiseOnItemCanBeRemoved(sender, args);
 			this.ItemCanBeDeletedCascade(args, sender);
 			return args;
 		}
@@ -222,7 +205,7 @@ namespace Sq1.Core.Serializers {
 		// very hacky, you should inherit DataSource from NamedObjectJsonSerializable with .Name property
 		public void ItemRename(DATASOURCE itemStored, string newName, object sender = null) {
 			if (sender == null) sender = this;
-			string msig = " RepositoryJsonsInFolder<" + OfWhat + ">::ItemRename(" + itemStored.Name + ", " + newName + "): ";
+			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemRename(" + itemStored.Name + ", " + newName + "): ";
 			try {
 				if (this.ItemsByName.ContainsKey(itemStored.Name) == false) {
 					throw new Exception("ALREADY_DELETED[" + itemStored.Name + "]");
@@ -243,8 +226,7 @@ namespace Sq1.Core.Serializers {
 
 				this.SerializeSingle(itemStored);
 				this.JsonDeleteRelname(jsonRelnameToDeleteBeforeRename);
-				if (this.OnItemRenamed == null) return;
-				this.OnItemRenamed(sender, new NamedObjectJsonEventArgs<DATASOURCE>(itemStored));
+				this.RaiseOnItemRenamed(sender, itemStored);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}

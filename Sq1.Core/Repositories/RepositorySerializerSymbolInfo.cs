@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
+
 using Sq1.Core.DataTypes;
 using Sq1.Core.Serializers;
 
 namespace Sq1.Core.Repositories {
-	public class RepositoryCustomSymbolInfo : Serializer<List<SymbolInfo>> {
-		public RepositoryCustomSymbolInfo() {}
+	public class RepositorySerializerSymbolInfo : Serializer<List<SymbolInfo>> {
+		public RepositorySerializerSymbolInfo() {}
 		public SymbolInfo FindSymbolInfo(string symbol) {
 			if (string.IsNullOrEmpty(symbol)) return null;
 			foreach (SymbolInfo current in base.Entity) {

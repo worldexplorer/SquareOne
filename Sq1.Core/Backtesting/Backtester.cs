@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Windows.Forms;
+using System.Diagnostics;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
-using System.Diagnostics;
 
 namespace Sq1.Core.Backtesting {
 	public class Backtester {

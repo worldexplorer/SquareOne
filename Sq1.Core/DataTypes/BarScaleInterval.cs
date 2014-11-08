@@ -1,4 +1,5 @@
 using System;
+
 namespace Sq1.Core.DataTypes {
 	public class BarScaleInterval {
 		public BarScale Scale;

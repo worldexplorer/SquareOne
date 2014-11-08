@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 
 using Newtonsoft.Json;
-using Sq1.Charting.MultiSplit;
 using Sq1.Core.Charting;
-using Sq1.Core.StrategyBase;
 
 namespace Sq1.Charting {
 	// why ChartSettings inherits Component? F4 on ChartSettings will allow you to edit colors visually

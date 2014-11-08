@@ -12,7 +12,7 @@ namespace Sq1.Core.DataTypes {
 		public SymbolInfo SymbolInfo {
 			get {
 				if (this.symbolInfo == null) {
-					this.symbolInfo = Assembler.InstanceInitialized.RepositoryCustomSymbolInfo.FindSymbolInfoOrNew(this.Symbol);
+					this.symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(this.Symbol);
 				}
 				return this.symbolInfo;
 			}
@@ -32,7 +32,7 @@ namespace Sq1.Core.DataTypes {
 			this.symbolInfo = new SymbolInfo();
 			// not initialized when Designer shows you Sq1.Charting.ChartControl with sample BarsUnscaled-derived 10 bars
 			// (Designer doesn't like reflecting/invoking static methods used to instantiate Assembler-singleton)
-			if (Assembler.IsInitialized) this.symbolInfo = Assembler.InstanceInitialized.RepositoryCustomSymbolInfo.FindSymbolInfoOrNew(this.Symbol);
+			if (Assembler.IsInitialized) this.symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(this.Symbol);
 		}
 
 		public void Add(DateTime key, double value) {

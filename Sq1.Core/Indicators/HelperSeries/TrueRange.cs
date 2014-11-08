@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Indicators.HelperSeries {

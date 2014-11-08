@@ -28,9 +28,6 @@ namespace Sq1.Charting {
 				for (int i = this.VisibleBarRight_cached; i >= this.VisibleBarLeft_cached; i--) {
 					if (i >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-						#if DEBUG
-						Debugger.Break();
-						#endif
 						Assembler.PopupException("VisiblePriceMax(): " + msg);
 						continue;
 					}
@@ -56,9 +53,6 @@ namespace Sq1.Charting {
 				for (int i = this.VisibleBarRight_cached; i >= this.VisibleBarLeft_cached; i--) {
 					if (i >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-						#if DEBUG
-						Debugger.Break();
-						#endif
 						Assembler.PopupException("VisiblePriceMin(): " + msg);
 						continue;
 					}
@@ -88,9 +82,6 @@ namespace Sq1.Charting {
 				double ret = seriesLow.MinValueBetweenIndexesDoubleMaxValueUnsafe(this.VisibleBarLeft_cached, this.VisibleBarRight_cached);
 				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException("VisiblePriceMin(): " + msg);
 				}
 				return ret;
@@ -101,9 +92,6 @@ namespace Sq1.Charting {
 				double ret = seriesHigh.MaxValueBetweenIndexesDoubleMinValueUnsafe(this.VisibleBarLeft_cached, this.VisibleBarRight_cached);
 				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException("VisiblePriceMax(): " + msg);
 				}
 				return ret;
@@ -140,13 +128,13 @@ namespace Sq1.Charting {
 			howManyPositionArrowsBeyondPriceBoundaries = this.alignVisiblePositionArrowsAndCountMaxOutstanding();
 			this.renderBarsPrice(g);
 			// TODO MOVE_IT_UPSTACK_AND_PLACE_AFTER_renderBarsPrice_SO_THAT_POSITION_LINES_SHOWUP_ON_TOP_OF_BARS 
-			//this.renderPositions(g);
+			//MOVED_TO renderBarsPrice() this.renderPositions(g);
 			this.renderOnChartLabels(g);
 			this.renderOnChartLines(g);
 			this.renderOnChartBarAnnotations(g);
-			//this.RenderBidAsk(g);
-			//this.RenderPositions(g);
+			this.renderBidAsk(g);
 		}
+		
 		//protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
 		//	base.PaintBackgroundWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter backgrounds
 		//}
@@ -199,9 +187,6 @@ namespace Sq1.Charting {
 			for (int barIndex = base.VisibleBarRight_cached; barIndex > base.VisibleBarLeft_cached; barIndex--) {
 				if (barIndex >= base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderBarsPrice(): " + msg);
 					continue;
 				}
@@ -360,9 +345,6 @@ namespace Sq1.Charting {
 			
 			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLines(): " + msg);
 				return;
 			}
@@ -411,10 +393,8 @@ namespace Sq1.Charting {
 				foreach (OnChartLine line in linesByRight) {
 					if (line.BarLeft > base.VisibleBarRight_cached) continue;	// line will start after VisibleRight
 					if (linesToDraw.Contains(line)) {
-						#if DEBUG
 						string msg = "should never happen";
-						Debugger.Break();
-						#endif
+						Assembler.PopupException(msg);
 						continue;
 					}
 					linesToDraw.Add(line);
@@ -440,9 +420,6 @@ namespace Sq1.Charting {
 		void renderOnChartLabels(Graphics g) {
 			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLabels(): " + msg);
 				return;
 			}
@@ -457,9 +434,6 @@ namespace Sq1.Charting {
 			// TODO remove dupes from render*, move loop upstack
 			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderOnChartLabels(): " + msg);
 				return;
 			}
@@ -471,9 +445,6 @@ namespace Sq1.Charting {
 			for (int barIndex = base.VisibleBarRight_cached; barIndex > base.VisibleBarLeft_cached; barIndex--) {
 				if (barIndex >= base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderBarsPrice(): " + msg);
 					continue;
 				}
@@ -524,9 +495,7 @@ namespace Sq1.Charting {
 //					} else {
 //						if (verticalPaddingDueToManyStackedAnnotationsAboveSameBar > 0) {
 //							string msg = "TESTME_WHEN_REASONABLE_PADDING_MIXED_WITH_INT.MAXVALUE_FOR_SAME_BAR";
-//							#if DEBUG
-//							Debugger.Break();
-//							#endif
+//							Assembler.PopupException(msg);
 //						}
 					}
 					int yPadding = 0;
@@ -557,6 +526,9 @@ namespace Sq1.Charting {
 					}
 				}
 			}
+		}
+		void renderBidAsk(Graphics g) {
+			;
 		}
 		
 		public override int ValueLastAvailableIndexMinusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }

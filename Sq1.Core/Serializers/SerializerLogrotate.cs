@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+
 using Newtonsoft.Json;
 
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotate<T> : Serializer<List<T>> {
 		public string OfWhat { get { return typeof(T).Name; } }
 		
-		private long logRotateSizeLimit;
-		private string logRotateDateFormat;
+		long logRotateSizeLimit;
+		string logRotateDateFormat;
 
-		private Object entityLock;
+		Object entityLock;
 		public bool HasChangesToSave;
-		private bool currentlySerializing;
-		private object itemsBufferedWhileSerializingLock;
-		private List<T> itemsBufferedWhileSerializing;
+		bool currentlySerializing;
+		object itemsBufferedWhileSerializingLock;
+		List<T> itemsBufferedWhileSerializing;
 
 		public SerializerLogrotate() : base() {
 			this.logRotateSizeLimit = 2 * 1024 * 1024;	// 2Mb
@@ -69,11 +70,11 @@ namespace Sq1.Core.Serializers {
 				this.currentlySerializing = false;
 			}
 		}
-		private void safeRotateWriteAll(string fileAbspath, string json) {
+		void safeRotateWriteAll(string fileAbspath, string json) {
 			this.safeLogRotate(fileAbspath);
 			File.WriteAllText(fileAbspath, json);
 		}
-		private void safeLogRotate(string fileAbspath) {
+		void safeLogRotate(string fileAbspath) {
 			string msig = " LogrotateSerializer<" + OfWhat + ">::safeLogRotate(fileAbspath=[" + fileAbspath + "]): ";
 			string relpath = Path.GetDirectoryName(fileAbspath);
 			if (Directory.Exists(relpath) == false) {

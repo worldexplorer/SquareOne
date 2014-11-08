@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+
 using DigitalRune.Windows.TextEditor;
 using DigitalRune.Windows.TextEditor.Document;
 using DigitalRune.Windows.TextEditor.Folding;

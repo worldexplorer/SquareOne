@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
-using System.Diagnostics;
 
 namespace Sq1.Core.StrategyBase {
 	public class NotOnChartBarsHelper {

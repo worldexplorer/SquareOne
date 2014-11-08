@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows.Forms;
 
 namespace Sq1.Charting.MultiSplit {
 	public partial class MultiSplitContainer<PANEL_BASE> {

@@ -1,6 +1,6 @@
 using System.Windows.Forms;
-using DigitalRune.Windows.TextEditor;
 
+using DigitalRune.Windows.TextEditor;
 
 namespace Sq1.Widgets.ScriptEditor {
 	public partial class OptionsDialog : Form {

@@ -103,7 +103,7 @@
       <DependentUpon>Bars.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\Bars.EventGenerator.cs">
-      <DependentUpon>Bars.cs</DependentUpon>
+      <DependentUpon>Bar.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\BarsUnscaled.cs" />
     <Compile Include="DataTypes\BarsUnscaledEventArgs.cs" />
@@ -134,8 +134,18 @@
     <Compile Include="DataFeed\NamedObjectJsonSerializable.cs" />
     <Compile Include="Repositories\RepositoryBarsFile.cs" />
     <Compile Include="Repositories\RepositoryBarsSameScaleInterval.cs" />
-    <Compile Include="Repositories\RepositoryCustomMarketInfo.cs" />
-    <Compile Include="Repositories\RepositoryCustomSymbolInfo.cs" />
+    <Compile Include="Repositories\RepositoryJsonDataSource.DynamicProperties.cs">
+      <DependentUpon>RepositoryJsonDataSource.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\RepositoryJsonDataSource.EventGenerator.cs">
+      <DependentUpon>RepositoryJsonDataSource.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\RepositoryJsonsInFolder.cs" />
+    <Compile Include="Repositories\RepositoryJsonsInFolder.EventGenerator.cs">
+      <DependentUpon>RepositoryJsonsInFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\RepositorySerializerMarketInfo.cs" />
+    <Compile Include="Repositories\RepositorySerializerSymbolInfo.cs" />
     <Compile Include="Repositories\RepositoryDllBrokerProvider.cs" />
     <Compile Include="Repositories\RepositoryDllJsonStrategy.cs" />
     <Compile Include="Repositories\RepositoryDllReporters.cs" />
@@ -144,8 +154,7 @@
     <Compile Include="Repositories\RepositoryDllStreamingProvider.cs" />
     <Compile Include="Repositories\RepositoryFoldersNoJson.cs" />
     <Compile Include="Repositories\RepositoryJsonDataSource.cs" />
-    <Compile Include="Repositories\ScriptRepository.cs" />
-    <Compile Include="Serializers\RepositoryJsonsInFolder.cs" />
+    <Compile Include="Repositories\RepositoryDllScript.cs" />
     <Compile Include="Serializers\SerializerLogrotate.cs" />
     <Compile Include="Serializers\SerializerLogrotatePeriodic.cs" />
     <Compile Include="Serializers\Serializer.cs" />
@@ -161,6 +170,9 @@
       <DependentUpon>ScriptExecutor.cs</DependentUpon>
     </Compile>
     <Compile Include="StrategyBase\ScriptParameterEventArgs.cs" />
+    <Compile Include="StrategyBase\Strategy.ScriptContext.cs">
+      <DependentUpon>Strategy.cs</DependentUpon>
+    </Compile>
     <Compile Include="StrategyBase\SystemPerformanceEventArgs.cs" />
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
     <Compile Include="Streaming\StreamingEarlyBinder.cs" />
@@ -280,10 +292,6 @@
     </ProjectReference>
     <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
       <Project>81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3</Project>
-      <Name>Newtonsoft.Json.Net20</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
   </ItemGroup>

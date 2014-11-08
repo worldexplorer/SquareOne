@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
+
 using DigitalRune.Windows.TextEditor;
 using DigitalRune.Windows.TextEditor.Completion;
 

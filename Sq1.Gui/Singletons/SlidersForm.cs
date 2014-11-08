@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core.StrategyBase;
+using Sq1.Gui.Forms;
 using Sq1.Support;
 
 namespace Sq1.Gui.Singletons {
@@ -14,32 +15,42 @@ namespace Sq1.Gui.Singletons {
 		public void Initialize(Strategy strategy) {
 			try {
 				base.SuspendLayout();
+				this.Size = new Size(this.Size.Width, this.SlidersAutoGrowControl.Height);
 				bool showEmptyStubWhenStrategyNullOrNoParameters = true;
 				if (strategy != null && strategy.Script != null) {
 					int parametersToShow = strategy.ScriptContextCurrent.IndicatorParametersByName.Values.Count + strategy.Script.ParametersById.Count; 
 					if (parametersToShow > 0) showEmptyStubWhenStrategyNullOrNoParameters = false;
 				}
-				if (showEmptyStubWhenStrategyNullOrNoParameters) {
-					this.SlidersAutoGrowControl.Hide();
-					this.pnlNoParametersInScript.Show();
-					this.lblScriptName.Text = (strategy == null || strategy.Script == null) ? "NO_SCRIPT" : strategy.Name;
-					this.Size = new Size(this.Size.Width, this.pnlNoParametersInScript.Height);
+				if (showEmptyStubWhenStrategyNullOrNoParameters == false) {
+					this.SlidersAutoGrowControl.Show();
+					this.pnlNoParametersInScript.Hide();
+					this.SlidersAutoGrowControl.Initialize(strategy);
+					this.PopulateFormTitle(strategy);
 					return;
 				}
-				this.pnlNoParametersInScript.Hide();
-				this.SlidersAutoGrowControl.Show();
-				this.SlidersAutoGrowControl.Initialize(strategy);
+				
+				this.SlidersAutoGrowControl.Hide();
+				this.pnlNoParametersInScript.Show();
+				if (strategy == null) {
+					string scriptName = "CHART_NO_STRATEGY";
+					ChartForm chartActive = base.DockPanel.ActiveDocument as ChartForm;
+					if (chartActive != null) {
+						scriptName = chartActive.Text;
+					}
+					this.lblNoParametersDefined.Text = "No Strategy in DockPanel.ActiveDocument; it contains only Chart";
+					this.lblScriptName.Text = scriptName;
+					base.Text = "CHART_NO_STRATEGY";
+					return;
+				}
+				this.lblNoParametersDefined.Text = "No parameters/indicators defined in the Script < DockPanel.ActiveDocument";
+				this.lblScriptName.Text = strategy.Name;
+				base.Text = "[" + strategy.ScriptContextCurrent.Name + "] [" + strategy.Name + "] ScriptContext";
+				if (strategy.Script == null) {
+					this.lblScriptName.Text += " NO_SCRIPT";
+				}
 			} finally {
 				base.ResumeLayout(true);
 			}
-			this.Size = new Size(this.Size.Width, this.SlidersAutoGrowControl.Height);
-			//if (this.Pane == null) {
-			//	string msg = "SlidersForm wasn't added to MainForm.DockContent; not activated; use chartFormsManager.StrategyCompileActivatePopulateSliders() later";
-			//	return;
-			//}
-			//this.Pane.Activate();
-			
-			this.PopulateFormTitle(strategy);
 		}
 		public void PopulateFormTitle(Strategy strategy) {
 			if (strategy.ScriptContextCurrent == null) return;

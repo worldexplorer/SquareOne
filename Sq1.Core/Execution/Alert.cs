@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 
 using Newtonsoft.Json;
 using Sq1.Core.DataFeed;

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 using Sq1.Core.Charting;
 using Sq1.Core.Charting.OnChart;
-using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {

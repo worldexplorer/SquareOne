@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+
 using BrightIdeasSoftware;
 
 namespace Sq1.Widgets.Exceptions {

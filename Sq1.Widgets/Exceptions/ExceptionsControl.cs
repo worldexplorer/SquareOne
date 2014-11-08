@@ -38,7 +38,7 @@ namespace Sq1.Widgets.Exceptions {
 		}
 
 		public void Initialize() {
-			this.DataSnapshotSerializer = new Serializer<ExceptionsControlDataSnapshot>(Assembler.InstanceInitialized.StatusReporter);
+			this.DataSnapshotSerializer = new Serializer<ExceptionsControlDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 				"Sq1.Widgets.ExceptionsControlDataSnapshot.json", "Workspaces",
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName);

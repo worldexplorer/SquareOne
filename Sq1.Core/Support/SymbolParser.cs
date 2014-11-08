@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Sq1.Core.Support {
-	public class SymbolParser {
+	public static class SymbolParser {
 		public static string SEPARATORS = ", \n\r";
 		
 		public static List<string> ParseSymbols(string csv) {

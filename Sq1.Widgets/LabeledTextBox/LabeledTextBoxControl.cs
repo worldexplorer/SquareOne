@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Sq1.Core.Execution;
-
 namespace Sq1.Widgets.LabeledTextBox {
 	public partial class LabeledTextBoxControl : UserControl {
 		public LabeledTextBoxControl() {

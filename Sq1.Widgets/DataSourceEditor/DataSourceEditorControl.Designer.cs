@@ -1,9 +1,4 @@
-﻿using System.ComponentModel;
-using System.Windows.Forms;
-using Sq1.Core;
-using Sq1.Core.DataTypes;
-
-namespace Sq1.Widgets.DataSourceEditor {
+﻿namespace Sq1.Widgets.DataSourceEditor {
 	partial class DataSourceEditorControl {
 		private System.Windows.Forms.Panel panel_0;
 		private System.Windows.Forms.UserControl userControl_0;

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
 using Sq1.Widgets.LabeledTextBox;
-using System.Diagnostics;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SlidersAutoGrowControl {

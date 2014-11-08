@@ -8,7 +8,6 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.Repositories;
 using Sq1.Core.Serializers;
 using Sq1.Core.Static;
-using Sq1.Core.Support;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl : UserControl {

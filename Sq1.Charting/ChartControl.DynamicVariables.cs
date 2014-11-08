@@ -2,9 +2,6 @@
 using System.Diagnostics;
 using System.Drawing;
 
-using Sq1.Core;
-using Sq1.Core.DataTypes;
-
 namespace Sq1.Charting {
 	public partial class ChartControl  {
 		// cache them all until base.Width/Height changes so they won't be calculated again with the same result for each bar
@@ -32,7 +29,7 @@ namespace Sq1.Charting {
 					#endif
 					return this.Bars.Count - 1;
 				}
-				this.hScrollBar.Visible = true;			// LAZY u chang this.hScrollBar.Visible u must trigger Resize() once again
+				this.hScrollBar.Visible = true;			// LAZY when u change this.hScrollBar.Visible u must trigger Resize() once again
 				float part0to1 = this.hScrollBar.Value / physicalMax;
 				if (part0to1 > 1) part0to1 = 1;	//	NONSENSE: this.hScrollBar.Value=432, physicalMax=423 - am I still resizing?...
 				try {

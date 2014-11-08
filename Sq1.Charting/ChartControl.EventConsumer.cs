@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 
-using Sq1.Charting.MultiSplit;
 using Sq1.Core;
 
 namespace Sq1.Charting {

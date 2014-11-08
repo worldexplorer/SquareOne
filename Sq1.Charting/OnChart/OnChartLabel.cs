@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+
 using Sq1.Core.Charting.OnChart;
 
 namespace Sq1.Charting.OnChart {

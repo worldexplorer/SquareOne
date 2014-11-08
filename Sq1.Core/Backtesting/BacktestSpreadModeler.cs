@@ -1,6 +1,7 @@
 ﻿using System;
-using Sq1.Core.DataTypes;
 using System.Diagnostics;
+
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Backtesting {
 	public abstract class BacktestSpreadModeler {

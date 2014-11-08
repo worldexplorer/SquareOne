@@ -1,6 +1,4 @@
 ﻿using System;
-using Sq1.Core;
-using Sq1.Core.Execution;
 
 namespace Sq1.Reporters {
 	public partial class Performance {
