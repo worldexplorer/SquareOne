@@ -2,7 +2,7 @@
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
   "StrategyGuidJsonCheck": "b04c88a3-7886-4edd-b218-5feba0e435fc",
   "StrategyNameJsonCheck": "ATRbandCompiled",
-  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json",
+  "StrategyAbsPathJsonCheck": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -21,7 +21,7 @@
       "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 279
+        "Distance": 46
       }
     },
     "ChartColorBackground": "White",
@@ -90,5 +90,5 @@
     "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
   },
   "ChartSerno": 19,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json], ScriptContextCurrentName[?Default?]"
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json], ScriptContextCurrentName[?Default?]"
 }

@@ -98,9 +98,6 @@ namespace Sq1.Charting {
 				double ret = seriesVolume.MinValueBetweenIndexesDoubleMaxValueUnsafe(this.VisibleBarLeft_cached, this.VisibleBarRight_cached);
 				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-						#if DEBUG
-						Debugger.Break();
-						#endif
 						Assembler.PopupException("VisibleVolumeMin(): " + msg);
 				}
 				return ret;
@@ -111,9 +108,6 @@ namespace Sq1.Charting {
 				double ret = seriesVolume.MaxValueBetweenIndexesDoubleMinValueUnsafe(this.VisibleBarLeft_cached, this.VisibleBarRight_cached);
 				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException("VisibleVolumeMax(): " + msg);
 				}
 				return ret;
@@ -128,9 +122,6 @@ namespace Sq1.Charting {
 			for (int i = base.VisibleBarRight_cached; i > base.VisibleBarLeft_cached; i--) {
 				if (i > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException("RenderBarsPrice(): " + msg);
 					continue;
 				}

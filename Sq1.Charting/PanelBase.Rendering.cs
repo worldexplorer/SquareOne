@@ -37,7 +37,7 @@ namespace Sq1.Charting {
 		protected virtual void GutterGridLinesRightBottomDrawForeground(Graphics g) {
 			string msig = " GutterGridLinesRightBottomDrawForeground() " + this.BarsIdent + " " + this.Parent.ToString();
 
-			this.ensureFontMetricsAreCalculated(g);
+			//MOVED_TO_OnPaintBackgroundDoubleBuffered_TO_GET_PROPER_HEIGHT_EARLIER this.ensureFontMetricsAreCalculated(g);
 			
 			if (this.ChartControl.BarsEmpty) return;
 			if (this.VisibleMax_cached == 0) return;	//it's a cached version for once-per-render calculation
@@ -48,6 +48,7 @@ namespace Sq1.Charting {
 			if (this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
 				string msg = "[" + this.PanelName + "]-PANEL_HEIGHT_MUST_BE_POSITIVE_this.PanelHeightMinusGutterBottomHeight_cached["
 					+ this.PanelHeightMinusGutterBottomHeight_cached + "]";
+				msg += "; this.ChartSettings.ScrollPositionAtBarIndex seems to be ZERO (Chartontrol.cs:82) => move the slider to change&serialize";
 				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
@@ -147,8 +148,18 @@ namespace Sq1.Charting {
 				int mouseBarMiddleX = mouseBarX + this.BarShadowOffset;
 				g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, mouseBarMiddleX, 0, mouseBarMiddleX, base.Height);
 			}
+			
+			if (this.GutterBottomDraw == false && this.ThisPanelIsPricePanel) {
+				string msg = "WHY??? this.GutterBottomDraw == false && this.ThisPanelIsPricePanel";
+				Assembler.PopupException(msg);
+				return;	// not initialized yet
+			}
 			if (this.GutterBottomDraw) {
-				if (this.GutterRightFontHeight_cached <= 0) return;	// not initialized yet
+				if (this.GutterRightFontHeight_cached <= 0) {
+					string msg = "SHOULDVE_BEEN_INVOKED_EARLIER: ensureFontMetricsAreCalculated()";
+					Assembler.PopupException(msg);
+					return;	// not initialized yet
+				}
 				//this.ChartControl.ChartSettings.PenGridlinesVerticalNewDate.Width = 2f;
 				int leftPadding = this.ChartControl.ChartSettings.GutterBottomPadding;
 				int y = this.PanelHeightMinusGutterBottomHeight_cached + leftPadding;

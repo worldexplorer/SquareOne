@@ -2,7 +2,7 @@
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
   "StrategyGuidJsonCheck": "4c7274f7-ab63-498b-b448-b7bc09f7263b",
   "StrategyNameJsonCheck": "EnterEveryBar",
-  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\my\\EnterEveryBar.json",
+  "StrategyAbsPathJsonCheck": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\my\\EnterEveryBar.json",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -90,5 +90,5 @@
     "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
   },
   "ChartSerno": 28,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\my\\EnterEveryBar.json], ScriptContextCurrentName[?Default?]"
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\my\\EnterEveryBar.json], ScriptContextCurrentName[?Default?]"
 }

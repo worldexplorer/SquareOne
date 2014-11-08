@@ -45,9 +45,9 @@
 			// lblNoParametersDefined
 			// 
 			this.lblNoParametersDefined.AutoSize = true;
-			this.lblNoParametersDefined.Location = new System.Drawing.Point(0, 0);
+			this.lblNoParametersDefined.Location = new System.Drawing.Point(0, 2);
 			this.lblNoParametersDefined.Name = "lblNoParametersDefined";
-			this.lblNoParametersDefined.Size = new System.Drawing.Size(158, 13);
+			this.lblNoParametersDefined.Size = new System.Drawing.Size(218, 13);
 			this.lblNoParametersDefined.TabIndex = 26;
 			this.lblNoParametersDefined.Text = "No parameters/indicators(*) defined in Script:";
 			// 
@@ -55,19 +55,19 @@
 			// 
 			this.lblScriptName.AutoSize = true;
 			this.lblScriptName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.lblScriptName.Location = new System.Drawing.Point(-3, 16);
+			this.lblScriptName.Location = new System.Drawing.Point(0, 17);
 			this.lblScriptName.Name = "lblScriptName";
 			this.lblScriptName.Size = new System.Drawing.Size(99, 13);
 			this.lblScriptName.TabIndex = 27;
 			this.lblScriptName.Text = "ScriptNameHere";
 			// 
-			// SlidersAutoGrow
+			// SlidersAutoGrowControl
 			// 
 			this.SlidersAutoGrowControl.BackColor = System.Drawing.SystemColors.Control;
 			this.SlidersAutoGrowControl.CurrentParametersFromChildSliders = null;
 			this.SlidersAutoGrowControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.SlidersAutoGrowControl.Location = new System.Drawing.Point(0, 0);
-			this.SlidersAutoGrowControl.Name = "SlidersAutoGrow";
+			this.SlidersAutoGrowControl.Name = "SlidersAutoGrowControl";
 			this.SlidersAutoGrowControl.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.SlidersAutoGrowControl.Size = new System.Drawing.Size(360, 89);
 			this.SlidersAutoGrowControl.TabIndex = 30;

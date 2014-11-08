@@ -75,6 +75,9 @@
     <Compile Include="Backtesting\Optimizer.cs" />
     <Compile Include="Backtesting\OptimizerParametersSequencer.cs" />
     <Compile Include="Backtesting\QuoteGenerated.cs" />
+    <Compile Include="Broker\BrokerProvider.EditorSupport.cs">
+      <DependentUpon>BrokerProvider.cs</DependentUpon>
+    </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
     <Compile Include="Broker\OrderEventDistributor.cs" />
     <Compile Include="Broker\OrderProcessorEventDistributor.cs" />
@@ -87,6 +90,9 @@
     <Compile Include="Charting\HostPanelForIndicator.cs" />
     <Compile Include="Charting\MultiSplitterProperties.cs" />
     <Compile Include="Charting\OnChartObjectOperationStatus.cs" />
+    <Compile Include="DataFeed\DataSource.EventGenerator.cs">
+      <DependentUpon>DataSource.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataFeed\DataSourceSymbolRenamedEventArgs.cs" />
     <Compile Include="DataFeed\IDataSourceEditor.cs" />
     <Compile Include="DataFeed\NamedObjectJsonEventArgs.cs" />
@@ -95,6 +101,9 @@
     </Compile>
     <Compile Include="DataTypes\Bars.DynamicProperties.cs">
       <DependentUpon>Bars.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataTypes\Bars.EventGenerator.cs">
+      <DependentUpon>Bar.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\BarsUnscaled.cs" />
     <Compile Include="DataTypes\BarsUnscaledEventArgs.cs" />
@@ -155,6 +164,9 @@
     <Compile Include="StrategyBase\SystemPerformanceEventArgs.cs" />
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
     <Compile Include="Streaming\StreamingEarlyBinder.cs" />
+    <Compile Include="Streaming\StreamingProvider.EditorSupport.cs">
+      <DependentUpon>StreamingProvider.cs</DependentUpon>
+    </Compile>
     <Compile Include="Streaming\StreamingSolidifier.cs" />
     <Compile Include="Support\SkipInstantiationAt.cs" />
     <Compile Include="Broker\OrderListByType.cs" />

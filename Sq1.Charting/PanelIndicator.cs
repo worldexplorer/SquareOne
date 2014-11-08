@@ -59,16 +59,12 @@ namespace Sq1.Charting {
 			} else {
 				if (visibleMinCandidateMaxUnsafe == double.MaxValue) {
 					string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS";
-					#if DEBUG
-					//Debugger.Break();
-					#endif
+					Assembler.PopupException(msg, null, false);
 					return;
 				}
 				if (visibleMaxCandidateMinUnsafe == double.MinValue) {
 					string msg = "ALL_OWN_CALCULATED_INDICATOR_VALUES_BETWEEN_BARLEFT_BARRIGHT_ARE_NANS";
-					#if DEBUG
-					//Debugger.Break();
-					#endif
+					Assembler.PopupException(msg, null, false);
 					return;
 				}
 			}
@@ -97,14 +93,12 @@ namespace Sq1.Charting {
 			}
 			if (double.IsNaN(this.VisibleRangeWithTwoSqueezers_cached)) {
 				string msg = "[" + this.ToString() + "]-INDICATOR_RANGE_MUST_BE_NON_NAN";
-				//Debugger.Break();
 				Assembler.PopupException(msg + msig);
 				return;
 			}
 			if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
 				// gridStep will throw an ArithmeticException
 				string msg = "[" + this.ToString() + "]-INDICATOR_RANGE_MUST_BE_POSITIVE";
-				//Debugger.Break();
 				Assembler.PopupException(msg + msig);
 				return;
 			}

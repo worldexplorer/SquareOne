@@ -41,7 +41,6 @@ namespace Sq1.Core.StrategyBase {
 		public Strategy Strategy;
 		public string StrategyName { get { return (this.Strategy == null) ? "STRATEGY_NULL" : this.Strategy.Name; } }
 		public OrderProcessor OrderProcessor { get; private set; }
-		public IStatusReporter StatusReporter { get; private set; }
 		#endregion
 
 		#region volatile Script is recompiled and replaced
@@ -104,9 +103,8 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 
-		protected ScriptExecutor(ChartShadow chartShadow, Strategy strategy, 
-								 OrderProcessor orderProcessor, IStatusReporter statusReporter) : this() {
-			this.Initialize(chartShadow, strategy, orderProcessor, statusReporter);
+		protected ScriptExecutor(ChartShadow chartShadow, Strategy strategy, OrderProcessor orderProcessor) : this() {
+			this.Initialize(chartShadow, strategy, orderProcessor);
 		}
 		public ScriptExecutor() {
 			this.IsStreaming = false;
@@ -125,14 +123,11 @@ namespace Sq1.Core.StrategyBase {
 			this.Optimizer = new Optimizer(this);
 		}
 
-		public void Initialize(ChartShadow chartShadow,
-							   Strategy strategy, OrderProcessor orderProcessor, IStatusReporter statusReporter) {
-
+		public void Initialize(ChartShadow chartShadow, Strategy strategy, OrderProcessor orderProcessor) {
 			string msg = " at this time, FOR SURE this.Bars==null, strategy.Script?=null";
 			this.ChartShadow = chartShadow;
 			this.Strategy = strategy;
 			this.OrderProcessor = orderProcessor;
-			this.StatusReporter = statusReporter;
 			
 			this.Optimizer.InitializedProperly = false;
 
@@ -409,8 +404,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		
 		public void PopupException(string msg, Exception ex = null) {
-			if (this.StatusReporter == null) return;
-			this.StatusReporter.PopupException(msg, ex);
+			Assembler.PopupException(msg, ex);
 			this.Backtester.AbortBacktestIfExceptionsLimitReached();
 		}
 
@@ -1114,7 +1108,7 @@ namespace Sq1.Core.StrategyBase {
 				Debugger.Break();
 			}
 			strategyClone.Script.Initialize(executorClone);
-			executorClone.Initialize(null, strategyClone, null, this.StatusReporter);
+			executorClone.Initialize(null, strategyClone, null);
 			//KEEP_DOWNSTACK strategyClone.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);
 
 			strategyClone.ScriptContextsByName = new Dictionary<string, ContextScript>();

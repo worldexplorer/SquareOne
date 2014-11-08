@@ -133,6 +133,7 @@ namespace Sq1.Gui {
 					//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormActive.ChartFormManager.Strategy);
 					//}
 					this.ChartFormActiveNullUnsafe.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+					this.ChartFormActiveNullUnsafe.Invalidate();	// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
 				}
 	
 				this.WorkspacesManager.SelectWorkspaceLoaded(workspaceToLoad);

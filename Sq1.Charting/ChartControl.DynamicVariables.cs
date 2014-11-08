@@ -32,7 +32,7 @@ namespace Sq1.Charting {
 					#endif
 					return this.Bars.Count - 1;
 				}
-				this.hScrollBar.Visible = true;			// LAZY u chang this.hScrollBar.Visible u must trigger Resize() once again
+				this.hScrollBar.Visible = true;			// LAZY when u change this.hScrollBar.Visible u must trigger Resize() once again
 				float part0to1 = this.hScrollBar.Value / physicalMax;
 				if (part0to1 > 1) part0to1 = 1;	//	NONSENSE: this.hScrollBar.Value=432, physicalMax=423 - am I still resizing?...
 				try {

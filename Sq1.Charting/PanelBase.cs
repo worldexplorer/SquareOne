@@ -82,7 +82,14 @@ namespace Sq1.Charting {
 		[Browsable(false)]
 		public int PanelHeightMinusGutterBottomHeight { get {
 				int ret = base.Height;
-				if (this.GutterBottomDraw) ret -= this.GutterBottomHeight_cached;
+				if (this.GutterBottomDraw) {
+					if (this.GutterBottomHeight_cached <= 0) {
+						string msg = "MOVE_UPSTACK_THIS_FONT_HEIGHT_CALCULATION substraction must occur now but it's -1?"
+							+ " developer should fix this lifecycle misconcept";
+						Assembler.PopupException(msg);
+					}
+					ret -= this.GutterBottomHeight_cached;
+				}
 				return ret;
 			} }
 		[Browsable(false)]
@@ -200,7 +207,7 @@ namespace Sq1.Charting {
 			if (this.ChartControl.BarsEmpty) {
 				string msg = "CHART_CONTROL_BARS_NULL_OR_EMPTY: this.ChartControl.BarsEmpty ";
 				//if (this.ChartControl.Bars != null) msg = "BUG: bars=[" + this.ChartControl.Bars + "]";
-				//Debugger.Break();
+				Assembler.PopupException(msg + msig, null, false);
 				this.DrawError(e.Graphics, msg + msig);
 				return;
 			}
@@ -221,6 +228,7 @@ namespace Sq1.Charting {
 					string msg = "PANEL_BASE_PAINT_ENTRY_POINT_PROTECTS_DERIVED_FROM_INVOKING_PaintWholeSurfaceBarsNotEmpty()"
 						+ " occurs for JSON-Scripted Strategies with PanelIndicator* open without indicator's data";
 					//Debugger.Break();	// moving beyond right bar makes all panels blank
+					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
 				
@@ -251,7 +259,7 @@ namespace Sq1.Charting {
 			} catch (Exception ex) {
 				string msg = "OnPaintDoubleBuffered(): caught[" + ex.Message + "]";
 				Debugger.Break();
-				Assembler.PopupException(msg, ex);
+				Assembler.PopupException(msg + msig, ex);
 				this.DrawError(e.Graphics, msg);
 			} finally {
 				this.ImPaintingForegroundNow = false;
@@ -378,6 +386,16 @@ namespace Sq1.Charting {
 				this.BarWidthIncludingPadding_cached = this.ChartControl.ChartSettings.BarWidthIncludingPadding;
 				this.BarWidthMinusRightPadding_cached = this.ChartControl.ChartSettings.BarWidthMinusRightPadding;
 				this.BarShadowXoffset_cached = this.ChartControl.ChartSettings.BarShadowXoffset;
+				
+				this.ensureFontMetricsAreCalculated(e.Graphics);	//MOVED_HERE_FROM_MOVE_UPSTACK_THIS_FONT_HEIGHT_CALCULATION
+//DEBUGGING_FOR_MOVED_HERE_FROM_MOVE_UPSTACK_THIS_FONT_HEIGHT_CALCULATION remove next commit
+//				if (this.GutterBottomDraw && this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
+//					Debugger.Break();
+//				}
+//				if (this.PanelHeightMinusGutterBottomHeight_cached != 0
+//					    && this.PanelHeightMinusGutterBottomHeight_cached != this.PanelHeightMinusGutterBottomHeight) {
+//					Debugger.Break();
+//				}
 				this.PanelHeightMinusGutterBottomHeight_cached = this.PanelHeightMinusGutterBottomHeight;
 				
 				this.PaintBackgroundWholeSurfaceBarsNotEmpty(e.Graphics);
@@ -519,7 +537,7 @@ namespace Sq1.Charting {
 				this.GutterBottomFontHeight_cached = (int)g.MeasureString("ABC123`'jg]", this.ChartControl.ChartSettings.GutterBottomFont).Height;
 	 		//}
 	 		//if (this.GutterBottomHeight_cached == -1) {
-				this.GutterBottomHeight_cached = this.GutterBottomFontHeight_cached + this.ChartControl.ChartSettings.GutterBottomPadding* 2;
+				this.GutterBottomHeight_cached = this.GutterBottomFontHeight_cached + this.ChartControl.ChartSettings.GutterBottomPadding * 2;
 	 		}
 		}
 		public override string ToString() {
