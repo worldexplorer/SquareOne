@@ -5,9 +5,9 @@
   "StrategyAbsPathJsonCheck": "NO_STRATEGY_CHART_ONLY",
   "ContextChart": {
     "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
-    "Name": "CHART_GMKN",
-    "Symbol": "GMKN",
-    "DataSourceName": "STATIC",
+    "Name": "CHART_autogen",
+    "Symbol": "autogen",
+    "DataSourceName": "Qmock",
     "ScaleInterval": {
       "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
       "Scale": 3,
@@ -44,11 +44,11 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 382
+        "Distance": 359
       }
     },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 16,
+    "BarWidthIncludingPadding": 8,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -58,12 +58,12 @@
     "GutterRightColorBackground": "Gainsboro",
     "GutterRightColorForeground": "Black",
     "GutterRightPadding": 5,
-    "GutterRightFont": "Microsoft Sans Serif, 8pt",
+    "GutterRightFont": "Consolas, 8pt",
     "GutterBottomColorBackground": "Gainsboro",
     "GutterBottomColorForeground": "Black",
     "GutterBottomNewDateColorForeground": "Green",
     "GutterBottomPadding": 2,
-    "GutterBottomFont": "Microsoft Sans Serif, 8pt",
+    "GutterBottomFont": "Consolas, 8pt",
     "GridlinesHorizontalColor": "WhiteSmoke",
     "GridlinesVerticalColor": "WhiteSmoke",
     "GridlinesVerticalNewDateColor": "Lime",
@@ -82,7 +82,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 403,
+    "ScrollPositionAtBarIndex": 0,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -98,7 +98,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 477,
+    "PriceVsVolumeSplitterDistance": 0,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
@@ -110,16 +110,8 @@
     "ChartLabelsUpperLeftPlatePadding": 1,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
     "ChartLabelsUpperLeftIndicatorSquareSize": 5,
-    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3,
-    "SpreadBidLineColor": "Orange",
-    "SpreadBidLineColorAlpha": 64,
-    "SpreadBidLineWidth": 1,
-    "SpreadAskLineColor": "Gray",
-    "SpreadAskLineColorAlpha": 64,
-    "SpreadAskLineWidth": 1,
-    "SpreadLabelFont": "Consolas, 6pt",
-    "SpreadLabelColor": "DarkGray"
+    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
   },
-  "ChartSerno": 18,
+  "ChartSerno": 30,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
 }

@@ -216,7 +216,6 @@ namespace Sq1.Core.Backtesting {
 			return this.BacktestsScheduled;
 		}
 		void afterBacktesterComplete(ScriptExecutor executorCompletePooled) {
-			#if DEBUG
 			string dbg = "complete: " + executorCompletePooled.Strategy.ScriptContextCurrent.Name + " "
 				+ executorCompletePooled.Strategy.Script.IndicatorParametersAsString;
 			string dbg2 = "";
@@ -224,8 +223,7 @@ namespace Sq1.Core.Backtesting {
 				IndicatorParameter ip = executorCompletePooled.Performance.ScriptAndIndicatorParameterClonesByName[iName];
 				dbg2 += iName + "[" + ip.ValueCurrent + "]";
 			}
-			//Assembler.PopupException(dbg + dbg2, null, false);
-			#endif
+			Assembler.PopupException(dbg + dbg2, null, false);
 
 			if (executorCompletePooled == null) {
 				Debugger.Break();

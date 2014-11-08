@@ -17,7 +17,7 @@
   },
   "StreamingProvider": {
     "$type": "Sq1.Adapters.QuikMock.StreamingMock, Sq1.Adapters.QuikMock",
-    "QuoteDelay": 1000,
+    "QuoteDelay": 100,
     "GenerateOnlySymbols": [],
     "StreamingDataSnapshot": {
       "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
@@ -35,13 +35,13 @@
       },
       "BestBid": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 158170.0,
-        "AUTOGEN": 158145.0
+        "autogen": 158025.0,
+        "AUTOGEN": 158175.0
       },
       "BestAsk": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 158190.0,
-        "AUTOGEN": 158165.0
+        "autogen": 158045.0,
+        "AUTOGEN": 158195.0
       },
       "LastQuotesReceived": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
@@ -56,16 +56,16 @@
           "Symbol": "AUTOGEN",
           "SymbolClass": "SPBFUT",
           "Source": "MockQuik",
-          "ServerTime": "2014-11-08T00:05:43.8091231",
-          "LocalTimeCreatedMillis": "2014-11-08T00:05:43.8091231-05:00",
-          "Bid": 158145.0,
-          "Ask": 158165.0,
+          "ServerTime": "2014-11-08T02:04:45.1770948",
+          "LocalTimeCreatedMillis": "2014-11-08T02:04:45.1770948-05:00",
+          "Bid": 158175.0,
+          "Ask": 158195.0,
           "Size": 5.0,
           "ItriggeredFillAtBidOrAsk": 0,
           "LastDealBidOrAsk": 2,
-          "IntraBarSerno": 0,
-          "Absno": 0,
-          "LastDealPrice": 158145.0,
+          "IntraBarSerno": -1,
+          "Absno": 41,
+          "LastDealPrice": 158175.0,
           "ParentStreamingBar": null,
           "HasParentBar": false,
           "ParentBarIdent": "NO_PARENT_BAR",
