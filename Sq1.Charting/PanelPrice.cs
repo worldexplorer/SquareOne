@@ -528,7 +528,28 @@ namespace Sq1.Charting {
 			}
 		}
 		void renderBidAsk(Graphics g) {
-			;
+			Quote quoteLast = this.ChartControl.ScriptExecutorObjects.QuoteLast;
+			if (quoteLast == null) return;
+			int chartWidth = base.ChartControl.ChartWidthMinusGutterRightPrice;
+			int yBid = 0;
+			double bid = quoteLast.Bid;
+			double ask = quoteLast.Ask;
+			if (double.IsNaN(bid) == false) {
+				yBid = base.ValueToYinverted(bid);
+				g.DrawLine(this.ChartControl.ChartSettings.PenSpreadBid, 0, yBid, chartWidth, yBid);
+			}
+			if (double.IsNaN(ask) == false) {
+				int yAsk = base.ValueToYinverted(ask);
+				g.DrawLine(this.ChartControl.ChartSettings.PenSpreadAsk, 0, yAsk, chartWidth, yAsk);
+			}
+
+			double spread = quoteLast.Spread;
+			if (double.IsNaN(spread) == false && this.ChartControl.ChartSettings.SpreadLabelColor != Color.Empty) {
+				string spreadFormatted = spread.ToString("N" + this.Decimals);
+				g.DrawString("spread[" + spreadFormatted + "]",
+					this.ChartControl.ChartSettings.SpreadLabelFont,
+					this.ChartControl.ChartSettings.SpreadLabelBrush, 5, yBid + 3);
+			}
 		}
 		
 		public override int ValueLastAvailableIndexMinusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }

@@ -25,7 +25,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public DataDistributor DataDistributor { get; protected set; }
 		[JsonProperty]	public StreamingDataSnapshot StreamingDataSnapshot { get; protected set; }
 		[JsonIgnore]	public virtual List<string> SymbolsUpstreamSubscribed { get; private set; }
-		[JsonIgnore]	protected Object SymbolsSubscribedLock = new Object();
+		[JsonIgnore]	protected Object SymbolsSubscribedLock;
 		[JsonIgnore]	public virtual string SymbolsUpstreamSubscribedAsString { get {
 				string ret = "";
 				lock (SymbolsSubscribedLock) {
@@ -34,12 +34,14 @@ namespace Sq1.Core.Streaming {
 				ret = ret.TrimEnd(',');
 				return ret;
 			} }
-		[JsonIgnore]	protected Object BarsConsumersLock = new Object();
+		[JsonIgnore]	protected Object BarsConsumersLock;
 		[JsonIgnore]	public bool SaveToStatic;
 		[JsonIgnore]	public ConnectionState ConnectionState { get; protected set; }
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingProvider() {
+			SymbolsSubscribedLock = new Object();
+			BarsConsumersLock = new Object();
 			SymbolsUpstreamSubscribed = new List<string>();
 			DataDistributor = new DataDistributor(this);
 			StreamingDataSnapshot = new StreamingDataSnapshot(this);
@@ -54,7 +56,7 @@ namespace Sq1.Core.Streaming {
 			this.StreamingDataSnapshot.InitializeLastQuoteReceived(this.DataSource.Symbols);
 		}
 		protected void SubscribeSolidifier() {
-			if (this.DataSource.StaticProvider == null) return;
+			//SOLIDIFIER_REPLACES_STATIC_TO_STORE_REALTIME_QUOTES if (this.DataSource.StaticProvider == null) return;
 			this.StreamingSolidifier = new StreamingSolidifier(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
 				string ident = "[" + this.StreamingSolidifier.ToString()
@@ -80,15 +82,16 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		// the essence#1 of streaming provider
+		#region the essence#1 of streaming provider
 		public virtual void Connect() {
 			StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorConnecting, 0, "ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
 		}
 		public virtual void Disconnect() {
 			StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorDisconnecting, 0, "DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
 		}
+		#endregion
 
-		// BEGIN the essence#2 of streaming provider
+		#region the essence#2 of streaming provider
 		public virtual void UpstreamSubscribe(string symbol) {
 			throw new Exception("please override StreamingProvider::UpstreamSubscribe()");
 			//CHILDRENT_TEMPLATE: base.UpstreamSubscribeRegistryHelper(symbol);
@@ -101,7 +104,7 @@ namespace Sq1.Core.Streaming {
 			throw new Exception("please override StreamingProvider::UpstreamIsSubscribed()");
 			//CHILDRENT_TEMPLATE: return base.UpstreamIsSubscribedRegistryHelper(symbol);
 		}
-		// END the essence#2 of streaming provider
+		#endregion
 
 		public void UpstreamSubscribeRegistryHelper(string symbol) {
 			if (String.IsNullOrEmpty(symbol)) {
@@ -139,7 +142,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		// overridable proxy methods routed by default to DataDistributor
+		#region overridable proxy methods routed by default to DataDistributor
 		public virtual void ConsumerBarRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, Bar PartialBarInsteadOfEmpty) {
 			this.ConsumerBarRegister(symbol, scaleInterval, consumer);
 			SymbolScaleDistributionChannel channel = this.DataDistributor.GetDistributionChannelFor(symbol, scaleInterval);
@@ -159,8 +162,9 @@ namespace Sq1.Core.Streaming {
 		public virtual bool ConsumerBarIsRegistered(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
 			return this.DataDistributor.ConsumerBarIsRegistered(symbol, scaleInterval, consumer);
 		}
+		#endregion
 
-		// overridable proxy methods routed by default to DataDistributor
+		#region overridable proxy methods routed by default to DataDistributor
 		public virtual void ConsumerQuoteRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer streamingConsumer) {
 			this.DataDistributor.ConsumerQuoteRegister(symbol, scaleInterval, streamingConsumer);
 			this.StreamingDataSnapshot.LastQuotePutNull(symbol);
@@ -176,6 +180,7 @@ namespace Sq1.Core.Streaming {
 			this.DataDistributor.ConsumerBarUnregisterDying(streamingConsumer);
 			this.DataDistributor.ConsumerQuoteUnregisterDying(streamingConsumer);
 		}
+		#endregion
 
 		public virtual void PushQuoteReceived(Quote quote) {
 			if (quote.ServerTime == DateTime.MinValue) {
@@ -250,6 +255,7 @@ namespace Sq1.Core.Streaming {
 		public void UpdateConnectionStatus(int code, string msg) {
 			if (this.StatusReporter == null) return;
 			StatusReporter.UpdateConnectionStatus(this.ConnectionState, code, msg);
+			StatusReporter.PopupException(msg, null, false);
 		}
 		public void InitializeStreamingOHLCVfromStreamingProvider(Bars chartBars) {
 			SymbolScaleDistributionChannel distributionChannel = this.DataDistributor
@@ -266,6 +272,15 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
+			if (chartBars.BarStaticLastNullUnsafe == null) {
+				// FAILED_FIXING_IN_DataDistributor
+				string msg = "BAR_STATIC_LAST_IS_NULL while streamingBar[" + streamingBar
+					+ "] for distributionChannel[" + distributionChannel + "]";
+				// Assembler.PopupException(msg, null);
+				//throw new Exception(msg);
+				return;
+			}
+			
 			if (streamingBar.DateTimeOpen != chartBars.BarStaticLastNullUnsafe.DateTimeNextBarOpenUnconditional) {
 				if (streamingBar.DateTimeOpen == chartBars.BarStaticLastNullUnsafe.DateTimeOpen) {
 					string msg = "STREAMINGBAR_OVERWROTE_LASTBAR streamingBar.DateTimeOpen[" + streamingBar.DateTimeOpen
@@ -280,14 +295,14 @@ namespace Sq1.Core.Streaming {
 			}
 			chartBars.OverrideStreamingDOHLCVwith(streamingBar);
 			string msg1 = "StreamingOHLCV Overwritten: Bars.StreamingBar[" + chartBars.BarStreamingCloneReadonly + "] taken from streamingBar[" + streamingBar + "]";
-			Assembler.PopupException(msg1, null, false);
+			//Assembler.PopupException(msg1, null, false);
 		}
 		public virtual void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
 			// in Market-dependant StreamingProviders, put in the Quote-derived quote anything like QuikQuote.FortsDepositBuy ;
 		}
 
 		public override string ToString() {
-			return Name + "/[" + this.ConnectionState + "]: UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]";
+			return this.Name + "/[" + this.ConnectionState + "]: UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]";
 		}
 	}
 }

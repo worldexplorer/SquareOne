@@ -7,13 +7,16 @@ using Sq1.Core.Static;
 
 namespace Sq1.Core.Streaming {
 	public class DataDistributor {
-		private StreamingProvider StreamingProvider { get; set; }
+		StreamingProvider StreamingProvider { get; set; }
 		public Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>> DistributionChannels { get; protected set; }
-		private Object lockConsumersBySymbol = new Object();
+		object lockConsumersBySymbol;
 
-		public DataDistributor(StreamingProvider streamingProvider) {
-			this.StreamingProvider = streamingProvider;
+		public DataDistributor() {
 			DistributionChannels = new Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>();
+			lockConsumersBySymbol = new object();
+		}
+		public DataDistributor(StreamingProvider streamingProvider) : this() {
+			this.StreamingProvider = streamingProvider;
 		}
 
 		public void ConsumerQuoteRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {

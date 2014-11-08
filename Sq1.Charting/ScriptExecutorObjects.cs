@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 
-using Sq1.Charting.OnChart;
 using Sq1.Core;
-using Sq1.Core.Charting.OnChart;
+using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
+using Sq1.Core.Charting.OnChart;
+using Sq1.Charting.OnChart;
 
 namespace Sq1.Charting {
 	public class ScriptExecutorObjects {
@@ -24,6 +25,8 @@ namespace Sq1.Charting {
 
 		public Dictionary<string, OnChartLabel> OnChartLabelsById { get; private set; }
 		public Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
+
+		public Quote QuoteLast;
 
 		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
 		public bool IndicatorsAllHaveNoOwnValues { get {
