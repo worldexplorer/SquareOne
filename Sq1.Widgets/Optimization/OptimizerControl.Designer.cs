@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Sq1.Widgets.Optimization {
 	partial class OptimizerControl {
 		private System.ComponentModel.IContainer components = null;

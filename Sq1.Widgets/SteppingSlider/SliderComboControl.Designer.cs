@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Sq1.Widgets.SteppingSlider {
 	partial class SliderComboControl {
 		private System.ComponentModel.IContainer components = null;

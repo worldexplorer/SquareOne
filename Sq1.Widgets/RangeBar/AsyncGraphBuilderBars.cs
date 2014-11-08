@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Widgets.RangeBar {

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+
 using Sq1.Core.Serializers;
 
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotatePeriodic<T> : SerializerLogrotate<T> {
 		public string OfWhat { get { return typeof(T).Name; } }
 		
-		private System.Threading.Timer timer;
-		private int periodMillis;
+		Timer timer;
+		int periodMillis;
 
 		public SerializerLogrotatePeriodic(int periodMillis = 10 * 1000) : base() {
 			this.periodMillis = periodMillis;

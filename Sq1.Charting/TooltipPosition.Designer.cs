@@ -1,9 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Drawing;
 using System.Windows.Forms;
-
-using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Charting {
 	[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]

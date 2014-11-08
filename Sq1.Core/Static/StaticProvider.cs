@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
 
 using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
-using Sq1.Core.DataTypes;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Static {
 	public class StaticProvider {

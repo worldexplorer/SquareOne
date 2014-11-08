@@ -4,6 +4,7 @@ using System.Drawing;
 using System.CodeDom.Compiler;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+
 using DigitalRune.Windows.TextEditor;
 using DigitalRune.Windows.TextEditor.Completion;
 using DigitalRune.Windows.TextEditor.Document;

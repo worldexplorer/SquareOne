@@ -2,7 +2,6 @@ using System;
 
 using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
-using Sq1.Core.Repositories;
 
 namespace Sq1.Core.DataTypes {
 	//v1 public partial class Bars : BarsUnscaledSortedList {

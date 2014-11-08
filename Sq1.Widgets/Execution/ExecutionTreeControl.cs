@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
@@ -140,7 +139,7 @@ namespace Sq1.Widgets.Execution {
 			this.ordersShadowTree = ordersShadowTree;
 			//moved to PopulateDataSnapshotInitializeSplittersAfterDockContentIsDone() this.RebuildAllTreeFocusOnTopmost();
 
-			this.DataSnapshotSerializer = new Serializer<ExecutionTreeDataSnapshot>(Assembler.InstanceInitialized.StatusReporter);
+			this.DataSnapshotSerializer = new Serializer<ExecutionTreeDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 				"Sq1.Widgets.ExecutionTreeDataSnapshot.json", "Workspaces" ,
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName);

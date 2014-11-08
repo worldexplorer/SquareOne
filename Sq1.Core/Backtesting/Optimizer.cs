@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
-using System.Diagnostics;
 
 namespace Sq1.Core.Backtesting {
 	public class Optimizer {

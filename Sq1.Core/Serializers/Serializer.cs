@@ -1,19 +1,17 @@
 ﻿using System;
 using System.IO;
+
 using Newtonsoft.Json;
-using Sq1.Core.Support;
 
 namespace Sq1.Core.Serializers {
 	// http://stackoverflow.com/questions/1727346/what-is-the-use-of-default-keyword-in-c
 	public class Serializer<T> where T : new() {
 		public string OfWhat { get { return typeof(T).Name; } }
 		
-		private IStatusReporter StatusReporter;
 		public string RootPath { get; protected set; }
 		public string Subfolder { get; protected set; }
 		public string WorkspaceName { get; protected set; }
-		public string AbsPath {
-			get {
+		public string AbsPath { get {
 				//string ret = this.RootPath + this.Subfolder + this.WorkspaceName + Path.DirectorySeparatorChar;
 				string ret = this.RootPath;
 				if (String.IsNullOrEmpty(this.Subfolder) == false) {
@@ -24,20 +22,14 @@ namespace Sq1.Core.Serializers {
 				}
 				//if (ret.EndsWith(Path.DirectorySeparatorChar) == false) ret += Path.DirectorySeparatorChar;
 				return ret;
-			}
-		}
+			} }
 		public string FnameRelpath { get; protected set; }
-		public string JsonAbsFile {
-			get { return Path.Combine(this.AbsPath, FnameRelpath); }
-		}
-		
+		public string JsonAbsFile { get { return Path.Combine(this.AbsPath, FnameRelpath); } }
 		public T Entity { get; protected set; }
-		
 		public Action<T> ActionAfterDeserialized;
 
-		public Serializer(IStatusReporter statusReporter = null) {
+		public Serializer() {
 			this.Entity = new T();
-			this.StatusReporter = statusReporter;
 		}
 		public bool Initialize(string rootPath, string relFname,
 					string subfolder = "Workspaces", string workspaceName = "Default",
@@ -137,10 +129,7 @@ namespace Sq1.Core.Serializers {
 		}
 		public void ThrowOrPopup(string msg, Exception ex = null) {
 			ex = new Exception(msg, ex); 
-			if (this.StatusReporter == null) {
-				throw ex;
-			}
-			this.StatusReporter.PopupException(msg, ex);
+			Assembler.PopupException(msg, ex);
 		}
 	}
 }

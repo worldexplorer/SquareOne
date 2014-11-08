@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.4
+# SharpDevelop 5.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B53C4B1A-94D6-46E7-B39B-889D8FED923A}"
-	ProjectSection(SolutionItems) = postProject
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sq1.Core", "Sq1.Core\Sq1.Core.csproj", "{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}"
 EndProject
@@ -26,7 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvHelper35", "CsvHelper261
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectListView2010", "ObjectListView_280-src\ObjectListView2010.csproj", "{18FEDA0C-D147-4286-B39A-01204808106A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Net20", "Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj", "81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Newtonsoft.Json.Net20", "Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj", "{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -140,18 +138,18 @@ Global
 		{18FEDA0C-D147-4286-B39A-01204808106A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18FEDA0C-D147-4286-B39A-01204808106A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{18FEDA0C-D147-4286-B39A-01204808106A}.Release|x86.ActiveCfg = Release|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Debug|Any CPU.Build.0 = Debug|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Debug|x86.Build.0 = Debug|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Debug|x86.ActiveCfg = Debug|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Release|Any CPU.Build.0 = Release|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Release|Any CPU.ActiveCfg = Release|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Release|x86.Build.0 = Release|Any CPU
-		81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3.Release|x86.ActiveCfg = Release|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Debug|x86.Build.0 = Debug|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|x86.ActiveCfg = Release|Any CPU
+		{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

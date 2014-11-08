@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+
 using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;

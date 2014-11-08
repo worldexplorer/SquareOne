@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading;
+
 using Sq1.Core.Accounting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;

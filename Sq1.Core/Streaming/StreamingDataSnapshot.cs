@@ -159,7 +159,7 @@ namespace Sq1.Core.Streaming {
 			double price = 0;
 			oss = OrderSpreadSide.ERROR;
 
-			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositoryCustomSymbolInfo.FindSymbolInfo(symbol);
+			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfo(symbol);
 			MarketOrderAs spreadSide;
 			if (forceCrossMarket) {
 				spreadSide = MarketOrderAs.LimitCrossMarket;
@@ -230,7 +230,7 @@ namespace Sq1.Core.Streaming {
 			if (double.IsNaN(price)) {
 				Debugger.Break();
 			}
-			symbolInfo = Assembler.InstanceInitialized.RepositoryCustomSymbolInfo.FindSymbolInfoOrNew(symbol);
+			symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(symbol);
 			//v2
 			price = symbolInfo.AlignAlertToPriceLevelSimplified(price, direction, MarketLimitStop.Market);
 

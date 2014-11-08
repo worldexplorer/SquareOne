@@ -8,7 +8,6 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Strategies.Demo {
 	public class TwoMAsCompiled : Script {

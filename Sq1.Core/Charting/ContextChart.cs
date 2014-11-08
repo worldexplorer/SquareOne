@@ -1,7 +1,6 @@
 ﻿using System;
 
 using Sq1.Core.DataTypes;
-using Sq1.Core.Execution;
 using Newtonsoft.Json;
 
 namespace Sq1.Core.StrategyBase {

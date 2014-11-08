@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Sq1.Widgets.RangeBar {
 	public class RangeBarInteger : RangeBar<int> {
 		

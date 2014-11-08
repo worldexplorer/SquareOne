@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 
 namespace Sq1.Core.Execution {
 	public class PositionEventArgs : EventArgs {

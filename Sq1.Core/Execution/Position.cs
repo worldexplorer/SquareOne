@@ -1,8 +1,8 @@
 using System;
 using System.Text;
-using Newtonsoft.Json;
-using Sq1.Core.DataTypes;
 using System.Diagnostics;
+
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Execution {
 	public partial class Position {

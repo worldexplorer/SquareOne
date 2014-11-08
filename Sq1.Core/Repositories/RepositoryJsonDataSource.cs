@@ -1,33 +1,22 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
 
-using Sq1.Core.Accounting;
 using Sq1.Core.Broker;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Serializers;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Repositories {
-	// the hackiest implementation in the whole project :(
-	public class RepositoryJsonDataSource : RepositoryJsonsInFolder<DataSource> {
-		public RepositoryCustomMarketInfo MarketInfoRepository;
+	// the hackiest class in the whole solution :(
+	public partial class RepositoryJsonDataSource : RepositoryJsonsInFolder<DataSource> {
+		public RepositorySerializerMarketInfo MarketInfoRepository;
 		public OrderProcessor OrderProcessor;
-
-		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolAdded;
-		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolCanBeRemoved;
-		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolRemovedDone;
-		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolRenamed;
 
 		public RepositoryJsonDataSource() : base() {
 			base.CheckIfValidAndShouldBeAddedAfterDeserialized = this.dataSourceDeserializedInitializePriorToAdding;
 		}
 		
-		public void Initialize(string rootPath, string subfolder,
-				IStatusReporter statusReporter,
-				RepositoryCustomMarketInfo marketInfoRepository, OrderProcessor orderProcessor) {
+		public void Initialize(string rootPath, string subfolder, IStatusReporter statusReporter,
+				RepositorySerializerMarketInfo marketInfoRepository, OrderProcessor orderProcessor) {
 			base.Initialize(rootPath, subfolder, statusReporter, this.dataSourceDeserializedInitializePriorToAdding);
 			this.MarketInfoRepository = marketInfoRepository;
 			this.OrderProcessor = orderProcessor;
@@ -77,8 +66,7 @@ namespace Sq1.Core.Repositories {
 		public DataSourceSymbolEventArgs SymbolCanBeDeleted(DataSource dataSource, string symbolToDelete, object sender = null) {
 			if (sender == null) sender = this;
 			var args = new DataSourceSymbolEventArgs(dataSource, symbolToDelete);
-			if (this.OnSymbolCanBeRemoved == null) return args;
-			this.OnSymbolCanBeRemoved(sender, args);
+			this.RaiseOnSymbolCanBeDeleted(sender, args);
 			return args;
 		}
 		public void SymbolAdd(DataSource dataSource, string symbolToAdd, object sender = null) {
@@ -87,8 +75,7 @@ namespace Sq1.Core.Repositories {
 			try {
 				dataSource.SymbolAdd(symbolToAdd);
 				base.SerializeSingle(dataSource);
-				if (this.OnSymbolAdded == null) return;
-				this.OnSymbolAdded(sender, new DataSourceSymbolEventArgs(dataSource, symbolToAdd));
+				this.RaiseOnSymbolAdded(sender, dataSource, symbolToAdd);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}
@@ -100,8 +87,7 @@ namespace Sq1.Core.Repositories {
 				dataSource.SymbolRename(oldSymbolName, newSymbolName);
 				base.SerializeSingle(dataSource);
 				// invoking the callback for DataSourcesTreeControl to repaint successfully renamed symbol
-				if (this.OnSymbolRenamed == null) return;
-				this.OnSymbolRenamed(sender, new DataSourceSymbolRenamedEventArgs(dataSource, newSymbolName, oldSymbolName));
+				this.RaiseOnSymbolRenamed(sender, dataSource, newSymbolName, oldSymbolName);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}
@@ -124,10 +110,9 @@ namespace Sq1.Core.Repositories {
 			try {
 				base.SerializeSingle(dataSource);
 				if (args != null) {
-					if (this.OnSymbolRemovedDone == null) return;
 					// since you answered DataSourceEventArgs.DoNotDeleteThisDataSourceBecauseItsUsedElsewhere=false,
 					// you were aware that OnItemRemovedDone is invoked on a detached object
-					this.OnSymbolRemovedDone(sender, args);
+					this.RaiseOnSymbolRemovedDone(sender, args);
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
@@ -141,55 +126,6 @@ namespace Sq1.Core.Repositories {
 				ret = current;
 			}
 			return ret;
-		}
-		public List<Account> AccountsFromUnderlyingBrokerProviders { get {
-				List<Account> ret = new List<Account>();
-				foreach (DataSource ds in base.ItemsAsList) {
-					if (ds.BrokerProvider == null) continue;
-					if (ds.BrokerProvider.AccountAutoPropagate == null) continue;
-					if (ret.Contains(ds.BrokerProvider.AccountAutoPropagate)) continue;
-					ret.Add(ds.BrokerProvider.AccountAutoPropagate);
-				}
-				return ret;
-			} }
-		public string AccountsFromUnderlyingBrokerProvidersAsString { get {
-				string ret = "";
-				foreach (Account account in AccountsFromUnderlyingBrokerProviders) {
-					ret += "[" + account.ToString() + "] ";
-				}
-				ret.TrimEnd(' ');
-				return ret;
-			} }
-		public ToolStripMenuItem[] CtxAccountsAllCheckedFromUnderlyingBrokerProviders { get {
-				List<Account> accts = this.AccountsFromUnderlyingBrokerProviders;
-				var ret = new List<ToolStripMenuItem>();
-				foreach (Account acct in accts) {
-					ToolStripMenuItem mni = new ToolStripMenuItem();
-					mni.Checked = true;
-					mni.Name = "mniAccount_" + acct.AccountNumber;
-					mni.Text = acct.AccountNumber;
-					if (acct.BrokerProvider != null) {
-						mni.Image = acct.BrokerProvider.Icon;
-					}
-					//mni.Size = new System.Drawing.Size(236, 22);
-					//mni.Click += new System.EventHandler(this.btnEdit_Click);
-					ret.Add(mni);
-				}
-				return ret.ToArray();
-			} }
-		public List<string> AccountNumbersFromUnderlyingBrokerProviders { get {
-				List<string> ret = new List<string>();
-				foreach (Account account in AccountsFromUnderlyingBrokerProviders) {
-					if (ret.Contains(account.AccountNumber)) continue;
-					ret.Add(account.AccountNumber);
-				}
-				return ret;
-			} }
-		public Account FindAccount(string accountNumber) {
-			foreach (Account current in AccountsFromUnderlyingBrokerProviders) {
-				if (current.AccountNumber == accountNumber) return current;
-			}
-			return null;
 		}
 		public int UsedTimes(MarketInfo marketInfo) {
 			int ret = 0;

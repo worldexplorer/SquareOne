@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.DataFeed;
-using Sq1.Core.DataTypes;
-using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Support;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
-using Sq1.Widgets.LabeledTextBox;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui {
@@ -45,7 +40,7 @@ namespace Sq1.Gui {
 			InitializeComponent();
 			try {
 				Assembler.InstanceUninitialized.Initialize(this as IStatusReporter);
-				this.GuiDataSnapshotSerializer = new Serializer<GuiDataSnapshot>(this as IStatusReporter);
+				this.GuiDataSnapshotSerializer = new Serializer<GuiDataSnapshot>();
 	
 				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeContext(Assembler.InstanceInitialized);
 				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeProviders(

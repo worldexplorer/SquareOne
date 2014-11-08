@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -9,7 +8,6 @@ using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DoubleBuffered;
-using Sq1.Core.Indicators;
 
 namespace Sq1.Charting {
 	public partial class PanelBase :

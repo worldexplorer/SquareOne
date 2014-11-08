@@ -1,5 +1,7 @@
 ﻿using System;
+
 using Sq1.Charting.MultiSplit;
+
 namespace Sq1.Charting {
 	partial class ChartControl {
 		private System.ComponentModel.IContainer components = null;

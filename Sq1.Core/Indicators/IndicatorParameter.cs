@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+
 using Newtonsoft.Json;
-using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Indicators {
 	public class IndicatorParameter {

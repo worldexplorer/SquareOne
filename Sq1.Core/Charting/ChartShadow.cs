@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
-using System.Windows.Forms;
 
 using Sq1.Core.Charting;
 using Sq1.Core.Charting.OnChart;
-using Sq1.Core.DataTypes;
 using Sq1.Core.DoubleBuffered;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;

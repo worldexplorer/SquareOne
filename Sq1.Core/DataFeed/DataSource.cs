@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -38,24 +37,24 @@ namespace Sq1.Core.DataFeed {
 				MarketName = value.Name;
 			} }
 		[JsonProperty]	public string StaticProviderName { get {
-							if (StaticProvider == null) return "STATIC_PROVIDER_NOT_INITIALIZED";
-							//return staticProvider.GetType().Name;
-							return StaticProvider.Name;
-						} }
+				if (StaticProvider == null) return "STATIC_PROVIDER_NOT_INITIALIZED";
+				//return staticProvider.GetType().Name;
+				return StaticProvider.Name;
+			} }
 		[JsonProperty]	public string StreamingProviderName { get {
-							if (StreamingProvider == null) return "STREAMING_PROVIDER_NOT_INITIALIZED";
-							//return staticProvider.GetType().Name;
-							return StreamingProvider.Name;
-						} }
+				if (StreamingProvider == null) return "STREAMING_PROVIDER_NOT_INITIALIZED";
+				//return staticProvider.GetType().Name;
+				return StreamingProvider.Name;
+			} }
 		[JsonProperty]	public string BrokerProviderName { get {
-							if (BrokerProvider == null) return "BROKER_PROVIDER_NOT_INITIALIZED";
-							//return staticProvider.GetType().Name;
-							return BrokerProvider.Name;
-						} }
+				if (BrokerProvider == null) return "BROKER_PROVIDER_NOT_INITIALIZED";
+				//return staticProvider.GetType().Name;
+				return BrokerProvider.Name;
+			} }
 		[JsonIgnore]	public bool IsIntraday { get { return ScaleInterval.IsIntraday; } }
 		[JsonIgnore]	public RepositoryBarsSameScaleInterval BarsRepository { get; protected set; }
 		//public BarsFolder BarsFolderPerst { get; protected set; }
-					 public string DataSourceAbspath { get; protected set; }
+		[JsonProperty]	public string DataSourceAbspath { get; protected set; }
 		[JsonIgnore]	public string DataSourcesAbspath;
 
 		// used only by JsonDeserialize()
@@ -75,7 +74,7 @@ namespace Sq1.Core.DataFeed {
 			}
 			this.ScaleInterval = scaleInterval; 
 			if (marketInfo == null) {
-				marketInfo = Assembler.InstanceInitialized.MarketInfoRepository.FindMarketInfoOrNew("MOCK"); 
+				marketInfo = Assembler.InstanceInitialized.RepositoryMarketInfo.FindMarketInfoOrNew("MOCK"); 
 			}
 			this.MarketInfo = marketInfo; 
 		}
@@ -235,7 +234,7 @@ namespace Sq1.Core.DataFeed {
 			Bars ret = this.RequestDataFromRepository(symbolRq);
 			ret.DataSource = this;
 			ret.MarketInfo = this.MarketInfo;
-			ret.SymbolInfo = Assembler.InstanceInitialized.RepositoryCustomSymbolInfo.FindSymbolInfoOrNew(ret.Symbol);
+			ret.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(ret.Symbol);
 			if (ret.Count == 0) return ret;
 			if (scaleIntervalRq == ret.ScaleInterval) return ret;
 			

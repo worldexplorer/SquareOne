@@ -1,5 +1,4 @@
 ﻿using System;
-using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Core.Charting {
 	public interface HostPanelForIndicator {

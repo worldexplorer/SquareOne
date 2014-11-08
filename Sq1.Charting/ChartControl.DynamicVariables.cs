@@ -2,9 +2,6 @@
 using System.Diagnostics;
 using System.Drawing;
 
-using Sq1.Core;
-using Sq1.Core.DataTypes;
-
 namespace Sq1.Charting {
 	public partial class ChartControl  {
 		// cache them all until base.Width/Height changes so they won't be calculated again with the same result for each bar

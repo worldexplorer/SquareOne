@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-using Sq1.Core;
 using Sq1.Core.DoubleBuffered;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;

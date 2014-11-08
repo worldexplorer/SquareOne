@@ -1,32 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
 using Sq1.Core.Broker;
 using Sq1.Core.Charting;
-using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Repositories;
 using Sq1.Core.Serializers;
-using Sq1.Core.Static;
-using Sq1.Core.StrategyBase;
-using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 
 namespace Sq1.Core {
 	public class Assembler {
-		public RepositoryJsonDataSource RepositoryJsonDataSource;
-		public RepositoryCustomSymbolInfo RepositoryCustomSymbolInfo;
-		public RepositoryCustomMarketInfo MarketInfoRepository;
-		public RepositoryDllJsonStrategy RepositoryDllJsonStrategy;
-
-		public RepositoryDllStaticProvider RepositoryDllStaticProvider;
-		public RepositoryDllStreamingProvider RepositoryDllStreamingProvider;
-		public RepositoryDllBrokerProvider RepositoryDllBrokerProvider;
-		public RepositoryDllReporters RepositoryDllReporters;
+		public RepositoryJsonDataSource			RepositoryJsonDataSource;
+		public RepositorySerializerSymbolInfo	RepositorySymbolInfo;
+		public RepositorySerializerMarketInfo	RepositoryMarketInfo;
+		public RepositoryDllStaticProvider		RepositoryDllStaticProvider;
+		public RepositoryDllStreamingProvider	RepositoryDllStreamingProvider;
+		public RepositoryDllBrokerProvider		RepositoryDllBrokerProvider;
+		public RepositoryDllReporters			RepositoryDllReporters;
+		public RepositoryDllJsonStrategy		RepositoryDllJsonStrategy;
 
 		public RepositoryFoldersNoJson WorkspacesRepository;
 		
@@ -99,8 +93,8 @@ namespace Sq1.Core {
 //			Assembler.instance = this;
 //		}
 		public Assembler() {
-			this.RepositoryCustomSymbolInfo = new RepositoryCustomSymbolInfo();
-			this.MarketInfoRepository = new RepositoryCustomMarketInfo();
+			this.RepositorySymbolInfo = new RepositorySerializerSymbolInfo();
+			this.RepositoryMarketInfo = new RepositorySerializerMarketInfo();
 			this.RepositoryJsonDataSource = new RepositoryJsonDataSource();
 			this.RepositoryDllJsonStrategy = new RepositoryDllJsonStrategy();
 
@@ -134,11 +128,11 @@ namespace Sq1.Core {
 			}
 			this.StatusReporter = mainForm;
 			
-			bool createdNewFile = this.RepositoryCustomSymbolInfo.Initialize(this.AppDataPath, "SymbolInfo.json", "", null);
-			List<SymbolInfo> symbolInfosNotUsed = this.RepositoryCustomSymbolInfo.Deserialize();
+			bool createdNewFile = this.RepositorySymbolInfo.Initialize(this.AppDataPath, "SymbolInfo.json", "", null);
+			List<SymbolInfo> symbolInfosNotUsed = this.RepositorySymbolInfo.Deserialize();
 			
-			createdNewFile = this.MarketInfoRepository.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
-			this.MarketInfoRepository.Deserialize();
+			createdNewFile = this.RepositoryMarketInfo.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
+			this.RepositoryMarketInfo.Deserialize();
 			
 			this.RepositoryDllJsonStrategy.Initialize(this.AppDataPath, this.AppStartupPath);
 
@@ -156,7 +150,7 @@ namespace Sq1.Core {
 			//v1 this.RepositoryJsonDataSource.DataSourcesDeserialize(this.MarketInfoRepository, this.OrderProcessor, this.StatusReporter);
 			
 			this.RepositoryJsonDataSource.Initialize(this.AppDataPath, "DataSources",
-				this.StatusReporter, this.MarketInfoRepository, this.OrderProcessor);
+				this.StatusReporter, this.RepositoryMarketInfo, this.OrderProcessor);
 			this.RepositoryJsonDataSource.DeserializeJsonsInFolder();
 
 			createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);

@@ -62,8 +62,8 @@ namespace Sq1.Core.Repositories {
 				return ret;
 			} }
 
-		public ScriptRepository ScriptRepositoryFoundInFolderDataStrategies;
-		public ScriptRepository ScriptRepositoryFoundInFolderAppStartup;
+		public RepositoryDllScript ScriptRepositoryFoundInFolderDataStrategies;
+		public RepositoryDllScript ScriptRepositoryFoundInFolderAppStartup;
 		private string AppStartupPath;
 
 		public RepositoryDllJsonStrategy() {
@@ -71,8 +71,8 @@ namespace Sq1.Core.Repositories {
 			this.PathMask = "*.dll";
 			this.StrategiesInFolders = new Dictionary<string, List<Strategy>>();
 			this.ScriptsInDlls = new Dictionary<string, List<Script>>();
-			this.ScriptRepositoryFoundInFolderDataStrategies = new ScriptRepository();
-			this.ScriptRepositoryFoundInFolderAppStartup = new ScriptRepository();
+			this.ScriptRepositoryFoundInFolderDataStrategies = new RepositoryDllScript();
+			this.ScriptRepositoryFoundInFolderAppStartup = new RepositoryDllScript();
 		}
 		public void RootPathCheckThrow(string rootPath) {
 			if (string.IsNullOrEmpty(rootPath)) {
@@ -148,7 +148,7 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		protected Dictionary<Assembly, List<Script>> StrategiesScanDllsInitDeserialized(string dataOrStartupPath) {
-			ScriptRepository repo = new ScriptRepository();
+			RepositoryDllScript repo = new RepositoryDllScript();
 			repo.InitializeAndScan(dataOrStartupPath);
 			Dictionary<Assembly, List<Script>> ret = repo.CloneableInstancesByAssemblies;
 			foreach (Assembly assembly in ret.Keys) {

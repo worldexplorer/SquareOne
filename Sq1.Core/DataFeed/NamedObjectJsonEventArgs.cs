@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sq1.Core.DataFeed {
 	public class NamedObjectJsonEventArgs<T> : EventArgs {

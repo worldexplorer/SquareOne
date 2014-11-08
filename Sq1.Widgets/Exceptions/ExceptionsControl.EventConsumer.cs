@@ -1,8 +1,8 @@
 using System;
 using System.Windows.Forms;
+
 using Sq1.Core;
 using Sq1.Widgets.LabeledTextBox;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {

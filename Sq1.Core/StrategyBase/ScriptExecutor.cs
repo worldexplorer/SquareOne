@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Reflection;
 using System.Diagnostics;		//StackFrame
 
 using Sq1.Core;
@@ -14,7 +12,6 @@ using Sq1.Core.Backtesting;
 using Sq1.Core.Broker;
 using Sq1.Core.Charting;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Support;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {

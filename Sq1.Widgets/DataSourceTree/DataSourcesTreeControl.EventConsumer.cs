@@ -5,9 +5,9 @@ using System.Diagnostics;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Widgets.LabeledTextBox;
-using Sq1.Core;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl {

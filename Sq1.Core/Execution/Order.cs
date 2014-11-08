@@ -5,7 +5,6 @@ using System.Threading;
 using System.Windows.Forms;
 
 using Newtonsoft.Json;
-using Sq1.Core.Accounting;
 
 namespace Sq1.Core.Execution {
 	public class Order {
