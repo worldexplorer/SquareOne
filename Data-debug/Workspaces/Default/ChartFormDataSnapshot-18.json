@@ -44,7 +44,7 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 382
+        "Distance": 243
       }
     },
     "ChartColorBackground": "White",
