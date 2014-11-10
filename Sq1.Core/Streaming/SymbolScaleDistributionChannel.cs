@@ -38,12 +38,12 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 
-			Quote quoteSernoEnrichedWithUnboundStreamingBar = StreamingBarFactoryUnattached.
+			Quote quoteSernoEnrichedWithUnboundStreamingBar = this.StreamingBarFactoryUnattached.
 				EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar(quote2bClonedForEachConsumer);
 			if (quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == 0) {
 				if (StreamingBarFactoryUnattached.LastBarFormedUnattached != null
 						//&& double.IsNaN(StreamingBarFactoryUnattached.LastBarFormedUnattached.Close) == true
-						&& StreamingBarFactoryUnattached.LastBarFormedUnattached.DateTimeOpen != DateTime.MinValue
+						&& this.StreamingBarFactoryUnattached.LastBarFormedUnattached.DateTimeOpen != DateTime.MinValue
 					) {
 					lock (lockConsumersBar) {
 						//try {
@@ -56,7 +56,7 @@ namespace Sq1.Core.Streaming {
 				} else {
 					string msg = "I won't push LastStaticBar(DateTime.MinValue, NaN*5) on first quote2bClonedForEachConsumer[" + quote2bClonedForEachConsumer + "]"
 						+ " because it has initialized LastStaticBar=StreamingBar.Clone()"
-						+ " for " + StreamingBarFactoryUnattached;
+						+ " for " + this.StreamingBarFactoryUnattached;
 					//Assembler.PopupException(msg);
 				}
 			}
@@ -66,7 +66,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		void bindNewStreamingBarAppendPokeConsumersStaticFormed() {
-			Bar barStreamingUnattached = StreamingBarFactoryUnattached.StreamingBarUnattached.Clone();
+			Bar barStreamingUnattached = this.StreamingBarFactoryUnattached.StreamingBarUnattached.Clone();
 			if (consumersBar.Count == 0) {
 				Assembler.PopupException("NO_BARS_CONSUMERS to push lastBarFormed[" + barStreamingUnattached.ToString() + "] SymbolScaleInterval["
 					+ SymbolScaleInterval + "]; returning");
@@ -87,7 +87,8 @@ namespace Sq1.Core.Streaming {
 						continue;
 					}
 					try {
-						consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStreamingUnattached);
+						Bar lastBarFormedUnattached = this.StreamingBarFactoryUnattached.LastBarFormedUnattached.Clone();
+						consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(lastBarFormedUnattached);
 					} catch (Exception e) {
 						string msg = "STREAMING_SOLIDIFIER_FAILED_TO_CONSUME_STATIC_JUST_FORMED";
 						Assembler.PopupException(msg + msig, e);

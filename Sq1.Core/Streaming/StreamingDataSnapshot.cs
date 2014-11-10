@@ -49,6 +49,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		protected void LastQuoteUpdate(Quote quote) {
+			string msig = " StreamingDataSnapshot.LastQuoteUpdate(" + quote.ToString() + ")";
 			Quote last = this.LastQuotesReceived[quote.Symbol];
 			if (last == null) {
 				this.LastQuotesReceived[quote.Symbol] = quote;
@@ -56,12 +57,12 @@ namespace Sq1.Core.Streaming {
 			}
 			if (last == quote) {
 				string msg = "How come you update twice to the same quote?";
-				Debugger.Break();
+				Assembler.PopupException(msg + msig, null);
 				return;
 			}
 			if (last.Absno >= quote.Absno) {
-				string msg = "DONT_FEED_ME_WITH_OLD_QUOTES";
-				Debugger.Break();
+				string msg = "DONT_FEED_ME_WITH_OLD_QUOTES (????QuoteQuik #-1/0 AUTOGEN)";
+				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
 			this.LastQuotesReceived[quote.Symbol] = quote;
@@ -131,6 +132,7 @@ namespace Sq1.Core.Streaming {
 
 		public virtual double GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(string symbol, Direction direction
 				, out OrderSpreadSide oss, bool forceCrossMarket) {
+			string msig = " GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(" + symbol + ", " + direction + ")";
 			double priceLastQuote = this.LastQuoteGetPriceForMarketOrder(symbol);
 			if (priceLastQuote == 0) {
 				string msg = "QuickCheck ZERO priceLastQuote=" + priceLastQuote + " for Symbol=[" + symbol + "]"
@@ -239,7 +241,7 @@ namespace Sq1.Core.Streaming {
 			double price1 = symbolInfo.AlignOrderToPriceLevel(price, direction, MarketLimitStop.Market);
 			if (price1 != price) {
 				string msg3 = "FIX_DEFINITELY_DIFFERENT_POSTPONE_TILL_ORDER_EXECUTOR_BACK_FOR_QUIK_BROKER";
-				Debugger.Break();
+				Assembler.PopupException(msg3 + msig, null);
 			}
 			#endif
 			
