@@ -126,13 +126,15 @@ namespace Sq1.Core.DataTypes {
 					base.BarAppend(barAdding);
 				} catch (Exception e) {
 					string msg = "BARS_UNSCALED_IS_NOT_SATISFIED Bars.BarAppendBind[" + barAdding + "] to " + this;
-					throw (new Exception(msg, e));
+					Assembler.PopupException(msg, e);
+					return;
 				}
 				try {
 					barAdding.SetParentForBackwardUpdate(this, base.Count - 1);
 				} catch (Exception e) {
 					string msg = "BACKWARD_UPDATE_FAILED adding bar[" + barAdding + "] to " + this;
-					throw (new Exception(msg, e));
+					Assembler.PopupException(msg, e);
+					return;
 				}
 			}
 		}

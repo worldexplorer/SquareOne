@@ -1,11 +1,10 @@
 using System;
-//using log4net;
+
 using Sq1.Core.DataTypes;
 using System.Diagnostics;
 
 namespace Sq1.Core.Streaming {
 	public class StreamingBarFactoryUnattached {
-		//private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		public string Symbol { get; private set; }
 		public BarScaleInterval ScaleInterval { get; set; }
 		public int IntraBarSerno { get; private set; }
@@ -98,7 +97,7 @@ namespace Sq1.Core.Streaming {
 			string msg = "";
 			if (StreamingBarInsteadOfEmpty.DateTimeOpen <= this.StreamingBarUnattached.DateTimeOpen) {
 				msg += "StreamingBarInsteadOfEmpty.DateTimeOpen[" + StreamingBarInsteadOfEmpty.DateTimeOpen
-					+ "] <= CurrentStreamingBar.Open[" + StreamingBarUnattached.Open + "]";
+					+ "] <= CurrentStreamingBar.Open[" + this.StreamingBarUnattached.Open + "]";
 				//log.Warn(msg + " // " + this);
 				return;
 			}
@@ -117,7 +116,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		public override string ToString() {
-			return Symbol + "_" + ScaleInterval + ":StreamingBar[" + StreamingBarUnattached + "]";
+			return this.Symbol + "_" + this.ScaleInterval.ToString() + ":StreamingBar[" + this.StreamingBarUnattached.ToString() + "]";
 		}
 	}
 }
