@@ -199,10 +199,7 @@ namespace Sq1.Core.Streaming {
 				this.UpdateConnectionStatus(503, mainFormStatus);
 
 				string msg = "HACK!!! FILLING_LAST_BIDASK_FOR_DUPE_QUOTE_IS_UNJUSTIFIED: PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES Backtester.generateQuotesForBarAndPokeStreaming()";
-				#if DEBUG	// TEST_EMBEDDED
-				//Debugger.Break();
-				#endif
-				Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg, null, true);
 				this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
 				this.StreamingDataSnapshot.UpdateLastBidAskSnapFromQuote(quote);
 
@@ -212,15 +209,12 @@ namespace Sq1.Core.Streaming {
 			Quote lastQuote = this.StreamingDataSnapshot.LastQuoteGetForSymbol(quote.Symbol);
 			if (lastQuote == null) {
 				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR symbol[" + quote.Symbol + "] NOTHING_TO_ADJUST_OR_TEST";
-				//Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, true);
 				//throw new Exception(msg);
 			} else {
 				if (quote.Absno != lastQuote.Absno + 1) {
 					string msg = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.Absno + "] != lastQuote.Absno[" + lastQuote.Absno + "] + 1";
-					#if DEBUG
-					//Debugger.Break();	// TEST_EMBEDDED
-					#endif
-					//Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, true);
 				}
 				quote.Absno = lastQuote.Absno + 1;
 
@@ -234,7 +228,6 @@ namespace Sq1.Core.Streaming {
 						+ " upcoming quote.LocalTimeCreatedMillis[" + quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff")
 						+ "] <= lastQuoteReceived.Symbol." + quote.Symbol + "["
 						+ lastQuote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]: DDE lagged somewhere?...";
-					Debugger.Break();
 					Assembler.PopupException(msg);
 				}
 			}
