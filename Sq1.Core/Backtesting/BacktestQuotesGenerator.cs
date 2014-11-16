@@ -113,7 +113,7 @@ namespace Sq1.Core.Backtesting {
 					continue;
 				}
 
-				closestOnOurWay.IntraBarSerno += ret.Count;
+				closestOnOurWay.IntraBarSerno += ret.Count;		// first quote has IntraBarSerno=-1?
 				closestOnOurWay.Absno = ++this.QuoteAbsno;		//DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
 
 				this.backtester.BacktestDataSource.BacktestStreamingProvider.PushQuoteReceived(closestOnOurWay);
