@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Text;
 
 namespace Sq1.Core.DataTypes {
 	public class Quote {
@@ -45,18 +46,20 @@ namespace Sq1.Core.DataTypes {
 
 		public static int IntraBarSernoShiftForGeneratedTowardsPendingFill = 100000;
 
-		public Quote(DateTime localTimeEqualsToServerTimeForGenerated) {
-			++AbsnoStaticCounter;
+		protected Quote() {	// make it proteted and use it when you'll need to super-modify a quote in StreamingProvider-derived 
+			Absno = ++AbsnoStaticCounter;
 			ServerTime = DateTime.MinValue;
-			// PROFILER_SAID_DATETIME.NOW_IS_SLOW__I_DONT_NEED_IT_FOR_BACKTEST_ANYWAY
-			LocalTimeCreatedMillis = (localTimeEqualsToServerTimeForGenerated != DateTime.MinValue)
-				? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
 			IntraBarSerno = -1;
 			Bid = double.NaN;
 			Ask = double.NaN;
 			Size = -1;
 			ItriggeredFillAtBidOrAsk = BidOrAsk.UNKNOWN;
 			LastDealBidOrAsk = BidOrAsk.UNKNOWN;
+		}
+		public Quote(DateTime localTimeEqualsToServerTimeForGenerated) : this() {
+			// PROFILER_SAID_DATETIME.NOW_IS_SLOW__I_DONT_NEED_IT_FOR_BACKTEST_ANYWAY
+			LocalTimeCreatedMillis = (localTimeEqualsToServerTimeForGenerated != DateTime.MinValue)
+				? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
 		}
 		// TODO: don't be lazy and move to StreamingProvider.QuoteAbsnoForSymbol<string Symbol, int Absno> and init it on Backtester.RunSimulation
 		//public void AbsnoReset() { Quote.AbsnoStaticCounter = 0; }
@@ -87,22 +90,71 @@ namespace Sq1.Core.DataTypes {
 		//	identicalButFresh.ParentStreamingBar = this.ParentStreamingBar;
 		//	return identicalButFresh;
 		//}
+//		public override string ToString() {
+//			string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol;
+//			//ret += " bid{" + Math.Round(this.Bid, 3) + "-" + Math.Round(this.Ask, 3) + "}ask"
+//			//ret += " size{" + this.Size + "@" + Math.Round(this.PriceLastDeal, 3) + "}lastDeal";
+//			ret += " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "@" + this.LastDealPrice + "}lastDeal";
+//			if (ServerTime != null) ret += " SERVER[" + ServerTime.ToString("HH:mm:ss.fff") + "]";
+//			ret += "[" + LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]LOCAL";
+//			if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;
+//			ret += " STR:" + this.ParentBarIdent;
+//			return ret;
+//		}
 		public override string ToString() {
-			string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol;
-			//ret += " bid{" + Math.Round(this.Bid, 3) + "-" + Math.Round(this.Ask, 3) + "}ask"
-			//ret += " size{" + this.Size + "@" + Math.Round(this.PriceLastDeal, 3) + "}lastDeal";
-			ret += " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "@" + this.LastDealPrice + "}lastDeal";
-			if (ServerTime != null) ret += " SERVER[" + ServerTime.ToString("HH:mm:ss.fff") + "]";
-			ret += "[" + LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]LOCAL";
-			if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;
-			ret += " STR:" + this.ParentBarIdent;
-			return ret;
+			StringBuilder sb = new StringBuilder();
+			sb.Append("#");
+			sb.Append(this.IntraBarSerno);
+			sb.Append("/");
+			sb.Append(this.Absno);
+			sb.Append(" ");
+			sb.Append(this.Symbol);
+			sb.Append(" bid{");
+			sb.Append(this.Bid);
+			sb.Append("-");
+			sb.Append(this.Ask);
+			sb.Append("}ask size{");
+			sb.Append(this.Size);
+			sb.Append("@");
+			sb.Append(this.LastDealPrice);
+			sb.Append("}lastDeal");
+			if (ServerTime != null) {
+				sb.Append(" SERVER[");
+				sb.Append(ServerTime.ToString("HH:mm:ss.fff"));
+				sb.Append("]");
+			}
+			sb.Append("[");
+			sb.Append(LocalTimeCreatedMillis.ToString("HH:mm:ss.fff"));
+			sb.Append("]LOCAL ");
+			if (string.IsNullOrEmpty(this.Source) == false) sb.Append(this.Source);
+			sb.Append("STR:");
+			sb.Append(this.ParentBarIdent);
+			return sb.ToString();
 		}
+//		public string ToStringShort() {
+//			string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol
+//				+ " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "}"
+//				+ ": " + this.ParentBarIdent;
+//			return ret;
+//		}
 		public string ToStringShort() {
-			string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol
-				+ " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "}"
-				+ ": " + this.ParentBarIdent;
-			return ret;
+			StringBuilder sb = new StringBuilder();
+			sb.Append("#");
+			sb.Append(this.IntraBarSerno);
+			sb.Append("/");
+			sb.Append(this.Absno);
+			sb.Append(" ");
+			sb.Append(this.Symbol);
+			sb.Append(" bid{");
+			sb.Append(this.Bid);
+			sb.Append("-");
+			sb.Append(this.Ask);
+			sb.Append("}ask size{");
+			sb.Append(this.Size);
+			sb.Append("}");
+			sb.Append(": ");
+			sb.Append(this.ParentBarIdent);
+			return sb.ToString();
 		}
 		public bool SameBidAsk(Quote other) {
 			return (this.Bid == other.Bid && this.Ask == other.Ask);

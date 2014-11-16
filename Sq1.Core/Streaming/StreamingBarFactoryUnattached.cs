@@ -55,7 +55,7 @@ namespace Sq1.Core.Streaming {
 						string msg = "GENERATED_QUOTES_ARENT_SUPPOSED_TO_GO_TO_NEXT_BAR";
 						Debugger.Break();
 					}
-					quoteClone.IntraBarSerno = this.IntraBarSerno;
+					// moved down as final result of "Enriching" quoteClone.IntraBarSerno = this.IntraBarSerno;
 				}
 				if (this.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
 					string msg = "BAR_FACTORY_INTRABAR_SERNO_NEVER_GOES_TO_SYNTHETIC_ZONE";
@@ -81,6 +81,13 @@ namespace Sq1.Core.Streaming {
 				//Assembler.PopupException(msg);
 			} else {
 				quoteClone.SetParentBar(this.StreamingBarUnattached);
+			}
+			
+			if (quoteClone.IntraBarSerno == -1) {
+				quoteClone.IntraBarSerno  = this.IntraBarSerno;
+			} else {
+				string msg = "ARE_YOU_SURE_ITS_REASONABLE_TO_SET_quoteClone.IntraBarSerno_OUTSIDE_StreamingBarFactory?..";
+				Debugger.Break();
 			}
 			return quoteClone;
 		}

@@ -93,12 +93,14 @@ namespace Sq1.Gui.Forms {
 				base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestampsOnStreamingButtonBeforeExecution(quote); });
 				return;
 			}
-			StringBuilder sb = new StringBuilder(
-				"StreamingOn #" + quote.IntraBarSerno.ToString("000") + " "
-				+ quote.ServerTime.ToString("HH:mm:ss.fff"));
+			StringBuilder sb = new StringBuilder("StreamingOn #");
+			sb.Append(quote.IntraBarSerno.ToString("000"));
+			sb.Append(" ");
+			sb.Append(quote.ServerTime.ToString("HH:mm:ss.fff"));
 			bool quoteTimesDifferMoreThanOneMicroSecond = quote.ServerTime.ToString("HH:mm:ss.f") != quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.f");
 			if (quoteTimesDifferMoreThanOneMicroSecond) {
-				sb.Append(" :: " + quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff"));
+				sb.Append(" :: ");
+				sb.Append(quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff"));
 			}
 			if (quote.HasParentBar) {
 				TimeSpan timeLeft = (quote.ParentStreamingBar.DateTimeNextBarOpenUnconditional > quote.ServerTime)
@@ -107,7 +109,8 @@ namespace Sq1.Gui.Forms {
 				string format = ":ss";
 				if (timeLeft.Minutes > 0) format = "mm:ss";
 				if (timeLeft.Hours > 0) format = "HH:mm:ss";
-				sb.Append(" " + new DateTime(timeLeft.Ticks).ToString(format));
+				sb.Append(" ");
+				sb.Append(new DateTime(timeLeft.Ticks).ToString(format));
 			}
 			this.btnStreaming.Text = sb.ToString();
 		}
