@@ -22,8 +22,8 @@
 		private System.Windows.Forms.Label lblDataSourceName;
 		private System.Windows.Forms.Label lblStreaming;
 		private System.Windows.Forms.Label lblExecution;
-		private System.Windows.Forms.Panel pnlStreaming;
-		private System.Windows.Forms.Panel pnlExecution;
+		private System.Windows.Forms.Panel pnlStreamingEditor;
+		private System.Windows.Forms.Panel pnlBrokerEditor;
 		private System.Windows.Forms.SplitContainer splitContainer3;
 		private System.Windows.Forms.SplitContainer splitContainer2;
 		private Sq1.Widgets.DataSourceEditor.MarketInfoEditor marketInfoEditor;
@@ -60,13 +60,13 @@
 			this.lvStreamingProviders = new System.Windows.Forms.ListView();
 			this.imglStreamingProviders = new System.Windows.Forms.ImageList(this.components);
 			this.grpStreaming = new System.Windows.Forms.GroupBox();
-			this.pnlStreaming = new System.Windows.Forms.Panel();
+			this.pnlStreamingEditor = new System.Windows.Forms.Panel();
 			this.splitContainer5 = new System.Windows.Forms.SplitContainer();
 			this.lblExecution = new System.Windows.Forms.Label();
 			this.lvBrokerProviders = new System.Windows.Forms.ListView();
 			this.imglBrokerProviders = new System.Windows.Forms.ImageList(this.components);
 			this.grpExecution = new System.Windows.Forms.GroupBox();
-			this.pnlExecution = new System.Windows.Forms.Panel();
+			this.pnlBrokerEditor = new System.Windows.Forms.Panel();
 			this.marketInfoEditor = new Sq1.Widgets.DataSourceEditor.MarketInfoEditor();
 			this.imglStaticProviders = new System.Windows.Forms.ImageList(this.components);
 			this.lvStaticProviders = new System.Windows.Forms.ListView();
@@ -151,6 +151,7 @@
 			this.btnPrevious.TabIndex = 2;
 			this.btnPrevious.Text = "<< Previous";
 			this.btnPrevious.UseVisualStyleBackColor = true;
+			this.btnPrevious.Visible = false;
 			this.btnPrevious.Click += new System.EventHandler(this.btnPrevious_Click);
 			// 
 			// btnNext
@@ -163,6 +164,7 @@
 			this.btnNext.TabIndex = 1;
 			this.btnNext.Text = "Next >>";
 			this.btnNext.UseVisualStyleBackColor = true;
+			this.btnNext.Visible = false;
 			this.btnNext.Click += new System.EventHandler(this.btnNext_Click);
 			// 
 			// btnSave
@@ -260,8 +262,8 @@
 			// lvStreamingProviders
 			// 
 			this.lvStreamingProviders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.lvStreamingProviders.HideSelection = false;
 			this.lvStreamingProviders.Location = new System.Drawing.Point(5, 17);
 			this.lvStreamingProviders.MultiSelect = false;
@@ -282,9 +284,9 @@
 			// grpStreaming
 			// 
 			this.grpStreaming.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
-			this.grpStreaming.Controls.Add(this.pnlStreaming);
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.grpStreaming.Controls.Add(this.pnlStreamingEditor);
 			this.grpStreaming.Location = new System.Drawing.Point(5, 3);
 			this.grpStreaming.Name = "grpStreaming";
 			this.grpStreaming.Size = new System.Drawing.Size(237, 106);
@@ -292,15 +294,15 @@
 			this.grpStreaming.TabStop = false;
 			this.grpStreaming.Text = "Streaming Settings";
 			// 
-			// pnlStreaming
+			// pnlStreamingEditor
 			// 
-			this.pnlStreaming.AutoScroll = true;
-			this.pnlStreaming.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.pnlStreaming.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pnlStreaming.Location = new System.Drawing.Point(3, 16);
-			this.pnlStreaming.Name = "pnlStreaming";
-			this.pnlStreaming.Size = new System.Drawing.Size(231, 87);
-			this.pnlStreaming.TabIndex = 7;
+			this.pnlStreamingEditor.AutoScroll = true;
+			this.pnlStreamingEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.pnlStreamingEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pnlStreamingEditor.Location = new System.Drawing.Point(3, 16);
+			this.pnlStreamingEditor.Name = "pnlStreamingEditor";
+			this.pnlStreamingEditor.Size = new System.Drawing.Size(231, 87);
+			this.pnlStreamingEditor.TabIndex = 7;
 			// 
 			// splitContainer5
 			// 
@@ -336,8 +338,8 @@
 			// lvBrokerProviders
 			// 
 			this.lvBrokerProviders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.lvBrokerProviders.HideSelection = false;
 			this.lvBrokerProviders.Location = new System.Drawing.Point(3, 19);
 			this.lvBrokerProviders.MultiSelect = false;
@@ -358,9 +360,9 @@
 			// grpExecution
 			// 
 			this.grpExecution.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
-			this.grpExecution.Controls.Add(this.pnlExecution);
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.grpExecution.Controls.Add(this.pnlBrokerEditor);
 			this.grpExecution.Location = new System.Drawing.Point(3, 3);
 			this.grpExecution.Name = "grpExecution";
 			this.grpExecution.Size = new System.Drawing.Size(255, 106);
@@ -368,16 +370,16 @@
 			this.grpExecution.TabStop = false;
 			this.grpExecution.Text = "Broker Settings";
 			// 
-			// pnlExecution
+			// pnlBrokerEditor
 			// 
-			this.pnlExecution.AutoScroll = true;
-			this.pnlExecution.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.pnlExecution.BackColor = System.Drawing.SystemColors.Control;
-			this.pnlExecution.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.pnlExecution.Location = new System.Drawing.Point(3, 16);
-			this.pnlExecution.Name = "pnlExecution";
-			this.pnlExecution.Size = new System.Drawing.Size(249, 87);
-			this.pnlExecution.TabIndex = 9;
+			this.pnlBrokerEditor.AutoScroll = true;
+			this.pnlBrokerEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.pnlBrokerEditor.BackColor = System.Drawing.SystemColors.Control;
+			this.pnlBrokerEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.pnlBrokerEditor.Location = new System.Drawing.Point(3, 16);
+			this.pnlBrokerEditor.Name = "pnlBrokerEditor";
+			this.pnlBrokerEditor.Size = new System.Drawing.Size(249, 87);
+			this.pnlBrokerEditor.TabIndex = 9;
 			// 
 			// marketInfoEditor
 			// 
@@ -398,8 +400,8 @@
 			// lvStaticProviders
 			// 
 			this.lvStaticProviders.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.lvStaticProviders.HideSelection = false;
 			this.lvStaticProviders.Location = new System.Drawing.Point(6, 16);
 			this.lvStaticProviders.MultiSelect = false;
@@ -415,7 +417,7 @@
 			// txtDataSourceName
 			// 
 			this.txtDataSourceName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtDataSourceName.Location = new System.Drawing.Point(6, 25);
 			this.txtDataSourceName.Name = "txtDataSourceName";
 			this.txtDataSourceName.Size = new System.Drawing.Size(143, 20);
@@ -468,8 +470,8 @@
 			// splitContainer6
 			// 
 			this.splitContainer6.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainer6.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.splitContainer6.Location = new System.Drawing.Point(0, 51);
 			this.splitContainer6.Name = "splitContainer6";
@@ -506,28 +508,28 @@
 			// nmrInterval
 			// 
 			this.nmrInterval.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.nmrInterval.Location = new System.Drawing.Point(72, 35);
 			this.nmrInterval.Maximum = new decimal(new int[] {
-									9999,
-									0,
-									0,
-									0});
+            9999,
+            0,
+            0,
+            0});
 			this.nmrInterval.Name = "nmrInterval";
 			this.nmrInterval.Size = new System.Drawing.Size(77, 20);
 			this.nmrInterval.TabIndex = 2;
 			this.nmrInterval.Value = new decimal(new int[] {
-									5,
-									0,
-									0,
-									0});
+            5,
+            0,
+            0,
+            0});
 			this.nmrInterval.ValueChanged += new System.EventHandler(this.nmrInterval_ValueChanged);
 			// 
 			// txtSymbols
 			// 
 			this.txtSymbols.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtSymbols.Location = new System.Drawing.Point(6, 76);
 			this.txtSymbols.Multiline = true;
 			this.txtSymbols.Name = "txtSymbols";
@@ -538,19 +540,19 @@
 			// cmbScale
 			// 
 			this.cmbScale.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.cmbScale.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cmbScale.FormattingEnabled = true;
 			this.cmbScale.Items.AddRange(new object[] {
-									"Unknown",
-									"Tick",
-									"Second",
-									"Minute",
-									"Daily",
-									"Weekly",
-									"Monthly",
-									"Quarterly",
-									"Yearly"});
+            "Unknown",
+            "Tick",
+            "Second",
+            "Minute",
+            "Daily",
+            "Weekly",
+            "Monthly",
+            "Quarterly",
+            "Yearly"});
 			this.cmbScale.Location = new System.Drawing.Point(72, 8);
 			this.cmbScale.Name = "cmbScale";
 			this.cmbScale.Size = new System.Drawing.Size(77, 21);
@@ -643,6 +645,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.nmrInterval)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
+
 		}
 		private System.Windows.Forms.SplitContainer splitContainer6;
 	}

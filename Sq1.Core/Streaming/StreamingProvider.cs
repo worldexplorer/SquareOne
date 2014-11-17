@@ -200,29 +200,29 @@ namespace Sq1.Core.Streaming {
 
 				string msg = "HACK!!! FILLING_LAST_BIDASK_FOR_DUPE_QUOTE_IS_UNJUSTIFIED: PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES Backtester.generateQuotesForBarAndPokeStreaming()";
 				Assembler.PopupException(msg, null, true);
+
+				//essence of PushQuoteReceived(); all above were pre-checks ensuring successfull completion of two lines below
 				this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
 				this.StreamingDataSnapshot.UpdateLastBidAskSnapFromQuote(quote);
-
 				return;
 			}
 
+			int absnoPerSymbolNext = 0;
+
 			Quote lastQuote = this.StreamingDataSnapshot.LastQuoteGetForSymbol(quote.Symbol);
 			if (lastQuote == null) {
-				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR symbol[" + quote.Symbol + "] NOTHING_TO_ADJUST_OR_TEST";
-				Assembler.PopupException(msg, null, true);
-				//throw new Exception(msg);
+				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
+				Assembler.PopupException(msg, null, false);
 			} else {
-				if (quote.Absno != lastQuote.Absno + 1) {
-					string msg = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.Absno + "] != lastQuote.Absno[" + lastQuote.Absno + "] + 1";
+				if (lastQuote.AbsnoPerSymbol == -1) {
+					string msg = "LAST_QUOTE_DIDNT_HAVE_ABSNO_SET_BY_STREAMING_PROVIDER_ON_PREV_ITERATION";
 					Assembler.PopupException(msg, null, true);
 				}
-				quote.Absno = lastQuote.Absno + 1;
 
-				//TODO WHAT_PRESICISION_DO_I_NEED_HERE?
 				//v1 HAS_NO_MILLISECONDS_FROM_QUIK if (quote.ServerTime > lastQuote.ServerTime) {
 				//v2 TOO_SENSITIVE_PRINTED_SAME_MILLISECONDS_BUT_STILL_DIFFERENT if (quote.ServerTime.Ticks > lastQuote.ServerTime.Ticks) {
-				string quoteMillis = quote.ServerTime.ToString("HH:mm:ss.fff");
-				string lastQuoteMillis = lastQuote.ServerTime.ToString("HH:mm:ss.fff");
+				string quoteMillis			= quote.ServerTime.ToString("HH:mm:ss.fff");
+				string lastQuoteMillis  = lastQuote.ServerTime.ToString("HH:mm:ss.fff");
 				if (quoteMillis == lastQuoteMillis) {
 					string msg = "DONT_FEED_ME_WITH_SAME_SERVER_TIME BACKTESTER_FORGOT_TO_INCREASE_SERVER_TIMESTAMP"
 						+ " upcoming quote.LocalTimeCreatedMillis[" + quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff")
@@ -230,18 +230,33 @@ namespace Sq1.Core.Streaming {
 						+ lastQuote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]: DDE lagged somewhere?...";
 					Assembler.PopupException(msg);
 				}
+
+				absnoPerSymbolNext = lastQuote.AbsnoPerSymbol + 1;
 			}
 
-			this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
+			//QUOTE_ABSNO_MUST_BE_-1__HERE_NOT_MODIFIED_AFTER_QUOTE.CTOR()
+			if (quote.AbsnoPerSymbol != -1) {
+				string msg = "THIS_WAS_REFACTORED_TO_IMPLEMENT QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_PROVIDER";
+				Assembler.PopupException(msg, null, true);
 
-			//BacktestStreamingProvider.EnrichGeneratedQuoteSaveSpreadInStreaming has updated lastQuote alredy...
+				//QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_PROVIDER
+				//if (quote.AbsnoPerSymbol >= absnoPerSymbolNext) {
+				//    string msg1 = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.AbsnoPerSymbol + "] >= lastQuote.Absno[" + lastQuote.AbsnoPerSymbol + "] + 1";
+				//    Assembler.PopupException(msg1, null, true);
+				//}
+			}
+			quote.AbsnoPerSymbol = absnoPerSymbolNext;
+
+			//OUTDATED?... BacktestStreamingProvider.EnrichGeneratedQuoteSaveSpreadInStreaming has updated lastQuote alredy...
+			//essence of PushQuoteReceived(); all above were pre-checks ensuring successfull completion of two lines below
+			this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
 			this.StreamingDataSnapshot.UpdateLastBidAskSnapFromQuote(quote);
+
 			try {
 				this.DataDistributor.PushQuoteToDistributionChannels(quote);
 			} catch (Exception e) {
 				string msg = "StreamingProvider.PushQuoteReceived()";
 				Assembler.PopupException(msg, e);
-				//throw e;
 			}
 		}
 

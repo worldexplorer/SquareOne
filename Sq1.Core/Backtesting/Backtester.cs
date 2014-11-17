@@ -338,15 +338,18 @@ namespace Sq1.Core.Backtesting {
 
 				int pendingsToFillInitially = this.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				List<QuoteGenerated> quotesInjected = this.QuotesGenerator.InjectQuotesToFillPendingAlerts(quote, bar2simulate);
-				if (quotesInjected.Count > 0 && quote.Absno != this.QuotesGenerator.QuoteAbsno) {
+				if (quotesInjected.Count > 0 && quote.AbsnoPerSymbol != this.QuotesGenerator.LastGeneratedAbsnoPerSymbol) {
 					//DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
 					#if DEBUG //TEST_EMBEDDED
-					if (quotesInjected.Count != this.QuotesGenerator.QuoteAbsno - quote.Absno) {
+					if (quotesInjected.Count != this.QuotesGenerator.LastGeneratedAbsnoPerSymbol - quote.AbsnoPerSymbol) {
 						string msg = "InjectQuotesToFillPendingAlerts()_INCREMENTED_QUOTE_ABSNO";
 						//Debugger.Break();
 					}
 					#endif
-					quote.Absno = this.QuotesGenerator.QuoteAbsno;
+					if (quote.AbsnoPerSymbol != this.QuotesGenerator.LastGeneratedAbsnoPerSymbol) {	//DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
+						string msg = "SO_WHY_ABSNO_MUST_BE_SET_HERE_AND_CANT_BE_SET_IN_QUOTE.CTOR?...";
+						quote.AbsnoPerSymbol  = this.QuotesGenerator.LastGeneratedAbsnoPerSymbol;
+					}
 				}
 				
 				#if DEBUG //TEST_EMBEDDED
