@@ -5,8 +5,5 @@ using System.ComponentModel.Design;
 
 namespace Sq1.Adapters.Quik {
 	public partial class StaticQuikEditor {
-		public StaticQuikEditor() {
-			InitializeComponent();
-		}
 	}
 }

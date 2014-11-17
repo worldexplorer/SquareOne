@@ -33,7 +33,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 		Random rnd;
 		bool prevRandWasPositive = true;
 
-		public DdeChannelLastQuoteMock(StreamingMock providerMock, string SymbolSubscribing) {
+		public DdeChannelLastQuoteMock(StreamingMock providerMock, string SymbolSubscribing, bool autoStart = false) {
 			//: base(streamingProvider, SymbolSubscribing)
 			this.providerMock = providerMock;
 			this.symbol = SymbolSubscribing;
@@ -47,8 +47,9 @@ namespace Sq1.Adapters.QuikMock.Dde {
 				this.priceLimitLowerSliding = priceStartFrom - priceIncrement * quotesPerBar * barsGrow;
 			};
 
-			pokerThread = new Thread(startMock);
+			pokerThread = new Thread(MockStart);
 			pokerThread.Name = "DdeChannelQuoteMock::pokerThread";
+			if (autoStart == false) return;
 			pokerThread.Start();
 			//startMock();
 			//Thread.Sleep(nextQuoteDelayMs);
@@ -102,15 +103,22 @@ namespace Sq1.Adapters.QuikMock.Dde {
 			this.nextQuoteDelayMs = nextQuoteDelayMs;
 		}
 
-		void startMock() {
+		public void MockStart() {
+			if (this.running == true) {
+				Assembler.PopupException("ALREADY_RUNNING", null, false);
+				return;
+			}
 			//Assembler.PopupException("startMock(" + pokesDone + "/" + pokesLimit + "): starting timer nextQuoteDelayMs=" + nextQuoteDelayMs + " period=0...");
 			Timer t = new Timer(new TimerCallback(pokeWithNewQuote));
 			t.Change(nextQuoteDelayMs, 0);
 			this.running = true;
 		}
 
-		void stopMock() {
-			if (running == false) return;
+		public void MockStop() {
+			if (this.running == false) {
+				Assembler.PopupException("ALREADY_STOPPED", null, false);
+				return;
+			}
 			running = false;
 		}
 
@@ -125,7 +133,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 			if (running == false) {
 				t.Dispose();
 				pokerThread.Abort();
-				Assembler.PopupException("Timer stopped");
+				Assembler.PopupException("pokerThread.Aborted()", null, false);
 				return;
 			}
 			//Assembler.PopupException("pokeWithNewQuote(" + pokesDone + "/" + pokesLimit + "): generating new bar");
@@ -161,7 +169,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 			quikQuote.Ask = quikQuote.Bid + this.spread;
 
 			quikQuote.Size = volumeIncrement;
-			if (quikQuote.Absno == this.QuoteAbsnoPriceMutatedToZero && quikQuote.Source == "QUIK_DDE_MOCK") {
+			if (quikQuote.AbsnoPerSymbol == this.QuoteAbsnoPriceMutatedToZero && quikQuote.Source == "QUIK_DDE_MOCK") {
 				//quikQuote.PriceLastDeal = 0;
 				Assembler.PopupException("MOCK_TEST_ONCE: setting Price=0 for quote[" + quikQuote + "]; watch CHART skipping it and ORDER with an ERROR");
 			}

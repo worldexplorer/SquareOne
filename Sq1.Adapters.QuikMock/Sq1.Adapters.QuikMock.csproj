@@ -58,10 +58,24 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DataFeed\StreamingMock.cs" />
+    <Compile Include="DataFeed\StreamingMockEditor.Designer.cs">
+      <DependentUpon>StreamingMockEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataFeed\StreamingMockEditor.EventConsumer.cs">
+      <DependentUpon>StreamingMockEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="OrderExecution\BrokerMockEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="OrderExecution\BrokerMock.cs" />
+    <Compile Include="OrderExecution\BrokerMockEditor.Designer.cs">
+      <DependentUpon>BrokerMockEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OrderExecution\BrokerMockEditor.EventConsumer.cs">
+      <DependentUpon>BrokerMockEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="OrderExecution\Terminal\QuikTerminalMock.cs" />
     <Compile Include="OrderExecution\Terminal\QuikTerminalMockThreadParam.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

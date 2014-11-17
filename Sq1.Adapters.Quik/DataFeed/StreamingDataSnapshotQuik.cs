@@ -28,7 +28,7 @@ namespace Sq1.Adapters.Quik {
 				this.FortsPutDepositForSymbol(quikQuote.Symbol, quikQuote.FortsPriceMin, quikQuote.FortsPriceMax);
 			}
 		}
-		private void FortsPutDepositForSymbol(string Symbol, double FortsDepositBuy, double FortsDepositSell) {
+		void FortsPutDepositForSymbol(string Symbol, double FortsDepositBuy, double FortsDepositSell) {
 			if (this.FortsDepositBuy.ContainsKey(Symbol)) {
 				this.FortsDepositBuy[Symbol] = FortsDepositBuy;
 			} else {
@@ -40,7 +40,7 @@ namespace Sq1.Adapters.Quik {
 				this.FortsDepositSell.Add(Symbol, FortsDepositSell);
 			}
 		}
-		private void FortsPutPriceMinMaxForSymbol(string Symbol, double FortsPriceMin, double FortsPriceMax) {
+		void FortsPutPriceMinMaxForSymbol(string Symbol, double FortsPriceMin, double FortsPriceMax) {
 			if (this.FortsPriceMin.ContainsKey(Symbol)) {
 				this.FortsPriceMin[Symbol] = FortsPriceMin;
 			} else {

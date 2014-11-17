@@ -53,6 +53,7 @@ namespace Sq1.Adapters.QuikMock {
 				}
 				return ret;
 			} }
+		[JsonProperty]	public bool GeneratingNow { get; internal set; }
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.StreamingEditorInitializeHelper(dataSourceEditor);
 			base.streamingEditorInstance = new StreamingMockEditor(this, dataSourceEditor);
@@ -187,6 +188,20 @@ namespace Sq1.Adapters.QuikMock {
 			return "StreamingMock: SymbolsSubscribed[" + this.SymbolsUpstreamSubscribedAsString + "]"
 				+ "/SymbolsGenerating[" + this.GenerateOnlySymbolsAsString + "]"
 				+ " DDE[" + this.DdeChannelsEstablished + "]";
+		}
+		public void AllSymbolsGenerateStart() {
+			lock (MockProvidersBySymbol) {
+				foreach (DdeChannelsMock channels in this.MockProvidersBySymbol.Values) {
+					channels.ChannelQuote.MockStart();
+				}
+			}
+		}
+		public void AllSymbolsGenerateStop() {
+			lock (MockProvidersBySymbol) {
+				foreach (DdeChannelsMock channels in this.MockProvidersBySymbol.Values) {
+					channels.ChannelQuote.MockStop();
+				}
+			}
 		}
 	}
 }

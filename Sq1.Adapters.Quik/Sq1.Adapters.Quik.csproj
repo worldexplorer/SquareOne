@@ -94,15 +94,36 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DataFeed\StaticQuik.cs" />
+    <Compile Include="DataFeed\StaticQuikEditor.Designer.cs">
+      <DependentUpon>StaticQuikEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataFeed\StaticQuikEditor.EventConsumer.cs">
+      <DependentUpon>StaticQuikEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="DataFeed\StreamingDataSnapshotQuik.cs" />
     <Compile Include="DataFeed\StreamingQuikEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="DataFeed\StreamingQuik.cs" />
+    <Compile Include="DataFeed\StreamingQuikEditor.Designer.cs">
+      <DependentUpon>StreamingQuikEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataFeed\StreamingQuikEditor.EventConsumer.cs">
+      <DependentUpon>StreamingQuikEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="OrderExecution\BrokerQuikEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="OrderExecution\BrokerQuik.cs" />
+    <Compile Include="OrderExecution\BrokerQuikEditor.Designer.cs">
+      <DependentUpon>BrokerQuikEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OrderExecution\BrokerQuikEditor.EventConsumer.cs">
+      <DependentUpon>BrokerQuikEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="OrderExecution\OrderCallbackDupesCheckerQuik.cs" />
     <Compile Include="OrderExecution\Terminal\QuikConnectionState.cs" />
     <Compile Include="OrderExecution\Terminal\QuikTerminal.cs" />
