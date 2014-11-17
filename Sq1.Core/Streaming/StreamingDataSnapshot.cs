@@ -22,7 +22,7 @@ namespace Sq1.Core.Streaming {
 				string ret = "";
 				foreach (string symbol in LastQuotesReceived.Keys) {
 					if (ret.Length > 0) ret += ",";
-					ret += symbol + ":" + ((LastQuotesReceived[symbol] == null) ? "NULL" : LastQuotesReceived[symbol].Absno.ToString());
+					ret += symbol + ":" + ((LastQuotesReceived[symbol] == null) ? "NULL" : LastQuotesReceived[symbol].AbsnoPerSymbol.ToString());
 				}
 				return ret;
 			} }
@@ -60,7 +60,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg + msig, null);
 				return;
 			}
-			if (last.Absno >= quote.Absno) {
+			if (last.AbsnoPerSymbol >= quote.AbsnoPerSymbol) {
 				string msg = "DONT_FEED_ME_WITH_OLD_QUOTES (????QuoteQuik #-1/0 AUTOGEN)";
 				Assembler.PopupException(msg + msig, null, false);
 				return;

@@ -13,7 +13,7 @@ namespace Sq1.Core.Backtesting {
 		List<QuoteGenerated> QuotesGeneratedForOneBar;
 
 		// IMPLEMENTED_BELOW_UNABSTRACTED_THIS_CLASS protected public abstract SortedList<int, QuoteGenerated> GenerateQuotesFromBarAvoidClearing(Bar bar);
-		public int QuoteAbsno;
+		public int LastGeneratedAbsnoPerSymbol;
 
 		protected string GeneratorName;
 
@@ -22,14 +22,14 @@ namespace Sq1.Core.Backtesting {
 			this.QuotePerBarGenerates = quotesPerBar;
 			this.BacktestModeSuitsFor = mode;
 			this.QuotesGeneratedForOneBar = new List<QuoteGenerated>();
-			this.QuoteAbsno = 0;
+			this.LastGeneratedAbsnoPerSymbol = -1;
 			this.GeneratorName = this.GetType().Name;
 		}
 
 		protected QuoteGenerated generateNewQuoteChildrenHelper(int intraBarSerno, string whoGenerated, string symbol, DateTime serverTime,
 				BidOrAsk bidOrAsk, double priceFromAlignedBar, double volume, Bar barSimulated) {
 			QuoteGenerated ret = new QuoteGenerated(serverTime);
-			ret.Absno = ++this.QuoteAbsno;
+			ret.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;
 			ret.ServerTime = serverTime;
 			ret.IntraBarSerno = intraBarSerno;
 			ret.Source = whoGenerated;
@@ -113,8 +113,15 @@ namespace Sq1.Core.Backtesting {
 					continue;
 				}
 
-				closestOnOurWay.IntraBarSerno += ret.Count;		// first quote has IntraBarSerno=-1?
-				closestOnOurWay.Absno = ++this.QuoteAbsno;		//DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
+				#if DEBUG // INLINE TEST
+				if (closestOnOurWay.AbsnoPerSymbol != -1) {
+					string msg = "QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_PROVIDER";
+					Assembler.PopupException(msg);
+				}
+				#endif
+
+				closestOnOurWay.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;		// DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
+				closestOnOurWay.IntraBarSerno += ret.Count;						// first quote has IntraBarSerno=-1, rimemba?
 
 				this.backtester.BacktestDataSource.BacktestStreamingProvider.PushQuoteReceived(closestOnOurWay);
 				ret.Add(closestOnOurWay);

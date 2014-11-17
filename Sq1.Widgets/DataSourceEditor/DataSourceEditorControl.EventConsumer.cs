@@ -53,16 +53,17 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			ListViewItem lvi = this.lvStreamingProviders.SelectedItems[0];
 			if (lvi.Tag == null) {
-				this.pnlStreaming.Controls.Clear();
+				this.pnlStreamingEditor.Controls.Clear();
 				ds.StreamingProvider = null;
 				return;
 			}
 			ds.StreamingProvider = (StreamingProvider)lvi.Tag;
 			ds.StreamingProvider.EditorInstance.PushStreamingProviderSettingsToEditor();
+			ds.StreamingProvider.EditorInstance.Dock = DockStyle.Fill;
 			//this.btnNext.Enabled = true;
 			//this.btnFinished.Enabled = false;
-			this.pnlStreaming.Controls.Clear();
-			this.pnlStreaming.Controls.Add(ds.StreamingProvider.EditorInstance);
+			this.pnlStreamingEditor.Controls.Clear();
+			this.pnlStreamingEditor.Controls.Add(ds.StreamingProvider.EditorInstance);
 			this.grpStreaming.Text = ds.StreamingProvider.Name + " Settings";
 		}
 		void lvBrokerProviders_SelectedIndexChanged(object sender, EventArgs e) {
@@ -73,16 +74,17 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			ListViewItem lvi = this.lvBrokerProviders.SelectedItems[0];
 			if (lvi.Tag == null) {
-				this.pnlExecution.Controls.Clear();
+				this.pnlBrokerEditor.Controls.Clear();
 				ds.BrokerProvider = null;
 				return;
 			}
 			ds.BrokerProvider = (BrokerProvider)lvi.Tag;
 			ds.BrokerProvider.EditorInstance.PushBrokerProviderSettingsToEditor();
+			ds.BrokerProvider.EditorInstance.Dock = DockStyle.Fill;
 			//this.btnNext.Enabled = true;
 			//this.btnFinished.Enabled = false;
-			this.pnlExecution.Controls.Clear();
-			this.pnlExecution.Controls.Add(ds.BrokerProvider.EditorInstance);
+			this.pnlBrokerEditor.Controls.Clear();
+			this.pnlBrokerEditor.Controls.Add(ds.BrokerProvider.EditorInstance);
 			this.grpExecution.Text = ds.BrokerProvider.Name + " Settings";
 		}
 		void lnkStaticDetails_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {

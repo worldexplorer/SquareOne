@@ -604,7 +604,7 @@ namespace Sq1.Core.StrategyBase {
 			int filledEntries = 0;
 			double priceFill = -1;
 			double slippageFill = -1;
-			if (quote.Absno == 523 && quote.IntraBarSerno == 100001) {
+			if (quote.AbsnoPerSymbol == 523 && quote.IntraBarSerno == 100001) {
 				//Debugger.Break();
 			}
 			bool filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);

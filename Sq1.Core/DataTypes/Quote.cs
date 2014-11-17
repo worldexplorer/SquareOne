@@ -4,51 +4,40 @@ using System.Text;
 
 namespace Sq1.Core.DataTypes {
 	public class Quote {
-		public string Symbol;
-		public string SymbolClass;
-		public string Source;
+		public const int IntraBarSernoShiftForGeneratedTowardsPendingFill = 100000;
+
+		public string	Symbol;
+		public string	SymbolClass;
+		public string	Source;
 		public DateTime ServerTime;
-		public DateTime LocalTimeCreatedMillis;
+		public DateTime LocalTimeCreatedMillis	{ get; protected set; }
 
-		public double Bid;
-		public double Ask;
-		public double Size;
-		public BidOrAsk ItriggeredFillAtBidOrAsk;
-		//WRITTEN_ONLY_BY_QUOTE_GENERATOR MADE_READONLY_COZ_WRITING_IS_A_WRONG_CONCEPT
-		/* must be PriceLastDeal==Bid || PriceLastDeal==Ask NOT_HALF public double PriceLastDeal { get {
-				if (this.ItriggeredFillAtBidOrAsk == BidOrAsk.UNKNOWN) {
-					//v1 return -1;
-					double median = (this.Ask + this.Bid) / 2;
-					if (double.IsNaN(median)) {
-						Debugger.Break();
-					}
-					return median;
-				}
-				return (this.ItriggeredFillAtBidOrAsk == BidOrAsk.Ask) ? this.Ask : this.Bid;
-			} }*/
+		public double	Bid;
+		public double	Ask;
+		public double	Size;
+		public BidOrAsk	ItriggeredFillAtBidOrAsk;
+		
+		public int		IntraBarSerno;
+		public int		AbsnoPerSymbol;
+
+		public Bar		ParentStreamingBar	{ get; protected set; }
+		public bool		HasParentBar		{ get { return this.ParentStreamingBar != null; } }
+		public string	ParentBarIdent		{ get { return (this.HasParentBar) ? this.ParentStreamingBar.ParentBarsIdent : "NO_PARENT_BAR"; } }
+
 		public BidOrAsk LastDealBidOrAsk;
-		public double LastDealPrice { get {
-			if (this.LastDealBidOrAsk == BidOrAsk.UNKNOWN) return double.NaN;
-			return (this.LastDealBidOrAsk == BidOrAsk.Bid) ? this.Bid : this.Ask;
-		} }
+		public double LastDealPrice {
+			get {		//WRITTEN_ONLY_BY_QUOTE_GENERATOR MADE_READONLY_COZ_WRITING_IS_A_WRONG_CONCEPT
+				if (this.LastDealBidOrAsk == BidOrAsk.UNKNOWN) return double.NaN;
+				return (this.LastDealBidOrAsk == BidOrAsk.Bid) ? this.Bid : this.Ask;
+			}
+		}
+		public double	Spread				{ get { return this.Ask - this.Bid; } }
 
-
-		public int IntraBarSerno;
-		//public int Absno { get { return AbsnoStaticCounter; } }		// I want a class var for furhter easy access despite it looks redundant
-		public int Absno;
-
-		[Obsolete("used as a reference for a single-backtest environment; otherwize Backtester and StreamingProvider compete for correct this.Absno value")]
-		public static int AbsnoStaticCounter = 0;
-
-		public Bar ParentStreamingBar { get; protected set; }
-		public bool HasParentBar { get { return this.ParentStreamingBar != null; } }
-		public string ParentBarIdent { get { return (this.HasParentBar) ? this.ParentStreamingBar.ParentBarsIdent : "NO_PARENT_BAR"; } }
-
-		public static int IntraBarSernoShiftForGeneratedTowardsPendingFill = 100000;
 
 		protected Quote() {	// make it proteted and use it when you'll need to super-modify a quote in StreamingProvider-derived 
-			Absno = ++AbsnoStaticCounter;
 			ServerTime = DateTime.MinValue;
+			//Absno = ++AbsnoStaticCounterForAllSymbolsUseless;
+			AbsnoPerSymbol = -1;	// QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_PROVIDER
 			IntraBarSerno = -1;
 			Bid = double.NaN;
 			Ask = double.NaN;
@@ -61,17 +50,15 @@ namespace Sq1.Core.DataTypes {
 			LocalTimeCreatedMillis = (localTimeEqualsToServerTimeForGenerated != DateTime.MinValue)
 				? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
 		}
-		// TODO: don't be lazy and move to StreamingProvider.QuoteAbsnoForSymbol<string Symbol, int Absno> and init it on Backtester.RunSimulation
-		//public void AbsnoReset() { Quote.AbsnoStaticCounter = 0; }
 		public void SetParentBar(Bar parentBar) {
 			if (this.Symbol != parentBar.Symbol) {
 				string msg = "here is the problem for a streaming bar to carry another symbol!";
-				#if DEBUG
-				Debugger.Break();		//TEST_EMBEDDED
-				#endif
+				Assembler.PopupException(msg);
 			}
 			this.ParentStreamingBar = parentBar;
 		}
+
+		#region SORRY_FOR_THE_MESS__I_NEED_TO_DERIVE_IDENTICAL_ONLY_FOR_GENERATED__IF_YOU_NEED_IT_IN_BASE_QUOTE_MOVE_IT_THERE
 		public Quote Clone() {
 			return (Quote)this.MemberwiseClone();
 		}
@@ -90,23 +77,25 @@ namespace Sq1.Core.DataTypes {
 		//	identicalButFresh.ParentStreamingBar = this.ParentStreamingBar;
 		//	return identicalButFresh;
 		//}
-//		public override string ToString() {
-//			string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol;
-//			//ret += " bid{" + Math.Round(this.Bid, 3) + "-" + Math.Round(this.Ask, 3) + "}ask"
-//			//ret += " size{" + this.Size + "@" + Math.Round(this.PriceLastDeal, 3) + "}lastDeal";
-//			ret += " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "@" + this.LastDealPrice + "}lastDeal";
-//			if (ServerTime != null) ret += " SERVER[" + ServerTime.ToString("HH:mm:ss.fff") + "]";
-//			ret += "[" + LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]LOCAL";
-//			if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;
-//			ret += " STR:" + this.ParentBarIdent;
-//			return ret;
-//		}
+		#endregion
+
+		//public override string ToString() {
+		//    string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol;
+		//    //ret += " bid{" + Math.Round(this.Bid, 3) + "-" + Math.Round(this.Ask, 3) + "}ask"
+		//    //ret += " size{" + this.Size + "@" + Math.Round(this.PriceLastDeal, 3) + "}lastDeal";
+		//    ret += " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "@" + this.LastDealPrice + "}lastDeal";
+		//    if (ServerTime != null) ret += " SERVER[" + ServerTime.ToString("HH:mm:ss.fff") + "]";
+		//    ret += "[" + LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]LOCAL";
+		//    if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;
+		//    ret += " STR:" + this.ParentBarIdent;
+		//    return ret;
+		//}
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();
 			sb.Append("#");
 			sb.Append(this.IntraBarSerno);
 			sb.Append("/");
-			sb.Append(this.Absno);
+			sb.Append(this.AbsnoPerSymbol);
 			sb.Append(" ");
 			sb.Append(this.Symbol);
 			sb.Append(" bid{");
@@ -131,18 +120,18 @@ namespace Sq1.Core.DataTypes {
 			sb.Append(this.ParentBarIdent);
 			return sb.ToString();
 		}
-//		public string ToStringShort() {
-//			string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol
-//				+ " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "}"
-//				+ ": " + this.ParentBarIdent;
-//			return ret;
-//		}
+		//public string ToStringShort() {
+		//    string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol
+		//        + " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "}"
+		//        + ": " + this.ParentBarIdent;
+		//    return ret;
+		//}
 		public string ToStringShort() {
 			StringBuilder sb = new StringBuilder();
 			sb.Append("#");
 			sb.Append(this.IntraBarSerno);
 			sb.Append("/");
-			sb.Append(this.Absno);
+			sb.Append(this.AbsnoPerSymbol);
 			sb.Append(" ");
 			sb.Append(this.Symbol);
 			sb.Append(" bid{");
@@ -179,6 +168,5 @@ namespace Sq1.Core.DataTypes {
 			}
 			return ret;
 		}
-		public double Spread { get { return this.Ask - this.Bid; } } 
 	}
 }
