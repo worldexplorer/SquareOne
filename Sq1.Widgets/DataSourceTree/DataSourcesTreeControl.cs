@@ -185,8 +185,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 			//DOESNT_WORK_FOR_SAME_SYMBOLS_FOUND_IN_TWO_DATASOURCES this.tree.SelectObject(symbolFound);
 			int indexToSelect = indexForDataSource + indexForSymbol + 1;
 			try {
-				this.tree.EnsureVisible(indexToSelect);
+				//throws when I point into Symbol folded inside a collapsed datasource this.tree.EnsureVisible(indexToSelect);
+				this.tree.Expand(dataSourceName);	// doesn't really expand the collapsed "Qmock" but let the selected row go "under" it; whatever, if I collapsed then I don't need the content
 				this.tree.SelectedIndex = indexToSelect;
+				this.tree.RefreshSelectedObjects();
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
 			}

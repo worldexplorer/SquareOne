@@ -10,13 +10,10 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
-using Sq1.Gui.Singletons;
-using Sq1.Widgets;
 using Sq1.Widgets.LabeledTextBox;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
-	public partial class ChartForm : DockContentImproved {
+	public partial class ChartForm {
 		public ChartFormManager ChartFormManager;
 
 		List<string> GroupScaleLabeledTextboxes;
@@ -52,11 +49,11 @@ namespace Sq1.Gui.Forms {
 			// TOO_EARLY_NO_BARS_SET_WILL_BE_THROWN this.PopulateBtnStreamingText();
 		}
 		public void AttachEventsToChartFormsManager() {
-			this.ChartControl.RangeBar.ValueMinChanged += this.ChartFormManager.EventManager.ChartRangeBar_AnyValueChanged;
-			this.ChartControl.RangeBar.ValueMaxChanged += this.ChartFormManager.EventManager.ChartRangeBar_AnyValueChanged;
-			this.ChartControl.RangeBar.ValuesMinAndMaxChanged += this.ChartFormManager.EventManager.ChartRangeBar_AnyValueChanged;
+			this.ChartControl.RangeBar.ValueMinChanged += this.ChartFormManager.ExternalEventsConsumer.ChartRangeBar_AnyValueChanged;
+			this.ChartControl.RangeBar.ValueMaxChanged += this.ChartFormManager.ExternalEventsConsumer.ChartRangeBar_AnyValueChanged;
+			this.ChartControl.RangeBar.ValuesMinAndMaxChanged += this.ChartFormManager.ExternalEventsConsumer.ChartRangeBar_AnyValueChanged;
 			
-			this.OnStreamingButtonStateChanged += new EventHandler<EventArgs>(this.ChartFormManager.EventManager.ChartForm_StreamingButtonStateChanged);
+			// REFACTORED_INVOKING_DIRECTLY this.OnStreamingButtonStateChanged += new EventHandler<EventArgs>(this.ChartFormManager.ExternalEventsConsumer.ChartForm_StreamingButtonStateChanged);
 			this.ChartControl.ChartSettingsChangedContainerShouldSerialize += new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
 			this.ChartControl.ContextScriptChangedContainerShouldSerialize += new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
 		}
@@ -172,7 +169,7 @@ namespace Sq1.Gui.Forms {
 			
 			this.mniBacktestOnRestart.Checked = ctxScript.BacktestOnRestart;
 			this.mniBacktestOnSelectorsChange.Checked = ctxScript.BacktestOnSelectorsChange;
-			this.btnAutoSubmit.Checked = ctxScript.ChartAutoSubmitting;
+			this.btnAutoSubmit.Checked = ctxScript.ChartEmittingOrders;
 			this.PropagateContextScriptToLTB(ctxScript);
 		}
 		
@@ -250,6 +247,9 @@ namespace Sq1.Gui.Forms {
 					Assembler.PopupException(msg);
 					break;
 			}
+			
+			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Checked = ctxScript.FillOutsideQuoteSpreadParanoidCheckThrow;
+			this.mnitlbSpreadGeneratorPct.InputFieldValue = ctxScript.SpreadModelerPercent.ToString();
 
 			if (this.ChartFormManager.MainForm.ChartFormActiveNullUnsafe == this) {
 				string msg = "WE_ARE_HERE_WHEN_WE_SWITCH_STRATEGY_FOR_CHART";

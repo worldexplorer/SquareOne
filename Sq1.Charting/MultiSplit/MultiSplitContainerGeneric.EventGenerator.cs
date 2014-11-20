@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Sq1.Charting.MultiSplit {
-	public partial class MultiSplitContainer<PANEL_BASE> {
+	public partial class MultiSplitContainerGeneric<PANEL_BASE> {
 		public EventHandler<MultiSplitterEventArgs> OnSplitterMoveStarted;
 		public EventHandler<MultiSplitterEventArgs> OnSplitterMovingNow;
 		public EventHandler<MultiSplitterEventArgs> OnSplitterMoveEnded;

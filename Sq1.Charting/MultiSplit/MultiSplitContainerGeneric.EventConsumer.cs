@@ -7,7 +7,7 @@ using Sq1.Core;
 using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Charting.MultiSplit {
-	public partial class MultiSplitContainer<PANEL_BASE>
+	public partial class MultiSplitContainerGeneric<PANEL_BASE>
 			: UserControl
 			//: UserControlDoubleBuffered
 			where PANEL_BASE : Control {

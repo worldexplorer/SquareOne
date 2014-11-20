@@ -15,7 +15,7 @@
   "StaticProvider": null,
   "StreamingProvider": null,
   "BrokerProvider": null,
-  "MarketName": "FORTS",
+  "MarketName": "MOCK",
   "Name": "MOCK",
   "StaticProviderName": "STATIC_PROVIDER_NOT_INITIALIZED",
   "StreamingProviderName": "STREAMING_PROVIDER_NOT_INITIALIZED",

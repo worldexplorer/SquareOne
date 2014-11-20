@@ -132,16 +132,16 @@ namespace Sq1.Core.Repositories {
 					} catch (Exception e) {
 						string msg = "STRATEGY_unJSON_FAILED: StrategyDeserializeFromJsonFile(" + strategyJsonAbsFile + ")";
 						Assembler.PopupException(msg, e);
-						var sample = new Strategy("sampleStrategy");
-						sample.ScriptSourceCode =
-							"namespace sample.Strategies {\r\n"
-								+ "public class MyScript : Script {\r\n"
-									+ "public override void ExecuteOnNewQuote(Quote quote) {\r\n"
-										+ "log(\"ExecuteOnNewQuote(): [\" + quote.ToString() + \"]\");\r\n"
-									+ "}\r\n"
-								+ "}\r\n"
-							+ "}\r\n";
-						this.StrategyAdd(sample, "sampleFolder");
+//						var sample = new Strategy("sampleStrategy");
+//						sample.ScriptSourceCode =
+//							"namespace sample.Strategies {\r\n"
+//								+ "public class MyScript : Script {\r\n"
+//									+ "public override void ExecuteOnNewQuote(Quote quote) {\r\n"
+//										+ "log(\"ExecuteOnNewQuote(): [\" + quote.ToString() + \"]\");\r\n"
+//									+ "}\r\n"
+//								+ "}\r\n"
+//							+ "}\r\n";
+//						this.StrategyAdd(sample, "sampleFolder");
 					}
 				}
 			}

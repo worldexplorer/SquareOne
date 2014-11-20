@@ -135,7 +135,7 @@ namespace Sq1.Gui {
 			}
 			//if (chartFormClicked.IsActivated == false) return;	//NOUP ActiveDocumentChanged is invoked twice: 1) for a form loosing control, 2) for a form gaining control
 			try {
-				chartFormClicked.ChartFormManager.EventManager.MainForm_ActivateDocumentPane_WithChart(sender, e);
+				chartFormClicked.ChartFormManager.ExternalEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
 				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
 				this.mainForm.GuiDataSnapshotSerializer.Serialize();
 				
@@ -174,7 +174,7 @@ namespace Sq1.Gui {
 				return;
 			}
 			try {
-				chartFormClicked.ChartFormManager.EventManager.MainForm_ActivateDocumentPane_WithChart(sender, e);
+				chartFormClicked.ChartFormManager.ExternalEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
 				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
 				this.mainForm.GuiDataSnapshotSerializer.Serialize();
 				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
@@ -227,7 +227,7 @@ namespace Sq1.Gui {
 					return;
 				}
 				// mainForm.ChartFormActive will already throw if Documents have no Charts selected; no need to check
-				this.mainForm.ChartFormActiveNullUnsafe.ChartFormManager.EventManager.DataSourcesTree_OnSymbolSelected(sender, e);
+				this.mainForm.ChartFormActiveNullUnsafe.ChartFormManager.ExternalEventsConsumer.DataSourcesTree_OnSymbolSelected(sender, e);
 			} catch (Exception ex) {
 				this.mainForm.PopupException(null, ex);
 			}

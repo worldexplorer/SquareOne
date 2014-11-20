@@ -212,11 +212,11 @@ namespace Sq1.Charting {
 			}
 			return line.Status;
 		}
-		public override bool BarBackgroundSet(int barIndex, Color color) {
+		public override bool BarBackgroundSet(int barIndex, Color colorBg) {
 			bool ret = false;
-			if (color == Color.Empty) return ret; 
+			if (colorBg == Color.Empty) return ret; 
 			try {
-				ret = this.ScriptExecutorObjects.BarBackgroundSet(barIndex, color);
+				ret = this.ScriptExecutorObjects.BarBackgroundSet(barIndex, colorBg);
 			} catch (Exception ex) {
 				string msg = "EXECUTOROBJECTS_COULDNT_FIND_BAR";
 				Assembler.PopupException(msg + " //BarBackgroundSet()");
@@ -226,10 +226,10 @@ namespace Sq1.Charting {
 		public override Color BarBackgroundGet(int barIndex) {
 			return this.ScriptExecutorObjects.BarBackgroundGet(barIndex);
 		}
-		public override bool BarForegroundSet(int barIndex, Color color) {
+		public override bool BarForegroundSet(int barIndex, Color colorFg) {
 			bool ret = false;
 			try {
-				ret = this.ScriptExecutorObjects.BarForegroundSet(barIndex, color);
+				ret = this.ScriptExecutorObjects.BarForegroundSet(barIndex, colorFg);
 			} catch (Exception ex) {
 				string msg = "EXECUTOROBJECTS_COULDNT_FIND_BAR";
 				Assembler.PopupException(msg + " //LineAddOrModify()");

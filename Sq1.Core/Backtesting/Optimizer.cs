@@ -35,7 +35,7 @@ namespace Sq1.Core.Backtesting {
 		
 		public int ScriptParametersTotalNr { get {
 				int ret = 0;
-				foreach (ScriptParameter sp in executor.Strategy.Script.ParametersById.Values) {
+				foreach (ScriptParameter sp in executor.Strategy.Script.ScriptParametersById.Values) {
 					if (sp.NumberOfRuns == 0) continue;
 					if (ret == 0) ret = 1;
 					ret *= sp.NumberOfRuns;
@@ -127,12 +127,12 @@ namespace Sq1.Core.Backtesting {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.executor.Strategy.Script.ParametersById == null) {
+			if (this.executor.Strategy.Script.ScriptParametersById == null) {
 				string msg = "Optimizer.executor.Strategy.Script.ParametersById == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.ParametersById = this.executor.Strategy.Script.ParametersById;
+			this.ParametersById = this.executor.Strategy.Script.ScriptParametersById;
 
 
 			if (this.executor.ExecutionDataSnapshot == null) {

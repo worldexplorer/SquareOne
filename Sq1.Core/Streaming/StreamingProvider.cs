@@ -143,16 +143,23 @@ namespace Sq1.Core.Streaming {
 		}
 
 		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerBarRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, Bar PartialBarInsteadOfEmpty) {
-			this.ConsumerBarRegister(symbol, scaleInterval, consumer);
-			SymbolScaleDistributionChannel channel = this.DataDistributor.GetDistributionChannelFor(symbol, scaleInterval);
-			channel.StreamingBarFactoryUnattached.InitWithStreamingBarInsteadOfEmpty(PartialBarInsteadOfEmpty);
-		}
+		//[Obsolete("NOT_USED_SHOULD_BE_COMMENTED_OUT")]
+		//public virtual void ConsumerBarRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, Bar PartialBarInsteadOfEmpty) {
+		//    this.ConsumerBarRegister(symbol, scaleInterval, consumer);
+		//    SymbolScaleDistributionChannel channel = this.DataDistributor.GetDistributionChannelFor(symbol, scaleInterval);
+		//    channel.StreamingBarFactoryUnattached.InitWithStreamingBarInsteadOfEmpty(PartialBarInsteadOfEmpty);
+		//}
 		public virtual void ConsumerBarRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
 			if (scaleInterval.Scale == BarScale.Unknown) {
 				string msg = "Failed to ConsumerBarRegister(): scaleInterval.Scale=Unknown; returning";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
+			}
+			bool alreadyRegistered = this.ConsumerBarIsRegistered(symbol, scaleInterval, consumer);
+			if (alreadyRegistered) {
+				string msg = "AVOIDING_MULTIPLE_SUBSCRIPTION BAR_CONSUMER_ALREADY_REGISTERED[" + consumer.ToString() + "] symbol[" + symbol + "] scaleInterval[" + scaleInterval.ToString() + "] ";
+				Assembler.PopupException(msg, null, false);
+				return;
 			}
 			this.DataDistributor.ConsumerBarRegister(symbol, scaleInterval, consumer);
 		}
@@ -165,8 +172,14 @@ namespace Sq1.Core.Streaming {
 		#endregion
 
 		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerQuoteRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer streamingConsumer) {
-			this.DataDistributor.ConsumerQuoteRegister(symbol, scaleInterval, streamingConsumer);
+		public virtual void ConsumerQuoteRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
+			bool alreadyRegistered = this.ConsumerQuoteIsRegistered(symbol, scaleInterval, consumer);
+			if (alreadyRegistered) {
+				string msg = "AVOIDING_MULTIPLE_SUBSCRIPTION QUOTE_CONSUMER_ALREADY_REGISTERED[" + consumer.ToString() + "] symbol[" + symbol + "] scaleInterval[" + scaleInterval.ToString() + "] ";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			this.DataDistributor.ConsumerQuoteRegister(symbol, scaleInterval, consumer);
 			this.StreamingDataSnapshot.LastQuotePutNull(symbol);
 		}
 		public virtual void ConsumerQuoteUnRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer streamingConsumer) {
@@ -199,7 +212,7 @@ namespace Sq1.Core.Streaming {
 				this.UpdateConnectionStatus(503, mainFormStatus);
 
 				string msg = "HACK!!! FILLING_LAST_BIDASK_FOR_DUPE_QUOTE_IS_UNJUSTIFIED: PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES Backtester.generateQuotesForBarAndPokeStreaming()";
-				Assembler.PopupException(msg, null, true);
+				Assembler.PopupException(msg, null, false);
 
 				//essence of PushQuoteReceived(); all above were pre-checks ensuring successfull completion of two lines below
 				this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);

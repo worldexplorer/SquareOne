@@ -1,7 +1,8 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "07e7825e-8e85-4e90-a852-bf04377cdc37",
-  "StrategyNameJsonCheck": "EnterEveryBarCompiled",
+  "StrategyGuidJsonCheck": "05af56d0-3c34-42dd-ad34-0dd5a70646f5",
+  "StrategyNameJsonCheck": "ATRbandCompiled",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -10,8 +11,26 @@
     "GutterBottomDateFormatDaily": "ddd dd-MMM",
     "GutterBottomDateFormatWeekly": "MMM-yy",
     "GutterBottomDateFormatYearly": "yyyy",
+    "MultiSplitterPropertiesByPanelName": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
+      "Price": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 0,
+        "Distance": 0
+      },
+      "Volume": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 88
+      },
+      "ATR (.Period:5[1..11/2])": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 2,
+        "Distance": 118
+      }
+    },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 8,
+    "BarWidthIncludingPadding": 25,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -35,7 +54,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 0,
+    "SqueezeVerticalPaddingPx": 210,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -61,19 +80,28 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 287,
+    "PriceVsVolumeSplitterDistance": 0,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
     "MousePositionTrackOnGutters": true,
     "MousePositionTrackOnGuttersColor": "LightGray",
-    "BarsBackgroundTransparencyAlfa": 32,
+    "BarsBackgroundTransparencyAlpha": 24,
     "ChartLabelsUpperLeftYstartTopmost": 18,
     "ChartLabelsUpperLeftX": 5,
     "ChartLabelsUpperLeftPlatePadding": 1,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
     "ChartLabelsUpperLeftIndicatorSquareSize": 5,
-    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
+    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3,
+    "SpreadBidLineColor": "Gray",
+    "SpreadBidLineColorAlpha": 64,
+    "SpreadBidLineWidth": 1,
+    "SpreadAskLineColor": "Orange",
+    "SpreadAskLineColorAlpha": 64,
+    "SpreadAskLineWidth": 1,
+    "SpreadLabelFont": "Consolas, 8pt",
+    "SpreadLabelColor": "DarkGray"
   },
-  "ChartSerno": 16
+  "ChartSerno": 1,
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json], ScriptContextCurrentName[?Default?]"
 }

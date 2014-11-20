@@ -109,18 +109,32 @@ namespace Sq1.Core.StrategyBase {
 			this.BuildStatsIncrementallyOnEachBarExecFinished(pokeUnit);
 			
 			
-			if (this.Executor.Strategy.Script.ParametersById == null) {
+			if (this.Executor.Strategy.Script.ScriptParametersById == null) {
 				string msg = "CANT_GRAB_";
 				Assembler.PopupException(msg);
 				return;
 			}
 			//WRONG this.ScriptAndIndicatorParameterClonesByName.Clear();
 			this.ScriptAndIndicatorParameterClonesByName = new SortedDictionary<string, IndicatorParameter>();
-			foreach (ScriptParameter sp in this.Executor.Strategy.Script.ParametersById.Values) {
+
+			string pids = this.Executor.Strategy.Script.ScriptParametersByIdAsString;
+			foreach (ScriptParameter sp in this.Executor.Strategy.Script.ScriptParametersById.Values) {
+				if (this.ScriptAndIndicatorParameterClonesByName.ContainsKey(sp.Name)) {
+					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_ScriptParameter[" + sp.Name + "]: " + pids;
+					Assembler.PopupException(msg);
+					continue;
+				}
 				this.ScriptAndIndicatorParameterClonesByName.Add(sp.Name, sp.Clone());
 			}
+	
 			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+			string iids = this.Executor.Strategy.Script.IndicatorParametersAsString;;
 			foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+				if (this.ScriptAndIndicatorParameterClonesByName.ContainsKey(ip.FullName)) {
+					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_IndicatorParameter[" + ip.Name + "]: " + iids;
+					Assembler.PopupException(msg);
+					continue;
+				}
 				this.ScriptAndIndicatorParameterClonesByName.Add(ip.FullName, ip.Clone());
 			}
 		}

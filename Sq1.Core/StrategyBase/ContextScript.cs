@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
+using Sq1.Core.Backtesting;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 
@@ -14,7 +15,7 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public Dictionary<string, List<IndicatorParameter>> IndicatorParametersByName { get; set; }	//  { get; set; } is needed for Json.Deserialize to really deserialize it
 		
 		[JsonProperty]	public bool IsCurrent;
-		[JsonProperty]	public bool ChartAutoSubmitting;
+		[JsonProperty]	public bool ChartEmittingOrders;
 
 		[JsonProperty]	public List<string> ReporterShortNamesUserInvokedJSONcheck;
 		[JsonProperty]	public bool BacktestOnRestart;
@@ -31,6 +32,11 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public double SlippageUnits;
 		[JsonProperty]	public int SlippageTicks;
 		[JsonProperty]	public int PriceLevelSizeForBonds;
+		
+		[JsonProperty]	public bool FillOutsideQuoteSpreadParanoidCheckThrow;
+		[JsonProperty]	public string SpreadModelerClassName;
+		[JsonProperty]	public double SpreadModelerPercent;
+		[JsonProperty]	public BacktestMode BacktestMode;
 
 
 		[JsonIgnore]	public List<IndicatorParameter> ParametersMerged { get {
@@ -65,8 +71,8 @@ namespace Sq1.Core.StrategyBase {
 			IndicatorParametersByName = new Dictionary<string, List<IndicatorParameter>>();
 			
 			IsCurrent = false;
-			ChartAutoSubmitting = false;
-			BacktestOnRestart = true;
+			ChartEmittingOrders = false;
+			BacktestOnRestart = false;
 			BacktestOnSelectorsChange = true;
 			BacktestOnDataSourceSaved = true;
 			ReporterShortNamesUserInvokedJSONcheck = new List<string>();
@@ -79,6 +85,11 @@ namespace Sq1.Core.StrategyBase {
 			RoundEquityLotsToUpperHundred = false;
 			SlippageTicks = 1;
 			SlippageUnits = 1.0;
+
+			FillOutsideQuoteSpreadParanoidCheckThrow = false;
+			SpreadModelerClassName = typeof(BacktestSpreadModelerPercentage).Name;
+			SpreadModelerPercent = BacktestStreamingProvider.PERCENTAGE_DEFAULT;
+			BacktestMode = BacktestMode.FourStrokeOHLC;
 		}
 		public void AbsorbFrom(ContextScript found, bool absorbScriptAndIndicatorParams = true) {
 			if (found == null) return;
@@ -99,12 +110,18 @@ namespace Sq1.Core.StrategyBase {
 				this.IndicatorParametersByName = found.IndicatorParametersByName;
 				this.CloneReferenceTypes(false);
 			}
+			
+			//some of these guys can easily be absorbed by object.MemberwiseClone(), why do I prefer to maintain the growing list manually?... 
 			//this.ChartBarSpacing = found.ChartBarSpacing;
-			this.ChartAutoSubmitting = found.ChartAutoSubmitting;
+			this.ChartEmittingOrders = found.ChartEmittingOrders;
 			this.BacktestOnRestart = found.BacktestOnRestart;
 			this.BacktestOnSelectorsChange = found.BacktestOnSelectorsChange;
 			this.BacktestOnDataSourceSaved = found.BacktestOnDataSourceSaved;
 			this.ReporterShortNamesUserInvokedJSONcheck = new List<string>(found.ReporterShortNamesUserInvokedJSONcheck);
+			this.FillOutsideQuoteSpreadParanoidCheckThrow = found.FillOutsideQuoteSpreadParanoidCheckThrow;
+			this.BacktestMode = found.BacktestMode;
+			this.SpreadModelerClassName = found.SpreadModelerClassName;
+			this.SpreadModelerPercent = found.SpreadModelerPercent;
 		}
 		public new ContextScript MemberwiseCloneMadePublic() {
 			return (ContextScript)base.MemberwiseClone();
@@ -114,7 +131,7 @@ namespace Sq1.Core.StrategyBase {
 			ret.CloneReferenceTypes();
 			return ret;
 		}
-		public ContextScript CloneGoingFromOptimizerToStrategy(string scriptContextNewName) {
+		public ContextScript CloneThatUserPushesFromOptimizerToStrategy(string scriptContextNewName) {
 			ContextScript ret = new ContextScript(scriptContextNewName);
 			ret.AbsorbFrom(this);
 			return ret;

@@ -31,6 +31,7 @@ namespace Sq1.Charting {
 		protected int	moveHorizontalYprev;
 
 		protected override void OnMouseEnter(EventArgs e) {
+			if (base.DesignMode) return;
 			base.OnMouseEnter(e);
 			this.scrollingHorizontally = false;
 			this.squeezingHorizontally = false;
@@ -41,6 +42,7 @@ namespace Sq1.Charting {
 			}
 		}
 		protected override void OnMouseLeave(EventArgs e) {
+			if (base.DesignMode) return;
 			base.OnMouseLeave(e);
 			
 			//this.ChartControl.TooltipPrice.ClientRectangle.Contains(e.
@@ -92,6 +94,7 @@ namespace Sq1.Charting {
 			base.OnMouseUp(e);
 		}
 		protected override void OnMouseMove(MouseEventArgs e) {
+			if (base.DesignMode) return;
 			if (this.ChartControl.IsBacktestingNow) {
 				this.Cursor = Cursors.WaitCursor;
 				return;

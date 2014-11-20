@@ -107,11 +107,11 @@ namespace Sq1.Strategies.Demo {
 			double upperLimit = dayOpenedAtPrice + dayOpenedAtPrice * 0.005;	//143.200 + 716 = 143.916 - most likely visible on the chart, not beoynd
 			double lowerLimit = dayOpenedAtPrice - dayOpenedAtPrice * 0.005;
 			
-			base.Executor.ChartConditionalLineDrawModify(lineId + "_red",
+			base.ChartConditionalLineDrawModify(lineId + "_red",
 				barFirstForCurrentTradingDay.ParentBarsIndex, upperLimit,
 				barStaticFormed.ParentBarsIndex, upperLimit,
 				Color.Red, 2);
-			base.Executor.ChartConditionalLineDrawModify(lineId + "_green",
+			base.ChartConditionalLineDrawModify(lineId + "_green",
 				barFirstForCurrentTradingDay.ParentBarsIndex, lowerLimit,
 				barStaticFormed.ParentBarsIndex, lowerLimit,
 				Color.Green, 2);
@@ -128,7 +128,7 @@ namespace Sq1.Strategies.Demo {
 			}
 
 			if (base.Bars.Count == base.Executor.Backtester.BarsOriginal.Count) {
-				base.Executor.ChartConditionalLineDrawModify("acrossAllBars",
+				base.ChartConditionalLineDrawModify("acrossAllBars",
 					0, base.Bars.BarStaticFirstNullUnsafe.Open,
 					base.Bars.BarStaticLastNullUnsafe.ParentBarsIndex, base.Bars.BarStaticLastNullUnsafe.Open,
 					Color.Goldenrod, 1);
@@ -136,7 +136,7 @@ namespace Sq1.Strategies.Demo {
 		}
 		void testBarBackground(Bar barStaticFormed) {
 			Color bg = (barStaticFormed.Open > barStaticFormed.Close) ? Color.LightGreen : Color.LightSalmon;
-			base.Executor.ChartConditionalBarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
+			base.ChartConditionalBarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
 		}
 		void testBarAnnotations(Bar barStaticFormed) {
 			int barIndex = barStaticFormed.ParentBarsIndex;

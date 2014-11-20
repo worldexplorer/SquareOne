@@ -74,10 +74,11 @@ namespace Sq1.Widgets.SteppingSlider {
 						+ "; remember you blew up on this.mniAllParamsResetToScriptDefaults.IsDisposed in TsiDynamic {get{}} in commit fb4c86e31ab6d67fa8b9aad2756e0f4b9c14d4db ?...";
 					continue;
 				}
-				base.Controls.Remove(slider);
+				//base.Controls.Remove(slider);
 				slider.Dispose();
 			}
-			// MOVED_UP_2_LINES base.Controls.Clear();
+			// MOVED_UP_2_LINES NOT_ENOUGH__EVERY_SLIDER_CLICK_WHOLE_BAG_MOVES_DOWN (!!!)
+			base.Controls.Clear();
 			try {
 				if (this.Strategy == null) return;
 				if (this.Strategy.Script == null) return;

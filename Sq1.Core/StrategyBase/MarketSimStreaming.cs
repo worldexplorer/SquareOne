@@ -9,13 +9,15 @@ namespace Sq1.Core.StrategyBase {
 	public class MarketSimStreaming {
 		ScriptExecutor executor;
 		List<Alert> stopLossesActivatedOnPreviousQuotes;
+		bool fillOutsideQuoteSpreadParanoidCheckThrow;
 
 		public MarketSimStreaming(ScriptExecutor executor) {
 			this.executor = executor;
 			this.stopLossesActivatedOnPreviousQuotes = new List<Alert>();
 		}
-		public void Initialize() {
+		public void Initialize(bool fillOutsideQuoteSpreadParanoidCheckThrow = false) {
 			this.stopLossesActivatedOnPreviousQuotes.Clear();
+			this.fillOutsideQuoteSpreadParanoidCheckThrow = fillOutsideQuoteSpreadParanoidCheckThrow;
 		}
 
 		public bool SimulateFill(Alert alert, out bool abortTryFill, out string abortTryFillReason) {
@@ -507,12 +509,10 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "ONE_ALERT_FILLED_REPORTED_MANY_WAS_FILLED SHOULD_NEVER_HAPPEN";
 					Assembler.PopupException(msg);
 				}
-				#if OUT_OF_SPREAD_PARANOID_CHECK
-				if (filled == 1) {
+				if (filled == 1 && this.fillOutsideQuoteSpreadParanoidCheckThrow == true) {
 					bool isFilledOutsideQuote	= alert.IsFilledOutsideQuote_DEBUG_CHECK;
 					bool isFilledOutsideBar		= alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK;
 				}
-				#endif
 
 				if (this.executor.ExecutionDataSnapshot.AlertsPendingContains(alert)) {
 					string msg = "normally, the filled alert already removed by CallbackAlertFilledMoveAroundInvokeScript()";

@@ -120,7 +120,7 @@ namespace Sq1.Widgets.Optimization {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			ContextScript selectedClone = selected.CloneGoingFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
+			ContextScript selectedClone = selected.CloneThatUserPushesFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
 			this.RaiseOnCopyToContextDefaultBacktest(selectedClone);
 		}
 		void mniCopyToDefaultCtx_Click(object sender, EventArgs e) {
@@ -158,7 +158,7 @@ namespace Sq1.Widgets.Optimization {
 				}
 			}
 			#endif
-			ContextScript selectedClone = selected.CloneGoingFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
+			ContextScript selectedClone = selected.CloneThatUserPushesFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
 			this.RaiseOnCopyToContextDefault(selectedClone);
 		}
 		void mniltbCopyToNewContext_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
@@ -177,7 +177,7 @@ namespace Sq1.Widgets.Optimization {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			ContextScript selectedClone = selected.CloneGoingFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
+			ContextScript selectedClone = selected.CloneThatUserPushesFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
 			this.RaiseOnCopyToContextNew(selectedClone);
 		}
 		void mniltbCopyToNewContextBacktest_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
@@ -196,7 +196,7 @@ namespace Sq1.Widgets.Optimization {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			ContextScript selectedClone = selected.CloneGoingFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
+			ContextScript selectedClone = selected.CloneThatUserPushesFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
 			this.RaiseOnCopyToContextNewBacktest(selectedClone);
 		}
 		void olvBacktests_CellClick(object sender, CellClickEventArgs e) {

@@ -105,13 +105,13 @@ namespace Sq1.Core.Charting {
 				Color color, int width, bool debugParametersDidntChange = false) {
 			throw new NotImplementedException();
 		}
-		public virtual bool BarBackgroundSet(int barIndex, Color color) {
+		public virtual bool BarBackgroundSet(int barIndex, Color colorBg) {
 			throw new NotImplementedException();
 		}
 		public virtual Color BarBackgroundGet(int barIndex) {
 			throw new NotImplementedException();
 		}
-		public virtual bool BarForegroundSet(int barIndex, Color color) {
+		public virtual bool BarForegroundSet(int barIndex, Color colorFg) {
 			throw new NotImplementedException();
 		}
 		public virtual Color BarForegroundGet(int barIndex) {
