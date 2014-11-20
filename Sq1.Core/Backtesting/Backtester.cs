@@ -16,13 +16,12 @@ namespace Sq1.Core.Backtesting {
 		public BacktestDataSource BacktestDataSource;
 		BacktestQuoteBarConsumer backtestQuoteBarConsumer;
 
-		bool setBacktestAborted = false;
-		public ManualResetEvent RequestingBacktestAbort = new ManualResetEvent(false);
-		public ManualResetEvent BacktestAborted = new ManualResetEvent(false);
-		// Calling ManualResetEvent.Set opens the gate,
-		// allowing any number of threads calling WaitOne to be let through
-		public ManualResetEvent BacktestIsRunning = new ManualResetEvent(false);
-		public ManualResetEvent BacktestCompletedQuotesCanGo = new ManualResetEvent(true);
+		bool setBacktestAborted;
+		public ManualResetEvent RequestingBacktestAbort;		// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
+		public ManualResetEvent BacktestAborted;
+		public ManualResetEvent BacktestIsRunning;
+		public ManualResetEvent BacktestCompletedQuotesCanGo;
+		
 
 		public int BarsSimulatedSoFar { get; private set; }
 		public int QuotesTotalToGenerate { get {
@@ -43,14 +42,24 @@ namespace Sq1.Core.Backtesting {
 				bool signalled = this.BacktestAborted.WaitOne(0);
 				return signalled;
 			} }
-		public Backtester(ScriptExecutor executor) {
-			this.backtestQuoteBarConsumer = new BacktestQuoteBarConsumer(this);
+
+		private Backtester() {
+			setBacktestAborted = false;
+			RequestingBacktestAbort = new ManualResetEvent(false);
+			BacktestAborted = new ManualResetEvent(false);
+			BacktestIsRunning = new ManualResetEvent(false);
+			BacktestCompletedQuotesCanGo = new ManualResetEvent(true);
+			backtestQuoteBarConsumer = new BacktestQuoteBarConsumer(this);
+			BacktestDataSource = new BacktestDataSource();
+		}
+
+		public Backtester(ScriptExecutor executor) : this() {
 			this.Executor = executor;
 			if (this.Executor.Strategy == null) return;
 			if (this.Executor.Strategy.Script == null) return;
-			this.Initialize(this.Executor.Strategy.Script.BacktestMode);
+			this.Initialize(this.Executor.Strategy.ScriptContextCurrent.BacktestMode);
 		}
-		public void Initialize(BacktestMode mode) {
+		public void Initialize(BacktestMode mode = BacktestMode.FourStrokeOHLC) {
 			this.BacktestMode = mode;
 			if (this.QuotesGenerator != null && this.QuotesGenerator.BacktestModeSuitsFor == mode) {
 				return;
@@ -60,7 +69,7 @@ namespace Sq1.Core.Backtesting {
 					this.QuotesGenerator = new BacktestQuotesGeneratorFourStroke(this);
 					break;
 				default:
-					string msg = "NYI: [" + this.Executor.Strategy.Script.BacktestMode + "]RunSimulation";
+					string msg = "NYI: [" + this.Executor.Strategy.ScriptContextCurrent.BacktestMode + "]RunSimulation";
 					#if DEBUG
 					Debugger.Break();
 					#endif
@@ -238,7 +247,33 @@ namespace Sq1.Core.Backtesting {
 				}
 
 				this.BarsSimulating = this.BarsOriginal.CloneNoBars("BACKTEST for " + this.BarsOriginal);
-				this.BacktestDataSource = new BacktestDataSource(this.BarsSimulating);
+				
+				#region candidate for this.BacktestDataSourceBuildFromUserSelection()
+				BacktestSpreadModeler spreadModeler;
+				// kept it on the surface and didn't pass ScriptContextCurrent.SpreadModelerPercent to "new BacktestDataSource()" because later BacktestDataSource:
+				// 1) will support different SpreadModelers with not only 1 parameter like SpreadModelerPercentage;
+				// 2) will support different BacktestModes like 12strokes, not only 4Stroke 
+				// 3) will poke StreamingProvider-derived implementations 12 times a bar with platform-generated quotes for backtests with regulated poke delay
+				// 4) will need to be provide visualized 
+				// v1 this.BacktestDataSource.BacktestStreamingProvider.InitializeSpreadModelerPercentage(this.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
+				// v2 UI-controlled in the future, right now the stub  
+				ContextScript ctx = this.Executor.Strategy.ScriptContextCurrent;
+				string msig = "Strategy[" + this.Executor.Strategy + "].ScriptContextCurrent[" + ctx + "]";
+				switch (ctx.SpreadModelerClassName) {
+					case "BacktestSpreadModelerPercentage":
+						spreadModeler = new BacktestSpreadModelerPercentage(this.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
+						break;
+					default:
+						string msg = "SPREAD_MODELER_NOT_YET_SUPPORTED[" + ctx.SpreadModelerClassName + "]"
+							+ ", instantiatind default BacktestSpreadModelerPercentage("
+							+ this.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent + ")";
+						Assembler.PopupException(msg + msig);
+						spreadModeler = new BacktestSpreadModelerPercentage(this.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
+						break;
+				}
+				this.BacktestDataSource.Initialize(this.BarsSimulating, spreadModeler);
+				#endregion
+				
 				this.BarsSimulating.DataSource = this.BacktestDataSource;
 
 				this.BacktestDataSource.StreamingProvider.ConsumerQuoteRegister(

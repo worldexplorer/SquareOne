@@ -24,7 +24,7 @@ namespace Sq1.Strategies.Demo {
 		}
 		
 		protected void log(string msg) {
-			if (this.ParametersById[2].ValueCurrent == 0.0) {
+			if (this.ScriptParametersById[2].ValueCurrent == 0.0) {
 				return;
 			}
 			string whereIam = "\n\r\n\rEnterEveryBar.cs now=[" + DateTime.Now.ToString("ddd dd-MMM-yyyy HH:mm:ss.fff") + "]";
@@ -49,11 +49,11 @@ namespace Sq1.Strategies.Demo {
 		}
 		void testChartLabelDrawOnNextLineModify() {
 			string parameterNameToLookup = "test";
-			if (base.ParametersByNameInlineCopy.ContainsKey(parameterNameToLookup) == false) {
+			if (base.ScriptParametersByNameInlineCopy.ContainsKey(parameterNameToLookup) == false) {
 				string msg = "if you renamed parameter [" + parameterNameToLookup + "] please ajdust the name here as well";
 				Assembler.PopupException(msg);
 			}
-			ScriptParameter param = base.ParametersByNameInlineCopy[parameterNameToLookup];
+			ScriptParameter param = base.ScriptParametersByNameInlineCopy[parameterNameToLookup];
 			double paramValue = param.ValueCurrent;
 			//Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
 			//base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);

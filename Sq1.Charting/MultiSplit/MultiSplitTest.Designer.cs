@@ -36,7 +36,7 @@ namespace Sq1.Charting.MultiSplit
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.multiSplitContainer1 = new Sq1.Charting.MultiSplit.MultiSplitContainer<System.Windows.Forms.Panel>();
+			this.multiSplitContainer1 = new Sq1.Charting.MultiSplit.MultiSplitContainerGeneric<System.Windows.Forms.Panel>();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.panel3 = new System.Windows.Forms.Panel();
@@ -102,6 +102,6 @@ namespace Sq1.Charting.MultiSplit
 		private System.Windows.Forms.Panel panel3;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.Panel panel1;
-		private Sq1.Charting.MultiSplit.MultiSplitContainer<System.Windows.Forms.Panel> multiSplitContainer1;
+		private Sq1.Charting.MultiSplit.MultiSplitContainerGeneric<System.Windows.Forms.Panel> multiSplitContainer1;
 	}
 }

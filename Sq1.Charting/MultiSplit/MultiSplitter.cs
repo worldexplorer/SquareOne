@@ -67,5 +67,16 @@ namespace Sq1.Charting.MultiSplit {
 			ret += ":" + this.Location.Y + "+" + this.Height + "=" + (this.Location.Y + this.Height);
 			return ret;
 		}
+
+		private void InitializeComponent() {
+			this.SuspendLayout();
+			// 
+			// MultiSplitter
+			// 
+			this.Name = "MultiSplitter";
+			this.Size = new System.Drawing.Size(783, 10);
+			this.ResumeLayout(false);
+
+		}
 	}
 }

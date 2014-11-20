@@ -6,8 +6,7 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Adapters.QuikMock {
 	public partial class BrokerMockEditor {
-		public Account Account {
-			get {
+		public Account Account { get {
 				Account ret;
 				try {
 					ret = new Account(this.txtQuikAccount.Text,
@@ -22,10 +21,8 @@ namespace Sq1.Adapters.QuikMock {
 				if (value == null) return;
 				this.txtQuikAccount.Text = value.AccountNumber;
 				this.txtCashAvailable.Text = value.CashAvailable.ToString();
-			}
-		}
-		public int RejectFirstNOrders {
-			get {
+			} }
+		public int RejectFirstNOrders { get {
 				int ret = 0;
 				try {
 					ret = Convert.ToInt32(this.txtRejectFirstNOrders.Text);
@@ -57,8 +54,7 @@ namespace Sq1.Adapters.QuikMock {
 				if (value == 2) this.rbtnCrossMarket.Checked = true;
 			}
 		}
-		public int ExecutionDelayMillis {
-			get {
+		public int ExecutionDelayMillis { get {
 				int ret = 0;
 				try {
 					ret = Convert.ToInt32(this.txtExecutionDelayMillis.Text);

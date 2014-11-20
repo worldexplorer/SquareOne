@@ -82,7 +82,8 @@ namespace Sq1.Core.Streaming {
 					streamingSolidifiersPoked++;
 					if (streamingSolidifiersPoked > 1) {
 						string msg = "two streaming charts open with same Symbol/Interval, both with their StreamingSolidifiers subscribed"
-							+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingProvider?...";
+							+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingProvider?..."
+							+ " Save datasource must fully unregister consumers and register again to avoid StreamingSolidifier dupes";
 						Assembler.PopupException(msg + msig);
 						continue;
 					}

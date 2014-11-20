@@ -71,8 +71,14 @@ namespace Sq1.Widgets {
 //			this.IsFormClosed = true;
 //			base.OnFormClosed(e);
 //		}
-		
+
+
 		public void ShowAsDocumentTabNotPane(DockPanel dockPanel) {
+			if (this.IsShown) {
+				this.ActivateDockContentPopupAutoHidden(false, true);
+				return;
+			}
+
 			var docs = dockPanel.DocumentsToArray();
 			if (docs.Length == 0) {
 				this.Show(dockPanel, DockState.Document);
@@ -88,11 +94,12 @@ namespace Sq1.Widgets {
 			this.Show(dockPanel, DockState.Document);
 		}
 
-		
-		public bool IsFloatingWindow { get { return this.DockState == DockState.Float; } }
-		public bool IsInDocumentArea { get { return this.DockState == DockState.Document; } }
-		public bool IsDocked { get { return DockHelper.IsDockWindowState(this.DockState); } }
-		public bool IsDockedAutoHide { get { return DockHelper.IsDockStateAutoHide(this.DockState); } }
+
+		public bool IsShown				{ get { return this.DockState != DockState.Unknown; } }
+		public bool IsFloatingWindow	{ get { return this.DockState == DockState.Float; } }
+		public bool IsInDocumentArea	{ get { return this.DockState == DockState.Document; } }
+		public bool IsDocked			{ get { return DockHelper.IsDockWindowState(this.DockState); } }
+		public bool IsDockedAutoHide	{ get { return DockHelper.IsDockStateAutoHide(this.DockState); } }
 		public bool IsCoveredOrAutoHidden { get {
 				if (this.IsDockedAutoHide) return true;
 				if (this.IsDocked) {
@@ -132,18 +139,18 @@ namespace Sq1.Widgets {
 				#endif
 				return true;
 			} }
+		public bool MustBeActivated		{ get { return this.IsShown ? this.IsCoveredOrAutoHidden : false; } }
 
 		// moved from modified WelfenLuoBlaBlaBla.DockHandler to restore release-state of DockContent library (not fully restored, though)
 		public void ActivateDockContentPopupAutoHidden(bool keepAutoHidden = true, bool activate = true) {
 			if (this.IsDocked) {
-				if (activate) this.Activate();
 				//if (keepAutoHidden) this.ToggleAutoHide();
-			} else if (this.IsDockedAutoHide) {
+			} else if (this.IsDockedAutoHide || this.DockState == DockState.Hidden) {
 				if (keepAutoHidden == false) {
 					this.ToggleAutoHide();
 				}
-				if (activate) this.Activate();
 			}
+			if (activate) this.Activate();
 		}
 
 		public void ToggleAutoHide() {
@@ -182,9 +189,7 @@ namespace Sq1.Widgets {
 			#endif
 			base.OnResize(e);
 		}
-		public bool NullOrDisposed { get { 
-				return DockContentImproved.IsNullOrDisposed(this);
-			}}
+		public bool NullOrDisposed { get { return DockContentImproved.IsNullOrDisposed(this); } }
 		public static bool IsNullOrDisposed(Form form) {
 			if (form == null) return true;
 			if (form.IsDisposed) return true;

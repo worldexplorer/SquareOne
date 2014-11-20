@@ -155,43 +155,54 @@ namespace Newtonsoft.Json.Serialization
                 return;
             }
 
-            switch (valueContract.ContractType)
-            {
-                case JsonContractType.Object:
-                    SerializeObject(writer, value, (JsonObjectContract)valueContract, member, containerContract, containerProperty);
-                    break;
-                case JsonContractType.Array:
-                    JsonArrayContract arrayContract = (JsonArrayContract)valueContract;
-                    if (!arrayContract.IsMultidimensionalArray)
-                        SerializeList(writer, (IEnumerable)value, arrayContract, member, containerContract, containerProperty);
-                    else
-                        SerializeMultidimensionalArray(writer, (Array)value, arrayContract, member, containerContract, containerProperty);
-                    break;
-                case JsonContractType.Primitive:
-                    SerializePrimitive(writer, value, (JsonPrimitiveContract)valueContract, member, containerContract, containerProperty);
-                    break;
-                case JsonContractType.String:
-                    SerializeString(writer, value, (JsonStringContract)valueContract);
-                    break;
-                case JsonContractType.Dictionary:
-                    JsonDictionaryContract dictionaryContract = (JsonDictionaryContract)valueContract;
-                    SerializeDictionary(writer, (value is IDictionary) ? (IDictionary)value : dictionaryContract.CreateWrapper(value), dictionaryContract, member, containerContract, containerProperty);
-                    break;
-#if !(NET35 || NET20 || PORTABLE40)
-                case JsonContractType.Dynamic:
+			// wrapping with TRY-CATCH helps to identify which PavelChuchkalov
+			try {
+				switch (valueContract.ContractType)
+				{
+					case JsonContractType.Object:
+						SerializeObject(writer, value, (JsonObjectContract)valueContract, member, containerContract, containerProperty);
+						break;
+					case JsonContractType.Array:
+						JsonArrayContract arrayContract = (JsonArrayContract)valueContract;
+						if (!arrayContract.IsMultidimensionalArray)
+							SerializeList(writer, (IEnumerable)value, arrayContract, member, containerContract, containerProperty);
+						else
+							SerializeMultidimensionalArray(writer, (Array)value, arrayContract, member, containerContract, containerProperty);
+						break;
+					case JsonContractType.Primitive:
+						SerializePrimitive(writer, value, (JsonPrimitiveContract)valueContract, member, containerContract, containerProperty);
+						break;
+					case JsonContractType.String:
+						SerializeString(writer, value, (JsonStringContract)valueContract);
+						break;
+					case JsonContractType.Dictionary:
+						JsonDictionaryContract dictionaryContract = (JsonDictionaryContract)valueContract;
+						SerializeDictionary(writer, (value is IDictionary) ? (IDictionary)value : dictionaryContract.CreateWrapper(value), dictionaryContract, member, containerContract, containerProperty);
+						break;
+	#if !(NET35 || NET20 || PORTABLE40)
+															case JsonContractType.Dynamic:
                     SerializeDynamic(writer, (IDynamicMetaObjectProvider)value, (JsonDynamicContract)valueContract, member, containerContract, containerProperty);
                     break;
-#endif
-#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
-                case JsonContractType.Serializable:
-                    SerializeISerializable(writer, (ISerializable)value, (JsonISerializableContract)valueContract, member, containerContract, containerProperty);
-                    break;
-#endif
-                case JsonContractType.Linq:
-                    ((JToken)value).WriteTo(writer, Serializer.Converters.ToArray());
-                    break;
-            }
-        }
+	#endif
+	#if !(NETFX_CORE || PORTABLE40 || PORTABLE)
+					case JsonContractType.Serializable:
+						SerializeISerializable(writer, (ISerializable)value, (JsonISerializableContract)valueContract, member, containerContract, containerProperty);
+						break;
+	#endif
+					case JsonContractType.Linq:
+						((JToken)value).WriteTo(writer, Serializer.Converters.ToArray());
+						break;
+				}
+			} catch (Exception ex) {
+				//bool thereIsHandler = IsErrorHandled(underlyingDictionary, containerContract, propertyName, null, writer.ContainerPath, ex);
+				//if (thereIsHandler) {
+				//	this.HandleError(writer, initialDepth);
+				//} else {
+					string msg = "member[" + member.ToString() + "] value[" + value.ToString() + "] type[" + value.GetType().ToString() + "]";
+					throw new Exception(msg, ex);
+				//}
+			}
+		}
 
         private bool? ResolveIsReference(JsonContract contract, JsonProperty property, JsonContainerContract collectionContract, JsonProperty containerProperty)
         {

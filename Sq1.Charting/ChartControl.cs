@@ -8,6 +8,7 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
+using Sq1.Charting.MultiSplit;
 
 namespace Sq1.Charting {
 	public partial class ChartControl {
@@ -18,6 +19,9 @@ namespace Sq1.Charting {
 		public bool RangeBarCollapsed {
 			get { return this.splitContainerChartVsRange.Panel2Collapsed; }
 			set { this.splitContainerChartVsRange.Panel2Collapsed = value; }
+			//Designer was complaining about NullReference; I was fixing NullPointer here....
+			//get { return this.splitContainerChartVsRange == null ? false : this.splitContainerChartVsRange.Panel2Collapsed; }
+			//set { if (this.splitContainerChartVsRange == null) return; this.splitContainerChartVsRange.Panel2Collapsed = value; }
 		}
 
 		// all cached variables must be calculated once per frame (once per ChartControl.PaintBackgroundWholeSurfaceBarsNotEmpty)
@@ -32,9 +36,18 @@ namespace Sq1.Charting {
 		public ChartControl() {
 			this.ChartSettings = new ChartSettings(); // was a component, used at InitializeComponent() (to draw SampleBars)
 			this.ScriptExecutorObjects = new ScriptExecutorObjects();
-			if (base.DesignMode) return;
+
 			InitializeComponent();
 			//when previous line doesn't help and Designer still throws exceptions return;
+			
+			// moved here from Designer to Make ChartForm work is Designer (third button)  
+			this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelVolume);
+			this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelPrice);
+
+			// doesn't live well in InitializeComponent(), designer barks 
+			this.multiSplitContainer.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitContainer.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
+
 
 			this.AutoScroll = false;
 			//this.HScroll = true;
@@ -43,6 +56,12 @@ namespace Sq1.Charting {
 			panels = new List<PanelBase>();
 			panels.Add(this.panelPrice);
 			panels.Add(this.panelVolume);
+
+			//v1 1/2 making ChartForm editable in Designer: exit to avoid InitializeCreateSplittersDistributeFor() below throw
+			//if (base.DesignMode) return; // Generics in InitializeComponent() cause Designer to throw up (new Sq1.Charting.MultiSplit.MultiSplitContainer<PanelBase>())
+			//v2 uncomment if you are opening ChartForm in Designer to make it editable; v1 doens't work!?!!
+			// return;
+
 			this.multiSplitContainer.InitializeCreateSplittersDistributeFor(panels);
 
 			// Splitter might still notify them for Resize() during startup (while only multiSplitter's size should generate Resize in nested controls)  
@@ -56,6 +75,10 @@ namespace Sq1.Charting {
 			this.panelPrice.Initialize(this);
 			this.panelVolume.Initialize(this);
 
+			#region 1/2 making ChartForm editable in Designer; I left that cumbersome because haven't finished investigation how to make ChartForm show ChartControl
+			// this.Initialize()_BELOW_MAKES_DESIGNER_THROW_DUE_TO_ASSEMBLER_NON_INSTANTIATED
+			return;
+
 			//this.chartRenderer.Initialize(this);
 			BarScaleInterval chartShouldntCare = new BarScaleInterval(BarScale.Minute, 5);
 			//REFLECTION_FAILS_FOR_DESIGNER BarsBasic.GenerateRandom(chartShouldntCare)
@@ -63,6 +86,7 @@ namespace Sq1.Charting {
 			Bars generated = new Bars("RANDOM", chartShouldntCare, "test-ChartControl-DesignMode");
 			generated.GenerateAppend();
 			this.Initialize(generated);
+			#endregion
 		}
 		public void Initialize(Bars barsNotNull, bool invalidateAllPanels = true) {
 			this.barEventsDetach();
@@ -112,7 +136,7 @@ namespace Sq1.Charting {
 			this.TooltipPriceHide();
 			this.TooltipPositionHide();
 		}
-		private void scrollToBarSafely(int bar) {
+		void scrollToBarSafely(int bar) {
 			if (bar > this.hScrollBar.Maximum) bar = this.hScrollBar.Maximum;
 			if (bar < this.hScrollBar.Minimum) bar = this.hScrollBar.Minimum;
 			this.ChartSettings.ScrollPositionAtBarIndex = bar;
@@ -268,7 +292,7 @@ namespace Sq1.Charting {
 			this.tooltipPositionShowXY(alertArrow, xPosition, yPosition);
 		}
 
-		private void tooltipPositionShowXY(AlertArrow alertArrowToPopup, int xPosition, int yPosition) {
+		void tooltipPositionShowXY(AlertArrow alertArrowToPopup, int xPosition, int yPosition) {
 			Point newLocation = new Point(xPosition, yPosition);
 			//DOESNT_SHOWUP_MOUSE_BETWEEN_ARROW_AND_BAR
 			//if (this.tooltipPosition.Location == newLocation) {	//Point is a structure with Equals() overriden => we are safe to compare
@@ -281,7 +305,7 @@ namespace Sq1.Charting {
 			this.tooltipPosition.Location = newLocation;
 			this.tooltipPosition.Visible = true;
 		}
-		private void tooltipPriceShowXY(Bar barToPopulate, int x, int y) {
+		void tooltipPriceShowXY(Bar barToPopulate, int x, int y) {
 			Point newLocation = new Point(x, y);
 			//DOESNT_SHOWUP_MOUSE_BETWEEN_ARROW_AND_BAR
 			if (this.tooltipPrice.Location == newLocation) {	//REMOVES_FLICKERING Point is a structure with Equals() overriden => we are safe to compare

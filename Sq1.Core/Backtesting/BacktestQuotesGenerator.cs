@@ -29,9 +29,9 @@ namespace Sq1.Core.Backtesting {
 		protected QuoteGenerated generateNewQuoteChildrenHelper(int intraBarSerno, string whoGenerated, string symbol, DateTime serverTime,
 				BidOrAsk bidOrAsk, double priceFromAlignedBar, double volume, Bar barSimulated) {
 			QuoteGenerated ret = new QuoteGenerated(serverTime);
-			ret.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;
 			ret.ServerTime = serverTime;
-			ret.IntraBarSerno = intraBarSerno;
+			//FILLED_LATER_DONT_CONFUSE_STREAMING_PROVIDER ret.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;
+			//FILLED_LATER_DONT_CONFUSE_STREAMING_PROVIDER ret.IntraBarSerno = intraBarSerno;
 			ret.Source = whoGenerated;
 			ret.Symbol = symbol;
 			ret.SymbolClass = this.backtester.BarsOriginal.SymbolInfo.SymbolClass;

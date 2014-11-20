@@ -7,6 +7,7 @@ using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {	// the following wrappers only make sense for optimization, when Executor.ChartShadow=null
+		// COMPILATION_ERROR??? public => internal block access from Script-derived and to enforce usage of Script's wrappers for the same methods
 //		public  void ChartConditionalSetIndicators(Dictionary<string, Indicator> indicators) {
 //			if (this.ChartShadow == null) return;
 //			this.ChartShadow.SetIndicators(indicators);
@@ -47,17 +48,17 @@ namespace Sq1.Core.StrategyBase {
 			return this.ChartShadow.LineDrawModify(id, barStart, priceStart, barEnd, priceEnd,
 				color, width, debugParametersDidntChange);
 		}
-		public void ChartConditionalBarBackgroundSet(int barsIndex, Color bg) {
+		public void ChartConditionalBarBackgroundSet(int barsIndex, Color colorBg) {
 			if (this.ChartShadow == null) return;
-			this.ChartShadow.BarBackgroundSet(barsIndex, bg);
+			this.ChartShadow.BarBackgroundSet(barsIndex, colorBg);
 		}
 		public Color ChartConditionalBarBackgroundGet(int barIndex) {
 			if (this.ChartShadow == null) return Color.Empty;
 			return this.ChartShadow.BarBackgroundGet(barIndex);
 		}
-		public bool ChartConditionalBarForegroundSet(int barIndex, Color color) {
+		public bool ChartConditionalBarForegroundSet(int barIndex, Color colorFg) {
 			if (this.ChartShadow == null) return true;
-			return this.ChartShadow.BarForegroundSet(barIndex, color);
+			return this.ChartShadow.BarForegroundSet(barIndex, colorFg);
 		}
 		public Color ChartConditionalBarForegroundGet(int barIndex) {
 			if (this.ChartShadow == null) return Color.Empty;

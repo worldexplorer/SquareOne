@@ -49,8 +49,10 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlertArrow.cs" />
@@ -73,15 +75,22 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MultiSplit\MultiSplitContainer.cs">
+    <Compile Include="MultiSplit\MultiSplitContainerOfPanelBase.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MultiSplit\MultiSplitContainer.EventConsumer.cs">
-      <DependentUpon>MultiSplitContainer.cs</DependentUpon>
+    <Compile Include="MultiSplit\MultiSplitContainerGeneric.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MultiSplit\MultiSplitContainer.EventGenerator.cs">
-      <DependentUpon>MultiSplitContainer.cs</DependentUpon>
+    <Compile Include="MultiSplit\MultiSplitContainerGeneric.EventConsumer.cs">
+      <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MultiSplit\MultiSplitContainerGeneric.EventGenerator.cs">
+      <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MultiSplit\MultiSplitContainerOfPanelBase.EventGenerator.cs">
+      <DependentUpon>MultiSplitContainerOfPanelBase.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="MultiSplit\MultiSplitterEventArgs.cs" />
@@ -141,6 +150,9 @@
   <ItemGroup>
     <EmbeddedResource Include="ChartControl.resx">
       <DependentUpon>ChartControl.Designer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MultiSplit\MultiSplitter.resx">
+      <DependentUpon>MultiSplitter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MultiSplit\MultiSplitTest.resx">
       <DependentUpon>MultiSplitTest.cs</DependentUpon>

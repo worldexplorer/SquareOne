@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Sq1.Core;
-using Sq1.Core.DataFeed;
 using Sq1.Core.Streaming;
-using Sq1.Core.Support;
 
 namespace Sq1.Adapters.QuikMock {
 	[ToolboxBitmap(typeof(StreamingMockEditor), "StreamingMock")]
@@ -33,7 +29,7 @@ namespace Sq1.Adapters.QuikMock {
 			// 
 			this.txtQuoteDelay.Location = new System.Drawing.Point(3, 16);
 			this.txtQuoteDelay.Name = "txtQuoteDelay";
-			this.txtQuoteDelay.Size = new System.Drawing.Size(93, 20);
+			this.txtQuoteDelay.Size = new System.Drawing.Size(43, 20);
 			this.txtQuoteDelay.TabIndex = 9;
 			this.txtQuoteDelay.Text = "500";
 			this.txtQuoteDelay.TextChanged += new System.EventHandler(this.txtQuoteDelay_TextChanged);
@@ -51,7 +47,7 @@ namespace Sq1.Adapters.QuikMock {
 			// cbxGeneratingNow
 			// 
 			this.cbxGeneratingNow.AutoSize = true;
-			this.cbxGeneratingNow.Location = new System.Drawing.Point(3, 81);
+			this.cbxGeneratingNow.Location = new System.Drawing.Point(52, 18);
 			this.cbxGeneratingNow.Name = "cbxGeneratingNow";
 			this.cbxGeneratingNow.Size = new System.Drawing.Size(101, 17);
 			this.cbxGeneratingNow.TabIndex = 15;
@@ -91,7 +87,7 @@ namespace Sq1.Adapters.QuikMock {
 			this.Controls.Add(this.lblQuoteDelay);
 			this.Controls.Add(this.txtQuoteDelay);
 			this.Name = "StreamingMockEditor";
-			this.Size = new System.Drawing.Size(240, 105);
+			this.Size = new System.Drawing.Size(240, 83);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

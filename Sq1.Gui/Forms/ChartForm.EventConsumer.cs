@@ -8,9 +8,7 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
-using Sq1.Widgets;
 using Sq1.Widgets.LabeledTextBox;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
@@ -55,7 +53,9 @@ namespace Sq1.Gui.Forms {
 					this.ChartFormManager.ChartStreamingConsumer.StopStreaming();
 				}
 				this.PopulateBtnStreamingClickedAndText();
-				this.RaiseStreamingButtonStateChanged();
+				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
+				//WHO_ELSE_NEEDS_IT? this.RaiseStreamingButtonStateChanged();
+				this.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 			} catch (Exception ex) {
 				Assembler.PopupException(ex.Message);
 			}
@@ -63,6 +63,7 @@ namespace Sq1.Gui.Forms {
 		void btnAutoSubmit_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnAutoSubmit.CheckOnClick=True this.BtnAutoSubmit.Checked = !this.BtnAutoSubmit.Checked;;
 			this.ChartFormManager.Executor.IsAutoSubmitting = this.btnAutoSubmit.Checked;
+			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
 		}
 		void mniBacktestOnEveryChange_Click(object sender, System.EventArgs e) {
 			try {
@@ -138,6 +139,7 @@ namespace Sq1.Gui.Forms {
 				BarScaleInterval scaleIntervalUserEntered = new BarScaleInterval(barScaleTyped, userTypedInteger);
 				ContextChart context = this.ChartFormManager.ContextCurrentChartOrStrategy;
 				context.ScaleInterval = scaleIntervalUserEntered;
+				
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mniltbAll_UserTyped");
 				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 			} catch (Exception ex) {
@@ -263,6 +265,40 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped()", ex);
 			}
 		}
+		void mniOutsideQuoteFillCheckThrow_Click(object sender, EventArgs e) {
+			ContextScript context = this.ChartFormManager.Strategy.ScriptContextCurrent;
+			context.FillOutsideQuoteSpreadParanoidCheckThrow = this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Checked;
+			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
+			this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mniOutOfQuoteFillThrow_Click");
+		}
+		void mnitlbSpreadGeneratorPct_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			try {
+				string userTyped = e.StringUserTyped;
+				double userTypedDouble;
+				bool validInteger = Double.TryParse(userTyped, out userTypedDouble);
+				if (validInteger == false) {
+					e.HighlightTextWithRed = true;
+					return;
+				}
+				if (userTypedDouble <= 0) {
+					e.HighlightTextWithRed = true;
+					return;
+				}
+				
+				ContextScript context = this.ChartFormManager.Strategy.ScriptContextCurrent;
+				context.SpreadModelerPercent = userTypedDouble;
+				
+				if (this.ChartFormManager.Executor.Backtester.BacktestDataSource == null) {
+					this.ChartFormManager.Executor.Backtester.Initialize();
+				}
+
+				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");
+				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+			} catch (Exception ex) {
+				Assembler.PopupException("mnitlbSpreadGeneratorPct_UserTyped()", ex);
+			}
+		}
+		
 //NOT_INVOKED_FOR_FORM
 //		protected override bool IsInputKey(Keys keyData) {
 //			Debugger.Break();

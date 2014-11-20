@@ -1,6 +1,6 @@
 {
   "$type": "Sq1.Core.StrategyBase.Strategy, Sq1.Core",
-  "Guid": "b04c88a3-7886-4edd-b218-5feba0e435fc",
+  "Guid": "05af56d0-3c34-42dd-ad34-0dd5a70646f5",
   "Name": "ATRbandCompiled",
   "ScriptSourceCode": null,
   "DotNetReferences": null,
@@ -19,9 +19,9 @@
         "SharesConstantEachTrade": 1.0
       },
       "IsCurrent": false,
-      "ChartAutoSubmitting": false,
+      "ChartEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
-      "BacktestOnRestart": false,
+      "BacktestOnRestart": true,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
@@ -36,23 +36,27 @@
       "SlippageUnits": 1.0,
       "SlippageTicks": 1,
       "PriceLevelSizeForBonds": 0,
+      "FillOutsideQuoteSpreadParanoidCheckThrow": false,
+      "SpreadModelerClassName": "BacktestSpreadModelerPercentage",
+      "SpreadModelerPercent": 0.005,
+      "BacktestMode": 4,
       "Name": "Default",
-      "Symbol": "RIM3",
-      "DataSourceName": "MOCK",
+      "Symbol": "autogen",
+      "DataSourceName": "Qmock",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
-        "Interval": 5,
+        "Interval": 10,
         "IsIntraday": true,
-        "AsTimeSpanInSeconds": 300,
-        "AsTimeSpan": "00:05:00"
+        "AsTimeSpanInSeconds": 600,
+        "AsTimeSpan": "00:10:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
         "Range": 1,
         "StartDate": "0001-01-01T00:00:00",
         "EndDate": "9999-12-31T23:59:59.9999999",
-        "RecentBars": 10000,
+        "RecentBars": 500,
         "RecentTimeunits": 0
       },
       "ChartStreaming": false,
@@ -67,7 +71,7 @@
           "ValueMin": 0.0,
           "ValueMax": 10.0,
           "ValueIncrement": 1.0,
-          "ValueCurrent": 0.0,
+          "ValueCurrent": 5.0,
           "BorderShown": false,
           "NumericUpdownShown": true
         }
@@ -77,21 +81,11 @@
         "ATR": [
           {
             "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-            "Name": "Multiplier",
-            "ValueMin": 0.1,
-            "ValueMax": 4.0,
-            "ValueIncrement": 0.1,
-            "ValueCurrent": 2.3,
-            "BorderShown": false,
-            "NumericUpdownShown": true
-          },
-          {
-            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
             "Name": "Period",
             "ValueMin": 1.0,
             "ValueMax": 11.0,
             "ValueIncrement": 2.0,
-            "ValueCurrent": 7.0,
+            "ValueCurrent": 5.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }
@@ -103,7 +97,7 @@
             "ValueMin": 0.1,
             "ValueMax": 10.0,
             "ValueIncrement": 0.1,
-            "ValueCurrent": 4.0,
+            "ValueCurrent": 1.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }

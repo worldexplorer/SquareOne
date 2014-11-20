@@ -1,7 +1,8 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "NO_STRATEGY_CHART_ONLY",
-  "StrategyNameJsonCheck": "EnterEveryBarCompiled",
+  "StrategyGuidJsonCheck": "7725f2be-42e2-495f-8d71-5ecd0c305d29",
+  "StrategyNameJsonCheck": "TwoMAs",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -10,8 +11,22 @@
     "GutterBottomDateFormatDaily": "ddd dd-MMM",
     "GutterBottomDateFormatWeekly": "MMM-yy",
     "GutterBottomDateFormatYearly": "yyyy",
+    "MultiSplitterPropertiesByPanelName": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
+      "Price": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 0,
+        "Distance": 0
+      },
+      "Volume": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 135
+      }
+    },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 9,
+    "BarWidthIncludingPadding": 2,
+    "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
     "PriceColorBarDown": "IndianRed",
@@ -35,7 +50,8 @@
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
     "SqueezeVerticalPaddingPx": 0,
-    "SqueezeHorizontalStep": 1,
+    "SqueezeVerticalPaddingStep": 10,
+    "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
     "SqueezeHorizontalKeyOnePressReceivedToOneStep": 1,
     "TooltipPriceShow": true,
@@ -43,7 +59,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 80,
+    "ScrollPositionAtBarIndex": 0,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -59,18 +75,28 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 238,
+    "PriceVsVolumeSplitterDistance": 0,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
     "MousePositionTrackOnGutters": true,
     "MousePositionTrackOnGuttersColor": "LightGray",
-    "BarsBackgroundTransparencyAlfa": 32,
+    "BarsBackgroundTransparencyAlpha": 24,
     "ChartLabelsUpperLeftYstartTopmost": 18,
     "ChartLabelsUpperLeftX": 5,
     "ChartLabelsUpperLeftPlatePadding": 1,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
-    "ChartLabelsUpperLeftIndicatorSquareSize": 5
+    "ChartLabelsUpperLeftIndicatorSquareSize": 5,
+    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3,
+    "SpreadBidLineColor": "Gray",
+    "SpreadBidLineColorAlpha": 64,
+    "SpreadBidLineWidth": 1,
+    "SpreadAskLineColor": "Orange",
+    "SpreadAskLineColorAlpha": 64,
+    "SpreadAskLineWidth": 1,
+    "SpreadLabelFont": "Consolas, 8pt",
+    "SpreadLabelColor": "DarkGray"
   },
-  "ChartSerno": 11
+  "ChartSerno": 3,
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json], ScriptContextCurrentName[?Default?]"
 }

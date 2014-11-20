@@ -86,7 +86,7 @@
     </Compile>
     <Compile Include="Forms\ChartFormDataSnapshot.cs" />
     <Compile Include="Forms\ChartFormManager.cs" />
-    <Compile Include="Forms\ChartFormEventManager.cs" />
+    <Compile Include="Forms\ChartFormExternalEventsConsumer.cs" />
     <Compile Include="Forms\ChartFormStreamingConsumer.cs" />
     <Compile Include="Forms\OptimizerForm.cs">
       <SubType>Form</SubType>

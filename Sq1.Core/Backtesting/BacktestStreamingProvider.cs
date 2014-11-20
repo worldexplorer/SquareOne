@@ -8,16 +8,20 @@ namespace Sq1.Core.Backtesting {
 	[SkipInstantiationAt(Startup = true)]
 	public class BacktestStreamingProvider : StreamingProvider {
 		public BacktestSpreadModeler SpreadModeler;
+		public const double PERCENTAGE_DEFAULT= 0.005;
 
-		public BacktestStreamingProvider() {
-			string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
-			//throw new Exception(msg);
-		}
-		public BacktestStreamingProvider(string symbol) : base() {
+//		public BacktestStreamingProvider() {
+//			string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
+//			//throw new Exception(msg);
+//		}
+		public BacktestStreamingProvider() : base() {
 			base.Name = "BacktestStreamingProvider";
+//			this.InitializeSpreadModelerPercentage(PERCENTAGE_DEFAULT);
+//		}
+//		public void InitializeSpreadModelerPercentage(double pct) {
 			//greater than BacktestSpreadModelerPercentageOfMedian(0.01) will make ATRband inconsistent! you'll see in TooltipPrice (Close+ATR != C+Upper) & SPREAD_MODELER_SHOULD_GENERATE_TIGHTER_SPREADS
 			//for medianPrice[80.36],percentageOfMedian[0.01] => spread[0.008036] => Bid[~80.35598],Ask[~80.36402]
-			this.SpreadModeler = new BacktestSpreadModelerPercentage(0.005);
+			this.SpreadModeler = new BacktestSpreadModelerPercentage(PERCENTAGE_DEFAULT);
 		}
 
 		public void GeneratedQuoteEnrichSymmetricallyAndPush(QuoteGenerated quote, Bar bar2simulate, double priceForSymmetricFillAtOpenOrClose = -1) {

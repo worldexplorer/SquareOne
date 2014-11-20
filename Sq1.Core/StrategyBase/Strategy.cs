@@ -32,7 +32,7 @@ namespace Sq1.Core.StrategyBase {
 		//				} }
 		[JsonIgnore]	public string ScriptParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
 				if (this.Script == null) return null;
-				return this.Script.ScriptParametersAsString;
+				return this.Script.ScriptParametersByIdAsString;
 			} }
 		[JsonIgnore]	public string IndicatorParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
 				if (this.Script == null) return null;
@@ -112,19 +112,19 @@ namespace Sq1.Core.StrategyBase {
 			//ScriptParameters are only identical objects between script context and sliders.tags, while every click-change is pushed into Script.ParametersByID)
 			int paramId = scriptParameter.Id;
 			double valueNew = scriptParameter.ValueCurrent;
-			if (this.Script.ParametersById.ContainsKey(paramId) == false) {
+			if (this.Script.ScriptParametersById.ContainsKey(paramId) == false) {
 				string msg = "YOU_CHANGED_SCRIPT_PARAMETER_WHICH_NO_LONGER_EXISTS_IN_SCRIPT";
 				Assembler.PopupException(msg);
 				return;
 			}
 
-			double valueOld = this.Script.ParametersById[paramId].ValueCurrent;
+			double valueOld = this.Script.ScriptParametersById[paramId].ValueCurrent;
 			if (valueOld == valueNew) {
 				string msg = "SLIDER_CHANGED_TO_VALUE_SCRIPT_PARAMETER_ALREADY_HAD [" + valueOld + "]=[" + valueNew + "]";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.Script.ParametersById[paramId].ValueCurrent = valueNew;
+			this.Script.ScriptParametersById[paramId].ValueCurrent = valueNew;
 		}
 		public void PushChangedIndicatorParameterValueToScriptAndSerialize(IndicatorParameter iParamChangedCtx) {
 			//new concept that IndicatorParameters are only identical objects between script context and sliders.tags, while every click-change is absorbed by snapshot.IndicatorsInstancesReflected

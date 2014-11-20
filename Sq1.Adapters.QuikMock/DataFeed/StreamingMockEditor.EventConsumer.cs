@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using Sq1.Core;
-
 namespace Sq1.Adapters.QuikMock {
 	public partial class StreamingMockEditor {
 		void txtQuoteDelay_KeyDown(object sender, KeyEventArgs e) {

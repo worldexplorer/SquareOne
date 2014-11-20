@@ -94,11 +94,11 @@ namespace Sq1.Gui.Forms {
 				OptimizerForm optimizer = this.OptimizerForm;
 				bool optimizerNotInstantiated = DockContentImproved.IsNullOrDisposed(optimizer);
 				if (optimizerNotInstantiated) return optimizerMustBeActivated;
-				optimizerMustBeActivated = optimizer.IsCoveredOrAutoHidden;
+				optimizerMustBeActivated = optimizer.MustBeActivated;
 				return !optimizerMustBeActivated;
 			} }
 		
-		public ChartFormEventManager EventManager;
+		public ChartFormExternalEventsConsumer ExternalEventsConsumer;
 		public bool ScriptEditedNeedsSaving;
 		public ChartFormStreamingConsumer ChartStreamingConsumer;
 		
@@ -178,11 +178,11 @@ namespace Sq1.Gui.Forms {
 			this.ChartForm.DdbStrategy.Enabled = false;
 			this.ChartForm.MniShowSourceCodeEditor.Enabled = false;
 			
-			this.EventManager = new ChartFormEventManager(this);
+			this.ExternalEventsConsumer = new ChartFormExternalEventsConsumer(this);
 			this.ChartForm.AttachEventsToChartFormsManager();
 			
 			try {
-				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig);
+				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true, false);
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
 				Assembler.PopupException(msg + msig, ex);
@@ -224,7 +224,7 @@ namespace Sq1.Gui.Forms {
 				this.optimizerFormFactory = new OptimizerFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
 				this.ChartForm.CtxReporters.Items.AddRange(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
 				
-				this.EventManager = new ChartFormEventManager(this);
+				this.ExternalEventsConsumer = new ChartFormExternalEventsConsumer(this);
 				this.ChartForm.AttachEventsToChartFormsManager();
 			} else {
 				// we had chart already opened with bars loaded; then we clicked on a strategy and we want strategy to be backtested on these bars
@@ -256,7 +256,7 @@ namespace Sq1.Gui.Forms {
 				//I'm here via Persist.Deserialize() (=> Reporters haven't been restored yet => backtest should be postponed); will backtest in InitializeStrategyAfterDeserialization
 				// STRATEGY_CLICK_TO_CHART_DOESNT_BACKTEST this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
 				// ALL_SORT_OF_STARTUP_ERRORS this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, false);
-				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, skipBacktestDuringDeserialization);
+				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, skipBacktestDuringDeserialization, false);
 				if (skipBacktestDuringDeserialization == false) {
 					this.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 				}
@@ -271,7 +271,7 @@ namespace Sq1.Gui.Forms {
 		public ContextChart ContextCurrentChartOrStrategy { get {
 				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart;
 			} }
-		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(string msig, bool loadNewBars = true, bool skipBacktest = false) {
+		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyRequired = true) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
 			this.Executor.BacktesterAbortIfRunningRestoreContext();
 
@@ -306,12 +306,9 @@ namespace Sq1.Gui.Forms {
 			string symbol = context.Symbol;
 			
 			if (context.ChartStreaming) {
-				string msg = "CHART_STREAMING_DISABLED_FORCIBLY_POSSIBLY_ENABLED_BY_OPENCHART_OR_NOT_ABORTED_UNFINISHED_BACKTEST ContextCurrentChartOrStrategy.ChartStreaming=true"
+				string msg = "CHART_STREAMING_DISABLED_FORCIBLY_SAVED POSSIBLY_ENABLED_BY_OPENCHART_OR_NOT_ABORTED_UNFINISHED_BACKTEST ContextCurrentChartOrStrategy.ChartStreaming=true"
 					+ "; Selectors should've been Disable()d on chat[" + this.ChartForm + "].Activated() or StreamingOn()"
 					+ " in MainForm.PropagateSelectorsForCurrentChart()";
-				#if DEBUG
-				//Debugger.Break();
-				#endif
 				Assembler.PopupException(msg + msig);
 				context.ChartStreaming = false;
 			}
@@ -366,6 +363,9 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
+			if (saveStrategyRequired) {
+				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+			}
 			//bool wontBacktest = skipBacktest || this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false;
 			if (willBacktest == false) {
 				this.Executor.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
@@ -384,7 +384,12 @@ namespace Sq1.Gui.Forms {
 			this.BacktesterRunSimulationRegular();
 		}
 		void ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain(object sender, DataSourceEventArgs e) {
-			if (this.Strategy == null) return;
+			if (this.Strategy == null) {
+				Assembler.PopupException("hey for ATRbandCompiled-DLL #D Debugger shows this=NullReferenceException, and Strategy=null while it was instantiated from DLL, right?....");
+				return;
+			}
+			// Save datasource must fully unregister consumers and register again to avoid StreamingSolidifier dupes
+			// ConsumerBarUnRegister()
 			if (this.Strategy.ScriptContextCurrent.BacktestOnDataSourceSaved == false) return;
 			this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(
 				"ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain", true, false);
@@ -498,8 +503,6 @@ namespace Sq1.Gui.Forms {
 			this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterCompleteOnceOnRestart), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
 
-			//NOT_SURE
-			Debugger.Break();
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) {
 				this.OptimizerFormShow(false);
 			}
@@ -597,9 +600,10 @@ namespace Sq1.Gui.Forms {
 			}
 			this.Strategy.CompileInstantiate();
 			if (this.Strategy.Script == null) {
-				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false) {
-					this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerErrors(this.Strategy.ScriptCompiler.CompilerErrors);
-				}
+				//POPUP_ANYWAY_KOZ_THATS_THE_ONLY_WAY_TO_SHOW_AND_FIX_COMPILATION_ERRORS if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false) {
+				this.EditorFormShow(false);
+				this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerErrors(this.Strategy.ScriptCompiler.CompilerErrors);
+				//}
 			} else {
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false) {
 					this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerSuccess();

@@ -12,10 +12,10 @@ using Sq1.Widgets.RangeBar;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
-	public class ChartFormEventManager {
+	public class ChartFormExternalEventsConsumer {
 		ChartFormManager chartFormManager;
 
-		public ChartFormEventManager(ChartFormManager chartFormManager) {
+		public ChartFormExternalEventsConsumer(ChartFormManager chartFormManager) {
 			this.chartFormManager = chartFormManager;
 			this.chartFormManager.ChartForm.FormClosing += ChartForm_FormClosing;
 			this.chartFormManager.ChartForm.Load += ChartForm_Load;
@@ -202,16 +202,18 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException("ChartRangeBar_AnyValueChanged", ex);
 			}
 		}
-		internal void ChartForm_StreamingButtonStateChanged(object sender, EventArgs e) {
-//			bool streamingChecked = this.chartFormManager.ChartForm.btnStreaming.Checked;
-//			SlidersForm.Instance.Enabled = !streamingChecked;
-//			SelectorsForm.Instance.Enabled = !streamingChecked;
-			try {
-				this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
-			} catch (Exception ex) {
-				Assembler.PopupException("ChartForm_StreamingButtonStateChanged", ex);
-			}
-		}
+// REFACTORED_INVOKING_DIRECTLY 
+//		internal void ChartForm_StreamingButtonStateChanged(object sender, EventArgs e) {
+////			bool streamingChecked = this.chartFormManager.ChartForm.btnStreaming.Checked;
+////			SlidersForm.Instance.Enabled = !streamingChecked;
+////			SelectorsForm.Instance.Enabled = !streamingChecked;
+//			
+//			try {
+//				this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
+//			} catch (Exception ex) {
+//				Assembler.PopupException("ChartForm_StreamingButtonStateChanged", ex);
+//			}
+//		}
 
 	}
 }

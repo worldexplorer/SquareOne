@@ -33,7 +33,7 @@ TODO list for v2.0-dev (next release after this one, ~Jun2015 **)
 
 * put streamingProvider-delivered quote into inboundQueue and return immediately  (disconnect streaming and strategy execution using quote buffer); let the streaming do its business in thread#1 while Distributor will push quotes/bars received in thread#2 (smth like ConcurrentQueue implementing IObservable in in its own thread) //for myself
 * streaming/realtime access to another instrument's Bars within userland strategy code, at least within the same DataSource (after which it wouldn't be difficult to subscribe the strategy to any other Symbol across all StreamingProviders / exchanges; inter-exchange order execution/accounting will be the next big task) //for Alex,calendarSpread
-* add support for options (storing all the strikes in multiple *.BAR files or one combined format, import of multiple strikes into one Symbol, extending streaming/execution API with strike selection) with QUIK as guinnea pig //for Rami,options
+* add support for options (storing all the strikes in multiple *.BAR files or one combined format, import of multiple strikes into one Symbol, extending streaming/execution API with strike selection) with QUIK as guinea pig //for Rami,options
 * charting for multi-Symbol strategies (bravo ProTrader3, your overlay normalization is almost arbitrage model calibration) //for Alex,calendarSpread
 * move QuikMockStreaming to Core and merge with MarketSimStreaming (both were prototypes of market-side model poking the  StreamingProvider chosen in DataSource), provide Editor to let user choose what DataFeed will generate (quotes along original Bars or sine-wave bars, next quote delay, delay randomness, jump distance&randomness, seconds of missing data, # of stale quotes etc) //for myself,lighterAdaptersHeavierCore
 * move QuikMockBroker to Core and merge/split with MarketSimStreaming (it was as a prototype of market-side model invoking callBacks of the BrokerProvider chosen in DataSource), provide Editor to let user choose how Order Execution will behave (randomness while rejecting orders, disconnect/connect, missing fills, partial fills, late fill notifications etc) //for myself,lighterAdaptersHeavierCore
@@ -50,4 +50,4 @@ Notes
 -----
 
 * SquareOne is covered by GPLv3; do you agree with its terms? (free to use, open source, distribution of derived work with published source code, no warranty etc)
-* please make your derived project also opensource if you use any part of SquareOne source code (platform enhancements), or please do not distribute at all (your proprietory trading strategies and other KNOW-HOW)
+* please make your derived project also opensource if you use any part of SquareOne source code (platform enhancements), or please do not distribute at all (your proprietary trading strategies and other KNOW-HOW)

@@ -88,14 +88,14 @@ namespace Sq1.Core.StrategyBase {
 		public bool IsAutoSubmitting {
 			get {
 				if (this.Strategy == null) return this.isAutoSubmittingWhenNoStrategyLoaded;
-				else return this.Strategy.ScriptContextCurrent.ChartAutoSubmitting;
+				else return this.Strategy.ScriptContextCurrent.ChartEmittingOrders;
 			}
 			set {
 				if (this.Strategy == null) {
 					this.isAutoSubmittingWhenNoStrategyLoaded = value;
 					return;
 				}
-				this.Strategy.ScriptContextCurrent.ChartAutoSubmitting = value;
+				this.Strategy.ScriptContextCurrent.ChartEmittingOrders = value;
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 			}
 		}
@@ -145,7 +145,7 @@ namespace Sq1.Core.StrategyBase {
 			this.ExecutionDataSnapshot.Initialize();
 			// Executor.Bars are NULL in ScriptExecutor.ctor() and NOT NULL in SetBars
 			//this.Performance.Initialize();
-			this.MarketSimStreaming.Initialize();
+			this.MarketSimStreaming.Initialize(Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
 			//v1, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
 			// if I listen to DataSourceRepository, all ScriptExecutors receive same notification including irrelated to my Bars
 			// Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed +=
@@ -873,7 +873,7 @@ namespace Sq1.Core.StrategyBase {
 					return;
 				}
 				
-				this.Backtester.Initialize(this.Strategy.Script.BacktestMode);
+				this.Backtester.Initialize();
 				this.Backtester.RunSimulation();
 				this.Performance.BuildStatsOnBacktestFinished();
 			} catch (Exception ex) {

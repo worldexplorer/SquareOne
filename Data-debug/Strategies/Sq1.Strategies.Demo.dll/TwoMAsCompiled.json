@@ -1,6 +1,6 @@
 {
   "$type": "Sq1.Core.StrategyBase.Strategy, Sq1.Core",
-  "Guid": "d7062341-ab3a-423e-b2df-95b9391266c3",
+  "Guid": "87a196aa-4f88-4a56-b0ab-39b77bba7b33",
   "Name": "TwoMAsCompiled",
   "ScriptSourceCode": null,
   "DotNetReferences": null,
@@ -18,25 +18,14 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": true,
-      "ChartAutoSubmitting": false,
+      "IsCurrent": false,
+      "ChartEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
-        "Positions": {
-          "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
-          "ShowEntriesExits": true,
-          "ShowPercentage": true,
-          "ShowBarsHeld": true,
-          "ShowMaeMfe": true,
-          "ShowSignals": true,
-          "ShowCommission": true,
-          "Colorify": true
-        },
-        "Performance": null
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
       },
       "ApplyCommission": false,
       "EnableSlippage": false,
@@ -47,26 +36,30 @@
       "SlippageUnits": 1.0,
       "SlippageTicks": 1,
       "PriceLevelSizeForBonds": 0,
+      "FillOutsideQuoteSpreadParanoidCheckThrow": false,
+      "SpreadModelerClassName": "BacktestSpreadModelerPercentage",
+      "SpreadModelerPercent": 0.005,
+      "BacktestMode": 4,
       "Name": "Default",
-      "Symbol": "RIM3",
-      "DataSourceName": "MOCK",
+      "Symbol": "autogen",
+      "DataSourceName": "Qmock",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
-        "Interval": 5,
+        "Interval": 1,
         "IsIntraday": true,
-        "AsTimeSpanInSeconds": 300,
-        "AsTimeSpan": "00:05:00"
+        "AsTimeSpanInSeconds": 60,
+        "AsTimeSpan": "00:01:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
         "Range": 1,
         "StartDate": "0001-01-01T00:00:00",
         "EndDate": "9999-12-31T23:59:59.9999999",
-        "RecentBars": 400,
+        "RecentBars": 500,
         "RecentTimeunits": 0
       },
-      "ChartStreaming": false,
+      "ChartStreaming": true,
       "ShowRangeBar": false,
       "ScriptParametersById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
@@ -80,7 +73,7 @@
             "ValueMin": 10.0,
             "ValueMax": 20.0,
             "ValueIncrement": 5.0,
-            "ValueCurrent": 20.0,
+            "ValueCurrent": 15.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }
@@ -92,7 +85,7 @@
             "ValueMin": 11.0,
             "ValueMax": 33.0,
             "ValueIncrement": 11.0,
-            "ValueCurrent": 33.0,
+            "ValueCurrent": 22.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }

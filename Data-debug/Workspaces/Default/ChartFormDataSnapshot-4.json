@@ -1,8 +1,8 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "b04c88a3-7886-4edd-b218-5feba0e435fc",
-  "StrategyNameJsonCheck": "ATRbandCompiled",
-  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json",
+  "StrategyGuidJsonCheck": "87a196aa-4f88-4a56-b0ab-39b77bba7b33",
+  "StrategyNameJsonCheck": "TwoMAsCompiled",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -11,8 +11,21 @@
     "GutterBottomDateFormatDaily": "ddd dd-MMM",
     "GutterBottomDateFormatWeekly": "MMM-yy",
     "GutterBottomDateFormatYearly": "yyyy",
+    "MultiSplitterPropertiesByPanelName": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
+      "Volume": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 0,
+        "Distance": 0
+      },
+      "Price": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 20
+      }
+    },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 8,
+    "BarWidthIncludingPadding": 25,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -36,7 +49,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 0,
+    "SqueezeVerticalPaddingPx": 150,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -46,7 +59,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 0,
+    "ScrollPositionAtBarIndex": 23,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -62,20 +75,28 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 260,
+    "PriceVsVolumeSplitterDistance": 0,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
     "MousePositionTrackOnGutters": true,
     "MousePositionTrackOnGuttersColor": "LightGray",
-    "BarsBackgroundTransparencyAlfa": 128,
+    "BarsBackgroundTransparencyAlpha": 24,
     "ChartLabelsUpperLeftYstartTopmost": 18,
     "ChartLabelsUpperLeftX": 5,
     "ChartLabelsUpperLeftPlatePadding": 1,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
     "ChartLabelsUpperLeftIndicatorSquareSize": 5,
-    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
+    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3,
+    "SpreadBidLineColor": "Gray",
+    "SpreadBidLineColorAlpha": 64,
+    "SpreadBidLineWidth": 1,
+    "SpreadAskLineColor": "Orange",
+    "SpreadAskLineColorAlpha": 64,
+    "SpreadAskLineWidth": 1,
+    "SpreadLabelFont": "Consolas, 8pt",
+    "SpreadLabelColor": "DarkGray"
   },
-  "ChartSerno": 20,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json], ScriptContextCurrentName[ScriptContextCurrentName]"
+  "ChartSerno": 4,
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json], ScriptContextCurrentName[?Default?]"
 }

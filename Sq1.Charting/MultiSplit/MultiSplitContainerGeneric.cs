@@ -12,7 +12,7 @@ namespace Sq1.Charting.MultiSplit {
 	//LAZY_TO_MAKE_IT_ACCEPT_NESTED_PANELS_DROPPED_FOR_DESIGNER THIS_SOLVES_ANOTHER_PROBLEM http://stackoverflow.com/questions/2785376/how-to-enable-design-support-in-a-custom-control/2863807#2863807
 	// PanelNamedFolding can be replaced by Control if you want; it's an overkill to make it MultiSplitContainer<PANEL_BASE> : UserControl where T : Control 
 	// did overkill for MultiSplitTest.cs ....  public partial class MultiSplitContainer {
-	 public partial class MultiSplitContainer<PANEL_BASE> {
+	 public partial class MultiSplitContainerGeneric<PANEL_BASE> {
 		public int SplitterHeight;
 		public int GrabHandleWidth;
 		public int MinimumPanelHeight;
@@ -26,9 +26,7 @@ namespace Sq1.Charting.MultiSplit {
 		ObservableCollection<PANEL_BASE> panels;
 		ObservableCollection<MultiSplitter> splitters;
 		
-		public MultiSplitContainer() : this(false) {
-		}
-		public MultiSplitContainer(bool debugSplitter = false) {
+		public MultiSplitContainerGeneric() : this(false) {
 			panels = new ObservableCollection<PANEL_BASE>();
 			splitters = new ObservableCollection<MultiSplitter>();
 			SplitterHeight = 5;
@@ -38,6 +36,8 @@ namespace Sq1.Charting.MultiSplit {
 			ColorBackgroundSliderDroppingTarget = Color.Red;
 			ColorBackgroundSliderRegular = Color.DarkGray;
 			ColorBackgroundSliderMouseOver = Color.SlateGray;
+		}
+		public MultiSplitContainerGeneric(bool debugSplitter = false) {
 			DebugSplitter = debugSplitter;
 			//initialHeights = new Dictionary<Control, int>();
 		}
@@ -51,6 +51,7 @@ namespace Sq1.Charting.MultiSplit {
 //			this.InitializeCreateSplittersDistributeFor(list);
 //		}
 		public void InitializeCreateSplittersDistributeFor(List<PANEL_BASE> whatIadd) {
+			// DOENST_HELP_OPENING_IN_DESIGNER STILL_THROWS if (base.DesignMode) return;
 			//Debugger.Break();
 			this.panels.Clear();
 			this.splitters.Clear();

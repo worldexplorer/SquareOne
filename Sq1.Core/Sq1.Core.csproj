@@ -36,7 +36,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
-    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED;VERBOSE_STRINGS_SLOW_disabled;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled;OUT_OF_SPREAD_PARANOID_CHECK_disabled</DefineConstants>
+    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED;VERBOSE_STRINGS_SLOW_disabled;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <StartAction>Project</StartAction>
@@ -165,6 +165,15 @@
     <Compile Include="StrategyBase\NotOnChartBarsKey.cs" />
     <Compile Include="StrategyBase\Reporter.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="StrategyBase\Scrip.TunnelledToChartControl.cs">
+      <DependentUpon>Script.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyBase\Script.DerivedShouldOverride.cs">
+      <DependentUpon>Script.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategyBase\Script.Trading.cs">
+      <DependentUpon>Script.cs</DependentUpon>
     </Compile>
     <Compile Include="StrategyBase\ScriptExecutor.ChartConditional.cs">
       <DependentUpon>ScriptExecutor.cs</DependentUpon>
