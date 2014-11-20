@@ -36,13 +36,13 @@
       },
       "BestBid": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 158040.0,
-        "AUTOGEN": 158050.0
+        "autogen": 158165.0,
+        "AUTOGEN": 158190.0
       },
       "BestAsk": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 158060.0,
-        "AUTOGEN": 158070.0
+        "autogen": 158185.0,
+        "AUTOGEN": 158210.0
       },
       "LastQuotesReceived": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
@@ -57,19 +57,19 @@
           "Symbol": "AUTOGEN",
           "SymbolClass": "SPBFUT",
           "Source": "MockQuik",
-          "ServerTime": "2014-11-17T02:37:46.2718124",
-          "Bid": 158050.0,
-          "Ask": 158070.0,
+          "ServerTime": "2014-11-18T23:30:32.1415611",
+          "Bid": 158190.0,
+          "Ask": 158210.0,
           "Size": 5.0,
           "ItriggeredFillAtBidOrAsk": 0,
-          "IntraBarSerno": 9,
-          "AbsnoPerSymbol": 9,
+          "IntraBarSerno": 39,
+          "AbsnoPerSymbol": 39,
           "LastDealBidOrAsk": 2,
-          "LocalTimeCreatedMillis": "2014-11-17T02:42:09.5072097-05:00",
+          "LocalTimeCreatedMillis": "2014-11-20T03:47:50.7988961-05:00",
           "ParentStreamingBar": null,
           "HasParentBar": false,
           "ParentBarIdent": "NO_PARENT_BAR",
-          "LastDealPrice": 158050.0,
+          "LastDealPrice": 158190.0,
           "Spread": 20.0
         }
       }
