@@ -12,10 +12,10 @@ using Sq1.Widgets.RangeBar;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
-	public class ChartFormExternalEventsConsumer {
+	public class ChartFormInterformEventsConsumer {
 		ChartFormManager chartFormManager;
 
-		public ChartFormExternalEventsConsumer(ChartFormManager chartFormManager) {
+		public ChartFormInterformEventsConsumer(ChartFormManager chartFormManager) {
 			this.chartFormManager = chartFormManager;
 			this.chartFormManager.ChartForm.FormClosing += ChartForm_FormClosing;
 			this.chartFormManager.ChartForm.Load += ChartForm_Load;
@@ -122,8 +122,8 @@ namespace Sq1.Gui.Forms {
 
 			this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;
 			
-			this.chartFormManager.ChartForm.btnAutoSubmit.Visible = false;
-			this.chartFormManager.ChartForm.btnStreaming.Visible = false;
+			this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
+			this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
 			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 			// CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END
 		}
@@ -161,8 +161,8 @@ namespace Sq1.Gui.Forms {
 	
 				this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;
 				
-				this.chartFormManager.ChartForm.btnAutoSubmit.Visible = false;
-				this.chartFormManager.ChartForm.btnStreaming.Visible = false;
+				this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
+				this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
 				this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 			}
 			// HACK FOR CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END COPYPASTE
@@ -189,8 +189,8 @@ namespace Sq1.Gui.Forms {
 			this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarValue = 0;
 			this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = false;
 			
-			this.chartFormManager.ChartForm.btnAutoSubmit.Visible = true;
-			this.chartFormManager.ChartForm.btnStreaming.Visible = true;
+			this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
+			this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
 			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 		}
 		internal void ChartRangeBar_AnyValueChanged(object sender, RangeArgs<DateTime> e) {
@@ -202,18 +202,5 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException("ChartRangeBar_AnyValueChanged", ex);
 			}
 		}
-// REFACTORED_INVOKING_DIRECTLY 
-//		internal void ChartForm_StreamingButtonStateChanged(object sender, EventArgs e) {
-////			bool streamingChecked = this.chartFormManager.ChartForm.btnStreaming.Checked;
-////			SlidersForm.Instance.Enabled = !streamingChecked;
-////			SelectorsForm.Instance.Enabled = !streamingChecked;
-//			
-//			try {
-//				this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
-//			} catch (Exception ex) {
-//				Assembler.PopupException("ChartForm_StreamingButtonStateChanged", ex);
-//			}
-//		}
-
 	}
 }

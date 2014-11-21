@@ -1,9 +1,33 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "7725f2be-42e2-495f-8d71-5ecd0c305d29",
-  "StrategyNameJsonCheck": "TwoMAs",
-  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json",
-  "ContextChart": null,
+  "StrategyGuidJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "StrategyNameJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "StrategyAbsPathJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "ContextChart": {
+    "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
+    "Name": "CHART_autogen",
+    "Symbol": "autogen",
+    "DataSourceName": "Qmock",
+    "ScaleInterval": {
+      "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+      "Scale": 3,
+      "Interval": 1,
+      "IsIntraday": true,
+      "AsTimeSpanInSeconds": 60,
+      "AsTimeSpan": "00:01:00"
+    },
+    "DataRange": {
+      "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
+      "Range": 1,
+      "StartDate": "0001-01-01T00:00:00",
+      "EndDate": "9999-12-31T23:59:59.9999999",
+      "RecentBars": 500,
+      "RecentTimeunits": 0
+    },
+    "IsStreamingTriggeringScript": false,
+    "ShowRangeBar": false,
+    "IsStreaming": true
+  },
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
     "GutterBottomDateFormatDayOpener": "ddd dd-MMM-yyyy",
@@ -21,11 +45,11 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 135
+        "Distance": 213
       }
     },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 2,
+    "BarWidthIncludingPadding": 14,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -97,6 +121,6 @@
     "SpreadLabelFont": "Consolas, 8pt",
     "SpreadLabelColor": "DarkGray"
   },
-  "ChartSerno": 3,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json], ScriptContextCurrentName[?Default?]"
+  "ChartSerno": 9,
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
 }

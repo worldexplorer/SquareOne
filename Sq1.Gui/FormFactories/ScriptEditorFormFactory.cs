@@ -23,9 +23,9 @@ namespace Sq1.Gui.FormFactories {
 			get { return this.chartFormManager.Strategy; }
 			set { this.chartFormManager.Strategy = value; }
 		}
-		public ScriptEditorFormFactory(ChartFormManager chartFormsManager, RepositoryDllJsonStrategy strategyRepository) {
+		public ScriptEditorFormFactory(ChartFormManager chartFormsManager) {
 			this.chartFormManager = chartFormsManager;
-			this.strategyRepository = strategyRepository;
+			this.strategyRepository = Assembler.InstanceInitialized.RepositoryDllJsonStrategy;
 		}
 		public void CreateEditorFormSubscribePushToManager(ChartFormManager chartFormsManager) {
 			this.scriptEditorForm = new ScriptEditorForm(chartFormsManager);

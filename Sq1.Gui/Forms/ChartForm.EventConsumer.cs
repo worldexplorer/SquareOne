@@ -44,13 +44,13 @@ namespace Sq1.Gui.Forms {
 			}
 			this.ChartFormManager.MainForm.MainFormSerialize();
 		}
-		void btnStreaming_Click(object sender, EventArgs e) {
+		void btnStreamingWillTriggerScript_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
 			try {
-				if (this.btnStreaming.Checked) {
-					this.ChartFormManager.ChartStreamingConsumer.StartStreaming();
+				if (this.btnStreamingTriggersScript.Checked) {
+					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStart();
 				} else {
-					this.ChartFormManager.ChartStreamingConsumer.StopStreaming();
+					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStop();
 				}
 				this.PopulateBtnStreamingClickedAndText();
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
@@ -60,9 +60,9 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(ex.Message);
 			}
 		}
-		void btnAutoSubmit_Click(object sender, EventArgs e) {
+		void btnStrategyEmittingOrders_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnAutoSubmit.CheckOnClick=True this.BtnAutoSubmit.Checked = !this.BtnAutoSubmit.Checked;;
-			this.ChartFormManager.Executor.IsAutoSubmitting = this.btnAutoSubmit.Checked;
+			this.ChartFormManager.Executor.IsStrategyEmittingOrders = this.btnStrategyEmittingOrders.Checked;
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
 		}
 		void mniBacktestOnEveryChange_Click(object sender, System.EventArgs e) {
@@ -298,44 +298,24 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException("mnitlbSpreadGeneratorPct_UserTyped()", ex);
 			}
 		}
-		
-//NOT_INVOKED_FOR_FORM
-//		protected override bool IsInputKey(Keys keyData) {
-//			Debugger.Break();
-//			switch (keyData) {
-//				case (Keys.Left):
-//				case (Keys.Right):
-//				case (Keys.Up):
-//				case (Keys.Down):
-//					return true;
-//				default:
-//					return base.IsInputKey(keyData);
-//			}
-//		}
-//INVOKED_FOR_FORM_IF_CHARTFORM_CTOR_HAS_base.KeyPreview=true; BUT_OVERRIDING_ProcessCmdKey_IN_CHART_CONTROL_SCROLLS_CHART
-//		protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-//			Debugger.Break();
-//			switch (keyData) {
-//				case (Keys.Left):
-//					this.ChartControl.ScrollOneBarLeftAtKeyPressRate();
-//					break;
-//				case (Keys.Right):
-//					this.ChartControl.ScrollOneBarRightAtKeyPressRate();
-//					break;
-////				case (Keys.Up):
-////					this.ChartControl.ScrollOneBarLeftAtKeyPressRate();
-////					break;
-////				case (Keys.Down):
-////					this.ChartControl.ScrollOneBarLeftAtKeyPressRate();
-////					break;
-//				default:
-//					//return base.ProcessCmdKey(ref msg, keyData);
-//					break;
-//			}
-//			return base.ProcessCmdKey(ref msg, keyData);
-//		}
-		//http://stackoverflow.com/questions/4378865/detect-arrow-key-keydown-for-the-whole-window
-		//http://msdn.microsoft.com/en-us/library/ms171535.aspx
-		//http://stackoverflow.com/questions/15091283/keydown-event-not-firing
+		void mniStreamingOn_Click(object sender, EventArgs e) {
+			try {
+				if (this.mniStreamingOn.Checked == false) {
+					this.mniStreamingOn.BackColor = Color.LightSalmon;
+					this.DdbBars.BackColor = Color.LightSalmon;
+				} else {
+					this.mniStreamingOn.BackColor = SystemColors.Control;
+					this.DdbBars.BackColor = SystemColors.Control;
+				}
+
+				if (this.mniStreamingOn.Checked) {
+					this.ChartFormManager.ChartStreamingConsumer.StreamingStart();
+				} else {
+					this.ChartFormManager.ChartStreamingConsumer.StreamingStop();
+				}
+			} catch (Exception ex) {
+				Assembler.PopupException("mniRedrawChartOnEachQuote_Click()", ex);
+			}
+		}
 	}
 }

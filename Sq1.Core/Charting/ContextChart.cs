@@ -12,8 +12,9 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public BarDataRange DataRange;
 
 		//public int ChartBarSpacing;
-		[JsonProperty]	public bool ChartStreaming;
+		[JsonProperty]	public bool IsStreamingTriggeringScript;
 		[JsonProperty]	public bool ShowRangeBar;
+		[JsonProperty]	public bool IsStreaming;
 
 		public ContextChart(string name = "UNDEFINED") : this() {
 			Name = name;
@@ -25,8 +26,9 @@ namespace Sq1.Core.StrategyBase {
 			ScaleInterval = new BarScaleInterval();
 			DataRange = new BarDataRange(500);
 			//ChartBarSpacing = 6;
-			ChartStreaming = false;
+			IsStreamingTriggeringScript = false;
 			ShowRangeBar = false;
+			IsStreaming = true;
 		}
 		public void AbsorbFrom(ContextChart found) {
 			if (found == null) return;
@@ -36,7 +38,7 @@ namespace Sq1.Core.StrategyBase {
 			this.ScaleInterval = found.ScaleInterval.Clone();
 			this.DataRange = found.DataRange.Clone();
 			//this.ChartBarSpacing = found.ChartBarSpacing;
-			this.ChartStreaming = found.ChartStreaming;
+			this.IsStreamingTriggeringScript = found.IsStreamingTriggeringScript;
 			this.ShowRangeBar = found.ShowRangeBar;
 		}
 //		public ChartContext MemberwiseClone() {

@@ -27,7 +27,7 @@ namespace Sq1.Core.Indicators {
 			//	return indicatorLegDrawn;	// INVALID FOR INDICATOR BASED ON NON_CHART_BARS_SCALE_INTERVAL
 			//}
 
-			if (bar.IsBarStaticLast && this.Executor.IsStreaming == false) {
+			if (bar.IsBarStaticLast && this.Executor.IsStreamingTriggeringScript == false) {
 				string msg = "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED";
 				//Assembler.PopupException(msg);
 				//return indicatorLegDrawn;
@@ -49,9 +49,6 @@ namespace Sq1.Core.Indicators {
 				//if (this.OwnValuesCalculated.ScaleInterval != bar.ParentBars.ScaleInterval) {
 				//	msg += " OwnValuesCalculated.ScaleInterval[" + this.OwnValuesCalculated.ScaleInterval + "] != bar.ParentBars.ScaleInterval[" + bar.ParentBars.ScaleInterval + "]";
 				//}
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(msg + msig);
 				return indicatorLegDrawn;
 			}
@@ -99,9 +96,6 @@ namespace Sq1.Core.Indicators {
 			if (barIndexPrev < 0 || barIndexPrev > this.OwnValuesCalculated.Count - 1) {
 				//string msg = "EDIT_DATASOURCE_EXTEND_MARKET_OPEN_CLOSE_HOURS";
 				string msg = "CAN_NOT_DRAW_INDICATOR_CANT_TAKE_VALUE_PREVIOUS_BAR_BEOYND_AVAILABLE barIndexPrev[" + barIndexPrev + "] OwnValuesCalculated.Count[" + this.OwnValuesCalculated.Count + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(msg + msig);
 				return indicatorLegDrawn;
 			}
@@ -110,9 +104,6 @@ namespace Sq1.Core.Indicators {
 			if (this.OwnValuesCalculated.ContainsDate(barPrev.DateTimeOpen) == false) {
 				//string msg = "EDIT_DATASOURCE_EXTEND_MARKET_OPEN_CLOSE_HOURS";
 				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_PREVIOUS_BAR[" + barPrev.DateTimeOpen + "] " + this.ToString();
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(msg + msig);
 				return indicatorLegDrawn;
 			}

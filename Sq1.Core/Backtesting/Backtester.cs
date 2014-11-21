@@ -171,6 +171,8 @@ namespace Sq1.Core.Backtesting {
 				#endif
 				throw e;
 			} finally {
+				// I won't get here if youser :) closed an app during the backtest / optimization;
+				// but in pre-Backtest BacktestContextInitialize() sets preBacktestBars!=null so this.Streaming=true won't save Strategy.ScriptContextCurrent.ChartStreaming
 				this.simulationPostBarsRestore();
 				this.closePositionsLeftOpenAfterBacktest();
 			}

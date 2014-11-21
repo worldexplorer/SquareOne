@@ -6,7 +6,9 @@ namespace Sq1.Core.Streaming {
 	public class StreamingSolidifier : IStreamingConsumer {
 		DataSource dataSource;
 
-		public StreamingSolidifier(DataSource dataSource) {
+		//IMPORTANT_SPLITTED_TO_CTOR+INITIALIZE_FOR_EDITED_DATASOURCE_TO_NOT_SUBSCRIBE_MY_MULTIPLE_INSTANCES public StreamingSolidifier(DataSource dataSource) {
+
+		public void Initialize(DataSource dataSource) {
 			if (dataSource == null) {
 				string msg = "DATASOURCE_NULL_ABSOLUTELY_INACCEPTABLE_FOR_SOLIDIFIER";
 				throw new Exception(msg);

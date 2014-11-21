@@ -19,7 +19,7 @@ namespace Sq1.Gui.ReportersSupport {
 		// doesn't allow multiple instances of the same reporter invoked for one chart
 		public Dictionary<string, Reporter> ReporterShortNamesUserInvoked;
 		public MenuItemsProvider MenuItemsProvider;
-		public int deserializeIndex = 0;
+		public int deserializeIndex;
 		
 		public Dictionary<string, DockContent> FormsAllRelated { get {
 				var ret = new Dictionary<string, DockContent>();
@@ -36,11 +36,14 @@ namespace Sq1.Gui.ReportersSupport {
 				return ret;
 			} }
 
-		public ReportersFormsManager(ChartFormManager chartFormManager, RepositoryDllReporters repository) {
+		private ReportersFormsManager() {
+			// ALREADY_THERE deserializeIndex = 0;
+			repository = Assembler.InstanceInitialized.RepositoryDllReporters;
+			ReporterShortNamesUserInvoked = new Dictionary<string, Reporter>();
+			MenuItemsProvider = new MenuItemsProvider(this, this.repository.TypesFound);
+		}
+		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
-			this.repository = repository;
-			this.ReporterShortNamesUserInvoked = new Dictionary<string, Reporter>();
-			this.MenuItemsProvider = new MenuItemsProvider(this, this.repository.TypesFound);
 		}
 		public void BuildOnceAllReports(SystemPerformance performance) {
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {

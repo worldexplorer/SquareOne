@@ -43,7 +43,7 @@ namespace Sq1.Gui.Forms {
 						//Debugger.Break();
 						#endif
 					if (this.scriptEditorFormFactory == null) {
-						this.scriptEditorFormFactory = new ScriptEditorFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+						this.scriptEditorFormFactory = new ScriptEditorFormFactory(this);
 					}
 					this.scriptEditorFormFactory.CreateEditorFormSubscribePushToManager(this);
 					if (this.ScriptEditorForm == null) {
@@ -78,7 +78,7 @@ namespace Sq1.Gui.Forms {
 						#if DEBUG
 						Debugger.Break();
 						#endif
-						this.optimizerFormFactory = new OptimizerFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+						this.optimizerFormFactory = new OptimizerFormFactory(this);
 					}
 
 					this.optimizerFormFactory.CreateOptimizerFormSubscribePushToManager(this);
@@ -98,7 +98,7 @@ namespace Sq1.Gui.Forms {
 				return !optimizerMustBeActivated;
 			} }
 		
-		public ChartFormExternalEventsConsumer ExternalEventsConsumer;
+		public ChartFormInterformEventsConsumer InterformEventsConsumer;
 		public bool ScriptEditedNeedsSaving;
 		public ChartFormStreamingConsumer ChartStreamingConsumer;
 		
@@ -112,17 +112,37 @@ namespace Sq1.Gui.Forms {
 				}
 				return ret;
 			} }
-		public ChartFormManager(int charSernoDeserialized = -1) {
+		public string StreamingButtonIdent { get {
+				string emptyChartOrStrategy = this.ContextCurrentChartOrStrategy.Symbol;
+				string onOff = this.ContextCurrentChartOrStrategy.IsStreaming ? " On" : " Off";
+
+				if (this.Strategy != null) {
+					emptyChartOrStrategy = this.Strategy.Name;
+					onOff = this.Executor.IsStreamingTriggeringScript ? " On" : " Off";
+				}
+
+				return emptyChartOrStrategy + onOff;
+			} }
+		public ContextChart ContextCurrentChartOrStrategy { get { return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart; } }
+
+		private ChartFormManager() {
 			this.StrategyFoundDuringDeserialization = false;
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
 			this.ScriptEditedNeedsSaving = false;
-//			this.Executor = new ScriptExecutor(Assembler.InstanceInitialized.ScriptExecutorConfig
-//				, this.ChartForm.ChartControl, null, Assembler.InstanceInitialized.OrderProcessor, Assembler.InstanceInitialized.StatusReporter);
+			//			this.Executor = new ScriptExecutor(Assembler.InstanceInitialized.ScriptExecutorConfig
+			//				, this.ChartForm.ChartControl, null, Assembler.InstanceInitialized.OrderProcessor, Assembler.InstanceInitialized.StatusReporter);
 			this.Executor = new ScriptExecutor();
-			this.ReportersFormsManager = new ReportersFormsManager(this, Assembler.InstanceInitialized.RepositoryDllReporters);
+			this.ReportersFormsManager = new ReportersFormsManager(this);
 			this.ChartStreamingConsumer = new ChartFormStreamingConsumer(this);
-			
+
+			// never used in CHART_ONLY, but we have "Open In Current Chart" for Strategies
+			this.scriptEditorFormFactory = new ScriptEditorFormFactory(this);
+			this.optimizerFormFactory = new OptimizerFormFactory(this);
+
 			this.DataSnapshotSerializer = new Serializer<ChartFormDataSnapshot>();
+		}
+		public ChartFormManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {
+			this.MainForm = mainForm;
 			if (charSernoDeserialized == -1) {
 				this.DataSnapshot = new ChartFormDataSnapshot();
 				return;
@@ -137,12 +157,11 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshot.ChartSerno = charSernoDeserialized;
 			this.DataSnapshotSerializer.Serialize();
 		}
-		public void InitializeChartNoStrategy(MainForm mainForm, ContextChart contextChart) {
+		public void InitializeChartNoStrategy(ContextChart contextChart) {
 			string msig = "ChartFormsManager.InitializeChartNoStrategy(" + contextChart + "): ";
-			this.MainForm = mainForm;
 
 			if (this.DataSnapshot.ChartSerno == -1) {
-				int charSernoNext = mainForm.GuiDataSnapshot.ChartSernoNextAvailable;
+				int charSernoNext = this.MainForm.GuiDataSnapshot.ChartSernoNextAvailable;
 				bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 					"ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
 					Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
@@ -171,32 +190,33 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshotSerializer.Serialize();
 
 			this.ChartForm.FormClosed += this.MainForm.MainFormEventManager.ChartForm_FormClosed;
+			this.ChartForm.Initialize(false);
 
-			//this.ChartForm.CtxReporters.Enabled = false;
-			this.ChartForm.DdbReporters.Enabled = false;
-			this.ChartForm.DdbBacktest.Enabled = false;
-			this.ChartForm.DdbStrategy.Enabled = false;
-			this.ChartForm.MniShowSourceCodeEditor.Enabled = false;
-			
-			this.ExternalEventsConsumer = new ChartFormExternalEventsConsumer(this);
-			this.ChartForm.AttachEventsToChartFormsManager();
-			
+			// sequence of invocation matters otherwise "Delegate to an instance method cannot have null 'this'."
+			// at Sq1.Gui.Forms.ChartForm.ChartFormEventsToChartFormManagerDetach() in C:\SquareOne\Sq1.Gui\Forms\ChartForm.cs:line 61
+			this.InterformEventsConsumer = new ChartFormInterformEventsConsumer(this);
+			// MAKES_SENSE_IF_this.InterformEventsConsumer_WAS_INITIALIZED_IN_CTOR() this.ChartForm.ChartFormEventsToChartFormManagerDetach();
+			this.ChartForm.ChartFormEventsToChartFormManagerAttach();
+
 			try {
 				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true, false);
+				if (contextChart.IsStreaming) {
+					this.ChartStreamingConsumer.StreamingStart();
+					string msg = "StreamingStarted=[" + this.ChartStreamingConsumer.StreamingStarted + "] contextChart.IsStreaming=true";
+					Assembler.PopupException(msg, null, false);
+				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
 				Assembler.PopupException(msg + msig, ex);
 			}
 		}
-		public void InitializeWithStrategy(MainForm mainForm, Strategy strategy, bool skipBacktestDuringDeserialization = true) {
+		public void InitializeWithStrategy(Strategy strategy, bool skipBacktestDuringDeserialization = true) {
 			string msig = "ChartFormsManager.InitializeWithStrategy(" + strategy + "): ";
-
-			this.MainForm = mainForm;
 			this.Strategy = strategy;
 			//this.Executor = new ScriptExecutor(mainForm.Assembler, this.Strategy);
 
 			if (this.DataSnapshot.ChartSerno == -1) {
-				int charSernoNext = mainForm.GuiDataSnapshot.ChartSernoNextAvailable;
+				int charSernoNext = this.MainForm.GuiDataSnapshot.ChartSernoNextAvailable;
 				bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 					"ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
 					Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
@@ -212,24 +232,20 @@ namespace Sq1.Gui.Forms {
 				// 1. create ChartForm.Chart.Renderer
 				this.ChartForm = new ChartForm(this);
 				this.ChartForm.FormClosed += this.MainForm.MainFormEventManager.ChartForm_FormClosed;
-				// 2. create Executor with Renderer
-				this.Executor.Initialize(this.ChartForm.ChartControl as ChartShadow,
-										 this.Strategy, Assembler.InstanceInitialized.OrderProcessor);
-				// 3. initialize Chart with Executor (I don't know why it should be so crazy)
-				//this.ChartForm.Chart.Initialize(this.Executor);
-				//ScriptExecutor.DataSource: you should not access DataSource before you've set Bars
-				//this.ChartForm.ChartStreamingConsumer.Initialize(this);
-				
-				this.scriptEditorFormFactory = new ScriptEditorFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
-				this.optimizerFormFactory = new OptimizerFormFactory(this, Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+
+				// sequence of invocation matters otherwise "Delegate to an instance method cannot have null 'this'."
+				// at Sq1.Gui.Forms.ChartForm.ChartFormEventsToChartFormManagerDetach() in C:\SquareOne\Sq1.Gui\Forms\ChartForm.cs:line 61
+				this.InterformEventsConsumer = new ChartFormInterformEventsConsumer(this);
+				// MAKES_SENSE_IF_this.InterformEventsConsumer_WAS_INITIALIZED_IN_CTOR() this.ChartForm.ChartFormEventsToChartFormManagerDetach();
+				this.ChartForm.ChartFormEventsToChartFormManagerAttach();
+
 				this.ChartForm.CtxReporters.Items.AddRange(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
-				
-				this.ExternalEventsConsumer = new ChartFormExternalEventsConsumer(this);
-				this.ChartForm.AttachEventsToChartFormsManager();
+
+				// 2. create Executor with Renderer
+				this.Executor.Initialize(this.ChartForm.ChartControl, this.Strategy);
 			} else {
 				// we had chart already opened with bars loaded; then we clicked on a strategy and we want strategy to be backtested on these bars
-				this.Executor.Initialize(this.ChartForm.ChartControl as ChartShadow,
-										 this.Strategy, Assembler.InstanceInitialized.OrderProcessor);
+				this.Executor.Initialize(this.ChartForm.ChartControl, this.Strategy);
 				if (this.ChartForm.CtxReporters.Items.Count == 0) {
 					this.ChartForm.CtxReporters.Items.AddRange(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
 				}
@@ -242,11 +258,7 @@ namespace Sq1.Gui.Forms {
 				this.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 			}
 
-			//this.ChartForm.CtxReporters.Enabled = true;
-			this.ChartForm.DdbReporters.Enabled = true;
-			this.ChartForm.DdbStrategy.Enabled = true;
-			this.ChartForm.DdbBacktest.Enabled = true;
-			this.ChartForm.MniShowSourceCodeEditor.Enabled = !this.Strategy.ActivatedFromDll;
+			this.ChartForm.Initialize(true, this.Strategy.ActivatedFromDll);
 
 			try {
 				// Click on strategy should open new chart,  
@@ -260,17 +272,16 @@ namespace Sq1.Gui.Forms {
 				if (skipBacktestDuringDeserialization == false) {
 					this.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 				}
+				if (this.Strategy.ScriptContextCurrent.IsStreaming) {
+					this.ChartStreamingConsumer.StreamingStart();
+					string msg = "StreamingStarted=[" + this.ChartStreamingConsumer.StreamingStarted + "] contextChart.IsStreaming=true";
+					Assembler.PopupException(msg, null, false);
+				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
 				Assembler.PopupException(msg + msig, ex);
-				#if DEBUG
-				Debugger.Break();
-				#endif
 			}
 		}
-		public ContextChart ContextCurrentChartOrStrategy { get {
-				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart;
-			} }
 		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyRequired = true) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
 			this.Executor.BacktesterAbortIfRunningRestoreContext();
@@ -305,12 +316,20 @@ namespace Sq1.Gui.Forms {
 			}
 			string symbol = context.Symbol;
 			
-			if (context.ChartStreaming) {
-				string msg = "CHART_STREAMING_DISABLED_FORCIBLY_SAVED POSSIBLY_ENABLED_BY_OPENCHART_OR_NOT_ABORTED_UNFINISHED_BACKTEST ContextCurrentChartOrStrategy.ChartStreaming=true"
-					+ "; Selectors should've been Disable()d on chat[" + this.ChartForm + "].Activated() or StreamingOn()"
-					+ " in MainForm.PropagateSelectorsForCurrentChart()";
-				Assembler.PopupException(msg + msig);
-				context.ChartStreaming = false;
+			//v1 COMMENTED_OUT ABORTED_UNFINISHED_BACKTEST should handle itself its own abortion;
+			//if (context.ChartStreaming) {
+			//	string msg = "CHART_STREAMING_FORCIBLY_DISABLED_SAVED POSSIBLY_ENABLED_BY_OPENCHART_OR_NOT_ABORTED_UNFINISHED_BACKTEST ContextCurrentChartOrStrategy.ChartStreaming=true"
+			//		+ "; Selectors should've been Disable()d on chat[" + this.ChartForm + "].Activated() or StreamingOn()"
+			//		+ " in MainForm.PropagateSelectorsForCurrentChart()";
+			//	Assembler.PopupException(msg + msig);
+			//	context.ChartStreaming = false;
+			//	saveStrategyRequired = true;
+			//}
+			
+			//v2: I closed opened the app while streaming from StreamingMock and I want it streaming after app restart!!!
+			if (context.IsStreaming && context.IsStreamingTriggeringScript && saveStrategyRequired == true) {	// saveStrategyRequired=true for all user-clicked GUI events
+				string msg = "NOT_AN_ERROR__I_REFUSE_TO_STOP_STREAMING__DISABLE_GUI_CONTROLS_THAT_TRIGGER_RELOADING_BARS";
+				Assembler.PopupException(msg + msig, null, false);
 			}
 			
 			if (context.ScaleInterval.Scale == BarScale.Unknown) {
@@ -336,11 +355,11 @@ namespace Sq1.Gui.Forms {
 				
 				if (this.Executor.Bars != null) {
 					this.Executor.Bars.DataSource.DataSourceEditedChartsDisplayedShouldRunBacktestAgain -=
-						new EventHandler<DataSourceEventArgs>(ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
+						new EventHandler<DataSourceEventArgs>(chartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
 				}
 				this.Executor.SetBars(barsClicked);
 				this.Executor.Bars.DataSource.DataSourceEditedChartsDisplayedShouldRunBacktestAgain +=
-						new EventHandler<DataSourceEventArgs>(ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
+						new EventHandler<DataSourceEventArgs>(chartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
 
 				bool invalidateAllPanels = wontBacktest;
 				this.ChartForm.ChartControl.Initialize(barsClicked, invalidateAllPanels);
@@ -351,8 +370,8 @@ namespace Sq1.Gui.Forms {
 			// set original Streaming Icon before we lost in simulationPreBarsSubstitute() and launched backtester in another thread
 			//V1 this.Executor.Performance.Initialize();
 			//V2_REPORTERS_NOT_REFRESHED this.Executor.BacktesterRunSimulation();
-			var iconCanBeNull = this.Executor.DataSource.StreamingProvider != null ? this.Executor.DataSource.StreamingProvider.Icon : null;
-			this.ChartForm.PropagateContextChartOrScriptToLTB(context, iconCanBeNull);
+			//var iconCanBeNull = this.Executor.DataSource.StreamingProvider != null ? this.Executor.DataSource.StreamingProvider.Icon : null;
+			this.ChartForm.AbsorbContextBarsToGui();
 
 			// v1 already in ChartRenderer.OnNewBarsInjected event - commented out DoInvalidate();
 			// v2 NOPE, during DataSourcesTree_OnSymbolSelected() we're invalidating it here! - uncommented back
@@ -364,6 +383,7 @@ namespace Sq1.Gui.Forms {
 			}
 
 			if (saveStrategyRequired) {
+				// StrategySave is here koz I'm invoked for ~10 user-click GUI events; only Deserialization shouldn't save anything
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 			}
 			//bool wontBacktest = skipBacktest || this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false;
@@ -383,7 +403,7 @@ namespace Sq1.Gui.Forms {
 			}
 			this.BacktesterRunSimulationRegular();
 		}
-		void ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain(object sender, DataSourceEventArgs e) {
+		void chartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain(object sender, DataSourceEventArgs e) {
 			if (this.Strategy == null) {
 				Assembler.PopupException("hey for ATRbandCompiled-DLL #D Debugger shows this=NullReferenceException, and Strategy=null while it was instantiated from DLL, right?....");
 				return;
@@ -434,12 +454,12 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			//ONLY_ON_WORKSPACE_RESTORE??? this.ChartForm.PropagateContextChartOrScriptToLTB(this.Strategy.ScriptContextCurrent);
-			if (this.Strategy.ScriptContextCurrent.ChartStreaming) this.ChartStreamingConsumer.StartStreaming();
+			if (this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript) this.ChartStreamingConsumer.StreamingStart();
 		}
 		public void InitializeChartNoStrategyAfterDeserialization(MainForm mainForm) {
-			this.InitializeChartNoStrategy(mainForm, null);
+			this.InitializeChartNoStrategy(null);
 		}
-		public void InitializeStrategyAfterDeserialization(MainForm mainForm, string strategyGuid, string strategyName = "PLEASE_SUPPLY_FOR_USERS_CONVENIENCE") {
+		public void InitializeStrategyAfterDeserialization(string strategyGuid, string strategyName = "PLEASE_SUPPLY_FOR_USERS_CONVENIENCE") {
 			this.StrategyFoundDuringDeserialization = false;
 			Strategy strategyFound = null;
 			if (String.IsNullOrEmpty(strategyGuid) == false) {
@@ -453,7 +473,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.InitializeWithStrategy(mainForm, strategyFound, true);
+			this.InitializeWithStrategy(strategyFound, true);
 			this.StrategyFoundDuringDeserialization = true;
 			if (this.Executor.Bars == null) {
 				string msg = "TYRINIG_AVOID_BARS_NULL_EXCEPTION: FIXME InitializeWithStrategy() didn't load bars";

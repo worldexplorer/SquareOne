@@ -40,18 +40,22 @@ namespace Sq1.Gui.Forms {
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.DdbBars = new System.Windows.Forms.ToolStripDropDownButton();
 			this.ctxBars = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.mniStreamingOn = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnitlbYearly = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mnitlbMonthly = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mnitlbWeekly = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mnitlbDaily = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mnitlbHourly = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mnitlbMinutes = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniBarsStoredScaleInterval = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnitlbShowLastBars = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniShowBarRange = new System.Windows.Forms.ToolStripMenuItem();
 			this.TsiProgressBarETA = new Sq1.Widgets.ProgressBacktestETA.ToolStripItemProgressBarETA();
-			this.btnStreaming = new System.Windows.Forms.ToolStripButton();
-			this.btnAutoSubmit = new System.Windows.Forms.ToolStripButton();
+			this.btnStreamingTriggersScript = new System.Windows.Forms.ToolStripButton();
+			this.btnStrategyEmittingOrders = new System.Windows.Forms.ToolStripButton();
 			this.ctxBacktest.SuspendLayout();
 			this.ctxStrategy.SuspendLayout();
 			this.statusStrip.SuspendLayout();
@@ -61,8 +65,8 @@ namespace Sq1.Gui.Forms {
 			// ChartControl
 			// 
 			this.ChartControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-			| System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.ChartControl.Location = new System.Drawing.Point(0, 0);
 			this.ChartControl.Name = "ChartControl";
 			this.ChartControl.RangeBarCollapsed = false;
@@ -72,42 +76,43 @@ namespace Sq1.Gui.Forms {
 			// ctxBacktest
 			// 
 			this.ctxBacktest.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mnitlbSpreadGeneratorPct,
-			this.mniFillOutsideQuoteSpreadParanoidCheckThrow,
-			this.toolStripSeparator4,
-			this.mniBacktestOnDataSourceSaved,
-			this.mniBacktestOnRestart,
-			this.mniBacktestOnSelectorsChange,
-			this.mniBacktestNow,
-			this.toolStripSeparator1,
-			this.mnitlbPositionSizeSharesConstantEachTrade,
-			this.mnitlbPositionSizeDollarsEachTradeConstant});
+            this.mnitlbSpreadGeneratorPct,
+            this.mniFillOutsideQuoteSpreadParanoidCheckThrow,
+            this.toolStripSeparator4,
+            this.mniBacktestOnDataSourceSaved,
+            this.mniBacktestOnRestart,
+            this.mniBacktestOnSelectorsChange,
+            this.mniBacktestNow,
+            this.toolStripSeparator1,
+            this.mnitlbPositionSizeSharesConstantEachTrade,
+            this.mnitlbPositionSizeDollarsEachTradeConstant});
 			this.ctxBacktest.Name = "ctxBacktest";
 			this.ctxBacktest.OwnerItem = this.DdbBacktest;
-			this.ctxBacktest.Size = new System.Drawing.Size(308, 220);
+			this.ctxBacktest.Size = new System.Drawing.Size(308, 198);
 			this.ctxBacktest.Opening += new System.ComponentModel.CancelEventHandler(this.ctxBacktest_Opening);
 			// 
 			// mnitlbSpreadGeneratorPct
 			// 
 			this.mnitlbSpreadGeneratorPct.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbSpreadGeneratorPct.InputFieldAlignedRight = false;
 			this.mnitlbSpreadGeneratorPct.InputFieldEditable = true;
 			this.mnitlbSpreadGeneratorPct.InputFieldOffsetX = 100;
 			this.mnitlbSpreadGeneratorPct.InputFieldValue = "0.005";
 			this.mnitlbSpreadGeneratorPct.InputFieldWidth = 60;
 			this.mnitlbSpreadGeneratorPct.Name = "mnitlbSpreadGeneratorPct";
-			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(168, 21);
+			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(163, 21);
 			this.mnitlbSpreadGeneratorPct.Text = "Spread %price";
 			this.mnitlbSpreadGeneratorPct.TextOffsetX = 0;
 			this.mnitlbSpreadGeneratorPct.TextRed = false;
-			this.mnitlbSpreadGeneratorPct.TextWidth = 100;
+			this.mnitlbSpreadGeneratorPct.TextWidth = 85;
 			this.mnitlbSpreadGeneratorPct.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbSpreadGeneratorPct_UserTyped);
 			// 
-			// mniOutsideQuoteFillThrow
+			// mniFillOutsideQuoteSpreadParanoidCheckThrow
 			// 
-			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Name = "mniOutsideQuoteFillCheckThrow";
+			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.CheckOnClick = true;
+			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Name = "mniFillOutsideQuoteSpreadParanoidCheckThrow";
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Size = new System.Drawing.Size(307, 22);
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Text = "OutsiteQuote Fills Reported";
-			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.CheckOnClick = true;
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Click += new System.EventHandler(this.mniOutsideQuoteFillCheckThrow_Click);
 			// 
 			// toolStripSeparator4
@@ -160,6 +165,7 @@ namespace Sq1.Gui.Forms {
 			// mnitlbPositionSizeSharesConstantEachTrade
 			// 
 			this.mnitlbPositionSizeSharesConstantEachTrade.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldAlignedRight = false;
 			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldEditable = true;
 			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldOffsetX = 80;
 			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldValue = "";
@@ -175,6 +181,7 @@ namespace Sq1.Gui.Forms {
 			// mnitlbPositionSizeDollarsEachTradeConstant
 			// 
 			this.mnitlbPositionSizeDollarsEachTradeConstant.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldAlignedRight = false;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldEditable = true;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldOffsetX = 80;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldValue = "";
@@ -226,11 +233,11 @@ namespace Sq1.Gui.Forms {
 			// ctxStrategy
 			// 
 			this.ctxStrategy.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniStrategyContextLoad,
-			this.mniStrategyRemove,
-			this.toolStripSeparator3,
-			this.MniShowOptimizer,
-			this.MniShowSourceCodeEditor});
+            this.mniStrategyContextLoad,
+            this.mniStrategyRemove,
+            this.toolStripSeparator3,
+            this.MniShowOptimizer,
+            this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
 			this.ctxStrategy.OwnerItem = this.DdbStrategy;
 			this.ctxStrategy.Size = new System.Drawing.Size(249, 98);
@@ -268,13 +275,13 @@ namespace Sq1.Gui.Forms {
 			// statusStrip
 			// 
 			this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.DdbBars,
-			this.DdbStrategy,
-			this.DdbBacktest,
-			this.DdbReporters,
-			this.TsiProgressBarETA,
-			this.btnStreaming,
-			this.btnAutoSubmit});
+            this.DdbBars,
+            this.DdbStrategy,
+            this.DdbBacktest,
+            this.DdbReporters,
+            this.TsiProgressBarETA,
+            this.btnStreamingTriggersScript,
+            this.btnStrategyEmittingOrders});
 			this.statusStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
 			this.statusStrip.Location = new System.Drawing.Point(0, 286);
 			this.statusStrip.Name = "statusStrip";
@@ -294,30 +301,50 @@ namespace Sq1.Gui.Forms {
 			// ctxBars
 			// 
 			this.ctxBars.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mnitlbYearly,
-			this.mnitlbMonthly,
-			this.mnitlbWeekly,
-			this.mnitlbDaily,
-			this.mnitlbHourly,
-			this.mnitlbMinutes,
-			this.toolStripSeparator2,
-			this.mnitlbShowLastBars,
-			this.mniShowBarRange});
+            this.mniStreamingOn,
+            this.toolStripSeparator6,
+            this.mnitlbYearly,
+            this.mnitlbMonthly,
+            this.mnitlbWeekly,
+            this.mnitlbDaily,
+            this.mnitlbHourly,
+            this.mnitlbMinutes,
+            this.toolStripSeparator5,
+            this.mniBarsStoredScaleInterval,
+            this.toolStripSeparator2,
+            this.mnitlbShowLastBars,
+            this.mniShowBarRange});
 			this.ctxBars.Name = "ctxScaleInterval";
 			this.ctxBars.OwnerItem = this.DdbBars;
-			this.ctxBars.Size = new System.Drawing.Size(229, 200);
+			this.ctxBars.Size = new System.Drawing.Size(255, 278);
+			// 
+			// mniStreamingOn
+			// 
+			this.mniStreamingOn.Checked = false;
+			this.mniStreamingOn.CheckOnClick = true;
+			this.mniStreamingOn.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.mniStreamingOn.Name = "mniStreamingOn";
+			this.mniStreamingOn.Size = new System.Drawing.Size(254, 22);
+			this.mniStreamingOn.Text = "Streaming On";
+			this.mniStreamingOn.Click += new System.EventHandler(this.mniStreamingOn_Click);
+			// 
+			// toolStripSeparator6
+			// 
+			this.toolStripSeparator6.Name = "toolStripSeparator6";
+			this.toolStripSeparator6.Size = new System.Drawing.Size(251, 6);
 			// 
 			// mnitlbYearly
 			// 
 			this.mnitlbYearly.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbYearly.InputFieldAlignedRight = true;
 			this.mnitlbYearly.InputFieldEditable = true;
-			this.mnitlbYearly.InputFieldOffsetX = 80;
+			this.mnitlbYearly.InputFieldOffsetX = 4;
 			this.mnitlbYearly.InputFieldValue = "";
-			this.mnitlbYearly.InputFieldWidth = 85;
+			this.mnitlbYearly.InputFieldWidth = 40;
 			this.mnitlbYearly.Name = "mnitlbYearly";
-			this.mnitlbYearly.Size = new System.Drawing.Size(168, 21);
+			this.mnitlbYearly.Size = new System.Drawing.Size(92, 21);
 			this.mnitlbYearly.Text = "Yearly";
-			this.mnitlbYearly.TextOffsetX = 0;
+			this.mnitlbYearly.TextOffsetX = 47;
 			this.mnitlbYearly.TextRed = false;
 			this.mnitlbYearly.TextWidth = 42;
 			this.mnitlbYearly.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
@@ -325,14 +352,15 @@ namespace Sq1.Gui.Forms {
 			// mnitlbMonthly
 			// 
 			this.mnitlbMonthly.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbMonthly.InputFieldAlignedRight = true;
 			this.mnitlbMonthly.InputFieldEditable = true;
-			this.mnitlbMonthly.InputFieldOffsetX = 80;
+			this.mnitlbMonthly.InputFieldOffsetX = 4;
 			this.mnitlbMonthly.InputFieldValue = "";
-			this.mnitlbMonthly.InputFieldWidth = 85;
+			this.mnitlbMonthly.InputFieldWidth = 40;
 			this.mnitlbMonthly.Name = "mnitlbMonthly";
-			this.mnitlbMonthly.Size = new System.Drawing.Size(168, 21);
+			this.mnitlbMonthly.Size = new System.Drawing.Size(105, 21);
 			this.mnitlbMonthly.Text = "Monthly";
-			this.mnitlbMonthly.TextOffsetX = 0;
+			this.mnitlbMonthly.TextOffsetX = 47;
 			this.mnitlbMonthly.TextRed = false;
 			this.mnitlbMonthly.TextWidth = 55;
 			this.mnitlbMonthly.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
@@ -340,14 +368,15 @@ namespace Sq1.Gui.Forms {
 			// mnitlbWeekly
 			// 
 			this.mnitlbWeekly.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbWeekly.InputFieldAlignedRight = true;
 			this.mnitlbWeekly.InputFieldEditable = true;
-			this.mnitlbWeekly.InputFieldOffsetX = 80;
+			this.mnitlbWeekly.InputFieldOffsetX = 4;
 			this.mnitlbWeekly.InputFieldValue = "";
-			this.mnitlbWeekly.InputFieldWidth = 85;
+			this.mnitlbWeekly.InputFieldWidth = 40;
 			this.mnitlbWeekly.Name = "mnitlbWeekly";
-			this.mnitlbWeekly.Size = new System.Drawing.Size(168, 21);
+			this.mnitlbWeekly.Size = new System.Drawing.Size(98, 21);
 			this.mnitlbWeekly.Text = "Weekly";
-			this.mnitlbWeekly.TextOffsetX = 0;
+			this.mnitlbWeekly.TextOffsetX = 47;
 			this.mnitlbWeekly.TextRed = false;
 			this.mnitlbWeekly.TextWidth = 48;
 			this.mnitlbWeekly.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
@@ -355,14 +384,15 @@ namespace Sq1.Gui.Forms {
 			// mnitlbDaily
 			// 
 			this.mnitlbDaily.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbDaily.InputFieldAlignedRight = true;
 			this.mnitlbDaily.InputFieldEditable = true;
-			this.mnitlbDaily.InputFieldOffsetX = 80;
+			this.mnitlbDaily.InputFieldOffsetX = 4;
 			this.mnitlbDaily.InputFieldValue = "";
-			this.mnitlbDaily.InputFieldWidth = 85;
+			this.mnitlbDaily.InputFieldWidth = 40;
 			this.mnitlbDaily.Name = "mnitlbDaily";
-			this.mnitlbDaily.Size = new System.Drawing.Size(168, 21);
+			this.mnitlbDaily.Size = new System.Drawing.Size(86, 21);
 			this.mnitlbDaily.Text = "Daily";
-			this.mnitlbDaily.TextOffsetX = 0;
+			this.mnitlbDaily.TextOffsetX = 47;
 			this.mnitlbDaily.TextRed = false;
 			this.mnitlbDaily.TextWidth = 36;
 			this.mnitlbDaily.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
@@ -370,14 +400,15 @@ namespace Sq1.Gui.Forms {
 			// mnitlbHourly
 			// 
 			this.mnitlbHourly.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbHourly.InputFieldAlignedRight = true;
 			this.mnitlbHourly.InputFieldEditable = true;
-			this.mnitlbHourly.InputFieldOffsetX = 80;
+			this.mnitlbHourly.InputFieldOffsetX = 4;
 			this.mnitlbHourly.InputFieldValue = "";
-			this.mnitlbHourly.InputFieldWidth = 85;
+			this.mnitlbHourly.InputFieldWidth = 40;
 			this.mnitlbHourly.Name = "mnitlbHourly";
-			this.mnitlbHourly.Size = new System.Drawing.Size(168, 21);
+			this.mnitlbHourly.Size = new System.Drawing.Size(96, 21);
 			this.mnitlbHourly.Text = "Hourly";
-			this.mnitlbHourly.TextOffsetX = 0;
+			this.mnitlbHourly.TextOffsetX = 47;
 			this.mnitlbHourly.TextRed = false;
 			this.mnitlbHourly.TextWidth = 46;
 			this.mnitlbHourly.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
@@ -385,34 +416,47 @@ namespace Sq1.Gui.Forms {
 			// mnitlbMinutes
 			// 
 			this.mnitlbMinutes.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbMinutes.InputFieldAlignedRight = true;
 			this.mnitlbMinutes.InputFieldEditable = true;
-			this.mnitlbMinutes.InputFieldOffsetX = 80;
+			this.mnitlbMinutes.InputFieldOffsetX = 4;
 			this.mnitlbMinutes.InputFieldValue = "";
-			this.mnitlbMinutes.InputFieldWidth = 85;
+			this.mnitlbMinutes.InputFieldWidth = 40;
 			this.mnitlbMinutes.Name = "mnitlbMinutes";
-			this.mnitlbMinutes.Size = new System.Drawing.Size(168, 21);
+			this.mnitlbMinutes.Size = new System.Drawing.Size(103, 21);
 			this.mnitlbMinutes.Text = "Minutes";
-			this.mnitlbMinutes.TextOffsetX = 0;
+			this.mnitlbMinutes.TextOffsetX = 47;
 			this.mnitlbMinutes.TextRed = false;
 			this.mnitlbMinutes.TextWidth = 53;
 			this.mnitlbMinutes.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
 			// 
+			// toolStripSeparator5
+			// 
+			this.toolStripSeparator5.Name = "toolStripSeparator5";
+			this.toolStripSeparator5.Size = new System.Drawing.Size(251, 6);
+			// 
+			// mniBarsStoredScaleInterval
+			// 
+			this.mniBarsStoredScaleInterval.Name = "mniBarsStoredScaleInterval";
+			this.mniBarsStoredScaleInterval.Size = new System.Drawing.Size(254, 22);
+			this.mniBarsStoredScaleInterval.Text = "[5-Minutes] Minimum";
+			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(225, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(251, 6);
 			// 
 			// mnitlbShowLastBars
 			// 
 			this.mnitlbShowLastBars.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbShowLastBars.InputFieldAlignedRight = true;
 			this.mnitlbShowLastBars.InputFieldEditable = true;
-			this.mnitlbShowLastBars.InputFieldOffsetX = 80;
+			this.mnitlbShowLastBars.InputFieldOffsetX = 4;
 			this.mnitlbShowLastBars.InputFieldValue = "";
-			this.mnitlbShowLastBars.InputFieldWidth = 85;
+			this.mnitlbShowLastBars.InputFieldWidth = 40;
 			this.mnitlbShowLastBars.Name = "mnitlbShowLastBars";
-			this.mnitlbShowLastBars.Size = new System.Drawing.Size(168, 21);
+			this.mnitlbShowLastBars.Size = new System.Drawing.Size(106, 21);
 			this.mnitlbShowLastBars.Text = "Last Bars";
-			this.mnitlbShowLastBars.TextOffsetX = 0;
+			this.mnitlbShowLastBars.TextOffsetX = 47;
 			this.mnitlbShowLastBars.TextRed = false;
 			this.mnitlbShowLastBars.TextWidth = 56;
 			this.mnitlbShowLastBars.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbShowLastBars_UserTyped);
@@ -423,7 +467,7 @@ namespace Sq1.Gui.Forms {
 			this.mniShowBarRange.CheckOnClick = true;
 			this.mniShowBarRange.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniShowBarRange.Name = "mniShowBarRange";
-			this.mniShowBarRange.Size = new System.Drawing.Size(228, 22);
+			this.mniShowBarRange.Size = new System.Drawing.Size(254, 22);
 			this.mniShowBarRange.Text = "Show Bars Range Selector";
 			this.mniShowBarRange.Click += new System.EventHandler(this.mniShowBarRange_Click);
 			// 
@@ -440,30 +484,31 @@ namespace Sq1.Gui.Forms {
 			this.TsiProgressBarETA.Visible = false;
 			this.TsiProgressBarETA.Click += new System.EventHandler(this.TsiProgressBarETAClick);
 			// 
-			// btnStreaming
+			// btnStreamingTriggersScript
 			// 
-			this.btnStreaming.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.btnStreaming.CheckOnClick = true;
-			this.btnStreaming.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.btnStreaming.Name = "btnStreaming";
-			this.btnStreaming.Size = new System.Drawing.Size(65, 20);
-			this.btnStreaming.Text = "Streaming";
-			this.btnStreaming.ToolTipText = "Enable/Disable Streaming";
-			this.btnStreaming.Click += new System.EventHandler(this.btnStreaming_Click);
+			this.btnStreamingTriggersScript.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.btnStreamingTriggersScript.CheckOnClick = true;
+			this.btnStreamingTriggersScript.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.btnStreamingTriggersScript.Name = "btnStreamingTriggersScript";
+			this.btnStreamingTriggersScript.Size = new System.Drawing.Size(65, 20);
+			this.btnStreamingTriggersScript.Text = "Streaming";
+			this.btnStreamingTriggersScript.ToolTipText = "ON=>Strategy will be invoked each Bar/Quote; OFF=>Strategy will never be invoked;" +
+    " CHART draws streaming bars no matter what";
+			this.btnStreamingTriggersScript.Click += new System.EventHandler(this.btnStreamingWillTriggerScript_Click);
 			// 
-			// btnAutoSubmit
+			// btnStrategyEmittingOrders
 			// 
-			this.btnAutoSubmit.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-			this.btnAutoSubmit.Checked = false;
-			this.btnAutoSubmit.CheckOnClick = true;
-			this.btnAutoSubmit.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.btnAutoSubmit.Enabled = false;
-			this.btnAutoSubmit.Name = "btnAutoSubmit";
-			this.btnAutoSubmit.Size = new System.Drawing.Size(80, 20);
-			this.btnAutoSubmit.Text = "Auto-Submit";
-			this.btnAutoSubmit.ToolTipText = "ON=>Orders are submitted to BrokerProvider you chose in your DataSource, OFF=>Ord" +
-	"ers are routed to DEPRECATEDSimulateBacktestPendingAlertsFill()";
-			this.btnAutoSubmit.Click += new System.EventHandler(this.btnAutoSubmit_Click);
+			this.btnStrategyEmittingOrders.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+			this.btnStrategyEmittingOrders.Checked = true;
+			this.btnStrategyEmittingOrders.CheckOnClick = true;
+			this.btnStrategyEmittingOrders.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.btnStrategyEmittingOrders.Enabled = false;
+			this.btnStrategyEmittingOrders.Name = "btnStrategyEmittingOrders";
+			this.btnStrategyEmittingOrders.Size = new System.Drawing.Size(70, 20);
+			this.btnStrategyEmittingOrders.Text = "EmitOrders";
+			this.btnStrategyEmittingOrders.ToolTipText = "ON=>Orders are submitted to BrokerProvider you chose in your DataSource, OFF=>Ord" +
+    "ers are routed to MarketSimStreaming through BacktestBrokerProvider";
+			this.btnStrategyEmittingOrders.Click += new System.EventHandler(this.btnStrategyEmittingOrders_Click);
 			// 
 			// ChartForm
 			// 
@@ -505,8 +550,8 @@ namespace Sq1.Gui.Forms {
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mnitlbPositionSizeDollarsEachTradeConstant;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mnitlbPositionSizeSharesConstantEachTrade;
 		private System.Windows.Forms.ContextMenuStrip ctxStrategy;
-		public System.Windows.Forms.ToolStripButton btnAutoSubmit;
-		public System.Windows.Forms.ToolStripButton btnStreaming;
+		public System.Windows.Forms.ToolStripButton btnStrategyEmittingOrders;
+		public System.Windows.Forms.ToolStripButton btnStreamingTriggersScript;
 		public Sq1.Widgets.ProgressBacktestETA.ToolStripItemProgressBarETA TsiProgressBarETA;
 		private System.Windows.Forms.StatusStrip statusStrip;
 		public System.Windows.Forms.ToolStripDropDownButton DdbReporters;
@@ -524,5 +569,9 @@ namespace Sq1.Gui.Forms {
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripMenuItem mniFillOutsideQuoteSpreadParanoidCheckThrow;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mnitlbSpreadGeneratorPct;
+		private System.Windows.Forms.ToolStripMenuItem mniStreamingOn;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+		private System.Windows.Forms.ToolStripMenuItem mniBarsStoredScaleInterval;
 	}
 }

@@ -8,12 +8,10 @@ using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.FormFactories {
 	public class OptimizerFormFactory {	// REASON_TO_EXIST: way to refresh Sliders and run Chart.Backtest() for added ContextScript from Sq1.Widgets.dll:OptimizationControl
-		private RepositoryDllJsonStrategy strategyRepository;
 		private ChartFormManager chartFormManager;
 
-		public OptimizerFormFactory(ChartFormManager chartFormsManager, RepositoryDllJsonStrategy strategyRepository) {
+		public OptimizerFormFactory(ChartFormManager chartFormsManager) {
 			this.chartFormManager = chartFormsManager;
-			this.strategyRepository = strategyRepository;
 		}
 
 		private OptimizerForm OptimizerForm {

@@ -1,7 +1,6 @@
 {
   "$type": "Sq1.Widgets.DataSourcesTree.DataSourceTreeDataSnapshot, Sq1.Widgets",
   "DataSourceFoldersExpanded": [
-    "Qmock",
-    "MOCK"
+    "Qmock"
   ]
 }

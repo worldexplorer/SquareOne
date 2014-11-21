@@ -168,7 +168,7 @@ namespace Sq1.Core.Streaming {
 			lock (lockConsumersBySymbol) {
 				Dictionary<string, List<BarScaleInterval>> symbolsScaleIntervals = this.SymbolsScaleIntervalsQuoteConsumerRegistered(dyingConsumer);
 				if (symbolsScaleIntervals == null) {
-					Assembler.PopupException("QuoteConsumer [" + dyingConsumer + "] was not registered to any symbols + ScaleIntervals; returning");
+					Assembler.PopupException("WASNT_REGISTERED_QuoteConsumer [" + dyingConsumer + "] for [any symbols + ScaleIntervals]", null, false);
 					return;
 				}
 				foreach (string symbol in symbolsScaleIntervals.Keys) {
@@ -182,7 +182,7 @@ namespace Sq1.Core.Streaming {
 			lock (lockConsumersBySymbol) {
 				Dictionary<string, List<BarScaleInterval>> symbolsScaleIntervals = this.SymbolsScaleIntervalsBarConsumerRegistered(dyingConsumer);
 				if (symbolsScaleIntervals == null) {
-					Assembler.PopupException("BarConsumer [" + dyingConsumer + "] was not registered to any symbols + ScaleIntervals; returning");
+					Assembler.PopupException("WASNT_REGISTERED_BarConsumer [" + dyingConsumer.ToString() + "] for [any symbols + ScaleIntervals]", null, false);
 					return;
 				}
 				foreach (string symbol in symbolsScaleIntervals.Keys) {

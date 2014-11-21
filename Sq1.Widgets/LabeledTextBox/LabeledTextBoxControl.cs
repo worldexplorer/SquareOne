@@ -69,6 +69,11 @@ namespace Sq1.Widgets.LabeledTextBox {
 			get { return this.TextBox.Enabled; }
 			set { this.TextBox.Enabled = value; }
 		}
+		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		public bool InputFieldAlignedRight {
+			get { return this.TextBox.TextAlign == HorizontalAlignment.Right; }
+			set { this.TextBox.TextAlign = (value == true) ? HorizontalAlignment.Right : HorizontalAlignment.Left; }
+		}
 		public ToolStripControlHost ParentToolStripControlHost;
 	}
 }
