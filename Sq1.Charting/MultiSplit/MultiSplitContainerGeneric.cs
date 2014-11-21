@@ -83,9 +83,10 @@ namespace Sq1.Charting.MultiSplit {
 			if (splitterPropertiesByPanelName == null) return;
 			if (splitterPropertiesByPanelName.Count == 0) return;
 			if (splitterPropertiesByPanelName.Count != this.panels.Count) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				string msg = "multisplit container doesn't get indicators panels added when WorkspaceLoad()"
+					+ "; if I return here to skip PropagateSplitterManorderDistance, will I be re-invoked after indicators are added?";
+				Assembler.PopupException(msg, null, false);
+				// NO_BETTER_LET_IT_SPARSELY_ASSIGN_PANEL_HEIGHTS__INDICATORS_WILL_PERFECTLY_FIT_IN_LATER return;
 			}
 	   		int baseHeight = base.Height;
 try {
@@ -93,17 +94,11 @@ try {
 				MultiSplitterProperties prop = splitterPropertiesByPanelName[panelName];
 				if (prop.ManualOrder < 0 && prop.ManualOrder >= this.splitters.Count) {
 					string msg = "SPLITTER_SKIPPED_CANT_MOVE_NO_DESTINATION_WHERE_TO panelName[" + panelName + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException(msg);
 					continue;
 				}
 				if (prop.ManualOrder < 0 && prop.ManualOrder >= this.panels.Count) {
 					string msg = "SPLITTER_SKIPPED_CANT_MOVE_PANEL_NO_DESTINATION_WHERE_TO panelName[" + panelName + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					Assembler.PopupException(msg);
 					continue;
 				}
@@ -116,10 +111,7 @@ try {
 				}
 				if (splitterFound == null) {
 					string msg = "SPLITTER_NOT_FOUND_WHILE_SETTING_MANORDER_DISTANCE panelName[" + panelName + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					Assembler.PopupException(msg);
+					//LET_IT_SPARSELY_ASSIGN_PANEL_HEIGHTS__OR_RECONSTRUCT_PANELS_HERE_FORCIBLY? Assembler.PopupException(msg);
 					continue;
 				}
 				splitterFound.Location = new Point(splitterFound.Location.X, prop.Distance);
@@ -189,10 +181,8 @@ try {
 			#endif
 			
 } catch (Exception ex) {
-	#if DEBUG
-	Debugger.Break();
-	#endif
-	Assembler.PopupException(null, ex);
+	string msg = "I_THOUGHT_SplitterPropertiesByPanelNameSet()_WAS_EXCEPTION_FREE";
+	Assembler.PopupException(msg, ex);
 }
 		}
 		
@@ -240,17 +230,16 @@ try {
 			
 			int deserializationError = Math.Abs(y - baseHeight);
 			if (deserializationError <= 3) {
-				#if DEBUG
-				//Debugger.Break();
-				#endif
-				return;			// we don't need proportional vertical fill when 1) splitterMoved, 2) splitterDragged, 3) splitterPositionsByManorder.Count==this.panels.Count
+				string msg = "we don't need proportional vertical fill when 1) splitterMoved, 2) splitterDragged"
+					+ " , 3) splitterPositionsByManorder.Count==this.panels.Count";
+				//Assembler.PopupException(msg);
+				return;
 			}
 			
 			int panelHeight = baseHeight - MinimumPanelHeight;
 			if (panelHeight < 0) {
-				#if DEBUG
-				Debugger.Break();		// WTF
-				#endif
+				string msg = "I_SHOULD_NEVER_BE_HERE__WTF";
+				Assembler.PopupException(msg);
 				return;
 			}
 

@@ -48,14 +48,21 @@ namespace Sq1.Gui.Forms {
 			//this.Chart.Initialize(this.ChartFormsManager.Executor);
 			// TOO_EARLY_NO_BARS_SET_WILL_BE_THROWN this.PopulateBtnStreamingText();
 		}
-		public void AttachEventsToChartFormsManager() {
-			this.ChartControl.RangeBar.ValueMinChanged += this.ChartFormManager.ExternalEventsConsumer.ChartRangeBar_AnyValueChanged;
-			this.ChartControl.RangeBar.ValueMaxChanged += this.ChartFormManager.ExternalEventsConsumer.ChartRangeBar_AnyValueChanged;
-			this.ChartControl.RangeBar.ValuesMinAndMaxChanged += this.ChartFormManager.ExternalEventsConsumer.ChartRangeBar_AnyValueChanged;
+		public void ChartFormEventsToChartFormManagerAttach() {
+			this.ChartControl.RangeBar.ValueMinChanged += this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
+			this.ChartControl.RangeBar.ValueMaxChanged += this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
+			this.ChartControl.RangeBar.ValuesMinAndMaxChanged += this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
 			
-			// REFACTORED_INVOKING_DIRECTLY this.OnStreamingButtonStateChanged += new EventHandler<EventArgs>(this.ChartFormManager.ExternalEventsConsumer.ChartForm_StreamingButtonStateChanged);
 			this.ChartControl.ChartSettingsChangedContainerShouldSerialize += new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
 			this.ChartControl.ContextScriptChangedContainerShouldSerialize += new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
+		}
+		public void ChartFormEventsToChartFormManagerDetach() {
+			this.ChartControl.RangeBar.ValueMinChanged -= this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
+			this.ChartControl.RangeBar.ValueMaxChanged -= this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
+			this.ChartControl.RangeBar.ValuesMinAndMaxChanged -= this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
+
+			this.ChartControl.ChartSettingsChangedContainerShouldSerialize -= new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
+			this.ChartControl.ContextScriptChangedContainerShouldSerialize -= new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
 		}
 
 		void ChartControl_ContextScriptChangedContainerShouldSerialize(object sender, EventArgs e) {
@@ -84,13 +91,14 @@ namespace Sq1.Gui.Forms {
 			}
 			return ret;
 		}
-		public void PrintQuoteTimestampsOnStreamingButtonBeforeExecution(Quote quote) {
+		public void PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution(Quote quote) {
 			if (quote == null) return;
 			if (InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestampsOnStreamingButtonBeforeExecution(quote); });
+				base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution(quote); });
 				return;
 			}
-			StringBuilder sb = new StringBuilder("StreamingOn #");
+			StringBuilder sb = new StringBuilder(this.ChartFormManager.StreamingButtonIdent);
+			sb.Append(" #");
 			sb.Append(quote.IntraBarSerno.ToString("000"));
 			sb.Append(" ");
 			sb.Append(quote.ServerTime.ToString("HH:mm:ss.fff"));
@@ -109,50 +117,69 @@ namespace Sq1.Gui.Forms {
 				sb.Append(" ");
 				sb.Append(new DateTime(timeLeft.Ticks).ToString(format));
 			}
-			this.btnStreaming.Text = sb.ToString();
+			this.btnStreamingTriggersScript.Text = sb.ToString();
 		}
 		public void PopulateBtnStreamingClickedAndText() {
-			bool streamingNow = this.ChartFormManager.Executor.IsStreaming;
+			bool streamingNow = this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming;
 			if (streamingNow) {
 				this.mniBacktestOnSelectorsChange.Enabled = false;
 				this.mniBacktestOnDataSourceSaved.Enabled = false;
 				this.mniBacktestNow.Enabled = false;
-				this.btnAutoSubmit.Enabled = true;
+				this.btnStrategyEmittingOrders.Enabled = true;
 			} else {
 				this.mniBacktestOnSelectorsChange.Enabled = true;
 				this.mniBacktestOnDataSourceSaved.Enabled = true;
 				this.mniBacktestNow.Enabled = true;
-				this.btnAutoSubmit.Enabled = false;
+				this.btnStrategyEmittingOrders.Enabled = false;
 			}
 			if (this.ChartFormManager.Executor.DataSource.StreamingProvider == null) {
-				this.btnStreaming.Text = "DataSource: [" + StreamingProvider.NO_STREAMING_PROVIDER + "]";
-				this.btnStreaming.Enabled = false;
+				this.btnStreamingTriggersScript.Text = "DataSource: [" + StreamingProvider.NO_STREAMING_PROVIDER + "]";
+				this.btnStreamingTriggersScript.Enabled = false;
 			} else {
-				this.btnStreaming.Text = "Streaming" + ((this.ChartFormManager.Executor.IsStreaming) ? "On" : "Off")
-					+ " 00:00:00.000"; //+:: 00:00:00.000";
-				this.btnStreaming.Enabled = true;
+				this.btnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent + " 00:00:00.000"; //+:: 00:00:00.000";
+				this.btnStreamingTriggersScript.Enabled = true;
 			}
 		}
-		public void PropagateContextChartOrScriptToLTB(ContextChart ctxChart, Bitmap streamingProviderIcon = null) {
+		public void AbsorbContextBarsToGui() {
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.PropagateContextChartOrScriptToLTB(ctxChart, streamingProviderIcon); });
+				base.BeginInvoke((MethodInvoker)delegate { this.AbsorbContextBarsToGui(); });
 				return;
 			}
-			
-			if (streamingProviderIcon != null) {
-				this.btnStreaming.Image = streamingProviderIcon;
+
+			StreamingProvider streaming = this.ChartFormManager.Executor.DataSource.StreamingProvider;
+			Bitmap iconCanBeNull = streaming != null ? streaming.Icon : null;
+
+			if (iconCanBeNull != null) {
+				this.btnStreamingTriggersScript.Image = iconCanBeNull;
 			}
 			// from btnStreaming_Click(); not related but visualises the last clicked state
-			if (this.btnStreaming.Checked) {
+			if (this.btnStreamingTriggersScript.Checked) {
 				this.mniBacktestOnSelectorsChange.Enabled = false;
 				this.mniBacktestOnDataSourceSaved.Enabled = false;
 				this.mniBacktestNow.Enabled = false;
-				this.btnAutoSubmit.Enabled = true;
+				this.btnStrategyEmittingOrders.Enabled = true;
 			} else {
 				this.mniBacktestOnSelectorsChange.Enabled = true;
 				this.mniBacktestOnDataSourceSaved.Enabled = true;
 				this.mniBacktestNow.Enabled = true;
-				this.btnAutoSubmit.Enabled = false;
+				this.btnStrategyEmittingOrders.Enabled = false;
+			}
+
+			Bars barsClickedUpstack = this.ChartFormManager.Executor.Bars;
+			this.mniBarsStoredScaleInterval.Text = barsClickedUpstack != null
+				? barsClickedUpstack.ScaleInterval.ToString() + " Minimun"
+				: "[MIN_SCALEINTERVAL_UNKNOWN]";
+
+			// WAS_METHOD_PARAMETER_BUT_ACCESSIBLE_LIKE_THIS__NULL_CHECK_DONE_UPSTACK
+			ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
+
+			this.mniStreamingOn.Checked = ctxChart.IsStreaming;
+			if (this.mniStreamingOn.Checked == false) {
+				this.mniStreamingOn.BackColor = Color.LightSalmon;
+				this.DdbBars.BackColor = Color.LightSalmon;
+			} else {
+				this.mniStreamingOn.BackColor = SystemColors.Control;
+				this.DdbBars.BackColor = SystemColors.Control;
 			}
 			
 			if (ctxChart.ShowRangeBar) {
@@ -163,13 +190,13 @@ namespace Sq1.Gui.Forms {
 				this.mniShowBarRange.Checked = false;
 			}
 
-			this.btnStreaming.Checked = ctxChart.ChartStreaming;
+			this.btnStreamingTriggersScript.Checked = ctxChart.IsStreamingTriggeringScript;
 			ContextScript ctxScript = ctxChart as ContextScript;
 			if (ctxScript == null) return;
 			
 			this.mniBacktestOnRestart.Checked = ctxScript.BacktestOnRestart;
 			this.mniBacktestOnSelectorsChange.Checked = ctxScript.BacktestOnSelectorsChange;
-			this.btnAutoSubmit.Checked = ctxScript.ChartEmittingOrders;
+			this.btnStrategyEmittingOrders.Checked = ctxScript.StrategyEmittingOrders;
 			this.PropagateContextScriptToLTB(ctxScript);
 		}
 		
@@ -270,7 +297,7 @@ namespace Sq1.Gui.Forms {
 			if (strategyClicked == null) return;
 
 			//do not disturb a streaming chart with selector's changes (disable selectors if streaming; for script-free charts strategy=null)
-			bool enableForNonStreaming = !strategyClicked.ScriptContextCurrent.ChartStreaming;
+			bool enableForNonStreaming = !strategyClicked.ScriptContextCurrent.IsStreamingTriggeringScript;
 			
 			//DataSourcesForm.Instance.DataSourcesTree.Enabled = enableForNonStreaming;
 			
@@ -284,6 +311,17 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbShowLastBars.Enabled = enableForNonStreaming;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.Enabled = enableForNonStreaming;
 			this.mnitlbPositionSizeSharesConstantEachTrade.Enabled = enableForNonStreaming;
-		}		
+		}
+
+		public void Initialize(bool containsStrategy, bool strategyActivatedFromDll = false) {
+			//this.CtxReporters.Enabled = containsStrategy;
+			this.DdbReporters.Enabled = containsStrategy;
+			this.DdbStrategy.Enabled = containsStrategy;
+			this.DdbBacktest.Enabled = containsStrategy;
+			this.btnStrategyEmittingOrders.Enabled = containsStrategy;
+
+			this.MniShowSourceCodeEditor.Enabled = containsStrategy;
+			if (containsStrategy) this.MniShowSourceCodeEditor.Enabled = !strategyActivatedFromDll;
+		}
 	}
 }

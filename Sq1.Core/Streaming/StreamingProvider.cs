@@ -13,20 +13,20 @@ namespace Sq1.Core.Streaming {
 	public partial class StreamingProvider {
 		public const string NO_STREAMING_PROVIDER = "--- No Streaming Provider ---";
 		
-		[JsonIgnore]	public string Name { get; protected set; }
-		[JsonIgnore]	public string Description { get; protected set; }
-		[JsonIgnore]	public Bitmap Icon { get; protected set; }
-		[JsonIgnore]	public bool IsConnected { get; protected set; }
-		[JsonIgnore]	public string PreferredStaticProviderName { get; protected set; }
-		[JsonIgnore]	public StreamingSolidifier StreamingSolidifier { get; protected set; }
-		[JsonIgnore]	public DataSource DataSource;
-		[JsonIgnore]	public string marketName { get { return this.DataSource.MarketInfo.Name; } }
-		[JsonIgnore]	public IStatusReporter StatusReporter { get; protected set; }
-		[JsonIgnore]	public DataDistributor DataDistributor { get; protected set; }
-		[JsonProperty]	public StreamingDataSnapshot StreamingDataSnapshot { get; protected set; }
-		[JsonIgnore]	public virtual List<string> SymbolsUpstreamSubscribed { get; private set; }
-		[JsonIgnore]	protected Object SymbolsSubscribedLock;
-		[JsonIgnore]	public virtual string SymbolsUpstreamSubscribedAsString { get {
+		[JsonIgnore]	public string				Name				{ get; protected set; }
+		[JsonIgnore]	public string				Description			{ get; protected set; }
+		[JsonIgnore]	public Bitmap				Icon				{ get; protected set; }
+		[JsonIgnore]	public bool					IsConnected			{ get; protected set; }
+		[JsonIgnore]	public string				PreferredStaticProviderName { get; protected set; }
+		[JsonIgnore]	public StreamingSolidifier	StreamingSolidifier	{ get; protected set; }
+		[JsonIgnore]	public DataSource			DataSource;
+		[JsonIgnore]	public string				marketName			{ get { return this.DataSource.MarketInfo.Name; } }
+		[JsonIgnore]	public IStatusReporter		StatusReporter		{ get; protected set; }
+		[JsonIgnore]	public DataDistributor		DataDistributor		{ get; protected set; }
+		[JsonProperty]	public StreamingDataSnapshot StreamingDataSnapshot	{ get; protected set; }
+		[JsonIgnore]	public virtual List<string>	SymbolsUpstreamSubscribed	{ get; private set; }
+		[JsonIgnore]	protected object			SymbolsSubscribedLock;
+		[JsonIgnore]	public virtual string		SymbolsUpstreamSubscribedAsString { get {
 				string ret = "";
 				lock (SymbolsSubscribedLock) {
 					foreach (string symbol in SymbolsUpstreamSubscribed) ret += symbol + ",";
@@ -34,17 +34,18 @@ namespace Sq1.Core.Streaming {
 				ret = ret.TrimEnd(',');
 				return ret;
 			} }
-		[JsonIgnore]	protected Object BarsConsumersLock;
-		[JsonIgnore]	public bool SaveToStatic;
-		[JsonIgnore]	public ConnectionState ConnectionState { get; protected set; }
+		[JsonIgnore]	protected object			BarsConsumersLock;
+		[JsonIgnore]	public bool					SaveToStatic;
+		[JsonIgnore]	public ConnectionState		ConnectionState		{ get; protected set; }
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingProvider() {
-			SymbolsSubscribedLock = new Object();
-			BarsConsumersLock = new Object();
+			SymbolsSubscribedLock = new object();
+			BarsConsumersLock = new object();
 			SymbolsUpstreamSubscribed = new List<string>();
 			DataDistributor = new DataDistributor(this);
 			StreamingDataSnapshot = new StreamingDataSnapshot(this);
+			StreamingSolidifier = new StreamingSolidifier();
 		}
 		public virtual void Initialize(DataSource dataSource, IStatusReporter statusReporter) {
 			this.StatusReporter = statusReporter;
@@ -56,14 +57,14 @@ namespace Sq1.Core.Streaming {
 			this.StreamingDataSnapshot.InitializeLastQuoteReceived(this.DataSource.Symbols);
 		}
 		protected void SubscribeSolidifier() {
-			//SOLIDIFIER_REPLACES_STATIC_TO_STORE_REALTIME_QUOTES if (this.DataSource.StaticProvider == null) return;
-			this.StreamingSolidifier = new StreamingSolidifier(this.DataSource);
+			//SOLIDIFIER_REPLACES_STATIC_PROVIDER_TO_STORE_REALTIME_QUOTES if (this.DataSource.StaticProvider == null) return;
+			this.StreamingSolidifier.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
 				string ident = "[" + this.StreamingSolidifier.ToString()
 					+ "] <= " + this.DataSource.Name + " :: " + symbol + " (" + this.DataSource.ScaleInterval + ")";
 
 				if (this.ConsumerBarIsRegistered(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
-					string msg = "DUPLICATE_SUBSCRIPTION_BARS " + ident;
+					string msg = "WONT_DUPLICATE_SUBSCRIPTION_BARS " + ident;
 					Assembler.PopupException(msg, null, false);
 				} else {
 					string msg = "FIRST_SUBSCRIPTION_BARS " + ident;
@@ -72,10 +73,12 @@ namespace Sq1.Core.Streaming {
 				}
 
 				if (this.ConsumerQuoteIsRegistered(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
-					string msg = "DUPLICATE_SUBSCRIPTION_QUOTE " + ident;
+					string msg = "WONT_DUPLICATE_SUBSCRIPTION_QUOTE " + ident;
 					Assembler.PopupException(msg, null, false);
 				} else {
-					string msg = "FIRST_SUBSCRIPTION_QUOTE " + ident;
+					string msg = "FIRST_SUBSCRIPTION_QUOTE " + ident
+						//+ " WHY_AM_I_GETTING_HERE_TWICE???"
+						;
 					Assembler.PopupException(msg, null, false);
 					this.ConsumerQuoteRegister(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
 				}

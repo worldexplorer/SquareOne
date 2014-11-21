@@ -259,7 +259,7 @@ namespace Sq1.Core.DataFeed {
 		}
 		public virtual Bars RequestDataFromRepository(string symbol) {
 			Bars ret;
-			symbol = symbol.ToUpper();
+			// UPPERCASING_WILL_INDUCE SYMBOL_MISMATCH__CANT_SET_PARENT_BAR_FOR_QUOTE symbol = symbol.ToUpper();
 
 			//BarsFolder perstFolder = new BarsFolder(this.BarsFolder.RootFolder, this.DataSource.ScaleInterval, true, "dts");
 			//RepositoryBarsPerst barsPerst = new RepositoryBarsPerst(perstFolder, symbol, false);

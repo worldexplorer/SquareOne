@@ -19,8 +19,8 @@ namespace Sq1.Core.Streaming {
 		public SymbolScaleDistributionChannel() {
 			lockConsumersQuote = new object();
 			lockConsumersBar = new object();
-			consumersQuote = new List<IStreamingConsumer>();
-			consumersBar = new List<IStreamingConsumer>();
+			this.consumersQuote = new List<IStreamingConsumer>();
+			this.consumersBar = new List<IStreamingConsumer>();
 			earlyBinders = new Dictionary<IStreamingConsumer, StreamingEarlyBinder>();
 		}
 		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval) : this() {
@@ -67,7 +67,7 @@ namespace Sq1.Core.Streaming {
 
 		void bindNewStreamingBarAppendPokeConsumersStaticFormed() {
 			Bar barStreamingUnattached = this.StreamingBarFactoryUnattached.StreamingBarUnattached.Clone();
-			if (consumersBar.Count == 0) {
+			if (this.consumersBar.Count == 0) {
 				Assembler.PopupException("NO_BARS_CONSUMERS to push lastBarFormed[" + barStreamingUnattached.ToString() + "] SymbolScaleInterval["
 					+ SymbolScaleInterval + "]; returning");
 				return;
@@ -141,7 +141,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		void bindStreamingBarForQuoteAndPushQuoteToConsumers(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
-			if (consumersQuote.Count == 0) {
+			if (this.consumersQuote.Count == 0) {
 				Assembler.PopupException("Can't push quoteSernoEnriched[" + quoteSernoEnrichedWithUnboundStreamingBar + "]: no QuoteConsumers for symbol["
 					+ Symbol + "] + scaleInterval[" + ScaleInterval + "]; returning");
 				return;
@@ -246,7 +246,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public void ConsumersQuoteAdd(IStreamingConsumer consumer) {
 			lock (lockConsumersQuote) {
-				consumersQuote.Add(consumer);
+				this.consumersQuote.Add(consumer);
 				if (earlyBinders.ContainsKey(consumer) == false) {
 					earlyBinders.Add(consumer, new StreamingEarlyBinder(this.StreamingBarFactoryUnattached, consumer));
 				}
@@ -254,7 +254,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public void ConsumersQuoteRemove(IStreamingConsumer consumer) {
 			lock (lockConsumersQuote) {
-				consumersQuote.Remove(consumer);
+				this.consumersQuote.Remove(consumer);
 				if (earlyBinders.ContainsKey(consumer) && this.consumersBar.Contains(consumer) == false) {
 					earlyBinders.Remove(consumer);
 				}
@@ -273,7 +273,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public void ConsumersBarAdd(IStreamingConsumer consumer) {
 			lock (lockConsumersBar) {
-				consumersBar.Add(consumer);
+				this.consumersBar.Add(consumer);
 				if (earlyBinders.ContainsKey(consumer) == false) {
 					earlyBinders.Add(consumer, new StreamingEarlyBinder(this.StreamingBarFactoryUnattached, consumer));
 				}
@@ -284,7 +284,7 @@ namespace Sq1.Core.Streaming {
 				if (consumer is StaticProvider) {
 					int a = 1;
 				}
-				consumersBar.Remove(consumer);
+				this.consumersBar.Remove(consumer);
 				if (earlyBinders.ContainsKey(consumer) && this.consumersQuote.Contains(consumer) == false) {
 					earlyBinders.Remove(consumer);
 				}

@@ -1,9 +1,33 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "b04c88a3-7886-4edd-b218-5feba0e435fc",
-  "StrategyNameJsonCheck": "ATRbandCompiled",
-  "StrategyAbsPathJsonCheck": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json",
-  "ContextChart": null,
+  "StrategyGuidJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "StrategyNameJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "StrategyAbsPathJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "ContextChart": {
+    "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
+    "Name": "CHART_autogen",
+    "Symbol": "autogen",
+    "DataSourceName": "Qmock",
+    "ScaleInterval": {
+      "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+      "Scale": 3,
+      "Interval": 1,
+      "IsIntraday": true,
+      "AsTimeSpanInSeconds": 60,
+      "AsTimeSpan": "00:01:00"
+    },
+    "DataRange": {
+      "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
+      "Range": 1,
+      "StartDate": "0001-01-01T00:00:00",
+      "EndDate": "9999-12-31T23:59:59.9999999",
+      "RecentBars": 500,
+      "RecentTimeunits": 0
+    },
+    "IsStreamingTriggeringScript": false,
+    "ShowRangeBar": false,
+    "IsStreaming": true
+  },
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
     "GutterBottomDateFormatDayOpener": "ddd dd-MMM-yyyy",
@@ -13,19 +37,19 @@
     "GutterBottomDateFormatYearly": "yyyy",
     "MultiSplitterPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "Volume": {
+      "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0
       },
-      "Price": {
+      "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 46
+        "Distance": 224
       }
     },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 12,
+    "BarWidthIncludingPadding": 8,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -35,12 +59,12 @@
     "GutterRightColorBackground": "Gainsboro",
     "GutterRightColorForeground": "Black",
     "GutterRightPadding": 5,
-    "GutterRightFont": "Microsoft Sans Serif, 8pt",
+    "GutterRightFont": "Consolas, 8pt",
     "GutterBottomColorBackground": "Gainsboro",
     "GutterBottomColorForeground": "Black",
     "GutterBottomNewDateColorForeground": "Green",
     "GutterBottomPadding": 2,
-    "GutterBottomFont": "Microsoft Sans Serif, 8pt",
+    "GutterBottomFont": "Consolas, 8pt",
     "GridlinesHorizontalColor": "WhiteSmoke",
     "GridlinesVerticalColor": "WhiteSmoke",
     "GridlinesVerticalNewDateColor": "Lime",
@@ -49,7 +73,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 170,
+    "SqueezeVerticalPaddingPx": 0,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -59,7 +83,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 5808,
+    "ScrollPositionAtBarIndex": 0,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -75,7 +99,7 @@
     "PositionLineProfitableColorAlpha": 100,
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
-    "PriceVsVolumeSplitterDistance": 477,
+    "PriceVsVolumeSplitterDistance": 0,
     "AlertPendingEllipseColor": "Maroon",
     "AlertPendingEllipseColorAlpha": 160,
     "AlertPendingEllipseWidth": 1,
@@ -87,8 +111,16 @@
     "ChartLabelsUpperLeftPlatePadding": 1,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
     "ChartLabelsUpperLeftIndicatorSquareSize": 5,
-    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3
+    "OnChartBarAnnotationsVerticalAwayFromPositionArrows": 3,
+    "SpreadBidLineColor": "Gray",
+    "SpreadBidLineColorAlpha": 64,
+    "SpreadBidLineWidth": 1,
+    "SpreadAskLineColor": "Orange",
+    "SpreadAskLineColorAlpha": 64,
+    "SpreadAskLineWidth": 1,
+    "SpreadLabelFont": "Consolas, 8pt",
+    "SpreadLabelColor": "DarkGray"
   },
-  "ChartSerno": 19,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\ATRbandCompiled.json], ScriptContextCurrentName[?Default?]"
+  "ChartSerno": 6,
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
 }

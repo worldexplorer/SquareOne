@@ -17,31 +17,28 @@ using Sq1.Core.Indicators;
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
 		#region constructed (my own data)
-		public ExecutionDataSnapshot ExecutionDataSnapshot { get; protected set; }
-		public SystemPerformance Performance { get; protected set; }
-		public Backtester Backtester { get; private set; }
-		public PositionPrototypeActivator PositionPrototypeActivator { get; private set; }
-		//public MarketSimStatic MarketSimStatic { get; private set; }
-		public MarketRealStreaming MarketRealStreaming { get; private set; }
-		public MarketSimStreaming MarketSimStreaming { get; private set; }
-		public ScriptExecutorEventGenerator EventGenerator { get; private set; }
+		public	ExecutionDataSnapshot			ExecutionDataSnapshot		{ get; protected set; }
+		public	SystemPerformance				Performance					{ get; protected set; }
+		public	Backtester						Backtester					{ get; private set; }
+		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; private set; }
+		public	MarketRealStreaming				MarketRealStreaming			{ get; private set; }
+		public	MarketSimStreaming				MarketSimStreaming			{ get; private set; }
+		public	ScriptExecutorEventGenerator	EventGenerator				{ get; private set; }
 		// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-		//public NotOnChartBarsHelper NotOnChartBarsHelper { get; private set; }
-		public CommissionCalculator CommissionCalculator;
-		public Optimizer Optimizer { get; protected set; }
+		//public	NotOnChartBarsHelper		NotOnChartBarsHelper		{ get; private set; }
+		public	CommissionCalculator			CommissionCalculator;
+		public	Optimizer						Optimizer					{ get; protected set; }
 		#endregion
 		
 		#region initialized (sort of Dependency Injection)
-		public ChartShadow ChartShadow;		// initialized with Sq1.Charting.ChartControl:ChartShadow
-		// managing ScriptExecutorObjects is ChartControl's responsibility;  
-		//public ScriptToChartCommunicator ScriptToChartCommunicator { get { return this.ChartShadow.ScriptToChartCommunicator; } }
-		public Strategy Strategy;
-		public string StrategyName { get { return (this.Strategy == null) ? "STRATEGY_NULL" : this.Strategy.Name; } }
-		public OrderProcessor OrderProcessor { get; private set; }
+		public	ChartShadow						ChartShadow;		// initialized with Sq1.Charting.ChartControl:ChartShadow
+		public	Strategy						Strategy;
+		public	string							StrategyName				{ get { return (this.Strategy == null) ? "STRATEGY_NULL" : this.Strategy.Name; } }
+		public	OrderProcessor					OrderProcessor				{ get; private set; }
 		#endregion
 
 		#region volatile Script is recompiled and replaced
-		public Bars Bars { get; private set; }
+		public	Bars							Bars						{ get; private set; }
 		public PositionSize PositionSize { get {
 				if (this.Strategy == null) {
 					string msg = "ScriptExecutor.PositionSize: you should not access PositionSize before you've set Strategy";
@@ -64,48 +61,64 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		#endregion
 
-		bool isStreamingWhenNoStrategyLoaded;
-		bool isAutoSubmittingWhenNoStrategyLoaded;
+		//bool isStreamingWhenNoStrategyLoaded;
+		bool isEmittingOrdersWhenNoStrategyLoaded;
 
-		public bool IsStreaming {
+		public bool IsStreamingTriggeringScript {
 			get {
-				if (this.Strategy == null) return this.isStreamingWhenNoStrategyLoaded;
-				else return this.Strategy.ScriptContextCurrent.ChartStreaming;
+				if (this.Strategy == null) {
+					//v1 return this.isStreamingWhenNoStrategyLoaded
+					string msg = "IsStreamingTriggeringScript__get: CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING";
+					Assembler.PopupException(msg);
+					return false;
+				}
+				return this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript;
 			}
 			set {
 				if (this.Strategy == null) {
-					this.isStreamingWhenNoStrategyLoaded = value;
+					//v1 this.isStreamingWhenNoStrategyLoaded = value;
+					string msg = "IsStreamingTriggeringScript__set: CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING";
+					Assembler.PopupException(msg);
 					return;
 				}
 				
-				this.Strategy.ScriptContextCurrent.ChartStreaming = value;
+				this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript = value;
 				// we are in beginning the backtest and will switch back to preBacktestIsStreaming after backtest finishes;
 				// if you AppKill during the backtest, you don't want btnStreaming be pressed (and disabled DataSource.StreamingProvider=null) after AppRestart 
-				if (this.preBacktestBars != null) return;
+				if (this.preBacktestBars != null) {
+					//string msg = "NOT_SAVING_STREAMING=ON_FOR_BACKTEST"
+					//	+ " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
+					//Assembler.PopupException(msg, null, false);
+					return;
+				}
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 			}
 		}
-		public bool IsAutoSubmitting {
+		public bool IsStrategyEmittingOrders {
 			get {
-				if (this.Strategy == null) return this.isAutoSubmittingWhenNoStrategyLoaded;
-				else return this.Strategy.ScriptContextCurrent.ChartEmittingOrders;
+				if (this.Strategy == null) {
+					//v1 return this.isEmittingOrdersWhenNoStrategyLoaded
+					string msg = "IsStrategyEmittingOrders__get: CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_EMITTING_MOUSE_ORDERS";
+					Assembler.PopupException(msg);
+					return false;
+				}
+				return this.Strategy.ScriptContextCurrent.StrategyEmittingOrders;
 			}
 			set {
 				if (this.Strategy == null) {
-					this.isAutoSubmittingWhenNoStrategyLoaded = value;
+					//v1 this.isEmittingOrdersWhenNoStrategyLoaded = value;
+					string msg = "IsStrategyEmittingOrders__set: CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_EMITTING_MOUSE_ORDERS";
+					Assembler.PopupException(msg);
 					return;
 				}
-				this.Strategy.ScriptContextCurrent.ChartEmittingOrders = value;
+				this.Strategy.ScriptContextCurrent.StrategyEmittingOrders = value;
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 			}
 		}
 
-		protected ScriptExecutor(ChartShadow chartShadow, Strategy strategy, OrderProcessor orderProcessor) : this() {
-			this.Initialize(chartShadow, strategy, orderProcessor);
-		}
 		public ScriptExecutor() {
-			this.IsStreaming = false;
-			this.IsAutoSubmitting = false;
+			// CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING				this.IsStreamingTriggeringScript = false;
+			// CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_EMITTING_MOUSE_ORDERS	this.IsStrategyEmittingOrders = false;
 
 			this.ExecutionDataSnapshot = new ExecutionDataSnapshot(this);
 			//NOW_IRRELEVANT_MOVED_TO_BacktesterRunSimulation this.Performance = new SystemPerformance(this);
@@ -118,13 +131,13 @@ namespace Sq1.Core.StrategyBase {
 			//this.NotOnChartBarsHelper = new NotOnChartBarsHelper(this);
 			this.CommissionCalculator = new CommissionCalculatorZero(this);
 			this.Optimizer = new Optimizer(this);
+			this.OrderProcessor = Assembler.InstanceInitialized.OrderProcessor;
 		}
 
-		public void Initialize(ChartShadow chartShadow, Strategy strategy, OrderProcessor orderProcessor) {
+		public void Initialize(ChartShadow chartShadow, Strategy strategy) {
 			string msg = " at this time, FOR SURE this.Bars==null, strategy.Script?=null";
 			this.ChartShadow = chartShadow;
 			this.Strategy = strategy;
-			this.OrderProcessor = orderProcessor;
 			
 			this.Optimizer.InitializedProperly = false;
 
@@ -202,8 +215,8 @@ namespace Sq1.Core.StrategyBase {
 			//this.ExecutionDataSnapshot.PositionsOpenedAfterExec
 			//this.ExecutionDataSnapshot.PositionsClosedAfterExec
 
-			bool willPlace = this.Backtester.IsBacktestingNow == false && this.OrderProcessor != null && this.IsAutoSubmitting;
-			bool setStatusSubmitting = this.IsStreaming && this.IsAutoSubmitting;
+			bool willPlace = this.Backtester.IsBacktestingNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
+			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
 
 			List<Alert> alertsNewAfterExecCopy = this.ExecutionDataSnapshot.AlertsNewAfterExecSafeCopy;
 			if (alertsNewAfterExecCopy.Count > 0) {
@@ -267,7 +280,7 @@ namespace Sq1.Core.StrategyBase {
 
 			Alert alert = null;
 			// real-time streaming should create its own Position after an Order gets filled
-			if (this.IsStreaming) {
+			if (this.IsStreamingTriggeringScript) {
 				alert = this.MarketRealStreaming.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
 																  direction, entryMarketLimitStop);
 			} else {
@@ -347,7 +360,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			if (this.IsStreaming) {
+			if (this.IsStreamingTriggeringScript) {
 				alert = this.MarketRealStreaming.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
 																 direction, exitMarketLimitStop);
 			} else {
@@ -369,7 +382,7 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 			bool killed = false;
-			if (this.IsStreaming) {
+			if (this.IsStreamingTriggeringScript) {
 				if (this.Backtester.IsBacktestingNow == true) {
 					killed = this.MarketSimStreaming.AnnihilateCounterpartyAlert(alert);
 					//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
@@ -483,7 +496,7 @@ namespace Sq1.Core.StrategyBase {
 			List<Position> positionsOpenedAfterAlertFilled = new List<Position>();
 			List<Position> positionsClosedAfterAlertFilled = new List<Position>();
 
-			Bar barFill = (this.IsStreaming) ? alertFilled.Bars.BarStreamingCloneReadonly : alertFilled.Bars.BarStaticLastNullUnsafe;
+			Bar barFill = (this.IsStreamingTriggeringScript) ? alertFilled.Bars.BarStreamingCloneReadonly : alertFilled.Bars.BarStaticLastNullUnsafe;
 			if (barFillRelno != barFill.ParentBarsIndex) {
 				string msg = "barFillRelno[" + barFillRelno + "] != barFill.ParentBarsIndex["
 					+ barFill.ParentBarsIndex + "]; barFill=[" + barFill + "]";
@@ -565,8 +578,8 @@ namespace Sq1.Core.StrategyBase {
 				positionsClosedAfterAlertFilled.Add(alertFilled.PositionAffected);
 			}
 
-			bool willPlace = this.Backtester.IsBacktestingNow == false && this.OrderProcessor != null && this.IsAutoSubmitting;
-			bool setStatusSubmitting = this.IsStreaming && this.IsAutoSubmitting;
+			bool willPlace = this.Backtester.IsBacktestingNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
+			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
 
 			PositionPrototype proto = alertFilled.PositionAffected.Prototype;
 			if (proto != null) {
@@ -736,7 +749,7 @@ namespace Sq1.Core.StrategyBase {
 			//if (this.checkPositionCanBeClosed(alert, msig, checkPositionOpenNow) == false) return;
 
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerProvider knows to pass Bar here?...
-			Bar barFill = (this.IsStreaming) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
+			Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingExitAlertClosePosition Forced";
 			// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR we can exit by TP or SL - position doesn't have an ExitAlert assigned until Position.EntryAlert was filled!!!
@@ -749,7 +762,7 @@ namespace Sq1.Core.StrategyBase {
 			string msig = "RemovePendingEntry(): ";
 
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerProvider knows to pass Bar here?...
-			Bar barFill = (this.IsStreaming) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
+			Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingEntryAlertClosePosition Forced";
 		}
@@ -810,7 +823,7 @@ namespace Sq1.Core.StrategyBase {
 					return false;
 				}
 			} else {
-				Bar barFill = (this.IsStreaming) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
+				Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
 				if (alert.PositionAffected.EntryFilledBarIndex != -1) {
 					string msg = "DUPE: can't do my job: alert.PositionAffected.EntryBar!=-1 for alert [" + alert + "]";
 					//throw new Exception(msig + msg);
@@ -833,17 +846,22 @@ namespace Sq1.Core.StrategyBase {
 		internal void BacktestContextInitialize(Bars bars) {
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
 			this.preDataSource = this.DataSource;
-			this.preBacktestIsStreaming = this.IsStreaming;
+			this.preBacktestIsStreaming = this.IsStreamingTriggeringScript;
 
 			this.Bars = bars;
 			//this.DataSource = bars.DataSource;
-			this.IsStreaming = true;
+			if (this.preBacktestBars != null) {
+				string msg = "NOT_SAVING_STREAMING=ON_FOR_BACKTEST"
+					+ " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
+				Assembler.PopupException(msg, null, false);
+			}
+			this.IsStreamingTriggeringScript = true;
 			//this.Strategy.ScriptBase.Initialize(this);
 		}
 		internal void BacktestContextRestore() {
 			this.Bars = this.preBacktestBars;
 			//this.DataSource = this.preDataSource;
-			this.IsStreaming = preBacktestIsStreaming;
+			this.IsStreamingTriggeringScript = preBacktestIsStreaming;
 			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 		}
@@ -1028,7 +1046,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "I_SHOULD_NOT_BE_NOTIFIED_IF_SYMBOL_WAS_NOT_RENAMED";
 				return;
 			}
-			if (this.IsStreaming) {
+			if (this.IsStreamingTriggeringScript) {
 				string msg = "EXECUTOR_REFUSED_TO_RENAME_STREAMING_BARS"
 					+ " TO_CREATE_BACKUP_TURN_STREAMING_OFF_RENAME_STREAMING_BACK_ON"
 					+ " TO_RENAME_PERMANENTLY_IMPLMEMENT_SYMBOL_MAPPING_FOR_STREAMING_SYMBOLS";
@@ -1095,17 +1113,19 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return ret;
 		}
-		public ScriptExecutor CloneForOptimizer(ContextScript ctxNext) {
+		public ScriptExecutor CloneForOptimizer(ContextScript ctxNext) {	// HACKY_BUT_NOT_TOO_BAD
 			//ScriptExecutor clone = base.MemberwiseClone();
 			// detach the chart clone.On
 			ScriptExecutor executorClone = new ScriptExecutor();
 			executorClone.Bars = this.Bars;
+			executorClone.OrderProcessor = null;
+
 			Strategy strategyClone = this.Strategy.CloneWithNewScriptInstanceResetContextsToSingle(ctxNext, executorClone);
 			if (strategyClone == this.Strategy) {
 				Debugger.Break();
 			}
 			strategyClone.Script.Initialize(executorClone);
-			executorClone.Initialize(null, strategyClone, null);
+			executorClone.Initialize(null, strategyClone);
 			//KEEP_DOWNSTACK strategyClone.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);
 
 			strategyClone.ScriptContextsByName = new Dictionary<string, ContextScript>();

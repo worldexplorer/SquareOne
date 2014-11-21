@@ -52,7 +52,7 @@ namespace Sq1.Core.DataTypes {
 		}
 		public void SetParentBar(Bar parentBar) {
 			if (this.Symbol != parentBar.Symbol) {
-				string msg = "here is the problem for a streaming bar to carry another symbol!";
+				string msg = "SYMBOL_MISMATCH__CANT_SET_PARENT_BAR_FOR_QUOTE quote.Symbol[" + this.Symbol + "] != parentBar.Symbol[" + parentBar.Symbol + "]";
 				Assembler.PopupException(msg);
 			}
 			this.ParentStreamingBar = parentBar;

@@ -90,7 +90,7 @@ namespace Sq1.Gui {
 						// who knows why LoadFromXml invokes me twice?
 						return ret;
 					}
-					ChartFormManager chartFormsManagerDeserialized = new ChartFormManager(chartSerno);
+					ChartFormManager chartFormsManagerDeserialized = new ChartFormManager(this, chartSerno);
 					//chartFormsManagerDeserialized.Initialize(this, strategy);
 					string strategyGuid;
 					bool existsGuid = persistedParsedToHash.TryGetValue("StrategyGuid", out strategyGuid);
@@ -106,7 +106,7 @@ namespace Sq1.Gui {
 							#endif
 							strategyName = "STRATEGY_NAME_HAVENT_BEEN_SERIALIZED";
 						}
-						chartFormsManagerDeserialized.InitializeStrategyAfterDeserialization(this, strategyGuid, strategyName);
+						chartFormsManagerDeserialized.InitializeStrategyAfterDeserialization(strategyGuid, strategyName);
 						if (chartFormsManagerDeserialized.StrategyFoundDuringDeserialization) {
 							if (chartFormsManagerDeserialized.Strategy.ActivatedFromDll == false) {
 								chartFormsManagerDeserialized.StrategyCompileActivateBeforeShow();	// if it was streaming at exit, we should have it ready

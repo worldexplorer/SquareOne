@@ -15,7 +15,7 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public Dictionary<string, List<IndicatorParameter>> IndicatorParametersByName { get; set; }	//  { get; set; } is needed for Json.Deserialize to really deserialize it
 		
 		[JsonProperty]	public bool IsCurrent;
-		[JsonProperty]	public bool ChartEmittingOrders;
+		[JsonProperty]	public bool StrategyEmittingOrders;
 
 		[JsonProperty]	public List<string> ReporterShortNamesUserInvokedJSONcheck;
 		[JsonProperty]	public bool BacktestOnRestart;
@@ -71,7 +71,7 @@ namespace Sq1.Core.StrategyBase {
 			IndicatorParametersByName = new Dictionary<string, List<IndicatorParameter>>();
 			
 			IsCurrent = false;
-			ChartEmittingOrders = false;
+			StrategyEmittingOrders = false;
 			BacktestOnRestart = false;
 			BacktestOnSelectorsChange = true;
 			BacktestOnDataSourceSaved = true;
@@ -113,7 +113,7 @@ namespace Sq1.Core.StrategyBase {
 			
 			//some of these guys can easily be absorbed by object.MemberwiseClone(), why do I prefer to maintain the growing list manually?... 
 			//this.ChartBarSpacing = found.ChartBarSpacing;
-			this.ChartEmittingOrders = found.ChartEmittingOrders;
+			this.StrategyEmittingOrders = found.StrategyEmittingOrders;
 			this.BacktestOnRestart = found.BacktestOnRestart;
 			this.BacktestOnSelectorsChange = found.BacktestOnSelectorsChange;
 			this.BacktestOnDataSourceSaved = found.BacktestOnDataSourceSaved;

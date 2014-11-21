@@ -961,7 +961,7 @@ namespace Sq1.Core.Broker {
 				//this.PopupException(new Exception(msg));
 				return;
 			}
-			bool setStatusSubmitting = executor.IsStreaming && executor.IsAutoSubmitting;
+			bool setStatusSubmitting = executor.IsStreamingTriggeringScript && executor.IsStrategyEmittingOrders;
 			this.CreateOrdersSubmitToBrokerProviderInNewThreadGroups(alertsCreatedByHooks, setStatusSubmitting, true);
 			orderWithNewState.Alert.Strategy.Script.Executor.PushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
 		}

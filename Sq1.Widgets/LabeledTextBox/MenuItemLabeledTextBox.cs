@@ -13,6 +13,7 @@ namespace Sq1.Widgets.LabeledTextBox {
 			this.LabeledTextBoxControl = this.Control as LabeledTextBoxControl;
 			this.LabeledTextBoxControl.ParentToolStripControlHost = this;	// to calculate ((ToolStripControlHost as ToolStipItem).Tag as ScriptContext) from LabeledTextBox.TextBox.OnKeyPress 
 			this.LabeledTextBoxControl.TextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
+			this.LabeledTextBoxControl.Padding = new Padding(0, 1, 0, 0);
 		}
 		[Browsable(true)]
 		public new string Text {
@@ -58,6 +59,11 @@ namespace Sq1.Widgets.LabeledTextBox {
 		public bool InputFieldEditable {
 			get { return this.LabeledTextBoxControl.InputFieldEditable; }
 			set { this.LabeledTextBoxControl.InputFieldEditable = value; }
+		}
+		[Browsable(true)]
+		public bool InputFieldAlignedRight {
+			get { return this.LabeledTextBoxControl.InputFieldAlignedRight; }
+			set { this.LabeledTextBoxControl.InputFieldAlignedRight = value; }
 		}
 		void TextBox_KeyDown(object sender, KeyEventArgs e) {
 			if (e.KeyCode != Keys.Enter) return;

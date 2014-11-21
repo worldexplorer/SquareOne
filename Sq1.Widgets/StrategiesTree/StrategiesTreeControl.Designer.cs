@@ -90,10 +90,9 @@ namespace Sq1.Widgets.StrategiesTree {
 			// 
 			// mniStrategyOpen
 			// 
-			this.mniStrategyOpen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.mniStrategyOpen.Name = "mniStrategyOpen";
 			this.mniStrategyOpen.Size = new System.Drawing.Size(225, 22);
-			this.mniStrategyOpen.Text = "Open Default as New Chart";
+			this.mniStrategyOpen.Text = "Open Default in New Chart";
 			this.mniStrategyOpen.Click += new System.EventHandler(this.mniStrategyOpen_Click);
 			// 
 			// mniStrategyOpenWith
@@ -104,7 +103,7 @@ namespace Sq1.Widgets.StrategiesTree {
 									this.mniScriptContext3});
 			this.mniStrategyOpenWith.Name = "mniStrategyOpenWith";
 			this.mniStrategyOpenWith.Size = new System.Drawing.Size(225, 22);
-			this.mniStrategyOpenWith.Text = "Load (Replace) Saved...";
+			this.mniStrategyOpenWith.Text = "Replace Current Chart with...";
 			// 
 			// mniScriptContext1
 			// 
@@ -130,7 +129,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.mniStrategyEdit.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mniStrategyEdit.Name = "mniStrategyEdit";
 			this.mniStrategyEdit.Size = new System.Drawing.Size(225, 22);
-			this.mniStrategyEdit.Text = "Edit";
+			this.mniStrategyEdit.Text = "NYI Edit Source Code";
 			this.mniStrategyEdit.Click += new System.EventHandler(this.mniStrategyEdit_Click);
 			// 
 			// mniStrategyDuplicate

@@ -60,7 +60,7 @@ namespace Sq1.Gui {
 				ChartFormManager msg = this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
 				active = msg.ChartForm;
 			}
-			active.ChartFormManager.InitializeWithStrategy(this.mainForm, strategy, false);
+			active.ChartFormManager.InitializeWithStrategy(strategy, false);
 			if (strategy.Script != null && strategy.Script.Executor != null) {
 				strategy.ContextSwitchCurrentToNamedAndSerialize(e.scriptContextName);
 			} else {
@@ -80,16 +80,16 @@ namespace Sq1.Gui {
 			}
 		}
 		ChartFormManager chartCreateShowPopulateSelectorsSlidersFromStrategy(Strategy strategy) {
-			ChartFormManager chartFormManager = new ChartFormManager();
-			chartFormManager.InitializeWithStrategy(this.mainForm, strategy, false);
+			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
+			chartFormManager.InitializeWithStrategy(strategy, false);
 			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 			chartFormManager.ChartFormShow();
 			chartFormManager.StrategyCompileActivatePopulateSlidersShow();
 			return chartFormManager;
 		}
 		void chartCreateShowPopulateSelectorsSlidersNoStrategy(ContextChart contextChart) {
-			ChartFormManager chartFormManager = new ChartFormManager();
-			chartFormManager.InitializeChartNoStrategy(this.mainForm, contextChart);
+			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
+			chartFormManager.InitializeChartNoStrategy(contextChart);
 			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 			chartFormManager.ChartFormShow();
 		}
@@ -135,7 +135,7 @@ namespace Sq1.Gui {
 			}
 			//if (chartFormClicked.IsActivated == false) return;	//NOUP ActiveDocumentChanged is invoked twice: 1) for a form loosing control, 2) for a form gaining control
 			try {
-				chartFormClicked.ChartFormManager.ExternalEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
+				chartFormClicked.ChartFormManager.InterformEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
 				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
 				this.mainForm.GuiDataSnapshotSerializer.Serialize();
 				
@@ -174,7 +174,7 @@ namespace Sq1.Gui {
 				return;
 			}
 			try {
-				chartFormClicked.ChartFormManager.ExternalEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
+				chartFormClicked.ChartFormManager.InterformEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
 				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
 				this.mainForm.GuiDataSnapshotSerializer.Serialize();
 				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
@@ -227,7 +227,7 @@ namespace Sq1.Gui {
 					return;
 				}
 				// mainForm.ChartFormActive will already throw if Documents have no Charts selected; no need to check
-				this.mainForm.ChartFormActiveNullUnsafe.ChartFormManager.ExternalEventsConsumer.DataSourcesTree_OnSymbolSelected(sender, e);
+				this.mainForm.ChartFormActiveNullUnsafe.ChartFormManager.InterformEventsConsumer.DataSourcesTree_OnSymbolSelected(sender, e);
 			} catch (Exception ex) {
 				this.mainForm.PopupException(null, ex);
 			}
