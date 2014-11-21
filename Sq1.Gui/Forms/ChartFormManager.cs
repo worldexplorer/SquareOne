@@ -200,7 +200,7 @@ namespace Sq1.Gui.Forms {
 
 			try {
 				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true, false);
-				if (contextChart.IsStreaming) {
+				if (this.DataSnapshot.ContextChart.IsStreaming) {
 					this.ChartStreamingConsumer.StreamingStart();
 					string msg = "StreamingStarted=[" + this.ChartStreamingConsumer.StreamingStarted + "] contextChart.IsStreaming=true";
 					Assembler.PopupException(msg, null, false);
