@@ -19,7 +19,7 @@
     "$type": "Sq1.Adapters.QuikMock.StreamingMock, Sq1.Adapters.QuikMock",
     "QuoteDelay": 100,
     "GenerateOnlySymbols": [],
-    "GeneratingNow": false,
+    "GeneratingNow": true,
     "StreamingDataSnapshot": {
       "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
       "FortsDepositSell": {
@@ -36,12 +36,12 @@
       },
       "BestBid": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 158165.0,
+        "autogen": 157695.0,
         "AUTOGEN": 158190.0
       },
       "BestAsk": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 158185.0,
+        "autogen": 157715.0,
         "AUTOGEN": 158210.0
       },
       "LastQuotesReceived": {
@@ -65,7 +65,7 @@
           "IntraBarSerno": 39,
           "AbsnoPerSymbol": 39,
           "LastDealBidOrAsk": 2,
-          "LocalTimeCreatedMillis": "2014-11-20T03:47:50.7988961-05:00",
+          "LocalTimeCreatedMillis": "2014-11-21T01:48:23.9786772-05:00",
           "ParentStreamingBar": null,
           "HasParentBar": false,
           "ParentBarIdent": "NO_PARENT_BAR",
