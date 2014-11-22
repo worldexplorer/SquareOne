@@ -1,6 +1,6 @@
 using System;
+
 using Sq1.Core;
-using Sq1.Core.Charting;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Static;
@@ -14,7 +14,7 @@ namespace Sq1.Gui.Forms {
 		//public event EventHandler<QuoteEventArgs> NewQuote;
 		//public event EventHandler<BarsEventArgs> BarsLocked;
 		ChartFormManager chartFormManager;
-		string msigForNpExceptions = "Failed to StartStreaming(): ";
+		string msigForNpExceptions = "Failed to StreamingSubscribe(): ";
 
 		#region CASCADED_INITIALIZATION_ALL_CHECKING_CONSISTENCY_FROM_ONE_METHOD begin
 		ChartFormManager ChartFormManager { get {
@@ -112,7 +112,7 @@ namespace Sq1.Gui.Forms {
 			Assembler.PopupException(msg);
 			//throw new Exception(msg);
 		}
-		bool canStartStreaming() {
+		bool canSubscribeToStreamingProvider() {
 			try {
 				var symbolSafe = this.Symbol;
 				var scaleSafe = this.Scale;
@@ -129,8 +129,8 @@ namespace Sq1.Gui.Forms {
 		public ChartFormStreamingConsumer(ChartFormManager chartFormManager) {
 			this.chartFormManager = chartFormManager;
 		}
-		public void StreamingStop() {
-			this.msigForNpExceptions = " //ChartFormStreamingConsumer.StreamingStop(" + this.ToString() + ")";
+		public void StreamingSubscribe(string reason = "NO_REASON_FOR_STREAMING_SUBSCRIBE") {
+			this.msigForNpExceptions = " //ChartFormStreamingConsumer.StreamingSubscribe(" + this.ToString() + ")";
 			var executorSafe = this.Executor;
 			var symbolSafe = this.Symbol;
 			var streamingSafe = this.StreamingProvider;
@@ -139,21 +139,24 @@ namespace Sq1.Gui.Forms {
 
 			//v1 this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming = false;
 			//v2
-			bool streamingStarted = this.StreamingStarted;
-			if (streamingStarted == true) {
+			bool subscribed = this.Subscribed;
+			if (subscribed == true) {
 				string msg = "STREAMING_STILL_HAS_TWO_CONSUMERS_REGISTER StreamingProvider[" + streamingSafe.ToString() + "]";
 				Assembler.PopupException(msg + this.msigForNpExceptions);
 				return;
+			} else {
+				string msg = "STREAMING_SUBSCRIBED[" + subscribed + "] due to [" + reason + "]";
+				Assembler.PopupException(msg+ this.msigForNpExceptions, null, false);
 			}
-			this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming = streamingStarted;
+			this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming = subscribed;
 
 			var chartFormSafe = this.ChartForm;
 			chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = null;
 		}
-		public void StreamingStart() {
-			if (this.canStartStreaming() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
+		public void StreamingUnsubscribe(string reason = "NO_REASON_FOR_STREAMING_UNSUBSCRIBE") {
+			if (this.canSubscribeToStreamingProvider() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
 
-			this.msigForNpExceptions = " //ChartFormStreamingConsumer.StreamingStart(" + this.ToString() + ")";
+			this.msigForNpExceptions = " //ChartFormStreamingConsumer.StreamingUnsubscribe(" + this.ToString() + ")";
 			var executorSafe = this.Executor;
 			var symbolSafe = this.Symbol;
 			var scaleIntervalSafe = this.ScaleInterval;
@@ -166,8 +169,9 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
-			if (this.StreamingStarted == true) {
-				Assembler.PopupException("ALREADY_STREAMING_OR_FORGOT_TO_DISCONNECT this.StreamingStarted=true " + this.msigForNpExceptions);
+			bool subscribed = this.Subscribed;
+			if (subscribed == true) {
+				Assembler.PopupException("ALREADY_STREAMING_OR_FORGOT_TO_DISCONNECT tthis.Subscribed=true " + this.msigForNpExceptions);
 				return;
 			}
 
@@ -200,24 +204,24 @@ namespace Sq1.Gui.Forms {
 
 			//v1 this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming = true;
 			//v2
-			bool streamingStarted = this.StreamingStarted;
-			if (streamingStarted == false) {
+			subscribed = this.Subscribed;
+			if (subscribed == false) {
 				string msg = "STREAMING_DIDNT_REGISTER_TWO_CONSUMERS StreamingProvider[" + streamingSafe.ToString() + "]";
 				Assembler.PopupException(msg + this.msigForNpExceptions);
 				return;
+			} else {
+				string msg = "STREAMING_SUBSCRIBED[" + subscribed + "] due to [" + reason + "]";
+				Assembler.PopupException(msg+ this.msigForNpExceptions, null, false);
 			}
-			this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming = streamingStarted;
+			this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming = subscribed;
 
-			#if DEBUG
 			if (chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast != null) {
 				string msg = "SHOULD_I_CLEANUP_QUOTE_LAST?";
 				Assembler.PopupException(msg + this.msigForNpExceptions);
 			}
-			#endif
 		}
-		public bool StreamingStarted { get {
-				if (this.canStartStreaming() == false) return false;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
-				this.msigForNpExceptions = " //ChartFormStreamingConsumer.StreamingStarted";
+		public bool Subscribed { get {
+				if (this.canSubscribeToStreamingProvider() == false) return false;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
 
 				var streamingSafe = this.StreamingProvider;
 				var symbolSafe = this.Symbol;
@@ -317,16 +321,15 @@ namespace Sq1.Gui.Forms {
 		#endregion
 
 		public override string ToString() {
-			this.msigForNpExceptions = "ToString(): ";
-			if (this.chartFormManager == null) return "ChartStreamingConsumer::chartFormsManager=null";
-			if (this.chartFormManager.ChartForm == null) return "ChartStreamingConsumer::chartFormsManager.ChartForm=null";
-			if (this.chartFormManager.ChartForm.IsDisposed) return "CHARTFORM_DISPOSED";
-			if (this.chartFormManager.Executor == null) return "ChartStreamingConsumer::chartFormsManager.Executor=null";
-			if (this.chartFormManager.Executor.Strategy == null) return "ChartStreamingConsumer::chartFormsManager.Executor.Strategy=null";
-			if (this.chartFormManager.Executor.Strategy.ScriptContextCurrent == null) return "ChartStreamingConsumer::chartFormsManager.Executor.Strategy.ScriptContextCurrent=null";
-			if (String.IsNullOrEmpty(this.chartFormManager.Executor.Strategy.ScriptContextCurrent.Symbol)) return "SYMBOL_EMPTY_NOT_SUBSCRIBED";
-
 			//v1
+			//this.msigForNpExceptions = "ToString(): ";
+			//if (this.chartFormManager == null) return "ChartStreamingConsumer::chartFormsManager=null";
+			//if (this.chartFormManager.ChartForm == null) return "ChartStreamingConsumer::chartFormsManager.ChartForm=null";
+			//if (this.chartFormManager.ChartForm.IsDisposed) return "CHARTFORM_DISPOSED";
+			//if (this.chartFormManager.Executor == null) return "ChartStreamingConsumer::chartFormsManager.Executor=null";
+			//if (this.chartFormManager.Executor.Strategy == null) return "ChartStreamingConsumer::chartFormsManager.Executor.Strategy=null";
+			//if (this.chartFormManager.Executor.Strategy.ScriptContextCurrent == null) return "ChartStreamingConsumer::chartFormsManager.Executor.Strategy.ScriptContextCurrent=null";
+			//if (String.IsNullOrEmpty(this.chartFormManager.Executor.Strategy.ScriptContextCurrent.Symbol)) return "SYMBOL_EMPTY_NOT_SUBSCRIBED";
 			//return this.ChartFormManager.StreamingButtonIdent
 			//    //+ " [" + this.Strategy.ScriptContextCurrent.Symbol + " " + this.Strategy.ScriptContextCurrent.ScaleInterval + "]"
 			//    ////+ " chart[" + this.ChartContainer.Text + "]"

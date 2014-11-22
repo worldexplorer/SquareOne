@@ -113,6 +113,12 @@ namespace Sq1.Gui.Forms {
 				return ret;
 			} }
 		public string StreamingButtonIdent { get {
+				if (this.ContextCurrentChartOrStrategy == null) {
+					string msg = "StreamingButtonIdent_UNKNOWN__INVOKED_TOO_EARLY_ContextChart_WASNT_INITIALIZED_YET";
+					//Assembler.PopupException(msg);
+					return msg;
+				}
+				
 				string emptyChartOrStrategy = this.ContextCurrentChartOrStrategy.Symbol;
 				string onOff = this.ContextCurrentChartOrStrategy.IsStreaming ? " On" : " Off";
 
@@ -158,7 +164,7 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshotSerializer.Serialize();
 		}
 		public void InitializeChartNoStrategy(ContextChart contextChart) {
-			string msig = "ChartFormsManager.InitializeChartNoStrategy(" + contextChart + "): ";
+			string msig = " //ChartFormsManager[" + this.ToString() + "].InitializeChartNoStrategy(" + contextChart + ")";
 
 			if (this.DataSnapshot.ChartSerno == -1) {
 				int charSernoNext = this.MainForm.GuiDataSnapshot.ChartSernoNextAvailable;
@@ -189,6 +195,7 @@ namespace Sq1.Gui.Forms {
 			}
 			this.DataSnapshotSerializer.Serialize();
 
+			// you open a chartNoStrategy, then load a strategy, then another one => you get 3 invocations of ChartForm_FormClosed()  
 			this.ChartForm.FormClosed += this.MainForm.MainFormEventManager.ChartForm_FormClosed;
 			this.ChartForm.Initialize(false);
 
@@ -200,10 +207,12 @@ namespace Sq1.Gui.Forms {
 
 			try {
 				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true, false);
-				if (this.DataSnapshot.ContextChart.IsStreaming) {
-					this.ChartStreamingConsumer.StreamingStart();
-					string msg = "StreamingStarted=[" + this.ChartStreamingConsumer.StreamingStarted + "] contextChart.IsStreaming=true";
-					Assembler.PopupException(msg, null, false);
+				//v1 if (this.DataSnapshot.ContextChart.IsStreaming) {
+				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
+				ContextChart ctx = this.ContextCurrentChartOrStrategy;
+				if (ctx.IsStreaming) {
+					string reason = "contextChart[" + ctx.ToString() + "].IsStreaming=true";
+					this.ChartStreamingConsumer.StreamingUnsubscribe(reason);
 				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
@@ -211,7 +220,7 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		public void InitializeWithStrategy(Strategy strategy, bool skipBacktestDuringDeserialization = true) {
-			string msig = "ChartFormsManager.InitializeWithStrategy(" + strategy + "): ";
+			string msig = " //ChartFormsManager[" + this.ToString() + "].InitializeWithStrategy(" + strategy.ToString() + ")";
 			this.Strategy = strategy;
 			//this.Executor = new ScriptExecutor(mainForm.Assembler, this.Strategy);
 
@@ -272,10 +281,12 @@ namespace Sq1.Gui.Forms {
 				if (skipBacktestDuringDeserialization == false) {
 					this.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
 				}
-				if (this.Strategy.ScriptContextCurrent.IsStreaming) {
-					this.ChartStreamingConsumer.StreamingStart();
-					string msg = "StreamingStarted=[" + this.ChartStreamingConsumer.StreamingStarted + "] contextChart.IsStreaming=true";
-					Assembler.PopupException(msg, null, false);
+				//v1 if (this.Strategy.ScriptContextCurrent.IsStreaming) {
+				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
+				ContextChart ctx = this.ContextCurrentChartOrStrategy;
+				if (ctx.IsStreaming) {
+					string reason = "contextChart[" + ctx.ToString() + "].IsStreaming=true";
+					this.ChartStreamingConsumer.StreamingUnsubscribe(reason);
 				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
@@ -364,7 +375,7 @@ namespace Sq1.Gui.Forms {
 				bool invalidateAllPanels = wontBacktest;
 				this.ChartForm.ChartControl.Initialize(barsClicked, invalidateAllPanels);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
-				this.ChartForm.PopulateBtnStreamingClickedAndText();
+				this.ChartForm.PopulateBtnStreamingTriggersScriptAfterBarsLoaded();
 			}
 
 			// set original Streaming Icon before we lost in simulationPreBarsSubstitute() and launched backtester in another thread
@@ -454,9 +465,9 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			//ONLY_ON_WORKSPACE_RESTORE??? this.ChartForm.PropagateContextChartOrScriptToLTB(this.Strategy.ScriptContextCurrent);
-			if (this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript) this.ChartStreamingConsumer.StreamingStart();
+			if (this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript) this.ChartStreamingConsumer.StreamingUnsubscribe();
 		}
-		public void InitializeChartNoStrategyAfterDeserialization(MainForm mainForm) {
+		public void InitializeChartNoStrategyAfterDeserialization() {
 			this.InitializeChartNoStrategy(null);
 		}
 		public void InitializeStrategyAfterDeserialization(string strategyGuid, string strategyName = "PLEASE_SUPPLY_FOR_USERS_CONVENIENCE") {
@@ -658,7 +669,8 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		public override string ToString() {
-			return "Strategy[" + this.Strategy.Name + "], Chart [" + this.ChartForm.ToString() + "]";
+			//v1: NullRef return "Strategy[" + this.Strategy.Name + "], Chart [" + this.ChartForm.ToString() + "]";
+			return this.StreamingButtonIdent;
 		}
 		public void PopulateMainFormSymbolStrategyTreesScriptParameters() {
 			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;

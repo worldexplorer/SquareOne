@@ -30,19 +30,19 @@
 			// Label
 			// 
 			this.Label.AutoSize = true;
-			this.Label.Location = new System.Drawing.Point(0, 2);
+			this.Label.Location = new System.Drawing.Point(0, 3);
 			this.Label.Name = "Label";
-			this.Label.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.Label.Size = new System.Drawing.Size(74, 13);
+			this.Label.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+			this.Label.Size = new System.Drawing.Size(73, 13);
 			this.Label.TabIndex = 0;
 			this.Label.Text = "Duplicate To:";
 			// 
 			// TextBox
 			// 
 			this.TextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+			| System.Windows.Forms.AnchorStyles.Left)));
 			this.TextBox.BackColor = System.Drawing.SystemColors.Info;
-			this.TextBox.Location = new System.Drawing.Point(90, 0);
+			this.TextBox.Location = new System.Drawing.Point(90, 1);
 			this.TextBox.Multiline = true;
 			this.TextBox.Name = "TextBox";
 			this.TextBox.Size = new System.Drawing.Size(117, 19);

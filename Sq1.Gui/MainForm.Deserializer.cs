@@ -95,7 +95,7 @@ namespace Sq1.Gui {
 					string strategyGuid;
 					bool existsGuid = persistedParsedToHash.TryGetValue("StrategyGuid", out strategyGuid);
 					if (string.IsNullOrEmpty(strategyGuid)) {
-						chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization(this);
+						chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization();
 						this.GuiDataSnapshot.AddChartFormsManagerJustDeserialized(chartFormsManagerDeserialized);
 					} else {
 						string strategyName;
@@ -112,7 +112,7 @@ namespace Sq1.Gui {
 								chartFormsManagerDeserialized.StrategyCompileActivateBeforeShow();	// if it was streaming at exit, we should have it ready
 							}
 						} else {
-							chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization(this);
+							chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization();
 						}
 						this.GuiDataSnapshot.AddChartFormsManagerJustDeserialized(chartFormsManagerDeserialized);
 					}
