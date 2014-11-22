@@ -33,6 +33,11 @@ namespace Sq1.Core.Indicators {
 				//return indicatorLegDrawn;
 			}
 			if (this.OwnValuesCalculated.ContainsDate(bar.DateTimeOpen) == false) {
+				if (bar.IsBarStreaming) {
+					string msg2 = "INDICATORS_HAVING_OWN_VALUE_FOR_STREAMING_BAR_IS_NYI";
+					//Assembler.PopupException(msg);
+					return indicatorLegDrawn;
+				}
 				if (this.Executor.Backtester.IsBacktestingNow) {
 					return indicatorLegDrawn;		// DONT_DELETE_ME
 				}

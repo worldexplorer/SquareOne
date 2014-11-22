@@ -35,7 +35,6 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			} }
 		[JsonIgnore]	protected object			BarsConsumersLock;
-		[JsonIgnore]	public bool					SaveToStatic;
 		[JsonIgnore]	public ConnectionState		ConnectionState		{ get; protected set; }
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
@@ -63,24 +62,22 @@ namespace Sq1.Core.Streaming {
 				string ident = "[" + this.StreamingSolidifier.ToString()
 					+ "] <= " + this.DataSource.Name + " :: " + symbol + " (" + this.DataSource.ScaleInterval + ")";
 
-				if (this.ConsumerBarIsRegistered(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
-					string msg = "WONT_DUPLICATE_SUBSCRIPTION_BARS " + ident;
+				if (this.ConsumerBarIsSubscribed(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
+					string msg = "WONT_DUPLICATE_SUBSCRIPTION_SOLIDIFIER_BARS " + ident;
 					Assembler.PopupException(msg, null, false);
 				} else {
-					string msg = "FIRST_SUBSCRIPTION_BARS " + ident;
+					this.ConsumerBarSubscribe(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
+					string msg = "SUBSCRIBED_SOLIDIFIER_BARS " + ident;
 					Assembler.PopupException(msg, null, false);
-					this.ConsumerBarRegister(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
 				}
 
-				if (this.ConsumerQuoteIsRegistered(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
-					string msg = "WONT_DUPLICATE_SUBSCRIPTION_QUOTE " + ident;
+				if (this.ConsumerQuoteIsSubscribed(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
+					string msg = "WONT_DUPLICATE_SUBSCRIPTION_SOLIDIFIER_QUOTES " + ident;
 					Assembler.PopupException(msg, null, false);
 				} else {
-					string msg = "FIRST_SUBSCRIPTION_QUOTE " + ident
-						//+ " WHY_AM_I_GETTING_HERE_TWICE???"
-						;
+					this.ConsumerQuoteSubscribe(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
+					string msg = "SUBSCRIBED_SOLIDIFIER_QUOTES " + ident;
 					Assembler.PopupException(msg, null, false);
-					this.ConsumerQuoteRegister(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
 				}
 			}
 		}
@@ -146,56 +143,50 @@ namespace Sq1.Core.Streaming {
 		}
 
 		#region overridable proxy methods routed by default to DataDistributor
-		//[Obsolete("NOT_USED_SHOULD_BE_COMMENTED_OUT")]
-		//public virtual void ConsumerBarRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, Bar PartialBarInsteadOfEmpty) {
-		//    this.ConsumerBarRegister(symbol, scaleInterval, consumer);
-		//    SymbolScaleDistributionChannel channel = this.DataDistributor.GetDistributionChannelFor(symbol, scaleInterval);
-		//    channel.StreamingBarFactoryUnattached.InitWithStreamingBarInsteadOfEmpty(PartialBarInsteadOfEmpty);
-		//}
-		public virtual void ConsumerBarRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
+		public virtual void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
 			if (scaleInterval.Scale == BarScale.Unknown) {
 				string msg = "Failed to ConsumerBarRegister(): scaleInterval.Scale=Unknown; returning";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
-			bool alreadyRegistered = this.ConsumerBarIsRegistered(symbol, scaleInterval, consumer);
+			bool alreadyRegistered = this.ConsumerBarIsSubscribed(symbol, scaleInterval, consumer);
 			if (alreadyRegistered) {
 				string msg = "AVOIDING_MULTIPLE_SUBSCRIPTION BAR_CONSUMER_ALREADY_REGISTERED[" + consumer.ToString() + "] symbol[" + symbol + "] scaleInterval[" + scaleInterval.ToString() + "] ";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			this.DataDistributor.ConsumerBarRegister(symbol, scaleInterval, consumer);
+			this.DataDistributor.ConsumerBarSubscribe(symbol, scaleInterval, consumer);
 		}
-		public virtual void ConsumerBarUnRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			this.DataDistributor.ConsumerBarUnRegister(symbol, scaleInterval, consumer);
+		public virtual void ConsumerBarUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
+			this.DataDistributor.ConsumerBarUnSubscribe(symbol, scaleInterval, consumer);
 		}
-		public virtual bool ConsumerBarIsRegistered(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			return this.DataDistributor.ConsumerBarIsRegistered(symbol, scaleInterval, consumer);
+		public virtual bool ConsumerBarIsSubscribed(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
+			return this.DataDistributor.ConsumerBarIsSubscribed(symbol, scaleInterval, consumer);
 		}
 		#endregion
 
 		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerQuoteRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			bool alreadyRegistered = this.ConsumerQuoteIsRegistered(symbol, scaleInterval, consumer);
+		public virtual void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
+			bool alreadyRegistered = this.ConsumerQuoteIsSubscribed(symbol, scaleInterval, consumer);
 			if (alreadyRegistered) {
 				string msg = "AVOIDING_MULTIPLE_SUBSCRIPTION QUOTE_CONSUMER_ALREADY_REGISTERED[" + consumer.ToString() + "] symbol[" + symbol + "] scaleInterval[" + scaleInterval.ToString() + "] ";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			this.DataDistributor.ConsumerQuoteRegister(symbol, scaleInterval, consumer);
+			this.DataDistributor.ConsumerQuoteSubscribe(symbol, scaleInterval, consumer);
 			this.StreamingDataSnapshot.LastQuotePutNull(symbol);
 		}
-		public virtual void ConsumerQuoteUnRegister(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer streamingConsumer) {
-			this.DataDistributor.ConsumerQuoteUnRegister(symbol, scaleInterval, streamingConsumer);
+		public virtual void ConsumerQuoteUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer streamingConsumer) {
+			this.DataDistributor.ConsumerQuoteUnSubscribe(symbol, scaleInterval, streamingConsumer);
 			this.StreamingDataSnapshot.LastQuotePutNull(symbol);
 		}
-		public virtual bool ConsumerQuoteIsRegistered(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			return this.DataDistributor.ConsumerQuoteIsRegistered(symbol, scaleInterval, consumer);
+		public virtual bool ConsumerQuoteIsSubscribed(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
+			return this.DataDistributor.ConsumerQuoteIsSubscribed(symbol, scaleInterval, consumer);
 		}
-		public virtual void ConsumerUnregisterDead(IStreamingConsumer streamingConsumer) {
-			this.DataDistributor.ConsumerBarUnregisterDying(streamingConsumer);
-			this.DataDistributor.ConsumerQuoteUnregisterDying(streamingConsumer);
-		}
+		//public virtual void ConsumerUnregisterDead(IStreamingConsumer streamingConsumer) {
+		//    this.DataDistributor.ConsumerBarUnSubscribeDying(streamingConsumer);
+		//    this.DataDistributor.ConsumerQuoteUnSubscribeDying(streamingConsumer);
+		//}
 		#endregion
 
 		public virtual void PushQuoteReceived(Quote quote) {

@@ -44,9 +44,6 @@ namespace Sq1.Widgets.StrategiesTree {
 			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
 				this.OnStrategyDoubleClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));
 			} catch (Exception ex) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(null, ex);
 			}
 		}		
@@ -75,9 +72,6 @@ namespace Sq1.Widgets.StrategiesTree {
 			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
 				this.OnStrategyOpenDefaultClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected));
 			} catch (Exception ex) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(null, ex);
 			}
 		}
@@ -88,11 +82,8 @@ namespace Sq1.Widgets.StrategiesTree {
 				return;
 			}
 			try {	// downstack backtest throwing won't crash Release (Debug will halt) 
-				this.OnStrategyOpenSavedClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected, mniClicked.Name));
+				this.OnStrategyOpenSavedClicked(this, new StrategyEventArgs(this.FolderSelected, this.StrategySelected, mniClicked.Text));
 			} catch (Exception ex) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(null, ex);
 			}
 		}
