@@ -154,7 +154,7 @@ namespace Sq1.Core.Repositories {
 		public string jsonRelnameForItem(DATASOURCE itemStored) {
 			return itemStored.Name + ".json";
 		}
-		public void ItemAdd(DATASOURCE itemCandidate, object sender = null) {
+		public void ItemAdd(DATASOURCE itemCandidate, object sender = null, bool serialize = false) {
 			if (sender == null) sender = this;
 			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemAdd(" + itemCandidate.Name + "): ";
 			try {
@@ -163,7 +163,7 @@ namespace Sq1.Core.Repositories {
 				}
 				//this.ItemAddCascade(itemCandidate, sender);
 				this.ItemsByName.Add(itemCandidate.Name, itemCandidate);
-				this.SerializeSingle(itemCandidate);
+				if (serialize) this.SerializeSingle(itemCandidate);
 				this.RaiseOnItemAdded(sender, itemCandidate);
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);

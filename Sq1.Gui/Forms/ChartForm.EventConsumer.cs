@@ -310,9 +310,9 @@ namespace Sq1.Gui.Forms {
 
 				string reason = "mniSubscribedToStreamingProviderQuotesBars.Checked[" + this.mniSubscribedToStreamingProviderQuotesBars.Checked + "]";
 				if (this.mniSubscribedToStreamingProviderQuotesBars.Checked) {
-					this.ChartFormManager.ChartStreamingConsumer.StreamingUnsubscribe(reason);
-				} else {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingSubscribe(reason);
+				} else {
+					this.ChartFormManager.ChartStreamingConsumer.StreamingUnsubscribe(reason);
 				}
 
 			} catch (Exception ex) {

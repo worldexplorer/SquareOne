@@ -185,14 +185,14 @@ namespace Sq1.Core.StrategyBase {
 					//		+ " " + alertsDumpedForStreamingBar + " alerts Dumped for " + quote;
 					//}
 				} catch (Exception ex) {
-					string msig = " Script[" + this.Strategy.Script.GetType().Name + "].OnNewQuoteCallback(" + quote + "): ";
+					string msig = " //Script[" + this.Strategy.Script.GetType().Name + "].OnNewQuoteCallback(" + quote + ")";
 					this.PopupException(ex.Message + msig, ex);
 				}
 			} else {
 				try {
 					this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLastNullUnsafe);
 				} catch (Exception ex) {
-					string msig = " Script[" + this.Strategy.Script.GetType().Name + "].OnNewBarCallback(" + quote + "): ";
+					string msig = " //Script[" + this.Strategy.Script.GetType().Name + "].OnNewBarCallback(" + quote + ")";
 					this.PopupException(ex.Message + msig, ex);
 				}
 			}

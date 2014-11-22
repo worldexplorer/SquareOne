@@ -278,9 +278,9 @@ namespace Sq1.Core.Backtesting {
 				
 				this.BarsSimulating.DataSource = this.BacktestDataSource;
 
-				this.BacktestDataSource.StreamingProvider.ConsumerQuoteRegister(
+				this.BacktestDataSource.StreamingProvider.ConsumerQuoteSubscribe(
 					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
-				this.BacktestDataSource.StreamingProvider.ConsumerBarRegister(
+				this.BacktestDataSource.StreamingProvider.ConsumerBarSubscribe(
 					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
 
 				this.Executor.BacktestContextInitialize(this.BarsSimulating);
@@ -311,9 +311,9 @@ namespace Sq1.Core.Backtesting {
 		}
 		void simulationPostBarsRestore() {
 			try {
-				this.BacktestDataSource.StreamingProvider.ConsumerQuoteUnRegister(
+				this.BacktestDataSource.StreamingProvider.ConsumerQuoteUnSubscribe(
 					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
-				this.BacktestDataSource.StreamingProvider.ConsumerBarUnRegister(
+				this.BacktestDataSource.StreamingProvider.ConsumerBarUnSubscribe(
 					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
 
 				this.Executor.BacktestContextRestore();

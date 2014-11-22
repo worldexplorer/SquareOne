@@ -212,7 +212,7 @@ namespace Sq1.Gui.Forms {
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
 				if (ctx.IsStreaming) {
 					string reason = "contextChart[" + ctx.ToString() + "].IsStreaming=true";
-					this.ChartStreamingConsumer.StreamingUnsubscribe(reason);
+					this.ChartStreamingConsumer.StreamingSubscribe(reason);
 				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
@@ -238,7 +238,6 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshotSerializer.Serialize();
 			
 			if (this.ChartForm == null) {
-				// 1. create ChartForm.Chart.Renderer
 				this.ChartForm = new ChartForm(this);
 				this.ChartForm.FormClosed += this.MainForm.MainFormEventManager.ChartForm_FormClosed;
 
@@ -249,23 +248,22 @@ namespace Sq1.Gui.Forms {
 				this.ChartForm.ChartFormEventsToChartFormManagerAttach();
 
 				this.ChartForm.CtxReporters.Items.AddRange(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
-
-				// 2. create Executor with Renderer
-				this.Executor.Initialize(this.ChartForm.ChartControl, this.Strategy);
-			} else {
-				// we had chart already opened with bars loaded; then we clicked on a strategy and we want strategy to be backtested on these bars
-				this.Executor.Initialize(this.ChartForm.ChartControl, this.Strategy);
-				if (this.ChartForm.CtxReporters.Items.Count == 0) {
-					this.ChartForm.CtxReporters.Items.AddRange(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
-				}
 			}
-			
+
+			this.Executor.Initialize(this.ChartForm.ChartControl, this.Strategy);
+
 			if (this.DataSnapshot.ChartSettings == null) {
+				string msg = "SORRY_WHEN_EXACTLY_THIS_MAKES_SENSE?...";
 				this.DataSnapshot.ChartSettings = this.ChartForm.ChartControl.ChartSettings;	// opening from Datasource => save
 			} else {
-				this.ChartForm.ChartControl.ChartSettings = this.DataSnapshot.ChartSettings;	// otherwize JustDeserialized => propagate
-				this.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
+				if (this.ChartForm.ChartControl.ChartSettings != this.DataSnapshot.ChartSettings) {
+					string msg = "IM_HERE_AT_InitializeStrategyAfterDeserialization,...";
+					this.ChartForm.ChartControl.ChartSettings = this.DataSnapshot.ChartSettings;	// otherwize JustDeserialized => propagate
+				} else {
+					string msg = "IM_LOADING_ANOTHER_STRATEGY_INTO_EXISTING_CHART";
+				}
 			}
+			this.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 
 			this.ChartForm.Initialize(true, this.Strategy.ActivatedFromDll);
 
@@ -286,7 +284,7 @@ namespace Sq1.Gui.Forms {
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
 				if (ctx.IsStreaming) {
 					string reason = "contextChart[" + ctx.ToString() + "].IsStreaming=true";
-					this.ChartStreamingConsumer.StreamingUnsubscribe(reason);
+					this.ChartStreamingConsumer.StreamingSubscribe(reason);
 				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
@@ -416,7 +414,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void chartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain(object sender, DataSourceEventArgs e) {
 			if (this.Strategy == null) {
-				Assembler.PopupException("hey for ATRbandCompiled-DLL #D Debugger shows this=NullReferenceException, and Strategy=null while it was instantiated from DLL, right?....");
+				//OUTDATED Assembler.PopupException("hey for ATRbandCompiled-DLL #D Debugger shows this=NullReferenceException, and Strategy=null while it was instantiated from DLL, right?....");
 				return;
 			}
 			// Save datasource must fully unregister consumers and register again to avoid StreamingSolidifier dupes
@@ -465,7 +463,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			//ONLY_ON_WORKSPACE_RESTORE??? this.ChartForm.PropagateContextChartOrScriptToLTB(this.Strategy.ScriptContextCurrent);
-			if (this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript) this.ChartStreamingConsumer.StreamingUnsubscribe();
+			if (this.Strategy.ScriptContextCurrent.IsStreaming) this.ChartStreamingConsumer.StreamingSubscribe();
 		}
 		public void InitializeChartNoStrategyAfterDeserialization() {
 			this.InitializeChartNoStrategy(null);
