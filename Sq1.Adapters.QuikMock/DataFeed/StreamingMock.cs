@@ -13,9 +13,9 @@ using Sq1.Core.Support;
 
 namespace Sq1.Adapters.QuikMock {
 	public class StreamingMock : StreamingProvider {
-		[JsonIgnore]	protected Dictionary<string, DdeChannelsMock> MockProvidersBySymbol = new Dictionary<string, DdeChannelsMock>();
-		[JsonProperty]	private int QuoteDelay;
-		[JsonIgnore]	public int QuoteDelayAutoPropagate {
+		[JsonIgnore]	protected	Dictionary<string, DdeChannelsMock> MockProvidersBySymbol;
+		[JsonProperty]	private		int				QuoteDelay;
+		[JsonIgnore]	public		int				QuoteDelayAutoPropagate {
 			get { return this.QuoteDelay; }
 			internal set {
 				this.QuoteDelay = value;
@@ -26,14 +26,14 @@ namespace Sq1.Adapters.QuikMock {
 				}
 			}
 		}
-		[JsonProperty]	public List<string> GenerateOnlySymbols { get; internal set; }
-		[JsonIgnore]	private string GenerateOnlySymbolsAsString { get {
+		[JsonProperty]	public		List<string>	GenerateOnlySymbols { get; internal set; }
+		[JsonIgnore]	private		string			GenerateOnlySymbolsAsString { get {
 				string ret = "";
 				foreach (string symbol in GenerateOnlySymbols) ret += symbol + ",";
 				ret = ret.TrimEnd(',');
 				return ret;
 			} }
-		[JsonIgnore]	public StreamingDataSnapshotQuik StreamingDataSnapshotQuik { get {
+		[JsonIgnore]	public		StreamingDataSnapshotQuik StreamingDataSnapshotQuik { get {
 				if (base.StreamingDataSnapshot is StreamingDataSnapshotQuik == false) {
 					string msg = "base.StreamingDataSnapshot[" + base.StreamingDataSnapshot
 						+ "] got modified while should remain of type StreamingDataSnapshotQuik"
@@ -42,25 +42,34 @@ namespace Sq1.Adapters.QuikMock {
 				}
 				return base.StreamingDataSnapshot as StreamingDataSnapshotQuik;
 			} }
-		[JsonIgnore]	public string DdeChannelsEstablished { get {
-				string ret = "";
-				lock (MockProvidersBySymbol) {
+		[JsonIgnore]	public		string			DdeChannelsEstablished { get { lock (MockProvidersBySymbol) {
+					string ret = "";
 					foreach (string DdeChannelName in MockProvidersBySymbol.Keys) {
 						if (ret != "") ret += " ";
 						ret += DdeChannelName;
 					}
+					return ret;
+				} } }
+		[JsonProperty]	public		bool			GeneratingNow { get; internal set; }
+		[JsonIgnore]	public		bool				GeneratingNowAutoPropagate {
+			get { return this.GeneratingNow; }
+			internal set {
+				this.GeneratingNow = value;
+				lock (base.SymbolsSubscribedLock) {
+					foreach (DdeChannelsMock quoteGenerator in this.MockProvidersBySymbol.Values) {
+						if (this.GeneratingNow) {
+							quoteGenerator.ChannelQuote.MockStart();
+						} else {
+							quoteGenerator.ChannelQuote.MockStop();
+						}
+					}
 				}
-				return ret;
-			} }
-		[JsonProperty]	public bool GeneratingNow { get; internal set; }
-		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
-			base.StreamingEditorInitializeHelper(dataSourceEditor);
-			base.streamingEditorInstance = new StreamingMockEditor(this, dataSourceEditor);
-			return base.streamingEditorInstance;
+			}
 		}
-
+		
 		public StreamingMock() : base() {
 			this.GenerateOnlySymbols = new List<string>();
+			this.MockProvidersBySymbol = new Dictionary<string, DdeChannelsMock>();
 			base.Name = "Mock StreamingDummy";
 			base.Description = "MOCK generating quotes, QuikTerminalMock is still used";
 			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStaticProvider;
@@ -68,13 +77,21 @@ namespace Sq1.Adapters.QuikMock {
 			base.StreamingDataSnapshot = new StreamingDataSnapshotQuik(this);
 			StreamingDataSnapshotQuik throwAtEarlyStage = this.StreamingDataSnapshotQuik;
 		}
+		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
+			base.StreamingEditorInitializeHelper(dataSourceEditor);
+			base.streamingEditorInstance = new StreamingMockEditor(this, dataSourceEditor);
+			return base.streamingEditorInstance;
+		}
 		public override void Initialize(DataSource dataSource, IStatusReporter statusReporter) {
 			base.Initialize(dataSource, statusReporter);
 			base.Name = "QuikMock Streaming";
+			if (this.GeneratingNow) {
+				this.Connect();
+			}
 		}
 		public override void Connect() {
 			if (base.IsConnected == true) return;
-			string ddeChannels = subscribeAllSymbols();
+			string ddeChannels = this.subscribeAllSymbols();
 			base.ConnectionState = ConnectionState.Connected;
 			base.UpdateConnectionStatus(0, "Started ddeChannels[" + ddeChannels + "]");
 			base.IsConnected = true;
@@ -87,30 +104,27 @@ namespace Sq1.Adapters.QuikMock {
 			base.IsConnected = false;
 		}
 
-		string subscribeAllSymbols() {
-			string ret = "";
-			lock (base.SymbolsSubscribedLock) {
+		string subscribeAllSymbols() { lock (base.SymbolsSubscribedLock) {
+				string ret = "";
 				foreach (string symbol in base.DataSource.Symbols) {
 					DdeChannelsMock ddeQuotesProviderMock = null;
-					if (this.MockProvidersBySymbol.ContainsKey(symbol) == false) {
-						ddeQuotesProviderMock = new DdeChannelsMock(this, symbol, this.StatusReporter);
-						this.StatusReporter = StatusReporter;
-
-						this.MockProvidersBySymbol.Add(symbol, ddeQuotesProviderMock);
-						Assembler.PopupException("MOCK: starting new DdeQuotesProvider[" + symbol + "]: " + ddeQuotesProviderMock);
-						ddeQuotesProviderMock.StartDdeServer();
-					} else {
+					if (this.MockProvidersBySymbol.ContainsKey(symbol) != false) {
 						ddeQuotesProviderMock = this.MockProvidersBySymbol[symbol];
-						Assembler.PopupException("MOCK: won't start existing DdeQuotesProvider[" + symbol + "]: " + ddeQuotesProviderMock);
+						string msg = "ALREADY_STARTED_DDE_QUOTES_FOR[" + symbol + "]: [" + ddeQuotesProviderMock + "]";
+						Assembler.PopupException(msg, null, false);
+						continue;
 					}
+						
+					ddeQuotesProviderMock = new DdeChannelsMock(this, symbol, this.StatusReporter);
+					this.MockProvidersBySymbol.Add(symbol, ddeQuotesProviderMock);
+					//this.UpstreamSubscribe(symbol);
+					
 					if (ret != "") ret += " ";
 					ret += symbol;
 				}
-			}
-			return ret;
-		}
-		string unsubscribeAllSymbols() {
-			lock (base.SymbolsSubscribedLock) {
+				return ret;
+			} }
+		string unsubscribeAllSymbols() { lock (base.SymbolsSubscribedLock) {
 				string ret = "";
 				foreach (string symbol in base.DataSource.Symbols) {
 					if (this.MockProvidersBySymbol.ContainsKey(symbol)) {
@@ -122,58 +136,57 @@ namespace Sq1.Adapters.QuikMock {
 					ret += symbol;
 				}
 				return ret;
-			}
-		}
+			} }
 
-		public override void UpstreamSubscribe(string symbol) {
-			if (String.IsNullOrEmpty(symbol)) {
-				string msg = "symbol[" + symbol + "]=IsNullOrEmpty, can't UpstreamSubscribe()";
-				throw new Exception(msg);
-			}
-			lock (base.SymbolsSubscribedLock) {
-				string DdeChannelName = symbol;
-				if (this.MockProvidersBySymbol.ContainsKey(DdeChannelName)) {
-					String msg = "already started DdeServer[" + DdeChannelName + "]";
-					Assembler.PopupException(msg, null, false);
-					this.StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorSymbolSubscribing, 1, msg);
+		public override void UpstreamSubscribe(string symbol) { lock (base.SymbolsSubscribedLock) {
+				string msig = " //UpstreamSubscribe(" + symbol + ")";
+				
+				if (String.IsNullOrEmpty(symbol)) {
+					string msg = "I_REFUSE_TO_PING_UPSTREAM_WITH_EMPTY_SYMBOL";
+					throw new Exception(msg + msig);
+				}
+				if (this.MockProvidersBySymbol.ContainsKey(symbol)) {
+					string msg2 = "DDE_QUOTES_ALREADY_STARTED";
+					Assembler.PopupException(msg2 + msig, null, false);
+					//this.StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorSymbolSubscribing, 1, msg2);
 					return;
 				}
-				DdeChannelsMock DdeQuotesProvider = new DdeChannelsMock(this, DdeChannelName, this.StatusReporter);
-				if (QuoteDelayAutoPropagate > 0) DdeQuotesProvider.ChannelQuote.setNextQuoteDelayMs(QuoteDelayAutoPropagate);
-				this.MockProvidersBySymbol.Add(DdeChannelName, DdeQuotesProvider);
-				DdeQuotesProvider.StartDdeServer();
-			}
-		}
-		public override void UpstreamUnSubscribe(string symbol) {
-			if (String.IsNullOrEmpty(symbol)) {
-				string msg = "symbol[" + symbol + "]=IsNullOrEmpty, can't UpstreamUnSubscribe()";
-				throw new Exception(msg);
-			}
-			lock (base.SymbolsSubscribedLock) {
-				string DdeChannelName = symbol;
-				if (this.MockProvidersBySymbol.ContainsKey(DdeChannelName)) {
-					string msg = "UnSubscribe(" + symbol + "): won't StopDdeServer[" + DdeChannelName + "] coz we need to press CTRL+SHIFT+L in QUIK again";
+				DdeChannelsMock ddeChannelsMock = new DdeChannelsMock(this, symbol, this.StatusReporter);
+				msig += ": [" + ddeChannelsMock.ToString() + "]";
+				
+				if (this.QuoteDelayAutoPropagate > 0) ddeChannelsMock.ChannelQuote.setNextQuoteDelayMs(this.QuoteDelayAutoPropagate);
+				this.MockProvidersBySymbol.Add(symbol, ddeChannelsMock);
+
+				string msg3 = "STARTING_NEW_DDE_QUOTES";
+				string started = (this.GeneratingNow) ? ddeChannelsMock.DdeServerStart() : "NOT_GENERATING_NOW";
+				Assembler.PopupException(started + "... <= " + msg3 + msig, null, false);
+			} }
+		public override void UpstreamUnSubscribe(string symbol) { lock (base.SymbolsSubscribedLock) {
+				if (String.IsNullOrEmpty(symbol)) {
+					string msg = "symbol[" + symbol + "]=IsNullOrEmpty, can't UpstreamUnSubscribe()";
+					throw new Exception(msg);
+				}
+				string ddeChannelName = symbol;
+				if (this.MockProvidersBySymbol.ContainsKey(ddeChannelName)) {
+					string msg = "UnSubscribe(" + symbol + "): won't StopDdeServer[" + ddeChannelName + "] coz we need to press CTRL+SHIFT+L in QUIK again";
 					Assembler.PopupException(msg, null, false);
 					this.StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorSymbolUnsubscribing, 1, msg);
 					return;
 				}
-			}
-		}
-		public override bool UpstreamIsSubscribed(string symbol) {
-			if (String.IsNullOrEmpty(symbol)) {
-				string msg = "symbol[" + symbol + "]=IsNullOrEmpty, can't UpstreamIsSubscribed()";
-				throw new Exception(msg);
-			}
-			lock (base.SymbolsSubscribedLock) {
+			} }
+		public override bool UpstreamIsSubscribed(string symbol) { lock (base.SymbolsSubscribedLock) {
+				if (String.IsNullOrEmpty(symbol)) {
+					string msg = "symbol[" + symbol + "]=IsNullOrEmpty, can't UpstreamIsSubscribed()";
+					throw new Exception(msg);
+				}
 				string DdeChannelName = symbol;
 				return this.MockProvidersBySymbol.ContainsKey(DdeChannelName);
-			}
-		}
+			} }
 		public override void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
 			QuoteQuik quikQuote = QuoteQuik.SafeUpcast(quote);
 			quikQuote.EnrichFromStreamingDataSnapshotQuik(this.StreamingDataSnapshotQuik);
 		}
-		public void PropagateGeneratedQuoteCallback(Quote quote) {
+		public void PushQuoteGenerated(Quote quote) {
 			if (this.GenerateOnlySymbols.Count > 0 && this.GenerateOnlySymbols.Contains(quote.Symbol) == false) return;
 			quote.Source = "MockQuik";
 			//if (quote.PriceLastDeal == 0) {
@@ -188,19 +201,16 @@ namespace Sq1.Adapters.QuikMock {
 				+ "/SymbolsGenerating[" + this.GenerateOnlySymbolsAsString + "]"
 				+ " DDE[" + this.DdeChannelsEstablished + "]";
 		}
-		public void AllSymbolsGenerateStart() {
-			lock (MockProvidersBySymbol) {
+		public void AllSymbolsGenerateStart() { lock (MockProvidersBySymbol) {
 				foreach (DdeChannelsMock channels in this.MockProvidersBySymbol.Values) {
 					channels.ChannelQuote.MockStart();
 				}
-			}
-		}
-		public void AllSymbolsGenerateStop() {
-			lock (MockProvidersBySymbol) {
+			} }
+		public void AllSymbolsGenerateStop() { lock (MockProvidersBySymbol) {
 				foreach (DdeChannelsMock channels in this.MockProvidersBySymbol.Values) {
 					channels.ChannelQuote.MockStop();
 				}
-			}
-		}
+				this.GeneratingNow = true;
+			} }
 	}
 }

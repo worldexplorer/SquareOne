@@ -26,10 +26,6 @@ namespace Sq1.Adapters.QuikMock {
 			}
 			set { this.txtQuoteDelay.Text = value.ToString(); }
 		}
-		public bool SaveToStatic {
-			get { return this.cbxGeneratingNow.Checked; }
-			set { this.cbxGeneratingNow.Checked = value; }
-		}
 		public List<string> GenerateOnlySymbols {
 			get { return SymbolParser.ParseSymbols(this.txtGenerateOnlySymbols.Text); }
 			set {
@@ -50,17 +46,28 @@ namespace Sq1.Adapters.QuikMock {
 			base.InitializeEditorFields();
 		}
 		public override void PushStreamingProviderSettingsToEditor() {
-			this.QuoteDelay = this.mockStreamingProvider.QuoteDelayAutoPropagate;
-			this.SaveToStatic = this.mockStreamingProvider.SaveToStatic;
-			this.GenerateOnlySymbols = this.mockStreamingProvider.GenerateOnlySymbols;
+			this.QuoteDelay				= this.mockStreamingProvider.QuoteDelayAutoPropagate;
+			this.GenerateOnlySymbols	= this.mockStreamingProvider.GenerateOnlySymbols;
+			// NB!!! assignment will trigger this.mockStreamingProvider.AllSymbolsGenerateStart() from cbxGeneratingNow_CheckedChanged
+			this.GeneratingNow			= this.mockStreamingProvider.GeneratingNow;
 		}
 		public override void PushEditedSettingsToStreamingProvider() {
 			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
 			if (this.QuoteDelay == 0) this.QuoteDelay = 1000;
-			this.mockStreamingProvider.QuoteDelayAutoPropagate = this.QuoteDelay;
-			this.mockStreamingProvider.SaveToStatic = this.SaveToStatic;
-			this.mockStreamingProvider.GenerateOnlySymbols = this.GenerateOnlySymbols;
-			this.mockStreamingProvider.GeneratingNow = this.GeneratingNow;
+			this.mockStreamingProvider.QuoteDelayAutoPropagate		= this.QuoteDelay;
+			this.mockStreamingProvider.GenerateOnlySymbols			= this.GenerateOnlySymbols;
+			try {
+				if (this.GeneratingNow) {
+					this.mockStreamingProvider.AllSymbolsGenerateStart();
+				} else {
+					this.mockStreamingProvider.AllSymbolsGenerateStop();
+				}
+				this.mockStreamingProvider.GeneratingNowAutoPropagate = this.GeneratingNow;
+				Assembler.InstanceInitialized.RepositoryJsonDataSource.SerializeSingle(this.mockStreamingProvider.DataSource);
+			} catch (Exception ex) {
+				string msg = "PushEditedSettingsToStreamingProvider()";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 	}
 }

@@ -173,7 +173,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 				//quikQuote.PriceLastDeal = 0;
 				Assembler.PopupException("MOCK_TEST_ONCE: setting Price=0 for quote[" + quikQuote + "]; watch CHART skipping it and ORDER with an ERROR");
 			}
-			this.providerMock.PropagateGeneratedQuoteCallback(quikQuote);
+			this.providerMock.PushQuoteGenerated(quikQuote);
 			//streamingProvider.putBestBidAskForSymbol(symbol, quote.Price - spread / 2, quote.Price + spread / 2);
 
 			t.Change(nextQuoteDelayMs, 0);
@@ -190,7 +190,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 		}
 
 		public override string ToString() {
-			return "StreamingMock[" + providerMock + "] quoteSource[" + quoteSource + "] symbol[" + symbol + "]";
+			return "[" + providerMock + "] quoteSource[" + quoteSource + "] symbol[" + symbol + "]";
 		}
 	}
 }

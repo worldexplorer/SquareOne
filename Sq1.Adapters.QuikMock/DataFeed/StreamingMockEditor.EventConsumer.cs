@@ -21,11 +21,6 @@ namespace Sq1.Adapters.QuikMock {
 		}
 
 		void cbxGeneratingNow_CheckedChanged(object sender, EventArgs e) {
-			if (this.cbxGeneratingNow.Checked) {
-				mockStreamingProvider.AllSymbolsGenerateStart();
-			} else {
-				mockStreamingProvider.AllSymbolsGenerateStop();
-			}
 			this.PushEditedSettingsToStreamingProvider();
 		}
 	}

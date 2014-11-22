@@ -6,7 +6,7 @@
   "DotNetReferences": null,
   "DllPathIfNoSourceCode": null,
   "ExceptionsLimitToAbortBacktest": 10,
-  "StoredInJsonAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json",
+  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json",
   "ScriptContextCurrentName": "Default",
   "ScriptContextsByName": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
@@ -18,7 +18,7 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": false,
+      "IsCurrent": true,
       "StrategyEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": false,
@@ -71,7 +71,7 @@
         "RecentTimeunits": 0
       },
       "IsStreamingTriggeringScript": true,
-      "ShowRangeBar": true,
+      "ShowRangeBar": false,
       "IsStreaming": true,
       "ScriptParametersById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"

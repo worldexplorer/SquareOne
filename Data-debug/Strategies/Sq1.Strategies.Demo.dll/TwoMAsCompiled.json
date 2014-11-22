@@ -18,14 +18,25 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
-      "IsCurrent": false,
-      "ChartEmittingOrders": false,
+      "IsCurrent": true,
+      "StrategyEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
+        "Performance": null,
+        "Positions": {
+          "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
+          "ShowEntriesExits": true,
+          "ShowPercentage": true,
+          "ShowBarsHeld": true,
+          "ShowMaeMfe": true,
+          "ShowSignals": true,
+          "ShowCommission": true,
+          "Colorify": true
+        }
       },
       "ApplyCommission": false,
       "EnableSlippage": false,
@@ -59,8 +70,9 @@
         "RecentBars": 500,
         "RecentTimeunits": 0
       },
-      "ChartStreaming": true,
+      "IsStreamingTriggeringScript": false,
       "ShowRangeBar": false,
+      "IsStreaming": true,
       "ScriptParametersById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
       },

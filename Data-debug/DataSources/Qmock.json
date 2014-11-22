@@ -36,18 +36,62 @@
       },
       "BestBid": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 157695.0,
+        "autogen": 158190.0,
         "AUTOGEN": 158190.0
       },
       "BestAsk": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 157715.0,
+        "autogen": 158210.0,
         "AUTOGEN": 158210.0
       },
       "LastQuotesReceived": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
         "RIMg": null,
-        "autogen": null,
+        "autogen": {
+          "$type": "Sq1.Adapters.Quik.QuoteQuik, Sq1.Adapters.Quik",
+          "FortsDepositBuy": 0.0,
+          "FortsDepositSell": 0.0,
+          "FortsPriceMax": 0.0,
+          "FortsPriceMin": 0.0,
+          "Symbol": "autogen",
+          "SymbolClass": "SPBFUT",
+          "Source": "MockQuik",
+          "ServerTime": "2014-11-22T01:15:41.0757555",
+          "Bid": 158190.0,
+          "Ask": 158210.0,
+          "Size": 5.0,
+          "ItriggeredFillAtBidOrAsk": 0,
+          "IntraBarSerno": 81,
+          "AbsnoPerSymbol": 1552,
+          "LastDealBidOrAsk": 2,
+          "LocalTimeCreatedMillis": "2014-11-22T01:15:41.0757555-05:00",
+          "ParentStreamingBar": {
+            "$type": "Sq1.Core.DataTypes.Bar, Sq1.Core",
+            "Open": 157845.0,
+            "High": 158230.0,
+            "Low": 157830.0,
+            "Close": 158190.0,
+            "Volume": 410.0,
+            "DaySerial": 0,
+            "Symbol": "autogen",
+            "ScaleInterval": {
+              "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+              "Scale": 3,
+              "Interval": 1,
+              "IsIntraday": true,
+              "AsTimeSpanInSeconds": 60,
+              "AsTimeSpan": "00:01:00"
+            },
+            "DateTimeOpen": "2014-11-22T01:15:00",
+            "DateTimeNextBarOpenUnconditional": "2014-11-22T01:16:00",
+            "DateTimePreviousBarOpenUnconditional": "2014-11-22T01:14:00",
+            "ParentBarsIdent": "NO_PARENT_BARS"
+          },
+          "HasParentBar": true,
+          "ParentBarIdent": "NO_PARENT_BARS",
+          "LastDealPrice": 158190.0,
+          "Spread": 20.0
+        },
         "AUTOGEN": {
           "$type": "Sq1.Adapters.Quik.QuoteQuik, Sq1.Adapters.Quik",
           "FortsDepositBuy": 0.0,
@@ -65,7 +109,7 @@
           "IntraBarSerno": 39,
           "AbsnoPerSymbol": 39,
           "LastDealBidOrAsk": 2,
-          "LocalTimeCreatedMillis": "2014-11-21T12:28:52.1975994-05:00",
+          "LocalTimeCreatedMillis": "2014-11-22T01:07:49.2925238-05:00",
           "ParentStreamingBar": null,
           "HasParentBar": false,
           "ParentBarIdent": "NO_PARENT_BAR",
@@ -103,5 +147,5 @@
   "StaticProviderName": "Mock StaticProvider",
   "StreamingProviderName": "QuikMock Streaming",
   "BrokerProviderName": "QuikMock Broker",
-  "DataSourceAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
+  "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
 }
