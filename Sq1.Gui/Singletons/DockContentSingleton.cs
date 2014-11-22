@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 
-using Sq1.Core.Support;
 using Sq1.Widgets;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Singletons {
 	public class DockContentSingleton<T> : DockContentImproved where T : new() {

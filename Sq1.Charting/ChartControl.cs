@@ -60,7 +60,7 @@ namespace Sq1.Charting {
 			//v1 1/2 making ChartForm editable in Designer: exit to avoid InitializeCreateSplittersDistributeFor() below throw
 			//if (base.DesignMode) return; // Generics in InitializeComponent() cause Designer to throw up (new Sq1.Charting.MultiSplit.MultiSplitContainer<PanelBase>())
 			//v2 uncomment if you are opening ChartForm in Designer to make it editable; v1 doens't work!?!!
-			// return;
+			// return;	// ENABLE_CHART_CONTROL_DESIGNER <= keyword for easy find
 
 			this.multiSplitContainer.InitializeCreateSplittersDistributeFor(panels);
 

@@ -20,6 +20,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			}
 			base.Dispose(disposing);
 		}
+
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StrategiesTreeControl));
@@ -104,6 +105,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.mniStrategyOpenWith.Name = "mniStrategyOpenWith";
 			this.mniStrategyOpenWith.Size = new System.Drawing.Size(225, 22);
 			this.mniStrategyOpenWith.Text = "Replace Current Chart with...";
+			this.mniStrategyOpenWith.Click += mniStrategyOpenWith_Click;
 			// 
 			// mniScriptContext1
 			// 

@@ -3,7 +3,6 @@ using System;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Static;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 
@@ -67,11 +66,6 @@ namespace Sq1.Gui.Forms {
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource=null");
 				return ret;
 			} }
-		StaticProvider StaticProvider { get {
-				var ret = this.DataSource.StaticProvider;
-				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource.StaticProvider=null");
-				return ret;
-			} }
 		StreamingProvider StreamingProvider { get {
 				StreamingProvider ret = this.DataSource.StreamingProvider;
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource.StreamingProvider=null STREAMING_PROVIDER_NOT_ASSIGNED_IN_DATASOURCE");
@@ -116,7 +110,6 @@ namespace Sq1.Gui.Forms {
 			try {
 				var symbolSafe = this.Symbol;
 				var scaleSafe = this.Scale;
-				var staticSafe = this.StaticProvider;
 				var streamingSafe = this.StreamingProvider;
 				var staticDeepSafe = this.StreamingSolidifierDeep;
 			} catch (Exception e) {

@@ -116,6 +116,7 @@ namespace Sq1.Gui {
 				}
 			} catch (Exception ex) {
 				string msg = "ChartFormsManagers.Remove() didn't go trought? duplicates";
+				Assembler.PopupException(msg, ex);
 			}
 		}
 		#endregion

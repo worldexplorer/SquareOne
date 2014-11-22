@@ -44,7 +44,6 @@ namespace Sq1.Gui {
 	
 				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeContext(Assembler.InstanceInitialized);
 				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeProviders(
-					Assembler.InstanceInitialized.RepositoryDllStaticProvider.CloneableInstanceByClassName,
 					Assembler.InstanceInitialized.RepositoryDllStreamingProvider.CloneableInstanceByClassName,
 					Assembler.InstanceInitialized.RepositoryDllBrokerProvider.CloneableInstanceByClassName);
 	

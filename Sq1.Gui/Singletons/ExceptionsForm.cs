@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Windows.Forms;
 
 using Sq1.Core;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Singletons {
 	public partial class ExceptionsForm : DockContentSingleton<ExceptionsForm> {
@@ -43,25 +42,8 @@ namespace Sq1.Gui.Singletons {
 				return;
 			}
 			this.ExceptionControl.InsertException(exception);
-			// doesn't help to show up an Auto-Hidden-after-creation THIS
-			//base.Show();
-			//base.BringToFront();
-
-			//base.Pane=null after RestoreXmlLayout()
-			if (base.Pane == null) return;
-			if (base.Pane.IsAutoHide) {
-				// why DockHelper.ToggleAutoHideState() and DockHandler.SetDockState() are internal???...
-				DockState newState = DockHelper.ToggleAutoHideState(base.Pane.DockState);
-				base.Pane.SetDockState(newState);
-			}
-			// added if(base.IsHidden) to stop Pane.Activate() steal focus during keyUp/keyDown in ExecutionTree when this generates Exceptions
-			if (base.IsHidden) base.Pane.Activate();
-			// removes focus from other forms; makes ExecutionForm.SelectedRow blue=>gray
-			// base.Activate();
+			base.ShowPopup();
 		}
-//		public override void VisibleChanged(object sender, EventArgs e) {
-//			int a = 1;
-//		}
 		protected override void OnLoad(EventArgs e) {
 			foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {
 				this.PopupException(null, beforeFormInstantiated, false);

@@ -16,7 +16,6 @@ namespace Sq1.Core {
 		public RepositoryJsonDataSource			RepositoryJsonDataSource;
 		public RepositorySerializerSymbolInfo	RepositorySymbolInfo;
 		public RepositorySerializerMarketInfo	RepositoryMarketInfo;
-		public RepositoryDllStaticProvider		RepositoryDllStaticProvider;
 		public RepositoryDllStreamingProvider	RepositoryDllStreamingProvider;
 		public RepositoryDllBrokerProvider		RepositoryDllBrokerProvider;
 		public RepositoryDllReporters			RepositoryDllReporters;
@@ -66,7 +65,6 @@ namespace Sq1.Core {
 			} }
 		public List<Exception> ExceptionsWhileInstantiating { get {
 				List<Exception> ret = new List<Exception>();
-				ret.AddRange(this.RepositoryDllStaticProvider.ExceptionsWhileScanning);
 				ret.AddRange(this.RepositoryDllStreamingProvider.ExceptionsWhileScanning);
 				ret.AddRange(this.RepositoryDllBrokerProvider.ExceptionsWhileScanning);
 				ret.AddRange(this.RepositoryDllReporters.ExceptionsWhileScanning);
@@ -98,7 +96,6 @@ namespace Sq1.Core {
 			this.RepositoryJsonDataSource = new RepositoryJsonDataSource();
 			this.RepositoryDllJsonStrategy = new RepositoryDllJsonStrategy();
 
-			this.RepositoryDllStaticProvider = new RepositoryDllStaticProvider();
 			this.RepositoryDllStreamingProvider = new RepositoryDllStreamingProvider();
 			this.RepositoryDllBrokerProvider = new RepositoryDllBrokerProvider();
 			this.RepositoryDllReporters = new RepositoryDllReporters();
@@ -136,7 +133,6 @@ namespace Sq1.Core {
 			
 			this.RepositoryDllJsonStrategy.Initialize(this.AppDataPath, this.AppStartupPath);
 
-			this.RepositoryDllStaticProvider.InitializeAndScan(this.AppStartupPath);
 			this.RepositoryDllStreamingProvider.InitializeAndScan(this.AppStartupPath);
 			this.RepositoryDllBrokerProvider.InitializeAndScan(this.AppStartupPath);
 			this.RepositoryDllReporters.InitializeAndScan(this.AppStartupPath);

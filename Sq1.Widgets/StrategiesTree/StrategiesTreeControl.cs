@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
@@ -69,10 +70,16 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.StrategySelected = strategy;
 			this.FolderSelected = strategy.StoredInFolderRelName;
 		}
+		
+		const string PREFIX_SCRIPT_CONTEXT_MNI_NAME = "mniContextScript_";
 		List<ToolStripItem> CreateMnisForScriptContexts(Strategy strategy) {
 			var ret = new List<ToolStripItem>();
 			foreach (string scriptContextName in strategy.ScriptContextsByName.Keys) {
-				var mni = new ToolStripMenuItem(scriptContextName, null, this.mniStrategyOpenWithScriptContext_Click, "mni" + scriptContextName);
+				string mniName = PREFIX_SCRIPT_CONTEXT_MNI_NAME + scriptContextName;
+				ToolStripMenuItem mni = new ToolStripMenuItem(scriptContextName, null, this.mniStrategyOpenWithScriptContext_Click, mniName);
+				if (scriptContextName == ContextScript.DEFAULT_NAME) {
+					mni.Font = new Font(mni.Font.FontFamily, mni.Font.Size, FontStyle.Bold);
+				}
 				ret.Add(mni);
 			}
 			return ret;

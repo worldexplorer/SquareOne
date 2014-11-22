@@ -7,7 +7,7 @@ using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Repositories;
 using Sq1.Core.Serializers;
-using Sq1.Core.Static;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl : UserControl {
@@ -69,7 +69,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			var dataSources = dataSourceRepository.ItemsAsList;
 			this.imageList.Images.Clear();
 			foreach (DataSource ds in dataSources) {
-				StaticProvider provider = ds.StaticProvider;
+				StreamingProvider provider = ds.StreamingProvider;
 				if (provider == null) continue;
 				this.populateIconForDataSource(ds);
 			}
@@ -86,7 +86,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 		void populateIconForDataSource(DataSource ds) {
 			if (ds == null) return;
-			StaticProvider provider = ds.StaticProvider;
+			StreamingProvider provider = ds.StreamingProvider;
 			if (provider == null) return;
 			this.imageList.Images.Add(provider.Icon);
 			int providerIconImageIndex = this.imageList.Images.Count - 1;
@@ -95,7 +95,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 		}
 		int getProviderImageIndexForDataSource(DataSource dataSource) {
-			var provider = dataSource.StaticProvider;
+			var provider = dataSource.StreamingProvider;
 			if (provider == null) return -1;
 			if (this.imageIndexByStaticProviderType.ContainsKey(provider.GetType()) == false) return -1;
 			return this.imageIndexByStaticProviderType[provider.GetType()];

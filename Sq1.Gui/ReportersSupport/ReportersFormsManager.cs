@@ -74,7 +74,7 @@ namespace Sq1.Gui.ReportersSupport {
 				string msg = "ChartForm_OnReporterMniClicked() should receive a click on ToolStripMenuItem, received from [" + sender.GetType() + "]";
 				throw new Exception(msg);
 			}
-			string reporterShortNameClicked = mniClicked.Text;
+			string reporterShortNameClicked = this.MenuItemsProvider.StripPrefixFromMniName(mniClicked);
 			bool beforeCheckPropagatedInverted = mniClicked.Checked;
 			try {
 				if (beforeCheckPropagatedInverted == true) {

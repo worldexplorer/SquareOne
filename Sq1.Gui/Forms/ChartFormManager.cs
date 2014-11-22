@@ -4,10 +4,8 @@ using System.Diagnostics;
 using System.Windows.Forms;
 
 using Sq1.Core;
-using Sq1.Core.Charting;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Execution;
 using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
 using Sq1.Gui.FormFactories;
@@ -163,6 +161,20 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshot.ChartSerno = charSernoDeserialized;
 			this.DataSnapshotSerializer.Serialize();
 		}
+		ChartForm chartFormFactory() {
+			ChartForm ret = new ChartForm(this);
+			
+			// sequence of invocation matters otherwise "Delegate to an instance method cannot have null 'this'."
+			// at Sq1.Gui.Forms.ChartForm.ChartFormEventsToChartFormManagerDetach() in C:\SquareOne\Sq1.Gui\Forms\ChartForm.cs:line 61
+			this.InterformEventsConsumer = new ChartFormInterformEventsConsumer(this, ret);
+			// MAKES_SENSE_IF_this.InterformEventsConsumer_WAS_INITIALIZED_IN_CTOR() this.ChartForm.ChartFormEventsToChartFormManagerDetach();
+			ret.ChartFormEventsToChartFormManagerAttach();
+			
+			// DONT_MOVE_OUTSIDE_CHART_FORM_FACTORY you open a chartNoStrategy, then load a strategy, then another one => you get 3 invocations of ChartForm_FormClosed()  
+			ret.FormClosed += this.MainForm.MainFormEventManager.ChartForm_FormClosed;
+			ret.AppendReportersMenuItems(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
+			return ret;
+		}
 		public void InitializeChartNoStrategy(ContextChart contextChart) {
 			string msig = " //ChartFormsManager[" + this.ToString() + "].InitializeChartNoStrategy(" + contextChart + ")";
 
@@ -175,13 +187,13 @@ namespace Sq1.Gui.Forms {
 				this.DataSnapshot.ChartSerno = charSernoNext;
 				this.DataSnapshotSerializer.Serialize();
 			}
-
-			this.ChartForm = new ChartForm(this);
+			
 			this.DataSnapshot.StrategyGuidJsonCheck		= "NO_STRATEGY_CHART_ONLY";
 			this.DataSnapshot.StrategyNameJsonCheck		= "NO_STRATEGY_CHART_ONLY";
 			this.DataSnapshot.StrategyAbsPathJsonCheck	= "NO_STRATEGY_CHART_ONLY";
 
-
+			if (this.ChartForm == null) this.ChartForm = this.chartFormFactory();
+			#region TODO move to chartFormFactory()
 			if (this.DataSnapshot.ChartSettings == null) {
 				// delete "ChartSettings": {} from JSON to reset to ChartControl>Design>ChartSettings>Properties
 				this.DataSnapshot.ChartSettings = this.ChartForm.ChartControl.ChartSettings;	// opening from Datasource => save
@@ -194,16 +206,8 @@ namespace Sq1.Gui.Forms {
 				this.DataSnapshot.ContextChart = contextChart;
 			}
 			this.DataSnapshotSerializer.Serialize();
-
-			// you open a chartNoStrategy, then load a strategy, then another one => you get 3 invocations of ChartForm_FormClosed()  
-			this.ChartForm.FormClosed += this.MainForm.MainFormEventManager.ChartForm_FormClosed;
+			#endregion
 			this.ChartForm.Initialize(false);
-
-			// sequence of invocation matters otherwise "Delegate to an instance method cannot have null 'this'."
-			// at Sq1.Gui.Forms.ChartForm.ChartFormEventsToChartFormManagerDetach() in C:\SquareOne\Sq1.Gui\Forms\ChartForm.cs:line 61
-			this.InterformEventsConsumer = new ChartFormInterformEventsConsumer(this);
-			// MAKES_SENSE_IF_this.InterformEventsConsumer_WAS_INITIALIZED_IN_CTOR() this.ChartForm.ChartFormEventsToChartFormManagerDetach();
-			this.ChartForm.ChartFormEventsToChartFormManagerAttach();
 
 			try {
 				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true, false);
@@ -237,21 +241,8 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshot.StrategyAbsPathJsonCheck = strategy.StoredInJsonAbspath;
 			this.DataSnapshotSerializer.Serialize();
 			
-			if (this.ChartForm == null) {
-				this.ChartForm = new ChartForm(this);
-				this.ChartForm.FormClosed += this.MainForm.MainFormEventManager.ChartForm_FormClosed;
-
-				// sequence of invocation matters otherwise "Delegate to an instance method cannot have null 'this'."
-				// at Sq1.Gui.Forms.ChartForm.ChartFormEventsToChartFormManagerDetach() in C:\SquareOne\Sq1.Gui\Forms\ChartForm.cs:line 61
-				this.InterformEventsConsumer = new ChartFormInterformEventsConsumer(this);
-				// MAKES_SENSE_IF_this.InterformEventsConsumer_WAS_INITIALIZED_IN_CTOR() this.ChartForm.ChartFormEventsToChartFormManagerDetach();
-				this.ChartForm.ChartFormEventsToChartFormManagerAttach();
-
-				this.ChartForm.CtxReporters.Items.AddRange(this.ReportersFormsManager.MenuItemsProvider.MenuItems.ToArray());
-			}
-
-			this.Executor.Initialize(this.ChartForm.ChartControl, this.Strategy);
-
+			if (this.ChartForm == null) this.ChartForm = this.chartFormFactory();
+			#region TODO merge this region from InitializeWithStrategy() and InitializeChartNoStrategy() into chartFormFactory()
 			if (this.DataSnapshot.ChartSettings == null) {
 				string msg = "SORRY_WHEN_EXACTLY_THIS_MAKES_SENSE?...";
 				this.DataSnapshot.ChartSettings = this.ChartForm.ChartControl.ChartSettings;	// opening from Datasource => save
@@ -264,8 +255,10 @@ namespace Sq1.Gui.Forms {
 				}
 			}
 			this.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
-
+			#endregion
 			this.ChartForm.Initialize(true, this.Strategy.ActivatedFromDll);
+
+			this.Executor.Initialize(this.ChartForm.ChartControl, this.Strategy);
 
 			try {
 				// Click on strategy should open new chart,  
