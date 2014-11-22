@@ -46,7 +46,7 @@ namespace Sq1.Adapters.Quik {
 		public override void Initialize(DataSource dataSource, StreamingProvider streamingProvider,
 				OrderProcessor orderProcessor, IStatusReporter connectionStatus) {
 			base.Initialize(dataSource, streamingProvider, orderProcessor, connectionStatus);
-			base.Name = "Quik BrokerProvider";
+			base.Name = "Quik Broker";
 
 			if (String.IsNullOrEmpty(this.QuikFolder)) return;
 			if (Directory.Exists(this.QuikFolder) == false) {

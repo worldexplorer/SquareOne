@@ -19,7 +19,6 @@ namespace Sq1.Adapters.Quik {
 		private TextBox txtTopicTrades;
 		private Label lblTopicTrades;
 		private Label lblMinus2;
-		private Label lblMinus3;
 		private TextBox txtTopicPrefixDOM;
 		private Label lblTopicPrefixDOM;
 		private Label lblMinus4;
@@ -33,7 +32,6 @@ namespace Sq1.Adapters.Quik {
 			this.txtTopicTrades = new System.Windows.Forms.TextBox();
 			this.lblTopicTrades = new System.Windows.Forms.Label();
 			this.lblMinus2 = new System.Windows.Forms.Label();
-			this.lblMinus3 = new System.Windows.Forms.Label();
 			this.txtTopicPrefixDOM = new System.Windows.Forms.TextBox();
 			this.lblTopicPrefixDOM = new System.Windows.Forms.Label();
 			this.lblMinus4 = new System.Windows.Forms.Label();
@@ -52,31 +50,31 @@ namespace Sq1.Adapters.Quik {
 			// 
 			this.txtDdeServerPrefix.Location = new System.Drawing.Point(3, 16);
 			this.txtDdeServerPrefix.Name = "txtDdeServerPrefix";
-			this.txtDdeServerPrefix.Size = new System.Drawing.Size(114, 20);
+			this.txtDdeServerPrefix.Size = new System.Drawing.Size(87, 20);
 			this.txtDdeServerPrefix.TabIndex = 8;
 			// 
 			// txtTopicQuotes
 			// 
 			this.txtTopicQuotes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtTopicQuotes.Location = new System.Drawing.Point(123, 16);
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtTopicQuotes.Location = new System.Drawing.Point(100, 16);
 			this.txtTopicQuotes.Name = "txtTopicQuotes";
-			this.txtTopicQuotes.Size = new System.Drawing.Size(92, 20);
+			this.txtTopicQuotes.Size = new System.Drawing.Size(113, 20);
 			this.txtTopicQuotes.TabIndex = 10;
 			// 
 			// lblTopicQuotes
 			// 
 			this.lblTopicQuotes.AutoSize = true;
-			this.lblTopicQuotes.Location = new System.Drawing.Point(120, 0);
+			this.lblTopicQuotes.Location = new System.Drawing.Point(100, 0);
 			this.lblTopicQuotes.Name = "lblTopicQuotes";
-			this.lblTopicQuotes.Size = new System.Drawing.Size(71, 13);
+			this.lblTopicQuotes.Size = new System.Drawing.Size(98, 13);
 			this.lblTopicQuotes.TabIndex = 9;
-			this.lblTopicQuotes.Text = "Quotes Topic";
+			this.lblTopicQuotes.Text = "Quotes Topic suffix";
 			// 
 			// lblMinus
 			// 
 			this.lblMinus.AutoSize = true;
-			this.lblMinus.Location = new System.Drawing.Point(115, 19);
+			this.lblMinus.Location = new System.Drawing.Point(89, 19);
 			this.lblMinus.Name = "lblMinus";
 			this.lblMinus.Size = new System.Drawing.Size(10, 13);
 			this.lblMinus.TabIndex = 11;
@@ -85,54 +83,45 @@ namespace Sq1.Adapters.Quik {
 			// txtTopicTrades
 			// 
 			this.txtTopicTrades.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtTopicTrades.Enabled = false;
-			this.txtTopicTrades.Location = new System.Drawing.Point(123, 55);
+			this.txtTopicTrades.Location = new System.Drawing.Point(100, 55);
 			this.txtTopicTrades.Name = "txtTopicTrades";
-			this.txtTopicTrades.Size = new System.Drawing.Size(92, 20);
+			this.txtTopicTrades.Size = new System.Drawing.Size(113, 20);
 			this.txtTopicTrades.TabIndex = 13;
 			// 
 			// lblTopicTrades
 			// 
 			this.lblTopicTrades.AutoSize = true;
-			this.lblTopicTrades.Location = new System.Drawing.Point(129, 39);
+			this.lblTopicTrades.Location = new System.Drawing.Point(100, 39);
 			this.lblTopicTrades.Name = "lblTopicTrades";
-			this.lblTopicTrades.Size = new System.Drawing.Size(86, 13);
+			this.lblTopicTrades.Size = new System.Drawing.Size(113, 13);
 			this.lblTopicTrades.TabIndex = 12;
-			this.lblTopicTrades.Text = "Historical Trades";
+			this.lblTopicTrades.Text = "Historical Trades suffix";
 			// 
 			// lblMinus2
 			// 
 			this.lblMinus2.AutoSize = true;
-			this.lblMinus2.Location = new System.Drawing.Point(115, 58);
+			this.lblMinus2.Location = new System.Drawing.Point(89, 58);
 			this.lblMinus2.Name = "lblMinus2";
 			this.lblMinus2.Size = new System.Drawing.Size(10, 13);
 			this.lblMinus2.TabIndex = 14;
 			this.lblMinus2.Text = "-";
 			// 
-			// lblMinus3
-			// 
-			this.lblMinus3.AutoSize = true;
-			this.lblMinus3.Location = new System.Drawing.Point(115, 97);
-			this.lblMinus3.Name = "lblMinus3";
-			this.lblMinus3.Size = new System.Drawing.Size(10, 13);
-			this.lblMinus3.TabIndex = 17;
-			this.lblMinus3.Text = "-";
-			// 
 			// txtTopicPrefixDOM
 			// 
 			this.txtTopicPrefixDOM.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtTopicPrefixDOM.Enabled = false;
-			this.txtTopicPrefixDOM.Location = new System.Drawing.Point(123, 94);
+			this.txtTopicPrefixDOM.Location = new System.Drawing.Point(100, 94);
 			this.txtTopicPrefixDOM.Name = "txtTopicPrefixDOM";
-			this.txtTopicPrefixDOM.Size = new System.Drawing.Size(92, 20);
+			this.txtTopicPrefixDOM.Size = new System.Drawing.Size(113, 20);
 			this.txtTopicPrefixDOM.TabIndex = 16;
 			// 
 			// lblTopicPrefixDOM
 			// 
 			this.lblTopicPrefixDOM.AutoSize = true;
-			this.lblTopicPrefixDOM.Location = new System.Drawing.Point(102, 78);
+			this.lblTopicPrefixDOM.Location = new System.Drawing.Point(100, 78);
 			this.lblTopicPrefixDOM.Name = "lblTopicPrefixDOM";
 			this.lblTopicPrefixDOM.Size = new System.Drawing.Size(113, 13);
 			this.lblTopicPrefixDOM.TabIndex = 15;
@@ -141,7 +130,7 @@ namespace Sq1.Adapters.Quik {
 			// lblMinus4
 			// 
 			this.lblMinus4.AutoSize = true;
-			this.lblMinus4.Location = new System.Drawing.Point(91, 97);
+			this.lblMinus4.Location = new System.Drawing.Point(89, 97);
 			this.lblMinus4.Name = "lblMinus4";
 			this.lblMinus4.Size = new System.Drawing.Size(10, 13);
 			this.lblMinus4.TabIndex = 18;
@@ -163,14 +152,13 @@ namespace Sq1.Adapters.Quik {
 			this.Controls.Add(this.lblDdePrefix);
 			this.Controls.Add(this.lblMinus);
 			this.Controls.Add(this.lblMinus2);
-			this.Controls.Add(this.lblMinus3);
 			this.Controls.Add(this.lblMinus4);
 			this.Name = "StreamingQuikEditor";
 			this.Size = new System.Drawing.Size(220, 119);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
-        }
+		}
         protected override void Dispose(bool disposing) {
             if (disposing && (components != null)) {
                 components.Dispose();

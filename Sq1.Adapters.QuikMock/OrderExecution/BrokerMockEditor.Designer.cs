@@ -42,15 +42,17 @@ namespace Sq1.Adapters.QuikMock {
 			// 
 			// txtCashAvailable
 			// 
-			this.txtCashAvailable.Location = new System.Drawing.Point(121, 58);
+			this.txtCashAvailable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtCashAvailable.Location = new System.Drawing.Point(124, 58);
 			this.txtCashAvailable.Name = "txtCashAvailable";
-			this.txtCashAvailable.Size = new System.Drawing.Size(113, 20);
+			this.txtCashAvailable.Size = new System.Drawing.Size(153, 20);
 			this.txtCashAvailable.TabIndex = 25;
 			// 
 			// lblFirstOrdersFail
 			// 
 			this.lblFirstOrdersFail.AutoSize = true;
-			this.lblFirstOrdersFail.Location = new System.Drawing.Point(121, 42);
+			this.lblFirstOrdersFail.Location = new System.Drawing.Point(124, 42);
 			this.lblFirstOrdersFail.Name = "lblFirstOrdersFail";
 			this.lblFirstOrdersFail.Size = new System.Drawing.Size(107, 13);
 			this.lblFirstOrdersFail.TabIndex = 24;
@@ -58,15 +60,17 @@ namespace Sq1.Adapters.QuikMock {
 			// 
 			// txtQuikAccount
 			// 
-			this.txtQuikAccount.Location = new System.Drawing.Point(118, 16);
+			this.txtQuikAccount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtQuikAccount.Location = new System.Drawing.Point(124, 16);
 			this.txtQuikAccount.Name = "txtQuikAccount";
-			this.txtQuikAccount.Size = new System.Drawing.Size(113, 20);
+			this.txtQuikAccount.Size = new System.Drawing.Size(153, 20);
 			this.txtQuikAccount.TabIndex = 23;
 			// 
 			// lblQuikAccount
 			// 
 			this.lblQuikAccount.AutoSize = true;
-			this.lblQuikAccount.Location = new System.Drawing.Point(118, 0);
+			this.lblQuikAccount.Location = new System.Drawing.Point(124, 0);
 			this.lblQuikAccount.Name = "lblQuikAccount";
 			this.lblQuikAccount.Size = new System.Drawing.Size(114, 13);
 			this.lblQuikAccount.TabIndex = 22;
@@ -76,7 +80,7 @@ namespace Sq1.Adapters.QuikMock {
 			// 
 			this.txtExecutionDelayMillis.Location = new System.Drawing.Point(3, 16);
 			this.txtExecutionDelayMillis.Name = "txtExecutionDelayMillis";
-			this.txtExecutionDelayMillis.Size = new System.Drawing.Size(113, 20);
+			this.txtExecutionDelayMillis.Size = new System.Drawing.Size(115, 20);
 			this.txtExecutionDelayMillis.TabIndex = 27;
 			this.txtExecutionDelayMillis.TextChanged += new System.EventHandler(this.txtExecutionDelayMillis_TextChanged);
 			// 
@@ -119,7 +123,7 @@ namespace Sq1.Adapters.QuikMock {
 			// 
 			this.txtRejectFirstNOrders.Location = new System.Drawing.Point(3, 58);
 			this.txtRejectFirstNOrders.Name = "txtRejectFirstNOrders";
-			this.txtRejectFirstNOrders.Size = new System.Drawing.Size(113, 20);
+			this.txtRejectFirstNOrders.Size = new System.Drawing.Size(115, 20);
 			this.txtRejectFirstNOrders.TabIndex = 5;
 			// 
 			// lblRejectFirstNOrders
@@ -134,7 +138,7 @@ namespace Sq1.Adapters.QuikMock {
 			// cbxRejectRandomly
 			// 
 			this.cbxRejectRandomly.AutoSize = true;
-			this.cbxRejectRandomly.Location = new System.Drawing.Point(3, 85);
+			this.cbxRejectRandomly.Location = new System.Drawing.Point(3, 84);
 			this.cbxRejectRandomly.Name = "cbxRejectRandomly";
 			this.cbxRejectRandomly.Size = new System.Drawing.Size(107, 17);
 			this.cbxRejectRandomly.TabIndex = 28;
@@ -145,7 +149,7 @@ namespace Sq1.Adapters.QuikMock {
 			// 
 			this.cbxRejectAllUpcoming.Appearance = System.Windows.Forms.Appearance.Button;
 			this.cbxRejectAllUpcoming.AutoSize = true;
-			this.cbxRejectAllUpcoming.Location = new System.Drawing.Point(3, 108);
+			this.cbxRejectAllUpcoming.Location = new System.Drawing.Point(3, 107);
 			this.cbxRejectAllUpcoming.Name = "cbxRejectAllUpcoming";
 			this.cbxRejectAllUpcoming.Size = new System.Drawing.Size(113, 23);
 			this.cbxRejectAllUpcoming.TabIndex = 29;
@@ -153,7 +157,7 @@ namespace Sq1.Adapters.QuikMock {
 			this.cbxRejectAllUpcoming.UseVisualStyleBackColor = true;
 			this.cbxRejectAllUpcoming.CheckedChanged += new System.EventHandler(this.cbxRejectAllUpcoming_CheckedChanged);
 			// 
-			// BrokerMockSettingsEditor
+			// BrokerMockEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -172,12 +176,12 @@ namespace Sq1.Adapters.QuikMock {
 			this.Controls.Add(this.txtRejectFirstNOrders);
 			this.Controls.Add(this.lblRejectFirstNOrders);
 			this.Location = new System.Drawing.Point(5, 5);
-			this.Name = "BrokerMockSettingsEditor";
+			this.Name = "BrokerMockEditor";
 			this.Size = new System.Drawing.Size(280, 138);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
-        }
+		}
         protected override void Dispose(bool disposing) {
             if (disposing && (components != null)) {
                 components.Dispose();

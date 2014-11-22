@@ -65,7 +65,7 @@
           "IntraBarSerno": 39,
           "AbsnoPerSymbol": 39,
           "LastDealBidOrAsk": 2,
-          "LocalTimeCreatedMillis": "2014-11-21T01:48:23.9786772-05:00",
+          "LocalTimeCreatedMillis": "2014-11-21T12:28:52.1975994-05:00",
           "ParentStreamingBar": null,
           "HasParentBar": false,
           "ParentBarIdent": "NO_PARENT_BAR",
@@ -101,7 +101,7 @@
   "MarketName": "MOCK",
   "Name": "Qmock",
   "StaticProviderName": "Mock StaticProvider",
-  "StreamingProviderName": "Mock StreamingProvider",
-  "BrokerProviderName": "Mock BrokerProvider",
-  "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
+  "StreamingProviderName": "QuikMock Streaming",
+  "BrokerProviderName": "QuikMock Broker",
+  "DataSourceAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
 }

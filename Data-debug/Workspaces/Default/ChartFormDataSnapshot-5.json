@@ -2,7 +2,7 @@
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
   "StrategyGuidJsonCheck": "7725f2be-42e2-495f-8d71-5ecd0c305d29",
   "StrategyNameJsonCheck": "TwoMAs",
-  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json",
+  "StrategyAbsPathJsonCheck": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json",
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
@@ -21,7 +21,7 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 213
+        "Distance": 243
       }
     },
     "ChartColorBackground": "White",
@@ -98,5 +98,5 @@
     "SpreadLabelColor": "DarkGray"
   },
   "ChartSerno": 5,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json], ScriptContextCurrentName[?Default?]"
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json], ScriptContextCurrentName[?Default?]"
 }

@@ -39,20 +39,9 @@ namespace Sq1.Adapters.Quik {
 		
 		public StreamingQuik() : base() {
 			base.Name = "Quik StreamingDummy";
-			base.Description = ""
-				+ "1. Сначала добейтесь, чтобы работал FinamStreamingDataProvider (галку выше)\n\n"
-				+ "2. QUIK: Текущая таблица параметров - редактировать (CTRL+E)\n"
-				+ "2.1. добавить инструмент RIU2\n"
-				+ "2.2. поля: Код класса, Код бумаги, Цена посл сделки, Время посл изм\n"
-				+ "2.3. Вывод через DDE сервер (CTRL+L): \n"
-				+ "2.3.1. DDE сервер: myWLD-RIU2, рабочая книга: quotes;\n"
-				+ "2.3.2. с заголовками столбцов = ДА, формальные заголовки = ДА;\n"
-				+ "3. WealthLab: создать в DataManager новый QuickStaticDataProvider DataSet, впечатать RIU2, открыть RIU2 чарт, нажать Stream в правом нижнем углу - запустится DDE сервер myWLD-RIU2\n"
-				+ "4. кнопка НАЧАТЬ ВЫВОД пункта 2 - рилтайм квоты RIU2 прольются в канал quotes и бары запрыгают в WealthLab\n"
-				+ "5. новый QuickStaticDataProvider DataSet GAZP в WealthLab создаст новый DDE сервер myWLD-GAZP с рабочей книгой quotes, останется создать новую таблицу параметров, настроить как в 1 и запустить экспорт DDE в сервер myWLD-GAZP книгу quotes. Enjoy!";
 			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingProvider;
 			base.PreferredStaticProviderName = "QuikStaticProvider";
-			this.DdeServerPrefix = "myWLD";
+			this.DdeServerPrefix = "SQ1";
 			this.DdeTopicQuotes = "quotes";
 			this.DdeTopicTrades = "trades";
 			this.DdeTopicPrefixDom = "dom";
@@ -60,7 +49,7 @@ namespace Sq1.Adapters.Quik {
 			StreamingDataSnapshotQuik throwAtEarlyStage = this.StreamingDataSnapshotQuik;
 		}
 		public override void Initialize(DataSource dataSource, IStatusReporter statusReporter) {
-			base.Name = "Quik StreamingProvider";
+			base.Name = "Quik Streaming";
 			base.Initialize(dataSource, statusReporter);
 			this.DdeChannels = new DdeChannels(this, this.StatusReporter);
 			this.Connect();

@@ -20,5 +20,5 @@
   "StaticProviderName": "STATIC_PROVIDER_NOT_INITIALIZED",
   "StreamingProviderName": "STREAMING_PROVIDER_NOT_INITIALIZED",
   "BrokerProviderName": "BROKER_PROVIDER_NOT_INITIALIZED",
-  "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\MOCK"
+  "DataSourceAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\MOCK"
 }

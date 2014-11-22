@@ -32,7 +32,7 @@ namespace Sq1.Adapters.QuikMock {
 		public override void Initialize(DataSource dataSource, StreamingProvider streamingProvider, OrderProcessor orderProcessor, IStatusReporter connectionStatus) {
 			base.Initialize(dataSource, streamingProvider, orderProcessor, connectionStatus);
 			base.QuikTerminal.ConnectDll();
-			base.Name = "Mock BrokerProvider";
+			base.Name = "QuikMock Broker";
 		}
 		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.BrokerEditorInitializeHelper(dataSourceEditor);

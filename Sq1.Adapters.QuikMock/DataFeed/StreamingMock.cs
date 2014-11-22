@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Reflection;
 
 using Newtonsoft.Json;
 using Sq1.Adapters.Quik;
@@ -71,7 +70,7 @@ namespace Sq1.Adapters.QuikMock {
 		}
 		public override void Initialize(DataSource dataSource, IStatusReporter statusReporter) {
 			base.Initialize(dataSource, statusReporter);
-			base.Name = "Mock StreamingProvider";
+			base.Name = "QuikMock Streaming";
 		}
 		public override void Connect() {
 			if (base.IsConnected == true) return;

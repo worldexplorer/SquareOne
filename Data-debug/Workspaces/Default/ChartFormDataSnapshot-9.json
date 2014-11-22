@@ -18,10 +18,10 @@
     },
     "DataRange": {
       "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
-      "Range": 1,
+      "Range": 0,
       "StartDate": "0001-01-01T00:00:00",
       "EndDate": "9999-12-31T23:59:59.9999999",
-      "RecentBars": 500,
+      "RecentBars": 0,
       "RecentTimeunits": 0
     },
     "IsStreamingTriggeringScript": false,
@@ -45,7 +45,7 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 213
+        "Distance": 219
       }
     },
     "ChartColorBackground": "White",
