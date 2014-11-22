@@ -90,17 +90,6 @@
     <Compile Include="DataFeed\Dde\XlDde\XlRowParsed.cs" />
     <Compile Include="DataFeed\Dde\XlDde\XlTable.cs" />
     <Compile Include="DataFeed\QuoteQuik.cs" />
-    <Compile Include="DataFeed\StaticQuikEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DataFeed\StaticQuik.cs" />
-    <Compile Include="DataFeed\StaticQuikEditor.Designer.cs">
-      <DependentUpon>StaticQuikEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DataFeed\StaticQuikEditor.EventConsumer.cs">
-      <DependentUpon>StaticQuikEditor.cs</DependentUpon>
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="DataFeed\StreamingDataSnapshotQuik.cs" />
     <Compile Include="DataFeed\StreamingQuikEditor.cs">
       <SubType>UserControl</SubType>
@@ -150,9 +139,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DataFeed\StaticQuikEditor.resx">
-      <DependentUpon>StaticQuikEditor.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="DataFeed\StreamingQuikEditor.resx">
       <DependentUpon>StreamingQuikEditor.cs</DependentUpon>
     </EmbeddedResource>

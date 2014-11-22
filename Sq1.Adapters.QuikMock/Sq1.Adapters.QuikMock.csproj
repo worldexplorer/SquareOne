@@ -53,7 +53,6 @@
   <ItemGroup>
     <Compile Include="DataFeed\Dde\DdeChannelLastQuoteMock.cs" />
     <Compile Include="DataFeed\Dde\DdeChannelsMock.cs" />
-    <Compile Include="DataFeed\StaticMock.cs" />
     <Compile Include="DataFeed\StreamingMockEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

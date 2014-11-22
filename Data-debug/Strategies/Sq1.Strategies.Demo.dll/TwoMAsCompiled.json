@@ -70,7 +70,7 @@
         "RecentBars": 500,
         "RecentTimeunits": 0
       },
-      "IsStreamingTriggeringScript": false,
+      "IsStreamingTriggeringScript": true,
       "ShowRangeBar": false,
       "IsStreaming": true,
       "ScriptParametersById": {

@@ -13,15 +13,15 @@
     "GutterBottomDateFormatYearly": "yyyy",
     "MultiSplitterPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "Volume": {
+      "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0
       },
-      "Price": {
+      "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 38
+        "Distance": 281
       }
     },
     "ChartColorBackground": "White",
@@ -59,7 +59,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 40,
+    "ScrollPositionAtBarIndex": 67,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,

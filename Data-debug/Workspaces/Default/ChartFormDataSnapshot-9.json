@@ -45,7 +45,7 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 243
+        "Distance": 265
       }
     },
     "ChartColorBackground": "White",
@@ -83,7 +83,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 32,
+    "ScrollPositionAtBarIndex": 56,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
