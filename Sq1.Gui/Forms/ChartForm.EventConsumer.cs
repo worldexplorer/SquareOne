@@ -52,7 +52,7 @@ namespace Sq1.Gui.Forms {
 				} else {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStop();
 				}
-				this.PopulateBtnStreamingClickedAndText();
+				this.PopulateBtnStreamingTriggersScriptAfterBarsLoaded();
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
 				//WHO_ELSE_NEEDS_IT? this.RaiseStreamingButtonStateChanged();
 				this.PropagateSelectorsDisabledIfStreamingForCurrentChart();
@@ -298,24 +298,29 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException("mnitlbSpreadGeneratorPct_UserTyped()", ex);
 			}
 		}
-		void mniStreamingOn_Click(object sender, EventArgs e) {
+		void mniSubscribedToStreamingProviderQuotesBars_Click(object sender, EventArgs e) {
 			try {
-				if (this.mniStreamingOn.Checked == false) {
-					this.mniStreamingOn.BackColor = Color.LightSalmon;
+				if (this.mniSubscribedToStreamingProviderQuotesBars.Checked == false) {
+					this.mniSubscribedToStreamingProviderQuotesBars.BackColor = Color.LightSalmon;
 					this.DdbBars.BackColor = Color.LightSalmon;
 				} else {
-					this.mniStreamingOn.BackColor = SystemColors.Control;
+					this.mniSubscribedToStreamingProviderQuotesBars.BackColor = SystemColors.Control;
 					this.DdbBars.BackColor = SystemColors.Control;
 				}
 
-				if (this.mniStreamingOn.Checked) {
-					this.ChartFormManager.ChartStreamingConsumer.StreamingStart();
+				string reason = "mniSubscribedToStreamingProviderQuotesBars.Checked[" + this.mniSubscribedToStreamingProviderQuotesBars.Checked + "]";
+				if (this.mniSubscribedToStreamingProviderQuotesBars.Checked) {
+					this.ChartFormManager.ChartStreamingConsumer.StreamingUnsubscribe(reason);
 				} else {
-					this.ChartFormManager.ChartStreamingConsumer.StreamingStop();
+					this.ChartFormManager.ChartStreamingConsumer.StreamingSubscribe(reason);
 				}
+
 			} catch (Exception ex) {
 				Assembler.PopupException("mniRedrawChartOnEachQuote_Click()", ex);
 			}
+		}
+		void TsiProgressBarETA_Click(object sender, EventArgs e) {
+			this.ChartFormManager.Executor.Backtester.AbortRunningBacktestWaitAborted("Backtest Aborted by clicking on progress bar");
 		}
 	}
 }

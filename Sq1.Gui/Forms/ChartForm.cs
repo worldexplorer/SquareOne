@@ -119,19 +119,21 @@ namespace Sq1.Gui.Forms {
 			}
 			this.btnStreamingTriggersScript.Text = sb.ToString();
 		}
-		public void PopulateBtnStreamingClickedAndText() {
-			bool streamingNow = this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming;
-			if (streamingNow) {
-				this.mniBacktestOnSelectorsChange.Enabled = false;
-				this.mniBacktestOnDataSourceSaved.Enabled = false;
-				this.mniBacktestNow.Enabled = false;
-				this.btnStrategyEmittingOrders.Enabled = true;
-			} else {
-				this.mniBacktestOnSelectorsChange.Enabled = true;
-				this.mniBacktestOnDataSourceSaved.Enabled = true;
-				this.mniBacktestNow.Enabled = true;
-				this.btnStrategyEmittingOrders.Enabled = false;
-			}
+		public void PopulateBtnStreamingTriggersScriptAfterBarsLoaded() {
+			//v1: IDEALLY_BACKTESTS_ARE_POSSIBLE_EVEN_DURING_STREAMING_USING_PUT_ON_HOLD
+//			bool streamingNow = this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming;
+//			if (streamingNow) {
+//				this.mniBacktestOnSelectorsChange.Enabled = false;
+//				this.mniBacktestOnDataSourceSaved.Enabled = false;
+//				this.mniBacktestNow.Enabled = false;
+//				this.btnStrategyEmittingOrders.Enabled = true;
+//			} else {
+//				this.mniBacktestOnSelectorsChange.Enabled = true;
+//				this.mniBacktestOnDataSourceSaved.Enabled = true;
+//				this.mniBacktestNow.Enabled = true;
+//				this.btnStrategyEmittingOrders.Enabled = false;
+//			}
+			
 			if (this.ChartFormManager.Executor.DataSource.StreamingProvider == null) {
 				this.btnStreamingTriggersScript.Text = "DataSource: [" + StreamingProvider.NO_STREAMING_PROVIDER + "]";
 				this.btnStreamingTriggersScript.Enabled = false;
@@ -139,6 +141,9 @@ namespace Sq1.Gui.Forms {
 				this.btnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent + " 00:00:00.000"; //+:: 00:00:00.000";
 				this.btnStreamingTriggersScript.Enabled = true;
 			}
+
+			// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
+			this.mniSubscribedToStreamingProviderQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingProvider.Name + "]";
 		}
 		public void AbsorbContextBarsToGui() {
 			if (base.InvokeRequired) {
@@ -173,12 +178,12 @@ namespace Sq1.Gui.Forms {
 			// WAS_METHOD_PARAMETER_BUT_ACCESSIBLE_LIKE_THIS__NULL_CHECK_DONE_UPSTACK
 			ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
 
-			this.mniStreamingOn.Checked = ctxChart.IsStreaming;
-			if (this.mniStreamingOn.Checked == false) {
-				this.mniStreamingOn.BackColor = Color.LightSalmon;
+			this.mniSubscribedToStreamingProviderQuotesBars.Checked = ctxChart.IsStreaming;
+			if (this.mniSubscribedToStreamingProviderQuotesBars.Checked == false) {
+				this.mniSubscribedToStreamingProviderQuotesBars.BackColor = Color.LightSalmon;
 				this.DdbBars.BackColor = Color.LightSalmon;
 			} else {
-				this.mniStreamingOn.BackColor = SystemColors.Control;
+				this.mniSubscribedToStreamingProviderQuotesBars.BackColor = SystemColors.Control;
 				this.DdbBars.BackColor = SystemColors.Control;
 			}
 			
@@ -288,9 +293,6 @@ namespace Sq1.Gui.Forms {
 				this.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 			}
 			this.PropagateSelectorsDisabledIfStreamingForCurrentChart();
-		}
-		void TsiProgressBarETAClick(object sender, EventArgs e) {
-			this.ChartFormManager.Executor.Backtester.AbortRunningBacktestWaitAborted("Backtest Aborted by clicking on progress bar");
 		}
 		public void PropagateSelectorsDisabledIfStreamingForCurrentChart() {
 			Strategy strategyClicked = this.ChartFormManager.Strategy;

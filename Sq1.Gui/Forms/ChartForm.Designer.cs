@@ -40,7 +40,7 @@ namespace Sq1.Gui.Forms {
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.DdbBars = new System.Windows.Forms.ToolStripDropDownButton();
 			this.ctxBars = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.mniStreamingOn = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniSubscribedToStreamingProviderQuotesBars = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnitlbYearly = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mnitlbMonthly = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
@@ -301,7 +301,7 @@ namespace Sq1.Gui.Forms {
 			// ctxBars
 			// 
 			this.ctxBars.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniStreamingOn,
+            this.mniSubscribedToStreamingProviderQuotesBars,
             this.toolStripSeparator6,
             this.mnitlbYearly,
             this.mnitlbMonthly,
@@ -320,13 +320,13 @@ namespace Sq1.Gui.Forms {
 			// 
 			// mniStreamingOn
 			// 
-			this.mniStreamingOn.Checked = false;
-			this.mniStreamingOn.CheckOnClick = true;
-			this.mniStreamingOn.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.mniStreamingOn.Name = "mniStreamingOn";
-			this.mniStreamingOn.Size = new System.Drawing.Size(254, 22);
-			this.mniStreamingOn.Text = "Streaming On";
-			this.mniStreamingOn.Click += new System.EventHandler(this.mniStreamingOn_Click);
+			this.mniSubscribedToStreamingProviderQuotesBars.Checked = false;
+			this.mniSubscribedToStreamingProviderQuotesBars.CheckOnClick = true;
+			this.mniSubscribedToStreamingProviderQuotesBars.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.mniSubscribedToStreamingProviderQuotesBars.Name = "mniSubscribedToStreamingProviderQuotesBars";
+			this.mniSubscribedToStreamingProviderQuotesBars.Size = new System.Drawing.Size(254, 22);
+			this.mniSubscribedToStreamingProviderQuotesBars.Text = "Subscribed to [StreamingDerived]";
+			this.mniSubscribedToStreamingProviderQuotesBars.Click += new System.EventHandler(this.mniSubscribedToStreamingProviderQuotesBars_Click);
 			// 
 			// toolStripSeparator6
 			// 
@@ -482,7 +482,7 @@ namespace Sq1.Gui.Forms {
 			this.TsiProgressBarETA.Size = new System.Drawing.Size(200, 18);
 			this.TsiProgressBarETA.Text = "TsiProgressBarETA";
 			this.TsiProgressBarETA.Visible = false;
-			this.TsiProgressBarETA.Click += new System.EventHandler(this.TsiProgressBarETAClick);
+			this.TsiProgressBarETA.Click += new System.EventHandler(this.TsiProgressBarETA_Click);
 			// 
 			// btnStreamingTriggersScript
 			// 
@@ -569,7 +569,7 @@ namespace Sq1.Gui.Forms {
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripMenuItem mniFillOutsideQuoteSpreadParanoidCheckThrow;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mnitlbSpreadGeneratorPct;
-		private System.Windows.Forms.ToolStripMenuItem mniStreamingOn;
+		private System.Windows.Forms.ToolStripMenuItem mniSubscribedToStreamingProviderQuotesBars;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripMenuItem mniBarsStoredScaleInterval;
