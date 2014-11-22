@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
-using Sq1.Core.Static;
-using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Streaming {
 	public class SymbolScaleDistributionChannel {
@@ -215,85 +213,52 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		public string SymbolScaleInterval { get { return this.Symbol + "_" + this.ScaleInterval; } }
-		public string ConsumersQuoteAsString { get {
-				string ret = "";
-				lock (lockConsumersQuote) {
+		public string ConsumersQuoteAsString { get { lock (lockConsumersQuote) {
+					string ret = "";
 					foreach (IStreamingConsumer consumer in this.consumersQuote) {
 						if (ret != "") ret += ", ";
 						ret += consumer.ToString();
 					}
-				}
-				return ret;
-			} }
-		public string ConsumersBarAsString { get {
-				string ret = "";
-				lock (lockConsumersBar) {
+					return ret;
+				} } }
+		public string ConsumersBarAsString { get { lock (lockConsumersBar) {
+					string ret = "";
 					foreach (IStreamingConsumer consumer in this.consumersBar) {
 						if (ret != "") ret += ", ";
 						ret += consumer.ToString();
 					}
-				}
-				return ret;
-			} }
-		public override string ToString() {
-			return this.SymbolScaleInterval + ":Quotes[" + ConsumersQuoteAsString + "],Bars[" + ConsumersBarAsString + "]";
-		}
+					return ret;
+				} } }
+		public override string ToString() { return this.SymbolScaleInterval + ":Quotes[" + ConsumersQuoteAsString + "],Bars[" + ConsumersBarAsString + "]"; }
 
-		public bool ConsumersQuoteContains(IStreamingConsumer consumer) {
-			lock (lockConsumersQuote) {
-				return this.consumersQuote.Contains(consumer);
-			}
-		}
-		public void ConsumersQuoteAdd(IStreamingConsumer consumer) {
-			lock (lockConsumersQuote) {
+		public bool ConsumersQuoteContains(IStreamingConsumer consumer) { lock (lockConsumersQuote) { return this.consumersQuote.Contains(consumer); } }
+		public void ConsumersQuoteAdd(IStreamingConsumer consumer) { lock (lockConsumersQuote) {
 				this.consumersQuote.Add(consumer);
 				if (earlyBinders.ContainsKey(consumer) == false) {
 					earlyBinders.Add(consumer, new StreamingEarlyBinder(this.StreamingBarFactoryUnattached, consumer));
 				}
-			}
-		}
-		public void ConsumersQuoteRemove(IStreamingConsumer consumer) {
-			lock (lockConsumersQuote) {
+			} }
+		public void ConsumersQuoteRemove(IStreamingConsumer consumer) { lock (lockConsumersQuote) {
 				this.consumersQuote.Remove(consumer);
 				if (earlyBinders.ContainsKey(consumer) && this.consumersBar.Contains(consumer) == false) {
 					earlyBinders.Remove(consumer);
 				}
-			}
-		}
-		public int ConsumersQuoteCount { get {
-				lock (lockConsumersQuote) {
-					return this.consumersQuote.Count;
-				}
 			} }
+		public int ConsumersQuoteCount { get { lock (lockConsumersQuote) { return this.consumersQuote.Count; } } }
 
-		public bool ConsumersBarContains(IStreamingConsumer consumer) {
-			lock (lockConsumersBar) {
-				return this.consumersBar.Contains(consumer);
-			}
-		}
-		public void ConsumersBarAdd(IStreamingConsumer consumer) {
-			lock (lockConsumersBar) {
+		public bool ConsumersBarContains(IStreamingConsumer consumer) { lock (lockConsumersBar) { return this.consumersBar.Contains(consumer); } }
+		public void ConsumersBarAdd(IStreamingConsumer consumer) { lock (lockConsumersBar) {
 				this.consumersBar.Add(consumer);
 				if (earlyBinders.ContainsKey(consumer) == false) {
 					earlyBinders.Add(consumer, new StreamingEarlyBinder(this.StreamingBarFactoryUnattached, consumer));
 				}
-			}
-		}
-		public void ConsumersBarRemove(IStreamingConsumer consumer) {
-			lock (lockConsumersBar) {
-				if (consumer is StaticProvider) {
-					int a = 1;
-				}
+			} }
+		public void ConsumersBarRemove(IStreamingConsumer consumer) { lock (lockConsumersBar) {
 				this.consumersBar.Remove(consumer);
 				if (earlyBinders.ContainsKey(consumer) && this.consumersQuote.Contains(consumer) == false) {
 					earlyBinders.Remove(consumer);
 				}
-			}
-		}
-		public int ConsumersBarCount { get {
-				lock (lockConsumersBar) {
-					return this.consumersBar.Count;
-				}
 			} }
+		public int ConsumersBarCount { get { lock (lockConsumersBar) { return this.consumersBar.Count; } } }
 	}
 }

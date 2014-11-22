@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 using Sq1.Core.DataTypes;
-using Sq1.Core.Static;
 
 namespace Sq1.Core.Streaming {
 	public class DataDistributor {
@@ -90,9 +88,6 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			if (consumer is StaticProvider) {
-				int a = 1;
-			}
 			lock (lockConsumersBySymbol) {
 				if (this.DistributionChannels.ContainsKey(symbol) == false) {
 					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval);
@@ -121,9 +116,6 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		public void ConsumerBarUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			if (consumer is StaticProvider) {
-				int a = 1;
-			}
 			lock (lockConsumersBySymbol) {
 				if (this.DistributionChannels.ContainsKey(symbol) == false) {
 					Assembler.PopupException("Can't unregister BarConsumer [" + consumer + "]: symbol[" + symbol + "] is not registered for any consumers; returning");

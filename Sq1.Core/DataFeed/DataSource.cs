@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using Sq1.Core.Broker;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Repositories;
-using Sq1.Core.Static;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 
@@ -25,7 +24,6 @@ namespace Sq1.Core.DataFeed {
 				return stringBuilder.ToString();
 			} }
 		[JsonProperty]	public BarScaleInterval ScaleInterval;
-		[JsonProperty]	public StaticProvider StaticProvider;
 		[JsonProperty]	public StreamingProvider StreamingProvider;
 		[JsonProperty]	public BrokerProvider BrokerProvider;
 		[JsonProperty]	public string MarketName;
@@ -35,11 +33,6 @@ namespace Sq1.Core.DataFeed {
 			set {
 				this.marketInfo = value;
 				MarketName = value.Name;
-			} }
-		[JsonProperty]	public string StaticProviderName { get {
-				if (StaticProvider == null) return "STATIC_PROVIDER_NOT_INITIALIZED";
-				//return staticProvider.GetType().Name;
-				return StaticProvider.Name;
 			} }
 		[JsonProperty]	public string StreamingProviderName { get {
 				if (StreamingProvider == null) return "STREAMING_PROVIDER_NOT_INITIALIZED";
@@ -97,9 +90,6 @@ namespace Sq1.Core.DataFeed {
 			//this.BarsFolderPerst = new BarsFolder(this.FolderForBarDataStore, this.ScaleInterval, true, "dts");
 
 			// works only for deserialized providers; for a newDataSource they are NULLs to be assigned in DataSourceEditor 
-			if (this.StaticProvider != null) {
-				this.StaticProvider.Initialize(this, dataSourcesAbspath);
-			}
 			if (this.StreamingProvider != null) {
 				this.StreamingProvider.Initialize(this, statusReporter);
 				if (this.BrokerProvider != null) {
@@ -109,7 +99,7 @@ namespace Sq1.Core.DataFeed {
 		}
 		public override string ToString() {
 			return Name + "(" + this.ScaleInterval.ToString() + ")" + SymbolsCSV
-				+ " {" + StaticProviderName + ":" + StreamingProviderName + ":" + BrokerProviderName + "}";
+				+ " {" + StreamingProviderName + ":" + BrokerProviderName + "}";
 		}
 
 		// internal => use only RepositoryJsonDataSource.SymbolAdd() which will notify subscribers about add operation

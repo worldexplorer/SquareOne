@@ -4,10 +4,8 @@ using System.Windows.Forms;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Gui.Singletons;
-using Sq1.Widgets;
 using Sq1.Widgets.RangeBar;
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -15,10 +13,10 @@ namespace Sq1.Gui.Forms {
 	public class ChartFormInterformEventsConsumer {
 		ChartFormManager chartFormManager;
 
-		public ChartFormInterformEventsConsumer(ChartFormManager chartFormManager) {
+		public ChartFormInterformEventsConsumer(ChartFormManager chartFormManager, ChartForm chartFormNotAssignedToManagerInTheFactoryYet = null) {
 			this.chartFormManager = chartFormManager;
-			this.chartFormManager.ChartForm.FormClosing += ChartForm_FormClosing;
-			this.chartFormManager.ChartForm.Load += ChartForm_Load;
+			chartFormNotAssignedToManagerInTheFactoryYet.FormClosing += ChartForm_FormClosing;
+			chartFormNotAssignedToManagerInTheFactoryYet.Load += ChartForm_Load;
 		}
 		void ChartForm_Load(object sender, EventArgs e) {
 			// ON_DESERIALIZATION_BACKTESTER_LAUNCHES_FASTER_THAN_CHART_FORM_GETS_LOADED; see ON_REQUESTING_ABORT_TASK_DIES_WITHOUT_INVOKING_CONTINUE_WITH

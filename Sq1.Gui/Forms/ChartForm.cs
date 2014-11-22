@@ -316,14 +316,16 @@ namespace Sq1.Gui.Forms {
 		}
 
 		public void Initialize(bool containsStrategy, bool strategyActivatedFromDll = false) {
-			//this.CtxReporters.Enabled = containsStrategy;
-			this.DdbReporters.Enabled = containsStrategy;
 			this.DdbStrategy.Enabled = containsStrategy;
 			this.DdbBacktest.Enabled = containsStrategy;
 			this.btnStrategyEmittingOrders.Enabled = containsStrategy;
 
 			this.MniShowSourceCodeEditor.Enabled = containsStrategy;
 			if (containsStrategy) this.MniShowSourceCodeEditor.Enabled = !strategyActivatedFromDll;
+		}
+		public void AppendReportersMenuItems(ToolStripItem[] toolStripItems) {
+			this.ctxStrategy.Items.Add(this.TssReportersBelowMe);	// if not added then we didn't initialize!
+			this.ctxStrategy.Items.AddRange(toolStripItems);
 		}
 	}
 }

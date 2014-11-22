@@ -576,5 +576,18 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.dataSnapshot.StrategyFoldersExpanded.Remove(folderCollapsed);
 			this.dataSnapshotSerializer.Serialize();
 		}
+		void mniStrategyOpenWith_Click(object sender, System.EventArgs e) {
+			string mniNameToFindDefaultScriptContent = PREFIX_SCRIPT_CONTEXT_MNI_NAME + ContextScript.DEFAULT_NAME;
+			ToolStripItem[] found = this.mniStrategyOpenWith.DropDownItems.Find(mniNameToFindDefaultScriptContent, false);
+			if (found.Length <= 0) {
+				string msg = "FAILED_TO_FIND_DEFAULT_SCRIPT_CONTEXT_AMONG_SUBMENU_ITEMS_TO_OPEN_REPLACE_IN_CURRENT_CHART"
+					+ " mniStrategyOpenWith.DropDownItems.Find(" + mniNameToFindDefaultScriptContent + ").Length[" + found + "] <= 0 //mniStrategyOpenWith_Click()";
+				Assembler.PopupException(msg);
+				return;
+			}
+			ToolStripMenuItem mniClicked = found[0] as ToolStripMenuItem;
+			string msig = "REPLACE_CURRENT_CHART_WITH_DEFAULT_mniStrategyOpenWith_Click";
+			this.RaiseOnStrategyOpenSavedClicked(msig, mniClicked);
+		}
 	}
 }

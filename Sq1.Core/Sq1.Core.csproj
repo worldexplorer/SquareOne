@@ -150,7 +150,6 @@
     <Compile Include="Repositories\RepositoryDllJsonStrategy.cs" />
     <Compile Include="Repositories\RepositoryDllReporters.cs" />
     <Compile Include="Repositories\RepositoryDllScanner.cs" />
-    <Compile Include="Repositories\RepositoryDllStaticProvider.cs" />
     <Compile Include="Repositories\RepositoryDllStreamingProvider.cs" />
     <Compile Include="Repositories\RepositoryFoldersNoJson.cs" />
     <Compile Include="Repositories\RepositoryJsonDataSource.cs" />
@@ -282,7 +281,6 @@
     <Compile Include="Execution\PositionSizeMode.cs" />
     <Compile Include="DataTypes\Quote.cs" />
     <Compile Include="DataTypes\SecurityType.cs" />
-    <Compile Include="Static\StaticProvider.cs" />
     <Compile Include="StrategyBase\Strategy.cs" />
     <Compile Include="StrategyBase\ScriptParameter.cs" />
     <Compile Include="DataTypes\SymbolInfo.cs" />

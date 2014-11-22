@@ -6,7 +6,6 @@ using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Static;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 
@@ -17,7 +16,6 @@ namespace Sq1.Widgets.DataSourceEditor {
 				if (this.ds == null) return "NO_DATASOURCE_LOADED_FOR_EDITING";
 				return this.ds.Name;
 			} }
-		public Dictionary<string, StaticProvider> StaticProvidersByName { get; private set; }
 		public Dictionary<string, StreamingProvider> StreamingProvidersByName { get; private set; }
 		public Dictionary<string, BrokerProvider> BrokerProvidersByName { get; private set; }
 		public string symbolsDefault;
@@ -30,10 +28,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 		}
 
 		public void InitializeProviders(
-				Dictionary<string, StaticProvider> staticProvidersByName,
 				Dictionary<string, StreamingProvider> streamingProvidersByName,
 				Dictionary<string, BrokerProvider> brokerProvidersByName) {
-			this.StaticProvidersByName = staticProvidersByName;
 			this.StreamingProvidersByName = streamingProvidersByName;
 			this.BrokerProvidersByName = brokerProvidersByName;
 		}
@@ -57,8 +53,6 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.txtSymbols.Text = this.ds.SymbolsCSV;
 			this.PopulateScaleIntervalFromDataSource();
 			this.PopulateStaticStreamingBrokerListViewsFromDataSource();
-
-			if (this.ds.StaticProvider != null) HighlightStaticByName(this.ds.StaticProvider.GetType().Name);
 
 			if (this.ds.StreamingProvider != null) {
 				HighlightStreamingByName(this.ds.StreamingProvider.GetType().Name);
@@ -96,33 +90,6 @@ namespace Sq1.Widgets.DataSourceEditor {
 				return;
 			}
 			
-			this.lvStaticProviders.Items.Clear();
-			foreach (StaticProvider staticProviderPrototype in StaticProvidersByName.Values) {
-				try {
-					StaticProvider staticProviderEditingInstance = null;	// staticProviderPrototype;
-					if (ds.StaticProvider != null && ds.StaticProvider.GetType().FullName == staticProviderPrototype.GetType().FullName) {
-						staticProviderEditingInstance = ds.StaticProvider;
-					}
-					// I still want to get a new instance, so if user choses it, I'll Initialize() it and put into serialize-able DataSource
-					if (staticProviderEditingInstance == null) {
-						staticProviderEditingInstance = (StaticProvider)Activator.CreateInstance(staticProviderPrototype.GetType());
-					}
-					ListViewItem lvi = new ListViewItem() {
-						Text = staticProviderEditingInstance.Name,
-						Name = staticProviderEditingInstance.GetType().Name,
-						Tag = staticProviderEditingInstance
-					};
-					if (staticProviderEditingInstance.Icon != null) {
-						this.imglStaticProviders.Images.Add(staticProviderEditingInstance.Icon);
-						lvi.ImageIndex = this.imglStaticProviders.Images.Count - 1;
-					}
-					this.lvStaticProviders.Items.Add(lvi);
-				} catch (Exception e) {
-					this.assemblerInstance.StatusReporter.PopupException(null, e);
-					return;
-				}
-			}
-
 			this.lvStreamingProviders.Items.Clear();
 			ListViewItem lviAbsentStreaming = new ListViewItem() {
 				Text = StreamingProvider.NO_STREAMING_PROVIDER,
@@ -212,16 +179,6 @@ namespace Sq1.Widgets.DataSourceEditor {
 					return;
 				}
 			}
-		}
-		public void HighlightStaticByName(string staticName) {
-			int staticIndex = this.lvStaticProviders.Items.IndexOfKey(staticName);
-			if (staticIndex < 0) {
-				string msg = "staticName[" + staticName + "] not found in this.lvStaticProviders";
-				this.assemblerInstance.StatusReporter.PopupException(msg);
-				return;
-			}
-			this.lvStaticProviders.Items[staticIndex].Selected = true;
-			//lvStaticProviders_SelectedIndexChanged(null, null);
 		}
 		public void HighlightStreamingByName(string streamingName) {
 			int streamingIndex = this.lvStreamingProviders.Items.IndexOfKey(streamingName);
