@@ -132,7 +132,7 @@ namespace Sq1.Charting {
 				return ret;
 			} }
 		
-		public override int ValueLastAvailableIndexMinusOneUnsafe { get {
+		public override int ValueIndexLastAvailableMinusOneUnsafe { get {
 				if (this.Indicator == null) return -1; 
 				if (this.Indicator.OwnValuesCalculated == null) return -1; 
 				return this.Indicator.OwnValuesCalculated.Count - 1; 

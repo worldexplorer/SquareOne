@@ -75,6 +75,8 @@ namespace Sq1.Charting {
 			this.panelPrice.Initialize(this);
 			this.panelVolume.Initialize(this);
 
+			BarIndexMouseIsOverNow = -1;	//if I didn't mouseover after app start, streaming values don't show up
+
 			#region 1/2 making ChartForm editable in Designer; I left that cumbersome because haven't finished investigation how to make ChartForm show ChartControl
 			// this.Initialize()_BELOW_MAKES_DESIGNER_THROW_DUE_TO_ASSEMBLER_NON_INSTANTIATED
 			return;

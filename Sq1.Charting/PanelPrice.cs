@@ -552,7 +552,7 @@ namespace Sq1.Charting {
 			}
 		}
 		
-		public override int ValueLastAvailableIndexMinusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }
+		public override int ValueIndexLastAvailableMinusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }
 		public override double ValueGetNaNunsafe(int barIndex) {
 			if (barIndex < 0) return double.NaN;
 			if (barIndex >= base.ChartControl.Bars.Count) return double.NaN; 

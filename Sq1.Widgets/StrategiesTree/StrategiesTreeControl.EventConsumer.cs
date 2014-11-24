@@ -497,8 +497,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			}
 			this.tree.SetObjects(strategyRepository.AllFoldersAvailable);
 		}
-
-		// inline search BEGIN
+		#region inline search, taken from ObjectListViewDemo
 		void txtFilterSymbol_TextChanged(object sender, EventArgs e) {
 			this.btnClear.Enabled = string.IsNullOrEmpty(this.textBoxFilterTree.Text) ? false : true;
 			this.TimedFilter(this.tree, this.textBoxFilterTree.Text);
@@ -554,12 +553,10 @@ namespace Sq1.Widgets.StrategiesTree {
 				this.toolTip1.SetToolTip(this.textBoxFilterTree, msg);
 			}
 		}
-
 		void btnClear_Click(object sender, EventArgs e) {
 			this.textBoxFilterTree.Text = "";
 		}
-		// inline search END
-
+		#endregion
 		void tree_Expanded(object sender, TreeBranchExpandedEventArgs e) {
 			if (this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized) return;
 			if (this.dataSnapshot == null) return;
@@ -588,6 +585,25 @@ namespace Sq1.Widgets.StrategiesTree {
 			ToolStripMenuItem mniClicked = found[0] as ToolStripMenuItem;
 			string msig = "REPLACE_CURRENT_CHART_WITH_DEFAULT_mniStrategyOpenWith_Click";
 			this.RaiseOnStrategyOpenSavedClicked(msig, mniClicked);
+		}
+		void mniShowHeader_Click(object sender, EventArgs e) {
+			//v1 ColumnHeaderStyle newStyle = this.tree.HeaderStyle == ColumnHeaderStyle.None ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
+			try {
+				this.dataSnapshot.ShowHeader = this.mniShowHeader.Checked;
+				this.dataSnapshotSerializer.Serialize();
+				this.tree.HeaderStyle = this.dataSnapshot.ShowHeader ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
+			} catch (Exception ex) {
+				Assembler.PopupException("mniShowHeader_Click", ex);
+			}
+		}
+		void mniShowSearchBar_Click (object sender, EventArgs e){
+			try {
+				this.dataSnapshot.ShowSearchBar = this.mniShowSearchBar.Checked;
+				this.dataSnapshotSerializer.Serialize();
+				this.tableLayoutPanel1.Visible = this.dataSnapshot.ShowSearchBar;
+			} catch (Exception ex) {
+				Assembler.PopupException("mniShowHeader_Click", ex);
+			}
 		}
 	}
 }

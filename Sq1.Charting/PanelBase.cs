@@ -38,7 +38,7 @@ namespace Sq1.Charting {
 		// USE_CACHED_VARIABLE_INSTEAD [Browsable(false)] public virtual double VisibleRange { get { return this.VisibleMax - this.VisibleMin; } }
 		[Browsable(false)] public virtual double FirstNonNanBetweenLeftRight { get {
 				double ret = double.NaN;
-				if (this.VisibleBarRight_cached > this.ValueLastAvailableIndexMinusOneUnsafe) return ret;
+				if (this.VisibleBarRight_cached > this.ValueIndexLastAvailableMinusOneUnsafe) return ret;
 				for (int i=this.VisibleBarLeft_cached; i<this.VisibleBarRight_cached; i++) {
 					ret = this.ValueGetNaNunsafe(i);
 					if (double.IsNaN(ret)) continue;
@@ -50,7 +50,7 @@ namespace Sq1.Charting {
 		// PanelPrice		must return bars[barIndexMouseOvered].Close
 		// PanelVolume		must return bars[barIndexMouseOvered].Volume
 		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
-		public virtual double PanelValueForBarCurrentNaNunsafe { get {
+		public virtual double PanelValueForBarMouseOveredNaNunsafe { get {
 				double ret = double.NaN;
 				if (this.ChartControl.BarIndexMouseIsOverNow == -1) return ret;
 				ret = this.ValueGetNaNunsafe(this.ChartControl.BarIndexMouseIsOverNow);
@@ -63,7 +63,7 @@ namespace Sq1.Charting {
 					Debugger.Break();
 					return ret;
 				}
-				ret = this.VisibleBarRight_cached <= this.ValueLastAvailableIndexMinusOneUnsafe;
+				ret = this.VisibleBarRight_cached <= this.ValueIndexLastAvailableMinusOneUnsafe;
 				return ret;
 			} }
 		public virtual double ValueGetNaNunsafe(int barIndex) {
@@ -72,7 +72,7 @@ namespace Sq1.Charting {
 		// REASON_TO_EXIST: for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
 		public virtual int Decimals { get { Debugger.Break(); throw new NotImplementedException(); } }
 		public string Format { get { return "N" + this.Decimals; } }
-		public virtual int ValueLastAvailableIndexMinusOneUnsafe { get {
+		public virtual int ValueIndexLastAvailableMinusOneUnsafe { get {
 				throw new NotImplementedException();
 			} }
 		
@@ -364,7 +364,7 @@ namespace Sq1.Charting {
 					Debugger.Break();
 				}
 				//v1
-				if (this.VisibleBarRight_cached > this.ValueLastAvailableIndexMinusOneUnsafe) {
+				if (this.VisibleBarRight_cached > this.ValueIndexLastAvailableMinusOneUnsafe) {
 					return;
 				}
 				//v2

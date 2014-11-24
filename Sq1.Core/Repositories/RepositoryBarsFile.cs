@@ -7,7 +7,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Repositories {
 	public class RepositoryBarsFile {
-		public RepositoryBarsSameScaleInterval BarsRepository { get; protected set; }
+		RepositoryBarsSameScaleInterval barsRepository; // WAS_PUBLIC_EARLIER{ get; protected set; }
 		public string Symbol { get; protected set; }
 		public string Abspath { get; protected set; }
 		public string Relpath { get { return RepositoryBarsFile.GetRelpathFromEnd(this.Abspath, 5); } }
@@ -23,9 +23,9 @@ namespace Sq1.Core.Repositories {
 		
 		public RepositoryBarsFile(RepositoryBarsSameScaleInterval barsFolder, string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
 			sequentialLock = new object();
-			this.BarsRepository = barsFolder;
+			this.barsRepository = barsFolder;
 			this.Symbol = symbol;
-			this.Abspath = this.BarsRepository.AbspathForSymbol(this.Symbol, throwIfDoesntExist, createIfDoesntExist);
+			this.Abspath = this.barsRepository.AbspathForSymbol(this.Symbol, throwIfDoesntExist, createIfDoesntExist);
 		}
 
 		public Bars BarsLoadAllThreadSafe() {
@@ -38,7 +38,7 @@ namespace Sq1.Core.Repositories {
 					return null;
 //					return bars;
 				}
-				bars = this.BarsLoadAll();
+				bars = this.barsLoadAll();
 			}
 			return bars;
 		}
@@ -61,7 +61,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return bars;
 		}
-		public Bars BarsLoadAll() {
+		private Bars barsLoadAll() {
 			string msig = " BarsLoadAll(this.Abspath=[" + this.Abspath + "]): ";
 			Bars bars = null;
 			DateTime dateTime = DateTime.Now;
@@ -135,12 +135,12 @@ namespace Sq1.Core.Repositories {
 			//BARS_INITIALIZED_EMPTY if (bars.Count == 0) return 0;
 			int barsSaved = -1;
 			lock (this.sequentialLock) {
-				barsSaved = this.BarsSave(bars);
+				barsSaved = this.barsSave(bars);
 				//Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
 			}
 			return barsSaved;
 		}
-		int BarsSave(Bars bars) {
+		int barsSave(Bars bars) {
 			int barsSaved = 0;
 			FileStream fileStream = null;
 			try {
@@ -243,12 +243,12 @@ namespace Sq1.Core.Repositories {
 			//BARS_INITIALIZED_EMPTY if (bars.Count == 0) return 0;
 			int barsAppended = -1;
 			lock (this.sequentialLock) {
-				barsAppended = this.BarAppend(barLastFormed);
+				barsAppended = this.barAppend(barLastFormed);
 				//Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
 			}
 			return barsAppended;
 		}
-		protected int BarAppend(Bar barLastFormed) {
+		int barAppend(Bar barLastFormed) {
 			//v1
 			//Bars allBars = this.BarsLoadAllThreadSafe();
 			//if (allBars == null) {

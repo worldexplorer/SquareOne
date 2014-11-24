@@ -112,6 +112,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.mniDataSourceDelete.Text = "Delete [" + this.DataSourceSelected.Name + "]";
 			}
 		}
+		#region inline search, taken from ObjectListViewDemo
 		void txtFilterSymbol_TextChanged(object sender, EventArgs e) {
 			this.btnClear.Enabled = string.IsNullOrEmpty(textBoxFilterTree.Text) ? false : true;
 			this.TimedFilter(this.tree, textBoxFilterTree.Text);
@@ -170,7 +171,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		void btnClear_Click(object sender, EventArgs e) {
 			this.textBoxFilterTree.Text = "";
 		}
-
+		#endregion
 		void tree_Expanded(object sender, TreeBranchExpandedEventArgs e) {
 			if (this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized) return;
 			DataSource dataSourceExpanded = e.Model as DataSource;
@@ -302,6 +303,25 @@ namespace Sq1.Widgets.DataSourcesTree {
 			Cursor.Current = Cursors.WaitCursor;
 			this.populateDataSourcesIntoTreeListView();
 			Cursor.Current = Cursors.Arrow;
+		}
+		void mniShowHeader_Click(object sender, EventArgs e) {
+			//v1 ColumnHeaderStyle newStyle = this.tree.HeaderStyle == ColumnHeaderStyle.None ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
+			try {
+				this.dataSnapshot.ShowHeader = this.mniShowHeader.Checked;
+				this.dataSnapshotSerializer.Serialize();
+				this.tree.HeaderStyle = this.dataSnapshot.ShowHeader ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
+			} catch (Exception ex) {
+				Assembler.PopupException("mniShowHeader_Click", ex);
+			}
+		}
+		void mniShowSearchBar_Click (object sender, EventArgs e){
+			try {
+				this.dataSnapshot.ShowSearchBar = this.mniShowSearchBar.Checked;
+				this.dataSnapshotSerializer.Serialize();
+				this.tableLayoutPanel1.Visible = this.dataSnapshot.ShowSearchBar;
+			} catch (Exception ex) {
+				Assembler.PopupException("mniShowHeader_Click", ex);
+			}
 		}
 	}
 }

@@ -43,6 +43,18 @@ namespace Sq1.Strategies.Demo {
 			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming;
 			if (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;
 
+			if (this.MAslow.OwnValuesCalculated == null) {
+				string msg = "MAslow[" + this.MAslow + ".OwnValuesCalculate = null";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (this.MAslow.OwnValuesCalculated.Count <= barStaticFormed.ParentBarsIndex) {
+				string msg = "MAslow[" + this.MAslow + ".OwnValuesCalculate.Count[" + this.MAslow.OwnValuesCalculated.Count
+					+ "] >= barStaticFormed.ParentBarsIndex[" + barStaticFormed.ParentBarsIndex + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+
 			double maSlowThis = this.MAslow.OwnValuesCalculated[barStaticFormed.ParentBarsIndex];
 			double maSlowPrev = this.MAslow.OwnValuesCalculated[barStaticFormed.ParentBarsIndex - 1];
 
@@ -125,6 +137,12 @@ namespace Sq1.Strategies.Demo {
 				if (status != OnChartObjectOperationStatus.OnChartObjectJustCreated) {
 					Debugger.Break();
 				}
+			}
+
+			if (base.Executor.Backtester.BarsOriginal == null) {
+				string msg = "base.Executor.Backtester.BarsOriginal == null";
+				//Assembler.PopupException(msg + " //Script=" + this.ToString());
+				return;
 			}
 
 			if (base.Bars.Count == base.Executor.Backtester.BarsOriginal.Count) {

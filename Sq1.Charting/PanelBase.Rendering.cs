@@ -59,13 +59,20 @@ namespace Sq1.Charting {
 				return;
 			}
 			
-			double panelValueForBarCurrent = this.PanelValueForBarCurrentNaNunsafe;
+			double panelValueForBarMouseOvered = this.PanelValueForBarMouseOveredNaNunsafe;
 			bool mouseTrack = this.ChartControl.ChartSettings.MousePositionTrackOnGutters;
 			if (mouseTrack) {		// && this.moveHorizontalYprev > -1
 				int mouseY = this.moveHorizontalYprev;
 				if (this.mouseOver == false || this.moveHorizontalYprev == -1) {
-					if (double.IsNaN(panelValueForBarCurrent) == false) {
-						mouseY = this.ValueToYinverted(panelValueForBarCurrent);
+					if (double.IsNaN(panelValueForBarMouseOvered) == false) {
+						mouseY = this.ValueToYinverted(panelValueForBarMouseOvered);
+					} else {
+						string msg = "DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES";
+						int lastIndex = this.ValueIndexLastAvailableMinusOneUnsafe;
+						if (double.IsNaN(lastIndex) == false) {
+							double lastValue = this.ValueGetNaNunsafe(lastIndex);
+							mouseY = this.ValueToYinverted(lastValue);
+						}
 					}
 				}
 				g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, 0, mouseY, base.Width, mouseY);
@@ -100,8 +107,15 @@ namespace Sq1.Charting {
 				if (mouseTrack) {			// && this.moveHorizontalYprev > -1
 					int mouseY = this.moveHorizontalYprev;
 					if (this.mouseOver == false || this.moveHorizontalYprev == -1) {
-						if (double.IsNaN(panelValueForBarCurrent) == false) {
-							mouseY = this.ValueToYinverted(panelValueForBarCurrent);
+						if (double.IsNaN(panelValueForBarMouseOvered) == false) {
+							mouseY = this.ValueToYinverted(panelValueForBarMouseOvered);
+						} else {
+							string msg = "DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES";
+							int lastIndex = this.ValueIndexLastAvailableMinusOneUnsafe;
+							if (double.IsNaN(lastIndex) == false) {
+								double lastValue = this.ValueGetNaNunsafe(lastIndex);
+								mouseY = this.ValueToYinverted(lastValue);
+							}
 						}
 					}
 					double mousePrice = this.YinvertedToValue(mouseY);

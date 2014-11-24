@@ -107,13 +107,13 @@ namespace Sq1.Core.DataTypes {
 			sb.Append("@");
 			sb.Append(this.LastDealPrice);
 			sb.Append("}lastDeal");
-			if (ServerTime != null) {
+			if (this.ServerTime != null) {
 				sb.Append(" SERVER[");
-				sb.Append(ServerTime.ToString("HH:mm:ss.fff"));
+				sb.Append(this.ServerTime.ToString("HH:mm:ss.fff"));
 				sb.Append("]");
 			}
 			sb.Append("[");
-			sb.Append(LocalTimeCreatedMillis.ToString("HH:mm:ss.fff"));
+			sb.Append(this.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff"));
 			sb.Append("]LOCAL ");
 			if (string.IsNullOrEmpty(this.Source) == false) sb.Append(this.Source);
 			sb.Append("STR:");

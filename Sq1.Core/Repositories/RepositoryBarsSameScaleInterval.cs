@@ -75,7 +75,16 @@ namespace Sq1.Core.Repositories {
 				}
 				return ret;
 			} }
-		public RepositoryBarsSameScaleInterval(string dataSourceAbspath, BarScaleInterval scaleInterval, bool createNonExistingSubfolder = true, string extension = "bar") {
+
+		//FILE.OPEN_FILE_CANT_BE_ACCESSED_FIXED_BY_ROUTING_ALL_FILE_ACCESS_THROUGH_ONE_SYNCHRONIZED_INSTANCE
+		Dictionary<string, RepositoryBarsFile> barsForDataSourceSymbols;
+		object barsForDataSourceSymbolsLock;
+
+		RepositoryBarsSameScaleInterval() {
+			barsForDataSourceSymbols = new Dictionary<string, RepositoryBarsFile>();
+			barsForDataSourceSymbolsLock = new object();
+		}
+		public RepositoryBarsSameScaleInterval(string dataSourceAbspath, BarScaleInterval scaleInterval, bool createNonExistingSubfolder = true, string extension = "bar") : this() {
 			this.DataSourceAbspath = dataSourceAbspath;
 			//if (this.FolderWithSymbolFiles.EndsWith(Path.DirectorySeparatorChar) == false) this.FolderWithSymbolFiles += Path.DirectorySeparatorChar;
 			if (Directory.Exists(this.DataSourceAbspath) == false) Directory.CreateDirectory(this.DataSourceAbspath);
@@ -142,9 +151,16 @@ namespace Sq1.Core.Repositories {
 			Directory.Delete(this.SubfolderAbspath);
 			return ret;
 		}
+
 		public RepositoryBarsFile DataFileForSymbol(string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
-			RepositoryBarsFile barsFile = new RepositoryBarsFile(this, symbol, throwIfDoesntExist, createIfDoesntExist);
-			return barsFile;
+			lock (barsForDataSourceSymbolsLock) {   //FILE.OPEN_FILE_CANT_BE_ACCESSED_FIXED_BY_ROUTING_ALL_FILE_ACCESS_THROUGH_ONE_SYNCHRONIZED_INSTANCE
+				if (this.barsForDataSourceSymbols.ContainsKey(symbol) == false) {
+					RepositoryBarsFile barsFileNew = new RepositoryBarsFile(this, symbol, throwIfDoesntExist, createIfDoesntExist);
+					this.barsForDataSourceSymbols.Add(symbol, barsFileNew);
+				}
+				RepositoryBarsFile barsFile = this.barsForDataSourceSymbols[symbol];
+				return barsFile;
+			}
 		}
 	}
 }

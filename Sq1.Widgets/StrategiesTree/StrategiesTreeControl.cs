@@ -39,9 +39,25 @@ namespace Sq1.Widgets.StrategiesTree {
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, false, true);
 			this.dataSnapshot = this.dataSnapshotSerializer.Deserialize();
 			
-			this.populateStrategyRepositoryIntoTreeListView();
+			this.populateStrategyRepositoryIntoTreeListView();			
+			this.populateDataSnapshotDeserialized();
 		}
-
+		void populateDataSnapshotDeserialized() {
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.populateDataSnapshotDeserialized(); });
+				return;
+			}
+			try {
+				this.tree.HeaderStyle = this.dataSnapshot.ShowHeader ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
+				this.mniShowHeader.Checked = this.dataSnapshot.ShowHeader;
+				
+				this.tableLayoutPanel1.Visible = this.dataSnapshot.ShowSearchBar;
+				this.mniShowSearchBar.Checked = this.dataSnapshot.ShowSearchBar;
+			} catch (Exception ex) {
+				string msg = "SHOULD_NEVER_HAPPEN StrategiesTreeControl.populateDataSnapshotDeserialized() ";
+				Assembler.PopupException(msg, ex);
+			}
+		}
 		void populateStrategyRepositoryIntoTreeListView() {
 			List<string> strategyFolders = strategyRepository.AllFoldersAvailable;
 			this.tree.SmallImageList = this.imageList;
@@ -55,6 +71,12 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = false;
 		}
 		void syncFolderStrategySelectedFromRowIndexClicked(int itemIndexSelected) {
+			string msig = " StrategiesTreeControl.syncFolderStrategySelectedFromRowIndexClicked(" + itemIndexSelected + ")";
+			if (this.tree.SelectedObject == null) {
+				string msg = "IM_HERE_WHEN_I_CLICKED_PLUS_TO_EXPAND_COLLAPSE";
+				Assembler.PopupException(msg + msig, null, false);
+				return;
+			}
 			string folder = this.tree.SelectedObject as string;
 			if (folder != null) {
 				this.FolderSelected = folder;
@@ -64,7 +86,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			Strategy strategy = this.tree.SelectedObject as Strategy;
 			if (strategy == null) {
 				string msg = "this.tree.SelectedObject is not a Strategy and wasn't a Folder either";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			this.StrategySelected = strategy;
