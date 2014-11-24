@@ -23,7 +23,7 @@ namespace Sq1.Core.Backtesting {
 				try {
 					indicator.OnNewStreamingQuote(quote);
 				} catch (Exception ex) {
-					Debugger.Break();
+					Assembler.PopupException("NEW_BAR_ADDED_DURING_BACKTEST__IMPLEMENT_STREAMING_ON_HOLD" + ex);
 				}
 			}
 
@@ -49,8 +49,10 @@ namespace Sq1.Core.Backtesting {
 			ReporterPokeUnit pokeUnit = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quote);
 		}
 		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed) {
+			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(" + barLastFormed.ToString() + ")";
 			if (barLastFormed == null) {
 				string msg = "Backtester starts generating quotes => first StreamingBar is added; for first four Quotes there's no static barsFormed yet!! Isi";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			//INVOCATION_WONT_DO_ANY_JOB this.simulatePendingFillPreExecuteEveryTick(null);

@@ -319,7 +319,7 @@ namespace Sq1.Core.Indicators {
 				string msig = " OnNewStaticBarFormed(" + newStaticBar.ToString() + ")";
 				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS[" + differenceMustNotBeMoreThanOne + "]";
 				#if DEBUG
-				Debugger.Break();
+				//Debugger.Break();
 				#endif
 				throw new Exception(msg + msig);
 			}
@@ -344,7 +344,7 @@ namespace Sq1.Core.Indicators {
 				string msig = " OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
 				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS[" + differenceMustNotBeMoreThanOne + "]";
 				#if DEBUG
-				Debugger.Break();
+				//Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}

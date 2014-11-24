@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
@@ -48,6 +49,9 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniFolderCreateStrategy = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniltbStrategyCreate = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniShowHeader = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniShowSearchBar = new System.Windows.Forms.ToolStripMenuItem();
 			this.textBoxFilterTree = new System.Windows.Forms.TextBox();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.tree = new BrightIdeasSoftware.TreeListView();
@@ -86,13 +90,13 @@ namespace Sq1.Widgets.StrategiesTree {
 									this.mniltbStrategyRenameTo,
 									this.mniStrategyDelete});
 			this.ctxStrategy.Name = "popupStrategy";
-			this.ctxStrategy.Size = new System.Drawing.Size(226, 212);
+			this.ctxStrategy.Size = new System.Drawing.Size(229, 234);
 			this.ctxStrategy.Opening += new System.ComponentModel.CancelEventHandler(this.ctxStrategy_Opening);
 			// 
 			// mniStrategyOpen
 			// 
 			this.mniStrategyOpen.Name = "mniStrategyOpen";
-			this.mniStrategyOpen.Size = new System.Drawing.Size(225, 22);
+			this.mniStrategyOpen.Size = new System.Drawing.Size(228, 22);
 			this.mniStrategyOpen.Text = "Open Default in New Chart";
 			this.mniStrategyOpen.Click += new System.EventHandler(this.mniStrategyOpen_Click);
 			// 
@@ -103,9 +107,8 @@ namespace Sq1.Widgets.StrategiesTree {
 									this.mniScriptContext2,
 									this.mniScriptContext3});
 			this.mniStrategyOpenWith.Name = "mniStrategyOpenWith";
-			this.mniStrategyOpenWith.Size = new System.Drawing.Size(225, 22);
+			this.mniStrategyOpenWith.Size = new System.Drawing.Size(228, 22);
 			this.mniStrategyOpenWith.Text = "Replace Current Chart with...";
-			this.mniStrategyOpenWith.Click += mniStrategyOpenWith_Click;
 			// 
 			// mniScriptContext1
 			// 
@@ -130,14 +133,14 @@ namespace Sq1.Widgets.StrategiesTree {
 			// 
 			this.mniStrategyEdit.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mniStrategyEdit.Name = "mniStrategyEdit";
-			this.mniStrategyEdit.Size = new System.Drawing.Size(225, 22);
+			this.mniStrategyEdit.Size = new System.Drawing.Size(228, 22);
 			this.mniStrategyEdit.Text = "NYI Edit Source Code";
 			this.mniStrategyEdit.Click += new System.EventHandler(this.mniStrategyEdit_Click);
 			// 
 			// mniStrategyDuplicate
 			// 
 			this.mniStrategyDuplicate.Name = "mniStrategyDuplicate";
-			this.mniStrategyDuplicate.Size = new System.Drawing.Size(225, 22);
+			this.mniStrategyDuplicate.Size = new System.Drawing.Size(228, 22);
 			this.mniStrategyDuplicate.Text = "Duplicate";
 			this.mniStrategyDuplicate.Visible = false;
 			this.mniStrategyDuplicate.Click += new System.EventHandler(this.mniStrategyDuplicate_Click);
@@ -145,33 +148,35 @@ namespace Sq1.Widgets.StrategiesTree {
 			// mniltbStrategyDuplicateTo
 			// 
 			this.mniltbStrategyDuplicateTo.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbStrategyDuplicateTo.InputFieldAlignedRight = false;
+			this.mniltbStrategyDuplicateTo.InputFieldEditable = true;
 			this.mniltbStrategyDuplicateTo.InputFieldOffsetX = 80;
 			this.mniltbStrategyDuplicateTo.InputFieldValue = "";
 			this.mniltbStrategyDuplicateTo.InputFieldWidth = 85;
 			this.mniltbStrategyDuplicateTo.Name = "mniltbStrategyDuplicateTo";
-			this.mniltbStrategyDuplicateTo.Size = new System.Drawing.Size(165, 21);
+			this.mniltbStrategyDuplicateTo.Size = new System.Drawing.Size(168, 21);
 			this.mniltbStrategyDuplicateTo.Text = "Duplicate To:";
+			this.mniltbStrategyDuplicateTo.TextOffsetX = 0;
 			this.mniltbStrategyDuplicateTo.TextRed = false;
-			this.mniltbStrategyDuplicateTo.UserTyped += new System.EventHandler<LabeledTextBox.LabeledTextBoxUserTypedArgs>(mniltbStrategyDuplicateTo_UserTyped);
+			this.mniltbStrategyDuplicateTo.TextWidth = 73;
 			// 
 			// sepStrategy
 			// 
 			this.sepStrategy.Name = "sepStrategy";
-			this.sepStrategy.Size = new System.Drawing.Size(222, 6);
+			this.sepStrategy.Size = new System.Drawing.Size(225, 6);
 			// 
 			// mniStrategyMoveToAnotherFolder
 			// 
 			this.mniStrategyMoveToAnotherFolder.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mniStrategyMoveToAnotherFolder.Name = "mniStrategyMoveToAnotherFolder";
-			this.mniStrategyMoveToAnotherFolder.Size = new System.Drawing.Size(225, 22);
+			this.mniStrategyMoveToAnotherFolder.Size = new System.Drawing.Size(228, 22);
 			this.mniStrategyMoveToAnotherFolder.Text = "Move To...";
-			this.mniStrategyMoveToAnotherFolder.Click += mniStrategyMoveToAnotherFolder_Click;
 			// 
 			// mniStrategyRename
 			// 
 			this.mniStrategyRename.Name = "mniStrategyRename";
 			this.mniStrategyRename.ShortcutKeys = System.Windows.Forms.Keys.F2;
-			this.mniStrategyRename.Size = new System.Drawing.Size(225, 22);
+			this.mniStrategyRename.Size = new System.Drawing.Size(228, 22);
 			this.mniStrategyRename.Text = "Rename";
 			this.mniStrategyRename.Visible = false;
 			this.mniStrategyRename.Click += new System.EventHandler(this.mniStrategyRename_Click);
@@ -179,20 +184,23 @@ namespace Sq1.Widgets.StrategiesTree {
 			// mniltbStrategyRenameTo
 			// 
 			this.mniltbStrategyRenameTo.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbStrategyRenameTo.InputFieldAlignedRight = false;
+			this.mniltbStrategyRenameTo.InputFieldEditable = true;
 			this.mniltbStrategyRenameTo.InputFieldOffsetX = 80;
 			this.mniltbStrategyRenameTo.InputFieldValue = "";
 			this.mniltbStrategyRenameTo.InputFieldWidth = 85;
 			this.mniltbStrategyRenameTo.Name = "mniltbStrategyRenameTo";
-			this.mniltbStrategyRenameTo.Size = new System.Drawing.Size(165, 21);
+			this.mniltbStrategyRenameTo.Size = new System.Drawing.Size(168, 21);
 			this.mniltbStrategyRenameTo.Text = "Rename To:";
+			this.mniltbStrategyRenameTo.TextOffsetX = 0;
 			this.mniltbStrategyRenameTo.TextRed = false;
-			this.mniltbStrategyRenameTo.UserTyped += new System.EventHandler<LabeledTextBox.LabeledTextBoxUserTypedArgs>(mniltbStrategyRenameTo_UserTyped);
+			this.mniltbStrategyRenameTo.TextWidth = 68;
 			// 
 			// mniStrategyDelete
 			// 
 			this.mniStrategyDelete.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mniStrategyDelete.Name = "mniStrategyDelete";
-			this.mniStrategyDelete.Size = new System.Drawing.Size(225, 22);
+			this.mniStrategyDelete.Size = new System.Drawing.Size(228, 22);
 			this.mniStrategyDelete.Text = "Delete Strategy";
 			this.mniStrategyDelete.Click += new System.EventHandler(this.mniStrategyDelete_Click);
 			// 
@@ -207,15 +215,18 @@ namespace Sq1.Widgets.StrategiesTree {
 									this.mniFolderDelete,
 									this.toolStripSeparator1,
 									this.mniFolderCreateStrategy,
-									this.mniltbStrategyCreate});
+									this.mniltbStrategyCreate,
+									this.toolStripSeparator2,
+									this.mniShowHeader,
+									this.mniShowSearchBar});
 			this.ctxFolder.Name = "popupSymbol";
-			this.ctxFolder.Size = new System.Drawing.Size(226, 170);
+			this.ctxFolder.Size = new System.Drawing.Size(229, 242);
 			// 
 			// mniFolderCreate
 			// 
 			this.mniFolderCreate.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mniFolderCreate.Name = "mniFolderCreate";
-			this.mniFolderCreate.Size = new System.Drawing.Size(225, 22);
+			this.mniFolderCreate.Size = new System.Drawing.Size(228, 22);
 			this.mniFolderCreate.Text = "Create New Folder";
 			this.mniFolderCreate.Visible = false;
 			this.mniFolderCreate.Click += new System.EventHandler(this.mniFolderCreate_Click);
@@ -223,20 +234,23 @@ namespace Sq1.Widgets.StrategiesTree {
 			// mniltbFolderCreate
 			// 
 			this.mniltbFolderCreate.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbFolderCreate.InputFieldAlignedRight = false;
+			this.mniltbFolderCreate.InputFieldEditable = true;
 			this.mniltbFolderCreate.InputFieldOffsetX = 80;
 			this.mniltbFolderCreate.InputFieldValue = "";
 			this.mniltbFolderCreate.InputFieldWidth = 85;
 			this.mniltbFolderCreate.Name = "mniltbFolderCreate";
-			this.mniltbFolderCreate.Size = new System.Drawing.Size(165, 21);
+			this.mniltbFolderCreate.Size = new System.Drawing.Size(168, 21);
 			this.mniltbFolderCreate.Text = "Create Folder";
+			this.mniltbFolderCreate.TextOffsetX = 0;
 			this.mniltbFolderCreate.TextRed = false;
-			this.mniltbFolderCreate.UserTyped += new System.EventHandler<LabeledTextBox.LabeledTextBoxUserTypedArgs>(mniltbFolderCreate_UserTyped);
+			this.mniltbFolderCreate.TextWidth = 72;
 			// 
 			// mniFolderRename
 			// 
 			this.mniFolderRename.Name = "mniFolderRename";
 			this.mniFolderRename.ShortcutKeys = System.Windows.Forms.Keys.F2;
-			this.mniFolderRename.Size = new System.Drawing.Size(225, 22);
+			this.mniFolderRename.Size = new System.Drawing.Size(228, 22);
 			this.mniFolderRename.Text = "Rename";
 			this.mniFolderRename.Visible = false;
 			this.mniFolderRename.Click += new System.EventHandler(this.mniFolderRename_Click);
@@ -244,33 +258,35 @@ namespace Sq1.Widgets.StrategiesTree {
 			// mniltbFolderRename
 			// 
 			this.mniltbFolderRename.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbFolderRename.InputFieldAlignedRight = false;
+			this.mniltbFolderRename.InputFieldEditable = true;
 			this.mniltbFolderRename.InputFieldOffsetX = 80;
 			this.mniltbFolderRename.InputFieldValue = "";
 			this.mniltbFolderRename.InputFieldWidth = 85;
 			this.mniltbFolderRename.Name = "mniltbFolderRename";
-			this.mniltbFolderRename.Size = new System.Drawing.Size(165, 21);
+			this.mniltbFolderRename.Size = new System.Drawing.Size(168, 21);
 			this.mniltbFolderRename.Text = "Rename To";
+			this.mniltbFolderRename.TextOffsetX = 0;
 			this.mniltbFolderRename.TextRed = false;
-			this.mniltbFolderRename.UserTyped += new System.EventHandler<LabeledTextBox.LabeledTextBoxUserTypedArgs>(mniltbFolderRename_UserTyped);
+			this.mniltbFolderRename.TextWidth = 65;
 			// 
 			// mniFolderDelete
 			// 
 			this.mniFolderDelete.ImageTransparentColor = System.Drawing.Color.Fuchsia;
-			//this.mniFolderDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
 			this.mniFolderDelete.Name = "mniFolderDelete";
-			this.mniFolderDelete.Size = new System.Drawing.Size(225, 22);
+			this.mniFolderDelete.Size = new System.Drawing.Size(228, 22);
 			this.mniFolderDelete.Text = "Delete Folder";
 			this.mniFolderDelete.Click += new System.EventHandler(this.mniFolderDelete_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(222, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(225, 6);
 			// 
 			// mniFolderCreateStrategy
 			// 
 			this.mniFolderCreateStrategy.Name = "mniFolderCreateStrategy";
-			this.mniFolderCreateStrategy.Size = new System.Drawing.Size(225, 22);
+			this.mniFolderCreateStrategy.Size = new System.Drawing.Size(228, 22);
 			this.mniFolderCreateStrategy.Text = "Create New Strategy";
 			this.mniFolderCreateStrategy.Visible = false;
 			this.mniFolderCreateStrategy.Click += new System.EventHandler(this.mniFolderCreateStrategy_Click);
@@ -278,14 +294,38 @@ namespace Sq1.Widgets.StrategiesTree {
 			// mniltbStrategyCreate
 			// 
 			this.mniltbStrategyCreate.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbStrategyCreate.InputFieldAlignedRight = false;
+			this.mniltbStrategyCreate.InputFieldEditable = true;
 			this.mniltbStrategyCreate.InputFieldOffsetX = 80;
 			this.mniltbStrategyCreate.InputFieldValue = "";
 			this.mniltbStrategyCreate.InputFieldWidth = 85;
 			this.mniltbStrategyCreate.Name = "mniltbStrategyCreate";
-			this.mniltbStrategyCreate.Size = new System.Drawing.Size(165, 21);
-			this.mniltbStrategyCreate.Text = "New Strategy:";
+			this.mniltbStrategyCreate.Size = new System.Drawing.Size(168, 21);
+			this.mniltbStrategyCreate.Text = "New Strategy";
+			this.mniltbStrategyCreate.TextOffsetX = 0;
 			this.mniltbStrategyCreate.TextRed = false;
-			this.mniltbStrategyCreate.UserTyped += new System.EventHandler<LabeledTextBox.LabeledTextBoxUserTypedArgs>(mniltbStrategyCreate_UserTyped);
+			this.mniltbStrategyCreate.TextWidth = 73;
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(225, 6);
+			// 
+			// mniShowHeader
+			// 
+			this.mniShowHeader.CheckOnClick = true;
+			this.mniShowHeader.Name = "mniShowHeader";
+			this.mniShowHeader.Size = new System.Drawing.Size(228, 22);
+			this.mniShowHeader.Text = "Show Header";
+			this.mniShowHeader.Click += new System.EventHandler(this.mniShowHeader_Click);
+			// 
+			// mniShowSearchBar
+			// 
+			this.mniShowSearchBar.CheckOnClick = true;
+			this.mniShowSearchBar.Name = "mniShowSearchBar";
+			this.mniShowSearchBar.Size = new System.Drawing.Size(228, 22);
+			this.mniShowSearchBar.Text = "Show Search Bar";
+			this.mniShowSearchBar.Click += new System.EventHandler(mniShowSearchBar_Click);
 			// 
 			// textBoxFilterTree
 			// 
@@ -302,25 +342,22 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.tree.AllColumns.Add(this.olvColumnName);
 			this.tree.AllColumns.Add(this.olvColumnSize);
 			this.tree.AllColumns.Add(this.olvColumnModified);
-			this.tree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
 			this.tree.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.tree.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
 			this.tree.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
 									this.olvColumnName});
-			//this.tree.ContextMenuStrip = this.ctxFolder;
 			this.tree.Cursor = System.Windows.Forms.Cursors.Arrow;
+			this.tree.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tree.EmptyListMsg = "Right Click To Create";
 			this.tree.FullRowSelect = true;
-			this.tree.HeaderUsesThemes = false;
+			this.tree.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
 			this.tree.HideSelection = false;
 			this.tree.Location = new System.Drawing.Point(0, 0);
-			this.tree.Name = "StrategiesTree";
+			this.tree.Name = "tree";
 			this.tree.OwnerDraw = true;
 			this.tree.ShowCommandMenuOnRightClick = true;
 			this.tree.ShowGroups = false;
-			this.tree.Size = new System.Drawing.Size(102, 135);
+			this.tree.Size = new System.Drawing.Size(102, 162);
 			this.tree.SmallImageList = this.imageList;
 			this.tree.TabIndex = 2;
 			this.tree.TintSortColumn = true;
@@ -339,18 +376,15 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.tree.ModelDropped += new System.EventHandler<BrightIdeasSoftware.ModelDropEventArgs>(this.treeListView_ModelDropped);
 			this.tree.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.treeListView_ItemSelectionChanged);
 			this.tree.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeListView_KeyDown);
-			this.tree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.treeListView_MouseDoubleClick);
 			// 
 			// olvColumnName
 			// 
-			this.olvColumnName.CellPadding = null;
 			this.olvColumnName.FillsFreeSpace = true;
 			this.olvColumnName.Hideable = false;
 			this.olvColumnName.Text = "Name";
 			// 
 			// olvColumnSize
 			// 
-			this.olvColumnSize.CellPadding = null;
 			this.olvColumnSize.DisplayIndex = 1;
 			this.olvColumnSize.IsVisible = false;
 			this.olvColumnSize.Text = "Size";
@@ -358,7 +392,6 @@ namespace Sq1.Widgets.StrategiesTree {
 			// 
 			// olvColumnModified
 			// 
-			this.olvColumnModified.CellPadding = null;
 			this.olvColumnModified.DisplayIndex = 2;
 			this.olvColumnModified.IsVisible = false;
 			this.olvColumnModified.Text = "Modified";
@@ -372,12 +405,14 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.tableLayoutPanel1.Controls.Add(this.textBoxFilterTree, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.btnClear, 1, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 135);
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 136);
+			this.tableLayoutPanel1.MinimumSize = new System.Drawing.Size(0, 26);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 1;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(102, 27);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(102, 26);
 			this.tableLayoutPanel1.TabIndex = 4;
+			this.tableLayoutPanel1.Visible = false;
 			// 
 			// btnClear
 			// 
@@ -385,7 +420,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.btnClear.Enabled = false;
 			this.btnClear.Location = new System.Drawing.Point(80, 3);
 			this.btnClear.Name = "btnClear";
-			this.btnClear.Size = new System.Drawing.Size(19, 21);
+			this.btnClear.Size = new System.Drawing.Size(19, 20);
 			this.btnClear.TabIndex = 4;
 			this.btnClear.Text = "X";
 			this.btnClear.UseVisualStyleBackColor = true;
@@ -429,6 +464,11 @@ namespace Sq1.Widgets.StrategiesTree {
 		private BrightIdeasSoftware.OLVColumn olvColumnSize;
 		private BrightIdeasSoftware.OLVColumn olvColumnModified;
 		private TableLayoutPanel tableLayoutPanel1;
-		private Button btnClear;
+		private Button btnClear;		
+
+
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripMenuItem mniShowSearchBar;
+		private System.Windows.Forms.ToolStripMenuItem mniShowHeader;
 	}
 }

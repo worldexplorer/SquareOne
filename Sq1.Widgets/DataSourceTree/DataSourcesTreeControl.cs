@@ -55,7 +55,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 			
 			this.populateDataSourcesIntoTreeListView();
-
+			this.populateDataSnapshotDeserialized();
+			
+			// TODO MULTIPLE_INITIALIZATIONS_WILL_INVOKE_YOUR_HANDLERS_MULTIPLE_TIMES
 			this.dataSourceRepository.OnItemAdded += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceAdded);
 			this.dataSourceRepository.OnItemRenamed += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceRenamed);
 			this.dataSourceRepository.OnItemCanBeRemoved += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceCanBeRemoved);
@@ -64,6 +66,22 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.dataSourceRepository.OnSymbolRenamed += new EventHandler<DataSourceSymbolEventArgs>(dataSourceRepository_OnSymbolRenamed);
 			this.dataSourceRepository.OnSymbolCanBeRemoved += new EventHandler<DataSourceSymbolEventArgs>(dataSourceRepository_OnSymbolCanBeRemoved);
 			this.dataSourceRepository.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(dataSourceRepository_OnSymbolRemovedDone);
+		}
+		void populateDataSnapshotDeserialized() {
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.populateDataSnapshotDeserialized(); });
+				return;
+			}
+			try {
+				this.tree.HeaderStyle = this.dataSnapshot.ShowHeader ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
+				this.mniShowHeader.Checked = this.dataSnapshot.ShowHeader;
+				
+				this.tableLayoutPanel1.Visible = this.dataSnapshot.ShowSearchBar;
+				this.mniShowSearchBar.Checked = this.dataSnapshot.ShowSearchBar;
+			} catch (Exception ex) {
+				string msg = "SHOULD_NEVER_HAPPEN StrategiesTreeControl.populateDataSnapshotDeserialized() ";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 		void populateDataSourcesIntoTreeListView() {
 			var dataSources = dataSourceRepository.ItemsAsList;
@@ -101,6 +119,12 @@ namespace Sq1.Widgets.DataSourcesTree {
 			return this.imageIndexByStaticProviderType[provider.GetType()];
 		}
 		void syncSymbolAndDataSourceSelectedFromRowIndexClicked(int itemRowIndex) {
+			string msig = " //DataSourcesTreeControl.syncSymbolAndDataSourceSelectedFromRowIndexClicked(" + itemRowIndex + ")";
+			if (this.tree.SelectedObject == null) {
+				string msg = "IM_HERE_WHEN_I_CLICKED_PLUS_TO_EXPAND_COLLAPSE";
+				Assembler.PopupException(msg + msig, null, false);
+				return;
+			}
 			try {
 			//if ((this.tree.SelectedObject is NullReferenceException) == false) {
 				// first time loaded, nothing is selected event after right click; (SelectedObject as DataSource) was NullReferenceException 
@@ -112,7 +136,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 				}
 			//}
 			} catch (NullReferenceException) {
-				string msg = "OLV_INTERNAL_EXCEPTION";
+				string msg = "OLV_INTERNAL_EXCEPTION?...";
+				Assembler.PopupException(msg + msig, null, false);
 			}
 			string symbol = null;
 			DataSource dataSourceParent = this.tree.SelectedObject as DataSource;

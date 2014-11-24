@@ -37,6 +37,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniltbSymbolAdd = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.sepNewDS = new System.Windows.Forms.ToolStripSeparator();
 			this.mniRefresh = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniShowHeader = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniShowSearchBar = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxSymbol = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniNewChartSymbol = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniOpenStrategySymbol = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,7 +75,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 									this.mniDataSourceDelete,
 									this.mniltbSymbolAdd,
 									this.sepNewDS,
-									this.mniRefresh});
+									this.mniRefresh,
+									this.mniShowHeader,
+									this.mniShowSearchBar});
 			this.ctxDataSource.Name = "popupDataSource";
 			this.ctxDataSource.Size = new System.Drawing.Size(226, 154);
 			this.ctxDataSource.Opening += new System.ComponentModel.CancelEventHandler(this.ctxDataSource_Opening);
@@ -81,13 +85,17 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// mniltbDataSourceAddNew
 			// 
 			this.mniltbDataSourceAddNew.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbDataSourceAddNew.InputFieldAlignedRight = false;
+			this.mniltbDataSourceAddNew.InputFieldEditable = true;
 			this.mniltbDataSourceAddNew.InputFieldOffsetX = 80;
 			this.mniltbDataSourceAddNew.InputFieldValue = "";
 			this.mniltbDataSourceAddNew.InputFieldWidth = 85;
 			this.mniltbDataSourceAddNew.Name = "mniltbDataSourceAddNew";
 			this.mniltbDataSourceAddNew.Size = new System.Drawing.Size(165, 21);
 			this.mniltbDataSourceAddNew.Text = "Add New:";
+			this.mniltbDataSourceAddNew.TextOffsetX = 0;
 			this.mniltbDataSourceAddNew.TextRed = false;
+			this.mniltbDataSourceAddNew.TextWidth = 56;
 			this.mniltbDataSourceAddNew.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDataSourceAddNew_UserTyped);
 			// 
 			// toolStripSeparator1
@@ -106,13 +114,17 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// mniltbDataSourceRename
 			// 
 			this.mniltbDataSourceRename.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbDataSourceRename.InputFieldAlignedRight = false;
+			this.mniltbDataSourceRename.InputFieldEditable = true;
 			this.mniltbDataSourceRename.InputFieldOffsetX = 80;
 			this.mniltbDataSourceRename.InputFieldValue = "";
 			this.mniltbDataSourceRename.InputFieldWidth = 85;
 			this.mniltbDataSourceRename.Name = "mniltbDataSourceRename";
 			this.mniltbDataSourceRename.Size = new System.Drawing.Size(165, 21);
 			this.mniltbDataSourceRename.Text = "Rename To:";
+			this.mniltbDataSourceRename.TextOffsetX = 0;
 			this.mniltbDataSourceRename.TextRed = false;
+			this.mniltbDataSourceRename.TextWidth = 68;
 			this.mniltbDataSourceRename.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDataSourceRename_UserTyped);
 			// 
 			// mniDataSourceDelete
@@ -127,13 +139,17 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// mniltbSymbolAdd
 			// 
 			this.mniltbSymbolAdd.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbSymbolAdd.InputFieldAlignedRight = false;
+			this.mniltbSymbolAdd.InputFieldEditable = true;
 			this.mniltbSymbolAdd.InputFieldOffsetX = 80;
 			this.mniltbSymbolAdd.InputFieldValue = "";
 			this.mniltbSymbolAdd.InputFieldWidth = 85;
 			this.mniltbSymbolAdd.Name = "mniltbSymbolAdd";
 			this.mniltbSymbolAdd.Size = new System.Drawing.Size(165, 21);
 			this.mniltbSymbolAdd.Text = "Add Symbol:";
+			this.mniltbSymbolAdd.TextOffsetX = 0;
 			this.mniltbSymbolAdd.TextRed = false;
+			this.mniltbSymbolAdd.TextWidth = 68;
 			this.mniltbSymbolAdd.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbSymbolAdd_UserTyped);
 			// 
 			// sepNewDS
@@ -203,14 +219,34 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// mnitlbSymbolRenameTo
 			// 
 			this.mnitlbSymbolRenameTo.BackColor = System.Drawing.Color.Transparent;
+			this.mnitlbSymbolRenameTo.InputFieldAlignedRight = false;
+			this.mnitlbSymbolRenameTo.InputFieldEditable = true;
 			this.mnitlbSymbolRenameTo.InputFieldOffsetX = 80;
 			this.mnitlbSymbolRenameTo.InputFieldValue = "";
 			this.mnitlbSymbolRenameTo.InputFieldWidth = 85;
 			this.mnitlbSymbolRenameTo.Name = "mnitlbSymbolRenameTo";
 			this.mnitlbSymbolRenameTo.Size = new System.Drawing.Size(165, 21);
 			this.mnitlbSymbolRenameTo.Text = "Rename To:";
+			this.mnitlbSymbolRenameTo.TextOffsetX = 0;
 			this.mnitlbSymbolRenameTo.TextRed = false;
+			this.mnitlbSymbolRenameTo.TextWidth = 68;
 			this.mnitlbSymbolRenameTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbSymbolRenameTo_UserTyped);
+			// 
+			// mniShowHeader
+			// 
+			this.mniShowHeader.CheckOnClick = true;
+			this.mniShowHeader.Name = "mniShowHeader";
+			this.mniShowHeader.Size = new System.Drawing.Size(228, 22);
+			this.mniShowHeader.Text = "Show Header";
+			this.mniShowHeader.Click += new System.EventHandler(this.mniShowHeader_Click);
+			// 
+			// mniShowSearchBar
+			// 
+			this.mniShowSearchBar.CheckOnClick = true;
+			this.mniShowSearchBar.Name = "mniShowSearchBar";
+			this.mniShowSearchBar.Size = new System.Drawing.Size(228, 22);
+			this.mniShowSearchBar.Text = "Show Search Bar";
+			this.mniShowSearchBar.Click += new System.EventHandler(mniShowSearchBar_Click);
 			// 
 			// textBoxFilterTree
 			// 
@@ -227,7 +263,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.btnClear.Enabled = false;
 			this.btnClear.Location = new System.Drawing.Point(108, 3);
 			this.btnClear.Name = "btnClear";
-			this.btnClear.Size = new System.Drawing.Size(19, 21);
+			this.btnClear.Size = new System.Drawing.Size(19, 20);
 			this.btnClear.TabIndex = 4;
 			this.btnClear.Text = "X";
 			this.btnClear.UseVisualStyleBackColor = true;
@@ -242,11 +278,12 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.tableLayoutPanel1.Controls.Add(this.textBoxFilterTree, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.btnClear, 1, 0);
 			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 210);
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 211);
+			this.tableLayoutPanel1.MinimumSize = new System.Drawing.Size(0, 26);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 1;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(130, 27);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(130, 26);
 			this.tableLayoutPanel1.TabIndex = 5;
 			this.tableLayoutPanel1.Visible = false;
 			// 
@@ -254,18 +291,15 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// 
 			this.tree.Activation = System.Windows.Forms.ItemActivation.OneClick;
 			this.tree.AllColumns.Add(this.olvColumnName);
-			this.tree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
 			this.tree.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.tree.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
 			this.tree.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
 									this.olvColumnName});
 			this.tree.Cursor = System.Windows.Forms.Cursors.Arrow;
+			this.tree.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tree.EmptyListMsg = "Right Click To Create";
 			this.tree.FullRowSelect = true;
 			this.tree.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.tree.HeaderUsesThemes = false;
 			this.tree.HideSelection = false;
 			this.tree.Location = new System.Drawing.Point(0, 0);
 			this.tree.MultiSelect = false;
@@ -295,7 +329,6 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// 
 			// olvColumnName
 			// 
-			this.olvColumnName.CellPadding = null;
 			this.olvColumnName.FillsFreeSpace = true;
 			this.olvColumnName.Text = "Name";
 			// 
@@ -325,6 +358,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 		private ToolStripMenuItem mniRefresh;
 		private ToolStripSeparator toolStripSeparator1;
 		private MenuItemLabeledTextBox mniltbDataSourceAddNew;
+
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripMenuItem mniShowSearchBar;
+		private System.Windows.Forms.ToolStripMenuItem mniShowHeader;
 
 	}
 }

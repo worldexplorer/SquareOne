@@ -28,6 +28,12 @@ namespace Sq1.Charting {
 				this.ScrollOnePageRight();
 			}
 		}
+		protected override void OnMouseLeave(EventArgs e) {
+			if (base.DesignMode) return;
+			base.OnMouseLeave(e);
+
+			// DOESNT_WORK this.InvalidateAllPanels();	//	DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES
+		}
 		#region ProcessCmdKey is a filter OnKeyDown should go together
 //DUE_TO_STOPPED_WORKING_REPLACED_BY_ProcessCmdKey	BEGIN
 //		protected override bool IsInputKey(Keys keyData) {

@@ -147,7 +147,7 @@ namespace Sq1.Core.Streaming {
 			int consumerSerno = 1;
 			int streamingSolidifiersPoked = 0;
 			foreach (IStreamingConsumer consumer in this.consumersQuote) {
-				string msig = " missed quoteSernoEnrichedWithUnboundStreamingBar[" + quoteSernoEnrichedWithUnboundStreamingBar
+				string msig = " missed quoteSernoEnrichedWithUnboundStreamingBar[" + quoteSernoEnrichedWithUnboundStreamingBar.ToString()
 					+ "]: QuoteConsumer#" + (consumerSerno++) + "/" + this.consumersQuote.Count + " " + consumer.ToString();
 
 				#region SPECIAL_CASE_SINGLE_POSSIBLE_SOLIDIFIER_NO_EARLY_BINDING_NECESSARY

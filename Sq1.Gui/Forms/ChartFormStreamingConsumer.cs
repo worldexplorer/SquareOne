@@ -267,6 +267,25 @@ namespace Sq1.Gui.Forms {
 			var chartFormSafe = this.ChartForm;
 			var executorSafe = this.Executor;
 
+			if (barLastFormed == null) {
+				string msg = "Streaming starts generating quotes => first StreamingBar is added; for first four Quotes there's no static barsFormed yet!! Isi";
+				Assembler.PopupException(msg + this.msigForNpExceptions);
+				return;
+			}
+
+			#region pasted from BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
+			//INVOCATION_WONT_DO_ANY_JOB this.simulatePendingFillPreExecuteEveryTick(null);
+			Sq1.Core.Execution.ExecutionDataSnapshot snap = this.Executor.ExecutionDataSnapshot;
+			foreach (Sq1.Core.Indicators.Indicator indicator in snap.IndicatorsReflectedScriptInstances.Values) {
+				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
+				//if (indicator.NotOnChartBarsKey != null) {
+				//	string msg = "Generate quotes for the Non-Chart-Bars and feed them into your indicators!";
+				//	continue;
+				//}
+				indicator.OnNewStaticBarFormed(barLastFormed);
+			}
+			#endregion
+
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				executorSafe.ExecuteOnNewBarOrNewQuote(null);	//new Quote());
 			}
@@ -344,8 +363,24 @@ namespace Sq1.Gui.Forms {
 			var symbolSafe = this.Symbol;
 			var chartFormSafe = this.ChartForm;
 			var scaleIntervalSafe = this.ScaleInterval;
-			string ident = "{this.ChartForm.Symbol[" + symbolSafe + "] + CHART[" + chartFormSafe.Text + "]'s (" + scaleIntervalSafe + ")}";
-			return ident;
+			string ret = "this.ChartForm.Symbol[" + symbolSafe + "] (" + scaleIntervalSafe + ")";
+
+            //HANGS_ON_STARTUP__#D_STACK_IS_BLANK__VS2010_HINTED_IM_ACCESSING_this.ChartForm.Text_FROM_DDE_QUOTE_GENERATOR (!?!?!)
+            if (chartFormSafe.InvokeRequired == false) {
+                ret += "CHART.TEXT[" + chartFormSafe.Text + "]";
+            } else {
+//            	ChartFormDataSnapshot snap = this.chartFormManager.DataSnapshot;
+//            	if (snap == null) {
+//            		Assembler.PopupException(null);
+//            	}
+//            	ContextChart ctx = this.chartFormManager.DataSnapshot.ContextChart;
+                ret += (this.Executor.Strategy != null)
+					? "SCRIPTCONTEXTCURRENT[" + this.Executor.Strategy.ScriptContextCurrent.ToString() + "]"
+                	: "CONTEXTCHART[" + this.chartFormManager.DataSnapshot.ContextChart.ToString() + "]"
+                	;
+            }
+
+            return "{" + ret + "}";
 		}
 	}
 }

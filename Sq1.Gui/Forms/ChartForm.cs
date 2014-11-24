@@ -299,7 +299,7 @@ namespace Sq1.Gui.Forms {
 			if (strategyClicked == null) return;
 
 			//do not disturb a streaming chart with selector's changes (disable selectors if streaming; for script-free charts strategy=null)
-			bool enableForNonStreaming = !strategyClicked.ScriptContextCurrent.IsStreaming;
+			bool enableForNonStreaming = !strategyClicked.ScriptContextCurrent.IsStreamingTriggeringScript;
 			
 			//DataSourcesForm.Instance.DataSourcesTree.Enabled = enableForNonStreaming;
 			

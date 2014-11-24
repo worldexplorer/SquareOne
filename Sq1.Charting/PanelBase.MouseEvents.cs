@@ -9,9 +9,9 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Charting {
 	public partial class PanelBase {
-		protected bool	mouseOver;					// HELPS_DRAWING_INDICATOR_VALUE_ON_GUTTER_WHILE_HOVERING_PANEL_PRICE
-		protected int	barIndexMouseIsOverPrev;
-		public	  int	BarIndexMouseIsOverNow; 
+		protected bool	mouseOver;						// HELPS_DRAWING_INDICATOR_VALUE_ON_GUTTER_WHILE_HOVERING_PANEL_PRICE
+		protected int	barIndexMouseIsOverPrev;		// barIndexMouseIsOverPrev is needed for a mouse over Volume to paint CurrentBar'sClose on Price (try & see)
+		public	  int	BarIndexMouseIsOverNow = -1;	// if I didn't mouseover after app start, streaming values don't show up
 		
 		protected bool	dragButtonPressed;
 		
@@ -28,7 +28,7 @@ namespace Sq1.Charting {
 		protected int	squeezeHorizontalXprev;
 		
 		protected int	moveHorizontalXprev;
-		protected int	moveHorizontalYprev;
+		protected int	moveHorizontalYprev = -1;	//if I didn't mouseover after app start, streaming values don't show up
 
 		protected override void OnMouseEnter(EventArgs e) {
 			if (base.DesignMode) return;
@@ -73,6 +73,8 @@ namespace Sq1.Charting {
 
 			//this.ChartControl.TooltipPriceHide();
 			//this.ChartControl.TooltipPositionHide();
+
+			this.ChartControl.InvalidateAllPanels();	//	DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES
 		}
 		protected override void OnMouseDown(MouseEventArgs e) {
 			if (e.Button != MouseButtons.Left) return;
@@ -254,11 +256,13 @@ namespace Sq1.Charting {
 				this.moveHorizontalYprev = e.Y;
 
 				if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
-					//base.Refresh();
+					//JONNY_BE_GOOD__DONT_BE_THIS_RUDE base.Refresh();
 					base.Invalidate();
+
+					//v1 if (this.ChartControl.BarIndexMouseIsOverNow != this.BarIndexMouseIsOverNow) {
 					if (barIndexMouseIsOverPrev != this.BarIndexMouseIsOverNow) {
-						barIndexMouseIsOverPrev  = this.BarIndexMouseIsOverNow;
-						this.ChartControl.BarIndexMouseIsOverNow = this.BarIndexMouseIsOverNow;
+						barIndexMouseIsOverPrev  = this.BarIndexMouseIsOverNow;		// barIndexMouseIsOverPrev is needed for a mouse over Volume to paint CurrentBar'sClose on Price (try & see)
+						this.ChartControl.BarIndexMouseIsOverNow  = this.BarIndexMouseIsOverNow;
 						this.ChartControl.InvalidateAllPanels();
 					}
 				}
