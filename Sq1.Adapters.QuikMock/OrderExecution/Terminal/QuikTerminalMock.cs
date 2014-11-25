@@ -131,7 +131,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 							try {
 								//double priceFill = -1;
 								//double slippageFill = -1;
-								filled = order.Alert.Strategy.Script.Executor.MarketSimStreaming.SimulateFill(order.Alert, out abortTryFill, out abortTryFillReason);	//, out priceFill, out slippageFill);
+								filled = order.Alert.Strategy.Script.Executor.MarketSim.SimulateFill(order.Alert, out abortTryFill, out abortTryFillReason);	//, out priceFill, out slippageFill);
 							} catch (Exception e) {
 								msg = "SimulateRealtimeOrderFill() THREAD_TERMINATING_EXCEPTION: [" + order.State + "]"
 									+ ": " + e.ToString();

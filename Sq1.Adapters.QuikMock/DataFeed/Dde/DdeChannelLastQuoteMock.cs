@@ -105,7 +105,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 
 		public void MockStart() {
 			if (this.running == true) {
-				Assembler.PopupException("ALREADY_RUNNING", null, false);
+				Assembler.PopupException("QUIK_MOCK_POKER_THREAD_ALREADY_RUNNING", null, false);
 				return;
 			}
 			//Assembler.PopupException("startMock(" + pokesDone + "/" + pokesLimit + "): starting timer nextQuoteDelayMs=" + nextQuoteDelayMs + " period=0...");
@@ -116,7 +116,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 
 		public void MockStop() {
 			if (this.running == false) {
-				Assembler.PopupException("ALREADY_STOPPED", null, false);
+				Assembler.PopupException("QUIK_MOCK_POKER_THREAD_ALREADY_STOPPED", null, false);
 				return;
 			}
 			running = false;

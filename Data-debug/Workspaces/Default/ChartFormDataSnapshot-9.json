@@ -1,8 +1,8 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "NO_STRATEGY_CHART_ONLY",
-  "StrategyNameJsonCheck": "NO_STRATEGY_CHART_ONLY",
-  "StrategyAbsPathJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "StrategyGuidJsonCheck": "05d850ff-a502-42f0-a65c-43695a409f16",
+  "StrategyNameJsonCheck": "EnterEveryBarCompiled",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json",
   "ContextChart": {
     "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
     "Name": "CHART_autogen",
@@ -45,11 +45,11 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 279
+        "Distance": 137
       }
     },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 16,
+    "BarWidthIncludingPadding": 36,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -73,7 +73,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 40,
+    "SqueezeVerticalPaddingPx": 0,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -83,7 +83,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 447,
+    "ScrollPositionAtBarIndex": 30,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
