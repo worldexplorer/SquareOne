@@ -6,6 +6,6 @@ namespace Sq1.Widgets.Exceptions {
 		public int SplitDistanceHorizontal = 0;
 		public bool RecentAlwaysSelected = true;
 		public int TreeRefreshDelayMsec = 500;
-		public bool TreeShowsTimesInsteadOfMessages = false;
+		public bool TreeShowExceptionTime = false;
 	}
 }

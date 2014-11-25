@@ -58,9 +58,9 @@ namespace Sq1.Widgets.Exceptions {
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 		}
 		void mniTreeShowsTimesInsteadOfMessages_Click(object sender, EventArgs e) {
-			this.DataSnapshot.TreeShowsTimesInsteadOfMessages = mniTreeShowsTimesInsteadOfMessages.Checked;
+			this.DataSnapshot.TreeShowExceptionTime = mniTreeShowExceptionTime.Checked;
 			this.DataSnapshotSerializer.Serialize();
-			this.olvTime.Text = this.DataSnapshot.TreeShowsTimesInsteadOfMessages ? "Time" : "Message";
+			this.olvTime.Text = this.DataSnapshot.TreeShowExceptionTime ? "Time" : "Message";
 			this.treeExceptions.RebuildAll(true);
 		}
 	}

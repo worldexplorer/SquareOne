@@ -143,7 +143,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
+		public virtual void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = true) {
 			if (scaleInterval.Scale == BarScale.Unknown) {
 				string msg = "Failed to ConsumerBarRegister(): scaleInterval.Scale=Unknown; returning";
 				Assembler.PopupException(msg);
@@ -155,7 +155,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			this.DataDistributor.ConsumerBarSubscribe(symbol, scaleInterval, consumer);
+			this.DataDistributor.ConsumerBarSubscribe(symbol, scaleInterval, consumer, quotePumpSeparatePushingThreadEnabled);
 		}
 		public virtual void ConsumerBarUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
 			this.DataDistributor.ConsumerBarUnSubscribe(symbol, scaleInterval, consumer);
@@ -166,14 +166,14 @@ namespace Sq1.Core.Streaming {
 		#endregion
 
 		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
+		public virtual void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = true) {
 			bool alreadyRegistered = this.ConsumerQuoteIsSubscribed(symbol, scaleInterval, consumer);
 			if (alreadyRegistered) {
 				string msg = "AVOIDING_MULTIPLE_SUBSCRIPTION QUOTE_CONSUMER_ALREADY_REGISTERED[" + consumer.ToString() + "] symbol[" + symbol + "] scaleInterval[" + scaleInterval.ToString() + "] ";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			this.DataDistributor.ConsumerQuoteSubscribe(symbol, scaleInterval, consumer);
+			this.DataDistributor.ConsumerQuoteSubscribe(symbol, scaleInterval, consumer, quotePumpSeparatePushingThreadEnabled);
 			this.StreamingDataSnapshot.LastQuotePutNull(symbol);
 		}
 		public virtual void ConsumerQuoteUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer streamingConsumer) {

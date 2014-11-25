@@ -346,7 +346,7 @@ namespace Sq1.Core.Indicators {
 				#if DEBUG
 				//Debugger.Break();
 				#endif
-				throw new Exception(msg);
+				throw new Exception(msg + msig);
 			}
 			if (differenceMustNotBeMoreThanOne == 1) {
 				DateTime streamingBarDateTime = newStreamingQuote.ParentStreamingBar.DateTimeOpen;

@@ -222,6 +222,9 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg + this.msigForNpExceptions, null, false);
 				chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = null;
 			}
+
+			SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelFor(symbolSafe, scaleIntervalSafe);
+			channel.QuotePump.UpdateThreadNameSinceMaxConsumersSubscribed = true;
 		}
 		public bool Subscribed { get {
 				if (this.canSubscribeToStreamingProvider() == false) return false;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
@@ -236,16 +239,20 @@ namespace Sq1.Gui.Forms {
 				return ret;
 			}}
 
-		public void StreamingTriggeringScriptStop() {
-			this.Executor.IsStreamingTriggeringScript = false;
-		}
 		public void StreamingTriggeringScriptStart() {
 			this.Executor.IsStreamingTriggeringScript = true;
+		}
+		public void StreamingTriggeringScriptStop() {
+			this.Executor.IsStreamingTriggeringScript = false;
 		}
 
 		#region IStreamingConsumer
 		Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { return this.Bars; } }
 		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed) {
+			if (barLastFormed == null) {
+				string msg = "WRONG_SHOW_BRO";
+				Assembler.PopupException(msg);
+			}
 			this.msigForNpExceptions = " //ChartFormStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(" + barLastFormed.ToString() + ")";
 
 			#if DEBUG	// TEST_INLINE

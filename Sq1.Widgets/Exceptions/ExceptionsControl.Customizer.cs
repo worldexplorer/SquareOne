@@ -17,15 +17,17 @@ namespace Sq1.Widgets.Exceptions {
 			this.olvTime.AspectGetter = delegate(object o) {
 				var ex = o as Exception;
 				if (ex == null) return o.ToString();
-				string messageOrNameOrTime = ex.Message;
-				if (this.DataSnapshot.TreeShowsTimesInsteadOfMessages) {
+				string messageOrNameOrTime = "";
+				if (this.DataSnapshot.TreeShowExceptionTime) {
 					if (this.ExceptionTimes.ContainsKey(ex)) {
 						DateTime exTime = this.ExceptionTimes[ex];
 						messageOrNameOrTime = exTime.ToString("HH:mm:ss.fff ddd dd MMM yyyy");
 					} else {
 						messageOrNameOrTime = ex.GetType().Name;
 					}
+					messageOrNameOrTime += " | ";
 				}
+				messageOrNameOrTime += ex.Message;
 				return messageOrNameOrTime;
 			};
 			this.olvTime.ImageGetter = delegate(object o) {

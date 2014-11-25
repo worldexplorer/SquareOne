@@ -23,7 +23,7 @@ namespace Sq1.Core.Backtesting {
 				try {
 					indicator.OnNewStreamingQuote(quote);
 				} catch (Exception ex) {
-					Assembler.PopupException("NEW_BAR_ADDED_DURING_BACKTEST__IMPLEMENT_STREAMING_ON_HOLD" + ex);
+					Assembler.PopupException("NEW_BAR_ADDED_DURING_BACKTEST__IMPLEMENT_STREAMING_ON_HOLD " + ex);
 				}
 			}
 
@@ -36,7 +36,7 @@ namespace Sq1.Core.Backtesting {
 					string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
 				}
 				int pendingCountPre = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-				int pendingFilled = this.backtester.Executor.MarketSimStreaming.SimulatePendingFill(quote);
+				int pendingFilled = this.backtester.Executor.MarketSim.SimulatePendingFill(quote);
 				int pendingCountNow = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingCountNow != pendingCountPre - pendingFilled) {
 					string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";

@@ -66,8 +66,8 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerHorizontal.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitContainerHorizontal_SplitterMoved);
 			this.mniRecentAlwaysSelected.Checked = this.DataSnapshot.RecentAlwaysSelected;
 			this.mniltbDelay.InputFieldValue = this.DataSnapshot.TreeRefreshDelayMsec.ToString();
-			this.mniTreeShowsTimesInsteadOfMessages.Checked = this.DataSnapshot.TreeShowsTimesInsteadOfMessages;
-			this.olvTime.Text = this.DataSnapshot.TreeShowsTimesInsteadOfMessages ? "Time" : "Message";
+			this.mniTreeShowExceptionTime.Checked = this.DataSnapshot.TreeShowExceptionTime;
+			this.olvTime.Text = this.DataSnapshot.TreeShowExceptionTime ? "Time" : "Message";
 		}
 		public void InsertException(Exception exception) {
 			if (exception == null) {

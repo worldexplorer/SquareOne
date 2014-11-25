@@ -6,12 +6,12 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
-	public class MarketSimStreaming {
+	public class MarketSim {
 		ScriptExecutor executor;
 		List<Alert> stopLossesActivatedOnPreviousQuotes;
 		bool fillOutsideQuoteSpreadParanoidCheckThrow;
 
-		public MarketSimStreaming(ScriptExecutor executor) {
+		public MarketSim(ScriptExecutor executor) {
 			this.executor = executor;
 			this.stopLossesActivatedOnPreviousQuotes = new List<Alert>();
 		}

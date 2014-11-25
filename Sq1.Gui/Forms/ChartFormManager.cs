@@ -88,11 +88,9 @@ namespace Sq1.Gui.Forms {
 			} }
 		public bool OptimizerFormIsNotDisposed { get { return (DockContentImproved.IsNullOrDisposed(this.OptimizerForm) == false); } }
 		public bool OptimizerIsOnSurface { get {
-				bool optimizerMustBeActivated = true;
 				OptimizerForm optimizer = this.OptimizerForm;
 				bool optimizerNotInstantiated = DockContentImproved.IsNullOrDisposed(optimizer);
-				if (optimizerNotInstantiated) return optimizerMustBeActivated;
-				optimizerMustBeActivated = optimizer.MustBeActivated;
+				bool optimizerMustBeActivated = optimizerNotInstantiated ? true : optimizer.MustBeActivated;
 				return !optimizerMustBeActivated;
 			} }
 		
@@ -336,12 +334,13 @@ namespace Sq1.Gui.Forms {
 			
 			if (context.ScaleInterval.Scale == BarScale.Unknown) {
 				if (dataSource.ScaleInterval.Scale == BarScale.Unknown) {
-					string msg1 = "SCALE_INTERVAL_UNKNOWN_BOTH_CONTEXT_DATASOURCE WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
+					string msg1 = "EDIT_DATASOURCE_SET_SCALE_INTERVAL SCALE_INTERVAL_UNKNOWN_BOTH_CONTEXT_DATASOURCE WILL_NOT_INITIALIZE Executor.Init(Strategy->BarsLoaded)";
 					throw new Exception(msg1 + msig);
 				}
 				context.ScaleInterval = dataSource.ScaleInterval;
-				string msg2 = "CONTEXT_SCALE_INTERVAL_UNKNOWN_FIXED_TO_DATASOURCE contextToPopulate.ScaleInterval[" + context.ScaleInterval + "]";
-				Assembler.PopupException(msg2 + msig);
+				string msg2 = "CONTEXT_SCALE_INTERVAL_UNKNOWN__RESET_TO_DATASOURCE'S contextToPopulate.ScaleInterval[" + context.ScaleInterval + "]";
+				Assembler.PopupException(msg2 + msig, null, false);
+				saveStrategyRequired = true;	// don't move this write before you read above
 			}
 
 			bool wontBacktest = skipBacktest || (this.Strategy != null && this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false);

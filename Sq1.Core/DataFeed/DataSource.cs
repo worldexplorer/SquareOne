@@ -174,6 +174,12 @@ namespace Sq1.Core.DataFeed {
 			if (this.ScaleInterval != barLastFormed.ScaleInterval) return ret;
 			if (this.Symbols.Contains(barLastFormed.Symbol) == false) return ret;
 			if (this.BarsRepository == null) return ret;
+			try {
+				barLastFormed.CheckOHLCVthrow();
+			} catch (Exception ex) {
+				Assembler.PopupException("WONT_ADD_TO_BAR_FILE DataSource.BarAppend(" + barLastFormed + ")", ex, false);
+				return ret;
+			}
 			ret = this.BarsRepository.DataFileForSymbol(barLastFormed.Symbol).BarsAppendThreadSafe(barLastFormed);
 			return ret;
 		}

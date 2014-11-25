@@ -109,6 +109,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.mniStrategyOpenWith.Name = "mniStrategyOpenWith";
 			this.mniStrategyOpenWith.Size = new System.Drawing.Size(228, 22);
 			this.mniStrategyOpenWith.Text = "Replace Current Chart with...";
+			this.mniStrategyOpenWith.Click += new System.EventHandler(mniStrategyOpenWith_Click);
 			// 
 			// mniScriptContext1
 			// 

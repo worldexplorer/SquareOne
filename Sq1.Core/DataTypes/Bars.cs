@@ -106,6 +106,7 @@ namespace Sq1.Core.DataTypes {
 				try {
 					barAdding.CheckOHLCVthrow();
 				} catch (Exception ex) {
+					Assembler.PopupException("BarAppendBindStatic(" + barAdding + ")", ex, false);
 					return;
 				}
 				this.BarStreaming = null;

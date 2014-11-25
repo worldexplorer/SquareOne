@@ -178,9 +178,7 @@ namespace Sq1.Core.Backtesting {
 			}
 		}
 		void closePositionsLeftOpenAfterBacktest() {
-			if (this.Executor.ExecutionDataSnapshot.AlertsPending.Count == 0) return;
-			List<Alert> alertsPending = new List<Alert>(this.Executor.ExecutionDataSnapshot.AlertsPending);
-			foreach (Alert alertPending in alertsPending) {
+			foreach (Alert alertPending in this.Executor.ExecutionDataSnapshot.AlertsPendingSafeCopy) {
 				try {
 					//if (alertPending.IsEntryAlert) {
 					//	this.Executor.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
@@ -201,10 +199,7 @@ namespace Sq1.Core.Backtesting {
 			if (this.Executor.ExecutionDataSnapshot.AlertsPending.Count > 0) {
 				string msg = "KILLING_LEFTOVER_ALERTS_DIDNT_WORK_OUT snap.AlertsPending.Count["
 					+ this.Executor.ExecutionDataSnapshot.AlertsPending.Count + "] should be ZERO";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 
 			foreach (Position positionOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNowSafeCopy) {
@@ -228,10 +223,6 @@ namespace Sq1.Core.Backtesting {
 			if (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0) {
 				string msg = "CLOSING_LEFTOVER_POSITIONS_DIDNT_WORK_OUT snap.PositionsOpenNow.Count["
 					+ this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count + "]";
-				//#if DEBUG
-				//Debugger.Break();
-				//#endif
-				//throw new Exception(msg);
 				Assembler.PopupException(msg, null, false);
 			}
 		}		
@@ -275,14 +266,14 @@ namespace Sq1.Core.Backtesting {
 				}
 				this.BacktestDataSource.Initialize(this.BarsSimulating, spreadModeler);
 				#endregion
-				
+
 				this.BarsSimulating.DataSource = this.BacktestDataSource;
 
 				this.BacktestDataSource.StreamingProvider.ConsumerQuoteSubscribe(
-					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
+					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
 				this.BacktestDataSource.StreamingProvider.ConsumerBarSubscribe(
-					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
-
+					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
+				
 				this.Executor.BacktestContextInitialize(this.BarsSimulating);
 				
 				// consumers will expect this.BarsOriginal != null
