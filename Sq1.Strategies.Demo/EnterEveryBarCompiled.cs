@@ -28,7 +28,7 @@ namespace Sq1.Strategies.Demo {
 				return;
 			}
 			string whereIam = "\n\r\n\rEnterEveryBar.cs now=[" + DateTime.Now.ToString("ddd dd-MMM-yyyy HH:mm:ss.fff") + "]";
-			//this.Executor.PopupException(msg + whereIam);
+			this.Executor.PopupException(msg + whereIam);
 		}
 		public override void InitializeBacktest() {
 			//Debugger.Break();
@@ -127,15 +127,21 @@ namespace Sq1.Strategies.Demo {
 			int alertsPendingCount = snap.AlertsPending.Count;
 			int positionsOpenNowCount = snap.PositionsOpenNow.Count;
 
-			bool hasAlertsPendingOrPositionsOpenNow = base.HasAlertsPendingOrPositionsOpenNow;
-			if (hasAlertsPendingOrPositionsOpenNow) {
+			//if (base.HasAlertsPendingOrPositionsOpenNow) {
+			if (base.HasAlertsPendingAndPositionsOpenNow) {
 				if (alertsPendingCount > 0) {
-					if (snap.AlertsPending[0] == lastPos.EntryAlert) {
-						string msg = "EXPECTED: I don't have open positions but I have an unfilled alert from lastPosition.EntryAlert=alertsPending[0]";
-					} else if (snap.AlertsPending[0] == lastPos.ExitAlert) {
+					Alert firstPendingAlert = snap.AlertsPending[0];
+					Alert lastPosEntryAlert = lastPos != null ? lastPos.EntryAlert : null;
+					Alert lastPosExitAlert  = lastPos != null ? lastPos.ExitAlert : null;
+					if (firstPendingAlert == lastPosEntryAlert) {
+						string msg = "EXPECTED: I don't have open positions but I have an unfilled firstPendingAlert from lastPosition.EntryAlert=alertsPending[0]";
+						this.log(msg);
+					} else if (firstPendingAlert == lastPosExitAlert) {
 						string msg = "EXPECTED: I have and open lastPosition with .ExitAlert=alertsPending[0]";
+						this.log(msg);
 					} else {
-						string msg = "UNEXPECTED: pending alert doesn't relate to lastPosition; who is here?";
+						string msg = "UNEXPECTED: firstPendingAlert alert doesn't relate to lastPosition; who is here?";
+						this.log(msg);
 					}
 				}
 				if (positionsOpenNowCount > 1) {
@@ -143,29 +149,52 @@ namespace Sq1.Strategies.Demo {
 					if (snap.PositionsOpenNow[0] == lastPos) {
 						msg += "50/50: positionsMaster.Last = positionsOpenNow.First";
 					}
+					this.log(msg);
 				}
 				return;
 			}
-
-			if (barStaticFormed.ParentBarsIndex == 30) {
-				Debugger.Break();
-				StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingProvider.StreamingDataSnapshot;
-				Quote lastQuote = streaming.LastQuoteGetForSymbol(barStaticFormed.Symbol);
-				double priceForMarketOrder = streaming.LastQuoteGetPriceForMarketOrder(barStaticFormed.Symbol);
-			}
-
 
 			if (barStaticFormed.Close > barStaticFormed.Open) {
 				string msg = "BuyAtMarket@" + barStaticFormed.ParentBarsIdent;
 				Position buyPlaced = BuyAtMarket(barStreaming, msg);
 				//Debugger.Break();
+				this.log(msg);
 			} else {
 				string msg = "ShortAtMarket@" + barStaticFormed.ParentBarsIdent;
 				Position shortPlaced = ShortAtMarket(barStreaming, msg);
 				//Debugger.Break();
+				this.log(msg);
 			}
-			//base.Executor.ChartConditionalLineDrawModify(...);
 		}
+		
+		public override void OnStreamingTriggeringScriptTurnedOnCallback() {
+			string msg = "STRATEGY_IS_NOW_AWARE_THAT_STREAMING_PROVIDER_WILL_TRIGGER_STRATEGY_METHODS"
+				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript+ "]";
+			Assembler.PopupException(msg, null, false);
+			
+			if (base.HasAlertsPendingOrPositionsOpenNow == false) return;
+
+			string msg2 = "here you can probably sync your actual open positions on the broker side with backtest-opened ghosts";
+			Assembler.PopupException(msg2, null, false);
+		}
+		public override void OnStreamingTriggeringScriptTurnedOffCallback() {
+			string msg = "STRATEGY_IS_NOW_AWARE_THAT_STREAMING_PROVIDER_WILL_NOT_TRIGGER_STRATEGY_METHODS"
+				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript+ "]";
+			Assembler.PopupException(msg, null, false);
+		}
+		
+		public override void OnStrategyEmittingOrdersTurnedOnCallback() {
+			string msg = "STRATEGY_IS_NOW_AWARE_THAT_ORDERS_WILL_START_SHOOTING_THROUGH_BROKER_PROVIDER"
+				+ " ScriptContextCurrent.StrategyEmittingOrders[" + this.Strategy.ScriptContextCurrent.StrategyEmittingOrders+ "]";
+			Assembler.PopupException(msg, null, false);
+		}
+		public override void OnStrategyEmittingOrdersTurnedOffCallback() {
+			string msg = "STRATEGY_IS_NOW_AWARE_THAT_ORDERS_WILL_STOP_SHOOTING_THROUGH_BROKER_PROVIDER"
+				+ " ScriptContextCurrent.StrategyEmittingOrders[" + this.Strategy.ScriptContextCurrent.StrategyEmittingOrders+ "]";
+			Assembler.PopupException(msg, null, false);
+		}
+
+		
 		public override void OnAlertFilledCallback(Alert alertFilled) {
 			if (alertFilled.FilledBarIndex == 12) {
 				//Debugger.Break();

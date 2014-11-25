@@ -13,6 +13,7 @@ using Sq1.Core.Broker;
 using Sq1.Core.Charting;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Indicators;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
@@ -21,8 +22,8 @@ namespace Sq1.Core.StrategyBase {
 		public	SystemPerformance				Performance					{ get; protected set; }
 		public	Backtester						Backtester					{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; private set; }
-		public	MarketRealStreaming				MarketRealStreaming			{ get; private set; }
-		public	MarketSimStreaming				MarketSimStreaming			{ get; private set; }
+		public	MarketLive				MarketLive			{ get; private set; }
+		public	MarketSim				MarketSim			{ get; private set; }
 		public	ScriptExecutorEventGenerator	EventGenerator				{ get; private set; }
 		// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 		//public	NotOnChartBarsHelper		NotOnChartBarsHelper		{ get; private set; }
@@ -86,12 +87,18 @@ namespace Sq1.Core.StrategyBase {
 				// we are in beginning the backtest and will switch back to preBacktestIsStreaming after backtest finishes;
 				// if you AppKill during the backtest, you don't want btnStreaming be pressed (and disabled DataSource.StreamingProvider=null) after AppRestart 
 				if (this.preBacktestBars != null) {
-					//string msg = "NOT_SAVING_STREAMING=ON_FOR_BACKTEST"
+					//string msg = "NOT_SAVING_IsStreamingTriggeringScript=ON_FOR_BACKTEST"
 					//	+ " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
 					//Assembler.PopupException(msg, null, false);
 					return;
 				}
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+				
+				if (value == true) {
+					this.Strategy.Script.OnStreamingTriggeringScriptTurnedOnCallback();
+				} else {
+					this.Strategy.Script.OnStreamingTriggeringScriptTurnedOffCallback();
+				}
 			}
 		}
 		public bool IsStrategyEmittingOrders {
@@ -113,6 +120,12 @@ namespace Sq1.Core.StrategyBase {
 				}
 				this.Strategy.ScriptContextCurrent.StrategyEmittingOrders = value;
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+				
+				if (value == true) {
+					this.Strategy.Script.OnStrategyEmittingOrdersTurnedOnCallback();
+				} else {
+					this.Strategy.Script.OnStrategyEmittingOrdersTurnedOffCallback();
+				}
 			}
 		}
 
@@ -124,8 +137,8 @@ namespace Sq1.Core.StrategyBase {
 			//NOW_IRRELEVANT_MOVED_TO_BacktesterRunSimulation this.Performance = new SystemPerformance(this);
 			this.Backtester = new Backtester(this);
 			this.PositionPrototypeActivator = new PositionPrototypeActivator(this);
-			this.MarketRealStreaming = new MarketRealStreaming(this);
-			this.MarketSimStreaming = new MarketSimStreaming(this);
+			this.MarketLive = new MarketLive(this);
+			this.MarketSim = new MarketSim(this);
 			this.EventGenerator = new ScriptExecutorEventGenerator(this);
 			// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 			//this.NotOnChartBarsHelper = new NotOnChartBarsHelper(this);
@@ -158,7 +171,7 @@ namespace Sq1.Core.StrategyBase {
 			this.ExecutionDataSnapshot.Initialize();
 			// Executor.Bars are NULL in ScriptExecutor.ctor() and NOT NULL in SetBars
 			//this.Performance.Initialize();
-			this.MarketSimStreaming.Initialize(Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
+			this.MarketSim.Initialize(Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
 			//v1, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
 			// if I listen to DataSourceRepository, all ScriptExecutors receive same notification including irrelated to my Bars
 			// Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed +=
@@ -281,16 +294,13 @@ namespace Sq1.Core.StrategyBase {
 			Alert alert = null;
 			// real-time streaming should create its own Position after an Order gets filled
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.MarketRealStreaming.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
+				alert = this.MarketLive.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
 																  direction, entryMarketLimitStop);
 			} else {
-				//alert = this.MarketSimStatic.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
-				//	direction, entryMarketLimitStop);
+				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
 				string msg = "BACKTESTS_MUST_RUN_IN_STREAMING_SINCE_MarketSimStatic_WAS_DEPRECATED_INFAVOROF_MarketRealStreaming";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
+				Assembler.PopupException(msg);
+				return null;
 			}
 			Alert similar = this.ExecutionDataSnapshot.FindSimilarNotSamePendingAlert(alert);
 			if (similar != null) {
@@ -361,12 +371,13 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.MarketRealStreaming.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
+				alert = this.MarketLive.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
 																 direction, exitMarketLimitStop);
 			} else {
-				//alert = this.MarketSimStatic.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
-				//	  direction, exitMarketLimitStop);
-				Debugger.Break();
+				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
+				string msg = "BACKTESTS_MUST_RUN_IN_STREAMING_SINCE_MarketSimStatic_WAS_DEPRECATED_INFAVOROF_MarketRealStreaming";
+				Assembler.PopupException(msg);
+				return alert;
 			}
 
 			this.ExecutionDataSnapshot.AlertEnrichedRegister(alert, registerInNewAfterExec);
@@ -384,10 +395,10 @@ namespace Sq1.Core.StrategyBase {
 			bool killed = false;
 			if (this.IsStreamingTriggeringScript) {
 				if (this.Backtester.IsBacktestingNow == true) {
-					killed = this.MarketSimStreaming.AnnihilateCounterpartyAlert(alert);
+					killed = this.MarketSim.AnnihilateCounterpartyAlert(alert);
 					//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
 				} else {
-					killed = this.MarketRealStreaming.AnnihilateCounterpartyAlert(alert);
+					killed = this.MarketLive.AnnihilateCounterpartyAlert(alert);
 				}
 			} else {
 				//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
@@ -844,6 +855,10 @@ namespace Sq1.Core.StrategyBase {
 		Assembler assembler;
 		Strategy strategy;
 		internal void BacktestContextInitialize(Bars bars) {
+			SymbolScaleDistributionChannel channel = this.Bars.DataSource.StreamingProvider.DataDistributor
+				.GetDistributionChannelFor(this.Bars.Symbol, this.Bars.ScaleInterval);
+			channel.QuotePump.PushConsumersPaused = true;
+
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
 			this.preDataSource = this.DataSource;
 			this.preBacktestIsStreaming = this.IsStreamingTriggeringScript;
@@ -851,7 +866,7 @@ namespace Sq1.Core.StrategyBase {
 			this.Bars = bars;
 			//this.DataSource = bars.DataSource;
 			if (this.preBacktestBars != null) {
-				string msg = "NOT_SAVING_STREAMING=ON_FOR_BACKTEST"
+				string msg = "NOT_SAVING_IsStreamingTriggeringScript=ON_FOR_BACKTEST"
 					+ " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
 				Assembler.PopupException(msg, null, false);
 			}
@@ -864,6 +879,10 @@ namespace Sq1.Core.StrategyBase {
 			this.IsStreamingTriggeringScript = preBacktestIsStreaming;
 			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
+
+			SymbolScaleDistributionChannel channel = this.Bars.DataSource.StreamingProvider.DataDistributor
+				.GetDistributionChannelFor(this.Bars.Symbol, this.Bars.ScaleInterval);
+			channel.QuotePump.PushConsumersPaused = false;
 		}
 		public void BacktesterAbortIfRunningRestoreContext() {
 			if (this.Backtester.IsBacktestingNow == false) return;
@@ -1065,9 +1084,9 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void AlertKillPending(Alert alert) {
 			if (this.Backtester.IsBacktestingNow) {
-				this.MarketSimStreaming.SimulateAlertKillPending(alert);
+				this.MarketSim.SimulateAlertKillPending(alert);
 			} else {
-				this.MarketRealStreaming.AlertKillPending(alert);
+				this.MarketLive.AlertKillPending(alert);
 			}
 		}
 		public double PositionSizeCalculate(Bar bar, double priceScriptAligned) {

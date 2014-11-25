@@ -30,5 +30,14 @@ namespace Sq1.Core.StrategyBase {
 		//}
 		//public virtual void ExecuteOnStopLossNegativeOffsetUpdateActivationFailed(Position position, PositionPrototype proto) {
 		//}
+
+		public virtual void OnStreamingTriggeringScriptTurnedOnCallback() {
+		}
+		public virtual void OnStreamingTriggeringScriptTurnedOffCallback() {
+		}
+		public virtual void OnStrategyEmittingOrdersTurnedOnCallback() {
+		}
+		public virtual void OnStrategyEmittingOrdersTurnedOffCallback() {
+		}
 	}
 }

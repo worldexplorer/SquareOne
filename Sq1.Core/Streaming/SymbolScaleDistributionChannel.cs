@@ -14,19 +14,32 @@ namespace Sq1.Core.Streaming {
 		object lockConsumersQuote;
 		object lockConsumersBar;
 
+		//NB#1	QuotePump.PushStraightOrBuffered replaced this.PushQuoteToConsumers to:
+		//		1) set Streaming free without necessity to wait for Script.OnNewQuote/Bar and deliver the next quote ASAP;
+		//		2) pause the Live trading and re-Backtest with new parameters imported from Optimizer, and continue Live with them (handling open positions at the edge NYI)
+		//NB#2	QuotePump.PushConsumersPaused will freeze max all opened charts and one Solidifier per DataSource:Symbol:ScaleInterval;
+		//		ability to control on per-consumer level costs more, including dissync between Solidifier.BarsStored and Executor.BarsInMemory
+		public QuotePump QuotePump { get; protected set; }
+
 		public SymbolScaleDistributionChannel() {
 			lockConsumersQuote = new object();
 			lockConsumersBar = new object();
-			this.consumersQuote = new List<IStreamingConsumer>();
-			this.consumersBar = new List<IStreamingConsumer>();
+			consumersQuote = new List<IStreamingConsumer>();
+			consumersBar = new List<IStreamingConsumer>();
 			earlyBinders = new Dictionary<IStreamingConsumer, StreamingEarlyBinder>();
+			QuotePump = new QuotePump(this);
 		}
-		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval) : this() {
+		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval, bool quotePumpSeparatePushingThreadEnabled = true) : this() {
 			Symbol = symbol;
 			ScaleInterval = scaleInterval;
 			StreamingBarFactoryUnattached = new StreamingBarFactoryUnattached(symbol, ScaleInterval);
+			// delayed start to 1) give BacktestStreaming-created channels to not start PumpThread (both architecturally and for linear call stack in debugger)
+			// 2) set Thread.CurrentThread.Name = QuotePump.channel.ToString() ( == this[SymbolScaleDistributionChannel].ToString), without subscribers it looks lame now
+			if (this.QuotePump.SeparatePushingThreadEnabled != quotePumpSeparatePushingThreadEnabled) {
+				this.QuotePump.SeparatePushingThreadEnabled  = quotePumpSeparatePushingThreadEnabled;
+			}
 		}
-		public void PushQuoteToConsumers(Quote quote2bClonedForEachConsumer) {
+		public void PushQuoteToPump(Quote quote2bClonedForEachConsumer) {
 			if (String.IsNullOrEmpty(quote2bClonedForEachConsumer.Symbol)) {
 				Assembler.PopupException("quote.Symbol[" + quote2bClonedForEachConsumer.Symbol + "] is null or empty, returning");
 				return;
@@ -38,6 +51,13 @@ namespace Sq1.Core.Streaming {
 
 			Quote quoteSernoEnrichedWithUnboundStreamingBar = this.StreamingBarFactoryUnattached.
 				EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar(quote2bClonedForEachConsumer);
+
+			//v1 this.PushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
+			//v2 let the user re-backtest during live streaming using 1) QuotePump.OnHold=true; 2) RunBacktest(); 3) QuotePump.OnHold=false;
+			QuotePump.PushStraightOrBuffered(quoteSernoEnrichedWithUnboundStreamingBar);
+		}
+		[Obsolete("DANGER!!! QUOTE_MUST_BE_CLONED_AND_ENRICHED USE_PushQuoteToPump_INSTEAD")]
+		public void PushQuoteToConsumers(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
 			if (quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == 0) {
 				if (StreamingBarFactoryUnattached.LastBarFormedUnattached != null
 						//&& double.IsNaN(StreamingBarFactoryUnattached.LastBarFormedUnattached.Close) == true
@@ -52,7 +72,7 @@ namespace Sq1.Core.Streaming {
 						//}
 					}
 				} else {
-					string msg = "I won't push LastStaticBar(DateTime.MinValue, NaN*5) on first quote2bClonedForEachConsumer[" + quote2bClonedForEachConsumer + "]"
+					string msg = "I won't push LastStaticBar(DateTime.MinValue, NaN*5) on first quoteSernoEnrichedWithUnboundStreamingBar[" + quoteSernoEnrichedWithUnboundStreamingBar + "]"
 						+ " because it has initialized LastStaticBar=StreamingBar.Clone()"
 						+ " for " + this.StreamingBarFactoryUnattached;
 					//Assembler.PopupException(msg);
@@ -197,12 +217,19 @@ namespace Sq1.Core.Streaming {
 				try {
 					quoteWithStreamingBarBound = binder.BindStreamingBarForQuote(quoteSernoEnrichedWithUnboundStreamingBar);
 				} catch (Exception e) {
-					string msg = "QUOTE_BINDING_TO_PARENT_STREAMIN_BAR_FAILED " + quoteWithStreamingBarBound.ToString();
+					string msg = "QUOTE_BINDING_TO_PARENT_STREAMING_BAR_FAILED " + quoteWithStreamingBarBound.ToString();
 					Assembler.PopupException(msg + msig, e);
 					continue;
 				}
 
 				try {
+					//if (consumer.ConsumerBarsToAppendInto.Count == 0) {
+					//    // HACK AVOIDING DONT_FEED_ME_WITH_EMPTY_BARS for very first quote of a symbol
+					//    consumer.ConsumerBarsToAppendInto.BarCreateAppendBindStatic(quoteSernoEnrichedWithUnboundStreamingBar.ServerTime,
+					//        quoteSernoEnrichedWithUnboundStreamingBar.Bid, quoteSernoEnrichedWithUnboundStreamingBar.Bid,
+					//        quoteSernoEnrichedWithUnboundStreamingBar.Ask, quoteSernoEnrichedWithUnboundStreamingBar.Ask,
+					//        quoteSernoEnrichedWithUnboundStreamingBar.Size);
+					//}
 					consumer.ConsumeQuoteOfStreamingBar(quoteWithStreamingBarBound);
 				} catch (Exception e) {
 					string msg = "BOUND_QUOTE_PUSH_FAILED " + quoteWithStreamingBarBound.ToString();
@@ -234,30 +261,30 @@ namespace Sq1.Core.Streaming {
 		public bool ConsumersQuoteContains(IStreamingConsumer consumer) { lock (lockConsumersQuote) { return this.consumersQuote.Contains(consumer); } }
 		public void ConsumersQuoteAdd(IStreamingConsumer consumer) { lock (lockConsumersQuote) {
 				this.consumersQuote.Add(consumer);
-				if (earlyBinders.ContainsKey(consumer) == false) {
-					earlyBinders.Add(consumer, new StreamingEarlyBinder(this.StreamingBarFactoryUnattached, consumer));
-				}
+				if (earlyBinders.ContainsKey(consumer)) return;
+				earlyBinders.Add(consumer, new StreamingEarlyBinder(this.StreamingBarFactoryUnattached, consumer));
 			} }
 		public void ConsumersQuoteRemove(IStreamingConsumer consumer) { lock (lockConsumersQuote) {
 				this.consumersQuote.Remove(consumer);
-				if (earlyBinders.ContainsKey(consumer) && this.consumersBar.Contains(consumer) == false) {
-					earlyBinders.Remove(consumer);
-				}
+				//if (earlyBinders.ContainsKey(consumer) && this.consumersBar.Contains(consumer) == false) {
+				if (this.consumersBar.Contains(consumer)) return;
+				if (earlyBinders.ContainsKey(consumer) == false) return;
+				earlyBinders.Remove(consumer);
 			} }
 		public int ConsumersQuoteCount { get { lock (lockConsumersQuote) { return this.consumersQuote.Count; } } }
 
 		public bool ConsumersBarContains(IStreamingConsumer consumer) { lock (lockConsumersBar) { return this.consumersBar.Contains(consumer); } }
 		public void ConsumersBarAdd(IStreamingConsumer consumer) { lock (lockConsumersBar) {
 				this.consumersBar.Add(consumer);
-				if (earlyBinders.ContainsKey(consumer) == false) {
-					earlyBinders.Add(consumer, new StreamingEarlyBinder(this.StreamingBarFactoryUnattached, consumer));
-				}
+				if (earlyBinders.ContainsKey(consumer)) return;
+				earlyBinders.Add(consumer, new StreamingEarlyBinder(this.StreamingBarFactoryUnattached, consumer));
 			} }
 		public void ConsumersBarRemove(IStreamingConsumer consumer) { lock (lockConsumersBar) {
 				this.consumersBar.Remove(consumer);
-				if (earlyBinders.ContainsKey(consumer) && this.consumersQuote.Contains(consumer) == false) {
-					earlyBinders.Remove(consumer);
-				}
+				//if (earlyBinders.ContainsKey(consumer) && this.consumersQuote.Contains(consumer) == false) {
+				if (this.consumersQuote.Contains(consumer)) return;
+				if (earlyBinders.ContainsKey(consumer) == false) return;
+				earlyBinders.Remove(consumer);
 			} }
 		public int ConsumersBarCount { get { lock (lockConsumersBar) { return this.consumersBar.Count; } } }
 	}

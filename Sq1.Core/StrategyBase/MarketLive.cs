@@ -5,10 +5,10 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
-	public class MarketRealStreaming {
-		private ScriptExecutor executor;
+	public class MarketLive {
+		ScriptExecutor executor;
 
-		public MarketRealStreaming(ScriptExecutor executor) {
+		public MarketLive(ScriptExecutor executor) {
 			this.executor = executor;
 		}
 

@@ -34,6 +34,7 @@ namespace Sq1.Core.StrategyBase {
 				if (positionsMaster.Count == 0) return null;
 				return positionsMaster[positionsMaster.Count - 1];
 			} }
+		public bool HasAlertsPendingAndPositionsOpenNow { get { return this.HasAlertsPending && this.HasPositionsOpenNow; } }
 		public bool HasAlertsPendingOrPositionsOpenNow { get { return this.HasAlertsPending || this.HasPositionsOpenNow; } }
 		public bool HasAlertsPending { get { return (this.Executor.ExecutionDataSnapshot.AlertsPending.Count > 0); } }
 		public bool HasPositionsOpenNow { get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
@@ -209,6 +210,7 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		public void IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot() {
 			this.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Clear();
+			bool strategySaveRequired = false;
 			foreach (Indicator indicatorInstance in this.IndicatorsInitializedInDerivedConstructor) {
 				if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorInstance.Name)) {
 					string msg = "IndicatorsInitializedInDerivedConstructor are getting initialized from ContextCurrent and will be kept in sync with user clicks"
@@ -239,8 +241,9 @@ namespace Sq1.Core.StrategyBase {
 					}
 				} else {
 					string msg = "JSONStrategy_JUST_ADDED_NEW_INDICATOR_WITH_ITS_NEW_PARAMETERS[" + indicatorInstance.Name + "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 					this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(indicatorInstance.Name, new List<IndicatorParameter>(indicatorInstance.ParametersByName.Values));
+					strategySaveRequired = true;
 				}
 
 				this.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Add(indicatorInstance.Name, indicatorInstance);
@@ -252,6 +255,7 @@ namespace Sq1.Core.StrategyBase {
 				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartConditionalHostPanelForIndicatorGet(indicatorInstance);
 				indicatorInstance.Initialize(priceOrItsOwnPanel);
 			}
+			if (strategySaveRequired) Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 		}
 		#endregion
 

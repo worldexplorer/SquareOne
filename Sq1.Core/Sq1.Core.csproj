@@ -182,6 +182,7 @@
       <DependentUpon>Strategy.cs</DependentUpon>
     </Compile>
     <Compile Include="StrategyBase\SystemPerformanceEventArgs.cs" />
+    <Compile Include="Streaming\QuotePump.cs" />
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
     <Compile Include="Streaming\StreamingEarlyBinder.cs" />
     <Compile Include="Streaming\StreamingProvider.EditorSupport.cs">
@@ -219,7 +220,7 @@
     <Compile Include="Execution\AlertEventArgs.cs" />
     <Compile Include="Execution\ReporterPokeUnitEventArgs.cs" />
     <Compile Include="StrategyBase\BidOrAsk.cs" />
-    <Compile Include="StrategyBase\MarketSimStreaming.cs" />
+    <Compile Include="StrategyBase\MarketSim.cs" />
     <Compile Include="Execution\PositionEventArgs.cs" />
     <Compile Include="StrategyBase\PerformanceEventArg.cs" />
     <Compile Include="StrategyBase\PositionPrototypeActivator.cs" />
@@ -290,7 +291,7 @@
     <Compile Include="Execution\Direction.cs" />
     <Compile Include="StrategyBase\Script.cs" />
     <Compile Include="StrategyBase\ScriptCompiler.cs" />
-    <Compile Include="StrategyBase\MarketRealStreaming.cs" />
+    <Compile Include="StrategyBase\MarketLive.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">

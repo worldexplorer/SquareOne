@@ -14,7 +14,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.olvTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxTree = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniRecentAlwaysSelected = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniTreeShowsTimesInsteadOfMessages = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniTreeShowExceptionTime = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniltbDelay = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniCopy = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,7 +86,7 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			this.ctxTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.mniRecentAlwaysSelected,
-			this.mniTreeShowsTimesInsteadOfMessages,
+			this.mniTreeShowExceptionTime,
 			this.mniltbDelay,
 			this.toolStripSeparator1,
 			this.mniCopy,
@@ -105,11 +105,11 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			// mniTreeShowsTimesInsteadOfMessages
 			// 
-			this.mniTreeShowsTimesInsteadOfMessages.CheckOnClick = true;
-			this.mniTreeShowsTimesInsteadOfMessages.Name = "mniTreeShowsTimesInsteadOfMessages";
-			this.mniTreeShowsTimesInsteadOfMessages.Size = new System.Drawing.Size(254, 22);
-			this.mniTreeShowsTimesInsteadOfMessages.Text = "Shows Times Instead Of Messages";
-			this.mniTreeShowsTimesInsteadOfMessages.Click += new System.EventHandler(this.mniTreeShowsTimesInsteadOfMessages_Click);
+			this.mniTreeShowExceptionTime.CheckOnClick = true;
+			this.mniTreeShowExceptionTime.Name = "mniTreeShowExceptionTime";
+			this.mniTreeShowExceptionTime.Size = new System.Drawing.Size(254, 22);
+			this.mniTreeShowExceptionTime.Text = "Show Timestamps";
+			this.mniTreeShowExceptionTime.Click += new System.EventHandler(this.mniTreeShowsTimesInsteadOfMessages_Click);
 			// 
 			// mniltbDelay
 			// 
@@ -279,7 +279,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.ResumeLayout(false);
 
 		}
-		private System.Windows.Forms.ToolStripMenuItem mniTreeShowsTimesInsteadOfMessages;
+		private System.Windows.Forms.ToolStripMenuItem mniTreeShowExceptionTime;
 		private TreeListView treeExceptions;
 		private TextBox txtExceptionMessage;
 		private ListView lvStackTrace;

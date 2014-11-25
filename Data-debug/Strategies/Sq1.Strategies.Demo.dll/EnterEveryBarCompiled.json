@@ -1,0 +1,121 @@
+{
+  "$type": "Sq1.Core.StrategyBase.Strategy, Sq1.Core",
+  "Guid": "05d850ff-a502-42f0-a65c-43695a409f16",
+  "Name": "EnterEveryBarCompiled",
+  "ScriptSourceCode": null,
+  "DotNetReferences": null,
+  "DllPathIfNoSourceCode": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
+  "ExceptionsLimitToAbortBacktest": 10,
+  "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json",
+  "ScriptContextCurrentName": "Default",
+  "ScriptContextsByName": {
+    "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
+    "Default": {
+      "$type": "Sq1.Core.StrategyBase.ContextScript, Sq1.Core",
+      "PositionSize": {
+        "$type": "Sq1.Core.Execution.PositionSize, Sq1.Core",
+        "Mode": 1,
+        "DollarsConstantEachTrade": 0.0,
+        "SharesConstantEachTrade": 1.0
+      },
+      "IsCurrent": true,
+      "StrategyEmittingOrders": false,
+      "ReporterShortNamesUserInvokedJSONcheck": [],
+      "BacktestOnRestart": true,
+      "BacktestOnSelectorsChange": true,
+      "BacktestOnDataSourceSaved": true,
+      "ReportersSnapshots": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
+        "Performance": null,
+        "Positions": {
+          "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
+          "ShowEntriesExits": true,
+          "ShowPercentage": true,
+          "ShowBarsHeld": true,
+          "ShowMaeMfe": true,
+          "ShowSignals": true,
+          "ShowCommission": true,
+          "Colorify": true
+        }
+      },
+      "ApplyCommission": false,
+      "EnableSlippage": false,
+      "LimitOrderSlippage": false,
+      "RoundEquityLots": false,
+      "RoundEquityLotsToUpperHundred": false,
+      "NoDecimalRoundingForLimitStopPrice": false,
+      "SlippageUnits": 1.0,
+      "SlippageTicks": 1,
+      "PriceLevelSizeForBonds": 0,
+      "FillOutsideQuoteSpreadParanoidCheckThrow": false,
+      "SpreadModelerClassName": "BacktestSpreadModelerPercentage",
+      "SpreadModelerPercent": 0.005,
+      "BacktestMode": 4,
+      "Name": "Default",
+      "Symbol": "autogen",
+      "DataSourceName": "Qmock",
+      "ScaleInterval": {
+        "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+        "Scale": 3,
+        "Interval": 1,
+        "IsIntraday": true,
+        "AsTimeSpanInSeconds": 60,
+        "AsTimeSpan": "00:01:00"
+      },
+      "DataRange": {
+        "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
+        "Range": 1,
+        "StartDate": "0001-01-01T00:00:00",
+        "EndDate": "9999-12-31T23:59:59.9999999",
+        "RecentBars": 500,
+        "RecentTimeunits": 0
+      },
+      "IsStreamingTriggeringScript": true,
+      "ShowRangeBar": false,
+      "IsStreaming": true,
+      "ScriptParametersById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib",
+        "1": {
+          "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
+          "Id": 1,
+          "ReasonToExist": "NO_REASON_TO_EXIST",
+          "Name": "test",
+          "ValueMin": 0.0,
+          "ValueMax": 10.0,
+          "ValueIncrement": 1.0,
+          "ValueCurrent": 0.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true
+        },
+        "2": {
+          "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
+          "Id": 2,
+          "ReasonToExist": "set to 0 if you don't want log() to spam your Exceptions window",
+          "Name": "verbose",
+          "ValueMin": 0.0,
+          "ValueMax": 1.0,
+          "ValueIncrement": 1.0,
+          "ValueCurrent": 0.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true
+        }
+      },
+      "IndicatorParametersByName": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+        "MAfast": [
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "Name": "Period",
+            "ValueMin": 10.0,
+            "ValueMax": 20.0,
+            "ValueIncrement": 1.0,
+            "ValueCurrent": 15.0,
+            "BorderShown": false,
+            "NumericUpdownShown": true
+          }
+        ]
+      }
+    }
+  },
+  "HasChartOnly": false
+}

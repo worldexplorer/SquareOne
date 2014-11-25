@@ -17,10 +17,10 @@ namespace Sq1.Core.Streaming {
 			this.StreamingProvider = streamingProvider;
 		}
 
-		public void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
+		public void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = true) {
 			lock (lockConsumersBySymbol) {
 				if (this.DistributionChannels.ContainsKey(symbol) == false) {
-					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval);
+					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled);
 					newChannel.ConsumersQuoteAdd(consumer);
 					Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 					newScaleChannels.Add(scaleInterval, newChannel);
@@ -87,10 +87,10 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		}
 
-		public void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
+		public void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = true) {
 			lock (lockConsumersBySymbol) {
 				if (this.DistributionChannels.ContainsKey(symbol) == false) {
-					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval);
+					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled);
 					newChannel.ConsumersBarAdd(consumer);
 					Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 					newScaleChannels.Add(scaleInterval, newChannel);
@@ -236,7 +236,7 @@ namespace Sq1.Core.Streaming {
 				}
 				// don't clone quote here!! enrich inside each channel => IntraBarSerno++,
 				// then clone quote for every consumer lateBind to ParentBars, variable on the history length
-				channel.PushQuoteToConsumers(quote);
+				channel.PushQuoteToPump(quote);
 			}
 		}
 		public List<SymbolScaleDistributionChannel> GetDistributionChannelsFor(string symbol) {
@@ -254,7 +254,6 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public SymbolScaleDistributionChannel GetDistributionChannelFor(string symbol, BarScaleInterval barScaleInterval) {
-
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
 				string msg = "NO_SYMBOL_SUBSCRIBER DataDistributor[" + this + "].DistributionChannels.ContainsKey(" + symbol + ")=false";
 				Assembler.PopupException(msg);
