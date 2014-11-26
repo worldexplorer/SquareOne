@@ -3,15 +3,15 @@ using System;
 namespace Sq1.Core.DataTypes {
 	public class BarDataRange {
 		public BarRange Range;
-		public DateTime StartDate;
-		public DateTime EndDate;
+		public DateTime DateFrom;
+		public DateTime DateTill;
 		public int RecentBars;
 		public int RecentTimeunits;
 
 		public BarDataRange() {
 			Range = BarRange.AllData;
-			StartDate = DateTime.MinValue;
-			EndDate = DateTime.MaxValue;
+			DateFrom = DateTime.MinValue;
+			DateTill = DateTime.MaxValue;
 		}
 		public BarDataRange(int recentBars) : this() {
 			Range = BarRange.RecentBars;
@@ -23,8 +23,8 @@ namespace Sq1.Core.DataTypes {
 		}
 		public BarDataRange(DateTime startDate, DateTime endDate) : this()  {
 			Range = BarRange.DateRange;
-			StartDate = startDate;
-			EndDate = endDate;
+			DateFrom = startDate;
+			DateTill = endDate;
 		}
 
 		public override string ToString() {
@@ -49,20 +49,20 @@ namespace Sq1.Core.DataTypes {
 					ret = this.RecentTimeunits.ToString("N0") + " Days";
 					break;
 				case BarRange.DateRange:
-					if (this.StartDate.Year == this.EndDate.Year) {
-						if (this.StartDate.Month == this.EndDate.Month) {
-							ret = this.StartDate.ToString("dd");
+					if (this.DateFrom.Year == this.DateTill.Year) {
+						if (this.DateFrom.Month == this.DateTill.Month) {
+							ret = this.DateFrom.ToString("dd");
 						} else {
-							ret = this.StartDate.ToString("dd MMM");
+							ret = this.DateFrom.ToString("dd MMM");
 						}
 					} else {
-						ret = this.StartDate.ToString("dd MMM yyyy");
+						ret = this.DateFrom.ToString("dd MMM yyyy");
 					}
 					ret += " ... ";
 					//if (this.IsStreaming) {
 					//	ret += "NOW";
 					//} else {
-						ret += this.EndDate.ToString("dd MMM yyyy");
+						ret += this.DateTill.ToString("dd MMM yyyy");
 					//}
 					break;
 				default:
@@ -92,8 +92,8 @@ namespace Sq1.Core.DataTypes {
 					endDate = DateTime.MaxValue;
 					break;
 				case BarRange.DateRange:
-					startDate = this.StartDate;
-					endDate = this.EndDate;
+					startDate = this.DateFrom;
+					endDate = this.DateTill;
 					break;
 				case BarRange.RecentBars:
 					startDate = DateTime.MinValue;

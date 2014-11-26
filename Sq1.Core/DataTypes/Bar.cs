@@ -163,7 +163,7 @@ namespace Sq1.Core.DataTypes {
 			string thisAsString = this.ToString();
 			return (barAsString == thisAsString);
 		}
-		public void CheckOHLCVthrow() {
+		public string CheckOHLCVthrow(bool throwNewException = true) {
 			string msg = "";
 			
 			if (this.Open <= 0)			msg += "Open[" + this.Open + "]<=0 ";
@@ -180,10 +180,14 @@ namespace Sq1.Core.DataTypes {
 			
 			if (this.Open > this.High)	msg += "Open[" + this.Open + "]>High[" + this.High + "] ";
 			if (this.Open < this.Low)	msg += "Open[" + this.Open + "]<Low[" + this.High + "] ";
-			
-			if (string.IsNullOrEmpty(msg)) return;
+
+			if (string.IsNullOrEmpty(msg)) return msg;
+
 			//Debugger.Break();
-			throw new Exception(msg);
+			if (throwNewException) {
+				throw new Exception(msg);
+			}
+			return msg;
 		}
 		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, ref string msg) {
 			if (this.Symbol != bar.Symbol) {

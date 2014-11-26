@@ -93,21 +93,22 @@ namespace Sq1.Core.DataTypes {
 				this.RaiseBarStreamingAdded(barAdding);
 			}
 		}
-		public Bar BarCreateAppendBindStatic(DateTime dateTime, double open, double high, double low, double close, double volume) {
+		public Bar BarCreateAppendBindStatic(DateTime dateTime, double open, double high, double low, double close, double volume, bool exceptionPullUpstack = false) {
 			lock (base.BarsLock) {
 				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
 				barAdding.SetOHLCValigned(open, high, low, close, volume, this.SymbolInfo);
-				this.BarAppendBindStatic(barAdding);
+				this.BarAppendBindStatic(barAdding, true);
 				return barAdding;
 			}
 		}
-		public void BarAppendBindStatic(Bar barAdding) {
+		public void BarAppendBindStatic(Bar barAdding, bool exceptionPullUpstack = false) {
 			lock (base.BarsLock) {
 				try {
 					barAdding.CheckOHLCVthrow();
 				} catch (Exception ex) {
-					Assembler.PopupException("BarAppendBindStatic(" + barAdding + ")", ex, false);
-					return;
+					string msg = "NOT_APPENDING_ZERO_BAR BarAppendBindStatic(" + barAdding + ")";
+					if (exceptionPullUpstack) throw new Exception(msg, ex);
+					Assembler.PopupException(msg, ex, false);
 				}
 				this.BarStreaming = null;
 				this.BarAppendBind(barAdding);

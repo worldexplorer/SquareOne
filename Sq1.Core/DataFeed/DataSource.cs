@@ -180,7 +180,7 @@ namespace Sq1.Core.DataFeed {
 				Assembler.PopupException("WONT_ADD_TO_BAR_FILE DataSource.BarAppend(" + barLastFormed + ")", ex, false);
 				return ret;
 			}
-			ret = this.BarsRepository.DataFileForSymbol(barLastFormed.Symbol).BarsAppendThreadSafe(barLastFormed);
+			ret = this.BarsRepository.DataFileForSymbol(barLastFormed.Symbol).BarAppendThreadSafe(barLastFormed);
 			return ret;
 		}
 		public int BarsSave(Bars bars, bool createIfDoesntExist = false) {

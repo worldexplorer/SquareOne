@@ -72,7 +72,8 @@ namespace Sq1.Core.Streaming {
 						//}
 					}
 				} else {
-					string msg = "I won't push LastStaticBar(DateTime.MinValue, NaN*5) on first quoteSernoEnrichedWithUnboundStreamingBar[" + quoteSernoEnrichedWithUnboundStreamingBar + "]"
+					string msg = "I won't push LastStaticBar(DateTime.MinValue, NaN*5) on first quoteSernoEnrichedWithUnboundStreamingBar["
+						+ quoteSernoEnrichedWithUnboundStreamingBar + "]"
 						+ " because it has initialized LastStaticBar=StreamingBar.Clone()"
 						+ " for " + this.StreamingBarFactoryUnattached;
 					//Assembler.PopupException(msg);

@@ -12,25 +12,44 @@ namespace Sq1.Core.Repositories {
 		public string Abspath { get; protected set; }
 		public string Relpath { get { return RepositoryBarsFile.GetRelpathFromEnd(this.Abspath, 5); } }
 		double barFileCurrentVersion = 3;	// yeps double :) 8 bytes!
-		int symbolMaxLength = 64;			// 32 UTF8 characters
-		int symbolHRMaxLength = 128;		// 64 UTF8 characters
-		long headerSize;
-		long oneBarSize;
-		object sequentialLock;
+		int symbolMaxLength = 64;			// IRRELEVANT_FOR_barFileCurrentVersion=3 32 UTF8 characters
+		int symbolHRMaxLength = 128;		// IRRELEVANT_FOR_barFileCurrentVersion=3 64 UTF8 characters
+		long headerSize;			// BARS_LOAD_TELEMETRY
+		long oneBarSize;			// BARS_LOAD_TELEMETRY
+		object fileReadWriteSequentialLock;
 
-		Dictionary<double, int> headerSizesByVersion = new Dictionary<double, int>() { { 3, 212 } };	// got 212 in Debugger from this.headerSize while reading saved v3 file
-		Dictionary<double, int> barSizesByVersion = new Dictionary<double, int>() { { 3, 48 } };	// got 212 in Debugger from this.oneBarSize while reading saved v3 file
+		Dictionary<double, long> headerSizesByVersion = new Dictionary<double, long>() { { 3, 20 } };	// got 212 in Debugger from this.headerSize while reading saved v3 file
+		Dictionary<double, long> barSizesByVersion = new Dictionary<double, long>() { { 3, 48 } };	// got 212 in Debugger from this.oneBarSize while reading saved v3 file
 		
 		public RepositoryBarsFile(RepositoryBarsSameScaleInterval barsFolder, string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
-			sequentialLock = new object();
+			fileReadWriteSequentialLock = new object();
 			this.barsRepository = barsFolder;
 			this.Symbol = symbol;
 			this.Abspath = this.barsRepository.AbspathForSymbol(this.Symbol, throwIfDoesntExist, createIfDoesntExist);
 		}
 
-		public Bars BarsLoadAllThreadSafe() {
+		public Bars BarsLoadThreadSafe(DateTime dateFrom, DateTime dateTill, int maxBars) {
+			Bars barsAll = this.BarsLoadAllThreadSafe();
+			//Assembler.PopupException("Loaded [ " + bars.Count + "] bars; symbol[" + this.Symbol + "] scaleInterval[" + this.BarsFolder.ScaleInterval + "]");
+			if (dateFrom == DateTime.MinValue && dateTill == DateTime.MaxValue && maxBars == 0) return barsAll;
+
+			string start = (dateFrom == DateTime.MinValue) ? "MIN" : dateFrom.ToString("dd-MMM-yyyy");
+			string end = (dateTill == DateTime.MaxValue) ? "MAX" : dateTill.ToString("dd-MMM-yyyy");
+			Bars bars = new Bars(barsAll.Symbol, barsAll.ScaleInterval, barsAll.ReasonToExist + " [" + start + "..." + end + "]max[" + maxBars + "]");
+			for (int i = 0; i < barsAll.Count; i++) {
+				if (maxBars > 0 && i >= maxBars) break;
+				Bar barAdding = barsAll[i];
+				bool skipThisBar = false;
+				if (dateFrom > DateTime.MinValue && barAdding.DateTimeOpen < dateFrom) skipThisBar = true;
+				if (dateTill < DateTime.MaxValue && barAdding.DateTimeOpen > dateTill) skipThisBar = true;
+				if (skipThisBar) continue;
+				bars.BarAppendBindStatic(barAdding.CloneDetached());
+			}
+			return bars;
+		}
+		public Bars BarsLoadAllThreadSafe(bool saveBarsIfThereWasFailedCheckOHLCV = true) {
 			Bars bars = null;
-			lock(this.sequentialLock) {
+			lock(this.fileReadWriteSequentialLock) {
 				if (File.Exists(this.Abspath) == false) {
 					string msg = "LoadBarsThreadSafe(): File doesn't exist [" + this.Abspath + "]";
 					//Assembler.PopupException(msg);
@@ -38,31 +57,16 @@ namespace Sq1.Core.Repositories {
 					return null;
 //					return bars;
 				}
-				bars = this.barsLoadAll();
+				bars = this.barsLoadAll(saveBarsIfThereWasFailedCheckOHLCV);
 			}
 			return bars;
 		}
-		public Bars BarsLoadThreadSafe(DateTime startDate, DateTime endDate, int maxBars) {
-			Bars barsAll = this.BarsLoadAllThreadSafe();
-			//Assembler.PopupException("Loaded [ " + bars.Count + "] bars; symbol[" + this.Symbol + "] scaleInterval[" + this.BarsFolder.ScaleInterval + "]");
-			if (startDate == DateTime.MinValue && endDate == DateTime.MaxValue && maxBars == 0) return barsAll;
-							  
-			string start = (startDate == DateTime.MinValue) ? "MIN" : startDate.ToString("dd-MMM-yyyy");
-			string end = (endDate == DateTime.MaxValue) ? "MAX" : endDate.ToString("dd-MMM-yyyy");
-			Bars bars = new Bars(barsAll.Symbol, barsAll.ScaleInterval, barsAll.ReasonToExist + " [" + start + "..." + end + "]max[" + maxBars + "]");
-			for (int i=0; i<barsAll.Count; i++) {
-				if (maxBars > 0 && i >= maxBars) break; 
-				Bar barAdding = barsAll[i];
-				bool skipThisBar = false;
-				if (startDate > DateTime.MinValue && barAdding.DateTimeOpen < startDate) skipThisBar = true; 
-				if (endDate < DateTime.MaxValue && barAdding.DateTimeOpen > endDate) skipThisBar = true;
-				if (skipThisBar) continue;
-				bars.BarAppendBindStatic(barAdding.CloneDetached());
-			}
-			return bars;
-		}
-		private Bars barsLoadAll() {
+		Bars barsLoadAll(bool resaveBarsIfThereWasFailedCheckOHLCV = true) {
 			string msig = " BarsLoadAll(this.Abspath=[" + this.Abspath + "]): ";
+			int barsReadTotal = 0;
+			int barsFailedCheckOHLCV = 0;
+			bool resaveRequiredByVersionMismatch = false;
+			
 			Bars bars = null;
 			DateTime dateTime = DateTime.Now;
 			FileStream fileStream = null;
@@ -74,9 +78,13 @@ namespace Sq1.Core.Repositories {
 				string symbolHumanReadable_IGNOREDv3;
 				
 				double version = binaryReader.ReadDouble();
-				#if DEBUG
-				//Debugger.Break();
-				#endif
+				if (version != this.barFileCurrentVersion) {
+					resaveRequiredByVersionMismatch = true;
+					string msg = "WILL_RESAVE_IN_CURRENT_BAR_BINARY_FORMAT"
+						+ " version[" + version + "] => this.barFileCurrentVersion[" + this.barFileCurrentVersion + "]"
+						+ " resaveRequiredByVersionMismatch[" + resaveRequiredByVersionMismatch + "]";
+					Assembler.PopupException(msg + msig, null, false);
+				}
 				
 				if (version == 1) {
 					//Assembler.PopupException("LoadBars[" + this.Relpath + "]: version[" + version + "]");
@@ -97,9 +105,7 @@ namespace Sq1.Core.Repositories {
 				BarScale barScale = (BarScale)binaryReader.ReadInt32();
 				int barInterval = binaryReader.ReadInt32();
 				int barsStored = binaryReader.ReadInt32();
-				#if DEBUG
-				this.headerSize = binaryReader.BaseStream.Position;
-				#endif
+				this.headerSize = binaryReader.BaseStream.Position;		// BARS_LOAD_TELEMETRY
 
 				BarScaleInterval scaleInterval = new BarScaleInterval(barScale, barInterval);
 				//string shortFnameIneedMorePathParts = Path.GetFileName(this.Abspath);
@@ -116,35 +122,102 @@ namespace Sq1.Core.Repositories {
 					double low = binaryReader.ReadDouble();
 					double close = binaryReader.ReadDouble();
 					double volume = binaryReader.ReadDouble();
-					#if DEBUG
+					barsReadTotal++;
 					if (this.oneBarSize == 0) {
-						this.oneBarSize = binaryReader.BaseStream.Position - this.headerSize;
+						// I want to print out the size of header and bar, but I don't want to extract save-able members from Bars and Bar to use Marshal.SizeOf(<T>)
+						this.oneBarSize = binaryReader.BaseStream.Position - this.headerSize;	// BARS_LOAD_TELEMETRY
 					}
-					#endif
-					Bar barAdded = bars.BarCreateAppendBindStatic(dateTimeOpen, open, high, low, close, volume);
+					try {
+						Bar barAdded = bars.BarCreateAppendBindStatic(dateTimeOpen, open, high, low, close, volume, true);
+					} catch (Exception ex) {
+						barsFailedCheckOHLCV++;
+						// already reported exception in CheckOHLCVthrow
+						string msg2 = " barsFailedCheckOHLCV[" + barsFailedCheckOHLCV + "]  barsReadTotal[" + barsReadTotal + "] bars.Count[" + bars.Count + "]"
+							+ " binaryReader.BaseStream.Position[" + binaryReader.BaseStream.Position + "]/[" + binaryReader.BaseStream.Length + "]";
+						Assembler.PopupException(msg2 + msig, ex, false);
+						continue;	//just in case if you add code below :)
+					}
 				}
-				//Debugger.Break();
-			} catch (EndOfStreamException ex) {
-				Assembler.PopupException(ex.Message + msig, ex);
+				
+				string msg3 = "BARS_LOAD_ALL_TELEMETRY SIZEOF(header)[" + this.headerSize + "] SIZEOF(Bar)[" + this.oneBarSize + "]"
+					+ " version[" + version + "] bars[" + bars + "] Relpath[" + this.Relpath + "]";
+				Assembler.PopupException(msg3 + msig, null, false);
+				try {
+					long barSize = this.barSizesByVersion[version];
+					if (barSize != this.oneBarSize) {
+						this.barSizesByVersion[version] = this.oneBarSize;
+					}
+				} catch (Exception ex) {
+					string msg2 = "FAILED_TO_SYNC this.barSizesByVersion[" + version + "]";
+					Assembler.PopupException(msg2 + msig, ex);
+				}
+	
+				try {
+					long headerSize = this.headerSizesByVersion[version];
+					if (headerSize != this.headerSize) {
+						this.headerSizesByVersion[version] = this.headerSize;
+					}
+				} catch (Exception ex) {
+					string msg2 = "FAILED_TO_SYNC this.headerSizesByVersion[" + version + "]";
+					Assembler.PopupException(msg2 + msig, ex);
+				}
+			} catch (Exception ex) {
+				string msg = "BARS_LOAD_ALL_FAILED[" + this.Abspath + "]";
+				Assembler.PopupException(msg + msig, ex);
 			} finally {
-				if (fileStream != null) fileStream.Close();
+				if (fileStream != null) {
+					fileStream.Close();
+					fileStream.Dispose();
+				}
 			}
+
+			
+			bool resaveRequired = resaveRequiredByVersionMismatch;
+			if (barsFailedCheckOHLCV > 0) {
+				string msg = "SOME_BARS_SKIPPED_WHILE_SAVING barsFailedCheckOHLCV[" + barsFailedCheckOHLCV + "] barsReadTotal[" + barsReadTotal + "] bars.Count[" + bars.Count + "]";
+				Assembler.PopupException(msg, null, false);
+				if (resaveBarsIfThereWasFailedCheckOHLCV) {
+					resaveRequired = true;
+				}
+			}
+			if (resaveRequired) {
+				int reSaved = this.BarsSaveThreadSafe(bars);
+				string msg2 = "RE-SAVED_TO_REMOVE_BARS_ALL_ZEROES reSaved[" + reSaved + "]";
+				Assembler.PopupException(msg2, null, false);
+			}
+
 			return bars;
 		}
 		public int BarsSaveThreadSafe(Bars bars) {
 			//BARS_INITIALIZED_EMPTY if (bars.Count == 0) return 0;
 			int barsSaved = -1;
-			lock (this.sequentialLock) {
+			lock (this.fileReadWriteSequentialLock) {
 				barsSaved = this.barsSave(bars);
 				//Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
 			}
 			return barsSaved;
 		}
 		int barsSave(Bars bars) {
+			string msig = " barsSave(" + bars + ")=>[" + this.Abspath + "]";
 			int barsSaved = 0;
+			int barsFailedCheckOHLCV = 0;
+
 			FileStream fileStream = null;
 			try {
-				fileStream = File.Create(this.Abspath);
+				// ALL_THROW_IN_VS2010
+				//fileStream = File.Create(this.Abspath);
+				//fileStream = File.Create(this.Abspath, 1024*1024, FileOptions.SequentialScan);
+				//fileStream = File.Open(this.Abspath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+				//fileStream = File.Open(this.Abspath, FileMode.Truncate, FileAccess.Write, FileShare.None);
+				//fileStream = File.OpenWrite(this.Abspath);
+				// SAME_THING_WORKS_IN_SHARP_DEVELOP
+				fileStream = File.Open(this.Abspath, FileMode.Truncate, FileAccess.Write, FileShare.None);
+			} catch (Exception ex) {
+				string msg = "1/4_FILE_OPEN_THROWN";
+				Assembler.PopupException(msg + msig, ex);
+				return barsSaved;
+			}
+			try {
 				// TODO create header structure and have its length the same both for Read & Write
 				// HEADER BEGIN
 				BinaryWriter binaryWriter = new BinaryWriter(fileStream);
@@ -169,6 +242,14 @@ namespace Sq1.Core.Repositories {
 				// HEADER END
 				for (int i = 0; i < bars.Count; i++) {
 					Bar bar = bars[i];
+					try {
+						bar.CheckOHLCVthrow();	//	catching the exception will display stacktrace in ExceptionsForm
+					} catch (Exception ex) {
+						barsFailedCheckOHLCV++;
+						string msg = "NOT_SAVING_TO_FILE_THIS_BAR__TOO_LATE_TO_FIND_WHO_GENERATED_IT barAllZeroes bar[" + bar + "]";
+						Assembler.PopupException(msg, ex, false);
+						continue;
+					}
 					binaryWriter.Write(bar.DateTimeOpen.Ticks);
 					binaryWriter.Write(bar.Open);
 					binaryWriter.Write(bar.High);
@@ -181,7 +262,14 @@ namespace Sq1.Core.Repositories {
 				string msg = "Error while Saving bars[" + this + "] into [" + this.Abspath + "]";
 				Assembler.PopupException(msg, ex);
 			} finally {
-				if (fileStream != null) fileStream.Close();
+				if (fileStream != null) {
+					fileStream.Close();
+					fileStream.Dispose();
+				}
+			}
+			if (barsFailedCheckOHLCV > 0) {
+				string msg = "SOME_BARS_SKIPPED_WHILE_SAVING barsFailedCheckOHLCV[" + barsFailedCheckOHLCV + "] barsSaved[" + barsSaved + "] bars.Count[" + bars.Count + "]";
+				Assembler.PopupException(msg, null, false);
 			}
 			return barsSaved;
 		}
@@ -239,10 +327,10 @@ namespace Sq1.Core.Repositories {
 		}
 		#endregion
 
-		public int BarsAppendThreadSafe(Bar barLastFormed) {
+		public int BarAppendThreadSafe(Bar barLastFormed) {
 			//BARS_INITIALIZED_EMPTY if (bars.Count == 0) return 0;
 			int barsAppended = -1;
-			lock (this.sequentialLock) {
+			lock (this.fileReadWriteSequentialLock) {
 				barsAppended = this.barAppend(barLastFormed);
 				//Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
 			}
@@ -272,11 +360,18 @@ namespace Sq1.Core.Repositories {
 			//int barsSaved = this.BarsSaveThreadSafe(allBars);
 
 			//v2, starting from barFileCurrentVersion=3: seek to the end, read last Bar, overwrite if same date or append if greater; 0.1ms instead of reading all - appending - writing all
-			#if DEBUG
-			//Debugger.Break();
-			#endif
 
+			int saved = 0;
 			string msig = " BarAppend(" + barLastFormed + ")=>[" + this.Abspath + "]";
+
+			try {
+				barLastFormed.CheckOHLCVthrow();	//	catching the exception will display stacktrace in ExceptionsForm
+			} catch (Exception ex) {
+				string msg = "NOT_APPENDING_TO_FILE_THIS_BAR__FIX_WHO_GENERATED_IT_UPSTACK barAllZeroes barLastFormed[" + barLastFormed + "]";
+				Assembler.PopupException(msg + msig, ex, false);
+				return saved;
+			}
+
 			FileStream fileStream = null;
 			try {
 				fileStream = File.Open(this.Abspath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
@@ -288,11 +383,12 @@ namespace Sq1.Core.Repositories {
 			try {
 				BinaryWriter binaryWriter = new BinaryWriter(fileStream);
 				BinaryReader binaryReader = new BinaryReader(fileStream);
-				int barSize = this.barSizesByVersion[this.barFileCurrentVersion];
+				//long barSize = this.barSizesByVersion[this.barFileCurrentVersion];
 				try {
-					fileStream.Seek(barSize, SeekOrigin.End);
+					// THIS_WAS_GENERATING_ZERO_BAR__YOU_WANTED_TO_PASS_NEGATIVE_VALUE_RELATIVE_TO_END_TO_SEEK_BACK_AND_ANALYZE_DATE_IF_STREAMING_SHOULD_BE_OVERWRITTEN_OR_STATIC_APPENDED fileStream.Seek(barSize, SeekOrigin.End);
+					fileStream.Seek(0, SeekOrigin.End);
 				} catch (Exception ex) {
-					string msg = "2/4_FILESTREAM_SEEK_END_THROWN barSize[" + barSize + "]";
+					string msg = "2/4_FILESTREAM_SEEK_END_THROWN Seek(0, SeekOrigin.End)";
 					Assembler.PopupException(msg + msig, ex);
 					return 0;
 				}
@@ -321,15 +417,19 @@ namespace Sq1.Core.Repositories {
 					binaryWriter.Write(barLastFormed.Low);
 					binaryWriter.Write(barLastFormed.Close);
 					binaryWriter.Write(barLastFormed.Volume);
+					saved++;
 				} catch (Exception ex) {
 					string msg = "4/4_BINARYWRITER_WRITER_THROWN";
 					Assembler.PopupException(msg + msig, ex);
 					return 0;
 				}
 			} finally {
-				if (fileStream != null) fileStream.Close();
+				if (fileStream != null) {
+					fileStream.Close();
+					fileStream.Dispose();
+				}
 			}
-			return 1;
+			return saved;
 		}
 		
 		public override string ToString() {
