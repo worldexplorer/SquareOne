@@ -26,6 +26,7 @@ namespace Sq1.Core.Streaming {
 		const int HEARTBEAT_TIMEOUT_DEFAULT = 1000;
 		bool exitPushingThreadRequested;
 		int quotesPrevWarning;
+		int timesThreadWasStarted;
 
 		public bool UpdateThreadNameSinceMaxConsumersSubscribed;
 		
@@ -41,12 +42,11 @@ namespace Sq1.Core.Streaming {
 						// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
 						return;
 					}
-					bool launchingSecondTime = (this.separatePushingThreadEnabled = false && value == true);
 					this.separatePushingThreadEnabled = value;
 					if (this.separatePushingThreadEnabled) {
 						this.exitPushingThreadRequested = false;
-						if (launchingSecondTime) {
-							Assembler.PopupException("TASK_MAY_NOT_BE_LAUNCHEABLE_MORE_THAN_ONCE FIRST_LAUNCH_WAS_IN_CTOR");
+						if (this.timesThreadWasStarted >= 1) {
+							Assembler.PopupException("TESTME_AND_DELETE_IF_OK TASK_MAY_NOT_BE_LAUNCHEABLE_MORE_THAN_ONCE");
 						}
 
 						this.confirmThreadStarted.Reset();
@@ -142,6 +142,7 @@ namespace Sq1.Core.Streaming {
 		void pusherEntryPoint() {
 			string msig = "MSIG_NOT_INITIALIZED_YET_pusherEntryPoint()";
 			try {
+				this.timesThreadWasStarted++;
 				this.confirmThreadStarted.Set();
 				while (this.exitPushingThreadRequested == false) {
 					msig = this.ToString();

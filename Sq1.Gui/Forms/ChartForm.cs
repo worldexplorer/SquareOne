@@ -238,8 +238,8 @@ namespace Sq1.Gui.Forms {
 					this.mnitlbShowLastBars.BackColor = Color.White;
 					break;
 				case BarRange.DateRange:
-					this.ChartControl.RangeBar.ValueMin = ctxScript.DataRange.StartDate; 
-					this.ChartControl.RangeBar.ValueMax = ctxScript.DataRange.EndDate; 
+					this.ChartControl.RangeBar.ValueMin = ctxScript.DataRange.DateFrom; 
+					this.ChartControl.RangeBar.ValueMax = ctxScript.DataRange.DateTill; 
 					this.mnitlbShowLastBars.InputFieldValue = "";
 					this.mnitlbShowLastBars.BackColor = Color.White;
 					break;
