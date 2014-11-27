@@ -248,6 +248,10 @@ namespace Sq1.Gui.Forms {
 
 		#region IStreamingConsumer
 		Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { return this.Bars; } }
+		void IStreamingConsumer.UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
+		}
+		void IStreamingConsumer.UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
+		}
 		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed) {
 			if (barLastFormed == null) {
 				string msg = "WRONG_SHOW_BRO";

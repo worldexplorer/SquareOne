@@ -204,7 +204,7 @@ namespace Sq1.Core.Backtesting {
 				//	bool executedAtBid = alert.Direction == Direction.Short || alert.Direction == Direction.Sell;
 				//	if (executedAtBid && alert.MarketLimitStop == MarketLimitStop.Stop) continue;
 				//}
-				QuoteGenerated quoteThatWillFillAlert = this.modelQuoteThatCouldFillAlert(alert, new DateTime(quoteToReach.LocalTimeCreatedMillis.Ticks - 911), bar2simulate);
+				QuoteGenerated quoteThatWillFillAlert = this.modelQuoteThatCouldFillAlert(alert, new DateTime(quoteToReach.LocalTimeCreated.Ticks - 911), bar2simulate);
 				if (quoteThatWillFillAlert == null) continue;
 
 				// trying to keep QuoteGenerated within the original simulated Bar (lazy to attach StreamingBar to QuoteGenerated now)

@@ -28,8 +28,9 @@ namespace Sq1.Core.StrategyBase {
 			DataSource ds = Assembler.InstanceInitialized.RepositoryJsonDataSource.DataSourceFindNullUnsafe(symbolScaleInterval.DataSourceName);
 			BarDataRange range = new BarDataRange(this.ScriptExecutor.Bars.BarFirst.DateTimeOpen, this.ScriptExecutor.Bars.BarLast.DateTimeOpen);
 			Bars bars = null;
+			string millisElapsedLoadCompress;
 			try {
-				Bars barsAll = ds.BarsLoadAndCompress(symbolScaleInterval.Symbol, symbolScaleInterval.BarScaleInterval);
+				Bars barsAll = ds.BarsLoadAndCompress(symbolScaleInterval.Symbol, symbolScaleInterval.BarScaleInterval, out millisElapsedLoadCompress);
 				Bars bar = barsAll.SelectRange(range);
 			} catch (Exception ex) {
 				Debugger.Break();

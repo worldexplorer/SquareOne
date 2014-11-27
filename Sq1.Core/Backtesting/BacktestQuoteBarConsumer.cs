@@ -13,6 +13,10 @@ namespace Sq1.Core.Backtesting {
 			this.backtester = backtester;
 		}
 		Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { return backtester.BarsSimulating; } }
+		void IStreamingConsumer.UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
+		}
+		void IStreamingConsumer.UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
+		}
 		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Quote quote) {
 			//Bar barLastFormed = quoteToReach.ParentStreamingBar;
 			ExecutionDataSnapshot snap = this.backtester.Executor.ExecutionDataSnapshot;

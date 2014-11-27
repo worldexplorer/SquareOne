@@ -151,9 +151,10 @@ namespace Sq1.Widgets.CsvImporter {
 					Assembler.InstanceInitialized.RepositoryJsonDataSource.SymbolAdd(this.targetDataSource, this.BarsParsed.Symbol);
 					overwrote = false;
 				}
-				int barsSaved = this.targetDataSource.BarsSave(this.BarsParsed);
+				string millisElapsed;
+				int barsSaved = this.targetDataSource.BarsSave(this.BarsParsed, out millisElapsed);
 				string msg = overwrote ? "FullyReplaced" : "Imported";
-				msg += " [" + barsSaved + "] bars";
+				msg += " [" + barsSaved + "]bars " + millisElapsed;
 				msg += " into DataSource[" + this.targetDataSource.Name + "]";
 				msg += " to Symbol[" + this.BarsParsed.Symbol + "]";
 				this.btnImport.Text = msg;

@@ -102,10 +102,10 @@ namespace Sq1.Gui.Forms {
 			sb.Append(quote.IntraBarSerno.ToString("000"));
 			sb.Append(" ");
 			sb.Append(quote.ServerTime.ToString("HH:mm:ss.fff"));
-			bool quoteTimesDifferMoreThanOneMicroSecond = quote.ServerTime.ToString("HH:mm:ss.f") != quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.f");
+			bool quoteTimesDifferMoreThanOneMicroSecond = quote.ServerTime.ToString("HH:mm:ss.f") != quote.LocalTimeCreated.ToString("HH:mm:ss.f");
 			if (quoteTimesDifferMoreThanOneMicroSecond) {
 				sb.Append(" :: ");
-				sb.Append(quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff"));
+				sb.Append(quote.LocalTimeCreated.ToString("HH:mm:ss.fff"));
 			}
 			if (quote.HasParentBar) {
 				TimeSpan timeLeft = (quote.ParentStreamingBar.DateTimeNextBarOpenUnconditional > quote.ServerTime)

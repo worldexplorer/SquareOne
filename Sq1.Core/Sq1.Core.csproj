@@ -133,6 +133,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataFeed\NamedObjectJsonSerializable.cs" />
     <Compile Include="Repositories\RepositoryBarsFile.cs" />
+    <Compile Include="Repositories\RepositoryBarsFile.Obsolete.cs">
+      <DependentUpon>RepositoryBarsFile.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\RepositoryBarsSameScaleInterval.cs" />
     <Compile Include="Repositories\RepositoryJsonDataSource.DynamicProperties.cs">
       <DependentUpon>RepositoryJsonDataSource.cs</DependentUpon>
