@@ -112,6 +112,8 @@ namespace Sq1.Adapters.QuikMock.Dde {
 			Timer t = new Timer(new TimerCallback(pokeWithNewQuote));
 			t.Change(nextQuoteDelayMs, 0);
 			this.running = true;
+			
+			providerMock.UpstreamSubscribedToSymbolPokeConsumersHelper(this.symbol);
 		}
 
 		public void MockStop() {
@@ -119,7 +121,8 @@ namespace Sq1.Adapters.QuikMock.Dde {
 				Assembler.PopupException("QUIK_MOCK_POKER_THREAD_ALREADY_STOPPED", null, false);
 				return;
 			}
-			running = false;
+			this.running = false;
+			providerMock.UpstreamUnSubscribedFromSymbolPokeConsumersHelper(this.symbol);
 		}
 
 		void pokeWithNewQuote(object state) {
