@@ -346,7 +346,11 @@ namespace Sq1.Gui.Forms {
 			bool wontBacktest = skipBacktest || (this.Strategy != null && this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false);
 			bool willBacktest = !wontBacktest;
 			if (loadNewBars) {
-				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, context.ScaleInterval);
+				string millisElapsedLoadCompress;
+				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, context.ScaleInterval, out millisElapsedLoadCompress);
+				Assembler.PopupException(millisElapsedLoadCompress + " //dataSource[" + dataSource.ToString()
+					+ "].BarsLoadAndCompress(" + symbol + ", " + context.ScaleInterval + ") ", null, false);
+
 				if (barsAll.Count > 0) {
 					this.ChartForm.ChartControl.RangeBar.Initialize(barsAll, barsAll);
 				}

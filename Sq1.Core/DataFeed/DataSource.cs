@@ -9,6 +9,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Repositories;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
+using System.Diagnostics;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource : NamedObjectJsonSerializable {
@@ -83,8 +84,9 @@ namespace Sq1.Core.DataFeed {
 				//barsEmpty.BarAppendBindStatic(new Bar(symbol, this.ScaleInterval, DateTime.Now));
 				//barsEmpty.BarCreateAppendBindStatic(DateTime.Now, double.NaN, double.NaN, double.NaN, double.NaN, double.NaN);
 
-				int mustBeZero = this.BarsSave(barsEmpty, true);
-				Assembler.PopupException("BARS_INITIALIZED_EMPTY[" + mustBeZero + "] " + barsEmpty.ToString(), null, false);
+				string millisElapsed;
+				int mustBeZero = this.BarsSave(barsEmpty, out millisElapsed, true);
+				Assembler.PopupException("BARS_INITIALIZED_EMPTY[" + mustBeZero + "] " + millisElapsed + " " + barsEmpty.ToString(), null, false);
 			}
 			
 			//this.BarsFolderPerst = new BarsFolder(this.FolderForBarDataStore, this.ScaleInterval, true, "dts");
@@ -169,7 +171,9 @@ namespace Sq1.Core.DataFeed {
 			this.Symbols.Remove(symbolToDelete);
 			this.BarsRepository.SymbolDataFileDelete(symbolToDelete);
 		}
-		internal int BarAppend(Bar barLastFormed) {
+		internal int BarAppendOrReplaceLast(Bar barLastFormed, out string millisElapsed) {
+			millisElapsed = "BAR_WASNT_SAVED";
+
 			int ret = -1;
 			if (this.ScaleInterval != barLastFormed.ScaleInterval) return ret;
 			if (this.Symbols.Contains(barLastFormed.Symbol) == false) return ret;
@@ -180,13 +184,31 @@ namespace Sq1.Core.DataFeed {
 				Assembler.PopupException("WONT_ADD_TO_BAR_FILE DataSource.BarAppend(" + barLastFormed + ")", ex, false);
 				return ret;
 			}
-			ret = this.BarsRepository.DataFileForSymbol(barLastFormed.Symbol).BarAppendThreadSafe(barLastFormed);
+
+			RepositoryBarsFile file = this.BarsRepository.DataFileForSymbol(barLastFormed.Symbol);
+			//v1 TESTED LIMITED_TO_APPEND_ONLY__SUITS_FOR_APPENDING_NOT_REPLACING_LAST_STORED_BAR ret = file.BarAppendStaticUnconditionalThreadSafe(barLastFormed);
+			//v2 experimental
+			Stopwatch replaceLastBarTimer = new Stopwatch();
+			replaceLastBarTimer.Start();
+			ret = file.BarAppendStaticOrReplaceStreamingThreadSafe(barLastFormed);
+			replaceLastBarTimer.Stop();
+			millisElapsed = "BarAppendOrReplaceLast[" + ret + "][" + barLastFormed.Symbol + "](" + replaceLastBarTimer.ElapsedMilliseconds + ")ms";
+
 			return ret;
 		}
-		public int BarsSave(Bars bars, bool createIfDoesntExist = false) {
+		public int BarsSave(Bars bars, out string millisElapsed, bool createIfDoesntExist = false) {
+			millisElapsed = "BARS_WERENT_SAVED";
+		
 			RepositoryBarsFile barsFile = this.BarsRepository.DataFileForSymbol(bars.Symbol, false, createIfDoesntExist);
+			Stopwatch replaceLastBarTimer = new Stopwatch();
+			replaceLastBarTimer.Start();
+
 			int barsSaved = barsFile.BarsSaveThreadSafe(bars);
-			string msg = "Saved [ " + barsSaved + "] bars; static[" + this.Name + "]";
+
+			replaceLastBarTimer.Stop();
+			millisElapsed = "BarsSave[" + bars.Count + "][" + barsSaved + "](" + replaceLastBarTimer.ElapsedMilliseconds + ")ms";
+
+			string msg = "Saved [ " + barsSaved + "]" + millisElapsed + "; static[" + this.Name + "]";
 
 			//BarsFolder perstFolder = new BarsFolder(this.BarsFolder.RootFolder, bars.ScaleInterval, true, "dts");
 			//RepositoryBarsPerst barsPerst = new RepositoryBarsPerst(perstFolder, bars.Symbol, false);
@@ -230,8 +252,25 @@ namespace Sq1.Core.DataFeed {
 			this.DataSourceAbspath = Path.Combine(this.DataSourcesAbspath, this.Name);
 			this.BarsRepository = new RepositoryBarsSameScaleInterval(this.DataSourceAbspath, this.ScaleInterval, true);
 		}
-		public Bars BarsLoadAndCompress(string symbolRq, BarScaleInterval scaleIntervalRq) {
-			Bars ret = this.RequestDataFromRepository(symbolRq);
+		public Bars BarsLoadAndCompress(string symbolRq, BarScaleInterval scaleIntervalRq, out string millisElapsed) {
+			millisElapsed = "WASNT_LOADED";
+
+			Stopwatch readAllTimer = new Stopwatch();
+			readAllTimer.Start();
+	
+			Bars ret;
+			//BarsFolder perstFolder = new BarsFolder(this.BarsFolder.RootFolder, this.DataSource.ScaleInterval, true, "dts");
+			//RepositoryBarsPerst barsPerst = new RepositoryBarsPerst(perstFolder, symbol, false);
+			//ret = barsPerst.BarsRead();
+			//if (ret == null) {
+			RepositoryBarsFile barsFile = this.BarsRepository.DataFileForSymbol(symbolRq);
+			ret = barsFile.BarsLoadAllNullUnsafeThreadSafe();
+			//}
+
+			readAllTimer.Stop();
+			millisElapsed = "BarsLoadAndCompress[" + ret.Symbol + "][" + ret.Count + "](" + readAllTimer.ElapsedMilliseconds + ")ms";
+
+			if (ret == null) ret = new Bars(symbolRq, this.ScaleInterval, "FILE_NOT_FOUND_OR_EMPTY " + this.GetType().Name);
 			ret.DataSource = this;
 			ret.MarketInfo = this.MarketInfo;
 			ret.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(ret.Symbol);
@@ -245,26 +284,19 @@ namespace Sq1.Core.DataFeed {
 				return ret;
 			}
 
+			Stopwatch compressTimer = new Stopwatch();
+			compressTimer.Start();
+
 			try {
 				ret = ret.ToLargerScaleInterval(scaleIntervalRq);
 			} catch (Exception e) {
 				Assembler.PopupException("BARS_COMPRESSION_FAILED (ret, scaleIntervalRq)", e);
 				throw e;
 			}
-			return ret;
-		}
-		public virtual Bars RequestDataFromRepository(string symbol) {
-			Bars ret;
-			// UPPERCASING_WILL_INDUCE SYMBOL_MISMATCH__CANT_SET_PARENT_BAR_FOR_QUOTE symbol = symbol.ToUpper();
 
-			//BarsFolder perstFolder = new BarsFolder(this.BarsFolder.RootFolder, this.DataSource.ScaleInterval, true, "dts");
-			//RepositoryBarsPerst barsPerst = new RepositoryBarsPerst(perstFolder, symbol, false);
-			//ret = barsPerst.BarsRead();
-			//if (ret == null) {
-			RepositoryBarsFile barsFile = this.BarsRepository.DataFileForSymbol(symbol);
-			ret = barsFile.BarsLoadAllThreadSafe();
-			//}
-			if (ret == null) ret = new Bars(symbol, this.ScaleInterval, "FILE_NOT_FOUND_OR_EMPTY " + this.GetType().Name);
+			compressTimer.Stop();
+			millisElapsed += " ToLargerScaleInterval(" + scaleIntervalRq + ")[" + compressTimer.ElapsedMilliseconds + "]ms";
+
 			return ret;
 		}
 	}

@@ -1,25 +1,34 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Repositories {
-	public class RepositoryBarsFile {
+	public partial class RepositoryBarsFile {
 		RepositoryBarsSameScaleInterval barsRepository; // WAS_PUBLIC_EARLIER{ get; protected set; }
 		public string Symbol { get; protected set; }
 		public string Abspath { get; protected set; }
 		public string Relpath { get { return RepositoryBarsFile.GetRelpathFromEnd(this.Abspath, 5); } }
+		
 		double barFileCurrentVersion = 3;	// yeps double :) 8 bytes!
 		int symbolMaxLength = 64;			// IRRELEVANT_FOR_barFileCurrentVersion=3 32 UTF8 characters
 		int symbolHRMaxLength = 128;		// IRRELEVANT_FOR_barFileCurrentVersion=3 64 UTF8 characters
 		long headerSize;			// BARS_LOAD_TELEMETRY
 		long oneBarSize;			// BARS_LOAD_TELEMETRY
+		
+		// 1)	in RepositoryBarsFile, strictly File.Open(FileAccess.(Read)Write, FileShare.None) OR File.Open(FileAccess.Read, FileShare.Read) are used;
+		// 		I wish there was a way for all binaryWriter.Write()s to block all concurrent non-conflicting File.Open(FileAccess.Read)s until previous File.Open(FileAccess.(Read)Write, FileShare.None).Close()s;
+		// 		it would be nicer if File.Open(FileAccess.Read, FileShare.Read) wouldn't throw but would wait for (FileAccess.(Read)Write+FileShare.None) to complete;
+		// 2)	fileReadWriteSequentialLock is used since there is no way for File.Open to wait current writes to Close(), it will always throw after File.Open(FileAccess.(Read)Write, FileShare.None): http://msdn.microsoft.com/en-us/library/system.io.fileshare%28v=vs.110%29.aspx
+		//		so I use fileReadWriteSequentialLock at all times including multiple non-conflicting File.Open(FileAccess.Read)s;
+		// 3)	if your BAR file is 400% fragmented and you can't wait for Seek(-barSize, SeekOrigin.End), please implement ASYNC_APPEND_TBI and you'll need
+		//		another lock or ManualResetEvent to notify readers that they can open a file closed after writer is complete;
+		// 4)	ASYNC_APPEND_TBI-related Task<LastBarAppender> could use this one: http://stackoverflow.com/questions/50744/wait-until-file-is-unlocked-in-net
 		object fileReadWriteSequentialLock;
 
-		Dictionary<double, long> headerSizesByVersion = new Dictionary<double, long>() { { 3, 20 } };	// got 212 in Debugger from this.headerSize while reading saved v3 file
-		Dictionary<double, long> barSizesByVersion = new Dictionary<double, long>() { { 3, 48 } };	// got 212 in Debugger from this.oneBarSize while reading saved v3 file
+		Dictionary<double, long> headerSizesByVersion	= new Dictionary<double, long>() { { 3, 20 } };	// got 20 in Debugger from this.headerSize while reading saved v3 file
+		Dictionary<double, long> barSizesByVersion		= new Dictionary<double, long>() { { 3, 48 } };	// got 48 in Debugger from this.oneBarSize while reading saved v3 file
 		
 		public RepositoryBarsFile(RepositoryBarsSameScaleInterval barsFolder, string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
 			fileReadWriteSequentialLock = new object();
@@ -28,8 +37,10 @@ namespace Sq1.Core.Repositories {
 			this.Abspath = this.barsRepository.AbspathForSymbol(this.Symbol, throwIfDoesntExist, createIfDoesntExist);
 		}
 
-		public Bars BarsLoadThreadSafe(DateTime dateFrom, DateTime dateTill, int maxBars) {
-			Bars barsAll = this.BarsLoadAllThreadSafe();
+		public Bars BarsLoadNullUnsafeThreadSafe_NOT_USED(DateTime dateFrom, DateTime dateTill, int maxBars) {
+			Bars barsAll = this.BarsLoadAllNullUnsafeThreadSafe();
+			if (barsAll == null) return barsAll;
+			
 			//Assembler.PopupException("Loaded [ " + bars.Count + "] bars; symbol[" + this.Symbol + "] scaleInterval[" + this.BarsFolder.ScaleInterval + "]");
 			if (dateFrom == DateTime.MinValue && dateTill == DateTime.MaxValue && maxBars == 0) return barsAll;
 
@@ -47,7 +58,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return bars;
 		}
-		public Bars BarsLoadAllThreadSafe(bool saveBarsIfThereWasFailedCheckOHLCV = true) {
+		public Bars BarsLoadAllNullUnsafeThreadSafe(bool saveBarsIfThereWasFailedCheckOHLCV = true) {
 			Bars bars = null;
 			lock(this.fileReadWriteSequentialLock) {
 				if (File.Exists(this.Abspath) == false) {
@@ -57,11 +68,11 @@ namespace Sq1.Core.Repositories {
 					return null;
 //					return bars;
 				}
-				bars = this.barsLoadAll(saveBarsIfThereWasFailedCheckOHLCV);
+				bars = this.barsLoadAllNullUnsafe(saveBarsIfThereWasFailedCheckOHLCV);
 			}
 			return bars;
 		}
-		Bars barsLoadAll(bool resaveBarsIfThereWasFailedCheckOHLCV = true) {
+		Bars barsLoadAllNullUnsafe(bool resaveBarsIfThereWasFailedCheckOHLCV = true) {
 			string msig = " BarsLoadAll(this.Abspath=[" + this.Abspath + "]): ";
 			int barsReadTotal = 0;
 			int barsFailedCheckOHLCV = 0;
@@ -117,11 +128,11 @@ namespace Sq1.Core.Repositories {
 				//for (int barsRead = 0; barsRead<barsStored; barsRead++) {
 				while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length) {
 					DateTime dateTimeOpen = new DateTime(binaryReader.ReadInt64());
-					double open = binaryReader.ReadDouble();
-					double high = binaryReader.ReadDouble();
-					double low = binaryReader.ReadDouble();
-					double close = binaryReader.ReadDouble();
-					double volume = binaryReader.ReadDouble();
+					double open		= binaryReader.ReadDouble();
+					double high		= binaryReader.ReadDouble();
+					double low		= binaryReader.ReadDouble();
+					double close	= binaryReader.ReadDouble();
+					double volume	= binaryReader.ReadDouble();
 					barsReadTotal++;
 					if (this.oneBarSize == 0) {
 						// I want to print out the size of header and bar, but I don't want to extract save-able members from Bars and Bar to use Marshal.SizeOf(<T>)
@@ -203,33 +214,32 @@ namespace Sq1.Core.Repositories {
 			int barsFailedCheckOHLCV = 0;
 
 			FileStream fileStream = null;
+			BinaryWriter binaryWriter = null;
 			try {
-				// ALL_THROW_IN_VS2010
+				// WILL_binaryWriter.Close()_HELP?... ALL_THROW_IN_VS2010
+				//fileStream = File.OpenWrite(this.Abspath);
 				//fileStream = File.Create(this.Abspath);
 				//fileStream = File.Create(this.Abspath, 1024*1024, FileOptions.SequentialScan);
 				//fileStream = File.Open(this.Abspath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
-				//fileStream = File.Open(this.Abspath, FileMode.Truncate, FileAccess.Write, FileShare.None);
-				//fileStream = File.OpenWrite(this.Abspath);
-				// SAME_THING_WORKS_IN_SHARP_DEVELOP
 				fileStream = File.Open(this.Abspath, FileMode.Truncate, FileAccess.Write, FileShare.None);
+				// SAME_THING_WORKS_IN_SHARP_DEVELOP
+				//fileStream = File.Open(this.Abspath, FileMode.Truncate, FileAccess.Write, FileShare.None);
 			} catch (Exception ex) {
 				string msg = "1/4_FILE_OPEN_THROWN";
 				Assembler.PopupException(msg + msig, ex);
 				return barsSaved;
 			}
 			try {
-				// TODO create header structure and have its length the same both for Read & Write
+				// LAZY to extract save-able members from Bars and Bar to use Marshal.SizeOf(<T>) TODO create header structure and have its length the same both for Read & Write
+				
 				// HEADER BEGIN
-				BinaryWriter binaryWriter = new BinaryWriter(fileStream);
+				binaryWriter = new BinaryWriter(fileStream);
 				binaryWriter.Write((double)this.barFileCurrentVersion); // yes it was double :)
 				if (this.barFileCurrentVersion == 1) {
 					binaryWriter.Write(bars.Symbol);
 					binaryWriter.Write(bars.SymbolHumanReadable);
 				} else if (this.barFileCurrentVersion <= 2) {
 					byte[] byteBufferSymbol = this.stringToByteArray(bars.Symbol, this.symbolMaxLength);
-					#if DEBUG
-					//TESTED Debugger.Break();
-					#endif
 					binaryWriter.Write(byteBufferSymbol);
 					byte[] byteBufferSymbolHR = this.stringToByteArray(bars.SymbolHumanReadable, this.symbolHRMaxLength);
 					binaryWriter.Write(byteBufferSymbolHR);
@@ -240,6 +250,7 @@ namespace Sq1.Core.Repositories {
 				binaryWriter.Write(bars.ScaleInterval.Interval);
 				binaryWriter.Write(bars.Count);
 				// HEADER END
+				
 				for (int i = 0; i < bars.Count; i++) {
 					Bar bar = bars[i];
 					try {
@@ -262,6 +273,10 @@ namespace Sq1.Core.Repositories {
 				string msg = "Error while Saving bars[" + this + "] into [" + this.Abspath + "]";
 				Assembler.PopupException(msg, ex);
 			} finally {
+				if (binaryWriter != null) {
+					binaryWriter.Close();
+					binaryWriter.Dispose();
+				}
 				if (fileStream != null) {
 					fileStream.Close();
 					fileStream.Dispose();
@@ -273,157 +288,110 @@ namespace Sq1.Core.Repositories {
 			}
 			return barsSaved;
 		}
-		#region v2-related fixed-width routines for Symbol and SymbolHR (useless for v3 but still invoked)
-		// http://stackoverflow.com/questions/472906/converting-a-string-to-byte-array
-		byte[] stringToByteArray(string symbol, int bufferLength) {
-			byte[] ret = new byte[bufferLength];
-			//v1
-			//string symbolTruncated = symbol;
-			//if (symbolTruncated.Length > byteBuffer.Length) {
-			//	symbolTruncated = symbolTruncated.Substring(0, byteBuffer.Length);
-			//	string msg = "";
-			//	Assembler.PopupException("TRUNCATED_SYMBOL_TO_FIT_BARFILE_HEADER v[" + this.barFileCurrentVersion + "](" + bufferLength+ ")bytes [" + symbol + "]=>[" + symbolTruncated + "]");
-			//}
-			//System.Buffer.BlockCopy(symbolTruncated.ToCharArray(), 0, byteBuffer, 0, symbolTruncated.Length);
-			//v2
-			byte[] utf8 = System.Text.Encoding.UTF8.GetBytes(symbol);
-			int min = Math.Min(utf8.Length, ret.Length);
-			System.Buffer.BlockCopy(utf8, 0, ret, 0, min);
-			string reconstructed = this.reconstructFromByteArray(ret);
-			if (reconstructed.Length != symbol.Length) {
-				string msg = "TRUNCATED_SYMBOL_TO_FIT_BARFILE_HEADER v[" + this.barFileCurrentVersion + "](" + bufferLength + ")bytes [" + symbol + "]=>[" + reconstructed + "]";
-				Assembler.PopupException(msg);
-			}
-			return ret;
-		}
-		string byteArrayToString(byte[] bytes) {
-			char[] chars = new char[bytes.Length / sizeof(char)];
-			//v1 System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
-			//v2
-			//for (int i = 0; i < chars.Length; i++) {
-			//	if (chars[i] == 0) break;	// want to avoid "RIM3\0\0\0\0\0\0"
-			//	System.Buffer.BlockCopy(bytes, i, chars, i, 1);
-			//}
-			//string ret = new string(chars);
 
-			string ret = this.reconstructFromByteArray(bytes);
-			return ret;
-		}
-		string reconstructFromByteArray(byte[] bytes) {
-			string reconstructed = System.Text.Encoding.UTF8.GetString(bytes);
-			char[] filtered = new char[bytes.Length];
-			int validDestIndex = 0;
-			foreach (char c in reconstructed.ToCharArray()) {
-				if (c == 0) continue;	// avoiding "RIM3\0\0\0\0\0\0" and  "R\0I\0M\03\0\0\0\0\0\0"
-				filtered[validDestIndex++] = c;
-			}
-			char[] final = new char[validDestIndex];
-			//System.Buffer.BlockCopy(filtered, 0, final, 0, final.Length);
-			for (int i = 0; i < final.Length; i++) {
-				final[i] = filtered[i];
-			}
-			string ret = new string(final);
-			return ret;
-		}
-		#endregion
-
-		public int BarAppendThreadSafe(Bar barLastFormed) {
-			//BARS_INITIALIZED_EMPTY if (bars.Count == 0) return 0;
-			int barsAppended = -1;
+		public int BarAppendStaticOrReplaceStreamingThreadSafe(Bar barLastFormed) {
+			int barsAppendedOrReplaced = -1;
 			lock (this.fileReadWriteSequentialLock) {
-				barsAppended = this.barAppend(barLastFormed);
+				barsAppendedOrReplaced = this.barAppendStaticOrReplaceStreaming(barLastFormed);
 				//Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
 			}
-			return barsAppended;
+			return barsAppendedOrReplaced;
 		}
-		int barAppend(Bar barLastFormed) {
-			//v1
-			//Bars allBars = this.BarsLoadAllThreadSafe();
-			//if (allBars == null) {
-			//	allBars = new Bars(barLastFormed.Symbol, barLastFormed.ScaleInterval, "DUMMY: LoadBars()=null");
-			//}
-			////allBars.DumpPartialInitFromStreamingBar(bar);
 
-			//// this happens on a very first quote - this.pushBarToConsumers(StreamingBarFactory.LastBarFormed.Clone());
-			//if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) return 0;
-
-			//// not really needed to clone to save it in a file, but we became strict to eliminate other bugs
-			//barLastFormed = barLastFormed.CloneDetached();
-
-			//// SetParentForBackwardUpdateAutoindex used within Bar only()
-			////barLastFormed.SetParentForBackwardUpdateAutoindex(allBars);
-			//if (allBars.BarStaticLastNullUnsafe.DateTimeOpen == barLastFormed.DateTimeOpen) {
-			//	return 0;
-			//}
-
-			//allBars.BarAppendBindStatic(barLastFormed);
-			//int barsSaved = this.BarsSaveThreadSafe(allBars);
-
-			//v2, starting from barFileCurrentVersion=3: seek to the end, read last Bar, overwrite if same date or append if greater; 0.1ms instead of reading all - appending - writing all
-
+		// for a daily chart, you may want to sync the streaming bar every 10 seconds (ASYNC_APPEND_TBI) otherwize you loose whole past day 
+		int barAppendStaticOrReplaceStreaming(Bar barLastFormedStaticOrCurrentStreaming) {
+			//starting from barFileCurrentVersion=3: seek to the end, read last Bar, overwrite if same date or append if greater; 0.1ms instead of reading all - appending - writing all
 			int saved = 0;
-			string msig = " BarAppend(" + barLastFormed + ")=>[" + this.Abspath + "]";
+			string msig = " barAppendStaticOrReplaceStreaming(" + barLastFormedStaticOrCurrentStreaming + ")=>[" + this.Abspath + "]";
 
 			try {
-				barLastFormed.CheckOHLCVthrow();	//	catching the exception will display stacktrace in ExceptionsForm
+				barLastFormedStaticOrCurrentStreaming.CheckOHLCVthrow();	//	catching the exception will display stacktrace in ExceptionsForm
 			} catch (Exception ex) {
-				string msg = "NOT_APPENDING_TO_FILE_THIS_BAR__FIX_WHO_GENERATED_IT_UPSTACK barAllZeroes barLastFormed[" + barLastFormed + "]";
+				string msg = "NOT_APPENDING_TO_FILE_THIS_BAR__FIX_WHO_GENERATED_IT_UPSTACK barAllZeroes barLastFormed[" + barLastFormedStaticOrCurrentStreaming + "]";
 				Assembler.PopupException(msg + msig, ex, false);
 				return saved;
 			}
 
 			FileStream fileStream = null;
+			BinaryWriter binaryWriter = null;
+			BinaryReader binaryReader = null;
 			try {
 				fileStream = File.Open(this.Abspath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
 			} catch (Exception ex) {
 				string msg = "1/4_FILE_OPEN_THROWN";
 				Assembler.PopupException(msg + msig, ex);
-				return 0;
+				return saved;
 			}
 			try {
-				BinaryWriter binaryWriter = new BinaryWriter(fileStream);
-				BinaryReader binaryReader = new BinaryReader(fileStream);
-				//long barSize = this.barSizesByVersion[this.barFileCurrentVersion];
+				binaryWriter = new BinaryWriter(fileStream);
+				binaryReader = new BinaryReader(fileStream);
+				long barSize = this.barSizesByVersion[this.barFileCurrentVersion];
 				try {
 					// THIS_WAS_GENERATING_ZERO_BAR__YOU_WANTED_TO_PASS_NEGATIVE_VALUE_RELATIVE_TO_END_TO_SEEK_BACK_AND_ANALYZE_DATE_IF_STREAMING_SHOULD_BE_OVERWRITTEN_OR_STATIC_APPENDED fileStream.Seek(barSize, SeekOrigin.End);
-					fileStream.Seek(0, SeekOrigin.End);
+					fileStream.Seek(-barSize, SeekOrigin.End);
 				} catch (Exception ex) {
-					string msg = "2/4_FILESTREAM_SEEK_END_THROWN Seek(0, SeekOrigin.End)";
+			        string msg = "2/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
 					Assembler.PopupException(msg + msig, ex);
-					return 0;
+					return saved;
 				}
-				//DateTime dateTimeOpen = new DateTime(binaryReader.ReadInt64());
-				//if (dateTimeOpen >= barLastFormed.DateTimeOpen) {
-				//    try {
-				//        fileStream.Seek(barSize, SeekOrigin.End);	// overwrite the last bar, apparently streaming has been solidified
-				//    } catch (Exception ex) {
-				//        string msg = "3/4_FILESTREAM_SEEK_END_THROWN barSize[" + barSize + "]";
-				//        Assembler.PopupException(msg + msig, ex);
-				//        return 0;
-				//    }
-				//} else {
-				//    try {
-				//        fileStream.Seek(0, SeekOrigin.End);			// append barLastFormed to file since it's newer than last saved/read
-				//    } catch (Exception ex) {
-				//        string msg = "3/4_FILESTREAM_SEEK_0_THROWN";
-				//        Assembler.PopupException(msg + msig, ex);
-				//        return 0;
-				//    }
-				//}
+				// 1/3 - read the date and see if the timestamp is the same as 
+				DateTime dateTimeOpenLastStored = new DateTime(binaryReader.ReadInt64());
+				if (dateTimeOpenLastStored > barLastFormedStaticOrCurrentStreaming.DateTimeOpen) {
+					string msg = "I_REFUSE_TO_STORE_BAR_EARLIER_THAN_LAST_STORED barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
+						+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]";
+					Assembler.PopupException(msg);
+					return saved;
+				}
+				long fileStreamLength = fileStream.Length;
+				if (barLastFormedStaticOrCurrentStreaming.DateTimeOpen == dateTimeOpenLastStored) {
+				    try {
+						long fileStreamPositionAfterSeekToLastBar = fileStream.Seek(-barSize, SeekOrigin.End);
+						string msg = "DEBUGGINNG__OVERWRITING_LAST_BAR_WITH_STREAMING barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
+							+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] == dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
+							+ " fileStreamPositionAfterSeekToLastBar[" + fileStreamPositionAfterSeekToLastBar + "] fileStreamLength[" + fileStreamLength + "]"
+							;
+						Assembler.PopupException(msg, null, false);
+					} catch (Exception ex) {
+				        string msg = "3/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
+				        Assembler.PopupException(msg + msig, ex);
+				        return saved;
+				    }
+				} else {
+				    try {
+						long fileStreamPositionAfterSeekToEnd = fileStream.Seek(0, SeekOrigin.End);
+						string msg = "DEBUGGINNG__APPENDING_FRESHLY_FORMED_STATIC_BAR: barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
+							+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
+							+ " fileStreamPositionAfterSeekToEnd[" + fileStreamPositionAfterSeekToEnd + "] fileStreamLength[" + fileStreamLength + "]"
+							;
+						Assembler.PopupException(msg, null, false);
+				    } catch (Exception ex) {
+				        string msg = "3/4_FILESTREAM_SEEK_END_THROWN";
+				        Assembler.PopupException(msg + msig, ex);
+				        return saved;
+				    }
+				}
 				try {
-					binaryWriter.Write(barLastFormed.DateTimeOpen.Ticks);
-					binaryWriter.Write(barLastFormed.Open);
-					binaryWriter.Write(barLastFormed.High);
-					binaryWriter.Write(barLastFormed.Low);
-					binaryWriter.Write(barLastFormed.Close);
-					binaryWriter.Write(barLastFormed.Volume);
+					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.DateTimeOpen.Ticks);
+					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.Open);
+					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.High);
+					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.Low);
+					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.Close);
+					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.Volume);
 					saved++;
 				} catch (Exception ex) {
 					string msg = "4/4_BINARYWRITER_WRITER_THROWN";
 					Assembler.PopupException(msg + msig, ex);
-					return 0;
+					return saved;
 				}
 			} finally {
+				if (binaryReader != null) {
+					binaryReader.Close();
+					binaryReader.Dispose();
+				}
+				if (binaryWriter != null) {
+					binaryWriter.Close();
+					binaryWriter.Dispose();
+				}
 				if (fileStream != null) {
 					fileStream.Close();
 					fileStream.Dispose();

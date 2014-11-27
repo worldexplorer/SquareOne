@@ -288,5 +288,14 @@ namespace Sq1.Core.Streaming {
 				earlyBinders.Remove(consumer);
 			} }
 		public int ConsumersBarCount { get { lock (lockConsumersBar) { return this.consumersBar.Count; } } }
+
+		internal void UpstreamSubscribedToSymbolPokeConsumers(string symbol) {
+			foreach (IStreamingConsumer quoteConsumer in this.consumersQuote) quoteConsumer.UpstreamSubscribedToSymbolNotification(null);
+			foreach (IStreamingConsumer barConsumer in this.consumersBar) barConsumer.UpstreamSubscribedToSymbolNotification(null);
+		}
+		internal void UpstreamUnSubscribedFromSymbolPokeConsumers(string symbol, Quote lastQuoteReceived) {
+			foreach (IStreamingConsumer quoteConsumer in this.consumersQuote) quoteConsumer.UpstreamUnSubscribedFromSymbolNotification(lastQuoteReceived);
+			foreach (IStreamingConsumer barConsumer in this.consumersBar) barConsumer.UpstreamUnSubscribedFromSymbolNotification(lastQuoteReceived);
+		}
 	}
 }

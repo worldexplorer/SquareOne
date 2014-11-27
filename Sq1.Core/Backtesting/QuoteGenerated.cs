@@ -37,7 +37,7 @@ namespace Sq1.Core.Backtesting {
 			identicalButFresh.SymbolClass = this.SymbolClass;
 			identicalButFresh.Source = this.Source;
 			identicalButFresh.ServerTime = this.ServerTime.AddMilliseconds(911);
-			identicalButFresh.LocalTimeCreatedMillis = this.LocalTimeCreatedMillis.AddMilliseconds(911);
+			identicalButFresh.LocalTimeCreated = this.LocalTimeCreated.AddMilliseconds(911);
 			identicalButFresh.LastDealBidOrAsk = this.LastDealBidOrAsk;
 			identicalButFresh.ItriggeredFillAtBidOrAsk = this.ItriggeredFillAtBidOrAsk;
 			identicalButFresh.Bid = this.Bid;
@@ -118,7 +118,7 @@ namespace Sq1.Core.Backtesting {
 				sb.Append("]");
 			}
 			sb.Append("[");
-			sb.Append(LocalTimeCreatedMillis.ToString("HH:mm:ss.fff"));
+			sb.Append(LocalTimeCreated.ToString("HH:mm:ss.fff"));
 			sb.Append("]LOCAL");
 			if (string.IsNullOrEmpty(this.Source) == false) {
 				sb.Append(" ");

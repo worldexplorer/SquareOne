@@ -10,7 +10,7 @@ namespace Sq1.Core.DataTypes {
 		public string	SymbolClass;
 		public string	Source;
 		public DateTime ServerTime;
-		public DateTime LocalTimeCreatedMillis	{ get; protected set; }
+		public DateTime LocalTimeCreated	{ get; protected set; }
 
 		public double	Bid;
 		public double	Ask;
@@ -47,7 +47,7 @@ namespace Sq1.Core.DataTypes {
 		}
 		public Quote(DateTime localTimeEqualsToServerTimeForGenerated) : this() {
 			// PROFILER_SAID_DATETIME.NOW_IS_SLOW__I_DONT_NEED_IT_FOR_BACKTEST_ANYWAY
-			LocalTimeCreatedMillis = (localTimeEqualsToServerTimeForGenerated != DateTime.MinValue)
+			LocalTimeCreated = (localTimeEqualsToServerTimeForGenerated != DateTime.MinValue)
 				? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
 		}
 		public void SetParentBar(Bar parentBar) {
@@ -113,7 +113,7 @@ namespace Sq1.Core.DataTypes {
 				sb.Append("]");
 			}
 			sb.Append("[");
-			sb.Append(this.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff"));
+			sb.Append(this.LocalTimeCreated.ToString("HH:mm:ss.fff"));
 			sb.Append("]LOCAL ");
 			if (string.IsNullOrEmpty(this.Source) == false) sb.Append(this.Source);
 			sb.Append("STR:");

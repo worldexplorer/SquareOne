@@ -232,9 +232,9 @@ namespace Sq1.Core.Streaming {
 				string lastQuoteMillis  = lastQuote.ServerTime.ToString("HH:mm:ss.fff");
 				if (quoteMillis == lastQuoteMillis) {
 					string msg = "DONT_FEED_ME_WITH_SAME_SERVER_TIME BACKTESTER_FORGOT_TO_INCREASE_SERVER_TIMESTAMP"
-						+ " upcoming quote.LocalTimeCreatedMillis[" + quote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff")
+						+ " upcoming quote.LocalTimeCreatedMillis[" + quote.LocalTimeCreated.ToString("HH:mm:ss.fff")
 						+ "] <= lastQuoteReceived.Symbol." + quote.Symbol + "["
-						+ lastQuote.LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]: DDE lagged somewhere?...";
+						+ lastQuote.LocalTimeCreated.ToString("HH:mm:ss.fff") + "]: DDE lagged somewhere?...";
 					Assembler.PopupException(msg);
 				}
 
@@ -266,7 +266,19 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg, e);
 			}
 		}
-
+		public void UpstreamSubscribedToSymbolPokeConsumersHelper(string symbol) {
+			List<SymbolScaleDistributionChannel> channels = this.DataDistributor.GetDistributionChannelsFor(symbol);
+			foreach (var channel in channels) {
+				channel.UpstreamSubscribedToSymbolPokeConsumers(symbol);
+			}
+		}
+		public void UpstreamUnSubscribedFromSymbolPokeConsumersHelper(string symbol) {
+			List<SymbolScaleDistributionChannel> channels = this.DataDistributor.GetDistributionChannelsFor(symbol);
+			Quote lastQuoteReceived = this.StreamingDataSnapshot.LastQuoteGetForSymbol(symbol);
+			foreach (var channel in channels) {
+				channel.UpstreamUnSubscribedFromSymbolPokeConsumers(symbol, lastQuoteReceived);
+			}
+		}
 		public void UpdateConnectionStatus(int code, string msg) {
 			if (this.StatusReporter == null) return;
 			StatusReporter.UpdateConnectionStatus(this.ConnectionState, code, msg);

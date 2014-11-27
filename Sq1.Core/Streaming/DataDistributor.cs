@@ -220,7 +220,7 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 			Quote lastQuote = this.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(quote.Symbol);
-			List<SymbolScaleDistributionChannel> channelsForSymbol = GetDistributionChannelsFor(quote.Symbol);
+			List<SymbolScaleDistributionChannel> channelsForSymbol = this.GetDistributionChannelsFor(quote.Symbol);
 			foreach (SymbolScaleDistributionChannel channel in channelsForSymbol) {
 				// late quote should be within current StreamingBar, otherwize don't deliver for channel
 				if (lastQuote != null && quote.ServerTime < lastQuote.ServerTime) {
