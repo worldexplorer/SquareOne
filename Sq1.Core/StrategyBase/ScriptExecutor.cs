@@ -178,20 +178,21 @@ namespace Sq1.Core.StrategyBase {
 			// Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed +=
 			//	new EventHandler<DataSourceSymbolEventArgs>(Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed);
 		}
-		public ReporterPokeUnit ExecuteOnNewBarOrNewQuote(Quote quote) {
+		public ReporterPokeUnit ExecuteOnNewBarOrNewQuote(Quote quoteForAlertsCreated, bool onNewQuoteTrue_onNewBarFalse = true) {
 			if (this.Strategy == null) {
 				string msg1 = "I_REFUSE_TO_EXECUTE_SCRIPT YOU_DIDNT_CHECK_MY_STRATEGY_IS_NULL";
 				Assembler.PopupException(msg1);
 				return null;
 			}
 			if (this.Strategy.Script == null) return null;
-			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quote);
+			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated);
 			this.ExecutionDataSnapshot.PreExecutionOnNewBarOrNewQuoteClear();
 			int alertsDumpedForStreamingBar = -1;
 
-			if (quote != null) {
+			//if (quote != null) {
+			if (onNewQuoteTrue_onNewBarFalse == true) {
 				try {
-					this.Strategy.Script.OnNewQuoteOfStreamingBarCallback(quote);
+					this.Strategy.Script.OnNewQuoteOfStreamingBarCallback(quoteForAlertsCreated);
 					//alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
 					//if (alertsDumpedForStreamingBar > 0) {
 					//	string msg = "ITS OK HERE since prev quote has created prototype-based alerts"
@@ -199,14 +200,14 @@ namespace Sq1.Core.StrategyBase {
 					//		+ " " + alertsDumpedForStreamingBar + " alerts Dumped for " + quote;
 					//}
 				} catch (Exception ex) {
-					string msig = " //Script[" + this.Strategy.Script.GetType().Name + "].OnNewQuoteCallback(" + quote + ")";
+					string msig = " //Script[" + this.Strategy.Script.GetType().Name + "].OnNewQuoteCallback(" + quoteForAlertsCreated + ")";
 					this.PopupException(ex.Message + msig, ex);
 				}
 			} else {
 				try {
 					this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLastNullUnsafe);
 				} catch (Exception ex) {
-					string msig = " //Script[" + this.Strategy.Script.GetType().Name + "].OnNewBarCallback(" + quote + ")";
+					string msig = " //Script[" + this.Strategy.Script.GetType().Name + "].OnNewBarCallback(" + quoteForAlertsCreated + ")";
 					this.PopupException(ex.Message + msig, ex);
 				}
 			}
@@ -240,17 +241,8 @@ namespace Sq1.Core.StrategyBase {
 
 			List<Alert> alertsNewAfterExecCopy = this.ExecutionDataSnapshot.AlertsNewAfterExecSafeCopy;
 
-			Quote quoteCreatedTheseAlerts = quote;
-			if (quoteCreatedTheseAlerts == null) {
-				// I'm here when executing Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback()
-				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.DataSource.StreamingProvider.StreamingDataSnapshot
-				    .LastQuoteCloneGetForSymbol(this.Strategy.ScriptContextCurrent.Symbol);
-				quoteCreatedTheseAlerts = lastMayNotBeTheCreatorHereHavingNoParentBars.Clone();
-				quoteCreatedTheseAlerts.SetParentBarStreaming(this.Bars.BarStreaming);
-			}
-
 			if (alertsNewAfterExecCopy.Count > 0) {
-				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecCopy, quoteCreatedTheseAlerts);
+				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecCopy, quoteForAlertsCreated);
 				if (willEmit) {
 					string msg2 = "Breakpoint";
 					//#D_FREEZE Assembler.PopupException(msg2);
@@ -262,7 +254,7 @@ namespace Sq1.Core.StrategyBase {
 					this.DataSource.UnPausePumpingFor(ctx.Symbol, ctx.ScaleInterval, false);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
 				}
 			} else {
-				if (willEmit && this.Strategy.Name == "EnterEveryBarCompiled" && quote == null) {
+				if (willEmit && this.Strategy.Name == "EnterEveryBarCompiled" && quoteForAlertsCreated == null) {
 					string msg2 = "EnterEveryBarCompiled must have had new Alert here every bar; instead, alertsNewAfterExecCopy.Count=0";
 					Assembler.PopupException(msg2, null, false);
 				}
@@ -677,7 +669,7 @@ namespace Sq1.Core.StrategyBase {
 							this.PopupException(msg);
 							Stopwatch waitedForStopLossOrder = new Stopwatch();
 							waitedForStopLossOrder.Start();
-							proto.StopLossAlertForAnnihilation.MreOrderFollowedIsNotNull.WaitOne(twoMinutes);
+							proto.StopLossAlertForAnnihilation.MreOrderFollowedIsSetNow.WaitOne(twoMinutes);
 							waitedForStopLossOrder.Stop();
 							msg = "waited " + waitedForStopLossOrder.ElapsedMilliseconds + "ms for StopLossAlert.OrderFollowed";
 							if (proto.StopLossAlertForAnnihilation.OrderFollowed == null) {
@@ -697,7 +689,7 @@ namespace Sq1.Core.StrategyBase {
 							this.PopupException(msg);
 							Stopwatch waitedForTakeProfitOrder = new Stopwatch();
 							waitedForTakeProfitOrder.Start();
-							proto.TakeProfitAlertForAnnihilation.MreOrderFollowedIsNotNull.WaitOne(twoMinutes);
+							proto.TakeProfitAlertForAnnihilation.MreOrderFollowedIsSetNow.WaitOne(twoMinutes);
 							waitedForTakeProfitOrder.Stop();
 							msg = "waited " + waitedForTakeProfitOrder.ElapsedMilliseconds + "ms for TakeProfitAlert.OrderFollowed";
 							if (proto.TakeProfitAlertForAnnihilation.OrderFollowed == null) {

@@ -126,9 +126,9 @@ namespace Sq1.Core.StrategyBase {
 				}
 				this.ScriptAndIndicatorParameterClonesByName.Add(sp.Name, sp.Clone());
 			}
-	
+
 			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
-			string iids = this.Executor.Strategy.Script.IndicatorParametersAsString;;
+			string iids = this.Executor.Strategy.Script.IndicatorParametersAsString;
 			foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
 				if (this.ScriptAndIndicatorParameterClonesByName.ContainsKey(ip.FullName)) {
 					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_IndicatorParameter[" + ip.Name + "]: " + iids;

@@ -5,21 +5,21 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Streaming {
 	public class SymbolScaleDistributionChannel {
-		public string Symbol { get; protected set; }
-		public BarScaleInterval ScaleInterval { get; protected set; }
-		public StreamingBarFactoryUnattached StreamingBarFactoryUnattached { get; protected set; }
-		Dictionary<IStreamingConsumer, StreamingEarlyBinder> earlyBinders;
-		List<IStreamingConsumer> consumersQuote;
-		List<IStreamingConsumer> consumersBar;
-		object lockConsumersQuote;
-		object lockConsumersBar;
+		public	string							Symbol							{ get; protected set; }
+		public	BarScaleInterval				ScaleInterval					{ get; protected set; }
+		public	StreamingBarFactoryUnattached	StreamingBarFactoryUnattached	{ get; protected set; }
+				Dictionary<IStreamingConsumer, StreamingEarlyBinder> earlyBinders;
+				List<IStreamingConsumer>		consumersQuote;
+				List<IStreamingConsumer>		consumersBar;
+				object							lockConsumersQuote;
+				object							lockConsumersBar;
 
 		//NB#1	QuotePump.PushStraightOrBuffered replaced this.PushQuoteToConsumers to:
 		//		1) set Streaming free without necessity to wait for Script.OnNewQuote/Bar and deliver the next quote ASAP;
 		//		2) pause the Live trading and re-Backtest with new parameters imported from Optimizer, and continue Live with them (handling open positions at the edge NYI)
 		//NB#2	QuotePump.PushConsumersPaused will freeze max all opened charts and one Solidifier per DataSource:Symbol:ScaleInterval;
 		//		ability to control on per-consumer level costs more, including dissync between Solidifier.BarsStored and Executor.BarsInMemory
-		public QuotePump QuotePump { get; protected set; }
+		public	QuotePump						QuotePump						{ get; protected set; }
 
 		public SymbolScaleDistributionChannel() {
 			lockConsumersQuote = new object();
@@ -58,6 +58,10 @@ namespace Sq1.Core.Streaming {
 		}
 		[Obsolete("DANGER!!! QUOTE_MUST_BE_CLONED_AND_ENRICHED MAKE_SURE_this.PushQuoteToConsumers()_IS_INVOKED_THROUGH_PushQuoteToPump.PushStraightOrBuffered()_NOT_STRAIGHT_FROM_this.PushQuoteToDistributionChannels()")]
 		public void PushQuoteToConsumers(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
+			if (quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == -1) {
+				string msg = "QUOTE_WAS_NOT_ENRICHED_BY_StreamingBarFactoryUnattached.EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar()";
+				Assembler.PopupException(msg);
+			}
 			if (quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == 0) {
 				if (StreamingBarFactoryUnattached.LastBarFormedUnattached != null
 						//&& double.IsNaN(StreamingBarFactoryUnattached.LastBarFormedUnattached.Close) == true
@@ -65,7 +69,7 @@ namespace Sq1.Core.Streaming {
 					) {
 					lock (lockConsumersBar) {
 						//try {
-						this.bindNewStreamingBarAppendPokeConsumersStaticFormed();
+						this.bindNewStreamingBarAppendPokeConsumersStaticFormed(quoteSernoEnrichedWithUnboundStreamingBar);
 						//} catch (Exception e) {
 						//	string msg = "is this why barsSimulated.Count=6 while barOriginal=31/50??";
 						//	throw new Exception(msg);
@@ -84,7 +88,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		void bindNewStreamingBarAppendPokeConsumersStaticFormed() {
+		void bindNewStreamingBarAppendPokeConsumersStaticFormed(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
 			Bar barStreamingUnattached = this.StreamingBarFactoryUnattached.StreamingBarUnattached.Clone();
 			if (this.consumersBar.Count == 0) {
 				Assembler.PopupException("NO_BARS_CONSUMERS to push lastBarFormed[" + barStreamingUnattached.ToString() + "] SymbolScaleInterval["
@@ -108,7 +112,7 @@ namespace Sq1.Core.Streaming {
 					}
 					try {
 						Bar lastBarFormedUnattached = this.StreamingBarFactoryUnattached.LastBarFormedUnattached.Clone();
-						consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(lastBarFormedUnattached);
+						consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(lastBarFormedUnattached, null);
 					} catch (Exception e) {
 						string msg = "STREAMING_SOLIDIFIER_FAILED_TO_CONSUME_STATIC_JUST_FORMED";
 						Assembler.PopupException(msg + msig, e);
@@ -118,13 +122,15 @@ namespace Sq1.Core.Streaming {
 				#endregion
 
 				if (consumer.ConsumerBarsToAppendInto == null) {
-					try {
-						//NOPE_FRESH_STREAMING_CONTAINING_JUST_ONE_QUOTE_I_WILL_POKE_QUOTES_FROM_IT consumer.ConsumeBarLastFormed(barLastFormedBound);
-						consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStreamingUnattached);
-					} catch (Exception e) {
-						string msg = "CHART_OR_BACKTESTER_WITHOUT_BARS_TO_BIND_AS_PARENT";
-						Assembler.PopupException(msg + msig, e);
-					}
+					//try {
+					//    //NOPE_FRESH_STREAMING_CONTAINING_JUST_ONE_QUOTE_I_WILL_POKE_QUOTES_FROM_IT consumer.ConsumeBarLastFormed(barLastFormedBound);
+					//    consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStreamingUnattached);
+					//} catch (Exception e) {
+					//    string msg = "CHART_OR_BACKTESTER_WITHOUT_BARS_TO_BIND_AS_PARENT";
+					//    Assembler.PopupException(msg + msig, e);
+					//}
+					string msg = "INVESTIGATE_THIS";
+					Assembler.PopupException(msg + msig);
 					continue;
 				}
 				if (	consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe != null
@@ -144,15 +150,36 @@ namespace Sq1.Core.Streaming {
 				Bar barLastFormedBound = null;
 				try {
 					barLastFormedBound = binder.BindBarToConsumerBarsAndAppend(barStreamingUnattached);
+					if (barLastFormedBound != consumer.ConsumerBarsToAppendInto.BarLast) {
+						string msg = "MUST_NEVER_HAPPEN_barLastFormedBound != consumer.ConsumerBarsToAppendInto.BarLast";
+						Assembler.PopupException(msg + msig);
+					}
+					if (barLastFormedBound == consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe) {
+						string msg = "MUST_NEVER_HAPPEN_barLastFormedBound == consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe";
+						Assembler.PopupException(msg + msig);
+					}
+					if (barLastFormedBound != consumer.ConsumerBarsToAppendInto.BarStreaming) {
+						string msg = "MUST_NEVER_HAPPEN_barLastFormedBound != consumer.ConsumerBarsToAppendInto.BarStreaming";
+						Assembler.PopupException(msg + msig);
+					}
 				} catch (Exception e) {
 					string msg = "BAR_BINDING_TO_PARENT_FAILED " + barLastFormedBound.ToString();
 					Assembler.PopupException(msg + msig, e);
 					continue;
 				}
 
+				Quote quoteWithStreamingBarBound = null;
+				try {
+					quoteWithStreamingBarBound = binder.BindStreamingBarForQuote(quoteSernoEnrichedWithUnboundStreamingBar);
+				} catch (Exception e) {
+					string msg = "QUOTE_BINDING_TO_PARENT_STREAMING_BAR_FAILED " + quoteWithStreamingBarBound.ToString();
+					Assembler.PopupException(msg + msig, e);
+					continue;
+				}
+
 				try {
 					Bar barStaticLast	= consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
-					consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStaticLast);
+					consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStaticLast, quoteWithStreamingBarBound);
 				} catch (Exception e) {
 					string msg = "BOUND_BAR_PUSH_FAILED " + barLastFormedBound.ToString();
 					Assembler.PopupException(msg + msig, e);
@@ -190,23 +217,6 @@ namespace Sq1.Core.Streaming {
 					continue;
 				}
 				#endregion
-	
-
-				//if (consumer.ConsumerBarsToAppendInto == null) {
-				//    try {
-				//        consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStreamingUnattached);
-				//    } catch (Exception e) {
-				//        string msg = "CHART_OR_BACKTESTER_WITHOUT_BARS_TO_BIND_AS_PARENT";
-				//        Assembler.PopupException(msg + msig, e);
-				//    }
-				//    continue;
-				//}
-				//if (	consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe != null
-				//     && consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe.DateTimeOpen == barStreamingUnattached.DateTimeOpen) {
-				//    string msg = "we are on 1st ever streaming quote: probably shouln't add it to avoid ALREADY_HAVE exception";
-				//    Assembler.PopupException(msg + msig);
-				//    continue;
-				//}
 
 				if (this.earlyBinders.ContainsKey(consumer) == false) {
 					string msg = "CONSUMER_WASNT_REGISTERED_IN_earlyBinders_INVOKE_ConsumersQuoteAdd()";
@@ -225,13 +235,6 @@ namespace Sq1.Core.Streaming {
 				}
 
 				try {
-					//if (consumer.ConsumerBarsToAppendInto.Count == 0) {
-					//    // HACK AVOIDING DONT_FEED_ME_WITH_EMPTY_BARS for very first quote of a symbol
-					//    consumer.ConsumerBarsToAppendInto.BarCreateAppendBindStatic(quoteSernoEnrichedWithUnboundStreamingBar.ServerTime,
-					//        quoteSernoEnrichedWithUnboundStreamingBar.Bid, quoteSernoEnrichedWithUnboundStreamingBar.Bid,
-					//        quoteSernoEnrichedWithUnboundStreamingBar.Ask, quoteSernoEnrichedWithUnboundStreamingBar.Ask,
-					//        quoteSernoEnrichedWithUnboundStreamingBar.Size);
-					//}
 					consumer.ConsumeQuoteOfStreamingBar(quoteWithStreamingBarBound);
 				} catch (Exception e) {
 					string msg = "BOUND_QUOTE_PUSH_FAILED " + quoteWithStreamingBarBound.ToString();

@@ -101,7 +101,7 @@ namespace Sq1.Gui.Singletons {
 			if (itemsCnt != allCnt)		ret += " | " + itemsCnt + " Displayed";
 			if (fugitive > 0)			ret += ", " + fugitive + " DeserializedPrevLaunch";
 
-			this.Text = "Execution " + ret;
+			this.Text = "Execution :: " + ret;
 		}
 
 		void executionTree_OnOrderDoubleClickedChartFormNotification(object sender, OrderEventArgs e) {

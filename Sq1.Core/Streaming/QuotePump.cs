@@ -81,20 +81,30 @@ namespace Sq1.Core.Streaming {
 					if (value == true) {
 						this.confirmPauseSwitched.Reset();
 						if (this.SeparatePushingThreadEnabled == false) {
-							string msg2 = "SKIPPING_PAUSE_PUSHING_THREAD_THAT_HAVENT_STARTED_YET (review how you use QuotePump)";
-							Assembler.PopupException(msg2 + msig, null, true);
+							//v1
+							//string msg2 = "SKIPPING_PAUSE_PUSHING_THREAD_THAT_HAVENT_STARTED_YET (review how you use QuotePump)";
+							//Assembler.PopupException(msg2 + msig, null, true);
+							//v2: SOFTENED_PAUSING_REQUIREMENT__SINGLE_THREADING_PAUSED_WILL_DROP_INCOMING_QUOTES__AFTER_DEBUGGING_DONE_COMMENT_UPSTACK_IN_SCRIPT_EXECITOR
+							pumpingPaused.Set();
+							string msg = "PUMPING_PAUSED_SINGLE_THREADED";
+							Assembler.PopupException(msg + msig, null, false);
 							return;
 						}
 						this.pauseRequested = true;
 						this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process pauseRequested=true
 						bool pausedConfirmed = this.confirmPauseSwitched.WaitOne(10000);
-						string msg = pausedConfirmed ? "PUMPING_PAUSED" : "PUMPING_PAUSED_NOT_CONFIRMED";
-						Assembler.PopupException(msg + msig, null, false);
+						string msg2 = pausedConfirmed ? "PUMPING_PAUSED" : "PUMPING_PAUSED_NOT_CONFIRMED";
+						Assembler.PopupException(msg2 + msig, null, false);
 					} else {
 						this.confirmPauseSwitched.Reset();
 						if (this.SeparatePushingThreadEnabled == false) {
-							string msg2 = "SKIPPING_UNPAUSE_PUSHING_THREAD_THAT_HAVENT_STARTED_YET (review how you use QuotePump)";
-							Assembler.PopupException(msg2 + msig, null, true);
+							//v1
+							//string msg2 = "SKIPPING_UNPAUSE_PUSHING_THREAD_THAT_HAVENT_STARTED_YET (review how you use QuotePump)";
+							//Assembler.PopupException(msg2 + msig, null, true);
+							//v2: SOFTENED_UNPAUSING_REQUIREMENT__SINGLE_THREADING_PAUSED_WILL_DROP_INCOMING_QUOTES__AFTER_DEBUGGING_DONE_COMMENT_UPSTACK_IN_SCRIPT_EXECITOR
+							pumpingPaused.Reset();
+							string msg2 = "PUMPING_UNPAUSED_SINGLE_THREADED";
+							Assembler.PopupException(msg2 + msig, null, false);
 							return;
 						}
 						this.unPauseRequested = true;
@@ -138,7 +148,12 @@ namespace Sq1.Core.Streaming {
 		}
 		public void PushStraightOrBuffered(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
 			if (this.separatePushingThreadEnabled == false) {
-				this.channel.PushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
+				if (this.PushConsumersPaused == false) {
+					this.channel.PushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
+				} else {
+					string msg = "IM_PAUSED_AND_SINGLE_THREADED__JUST_DROPPED_QUOTE [" + quoteSernoEnrichedWithUnboundStreamingBar + "]";
+					Assembler.PopupException(msg, null, false);
+				}
 				return;
 			}
 			if (this.quotesPrevWarning == 0 || this.qq.Count % 1000 > 0) {

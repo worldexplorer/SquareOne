@@ -303,9 +303,10 @@ namespace Sq1.Core.DataFeed {
 			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(symbol, scaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
-					string msg = "WONT_UNPAUSE__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg, null, true);
+					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+					Assembler.PopupException(msg, null, false);
 				}
+				channel.QuotePump.PushConsumersPaused = true;
 				return;
 			}
 			if (channel.QuotePump.PushConsumersPaused == true) {
@@ -321,9 +322,10 @@ namespace Sq1.Core.DataFeed {
 			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(symbol, scaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
-					string msg = "WONT_UNPAUSE__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg, null, true);
+					string msg = "WILL_UNPAUSE_DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+					Assembler.PopupException(msg, null, false);
 				}
+				channel.QuotePump.PushConsumersPaused = false;
 				return;
 			}
 			if (channel.QuotePump.PushConsumersPaused == false) {

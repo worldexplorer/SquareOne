@@ -252,7 +252,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void IStreamingConsumer.UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
 		}
-		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed) {
+		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
 			if (barLastFormed == null) {
 				string msg = "WRONG_SHOW_BRO";
 				Assembler.PopupException(msg);
@@ -298,7 +298,7 @@ namespace Sq1.Gui.Forms {
 			#endregion
 
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
-				executorSafe.ExecuteOnNewBarOrNewQuote(null);	//new Quote());
+				executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
 			}
 
 			if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {

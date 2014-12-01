@@ -6,6 +6,6 @@ namespace Sq1.Core.Streaming {
 		void UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop);
 		Bars ConsumerBarsToAppendInto { get; }
 		void ConsumeQuoteOfStreamingBar(Quote quote);
-		void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed);
+		void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated);
 	}
 }

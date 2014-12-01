@@ -42,7 +42,14 @@ namespace Sq1.Core.Streaming {
 
 			if (quoteClone.ServerTime >= this.StreamingBarUnattached.DateTimeNextBarOpenUnconditional) {
 				this.LastBarFormedUnattached = this.StreamingBarUnattached.Clone();	//beware! on very first quote LastBarFormed.DateTimeOpen == DateTime.MinValue
-				this.initStreamingBarResetIntraBarSerno(quoteClone.ServerTime, quoteClone.LastDealPrice, quoteClone.Size);
+
+				this.StreamingBarUnattached			= new Bar(this.Symbol, this.ScaleInterval, quoteClone.ServerTime);
+				this.StreamingBarUnattached.Open	= quoteClone.LastDealPrice;
+				this.StreamingBarUnattached.High	= quoteClone.LastDealPrice;
+				this.StreamingBarUnattached.Low		= quoteClone.LastDealPrice;
+				this.StreamingBarUnattached.Close	= quoteClone.LastDealPrice;
+				this.StreamingBarUnattached.Volume	= quoteClone.Size;
+				this.IntraBarSerno = 0;
 
 				// quoteClone.IntraBarSerno doesn't feel new Bar; can contain 100004 for generatedQuotes;
 				// I only want to reset to 0 when it's attributed to a new Bar; it's unlikely to face a new bar here for generatedQuotes;
@@ -90,15 +97,6 @@ namespace Sq1.Core.Streaming {
 				Debugger.Break();
 			}
 			return quoteClone;
-		}
-		protected void initStreamingBarResetIntraBarSerno(DateTime quoteServerTime, double OHLC, double quoteSize) {
-			this.StreamingBarUnattached = new Bar(this.Symbol, this.ScaleInterval, quoteServerTime);
-			this.StreamingBarUnattached.Open = OHLC;
-			this.StreamingBarUnattached.High = OHLC;
-			this.StreamingBarUnattached.Low = OHLC;
-			this.StreamingBarUnattached.Close = OHLC;
-			this.StreamingBarUnattached.Volume = quoteSize;
-			this.IntraBarSerno = 0;
 		}
 		public void InitWithStreamingBarInsteadOfEmpty(Bar StreamingBarInsteadOfEmpty) {
 			string msg = "";
