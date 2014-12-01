@@ -17,14 +17,14 @@ namespace Sq1.Core.Broker {
 				throw new Exception("CTOR_FAILED: orderStatesAllowed.OrderStates.Count=0: you must supply non-empty OrderStatesCollections allows for this OrderList");
 			}
 			this.StatesAllowed = orderStatesAllowed;
-			base.Capacity = 2000;
+			base.InnerOrderList.Capacity = 2000;
 		}
 
 		protected override bool checkThrowAdd(Order order) {
 			// don't throw - we are adding into a fake collection anyway (created as new, will be dropped)
 			if (this.StatesAllowed == OrderStatesCollections.Unknown) return true;
 			if (this.StateIsAcceptable(order.State)) return true;
-			string msg = "OrderAdding.State[" + order.State + "] is not in the list of " + StatesAllowed.ToString();
+			string msg = "OrderAdding.State[" + order.State + "] is not in the list of " + this.StatesAllowed.ToString();
 			throw new Exception(msg);
 		}
 		protected override bool checkThrowRemove(Order order) {
@@ -38,10 +38,10 @@ namespace Sq1.Core.Broker {
 			return this.StateIsAcceptable(order.State) && (base.Contains(order) == false);
 		}
 		public override string ToString() {
-			return "OrderListByState[" + StatesAllowed.ToString() + "]";
+			return "OrderListByState[" + this.StatesAllowed.ToString() + "]";
 		}
 		public override string ToShortString() {
-			return StatesAllowed.CollectionName;
+			return this.StatesAllowed.CollectionName;
 		}
 	}
 }

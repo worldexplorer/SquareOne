@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 
 using Newtonsoft.Json;
 using Sq1.Core.Broker;
@@ -9,14 +10,13 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Repositories;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
-using System.Diagnostics;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource : NamedObjectJsonSerializable {
 		// MOVED_TO_PARENT_NamedObjectJsonSerializable [DataMember] public new string Name;
-		[JsonProperty]	public string SymbolSelected;
-		[JsonProperty]	public List<string> Symbols;
-		[JsonIgnore]	public string SymbolsCSV { get {
+		[JsonProperty]	public string				SymbolSelected;
+		[JsonProperty]	public List<string>			Symbols;
+		[JsonIgnore]	public string				SymbolsCSV			{ get {
 				StringBuilder stringBuilder = new StringBuilder();
 				foreach (string current in Symbols) {
 					if (stringBuilder.Length > 0) stringBuilder.Append(",");
@@ -24,32 +24,32 @@ namespace Sq1.Core.DataFeed {
 				}
 				return stringBuilder.ToString();
 			} }
-		[JsonProperty]	public BarScaleInterval ScaleInterval;
-		[JsonProperty]	public StreamingProvider StreamingProvider;
-		[JsonProperty]	public BrokerProvider BrokerProvider;
-		[JsonProperty]	public string MarketName;
-		[JsonIgnore]	public MarketInfo marketInfo;
-		[JsonIgnore]	public MarketInfo MarketInfo {
+		[JsonProperty]	public BarScaleInterval		ScaleInterval;
+		[JsonProperty]	public StreamingProvider	StreamingProvider;
+		[JsonProperty]	public BrokerProvider		BrokerProvider;
+		[JsonProperty]	public string				MarketName;
+		[JsonIgnore]	public MarketInfo			marketInfo;
+		[JsonIgnore]	public MarketInfo			MarketInfo {
 			get { return this.marketInfo; }
 			set {
 				this.marketInfo = value;
 				MarketName = value.Name;
 			} }
-		[JsonProperty]	public string StreamingProviderName { get {
-				if (StreamingProvider == null) return "STREAMING_PROVIDER_NOT_INITIALIZED";
+		[JsonProperty]	public string				StreamingProviderName	{ get {
+				if (StreamingProvider == null) return "PLEASE_ATTACH_AND_CONFIGURE_STREAMING_PROVIDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";
 				//return staticProvider.GetType().Name;
 				return StreamingProvider.Name;
 			} }
-		[JsonProperty]	public string BrokerProviderName { get {
-				if (BrokerProvider == null) return "BROKER_PROVIDER_NOT_INITIALIZED";
+		[JsonProperty]	public string				BrokerProviderName		{ get {
+				if (BrokerProvider == null) return "PLEASE_ATTACH_AND_CONFIGURE_BROKER_PROVIDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";
 				//return staticProvider.GetType().Name;
 				return BrokerProvider.Name;
 			} }
-		[JsonIgnore]	public bool IsIntraday { get { return ScaleInterval.IsIntraday; } }
-		[JsonIgnore]	public RepositoryBarsSameScaleInterval BarsRepository { get; protected set; }
-		//public BarsFolder BarsFolderPerst { get; protected set; }
-		[JsonProperty]	public string DataSourceAbspath { get; protected set; }
-		[JsonIgnore]	public string DataSourcesAbspath;
+		[JsonIgnore]	public bool					IsIntraday				{ get { return this.ScaleInterval.IsIntraday; } }
+		[JsonIgnore]	public RepositoryBarsSameScaleInterval	BarsRepository	{ get; protected set; }
+		//[JsonIgnore]	public BarsFolder			BarsFolderPerst			{ get; protected set; }
+		[JsonProperty]	public string				DataSourceAbspath		{ get; protected set; }
+		[JsonIgnore]	public string				DataSourcesAbspath;
 
 		// used only by JsonDeserialize()
 		public DataSource() {
@@ -192,7 +192,7 @@ namespace Sq1.Core.DataFeed {
 			replaceLastBarTimer.Start();
 			ret = file.BarAppendStaticOrReplaceStreamingThreadSafe(barLastFormed);
 			replaceLastBarTimer.Stop();
-			millisElapsed = "BarAppendOrReplaceLast[" + ret + "][" + barLastFormed.Symbol + "](" + replaceLastBarTimer.ElapsedMilliseconds + ")ms";
+			millisElapsed = "BarAppendOrReplaceLast[" + barLastFormed.Symbol + "][" + ret + "](" + replaceLastBarTimer.ElapsedMilliseconds + ")ms";
 
 			return ret;
 		}
@@ -298,6 +298,42 @@ namespace Sq1.Core.DataFeed {
 			millisElapsed += " ToLargerScaleInterval(" + scaleIntervalRq + ")[" + compressTimer.ElapsedMilliseconds + "]ms";
 
 			return ret;
+		}
+		public void PausePumpingFor(string symbol, BarScaleInterval scaleInterval, bool wrongUsagePopup = true) {
+			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(symbol, scaleInterval);
+			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
+				if (wrongUsagePopup == true) {
+					string msg = "WONT_UNPAUSE__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+					Assembler.PopupException(msg, null, true);
+				}
+				return;
+			}
+			if (channel.QuotePump.PushConsumersPaused == true) {
+				if (wrongUsagePopup == true) {
+					string msg = "PUSHING_THREAD_ALREADY_PAUSED (review how you use QuotePump)";
+					Assembler.PopupException(msg, null, true);
+				}
+				return;
+			}
+			channel.QuotePump.PushConsumersPaused = true;
+		}
+		public void UnPausePumpingFor(string symbol, BarScaleInterval scaleInterval, bool wrongUsagePopup = true) {
+			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(symbol, scaleInterval);
+			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
+				if (wrongUsagePopup == true) {
+					string msg = "WONT_UNPAUSE__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
+					Assembler.PopupException(msg, null, true);
+				}
+				return;
+			}
+			if (channel.QuotePump.PushConsumersPaused == false) {
+				if (wrongUsagePopup == true) {
+					string msg = "PUSHING_THREAD_ALREADY_UNPAUSED (review how you use QuotePump)";
+					Assembler.PopupException(msg, null, true);
+				}
+				return;
+			}
+			channel.QuotePump.PushConsumersPaused = false;
 		}
 	}
 }

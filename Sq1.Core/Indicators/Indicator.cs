@@ -338,7 +338,7 @@ namespace Sq1.Core.Indicators {
 			
 			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote(newStreamingQuote);
 			
-			int streamingBarIndex = newStreamingQuote.ParentStreamingBar.ParentBarsIndex;
+			int streamingBarIndex = newStreamingQuote.ParentBarStreaming.ParentBarsIndex;
 			int differenceMustNotBeMoreThanOne = streamingBarIndex - this.OwnValuesCalculated.StreamingIndex;
 			if (differenceMustNotBeMoreThanOne > 1) {
 				string msig = " OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
@@ -349,7 +349,7 @@ namespace Sq1.Core.Indicators {
 				throw new Exception(msg + msig);
 			}
 			if (differenceMustNotBeMoreThanOne == 1) {
-				DateTime streamingBarDateTime = newStreamingQuote.ParentStreamingBar.DateTimeOpen;
+				DateTime streamingBarDateTime = newStreamingQuote.ParentBarStreaming.DateTimeOpen;
 				this.OwnValuesCalculated.Append(streamingBarDateTime, derivedCalculated);
 			} else {
 				this.OwnValuesCalculated.StreamingValue = derivedCalculated;

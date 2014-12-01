@@ -32,7 +32,7 @@ namespace Sq1.Core.StrategyBase {
 
 		public SystemPerformance(ScriptExecutor scriptExecutor) {
 			if (scriptExecutor == null) {
-				string msg = "we shouldn't execute strategy when this.Executor == null";
+				string msg = "DONT_PASS_EMPTY_EXECUTOR SystemPerformance(scriptExecutor=null)";
 				throw new Exception(msg);
 			}
 
@@ -45,10 +45,10 @@ namespace Sq1.Core.StrategyBase {
 			//ScriptAndIndicatorParameterClonesByName = new SortedDictionary<string, IndicatorParameter>();
 		}
 		public void Initialize() {
-			if (this.Executor.Bars == null) {
-				string msg = "we shouldn't execute strategy on this.Executor.Bars == null";
-				throw new Exception(msg);
-			}
+			//if (this.Executor.Bars == null) {
+			//    string msg = "we shouldn't execute strategy on this.Executor.Bars == null";
+			//    throw new Exception(msg);
+			//}
 
 			this.SliceLong.Initialize();
 			this.SliceShort.Initialize();

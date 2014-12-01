@@ -48,7 +48,6 @@ namespace Sq1.Core.StrategyBase {
 				this.executor.Strategy);
 			alert.AbsorbFromExecutorAfterCreatedByMarketReal(executor);
 
-			
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 			if (entryPriceScript != alert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
@@ -57,8 +56,6 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 			}
 			#endif
-
-
 
 			return alert;
 		}
@@ -113,7 +110,7 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 		}
-		private void checkThrowEntryBarIsValid(Bar entryBar) {
+		void checkThrowEntryBarIsValid(Bar entryBar) {
 //			if (entryBar < this.executor.Bars.Count) {
 //				string msg = "use MarketSim for Backtest! MarketRealTime is for entryBars >= this.executor.Bars.Count";
 //				throw new Exception(msg);
@@ -142,7 +139,7 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 		}
-		private double getStreamingPriceForMarketOrder(MarketLimitStop entryMarketLimitStop,
+		double getStreamingPriceForMarketOrder(MarketLimitStop entryMarketLimitStop,
 				Direction direction, out OrderSpreadSide priceSpreadSide) {
 			double priceForMarketAlert = -1;
 			priceSpreadSide = OrderSpreadSide.Unknown;

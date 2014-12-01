@@ -45,7 +45,7 @@ namespace Sq1.Core.Backtesting {
 			identicalButFresh.Size = this.Size;
 			identicalButFresh.IntraBarSerno = this.IntraBarSerno + Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill;
 			identicalButFresh.ParentBarSimulated = this.ParentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
-			identicalButFresh.ParentStreamingBar = this.ParentStreamingBar;	// this may fix it injected quotes don't seem to have ParentBarSimulated
+			identicalButFresh.ParentBarStreaming = this.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated
 			return identicalButFresh;
 		}
 		#endregion
@@ -76,7 +76,7 @@ namespace Sq1.Core.Backtesting {
 			sb.Append("} SIM:");
 			sb.Append(this.ParentBarSimulated);
 			sb.Append(" STR:");
-			sb.Append(this.ParentStreamingBar);
+			sb.Append(this.ParentBarStreaming);
 			if (string.IsNullOrEmpty(this.Source) == false) {
 				sb.Append(" ");
 				sb.Append(Source);
@@ -130,7 +130,7 @@ namespace Sq1.Core.Backtesting {
 			sb.Append(" SIM:");
 			sb.Append(this.ParentBarSimulated);
 			sb.Append(" STR:");
-			sb.Append(this.ParentStreamingBar);
+			sb.Append(this.ParentBarStreaming);
 			return sb.ToString();
 		}
 	}

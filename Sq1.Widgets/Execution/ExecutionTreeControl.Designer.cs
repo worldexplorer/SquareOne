@@ -2,8 +2,6 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-using BrightIdeasSoftware;
-
 namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl : UserControl {
 		private IContainer components;
@@ -106,36 +104,35 @@ namespace Sq1.Widgets.Execution {
 			this.OrdersTree.CausesValidation = false;
 			this.OrdersTree.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
 			this.OrdersTree.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-									this.colheGUID,
-									this.colheReplacedByGUID,
-									this.colheKilledByGUID,
-									this.colheBarNum,
-									this.colheDatetime,
-									this.colheSymbol,
-									this.colheDirection,
-									this.colheOrderType,
-									this.colheSpreadSide,
-									this.colhePriceScript,
-									this.colheSlippage,
-									this.colhePriceScriptRequested,
-									this.colhePriceFilled,
-									this.colheStateTime,
-									this.colheState,
-									this.colhePriceDeposited,
-									this.colheQtyRequested,
-									this.colheQtyFilled,
-									this.colheSernoSession,
-									this.colheSernoExchange,
-									this.colheStrategyName,
-									this.colheSignalName,
-									this.colheScale,
-									this.colheAccount,
-									this.colheLastMessage});
+			this.colheGUID,
+			this.colheReplacedByGUID,
+			this.colheKilledByGUID,
+			this.colheState,
+			this.colheStateTime,
+			this.colheBarNum,
+			this.colheDatetime,
+			this.colheSymbol,
+			this.colheDirection,
+			this.colheOrderType,
+			this.colheSpreadSide,
+			this.colhePriceScript,
+			this.colheSlippage,
+			this.colhePriceScriptRequested,
+			this.colhePriceFilled,
+			this.colhePriceDeposited,
+			this.colheQtyRequested,
+			this.colheQtyFilled,
+			this.colheSernoSession,
+			this.colheSernoExchange,
+			this.colheStrategyName,
+			this.colheSignalName,
+			this.colheScale,
+			this.colheAccount,
+			this.colheLastMessage});
 			this.OrdersTree.ContextMenuStrip = this.ctxOrder;
 			this.OrdersTree.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.OrdersTree.EmptyListMsg = "";
 			this.OrdersTree.FullRowSelect = true;
-			this.OrdersTree.HeaderUsesThemes = false;
 			this.OrdersTree.HideSelection = false;
 			this.OrdersTree.IncludeColumnHeadersInCopy = true;
 			this.OrdersTree.IncludeHiddenColumnsInDataTransfer = true;
@@ -154,13 +151,13 @@ namespace Sq1.Widgets.Execution {
 			this.OrdersTree.UseFiltering = true;
 			this.OrdersTree.View = System.Windows.Forms.View.Details;
 			this.OrdersTree.VirtualMode = true;
+			this.OrdersTree.FormatRow += new System.EventHandler<BrightIdeasSoftware.FormatRowEventArgs>(this.tree_FormatRow);
 			this.OrdersTree.SelectedIndexChanged += new System.EventHandler(this.ordersTree_SelectedIndexChanged);
 			this.OrdersTree.DoubleClick += new System.EventHandler(this.ordersTree_DoubleClick);
 			this.OrdersTree.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ordersTree_KeyDown);
 			// 
 			// colheGUID
 			// 
-			this.colheGUID.CellPadding = null;
 			this.colheGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheGUID.Text = "GUID";
 			this.colheGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -168,7 +165,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheReplacedByGUID
 			// 
-			this.colheReplacedByGUID.CellPadding = null;
 			this.colheReplacedByGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheReplacedByGUID.Text = "ReplcdBy";
 			this.colheReplacedByGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -176,7 +172,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheKilledByGUID
 			// 
-			this.colheKilledByGUID.CellPadding = null;
 			this.colheKilledByGUID.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheKilledByGUID.Text = "KilledBy";
 			this.colheKilledByGUID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -184,7 +179,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheBarNum
 			// 
-			this.colheBarNum.CellPadding = null;
 			this.colheBarNum.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheBarNum.Text = "#Bar";
 			this.colheBarNum.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -192,37 +186,31 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheDatetime
 			// 
-			this.colheDatetime.CellPadding = null;
 			this.colheDatetime.Text = "Order Time";
 			this.colheDatetime.Width = 84;
 			// 
 			// colheSymbol
 			// 
-			this.colheSymbol.CellPadding = null;
 			this.colheSymbol.Text = "Symbol";
 			this.colheSymbol.Width = 42;
 			// 
 			// colheDirection
 			// 
-			this.colheDirection.CellPadding = null;
 			this.colheDirection.Text = "Direction";
 			this.colheDirection.Width = 51;
 			// 
 			// colheOrderType
 			// 
-			this.colheOrderType.CellPadding = null;
 			this.colheOrderType.Text = "OrderType";
 			this.colheOrderType.Width = 56;
 			// 
 			// colheSpreadSide
 			// 
-			this.colheSpreadSide.CellPadding = null;
 			this.colheSpreadSide.Text = "SpreadSide";
 			this.colheSpreadSide.Width = 100;
 			// 
 			// colhePriceScript
 			// 
-			this.colhePriceScript.CellPadding = null;
 			this.colhePriceScript.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colhePriceScript.Text = "$Script";
 			this.colhePriceScript.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -230,7 +218,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheSlippage
 			// 
-			this.colheSlippage.CellPadding = null;
 			this.colheSlippage.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheSlippage.Text = "Slippage";
 			this.colheSlippage.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -238,7 +225,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colhePriceScriptRequested
 			// 
-			this.colhePriceScriptRequested.CellPadding = null;
 			this.colhePriceScriptRequested.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colhePriceScriptRequested.Text = "$Requested";
 			this.colhePriceScriptRequested.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -246,7 +232,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colhePriceFilled
 			// 
-			this.colhePriceFilled.CellPadding = null;
 			this.colhePriceFilled.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colhePriceFilled.Text = "$Filled";
 			this.colhePriceFilled.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -254,19 +239,16 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheStateTime
 			// 
-			this.colheStateTime.CellPadding = null;
-			this.colheStateTime.Text = "State Time";
+			this.colheStateTime.Text = "OrderStateTime";
 			this.colheStateTime.Width = 84;
 			// 
 			// colheState
 			// 
-			this.colheState.CellPadding = null;
-			this.colheState.Text = "State";
+			this.colheState.Text = "OrderState";
 			this.colheState.Width = 111;
 			// 
 			// colhePriceDeposited
 			// 
-			this.colhePriceDeposited.CellPadding = null;
 			this.colhePriceDeposited.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colhePriceDeposited.Text = "$Deposited";
 			this.colhePriceDeposited.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -274,7 +256,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheQtyRequested
 			// 
-			this.colheQtyRequested.CellPadding = null;
 			this.colheQtyRequested.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheQtyRequested.Text = "QRequested";
 			this.colheQtyRequested.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -282,7 +263,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheQtyFilled
 			// 
-			this.colheQtyFilled.CellPadding = null;
 			this.colheQtyFilled.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheQtyFilled.Text = "QFilled";
 			this.colheQtyFilled.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -290,7 +270,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheSernoSession
 			// 
-			this.colheSernoSession.CellPadding = null;
 			this.colheSernoSession.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheSernoSession.Text = "#Session";
 			this.colheSernoSession.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -298,7 +277,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheSernoExchange
 			// 
-			this.colheSernoExchange.CellPadding = null;
 			this.colheSernoExchange.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.colheSernoExchange.Text = "#Exchange";
 			this.colheSernoExchange.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -306,31 +284,26 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheStrategyName
 			// 
-			this.colheStrategyName.CellPadding = null;
 			this.colheStrategyName.Text = "Strategy";
 			this.colheStrategyName.Width = 53;
 			// 
 			// colheSignalName
 			// 
-			this.colheSignalName.CellPadding = null;
 			this.colheSignalName.Text = "Signal";
 			this.colheSignalName.Width = 42;
 			// 
 			// colheScale
 			// 
-			this.colheScale.CellPadding = null;
 			this.colheScale.Text = "Scale";
 			this.colheScale.Width = 40;
 			// 
 			// colheAccount
 			// 
-			this.colheAccount.CellPadding = null;
 			this.colheAccount.Text = "Account";
 			this.colheAccount.Width = 40;
 			// 
 			// colheLastMessage
 			// 
-			this.colheLastMessage.CellPadding = null;
 			this.colheLastMessage.FillsFreeSpace = true;
 			this.colheLastMessage.Text = "LastMessage";
 			this.colheLastMessage.Width = 400;
@@ -338,22 +311,22 @@ namespace Sq1.Widgets.Execution {
 			// ctxOrder
 			// 
 			this.ctxOrder.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.mniOrderCancel,
-									this.mniOrderCancelReplace,
-									this.mniOrderRemoveSelected,
-									this.sepCancel,
-									this.mniCancelAllPending,
-									this.mniStopEmergencyClose,
-									this.mniKillAlStopAutoSubmit,
-									this.toolStripSeparator3,
-									this.mniFilterColumns,
-									this.mniFilterOrderStates,
-									this.mniFilterAccounts,
-									this.mniVisualOptions,
-									this.toolStripSeparator1,
-									this.mniRemoveCompleted,
-									this.mniOrderEdit,
-									this.mniOrderSubmit});
+			this.mniOrderCancel,
+			this.mniOrderCancelReplace,
+			this.mniOrderRemoveSelected,
+			this.sepCancel,
+			this.mniCancelAllPending,
+			this.mniStopEmergencyClose,
+			this.mniKillAlStopAutoSubmit,
+			this.toolStripSeparator3,
+			this.mniFilterColumns,
+			this.mniFilterOrderStates,
+			this.mniFilterAccounts,
+			this.mniVisualOptions,
+			this.toolStripSeparator1,
+			this.mniRemoveCompleted,
+			this.mniOrderEdit,
+			this.mniOrderSubmit});
 			this.ctxOrder.Name = "popupOrders";
 			this.ctxOrder.Size = new System.Drawing.Size(237, 308);
 			// 
@@ -421,15 +394,15 @@ namespace Sq1.Widgets.Execution {
 			// ctxColumns
 			// 
 			this.ctxColumns.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.mniShowWhenWhat,
-									this.mniShowKilledReplaced,
-									this.mniShowPrice,
-									this.mniShowQty,
-									this.mniShowExchange,
-									this.mniShowOrigin,
-									this.mniShowExtra,
-									this.mniShowPosition,
-									this.mniShowLastMessage});
+			this.mniShowWhenWhat,
+			this.mniShowKilledReplaced,
+			this.mniShowPrice,
+			this.mniShowQty,
+			this.mniShowExchange,
+			this.mniShowOrigin,
+			this.mniShowExtra,
+			this.mniShowPosition,
+			this.mniShowLastMessage});
 			this.ctxColumns.Name = "ctxColumns";
 			this.ctxColumns.OwnerItem = this.mniFilterColumns;
 			this.ctxColumns.Size = new System.Drawing.Size(189, 202);
@@ -510,7 +483,7 @@ namespace Sq1.Widgets.Execution {
 			// mniFilterOrderStates
 			// 
 			this.mniFilterOrderStates.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.toolStripMenuItem4});
+			this.toolStripMenuItem4});
 			this.mniFilterOrderStates.Name = "mniFilterOrderStates";
 			this.mniFilterOrderStates.Size = new System.Drawing.Size(236, 22);
 			this.mniFilterOrderStates.Text = "Filter Order States";
@@ -545,15 +518,15 @@ namespace Sq1.Widgets.Execution {
 			// ctxListControl
 			// 
 			this.ctxListControl.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.mniToggleBrokerTime,
-									this.mniToggleCompletedOrders,
-									this.mniToggleMessagesPane,
-									this.mniToggleMessagesPaneSplitHorizontally,
-									this.mniToggleSyncWithChart,
-									this.toolStripSeparator2,
-									this.mniExpandAll,
-									this.mniCollapseAll,
-									this.mniRebuildAll});
+			this.mniToggleBrokerTime,
+			this.mniToggleCompletedOrders,
+			this.mniToggleMessagesPane,
+			this.mniToggleMessagesPaneSplitHorizontally,
+			this.mniToggleSyncWithChart,
+			this.toolStripSeparator2,
+			this.mniExpandAll,
+			this.mniCollapseAll,
+			this.mniRebuildAll});
 			this.ctxListControl.Name = "ctxListControl";
 			this.ctxListControl.OwnerItem = this.mniVisualOptions;
 			this.ctxListControl.Size = new System.Drawing.Size(254, 186);
@@ -668,13 +641,12 @@ namespace Sq1.Widgets.Execution {
 			this.lvMessages.CausesValidation = false;
 			this.lvMessages.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
 			this.lvMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-									this.colheMessageDateTime,
-									this.colheMessageState,
-									this.colheMessageText});
+			this.colheMessageDateTime,
+			this.colheMessageState,
+			this.colheMessageText});
 			this.lvMessages.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.lvMessages.EmptyListMsg = "";
 			this.lvMessages.FullRowSelect = true;
-			this.lvMessages.HeaderUsesThemes = false;
 			this.lvMessages.HideSelection = false;
 			this.lvMessages.IncludeColumnHeadersInCopy = true;
 			this.lvMessages.IncludeHiddenColumnsInDataTransfer = true;
@@ -693,19 +665,16 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheMessageDateTime
 			// 
-			this.colheMessageDateTime.CellPadding = null;
 			this.colheMessageDateTime.Text = "DateTime";
 			this.colheMessageDateTime.Width = 83;
 			// 
 			// colheMessageState
 			// 
-			this.colheMessageState.CellPadding = null;
-			this.colheMessageState.Text = "Status";
+			this.colheMessageState.Text = "OrderState";
 			this.colheMessageState.Width = 101;
 			// 
 			// colheMessageText
 			// 
-			this.colheMessageText.CellPadding = null;
 			this.colheMessageText.Text = "Message";
 			this.colheMessageText.Width = 2211;
 			// 
@@ -746,6 +715,7 @@ namespace Sq1.Widgets.Execution {
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerMessagePane)).EndInit();
 			this.splitContainerMessagePane.ResumeLayout(false);
 			this.ResumeLayout(false);
+
 		}
 		private System.Windows.Forms.ToolStripMenuItem mniRebuildAll;
 		private System.Windows.Forms.ToolStripMenuItem mniToggleBrokerTime;

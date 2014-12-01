@@ -113,6 +113,7 @@ namespace Sq1.Core.Broker {
 			if (rejected == null) {
 				throw new Exception("Rejected[" + orderRejected + "] wasn't found!!!");
 			}
+			if (string.IsNullOrEmpty(rejected.ReplacedByGUID)) return null;
 			Order replacement = this.OrderProcessor.DataSnapshot.OrdersAll.FindByGUID(rejected.ReplacedByGUID);
 			return replacement;
 		}

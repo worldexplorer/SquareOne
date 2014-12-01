@@ -43,7 +43,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			this.ds = dsEdit;
 			if (this.Parent != null) {
-				this.Parent.Text = ds.Name;
+				this.Parent.Text = "DataSourceEdit :: " + ds.Name;
 			} else {
 				this.Text = ds.Name;
 			}

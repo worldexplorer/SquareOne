@@ -28,8 +28,9 @@ namespace Sq1.Widgets.Execution {
 				}
 				this.mniStopEmergencyClose.Enabled = removeEmergencyLockEnabled;*/
 				
-				if (this.DataSnapshot.ToggleSyncWithChart) {
-					this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTree.SelectedObject as Order);
+				if (this.DataSnapshot.ToggleSingleClickSyncWithChart) {
+					//v1 this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTree.SelectedObject as Order);
+					this.ordersTree_DoubleClick(this, null);
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("ordersTree_SelectedIndexChanged()", ex);
@@ -69,7 +70,7 @@ namespace Sq1.Widgets.Execution {
 			this.RebuildAllTreeFocusOnTopmost();
 		}
 		void mniToggleSyncWithChart_Click(object sender, EventArgs e) {
-			this.DataSnapshot.ToggleSyncWithChart = this.mniToggleSyncWithChart.Checked;
+			this.DataSnapshot.ToggleSingleClickSyncWithChart = this.mniToggleSyncWithChart.Checked;
 			this.DataSnapshotSerializer.Serialize();
 		}
 		void mniToggleMessagesPane_Click(object sender, EventArgs e) {
@@ -112,7 +113,7 @@ namespace Sq1.Widgets.Execution {
 		void btnRemoveSelected_Click(object sender, EventArgs e) {
 			List<Order> orders = new List<Order>();
 			foreach (Order eachNonPending in this.OrdersSelected) {
-				if (eachNonPending.ExpectingCallbackFromBroker || eachNonPending.InEmergencyState) continue;
+				if (eachNonPending.InStateExpectingCallbackFromBroker || eachNonPending.InStateEmergency) continue;
 				orders.Add(eachNonPending);
 			}
 			if (orders.Count > 0) {
@@ -150,7 +151,7 @@ namespace Sq1.Widgets.Execution {
 		void mniOrderSubmit_Click(object sender, EventArgs e) {
 			List<Order> orders = new List<Order>();
 			foreach (Order current in this.OrdersSelected) {
-				if (current.StateChangeableToSubmitted) {
+				if (current.InStateChangeableToSubmitted) {
 					if (current.Alert.AccountNumber.StartsWith("Paper")) {
 						//current.AlertDate = MainModule.Instance._getAuthenticationProvider().GetCurrentDateTime;
 						DateTime serverTime = current.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
@@ -201,8 +202,66 @@ namespace Sq1.Widgets.Execution {
 
 		void ordersTree_DoubleClick(object sender, EventArgs e) {
 			//if (this.mniOrderEdit.Enabled) this.mniOrderEdit_Click(sender, e);
+			if (this.OrdersTree.SelectedItem == null) {
+				string msg = "OrdersTree.SelectedItem == null";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (this.OrdersTree.SelectedItem.ForeColor == Color.DimGray) {
+				string msg = "tree_FormatRow() sets Item.ForeColor=Color.DimGray when AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)==false"
+					+ " (all JSON-deserialized orders have no chart to get popped-up)";
+				//Debugger.Break();
+				return;
+			}
+			//otherwize if you'll see REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR - dont forget to use Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
 			this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTree.SelectedObject as Order);
 		}
+		void mniExpandAllClick(object sender, EventArgs e) {
+			this.OrdersTree.ExpandAll();
+		}
+		void mniCollapseAllClick(object sender, EventArgs e) {
+			this.OrdersTree.CollapseAll();
+		}
+		void RebuildAllToolStripMenuItemClick(object sender, EventArgs e) {
+			this.OrdersTree.RebuildAll(true);
+		}		
+		
+		void SplitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {
+			if (this.DataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				return;
+			}
+			if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
+				if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;
+				this.DataSnapshot.MessagePaneSplitDistanceHorizontal = e.SplitY;
+			} else {
+				if (this.DataSnapshot.MessagePaneSplitDistanceVertical == e.SplitX) return;
+				this.DataSnapshot.MessagePaneSplitDistanceVertical = e.SplitX;
+			}
+			this.DataSnapshotSerializer.Serialize();
+		}
+
+		//http://objectlistview.sourceforge.net/cs/recipes.html#how-can-i-change-the-colours-of-a-row-or-just-a-cell
+		readonly Color BACKGROUND_GREEN = Color.FromArgb(230, 255, 230);
+		readonly Color BACKGROUND_RED = Color.FromArgb(255, 230, 230);
+		void ordersTree_FormatRow(object sender, FormatRowEventArgs e) {
+			var order = e.Model as Order;
+			if (order == null) {
+				Assembler.PopupException("ordersTree_FormatRow(): (e.Model as Order =null");
+				return;
+			}
+			e.Item.BackColor = (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long)
+				? BACKGROUND_GREEN : BACKGROUND_RED;
+		}
+	}
+}
+
+
+
 
 //		void populateOrders() {
 //			List<ListViewItem> ret = new List<ListViewItem>();
@@ -251,46 +310,3 @@ namespace Sq1.Widgets.Execution {
 //			this.PopulateMessagesFromSelectedOrder(null);
 //			this.raiseOrderStatsChangedRecalculateWindowTitleExecutionFormNotification();
 //		}
-		void mniExpandAllClick(object sender, EventArgs e) {
-			this.OrdersTree.ExpandAll();
-		}
-		void mniCollapseAllClick(object sender, EventArgs e) {
-			this.OrdersTree.CollapseAll();
-		}
-		void RebuildAllToolStripMenuItemClick(object sender, EventArgs e) {
-			this.OrdersTree.RebuildAll(true);
-		}		
-		
-		void SplitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {
-			if (this.DataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()
-			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				return;
-			}
-			if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
-				if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;
-				this.DataSnapshot.MessagePaneSplitDistanceHorizontal = e.SplitY;
-			} else {
-				if (this.DataSnapshot.MessagePaneSplitDistanceVertical == e.SplitX) return;
-				this.DataSnapshot.MessagePaneSplitDistanceVertical = e.SplitX;
-			}
-			this.DataSnapshotSerializer.Serialize();
-		}
-
-		//http://objectlistview.sourceforge.net/cs/recipes.html#how-can-i-change-the-colours-of-a-row-or-just-a-cell
-		readonly Color BACKGROUND_GREEN = Color.FromArgb(230, 255, 230);
-		readonly Color BACKGROUND_RED = Color.FromArgb(255, 230, 230);
-		void ordersTree_FormatRow(object sender, FormatRowEventArgs e) {
-			var order = e.Model as Order;
-			if (order == null) {
-				Assembler.PopupException("ordersTree_FormatRow(): (e.Model as Order =null");
-				return;
-			}
-			e.Item.BackColor = (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long)
-				? BACKGROUND_GREEN : BACKGROUND_RED;
-		}
-	}
-}

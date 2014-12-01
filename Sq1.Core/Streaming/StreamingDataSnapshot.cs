@@ -9,72 +9,76 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Streaming {
 	public class StreamingDataSnapshot {
-		[JsonIgnore]	StreamingProvider streamingProvider;
-		[JsonProperty]	protected Dictionary<string, double> BestBid { get; private set; }
-		[JsonProperty]	protected Dictionary<string, double> BestAsk { get; private set; }
-		[JsonProperty]	protected Dictionary<string, Quote> LastQuotesReceived { get; private set; }
-
-		[JsonIgnore]	protected Object LockLastQuote = new Object();
-		[JsonIgnore]	protected Object LockBestBid = new Object();
-		[JsonIgnore]	protected Object LockBestAsk = new Object();
-
-		[JsonIgnore]	public string SymbolsSubscribedAndReceiving { get {
+		[JsonIgnore]	StreamingProvider			streamingProvider;
+		[JsonIgnore]	object						lockLastQuote;
+		[JsonProperty]	Dictionary<string, Quote>	lastQuoteClonesReceivedUnboundBySymbol;	// { get; private set; }
+		[JsonProperty]	public string				SymbolsSubscribedAndReceiving		{ get {
 				string ret = "";
-				foreach (string symbol in LastQuotesReceived.Keys) {
+				foreach (string symbol in lastQuoteClonesReceivedUnboundBySymbol.Keys) {
 					if (ret.Length > 0) ret += ",";
-					ret += symbol + ":" + ((LastQuotesReceived[symbol] == null) ? "NULL" : LastQuotesReceived[symbol].AbsnoPerSymbol.ToString());
+					ret += symbol + ":" + ((lastQuoteClonesReceivedUnboundBySymbol[symbol] == null) ? "NULL" : lastQuoteClonesReceivedUnboundBySymbol[symbol].AbsnoPerSymbol.ToString());
 				}
 				return ret;
 			} }
-		public StreamingDataSnapshot(StreamingProvider streamingProvider) {
+
+		private StreamingDataSnapshot() {
+			lastQuoteClonesReceivedUnboundBySymbol = new Dictionary<string, Quote>();
+			lockLastQuote = new object();
+		}
+
+		public StreamingDataSnapshot(StreamingProvider streamingProvider) : this() {
 			this.streamingProvider = streamingProvider;
-			this.LastQuotesReceived = new Dictionary<string, Quote>();
-			this.BestBid = new Dictionary<string, double>();
-			this.BestAsk = new Dictionary<string, double>();
 		}
 
 		public void InitializeLastQuoteReceived(List<string> symbols) {
 			foreach (string symbol in symbols) {
-				if (this.LastQuotesReceived.ContainsKey(symbol)) continue;
-				this.LastQuotesReceived.Add(symbol, null);
+				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(symbol)) continue;
+				this.lastQuoteClonesReceivedUnboundBySymbol.Add(symbol, null);
 			}
 		}
-		public void LastQuotePutNull(string symbol) {
-			lock (LockLastQuote) {
-				if (this.LastQuotesReceived.ContainsKey(symbol)) {
-					this.LastQuotesReceived[symbol] = null;
+		public void LastQuoteInitialize(string symbol) {
+			lock (lockLastQuote) {
+				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(symbol)) {
+					this.lastQuoteClonesReceivedUnboundBySymbol[symbol] = null;
 				} else {
-					this.LastQuotesReceived.Add(symbol, null);
+					this.lastQuoteClonesReceivedUnboundBySymbol.Add(symbol, null);
 				}
 			}
 		}
-		protected void LastQuoteUpdate(Quote quote) {
-			string msig = " StreamingDataSnapshot.LastQuoteUpdate(" + quote.ToString() + ")";
-			Quote last = this.LastQuotesReceived[quote.Symbol];
-			if (last == null) {
-				this.LastQuotesReceived[quote.Symbol] = quote;
+		public void LastQuoteCloneSetForSymbol(Quote quote) {
+			string msig = " StreamingDataSnapshot.LastQuoteSetForSymbol(" + quote.ToString() + ")";
+
+			if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(quote.Symbol) == false) {
+				this.lastQuoteClonesReceivedUnboundBySymbol.Add(quote.Symbol, null);
+				string msg = "SUBSCRIBER_SHOULD_HAVE_INVOKED_LastQuoteInitialize()__FOLLOW_THIS_LIFECYCLE__ITS_A_RELIGION_NOT_OPEN_FOR_DISCUSSION";
+				Assembler.PopupException(msg + msig);
+			}
+
+			Quote lastQuote = this.lastQuoteClonesReceivedUnboundBySymbol[quote.Symbol];
+			if (lastQuote == null) {
+				this.lastQuoteClonesReceivedUnboundBySymbol[quote.Symbol] = quote;
 				return;
 			}
-			if (last == quote) {
-				string msg = "How come you update twice to the same quote?";
-				Assembler.PopupException(msg + msig, null);
+			if (lastQuote == quote) {
+				string msg = "DONT_PUT_SAME_QUOTE_TWICE";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
-			if (last.AbsnoPerSymbol >= quote.AbsnoPerSymbol) {
+			if (lastQuote.AbsnoPerSymbol >= quote.AbsnoPerSymbol) {
 				string msg = "DONT_FEED_ME_WITH_OLD_QUOTES (????QuoteQuik #-1/0 AUTOGEN)";
-				Assembler.PopupException(msg + msig, null, false);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
-			this.LastQuotesReceived[quote.Symbol] = quote;
+			this.lastQuoteClonesReceivedUnboundBySymbol[quote.Symbol] = quote;
 		}
-		public Quote LastQuoteGetForSymbol(string Symbol) {
-			lock (this.LockLastQuote) {
-				if (this.LastQuotesReceived.ContainsKey(Symbol) == false) return null;
-				return this.LastQuotesReceived[Symbol];
+		public Quote LastQuoteCloneGetForSymbol(string Symbol) {
+			lock (this.lockLastQuote) {
+				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol) == false) return null;
+				return this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
 			}
 		}
 		public double LastQuoteGetPriceForMarketOrder(string Symbol) {
-			Quote lastQuote = LastQuoteGetForSymbol(Symbol);
+			Quote lastQuote = LastQuoteCloneGetForSymbol(Symbol);
 			if (lastQuote == null) return 0;
 			if (lastQuote.LastDealBidOrAsk == BidOrAsk.UNKNOWN) {
 				Debugger.Break();
@@ -83,25 +87,29 @@ namespace Sq1.Core.Streaming {
 			return lastQuote.LastDealPrice;
 		}
 
-		public virtual void UpdateLastBidAskSnapFromQuote(Quote quote) {
-			this.LastQuoteUpdate(quote);
+		public double BestBidGetForMarketOrder(string Symbol) {
+			double ret = -1;
+			//lock (this.bestBidBySymbol) { if (this.bestBidBySymbol.ContainsKey(Symbol)) { ret = this.bestBidBySymbol[Symbol]; } }
+			lock (this.lockLastQuote) {
+				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol)) {
+					Quote lastQuote = this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
+					ret = lastQuote.Bid;
+				}
+			}
+			return ret;
+		}
+		public double BestAskGetForMarketOrder(string Symbol) {
+			double ret = -1;
+			//lock (this.bestAskBySymbol) { if (this.bestAskBySymbol.ContainsKey(Symbol)) { ret = this.bestAskBySymbol[Symbol]; } }
+			lock (this.lockLastQuote) {
+				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol)) {
+					Quote lastQuote = this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
+					ret = lastQuote.Ask;
+				}
+			}
+			return ret;
+		}
 
-			if (double.IsNaN(quote.Bid) || double.IsNaN(quote.Ask)) {
-				if (false) throw new Exception("You seem to process Bars.LastBar with Partials=NaN");
-				return;
-			}
-			if (quote.Bid != 0 && quote.Ask != 0) {
-				this.BestBidAskPutForSymbol(quote.Symbol, quote.Bid, quote.Ask);
-			}
-		}
-		public void BestBidAskPutForSymbol(string Symbol, double bid, double ask) {
-			lock (this.BestBid) {
-				this.BestBid[Symbol] = bid;
-			}
-			lock (this.BestAsk) {
-				this.BestAsk[Symbol] = ask;
-			}
-		}
 		public double BidOrAskFor(string Symbol, PositionLongShort direction) {
 			if (direction == PositionLongShort.Unknown) {
 				string msg = "BidOrAskFor(" + Symbol + ", " + direction + "): Bid and Ask are wrong to return for [" + direction + "]";
@@ -111,25 +119,6 @@ namespace Sq1.Core.Streaming {
 				? this.BestBidGetForMarketOrder(Symbol) : this.BestAskGetForMarketOrder(Symbol);
 			return price;
 		}
-		public double BestBidGetForMarketOrder(string Symbol) {
-			double ret = 0;
-			lock (this.BestBid) {
-				if (this.BestBid.ContainsKey(Symbol)) {
-					ret = this.BestBid[Symbol];
-				}
-			}
-			return ret;
-		}
-		public double BestAskGetForMarketOrder(string Symbol) {
-			double ret = 0;
-			lock (this.BestAsk) {
-				if (this.BestAsk.ContainsKey(Symbol)) {
-					ret = this.BestAsk[Symbol];
-				}
-			}
-			return ret;
-		}
-
 		public virtual double GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(string symbol, Direction direction
 				, out OrderSpreadSide oss, bool forceCrossMarket) {
 			string msig = " GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(" + symbol + ", " + direction + ")";

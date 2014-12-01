@@ -81,9 +81,10 @@ namespace Sq1.Core.Repositories {
 			Bars bars = null;
 			DateTime dateTime = DateTime.Now;
 			FileStream fileStream = null;
+			BinaryReader binaryReader = null;
 			try {
 				fileStream = File.Open(this.Abspath, FileMode.Open, FileAccess.Read, FileShare.Read);
-				BinaryReader binaryReader = new BinaryReader(fileStream);
+				binaryReader = new BinaryReader(fileStream);
 
 				string symbol_IGNOREDv3 = "NOT_READ_FROM_FILE";
 				string symbolHumanReadable_IGNOREDv3;
@@ -125,6 +126,8 @@ namespace Sq1.Core.Repositories {
 				//v1,2 AFTER_IMPLEMENTING_FIXED_SYMBOL_WIDTH_IGNORING_WHAT_I_READ_FROM_FILE  bars = new Bars(symbol, scaleInterval, shortFname);
 				string v3ignoresSymbolFromFile = (this.barFileCurrentVersion <=2) ? symbol_IGNOREDv3 : this.Symbol;
 				bars = new Bars(v3ignoresSymbolFromFile, scaleInterval, shortFname);
+				
+				//http://stackoverflow.com/questions/58380/avoiding-first-chance-exception-messages-when-the-exception-is-safely-handled
 				//for (int barsRead = 0; barsRead<barsStored; barsRead++) {
 				while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length) {
 					DateTime dateTimeOpen = new DateTime(binaryReader.ReadInt64());
@@ -152,7 +155,7 @@ namespace Sq1.Core.Repositories {
 				
 				string msg3 = "BARS_LOAD_ALL_TELEMETRY SIZEOF(header)[" + this.headerSize + "] SIZEOF(Bar)[" + this.oneBarSize + "]"
 					+ " version[" + version + "] bars[" + bars + "] Relpath[" + this.Relpath + "]";
-				Assembler.PopupException(msg3 + msig, null, false);
+				//Assembler.PopupException(msg3 + msig, null, false);
 				try {
 					long barSize = this.barSizesByVersion[version];
 					if (barSize != this.oneBarSize) {
@@ -176,6 +179,10 @@ namespace Sq1.Core.Repositories {
 				string msg = "BARS_LOAD_ALL_FAILED[" + this.Abspath + "]";
 				Assembler.PopupException(msg + msig, ex);
 			} finally {
+				if (binaryReader != null) {
+					binaryReader.Close();
+					binaryReader.Dispose();
+				}
 				if (fileStream != null) {
 					fileStream.Close();
 					fileStream.Dispose();
@@ -350,7 +357,7 @@ namespace Sq1.Core.Repositories {
 							+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] == dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
 							+ " fileStreamPositionAfterSeekToLastBar[" + fileStreamPositionAfterSeekToLastBar + "] fileStreamLength[" + fileStreamLength + "]"
 							;
-						Assembler.PopupException(msg, null, false);
+						//Assembler.PopupException(msg, null, false);
 					} catch (Exception ex) {
 				        string msg = "3/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
 				        Assembler.PopupException(msg + msig, ex);
@@ -363,7 +370,7 @@ namespace Sq1.Core.Repositories {
 							+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
 							+ " fileStreamPositionAfterSeekToEnd[" + fileStreamPositionAfterSeekToEnd + "] fileStreamLength[" + fileStreamLength + "]"
 							;
-						Assembler.PopupException(msg, null, false);
+						//Assembler.PopupException(msg, null, false);
 				    } catch (Exception ex) {
 				        string msg = "3/4_FILESTREAM_SEEK_END_THROWN";
 				        Assembler.PopupException(msg + msig, ex);

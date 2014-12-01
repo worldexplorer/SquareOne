@@ -102,7 +102,7 @@ namespace Sq1.Gui {
 			try {
 				if (this.mniExecution.Checked == false) {
 					ExecutionForm.Instance.Show(this.DockPanel);
-					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
+					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized();
 				} else {
 					ExecutionForm.Instance.Hide();
 				}

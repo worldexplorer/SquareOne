@@ -108,7 +108,12 @@ namespace Sq1.Widgets {
 				base.Pane.SetDockState(newState);
 			}
 			// added if(base.IsHidden) to stop Pane.Activate() steal focus during keyUp/keyDown in ExecutionTree when this generates Exceptions
-			if (base.IsHidden) base.Pane.Activate();
+			//if (base.IsHidden) base.Pane.Activate();
+			if (base.Visible == false) {
+				string msg = "I'm here when ExceptionsForm is covered by another docked pane";
+				//DOESNT_BRING_ME_ON_TOP_OF_PANES_COVERING_ME base.Pane.Activate();
+				this.Activate();	// NOW_ITS_A_POPUP_INDEED !!! YAHOO_WASNT_POPPING_UP_FOR_TWO_YEARS__SPENT_HOURS_TO_FIGURE_OUT
+			}
 			// removes focus from other forms; makes ExecutionForm.SelectedRow blue=>gray
 			// base.Activate();
 		}

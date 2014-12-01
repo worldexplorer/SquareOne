@@ -490,7 +490,7 @@ namespace Sq1.Gui.Forms {
 			this.btnStrategyEmittingOrders.Checked = true;
 			this.btnStrategyEmittingOrders.CheckOnClick = true;
 			this.btnStrategyEmittingOrders.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.btnStrategyEmittingOrders.Enabled = false;
+			this.btnStrategyEmittingOrders.Enabled = true;
 			this.btnStrategyEmittingOrders.Name = "btnStrategyEmittingOrders";
 			this.btnStrategyEmittingOrders.Size = new System.Drawing.Size(70, 20);
 			this.btnStrategyEmittingOrders.Text = "EmitOrders";

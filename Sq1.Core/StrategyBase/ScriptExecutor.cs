@@ -145,6 +145,7 @@ namespace Sq1.Core.StrategyBase {
 			this.CommissionCalculator = new CommissionCalculatorZero(this);
 			this.Optimizer = new Optimizer(this);
 			this.OrderProcessor = Assembler.InstanceInitialized.OrderProcessor;
+			this.Performance = new SystemPerformance(this);
 		}
 
 		public void Initialize(ChartShadow chartShadow, Strategy strategy) {
@@ -169,8 +170,8 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 			this.ExecutionDataSnapshot.Initialize();
-			// Executor.Bars are NULL in ScriptExecutor.ctor() and NOT NULL in SetBars
-			//this.Performance.Initialize();
+			// SO_WHAT??? Executor.Bars are NULL in ScriptExecutor.ctor() and NOT NULL in SetBars
+			this.Performance.Initialize();
 			this.MarketSim.Initialize(Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
 			//v1, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
 			// if I listen to DataSourceRepository, all ScriptExecutors receive same notification including irrelated to my Bars
@@ -228,14 +229,42 @@ namespace Sq1.Core.StrategyBase {
 			//this.ExecutionDataSnapshot.PositionsOpenedAfterExec
 			//this.ExecutionDataSnapshot.PositionsClosedAfterExec
 
-			bool willPlace = this.Backtester.IsBacktestingNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
+			
+			bool willEmit = this.Backtester.IsBacktestingNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
 			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
+			if (willEmit) {
+				string msg3 = "Breakpoint";
+				//Debugger.Break();
+				//#D_FREEZE Assembler.PopupException(msg3, null, false);
+			}
 
 			List<Alert> alertsNewAfterExecCopy = this.ExecutionDataSnapshot.AlertsNewAfterExecSafeCopy;
+
+			Quote quoteCreatedTheseAlerts = quote;
+			if (quoteCreatedTheseAlerts == null) {
+				// I'm here when executing Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback()
+				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.DataSource.StreamingProvider.StreamingDataSnapshot
+				    .LastQuoteCloneGetForSymbol(this.Strategy.ScriptContextCurrent.Symbol);
+				quoteCreatedTheseAlerts = lastMayNotBeTheCreatorHereHavingNoParentBars.Clone();
+				quoteCreatedTheseAlerts.SetParentBarStreaming(this.Bars.BarStreaming);
+			}
+
 			if (alertsNewAfterExecCopy.Count > 0) {
-				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecCopy, quote);
-				if (willPlace) {
-					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreadGroups(alertsNewAfterExecCopy, setStatusSubmitting, true);
+				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecCopy, quoteCreatedTheseAlerts);
+				if (willEmit) {
+					string msg2 = "Breakpoint";
+					//#D_FREEZE Assembler.PopupException(msg2);
+					//Debugger.Break();
+					ContextScript ctx = this.Strategy.ScriptContextCurrent;
+					
+					this.DataSource.PausePumpingFor(ctx.Symbol, ctx.ScaleInterval, false);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
+					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsNewAfterExecCopy, setStatusSubmitting, true);
+					this.DataSource.UnPausePumpingFor(ctx.Symbol, ctx.ScaleInterval, false);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
+				}
+			} else {
+				if (willEmit && this.Strategy.Name == "EnterEveryBarCompiled" && quote == null) {
+					string msg2 = "EnterEveryBarCompiled must have had new Alert here every bar; instead, alertsNewAfterExecCopy.Count=0";
+					Assembler.PopupException(msg2, null, false);
 				}
 			}
 
@@ -266,11 +295,11 @@ namespace Sq1.Core.StrategyBase {
 				alert.QuoteCreatedThisAlert = quote;
 			}
 		}
-		public Position BuyOrShortAlertCreateDontRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
-														  Direction direction, MarketLimitStop entryMarketLimitStop) {
-			return BuyOrShortAlertCreateRegister(entryBar, stopOrLimitPrice, entrySignalName,
-												 direction, entryMarketLimitStop, false);
-		}
+//		public Position BuyOrShortAlertCreateDontRegister(Bar entryBar, double stopOrLimitPrice, string entrySignalName,
+//														  Direction direction, MarketLimitStop entryMarketLimitStop) {
+//			return BuyOrShortAlertCreateRegister(entryBar, stopOrLimitPrice, entrySignalName,
+//												 direction, entryMarketLimitStop, false);
+//		}
 		public void CheckThrowAlertCanBeCreated(Bar entryBar, string msig) {
 			string invoker = (new StackFrame(3, true).GetMethod().Name) + "(): ";
 			if (this.Bars == null) {
@@ -507,10 +536,18 @@ namespace Sq1.Core.StrategyBase {
 			List<Position> positionsOpenedAfterAlertFilled = new List<Position>();
 			List<Position> positionsClosedAfterAlertFilled = new List<Position>();
 
+			//v1
 			Bar barFill = (this.IsStreamingTriggeringScript) ? alertFilled.Bars.BarStreamingCloneReadonly : alertFilled.Bars.BarStaticLastNullUnsafe;
 			if (barFillRelno != barFill.ParentBarsIndex) {
 				string msg = "barFillRelno[" + barFillRelno + "] != barFill.ParentBarsIndex["
 					+ barFill.ParentBarsIndex + "]; barFill=[" + barFill + "]";
+				Assembler.PopupException(msg, null, false);
+			}
+			//v2
+			// Limit might get a Fill 2 bars after it was placed; PlacedBarIndex=BarStreaming.ParentIndex = now for past bar signals => not "PlacedBarIndex-1"
+			if (barFillRelno < alertFilled.PlacedBarIndex) {
+				string msg = "I_REFUSE_MOVE_AROUND__FILLED_BEFORE_PLACED barFillRelno[" + barFillRelno + "] < PlacedBarIndex["
+					+ alertFilled.PlacedBarIndex + "]; FilledBar=[" + alertFilled.FilledBar + "] PlacedBar=[" + alertFilled.PlacedBar + "]";
 				Assembler.PopupException(msg);
 			}
 			if (priceFill == -1) {
@@ -551,14 +588,14 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (quote == null) {
-				quote = this.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(alertFilled.Symbol);
+				quote = this.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alertFilled.Symbol);
 				// TODO: here quote will have NO_PARENT_BARS, since StreamingDataSnapshot contains anonymous quote;
 				// I should keep per-timeframe / per-distributionChannel LastQuote to have ParentBar= different StreamingBar 's
 				// bindStreamingBarForQuoteAndPushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar.Clone());
 			}
 
+			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(quote.Symbol);
 			alertFilled.QuoteFilledThisAlert = quote.Clone();	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
-			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(quote.Symbol);
 			alertFilled.QuoteFilledThisAlert.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAskWillFillMe;
 			
 			try {
@@ -566,9 +603,6 @@ namespace Sq1.Core.StrategyBase {
 			} catch (Exception ex) {
 				string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
 				Assembler.PopupException(msg + msig, ex);
-				#if DEBUG
-				Debugger.Break();
-				#endif
 			}
 			bool removed = this.ExecutionDataSnapshot.AlertsPendingRemove(alertFilled);
 			if (removed == false) {
@@ -632,7 +666,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 
 				if (alertsNewAfterAlertFilled.Count > 0 && willPlace) {
-					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreadGroups(alertsNewAfterAlertFilled, setStatusSubmitting, true);
+					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsNewAfterAlertFilled, setStatusSubmitting, true);
 
 					// 3. Script using proto might move SL and TP which require ORDERS to be moved, not NULLs
 					int twoMinutes = 120000;
@@ -663,7 +697,7 @@ namespace Sq1.Core.StrategyBase {
 							this.PopupException(msg);
 							Stopwatch waitedForTakeProfitOrder = new Stopwatch();
 							waitedForTakeProfitOrder.Start();
-							proto.TakeProfitAlertForAnnihilation.MreOrderFollowedIsNotNull.WaitOne();
+							proto.TakeProfitAlertForAnnihilation.MreOrderFollowedIsNotNull.WaitOne(twoMinutes);
 							waitedForTakeProfitOrder.Stop();
 							msg = "waited " + waitedForTakeProfitOrder.ElapsedMilliseconds + "ms for TakeProfitAlert.OrderFollowed";
 							if (proto.TakeProfitAlertForAnnihilation.OrderFollowed == null) {
@@ -855,10 +889,8 @@ namespace Sq1.Core.StrategyBase {
 		Assembler assembler;
 		Strategy strategy;
 		internal void BacktestContextInitialize(Bars bars) {
-			SymbolScaleDistributionChannel channel = this.Bars.DataSource.StreamingProvider.DataDistributor
-				.GetDistributionChannelFor(this.Bars.Symbol, this.Bars.ScaleInterval);
-			channel.QuotePump.PushConsumersPaused = true;
-
+			this.Bars.DataSource.PausePumpingFor(this.Bars.Symbol, this.Bars.ScaleInterval);
+			
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
 			this.preDataSource = this.DataSource;
 			this.preBacktestIsStreaming = this.IsStreamingTriggeringScript;
@@ -880,9 +912,7 @@ namespace Sq1.Core.StrategyBase {
 			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
-			SymbolScaleDistributionChannel channel = this.Bars.DataSource.StreamingProvider.DataDistributor
-				.GetDistributionChannelFor(this.Bars.Symbol, this.Bars.ScaleInterval);
-			channel.QuotePump.PushConsumersPaused = false;
+			this.Bars.DataSource.UnPausePumpingFor(this.Bars.Symbol, this.Bars.ScaleInterval);
 		}
 		public void BacktesterAbortIfRunningRestoreContext() {
 			if (this.Backtester.IsBacktestingNow == false) return;
@@ -894,7 +924,7 @@ namespace Sq1.Core.StrategyBase {
 		public void BacktesterRunSimulation() {
 			try {
 				this.ExecutionDataSnapshot.Initialize();
-				this.Performance = new SystemPerformance(this);
+				//MOVED_IN_CTOR() this.Performance = new SystemPerformance(this);
 				this.Performance.Initialize();
 				this.Strategy.Script.InitializeBacktestWithExecutorsBarsInstantiateIndicators();
 

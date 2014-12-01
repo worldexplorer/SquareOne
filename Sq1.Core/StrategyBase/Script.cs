@@ -11,37 +11,37 @@ using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public abstract partial class Script {
-		public		ScriptExecutor	Executor		{ get; private set; }
-		protected	Bars			Bars			{ get { return (Executor == null) ? null : Executor.Bars; } }
-		public		Strategy		Strategy		{ get { return this.Executor.Strategy; } }
-		public		string			StrategyName	{ get { return this.Executor.StrategyName; } }
-		public		List<Position>	Positions		{ get { return this.Executor.ExecutionDataSnapshot.PositionsMaster; } }
+		public		ScriptExecutor	Executor							{ get; private set; }
+		protected	Bars			Bars								{ get { return (Executor == null) ? null : Executor.Bars; } }
+		public		Strategy		Strategy							{ get { return this.Executor.Strategy; } }
+		public		string			StrategyName						{ get { return this.Executor.StrategyName; } }
+		public		List<Position>	Positions							{ get { return this.Executor.ExecutionDataSnapshot.PositionsMaster; } }
 		
 		#region Position-related userland-invokeable parts
-		public bool IsLastPositionNotClosedYet { get {
+		public		bool			IsLastPositionNotClosedYet			{ get {
 				//v1 return LastPosition.Active;
 				Position pos = this.LastPosition;
 				if (null == pos) return false;
 				return (pos.ExitMarketLimitStop == MarketLimitStop.Unknown);
 			} }
-		public Position LastPositionOpenNow { get {
+		public		Position		LastPositionOpenNow					{ get {
 				List<Position> positionsOpenNow = this.Executor.ExecutionDataSnapshot.PositionsOpenNow;
 				if (positionsOpenNow.Count == 0) return null;
 				return positionsOpenNow[positionsOpenNow.Count - 1];
 			} }
-		public Position LastPosition { get {
+		public		Position		LastPosition						{ get {
 				List<Position> positionsMaster = this.Executor.ExecutionDataSnapshot.PositionsMaster;
 				if (positionsMaster.Count == 0) return null;
 				return positionsMaster[positionsMaster.Count - 1];
 			} }
-		public bool HasAlertsPendingAndPositionsOpenNow { get { return this.HasAlertsPending && this.HasPositionsOpenNow; } }
-		public bool HasAlertsPendingOrPositionsOpenNow { get { return this.HasAlertsPending || this.HasPositionsOpenNow; } }
-		public bool HasAlertsPending { get { return (this.Executor.ExecutionDataSnapshot.AlertsPending.Count > 0); } }
-		public bool HasPositionsOpenNow { get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
+		public		bool			HasAlertsPendingAndPositionsOpenNow	{ get { return this.HasAlertsPending && this.HasPositionsOpenNow; } }
+		public		bool			HasAlertsPendingOrPositionsOpenNow	{ get { return this.HasAlertsPending || this.HasPositionsOpenNow; } }
+		public		bool			HasAlertsPending					{ get { return (this.Executor.ExecutionDataSnapshot.AlertsPending.Count > 0); } }
+		public		bool			HasPositionsOpenNow					{ get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
 		#endregion
 		
 		public SortedDictionary<int, ScriptParameter> ScriptParametersById;
-		public Dictionary<string, ScriptParameter> ScriptParametersByNameInlineCopy { get {
+		public		Dictionary<string, ScriptParameter> ScriptParametersByNameInlineCopy { get {
 				Dictionary<string, ScriptParameter> ret = new Dictionary<string, ScriptParameter>();
 				foreach (ScriptParameter param in ScriptParametersById.Values) {
 					if (ret.ContainsKey(param.Name)) {
@@ -53,7 +53,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return ret;
 			} }
-		public string ScriptParametersByIdAsString { get {
+		public	string				ScriptParametersByIdAsString		{ get {
 				if (this.ScriptParametersById.Count == 0) return "(NoScriptParameters)";
 				string ret = "";
 				foreach (int id in this.ScriptParametersById.Keys) {

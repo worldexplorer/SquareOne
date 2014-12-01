@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 
+using Newtonsoft.Json;
 using Sq1.Core.Accounting;
 using Sq1.Core.DataFeed;
+using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
-using Newtonsoft.Json;
 
 namespace Sq1.Core.Broker {
 	public partial class BrokerProvider {
@@ -157,7 +158,7 @@ namespace Sq1.Core.Broker {
 				}
 				if (ordersToExecute.Contains(order)) {
 					string msg = "ORDER_DUPLICATE_IN_NEW: order=[" + order + "]";
-					this.OrderProcessor.PopupException(new Exception(msg));
+					Assembler.PopupException(msg, null, false);
 					continue;
 				}
 				ordersToExecute.Add(order);
@@ -179,18 +180,18 @@ namespace Sq1.Core.Broker {
 					//}
 					try {
 						this.OrderPreSubmitEnrichCheckThrow(order);
-					} catch (Exception e) {
-						this.OrderProcessor.PopupException(new Exception(msig + msg, e));
-						this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + e.Message + " //" + msg);
+					} catch (Exception ex) {
+						Assembler.PopupException(msg, ex, false);
+						this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + ex.Message + " //" + msg);
 						if (order.State == OrderState.IRefuseOpenTillEmergencyCloses) {
 							msg = "looks good, OrderPreSubmitChecker() caught the EmergencyLock exists";
-							this.OrderProcessor.PopupException(new Exception(msig + msg, e));
+							Assembler.PopupException(msg + msig, ex, false);
 							this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
 						}
 						continue;
 					}
 					//this.OrderProcessor.DataSnapshot.MoveAlongStateLists(order);
-					OrderSubmit(order);
+					this.OrderSubmit(order);
 				}
 			}
 		}
@@ -411,7 +412,7 @@ namespace Sq1.Core.Broker {
 			string msg = "";
 			try {
 				switch (orderWithNewState.State) {
-					case OrderState.Active: //Значение «1» соответствует состоянию «Активна»
+					case OrderState.WaitingBrokerFill: //Значение «1» соответствует состоянию «Активна»
 						Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersPending.FindSimilarNotSamePendingOrder(orderWithNewState);
 						//Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersAll.FindSimilarNotSamePendingOrder(orderWithNewState);
 						if (mustBeSame == null) break;

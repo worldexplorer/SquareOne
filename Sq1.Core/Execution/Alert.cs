@@ -9,14 +9,14 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Execution {
-	public class Alert {
-		[JsonIgnore]	public Bars Bars;
-		[JsonProperty]	public Bar PlacedBar { get; protected set; }
-		[JsonProperty]	public int PlacedBarIndex { get; protected set; }
-		[JsonProperty]	public Bar FilledBar { get; protected set; }
-		[JsonProperty]	public Bar FilledBarSnapshotFrozenAtFill { get; protected set; }
-		[JsonProperty]	public int FilledBarIndex { get; protected set; }
-		[JsonProperty]	public DateTime PlacedDateTime { get {
+	public	class Alert {
+		[JsonIgnore]	public	Bars				Bars;
+		[JsonProperty]	public	Bar					PlacedBar						{ get; protected set; }
+		[JsonProperty]	public	int					PlacedBarIndex					{ get; protected set; }
+		[JsonProperty]	public	Bar					FilledBar						{ get; protected set; }
+		[JsonProperty]	public	Bar					FilledBarSnapshotFrozenAtFill	{ get; protected set; }
+		[JsonProperty]	public	int					FilledBarIndex					{ get; protected set; }
+		[JsonProperty]	public	DateTime			PlacedDateTime					{ get {
 				if (this.PlacedBar == null) return DateTime.MinValue;
 //				if (this.PlacedBarIndex == -1 || this.PlacedBarIndex > this.Bars.Count) return PlacedDateTime.MinValue;
 //				if (this.PlacedBarIndex == this.Bars.Count) {
@@ -25,12 +25,12 @@ namespace Sq1.Core.Execution {
 //				return this.Bars[this.PlacedBarIndex].DateTimeOpen;
 				return this.PlacedBar.DateTimeOpen;
 			} }
-		[JsonProperty]	public DateTime QuoteCreatedThisAlertServerTime;	// EXECUTOR_ENRICHES_ALERT_WITH_QUOTE { get; protected set; }
-		[JsonProperty]	public string Symbol;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC  { get; protected set; }
-		[JsonProperty]	public string SymbolClass;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		[JsonProperty]	public string AccountNumber;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		[JsonProperty]	public string dataSourceName { get; protected set; }		// containsBidAsk BrokerProvider for further {new Order(Alert)} execution
-		[JsonIgnore]	public DataSource DataSource { get {
+		[JsonProperty]	public	DateTime			QuoteCreatedThisAlertServerTime;	// EXECUTOR_ENRICHES_ALERT_WITH_QUOTE { get; protected set; }
+		[JsonProperty]	public	string				Symbol;								// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC  { get; protected set; }
+		[JsonProperty]	public	string				SymbolClass;						// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonProperty]	public	string				AccountNumber;						// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonProperty]	public	string				dataSourceName					{ get; protected set; }		// containsBidAsk BrokerProvider for further {new Order(Alert)} execution
+		[JsonIgnore]	public	DataSource			DataSource						{ get {
 				if (this.Bars == null) {
 					throw new Exception("alert.Bars=null for alert[" + this + "]");
 				}
@@ -40,45 +40,46 @@ namespace Sq1.Core.Execution {
 				dataSourceName = this.Bars.DataSource.Name;
 				return this.Bars.DataSource;
 			} }
-		[JsonProperty] public double PriceScript { get; protected set; }				//doesn't contain Slippage
-		[JsonProperty] public double PriceScriptAligned { get; protected set; }
+		[JsonProperty]	public	double				PriceScript						{ get; protected set; }				//doesn't contain Slippage
+		[JsonProperty]	public	double				PriceScriptAligned				{ get; protected set; }
 
-		double priceStopLimitActivation;
-		[JsonProperty] public double PriceStopLimitActivation {
+		[JsonIgnore]		 	double				priceStopLimitActivation;
+		[JsonProperty]	public	double				PriceStopLimitActivation {
 			get { return this.priceStopLimitActivation; }
 			set {
 				this.priceStopLimitActivation = value;
-				if (this.Bars == null) {
-					string msg = "DONT_FORGET_TO_GENERATE_PriceStopLimitActivationAligned_AFTER_JSON_DESERIALIZATION";
-					Assembler.PopupException(msg);
-					return;
-				}
-				if (this.Bars.SymbolInfo == null) {
-					string msg = "ATTACH_SYMBOL_INFO_TO_BARS__TO_CALCULATE_PRICE_SCRIPT_ALIGNED";
-					Assembler.PopupException(msg);
-					return;
-				}
-				this.PriceStopLimitActivationAligned = this.Bars.SymbolInfo.AlignAlertToPriceLevelSimplified(this.priceStopLimitActivation, this.Direction, this.MarketLimitStop);
+//				if (this.Bars == null) {
+//					string msg = "DONT_FORGET_TO_GENERATE_PriceStopLimitActivationAligned_AFTER_JSON_DESERIALIZATION";
+//					Assembler.PopupException(msg);
+//					return;
+//				}
+//				if (this.Bars.SymbolInfo == null) {
+//					string msg = "ATTACH_SYMBOL_INFO_TO_BARS__TO_CALCULATE_PRICE_SCRIPT_ALIGNED";
+//					Assembler.PopupException(msg);
+//					return;
+//				}
+//				this.priceStopLimitActivation = this.Bars.SymbolInfo.AlignAlertToPriceLevelSimplified(this.priceStopLimitActivation, this.Direction, this.MarketLimitStop);
 			}
 		}
-		[JsonProperty] public double PriceStopLimitActivationAligned { get; protected set; }
-		
-		[JsonProperty] public double Qty;
-		[JsonProperty] public MarketLimitStop MarketLimitStop;	//BROKER_PROVIDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
-		[JsonProperty] public MarketOrderAs MarketOrderAs;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		[JsonProperty] public Direction Direction;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC { get; protected set; }
-
-						public string DirectionAsString;
-						public string MarketLimitStopAsString;
-
-					public PositionLongShort PositionLongShortFromDirection { get { return MarketConverter.LongShortFromDirection(this.Direction); } }
-					 public bool IsExitAlert { get { return !IsEntryAlert; } }
-					 public bool IsEntryAlert { get { return MarketConverter.IsEntryFromDirection(this.Direction); } }
-		[JsonProperty] public string SignalName;	//ORDER_SETS_NAME_FOR_KILLER_ALERTS { get; protected set; }
-		[JsonProperty] public Guid StrategyID;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		[JsonProperty] public string StrategyName;	// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-					 public Strategy Strategy { get; protected set; }
-					 public bool IsExecutorBacktestingNow { get {
+		[JsonProperty]	public	double				PriceStopLimitActivationAligned	{ get; protected set; }
+		[JsonProperty]	public	double				Qty;
+		[JsonProperty]	public	MarketLimitStop		MarketLimitStop;				//BROKER_PROVIDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
+		[JsonProperty]	public	MarketOrderAs		MarketOrderAs;					// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonIgnore]	public	string 				MarketLimitStopAsString;
+		[JsonProperty]	public	Direction			Direction;						// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC { get; protected set; }
+		[JsonIgnore]	public	string				DirectionAsString;
+		[JsonIgnore]	public	PositionLongShort	PositionLongShortFromDirection	{ get { return MarketConverter.LongShortFromDirection(this.Direction); } }
+		[JsonIgnore]	public	bool				IsExitAlert						{ get { return !IsEntryAlert; } }
+		[JsonIgnore]	public	bool				IsEntryAlert					{ get { return MarketConverter.IsEntryFromDirection(this.Direction); } }
+		[JsonProperty]	public	string				SignalName;						//ORDER_SETS_NAME_FOR_KILLER_ALERTS { get; protected set; }
+		[JsonProperty]	public	Guid				StrategyID;						// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonProperty]	public	string				StrategyName;					// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonIgnore]	public	Strategy			Strategy						{ get; protected set; }
+		[JsonIgnore]	public	bool				IsExecutorBacktestingNow		{ get {
+				if (this.Strategy == null) {
+					string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL__ADDED_[JsonIgnore]";
+					return false;
+				}
 				if (this.Strategy.Script == null) {
 					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script=null for " + this);
 				}
@@ -90,22 +91,20 @@ namespace Sq1.Core.Execution {
 				}
 				return this.Strategy.Script.Executor.Backtester.IsBacktestingNow;
 			} }
-		[JsonProperty]	public BarScaleInterval BarsScaleInterval { get; protected set; }
-		[JsonProperty]	public OrderSpreadSide OrderSpreadSide;
-		[JsonProperty]	public Quote QuoteCreatedThisAlert;
-		[JsonProperty]	public Quote QuoteFilledThisAlert;
-		[JsonProperty]	public Quote QuoteLastWhenThisAlertFilled;
-		[JsonIgnore]	public Position PositionAffected;
-		[JsonIgnore]	public DateTime PositionEntryDate { get {
-				if (this.PositionAffected != null) {
-					return this.PositionAffected.EntryDate;
-				}
+		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }
+		[JsonProperty]	public	OrderSpreadSide		OrderSpreadSide;
+		[JsonProperty]	public	Quote				QuoteCreatedThisAlert;
+		[JsonProperty]	public	Quote				QuoteFilledThisAlert;
+		[JsonProperty]	public	Quote				QuoteLastWhenThisAlertFilled;
+		[JsonIgnore]	public	Position			PositionAffected;
+		[JsonIgnore]	public	DateTime			PositionEntryDate				{ get {
+				if (this.PositionAffected != null) return this.PositionAffected.EntryDate;
 				return DateTime.MinValue;
 			} }
-		[JsonIgnore]	public Order OrderFollowed;			// set on Order(alert).executed;
-		[JsonIgnore]	public ManualResetEvent MreOrderFollowedIsNotNull { get; private set; }
-		[JsonProperty]	public double PriceDeposited;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
-		[JsonIgnore]	public string IsAlertCreatedOnPreviousBar { get {
+		[JsonIgnore]	public	Order				OrderFollowed;			// set on Order(alert).executed;
+		[JsonIgnore]	public	ManualResetEvent	MreOrderFollowedIsNotNull		{ get; private set; }
+		[JsonProperty]	public	double				PriceDeposited;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
+		[JsonIgnore]	public	string				IsAlertCreatedOnPreviousBar		{ get {
 				string ret = "";
 				DateTime serverTimeNow = this.Bars.MarketInfo.ServerTimeNow;
 				DateTime nextBarOpen = this.PlacedBar.DateTimeNextBarOpenUnconditional;
@@ -115,8 +114,111 @@ namespace Sq1.Core.Execution {
 				}
 				return ret;
 			} }
+		[JsonIgnore]	public	double QtyFilledThroughPosition { get {
+				double ret = 0;
+				if (this.PositionAffected == null) return ret;
+				if (this.IsEntryAlert && this.PositionAffected.EntryAlert == this) {
+					ret = this.PositionAffected.Shares;
+				}
+				if (this.IsExitAlert && this.PositionAffected.ExitAlert == this) {
+					ret = this.PositionAffected.Shares;
+				}
+				return ret;
+			} }
+		[JsonIgnore]	public	double PriceFilledThroughPosition { get {
+				double ret = 0;
+				if (this.PositionAffected == null) return ret;
+				if (this.IsEntryAlert && this.PositionAffected.EntryAlert == this) {
+					ret = this.PositionAffected.EntryFilledPrice;
+				}
+				if (this.IsExitAlert && this.PositionAffected.ExitAlert == this) {
+					ret = this.PositionAffected.ExitFilledPrice;
+				}
+				return ret;
+			} }
 
-		public Alert() {	// called by Json.Deserialize()
+		[JsonProperty]	public	bool IsFilled { get {
+				if (this.PositionAffected == null) return false;
+				return this.IsEntryAlert
+					? this.PositionAffected.IsEntryFilled
+					: this.PositionAffected.IsExitFilled;
+			} }
+		[JsonProperty]	public	bool IsKilled;
+		[JsonIgnore]	public	bool IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK { get {
+				bool notFilled = (this.FilledBarSnapshotFrozenAtFill == null);
+				#if DEBUG
+				if (notFilled) {
+					Debugger.Break();
+					return true;
+				}
+				#endif
+
+
+				bool fillAtSlimBarIsWithinSpread = this.FilledBarSnapshotFrozenAtFill.FillAtSlimBarIsWithinSpread(
+					this.PriceFilledThroughPosition, this.QuoteFilledThisAlert.Spread);
+				#if DEBUG
+				if (!fillAtSlimBarIsWithinSpread) {
+					Debugger.Break();
+					return true;
+				}
+				#endif
+
+				if (fillAtSlimBarIsWithinSpread == false) {
+					bool insideBar = this.FilledBarSnapshotFrozenAtFill.ContainsPrice(this.PriceFilledThroughPosition);
+					bool outsideBar = !insideBar;
+					#if DEBUG
+					if (outsideBar) {
+						Debugger.Break();
+						return true;
+					}
+					#endif
+
+					bool containsBidAsk = this.FilledBarSnapshotFrozenAtFill.ContainsBidAskForQuoteGenerated(this.QuoteFilledThisAlert);
+					#if DEBUG
+					if (!containsBidAsk && fillAtSlimBarIsWithinSpread) {
+						Debugger.Break();
+						return true;
+					}
+					#endif
+				}
+				
+				bool priceBetweenFilledQuotesBidAsk = this.QuoteFilledThisAlert.PriceBetweenBidAsk(this.PriceFilledThroughPosition);
+				#if DEBUG
+				if (!priceBetweenFilledQuotesBidAsk) {
+					Debugger.Break();
+					return true;
+				}
+				#endif
+
+				return false;	// false = ok, filledInsideBarShapshotFrozen
+			} }
+		//[JsonIgnore]	public	bool IsFilledOutsideBar_DEBUG_CHECK { get {
+		//		if (this.FilledBar == null) return false;
+		//		bool insideBar = (this.PriceFilledThroughPosition >= this.FilledBar.Low && this.PriceFilledThroughPosition <= this.FilledBar.High);
+		//		bool outsideBar = !insideBar; 
+		//		#if DEBUG
+		//		if (outsideBar) {
+		//			Debugger.Break();
+		//		}
+		//		#endif
+		//		return outsideBar;
+		//	} }
+		[JsonIgnore]	public	bool IsFilledOutsideQuote_DEBUG_CHECK { get {
+				if (this.QuoteFilledThisAlert == null) return false;
+				bool insideQuote = (this.PriceFilledThroughPosition >= this.QuoteFilledThisAlert.Bid && this.PriceFilledThroughPosition <= this.QuoteFilledThisAlert.Ask);
+				bool outsideQuote = !insideQuote; 
+				#if DEBUG
+				if (outsideQuote) {
+					Debugger.Break();
+				}
+				#endif
+				return outsideQuote;
+			} }
+		[JsonProperty]	public	BidOrAsk BidOrAskWillFillMe{ get {
+				return MarketConverter.BidOrAskWillFillAlert(this);
+			}}
+
+		public	Alert() {	// called by Json.Deserialize()
 			PlacedBarIndex = -1;
 			FilledBarIndex = -1;
 			//TimeCreatedServerBar = DateTime.MinValue;
@@ -137,7 +239,7 @@ namespace Sq1.Core.Execution {
 			OrderFollowed = null;
 			MreOrderFollowedIsNotNull = new ManualResetEvent(false);
 		}
-		public Alert(Bar bar, double qty, double priceScript, string signalName,
+		public	Alert(Bar bar, double qty, double priceScript, string signalName,
 				Direction direction, MarketLimitStop marketLimitStop, OrderSpreadSide orderSpreadSide,
 				Strategy strategy) : this() {
 
@@ -188,6 +290,10 @@ namespace Sq1.Core.Execution {
 			this.MarketLimitStopAsString = this.Direction.ToString();
 			this.OrderSpreadSide = orderSpreadSide;
 
+			if (strategy == null) {
+				string msg = "SERIALIZER_LOGROTATE<ORDER>_GOT_A_SUBMITTED_ALERT_WITH_STRATEGY_NULL__HOW_COME?";
+				Assembler.PopupException(msg);
+			}
 			this.Strategy = strategy;
 			if (this.Strategy != null) {
 				this.StrategyID = this.Strategy.Guid;
@@ -214,29 +320,8 @@ namespace Sq1.Core.Execution {
 				throw new Exception(msg);
 			}
 		}
-		[JsonIgnore]	public double QtyFilledThroughPosition { get {
-				double ret = 0;
-				if (this.PositionAffected == null) return ret;
-				if (this.IsEntryAlert && this.PositionAffected.EntryAlert == this) {
-					ret = this.PositionAffected.Shares;
-				}
-				if (this.IsExitAlert && this.PositionAffected.ExitAlert == this) {
-					ret = this.PositionAffected.Shares;
-				}
-				return ret;
-			} }
-		[JsonIgnore]	public double PriceFilledThroughPosition { get {
-				double ret = 0;
-				if (this.PositionAffected == null) return ret;
-				if (this.IsEntryAlert && this.PositionAffected.EntryAlert == this) {
-					ret = this.PositionAffected.EntryFilledPrice;
-				}
-				if (this.IsExitAlert && this.PositionAffected.ExitAlert == this) {
-					ret = this.PositionAffected.ExitFilledPrice;
-				}
-				return ret;
-			} }
-		public override string ToString() {
+
+		public	override string ToString() {
 			//v1 PROFILER_SAID_TOO_SLOW
 //			string msg = "bar#" + this.PlacedBarIndex + ": "
 //				//+ (this.isEntryAlert ? "entry" : "exit ")
@@ -283,7 +368,7 @@ namespace Sq1.Core.Execution {
 			}
 			return msg.ToString();
 		}
-		public string ToStringForTooltip() {
+		public	string ToStringForTooltip() {
 			string longOrderType = (MarketLimitStop == MarketLimitStop.StopLimit) ? "" : "\t";
 
 			string msg = DirectionAsString
@@ -297,7 +382,7 @@ namespace Sq1.Core.Execution {
 			msg += "\t[" + SignalName + "]";
 			return msg;
 		}
-		public string ToStringForOrder() {
+		public	string ToStringForOrder() {
 			string msg = Direction
 				+ " " + MarketLimitStop
 				// not Symbol coz stack overflow
@@ -306,7 +391,7 @@ namespace Sq1.Core.Execution {
 				+ "/" + SymbolClass;
 			return msg;
 		}
-		public bool IsIdenticalOrderlessPriceless(Alert alert) {
+		public	bool IsIdenticalOrderlessPriceless(Alert alert) {
 			if (alert == null) {
 				throw new Exception("you must've cleaned Executor.MasterAlerts from another thread while enumerating?...");
 			}
@@ -326,7 +411,7 @@ namespace Sq1.Core.Execution {
 			bool streamingBarMayBeDifferent = this.PriceScript == alert.PriceScript;
 			return basic && streamingBarMayBeDifferent;
 		}
-		public bool IsIdenticalForOrdersPending(Alert alert) {
+		public	bool IsIdenticalForOrdersPending(Alert alert) {
 			if (alert == null) {
 				throw new Exception("you must've cleaned Executor.DataSnapshot from another thread while enumerating?...");
 			}
@@ -344,9 +429,9 @@ namespace Sq1.Core.Execution {
 				;
 			return basic && streamingBarMayBeDifferent;
 		}
-		public virtual void AbsorbFromExecutorAfterCreatedByMarketReal(ScriptExecutor executor) {
+		public	virtual void AbsorbFromExecutorAfterCreatedByMarketReal(ScriptExecutor executor) {
 		}
-		public void FillPositionAffectedEntryOrExitRespectively(Bar barFill, int barFillRelno,
+		public	void FillPositionAffectedEntryOrExitRespectively(Bar barFill, int barFillRelno,
 				double priceFill, double qtyFill, double slippageFill, double commissionFill) {
 			//if (this.BarRelnoFilled != -1) {
 			if (this.FilledBar != null) {
@@ -366,90 +451,11 @@ namespace Sq1.Core.Execution {
 				if (this.PositionAffected.EntryFilledBarIndex != barFillRelno) {
 					string msg = "ENTRY_ALERT_SIMPLE_CHECK_FAILED_AVOIDING_EXCEPTION_IN_PositionsMasterOpenNewAdd"
 						+ "EntryFilledBarIndex[" + this.PositionAffected.EntryFilledBarIndex + "] != barFillRelno[" + barFillRelno + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
+					Assembler.PopupException(msg);
 				}
 			} else {
 				this.PositionAffected.FillExitWith(barFill, priceFill, qtyFill, slippageFill, commissionFill);
 			}
 		}
-		[JsonProperty]	public bool IsFilled { get {
-				if (this.PositionAffected == null) return false;
-				return this.IsEntryAlert
-					? this.PositionAffected.IsEntryFilled
-					: this.PositionAffected.IsExitFilled;
-			} }
-		[JsonProperty]	public bool IsKilled;
-		[JsonProperty]	public bool IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK { get {
-				bool notFilled = (this.FilledBarSnapshotFrozenAtFill == null);
-				#if DEBUG
-				if (notFilled) {
-					Debugger.Break();
-				}
-				#endif
-
-
-				bool fillAtSlimBarIsWithinSpread = this.FilledBarSnapshotFrozenAtFill.FillAtSlimBarIsWithinSpread(
-					this.PriceFilledThroughPosition, this.QuoteFilledThisAlert.Spread);
-				#if DEBUG
-				if (!fillAtSlimBarIsWithinSpread) {
-					Debugger.Break();
-				}
-				#endif
-
-				if (fillAtSlimBarIsWithinSpread == false) {
-					bool insideBar = this.FilledBarSnapshotFrozenAtFill.ContainsPrice(this.PriceFilledThroughPosition);
-					bool outsideBar = !insideBar;
-					#if DEBUG
-					if (outsideBar) {
-						Debugger.Break();
-					}
-					#endif
-
-					bool containsBidAsk = this.FilledBarSnapshotFrozenAtFill.ContainsBidAskForQuoteGenerated(this.QuoteFilledThisAlert);
-					#if DEBUG
-					if (!containsBidAsk && fillAtSlimBarIsWithinSpread) {
-						Debugger.Break();
-					}
-					#endif
-				}
-				
-				bool priceBetweenFilledQuotesBidAsk = this.QuoteFilledThisAlert.PriceBetweenBidAsk(this.PriceFilledThroughPosition);
-				//#if DEBUG
-				//if (!priceBetweenFilledQuotesBidAsk) {
-				//	Debugger.Break();
-				//}
-				//#endif
-
-				return false;	// false = ok, filledInsideBarShapshotFrozen
-			} }
-		//[JsonProperty]	public bool IsFilledOutsideBar_DEBUG_CHECK { get {
-		//		if (this.FilledBar == null) return false;
-		//		bool insideBar = (this.PriceFilledThroughPosition >= this.FilledBar.Low && this.PriceFilledThroughPosition <= this.FilledBar.High);
-		//		bool outsideBar = !insideBar; 
-		//		#if DEBUG
-		//		if (outsideBar) {
-		//			Debugger.Break();
-		//		}
-		//		#endif
-		//		return outsideBar;
-		//	} }
-		[JsonProperty]	public bool IsFilledOutsideQuote_DEBUG_CHECK { get {
-				if (this.QuoteFilledThisAlert == null) return false;
-				bool insideQuote = (this.PriceFilledThroughPosition >= this.QuoteFilledThisAlert.Bid && this.PriceFilledThroughPosition <= this.QuoteFilledThisAlert.Ask);
-				bool outsideQuote = !insideQuote; 
-				#if DEBUG
-				if (outsideQuote) {
-					Debugger.Break();
-				}
-				#endif
-				return outsideQuote;
-			} }
-
-		[JsonProperty]	public BidOrAsk BidOrAskWillFillMe{ get {
-				return MarketConverter.BidOrAskWillFillAlert(this);
-			}}
-		
 	}
 }

@@ -4,10 +4,10 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
 	public class OrderEventDistributor {
-		public event EventHandler<OrderEventArgs> OnOrderAddedExecutionFormNotification;
-		public event EventHandler<OrderEventArgs> OnOrderRemovedExecutionFormNotification;
-		public event EventHandler<OrderEventArgs> OnOrderStateChangedExecutionFormNotification;
-		public event EventHandler<OrderStateMessageEventArgs> OnOrderMessageAddedExecutionFormNotification;
+		public event EventHandler<OrderEventArgs>				OnOrderAddedExecutionFormNotification;
+		public event EventHandler<OrderEventArgs>				OnOrderRemovedExecutionFormNotification;
+		public event EventHandler<OrderEventArgs>				OnOrderStateChangedExecutionFormNotification;
+		public event EventHandler<OrderStateMessageEventArgs>	OnOrderMessageAddedExecutionFormNotification;
 		
 		public OrderEventDistributor() {
 		}

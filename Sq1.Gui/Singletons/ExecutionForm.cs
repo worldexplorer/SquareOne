@@ -1,11 +1,10 @@
 using System;
 using System.Windows.Forms;
+
 using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.Charting;
 using Sq1.Core.Execution;
-using Sq1.Core.Support;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Singletons {
 	public partial class ExecutionForm : DockContentSingleton<ExecutionForm> {
@@ -42,7 +41,7 @@ namespace Sq1.Gui.Singletons {
 			if (this.IsHiddenHandlingRepopulate()) return;
 			//if (this.executionTree.SelectedAccountNumbers.Contains(e.Order.Alert.AccountNumber) == false) return;
 			this.ExecutionTreeControl.OrderInsertToListView(e.Order);
-			if (this.ExecutionTreeControl.DataSnapshot.ToggleSyncWithChart) {
+			if (this.ExecutionTreeControl.DataSnapshot.ToggleSingleClickSyncWithChart) {
 				this.executionTree_OnOrderDoubleClickedChartFormNotification(sender, e);
 			}
 		}
@@ -57,7 +56,7 @@ namespace Sq1.Gui.Singletons {
 			//this.executionTree.OrderInsertMessage(e.OrderStateMessage);
 			//this.executionTree.PopulateMessagesFromSelectedOrder(e.OrderStateMessage.Order);
 			this.ExecutionTreeControl.PopulateMessagesFromSelectedOrder(e.OrderStateMessage.Order);
-			this.populateWindowText();
+			this.PopulateWindowText();
 		}
 		void orderProcessor_OrderStateChanged(object sender, OrderEventArgs e) {
 			if (base.IsDisposed) return;
@@ -75,23 +74,24 @@ namespace Sq1.Gui.Singletons {
 			}
 			if (this.IsHiddenHandlingRepopulate()) return;
 			this.ExecutionTreeControl.OrderRemoveFromListView(e.Order);
-			this.populateWindowText();
+			this.PopulateWindowText();
 		}
 
-		void populateWindowText() {
+		public void PopulateWindowText() {
 			if (base.InvokeRequired) {
-				base.BeginInvoke(new MethodInvoker(this.populateWindowText));
+				base.BeginInvoke(new MethodInvoker(this.PopulateWindowText));
 				return;
 			}
 			string ret = "";
-			int itemsCnt = this.ExecutionTreeControl.OrdersTree.Items.Count;
-			int allCnt = this.orderProcessor.DataSnapshot.OrdersAll.Count;
-			int submittingCnt = this.orderProcessor.DataSnapshot.OrdersSubmitting.Count;
-			int pendingCnt = this.orderProcessor.DataSnapshot.OrdersPending.Count;
-			int pendingFailedCnt = this.orderProcessor.DataSnapshot.OrdersPendingFailed.Count;
-			int cemeteryHealtyCnt = this.orderProcessor.DataSnapshot.OrdersCemeteryHealthy.Count;
-			int cemeterySickCnt = this.orderProcessor.DataSnapshot.OrdersCemeterySick.Count;
-			int fugitive = allCnt - (submittingCnt + pendingCnt + pendingFailedCnt + cemeteryHealtyCnt + cemeterySickCnt);
+			int itemsCnt			= this.ExecutionTreeControl.OrdersTree.Items.Count;
+			int allCnt				= this.orderProcessor.DataSnapshot.OrdersAll.InnerOrderList.Count;
+			int submittingCnt		= this.orderProcessor.DataSnapshot.OrdersSubmitting.InnerOrderList.Count;
+			int pendingCnt			= this.orderProcessor.DataSnapshot.OrdersPending.InnerOrderList.Count;
+			int pendingFailedCnt	= this.orderProcessor.DataSnapshot.OrdersPendingFailed.InnerOrderList.Count;
+			int cemeteryHealtyCnt	= this.orderProcessor.DataSnapshot.OrdersCemeteryHealthy.InnerOrderList.Count;
+			int cemeterySickCnt		= this.orderProcessor.DataSnapshot.OrdersCemeterySick.InnerOrderList.Count;
+			int fugitive			= allCnt - (submittingCnt + pendingCnt + pendingFailedCnt + cemeteryHealtyCnt + cemeterySickCnt);
+
 										ret +=		   cemeteryHealtyCnt + " Filled/Killed/Killers";
 										ret += " | " + pendingCnt + " Pending";
 			if (submittingCnt > 0)		ret += " | " + submittingCnt + " Submitting";
@@ -111,8 +111,8 @@ namespace Sq1.Gui.Singletons {
 				chartFound.SelectPosition(e.Order.Alert.PositionAffected);
 			} catch (Exception ex) {
 				//string msg = "TODO: add chartManager to Assembler, tunnel Execution.DoubleClick => select Chart.Trade; orderDoubleClicked[" + e.Order + "]";
-				string msg = "tunnelling Execution.DoubleClick => select Chart.Trade; orderDoubleClicked[" + e.Order + "]";
-				Assembler.PopupException(msg, ex);
+				string msg = "HISTORICAL_ORDER_ISNT_LINKED_TO_ANY_CHART__CANT_POPUP_POSITION orderDoubleClicked[" + e.Order + "]";
+				Assembler.PopupException(msg, ex, false);
 			}
 		}
 
@@ -126,10 +126,11 @@ namespace Sq1.Gui.Singletons {
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderStateChangedExecutionFormNotification += this.orderProcessor_OrderStateChanged;
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderMessageAddedExecutionFormNotification += this.orderProcessor_OrderMessageAdded;
 
-			this.ExecutionTreeControl.OnOrderStatsChangedRecalculateWindowTitleExecutionFormNotification += delegate { this.populateWindowText(); };
-			this.ExecutionTreeControl.OnOrderDoubleClickedChartFormNotification += this.executionTree_OnOrderDoubleClickedChartFormNotification;;
+			this.ExecutionTreeControl.OnOrderStatsChangedRecalculateWindowTitleExecutionFormNotification += delegate { this.PopulateWindowText(); };
+			this.ExecutionTreeControl.OnOrderDoubleClickedChartFormNotification += this.executionTree_OnOrderDoubleClickedChartFormNotification;
 
 			isHiddenPrevState = base.IsHidden;
+			//BETTER_IN_MainForm.WorkspaceLoad(): this.ExecutionTreeControl.MoveStateColumnToLeftmost();
 		}
 		void ExecutionForm_Closed(object sender, FormClosedEventArgs e) {
 			string msg = "ExecutionForm_Closed(): all self-hiding singletons are closed() on MainForm.Close()?";

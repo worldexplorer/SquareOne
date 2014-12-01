@@ -12,7 +12,7 @@ namespace Sq1.Core.Execution {
 		//SubmittingAsync = 220,
 		SubmittingSequenced = 230,
 		Submitted = 240,
-		Active = 250,
+		WaitingBrokerFill = 250,
 		Rejected = 300,
 		RejectedLimitReached = 330,
 		Filled = 400,

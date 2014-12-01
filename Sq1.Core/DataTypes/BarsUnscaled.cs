@@ -69,7 +69,7 @@ namespace Sq1.Core.DataTypes {
 		public void CheckThrowDOHLCVasLast(Bar barAdding) {
 			Bar lastBar = this.BarLast;
 			if (lastBar == null) return;
-			string msg = "NO_COMPLAINS";
+			string msg = "BARS_IDENTICAL";
 			bool sameDOHLCV = lastBar.HasSameDOHLCVas(barAdding, "barAdding", "LastBar", ref msg);
 			if (sameDOHLCV == false) return;
 			if (string.IsNullOrEmpty(msg)) msg = "PROJECT_SETTINGS_COMPILE_[VERBOSE_STRINGS_SLOW]_OPTION_ENABLE_TO_SEE_DETAILS";

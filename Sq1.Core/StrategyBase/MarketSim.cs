@@ -9,7 +9,7 @@ namespace Sq1.Core.StrategyBase {
 	public class MarketSim {
 		ScriptExecutor executor;
 		List<Alert> stopLossesActivatedOnPreviousQuotes;
-		bool fillOutsideQuoteSpreadParanoidCheckThrow;
+		public bool FillOutsideQuoteSpreadParanoidCheckThrow { get; private set; }
 
 		public MarketSim(ScriptExecutor executor) {
 			this.executor = executor;
@@ -17,78 +17,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void Initialize(bool fillOutsideQuoteSpreadParanoidCheckThrow = false) {
 			this.stopLossesActivatedOnPreviousQuotes.Clear();
-			this.fillOutsideQuoteSpreadParanoidCheckThrow = fillOutsideQuoteSpreadParanoidCheckThrow;
-		}
-
-		public bool SimulateFill(Alert alert, out bool abortTryFill, out string abortTryFillReason) {
-			abortTryFill = false;
-			abortTryFillReason = "ABORT_NO_REASON_SO_SHOULD_CONTINUE_TRY_FILL";
-			if (alert.DataSource.BrokerProviderName.Contains("Mock") == false) {
-				string msg = "SimulateRealtimeOrderFill() should be called only from BrokerProvidersName.Contains(Mock)"
-					+ "; here you have MOCK Realtime Streaming and Broker,"
-					+ " it's not a time-insensitive QuotesFromBar-generated Streaming Backtest"
-					+ " (both are routed to here, MarketSim, hypothetical order execution)";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-			}
-
-			if (alert.PositionAffected == null) {
-				string msg = "alertToBeKilled always has a PositionAffected, even for OnChartManual Buy/Short Market/Stop/Limit";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-			}
-
-			bool filled = false;
-			double priceFill = -1;
-			double slippageFill = -1;
-			Quote quote = this.executor.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(alert.Symbol);
-			if (quote == null) {
-				string msg = "how come LastQuoteGetForSymbol(" + alert.Symbol + ")=null??? StreamingProvider[" + this.executor.DataSource.StreamingProvider + "]";
-				//this.executor.PopupException(new Exception(msg));
-				return false;
-			}
-
-			if (alert.IsEntryAlert) {
-				if (alert.PositionAffected.IsEntryFilled) {
-					string msg = "PositionAffected.EntryFilled => did you create many threads in your QuikTerminalMock?";
-					throw new Exception(msg);
-				}
-				filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
-			} else {
-				if (alert.PositionAffected.IsEntryFilled == false) {
-					string msg = "I refuse to tryFill an ExitOrder because ExitOrder.Alert.PositionAffected.EntryFilled=false";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					throw new Exception(msg);
-				}
-				if (alert.PositionAffected.IsExitFilled) {
-					string msg = null;
-					if (alert.PositionAffected.IsExitFilledWithPrototypedAlert) {
-						msg = "ExitAlert already filled and Counterparty.Status=["
-							+ alert.PositionAffected.PrototypedExitCounterpartyAlert.OrderFollowed.State + "] (does it look OK for you?)";
-					} else {
-						msg = "I refuse to tryFill non-Prototype based ExitOrder having PositionAffected.IsExitFilled=true";
-					}
-					abortTryFill = true;
-					abortTryFillReason = msg;
-					// abortTryFillReason goes to the order.Message inside the caller
-					//this.executor.ThrowPopup(new Exception(msg));
-					return false;
-				}
-				try {
-					filled = this.CheckExitAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
-				} catch (Exception e) {
-					#if DEBUG
-					Debugger.Break();
-					#endif
-				}
-			}
-			return filled;
+			this.FillOutsideQuoteSpreadParanoidCheckThrow = fillOutsideQuoteSpreadParanoidCheckThrow;
 		}
 		public bool CheckEntryAlertWillBeFilledByQuote(Alert entryAlert, Quote quote, out double entryPriceOut, out double entrySlippageOutNotUsed) {
 			// if entry is triggered, call position.EnterFinalize(entryPrice, entrySlippage, entryCommission);
@@ -224,11 +153,14 @@ namespace Sq1.Core.StrategyBase {
 			//v1
 			
 			if (quote.PriceBetweenBidAsk(entryPriceOut) == false) {
-				string msg = "I_DONT_UNDERSTAND_HOW_I_DIDNT_DROP_THIS_QUOTE_BEFORE_BUT_I_HAVE_TO_DROP_IT_NOW"
-					+ " MUST_BE_BETWEEN: [" + quote.Bid + "] < [" + entryPriceOut + "] < [" + quote.Ask + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				string msig = " MUST_BE_BETWEEN: [" + quote.Bid + "] < [" + entryPriceOut + "] < [" + quote.Ask + "]";
+				if (this.executor.Backtester.IsBacktestingNow) {
+					string msg = "OBSOLETE I_DONT_UNDERSTAND_HOW_I_DIDNT_DROP_THIS_QUOTE_BEFORE_BUT_I_HAVE_TO_DROP_IT_NOW";
+					Assembler.PopupException(msg + msig, null);
+				} else {
+					string msg = "QuikTerminalMock uses MarketSim.SimulateFill() for live-simulated mode => no surprise here";
+					//Assembler.PopupException(msg + msig, null);
+				}
 				return false;
 			}
 			return true;
@@ -300,11 +232,11 @@ namespace Sq1.Core.StrategyBase {
 					}
 					break;
 				case MarketLimitStop.StopLimit:
-					if (quote.ParentStreamingBar == null) {
+					if (quote.ParentBarStreaming == null) {
 						string msg = "quoteToReach must be bound here!!!";
 						//Debugger.Break();
 					} else {
-						if (quote.ParentStreamingBar.ParentBarsIndex == 133) Debugger.Break();
+						if (quote.ParentBarStreaming.ParentBarsIndex == 133) Debugger.Break();
 					}
 
 					//v2
@@ -349,7 +281,7 @@ namespace Sq1.Core.StrategyBase {
 								return false;
 							}
 							if (exitPriceOut < quote.Ask) {
-								string msg = "SellLimit wasn't TOUCHED_FROM_ABOVE; staying Active but not filled at this bar" 
+								string msg = "SellLimit wasn't TOUCHED_FROM_ABOVE; staying WaitingFillBroker but not filled at this bar" 
 									+ " (TODO: if on next bar SellLimit is fillable, avoid first StopActivation condition above)";
 								return false;
 							}
@@ -389,7 +321,7 @@ namespace Sq1.Core.StrategyBase {
 								return false;
 							}
 							if (exitPriceOut > quote.Ask) {
-								string msg = "BuyLimit wasn't TOUCHED_FROM_BELOW; staying Active but not filled at this bar"
+								string msg = "BuyLimit wasn't TOUCHED_FROM_BELOW; staying WaitingFillBroker but not filled at this bar"
 									+ " (TODO: if on next bar BuyLimit is fillable, avoid first StopActivation condition above)";
 								return false;
 							}
@@ -464,7 +396,7 @@ namespace Sq1.Core.StrategyBase {
 			return true;
 		}
 
-		public int SimulatePendingFill(Quote quote) {
+		public int SimulateFillAllPendingAlerts(Quote quote) {
 			this.checkThrowRealtimePendingQuote(quote);
 			// there is no userlevel API to kill orders; in your Script, you operate SellAt/BuyAt; protoActivator.StopMove
 			// killing orders is the privilege of Realtime: OrderManager kills orders by
@@ -494,36 +426,121 @@ namespace Sq1.Core.StrategyBase {
 					continue;
 				}
 
-				//if (quoteToReach.ParentStreamingBar.ParentBarsIndex == 133) Debugger.Break();
-
-				int filled = 0;
-				if (alert.IsEntryAlert) {
-					filled = this.simulatePendingFillEntry(alert, quote);
-					entriesFilled += filled;
-				} else {
-					filled = this.simulatePendingFillExit(alert, quote);
-					exitsFilled += filled;
-				}
-				if (filled == 0) continue;
-				if (filled > 1) {
-					string msg = "ONE_ALERT_FILLED_REPORTED_MANY_WAS_FILLED SHOULD_NEVER_HAPPEN";
-					Assembler.PopupException(msg);
-				}
-				if (filled == 1 && this.fillOutsideQuoteSpreadParanoidCheckThrow == true) {
-					bool isFilledOutsideQuote	= alert.IsFilledOutsideQuote_DEBUG_CHECK;
-					bool isFilledOutsideBar		= alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK;
-				}
-
-				if (this.executor.ExecutionDataSnapshot.AlertsPendingContains(alert)) {
-					string msg = "normally, the filled alert already removed by CallbackAlertFilledMoveAroundInvokeScript()";
-					bool removed = this.executor.ExecutionDataSnapshot.AlertsPendingRemove(alert);
-					Assembler.PopupException(msg + " SimulatePendingFill(" + quote + ")");
-				} else {
-					//Debugger.Break();
+				bool filled = this.SimulateFillPendingAlert(alert, quote);
+				if (filled) {
+					if (alert.IsEntryAlert)	entriesFilled++;
+					else					exitsFilled++;
 				}
 			}
-			return entriesFilled + exitsFilled;// + entriesStuckFilled + exitsStuckFilled;
+			int filledTotal = entriesFilled + exitsFilled;// + entriesStuckFilled + exitsStuckFilled;
+			if (filledTotal > alertsPendingSafeCopy.Count) {
+				string msg = "WHY_THERE_WERE_MORE_ALERTS_FILLED_THAN_THERE_WERE_ALERTS??? filledTotal["
+					+ filledTotal + "] > alertsPendingSafeCopy.Count[" + alertsPendingSafeCopy.Count + "]";
+				Assembler.PopupException(msg);
+			}
+			return filledTotal;
 		}
+
+		public bool SimulateFillPendingAlert(Alert alert, Quote quote) {
+			bool filled = false;
+			if (alert.IsEntryAlert) {
+				filled = this.simulatePendingFillEntry(alert, quote);
+			} else {
+				filled = this.simulatePendingFillExit(alert, quote);
+			}
+			if (filled == false) return filled;
+
+			if (this.executor.ExecutionDataSnapshot.AlertsPendingContains(alert) == true) {
+				string msg = "ALERT_MUST_HAVE_BEEN_REMOVED_FROM_PENDINGS_AFTER_FILL"
+					+ "; normally, the filled alert should be already removed here by CallbackAlertFilledMoveAroundInvokeScript()"
+					+ "; AlertsPendingContains(" + alert + ")=true";
+				bool removed = this.executor.ExecutionDataSnapshot.AlertsPendingRemove(alert);
+				Assembler.PopupException(msg + " SimulatePendingFill(" + quote + ")");
+			} else {
+				//Debugger.Break();
+			}
+			if (this.FillOutsideQuoteSpreadParanoidCheckThrow == true) {
+				bool isFilledOutsideQuote = alert.IsFilledOutsideQuote_DEBUG_CHECK;
+				bool isFilledOutsideBar = alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK;
+				Assembler.PopupException("ALERT_FILLED_OUSIDE_QUOTE");
+			}
+			return filled;
+		}
+		
+		public bool SimulateFillLive(Alert alert, Quote quote, out bool abortTryFill, out string abortTryFillReason) {
+			abortTryFill = false;
+			abortTryFillReason = "NO_REASON_TO_ABORT_TRY_FILL";
+			if (alert.DataSource.BrokerProviderName.Contains("Mock") == false) {
+				string msg = "SimulateRealtimeOrderFill() should be called only from BrokerProvidersName.Contains(Mock)"
+					+ "; here you have MOCK Realtime Streaming and Broker,"
+					+ " it's not a time-insensitive QuotesFromBar-generated Streaming Backtest"
+					+ " (both are routed to here, MarketSim, hypothetical order execution)";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
+			}
+
+			if (alert.PositionAffected == null) {
+				string msg = "alertToBeKilled always has a PositionAffected, even for OnChartManual Buy/Short Market/Stop/Limit";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg);
+			}
+
+			bool filled = false;
+			//double priceFill = -1;
+			//double slippageFill = -1;
+			//Quote quote = this.executor.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(alert.Symbol);
+			if (quote == null) {
+				string msg = "how come LastQuoteGetForSymbol(" + alert.Symbol + ")=null??? StreamingProvider["
+					+ this.executor.DataSource.StreamingProvider + "]";
+				//this.executor.PopupException(new Exception(msg));
+				return false;
+			}
+
+			if (alert.IsEntryAlert) {
+				if (alert.PositionAffected.IsEntryFilled) {
+					string msg = "WONT_FILL_ENTRY_TWICE PositionAffected.EntryFilled => did you create many threads in your QuikTerminalMock?";
+					throw new Exception(msg);
+				}
+				//filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
+				filled = this.SimulateFillPendingAlert(alert, quote);
+			} else {
+				if (alert.PositionAffected.IsEntryFilled == false) {
+					string msg = "WONT_FILL_EXIT_TWICE I refuse to tryFill an ExitOrder because ExitOrder.Alert.PositionAffected.EntryFilled=false";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					throw new Exception(msg);
+				}
+				if (alert.PositionAffected.IsExitFilled) {
+					string msg = null;
+					if (alert.PositionAffected.IsExitFilledWithPrototypedAlert) {
+						msg = "ExitAlert already filled and Counterparty.Status=["
+							+ alert.PositionAffected.PrototypedExitCounterpartyAlert.OrderFollowed.State + "] (does it look OK for you?)";
+					} else {
+						msg = "I refuse to tryFill non-Prototype based ExitOrder having PositionAffected.IsExitFilled=true";
+					}
+					abortTryFill = true;
+					abortTryFillReason = msg;
+					// abortTryFillReason goes to the order.Message inside the caller
+					//this.executor.ThrowPopup(new Exception(msg));
+					return false;
+				}
+				try {
+					//filled = this.CheckExitAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
+					filled = this.SimulateFillPendingAlert(alert, quote);
+				} catch (Exception e) {
+					#if DEBUG
+					Debugger.Break();
+					#endif
+				}
+			}
+			return filled;
+		}
+		
 		string checkAlertFillable(Alert alert) {
 			string msg = null;
 			if (alert.IsFilled == true) {
@@ -587,55 +604,56 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 				//return 0;
 			}
-			if (quote.ParentStreamingBar == null) {
+			if (quote.ParentBarStreaming == null) {
 				string msg = "I refuse to serve this quoteToReach.ParentStreamingBar=null";
 				#if DEBUG
 				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
-			if (quote.ParentStreamingBar.ParentBarsIndex != this.executor.Bars.Count - 1) {
+			if (quote.ParentBarStreaming.ParentBarsIndex != this.executor.Bars.Count - 1) {
 				string msg = "I refuse to serve this quoteToReach.ParentStreamingBar.ParentBarsIndex["
-					+ quote.ParentStreamingBar.ParentBarsIndex + "] != this.executor.Bars.Count-1[" + (this.executor.Bars.Count - 1) + "]";
+					+ quote.ParentBarStreaming.ParentBarsIndex + "] != this.executor.Bars.Count-1[" + (this.executor.Bars.Count - 1) + "]";
 				throw new Exception(msg);
 			}
 		}
-		int simulatePendingFillEntry(Alert alert, Quote quote) {
-			int filledEntries = 0;
+		bool simulatePendingFillEntry(Alert alert, Quote quote) {
 			double priceFill = -1;
 			double slippageFill = -1;
 			if (quote.AbsnoPerSymbol == 523 && quote.IntraBarSerno == 100001) {
 				//Debugger.Break();
 			}
 			bool filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
-			if (filled) {
-				filledEntries++;
-				double entryCommission = this.executor.OrderCommissionCalculate(alert.Direction,
-					alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);
-				int entryBarToTestOn = quote.ParentStreamingBar.ParentBarsIndex;
-				// making a derived quoteToReach look like "dedicated" specifically to the filled alertToBeKilled
-				if (quote.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
-					quote.Size = alert.Qty;
-				}
-				this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote, entryBarToTestOn,
-					priceFill, alert.Qty, slippageFill, entryCommission);
+			if (filled == false) return filled;
+
+			int entryBarToTestOn = quote.ParentBarStreaming.ParentBarsIndex;
+			if (entryBarToTestOn == -1) {
+				string msg = "AVOIDING_ALL_SORT_OF_MOVE_AROUND_ERRORS MUST_BE_POSITIVE_GOT_-1_quote.ParentStreamingBar.ParentBarsIndex";
+				Assembler.PopupException(msg);
+				return filled;
 			}
-			return filledEntries;
+			// making a derived quoteToReach look like "dedicated" specifically to the filled alertToBeKilled
+			if (quote.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
+				quote.Size = alert.Qty;
+			}
+			double entryCommission = this.executor.OrderCommissionCalculate(alert.Direction,
+				alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);
+			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote, entryBarToTestOn,
+				priceFill, alert.Qty, slippageFill, entryCommission);
+			return filled;
 		}
-		int simulatePendingFillExit(Alert alert, Quote quote) {
-			int filledExits = 0;
+		bool simulatePendingFillExit(Alert alert, Quote quote) {
 			double priceFill = -1;
 			double slippageFill = 1;
 			bool filled = this.CheckExitAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
-			if (filled) {
-				filledExits++;
-				double exitCommission = this.executor.OrderCommissionCalculate(alert.Direction,
-					alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);
-				int exitBarToTestOn = quote.ParentStreamingBar.ParentBarsIndex;
-				this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote, exitBarToTestOn,
-					priceFill, alert.Qty, slippageFill, exitCommission);
-			}
-			return filledExits;
+			if (filled == false) return filled;
+
+			double exitCommission = this.executor.OrderCommissionCalculate(alert.Direction,
+				alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);
+			int exitBarToTestOn = quote.ParentBarStreaming.ParentBarsIndex;
+			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote, exitBarToTestOn,
+				priceFill, alert.Qty, slippageFill, exitCommission);
+			return filled;
 		}
 
 		public void SimulateStopLossMoved(Alert alertToBeKilled) {

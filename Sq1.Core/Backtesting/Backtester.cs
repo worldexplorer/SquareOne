@@ -33,10 +33,10 @@ namespace Sq1.Core.Backtesting {
 		public BacktestQuotesGenerator QuotesGenerator { get; private set; }
 
 		public string ProgressStats { get {
-				if (QuotesGenerator == null) return "QuotesGenerator=null";
+				if (this.QuotesGenerator == null) return "QuotesGenerator=null";
 				return this.QuotesGeneratedSoFar + " / " + this.QuotesTotalToGenerate;
 			} }
-		public bool IsBacktestingNow { get { return BacktestIsRunning.WaitOne(0); } }
+		public bool IsBacktestingNow { get { return this.BacktestIsRunning.WaitOne(0); } }
 		public bool WasBacktestAborted { get {
 				if (QuotesGenerator == null) return false;
 				bool signalled = this.BacktestAborted.WaitOne(0);
@@ -52,7 +52,6 @@ namespace Sq1.Core.Backtesting {
 			backtestQuoteBarConsumer = new BacktestQuoteBarConsumer(this);
 			BacktestDataSource = new BacktestDataSource();
 		}
-
 		public Backtester(ScriptExecutor executor) : this() {
 			this.Executor = executor;
 			if (this.Executor.Strategy == null) return;

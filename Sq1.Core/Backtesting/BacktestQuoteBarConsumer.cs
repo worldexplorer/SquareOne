@@ -40,7 +40,7 @@ namespace Sq1.Core.Backtesting {
 					string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
 				}
 				int pendingCountPre = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-				int pendingFilled = this.backtester.Executor.MarketSim.SimulatePendingFill(quote);
+				int pendingFilled = this.backtester.Executor.MarketSim.SimulateFillAllPendingAlerts(quote);
 				int pendingCountNow = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingCountNow != pendingCountPre - pendingFilled) {
 					string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
@@ -70,7 +70,8 @@ namespace Sq1.Core.Backtesting {
 				indicator.OnNewStaticBarFormed(barLastFormed);
 			}
 
-			this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
+			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
+			ReporterPokeUnit pokeUnit = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(null);
 		}
 	}
 }

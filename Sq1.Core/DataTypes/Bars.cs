@@ -59,38 +59,25 @@ namespace Sq1.Core.DataTypes {
 			ret.DataSource = this.DataSource;
 			return ret;
 		}
-		public Bar CreateNewOrAbsorbIntoStreaming(Bar barToMergeToStreaming) {
+		public Bar BarStreamingCreateNewOrAbsorb(Bar barToMergeToStreaming) {
 			lock (base.BarsLock) {
-				bool shouldAppend = this.BarLast == null || barToMergeToStreaming.DateTimeOpen >= this.BarLast.DateTimeNextBarOpenUnconditional; 
-				if (this.BarStreaming == null || shouldAppend) {	// if this.BarStreaming == null I'll have just one bar in Bars which will be streaming and no static 
-					this.BarStreaming = this.barCreateAppendBindStreaming(barToMergeToStreaming);
-					return this.BarStreaming;
+				bool shouldAppend = this.BarLast == null || barToMergeToStreaming.DateTimeOpen >= this.BarLast.DateTimeNextBarOpenUnconditional;
+				if (shouldAppend) {	// if this.BarStreaming == null I'll have just one bar in Bars which will be streaming and no static 
+					Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, barToMergeToStreaming.DateTimeOpen);
+					barAdding.SetOHLCValigned(barToMergeToStreaming.Open, barToMergeToStreaming.High,
+						barToMergeToStreaming.Low, barToMergeToStreaming.Close, barToMergeToStreaming.Volume, this.SymbolInfo);
+					this.BarAppendBind(barAdding);
+					this.BarStreaming = barAdding;
+					this.RaiseBarStreamingAdded(barAdding);
+				} else {
+					if (this.BarStreaming == null) {
+						this.BarStreaming = this.BarLast;
+					}
+					//base.BarAbsorbAppend(this.StreamingBar, open, high, low, close, volume);
+					this.BarStreaming.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming);	// duplicated volume for just added bar; moved up
+					this.RaiseBarStreamingUpdated(barToMergeToStreaming);
 				}
-				if (this.BarStreaming == null) {
-					throw new Exception("NO_STREAMING_BAR_TO_EXPAND: AbsorbIntoStreaming(" + barToMergeToStreaming + ")");
-				}
-				//base.BarAbsorbAppend(this.StreamingBar, open, high, low, close, volume);
-				this.BarStreaming.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming);
-				this.RaiseBarStreamingUpdated(barToMergeToStreaming);
 				return this.BarStreaming;
-			}
-		}
-		Bar barCreateAppendBindStreaming(Bar bar) {
-			return this.barCreateAppendBindStreaming(bar.DateTimeOpen, bar.Open, bar.High, bar.Low, bar.Close, bar.Volume);
-		}
-		Bar barCreateAppendBindStreaming(DateTime dateTime, double open, double high, double low, double close, double volume) {
-			lock (base.BarsLock) {
-				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
-				barAdding.SetOHLCValigned(open, high, low, close, volume, this.SymbolInfo);
-				this.barAppendBindStreaming(barAdding);
-				return barAdding;
-			}
-		}
-		void barAppendBindStreaming(Bar barAdding) {
-			lock (base.BarsLock) {
-				this.BarAppendBind(barAdding);
-				this.BarStreaming = barAdding;
-				this.RaiseBarStreamingAdded(barAdding);
 			}
 		}
 		public Bar BarCreateAppendBindStatic(DateTime dateTime, double open, double high, double low, double close, double volume, bool exceptionPullUpstack = false) {
@@ -140,7 +127,7 @@ namespace Sq1.Core.DataTypes {
 				}
 			}
 		}
-		public void OverrideStreamingDOHLCVwith(Bar bar) {
+		public void BarStreamingOverrideDOHLCVwith(Bar bar) {
 			if (bar == null) {
 				string msg = "I_DONT_ACCEPT_NULL_BARS_TO OverrideStreamingDOHLCVwith(" + bar + ")";
 				throw new Exception(msg);
@@ -148,6 +135,13 @@ namespace Sq1.Core.DataTypes {
 			if (this.BarStreaming == null) {
 				string msg = "CAN_ONLY_OVERRIDE_STREAMING_NOT_NULL_WHILE_NOW_IT_IS_NULL OverrideStreamingDOHLCVwith(" + bar + "): this.streamingBar == null";
 				throw new Exception(msg);
+			}
+			string msgSame = "BARS_IDENTICAL";
+			bool sameDOHLCV = this.BarStreaming.HasSameDOHLCVas(bar, "barAbsorbed", "BarStreaming", ref msgSame);
+			if (sameDOHLCV) {
+				string msg = "NO_NEED_TO_ABSORB_ANYTHING__DESTINATION_HasSameDOHLCV msgSame[" + msgSame + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
 			}
 			//this.streamingBar.DateTimeOpen = bar.DateTimeOpen;
 			this.BarStreaming.AbsorbOHLCVfrom(bar);

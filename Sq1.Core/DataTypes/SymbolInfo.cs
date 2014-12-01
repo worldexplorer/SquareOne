@@ -6,11 +6,11 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.DataTypes {
 	public class SymbolInfo {
-		[JsonProperty]	public SecurityType SecurityType;
-		[JsonProperty]	public string Symbol;
-		[JsonProperty]	public string SymbolClass;
-		[JsonProperty]		   double _Point2Dollar;
-		[JsonProperty]	public double Point2Dollar {
+		[JsonProperty]	public SecurityType		SecurityType;
+		[JsonProperty]	public string			Symbol;
+		[JsonProperty]	public string			SymbolClass;
+		[JsonProperty]		   double			_Point2Dollar;
+		[JsonProperty]	public double			Point2Dollar {
 			get { return this._Point2Dollar; }
 			set {
 				if (value <= 0.0) {
@@ -20,34 +20,34 @@ namespace Sq1.Core.DataTypes {
 				this._Point2Dollar = value;
 			}
 		}
-		[JsonProperty]	public double PriceLevelSizeForBonds;
-		[JsonProperty]	public int DecimalsPrice;
-		[JsonProperty]	public int DecimalsVolume;		// valid for partial Forex lots and Bitcoins; for stocks/options/futures its always (int)1
+		[JsonProperty]	public double			PriceLevelSizeForBonds;
+		[JsonProperty]	public int				DecimalsPrice;
+		[JsonProperty]	public int				DecimalsVolume;					// valid for partial Forex lots and Bitcoins; for stocks/options/futures its always (int)1
 
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
-		[JsonProperty]	public double PriceMinimalStepFromDecimal { get { return Math.Pow(10, -this.DecimalsPrice); } }			// 10^(-2) = 0.01
-		[JsonProperty]	public double VolumeMinimalStepFromDecimal { get { return Math.Pow(10, -this.DecimalsVolume); } }		// 10^(-2) = 0.01
+		[JsonProperty]	public double			PriceMinimalStepFromDecimal		{ get { return Math.Pow(10, -this.DecimalsPrice); } }			// 10^(-2) = 0.01
+		[JsonProperty]	public double			VolumeMinimalStepFromDecimal	{ get { return Math.Pow(10, -this.DecimalsVolume); } }		// 10^(-2) = 0.01
 		
-		[JsonProperty]	public bool SameBarPolarCloseThenOpen;
-		[JsonProperty]	public int SequencedOpeningAfterClosedDelayMillis;
-		[JsonProperty]	public int EmergencyCloseDelayMillis;
-		[JsonProperty]	public int EmergencyCloseAttemptsMax;
-		[JsonProperty]	public bool ReSubmitRejected;
-		[JsonProperty]	public bool ReSubmittedUsesNextSlippage;
-		[JsonProperty]	public bool UseFirstSlippageForBacktest;
-		[JsonProperty]	public string SlippagesBuy;
-		[JsonProperty]	public string SlippagesSell;
-		[JsonProperty]	public MarketOrderAs MarketOrderAs;
-		[JsonProperty]	public bool MarketZeroOrMinMax { get {
+		[JsonProperty]	public bool				SameBarPolarCloseThenOpen;
+		[JsonProperty]	public int				SequencedOpeningAfterClosedDelayMillis;
+		[JsonProperty]	public int				EmergencyCloseDelayMillis;
+		[JsonProperty]	public int				EmergencyCloseAttemptsMax;
+		[JsonProperty]	public bool				ReSubmitRejected;
+		[JsonProperty]	public bool				ReSubmittedUsesNextSlippage;
+		[JsonProperty]	public bool				UseFirstSlippageForBacktest;
+		[JsonProperty]	public string			SlippagesBuy;
+		[JsonProperty]	public string			SlippagesSell;
+		[JsonProperty]	public MarketOrderAs	MarketOrderAs;
+		[JsonProperty]	public bool				MarketZeroOrMinMax				{ get {
 				return this.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
 					|| this.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
 			} }
-		[JsonProperty]	public bool ReplaceTidalWithCrossMarket;
-		[JsonProperty]	public int ReplaceTidalMillis;
-		[JsonProperty]	public bool SimBugOutOfBarStopsFill;
-		[JsonProperty]	public bool SimBugOutOfBarLimitsFill;
-		[JsonProperty]		   double _Margin;
-		[JsonProperty]	public double LeverageForFutures {
+		[JsonProperty]	public bool				ReplaceTidalWithCrossMarket;
+		[JsonProperty]	public int				ReplaceTidalMillis;
+		[JsonProperty]	public bool				SimBugOutOfBarStopsFill;
+		[JsonProperty]	public bool				SimBugOutOfBarLimitsFill;
+		[JsonProperty]		   double			_Margin;
+		[JsonIgnore]	public double			LeverageForFutures {
 			get { return this._Margin; }
 			set {
 				if (value <= 0.0) {
@@ -100,7 +100,9 @@ namespace Sq1.Core.DataTypes {
 			int ret = -1;
 			string slippagesCommaSeparated = (direction == Direction.Buy || direction == Direction.Cover)
 				? this.SlippagesBuy : this.SlippagesSell;
-			if (string.IsNullOrEmpty(slippagesCommaSeparated)) return ret;
+			if (string.IsNullOrEmpty(slippagesCommaSeparated)) {
+				return ret;
+			}
 			string[] slippages = slippagesCommaSeparated.Split(',');
 			if (slippages != null) ret = slippages.Length - 1;
 			return ret;

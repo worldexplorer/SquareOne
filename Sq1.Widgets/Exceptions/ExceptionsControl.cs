@@ -86,7 +86,7 @@ namespace Sq1.Widgets.Exceptions {
 //			//this.tree.InsertObjects(0, new List<Exception>() { exception });
 //			this.treeExceptions.Expand(exception);
 //			// MAKES StrategiesTreeControl.CellClick invoke handlers 100 times!!! nonsense I know Application.DoEvents();	// TsiProgressBarETAClick doesn't get control when every quote there is an exception and user can't interrupt the backtest
-			this.flushListToTree();
+			this.FlushListToTreeIfDockContentDeserialized();
 		}
 		void selectMostRecentException() {
 			if (this.treeExceptions.GetItemCount() == 0) return;
@@ -117,8 +117,12 @@ namespace Sq1.Widgets.Exceptions {
 				this.lvStackTrace.EndUpdate();
 			}
 		}
-		void flushListToTree() {
-			if (this.Visible == false) return;
+		public void FlushListToTreeIfDockContentDeserialized() {
+			// WINDOWS.FORMS.VISIBLE=FALSE_IS_SET_BY_DOCK_CONTENT_LUO ANALYZE_DockContentImproved.IsShown_INSTEAD if (this.Visible == false) return;
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				return;
+			}
+			
 			this.treeExceptions.SetObjects(this.Exceptions);
 			this.treeExceptions.RebuildAll(true);
 			if (this.Exceptions.Count == 0) {

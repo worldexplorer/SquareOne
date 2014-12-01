@@ -6,10 +6,10 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
 	public class OrderPostProcessorEmergency {
-		private List<OrderPostProcessorEmergencyLock> emergencyLocks;
-		private List<Order> interruptedEmergencyLockReasons;
-		private OrderProcessor orderProcessor;
-		private OrderPostProcessorSequencerCloseThenOpen OPPsequencer;
+		List<OrderPostProcessorEmergencyLock>		emergencyLocks;
+		List<Order>									interruptedEmergencyLockReasons;
+		OrderProcessor								orderProcessor;
+		OrderPostProcessorSequencerCloseThenOpen	OPPsequencer;
 
 		public OrderPostProcessorEmergency(OrderProcessor orderProcessor, OrderPostProcessorSequencerCloseThenOpen OPPSequencer) {
 			this.emergencyLocks = new List<OrderPostProcessorEmergencyLock>();
@@ -43,7 +43,7 @@ namespace Sq1.Core.Broker {
 		public void RemoveEmergencyLockFilled(Order filledEmergencyOrder) {
 			this.removeEmergencyLock(filledEmergencyOrder, OrderState.EmergencyCloseComplete);
 		}
-		private void removeEmergencyLock(Order filledEmergencyOrder, OrderState stateCompletedOrInterrupted) {
+		void removeEmergencyLock(Order filledEmergencyOrder, OrderState stateCompletedOrInterrupted) {
 			OrderPostProcessorEmergencyLock emergencyLock = new OrderPostProcessorEmergencyLock(filledEmergencyOrder);
 			string msgPost = "EmergencyLock Removed [" + emergencyLock + "]";
 			if (this.emergencyLocks.Contains(emergencyLock) == false) {
@@ -98,7 +98,7 @@ namespace Sq1.Core.Broker {
 			ThreadPool.QueueUserWorkItem(new WaitCallback(this.closeEmergencyThreadWrapper), new object[] { rejectedExitOrderOrEmergencyCloseOrder });
 			//CloseEmergencyThreadEntry(rejectedExitOrder);
 		}
-		private void closeEmergencyThreadWrapper(Object order_array) {
+		void closeEmergencyThreadWrapper(Object order_array) {
 			object[] array = order_array as object[];
 			Order rejectedExitOrder = (Order)array[0];
 			try {
@@ -107,7 +107,7 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException("CloseEmergencyThreadWrapper(): " + e.ToString(), e);
 			}
 		}
-		private void closeEmergencyThreadEntry(Order rejectedExitOrder) {
+		void closeEmergencyThreadEntry(Order rejectedExitOrder) {
 			try {
 				throwLogIfNotRejectedClosingOrder(rejectedExitOrder);
 				throwLogAndAppendMessageIfNoEmergencyLockFor(rejectedExitOrder);
@@ -116,7 +116,7 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 
-			OrderState newState = rejectedExitOrder.ComplementaryEmergencyStateForError;
+			OrderState newState = rejectedExitOrder.InStateErrorComplementaryEmergencyState;
 			string changeState = "ExitOrderCriticalState[" + rejectedExitOrder.State + "]=>[" + newState + "]";
 
 			int millis = rejectedExitOrder.Alert.Bars.SymbolInfo.EmergencyCloseDelayMillis;
@@ -138,7 +138,7 @@ namespace Sq1.Core.Broker {
 			}
 			this.submitReplacementOrderFor(rejectedExitOrder);
 		}
-		private void submitReplacementOrderFor(Order rejectedOrderToReplace) {
+		void submitReplacementOrderFor(Order rejectedOrderToReplace) {
 			Order replacement = this.createEmergencyCloseOrderInsteadOfRejected(rejectedOrderToReplace);
 			if (replacement == null) {
 				string msgNoReplacement = "got NULL from CreateEmergencyCloseOrderInsteadOfRejected() for (" + rejectedOrderToReplace + "); ";
@@ -187,7 +187,7 @@ namespace Sq1.Core.Broker {
 				this.orderProcessor.UpdateOrderStateAndPostProcess(replacement, omsg2);
 			}
 		}
-		private Order createEmergencyCloseOrderInsteadOfRejected(Order rejectedOrderToReplace) {
+		Order createEmergencyCloseOrderInsteadOfRejected(Order rejectedOrderToReplace) {
 			if (rejectedOrderToReplace == null) {
 				Assembler.PopupException("rejectedOrderToReplace=null why did you call me?");
 				return null;
@@ -223,7 +223,7 @@ namespace Sq1.Core.Broker {
 	
 			return emergencyReplacement;
 		}
-		private Order findEmergencyReplacementForRejectedOrder(Order orderRejected) {
+		Order findEmergencyReplacementForRejectedOrder(Order orderRejected) {
 			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.FindByGUID(orderRejected.GUID);
 			if (rejected == null) {
 				throw new Exception("Rejected[" + orderRejected + "] wasn't found!!!");
@@ -231,19 +231,19 @@ namespace Sq1.Core.Broker {
 			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.FindByGUID(rejected.EmergencyReplacedByGUID);
 			return replacement;
 		}
-		private void throwLogIfNotRejectedClosingOrder(Order order) {
+		void throwLogIfNotRejectedClosingOrder(Order order) {
 			if (order.Alert.IsEntryAlert == true) {
 				string msg = "Direction=[" + order.Alert.Direction + "] is not a Sell/Cover; order[" + order + "]";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
-			if (order.stateChangeableToEmergency == false) {
+			if (order.InStateChangeableToEmergency == false) {
 				string msg = "State=[" + order.State + "] is not a Rejected/Error*; order[" + order + "]";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 		}
-		private void throwLogAndAppendMessageIfNoEmergencyLockFor(Order order) {
+		void throwLogAndAppendMessageIfNoEmergencyLockFor(Order order) {
 			OrderPostProcessorEmergencyLock emergencyLock = new OrderPostProcessorEmergencyLock(order);
 			if (this.emergencyLocks.Contains(emergencyLock) == false) {
 				string msg = "who removed EmergencyLock before EmergencyCloseComplete?! " + emergencyLock.ToString();
@@ -252,7 +252,7 @@ namespace Sq1.Core.Broker {
 				throw new Exception(msg);
 			}
 		}
-		private void throwLogAndAppendMessageIfNextAttemptReachesLimit(Order rejectedExitOrder) {
+		void throwLogAndAppendMessageIfNextAttemptReachesLimit(Order rejectedExitOrder) {
 			if (rejectedExitOrder.IsEmergencyClose == false) return;
 			int emergencyCloseAttemptsMax = rejectedExitOrder.Alert.Bars.SymbolInfo.EmergencyCloseAttemptsMax;
 			if (rejectedExitOrder.EmergencyCloseAttemptSerno + 1 < emergencyCloseAttemptsMax) return;
@@ -264,7 +264,7 @@ namespace Sq1.Core.Broker {
 			this.orderProcessor.UpdateOrderStateAndPostProcess(rejectedExitOrder, omsg);
 			throw new Exception(msg);
 		}
-		private void throwLogIfEmergencyCloseInterrupted(Order replacementOrder) {
+		void throwLogIfEmergencyCloseInterrupted(Order replacementOrder) {
 			Order reason4lock = this.GetReasonForLock(replacementOrder);
 			lock (this.interruptedEmergencyLockReasons) {
 				if (this.interruptedEmergencyLockReasons.Contains(reason4lock) == false) return;
@@ -275,7 +275,7 @@ namespace Sq1.Core.Broker {
 			this.orderProcessor.UpdateOrderStateAndPostProcess(replacementOrder, newOrderStateRejected);
 			throw new Exception(msg);
 		}
-		private void addMessageNoMoreSlippagesAvailable(Order order) {
+		void addMessageNoMoreSlippagesAvailable(Order order) {
 			int slippageIndexMax = order.Alert.Bars.SymbolInfo.getSlippageIndexMax(order.Alert.Direction);
 			string msg2 = "EMERGENCY Reached max slippages available for [" + order.Alert.Bars.Symbol + "]"
 				+ " order.SlippageIndex[" + order.SlippageIndex + "] > slippageIndexMax[" + slippageIndexMax + "]"

@@ -80,31 +80,34 @@ namespace Sq1.Core.Charting {
 		public void Remove(CHART chart, ALERTS alert) {
 			string msig = " DictionaryManyToOne::Remove(chart[" + chart + "], alert[" + alert + "]): ";
 			if (this.Lookup.ContainsKey(chart) == false) {
-				string msg = "chart[" + chart + "] was never registered in this.Lookup";
+				string msg = "CONTAINER_WAS_NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
 				throw new Exception(msg + msig);
 			}
 			if (this.Lookup[chart].Contains(alert) == false) {
-				string msg = "alert[" + alert + "] was never added into this.Lookup[chart]";
+				string msg = "LOOKUP_REFERENCE_WAS_NEVER_ADDED_FOR alert[" + alert + "]";
 				throw new Exception(msg + msig);
 			}
 			if (this.Reverse.ContainsKey(alert) == false) {
-				string msg = "alert[" + alert + "] was never added into this.Reverse";
+				string msg = "REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert[" + alert + "]";
 				throw new Exception(msg + msig);
 			}
 			this.Lookup[chart].Remove(alert);
 			this.Reverse.Remove(alert);
 		}
 		
+		public bool IsItemRegisteredForAnyContainer(ALERTS alert) {
+			string msig = " DictionaryManyToOne::IsItemRegistered(alert[" + alert + "]): ";
+			return this.Reverse.ContainsKey(alert);
+		}
 		public CHART FindContainerFor(ALERTS alert) {
 			string msig = " DictionaryManyToOne::FindContainerFor(alert[" + alert + "]): ";
 			if (this.Reverse.ContainsKey(alert) == false) {
-				string msg = "alert[" + alert + "] was never added into this.Reverse";
+				string msg = "REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert[" + alert + "]";
 				throw new Exception(msg + msig);
 			}
 			return this.Reverse[alert];
 		}
-		
-		public List<ALERTS> FindContents(CHART chart) {
+		public List<ALERTS> FindContentsOf(CHART chart) {
 			string msig = " DictionaryManyToOne::FindContents(chart[" + chart + "]): ";
 			if (this.Lookup.ContainsKey(chart) == false) {
 				string msg = "chart[" + chart + "] was never registered in this.Lookup";

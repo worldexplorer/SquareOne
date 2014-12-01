@@ -12,7 +12,7 @@ namespace Sq1.Strategies.Demo {
 			//this.PadBars(0);
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quoteNewArrived) {
-			this.placePrototypeOncePositionClosed(quoteNewArrived.ParentStreamingBar);
+			this.placePrototypeOncePositionClosed(quoteNewArrived.ParentBarStreaming);
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barNewStaticArrived) {
 			//this.placePrototypeOncePositionClosed(barNewStaticArrived);
