@@ -42,9 +42,9 @@ namespace Sq1.Core.Streaming {
 			if (ignoreIntervalForceReplaceBarImmediately == false && secondsSinceLastDumped <= this.barStreamingDumpIntervalSeconds) return;
 
 			string millisElapsed;
-			int barsSaved = this.dataSource.BarAppendOrReplaceLast(quote.ParentStreamingBar, out millisElapsed);
+			int barsSaved = this.dataSource.BarAppendOrReplaceLast(quote.ParentBarStreaming, out millisElapsed);
 
-			string msig = " //StreamingSolidifier.replaceStreamingBar(" + quote.ParentStreamingBar.Close + ")";
+			string msig = " //StreamingSolidifier.replaceStreamingBar(" + quote.ParentBarStreaming.Close + ")";
 			string msg = millisElapsed
 				+ " quote[" + quote.LocalTimeCreated.ToString("mm:ss.fff") + "]=>[" + this.barStreamingLastDumpedLocal.ToString("mm:ss.fff") + "]"
 				+ " secondsSinceLastDumped[" + secondsSinceLastDumped.ToString("N3") + "] >= dumpInterval[" + this.barStreamingDumpIntervalSeconds + "]";

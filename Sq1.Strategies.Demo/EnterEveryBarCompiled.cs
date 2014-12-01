@@ -66,7 +66,7 @@ namespace Sq1.Strategies.Demo {
 			//DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
 
 			if (this.Executor.Backtester.IsBacktestingNow == false) {
-				Bar bar = quote.ParentStreamingBar;
+				Bar bar = quote.ParentBarStreaming;
 				int barNo = bar.ParentBarsIndex;
 				if (barNo == -1) return;
 				DateTime lastStaticBarDateTime = bar.ParentBars.BarStaticLastNullUnsafe.DateTimeOpen;
@@ -114,7 +114,7 @@ namespace Sq1.Strategies.Demo {
 				if (barStaticFormed.ParentBarsIndex == 163) {
 					Debugger.Break();
 					StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingProvider.StreamingDataSnapshot;
-					Quote lastQuote = streaming.LastQuoteGetForSymbol(barStaticFormed.Symbol);
+					Quote lastQuote = streaming.LastQuoteCloneGetForSymbol(barStaticFormed.Symbol);
 					double priceForMarketOrder = streaming.LastQuoteGetPriceForMarketOrder(barStaticFormed.Symbol);
 				}
 

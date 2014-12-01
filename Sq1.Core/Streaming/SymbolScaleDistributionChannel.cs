@@ -56,7 +56,7 @@ namespace Sq1.Core.Streaming {
 			//v2 let the user re-backtest during live streaming using 1) QuotePump.OnHold=true; 2) RunBacktest(); 3) QuotePump.OnHold=false;
 			QuotePump.PushStraightOrBuffered(quoteSernoEnrichedWithUnboundStreamingBar);
 		}
-		[Obsolete("DANGER!!! QUOTE_MUST_BE_CLONED_AND_ENRICHED USE_PushQuoteToPump_INSTEAD")]
+		[Obsolete("DANGER!!! QUOTE_MUST_BE_CLONED_AND_ENRICHED MAKE_SURE_this.PushQuoteToConsumers()_IS_INVOKED_THROUGH_PushQuoteToPump.PushStraightOrBuffered()_NOT_STRAIGHT_FROM_this.PushQuoteToDistributionChannels()")]
 		public void PushQuoteToConsumers(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
 			if (quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == 0) {
 				if (StreamingBarFactoryUnattached.LastBarFormedUnattached != null
@@ -151,7 +151,8 @@ namespace Sq1.Core.Streaming {
 				}
 
 				try {
-					consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe);
+					Bar barStaticLast	= consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
+					consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStaticLast);
 				} catch (Exception e) {
 					string msg = "BOUND_BAR_PUSH_FAILED " + barLastFormedBound.ToString();
 					Assembler.PopupException(msg + msig, e);
@@ -237,7 +238,6 @@ namespace Sq1.Core.Streaming {
 					Assembler.PopupException(msg + msig, e);
 					continue;
 				}
-
 			}
 		}
 		public string SymbolScaleInterval { get { return this.Symbol + "_" + this.ScaleInterval; } }

@@ -18,7 +18,7 @@ namespace Sq1.Gui {
 		public MainFormEventManager MainFormEventManager;
 		public MainFormWorkspacesManager WorkspacesManager;
 		public GuiDataSnapshot GuiDataSnapshot;
-		public Sq1.Core.Serializers.Serializer<Sq1.Gui.GuiDataSnapshot> GuiDataSnapshotSerializer;
+		public Serializer<GuiDataSnapshot> GuiDataSnapshotSerializer;
 		public bool MainFormClosingSkipChartFormsRemoval;
 
 		public ChartForm ChartFormActiveNullUnsafe { get {
@@ -195,17 +195,29 @@ namespace Sq1.Gui {
 				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
 				//this.DockPanel.ResumeLayout(true);
 				//this.DockPanel.Invalidate();
+
+				ExecutionForm.Instance.ExecutionTreeControl.MoveStateColumnToLeftmost();
+				if (ExecutionForm.Instance.IsShown) {
+					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized();
+					ExecutionForm.Instance.PopulateWindowText();
+				}
+				if (ExceptionsForm.Instance.IsShown) {
+					ExceptionsForm.Instance.ExceptionControl.FlushListToTreeIfDockContentDeserialized();
+				}
 			} catch (Exception ex) {
 				this.PopupException("WorkspaceLoad()", ex);
 			}
 		}
 		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {
-			DataSourcesForm.Instance.VisibleChanged += delegate { this.mniSymbols.Checked = DataSourcesForm.Instance.Visible; };
-			ExceptionsForm.Instance.VisibleChanged += delegate { this.mniExceptions.Checked = ExceptionsForm.Instance.Visible; };
-			SlidersForm.Instance.VisibleChanged += delegate { this.mniSliders.Checked = SlidersForm.Instance.Visible; };
-			StrategiesForm.Instance.VisibleChanged += delegate { this.mniStrategies.Checked = StrategiesForm.Instance.Visible; };
-			ExecutionForm.Instance.VisibleChanged += delegate { this.mniExecution.Checked = ExecutionForm.Instance.Visible; };
-			CsvImporterForm.Instance.VisibleChanged += delegate { this.mniCsvImporter.Checked = CsvImporterForm.Instance.Visible; };
+			DataSourcesForm.Instance.VisibleChanged		+= delegate { this.mniSymbols.Checked		= DataSourcesForm.Instance.Visible; };
+			ExceptionsForm.Instance.VisibleChanged		+= delegate {
+				// OK_SO_LUO_PLAYS_WITH_WINDOWS.FORMS.VISIBLE_I_SEE Debugger.Break();
+				this.mniExceptions.Checked = ExceptionsForm.Instance.Visible;
+			};
+			SlidersForm.Instance.VisibleChanged			+= delegate { this.mniSliders.Checked		= SlidersForm.Instance.Visible; };
+			StrategiesForm.Instance.VisibleChanged		+= delegate { this.mniStrategies.Checked	= StrategiesForm.Instance.Visible; };
+			ExecutionForm.Instance.VisibleChanged		+= delegate { this.mniExecution.Checked		= ExecutionForm.Instance.Visible; };
+			CsvImporterForm.Instance.VisibleChanged		+= delegate { this.mniCsvImporter.Checked	= CsvImporterForm.Instance.Visible; };
 
 			this.MainFormEventManager = new MainFormEventManager(this);
 

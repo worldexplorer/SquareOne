@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
+
 using BrightIdeasSoftware;
 using Sq1.Core;
-using Sq1.Core.Broker;
 using Sq1.Core.Execution;
-using Sq1.Core.Support;
 
 namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
-		private void orderTreeListViewCustomize() {
+		void orderTreeListViewCustomize() {
 			//v2
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
@@ -21,7 +21,7 @@ namespace Sq1.Widgets.Execution {
 			if (allColumns.Count > 0) {
 				this.OrdersTree.AllColumns.AddRange(allColumns);
 			}
-			
+
 			//	http://stackoverflow.com/questions/9802724/how-to-create-a-multicolumn-treeview-like-this-in-c-sharp-winforms-app/9802753#9802753
 			this.OrdersTree.CanExpandGetter = delegate(object o) {
 				var order = o as Order;
@@ -119,7 +119,7 @@ namespace Sq1.Widgets.Execution {
 			this.colheState.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colheState.AspectGetter: order=null";
-				return (order.ExpectingCallbackFromBroker ? "*" : "") +  order.State.ToString();
+				return (order.InStateExpectingCallbackFromBroker ? "*" : "") +  order.State.ToString();
 			};
 //			this.colheState.FontGetter = delegate(object o) {
 //				var order = o as Order;
@@ -193,7 +193,7 @@ namespace Sq1.Widgets.Execution {
 				return order.LastMessage;
 			};
 		}
-		public string formatOrderPriceSpreadSide(Order order, int pricingDecimalForSymbol) {
+		string formatOrderPriceSpreadSide(Order order, int pricingDecimalForSymbol) {
 			string ret = "";
 			switch (order.SpreadSide) {
 				case OrderSpreadSide.AskCrossed:
@@ -210,7 +210,7 @@ namespace Sq1.Widgets.Execution {
 			}
 			return ret;
 		}
-		private void messagesListViewCustomize() {
+		void messagesListViewCustomize() {
 			this.colheMessageText.AspectGetter = delegate(object o) {
 				var omsg = o as OrderStateMessage;
 				if (omsg == null) return "colheMessageText.AspectGetter: omsg=null";
@@ -226,6 +226,25 @@ namespace Sq1.Widgets.Execution {
 				if (omsg == null) return "colheMessageDateTime.AspectGetter: omsg=null";
 				return omsg.DateTime.ToString(Assembler.DateTimeFormatLong);
 			};
+		}
+		void tree_FormatRow(object sender, BrightIdeasSoftware.FormatRowEventArgs e) {
+			Order order = e.Model as Order;
+			if (order == null) return;
+			//v1 if (Assembler.InstanceInitialized.AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)) return;
+			//v2 ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL
+			if (order.Alert.Bars != null) return;
+			e.Item.ForeColor = Color.DimGray;
+		}
+		public void MoveStateColumnToLeftmost() {
+			//moving State as we drag-n-dropped it; tree will grow in second column
+			//NOT_NEEDED this.OrdersTree.BuildList();
+			//NOT_NEEDED this.RebuildAllTreeFocusOnTopmost();
+			this.OrdersTree.SetObjects(this.ordersShadowTree.InnerOrderList);
+			//NOT_NEEDED this.OrdersTree.RebuildAll(true);
+			this.OrdersTree.Columns.RemoveAt(3);
+			this.OrdersTree.Columns.Insert(0, this.colheState);
+			//NOT_NEEDED this.OrdersTree.BuildList();
+			//NOT_NEEDED this.RebuildAllTreeFocusOnTopmost();
 		}
 	}
 }

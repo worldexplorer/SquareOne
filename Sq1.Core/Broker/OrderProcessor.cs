@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 using Sq1.Core.Accounting;
@@ -10,28 +11,26 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Broker {
 	public class OrderProcessor {
-		public bool AlwaysExitAllSharesInPosition;
-		public IStatusReporter StatusReporter { get; protected set; }
-		public OrderProcessorDataSnapshot DataSnapshot { get; private set; }
-		public OrderProcessorEventDistributor EventDistributor { get; private set; }
-		public OrderPostProcessorEmergency OPPemergency { get; private set; }
-		public OrderPostProcessorRejected OPPrejected { get; private set; }
-		public OrderPostProcessorSequencerCloseThenOpen OPPsequencer { get; private set; }
-		public OrderPostProcessorStateChangedTrigger OPPstatusCallbacks { get; private set; }
+		public bool										AlwaysExitAllSharesInPosition;
+		public OrderProcessorDataSnapshot				DataSnapshot					{ get; private set; }
+		public OrderProcessorEventDistributor			EventDistributor				{ get; private set; }
+		public OrderPostProcessorEmergency				OPPemergency					{ get; private set; }
+		public OrderPostProcessorRejected				OPPrejected						{ get; private set; }
+		public OrderPostProcessorSequencerCloseThenOpen	OPPsequencer					{ get; private set; }
+		public OrderPostProcessorStateChangedTrigger	OPPstatusCallbacks				{ get; private set; }
 
 		public OrderProcessor() {
-			this.OPPsequencer = new OrderPostProcessorSequencerCloseThenOpen(this);
-			this.OPPemergency = new OrderPostProcessorEmergency(this, this.OPPsequencer);
-			this.OPPrejected = new OrderPostProcessorRejected(this);
-			this.OPPstatusCallbacks = new OrderPostProcessorStateChangedTrigger(this);
-			this.DataSnapshot = new OrderProcessorDataSnapshot(this);
-			this.EventDistributor = new OrderProcessorEventDistributor(this);
+			this.OPPsequencer			= new OrderPostProcessorSequencerCloseThenOpen(this);
+			this.OPPemergency			= new OrderPostProcessorEmergency(this, this.OPPsequencer);
+			this.OPPrejected			= new OrderPostProcessorRejected(this);
+			this.OPPstatusCallbacks		= new OrderPostProcessorStateChangedTrigger(this);
+			this.DataSnapshot			= new OrderProcessorDataSnapshot(this);
+			this.EventDistributor		= new OrderProcessorEventDistributor(this);
 		}
 
-		public void Initialize(string rootPath, IStatusReporter mainForm) {
+		public void Initialize(string rootPath) {
 			//if (rootPath.EndsWith(Path.DirectorySeparatorChar) == false) rootPath += Path.DirectorySeparatorChar;
 			this.DataSnapshot.Initialize(rootPath);
-			this.StatusReporter = mainForm;
 		}
 
 		bool isExitOrderConsistentLogInconsistency(Order order) {
@@ -109,7 +108,7 @@ namespace Sq1.Core.Broker {
 
 			if (setStatusSubmitting == true) {
 				if (newborn.hasBrokerProvider("CreatePropagateOrderFromAlert(): ") == false) {
-					string msg = "CRAZY #61";
+					string msg = "ORDER_HAS_NO_BROKER_PROVIDER__SELECT_AND_CONFIGURE_IN_DATASOURCE_EDITOR__DLL_MIGHT_HAVE_DISAPPEARED";
 					Assembler.PopupException(msg);
 					return null;
 				}
@@ -125,7 +124,7 @@ namespace Sq1.Core.Broker {
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 			return newborn;
 		}
-		public void CreateOrdersSubmitToBrokerProviderInNewThreadGroups(List<Alert> alertsBatch, bool setStatusSubmitting, bool fromAutoTrading) {
+		public void CreateOrdersSubmitToBrokerProviderInNewThreads(List<Alert> alertsBatch, bool setStatusSubmitting, bool emittedByScript) {
 			if (alertsBatch.Count == 0) {
 				string msg = "no alerts to Add; why did you call me? make sure you invoke using a synchronized Queue";
 				Assembler.PopupException(msg);
@@ -149,15 +148,16 @@ namespace Sq1.Core.Broker {
 
 				Order newOrder;
 				try {
-					newOrder = CreatePropagateOrderFromAlert(alert, setStatusSubmitting, fromAutoTrading);
-				} catch (Exception e) {
-					this.PopupException(e);
+					newOrder = this.CreatePropagateOrderFromAlert(alert, setStatusSubmitting, emittedByScript);
+				} catch (Exception ex) {
+					string msg = "THROWN_this.CreatePropagateOrderFromAlert";
+					Assembler.PopupException(msg, ex, false);
 					continue;
 				}
 				if (newOrder == null) {
 					string msg = "CreatePropagateOrderFromAlert=null => nothing sent to BrokerProver"
 						+ " and I should've removed alert[" + alert + "] from all pending collections";
-					this.PopupException(new Exception(msg));
+					Assembler.PopupException(msg, null, false);
 					continue;
 				}
 				if (newOrder.State != OrderState.Submitting) {
@@ -170,15 +170,16 @@ namespace Sq1.Core.Broker {
 					//&& newOrder.Alert.Strategy.Script.Executor.IsStreaming == true
 					//&& newOrder.FromAutoTrading == true
 					string msg = "Unexpected newOrder.State[" + newOrder.State + "] from CreatePropagateOrderFromAlert()";
-					this.PopupException(new Exception(msg));
+					Assembler.PopupException(msg, null, false);
 					continue;
 				}
 				if (broker == null) {
 					broker = alert.DataSource.BrokerProvider;
 				} else {
 					if (broker != alert.DataSource.BrokerProvider) {
-						throw new Exception("alertsBatch MUST contain alerts for the same broker"
-							+ "; prevAlert.Broker[" + broker + "] while thisAlert.DataSource.BrokerProvider[" + alert.DataSource.BrokerProvider + "]");
+						string msg = "CROSS_EXCHANGE_ALERTS_NYI alertsBatch MUST contain alerts for the same broker"
+							+ "; prevAlert.Broker[" + broker + "] while thisAlert.DataSource.BrokerProvider[" + alert.DataSource.BrokerProvider + "]";
+						throw new Exception(msg);
 					}
 				}
 				if (alert.Bars.SymbolInfo.SameBarPolarCloseThenOpen) {
@@ -219,18 +220,21 @@ namespace Sq1.Core.Broker {
 			if (ordersAgnostic.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry ordersAgnostic[" + ordersAgnostic.Count + "] through [" + broker + "]";
 				//this.PopupException(new Exception(msg));
+				//Debugger.Break();
 				ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersAgnostic });
 				return;
 			}
 			if (ordersClosing.Count > 0 && ordersOpening.Count == 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry ordersClosing[" + ordersClosing.Count + "] through [" + broker + "]";
 				//this.PopupException(new Exception(msg));
+				Debugger.Break();
 				ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersClosing });
 				return;
 			}
 			if (ordersClosing.Count == 0 && ordersOpening.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry ordersOpening[" + ordersOpening.Count + "] through [" + broker + "]";
 				//this.PopupException(new Exception(msg));
+				Debugger.Break();
 				ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpening });
 				return;
 			}
@@ -241,6 +245,7 @@ namespace Sq1.Core.Broker {
 					string msg = "Scheduling SubmitOrdersThreadEntry ordersClosing[" + ordersClosing.Count
 						+ "] through [" + broker + "], then  ordersOpening[" + ordersOpening.Count + "]";
 					//this.PopupException(new Exception(msg));
+					Debugger.Break();
 					ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersClosing });
 					return;
 				} else {
@@ -248,6 +253,7 @@ namespace Sq1.Core.Broker {
 					ordersMerged.AddRange(ordersOpening);
 					string msg = "Scheduling SubmitOrdersThreadEntry ordersMerged[" + ordersMerged.Count + "] through [" + broker + "]";
 					//this.PopupException(new Exception(msg));
+					Debugger.Break();
 					ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersMerged });
 					return;
 				}
@@ -308,12 +314,6 @@ namespace Sq1.Core.Broker {
 			}
 			return true;
 		}
-
-		public void PopupException(Exception exception) {
-			if (this.StatusReporter == null) return;
-			this.StatusReporter.PopupException(null, exception);
-		}
-
 		public Order CreateKillerOrder(Order victimOrder) {
 			string msig = "CreateKillerOrder(): ";
 			if (victimOrder == null) {
@@ -475,7 +475,7 @@ namespace Sq1.Core.Broker {
 				case OrderState.TPAnnihilated:
 					break;
 				case OrderState.Submitting:
-				case OrderState.Active:
+				case OrderState.WaitingBrokerFill:
 				case OrderState.Filled:
 					break;
 				case OrderState.Killed:
@@ -546,7 +546,7 @@ namespace Sq1.Core.Broker {
 				throw new Exception(msg);
 			}
 
-			if (newStateOmsg.State == OrderState.Active) {
+			if (newStateOmsg.State == OrderState.WaitingBrokerFill) {
 				bool signalled = order.MreActiveCanCome.WaitOne(-1);
 			}
 
@@ -564,6 +564,7 @@ namespace Sq1.Core.Broker {
 		}
 		public void UpdateOrderStateAndPostProcess(Order order, OrderStateMessage newStateOmsg, double priceFill = 0, double qtyFill = 0) {
 			string msig = "UpdateOrderStateAndPostProcess(): ";
+			//Debugger.Break();
 
 			try {
 				if (order.State == OrderState.Killed) {
@@ -581,7 +582,7 @@ namespace Sq1.Core.Broker {
 					return;
 				}
 
-				if (order.hasBrokerProvider("handleOrderStatusUpdate():") == false) {
+				if (order.hasBrokerProvider("UpdateOrderStateAndPostProcess():") == false) {
 					string msg = "most likely QuikTerminal.CallbackOrderStatus got something wrong...";
 					Assembler.PopupException(msg);
 					return;
@@ -595,7 +596,7 @@ namespace Sq1.Core.Broker {
 					this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, prePostErrorMsg);
 					return;
 				}
-				if (newStateOmsg.State == OrderState.Rejected && order.InEmergencyState) {
+				if (newStateOmsg.State == OrderState.Rejected && order.InStateEmergency) {
 					string prePostErrorMsg = "BrokerProvider CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for"
 						+ " order.inEmergencyState[" + order.State + "] "
 						//+ "; skipping PostProcess for [" + order + "]"
@@ -645,9 +646,10 @@ namespace Sq1.Core.Broker {
 				}
 				this.UpdateOrderStateNoPostProcess(order, newStateOmsg);
 				this.PostProcessOrderState(order, priceFill, qtyFill);
-			} catch (Exception e) {
+			} catch (Exception ex) {
 				string msg = "trying to figure out why SL is not getting placed - we didn't reach PostProcess??";
-				this.PopupException(new Exception(msg, e));
+				//this.PopupException(new Exception(msg, ex));
+				Assembler.PopupException(msg, ex);
 			}
 		}
 		void PostProcessAccounting(Order order, double qtyFill) {
@@ -721,9 +723,9 @@ namespace Sq1.Core.Broker {
 						int barRelnoFill = order.Alert.Bars.Count;
 						order.Alert.Strategy.Script.Executor.CallbackAlertFilledMoveAroundInvokeScript(order.Alert, null, barRelnoFill,
 							order.PriceFill, order.QtyFill, order.SlippageFill, order.CommissionFill);
-					} catch (Exception e) {
+					} catch (Exception ex) {
 						string msg = "PostProcessOrderState caught from CallbackAlertFilledMoveAroundInvokeScript() " + msgException;
-						this.PopupException(new Exception(msg, e));
+						Assembler.PopupException(msg, ex, false);
 					}
 					break;
 
@@ -765,7 +767,7 @@ namespace Sq1.Core.Broker {
 						}
 					}
 			
-					Assembler.PopupException("PostProcess(): order.PriceFill=0 " + msgException);
+					Assembler.PopupException("PostProcess(): order.PriceFill=0 " + msgException, null, false);
 					order.PriceFill = 0;
 					//NEVER order.PricePaid = 0;
 
@@ -787,7 +789,7 @@ namespace Sq1.Core.Broker {
 				case OrderState.SubmittingSequenced:
 				case OrderState.Submitted:
 				case OrderState.SubmittedNoFeedback:
-				case OrderState.Active:
+				case OrderState.WaitingBrokerFill:
 					break;
 
 				case OrderState.IRefuseOpenTillEmergencyCloses:
@@ -848,7 +850,7 @@ namespace Sq1.Core.Broker {
 
 			// 2. hook onActive=>kill
 			OrderPostProcessorStateHook stopLossReceivedActiveCallback = new OrderPostProcessorStateHook("StopLossReceivedActiveCallback",
-				order2killAndReplace, OrderState.Active,
+				order2killAndReplace, OrderState.WaitingBrokerFill,
 				delegate(Order stopLossToBeKilled, ReporterPokeUnit pokeUnit) {
 					string msg = msig + "StopLossReceivedActiveCallback(): invoking KillOrderUsingKillerOrder() "
 						+ " [" + stateBeforeActiveAssummingSubmitting + "] => "
@@ -914,7 +916,7 @@ namespace Sq1.Core.Broker {
 
 			// 2. hook onActive=>kill
 			OrderPostProcessorStateHook takeProfitReceivedActiveCallback = new OrderPostProcessorStateHook("TakeProfitReceivedActiveCallback",
-				order2killAndReplace, OrderState.Active,
+				order2killAndReplace, OrderState.WaitingBrokerFill,
 				delegate(Order takeProfitToBeKilled, ReporterPokeUnit pokeUnit) {
 					string msg = msig + "takeProfitReceivedActiveCallback(): invoking KillOrderUsingKillerOrder() "
 						+ " [" + stateBeforeActiveAssummingSubmitting + "] => "
@@ -962,7 +964,7 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 			bool setStatusSubmitting = executor.IsStreamingTriggeringScript && executor.IsStrategyEmittingOrders;
-			this.CreateOrdersSubmitToBrokerProviderInNewThreadGroups(alertsCreatedByHooks, setStatusSubmitting, true);
+			this.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsCreatedByHooks, setStatusSubmitting, true);
 			orderWithNewState.Alert.Strategy.Script.Executor.PushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
 		}
 		public void RemovePendingAlertsForVictimOrderMustBePostKill(Order orderKilled, string msig) {

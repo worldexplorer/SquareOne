@@ -159,7 +159,7 @@ namespace Sq1.Core.Backtesting {
 
 			// PARANOINDAL_CHECK_IF_PREV_QUOTE_IS_QUOTE_TO_REACH copypaste
 			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.BacktestStreamingProvider.StreamingDataSnapshot
-				.LastQuoteGetForSymbol(quoteToReach.Symbol);
+				.LastQuoteCloneGetForSymbol(quoteToReach.Symbol);
 			QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
 			if (quotePrev == null) {
 				#if DEBUG
@@ -319,7 +319,7 @@ namespace Sq1.Core.Backtesting {
 
 
 			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.BacktestStreamingProvider.StreamingDataSnapshot
-				.LastQuoteGetForSymbol(alert.Symbol);
+				.LastQuoteCloneGetForSymbol(alert.Symbol);
 
 			QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
 			if (quotePrev == null) {

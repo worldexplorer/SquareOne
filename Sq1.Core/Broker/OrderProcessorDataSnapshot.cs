@@ -1,24 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using System.Diagnostics;
 using Sq1.Core.Execution;
 using Sq1.Core.Serializers;
 
 namespace Sq1.Core.Broker {
 	public class OrderProcessorDataSnapshot {
-		public OrderListByState OrdersSubmitting { get; private set; }
-		public OrderListByState OrdersPending { get; private set; }
-		public OrderListByState OrdersPendingFailed { get; private set; }
-		public OrderListByState OrdersCemeteryHealthy { get; private set; }
-		public OrderListByState OrdersCemeterySick { get; private set; }
-		public OrderList		OrdersAll { get; private set; }
-		//public Dictionary<Account, List<Order>> OrdersByAccount { get; private set; }
+		// REASON_TO_EXIST: having lanes makes order lookups faster; by having order state I know which List I'll be looking for GUID
+		// useful application is when 100,000 orders are filled sucessfully and I received a UpdatePending notification for GUID=99,999
+		// CemeteryHealty would contain all
+		public OrderListByState						OrdersSubmitting			{ get; private set; }
+		public OrderListByState						OrdersPending				{ get; private set; }
+		public OrderListByState						OrdersPendingFailed			{ get; private set; }
+		public OrderListByState						OrdersCemeteryHealthy		{ get; private set; }
+		public OrderListByState						OrdersCemeterySick			{ get; private set; }
+		public OrderList							OrdersAll					{ get; private set; }
+		//public Dictionary<Account, List<Order>>	OrdersByAccount				{ get; private set; }
 
-		public int OrderCountThreadSafe { get; private set; }
-		public int OrdersCurrentlyProcessingByBrokerCount { get; private set; }
-		public OrderProcessor OrderProcessor { get; private set; }
-		public SerializerLogrotatePeriodic<Order> SerializerLogrotateOrders { get; private set; }
-		public OrdersShadowTreeDerived OrdersTree { get; private set; }
+		public int									OrderCountThreadSafe		{ get; private set; }
+		public int									OrdersCurrentlyProcessingByBrokerCount		{ get; private set; }
+		public OrderProcessor						OrderProcessor				{ get; private set; }
+		public SerializerLogrotatePeriodic<Order>	SerializerLogrotateOrders	{ get; private set; }
+		public OrdersShadowTreeDerived				OrdersTree					{ get; private set; }
 
 		protected OrderProcessorDataSnapshot() {
 			this.OrdersSubmitting		= new OrderListByState(OrderStatesCollections.AllowedForSubmissionToBrokerProvider);
@@ -43,7 +47,7 @@ namespace Sq1.Core.Broker {
 				//this.OrdersTree.InitializeScanDeserializedMoveDerivedsInsideBuildTreeShadow(this.SerializerLogRotate.OrdersBuffered.ItemsMain);
 				List<Order> ordersInit = this.SerializerLogrotateOrders.Entity; 
 				foreach (Order current in ordersInit) {
-					if (current.ExpectingCallbackFromBroker) {
+					if (current.InStateExpectingCallbackFromBroker) {
 						current.State = OrderState.SubmittedNoFeedback;
 					}
 				}
@@ -54,19 +58,24 @@ namespace Sq1.Core.Broker {
 				// adding/removing to OrdersAll should add/remove to OrdersBuffered and OrdersTree (slow but true)
 				this.OrdersAll = new OrderList("OrdersAll", ordersInit, this);
 				this.OrdersTree.InitializeScanDeserializedMoveDerivedsInsideBuildTreeShadow(this.OrdersAll);
-			} catch (Exception e) {
-				this.OrderProcessor.PopupException(e);
+			} catch (Exception ex) {
+				string msg = "THROWN_OrderProcessorDataSnapshot.Initialize()";
+				Assembler.PopupException(msg, ex, false);
 			}
 			this.SerializerLogrotateOrders.StartSerializerThread();
 			this.UpdateActiveOrdersCountEvent();
 		}
 
 		public void OrderAddSynchronizedAndPropagate(Order orderToAdd) {
+			string msg = "HEY_I_REACHED_THIS_POINT__NO_EXCEPTIONS_SO_FAR?";
+			//Debugger.Break();
+			//#D_HANGS Assembler.PopupException(msg);
+			
 			this.OrdersAll.Insert(0, orderToAdd);
 			this.SerializerLogrotateOrders.Insert(0, orderToAdd);
 
 			this.OrderCountThreadSafe++;
-			if (orderToAdd.ExpectingCallbackFromBroker) this.OrdersCurrentlyProcessingByBrokerCount++;
+			if (orderToAdd.InStateExpectingCallbackFromBroker) this.OrdersCurrentlyProcessingByBrokerCount++;
 			
 			this.OrdersTree.InsertToShadowTreeRaiseExecutionFormNotification(0, orderToAdd);
 			//OrdersTree RaisesTheSameEvent!!! make sure you won't receive it twice
@@ -102,19 +111,19 @@ namespace Sq1.Core.Broker {
 		}
 
 		public OrderListByState FindStateLaneExpectedByOrderState(OrderState orderState) {
-			if (this.OrdersSubmitting.StateIsAcceptable(orderState)) return this.OrdersSubmitting;
-			if (this.OrdersPending.StateIsAcceptable(orderState)) return this.OrdersPending;
-			if (this.OrdersPendingFailed.StateIsAcceptable(orderState)) return this.OrdersPendingFailed;
-			if (this.OrdersCemeteryHealthy.StateIsAcceptable(orderState)) return this.OrdersCemeteryHealthy;
-			if (this.OrdersCemeterySick.StateIsAcceptable(orderState)) return this.OrdersCemeterySick;
+			if (this.OrdersSubmitting		.StateIsAcceptable(orderState))	return this.OrdersSubmitting;
+			if (this.OrdersPending			.StateIsAcceptable(orderState))	return this.OrdersPending;
+			if (this.OrdersPendingFailed	.StateIsAcceptable(orderState))	return this.OrdersPendingFailed;
+			if (this.OrdersCemeteryHealthy	.StateIsAcceptable(orderState))	return this.OrdersCemeteryHealthy;
+			if (this.OrdersCemeterySick		.StateIsAcceptable(orderState))	return this.OrdersCemeterySick;
 			return new OrderListByState(OrderStatesCollections.Unknown);
 		}
 		public OrderListByState FindStateLaneWhichContainsOrder(Order order) {
-			if (this.OrdersSubmitting.Contains(order)) return this.OrdersSubmitting;
-			if (this.OrdersPending.Contains(order)) return this.OrdersPending;
-			if (this.OrdersPendingFailed.Contains(order)) return this.OrdersPendingFailed;
-			if (this.OrdersCemeteryHealthy.Contains(order)) return this.OrdersCemeteryHealthy;
-			if (this.OrdersCemeterySick.Contains(order)) return this.OrdersCemeterySick;
+			if (this.OrdersSubmitting.Contains(order))		return this.OrdersSubmitting;
+			if (this.OrdersPending.Contains(order))			return this.OrdersPending;
+			if (this.OrdersPendingFailed.Contains(order))	return this.OrdersPendingFailed;
+			if (this.OrdersCemeteryHealthy.Contains(order))	return this.OrdersCemeteryHealthy;
+			if (this.OrdersCemeterySick.Contains(order))	return this.OrdersCemeterySick;
 			return new OrderListByState(OrderStatesCollections.Unknown);
 		}
 
@@ -128,19 +137,21 @@ namespace Sq1.Core.Broker {
 				try {
 					orderLaneBeforeStateUpdate.Remove(orderNowAfterUpdate);
 				} catch (Exception e) {
-					Assembler.PopupException(msig, e);
+					Assembler.PopupException(msig, e, false);
 				}
 				try {
 					orderLaneAfterStateUpdate.Insert(0, orderNowAfterUpdate);
 				} catch (Exception e) {
-					Assembler.PopupException(msig, e);
+					Assembler.PopupException(msig, e, false);
 				}
 			}
 		}
 
 		public OrderListByState FindStateLaneDoesntContain(Order order) {
 			OrderListByState expectedToNotContain = this.FindStateLaneExpectedByOrderState(order.State);
-			if (expectedToNotContain.Contains(order)) return new OrderListByState(OrderStatesCollections.Unknown);
+			if (expectedToNotContain.Contains(order)) {
+				expectedToNotContain = new OrderListByState(OrderStatesCollections.Unknown);
+			}
 			return expectedToNotContain;
 		}
 	}

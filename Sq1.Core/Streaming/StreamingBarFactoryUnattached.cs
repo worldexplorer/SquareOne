@@ -76,11 +76,11 @@ namespace Sq1.Core.Streaming {
 				this.StreamingBarUnattached.MergeExpandHLCVforStreamingBarUnattached(quoteClone);
 				this.IntraBarSerno++;
 			}
-			if (quoteClone.ParentStreamingBar != null) {
+			if (quoteClone.ParentBarStreaming != null) {
 				string msg = "QUOTE_ALREADY_ENRICHED_WITH_PARENT_STREAMING_BAR; I think it's a pre- bindStreamingBarForQueue() atavism";
 				//Assembler.PopupException(msg);
 			} else {
-				quoteClone.SetParentBar(this.StreamingBarUnattached);
+				quoteClone.SetParentBarStreaming(this.StreamingBarUnattached);
 			}
 			
 			if (quoteClone.IntraBarSerno == -1) {

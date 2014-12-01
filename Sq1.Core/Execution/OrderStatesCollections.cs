@@ -17,7 +17,7 @@ namespace Sq1.Core.Execution {
 			new OrderStatesCollections(new List<OrderState>() {
 				OrderState.LeaveTheSame,
 				OrderState.Submitted,
-				OrderState.Active,
+				OrderState.WaitingBrokerFill,
 				OrderState.TradeStatus,
 				OrderState.KillerBulletFlying,
 				OrderState.KillPending,

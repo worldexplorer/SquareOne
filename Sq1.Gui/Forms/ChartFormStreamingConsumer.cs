@@ -308,33 +308,48 @@ namespace Sq1.Gui.Forms {
 		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Quote quote) {
 			this.msigForNpExceptions = " //ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar(" + quote.ToString() + ")";
 
-			#if DEBUG	// TEST_INLINE
+			#if DEBUG	// TEST_INLINE_BEGIN
 			var barsSafe = this.Bars;
-			if (barsSafe.ScaleInterval != quote.ParentStreamingBar.ScaleInterval) {
+			if (barsSafe.ScaleInterval != quote.ParentBarStreaming.ScaleInterval) {
 				string msg = "SCALEINTERVAL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + this.ChartForm.Text + "]"
-					+ " bars[" + barsSafe.ScaleInterval + "] quote.ParentStreamingBar[" + quote.ParentStreamingBar.ScaleInterval + "]";
+					+ " bars[" + barsSafe.ScaleInterval + "] quote.ParentStreamingBar[" + quote.ParentBarStreaming.ScaleInterval + "]";
 				Assembler.PopupException(msg + this.msigForNpExceptions);
 				return;
 			}
-			if (barsSafe.Symbol != quote.ParentStreamingBar.Symbol) {
+			if (barsSafe.Symbol != quote.ParentBarStreaming.Symbol) {
 				string msg = "SYMBOL_RECEIVED_DOESNT_MATCH_CHARTS ChartForm[" + this.ChartForm.Text + "]"
-					+ " bars[" + barsSafe.Symbol + "] quote.ParentStreamingBar[" + quote.ParentStreamingBar.Symbol + "]";
+					+ " bars[" + barsSafe.Symbol + "] quote.ParentStreamingBar[" + quote.ParentBarStreaming.Symbol + "]";
 				Assembler.PopupException(msg + this.msigForNpExceptions);
 				return;
 			}
-			#endif
+			string msg2 = "BARS_IDENTICAL";
+			bool sameDOHLCV = barsSafe.BarStreaming.HasSameDOHLCVas(quote.ParentBarStreaming, "quote.ParentStreamingBar", "barsSafe.BarStreaming", ref msg2);
+			if (sameDOHLCV == false) {
+				string msg = "FIXME_MUST_BE_THE_SAME EARLY_BINDER_DIDNT_DO_ITS_JOB#3 [" + msg2 + "] this.Executor.Bars.BarStreaming[" + barsSafe.BarStreaming
+					+ "].HasSameDOHLCVas(quote.ParentStreamingBar[" + quote.ParentBarStreaming + "])=false";
+				Assembler.PopupException(msg + this.msigForNpExceptions);
+				return;
+			}
+			if (barsSafe.BarStreaming != quote.ParentBarStreaming) {
+				string msg = "SHOULD_THEY_BE_CLONES_OR_SAME? EARLY_BINDER_DIDNT_DO_ITS_JOB#3 bars[" + barsSafe
+					+ "] quote.ParentStreamingBar[" + quote.ParentBarStreaming + "]";
+				Assembler.PopupException(msg + this.msigForNpExceptions);
+				return;
+			}
+			#endif	// TEST_INLINE_END
 
 			var streamingSafe = this.StreamingProvider;
 			var chartFormSafe = this.ChartForm;
 			var executorSafe = this.Executor;
 
-			try {
-				streamingSafe.InitializeStreamingOHLCVfromStreamingProvider(this.chartFormManager.Executor.Bars);
-			} catch (Exception e) {
-				Assembler.PopupException("didn't merge with Partial, continuing", e, false);
-			}
+			// STREAMING_BAR_IS_ALREADY_MERGED_IN_EARLY_BINDER_WITH_QUOTE_RECIPROCALLY
+			//try {
+			//    streamingSafe.InitializeStreamingOHLCVfromStreamingProvider(this.chartFormManager.Executor.Bars);
+			//} catch (Exception e) {
+			//    Assembler.PopupException("didn't merge with Partial, continuing", e, false);
+			//}
 
-			if (quote.ParentStreamingBar.ParentBarsIndex > quote.ParentStreamingBar.ParentBars.Count) {
+			if (quote.ParentBarStreaming.ParentBarsIndex > quote.ParentBarStreaming.ParentBars.Count) {
 				string msg = "should I add a bar into Chart.Bars?... NO !!! already added";
 			}
 

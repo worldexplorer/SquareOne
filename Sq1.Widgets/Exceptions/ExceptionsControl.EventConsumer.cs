@@ -7,7 +7,7 @@ using Sq1.Widgets.LabeledTextBox;
 namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
 		void form_OnLoad(object sender, System.EventArgs e) {
-			this.flushListToTree();
+			this.FlushListToTreeIfDockContentDeserialized();
 		}
 		void tree_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.treeExceptions.SelectedObject == null) {
@@ -19,7 +19,7 @@ namespace Sq1.Widgets.Exceptions {
 		}
 		void mniClear_Click(object sender, EventArgs e) {
 			this.Exceptions.Clear();
-			this.flushListToTree();
+			this.FlushListToTreeIfDockContentDeserialized();
 		}
 		void mniCopy_Click(object sender, EventArgs e) {
 			this.CopyExceptionDataToClipboard();

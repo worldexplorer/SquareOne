@@ -80,6 +80,11 @@ namespace Sq1.Core.Streaming {
 					}
 					if (value == true) {
 						this.confirmPauseSwitched.Reset();
+						if (this.SeparatePushingThreadEnabled == false) {
+							string msg2 = "SKIPPING_PAUSE_PUSHING_THREAD_THAT_HAVENT_STARTED_YET (review how you use QuotePump)";
+							Assembler.PopupException(msg2 + msig, null, true);
+							return;
+						}
 						this.pauseRequested = true;
 						this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process pauseRequested=true
 						bool pausedConfirmed = this.confirmPauseSwitched.WaitOne(10000);
@@ -87,6 +92,11 @@ namespace Sq1.Core.Streaming {
 						Assembler.PopupException(msg + msig, null, false);
 					} else {
 						this.confirmPauseSwitched.Reset();
+						if (this.SeparatePushingThreadEnabled == false) {
+							string msg2 = "SKIPPING_UNPAUSE_PUSHING_THREAD_THAT_HAVENT_STARTED_YET (review how you use QuotePump)";
+							Assembler.PopupException(msg2 + msig, null, true);
+							return;
+						}
 						this.unPauseRequested = true;
 						this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process unPauseRequested=true
 						bool unPausedConfirmed = this.confirmPauseSwitched.WaitOne(10000);
@@ -119,7 +129,9 @@ namespace Sq1.Core.Streaming {
 			confirmPauseSwitched = new ManualResetEvent(false);
 
 			//v1
-			if (this.SeparatePushingThreadEnabled != separatePushingThreadEnabled) this.SeparatePushingThreadEnabled = separatePushingThreadEnabled;
+			if (this.SeparatePushingThreadEnabled != separatePushingThreadEnabled) {
+				this.SeparatePushingThreadEnabled  = separatePushingThreadEnabled;
+			}
 			//// else you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
 			//v2 it'll exit if both were false => no waiting for confirmation from non-started thread
 			// I_STILL_WANT_LESS_NOISE_FOR_THAT_SAFETY_RETURN_BREAKPOINT this.SeparatePushingThreadEnabled = separatePushingThreadEnabled;

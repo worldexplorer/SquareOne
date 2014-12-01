@@ -43,12 +43,12 @@ namespace Sq1.Core.Broker {
 			}
 			this.OrderEventDistributor.RaiseOrderAddedExecutionFormNotification(this, orderAdded);
 		}
-		private void scanDeserializedMoveDerivedsInsideBuildTreeShadow(OrderList ordersFlat) {
-			string msig = " BufferedSerializerDerivedOrdersSelfRestore::RestoreDerivedFromItself(): ";
+		void scanDeserializedMoveDerivedsInsideBuildTreeShadow(OrderList ordersFlat) {
+			string msig = " OrdersShadowTreeDerived::scanDeserializedMoveDerivedsInsideBuildTreeShadow(): ";
 			int derivedsFound = 0;
 
 			List<Order> foundSoRemoveFromRoot = new List<Order>();
-			foreach (Order orderWithDeriveds in ordersFlat) {
+			foreach (Order orderWithDeriveds in ordersFlat.InnerOrderList) {
 				if (orderWithDeriveds.DerivedOrdersGuids == null) continue;
 				foreach (string guidToFind in orderWithDeriveds.DerivedOrdersGuids) {
 					string ident = "orderWithDeriveds[" + orderWithDeriveds.GUID + "] has derivedGuid[" + guidToFind + "]";
@@ -59,7 +59,7 @@ namespace Sq1.Core.Broker {
 					}
 					
 					Order orderFound = null;
-					foreach (Order orderEveryScanning in ordersFlat) {
+					foreach (Order orderEveryScanning in ordersFlat.InnerOrderList) {
 						if (orderEveryScanning.GUID != guidToFind) continue;
 						orderFound = orderEveryScanning;
 						break;
@@ -87,12 +87,12 @@ namespace Sq1.Core.Broker {
 				}
 			}
 			
-			foreach (Order order in ordersFlat) {
+			foreach (Order order in ordersFlat.InnerOrderList) {
 				if (foundSoRemoveFromRoot.Contains(order)) continue;
 				base.Insert(0, order);
 			}
 
-			string stats = "DERIVEDS_MOVED[" + derivedsFound + "] = ordersFlat.Count[" + ordersFlat.Count + "] - base.Count[" + base.Count + "]";
+			string stats = "DERIVEDS_MOVED[" + derivedsFound + "] = ordersFlat.Count[" + ordersFlat.InnerOrderList.Count + "] - base.Count[" + base.InnerOrderList.Count + "]";
 			//Assembler.PopupException(stats + msig);
 		}
 		

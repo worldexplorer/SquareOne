@@ -108,9 +108,9 @@ namespace Sq1.Gui.Forms {
 				sb.Append(quote.LocalTimeCreated.ToString("HH:mm:ss.fff"));
 			}
 			if (quote.HasParentBar) {
-				TimeSpan timeLeft = (quote.ParentStreamingBar.DateTimeNextBarOpenUnconditional > quote.ServerTime)
-					? quote.ParentStreamingBar.DateTimeNextBarOpenUnconditional.Subtract(quote.ServerTime)
-					: quote.ServerTime.Subtract(quote.ParentStreamingBar.DateTimeNextBarOpenUnconditional);
+				TimeSpan timeLeft = (quote.ParentBarStreaming.DateTimeNextBarOpenUnconditional > quote.ServerTime)
+					? quote.ParentBarStreaming.DateTimeNextBarOpenUnconditional.Subtract(quote.ServerTime)
+					: quote.ServerTime.Subtract(quote.ParentBarStreaming.DateTimeNextBarOpenUnconditional);
 				string format = ":ss";
 				if (timeLeft.Minutes > 0) format = "mm:ss";
 				if (timeLeft.Hours > 0) format = "HH:mm:ss";
@@ -162,12 +162,12 @@ namespace Sq1.Gui.Forms {
 				this.mniBacktestOnSelectorsChange.Enabled = false;
 				this.mniBacktestOnDataSourceSaved.Enabled = false;
 				this.mniBacktestNow.Enabled = false;
-				this.btnStrategyEmittingOrders.Enabled = true;
+				//this.btnStrategyEmittingOrders.Enabled = true;
 			} else {
 				this.mniBacktestOnSelectorsChange.Enabled = true;
 				this.mniBacktestOnDataSourceSaved.Enabled = true;
 				this.mniBacktestNow.Enabled = true;
-				this.btnStrategyEmittingOrders.Enabled = false;
+				//this.btnStrategyEmittingOrders.Enabled = false;
 			}
 
 			Bars barsClickedUpstack = this.ChartFormManager.Executor.Bars;
@@ -318,7 +318,7 @@ namespace Sq1.Gui.Forms {
 		public void Initialize(bool containsStrategy, bool strategyActivatedFromDll = false) {
 			this.DdbStrategy.Enabled = containsStrategy;
 			this.DdbBacktest.Enabled = containsStrategy;
-			this.btnStrategyEmittingOrders.Enabled = containsStrategy;
+			//this.btnStrategyEmittingOrders.Enabled = containsStrategy;
 
 			this.MniShowSourceCodeEditor.Enabled = containsStrategy;
 			if (containsStrategy) this.MniShowSourceCodeEditor.Enabled = !strategyActivatedFromDll;

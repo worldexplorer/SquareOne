@@ -21,14 +21,14 @@ namespace Sq1.Core {
 		public RepositoryDllReporters			RepositoryDllReporters;
 		public RepositoryDllJsonStrategy		RepositoryDllJsonStrategy;
 
-		public RepositoryFoldersNoJson WorkspacesRepository;
+		public RepositoryFoldersNoJson			WorkspacesRepository;
 		
-		public OrderProcessor OrderProcessor;
-		public IStatusReporter StatusReporter;
+		public OrderProcessor					OrderProcessor;
+		public IStatusReporter					StatusReporter;
 		
-		public DictionaryManyToOne<ChartShadow, Alert> AlertsForChart;
-		public AssemblerDataSnapshot AssemblerDataSnapshot;
-		public Serializer<AssemblerDataSnapshot> AssemblerDataSnapshotSerializer;		
+		public DictionaryManyToOne<ChartShadow, Alert>	AlertsForChart;
+		public AssemblerDataSnapshot					AssemblerDataSnapshot;
+		public Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;		
 		
 		public const string DateTimeFormatIndicatorHasNoValuesFor = "yyyy-MMM-dd ddd HH:mm";
 		public const string DateTimeFormatLong = "HH:mm:ss.fff ddd dd MMM yyyy";
@@ -91,23 +91,23 @@ namespace Sq1.Core {
 //			Assembler.instance = this;
 //		}
 		public Assembler() {
-			this.RepositorySymbolInfo = new RepositorySerializerSymbolInfo();
-			this.RepositoryMarketInfo = new RepositorySerializerMarketInfo();
-			this.RepositoryJsonDataSource = new RepositoryJsonDataSource();
-			this.RepositoryDllJsonStrategy = new RepositoryDllJsonStrategy();
+			this.RepositorySymbolInfo				= new RepositorySerializerSymbolInfo();
+			this.RepositoryMarketInfo				= new RepositorySerializerMarketInfo();
+			this.RepositoryJsonDataSource			= new RepositoryJsonDataSource();
+			this.RepositoryDllJsonStrategy			= new RepositoryDllJsonStrategy();
 
-			this.RepositoryDllStreamingProvider = new RepositoryDllStreamingProvider();
-			this.RepositoryDllBrokerProvider = new RepositoryDllBrokerProvider();
-			this.RepositoryDllReporters = new RepositoryDllReporters();
+			this.RepositoryDllStreamingProvider		= new RepositoryDllStreamingProvider();
+			this.RepositoryDllBrokerProvider		= new RepositoryDllBrokerProvider();
+			this.RepositoryDllReporters				= new RepositoryDllReporters();
 			
-			this.WorkspacesRepository = new RepositoryFoldersNoJson();
+			this.WorkspacesRepository				= new RepositoryFoldersNoJson();
 
-			//this.ChartRendererConfigured = new ChartRenderer();
-			this.OrderProcessor = new OrderProcessor();
-			this.AlertsForChart = new DictionaryManyToOne<ChartShadow, Alert>();
+			//this.ChartRendererConfigured			= new ChartRenderer();
+			this.OrderProcessor						= new OrderProcessor();
+			this.AlertsForChart						= new DictionaryManyToOne<ChartShadow, Alert>();
 			
-			this.AssemblerDataSnapshot = new AssemblerDataSnapshot();
-			this.AssemblerDataSnapshotSerializer = new Serializer<AssemblerDataSnapshot>();
+			this.AssemblerDataSnapshot				= new AssemblerDataSnapshot();
+			this.AssemblerDataSnapshotSerializer	= new Serializer<AssemblerDataSnapshot>();
 		}
 		public Assembler InitializedWithSame(IStatusReporter mainForm) {
 			if (this.StatusReporter == mainForm) return Assembler.InstanceInitialized;
@@ -140,7 +140,7 @@ namespace Sq1.Core {
 			this.WorkspacesRepository.Initialize(this.AppDataPath, "Workspaces", this.StatusReporter);
 			this.WorkspacesRepository.ScanFolders();
 
-			this.OrderProcessor.Initialize(this.AppDataPath, this.StatusReporter);
+			this.OrderProcessor.Initialize(this.AppDataPath);
 
 			//v1 this.RepositoryJsonDataSource.Initialize(this.AppDataPath);
 			//v1 this.RepositoryJsonDataSource.DataSourcesDeserialize(this.MarketInfoRepository, this.OrderProcessor, this.StatusReporter);
@@ -184,6 +184,9 @@ namespace Sq1.Core {
 					+ "; but .PopupException() will insert your exception into the tree and display OnLoad()";
 			}
 			Assembler.InstanceInitialized.StatusReporter.PopupException(msg, ex, debuggingBreak);
+			if (exceptionsForm.Visible == false && Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
+				exceptionsForm.Visible = true;
+			}
 		}
 		public static void DisplayStatus(string msg) {
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();

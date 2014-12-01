@@ -17,33 +17,41 @@ namespace Sq1.Widgets.Execution {
 
 		//Font fontNormal;
 		//Font fontBold;
-		public Order OrderSelected {
-			get {
+		public Order OrderSelected { get {
 				if (this.OrdersTree.SelectedObjects.Count != 1) return null;
 				return this.OrdersTree.SelectedObjects[0] as Order;
-			}
-		}
-		public List<Order> OrdersSelected {
-			get {
+			} }
+		public List<Order> OrdersSelected { get {
 				List<Order> ret = new List<Order>();
 				foreach (object obj in this.OrdersTree.SelectedObjects) ret.Add(obj as Order);
 				return ret;
-			}
-		}
-		public List<string> SelectedAccountNumbers {
-			get {
+			} }
+		public List<string> SelectedAccountNumbers { get {
 				var ret = new List<string>();
 				foreach (ToolStripItem mni in this.ctxAccounts.Items) {
 					if (mni.Selected == false) continue;
 					ret.Add(mni.Text);
 				}
 				return ret;
-			}
-		}
+			} }
 		Dictionary<ToolStripMenuItem, List<OLVColumn>> columnsByFilters;
 		OrdersShadowTreeDerived ordersShadowTree;
 
-		public void buildMniShortcutsAfterInitializeComponent() {
+		public ExecutionTreeControl() {
+			this.InitializeComponent();
+			this.buildMniShortcutsAfterInitializeComponent();
+			
+			this.orderTreeListViewCustomize();
+			this.messagesListViewCustomize();
+			
+			//this.fontNormal = this.Font;
+			//this.fontBold = new Font(this.fontNormal, FontStyle.Bold);
+			WindowsFormsUtils.SetDoubleBuffered(this.OrdersTree);
+			WindowsFormsUtils.SetDoubleBuffered(this.lvMessages);
+			WindowsFormsUtils.SetDoubleBuffered(this);
+
+		}
+		void buildMniShortcutsAfterInitializeComponent() {
 			columnsByFilters = new Dictionary<ToolStripMenuItem, List<OLVColumn>>();
 			columnsByFilters.Add(this.mniShowWhenWhat, new List<OLVColumn>() {
 				this.colheBarNum,
@@ -86,21 +94,12 @@ namespace Sq1.Widgets.Execution {
 				this.colheLastMessage
 				});
 		}
-		public ExecutionTreeControl() {
-			this.InitializeComponent();
-			this.buildMniShortcutsAfterInitializeComponent();
-			
-			this.orderTreeListViewCustomize();
-			this.messagesListViewCustomize();
-			
-			//this.fontNormal = this.Font;
-			//this.fontBold = new Font(this.fontNormal, FontStyle.Bold);
-			WindowsFormsUtils.SetDoubleBuffered(this.OrdersTree);
-			WindowsFormsUtils.SetDoubleBuffered(this.lvMessages);
-			WindowsFormsUtils.SetDoubleBuffered(this);
-		}
 		//former public void Initialize(), replaced by InitializeWithShadowTreeRebuilt();
-		public void PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized() {
+		public void PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized() {
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				return;
+			}
+			
 			this.mniToggleMessagesPaneSplitHorizontally.Checked = this.DataSnapshot.ToggleMessagePaneSplittedHorizontally;
 			Orientation newOrientation = this.DataSnapshot.ToggleMessagePaneSplittedHorizontally
 					? Orientation.Horizontal : Orientation.Vertical;
@@ -129,15 +128,14 @@ namespace Sq1.Widgets.Execution {
 			
 			this.mniToggleBrokerTime.Checked = this.DataSnapshot.ToggleBrokerTime;
 			this.mniToggleCompletedOrders.Checked = this.DataSnapshot.ToggleCompletedOrders;
-			this.mniToggleSyncWithChart.Checked = this.DataSnapshot.ToggleSyncWithChart;
+			this.mniToggleSyncWithChart.Checked = this.DataSnapshot.ToggleSingleClickSyncWithChart;
 			
 			this.DataSnapshot.firstRowShouldStaySelected = true;
 			this.RebuildAllTreeFocusOnTopmost();
 		}
 		public void InitializeWithShadowTreeRebuilt(OrdersShadowTreeDerived ordersShadowTree) {
-			//this.PopulateDataSnapshotInitializeSplittersAfterDockContentIsDone();
 			this.ordersShadowTree = ordersShadowTree;
-			//moved to PopulateDataSnapshotInitializeSplittersAfterDockContentIsDone() this.RebuildAllTreeFocusOnTopmost();
+			// NOPE_DOCK_CONTENT_HASNT_BEEN_DESERIALiZED_YET_I_DONT_KNOW_IF_IM_SHOWN_OR_NOT this.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
 
 			this.DataSnapshotSerializer = new Serializer<ExecutionTreeDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
@@ -186,7 +184,6 @@ namespace Sq1.Widgets.Execution {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			//ConcurrentStack<OrderStateMessage> messagesSafeCopy = order.MessagesSafeCopy;
 			ConcurrentQueue<OrderStateMessage> messagesSafeCopy = order.MessagesSafeCopy;
 			if (messagesSafeCopy == null) {
 				string msg = "order.MessagesSafeCopy=null; must be at least empty list";
@@ -207,7 +204,7 @@ namespace Sq1.Widgets.Execution {
 			this.raiseOrderStatsChangedRecalculateWindowTitleExecutionFormNotification(this, order);
 		}
 		public void RebuildAllTreeFocusOnTopmost() {
-			this.OrdersTree.SetObjects(this.ordersShadowTree);
+			this.OrdersTree.SetObjects(this.ordersShadowTree.InnerOrderList);
 			this.OrdersTree.RebuildAll(true);
 			//foreach (var order in this.ordersShadowTree) this.OrdersTree.ToggleExpansion(order);
 			this.OrdersTree.ExpandAll();
@@ -216,10 +213,11 @@ namespace Sq1.Widgets.Execution {
 		public void populateLastOrderMessages() {
 			if (this.DataSnapshot == null) return;
 			if (this.DataSnapshot.firstRowShouldStaySelected == false) return;
-			if (this.ordersShadowTree.Count == 0) return;
-			var orderTopmost = this.ordersShadowTree[0];
+			if (this.ordersShadowTree.InnerOrderList.Count == 0) return;
+			var orderTopmost = this.ordersShadowTree.InnerOrderList[0];
 			if (this.OrdersTree == null) return;
-			this.OrdersTree.SelectObject(orderTopmost, true);
+			//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectObject(orderTopmost, true);
+			//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectedIndex = 0;
 			this.PopulateMessagesFromSelectedOrder(orderTopmost);
 		}
 		public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {

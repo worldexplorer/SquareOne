@@ -219,7 +219,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException("quote[" + quote + "]'se Symbol is null or empty, returning");
 				return;
 			}
-			Quote lastQuote = this.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(quote.Symbol);
+			Quote lastQuote = this.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(quote.Symbol);
 			List<SymbolScaleDistributionChannel> channelsForSymbol = this.GetDistributionChannelsFor(quote.Symbol);
 			foreach (SymbolScaleDistributionChannel channel in channelsForSymbol) {
 				// late quote should be within current StreamingBar, otherwize don't deliver for channel
@@ -235,7 +235,7 @@ namespace Sq1.Core.Streaming {
 					}
 				}
 				// don't clone quote here!! enrich inside each channel => IntraBarSerno++,
-				// then clone quote for every consumer lateBind to ParentBars, variable on the history length
+				// then clone quote for every consumer and earlyBind() to BarStreaming, link it to BarsParent (variable on length of the history loaded into Bars)
 				channel.PushQuoteToPump(quote);
 			}
 		}

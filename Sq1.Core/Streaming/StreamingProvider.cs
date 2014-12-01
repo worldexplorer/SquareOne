@@ -11,7 +11,7 @@ using System.Diagnostics;
 namespace Sq1.Core.Streaming {
 	// TODO: it's not an abstract class because....
 	public partial class StreamingProvider {
-		public const string NO_STREAMING_PROVIDER = "--- No Streaming Provider ---";
+		[JsonIgnore]	public const string			NO_STREAMING_PROVIDER = "--- No Streaming Provider ---";
 		
 		[JsonIgnore]	public string				Name				{ get; protected set; }
 		[JsonIgnore]	public string				Description			{ get; protected set; }
@@ -68,7 +68,7 @@ namespace Sq1.Core.Streaming {
 				} else {
 					this.ConsumerBarSubscribe(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
 					string msg = "SUBSCRIBED_SOLIDIFIER_BARS " + ident;
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 				}
 
 				if (this.ConsumerQuoteIsSubscribed(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
@@ -77,7 +77,7 @@ namespace Sq1.Core.Streaming {
 				} else {
 					this.ConsumerQuoteSubscribe(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
 					string msg = "SUBSCRIBED_SOLIDIFIER_QUOTES " + ident;
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 				}
 			}
 		}
@@ -143,7 +143,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = true) {
+		public virtual void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = false) {
 			if (scaleInterval.Scale == BarScale.Unknown) {
 				string msg = "Failed to ConsumerBarRegister(): scaleInterval.Scale=Unknown; returning";
 				Assembler.PopupException(msg);
@@ -174,11 +174,11 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 			this.DataDistributor.ConsumerQuoteSubscribe(symbol, scaleInterval, consumer, quotePumpSeparatePushingThreadEnabled);
-			this.StreamingDataSnapshot.LastQuotePutNull(symbol);
+			this.StreamingDataSnapshot.LastQuoteInitialize(symbol);
 		}
 		public virtual void ConsumerQuoteUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer streamingConsumer) {
 			this.DataDistributor.ConsumerQuoteUnSubscribe(symbol, scaleInterval, streamingConsumer);
-			this.StreamingDataSnapshot.LastQuotePutNull(symbol);
+			this.StreamingDataSnapshot.LastQuoteInitialize(symbol);
 		}
 		public virtual bool ConsumerQuoteIsSubscribed(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
 			return this.DataDistributor.ConsumerQuoteIsSubscribed(symbol, scaleInterval, consumer);
@@ -205,18 +205,17 @@ namespace Sq1.Core.Streaming {
 					+ dateTimeNextBarOpenConditional.ToString("HH:mm") + "]; ignoring quote[" + quote + "]";
 				this.UpdateConnectionStatus(503, mainFormStatus);
 
-				string msg = "HACK!!! FILLING_LAST_BIDASK_FOR_DUPE_QUOTE_IS_UNJUSTIFIED: PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES Backtester.generateQuotesForBarAndPokeStreaming()";
-				Assembler.PopupException(msg, null, false);
-
+				//string msg = "HACK!!! FILLING_LAST_BIDASK_FOR_DUPE_QUOTE_IS_UNJUSTIFIED: PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES Backtester.generateQuotesForBarAndPokeStreaming()";
+				//Assembler.PopupException(msg, null, false);
 				//essence of PushQuoteReceived(); all above were pre-checks ensuring successfull completion of two lines below
-				this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
-				this.StreamingDataSnapshot.UpdateLastBidAskSnapFromQuote(quote);
+				// ALREADY_ENRICHED this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
+				this.StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
 				return;
 			}
 
 			int absnoPerSymbolNext = 0;
 
-			Quote lastQuote = this.StreamingDataSnapshot.LastQuoteGetForSymbol(quote.Symbol);
+			Quote lastQuote = this.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(quote.Symbol);
 			if (lastQuote == null) {
 				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
 				Assembler.PopupException(msg, null, false);
@@ -256,13 +255,13 @@ namespace Sq1.Core.Streaming {
 
 			//OUTDATED?... BacktestStreamingProvider.EnrichGeneratedQuoteSaveSpreadInStreaming has updated lastQuote alredy...
 			//essence of PushQuoteReceived(); all above were pre-checks ensuring successfull completion of two lines below
-			this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
-			this.StreamingDataSnapshot.UpdateLastBidAskSnapFromQuote(quote);
+			// ALREADY_ENRICHED this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
+			this.StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote.Clone());
 
 			try {
 				this.DataDistributor.PushQuoteToDistributionChannels(quote);
 			} catch (Exception e) {
-				string msg = "StreamingProvider.PushQuoteReceived()";
+				string msg = "SOME_CONSUMERS_SOME_SCALEINTERVALS_FAILED_ON_ONE StreamingProvider.PushQuoteReceived()";
 				Assembler.PopupException(msg, e);
 			}
 		}
@@ -274,7 +273,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public void UpstreamUnSubscribedFromSymbolPokeConsumersHelper(string symbol) {
 			List<SymbolScaleDistributionChannel> channels = this.DataDistributor.GetDistributionChannelsFor(symbol);
-			Quote lastQuoteReceived = this.StreamingDataSnapshot.LastQuoteGetForSymbol(symbol);
+			Quote lastQuoteReceived = this.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(symbol);
 			foreach (var channel in channels) {
 				channel.UpstreamUnSubscribedFromSymbolPokeConsumers(symbol, lastQuoteReceived);
 			}
@@ -287,7 +286,9 @@ namespace Sq1.Core.Streaming {
 		public void InitializeStreamingOHLCVfromStreamingProvider(Bars chartBars) {
 			SymbolScaleDistributionChannel distributionChannel = this.DataDistributor
 				.GetDistributionChannelFor(chartBars.Symbol, chartBars.ScaleInterval);
-			Bar streamingBar = distributionChannel.StreamingBarFactoryUnattached.StreamingBarUnattached;
+			//v1 
+			//Bar streamingBar = distributionChannel.StreamingBarFactoryUnattached.StreamingBarUnattached;
+			Bar streamingBar = chartBars.BarStreaming;
 			if (streamingBar == null) {
 				string msg = "STREAMING_NEVER_STARTED BarFactory.StreamingBar=null for distributionChannel[" + distributionChannel + "]";
 				Assembler.PopupException(msg);
@@ -320,7 +321,7 @@ namespace Sq1.Core.Streaming {
 					//log.Error(msg);
 				}
 			}
-			chartBars.OverrideStreamingDOHLCVwith(streamingBar);
+			chartBars.BarStreamingOverrideDOHLCVwith(streamingBar);
 			string msg1 = "StreamingOHLCV Overwritten: Bars.StreamingBar[" + chartBars.BarStreamingCloneReadonly + "] taken from streamingBar[" + streamingBar + "]";
 			//Assembler.PopupException(msg1, null, false);
 		}

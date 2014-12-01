@@ -12,18 +12,18 @@ using Sq1.Charting.OnChart;
 
 namespace Sq1.Charting {
 	public class ScriptExecutorObjects {
-		public Dictionary<int, List<AlertArrow>> AlertArrowsListByBar { get; private set; }
-		public Dictionary<string, Indicator> Indicators { get; set; }
-		public Dictionary<int, List<Alert>> AlertsPendingHistorySafeCopy { get; private set; }
+		public Dictionary<int, List<AlertArrow>>	AlertArrowsListByBar			{ get; private set; }
+		public Dictionary<string, Indicator>		Indicators						{ get; set; }
+		public Dictionary<int, List<Alert>>			AlertsPendingHistorySafeCopy	{ get; private set; }
 
-		public Dictionary<string, OnChartLine> LinesById { get; private set; }
-		public Dictionary<int, List<OnChartLine>> LinesByLeftBar { get; private set; }
-		public Dictionary<int, List<OnChartLine>> LinesByRightBar { get; private set; }
+		public Dictionary<string, OnChartLine>		LinesById						{ get; private set; }
+		public Dictionary<int, List<OnChartLine>>	LinesByLeftBar					{ get; private set; }
+		public Dictionary<int, List<OnChartLine>>	LinesByRightBar					{ get; private set; }
 
-		public Dictionary<int, Color> BarBackgroundsByBar { get; private set; }
-		public Dictionary<int, Color> BarForegroundsByBar { get; private set; }
+		public Dictionary<int, Color>				BarBackgroundsByBar				{ get; private set; }
+		public Dictionary<int, Color>				BarForegroundsByBar				{ get; private set; }
 
-		public Dictionary<string, OnChartLabel> OnChartLabelsById { get; private set; }
+		public Dictionary<string, OnChartLabel>		OnChartLabelsById				{ get; private set; }
 		public Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
 
 		public Quote QuoteLast;
@@ -48,19 +48,19 @@ namespace Sq1.Charting {
 			} }
 		
 		public ScriptExecutorObjects() {
-			AlertArrowsListByBar = new Dictionary<int, List<AlertArrow>>();
-			Indicators = new Dictionary<string, Indicator>();
-			AlertsPendingHistorySafeCopy = new Dictionary<int, List<Alert>>();
+			AlertArrowsListByBar		= new Dictionary<int, List<AlertArrow>>();
+			Indicators					= new Dictionary<string, Indicator>();
+			AlertsPendingHistorySafeCopy= new Dictionary<int, List<Alert>>();
 			
-			LinesById = new Dictionary<string, OnChartLine>();
-			LinesByLeftBar = new Dictionary<int, List<OnChartLine>>();
-			LinesByRightBar = new Dictionary<int, List<OnChartLine>>();
+			LinesById					= new Dictionary<string, OnChartLine>();
+			LinesByLeftBar				= new Dictionary<int, List<OnChartLine>>();
+			LinesByRightBar				= new Dictionary<int, List<OnChartLine>>();
 			
-			BarBackgroundsByBar = new Dictionary<int, Color>();
-			BarForegroundsByBar = new Dictionary<int, Color>();
+			BarBackgroundsByBar			= new Dictionary<int, Color>();
+			BarForegroundsByBar			= new Dictionary<int, Color>();
 
-			OnChartLabelsById = new Dictionary<string, OnChartLabel>();
-			OnChartBarAnnotationsByBar = new Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>>();		
+			OnChartLabelsById			= new Dictionary<string, OnChartLabel>();
+			OnChartBarAnnotationsByBar	= new Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>>();		
 		}
 		public void ClearAllBeforeBacktest() {
 			this.AlertArrowsListByBar.Clear();
@@ -148,11 +148,11 @@ namespace Sq1.Charting {
 				Debugger.Break();
 				return;
 			}
-			if (null == pokeUnit.QuoteGeneratedThisUnit.ParentStreamingBar) {
+			if (null == pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming) {
 				Debugger.Break();
 				return;
 			}
-			int barIndex = pokeUnit.QuoteGeneratedThisUnit.ParentStreamingBar.ParentBarsIndex;
+			int barIndex = pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming.ParentBarsIndex;
 			this.AlertsPendingHistorySafeCopy.Add(barIndex, pokeUnit.AlertsNew);
 		}
 		
