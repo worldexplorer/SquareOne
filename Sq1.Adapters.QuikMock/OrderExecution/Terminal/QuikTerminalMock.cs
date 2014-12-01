@@ -63,7 +63,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 		int CONST_msum = 9999191;
 		int CONST_descriptor = -111111;
 
-		protected void OrderSimulateFillLoopStateThreadEntryPoint(object o) {
+		void orderSimulateFillLoopStateThreadEntryPoint(object o) {
 			string msig = " //QuikTerminalMock(" + this.DllName + ").OrderTryFillLoopEachOrderNewThread()";
 			QuikTerminalMockThreadParam tp = (QuikTerminalMockThreadParam)o;
 
@@ -89,7 +89,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				base.CallbackOrderStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
 					-999.99, tp.Balance, 9999191, tp.IsSell, nStatus, 111111);
 				// let order "become" WaitingFillBroker (why State didn't change  immediately after base.CallbackOrderStatus???)
-				//WTF?... Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis);
+				Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis);
 
 				// CallbackOrderStatus sets the status to WaitingFillBroker immediately, check it here
 				if (OrderStatesCollections.NoInterventionRequired.Contains(order.State) == false) {
@@ -305,7 +305,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			tp.OrderStatus = orderStateOut;
 			tp.TryFillInvokedTimes = 0;
 
-			Thread th = new Thread(new ParameterizedThreadStart(this.OrderSimulateFillLoopStateThreadEntryPoint));
+			Thread th = new Thread(new ParameterizedThreadStart(this.orderSimulateFillLoopStateThreadEntryPoint));
 			//Thread th = new Thread(new ParameterizedThreadStart(OrderTryFillLoop));
 			th.Name = Thread.CurrentThread.ManagedThreadId + " >> MOCK.OrderTryFillLoop(" + opBuySell + typeMarketLimitStop + quantity + "@" + price + ")";
 			//Debugger.Break();

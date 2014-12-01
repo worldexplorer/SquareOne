@@ -19,17 +19,28 @@
     "GeneratingNow": true,
     "StreamingDataSnapshot": {
       "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
-      "bestBidBySymbol": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 157995.0
-      },
-      "bestAskBySymbol": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 158015.0
-      },
-      "lastQuotesReceivedUnboundBySymbol": {
+      "lastQuoteClonesReceivedUnboundBySymbol": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
-        "autogen": null
+        "autogen": {
+          "$type": "Sq1.Adapters.Quik.QuoteQuik, Sq1.Adapters.Quik",
+          "FortsDepositBuy": 10028.0,
+          "FortsDepositSell": 10067.0,
+          "FortsPriceMax": 160000.0,
+          "FortsPriceMin": 156000.0,
+          "Symbol": "autogen",
+          "SymbolClass": "SPBFUT",
+          "Source": "MockQuik",
+          "ServerTime": "2014-12-01T03:49:29.1648517",
+          "Bid": 157905.0,
+          "Ask": 157925.0,
+          "Size": 5.0,
+          "AbsnoPerSymbol": 209,
+          "LastDealBidOrAsk": 2,
+          "LocalTimeCreated": "2014-12-01T03:49:29.1648517-05:00",
+          "ParentBarIdent": "NO_PARENT_BAR",
+          "LastDealPrice": 157905.0,
+          "Spread": 20.0
+        }
       },
       "FortsDepositSell": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
@@ -43,7 +54,7 @@
       "FortsPriceMax": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
-      "SymbolsSubscribedAndReceiving": "autogen:NULL"
+      "SymbolsSubscribedAndReceiving": "autogen:209"
     }
   },
   "BrokerProvider": {
@@ -61,8 +72,8 @@
       "AccountValueTimeStamp": "0001-01-01T00:00:00"
     },
     "ExecutionDelayMillis": 1000,
-    "RejectFirstNOrders": 5,
-    "RejectRandomly": true,
+    "RejectFirstNOrders": 0,
+    "RejectRandomly": false,
     "RejectAllUpcoming": false,
     "QuikFolder": null,
     "QuikDllName": "TRANS2QUIK.DLL",
