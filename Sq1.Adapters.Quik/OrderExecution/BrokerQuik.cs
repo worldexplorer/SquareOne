@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 
@@ -15,17 +16,15 @@ using Sq1.Core.Support;
 
 namespace Sq1.Adapters.Quik {
 	public class BrokerQuik : BrokerProvider {
-		//[JsonIgnore]	BrokerQuikEditor editor;
-		[JsonIgnore]	public QuikTerminal QuikTerminal { get; protected set; }
-		[JsonIgnore]	public int AskPrice { get; protected set; }
-		[JsonIgnore]	public int BidPrice { get; protected set; }
-		[JsonProperty]	public string QuikFolder { get; internal set; }
-		[JsonProperty]	public string QuikDllName { get; internal set; }
-		[JsonIgnore]	public string QuikDllAbsPath { get {return Path.Combine(this.QuikFolder, this.QuikDllName);} }
-		[JsonProperty]	public string QuikClientCode { get; internal set; }
-		[JsonProperty]	public int ReconnectTimeoutMillis { get; internal set; }
-		[JsonProperty]	private Account AccountMicex;
-		[JsonIgnore]	public Account AccountMicexAutoPopulated {
+		//[JsonIgnore]			BrokerQuikEditor	editor;
+		[JsonIgnore]	public	QuikTerminal		QuikTerminal { get; protected set; }
+		[JsonProperty]	public	string				QuikFolder { get; internal set; }
+		[JsonProperty]	public	string				QuikDllName { get; internal set; }
+		[JsonIgnore]	public	string				QuikDllAbsPath { get {return Path.Combine(this.QuikFolder, this.QuikDllName);} }
+		[JsonProperty]	public	string				QuikClientCode { get; internal set; }
+		[JsonProperty]	public	int					ReconnectTimeoutMillis { get; internal set; }
+		[JsonProperty]			Account				AccountMicex;
+		[JsonIgnore]	public	Account				AccountMicexAutoPopulated {
 			get { return AccountMicex; }
 			internal set {
 				this.AccountMicex = value;
@@ -78,14 +77,15 @@ namespace Sq1.Adapters.Quik {
 		public void CallbackTradeStateReceivedQuik(long SernoExchange, DateTime tradeDate, 
 				string classCode, string secCode, double priceFill, int qtyFill,
 				double tradePrice2, double tradeTradeSysCommission, double tradeTScommission) {
+			string msig = Name + "::CallbackTradeStateReceivedQuik(): ";
 			try {
-				string msg = Name + "::TradeState(): ";
+				string msg = "";
 				Order order = this.OrderProcessor.DataSnapshot.OrdersPending.FindBySernoExchange((long)SernoExchange);
 				if (order == null) {
 					msg += " Order with SernoExchange[" + SernoExchange + "] was not found"
 						//+ "; " + base.OrderProcessor.DataSnapshot.DataSnapshot.Serializer.SessionSernosAsString
 						;
-					throw new Exception(msg);
+					throw new Exception(msig + msg);
 				}
 
 				msg += " tradeDate=[" + tradeDate + "] quantity[" + qtyFill + "] @price [" + priceFill + "]"
@@ -110,12 +110,13 @@ namespace Sq1.Adapters.Quik {
 					}
 				}
 			} catch (Exception exc) {
-				base.StatusReporter.PopupException(null, exc);
+				string msg = "THROWN_SOMEWHERE_SORRY_IN_CallbackTradeStateReceivedQuik";
+				Assembler.PopupException(msg + msig, exc);
 			}
 		}
 		public void CallbackOrderStateReceivedQuik(OrderState orderState, string GUID, long SernoExchange,
 				string classCode, string secCode, double fillPrice, int fillQnty) {
-			string msg = Name + "::CallbackOrderStateReceivedQuik(): ";
+			string msig = Name + "::CallbackOrderStateReceivedQuik(): ";
 			Order orderExecuted = null;
 			try {
 				orderExecuted = base.CallbackOrderStateReceivedFindOrderCheckThrow(GUID);
@@ -137,14 +138,15 @@ namespace Sq1.Adapters.Quik {
 						+ ((orderExecuted.Alert.PositionLongShortFromDirection == PositionLongShort.Long) ? 100 : -100);
 				}
 
-				msg += " Status=[" + orderState + "] @price [" + fillPrice + "]"	//filled[" + fillQnty + "] 
+				string msg = " Status=[" + orderState + "] @price [" + fillPrice + "]"	//filled[" + fillQnty + "] 
 					+ " SernoSession=[" + GUID + "] SernoExchange=[" + SernoExchange + "] Guid=[" + orderExecuted.GUID + "]"
 					+ " " + secCode + "/" + classCode;
 				OrderStateMessage omsg = new OrderStateMessage(orderExecuted, orderState, msg);
 				base.OrderProcessor.UpdateOrderStateAndPostProcess(orderExecuted, omsg, fillPrice, fillQnty);
 				//base.TradeManager.appendMessageAndPropagate(orderExecuted, newOrderState);
 			} catch (Exception exc) {
-				base.StatusReporter.PopupException(null, exc);
+				string msg = "THROWN_base.CallbackOrderStateReceivedFindOrderCheckThrow(" + GUID + ")";
+				Assembler.PopupException(msg, exc);
 			}
 			base.CallbackOrderStateReceived(orderExecuted);
 		}
@@ -165,7 +167,7 @@ namespace Sq1.Adapters.Quik {
 				return;
 			}
 			if (state != QuikConnectionState.DllConnected) {
-				Assembler.PopupException(Name + "::callbackConnectionUpdated(): state=[" + state + "] message=[" + message + "]");
+				Assembler.PopupException(Name + "::callbackConnectionUpdated(): state=[" + state + "] message=[" + message + "]", null, false);
 			}
 			string msg = state + " " + message;
 			if (base.StatusReporter != null) {
@@ -175,6 +177,7 @@ namespace Sq1.Adapters.Quik {
 			}
 		}
 		public override void OrderSubmit(Order order) {
+			//Debugger.Break();
 			string msig = Name + "::OrderSubmit():"
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 				+ " SernoSession[" + order.SernoSession + "]";
@@ -219,14 +222,15 @@ namespace Sq1.Adapters.Quik {
 			//base.OrderSubmitPostProcessOrdersPendingAdd(order);
 			// I expect here "Submitted", move it now
 			//base.OrderProcessor.DataSnapshot.StateLaneAddAppropriate(order);
-			base.OrderProcessor.DataSnapshot.FindStateLaneDoesntContain(order).Insert(0, order);
-
+			OrderListByState olist = base.OrderProcessor.DataSnapshot.FindStateLaneDoesntContain(order);
+			olist.Insert(0, order);
 
 			msg = " orderStateFromTerminal[" + orderStateFromTerminalMustGetSubmitting + "]"
 				+ " msgSumbittedFromTerminal[" + msgSumbittedFromTerminal + "]"
 				+ " sernoSessionFromTerminal[" + sernoSessionFromTerminal + "]";
 			//Assembler.PopupException(msig + msg);
 
+			//Debugger.Break();
 			base.OrderProcessor.UpdateOrderStateAndPostProcess(order,
 				new OrderStateMessage(order, orderStateFromTerminalMustGetSubmitting, msig + msg));
 		}
@@ -265,80 +269,97 @@ namespace Sq1.Adapters.Quik {
 			throw new Exception("TODO: don't forget to implement before going live!");
 		}
 		public override void OrderPreSubmitEnrichBrokerSpecificInjection(Order order) {
-			string msg;
-			if (order.Alert.PriceDeposited != -1) {
-				msg = "alert[" + order.Alert + "] has already PricePaid[" + order.Alert.PriceDeposited + "] != 0";
-				return;
-			}
+			string msig = " //BrokerQuik.OrderPreSubmitEnrichBrokerSpecificInjection(" + order.ToString() + ")";
+			string msg = "";
+			
 			if (order.Alert.QuoteCreatedThisAlert == null) {
-				order.Alert.QuoteCreatedThisAlert = this.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(order.Alert.Symbol);
+				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(order.Alert.Symbol);
+				order.Alert.QuoteCreatedThisAlert = lastMayNotBeTheCreatorHereHavingNoParentBars;
+				string msg2 = "AVOIDING_ORDER_MARKED_INCONSISTENT: " + order.Alert.QuoteCreatedThisAlert;
+				Assembler.PopupException(msg2, null, false);
+			}
+			
+			if (order.Alert.PriceDeposited != -1) {
+				msg = "I_REFISE_TO_ENRICH_FILLED_ALERT alert[" + order.Alert + "].PriceDeposited[" + order.Alert.PriceDeposited + "] != 0";
+				Assembler.PopupException(msg + msig, null, false);
+				return;
 			}
 			QuoteQuik quikQuote = QuoteQuik.SafeUpcast(order.Alert.QuoteCreatedThisAlert);
 			if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
 				if (quikQuote.FortsDepositBuy <= 0) {
-					msg = "Quote.FortsDepositBuy[" + quikQuote.FortsDepositBuy + "] <= ZERO";
+					//DISABLED_FOR_ORDER_TO_SHOWUP_IN_ORDER_EXECUTION_FORM msg = "Quote.FortsDepositBuy[" + quikQuote.FortsDepositBuy + "] <= ZERO";
 				} else {
 					order.Alert.PriceDeposited = quikQuote.FortsDepositBuy;
 				}
 			} else {
 				if (quikQuote.FortsDepositSell <= 0) {
-					msg = "Quote.FortsDepositSell[" + quikQuote.FortsDepositSell + "] <= ZERO";
+					//DISABLED_FOR_ORDER_TO_SHOWUP_IN_ORDER_EXECUTION_FORM msg = "Quote.FortsDepositSell[" + quikQuote.FortsDepositSell + "] <= ZERO";
 				} else {
 					order.Alert.PriceDeposited = -quikQuote.FortsDepositSell;
 				}
 			}
+			if (string.IsNullOrEmpty(msg)) return;
+			Assembler.PopupException(msg + msig, null, false);
 		}
 		public override string ModifyOrderTypeAccordingToMarketOrderAsBrokerSpecificInjection(Order order) {
 			string msg = "";
 			if (order.Alert.QuoteCreatedThisAlert == null) {
-				msg = "order.Quote=null SymbolInfo[" + order.Alert.Symbol + "/" + order.Alert.SymbolClass
-					+ "] //" + msg;
+				msg = "ORDER_MARKED_INCONSISTENT__order.Alert.QuoteCreatedThisAlert=null SymbolInfo["
+					 + order.Alert.Symbol + "/" + order.Alert.SymbolClass + "]";
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
 				base.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
 				throw new Exception(msg);
 			}
-			if (order.Alert.QuoteCreatedThisAlert == null) {
-				msg = "WRONG: order.Alert.QuoteCreatedThisAlert=null for alert=[" + order.Alert + "]";
-				throw new Exception(msg);
-			}
-			if (order.Alert.QuoteCreatedThisAlert is QuoteQuik == false) {
-				msg = "Should be of a type Sq1.Adapters.Quik.QuoteQuik instead of Sq1.Core.DataTypes.Quote: "
-					+ order.Alert.QuoteCreatedThisAlert;
-				throw new Exception(msg);
-			}
 			QuoteQuik quikQuote = order.Alert.QuoteCreatedThisAlert as QuoteQuik;
-			if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
-				double priceMax = quikQuote.FortsPriceMax;
-				if (priceMax <= 0) {
-					msg = "Price=Quote.FortsPriceMax[" + priceMax + "]=ZERO for"
-						+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
-						+ " (Slippage=" + order.SlippageFill + ")";
-					OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-					this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
-					throw new Exception(msg);
-				}
-				order.PriceRequested = priceMax;
-				order.SlippageFill = 0;
-				msg = "Setting PriceRequested=[" + order.PriceRequested + "]=Quote.FortsPriceMax"
-					+ " since MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
-					//	+ "; (useless Slippage=" + order.Slippage + ")"
-					;
-			} else {
-				double priceMin = quikQuote.FortsPriceMin;
-				if (priceMin <= 0) {
-					msg = "Price=Quote.FortsPriceMin[" + priceMin + "]=ZERO for"
-						+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
-						+ " (Slippage=" + order.SlippageFill + ")";
-					OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-					this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
-					throw new Exception(msg);
-				}
-				order.PriceRequested = priceMin;
-				order.SlippageFill = 0;
-				msg = "Setting PriceRequested=[" + order.PriceRequested + "]=Quote.FortsPriceMin"
-					+ "; since Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
-					//	+ " (useless Slippage=" + order.Slippage + ")"
-					+ "";
+			if (quikQuote == null) {
+				msg = "QUOTE_MUST_BE_TYPE(Sq1.Adapters.Quik.QuoteQuik)_INSTEAD_OF "
+					+ order.Alert.QuoteCreatedThisAlert.GetType();
+				throw new Exception(msg);
+			}
+			switch (order.Alert.MarketLimitStop) {
+				case MarketLimitStop.Market:
+					if (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) {
+						double priceMax = quikQuote.FortsPriceMax;
+						if (priceMax <= 0) {
+							msg = "Price=Quote.FortsPriceMax[" + priceMax + "]=ZERO for"
+								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
+								+ " (Slippage=" + order.SlippageFill + ")";
+							Debugger.Break();
+							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
+							this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
+							throw new Exception(msg);
+						}
+						order.PriceRequested = priceMax;
+						order.SlippageFill = 0;
+						msg = "Setting PriceRequested=[" + order.PriceRequested + "]=Quote.FortsPriceMax"
+							+ " since MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
+							//	+ "; (useless Slippage=" + order.Slippage + ")"
+							;
+					} else {
+						double priceMin = quikQuote.FortsPriceMin;
+						if (priceMin <= 0) {
+							msg = "Price=Quote.FortsPriceMin[" + priceMin + "]=ZERO for"
+								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
+								+ " (Slippage=" + order.SlippageFill + ")";
+							Debugger.Break();
+							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
+							this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
+							throw new Exception(msg);
+						}
+						order.PriceRequested = priceMin;
+						order.SlippageFill = 0;
+						msg = "Setting PriceRequested=[" + order.PriceRequested + "]=Quote.FortsPriceMin"
+							+ "; since Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
+							//	+ " (useless Slippage=" + order.Slippage + ")"
+							+ "";
+					}
+					break;
+				case MarketLimitStop.Limit:
+					break;
+				case MarketLimitStop.Stop:
+					break;
+				case MarketLimitStop.StopLimit:
+					break;
 			}
 			return msg;
 		}

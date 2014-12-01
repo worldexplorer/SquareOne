@@ -136,14 +136,14 @@ namespace Sq1.Adapters.Quik {
 			}
 		}
 
-		public void FilterAndDistributeDdeQuote(Quote quote) {
-			DateTime thisDayClose = this.DataSource.MarketInfo.getThisDayClose(quote);
-			DateTime preMarketQuotePoitingToThisDayClose = quote.ServerTime.AddSeconds(1);
+		public void FilterAndDistributeDdeQuote(QuoteQuik quoteQuik) {
+			DateTime thisDayClose = this.DataSource.MarketInfo.getThisDayClose(quoteQuik);
+			DateTime preMarketQuotePoitingToThisDayClose = quoteQuik.ServerTime.AddSeconds(1);
 			bool isQuikPreMarketQuote = preMarketQuotePoitingToThisDayClose >= thisDayClose;
 			if (isQuikPreMarketQuote) {
 				string msg = "skipping pre-market quote"
-					+ " quote.ServerTime[" + quote.ServerTime + "].AddSeconds(1) >= thisDayClose[" + thisDayClose + "]"
-					+ " quote=[" + quote + "]";
+					+ " quote.ServerTime[" + quoteQuik.ServerTime + "].AddSeconds(1) >= thisDayClose[" + thisDayClose + "]"
+					+ " quote=[" + quoteQuik + "]";
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -154,8 +154,9 @@ namespace Sq1.Adapters.Quik {
 //				this.StatusReporter.PopupException(new Exception(msg));
 //				return;
 //			}
-			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik";
-			base.PushQuoteReceived(quote);
+			if (string.IsNullOrEmpty(quoteQuik.Source)) quoteQuik.Source = "Quik";
+			this.StreamingDataSnapshotQuik.StoreFortsSpecifics_NOT_USED(quoteQuik);
+			base.PushQuoteReceived(quoteQuik);
 		}
 		public override void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
 			if (quote is QuoteQuik == false) {

@@ -6,7 +6,7 @@
   "ToggleCompletedOrders": true,
   "ToggleMessagesPane": true,
   "ToggleMessagePaneSplittedHorizontally": false,
-  "ToggleSyncWithChart": true,
+  "ToggleSingleClickSyncWithChart": true,
   "MessagePaneSplitDistanceHorizontal": 334,
-  "MessagePaneSplitDistanceVertical": 534
+  "MessagePaneSplitDistanceVertical": 447
 }

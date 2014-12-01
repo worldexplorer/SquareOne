@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
+using Sq1.Core;
 
 namespace Sq1.Adapters.Quik {
 	public class StreamingDataSnapshotQuik : StreamingDataSnapshot {
@@ -13,14 +14,14 @@ namespace Sq1.Adapters.Quik {
 		[JsonProperty]	protected Dictionary<string, double> FortsPriceMax { get; private set; }
 
 		public StreamingDataSnapshotQuik(StreamingProvider streamingProvider) : base(streamingProvider) {
-			this.FortsDepositBuy = new Dictionary<string, double>();
-			this.FortsDepositSell = new Dictionary<string, double>();
-			this.FortsPriceMin = new Dictionary<string, double>();
-			this.FortsPriceMax = new Dictionary<string, double>();
+			this.FortsDepositBuy	= new Dictionary<string, double>();
+			this.FortsDepositSell	= new Dictionary<string, double>();
+			this.FortsPriceMin		= new Dictionary<string, double>();
+			this.FortsPriceMax		= new Dictionary<string, double>();
 		}
-		public override void UpdateLastBidAskSnapFromQuote(Quote quote) {
-			base.UpdateLastBidAskSnapFromQuote(quote);
-			QuoteQuik quikQuote = QuoteQuik.SafeUpcast(quote);
+		public void StoreFortsSpecifics_NOT_USED(QuoteQuik quikQuote) {
+			string msg = "I_POSTPONED_REFACTORING_STREAMING_DATA_SNAPSHOT_AND_ITS_LIFECYCLE";
+			//Assembler.PopupException(msg);
 			if (quikQuote.FortsDepositBuy != 0 || quikQuote.FortsDepositSell != 0) {
 				this.FortsPutPriceMinMaxForSymbol(quikQuote.Symbol, quikQuote.FortsDepositBuy, quikQuote.FortsDepositSell);
 			}

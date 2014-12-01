@@ -1,5 +1,6 @@
 ﻿using Sq1.Core.DataTypes;
 using Sq1.Adapters.Quik.Dde.XlDde;
+using Sq1.Core;
 
 namespace Sq1.Adapters.Quik.Dde {
 	public class DdeChannelDepth : XlDdeChannel {
@@ -101,7 +102,9 @@ namespace Sq1.Adapters.Quik.Dde {
 			ddeQuotes[bid].Type = DdeQuoteType.BestBid;
 			//DdeSpread s = new DdeSpread(ddeQuotes[ask].Price, ddeQuotes[bid].Price);
 			//quikStreamingProvider.DdeDeliveredSpread(s, SymbolSubscribing);
-			quikStreamingProvider.StreamingDataSnapshot.BestBidAskPutForSymbol(symbol, ddeQuotes[bid].Price, ddeQuotes[ask].Price);
+			//quikStreamingProvider.StreamingDataSnapshot.BestBidAskPutForSymbol(symbol, ddeQuotes[bid].Price, ddeQuotes[ask].Price);
+			string msg = "THIS_CLASS_SHOULD_BE_REFACTORER__ITS_DISABLED_IN_DDE_SERVER_HERE";
+			Assembler.PopupException(msg);
 		}
 	}
 }

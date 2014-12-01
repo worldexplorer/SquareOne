@@ -16,9 +16,21 @@
     "$type": "Sq1.Adapters.QuikMock.StreamingMock, Sq1.Adapters.QuikMock",
     "QuoteDelay": 100,
     "GenerateOnlySymbols": [],
-    "GeneratingNow": false,
+    "GeneratingNow": true,
     "StreamingDataSnapshot": {
       "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
+      "bestBidBySymbol": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
+        "autogen": 157995.0
+      },
+      "bestAskBySymbol": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
+        "autogen": 158015.0
+      },
+      "lastQuotesReceivedUnboundBySymbol": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
+        "autogen": null
+      },
       "FortsDepositSell": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
@@ -31,89 +43,7 @@
       "FortsPriceMax": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
-      "BestBid": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 157955.0,
-        "AUTOGEN": 158190.0
-      },
-      "BestAsk": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 157975.0,
-        "AUTOGEN": 158210.0
-      },
-      "LastQuotesReceived": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
-        "RIMg": null,
-        "autogen": {
-          "$type": "Sq1.Adapters.Quik.QuoteQuik, Sq1.Adapters.Quik",
-          "FortsDepositBuy": 0.0,
-          "FortsDepositSell": 0.0,
-          "FortsPriceMax": 0.0,
-          "FortsPriceMin": 0.0,
-          "Symbol": "autogen",
-          "SymbolClass": "SPBFUT",
-          "Source": "MockQuik",
-          "ServerTime": "2014-11-27T03:43:29.1169949",
-          "Bid": 157955.0,
-          "Ask": 157975.0,
-          "Size": 5.0,
-          "ItriggeredFillAtBidOrAsk": 0,
-          "IntraBarSerno": 266,
-          "AbsnoPerSymbol": 341,
-          "LastDealBidOrAsk": 2,
-          "LocalTimeCreated": "2014-11-27T03:43:29.1169949-05:00",
-          "ParentStreamingBar": {
-            "$type": "Sq1.Core.DataTypes.Bar, Sq1.Core",
-            "Open": 158375.0,
-            "High": 158465.0,
-            "Low": 157555.0,
-            "Close": 157955.0,
-            "Volume": 1335.0,
-            "DaySerial": 0,
-            "Symbol": "autogen",
-            "ScaleInterval": {
-              "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-              "Scale": 3,
-              "Interval": 1,
-              "IsIntraday": true,
-              "AsTimeSpanInSeconds": 60,
-              "AsTimeSpan": "00:01:00"
-            },
-            "DateTimeOpen": "2014-11-27T03:43:00",
-            "DateTimeNextBarOpenUnconditional": "2014-11-27T03:44:00",
-            "DateTimePreviousBarOpenUnconditional": "2014-11-27T03:42:00",
-            "ParentBarsIdent": "NO_PARENT_BARS"
-          },
-          "HasParentBar": true,
-          "ParentBarIdent": "NO_PARENT_BARS",
-          "LastDealPrice": 157955.0,
-          "Spread": 20.0
-        },
-        "AUTOGEN": {
-          "$type": "Sq1.Adapters.Quik.QuoteQuik, Sq1.Adapters.Quik",
-          "FortsDepositBuy": 0.0,
-          "FortsDepositSell": 0.0,
-          "FortsPriceMax": 0.0,
-          "FortsPriceMin": 0.0,
-          "Symbol": "AUTOGEN",
-          "SymbolClass": "SPBFUT",
-          "Source": "MockQuik",
-          "ServerTime": "2014-11-18T23:30:32.1415611",
-          "Bid": 158190.0,
-          "Ask": 158210.0,
-          "Size": 5.0,
-          "ItriggeredFillAtBidOrAsk": 0,
-          "IntraBarSerno": 39,
-          "AbsnoPerSymbol": 39,
-          "LastDealBidOrAsk": 2,
-          "LocalTimeCreated": "2014-11-27T03:42:26.1618736-05:00",
-          "ParentStreamingBar": null,
-          "HasParentBar": false,
-          "ParentBarIdent": "NO_PARENT_BAR",
-          "LastDealPrice": 158190.0,
-          "Spread": 20.0
-        }
-      }
+      "SymbolsSubscribedAndReceiving": "autogen:NULL"
     }
   },
   "BrokerProvider": {

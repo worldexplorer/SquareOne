@@ -127,6 +127,15 @@ namespace Sq1.Adapters.Quik.Terminal {
 		}
 
 		protected Dictionary<string, int> SymbolClassSubscribers = new Dictionary<string, int>();
+		protected string SymbolClassSubscribersAsString { get {
+				string ret = "";
+				foreach (string symbolColonClass in this.SymbolClassSubscribers.Keys) {
+					int subscribersCount = this.SymbolClassSubscribers[symbolColonClass];
+					ret += symbolColonClass + ":" + subscribersCount + ",";
+				}
+				ret.TrimEnd(",".ToCharArray());
+				return ret;
+			} }
 		public bool IsSubscribed(string SecCode, string ClassCode) {
 			string key = SecCode + ":" + ClassCode;
 			bool subscribed = SymbolClassSubscribers.ContainsKey(key);
@@ -351,13 +360,13 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 				double msum, int isSell, int status, int orderDescriptor) {
 
 			//int filled = Trans2Quik.ORDER_QTY(orderDescriptor);	// filled[" + filled + "]
-			string msig = "QuikTerminal(" + this.DllName + ")::CallbackOrderStatus() ";
-			string msgError = "";
-			string msgDebug = " price[" + priceFilled + "] status[" + status + "]"
+			string msgDebug = "price[" + priceFilled + "] status[" + status + "]"
 				+ " nMode[" + nMode + "] Guid[" + GUID + "] SernoExchange[" + SernoExchange + "]"
 				+ " classCode[" + classCode + "] secCode[" + secCode + "]"
 				+ " balance[" + balance + "] msum[" + msum + "] isSell[" + isSell + "]"
 				;
+			string msig = " QuikTerminal(" + this.DllName + ").CallbackOrderStatus(" + msgDebug + ")";
+			string msgError = "";
 			OrderList orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending;
 			Order orderExecuted = orders.FindByGUID(GUID.ToString());
 			if (orderExecuted == null) {
@@ -371,7 +380,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			if (orderExecuted == null) {
 				msgError += " Order not found Guid[" + GUID + "] ; orderSernos=["
 					+ BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.SessionSernos
-					+ "] Count=[" + orders.Count + "]";
+					+ "] Count=[" + orders.InnerOrderList.Count + "]";
 			} else {
 				msgDebug += " Order found Guid[" + GUID + "] orderExecuted=[" + orderExecuted + "]";
 			}
@@ -383,7 +392,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			//Assembler.PopupException(msgDebug);
 			if (nMode == 1) return;
 			if (orderExecuted == null) {
-				BrokerQuik.StatusReporter.PopupException(msgError);
+				Assembler.PopupException(msgError + msig);
 				return;
 			}
 			if (string.IsNullOrEmpty(msgError) == false) {
@@ -394,7 +403,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			int qtyFilled = (int) (orderExecuted.QtyRequested - (double)balance);
 			switch (status) {
 				case 1: //Значение «1» соответствует состоянию «Активна»
-					WldStatus = OrderState.Active;
+					WldStatus = OrderState.WaitingBrokerFill;
 					priceFilled = 0;
 					break;
 				case 2: //«2» - «Снята»
@@ -415,7 +424,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 					}
 					break;
 			}
-			BrokerQuik.CallbackOrderStateReceivedQuik(WldStatus, GUID.ToString(), (long)SernoExchange,
+			this.BrokerQuik.CallbackOrderStateReceivedQuik(WldStatus, GUID.ToString(), (long)SernoExchange,
 				classCode, secCode, priceFilled, qtyFilled);
 			//	ThreadPool.QueueUserWorkItem(new WaitCallback(order.Alert.DataSource.BrokerProvider.SubmitOrdersThreadEntry),
 			//		new object[] { ordersFromAlerts });
@@ -449,7 +458,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			if (orderSubmitting == null) {
 				msg += " Order not found Guid[" + GUID + "] ; orderSernos=["
 					+ orders.SessionSernos
-					+ "] Count=[" + orders.Count + "]";
+					+ "] Count=[" + orders.InnerOrderList.Count + "]";
 				Assembler.PopupException(msg);
 				BrokerQuik.StatusReporter.PopupException(msg);
 				return;

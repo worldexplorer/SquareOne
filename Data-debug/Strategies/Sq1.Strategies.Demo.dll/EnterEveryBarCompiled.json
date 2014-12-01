@@ -19,9 +19,9 @@
         "SharesConstantEachTrade": 1.0
       },
       "IsCurrent": true,
-      "StrategyEmittingOrders": false,
+      "StrategyEmittingOrders": true,
       "ReporterShortNamesUserInvokedJSONcheck": [],
-      "BacktestOnRestart": true,
+      "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
@@ -65,8 +65,8 @@
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
         "Range": 1,
-        "StartDate": "0001-01-01T00:00:00",
-        "EndDate": "9999-12-31T23:59:59.9999999",
+        "DateFrom": "0001-01-01T00:00:00",
+        "DateTill": "9999-12-31T23:59:59.9999999",
         "RecentBars": 500,
         "RecentTimeunits": 0
       },

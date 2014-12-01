@@ -1,11 +1,11 @@
 ﻿using System;
+
 using Sq1.Core.Execution;
 using Sq1.Core.Broker;
 
 namespace Sq1.Adapters.Quik {
 	public class OrderCallbackDupesCheckerQuik : OrderCallbackDupesChecker {
-		public OrderCallbackDupesCheckerQuik(BrokerProvider brokerProvider)
-			: base(brokerProvider) {
+		public OrderCallbackDupesCheckerQuik(BrokerProvider brokerProvider) : base(brokerProvider) {
 		}
 		public override string OrderCallbackDupeResonWhy(
 				Order order, OrderStateMessage newStateOmsg, double priceFill, double qtyFill) {

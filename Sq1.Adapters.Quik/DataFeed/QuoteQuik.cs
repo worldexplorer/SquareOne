@@ -1,13 +1,15 @@
 ﻿using System;
+
 using Sq1.Core.DataTypes;
+using Newtonsoft.Json;
 
 namespace Sq1.Adapters.Quik {
 	public class QuoteQuik : Quote {
-		public double FortsDepositBuy;
-		public double FortsDepositSell;
+		[JsonProperty]	public double	FortsDepositBuy;
+		[JsonProperty]	public double	FortsDepositSell;
 
-		public double FortsPriceMax;
-		public double FortsPriceMin;
+		[JsonProperty]	public double	FortsPriceMax;
+		[JsonProperty]	public double	FortsPriceMin;
 
 		public QuoteQuik(DateTime quoteDate) : base(quoteDate) {
 		}

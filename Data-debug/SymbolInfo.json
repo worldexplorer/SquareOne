@@ -3,7 +3,7 @@
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
     "SecurityType": 1,
     "Symbol": "autogen",
-    "SymbolClass": "NONE",
+    "SymbolClass": "NO_SYMBOL_CLASS",
     "PriceLevelSizeForBonds": 10.0,
     "DecimalsPrice": 0,
     "DecimalsVolume": 0,

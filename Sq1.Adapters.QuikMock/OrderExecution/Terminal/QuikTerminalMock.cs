@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
 using Sq1.Adapters.Quik.Terminal;
 using Sq1.Adapters.QuikMock.Terminal;
 using Sq1.Core;
 using Sq1.Core.Execution;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Adapters.QuikMock.Terminal {
 	public class QuikTerminalMock : QuikTerminal {
@@ -14,9 +16,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 		bool simulateTradeStatus = false;
 		bool simulateOrderStatusDupes = false;
 		
-		BrokerMock mockBrokerProvider {
-			get { return base.BrokerQuik as BrokerMock; }
-		}
+		BrokerMock mockBrokerProvider { get { return base.BrokerQuik as BrokerMock; } }
 
 		public QuikTerminalMock() {
 			throw new Exception("QuikTerminalMock doesn't support default constructor, use QuikTerminalMock(BrokerMock)");
@@ -43,12 +43,12 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			}
 
 			string key = SecCode + ":" + ClassCode;
-			if (SymbolClassSubscribers.ContainsKey(key)) {
-				SymbolClassSubscribers[key]++;
+			if (this.SymbolClassSubscribers.ContainsKey(key)) {
+				this.SymbolClassSubscribers[key]++;
 			} else {
-				SymbolClassSubscribers[key] = 1;
-				if (SymbolClassSubscribers.Count == 0) CurrentStatus = "";
-				CurrentStatus = SymbolClassSubscribers.ToString();
+				this.SymbolClassSubscribers.Add(key, 1);
+				if (this.SymbolClassSubscribers.Count == 0) CurrentStatus = "";
+				CurrentStatus = SymbolClassSubscribersAsString;
 
 				base.BrokerQuik.callbackTerminalConnectionStateUpdated(QuikConnectionState.ConnectedSubscribed,
 					"QuikTerminal(" + this.DllName + ") 2/2 " + QuikConnectionState.ConnectedSubscribed
@@ -63,10 +63,11 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 		int CONST_msum = 9999191;
 		int CONST_descriptor = -111111;
 
-		protected void OrderTryFillLoopEachOrderNewThread(object o) {
-			string msig = "QuikTerminal(" + this.DllName + ")::OrderTryFillLoopEachOrderNewThread(): ";
+		protected void OrderSimulateFillLoopStateThreadEntryPoint(object o) {
+			string msig = " //QuikTerminalMock(" + this.DllName + ").OrderTryFillLoopEachOrderNewThread()";
 			QuikTerminalMockThreadParam tp = (QuikTerminalMockThreadParam)o;
 
+			//Debugger.Break();
 			string msg = "";
 			Order order = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersSubmitting.FindByGUID(tp.GUID.ToString());
 			if (order == null) {
@@ -77,128 +78,152 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			}
 			if (order == null) {
 				msg = "OrdersPending.FindByGUID(" + tp.GUID.ToString() + "=null, can't update with Active/Filled";
-				base.BrokerQuik.OrderProcessor.PopupException(new Exception(msg));
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 
 			try {
-				// let all the Submitting status reach the order (ManualResetEvent?...) - impossible tend to happen
-				// (avoiding Active have the same timestamp as Submitting and come after Submitting - screenshot)
-				//Thread.Sleep(100);
-				//bool signalled = order.MreActiveCanCome.WaitOne(-1);
-
-				//if (order.State != OrderState.Submitted) {
-				//	msg = " order.State[" + order.State + "] != Submitted, won't update to Active, won't run the loop!";
-				//	mockBrokerProvider.OrderManager.AppendMessageAndPropagate(order, msig + msg);
-				//	order.Alert.Strategy.Script.Executor.RemovePendingAlertClosePosition(order.Alert, msig);
-				//	return;
-				//}
-
-				//if (OrderStatesCollections.AllowedForSubmissionToBrokerProvider.Contains(order.State) == false) {
-				//	string allowed = OrderStatesCollections.AllowedForSubmissionToBrokerProvider.ToString();
-				//	msg = "MOCK_CHECK: order.State[" + order.State + "] NOT_IN (" + allowed + ") after QuikTerminal::CallbackOrderStatus(), won't run the loop!"
-				//		+ "; just wanna make sure all pre-Active statuses so while() loop wont need to deal with them";
-				//	base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-				//	//order.Alert.Strategy.Script.Executor.RemovePendingAlertClosePosition(order.Alert, msig);
-				//	order.Alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScript(order.Alert, order.Alert.Bars.Count);
-				//	return;
-				//}
-
-				// set status to active "Active"
+				// setting status to WaitingFillBroker
 				//nStatus Тип: Long. Состояние исполнения заявки: Значение «1» соответствует состоянию «Активна», «2» - «Снята», иначе «Исполнена» 
 				int nStatus = 1;
 				base.CallbackOrderStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
 					-999.99, tp.Balance, 9999191, tp.IsSell, nStatus, 111111);
-				// let order "become" Active (why State didn't change  immediately after base.CallbackOrderStatus???)
+				// let order "become" WaitingFillBroker (why State didn't change  immediately after base.CallbackOrderStatus???)
 				//WTF?... Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis);
 
-				// CallbackOrderStatus sets the status to Active immediately, check it here
+				// CallbackOrderStatus sets the status to WaitingFillBroker immediately, check it here
 				if (OrderStatesCollections.NoInterventionRequired.Contains(order.State) == false) {
 					string allowed = OrderStatesCollections.NoInterventionRequired.ToString();
 					msg = "MOCK_CHECK: order.State[" + order.State + "] NOT_IN (" + allowed + ") after QuikTerminal::CallbackOrderStatus(), won't run the loop!";
-					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
+					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
 					//order.Alert.Strategy.Script.Executor.RemovePendingAlertClosePosition(order.Alert, msig);
 					order.Alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScript(order.Alert, order.Alert.Bars.Count);
 					return;
 				}
 
 				while (this.mockBrokerProvider.SignalToTerminateAllOrderTryFillLoopsInAllMocks == false) {
-					switch (order.State) {
-						case OrderState.Active:
-							bool filled = false;
-							bool abortTryFill = false;
-							string abortTryFillReason = "NO_ABORT_TRY_FILL_MESSAGE";
-							try {
-								//double priceFill = -1;
-								//double slippageFill = -1;
-								filled = order.Alert.Strategy.Script.Executor.MarketSim.SimulateFill(order.Alert, out abortTryFill, out abortTryFillReason);	//, out priceFill, out slippageFill);
-							} catch (Exception e) {
-								msg = "SimulateRealtimeOrderFill() THREAD_TERMINATING_EXCEPTION: [" + order.State + "]"
-									+ ": " + e.ToString();
-								base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-								order.Alert.DataSource.BrokerProvider.StatusReporter.PopupException(msg, e);
-								return;
-							}
-							if (abortTryFill == true) {
-								msg = "OrderFilledNotifyLikeTerminalCallback(): THREAD_ABORTED_TERMINATING: [" + order.State + "]"
-									+ ": " + abortTryFillReason;
-								base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-								return;
-							}
-							if (filled) {
-								try {
-									this.OrderFilledNotifyLikeTerminalCallback(order, tp);
-									msg = "THREAD_TERMINATING_OK: [" + order.State + "] OrderFilledNotifyLikeTerminalCallback() complete";
-									base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-								} catch (Exception e) {
-									msg = "OrderFilledNotifyLikeTerminalCallback(): THREAD_TERMINATING_EXCEPTION: [" + order.State + "]"
-										+ ": " + e.ToString();
-									base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-									order.Alert.DataSource.BrokerProvider.StatusReporter.PopupException(msg, e);
-									return;
-								}
-								return;
-							} else {
-								//msg = " order.State[" + order.State + "] == Active but not filled @[" + tp.TryFillInvokedTimes + "] attempt;"
-								//	+ " waiting for the price to reach alert.PriceScript[" + order.Alert.PriceScript + "]";
-							}
-							break;
-						case OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted:
-							msg = "SHOULD_NEVER_LAND_HERE: BrokerProvider should never get PastExecutionDueNotAutoSubmitted orders"
-								+ ";  check CreateOrdersSubmitToBrokerProvider() once again";
-							base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-							//order.Alert.Strategy.Script.Executor.RemovePendingEntryAlertCloneFromEntryClosePositionBacktestEnded(order.Alert);
-							// I'm suggesting a wrapper instead of low-level hanlder
-							//order.Alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScript(order.Alert, order.Alert.Bars.Count);
-							return;
-						//case OrderState.Submitting:
-						//	break;
-						case OrderState.KillPending:
-						case OrderState.Killed:
-						case OrderState.TPAnnihilated:
-						case OrderState.SLAnnihilated:
-							msg = "THREAD_TERMINATING_ANNIHILATED: [" + order.State + "] is expected and handled";
-							base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-							return;
-						default:
-							msg = "THREAD_TERMINATING_WEIRD: got [" + order.State + "] while Active should've been set!!!";
-							base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-							return;
-					}
-
-					if (msg != "") {
-						msg += "; sleeping [" + this.mockBrokerProvider.ExecutionDelayMillis + "]ms"
-							+ " and continuing OrderTryFillLoopEachOrderNewThread";
-						base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
-					}
-
-					tp.TryFillInvokedTimes++;
-					Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis);
+					this.orderSimulateFillLoopStep(order, tp);
 				}
 			} catch (Exception e) {
 				order.Alert.Strategy.Script.Executor.PopupException("QuikTerminalMock::OrderTryFillLoopEachOrderNewThread()", e);
 				//base.BrokerQuik.OrderProcessor.PopupException("QuikTerminalMock::OrderTryFillLoopEachOrderNewThread()", e);
 			}
+		}
+
+		void orderSimulateFillLoopStep(Order order, QuikTerminalMockThreadParam tp) {
+			string msig = " //QuikTerminalMock(" + this.DllName + ").orderSimulateFillLoopStep(order[" + order + "] tp[" + tp + "])";
+			string msg = "";
+
+			bool abortThread = false;
+			Exception exCaught = null;
+			//Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis / 2);
+
+			switch (order.State) {
+				case OrderState.WaitingBrokerFill:
+					Quote quoteToFillAgainst;
+					try {
+						if (order.Alert.Strategy == null) {
+							msg += "JSON_DESERIALIZED_ORDERS_ONLY_HAVE_ALERT.STRATEGY_NULL BUT_WHY_WOULD_YOU_FILL_IT_HERE? ";
+							abortThread = true;
+							break;
+						}
+						quoteToFillAgainst = order.Alert.QuoteCreatedThisAlert;
+						if (order.Alert.QuoteCreatedThisAlert.ParentBarStreaming.ParentBarsIndex == -1) {
+							msg += "EARLY_BINDER_DIDNT_DO_ITS_JOB#2 order.Alert.QuoteCreatedThisAlert.ParentStreamingBar.ParentBarsIndex=-1 ";
+							abortThread = true;
+							break;
+						}
+						Quote quoteLast = this.mockBrokerProvider.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(order.Alert.Symbol);
+						if (quoteLast.SameBidAsk(order.Alert.QuoteCreatedThisAlert)) {
+							msg += "SURE_CURRENT_QUOTE_AND_QuoteCreatedThisAlert_MUST_BE_DIFFERENT_HERE that's why QuikBrokerEditor has ExecutionDelay!"
+								+ "; TODO: split it to two 1) DelayOrderEmittedToFilled (Limit came too late))"
+								+ ", 2) DelayOrderFilledCallback (Strategy gets callback 1 sec later after filled by the Market) ";
+							//abortThread = true;
+							//break;
+						}
+						//if (quoteLast.ParentBarStreaming.ParentBarsIndex == -1) {
+						//    msg += "EARLY_BINDER_DIDNT_DO_ITS_JOB#1 quote.ParentStreamingBar.ParentBarsIndex=-1 ";
+						//    abortThread = true;
+						//    break;
+						//}
+						//quoteToFillAgainst = quoteLast;
+					} catch (Exception ex) {
+						msg += "FAILED_INNER_mockBrokerProvider.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol( " + order.Alert.Symbol + ")";
+						exCaught = ex;
+						break;
+					}
+
+					bool filled = false;
+					bool abortTryFill = false;
+					string abortTryFillReason = "NO_ABORT_TRY_FILL_MESSAGE";
+					try {
+						filled = order.Alert.Strategy.Script.Executor.MarketSim.SimulateFillLive(order.Alert, quoteToFillAgainst, out abortTryFill, out abortTryFillReason);	
+					} catch (Exception ex) {
+						msg = "FAILED_INNER_MarketSim.SimulateFillLive(" + quoteToFillAgainst + ") " + msg;
+						exCaught = ex;
+						break;
+					}
+					if (abortTryFill == true) {
+						msg = "FAILED_INNER_MarketSim.SimulateFillLive(): " + abortTryFillReason + msg;
+						abortThread = true;
+						break;
+					}
+					if (filled) {
+						try {
+							this.OrderFilledNotifyLikeTerminalCallback(order, tp);
+							msg = "THREAD_FILLED_ORDER__SUCCESSFULLY_COMPLETED_OrderFilledNotifyLikeTerminalCallback() " + msg;
+							base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
+							return;
+						} catch (Exception ex) {
+							msg = "FAILED_INNER_OrderFilledNotifyLikeTerminalCallback() " + msg;
+							exCaught = ex;
+							break;
+						}
+					} else {
+						//msg = " order.State[" + order.State + "] == WaitingFillBroker but not filled @[" + tp.TryFillInvokedTimes + "] attempt;"
+						//	+ " waiting for the price to reach alert.PriceScript[" + order.Alert.PriceScript + "]";
+					}
+					break;
+				case OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted:
+					msg = "SHOULD_NEVER_BE_HERE: BrokerProvider should never get PastExecutionDueNotAutoSubmitted orders"
+						+ ";  check CreateOrdersSubmitToBrokerProvider() once again";
+					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
+					//order.Alert.Strategy.Script.Executor.RemovePendingEntryAlertCloneFromEntryClosePositionBacktestEnded(order.Alert);
+					// I'm suggesting a wrapper instead of low-level hanlder
+					//order.Alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScript(order.Alert, order.Alert.Bars.Count);
+					return;
+				//case OrderState.Submitting:
+				//	break;
+				case OrderState.KillPending:
+				case OrderState.Killed:
+				case OrderState.TPAnnihilated:
+				case OrderState.SLAnnihilated:
+					msg = "THREAD_TERMINATING_ANNIHILATED: [" + order.State + "] is expected and handled";
+					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
+					return;
+				default:
+					msg = "THREAD_TERMINATING_WEIRD: got [" + order.State + "] while WaitingFillBroker should've been set!!!";
+					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
+					return;
+			}
+
+			if (abortThread || exCaught != null) {
+				msg = "THREAD_ABORTING: " + msg;
+				base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
+				Assembler.PopupException(msg + msig, exCaught);
+				return;
+			}
+
+			if (msg != "") {
+				msg += "; sleeping [" + this.mockBrokerProvider.ExecutionDelayMillis + "]ms"
+					+ " and continuing OrderTryFillLoopEachOrderNewThread";
+				base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
+
+			}
+
+			tp.TryFillInvokedTimes++;
+			Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis);
+			//Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis / 2);
 		}
 
 		protected void OrderFilledNotifyLikeTerminalCallback(Order order, QuikTerminalMockThreadParam tp) {
@@ -207,7 +232,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 
 			int sleepMs = this.mockBrokerProvider.ExecutionDelayMillis + Rng.Next(100, 1000);
 			msg = " Sleeping random [" + (sleepMs) + "]ms; status=>[" + tp.QuikStatus + "]";
-			base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
+			base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
 			Thread.Sleep(sleepMs);
 
 			if (this.mockBrokerProvider.RejectAllUpcoming) {
@@ -256,7 +281,8 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				string SecCode, string ClassCode, double price, int quantity,
 				string GUID, out int SernoSession, out string msgSumbittedOut, out OrderState orderStateOut) {
 
-			if (!IsSubscribed(SecCode, ClassCode)) Subscribe(SecCode, ClassCode);
+			//Debugger.Break();
+			if (!this.IsSubscribed(SecCode, ClassCode)) this.Subscribe(SecCode, ClassCode);
 			string trans = base.getOrderCommand(opBuySell, typeMarketLimitStop, SecCode, ClassCode, price, quantity, GUID, out SernoSession);
 			Order orderFound = base.BrokerQuik.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(GUID, OrderState.Submitting, trans);
 			orderStateOut = OrderState.Submitted;
@@ -279,12 +305,13 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			tp.OrderStatus = orderStateOut;
 			tp.TryFillInvokedTimes = 0;
 
-			Thread th = new Thread(new ParameterizedThreadStart(OrderTryFillLoopEachOrderNewThread));
+			Thread th = new Thread(new ParameterizedThreadStart(this.OrderSimulateFillLoopStateThreadEntryPoint));
 			//Thread th = new Thread(new ParameterizedThreadStart(OrderTryFillLoop));
 			th.Name = Thread.CurrentThread.ManagedThreadId + " >> MOCK.OrderTryFillLoop(" + opBuySell + typeMarketLimitStop + quantity + "@" + price + ")";
+			//Debugger.Break();
 			th.Start(tp);
 			// STICKY_ORDERS_NOT_GETTING_EXECUTED the new thread should wait for Submitted to get updated, MreActiveCanCome to signal and then continue;
-			// otherwize Active magically happens before the upperStack OrderSubmit() sets Submitted returned here and Submitted stays forever
+			// otherwize WaitingFillBroker magically happens before the upperStack OrderSubmit() sets Submitted returned here and Submitted stays forever
 		}
 
 
@@ -369,25 +396,25 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				if (orderKiller == null) {
 					msg = "orderKiller==null, can't update with KillerBulletFlying";
 					base.BrokerQuik.OrderProcessor.UpdateOrderStateNoPostProcess(orderKiller,
-						new OrderStateMessage(orderKiller, OrderState.Error, msig + msg));
+						new OrderStateMessage(orderKiller, OrderState.Error, msg + msig));
 					return;
 				}
 				if (orderKiller.KillerOrder != null) {
 					msg = " use ParametrizedCallbackOrderStatus() for labourOrder fill simulation!";
-					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderKiller, msig + msg);
+					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderKiller, msg + msig);
 					return;
 				}
 
 				int sleepMs = this.mockBrokerProvider.ExecutionDelayMillis + Rng.Next(100, 1000);
 				msg = "Sleeping random [" + sleepMs + "]ms; status=>[" + t.QuikStatus + "]";
 				base.BrokerQuik.OrderProcessor.UpdateOrderStateNoPostProcess(orderKiller,
-					new OrderStateMessage(orderKiller, OrderState.KillerBulletFlying, msig + msg));
+					new OrderStateMessage(orderKiller, OrderState.KillerBulletFlying, msg + msig));
 				Thread.Sleep(sleepMs);
 
 				if (orderKiller.State != OrderState.KillerBulletFlying) {
 					msg = "orderKiller.State[" + orderKiller.State + "] != KillerBulletFlying (victim kill failed?), won't update victim.Killed <=> killerFilled;"
 						+ " t.t_status[" + t.QuikStatus + "]?=2)";
-					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderKiller, msig + msg);
+					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderKiller, msg + msig);
 					return;
 				}
 
