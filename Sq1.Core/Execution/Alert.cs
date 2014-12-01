@@ -102,7 +102,7 @@ namespace Sq1.Core.Execution {
 				return DateTime.MinValue;
 			} }
 		[JsonIgnore]	public	Order				OrderFollowed;			// set on Order(alert).executed;
-		[JsonIgnore]	public	ManualResetEvent	MreOrderFollowedIsNotNull		{ get; private set; }
+		[JsonIgnore]	public	ManualResetEvent	MreOrderFollowedIsSetNow		{ get; private set; }
 		[JsonProperty]	public	double				PriceDeposited;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
 		[JsonIgnore]	public	string				IsAlertCreatedOnPreviousBar		{ get {
 				string ret = "";
@@ -219,25 +219,25 @@ namespace Sq1.Core.Execution {
 			}}
 
 		public	Alert() {	// called by Json.Deserialize()
-			PlacedBarIndex = -1;
-			FilledBarIndex = -1;
-			//TimeCreatedServerBar = DateTime.MinValue;
-			this.QuoteCreatedThisAlertServerTime = DateTime.MinValue;
-			Symbol = "UNKNOWN_JUST_DESERIALIZED";
-			//SymbolClass = "";		//QUIK
-			//AccountNumber = "";
-			PriceScript = 0;
-			PriceDeposited = -1;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
-			Qty = 0;
-			MarketLimitStop = MarketLimitStop.Unknown;
-			MarketOrderAs = MarketOrderAs.Unknown;
-			Direction = Direction.Unknown;
-			SignalName = "";
-			StrategyID = Guid.Empty;
-			StrategyName = "NO_STRATEGY"; 
-			BarsScaleInterval = new BarScaleInterval(BarScale.Unknown, 0);
-			OrderFollowed = null;
-			MreOrderFollowedIsNotNull = new ManualResetEvent(false);
+			PlacedBarIndex				= -1;
+			FilledBarIndex				= -1;
+			//TimeCreatedServerBar		= DateTime.MinValue;
+			QuoteCreatedThisAlertServerTime = DateTime.MinValue;
+			Symbol						= "UNKNOWN_JUST_DESERIALIZED";
+			//SymbolClass				= "";		//QUIK
+			//AccountNumber				= "";
+			PriceScript					= 0;
+			PriceDeposited				= -1;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
+			Qty							= 0;
+			MarketLimitStop				= MarketLimitStop.Unknown;
+			MarketOrderAs				= MarketOrderAs.Unknown;
+			Direction					= Direction.Unknown;
+			SignalName					= "";
+			StrategyID					= Guid.Empty;
+			StrategyName				= "NO_STRATEGY"; 
+			BarsScaleInterval			= new BarScaleInterval(BarScale.Unknown, 0);
+			OrderFollowed				= null;
+			MreOrderFollowedIsSetNow	= new ManualResetEvent(false);
 		}
 		public	Alert(Bar bar, double qty, double priceScript, string signalName,
 				Direction direction, MarketLimitStop marketLimitStop, OrderSpreadSide orderSpreadSide,
@@ -262,10 +262,10 @@ namespace Sq1.Core.Execution {
 				#endif
 				throw new Exception(msg);
 			}
-			this.Bars = bar.ParentBars;
-			this.PlacedBar = bar;
-			this.PlacedBarIndex = bar.ParentBarsIndex;
-			this.Symbol = bar.Symbol;
+			this.Bars			= bar.ParentBars;
+			this.PlacedBar		= bar;
+			this.PlacedBarIndex	= bar.ParentBarsIndex;
+			this.Symbol			= bar.Symbol;
 			
 			this.BarsScaleInterval = this.Bars.ScaleInterval;
 			if (this.Bars.SymbolInfo != null) {

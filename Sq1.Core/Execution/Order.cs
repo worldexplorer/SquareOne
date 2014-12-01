@@ -278,7 +278,7 @@ namespace Sq1.Core.Execution {
 //				alert.PositionAffected.EntryAlert.OrderFollowed.DerivedOrdersAdd(this);
 //				// TODO will also have to notify ExecutionForm on this Order, which will close a Position 
 //			}
-			alert.MreOrderFollowedIsNotNull.Set();	// Order is fully constructed, all properties assigned, go read them
+			alert.MreOrderFollowedIsSetNow.Set();	// Order is fully constructed, all properties assigned, go read them
 		}
 		public static string newGUID() {
 			string ret = DateTime.Now.ToString("Hmmssfff");

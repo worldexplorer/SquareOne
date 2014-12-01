@@ -52,7 +52,7 @@ namespace Sq1.Core.Backtesting {
 			//this.backtester.Executor.Script.OnNewQuoteCallback(quoteToReach);
 			ReporterPokeUnit pokeUnit = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quote);
 		}
-		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed) {
+		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
 			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(" + barLastFormed.ToString() + ")";
 			if (barLastFormed == null) {
 				string msg = "Backtester starts generating quotes => first StreamingBar is added; for first four Quotes there's no static barsFormed yet!! Isi";
@@ -71,7 +71,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
-			ReporterPokeUnit pokeUnit = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(null);
+			ReporterPokeUnit pokeUnit = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, true);
 		}
 	}
 }
