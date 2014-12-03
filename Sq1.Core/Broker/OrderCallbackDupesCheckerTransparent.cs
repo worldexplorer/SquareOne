@@ -7,7 +7,7 @@ namespace Sq1.Core.Broker {
 		public OrderCallbackDupesCheckerTransparent(BrokerProvider brokerProvider)
 			: base(brokerProvider) {
 		}
-		public override string OrderCallbackDupeResonWhy(
+		public override string OrderCallbackIsDupeReson(
 				Order order, OrderStateMessage newStateOmsg, double priceFill, double qtyFill) {
 			return null;
 		}

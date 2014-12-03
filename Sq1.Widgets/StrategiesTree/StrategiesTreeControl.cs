@@ -12,8 +12,7 @@ using Sq1.Core.Support;
 
 namespace Sq1.Widgets.StrategiesTree {
 	public partial class StrategiesTreeControl {
-		private RepositoryDllJsonStrategy strategyRepository;
-		private IStatusReporter statusReporter;
+		RepositoryDllJsonStrategy strategyRepository;
 
 		public string FolderSelected;
 		public Strategy StrategySelected;

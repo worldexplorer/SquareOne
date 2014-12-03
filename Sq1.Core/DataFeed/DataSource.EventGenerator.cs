@@ -1,7 +1,7 @@
 using System;
 
 namespace Sq1.Core.DataFeed {
-	public partial class DataSource : NamedObjectJsonSerializable {
+	public partial class DataSource {
 		public event EventHandler<DataSourceEventArgs>				DataSourceEditedChartsDisplayedShouldRunBacktestAgain;
 		public event EventHandler<DataSourceSymbolRenamedEventArgs> SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars;
 

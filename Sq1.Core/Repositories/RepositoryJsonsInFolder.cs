@@ -86,7 +86,7 @@ namespace Sq1.Core.Repositories {
 			this.ItemsByName.Clear();
 			if (Directory.Exists(this.AbsPath) == false) {
 				string msg = "doesn't exist, no {" + this.MaskRel + "}s deserialized; returning";
-				this.StatusReporter.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			string[] files = Directory.GetFiles(this.AbsPath, this.Mask);
@@ -96,7 +96,7 @@ namespace Sq1.Core.Repositories {
 				DATASOURCE deserialized = this.DeserializeSingle(fileName);
 				if (deserialized == null) {
 					string msg = "FAILED_TO_DESERIALIZE_ONE_OF_MANY_JSONS " + thisOne;
-					this.StatusReporter.PopupException(msg + msig);
+					Assembler.PopupException(msg + msig);
 					continue;
 				}
 				string key = this.ExtractKeyFromJsonAbsname(fileName);

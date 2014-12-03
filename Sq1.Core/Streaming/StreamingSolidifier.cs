@@ -42,13 +42,22 @@ namespace Sq1.Core.Streaming {
 			if (ignoreIntervalForceReplaceBarImmediately == false && secondsSinceLastDumped <= this.barStreamingDumpIntervalSeconds) return;
 
 			string millisElapsed;
+			
+			if (quote.ParentBarStreaming == null) {
+				string msg2 = "STREAMING_SOLIDIFIER_FAILED_TO_STORE_LAST_QUOTE_AT_QUOTE_GENERATOR_STOPPED FIX_quote.ParentBarStreaming=null_HERE";
+				Assembler.PopupException(msg2, null, false);
+				return;
+			}
+			
+			//lastQuoteReceived.SetParentBarStreaming(quoteConsumer.ConsumerBarsToAppendInto.BarStreaming);
+
 			int barsSaved = this.dataSource.BarAppendOrReplaceLast(quote.ParentBarStreaming, out millisElapsed);
 
 			string msig = " //StreamingSolidifier.replaceStreamingBar(" + quote.ParentBarStreaming.Close + ")";
 			string msg = millisElapsed
 				+ " quote[" + quote.LocalTimeCreated.ToString("mm:ss.fff") + "]=>[" + this.barStreamingLastDumpedLocal.ToString("mm:ss.fff") + "]"
 				+ " secondsSinceLastDumped[" + secondsSinceLastDumped.ToString("N3") + "] >= dumpInterval[" + this.barStreamingDumpIntervalSeconds + "]";
-			Assembler.PopupException(msg + msig, null, false);
+			// TOO_NOISY Assembler.PopupException(msg + msig, null, false);
 
 			this.barStreamingLastDumpedLocal = quote.LocalTimeCreated;
 			this.barStreamingLastDumpedLocalAsString = quote.LocalTimeCreated.ToString("HH:mm:ss.fff");

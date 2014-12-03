@@ -8,7 +8,7 @@ namespace Sq1.Core.Broker {
 		public OrderCallbackDupesChecker(BrokerProvider brokerProvider) {
 			this.brokerProvider = brokerProvider;
 		}
-		public abstract string OrderCallbackDupeResonWhy(
+		public abstract string OrderCallbackIsDupeReson(
 			Order order, OrderStateMessage newStateOmsg, double priceFill, double qtyFill);
 	}
 }

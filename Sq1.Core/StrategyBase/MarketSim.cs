@@ -449,7 +449,13 @@ namespace Sq1.Core.StrategyBase {
 				filled = this.simulatePendingFillExit(alert, quote);
 			}
 			if (filled == false) return filled;
-
+			
+			if (this.executor.Backtester.IsBacktestingNow == false) {
+				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
+				return filled;
+			}
+			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
+			
 			if (this.executor.ExecutionDataSnapshot.AlertsPendingContains(alert) == true) {
 				string msg = "ALERT_MUST_HAVE_BEEN_REMOVED_FROM_PENDINGS_AFTER_FILL"
 					+ "; normally, the filled alert should be already removed here by CallbackAlertFilledMoveAroundInvokeScript()"
@@ -468,6 +474,10 @@ namespace Sq1.Core.StrategyBase {
 		}
 		
 		public bool SimulateFillLive(Alert alert, Quote quote, out bool abortTryFill, out string abortTryFillReason) {
+			if (this.executor.Backtester.IsBacktestingNow) {
+				string msg = "DONT_INVOKE_ME_DURING_THE_BACKTEST SimulateFillLive() was designed for Sq1.Adapters.QuikMock.Terminal.QuikTerminalMock()";
+				Assembler.PopupException(msg);
+			}
 			abortTryFill = false;
 			abortTryFillReason = "NO_REASON_TO_ABORT_TRY_FILL";
 			if (alert.DataSource.BrokerProviderName.Contains("Mock") == false) {
@@ -589,7 +599,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		void checkThrowRealtimePendingQuote(Quote quote) {
 			if (this.executor.Backtester.IsBacktestingNow == false) {
-				string msg = "SimulateBacktest*() should not be used for RealTime BrokerProviders and RealTime Mocks!"
+				string msg = "SimulateFill*() should not be used for RealTime BrokerProviders and RealTime Mocks!"
 					+ " make sure you invoked executor.CallbackAlertFilledInvokeScript() from where you are now";
 				#if DEBUG
 				Debugger.Break();
@@ -638,6 +648,12 @@ namespace Sq1.Core.StrategyBase {
 			}
 			double entryCommission = this.executor.OrderCommissionCalculate(alert.Direction,
 				alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);
+			
+			if (this.executor.Backtester.IsBacktestingNow == false) {
+				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
+				return filled;
+			}
+			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
 			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote, entryBarToTestOn,
 				priceFill, alert.Qty, slippageFill, entryCommission);
 			return filled;
@@ -651,6 +667,12 @@ namespace Sq1.Core.StrategyBase {
 			double exitCommission = this.executor.OrderCommissionCalculate(alert.Direction,
 				alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);
 			int exitBarToTestOn = quote.ParentBarStreaming.ParentBarsIndex;
+			
+			if (this.executor.Backtester.IsBacktestingNow == false) {
+				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
+				return filled;
+			}
+			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
 			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote, exitBarToTestOn,
 				priceFill, alert.Qty, slippageFill, exitCommission);
 			return filled;

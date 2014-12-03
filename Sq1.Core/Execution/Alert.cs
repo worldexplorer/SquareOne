@@ -26,9 +26,9 @@ namespace Sq1.Core.Execution {
 				return this.PlacedBar.DateTimeOpen;
 			} }
 		[JsonProperty]	public	DateTime			QuoteCreatedThisAlertServerTime;	// EXECUTOR_ENRICHES_ALERT_WITH_QUOTE { get; protected set; }
-		[JsonProperty]	public	string				Symbol;								// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC  { get; protected set; }
-		[JsonProperty]	public	string				SymbolClass;						// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		[JsonProperty]	public	string				AccountNumber;						// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonProperty]	public	string				Symbol							{ get; protected set; }
+		[JsonProperty]	public	string				SymbolClass						{ get; protected set; }
+		[JsonProperty]	public	string				AccountNumber					{ get; protected set; }
 		[JsonProperty]	public	string				dataSourceName					{ get; protected set; }		// containsBidAsk BrokerProvider for further {new Order(Alert)} execution
 		[JsonIgnore]	public	DataSource			DataSource						{ get {
 				if (this.Bars == null) {
@@ -62,18 +62,18 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		[JsonProperty]	public	double				PriceStopLimitActivationAligned	{ get; protected set; }
-		[JsonProperty]	public	double				Qty;
+		[JsonProperty]	public	double				Qty								{ get; protected set; }
 		[JsonProperty]	public	MarketLimitStop		MarketLimitStop;				//BROKER_PROVIDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
-		[JsonProperty]	public	MarketOrderAs		MarketOrderAs;					// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		[JsonIgnore]	public	string 				MarketLimitStopAsString;
-		[JsonProperty]	public	Direction			Direction;						// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC { get; protected set; }
-		[JsonIgnore]	public	string				DirectionAsString;
+		[JsonProperty]	public	MarketOrderAs		MarketOrderAs					{ get; protected set; }
+		[JsonIgnore]	public	string 				MarketLimitStopAsString			{ get; protected set; }
+		[JsonProperty]	public	Direction			Direction						{ get; protected set; }
+		[JsonIgnore]	public	string				DirectionAsString				{ get; protected set; }
 		[JsonIgnore]	public	PositionLongShort	PositionLongShortFromDirection	{ get { return MarketConverter.LongShortFromDirection(this.Direction); } }
 		[JsonIgnore]	public	bool				IsExitAlert						{ get { return !IsEntryAlert; } }
 		[JsonIgnore]	public	bool				IsEntryAlert					{ get { return MarketConverter.IsEntryFromDirection(this.Direction); } }
 		[JsonProperty]	public	string				SignalName;						//ORDER_SETS_NAME_FOR_KILLER_ALERTS { get; protected set; }
-		[JsonProperty]	public	Guid				StrategyID;						// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
-		[JsonProperty]	public	string				StrategyName;					// JSON_DESERIALIZER_WANTS_MEMBERS_FULLY_PUBLIC   { get; protected set; }
+		[JsonProperty]	public	Guid				StrategyID						{ get; protected set; }
+		[JsonProperty]	public	string				StrategyName					{ get; protected set; }
 		[JsonIgnore]	public	Strategy			Strategy						{ get; protected set; }
 		[JsonIgnore]	public	bool				IsExecutorBacktestingNow		{ get {
 				if (this.Strategy == null) {
@@ -102,7 +102,7 @@ namespace Sq1.Core.Execution {
 				return DateTime.MinValue;
 			} }
 		[JsonIgnore]	public	Order				OrderFollowed;			// set on Order(alert).executed;
-		[JsonIgnore]	public	ManualResetEvent	MreOrderFollowedIsSetNow		{ get; private set; }
+		[JsonIgnore]	public	ManualResetEvent	MreOrderFollowedIsAssignedNow		{ get; private set; }
 		[JsonProperty]	public	double				PriceDeposited;		// for a Future, we pay less that it's quoted (GUARANTEE DEPOSIT)
 		[JsonIgnore]	public	string				IsAlertCreatedOnPreviousBar		{ get {
 				string ret = "";
@@ -237,7 +237,7 @@ namespace Sq1.Core.Execution {
 			StrategyName				= "NO_STRATEGY"; 
 			BarsScaleInterval			= new BarScaleInterval(BarScale.Unknown, 0);
 			OrderFollowed				= null;
-			MreOrderFollowedIsSetNow	= new ManualResetEvent(false);
+			MreOrderFollowedIsAssignedNow	= new ManualResetEvent(false);
 		}
 		public	Alert(Bar bar, double qty, double priceScript, string signalName,
 				Direction direction, MarketLimitStop marketLimitStop, OrderSpreadSide orderSpreadSide,

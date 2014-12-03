@@ -112,7 +112,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 							streamingProviderInstance.StreamingEditorInitialize(this);
 						} catch (Exception e) {
 							string msg = "can't initialize streamingProviderInstance[" + streamingProviderInstance + "]";
-							this.assemblerInstance.StatusReporter.PopupException(msg, e);
+							Assembler.PopupException(msg, e);
 							return;
 						}
 					}
@@ -128,7 +128,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 					}
 					this.lvStreamingProviders.Items.Add(lvi);
 				} catch (Exception e) {
-					this.assemblerInstance.StatusReporter.PopupException(null, e);
+					Assembler.PopupException(null, e);
 					return;
 				}
 			}
@@ -155,7 +155,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 							brokerProviderInstance.BrokerEditorInitialize(this);
 						} catch (Exception e) {
 							string msg = "can't initialize brokerProviderInstance[" + brokerProviderInstance + "]";
-							this.assemblerInstance.StatusReporter.PopupException(msg, e);
+							Assembler.PopupException(msg, e);
 							return;
 						}
 					}
@@ -175,7 +175,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 					}
 					this.lvBrokerProviders.Items.Add(lvi);
 				} catch (Exception e) {
-					this.assemblerInstance.StatusReporter.PopupException(null, e);
+					Assembler.PopupException(null, e);
 					return;
 				}
 			}
@@ -184,7 +184,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			int streamingIndex = this.lvStreamingProviders.Items.IndexOfKey(streamingName);
 			if (streamingIndex < 0) {
 				string msg = "streamingName[" + streamingName + "] not found in this.lvStreamingProviders";
-				this.assemblerInstance.StatusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.lvStreamingProviders.Items[streamingIndex].Selected = true;
@@ -194,7 +194,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			int brokerIndex = this.lvBrokerProviders.Items.IndexOfKey(brokerName);
 			if (brokerIndex < 0) {
 				string msg = "brokerName[" + brokerName + "] not found in this.lvBrokerProviders";
-				this.assemblerInstance.StatusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.lvBrokerProviders.Items[brokerIndex].Selected = true;
@@ -229,7 +229,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			if (ds.StreamingProvider != null) ds.StreamingProvider.EditorInstance.PushEditedSettingsToStreamingProvider();
 			if (ds.BrokerProvider != null) ds.BrokerProvider.EditorInstance.PushEditedSettingsToBrokerProvider();
 			// for DataSource, nothing changed, but providers were assigned by user clicks, so DS will Initialize() each
-			ds.Initialize(this.assemblerInstance.RepositoryJsonDataSource.AbsPath, this.assemblerInstance.OrderProcessor, this.assemblerInstance.StatusReporter);
+			ds.Initialize(this.assemblerInstance.RepositoryJsonDataSource.AbsPath, this.assemblerInstance.OrderProcessor);
 			this.assemblerInstance.RepositoryJsonDataSource.SerializeSingle(ds);
 			//LOOKS_LIKE_STARTS_BACKTESTING_BEFORE_DSEDITOR_CLOSED
 			//USER_HAS_X_TO_CLOSE_THIS_WINDOW this.btnCancel_Click(this, null);

@@ -124,7 +124,7 @@ namespace Sq1.Widgets.Execution {
 				}
 			}
 			//late binding prevents SplitterMoved() induced by DockContent layouting LoadAsXml()ed docked forms 
-			this.splitContainerMessagePane.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitContainerMessagePane_SplitterMoved);
+			this.splitContainerMessagePane.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerMessagePane_SplitterMoved);
 			
 			this.mniToggleBrokerTime.Checked = this.DataSnapshot.ToggleBrokerTime;
 			this.mniToggleCompletedOrders.Checked = this.DataSnapshot.ToggleCompletedOrders;

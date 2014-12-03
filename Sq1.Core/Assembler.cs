@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
@@ -13,35 +14,36 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core {
 	public class Assembler {
-		public RepositoryJsonDataSource			RepositoryJsonDataSource;
-		public RepositorySerializerSymbolInfo	RepositorySymbolInfo;
-		public RepositorySerializerMarketInfo	RepositoryMarketInfo;
-		public RepositoryDllStreamingProvider	RepositoryDllStreamingProvider;
-		public RepositoryDllBrokerProvider		RepositoryDllBrokerProvider;
-		public RepositoryDllReporters			RepositoryDllReporters;
-		public RepositoryDllJsonStrategy		RepositoryDllJsonStrategy;
+		public RepositoryJsonDataSource					RepositoryJsonDataSource;
+		public RepositorySerializerSymbolInfo			RepositorySymbolInfo;
+		public RepositorySerializerMarketInfo			RepositoryMarketInfo;
+		public RepositoryDllStreamingProvider			RepositoryDllStreamingProvider;
+		public RepositoryDllBrokerProvider				RepositoryDllBrokerProvider;
+		public RepositoryDllReporters					RepositoryDllReporters;
+		public RepositoryDllJsonStrategy				RepositoryDllJsonStrategy;
 
-		public RepositoryFoldersNoJson			WorkspacesRepository;
+		public RepositoryFoldersNoJson					WorkspacesRepository;
 		
-		public OrderProcessor					OrderProcessor;
-		public IStatusReporter					StatusReporter;
+		public OrderProcessor							OrderProcessor;
+		public IStatusReporter							StatusReporter;
 		
 		public DictionaryManyToOne<ChartShadow, Alert>	AlertsForChart;
 		public AssemblerDataSnapshot					AssemblerDataSnapshot;
 		public Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;		
 		
-		public const string DateTimeFormatIndicatorHasNoValuesFor = "yyyy-MMM-dd ddd HH:mm";
-		public const string DateTimeFormatLong = "HH:mm:ss.fff ddd dd MMM yyyy";
-		public const string DateTimeFormatLongFilename = "yyyy-MMM-dd_ddd_HH.mm.ss";
+		public const string								DateTimeFormatIndicatorHasNoValuesFor = "yyyy-MMM-dd ddd HH:mm";
+		public const string								DateTimeFormatLong = "HH:mm:ss.fff ddd dd MMM yyyy";
+		public const string								DateTimeFormatLongFilename = "yyyy-MMM-dd_ddd_HH.mm.ss";
+		
 		public static string FormattedLongFilename(DateTime dt) {
 			return dt.ToString(Assembler.DateTimeFormatLongFilename);
 		}
 
-		public bool MainFormClosingIgnoreReLayoutDockedForms = false;
-		public bool MainFormDockFormsFullyDeserializedLayoutComplete = false;
+		public bool										MainFormClosingIgnoreReLayoutDockedForms = false;
+		public bool										MainFormDockFormsFullyDeserializedLayoutComplete = false;
 
-		private static Assembler instance = null;
-		public static Assembler InstanceInitialized { get {
+			   static Assembler							instance = null;
+		public static Assembler							InstanceInitialized { get {
 				string usage = "; use Assembler.InstanceUninitialized.Initialize(MainForm); this singleton requires IStatusReporter to get fully initialized";
 				if (Assembler.instance == null) {
 					throw (new Exception("Assembler.instance=null" + usage));
@@ -51,19 +53,19 @@ namespace Sq1.Core {
 				}
 				return Assembler.instance;
 			} }
-		public static bool IsInitialized { get { return Assembler.instance != null && Assembler.instance.StatusReporter != null; } }
-		public static Assembler InstanceUninitialized { get {
+		public static bool								IsInitialized { get { return Assembler.instance != null && Assembler.instance.StatusReporter != null; } }
+		public static Assembler							InstanceUninitialized { get {
 				if (Assembler.instance == null) {
 					Assembler.instance = new Assembler();
 				}
 				return instance;
 			} }
-		public string AppStartupPath { get {
+		public string									AppStartupPath { get {
 				string ret = Application.StartupPath;
 				if (ret.EndsWith(Path.DirectorySeparatorChar.ToString()) == false) ret += Path.DirectorySeparatorChar;
 				return ret;
 			} }
-		public List<Exception> ExceptionsWhileInstantiating { get {
+		public List<Exception>							ExceptionsWhileInstantiating { get {
 				List<Exception> ret = new List<Exception>();
 				ret.AddRange(this.RepositoryDllStreamingProvider.ExceptionsWhileScanning);
 				ret.AddRange(this.RepositoryDllBrokerProvider.ExceptionsWhileScanning);
@@ -79,7 +81,7 @@ namespace Sq1.Core {
 		// C:\Sq1\Sq1.Gui\bin\Debug\Data
 		public readonly string DATA_FOLDER_DEBUG_RELEASE = "Data";
 #endif
-		public string AppDataPath { get {
+		public string									AppDataPath { get {
 				string ret = this.AppStartupPath + DATA_FOLDER_DEBUG_RELEASE;
 				//if (defined("DEBUG")) ret = Application.UserAppDataPath + "" + Path.DirectorySeparatorChar + "Data";
 				if (Directory.Exists(ret) == false) Directory.CreateDirectory(ret);
@@ -129,25 +131,25 @@ namespace Sq1.Core {
 			List<SymbolInfo> symbolInfosNotUsed = this.RepositorySymbolInfo.Deserialize();
 			
 			createdNewFile = this.RepositoryMarketInfo.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
-			this.RepositoryMarketInfo.Deserialize();
+			this.RepositoryMarketInfo			.Deserialize();
 			
-			this.RepositoryDllJsonStrategy.Initialize(this.AppDataPath, this.AppStartupPath);
+			this.RepositoryDllJsonStrategy		.Initialize(this.AppDataPath, this.AppStartupPath);
 
-			this.RepositoryDllStreamingProvider.InitializeAndScan(this.AppStartupPath);
-			this.RepositoryDllBrokerProvider.InitializeAndScan(this.AppStartupPath);
-			this.RepositoryDllReporters.InitializeAndScan(this.AppStartupPath);
+			this.RepositoryDllStreamingProvider	.InitializeAndScan(this.AppStartupPath);
+			this.RepositoryDllBrokerProvider	.InitializeAndScan(this.AppStartupPath);
+			this.RepositoryDllReporters			.InitializeAndScan(this.AppStartupPath);
 			
-			this.WorkspacesRepository.Initialize(this.AppDataPath, "Workspaces", this.StatusReporter);
-			this.WorkspacesRepository.ScanFolders();
+			this.WorkspacesRepository			.Initialize(this.AppDataPath, "Workspaces", this.StatusReporter);
+			this.WorkspacesRepository			.ScanFolders();
 
-			this.OrderProcessor.Initialize(this.AppDataPath);
+			this.OrderProcessor					.Initialize(this.AppDataPath);
 
-			//v1 this.RepositoryJsonDataSource.Initialize(this.AppDataPath);
-			//v1 this.RepositoryJsonDataSource.DataSourcesDeserialize(this.MarketInfoRepository, this.OrderProcessor, this.StatusReporter);
+			//v1 this.RepositoryJsonDataSource	.Initialize(this.AppDataPath);
+			//v1 this.RepositoryJsonDataSource	.DataSourcesDeserialize(this.MarketInfoRepository, this.OrderProcessor, this.StatusReporter);
 			
-			this.RepositoryJsonDataSource.Initialize(this.AppDataPath, "DataSources",
+			this.RepositoryJsonDataSource		.Initialize(this.AppDataPath, "DataSources",
 				this.StatusReporter, this.RepositoryMarketInfo, this.OrderProcessor);
-			this.RepositoryJsonDataSource.DeserializeJsonsInFolder();
+			this.RepositoryJsonDataSource		.DeserializeJsonsInFolder();
 
 			createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);
 			this.AssemblerDataSnapshot = this.AssemblerDataSnapshotSerializer.Deserialize();
@@ -169,24 +171,28 @@ namespace Sq1.Core {
 		
 		public static void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
-			Form exceptionsForm = Assembler.InstanceInitialized.StatusReporter as Form;
-			if (exceptionsForm == null) {
-				string msg2 = "Assembler.InstanceInitialized.StatusReporter is not a Form";
-				//MessageBox.Show(ex.Message, msg);
-				throw new Exception(msg2, ex);
+			
+			//v1-SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD 
+//			#if DEBUG
+//			if (debuggingBreak) {
+//				Debugger.Break();
+//				// SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD
+//				// break here and add to ExceptionControl.ExceptionsList later; if you let it go then
+//				// MainForm might switch to GUI thread and you'll loose your callstack in VS/SharpDevelop
+//				debuggingBreak = false;
+//				//return;		// FIXED_IN_MAIN_FORM tmp hack for SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD
+//			}
+//			#endif
+
+			try {
+				// this is gonna throw from a non-GUI thread, right?!... (moved to MainForm.PopupException() with base.BeginInvoke() as first step)
+				// if I PopupException from a BrokerProvider thread, exceptionsForm.Visible and others should throw
+				Form exceptionsForm = Assembler.InstanceInitialized.StatusReporter as Form;
+			} catch (Exception ex1) {
+				Debugger.Break();
 			}
-			if (exceptionsForm.Visible == false) {
-//				//v1 throw (exc);
-//				//string msg2 = "Assembler.InstanceInitialized.StatusReporter is a Form but Visible=false";
-//				//v2 MessageBox.Show(ex.Message, msg);
-//				//v3 throw new Exception(msg2, ex);
-				string msg2 = "ExceptionForm.Visible=false"
-					+ "; but .PopupException() will insert your exception into the tree and display OnLoad()";
-			}
+
 			Assembler.InstanceInitialized.StatusReporter.PopupException(msg, ex, debuggingBreak);
-			if (exceptionsForm.Visible == false && Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
-				exceptionsForm.Visible = true;
-			}
 		}
 		public static void DisplayStatus(string msg) {
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();

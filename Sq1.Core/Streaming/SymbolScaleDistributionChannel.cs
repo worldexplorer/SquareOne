@@ -196,7 +196,7 @@ namespace Sq1.Core.Streaming {
 			int consumerSerno = 1;
 			int streamingSolidifiersPoked = 0;
 			foreach (IStreamingConsumer consumer in this.consumersQuote) {
-				string msig = " missed quoteSernoEnrichedWithUnboundStreamingBar[" + quoteSernoEnrichedWithUnboundStreamingBar.ToString()
+				string msig = " //bindStreamingBarForQuoteAndPushQuoteToConsumers(): quoteSernoEnrichedWithUnboundStreamingBar[" + quoteSernoEnrichedWithUnboundStreamingBar.ToString()
 					+ "]: QuoteConsumer#" + (consumerSerno++) + "/" + this.consumersQuote.Count + " " + consumer.ToString();
 
 				#region SPECIAL_CASE_SINGLE_POSSIBLE_SOLIDIFIER_NO_EARLY_BINDING_NECESSARY
@@ -236,6 +236,11 @@ namespace Sq1.Core.Streaming {
 
 				try {
 					consumer.ConsumeQuoteOfStreamingBar(quoteWithStreamingBarBound);
+					string msg = "CONSUMER_PROCESSED "
+					//v1+ "#" + quoteWithStreamingBarBound.IntraBarSerno + "/" + quoteWithStreamingBarBound.AbsnoPerSymbol
+						+ quoteWithStreamingBarBound.ToStringShort()
+						+ " => " + consumer.ToString();
+					//Assembler.PopupException(msg, null, false);
 				} catch (Exception e) {
 					string msg = "BOUND_QUOTE_PUSH_FAILED " + quoteWithStreamingBarBound.ToString();
 					Assembler.PopupException(msg + msig, e);
@@ -297,8 +302,15 @@ namespace Sq1.Core.Streaming {
 			foreach (IStreamingConsumer barConsumer in this.consumersBar) barConsumer.UpstreamSubscribedToSymbolNotification(null);
 		}
 		internal void UpstreamUnSubscribedFromSymbolPokeConsumers(string symbol, Quote lastQuoteReceived) {
-			foreach (IStreamingConsumer quoteConsumer in this.consumersQuote) quoteConsumer.UpstreamUnSubscribedFromSymbolNotification(lastQuoteReceived);
-			foreach (IStreamingConsumer barConsumer in this.consumersBar) barConsumer.UpstreamUnSubscribedFromSymbolNotification(lastQuoteReceived);
+			foreach (IStreamingConsumer quoteConsumer in this.consumersQuote) {
+				quoteConsumer.UpstreamUnSubscribedFromSymbolNotification(lastQuoteReceived);
+			}
+			foreach (IStreamingConsumer barConsumer in this.consumersBar) {
+				if (barConsumer is StreamingSolidifier == false) {
+					lastQuoteReceived.SetParentBarStreaming(barConsumer.ConsumerBarsToAppendInto.BarStreaming);
+				}
+				barConsumer.UpstreamUnSubscribedFromSymbolNotification(lastQuoteReceived);
+			}
 		}
 	}
 }

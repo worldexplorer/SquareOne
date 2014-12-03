@@ -335,7 +335,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniOrderCancel.Name = "mniOrderCancel";
 			this.mniOrderCancel.Size = new System.Drawing.Size(236, 22);
 			this.mniOrderCancel.Text = "Cancel Selected Order(s)";
-			this.mniOrderCancel.Click += new System.EventHandler(this.btnCancelSelected_Click);
+			this.mniOrderCancel.Click += new System.EventHandler(this.mniOrderCancel_Click);
 			// 
 			// mniOrderCancelReplace
 			// 
@@ -349,7 +349,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniOrderRemoveSelected.Name = "mniOrderRemoveSelected";
 			this.mniOrderRemoveSelected.Size = new System.Drawing.Size(236, 22);
 			this.mniOrderRemoveSelected.Text = "Remove Selected Order(s)";
-			this.mniOrderRemoveSelected.Click += new System.EventHandler(this.btnRemoveSelected_Click);
+			this.mniOrderRemoveSelected.Click += new System.EventHandler(this.mniOrdersRemoveSelected_Click);
 			// 
 			// sepCancel
 			// 
@@ -362,14 +362,14 @@ namespace Sq1.Widgets.Execution {
 			this.mniCancelAllPending.Size = new System.Drawing.Size(236, 22);
 			this.mniCancelAllPending.Text = "Cancel All Active";
 			this.mniCancelAllPending.ToolTipText = "Cancel all Active Orders and DOESN\'T disable Auto-Trading";
-			this.mniCancelAllPending.Click += new System.EventHandler(this.btnCancelAll_Click);
+			this.mniCancelAllPending.Click += new System.EventHandler(this.mniOrdersCancel_Click);
 			// 
 			// mniStopEmergencyClose
 			// 
 			this.mniStopEmergencyClose.Name = "mniStopEmergencyClose";
 			this.mniStopEmergencyClose.Size = new System.Drawing.Size(236, 22);
 			this.mniStopEmergencyClose.Text = "Unlock Emergency";
-			this.mniStopEmergencyClose.Click += new System.EventHandler(this.btnRemoveEmergencyLock_Click);
+			this.mniStopEmergencyClose.Click += new System.EventHandler(this.mniEmergencyLockRemove_Click);
 			// 
 			// mniKillAlStopAutoSubmit
 			// 
@@ -377,7 +377,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniKillAlStopAutoSubmit.Size = new System.Drawing.Size(236, 22);
 			this.mniKillAlStopAutoSubmit.Text = "Kill All Stop AutoSubmit";
 			this.mniKillAlStopAutoSubmit.ToolTipText = "Kill all (even Completed) Orders and DISABLE AutoSubmit";
-			this.mniKillAlStopAutoSubmit.Click += new System.EventHandler(this.mniKillAlStopAutoSubmit_Click);
+			this.mniKillAlStopAutoSubmit.Click += new System.EventHandler(this.mniKillAllStopAutoSubmit_Click);
 			// 
 			// toolStripSeparator3
 			// 
@@ -585,21 +585,21 @@ namespace Sq1.Widgets.Execution {
 			this.mniExpandAll.Name = "mniExpandAll";
 			this.mniExpandAll.Size = new System.Drawing.Size(253, 22);
 			this.mniExpandAll.Text = "Expand All";
-			this.mniExpandAll.Click += new System.EventHandler(this.mniExpandAllClick);
+			this.mniExpandAll.Click += new System.EventHandler(this.mniTreeExpandAllClick);
 			// 
 			// mniCollapseAll
 			// 
 			this.mniCollapseAll.Name = "mniCollapseAll";
 			this.mniCollapseAll.Size = new System.Drawing.Size(253, 22);
 			this.mniCollapseAll.Text = "Collapse All";
-			this.mniCollapseAll.Click += new System.EventHandler(this.mniCollapseAllClick);
+			this.mniCollapseAll.Click += new System.EventHandler(this.mniTreeCollapseAllClick);
 			// 
 			// mniRebuildAll
 			// 
 			this.mniRebuildAll.Name = "mniRebuildAll";
 			this.mniRebuildAll.Size = new System.Drawing.Size(253, 22);
 			this.mniRebuildAll.Text = "Rebuild All";
-			this.mniRebuildAll.Click += new System.EventHandler(this.RebuildAllToolStripMenuItemClick);
+			this.mniRebuildAll.Click += new System.EventHandler(this.mniRebuildAll_Click);
 			// 
 			// toolStripSeparator1
 			// 

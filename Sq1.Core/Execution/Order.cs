@@ -5,44 +5,45 @@ using System.Threading;
 using System.Windows.Forms;
 
 using Newtonsoft.Json;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Execution {
 	public class Order {
-		[JsonProperty]	public DateTime		TimeCreatedBroker;
-		[JsonProperty]	public double		PriceRequested;
-		[JsonProperty]	public double		PriceFill;
-		[JsonProperty]	public double		QtyRequested;
-		[JsonProperty]	public double		QtyFill;
+		[JsonProperty]	public DateTime		TimeCreatedBroker;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public double		PriceRequested;				// SET_IN_BROKER_PROVIDER	{ get; protected set; }
+		[JsonProperty]	public double		PriceFill;					// SET_IN_ORDER_PROCESSOR   { get; protected set; }
+		[JsonProperty]	public double		QtyRequested;				// SET_IN_ORDER_PROCESSOR   { get; protected set; }
+		[JsonProperty]	public double		QtyFill;						// SET_IN_ORDER_PROCESSOR   { get; protected set; }
 
-		[JsonProperty]	public string		GUID;
-		[JsonProperty]	public OrderState	State;
-		[JsonProperty]	public DateTime		StateUpdateLastTimeLocal;
-		[JsonProperty]	public int			SernoSession;
-		[JsonProperty]	public long			SernoExchange;
+		[JsonProperty]	public string		GUID						{ get; protected set; }
+		[JsonProperty]	public OrderState	State;						// SET_IN_ORDER_PROCESSOR   { get; protected set; }
+		[JsonProperty]	public DateTime		StateUpdateLastTimeLocal;	// SET_IN_ORDER_PROCESSOR   { get; protected set; }
+		[JsonProperty]	public int			SernoSession;				// SET_IN_BROKER_QUIK	{ get; protected set; }
+		[JsonProperty]	public long			SernoExchange;				// SET_IN_BROKER_QUIK	{ get; protected set; }
 
-		[JsonProperty]	public bool			IsReplacement;
-		[JsonProperty]	public string		ReplacementForGUID;
-		[JsonProperty]	public string		ReplacedByGUID;
+		[JsonProperty]	public bool			IsReplacement;				// SET_IN_ORDER_PROCESSOR   { get; protected set; }
+		[JsonProperty]	public string		ReplacementForGUID			{ get; protected set; }
+		[JsonProperty]	public string		ReplacedByGUID				{ get; protected set; }
 
-		[JsonProperty]	public bool			IsEmergencyClose;
-		[JsonProperty]	public int			EmergencyCloseAttemptSerno;
-		[JsonProperty]	public string		EmergencyReplacementForGUID;
-		[JsonProperty]	public string		EmergencyReplacedByGUID;
+		[JsonProperty]	public bool			IsEmergencyClose;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public int			EmergencyCloseAttemptSerno;	// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public string		EmergencyReplacementForGUID;	// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public string		EmergencyReplacedByGUID;		// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
 
-		[JsonProperty]	public bool			IsKiller;
-		[JsonProperty]	public string		VictimGUID;
-		[JsonIgnore]	public Order		VictimToBeKilled;
-		[JsonProperty]	public string		KillerGUID;
-		[JsonIgnore]	public Order		KillerOrder;
+		[JsonProperty]	public bool			IsKiller					{ get; protected set; }
+		[JsonProperty]	public string		VictimGUID					{ get; protected set; }
+		[JsonIgnore]	public Order		VictimToBeKilled			{ get; protected set; }
+		[JsonProperty]	public string		KillerGUID					{ get; protected set; }
+		[JsonIgnore]	public Order		KillerOrder					{ get; protected set; }
 
-		[JsonProperty]	public DateTime		DateServerLastFillUpdate;
-		[JsonProperty]	public bool			EmittedByScript { get; private set; }
-		[JsonProperty]	public double		SlippageFill;
-		[JsonProperty]	public int			SlippageIndex;
-		[JsonProperty]	public double		CurrentAsk;
-		[JsonProperty]	public double		CurrentBid;		// json.deserialize will put NULL when { get; private set; }
-		[JsonProperty]	public OrderSpreadSide SpreadSide;
-		[JsonProperty]	public string		PriceSpreadSideAsString { get {
+		[JsonProperty]	public DateTime		DateServerLastFillUpdate;	// SET_IN_BROKER_QUIK	{ get; protected set; }
+		[JsonProperty]	public bool			EmittedByScript 			{ get; protected set; }
+		[JsonProperty]	public double		SlippageFill;				// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public int			SlippageIndex;				// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public double		CurrentAsk					{ get; protected set; }
+		[JsonProperty]	public double		CurrentBid					{ get; protected set; }
+		[JsonProperty]	public OrderSpreadSide SpreadSide;				// SET_IN_BROKER_PROVIDER	{ get; protected set; }
+		[JsonProperty]	public string		PriceSpreadSideAsString		{ get {
 				string ret = "";
 				switch (this.SpreadSide) {
 					case OrderSpreadSide.AskCrossed:
@@ -59,7 +60,7 @@ namespace Sq1.Core.Execution {
 				}
 				return ret;
 			} }
-		[JsonProperty]	public Alert		Alert;		// json.deserialize will put NULL when { get; private set; }
+		[JsonProperty]	public Alert		Alert						{ get; private set; }
 	
 		// why Concurrent: OrderProcessor adds while GUI reads (a copy); why Stack: ExecutionTree displays Messages RecentOnTop;
 		// TODO: revert to List (with lock(privateLock) { messages.Add/Remove/Count}) when:
@@ -94,12 +95,12 @@ namespace Sq1.Core.Execution {
 		}
 
 		// no search among lvOrders.Items[] is required to populate the order update
-		[JsonIgnore]	public ListViewItem		ListViewItemInExecutionForm;
-		[JsonIgnore]	public int				StateImageIndex;
+		[JsonIgnore]	public ListViewItem		ListViewItemInExecutionForm	{ get; protected set; }
+		[JsonIgnore]	public int				StateImageIndex				{ get; protected set; }
 		
-		[JsonIgnore]	public List<Order>		DerivedOrders;		// rebuilt on app restart from	DerivedOrdersGuids 
-		[JsonProperty]	public List<string>		DerivedOrdersGuids;
-		[JsonProperty]	public Order			DerivedFrom;		// one parent with possibly its own parent, but not too deep; lazy to restore from DerivedFromGui only to rebuild Tree after restart
+		[JsonIgnore]	public List<Order>		DerivedOrders				{ get; protected set; }		// rebuilt on app restart from	DerivedOrdersGuids 
+		[JsonProperty]	public List<string>		DerivedOrdersGuids			{ get; protected set; }
+		[JsonProperty]	public Order			DerivedFrom	;				// SET_IN_OrdersShadowTreeDerived	{ get; protected set; }		// one parent with possibly its own parent, but not too deep; lazy to restore from DerivedFromGui only to rebuild Tree after restart
 
 		
 		#region TODO OrderStateCollections: REFACTOR states to be better named/handled in OrderStateCollections.cs
@@ -144,7 +145,7 @@ namespace Sq1.Core.Execution {
 
 
 
-		[JsonProperty]	public int				AddedToOrdersListCounter;
+		[JsonProperty]	public int				AddedToOrdersListCounter;	// SET_IN_ORDER_LIST { get; protected set; }
 		[JsonProperty]	public string			LastMessage { get {
 				int count = this.messages.Count; 
 				if (count == 0) return "";
@@ -204,8 +205,8 @@ namespace Sq1.Core.Execution {
 			} }
 
 		[JsonProperty]	static int absno = 0;
-		[JsonProperty]	public double CommissionFill;
-		[JsonIgnore]	public ManualResetEvent MreActiveCanCome { get; protected set; }		// JSON restore of a ManualResetEvent makes GC thread throw SEHException (thanx for a great free library anyway)
+		[JsonProperty]	public double CommissionFill				{ get; protected set; }
+		[JsonIgnore]	public ManualResetEvent MreActiveCanCome	{ get; protected set; }		// JSON restore of a ManualResetEvent makes GC thread throw SEHException (thanx for a great free library anyway)
 
  		public Order() {	// called by Json.Deserialize(); what if I'll make it protected?
 			this.GUID = newGUID();
@@ -278,7 +279,7 @@ namespace Sq1.Core.Execution {
 //				alert.PositionAffected.EntryAlert.OrderFollowed.DerivedOrdersAdd(this);
 //				// TODO will also have to notify ExecutionForm on this Order, which will close a Position 
 //			}
-			alert.MreOrderFollowedIsSetNow.Set();	// Order is fully constructed, all properties assigned, go read them
+			alert.MreOrderFollowedIsAssignedNow.Set();	// Order is fully constructed, all properties assigned, go read them
 		}
 		public static string newGUID() {
 			string ret = DateTime.Now.ToString("Hmmssfff");
@@ -430,6 +431,10 @@ namespace Sq1.Core.Execution {
 				}
 				return (occurenciesFound >= occurenciesLooking);
 			}
+		}
+		public void AbsorbCurrentBidAskFromStreamingSnapshot(StreamingDataSnapshot snap) {
+			this.CurrentBid = snap.BestBidGetForMarketOrder(this.Alert.Symbol);
+			this.CurrentAsk = snap.BestAskGetForMarketOrder(this.Alert.Symbol);
 		}
 	}
 }

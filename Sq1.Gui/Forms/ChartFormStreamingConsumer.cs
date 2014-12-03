@@ -1,5 +1,5 @@
 using System;
-
+using System.Threading;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
@@ -224,7 +224,7 @@ namespace Sq1.Gui.Forms {
 			}
 
 			SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelFor(symbolSafe, scaleIntervalSafe);
-			channel.QuotePump.UpdateThreadNameSinceMaxConsumersSubscribed = true;
+			channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
 		}
 		public bool Subscribed { get {
 				if (this.canSubscribeToStreamingProvider() == false) return false;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
@@ -275,8 +275,11 @@ namespace Sq1.Gui.Forms {
 			}
 			#endif
 
-			var chartFormSafe = this.ChartForm;
-			var executorSafe = this.Executor;
+			var chartFormSafe		= this.ChartForm;
+			var executorSafe		= this.Executor;
+			var dataSourceSafe		= this.DataSource;
+			var symbolSafe			= this.Symbol;
+			var scaleIntervalSafe	= this.ScaleInterval;
 
 			if (barLastFormed == null) {
 				string msg = "Streaming starts generating quotes => first StreamingBar is added; for first four Quotes there's no static barsFormed yet!! Isi";
@@ -298,7 +301,13 @@ namespace Sq1.Gui.Forms {
 			#endregion
 
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
-				executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
+				try {
+					dataSourceSafe.PausePumpingFor(symbolSafe, scaleIntervalSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					// TESTED BACKLOG_GREWUP Thread.Sleep(10);
+					executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
+				} finally {
+					dataSourceSafe.UnPausePumpingFor(symbolSafe, scaleIntervalSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
+				}
 			}
 
 			if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {
@@ -389,11 +398,11 @@ namespace Sq1.Gui.Forms {
 			var symbolSafe = this.Symbol;
 			var chartFormSafe = this.ChartForm;
 			var scaleIntervalSafe = this.ScaleInterval;
-			string ret = "this.ChartForm.Symbol[" + symbolSafe + "] (" + scaleIntervalSafe + ")";
+			string ret = "ChartForm.Symbol[" + symbolSafe + "](" + scaleIntervalSafe + ")";
 
             //HANGS_ON_STARTUP__#D_STACK_IS_BLANK__VS2010_HINTED_IM_ACCESSING_this.ChartForm.Text_FROM_DDE_QUOTE_GENERATOR (!?!?!)
             if (chartFormSafe.InvokeRequired == false) {
-                ret += "CHART.TEXT[" + chartFormSafe.Text + "]";
+                ret += " CHART.TEXT[" + chartFormSafe.Text + "]";
             } else {
 //            	ChartFormDataSnapshot snap = this.chartFormManager.DataSnapshot;
 //            	if (snap == null) {
@@ -401,8 +410,8 @@ namespace Sq1.Gui.Forms {
 //            	}
 //            	ContextChart ctx = this.chartFormManager.DataSnapshot.ContextChart;
                 ret += (this.Executor.Strategy != null)
-					? "SCRIPTCONTEXTCURRENT[" + this.Executor.Strategy.ScriptContextCurrent.ToString() + "]"
-                	: "CONTEXTCHART[" + this.chartFormManager.DataSnapshot.ContextChart.ToString() + "]"
+					? " ScriptContextCurrent[" + this.Executor.Strategy.ScriptContextCurrent.ToString() + "]"
+                	: " ContextChart[" + this.chartFormManager.DataSnapshot.ContextChart.ToString() + "]"
                 	;
             }
 

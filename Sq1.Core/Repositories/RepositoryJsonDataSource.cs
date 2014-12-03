@@ -36,7 +36,7 @@ namespace Sq1.Core.Repositories {
 
 			//string barDataStorePath = Path.Combine(base.RootPath, dsDeserialized.StaticProvider.GetType().Name);
 			try {
-				dsDeserialized.Initialize(base.AbsPath, this.OrderProcessor, base.StatusReporter);
+				dsDeserialized.Initialize(base.AbsPath, this.OrderProcessor);
 			} catch (Exception ex) {
 				string msg = "FAILED to dsDeserialized.InitializeAndScan(" + base.AbsPath + ")"
 					//+ "; //Exception shouldn't break all DataSourceManager.DataSourcesDeserialize()"
@@ -49,7 +49,7 @@ namespace Sq1.Core.Repositories {
 		}
 
 		public override void ItemAddCascade(DataSource itemCandidate, object sender = null) {
-			itemCandidate.Initialize(base.AbsPath, this.OrderProcessor, base.StatusReporter);
+			itemCandidate.Initialize(base.AbsPath, this.OrderProcessor);
 			//v1 WILL_DELETES_BAR_FILE_IF_RENAME_FAILS itemCandidate.CreateDeleteBarFilesToSymbolsDeserialized();
 			//v2 
 			itemCandidate.SymbolsRebuildReadDataSourceSubFolderAfterDeserialization();

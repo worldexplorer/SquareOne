@@ -119,12 +119,13 @@ namespace Sq1.Widgets.Execution {
 			this.colheState.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colheState.AspectGetter: order=null";
-				return (order.InStateExpectingCallbackFromBroker ? "*" : "") +  order.State.ToString();
+				//return (order.InStateExpectingCallbackFromBroker ? "* " : "") + order.State.ToString();
+				return order.State.ToString();
 			};
 //			this.colheState.FontGetter = delegate(object o) {
 //				var order = o as Order;
 //				if (order == null) {
-//					this.statusReporter.PopupException("colheState.FontGetter: order=null");
+//					Assembler.PopupException("colheState.FontGetter: order=null");
 //					return null;
 //				}
 //				return (order.ExpectingCallbackFromBroker) ? this.fontBold : this.fontNormal;
@@ -230,6 +231,10 @@ namespace Sq1.Widgets.Execution {
 		void tree_FormatRow(object sender, BrightIdeasSoftware.FormatRowEventArgs e) {
 			Order order = e.Model as Order;
 			if (order == null) return;
+			if (order.InStateExpectingCallbackFromBroker) {
+				e.Item.Font = new Font(e.Item.Font, FontStyle.Bold);
+			}
+
 			//v1 if (Assembler.InstanceInitialized.AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)) return;
 			//v2 ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL
 			if (order.Alert.Bars != null) return;
