@@ -1,33 +1,28 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 
-using Sq1.Adapters.Quik.Terminal;
-using Sq1.Adapters.QuikMock.Terminal;
 using Sq1.Core;
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
+using Sq1.Adapters.Quik.Terminal;
 
 namespace Sq1.Adapters.QuikMock.Terminal {
 	public class QuikTerminalMock : QuikTerminal {
 		public override string DllName { get { return "QUIK_MOCK"; } }
-		bool simulateUnexistingGUID = false;
-		bool simulateUnexistingSernoExchange = false;
-		bool simulateTradeStatus = false;
-		bool simulateOrderStatusDupes = false;
+		
+		bool simulateUnexistingGUID				= false;
+		bool simulateUnexistingSernoExchange	= false;
+		bool simulateTradeStatus				= false;
+		bool simulateOrderStatusDupes			= false;
 		
 		BrokerMock mockBrokerProvider { get { return base.BrokerQuik as BrokerMock; } }
 
 		public QuikTerminalMock() {
-			throw new Exception("QuikTerminalMock doesn't support default constructor, use QuikTerminalMock(BrokerMock)");
+			throw new Exception("FOR_JSON_DESERIALIZER QuikTerminalMock doesn't support default constructor, use QuikTerminalMock(BrokerMock)");
 		}
 		public QuikTerminalMock(BrokerMock mockBrokerProvider) : base(mockBrokerProvider) {
-			// base needs its own....
 			base.BrokerQuik = mockBrokerProvider;
-			// this is needs its own....
-			//this.mockBrokerProvider = mockBrokerProvider;
-			base.BrokerQuik.callbackTerminalConnectionStateUpdated(
-				QuikConnectionState.DllConnected, "Соединение с " + this.DllName + " установлено");
+			base.BrokerQuik.callbackTerminalConnectionStateUpdated(QuikConnectionState.DllConnected, "Connected to " + this.DllName);
 		}
 		public override void ConnectDll() {
 			DllConnected = true;
@@ -64,7 +59,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 		int CONST_descriptor = -111111;
 
 		void orderSimulateFillLoopStateThreadEntryPoint(object o) {
-			string msig = " //QuikTerminalMock(" + this.DllName + ").OrderTryFillLoopEachOrderNewThread()";
+			string msig = " //QuikTerminalMock(" + this.DllName + ").orderSimulateFillLoopStateThreadEntryPoint()";
 			QuikTerminalMockThreadParam tp = (QuikTerminalMockThreadParam)o;
 
 			//Debugger.Break();
@@ -102,15 +97,18 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				}
 
 				while (this.mockBrokerProvider.SignalToTerminateAllOrderTryFillLoopsInAllMocks == false) {
-					this.orderSimulateFillLoopStep(order, tp);
+					bool abortThread = this.orderSimulateFillLoopStep(order, tp);
+					if (abortThread) break;
 				}
-			} catch (Exception e) {
-				order.Alert.Strategy.Script.Executor.PopupException("QuikTerminalMock::OrderTryFillLoopEachOrderNewThread()", e);
+			} catch (Exception ex) {
+				//KEPT_FOR_FUTURE_PER_STRATEGY_OR_PER_PROVIDER_SEPARATE_EXCEPTION_LIST
+				//order.Alert.Strategy.Script.Executor.PopupException("QuikTerminalMock::OrderTryFillLoopEachOrderNewThread()", e);
 				//base.BrokerQuik.OrderProcessor.PopupException("QuikTerminalMock::OrderTryFillLoopEachOrderNewThread()", e);
+				Assembler.PopupException(msig, ex);
 			}
 		}
 
-		void orderSimulateFillLoopStep(Order order, QuikTerminalMockThreadParam tp) {
+		bool orderSimulateFillLoopStep(Order order, QuikTerminalMockThreadParam tp) {
 			string msig = " //QuikTerminalMock(" + this.DllName + ").orderSimulateFillLoopStep(order[" + order + "] tp[" + tp + "])";
 			string msg = "";
 
@@ -157,7 +155,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 					bool abortTryFill = false;
 					string abortTryFillReason = "NO_ABORT_TRY_FILL_MESSAGE";
 					try {
-						filled = order.Alert.Strategy.Script.Executor.MarketSim.SimulateFillLive(order.Alert, quoteToFillAgainst, out abortTryFill, out abortTryFillReason);	
+						filled = order.Alert.Strategy.Script.Executor.MarketSim.SimulateFillLive(order.Alert, quoteToFillAgainst, out abortTryFill, out abortTryFillReason);
 					} catch (Exception ex) {
 						msg = "FAILED_INNER_MarketSim.SimulateFillLive(" + quoteToFillAgainst + ") " + msg;
 						exCaught = ex;
@@ -173,10 +171,12 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 							this.OrderFilledNotifyLikeTerminalCallback(order, tp);
 							msg = "THREAD_FILLED_ORDER__SUCCESSFULLY_COMPLETED_OrderFilledNotifyLikeTerminalCallback() " + msg;
 							base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
-							return;
+							abortThread = true;
+							break;
 						} catch (Exception ex) {
 							msg = "FAILED_INNER_OrderFilledNotifyLikeTerminalCallback() " + msg;
 							exCaught = ex;
+							abortThread = true;
 							break;
 						}
 					} else {
@@ -191,7 +191,8 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 					//order.Alert.Strategy.Script.Executor.RemovePendingEntryAlertCloneFromEntryClosePositionBacktestEnded(order.Alert);
 					// I'm suggesting a wrapper instead of low-level hanlder
 					//order.Alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScript(order.Alert, order.Alert.Bars.Count);
-					return;
+					abortThread = true;
+					break;
 				//case OrderState.Submitting:
 				//	break;
 				case OrderState.KillPending:
@@ -200,18 +201,22 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				case OrderState.SLAnnihilated:
 					msg = "THREAD_TERMINATING_ANNIHILATED: [" + order.State + "] is expected and handled";
 					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
-					return;
+					abortThread = true;
+					break;
 				default:
 					msg = "THREAD_TERMINATING_WEIRD: got [" + order.State + "] while WaitingFillBroker should've been set!!!";
 					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
-					return;
+					abortThread = true;
+					break;
 			}
 
 			if (abortThread || exCaught != null) {
-				msg = "THREAD_ABORTING: " + msg;
-				base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
-				Assembler.PopupException(msg + msig, exCaught);
-				return;
+				if (exCaught != null) {
+					msg = "THREAD_ABORTING_BY_EXCEPTION: " + msg;
+					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
+					//Assembler.PopupException(msg + msig, exCaught, false);
+				}
+				return abortThread;
 			}
 
 			if (msg != "") {
@@ -224,14 +229,16 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			tp.TryFillInvokedTimes++;
 			Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis);
 			//Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis / 2);
+			
+			return abortThread;
 		}
 
 		protected void OrderFilledNotifyLikeTerminalCallback(Order order, QuikTerminalMockThreadParam tp) {
-			string msig = "QuikTerminal(" + this.DllName + ")::OrderFilled(): ";
+			string msig = " //QuikTerminalMock(" + this.DllName + ")::OrderFilled()";
 			string msg = "";
 
 			int sleepMs = this.mockBrokerProvider.ExecutionDelayMillis + Rng.Next(100, 1000);
-			msg = " Sleeping random [" + (sleepMs) + "]ms; status=>[" + tp.QuikStatus + "]";
+			msg = "Sleeping random [" + (sleepMs) + "]ms; status=>[" + tp.QuikStatus + "]";
 			base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
 			Thread.Sleep(sleepMs);
 
@@ -254,7 +261,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				Thread.Sleep(sleepMs);
 			}
 
-			// 3 identical ORDER callbacks like QUIK does; "Filled/Rejected"; subject for OrderCallbackDupesCheckerQuik
+			// 3 identical excessive (spamming) ORDER callbacks like QUIK does; "Filled/Rejected"; subject for OrderCallbackDupesCheckerQuik
 			base.CallbackOrderStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
 				tp.Price, tp.Balance, CONST_msum, tp.IsSell, tp.QuikStatus, CONST_descriptor);
 			if (this.simulateOrderStatusDupes == true) {
@@ -264,14 +271,14 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 					tp.Price, tp.Balance, CONST_msum, tp.IsSell, tp.QuikStatus, CONST_descriptor);
 			}
 
-			if (simulateUnexistingSernoExchange == true) {
-				simulateUnexistingSernoExchange = false;
+			if (this.simulateUnexistingSernoExchange == true) {
+				this.simulateUnexistingSernoExchange = false;
 				base.CallbackOrderStatus(CONST_nMode, tp.GUID, tp.SernoExchange * 2, tp.ClassCode, tp.SecCode,
 					tp.Price, tp.Balance, CONST_msum, tp.IsSell, tp.QuikStatus, CONST_descriptor);
 			}
 
-			if (simulateUnexistingGUID == true) {
-				simulateUnexistingGUID = false;
+			if (this.simulateUnexistingGUID == true) {
+				this.simulateUnexistingGUID = false;
 				base.CallbackOrderStatus(CONST_nMode, -tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
 					tp.Price, tp.Balance, CONST_msum, tp.IsSell, tp.QuikStatus, CONST_descriptor);
 			}
@@ -337,25 +344,25 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			int a = 1;
 			if (orderKiller == null) {
 				msg = "order==null, can't update with KillSubmittingAsync";
-				base.BrokerQuik.OrderProcessor.UpdateOrderStateNoPostProcess(orderKiller,
+				base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
 					new OrderStateMessage(orderKiller, OrderState.Error, victimMsgSumbitted + msg));
 				return;
 			}
 			if (orderKiller.KillerOrder != null) {
 				msg = "use ParametrizedCallbackOrderStatus() for labourOrder fill simulation!";
-				base.BrokerQuik.OrderProcessor.UpdateOrderStateNoPostProcess(orderKiller,
+				base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
 					new OrderStateMessage(orderKiller, OrderState.Error, victimMsgSumbitted + msg));
 				return;
 			}
 			if (orderKiller.State != OrderState.KillerPreSubmit) {
 				msg = "orderKiller.State[" + orderKiller.State + "] != KillerPreSubmit (victim kill failed?), won't update with KillSubmittingAsync";
-				base.BrokerQuik.OrderProcessor.UpdateOrderStateNoPostProcess(orderKiller,
+				base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
 					new OrderStateMessage(orderKiller, OrderState.Error, victimMsgSumbitted + msg));
 				return;
 			}
 
 			string trans = this.getOrderKillCommand(SecCode, ClassCode, victimWasStopOrder, VictimGUID, VictimSernoExchange, out SernoSession);
-			base.BrokerQuik.OrderProcessor.UpdateOrderStateNoPostProcess(orderKiller,
+			base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
 				new OrderStateMessage(orderKiller, OrderState.KillerSubmitting, trans));
 			
 			victimMsgSumbitted = msig + "Trans2Quik.Result.SUCCESS    "
@@ -395,7 +402,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			try {
 				if (orderKiller == null) {
 					msg = "orderKiller==null, can't update with KillerBulletFlying";
-					base.BrokerQuik.OrderProcessor.UpdateOrderStateNoPostProcess(orderKiller,
+					base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
 						new OrderStateMessage(orderKiller, OrderState.Error, msg + msig));
 					return;
 				}
@@ -407,7 +414,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 
 				int sleepMs = this.mockBrokerProvider.ExecutionDelayMillis + Rng.Next(100, 1000);
 				msg = "Sleeping random [" + sleepMs + "]ms; status=>[" + t.QuikStatus + "]";
-				base.BrokerQuik.OrderProcessor.UpdateOrderStateNoPostProcess(orderKiller,
+				base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
 					new OrderStateMessage(orderKiller, OrderState.KillerBulletFlying, msg + msig));
 				Thread.Sleep(sleepMs);
 
@@ -451,8 +458,10 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 					base.CallbackOrderStatus(nMode, -t.GUID, t.SernoExchange, t.ClassCode, t.SecCode,
 						t.Price, t.Balance, msum, t.IsSell, t.QuikStatus, descriptor);
 				}
-			} catch (Exception e) {
-				orderKiller.Alert.Strategy.Script.Executor.PopupException("QuikTerminalMock::KillOrderEachOrderNewThread()", e);
+			} catch (Exception ex) {
+				//KEPT_FOR_FUTURE_PER_STRATEGY_OR_PER_PROVIDER_SEPARATE_EXCEPTION_LIST
+				//orderKiller.Alert.Strategy.Script.Executor.PopupException("QuikTerminalMock::KillOrderEachOrderNewThread()", e);
+				Assembler.PopupException(msig, ex);
 			}
 		}
 		public override void sendTransactionKillAll(string SecCode, string ClassCode, string GUID, out string msgSumbitted) {

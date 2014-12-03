@@ -5,14 +5,12 @@ namespace Sq1.Adapters.QuikMock.Dde {
 	public class DdeChannelsMock {
 		public DdeChannelLastQuoteMock	ChannelQuote		{ get; protected set; }
 		public string					Symbol				{ get; protected set; }
-		public IStatusReporter			StatusReporter	{ get; protected set; }
 
-		public DdeChannelsMock(StreamingMock receiver, string symbol, IStatusReporter statusReporter) {
+		public DdeChannelsMock(StreamingMock receiver, string symbol) {
 			this.Symbol = symbol;
 			this.ChannelQuote = new DdeChannelLastQuoteMock(receiver, symbol);
 			//this.ChannelDepth = new DdeChannelDepth(streamingProvider, symbol);
 			//this.ChannelHistory = new DdeChannelHistory(streamingProvider, quikTerminal, Symbol);
-			this.StatusReporter = statusReporter;
 		}
 		public string DdeServerStart() {
 			string ret = "DdeChannelsMock_HAVENT_STARTED";

@@ -23,22 +23,22 @@
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
         "autogen": {
           "$type": "Sq1.Adapters.Quik.QuoteQuik, Sq1.Adapters.Quik",
-          "FortsDepositBuy": 10028.0,
-          "FortsDepositSell": 10067.0,
+          "FortsDepositBuy": 10041.0,
+          "FortsDepositSell": 10050.0,
           "FortsPriceMax": 160000.0,
           "FortsPriceMin": 156000.0,
           "Symbol": "autogen",
           "SymbolClass": "SPBFUT",
           "Source": "MockQuik",
-          "ServerTime": "2014-12-01T03:49:29.1648517",
-          "Bid": 157905.0,
-          "Ask": 157925.0,
+          "ServerTime": "2014-12-03T02:48:45.0482",
+          "Bid": 158385.0,
+          "Ask": 158405.0,
           "Size": 5.0,
-          "AbsnoPerSymbol": 209,
+          "AbsnoPerSymbol": 84,
           "LastDealBidOrAsk": 2,
-          "LocalTimeCreated": "2014-12-01T03:49:29.1648517-05:00",
-          "ParentBarIdent": "NO_PARENT_BAR",
-          "LastDealPrice": 157905.0,
+          "LocalTimeCreated": "2014-12-03T02:48:45.0482-05:00",
+          "ParentBarIdent": "BarStreaming#499/499",
+          "LastDealPrice": 158385.0,
           "Spread": 20.0
         }
       },
@@ -54,7 +54,7 @@
       "FortsPriceMax": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
-      "SymbolsSubscribedAndReceiving": "autogen:209"
+      "SymbolsSubscribedAndReceiving": "autogen:84"
     }
   },
   "BrokerProvider": {

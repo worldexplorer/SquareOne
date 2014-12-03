@@ -126,7 +126,13 @@ namespace Sq1.Adapters.QuikMock.Dde {
 		}
 
 		void pokeWithNewQuote(object state) {
-			if (Thread.CurrentThread.Name != "DdeChannelQuoteMock::pokeWithNewQuote") Thread.CurrentThread.Name = "DdeChannelQuoteMock::pokeWithNewQuote";
+			if (Thread.CurrentThread.Name != "DdeChannelQuoteMock::pokeWithNewQuote") {
+				try {
+					Thread.CurrentThread.Name = "DdeChannelQuoteMock::pokeWithNewQuote";
+				} catch (Exception ex) {
+					Assembler.PopupException("CANT_SET_THREAD_NAME pokeWithNewQuote", ex);
+				}
+			}
 			Timer t = (Timer)state;
 			if (pokesLimit > 0 && pokesDone++ > pokesLimit) {
 				Assembler.PopupException("pokeWithNewQuote(" + pokesDone + "/" + pokesLimit + "): no more quotes to generate"

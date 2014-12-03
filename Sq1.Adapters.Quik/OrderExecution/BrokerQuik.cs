@@ -16,15 +16,15 @@ using Sq1.Core.Support;
 
 namespace Sq1.Adapters.Quik {
 	public class BrokerQuik : BrokerProvider {
-		//[JsonIgnore]			BrokerQuikEditor	editor;
-		[JsonIgnore]	public	QuikTerminal		QuikTerminal { get; protected set; }
-		[JsonProperty]	public	string				QuikFolder { get; internal set; }
-		[JsonProperty]	public	string				QuikDllName { get; internal set; }
-		[JsonIgnore]	public	string				QuikDllAbsPath { get {return Path.Combine(this.QuikFolder, this.QuikDllName);} }
-		[JsonProperty]	public	string				QuikClientCode { get; internal set; }
-		[JsonProperty]	public	int					ReconnectTimeoutMillis { get; internal set; }
-		[JsonProperty]			Account				AccountMicex;
-		[JsonIgnore]	public	Account				AccountMicexAutoPopulated {
+		//I_FORGOT_HOW_BROKER_IS_NOTIFIED_WITH_USER_EDITED_SETTINGS?... [JsonIgnore]			BrokerQuikEditor	editor;
+		[JsonIgnore]	public	QuikTerminal	QuikTerminal { get; protected set; }
+		[JsonProperty]	public	string			QuikFolder { get; internal set; }
+		[JsonProperty]	public	string			QuikDllName { get; internal set; }
+		[JsonIgnore]	public	string			QuikDllAbsPath { get {return Path.Combine(this.QuikFolder, this.QuikDllName);} }
+		[JsonProperty]	public	string			QuikClientCode { get; internal set; }
+		[JsonProperty]	public	int				ReconnectTimeoutMillis { get; internal set; }
+		[JsonProperty]			Account			AccountMicex;
+		[JsonIgnore]	public	Account			AccountMicexAutoPopulated {
 			get { return AccountMicex; }
 			internal set {
 				this.AccountMicex = value;
@@ -38,13 +38,11 @@ namespace Sq1.Adapters.Quik {
 			this.QuikTerminal = new QuikTerminal(this);
 			this.QuikDllName = this.QuikTerminal.DllName;
 
-			this.AccountMicexAutoPopulated = new Account("ACCTNR_NOT_SET", -1001);
-			//base.OrdersPending = new BrokerOrdersPending(true);
+			this.AccountMicexAutoPopulated = new Account("QUIK_MICEX_ACCTNR_NOT_SET", -1001);
 			base.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerQuik(this);
 		}
-		public override void Initialize(DataSource dataSource, StreamingProvider streamingProvider,
-				OrderProcessor orderProcessor, IStatusReporter connectionStatus) {
-			base.Initialize(dataSource, streamingProvider, orderProcessor, connectionStatus);
+		public override void Initialize(DataSource dataSource, StreamingProvider streamingProvider, OrderProcessor orderProcessor) {
+			base.Initialize(dataSource, streamingProvider, orderProcessor);
 			base.Name = "Quik Broker";
 
 			if (String.IsNullOrEmpty(this.QuikFolder)) return;
@@ -114,41 +112,56 @@ namespace Sq1.Adapters.Quik {
 				Assembler.PopupException(msg + msig, exc);
 			}
 		}
-		public void CallbackOrderStateReceivedQuik(OrderState orderState, string GUID, long SernoExchange,
-				string classCode, string secCode, double fillPrice, int fillQnty) {
-			string msig = Name + "::CallbackOrderStateReceivedQuik(): ";
-			Order orderExecuted = null;
-			try {
-				orderExecuted = base.CallbackOrderStateReceivedFindOrderCheckThrow(GUID);
+		public void CallbackOrderStateReceivedQuik(OrderState newOrderStateReceived, string GUID, long SernoExchange,
+												string classCode, string secCode, double fillPrice, int fillQnty) {
+			string msig = "fillPrice[" + fillPrice + "] fillQnty[" + fillQnty + "]" 
+				+ " " + secCode + "/" + classCode
+				+ " newOrderStateReceived=[" + newOrderStateReceived + "] SernoExchange=[" + SernoExchange + "] GUID=[" + GUID + "]"
+				+ " //" + Name + ":CallbackOrderStateReceivedQuik()";
 
-				if (orderExecuted.SernoExchange == 0) {
-					// link GUID to SernoExchange - the main role of QUIK broker provider :)
-					orderExecuted.SernoExchange = SernoExchange;
-				}
-
-				if (orderState == OrderState.KillerDone || orderState == OrderState.Rejected) {
-					fillPrice = 0;
-					//fillQnty = 0;
-				}
-				if (this.Name == "Mock BrokerProvider" 
-						&& orderExecuted.Alert.MarketLimitStop == MarketLimitStop.Market 
-						&& orderExecuted.Alert.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
-						&& (fillPrice != -999.99 && fillPrice != 0)) {
-					fillPrice = orderExecuted.Alert.PriceScript
-						+ ((orderExecuted.Alert.PositionLongShortFromDirection == PositionLongShort.Long) ? 100 : -100);
-				}
-
-				string msg = " Status=[" + orderState + "] @price [" + fillPrice + "]"	//filled[" + fillQnty + "] 
-					+ " SernoSession=[" + GUID + "] SernoExchange=[" + SernoExchange + "] Guid=[" + orderExecuted.GUID + "]"
-					+ " " + secCode + "/" + classCode;
-				OrderStateMessage omsg = new OrderStateMessage(orderExecuted, orderState, msg);
-				base.OrderProcessor.UpdateOrderStateAndPostProcess(orderExecuted, omsg, fillPrice, fillQnty);
-				//base.TradeManager.appendMessageAndPropagate(orderExecuted, newOrderState);
-			} catch (Exception exc) {
-				string msg = "THROWN_base.CallbackOrderStateReceivedFindOrderCheckThrow(" + GUID + ")";
-				Assembler.PopupException(msg, exc);
+			Order order = base.FindOrderLaneOptimizedNullUnsafe(GUID);
+			if (order == null) {
+				// already reported "PENDING_ORDER_NOT_FOUND__RETURNING_ORDER_NULL" in base.FindOrderLaneOptimizedNullUnsafe() 
+				return;
 			}
-			base.CallbackOrderStateReceived(orderExecuted);
+
+			if (order.SernoExchange == 0) {
+				order.SernoExchange  = SernoExchange;	// link GUID to SernoExchange - the main role of QUIK broker provider :)
+			}
+			if (newOrderStateReceived == OrderState.KillerDone || newOrderStateReceived == OrderState.Rejected) {
+				if (fillPrice != 0) {
+					string msg = "QUIK_HINTS_ON_SOMETHING fillPrice[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
+					this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg);
+					fillPrice = 0;
+				}
+				if (fillQnty != 0) {
+					string msg = "QUIK_HINTS_ON_SOMETHING fillQnty[" + fillPrice + "]!=0 for newOrderStateReceived[" + newOrderStateReceived + "]";
+					this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg);
+					fillQnty = 0;
+				}
+			}
+			
+			if (this.Name == "Mock BrokerProvider" 
+					&& order.Alert.MarketLimitStop == MarketLimitStop.Market 
+					&& order.Alert.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
+					&& (fillPrice != -999.99 && fillPrice != 0)) {
+				Assembler.PopupException("REMINDER_WHAT_THIS_EXPERIMENT_WAS_ALL_ABOUT");
+				fillPrice = order.Alert.PriceScript
+					+ ((order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) ? 100 : -100);
+			}
+
+			OrderStateMessage omsg = new OrderStateMessage(order, newOrderStateReceived, msig);
+
+			// if you want to bring the check up earlier than UpdateOrderStateAndPostProcess will do it or change the message added to order
+			//string whyIthinkQuikIsSpammingMe = this.OrderCallbackDupesChecker.OrderCallbackIsDupeReson(
+			//	orderExecuted, omsg, fillPrice, fillQnty);
+			//if (string.IsNullOrEmpty(whyIthinkQuikIsSpammingMe) == false) {
+			//	this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderExecuted,
+			//		"ORDER_CALLBACK_DUPE__SKIPPED_PROCESSING: " + whyIthinkQuikIsSpammingMe);
+			//	return;
+			//}
+			base.OrderProcessor.UpdateOrderStateDontPostProcess(order, omsg);
+			base.CallbackOrderStateReceived(order);
 		}
 		
 		QuikConnectionState previousConnectionState = QuikConnectionState.None;

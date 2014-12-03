@@ -1,16 +1,12 @@
-﻿using System.Reflection;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Sq1.Core;
-using Sq1.Core.Support;
 using Sq1.Core.DataTypes;
-using Sq1.Adapters.Quik.Dde.XlDde;
 using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
 	public class DdeChannels {
 		protected StreamingQuik quikStreamingProvider;
-		public IStatusReporter StatusReporter { get; protected set; }
 		public ConnectionState ConnectionState { get; protected set; }
 		
 		XlDdeServer server;
@@ -19,9 +15,8 @@ namespace Sq1.Adapters.Quik.Dde {
 		public DdeChannelTrades ChannelTrades { get; protected set; }
 		Dictionary<string, List<XlDdeChannel>> channelsBySymbols;
 		
-		public DdeChannels(StreamingQuik streamingProvider, IStatusReporter StatusReporter) {
+		public DdeChannels(StreamingQuik streamingProvider) {
 			this.quikStreamingProvider = streamingProvider;
-			this.StatusReporter = StatusReporter;
 			this.server = new XlDdeServer(this.quikStreamingProvider.DdeServerPrefix);
 			this.channelsBySymbols = new Dictionary<string, List<XlDdeChannel>>();
 			this.ConnectionState = ConnectionState.JustInitialized;
@@ -117,8 +112,7 @@ namespace Sq1.Adapters.Quik.Dde {
 			} else {
 				Assembler.PopupException(this.ConnectionState + " " + msg);
 			}
-			if (StatusReporter == null) return;
-			StatusReporter.UpdateConnectionStatus(this.ConnectionState, code, msg);
+			Assembler.DisplayStatus(msg);
 		}
 		public override string ToString() {
 			string ret = "DdeServerPrefix[" + this.quikStreamingProvider.DdeServerPrefix + "]/[" + this.ConnectionState + "]:";

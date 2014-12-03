@@ -399,35 +399,33 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 				orderExecuted.AppendMessage(msig + msgError);
 			}
 
-			OrderState WldStatus = OrderState.Unknown;
+			OrderState newOrderStateReceived = OrderState.Unknown;
 			int qtyFilled = (int) (orderExecuted.QtyRequested - (double)balance);
 			switch (status) {
 				case 1: //Значение «1» соответствует состоянию «Активна»
-					WldStatus = OrderState.WaitingBrokerFill;
+					newOrderStateReceived = OrderState.WaitingBrokerFill;
 					priceFilled = 0;
 					break;
 				case 2: //«2» - «Снята»
 					//if (orderExecuted.State == OrderState.KillPending) {
 					if (orderExecuted.FindStateInOrderMessages(OrderState.KillPending)) {
-						WldStatus = OrderState.Killed;
+						newOrderStateReceived = OrderState.Killed;
 					} else {
 						// what was the state of a victim before you said Rejected? must be Killed!! TradeStatus!!! shit!
-						WldStatus = OrderState.Rejected;
+						newOrderStateReceived = OrderState.Rejected;
 					}
 					priceFilled = 0;
 					break;
 				default:	// иначе «Исполнена»
 					if (balance > 0) {
-						WldStatus = OrderState.FilledPartially;
+						newOrderStateReceived = OrderState.FilledPartially;
 					} else {
-						WldStatus = OrderState.Filled;
+						newOrderStateReceived = OrderState.Filled;
 					}
 					break;
 			}
-			this.BrokerQuik.CallbackOrderStateReceivedQuik(WldStatus, GUID.ToString(), (long)SernoExchange,
+			this.BrokerQuik.CallbackOrderStateReceivedQuik(newOrderStateReceived, GUID.ToString(), (long)SernoExchange,
 				classCode, secCode, priceFilled, qtyFilled);
-			//	ThreadPool.QueueUserWorkItem(new WaitCallback(order.Alert.DataSource.BrokerProvider.SubmitOrdersThreadEntry),
-			//		new object[] { ordersFromAlerts });
 		}
 /* Функция TRANS2QUIK_TRANSACTIONS_REPLY_CALLBACK
 Описание прототипа функции обратного вызова для обработки полученной информации об отправленной транзакции.
@@ -460,7 +458,6 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 					+ orders.SessionSernos
 					+ "] Count=[" + orders.InnerOrderList.Count + "]";
 				Assembler.PopupException(msg);
-				BrokerQuik.StatusReporter.PopupException(msg);
 				return;
 			}
 			//TradeManager.AppendMessageAndPropagate(orderSubmitting, msg);
@@ -594,8 +591,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 					Subscribe(SecCode, ClassCode);
 				} catch (Exception e) {
 					msgSumbitted = msig + "Couldn't Subscribe(" + SecCode + ", " + ClassCode + "), NOT going to Trans2Quik.SEND_ASYNC_TRANSACTION()";
-					//Assembler.PopupException(msgSumbitted, e);
-					this.BrokerQuik.StatusReporter.PopupException(msgSumbitted, e);
+					Assembler.PopupException(msgSumbitted, e);
 					SernoSession = -999;
 					orderState = OrderState.Error;
 					return;

@@ -9,12 +9,11 @@ using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
-using Sq1.Core.Support;
 
 namespace Sq1.Adapters.QuikMock {
 	public class StreamingMock : StreamingProvider {
 		[JsonIgnore]	protected	Dictionary<string, DdeChannelsMock> MockProvidersBySymbol;
-		[JsonProperty]	private		int				QuoteDelay;
+		[JsonProperty]				int				QuoteDelay;
 		[JsonIgnore]	public		int				QuoteDelayAutoPropagate {
 			get { return this.QuoteDelay; }
 			internal set {
@@ -51,7 +50,7 @@ namespace Sq1.Adapters.QuikMock {
 					return ret;
 				} } }
 		[JsonProperty]	public		bool			GeneratingNow { get; internal set; }
-		[JsonIgnore]	public		bool				GeneratingNowAutoPropagate {
+		[JsonIgnore]	public		bool			GeneratingNowAutoPropagate {
 			get { return this.GeneratingNow; }
 			internal set {
 				this.GeneratingNow = value;
@@ -82,8 +81,8 @@ namespace Sq1.Adapters.QuikMock {
 			base.streamingEditorInstance = new StreamingMockEditor(this, dataSourceEditor);
 			return base.streamingEditorInstance;
 		}
-		public override void Initialize(DataSource dataSource, IStatusReporter statusReporter) {
-			base.Initialize(dataSource, statusReporter);
+		public override void Initialize(DataSource dataSource) {
+			base.Initialize(dataSource);
 			base.Name = "QuikMock Streaming";
 			if (this.GeneratingNow) {
 				this.Connect();
@@ -115,7 +114,7 @@ namespace Sq1.Adapters.QuikMock {
 						continue;
 					}
 						
-					ddeQuotesProviderMock = new DdeChannelsMock(this, symbol, this.StatusReporter);
+					ddeQuotesProviderMock = new DdeChannelsMock(this, symbol);
 					this.MockProvidersBySymbol.Add(symbol, ddeQuotesProviderMock);
 					//this.UpstreamSubscribe(symbol);
 					
@@ -151,7 +150,7 @@ namespace Sq1.Adapters.QuikMock {
 					//this.StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorSymbolSubscribing, 1, msg2);
 					return;
 				}
-				DdeChannelsMock ddeChannelsMock = new DdeChannelsMock(this, symbol, this.StatusReporter);
+				DdeChannelsMock ddeChannelsMock = new DdeChannelsMock(this, symbol);
 				msig += ": [" + ddeChannelsMock.ToString() + "]";
 				
 				if (this.QuoteDelayAutoPropagate > 0) ddeChannelsMock.ChannelQuote.setNextQuoteDelayMs(this.QuoteDelayAutoPropagate);
@@ -170,7 +169,7 @@ namespace Sq1.Adapters.QuikMock {
 				if (this.MockProvidersBySymbol.ContainsKey(ddeChannelName)) {
 					string msg = "UnSubscribe(" + symbol + "): won't StopDdeServer[" + ddeChannelName + "] coz we need to press CTRL+SHIFT+L in QUIK again";
 					Assembler.PopupException(msg, null, false);
-					this.StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorSymbolUnsubscribing, 1, msg);
+					Assembler.DisplayStatus("ConnectionState.ErrorSymbolUnsubscribing " + msg);
 					return;
 				}
 			} }
@@ -201,16 +200,5 @@ namespace Sq1.Adapters.QuikMock {
 				+ "/SymbolsGenerating[" + this.GenerateOnlySymbolsAsString + "]"
 				+ " DDE[" + this.DdeChannelsEstablished + "]";
 		}
-		public void AllSymbolsGenerateStart() { lock (MockProvidersBySymbol) {
-				foreach (DdeChannelsMock channels in this.MockProvidersBySymbol.Values) {
-					channels.ChannelQuote.MockStart();
-				}
-			} }
-		public void AllSymbolsGenerateStop() { lock (MockProvidersBySymbol) {
-				foreach (DdeChannelsMock channels in this.MockProvidersBySymbol.Values) {
-					channels.ChannelQuote.MockStop();
-				}
-				this.GeneratingNow = true;
-			} }
 	}
 }

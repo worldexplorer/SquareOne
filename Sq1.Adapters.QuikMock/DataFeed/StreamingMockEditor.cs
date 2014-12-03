@@ -57,11 +57,6 @@ namespace Sq1.Adapters.QuikMock {
 			this.mockStreamingProvider.QuoteDelayAutoPropagate		= this.QuoteDelay;
 			this.mockStreamingProvider.GenerateOnlySymbols			= this.GenerateOnlySymbols;
 			try {
-				if (this.GeneratingNow) {
-					this.mockStreamingProvider.AllSymbolsGenerateStart();
-				} else {
-					this.mockStreamingProvider.AllSymbolsGenerateStop();
-				}
 				this.mockStreamingProvider.GeneratingNowAutoPropagate = this.GeneratingNow;
 				Assembler.InstanceInitialized.RepositoryJsonDataSource.SerializeSingle(this.mockStreamingProvider.DataSource);
 			} catch (Exception ex) {

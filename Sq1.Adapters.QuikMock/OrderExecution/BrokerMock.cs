@@ -29,8 +29,8 @@ namespace Sq1.Adapters.QuikMock {
 			this.RejectRandomly = true;
 			this.RejectAllUpcoming = false;
 		}
-		public override void Initialize(DataSource dataSource, StreamingProvider streamingProvider, OrderProcessor orderProcessor, IStatusReporter connectionStatus) {
-			base.Initialize(dataSource, streamingProvider, orderProcessor, connectionStatus);
+		public override void Initialize(DataSource dataSource, StreamingProvider streamingProvider, OrderProcessor orderProcessor) {
+			base.Initialize(dataSource, streamingProvider, orderProcessor);
 			base.QuikTerminal.ConnectDll();
 			base.Name = "QuikMock Broker";
 		}

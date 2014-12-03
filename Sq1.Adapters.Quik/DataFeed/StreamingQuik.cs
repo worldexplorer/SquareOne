@@ -48,10 +48,10 @@ namespace Sq1.Adapters.Quik {
 			base.StreamingDataSnapshot = new StreamingDataSnapshotQuik(this);
 			StreamingDataSnapshotQuik throwAtEarlyStage = this.StreamingDataSnapshotQuik;
 		}
-		public override void Initialize(DataSource dataSource, IStatusReporter statusReporter) {
+		public override void Initialize(DataSource dataSource) {
 			base.Name = "Quik Streaming";
-			base.Initialize(dataSource, statusReporter);
-			this.DdeChannels = new DdeChannels(this, this.StatusReporter);
+			base.Initialize(dataSource);
+			this.DdeChannels = new DdeChannels(this);
 			this.Connect();
 		}
 		public override void Connect() {
@@ -151,7 +151,7 @@ namespace Sq1.Adapters.Quik {
 //				string msg = "skipping pre-market quote since CHARTS will screw up painting price=0;"
 //					+ " quote=[" + quote + "]";
 //				Assembler.PopupException(msg);
-//				this.StatusReporter.PopupException(new Exception(msg));
+//				Assembler.PopupException(new Exception(msg));
 //				return;
 //			}
 			if (string.IsNullOrEmpty(quoteQuik.Source)) quoteQuik.Source = "Quik";
