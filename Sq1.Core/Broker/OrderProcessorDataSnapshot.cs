@@ -83,16 +83,20 @@ namespace Sq1.Core.Broker {
 		}
 
 
-		public void OrdersRemove(List<Order> ordersToRemove) {
+		public void OrdersRemove(List<Order> ordersToRemove, bool externalUpdatesWillBeTriggeredUpstack = false) {
 			this.OrdersAll.RemoveAll(ordersToRemove);
-			this.SerializerLogrotateOrders.Remove(ordersToRemove);
 			this.OrdersTree.RemoveFromShadowTree(ordersToRemove);
-			this.UpdateActiveOrdersCountEvent();
+			this.SerializerLogrotateOrders.Remove(ordersToRemove);
+			if (externalUpdatesWillBeTriggeredUpstack == false) {
+				this.SerializerLogrotateOrders.HasChangesToSave = true;
+				this.UpdateActiveOrdersCountEvent();
+			}
 		}
-		public void OrdersRemoveNonPendingForAccountNumber(string acctNum) {
-			this.OrdersAll.RemoveForAccount(acctNum);
-			//this.SerializerLogrotateOrders.RemoveForAccount(acctNum);
-			//this.OrdersTree.RemoveForAccount(ordersToRemove);
+		public void OrdersRemoveNonPendingForAccounts(List<string> accountNumbers) {
+			foreach (string accountNumber in accountNumbers) {
+				List<Order> ordersForAccount = this.OrdersAll.FindAllForAccount(accountNumber); 
+				this.OrdersRemove(ordersForAccount, true);
+			}
 			this.SerializerLogrotateOrders.HasChangesToSave = true;
 			this.UpdateActiveOrdersCountEvent();
 		}

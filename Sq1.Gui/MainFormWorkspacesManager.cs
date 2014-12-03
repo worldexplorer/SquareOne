@@ -37,7 +37,7 @@ namespace Sq1.Gui {
 		void mniWorkspace_Click(object sender, EventArgs e) {
 			var mniWorkspace = sender as ToolStripMenuItem;
 			if (mniWorkspace == null) {
-				this.mainForm.PopupException("mniWorkspace_Click(): (sender as ToolStripMenuItem) = null");
+				Assembler.PopupException("mniWorkspace_Click(): (sender as ToolStripMenuItem) = null");
 				return;
 			}
 			this.WorkspaceCurrentMni.Checked = false;
@@ -95,19 +95,19 @@ namespace Sq1.Gui {
 			ToolStripMenuItem ret = null;
 			if (this.WorkspaceCurrentMni == null) {
 				string msg = "this.WorkspaceCurrentMni == null";
-				this.mainForm.PopupException(msg);
+				Assembler.PopupException(msg);
 				return ret;
 			}
 			int index = this.workspaceMenuItems.IndexOf(this.WorkspaceCurrentMni);
 			if (index == -1) {
 				string msg = "this.workspaceMenuItems.IndexOf(this.WorkspaceCurrentMni) == -1";
-				this.mainForm.PopupException(msg);
+				Assembler.PopupException(msg);
 				return ret;
 			}
 			index++;
 			if (index >= this.workspaceMenuItems.Count) {
 				string msg = "index[" + index + "] >= this.workspaceMenuItems.Count[" + this.workspaceMenuItems.Count + "]";
-				this.mainForm.PopupException(msg);
+				Assembler.PopupException(msg);
 				return ret;
 			}
 			return this.workspaceMenuItems[index];

@@ -6,7 +6,6 @@ using System.Threading;
 using Newtonsoft.Json;
 using Sq1.Core.Accounting;
 using Sq1.Core.DataFeed;
-using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
@@ -54,11 +53,10 @@ namespace Sq1.Core.Broker {
 			this.AccountAutoPropagate = new Account("ACCTNR_NOT_SET", -1000);
 			this.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerTransparent(this);
 		}
-		public virtual void Initialize(DataSource dataSource, StreamingProvider streamingProvider, OrderProcessor orderProcessor, IStatusReporter connectionStatus) {
+		public virtual void Initialize(DataSource dataSource, StreamingProvider streamingProvider, OrderProcessor orderProcessor) {
 			this.DataSource = dataSource;
 			this.StreamingProvider = streamingProvider;
 			this.OrderProcessor = orderProcessor;
-			this.StatusReporter = connectionStatus;
 			this.AccountAutoPropagate.Initialize(this);
 		}
 		//public virtual void Initialize(SettingsManager settingsManager) {
@@ -137,7 +135,7 @@ namespace Sq1.Core.Broker {
 					Assembler.PopupException(msg, e);
 					return;
 				}
-				this.StatusReporter.PopupException(msg, e);
+				Assembler.PopupException(msg, e);
 			}
 		}
 		public virtual void SubmitOrders(IList<Order> orders) {
@@ -260,8 +258,7 @@ namespace Sq1.Core.Broker {
 				throw new Exception(msg, ex);
 			}
 
-			order.CurrentBid = this.StreamingProvider.StreamingDataSnapshot.BestBidGetForMarketOrder(order.Alert.Symbol);
-			order.CurrentAsk = this.StreamingProvider.StreamingDataSnapshot.BestAskGetForMarketOrder(order.Alert.Symbol);
+			order.AbsorbCurrentBidAskFromStreamingSnapshot(this.StreamingProvider.StreamingDataSnapshot);
 
 			this.OrderPreSubmitEnrichBrokerSpecificInjection(order);
 
@@ -291,8 +288,7 @@ namespace Sq1.Core.Broker {
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 				+ " SernoSession[" + order.SernoSession + "]";
 
-			order.CurrentBid = this.StreamingProvider.StreamingDataSnapshot.BestBidGetForMarketOrder(order.Alert.Symbol);
-			order.CurrentAsk = this.StreamingProvider.StreamingDataSnapshot.BestAskGetForMarketOrder(order.Alert.Symbol);
+			order.AbsorbCurrentBidAskFromStreamingSnapshot(this.StreamingProvider.StreamingDataSnapshot);
 
 			double priceBestBidAsk = this.StreamingProvider.StreamingDataSnapshot.BidOrAskFor(
 				order.Alert.Symbol, order.Alert.PositionLongShortFromDirection);
@@ -412,7 +408,7 @@ namespace Sq1.Core.Broker {
 			string msg = "";
 			try {
 				switch (orderWithNewState.State) {
-					case OrderState.WaitingBrokerFill: //Значение «1» соответствует состоянию «Активна»
+					case OrderState.WaitingBrokerFill:
 						Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersPending.FindSimilarNotSamePendingOrder(orderWithNewState);
 						//Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersAll.FindSimilarNotSamePendingOrder(orderWithNewState);
 						if (mustBeSame == null) break;
@@ -428,28 +424,29 @@ namespace Sq1.Core.Broker {
 							//Assembler.PopupException(msg);
 						}
 						break;
-					case OrderState.Killed: //«2» - «Снята»
+					case OrderState.Killed:
+						this.RemoveOrdersPendingOnFilledCallback(orderWithNewState, msig);
 						this.OrderProcessor.RemovePendingAlertsForVictimOrderMustBePostKill(orderWithNewState, msig);
 						break;
-					case OrderState.Rejected: //«2» - «Снята»
+					case OrderState.Rejected:
 					case OrderState.SLAnnihilated:
 					case OrderState.TPAnnihilated:
-					case OrderState.FilledPartially: // иначе «Исполнена»
-					case OrderState.Filled: // иначе «Исполнена»
+					case OrderState.FilledPartially:
+					case OrderState.Filled:
+						this.RemoveOrdersPendingOnFilledCallback(orderWithNewState, msig);
 						break;
 					default:
 						msg += "STATE_UNEXPECTED";
 						orderWithNewState.AppendMessage(msig + msg);
 						break;
 				}
-				this.RemoveOrdersPendingOnFilledCallback(orderWithNewState, msig);
 			} catch (Exception e) {
-				this.StatusReporter.PopupException(msig, e);
+				Assembler.PopupException(msig, e);
 			}
 			try {
 				this.OrderProcessor.InvokeHooksAndSubmitNewAlertsBackToBrokerProvider(orderWithNewState);
 			} catch (Exception e) {
-				this.StatusReporter.PopupException("InvokeHooksAndSubmitNewAlertsBackToBrokerProvider()" + msig, e);
+				Assembler.PopupException("InvokeHooksAndSubmitNewAlertsBackToBrokerProvider()" + msig, e);
 			}
 		}
 
@@ -469,34 +466,46 @@ namespace Sq1.Core.Broker {
 			}
 			orderExecuted.AppendMessage(msig + msg);
 		}
-		public Order CallbackOrderStateReceivedFindOrderCheckThrow(string GUID) {
-			string msg = "";
-			Order orderExecuted = this.OrderProcessor.DataSnapshot.OrdersPending.FindByGUID(GUID);
-			if (orderExecuted == null) {
-				orderExecuted = this.OrderProcessor.DataSnapshot.OrdersSubmitting.FindByGUID(GUID);
+		public Order FindOrderLaneOptimizedNullUnsafe(string GUID, List<OrderList> orderLanes = null, char separator = ';') {
+			string msig = " //" + this.Name;
+			string orderLanesSearchedAsString = "";
+			Order orderFound = null;
+			
+			if (orderLanes == null) {
+				var snap = this.OrderProcessor.DataSnapshot;
+				orderLanes = new List<OrderList>() {snap.OrdersPending, snap.OrdersSubmitting, snap.OrdersAll};
 			}
-			if (orderExecuted == null) {
-				orderExecuted = this.OrderProcessor.DataSnapshot.OrdersAll.FindByGUID(GUID);
+			foreach (OrderList orderLane in orderLanes) {
+				orderLanesSearchedAsString += orderLane.GetType().Name.Substring(5) + separator;	// removing "Orders" from "OrdersSubmitting"
+				orderFound = orderLane.FindByGUID(GUID);
+				if (orderFound != null) break;
 			}
-			int a = 1;
-			if (orderExecuted == null) {
-				msg += " Order with Guid[" + GUID + "] was not found"
-					//+ "; " + this.OrderProcessor.DataSnapshot.DataSnapshot.Serializer.SessionSernosAsString
-					;
-				throw new Exception(msg);
+			orderLanesSearchedAsString = orderLanesSearchedAsString.TrimEnd(separator);
+			msig += ".FindOrderLaneOptimizedNullUnsafe(" + GUID + "),orderLanesSearchedAsString[" + orderLanesSearchedAsString + "]";
+			
+			if (orderFound == null) {
+				string msg = "PENDING_ORDER_NOT_FOUND__RETURNING_ORDER_NULL";
+				//msg		  += "; OrdersAll.SessionSernos[" + this.OrderProcessor.DataSnapshot.OrdersAll.SessionSernos + "]";
+				Assembler.PopupException(msg + msig, null, true);
+				return null; 
 			}
-			if (orderExecuted.Alert.DataSource == null) {
-				//	msg += "restored order[" + orderExecuted.ToString() + "]'s DataSource; linking deserialized refreshed from QUIK";
-				msg += "(orderExecuted.Alert.DataSource==null for order[" + orderExecuted + "]";
-				Assembler.PopupException(msg + "restored order[" + orderExecuted.ToString() + "]'s DataSource ");
-				//	orderExecuted.Alert.DataSource = this.DataSource;
-				throw new Exception(msg);
+			if (orderFound.Alert == null) {
+				string msg = "ORDER_FOUND_HAS_ALERT_NULL_UNRECOVERABLE__RETURNING_ORDER_NULL orderFound[" + orderFound.ToString() + "]";
+				Assembler.PopupException(msg + msig);
+				return null; 
 			}
-			if (orderExecuted.Alert.DataSource.BrokerProvider == null) {
-				Assembler.PopupException(msg + "restored order[" + orderExecuted.ToString() + "]'s BrokerProvider ");
-				orderExecuted.Alert.DataSource.BrokerProvider = this;
+//			if (orderFound.Alert.DataSource == null) {
+//				string msg = "ORDER_FOUND_HAS_DATASOURCE_NULL__ASSIGNING_MINE orderFound[" + orderFound.ToString()
+//					+ "] this.DataSource[" + this.DataSource.ToString() + "]";
+//				Assembler.PopupException(msg + msig);
+//				orderFound.Alert.DataSource = this.DataSource;
+//			}
+			if (orderFound.Alert.DataSource.BrokerProvider == null) {
+				string msg = "ORDER_FOUND_HAS_BROKER_NULL__ASSIGNING_MYSELF orderFound[" + orderFound.ToString()
+					+ "] this[" + this.ToString() + "]";
+				orderFound.Alert.DataSource.BrokerProvider = this;
 			}
-			return orderExecuted;
+			return orderFound;
 		}
 
 		public virtual void MoveStopLossOrderProcessorInvoker(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {

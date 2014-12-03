@@ -193,7 +193,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "position ClosedByStopLoss@" + alert.PriceScript + ", annihilating TakeProfit";
 				newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.TPAnnihilated, msg);
 			}
-			executor.OrderProcessor.UpdateOrderStateNoPostProcess(alert.OrderFollowed, newOrderState);
+			executor.OrderProcessor.UpdateOrderStateDontPostProcess(alert.OrderFollowed, newOrderState);
 			executor.OrderProcessor.KillOrderUsingKillerOrder(alert.OrderFollowed);
 
 			//this.executor.RemovePendingExitAlert(alert, "MarketRealtime:AnnihilateCounterparty(): ");

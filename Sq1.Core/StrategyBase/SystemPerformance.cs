@@ -92,8 +92,6 @@ namespace Sq1.Core.StrategyBase {
 				positionsMaster = this.Executor.ExecutionDataSnapshot.PositionsMaster;
 			}
 
-			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(null);
-
 			List<Position> positionsClosed = new List<Position>(this.Executor.ExecutionDataSnapshot.PositionsMaster);
 			foreach (Position posOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow) {
 				if (positionsClosed.Contains(posOpen) == false) {
@@ -104,8 +102,9 @@ namespace Sq1.Core.StrategyBase {
 				}
 				positionsClosed.Remove(posOpen);
 			}
-			pokeUnit.PositionsOpened = this.Executor.ExecutionDataSnapshot.PositionsOpenNow;
-			pokeUnit.PositionsClosed = positionsClosed;
+			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(null, null,
+					this.Executor.ExecutionDataSnapshot.PositionsOpenNow,
+					positionsClosed);
 			this.BuildStatsIncrementallyOnEachBarExecFinished(pokeUnit);
 			
 			

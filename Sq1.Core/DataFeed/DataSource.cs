@@ -9,7 +9,6 @@ using Sq1.Core.Broker;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Repositories;
 using Sq1.Core.Streaming;
-using Sq1.Core.Support;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource : NamedObjectJsonSerializable {
@@ -72,7 +71,7 @@ namespace Sq1.Core.DataFeed {
 			}
 			this.MarketInfo = marketInfo; 
 		}
-		public void Initialize(string dataSourcesAbspath, OrderProcessor orderProcessor, IStatusReporter statusReporter) {
+		public void Initialize(string dataSourcesAbspath, OrderProcessor orderProcessor) {
 			this.DataSourcesAbspath = dataSourcesAbspath;
 			this.DataSourceAbspath = Path.Combine(this.DataSourcesAbspath, this.Name);
 			this.BarsRepository = new RepositoryBarsSameScaleInterval(this.DataSourceAbspath, this.ScaleInterval, true);
@@ -93,9 +92,9 @@ namespace Sq1.Core.DataFeed {
 
 			// works only for deserialized providers; for a newDataSource they are NULLs to be assigned in DataSourceEditor 
 			if (this.StreamingProvider != null) {
-				this.StreamingProvider.Initialize(this, statusReporter);
+				this.StreamingProvider.Initialize(this);
 				if (this.BrokerProvider != null) {
-					this.BrokerProvider.Initialize(this, this.StreamingProvider, orderProcessor, statusReporter);
+					this.BrokerProvider.Initialize(this, this.StreamingProvider, orderProcessor);
 				}
 			}
 		}
@@ -172,9 +171,13 @@ namespace Sq1.Core.DataFeed {
 			this.BarsRepository.SymbolDataFileDelete(symbolToDelete);
 		}
 		internal int BarAppendOrReplaceLast(Bar barLastFormed, out string millisElapsed) {
-			millisElapsed = "BAR_WASNT_SAVED";
-
 			int ret = -1;
+			millisElapsed = "BAR_WASNT_SAVED";
+			if (barLastFormed == null) {
+				millisElapsed += " barLastFormed=null"; 
+				return ret;
+			}
+
 			if (this.ScaleInterval != barLastFormed.ScaleInterval) return ret;
 			if (this.Symbols.Contains(barLastFormed.Symbol) == false) return ret;
 			if (this.BarsRepository == null) return ret;

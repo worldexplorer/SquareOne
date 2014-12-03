@@ -58,7 +58,7 @@ namespace Sq1.Core.Repositories {
 			this.FoldersWithin.Clear();
 			if (Directory.Exists(this.AbsPath) == false) {
 				string msg = "ScanFolders() path[" + this.AbsPath + "] doesn't exist; returning";
-				this.StatusReporter.PopupException(msg);
+				Assembler.PopupException(msg);
 				return;
 			}
 			string[] folders = Directory.GetDirectories(this.AbsPath);
@@ -73,7 +73,7 @@ namespace Sq1.Core.Repositories {
 			if (this.StatusReporter == null) {
 				throw ex;
 			}
-			this.StatusReporter.PopupException(msg, ex);
+			Assembler.PopupException(msg, ex);
 		}
 	}
 }

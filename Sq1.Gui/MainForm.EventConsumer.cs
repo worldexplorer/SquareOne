@@ -15,7 +15,7 @@ namespace Sq1.Gui {
 				// separate try {} for MONO: Reflection bla-bla-bla exception
 				this.MainFormEventManagerInitializeWhenDockingIsNotNullAnymore();
 			} catch (Exception ex) {
-				this.PopupException("MainFormEventManagerInitializeWhenDockingIsNotNullAnymore()", ex);
+				Assembler.PopupException("MainFormEventManagerInitializeWhenDockingIsNotNullAnymore()", ex);
 			}
 			try {
 				this.createWorkspacesManager();
@@ -32,7 +32,7 @@ namespace Sq1.Gui {
 				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
 				this.ResumeLayout(true);
 			} catch (Exception ex) {
-				this.PopupException("mainForm_Load()", ex);
+				Assembler.PopupException("mainForm_Load()", ex);
 			}
 		}
 
@@ -59,7 +59,7 @@ namespace Sq1.Gui {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException("mniExceptions_Click()", ex);
+				Assembler.PopupException("mniExceptions_Click()", ex);
 			}
 		}
 		void mniSymbols_Click(object sender, EventArgs e) {
@@ -71,7 +71,7 @@ namespace Sq1.Gui {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException("mniSymbols_Click()", ex);
+				Assembler.PopupException("mniSymbols_Click()", ex);
 			}
 		}
 		void mniSliders_Click(object sender, EventArgs e) {
@@ -83,7 +83,7 @@ namespace Sq1.Gui {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException("mniSliders_Click()", ex);
+				Assembler.PopupException("mniSliders_Click()", ex);
 			}
 		}
 		void mniStrategies_Click(object sender, EventArgs e) {
@@ -95,7 +95,7 @@ namespace Sq1.Gui {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException("mniStrategies_Click()", ex);
+				Assembler.PopupException("mniStrategies_Click()", ex);
 			}
 		}
 		void mniExecution_Click(object sender, EventArgs e) {
@@ -108,7 +108,7 @@ namespace Sq1.Gui {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException("mniExecution_Click()", ex);
+				Assembler.PopupException("mniExecution_Click()", ex);
 			}
 		}
 		void mniCsvImporter_Click(object sender, System.EventArgs e) {
@@ -120,7 +120,7 @@ namespace Sq1.Gui {
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				this.PopupException("mniCsvImporter_Click()", ex);
+				Assembler.PopupException("mniCsvImporter_Click()", ex);
 			}
 		}
 		

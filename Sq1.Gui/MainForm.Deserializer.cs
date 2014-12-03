@@ -55,7 +55,7 @@ namespace Sq1.Gui {
 					return dummyDoc;*/
 				}
 			} catch (Exception e) {
-				this.PopupException("PersistStringInstantiator", e);
+				Assembler.PopupException("PersistStringInstantiator", e);
 			}
 			if (ret == null) {
 				string msg = "returning null will confuse DockPanel; instead, return an instance and initialize it later";

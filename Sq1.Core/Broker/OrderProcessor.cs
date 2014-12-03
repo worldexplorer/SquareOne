@@ -7,7 +7,6 @@ using Sq1.Core.Accounting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Support;
 
 namespace Sq1.Core.Broker {
 	public class OrderProcessor {
@@ -119,7 +118,7 @@ namespace Sq1.Core.Broker {
 				//	newbornOrderState = OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted;
 				//}
 			}
-			this.UpdateOrderStateNoPostProcess(newborn, new OrderStateMessage(newborn, newbornOrderState, newbornMessage));
+			this.UpdateOrderStateDontPostProcess(newborn, new OrderStateMessage(newborn, newbornOrderState, newbornMessage));
 			this.DataSnapshot.OrderAddSynchronizedAndPropagate(newborn);
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 			return newborn;
@@ -445,7 +444,7 @@ namespace Sq1.Core.Broker {
 			OrderState orderStateAbsorbed = (orderState == OrderState.LeaveTheSame) ? orderFound.State : orderState;
 			if (orderStateAbsorbed != orderFound.State) {
 				OrderStateMessage osm = new OrderStateMessage(orderFound, orderStateAbsorbed, message);
-				UpdateOrderStateNoPostProcess(orderFound, osm);
+				UpdateOrderStateDontPostProcess(orderFound, osm);
 			} else {
 				this.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderFound, message);
 			}
@@ -468,7 +467,7 @@ namespace Sq1.Core.Broker {
 		}
 
 		void PostProcessVictimOrder(Order victimOrder, OrderStateMessage newStateOmsg) {
-			this.UpdateOrderStateNoPostProcess(victimOrder, newStateOmsg);
+			this.UpdateOrderStateDontPostProcess(victimOrder, newStateOmsg);
 			switch (victimOrder.State) {
 				case OrderState.KillPending:
 				case OrderState.SLAnnihilated:
@@ -480,18 +479,18 @@ namespace Sq1.Core.Broker {
 					break;
 				case OrderState.Killed:
 					if (victimOrder.FindStateInOrderMessages(OrderState.SLAnnihilated)) {
-						this.UpdateOrderStateNoPostProcess(victimOrder,
+						this.UpdateOrderStateDontPostProcess(victimOrder,
 							new OrderStateMessage(victimOrder, OrderState.SLAnnihilated,
 								"Setting State to the reason why it was killed"));
 					}
 					if (victimOrder.FindStateInOrderMessages(OrderState.TPAnnihilated)) {
-						this.UpdateOrderStateNoPostProcess(victimOrder,
+						this.UpdateOrderStateDontPostProcess(victimOrder,
 							new OrderStateMessage(victimOrder, OrderState.TPAnnihilated,
 								"Setting State to the reason why it was killed"));
 					}
 
 					Order killerOrder = victimOrder.KillerOrder;
-					this.UpdateOrderStateNoPostProcess(killerOrder,
+					this.UpdateOrderStateDontPostProcess(killerOrder,
 						new OrderStateMessage(killerOrder, OrderState.KillerDone,
 							"Victim.Killed => Killer.KillerDone"));
 					break;
@@ -515,7 +514,7 @@ namespace Sq1.Core.Broker {
 				case OrderState.KillerSubmitting:
 				case OrderState.KillerBulletFlying:
 				case OrderState.KillerDone:
-					this.UpdateOrderStateNoPostProcess(killerOrder, newStateOmsg);
+					this.UpdateOrderStateDontPostProcess(killerOrder, newStateOmsg);
 					break;
 				default:
 					string msg = "no handler for killerOrder[" + killerOrder + "]'s state[" + killerOrder.State + "]"
@@ -527,7 +526,7 @@ namespace Sq1.Core.Broker {
 			}
 		}
 		object orderUpdateLock = new object();
-		public void UpdateOrderStateNoPostProcess(Order order, OrderStateMessage newStateOmsg) {
+		public void UpdateOrderStateDontPostProcess(Order order, OrderStateMessage newStateOmsg) {
 			lock (this.orderUpdateLock) {
 				if (newStateOmsg.Order != order) {
 					string msg = "sorry for athavism, but OrderStateMessage.Order should be equal to order here";
@@ -565,98 +564,71 @@ namespace Sq1.Core.Broker {
 				// REPLACED_WITH_OUTER_this.orderUpdateLock if (order.State == OrderState.Submitted) order.MreActiveCanCome.Set();}
 			}
 		}
-		public void UpdateOrderStateAndPostProcess(Order order, OrderStateMessage newStateOmsg, double priceFill = 0, double qtyFill = 0) {
+		public void UpdateOrderStateAndPostProcess(Order order, OrderStateMessage newStateOmsg,
+								double priceFill = 0, double qtyFill = 0) { lock (this.orderUpdateLock) {
 			string msig = "UpdateOrderStateAndPostProcess(): ";
-			//Debugger.Break();
-
-			lock (this.orderUpdateLock) {
-				try {
-					if (order.State == OrderState.Killed) {
-						int a = 1;
-						// crawl in debugger if I can find VictimOrder.Alert.Executor.Script.OnAlertKilledCallback
-						//this.RemovePendingAlertsForVictimOrderMustBePostKill(order, msig);
-					}
-
-					if (order.VictimToBeKilled != null) {
-						this.PostProcessKillerOrder(order, newStateOmsg);
-						return;
-					}
-					if (order.KillerOrder != null) {
-						this.PostProcessVictimOrder(order, newStateOmsg);
-						return;
-					}
-
-					if (order.hasBrokerProvider("UpdateOrderStateAndPostProcess():") == false) {
-						string msg = "most likely QuikTerminal.CallbackOrderStatus got something wrong...";
-						Assembler.PopupException(msg);
-						return;
-					}
-
-
-					if (newStateOmsg.State == OrderState.Rejected && order.State == OrderState.EmergencyCloseLimitReached) {
-						string prePostErrorMsg = "BrokerProvider CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for EmergencyCloseLimitReached "
-							//+ "; skipping PostProcess for [" + order + "]"
-							;
-						this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, prePostErrorMsg);
-						return;
-					}
-					if (newStateOmsg.State == OrderState.Rejected && order.InStateEmergency) {
-						string prePostErrorMsg = "BrokerProvider CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for"
-							+ " order.inEmergencyState[" + order.State + "] "
-							//+ "; skipping PostProcess for [" + order + "]"
-							;
-						this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, prePostErrorMsg);
-						return;
-					}
-
-					OrderCallbackDupesChecker dupesChecker = order.Alert.DataSource.BrokerProvider.OrderCallbackDupesChecker;
-					if (dupesChecker != null) {
-						string why = dupesChecker.OrderCallbackDupeResonWhy(order, newStateOmsg, priceFill, qtyFill);
-						if (string.IsNullOrEmpty(why) == false) {
-							string msgChecker = "OrderCallbackDupeResonWhy[" + why + "]; skipping PostProcess for [" + order + "]";
-							this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msgChecker);
-							return;
-						}
-					}
-
-					if (newStateOmsg.State == OrderState.Filled) {
-						int a = 1;
-					}
-
-					/*if (qtyFill != 0) {
-						if (order.QtyFill == 0 || order.QtyFill == -999) {
-							order.QtyFill = qtyFill;
-						} else {
-							if (order.QtyFill != qtyFill && order.QtyFill != -qtyFill) {
-								string msg = "got qtyFill[" + qtyFill + "] while order.QtyFill=[" + order.QtyFill
-									+ "]; skipping update; trying to figure out why Filled orders get ZERO price from QUIK";
-								order.AppendMessage(msg);
-							}
-						}
-					}*/
-					if (priceFill != 0) {
-						if (order.PriceFill == 0 || order.PriceFill == -999.99) {
-							order.PriceFill = priceFill;
-							order.QtyFill = qtyFill;
-						} else {
-							bool marketWasSubstituted = order.Alert.MarketLimitStop == MarketLimitStop.Limit
-									&& order.Alert.Bars.SymbolInfo.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
-							if (order.PriceFill != priceFill && marketWasSubstituted == false) {
-								string msg = "got priceFill[" + priceFill + "] while order.PriceFill=[" + order.PriceFill + "]"
-									+ "; weird for Order.Alert.MarketLimitStop=[" + order.Alert.MarketLimitStop + "]";
-								order.AppendMessage(msg);
-							}
-						}
-					}
-					this.UpdateOrderStateNoPostProcess(order, newStateOmsg);
-					this.PostProcessOrderState(order, priceFill, qtyFill);
-				} catch (Exception ex) {
-					string msg = "trying to figure out why SL is not getting placed - we didn't reach PostProcess??";
-					//this.PopupException(new Exception(msg, ex));
-					Assembler.PopupException(msg, ex);
+			try {
+				if (order.VictimToBeKilled != null) {
+					this.PostProcessKillerOrder(order, newStateOmsg);
+					return;
 				}
+				if (order.KillerOrder != null) {
+					this.PostProcessVictimOrder(order, newStateOmsg);
+					return;
+				}
+				if (order.hasBrokerProvider("UpdateOrderStateAndPostProcess():") == false) {
+					string msg = "most likely QuikTerminal.CallbackOrderStatus got something wrong...";
+					Assembler.PopupException(msg);
+					return;
+				}
+
+				if (newStateOmsg.State == OrderState.Rejected && order.State == OrderState.EmergencyCloseLimitReached) {
+					string prePostErrorMsg = "BrokerProvider CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for EmergencyCloseLimitReached "
+						//+ "; skipping PostProcess for [" + order + "]"
+						;
+					this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, prePostErrorMsg);
+					return;
+				}
+				if (newStateOmsg.State == OrderState.Rejected && order.InStateEmergency) {
+					string prePostErrorMsg = "BrokerProvider CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for"
+						+ " order.inEmergencyState[" + order.State + "] "
+						//+ "; skipping PostProcess for [" + order + "]"
+						;
+					this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, prePostErrorMsg);
+					return;
+				}
+
+				OrderCallbackDupesChecker dupesChecker = order.Alert.DataSource.BrokerProvider.OrderCallbackDupesChecker;
+				if (dupesChecker != null) {
+					string whyIthinkBrokerIsSpammingMe = dupesChecker.OrderCallbackIsDupeReson(order, newStateOmsg, priceFill, qtyFill);
+					if (string.IsNullOrEmpty(whyIthinkBrokerIsSpammingMe) == false) {
+						string msgChecker = "OrderCallbackDupeResonWhy[" + whyIthinkBrokerIsSpammingMe + "]; skipping PostProcess for [" + order + "]";
+						this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msgChecker);
+						return;
+					}
+				}
+
+				if (priceFill != 0) {
+					if (order.PriceFill == 0 || order.PriceFill == -999.99) {
+						order.PriceFill = priceFill;
+						order.QtyFill = qtyFill;
+					} else {
+						bool marketWasSubstituted = order.Alert.MarketLimitStop == MarketLimitStop.Limit
+								&& order.Alert.Bars.SymbolInfo.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
+						if (order.PriceFill != priceFill && marketWasSubstituted == false) {
+							string msg = "got priceFill[" + priceFill + "] while order.PriceFill=[" + order.PriceFill + "]"
+								+ "; weird for Order.Alert.MarketLimitStop=[" + order.Alert.MarketLimitStop + "]";
+							order.AppendMessage(msg);
+						}
+					}
+				}
+				this.UpdateOrderStateDontPostProcess(order, newStateOmsg);
+				this.PostProcessOrderState(order, priceFill, qtyFill);
+			} catch (Exception ex) {
+				string msg = "trying to figure out why SL is not getting placed - we didn't reach PostProcess??";
+				Assembler.PopupException(msg, ex);
 			}
-		}
+		} }
 		void PostProcessAccounting(Order order, double qtyFill) {
 			if (order.Alert.Direction == Direction.Unknown) {
 				string msg = "Direction.Unknown can't be here; Unknown is default for Deserialization errors!";
@@ -958,7 +930,7 @@ namespace Sq1.Core.Broker {
 		}
 		public void InvokeHooksAndSubmitNewAlertsBackToBrokerProvider(Order orderWithNewState) {
 			ScriptExecutor executor = orderWithNewState.Alert.Strategy.Script.Executor;
-			ReporterPokeUnit afterHooksInvokedPokeUnit = new ReporterPokeUnit(null);
+			ReporterPokeUnit afterHooksInvokedPokeUnit = new ReporterPokeUnit();
 			int hooksInvoked = this.OPPstatusCallbacks.InvokeOnceHooksForOrderStateAndDelete(orderWithNewState, afterHooksInvokedPokeUnit);
 			if (executor.Backtester.IsBacktestingNow) return;
 
@@ -970,7 +942,7 @@ namespace Sq1.Core.Broker {
 			}
 			bool setStatusSubmitting = executor.IsStreamingTriggeringScript && executor.IsStrategyEmittingOrders;
 			this.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsCreatedByHooks, setStatusSubmitting, true);
-			orderWithNewState.Alert.Strategy.Script.Executor.PushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
+			orderWithNewState.Alert.Strategy.Script.Executor.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
 		}
 		public void RemovePendingAlertsForVictimOrderMustBePostKill(Order orderKilled, string msig) {
 			string msg = "";

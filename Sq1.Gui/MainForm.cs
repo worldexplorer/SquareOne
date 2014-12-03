@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 using Sq1.Core;
@@ -15,6 +16,8 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui {
 	public partial class MainForm : Form {
+		const string GUI_THREAD_NAME = "GUI_THREAD"; // USED_WHEN_base.InvokeRequired_THROWS_#D SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD
+
 		public MainFormEventManager MainFormEventManager;
 		public MainFormWorkspacesManager WorkspacesManager;
 		public GuiDataSnapshot GuiDataSnapshot;
@@ -38,6 +41,17 @@ namespace Sq1.Gui {
 
 		public MainForm() {
 			InitializeComponent();
+			
+			string currentThreadName;
+			try {
+				currentThreadName = Thread.CurrentThread.Name;	// SharpDevelop4.4 Debugger doesn't evaluate, so I assign to visualize it 
+				Thread.CurrentThread.Name = GUI_THREAD_NAME;
+				currentThreadName = Thread.CurrentThread.Name;
+			} catch (Exception ex) {
+				string msg = "FAILED_TO_SET_GUI_THREAD_NAME Thread.CurrentThread.Name=[" + GUI_THREAD_NAME + "] //MainForm()";
+				Assembler.PopupException(msg, ex);
+			}
+
 			try {
 				Assembler.InstanceUninitialized.Initialize(this as IStatusReporter);
 				this.GuiDataSnapshotSerializer = new Serializer<GuiDataSnapshot>();
@@ -47,12 +61,12 @@ namespace Sq1.Gui {
 					Assembler.InstanceInitialized.RepositoryDllStreamingProvider.CloneableInstanceByClassName,
 					Assembler.InstanceInitialized.RepositoryDllBrokerProvider.CloneableInstanceByClassName);
 	
-				DataSourcesForm.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
-				StrategiesForm.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
-				ExecutionForm.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
-				CsvImporterForm.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				DataSourcesForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				StrategiesForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+				ExecutionForm		.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
+				CsvImporterForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
 			} catch (Exception ex) {
-				this.PopupException("MainForm()", ex);
+				Assembler.PopupException("ASSEMBLER_OR_SINGLETONS_FAILED //MainForm()", ex);
 			}
 		}
 
@@ -205,7 +219,7 @@ namespace Sq1.Gui {
 					ExceptionsForm.Instance.ExceptionControl.FlushListToTreeIfDockContentDeserialized();
 				}
 			} catch (Exception ex) {
-				this.PopupException("WorkspaceLoad()", ex);
+				Assembler.PopupException("WorkspaceLoad()", ex);
 			}
 		}
 		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {

@@ -185,7 +185,6 @@ namespace Sq1.Core.StrategyBase {
 				return null;
 			}
 			if (this.Strategy.Script == null) return null;
-			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated);
 			this.ExecutionDataSnapshot.PreExecutionOnNewBarOrNewQuoteClear();
 			int alertsDumpedForStreamingBar = -1;
 
@@ -249,9 +248,9 @@ namespace Sq1.Core.StrategyBase {
 					//Debugger.Break();
 					ContextScript ctx = this.Strategy.ScriptContextCurrent;
 					
-					this.DataSource.PausePumpingFor(ctx.Symbol, ctx.ScaleInterval, false);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
+					//MOVED_TO_ this.DataSource.PausePumpingFor(ctx.Symbol, ctx.ScaleInterval, false);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
 					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsNewAfterExecCopy, setStatusSubmitting, true);
-					this.DataSource.UnPausePumpingFor(ctx.Symbol, ctx.ScaleInterval, false);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
+					//this.DataSource.UnPausePumpingFor(ctx.Symbol, ctx.ScaleInterval, false);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
 				}
 			} else {
 				if (willEmit && this.Strategy.Name == "EnterEveryBarCompiled" && quoteForAlertsCreated == null) {
@@ -262,9 +261,15 @@ namespace Sq1.Core.StrategyBase {
 
 			if (this.Backtester.IsBacktestingNow && this.Backtester.WasBacktestAborted) return null;
 
-			pokeUnit.AlertsNew = alertsNewAfterExecCopy;
-			pokeUnit.PositionsOpened = this.ExecutionDataSnapshot.PositionsOpenedAfterExecSafeCopy;
-			pokeUnit.PositionsClosed = this.ExecutionDataSnapshot.PositionsClosedAfterExecSafeCopy;
+			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated,
+												alertsNewAfterExecCopy,
+												this.ExecutionDataSnapshot.PositionsOpenedAfterExecSafeCopy,
+												this.ExecutionDataSnapshot.PositionsClosedAfterExecSafeCopy);
+			if (this.Backtester.IsBacktestingNow == false) {
+				// NOPE PositionsMaster grows only in Callback: do this before this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads() to avoid REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert
+				this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
+			}
+			
 			return pokeUnit;
 		}
 
@@ -482,11 +487,18 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		//DateTime lastTimeReportersPoked = DateTime.MinValue;
-		public void PushPositionsOpenedClosedToReportersAsyncUnsafe(ReporterPokeUnit pokeUnit) {
-			// EMPTY_AFTEREXEC check#1
-			if (pokeUnit.PositionsChanged == 0) return;
+		public void AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(ReporterPokeUnit pokeUnit) {
+			if (pokeUnit.PositionsCount == 0) {
+				return;		// EMPTY_AFTEREXEC check#1
+			}
 
-			this.clonePositionsForChartPickupRealtime(pokeUnit);
+			foreach (Position pos in pokeUnit.PositionsOpenedClosedMergedTogether) {
+				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.EntryAlert);
+				if (pos.ExitAlert != null) {
+					Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
+				}
+			}
+			this.ChartShadow.PositionsRealtimeAdd(pokeUnit.Clone());
 			this.Performance.BuildStatsIncrementallyOnEachBarExecFinished(pokeUnit);
 		}
 
@@ -515,7 +527,8 @@ namespace Sq1.Core.StrategyBase {
 				if (removed) alert.IsKilled = true;
 			} else {
 				string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsPending DELETED_EARLIER_OR_NEVER_BEEN_ADDED;"
-					+ " PositionCloseImmediately() kills all PositionPrototype-based PendingAlerts => killing those using AlertKillPending() before/after PositionCloseImmediately() is wrong!";
+					+ " PositionCloseImmediately() kills all PositionPrototype-based PendingAlerts"
+					+ " => killing those using AlertKillPending() before/after PositionCloseImmediately() is wrong!";
 				//throw new Exception(msg);
 				Assembler.PopupException(msg);
 			}
@@ -603,14 +616,9 @@ namespace Sq1.Core.StrategyBase {
 				#endif
 			}
 			if (alertFilled.IsEntryAlert) {
-				// position has its parent alert in Position.ctor()
-				//// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR
-				//alert.PositionAffected.EntryCopyFromAlert(alert);
 				this.ExecutionDataSnapshot.PositionsMasterOpenNewAdd(alertFilled.PositionAffected);
 				positionsOpenedAfterAlertFilled.Add(alertFilled.PositionAffected);
 			} else {
-				//// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR we can exit by TP or SL - position doesn't have an ExitAlert assigned until Alert was filled!!!
-				//alertFilled.PositionAffected.ExitAlertAttach(alertFilled);
 				this.ExecutionDataSnapshot.MovePositionOpenToClosed(alertFilled.PositionAffected);
 				positionsClosedAfterAlertFilled.Add(alertFilled.PositionAffected);
 			}
@@ -669,7 +677,7 @@ namespace Sq1.Core.StrategyBase {
 							this.PopupException(msg);
 							Stopwatch waitedForStopLossOrder = new Stopwatch();
 							waitedForStopLossOrder.Start();
-							proto.StopLossAlertForAnnihilation.MreOrderFollowedIsSetNow.WaitOne(twoMinutes);
+							proto.StopLossAlertForAnnihilation.MreOrderFollowedIsAssignedNow.WaitOne(twoMinutes);
 							waitedForStopLossOrder.Stop();
 							msg = "waited " + waitedForStopLossOrder.ElapsedMilliseconds + "ms for StopLossAlert.OrderFollowed";
 							if (proto.StopLossAlertForAnnihilation.OrderFollowed == null) {
@@ -689,7 +697,7 @@ namespace Sq1.Core.StrategyBase {
 							this.PopupException(msg);
 							Stopwatch waitedForTakeProfitOrder = new Stopwatch();
 							waitedForTakeProfitOrder.Start();
-							proto.TakeProfitAlertForAnnihilation.MreOrderFollowedIsSetNow.WaitOne(twoMinutes);
+							proto.TakeProfitAlertForAnnihilation.MreOrderFollowedIsAssignedNow.WaitOne(twoMinutes);
 							waitedForTakeProfitOrder.Stop();
 							msg = "waited " + waitedForTakeProfitOrder.ElapsedMilliseconds + "ms for TakeProfitAlert.OrderFollowed";
 							if (proto.TakeProfitAlertForAnnihilation.OrderFollowed == null) {
@@ -708,11 +716,9 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.Backtester.IsBacktestingNow == false) {
-				ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quote);
-				pokeUnit.AlertsNew = alertsNewAfterAlertFilled;
-				pokeUnit.PositionsOpened = positionsOpenedAfterAlertFilled;
-				pokeUnit.PositionsClosed = positionsClosedAfterAlertFilled;
-				this.PushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
+				ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quote,
+					alertsNewAfterAlertFilled, positionsOpenedAfterAlertFilled, positionsClosedAfterAlertFilled);
+				this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
 			}
 
 			// 4. Script event will generate a StopLossMove PostponedHook
@@ -916,7 +922,7 @@ namespace Sq1.Core.StrategyBase {
 		public void BacktesterRunSimulation() {
 			try {
 				this.ExecutionDataSnapshot.Initialize();
-				//MOVED_IN_CTOR() this.Performance = new SystemPerformance(this);
+				//MOVED_TO_CTOR() this.Performance = new SystemPerformance(this);
 				this.Performance.Initialize();
 				this.Strategy.Script.InitializeBacktestWithExecutorsBarsInstantiateIndicators();
 
@@ -1037,16 +1043,6 @@ namespace Sq1.Core.StrategyBase {
 			return (completionPortThreadsMax / completionPortThreadsAvailable) * 100;
 		}
 		void clonePositionsForChartPickupRealtime(ReporterPokeUnit pokeUnit) {
-			this.registerAnyAlertForReporterClickedToChartSpotted(pokeUnit.PositionsOpenedClosedMergedTogether);
-			this.ChartShadow.PositionsRealtimeAdd(pokeUnit.Clone());
-		}
-		void registerAnyAlertForReporterClickedToChartSpotted(List<Position> positionsMaster) {
-			foreach (Position pos in positionsMaster) {
-				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.EntryAlert);
-				if (pos.ExitAlert != null) {
-					Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
-				}
-			}
 		}
 		public void SetBars(Bars barsClicked) {
 			if (barsClicked == null) {

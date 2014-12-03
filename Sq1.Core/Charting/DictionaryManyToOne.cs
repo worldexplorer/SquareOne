@@ -71,11 +71,11 @@ namespace Sq1.Core.Charting {
 			this.Reverse.Add(alert, chart);
 		}
 		
-		public void AddRange(CHART chart, List<ALERTS> alerts) {
-			foreach (ALERTS alert in alerts) {
-				this.Add(chart, alert);
-			}
-		}
+//		public void AddRange(CHART chart, List<ALERTS> alerts) {
+//			foreach (ALERTS alert in alerts) {
+//				this.Add(chart, alert);
+//			}
+//		}
 
 		public void Remove(CHART chart, ALERTS alert) {
 			string msig = " DictionaryManyToOne::Remove(chart[" + chart + "], alert[" + alert + "]): ";
@@ -103,7 +103,7 @@ namespace Sq1.Core.Charting {
 			string msig = " DictionaryManyToOne::FindContainerFor(alert[" + alert + "]): ";
 			if (this.Reverse.ContainsKey(alert) == false) {
 				string msg = "REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert[" + alert + "]";
-				throw new Exception(msg + msig);
+				throw new Exception(msg + msig);	// I hate nullable types alltogether; can't return null here koz CHART=null is nonsence for the Dictionary
 			}
 			return this.Reverse[alert];
 		}

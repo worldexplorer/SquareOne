@@ -94,7 +94,7 @@ namespace Sq1.Widgets.Execution {
 		void ctxAccounts_ItemClicked(object sender, ToolStripItemClickedEventArgs e) {
 			throw new Exception("NYI");
 		}
-		void btnRemoveEmergencyLock_Click(object sender, EventArgs e) {
+		void mniEmergencyLockRemove_Click(object sender, EventArgs e) {
 			try {
 				foreach (Order selectedOrder in this.OrdersSelected) {
 					Order reason4lock = Assembler.InstanceInitialized.OrderProcessor.OPPemergency.GetReasonForLock(selectedOrder);
@@ -110,16 +110,15 @@ namespace Sq1.Widgets.Execution {
 				Assembler.PopupException(null, ex);
 			}
 		}
-		void btnRemoveSelected_Click(object sender, EventArgs e) {
-			List<Order> orders = new List<Order>();
+		void mniOrdersRemoveSelected_Click(object sender, EventArgs e) {
+			List<Order> ordersNonPending = new List<Order>();
 			foreach (Order eachNonPending in this.OrdersSelected) {
 				if (eachNonPending.InStateExpectingCallbackFromBroker || eachNonPending.InStateEmergency) continue;
-				orders.Add(eachNonPending);
+				ordersNonPending.Add(eachNonPending);
 			}
-			if (orders.Count > 0) {
-				Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.OrdersRemove(orders);
-				this.RebuildAllTreeFocusOnTopmost();
-			}
+			if (ordersNonPending.Count == 0) return;
+			Assembler.InstanceInitialized.OrderProcessor.DataSnapshot.OrdersRemove(ordersNonPending);
+			this.RebuildAllTreeFocusOnTopmost();
 		}
 		void ordersTree_KeyDown(object sender, KeyEventArgs e) {
 			if (e.KeyCode == Keys.Delete) {
@@ -128,10 +127,8 @@ namespace Sq1.Widgets.Execution {
 			}
 		}
 		void mniOrdersRemoveCompleted_Click(object sender, EventArgs e) {
-			//Assembler.Constructed.OrderProcessor.DataSnapshot.OrdersRemoveNonPendingForAccountNumber(this.SelectedAccountNumbers);
-			//thread unsafe? just notifying instead Assembler.Constructed.OrderProcessor.DataSnapshot.Serializer.OrdersBuffered.Serialize();
-//			this.populateOrders();
-//			this.lvMessages.Items.Clear();
+			Assembler.InstanceInitialized.OrderProcessor.DataSnapshot
+				.OrdersRemoveNonPendingForAccounts(this.SelectedAccountNumbers);
 			this.RebuildAllTreeFocusOnTopmost();
 		}
 		void mniOrderCancelReplace_Click(object sender, EventArgs e) {
@@ -182,11 +179,11 @@ namespace Sq1.Widgets.Execution {
 //				this.ordersTree_SelectedIndexChanged(this, e);
 //			}
 		}
-		void btnCancelSelected_Click(object sender, EventArgs e) {
+		void mniOrderCancel_Click(object sender, EventArgs e) {
 			if (this.OrdersSelected.Count == 0) return;
 			Assembler.InstanceInitialized.OrderProcessor.KillSelectedOrders(this.OrdersSelected);
 		}
-		void btnCancelAll_Click(object sender, EventArgs e) {
+		void mniOrdersCancel_Click(object sender, EventArgs e) {
 			//DialogResult dialogResult = MessageBox.Show(this,
 			//	"This action will Cancel any Active Orders and turn Auto-Trading off - Continue?", "Confirm"
 			//	, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -196,7 +193,7 @@ namespace Sq1.Widgets.Execution {
 			//}
 			Assembler.InstanceInitialized.OrderProcessor.CancelAllPending();
 		}
-		void mniKillAlStopAutoSubmit_Click(object sender, EventArgs e) {
+		void mniKillAllStopAutoSubmit_Click(object sender, EventArgs e) {
 			Assembler.InstanceInitialized.OrderProcessor.KillAll();
 		}
 
@@ -216,17 +213,17 @@ namespace Sq1.Widgets.Execution {
 			//otherwize if you'll see REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR - dont forget to use Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
 			this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTree.SelectedObject as Order);
 		}
-		void mniExpandAllClick(object sender, EventArgs e) {
+		void mniTreeExpandAllClick(object sender, EventArgs e) {
 			this.OrdersTree.ExpandAll();
 		}
-		void mniCollapseAllClick(object sender, EventArgs e) {
+		void mniTreeCollapseAllClick(object sender, EventArgs e) {
 			this.OrdersTree.CollapseAll();
 		}
-		void RebuildAllToolStripMenuItemClick(object sender, EventArgs e) {
+		void mniRebuildAll_Click(object sender, EventArgs e) {
 			this.OrdersTree.RebuildAll(true);
 		}		
 		
-		void SplitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {
+		void splitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {
 			if (this.DataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {

@@ -7,67 +7,106 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Execution {
 	public class ExecutionDataSnapshot {
-		private ScriptExecutor executor;
+			   ScriptExecutor executor;
 
-		public List<Position> PositionsMaster { get; private set; }
-		public Dictionary<int, List<Position>> PositionsMasterByEntryBar { get; private set; }
-		public Dictionary<int, List<Position>> PositionsMasterByExitBar { get; private set; }
-		private object PositionsMasterByEntryBarLock = new object();
-		private object PositionsMasterByExitBarLock = new object();
+		public List<Position>					PositionsMaster				{ get; private set; }
+		public Dictionary<int, List<Position>>	PositionsMasterByEntryBar	{ get; private set; }
+		public Dictionary<int, List<Position>>	PositionsMasterByExitBar	{ get; private set; }
+			   object							positionsMasterByEntryBarLock;
+			   object							positionsMasterByExitBarLock;
 
-		public int positionSernoAbs { get; private set; }
-		public List<Position> PositionsOpenedAfterExec { get; private set; }
-		public List<Position> PositionsClosedAfterExec { get; private set; }
-		public List<Position> PositionsOpenNow { get; private set; }
-		public List<Position> PositionsOpenNowSafeCopy { get { return new List<Position>(this.PositionsOpenNow); } }
-		public List<Alert> AlertsPending { get; private set; }
-		public List<Alert> AlertsPendingSafeCopy { get { return new List<Alert>(this.AlertsPending); } }
+		public int								positionSernoAbs			{ get; private set; }
+		public List<Position>					PositionsOpenedAfterExec	{ get; private set; }
+		public List<Position>					PositionsClosedAfterExec	{ get; private set; }
+		public List<Position>					PositionsOpenNow			{ get; private set; }
+		public List<Position>					PositionsOpenNowSafeCopy	{ get { return new List<Position>(this.PositionsOpenNow); } }
+		public List<Alert>						AlertsPending				{ get; private set; }
+		public List<Alert>						AlertsPendingSafeCopy		{ get { return new List<Alert>(this.AlertsPending); } }
 
-		private object AlertsPendingLock = new object();
-		public Dictionary<int, List<Alert>> AlertsPendingHistoryByBar { get; private set; }
-		private object AlertsPendingHistoryByBarLock = new object();
+			   object							AlertsPendingLock;
+		public Dictionary<int, List<Alert>>		AlertsPendingHistoryByBar	{ get; private set; }
+			   object							AlertsPendingHistoryByBarLock;
 
-		public List<Alert> AlertsMaster { get; private set; }
-		public List<Alert> AlertsNewAfterExec { get; private set; }
-		public Dictionary<string, Indicator> IndicatorsReflectedScriptInstances { get; set; }
+		public List<Alert>						AlertsMaster				{ get; private set; }
+			   object							alertsMasterLock;
+		public List<Alert>						AlertsNewAfterExec			{ get; private set; }
+		public Dictionary<string, Indicator>	IndicatorsReflectedScriptInstances;
+
+		public Dictionary<int, List<Alert>> AlertsPendingHistorySafeCopy { get { return this.AlertsPendingHistorySafeCopyForRenderer(0, -1); } }
+		public Dictionary<int, List<Position>> PositionsMasterByEntryBarSafeCopy { get {
+				Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
+				lock (this.positionsMasterByEntryBarLock) {
+					foreach (int bar in this.PositionsMasterByEntryBar.Keys) {
+						ret.Add(bar, new List<Position>(this.PositionsMasterByEntryBar[bar]));
+					}
+				}
+				return ret;
+			} }
+		public Dictionary<int, List<Position>> PositionsMasterByExitBarSafeCopy { get {
+				Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
+				lock (this.positionsMasterByExitBarLock) {
+					foreach (int bar in this.PositionsMasterByExitBar.Keys) {
+						ret.Add(bar, new List<Position>(this.PositionsMasterByExitBar[bar]));
+					}
+				}
+				return ret;
+			} }
+		public List<Position> PositionsOpenedAfterExecSafeCopy { get {
+				lock (this.PositionsOpenedAfterExec) {
+					return new List<Position>(this.PositionsOpenedAfterExec);
+				}
+			} }
+		public List<Position> PositionsClosedAfterExecSafeCopy { get {
+				lock (this.PositionsClosedAfterExec) {
+					return new List<Position>(this.PositionsClosedAfterExec);
+				}
+			} }
+		public List<Alert> AlertsNewAfterExecSafeCopy { get {
+				lock (this.AlertsNewAfterExec) {
+					return new List<Alert>(this.AlertsNewAfterExec);
+				}
+			} }
 
 		public ExecutionDataSnapshot(ScriptExecutor strategyExecutor) {
 			this.executor = strategyExecutor;
 
-			this.PositionsOpenNow = new List<Position>();
-			this.AlertsPending = new List<Alert>();
-			this.AlertsPendingHistoryByBar = new Dictionary<int, List<Alert>>();
-			this.AlertsMaster = new List<Alert>();
-			this.AlertsNewAfterExec = new List<Alert>();
-			this.PositionsMaster = new List<Position>();
-			this.PositionsMasterByEntryBar = new Dictionary<int, List<Position>>();
-			this.PositionsMasterByExitBar = new Dictionary<int, List<Position>>();
-			this.positionSernoAbs = 0;
-			this.PositionsOpenedAfterExec = new List<Position>();
-			this.PositionsClosedAfterExec = new List<Position>();
-			this.IndicatorsReflectedScriptInstances = new Dictionary<string, Indicator>();
+			PositionsOpenNow				= new List<Position>();
+			AlertsPending					= new List<Alert>();
+			AlertsPendingLock				= new object();
+			AlertsPendingHistoryByBar		= new Dictionary<int, List<Alert>>();
+			AlertsPendingHistoryByBarLock	= new object();
+			AlertsMaster					= new List<Alert>();
+			alertsMasterLock				= new object();
+			AlertsNewAfterExec				= new List<Alert>();
+			PositionsMaster					= new List<Position>();
+
+			PositionsMasterByEntryBar		= new Dictionary<int, List<Position>>();
+			PositionsMasterByExitBar		= new Dictionary<int, List<Position>>();
+			positionsMasterByEntryBarLock	= new object();
+			positionsMasterByExitBarLock	= new object();
+			positionSernoAbs				= 0;
+			PositionsOpenedAfterExec		= new List<Position>();
+			PositionsClosedAfterExec		= new List<Position>();
+			IndicatorsReflectedScriptInstances = new Dictionary<string, Indicator>();
 		}
 
 		public void Initialize() {
 			//this.Clear();
-			this.PositionsMaster.Clear();
-			this.PositionsMasterByEntryBar.Clear();
-			this.PositionsMasterByExitBar.Clear();
-			this.positionSernoAbs = 0;
+			this.PositionsMaster			.Clear();
+			this.PositionsMasterByEntryBar	.Clear();
+			this.PositionsMasterByExitBar	.Clear();
+			this.positionSernoAbs			= 0;
 
-			this.PositionsOpenedAfterExec.Clear();
-			this.PositionsClosedAfterExec.Clear();
-			this.PositionsOpenNow.Clear();
+			this.PositionsOpenedAfterExec	.Clear();
+			this.PositionsClosedAfterExec	.Clear();
+			this.PositionsOpenNow			.Clear();
 
-			this.AlertsMaster.Clear();
-			this.AlertsNewAfterExec.Clear();
-			this.AlertsPending.Clear();
-			this.AlertsPendingHistoryByBar.Clear();
+			this.AlertsMaster				.Clear();
+			this.AlertsNewAfterExec			.Clear();
+			this.AlertsPending				.Clear();
+			this.AlertsPendingHistoryByBar	.Clear();
 		}
 		internal void PreExecutionOnNewBarOrNewQuoteClear() {
-			if (this.AlertsNewAfterExec.Count > 0) {
-				int a = 1;
-			}
 			this.AlertsNewAfterExec.Clear();
 			this.PositionsOpenedAfterExec.Clear();
 			this.PositionsClosedAfterExec.Clear();
@@ -84,7 +123,7 @@ namespace Sq1.Core.Execution {
 				return;
 			}
 			//if (positionOpening.EntryFilledBarIndex < 10) { int a = 1; }
-			lock (this.PositionsMasterByEntryBarLock) {
+			lock (this.positionsMasterByEntryBarLock) {
 				//if (PositionsMasterContainsIdenticalPosition(position)) return;
 				//position.SernoInMasterList = this.PositionsMaster.Count;
 
@@ -130,13 +169,6 @@ namespace Sq1.Core.Execution {
 				}
 			}
 		}
-		//public bool PositionsMasterContainsIdenticalPosition(Position maybeAlready) {
-		//	foreach (Position each in this.PositionsMaster) {
-		//		if (maybeAlready.isIdentical(each)) return true;
-		//	}
-		//	return false;
-		//}
-		private object alertsMasterLock = new object();
 		public void AlertEnrichedRegister(Alert alert, bool registerInNewAfterExec = false) {
 			if (alert.Qty == 0.0) {
 				string msg = "alert[" + alert + "].Qty==0; hopefully will be displayed but not executed...";
@@ -177,8 +209,7 @@ namespace Sq1.Core.Execution {
 			}
 			return false;
 		}
-		public void MovePositionOpenToClosed(Position positionClosing, bool absenseInPositionsOpenNowIsAnError = true) {
-			lock (this.PositionsMasterByExitBarLock) {
+		public void MovePositionOpenToClosed(Position positionClosing, bool absenseInPositionsOpenNowIsAnError = true) { lock (this.positionsMasterByExitBarLock) {
 				if (this.PositionsMasterByExitBar.ContainsKey(positionClosing.ExitFilledBarIndex) == false) {
 					this.PositionsMasterByExitBar.Add(positionClosing.ExitFilledBarIndex, new List<Position>());
 				}
@@ -212,13 +243,10 @@ namespace Sq1.Core.Execution {
 					this.PositionsOpenNow.Remove(positionClosing);
 				}
 
-			}
-		}
-		public bool HasPositionOpenNow(Position positionClosing) {
-			lock (this.PositionsMasterByExitBarLock) {
+			} }
+		public bool HasPositionOpenNow(Position positionClosing) { lock (this.positionsMasterByExitBarLock) {
 				return this.PositionsOpenNow.Contains(positionClosing);
-			}
-		}
+			} }
 		// replaced to AlertsMasterNewPendingAddEnriched:AlertsPendingHistoryByBarAddNoDupe()
 		// but still used in ExecuteOnNewBarOrNewQuote() to dump old pending Stops/Limits
 		// if the stop/limit wasn't filled on the prev bar and stays in pending,
@@ -267,9 +295,8 @@ namespace Sq1.Core.Execution {
 					: ByBarDumpStatus.SequentialAlertAddedForExistingBarInHistory;
 			//}
 		}
-		public Alert FindSimilarNotSamePendingAlert(Alert alert) {
-			Alert similar = null;
-			lock (AlertsPendingLock) {
+		public Alert FindSimilarNotSamePendingAlert(Alert alert) { lock (AlertsPendingLock) {
+				Alert similar = null;
 				foreach (Alert alertSimilar in this.AlertsPending) {
 					if (alertSimilar == alert) continue;
 					if (alertSimilar.IsIdenticalForOrdersPending(alert)) {
@@ -280,10 +307,8 @@ namespace Sq1.Core.Execution {
 						similar = alertSimilar;
 					}
 				}
-			}
-			return similar;
-		}
-		public Dictionary<int, List<Alert>> AlertsPendingHistorySafeCopy { get { return this.AlertsPendingHistorySafeCopyForRenderer(0, -1); } }
+				return similar;
+			} }
 		public Dictionary<int, List<Alert>> AlertsPendingHistorySafeCopyForRenderer(int barNoLeftVisible, int barNoRightVisible) {
 			if (barNoRightVisible == -1) barNoRightVisible = this.executor.Bars.Count;
 			Dictionary<int, List<Alert>> ret = new Dictionary<int, List<Alert>>();
@@ -295,57 +320,22 @@ namespace Sq1.Core.Execution {
 			}
 			return ret;
 		}
-		public void AlertsPendingAdd(Alert alert) {
-			lock (this.AlertsPendingLock) {
+		public void AlertsPendingAdd(Alert alert) { lock (this.AlertsPendingLock) {
 				this.AlertsPending.Add(alert);
-			}
-		}
-		public bool AlertsPendingContains(Alert alert) {
-			lock (this.AlertsPendingLock) {
+			} }
+		public bool AlertsPendingContains(Alert alert) { lock (this.AlertsPendingLock) {
 				return this.AlertsPending.Contains(alert);
-			}
-		}
-		public bool AlertsPendingRemove(Alert alert) {
-			lock (this.AlertsPendingLock) {
+			} }
+		public bool AlertsPendingRemove(Alert alert) { lock (this.AlertsPendingLock) {
 				bool removed = this.AlertsPending.Remove(alert);
 				if (removed == false) {
-					string msg = "you did't remove anything, what you did expect upstack?...";
+					string msg = this.executor.Backtester.IsBacktestingNow
+						? "PENDING_WAS_REMOVED_EARLIER_OR_NOT_ADDED_AT_ALL; what you did expect upstack?..."
+						: "PLEASE_IMPLEMENT_AND_EMPLOY_OrderCallbackDupesChecker.OrderCallbackIsDupeReson()"
+							+ " BrokerProvider" + this.executor.DataSource.BrokerProvider + " alert[" + alert + "]";
+					Assembler.PopupException(msg, null, false);
 				}
 				return removed;
-			}
-		}
-		public Dictionary<int, List<Position>> PositionsMasterByEntryBarSafeCopy { get {
-				Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
-				lock (this.PositionsMasterByEntryBarLock) {
-					foreach (int bar in this.PositionsMasterByEntryBar.Keys) {
-						ret.Add(bar, new List<Position>(this.PositionsMasterByEntryBar[bar]));
-					}
-				}
-				return ret;
-			} }
-		public Dictionary<int, List<Position>> PositionsMasterByExitBarSafeCopy { get {
-				Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
-				lock (this.PositionsMasterByExitBarLock) {
-					foreach (int bar in this.PositionsMasterByExitBar.Keys) {
-						ret.Add(bar, new List<Position>(this.PositionsMasterByExitBar[bar]));
-					}
-				}
-				return ret;
-			} }
-		public List<Position> PositionsOpenedAfterExecSafeCopy { get {
-				lock (this.PositionsOpenedAfterExec) {
-					return new List<Position>(this.PositionsOpenedAfterExec);
-				}
-			} }
-		public List<Position> PositionsClosedAfterExecSafeCopy { get {
-				lock (this.PositionsClosedAfterExec) {
-					return new List<Position>(this.PositionsClosedAfterExec);
-				}
-			} }
-		public List<Alert> AlertsNewAfterExecSafeCopy { get {
-				lock (this.AlertsNewAfterExec) {
-					return new List<Alert>(this.AlertsNewAfterExec);
-				}
 			} }
 	}
 }

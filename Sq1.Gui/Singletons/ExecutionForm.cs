@@ -107,12 +107,11 @@ namespace Sq1.Gui.Singletons {
 		void executionTree_OnOrderDoubleClickedChartFormNotification(object sender, OrderEventArgs e) {
 			try {
 				ChartShadow chartFound = Assembler.InstanceInitialized.AlertsForChart.FindContainerFor(e.Order.Alert);
-				//chartFound.SelectAlert(e.Order.Alert);
 				chartFound.SelectPosition(e.Order.Alert.PositionAffected);
 			} catch (Exception ex) {
 				//string msg = "TODO: add chartManager to Assembler, tunnel Execution.DoubleClick => select Chart.Trade; orderDoubleClicked[" + e.Order + "]";
 				string msg = "HISTORICAL_ORDER_ISNT_LINKED_TO_ANY_CHART__CANT_POPUP_POSITION orderDoubleClicked[" + e.Order + "]";
-				Assembler.PopupException(msg, ex, false);
+				//Assembler.PopupException(msg, ex, false);
 			}
 		}
 

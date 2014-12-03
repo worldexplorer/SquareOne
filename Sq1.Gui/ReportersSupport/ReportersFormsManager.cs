@@ -88,7 +88,7 @@ namespace Sq1.Gui.ReportersSupport {
 				}
 				this.ChartFormManager.MainForm.MainFormSerialize();
 			} catch (Exception ex) {
-				this.ChartFormManager.MainForm.PopupException("ChartForm_OnReporterMniClicked()", ex);
+				Assembler.PopupException("ChartForm_OnReporterMniClicked()", ex);
 				return;
 			}
 			//nope, doing that in ReporterActivateShowRegisterMniTick() ReporterClosingUnregisterMniUntick()

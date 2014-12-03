@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Support;
-using System.Diagnostics;
 
 namespace Sq1.Core.Streaming {
 	// TODO: it's not an abstract class because....
@@ -21,7 +20,6 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public StreamingSolidifier	StreamingSolidifier	{ get; protected set; }
 		[JsonIgnore]	public DataSource			DataSource;
 		[JsonIgnore]	public string				marketName			{ get { return this.DataSource.MarketInfo.Name; } }
-		[JsonIgnore]	public IStatusReporter		StatusReporter		{ get; protected set; }
 		[JsonIgnore]	public DataDistributor		DataDistributor		{ get; protected set; }
 		[JsonProperty]	public StreamingDataSnapshot StreamingDataSnapshot	{ get; protected set; }
 		[JsonIgnore]	public virtual List<string>	SymbolsUpstreamSubscribed	{ get; private set; }
@@ -46,8 +44,7 @@ namespace Sq1.Core.Streaming {
 			StreamingDataSnapshot = new StreamingDataSnapshot(this);
 			StreamingSolidifier = new StreamingSolidifier();
 		}
-		public virtual void Initialize(DataSource dataSource, IStatusReporter statusReporter) {
-			this.StatusReporter = statusReporter;
+		public virtual void Initialize(DataSource dataSource) {
 			this.InitializeFromDataSource(dataSource);
 			this.SubscribeSolidifier();
 		}
@@ -84,10 +81,12 @@ namespace Sq1.Core.Streaming {
 
 		#region the essence#1 of streaming provider
 		public virtual void Connect() {
-			StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorConnecting, 0, "ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
+			//StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorConnecting, 0, "ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
+			Assembler.DisplayStatus("ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
 		}
 		public virtual void Disconnect() {
-			StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorDisconnecting, 0, "DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
+			//StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorDisconnecting, 0, "DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
+			Assembler.DisplayStatus("DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
 		}
 		#endregion
 
@@ -143,7 +142,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = false) {
+		public virtual void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = true) {
 			if (scaleInterval.Scale == BarScale.Unknown) {
 				string msg = "Failed to ConsumerBarRegister(): scaleInterval.Scale=Unknown; returning";
 				Assembler.PopupException(msg);
@@ -279,9 +278,9 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		public void UpdateConnectionStatus(int code, string msg) {
-			if (this.StatusReporter == null) return;
-			StatusReporter.UpdateConnectionStatus(this.ConnectionState, code, msg);
-			StatusReporter.PopupException(msg, null, false);
+			//StatusReporter.UpdateConnectionStatus(this.ConnectionState, code, msg);
+			//StatusReporter.PopupException(msg, null, false);
+			Assembler.PopupException(this.ConnectionState + ", " + code + ", " + msg, null, false);
 		}
 		public void InitializeStreamingOHLCVfromStreamingProvider(Bars chartBars) {
 			SymbolScaleDistributionChannel distributionChannel = this.DataDistributor
