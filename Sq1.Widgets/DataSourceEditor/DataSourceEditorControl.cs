@@ -52,7 +52,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 			this.txtSymbols.Text = this.ds.SymbolsCSV;
 			this.PopulateScaleIntervalFromDataSource();
-			this.PopulateStaticStreamingBrokerListViewsFromDataSource();
+			this.PopulateStreamingBrokerListViewsFromDataSource();
 
 			if (this.ds.StreamingProvider != null) {
 				HighlightStreamingByName(this.ds.StreamingProvider.GetType().Name);
@@ -83,7 +83,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				this.nmrInterval.Value = ds.ScaleInterval.Interval;
 			}
 		}
-		public void PopulateStaticStreamingBrokerListViewsFromDataSource() {
+		public void PopulateStreamingBrokerListViewsFromDataSource() {
 			if (base.IsDisposed) {
 				string msg = "base.IsDisposed=true for DataSourceEditorForm::PopulateStaticStreamingBrokerListViewsFromDataSource()";
 				Assembler.PopupException(msg);

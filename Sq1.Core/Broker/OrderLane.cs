@@ -5,7 +5,7 @@ using System.Diagnostics;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
-	public class OrderList {
+	public class OrderLane {
 		readonly OrderProcessorDataSnapshot neighborLanesWhenOrdersAll;
 		readonly string		ident;
 		protected Object	ordersLock;
@@ -23,14 +23,14 @@ namespace Sq1.Core.Broker {
 				} } }
 		public List<string>	OrdersGuids;
 
-		public OrderList(string ident, List<Order> ordersInit, OrderProcessorDataSnapshot neighborLanes = null) : this(ident, neighborLanes) {
+		public OrderLane(string ident, List<Order> ordersInit, OrderProcessorDataSnapshot neighborLanes = null) : this(ident, neighborLanes) {
 			this.InnerOrderList.InsertRange(0, ordersInit);
 		}
-		public OrderList(string ident, OrderProcessorDataSnapshot neighborLanes = null) : this() {
+		public OrderLane(string ident, OrderProcessorDataSnapshot neighborLanes = null) : this() {
 			this.ident = ident;
 			this.neighborLanesWhenOrdersAll = neighborLanes;
 		}
-		protected  OrderList() : base() {
+		protected OrderLane() : base() {
 			this.InnerOrderList = new List<Order>();
 			this.ordersLock = new Object();
 			this.InnerOrderList.Capacity = 2000;
@@ -48,14 +48,14 @@ namespace Sq1.Core.Broker {
 			}
 			Stopwatch fullScanTook = new Stopwatch();
 			fullScanTook.Start();
-			OrderListByState laneFound;
-			OrderListByState laneExpected = this.neighborLanesWhenOrdersAll.FindStateLaneExpectedByOrderState(order.State);
+			OrderLaneByState laneFound;
+			OrderLaneByState laneExpected = this.neighborLanesWhenOrdersAll.FindStateLaneExpectedByOrderState(order.State);
 			if (laneExpected.Contains(order)) {
 				msg += "FOUND_IN_EXPECTED_LANE";
 				laneFound = laneExpected;
 			} else {
 				msg += "NOT_FOUND_WHERE_EXPECTED_TRYING_FULL_SEARCH";
-				OrderListByState lanesFullScan = neighborLanesWhenOrdersAll.FindStateLaneWhichContainsOrder(order);
+				OrderLaneByState lanesFullScan = neighborLanesWhenOrdersAll.FindStateLaneWhichContainsOrder(order);
 				if (lanesFullScan.StatesAllowed == OrderStatesCollections.Unknown) {
 					msg += "; only OrdersAll contains this order, pass iDontNeedSuggestionsHere=true";
 					return;
@@ -230,7 +230,7 @@ namespace Sq1.Core.Broker {
 		}
 
 		public override string ToString() {
-			return "OrderList[" + this.ident + "]";
+			return "OrderLane[" + this.ident + "]";
 		}
 		public virtual string ToShortString() {
 			return this.ident;

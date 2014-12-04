@@ -175,6 +175,12 @@
     <Compile Include="LabeledTextBox\MenuItemLabeledTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="LiveSim\LiveSimControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LiveSim\LiveSimControl.Designer.cs">
+      <DependentUpon>LiveSimControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ObjectListViewDemo\ShellUtilities.cs" />
     <Compile Include="Optimization\OptimizerControl.cs">
       <SubType>UserControl</SubType>
@@ -342,6 +348,9 @@
     <EmbeddedResource Include="LabeledTextBox\LabeledTextBoxControl.resx">
       <DependentUpon>LabeledTextBoxControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="LiveSim\LiveSimControl.resx">
+      <DependentUpon>LiveSimControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Optimization\OptimizerControl.resx">
       <DependentUpon>OptimizerControl.Designer.cs</DependentUpon>
     </EmbeddedResource>
@@ -390,6 +399,10 @@
     <ProjectReference Include="..\ObjectListView_280-src\ObjectListView2010.csproj">
       <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
       <Name>ObjectListView2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sq1.Adapters.QuikMock\Sq1.Adapters.QuikMock.csproj">
+      <Project>{2CB6E9D9-1ABB-4E92-9094-F8395711143B}</Project>
+      <Name>Sq1.Adapters.QuikMock</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
       <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>

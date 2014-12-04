@@ -12,9 +12,10 @@ namespace Sq1.Core.Broker {
 		protected bool ignoreEditorFieldChangesWhileInitializingEditor;
 
 		public BrokerEditor() { /*used in Design Mode for the descendands*/ }
-		public BrokerEditor(BrokerProvider BrokerProvider, IDataSourceEditor dataSourceEditor) {
+		public virtual void Initialize(BrokerProvider BrokerProvider, IDataSourceEditor dataSourceEditor) {
 			this.brokerProvider = BrokerProvider;
 			this.dataSourceEditor = dataSourceEditor;
+			this.InitializeEditorFields();
 		}
 		public void InitializeEditorFields() {
 			this.ignoreEditorFieldChangesWhileInitializingEditor = true;

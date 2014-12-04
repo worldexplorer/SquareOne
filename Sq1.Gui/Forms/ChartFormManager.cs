@@ -86,6 +86,25 @@ namespace Sq1.Gui.Forms {
 				}
 				return this.OptimizerForm;
 			} }
+		LivesimFormFactory livesimFormFactory;
+		public LivesimForm LivesimForm;
+		public LivesimForm LivesimFormConditionalInstance { get {
+				if (DockContentImproved.IsNullOrDisposed(this.LivesimForm)) {
+					if (this.Strategy == null) return null;
+					if (this.livesimFormFactory == null) {
+						#if DEBUG
+						Debugger.Break();
+						#endif
+						this.livesimFormFactory = new LivesimFormFactory(this);
+					}
+
+					this.livesimFormFactory.CreateLivesimFormSubscribePushToManager(this);
+					if (this.LivesimForm == null) {
+						throw new Exception("LivesimFormFactory.CreateAndSubscribe() failed to create LivesimForm in ChartFormsManager");
+					}
+				}
+				return this.LivesimForm;
+			} }
 		public bool OptimizerFormIsNotDisposed { get { return (DockContentImproved.IsNullOrDisposed(this.OptimizerForm) == false); } }
 		public bool OptimizerIsOnSurface { get {
 				OptimizerForm optimizer = this.OptimizerForm;
@@ -140,6 +159,7 @@ namespace Sq1.Gui.Forms {
 			// never used in CHART_ONLY, but we have "Open In Current Chart" for Strategies
 			this.scriptEditorFormFactory = new ScriptEditorFormFactory(this);
 			this.optimizerFormFactory = new OptimizerFormFactory(this);
+			this.livesimFormFactory = new LivesimFormFactory(this);
 
 			this.DataSnapshotSerializer = new Serializer<ChartFormDataSnapshot>();
 		}
@@ -530,6 +550,7 @@ namespace Sq1.Gui.Forms {
 
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) {
 				this.OptimizerFormShow(false);
+				this.LivesimFormShow(false);
 			}
 		}
 		public void ReportersDumpCurrentForSerialization() {
@@ -585,6 +606,22 @@ namespace Sq1.Gui.Forms {
 			this.OptimizerFormConditionalInstance.Show(mainPanelOrAnotherOptimizersPanel);
 			this.OptimizerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
 			this.OptimizerFormConditionalInstance.OptimizerControl.Refresh();	// olvBacktest doens't repaint while having results?...
+		}
+		public void LivesimFormShow(bool keepAutoHidden = true) {
+			this.LivesimFormConditionalInstance.Initialize(this);
+
+			DockPanel mainPanelOrAnotherLivesimsPanel = this.dockPanel;
+			LivesimForm anotherOptimizer = null;
+			foreach (DockContent form in this.dockPanel.Contents) {
+				anotherOptimizer = form as LivesimForm;
+				if (anotherOptimizer == null) continue;
+				if (anotherOptimizer.Pane == null) continue;
+				mainPanelOrAnotherLivesimsPanel = anotherOptimizer.Pane.DockPanel;
+				break;
+			}
+			this.LivesimFormConditionalInstance.Show(mainPanelOrAnotherLivesimsPanel);
+			this.LivesimFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+			//this.LivesimFormConditionalInstance.OptimizerControl.Refresh();	// olvBacktest doens't repaint while having results?...
 		}
 		
 		const string prefixWhenNeedsToBeSaved = "* ";

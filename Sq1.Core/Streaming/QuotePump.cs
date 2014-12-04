@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,6 +31,7 @@ namespace Sq1.Core.Streaming {
 					int		timesThreadWasStarted;
 
 		public bool UpdateThreadNameAfterMaxConsumersSubscribed;
+				Stopwatch	watchForPpausedQuotesProcessing;
 		
 		bool separatePushingThreadEnabled;
 		public bool SeparatePushingThreadEnabled {
@@ -89,15 +91,17 @@ namespace Sq1.Core.Streaming {
 							//v2: SOFTENED_PAUSING_REQUIREMENT__SINGLE_THREADING_PAUSED_WILL_DROP_INCOMING_QUOTES__AFTER_DEBUGGING_DONE_COMMENT_UPSTACK_IN_SCRIPT_EXECITOR
 							string msg = "PUMPING_PAUSED_SINGLE_THREADED";
 							Assembler.PopupException(msg + msig, null, false);
-							this.pushConsumersPaused = value;
-							return;
-						}
-						if (Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false) {
-							this.pauseRequested = true;
-							this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process pauseRequested=true
-							bool pausedConfirmed = this.confirmPauseSwitched.WaitOne(this.heartbeatTimeout * 2);
-							string msg2 = pausedConfirmed ? "PUMPING_PAUSED" : "PUMPING_PAUSED_NOT_CONFIRMED";
-							Assembler.PopupException(msg2 + msig, null, false);
+						} else {
+							if (Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false) {
+								this.pauseRequested = true;
+								this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process pauseRequested=true
+								bool pausedConfirmed = this.confirmPauseSwitched.WaitOne(this.heartbeatTimeout * 2);
+								string msg2 = pausedConfirmed ? "PUMPING_PAUSED" : "PUMPING_PAUSED_NOT_CONFIRMED";
+								Assembler.PopupException(msg2 + msig, null, false);
+							} else {
+								string msg2 = "PAUSED_FROM_WITHIN_PUMPING_THREAD";
+								Assembler.PopupException(msg2 + msig, null, false);
+							}
 						}
 					} else {
 						this.confirmPauseSwitched.Reset();
@@ -108,15 +112,17 @@ namespace Sq1.Core.Streaming {
 							//v2: SOFTENED_UNPAUSING_REQUIREMENT__SINGLE_THREADING_PAUSED_WILL_DROP_INCOMING_QUOTES__AFTER_DEBUGGING_DONE_COMMENT_UPSTACK_IN_SCRIPT_EXECITOR
 							string msg2 = "PUMPING_UNPAUSED_SINGLE_THREADED";
 							Assembler.PopupException(msg2 + msig, null, false);
-							this.pushConsumersPaused = value;
-							return;
-						}
-						if (Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false) {
-							this.unPauseRequested = true;
-							this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process unPauseRequested=true
-							bool unPausedConfirmed = this.confirmPauseSwitched.WaitOne(this.heartbeatTimeout * 2);
-							string msg = unPausedConfirmed ? "PUMPING_RESUMED" : "PUMPING_RESUMED_NOT_CONFIRMED";
-							Assembler.PopupException(msg + msig, null, false);
+						} else {
+							if (Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false) {
+								this.unPauseRequested = true;
+								this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process unPauseRequested=true
+								bool unPausedConfirmed = this.confirmPauseSwitched.WaitOne(this.heartbeatTimeout * 2);
+								string msg = unPausedConfirmed ? "PUMPING_RESUMED" : "PUMPING_RESUMED_NOT_CONFIRMED";
+								Assembler.PopupException(msg + msig, null, false);
+							} else {
+								string msg2 = "UNPAUSED_FROM_WITHIN_PUMPING_THREAD";
+								Assembler.PopupException(msg2 + msig, null, false);
+							}
 						}
 					}
 					this.pushConsumersPaused = value;
@@ -151,6 +157,7 @@ namespace Sq1.Core.Streaming {
 			//// else you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
 			//v2 it'll exit if both were false => no waiting for confirmation from non-started thread
 			// I_STILL_WANT_LESS_NOISE_FOR_THAT_SAFETY_RETURN_BREAKPOINT this.SeparatePushingThreadEnabled = separatePushingThreadEnabled;
+			watchForPpausedQuotesProcessing = new Stopwatch();
 		}
 		public void PushStraightOrBuffered(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
 			if (this.separatePushingThreadEnabled == false) {
@@ -167,7 +174,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg, null, false);
 			}
 			if (this.qq.Count > 0 && this.qq.Count % WARN_AFTER_QUOTES_BUFFERED == 0) { 
-				string msg = "QUOTES_BACKLOG_GREWUP_FOR_X_MORE_QUOTES [" + WARN_AFTER_QUOTES_BUFFERED + "] this.qq.Count[" + this.qq.Count + "]";
+				string msg = "QUOTES_BACKLOG_GREW_[" + WARN_AFTER_QUOTES_BUFFERED + "] qq.Count[" + this.qq.Count + "]";
 				Assembler.PopupException(msg, null, false);
 			}
 			qq.Enqueue(quoteSernoEnrichedWithUnboundStreamingBar);
@@ -198,6 +205,11 @@ namespace Sq1.Core.Streaming {
 						//Assembler.PopupException(msg, null, true);
 						break;
 					}
+					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == true) {
+						string msg = "MainFormClosingIgnoreReLayoutDockedForms == true";
+						break;
+					}
+
 					if (this.pauseRequested) {
 						this.pauseRequested = false;
 						this.confirmPauseSwitched.Set();	// whoever was waiting for PushConsumersPaused=true rest assured that pauseRequested is satisfied (no more quotes pumping anymore until unPauseRequested)
@@ -223,10 +235,17 @@ namespace Sq1.Core.Streaming {
 						continue;
 					}
 
+					int quotesCollected = 0;
+					int quotesProcessed = 0;
+					int customerCalls = 0;
 					Quote quoteDequeued;
 					while (qq.TryDequeue(out quoteDequeued)) {
+						if (quotesCollected == 0) quotesCollected = qq.Count;
+						if (quotesCollected  > 0) watchForPpausedQuotesProcessing.Restart();
 						try {
 							this.channel.PushQuoteToConsumers(quoteDequeued);
+							quotesProcessed++;
+							customerCalls += this.channel.ConsumersBarCount + this.channel.ConsumersQuoteCount;
 						} catch (Exception ex) {
 							string msg = "CONSUMER_FAILED_TO_DIGEST_QUOTE recipient[" + this.channel.ToString()
 								+ "] quoteDequeued[" + quoteDequeued.ToString() + "]";
@@ -234,6 +253,14 @@ namespace Sq1.Core.Streaming {
 							continue;
 						}
 					}
+					if (quotesCollected > 0) {
+						watchForPpausedQuotesProcessing.Stop();
+						string msg = "QUOTES_BACKLOG_DRAINED[" + watchForPpausedQuotesProcessing.ElapsedMilliseconds + "]ms"
+							+ " customerCalls[" + customerCalls + "]"
+							+ " qCollected[" + quotesCollected + "] qProcessed[" + quotesProcessed + "]";
+						Assembler.PopupException(msg, null, false);
+					}
+
 					this.HasQuoteToPush = false;
 				}
 				this.confirmThreadExited.Set();

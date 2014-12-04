@@ -3,13 +3,13 @@
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
-	public class OrderListByState : OrderList {
+	public class OrderLaneByState : OrderLane {
 		public OrderStatesCollections StatesAllowed { get; private set; }
 
-		public OrderListByState() {
+		public OrderLaneByState() {
 			throw new Exception("you must supply OrderStatesCollections allows for this OrderList, use another constructor");
 		}
-		public OrderListByState(OrderStatesCollections orderStatesAllowed) {
+		public OrderLaneByState(OrderStatesCollections orderStatesAllowed) {
 			if (orderStatesAllowed == null) {
 				throw new Exception("CTOR_FAILED: orderStatesAllowed=NULL: you must supply non-null, non-empty OrderStatesCollections allows for this OrderList");
 			}
@@ -38,7 +38,7 @@ namespace Sq1.Core.Broker {
 			return this.StateIsAcceptable(order.State) && (base.Contains(order) == false);
 		}
 		public override string ToString() {
-			return "OrderListByState[" + this.StatesAllowed.ToString() + "]";
+			return "OrdersLaneByState[" + this.StatesAllowed.ToString() + "]";
 		}
 		public override string ToShortString() {
 			return this.StatesAllowed.CollectionName;

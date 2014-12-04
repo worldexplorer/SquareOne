@@ -303,7 +303,8 @@ namespace Sq1.Gui.Forms {
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				try {
 					dataSourceSafe.PausePumpingFor(symbolSafe, scaleIntervalSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
-					// TESTED BACKLOG_GREWUP Thread.Sleep(10);
+					// TESTED BACKLOG_GREWUP
+					Thread.Sleep(450);	// 10,000msec = 10sec
 					executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
 				} finally {
 					dataSourceSafe.UnPausePumpingFor(symbolSafe, scaleIntervalSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
