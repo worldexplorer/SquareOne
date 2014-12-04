@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Drawing;
-using System.Windows.Forms;
 
 using Sq1.Core;
-using Sq1.Core.DataFeed;
-using Sq1.Core.Streaming;
 using Sq1.Core.Support;
+using Sq1.Core.Streaming;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Adapters.QuikMock {
 	public partial class StreamingMockEditor {
@@ -41,9 +38,13 @@ namespace Sq1.Adapters.QuikMock {
 		}
 		StreamingMock mockStreamingProvider { get { return base.streamingProvider as StreamingMock; } }
 
-		public StreamingMockEditor(StreamingMock mockStreamingProvider, IDataSourceEditor dataSourceEditor) : base(mockStreamingProvider, dataSourceEditor) {
-			InitializeComponent();
-			base.InitializeEditorFields();
+		// Designer will call this
+		public StreamingMockEditor()  {
+			this.InitializeComponent();
+		}
+		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => streamingProviderInstance.StreamingEditorInitialize() will call this
+		public StreamingMockEditor(StreamingProvider mockStreamingProvider, IDataSourceEditor dataSourceEditor) : this() {
+			base.Initialize(mockStreamingProvider, dataSourceEditor);
 		}
 		public override void PushStreamingProviderSettingsToEditor() {
 			this.QuoteDelay				= this.mockStreamingProvider.QuoteDelayAutoPropagate;

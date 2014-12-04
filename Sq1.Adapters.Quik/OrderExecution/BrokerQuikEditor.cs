@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Drawing;
-using System.Windows.Forms;
-using System.ComponentModel;
-using System.ComponentModel.Design;
 
-using Sq1.Core.Broker;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Accounting;
+using Sq1.Core.Broker;
 
 namespace Sq1.Adapters.Quik {
 	public partial class BrokerQuikEditor {
@@ -63,14 +60,16 @@ namespace Sq1.Adapters.Quik {
 				this.txtCashAvailableMicex.Text = value.CashAvailable.ToString();
 			}
 		}
-		BrokerQuik BrokerQuik {
-			get { return base.brokerProvider as BrokerQuik; }
+		BrokerQuik BrokerQuik { get { return base.brokerProvider as BrokerQuik; } }
+
+		// Designer will call this
+		public BrokerQuikEditor() {
+			this.InitializeComponent();
 		}
 
-		public BrokerQuikEditor(BrokerQuik BrokerQuik, IDataSourceEditor dataSourceEditor)
-			: base(BrokerQuik, dataSourceEditor) {
-			InitializeComponent();
-			base.InitializeEditorFields();
+		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => brokerProviderInstance.BrokerEditorInitialize() will call this
+		public BrokerQuikEditor(BrokerProvider brokerQuik, IDataSourceEditor dataSourceEditor) : this() {
+		    base.Initialize(brokerQuik, dataSourceEditor);
 		}
 		public override void PushBrokerProviderSettingsToEditor() {
 			this.Account = this.BrokerQuik.AccountAutoPropagate;

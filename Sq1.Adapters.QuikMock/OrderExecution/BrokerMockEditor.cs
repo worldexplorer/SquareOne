@@ -67,14 +67,16 @@ namespace Sq1.Adapters.QuikMock {
 			}
 			set { this.txtExecutionDelayMillis.Text = value.ToString(); }
 		}
-		BrokerMock mockBrokerProvider {
-			get { return base.brokerProvider as BrokerMock; }
+		BrokerMock mockBrokerProvider { get { return base.brokerProvider as BrokerMock; } }
+
+		// Designer will call this
+		public BrokerMockEditor() {
+			this.InitializeComponent();
 		}
 
-		public BrokerMockEditor(BrokerMock mockBrokerProvider, IDataSourceEditor dataSourceEditor)
-			: base(mockBrokerProvider, dataSourceEditor) {
-			InitializeComponent();
-			base.InitializeEditorFields();
+		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => brokerProviderInstance.BrokerEditorInitialize() will call this
+		public BrokerMockEditor(BrokerMock mockBrokerProvider, IDataSourceEditor dataSourceEditor) : this() {
+			base.Initialize(mockBrokerProvider, dataSourceEditor);
 		}
 
 		public override void PushBrokerProviderSettingsToEditor() {

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-
 using Sq1.Core.Streaming;
 using Sq1.Core.DataFeed;
 
@@ -25,14 +20,14 @@ namespace Sq1.Adapters.Quik {
 			get { return this.txtTopicPrefixDOM.Text; }
 			set { this.txtTopicPrefixDOM.Text = value; }
 		}
-		private StreamingQuik quikStreamingProvider {
-			get { return base.streamingProvider as StreamingQuik; }
-		}
+		private StreamingQuik quikStreamingProvider { get { return base.streamingProvider as StreamingQuik; } }
 
-		public StreamingQuikEditor(StreamingQuik quikStreamingProvider, IDataSourceEditor dataSourceEditor)
-			: base(quikStreamingProvider, dataSourceEditor) {
-			InitializeComponent();
-			base.InitializeEditorFields();
+		public StreamingQuikEditor() {
+			this.InitializeComponent();
+		}
+		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => streamingProviderInstance.StreamingEditorInitialize() will call this
+		public StreamingQuikEditor(StreamingProvider quikStreamingProvider, IDataSourceEditor dataSourceEditor) : this() {
+			base.Initialize(quikStreamingProvider, dataSourceEditor);
 		}
 		public override void PushStreamingProviderSettingsToEditor() {
 			this.DdeServerPrefix = this.quikStreamingProvider.DdeServerPrefix;

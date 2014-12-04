@@ -367,7 +367,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 				;
 			string msig = " QuikTerminal(" + this.DllName + ").CallbackOrderStatus(" + msgDebug + ")";
 			string msgError = "";
-			OrderList orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending;
+			OrderLane orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending;
 			Order orderExecuted = orders.FindByGUID(GUID.ToString());
 			if (orderExecuted == null) {
 				orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersSubmitting;
@@ -386,17 +386,18 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			}
 
 			if (nMode == 1) {
-				msgDebug = "IGNORING nMode[" + nMode + "]=1 " + msgDebug;
-				//msgError = msgDebug;
+				msgError = "IGNORING nMode[" + nMode + "]=1 " + msgDebug;
+				Assembler.PopupException(msgError);
 			}
-			//Assembler.PopupException(msgDebug);
-			if (nMode == 1) return;
 			if (orderExecuted == null) {
-				Assembler.PopupException(msgError + msig);
+				Assembler.PopupException(msgError + msgDebug + msig);
 				return;
 			}
 			if (string.IsNullOrEmpty(msgError) == false) {
 				orderExecuted.AppendMessage(msig + msgError);
+			}
+			if (nMode == 1) {
+				return;
 			}
 
 			OrderState newOrderStateReceived = OrderState.Unknown;
@@ -424,8 +425,11 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 					}
 					break;
 			}
-			this.BrokerQuik.CallbackOrderStateReceivedQuik(newOrderStateReceived, GUID.ToString(), (long)SernoExchange,
-				classCode, secCode, priceFilled, qtyFilled);
+			this.BrokerQuik.CallbackOrderStateReceivedQuik(newOrderStateReceived, GUID.ToString(),
+						(long)SernoExchange, classCode, secCode, priceFilled, qtyFilled);
+			if (newOrderStateReceived == OrderState.FilledPartially || newOrderStateReceived == OrderState.Filled) {
+				this.BrokerQuik.OrderProcessor.PostProcessOrderState(orderExecuted, priceFilled, qtyFilled);
+			}
 		}
 /* Функция TRANS2QUIK_TRANSACTIONS_REPLY_CALLBACK
 Описание прототипа функции обратного вызова для обработки полученной информации об отправленной транзакции.

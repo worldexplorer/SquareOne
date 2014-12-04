@@ -8,7 +8,6 @@ using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
-using Sq1.Core.Support;
 
 namespace Sq1.Adapters.Quik {
 	public class StreamingQuik : StreamingProvider {
@@ -18,7 +17,8 @@ namespace Sq1.Adapters.Quik {
 		[JsonProperty]	public string DdeTopicPrefixDom { get; internal set; }
 		[JsonIgnore]	DdeChannels DdeChannels;
 		[JsonIgnore]	public string DdeChannelsEstablished { get {
-				string ret = "";
+				string ret = "DDE_CHANNELS_NULL__STREAMING_QUIK_NOT_YET_INITIALIZED";
+				if (this.DdeChannels == null) return ret;
 				lock (base.SymbolsSubscribedLock) {
 					ret = this.DdeChannels.ToString();
 				}
@@ -35,7 +35,14 @@ namespace Sq1.Adapters.Quik {
 				return base.StreamingDataSnapshot as StreamingDataSnapshotQuik;
 			} }
 		[JsonProperty]	public override List<string> SymbolsUpstreamSubscribed { get {
-				return this.DdeChannels.SymbolsHavingIndividualChannels; } }
+				List<string> ret = new List<string>();
+				if (this.DdeChannels == null) {
+					string msg = "NO_SYMBOLS__STREAMING_QUIK_NOT_INITIALIZED_DDE_CHANNELS_NULL";
+					return ret;
+				}
+				ret = this.DdeChannels.SymbolsHavingIndividualChannels;
+				return ret;
+			} }
 		
 		public StreamingQuik() : base() {
 			base.Name = "Quik StreamingDummy";

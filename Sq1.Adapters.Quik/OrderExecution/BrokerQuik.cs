@@ -12,18 +12,16 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
-using Sq1.Core.Support;
 
 namespace Sq1.Adapters.Quik {
 	public class BrokerQuik : BrokerProvider {
-		//I_FORGOT_HOW_BROKER_IS_NOTIFIED_WITH_USER_EDITED_SETTINGS?... [JsonIgnore]			BrokerQuikEditor	editor;
-		[JsonIgnore]	public	QuikTerminal	QuikTerminal { get; protected set; }
-		[JsonProperty]	public	string			QuikFolder { get; internal set; }
-		[JsonProperty]	public	string			QuikDllName { get; internal set; }
-		[JsonIgnore]	public	string			QuikDllAbsPath { get {return Path.Combine(this.QuikFolder, this.QuikDllName);} }
-		[JsonProperty]	public	string			QuikClientCode { get; internal set; }
-		[JsonProperty]	public	int				ReconnectTimeoutMillis { get; internal set; }
-		[JsonProperty]			Account			AccountMicex;
+		[JsonIgnore]	public	QuikTerminal	QuikTerminal			{ get; protected set; }
+		[JsonProperty]	public	string			QuikFolder				{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
+		[JsonProperty]	public	string			QuikDllName				{ get; protected set; }
+		[JsonIgnore]	public	string			QuikDllAbsPath			{ get {return Path.Combine(this.QuikFolder, this.QuikDllName);} }
+		[JsonProperty]	public	string			QuikClientCode			{ get; protected set; }
+		[JsonProperty]	public	int				ReconnectTimeoutMillis	{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
+		[JsonProperty]			Account			AccountMicex;			//{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 		[JsonIgnore]	public	Account			AccountMicexAutoPopulated {
 			get { return AccountMicex; }
 			internal set {
@@ -64,14 +62,8 @@ namespace Sq1.Adapters.Quik {
 			base.brokerEditorInstance = new BrokerQuikEditor(this, dataSourceEditor);
 			return base.brokerEditorInstance;
 		}
-
-		public override void Connect() {
-			QuikTerminal.ConnectDll();
-		}
-		public override void Disconnect() {
-			QuikTerminal.DisconnectDll();
-		}
-
+		public override void Connect() { QuikTerminal.ConnectDll(); }
+		public override void Disconnect() { QuikTerminal.DisconnectDll(); }
 		public void CallbackTradeStateReceivedQuik(long SernoExchange, DateTime tradeDate, 
 				string classCode, string secCode, double priceFill, int qtyFill,
 				double tradePrice2, double tradeTradeSysCommission, double tradeTScommission) {
@@ -145,7 +137,7 @@ namespace Sq1.Adapters.Quik {
 					&& order.Alert.MarketLimitStop == MarketLimitStop.Market 
 					&& order.Alert.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
 					&& (fillPrice != -999.99 && fillPrice != 0)) {
-				Assembler.PopupException("REMINDER_WHAT_THIS_EXPERIMENT_WAS_ALL_ABOUT");
+				Assembler.PopupException("REMIND_ME_WHAT_THIS_EXPERIMENT_WAS_ALL_ABOUT?");
 				fillPrice = order.Alert.PriceScript
 					+ ((order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) ? 100 : -100);
 			}
@@ -160,10 +152,12 @@ namespace Sq1.Adapters.Quik {
 			//		"ORDER_CALLBACK_DUPE__SKIPPED_PROCESSING: " + whyIthinkQuikIsSpammingMe);
 			//	return;
 			//}
+
 			base.OrderProcessor.UpdateOrderStateDontPostProcess(order, omsg);
 			base.CallbackOrderStateReceived(order);
 		}
-		
+
+		//[JsonIgnore]	[JsonIgnore]	[JsonIgnore]	
 		QuikConnectionState previousConnectionState = QuikConnectionState.None;
 		int identicalConnectionStatesReported = 0;
 		int identicalConnectionStatesReportedLimit = 3;
@@ -235,7 +229,7 @@ namespace Sq1.Adapters.Quik {
 			//base.OrderSubmitPostProcessOrdersPendingAdd(order);
 			// I expect here "Submitted", move it now
 			//base.OrderProcessor.DataSnapshot.StateLaneAddAppropriate(order);
-			OrderListByState olist = base.OrderProcessor.DataSnapshot.FindStateLaneDoesntContain(order);
+			OrderLaneByState olist = base.OrderProcessor.DataSnapshot.FindStateLaneDoesntContain(order);
 			olist.Insert(0, order);
 
 			msg = " orderStateFromTerminal[" + orderStateFromTerminalMustGetSubmitting + "]"
@@ -286,7 +280,8 @@ namespace Sq1.Adapters.Quik {
 			string msg = "";
 			
 			if (order.Alert.QuoteCreatedThisAlert == null) {
-				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(order.Alert.Symbol);
+				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.StreamingProvider.StreamingDataSnapshot
+					.LastQuoteCloneGetForSymbol(order.Alert.Symbol);
 				order.Alert.QuoteCreatedThisAlert = lastMayNotBeTheCreatorHereHavingNoParentBars;
 				string msg2 = "AVOIDING_ORDER_MARKED_INCONSISTENT: " + order.Alert.QuoteCreatedThisAlert;
 				Assembler.PopupException(msg2, null, false);

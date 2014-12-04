@@ -7,18 +7,17 @@ using Sq1.Core.Broker;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
-using Sq1.Core.Support;
 
 using Sq1.Adapters.Quik;
 using Sq1.Adapters.QuikMock.Terminal;
 
 namespace Sq1.Adapters.QuikMock {
 	public class BrokerMock : BrokerQuik {
-		[JsonIgnore]	public QuikTerminalMock MockTerminal;
-		[JsonProperty]	public int ExecutionDelayMillis { get; internal set; }
-		[JsonProperty]	public int RejectFirstNOrders { get; internal set; }
-		[JsonProperty]	public bool RejectRandomly { get; internal set; }
-		[JsonProperty]	public bool RejectAllUpcoming { get; internal set; }
+		[JsonIgnore]	public	QuikTerminalMock	MockTerminal;
+		[JsonProperty]	public	int					ExecutionDelayMillis	{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
+		[JsonProperty]	public	int					RejectFirstNOrders		{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
+		[JsonProperty]	public	bool				RejectRandomly			{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
+		[JsonProperty]	public	bool				RejectAllUpcoming		{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 
 		public BrokerMock() : base() {
 			base.Name = "Mock BrokerDummy";

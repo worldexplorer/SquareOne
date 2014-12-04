@@ -83,8 +83,12 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				int nStatus = 1;
 				base.CallbackOrderStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
 					-999.99, tp.Balance, 9999191, tp.IsSell, nStatus, 111111);
-				// let order "become" WaitingFillBroker (why State didn't change  immediately after base.CallbackOrderStatus???)
-				Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis);
+
+				int sleepMs = this.mockBrokerProvider.ExecutionDelayMillis;
+				msg = "UNNECESSARY_DELAY  Sleeping [" + (sleepMs) + "]ms; state=>[" + nStatus + "]"
+					+ " let order become WaitingFillBroker (why State didn't change  immediately after base.CallbackOrderStatus???)";
+				base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
+				Thread.Sleep(sleepMs);
 
 				// CallbackOrderStatus sets the status to WaitingFillBroker immediately, check it here
 				if (OrderStatesCollections.NoInterventionRequired.Contains(order.State) == false) {
@@ -99,6 +103,9 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				while (this.mockBrokerProvider.SignalToTerminateAllOrderTryFillLoopsInAllMocks == false) {
 					bool abortThread = this.orderSimulateFillLoopStep(order, tp);
 					if (abortThread) break;
+					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == true) {
+						break;
+					}
 				}
 			} catch (Exception ex) {
 				//KEPT_FOR_FUTURE_PER_STRATEGY_OR_PER_PROVIDER_SEPARATE_EXCEPTION_LIST
@@ -114,7 +121,9 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 
 			bool abortThread = false;
 			Exception exCaught = null;
-			//Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis / 2);
+
+// all the delays come before the sleep, becase after the sleep I'll notify BrokerProvider and it'll trigger PostProcess immediately
+			//NOPE_WILL_SLEEP_IMMEDIATELY_PIOR_TO_Quik.CallbackOrderStatus() THIS_IS_DELAY_BEFORE_ORDER_PROCESSOR Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis);
 
 			switch (order.State) {
 				case OrderState.WaitingBrokerFill:
@@ -155,7 +164,8 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 					bool abortTryFill = false;
 					string abortTryFillReason = "NO_ABORT_TRY_FILL_MESSAGE";
 					try {
-						filled = order.Alert.Strategy.Script.Executor.MarketSim.SimulateFillLive(order.Alert, quoteToFillAgainst, out abortTryFill, out abortTryFillReason);
+						filled = order.Alert.Strategy.Script.Executor.MarketSim.SimulateFillLive(
+							order.Alert, quoteToFillAgainst, out abortTryFill, out abortTryFillReason);
 					} catch (Exception ex) {
 						msg = "FAILED_INNER_MarketSim.SimulateFillLive(" + quoteToFillAgainst + ") " + msg;
 						exCaught = ex;
@@ -225,11 +235,10 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
 
 			}
-
 			tp.TryFillInvokedTimes++;
+
+			// Limit order not filled; we are waiting for new quotes to catch the fill
 			Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis);
-			//Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis / 2);
-			
 			return abortThread;
 		}
 
@@ -238,7 +247,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			string msg = "";
 
 			int sleepMs = this.mockBrokerProvider.ExecutionDelayMillis + Rng.Next(100, 1000);
-			msg = "Sleeping random [" + (sleepMs) + "]ms; status=>[" + tp.QuikStatus + "]";
+			msg = "Sleeping random [" + (sleepMs) + "]ms; status=>[" + tp.QuikStatus + "] THIS_IS_DELAY_BEFORE_ORDER_PROCESSOR";
 			base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
 			Thread.Sleep(sleepMs);
 
@@ -256,15 +265,18 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 
 			// 1 TRADE callbacks like QUIK does
 			if (this.simulateTradeStatus == true) {
-				this.CallbackTradeStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
+				base.CallbackTradeStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
 					tp.Price, tp.Filled, tp.Balance, tp.IsSell, CONST_descriptor);
 				Thread.Sleep(sleepMs);
 			}
 
-			// 3 identical excessive (spamming) ORDER callbacks like QUIK does; "Filled/Rejected"; subject for OrderCallbackDupesCheckerQuik
+			// setting status to Filled
+			//nStatus Тип: Long. Состояние исполнения заявки: Значение «1» соответствует состоянию «Активна», «2» - «Снята», иначе «Исполнена» 
 			base.CallbackOrderStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
 				tp.Price, tp.Balance, CONST_msum, tp.IsSell, tp.QuikStatus, CONST_descriptor);
+
 			if (this.simulateOrderStatusDupes == true) {
+				// 3 identical excessive (spamming) ORDER callbacks like QUIK does; "Filled/Rejected"; subject for OrderCallbackDupesCheckerQuik
 				base.CallbackOrderStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
 					tp.Price, tp.Balance, CONST_msum, tp.IsSell, tp.QuikStatus, CONST_descriptor);
 				base.CallbackOrderStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
