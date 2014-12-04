@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
-	public class OrderListByType : OrderList {
+	public class OrderLaneByType : OrderLane {
 		List<MarketLimitStop> typesAllowed;
 
-		public OrderListByType(List<MarketLimitStop> orderStatesAllowed) {
+		public OrderLaneByType(List<MarketLimitStop> orderStatesAllowed) {
 			this.typesAllowed = orderStatesAllowed;
 		}
 

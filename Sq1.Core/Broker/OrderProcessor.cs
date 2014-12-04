@@ -696,7 +696,6 @@ namespace Sq1.Core.Broker {
 					}
 					this.OPPsequencer.OrderFilledUnlockSequenceSubmitOpening(order);
 					try {
-						// of course here we are getting streaming=on... hope it's not only an assumption :)
 						int barRelnoFill = order.Alert.Bars.Count;
 						order.Alert.Strategy.Script.Executor.CallbackAlertFilledMoveAroundInvokeScript(order.Alert, null, barRelnoFill,
 							order.PriceFill, order.QtyFill, order.SlippageFill, order.CommissionFill);
@@ -942,7 +941,8 @@ namespace Sq1.Core.Broker {
 			}
 			bool setStatusSubmitting = executor.IsStreamingTriggeringScript && executor.IsStrategyEmittingOrders;
 			this.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsCreatedByHooks, setStatusSubmitting, true);
-			orderWithNewState.Alert.Strategy.Script.Executor.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
+			orderWithNewState.Alert.Strategy.Script.Executor
+				.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
 		}
 		public void RemovePendingAlertsForVictimOrderMustBePostKill(Order orderKilled, string msig) {
 			string msg = "";

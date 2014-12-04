@@ -14,18 +14,18 @@ namespace Sq1.Core.Broker {
 	public partial class BrokerProvider {
 		public const string NO_BROKER_PROVIDER = "--- No Broker Provider ---";
 
-		[JsonIgnore]	private object lockSubmitOrders;
-		[JsonIgnore]	public string Name { get; protected set; }
-		[JsonIgnore]	public bool HasMockInName { get { return Name.Contains("Mock"); } }
-		[JsonIgnore]	public bool HasBacktestInName { get { return Name.Contains("Backtest"); } }
-		[JsonIgnore]	public Bitmap Icon { get; protected set; }
-		[JsonIgnore]	public DataSource DataSource { get; protected set; }
-		[JsonIgnore]	public OrderProcessor OrderProcessor { get; protected set; }
-		[JsonIgnore]	public StreamingProvider StreamingProvider;
-		[JsonIgnore]	public IStatusReporter StatusReporter { get; protected set; }
-//		[JsonIgnore]	public List<Account> Accounts { get; protected set; }
-		[JsonProperty]	public Account Account;
-		[JsonIgnore]	public Account AccountAutoPropagate {
+		[JsonIgnore]		   object				lockSubmitOrders;
+		[JsonIgnore]	public string				Name				{ get; protected set; }
+		[JsonIgnore]	public bool					HasMockInName		{ get { return Name.Contains("Mock"); } }
+		[JsonIgnore]	public bool					HasBacktestInName	{ get { return Name.Contains("Backtest"); } }
+		[JsonIgnore]	public Bitmap				Icon				{ get; protected set; }
+		[JsonIgnore]	public DataSource			DataSource			{ get; protected set; }
+		[JsonIgnore]	public OrderProcessor		OrderProcessor		{ get; protected set; }
+		[JsonIgnore]	public StreamingProvider	StreamingProvider	{ get; protected set; }
+		[JsonIgnore]	public IStatusReporter		StatusReporter		{ get; protected set; }
+//		[JsonIgnore]	public List<Account>		Accounts			{ get; protected set; }
+		[JsonProperty]	public Account				Account;
+		[JsonIgnore]	public Account				AccountAutoPropagate {
 			get { return this.Account; }
 			set {
 				this.Account = value;
@@ -59,10 +59,6 @@ namespace Sq1.Core.Broker {
 			this.OrderProcessor = orderProcessor;
 			this.AccountAutoPropagate.Initialize(this);
 		}
-		//public virtual void Initialize(SettingsManager settingsManager) {
-		//	this.SettingsManager = settingsManager;
-		//	//base.Initialize(settingsManager);
-		//}
 		public virtual void Connect() {
 			throw new Exception("please override BrokerProvider::Connect() for BrokerProvider.Name=[" + Name + "]");
 		}
@@ -433,7 +429,7 @@ namespace Sq1.Core.Broker {
 					case OrderState.TPAnnihilated:
 					case OrderState.FilledPartially:
 					case OrderState.Filled:
-						this.RemoveOrdersPendingOnFilledCallback(orderWithNewState, msig);
+						//this.RemoveOrdersPendingOnFilledCallback(orderWithNewState, msig);
 						break;
 					default:
 						msg += "STATE_UNEXPECTED";
@@ -466,16 +462,16 @@ namespace Sq1.Core.Broker {
 			}
 			orderExecuted.AppendMessage(msig + msg);
 		}
-		public Order FindOrderLaneOptimizedNullUnsafe(string GUID, List<OrderList> orderLanes = null, char separator = ';') {
+		public Order FindOrderLaneOptimizedNullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
 			string msig = " //" + this.Name;
 			string orderLanesSearchedAsString = "";
 			Order orderFound = null;
 			
 			if (orderLanes == null) {
 				var snap = this.OrderProcessor.DataSnapshot;
-				orderLanes = new List<OrderList>() {snap.OrdersPending, snap.OrdersSubmitting, snap.OrdersAll};
+				orderLanes = new List<OrderLane>() {snap.OrdersPending, snap.OrdersSubmitting, snap.OrdersAll};
 			}
-			foreach (OrderList orderLane in orderLanes) {
+			foreach (OrderLane orderLane in orderLanes) {
 				orderLanesSearchedAsString += orderLane.GetType().Name.Substring(5) + separator;	// removing "Orders" from "OrdersSubmitting"
 				orderFound = orderLane.FindByGUID(GUID);
 				if (orderFound != null) break;

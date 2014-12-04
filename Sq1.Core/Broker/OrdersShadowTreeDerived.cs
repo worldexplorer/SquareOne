@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
-	public class OrdersShadowTreeDerived : OrderList {
-		OrderList ordersAll;
+	public class OrdersShadowTreeDerived : OrderLane {
+		OrderLane ordersAll;
 		public OrderEventDistributor OrderEventDistributor;
 		
 		public OrdersShadowTreeDerived() : base() {
 			this.OrderEventDistributor = new OrderEventDistributor();
 		}
-		public void InitializeScanDeserializedMoveDerivedsInsideBuildTreeShadow(OrderList ordersAllDeserialized) {
+		public void InitializeScanDeserializedMoveDerivedsInsideBuildTreeShadow(OrderLane ordersAllDeserialized) {
 			base.Clear();
 			this.ordersAll = ordersAllDeserialized;
 			this.scanDeserializedMoveDerivedsInsideBuildTreeShadow(this.ordersAll);
@@ -43,7 +43,7 @@ namespace Sq1.Core.Broker {
 			}
 			this.OrderEventDistributor.RaiseOrderAddedExecutionFormNotification(this, orderAdded);
 		}
-		void scanDeserializedMoveDerivedsInsideBuildTreeShadow(OrderList ordersFlat) {
+		void scanDeserializedMoveDerivedsInsideBuildTreeShadow(OrderLane ordersFlat) {
 			string msig = " OrdersShadowTreeDerived::scanDeserializedMoveDerivedsInsideBuildTreeShadow(): ";
 			int derivedsFound = 0;
 
