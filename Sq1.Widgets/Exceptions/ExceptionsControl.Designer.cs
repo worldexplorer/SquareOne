@@ -1,9 +1,15 @@
 using System;
 using System.Windows.Forms;
 
+using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Drawing;
+
 using BrightIdeasSoftware;
 
 namespace Sq1.Widgets.Exceptions {
+	[ToolboxBitmap(typeof(ExceptionsControl), "ExceptionsControl")]
+	[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
 	public partial class ExceptionsControl : UserControl {
 		#region Windows Form Designer generated code
 

@@ -8,7 +8,6 @@ using Sq1.Core;
 using Sq1.Core.Repositories;
 using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Support;
 
 namespace Sq1.Widgets.StrategiesTree {
 	public partial class StrategiesTreeControl {

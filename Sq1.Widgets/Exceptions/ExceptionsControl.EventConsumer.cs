@@ -7,6 +7,7 @@ using Sq1.Widgets.LabeledTextBox;
 namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
 		void form_OnLoad(object sender, System.EventArgs e) {
+			if (base.DesignMode) return;
 			this.FlushListToTreeIfDockContentDeserialized();
 		}
 		void tree_SelectedIndexChanged(object sender, EventArgs e) {

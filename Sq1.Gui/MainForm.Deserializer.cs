@@ -142,6 +142,13 @@ namespace Sq1.Gui {
 					ret = parentChart.OptimizerFormConditionalInstance;
 					break;
 
+				case ("LiveSim"):
+					//return "Livesim:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
+					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					if (parentChart.StrategyFoundDuringDeserialization == false) break;
+					ret = parentChart.LivesimFormConditionalInstance;
+					break;
+
 				case ("DataSourceEditor"):
 					//Assembler.PopupException("DataSourceEditorForm: initializing with datasource[" + persistedParsedToHash["DataSourceEditing"] + "]");
 					DataSourceEditorForm instance = DataSourceEditorForm.Instance;

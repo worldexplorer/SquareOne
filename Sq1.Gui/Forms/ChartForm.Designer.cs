@@ -19,6 +19,8 @@ namespace Sq1.Gui.Forms {
 			this.ctxBacktest = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mnitlbSpreadGeneratorPct = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+			this.MniShowLivesim = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniBacktestOnDataSourceSaved = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBacktestOnRestart = new System.Windows.Forms.ToolStripMenuItem();
@@ -33,9 +35,9 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSourceCodeEditor = new System.Windows.Forms.ToolStripMenuItem();
 			this.MniShowOptimizer = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxStrategy = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.TssReportersBelowMe = new System.Windows.Forms.ToolStripSeparator();
 			this.mniStrategyContextLoad = new System.Windows.Forms.ToolStripMenuItem();
 			this.DdbStrategy = new System.Windows.Forms.ToolStripDropDownButton();
+			this.TssReportersBelowMe = new System.Windows.Forms.ToolStripSeparator();
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.DdbBars = new System.Windows.Forms.ToolStripDropDownButton();
 			this.ctxBars = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -77,6 +79,8 @@ namespace Sq1.Gui.Forms {
 			this.ctxBacktest.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.mnitlbSpreadGeneratorPct,
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow,
+			this.toolStripSeparator7,
+			this.MniShowLivesim,
 			this.toolStripSeparator4,
 			this.mniBacktestOnDataSourceSaved,
 			this.mniBacktestOnRestart,
@@ -86,8 +90,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeSharesConstantEachTrade,
 			this.mnitlbPositionSizeDollarsEachTradeConstant});
 			this.ctxBacktest.Name = "ctxBacktest";
-			this.ctxBacktest.OwnerItem = this.DdbBacktest;
-			this.ctxBacktest.Size = new System.Drawing.Size(308, 198);
+			this.ctxBacktest.Size = new System.Drawing.Size(308, 248);
 			this.ctxBacktest.Opening += new System.ComponentModel.CancelEventHandler(this.ctxBacktest_Opening);
 			// 
 			// mnitlbSpreadGeneratorPct
@@ -113,6 +116,18 @@ namespace Sq1.Gui.Forms {
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Size = new System.Drawing.Size(307, 22);
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Text = "OutsiteQuote Fills Reported";
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Click += new System.EventHandler(this.mniOutsideQuoteFillCheckThrow_Click);
+			// 
+			// toolStripSeparator7
+			// 
+			this.toolStripSeparator7.Name = "toolStripSeparator7";
+			this.toolStripSeparator7.Size = new System.Drawing.Size(304, 6);
+			// 
+			// MniShowLivesim
+			// 
+			this.MniShowLivesim.Name = "MniShowLivesim";
+			this.MniShowLivesim.Size = new System.Drawing.Size(307, 22);
+			this.MniShowLivesim.Text = "Show Simulator (Experimental)";
+			this.MniShowLivesim.Click += new System.EventHandler(this.MniShowLivesim_Click);
 			// 
 			// toolStripSeparator4
 			// 
@@ -229,7 +244,7 @@ namespace Sq1.Gui.Forms {
 			this.MniShowOptimizer.Text = "Show Optimizer";
 			this.MniShowOptimizer.Click += new System.EventHandler(this.MniShowOptimizer_Click);
 			// 
-			// CtxStrategy
+			// ctxStrategy
 			// 
 			this.ctxStrategy.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this.mniStrategyContextLoad,
@@ -238,14 +253,8 @@ namespace Sq1.Gui.Forms {
 			this.MniShowOptimizer,
 			this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
-			this.ctxStrategy.OwnerItem = this.DdbStrategy;
-			this.ctxStrategy.Size = new System.Drawing.Size(249, 126);
+			this.ctxStrategy.Size = new System.Drawing.Size(249, 98);
 			this.ctxStrategy.Opening += new System.ComponentModel.CancelEventHandler(this.ctxStrategy_Opening);
-			// 
-			// tssReportersBelowMe
-			// 
-			this.TssReportersBelowMe.Name = "tssReportersBelowMe";
-			this.TssReportersBelowMe.Size = new System.Drawing.Size(245, 6);
 			// 
 			// mniStrategyContextLoad
 			// 
@@ -260,6 +269,11 @@ namespace Sq1.Gui.Forms {
 			this.DdbStrategy.Name = "DdbStrategy";
 			this.DdbStrategy.Size = new System.Drawing.Size(63, 20);
 			this.DdbStrategy.Text = "Strategy";
+			// 
+			// TssReportersBelowMe
+			// 
+			this.TssReportersBelowMe.Name = "TssReportersBelowMe";
+			this.TssReportersBelowMe.Size = new System.Drawing.Size(245, 6);
 			// 
 			// statusStrip
 			// 
@@ -490,7 +504,6 @@ namespace Sq1.Gui.Forms {
 			this.btnStrategyEmittingOrders.Checked = true;
 			this.btnStrategyEmittingOrders.CheckOnClick = true;
 			this.btnStrategyEmittingOrders.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.btnStrategyEmittingOrders.Enabled = true;
 			this.btnStrategyEmittingOrders.Name = "btnStrategyEmittingOrders";
 			this.btnStrategyEmittingOrders.Size = new System.Drawing.Size(70, 20);
 			this.btnStrategyEmittingOrders.Text = "EmitOrders";
@@ -560,5 +573,7 @@ namespace Sq1.Gui.Forms {
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripMenuItem mniBarsStoredScaleInterval;
 		public System.Windows.Forms.ToolStripSeparator TssReportersBelowMe;
+		private  System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+		public System.Windows.Forms.ToolStripMenuItem MniShowLivesim;
 	}
 }

@@ -130,6 +130,29 @@
     <Compile Include="Indicators\IndicatorMovingAverageSimple.cs" />
     <Compile Include="Indicators\IndicatorParameter.cs" />
     <Compile Include="Indicators\IndicatorParameterEventArgs.cs" />
+    <Compile Include="Livesim\BrokerLivesim.cs" />
+    <Compile Include="Livesim\LivesimDataSource.cs" />
+    <Compile Include="Livesim\StreamingLivesim.cs" />
+    <Compile Include="Livesim\BrokerLivesimEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Livesim\BrokerLivesimEditor.Designer.cs">
+      <DependentUpon>BrokerLivesimEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Livesim\BrokerLivesimEditor.EventConsumer.cs">
+      <DependentUpon>BrokerLivesimEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Livesim\StreamingLivesimEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Livesim\StreamingLivesimEditor.Designer.cs">
+      <DependentUpon>StreamingLivesimEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Livesim\StreamingLivesimEditor.EventConsumer.cs">
+      <DependentUpon>StreamingLivesimEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataFeed\NamedObjectJsonSerializable.cs" />
     <Compile Include="Repositories\RepositoryBarsFile.cs" />
@@ -193,11 +216,11 @@
     </Compile>
     <Compile Include="Streaming\StreamingSolidifier.cs" />
     <Compile Include="Support\SkipInstantiationAt.cs" />
-    <Compile Include="Broker\OrderListByType.cs" />
+    <Compile Include="Broker\OrderLaneByType.cs" />
     <Compile Include="Broker\OrderCallbackDupesChecker.cs" />
     <Compile Include="Broker\OrderCallbackDupesCheckerTransparent.cs" />
-    <Compile Include="Broker\OrderList.cs" />
-    <Compile Include="Broker\OrderListByState.cs" />
+    <Compile Include="Broker\OrderLane.cs" />
+    <Compile Include="Broker\OrderLaneByState.cs" />
     <Compile Include="Broker\OrderProcessorDataSnapshot.cs" />
     <Compile Include="Broker\OrderPostProcessorStateChangedTrigger.cs" />
     <Compile Include="Broker\OrderPostProcessorStateHook.cs" />
@@ -312,5 +335,13 @@
     </None>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Livesim\BrokerLivesimEditor.resx">
+      <DependentUpon>BrokerLivesimEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Livesim\StreamingLivesimEditor.resx">
+      <DependentUpon>StreamingLivesimEditor.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -44,6 +44,17 @@ namespace Sq1.Gui.Forms {
 			}
 			this.ChartFormManager.MainForm.MainFormSerialize();
 		}
+		void MniShowLivesim_Click(object sender, EventArgs e) {
+			if (this.MniShowLivesim.Checked) {
+				// if autohidden => popup and keepAutoHidden=false
+				this.ChartFormManager.LivesimFormShow(false);
+			} else {
+				//this.ChartFormManager.LivesimFormConditionalInstance.ToggleAutoHide();
+				//this.ChartFormManager.LivesimFormConditionalInstance.Visible = true;
+				this.ChartFormManager.LivesimFormShow(false);
+			}
+			this.ChartFormManager.MainForm.MainFormSerialize();
+		}
 		void btnStreamingWillTriggerScript_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
 			try {

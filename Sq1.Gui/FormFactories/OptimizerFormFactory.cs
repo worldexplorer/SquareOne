@@ -1,20 +1,19 @@
 ﻿using System;
 
 using Sq1.Core;
-using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.FormFactories {
 	public class OptimizerFormFactory {	// REASON_TO_EXIST: way to refresh Sliders and run Chart.Backtest() for added ContextScript from Sq1.Widgets.dll:OptimizationControl
-		private ChartFormManager chartFormManager;
+		ChartFormManager chartFormManager;
 
 		public OptimizerFormFactory(ChartFormManager chartFormsManager) {
 			this.chartFormManager = chartFormsManager;
 		}
 
-		private OptimizerForm OptimizerForm {
+		OptimizerForm OptimizerForm {
 			get { return this.chartFormManager.OptimizerFormConditionalInstance; }
 			set { this.chartFormManager.OptimizerForm = value; }
 		}
