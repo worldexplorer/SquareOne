@@ -5,7 +5,6 @@ using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
-using Sq1.Gui.Singletons;
 using Sq1.Widgets.RangeBar;
 using WeifenLuo.WinFormsUI.Docking;
 

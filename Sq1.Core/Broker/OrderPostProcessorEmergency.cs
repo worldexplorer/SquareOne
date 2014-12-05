@@ -217,18 +217,17 @@ namespace Sq1.Core.Broker {
 			DateTime serverTimeNow = rejectedOrderToReplace.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
 			emergencyReplacement.TimeCreatedBroker = serverTimeNow;
 
-			this.orderProcessor.DataSnapshot.OrderAddSynchronizedAndPropagate(emergencyReplacement);
-			this.orderProcessor.EventDistributor.RaiseOrderStateChanged(this, rejectedOrderToReplace);
-			this.orderProcessor.EventDistributor.RaiseOrderReplacementOrKillerCreatedForVictim(this, rejectedOrderToReplace);
+			this.orderProcessor.DataSnapshot.OrderInsertNotifyGuiAsync(emergencyReplacement);
+			this.orderProcessor.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){rejectedOrderToReplace});
 	
 			return emergencyReplacement;
 		}
 		Order findEmergencyReplacementForRejectedOrder(Order orderRejected) {
-			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.FindByGUID(orderRejected.GUID);
+			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(orderRejected.GUID);
 			if (rejected == null) {
 				throw new Exception("Rejected[" + orderRejected + "] wasn't found!!!");
 			}
-			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.FindByGUID(rejected.EmergencyReplacedByGUID);
+			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(rejected.EmergencyReplacedByGUID);
 			return replacement;
 		}
 		void throwLogIfNotRejectedClosingOrder(Order order) {

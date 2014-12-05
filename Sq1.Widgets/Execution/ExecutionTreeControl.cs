@@ -12,21 +12,20 @@ using Sq1.Support;
 
 namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
-		public ExecutionTreeDataSnapshot DataSnapshot;
-		public Serializer<ExecutionTreeDataSnapshot> DataSnapshotSerializer;
-
-		//Font fontNormal;
-		//Font fontBold;
-		public Order OrderSelected { get {
-				if (this.OrdersTree.SelectedObjects.Count != 1) return null;
-				return this.OrdersTree.SelectedObjects[0] as Order;
+		public ExecutionTreeDataSnapshot				DataSnapshot;
+		public Serializer<ExecutionTreeDataSnapshot>	DataSnapshotSerializer;
+		Dictionary<ToolStripMenuItem, List<OLVColumn>>	columnsByFilters;
+		OrdersAutoTree									ordersTree;
+		public Order									OrderSelected			{ get {
+				if (this.OrdersTreeOLV.SelectedObjects.Count != 1) return null;
+				return this.OrdersTreeOLV.SelectedObjects[0] as Order;
 			} }
-		public List<Order> OrdersSelected { get {
+		public List<Order>								OrdersSelected			{ get {
 				List<Order> ret = new List<Order>();
-				foreach (object obj in this.OrdersTree.SelectedObjects) ret.Add(obj as Order);
+				foreach (object obj in this.OrdersTreeOLV.SelectedObjects) ret.Add(obj as Order);
 				return ret;
 			} }
-		public List<string> SelectedAccountNumbers { get {
+		public List<string>								SelectedAccountNumbers	{ get {
 				var ret = new List<string>();
 				foreach (ToolStripItem mni in this.ctxAccounts.Items) {
 					if (mni.Selected == false) continue;
@@ -34,8 +33,6 @@ namespace Sq1.Widgets.Execution {
 				}
 				return ret;
 			} }
-		Dictionary<ToolStripMenuItem, List<OLVColumn>> columnsByFilters;
-		OrdersShadowTreeDerived ordersShadowTree;
 
 		public ExecutionTreeControl() {
 			this.InitializeComponent();
@@ -44,9 +41,7 @@ namespace Sq1.Widgets.Execution {
 			this.orderTreeListViewCustomize();
 			this.messagesListViewCustomize();
 			
-			//this.fontNormal = this.Font;
-			//this.fontBold = new Font(this.fontNormal, FontStyle.Bold);
-			WindowsFormsUtils.SetDoubleBuffered(this.OrdersTree);
+			WindowsFormsUtils.SetDoubleBuffered(this.OrdersTreeOLV);
 			WindowsFormsUtils.SetDoubleBuffered(this.lvMessages);
 			WindowsFormsUtils.SetDoubleBuffered(this);
 
@@ -133,8 +128,8 @@ namespace Sq1.Widgets.Execution {
 			this.DataSnapshot.firstRowShouldStaySelected = true;
 			this.RebuildAllTreeFocusOnTopmost();
 		}
-		public void InitializeWithShadowTreeRebuilt(OrdersShadowTreeDerived ordersShadowTree) {
-			this.ordersShadowTree = ordersShadowTree;
+		public void InitializeWithShadowTreeRebuilt(OrdersAutoTree ordersTree) {
+			this.ordersTree = ordersTree;
 			// NOPE_DOCK_CONTENT_HASNT_BEEN_DESERIALiZED_YET_I_DONT_KNOW_IF_IM_SHOWN_OR_NOT this.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
 
 			this.DataSnapshotSerializer = new Serializer<ExecutionTreeDataSnapshot>();
@@ -156,18 +151,16 @@ namespace Sq1.Widgets.Execution {
 			this.ctxAccounts.Items.AddRange(ctxAccountsAllCheckedFromUnderlyingBrokerProviders);
 			this.ctxAccounts.ResumeLayout();
 		}	
-		public void OrderUpdateListItem(Order order) {
-			this.OrdersTree.RefreshObject(order);
+		public void OrderStateUpdateOLV(List<Order> orders) {
+			if (orders.Count == 0) return;
+			foreach (Order order in orders) {
+				this.OrdersTreeOLV.RefreshObject(order);
+			}
 			// without Invalidate/Refresh, I'll see status change only after mouseover the row with updated Status... :(
-			this.OrdersTree.Invalidate();
+			this.OrdersTreeOLV.Invalidate();
 			//this.OrdersTree.Refresh();
-			this.PopulateMessagesFromSelectedOrder(order);
+			this.PopulateMessagesFromSelectedOrder(orders[0]);
 			//this.lvOrders_SelectedIndexChanged(this.lvOrders, EventArgs.Empty);
-			this.raiseOrderStatsChangedRecalculateWindowTitleExecutionFormNotification(this, order);
-		}
-		public void OrderInsertToListView(Order order) {
-			this.RebuildAllTreeFocusOnTopmost();
-			this.raiseOrderStatsChangedRecalculateWindowTitleExecutionFormNotification(this, order);
 		}
 		public void PopulateMessagesFromSelectedOrder(Order order) {
 			if (this.splitContainerMessagePane.Panel2Collapsed == true) return;
@@ -199,33 +192,36 @@ namespace Sq1.Widgets.Execution {
 
 //				//	order.Messages.Sort((x, y) => y.DateTime.CompareTo(x.DateTime));
 		}
-		public void OrderRemoveFromListView(Order order) {
-			this.OrdersTree.RemoveObject(order);
-			this.raiseOrderStatsChangedRecalculateWindowTitleExecutionFormNotification(this, order);
+		public void OrderInsertToListView(Order order) {
+			this.RebuildAllTreeFocusOnTopmost();
+		}
+		public void OrderRemoveFromListView(List<Order> orders) {
+			this.ordersTree.RemoveAll(orders);
+			this.OrdersTreeOLV.RemoveObjects(orders);
 		}
 		public void RebuildAllTreeFocusOnTopmost() {
-			this.OrdersTree.SetObjects(this.ordersShadowTree.InnerOrderList);
-			this.OrdersTree.RebuildAll(true);
+			this.OrdersTreeOLV.SetObjects(this.ordersTree.InnerOrderList);
+			this.OrdersTreeOLV.RebuildAll(true);
 			//foreach (var order in this.ordersShadowTree) this.OrdersTree.ToggleExpansion(order);
-			this.OrdersTree.ExpandAll();
+			this.OrdersTreeOLV.ExpandAll();
 			this.populateLastOrderMessages();
 		}
 		public void populateLastOrderMessages() {
 			if (this.DataSnapshot == null) return;
 			if (this.DataSnapshot.firstRowShouldStaySelected == false) return;
-			if (this.ordersShadowTree.InnerOrderList.Count == 0) return;
-			var orderTopmost = this.ordersShadowTree.InnerOrderList[0];
-			if (this.OrdersTree == null) return;
+			if (this.ordersTree.InnerOrderList.Count == 0) return;
+			var orderTopmost = this.ordersTree.InnerOrderList[0];
+			if (this.OrdersTreeOLV == null) return;
 			//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectObject(orderTopmost, true);
 			//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectedIndex = 0;
 			this.PopulateMessagesFromSelectedOrder(orderTopmost);
 		}
 		public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {
-			this.OrdersTree.RefreshObject(orderParentToRepaint);
+			this.OrdersTreeOLV.RefreshObject(orderParentToRepaint);
 			// apparently, a node with a child, doesn't require RebuildAdd/Invalidate/Refresh...
 			//this.OrdersTree.RebuildAll(true);
 			//this.OrdersTree.Invalidate();
-			this.OrdersTree.Expand(orderParentToRepaint);
+			this.OrdersTreeOLV.Expand(orderParentToRepaint);
 		}		
 	}
 }

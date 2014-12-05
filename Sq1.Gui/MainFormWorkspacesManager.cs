@@ -7,13 +7,13 @@ using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Gui {
 	public class MainFormWorkspacesManager {
-		private const string prefix = "workspace_";
-		private MainForm mainForm;
+		const string prefix = "workspace_";
+		MainForm mainForm;
 
 		public string WorkspaceCurrentName { get { return this.WorkspaceCurrentMni.Text; } }
 		public ToolStripMenuItem WorkspaceCurrentMni { get; protected set; }
 
-		private List<ToolStripMenuItem> workspaceMenuItems;
+		List<ToolStripMenuItem> workspaceMenuItems;
 		public ToolStripMenuItem[] WorkspaceMenuItemsWithHandlers { get { return this.workspaceMenuItems.ToArray(); } }
 
 		public MainFormWorkspacesManager(MainForm mainForm) {
@@ -21,7 +21,7 @@ namespace Sq1.Gui {
 			this.workspaceMenuItems = this.initializeFromRepository();
 		}
 		
-		private List<ToolStripMenuItem> initializeFromRepository() {
+		List<ToolStripMenuItem> initializeFromRepository() {
 			var ret = new List<ToolStripMenuItem>();
 			foreach (string workspace in Assembler.InstanceInitialized.WorkspacesRepository.FoldersWithin) {
 				var mni = new ToolStripMenuItem();
@@ -91,7 +91,7 @@ namespace Sq1.Gui {
 			return ret;
 		}
 		
-		private ToolStripMenuItem findNextOrPrevIfLastAfterDeletion() {
+		ToolStripMenuItem findNextOrPrevIfLastAfterDeletion() {
 			ToolStripMenuItem ret = null;
 			if (this.WorkspaceCurrentMni == null) {
 				string msg = "this.WorkspaceCurrentMni == null";

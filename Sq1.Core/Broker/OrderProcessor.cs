@@ -4,15 +4,13 @@ using System.Diagnostics;
 using System.Threading;
 
 using Sq1.Core.Accounting;
-using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Broker {
-	public class OrderProcessor {
+	public partial class OrderProcessor {
 		public bool										AlwaysExitAllSharesInPosition;
 		public OrderProcessorDataSnapshot				DataSnapshot					{ get; private set; }
-		public OrderProcessorEventDistributor			EventDistributor				{ get; private set; }
 		public OrderPostProcessorEmergency				OPPemergency					{ get; private set; }
 		public OrderPostProcessorRejected				OPPrejected						{ get; private set; }
 		public OrderPostProcessorSequencerCloseThenOpen	OPPsequencer					{ get; private set; }
@@ -24,7 +22,6 @@ namespace Sq1.Core.Broker {
 			this.OPPrejected			= new OrderPostProcessorRejected(this);
 			this.OPPstatusCallbacks		= new OrderPostProcessorStateChangedTrigger(this);
 			this.DataSnapshot			= new OrderProcessorDataSnapshot(this);
-			this.EventDistributor		= new OrderProcessorEventDistributor(this);
 		}
 
 		public void Initialize(string rootPath) {
@@ -94,7 +91,7 @@ namespace Sq1.Core.Broker {
 			}
 			if (alert.IsExitAlert) {
 				if (this.isExitOrderConsistentLogInconsistency(newborn) == false) {
-					this.DataSnapshot.OrderAddSynchronizedAndPropagate(newborn);
+					this.DataSnapshot.OrderInsertNotifyGuiAsync(newborn);
 					string reason = newborn.LastMessage;
 					return null;
 				}
@@ -119,7 +116,7 @@ namespace Sq1.Core.Broker {
 				//}
 			}
 			this.UpdateOrderStateDontPostProcess(newborn, new OrderStateMessage(newborn, newbornOrderState, newbornMessage));
-			this.DataSnapshot.OrderAddSynchronizedAndPropagate(newborn);
+			this.DataSnapshot.OrderInsertNotifyGuiAsync(newborn);
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 			return newborn;
 		}
@@ -265,22 +262,6 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg);
 			}
 		}
-		public void SubmitEatableOrdersFromGui(List<Order> orders) {
-			List<Order> ordersEatable = new List<Order>();
-			foreach (Order order in orders) {
-				if (this.IsOrderEatable(order) == false) continue;
-				ordersEatable.Add(order);
-				string msg = "Submitting Eatable Order From Gui";
-				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.Submitting, msg);
-				this.UpdateOrderStateAndPostProcess(order, newOrderState);
-			}
-			if (ordersEatable.Count > 0) {
-				BrokerProvider broker = extractSameBrokerProviderThrowIfDifferent(ordersEatable, "SubmitEatableOrders(): ");
-				broker.SubmitOrders(ordersEatable);
-			}
-			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
-			this.DataSnapshot.UpdateActiveOrdersCountEvent();
-		}
 		public BrokerProvider extractSameBrokerProviderThrowIfDifferent(List<Order> orders, string callerMethod) {
 			BrokerProvider broker = null;
 			foreach (Order order in orders) {
@@ -314,42 +295,25 @@ namespace Sq1.Core.Broker {
 			return true;
 		}
 		public Order CreateKillerOrder(Order victimOrder) {
-			string msig = "CreateKillerOrder(): ";
+			string msig = " //CreateKillerOrder()";
 			if (victimOrder == null) {
-				string msg = "victimOrder == null why did you call me?";
-				Assembler.PopupException(msg);
+				string msg = "DONT_ANNOY_KILLER_IF_YOU_DONT_WANT_TO_KILL_ANYONE victimOrder=null";
+				Assembler.PopupException(msg + msig);
 				return null;
 			}
 			if (victimOrder.hasBrokerProvider(msig) == false) {
-				string msg = "CRAZY #62";
-				Assembler.PopupException(msg);
+				string msg = "VICTIM_DOESNT_HAVE_BROKER " + victimOrder;
+				Assembler.PopupException(msg + msig);
 				return null;
 			}
 			//this.RemovePendingAlertsForVictimOrderMustBePostKill(victimOrder, msig);
 
 			Order killerOrder = victimOrder.DeriveKillerOrder();
-			DateTime serverTimeNow = victimOrder.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
-			killerOrder.TimeCreatedBroker = serverTimeNow;
-			this.DataSnapshot.OrderAddSynchronizedAndPropagate(killerOrder);
-			this.EventDistributor.RaiseOrderReplacementOrKillerCreatedForVictim(victimOrder);
+			this.DataSnapshot.OrderInsertNotifyGuiAsync(killerOrder);
+			//this.RaiseOrderReplacementOrKillerCreatedForVictim(victimOrder);
+			this.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>() {victimOrder});
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
-			this.DataSnapshot.UpdateActiveOrdersCountEvent();
 			return killerOrder;
-		}
-		public void KillAll() {
-			//List<Order> allOrdersClone = new List<Order>();
-			//this.KillSelectedOrders(allOrdersClone);
-			Assembler.PopupException("DOESNT_MAKE_SENSE_NOT_IMPLEMETED KillAll()");
-		}
-		public void KillSelectedOrders(List<Order> orders) {
-			if (orders.Count == 0) return;
-			List<Order> ordersToCancel = new List<Order>();
-			for (int i = orders.Count - 1; i >= 0; i--) {
-				Order victimOrder = orders[i];
-				this.KillOrderUsingKillerOrder(victimOrder);
-			}
-			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
-			this.DataSnapshot.UpdateActiveOrdersCountEvent();
 		}
 		public void KillOrderUsingKillerOrder(Order victimOrder) {
 			Order killerOrder = this.CreateKillerOrder(victimOrder);
@@ -365,75 +329,10 @@ namespace Sq1.Core.Broker {
 
 			killerOrder.Alert.DataSource.BrokerProvider.OrderKillSubmitUsingKillerOrder(killerOrder);
 		}
-		public void CancelStrategyOrders(string account, Strategy strategy, string symbol, BarScaleInterval dataScale) {
-			try {
-				Exception e = new Exception("just for call stack trace");
-				throw e;
-			} catch (Exception ex) {
-				string msg = "I won't cancel any orders; reconsider application architecture";
-				Assembler.PopupException(msg, ex);
-			}
-		}
-		public void CancelAllPending() {
-			List<Order> ordersToCancel = new List<Order>();
-			//TODO: refactor!!!
-			//lock (this.OrdersLock) {
-			//	foreach (Order order in this.Orders) {
-			//		switch (order.State) {
-			//			case OrderState.Submitted:
-			//			case OrderState.Active:
-			//			case OrderState.FilledPartially:
-			//				//if (order.State == OrderState.Submitted) {
-			//				//	order.FromAutoTrading = false;
-			//				//	log.Error("I didn't set order[" + order.ToString() + "].FromAutoTrading=false because order.Status=Submitted during CancelAll()");
-			//				//}
-			//				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.KillPending,
-			//					"CancelAll(Active|FilledPartially): expecting callback on successful KILLER completion");
-			//				this.UpdateOrderStateAndPostProcess(order, newOrderState, order.PriceRequested, order.QtyFill);
-			//				//if (this.OrderStateChangedByExecution != null) {
-			//				//	this.OrderStateChangedByExecution(this, new OrderEventArgs(order));
-			//				//}
-			//				ordersToCancel.Add(order);
-			//				break;
-
-			//			default:
-			//				log.Fatal("CancelAllPending(): doing nothing with order[" + order + "] because order.State[" + order.State + "] is not within {Submitted,Active,FilledPartially}");
-			//				break;
-			//		}
-			//	}
-			//}
-			if (ordersToCancel.Count == 0) {
-				return;
-			}
-			BrokerProvider broker = extractSameBrokerProviderThrowIfDifferent(ordersToCancel, "CancelAll(): ");
-			//broker.KillSelectedOrders(ordersToCancel);
-			//this.DataSnapshot.UpdateActiveOrdersCountEvent();
-			this.KillSelectedOrders(ordersToCancel);
-		}
-		public void CancelReplaceOrder(Order orderToReplace, Order orderReplacement) {
-			string msgVictim = "expecting callback on successful REPLACEMENT completion [" + orderReplacement + "]";
-			OrderStateMessage newOrderStateVictim = new OrderStateMessage(orderToReplace, OrderState.KillPending, msgVictim);
-			this.UpdateOrderStateAndPostProcess(orderToReplace, newOrderStateVictim);
-
-			orderReplacement.State = OrderState.Submitted;
-			orderReplacement.IsReplacement = true;
-			this.DataSnapshot.OrderAddSynchronizedAndPropagate(orderReplacement);
-
-			if (orderToReplace.hasBrokerProvider("CancelReplaceOrder(): ") == false) {
-				string msg = "CRAZY #65";
-				Assembler.PopupException(msg);
-				return;
-			}
-			orderToReplace.Alert.DataSource.BrokerProvider.CancelReplace(orderToReplace, orderReplacement);
-
-			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
-			this.DataSnapshot.UpdateActiveOrdersCountEvent();
-		}
-
 		public Order UpdateOrderStateByGuidNoPostProcess(string orderGUID, OrderState orderState, string message) {
-			Order orderFound = this.DataSnapshot.OrdersSubmitting.FindByGUID(orderGUID);
+			Order orderFound = this.DataSnapshot.OrdersSubmitting.ScanRecentForGUID(orderGUID);
 			if (orderFound == null) {
-				 orderFound = this.DataSnapshot.OrdersAll.FindByGUID(orderGUID);
+				 orderFound = this.DataSnapshot.OrdersAll.ScanRecentForGUID(orderGUID);
 			}
 			if (orderFound == null) {
 				string msg = "order[" + orderGUID + "] wasn't found; OrderProcessorDataSnapshot.OrderCount=[" + this.DataSnapshot.OrderCountThreadSafe + "]";
@@ -456,7 +355,7 @@ namespace Sq1.Core.Broker {
 				int a = 1;
 			}
 			omsg.Order.AppendMessageSynchronized(omsg);
-			this.EventDistributor.RaiseOrderMessageAddedExecutionFormNotification(this, omsg);
+			this.RaiseOrderMessageAddedExecutionFormNotification(this, omsg);
 		}
 		public void AppendOrderMessageAndPropagateCheckThrowOrderNull(Order order, string msg) {
 			if (order == null) {
@@ -558,7 +457,7 @@ namespace Sq1.Core.Broker {
 				order.StateUpdateLastTimeLocal = newStateOmsg.DateTime;
 				this.DataSnapshot.SwitchLanesForOrderPostStatusUpdate(order, orderStatePriorToUpdate);
 
-				this.EventDistributor.RaiseOrderStateChanged(this, order);
+				this.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){order});
 				this.appendOrderMessageAndPropagate(order, newStateOmsg);
 
 				// REPLACED_WITH_OUTER_this.orderUpdateLock if (order.State == OrderState.Submitted) order.MreActiveCanCome.Set();}
@@ -602,7 +501,7 @@ namespace Sq1.Core.Broker {
 				if (dupesChecker != null) {
 					string whyIthinkBrokerIsSpammingMe = dupesChecker.OrderCallbackIsDupeReson(order, newStateOmsg, priceFill, qtyFill);
 					if (string.IsNullOrEmpty(whyIthinkBrokerIsSpammingMe) == false) {
-						string msgChecker = "OrderCallbackDupeResonWhy[" + whyIthinkBrokerIsSpammingMe + "]; skipping PostProcess for [" + order + "]";
+						string msgChecker = "SKIPPING_POSTPROCESS_DUPE[" + whyIthinkBrokerIsSpammingMe + "]; for [" + order + "]";
 						this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msgChecker);
 						return;
 					}
@@ -685,6 +584,9 @@ namespace Sq1.Core.Broker {
 			//if (order.Alert.isEntryAlert && order.State == OrderState.Rejected) {
 			//	order.State = OrderState.Filled;
 			//}
+			if (OrderStatesCollections.NoInterventionRequired.Contains(order.State) == false) {
+				this.DataSnapshot.OrdersExpectingBrokerUpdateCount--;
+			}
 			switch (order.State) {
 				case OrderState.Filled:
 				case OrderState.FilledPartially:
@@ -696,8 +598,7 @@ namespace Sq1.Core.Broker {
 					}
 					this.OPPsequencer.OrderFilledUnlockSequenceSubmitOpening(order);
 					try {
-						int barRelnoFill = order.Alert.Bars.Count;
-						order.Alert.Strategy.Script.Executor.CallbackAlertFilledMoveAroundInvokeScript(order.Alert, null, barRelnoFill,
+						order.Alert.Strategy.Script.Executor.CallbackAlertFilledMoveAroundInvokeScript(order.Alert, null,
 							order.PriceFill, order.QtyFill, order.SlippageFill, order.CommissionFill);
 					} catch (Exception ex) {
 						string msg = "PostProcessOrderState caught from CallbackAlertFilledMoveAroundInvokeScript() " + msgException;
@@ -707,7 +608,7 @@ namespace Sq1.Core.Broker {
 
 				case OrderState.ErrorCancelReplace:
 					this.DataSnapshot.OrdersRemove(new List<Order>() { order });
-					this.EventDistributor.RaiseOrderRemovedExecutionFormNotification(this, order);
+					this.RaiseAsyncOrderRemovedExecutionFormExecutionFormShouldRebuildOLV(this, new List<Order>(){order});
 					Assembler.PopupException(msgException);
 					break;
 
@@ -738,7 +639,7 @@ namespace Sq1.Core.Broker {
 								//+ "; skipping PostProcess for [" + order + "]"
 								;
 							this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg);
-							this.EventDistributor.RaiseOrderPropertiesUpdatedByExecutionButSameState(order);
+							this.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){order});
 							return;
 						}
 					}

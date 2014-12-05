@@ -13,17 +13,17 @@ namespace Sq1.Widgets.Execution {
 			//v2
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
-			foreach (ColumnHeader columnHeader in this.OrdersTree.Columns) {
+			foreach (ColumnHeader columnHeader in this.OrdersTreeOLV.Columns) {
 				OLVColumn oLVColumn = columnHeader as OLVColumn; 
 				if (oLVColumn == null) continue;
 				allColumns.Add(oLVColumn);
 			}
 			if (allColumns.Count > 0) {
-				this.OrdersTree.AllColumns.AddRange(allColumns);
+				this.OrdersTreeOLV.AllColumns.AddRange(allColumns);
 			}
 
 			//	http://stackoverflow.com/questions/9802724/how-to-create-a-multicolumn-treeview-like-this-in-c-sharp-winforms-app/9802753#9802753
-			this.OrdersTree.CanExpandGetter = delegate(object o) {
+			this.OrdersTreeOLV.CanExpandGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) {
 					Assembler.PopupException("treeListView.CanExpandGetter: order=null");
@@ -31,7 +31,7 @@ namespace Sq1.Widgets.Execution {
 				}
 				return order.DerivedOrders.Count > 0;
 			};
-			this.OrdersTree.ChildrenGetter = delegate(object o) {
+			this.OrdersTreeOLV.ChildrenGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) {
 					Assembler.PopupException("treeListView.ChildrenGetter: order=null");
@@ -244,10 +244,10 @@ namespace Sq1.Widgets.Execution {
 			//moving State as we drag-n-dropped it; tree will grow in second column
 			//NOT_NEEDED this.OrdersTree.BuildList();
 			//NOT_NEEDED this.RebuildAllTreeFocusOnTopmost();
-			this.OrdersTree.SetObjects(this.ordersShadowTree.InnerOrderList);
+			this.OrdersTreeOLV.SetObjects(this.ordersTree.InnerOrderList);
 			//NOT_NEEDED this.OrdersTree.RebuildAll(true);
-			this.OrdersTree.Columns.RemoveAt(3);
-			this.OrdersTree.Columns.Insert(0, this.colheState);
+			this.OrdersTreeOLV.Columns.RemoveAt(3);
+			this.OrdersTreeOLV.Columns.Insert(0, this.colheState);
 			//NOT_NEEDED this.OrdersTree.BuildList();
 			//NOT_NEEDED this.RebuildAllTreeFocusOnTopmost();
 		}

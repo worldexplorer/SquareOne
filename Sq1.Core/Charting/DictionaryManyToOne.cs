@@ -12,9 +12,9 @@ namespace Sq1.Core.Charting {
 		}
 		
 		public void Register(CHART chart) {
-			string msig = " DictionaryManyToOne::Register(): ";
+			string msig = " //DictionaryManyToOne::Register()";
 			if (this.Lookup.ContainsKey(chart)) {
-				string msg = "chart[" + chart + "] is already registered in this.Lookup";
+				string msg = "ALREADY_ADDED_INTO_this.Lookup chart[" + chart + "]";
 				throw new Exception(msg + msig);
 			}
 //			if (this.Reverse.ContainsValue(chart)) {
@@ -25,9 +25,9 @@ namespace Sq1.Core.Charting {
 		}
 		
 		public void UnRegister(CHART chart) {
-			string msig = " DictionaryManyToOne::UnRegister(): ";
+			string msig = " //DictionaryManyToOne::UnRegister()";
 			if (this.Lookup.ContainsKey(chart) == false) {
-				string msg = "chart[" + chart + "] was never registered in this.Lookup";
+				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
 				throw new Exception(msg + msig);
 			}
 //			if (this.Reverse.ContainsValue(chart)) {
@@ -38,9 +38,9 @@ namespace Sq1.Core.Charting {
 		}
 		
 		public void ClearDependantsFor(CHART chart) {
-			string msig = " DictionaryManyToOne::ClearDependantsFor(): ";
+			string msig = " //DictionaryManyToOne::ClearDependantsFor()";
 			if (this.Lookup.ContainsKey(chart) == false) {
-				string msg = "chart[" + chart + "] was never registered in this.Lookup";
+				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
 				throw new Exception(msg + msig);
 			}
 			foreach (ALERTS dependant in this.Lookup[chart]) {
@@ -54,17 +54,17 @@ namespace Sq1.Core.Charting {
 		}
 		
 		public void Add(CHART chart, ALERTS alert) {
-			string msig = " DictionaryManyToOne::Add(chart[" + chart + "], alert[" + alert + "]): ";
+			string msig = " //DictionaryManyToOne::Add(chart[" + chart + "], alert[" + alert + "])";
 			if (this.Lookup.ContainsKey(chart) == false) {
-				string msg = "chart[" + chart + "] was never registered in this.Lookup";
+				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
 				throw new Exception(msg + msig);
 			}
 			if (this.Lookup[chart].Contains(alert)) {
-				string msg = "alert[" + alert + "] already added into this.Lookup[chart]";
+				string msg = "ALREADY_ADDED_INTO_this.Lookup[chart] alert[" + alert + "]";
 				throw new Exception(msg + msig);
 			}
 			if (this.Reverse.ContainsKey(alert)) {
-				string msg = "alert[" + alert + "] already added into this.Reverse";
+				string msg = "ALREADY_ADDED_INTO_this.Reverse alert[" + alert + "]";
 				throw new Exception(msg + msig);
 			}
 			this.Lookup[chart].Add(alert);
@@ -78,7 +78,7 @@ namespace Sq1.Core.Charting {
 //		}
 
 		public void Remove(CHART chart, ALERTS alert) {
-			string msig = " DictionaryManyToOne::Remove(chart[" + chart + "], alert[" + alert + "]): ";
+			string msig = " //DictionaryManyToOne::Remove(chart[" + chart + "], alert[" + alert + "])";
 			if (this.Lookup.ContainsKey(chart) == false) {
 				string msg = "CONTAINER_WAS_NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
 				throw new Exception(msg + msig);
@@ -100,7 +100,7 @@ namespace Sq1.Core.Charting {
 			return this.Reverse.ContainsKey(alert);
 		}
 		public CHART FindContainerFor(ALERTS alert) {
-			string msig = " DictionaryManyToOne::FindContainerFor(alert[" + alert + "]): ";
+			string msig = " //DictionaryManyToOne::FindContainerFor(alert[" + alert + "])";
 			if (this.Reverse.ContainsKey(alert) == false) {
 				string msg = "REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert[" + alert + "]";
 				throw new Exception(msg + msig);	// I hate nullable types alltogether; can't return null here koz CHART=null is nonsence for the Dictionary
@@ -108,9 +108,9 @@ namespace Sq1.Core.Charting {
 			return this.Reverse[alert];
 		}
 		public List<ALERTS> FindContentsOf(CHART chart) {
-			string msig = " DictionaryManyToOne::FindContents(chart[" + chart + "]): ";
+			string msig = " //DictionaryManyToOne::FindContents(chart[" + chart + "])";
 			if (this.Lookup.ContainsKey(chart) == false) {
-				string msg = "chart[" + chart + "] was never registered in this.Lookup";
+				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
 				throw new Exception(msg + msig);
 			}
 			return this.Lookup[chart];

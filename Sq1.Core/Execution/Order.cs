@@ -313,6 +313,9 @@ namespace Sq1.Core.Execution {
 			
 			this.DerivedOrdersAdd(killer);
 			
+			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
+			killer.TimeCreatedBroker = serverTimeNow;
+
 			return killer;
 		}
 		public Order DeriveReplacementOrder() {
@@ -327,6 +330,9 @@ namespace Sq1.Core.Execution {
 			this.ReplacedByGUID = replacement.GUID;
 			
 			this.DerivedOrdersAdd(replacement);
+
+			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
+			replacement.TimeCreatedBroker = serverTimeNow;
 
 			return replacement;
 		}
@@ -386,13 +392,17 @@ namespace Sq1.Core.Execution {
 			} else {
 				ret += " this.Alert=null_CONSTRUCTOR_NOT_COMPLETE";
 			}
-			ret += " @ " + this.PriceRequested;
+
+			string formatPrice = "N0";
+			if (this.Alert.Bars != null) formatPrice = this.Alert.Bars.SymbolInfo.FormatPrice;
+
+			ret += " @ " + this.PriceRequested.ToString(formatPrice);
 			ret += " " + this.State;
 			if (this.SernoSession != 0) ret += " SernoSession[" + this.SernoSession + "]";
 			//if (GUID != "") ret += " GUID[" + GUID + "]";
 			//if (SernoExchange != 0) ret += " SernoExchange[" + SernoExchange + "]";
 			if (this.QtyFill != 0.0) ret += " FillQty[" + this.QtyFill + "]";
-			if (this.PriceFill != 0.0) ret += " PriceFilled[" + this.PriceFill + "]";
+			if (this.PriceFill != 0.0) ret += " PriceFilled[" + this.PriceFill.ToString(formatPrice) + "]";
 			//if (this.Alert.PriceDeposited != 0) ret += " PricePaid[" + this.Alert.PriceDeposited + "]";
 			if (this.EmittedByScript) ret += " EmittedByScript";
 			return ret;
@@ -421,6 +431,14 @@ namespace Sq1.Core.Execution {
 			if (this.CommissionFill == 0 && commissionFill != 0) {
 				this.CommissionFill = commissionFill;
 			}
+			// NOPE THATS_WHATS_WHAT_CallbackAlertFilledMoveAroundInvokeScript_WILL_DO_LATER_IN_OrderProcessor
+			//Bar barStreaming = this.Alert.Bars.BarStreaming;
+			//if (barStreaming == null) {
+			//    string msg = "ORDER_FILLED_HAS_ALERT_WITHOUT_STREAMING_BAR order[" + this.ToString() + "].Alert[" + this.Alert + "]";
+			//    Assembler.PopupException(msg);
+			//    return;
+			//}
+			//this.Alert.FillPositionAffectedEntryOrExitRespectively(barStreaming, -1, priceFill, qtyFill, slippageFill, commissionFill);
 		}
 		public bool FindStateInOrderMessages(OrderState orderState, int occurenciesLooking = 1) {
 			lock (this.messages) {

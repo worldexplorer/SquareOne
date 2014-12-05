@@ -77,7 +77,7 @@ namespace Sq1.Core.Execution {
 			throw new Exception("You can't pass an empty list, please Use predefined static collections");
 		}
 
-		private OrderStatesCollections(List<OrderState> orderStates, string collectionName) {
+		OrderStatesCollections(List<OrderState> orderStates, string collectionName) {
 			base.Clear();
 			base.AddRange(orderStates);
 			this.CollectionName = collectionName;

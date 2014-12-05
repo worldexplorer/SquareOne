@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
@@ -152,40 +153,89 @@ namespace Sq1.Gui {
 			foreach (var mgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				var mniRoot = new ToolStripMenuItem();
 				mniRoot.Text = mgr.ChartForm.Text;
-				var ctxChildrenForms = new ContextMenuStrip();
+				var ctxChartRelatedForms = new ContextMenuStrip();
+				
+				bool separatorAdded = false;
 				foreach (string textForMenu in mgr.FormsAllRelated.Keys) {
-					DockContent form = mgr.FormsAllRelated[textForMenu];
-					var mniChartForWindowsGrouped = new ToolStripMenuItem();
-					mniChartForWindowsGrouped.Text = textForMenu;
-					mniChartForWindowsGrouped.Tag = form;
-					mniChartForWindowsGrouped.Checked = form.Visible;
-					if (form.IsActivated) {
-						mniChartForWindowsGrouped.Enabled = false;
-					} else {
-						mniChartForWindowsGrouped.Click += new EventHandler(mniWindowsCtxCharts_Click);
+					DockContentImproved formImproved = mgr.FormsAllRelated[textForMenu];
+					
+					if (formImproved is ReporterFormWrapper && separatorAdded == false) {
+						ToolStripSeparator sep = new ToolStripSeparator();
+						ctxChartRelatedForms.Items.Add(sep);
+						separatorAdded = true;
+						continue;
 					}
-					ctxChildrenForms.Items.Add(mniChartForWindowsGrouped);
+					
+					ToolStripMenuItem mniChartSubitem = new ToolStripMenuItem();
+					mniChartSubitem.Text = textForMenu;
+					mniChartSubitem.Tag = formImproved;
+					mniChartSubitem.Checked = (formImproved.IsCoveredOrAutoHidden == false);
+					mniChartSubitem.Click += new EventHandler(mniWindowsCtxShart_SubitemClick);
+					mniChartSubitem.MouseEnter += new EventHandler(mniWindowsCtxChart_SubitemMouseEnter);
+					mniChartSubitem.MouseLeave += new EventHandler(mniWindowsCtxChart_SubitemMouseLeave);
+					mniChartSubitem.CheckOnClick = false;
+					ctxChartRelatedForms.Items.Add(mniChartSubitem);
 				}
-				mniRoot.DropDown = ctxChildrenForms;
+				mniRoot.DropDown = ctxChartRelatedForms;
 				this.ctxWindows.Items.Add(mniRoot);
 			}
 		}
-		void mniWindowsCtxCharts_Click(object sender, EventArgs e) {
-			var mniWindowChartAnyRelatedForm = sender as ToolStripMenuItem;
-			DockContentImproved anyAdressableForm = mniWindowChartAnyRelatedForm.Tag as DockContentImproved;
-			if (anyAdressableForm == null) {
-				string msg = "reporterToPopup.Parent IS_NOT DockContentImproved";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				Assembler.PopupException(msg + " //mniWindowsCtxCharts_Click()");
+		void mniWindowsCtxShart_SubitemClick(object sender, EventArgs e) {
+			ToolStripMenuItem mniChartRelatedForm = sender as ToolStripMenuItem;
+			if (mniChartRelatedForm == null) {
+				string msg = "SENDER_MUST_BE_ToolStripMenuItem sender[" + sender + "]";
+				Assembler.PopupException(msg + " //mniWindowsCtxShart_SubitemClick()");
 				return;
 			}
-			if (mniWindowChartAnyRelatedForm.Checked) {
-				anyAdressableForm.ToggleAutoHide();		// forms in Document should be ignored
-			} else {
-				anyAdressableForm.ActivateDockContentPopupAutoHidden(false);
+			DockContentImproved chartRelatedForm = mniChartRelatedForm.Tag as DockContentImproved;
+			if (chartRelatedForm == null) {
+				string msg = "CHART_RELATED_FORM_MUST_BE_DockContentImproved mniChartRelatedForm["
+					+ mniChartRelatedForm.Text + "].Tag[" + mniChartRelatedForm.Tag + "]";
+				Assembler.PopupException(msg + " //mniWindowsCtxShart_SubitemClick()");
+				return;
 			}
+			mniChartRelatedForm.Checked = !mniChartRelatedForm.Checked;
+			if (mniChartRelatedForm.Checked) {
+				chartRelatedForm.Activate();
+			}
+			this.ctxWindows.Show();
+		}
+		void mniWindowsCtxChart_SubitemMouseEnter(object sender, EventArgs e) {
+			ToolStripMenuItem mniChartRelatedForm = sender as ToolStripMenuItem;
+			if (mniChartRelatedForm == null) {
+				string msg = "SENDER_MUST_BE_ToolStripMenuItem sender[" + sender + "]";
+				Assembler.PopupException(msg + " //mniWindowsCtxChart_SubitemMouseEnter()");
+				return;
+			}
+			DockContentImproved chartRelatedForm = mniChartRelatedForm.Tag as DockContentImproved;
+			if (chartRelatedForm == null) {
+				string msg = "CHART_RELATED_FORM_MUST_BE_DockContentImproved mniChartRelatedForm["
+					+ mniChartRelatedForm.Text + "].Tag[" + mniChartRelatedForm.Tag + "]";
+				Assembler.PopupException(msg + " //mniWindowsCtxChart_SubitemMouseEnter()");
+				return;
+			}
+			if (mniChartRelatedForm.Checked == false) {
+				chartRelatedForm.ToggleAutoHide();
+			}
+			chartRelatedForm.Activate();
+		}
+		void mniWindowsCtxChart_SubitemMouseLeave(object sender, EventArgs e) {
+			ToolStripMenuItem mniChartRelatedForm = sender as ToolStripMenuItem;
+			if (mniChartRelatedForm == null) {
+				string msg = "SENDER_MUST_BE_ToolStripMenuItem sender[" + sender + "]";
+				Assembler.PopupException(msg + " //mniWindowsCtxChart_SubitemMouseLeave()");
+				return;
+			}
+			DockContentImproved chartRelatedForm = mniChartRelatedForm.Tag as DockContentImproved;
+			if (chartRelatedForm == null) {
+				string msg = "CHART_RELATED_FORM_MUST_BE_DockContentImproved mniChartRelatedForm["
+					+ mniChartRelatedForm.Text + "].Tag[" + mniChartRelatedForm.Tag + "]";
+				Assembler.PopupException(msg + " //mniWindowsCtxChart_SubitemMouseLeave()");
+				return;
+			}
+			if (mniChartRelatedForm.Checked) return;	// leave it open after I clicked to confirm I want it open
+			// otherwize I didn't click and it was IsCoveredOrAutoHidden==false; put it back Left=>LeftHidden
+			chartRelatedForm.ToggleAutoHide();
 		}
 	}
 }

@@ -12,12 +12,12 @@ namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
 		void ordersTree_SelectedIndexChanged(object sender, EventArgs e) {
 			try {
-				this.DataSnapshot.firstRowShouldStaySelected = (this.OrdersTree.SelectedIndex == 0) ? true : false;
-				int selectedIndex = this.OrdersTree.SelectedIndex;
+				this.DataSnapshot.firstRowShouldStaySelected = (this.OrdersTreeOLV.SelectedIndex == 0) ? true : false;
+				int selectedIndex = this.OrdersTreeOLV.SelectedIndex;
 				if (selectedIndex == -1) return;		// when selection changes, old selected is unselected; we got here twice on every click
 				
-				this.OrdersTree.RedrawItems(selectedIndex, selectedIndex, true);
-				this.PopulateMessagesFromSelectedOrder(this.OrdersTree.SelectedObject as Order);
+				this.OrdersTreeOLV.RedrawItems(selectedIndex, selectedIndex, true);
+				this.PopulateMessagesFromSelectedOrder(this.OrdersTreeOLV.SelectedObject as Order);
 				
 				/*bool removeEmergencyLockEnabled = false;
 				foreach (Order selectedOrder in this.OrdersSelected) {
@@ -61,7 +61,7 @@ namespace Sq1.Widgets.Execution {
 			foreach (OLVColumn column in columns) {
 				column.IsVisible = newCheckedState;
 			}
-			this.OrdersTree.RebuildColumns();
+			this.OrdersTreeOLV.RebuildColumns();
 		}
 		void mniToggleBrokerTime_Click(object sender, EventArgs e) {
 			// F4.CheckOnClick=True this.mniBrokerTime.Checked = !this.mniBrokerTime.Checked; 
@@ -131,57 +131,19 @@ namespace Sq1.Widgets.Execution {
 				.OrdersRemoveNonPendingForAccounts(this.SelectedAccountNumbers);
 			this.RebuildAllTreeFocusOnTopmost();
 		}
-		void mniOrderCancelReplace_Click(object sender, EventArgs e) {
-			if (this.OrdersTree.SelectedItems.Count != 1) {
+		void mniOrderReplace_Click(object sender, EventArgs e) {
+			if (this.OrdersTreeOLV.SelectedItems.Count != 1) {
 				return;
 			}
-			ListViewItem listViewItem = this.OrdersTree.SelectedItems[0];
-			Order order = (Order)listViewItem.Tag;
-			Order replacement = order.DeriveReplacementOrder();
-//			EditOrderForm editOrderForm = new EditOrderForm(replacement);
-//			editOrderForm.Text = "Cancel/Replace Order";
-//			editOrderForm.method_1(true);
-//			if (editOrderForm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK) {
-//				Assembler.Constructed.OrderProcessor.CancelReplaceOrder(order, replacement);
-//			}
+			ListViewItem listViewItem = this.OrdersTreeOLV.SelectedItems[0];
+			listViewItem.BeginEdit();
+			//Order order = (Order)listViewItem.Tag;
+			//Order replacement = order.DeriveReplacementOrder();
+			Assembler.PopupException("NOT_IMPLEMETED");
 		}
-		void mniOrderSubmit_Click(object sender, EventArgs e) {
-			List<Order> orders = new List<Order>();
-			foreach (Order current in this.OrdersSelected) {
-				if (current.InStateChangeableToSubmitted) {
-					if (current.Alert.AccountNumber.StartsWith("Paper")) {
-						//current.AlertDate = MainModule.Instance._getAuthenticationProvider().GetCurrentDateTime;
-						DateTime serverTime = current.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
-						current.TimeCreatedBroker = serverTime;
-					}
-					orders.Add(current);
-				}
-			}
-			if (orders.Count == 0) return;
-			Assembler.InstanceInitialized.OrderProcessor.SubmitEatableOrdersFromGui(orders);
-		}
-		void mniOrderEdit_Click(object sender, EventArgs e) {
-			//DONT_USE_COUNT_IN_VIRTUAL_MODE if (this.OrdersTree.SelectedItems.Count != 1) {
-			//	return;
-			//}
-			//Order order = (Order)this.OrdersTree.SelectedItems[0].Tag;
-//			EditOrderForm editOrderForm = new EditOrderForm(order);
-//			if (editOrderForm.ShowDialog(this) == System.Windows.Forms.DialogResult.OK) {
-//				this.populateListViewItemColumnsFromOrder(this.ordersTree.SelectedItems[0], order);
-//				if (order.State == OrderState.Error) {
-//					//tradeManager.updateOrderStatus(order.GUID, OrderStatus.Staged, DateTime.Now, 0.0, 0.0, 0, "");
-//					//tradeManager.updateOrderStatusAndPropagate(order, OrderState.Staged, DateTime.Now, 0.0, 0.0, "");
-//					string msg = "Error while updating Order using EditOrderForm";
-//					OrderStateMessage newOrderStaged = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
-//					Assembler.Constructed.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderStaged);
-//					throw new Exception("CRAZY#7: how is it possible that after editing Order.State = OrderState.Error???");
-//				}
-//				this.ordersTree_SelectedIndexChanged(this, e);
-//			}
-		}
-		void mniOrderCancel_Click(object sender, EventArgs e) {
+		void mniOrderKill_Click(object sender, EventArgs e) {
 			if (this.OrdersSelected.Count == 0) return;
-			Assembler.InstanceInitialized.OrderProcessor.KillSelectedOrders(this.OrdersSelected);
+			Assembler.InstanceInitialized.OrderProcessor.KillPending(this.OrdersSelected);
 		}
 		void mniOrdersCancel_Click(object sender, EventArgs e) {
 			//DialogResult dialogResult = MessageBox.Show(this,
@@ -199,28 +161,28 @@ namespace Sq1.Widgets.Execution {
 
 		void ordersTree_DoubleClick(object sender, EventArgs e) {
 			//if (this.mniOrderEdit.Enabled) this.mniOrderEdit_Click(sender, e);
-			if (this.OrdersTree.SelectedItem == null) {
+			if (this.OrdersTreeOLV.SelectedItem == null) {
 				string msg = "OrdersTree.SelectedItem == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.OrdersTree.SelectedItem.ForeColor == Color.DimGray) {
+			if (this.OrdersTreeOLV.SelectedItem.ForeColor == Color.DimGray) {
 				string msg = "tree_FormatRow() sets Item.ForeColor=Color.DimGray when AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)==false"
 					+ " (all JSON-deserialized orders have no chart to get popped-up)";
 				//Debugger.Break();
 				return;
 			}
 			//otherwize if you'll see REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR - dont forget to use Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
-			this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTree.SelectedObject as Order);
+			this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTreeOLV.SelectedObject as Order);
 		}
-		void mniTreeExpandAllClick(object sender, EventArgs e) {
-			this.OrdersTree.ExpandAll();
+		void mniTreeExpandAll_Click(object sender, EventArgs e) {
+			this.OrdersTreeOLV.ExpandAll();
 		}
-		void mniTreeCollapseAllClick(object sender, EventArgs e) {
-			this.OrdersTree.CollapseAll();
+		void mniTreeCollapseAll_Click(object sender, EventArgs e) {
+			this.OrdersTreeOLV.CollapseAll();
 		}
 		void mniRebuildAll_Click(object sender, EventArgs e) {
-			this.OrdersTree.RebuildAll(true);
+			this.OrdersTreeOLV.RebuildAll(true);
 		}		
 		
 		void splitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {

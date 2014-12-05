@@ -19,7 +19,7 @@ namespace Sq1.Gui.Singletons {
 			this.orderProcessor = orderProcessor;
 			
 			//this.executionTree.Initialize(this.orderProcessor.DataSnapshot.OrdersAll.SafeCopy);
-			this.ExecutionTreeControl.InitializeWithShadowTreeRebuilt(this.orderProcessor.DataSnapshot.OrdersTree);
+			this.ExecutionTreeControl.InitializeWithShadowTreeRebuilt(this.orderProcessor.DataSnapshot.OrdersAutoTree);
 			this.ExecutionTreeControl.PopulateAccountsMenuFromBrokerProvider(Assembler.InstanceInitialized.RepositoryJsonDataSource.CtxAccountsAllCheckedFromUnderlyingBrokerProviders);			
 		}
 		
@@ -32,7 +32,7 @@ namespace Sq1.Gui.Singletons {
 			}
 			return base.IsHidden;
 		}
-		public void orderProcessor_OrderAdded(object sender, OrderEventArgs e) {
+		public void orderProcessor_OrderAdded(object sender, OrdersListEventArgs e) {
 			if (this.InvokeRequired) {
 				base.BeginInvoke((MethodInvoker)delegate { orderProcessor_OrderAdded(sender, e); });
 				return;
@@ -40,10 +40,14 @@ namespace Sq1.Gui.Singletons {
 			//if (e.Order.State == OrderState.AutoSubmitNotEnabled) return;
 			if (this.IsHiddenHandlingRepopulate()) return;
 			//if (this.executionTree.SelectedAccountNumbers.Contains(e.Order.Alert.AccountNumber) == false) return;
-			this.ExecutionTreeControl.OrderInsertToListView(e.Order);
-			if (this.ExecutionTreeControl.DataSnapshot.ToggleSingleClickSyncWithChart) {
-				this.executionTree_OnOrderDoubleClickedChartFormNotification(sender, e);
+			if (e.Orders.Count == 0) return;
+			foreach (Order o in e.Orders) {
+				this.ExecutionTreeControl.OrderInsertToListView(o);
 			}
+			//if (this.ExecutionTreeControl.DataSnapshot.ToggleSingleClickSyncWithChart) {
+			//	this.executionTree_OnOrderDoubleClickedChartFormNotification(sender, e);
+			//}
+			this.PopulateWindowText();
 		}
 		void orderProcessor_OrderMessageAdded(object sender, OrderStateMessageEventArgs e) {
 			if (base.IsDisposed) return;
@@ -58,22 +62,23 @@ namespace Sq1.Gui.Singletons {
 			this.ExecutionTreeControl.PopulateMessagesFromSelectedOrder(e.OrderStateMessage.Order);
 			this.PopulateWindowText();
 		}
-		void orderProcessor_OrderStateChanged(object sender, OrderEventArgs e) {
+		void orderProcessor_OrderStateChanged(object sender, OrdersListEventArgs e) {
 			if (base.IsDisposed) return;
 			if (this.InvokeRequired) {
 				base.BeginInvoke((MethodInvoker)delegate { this.orderProcessor_OrderStateChanged(sender, e); });
 				return;
 			}
 			if (this.IsHiddenHandlingRepopulate()) return;
-			this.ExecutionTreeControl.OrderUpdateListItem(e.Order);
+			this.ExecutionTreeControl.OrderStateUpdateOLV(e.Orders);
+			this.PopulateWindowText();
 		}
-		void orderProcessor_OrderRemoved(object sender, OrderEventArgs e) {
+		void orderProcessor_OrderRemoved(object sender, OrdersListEventArgs e) {
 			if (this.InvokeRequired) {
 				base.BeginInvoke((MethodInvoker)delegate { orderProcessor_OrderRemoved(sender, e); });
 				return;
 			}
 			if (this.IsHiddenHandlingRepopulate()) return;
-			this.ExecutionTreeControl.OrderRemoveFromListView(e.Order);
+			this.ExecutionTreeControl.OrderRemoveFromListView(e.Orders);
 			this.PopulateWindowText();
 		}
 
@@ -83,7 +88,7 @@ namespace Sq1.Gui.Singletons {
 				return;
 			}
 			string ret = "";
-			int itemsCnt			= this.ExecutionTreeControl.OrdersTree.Items.Count;
+			int itemsCnt			= this.ExecutionTreeControl.OrdersTreeOLV.Items.Count;
 			int allCnt				= this.orderProcessor.DataSnapshot.OrdersAll.InnerOrderList.Count;
 			int submittingCnt		= this.orderProcessor.DataSnapshot.OrdersSubmitting.InnerOrderList.Count;
 			int pendingCnt			= this.orderProcessor.DataSnapshot.OrdersPending.InnerOrderList.Count;
@@ -116,16 +121,16 @@ namespace Sq1.Gui.Singletons {
 		}
 
 		void ExecutionForm_Load(object sender, EventArgs e) {
-			this.orderProcessor.EventDistributor.OnOrderAddedExecutionFormNotification += this.orderProcessor_OrderAdded;
-			this.orderProcessor.EventDistributor.OnOrderRemovedExecutionFormNotification += this.orderProcessor_OrderRemoved;
-			this.orderProcessor.EventDistributor.OnOrderStateChangedExecutionFormNotification += this.orderProcessor_OrderStateChanged;
-			this.orderProcessor.EventDistributor.OnOrderMessageAddedExecutionFormNotification += this.orderProcessor_OrderMessageAdded;
+			this.orderProcessor.OnOrderAddedExecutionFormNotification			+= this.orderProcessor_OrderAdded;
+			this.orderProcessor.OnOrderRemovedExecutionFormNotification			+= this.orderProcessor_OrderRemoved;
+			this.orderProcessor.OnOrderStateChangedExecutionFormNotification	+= this.orderProcessor_OrderStateChanged;
+			this.orderProcessor.OnOrderMessageAddedExecutionFormNotification	+= this.orderProcessor_OrderMessageAdded;
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderAddedExecutionFormNotification += this.orderProcessor_OrderAdded;
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderRemovedExecutionFormNotification += this.orderProcessor_OrderRemoved;
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderStateChangedExecutionFormNotification += this.orderProcessor_OrderStateChanged;
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderMessageAddedExecutionFormNotification += this.orderProcessor_OrderMessageAdded;
 
-			this.ExecutionTreeControl.OnOrderStatsChangedRecalculateWindowTitleExecutionFormNotification += delegate { this.PopulateWindowText(); };
+			//this.ExecutionTreeControl.OnOrderStatsChangedRecalculateWindowTitleExecutionFormNotification += delegate { this.PopulateWindowText(); };
 			this.ExecutionTreeControl.OnOrderDoubleClickedChartFormNotification += this.executionTree_OnOrderDoubleClickedChartFormNotification;
 
 			isHiddenPrevState = base.IsHidden;
@@ -136,10 +141,10 @@ namespace Sq1.Gui.Singletons {
 			//ExecutionForm.Instance = null;
 		}
 		void ExecutionForm_Closing(object sender, FormClosingEventArgs e) {
-			this.orderProcessor.EventDistributor.OnOrderAddedExecutionFormNotification -= this.orderProcessor_OrderAdded;
-			this.orderProcessor.EventDistributor.OnOrderRemovedExecutionFormNotification -= this.orderProcessor_OrderRemoved;
-			this.orderProcessor.EventDistributor.OnOrderStateChangedExecutionFormNotification -= this.orderProcessor_OrderStateChanged;
-			this.orderProcessor.EventDistributor.OnOrderMessageAddedExecutionFormNotification -= this.orderProcessor_OrderMessageAdded;
+			this.orderProcessor.OnOrderAddedExecutionFormNotification -= this.orderProcessor_OrderAdded;
+			this.orderProcessor.OnOrderRemovedExecutionFormNotification -= this.orderProcessor_OrderRemoved;
+			this.orderProcessor.OnOrderStateChangedExecutionFormNotification -= this.orderProcessor_OrderStateChanged;
+			this.orderProcessor.OnOrderMessageAddedExecutionFormNotification -= this.orderProcessor_OrderMessageAdded;
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderAddedExecutionFormNotification -= this.orderProcessor_OrderAdded;
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderRemovedExecutionFormNotification -= this.orderProcessor_OrderRemoved;
 //			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderStateChangedExecutionFormNotification -= this.orderProcessor_OrderStateChanged;

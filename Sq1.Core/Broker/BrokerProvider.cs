@@ -405,7 +405,7 @@ namespace Sq1.Core.Broker {
 			try {
 				switch (orderWithNewState.State) {
 					case OrderState.WaitingBrokerFill:
-						Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersPending.FindSimilarNotSamePendingOrder(orderWithNewState);
+						Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForSimilarNotSamePendingOrder(orderWithNewState);
 						//Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersAll.FindSimilarNotSamePendingOrder(orderWithNewState);
 						if (mustBeSame == null) break;
 						bool identical = mustBeSame.Alert.IsIdenticalOrderlessPriceless(orderWithNewState.Alert);
@@ -421,7 +421,7 @@ namespace Sq1.Core.Broker {
 						}
 						break;
 					case OrderState.Killed:
-						this.RemoveOrdersPendingOnFilledCallback(orderWithNewState, msig);
+						this.removeOrdersPendingOnFilledCallback(orderWithNewState, msig);
 						this.OrderProcessor.RemovePendingAlertsForVictimOrderMustBePostKill(orderWithNewState, msig);
 						break;
 					case OrderState.Rejected:
@@ -446,14 +446,15 @@ namespace Sq1.Core.Broker {
 			}
 		}
 
-		private void RemoveOrdersPendingOnFilledCallback(Order orderExecuted, string msig) {
+		void removeOrdersPendingOnFilledCallback(Order orderExecuted, string msig) {
 			msig = "RemoveOrdersPendingOnFilledCallback(): ";
 			//if (OrderStatesCollections.CemeteryHealthy.OrderStates.Contains(orderExecuted.State) == false) return;
 
 			//string msg = this.OrderProcessor.DataSnapshot.OrdersPending.ToStringSummary();
 			//bool removed = this.OrderProcessor.DataSnapshot.OrdersPending.Remove(orderExecuted);
 			//msg += " ...REMOVED(" + removed + ")=> " + this.OrderProcessor.DataSnapshot.OrdersPending.ToStringSummary();
-			string msg = this.OrderProcessor.DataSnapshot.FindStateLaneExpectedByOrderState(orderExecuted.State).ToString();
+			OrderLaneByState lane = this.OrderProcessor.DataSnapshot.SuggestLaneByOrderStateNullUnsafe(orderExecuted.State);
+			string msg = (lane != null) ? lane.ToString() : "NO_SUGGESTION_FOR[" + orderExecuted.State + "]";
 
 			if (orderExecuted.Alert.IsExitAlert && orderExecuted.Alert.PositionAffected.IsExitFilled == false) {
 				msg = "WARNING_POSITION_STILL_OPEN "
@@ -462,7 +463,7 @@ namespace Sq1.Core.Broker {
 			}
 			orderExecuted.AppendMessage(msig + msg);
 		}
-		public Order FindOrderLaneOptimizedNullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
+		public Order ScanEvidentLanesForGuidNullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
 			string msig = " //" + this.Name;
 			string orderLanesSearchedAsString = "";
 			Order orderFound = null;
@@ -473,7 +474,7 @@ namespace Sq1.Core.Broker {
 			}
 			foreach (OrderLane orderLane in orderLanes) {
 				orderLanesSearchedAsString += orderLane.GetType().Name.Substring(5) + separator;	// removing "Orders" from "OrdersSubmitting"
-				orderFound = orderLane.FindByGUID(GUID);
+				orderFound = orderLane.ScanRecentForGUID(GUID);
 				if (orderFound != null) break;
 			}
 			orderLanesSearchedAsString = orderLanesSearchedAsString.TrimEnd(separator);
@@ -504,12 +505,12 @@ namespace Sq1.Core.Broker {
 			return orderFound;
 		}
 
-		public virtual void MoveStopLossOrderProcessorInvoker(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {
+		public virtual void MoveStopLossOverrideable(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {
 			// broker providers might put some additional order processing,
 			// but they must call OrderProcessor.MoveStopLoss() or imitate similar mechanism
 			this.OrderProcessor.MoveStopLoss(proto, newActivationOffset, newStopLossNegativeOffset);
 		}
-		public void MoveTakeProfitOrderProcessorInvoker(PositionPrototype proto, double newTakeProfitPositiveOffset) {
+		public void MoveTakeProfitOverrideable(PositionPrototype proto, double newTakeProfitPositiveOffset) {
 			// broker providers might put some additional order processing,
 			// but they must call OrderProcessor.MoveStopLoss() or imitate similar mechanism
 			this.OrderProcessor.MoveTakeProfit(proto, newTakeProfitPositiveOffset);

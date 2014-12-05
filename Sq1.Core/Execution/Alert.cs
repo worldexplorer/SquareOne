@@ -94,7 +94,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }
 		[JsonProperty]	public	OrderSpreadSide		OrderSpreadSide;
 		[JsonProperty]	public	Quote				QuoteCreatedThisAlert;
-		[JsonProperty]	public	Quote				QuoteFilledThisAlert;
+		[JsonProperty]	public	Quote				QuoteFilledThisAlertDuringBacktestNotLive;
 		[JsonProperty]	public	Quote				QuoteLastWhenThisAlertFilled;
 		[JsonIgnore]	public	Position			PositionAffected;
 		[JsonIgnore]	public	DateTime			PositionEntryDate				{ get {
@@ -155,7 +155,7 @@ namespace Sq1.Core.Execution {
 
 
 				bool fillAtSlimBarIsWithinSpread = this.FilledBarSnapshotFrozenAtFill.FillAtSlimBarIsWithinSpread(
-					this.PriceFilledThroughPosition, this.QuoteFilledThisAlert.Spread);
+					this.PriceFilledThroughPosition, this.QuoteFilledThisAlertDuringBacktestNotLive.Spread);
 				#if DEBUG
 				if (!fillAtSlimBarIsWithinSpread) {
 					Debugger.Break();
@@ -173,7 +173,7 @@ namespace Sq1.Core.Execution {
 					}
 					#endif
 
-					bool containsBidAsk = this.FilledBarSnapshotFrozenAtFill.ContainsBidAskForQuoteGenerated(this.QuoteFilledThisAlert);
+					bool containsBidAsk = this.FilledBarSnapshotFrozenAtFill.ContainsBidAskForQuoteGenerated(this.QuoteFilledThisAlertDuringBacktestNotLive);
 					#if DEBUG
 					if (!containsBidAsk && fillAtSlimBarIsWithinSpread) {
 						Debugger.Break();
@@ -182,7 +182,7 @@ namespace Sq1.Core.Execution {
 					#endif
 				}
 				
-				bool priceBetweenFilledQuotesBidAsk = this.QuoteFilledThisAlert.PriceBetweenBidAsk(this.PriceFilledThroughPosition);
+				bool priceBetweenFilledQuotesBidAsk = this.QuoteFilledThisAlertDuringBacktestNotLive.PriceBetweenBidAsk(this.PriceFilledThroughPosition);
 				#if DEBUG
 				if (!priceBetweenFilledQuotesBidAsk) {
 					Debugger.Break();
@@ -204,8 +204,8 @@ namespace Sq1.Core.Execution {
 		//		return outsideBar;
 		//	} }
 		[JsonIgnore]	public	bool IsFilledOutsideQuote_DEBUG_CHECK { get {
-				if (this.QuoteFilledThisAlert == null) return false;
-				bool insideQuote = (this.PriceFilledThroughPosition >= this.QuoteFilledThisAlert.Bid && this.PriceFilledThroughPosition <= this.QuoteFilledThisAlert.Ask);
+				if (this.QuoteFilledThisAlertDuringBacktestNotLive == null) return false;		// this is LIVE - I'm just notified "your order is filled" at a random moment; no way I could possibly figure out
+				bool insideQuote = (this.PriceFilledThroughPosition >= this.QuoteFilledThisAlertDuringBacktestNotLive.Bid && this.PriceFilledThroughPosition <= this.QuoteFilledThisAlertDuringBacktestNotLive.Ask);
 				bool outsideQuote = !insideQuote; 
 				#if DEBUG
 				if (outsideQuote) {
@@ -451,7 +451,7 @@ namespace Sq1.Core.Execution {
 				if (this.PositionAffected.EntryFilledBarIndex != barFillRelno) {
 					string msg = "ENTRY_ALERT_SIMPLE_CHECK_FAILED_AVOIDING_EXCEPTION_IN_PositionsMasterOpenNewAdd"
 						+ "EntryFilledBarIndex[" + this.PositionAffected.EntryFilledBarIndex + "] != barFillRelno[" + barFillRelno + "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);	//makes #D loose callstack & throw
 				}
 			} else {
 				this.PositionAffected.FillExitWith(barFill, priceFill, qtyFill, slippageFill, commissionFill);

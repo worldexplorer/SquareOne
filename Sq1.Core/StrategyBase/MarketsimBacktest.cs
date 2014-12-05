@@ -6,12 +6,12 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
-	public class MarketSim {
+	public class MarketsimBacktest {
 		ScriptExecutor executor;
 		List<Alert> stopLossesActivatedOnPreviousQuotes;
 		public bool FillOutsideQuoteSpreadParanoidCheckThrow { get; private set; }
 
-		public MarketSim(ScriptExecutor executor) {
+		public MarketsimBacktest(ScriptExecutor executor) {
 			this.executor = executor;
 			this.stopLossesActivatedOnPreviousQuotes = new List<Alert>();
 		}
@@ -472,85 +472,6 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return filled;
 		}
-		
-		public bool SimulateFillLive(Alert alert, Quote quote, out bool abortTryFill, out string abortTryFillReason) {
-			if (this.executor.Backtester.IsBacktestingNow) {
-				string msg = "DONT_INVOKE_ME_DURING_THE_BACKTEST SimulateFillLive() was designed for Sq1.Adapters.QuikMock.Terminal.QuikTerminalMock()";
-				Assembler.PopupException(msg);
-			}
-			abortTryFill = false;
-			abortTryFillReason = "NO_REASON_TO_ABORT_TRY_FILL";
-			if (alert.DataSource.BrokerProviderName.Contains("Mock") == false) {
-				string msg = "SimulateRealtimeOrderFill() should be called only from BrokerProvidersName.Contains(Mock)"
-					+ "; here you have MOCK Realtime Streaming and Broker,"
-					+ " it's not a time-insensitive QuotesFromBar-generated Streaming Backtest"
-					+ " (both are routed to here, MarketSim, hypothetical order execution)";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-			}
-
-			if (alert.PositionAffected == null) {
-				string msg = "alertToBeKilled always has a PositionAffected, even for OnChartManual Buy/Short Market/Stop/Limit";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-			}
-
-			bool filled = false;
-			//double priceFill = -1;
-			//double slippageFill = -1;
-			//Quote quote = this.executor.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(alert.Symbol);
-			if (quote == null) {
-				string msg = "how come LastQuoteGetForSymbol(" + alert.Symbol + ")=null??? StreamingProvider["
-					+ this.executor.DataSource.StreamingProvider + "]";
-				//this.executor.PopupException(new Exception(msg));
-				return false;
-			}
-
-			if (alert.IsEntryAlert) {
-				if (alert.PositionAffected.IsEntryFilled) {
-					string msg = "WONT_FILL_ENTRY_TWICE PositionAffected.EntryFilled => did you create many threads in your QuikTerminalMock?";
-					throw new Exception(msg);
-				}
-				//filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
-				filled = this.SimulateFillPendingAlert(alert, quote);
-			} else {
-				if (alert.PositionAffected.IsEntryFilled == false) {
-					string msg = "WONT_FILL_EXIT_TWICE I refuse to tryFill an ExitOrder because ExitOrder.Alert.PositionAffected.EntryFilled=false";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					throw new Exception(msg);
-				}
-				if (alert.PositionAffected.IsExitFilled) {
-					string msg = null;
-					if (alert.PositionAffected.IsExitFilledWithPrototypedAlert) {
-						msg = "ExitAlert already filled and Counterparty.Status=["
-							+ alert.PositionAffected.PrototypedExitCounterpartyAlert.OrderFollowed.State + "] (does it look OK for you?)";
-					} else {
-						msg = "I refuse to tryFill non-Prototype based ExitOrder having PositionAffected.IsExitFilled=true";
-					}
-					abortTryFill = true;
-					abortTryFillReason = msg;
-					// abortTryFillReason goes to the order.Message inside the caller
-					//this.executor.ThrowPopup(new Exception(msg));
-					return false;
-				}
-				try {
-					//filled = this.CheckExitAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
-					filled = this.SimulateFillPendingAlert(alert, quote);
-				} catch (Exception e) {
-					#if DEBUG
-					Debugger.Break();
-					#endif
-				}
-			}
-			return filled;
-		}
-		
 		string checkAlertFillable(Alert alert) {
 			string msg = null;
 			if (alert.IsFilled == true) {
@@ -654,7 +575,7 @@ namespace Sq1.Core.StrategyBase {
 				return filled;
 			}
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
-			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote, entryBarToTestOn,
+			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote,
 				priceFill, alert.Qty, slippageFill, entryCommission);
 			return filled;
 		}
@@ -666,14 +587,18 @@ namespace Sq1.Core.StrategyBase {
 
 			double exitCommission = this.executor.OrderCommissionCalculate(alert.Direction,
 				alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);
-			int exitBarToTestOn = quote.ParentBarStreaming.ParentBarsIndex;
+			if (quote.ParentBarStreaming.ParentBarsIndex == -1) {
+				string msg = "AVOIDING_ALL_SORT_OF_MOVE_AROUND_ERRORS MUST_BE_POSITIVE_GOT_-1_quote.ParentStreamingBar.ParentBarsIndex";
+				Assembler.PopupException(msg);
+				return filled;
+			}
 			
 			if (this.executor.Backtester.IsBacktestingNow == false) {
 				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
 				return filled;
 			}
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
-			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote, exitBarToTestOn,
+			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote,
 				priceFill, alert.Qty, slippageFill, exitCommission);
 			return filled;
 		}

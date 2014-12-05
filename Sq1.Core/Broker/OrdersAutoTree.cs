@@ -4,47 +4,23 @@ using System.Collections.Generic;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
-	public class OrdersShadowTreeDerived : OrderLane {
+	public class OrdersAutoTree : OrderLane {
 		OrderLane ordersAll;
-		public OrderEventDistributor OrderEventDistributor;
 		
-		public OrdersShadowTreeDerived() : base() {
-			this.OrderEventDistributor = new OrderEventDistributor();
+		public OrdersAutoTree() : base() {
 		}
 		public void InitializeScanDeserializedMoveDerivedsInsideBuildTreeShadow(OrderLane ordersAllDeserialized) {
 			base.Clear();
 			this.ordersAll = ordersAllDeserialized;
 			this.scanDeserializedMoveDerivedsInsideBuildTreeShadow(this.ordersAll);
 		}
-//		public Order FindOrderGuidOnRootLevel(string Guid) {
-//			Order orderParent = null;
-//			foreach (var each in this.ordersAll) {
-//				if (each.GUID != Guid) continue; 
-//				orderParent = each;
-//				break;
-//			}
-//			return orderParent;
-//		}
-//		public Order FindOrderGuidAmongDerivedsRecursively(string Guid) {
-//			Order ret = null
-//			foreach (var each in this.ordersAll) {
-//				var found = each.FindOrderGuidAmongDerivedsRecursively(Guid);
-//				if (found == null) continue;
-//				ret = found;
-//				break;
-//			}
-//			return ret;
-//		}
-		//InsertToShadowTreeAfterAddingThisOrderToAnotherOrdersDerivedSlow
-		public void InsertToShadowTreeRaiseExecutionFormNotification(int indexInsertToIfOrderNotDerived, Order orderAdded) {
+		public void InsertToRoot(Order orderAdded) {
 			Order orderParent = orderAdded.DerivedFrom;
-			if (orderParent == null) {
-				base.Insert(indexInsertToIfOrderNotDerived, orderAdded);
-			}
-			this.OrderEventDistributor.RaiseOrderAddedExecutionFormNotification(this, orderAdded);
+			if (orderParent != null) return;
+			base.Insert(orderAdded);
 		}
 		void scanDeserializedMoveDerivedsInsideBuildTreeShadow(OrderLane ordersFlat) {
-			string msig = " OrdersShadowTreeDerived::scanDeserializedMoveDerivedsInsideBuildTreeShadow(): ";
+			string msig = " OrdersAutoTree::scanDeserializedMoveDerivedsInsideBuildTreeShadow(): ";
 			int derivedsFound = 0;
 
 			List<Order> foundSoRemoveFromRoot = new List<Order>();
@@ -89,20 +65,40 @@ namespace Sq1.Core.Broker {
 			
 			foreach (Order order in ordersFlat.InnerOrderList) {
 				if (foundSoRemoveFromRoot.Contains(order)) continue;
-				base.Insert(0, order);
+				base.Insert(order);
 			}
 
 			string stats = "DERIVEDS_MOVED[" + derivedsFound + "] = ordersFlat.Count[" + ordersFlat.InnerOrderList.Count + "] - base.Count[" + base.InnerOrderList.Count + "]";
 			//Assembler.PopupException(stats + msig);
 		}
 		
-		public void RemoveFromShadowTree(List<Order> ordersToRemove) {
-			//base.RemoveRange(ordersToRemove);
-			//throw new NotImplementedException("ExecutionTree.HideCompletedOrders] is a shaky ground; why do you need to remove? tree scan is a PITA");
-		}
-		public void AppendOrderMessageAndRaiseOrderMessageAddedExecutionFormNotification(object sender, OrderStateMessage orderStateMessage) {
-			orderStateMessage.Order.AppendMessageSynchronized(orderStateMessage);
-			this.OrderEventDistributor.RaiseOrderMessageAddedExecutionFormNotification(sender, orderStateMessage);
+		public void RemoveFromRootLevelKeepOrderPointers(List<Order> ordersToRemove) {
+			foreach (Order order in ordersToRemove) {
+				if (order.DerivedFrom != null) continue;
+				base.Remove(order);
+			}
 		}
 	}
 }
+
+
+//		public Order FindOrderGuidOnRootLevel(string Guid) {
+//			Order orderParent = null;
+//			foreach (var each in this.ordersAll) {
+//				if (each.GUID != Guid) continue; 
+//				orderParent = each;
+//				break;
+//			}
+//			return orderParent;
+//		}
+//		public Order FindOrderGuidAmongDerivedsRecursively(string Guid) {
+//			Order ret = null
+//			foreach (var each in this.ordersAll) {
+//				var found = each.FindOrderGuidAmongDerivedsRecursively(Guid);
+//				if (found == null) continue;
+//				ret = found;
+//				break;
+//			}
+//			return ret;
+//		}
+		//InsertToShadowTreeAfterAddingThisOrderToAnotherOrdersDerivedSlow

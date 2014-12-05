@@ -79,9 +79,13 @@
       <DependentUpon>BrokerProvider.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
-    <Compile Include="Broker\OrderEventDistributor.cs" />
-    <Compile Include="Broker\OrderProcessorEventDistributor.cs" />
-    <Compile Include="Broker\OrdersShadowTreeDerived.cs" />
+    <Compile Include="Broker\OrderProcessor.EventDistributor.cs">
+      <DependentUpon>OrderProcessor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\OrderProcessor.GuiCommands.cs">
+      <DependentUpon>OrderProcessor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\OrdersAutoTree.cs" />
     <Compile Include="Charting\ChartPanelType.cs" />
     <Compile Include="Charting\ChartShadow.cs">
       <SubType>UserControl</SubType>
@@ -114,6 +118,7 @@
     <Compile Include="DoubleBuffered\UserControlDoubleBuffered.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Execution\OrderEventArgs.cs" />
     <Compile Include="Execution\OrderStateMessageEventArgs.cs" />
     <Compile Include="Execution\Position.Stats.cs">
       <DependentUpon>Position.cs</DependentUpon>
@@ -246,7 +251,7 @@
     <Compile Include="Execution\AlertEventArgs.cs" />
     <Compile Include="Execution\ReporterPokeUnitEventArgs.cs" />
     <Compile Include="StrategyBase\BidOrAsk.cs" />
-    <Compile Include="StrategyBase\MarketSim.cs" />
+    <Compile Include="StrategyBase\MarketsimBacktest.cs" />
     <Compile Include="Execution\PositionEventArgs.cs" />
     <Compile Include="StrategyBase\PerformanceEventArg.cs" />
     <Compile Include="StrategyBase\PositionPrototypeActivator.cs" />
@@ -298,7 +303,7 @@
     <Compile Include="DataTypes\MarketInfo.cs" />
     <Compile Include="DataTypes\MarketShortDay.cs" />
     <Compile Include="Execution\Order.cs" />
-    <Compile Include="Execution\OrderEventArgs.cs" />
+    <Compile Include="Execution\OrdersListEventArgs.cs" />
     <Compile Include="Execution\OrderStateMessage.cs" />
     <Compile Include="Execution\OrderState.cs" />
     <Compile Include="Execution\MarketLimitStop.cs" />
@@ -317,7 +322,7 @@
     <Compile Include="Execution\Direction.cs" />
     <Compile Include="StrategyBase\Script.cs" />
     <Compile Include="StrategyBase\ScriptCompiler.cs" />
-    <Compile Include="StrategyBase\MarketLive.cs" />
+    <Compile Include="StrategyBase\MarketsimLive.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
