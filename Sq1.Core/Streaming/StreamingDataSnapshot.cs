@@ -71,12 +71,10 @@ namespace Sq1.Core.Streaming {
 			}
 			this.lastQuoteClonesReceivedUnboundBySymbol[quote.Symbol] = quote;
 		}
-		public Quote LastQuoteCloneGetForSymbol(string Symbol) {
-			lock (this.lockLastQuote) {
+		public Quote LastQuoteCloneGetForSymbol(string Symbol) { lock (this.lockLastQuote) {
 				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol) == false) return null;
 				return this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
-			}
-		}
+			} }
 		public double LastQuoteGetPriceForMarketOrder(string Symbol) {
 			Quote lastQuote = LastQuoteCloneGetForSymbol(Symbol);
 			if (lastQuote == null) return 0;
@@ -87,28 +85,24 @@ namespace Sq1.Core.Streaming {
 			return lastQuote.LastDealPrice;
 		}
 
-		public double BestBidGetForMarketOrder(string Symbol) {
-			double ret = -1;
-			//lock (this.bestBidBySymbol) { if (this.bestBidBySymbol.ContainsKey(Symbol)) { ret = this.bestBidBySymbol[Symbol]; } }
-			lock (this.lockLastQuote) {
+		public double BestBidGetForMarketOrder(string Symbol) { lock (this.lockLastQuote) {
+				double ret = -1;
+				//lock (this.bestBidBySymbol) { if (this.bestBidBySymbol.ContainsKey(Symbol)) { ret = this.bestBidBySymbol[Symbol]; } }
 				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol)) {
 					Quote lastQuote = this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
 					ret = lastQuote.Bid;
 				}
-			}
-			return ret;
-		}
-		public double BestAskGetForMarketOrder(string Symbol) {
-			double ret = -1;
-			//lock (this.bestAskBySymbol) { if (this.bestAskBySymbol.ContainsKey(Symbol)) { ret = this.bestAskBySymbol[Symbol]; } }
-			lock (this.lockLastQuote) {
+				return ret;
+			} }
+		public double BestAskGetForMarketOrder(string Symbol) { lock (this.lockLastQuote) {
+				double ret = -1;
+				//lock (this.bestAskBySymbol) { if (this.bestAskBySymbol.ContainsKey(Symbol)) { ret = this.bestAskBySymbol[Symbol]; } }
 				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol)) {
 					Quote lastQuote = this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
 					ret = lastQuote.Ask;
 				}
-			}
-			return ret;
-		}
+				return ret;
+			} }
 
 		public double BidOrAskFor(string Symbol, PositionLongShort direction) {
 			if (direction == PositionLongShort.Unknown) {

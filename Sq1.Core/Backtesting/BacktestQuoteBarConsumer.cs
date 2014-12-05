@@ -39,9 +39,9 @@ namespace Sq1.Core.Backtesting {
 					//	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
 					string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
 				}
-				int pendingCountPre = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-				int pendingFilled = this.backtester.Executor.MarketSim.SimulateFillAllPendingAlerts(quote);
-				int pendingCountNow = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
+				int pendingCountPre	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
+				int pendingFilled	= this.backtester.Executor.MarketsimBacktest.SimulateFillAllPendingAlerts(quote);
+				int pendingCountNow	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingCountNow != pendingCountPre - pendingFilled) {
 					string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
 				}

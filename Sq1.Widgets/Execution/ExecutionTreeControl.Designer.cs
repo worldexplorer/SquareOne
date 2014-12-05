@@ -14,7 +14,7 @@ namespace Sq1.Widgets.Execution {
 
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
-			this.OrdersTree = new BrightIdeasSoftware.TreeListView();
+			this.OrdersTreeOLV = new BrightIdeasSoftware.TreeListView();
 			this.colheGUID = new BrightIdeasSoftware.OLVColumn();
 			this.colheReplacedByGUID = new BrightIdeasSoftware.OLVColumn();
 			this.colheKilledByGUID = new BrightIdeasSoftware.OLVColumn();
@@ -41,13 +41,13 @@ namespace Sq1.Widgets.Execution {
 			this.colheAccount = new BrightIdeasSoftware.OLVColumn();
 			this.colheLastMessage = new BrightIdeasSoftware.OLVColumn();
 			this.ctxOrder = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.mniOrderCancel = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniOrderCancelReplace = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniOrderRemoveSelected = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniOrdersKill = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniOrderReplace = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniOrdersWipe = new System.Windows.Forms.ToolStripMenuItem();
 			this.sepCancel = new System.Windows.Forms.ToolStripSeparator();
-			this.mniCancelAllPending = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniKillAllPending = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniStopEmergencyClose = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniKillAlStopAutoSubmit = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniKillAllStopAutoSubmit = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniFilterColumns = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxColumns = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -76,16 +76,13 @@ namespace Sq1.Widgets.Execution {
 			this.mniCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniRebuildAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.mniRemoveCompleted = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniOrderEdit = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniOrderSubmit = new System.Windows.Forms.ToolStripMenuItem();
 			this.imgListOrderDirection = new System.Windows.Forms.ImageList(this.components);
 			this.lvMessages = new BrightIdeasSoftware.ObjectListView();
 			this.colheMessageDateTime = new BrightIdeasSoftware.OLVColumn();
 			this.colheMessageState = new BrightIdeasSoftware.OLVColumn();
 			this.colheMessageText = new BrightIdeasSoftware.OLVColumn();
 			this.splitContainerMessagePane = new System.Windows.Forms.SplitContainer();
-			((System.ComponentModel.ISupportInitialize)(this.OrdersTree)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.OrdersTreeOLV)).BeginInit();
 			this.ctxOrder.SuspendLayout();
 			this.ctxColumns.SuspendLayout();
 			this.ctxListControl.SuspendLayout();
@@ -98,12 +95,12 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// OrdersTree
 			// 
-			this.OrdersTree.Activation = System.Windows.Forms.ItemActivation.OneClick;
-			this.OrdersTree.AllowColumnReorder = true;
-			this.OrdersTree.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.OrdersTree.CausesValidation = false;
-			this.OrdersTree.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
-			this.OrdersTree.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.OrdersTreeOLV.Activation = System.Windows.Forms.ItemActivation.OneClick;
+			this.OrdersTreeOLV.AllowColumnReorder = true;
+			this.OrdersTreeOLV.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.OrdersTreeOLV.CausesValidation = false;
+			this.OrdersTreeOLV.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
+			this.OrdersTreeOLV.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
 			this.colheGUID,
 			this.colheReplacedByGUID,
 			this.colheKilledByGUID,
@@ -129,32 +126,32 @@ namespace Sq1.Widgets.Execution {
 			this.colheScale,
 			this.colheAccount,
 			this.colheLastMessage});
-			this.OrdersTree.ContextMenuStrip = this.ctxOrder;
-			this.OrdersTree.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.OrdersTree.EmptyListMsg = "";
-			this.OrdersTree.FullRowSelect = true;
-			this.OrdersTree.HideSelection = false;
-			this.OrdersTree.IncludeColumnHeadersInCopy = true;
-			this.OrdersTree.IncludeHiddenColumnsInDataTransfer = true;
-			this.OrdersTree.Location = new System.Drawing.Point(0, 0);
-			this.OrdersTree.Name = "OrdersTree";
-			this.OrdersTree.OwnerDraw = true;
-			this.OrdersTree.ShowGroups = false;
-			this.OrdersTree.ShowItemToolTips = true;
-			this.OrdersTree.Size = new System.Drawing.Size(334, 411);
-			this.OrdersTree.SmallImageList = this.imgListOrderDirection;
-			this.OrdersTree.TabIndex = 18;
-			this.OrdersTree.TintSortColumn = true;
-			this.OrdersTree.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
-			this.OrdersTree.UseCompatibleStateImageBehavior = false;
-			this.OrdersTree.UseFilterIndicator = true;
-			this.OrdersTree.UseFiltering = true;
-			this.OrdersTree.View = System.Windows.Forms.View.Details;
-			this.OrdersTree.VirtualMode = true;
-			this.OrdersTree.FormatRow += new System.EventHandler<BrightIdeasSoftware.FormatRowEventArgs>(this.tree_FormatRow);
-			this.OrdersTree.SelectedIndexChanged += new System.EventHandler(this.ordersTree_SelectedIndexChanged);
-			this.OrdersTree.DoubleClick += new System.EventHandler(this.ordersTree_DoubleClick);
-			this.OrdersTree.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ordersTree_KeyDown);
+			this.OrdersTreeOLV.ContextMenuStrip = this.ctxOrder;
+			this.OrdersTreeOLV.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.OrdersTreeOLV.EmptyListMsg = "";
+			this.OrdersTreeOLV.FullRowSelect = true;
+			this.OrdersTreeOLV.HideSelection = false;
+			this.OrdersTreeOLV.IncludeColumnHeadersInCopy = true;
+			this.OrdersTreeOLV.IncludeHiddenColumnsInDataTransfer = true;
+			this.OrdersTreeOLV.Location = new System.Drawing.Point(0, 0);
+			this.OrdersTreeOLV.Name = "OrdersTree";
+			this.OrdersTreeOLV.OwnerDraw = true;
+			this.OrdersTreeOLV.ShowGroups = false;
+			this.OrdersTreeOLV.ShowItemToolTips = true;
+			this.OrdersTreeOLV.Size = new System.Drawing.Size(334, 411);
+			this.OrdersTreeOLV.SmallImageList = this.imgListOrderDirection;
+			this.OrdersTreeOLV.TabIndex = 18;
+			this.OrdersTreeOLV.TintSortColumn = true;
+			this.OrdersTreeOLV.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
+			this.OrdersTreeOLV.UseCompatibleStateImageBehavior = false;
+			this.OrdersTreeOLV.UseFilterIndicator = true;
+			this.OrdersTreeOLV.UseFiltering = true;
+			this.OrdersTreeOLV.View = System.Windows.Forms.View.Details;
+			this.OrdersTreeOLV.VirtualMode = true;
+			this.OrdersTreeOLV.FormatRow += new System.EventHandler<BrightIdeasSoftware.FormatRowEventArgs>(this.tree_FormatRow);
+			this.OrdersTreeOLV.SelectedIndexChanged += new System.EventHandler(this.ordersTree_SelectedIndexChanged);
+			this.OrdersTreeOLV.DoubleClick += new System.EventHandler(this.ordersTree_DoubleClick);
+			this.OrdersTreeOLV.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ordersTree_KeyDown);
 			// 
 			// colheGUID
 			// 
@@ -244,7 +241,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheState
 			// 
-			this.colheState.Text = "OrderState";
+			this.colheState.Text = "State";
 			this.colheState.Width = 111;
 			// 
 			// colhePriceDeposited
@@ -311,45 +308,42 @@ namespace Sq1.Widgets.Execution {
 			// ctxOrder
 			// 
 			this.ctxOrder.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniOrderCancel,
-			this.mniOrderCancelReplace,
-			this.mniOrderRemoveSelected,
+			this.mniOrdersKill,
+			this.mniOrderReplace,
 			this.sepCancel,
-			this.mniCancelAllPending,
+			this.mniKillAllPending,
+			this.mniKillAllStopAutoSubmit,
 			this.mniStopEmergencyClose,
-			this.mniKillAlStopAutoSubmit,
 			this.toolStripSeparator3,
 			this.mniFilterColumns,
 			this.mniFilterOrderStates,
 			this.mniFilterAccounts,
 			this.mniVisualOptions,
 			this.toolStripSeparator1,
-			this.mniRemoveCompleted,
-			this.mniOrderEdit,
-			this.mniOrderSubmit});
+			this.mniOrdersWipe});
 			this.ctxOrder.Name = "popupOrders";
 			this.ctxOrder.Size = new System.Drawing.Size(237, 308);
 			// 
 			// mniOrderCancel
 			// 
-			this.mniOrderCancel.Name = "mniOrderCancel";
-			this.mniOrderCancel.Size = new System.Drawing.Size(236, 22);
-			this.mniOrderCancel.Text = "Cancel Selected Order(s)";
-			this.mniOrderCancel.Click += new System.EventHandler(this.mniOrderCancel_Click);
+			this.mniOrdersKill.Name = "mniOrderCancel";
+			this.mniOrdersKill.Size = new System.Drawing.Size(236, 22);
+			this.mniOrdersKill.Text = "Kill Selected Order(s)";
+			this.mniOrdersKill.Click += new System.EventHandler(this.mniOrderKill_Click);
 			// 
 			// mniOrderCancelReplace
 			// 
-			this.mniOrderCancelReplace.Name = "mniOrderCancelReplace";
-			this.mniOrderCancelReplace.Size = new System.Drawing.Size(236, 22);
-			this.mniOrderCancelReplace.Text = "Cancel/Replace Selected Order";
-			this.mniOrderCancelReplace.Click += new System.EventHandler(this.mniOrderCancelReplace_Click);
+			this.mniOrderReplace.Name = "mniOrderCancelReplace";
+			this.mniOrderReplace.Size = new System.Drawing.Size(236, 22);
+			this.mniOrderReplace.Text = "NYI Replace Selected Order";
+			this.mniOrderReplace.Click += new System.EventHandler(this.mniOrderReplace_Click);
 			// 
 			// mniOrderRemoveSelected
 			// 
-			this.mniOrderRemoveSelected.Name = "mniOrderRemoveSelected";
-			this.mniOrderRemoveSelected.Size = new System.Drawing.Size(236, 22);
-			this.mniOrderRemoveSelected.Text = "Remove Selected Order(s)";
-			this.mniOrderRemoveSelected.Click += new System.EventHandler(this.mniOrdersRemoveSelected_Click);
+			this.mniOrdersWipe.Name = "mniOrderRemoveSelected";
+			this.mniOrdersWipe.Size = new System.Drawing.Size(236, 22);
+			this.mniOrdersWipe.Text = "Remove From This History";
+			this.mniOrdersWipe.Click += new System.EventHandler(this.mniOrdersRemoveSelected_Click);
 			// 
 			// sepCancel
 			// 
@@ -358,26 +352,26 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// mniCancelAllPending
 			// 
-			this.mniCancelAllPending.Name = "mniCancelAllPending";
-			this.mniCancelAllPending.Size = new System.Drawing.Size(236, 22);
-			this.mniCancelAllPending.Text = "Cancel All Active";
-			this.mniCancelAllPending.ToolTipText = "Cancel all Active Orders and DOESN\'T disable Auto-Trading";
-			this.mniCancelAllPending.Click += new System.EventHandler(this.mniOrdersCancel_Click);
+			this.mniKillAllPending.Name = "mniCancelAllPending";
+			this.mniKillAllPending.Size = new System.Drawing.Size(236, 22);
+			this.mniKillAllPending.Text = "Kill All Active";
+			this.mniKillAllPending.ToolTipText = "Cancel all Active Orders and DOESN\'T disable Auto-Trading";
+			this.mniKillAllPending.Click += new System.EventHandler(this.mniOrdersCancel_Click);
 			// 
 			// mniStopEmergencyClose
 			// 
 			this.mniStopEmergencyClose.Name = "mniStopEmergencyClose";
 			this.mniStopEmergencyClose.Size = new System.Drawing.Size(236, 22);
-			this.mniStopEmergencyClose.Text = "Unlock Emergency";
+			this.mniStopEmergencyClose.Text = "Stop Emergency Close";
 			this.mniStopEmergencyClose.Click += new System.EventHandler(this.mniEmergencyLockRemove_Click);
 			// 
 			// mniKillAlStopAutoSubmit
 			// 
-			this.mniKillAlStopAutoSubmit.Name = "mniKillAlStopAutoSubmit";
-			this.mniKillAlStopAutoSubmit.Size = new System.Drawing.Size(236, 22);
-			this.mniKillAlStopAutoSubmit.Text = "Kill All Stop AutoSubmit";
-			this.mniKillAlStopAutoSubmit.ToolTipText = "Kill all (even Completed) Orders and DISABLE AutoSubmit";
-			this.mniKillAlStopAutoSubmit.Click += new System.EventHandler(this.mniKillAllStopAutoSubmit_Click);
+			this.mniKillAllStopAutoSubmit.Name = "mniKillAlStopAutoSubmit";
+			this.mniKillAllStopAutoSubmit.Size = new System.Drawing.Size(236, 22);
+			this.mniKillAllStopAutoSubmit.Text = "Stop Emitting, Kill All Active";
+			this.mniKillAllStopAutoSubmit.ToolTipText = "Kill all (even Completed) Orders and DISABLE AutoSubmit";
+			this.mniKillAllStopAutoSubmit.Click += new System.EventHandler(this.mniKillAllStopAutoSubmit_Click);
 			// 
 			// toolStripSeparator3
 			// 
@@ -585,14 +579,14 @@ namespace Sq1.Widgets.Execution {
 			this.mniExpandAll.Name = "mniExpandAll";
 			this.mniExpandAll.Size = new System.Drawing.Size(253, 22);
 			this.mniExpandAll.Text = "Expand All";
-			this.mniExpandAll.Click += new System.EventHandler(this.mniTreeExpandAllClick);
+			this.mniExpandAll.Click += new System.EventHandler(this.mniTreeExpandAll_Click);
 			// 
 			// mniCollapseAll
 			// 
 			this.mniCollapseAll.Name = "mniCollapseAll";
 			this.mniCollapseAll.Size = new System.Drawing.Size(253, 22);
 			this.mniCollapseAll.Text = "Collapse All";
-			this.mniCollapseAll.Click += new System.EventHandler(this.mniTreeCollapseAllClick);
+			this.mniCollapseAll.Click += new System.EventHandler(this.mniTreeCollapseAll_Click);
 			// 
 			// mniRebuildAll
 			// 
@@ -605,27 +599,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(233, 6);
-			// 
-			// mniRemoveCompleted
-			// 
-			this.mniRemoveCompleted.Name = "mniRemoveCompleted";
-			this.mniRemoveCompleted.Size = new System.Drawing.Size(236, 22);
-			this.mniRemoveCompleted.Text = "Remove Completed (Clear)";
-			this.mniRemoveCompleted.Click += new System.EventHandler(this.mniOrdersRemoveCompleted_Click);
-			// 
-			// mniOrderEdit
-			// 
-			this.mniOrderEdit.Name = "mniOrderEdit";
-			this.mniOrderEdit.Size = new System.Drawing.Size(236, 22);
-			this.mniOrderEdit.Text = "Edit Selected Order";
-			this.mniOrderEdit.Click += new System.EventHandler(this.mniOrderEdit_Click);
-			// 
-			// mniOrderSubmit
-			// 
-			this.mniOrderSubmit.Name = "mniOrderSubmit";
-			this.mniOrderSubmit.Size = new System.Drawing.Size(236, 22);
-			this.mniOrderSubmit.Text = "Submit Selected Order(s)";
-			this.mniOrderSubmit.Click += new System.EventHandler(this.mniOrderSubmit_Click);
 			// 
 			// imgListOrderDirection
 			// 
@@ -670,7 +643,7 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// colheMessageState
 			// 
-			this.colheMessageState.Text = "OrderState";
+			this.colheMessageState.Text = "State";
 			this.colheMessageState.Width = 101;
 			// 
 			// colheMessageText
@@ -689,7 +662,7 @@ namespace Sq1.Widgets.Execution {
 			// splitContainerMessagePane.Panel1
 			// 
 			this.splitContainerMessagePane.Panel1.BackColor = System.Drawing.SystemColors.Control;
-			this.splitContainerMessagePane.Panel1.Controls.Add(this.OrdersTree);
+			this.splitContainerMessagePane.Panel1.Controls.Add(this.OrdersTreeOLV);
 			// 
 			// splitContainerMessagePane.Panel2
 			// 
@@ -705,7 +678,7 @@ namespace Sq1.Widgets.Execution {
 			this.Controls.Add(this.splitContainerMessagePane);
 			this.Name = "ExecutionTreeControl";
 			this.Size = new System.Drawing.Size(833, 411);
-			((System.ComponentModel.ISupportInitialize)(this.OrdersTree)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.OrdersTreeOLV)).EndInit();
 			this.ctxOrder.ResumeLayout(false);
 			this.ctxColumns.ResumeLayout(false);
 			this.ctxListControl.ResumeLayout(false);
@@ -737,9 +710,9 @@ namespace Sq1.Widgets.Execution {
 		private BrightIdeasSoftware.OLVColumn colheMessageState;
 		private BrightIdeasSoftware.OLVColumn colheMessageDateTime;
 		private BrightIdeasSoftware.ObjectListView lvMessages;
-		private System.Windows.Forms.ToolStripMenuItem mniKillAlStopAutoSubmit;
+		private System.Windows.Forms.ToolStripMenuItem mniKillAllStopAutoSubmit;
 		private System.Windows.Forms.ToolStripMenuItem mniStopEmergencyClose;
-		private System.Windows.Forms.ToolStripMenuItem mniCancelAllPending;
+		private System.Windows.Forms.ToolStripMenuItem mniKillAllPending;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ContextMenuStrip ctxAccounts;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
@@ -753,16 +726,13 @@ namespace Sq1.Widgets.Execution {
 		private System.Windows.Forms.ToolStripMenuItem mniShowPrice;
 		private System.Windows.Forms.ToolStripMenuItem mniShowWhenWhat;
 		private System.Windows.Forms.ContextMenuStrip ctxColumns;
-		private System.Windows.Forms.ToolStripMenuItem mniRemoveCompleted;
-		private System.Windows.Forms.ToolStripMenuItem mniOrderRemoveSelected;
+		private System.Windows.Forms.ToolStripMenuItem mniOrdersWipe;
 		private System.Windows.Forms.ToolStripSeparator sepCancel;
-		private System.Windows.Forms.ToolStripMenuItem mniOrderCancelReplace;
-		private System.Windows.Forms.ToolStripMenuItem mniOrderCancel;
-		private System.Windows.Forms.ToolStripMenuItem mniOrderSubmit;
-		private System.Windows.Forms.ToolStripMenuItem mniOrderEdit;
+		private System.Windows.Forms.ToolStripMenuItem mniOrderReplace;
+		private System.Windows.Forms.ToolStripMenuItem mniOrdersKill;
 		private System.Windows.Forms.ContextMenuStrip ctxOrder;
 		private System.Windows.Forms.ImageList imgListOrderDirection;
-		public BrightIdeasSoftware.TreeListView OrdersTree;
+		public BrightIdeasSoftware.TreeListView OrdersTreeOLV;
 		
 		private BrightIdeasSoftware.OLVColumn colheDatetime;
 		private BrightIdeasSoftware.OLVColumn colheBarNum;

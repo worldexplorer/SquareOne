@@ -6,10 +6,10 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Broker {
 	public class OrderPostProcessorRejected {
-		private OrderProcessor OrderProcessor;
+		OrderProcessor orderProcessor;
 
 		public OrderPostProcessorRejected(OrderProcessor orderProcessor) {
-			this.OrderProcessor = orderProcessor;
+			this.orderProcessor = orderProcessor;
 		}
 		public void HandleReplaceRejected(Order order) {
 			if (order.State != OrderState.Rejected) {
@@ -29,14 +29,14 @@ namespace Sq1.Core.Broker {
 		public void ReplaceRejectedOrder(Order rejectedOrderToReplace) {
 			if (rejectedOrderToReplace.State != OrderState.Rejected) {
 				string msg = "will not ReplaceRejectedOrder(" + rejectedOrderToReplace + ") which is not Rejected; continuing";
-				this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
 				Assembler.PopupException(msg);
 				return;
 			}
 			if (rejectedOrderToReplace.Alert.Bars.SymbolInfo.ReSubmitRejected == false) {
 				string msg = "SymbolInfo[" + rejectedOrderToReplace.Alert.Symbol + "/" + rejectedOrderToReplace.Alert.SymbolClass + "].ReSubmitRejected==false"
 					+ " will not ReplaceRejectedOrder(" + rejectedOrderToReplace + "); continuing";
-				this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -66,7 +66,7 @@ namespace Sq1.Core.Broker {
 			}
 			string msg_replacement = "This is a replacement for order["
 				+ replacement.ReplacementForGUID + "]; SlippageIndex[" + replacement.SlippageIndex + "]";
-			this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(replacement, msg_replacement);
+			this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(replacement, msg_replacement);
 
 			if (replacement.noMoreSlippagesAvailable) {
 				AddMessageNoMoreSlippagesAvailable(replacement);
@@ -87,7 +87,7 @@ namespace Sq1.Core.Broker {
 			Order replacement = this.findReplacementOrderForRejectedOrder(rejectedOrderToReplace);
 			if (replacement != null) {
 				string msg = "Rejected[" + rejectedOrderToReplace + "] already has a replacement[" + replacement + "] with State[" + replacement.State + "]; ignored rejection duplicates from broker";
-				this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
+				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
 				return null;
 			}
 			//DateTime todayDate = DateTime.Now.Date;
@@ -101,20 +101,18 @@ namespace Sq1.Core.Broker {
 				return null;
 			}
 			Order replacementOrder = rejectedOrderToReplace.DeriveReplacementOrder();
-			DateTime serverTimeNow = rejectedOrderToReplace.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
-			replacementOrder.TimeCreatedBroker = serverTimeNow;
-			this.OrderProcessor.DataSnapshot.OrderAddSynchronizedAndPropagate(replacementOrder);
-			this.OrderProcessor.EventDistributor.RaiseOrderStateChanged(this, rejectedOrderToReplace);
-			this.OrderProcessor.EventDistributor.RaiseOrderReplacementOrKillerCreatedForVictim(this, rejectedOrderToReplace);
+			this.orderProcessor.DataSnapshot.OrderInsertNotifyGuiAsync(replacementOrder);
+			this.orderProcessor.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){rejectedOrderToReplace});
+			//this.orderProcessor.RaiseOrderReplacementOrKillerCreatedForVictim(this, rejectedOrderToReplace);
 			return replacementOrder;
 		}
 		public Order findReplacementOrderForRejectedOrder(Order orderRejected) {
-			Order rejected = this.OrderProcessor.DataSnapshot.OrdersAll.FindByGUID(orderRejected.GUID);
+			Order rejected = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(orderRejected.GUID);
 			if (rejected == null) {
 				throw new Exception("Rejected[" + orderRejected + "] wasn't found!!!");
 			}
 			if (string.IsNullOrEmpty(rejected.ReplacedByGUID)) return null;
-			Order replacement = this.OrderProcessor.DataSnapshot.OrdersAll.FindByGUID(rejected.ReplacedByGUID);
+			Order replacement = this.orderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(rejected.ReplacedByGUID);
 			return replacement;
 		}
 		public void SubmitReplacementOrderInsteadOfRejected(Order replacementOrder) {
@@ -129,7 +127,7 @@ namespace Sq1.Core.Broker {
 			string msg = "Scheduling SubmitOrdersThreadEntry [" + replacementOrder.ToString() + "] slippageIndex["
 				+ replacementOrder.SlippageIndex + "] through [" + replacementOrder.Alert.DataSource.BrokerProvider + "]";
 			OrderStateMessage newOrderState = new OrderStateMessage(replacementOrder, OrderState.PreSubmit, msg);
-			this.OrderProcessor.UpdateOrderStateAndPostProcess(replacementOrder, newOrderState);
+			this.orderProcessor.UpdateOrderStateAndPostProcess(replacementOrder, newOrderState);
 
 			//this.BrokerProvider.SubmitOrdersThreadEntry(ordersFromAlerts);
 			ThreadPool.QueueUserWorkItem(new WaitCallback(replacementOrder.Alert.DataSource.BrokerProvider.SubmitOrdersThreadEntry),
@@ -145,7 +143,7 @@ namespace Sq1.Core.Broker {
 			Assembler.PopupException(msg2);
 			//orderProcessor.updateOrderStatusError(orderExecuted, OrderState.RejectedLimitReached, msg2);
 			OrderStateMessage newOrderStateRejected = new OrderStateMessage(order, OrderState.RejectedLimitReached, msg2);
-			this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderStateRejected);
+			this.orderProcessor.UpdateOrderStateAndPostProcess(order, newOrderStateRejected);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sq1.Core;
@@ -34,7 +35,17 @@ namespace Sq1.Gui.Singletons {
 			#endif
 
 			if (msg != null) ex = new Exception(msg, ex);
-			this.popupException(ex);
+
+			#region EXPERIMENTAL
+			Task t = new Task(delegate {
+				this.popupException(ex);
+			});
+			t.ContinueWith(delegate {
+				string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
+				Assembler.PopupException(msg2, t.Exception);
+			}, TaskContinuationOptions.OnlyOnFaulted);
+			t.Start();
+			#endregion
 		}
 		void popupException(Exception exception) {
 			if (base.IsDisposed) return;

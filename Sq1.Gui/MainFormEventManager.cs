@@ -1,24 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.DataFeed;
-using Sq1.Core.DataTypes;
-using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Support;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
-using Sq1.Widgets.SteppingSlider;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui {
 	public class MainFormEventManager {
 		private MainForm mainForm;
-
-		private IStatusReporter statusReporter { get { return this.mainForm as IStatusReporter; } }
 
 		public MainFormEventManager(MainForm mainForm) {
 			this.mainForm = mainForm;

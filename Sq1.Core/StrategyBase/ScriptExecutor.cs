@@ -22,8 +22,8 @@ namespace Sq1.Core.StrategyBase {
 		public	SystemPerformance				Performance					{ get; protected set; }
 		public	Backtester						Backtester					{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; private set; }
-		public	MarketLive				MarketLive			{ get; private set; }
-		public	MarketSim				MarketSim			{ get; private set; }
+		public	MarketsimLive				MarketsimLive			{ get; private set; }
+		public	MarketsimBacktest				MarketsimBacktest			{ get; private set; }
 		public	ScriptExecutorEventGenerator	EventGenerator				{ get; private set; }
 		// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 		//public	NotOnChartBarsHelper		NotOnChartBarsHelper		{ get; private set; }
@@ -137,8 +137,8 @@ namespace Sq1.Core.StrategyBase {
 			//NOW_IRRELEVANT_MOVED_TO_BacktesterRunSimulation this.Performance = new SystemPerformance(this);
 			this.Backtester = new Backtester(this);
 			this.PositionPrototypeActivator = new PositionPrototypeActivator(this);
-			this.MarketLive = new MarketLive(this);
-			this.MarketSim = new MarketSim(this);
+			this.MarketsimLive = new MarketsimLive(this);
+			this.MarketsimBacktest = new MarketsimBacktest(this);
 			this.EventGenerator = new ScriptExecutorEventGenerator(this);
 			// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 			//this.NotOnChartBarsHelper = new NotOnChartBarsHelper(this);
@@ -172,7 +172,7 @@ namespace Sq1.Core.StrategyBase {
 			this.ExecutionDataSnapshot.Initialize();
 			// SO_WHAT??? Executor.Bars are NULL in ScriptExecutor.ctor() and NOT NULL in SetBars
 			this.Performance.Initialize();
-			this.MarketSim.Initialize(Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
+			this.MarketsimBacktest.Initialize(Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
 			//v1, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
 			// if I listen to DataSourceRepository, all ScriptExecutors receive same notification including irrelated to my Bars
 			// Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed +=
@@ -320,7 +320,7 @@ namespace Sq1.Core.StrategyBase {
 			Alert alert = null;
 			// real-time streaming should create its own Position after an Order gets filled
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.MarketLive.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
+				alert = this.MarketsimLive.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
 																  direction, entryMarketLimitStop);
 			} else {
 				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
@@ -397,7 +397,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.MarketLive.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
+				alert = this.MarketsimLive.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
 																 direction, exitMarketLimitStop);
 			} else {
 				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
@@ -421,10 +421,10 @@ namespace Sq1.Core.StrategyBase {
 			bool killed = false;
 			if (this.IsStreamingTriggeringScript) {
 				if (this.Backtester.IsBacktestingNow == true) {
-					killed = this.MarketSim.AnnihilateCounterpartyAlert(alert);
+					killed = this.MarketsimBacktest.AnnihilateCounterpartyAlert(alert);
 					//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
 				} else {
-					killed = this.MarketLive.AnnihilateCounterpartyAlert(alert);
+					killed = this.MarketsimLive.AnnihilateCounterpartyAlert(alert);
 				}
 			} else {
 				//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
@@ -534,27 +534,13 @@ namespace Sq1.Core.StrategyBase {
 			}
 			alert.Strategy.Script.OnAlertKilledCallback(alert);
 		}
-		public void CallbackAlertFilledMoveAroundInvokeScript(Alert alertFilled, Quote quote,
-					 int barFillRelno, double priceFill, double qtyFill, double slippageFill, double commissionFill) {
-			string msig = " CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quote + ")";
+		public void CallbackAlertFilledMoveAroundInvokeScript(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
+					 double priceFill, double qtyFill, double slippageFill, double commissionFill) {
+			string msig = " CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
 			List<Alert> alertsNewAfterAlertFilled = new List<Alert>();
 			List<Position> positionsOpenedAfterAlertFilled = new List<Position>();
 			List<Position> positionsClosedAfterAlertFilled = new List<Position>();
 
-			//v1
-			Bar barFill = (this.IsStreamingTriggeringScript) ? alertFilled.Bars.BarStreamingCloneReadonly : alertFilled.Bars.BarStaticLastNullUnsafe;
-			if (barFillRelno != barFill.ParentBarsIndex) {
-				string msg = "barFillRelno[" + barFillRelno + "] != barFill.ParentBarsIndex["
-					+ barFill.ParentBarsIndex + "]; barFill=[" + barFill + "]";
-				Assembler.PopupException(msg, null, false);
-			}
-			//v2
-			// Limit might get a Fill 2 bars after it was placed; PlacedBarIndex=BarStreaming.ParentIndex = now for past bar signals => not "PlacedBarIndex-1"
-			if (barFillRelno < alertFilled.PlacedBarIndex) {
-				string msg = "I_REFUSE_MOVE_AROUND__FILLED_BEFORE_PLACED barFillRelno[" + barFillRelno + "] < PlacedBarIndex["
-					+ alertFilled.PlacedBarIndex + "]; FilledBar=[" + alertFilled.FilledBar + "] PlacedBar=[" + alertFilled.PlacedBar + "]";
-				Assembler.PopupException(msg);
-			}
 			if (priceFill == -1) {
 				string msg = "won't set priceFill=-1 for alert [" + alertFilled + "]";
 				#if DEBUG
@@ -569,6 +555,8 @@ namespace Sq1.Core.StrategyBase {
 				#endif
 				throw new Exception(msg);
 			}
+
+			Bar barFill = (this.IsStreamingTriggeringScript) ? alertFilled.Bars.BarStreamingCloneReadonly : alertFilled.Bars.BarStaticLastNullUnsafe;
 			if (alertFilled.IsEntryAlert) {
 				if (alertFilled.PositionAffected.EntryFilledBarIndex != -1) {
 					string msg = "DUPE: CallbackAlertFilled can't do its job: alert.PositionAffected.EntryBar!=-1 for alert [" + alertFilled + "]";
@@ -592,16 +580,45 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			if (quote == null) {
-				quote = this.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alertFilled.Symbol);
-				// TODO: here quote will have NO_PARENT_BARS, since StreamingDataSnapshot contains anonymous quote;
-				// I should keep per-timeframe / per-distributionChannel LastQuote to have ParentBar= different StreamingBar 's
-				// bindStreamingBarForQuoteAndPushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar.Clone());
+			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alertFilled.Symbol);
+
+			int barFillRelno  = alertFilled.Bars.Count - 1;
+			if (barFillRelno != alertFilled.Bars.BarStreaming.ParentBarsIndex) {
+				string msg = "NONSENSE#3";
+				Assembler.PopupException(msg);
+			}
+				
+			//v1
+			if (barFillRelno != barFill.ParentBarsIndex) {
+				string msg = "barFillRelno[" + barFillRelno + "] != barFill.ParentBarsIndex["
+					+ barFill.ParentBarsIndex + "]; barFill=[" + barFill + "]";
+				Assembler.PopupException(msg, null, false);
+			}
+			//v2
+			// Limit might get a Fill 2 bars after it was placed; PlacedBarIndex=BarStreaming.ParentIndex = now for past bar signals => not "PlacedBarIndex-1"
+			if (barFillRelno < alertFilled.PlacedBarIndex) {
+				string msg = "I_REFUSE_MOVE_AROUND__FILLED_BEFORE_PLACED barFillRelno[" + barFillRelno + "] < PlacedBarIndex["
+					+ alertFilled.PlacedBarIndex + "]; FilledBar=[" + alertFilled.FilledBar + "] PlacedBar=[" + alertFilled.PlacedBar + "]";
+				Assembler.PopupException(msg);
 			}
 
-			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(quote.Symbol);
-			alertFilled.QuoteFilledThisAlert = quote.Clone();	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
-			alertFilled.QuoteFilledThisAlert.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAskWillFillMe;
+			if (quoteFilledThisAlertNullForLive != null) {
+				//BACKTEST
+				if (quoteFilledThisAlertNullForLive.ParentBarStreaming == null) {
+					string msg = "NONSENSE#1";
+					Assembler.PopupException(msg);
+				}
+				if (quoteFilledThisAlertNullForLive.ParentBarStreaming != alertFilled.Bars.BarStreaming) {
+					string msg = "NONSENSE#4";
+					Assembler.PopupException(msg);
+				}
+				if (alertFilled.Bars != quoteFilledThisAlertNullForLive.ParentBarStreaming.ParentBars) {
+					string msg = "NONSENSE#2";
+					Assembler.PopupException(msg);
+				}
+				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive = quoteFilledThisAlertNullForLive.Clone();	// CLONE_TO_FREEZE_AS_IT_HAPPENED_IGNORING_WHATEVER_HAPPENED_WITH_ORIGINAL_QUOTE_AFTERWARDS
+				alertFilled.QuoteFilledThisAlertDuringBacktestNotLive.ItriggeredFillAtBidOrAsk = alertFilled.BidOrAskWillFillMe;
+			}
 			
 			try {
 				alertFilled.FillPositionAffectedEntryOrExitRespectively(barFill, barFillRelno, priceFill, qtyFill, slippageFill, commissionFill);
@@ -716,7 +733,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.Backtester.IsBacktestingNow == false) {
-				ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quote,
+				ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteFilledThisAlertNullForLive,
 					alertsNewAfterAlertFilled, positionsOpenedAfterAlertFilled, positionsClosedAfterAlertFilled);
 				this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
 			}
@@ -1102,9 +1119,9 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void AlertKillPending(Alert alert) {
 			if (this.Backtester.IsBacktestingNow) {
-				this.MarketSim.SimulateAlertKillPending(alert);
+				this.MarketsimBacktest.SimulateAlertKillPending(alert);
 			} else {
-				this.MarketLive.AlertKillPending(alert);
+				this.MarketsimLive.AlertKillPending(alert);
 			}
 		}
 		public double PositionSizeCalculate(Bar bar, double priceScriptAligned) {

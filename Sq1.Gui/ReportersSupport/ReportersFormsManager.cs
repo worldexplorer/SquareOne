@@ -14,33 +14,31 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.ReportersSupport {
 	public class ReportersFormsManager {
-		public readonly ChartFormManager ChartFormManager;
-		private readonly RepositoryDllReporters repository;
-		// doesn't allow multiple instances of the same reporter invoked for one chart
-		public Dictionary<string, Reporter> ReporterShortNamesUserInvoked;
-		public MenuItemsProvider MenuItemsProvider;
-		public int deserializeIndex;
+		public	ChartFormManager 				ChartFormManager 				{ get; private set; }
+				RepositoryDllReporters 			reportersRepo;
+		public	Dictionary<string, Reporter>	ReporterShortNamesUserInvoked	{ get; private set; }	// multiple instances of the same reporter invoked for one chart <= are not allowed
+		public	MenuItemsProvider				MenuItemsProvider				{ get; private set; }
 		
-		public Dictionary<string, DockContent> FormsAllRelated { get {
-				var ret = new Dictionary<string, DockContent>();
+		public Dictionary<string, ReporterFormWrapper> FormsAllRelated { get {
+				var ret = new Dictionary<string, ReporterFormWrapper>();
 				foreach (string reporterName in this.ReporterShortNamesUserInvoked.Keys) {
 					Reporter reporter = this.ReporterShortNamesUserInvoked[reporterName];
-					var parentForm = reporter.Parent as DockContent;
-					if (parentForm == null) {
-						string msg = "Reporter[" + reporter + "].Parent[" + reporter.Parent + "] is not a DockContent";
+					ReporterFormWrapper reporterContainerForm = reporter.Parent as ReporterFormWrapper;
+					if (reporterContainerForm == null) {
+						string msg = "Reporter[" + reporter + "].Parent[" + reporter.Parent + "] is not a ReporterFormWrapper";
 						Assembler.PopupException(msg);
 						continue;
 					}
-					ret.Add(reporterName, parentForm);
+					ret.Add(reporterName, reporterContainerForm);
 				}
 				return ret;
 			} }
 
 		private ReportersFormsManager() {
 			// ALREADY_THERE deserializeIndex = 0;
-			repository = Assembler.InstanceInitialized.RepositoryDllReporters;
+			reportersRepo = Assembler.InstanceInitialized.RepositoryDllReporters;
 			ReporterShortNamesUserInvoked = new Dictionary<string, Reporter>();
-			MenuItemsProvider = new MenuItemsProvider(this, this.repository.TypesFound);
+			MenuItemsProvider = new MenuItemsProvider(this, this.reportersRepo.TypesFound);
 		}
 		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
@@ -96,8 +94,8 @@ namespace Sq1.Gui.ReportersSupport {
 		}
 
 		public ReporterFormWrapper ReporterActivateShowRegisterMniTick(string typeNameShortOrFullAutodetect, bool show=true) {
-			string typeNameShort = this.repository.ShrinkTypeName(typeNameShortOrFullAutodetect);
-			Reporter reporterActivated = this.repository.ActivateFromTypeName(typeNameShortOrFullAutodetect);
+			string typeNameShort = this.reportersRepo.ShrinkTypeName(typeNameShortOrFullAutodetect);
+			Reporter reporterActivated = this.reportersRepo.ActivateFromTypeName(typeNameShortOrFullAutodetect);
 			object reportersSnapshot = this.findOrCreateReportersSnapshot(reporterActivated);
 			reporterActivated.Initialize(this.ChartFormManager.ChartForm.ChartControl as ChartShadow, reportersSnapshot);
 			var ret = new ReporterFormWrapper(this, reporterActivated);

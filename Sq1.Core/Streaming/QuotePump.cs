@@ -100,7 +100,7 @@ namespace Sq1.Core.Streaming {
 								Assembler.PopupException(msg2 + msig, null, false);
 							} else {
 								string msg2 = "PAUSED_FROM_WITHIN_PUMPING_THREAD";
-								Assembler.PopupException(msg2 + msig, null, false);
+								//Assembler.PopupException(msg2 + msig, null, false);
 							}
 						}
 					} else {
@@ -121,7 +121,7 @@ namespace Sq1.Core.Streaming {
 								Assembler.PopupException(msg + msig, null, false);
 							} else {
 								string msg2 = "UNPAUSED_FROM_WITHIN_PUMPING_THREAD";
-								Assembler.PopupException(msg2 + msig, null, false);
+								//Assembler.PopupException(msg2 + msig, null, false);
 							}
 						}
 					}
@@ -171,7 +171,7 @@ namespace Sq1.Core.Streaming {
 			}
 			if (this.qq.Count == 1) { 
 				string msg = "QUOTES_BACKLOG_STARTED_TO_GROW this.qq.Count[" + this.qq.Count + "]";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 			}
 			if (this.qq.Count > 0 && this.qq.Count % WARN_AFTER_QUOTES_BUFFERED == 0) { 
 				string msg = "QUOTES_BACKLOG_GREW_[" + WARN_AFTER_QUOTES_BUFFERED + "] qq.Count[" + this.qq.Count + "]";

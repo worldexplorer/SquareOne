@@ -40,8 +40,8 @@ namespace Sq1.Core.StrategyBase {
 		public		bool			HasPositionsOpenNow					{ get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
 		#endregion
 		
-		public SortedDictionary<int, ScriptParameter> ScriptParametersById;
-		public		Dictionary<string, ScriptParameter> ScriptParametersByNameInlineCopy { get {
+		public	SortedDictionary<int, ScriptParameter>	ScriptParametersById;
+		public	Dictionary<string, ScriptParameter>		ScriptParametersByNameInlineCopy { get {
 				Dictionary<string, ScriptParameter> ret = new Dictionary<string, ScriptParameter>();
 				foreach (ScriptParameter param in ScriptParametersById.Values) {
 					if (ret.ContainsKey(param.Name)) {

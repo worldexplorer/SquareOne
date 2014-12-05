@@ -117,11 +117,12 @@ namespace Sq1.Gui.Forms {
 		public bool ScriptEditedNeedsSaving;
 		public ChartFormStreamingConsumer ChartStreamingConsumer;
 		
-		public Dictionary<string, DockContent> FormsAllRelated { get {
-				var ret = new Dictionary<string, DockContent>();
-				if (this.ChartForm != null) ret.Add("Chart", this.ChartForm);
-				if (this.ScriptEditorForm != null) ret.Add("Source Code", this.ScriptEditorForm);
-				if (this.OptimizerForm != null) ret.Add("Optimizer", this.OptimizerForm);
+		public Dictionary<string, DockContentImproved> FormsAllRelated { get {
+				var ret = new Dictionary<string, DockContentImproved>();
+				if (this.ChartForm			!= null) ret.Add("Chart",		this.ChartForm);
+				if (this.ScriptEditorForm	!= null) ret.Add("Source Code",	this.ScriptEditorForm);
+				if (this.OptimizerForm		!= null) ret.Add("Optimizer",	this.OptimizerForm);
+				if (this.LivesimForm		!= null) ret.Add("LiveSim",		this.LivesimForm);
 				foreach (string textForMenuItem in this.ReportersFormsManager.FormsAllRelated.Keys) {
 					ret.Add(textForMenuItem, this.ReportersFormsManager.FormsAllRelated[textForMenuItem]);
 				}

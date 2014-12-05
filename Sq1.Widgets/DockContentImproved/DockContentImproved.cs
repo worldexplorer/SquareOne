@@ -185,9 +185,36 @@ namespace Sq1.Widgets {
 			if (this.DockState == DockState.Document) return;
 			if (this.DockState == DockState.Float) return;
 			if (this.DockState == DockState.Hidden) return;
-			DockState newState = DockHelper.ToggleAutoHideState(this.Pane.DockState);
+			//DockState newState = // BROKEN_CONTAINS_DUPLICATED_LOGIC_NONSENSE DockHelper.ToggleAutoHideState(this.Pane.DockState);
+			DockState newState = this.ToggleAutoHideState(this.Pane.DockState);
 			this.Pane.SetDockState(newState);
 		}
+
+		public DockState ToggleAutoHideState(DockState state) {
+			// unminimize if minimized
+			if (state ==	DockState.DockLeftAutoHide)
+					return	DockState.DockLeft;
+			if (state ==	DockState.DockRightAutoHide)
+					return	DockState.DockRight;
+			if (state ==	DockState.DockTopAutoHide)
+					return	DockState.DockTop;
+			if (state ==	DockState.DockBottomAutoHide)
+					return	DockState.DockBottom;
+			
+			// minimize if not minimized
+			if (state ==	DockState.DockLeft)
+					return	DockState.DockLeftAutoHide;
+			if (state ==	DockState.DockRight)
+					return	DockState.DockRightAutoHide;
+			if (state ==	DockState.DockTop)
+					return	DockState.DockTopAutoHide;
+			if (state ==	DockState.DockBottom)
+					return	DockState.DockBottomAutoHide;
+			
+			// these are non-Minimize-able states DockState.Unknown,Document,Float,Hidden
+			return state;
+		}
+
 		protected override void OnResize(EventArgs e) {
 			if (base.DesignMode) {
 				base.OnResize(e);

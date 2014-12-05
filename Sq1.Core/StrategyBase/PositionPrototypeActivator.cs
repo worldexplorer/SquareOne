@@ -300,9 +300,9 @@ namespace Sq1.Core.StrategyBase {
 						// SL_WILL_BE_KILLED proto.StopLossAlertForAnnihilation.PriceStopLimitActivation = proto.OffsetToPrice(newActivationOffset);
 						proto.SetNewStopLossOffsets(newStopLossNegativeOffset, newActivationOffset);
 						// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
-						executor.MarketSim.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
+						executor.MarketsimBacktest.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
 					} else {
-						executor.DataSource.BrokerProvider.MoveStopLossOrderProcessorInvoker(proto, newActivationOffset, newStopLossNegativeOffset);
+						executor.DataSource.BrokerProvider.MoveStopLossOverrideable(proto, newActivationOffset, newStopLossNegativeOffset);
 					}
 					break;
 					#endregion
@@ -310,9 +310,9 @@ namespace Sq1.Core.StrategyBase {
 					if (executor.Backtester.IsBacktestingNow) {
 						proto.SetNewStopLossOffsets(newStopLossNegativeOffset, 0);
 						// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
-						executor.MarketSim.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
+						executor.MarketsimBacktest.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
 					} else {
-						executor.DataSource.BrokerProvider.MoveStopLossOrderProcessorInvoker(proto, 0, newStopLossNegativeOffset);
+						executor.DataSource.BrokerProvider.MoveStopLossOverrideable(proto, 0, newStopLossNegativeOffset);
 					}
 					break;
 				default:
@@ -341,9 +341,9 @@ namespace Sq1.Core.StrategyBase {
 				// TP_WILL_BE_KILLED proto.TakeProfitAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newTakeProfitPositiveOffset);
 				proto.SetNewTakeProfitOffset(newTakeProfitPositiveOffset);
 				// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
-				executor.MarketSim.SimulateTakeProfitMoved(proto.TakeProfitAlertForAnnihilation);
+				executor.MarketsimBacktest.SimulateTakeProfitMoved(proto.TakeProfitAlertForAnnihilation);
 			} else {
-				executor.DataSource.BrokerProvider.MoveTakeProfitOrderProcessorInvoker(proto, newTakeProfitPositiveOffset);
+				executor.DataSource.BrokerProvider.MoveTakeProfitOverrideable(proto, newTakeProfitPositiveOffset);
 			}
 		}
 		void checkThrowPlacingProtoMakesSense(PositionPrototype proto) {
