@@ -8,7 +8,13 @@ namespace Sq1.Adapters.Quik {
 		public OrderCallbackDupesCheckerQuik(BrokerProvider brokerProvider) : base(brokerProvider) {
 		}
 		public override string OrderCallbackIsDupeReson(Order order, OrderStateMessage newOrderStateMessage, double priceFill, double qtyFill) {
-			string ret = null;
+			string whyIthinkBrokerIsSpammingMe = null;
+
+			string whatIsDifferent = "";
+			if (order.State != newOrderStateMessage.State) {
+				whatIsDifferent += "order.State[" + order.State + "] => omsg.State[" + newOrderStateMessage.State + "] ";
+			}
+
 			switch (newOrderStateMessage.State) {
 				//v1
 				//case OrderState.Filled:
@@ -19,19 +25,19 @@ namespace Sq1.Adapters.Quik {
 				//v2
 				default:
 					// TESTME triggered by QuikTerminalMock.simulateOrderStatusDupes=true
-					string whatIsDifferent = "";
 					if (order.PriceFill != priceFill) {
 						whatIsDifferent += "order.PriceFill[" + order.PriceFill+ "] => priceFill[" + priceFill + "] ";
 					}
 					if (order.QtyFill != qtyFill) {
 						whatIsDifferent += "order.QtyFill[" + order.QtyFill+ "] => qtyFill[" + qtyFill + "] ";
 					}
-					
-					if (whatIsDifferent != "") break;
-					ret = "ORDER_PRICE,QTY_FILL_ARE_THE_SAME";
 					break;
 			}
-			return ret;
+
+			if (whatIsDifferent == "") {
+				whyIthinkBrokerIsSpammingMe = "NOTHING_TO_UPDATE_SAME State[" + order.State + "] priceFill[" + priceFill + "] qtyFill[" + qtyFill + "]";
+			}
+			return whyIthinkBrokerIsSpammingMe;
 		}
 	}
 }

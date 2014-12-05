@@ -310,7 +310,7 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 				+ " tradeTradeSysCommission[" + tradeTradeSysCommission + "] tradeTScommission[" + tradeTScommission + "]";
 
 			//Order orderExecuted = this.BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.FindBySernoExchange((long)SernoExchange);
-			Order orderExecuted = this.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.FindBySernoExchange((long)SernoExchange);
+			Order orderExecuted = this.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.ScanRecentForSernoExchange((long)SernoExchange);
 			if (orderExecuted == null) {
 				msg += " orderExecuted=null";
 			} else {
@@ -368,18 +368,18 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			string msig = " QuikTerminal(" + this.DllName + ").CallbackOrderStatus(" + msgDebug + ")";
 			string msgError = "";
 			OrderLane orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending;
-			Order orderExecuted = orders.FindByGUID(GUID.ToString());
+			Order orderExecuted = orders.ScanRecentForGUID(GUID.ToString());
 			if (orderExecuted == null) {
 				orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersSubmitting;
-				orderExecuted = orders.FindByGUID(GUID.ToString());
+				orderExecuted = orders.ScanRecentForGUID(GUID.ToString());
 			}
 			if (orderExecuted == null) {
 				orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll;
-				orderExecuted = orders.FindByGUID(GUID.ToString());
+				orderExecuted = orders.ScanRecentForGUID(GUID.ToString());
 			}
 			if (orderExecuted == null) {
 				msgError += " Order not found Guid[" + GUID + "] ; orderSernos=["
-					+ BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.SessionSernos
+					+ BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.SessionSernosAsString
 					+ "] Count=[" + orders.InnerOrderList.Count + "]";
 			} else {
 				msgDebug += " Order found Guid[" + GUID + "] orderExecuted=[" + orderExecuted + "]";
@@ -405,7 +405,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			switch (status) {
 				case 1: //Значение «1» соответствует состоянию «Активна»
 					newOrderStateReceived = OrderState.WaitingBrokerFill;
-					priceFilled = 0;
+					//priceFilled = 0;
 					break;
 				case 2: //«2» - «Снята»
 					//if (orderExecuted.State == OrderState.KillPending) {
@@ -456,10 +456,10 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 				+ " Guid[" + GUID + "] SernoExchange[" + SernoExchange + "]"
 				;
 			var orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending;
-			Order orderSubmitting = orders.FindByGUID(GUID.ToString());
+			Order orderSubmitting = orders.ScanRecentForGUID(GUID.ToString());
 			if (orderSubmitting == null) {
 				msg += " Order not found Guid[" + GUID + "] ; orderSernos=["
-					+ orders.SessionSernos
+					+ orders.SessionSernosAsString
 					+ "] Count=[" + orders.InnerOrderList.Count + "]";
 				Assembler.PopupException(msg);
 				return;
@@ -490,7 +490,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 				string SecCode, string ClassCode, double price, int quantity,
 				string GUID, out int SernoSession, out string msgSumbittedOut, out OrderState orderStateOut) {
 
-			string msig = "QuikTerminal(" + this.DllName + ").SendTransactionOrderAsync(" + opBuySell + typeMarketLimitStop + quantity + "@" + price + "): ";
+			string msig = "QuikTerminal(" + this.DllName + ").SendTransactionOrderAsync(" + opBuySell + typeMarketLimitStop + quantity + "@" + price + ")";
 			try {
 				if (Thread.CurrentThread.Name != msig) Thread.CurrentThread.Name = msig;
 			} catch (Exception e) {
@@ -520,12 +520,12 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			string trans = this.getOrderCommand(opBuySell, typeMarketLimitStop, SecCode, ClassCode, price, quantity, GUID, out SernoSession);
 			this.BrokerQuik.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(GUID, orderStateOut, trans);
 
-			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
+			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out this.error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 			msgSumbittedOut = "r[" + r + "] callbackErrorMsg[" + this.callbackErrorMsg + "] error[" + error + "]";
 			if (r == Trans2Quik.Result.SUCCESS) {
-				orderStateOut = OrderState.Submitting;
+				orderStateOut = OrderState.Submitted;
 			} else {
-				orderStateOut = OrderState.Error;
+				orderStateOut = OrderState.ErrorSubmittingBroker;
 			}
 		}
 		protected string getOrderCommand(char opBuySell, char typeMarketLimitStop,

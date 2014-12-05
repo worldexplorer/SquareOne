@@ -69,7 +69,7 @@ namespace Sq1.Adapters.QuikMock {
 		public StreamingMock() : base() {
 			this.GenerateOnlySymbols = new List<string>();
 			this.MockProvidersBySymbol = new Dictionary<string, DdeChannelsMock>();
-			base.Name = "Mock StreamingDummy";
+			base.Name = "StreamingQuikMockDummy";
 			base.Description = "MOCK generating quotes, QuikTerminalMock is still used";
 			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStaticProvider;
 			base.PreferredStaticProviderName = "MockStaticProvider";
@@ -83,7 +83,7 @@ namespace Sq1.Adapters.QuikMock {
 		}
 		public override void Initialize(DataSource dataSource) {
 			base.Initialize(dataSource);
-			base.Name = "QuikMock Streaming";
+			base.Name = "StreamingQuikMock";
 			if (this.GeneratingNow) {
 				this.Connect();
 			}

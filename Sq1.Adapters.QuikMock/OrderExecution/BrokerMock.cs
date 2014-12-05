@@ -20,7 +20,7 @@ namespace Sq1.Adapters.QuikMock {
 		[JsonProperty]	public	bool				RejectAllUpcoming		{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 
 		public BrokerMock() : base() {
-			base.Name = "Mock BrokerDummy";
+			base.Name = "BrokerQuikMockDummy";
 			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStreamingProvider;
 			base.QuikTerminal = new QuikTerminalMock(this);
 			this.ExecutionDelayMillis = 1000;
@@ -31,7 +31,7 @@ namespace Sq1.Adapters.QuikMock {
 		public override void Initialize(DataSource dataSource, StreamingProvider streamingProvider, OrderProcessor orderProcessor) {
 			base.Initialize(dataSource, streamingProvider, orderProcessor);
 			base.QuikTerminal.ConnectDll();
-			base.Name = "QuikMock Broker";
+			base.Name = "BrokerQuikMock";
 		}
 		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.BrokerEditorInitializeHelper(dataSourceEditor);

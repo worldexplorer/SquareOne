@@ -70,7 +70,7 @@ namespace Sq1.Adapters.Quik {
 			string msig = Name + "::CallbackTradeStateReceivedQuik(): ";
 			try {
 				string msg = "";
-				Order order = this.OrderProcessor.DataSnapshot.OrdersPending.FindBySernoExchange((long)SernoExchange);
+				Order order = this.OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForSernoExchange((long)SernoExchange);
 				if (order == null) {
 					msg += " Order with SernoExchange[" + SernoExchange + "] was not found"
 						//+ "; " + base.OrderProcessor.DataSnapshot.DataSnapshot.Serializer.SessionSernosAsString
@@ -108,10 +108,11 @@ namespace Sq1.Adapters.Quik {
 												string classCode, string secCode, double fillPrice, int fillQnty) {
 			string msig = "fillPrice[" + fillPrice + "] fillQnty[" + fillQnty + "]" 
 				+ " " + secCode + "/" + classCode
-				+ " newOrderStateReceived=[" + newOrderStateReceived + "] SernoExchange=[" + SernoExchange + "] GUID=[" + GUID + "]"
+				//+ " newOrderStateReceived=[" + newOrderStateReceived + "]"
+				+ " SernoExchange=[" + SernoExchange + "] GUID=[" + GUID + "]"
 				+ " //" + Name + ":CallbackOrderStateReceivedQuik()";
 
-			Order order = base.FindOrderLaneOptimizedNullUnsafe(GUID);
+			Order order = base.ScanEvidentLanesForGuidNullUnsafe(GUID);
 			if (order == null) {
 				// already reported "PENDING_ORDER_NOT_FOUND__RETURNING_ORDER_NULL" in base.FindOrderLaneOptimizedNullUnsafe() 
 				return;
@@ -185,7 +186,7 @@ namespace Sq1.Adapters.Quik {
 		}
 		public override void OrderSubmit(Order order) {
 			//Debugger.Break();
-			string msig = Name + "::OrderSubmit():"
+			string msig = " //" + Name + "::OrderSubmit():"
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 				+ " SernoSession[" + order.SernoSession + "]";
 			string msg = "";
@@ -218,28 +219,17 @@ namespace Sq1.Adapters.Quik {
 			char opBuySell = (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) ? 'B' : 'S';
 			int sernoSessionFromTerminal = -999;
 			string msgSumbittedFromTerminal = "";
-			OrderState orderStateFromTerminalMustGetSubmitting = OrderState.Unknown;
+			OrderState orderStateFromTerminalMustGetSubmitted = OrderState.Unknown;
 			this.QuikTerminal.SendTransactionOrderAsync(opBuySell, typeMarketLimitStop,
 				order.Alert.Symbol, order.Alert.SymbolClass,
 				order.PriceRequested, (int)order.QtyRequested, order.GUID,
-				out sernoSessionFromTerminal, out msgSumbittedFromTerminal, out orderStateFromTerminalMustGetSubmitting);
+				out sernoSessionFromTerminal, out msgSumbittedFromTerminal, out orderStateFromTerminalMustGetSubmitted);
 
+			msg = msgSumbittedFromTerminal + "order.SernoSession[" + order.SernoSession + "]=>[" + sernoSessionFromTerminal + "] ";
 			order.SernoSession = sernoSessionFromTerminal;
 
-			//base.OrderSubmitPostProcessOrdersPendingAdd(order);
-			// I expect here "Submitted", move it now
-			//base.OrderProcessor.DataSnapshot.StateLaneAddAppropriate(order);
-			OrderLaneByState olist = base.OrderProcessor.DataSnapshot.FindStateLaneDoesntContain(order);
-			olist.Insert(0, order);
-
-			msg = " orderStateFromTerminal[" + orderStateFromTerminalMustGetSubmitting + "]"
-				+ " msgSumbittedFromTerminal[" + msgSumbittedFromTerminal + "]"
-				+ " sernoSessionFromTerminal[" + sernoSessionFromTerminal + "]";
-			//Assembler.PopupException(msig + msg);
-
-			//Debugger.Break();
-			base.OrderProcessor.UpdateOrderStateAndPostProcess(order,
-				new OrderStateMessage(order, orderStateFromTerminalMustGetSubmitting, msig + msg));
+			OrderStateMessage newState = new OrderStateMessage(order, orderStateFromTerminalMustGetSubmitted, msg + msig);
+			base.OrderProcessor.UpdateOrderStateAndPostProcess(order, newState);
 		}
 		public override void OrderKillSubmit(Order victimOrder) {
 			string msig = Name + "::OrderKillSubmit():"

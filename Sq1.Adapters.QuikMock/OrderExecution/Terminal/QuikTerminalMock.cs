@@ -64,12 +64,12 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 
 			//Debugger.Break();
 			string msg = "";
-			Order order = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersSubmitting.FindByGUID(tp.GUID.ToString());
+			Order order = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersSubmitting.ScanRecentForGUID(tp.GUID.ToString());
 			if (order == null) {
-				order = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.FindByGUID(tp.GUID.ToString());
+				order = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForGUID(tp.GUID.ToString());
 			}
 			if (order == null) {
-				order = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.FindByGUID(tp.GUID.ToString());
+				order = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(tp.GUID.ToString());
 			}
 			if (order == null) {
 				msg = "OrdersPending.FindByGUID(" + tp.GUID.ToString() + "=null, can't update with Active/Filled";
@@ -84,11 +84,11 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				base.CallbackOrderStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
 					-999.99, tp.Balance, 9999191, tp.IsSell, nStatus, 111111);
 
-				int sleepMs = this.mockBrokerProvider.ExecutionDelayMillis;
-				msg = "UNNECESSARY_DELAY  Sleeping [" + (sleepMs) + "]ms; state=>[" + nStatus + "]"
-					+ " let order become WaitingFillBroker (why State didn't change  immediately after base.CallbackOrderStatus???)";
-				base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
-				Thread.Sleep(sleepMs);
+				//int sleepMs = this.mockBrokerProvider.ExecutionDelayMillis;
+				//msg = "UNNECESSARY_DELAY  Sleeping [" + (sleepMs) + "]ms; state=>[" + nStatus + "]"
+				//    + " let order become WaitingFillBroker (why State didn't change  immediately after base.CallbackOrderStatus???)";
+				//base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
+				//Thread.Sleep(sleepMs);
 
 				// CallbackOrderStatus sets the status to WaitingFillBroker immediately, check it here
 				if (OrderStatesCollections.NoInterventionRequired.Contains(order.State) == false) {
@@ -127,33 +127,17 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 
 			switch (order.State) {
 				case OrderState.WaitingBrokerFill:
-					Quote quoteToFillAgainst;
 					try {
 						if (order.Alert.Strategy == null) {
 							msg += "JSON_DESERIALIZED_ORDERS_ONLY_HAVE_ALERT.STRATEGY_NULL BUT_WHY_WOULD_YOU_FILL_IT_HERE? ";
 							abortThread = true;
 							break;
 						}
-						quoteToFillAgainst = order.Alert.QuoteCreatedThisAlert;
 						if (order.Alert.QuoteCreatedThisAlert.ParentBarStreaming.ParentBarsIndex == -1) {
 							msg += "EARLY_BINDER_DIDNT_DO_ITS_JOB#2 order.Alert.QuoteCreatedThisAlert.ParentStreamingBar.ParentBarsIndex=-1 ";
 							abortThread = true;
 							break;
 						}
-						Quote quoteLast = this.mockBrokerProvider.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(order.Alert.Symbol);
-						if (quoteLast.SameBidAsk(order.Alert.QuoteCreatedThisAlert)) {
-							msg += "SURE_CURRENT_QUOTE_AND_QuoteCreatedThisAlert_MUST_BE_DIFFERENT_HERE that's why QuikBrokerEditor has ExecutionDelay!"
-								+ "; TODO: split it to two 1) DelayOrderEmittedToFilled (Limit came too late))"
-								+ ", 2) DelayOrderFilledCallback (Strategy gets callback 1 sec later after filled by the Market) ";
-							//abortThread = true;
-							//break;
-						}
-						//if (quoteLast.ParentBarStreaming.ParentBarsIndex == -1) {
-						//    msg += "EARLY_BINDER_DIDNT_DO_ITS_JOB#1 quote.ParentStreamingBar.ParentBarsIndex=-1 ";
-						//    abortThread = true;
-						//    break;
-						//}
-						//quoteToFillAgainst = quoteLast;
 					} catch (Exception ex) {
 						msg += "FAILED_INNER_mockBrokerProvider.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol( " + order.Alert.Symbol + ")";
 						exCaught = ex;
@@ -164,10 +148,10 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 					bool abortTryFill = false;
 					string abortTryFillReason = "NO_ABORT_TRY_FILL_MESSAGE";
 					try {
-						filled = order.Alert.Strategy.Script.Executor.MarketSim.SimulateFillLive(
-							order.Alert, quoteToFillAgainst, out abortTryFill, out abortTryFillReason);
+						filled = order.Alert.Strategy.Script.Executor.MarketsimLive.AlertTryFillUsingBacktest(
+							order.Alert, out abortTryFill, out abortTryFillReason);
 					} catch (Exception ex) {
-						msg = "FAILED_INNER_MarketSim.SimulateFillLive(" + quoteToFillAgainst + ") " + msg;
+						msg = "FAILED_INNER_MarketSim.SimulateFillLive(" + order + ") " + msg;
 						exCaught = ex;
 						break;
 					}
@@ -247,7 +231,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			string msg = "";
 
 			int sleepMs = this.mockBrokerProvider.ExecutionDelayMillis + Rng.Next(100, 1000);
-			msg = "Sleeping random [" + (sleepMs) + "]ms; status=>[" + tp.QuikStatus + "] THIS_IS_DELAY_BEFORE_ORDER_PROCESSOR";
+			msg = "DELAY_DELIVERING_FILL[" + (sleepMs) + "]ms QuikStatus[" + tp.QuikStatus + "] State[" + order.State + "]";
 			base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
 			Thread.Sleep(sleepMs);
 
@@ -306,9 +290,8 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			Order orderFound = base.BrokerQuik.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(GUID, OrderState.Submitting, trans);
 			orderStateOut = OrderState.Submitted;
 
-			msgSumbittedOut = "QuikTerminal(" + this.DllName + ")::SendTransactionOrderAsync() Trans2Quik.Result.SUCCESS    "
-				+ ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
-			//this.OrderManager.AppendMessageForOrderGuidAndPropagate(GUID, orderState, msgSumbitted);
+			string msig = " //QuikTerminal(" + this.DllName + ").SendTransactionOrderAsync(" + opBuySell + typeMarketLimitStop + quantity + "@" + price + ")";
+			msgSumbittedOut = "r[MOCK_SUCCESS] callbackErrorMsg[" + base.callbackErrorMsg + "] error[" + error + "]" + msig;
 
 			QuikTerminalMockThreadParam tp = new QuikTerminalMockThreadParam();
 			tp.ClassCode = ClassCode;
@@ -346,12 +329,12 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			victimOrderState = OrderState.Error;
 			SernoSession = -9999;
 
-			Order orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersSubmitting.FindByGUID(KillerGUID.ToString());
+			Order orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersSubmitting.ScanRecentForGUID(KillerGUID.ToString());
 			//if (orderKiller == null) {
 			//	Order orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.FindByGUID(KillerGUID.ToString());
 			//}
 			if (orderKiller == null) {
-				 orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.FindByGUID(KillerGUID.ToString());
+				 orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(KillerGUID.ToString());
 			}
 			int a = 1;
 			if (orderKiller == null) {
@@ -403,12 +386,12 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			string msg = "";
 
 			QuikTerminalMockThreadParam t = (QuikTerminalMockThreadParam)o;
-			Order orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersSubmitting.FindByGUID(t.KillerGUID.ToString());
+			Order orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersSubmitting.ScanRecentForGUID(t.KillerGUID.ToString());
 			if (orderKiller == null) {
-				orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.FindByGUID(t.KillerGUID.ToString());
+				orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForGUID(t.KillerGUID.ToString());
 			}
 			if (orderKiller == null) {
-				 orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.FindByGUID(t.KillerGUID.ToString());
+				 orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(t.KillerGUID.ToString());
 			}
 			int a =	1;
 			try {

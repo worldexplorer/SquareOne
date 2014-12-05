@@ -2,11 +2,11 @@
   "$type": "Sq1.Widgets.Execution.ExecutionTreeDataSnapshot, Sq1.Widgets",
   "firstRowShouldStaySelected": false,
   "pricingDecimalForSymbol": 0,
-  "ToggleBrokerTime": false,
+  "ToggleBrokerTime": true,
   "ToggleCompletedOrders": true,
   "ToggleMessagesPane": true,
   "ToggleMessagePaneSplittedHorizontally": false,
   "ToggleSingleClickSyncWithChart": true,
-  "MessagePaneSplitDistanceHorizontal": 334,
-  "MessagePaneSplitDistanceVertical": 335
+  "MessagePaneSplitDistanceHorizontal": 572,
+  "MessagePaneSplitDistanceVertical": 272
 }
