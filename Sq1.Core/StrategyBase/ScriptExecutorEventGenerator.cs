@@ -1,4 +1,5 @@
 ﻿using System;
+using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
 	public class ScriptExecutorEventGenerator {
@@ -6,6 +7,8 @@ namespace Sq1.Core.StrategyBase {
 		public event EventHandler<EventArgs> BacktesterContextInitializedStep2of4;
 		public event EventHandler<EventArgs> BacktesterSimulatedChunkStep3of4;
 		public event EventHandler<EventArgs> BacktesterSimulatedAllBarsStep4of4;
+
+		public event EventHandler<ReporterPokeUnitEventArgs> BrokerOpenedOrClosedPositions;
 
 		private ScriptExecutor scriptExecutor;
 
@@ -27,6 +30,10 @@ namespace Sq1.Core.StrategyBase {
 		public void RaiseBacktesterSimulatedAllBarsStep4of4() {
 			if (this.BacktesterSimulatedAllBarsStep4of4 == null) return;
 			this.BacktesterSimulatedAllBarsStep4of4(this, null);
+		}
+		public void RaiseBrokerOpenedOrClosedPositions(ReporterPokeUnit pokeUnit) {
+			if (this.BrokerOpenedOrClosedPositions == null) return;
+			this.BrokerOpenedOrClosedPositions(this, new ReporterPokeUnitEventArgs(pokeUnit));
 		}
 	}
 }

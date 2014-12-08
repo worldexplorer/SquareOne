@@ -52,34 +52,37 @@ namespace Sq1.Gui {
 //			}
 
 			
-			try {
-				//v2-SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD
-				// this is gonna throw from a non-GUI thread, right?!... (moved to MainForm.PopupException() with base.BeginInvoke() as first step)
-				// USED_WHEN_base.InvokeRequired_THROWS_#D
-				if (base.InvokeRequired == true) {
-				//string currentThreadName = Thread.CurrentThread.Name;
-				//if (currentThreadName != GUI_THREAD_NAME) {
-					#if DEBUG
-					if (debuggingBreak) {
-						string note = "BREAKING_EARLIER__BECAUSE_YOU_WILL_LOOSE_CALLSTACK_SOON";
-						Debugger.Break();
-					}
-					#endif
-					base.BeginInvoke((MethodInvoker)delegate { this.PopupException(msg, exc, false); });
-					return;
-				}
-			} catch (Exception ex) {
-				#if DEBUG
-				if (debuggingBreak) {
-					Debugger.Break();
-				}
-				#endif
+			//try {
+			//    //v2-SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD
+			//    // this is gonna throw from a non-GUI thread, right?!... (moved to MainForm.PopupException() with base.BeginInvoke() as first step)
+			//    // USED_WHEN_base.InvokeRequired_THROWS_#D
+			//    if (base.InvokeRequired == true) {
+			//    //string currentThreadName = Thread.CurrentThread.Name;
+			//    //if (currentThreadName != GUI_THREAD_NAME) {
+			//        //#if DEBUG
+			//        //if (debuggingBreak) {
+			//        //    string note = "BREAKING_EARLIER__BECAUSE_YOU_WILL_LOOSE_CALLSTACK_SOON";
+			//        //    Debugger.Break();
+			//        //}
+			//        //#endif
+			//        //base.BeginInvoke((MethodInvoker)delegate { this.PopupException(msg, exc, false); });
+			//        //return;
+			//        ExceptionsForm.Instance.PopupException(msg, exc, debuggingBreak);
+			//    }
+			//} catch (Exception ex) {
+			//    #if DEBUG
+			//    if (debuggingBreak) {
+			//        Debugger.Break();
+			//    }
+			//    #endif
 				
-				string msg2 = "IM_NOT_FIXING_WINDOW_HANDLE_NOT_YET_CREATED WHAT_MIGHT_POSSIBLY_BE_WRONG_WITH_base.InvokeRequired()";
-				ExceptionsForm.Instance.ExceptionControl.InsertException(new Exception(msg2, ex));
-				ExceptionsForm.Instance.ExceptionControl.InsertException(exc);
-				return;
-			}
+			//    string msg2 = "IM_NOT_FIXING_WINDOW_HANDLE_NOT_YET_CREATED WHAT_MIGHT_POSSIBLY_BE_WRONG_WITH_base.InvokeRequired()";
+			//    //ExceptionsForm.Instance.ExceptionControl.InsertExceptionFlushToGui(new Exception(msg2, ex));
+			//    //ExceptionsForm.Instance.ExceptionControl.InsertExceptionFlushToGui(exc);
+			//    ExceptionsForm.Instance.PopupException(msg2, ex);
+			//    ExceptionsForm.Instance.PopupException(null, exc);
+			//    return;
+			//}
 
 			
 			// I_SHOULDNT_CARE_IF_ASSEMBLER_INSTANTIATED_EXCEPTIONS_FORM__koZ_ITS_IN_THIS_DLL ExceptionsForm exceptionsForm = Assembler.InstanceInitialized.StatusReporter as ExceptionsForm;
@@ -107,9 +110,9 @@ namespace Sq1.Gui {
 //				return;
 //			}
 
-			if (exceptionsForm.Visible == false && Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
-				exceptionsForm.Visible = true;
-			}
+			//if (exceptionsForm.Visible == false && Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
+			//	exceptionsForm.Visible = true;
+			//}
 
 			if (this.MainFormClosingSkipChartFormsRemoval) {
 				if (this.ExceptionsDuringApplicationShutdown == null) {

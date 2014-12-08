@@ -76,12 +76,12 @@ namespace Sq1.Core.Broker {
 			}
 			return exitOrderHasNoErrors;
 		}
-		public Order CreatePropagateOrderFromAlert(Alert alert, bool setStatusSubmitting, bool fromAutoTrading) {
+		public Order CreatePropagateOrderFromAlert(Alert alert, bool setStatusSubmitting, bool emittedByScript) {
 			if (alert.MarketLimitStop == MarketLimitStop.AtClose) {
 				string msg = "NYI: alert.OrderType= OrderType.AtClose [" + alert + "]";
 				throw new Exception(msg);
 			}
-			Order newborn = new Order(alert, fromAutoTrading, false);
+			Order newborn = new Order(alert, emittedByScript, false);
 			try {
 				newborn.Alert.DataSource.BrokerProvider.ModifyOrderTypeAccordingToMarketOrderAs(newborn);
 			} catch (Exception e) {
@@ -93,6 +93,12 @@ namespace Sq1.Core.Broker {
 				if (this.isExitOrderConsistentLogInconsistency(newborn) == false) {
 					this.DataSnapshot.OrderInsertNotifyGuiAsync(newborn);
 					string reason = newborn.LastMessage;
+					string msg = "ALERT_INCONSISTENT_ORDER_PROCESSOR_DIDNT_SUBMIT reason[" + reason + "] " + alert;
+					Assembler.PopupException(msg, null, false);
+
+					alert.Strategy.Script.Executor.RemovePendingExitAlertPastDueClosePosition(alert);
+					msg = "DID_I_CLOSE_THIS_PENDING_ALERT_HAVING_NO_LIVE_POSITION? " + alert;
+					Assembler.PopupException(msg, null, false);
 					return null;
 				}
 				//adjustExitOrderQtyRequestedToMatchEntry(order);
@@ -110,14 +116,13 @@ namespace Sq1.Core.Broker {
 				}
 				newbornOrderState = this.IsOrderEatable(newborn) ? OrderState.Submitting : OrderState.ErrorSubmittingNotEatable;
 				//string isPastDue = newborn.Alert.IsAlertCreatedOnPreviousBar;
-				//if (fromAutoTrading && String.IsNullOrEmpty(isPastDue) == false) {
+				//if (emittedByScript && String.IsNullOrEmpty(isPastDue) == false) {
 				//	newbornMessage += "; " + isPastDue;
 				//	newbornOrderState = OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted;
 				//}
 			}
 			this.UpdateOrderStateDontPostProcess(newborn, new OrderStateMessage(newborn, newbornOrderState, newbornMessage));
 			this.DataSnapshot.OrderInsertNotifyGuiAsync(newborn);
-			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 			return newborn;
 		}
 		public void CreateOrdersSubmitToBrokerProviderInNewThreads(List<Alert> alertsBatch, bool setStatusSubmitting, bool emittedByScript) {
@@ -139,6 +144,9 @@ namespace Sq1.Core.Broker {
 			foreach (Alert alert in alertsBatch) {
 				// I only needed alert.OrderFollowed=newOrder... mb even CreatePropagateOrderFromAlert() should be reduced for backtest
 				if (alert.Strategy.Script.Executor.Backtester.IsBacktestingNow) {
+					string msg = "BACKTEST_DOES_NOT_SUBMIT_ORDERS__CHECK_QUIK_MOCK_FOR_LIVE_SIMULATION";
+					Assembler.PopupException(msg);
+					alert.Strategy.Script.Executor.Backtester.AbortRunningBacktestWaitAborted(msg);
 					continue;
 				}
 
@@ -147,13 +155,12 @@ namespace Sq1.Core.Broker {
 					newOrder = this.CreatePropagateOrderFromAlert(alert, setStatusSubmitting, emittedByScript);
 				} catch (Exception ex) {
 					string msg = "THROWN_this.CreatePropagateOrderFromAlert";
-					Assembler.PopupException(msg, ex, false);
+					Assembler.PopupException(msg, ex, true);
 					continue;
 				}
 				if (newOrder == null) {
-					string msg = "CreatePropagateOrderFromAlert=null => nothing sent to BrokerProver"
-						+ " and I should've removed alert[" + alert + "] from all pending collections";
-					Assembler.PopupException(msg, null, false);
+					string msg = "ALERT_INCONSISTENT_ORDER_PROCESSOR_DIDNT_SUBMIT ";
+					//ALREADY_COMPLAINED Assembler.PopupException(msg, null, false);
 					continue;
 				}
 				if (newOrder.State != OrderState.Submitting) {
@@ -199,38 +206,36 @@ namespace Sq1.Core.Broker {
 				}
 			}
 			if (ordersAgnostic.Count == 0 && (ordersClosing.Count + ordersOpening.Count) == 0) {
-				string msg = "NO_ORDERS_TO_SUBMIT (did you turn Submit=Off?...)"
-					+ " newBornOrdersToSubmit.Count=0 while alertsBatch.Count[" + alertsBatch.Count + "]>0 "
+				string msg = "NO_ORDERS_TO_SUBMIT newBornOrdersToSubmit.Count=0 while alertsBatch.Count[" + alertsBatch.Count + "]>0 "
 					+ ": ordersAgnostic.Count[" + ordersAgnostic.Count + "]"
 					+ " && ordersClosing.Count[" + ordersClosing.Count + "]"
 					+   "  ordersOpening.Count[" + ordersOpening.Count + "]";
-				throw new Exception(msg);
+				//ALREADY_COMPLAINED Assembler.PopupException(msg, null, false);
+				return;
 			}
 
 			if (ordersAgnostic.Count > 0 && (ordersClosing.Count > 0 || ordersOpening.Count > 0)) {
 				string msg = "got mix of orderAware/Agnostic securities in AlertsBatch"
 					+ "ordersAgnostic[" + ordersAgnostic.Count + "] :: ordersClosing[" + ordersClosing.Count
 					+ "] ordersOpening[" + ordersOpening.Count+ "]";
-				throw new Exception(msg);
+				Assembler.PopupException(msg);
+				return;
 			}
 			if (ordersAgnostic.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry ordersAgnostic[" + ordersAgnostic.Count + "] through [" + broker + "]";
-				//this.PopupException(new Exception(msg));
-				//Debugger.Break();
+				//Assembler.PopupException(msg, null, false);
 				ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersAgnostic });
 				return;
 			}
 			if (ordersClosing.Count > 0 && ordersOpening.Count == 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry ordersClosing[" + ordersClosing.Count + "] through [" + broker + "]";
-				//this.PopupException(new Exception(msg));
-				Debugger.Break();
+				Assembler.PopupException(msg, null, false);
 				ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersClosing });
 				return;
 			}
 			if (ordersClosing.Count == 0 && ordersOpening.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry ordersOpening[" + ordersOpening.Count + "] through [" + broker + "]";
-				//this.PopupException(new Exception(msg));
-				Debugger.Break();
+				Assembler.PopupException(msg, null, false);
 				ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpening });
 				return;
 			}
@@ -240,16 +245,14 @@ namespace Sq1.Core.Broker {
 					this.OPPsequencer.InitializeSequence(ordersClosing, ordersOpening);
 					string msg = "Scheduling SubmitOrdersThreadEntry ordersClosing[" + ordersClosing.Count
 						+ "] through [" + broker + "], then  ordersOpening[" + ordersOpening.Count + "]";
-					//this.PopupException(new Exception(msg));
-					Debugger.Break();
+					Assembler.PopupException(msg, null, false);
 					ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersClosing });
 					return;
 				} else {
 					List<Order> ordersMerged = new List<Order>(ordersClosing);
 					ordersMerged.AddRange(ordersOpening);
 					string msg = "Scheduling SubmitOrdersThreadEntry ordersMerged[" + ordersMerged.Count + "] through [" + broker + "]";
-					//this.PopupException(new Exception(msg));
-					Debugger.Break();
+					Assembler.PopupException(msg, null, false);
 					ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersMerged });
 					return;
 				}
@@ -335,7 +338,7 @@ namespace Sq1.Core.Broker {
 				 orderFound = this.DataSnapshot.OrdersAll.ScanRecentForGUID(orderGUID);
 			}
 			if (orderFound == null) {
-				string msg = "order[" + orderGUID + "] wasn't found; OrderProcessorDataSnapshot.OrderCount=[" + this.DataSnapshot.OrderCountThreadSafe + "]";
+				string msg = "order[" + orderGUID + "] wasn't found; OrderProcessorDataSnapshot.OrderCount=[" + this.DataSnapshot.OrderCount + "]";
 				throw new Exception(msg);
 				//log.Fatal(msg, new Exception(msg));
 				//return;

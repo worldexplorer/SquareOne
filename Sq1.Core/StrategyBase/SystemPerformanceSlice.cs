@@ -8,45 +8,38 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
 	public class SystemPerformanceSlice {
-		private SystemPerformance parentPerformance;
-		public string ReasonToExist;
-		public PositionLongShort PositionLongShortImTracking { get; private set; }
-		public DataSeriesTimeBased EquityCurve { get; private set; }
-		public DataSeriesTimeBased CashCurve { get; private set; }
-		public List<Position> PositionsImTracking { get; private set; }
-		public IList<Position> PositionsImTrackingReadOnly { get { return this.PositionsImTracking.AsReadOnly(); } }
-		public List<Position> PositionsImTrackingReversed { get { 
-				List<Position> ret = new List<Position>();
-				foreach (Position pos in this.PositionsImTrackingReadOnly) ret.Insert(0, pos);
-				return ret;
-			} }
-		
+		public	string				ReasonToExist;
+		public	PositionLongShort	PositionLongShortImTracking		{ get; private set; }
+		public	DataSeriesTimeBased	EquityCurve						{ get; private set; }
+		public	DataSeriesTimeBased	CashCurve						{ get; private set; }
+		public	List<Position>		PositionsImTracking				{ get; private set; }
+		public	IList<Position>		PositionsImTrackingReadonly		{ get { return this.PositionsImTracking.AsReadOnly(); } }
 
-		public double CashAvailable;
+		public	double				CashAvailable;
 
-		public DateTime NetProfitPeakDate;
-		public double NetProfitPeak;
-		public DateTime MaxDrawDownLastLossDate;
-		public double MaxDrawDown;
+		public	DateTime			NetProfitPeakDate;
+		public	double				NetProfitPeak;
+		public	DateTime			MaxDrawDownLastLossDate;
+		public	double				MaxDrawDown;
 
-		double curConsecWinners;
-		double curConsecLosers;
-		public double MaxConsecWinners;
-		public double MaxConsecLosers;
+				double				curConsecWinners;
+				double				curConsecLosers;
+		public	double				MaxConsecWinners;
+		public	double				MaxConsecLosers;
 
-		public double ProfitFactor { get {
+		public double ProfitFactor	{ get {
 				if (this.NetLossLosers == 0) return double.PositiveInfinity;
 				return Math.Round(this.NetProfitWinners / Math.Abs(this.NetLossLosers), 2);
 			} }
-		public double RecoveryFactor { get {
+		public double RecoveryFactor	{ get {
 				if (this.MaxDrawDown == 0) return double.PositiveInfinity;
 				return Math.Round(Math.Abs(this.NetProfitForClosedPositionsBoth / this.MaxDrawDown), 2);
 			} }
-		public double WinRatePct { get {
+		public double WinRatePct	{ get {
 				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
 				return Math.Round(100 * this.PositionsCountWinners / (double)this.PositionsCountBoth, 1);
 			} }
-		public double LossRatePct { get {
+		public double LossRatePct	{ get {
 				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
 				return Math.Round(100 * this.PositionsCountLosers / (double)this.PositionsCountBoth, 2);
 			} }
@@ -141,8 +134,7 @@ namespace Sq1.Core.StrategyBase {
 			PositionsImTracking = new List<Position>();
 			PositionLongShortImTracking = PositionLongShort.Unknown;	// direction not specified => it means "both short and long" here
 		}
-		public SystemPerformanceSlice(SystemPerformance performance, PositionLongShort positionLongShortImTracking, string reasonToExist) : this() {
-			parentPerformance = performance;
+		public SystemPerformanceSlice(PositionLongShort positionLongShortImTracking, string reasonToExist) : this() {
 			PositionLongShortImTracking = positionLongShortImTracking;
 			ReasonToExist = reasonToExist;
 		}

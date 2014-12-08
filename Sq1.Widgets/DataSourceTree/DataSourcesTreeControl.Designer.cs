@@ -25,6 +25,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 			base.Dispose(disposing);
 		}
+
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.imageList = new System.Windows.Forms.ImageList(this.components);
@@ -46,15 +47,15 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.sepSymbol = new System.Windows.Forms.ToolStripSeparator();
 			this.mniRemoveSymbol = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnitlbSymbolRenameTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
-			this.textBoxFilterTree = new System.Windows.Forms.TextBox();
+			this.txtSearch = new System.Windows.Forms.TextBox();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.btnClear = new System.Windows.Forms.Button();
-			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.pnlSearch = new System.Windows.Forms.TableLayoutPanel();
 			this.tree = new BrightIdeasSoftware.TreeListView();
 			this.olvColumnName = new BrightIdeasSoftware.OLVColumn();
 			this.ctxDataSource.SuspendLayout();
 			this.ctxSymbol.SuspendLayout();
-			this.tableLayoutPanel1.SuspendLayout();
+			this.pnlSearch.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.tree)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -250,12 +251,12 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// 
 			// textBoxFilterTree
 			// 
-			this.textBoxFilterTree.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.textBoxFilterTree.Location = new System.Drawing.Point(3, 3);
-			this.textBoxFilterTree.Name = "textBoxFilterTree";
-			this.textBoxFilterTree.Size = new System.Drawing.Size(99, 20);
-			this.textBoxFilterTree.TabIndex = 3;
-			this.textBoxFilterTree.TextChanged += new System.EventHandler(this.txtFilterSymbol_TextChanged);
+			this.txtSearch.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtSearch.Location = new System.Drawing.Point(3, 3);
+			this.txtSearch.Name = "textBoxFilterTree";
+			this.txtSearch.Size = new System.Drawing.Size(99, 20);
+			this.txtSearch.TabIndex = 3;
+			this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
 			// 
 			// btnClear
 			// 
@@ -271,21 +272,21 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// 
 			// tableLayoutPanel1
 			// 
-			this.tableLayoutPanel1.BackColor = System.Drawing.SystemColors.Control;
-			this.tableLayoutPanel1.ColumnCount = 2;
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-			this.tableLayoutPanel1.Controls.Add(this.textBoxFilterTree, 0, 0);
-			this.tableLayoutPanel1.Controls.Add(this.btnClear, 1, 0);
-			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 211);
-			this.tableLayoutPanel1.MinimumSize = new System.Drawing.Size(0, 26);
-			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 1;
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(130, 26);
-			this.tableLayoutPanel1.TabIndex = 5;
-			this.tableLayoutPanel1.Visible = false;
+			this.pnlSearch.BackColor = System.Drawing.SystemColors.Control;
+			this.pnlSearch.ColumnCount = 2;
+			this.pnlSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.pnlSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.pnlSearch.Controls.Add(this.txtSearch, 0, 0);
+			this.pnlSearch.Controls.Add(this.btnClear, 1, 0);
+			this.pnlSearch.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.pnlSearch.Location = new System.Drawing.Point(0, 211);
+			this.pnlSearch.MinimumSize = new System.Drawing.Size(0, 26);
+			this.pnlSearch.Name = "tableLayoutPanel1";
+			this.pnlSearch.RowCount = 1;
+			this.pnlSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.pnlSearch.Size = new System.Drawing.Size(130, 26);
+			this.pnlSearch.TabIndex = 5;
+			this.pnlSearch.Visible = false;
 			// 
 			// tree
 			// 
@@ -326,6 +327,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.tree.CellClick += new System.EventHandler<BrightIdeasSoftware.CellClickEventArgs>(this.tree_CellClick);
 			this.tree.CellRightClick += new System.EventHandler<BrightIdeasSoftware.CellRightClickEventArgs>(this.tree_CellRightClick);
 			this.tree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.tree_MouseDoubleClick);
+			this.tree.PreviewKeyDown += tree_PreviewKeyDown;
 			// 
 			// olvColumnName
 			// 
@@ -335,23 +337,23 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// DataSourcesTreeControl
 			// 
 			this.BackColor = System.Drawing.SystemColors.Window;
-			this.Controls.Add(this.tableLayoutPanel1);
+			this.Controls.Add(this.pnlSearch);
 			this.Controls.Add(this.tree);
 			this.Name = "DataSourcesTreeControl";
 			this.Size = new System.Drawing.Size(130, 237);
 			this.ctxDataSource.ResumeLayout(false);
 			this.ctxSymbol.ResumeLayout(false);
-			this.tableLayoutPanel1.ResumeLayout(false);
-			this.tableLayoutPanel1.PerformLayout();
+			this.pnlSearch.ResumeLayout(false);
+			this.pnlSearch.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.tree)).EndInit();
 			this.ResumeLayout(false);
 		}
 		private BrightIdeasSoftware.TreeListView tree;
 		private BrightIdeasSoftware.OLVColumn olvColumnName;
-		private TextBox textBoxFilterTree;
+		private TextBox txtSearch;
 		private ToolTip toolTip1;
 		private Button btnClear;
-		private TableLayoutPanel tableLayoutPanel1;
+		private TableLayoutPanel pnlSearch;
 		private MenuItemLabeledTextBox mniltbSymbolAdd;
 		private MenuItemLabeledTextBox mniltbDataSourceRename;
 		private MenuItemLabeledTextBox mnitlbSymbolRenameTo;

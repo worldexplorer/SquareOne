@@ -54,7 +54,7 @@ namespace Sq1.Core.Indicators {
 				//if (this.OwnValuesCalculated.ScaleInterval != bar.ParentBars.ScaleInterval) {
 				//	msg += " OwnValuesCalculated.ScaleInterval[" + this.OwnValuesCalculated.ScaleInterval + "] != bar.ParentBars.ScaleInterval[" + bar.ParentBars.ScaleInterval + "]";
 				//}
-				Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig, null, false);
 				return indicatorLegDrawn;
 			}
 //			return this.DrawValueIndicatorSpecific(g, bar, barPlaceholder);

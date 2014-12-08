@@ -4,10 +4,8 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
-using Sq1.Core;
-using System.Threading;
 
-namespace Sq1.Widgets {
+namespace Sq1.Core {
 	public class DockContentImproved : DockContent {
 		// Docked Form with MinimumSize will take all MinimumSize area and overlap to neighbours
 		// MinimumSize should be 0 to avoid overlap confusion and let myself resize to 0
@@ -96,12 +94,10 @@ namespace Sq1.Widgets {
 		}
 		
 		#region taken from Exceptions, TODO use variables from this class (replace first steps of explorations with DockContentImproved's methods)
-		public void ShowPopupSwitchToGuiThreadRunDelegateInIt(Delegate runInGuiThread = null) {
+		public void ShowPopupSwitchToGuiThread() {
 			if (base.IsDisposed) return;
 			if (base.InvokeRequired == true) {
-				//base.BeginInvoke((MethodInvoker)delegate { this.ShowPopupSwitchToGuiThread(runInGuiThread); });
-				//return;
-				base.Invoke((MethodInvoker)delegate { this.ShowPopupSwitchToGuiThreadRunDelegateInIt(runInGuiThread); });
+				base.BeginInvoke((MethodInvoker)delegate { this.ShowPopupSwitchToGuiThread(); });
 				return;
 			}
 			// doesn't help to show up an Auto-Hidden-after-creation THIS
@@ -124,10 +120,6 @@ namespace Sq1.Widgets {
 			}
 			// removes focus from other forms; makes ExecutionForm.SelectedRow blue=>gray
 			// base.Activate();
-
-			if (runInGuiThread != null) {
-				runInGuiThread.DynamicInvoke();
-			}
 		}
 //		public override void VisibleChanged(object sender, EventArgs e) {
 //			int a = 1;

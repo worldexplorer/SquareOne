@@ -240,14 +240,13 @@ namespace Sq1.Core.Execution {
 			this.DerivedOrders = new List<Order>();
 			this.DerivedOrdersGuids = new List<string>();
 		}
-		public Order(Alert alert, bool fromAutoTrading,
-				bool forceOverwriteAlertOrderFollowedToNewlyCreatedOrder = false) : this() {
+		public Order(Alert alert, bool emittedByScript, bool forceOverwriteAlertOrderFollowedToNewlyCreatedOrder = false) : this() {
 			if (alert == null) {
-				string msg = "Order(): alert=null (serializer will get upset) for " + this.ToString();
+				string msg = "DONT_PASS_ALERT_NULL_TO_Order()  btw, OrderSerializerLogrotate will also refuse to serialize an empty Order";
 				throw new Exception(msg);
 			}
 			if (alert.OrderFollowed != null && forceOverwriteAlertOrderFollowedToNewlyCreatedOrder == false) {
-				string msg = "I refuse to create one more order for an alert.OrderFollowed!=null; alert[" + alert + "] alert.OrderFollowed[" + alert.OrderFollowed + "]";
+				string msg = "YOU_DONT_NEED_TWO_ORDERS_PER_ALERT alert.OrderFollowed!=null; alert[" + alert + "] alert.OrderFollowed[" + alert.OrderFollowed + "]";
 				alert.OrderFollowed.AppendMessage(msg);
 				throw new Exception(msg);
 			}
@@ -255,15 +254,13 @@ namespace Sq1.Core.Execution {
 				string msg = "EARLY_BINDER_DIDN_DO_ITS_JOB#5";
 				Assembler.PopupException(msg);
 			}
-			this.PriceRequested = alert.PriceScript;
-			this.QtyRequested = alert.Qty;
-			this.EmittedByScript = fromAutoTrading;
-			//this.TimeCreatedServer = alert.TimeCreatedLocal;
-			// due to serverTime lagging, replacements orders are born before the original order...
-			this.TimeCreatedBroker = alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
-			//this.PositionFollowed = new Position() when order.State becomes OrderState.Filled;
-			this.SpreadSide = alert.OrderSpreadSide;
-			//this.ExtendedOrderType = alert.ExtendedOrderType;
+			this.PriceRequested			= alert.PriceScript;
+			this.QtyRequested			= alert.Qty;
+			this.EmittedByScript		= emittedByScript;
+			//due to serverTime lagging, replacements orders are born before the original order... this.TimeCreatedServer = alert.TimeCreatedLocal;
+			this.TimeCreatedBroker		= alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
+			//Order.PositionFollowed will be created when order.State becomes OrderState.Filled this.PositionFollowed		= new Position()
+			this.SpreadSide				= alert.OrderSpreadSide;
 
 			// Bid/Ask Dictionaries are synchronized => no exceptions
 			if (alert.DataSource != null && alert.DataSource.StreamingProvider != null) {
@@ -279,7 +276,7 @@ namespace Sq1.Core.Execution {
 //				alert.PositionAffected.EntryAlert.OrderFollowed.DerivedOrdersAdd(this);
 //				// TODO will also have to notify ExecutionForm on this Order, which will close a Position 
 //			}
-			alert.MreOrderFollowedIsAssignedNow.Set();	// Order is fully constructed, all properties assigned, go read them
+			alert.MreOrderFollowedIsAssignedNow.Set();	// simple alert submission is single threaded, including proto.StopLossAlertForAnnihilation!
 		}
 		public static string newGUID() {
 			string ret = DateTime.Now.ToString("Hmmssfff");

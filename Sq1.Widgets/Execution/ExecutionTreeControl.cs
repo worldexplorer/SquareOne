@@ -8,6 +8,7 @@ using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.Execution;
 using Sq1.Core.Serializers;
+using Sq1.Core.Support;
 using Sq1.Support;
 
 namespace Sq1.Widgets.Execution {
@@ -42,7 +43,7 @@ namespace Sq1.Widgets.Execution {
 			this.messagesListViewCustomize();
 			
 			WindowsFormsUtils.SetDoubleBuffered(this.OrdersTreeOLV);
-			WindowsFormsUtils.SetDoubleBuffered(this.lvMessages);
+			WindowsFormsUtils.SetDoubleBuffered(this.olvMessages);
 			WindowsFormsUtils.SetDoubleBuffered(this);
 
 		}
@@ -50,7 +51,7 @@ namespace Sq1.Widgets.Execution {
 			columnsByFilters = new Dictionary<ToolStripMenuItem, List<OLVColumn>>();
 			columnsByFilters.Add(this.mniShowWhenWhat, new List<OLVColumn>() {
 				this.colheBarNum,
-				this.colheDatetime,
+				this.colheOrderCreated,
 				this.colheSymbol,
 				this.colheDirection,
 				this.colheOrderType
@@ -143,6 +144,25 @@ namespace Sq1.Widgets.Execution {
 				int newDistance = this.splitContainerMessagePane.SplitterDistance - this.splitContainerMessagePane.SplitterWidth;
 				this.DataSnapshot.MessagePaneSplitDistanceVertical = newDistance;
 				this.DataSnapshotSerializer.Serialize();
+			} else {
+				//v1 prior to using this.OrdersTreeOLV.SaveState();
+//				// reversing "each cell go find one criminal to imprison" game; columnsByText will avoid full scan each column while setting 6 lines later  
+//				Dictionary<string, OLVColumn> columnsByText = new Dictionary<string, OLVColumn>();
+//				foreach (OLVColumn col in this.OrdersTreeOLV.Columns) {
+//					if (this.DataSnapshot.ColumnsShown.ContainsKey(col.Text) == false) continue;
+//					columnsByText.Add(col.Text, col);
+//				}
+//				// now the game is "the cell knows the criminal" which is an easier task for cell to imprison
+//				foreach (string colText in columnsByText.Keys) {
+//					if (this.DataSnapshot.ColumnsShown.ContainsKey(colText) == false) continue;
+//					bool visible = this.DataSnapshot.ColumnsShown[colText];
+//					OLVColumn col = columnsByText[colText];
+//					col.IsVisible = visible;
+//				}
+				// http://stackoverflow.com/questions/11743160/how-do-i-encode-and-decode-a-base64-string
+				
+				byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.DataSnapshot.OrdersTreeOlvStateBase64);
+				this.OrdersTreeOLV.RestoreState(olvStateBinary);
 			}
 		}
 		public void PopulateAccountsMenuFromBrokerProvider(ToolStripMenuItem[] ctxAccountsAllCheckedFromUnderlyingBrokerProviders) {
@@ -159,25 +179,27 @@ namespace Sq1.Widgets.Execution {
 			// without Invalidate/Refresh, I'll see status change only after mouseover the row with updated Status... :(
 			this.OrdersTreeOLV.Invalidate();
 			//this.OrdersTree.Refresh();
-			this.PopulateMessagesFromSelectedOrder(orders[0]);
+			Order firstOrNull =  (orders.Count > 0) ? orders[0] : null;
+			this.PopulateMessagesFromSelectedOrder(firstOrNull);
 			//this.lvOrders_SelectedIndexChanged(this.lvOrders, EventArgs.Empty);
 		}
-		public void PopulateMessagesFromSelectedOrder(Order order) {
+		public void PopulateMessagesFromSelectedOrder(Order orderNullMeansClear) {
 			if (this.splitContainerMessagePane.Panel2Collapsed == true) return;
-			string msig = " PopulateMessagesFromSelectedOrder(" + order + ")";
-			if (this.lvMessages == null) {
+			string msig = " PopulateMessagesFromSelectedOrder(" + orderNullMeansClear + ")";
+			if (this.olvMessages == null) {
 				string msg = "this.lvMessages=null";
 				//throw new Exception(msg);
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			if (order == null) {
-				string msg = "order=null || (OrdersTree.SelectedObject as Order)=null";
+			if (orderNullMeansClear == null) {
+				//string msg = "order=null || (OrdersTree.SelectedObject as Order)=null";
 				//throw new Exception(msg);
-				Assembler.PopupException(msg + msig);
+				//Assembler.PopupException(msg + msig);
+				this.olvMessages.Clear();
 				return;
 			}
-			ConcurrentQueue<OrderStateMessage> messagesSafeCopy = order.MessagesSafeCopy;
+			ConcurrentQueue<OrderStateMessage> messagesSafeCopy = orderNullMeansClear.MessagesSafeCopy;
 			if (messagesSafeCopy == null) {
 				string msg = "order.MessagesSafeCopy=null; must be at least empty list";
 				//throw new Exception(msg);
@@ -186,7 +208,7 @@ namespace Sq1.Widgets.Execution {
 			}
 			
 			// TODO: neutralize Sort() downstack 
-			this.lvMessages.SetObjects(messagesSafeCopy);
+			this.olvMessages.SetObjects(messagesSafeCopy);
 			// SetObjects() doesn't require Invalidate(), unlike RefreshObject()  
 			//this.lvMessages.Invalidate();
 
@@ -209,9 +231,13 @@ namespace Sq1.Widgets.Execution {
 		public void populateLastOrderMessages() {
 			if (this.DataSnapshot == null) return;
 			if (this.DataSnapshot.firstRowShouldStaySelected == false) return;
-			if (this.ordersTree.InnerOrderList.Count == 0) return;
-			var orderTopmost = this.ordersTree.InnerOrderList[0];
+			//NOPE I WANT TO CLEAR MESSAGES AFTER I WIPED OUT ALL THE ORDERS if (this.ordersTree.InnerOrderList.Count == 0) return;
 			if (this.OrdersTreeOLV == null) return;
+			if (this.ordersTree.InnerOrderList.Count == 0) {
+				this.OrdersTreeOLV.Clear();
+				return;
+			}
+			var orderTopmost = this.ordersTree.InnerOrderList[0];
 			//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectObject(orderTopmost, true);
 			//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectedIndex = 0;
 			this.PopulateMessagesFromSelectedOrder(orderTopmost);

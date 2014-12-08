@@ -267,7 +267,7 @@ namespace Sq1.Charting {
 					}
 				}
 
-				if (this.ThisPanelIsPricePanel) {
+				if (this.ThisPanelIsPricePanel && this.scrollingHorizontally == false) {
 					this.TooltipPositionShown = this.handleTooltipsPositionAndPrice(e);
 					if (this.TooltipPositionShown == false) this.handleTooltipPrice(e);
 				}

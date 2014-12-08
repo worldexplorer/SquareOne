@@ -19,12 +19,17 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.mniStrategyOpen_Click(sender, e);
 		}
 		void treeListView_KeyDown(object sender, KeyEventArgs e) {
-			if (this.StrategySelected == null) return;
-			switch (e.KeyCode) {
-					case Keys.Enter:	this.mniStrategyOpen_Click(sender, e); break;
-					case Keys.Delete:	this.mniStrategyDelete_Click(sender, e); break;
-					case Keys.F2:		this.mniStrategyRename_Click(sender, e); break;
-			}
+			//v1
+//			if (this.StrategySelected == null) return;
+//			switch (e.KeyCode) {
+//				case Keys.Enter:	this.mniStrategyOpen_Click(sender, e); break;
+//				case Keys.Delete:	this.mniStrategyDelete_Click(sender, e); break;
+//				case Keys.F2:		this.mniStrategyRename_Click(sender, e); break;
+//			}
+			//v2
+			if (this.pnlSearch.Visible) return;
+			this.mniShowSearchBar.Checked = true;
+			this.mniShowSearchBar_Click(sender, null);
 		}
 		void treeListView_CellClick(object sender, CellClickEventArgs e) {
 			if (e.RowIndex == -1) return;
@@ -498,9 +503,9 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.tree.SetObjects(strategyRepository.AllFoldersAvailable);
 		}
 		#region inline search, taken from ObjectListViewDemo
-		void txtFilterSymbol_TextChanged(object sender, EventArgs e) {
-			this.btnClear.Enabled = string.IsNullOrEmpty(this.textBoxFilterTree.Text) ? false : true;
-			this.TimedFilter(this.tree, this.textBoxFilterTree.Text);
+		void txtSearch_TextChanged(object sender, EventArgs e) {
+			this.btnClear.Enabled = string.IsNullOrEmpty(this.txtSearch.Text) ? false : true;
+			this.TimedFilter(this.tree, this.txtSearch.Text);
 		}
 		void TimedFilter(ObjectListView olv, string txt) {
 			this.TimedFilter(olv, txt, 0);
@@ -544,17 +549,17 @@ namespace Sq1.Widgets.StrategiesTree {
 			IList objects = olv.Objects as IList;
 			if (objects == null) {
 				string msg = String.Format("Filtered in {0}ms", stopWatch.ElapsedMilliseconds);
-				this.toolTip1.SetToolTip(this.textBoxFilterTree, msg);
+				this.toolTip1.SetToolTip(this.txtSearch, msg);
 			} else {
 				string msg = String.Format("Filtered {0} items down to {1} items in {2}ms",
 										   objects.Count,
 										   olv.Items.Count,
 										   stopWatch.ElapsedMilliseconds);
-				this.toolTip1.SetToolTip(this.textBoxFilterTree, msg);
+				this.toolTip1.SetToolTip(this.txtSearch, msg);
 			}
 		}
 		void btnClear_Click(object sender, EventArgs e) {
-			this.textBoxFilterTree.Text = "";
+			this.txtSearch.Text = "";
 		}
 		#endregion
 		void tree_Expanded(object sender, TreeBranchExpandedEventArgs e) {
@@ -596,11 +601,12 @@ namespace Sq1.Widgets.StrategiesTree {
 				Assembler.PopupException("mniShowHeader_Click", ex);
 			}
 		}
-		void mniShowSearchBar_Click (object sender, EventArgs e){
+		void mniShowSearchBar_Click(object sender, EventArgs e){
 			try {
 				this.dataSnapshot.ShowSearchBar = this.mniShowSearchBar.Checked;
 				this.dataSnapshotSerializer.Serialize();
-				this.tableLayoutPanel1.Visible = this.dataSnapshot.ShowSearchBar;
+				this.pnlSearch.Visible = this.dataSnapshot.ShowSearchBar;
+				this.txtSearch.Focus();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniShowHeader_Click", ex);
 			}

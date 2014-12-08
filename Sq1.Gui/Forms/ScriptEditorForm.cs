@@ -1,6 +1,6 @@
 ﻿using System;
+
 using Sq1.Widgets;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
 	public partial class ScriptEditorForm : DockContentImproved {

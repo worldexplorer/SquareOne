@@ -114,7 +114,7 @@ namespace Sq1.Charting {
 			}
 			if (mustBeNull != null) {
 				string msg = "DUPLICATE_ALERTARROW mustBeNull=[" + mustBeNull + "])";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 			}
 			return mustBeNull == null;
 		}

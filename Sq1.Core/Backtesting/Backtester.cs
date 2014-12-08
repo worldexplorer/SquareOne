@@ -9,41 +9,43 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Backtesting {
 	public class Backtester {
-		public ScriptExecutor Executor;
+		public const string				BARS_BACKTEST_CLONE_PREFIX		= "BACKTEST_BARS_CLONED_FROM_";
+		public ScriptExecutor			Executor						{ get; private set; }
 
-		public Bars BarsOriginal { get; private set; }
-		public Bars BarsSimulating { get; private set; }
-		public BacktestDataSource BacktestDataSource;
-		BacktestQuoteBarConsumer backtestQuoteBarConsumer;
+		public Bars						BarsOriginal					{ get; private set; }
+		public Bars						BarsSimulating					{ get; private set; }
+		public BacktestDataSource		BacktestDataSource				{ get; private set; }
+		   BacktestQuoteBarConsumer 	backtestQuoteBarConsumer;
 
-		bool setBacktestAborted;
-		public ManualResetEvent RequestingBacktestAbort;		// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
-		public ManualResetEvent BacktestAborted;
-		public ManualResetEvent BacktestIsRunning;
-		public ManualResetEvent BacktestCompletedQuotesCanGo;
+			   bool						setBacktestAborted;
+		public ManualResetEvent			RequestingBacktestAbort			{ get; private set; }	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
+		public ManualResetEvent			BacktestAborted					{ get; private set; }
+		public ManualResetEvent			BacktestIsRunning				{ get; private set; }
+		public ManualResetEvent			BacktestCompletedQuotesCanGo	{ get; private set; }
 		
 
-		public int BarsSimulatedSoFar { get; private set; }
-		public int QuotesTotalToGenerate { get {
+		public int						BarsSimulatedSoFar				{ get; private set; }
+		public int						QuotesTotalToGenerate			{ get {
 				if (this.BarsOriginal == null) return -1;
 				return this.BarsOriginal.Count * this.QuotesGenerator.QuotePerBarGenerates;
 			} }
-		public int QuotesGeneratedSoFar { get { return BarsSimulatedSoFar * this.QuotesGenerator.QuotePerBarGenerates; } }
-		public BacktestMode BacktestMode { get; private set; }
-		public BacktestQuotesGenerator QuotesGenerator { get; private set; }
+		public int						QuotesGeneratedSoFar			{ get { return BarsSimulatedSoFar * this.QuotesGenerator.QuotePerBarGenerates; } }
+		public BacktestMode				BacktestMode					{ get; private set; }
+		public BacktestQuotesGenerator	QuotesGenerator					{ get; private set; }
 
-		public string ProgressStats { get {
+		public string					ProgressStats					{ get {
 				if (this.QuotesGenerator == null) return "QuotesGenerator=null";
 				return this.QuotesGeneratedSoFar + " / " + this.QuotesTotalToGenerate;
 			} }
-		public bool IsBacktestingNow { get { return this.BacktestIsRunning.WaitOne(0); } }
-		public bool WasBacktestAborted { get {
+		public bool						IsBacktestingNow				{ get { return this.BacktestIsRunning.WaitOne(0); } }
+		public bool						WasBacktestAborted				{ get {
 				if (QuotesGenerator == null) return false;
 				bool signalled = this.BacktestAborted.WaitOne(0);
 				return signalled;
 			} }
+		public int						ExceptionsHappenedSinceBacktestStarted = 0;
 
-		private Backtester() {
+		Backtester() {
 			setBacktestAborted = false;
 			RequestingBacktestAbort = new ManualResetEvent(false);
 			BacktestAborted = new ManualResetEvent(false);
@@ -119,7 +121,7 @@ namespace Sq1.Core.Backtesting {
 			// allowing any number of threads calling WaitOne to be let through
 			this.BacktestCompletedQuotesCanGo.Set();
 		}
-		public int ExceptionsHappenedSinceBacktestStarted = 0;
+
 		public void AbortBacktestIfExceptionsLimitReached() {
 			if (this.IsBacktestingNow == false) return;
 			this.ExceptionsHappenedSinceBacktestStarted++;
@@ -177,6 +179,7 @@ namespace Sq1.Core.Backtesting {
 			}
 		}
 		void closePositionsLeftOpenAfterBacktest() {
+			//return;
 			foreach (Alert alertPending in this.Executor.ExecutionDataSnapshot.AlertsPendingSafeCopy) {
 				try {
 					//if (alertPending.IsEntryAlert) {
@@ -238,7 +241,7 @@ namespace Sq1.Core.Backtesting {
 					this.Executor.EventGenerator.RaiseBacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4();
 				}
 
-				this.BarsSimulating = this.BarsOriginal.CloneNoBars("BACKTEST for " + this.BarsOriginal);
+				this.BarsSimulating = this.BarsOriginal.CloneNoBars(BARS_BACKTEST_CLONE_PREFIX + this.BarsOriginal);
 				
 				#region candidate for this.BacktestDataSourceBuildFromUserSelection()
 				BacktestSpreadModeler spreadModeler;
@@ -277,9 +280,9 @@ namespace Sq1.Core.Backtesting {
 				
 				// consumers will expect this.BarsOriginal != null
 				this.Executor.EventGenerator.RaiseBacktesterSimulationContextInitializedStep2of4();
-			} catch (Exception e) {
+			} catch (Exception ex) {
 				string msg = "PreBarsSubstitute(): Backtester caught a long beard...";
-				this.Executor.PopupException(msg, e);
+				this.Executor.PopupException(msg, ex);
 			} finally {
 				this.BarsSimulatedSoFar = 0;
 				setBacktestAborted = false;

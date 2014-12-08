@@ -3,45 +3,46 @@ using System.Text;
 using System.Diagnostics;
 
 using Sq1.Core.DataTypes;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Execution {
 	public partial class Position {
 		public int SernoAbs;
 		
-		public bool IsLong { get { return this.PositionLongShort == PositionLongShort.Long; } }
-		public bool IsShort { get { return this.PositionLongShort == PositionLongShort.Short; } }
+		public bool					IsLong					{ get { return this.PositionLongShort == PositionLongShort.Long; } }
+		public bool					IsShort					{ get { return this.PositionLongShort == PositionLongShort.Short; } }
 		
-		public PositionLongShort PositionLongShort { get; protected set; }
-		public Bars Bars { get; protected set; }
-		public string Symbol { get { return this.Bars.Symbol; } }
-		public double Shares { get; protected set; }
-		public double LastQuoteForMarketOrStopLimitImplicitPrice;// { get; protected set; }
+		public PositionLongShort	PositionLongShort		{ get; protected set; }
+		public Bars					Bars					{ get; protected set; }
+		public string				Symbol					{ get { return this.Bars.Symbol; } }
+		public double				Shares					{ get; protected set; }
+		public double				LastQuoteForMarketOrStopLimitImplicitPrice;// { get; protected set; }
 
-		public PositionPrototype Prototype;
+		public PositionPrototype	Prototype;
 
-		public Alert EntryAlert;		// { get; protected set; }
-		public MarketLimitStop EntryMarketLimitStop { get; protected set; }
-		public int EntryFilledBarIndex { get; protected set; }
-		public Bar EntryBar { get { return this.Bars[this.EntryFilledBarIndex]; } }
-		public double EntryFilledPrice { get; protected set; }
-		public double EntryPriceScript;	// { get; protected set; }
-		private double EntryFilledQty;	// { get; protected set; }
-		public double EntryFilledSlippage { get; protected set; }
-		public string EntrySignal { get; protected set; }
-		public double EntryFilledCommission { get; protected set; }
+		public Alert				EntryAlert;				// { get; protected set; }
+		public MarketLimitStop		EntryMarketLimitStop	{ get; protected set; }
+		public int					EntryFilledBarIndex		{ get; protected set; }
+		public Bar					EntryBar				{ get { return this.Bars[this.EntryFilledBarIndex]; } }
+		public double				EntryFilledPrice		{ get; protected set; }
+		public double				EntryPriceScript;		// { get; protected set; }
+		private double				EntryFilledQty;			// { get; protected set; }
+		public double				EntryFilledSlippage		{ get; protected set; }
+		public string				EntrySignal				{ get; protected set; }
+		public double				EntryFilledCommission	{ get; protected set; }
 
-		public Alert ExitAlert;			// { get; protected set; }
-		public MarketLimitStop ExitMarketLimitStop { get; protected set; }
-		public int ExitFilledBarIndex { get; protected set; }
-		public Bar ExitBar { get { return this.Bars[this.ExitFilledBarIndex]; } }
-		public double ExitFilledPrice { get; protected set; }
-		public double ExitPriceScript;	// { get; protected set; }
-		private double ExitFilledQty;	// { get; protected set; }
-		public double ExitFilledSlippage { get; protected set; }
-		public string ExitSignal { get; protected set; }
-		public double ExitFilledCommission { get; protected set; }
+		public Alert				ExitAlert;				// { get; protected set; }
+		public MarketLimitStop		ExitMarketLimitStop		{ get; protected set; }
+		public int					ExitFilledBarIndex		{ get; protected set; }
+		public Bar					ExitBar					{ get { return this.Bars[this.ExitFilledBarIndex]; } }
+		public double				ExitFilledPrice			{ get; protected set; }
+		public double				ExitPriceScript;		// { get; protected set; }
+		private double				ExitFilledQty;			// { get; protected set; }
+		public double				ExitFilledSlippage		{ get; protected set; }
+		public string				ExitSignal				{ get; protected set; }
+		public double				ExitFilledCommission	{ get; protected set; }
 
-		public string StrategyID;
+		public string				StrategyID;
 		//public bool NoExitBarOrStreaming { get { return (this.ExitBarIndex == -1 || this.ExitBarIndex == this.Bars.Count); } }
 		public bool ExitNotFilledOrStreaming { get {
 				if (this.ExitFilledBarIndex == -1) return true;
@@ -58,16 +59,6 @@ namespace Sq1.Core.Execution {
 				return this.EntryBar.DateTimeOpen;
 			} }
 		public DateTime ExitDate { get {
-//				if (this.ExitBarIndex == -1 || this.ExitBarIndex > this.Bars.Count) {
-//					if (this.ExitAlert != null) return this.ExitAlert.DateTime;
-//					return DateTime.MinValue;
-//				}
-//				if (this.ExitBarIndex == this.Bars.Count) {
-//					return this.Bars.StreamingBarCloneReadonly.DateTimeOpen;
-//				}
-//				Bar exitBar = this.Bars[this.ExitBarIndex];
-//				if (exitBar == null) return DateTime.MinValue;
-//				return exitBar.DateTimeOpen;
 				Bar barExit = this.ExitBar;		// don't take it from this.ExitAlert! dateFilled depends on the market, not on your strategy
 				if (barExit == null) return DateTime.MinValue; 
 				return this.EntryBar.DateTimeOpen;
@@ -81,25 +72,6 @@ namespace Sq1.Core.Execution {
 
 		public double ExitOrStreamingPrice { get {
 				double ret = -1;
-//				if (this.ExitBarIndex == -1 || this.ExitBarIndex > this.Bars.Count) {
-//					Bar partial = this.Bars.StreamingBarCloneReadonly;
-//					ret = (double.IsNaN(partial.Close) == false) ? partial.Close : this.Bars.BarStaticLast.Close;
-//				} else {
-//					if (this.ExitPrice != 0 && this.ExitPrice != -1) {	//-1 is a standard for justInitialized nonFilled position's Entry/Exit Prices and Bars;
-//						ret = this.ExitPrice;
-//					} else {
-//						//if (this.ExitBar == this.Bars.Count - 1) {
-//						//	return this.Bars.LastBar.Close;
-//						//}
-//						if (this.ExitBarIndex < this.Bars.Count) {
-//							ret = this.Bars[this.ExitBarIndex].Close;
-//						}
-//						if (this.ExitBarIndex == this.Bars.Count) {
-//							ret = this.Bars.StreamingBarCloneReadonly.Close;
-//						}
-//						// here is the reason for an exception!! TODO: refactor in more concise words
-//					}
-//				}
 				if (this.ExitFilledPrice != 0 && this.ExitFilledPrice != -1) {	//-1 is a standard for justInitialized nonFilled position's Entry/Exit Prices and Bars;
 					ret = this.ExitFilledPrice;
 				} else {
@@ -348,6 +320,7 @@ namespace Sq1.Core.Execution {
 				throw new Exception(msg);
 			}
 			this.ExitFilledBarIndex = exitBar.ParentBarsIndex;
+
 			if (this.ExitBar == null) {
 				string msg = "BARINDEX_FILLED_POSITION_EXIT_DOESNT_BELONG_TO_ITS_OWN_PARENT_BARS_CHECK_Position.EntryBar_PROPERTY exitBar["
 					+ exitBar + "] this.Bars[" + this.Bars + "]";
@@ -364,13 +337,20 @@ namespace Sq1.Core.Execution {
 				#endif
 				throw new Exception(msg + msig);
 			}
+
 			if (exitBar.ParentBars != this.EntryBar.ParentBars) {
-				string msg = "PARENTS_OF_BAR_FILLED_POSITION_EXIT_MUST_BE_SAME_AS_ENTRY_BAR_PARENTS exitBar.ParentBars["
-					+ exitBar.ParentBars + "] != this.EntryBar.ParentBars[" + this.EntryBar.ParentBars + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg + msig);
+				bool skipWhenRemovingPendingAlertBacktestLeftOpen = this.EntryBar.ParentBars.ReasonToExist.Contains(Backtester.BARS_BACKTEST_CLONE_PREFIX)
+					&& exitBar.ParentBars.ReasonToExist.Contains(Backtester.BARS_BACKTEST_CLONE_PREFIX) == false;
+				if (skipWhenRemovingPendingAlertBacktestLeftOpen) {
+				    string msg = "NOW_LOOK_AT_CALLSTACK__3_LEVELS_LOWER_YOU_SHOULD_SEE__ScriptExecutor.RemovePendingExitAlertPastDueClosePosition()";
+				} else {
+					string msg = "PARENTS_OF_BAR_FILLED_POSITION_EXIT_MUST_BE_SAME_AS_ENTRY_BAR_PARENTS exitBar.ParentBars["
+						+ exitBar.ParentBars + "] != this.EntryBar.ParentBars[" + this.EntryBar.ParentBars + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					throw new Exception(msg + msig);
+				}
 			}
 			this.ExitFilledPrice = exitFillPrice;
 			this.ExitFilledQty = exitFillQty;

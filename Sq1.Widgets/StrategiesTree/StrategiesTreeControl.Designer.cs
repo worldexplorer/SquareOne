@@ -52,18 +52,18 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniShowHeader = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniShowSearchBar = new System.Windows.Forms.ToolStripMenuItem();
-			this.textBoxFilterTree = new System.Windows.Forms.TextBox();
+			this.txtSearch = new System.Windows.Forms.TextBox();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.tree = new BrightIdeasSoftware.TreeListView();
 			this.olvColumnName = new BrightIdeasSoftware.OLVColumn();
 			this.olvColumnSize = new BrightIdeasSoftware.OLVColumn();
 			this.olvColumnModified = new BrightIdeasSoftware.OLVColumn();
-			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this.pnlSearch = new System.Windows.Forms.TableLayoutPanel();
 			this.btnClear = new System.Windows.Forms.Button();
 			this.ctxStrategy.SuspendLayout();
 			this.ctxFolder.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.tree)).BeginInit();
-			this.tableLayoutPanel1.SuspendLayout();
+			this.pnlSearch.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// imageList
@@ -330,12 +330,12 @@ namespace Sq1.Widgets.StrategiesTree {
 			// 
 			// textBoxFilterTree
 			// 
-			this.textBoxFilterTree.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.textBoxFilterTree.Location = new System.Drawing.Point(3, 3);
-			this.textBoxFilterTree.Name = "textBoxFilterTree";
-			this.textBoxFilterTree.Size = new System.Drawing.Size(71, 20);
-			this.textBoxFilterTree.TabIndex = 3;
-			this.textBoxFilterTree.TextChanged += new System.EventHandler(this.txtFilterSymbol_TextChanged);
+			this.txtSearch.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtSearch.Location = new System.Drawing.Point(3, 3);
+			this.txtSearch.Name = "textBoxFilterTree";
+			this.txtSearch.Size = new System.Drawing.Size(71, 20);
+			this.txtSearch.TabIndex = 3;
+			this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
 			// 
 			// tree
 			// 
@@ -399,21 +399,21 @@ namespace Sq1.Widgets.StrategiesTree {
 			// 
 			// tableLayoutPanel1
 			// 
-			this.tableLayoutPanel1.BackColor = System.Drawing.SystemColors.Control;
-			this.tableLayoutPanel1.ColumnCount = 2;
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-			this.tableLayoutPanel1.Controls.Add(this.textBoxFilterTree, 0, 0);
-			this.tableLayoutPanel1.Controls.Add(this.btnClear, 1, 0);
-			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 136);
-			this.tableLayoutPanel1.MinimumSize = new System.Drawing.Size(0, 26);
-			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 1;
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(102, 26);
-			this.tableLayoutPanel1.TabIndex = 4;
-			this.tableLayoutPanel1.Visible = false;
+			this.pnlSearch.BackColor = System.Drawing.SystemColors.Control;
+			this.pnlSearch.ColumnCount = 2;
+			this.pnlSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.pnlSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+			this.pnlSearch.Controls.Add(this.txtSearch, 0, 0);
+			this.pnlSearch.Controls.Add(this.btnClear, 1, 0);
+			this.pnlSearch.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.pnlSearch.Location = new System.Drawing.Point(0, 136);
+			this.pnlSearch.MinimumSize = new System.Drawing.Size(0, 26);
+			this.pnlSearch.Name = "tableLayoutPanel1";
+			this.pnlSearch.RowCount = 1;
+			this.pnlSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.pnlSearch.Size = new System.Drawing.Size(102, 26);
+			this.pnlSearch.TabIndex = 4;
+			this.pnlSearch.Visible = false;
 			// 
 			// btnClear
 			// 
@@ -430,15 +430,15 @@ namespace Sq1.Widgets.StrategiesTree {
 			// StrategiesTreeControl
 			// 
 			this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-			this.Controls.Add(this.tableLayoutPanel1);
+			this.Controls.Add(this.pnlSearch);
 			this.Controls.Add(this.tree);
 			this.Name = "StrategiesTreeControl";
 			this.Size = new System.Drawing.Size(102, 162);
 			this.ctxStrategy.ResumeLayout(false);
 			this.ctxFolder.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.tree)).EndInit();
-			this.tableLayoutPanel1.ResumeLayout(false);
-			this.tableLayoutPanel1.PerformLayout();
+			this.pnlSearch.ResumeLayout(false);
+			this.pnlSearch.PerformLayout();
 			this.ResumeLayout(false);
 		}
 
@@ -449,7 +449,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbStrategyDuplicateTo;
 
 		public BrightIdeasSoftware.TreeListView tree;
-		private TextBox textBoxFilterTree;
+		private TextBox txtSearch;
 		private ToolTip toolTip1;
 		private ToolStripMenuItem mniStrategyOpen;
 		private ToolStripMenuItem mniStrategyOpenWith;
@@ -464,7 +464,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		private BrightIdeasSoftware.OLVColumn olvColumnName;
 		private BrightIdeasSoftware.OLVColumn olvColumnSize;
 		private BrightIdeasSoftware.OLVColumn olvColumnModified;
-		private TableLayoutPanel tableLayoutPanel1;
+		private TableLayoutPanel pnlSearch;
 		private Button btnClear;		
 
 

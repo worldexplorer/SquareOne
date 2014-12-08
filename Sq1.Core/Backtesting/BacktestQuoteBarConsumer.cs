@@ -71,7 +71,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
-			ReporterPokeUnit pokeUnit = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, true);
+			ReporterPokeUnit pokeUnit = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
 		}
 	}
 }

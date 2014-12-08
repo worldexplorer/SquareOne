@@ -166,6 +166,11 @@ namespace Sq1.Core.StrategyBase {
 					List<IndicatorParameter> indicatorParameters = parametersByIndicatorName[indicatorName];
 					foreach (IndicatorParameter indicatorParameter in indicatorParameters) {
 						string indicatorDotParameterName = indicatorName + "." + indicatorParameter.Name;
+						if (indicatorParameter.FullName.StartsWith(indicatorName) == false) {
+							// HACK! Indicator Instantiator must have had set Indicator.Name=<Script's variable name>
+							//Debugger.Break();
+							indicatorParameter.IndicatorName = indicatorName;
+						}
 						ret.Add(indicatorDotParameterName, indicatorParameter);
 					}
 				}

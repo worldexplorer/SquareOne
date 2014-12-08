@@ -137,13 +137,14 @@ namespace Sq1.Gui.Forms {
 			if (this.ChartFormManager.Executor.DataSource.StreamingProvider == null) {
 				this.btnStreamingTriggersScript.Text = "DataSource: [" + StreamingProvider.NO_STREAMING_PROVIDER + "]";
 				this.btnStreamingTriggersScript.Enabled = false;
+				this.mniSubscribedToStreamingProviderQuotesBars.Text = "Not Subscribed: edit DataSource > attach StreamingProvider";
 			} else {
 				this.btnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent + " 00:00:00.000"; //+:: 00:00:00.000";
 				this.btnStreamingTriggersScript.Enabled = true;
-			}
 
-			// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
-			this.mniSubscribedToStreamingProviderQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingProvider.Name + "]";
+				// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
+				this.mniSubscribedToStreamingProviderQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingProvider.Name + "]";
+			}
 		}
 		public void AbsorbContextBarsToGui() {
 			if (base.InvokeRequired) {

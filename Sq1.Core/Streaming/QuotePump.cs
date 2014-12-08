@@ -12,13 +12,14 @@ namespace Sq1.Core.Streaming {
 	// 3) I run Backtest => I need to postpone the reception of the incoming quotes for the duration of the backtest and then continue live orders emission
 	public class QuotePump : IDisposable {
 		ConcurrentQueue<Quote> qq;
-		ManualResetEvent	hasQuoteToPush;		// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
+		ManualResetEvent	hasQuoteToPush;			// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 		ManualResetEvent	confirmThreadStarted;	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 		ManualResetEvent	confirmThreadExited;	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 
 		bool				pauseRequested;
 		bool				unPauseRequested;
-		ManualResetEvent	confirmPauseSwitched;	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
+		ManualResetEvent	confirmPaused;		// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
+		ManualResetEvent	confirmUnpaused;	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 
 		SymbolScaleDistributionChannel channel;
 		
@@ -83,7 +84,7 @@ namespace Sq1.Core.Streaming {
 						return;
 					}
 					if (value == true) {
-						this.confirmPauseSwitched.Reset();
+						this.confirmPaused.Reset();
 						if (this.SeparatePushingThreadEnabled == false) {
 							//v1
 							//string msg2 = "SKIPPING_PAUSE_PUSHING_THREAD_THAT_HAVENT_STARTED_YET (review how you use QuotePump)";
@@ -92,10 +93,11 @@ namespace Sq1.Core.Streaming {
 							string msg = "PUMPING_PAUSED_SINGLE_THREADED";
 							Assembler.PopupException(msg + msig, null, false);
 						} else {
-							if (Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false) {
+							// Thread.CurrentThread.Name=null for Backtester.RunSimulation
+							if (Thread.CurrentThread.Name != null && Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false) {
 								this.pauseRequested = true;
 								this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process pauseRequested=true
-								bool pausedConfirmed = this.confirmPauseSwitched.WaitOne(this.heartbeatTimeout * 2);
+								bool pausedConfirmed = this.confirmPaused.WaitOne(this.heartbeatTimeout * 2);
 								string msg2 = pausedConfirmed ? "PUMPING_PAUSED" : "PUMPING_PAUSED_NOT_CONFIRMED";
 								Assembler.PopupException(msg2 + msig, null, false);
 							} else {
@@ -104,7 +106,7 @@ namespace Sq1.Core.Streaming {
 							}
 						}
 					} else {
-						this.confirmPauseSwitched.Reset();
+						this.confirmUnpaused.Reset();
 						if (this.SeparatePushingThreadEnabled == false) {
 							//v1
 							//string msg2 = "SKIPPING_UNPAUSE_PUSHING_THREAD_THAT_HAVENT_STARTED_YET (review how you use QuotePump)";
@@ -113,10 +115,11 @@ namespace Sq1.Core.Streaming {
 							string msg2 = "PUMPING_UNPAUSED_SINGLE_THREADED";
 							Assembler.PopupException(msg2 + msig, null, false);
 						} else {
-							if (Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false) {
+							// Thread.CurrentThread.Name=null for Backtester.RunSimulation
+							if (Thread.CurrentThread.Name != null && Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false) {
 								this.unPauseRequested = true;
 								this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process unPauseRequested=true
-								bool unPausedConfirmed = this.confirmPauseSwitched.WaitOne(this.heartbeatTimeout * 2);
+								bool unPausedConfirmed = this.confirmUnpaused.WaitOne(this.heartbeatTimeout * 2);
 								string msg = unPausedConfirmed ? "PUMPING_RESUMED" : "PUMPING_RESUMED_NOT_CONFIRMED";
 								Assembler.PopupException(msg + msig, null, false);
 							} else {
@@ -148,7 +151,8 @@ namespace Sq1.Core.Streaming {
 			confirmThreadStarted = new ManualResetEvent(false);
 			confirmThreadExited = new ManualResetEvent(false);
 			bufferPusher = new Task(this.pusherEntryPoint);
-			confirmPauseSwitched = new ManualResetEvent(false);
+			confirmPaused = new ManualResetEvent(false);
+			confirmUnpaused = new ManualResetEvent(false);
 
 			//v1
 			if (this.SeparatePushingThreadEnabled != separatePushingThreadEnabled) {
@@ -174,7 +178,7 @@ namespace Sq1.Core.Streaming {
 				//Assembler.PopupException(msg, null, false);
 			}
 			if (this.qq.Count > 0 && this.qq.Count % WARN_AFTER_QUOTES_BUFFERED == 0) { 
-				string msg = "QUOTES_BACKLOG_GREW_[" + WARN_AFTER_QUOTES_BUFFERED + "] qq.Count[" + this.qq.Count + "]";
+				string msg = "QUOTES_BACKLOG_GREW [" + WARN_AFTER_QUOTES_BUFFERED + "] qq.Count[" + this.qq.Count + "]";
 				Assembler.PopupException(msg, null, false);
 			}
 			qq.Enqueue(quoteSernoEnrichedWithUnboundStreamingBar);
@@ -212,12 +216,12 @@ namespace Sq1.Core.Streaming {
 
 					if (this.pauseRequested) {
 						this.pauseRequested = false;
-						this.confirmPauseSwitched.Set();	// whoever was waiting for PushConsumersPaused=true rest assured that pauseRequested is satisfied (no more quotes pumping anymore until unPauseRequested)
+						this.confirmPaused.Set();	// whoever was waiting for PushConsumersPaused=true rest assured that pauseRequested is satisfied (no more quotes pumping anymore until unPauseRequested)
 						//continue;							// here might be quotes regardless my fake HasQuoteToPush = true
 					}
 					if (this.unPauseRequested) {
 						this.unPauseRequested = false;
-						this.confirmPauseSwitched.Set();	// whoever was waiting for PushConsumersPaused=false rest assured that unPauseRequested is satisfied (quotes pumping from now on until pauseRequested)
+						this.confirmUnpaused.Set();	// whoever was waiting for PushConsumersPaused=false rest assured that unPauseRequested is satisfied (quotes pumping from now on until pauseRequested)
 						if (this.qq.Count > 0) {
 							string msg = "PUSHER_COLLECTED_QUOTES_DURING_PAUSE: qq.Count[" + this.qq.Count + "]";
 							Assembler.PopupException(msg, null, false);
@@ -255,7 +259,7 @@ namespace Sq1.Core.Streaming {
 					}
 					if (quotesCollected > 0) {
 						watchForPpausedQuotesProcessing.Stop();
-						string msg = "QUOTES_BACKLOG_DRAINED[" + watchForPpausedQuotesProcessing.ElapsedMilliseconds + "]ms"
+						string msg = "QUOTES_BACKLOG_DRAINED [" + watchForPpausedQuotesProcessing.ElapsedMilliseconds + "]ms"
 							+ " customerCalls[" + customerCalls + "]"
 							+ " qCollected[" + quotesCollected + "] qProcessed[" + quotesProcessed + "]";
 						Assembler.PopupException(msg, null, false);
@@ -276,5 +280,14 @@ namespace Sq1.Core.Streaming {
 		}
 		#endregion
 		public string ToString() { return THREAD_PREFIX + this.channel.ToString(); }
+
+		public bool WaitUntilUnpaused(int maxWaitingMillis = 1000) {
+			bool unpaused = this.confirmUnpaused.WaitOne(maxWaitingMillis);
+			return unpaused;
+		}
+		public bool WaitUntilPaused(int maxWaitingMillis = 1000) {
+			bool paused = this.confirmPaused.WaitOne(maxWaitingMillis);
+			return paused;
+		}
 	}
 }

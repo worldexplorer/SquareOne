@@ -49,7 +49,7 @@ namespace Sq1.Widgets.StrategiesTree {
 				this.tree.HeaderStyle = this.dataSnapshot.ShowHeader ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
 				this.mniShowHeader.Checked = this.dataSnapshot.ShowHeader;
 				
-				this.tableLayoutPanel1.Visible = this.dataSnapshot.ShowSearchBar;
+				this.pnlSearch.Visible = this.dataSnapshot.ShowSearchBar;
 				this.mniShowSearchBar.Checked = this.dataSnapshot.ShowSearchBar;
 			} catch (Exception ex) {
 				string msg = "SHOULD_NEVER_HAPPEN StrategiesTreeControl.populateDataSnapshotDeserialized() ";

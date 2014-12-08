@@ -98,10 +98,11 @@ namespace Sq1.Charting {
 			//int nominal = (int) (this.BarWidthIncludingPadding * 0.25F);
 			int nominal = 1;
 			// algo below allows you have this.BarTotalWidthPx both odd and even automatically
-			int compensated = nominal;
-			int keepWidthOdd = this.BarWidthIncludingPadding - compensated;
-			if (keepWidthOdd % 2 == 0) compensated++;	// increase padding to have 1px shadows right in the middle of a bar
-			return compensated;
+			//int compensated = nominal;
+			//int keepWidthOdd = this.BarWidthIncludingPadding - compensated;
+			//if (keepWidthOdd % 2 == 0) compensated++;	// increase padding to have 1px shadows right in the middle of a bar
+			//return compensated;
+			return nominal;
 		} }
 		[JsonIgnore]	public int BarWidthMinusRightPadding { get { return this.BarWidthIncludingPadding - this.BarPaddingRight; } }
 		[JsonIgnore]	public int BarShadowXoffset { get { return this.BarWidthMinusRightPadding / 2; } }
