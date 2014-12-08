@@ -164,28 +164,83 @@ namespace Sq1.Reporters {
 				this.olvcEntryDate.Width = 80;
 				this.olvcExitDate.Width = 80;
 			}
-			this.reversePositionsCalcCumulativesDumpToTitleAndOLV();
-		}
-		public override void BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit pokeUnit) {
-			Debugger.Break();
-			this.reversePositionsCalcCumulativesDumpToTitleAndOLV();
-		}
-		void reversePositionsCalcCumulativesDumpToTitleAndOLV() {
-			double cumProfitDollar = 0;
+
+			double cumProfitDollar = 0;			//void reversePositionsCalcCumulativesDumpToTitleAndOLV() {
 			double cumProfitPercent = 0;
 			this.cumulativeProfitDollar.Clear();
 			this.cumulativeProfitPercent.Clear();
-			//v1 this.positionsAllReversedCached = base.SystemPerformance.SlicesShortAndLong.PositionsImTrackingReversed;
-			//v2
 			this.positionsAllReversedCached.Clear();
-			foreach (Position pos in base.SystemPerformance.SlicesShortAndLong.PositionsImTrackingReadOnly) {
+			foreach (Position pos in base.SystemPerformance.SlicesShortAndLong.PositionsImTrackingReadonly) {
+				if (this.positionsAllReversedCached.Contains(pos) == false) {
+					cumProfitDollar += pos.NetProfit;
+					cumProfitPercent += pos.NetProfitPercent;
+					this.cumulativeProfitDollar.Add(pos, cumProfitDollar);
+					this.cumulativeProfitPercent.Add(pos, cumProfitPercent);
+					this.positionsAllReversedCached.Insert(0, pos);
+					continue;
+				}
+			}
+			base.TabText = "Positions (" + this.positionsAllReversedCached.Count + ")";
+			this.olvPositions.SetObjects(this.positionsAllReversedCached);
+		}
+		public override void BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit pokeUnit) {
+			int earliestIndexUpdated = -1;
+			List<Position> merged = pokeUnit.PositionsOpenedClosedMergedTogether;
+			foreach (Position pos in merged) {
+				if (this.positionsAllReversedCached.Contains(pos) == false) {
+					Position posRecent = this.positionsAllReversedCached[0];
+					double cumProfitDollar1 = this.cumulativeProfitDollar[posRecent] + pos.NetProfit;
+					double cumProfitPercent1 = this.cumulativeProfitPercent[posRecent] + pos.NetProfitPercent;
+					this.cumulativeProfitDollar.Add(pos, cumProfitDollar1);
+					this.cumulativeProfitPercent.Add(pos, cumProfitPercent1);
+					this.positionsAllReversedCached.Insert(0, pos);
+					continue;
+				}
+				int posIndex = this.positionsAllReversedCached.IndexOf(pos);
+				if (posIndex == -1) {
+					string msg3 = "YOU_JUST_SAID_YOU_CONTAINED_THIS_POSITION???";
+					Assembler.PopupException(msg3);
+				}
+				if (earliestIndexUpdated == -1) {
+					earliestIndexUpdated = posIndex;
+					continue;
+				}
+				if (earliestIndexUpdated >= posIndex) continue;
+				earliestIndexUpdated = posIndex;
+			}
+			if (earliestIndexUpdated == -1) {
+				string msg2 = "NO_POSITIONS_UPDATED_NO_NEED_TO_RECALCULATE_ANYTHING";
+				if (merged.Count > 0) {
+					base.TabText = "Positions (" + this.positionsAllReversedCached.Count + ")";
+					this.olvPositions.SetObjects(this.positionsAllReversedCached);
+				}
+				return;
+			}
+			string msg = "POSITIONS_UPDATED_SO_I_RECALCULATE_FROM_EARLIEST_INDEX_UP_TO_ZERO";
+			double cumProfitDollar = 0;
+			double cumProfitPercent = 0;
+			for(int i = earliestIndexUpdated; i>=0; i--) {
+				Position pos = this.positionsAllReversedCached[i];
+				if (i == earliestIndexUpdated) {
+					if (this.cumulativeProfitDollar.ContainsKey(pos)) {
+						cumProfitDollar = this.cumulativeProfitDollar[pos] + pos.NetProfit;
+					} else {
+						string msg1 = "NONSENSE#1";
+					}
+					if (this.cumulativeProfitPercent.ContainsKey(pos)) {
+						cumProfitPercent = this.cumulativeProfitPercent[pos] + pos.NetProfitPercent;
+					} else {
+						string msg2 = "NONSENSE#2";
+					}
+					continue;
+				}
 				cumProfitDollar += pos.NetProfit;
 				cumProfitPercent += pos.NetProfitPercent;
-				this.cumulativeProfitDollar.Add(pos, cumProfitDollar);
-				this.cumulativeProfitPercent.Add(pos, cumProfitPercent);
-				this.positionsAllReversedCached.Insert(0, pos);
+
+				this.cumulativeProfitDollar[pos] = cumProfitDollar;
+				this.cumulativeProfitPercent[pos] = cumProfitPercent;
 			}
-			
+
 			base.TabText = "Positions (" + this.positionsAllReversedCached.Count + ")";
 			this.olvPositions.SetObjects(this.positionsAllReversedCached);
 		}

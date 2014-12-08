@@ -63,12 +63,14 @@ namespace Sq1.Core.Broker {
 					}
 					laneFound = lanesFullScan;
 				}
-				msg = "USE [" + laneFound.ToShortString() + "] instead of OrdersAll: " + msg;
+
+				msg = "USE [" + laneFound.ToString() + "] instead of OrdersAll: " + msg;
 			} else {
 				msg = "NO_SUGGESTION_FOR[" + order.State + "] instead of OrdersAll: " + msg;
 			}
 			fullScanTook.Stop();
-			msg += " (fullScanTook " + fullScanTook.ElapsedMilliseconds + "ms)";
+			msg += " order[" + order + "]";
+			msg = "(" + fullScanTook.ElapsedMilliseconds + "ms) " + msg;
 			Assembler.PopupException(msg, null, true);
 		}
 		protected virtual bool checkThrowAdd	(Order order) { return true; }
@@ -201,8 +203,7 @@ namespace Sq1.Core.Broker {
 			return ordersForAccount;
 		}
 
-		public override string	ToString()			{ return "OrderLane[" + this.ident + "]"; }
-		public virtual	string	ToShortString()		{ return this.ident; }
-		public			string	ToStringSummary()	{ return this.ToString() + ".Count=[" + this.InnerOrderList.Count + "]"; }
+		public override string	ToString()			{ return this.ident; }
+		public			string	ToStringCount()		{ return this.ToString() + ".Count=[" + this.InnerOrderList.Count + "]"; }
 	}
 }

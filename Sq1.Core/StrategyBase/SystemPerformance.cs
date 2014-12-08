@@ -9,26 +9,29 @@ using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public class SystemPerformance {
-		public ScriptExecutor Executor { get; private set; }
-		public Bars Bars { get {
+		public ScriptExecutor								Executor			{ get; private set; }
+		public Bars											Bars				{ get {
 				if (this.Executor.Bars == null) {
 					string msg = "don't execute any SystemPerformance calculations before calling InitializeAndScan(): this.Executor.Bars == null";
 					throw new Exception(msg);
 				}
 				return this.Executor.Bars;
 			} }
-		public Bars BenchmarkSymbolBars { get { return this.Bars; } }
+		public Bars											BenchmarkSymbolBars	{ get { return this.Bars; } }
 
-//		public List<Position>					DEBUGGING_PositionsMaster { get; internal set; }
-//		public Dictionary<int, List<Position>>	DEBUGGING_PositionsMasterByEntryBarSafeCopy { get; internal set; }
-//		public Dictionary<int, List<Position>>	DEBUGGING_PositionsMasterByExitBarSafeCopy { get; internal set; }
-
-		public SystemPerformanceSlice SlicesShortAndLong { get; private set; }
-		public SystemPerformanceSlice SliceLong { get; private set; }
-		public SystemPerformanceSlice SliceShort { get; private set; }
-		public SystemPerformanceSlice SliceBuyHold { get; private set; }
+		public SystemPerformanceSlice						SlicesShortAndLong	{ get; private set; }
+		public SystemPerformanceSlice						SliceLong			{ get; private set; }
+		public SystemPerformanceSlice						SliceShort			{ get; private set; }
+		public SystemPerformanceSlice						SliceBuyHold		{ get; private set; }
 		
 		public SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName; 
+
+		public string						EssentialsForScriptContextNewName	{ get {
+				return "Net[" + this.SlicesShortAndLong.NetProfitForClosedPositionsBoth + "]"
+				+ " PF[" + this.SlicesShortAndLong.ProfitFactor + "]"
+				+ " RF[" + this.SlicesShortAndLong.RecoveryFactor + "]";
+			} }
+
 
 		public SystemPerformance(ScriptExecutor scriptExecutor) {
 			if (scriptExecutor == null) {
@@ -36,13 +39,13 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 
-			this.Executor = scriptExecutor;
-			this.SliceLong			= new SystemPerformanceSlice(this, PositionLongShort.Long,		"StatsForLongPositionsOnly");
-			this.SliceShort			= new SystemPerformanceSlice(this, PositionLongShort.Short,		"StatsForShortPositionsOnly");
-			this.SlicesShortAndLong	= new SystemPerformanceSlice(this, PositionLongShort.Unknown,	"StatsForShortAndLongPositions");
-			this.SliceBuyHold		= new SystemPerformanceSlice(this, PositionLongShort.Unknown,	"StatsForBuyHold");
-			
-			//ScriptAndIndicatorParameterClonesByName = new SortedDictionary<string, IndicatorParameter>();
+			this.Executor			= scriptExecutor;
+			this.SliceLong			= new SystemPerformanceSlice(PositionLongShort.Long,		"StatsForLongPositionsOnly");
+			this.SliceShort			= new SystemPerformanceSlice(PositionLongShort.Short,		"StatsForShortPositionsOnly");
+			this.SlicesShortAndLong	= new SystemPerformanceSlice(PositionLongShort.Unknown,	"StatsForShortAndLongPositions");
+			this.SliceBuyHold		= new SystemPerformanceSlice(PositionLongShort.Unknown,	"StatsForBuyHold");
+
+			//CREATED_IN_this.BuildStatsOnBacktestFinished() ScriptAndIndicatorParameterClonesByName = new SortedDictionary<string, IndicatorParameter>();
 		}
 		public void Initialize() {
 			//if (this.Executor.Bars == null) {
@@ -50,10 +53,10 @@ namespace Sq1.Core.StrategyBase {
 			//    throw new Exception(msg);
 			//}
 
-			this.SliceLong.Initialize();
-			this.SliceShort.Initialize();
-			this.SlicesShortAndLong.Initialize();
-			this.SliceBuyHold.Initialize();
+			this.SliceLong			.Initialize();
+			this.SliceShort			.Initialize();
+			this.SlicesShortAndLong	.Initialize();
+			this.SliceBuyHold		.Initialize();
 		}
 		public void BuildStatsIncrementallyOnEachBarExecFinished(ReporterPokeUnit pokeUnit) {
 			Dictionary<int, List<Position>> posByEntry = pokeUnit.PositionsOpenedByBarFilled;
@@ -137,11 +140,18 @@ namespace Sq1.Core.StrategyBase {
 				this.ScriptAndIndicatorParameterClonesByName.Add(ip.FullName, ip.Clone());
 			}
 		}
-		// Optimizer takes Clone with Slices ready to use; same (parent) SystemPerformance.Initialize() overwrites with new Slices, while clone keeps pointers to old Slices => Optimizer is happy   
-		public SystemPerformance CloneForOptimizer { get { return (SystemPerformance)base.MemberwiseClone(); } }
-		public string EssentialsForScriptContextNewName { get { return "Net[" + this.SlicesShortAndLong.NetProfitForClosedPositionsBoth + "]"
-				+ " PF[" + this.SlicesShortAndLong.ProfitFactor + "]"
-				+ " RF[" + this.SlicesShortAndLong.RecoveryFactor + "]";
-			} }
+		public SystemPerformance CloneForOptimizer() {
+			// Optimizer takes Clone with Slices ready to use; same (parent) SystemPerformance.Initialize() overwrites with new Slices,
+			// while clone keeps pointers to old Slices => Optimizer is happy   
+			return (SystemPerformance)base.MemberwiseClone();
+		}
+		//public SystemPerformance CloneForReporter() {
+		//    // Sq1.Reporters.Performance needs full deep copy to maintain its own lists to avoid "Collection Modified Exceptions"
+		//    // instead of making ScriptExecutor.DataSnapshot.PositionsMaster and everything synchronized (slows down adding by strategy?),
+		//    // each report receives PokeUnit and messes up its own data at its own risk in its own address space
+		//    SystemPerformance ret = (SystemPerformance)base.MemberwiseClone();
+		//    ret.
+		//    return ret;
+		//}
 	}
 }

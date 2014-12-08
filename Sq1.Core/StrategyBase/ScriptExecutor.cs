@@ -247,15 +247,27 @@ namespace Sq1.Core.StrategyBase {
 					//#D_FREEZE Assembler.PopupException(msg2);
 					//Debugger.Break();
 					ContextScript ctx = this.Strategy.ScriptContextCurrent;
-					
-					//MOVED_TO_ this.DataSource.PausePumpingFor(ctx.Symbol, ctx.ScaleInterval, false);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
+
+					//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
+					// ^^^ this.DataSource.PausePumpingFor(this.Bars, true);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
+					bool paused = this.Bars.DataSource.WaitUntilPumpPaused(this.Bars, 0);
+					if (paused == true) {
+						string msg3 = "YOU_WANT_ONE_STRATEGY_PER_SYMBOL_LIVE MAKE_SURE_YOU_HAVE_ONLY_ONE_SYMBOL:INTERVAL_ACROSS_ALL_OPEN_CHARTS PUMP_SHOULD_HAVE_BEEN_PAUSED_EARLIER"
+							+ " in ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
+						Assembler.PopupException(msg3);
+					}
 					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsNewAfterExecCopy, setStatusSubmitting, true);
-					//this.DataSource.UnPausePumpingFor(ctx.Symbol, ctx.ScaleInterval, false);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
-				}
-			} else {
-				if (willEmit && this.Strategy.Name == "EnterEveryBarCompiled" && quoteForAlertsCreated == null) {
-					string msg2 = "EnterEveryBarCompiled must have had new Alert here every bar; instead, alertsNewAfterExecCopy.Count=0";
-					Assembler.PopupException(msg2, null, false);
+					//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
+					// ^^^ this.DataSource.UnPausePumpingFor(this.Bars, true);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
+
+					foreach (Alert alert in alertsNewAfterExecCopy) {
+						if (alert.OrderFollowed != null) continue;
+						bool removed = this.ExecutionDataSnapshot.AlertsPendingRemove(alert);
+						if (removed == false) {
+							string msg3 = "FAILED_TO_REMOVE_INCONSISTENT_ALERT_FROM_PENDING removed=" + removed;
+							Assembler.PopupException(msg3);
+						}
+					}
 				}
 			}
 
@@ -489,17 +501,23 @@ namespace Sq1.Core.StrategyBase {
 		//DateTime lastTimeReportersPoked = DateTime.MinValue;
 		public void AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(ReporterPokeUnit pokeUnit) {
 			if (pokeUnit.PositionsCount == 0) {
-				return;		// EMPTY_AFTEREXEC check#1
+			    return;		// EMPTY_AFTEREXEC check#1
 			}
 
-			foreach (Position pos in pokeUnit.PositionsOpenedClosedMergedTogether) {
-				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.EntryAlert);
-				if (pos.ExitAlert != null) {
-					Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
-				}
+			//v1: avoiding ALREADY_ADDED exception: pos.EntryAlert in positionsMerged is indeed already added when it was opened 
+			//foreach (Position pos in pokeUnit.PositionsOpenedClosedMergedTogether) {
+			//	Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.EntryAlert);
+			//	if (pos.ExitAlert != null) {
+			//		Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
+			//	}
+			//}
+			//v2
+			foreach (Alert alert in pokeUnit.AlertsNew) {
+				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
 			}
-			this.ChartShadow.PositionsRealtimeAdd(pokeUnit.Clone());
 			this.Performance.BuildStatsIncrementallyOnEachBarExecFinished(pokeUnit);
+			this.ChartShadow.PositionsRealtimeAdd(pokeUnit.Clone());
+			this.EventGenerator.RaiseBrokerOpenedOrClosedPositions(pokeUnit.Clone());
 		}
 
 		public void CreatedOrderWontBePlacedPastDueInvokeScript(Alert alert, int barNotSubmittedRelno) {
@@ -706,7 +724,7 @@ namespace Sq1.Core.StrategyBase {
 							}
 						} else {
 							string msg = "you are definitely crazy, StopLossAlert.OrderFollowed is a single-threaded assignment";
-							//this.ThrowPopup(new Exception(msg));
+							Assembler.PopupException(msg);
 						}
 
 						if (proto.TakeProfitAlertForAnnihilation.OrderFollowed == null) {
@@ -726,7 +744,7 @@ namespace Sq1.Core.StrategyBase {
 							}
 						} else {
 							string msg = "you are definitely crazy, TakeProfitAlert.OrderFollowed is a single-threaded assignment";
-							//this.ThrowPopup(new Exception(msg));
+							Assembler.PopupException(msg);
 						}
 					}
 				}
@@ -809,7 +827,12 @@ namespace Sq1.Core.StrategyBase {
 			//if (this.checkPositionCanBeClosed(alert, msig, checkPositionOpenNow) == false) return;
 
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerProvider knows to pass Bar here?...
-			Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
+			//v1 STREAMING DOESNT BELONG??? Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
+			//v2 NO_I_NEED_STREAMING_BAR_NOT_THE_SAME_I_OPENED_THE_LEFTOVER_POSITION
+			Bar barFill = alert.Bars.BarStaticLastNullUnsafe;
+			// HACK adding streaming LIVE to where BACKTEST_BARS_CLONED_FOR_ just ended; to avoid NPE at "if (exitBar.Open != this.ExitBar.Open) {"
+			//v3 alert.Bars.BarCreateAppendBindStatic(barFill.DateTimeOpen, barFill.Open, barFill.High, barFill.Low, barFill.Close, barFill.Volume);
+			//v4 alert.Bars.BarStreamingCreateNewOrAbsorb(this.Bars.BarStreaming);
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingExitAlertClosePosition Forced";
 			// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR we can exit by TP or SL - position doesn't have an ExitAlert assigned until Position.EntryAlert was filled!!!
@@ -904,7 +927,13 @@ namespace Sq1.Core.StrategyBase {
 		Assembler assembler;
 		Strategy strategy;
 		internal void BacktestContextInitialize(Bars bars) {
-			this.Bars.DataSource.PausePumpingFor(this.Bars.Symbol, this.Bars.ScaleInterval);
+			if (this.Bars.DataSource.StreamingProvider != null) {
+				this.Bars.DataSource.PausePumpingFor(this.Bars);
+			} else {
+				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingProvider=null //BacktestContextInitialize(" + bars + ")";
+				Assembler.PopupException(msg, null, false);
+				// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = true;
+			}
 			
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
 			this.preDataSource = this.DataSource;
@@ -927,7 +956,13 @@ namespace Sq1.Core.StrategyBase {
 			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
-			this.Bars.DataSource.UnPausePumpingFor(this.Bars.Symbol, this.Bars.ScaleInterval);
+			if (this.Bars.DataSource.StreamingProvider != null) {
+				this.Bars.DataSource.UnPausePumpingFor(this.Bars);
+			} else {
+				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingProvider=null //BacktestContextInitialize(" + this.Bars + ")";
+				Assembler.PopupException(msg, null, false);
+				// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = false;
+			}
 		}
 		public void BacktesterAbortIfRunningRestoreContext() {
 			if (this.Backtester.IsBacktestingNow == false) return;

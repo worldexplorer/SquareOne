@@ -340,7 +340,8 @@ namespace Sq1.Core.StrategyBase {
 					break;
 				case MarketLimitStop.Market:
 				case MarketLimitStop.AtClose:
-					if (quote.PriceBetweenBidAsk(exitPriceOut) == false) {
+					// WHY (IsBacktestingNow == true): market orders during LIVE could be filled at virtually ANY price
+					if (quote.PriceBetweenBidAsk(exitPriceOut) == false && this.executor.Backtester.IsBacktestingNow == true) {
 						#if DEBUG
 						string msg = "this isn't enough: market orders are still executed outside the bar...";
 						Debugger.Break();	// we'll need to generate one more quote onTheWayTo exitPriceOut

@@ -37,6 +37,7 @@ namespace Sq1.Gui.Singletons {
 				base.BeginInvoke((MethodInvoker)delegate { orderProcessor_OrderAdded(sender, e); });
 				return;
 			}
+			this.ShowPopupSwitchToGuiThreadRunDelegateInIt();
 			//if (e.Order.State == OrderState.AutoSubmitNotEnabled) return;
 			if (this.IsHiddenHandlingRepopulate()) return;
 			//if (this.executionTree.SelectedAccountNumbers.Contains(e.Order.Alert.AccountNumber) == false) return;

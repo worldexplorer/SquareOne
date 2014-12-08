@@ -38,10 +38,7 @@ namespace Sq1.Core.Broker {
 			return this.StateIsAcceptable(order.State) && (base.Contains(order) == false);
 		}
 		public override string ToString() {
-			return "OrdersLaneByState[" + this.StatesAllowed.ToString() + "]";
-		}
-		public override string ToShortString() {
-			return this.StatesAllowed.CollectionName;
+			return this.StatesAllowed.ToString();
 		}
 	}
 }

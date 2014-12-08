@@ -28,15 +28,20 @@ namespace Sq1.Core.Indicators {
 		
 		public override double CalculateOwnValueOnNewStaticBarFormed(Bar newStaticBar) {
 			#region DELETEME_AFTER_COMPATIBILITY_TEST
-			if (base.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) {
-				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW";
-				if (base.OwnValuesCalculated.LastDateAppended > newStaticBar.DateTimeOpen) {
-					msg = "DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
-					Assembler.PopupException(msg);
-					return double.NaN;
-				} else {
-					msg = "DURING_INCUBATION_EACH_QUOTE_ADDS_NAN_SO_ON_STATIC_FORMED_THERE_IS_LEGITIMATE_VALUE ";
+			try {
+				if (base.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) {
+					string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW";
+					if (base.OwnValuesCalculated.LastDateAppended > newStaticBar.DateTimeOpen) {
+						msg = "DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
+						Assembler.PopupException(msg);
+						return double.NaN;
+					} else {
+						msg = "DURING_INCUBATION_EACH_QUOTE_ADDS_NAN_SO_ON_STATIC_FORMED_THERE_IS_LEGITIMATE_VALUE ";
+					}
 				}
+			} catch (Exception ex) {
+				string msg = "QUE_PASHA???";
+				Assembler.PopupException(msg);
 			}
 			#endregion
 

@@ -5,6 +5,7 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
+using Sq1.Core.Execution;
 
 namespace Sq1.Gui.Forms {
 	// ANY_STRATEGY_WILL_RUN_WITH_A_CHART_ITS_NOT_A_SERVER_APPLICATION
@@ -278,8 +279,6 @@ namespace Sq1.Gui.Forms {
 			var chartFormSafe		= this.ChartForm;
 			var executorSafe		= this.Executor;
 			var dataSourceSafe		= this.DataSource;
-			var symbolSafe			= this.Symbol;
-			var scaleIntervalSafe	= this.ScaleInterval;
 
 			if (barLastFormed == null) {
 				string msg = "Streaming starts generating quotes => first StreamingBar is added; for first four Quotes there's no static barsFormed yet!! Isi";
@@ -289,7 +288,7 @@ namespace Sq1.Gui.Forms {
 
 			#region pasted from BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
 			//INVOCATION_WONT_DO_ANY_JOB this.simulatePendingFillPreExecuteEveryTick(null);
-			Sq1.Core.Execution.ExecutionDataSnapshot snap = this.Executor.ExecutionDataSnapshot;
+			ExecutionDataSnapshot snap = this.Executor.ExecutionDataSnapshot;
 			foreach (Sq1.Core.Indicators.Indicator indicator in snap.IndicatorsReflectedScriptInstances.Values) {
 				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
 				//if (indicator.NotOnChartBarsKey != null) {
@@ -302,12 +301,12 @@ namespace Sq1.Gui.Forms {
 
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				try {
-					dataSourceSafe.PausePumpingFor(symbolSafe, scaleIntervalSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
-					// TESTED BACKLOG_GREWUP
-					Thread.Sleep(450);	// 10,000msec = 10sec
-					executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
+					dataSourceSafe.PausePumpingFor(barsSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
+					ReporterPokeUnit pokeUnit = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
+					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 				} finally {
-					dataSourceSafe.UnPausePumpingFor(symbolSafe, scaleIntervalSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					dataSourceSafe.UnPausePumpingFor(barsSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
 				}
 			}
 
@@ -369,7 +368,8 @@ namespace Sq1.Gui.Forms {
 
 			// #2/3 execute strategy in the thread of a StreamingProvider (DDE server for MockQuickProvider)
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
-				executorSafe.ExecuteOnNewBarOrNewQuote(quote);
+				ReporterPokeUnit pokeUnit = executorSafe.ExecuteOnNewBarOrNewQuote(quote);
+				//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 			}
 
 			// #3/3 trigger ChartControl to repaint candles with new positions and bid/ask lines

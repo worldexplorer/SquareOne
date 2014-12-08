@@ -9,21 +9,23 @@ namespace Sq1.Core.Broker {
 		// REASON_TO_EXIST: having lanes makes order lookups faster; by having order state I know which List I'll be looking for GUID
 		// useful application is when 100,000 orders are filled sucessfully and I received a UpdatePending notification for GUID=99,999
 		// CemeteryHealty would contain all
-		public OrderLaneByState		OrdersSubmitting			{ get; private set; }
-		public OrderLaneByState		OrdersPending				{ get; private set; }
-		public OrderLaneByState		OrdersPendingFailed			{ get; private set; }
-		public OrderLaneByState		OrdersCemeteryHealthy		{ get; private set; }
-		public OrderLaneByState		OrdersCemeterySick			{ get; private set; }
-		public OrderLane			OrdersAll					{ get; private set; }
+		public OrderLaneByState		OrdersSubmitting							{ get; private set; }
+		public OrderLaneByState		OrdersPending								{ get; private set; }
+		public OrderLaneByState		OrdersPendingFailed							{ get; private set; }
+		public OrderLaneByState		OrdersCemeteryHealthy						{ get; private set; }
+		public OrderLaneByState		OrdersCemeterySick							{ get; private set; }
+		public OrderLane			OrdersAll									{ get; private set; }
 
 			   OrderProcessor		orderProcessor;
-		public int					OrderCountThreadSafe		{ get; private set; }
-		public int					OrdersExpectingBrokerUpdateCount;		//{ get; private set; }
-		public OrdersAutoTree		OrdersAutoTree				{ get; private set; }
+		public int					OrderCount						{ get; private set; }
+		public int					OrdersExpectingBrokerUpdateCount;			//{ get; private set; }
+		public OrdersAutoTree		OrdersAutoTree								{ get; private set; }
 			   object				orderSwitchingLanesLock;
 
 		public SerializerLogrotatePeriodic<Order>	SerializerLogrotateOrders	{ get; private set; }
 		//public Dictionary<Account, List<Order>>	OrdersByAccount				{ get; private set; }
+
+		public List<OrderLane>		LanesForCallbackOrderState					{ get; private set; }
 
 		protected OrderProcessorDataSnapshot() {
 			OrdersSubmitting		= new OrderLaneByState(OrderStatesCollections.AllowedForSubmissionToBrokerProvider);
@@ -37,6 +39,8 @@ namespace Sq1.Core.Broker {
 			SerializerLogrotateOrders	= new SerializerLogrotatePeriodic<Order>();
 			OrdersAutoTree				= new OrdersAutoTree();
 			orderSwitchingLanesLock	= new object();
+
+			LanesForCallbackOrderState = new List<OrderLane>() { this.OrdersPending, this.OrdersSubmitting, this.OrdersAll };
 		}
 		public OrderProcessorDataSnapshot(OrderProcessor orderProcessor) : this() {
 			this.orderProcessor = orderProcessor;
@@ -71,29 +75,30 @@ namespace Sq1.Core.Broker {
 			string msg = "HEY_I_REACHED_THIS_POINT__NO_EXCEPTIONS_SO_FAR?";
 			//Debugger.Break();
 			//#D_HANGS Assembler.PopupException(msg);
-			
+			//MOVED_TO_RaiseAsyncOrderAddedExecutionFormShouldRebuildOLV() handler Assembler.PopupExecutionForm();
+
 			this.OrdersAll.Insert(orderToAdd);
 			this.SerializerLogrotateOrders.Insert(0, orderToAdd);
 
-			this.OrderCountThreadSafe++;
+			this.OrderCount++;
 			if (orderToAdd.InStateExpectingCallbackFromBroker) this.OrdersExpectingBrokerUpdateCount++;
 			
 			this.OrdersAutoTree.InsertToRoot(orderToAdd);
 			this.orderProcessor.RaiseAsyncOrderAddedExecutionFormShouldRebuildOLV(this, new List<Order>(){orderToAdd});
 		}
-		public void OrdersRemove(List<Order> ordersToRemove, bool externalUpdatesWillBeTriggeredUpstack = false) {
+		public void OrdersRemove(List<Order> ordersToRemove, bool serializeSinceThisIsNotBatchRemove = true) {
 			this.OrdersAll.RemoveAll(ordersToRemove);
 			this.OrdersAutoTree.RemoveFromRootLevelKeepOrderPointers(ordersToRemove);
 			this.orderProcessor.RaiseAsyncOrderRemovedExecutionFormExecutionFormShouldRebuildOLV(this, ordersToRemove);
 			this.SerializerLogrotateOrders.Remove(ordersToRemove);
-			if (externalUpdatesWillBeTriggeredUpstack == false) {
+			if (serializeSinceThisIsNotBatchRemove == false) {
 				this.SerializerLogrotateOrders.HasChangesToSave = true;
 			}
 		}
 		public void OrdersRemoveNonPendingForAccounts(List<string> accountNumbers) {
 			foreach (string accountNumber in accountNumbers) {
 				List<Order> ordersForAccount = this.OrdersAll.ScanRecentFindAllForAccount(accountNumber); 
-				this.OrdersRemove(ordersForAccount, true);
+				this.OrdersRemove(ordersForAccount, false);
 			}
 			this.SerializerLogrotateOrders.HasChangesToSave = true;
 		}
@@ -144,5 +149,23 @@ namespace Sq1.Core.Broker {
 		//    }
 		//    return expectedToNotContain;
 		//}
+
+		public Order ScanRecentForGUID(string GUID, List<OrderLane> lanes, out string logOrEmpty) {
+			Order ret = null;
+			logOrEmpty = "";
+
+			foreach (OrderLane lane in lanes) {
+				ret = lane.ScanRecentForGUID(GUID.ToString());
+				if (ret != null) break;
+				logOrEmpty += lane.ToStringCount() + " sessionSernos(" + lane.SessionSernosAsString + "),";
+			}
+			logOrEmpty.Trim(",".ToCharArray());
+
+			if (logOrEmpty != "") {
+				logOrEmpty = "LANES_SCANNED [" + logOrEmpty + "]";
+			}
+
+			return ret;
+		}
 	}
 }

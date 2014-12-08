@@ -14,7 +14,7 @@ namespace Sq1.Core.Charting {
 		public void Register(CHART chart) {
 			string msig = " //DictionaryManyToOne::Register()";
 			if (this.Lookup.ContainsKey(chart)) {
-				string msg = "ALREADY_ADDED_INTO_this.Lookup chart[" + chart + "]";
+				string msg = "ALREADY_REGISTERED_IN_this.Lookup chart[" + chart + "]";
 				throw new Exception(msg + msig);
 			}
 //			if (this.Reverse.ContainsValue(chart)) {

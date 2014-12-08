@@ -184,6 +184,8 @@ namespace Sq1.Gui {
 			return ret;
 		}
 		void initializeMainFromDeserializedDataSnapshot() {
+			//Assembler.InstanceInitialized.ExecutionForm = ExecutionForm.Instance;
+			
 			Screen screenFormIsShownOn = null;
 			Rectangle workingAreaCurrentScreen = new Rectangle();		//dummy assignment to avoid "Rectangle is non-nullable type"
 			if (this.GuiDataSnapshot.MainFormLocation != null) {

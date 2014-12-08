@@ -208,7 +208,7 @@ namespace Sq1.Core.Streaming {
 				//Assembler.PopupException(msg, null, false);
 				//essence of PushQuoteReceived(); all above were pre-checks ensuring successfull completion of two lines below
 				// ALREADY_ENRICHED this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
-				this.StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
+				//LOTS_OF_NOISE this.StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
 				return;
 			}
 
@@ -280,7 +280,8 @@ namespace Sq1.Core.Streaming {
 		public void UpdateConnectionStatus(int code, string msg) {
 			//StatusReporter.UpdateConnectionStatus(this.ConnectionState, code, msg);
 			//StatusReporter.PopupException(msg, null, false);
-			Assembler.PopupException(this.ConnectionState + ", " + code + ", " + msg, null, false);
+			//Assembler.PopupException(this.ConnectionState + ", " + code + ", " + msg, null, false);
+			Assembler.DisplayStatus(this.ConnectionState + ", " + code + ", " + msg);
 		}
 		public void InitializeStreamingOHLCVfromStreamingProvider(Bars chartBars) {
 			SymbolScaleDistributionChannel distributionChannel = this.DataDistributor

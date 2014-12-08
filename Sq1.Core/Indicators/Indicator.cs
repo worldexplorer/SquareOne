@@ -57,8 +57,8 @@ namespace Sq1.Core.Indicators {
 		private Bars barsEffective_cached;
 		public Bars BarsEffective { get {
 				if (this.Executor == null) {
-					Assembler.PopupException("YOU_FORGOT_TO_INVOKE_INDICATOR.INITIALIZE()_OR_WAIT_UNTIL_ITLLBE_INVOKED_LATER Executor=null in Indicator.BarsEffective_get()");
-					Debugger.Break();
+					string msg = "YOU_FORGOT_TO_INVOKE_INDICATOR.INITIALIZE()_OR_WAIT_UNTIL_ITLLBE_INVOKED_LATER Executor=null in Indicator.BarsEffective_get()";
+					Assembler.PopupException(msg);
 					return this.barsEffective_cached;
 				}
 				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
@@ -146,7 +146,7 @@ namespace Sq1.Core.Indicators {
 		
 		public string parametersAsStringShort_cached;
 		public string ParametersAsStringShort { get {
-				if (parametersAsStringShort_cached == null) {
+				//if (parametersAsStringShort_cached == null) {
 					StringBuilder sb = new StringBuilder();
 					foreach (string paramName in this.ParametersByName.Keys) {
 						IndicatorParameter param = this.ParametersByName[paramName];
@@ -154,7 +154,7 @@ namespace Sq1.Core.Indicators {
 						sb.Append(param.ToString());
 					}
 					this.parametersAsStringShort_cached = sb.ToString();
-				}
+				//}
 				return this.parametersAsStringShort_cached;
 			} }
 //		public string ParametersAsStringLong { get ; }
@@ -194,7 +194,7 @@ namespace Sq1.Core.Indicators {
 			DataSeriesProxyFor = DataSeriesProxyableFromBars.Close;
 			ChartPanelType = ChartPanelType.PanelPrice;
 			// MOVED_TO_BacktestStarting();
-			//this.OwnValuesCalculated = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), this.Name);
+			this.OwnValuesCalculated = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), this.Name);
 			LineColor = Color.Indigo;
 			LineWidth = 1;
 			Decimals = 2;

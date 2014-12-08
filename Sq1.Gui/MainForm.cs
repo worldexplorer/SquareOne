@@ -210,7 +210,7 @@ namespace Sq1.Gui {
 				//this.DockPanel.ResumeLayout(true);
 				//this.DockPanel.Invalidate();
 
-				ExecutionForm.Instance.ExecutionTreeControl.MoveStateColumnToLeftmost();
+				//NOPE ExecutionForm.Instance.ExecutionTreeControl.MoveStateColumnToLeftmost();
 				if (ExecutionForm.Instance.IsShown) {
 					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized();
 					ExecutionForm.Instance.PopulateWindowText();

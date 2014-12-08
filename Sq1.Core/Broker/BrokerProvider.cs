@@ -166,7 +166,7 @@ namespace Sq1.Core.Broker {
 					//Order orderSimilar = this.OrderProcessor.DataSnapshot.OrdersPending.FindSimilarNotSamePendingOrder(order);
 					//// Orders.All.ContainForSure: Order orderSimilar = this.OrderProcessor.DataSnapshot.OrdersAll.FindSimilarNotSamePendingOrder(order);
 					//if (orderSimilar != null) {
-					//	msg = "ORDER_DUPLICATE_IN_SUBMITTED: dropping order [" + order + "] (not sumbitted) since similar is not executed yet [" + orderSimilar + "] " + msg;
+					//	msg = "ORDER_DUPLICATE_IN_SUBMITTED: dropping order [" + order + "] (not submitted) since similar is not executed yet [" + orderSimilar + "] " + msg;
 					//	this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msig + msg);
 					//	this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(orderSimilar, msig + msg);
 					//	this.OrderProcessor.PopupException(new Exception(msig + msg));
@@ -280,9 +280,10 @@ namespace Sq1.Core.Broker {
 			return "";
 		}
 		public virtual void ModifyOrderTypeAccordingToMarketOrderAs(Order order) {
-			string msg = Name + "::ModifyOrderTypeAccordingToMarketOrderAs():"
+			string msig = " //" + Name + "::ModifyOrderTypeAccordingToMarketOrderAs():"
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 				+ " SernoSession[" + order.SernoSession + "]";
+			string msg = "";
 
 			order.AbsorbCurrentBidAskFromStreamingSnapshot(this.StreamingProvider.StreamingDataSnapshot);
 
@@ -308,26 +309,30 @@ namespace Sq1.Core.Broker {
 					switch (order.Alert.MarketOrderAs) {
 						case MarketOrderAs.MarketZeroSentToBroker:
 							order.PriceRequested = 0;
-							msg = "SymbolInfo[" + order.Alert.Symbol + "/" + order.Alert.SymbolClass + "].OverrideMarketPriceToZero==true"
-								+ "; setting Price=0 (Slippage=" + order.SlippageFill + ") //" + msg;
+							msg = "SYMBOL_INFO_CONVERSION_MarketZeroSentToBroker SymbolInfo[" + order.Alert.Symbol + "/" + order.Alert.SymbolClass + "].OverrideMarketPriceToZero==true"
+								+ "; setting Price=0 (Slippage=" + order.SlippageFill + ")";
 							break;
 						case MarketOrderAs.MarketMinMaxSentToBroker:
-							order.Alert.MarketLimitStop = MarketLimitStop.Limit;
-							msg = this.ModifyOrderTypeAccordingToMarketOrderAsBrokerSpecificInjection(order);
-							msg = "[" + order.Alert.MarketLimitStop + "]=>[" + MarketLimitStop.Limit + "](" + order.Alert.MarketOrderAs + ") // " + msg;
+							MarketLimitStop beforeBrokerSpecific = order.Alert.MarketLimitStop;
+							string brokerSpecificDetails = this.ModifyOrderTypeAccordingToMarketOrderAsBrokerSpecificInjection(order);
+							if (brokerSpecificDetails != "") {
+								msg = "BROKER_SPECIFIC_CONVERSION_MarketMinMaxSentToBroker: [" + beforeBrokerSpecific + "]=>[" + order.Alert.MarketLimitStop + "](" + order.Alert.MarketOrderAs
+									+ ") brokerSpecificDetails[" + brokerSpecificDetails + "]";
+							} else {
+								order.Alert.MarketLimitStop = MarketLimitStop.Limit;
+								msg = "SYMBOL_INFO_CONVERSION_MarketMinMaxSentToBroker: [" + beforeBrokerSpecific + "]=>[" + order.Alert.MarketLimitStop + "](" + order.Alert.MarketOrderAs + ")";
+							}
 							break;
 						case MarketOrderAs.LimitCrossMarket:
 							order.Alert.MarketLimitStop = MarketLimitStop.Limit;
-							msg = "PreSubmit: doing nothing for Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
-								+ " //" + msg;
+							msg = "PreSubmit_LimitCrossMarket: doing nothing for Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]";
 							break;
 						case MarketOrderAs.LimitTidal:
 							order.Alert.MarketLimitStop = MarketLimitStop.Limit;
-							msg = "PreSubmit: doing nothing for Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
-								+ " //" + msg;
+							msg = "PreSubmit_LimitTidal: doing nothing for Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]";
 							break;
 						default:
-							msg = "no handler for Market Order with Alert.MarketOrderAs[" + order.Alert.MarketOrderAs + "] // " + msg;
+							msg = "no handler for Market Order with Alert.MarketOrderAs[" + order.Alert.MarketOrderAs + "]";
 							OrderStateMessage newOrderState2 = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
 							this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState2);
 							throw new Exception(msg);
@@ -396,7 +401,7 @@ namespace Sq1.Core.Broker {
 					this.OrderProcessor.UpdateOrderStateAndPostProcess(order, omsg);
 					throw new Exception(msg);
 			}
-			order.AppendMessage(msg);
+			order.AppendMessage(msg + msig);
 		}
 
 		public void CallbackOrderStateReceived(Order orderWithNewState) {

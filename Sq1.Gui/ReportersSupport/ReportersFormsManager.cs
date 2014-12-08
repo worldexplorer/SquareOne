@@ -42,6 +42,11 @@ namespace Sq1.Gui.ReportersSupport {
 		}
 		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
+			this.ChartFormManager.Executor.EventGenerator.BrokerOpenedOrClosedPositions += new EventHandler<ReporterPokeUnitEventArgs>(EventGenerator_BrokerOpenedOrClosedPositions);
+		}
+
+		void EventGenerator_BrokerOpenedOrClosedPositions(object sender, ReporterPokeUnitEventArgs e) {
+			this.BuildIncrementalAllReports(e.PokeUnit);
 		}
 		public void BuildOnceAllReports(SystemPerformance performance) {
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {

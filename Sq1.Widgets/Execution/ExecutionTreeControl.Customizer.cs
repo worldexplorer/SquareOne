@@ -6,19 +6,40 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Sq1.Core;
 using Sq1.Core.Execution;
+using Sq1.Core.Support;
 
 namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
+		void oLVColumn_VisibilityChanged(object sender, EventArgs e) {
+			OLVColumn oLVColumn = sender as OLVColumn;
+			if (oLVColumn == null) return;
+			
+				//v1 prior to using this.OrdersTreeOLV.SaveState();
+//			if (this.DataSnapshot.ColumnsShown.ContainsKey(oLVColumn.Text) == false) {
+//				this.DataSnapshot.ColumnsShown.Add(oLVColumn.Text, oLVColumn.IsVisible);
+//			} else {
+//				this.DataSnapshot.ColumnsShown[oLVColumn.Text] = oLVColumn.IsVisible;
+//			}
+			byte[] olvStateBinary = this.OrdersTreeOLV.SaveState();
+			this.DataSnapshot.OrdersTreeOlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
+
+			this.DataSnapshotSerializer.Serialize();
+		}
+
 		void orderTreeListViewCustomize() {
 			//v2
 			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
 			List<OLVColumn> allColumns = new List<OLVColumn>();
 			foreach (ColumnHeader columnHeader in this.OrdersTreeOLV.Columns) {
 				OLVColumn oLVColumn = columnHeader as OLVColumn; 
+				oLVColumn.VisibilityChanged += oLVColumn_VisibilityChanged;
 				if (oLVColumn == null) continue;
+				//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
+				if (this.OrdersTreeOLV.AllColumns.Contains(oLVColumn)) continue;
 				allColumns.Add(oLVColumn);
 			}
 			if (allColumns.Count > 0) {
+				//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
 				this.OrdersTreeOLV.AllColumns.AddRange(allColumns);
 			}
 
@@ -50,7 +71,7 @@ namespace Sq1.Widgets.Execution {
 				if (order == null) return "colheBarNum.AspectGetter: order=null";
 				return order.Alert.PlacedBarIndex.ToString();
 			};
-			this.colheDatetime.AspectGetter = delegate(object o) {
+			this.colheOrderCreated.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colheDatetime.AspectGetter: order=null";
 				DateTime orderCreated;
@@ -212,6 +233,17 @@ namespace Sq1.Widgets.Execution {
 			return ret;
 		}
 		void messagesListViewCustomize() {
+			// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
+			List<OLVColumn> allColumns = new List<OLVColumn>();
+			foreach (ColumnHeader columnHeader in this.olvMessages.Columns) {
+				OLVColumn oLVColumn = columnHeader as OLVColumn; 
+				if (oLVColumn == null) continue;
+				allColumns.Add(oLVColumn);
+			}
+			if (allColumns.Count > 0) {
+				this.olvMessages.AllColumns.AddRange(allColumns);
+			}
+
 			this.colheMessageText.AspectGetter = delegate(object o) {
 				var omsg = o as OrderStateMessage;
 				if (omsg == null) return "colheMessageText.AspectGetter: omsg=null";
@@ -240,16 +272,17 @@ namespace Sq1.Widgets.Execution {
 			if (order.Alert.Bars != null) return;
 			e.Item.ForeColor = Color.DimGray;
 		}
-		public void MoveStateColumnToLeftmost() {
-			//moving State as we drag-n-dropped it; tree will grow in second column
-			//NOT_NEEDED this.OrdersTree.BuildList();
-			//NOT_NEEDED this.RebuildAllTreeFocusOnTopmost();
-			this.OrdersTreeOLV.SetObjects(this.ordersTree.InnerOrderList);
-			//NOT_NEEDED this.OrdersTree.RebuildAll(true);
-			this.OrdersTreeOLV.Columns.RemoveAt(3);
-			this.OrdersTreeOLV.Columns.Insert(0, this.colheState);
-			//NOT_NEEDED this.OrdersTree.BuildList();
-			//NOT_NEEDED this.RebuildAllTreeFocusOnTopmost();
-		}
+		// WRONG WAY TO MOVE COLUMNS AROUND: AFTER I did RestoreState(), Column(3) is not State and I add State twice => exception
+//		public void MoveStateColumnToLeftmost() {
+//			//moving State as we drag-n-dropped it; tree will grow in second column
+//			//NOT_NEEDED this.OrdersTree.BuildList();
+//			//NOT_NEEDED this.RebuildAllTreeFocusOnTopmost();
+//			this.OrdersTreeOLV.SetObjects(this.ordersTree.InnerOrderList);
+//			//NOT_NEEDED this.OrdersTree.RebuildAll(true);
+//			this.OrdersTreeOLV.Columns.RemoveAt(3);
+//			this.OrdersTreeOLV.Columns.Insert(0, this.colheState);
+//			//NOT_NEEDED this.OrdersTree.BuildList();
+//			//NOT_NEEDED this.RebuildAllTreeFocusOnTopmost();
+//		}
 	}
 }

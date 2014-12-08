@@ -74,14 +74,14 @@ namespace Sq1.Reporters {
 			}
 		}
 		protected virtual void GenerateReportForOneColumn(SystemPerformanceSlice slice) {
-			IList<Position> positionsAllReadOnly = slice.PositionsImTrackingReadOnly;  
+			IList<Position> positionsAllReadOnly = slice.PositionsImTrackingReadonly;  
 
 			// NO_FORMATTING_PRINT_AS_IT_IS !!!! YOULL_NEVER_FIND_ROUNDING_ERROR_IF_YOU_ROUND_JUST_BEFORE_PRINTING
 			this.addCurrency("Net Profit", "NetProfitForClosedPositionsBoth", slice.NetProfitForClosedPositionsBoth, Color.Empty, Color.Empty, this.getLviForeColor(slice.NetProfitForClosedPositionsBoth), FontStyle.Bold, FontStyle.Regular);
 			this.addNumeric("Win/Loss Ratio", "Win/Loss Ratio = PositionsCountWinners / PositionsCountLosers", slice.WinLossRatio, this.getLviForeColor(slice.WinLossRatio, 1));
 			this.addNumeric("Profit Factor", "Profit Factor = NetProfitWinners / Abs(NetLossLosers)", slice.ProfitFactor, this.getLviForeColor(slice.ProfitFactor, 1));
 			this.addNumeric("Recovery Factor", "Recovery Factor = Abs(NetProfitForClosedPositionsBoth / MaxDrawDown)", slice.RecoveryFactor, this.getLviForeColor(slice.ProfitFactor, 1));
-			this.addNumeric("Payoff Ratio", "Payoff Ratio = Abs(AvgProfitPctBoth / AvgLossPctLosers)", slice.PayoffRatio, this.getLviForeColor(slice.ProfitFactor, 1));
+			this.addNumeric("Payout", "Payout = Abs(AvgProfitPctBoth / AvgLossPctLosers)", slice.PayoffRatio, this.getLviForeColor(slice.ProfitFactor, 1));
 			this.addCurrency("Commission", "-CommissionBoth", -slice.CommissionBoth, this.getLviForeColor(-slice.CommissionBoth));
 
 			this.addNumeric("All Trades", "PositionsCountBoth", slice.PositionsCountBoth, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);

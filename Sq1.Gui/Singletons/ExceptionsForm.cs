@@ -35,26 +35,21 @@ namespace Sq1.Gui.Singletons {
 			#endif
 
 			if (msg != null) ex = new Exception(msg, ex);
+			this.ExceptionControl.InsertException(ex);
 
 			#region EXPERIMENTAL
 			Task t = new Task(delegate {
-				this.popupException(ex);
+				base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
+					this.ExceptionControl.FlushListToTreeIfDockContentDeserialized();
+				}));
 			});
 			t.ContinueWith(delegate {
 				string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
-				Assembler.PopupException(msg2, t.Exception);
+				//Debugger.Break();
+				//Assembler.PopupException(msg2, t.Exception);
 			}, TaskContinuationOptions.OnlyOnFaulted);
 			t.Start();
 			#endregion
-		}
-		void popupException(Exception exception) {
-			if (base.IsDisposed) return;
-			if (base.InvokeRequired == true) {
-				base.BeginInvoke((MethodInvoker)delegate { this.popupException(exception); });
-				return;
-			}
-			this.ExceptionControl.InsertException(exception);
-			base.ShowPopup();
 		}
 		protected override void OnLoad(EventArgs e) {
 			foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {

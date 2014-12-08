@@ -205,12 +205,13 @@ namespace Sq1.Core.StrategyBase {
 		}
 		
 		public bool AlertTryFillUsingBacktest(Alert alert, out bool abortTryFill, out string abortTryFillReason) {
-			if (this.executor.Backtester.IsBacktestingNow) {
-				string msg = "DONT_INVOKE_ME_DURING_THE_BACKTEST AlertTryFillUsingBacktest() was designed for Sq1.Adapters.QuikMock.Terminal.QuikTerminalMock()";
-				Assembler.PopupException(msg);
-			}
 			abortTryFill = false;
 			abortTryFillReason = "NO_REASON_TO_ABORT_TRY_FILL";
+			if (this.executor.Backtester.IsBacktestingNow) {
+				string msg = "WAIT_UNTIL_QUOTE_PUMP_RESUMES__DONT_INVOKE_ME_DURING_THE_BACKTEST AlertTryFillUsingBacktest() was designed for Sq1.Adapters.QuikMock.Terminal.QuikTerminalMock";
+				Assembler.PopupException(msg, null, false);
+				return false;
+			}
 			if (alert.DataSource.BrokerProviderName.Contains("Mock") == false) {
 				string msg = "AlertTryFillUsingBacktest() should be called only from BrokerProvidersName.Contains(Mock)"
 					+ "; here you have MOCK Realtime Streaming and Broker,"

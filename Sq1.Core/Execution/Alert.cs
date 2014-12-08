@@ -287,7 +287,7 @@ namespace Sq1.Core.Execution {
 			this.Direction = direction;
 			this.DirectionAsString = this.Direction.ToString();
 			this.MarketLimitStop = marketLimitStop;
-			this.MarketLimitStopAsString = this.Direction.ToString();
+			this.MarketLimitStopAsString = this.MarketLimitStop.ToString();
 			this.OrderSpreadSide = orderSpreadSide;
 
 			if (strategy == null) {

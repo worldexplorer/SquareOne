@@ -302,8 +302,8 @@ namespace Sq1.Core.DataFeed {
 
 			return ret;
 		}
-		public void PausePumpingFor(string symbol, BarScaleInterval scaleInterval, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(symbol, scaleInterval);
+		public void PausePumpingFor(Bars bars, bool wrongUsagePopup = true) {
+			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
@@ -321,8 +321,8 @@ namespace Sq1.Core.DataFeed {
 			}
 			channel.QuotePump.PushConsumersPaused = true;
 		}
-		public void UnPausePumpingFor(string symbol, BarScaleInterval scaleInterval, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(symbol, scaleInterval);
+		public void UnPausePumpingFor(Bars bars, bool wrongUsagePopup = true) {
+			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_UNPAUSE_DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
@@ -339,6 +339,19 @@ namespace Sq1.Core.DataFeed {
 				return;
 			}
 			channel.QuotePump.PushConsumersPaused = false;
+		}
+
+		public bool WaitUntilPumpUnpaused(Bars bars, int maxWaitingMillis = 1000) {
+			DataDistributor distr = this.StreamingProvider.DataDistributor;
+			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
+			bool unpaused = channel.QuotePump.WaitUntilUnpaused(maxWaitingMillis);
+			return unpaused;
+		}
+		public bool WaitUntilPumpPaused(Bars bars, int maxWaitingMillis = 1000) {
+			DataDistributor distr = this.StreamingProvider.DataDistributor;
+			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
+			bool paused = channel.QuotePump.WaitUntilPaused(maxWaitingMillis);
+			return paused;
 		}
 	}
 }

@@ -26,6 +26,7 @@ namespace Sq1.Core {
 		
 		public OrderProcessor							OrderProcessor;
 		public IStatusReporter							StatusReporter;
+		//public DockContentImproved						ExecutionForm;
 		
 		public DictionaryManyToOne<ChartShadow, Alert>	AlertsForChart;
 		public AssemblerDataSnapshot					AssemblerDataSnapshot;
@@ -111,14 +112,10 @@ namespace Sq1.Core {
 			this.AssemblerDataSnapshot				= new AssemblerDataSnapshot();
 			this.AssemblerDataSnapshotSerializer	= new Serializer<AssemblerDataSnapshot>();
 		}
-		public Assembler InitializedWithSame(IStatusReporter mainForm) {
-			if (this.StatusReporter == mainForm) return Assembler.InstanceInitialized;
-			return this.Initialize(mainForm);
-		}
 		public Assembler Initialize(IStatusReporter mainForm) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
 				string msg = "Assembler.InstanceInitialized.StatusReporter[" + this.StatusReporter + "] != mainForm[" + mainForm + "]";
-				msg += "; you initialize the StatusReporter once per lifetime;"
+				msg += "; you initialize the StatusReporter and ExecutionForm once per lifetime;"
 					+ " if you need to re-initialize singleton with new IStatusReporter then refactor it"
 					+ " and introduce Reset(IStatusReporter) method which won't throw this;"
 					+ " or you can just set Assembler.InstanceInitialized.StatusReporter={your different IStatusReporter}"
@@ -198,5 +195,14 @@ namespace Sq1.Core {
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
 		}
+
+		//internal static void PopupExecutionForm() {
+		//    if (Assembler.InstanceInitialized.ExecutionForm == null) {
+		//        string msg = "I_CAN_NOT_CONTINUE_WITHOUT_EXECUTION_FORM__ORDER_PROCESSOR_HAS_SOME_ORDERS_TO_DISPLAY";
+		//        Assembler.PopupException(msg);
+		//        return;
+		//    }
+		//    Assembler.InstanceInitialized.ExecutionForm.ShowPopupSwitchToGuiThread();
+		//}
 	}
 }
