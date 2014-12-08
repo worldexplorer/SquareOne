@@ -182,7 +182,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 				//quikQuote.PriceLastDeal = 0;
 				Assembler.PopupException("MOCK_TEST_ONCE: setting Price=0 for quote[" + quikQuote + "]; watch CHART skipping it and ORDER with an ERROR");
 			}
-			this.providerMock.PushQuoteGenerated(quikQuote);
+			this.providerMock.PushQuoteReceived(quikQuote);
 			//streamingProvider.putBestBidAskForSymbol(symbol, quote.Price - spread / 2, quote.Price + spread / 2);
 
 			t.Change(nextQuoteDelayMs, 0);

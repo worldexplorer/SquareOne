@@ -21,7 +21,7 @@
       "IsCurrent": true,
       "StrategyEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
-      "BacktestOnRestart": false,
+      "BacktestOnRestart": true,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
@@ -85,7 +85,7 @@
             "ValueMin": 10.0,
             "ValueMax": 20.0,
             "ValueIncrement": 5.0,
-            "ValueCurrent": 15.0,
+            "ValueCurrent": 10.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }
@@ -97,7 +97,7 @@
             "ValueMin": 11.0,
             "ValueMax": 33.0,
             "ValueIncrement": 11.0,
-            "ValueCurrent": 22.0,
+            "ValueCurrent": 33.0,
             "BorderShown": false,
             "NumericUpdownShown": true
           }

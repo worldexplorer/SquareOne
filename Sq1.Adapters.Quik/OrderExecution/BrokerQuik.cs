@@ -218,14 +218,16 @@ namespace Sq1.Adapters.Quik {
 
 			char opBuySell = (order.Alert.PositionLongShortFromDirection == PositionLongShort.Long) ? 'B' : 'S';
 			int sernoSessionFromTerminal = -999;
-			string msgSumbittedFromTerminal = "";
+			string msgSubmittedFromTerminal = "";
 			OrderState orderStateFromTerminalMustGetSubmitted = OrderState.Unknown;
+
+			double priceFill = order.PriceRequested;
 			this.QuikTerminal.SendTransactionOrderAsync(opBuySell, typeMarketLimitStop,
 				order.Alert.Symbol, order.Alert.SymbolClass,
 				order.PriceRequested, (int)order.QtyRequested, order.GUID,
-				out sernoSessionFromTerminal, out msgSumbittedFromTerminal, out orderStateFromTerminalMustGetSubmitted);
+				out sernoSessionFromTerminal, out msgSubmittedFromTerminal, out orderStateFromTerminalMustGetSubmitted);
 
-			msg = msgSumbittedFromTerminal + "order.SernoSession[" + order.SernoSession + "]=>[" + sernoSessionFromTerminal + "] ";
+			msg = msgSubmittedFromTerminal + "order.SernoSession[" + order.SernoSession + "]=>[" + sernoSessionFromTerminal + "] ";
 			order.SernoSession = sernoSessionFromTerminal;
 
 			OrderStateMessage newState = new OrderStateMessage(order, orderStateFromTerminalMustGetSubmitted, msg + msig);
@@ -239,7 +241,7 @@ namespace Sq1.Adapters.Quik {
 
 			bool victimWasStopOrder = victimOrder.Alert.MarketLimitStop == MarketLimitStop.Stop;
 			
-			string msgSumbittedFromTerminal = "";
+			string msgSubmittedFromTerminal = "";
 			int sernoSessionFromTerminal = -999;
 			OrderState killerStateFromTerminal = OrderState.Unknown;
 
@@ -249,18 +251,18 @@ namespace Sq1.Adapters.Quik {
 				killerOrder.GUID.ToString(),
 				victimOrder.GUID.ToString(),
 				victimOrder.SernoExchange, victimWasStopOrder,
-				out msgSumbittedFromTerminal, out sernoSessionFromTerminal, out killerStateFromTerminal);
+				out msgSubmittedFromTerminal, out sernoSessionFromTerminal, out killerStateFromTerminal);
 
 			killerOrder.SernoSession = sernoSessionFromTerminal;
 
 			string msg = "killerStateFromTerminal[" + killerStateFromTerminal + "]"
-				+ " msgSumbittedFromTerminal[" + msgSumbittedFromTerminal + "]"
+				+ " msgSubmittedFromTerminal[" + msgSubmittedFromTerminal + "]"
 				+ " sernoSessionFromTerminal[" + sernoSessionFromTerminal + "]";
 			base.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(killerOrder, msig + msg);
 
 			// don't set State.KillPending to Killer!!! Killer has KillSubmitting->BulletFlying->KillerDone
 			//base.OrderManager.UpdateOrderStateAndPostProcess(killerOrder,
-			//	new OrderStateMessage(killerOrder, killerStateFromTerminal, msgSumbittedFromTerminal));
+			//	new OrderStateMessage(killerOrder, killerStateFromTerminal, msgSubmittedFromTerminal));
 		}
 		public override void CancelReplace(Order order, Order newOrder) {
 			throw new Exception("TODO: don't forget to implement before going live!");

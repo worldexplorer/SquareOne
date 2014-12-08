@@ -19,14 +19,14 @@ namespace Sq1.Adapters.Quik {
 			this.FortsPriceMin		= new Dictionary<string, double>();
 			this.FortsPriceMax		= new Dictionary<string, double>();
 		}
-		public void StoreFortsSpecifics_NOT_USED(QuoteQuik quikQuote) {
+		public void StoreFortsSpecifics(QuoteQuik quikQuote) {
 			string msg = "I_POSTPONED_REFACTORING_STREAMING_DATA_SNAPSHOT_AND_ITS_LIFECYCLE";
 			//Assembler.PopupException(msg);
 			if (quikQuote.FortsDepositBuy != 0 || quikQuote.FortsDepositSell != 0) {
-				this.FortsPutPriceMinMaxForSymbol(quikQuote.Symbol, quikQuote.FortsDepositBuy, quikQuote.FortsDepositSell);
+				this.FortsPutPriceMinMaxForSymbol(quikQuote.Symbol, quikQuote.FortsPriceMin, quikQuote.FortsPriceMax);
 			}
 			if (quikQuote.FortsPriceMin != 0 || quikQuote.FortsPriceMax != 0) {
-				this.FortsPutDepositForSymbol(quikQuote.Symbol, quikQuote.FortsPriceMin, quikQuote.FortsPriceMax);
+				this.FortsPutDepositForSymbol(quikQuote.Symbol, quikQuote.FortsDepositBuy, quikQuote.FortsDepositSell);
 			}
 		}
 		void FortsPutDepositForSymbol(string Symbol, double FortsDepositBuy, double FortsDepositSell) {

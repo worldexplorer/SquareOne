@@ -11,12 +11,12 @@ using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik {
 	public class StreamingQuik : StreamingProvider {
-		[JsonProperty]	public string DdeServerPrefix { get; internal set; }
-		[JsonProperty]	public string DdeTopicQuotes { get; internal set; }
-		[JsonProperty]	public string DdeTopicTrades { get; internal set; }
-		[JsonProperty]	public string DdeTopicPrefixDom { get; internal set; }
-		[JsonIgnore]	DdeChannels DdeChannels;
-		[JsonIgnore]	public string DdeChannelsEstablished { get {
+		[JsonProperty]	public	string DdeServerPrefix		{ get; internal set; }
+		[JsonProperty]	public	string DdeTopicQuotes		{ get; internal set; }
+		[JsonProperty]	public	string DdeTopicTrades		{ get; internal set; }
+		[JsonProperty]	public	string DdeTopicPrefixDom	{ get; internal set; }
+		[JsonIgnore]			DdeChannels DdeChannels;
+		[JsonIgnore]	private string DdeChannelsEstablished { get {
 				string ret = "DDE_CHANNELS_NULL__STREAMING_QUIK_NOT_YET_INITIALIZED";
 				if (this.DdeChannels == null) return ret;
 				lock (base.SymbolsSubscribedLock) {
@@ -25,7 +25,7 @@ namespace Sq1.Adapters.Quik {
 				return ret;
 			} }
 		
-		[JsonIgnore]	public StreamingDataSnapshotQuik StreamingDataSnapshotQuik { get {
+		[JsonIgnore]	protected StreamingDataSnapshotQuik StreamingDataSnapshotQuik { get {
 				if (base.StreamingDataSnapshot is StreamingDataSnapshotQuik == false) {
 					string msg = "base.StreamingDataSnapshot[" + base.StreamingDataSnapshot
 						+ "] got modified while should remain of type StreamingDataSnapshotQuik"
@@ -143,35 +143,31 @@ namespace Sq1.Adapters.Quik {
 			}
 		}
 
-		public void FilterAndDistributeDdeQuote(QuoteQuik quoteQuik) {
-			DateTime thisDayClose = this.DataSource.MarketInfo.getThisDayClose(quoteQuik);
-			DateTime preMarketQuotePoitingToThisDayClose = quoteQuik.ServerTime.AddSeconds(1);
+		public override void PushQuoteReceived(Quote quote) {
+			DateTime thisDayClose = this.DataSource.MarketInfo.getThisDayClose(quote);
+			DateTime preMarketQuotePoitingToThisDayClose = quote.ServerTime.AddSeconds(1);
 			bool isQuikPreMarketQuote = preMarketQuotePoitingToThisDayClose >= thisDayClose;
 			if (isQuikPreMarketQuote) {
 				string msg = "skipping pre-market quote"
-					+ " quote.ServerTime[" + quoteQuik.ServerTime + "].AddSeconds(1) >= thisDayClose[" + thisDayClose + "]"
-					+ " quote=[" + quoteQuik + "]";
+					+ " quote.ServerTime[" + quote.ServerTime + "].AddSeconds(1) >= thisDayClose[" + thisDayClose + "]"
+					+ " quote=[" + quote + "]";
 				Assembler.PopupException(msg);
 				return;
 			}
-//			if (quote.PriceLastDeal == 0) {
-//				string msg = "skipping pre-market quote since CHARTS will screw up painting price=0;"
-//					+ " quote=[" + quote + "]";
-//				Assembler.PopupException(msg);
-//				Assembler.PopupException(new Exception(msg));
-//				return;
-//			}
-			if (string.IsNullOrEmpty(quoteQuik.Source)) quoteQuik.Source = "Quik";
-			this.StreamingDataSnapshotQuik.StoreFortsSpecifics_NOT_USED(quoteQuik);
-			base.PushQuoteReceived(quoteQuik);
+			//if (quote.PriceLastDeal == 0) {
+			//    string msg = "skipping pre-market quote since CHARTS will screw up painting price=0;"
+			//        + " quote=[" + quote + "]";
+			//    Assembler.PopupException(msg);
+			//    Assembler.PopupException(new Exception(msg));
+			//    return;
+			//}
+			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik";
+			QuoteQuik quoteQuik = QuoteQuik.SafeUpcast(quote);
+			this.StreamingDataSnapshotQuik.StoreFortsSpecifics(quoteQuik);
+			base.PushQuoteReceived(quote);
 		}
 		public override void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
-			if (quote is QuoteQuik == false) {
-				string msg = "Should be of a type Sq1.Adapters.Quik.QuoteQuik instead of Sq1.Core.DataTypes.Quote: "
-					+ quote;
-				throw new Exception(msg);
-			}
-			QuoteQuik quikQuote = quote as QuoteQuik;
+			QuoteQuik quikQuote = QuoteQuik.SafeUpcast(quote);
 			quikQuote.EnrichFromStreamingDataSnapshotQuik(this.StreamingDataSnapshotQuik);
 		}
 

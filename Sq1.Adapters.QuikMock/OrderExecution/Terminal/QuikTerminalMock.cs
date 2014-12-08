@@ -5,6 +5,7 @@ using Sq1.Core;
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 using Sq1.Adapters.Quik.Terminal;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.QuikMock.Terminal {
 	public class QuikTerminalMock : QuikTerminal {
@@ -148,8 +149,17 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 					bool abortTryFill = false;
 					string abortTryFillReason = "NO_ABORT_TRY_FILL_MESSAGE";
 					try {
-						filled = order.Alert.Strategy.Script.Executor.MarketsimLive.AlertTryFillUsingBacktest(
-							order.Alert, out abortTryFill, out abortTryFillReason);
+						Alert alert = order.Alert;
+						//DataDistributor distr = order.Alert.DataSource.StreamingProvider.DataDistributor;
+						//SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(alert.Symbol, alert.Bars.ScaleInterval);
+						//channel.QuotePump.WaitUntilUnpaused();
+						//DataDistributor distr = order.Alert.DataSource.UnPausePumpingFor(alert.Bars;
+						//bool unpaused = alert.DataSource.WaitUntilPumpUnpaused(alert.Bars, 3000);
+						//if (unpaused == false) {
+						//    string msg2 = "WHY_DO_I_NEED_PUMP_UNPAUSED_HERE???";
+						//    Assembler.PopupException(msg2);
+						//}
+						filled = alert.Strategy.Script.Executor.MarketsimLive.AlertTryFillUsingBacktest(alert, out abortTryFill, out abortTryFillReason);
 					} catch (Exception ex) {
 						msg = "FAILED_INNER_MarketSim.SimulateFillLive(" + order + ") " + msg;
 						exCaught = ex;
@@ -282,7 +292,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 
 		public override void SendTransactionOrderAsync(char opBuySell, char typeMarketLimitStop,
 				string SecCode, string ClassCode, double price, int quantity,
-				string GUID, out int SernoSession, out string msgSumbittedOut, out OrderState orderStateOut) {
+				string GUID, out int SernoSession, out string msgSubmittedOut, out OrderState orderStateOut) {
 
 			//Debugger.Break();
 			if (!this.IsSubscribed(SecCode, ClassCode)) this.Subscribe(SecCode, ClassCode);
@@ -291,7 +301,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			orderStateOut = OrderState.Submitted;
 
 			string msig = " //QuikTerminal(" + this.DllName + ").SendTransactionOrderAsync(" + opBuySell + typeMarketLimitStop + quantity + "@" + price + ")";
-			msgSumbittedOut = "r[MOCK_SUCCESS] callbackErrorMsg[" + base.callbackErrorMsg + "] error[" + error + "]" + msig;
+			msgSubmittedOut = "r[MOCK_SUCCESS] callbackErrorMsg[" + base.callbackErrorMsg + "] error[" + error + "]" + msig;
 
 			QuikTerminalMockThreadParam tp = new QuikTerminalMockThreadParam();
 			tp.ClassCode = ClassCode;
@@ -319,13 +329,13 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 
 		public override void SendTransactionOrderKillAsync(string SecCode, string ClassCode,
 				string KillerGUID, string VictimGUID, long VictimSernoExchange, bool victimWasStopOrder,
-				out string victimMsgSumbitted, out int SernoSession, out OrderState victimOrderState) {
+				out string victimMsgSubmitted, out int SernoSession, out OrderState victimOrderState) {
 
 			string msig = "QuikTerminal(" + this.DllName + ")::SendTransactionOrderKillAsync(): ";
 			string msg = "";
 
 			if (!IsSubscribed(SecCode, ClassCode)) Subscribe(SecCode, ClassCode);
-			victimMsgSumbitted = msig + " Trans2Quik.Result.PRE_CHECK_FAILED";
+			victimMsgSubmitted = msig + " Trans2Quik.Result.PRE_CHECK_FAILED";
 			victimOrderState = OrderState.Error;
 			SernoSession = -9999;
 
@@ -340,19 +350,19 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			if (orderKiller == null) {
 				msg = "order==null, can't update with KillSubmittingAsync";
 				base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
-					new OrderStateMessage(orderKiller, OrderState.Error, victimMsgSumbitted + msg));
+					new OrderStateMessage(orderKiller, OrderState.Error, victimMsgSubmitted + msg));
 				return;
 			}
 			if (orderKiller.KillerOrder != null) {
 				msg = "use ParametrizedCallbackOrderStatus() for labourOrder fill simulation!";
 				base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
-					new OrderStateMessage(orderKiller, OrderState.Error, victimMsgSumbitted + msg));
+					new OrderStateMessage(orderKiller, OrderState.Error, victimMsgSubmitted + msg));
 				return;
 			}
 			if (orderKiller.State != OrderState.KillerPreSubmit) {
 				msg = "orderKiller.State[" + orderKiller.State + "] != KillerPreSubmit (victim kill failed?), won't update with KillSubmittingAsync";
 				base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
-					new OrderStateMessage(orderKiller, OrderState.Error, victimMsgSumbitted + msg));
+					new OrderStateMessage(orderKiller, OrderState.Error, victimMsgSubmitted + msg));
 				return;
 			}
 
@@ -360,7 +370,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
 				new OrderStateMessage(orderKiller, OrderState.KillerSubmitting, trans));
 			
-			victimMsgSumbitted = msig + "Trans2Quik.Result.SUCCESS    "
+			victimMsgSubmitted = msig + "Trans2Quik.Result.SUCCESS    "
 				+ ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 			victimOrderState = OrderState.KillPending;
 
@@ -459,7 +469,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				Assembler.PopupException(msig, ex);
 			}
 		}
-		public override void sendTransactionKillAll(string SecCode, string ClassCode, string GUID, out string msgSumbitted) {
+		public override void sendTransactionKillAll(string SecCode, string ClassCode, string GUID, out string msgSubmitted) {
 			transId++;
 			String trans = ""
 				+ "TRANS_ID=" + Order.newGUID() + ";"
@@ -469,7 +479,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			//quikTransactionsAttemptedLog.Put("QuikTerminal(" + this.DllName + ")::sendTransactionKillAll(): " + trans);
 			throw new Exception("NYI");
 			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			msgSumbitted = "QuikTerminal(" + this.DllName + "):: " + r + "    " + ((this.callbackErrorMsg.Length > 0)
+			msgSubmitted = "QuikTerminal(" + this.DllName + "):: " + r + "    " + ((this.callbackErrorMsg.Length > 0)
 				? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 
 			QuikTerminalMockThreadParam tp = new QuikTerminalMockThreadParam();

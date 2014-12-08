@@ -367,41 +367,37 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 				;
 			string msig = " QuikTerminal(" + this.DllName + ").CallbackOrderStatus(" + msgDebug + ")";
 			string msgError = "";
-			OrderLane orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending;
-			Order orderExecuted = orders.ScanRecentForGUID(GUID.ToString());
-			if (orderExecuted == null) {
-				orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersSubmitting;
-				orderExecuted = orders.ScanRecentForGUID(GUID.ToString());
-			}
-			if (orderExecuted == null) {
-				orders = BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll;
-				orderExecuted = orders.ScanRecentForGUID(GUID.ToString());
-			}
-			if (orderExecuted == null) {
-				msgError += " Order not found Guid[" + GUID + "] ; orderSernos=["
-					+ BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.SessionSernosAsString
-					+ "] Count=[" + orders.InnerOrderList.Count + "]";
+
+			OrderProcessorDataSnapshot snap = this.BrokerQuik.OrderProcessor.DataSnapshot;
+			//v1
+			string logOrEmpty = "";
+			Order order = snap.ScanRecentForGUID(GUID.ToString(), snap.LanesForCallbackOrderState, out logOrEmpty);
+			//v2
+			//Order order = snap.OrdersAll.ScanRecentForGUID(GUID.ToString());
+
+			if (order == null) {
+				msgError += "ORDER_NOT_FOUND_BY_GUID[" + GUID + "] [" + logOrEmpty + "] orderExecuted=[" + order + "]";
 			} else {
-				msgDebug += " Order found Guid[" + GUID + "] orderExecuted=[" + orderExecuted + "]";
+				msgDebug += "ORDER_FOUND_BY_GUID[" + GUID + "] orderExecuted=[" + order + "]";
 			}
 
 			if (nMode == 1) {
 				msgError = "IGNORING nMode[" + nMode + "]=1 " + msgDebug;
 				Assembler.PopupException(msgError);
 			}
-			if (orderExecuted == null) {
+			if (order == null) {
 				Assembler.PopupException(msgError + msgDebug + msig);
 				return;
 			}
 			if (string.IsNullOrEmpty(msgError) == false) {
-				orderExecuted.AppendMessage(msig + msgError);
+				order.AppendMessage(msig + msgError);
 			}
 			if (nMode == 1) {
 				return;
 			}
 
 			OrderState newOrderStateReceived = OrderState.Unknown;
-			int qtyFilled = (int) (orderExecuted.QtyRequested - (double)balance);
+			int qtyFilled = (int) (order.QtyRequested - (double)balance);
 			switch (status) {
 				case 1: //Значение «1» соответствует состоянию «Активна»
 					newOrderStateReceived = OrderState.WaitingBrokerFill;
@@ -409,7 +405,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 					break;
 				case 2: //«2» - «Снята»
 					//if (orderExecuted.State == OrderState.KillPending) {
-					if (orderExecuted.FindStateInOrderMessages(OrderState.KillPending)) {
+					if (order.FindStateInOrderMessages(OrderState.KillPending)) {
 						newOrderStateReceived = OrderState.Killed;
 					} else {
 						// what was the state of a victim before you said Rejected? must be Killed!! TradeStatus!!! shit!
@@ -428,7 +424,7 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			this.BrokerQuik.CallbackOrderStateReceivedQuik(newOrderStateReceived, GUID.ToString(),
 						(long)SernoExchange, classCode, secCode, priceFilled, qtyFilled);
 			if (newOrderStateReceived == OrderState.FilledPartially || newOrderStateReceived == OrderState.Filled) {
-				this.BrokerQuik.OrderProcessor.PostProcessOrderState(orderExecuted, priceFilled, qtyFilled);
+				this.BrokerQuik.OrderProcessor.PostProcessOrderState(order, priceFilled, qtyFilled);
 			}
 		}
 /* Функция TRANS2QUIK_TRANSACTIONS_REPLY_CALLBACK
@@ -488,7 +484,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 		}
 		public virtual void SendTransactionOrderAsync(char opBuySell, char typeMarketLimitStop,
 				string SecCode, string ClassCode, double price, int quantity,
-				string GUID, out int SernoSession, out string msgSumbittedOut, out OrderState orderStateOut) {
+				string GUID, out int SernoSession, out string msgSubmittedOut, out OrderState orderStateOut) {
 
 			string msig = "QuikTerminal(" + this.DllName + ").SendTransactionOrderAsync(" + opBuySell + typeMarketLimitStop + quantity + "@" + price + ")";
 			try {
@@ -500,16 +496,16 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			/*if (!connected) {
 				sernoSessionOut = 0;
 				orderStatus = OrderStatus.Error;
-				msgSumbittedOut = Name + "::sendTransactionOrder(): " + CurrentStatus;
+				msgSubmittedOut = Name + "::sendTransactionOrder(): " + CurrentStatus;
 				return;
 			}*/
 			if (!IsSubscribed(SecCode, ClassCode)) {
 				try {
 					Subscribe(SecCode, ClassCode);
 				} catch (Exception e) {
-					msgSumbittedOut = msig + "Couldn't Subscribe(" + SecCode + ", " + ClassCode + "), NOT going to Trans2Quik.SEND_ASYNC_TRANSACTION()";
-					//this.BrokerQuik.StatusReporter.PopupException(new Exception(msgSumbittedOut, e));
-					Assembler.PopupException(msgSumbittedOut, e);
+					msgSubmittedOut = msig + "Couldn't Subscribe(" + SecCode + ", " + ClassCode + "), NOT going to Trans2Quik.SEND_ASYNC_TRANSACTION()";
+					//this.BrokerQuik.StatusReporter.PopupException(new Exception(msgSubmittedOut, e));
+					Assembler.PopupException(msgSubmittedOut, e);
 					SernoSession = -999;
 					orderStateOut = OrderState.Error;
 					return;
@@ -521,7 +517,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			this.BrokerQuik.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(GUID, orderStateOut, trans);
 
 			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out this.error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			msgSumbittedOut = "r[" + r + "] callbackErrorMsg[" + this.callbackErrorMsg + "] error[" + error + "]";
+			msgSubmittedOut = "r[" + r + "] callbackErrorMsg[" + this.callbackErrorMsg + "] error[" + error + "]";
 			if (r == Trans2Quik.Result.SUCCESS) {
 				orderStateOut = OrderState.Submitted;
 			} else {
@@ -573,7 +569,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 		}
 		public virtual void SendTransactionOrderKillAsync(string SecCode, string ClassCode,
 				string KillerGUID, string VictimGUID, long SernoExchangeVictim, bool victimWasStopOrder,
-				out string msgSumbitted, out int SernoSession, out OrderState orderState) {
+				out string msgSubmitted, out int SernoSession, out OrderState orderState) {
 
 			string msig = "QuikTerminal(" + this.DllName + ").SendTransactionOrderKillAsync("
 				+ "KillerGUID[" + KillerGUID + "], VictimGUID[" + VictimGUID + "], SernoExchangeVictim[" + SernoExchangeVictim + "], victimWasStopOrder[" + victimWasStopOrder + "]"
@@ -587,15 +583,15 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			/*if (!connected) {
 				sernoSessionOut = 0;
 				orderStatus = OrderStatus.Error;
-				msgSumbittedOut = Name + "::sendTransactionOrder(): " + CurrentStatus;
+				msgSubmittedOut = Name + "::sendTransactionOrder(): " + CurrentStatus;
 				return;
 			}*/
 			if (!IsSubscribed(SecCode, ClassCode)) {
 				try {
 					Subscribe(SecCode, ClassCode);
 				} catch (Exception e) {
-					msgSumbitted = msig + "Couldn't Subscribe(" + SecCode + ", " + ClassCode + "), NOT going to Trans2Quik.SEND_ASYNC_TRANSACTION()";
-					Assembler.PopupException(msgSumbitted, e);
+					msgSubmitted = msig + "Couldn't Subscribe(" + SecCode + ", " + ClassCode + "), NOT going to Trans2Quik.SEND_ASYNC_TRANSACTION()";
+					Assembler.PopupException(msgSubmitted, e);
 					SernoSession = -999;
 					orderState = OrderState.Error;
 					return;
@@ -606,7 +602,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			this.BrokerQuik.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(KillerGUID, OrderState.KillerSubmitting, trans);
 
 			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
-			msgSumbitted = msig + r + "    " + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
+			msgSubmitted = msig + r + "    " + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 			if (r == Trans2Quik.Result.SUCCESS) {
 				orderState = OrderState.KillPending;
 			} else {
@@ -630,9 +626,9 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			trans += getAccountClientCode(ClassCode);
 			return trans;
 		}
-		public virtual void sendTransactionKillAll(string SecCode, string ClassCode, string GUID, out string msgSumbitted) {
+		public virtual void sendTransactionKillAll(string SecCode, string ClassCode, string GUID, out string msgSubmitted) {
 			if (!DllConnected) {
-				msgSumbitted = "QuikTerminal(" + this.DllName + ")::sendTransactionKillAll(): " + CurrentStatus;
+				msgSubmitted = "QuikTerminal(" + this.DllName + ")::sendTransactionKillAll(): " + CurrentStatus;
 				return;
 			}
 
@@ -683,7 +679,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			//r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 			//ret += "QuikTerminal(" + this.DllName + "):: " + r + "    " + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 
-			msgSumbitted = (ret != "") ? ret : null;
+			msgSubmitted = (ret != "") ? ret : null;
 		}
 	}
 }

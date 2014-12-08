@@ -63,7 +63,7 @@ namespace Sq1.Adapters.Quik.Dde {
 			//	lastQuoteSizeForVolume = sizeParsed;
 			//	quote.Size = sizeParsed;
 			//}
-			quikStreamingProvider.FilterAndDistributeDdeQuote(quikQuote);
+			quikStreamingProvider.PushQuoteReceived(quikQuote);
 		}
 		public override string ToString() {
 			return "ChannelQuotes{Symbols[" + quikStreamingProvider.StreamingDataSnapshot.SymbolsSubscribedAndReceiving + "] " + base.ToString() + "}";

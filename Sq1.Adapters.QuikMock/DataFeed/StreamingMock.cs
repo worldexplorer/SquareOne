@@ -181,19 +181,33 @@ namespace Sq1.Adapters.QuikMock {
 				string DdeChannelName = symbol;
 				return this.MockProvidersBySymbol.ContainsKey(DdeChannelName);
 			} }
+		public override void PushQuoteReceived(Quote quote) {
+			if (this.GenerateOnlySymbols.Count > 0 && this.GenerateOnlySymbols.Contains(quote.Symbol) == false) return;
+			DateTime thisDayClose = this.DataSource.MarketInfo.getThisDayClose(quote);
+			DateTime preMarketQuotePoitingToThisDayClose = quote.ServerTime.AddSeconds(1);
+			bool isQuikPreMarketQuote = preMarketQuotePoitingToThisDayClose >= thisDayClose;
+			if (isQuikPreMarketQuote) {
+				string msg = "skipping pre-market quote"
+					+ " quote.ServerTime[" + quote.ServerTime + "].AddSeconds(1) >= thisDayClose[" + thisDayClose + "]"
+					+ " quote=[" + quote + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			//if (quote.PriceLastDeal == 0) {
+			//    string msg = "skipping pre-market quote since CHARTS will screw up painting price=0;"
+			//        + " quote=[" + quote + "]";
+			//    Assembler.PopupException(msg);
+			//    Assembler.PopupException(new Exception(msg));
+			//    return;
+			//}
+			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik";
+			QuoteQuik quikQuote = QuoteQuik.SafeUpcast(quote);
+			this.StreamingDataSnapshotQuik.StoreFortsSpecifics(quikQuote);
+			base.PushQuoteReceived(quote);
+		}
 		public override void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
 			QuoteQuik quikQuote = QuoteQuik.SafeUpcast(quote);
 			quikQuote.EnrichFromStreamingDataSnapshotQuik(this.StreamingDataSnapshotQuik);
-		}
-		public void PushQuoteGenerated(Quote quote) {
-			if (this.GenerateOnlySymbols.Count > 0 && this.GenerateOnlySymbols.Contains(quote.Symbol) == false) return;
-			quote.Source = "MockQuik";
-			//if (quote.PriceLastDeal == 0) {
-			//	Assembler.PopupException("this.ConsumeDdeDeliveredQuote(" + quote.Symbol + "): returning since CHARTS will screw up painting it; price=0: quote=[" + quote + "]");
-			//	return;
-			//}
-			if (string.IsNullOrEmpty(quote.Source)) quote.Source = "Quik";
-			base.PushQuoteReceived(quote);
 		}
 		public override string ToString() {
 			return "StreamingMock: SymbolsSubscribed[" + this.SymbolsUpstreamSubscribedAsString + "]"
