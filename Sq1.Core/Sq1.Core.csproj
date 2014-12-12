@@ -118,6 +118,7 @@
     <Compile Include="DoubleBuffered\UserControlDoubleBuffered.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Execution\PositionListEventArgs.cs" />
     <Compile Include="Execution\OrderEventArgs.cs" />
     <Compile Include="Execution\OrderStateMessageEventArgs.cs" />
     <Compile Include="Execution\Position.Stats.cs">

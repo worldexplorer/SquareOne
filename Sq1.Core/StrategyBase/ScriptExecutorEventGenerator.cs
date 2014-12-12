@@ -1,5 +1,6 @@
 ﻿using System;
 using Sq1.Core.Execution;
+using System.Collections.Generic;
 
 namespace Sq1.Core.StrategyBase {
 	public class ScriptExecutorEventGenerator {
@@ -8,7 +9,9 @@ namespace Sq1.Core.StrategyBase {
 		public event EventHandler<EventArgs> BacktesterSimulatedChunkStep3of4;
 		public event EventHandler<EventArgs> BacktesterSimulatedAllBarsStep4of4;
 
-		public event EventHandler<ReporterPokeUnitEventArgs> BrokerOpenedOrClosedPositions;
+		public event EventHandler<ReporterPokeUnitEventArgs>	BrokerOpenedOrClosedPositions;
+		//YOU_KNOW_I_HATE_UNNECESSARY_EVENTS!!!__INVOKING_DIRECTLY_UpdateOpenPositionsDueToStreamingNewQuote() public event EventHandler<PositionListEventArgs>		OpenPositionsUpdatedDueToStreamingNewQuote;
+		public event EventHandler<ReporterPokeUnitEventArgs>	ExecutorCreatedUnfilledPositions;
 
 		private ScriptExecutor scriptExecutor;
 
@@ -34,6 +37,15 @@ namespace Sq1.Core.StrategyBase {
 		public void RaiseBrokerOpenedOrClosedPositions(ReporterPokeUnit pokeUnit) {
 			if (this.BrokerOpenedOrClosedPositions == null) return;
 			this.BrokerOpenedOrClosedPositions(this, new ReporterPokeUnitEventArgs(pokeUnit));
+		}
+		//public void RaiseOpenPositionsUpdatedDueToStreamingNewQuote(List<Position> positionsUpdatedDueToStreamingNewQuote) {
+		//    if (this.OpenPositionsUpdatedDueToStreamingNewQuote == null) return;
+		//    this.OpenPositionsUpdatedDueToStreamingNewQuote(this, new PositionListEventArgs(new List<Position>(positionsUpdatedDueToStreamingNewQuote)));
+		//}
+
+		internal void RaiseExecutorCreatedPositions(ReporterPokeUnit pokeUnit) {
+			if (this.ExecutorCreatedUnfilledPositions == null) return;
+			this.ExecutorCreatedUnfilledPositions(this, new ReporterPokeUnitEventArgs(pokeUnit));
 		}
 	}
 }

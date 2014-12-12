@@ -347,7 +347,7 @@ namespace Sq1.Charting {
 			if (double.IsNaN(barMouseIsOverNow.Low)) return;
 			if (double.IsNaN(barMouseIsOverNow.High)) return;
 
-			int yLow = this.ValueToYinverted(barMouseIsOverNow.Low);
+			int yLow  = this.ValueToYinverted(barMouseIsOverNow.Low);
 			int yHigh = this.ValueToYinverted(barMouseIsOverNow.High);
 
 			Rectangle rectangleBarWithShadows = new Rectangle();

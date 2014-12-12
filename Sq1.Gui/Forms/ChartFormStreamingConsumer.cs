@@ -6,6 +6,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
+using System.Collections.Generic;
 
 namespace Sq1.Gui.Forms {
 	// ANY_STRATEGY_WILL_RUN_WITH_A_CHART_ITS_NOT_A_SERVER_APPLICATION
@@ -362,19 +363,25 @@ namespace Sq1.Gui.Forms {
 				string msg = "should I add a bar into Chart.Bars?... NO !!! already added";
 			}
 
-			// #1/3 launch update in GUI thread
+			// #1/4 launch update in GUI thread
 			chartFormSafe.PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution(quote);
 			chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = quote.Clone();
 
-			// #2/3 execute strategy in the thread of a StreamingProvider (DDE server for MockQuickProvider)
+			// #2/4 execute strategy in the thread of a StreamingProvider (DDE server for MockQuickProvider)
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				ReporterPokeUnit pokeUnit = executorSafe.ExecuteOnNewBarOrNewQuote(quote);
 				//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 			}
 
-			// #3/3 trigger ChartControl to repaint candles with new positions and bid/ask lines
+			// #3/4 trigger ChartControl to repaint candles with new positions and bid/ask lines
 			if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {
 				chartFormSafe.ChartControl.InvalidateAllPanels();
+			}
+
+			// #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
+			List<Position> positionsOpenNowSafeCopy = executorSafe.ExecutionDataSnapshot.PositionsOpenNowSafeCopy;
+			if (positionsOpenNowSafeCopy.Count > 0) {
+				this.ChartFormManager.ReportersFormsManager.UpdateOpenPositionsDueToStreamingNewQuote(positionsOpenNowSafeCopy);
 			}
 		}
 		#endregion

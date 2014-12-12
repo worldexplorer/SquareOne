@@ -40,8 +40,8 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			this.Executor			= scriptExecutor;
-			this.SliceLong			= new SystemPerformanceSlice(PositionLongShort.Long,		"StatsForLongPositionsOnly");
-			this.SliceShort			= new SystemPerformanceSlice(PositionLongShort.Short,		"StatsForShortPositionsOnly");
+			this.SliceLong			= new SystemPerformanceSlice(PositionLongShort.Long,	"StatsForLongPositionsOnly");
+			this.SliceShort			= new SystemPerformanceSlice(PositionLongShort.Short,	"StatsForShortPositionsOnly");
 			this.SlicesShortAndLong	= new SystemPerformanceSlice(PositionLongShort.Unknown,	"StatsForShortAndLongPositions");
 			this.SliceBuyHold		= new SystemPerformanceSlice(PositionLongShort.Unknown,	"StatsForBuyHold");
 
@@ -57,14 +57,6 @@ namespace Sq1.Core.StrategyBase {
 			this.SliceShort			.Initialize();
 			this.SlicesShortAndLong	.Initialize();
 			this.SliceBuyHold		.Initialize();
-		}
-		public void BuildStatsIncrementallyOnEachBarExecFinished(ReporterPokeUnit pokeUnit) {
-			Dictionary<int, List<Position>> posByEntry = pokeUnit.PositionsOpenedByBarFilled;
-			Dictionary<int, List<Position>> posByExit = pokeUnit.PositionsClosedByBarFilled;
-			int absorbedLong	= this.SliceLong			.BuildStatsIncrementallyOnEachBarExecFinished(posByEntry, posByExit);
-			int absorbedShort	= this.SliceShort			.BuildStatsIncrementallyOnEachBarExecFinished(posByEntry, posByExit);
-			int absorbedBoth	= this.SlicesShortAndLong	.BuildStatsIncrementallyOnEachBarExecFinished(posByEntry, posByExit);
-			int absorbedBH		= this.SliceBuyHold			.BuildStatsIncrementallyOnEachBarExecFinished(posByEntry, posByExit);
 		}
 
 		public void BuildStatsOnBacktestFinished(List<Position> positionsMaster = null) {
@@ -108,7 +100,12 @@ namespace Sq1.Core.StrategyBase {
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(null, null,
 					this.Executor.ExecutionDataSnapshot.PositionsOpenNow,
 					positionsClosed);
-			this.BuildStatsIncrementallyOnEachBarExecFinished(pokeUnit);
+			Dictionary<int, List<Position>> posByEntry = pokeUnit.PositionsOpenedByBarFilled;
+			Dictionary<int, List<Position>> posByExit = pokeUnit.PositionsClosedByBarFilled;
+			int absorbedLong	= this.SliceLong			.BuildStatsOnBacktestFinished(posByEntry, posByExit);
+			int absorbedShort	= this.SliceShort			.BuildStatsOnBacktestFinished(posByEntry, posByExit);
+			int absorbedBoth	= this.SlicesShortAndLong	.BuildStatsOnBacktestFinished(posByEntry, posByExit);
+			int absorbedBH		= this.SliceBuyHold			.BuildStatsOnBacktestFinished(posByEntry, posByExit);
 			
 			
 			if (this.Executor.Strategy.Script.ScriptParametersById == null) {
@@ -153,5 +150,8 @@ namespace Sq1.Core.StrategyBase {
 		//    ret.
 		//    return ret;
 		//}
+
+		internal void BuildReportIncrementalPositionsCreated(ReporterPokeUnit reporterPokeUnit) {
+		}
 	}
 }

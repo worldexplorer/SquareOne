@@ -95,11 +95,6 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// OrdersTreeOLV
 			// 
-			this.OrdersTreeOLV.Activation = System.Windows.Forms.ItemActivation.OneClick;
-			this.OrdersTreeOLV.AllowColumnReorder = true;
-			this.OrdersTreeOLV.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.OrdersTreeOLV.CausesValidation = false;
-			this.OrdersTreeOLV.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
 			this.OrdersTreeOLV.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colheGUID,
             this.colheReplacedByGUID,
@@ -126,16 +121,19 @@ namespace Sq1.Widgets.Execution {
             this.colheScale,
             this.colheAccount,
             this.colheLastMessage});
+			this.OrdersTreeOLV.AllowColumnReorder = true;
+			this.OrdersTreeOLV.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.OrdersTreeOLV.CausesValidation = false;
+			this.OrdersTreeOLV.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
 			this.OrdersTreeOLV.ContextMenuStrip = this.ctxOrder;
 			this.OrdersTreeOLV.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.OrdersTreeOLV.EmptyListMsg = "";
 			this.OrdersTreeOLV.FullRowSelect = true;
 			this.OrdersTreeOLV.HideSelection = false;
 			this.OrdersTreeOLV.IncludeColumnHeadersInCopy = true;
 			this.OrdersTreeOLV.IncludeHiddenColumnsInDataTransfer = true;
 			this.OrdersTreeOLV.Location = new System.Drawing.Point(0, 0);
+			this.OrdersTreeOLV.MultiSelect = true;
 			this.OrdersTreeOLV.Name = "OrdersTreeOLV";
-			this.OrdersTreeOLV.OwnerDraw = true;
 			this.OrdersTreeOLV.ShowGroups = false;
 			this.OrdersTreeOLV.ShowCommandMenuOnRightClick = true;
 			this.OrdersTreeOLV.ShowItemToolTips = true;
@@ -147,8 +145,9 @@ namespace Sq1.Widgets.Execution {
 			this.OrdersTreeOLV.UseCompatibleStateImageBehavior = false;
 			this.OrdersTreeOLV.UseFilterIndicator = true;
 			this.OrdersTreeOLV.UseFiltering = true;
+			this.OrdersTreeOLV.UseHotItem = true;
+			this.OrdersTreeOLV.UseTranslucentHotItem = true;
 			this.OrdersTreeOLV.View = System.Windows.Forms.View.Details;
-			this.OrdersTreeOLV.VirtualMode = true;
 			this.OrdersTreeOLV.FormatRow += new System.EventHandler<BrightIdeasSoftware.FormatRowEventArgs>(this.tree_FormatRow);
 			this.OrdersTreeOLV.SelectedIndexChanged += new System.EventHandler(this.ordersTree_SelectedIndexChanged);
 			this.OrdersTreeOLV.DoubleClick += new System.EventHandler(this.ordersTree_DoubleClick);

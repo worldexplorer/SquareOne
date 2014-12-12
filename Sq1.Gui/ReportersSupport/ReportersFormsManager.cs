@@ -43,18 +43,26 @@ namespace Sq1.Gui.ReportersSupport {
 		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
 			this.ChartFormManager.Executor.EventGenerator.BrokerOpenedOrClosedPositions += new EventHandler<ReporterPokeUnitEventArgs>(EventGenerator_BrokerOpenedOrClosedPositions);
+			//this.ChartFormManager.Executor.EventGenerator.OpenPositionsUpdatedDueToStreamingNewQuote += new EventHandler<PositionListEventArgs>(EventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote);
+			this.ChartFormManager.Executor.EventGenerator.ExecutorCreatedUnfilledPositions += new EventHandler<ReporterPokeUnitEventArgs>(EventGenerator_ExecutorCreatedUnfilledPositions);
 		}
 
 		void EventGenerator_BrokerOpenedOrClosedPositions(object sender, ReporterPokeUnitEventArgs e) {
-			this.BuildIncrementalAllReports(e.PokeUnit);
+			this.BuildIncrementalOnPositionsOpenedClosedAllReports(e.PokeUnit);
 		}
-		public void BuildOnceAllReports(SystemPerformance performance) {
+		//void EventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote(object sender, PositionListEventArgs e) {
+		//    this.UpdateOpenPositionsDueToStreamingNewQuote(e.PositionsOpenedNow);
+		//}
+		void EventGenerator_ExecutorCreatedUnfilledPositions(object sender, ReporterPokeUnitEventArgs e) {
+			this.BuildIncrementalOnPositionsCreatedUnfilledAllReports(e.PokeUnit);
+		}
+		public void BuildReportFullOnBacktestFinishedAllReporters(SystemPerformance performance) {
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {
-				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildOnceAllReports(performance); });
+				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildReportFullOnBacktestFinishedAllReporters(performance); });
 				return;
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
-				rep.BuildOnceAfterFullBlindBacktestFinished(performance);
+				rep.BuildFullOnBacktestFinished(performance);
 				
 				// Reporters.Position should display "Positions (276)"
 				ReporterFormWrapper parent = rep.Parent as ReporterFormWrapper;
@@ -62,13 +70,31 @@ namespace Sq1.Gui.ReportersSupport {
 				parent.Text = rep.TabText + " :: " + this.ChartFormManager.ChartForm.Text;
 			}
 		}
-		public void BuildIncrementalAllReports(ReporterPokeUnit pokeUnit) {
+		public void BuildIncrementalOnPositionsOpenedClosedAllReports(ReporterPokeUnit pokeUnit) {
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {
-				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildIncrementalAllReports(pokeUnit); });
+				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildIncrementalOnPositionsOpenedClosedAllReports(pokeUnit); });
 				return;
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
-				rep.BuildIncrementalAfterPositionsChangedInRealTime(pokeUnit);
+				rep.BuildIncrementalOnPositionsOpenedClosed_step3of3(pokeUnit);
+			}
+		}
+		public void UpdateOpenPositionsDueToStreamingNewQuote(List<Position> positionsUpdatedDueToStreamingNewQuote) {
+			if (this.ChartFormManager.ChartForm.InvokeRequired) {
+				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.UpdateOpenPositionsDueToStreamingNewQuote(positionsUpdatedDueToStreamingNewQuote); });
+				return;
+			}
+			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+				rep.BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(positionsUpdatedDueToStreamingNewQuote);
+			}
+		}
+		public void BuildIncrementalOnPositionsCreatedUnfilledAllReports(ReporterPokeUnit pokeUnit) {
+			if (this.ChartFormManager.ChartForm.InvokeRequired) {
+				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildIncrementalOnPositionsCreatedUnfilledAllReports(pokeUnit); });
+				return;
+			}
+			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+				rep.BuildIncrementalOnPositionsCreatedUnfilled_step1of3(pokeUnit);
 			}
 		}
 		public void ChartForm_OnReporterMniClicked(object sender, EventArgs e) {
@@ -111,7 +137,7 @@ namespace Sq1.Gui.ReportersSupport {
 			this.ChartFormManager.ReportersDumpCurrentForSerialization();
 			this.MenuItemsProvider.FindMniByShortNameAndTick(typeNameShort);
 			if (this.ChartFormManager.Executor.Performance != null) {
-				reporterActivated.BuildOnceAfterFullBlindBacktestFinished(this.ChartFormManager.Executor.Performance);
+				reporterActivated.BuildFullOnBacktestFinished(this.ChartFormManager.Executor.Performance);
 			}
 			return ret;
 		}

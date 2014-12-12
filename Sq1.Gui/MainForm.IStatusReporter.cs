@@ -13,7 +13,13 @@ namespace Sq1.Gui {
 	public partial class MainForm : IStatusReporter {
 	
 		public void DisplayStatus(string Message) {
+			//Debugger.Break();	// ACTIVATE_MY_ATTEMPTS_BELOW_TO MAKE THE LABEL DISPLAY THE DAMN MESSAGE
+			if (base.InvokeRequired) {
+			    base.BeginInvoke((MethodInvoker)delegate { this.DisplayStatus(Message); });
+			    return;
+			}
 			this.lblStatus.Text = Message;
+			this.lblStatus.Invalidate();
 		}
 
 		public void DisplayStatusConnected(bool reconnect) {

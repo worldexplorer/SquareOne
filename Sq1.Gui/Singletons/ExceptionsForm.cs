@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 using Sq1.Core;
 
@@ -17,14 +16,6 @@ namespace Sq1.Gui.Singletons {
 					"; base() has not been informed yet that the form IS in DesignMode, right?...");
 				//return; 
 			}
-//			if (ExceptionsForm.instanceBeingConstructedUseForDesignMode == false) {
-//				string msg = "while in DesignMode, trying to avoid"
-//					+ "	1) The variable 'ExceptionControl' is either undeclared or was never assigned."
-//					+ "	2) System.Exception: Assembler.instance=null; use Assembler.InstanceUninitialized.Initialize(MainForm); this singleton requires IStatusReporter to get fully initialized"
-//					;
-//				throw new Exception(msg);
-//			}
-			
 			this.ExceptionControl.Initialize();
 		}
 		public void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {

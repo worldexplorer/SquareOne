@@ -102,13 +102,24 @@ namespace Sq1.Charting {
 			this.SyncHorizontalScrollToBarsCount();
 			//this.hScrollBar.ValueCurrent = this.hScrollBar.Maximum;	// I just sync'ed this.hScrollBar.Maximum = this.Bars.Count - 1
 			// after I reduced BarRange{500bars => 100bars} in MainForm, don't set this.hScrollBar.Value here, I'll invoke ScrollToLastBarRight() upstack
-			if (this.ChartSettings.ScrollPositionAtBarIndex >= this.hScrollBar.Minimum && this.ChartSettings.ScrollPositionAtBarIndex <= this.hScrollBar.Maximum) {
-				// I'm here 1) at ChartControl startup; 2) after I changed BarRange in MainForm 
-				this.hScrollBar.Value = this.ChartSettings.ScrollPositionAtBarIndex;
-			} else {
-				string msg = "HSCROLL_POSITION_VALUE_OUT_OF_RANGE; fix deserialization upstack";
-
+			//v1 if (this.ChartSettings.ScrollPositionAtBarIndex >= this.hScrollBar.Minimum && this.ChartSettings.ScrollPositionAtBarIndex <= this.hScrollBar.Maximum) {
+			//	// I'm here 1) at ChartControl startup; 2) after I changed BarRange in MainForm 
+			//	this.hScrollBar.Value = this.ChartSettings.ScrollPositionAtBarIndex;
+			//} else {
+			//	string msg = "HSCROLL_POSITION_VALUE_OUT_OF_RANGE; fix deserialization upstack";
+			//}
+			//v1 STREAMING_GROWS_BARS.COUNT_AND_YOU_SAVE_IT_AS_520__ON_RESTART_YOU_GO_BEYOND_BARS_LOADED_500
+			//v2
+			if (this.ChartSettings.ScrollPositionAtBarIndex < 0) {
+				string msg = "CATCH_AND_FIX_WHEN_YOU_ASSIGN_ChartSettings.ScrollPositionAtBarIndex_TO_NEGATIVE_VALUE";
+				Assembler.PopupException(msg);
+				return;
 			}
+			if (this.ChartSettings.ScrollPositionAtBarIndex > this.hScrollBar.Maximum) {
+				this.ChartSettings.ScrollPositionAtBarIndex = this.hScrollBar.Maximum;
+			}
+			// I'm here 1) at ChartControl startup; 2) after I changed BarRange in MainForm 
+			this.hScrollBar.Value = this.ChartSettings.ScrollPositionAtBarIndex;
 			foreach (PanelBase panel in this.panels) {	// at least PanelPrice and PanelVolume
 				panel.InitializeWithNonEmptyBars(this);
 			}
@@ -135,8 +146,10 @@ namespace Sq1.Charting {
 			foreach (PanelBase panel in this.panels) {
 				panel.Invalidate();
 			}
-			this.TooltipPriceHide();
-			this.TooltipPositionHide();
+			//if (this.InvalidatedByStreamingKeepTooltipsOpen == true) return;
+			//this.TooltipPriceHide();
+			//this.TooltipPositionHide();
+			//this.InvalidatedByStreamingKeepTooltipsOpen = false;
 		}
 		void scrollToBarSafely(int bar) {
 			if (bar > this.hScrollBar.Maximum) bar = this.hScrollBar.Maximum;

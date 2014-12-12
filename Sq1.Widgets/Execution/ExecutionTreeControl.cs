@@ -159,10 +159,12 @@ namespace Sq1.Widgets.Execution {
 //					OLVColumn col = columnsByText[colText];
 //					col.IsVisible = visible;
 //				}
+				//v2
 				// http://stackoverflow.com/questions/11743160/how-do-i-encode-and-decode-a-base64-string
-				
-				byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.DataSnapshot.OrdersTreeOlvStateBase64);
-				this.OrdersTreeOLV.RestoreState(olvStateBinary);
+				if (this.DataSnapshot.OrdersTreeOlvStateBase64.Length > 0) {
+					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.DataSnapshot.OrdersTreeOlvStateBase64);
+					this.OrdersTreeOLV.RestoreState(olvStateBinary);
+				}
 			}
 		}
 		public void PopulateAccountsMenuFromBrokerProvider(ToolStripMenuItem[] ctxAccountsAllCheckedFromUnderlyingBrokerProviders) {
