@@ -279,7 +279,7 @@ namespace Sq1.Core.StrategyBase {
 												this.ExecutionDataSnapshot.PositionsClosedAfterExecSafeCopy);
 			if (this.Backtester.IsBacktestingNow == false) {
 				// NOPE PositionsMaster grows only in Callback: do this before this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads() to avoid REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert
-				this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
+				this.AddPositionsJustCreatedUnfilledToChartShadowAndPushToReportersAsyncUnsafe(pokeUnit);
 			}
 			
 			return pokeUnit;
@@ -499,7 +499,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		//DateTime lastTimeReportersPoked = DateTime.MinValue;
-		public void AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(ReporterPokeUnit pokeUnit) {
+		public void AddPositionsJustCreatedUnfilledToChartShadowAndPushToReportersAsyncUnsafe(ReporterPokeUnit pokeUnit) {
 			if (pokeUnit.PositionsCount == 0) {
 			    return;		// EMPTY_AFTEREXEC check#1
 			}
@@ -515,9 +515,12 @@ namespace Sq1.Core.StrategyBase {
 			foreach (Alert alert in pokeUnit.AlertsNew) {
 				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
 			}
-			this.Performance.BuildStatsIncrementallyOnEachBarExecFinished(pokeUnit);
+			//SEQUENCE_MATTERS
+			this.Performance.BuildReportIncrementalPositionsCreated(pokeUnit.Clone());
 			this.ChartShadow.PositionsRealtimeAdd(pokeUnit.Clone());
-			this.EventGenerator.RaiseBrokerOpenedOrClosedPositions(pokeUnit.Clone());
+			this.EventGenerator.RaiseExecutorCreatedPositions(pokeUnit.Clone());
+			//ONLY_ON_FILL this.Performance.BuildStatsIncrementallyOnEachBarExecFinished(pokeUnit);
+			//ONLY_ON_FILL this.EventGenerator.RaiseBrokerOpenedOrClosedPositions(pokeUnit.Clone());
 		}
 
 		public void CreatedOrderWontBePlacedPastDueInvokeScript(Alert alert, int barNotSubmittedRelno) {
@@ -753,7 +756,8 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Backtester.IsBacktestingNow == false) {
 				ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteFilledThisAlertNullForLive,
 					alertsNewAfterAlertFilled, positionsOpenedAfterAlertFilled, positionsClosedAfterAlertFilled);
-				this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
+				//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
+				this.EventGenerator.RaiseBrokerOpenedOrClosedPositions(pokeUnit);
 			}
 
 			// 4. Script event will generate a StopLossMove PostponedHook

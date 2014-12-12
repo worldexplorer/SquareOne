@@ -27,7 +27,7 @@ namespace Sq1.Reporters {
 			WindowsFormsUtils.SetDoubleBuffered(this.lvPerformance);
 			this.objectListViewCustomize();
 		}
-		public override void BuildOnceAfterFullBlindBacktestFinished(SystemPerformance performance) {
+		public override void BuildFullOnBacktestFinished(SystemPerformance performance) {
 			this.systemPerformance = performance;
 			this.propagatePerformanceReport(performance);
 		}
@@ -175,10 +175,14 @@ namespace Sq1.Reporters {
 //			if (colorFore	!= Color.Empty) subLvi.ForeColor = colorFore;
 			lvi.SubItems.Add(subLvi);
 		}
-		public override void BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit pokeUnit) {
+		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
 		}
 		public override object CreateSnapshotToStoreInScriptContext() {
 			return null;
+		}
+		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(List<Position> positionsUpdatedDueToStreamingNewQuote) {
+		}
+		public override void BuildIncrementalOnPositionsCreatedUnfilled_step1of3(ReporterPokeUnit pokeUnit) {
 		}
 	}
 }

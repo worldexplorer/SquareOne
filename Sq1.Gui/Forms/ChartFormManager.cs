@@ -470,7 +470,7 @@ namespace Sq1.Gui.Forms {
 			
 			//this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);
 			// MOVED_TO_BacktesterRunSimulation() this.Executor.Performance.BuildStatsOnBacktestFinished();
-			this.ReportersFormsManager.BuildOnceAllReports(this.Executor.Performance);
+			this.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters(this.Executor.Performance);
 		}
 		void afterBacktesterCompleteOnceOnRestart(ScriptExecutor myOwnExecutorIgnoring) {
 			this.afterBacktesterComplete(myOwnExecutorIgnoring);

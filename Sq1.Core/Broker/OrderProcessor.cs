@@ -845,8 +845,7 @@ namespace Sq1.Core.Broker {
 			}
 			bool setStatusSubmitting = executor.IsStreamingTriggeringScript && executor.IsStrategyEmittingOrders;
 			this.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsCreatedByHooks, setStatusSubmitting, true);
-			orderWithNewState.Alert.Strategy.Script.Executor
-				.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
+			//ONLY_ON_FILL orderWithNewState.Alert.Strategy.Script.Executor.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
 		}
 		public void RemovePendingAlertsForVictimOrderMustBePostKill(Order orderKilled, string msig) {
 			string msg = "";

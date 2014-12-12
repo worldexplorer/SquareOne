@@ -28,6 +28,9 @@ namespace Sq1.Core.Streaming {
 			consumersBar = new List<IStreamingConsumer>();
 			earlyBinders = new Dictionary<IStreamingConsumer, StreamingEarlyBinder>();
 			QuotePump = new QuotePump(this);
+			// avoiding YOU_FORGOT_TO_INVOKE_INDICATOR.INITIALIZE()_OR_WAIT_UNTIL_ITLLBE_INVOKED_LATER
+			// Assembler instantiates StreamingProviders early enough so these horses 
+			// NOPE_ON_APP_RESTART_BACKTESTER_COMPLAINS_ITS_ALREADY_PAUSED QuotePump.PushConsumersPaused = true;
 		}
 		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval, bool quotePumpSeparatePushingThreadEnabled = true) : this() {
 			Symbol = symbol;

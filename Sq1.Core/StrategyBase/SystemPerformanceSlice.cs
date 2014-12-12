@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
@@ -166,7 +164,7 @@ namespace Sq1.Core.StrategyBase {
 			this.BarsHeldTotalForClosedPositionsLosers = 0;
 			this.PositionsCountLosers = 0;
 		}
-		public int BuildStatsIncrementallyOnEachBarExecFinished (Dictionary<int, List<Position>> positionsOpenedAfterExec, Dictionary<int, List<Position>> positionsClosedAfterExec) {
+		public int BuildStatsOnBacktestFinished(Dictionary<int, List<Position>> positionsOpenedAfterExec, Dictionary<int, List<Position>> positionsClosedAfterExec) {
 			int positionsOpenAbsorbed = 0;
 
 			int minBar = Int32.MaxValue;
@@ -345,9 +343,6 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception("POSITION_ATBAR_HAS_EXIT_DATE_DIFFERENT_FROM_OTHER_POSITIONS"
 					+ " otherAlerts[" + barDateTime + "] exitPosition.ExitBar.DateTimeOpen[" + exitPosition.ExitBar.DateTimeOpen + "]");
 			}
-		}
-		public void BuildStatsOnBacktestFinished(Dictionary<int, List<Position>> posByEntry, Dictionary<int, List<Position>> posByExit) {
-			this.BuildStatsIncrementallyOnEachBarExecFinished(posByEntry, posByExit);
 		}
 		int absorbPositionsImTracking(Position position) {
 			int absorbed = 0;
