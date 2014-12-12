@@ -35,7 +35,8 @@
           "ShowMaeMfe": true,
           "ShowSignals": true,
           "ShowCommission": true,
-          "Colorify": true
+          "Colorify": true,
+          "PositionsOlvStateBase64": ""
         }
       },
       "ApplyCommission": false,
