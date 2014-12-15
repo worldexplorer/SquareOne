@@ -302,7 +302,7 @@ namespace Sq1.Core.DataFeed {
 
 			return ret;
 		}
-		public void PausePumpingFor(Bars bars, bool wrongUsagePopup = true) {
+		public void PumpingPauseFor(Bars bars, bool wrongUsagePopup = true) {
 			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
@@ -321,7 +321,7 @@ namespace Sq1.Core.DataFeed {
 			}
 			channel.QuotePump.PushConsumersPaused = true;
 		}
-		public void UnPausePumpingFor(Bars bars, bool wrongUsagePopup = true) {
+		public void PumpingUnPauseFor(Bars bars, bool wrongUsagePopup = true) {
 			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
@@ -341,13 +341,19 @@ namespace Sq1.Core.DataFeed {
 			channel.QuotePump.PushConsumersPaused = false;
 		}
 
-		public bool WaitUntilPumpUnpaused(Bars bars, int maxWaitingMillis = 1000) {
+		public bool PumpingPausedGet(Bars bars) {
+			DataDistributor distr = this.StreamingProvider.DataDistributor;
+			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
+			bool unpaused = channel.QuotePump.PushConsumersPaused;
+			return unpaused;
+		}
+		public bool PumpingWaitUntilUnpaused(Bars bars, int maxWaitingMillis = 1000) {
 			DataDistributor distr = this.StreamingProvider.DataDistributor;
 			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 			bool unpaused = channel.QuotePump.WaitUntilUnpaused(maxWaitingMillis);
 			return unpaused;
 		}
-		public bool WaitUntilPumpPaused(Bars bars, int maxWaitingMillis = 1000) {
+		public bool PumpingWaitUntilPaused(Bars bars, int maxWaitingMillis = 1000) {
 			DataDistributor distr = this.StreamingProvider.DataDistributor;
 			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 			bool paused = channel.QuotePump.WaitUntilPaused(maxWaitingMillis);

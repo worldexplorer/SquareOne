@@ -318,7 +318,9 @@ namespace WeifenLuo.WinFormsUI.Docking {
 				try {
 					LoadFromXml(dockPanel, fs, deserializeContent);
 				} catch (Exception e) {
-					int a = 1;
+					#if DEBUG
+					System.Diagnostics.Debugger.Break();
+					#endif
 				} finally {
 					fs.Close();
 				}
@@ -552,6 +554,9 @@ namespace WeifenLuo.WinFormsUI.Docking {
 							else
 								content.DockHandler.PanelPane = pane;
 						} catch (Exception e) {
+							#if DEBUG
+							System.Diagnostics.Debugger.Break();
+							#endif
 							continue;
 						}
 					}

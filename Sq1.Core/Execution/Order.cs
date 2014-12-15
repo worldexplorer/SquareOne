@@ -95,8 +95,8 @@ namespace Sq1.Core.Execution {
 		}
 
 		// no search among lvOrders.Items[] is required to populate the order update
-		[JsonIgnore]	public ListViewItem		ListViewItemInExecutionForm	{ get; protected set; }
-		[JsonIgnore]	public int				StateImageIndex				{ get; protected set; }
+		//[JsonIgnore]	public ListViewItem		ListViewItemInExecutionForm	{ get; protected set; }
+		//[JsonIgnore]	public int				StateImageIndex				{ get; protected set; }
 		
 		[JsonIgnore]	public List<Order>		DerivedOrders				{ get; protected set; }		// rebuilt on app restart from	DerivedOrdersGuids 
 		[JsonProperty]	public List<string>		DerivedOrdersGuids			{ get; protected set; }
@@ -228,7 +228,7 @@ namespace Sq1.Core.Execution {
 			this.VictimGUID = "";
 			this.KillerGUID = "";
 
-			this.StateImageIndex = 0;
+			//this.StateImageIndex = 0;
 			this.StateUpdateLastTimeLocal = DateTime.MinValue;
 			this.EmittedByScript = false;
 			this.SlippageFill = 0;

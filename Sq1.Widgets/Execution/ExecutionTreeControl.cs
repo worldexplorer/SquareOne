@@ -45,7 +45,6 @@ namespace Sq1.Widgets.Execution {
 			WindowsFormsUtils.SetDoubleBuffered(this.OrdersTreeOLV);
 			WindowsFormsUtils.SetDoubleBuffered(this.olvMessages);
 			WindowsFormsUtils.SetDoubleBuffered(this);
-
 		}
 		void buildMniShortcutsAfterInitializeComponent() {
 			columnsByFilters = new Dictionary<ToolStripMenuItem, List<OLVColumn>>();

@@ -103,15 +103,20 @@ namespace Sq1.Reporters {
 			this.rebuildOLVproperly();
 		}
 		void rebuildOLVproperly() {
-			this.olvPositions.SetObjects(this.positionsAllReversedCached);
-			this.olvPositions.RebuildColumns();
-			this.olvPositions.BuildList();
-			base.TabText = "Positions (" + this.positionsAllReversedCached.Count + ")";
+			try {
+				this.olvPositions.SetObjects(this.positionsAllReversedCached);
+				this.olvPositions.RebuildColumns();
+				this.olvPositions.BuildList();
+				base.TabText = "Positions (" + this.positionsAllReversedCached.Count + ")";
+			} catch (Exception ex) {
+				string msg = "I_KNEW_OLV_WILL_REFUSE_TO_REFRESH_POSITIONS_IT_DOESNT_HAVE";
+				Assembler.PopupException(msg);
+			}
 		}
-		public override void BuildIncrementalOnPositionsCreatedUnfilled_step1of3(ReporterPokeUnit pokeUnit) {
+		public override void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
 			foreach (Position pos in pokeUnit.PositionsOpened) {
 				if (this.positionsAllReversedCached.Contains(pos)) {
-					string msg3 = "REPORTERS.POSITIONS_ALREADY_ADDED_BuildIncrementalOnPositionsCreatedUnfilled()";
+					string msg3 = "REPORTERS.POSITIONS_ALREADY_ADDED_BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3()";
 					Assembler.PopupException(msg3);
 					continue;
 				}
@@ -124,11 +129,14 @@ namespace Sq1.Reporters {
 			this.rebuildOLVproperly();
 		}
 		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
+			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsClosed;
+		}
+		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(List<Position> positionsUpdatedDueToStreamingNewQuote) {
 			int earliestIndexUpdated = -1;
-			foreach (Position pos in pokeUnit.PositionsClosed) {
+			foreach (Position pos in positionsUpdatedDueToStreamingNewQuote) {
 				int posIndex = this.positionsAllReversedCached.IndexOf(pos);
 				if (posIndex == -1) {
-					string msg3 = "YOU_DIDNT_INVOKE_BuildIncrementalOnPositionsCreatedUnfilled_WITH_THIS_POSITION???";
+					string msg3 = "YOU_DIDNT_INVOKE_BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3_WITH_THIS_POSITION???";
 					Assembler.PopupException(msg3);
 				}
 				if (earliestIndexUpdated == -1) {
@@ -140,7 +148,7 @@ namespace Sq1.Reporters {
 			}
 			if (earliestIndexUpdated == -1) {
 				string msg2 = "NO_POSITIONS_UPDATED_NO_NEED_TO_RECALCULATE_ANYTHING";
-				if (pokeUnit.PositionsClosed.Count > 0) {
+				if (positionsUpdatedDueToStreamingNewQuote.Count > 0) {
 					this.rebuildOLVproperly();
 				}
 				return;
@@ -148,38 +156,41 @@ namespace Sq1.Reporters {
 			string msg = "POSITIONS_UPDATED_SO_I_RECALCULATE_FROM_EARLIEST_INDEX_UP_TO_ZERO";
 			double cumProfitDollar = 0;
 			double cumProfitPercent = 0;
-			for(int i = earliestIndexUpdated; i>=0; i--) {
+
+			for (int i = earliestIndexUpdated; i >= 0; i--) {
 				Position pos = this.positionsAllReversedCached[i];
-				if (i == earliestIndexUpdated) {
-					if (this.cumulativeProfitDollar.ContainsKey(pos)) {
-						cumProfitDollar = this.cumulativeProfitDollar[pos] + pos.NetProfit;
+				if (i == earliestIndexUpdated && i < this.positionsAllReversedCached.Count) {
+					Position posPrev = this.positionsAllReversedCached[i+1];
+					if (this.cumulativeProfitDollar.ContainsKey(posPrev)) {
+						cumProfitDollar = this.cumulativeProfitDollar[posPrev];
 					} else {
 						string msg1 = "REPORTERS.POSITIONS_NONSENSE#1";
 						Assembler.PopupException(msg1);
 					}
-					if (this.cumulativeProfitPercent.ContainsKey(pos)) {
-						cumProfitPercent = this.cumulativeProfitPercent[pos] + pos.NetProfitPercent;
+					if (this.cumulativeProfitPercent.ContainsKey(posPrev)) {
+						cumProfitPercent = this.cumulativeProfitPercent[posPrev];
 					} else {
 						string msg1 = "REPORTERS.POSITIONS_NONSENSE#2";
 						Assembler.PopupException(msg1);
 					}
-					continue;
 				}
 				cumProfitDollar += pos.NetProfit;
 				cumProfitPercent += pos.NetProfitPercent;
 
+				double oldValue = this.cumulativeProfitDollar[pos];
 				this.cumulativeProfitDollar[pos] = cumProfitDollar;
 				this.cumulativeProfitPercent[pos] = cumProfitPercent;
+
+				double newValue = this.cumulativeProfitDollar[pos];
+				double difference = newValue - oldValue;
+				if (difference == 0) {
+					string msg2 = "DID_YOU_GET_QUOTE_WITH_SAME_BID_ASK????__YOU_SHOULDVE_IGNORED_IT_IN_STREAMING_PROVIDER";
+					Assembler.PopupException(msg2, null, false);
+				}
 			}
-			this.rebuildOLVproperly();
-		}
-		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(List<Position> positionsUpdatedDueToStreamingNewQuote) {
-			try {
-				this.olvPositions.RefreshObjects(positionsUpdatedDueToStreamingNewQuote);
-			} catch (Exception ex) {
-				string msg = "I_KNEW_OLV_WILL_REFUSE_TO_REFRESH_POSITIONS_IT_DOESNT_HAVE";
-				Assembler.PopupException(msg);
-			}
+			//v1 SLOW? this.rebuildOLVproperly();
+			//v2 hoping ObjectListView uses Dictionary to locate changed positions
+			this.olvPositions.RefreshObjects(positionsUpdatedDueToStreamingNewQuote);
 		}
 		string generateTextScreenshot() {
 			if (this.positionsAllReversedCached.Count == 0) return "NO_POSITIONS";

@@ -27,6 +27,7 @@ namespace Sq1.Gui.Singletons {
 
 			if (msg != null) ex = new Exception(msg, ex);
 			this.ExceptionControl.InsertException(ex);
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 
 			#region EXPERIMENTAL
 			Task t = new Task(delegate {

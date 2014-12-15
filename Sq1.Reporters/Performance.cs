@@ -182,7 +182,7 @@ namespace Sq1.Reporters {
 		}
 		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(List<Position> positionsUpdatedDueToStreamingNewQuote) {
 		}
-		public override void BuildIncrementalOnPositionsCreatedUnfilled_step1of3(ReporterPokeUnit pokeUnit) {
+		public override void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
 		}
 	}
 }
