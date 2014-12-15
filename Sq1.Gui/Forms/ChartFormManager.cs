@@ -693,6 +693,7 @@ namespace Sq1.Gui.Forms {
 		public void PopulateSliders() {
 			//CAN_HANDLE_NULL_IN_SlidersForm.Instance.Initialize()  if (this.Strategy == null) return;
 			// if you are tired of seeing "CHART_NO_STRATEGY" if (this.Strategy == null) return;
+			if (SlidersForm.Instance.DockPanel == null) SlidersForm.Instance.Show(this.dockPanel);
 			SlidersForm.Instance.Initialize(this.Strategy);		
 			if (SlidersForm.Instance.Visible == false) {		// don't activate the tab if user has docked another Form on top of SlidersForm
 				//FOR_CHART_NO_STRATEGY_BRINGS_EMPTY_SLIDERS_UP SlidersForm.Instance.Show(this.dockPanel);

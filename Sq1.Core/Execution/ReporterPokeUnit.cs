@@ -5,13 +5,14 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Execution {
 	public class ReporterPokeUnit {
-		public Quote			QuoteGeneratedThisUnit	{ get; protected set; }
-		public List<Alert>		AlertsNew				{ get; protected set; }
-		public List<Position>	PositionsOpened			{ get; protected set; }
-		public List<Position>	PositionsClosed			{ get; protected set; }
+		public Quote			QuoteGeneratedThisUnit		{ get; protected set; }
+		public List<Alert>		AlertsNew					{ get; protected set; }
+		public List<Position>	PositionsOpened				{ get; protected set; }
+		public List<Position>	PositionsClosed				{ get; protected set; }
 		
-		public int				PositionsCount			{ get { return this.PositionsOpened.Count + this.PositionsClosed.Count; } }
-		public List<Position>	PositionsOpenedClosedMergedTogether { get {
+		public int				PositionsCount				{ get { return this.PositionsOpened.Count + this.PositionsClosed.Count; } }
+		public int				PositionsPlusAlertsCount	{ get { return this.PositionsCount + this.AlertsNew.Count; } }
+		public List<Position> PositionsOpenedClosedMergedTogether { get {
 				List<Position> ret = new List<Position>();
 				ret.AddRange(this.PositionsClosed);
 				ret.AddRange(this.PositionsOpened);
@@ -58,6 +59,9 @@ namespace Sq1.Core.Execution {
 				new List<Position>(this.PositionsOpened),
 				new List<Position>(this.PositionsClosed));
 			return ret;
+		}
+		public override string ToString() {
+			return "AlertsNew[" + this.AlertsNew.Count + "] PositionsOpened[" + this.PositionsOpened.Count + "] PositionsClosed[" + this.PositionsClosed.Count + "]";
 		}
 	}
 }

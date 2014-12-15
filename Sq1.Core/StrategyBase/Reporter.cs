@@ -52,7 +52,7 @@ namespace Sq1.Core.StrategyBase {
 		//    string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
 		//    throw new NotImplementedException(msg);
 		//}
-		public abstract void BuildIncrementalOnPositionsCreatedUnfilled_step1of3(ReporterPokeUnit pokeUnit);
+		public abstract void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit);
 		public virtual object CreateSnapshotToStoreInScriptContext() {
 			return null;
 		}

@@ -41,16 +41,16 @@ namespace Sq1.Gui {
 
 		public MainForm() {
 			InitializeComponent();
-			
-			string currentThreadName;
-			try {
-				currentThreadName = Thread.CurrentThread.Name;	// SharpDevelop4.4 Debugger doesn't evaluate, so I assign to visualize it 
-				Thread.CurrentThread.Name = GUI_THREAD_NAME;
-				currentThreadName = Thread.CurrentThread.Name;
-			} catch (Exception ex) {
-				string msg = "FAILED_TO_SET_GUI_THREAD_NAME Thread.CurrentThread.Name=[" + GUI_THREAD_NAME + "] //MainForm()";
-				Assembler.PopupException(msg, ex);
-			}
+
+			//string currentThreadName;
+			//try {
+			//    currentThreadName = Thread.CurrentThread.Name;	// SharpDevelop4.4 Debugger doesn't evaluate, so I assign to visualize it 
+			//    Thread.CurrentThread.Name = GUI_THREAD_NAME;
+			//    currentThreadName = Thread.CurrentThread.Name;
+			//} catch (Exception ex) {
+			//    string msg = "FAILED_TO_SET_GUI_THREAD_NAME Thread.CurrentThread.Name=[" + GUI_THREAD_NAME + "] //MainForm()";
+			//    Assembler.PopupException(msg, ex);
+			//}
 
 			try {
 				Assembler.InstanceUninitialized.Initialize(this as IStatusReporter);
@@ -118,14 +118,7 @@ namespace Sq1.Gui {
 					DeserializeDockContent deserializeDockContent = new DeserializeDockContent(this.persistStringInstantiator);
 					this.DockPanel.LoadFromXml(LayoutXml, deserializeDockContent);
 				}
-	
-//				this.mniExceptions.Checked = !ExceptionsForm.Instance.IsHidden;
-//				this.mniSymbols.Checked = !DataSourcesForm.Instance.IsHidden;
-//				this.mniSliders.Checked = !SlidersForm.Instance.IsHidden;
-//				this.mniStrategies.Checked = !StrategiesForm.Instance.IsHidden;
-//				this.mniSymbolManager.Checked = !SymbolManagerForm.Instance.IsHidden;
-//				this.mniExecution.Checked = !ExecutionForm.Instance.IsHidden;
-//				this.mniCsvImporter.Checked = !CsvImporterForm.Instance.IsHidden;
+
 	
 				this.initializeMainFromDeserializedDataSnapshot();
 				this.mainFormEventManagerInitializeAfterDockingDeserialized();

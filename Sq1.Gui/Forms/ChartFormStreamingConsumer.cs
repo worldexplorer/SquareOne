@@ -302,12 +302,12 @@ namespace Sq1.Gui.Forms {
 
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				try {
-					dataSourceSafe.PausePumpingFor(barsSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					dataSourceSafe.PumpingPauseFor(barsSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
 					// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
-					ReporterPokeUnit pokeUnit = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
+					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
 					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 				} finally {
-					dataSourceSafe.UnPausePumpingFor(barsSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					dataSourceSafe.PumpingUnPauseFor(barsSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
 				}
 			}
 
@@ -369,7 +369,7 @@ namespace Sq1.Gui.Forms {
 
 			// #2/4 execute strategy in the thread of a StreamingProvider (DDE server for MockQuickProvider)
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
-				ReporterPokeUnit pokeUnit = executorSafe.ExecuteOnNewBarOrNewQuote(quote);
+				ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quote);
 				//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 			}
 
@@ -378,11 +378,11 @@ namespace Sq1.Gui.Forms {
 				chartFormSafe.ChartControl.InvalidateAllPanels();
 			}
 
-			// #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
-			List<Position> positionsOpenNowSafeCopy = executorSafe.ExecutionDataSnapshot.PositionsOpenNowSafeCopy;
-			if (positionsOpenNowSafeCopy.Count > 0) {
-				this.ChartFormManager.ReportersFormsManager.UpdateOpenPositionsDueToStreamingNewQuote(positionsOpenNowSafeCopy);
-			}
+			// MOVED_TO_ScriptExecutor_USING_RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
+			//List<Position> positionsOpenNowSafeCopy = executorSafe.ExecutionDataSnapshot.PositionsOpenNowSafeCopy;
+			//if (positionsOpenNowSafeCopy.Count > 0) {
+			//    this.ChartFormManager.ReportersFormsManager.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(positionsOpenNowSafeCopy);
+			//}
 		}
 		#endregion
 

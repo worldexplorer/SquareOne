@@ -9,12 +9,12 @@ namespace Sq1.Charting.MultiSplit {
 		public PanelBase PanelBelow;
 
 		int GrabHandleWidth;
-		Color ColorGrabHandle;
+		Color GrabHandleColor;
 		bool DebugSplitter;
 		
-		public MultiSplitter(int grabHandleWidth, Color colorGrabHandle, bool debugSplitter = false) {
+		public MultiSplitter(int grabHandleWidth, Color grabHandleColor, bool debugSplitter = false) {
 			GrabHandleWidth = grabHandleWidth;
-			ColorGrabHandle = colorGrabHandle;
+			GrabHandleColor = grabHandleColor;
 			DebugSplitter = debugSplitter;
 		}
 
@@ -24,7 +24,7 @@ namespace Sq1.Charting.MultiSplit {
 			try {
 				Graphics g = e.Graphics;
 				Rectangle grabRect = new Rectangle(0, 0, this.GrabHandleWidth, base.Height);
-				using (SolidBrush grabBrush = new SolidBrush(this.ColorGrabHandle)) {
+				using (SolidBrush grabBrush = new SolidBrush(this.GrabHandleColor)) {
 					g.FillRectangle(grabBrush, grabRect);
 				}
 				//this.DrawGripForSplitter(g);
