@@ -302,12 +302,12 @@ namespace Sq1.Gui.Forms {
 
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				try {
-					dataSourceSafe.PumpingPauseFor(barsSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					dataSourceSafe.PumpingAutoPauseFor(executorSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
 					// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
 					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
 					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 				} finally {
-					dataSourceSafe.PumpingUnPauseFor(barsSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					dataSourceSafe.PumpAutoResumeFor(executorSafe, true);	// NOW_FOR_LIVE_MOCK_BUFFERING
 				}
 			}
 

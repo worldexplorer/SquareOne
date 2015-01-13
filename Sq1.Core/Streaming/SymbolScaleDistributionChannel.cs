@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Streaming {
 	public class SymbolScaleDistributionChannel {
@@ -13,6 +14,7 @@ namespace Sq1.Core.Streaming {
 				List<IStreamingConsumer>		consumersBar;
 				object							lockConsumersQuote;
 				object							lockConsumersBar;
+				List<Backtester>				backtestersRunningCausingPumpingPause;
 
 		//NB#1	QuotePump.PushStraightOrBuffered replaced this.PushQuoteToConsumers to:
 		//		1) set Streaming free without necessity to wait for Script.OnNewQuote/Bar and deliver the next quote ASAP;
@@ -27,10 +29,12 @@ namespace Sq1.Core.Streaming {
 			consumersQuote = new List<IStreamingConsumer>();
 			consumersBar = new List<IStreamingConsumer>();
 			earlyBinders = new Dictionary<IStreamingConsumer, StreamingEarlyBinder>();
+			backtestersRunningCausingPumpingPause = new List<Backtester>();
 			QuotePump = new QuotePump(this);
 			// avoiding YOU_FORGOT_TO_INVOKE_INDICATOR.INITIALIZE()_OR_WAIT_UNTIL_ITLLBE_INVOKED_LATER
 			// Assembler instantiates StreamingProviders early enough so these horses 
-			// NOPE_ON_APP_RESTART_BACKTESTER_COMPLAINS_ITS_ALREADY_PAUSED QuotePump.PushConsumersPaused = true;
+			// NOPE_ON_APP_RESTART_BACKTESTER_COMPLAINS_ITS_ALREADY_PAUSED
+			// moved BacktesterRunningAdd() to QuotePump.PushConsumersPaused = true;
 		}
 		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval, bool quotePumpSeparatePushingThreadEnabled = true) : this() {
 			Symbol = symbol;
@@ -314,6 +318,36 @@ namespace Sq1.Core.Streaming {
 				}
 				barConsumer.UpstreamUnSubscribedFromSymbolNotification(lastQuoteReceived);
 			}
+		}
+
+		public void PumpAutoPauseBacktesterLaunchingAdd(Backtester backtesterAdding) {
+			if (backtestersRunningCausingPumpingPause.Contains(backtesterAdding)) {
+				string msg = "ADD_BACTESTER_ONLY_ONCE [" + backtesterAdding + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			backtestersRunningCausingPumpingPause.Add(backtesterAdding);
+			if (QuotePump.PushConsumersPaused == true) {
+				string msg = "PUMP_ALREADY_PAUSED_BY_ANOTHER_CONSUMERS_BACKTEST__LAZY_TO_FIND_ROOT_CAUSE_KOZ_NOT_AN_ERROR backtesterAdding=[" + backtesterAdding + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			this.QuotePump.PushConsumersPaused = true;
+		}
+		public void PumpAutoResumeBacktesterCompleteRemove(Backtester backtesterRemoving) {
+			if (backtestersRunningCausingPumpingPause.Contains(backtesterRemoving) == false) {
+				string msg = "YOU_NEVER_ADDED_BACKTESTER [" + backtesterRemoving + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			backtestersRunningCausingPumpingPause.Remove(backtesterRemoving);
+			if (backtestersRunningCausingPumpingPause.Count > 0) return;
+			if (QuotePump.PushConsumersPaused == false) {
+				string msg = "YOU_RUINED_WHOLE_IDEA_OF_DISTRIBUTOR_CHANNEL_AUTORESUME_ITS_PUMP backtesterRemoving=[" + backtesterRemoving + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			this.QuotePump.PushConsumersPaused = false;
 		}
 	}
 }

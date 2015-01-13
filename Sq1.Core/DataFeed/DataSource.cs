@@ -9,6 +9,7 @@ using Sq1.Core.Broker;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Repositories;
 using Sq1.Core.Streaming;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource : NamedObjectJsonSerializable {
@@ -302,8 +303,8 @@ namespace Sq1.Core.DataFeed {
 
 			return ret;
 		}
-		public void PumpingPauseFor(Bars bars, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
+		public void PumpingAutoPauseFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
+			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
@@ -312,17 +313,19 @@ namespace Sq1.Core.DataFeed {
 				channel.QuotePump.PushConsumersPaused = true;
 				return;
 			}
-			if (channel.QuotePump.PushConsumersPaused == true) {
-				if (wrongUsagePopup == true) {
-					string msg = "PUSHING_THREAD_ALREADY_PAUSED (review how you use QuotePump)";
-					Assembler.PopupException(msg, null, true);
-				}
-				return;
-			}
-			channel.QuotePump.PushConsumersPaused = true;
+			// v1 UNFINISHED_PARALLEL_BACKTESTS_SHOULD_NOT_GET_NEW_QUOTES
+			//if (channel.QuotePump.PushConsumersPaused == true) {
+			//    if (wrongUsagePopup == true) {
+			//        string msg = "PUSHING_THREAD_ALREADY_PAUSED (review how you use QuotePump)";
+			//        Assembler.PopupException(msg, null, true);
+			//    }
+			//    return;
+			//}
+			//channel.QuotePump.PushConsumersPaused = true;
+			channel.PumpAutoPauseBacktesterLaunchingAdd(executor.Backtester);
 		}
-		public void PumpingUnPauseFor(Bars bars, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
+		public void PumpAutoResumeFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
+			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_UNPAUSE_DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
@@ -331,14 +334,16 @@ namespace Sq1.Core.DataFeed {
 				channel.QuotePump.PushConsumersPaused = false;
 				return;
 			}
-			if (channel.QuotePump.PushConsumersPaused == false) {
-				if (wrongUsagePopup == true) {
-					string msg = "PUSHING_THREAD_ALREADY_UNPAUSED (review how you use QuotePump)";
-					Assembler.PopupException(msg, null, true);
-				}
-				return;
-			}
-			channel.QuotePump.PushConsumersPaused = false;
+			// v1 UNFINISHED_PARALLEL_BACKTESTS_SHOULD_NOT_GET_NEW_QUOTES
+			//if (channel.QuotePump.PushConsumersPaused == false) {
+			//    if (wrongUsagePopup == true) {
+			//        string msg = "PUSHING_THREAD_ALREADY_UNPAUSED (review how you use QuotePump)";
+			//        Assembler.PopupException(msg, null, true);
+			//    }
+			//    return;
+			//}
+			//channel.QuotePump.PushConsumersPaused = false;
+			channel.PumpAutoResumeBacktesterCompleteRemove(executor.Backtester);
 		}
 
 		public bool PumpingPausedGet(Bars bars) {

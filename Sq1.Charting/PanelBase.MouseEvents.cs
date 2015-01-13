@@ -71,8 +71,8 @@ namespace Sq1.Charting {
 			BarIndexMouseIsOverNow = -1;
 			this.ChartControl.BarIndexMouseIsOverNow = -1;
 
-			//this.ChartControl.TooltipPriceHide();
-			//this.ChartControl.TooltipPositionHide();
+			this.ChartControl.TooltipPriceHide();
+			this.ChartControl.TooltipPositionHide();
 
 			this.ChartControl.InvalidateAllPanels();	//	DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES
 		}

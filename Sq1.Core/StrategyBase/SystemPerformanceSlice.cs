@@ -7,7 +7,7 @@ using Sq1.Core.Execution;
 namespace Sq1.Core.StrategyBase {
 	public class SystemPerformanceSlice {
 		public	string				ReasonToExist;
-		public	PositionLongShort	PositionLongShortImTracking		{ get; private set; }
+		public	SystemPerformancePositionsTracking	PositionLongShortImTracking		{ get; private set; }
 		public	DataSeriesTimeBased	EquityCurve						{ get; private set; }
 		public	DataSeriesTimeBased	CashCurve						{ get; private set; }
 		public	List<Position>		PositionsImTracking				{ get; private set; }
@@ -130,9 +130,11 @@ namespace Sq1.Core.StrategyBase {
 			EquityCurve = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), "Equity");
 			CashCurve = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), "Cash");
 			PositionsImTracking = new List<Position>();
-			PositionLongShortImTracking = PositionLongShort.Unknown;	// direction not specified => it means "both short and long" here
+			//v1 PositionLongShortImTracking = PositionLongShort.Unknown;	// direction not specified => it means "both short and long" here
+			//v2
+			PositionLongShortImTracking = SystemPerformancePositionsTracking.LongAndShort;
 		}
-		public SystemPerformanceSlice(PositionLongShort positionLongShortImTracking, string reasonToExist) : this() {
+		public SystemPerformanceSlice(SystemPerformancePositionsTracking positionLongShortImTracking, string reasonToExist) : this() {
 			PositionLongShortImTracking = positionLongShortImTracking;
 			ReasonToExist = reasonToExist;
 		}
@@ -164,7 +166,7 @@ namespace Sq1.Core.StrategyBase {
 			this.BarsHeldTotalForClosedPositionsLosers = 0;
 			this.PositionsCountLosers = 0;
 		}
-		public int BuildStatsOnBacktestFinished(Dictionary<int, List<Position>> positionsOpenedAfterExec, Dictionary<int, List<Position>> positionsClosedAfterExec) {
+		public int BuildStatsAfterExec(Dictionary<int, List<Position>> positionsOpenedAfterExec, Dictionary<int, List<Position>> positionsClosedAfterExec) {
 			int positionsOpenAbsorbed = 0;
 
 			int minBar = Int32.MaxValue;
@@ -219,15 +221,15 @@ namespace Sq1.Core.StrategyBase {
 			int positionsClosedAbsorbedShort = 0;
 
 			foreach (Position entryPosition in positionsOpenedAtBar) {
-				if (this.PositionLongShortImTracking != PositionLongShort.Unknown
-						&& entryPosition.PositionLongShort != this.PositionLongShortImTracking) continue;
+				//v1 if (this.PositionLongShortImTracking != PositionLongShort.Unknown && entryPosition.PositionLongShort != this.PositionLongShortImTracking) continue;
+				if (this.shouldAddupPosition(entryPosition) == false) continue; 
 				if (barDateTime == DateTime.MinValue) barDateTime = entryPosition.EntryBar.DateTimeOpen;
 				this.checkThrowEntry(entryPosition, barDateTime);
 				double priceSpent = //(entryPosition.EntryAlert.PriceDeposited != -1) ? entryPosition.EntryAlert.PriceDeposited :
 					entryPosition.EntryFilledPrice;
 				//if (entryPosition.IsShort) priceSpent *= -1;
 				cashBalanceAtBar -= (priceSpent + entryPosition.EntryFilledCommission);
-				if (entryPosition.IsExitFilled == false) continue;
+				//if (entryPosition.IsExitFilled == false) continue;
 
 				commissionBoth += entryPosition.EntryFilledCommission;
 				int absorbed = this.absorbPositionsImTracking(entryPosition);
@@ -241,8 +243,8 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 			foreach (Position exitPosition in positionsClosedAtBar) {
-				if (this.PositionLongShortImTracking != PositionLongShort.Unknown
-						&& exitPosition.PositionLongShort != this.PositionLongShortImTracking) continue;
+				//v1 if (this.PositionLongShortImTracking != PositionLongShort.Unknown && exitPosition.PositionLongShort != this.PositionLongShortImTracking) continue;
+				if (this.shouldAddupPosition(exitPosition) == false) continue;
 				if (barDateTime == DateTime.MinValue) barDateTime = exitPosition.ExitBar.DateTimeOpen;
 				this.checkThrowExit(exitPosition, barDateTime);
 
@@ -251,7 +253,10 @@ namespace Sq1.Core.StrategyBase {
 				//if (exitPosition.IsShort) priceReceived *= -1;
 				cashBalanceAtBar += (priceReceived - exitPosition.ExitFilledCommission);
 				
-				int absorbed = this.absorbPositionsImTracking(exitPosition);
+				//v1 int absorbed = this.absorbPositionsImTracking(exitPosition);
+				//v2 looks stupid but every closed position was already absorbed when it was opened; any drawbacks?...
+				int absorbed = 1;
+
 				positionsClosedAbsorbedBoth += absorbed;
 				netProfitAtBarBoth += exitPosition.NetProfit;
 				netProfitPctAtBarBoth += exitPosition.NetProfitPercent;
@@ -356,15 +361,49 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 				return absorbed;
 			}
-			if (this.PositionLongShortImTracking == PositionLongShort.Unknown) {
-				this.PositionsImTracking.Add(position);
-				absorbed++;
-				return absorbed;
-			}
-			if (position.PositionLongShort != this.PositionLongShortImTracking) return absorbed;
+			//v1
+			//if (this.PositionLongShortImTracking == PositionLongShort.Unknown) {
+			//    this.PositionsImTracking.Add(position);
+			//    absorbed++;
+			//    return absorbed;
+			//}
+			//if (position.PositionLongShort != this.PositionLongShortImTracking) return absorbed;
+			//v2
+			if (this.shouldAddupPosition(position) == false) return absorbed;
 			this.PositionsImTracking.Add(position);
 			absorbed++;
 			return absorbed;
+		}
+		bool shouldAddupPosition(Position position) {
+			bool ret = false;
+			if (position.PositionLongShort == PositionLongShort.Unknown) {
+				string msg = "POSITION_MUST_BE_LONG_OR_SHORT__UNKNOWN_CANNOT_BE_ACCEPTED_TO_ADDUP_INTO_PERFORMANCE_SLICE " + this.ToString();
+				Assembler.PopupException(msg);
+				return ret;
+			}
+			switch (this.PositionLongShortImTracking) {
+				case SystemPerformancePositionsTracking.Unknown:
+					string msg = "SHOULD_NEVER_BE_USED_FOR_INSTANTIATED_SLICES SystemPerformancePositionsTracking." + this.PositionsImTracking;
+					Assembler.PopupException(msg);
+					break;
+				case SystemPerformancePositionsTracking.LongOnly:
+					ret = (position.PositionLongShort == PositionLongShort.Long) ? true : false;
+					break;
+				case SystemPerformancePositionsTracking.ShortOnly:
+					ret = (position.PositionLongShort == PositionLongShort.Short) ? true : false;
+					break;
+				case SystemPerformancePositionsTracking.LongAndShort:
+					ret = true;
+					break;
+				case SystemPerformancePositionsTracking.BuyAndHold:
+					ret = false;
+					break;
+				default:
+					string msg2 = "ADD_CASE_IF_YOU_EXTENDED_SystemPerformancePositionsTracking";
+					Assembler.PopupException(msg2);
+					break;
+			}
+			return ret;
 		}
 		public bool ContainsIdenticalPosition(Position maybeAlready) {
 			return this.PositionsImTracking.Contains(maybeAlready);
