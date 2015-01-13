@@ -10,6 +10,7 @@ using Sq1.Core.Streaming;
 
 using Sq1.Adapters.Quik;
 using Sq1.Adapters.QuikMock.Terminal;
+using System.Diagnostics;
 
 namespace Sq1.Adapters.QuikMock {
 	public class BrokerMock : BrokerQuik {
@@ -108,6 +109,33 @@ namespace Sq1.Adapters.QuikMock {
 					}
 				}
 			}
+
+
+
+			bool pausedToFinishBacktest = base.StreamingProvider.DataSource.PumpingPausedGet(order.Alert.Bars);
+			bool backtestIsRunning = order.Alert.Strategy.Script.Executor.Backtester.IsBacktestingNow;
+
+			if (pausedToFinishBacktest) {
+				if (backtestIsRunning == false) {
+					string msg3 = "ANOTHER_PARALLEL_BACKTEST_PAUSED_PUMP__OR_PAUSE_PUMP_WHILE_BACKTEST_RUNNING_IMPLEMENTATION_DOESNT_DO_ITS_JOB";
+					Assembler.PopupException(msg3);
+				}
+
+				Stopwatch waitedFor = new Stopwatch();
+				waitedFor.Start();
+				base.StreamingProvider.DataSource.PumpingWaitUntilUnpaused(order.Alert.Bars, 120000);
+				waitedFor.Stop();
+				if (waitedFor.ElapsedMilliseconds > 1000) {
+					string msg2 = "I_WISH_I_KNEW_WHO_TOOK_THAT_LONG_TO_KEEP_PUMP_PAUSED";
+					Assembler.PopupException(msg2);
+				} else {
+					string msg4 = "NICE_CATCH__DONT_INVOKE_ORDER_UPDATE_BEFORE_POSITION_WAS_REGISTERED_IN_OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForGUID()";
+					Assembler.PopupException(msg4);
+
+				}
+			}
+
+
 			this.QuikTerminal.SendTransactionOrderAsync(opBuySell, typeMarketLimitStop,
 				order.Alert.Symbol, order.Alert.SymbolClass,
 				priceFill, (int)order.QtyRequested, order.GUID,

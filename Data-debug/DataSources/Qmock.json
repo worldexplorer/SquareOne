@@ -21,26 +21,7 @@
       "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
       "lastQuoteClonesReceivedUnboundBySymbol": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
-        "autogen": {
-          "$type": "Sq1.Adapters.Quik.QuoteQuik, Sq1.Adapters.Quik",
-          "FortsDepositBuy": 10096.0,
-          "FortsDepositSell": 10027.0,
-          "FortsPriceMax": 160000.0,
-          "FortsPriceMin": 156000.0,
-          "Symbol": "autogen",
-          "SymbolClass": "SPBFUT",
-          "Source": "MockQuik",
-          "ServerTime": "2014-12-04T00:23:54.414591",
-          "Bid": 158055.0,
-          "Ask": 158075.0,
-          "Size": 5.0,
-          "AbsnoPerSymbol": 749,
-          "LastDealBidOrAsk": 2,
-          "LocalTimeCreated": "2014-12-04T00:23:54.414591-05:00",
-          "ParentBarIdent": "BarStreaming#501/501",
-          "LastDealPrice": 158055.0,
-          "Spread": 20.0
-        }
+        "autogen": null
       },
       "FortsDepositSell": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
@@ -54,7 +35,7 @@
       "FortsPriceMax": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
       },
-      "SymbolsSubscribedAndReceiving": "autogen:749"
+      "SymbolsSubscribedAndReceiving": "autogen:NULL"
     }
   },
   "BrokerProvider": {
@@ -82,7 +63,7 @@
   },
   "MarketName": "MOCK",
   "Name": "Qmock",
-  "StreamingProviderName": "QuikMock Streaming",
-  "BrokerProviderName": "QuikMock Broker",
+  "StreamingProviderName": "StreamingQuikMock",
+  "BrokerProviderName": "BrokerQuikMock",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
 }

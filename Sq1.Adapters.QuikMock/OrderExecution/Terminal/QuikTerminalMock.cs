@@ -6,6 +6,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 using Sq1.Adapters.Quik.Terminal;
 using Sq1.Core.Streaming;
+using System.Diagnostics;
 
 namespace Sq1.Adapters.QuikMock.Terminal {
 	public class QuikTerminalMock : QuikTerminal {
@@ -82,6 +83,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				// setting status to WaitingFillBroker
 				//nStatus Тип: Long. Состояние исполнения заявки: Значение «1» соответствует состоянию «Активна», «2» - «Снята», иначе «Исполнена» 
 				int nStatus = 1;
+
 				base.CallbackOrderStatus(CONST_nMode, tp.GUID, tp.SernoExchange, tp.ClassCode, tp.SecCode,
 					-999.99, tp.Balance, 9999191, tp.IsSell, nStatus, 111111);
 
