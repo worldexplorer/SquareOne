@@ -24,7 +24,14 @@ namespace Sq1.Core.StrategyBase {
 		public SystemPerformanceSlice						SliceShort			{ get; private set; }
 		public SystemPerformanceSlice						SliceBuyHold		{ get; private set; }
 		
-		public SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName; 
+		public SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName;
+
+
+		//cumulativeProfitDollar,Percent+CalcEachStreamingUpdate should be moved into SystemPerformanceSlice for other Reporters to be used in their drawings
+		Dictionary<Position, double> cumulativeProfitDollar;
+		Dictionary<Position, double> cumulativeProfitPercent;
+
+
 
 		public string						EssentialsForScriptContextNewName	{ get {
 				return "Net[" + this.SlicesShortAndLong.NetProfitForClosedPositionsBoth + "]"
@@ -40,12 +47,15 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			this.Executor			= scriptExecutor;
-			this.SliceLong			= new SystemPerformanceSlice(PositionLongShort.Long,	"StatsForLongPositionsOnly");
-			this.SliceShort			= new SystemPerformanceSlice(PositionLongShort.Short,	"StatsForShortPositionsOnly");
-			this.SlicesShortAndLong	= new SystemPerformanceSlice(PositionLongShort.Unknown,	"StatsForShortAndLongPositions");
-			this.SliceBuyHold		= new SystemPerformanceSlice(PositionLongShort.Unknown,	"StatsForBuyHold");
+			this.SliceLong			= new SystemPerformanceSlice(SystemPerformancePositionsTracking.LongOnly,		"StatsForLongPositionsOnly");
+			this.SliceShort			= new SystemPerformanceSlice(SystemPerformancePositionsTracking.ShortOnly,		"StatsForShortPositionsOnly");
+			this.SlicesShortAndLong = new SystemPerformanceSlice(SystemPerformancePositionsTracking.LongAndShort,	"StatsForShortAndLongPositions");
+			this.SliceBuyHold		= new SystemPerformanceSlice(SystemPerformancePositionsTracking.BuyAndHold,		"StatsForBuyHold");
 
 			//CREATED_IN_this.BuildStatsOnBacktestFinished() ScriptAndIndicatorParameterClonesByName = new SortedDictionary<string, IndicatorParameter>();
+
+			this.cumulativeProfitDollar = new Dictionary<Position, double>();
+			this.cumulativeProfitPercent = new Dictionary<Position, double>();
 		}
 		public void Initialize() {
 			//if (this.Executor.Bars == null) {
@@ -100,12 +110,30 @@ namespace Sq1.Core.StrategyBase {
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(null, null,
 					this.Executor.ExecutionDataSnapshot.PositionsOpenNow,
 					positionsClosed);
-			Dictionary<int, List<Position>> posByEntry = pokeUnit.PositionsOpenedByBarFilled;
-			Dictionary<int, List<Position>> posByExit = pokeUnit.PositionsClosedByBarFilled;
-			int absorbedLong	= this.SliceLong			.BuildStatsOnBacktestFinished(posByEntry, posByExit);
-			int absorbedShort	= this.SliceShort			.BuildStatsOnBacktestFinished(posByEntry, posByExit);
-			int absorbedBoth	= this.SlicesShortAndLong	.BuildStatsOnBacktestFinished(posByEntry, posByExit);
-			int absorbedBH		= this.SliceBuyHold			.BuildStatsOnBacktestFinished(posByEntry, posByExit);
+			Dictionary<int, List<Position>> posByEntry	= pokeUnit.PositionsOpenedByBarFilled;
+			Dictionary<int, List<Position>> posByExit	= pokeUnit.PositionsClosedByBarFilled;
+			int absorbedLong	= this.SliceLong			.BuildStatsAfterExec(posByEntry, posByExit);
+			int absorbedShort	= this.SliceShort			.BuildStatsAfterExec(posByEntry, posByExit);
+			int absorbedBoth	= this.SlicesShortAndLong	.BuildStatsAfterExec(posByEntry, posByExit);
+			int absorbedBH		= this.SliceBuyHold			.BuildStatsAfterExec(posByEntry, posByExit);
+
+			double cumProfitDollar = 0;
+			double cumProfitPercent = 0;
+			this.cumulativeProfitDollar.Clear();
+			this.cumulativeProfitPercent.Clear();
+			SystemPerformanceSlice both = this.SlicesShortAndLong;
+			foreach (Position pos in both.PositionsImTrackingReadonly) {
+				if (this.cumulativeProfitDollar.ContainsKey(pos)) {
+					string msg = "CUMULATIVES_ALREADY_CALCULATED_FOR_THIS_POSITION SystemPerformanceSlice["
+						+ both + "].PositionsImTracking contains duplicate " + pos;
+					Assembler.PopupException(msg);
+					continue;
+				}
+				cumProfitDollar += pos.NetProfit;
+				cumProfitPercent += pos.NetProfitPercent;
+				this.cumulativeProfitDollar.Add(pos, cumProfitDollar);
+				this.cumulativeProfitPercent.Add(pos, cumProfitPercent);
+			}
 			
 			
 			if (this.Executor.Strategy.Script.ScriptParametersById == null) {
@@ -151,7 +179,94 @@ namespace Sq1.Core.StrategyBase {
 		//    return ret;
 		//}
 
-		internal void BuildReportIncrementalPositionsCreated(ReporterPokeUnit reporterPokeUnit) {
+		internal void BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
+			if (this.Executor.Backtester.IsBacktestingNow) {
+				string msg = "DONT_INVOKE_ME_DURING_BACKTEST__BuildStatsOnBacktestFinished()_ALREADY_DID_THIS_JOB";
+				Assembler.PopupException(msg);
+				return;
+			}
+			Dictionary<int, List<Position>> posByEntry	= pokeUnit.PositionsOpenedByBarFilled;
+			Dictionary<int, List<Position>> posByExit	= pokeUnit.PositionsClosedByBarFilled;
+			int absorbedOpenLong	= this.SliceLong			.BuildStatsAfterExec(posByEntry, posByExit);
+			int absorbedOpenShort	= this.SliceShort			.BuildStatsAfterExec(posByEntry, posByExit);
+			int absorbedOpenBoth	= this.SlicesShortAndLong	.BuildStatsAfterExec(posByEntry, posByExit);
+			int absorbedOpenBH		= this.SliceBuyHold			.BuildStatsAfterExec(posByEntry, posByExit);
+			if (absorbedOpenBoth != pokeUnit.PositionsOpened.Count) {
+				string msg = pokeUnit.PositionsOpened.Count + " POSITIONS_NOT_ABSORBED_BY " + this.SlicesShortAndLong.ToString() + " HOPE_SLICE_BOTH_WILL_RECEIVE_IT";
+				Assembler.PopupException(msg);
+			}
+		}
+		internal void BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(List<Position> positionsUpdatedDueToStreamingNewQuote) {
+			int earliestIndexUpdated = -1;
+			SystemPerformanceSlice both = this.SlicesShortAndLong;
+			foreach (Position pos in positionsUpdatedDueToStreamingNewQuote) {
+				int posIndex = both.PositionsImTrackingReadonly.IndexOf(pos);
+				if (posIndex == -1) {
+					string msg3 = "IS_IT_STILL_RUNNING_IN_ANOTHER_THREAD??___YOU_DIDNT_INVOKE_BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3_WITH_THIS_POSITION???";
+					Assembler.PopupException(msg3, null, false);
+				}
+				if (earliestIndexUpdated == -1) {
+					earliestIndexUpdated = posIndex;
+					continue;
+				}
+				if (earliestIndexUpdated >= posIndex) continue;
+				earliestIndexUpdated = posIndex;
+			}
+			if (earliestIndexUpdated == -1) {
+				string msg2 = "NO_POSITIONS_UPDATED_NO_NEED_TO_RECALCULATE_ANYTHING";
+				if (positionsUpdatedDueToStreamingNewQuote.Count > 0) {
+					//this.rebuildOLVproperly();
+				}
+				return;
+			}
+			string msg = "POSITIONS_UPDATED_SO_I_RECALCULATE_FROM_EARLIEST_INDEX_UP_TO_ZERO";
+			double cumProfitDollar = 0;
+			double cumProfitPercent = 0;
+
+			//for (int i = earliestIndexUpdated; i >= 0; i--) {
+			//    Position pos = this.positionsAllReversedCached[i];
+			//    if (i == earliestIndexUpdated && i < this.positionsAllReversedCached.Count) {
+			//        Position posPrev = this.positionsAllReversedCached[i + 1];
+			//        if (this.cumulativeProfitDollar.ContainsKey(posPrev)) {
+			//            cumProfitDollar = this.cumulativeProfitDollar[posPrev];
+			//        } else {
+			//            string msg1 = "REPORTERS.POSITIONS_NONSENSE#1";
+			//            Assembler.PopupException(msg1);
+			//        }
+			//        if (this.cumulativeProfitPercent.ContainsKey(posPrev)) {
+			//            cumProfitPercent = this.cumulativeProfitPercent[posPrev];
+			//        } else {
+			//            string msg1 = "REPORTERS.POSITIONS_NONSENSE#2";
+			//            Assembler.PopupException(msg1);
+			//        }
+			//    }
+			//    cumProfitDollar += pos.NetProfit;
+			//    cumProfitPercent += pos.NetProfitPercent;
+
+			//    double oldValue = this.cumulativeProfitDollar[pos];
+			//    this.cumulativeProfitDollar[pos] = cumProfitDollar;
+			//    this.cumulativeProfitPercent[pos] = cumProfitPercent;
+
+			//    double newValue = this.cumulativeProfitDollar[pos];
+			//    double difference = newValue - oldValue;
+			//    if (difference == 0) {
+			//        string msg2 = "DID_YOU_GET_QUOTE_WITH_SAME_BID_ASK????__YOU_SHOULDVE_IGNORED_IT_IN_STREAMING_PROVIDER";
+			//        Assembler.PopupException(msg2, null, false);
+			//    }
+			//}
+		}
+		internal void BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(ReporterPokeUnit reporterPokeUnit) {
+			//OVERKILL_ALREADY_ADDED_EVERYTHING this.BuildStatsOnBacktestFinished(); BuildStatsAfterExec()
+		}
+
+		public double CumulativeNetProfitForPosition(Position position) {
+			double ret = this.cumulativeProfitDollar.ContainsKey(position) ? this.cumulativeProfitDollar[position] : -1;
+			return ret;
+		}
+
+		public double CumulativeNetProfitPercentForPosition(Position position) {
+			double ret = this.cumulativeProfitPercent.ContainsKey(position) ? this.cumulativeProfitPercent[position] : -1;
+			return ret;
 		}
 	}
 }

@@ -273,11 +273,13 @@ namespace Sq1.Core.StrategyBase {
 
 			if (this.Backtester.IsBacktestingNow && this.Backtester.WasBacktestAborted) return null;
 
-
-			// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
-			List<Position> pokeReportersWithCurrentlyOpened = this.ExecutionDataSnapshot.PositionsOpenNowSafeCopy;
-			if (pokeReportersWithCurrentlyOpened.Count > 0) {
-				this.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeReportersWithCurrentlyOpened);
+			if (this.Backtester.IsBacktestingNow == false) {
+				// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
+				List<Position> pokeReportersWithCurrentlyOpened = this.ExecutionDataSnapshot.PositionsOpenNowSafeCopy;
+				if (pokeReportersWithCurrentlyOpened.Count > 0) {
+					this.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeReportersWithCurrentlyOpened);
+					this.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeReportersWithCurrentlyOpened);
+				}
 			}
 
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated,
@@ -736,21 +738,24 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			if (this.Backtester.IsBacktestingNow == false) {
-				ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteFilledThisAlertNullForLive,
-					alertsNewAfterAlertFilled, positionsOpenedAfterAlertFilled, positionsClosedAfterAlertFilled);
-				//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
-				if (pokeUnit.PositionsOpened.Count > 0) {
-					//SEQUENCE_MATTERS NOTIFY_REPORTERS_ABOUT_POSTISIONS_OPENED__ALERTS_WERE_ALREADY_ADDED_PRIOR_TO_FILL_TO_CHART_BY_ExecuteOnNewBarOrNewQuote
-					this.Performance.BuildReportIncrementalPositionsCreated(pokeUnit.Clone());
-					this.ChartShadow.PositionsRealtimeAdd(pokeUnit.Clone());
-					// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
-					this.EventGenerator.RaiseBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit.Clone());		// WHOLE_POLE_UNIT_CAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
-				}
-				if (pokeUnit.PositionsClosed.Count > 0) {
-					// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
-					this.EventGenerator.RaiseBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit.Clone());		// WHOLE_POLE_UNIT_CAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
-				}
+			if (this.Backtester.IsBacktestingNow) {
+				string msg = "AFTER_BACKTEST_HOOK_INVOKES_Performance.BuildStatsOnBacktestFinished()_AND_ReportersFormsManager.BuildReportFullOnBacktestFinished()";
+				return;
+			}
+
+			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteFilledThisAlertNullForLive,
+				alertsNewAfterAlertFilled, positionsOpenedAfterAlertFilled, positionsClosedAfterAlertFilled);
+			//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
+			if (pokeUnit.PositionsOpened.Count > 0) {
+				this.Performance.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit.Clone());
+				this.ChartShadow.PositionsRealtimeAdd(pokeUnit.Clone());
+				// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
+				this.EventGenerator.RaiseBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit.Clone());		// WHOLE_POLE_UNIT_CAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+			}
+			if (pokeUnit.PositionsClosed.Count > 0) {
+				this.Performance.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit.Clone());
+				// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
+				this.EventGenerator.RaiseBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit.Clone());		// WHOLE_POLE_UNIT_CAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 			}
 
 			// 4. Script event will generate a StopLossMove PostponedHook
@@ -921,13 +926,9 @@ namespace Sq1.Core.StrategyBase {
 		Bars		preBacktestBars;
 		DataSource	preDataSource;
 		bool		preBacktestIsStreaming;
-		bool		prePumpingPaused;
 		internal void BacktestContextInitialize(Bars bars) {
 			if (this.Bars.DataSource.StreamingProvider != null) {
-				this.prePumpingPaused = this.Bars.DataSource.PumpingPausedGet(bars);
-				if (this.prePumpingPaused == false) {
-					this.Bars.DataSource.PumpingPauseFor(this.Bars);
-				}
+				this.Bars.DataSource.PumpingAutoPauseFor(this);
 			} else {
 				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingProvider=null //BacktestContextInitialize(" + bars + ")";
 				Assembler.PopupException(msg, null, false);
@@ -956,11 +957,9 @@ namespace Sq1.Core.StrategyBase {
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
 			if (this.Bars.DataSource.StreamingProvider != null) {
-				if (this.prePumpingPaused) {
-					this.Bars.DataSource.PumpingUnPauseFor(this.Bars);
-				}
+				this.Bars.DataSource.PumpAutoResumeFor(this);
 			} else {
-				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingProvider=null //BacktestContextInitialize(" + this.Bars + ")";
+				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingProvider=null //BacktestContextRestore(" + this.Bars + ")";
 				Assembler.PopupException(msg, null, false);
 				// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = false;
 			}
@@ -1222,6 +1221,13 @@ namespace Sq1.Core.StrategyBase {
 			strategyClone.ScriptContextAdd(ctxNext.Name, ctxNext, true);
 
 			return executorClone;
+		}
+		public override string ToString() {
+			string ret = this.StrategyName;
+			if (this.Strategy == null) return ret;
+			if (this.Strategy.ScriptContextCurrent == null) return ret;
+			ret += " @ " + this.Strategy.ScriptContextCurrent.ToString();
+			return ret;
 		}
 	}
 }

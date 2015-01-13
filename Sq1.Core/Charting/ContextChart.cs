@@ -58,6 +58,9 @@ namespace Sq1.Core.StrategyBase {
 			sb.Append(this.DataSourceName);
 			sb.Append(" :: ");
 			sb.Append(this.Symbol);
+			sb.Append(" [");
+			sb.Append(this.ScaleInterval.ToString());
+			sb.Append(" ]");
 			if (typeof(ContextChart) != this.GetType()) {	//append ContextScript name, not for ContextChart
 				sb.Append(" ctx/");
 				sb.Append(this.Name);

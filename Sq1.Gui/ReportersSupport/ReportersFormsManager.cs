@@ -43,14 +43,14 @@ namespace Sq1.Gui.ReportersSupport {
 		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
 
-			this.ChartFormManager.Executor.EventGenerator.BrokerFilledAlertsClosingForPositions_step3of3 += new EventHandler<ReporterPokeUnitEventArgs>(
-				this.EventGenerator_BrokerFilledAlertsClosingForPositions_step3of3);
+			this.ChartFormManager.Executor.EventGenerator.BrokerFilledAlertsOpeningForPositions_step1of3 += new EventHandler<ReporterPokeUnitEventArgs>(
+				this.EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3);
 
 			this.ChartFormManager.Executor.EventGenerator.OpenPositionsUpdatedDueToStreamingNewQuote_step2of3 += new EventHandler<PositionListEventArgs>(
 				this.EventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3);
 
-			this.ChartFormManager.Executor.EventGenerator.BrokerFilledAlertsOpeningForPositions_step1of3 += new EventHandler<ReporterPokeUnitEventArgs>(
-				this.EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3);
+			this.ChartFormManager.Executor.EventGenerator.BrokerFilledAlertsClosingForPositions_step3of3 += new EventHandler<ReporterPokeUnitEventArgs>(
+				this.EventGenerator_BrokerFilledAlertsClosingForPositions_step3of3);
 		}
 
 		void EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(object sender, ReporterPokeUnitEventArgs e) {

@@ -194,6 +194,7 @@
     <Compile Include="StrategyBase\ContextScriptEventArgs.cs" />
     <Compile Include="StrategyBase\NotOnChartBarsHelper.cs" />
     <Compile Include="StrategyBase\NotOnChartBarsKey.cs" />
+    <Compile Include="StrategyBase\SystemPerformancePositionsTracking.cs" />
     <Compile Include="StrategyBase\Reporter.cs">
       <SubType>UserControl</SubType>
     </Compile>
