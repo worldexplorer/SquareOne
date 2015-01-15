@@ -15,7 +15,7 @@ namespace Sq1.Core.StrategyBase {
 		protected	Bars			Bars								{ get { return (Executor == null) ? null : Executor.Bars; } }
 		public		Strategy		Strategy							{ get { return this.Executor.Strategy; } }
 		public		string			StrategyName						{ get { return this.Executor.StrategyName; } }
-		public		List<Position>	Positions							{ get { return this.Executor.ExecutionDataSnapshot.PositionsMaster; } }
+		public		PositionList	Positions							{ get { return this.Executor.ExecutionDataSnapshot.PositionsMaster; } }
 		
 		#region Position-related userland-invokeable parts
 		public		bool			IsLastPositionNotClosedYet			{ get {
@@ -25,12 +25,12 @@ namespace Sq1.Core.StrategyBase {
 				return (pos.ExitMarketLimitStop == MarketLimitStop.Unknown);
 			} }
 		public		Position		LastPositionOpenNow					{ get {
-				List<Position> positionsOpenNow = this.Executor.ExecutionDataSnapshot.PositionsOpenNow;
+				List<Position> positionsOpenNow = this.Executor.ExecutionDataSnapshot.PositionsOpenNow.InnerList;
 				if (positionsOpenNow.Count == 0) return null;
 				return positionsOpenNow[positionsOpenNow.Count - 1];
 			} }
 		public		Position		LastPosition						{ get {
-				List<Position> positionsMaster = this.Executor.ExecutionDataSnapshot.PositionsMaster;
+				List<Position> positionsMaster = this.Executor.ExecutionDataSnapshot.PositionsMaster.InnerList;
 				if (positionsMaster.Count == 0) return null;
 				return positionsMaster[positionsMaster.Count - 1];
 			} }

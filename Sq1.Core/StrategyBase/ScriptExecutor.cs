@@ -186,7 +186,6 @@ namespace Sq1.Core.StrategyBase {
 			}
 			if (this.Strategy.Script == null) return null;
 			this.ExecutionDataSnapshot.PreExecutionOnNewBarOrNewQuoteClear();
-			int alertsDumpedForStreamingBar = -1;
 
 			//if (quote != null) {
 			if (onNewQuoteTrue_onNewBarFalse == true) {
@@ -211,14 +210,15 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 			string msg = "DONT_REMOVE_ALERT_SHOULD_LEAVE_ITS_TRAIL_DURING_LIFETIME_TO_PUT_UNFILLED_DOTS_ON_CHART";
-			alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
-			if (alertsDumpedForStreamingBar > 0) {
-				msg += " DUMPED_AFTER_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
-			}
+			//int alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
+//			int alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.AlertsPending.Count;
+//			if (alertsDumpedForStreamingBar > 0) {
+//				msg += " DUMPED_AFTER_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
+//			}
 
 
 			// what's updated after Exec: non-volatile, kept un-reset until executor.Initialize():
-			//this.ExecutionDataSnapshot.PositionsMasterByEntryBar (unique)
+			//this.ExecutionDataSnapshot.PositionsMaster.ByEntryBarFilled (unique)
 			//this.ExecutionDataSnapshot.PositionsMaster
 			//this.PositionsOnlyActive
 			//this.AlertsMaster
@@ -238,7 +238,7 @@ namespace Sq1.Core.StrategyBase {
 				//#D_FREEZE Assembler.PopupException(msg3, null, false);
 			}
 
-			List<Alert> alertsNewAfterExecCopy = this.ExecutionDataSnapshot.AlertsNewAfterExecSafeCopy;
+			List<Alert> alertsNewAfterExecCopy = this.ExecutionDataSnapshot.AlertsNewAfterExec.SafeCopy;
 
 			if (alertsNewAfterExecCopy.Count > 0) {
 				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecCopy, quoteForAlertsCreated);
@@ -262,7 +262,7 @@ namespace Sq1.Core.StrategyBase {
 
 					foreach (Alert alert in alertsNewAfterExecCopy) {
 						if (alert.OrderFollowed != null) continue;
-						bool removed = this.ExecutionDataSnapshot.AlertsPendingRemove(alert);
+						bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 						if (removed == false) {
 							string msg3 = "FAILED_TO_REMOVE_INCONSISTENT_ALERT_FROM_PENDING removed=" + removed;
 							Assembler.PopupException(msg3);
@@ -273,21 +273,23 @@ namespace Sq1.Core.StrategyBase {
 
 			if (this.Backtester.IsBacktestingNow && this.Backtester.WasBacktestAborted) return null;
 
+			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated,
+												this.ExecutionDataSnapshot.AlertsNewAfterExec.Clone(),
+												this.ExecutionDataSnapshot.PositionsOpenedAfterExec.Clone(),
+												this.ExecutionDataSnapshot.PositionsClosedAfterExec.Clone(),
+												this.ExecutionDataSnapshot.PositionsOpenNow.Clone()
+											);
+
 			if (this.Backtester.IsBacktestingNow == false) {
 				// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
-				List<Position> pokeReportersWithCurrentlyOpened = this.ExecutionDataSnapshot.PositionsOpenNowSafeCopy;
-				if (pokeReportersWithCurrentlyOpened.Count > 0) {
-					this.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeReportersWithCurrentlyOpened);
-					this.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeReportersWithCurrentlyOpened);
+				if (pokeUnit.PositionsOpenNow.Count > 0) {
+					this.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this.ExecutionDataSnapshot.PositionsOpenNow);
+					this.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit);
 				}
 			}
 
-			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated,
-												alertsNewAfterExecCopy,
-												this.ExecutionDataSnapshot.PositionsOpenedAfterExecSafeCopy,
-												this.ExecutionDataSnapshot.PositionsClosedAfterExecSafeCopy);
 			if (pokeUnit.PositionsPlusAlertsCount == 0) return null;
-			foreach (Alert alert in pokeUnit.AlertsNew) {
+			foreach (Alert alert in pokeUnit.AlertsNew.InnerList) {
 				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
 			}
 			if (this.Backtester.IsBacktestingNow) return pokeUnit;
@@ -409,7 +411,7 @@ namespace Sq1.Core.StrategyBase {
 					this.PopupException(msg);
 					return position.ExitAlert;
 				}
-				foreach (Alert closingAlertForPosition in this.ExecutionDataSnapshot.AlertsPending) {
+				foreach (Alert closingAlertForPosition in this.ExecutionDataSnapshot.AlertsPending.InnerList) {
 					if (closingAlertForPosition.PositionAffected == position && closingAlertForPosition.IsExitAlert) {
 						string msg = "PENDING_EXIT_ALERT_FOUND_WHILE_POSITION.EXITALERT=NULL"
 							+ "; position.ExitAlert[" + position.ExitAlert + "] != closingAlertForPosition[" + closingAlertForPosition + "]";
@@ -510,7 +512,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		public void CreatedOrderWontBePlacedPastDueInvokeScript(Alert alert, int barNotSubmittedRelno) {
-			//this.ExecutionDataSnapshot.AlertsPendingRemove(alert);
+			//this.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 			if (alert.IsEntryAlert) {
 				this.RemovePendingEntry(alert);
 				this.ClosePositionWithAlertClonedFromEntryBacktestEnded(alert);
@@ -529,8 +531,8 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 		public void CallbackAlertKilledInvokeScript(Alert alert) {
-			if (this.ExecutionDataSnapshot.AlertsPendingContains(alert)) {
-				bool removed = this.ExecutionDataSnapshot.AlertsPendingRemove(alert);
+			if (this.ExecutionDataSnapshot.AlertsPending.Contains(alert)) {
+				bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 				if (removed) alert.IsKilled = true;
 			} else {
 				string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsPending DELETED_EARLIER_OR_NEVER_BEEN_ADDED;"
@@ -544,9 +546,10 @@ namespace Sq1.Core.StrategyBase {
 		public void CallbackAlertFilledMoveAroundInvokeScript(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
 					 double priceFill, double qtyFill, double slippageFill, double commissionFill) {
 			string msig = " CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
-			List<Alert> alertsNewAfterAlertFilled = new List<Alert>();
-			List<Position> positionsOpenedAfterAlertFilled = new List<Position>();
-			List<Position> positionsClosedAfterAlertFilled = new List<Position>();
+			
+			AlertList alertsNewAfterAlertFilled = new AlertList("alertsNewAfterAlertFilled");
+			Position positionOpenedAfterAlertFilled = null;
+			Position positionClosedAfterAlertFilled = null;
 
 			if (priceFill == -1) {
 				string msg = "won't set priceFill=-1 for alert [" + alertFilled + "]";
@@ -632,18 +635,24 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
 				Assembler.PopupException(msg + msig, ex);
 			}
-			bool removed = this.ExecutionDataSnapshot.AlertsPendingRemove(alertFilled);
+			bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertFilled);
 			if (removed == false) {
 				#if DEBUG
 				Debugger.Break();
 				#endif
 			}
+
+			PositionList positionsOpenedAfterAlertFilled = new PositionList("positionsOpenedAfterAlertFilled");
+			PositionList positionsClosedAfterAlertFilled = new PositionList("positionsClosedAfterAlertFilled");
+
 			if (alertFilled.IsEntryAlert) {
 				this.ExecutionDataSnapshot.PositionsMasterOpenNewAdd(alertFilled.PositionAffected);
-				positionsOpenedAfterAlertFilled.Add(alertFilled.PositionAffected);
+				positionOpenedAfterAlertFilled = alertFilled.PositionAffected;
+				positionsOpenedAfterAlertFilled.AddOpening_step1of2(positionOpenedAfterAlertFilled);
 			} else {
 				this.ExecutionDataSnapshot.MovePositionOpenToClosed(alertFilled.PositionAffected);
-				positionsClosedAfterAlertFilled.Add(alertFilled.PositionAffected);
+				positionClosedAfterAlertFilled = alertFilled.PositionAffected;
+				positionsClosedAfterAlertFilled.AddClosed(positionClosedAfterAlertFilled);
 			}
 
 			bool willPlace = this.Backtester.IsBacktestingNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
@@ -658,7 +667,7 @@ namespace Sq1.Core.StrategyBase {
 					alertFilled.PositionAffected.ExitAlertAttach(alertFilled);
 				}
 				// 1. alert.PositionAffected.Prototype.StopLossAlertForAnnihilation and TP will get assigned
-				alertsNewAfterAlertFilled = this.PositionPrototypeActivator.AlertFilledCreateSlTpOrAnnihilateCounterparty(alertFilled);
+				alertsNewAfterAlertFilled.AddRange(this.PositionPrototypeActivator.AlertFilledCreateSlTpOrAnnihilateCounterparty(alertFilled));
 				// quick check: there must be {SL+TP} OR Annihilator
 				//this.BacktesterFacade.IsBacktestingNow == false &&
 				if (alertFilled.IsEntryAlert) {
@@ -689,7 +698,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 
 				if (alertsNewAfterAlertFilled.Count > 0 && willPlace) {
-					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsNewAfterAlertFilled, setStatusSubmitting, true);
+					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsNewAfterAlertFilled.InnerList, setStatusSubmitting, true);
 
 					// 3. Script using proto might move SL and TP which require ORDERS to be moved, not NULLs
 					int twoMinutes = 120000;
@@ -743,19 +752,22 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 
-			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteFilledThisAlertNullForLive,
-				alertsNewAfterAlertFilled, positionsOpenedAfterAlertFilled, positionsClosedAfterAlertFilled);
+			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteFilledThisAlertNullForLive, alertsNewAfterAlertFilled,
+			                                                 positionsOpenedAfterAlertFilled,
+			                                                 positionsClosedAfterAlertFilled,
+			                                                 null
+			                                                );
 			//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
-			if (pokeUnit.PositionsOpened.Count > 0) {
-				this.Performance.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit.Clone());
+			if (positionOpenedAfterAlertFilled != null) {
+				this.Performance.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(positionOpenedAfterAlertFilled);
 				this.ChartShadow.PositionsRealtimeAdd(pokeUnit.Clone());
 				// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
-				this.EventGenerator.RaiseBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit.Clone());		// WHOLE_POLE_UNIT_CAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+				this.EventGenerator.RaiseBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit.Clone());		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 			}
-			if (pokeUnit.PositionsClosed.Count > 0) {
-				this.Performance.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit.Clone());
+			if (positionClosedAfterAlertFilled != null) {
+				this.Performance.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(positionClosedAfterAlertFilled);
 				// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
-				this.EventGenerator.RaiseBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit.Clone());		// WHOLE_POLE_UNIT_CAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+				this.EventGenerator.RaiseBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit.Clone());		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 			}
 
 			// 4. Script event will generate a StopLossMove PostponedHook
@@ -801,10 +813,10 @@ namespace Sq1.Core.StrategyBase {
 		public void RemovePendingExitAlert(Alert alert, string msig) {
 			string msg = "";
 			ExecutionDataSnapshot snap = alert.Strategy.Script.Executor.ExecutionDataSnapshot;
-			//this.executor.ExecutionDataSnapshot.AlertsPendingRemove(alert);
+			//this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 			string orderState = (alert.OrderFollowed == null) ? "alert.OrderFollowed=NULL" : alert.OrderFollowed.State.ToString();
-			if (snap.AlertsPendingContains(alert)) {
-				bool removed = snap.AlertsPendingRemove(alert);
+			if (snap.AlertsPending.Contains(alert)) {
+				bool removed = snap.AlertsPending.Remove(alert);
 				msg = "REMOVED " + orderState + " Pending alert[" + alert + "] ";
 			} else {
 				msg = "CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alert + "] ";
@@ -887,7 +899,7 @@ namespace Sq1.Core.StrategyBase {
 				return false;
 			}
 			if (checkPositionOpenNow == true) {
-				bool shouldRemove = this.ExecutionDataSnapshot.HasPositionOpenNow(alert.PositionAffected);
+				bool shouldRemove = this.ExecutionDataSnapshot.PositionsOpenNow.Contains(alert.PositionAffected);
 
 				if (alert.FilledBarIndex > -1) {
 					if (shouldRemove) {

@@ -11,7 +11,7 @@ namespace Sq1.Core.StrategyBase {
 
 		public event EventHandler<ReporterPokeUnitEventArgs>	BrokerFilledAlertsOpeningForPositions_step1of3;
 		//YOU_KNOW_I_HATE_UNNECESSARY_EVENTS!!!__INVOKING_DIRECTLY_UpdateOpenPositionsDueToStreamingNewQuote()
-		public event EventHandler<PositionListEventArgs>		OpenPositionsUpdatedDueToStreamingNewQuote_step2of3;
+		public event EventHandler<ReporterPokeUnitEventArgs>	OpenPositionsUpdatedDueToStreamingNewQuote_step2of3;
 		public event EventHandler<ReporterPokeUnitEventArgs>	BrokerFilledAlertsClosingForPositions_step3of3;
 
 		private ScriptExecutor scriptExecutor;
@@ -44,10 +44,10 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		public void RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(List<Position> positionsUpdatedDueToStreamingNewQuote) {
+		public void RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
 			try {
 				if (this.OpenPositionsUpdatedDueToStreamingNewQuote_step2of3 == null) return;
-				this.OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this, new PositionListEventArgs(new List<Position>(positionsUpdatedDueToStreamingNewQuote)));
+				this.OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this, new ReporterPokeUnitEventArgs(pokeUnit));
 			} catch (Exception ex) {
 				string msg = "EVENT_SUBSCRIBER_THREW_WHILE_BeginInvoke__OpenPositionsUpdatedDueToStreamingNewQuote_step2of3()";
 				Assembler.PopupException(msg, ex);

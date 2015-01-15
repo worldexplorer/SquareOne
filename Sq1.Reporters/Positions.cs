@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -100,7 +99,7 @@ namespace Sq1.Reporters {
 			}
 		}
 		public override void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
-			foreach (Position pos in pokeUnit.PositionsOpened) {
+			foreach (Position pos in pokeUnit.PositionsOpened.InnerList) {
 				if (this.positionsAllReversedCached.Contains(pos)) {
 					string msg3 = "REPORTERS.POSITIONS_ALREADY_ADDED_BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3()";
 					Assembler.PopupException(msg3);
@@ -111,9 +110,10 @@ namespace Sq1.Reporters {
 			this.rebuildOLVproperly();
 		}
 		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
-			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsClosed;
+			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsClosed.InnerList;
 		}
-		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(List<Position> positionsUpdatedDueToStreamingNewQuote) {
+		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
+			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsOpenNow.InnerList;
 			//v1 SLOW? this.rebuildOLVproperly();
 			//v2 hoping ObjectListView uses Dictionary to locate changed positions
 			this.olvPositions.RefreshObjects(positionsUpdatedDueToStreamingNewQuote);
@@ -177,9 +177,9 @@ namespace Sq1.Reporters {
 				sb.Append("\t");
 				sb.Append(position.MFEPercent.ToString("F2"));
 				sb.Append("\t");
-				sb.Append(this.SystemPerformance.CumulativeNetProfitForPosition(position).ToString(base.FormatPrice));
+				sb.Append(this.SystemPerformance.SlicesShortAndLong.CumulativeNetProfitForPosition(position).ToString(base.FormatPrice));
 				sb.Append("\t");
-				sb.Append(this.SystemPerformance.CumulativeNetProfitPercentForPosition(position).ToString("F2"));
+				sb.Append(this.SystemPerformance.SlicesShortAndLong.CumulativeNetProfitPercentForPosition(position).ToString("F2"));
 				sb.Append("\n");
 			}
 			return sb.ToString();
