@@ -12,10 +12,10 @@ using Sq1.Support;
 
 namespace Sq1.Reporters {
 	public partial class Performance : Reporter {
-		private int currentColumn;
-		private int currentRow;
-		private Dictionary<FontStyle, Font> fontsByStyle;
-		private SystemPerformance systemPerformance;
+		int currentColumn;
+		int currentRow;
+		Dictionary<FontStyle, Font> fontsByStyle;
+		SystemPerformance systemPerformance;
 
 		public Performance(ChartShadow chart): this() {
 			this.Initialize(chart, null);
@@ -55,8 +55,8 @@ namespace Sq1.Reporters {
 				this.currentRow = 0;
 				this.GenerateReportForOneColumn(performance.SliceBuyHold);
 				
-				if (performance.BenchmarkSymbolBars != null) {
-					this.colBuyHold.Text = performance.BenchmarkSymbolBars.Symbol;
+				if (performance.BarsBuyAndHold != null) {
+					this.colBuyHold.Text = performance.BarsBuyAndHold.Symbol;
 					this.colBuyHold.Width = 50;
 				} else {
 					this.colBuyHold.Text = "Buy & Hold";
@@ -180,7 +180,7 @@ namespace Sq1.Reporters {
 		public override object CreateSnapshotToStoreInScriptContext() {
 			return null;
 		}
-		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(List<Position> positionsUpdatedDueToStreamingNewQuote) {
+		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
 		}
 		public override void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
 		}

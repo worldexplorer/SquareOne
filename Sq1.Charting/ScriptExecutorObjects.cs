@@ -119,8 +119,8 @@ namespace Sq1.Charting {
 			return mustBeNull == null;
 		}
 		public void PositionArrowsRealtimeAdd(ReporterPokeUnit pokeUnit) {
-			this.PositionArrowsBacktestAdd(pokeUnit.PositionsOpened);
-			this.PositionArrowsBacktestAdd(pokeUnit.PositionsClosed);
+			this.PositionArrowsBacktestAdd(pokeUnit.PositionsOpened.InnerList);
+			this.PositionArrowsBacktestAdd(pokeUnit.PositionsClosed.InnerList);
 //		NO_NEED_TO_CACHE_OPENING_ALERT_BITMAP_FOR_JUST_CLOSED_POSITIONS AlertArrow.Bitmap is dynamic for EntryAlerts until the position is closed;
 //			foreach (AlertArrow eachNewClosed in pokeUnit.PositionsClosed) {
 //				if (this.AlertArrowsListByBar.ContainsKey[eachNewClosed.EntryBarIndex] == false) {
@@ -153,7 +153,7 @@ namespace Sq1.Charting {
 				return;
 			}
 			int barIndex = pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming.ParentBarsIndex;
-			this.AlertsPendingHistorySafeCopy.Add(barIndex, pokeUnit.AlertsNew);
+			this.AlertsPendingHistorySafeCopy.Add(barIndex, pokeUnit.AlertsNew.InnerList);
 		}
 		
 		public OnChartLine LineAddOrModify(string lineId, int barLeft, double priceLeft, int barRight, double priceRight,

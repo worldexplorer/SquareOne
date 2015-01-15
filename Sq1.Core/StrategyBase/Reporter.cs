@@ -47,7 +47,7 @@ namespace Sq1.Core.StrategyBase {
 		//    string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
 		//    throw new NotImplementedException(msg);
 		//}
-		public abstract void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(List<Position> positionsUpdatedDueToStreamingNewQuote);
+		public abstract void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit);
 		//public virtual void OpenPositionsUpdatedDueToStreamingNewQuote(ReporterPokeUnit pokeUnit) {
 		//    string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
 		//    throw new NotImplementedException(msg);

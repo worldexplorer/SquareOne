@@ -46,7 +46,7 @@ namespace Sq1.Gui.ReportersSupport {
 			this.ChartFormManager.Executor.EventGenerator.BrokerFilledAlertsOpeningForPositions_step1of3 += new EventHandler<ReporterPokeUnitEventArgs>(
 				this.EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3);
 
-			this.ChartFormManager.Executor.EventGenerator.OpenPositionsUpdatedDueToStreamingNewQuote_step2of3 += new EventHandler<PositionListEventArgs>(
+			this.ChartFormManager.Executor.EventGenerator.OpenPositionsUpdatedDueToStreamingNewQuote_step2of3 += new EventHandler<ReporterPokeUnitEventArgs>(
 				this.EventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3);
 
 			this.ChartFormManager.Executor.EventGenerator.BrokerFilledAlertsClosingForPositions_step3of3 += new EventHandler<ReporterPokeUnitEventArgs>(
@@ -56,8 +56,8 @@ namespace Sq1.Gui.ReportersSupport {
 		void EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(object sender, ReporterPokeUnitEventArgs e) {
 			this.BuildIncrementalOnPositionsOpenedAllReports_step1of3(e.PokeUnit);
 		}
-		void EventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(object sender, PositionListEventArgs e) {
-		    this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(e.PositionsOpenedNow);
+		void EventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(object sender, ReporterPokeUnitEventArgs e) {
+		    this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(e.PokeUnit);
 		}
 		void EventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(object sender, ReporterPokeUnitEventArgs e) {
 			this.BuildIncrementalOnPositionsClosedAllReports_step3of3(e.PokeUnit);
@@ -85,13 +85,13 @@ namespace Sq1.Gui.ReportersSupport {
 				rep.BuildIncrementalOnPositionsOpenedClosed_step3of3(pokeUnit);
 			}
 		}
-		public void UpdateOpenPositionsDueToStreamingNewQuote_step2of3(List<Position> positionsUpdatedDueToStreamingNewQuote) {
+		public void UpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {
-				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(positionsUpdatedDueToStreamingNewQuote); });
+				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(pokeUnit); });
 				return;
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
-				rep.BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(positionsUpdatedDueToStreamingNewQuote);
+				rep.BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(pokeUnit);
 			}
 		}
 		public void BuildIncrementalOnPositionsOpenedAllReports_step1of3(ReporterPokeUnit pokeUnit) {

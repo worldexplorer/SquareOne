@@ -130,7 +130,7 @@ namespace Sq1.Strategies.Demo {
 			//if (base.HasAlertsPendingOrPositionsOpenNow) {
 			if (base.HasAlertsPendingAndPositionsOpenNow) {
 				if (alertsPendingCount > 0) {
-					Alert firstPendingAlert = snap.AlertsPending[0];
+					Alert firstPendingAlert = snap.AlertsPending.InnerList[0];
 					Alert lastPosEntryAlert = lastPos != null ? lastPos.EntryAlert : null;
 					Alert lastPosExitAlert  = lastPos != null ? lastPos.ExitAlert : null;
 					if (firstPendingAlert == lastPosEntryAlert) {
@@ -146,7 +146,7 @@ namespace Sq1.Strategies.Demo {
 				}
 				if (positionsOpenNowCount > 1) {
 					string msg = "EXPECTED: I got multiple positions[" + positionsOpenNowCount + "]";
-					if (snap.PositionsOpenNow[0] == lastPos) {
+					if (snap.PositionsOpenNow.InnerList[0] == lastPos) {
 						msg += "50/50: positionsMaster.Last = positionsOpenNow.First";
 					}
 					this.log(msg);

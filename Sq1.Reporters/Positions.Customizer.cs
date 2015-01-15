@@ -192,13 +192,13 @@ namespace Sq1.Reporters {
 			this.olvcCumProfitDollar.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "clhCumProfitDollar.AspectGetter: position=null";
-				double cumulProfitAtThisPositionClosed = this.SystemPerformance.CumulativeNetProfitForPosition(position);
+				double cumulProfitAtThisPositionClosed = this.SystemPerformance.SlicesShortAndLong.CumulativeNetProfitForPosition(position);
 				return cumulProfitAtThisPositionClosed.ToString(base.FormatPrice);
 			};
 			this.olvcCumProfitPct.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "clhCumProfitPct.AspectGetter: position=null";
-				double cumulPercentAtThisPositionClosed = this.SystemPerformance.CumulativeNetProfitPercentForPosition(position);
+				double cumulPercentAtThisPositionClosed = this.SystemPerformance.SlicesShortAndLong.CumulativeNetProfitPercentForPosition(position);
 				return cumulPercentAtThisPositionClosed.ToString("F2");
 			};
 			this.olvcComission.AspectGetter = delegate(object o) {

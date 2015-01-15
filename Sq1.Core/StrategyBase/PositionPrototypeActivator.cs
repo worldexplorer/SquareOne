@@ -49,7 +49,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		private bool checkPrototypeAlreadyPlaced(PositionPrototype proto) {
-			foreach (Alert alert in executor.ExecutionDataSnapshot.AlertsPending) {
+			foreach (Alert alert in executor.ExecutionDataSnapshot.AlertsPending.InnerList) {
 				Position pos = alert.PositionAffected;
 				if (pos == null) continue;
 				if (pos.Prototype == null) continue;
@@ -59,7 +59,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		private bool checkPendingEntryPositionAlreadyPlaced(Position entryPosition) {
 			if (entryPosition.EntryAlert == null) return false;
-			foreach (Alert alert in executor.ExecutionDataSnapshot.AlertsPending) {
+			foreach (Alert alert in executor.ExecutionDataSnapshot.AlertsPending.InnerList) {
 				Position pos = alert.PositionAffected;
 				if (pos == null) continue;
 				if (pos.EntryAlert == null) continue;

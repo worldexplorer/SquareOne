@@ -112,13 +112,15 @@
     <Compile Include="DataTypes\BarsUnscaled.cs" />
     <Compile Include="DataTypes\BarsUnscaledEventArgs.cs" />
     <Compile Include="DataTypes\BarsUnscaledList.cs" />
+    <Compile Include="DataTypes\BidOrAsk.cs" />
     <Compile Include="DoubleBuffered\PanelDoubleBuffered.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="DoubleBuffered\UserControlDoubleBuffered.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Execution\PositionListEventArgs.cs" />
+    <Compile Include="Execution\AlertList.cs" />
+    <Compile Include="Execution\PositionList.cs" />
     <Compile Include="Execution\OrderEventArgs.cs" />
     <Compile Include="Execution\OrderStateMessageEventArgs.cs" />
     <Compile Include="Execution\Position.Stats.cs">
@@ -222,6 +224,7 @@
       <DependentUpon>StreamingProvider.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\StreamingSolidifier.cs" />
+    <Compile Include="Support\ConcurrentList.cs" />
     <Compile Include="Support\ObjectListViewStateSerializer.cs" />
     <Compile Include="Support\SkipInstantiationAt.cs" />
     <Compile Include="Broker\OrderLaneByType.cs" />
@@ -253,7 +256,6 @@
     <Compile Include="Execution\ExecutionDataSnapshot.cs" />
     <Compile Include="Execution\AlertEventArgs.cs" />
     <Compile Include="Execution\ReporterPokeUnitEventArgs.cs" />
-    <Compile Include="StrategyBase\BidOrAsk.cs" />
     <Compile Include="StrategyBase\MarketsimBacktest.cs" />
     <Compile Include="Execution\PositionEventArgs.cs" />
     <Compile Include="StrategyBase\PerformanceEventArg.cs" />

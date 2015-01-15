@@ -197,7 +197,7 @@ namespace Sq1.Core.StrategyBase {
 			executor.OrderProcessor.KillOrderUsingKillerOrder(alert.OrderFollowed);
 
 			//this.executor.RemovePendingExitAlert(alert, "MarketRealtime:AnnihilateCounterparty(): ");
-			bool removed = this.executor.ExecutionDataSnapshot.AlertsPendingRemove(alert);
+			bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 			return true;
 		}
 		public bool AlertKillPending(Alert alert) {

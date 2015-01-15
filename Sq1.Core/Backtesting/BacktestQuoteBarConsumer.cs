@@ -32,7 +32,8 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			if (snap.AlertsPending.Count > 0) {
-				var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
+				//var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
+				int dumped = snap.AlertsPending.ByBarPlaced.Count;
 				if (dumped > 0) {
 					//string msg = "here is at least one reason why dumping on fresh quoteToReach makes sense"
 					//	+ " if we never reach this breakpoint the remove dump() from here"

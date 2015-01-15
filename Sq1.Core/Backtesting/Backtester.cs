@@ -180,7 +180,7 @@ namespace Sq1.Core.Backtesting {
 		}
 		void closePositionsLeftOpenAfterBacktest() {
 			//return;
-			foreach (Alert alertPending in this.Executor.ExecutionDataSnapshot.AlertsPendingSafeCopy) {
+			foreach (Alert alertPending in this.Executor.ExecutionDataSnapshot.AlertsPending.SafeCopy) {
 				try {
 					//if (alertPending.IsEntryAlert) {
 					//	this.Executor.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
@@ -188,7 +188,7 @@ namespace Sq1.Core.Backtesting {
 					//	string msg = "checkPositionCanBeClosed() will later interrupt the flow saying {Sorry I don't serve alerts.IsExitAlert=true}";
 					//	this.Executor.RemovePendingExitAlertPastDueClosePosition(alertPending);
 					//}
-					//bool removed = this.Executor.ExecutionDataSnapshot.AlertsPendingRemove(alertPending);
+					//bool removed = this.Executor.ExecutionDataSnapshot.AlertsPending.Remove(alertPending);
 					this.Executor.AlertKillPending(alertPending);
 				} catch (Exception e) {
 					string msg = "NOT_AN_ERROR BACKTEST_POSITION_FINALIZER: check innerException: most likely you got POSITION_ALREADY_CLOSED on counterparty alert's force-close?";
@@ -204,7 +204,7 @@ namespace Sq1.Core.Backtesting {
 				Assembler.PopupException(msg, null, false);
 			}
 
-			foreach (Position positionOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNowSafeCopy) {
+			foreach (Position positionOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow.SafeCopy) {
 				//v1
 				//List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionCloseImmediately(positionOpen, );
 				//v2

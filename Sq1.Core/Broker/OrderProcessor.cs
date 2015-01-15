@@ -605,7 +605,7 @@ namespace Sq1.Core.Broker {
 							order.PriceFill, order.QtyFill, order.SlippageFill, order.CommissionFill);
 					} catch (Exception ex) {
 						string msg = "PostProcessOrderState caught from CallbackAlertFilledMoveAroundInvokeScript() " + msgException;
-						Assembler.PopupException(msg, ex, false);
+						Assembler.PopupException(msg, ex);
 					}
 					break;
 
@@ -837,7 +837,7 @@ namespace Sq1.Core.Broker {
 			int hooksInvoked = this.OPPstatusCallbacks.InvokeOnceHooksForOrderStateAndDelete(orderWithNewState, afterHooksInvokedPokeUnit);
 			if (executor.Backtester.IsBacktestingNow) return;
 
-			List<Alert> alertsCreatedByHooks = afterHooksInvokedPokeUnit.AlertsNew;
+			List<Alert> alertsCreatedByHooks = afterHooksInvokedPokeUnit.AlertsNew.InnerList;
 			if (alertsCreatedByHooks.Count == 0) {
 				string msg = "NOT_AN_ERROR: ZERO alerts from [" + hooksInvoked + "] hooks invoked; order[" + orderWithNewState + "]";
 				//this.PopupException(new Exception(msg));
@@ -876,7 +876,7 @@ namespace Sq1.Core.Broker {
 			ScriptExecutor executor = alertForOrder.Strategy.Script.Executor;
 			try {
 				executor.CallbackAlertKilledInvokeScript(alertForOrder);
-				msg = orderKilled.State + " => AlertsPendingRemove.Remove(orderExecuted.Alert)'d";
+				msg = orderKilled.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d";
 				orderKilled.AppendMessage(msig + msg);
 			} catch (Exception e) {
 				msg = orderKilled.State + " is a Cemetery but [" + e.Message + "]"
