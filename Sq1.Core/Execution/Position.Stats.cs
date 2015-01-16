@@ -47,14 +47,13 @@ namespace Sq1.Core.Execution {
 		
 		int mfeUptoBarIndex;
 		double mfeUptoValue;
-		public double MFE {	// will be always positive
-			get {
+		public double MFE { get {	// will be always positive
 				if (this.Bars == null) return -999999;
 				if (this.EntryFilledBarIndex == -1) return -999998;
 				if (this.Bars.Count <= 0) return -999997;
 				int barIndexExitOrStreaming = (this.ExitFilledBarIndex != -1) ? this.ExitFilledBarIndex : this.Bars.Count - 1;
 				//v1 if (barIndexExitOrStreaming == this.mfeUptoBarIndex) return this.mfeUptoValue;
-				if (this.ExitFilledBarIndex == -1) return this.mfeUptoValue;
+				//V2 if (this.ExitFilledBarIndex == -1) return this.mfeUptoValue;
 				
 				double mfe = 0;
 				int mfeBarIndex = -1;
@@ -71,12 +70,11 @@ namespace Sq1.Core.Execution {
 				}
 				mfe *= this.Shares;
 				mfe *= this.Bars.SymbolInfo.Point2Dollar;
-				mfe -= this.EntryFilledCommission;
+				//mfe -= this.EntryFilledCommission;
 				this.mfeUptoBarIndex = barIndexExitOrStreaming; 
 				this.mfeUptoValue = mfe;
 				return mfe;
-			}
-		}
+			} }
 		public double MFEPercent { get {
 				if (this.Bars == null) return -999999;
 				return 100.0 * this.MFE / this.PositionCost;
@@ -84,14 +82,13 @@ namespace Sq1.Core.Execution {
 		
 		int maeUptoBarIndex;
 		double maeUptoValue;
-		public double MAE {	// will be always negative
-			get {
+		public double MAE { get {	// will be always negative
 				if (this.Bars == null) return -999999;
 				if (this.EntryFilledBarIndex == -1) return -999999;
 				if (this.Bars.Count <= 0) return -9999998;
 				int barExitOrStreaming = (this.ExitFilledBarIndex != -1) ? this.ExitFilledBarIndex : this.Bars.Count - 1;
 				//v1 if (barExitOrStreaming == this.maeUptoBarIndex) return this.maeUptoValue;
-				if (this.ExitFilledBarIndex == -1) return this.maeUptoValue;
+				//V2 if (this.ExitFilledBarIndex == -1) return this.maeUptoValue;
 				
 				double mae = 0;
 				int maeBarIndex = -1;
@@ -108,12 +105,11 @@ namespace Sq1.Core.Execution {
 				}
 				mae *= this.Shares;
 				mae *= this.Bars.SymbolInfo.Point2Dollar;
-				mae += this.EntryFilledCommission;
+				//mae += this.EntryFilledCommission;
 				this.maeUptoBarIndex = barExitOrStreaming; 
 				this.maeUptoValue = mae;
 				return mae;
-			}
-		}
+			} }
 		public double MAEPercent { get {
 				if (this.Bars == null) return -999999;
 				return 100.0 * this.MAE / this.PositionCost;

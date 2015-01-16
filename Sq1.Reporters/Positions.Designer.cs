@@ -23,6 +23,8 @@ namespace Sq1.Reporters {
 		private BrightIdeasSoftware.OLVColumn olvcProfitPerBar;
 		private BrightIdeasSoftware.OLVColumn olvcEntrySignalName;
 		private BrightIdeasSoftware.OLVColumn olvcExitSignalName;
+		private BrightIdeasSoftware.OLVColumn olvcMae;
+		private BrightIdeasSoftware.OLVColumn olvcMfe;
 		private BrightIdeasSoftware.OLVColumn olvcMaePct;
 		private BrightIdeasSoftware.OLVColumn olvcMfePct;
 		private BrightIdeasSoftware.OLVColumn olvcCumProfitDollar;
@@ -57,6 +59,8 @@ namespace Sq1.Reporters {
 			this.olvcProfitPerBar = new BrightIdeasSoftware.OLVColumn();
 			this.olvcEntrySignalName = new BrightIdeasSoftware.OLVColumn();
 			this.olvcExitSignalName = new BrightIdeasSoftware.OLVColumn();
+			this.olvcMae = new BrightIdeasSoftware.OLVColumn();
+			this.olvcMfe = new BrightIdeasSoftware.OLVColumn();
 			this.olvcMaePct = new BrightIdeasSoftware.OLVColumn();
 			this.olvcMfePct = new BrightIdeasSoftware.OLVColumn();
 			this.olvcCumProfitPct = new BrightIdeasSoftware.OLVColumn();
@@ -90,6 +94,8 @@ namespace Sq1.Reporters {
 			this.olvcExitSignalName,
 			this.olvcMaePct,
 			this.olvcMfePct,
+			this.olvcMae,
+			this.olvcMfe,
 			this.olvcCumProfitPct,
 			this.olvcCumProfitDollar,
 			this.olvcComission});
@@ -187,14 +193,14 @@ namespace Sq1.Reporters {
 			// olvcProfitPct
 			// 
 			this.olvcProfitPct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcProfitPct.Text = "Profit %";
+			this.olvcProfitPct.Text = "%Profit";
 			this.olvcProfitPct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcProfitPct.Width = 36;
 			// 
 			// olvcProfitDollar
 			// 
 			this.olvcProfitDollar.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcProfitDollar.Text = "Profit $";
+			this.olvcProfitDollar.Text = "$Profit";
 			this.olvcProfitDollar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcProfitDollar.Width = 45;
 			// 
@@ -222,31 +228,46 @@ namespace Sq1.Reporters {
 			this.olvcExitSignalName.Text = "Exit Signal";
 			this.olvcExitSignalName.Width = 70;
 			// 
+			// olvcMae
+			// 
+			this.olvcMae.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMae.Text = "$MAE";
+			this.olvcMae.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMae.Width = 42;
+			// 
+			// olvcMfe
+			// 
+			this.olvcMfe.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMfe.Text = "$MFE";
+			this.olvcMfe.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMfe.Width = 42;
+			// 
 			// olvcMaePct
 			// 
 			this.olvcMaePct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMaePct.Text = "MAE %";
+			this.olvcMaePct.Text = "%MAE";
 			this.olvcMaePct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMaePct.Width = 42;
 			// 
 			// olvcMfePct
 			// 
 			this.olvcMfePct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMfePct.Text = "MFE %";
+			this.olvcMfePct.Text = "%MFE";
 			this.olvcMfePct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMfePct.Width = 42;
+	
 			// 
 			// olvcCumProfitPct
 			// 
 			this.olvcCumProfitPct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCumProfitPct.Text = "%Profit Cumulative";
+			this.olvcCumProfitPct.Text = "%ProfitCumulative";
 			this.olvcCumProfitPct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcCumProfitPct.Width = 41;
 			// 
 			// olvcCumProfitDollar
 			// 
 			this.olvcCumProfitDollar.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCumProfitDollar.Text = "$Profit Cumulative";
+			this.olvcCumProfitDollar.Text = "$ProfitCumulative";
 			this.olvcCumProfitDollar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcCumProfitDollar.Width = 50;
 			// 

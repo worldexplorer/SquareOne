@@ -407,7 +407,7 @@ namespace Sq1.Core.StrategyBase {
 			int exitsFilled = 0;
 			int entriesFilled = 0;
 
-			List<Alert> alertsPendingSafeCopy = this.executor.ExecutionDataSnapshot.AlertsPending.SafeCopy;
+			List<Alert> alertsPendingSafeCopy = this.executor.ExecutionDataSnapshot.AlertsPending.InnerListSafeCopy;
 			foreach (Alert alert in alertsPendingSafeCopy) {
 				if (alert.IsFilled && alert.IsExitAlert && alert.PositionAffected.Prototype != null) {
 					bool thisAlertWasAnnihilated = false;
@@ -457,7 +457,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
 			
-			if (this.executor.ExecutionDataSnapshot.AlertsPending.Contains(alert) == true) {
+			if (this.executor.ExecutionDataSnapshot.AlertsPending.ContainsInInnerList(alert) == true) {
 				string msg = "ALERT_MUST_HAVE_BEEN_REMOVED_FROM_PENDINGS_AFTER_FILL"
 					+ "; normally, the filled alert should be already removed here by CallbackAlertFilledMoveAroundInvokeScript()"
 					+ "; AlertsPending.Contains(" + alert + ")=true";
@@ -619,7 +619,7 @@ namespace Sq1.Core.StrategyBase {
 			// executor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
 		}
 		public bool AnnihilateCounterpartyAlert(Alert alert) {
-			if (this.executor.ExecutionDataSnapshot.AlertsPending.Contains(alert) == false) {
+			if (this.executor.ExecutionDataSnapshot.AlertsPending.ContainsInInnerList(alert) == false) {
 				string msg = "ANNIHILATE_COUNTERPARTY_ALREADY_REMOVED " + alert;	//ExecSnap.AlertsPending not synchronized: already removed
 				throw new Exception(msg);
 				//return false;

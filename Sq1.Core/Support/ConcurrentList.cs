@@ -13,21 +13,17 @@ namespace Sq1.Core.Support {
 		} } }
 		public T LastNullUnsafe { get { lock(this.LockObject) {
 			T ret = default(T);
-			if (ret != null) {
-				Debugger.Break();
-			}
+			if (ret != null) Debugger.Break();		// I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL
 			if (this.InnerList.Count > 0) ret = this.InnerList[this.InnerList.Count - 1];
 			return ret;
 		} } }
 		public T PreLastNullUnsafe { get { lock(this.LockObject) {
 			T ret = default(T);
-			if (ret != null) {
-				Debugger.Break();
-			}
+			if (ret != null) Debugger.Break();		// I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL
 			if (this.InnerList.Count > 1) ret = this.InnerList[this.InnerList.Count - 2];
 			return ret;
 		} } }
-		public virtual List<T>	SafeCopy { get { lock (this.LockObject) {
+		public List<T> InnerListSafeCopy { get { lock (this.LockObject) {
 			return new List<T>(this.InnerList);
 		} } }
 		public ConcurrentList(string reasonToExist) {
@@ -35,16 +31,16 @@ namespace Sq1.Core.Support {
 			LockObject			= new object();
 			InnerList			= new List<T>();
 		}
-		public bool Contains(T position) { lock(this.LockObject) {
+		public bool ContainsInInnerList(T position) { lock(this.LockObject) {
 			return this.InnerList.Contains(position);
 		} }
-		public virtual void Clear() { lock(this.LockObject) {
+		protected virtual void ClearInnerList() { lock(this.LockObject) {
 			this.InnerList.Clear();
 		} }
-		public virtual bool Remove(T position, bool absenseIsAnError = true) { lock(this.LockObject) {
+		protected virtual bool RemoveFromInnerList(T position, bool absenseThrowsAnError = true) { lock(this.LockObject) {
 			bool removed = false;
 			if (this.InnerList.Contains(position) == false) {
-				if (absenseIsAnError == true) {
+				if (absenseThrowsAnError == true) {
 					string msg = "CANT_REMOVE_REMOVED_EARLIER_OR_WASNT_ADDED " + position.ToString();
 					Assembler.PopupException(msg);
 					return removed;
@@ -54,10 +50,10 @@ namespace Sq1.Core.Support {
 			}
 			return removed;
 		} }
-		public virtual bool Add(T alertOrPosition) { lock(this.LockObject) {
+		protected virtual bool AddToInnerList(T alertOrPosition, bool duplicateThrowsAnError = true) { lock(this.LockObject) {
 			bool added = false;
-			if (this.InnerList.Contains(alertOrPosition)) {
-				string msg = "ALREADY_ADDED " + alertOrPosition.ToString();
+			if (this.InnerList.Contains(alertOrPosition) && duplicateThrowsAnError) {
+				string msg = this.ReasonToExist + ": MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + alertOrPosition.ToString();
 				Assembler.PopupException(msg);
 				return added;
 			}
@@ -65,11 +61,12 @@ namespace Sq1.Core.Support {
 			added = true;
 			return added;
 		} }
-		public virtual ConcurrentList<T> Clone() {
-			ConcurrentList<T> ret	= new ConcurrentList<T>(this.ReasonToExist + "_CLONE");
-			ret.InnerList			= this.SafeCopy;
-			return ret;
-		}
+		// 1) won't use without subclassing; 2) in the subclass, {(AlertList) ConcurrentList<T>} doesn't work properly => disabled completely 
+		//public virtual ConcurrentList<T> Clone() { lock (this.LockObject) {
+		//	ConcurrentList<T> ret	= new ConcurrentList<T>(this.ReasonToExist + "_CLONE");
+		//	ret.InnerList			= this.SafeCopy;
+		//	return ret;
+		//} }
 		public override string ToString() { lock(this.LockObject) {
 			return string.Format("{0} InnerList[{1}]", ReasonToExist, InnerList.Count);
 		} }

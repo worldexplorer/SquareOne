@@ -69,7 +69,7 @@ namespace Sq1.Core.StrategyBase {
 
 			PositionList positionsClosed = this.Executor.ExecutionDataSnapshot.PositionsMaster.Clone();
 			foreach (Position posOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow.InnerList) {
-				if (positionsClosed.Contains(posOpen) == false) {
+				if (positionsClosed.ContainsInInnerList(posOpen) == false) {
 					#if DEBUG
 					Debugger.Break();
 					#endif

@@ -238,7 +238,7 @@ namespace Sq1.Core.StrategyBase {
 				//#D_FREEZE Assembler.PopupException(msg3, null, false);
 			}
 
-			List<Alert> alertsNewAfterExecCopy = this.ExecutionDataSnapshot.AlertsNewAfterExec.SafeCopy;
+			List<Alert> alertsNewAfterExecCopy = this.ExecutionDataSnapshot.AlertsNewAfterExec.InnerListSafeCopy;
 
 			if (alertsNewAfterExecCopy.Count > 0) {
 				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecCopy, quoteForAlertsCreated);
@@ -353,7 +353,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 				return null;
 			}
-			Alert similar = this.ExecutionDataSnapshot.FindSimilarNotSamePendingAlert(alert);
+			Alert similar = this.ExecutionDataSnapshot.AlertsPending.FindSimilarNotSameIdenticalForOrdersPending(alert);
 			if (similar != null) {
 				string msg = "DUPLICATE_ALERT_FOUND similar[" + similar + "]";
 				Assembler.PopupException(msg + msig);
@@ -531,7 +531,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}
 		public void CallbackAlertKilledInvokeScript(Alert alert) {
-			if (this.ExecutionDataSnapshot.AlertsPending.Contains(alert)) {
+			if (this.ExecutionDataSnapshot.AlertsPending.ContainsInInnerList(alert)) {
 				bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 				if (removed) alert.IsKilled = true;
 			} else {
@@ -648,7 +648,7 @@ namespace Sq1.Core.StrategyBase {
 			if (alertFilled.IsEntryAlert) {
 				this.ExecutionDataSnapshot.PositionsMasterOpenNewAdd(alertFilled.PositionAffected);
 				positionOpenedAfterAlertFilled = alertFilled.PositionAffected;
-				positionsOpenedAfterAlertFilled.AddOpening_step1of2(positionOpenedAfterAlertFilled);
+				positionsOpenedAfterAlertFilled.AddOpened_step1of2(positionOpenedAfterAlertFilled);
 			} else {
 				this.ExecutionDataSnapshot.MovePositionOpenToClosed(alertFilled.PositionAffected);
 				positionClosedAfterAlertFilled = alertFilled.PositionAffected;
@@ -815,7 +815,7 @@ namespace Sq1.Core.StrategyBase {
 			ExecutionDataSnapshot snap = alert.Strategy.Script.Executor.ExecutionDataSnapshot;
 			//this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 			string orderState = (alert.OrderFollowed == null) ? "alert.OrderFollowed=NULL" : alert.OrderFollowed.State.ToString();
-			if (snap.AlertsPending.Contains(alert)) {
+			if (snap.AlertsPending.ContainsInInnerList(alert)) {
 				bool removed = snap.AlertsPending.Remove(alert);
 				msg = "REMOVED " + orderState + " Pending alert[" + alert + "] ";
 			} else {
@@ -899,7 +899,7 @@ namespace Sq1.Core.StrategyBase {
 				return false;
 			}
 			if (checkPositionOpenNow == true) {
-				bool shouldRemove = this.ExecutionDataSnapshot.PositionsOpenNow.Contains(alert.PositionAffected);
+				bool shouldRemove = this.ExecutionDataSnapshot.PositionsOpenNow.ContainsInInnerList(alert.PositionAffected);
 
 				if (alert.FilledBarIndex > -1) {
 					if (shouldRemove) {
