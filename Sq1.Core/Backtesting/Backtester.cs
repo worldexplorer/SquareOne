@@ -180,7 +180,7 @@ namespace Sq1.Core.Backtesting {
 		}
 		void closePositionsLeftOpenAfterBacktest() {
 			//return;
-			foreach (Alert alertPending in this.Executor.ExecutionDataSnapshot.AlertsPending.SafeCopy) {
+			foreach (Alert alertPending in this.Executor.ExecutionDataSnapshot.AlertsPending.InnerListSafeCopy) {
 				try {
 					//if (alertPending.IsEntryAlert) {
 					//	this.Executor.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
@@ -204,7 +204,7 @@ namespace Sq1.Core.Backtesting {
 				Assembler.PopupException(msg, null, false);
 			}
 
-			foreach (Position positionOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow.SafeCopy) {
+			foreach (Position positionOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow.InnerListSafeCopy) {
 				//v1
 				//List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionCloseImmediately(positionOpen, );
 				//v2

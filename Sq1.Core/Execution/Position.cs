@@ -55,13 +55,13 @@ namespace Sq1.Core.Execution {
 		public DateTime EntryDate { get {
 				//if (this.EntryBarIndex < 0 || this.EntryBarIndex > this.Bars.Count) return DateTime.MinValue;
 				Bar barEntry = this.EntryBar;		// don't take it from Alert! dateFilled depends on the market, not on your strategy
-				if (barEntry == null) return DateTime.MinValue; 
-				return this.EntryBar.DateTimeOpen;
+				if (barEntry == null) return DateTime.MinValue;
+				return barEntry.DateTimeOpen;
 			} }
 		public DateTime ExitDate { get {
 				Bar barExit = this.ExitBar;		// don't take it from this.ExitAlert! dateFilled depends on the market, not on your strategy
-				if (barExit == null) return DateTime.MinValue; 
-				return this.EntryBar.DateTimeOpen;
+				if (barExit == null) return DateTime.MinValue;
+				return barExit.DateTimeOpen;
 			} }
 		public double Size { get {
 				if (this.Bars.SymbolInfo.SecurityType == SecurityType.Future) {

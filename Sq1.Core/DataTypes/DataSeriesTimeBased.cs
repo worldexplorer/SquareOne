@@ -8,8 +8,12 @@ namespace Sq1.Core.DataTypes {
 		public DateTime LastDateAppended;
 
 		public BarScaleInterval ScaleInterval;
+		public virtual double this[int barIndex] {
+			get { return base[barIndex]; }
+			set { base[barIndex] = value; }
+		}
 
-		public DataSeriesTimeBased(BarScaleInterval scaleInterval) {	// : base()
+		protected DataSeriesTimeBased(BarScaleInterval scaleInterval) {	// NOT_USING_PARENTS_List<double>doubleValues      : base()
 			doublesByDate = new SortedList<DateTime, double>();
 			ScaleInterval = scaleInterval;
 			LastDateAppended = DateTime.MinValue;
@@ -41,7 +45,7 @@ namespace Sq1.Core.DataTypes {
 			this.doublesByDate.Clear();
 			this.LastDateAppended = DateTime.MinValue;
 		}
-		private void checkThrow(DateTime appending) {
+		void checkThrow(DateTime appending) {
 			if (appending == DateTime.MinValue) {
 				string msg = "#1 APPENDING_MIN_DATE_NOT_ALLOWED appending[" + appending + "]";
 				#if DEBUG

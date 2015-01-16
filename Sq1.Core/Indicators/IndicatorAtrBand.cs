@@ -32,8 +32,8 @@ namespace Sq1.Core.Indicators {
 		
 		public override string BacktestStartingPreCheckErrors() {
 			if (this.ParamMultiplier.ValueCurrent <= 0) return "Multiplier[" + this.ParamMultiplier.ValueCurrent + "] MUST BE > 0";
-			this.BandLower = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, base.LineColor);
-			this.BandUpper = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, base.LineColor);
+			this.BandLower = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, "BandLower for " + base.Name, base.LineColor);
+			this.BandUpper = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, "BandLower for " + base.Name, base.LineColor);
 			return null;
 		}
 		

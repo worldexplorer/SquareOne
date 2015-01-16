@@ -8,8 +8,8 @@ namespace Sq1.Core.Indicators.HelperSeries {
 	public class DataSeriesTimeBasedColorified : DataSeriesTimeBased {
 		public Color Color;
 		public SortedList<DateTime, Bar> ParentBarsByDate;
-		
-		public DataSeriesTimeBasedColorified(BarScaleInterval scaleInterval, Color color) : base(scaleInterval) {
+
+		public DataSeriesTimeBasedColorified(BarScaleInterval scaleInterval, string description, Color color) : base(scaleInterval, description) {
 			Color = color;
 			ParentBarsByDate = new SortedList<DateTime, Bar>();
 		}

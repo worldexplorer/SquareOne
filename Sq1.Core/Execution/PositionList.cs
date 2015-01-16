@@ -19,94 +19,113 @@ namespace Sq1.Core.Execution {
 			return ret;
 		} } }
 
-		public int LastEntryFilledBarIndex;
-		public int LastExitFilledBarIndex;
+		public int LastBarIndexEntry;
+		public int LastBarIndexExit;
 		
 		public PositionList(string reasonToExist) : base(reasonToExist) {
 			ByEntryBarFilled	= new Dictionary<int, List<Position>>();
 			ByExitBarFilled		= new Dictionary<int, List<Position>>();
-			LastEntryFilledBarIndex	= -1;
-			LastExitFilledBarIndex	= -1;
+			LastBarIndexEntry	= -1;
+			LastBarIndexExit	= -1;
 		}
-//		public PositionList(string reasonToExist, List<Position> positions) : this(reasonToExist) {
-//			this.AddRange(positions);
-//		}
-		public void AddRange(List<Position> positions) {
-			foreach (Position position in positions) this.AddOpening_step1of2(position);
-		}
-		
-		public override void Clear() { lock(base.LockObject) {
-			base					.Clear();
+		public void Clear() { lock(base.LockObject) {
+			base					.ClearInnerList();
 			this.ByEntryBarFilled	.Clear();
 			this.ByExitBarFilled	.Clear();
-			this.LastEntryFilledBarIndex	= -1;
-			this.LastExitFilledBarIndex		= -1;
-		}
-		}
+			this.LastBarIndexEntry	= -1;
+			this.LastBarIndexExit	= -1;
+		} }
+		// NEVER_USED__UNCOMMENT_WHEN_YOU_NEED_IT public void AddRangeOpened(List<Position> positions) {
+		//	foreach (Position position in positions) this.AddOpened_step1of2(position);
+		//}
 		public void AddClosed(Position position) { lock(base.LockObject) {
-			this.AddOpening_step1of2(position);
+			this.AddOpened_step1of2(position);
 			this.AddToClosedDictionary_step2of2(position);
 		} }
-		public bool AddOpening_step1of2(Position position, bool duplicateIsAnError = true) { lock(base.LockObject) {
+		public bool AddOpened_step1of2(Position positionOpened, bool duplicateThrowsAnError = true) { lock(base.LockObject) {
 			bool added = false;
-			if (position == null) {
-				string msg = "ADD_ONLY_FILLED_POSITION_NOT_NULL position[" + position + "]";
+			if (positionOpened == null) {
+				string msg = "ADD_ONLY_FILLED_POSITION_NOT_NULL position[" + positionOpened + "]";
 				Assembler.PopupException(msg);
 				return added;
 			}
-			if (position.Shares == 0.0) {
-				string msg = "POSITION_MUST_HAVE_POSITIVE_SIZE position[" + position + "]";
+			if (positionOpened.Shares == 0.0) {
+				string msg = "POSITION_MUST_HAVE_POSITIVE_SIZE position[" + positionOpened + "]";
 				Assembler.PopupException(msg);
 				return added;
 			}
-			if (base.InnerList.Contains(position) && duplicateIsAnError) {
-				string msg = "POSITION_MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + position.ToString();
+			if (positionOpened.EntryAlert == null) {
+				string msg = "POSITION_ATBAR_HAS_NO_ENTRY_ALERT position[" + positionOpened + "]";
 				Assembler.PopupException(msg);
 				return added;
 			}
-			if (position.EntryFilledBarIndex == -1) {
-				string msg = "POSITION_MUST_HAVE_ENTRY_FILLED_PRIOR_TO_ADDING_TO_POSITIONLIST " + position.ToString();
+			if (positionOpened.EntryDate == DateTime.MinValue) {
+				string msg = "POSITION_ATBAR_HAS_NO_ENTRY_DATE"
+					+ " while EntryAlert.FilledBar.DateTimeOpen[" + positionOpened.EntryAlert.FilledBar.DateTimeOpen + "]";
 				Assembler.PopupException(msg);
 				return added;
 			}
+			if (positionOpened.EntryFilledBarIndex == -1) {
+				string msg = "POSITION_MUST_HAVE_ENTRY_FILLED_PRIOR_TO_ADDING_TO_POSITIONLIST " + positionOpened.ToString();
+				Assembler.PopupException(msg);
+				return added;
+			}
+			//v1
+			//if (base.InnerList.Contains(position) && duplicateThrowsAnError) {
+			//	string msg = this.ReasonToExist + " MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + position.ToString();
+			//	Assembler.PopupException(msg);
+			//	return added;
+			//}
+			//v2
+			added = base.AddToInnerList(positionOpened, duplicateThrowsAnError);
+			if (added == false) return added;
 			
-			if (this.ByEntryBarFilled.ContainsKey(position.EntryFilledBarIndex) == false) {
-				this.ByEntryBarFilled.Add(position.EntryFilledBarIndex, new List<Position>());
-			}
-			List<Position> byEntrySlot = this.ByEntryBarFilled[position.EntryFilledBarIndex];
-			byEntrySlot.Add(position);
+			if (this.LastBarIndexEntry < positionOpened.EntryFilledBarIndex) this.LastBarIndexEntry = positionOpened.EntryFilledBarIndex;
 			
-			added = base.Add(position);
-			if (this.LastEntryFilledBarIndex < position.EntryFilledBarIndex) this.LastEntryFilledBarIndex = position.EntryFilledBarIndex;
-
-			//if (position.ExitFilledBarIndex == -1) return;
-			//this.AddToClosedDictionary_step2of2(position);
+			if (this.ByEntryBarFilled.ContainsKey(positionOpened.EntryFilledBarIndex) == false) {
+				this.ByEntryBarFilled.Add(positionOpened.EntryFilledBarIndex, new List<Position>());
+			}
+			List<Position> byEntrySlot = this.ByEntryBarFilled[positionOpened.EntryFilledBarIndex];
+			byEntrySlot.Add(positionOpened);
 			return added;
 		} }
-		public bool AddToClosedDictionary_step2of2(Position position, bool absenseIsAnError = true) { lock(base.LockObject) {
+		public bool AddToClosedDictionary_step2of2(Position positionClosed, bool absenseThrowsAnError = true) { lock(base.LockObject) {
 			bool added = false;
-			if (base.InnerList.Contains(position) == false && absenseIsAnError) {
-				string msg = "POSITION_MUST_BE_ADDED_WHILE_JUST_OPENED_AND_SYNCED_TO_CLOSED_DICTIONARY_ON_CLOSE " + position.ToString();
+			if (positionClosed.ExitAlert == null) {
+				string msg = "POSITION_ATBAR_HAS_NO_EXIT_ALERT";
 				Assembler.PopupException(msg);
 				return added;
 			}
-			if (position.ExitFilledBarIndex == -1) {
-				string msg = "POSITION_MUST_HAVE_EXIT_FILLED_PRIOR_TO_ADDING_TO_CLOSED_DICTIONARY " + position.ToString();
+			if (positionClosed.ExitDate == DateTime.MinValue) {
+				string msg = "POSITION_ATBAR_HAS_NO_EXIT_DATE"
+					+ " while ExitAlert.FilledBar.DateTimeOpen[" + positionClosed.ExitAlert.FilledBar.DateTimeOpen + "]";
+				Assembler.PopupException(msg);
+				return added;
+			}
+			if (base.InnerList.Contains(positionClosed) == false && absenseThrowsAnError) {
+				string msg = "POSITION_MUST_BE_ADDED_WHILE_JUST_OPENED_AND_SYNCED_TO_CLOSED_DICTIONARY_ON_CLOSE " + positionClosed.ToString();
+				Assembler.PopupException(msg);
+				return added;
+			}
+			if (positionClosed.ExitFilledBarIndex == -1) {
+				string msg = "POSITION_MUST_HAVE_EXIT_FILLED_PRIOR_TO_ADDING_TO_CLOSED_DICTIONARY " + positionClosed.ToString();
 				Assembler.PopupException(msg);
 				return added;
 			}
 			
-			if (this.ByExitBarFilled.ContainsKey(position.ExitFilledBarIndex) == false) {
-				this.ByExitBarFilled.Add(position.ExitFilledBarIndex, new List<Position>());
+			if (this.ByExitBarFilled.ContainsKey(positionClosed.ExitFilledBarIndex) == false) {
+				this.ByExitBarFilled.Add(positionClosed.ExitFilledBarIndex, new List<Position>());
 			}
-			List<Position> byExitSlot = this.ByExitBarFilled[position.ExitFilledBarIndex];
-			byExitSlot.Add(position);
+			List<Position> byExitSlot = this.ByExitBarFilled[positionClosed.ExitFilledBarIndex];
+			byExitSlot.Add(positionClosed);
+			
 			added = true;
-			this.LastExitFilledBarIndex = position.ExitFilledBarIndex;
+			if (this.LastBarIndexExit < positionClosed.ExitFilledBarIndex) this.LastBarIndexExit = positionClosed.ExitFilledBarIndex;
+			
 			return added;
 		} }
-		public override bool Remove(Position position, bool absenseIsAnError = true) { lock(base.LockObject) {
-			bool removed = base.Remove(position, absenseIsAnError);
+		public bool Remove(Position position, bool absenseThrowsAnError = true) { lock(base.LockObject) {
+			bool removed = base.RemoveFromInnerList(position, absenseThrowsAnError);
 			if (this.ByEntryBarFilled.ContainsKey(position.EntryFilledBarIndex)) {
 				List<Position> byEntrySlot = this.ByEntryBarFilled[position.EntryFilledBarIndex];
 				if (byEntrySlot.Contains(position)) byEntrySlot.Remove(position);
@@ -119,16 +138,18 @@ namespace Sq1.Core.Execution {
 			}
 			return removed;
 		} }
-		public new PositionList Clone() {
+		public PositionList Clone() { lock(base.LockObject) {
 			PositionList ret		= new PositionList(this.ReasonToExist + "_CLONE");
-			ret.InnerList			= this.SafeCopy;
+			ret.InnerList			= this.InnerListSafeCopy;
 			ret.ByEntryBarFilled	= this.ByEntryBarFilledSafeCopy;
 			ret.ByExitBarFilled		= this.ByExitBarFilledSafeCopy;
 			return ret;
-		}
+		} }
 		public override string ToString() { lock(base.LockObject) {
-			return base.ToString() + string.Format(" ByEntryFilled.Bars[{2}] ByExitFilled.Bars[{3}]",
-				ReasonToExist, InnerList.Count, ByEntryBarFilled.Keys.Count, ByExitBarFilled.Keys.Count);
+			string ret = base.ToString()
+				+ " ByEntryFilled.Bars[" + ByEntryBarFilled.Keys.Count + "]"
+				+ "  ByExitFilled.Bars[" +  ByExitBarFilled.Keys.Count+ "]";
+			return ret;
 		} }
 	}
 }

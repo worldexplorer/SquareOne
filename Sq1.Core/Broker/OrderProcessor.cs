@@ -761,7 +761,7 @@ namespace Sq1.Core.Broker {
 			Alert replacement = executor.PositionPrototypeActivator.CreateStopLossFromPositionPrototype(position);
 			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerProvider();
 			//this.CreateOrdersSubmitToBrokerProviderInNewThreadGroups(new List<Alert>() {replacement}, true, true);
-			pokeUnit.AlertsNew.Add(replacement);
+			pokeUnit.AlertsNew.AddNoDupe(replacement);
 			msg += " newAlert[" + replacement + "]";
 			killedStopLoss.AppendMessage(msig + msg);
 		}
@@ -827,7 +827,7 @@ namespace Sq1.Core.Broker {
 			Alert replacement = executor.PositionPrototypeActivator.CreateTakeProfitFromPositionPrototype(position);
 			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerProvider();
 			//this.CreateOrdersSubmitToBrokerProviderInNewThreadGroups(new List<Alert>() { replacement }, true, true);
-			pokeUnit.AlertsNew.Add(replacement);
+			pokeUnit.AlertsNew.AddNoDupe(replacement);
 			msg += " newAlert[" + replacement + "]";
 			killedTakeProfit.AppendMessage(msig + msg);
 		}

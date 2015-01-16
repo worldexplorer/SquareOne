@@ -13,9 +13,7 @@ namespace Sq1.Core.DataTypes {
 			base.Description = this.dataSeriesBeingExposed + " for " + this.ToString();
 		}
 //		public override double StreamingValue {
-//			get {
-//				return this[this.Count-1];
-//			}
+//			get { return this[this.Count-1]; }
 //			set {
 //				if (double.IsNaN(value)) return;
 //				string msg = "Cannot set StreamingValue[" + value + "] for " + this.ToString();
@@ -37,12 +35,12 @@ namespace Sq1.Core.DataTypes {
 					//return double.NaN;
 				}
 				switch (this.dataSeriesBeingExposed) {
-						//case "DateTimeOpen": return this.barsBeingProxied[barIndex].DateTimeOpen;
-					case DataSeriesProxyableFromBars.Open: return this.barsBeingProxied[barIndex].Open;
-					case DataSeriesProxyableFromBars.High: return this.barsBeingProxied[barIndex].High;
-					case DataSeriesProxyableFromBars.Low: return this.barsBeingProxied[barIndex].Low;
-					case DataSeriesProxyableFromBars.Close: return this.barsBeingProxied[barIndex].Close;
-					case DataSeriesProxyableFromBars.Volume: return this.barsBeingProxied[barIndex].Volume;
+					//case "DateTimeOpen": return this.barsBeingProxied[barIndex].DateTimeOpen;
+					case DataSeriesProxyableFromBars.Open:		return this.barsBeingProxied[barIndex].Open;
+					case DataSeriesProxyableFromBars.High:		return this.barsBeingProxied[barIndex].High;
+					case DataSeriesProxyableFromBars.Low:		return this.barsBeingProxied[barIndex].Low;
+					case DataSeriesProxyableFromBars.Close:		return this.barsBeingProxied[barIndex].Close;
+					case DataSeriesProxyableFromBars.Volume:	return this.barsBeingProxied[barIndex].Volume;
 				}
 				throw new InvalidOperationException("PLEASE DON'T ADD MORE VALUES INTO ENUM DataSeriesProxyableFromBars:"
 					+ " barFieldBeingProxied[" + this.dataSeriesBeingExposed.ToString()
@@ -53,10 +51,10 @@ namespace Sq1.Core.DataTypes {
 			}
 		}
 		public override void Append(DateTime dateTimeAdding, double value) {
-			throw new InvalidOperationException("Cannot Add into " + this.ToString());
+			throw new InvalidOperationException("DataSeriesProxyBars_IS_A_PROXY__DID_YOU_WANT_TO_APPEND_TO_BARS???_CAN_NOT_ADD_ONLY_ONE_VALUE_INTO " + this.ToString());
 		}
 		public override void Clear() {
-			throw new InvalidOperationException("Cannot Clear " + this.ToString());
+			throw new InvalidOperationException("DataSeriesProxyBars_IS_A_PROXY__DID_YOU_WANT_TO_CLEAR_BARS???_CAN_NOT_CLEAR " + this.ToString());
 		}
 		public override string ToString() {
 			return "DataSeriesProxyBars[" + this.dataSeriesBeingExposed.ToString() + "] based on " + this.barsBeingProxied.ToString();

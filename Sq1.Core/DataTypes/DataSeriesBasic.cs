@@ -4,11 +4,11 @@ using System.Diagnostics;
 
 namespace Sq1.Core.DataTypes {
 	public class DataSeriesBasic {
-		public string Description;
-		List<double> doubleValues;
-		public virtual IList<double> Values { get { return this.doubleValues; } }
-		public virtual int StreamingIndex { get { return this.doubleValues.Count - 1; } }
-		public virtual double StreamingValue {
+		public			string			Description;
+						List<double>	doubleValues;
+		public virtual	IList<double>	Values { get { return this.doubleValues; } }
+		public virtual	int				StreamingIndex { get { return this.doubleValues.Count - 1; } }
+		public virtual	double			StreamingValue {
 			get { return (this.doubleValues.Count == 0) ? double.NaN : this[this.doubleValues.Count - 1]; }
 			set {
 				if (this.doubleValues.Count == 0) {
@@ -21,12 +21,12 @@ namespace Sq1.Core.DataTypes {
 				this[this.doubleValues.Count - 1] = value;
 			}
 		}
-		public virtual int Count { get { return this.doubleValues.Count; } }
-		public virtual int Capacity {
+		public virtual	int				Count { get { return this.doubleValues.Count; } }
+		public virtual	int				Capacity {
 			get { return this.doubleValues.Capacity; }
 			set { this.doubleValues.Capacity = value; }
 		}
-		public DataSeriesBasic() {
+		protected DataSeriesBasic() {
 			this.doubleValues = new List<double>();
 			#if DEBUG
 			if (double.IsNaN(this.StreamingValue) == false) {
@@ -34,14 +34,18 @@ namespace Sq1.Core.DataTypes {
 			}
 			#endif
 		}
-		public DataSeriesBasic(string description) : this() {
+		protected DataSeriesBasic(string description) : this() {
 			this.Description = description;
 		}
-		public virtual double this[int barIndex] {
+		// protected to make the childs expose this[int] method; may be it's gonna be inapplicable and only this[Position] will have to be public
+		// I thought I could replace Dictionary<Position, double> CumulativeProfitDollar, CumulativeProfitPercent in SystemPerformanceSlice but StreamingValue looks inappropriate at all   
+		// but making it protected 
+		protected virtual double this[int barIndex] {
 			get {
 				if (barIndex < 0 || barIndex > this.doubleValues.Count - 1) {
-					string msg = this.Description + "[" + barIndex + "] is out of bounds: " 
-						+ this.Description + ".Count=" + this.doubleValues.Count;
+					string msg = "BAR_INDEX_REQUESTED_DOES_NOT_EXIST barIndex[" + barIndex + "] this.doubleValues.Count[" + this.doubleValues.Count + "]"
+						//+ " " + this.ToString()
+						;
 					throw new ArgumentOutOfRangeException(msg);
 				}
 				if (barIndex == this.doubleValues.Count) {
