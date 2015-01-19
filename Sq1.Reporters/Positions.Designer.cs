@@ -11,6 +11,7 @@ namespace Sq1.Reporters {
 		private BrightIdeasSoftware.OLVColumn olvcSerno;
 		private BrightIdeasSoftware.OLVColumn olvcSymbol;
 		private BrightIdeasSoftware.OLVColumn olvcQuantity;
+		private BrightIdeasSoftware.OLVColumn olvcCost;
 		private BrightIdeasSoftware.OLVColumn olvcEntryDate;
 		private BrightIdeasSoftware.OLVColumn olvcEntryPrice;
 		private BrightIdeasSoftware.OLVColumn olvcEntryOrder;
@@ -27,8 +28,8 @@ namespace Sq1.Reporters {
 		private BrightIdeasSoftware.OLVColumn olvcMfe;
 		private BrightIdeasSoftware.OLVColumn olvcMaePct;
 		private BrightIdeasSoftware.OLVColumn olvcMfePct;
-		private BrightIdeasSoftware.OLVColumn olvcCumProfitDollar;
-		private BrightIdeasSoftware.OLVColumn olvcCumProfitPct;
+		private BrightIdeasSoftware.OLVColumn olvcCumNetProfitDollar;
+		private BrightIdeasSoftware.OLVColumn olvcCumNetProfitPct;
 		private BrightIdeasSoftware.OLVColumn olvcComission;
 
 		private ContextMenuStrip ctxPopup;
@@ -47,6 +48,7 @@ namespace Sq1.Reporters {
 			this.olvcSerno = new BrightIdeasSoftware.OLVColumn();
 			this.olvcSymbol = new BrightIdeasSoftware.OLVColumn();
 			this.olvcQuantity = new BrightIdeasSoftware.OLVColumn();
+			this.olvcCost = new BrightIdeasSoftware.OLVColumn();
 			this.olvcEntryDate = new BrightIdeasSoftware.OLVColumn();
 			this.olvcEntryPrice = new BrightIdeasSoftware.OLVColumn();
 			this.olvcEntryOrder = new BrightIdeasSoftware.OLVColumn();
@@ -63,8 +65,8 @@ namespace Sq1.Reporters {
 			this.olvcMfe = new BrightIdeasSoftware.OLVColumn();
 			this.olvcMaePct = new BrightIdeasSoftware.OLVColumn();
 			this.olvcMfePct = new BrightIdeasSoftware.OLVColumn();
-			this.olvcCumProfitPct = new BrightIdeasSoftware.OLVColumn();
-			this.olvcCumProfitDollar = new BrightIdeasSoftware.OLVColumn();
+			this.olvcCumNetProfitPct = new BrightIdeasSoftware.OLVColumn();
+			this.olvcCumNetProfitDollar = new BrightIdeasSoftware.OLVColumn();
 			this.olvcComission = new BrightIdeasSoftware.OLVColumn();
 			this.ctxPopup = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniColorify = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,6 +82,7 @@ namespace Sq1.Reporters {
 			this.olvcSerno,
 			this.olvcSymbol,
 			this.olvcQuantity,
+			this.olvcCost,
 			this.olvcEntryDate,
 			this.olvcEntryPrice,
 			this.olvcEntryOrder,
@@ -96,8 +99,8 @@ namespace Sq1.Reporters {
 			this.olvcMfePct,
 			this.olvcMae,
 			this.olvcMfe,
-			this.olvcCumProfitPct,
-			this.olvcCumProfitDollar,
+			this.olvcCumNetProfitPct,
+			this.olvcCumNetProfitDollar,
 			this.olvcComission});
 			this.olvPositions.AllowColumnReorder = true;
 			this.olvPositions.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -151,6 +154,13 @@ namespace Sq1.Reporters {
 			this.olvcQuantity.Text = "Shares";
 			this.olvcQuantity.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcQuantity.Width = 19;
+			// 
+			// olvcPositionCost
+			// 
+			this.olvcCost.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcCost.Text = "$Cost";
+			this.olvcCost.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcCost.Width = 40;
 			// 
 			// olvcEntryDate
 			// 
@@ -255,21 +265,20 @@ namespace Sq1.Reporters {
 			this.olvcMfePct.Text = "%MFE";
 			this.olvcMfePct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMfePct.Width = 42;
-	
 			// 
 			// olvcCumProfitPct
 			// 
-			this.olvcCumProfitPct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCumProfitPct.Text = "%ProfitCumulative";
-			this.olvcCumProfitPct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCumProfitPct.Width = 41;
+			this.olvcCumNetProfitPct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcCumNetProfitPct.Text = "%ProfitCumulative";
+			this.olvcCumNetProfitPct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcCumNetProfitPct.Width = 41;
 			// 
 			// olvcCumProfitDollar
 			// 
-			this.olvcCumProfitDollar.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCumProfitDollar.Text = "$ProfitCumulative";
-			this.olvcCumProfitDollar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCumProfitDollar.Width = 50;
+			this.olvcCumNetProfitDollar.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcCumNetProfitDollar.Text = "$ProfitCumulative";
+			this.olvcCumNetProfitDollar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcCumNetProfitDollar.Width = 50;
 			// 
 			// olvcComission
 			// 

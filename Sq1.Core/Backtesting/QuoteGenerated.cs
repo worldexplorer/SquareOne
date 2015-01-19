@@ -73,10 +73,11 @@ namespace Sq1.Core.Backtesting {
 			sb.Append(this.Ask);
 			sb.Append("}ask size{");
 			sb.Append(this.Size);
-			sb.Append("} SIM:");
+			sb.Append("} ParentBarSimulated[");
 			sb.Append(this.ParentBarSimulated);
-			sb.Append(" STR:");
+			sb.Append("] ParentBarStreaming[");
 			sb.Append(this.ParentBarStreaming);
+			sb.Append("]");
 			if (string.IsNullOrEmpty(this.Source) == false) {
 				sb.Append(" ");
 				sb.Append(Source);
@@ -126,11 +127,11 @@ namespace Sq1.Core.Backtesting {
 			}
 			sb.Append(" WentThroughStreamingToScript[");
 			sb.Append(this.WentThroughStreamingToScript);
-			sb.Append("]");
-			sb.Append(" SIM:");
+			sb.Append("] ParentBarSimulated[");
 			sb.Append(this.ParentBarSimulated);
-			sb.Append(" STR:");
+			sb.Append("] ParentBarStreaming[");
 			sb.Append(this.ParentBarStreaming);
+			sb.Append("]");
 			return sb.ToString();
 		}
 	}

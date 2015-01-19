@@ -94,7 +94,7 @@ namespace Sq1.Core.Streaming {
 				quoteClone.IntraBarSerno  = this.IntraBarSerno;
 			} else {
 				string msg = "ARE_YOU_SURE_ITS_REASONABLE_TO_SET_quoteClone.IntraBarSerno_OUTSIDE_StreamingBarFactory?..";
-				Debugger.Break();
+				Assembler.PopupException(msg, null, false);
 			}
 			return quoteClone;
 		}

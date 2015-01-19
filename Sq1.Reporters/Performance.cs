@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core.Charting;
-using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Support;
@@ -31,8 +30,9 @@ namespace Sq1.Reporters {
 			this.systemPerformance = performance;
 			this.propagatePerformanceReport(performance);
 		}
-		void propagatePerformanceReport(SystemPerformance performance) {
-			DataSeriesTimeBased equityCurve = performance.SlicesShortAndLong.EquityCurve;
+		void propagatePerformanceReport(SystemPerformance performance = null) {
+			if (performance == null) performance = this.systemPerformance;
+			
 			this.fontsByStyle.Clear();
 			this.fontsByStyle.Add(this.Font.Style, this.Font);
 			try {
@@ -77,68 +77,68 @@ namespace Sq1.Reporters {
 			IList<Position> positionsAllReadOnly = slice.PositionsImTrackingReadonly;  
 
 			// NO_FORMATTING_PRINT_AS_IT_IS !!!! YOULL_NEVER_FIND_ROUNDING_ERROR_IF_YOU_ROUND_JUST_BEFORE_PRINTING
-			this.addCurrency("Net Profit", "NetProfitForClosedPositionsBoth", slice.NetProfitForClosedPositionsBoth, Color.Empty, Color.Empty, this.getLviForeColor(slice.NetProfitForClosedPositionsBoth), FontStyle.Bold, FontStyle.Regular);
-			this.addNumeric("Win/Loss Ratio", "Win/Loss Ratio = PositionsCountWinners / PositionsCountLosers", slice.WinLossRatio, this.getLviForeColor(slice.WinLossRatio, 1));
-			this.addNumeric("Profit Factor", "Profit Factor = NetProfitWinners / Abs(NetLossLosers)", slice.ProfitFactor, this.getLviForeColor(slice.ProfitFactor, 1));
-			this.addNumeric("Recovery Factor", "Recovery Factor = Abs(NetProfitForClosedPositionsBoth / MaxDrawDown)", slice.RecoveryFactor, this.getLviForeColor(slice.ProfitFactor, 1));
-			this.addNumeric("Payout", "Payout = Abs(AvgProfitPctBoth / AvgLossPctLosers)", slice.PayoffRatio, this.getLviForeColor(slice.ProfitFactor, 1));
-			this.addCurrency("Commission", "-CommissionBoth", -slice.CommissionBoth, this.getLviForeColor(-slice.CommissionBoth));
+			this.addCurrency(		slice.NetProfitForClosedPositionsBoth, "Net Profit", "NetProfitForClosedPositionsBoth", Color.Empty, Color.Empty, this.getLviForeColor(slice.NetProfitForClosedPositionsBoth), FontStyle.Bold, FontStyle.Regular);
+			this.addNumeric(		slice.WinLossRatio,			"Win/Loss Ratio", "Win/Loss Ratio = PositionsCountWinners / PositionsCountLosers", this.getLviForeColor(slice.WinLossRatio, 1));
+			this.addNumeric(		slice.ProfitFactor,			"Profit Factor", "Profit Factor = NetProfitWinners / Abs(NetLossLosers)", this.getLviForeColor(slice.ProfitFactor, 1));
+			this.addNumeric(		slice.RecoveryFactor,		"Recovery Factor", "Recovery Factor = Abs(NetProfitForClosedPositionsBoth / MaxDrawDown)", this.getLviForeColor(slice.ProfitFactor, 1));
+			this.addNumeric(		slice.PayoffRatio,			"Payout", "Payout = Abs(AvgProfitPctBoth / AvgLossPctLosers)", this.getLviForeColor(slice.ProfitFactor, 1));
+			this.addCurrency(	   -slice.CommissionBoth,		"Commission", "-CommissionBoth", this.getLviForeColor(-slice.CommissionBoth));
 
-			this.addNumeric("All Trades", "PositionsCountBoth", slice.PositionsCountBoth, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.addNumeric("Avg Profit", "Avg Profit = NetProfitForClosedPositionsBoth / PositionsCountBoth", slice.AvgProfitBoth, this.getLviForeColor(slice.AvgProfitBoth));
-			this.addPercent("Avg Profit %", "Avg Profit % = NetProfitPctForClosedPositionsBoth / PositionsCountBoth", slice.AvgProfitPctBoth, this.getLviForeColor(slice.AvgProfitPctBoth));
-			this.addNumeric("Avg Bars Held", "Avg Bars Held = BarsHeldTotalForClosedPositionsBoth / PositionsCountBoth", slice.AvgBarsHeldBoth);
-			this.addNumeric("Profit per Bar", "Profit per Bar = NetProfitForClosedPositionsBoth / BarsHeldTotalForClosedPositionsBoth", slice.ProfitPerBarBoth, this.getLviForeColor(slice.NetProfitForClosedPositionsBoth));
-			this.addCurrency("Max Drawdown", "Max Drawdown = Min(NetProfitForClosedPositionsBoth - NetProfitPeak)", slice.MaxDrawDown, Color.Empty, Color.Empty, this.getLviForeColor(slice.MaxDrawDown));
-			this.addDateTime("Max Drawdown Date", "Max Drawdown Date = Date(Max Drawdown)", slice.MaxDrawDownLastLossDate);
+			this.addNumeric(		slice.PositionsCountBoth,	 "All Trades", "PositionsCountBoth", Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
+			this.addNumeric(		slice.AvgProfitBoth,		"Avg Profit", "Avg Profit = NetProfitForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.AvgProfitBoth));
+			this.addPercent(		slice.AvgProfitPctBoth,		"Avg Profit %", "Avg Profit % = NetProfitPctForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.AvgProfitPctBoth));
+			this.addNumeric(		slice.AvgBarsHeldBoth,		"Avg Bars Held", "Avg Bars Held = BarsHeldTotalForClosedPositionsBoth / PositionsCountBoth");
+			this.addNumeric(		slice.ProfitPerBarBoth, 	"Profit per Bar", "Profit per Bar = NetProfitForClosedPositionsBoth / BarsHeldTotalForClosedPositionsBoth",	this.getLviForeColor(slice.NetProfitForClosedPositionsBoth));
+			this.addCurrency(		slice.MaxDrawDown,			"Max Drawdown", "Max Drawdown = Min(NetProfitForClosedPositionsBoth - NetProfitPeak)", Color.Empty, Color.Empty, this.getLviForeColor(slice.MaxDrawDown));
+			this.addDateTime(		slice.MaxDrawDownLastLossDate, "Max Drawdown Date", "Max Drawdown Date = Date(Max Drawdown)");
 
-			this.addNumeric("Winners", "PositionsCountWinners", (double)slice.PositionsCountWinners, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.addNumeric("Win Rate", "Win Rate = 100 * PositionsCountWinners / PositionsCountBoth", slice.WinRatePct, this.getLviForeColor(slice.WinRatePct, 50));
-			this.addCurrency("Net Profit", "NetProfitWinners", slice.NetProfitWinners, this.getLviForeColor(slice.NetProfitWinners));
-			this.addNumeric("Avg Profit", "Winners Avg Profit = NetProfitWinners / PositionsCountWinners", slice.AvgProfitWinners, this.getLviForeColor(slice.AvgProfitWinners));
-			this.addPercent("Avg Profit %", "Winners Avg Profit % = NetProfitPctForClosedPositionsLong / PositionsCountWinners", slice.AvgProfitPctWinners, this.getLviForeColor(slice.AvgProfitPctWinners));
-			this.addNumeric("Avg Bars Held", "Winners Avg Bars Held = BarsHeldTotalForClosedPositionsWinners / PositionsCountWinners", slice.AvgBarsHeldWinners);
-			this.addNumeric("Max Consecutive Winners", "Winners Max Consecutive = MaxLen(exitPosition.NetProfit > 0)", (double)slice.MaxConsecWinners);
+			this.addNumeric((double)slice.PositionsCountWinners, "Winners", "PositionsCountWinners", Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
+			this.addNumeric(		slice.WinRatePct,			"Win Rate", "Win Rate = 100 * PositionsCountWinners / PositionsCountBoth", this.getLviForeColor(slice.WinRatePct, 50));
+			this.addCurrency(		slice.NetProfitWinners,		"Net Profit", "NetProfitWinners", this.getLviForeColor(slice.NetProfitWinners));
+			this.addNumeric(		slice.AvgProfitWinners,		"Avg Profit", "Winners Avg Profit = NetProfitWinners / PositionsCountWinners", this.getLviForeColor(slice.AvgProfitWinners));
+			this.addPercent(		slice.AvgProfitPctWinners,	"Avg Profit %", "Winners Avg Profit % = NetProfitPctForClosedPositionsLong / PositionsCountWinners", this.getLviForeColor(slice.AvgProfitPctWinners));
+			this.addNumeric(		slice.AvgBarsHeldWinners,	"Avg Bars Held", "Winners Avg Bars Held = BarsHeldTotalForClosedPositionsWinners / PositionsCountWinners");
+			this.addNumeric((double)slice.MaxConsecWinners,		"Max Consecutive Winners", "Winners Max Consecutive = MaxLen(exitPosition.NetProfit > 0)");
 
-			this.addNumeric("Losers", "PositionsCountLosers", (double)slice.PositionsCountLosers, Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.addNumeric("Loss Rate", "Loss Rate = 100 * this.PositionsCountLosers / PositionsCountBoth", slice.LossRatePct, this.getLviForeColor(slice.LossRatePct, 50));
-			this.addCurrency("Net Loss", "NetLossLosers", slice.NetLossLosers, this.getLviForeColor(slice.NetLossLosers));
-			this.addNumeric("Avg Loss", "Losers Avg Loss = NetLossLosers / PositionsCountLosers", slice.AvgLossLosers, this.getLviForeColor(slice.AvgLossLosers));
-			this.addPercent("Avg Loss %", "Losers Avg Loss % = NetProfitPctForClosedPositionsLosers / PositionsCountLosers", slice.AvgLossPctLosers, this.getLviForeColor(slice.AvgLossPctLosers));
-			this.addNumeric("Avg Bars Held", "Losers Avg Bars Held = BarsHeldTotalForClosedPositionsLosers / PositionsCountLosers", slice.AvgBarsHeldLosers);
-			this.addNumeric("Max Consecutive Losers", "Losers Max Consecutive = MaxLen(exitPosition.NetProfit < 0)", (double)slice.MaxConsecLosers);
+			this.addNumeric((double)slice.PositionsCountLosers, "Losers", "PositionsCountLosers", Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
+			this.addNumeric(		slice.LossRatePct,			"Loss Rate", "Loss Rate = 100 * this.PositionsCountLosers / PositionsCountBoth", this.getLviForeColor(slice.LossRatePct, 50));
+			this.addCurrency(		slice.NetLossLosers,		"Net Loss", "NetLossLosers", this.getLviForeColor(slice.NetLossLosers));
+			this.addNumeric(		slice.AvgLossLosers,		"Avg Loss", "Losers Avg Loss = NetLossLosers / PositionsCountLosers", this.getLviForeColor(slice.AvgLossLosers));
+			this.addPercent(		slice.AvgLossPctLosers,		"Avg Loss %", "Losers Avg Loss % = NetProfitPctForClosedPositionsLosers / PositionsCountLosers", this.getLviForeColor(slice.AvgLossPctLosers));
+			this.addNumeric(		slice.AvgBarsHeldLosers,	"Avg Bars Held", "Losers Avg Bars Held = BarsHeldTotalForClosedPositionsLosers / PositionsCountLosers");
+			this.addNumeric((double)slice.MaxConsecLosers,		"Max Consecutive Losers", "Losers Max Consecutive = MaxLen(exitPosition.NetProfit < 0)");
 		}
 		
 		Color getLviForeColor(double value, double ethalonRedIfLessBlueIfGreater = 0.0) {
 			if (value == ethalonRedIfLessBlueIfGreater) return this.ForeColor;
 			return (value > ethalonRedIfLessBlueIfGreater) ? Color.Blue : Color.Red;
 		}
-		void addCurrency(string label, string tooltip, double value, Color itemFontColor) {
-			this.addCurrency(label, tooltip, value, Color.Empty, Color.Empty, itemFontColor);
+		void addCurrency(double value, string label, string tooltip, Color itemFontColor) {
+			this.addCurrency(value, label, tooltip, Color.Empty, Color.Empty, itemFontColor);
 		}
-		void addCurrency(string label, string tooltip, double value,
+		void addCurrency(double value, string label, string tooltip,
 				Color backColor, Color labelFontColor, Color itemFontColor,
 				FontStyle labelFontStyle = FontStyle.Regular, FontStyle itemFontStyle = FontStyle.Regular) {
 			string format = systemPerformance.Bars.SymbolInfo.FormatPrice;
 			string valueFormatted = value.ToString(format);
-			this.addLvi(label, tooltip, valueFormatted, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
+			this.addLvi(valueFormatted, label, tooltip, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
 		}
-		void addNumeric(string label, string tooltip, double value) {
-			this.addLvi(label, tooltip, value.ToString(), Color.Empty, Color.Empty, Color.Empty);
+		void addNumeric(double value, string label, string tooltip) {
+			this.addLvi(value.ToString(), label, tooltip, Color.Empty, Color.Empty, Color.Empty);
 		}
-		void addNumeric(string label, string tooltip, double value, Color itemFontColor) {
-			this.addLvi(label, tooltip, value.ToString(), Color.Empty, Color.Empty, itemFontColor);
+		void addNumeric(double value, string label, string tooltip, Color itemFontColor) {
+			this.addLvi(value.ToString(), label, tooltip, Color.Empty, Color.Empty, itemFontColor);
 		}
-		void addNumeric(string label, string tooltip, double value, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
-			this.addLvi(label, tooltip, value.ToString(), backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
+		void addNumeric(double value, string label, string tooltip, Color backColor, Color labelFontColor, Color itemFontColor, FontStyle labelFontStyle, FontStyle itemFontStyle) {
+			this.addLvi(value.ToString(), label, tooltip, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
 		}
-		void addPercent(string label, string tooltip, double value, Color itemFontColor) {
-			this.addLvi(label, tooltip, value.ToString(), Color.Empty, Color.Empty, itemFontColor);
+		void addPercent(double value, string label, string tooltip, Color itemFontColor) {
+			this.addLvi(value.ToString(), label, tooltip, Color.Empty, Color.Empty, itemFontColor);
 		}
-		void addDateTime(string label, string tooltip, DateTime value) {
-			this.addLvi(label, tooltip, value.ToShortDateString() + " " + value.ToShortTimeString(), Color.Empty, Color.Empty, Color.Empty);
+		void addDateTime(DateTime value, string label, string tooltip) {
+			this.addLvi(value.ToShortDateString() + " " + value.ToShortTimeString(), label, tooltip, Color.Empty, Color.Empty, Color.Empty);
 		}
-		void addLvi(string label, string tooltip, string valueAlreadyFormatted,
+		void addLvi(string valueAlreadyFormatted, string label, string tooltip,
 				Color colorBack, Color colorForeLabel, Color colorFore,
 				FontStyle labelFontStyle = FontStyle.Regular, FontStyle itemFontStyle = FontStyle.Regular) {
 			ListViewItem lvi;
@@ -175,14 +175,22 @@ namespace Sq1.Reporters {
 //			if (colorFore	!= Color.Empty) subLvi.ForeColor = colorFore;
 			lvi.SubItems.Add(subLvi);
 		}
-		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
-		}
 		public override object CreateSnapshotToStoreInScriptContext() {
 			return null;
 		}
-		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
-		}
+		double lastKnownCashAvailable = -1;
 		public override void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
+			this.lastKnownCashAvailable = this.systemPerformance.SlicesShortAndLong.CashAvailable;
+			this.propagatePerformanceReport();
+		}
+		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
+			this.lastKnownCashAvailable = this.systemPerformance.SlicesShortAndLong.CashAvailable;
+			this.propagatePerformanceReport();
+		}
+		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
+			if (this.lastKnownCashAvailable == this.systemPerformance.SlicesShortAndLong.CashAvailable) return;
+				this.lastKnownCashAvailable = this.systemPerformance.SlicesShortAndLong.CashAvailable;
+			this.propagatePerformanceReport();
 		}
 	}
 }

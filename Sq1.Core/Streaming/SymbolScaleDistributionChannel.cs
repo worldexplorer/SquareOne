@@ -320,31 +320,37 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		public void PumpAutoPauseBacktesterLaunchingAdd(Backtester backtesterAdding) {
-			if (backtestersRunningCausingPumpingPause.Contains(backtesterAdding)) {
-				string msg = "ADD_BACTESTER_ONLY_ONCE [" + backtesterAdding + "]";
-				Assembler.PopupException(msg);
-				return;
-			}
-			backtestersRunningCausingPumpingPause.Add(backtesterAdding);
+		public void PumpAutoPauseBacktesterLaunchingAdd(Backtester backtesterAdding) {	// POTENTINALLY_THREAD_UNSAFE lock(this.lockPump) {
 			if (QuotePump.PushConsumersPaused == true) {
 				string msg = "PUMP_ALREADY_PAUSED_BY_ANOTHER_CONSUMERS_BACKTEST__LAZY_TO_FIND_ROOT_CAUSE_KOZ_NOT_AN_ERROR backtesterAdding=[" + backtesterAdding + "]";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
+			if (this.backtestersRunningCausingPumpingPause.Contains(backtesterAdding)) {
+				string msg = "ADD_BACKTESTER_ONLY_ONCE [" + backtesterAdding + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.backtestersRunningCausingPumpingPause.Add(backtesterAdding);
 			this.QuotePump.PushConsumersPaused = true;
 		}
 		public void PumpAutoResumeBacktesterCompleteRemove(Backtester backtesterRemoving) {
-			if (backtestersRunningCausingPumpingPause.Contains(backtesterRemoving) == false) {
+			if (this.QuotePump.PushConsumersPaused == false) {
+				string msg = "YOU_RUINED_WHOLE_IDEA_OF_DISTRIBUTOR_CHANNEL_AUTORESUME_ITS_PUMP backtesterRemoving=[" + backtesterRemoving + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (this.backtestersRunningCausingPumpingPause.Contains(backtesterRemoving) == false) {
 				string msg = "YOU_NEVER_ADDED_BACKTESTER [" + backtesterRemoving + "]";
 				Assembler.PopupException(msg);
 				return;
 			}
-			backtestersRunningCausingPumpingPause.Remove(backtesterRemoving);
-			if (backtestersRunningCausingPumpingPause.Count > 0) return;
-			if (QuotePump.PushConsumersPaused == false) {
-				string msg = "YOU_RUINED_WHOLE_IDEA_OF_DISTRIBUTOR_CHANNEL_AUTORESUME_ITS_PUMP backtesterRemoving=[" + backtesterRemoving + "]";
-				Assembler.PopupException(msg, null, false);
+			this.backtestersRunningCausingPumpingPause.Remove(backtesterRemoving);
+			if (this.backtestersRunningCausingPumpingPause.Count > 0) {
+				string msg = "STILL_HAVE_OTHER_BACKTEST_RUNNING_IN_PARALLEL__WILL_UNPAUSE_PUMP_AFTER_LAST_TERMINATES"
+					+ " backtestersRunningCausingPumpingPause.Count=[" + this.backtestersRunningCausingPumpingPause.Count + "]"
+					+ " after backtesterRemoved[" + backtesterRemoving + "]";
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.QuotePump.PushConsumersPaused = false;

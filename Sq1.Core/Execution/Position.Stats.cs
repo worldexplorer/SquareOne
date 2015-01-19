@@ -15,18 +15,17 @@ namespace Sq1.Core.Execution {
 					? this.ExitOrStreamingPrice - this.EntryFilledPrice
 					: this.EntryFilledPrice - this.ExitOrStreamingPrice;;
 			} }
-		public double DistanceInPointsNoSlippage { get {
-				return (this.PositionLongShort == PositionLongShort.Long)
-					? this.ExitOrCurrentPriceNoSlippage - this.EntryPriceNoSlippage
-					: this.EntryPriceNoSlippage - this.ExitOrCurrentPriceNoSlippage;
-			} }
-		public double NetProfitNoSlippage { get {
-				if (this.Bars == null) return -999999;
-				double netProfitNoSlippage = this.Shares * this.DistanceInPointsNoSlippage * this.Bars.SymbolInfo.Point2Dollar;
-				netProfitNoSlippage -= this.EntryFilledCommission;
-				if (this.ExitFilledBarIndex != -1) netProfitNoSlippage -= this.ExitFilledCommission;
-				return netProfitNoSlippage;
-			} }
+//		public double DistanceInPointsNoSlippage { get {
+//				return (this.PositionLongShort == PositionLongShort.Long)
+//					? this.ExitOrCurrentPriceNoSlippage - this.EntryPriceNoSlippage
+//					: this.EntryPriceNoSlippage - this.ExitOrCurrentPriceNoSlippage;
+//			} }
+//		public double NetProfitNoSlippage { get {
+//				if (this.Bars == null) return -999999;
+//				double netProfitNoSlippage = this.NetProfit;
+//				if (this.ExitFilledBarIndex != -1) netProfitNoSlippage -= this.ExitFilledCommission;
+//				return netProfitNoSlippage;
+//			} }
 		public double PositionCost { get { return this.Shares * this.EntryFilledPrice * this.Bars.SymbolInfo.Point2Dollar; } }
 		public double NetProfitPercent { get {
 				if (this.Bars == null) return -999999;

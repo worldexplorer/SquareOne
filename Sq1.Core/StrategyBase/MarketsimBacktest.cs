@@ -342,10 +342,8 @@ namespace Sq1.Core.StrategyBase {
 				case MarketLimitStop.AtClose:
 					// WHY (IsBacktestingNow == true): market orders during LIVE could be filled at virtually ANY price
 					if (quote.PriceBetweenBidAsk(exitPriceOut) == false && this.executor.Backtester.IsBacktestingNow == true) {
-						#if DEBUG
-						string msg = "this isn't enough: market orders are still executed outside the bar...";
-						Debugger.Break();	// we'll need to generate one more quote onTheWayTo exitPriceOut
-						#endif
+						string msg = "this isn't enough: market orders are still executed outside the bar; we'll need to generate one more quote onTheWayTo exitPriceOut";
+						Assembler.PopupException(msg, null, false);
 						return false;
 					}
 					switch (exitAlert.Direction) {
@@ -552,9 +550,6 @@ namespace Sq1.Core.StrategyBase {
 		bool simulatePendingFillEntry(Alert alert, Quote quote) {
 			double priceFill = -1;
 			double slippageFill = -1;
-			if (quote.AbsnoPerSymbol == 523 && quote.IntraBarSerno == 100001) {
-				//Debugger.Break();
-			}
 			bool filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
 			if (filled == false) return filled;
 

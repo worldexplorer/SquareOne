@@ -7,8 +7,8 @@ namespace Sq1.Core.DataTypes {
 		public			string			Description;
 						List<double>	doubleValues;
 		public virtual	IList<double>	Values { get { return this.doubleValues; } }
-		public virtual	int				StreamingIndex { get { return this.doubleValues.Count - 1; } }
-		public virtual	double			StreamingValue {
+		public virtual	int				LastIndex { get { return this.doubleValues.Count - 1; } }
+		public virtual	double			LastValue {
 			get { return (this.doubleValues.Count == 0) ? double.NaN : this[this.doubleValues.Count - 1]; }
 			set {
 				if (this.doubleValues.Count == 0) {
@@ -29,7 +29,7 @@ namespace Sq1.Core.DataTypes {
 		protected DataSeriesBasic() {
 			this.doubleValues = new List<double>();
 			#if DEBUG
-			if (double.IsNaN(this.StreamingValue) == false) {
+			if (double.IsNaN(this.LastValue) == false) {
 				Debugger.Break();
 			}
 			#endif
@@ -80,7 +80,7 @@ namespace Sq1.Core.DataTypes {
 		public override string ToString() {
 			string ret = this.Count + "doubleValues";
 			if (this.Count > 0) {
-				ret += " last=[" + this.StreamingValue + "] @[" + this.StreamingIndex + "]";
+				ret += " LastValue=[" + this.LastValue + "] @[" + this.LastIndex + "]";
 			}
 			if (string.IsNullOrEmpty(this.Description) == false) ret += "/" + this.Description;
 			return ret;

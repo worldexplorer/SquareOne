@@ -6,8 +6,8 @@ using Sq1.Core.Indicators.HelperSeries;
 
 namespace Sq1.Core.Indicators {
 	public class IndicatorMovingAverageSimple : Indicator {
-		public IndicatorParameter ParamPeriod { get; set; }	// IndicatorParameter must be a property
-		private MovingAverageSimple smaSeries;
+		public	IndicatorParameter	ParamPeriod;	//NOPE_JSON.SERIALIZE_PICKS_UP_FIELDS_TOO { get; set; }	// IndicatorParameter must be a property
+				MovingAverageSimple	smaSeries;
 		
 		public override int FirstValidBarIndex {
 			get { return (int)this.ParamPeriod.ValueCurrent; }		// Period = 15, 0..14 are NaN, index=15 has valueCalculated
@@ -27,12 +27,27 @@ namespace Sq1.Core.Indicators {
 		}
 		
 		public override double CalculateOwnValueOnNewStaticBarFormed(Bar newStaticBar) {
+			double ret = double.NaN;
+
+			if (this.ParamPeriod.ValueCurrent <= 0) {
+				string msg = "this.ParamPeriod.ValueCurrent <= 0";
+				Assembler.PopupException(msg);
+				return ret;
+			}
+
 			#region DELETEME_AFTER_COMPATIBILITY_TEST
 			try {
+				bool duplicateFound = false;
+				double alreadyExistingValue = double.NegativeInfinity;
 				if (base.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) {
+					duplicateFound = true;
+					alreadyExistingValue = base.OwnValuesCalculated[newStaticBar.DateTimeOpen];
+				}
+				if (duplicateFound && double.IsNegativeInfinity(alreadyExistingValue) == true && double.IsNaN(alreadyExistingValue) == false) {
 					string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW";
-					if (base.OwnValuesCalculated.LastDateAppended > newStaticBar.DateTimeOpen) {
-						msg = "DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
+					if (newStaticBar.DateTimeOpen < base.OwnValuesCalculated.LastDateAppended) {
+						msg = "DONT_INVOKE_ME_TWICE [" + base.OwnValuesCalculated.LastValueAppended + "]"
+							+ "newStaticBar.DateTimeOpen[" + newStaticBar.DateTimeOpen + "] < LastDateAppended[" + base.OwnValuesCalculated.LastDateAppended + "]";
 						Assembler.PopupException(msg);
 						return double.NaN;
 					} else {
@@ -45,11 +60,7 @@ namespace Sq1.Core.Indicators {
 			}
 			#endregion
 
-			if (this.ParamPeriod.ValueCurrent <= 0) return double.NaN;
-			if (base.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) return double.NaN;
-			if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) return double.NaN;
-
-			double ret = this.smaSeries.CalculateAppendOwnValueForNewStaticBarFormedNanUnsafe(newStaticBar);
+			ret = this.smaSeries.CalculateAppendOwnValueForNewStaticBarFormedNanUnsafe(newStaticBar);
 
 			#region DELETEME_AFTER_COMPATIBILITY_TEST
 			#if TEST_COMPATIBILITY

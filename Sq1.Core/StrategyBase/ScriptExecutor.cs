@@ -301,18 +301,18 @@ namespace Sq1.Core.StrategyBase {
 		void enrichAlertsWithQuoteCreated(List<Alert> alertsAfterStrategy, Quote quote) {
 			if (quote == null) return;
 			foreach (Alert alert in alertsAfterStrategy) {
-				if (alert.PlacedBarIndex != this.Bars.Count - 1) {
-					string msg = "skipping enriching: alertsNewAfterExec should contain only lastBar alerts"
-						+ "; got alertAfterStrategy.BarRelnoPlaced[" + alert.PlacedBarIndex + "]"
-						+ "!= this.Bars.Count[" + this.Bars.Count + "] for alert[" + alert + "]";
+				if (quote.HasParentBar == false) {
+					string msg = "I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE__SINCE_QUOTE_HAS_NO_PARENT_BAR__I_CAN_NOT_CHECK_IF_QUOTE_AND_ALERT_ARE_FOR_THE_SAME_BAR";
 					this.PopupException(msg);
 					continue;
 				}
-				//log.Debug("quote!=null => setting for TradeHistory:" +
-				//	" 1) alert.BrokerQuoteDateTime=quote.ServerTime[" + quote.ServerTime + "]" +
-				//	" 2) alert.PriceDeposited=[" + priceDeposited + "] quote.DepositBuy[" + quote.FortsDepositBuy + "] quote.DepositSell[" + quote.FortsDepositSell + "] ");
-				//if (alertAfterStrategy.DataRange == null) alertAfterStrategy.DataRange = this.BarDataRange;
-				//alertAfterStrategy.PositionSize = this.PositionSize;
+				int alertIsLateNbars = quote.ParentBarStreaming.ParentBarsIndex - alert.PlacedBarIndex;
+				if (alertIsLateNbars != 0) {
+					string msg = "I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE alertIsLateNbars[" + alertIsLateNbars + "] alert[" + alert + "]";
+					this.PopupException(msg);
+					continue;
+				}
+				//alert.PositionSize = this.PositionSize;
 				alert.QuoteCreatedThisAlertServerTime = quote.ServerTime;
 				alert.QuoteCreatedThisAlert = quote;
 			}

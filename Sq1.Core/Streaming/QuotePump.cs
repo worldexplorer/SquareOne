@@ -101,6 +101,11 @@ namespace Sq1.Core.Streaming {
 								string msg2 = pausedConfirmed ? "PUMPING_PAUSED" : "PUMPING_PAUSED_NOT_CONFIRMED";
 								Assembler.PopupException(msg2 + msig, null, false);
 							} else {
+								bool unPausedNow = this.confirmUnpaused.WaitOne(0);
+								if (unPausedNow == true) {
+									string msg = "added complimentary to PushConsumersPaused=false below => I didn't confirm unpausing because I just paused => for whoever might check Wait() un-timely";
+									this.confirmUnpaused.Reset();
+								}
 								string msg2 = "PAUSED_FROM_WITHIN_PUMPING_THREAD";
 								//Assembler.PopupException(msg2 + msig, null, false);
 							}
@@ -123,6 +128,12 @@ namespace Sq1.Core.Streaming {
 								string msg = unPausedConfirmed ? "PUMPING_RESUMED" : "PUMPING_RESUMED_NOT_CONFIRMED";
 								Assembler.PopupException(msg + msig, null, false);
 							} else {
+								bool unPausedNow = this.confirmUnpaused.WaitOne(0);
+								if (unPausedNow == false) {
+									string msg = "added since BrokerMock.SubmitOrder was waiting for 2 minutes after someone has already unpaused"
+										+ " ; I have to notify waiters can proceed via WaitUntilUnpaused, even if noone is WaitingOne()";
+									this.confirmUnpaused.Set();
+								}
 								string msg2 = "UNPAUSED_FROM_WITHIN_PUMPING_THREAD";
 								//Assembler.PopupException(msg2 + msig, null, false);
 							}
@@ -206,12 +217,13 @@ namespace Sq1.Core.Streaming {
 					bool signalled = this.hasQuoteToPush.WaitOne(this.heartbeatTimeout);
 					if (this.exitPushingThreadRequested) {
 						string msg = "ABORTING_PUMP_AFTER_SeparatePushingThreadEnabled=false_OR_ IDisposable.Dispose()";
-						//Assembler.PopupException(msg, null, true);
+						Assembler.PopupException(msg, null, true);
 						break;
 					}
 					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == true) {
 						string msg = "MainFormClosingIgnoreReLayoutDockedForms == true";
-						break;
+						Assembler.PopupException(msg, null, false);
+						break;	// breaks WHILE and exits the thread
 					}
 
 					if (this.pauseRequested) {

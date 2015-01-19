@@ -195,6 +195,7 @@ namespace Sq1.Gui {
 					//NOPE_WRONG_MOVE cfmgr.ChartForm.Size = this.DockPanel.ClientSize;
 
 					cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
+					cfmgr.Executor.DataSource.StreamingProvider.UpstreamConnect();
 				}
 				
 				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>

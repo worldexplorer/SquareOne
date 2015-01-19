@@ -122,12 +122,15 @@ namespace Sq1.Gui {
 
 			if (this.MainFormClosingSkipChartFormsRemoval) {
 				if (this.ExceptionsDuringApplicationShutdown == null) {
-					this.ExceptionsDuringApplicationShutdown = new List<Exception>();
-					this.ExceptionsDuringApplicationShutdownSerializer = new Serializer<List<Exception>>();
-					string now = Assembler.FormattedLongFilename(DateTime.Now);
-					bool createdNewFile = this.ExceptionsDuringApplicationShutdownSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
-						"ExceptionsDuringApplicationShutdown-" + now + ".json", "Exceptions", null, true, true);
-					this.ExceptionsDuringApplicationShutdown = this.ExceptionsDuringApplicationShutdownSerializer.Deserialize(); 
+					//v1: produced useless "[ null ]" file
+					//this.ExceptionsDuringApplicationShutdown = new List<Exception>();
+					//this.ExceptionsDuringApplicationShutdownSerializer = new Serializer<List<Exception>>();
+					//string now = Assembler.FormattedLongFilename(DateTime.Now);
+					//bool createdNewFile = this.ExceptionsDuringApplicationShutdownSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
+					//    "ExceptionsDuringApplicationShutdown-" + now + ".json", "Exceptions", null, true, true);
+					//this.ExceptionsDuringApplicationShutdown = this.ExceptionsDuringApplicationShutdownSerializer.Deserialize(); 
+					//v2
+					return;
 				}
 				this.ExceptionsDuringApplicationShutdown.Insert(0, exc);
 				this.ExceptionsDuringApplicationShutdownSerializer.Serialize();
