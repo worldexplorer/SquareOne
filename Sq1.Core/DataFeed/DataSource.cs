@@ -308,7 +308,13 @@ namespace Sq1.Core.DataFeed {
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
-					Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg);
+				}
+				if (channel.QuotePump.PushConsumersPaused == true) {
+					if (wrongUsagePopup == true) {
+						string msg = "PUSHING_THREAD_ALREADY_PAUSED (review how you use QuotePump)";
+						Assembler.PopupException(msg);
+					}
 				}
 				channel.QuotePump.PushConsumersPaused = true;
 				return;
@@ -331,6 +337,12 @@ namespace Sq1.Core.DataFeed {
 					string msg = "WILL_UNPAUSE_DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg, null, false);
 				}
+				if (channel.QuotePump.PushConsumersPaused == false) {
+					if (wrongUsagePopup == true) {
+						string msg = "PUSHING_THREAD_ALREADY_UNPAUSED (review how you use QuotePump)";
+						Assembler.PopupException(msg);
+					}
+				}
 				channel.QuotePump.PushConsumersPaused = false;
 				return;
 			}
@@ -349,8 +361,8 @@ namespace Sq1.Core.DataFeed {
 		public bool PumpingPausedGet(Bars bars) {
 			DataDistributor distr = this.StreamingProvider.DataDistributor;
 			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
-			bool unpaused = channel.QuotePump.PushConsumersPaused;
-			return unpaused;
+			bool paused = channel.QuotePump.PushConsumersPaused;
+			return paused;
 		}
 		public bool PumpingWaitUntilUnpaused(Bars bars, int maxWaitingMillis = 1000) {
 			DataDistributor distr = this.StreamingProvider.DataDistributor;

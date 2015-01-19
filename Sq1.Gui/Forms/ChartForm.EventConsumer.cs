@@ -314,16 +314,44 @@ namespace Sq1.Gui.Forms {
 				if (this.mniSubscribedToStreamingProviderQuotesBars.Checked == false) {
 					this.mniSubscribedToStreamingProviderQuotesBars.BackColor = Color.LightSalmon;
 					this.DdbBars.BackColor = Color.LightSalmon;
+					this.mniSubscribedToStreamingProviderQuotesBars.Text = "NOT Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingProvider.Name + "]";
 				} else {
 					this.mniSubscribedToStreamingProviderQuotesBars.BackColor = SystemColors.Control;
 					this.DdbBars.BackColor = SystemColors.Control;
+					this.mniSubscribedToStreamingProviderQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingProvider.Name + "]";
 				}
+
+				ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
+				bool prevStreaming = ctxChart.IsStreaming;
 
 				string reason = "mniSubscribedToStreamingProviderQuotesBars.Checked[" + this.mniSubscribedToStreamingProviderQuotesBars.Checked + "]";
 				if (this.mniSubscribedToStreamingProviderQuotesBars.Checked) {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingSubscribe(reason);
+					// without backtest here, Indicators aren't calculated if there was no "Backtest Now" or "Backtest on App Restart"
+					// better duplicated backtest but synced, than streaming starts without prior bars are processed by the strategy
+					// TODO few quotes might get pushed into the indicators/strategy before backtest pauses QuotePump in new thread
+					this.ChartFormManager.BacktesterRunSimulationRegular();
 				} else {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingUnsubscribe(reason);
+				}
+
+				bool nowStreaming = ctxChart.IsStreaming;
+				if (nowStreaming == prevStreaming) {
+					string msg = "SHOULD_HAVE_CHANGED_BUT_STAYS_THE_SAME nowStreaming[" + nowStreaming + "] == prevStreaming[" + prevStreaming + "]";
+					Assembler.PopupException(msg);
+				}
+				if (nowStreaming != this.mniSubscribedToStreamingProviderQuotesBars.Checked) {
+					string msg = "MUST_BE_SYNCHRONIZED_BUT_STAYS_UNSYNC nowStreaming[" + nowStreaming
+						+ "] != this.mniSubscribedToStreamingProviderQuotesBars.Checked[" + this.mniSubscribedToStreamingProviderQuotesBars.Checked + "]";
+					Assembler.PopupException(msg);
+				}
+
+				if (this.ChartFormManager.Strategy == null) {
+					// .IsStreaming {that we just changed by StreamingSubscribe()/StreamingUnSubscribe()} is in ContextChart => saving DataSnapshot
+					this.ChartFormManager.DataSnapshotSerializer.Serialize();
+				} else {
+					// .IsStreaming {that we just changed by StreamingSubscribe()/StreamingUnSubscribe()} is in ContextScript => saving Strategy
+					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
 				}
 
 			} catch (Exception ex) {

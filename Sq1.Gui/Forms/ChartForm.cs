@@ -137,7 +137,7 @@ namespace Sq1.Gui.Forms {
 			if (this.ChartFormManager.Executor.DataSource.StreamingProvider == null) {
 				this.btnStreamingTriggersScript.Text = "DataSource: [" + StreamingProvider.NO_STREAMING_PROVIDER + "]";
 				this.btnStreamingTriggersScript.Enabled = false;
-				this.mniSubscribedToStreamingProviderQuotesBars.Text = "Not Subscribed: edit DataSource > attach StreamingProvider";
+				this.mniSubscribedToStreamingProviderQuotesBars.Text = "NOT Subscribed: edit DataSource > attach StreamingProvider";
 			} else {
 				this.btnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent + " 00:00:00.000"; //+:: 00:00:00.000";
 				this.btnStreamingTriggersScript.Enabled = true;
@@ -183,6 +183,7 @@ namespace Sq1.Gui.Forms {
 			if (this.mniSubscribedToStreamingProviderQuotesBars.Checked == false) {
 				this.mniSubscribedToStreamingProviderQuotesBars.BackColor = Color.LightSalmon;
 				this.DdbBars.BackColor = Color.LightSalmon;
+				this.mniSubscribedToStreamingProviderQuotesBars.Text = "NOT " + this.mniSubscribedToStreamingProviderQuotesBars.Text;
 			} else {
 				this.mniSubscribedToStreamingProviderQuotesBars.BackColor = SystemColors.Control;
 				this.DdbBars.BackColor = SystemColors.Control;

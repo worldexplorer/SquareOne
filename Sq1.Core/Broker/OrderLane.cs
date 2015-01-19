@@ -139,6 +139,7 @@ namespace Sq1.Core.Broker {
 					found = order;
 					break;
 				}
+				if (found == null) return found;
 				if (iDontNeedSuggestionsHere == false) suggestLanePopupException(found);
 				return found;
 			} }

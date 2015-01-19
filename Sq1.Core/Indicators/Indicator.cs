@@ -310,25 +310,50 @@ namespace Sq1.Core.Indicators {
 			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) {
 				return;
 			}
-				
+
+			if (this.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) {
+				string msg = "base.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) {
+				int barsToValidValue = this.FirstValidBarIndex - newStaticBar.ParentBarsIndex;
+				string msg = "barsToValidValue[" + barsToValidValue + "] newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex";
+				//Assembler.PopupException(msg, null, false);
+				return;
+			}
+
 			double derivedCalculated = this.CalculateOwnValueOnNewStaticBarFormed(newStaticBar);
 
 			int newStaticBarIndex = newStaticBar.ParentBarsIndex;
-			int differenceMustNotBeMoreThanOne = newStaticBarIndex - this.OwnValuesCalculated.StreamingIndex;
-			if (differenceMustNotBeMoreThanOne > 1) {
+			int differenceMustBeZero = newStaticBarIndex - this.OwnValuesCalculated.LastIndex;
+			if (differenceMustBeZero != 0) {
 				string msig = " OnNewStaticBarFormed(" + newStaticBar.ToString() + ")";
-				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS[" + differenceMustNotBeMoreThanOne + "]";
-				#if DEBUG
-				//Debugger.Break();
-				#endif
-				throw new Exception(msg + msig);
-			}
-			if (differenceMustNotBeMoreThanOne == 1) {
+				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS[" + differenceMustBeZero + "]";
+				Assembler.PopupException(msg + msig);
 				DateTime streamingBarDateTime = newStaticBar.DateTimeOpen;
 				this.OwnValuesCalculated.Append(streamingBarDateTime, derivedCalculated);
-			} else {
-				this.OwnValuesCalculated.StreamingValue = derivedCalculated;
+				return;
 			}
+			//if (differenceMustBeZero <= 0) {
+				if (double.IsNaN(this.OwnValuesCalculated.LastValue) == false) {
+					string msg = "I_REFUSE_TO_REPLACE_STREAMING_VALUE__YOU_MUST_CALCULATE_OWN_VALUE_ONCE_PER_BAR_FOR_PREV_BAR"
+						+ " LastValue[" + this.OwnValuesCalculated.LastValue + "]"
+						+ " LastIndex[" + this.OwnValuesCalculated.LastIndex + "]"
+						+ " LastValueAppended[" + this.OwnValuesCalculated.LastValueAppended + "]"
+						+ " LastDateAppended[" + this.OwnValuesCalculated.LastDateAppended + "]"
+						+ " Count[" + this.OwnValuesCalculated.Count + "]"
+						;
+					Assembler.PopupException(msg);
+					return;
+				}
+				if (double.IsNaN(this.OwnValuesCalculated.LastValue) && double.IsNaN(derivedCalculated)) {
+					return;
+				}
+				this.OwnValuesCalculated.LastValue = derivedCalculated;
+			//	return;
+			//}
+			// ALREADY_APPENDED_IN_OnNewStreamingQuote() this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, derivedCalculated);
 		}
 		public void OnNewStreamingQuote(Quote newStreamingQuote) {
 			if (this.OwnValuesCalculated == null) {
@@ -339,21 +364,21 @@ namespace Sq1.Core.Indicators {
 			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote(newStreamingQuote);
 			
 			int streamingBarIndex = newStreamingQuote.ParentBarStreaming.ParentBarsIndex;
-			int differenceMustNotBeMoreThanOne = streamingBarIndex - this.OwnValuesCalculated.StreamingIndex;
+			int differenceMustNotBeMoreThanOne = streamingBarIndex - this.OwnValuesCalculated.LastIndex;
 			if (differenceMustNotBeMoreThanOne > 1) {
 				string msig = " OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
 				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS[" + differenceMustNotBeMoreThanOne + "]";
-				#if DEBUG
-				//Debugger.Break();
-				#endif
-				throw new Exception(msg + msig);
+				Assembler.PopupException(msg + msig);
 			}
 			if (differenceMustNotBeMoreThanOne == 1) {
 				DateTime streamingBarDateTime = newStreamingQuote.ParentBarStreaming.DateTimeOpen;
 				this.OwnValuesCalculated.Append(streamingBarDateTime, derivedCalculated);
-			} else {
-				this.OwnValuesCalculated.StreamingValue = derivedCalculated;
+				return;
 			}
+			if (double.IsNaN(this.OwnValuesCalculated.LastValue) && double.IsNaN(derivedCalculated)) {
+				return;
+			}
+			this.OwnValuesCalculated.LastValue = derivedCalculated;
 		}
 		
 		//v1

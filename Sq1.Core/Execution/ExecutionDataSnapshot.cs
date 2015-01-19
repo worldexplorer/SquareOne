@@ -58,10 +58,6 @@ namespace Sq1.Core.Execution {
 			if (positionOpening.EntryFilledBarIndex == -1) {
 				string msg = "ENTRY_BAR_NEGATIVE_CAN_NOT_STORE_POSITION_IN_PositionsMaster.ByEntryBarFilled"
 					+ " Strategy[" + this.executor.Strategy.ToString() + "] EntryBar=-1 for position[" + positionOpening + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				//throw new Exception(msg);
 				Assembler.PopupException(msg);
 				return;
 			}

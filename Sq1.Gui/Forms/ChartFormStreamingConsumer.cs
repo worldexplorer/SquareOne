@@ -7,6 +7,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
 using System.Collections.Generic;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Gui.Forms {
 	// ANY_STRATEGY_WILL_RUN_WITH_A_CHART_ITS_NOT_A_SERVER_APPLICATION
@@ -351,6 +352,16 @@ namespace Sq1.Gui.Forms {
 			var streamingSafe = this.StreamingProvider;
 			var chartFormSafe = this.ChartForm;
 			var executorSafe = this.Executor;
+
+			// copy-paste from BacktestQuoteBarConsumer.ConsumeQuoteOfStreamingBar; fixes TODO indicator interrupts at first Streaming bar (+msg)
+			ExecutionDataSnapshot snap = executorSafe.ExecutionDataSnapshot;
+			foreach (Indicator indicator in snap.IndicatorsReflectedScriptInstances.Values) {
+				try {
+					indicator.OnNewStreamingQuote(quote);
+				} catch (Exception ex) {
+					Assembler.PopupException("NEW_BAR_ADDED_DURING_BACKTEST__IMPLEMENT_STREAMING_ON_HOLD " + ex);
+				}
+			}
 
 			// STREAMING_BAR_IS_ALREADY_MERGED_IN_EARLY_BINDER_WITH_QUOTE_RECIPROCALLY
 			//try {

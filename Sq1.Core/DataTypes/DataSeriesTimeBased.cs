@@ -4,19 +4,27 @@ using System.Diagnostics;
 
 namespace Sq1.Core.DataTypes {
 	public class DataSeriesTimeBased : DataSeriesBasic {
-		SortedList<DateTime, double> doublesByDate;
-		public DateTime LastDateAppended;
+				SortedList<DateTime, double> doublesByDate;
+		public	DateTime	LastDateAppended	{ get; protected set; }
+		public	double		LastValueAppended	{ get; protected set; }
 
 		public BarScaleInterval ScaleInterval;
 		public virtual double this[int barIndex] {
 			get { return base[barIndex]; }
 			set { base[barIndex] = value; }
 		}
+		//public virtual double this[int barIndex] {
+		//    get { return this.doublesByDate[this.doublesByDate.Keys[barIndex]]; }
+		//    set { this.doublesByDate[this.doublesByDate.Keys[barIndex]] = value; }
+		//}
+
+		public virtual double this[DateTime date] { get { return this.doublesByDate[date]; } }
 
 		protected DataSeriesTimeBased(BarScaleInterval scaleInterval) {	// NOT_USING_PARENTS_List<double>doubleValues      : base()
 			doublesByDate = new SortedList<DateTime, double>();
 			ScaleInterval = scaleInterval;
 			LastDateAppended = DateTime.MinValue;
+			LastValueAppended = double.NaN;
 		}
 		public DataSeriesTimeBased(BarScaleInterval scaleInterval, string description) : this(scaleInterval) {
 			this.Description = description;
@@ -33,6 +41,7 @@ namespace Sq1.Core.DataTypes {
 				base.Append(value);
 				this.doublesByDate.Add(dateTimeAdding, value);
 				this.LastDateAppended = dateTimeAdding;
+				this.LastValueAppended = value;
 			} catch (Exception e) {
 				#if DEBUG
 				Debugger.Break();
@@ -41,9 +50,10 @@ namespace Sq1.Core.DataTypes {
 			}
 		}
 		public override void Clear() {
-			base.Clear();
+			// base.doubleValues_NOT_CONSTRUCTED_base.Clear()_WILL_THROW base.Clear();
 			this.doublesByDate.Clear();
 			this.LastDateAppended = DateTime.MinValue;
+			this.LastValueAppended = double.NaN;
 		}
 		void checkThrow(DateTime appending) {
 			if (appending == DateTime.MinValue) {
@@ -92,8 +102,20 @@ namespace Sq1.Core.DataTypes {
 			valueExisting += value;
 			this[indexFound] = valueExisting;
 		}
+		// decided to use CumulativeCash,CumulativeEquity in SystemPerformanceSlice
+//		public void Replace(DateTime dateTimeAdding, double value, bool throwIfDoesntExist = true) {
+//			int indexFound = this.doublesByDate.IndexOfKey(dateTimeAdding);
+//			if (indexFound == -1) {
+//				this.Append(dateTimeAdding, value);
+//				return;
+//			}
+//			double valueExisting = this[indexFound];
+//			valueExisting += value;
+//			this[indexFound] = valueExisting;
+//		}
 		public override string ToString() {
 			string ret = "[" + this.ScaleInterval + "]" + this.Count + "doublesByDate ";
+			ret += " Last[" + this.LastValueAppended + "]@[" + this.LastDateAppended + "]";
 			ret += base.ToString();
 			return ret;
 		}

@@ -68,7 +68,7 @@ namespace Sq1.Reporters {
 
 			this.olvcPosition.ImageGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.AspectGetter: position=null";
+				if (position == null) return "olvcPosition.ImageGetter: position=null";
 
 				//this.tradeTypes.Images.SetKeyName(0, "45degrees3-LongEntryUnknown.png");
 				//this.tradeTypes.Images.SetKeyName(1, "45degrees3-LongEntryProfit.png");
@@ -92,137 +92,142 @@ namespace Sq1.Reporters {
 			};
 			this.olvcPosition.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.AspectGetter: position=null";
+				if (position == null) return "olvcPosition.AspectGetter: position=null";
 				return position.PositionLongShort.ToString();
 			};
 			this.olvcSerno.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhSerno.AspectGetter: position=null";
+				if (position == null) return "olvcSerno.AspectGetter: position=null";
 				return position.SernoAbs.ToString();
 			};
 			this.olvcSymbol.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.clhSymbol: position=null";
+				if (position == null) return "olvcSymbol.AspectGetter: position=null";
 				return position.Bars.Symbol;
 			};
 			this.olvcQuantity.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.clhQuantity: position=null";
+				if (position == null) return "olvcQuantity.AspectGetter: position=null";
 				//string format = "N" + position.Bars.SymbolInfo.DecimalsVolume;
 				return position.Shares.ToString(base.FormatPrice);
+			};
+			this.olvcCost.AspectGetter = delegate(object o) {
+				var position = o as Position;
+				if (position == null) return "olvcCost.AspectGetter: position=null";
+				return position.PositionCost.ToString(base.FormatPrice);
 			};
 
 			this.olvcEntryDate.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.clhEntryDate: position=null";
+				if (position == null) return "olvcEntryDate.AspectGetter: position=null";
 				string format = (position.Bars.IsIntraday) ? "dd-MMM-yyyy HH:mm:ss" : "dd-MMM-yyyy";
 				return position.EntryDate.ToString(format);
 			};
 			this.olvcEntryPrice.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.clhEntryPrice: position=null";
+				if (position == null) return "olvcEntryPrice.AspectGetter: position=null";
 				//string format = "N" + position.Bars.SymbolInfo.DecimalsPrice;
 				return position.EntryFilledPrice.ToString(base.FormatPrice);
 			};
 			this.olvcEntryOrder.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhEntryOrder.AspectGetter: position=null";
+				if (position == null) return "olvcEntryOrder.AspectGetter: position=null";
 				return position.EntryMarketLimitStop.ToString();
 			};
 			this.olvcEntrySignalName.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhEntrySignalName.AspectGetter: position=null";
+				if (position == null) return "olvcEntrySignalName.AspectGetter: position=null";
 				return position.EntrySignal.ToString();
 			};
 
 			this.olvcExitDate.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.clhExitDate: position=null";
+				if (position == null) return "olvcExitDate.AspectGetter: position=null";
 				if (position.ExitDate == DateTime.MinValue) return "STILL_OPEN";
 				string format = (position.Bars.IsIntraday) ? "dd-MMM-yyyy HH:mm:ss" : "dd-MMM-yyyy";
 				return position.EntryDate.ToString(format);
 			};
 			this.olvcExitPrice.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.clhExitPrice: position=null";
+				if (position == null) return "olvcExitPrice.AspectGetter: position=null";
 				//if (position.ExitDate == DateTime.MinValue) return "STILL_OPEN"
 				//string format = "N" + position.Bars.SymbolInfo.DecimalsPrice;
 				return position.ExitFilledPrice.ToString(base.FormatPrice);
 			};
 			this.olvcExitOrder.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhExitOrder.AspectGetter: position=null";
+				if (position == null) return "olvcExitOrder.AspectGetter: position=null";
 				if (position.ExitDate == DateTime.MinValue) return "STILL_OPEN";
 				return position.ExitMarketLimitStop.ToString();
 			};
 			this.olvcExitSignalName.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhExitSignalName.AspectGetter: position=null";
+				if (position == null) return "olvcExitSignalName.AspectGetter: position=null";
 				if (position.ExitDate == DateTime.MinValue) return null;
 				return position.ExitSignal.ToString();
 			};
 
 			this.olvcProfitPct.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.clhProfitPct: position=null";
+				if (position == null) return "olvcProfitPct.AspectGetter: position=null";
 				return position.NetProfitPercent.ToString("F2") + " %";
 			};
 			this.olvcProfitDollar.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.clhProfitDollar: position=null";
+				if (position == null) return "olvcProfitDollar.AspectGetter: position=null";
 				return position.NetProfit.ToString(base.FormatPrice) + " $";
 			};
 
 			this.olvcBarsHeld.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.clhBarsHeld: position=null";
+				if (position == null) return "olvcBarsHeld.AspectGetter: position=null";
 				return position.BarsHeld.ToString("N0");
 			};
 			this.olvcProfitPerBar.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhPosition.clhProfitPerBar: position=null";
+				if (position == null) return "olvcProfitPerBar.AspectGetter: position=null";
 				return position.ProfitPerBar.ToString(base.FormatPrice) + " $";
 			};
 
 			this.olvcMae.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhMae.AspectGetter: position=null";
+				if (position == null) return "olvcMae.AspectGetter: position=null";
 				return position.MAE.ToString(base.FormatPrice) + " $";
 			};
 			this.olvcMfe.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhMfe.AspectGetter: position=null";
+				if (position == null) return "olvcMfe.AspectGetter: position=null";
 				return position.MFE.ToString(base.FormatPrice) + " $";
 			};
 			this.olvcMaePct.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhMaePct.AspectGetter: position=null";
+				if (position == null) return "olvcMaePct.AspectGetter: position=null";
 				return position.MAEPercent.ToString("F2") + " %";
 			};
 			this.olvcMfePct.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhMfePct.AspectGetter: position=null";
+				if (position == null) return "olvcMfePct.AspectGetter: position=null";
 				return position.MFEPercent.ToString("F2") + " %";
 			};
 
-			this.olvcCumProfitDollar.AspectGetter = delegate(object o) {
+			this.olvcCumNetProfitDollar.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhCumProfitDollar.AspectGetter: position=null";
-				double cumulProfitAtThisPositionClosed = this.SystemPerformance.SlicesShortAndLong.CumulativeNetProfitForPosition(position);
-				return cumulProfitAtThisPositionClosed.ToString(base.FormatPrice) + " $";
+				if (position == null) return "olvcCumProfitDollar.AspectGetter: position=null";
+				double cumProfit = this.SystemPerformance.SlicesShortAndLong.CumulativeNetProfitForPosition(position);
+				return cumProfit.ToString(base.FormatPrice) + " $";
 			};
-			this.olvcCumProfitPct.AspectGetter = delegate(object o) {
+			this.olvcCumNetProfitPct.AspectGetter = delegate(object o) {
 				var position = o as Position;
-				if (position == null) return "clhCumProfitPct.AspectGetter: position=null";
-				double cumulPercentAtThisPositionClosed = this.SystemPerformance.SlicesShortAndLong.CumulativeNetProfitPercentForPosition(position);
-				return cumulPercentAtThisPositionClosed.ToString("F2") + " %";
+				if (position == null) return "olvcCumProfitPct.AspectGetter: position=null";
+				double cumProfitPct = this.SystemPerformance.SlicesShortAndLong.CumulativeNetProfitPercentForPosition(position);
+				return cumProfitPct.ToString("F2") + " %";
 			};
 
 			this.olvcComission.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "clhComission.AspectGetter: position=null";
 				double commission = position.EntryFilledCommission + position.ExitFilledCommission;
-				return "$ " + commission.ToString("F2");
+				return commission.ToString("F2") + " $";
 			};
 		}
 	}

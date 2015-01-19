@@ -80,11 +80,11 @@ namespace Sq1.Core.Streaming {
 		}
 
 		#region the essence#1 of streaming provider
-		public virtual void Connect() {
+		public virtual void UpstreamConnect() {
 			//StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorConnecting, 0, "ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
 			Assembler.DisplayStatus("ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
 		}
-		public virtual void Disconnect() {
+		public virtual void UpstreamDisconnect() {
 			//StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorDisconnecting, 0, "DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
 			Assembler.DisplayStatus("DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
 		}
@@ -241,7 +241,7 @@ namespace Sq1.Core.Streaming {
 
 			//QUOTE_ABSNO_MUST_BE_-1__HERE_NOT_MODIFIED_AFTER_QUOTE.CTOR()
 			if (quote.AbsnoPerSymbol != -1) {
-				string msg = "THIS_WAS_REFACTORED_TO_IMPLEMENT QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_PROVIDER";
+				string msg = "THIS_WAS_REFACTORED__QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL__INITIALIZED_IN_STREAMING_PROVIDER";
 				Assembler.PopupException(msg, null, true);
 
 				//QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_PROVIDER
