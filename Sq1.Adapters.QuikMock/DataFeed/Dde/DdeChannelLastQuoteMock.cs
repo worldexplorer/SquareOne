@@ -103,6 +103,8 @@ namespace Sq1.Adapters.QuikMock.Dde {
 			this.nextQuoteDelayMs = nextQuoteDelayMs;
 		}
 
+		public bool MockRunning { get { return this.running; } }
+		public string MockRunningAsString { get { return this.running ? "RUNNING" : "NOT_RUNNING" ; } }
 		public void MockStart() {
 			if (this.running == true) {
 				Assembler.PopupException("QUIK_MOCK_POKER_THREAD_ALREADY_RUNNING", null, false);

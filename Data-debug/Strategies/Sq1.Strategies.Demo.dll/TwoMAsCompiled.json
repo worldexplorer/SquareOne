@@ -21,7 +21,7 @@
       "IsCurrent": true,
       "StrategyEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
-      "BacktestOnRestart": true,
+      "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {

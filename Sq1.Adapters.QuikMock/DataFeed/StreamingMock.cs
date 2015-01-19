@@ -12,14 +12,14 @@ using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.QuikMock {
 	public class StreamingMock : StreamingProvider {
-		[JsonIgnore]	protected	Dictionary<string, DdeChannelsMock> MockProvidersBySymbol;
+		[JsonIgnore]	protected	Dictionary<string, DdeChannelsMock> MockDdeChannelsBySymbol;
 		[JsonProperty]				int				QuoteDelay;
 		[JsonIgnore]	public		int				QuoteDelayAutoPropagate {
 			get { return this.QuoteDelay; }
 			internal set {
 				this.QuoteDelay = value;
 				lock (base.SymbolsSubscribedLock) {
-					foreach (DdeChannelsMock quoteGenerator in MockProvidersBySymbol.Values) {
+					foreach (DdeChannelsMock quoteGenerator in MockDdeChannelsBySymbol.Values) {
 						quoteGenerator.ChannelQuote.setNextQuoteDelayMs(this.QuoteDelayAutoPropagate);
 					}
 				}
@@ -41,9 +41,9 @@ namespace Sq1.Adapters.QuikMock {
 				}
 				return base.StreamingDataSnapshot as StreamingDataSnapshotQuik;
 			} }
-		[JsonIgnore]	public		string			DdeChannelsEstablished { get { lock (MockProvidersBySymbol) {
+		[JsonIgnore]	public		string			DdeChannelsEstablished { get { lock (MockDdeChannelsBySymbol) {
 					string ret = "";
-					foreach (string DdeChannelName in MockProvidersBySymbol.Keys) {
+					foreach (string DdeChannelName in MockDdeChannelsBySymbol.Keys) {
 						if (ret != "") ret += " ";
 						ret += DdeChannelName;
 					}
@@ -55,7 +55,7 @@ namespace Sq1.Adapters.QuikMock {
 			internal set {
 				this.GeneratingNow = value;
 				lock (base.SymbolsSubscribedLock) {
-					foreach (DdeChannelsMock quoteGenerator in this.MockProvidersBySymbol.Values) {
+					foreach (DdeChannelsMock quoteGenerator in this.MockDdeChannelsBySymbol.Values) {
 						if (this.GeneratingNow) {
 							quoteGenerator.ChannelQuote.MockStart();
 						} else {
@@ -68,7 +68,7 @@ namespace Sq1.Adapters.QuikMock {
 		
 		public StreamingMock() : base() {
 			this.GenerateOnlySymbols = new List<string>();
-			this.MockProvidersBySymbol = new Dictionary<string, DdeChannelsMock>();
+			this.MockDdeChannelsBySymbol = new Dictionary<string, DdeChannelsMock>();
 			base.Name = "StreamingQuikMockDummy";
 			base.Description = "MOCK generating quotes, QuikTerminalMock is still used";
 			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStaticProvider;
@@ -84,38 +84,36 @@ namespace Sq1.Adapters.QuikMock {
 		public override void Initialize(DataSource dataSource) {
 			base.Initialize(dataSource);
 			base.Name = "StreamingQuikMock";
-			if (this.GeneratingNow) {
-				this.Connect();
-			}
+			//MOVED_TO_MainForm.WorkspaceLoad() if (this.GeneratingNow) this.Connect();
 		}
-		public override void Connect() {
+		public override void UpstreamConnect() {
 			if (base.IsConnected == true) return;
-			string ddeChannels = this.subscribeAllSymbols();
+			string stats = this.subscribeAllSymbols();
 			base.ConnectionState = ConnectionState.Connected;
-			base.UpdateConnectionStatus(0, "Started ddeChannels[" + ddeChannels + "]");
+			base.UpdateConnectionStatus(0, "Started [" + stats + "]");
 			base.IsConnected = true;
 		}
-		public override void Disconnect() {
+		public override void UpstreamDisconnect() {
 			if (base.IsConnected == false) return;
-			string ddeChannels = unsubscribeAllSymbols();
+			string stats = unsubscribeAllSymbols();
 			base.ConnectionState = ConnectionState.Disconnected;
-			base.UpdateConnectionStatus( 0, "Stopped DdeChannels[" + ddeChannels + "]");
+			base.UpdateConnectionStatus( 0, "Stopped [" + stats + "]");
 			base.IsConnected = false;
 		}
 
 		string subscribeAllSymbols() { lock (base.SymbolsSubscribedLock) {
 				string ret = "";
 				foreach (string symbol in base.DataSource.Symbols) {
-					DdeChannelsMock ddeQuotesProviderMock = null;
-					if (this.MockProvidersBySymbol.ContainsKey(symbol) != false) {
-						ddeQuotesProviderMock = this.MockProvidersBySymbol[symbol];
-						string msg = "ALREADY_STARTED_DDE_QUOTES_FOR[" + symbol + "]: [" + ddeQuotesProviderMock + "]";
-						Assembler.PopupException(msg, null, false);
-						continue;
+					if (this.MockDdeChannelsBySymbol.ContainsKey(symbol) == false) {
+						DdeChannelsMock channels = new DdeChannelsMock(this, symbol);
+						string msg = "SHOULD_HAVE_BEEN_ADDED_ALREADY " + channels;
+						Assembler.PopupException(msg);
+						this.MockDdeChannelsBySymbol.Add(symbol, channels);
 					}
-						
-					ddeQuotesProviderMock = new DdeChannelsMock(this, symbol);
-					this.MockProvidersBySymbol.Add(symbol, ddeQuotesProviderMock);
+					DdeChannelsMock ddeChannelsMock = this.MockDdeChannelsBySymbol[symbol];
+					string started = this.GeneratingNow ? ddeChannelsMock.AllChannelsForSymbolStart() : "GENERATING_NOW=FALSE";
+					string msg2 = "subscribed[" + symbol + "]: [" + started + "]";
+					Assembler.PopupException(msg2, null, false);
 					//this.UpstreamSubscribe(symbol);
 					
 					if (ret != "") ret += " ";
@@ -126,11 +124,12 @@ namespace Sq1.Adapters.QuikMock {
 		string unsubscribeAllSymbols() { lock (base.SymbolsSubscribedLock) {
 				string ret = "";
 				foreach (string symbol in base.DataSource.Symbols) {
-					if (this.MockProvidersBySymbol.ContainsKey(symbol)) {
-						//this.MockProvidersBySymbol[DdeChannelName].StopDdeServer();
-						//this.MockProvidersBySymbol.Remove(DdeChannelName);
-						Assembler.PopupException("stopAllDdeServers(): won't StopDdeServer(" + symbol + ") coz we need to press CTRL+SHIFT+L in QUIK again");
+					if (this.MockDdeChannelsBySymbol.ContainsKey(symbol) == false) {
+						string msg = "stopAllDdeServers(): won't StopDdeServer(" + symbol + ") coz we need to press CTRL+SHIFT+L in QUIK again";
+						Assembler.PopupException(msg);
+						continue;
 					}
+					ret += this.MockDdeChannelsBySymbol[symbol].AllChannelsForSymbolStop();
 					if (ret != "") ret += " ";
 					ret += symbol;
 				}
@@ -144,8 +143,8 @@ namespace Sq1.Adapters.QuikMock {
 					string msg = "I_REFUSE_TO_PING_UPSTREAM_WITH_EMPTY_SYMBOL";
 					throw new Exception(msg + msig);
 				}
-				if (this.MockProvidersBySymbol.ContainsKey(symbol)) {
-					string msg2 = "DDE_QUOTES_ALREADY_STARTED";
+				if (this.MockDdeChannelsBySymbol.ContainsKey(symbol)) {
+					string msg2 = "SYMBOL_ALREADY_SUBSCRIBED " + this.MockDdeChannelsBySymbol[symbol].ToString();
 					Assembler.PopupException(msg2 + msig, null, false);
 					//this.StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorSymbolSubscribing, 1, msg2);
 					return;
@@ -154,10 +153,10 @@ namespace Sq1.Adapters.QuikMock {
 				msig += ": [" + ddeChannelsMock.ToString() + "]";
 				
 				if (this.QuoteDelayAutoPropagate > 0) ddeChannelsMock.ChannelQuote.setNextQuoteDelayMs(this.QuoteDelayAutoPropagate);
-				this.MockProvidersBySymbol.Add(symbol, ddeChannelsMock);
+				this.MockDdeChannelsBySymbol.Add(symbol, ddeChannelsMock);
 
-				string msg3 = "STARTING_NEW_DDE_QUOTES";
-				string started = (this.GeneratingNow) ? ddeChannelsMock.DdeServerStart() : "NOT_GENERATING_NOW";
+				string msg3 = "SYMBOL_SUBSCRIBED";
+				string started = (base.IsConnected && this.GeneratingNow) ? ddeChannelsMock.AllChannelsForSymbolStart() : "NOT_GENERATING_NOW";
 				Assembler.PopupException(started + "... <= " + msg3 + msig, null, false);
 			} }
 		public override void UpstreamUnSubscribe(string symbol) { lock (base.SymbolsSubscribedLock) {
@@ -166,7 +165,7 @@ namespace Sq1.Adapters.QuikMock {
 					throw new Exception(msg);
 				}
 				string ddeChannelName = symbol;
-				if (this.MockProvidersBySymbol.ContainsKey(ddeChannelName)) {
+				if (this.MockDdeChannelsBySymbol.ContainsKey(ddeChannelName)) {
 					string msg = "UnSubscribe(" + symbol + "): won't StopDdeServer[" + ddeChannelName + "] coz we need to press CTRL+SHIFT+L in QUIK again";
 					Assembler.PopupException(msg, null, false);
 					Assembler.DisplayStatus("ConnectionState.ErrorSymbolUnsubscribing " + msg);
@@ -179,7 +178,7 @@ namespace Sq1.Adapters.QuikMock {
 					throw new Exception(msg);
 				}
 				string DdeChannelName = symbol;
-				return this.MockProvidersBySymbol.ContainsKey(DdeChannelName);
+				return this.MockDdeChannelsBySymbol.ContainsKey(DdeChannelName);
 			} }
 		public override void PushQuoteReceived(Quote quote) {
 			if (this.GenerateOnlySymbols.Count > 0 && this.GenerateOnlySymbols.Contains(quote.Symbol) == false) return;

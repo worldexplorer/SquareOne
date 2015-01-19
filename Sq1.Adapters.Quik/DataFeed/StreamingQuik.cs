@@ -11,12 +11,12 @@ using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik {
 	public class StreamingQuik : StreamingProvider {
-		[JsonProperty]	public	string DdeServerPrefix		{ get; internal set; }
-		[JsonProperty]	public	string DdeTopicQuotes		{ get; internal set; }
-		[JsonProperty]	public	string DdeTopicTrades		{ get; internal set; }
-		[JsonProperty]	public	string DdeTopicPrefixDom	{ get; internal set; }
-		[JsonIgnore]			DdeChannels DdeChannels;
-		[JsonIgnore]	private string DdeChannelsEstablished { get {
+		[JsonProperty]	public	string		DdeServerPrefix		{ get; internal set; }
+		[JsonProperty]	public	string		DdeTopicQuotes		{ get; internal set; }
+		[JsonProperty]	public	string		DdeTopicTrades		{ get; internal set; }
+		[JsonProperty]	public	string		DdeTopicPrefixDom	{ get; internal set; }
+		[JsonIgnore]			DdeChannels	DdeChannels;
+		[JsonIgnore]			string		DdeChannelsEstablished { get {
 				string ret = "DDE_CHANNELS_NULL__STREAMING_QUIK_NOT_YET_INITIALIZED";
 				if (this.DdeChannels == null) return ret;
 				lock (base.SymbolsSubscribedLock) {
@@ -59,9 +59,9 @@ namespace Sq1.Adapters.Quik {
 			base.Name = "Quik Streaming";
 			base.Initialize(dataSource);
 			this.DdeChannels = new DdeChannels(this);
-			this.Connect();
+			//MOVED_TO_MainForm.WorkspaceLoad() this.Connect();
 		}
-		public override void Connect() {
+		public override void UpstreamConnect() {
 			if (base.IsConnected == true) return;
 			string symbolsSubscribed = subscribeAllSymbols();
 			this.DdeChannels.StartDdeServer();
@@ -70,7 +70,7 @@ namespace Sq1.Adapters.Quik {
 			Assembler.PopupException("QUIK started DdeChannels[" + this.DdeChannels.ToString() + "]");
 			base.IsConnected = true;
 		}
-		public override void Disconnect() {
+		public override void UpstreamDisconnect() {
 			if (base.IsConnected == false) return;
 			Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeChannels.ToString() + "]");
 			string symbolsUnsubscribed = unsubscribeAllSymbols();

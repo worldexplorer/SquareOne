@@ -110,31 +110,28 @@ namespace Sq1.Adapters.QuikMock {
 				}
 			}
 
-
-
 			bool pausedToFinishBacktest = base.StreamingProvider.DataSource.PumpingPausedGet(order.Alert.Bars);
 			bool backtestIsRunning = order.Alert.Strategy.Script.Executor.Backtester.IsBacktestingNow;
 
 			if (pausedToFinishBacktest) {
 				if (backtestIsRunning == false) {
-					string msg3 = "ANOTHER_PARALLEL_BACKTEST_PAUSED_PUMP__OR_PAUSE_PUMP_WHILE_BACKTEST_RUNNING_IMPLEMENTATION_DOESNT_DO_ITS_JOB";
-					Assembler.PopupException(msg3);
+					string msg3 = "__SUBMIT_ORDERS_OR_ANOTHER_PARALLEL_BACKTEST_PAUSED_QUOTE_PUMP__OR_PAUSE_PUMP_WHILE_BACKTEST_RUNNING_IMPLEMENTATION_DOESNT_DO_ITS_JOB";
+					//Assembler.PopupException(msg3, null, false);
 				}
 
 				Stopwatch waitedFor = new Stopwatch();
 				waitedFor.Start();
-				base.StreamingProvider.DataSource.PumpingWaitUntilUnpaused(order.Alert.Bars, 120000);
+				bool unpaused = base.StreamingProvider.DataSource.PumpingWaitUntilUnpaused(order.Alert.Bars, 120000);
 				waitedFor.Stop();
+				string waited = "__WAITED_FOR_UNPAUSE_CONFIRMATION[" + waitedFor.ElapsedMilliseconds + "]ms ";
 				if (waitedFor.ElapsedMilliseconds > 1000) {
-					string msg2 = "I_WISH_I_KNEW_WHO_TOOK_THAT_LONG_TO_KEEP_PUMP_PAUSED";
-					Assembler.PopupException(msg2);
+					string msg2 = "I_WISH_I_KNEW_WHO_TOOK_THAT_LONG_TO_KEEP_QUOTE_PUMP_PAUSED";
+					Assembler.PopupException(waited + msg2);
 				} else {
 					string msg4 = "NICE_CATCH__DONT_INVOKE_ORDER_UPDATE_BEFORE_POSITION_WAS_REGISTERED_IN_OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForGUID()";
-					Assembler.PopupException(msg4);
-
+					//Assembler.PopupException(waited + msg4, null, false);
 				}
 			}
-
 
 			this.QuikTerminal.SendTransactionOrderAsync(opBuySell, typeMarketLimitStop,
 				order.Alert.Symbol, order.Alert.SymbolClass,

@@ -6,14 +6,14 @@ using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
 	public class DdeChannels {
-		protected StreamingQuik quikStreamingProvider;
-		public ConnectionState ConnectionState { get; protected set; }
+		protected	StreamingQuik							quikStreamingProvider;
+		public		ConnectionState							ConnectionState { get; protected set; }
 		
-		XlDdeServer server;
+					XlDdeServer								server;
 		
-		public DdeChannelLastQuote ChannelQuotes { get; protected set; }
-		public DdeChannelTrades ChannelTrades { get; protected set; }
-		Dictionary<string, List<XlDdeChannel>> channelsBySymbols;
+		public		DdeChannelLastQuote						ChannelQuotes { get; protected set; }
+		public		DdeChannelTrades						ChannelTrades { get; protected set; }
+					Dictionary<string, List<XlDdeChannel>>	channelsBySymbols;
 		
 		public DdeChannels(StreamingQuik streamingProvider) {
 			this.quikStreamingProvider = streamingProvider;
@@ -54,11 +54,7 @@ namespace Sq1.Adapters.Quik.Dde {
 			}
 			return ret;
 		}
-		public List<string> SymbolsHavingIndividualChannels {
-			get {
-				return new List<string>(this.channelsBySymbols.Keys);
-			}
-		}
+		public List<string> SymbolsHavingIndividualChannels { get { return new List<string>(this.channelsBySymbols.Keys); } }
 		public void StartDdeServer() {
 			string msg = "";
 			if (string.IsNullOrWhiteSpace(server.Service)) {
