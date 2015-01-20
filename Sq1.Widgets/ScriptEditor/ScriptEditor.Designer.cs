@@ -226,7 +226,7 @@
 			this.splitContainer1.Panel2MinSize = 12;
 			this.splitContainer1.Size = new System.Drawing.Size(401, 240);
 			this.splitContainer1.SplitterDistance = 211;
-			this.splitContainer1.SplitterIncrement = 12;
+			//this.splitContainer1.SplitterIncrement = 12;
 			this.splitContainer1.TabIndex = 2;
 			// 
 			// txtCompilerErrors

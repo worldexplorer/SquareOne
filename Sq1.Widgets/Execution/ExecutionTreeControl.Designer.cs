@@ -669,7 +669,7 @@ namespace Sq1.Widgets.Execution {
 			this.splitContainerMessagePane.Panel2.Controls.Add(this.olvMessages);
 			this.splitContainerMessagePane.Size = new System.Drawing.Size(833, 411);
 			this.splitContainerMessagePane.SplitterDistance = 334;
-			this.splitContainerMessagePane.SplitterIncrement = 20;
+			//this.splitContainerMessagePane.SplitterIncrement = 20;
 			this.splitContainerMessagePane.TabIndex = 22;
 			// 
 			// ExecutionTreeControl

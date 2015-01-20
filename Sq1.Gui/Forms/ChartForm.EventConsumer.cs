@@ -60,6 +60,11 @@ namespace Sq1.Gui.Forms {
 			try {
 				if (this.btnStreamingTriggersScript.Checked) {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStart();
+					// same idea as in mniSubscribedToStreamingProviderQuotesBars_Click();
+					ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
+					if (this.ChartFormManager.Executor.Strategy.Script != null && ctxChart.IsStreamingTriggeringScript) {
+						this.ChartFormManager.BacktesterRunSimulationRegular();
+					}
 				} else {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStop();
 				}
@@ -327,10 +332,12 @@ namespace Sq1.Gui.Forms {
 				string reason = "mniSubscribedToStreamingProviderQuotesBars.Checked[" + this.mniSubscribedToStreamingProviderQuotesBars.Checked + "]";
 				if (this.mniSubscribedToStreamingProviderQuotesBars.Checked) {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingSubscribe(reason);
-					// without backtest here, Indicators aren't calculated if there was no "Backtest Now" or "Backtest on App Restart"
-					// better duplicated backtest but synced, than streaming starts without prior bars are processed by the strategy
-					// TODO few quotes might get pushed into the indicators/strategy before backtest pauses QuotePump in new thread
-					this.ChartFormManager.BacktesterRunSimulationRegular();
+					if (this.ChartFormManager.Strategy != null && ctxChart.IsStreamingTriggeringScript) {
+						// without backtest here, Indicators aren't calculated if there was no "Backtest Now" or "Backtest on App Restart"
+						// better duplicated backtest but synced, than streaming starts without prior bars are processed by the strategy
+						// TODO few quotes might get pushed into the indicators/strategy before backtest pauses QuotePump in new thread
+						this.ChartFormManager.BacktesterRunSimulationRegular();
+					}
 				} else {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingUnsubscribe(reason);
 				}

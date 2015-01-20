@@ -53,7 +53,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.splitContainer1.Panel2.Controls.Add(this.PanelFillSlider);
 			this.splitContainer1.Size = new System.Drawing.Size(236, 17);
 			this.splitContainer1.SplitterDistance = 41;		// exact size to fit "2.61"
-			this.splitContainer1.SplitterIncrement = 12;	// exact increment to fit "2.61" => "2.6172" => "2.617216" 
+			//this.splitContainer1.SplitterIncrement = 12;	// exact increment to fit "2.61" => "2.6172" => "2.617216" 
 			this.splitContainer1.TabIndex = 2;
 			// 
 			// DomainUpDown

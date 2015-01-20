@@ -1,16 +1,17 @@
 ﻿using System;
-using System.IO;
-using System.Drawing;
 using System.CodeDom.Compiler;
-using System.Windows.Forms;
+using System.Drawing;
+using System.IO;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 using DigitalRune.Windows.TextEditor;
 using DigitalRune.Windows.TextEditor.Completion;
 using DigitalRune.Windows.TextEditor.Document;
-using DigitalRune.Windows.TextEditor.Highlighting;
 using DigitalRune.Windows.TextEditor.Formatting;
+using DigitalRune.Windows.TextEditor.Highlighting;
 using DigitalRune.Windows.TextEditor.Insight;
+using Sq1.Core;
 
 namespace Sq1.Widgets.ScriptEditor {
 	public partial class ScriptEditor : UserControl {
@@ -135,7 +136,12 @@ namespace Sq1.Widgets.ScriptEditor {
 				distanceFromBottom += 11;
 				//distanceFromBottom += this.splitContainer1.SplitterWidth;
 				int distanceFromTop = base.Height - distanceFromBottom;
-				this.splitContainer1.SplitterDistance = distanceFromTop;
+				try {
+					this.splitContainer1.SplitterDistance = distanceFromTop;
+				} catch (Exception ex) {
+					string msg = "TRYING_TO_LOCALIZE_SPLITTER_MUST_BE_BETWEEN_0_AND_PANEL_MIN";
+					Assembler.PopupException(msg);
+				}
 			}
 			if (this.splitContainer1.Panel2Collapsed) this.splitContainer1.Panel2Collapsed = false;
 		}

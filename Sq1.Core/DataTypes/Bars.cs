@@ -74,7 +74,7 @@ namespace Sq1.Core.DataTypes {
 						this.BarStreaming = this.BarLast;
 					}
 					//base.BarAbsorbAppend(this.StreamingBar, open, high, low, close, volume);
-					this.BarStreaming.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming);	// duplicated volume for just added bar; moved up
+					this.BarStreaming.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming, false);	// duplicated volume for just added bar; moved up
 					this.RaiseBarStreamingUpdated(barToMergeToStreaming);
 				}
 				return this.BarStreaming;
@@ -284,7 +284,7 @@ namespace Sq1.Core.DataTypes {
 					barCompressing = new Bar(this.Symbol, scaleIntervalTo, barEach.DateTimeOpen);
 					barCompressing.AbsorbOHLCVfrom(barEach);
 				} else {
-					barCompressing.MergeExpandHLCVwhileCompressingManyBarsToOne(barEach);
+					barCompressing.MergeExpandHLCVwhileCompressingManyBarsToOne(barEach, true);
 				}
 			}
 			return barsConverted;

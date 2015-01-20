@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
@@ -14,7 +15,6 @@ namespace Sq1.Reporters {
 		int currentColumn;
 		int currentRow;
 		Dictionary<FontStyle, Font> fontsByStyle;
-		SystemPerformance systemPerformance;
 
 		public Performance(ChartShadow chart): this() {
 			this.Initialize(chart, null);
@@ -27,11 +27,16 @@ namespace Sq1.Reporters {
 			this.objectListViewCustomize();
 		}
 		public override void BuildFullOnBacktestFinished(SystemPerformance performance) {
-			this.systemPerformance = performance;
+			base.SystemPerformance = performance;
 			this.propagatePerformanceReport(performance);
 		}
 		void propagatePerformanceReport(SystemPerformance performance = null) {
-			if (performance == null) performance = this.systemPerformance;
+			if (performance == null) performance = base.SystemPerformance;
+			if (performance == null) {
+				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES";
+				Assembler.PopupException(msg);
+				return;
+			}
 			
 			this.fontsByStyle.Clear();
 			this.fontsByStyle.Add(this.Font.Style, this.Font);
@@ -119,7 +124,7 @@ namespace Sq1.Reporters {
 		void addCurrency(double value, string label, string tooltip,
 				Color backColor, Color labelFontColor, Color itemFontColor,
 				FontStyle labelFontStyle = FontStyle.Regular, FontStyle itemFontStyle = FontStyle.Regular) {
-			string format = systemPerformance.Bars.SymbolInfo.FormatPrice;
+			string format = SystemPerformance.Bars.SymbolInfo.FormatPrice;
 			string valueFormatted = value.ToString(format);
 			this.addLvi(valueFormatted, label, tooltip, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
 		}
@@ -180,16 +185,34 @@ namespace Sq1.Reporters {
 		}
 		double lastKnownCashAvailable = -1;
 		public override void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
-			this.lastKnownCashAvailable = this.systemPerformance.SlicesShortAndLong.CashAvailable;
+			if (base.SystemPerformance == null) {
+				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES";
+				Assembler.PopupException(msg);
+				return;
+			} else {
+				this.lastKnownCashAvailable = base.SystemPerformance.SlicesShortAndLong.CashAvailable;
+			}
 			this.propagatePerformanceReport();
 		}
 		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
-			this.lastKnownCashAvailable = this.systemPerformance.SlicesShortAndLong.CashAvailable;
+			if (base.SystemPerformance == null) {
+				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES";
+				Assembler.PopupException(msg);
+				return;
+			} else {
+				this.lastKnownCashAvailable = base.SystemPerformance.SlicesShortAndLong.CashAvailable;
+			}
 			this.propagatePerformanceReport();
 		}
 		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
-			if (this.lastKnownCashAvailable == this.systemPerformance.SlicesShortAndLong.CashAvailable) return;
-				this.lastKnownCashAvailable = this.systemPerformance.SlicesShortAndLong.CashAvailable;
+			if (base.SystemPerformance == null) {
+				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES";
+				Assembler.PopupException(msg);
+				return;
+			} else {
+				if (this.lastKnownCashAvailable == base.SystemPerformance.SlicesShortAndLong.CashAvailable) return;
+					this.lastKnownCashAvailable = base.SystemPerformance.SlicesShortAndLong.CashAvailable;
+			}
 			this.propagatePerformanceReport();
 		}
 	}
