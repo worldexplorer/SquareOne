@@ -188,18 +188,30 @@ namespace Sq1.Widgets.Execution {
 		void splitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {
 			if (this.DataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				return;
+			//v1 BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			//	#if DEBUG
+			//	Debugger.Break();
+			//	#endif
+			//	return;
+			//}
+			//v2 HACK http://stackoverflow.com/questions/10161088/get-elapsed-time-since-application-start-in-c-sharp
+			try {
+				TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
+				if (sinceApplicationStart.Seconds <= 10) return;
+			} catch (Exception ex) {
+				Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			}
 			if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
-				if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;
-				this.DataSnapshot.MessagePaneSplitDistanceHorizontal = e.SplitY;
+				//if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;
+				//this.DataSnapshot.MessagePaneSplitDistanceHorizontal = e.SplitY;
+				if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == this.splitContainerMessagePane.SplitterDistance) return;
+					this.DataSnapshot.MessagePaneSplitDistanceHorizontal =  this.splitContainerMessagePane.SplitterDistance;
 			} else {
-				if (this.DataSnapshot.MessagePaneSplitDistanceVertical == e.SplitX) return;
-				this.DataSnapshot.MessagePaneSplitDistanceVertical = e.SplitX;
+				//if (this.DataSnapshot.MessagePaneSplitDistanceVertical == e.SplitX) return;
+				//this.DataSnapshot.MessagePaneSplitDistanceVertical = e.SplitX;
+				if (this.DataSnapshot.MessagePaneSplitDistanceVertical == this.splitContainerMessagePane.SplitterDistance) return;
+					this.DataSnapshot.MessagePaneSplitDistanceVertical =  this.splitContainerMessagePane.SplitterDistance;
 			}
 			this.DataSnapshotSerializer.Serialize();
 		}

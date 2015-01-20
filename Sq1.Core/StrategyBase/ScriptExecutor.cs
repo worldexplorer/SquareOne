@@ -760,15 +760,15 @@ namespace Sq1.Core.StrategyBase {
 			//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
 			if (positionOpenedAfterAlertFilled != null) {
 				this.Performance.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(positionOpenedAfterAlertFilled);
-				this.ChartShadow.PositionsRealtimeAdd(pokeUnit.Clone());
 				// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
-				this.EventGenerator.RaiseBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit.Clone());		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+				this.EventGenerator.RaiseBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 			}
 			if (positionClosedAfterAlertFilled != null) {
 				this.Performance.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(positionClosedAfterAlertFilled);
 				// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
-				this.EventGenerator.RaiseBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit.Clone());		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+				this.EventGenerator.RaiseBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 			}
+			this.ChartShadow.PositionsRealtimeAdd(pokeUnit);
 
 			// 4. Script event will generate a StopLossMove PostponedHook
 			this.invokeScriptEvents(alertFilled);

@@ -67,6 +67,10 @@ namespace Sq1.Gui.ReportersSupport {
 				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildReportFullOnBacktestFinishedAllReporters(performance); });
 				return;
 			}
+			if (performance.SlicesShortAndLong.PositionsImTracking.Count == 0 && performance.SlicesShortAndLong.NetProfitForClosedPositionsBoth != 0) {
+				string msg = "REPORTERS.POSITIONS_WILL_BE_EMPTY__WHILE_REPORTERS.PERFORMACE_WILL_DISPLAY_BACKTESTED_NUMBERS";
+				Assembler.PopupException(msg);
+			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 				rep.BuildFullOnBacktestFinished(performance);
 				
@@ -142,9 +146,15 @@ namespace Sq1.Gui.ReportersSupport {
 			this.ReporterShortNamesUserInvoked.Add(typeNameShort, reporterActivated);
 			this.ChartFormManager.ReportersDumpCurrentForSerialization();
 			this.MenuItemsProvider.FindMniByShortNameAndTick(typeNameShort);
-			if (this.ChartFormManager.Executor.Performance != null) {
-				reporterActivated.BuildFullOnBacktestFinished(this.ChartFormManager.Executor.Performance);
+			
+			// avoiding unnesessary Reporters' calculation when there was no backtest invoked yet; I don't mind absolutely blank Performance Report without headers
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return ret;
+			if (this.ChartFormManager.Executor.Performance == null) {
+				string msg = "SO_WHEN_IT_HAPPENS_IF_EVER?..";
+				Assembler.PopupException(msg);
+				return ret;
 			}
+			reporterActivated.BuildFullOnBacktestFinished(this.ChartFormManager.Executor.Performance);
 			return ret;
 		}
 		object findOrCreateReportersSnapshot(Reporter reporterActivated) {

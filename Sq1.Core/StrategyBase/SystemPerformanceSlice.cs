@@ -257,6 +257,8 @@ namespace Sq1.Core.StrategyBase {
 			if (this.positionIsMineShouldAppendAndUpdate(positionOpened) == false) return positionsOpenAbsorbedBoth;
 			bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, true);
 			if (added == false) {
+				string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH?";
+				Assembler.PopupException(msg);
 				return positionsOpenAbsorbedBoth;
 			}
 
@@ -312,6 +314,39 @@ namespace Sq1.Core.StrategyBase {
 			return positionsUpdatedAbsorbed;
 		}
 		public int BuildStatsOnBacktestFinished(ReporterPokeUnit pokeUnit) {
+			int positionsOpenedAbsorbedToInternal = 0;
+			foreach (Position positionOpened in pokeUnit.PositionsOpened.InnerList) {
+				if (this.positionIsMineShouldAppendAndUpdate(positionOpened) == false) continue;
+				bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, true);
+				if (added == false) {
+					string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH? SHOULD_I_CLEAR_BEFORE_BuildStatsOnBacktestFinished()?";
+					Assembler.PopupException(msg);
+					continue;
+				}
+				positionsOpenedAbsorbedToInternal++;
+			}
+			if (positionsOpenedAbsorbedToInternal != pokeUnit.PositionsOpened.InnerList.Count) {
+					string msg = "IS_THERE_ANY_PROBLEM?";
+					//Assembler.PopupException(msg);
+			}
+			
+			int positionsClosedAbsorbedToInternal = 0;
+			foreach (Position positionClosed in pokeUnit.PositionsClosed.InnerList) {
+				if (this.positionIsMineShouldAppendAndUpdate(positionClosed) == false) continue; 
+				bool added = this.PositionsImTracking.AddToClosedDictionary_step2of2(positionClosed, true);
+				if (added == false) {
+					string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH? SHOULD_I_CLEAR_BEFORE_BuildStatsOnBacktestFinished()?";
+					Assembler.PopupException(msg);
+					continue;
+				}
+				positionsClosedAbsorbedToInternal++;
+			}
+			if (positionsClosedAbsorbedToInternal != pokeUnit.PositionsClosed.InnerList.Count) {
+					string msg = "IS_THERE_ANY_PROBLEM?";
+					//Assembler.PopupException(msg);
+			}
+			
+
 			Dictionary<int, List<Position>> positionsOpenedAfterExec	= pokeUnit.PositionsOpened.ByEntryBarFilled;
 			Dictionary<int, List<Position>> positionsClosedAfterExec	= pokeUnit.PositionsClosed.ByExitBarFilled;
 			
@@ -338,6 +373,7 @@ namespace Sq1.Core.StrategyBase {
 				List<Position> positionsClosedAtBar = positionsClosedAfterExec.ContainsKey(barIndex)
 					? positionsClosedAfterExec[barIndex] : new List<Position>();
 				if (positionsOpenedAtBar.Count == 0 && positionsClosedAtBar.Count == 0) continue;
+
 				positionsOpenAbsorbed += this.updateAtomicStatsForPositionsClosedAtBar(barIndex, positionsOpenedAtBar, positionsClosedAtBar);
 			}
 			this.BuildStatsCumulativeOnBacktestFinished();

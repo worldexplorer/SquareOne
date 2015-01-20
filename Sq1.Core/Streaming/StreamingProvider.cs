@@ -82,11 +82,11 @@ namespace Sq1.Core.Streaming {
 		#region the essence#1 of streaming provider
 		public virtual void UpstreamConnect() {
 			//StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorConnecting, 0, "ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
-			Assembler.DisplayStatus("ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
+			Assembler.DisplayStatus("ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD " + this.ToString());
 		}
 		public virtual void UpstreamDisconnect() {
 			//StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorDisconnecting, 0, "DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
-			Assembler.DisplayStatus("DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
+			Assembler.DisplayStatus("DisconnectStreaming(): NOT_OVERRIDEN_IN_CHILD " + this.ToString());
 		}
 		#endregion
 

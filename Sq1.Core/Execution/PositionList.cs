@@ -78,7 +78,11 @@ namespace Sq1.Core.Execution {
 			//}
 			//v2
 			added = base.AddToInnerList(positionOpened, duplicateThrowsAnError);
-			if (added == false) return added;
+			if (added == false) {
+				string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH?";
+				Assembler.PopupException(msg);
+				return added;
+			}
 			
 			if (this.LastBarIndexEntry < positionOpened.EntryFilledBarIndex) this.LastBarIndexEntry = positionOpened.EntryFilledBarIndex;
 			

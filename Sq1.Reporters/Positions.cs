@@ -111,6 +111,8 @@ namespace Sq1.Reporters {
 		}
 		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
 			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsClosed.InnerList;
+			// NOPE_SOMETIMES_CLOSING_PRICE_NOT_SHOWN ALREADY_REFRESHED_DURING_STEP2
+			this.olvPositions.RefreshObjects(positionsUpdatedDueToStreamingNewQuote);
 		}
 		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
 			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsOpenNow.InnerList;

@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Core.StrategyBase;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 using WeifenLuo.WinFormsUI.Docking;
@@ -110,6 +111,12 @@ namespace Sq1.Gui {
 						if (chartFormsManagerDeserialized.StrategyFoundDuringDeserialization) {
 							if (chartFormsManagerDeserialized.Strategy.ActivatedFromDll == false) {
 								chartFormsManagerDeserialized.StrategyCompileActivateBeforeShow();	// if it was streaming at exit, we should have it ready
+							}
+							// same idea as in mniSubscribedToStreamingProviderQuotesBars_Click();
+							// I see StreamingSubscribe() happening down the road since quotes are drawn, just want to avoid YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES
+							ContextChart ctxChart = chartFormsManagerDeserialized.ContextCurrentChartOrStrategy;
+							if (chartFormsManagerDeserialized.Executor.Strategy.Script != null && ctxChart.IsStreaming && ctxChart.IsStreamingTriggeringScript) {
+								chartFormsManagerDeserialized.BacktesterRunSimulationRegular();
 							}
 						} else {
 							chartFormsManagerDeserialized.InitializeChartNoStrategyAfterDeserialization();

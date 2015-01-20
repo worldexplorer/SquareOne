@@ -329,11 +329,15 @@ namespace Sq1.Core.DataTypes {
 			return dateTime;
 		}
 		#endregion
-		public void MergeExpandHLCVwhileCompressingManyBarsToOne(Bar bar) {
+		public void MergeExpandHLCVwhileCompressingManyBarsToOne(Bar bar, bool addVolumeWeAreCompressingStaticBarsToLargerScaleInterval = true) {
 			if (bar.High > this.High) this.High = bar.High;
 			if (bar.Low < this.Low) this.Low = bar.Low;
 			this.Close = bar.Close;
-			this.Volume += bar.Volume;
+			if (addVolumeWeAreCompressingStaticBarsToLargerScaleInterval) {
+				this.Volume += bar.Volume;
+			} else {
+				this.Volume = bar.Volume;
+			}
 		}
 		public void MergeExpandHLCVforStreamingBarUnattached(Quote quoteClone) {
 			//if (quoteClone.PriceLastDeal > this.High) this.High = quoteClone.PriceLastDeal;

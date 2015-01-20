@@ -141,7 +141,6 @@ namespace Sq1.Gui {
 
 				if (ExceptionsForm.Instance.ExceptionControl.Exceptions.Count > 0) {
 					ExceptionsForm.Instance.Show(this.DockPanel);
-					ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
 				}
 
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
@@ -210,6 +209,7 @@ namespace Sq1.Gui {
 					ExecutionForm.Instance.PopulateWindowText();
 				}
 				if (ExceptionsForm.Instance.IsShown) {
+					ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
 					ExceptionsForm.Instance.ExceptionControl.FlushListToTreeIfDockContentDeserialized();
 				}
 			} catch (Exception ex) {

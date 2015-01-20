@@ -50,15 +50,34 @@ namespace Sq1.Widgets.Exceptions {
 			}
 		}
 		public void PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized() {
+			// WILL_SET_THIS_FLAG_NEXT_LINE_UPSTACK
+			// NOT_ANYMORE!!!_NOW_TIMER____ALSO_in_SplitContainerVertical/Horizontal_SplitterMoved_I_IGNORE_DISTANCES_RELYING_ON_MainFormDockFormsFullyDeserializedLayoutComplete
+//			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+//				string msg = "CHOOSE_ANOTHER_INVOCATION_SPOT__AFTER_MAIN_FORM_FULLY_DESERIALIZED";
+//				Assembler.PopupException(msg);
+//			}
 			if (this.Width == 0) {
 				string msg = "CANT_SET_SPLITTER_DISTANCE_FOR_UNSHOWN_CONTROL ExceptionsControl.Visible[" + this.Visible + "]; can't set SplitDistanceVertical, SplitDistanceHorizontal";
 				Assembler.PopupException(msg);
 			} else {
-				if (this.DataSnapshot.SplitDistanceVertical > 0 && this.splitContainerVertical.SplitterDistance != this.DataSnapshot.SplitDistanceVertical) {
-					this.splitContainerVertical.SplitterDistance = this.DataSnapshot.SplitDistanceVertical;
-				}
-				if (this.DataSnapshot.SplitDistanceHorizontal > 0 && this.splitContainerHorizontal.SplitterDistance != this.DataSnapshot.SplitDistanceHorizontal) {
-					this.splitContainerHorizontal.SplitterDistance = this.DataSnapshot.SplitDistanceHorizontal;
+				try {
+					if (this.DataSnapshot.SplitDistanceVertical > 0) {
+						string msg = "+51_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
+						int newVerticalDistance = this.DataSnapshot.SplitDistanceVertical + 51;	// + this.splitContainerVertical.SplitterWidth;
+						if (this.splitContainerVertical.SplitterDistance != newVerticalDistance) {
+							this.splitContainerVertical.SplitterDistance =  newVerticalDistance;
+						}
+					}
+					if (this.DataSnapshot.SplitDistanceHorizontal > 0) {
+						string msg = "+67_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_HORIZONTAL";
+						int newHorizontalDistance = this.DataSnapshot.SplitDistanceHorizontal + 67;	// + this.splitContainerHorizontal.SplitterWidth; 
+						if (this.splitContainerHorizontal.SplitterDistance != newHorizontalDistance) {
+							this.splitContainerHorizontal.SplitterDistance =  newHorizontalDistance;
+						}
+					}
+				} catch (Exception ex) {
+					string msg = "TRYING_TO_LOCALIZE_SPLITTER_MUST_BE_BETWEEN_0_AND_PANEL_MIN";
+					Assembler.PopupException(msg);
 				}
 			}
 			//late binding prevents SplitterMoved() induced by DockContent layouting LoadAsXml()ed docked forms 

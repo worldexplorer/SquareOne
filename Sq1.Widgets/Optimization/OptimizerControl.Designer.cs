@@ -104,7 +104,7 @@ namespace Sq1.Widgets.Optimization {
 			this.splitContainer1.Panel2.Controls.Add(this.olvBacktests);
 			this.splitContainer1.Size = new System.Drawing.Size(685, 671);
 			this.splitContainer1.SplitterDistance = 135;
-			this.splitContainer1.SplitterIncrement = 27;
+			//this.splitContainer1.SplitterIncrement = 27;
 			this.splitContainer1.TabIndex = 0;
 			// 
 			// lblStaleReason
