@@ -369,8 +369,9 @@ namespace Sq1.Gui.Forms {
 			if (loadNewBars) {
 				string millisElapsedLoadCompress;
 				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, context.ScaleInterval, out millisElapsedLoadCompress);
-				Assembler.PopupException(millisElapsedLoadCompress + " //dataSource[" + dataSource.ToString()
-					+ "].BarsLoadAndCompress(" + symbol + ", " + context.ScaleInterval + ") ", null, false);
+				string stats = millisElapsedLoadCompress + " //dataSource[" + dataSource.ToString()
+					+ "].BarsLoadAndCompress(" + symbol + ", " + context.ScaleInterval + ") ";
+				//Assembler.PopupException(stats, null, false);
 
 				if (barsAll.Count > 0) {
 					this.ChartForm.ChartControl.RangeBar.Initialize(barsAll, barsAll);
@@ -427,7 +428,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.BacktesterRunSimulationRegular();
+			this.BacktesterRunSimulation();
 		}
 		void chartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain(object sender, DataSourceEventArgs e) {
 			if (this.Strategy == null) {
@@ -440,14 +441,18 @@ namespace Sq1.Gui.Forms {
 			this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(
 				"ChartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain", true, false);
 		}
-		public void BacktesterRunSimulationRegular() {
+		public void BacktesterRunSimulation(bool subscribeUpstreamOnWorkspaceRestore = false) {
 			try {
 				this.Executor.ChartShadow.BacktestIsRunning.Set();	//WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
 				if (this.Executor.Strategy.ActivatedFromDll == false) {
 					// ONLY_TO_MAKE_CHARTFORM_BACKTEST_NOW_WORK__FOR_F5_ITS_A_DUPLICATE__LAZY_TO_ENMESS_CHART_FORM_MANAGER_WITH_SCRIPT_EDITOR_FUNCTIONALITY
 					this.StrategyCompileActivatePopulateSlidersShow();
 				}
-				this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
+				if (subscribeUpstreamOnWorkspaceRestore == true) {
+					this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterCompleteOnceOnWorkspaceRestore), true);
+				} else {
+					this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
+				}
 			} catch (Exception ex) {
 				string msg = "RUN_SIMULATION_TRAMPOLINE_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Executor.Bars + "]";
 				Assembler.PopupException(msg, ex);
@@ -473,7 +478,7 @@ namespace Sq1.Gui.Forms {
 			// MOVED_TO_BacktesterRunSimulation() this.Executor.Performance.BuildStatsOnBacktestFinished();
 			this.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters(this.Executor.Performance);
 		}
-		void afterBacktesterCompleteOnceOnRestart(ScriptExecutor myOwnExecutorIgnoring) {
+		void afterBacktesterCompleteOnceOnWorkspaceRestore(ScriptExecutor myOwnExecutorIgnoring) {
 			this.afterBacktesterComplete(myOwnExecutorIgnoring);
 			
 			if (this.Strategy == null) {
@@ -494,9 +499,6 @@ namespace Sq1.Gui.Forms {
 			}
 			if (strategyFound == null) {
 				string msg = "STRATEGY_NOT_FOUND: RepositoryDllJsonStrategy.LookupByGuid(strategyGuid=" + strategyGuid + ")";
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -505,54 +507,65 @@ namespace Sq1.Gui.Forms {
 			if (this.Executor.Bars == null) {
 				string msg = "TYRINIG_AVOID_BARS_NULL_EXCEPTION: FIXME InitializeWithStrategy() didn't load bars";
 				Assembler.PopupException(msg);
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				return;
 			}
-			if (this.Strategy.ScriptContextCurrent.BacktestOnRestart == false) {
+
+			ContextChart ctxChart = this.ContextCurrentChartOrStrategy;
+			bool streamingAsContinuationOfBacktest = ctxChart.IsStreaming && ctxChart.IsStreamingTriggeringScript;
+			bool willBacktest = streamingAsContinuationOfBacktest || this.Strategy.ScriptContextCurrent.BacktestOnRestart;
+
+			if (willBacktest == false) {
 				// COPYFROM_StrategyCompileActivatePopulateSlidersShow()
 				if (this.Strategy.Script != null && this.Strategy.ActivatedFromDll) {
-					this.Strategy.Script.PullParametersFromCurrentContextSaveStrategyIfAbsorbedFromScript();
+					this.Strategy.Script.PushRegisteredScriptParametersIntoCurrentContextSaveStrategy();
 				}
 				return;
 			}
 
-			this.Strategy.CompileInstantiate();	//this.Strategy is initialized in this.Initialize(); mess comes from StrategiesTree_OnStrategyOpenSavedClicked() (TODO: reduce multiple paths)
+			this.Strategy.CompileInstantiate();
 			if (this.Strategy.Script == null) {
 				string msig = " InitializeStrategyAfterDeserialization(" + this.Strategy.ToString() + ")";
-				string msg = "COMPILATION_FAILED_AFTER_DESERIALIZATION BACKTEST_ON_RESTART_TURNED_OFF";
+				string msg = "COMPILATION_FAILED_AFTER_DESERIALIZATION"
+					+ " LET_USER_DEACTIVATE_FOR_NEXT_RESTART_NOT_TURNED_OFF: BacktestOnRestart,IsStreamingTriggeringScript";
 				Assembler.PopupException(msg + msig);
-				this.Strategy.ScriptContextCurrent.BacktestOnRestart = false;
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				//v1: LET_USER_DEACTIVATE_FOR_NEXT_RESTART
+				//this.Strategy.ScriptContextCurrent.BacktestOnRestart = false;
+				//this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript = false;
+				//Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
 				return;
 			}
 			if (this.Strategy.Script.Executor == null) {
 				//IM_GETTING_HERE_ON_STARTUP_AFTER_SUCCESFULL_COMPILATION_CHART_RELATED_STRATEGIES Debugger.Break();
-				string msg = "you should never get here; a compiled script should've been already linked to Executor (without bars on deserialization) 10 lines above in this.InitializeWithStrategy(mainForm, strategy);";
-				#if DEBUG
 				if (this.Strategy.ActivatedFromDll == true) {
-					Debugger.Break();
+					string msg = "you should never get here; a compiled script should've been already linked to Executor (without bars on deserialization)"
+						+ " 10 lines above in this.InitializeWithStrategy(mainForm, strategy)";
+					Assembler.PopupException(msg);
 				}
-				#endif
 				this.Strategy.Script.Initialize(this.Executor);
 			}
+			//v2 TOO_SPECIFIC this.StrategyActivateBeforeShow();
 
-			//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
-			string msg2 = "DONT_UNCOMMENT_ITS_LIKE_METHOD_BUT_USED_IN_SLIDERS_AUTO_GROW_CONTROL_4_HOURS_DEBUGGING";
-			// MOVED_TO_StrategyCompileActivatePopulateSlidersShow() this.Strategy.Script.PullCurrentContextParametersFromStrategyTwoWayMergeSaveStrategy();
-
-			// MOVED_TO_StrategyCompileActivatePopulateSlidersShow(), we definitely will be running it later due to BacktestOnRestart.true tested 20 lines above this.Strategy.Script.IndicatorsInitializeMergeParamsfromJsonStoreInSnapshot();
 			
-			this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterCompleteOnceOnRestart), true);
+			//v1 this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterCompleteOnceOnWorkspaceRestore), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
+			//v2
+			// same idea as in mniSubscribedToStreamingProviderQuotesBars_Click();
+			// I see StreamingSubscribe() happening down the road since quotes are drawn, just want to avoid YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES
+			if (willBacktest) {
+				this.BacktesterRunSimulation(true);
+			}
 
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) {
+				string msg = "WILL_NEVER_HAPPEN?";
+				Assembler.PopupException(msg);
 				this.OptimizerFormShow(false);
 				this.LivesimFormShow(false);
+			}
+
+			if (this.Strategy.ActivatedFromDll == false) {
+				string msg = "WILL_DEBUG_THIS_LATER";
+				Debugger.Break();
+				// MOVED_20_LINES_UP this.StrategyCompileActivateBeforeShow();	// if it was streaming at exit, we should have it ready
 			}
 		}
 		public void ReportersDumpCurrentForSerialization() {
@@ -686,7 +699,7 @@ namespace Sq1.Gui.Forms {
 
 			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
 				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
-				this.Strategy.Script.PullParametersFromCurrentContextSaveStrategyIfAbsorbedFromScript();
+				this.Strategy.Script.PushRegisteredScriptParametersIntoCurrentContextSaveStrategy();
 			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.PopulateSliders();

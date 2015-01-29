@@ -10,21 +10,21 @@ using Sq1.Core.Support;
 namespace Sq1.Core.Streaming {
 	// TODO: it's not an abstract class because....
 	public partial class StreamingProvider {
-		[JsonIgnore]	public const string			NO_STREAMING_PROVIDER = "--- No Streaming Provider ---";
+		[JsonIgnore]	public const string				NO_STREAMING_PROVIDER = "--- No Streaming Provider ---";
 		
-		[JsonIgnore]	public string				Name				{ get; protected set; }
-		[JsonIgnore]	public string				Description			{ get; protected set; }
-		[JsonIgnore]	public Bitmap				Icon				{ get; protected set; }
-		[JsonIgnore]	public bool					IsConnected			{ get; protected set; }
-		[JsonIgnore]	public string				PreferredStaticProviderName { get; protected set; }
-		[JsonIgnore]	public StreamingSolidifier	StreamingSolidifier	{ get; protected set; }
-		[JsonIgnore]	public DataSource			DataSource;
-		[JsonIgnore]	public string				marketName			{ get { return this.DataSource.MarketInfo.Name; } }
-		[JsonIgnore]	public DataDistributor		DataDistributor		{ get; protected set; }
-		[JsonProperty]	public StreamingDataSnapshot StreamingDataSnapshot	{ get; protected set; }
-		[JsonIgnore]	public virtual List<string>	SymbolsUpstreamSubscribed	{ get; private set; }
-		[JsonIgnore]	protected object			SymbolsSubscribedLock;
-		[JsonIgnore]	public virtual string		SymbolsUpstreamSubscribedAsString { get {
+		[JsonIgnore]	public string					Name								{ get; protected set; }
+		[JsonIgnore]	public string					Description							{ get; protected set; }
+		[JsonIgnore]	public Bitmap					Icon								{ get; protected set; }
+		[JsonIgnore]	public bool						IsConnected							{ get; protected set; }
+		[JsonIgnore]	public string					PreferredStaticProviderName 		{ get; protected set; }
+		[JsonIgnore]	public StreamingSolidifier		StreamingSolidifier					{ get; protected set; }
+		[JsonIgnore]	public DataSource				DataSource;
+		[JsonIgnore]	public string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }
+		[JsonIgnore]	public DataDistributor			DataDistributor						{ get; protected set; }
+		[JsonProperty]	public StreamingDataSnapshot	StreamingDataSnapshot				{ get; protected set; }
+		[JsonIgnore]	public virtual List<string>		SymbolsUpstreamSubscribed			{ get; private set; }
+		[JsonIgnore]	protected object				SymbolsSubscribedLock;
+		[JsonIgnore]	public virtual string			SymbolsUpstreamSubscribedAsString 	{ get {
 				string ret = "";
 				lock (SymbolsSubscribedLock) {
 					foreach (string symbol in SymbolsUpstreamSubscribed) ret += symbol + ",";
@@ -32,8 +32,8 @@ namespace Sq1.Core.Streaming {
 				ret = ret.TrimEnd(',');
 				return ret;
 			} }
-		[JsonIgnore]	protected object			BarsConsumersLock;
-		[JsonIgnore]	public ConnectionState		ConnectionState		{ get; protected set; }
+		[JsonIgnore]	protected object				BarsConsumersLock;
+		[JsonIgnore]	public ConnectionState			ConnectionState						{ get; protected set; }
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingProvider() {
@@ -154,6 +154,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
+
 			this.DataDistributor.ConsumerBarSubscribe(symbol, scaleInterval, consumer, quotePumpSeparatePushingThreadEnabled);
 		}
 		public virtual void ConsumerBarUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
@@ -331,6 +332,29 @@ namespace Sq1.Core.Streaming {
 
 		public override string ToString() {
 			return this.Name + "/[" + this.ConnectionState + "]: UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]";
+		}
+
+		internal void AbsorbStreamingBarFactoryFrom(StreamingProvider streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
+			SymbolScaleDistributionChannel channelBacktest = streamingBacktest.DataDistributor.GetDistributionChannelFor(symbol, barScaleInterval);
+			Bar barLastFormedBacktest = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattached;
+			Bar barStreamingBacktest = channelBacktest.StreamingBarFactoryUnattached.BarStreamingUnattached;
+
+			SymbolScaleDistributionChannel channelOriginal = this.DataDistributor.GetDistributionChannelFor(symbol, barScaleInterval);
+			Bar barLastFormedOriginal = channelOriginal.StreamingBarFactoryUnattached.BarLastFormedUnattached;
+			Bar barStreamingOriginal = channelOriginal.StreamingBarFactoryUnattached.BarStreamingUnattached;
+
+			if (barLastFormedOriginal == null || barLastFormedOriginal.DateTimeOpen == DateTime.MinValue) {
+				string msg = "SYNCHRONIZING_STREAMING_BAR_FACTORY_FOR_FIRST_TIME_BACKTEST";
+				Assembler.PopupException(msg, null, false);
+				channelOriginal.StreamingBarFactoryUnattached.AbsorbBarLastStaticFromChannel(channelBacktest);
+				channelOriginal.StreamingBarFactoryUnattached.AbsorbBarStreamingFromChannel(channelBacktest);
+			} else {
+				string difference = "";
+				if (barLastFormedOriginal.HasSameDOHLCVas(barLastFormedBacktest, "barLastBacktest", "barLastOriginal", ref difference)) {
+					string msg = "SHOULD_NOT_BE_DIFFERENT_FOR_MID_LIVE_BACKTEST_SINCE_QUOTES_MUST_HAVE_BEEN_PAUSED " + difference;
+					//Assembler.PopupException(msg);
+				}
+			}
 		}
 	}
 }

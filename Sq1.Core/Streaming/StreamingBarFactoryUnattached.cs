@@ -5,17 +5,17 @@ using System.Diagnostics;
 
 namespace Sq1.Core.Streaming {
 	public class StreamingBarFactoryUnattached {
-		public string Symbol { get; private set; }
-		public BarScaleInterval ScaleInterval { get; set; }
-		public int IntraBarSerno { get; private set; }
-		public Bar StreamingBarUnattached { get; private set; }
-		public Bar LastBarFormedUnattached { get; protected set; }
+		public string			Symbol					{ get; private set; }
+		public BarScaleInterval ScaleInterval			{ get; set; }
+		public int				IntraBarSerno			{ get; private set; }
+		public Bar				BarStreamingUnattached	{ get; private set; }
+		public Bar				BarLastFormedUnattached	{ get; protected set; }
 
 		public StreamingBarFactoryUnattached(string symbol, BarScaleInterval scaleInterval) {
 			Symbol = symbol;
 			ScaleInterval = scaleInterval;
-			LastBarFormedUnattached = null;
-			StreamingBarUnattached = new Bar(this.Symbol, this.ScaleInterval, DateTime.MinValue);
+			BarLastFormedUnattached = null;
+			BarStreamingUnattached = new Bar(this.Symbol, this.ScaleInterval, DateTime.MinValue);
 			IntraBarSerno = 0;
 		}
 		public virtual Quote EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar(Quote quoteClone) {
@@ -27,8 +27,8 @@ namespace Sq1.Core.Streaming {
 				//return;
 			}
 
-			if (this.StreamingBarUnattached.Symbol != quoteClone.Symbol) {
-				string msg = "StreamingBar.Symbol=[" + this.StreamingBarUnattached.Symbol + "]!=quote.Symbol["
+			if (this.BarStreamingUnattached.Symbol != quoteClone.Symbol) {
+				string msg = "StreamingBar.Symbol=[" + this.BarStreamingUnattached.Symbol + "]!=quote.Symbol["
 					+ quoteClone.Symbol + "] (" + quoteClone + ")";
 				throw new Exception(msg);
 				//return;
@@ -40,15 +40,18 @@ namespace Sq1.Core.Streaming {
 			//SEE_BELOW 	this.initStreamingBarResetIntraBarSerno(quoteClone.ServerTime, quoteClone.PriceLastDeal, quoteClone.Size);
 			//SEE_BELOW }
 
-			if (quoteClone.ServerTime >= this.StreamingBarUnattached.DateTimeNextBarOpenUnconditional) {
-				this.LastBarFormedUnattached = this.StreamingBarUnattached.Clone();	//beware! on very first quote LastBarFormed.DateTimeOpen == DateTime.MinValue
+			if (quoteClone.ServerTime >= this.BarStreamingUnattached.DateTimeNextBarOpenUnconditional) {
+				if (this.BarLastFormedUnattached != null && this.BarLastFormedUnattached.DateTimeOpen == DateTime.MinValue) {
+					string msg = "beware! on very first quote LastBarFormed.DateTimeOpen == DateTime.MinValue";
+				}
+				this.BarLastFormedUnattached = this.BarStreamingUnattached.Clone();
 
-				this.StreamingBarUnattached			= new Bar(this.Symbol, this.ScaleInterval, quoteClone.ServerTime);
-				this.StreamingBarUnattached.Open	= quoteClone.LastDealPrice;
-				this.StreamingBarUnattached.High	= quoteClone.LastDealPrice;
-				this.StreamingBarUnattached.Low		= quoteClone.LastDealPrice;
-				this.StreamingBarUnattached.Close	= quoteClone.LastDealPrice;
-				this.StreamingBarUnattached.Volume	= quoteClone.Size;
+				this.BarStreamingUnattached			= new Bar(this.Symbol, this.ScaleInterval, quoteClone.ServerTime);
+				this.BarStreamingUnattached.Open	= quoteClone.LastDealPrice;
+				this.BarStreamingUnattached.High	= quoteClone.LastDealPrice;
+				this.BarStreamingUnattached.Low		= quoteClone.LastDealPrice;
+				this.BarStreamingUnattached.Close	= quoteClone.LastDealPrice;
+				this.BarStreamingUnattached.Volume	= quoteClone.Size;
 				this.IntraBarSerno = 0;
 
 				// quoteClone.IntraBarSerno doesn't feel new Bar; can contain 100004 for generatedQuotes;
@@ -69,25 +72,25 @@ namespace Sq1.Core.Streaming {
 					Debugger.Break();
 				}
 			} else {
-				if (double.IsNaN(this.StreamingBarUnattached.Open) || this.StreamingBarUnattached.Open == 0.0) {
+				if (double.IsNaN(this.BarStreamingUnattached.Open) || this.BarStreamingUnattached.Open == 0.0) {
 					string msg = "we should've had StreamingBar already initialized with first quote of a bar"
 						+ "; should only happen on first quote of first bar ever of a symbol freshly added to DataSource";
 					if (double.IsNaN(quoteClone.LastDealPrice)) {
 						msg = "INITIALIZED_OPEN_WITH_NAN_FROM_quoteClone.LastDealPrice " + msg;
 					}
 					Assembler.PopupException(msg, null, false);
-					this.StreamingBarUnattached.Open = quoteClone.LastDealPrice;
+					this.BarStreamingUnattached.Open = quoteClone.LastDealPrice;
 					//this.StreamingBarUnattached.High = quoteClone.LastDealPrice;
 					//this.StreamingBarUnattached.Low = quoteClone.LastDealPrice;
 				}
-				this.StreamingBarUnattached.MergeExpandHLCVforStreamingBarUnattached(quoteClone);
+				this.BarStreamingUnattached.MergeExpandHLCVforStreamingBarUnattached(quoteClone);
 				this.IntraBarSerno++;
 			}
 			if (quoteClone.ParentBarStreaming != null) {
 				string msg = "QUOTE_ALREADY_ENRICHED_WITH_PARENT_STREAMING_BAR; I think it's a pre- bindStreamingBarForQueue() atavism";
 				//Assembler.PopupException(msg);
 			} else {
-				quoteClone.SetParentBarStreaming(this.StreamingBarUnattached);
+				quoteClone.SetParentBarStreaming(this.BarStreamingUnattached);
 			}
 			
 			if (quoteClone.IntraBarSerno == -1) {
@@ -100,9 +103,9 @@ namespace Sq1.Core.Streaming {
 		}
 		public void InitWithStreamingBarInsteadOfEmpty(Bar StreamingBarInsteadOfEmpty) {
 			string msg = "";
-			if (StreamingBarInsteadOfEmpty.DateTimeOpen <= this.StreamingBarUnattached.DateTimeOpen) {
+			if (StreamingBarInsteadOfEmpty.DateTimeOpen <= this.BarStreamingUnattached.DateTimeOpen) {
 				msg += "StreamingBarInsteadOfEmpty.DateTimeOpen[" + StreamingBarInsteadOfEmpty.DateTimeOpen
-					+ "] <= CurrentStreamingBar.Open[" + this.StreamingBarUnattached.Open + "]";
+					+ "] <= CurrentStreamingBar.Open[" + this.BarStreamingUnattached.Open + "]";
 				//log.Warn(msg + " // " + this);
 				return;
 			}
@@ -115,13 +118,21 @@ namespace Sq1.Core.Streaming {
 			if (StreamingBarInsteadOfEmpty.Open == 0) {
 				msg += "StreamingBarInsteadOfEmpty.Open[" + StreamingBarInsteadOfEmpty.Open + "] == 0 ";
 			}
-			this.StreamingBarUnattached = StreamingBarInsteadOfEmpty.Clone();
+			this.BarStreamingUnattached = StreamingBarInsteadOfEmpty.Clone();
 			if (string.IsNullOrEmpty(msg) == false) {
 				//log.Warn("InitWithStreamingBarInsteadOfEmpty: " + msg + " // " + this);
 			}
 		}
 		public override string ToString() {
-			return this.Symbol + "_" + this.ScaleInterval.ToString() + ":StreamingBar[" + this.StreamingBarUnattached.ToString() + "]";
+			return this.Symbol + "_" + this.ScaleInterval.ToString() + ":StreamingBar[" + this.BarStreamingUnattached.ToString() + "]";
+		}
+
+		internal void AbsorbBarLastStaticFromChannel(SymbolScaleDistributionChannel channelBacktest) {
+			this.BarLastFormedUnattached = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattached.CloneDetached();
+		}
+
+		internal void AbsorbBarStreamingFromChannel(SymbolScaleDistributionChannel channelBacktest) {
+			this.BarStreamingUnattached = channelBacktest.StreamingBarFactoryUnattached.BarStreamingUnattached.CloneDetached();
 		}
 	}
 }

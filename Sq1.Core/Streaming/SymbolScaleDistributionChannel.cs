@@ -70,17 +70,12 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg);
 			}
 			if (quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == 0) {
-				if (StreamingBarFactoryUnattached.LastBarFormedUnattached != null
+				if (StreamingBarFactoryUnattached.BarLastFormedUnattached != null
 						//&& double.IsNaN(StreamingBarFactoryUnattached.LastBarFormedUnattached.Close) == true
-						&& this.StreamingBarFactoryUnattached.LastBarFormedUnattached.DateTimeOpen != DateTime.MinValue
+						&& this.StreamingBarFactoryUnattached.BarLastFormedUnattached.DateTimeOpen != DateTime.MinValue
 					) {
 					lock (lockConsumersBar) {
-						//try {
 						this.bindNewStreamingBarAppendPokeConsumersStaticFormed(quoteSernoEnrichedWithUnboundStreamingBar);
-						//} catch (Exception e) {
-						//	string msg = "is this why barsSimulated.Count=6 while barOriginal=31/50??";
-						//	throw new Exception(msg);
-						//}
 					}
 				} else {
 					string msg = "I won't push LastStaticBar(DateTime.MinValue, NaN*5) on first quoteSernoEnrichedWithUnboundStreamingBar["
@@ -96,7 +91,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		void bindNewStreamingBarAppendPokeConsumersStaticFormed(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
-			Bar barStreamingUnattached = this.StreamingBarFactoryUnattached.StreamingBarUnattached.Clone();
+			Bar barStreamingUnattached = this.StreamingBarFactoryUnattached.BarStreamingUnattached.Clone();
 			if (this.consumersBar.Count == 0) {
 				Assembler.PopupException("NO_BARS_CONSUMERS to push lastBarFormed[" + barStreamingUnattached.ToString() + "] SymbolScaleInterval["
 					+ SymbolScaleInterval + "]; returning");
@@ -118,7 +113,7 @@ namespace Sq1.Core.Streaming {
 						continue;
 					}
 					try {
-						Bar lastBarFormedUnattached = this.StreamingBarFactoryUnattached.LastBarFormedUnattached.Clone();
+						Bar lastBarFormedUnattached = this.StreamingBarFactoryUnattached.BarLastFormedUnattached.Clone();
 						consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(lastBarFormedUnattached, null);
 					} catch (Exception e) {
 						string msg = "STREAMING_SOLIDIFIER_FAILED_TO_CONSUME_STATIC_JUST_FORMED";

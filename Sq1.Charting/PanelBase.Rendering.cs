@@ -127,6 +127,11 @@ namespace Sq1.Charting {
 					int labelWidth = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont).Width;
 					int labelHeight = (int)g.MeasureString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont).Height;
 					int labelXalignedRight = base.Width - this.ChartControl.ChartSettings.GutterRightPadding - labelWidth;
+
+					int pxBelowBottomBoundary = (labelYadjustedUp + labelHeight) - base.Height;
+					if (pxBelowBottomBoundary > 0) {
+						labelYadjustedUp -= pxBelowBottomBoundary;
+					}
 					
 					Rectangle plate = new Rectangle(labelXalignedRight, labelYadjustedUp - 2, labelWidth + 1, labelHeight + 3);
 					if (base.ForeColor != Color.Empty) {

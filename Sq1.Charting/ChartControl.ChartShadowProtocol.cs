@@ -241,19 +241,16 @@ namespace Sq1.Charting {
 		}
 		public override OnChartObjectOperationStatus ChartLabelDrawOnNextLineModify(
 				string labelId, string labelText, Font font, Color colorFore, Color colorBack) {
-			OnChartLabel label = null;
+			OnChartObjectOperationStatus ret = OnChartObjectOperationStatus.Unknown;
 			try {
-				label = this.ScriptExecutorObjects.ChartLabelAddOrModify(labelId, labelText, font, colorFore, colorBack);
+				OnChartLabel label = this.ScriptExecutorObjects.ChartLabelAddOrModify(labelId, labelText, font, colorFore, colorBack);
+				ret = label.Status;
 			} catch (Exception ex) {
-				if (label != null) {
-					Assembler.PopupException(label.ToString() + " //LabelDrawMofify()");
-				} else {
-					string msg = "EXECUTOROBJECTS_DIDNT_EVEN_RETURN_LINE_SOMETHING_SERIOUS";
-					Assembler.PopupException(msg + " //LabelDrawMofify()");
-				}
-				return OnChartObjectOperationStatus.Unknown;
+				string msg = "DID_YOU_RUN_BACKTEST_TWICE??__MULTITHREADING_DUPLICATES_FOR_LABEL[" + labelId + "]";
+				Assembler.PopupException(msg + " //LabelDrawMofify()", ex);
+				return ret;
 			}
-			return label.Status;
+			return ret;
 		}
 
 		public override OnChartObjectOperationStatus BarAnnotationDrawModify(

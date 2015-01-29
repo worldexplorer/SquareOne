@@ -244,10 +244,8 @@ namespace Sq1.Charting.MultiSplit {
 			}
 			if (splitterIsDraggingNow) {
 				if (panelMouseIsOverNow == null) {
-					string msg = "HAPPENED_ONCE_NO_CLUE";
-					#if DEBUG
-					Debugger.Break();
-					#endif
+					string msg = "SINGLE_CLICK_ON_YELLOW_WITHOUT_DRAGGING?";
+					Assembler.PopupException(msg, null, false);
 					return;
 				} else {
 					int indexToMoveFrom = this.splitters.IndexOf(splitterStartedResizeOrDrag);

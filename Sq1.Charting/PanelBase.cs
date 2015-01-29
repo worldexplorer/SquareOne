@@ -71,7 +71,7 @@ namespace Sq1.Charting {
 		}
 		// REASON_TO_EXIST: for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
 		public virtual int Decimals { get { Debugger.Break(); throw new NotImplementedException(); } }
-		public string Format { get { return "N" + this.Decimals; } }
+		public string Format { get { return "N" + (this.Decimals + 1); } }
 		public virtual int ValueIndexLastAvailableMinusOneUnsafe { get {
 				throw new NotImplementedException();
 			} }

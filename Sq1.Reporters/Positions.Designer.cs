@@ -153,14 +153,14 @@ namespace Sq1.Reporters {
 			this.olvcQuantity.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcQuantity.Text = "Shares";
 			this.olvcQuantity.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcQuantity.Width = 19;
+			this.olvcQuantity.Width = 15;
 			// 
 			// olvcPositionCost
 			// 
 			this.olvcCost.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcCost.Text = "$Cost";
 			this.olvcCost.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCost.Width = 40;
+			this.olvcCost.Width = 60;
 			// 
 			// olvcEntryDate
 			// 
@@ -174,7 +174,7 @@ namespace Sq1.Reporters {
 			this.olvcEntryPrice.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcEntryPrice.Text = "Entry Price";
 			this.olvcEntryPrice.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcEntryPrice.Width = 55;
+			this.olvcEntryPrice.Width = 60;
 			// 
 			// olvcEntryOrder
 			// 
@@ -193,7 +193,7 @@ namespace Sq1.Reporters {
 			this.olvcExitPrice.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcExitPrice.Text = "Exit Price";
 			this.olvcExitPrice.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcExitPrice.Width = 55;
+			this.olvcExitPrice.Width = 60;
 			// 
 			// olvcExitOrder
 			// 
@@ -205,14 +205,14 @@ namespace Sq1.Reporters {
 			this.olvcProfitPct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcProfitPct.Text = "%Profit";
 			this.olvcProfitPct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcProfitPct.Width = 36;
+			this.olvcProfitPct.Width = 40;
 			// 
 			// olvcProfitDollar
 			// 
 			this.olvcProfitDollar.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcProfitDollar.Text = "$Profit";
 			this.olvcProfitDollar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcProfitDollar.Width = 45;
+			this.olvcProfitDollar.Width = 50;
 			// 
 			// olvcBarsHeld
 			// 
@@ -243,49 +243,49 @@ namespace Sq1.Reporters {
 			this.olvcMae.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMae.Text = "$MAE";
 			this.olvcMae.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMae.Width = 42;
+			this.olvcMae.Width = 47;
 			// 
 			// olvcMfe
 			// 
 			this.olvcMfe.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMfe.Text = "$MFE";
 			this.olvcMfe.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMfe.Width = 42;
+			this.olvcMfe.Width = 47;
 			// 
 			// olvcMaePct
 			// 
 			this.olvcMaePct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMaePct.Text = "%MAE";
 			this.olvcMaePct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMaePct.Width = 42;
+			this.olvcMaePct.Width = 47;
 			// 
 			// olvcMfePct
 			// 
 			this.olvcMfePct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMfePct.Text = "%MFE";
 			this.olvcMfePct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMfePct.Width = 42;
+			this.olvcMfePct.Width = 47;
 			// 
 			// olvcCumProfitPct
 			// 
 			this.olvcCumNetProfitPct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcCumNetProfitPct.Text = "%ProfitCumulative";
 			this.olvcCumNetProfitPct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCumNetProfitPct.Width = 41;
+			this.olvcCumNetProfitPct.Width = 46;
 			// 
 			// olvcCumProfitDollar
 			// 
 			this.olvcCumNetProfitDollar.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcCumNetProfitDollar.Text = "$ProfitCumulative";
 			this.olvcCumNetProfitDollar.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCumNetProfitDollar.Width = 50;
+			this.olvcCumNetProfitDollar.Width = 55;
 			// 
 			// olvcComission
 			// 
 			this.olvcComission.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcComission.Text = "$Commission";
 			this.olvcComission.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcComission.Width = 40;
+			this.olvcComission.Width = 45;
 			// 
 			// ctxPopup
 			// 

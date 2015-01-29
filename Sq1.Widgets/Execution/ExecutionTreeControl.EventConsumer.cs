@@ -196,12 +196,14 @@ namespace Sq1.Widgets.Execution {
 			//	return;
 			//}
 			//v2 HACK http://stackoverflow.com/questions/10161088/get-elapsed-time-since-application-start-in-c-sharp
-			try {
-				TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
-				if (sinceApplicationStart.Seconds <= 10) return;
-			} catch (Exception ex) {
-				Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
-			}
+			//try {
+			//    TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
+			//    if (sinceApplicationStart.Seconds <= 10) return;
+			//} catch (Exception ex) {
+			//    Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
+			//}
+			//v3
+			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
 			if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
 				//if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;
 				//this.DataSnapshot.MessagePaneSplitDistanceHorizontal = e.SplitY;

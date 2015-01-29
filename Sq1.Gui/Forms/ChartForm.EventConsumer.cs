@@ -63,7 +63,7 @@ namespace Sq1.Gui.Forms {
 					// same idea as in mniSubscribedToStreamingProviderQuotesBars_Click();
 					ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
 					if (this.ChartFormManager.Executor.Strategy.Script != null && ctxChart.IsStreamingTriggeringScript) {
-						this.ChartFormManager.BacktesterRunSimulationRegular();
+						this.ChartFormManager.BacktesterRunSimulation();
 					}
 				} else {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStop();
@@ -104,7 +104,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void mniBacktestNow_Click(object sender, System.EventArgs e) {
 			try {
-				this.ChartFormManager.BacktesterRunSimulationRegular();
+				this.ChartFormManager.BacktesterRunSimulation();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestNow_Click()", ex);
 			}
@@ -336,7 +336,7 @@ namespace Sq1.Gui.Forms {
 						// without backtest here, Indicators aren't calculated if there was no "Backtest Now" or "Backtest on App Restart"
 						// better duplicated backtest but synced, than streaming starts without prior bars are processed by the strategy
 						// TODO few quotes might get pushed into the indicators/strategy before backtest pauses QuotePump in new thread
-						this.ChartFormManager.BacktesterRunSimulationRegular();
+						this.ChartFormManager.BacktesterRunSimulation();
 					}
 				} else {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingUnsubscribe(reason);

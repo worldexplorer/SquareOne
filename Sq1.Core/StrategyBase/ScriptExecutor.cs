@@ -22,11 +22,9 @@ namespace Sq1.Core.StrategyBase {
 		public	SystemPerformance				Performance					{ get; protected set; }
 		public	Backtester						Backtester					{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; private set; }
-		public	MarketsimLive				MarketsimLive			{ get; private set; }
+		public	MarketsimLive					MarketsimLive			{ get; private set; }
 		public	MarketsimBacktest				MarketsimBacktest			{ get; private set; }
 		public	ScriptExecutorEventGenerator	EventGenerator				{ get; private set; }
-		// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-		//public	NotOnChartBarsHelper		NotOnChartBarsHelper		{ get; private set; }
 		public	CommissionCalculator			CommissionCalculator;
 		public	Optimizer						Optimizer					{ get; protected set; }
 		#endregion
@@ -140,8 +138,6 @@ namespace Sq1.Core.StrategyBase {
 			this.MarketsimLive = new MarketsimLive(this);
 			this.MarketsimBacktest = new MarketsimBacktest(this);
 			this.EventGenerator = new ScriptExecutorEventGenerator(this);
-			// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-			//this.NotOnChartBarsHelper = new NotOnChartBarsHelper(this);
 			this.CommissionCalculator = new CommissionCalculatorZero(this);
 			this.Optimizer = new Optimizer(this);
 			this.OrderProcessor = Assembler.InstanceInitialized.OrderProcessor;
@@ -189,6 +185,14 @@ namespace Sq1.Core.StrategyBase {
 
 			//if (quote != null) {
 			if (onNewQuoteTrue_onNewBarFalse == true) {
+				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
+					try {
+						indicator.OnNewStreamingQuote(quoteForAlertsCreated);
+					} catch (Exception ex) {
+						Assembler.PopupException("INDICATOR_ON_NEW_STREAMING_QUOTE " + indicator.ToString(), ex);
+					}
+				}
+
 				try {
 					this.Strategy.Script.OnNewQuoteOfStreamingBarCallback(quoteForAlertsCreated);
 					//alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
@@ -202,6 +206,17 @@ namespace Sq1.Core.StrategyBase {
 					this.PopupException(ex.Message + msig, ex);
 				}
 			} else {
+				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
+					try {
+						int barsAheadOfIndicator = this.Bars.BarStaticLastNullUnsafe.ParentBarsIndex - indicator.OwnValuesCalculated.LastIndex;
+						if (barsAheadOfIndicator == 0) continue;
+
+						indicator.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended(this.Bars.BarStaticLastNullUnsafe);
+					} catch (Exception ex) {
+						Assembler.PopupException("INDICATOR_ON_NEW_BAR " + indicator.ToString(), ex);
+					}
+				}
+
 				try {
 					this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLastNullUnsafe);
 				} catch (Exception ex) {
@@ -951,7 +966,21 @@ namespace Sq1.Core.StrategyBase {
 			this.preDataSource = this.DataSource;
 			this.preBacktestIsStreaming = this.IsStreamingTriggeringScript;
 
-			this.Bars = bars;
+			if (this.Bars == bars) {
+				string msg = "LIFECYCLE_INCONSISTENT__BARS_ALREADY_INITIALIZED " + this.Bars;
+				Assembler.PopupException(msg);
+			} else {
+				this.Bars = bars;
+				bool indicatorsHaveNoErrorsCanStartBacktesting = true;
+				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
+					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStartingConstructOwnValuesValidateParameters(this);
+				}
+				if (indicatorsHaveNoErrorsCanStartBacktesting == false) {
+					string msg = "I_SHOULD_ABORT_BACKTEST_NOW_HERE_BUT_DONT_HAVE_A_MECHANISM indicatorsHaveNoErrorsCanStartBacktesting=false";
+					Assembler.PopupException(msg);
+					throw new Exception(msg);
+				}
+			}
 			//this.DataSource = bars.DataSource;
 			if (this.preBacktestBars != null) {
 				string msg = "NOT_SAVING_IsStreamingTriggeringScript=ON_FOR_BACKTEST"
@@ -963,12 +992,22 @@ namespace Sq1.Core.StrategyBase {
 		}
 		internal void BacktestContextRestore() {
 			this.Bars = this.preBacktestBars;
+			foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
+				if (indicator.OwnValuesCalculated.Count != this.Bars.Count - 1) {
+					string state = "MA.OwnValues.Count=499, MA.BarsEffective.Count=500[0...499], MA.BarsEffective.BarStreaming=null <= that's why indicator has 1 less";
+					string msg = "REMOVE_HOLES_IN_INDICATOR " + indicator;
+					Assembler.PopupException(msg);
+				}
+				indicator.ResetBarsEffectiveProxyForBacktestStartingOrSwitchToOriginalBarsContinueToLiveNorecalculateStopped();
+			}
+
 			//this.DataSource = this.preDataSource;
 			this.IsStreamingTriggeringScript = preBacktestIsStreaming;
 			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
-			if (this.Bars.DataSource.StreamingProvider != null) {
+			StreamingProvider streaming = this.DataSource.StreamingProvider;
+			if (streaming != null) {
 				this.Bars.DataSource.PumpAutoResumeFor(this);
 			} else {
 				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingProvider=null //BacktestContextRestore(" + this.Bars + ")";
@@ -988,18 +1027,10 @@ namespace Sq1.Core.StrategyBase {
 				this.ExecutionDataSnapshot.Initialize();
 				//MOVED_TO_CTOR() this.Performance = new SystemPerformance(this);
 				this.Performance.Initialize();
-				this.Strategy.Script.InitializeBacktestWithExecutorsBarsInstantiateIndicators();
+				this.Strategy.Script.InitializeBacktestWrapper();
 
 				if (this.ChartShadow != null) {
 					this.ChartShadow.SetIndicators(this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances);
-				}
-				bool indicatorsHaveNoErrorsCanStartBacktesting = true;
-				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
-					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStartingConstructOwnValuesValidateParameters(this);
-				}
-				if (indicatorsHaveNoErrorsCanStartBacktesting == false) {
-					// CATCH_IS_FOR_SIMULATION_EXCEPTIONS_NOT_FOR_YOU!!! throw new Exception("indicatorsHaveNoErrorsCanStartBacktesting=false");
-					return;
 				}
 				
 				this.Backtester.Initialize();
@@ -1048,12 +1079,12 @@ namespace Sq1.Core.StrategyBase {
 			//this.ChartShadow.ScriptToChartCommunicator.PositionsBacktestClearAfterChartPickedUp();
 			if (this.ChartShadow != null) this.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
 
-			if (this.Strategy.ActivatedFromDll) {
+			//if (this.Strategy.ActivatedFromDll) {
 				// FIXED "EnterEveryBar doesn't draw MAfast"; editor-typed strategies already have indicators in SNAP after pre-backtest compilation
 				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true
 				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
-			}
-			this.Strategy.Script.PullParametersFromCurrentContextSaveStrategyIfAbsorbedFromScript();
+			//}
+			this.Strategy.Script.PushRegisteredScriptParametersIntoCurrentContextSaveStrategy();
 			
 			//inNewThread = false;
 			if (inNewThread) {

@@ -13,19 +13,8 @@ namespace Sq1.Core.Indicators {
 			bool indicatorLegDrawn = false;
 			// MOVED_UPSTACK if (bar.ParentBarsIndex <= this.FirstValidBarIndex) return indicatorLegDrawn;
 			if (Object.ReferenceEquals(this.OwnValuesCalculated, null)) return indicatorLegDrawn;
-			string msig = " Indicator[" + this.NameWithParameters + "].DrawValueEntryPoint(" + bar + ")";
-			//v1
-			//if (this.OwnValuesCalculated.Count < bar.ParentBarsIndex) {
-			//	string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_BAR bar[" + bar + "]";
-			//	//Assembler.PopupException(msg + msig);
-			//	return indicatorLegDrawn;
-			//}
-			//double calculated = this.OwnValuesCalculated[bar.ParentBarsIndex];
-			// v2-BEGIN
-			// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-			//if (null == this.NotOnChartBarScaleInterval && bar.ParentBarsIndex < this.FirstValidBarIndex) {
-			//	return indicatorLegDrawn;	// INVALID FOR INDICATOR BASED ON NON_CHART_BARS_SCALE_INTERVAL
-			//}
+			string msig = " Indicator[" + this.Name + "]{" + this.OwnValuesCalculated.ToString() + "}"
+				+ ".DrawValueEntryPoint(" + bar + ")";
 
 			if (bar.IsBarStaticLast && this.Executor.IsStreamingTriggeringScript == false) {
 				string msg = "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED";
@@ -45,16 +34,13 @@ namespace Sq1.Core.Indicators {
 					string msg2 = "YOU_HAD_BACKTESTONSELECTORS_OFF_AND_CLICKED_ANOTHER_SYMBOL? SKIPPING_RENDERING BUT_BETTER_TO_SET_OWN_VALUES_TO_NULL_AT_SYMBOL_CHANGE";
 					return indicatorLegDrawn;
 				}
-				//string msg = "EDIT_DATASOURCE_EXTEND_MARKET_OPEN_CLOSE_HOURS";
+				if (bar == this.BarsEffective.BarStaticLastNullUnsafe && this.BarsEffective.BarStreaming == null) {
+					string msg2 = "WHEN_YOU_START_STREAMING_LAST_STATIC_BAR_WILL_BE_DRAWN";
+					return indicatorLegDrawn;
+				}
 				string msg = "CAN_NOT_DRAW_INDICATOR_HAS_NO_VALUE_CALCULATED_FOR_BAR bar[" + bar.DateTimeOpen + "]";
-				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-				//if (this.OwnValuesCalculated.ScaleInterval == null) {
-				//	var scaleIntervalAutoInit = this.NotOnChartBarsKey;
-				//}
-				//if (this.OwnValuesCalculated.ScaleInterval != bar.ParentBars.ScaleInterval) {
-				//	msg += " OwnValuesCalculated.ScaleInterval[" + this.OwnValuesCalculated.ScaleInterval + "] != bar.ParentBars.ScaleInterval[" + bar.ParentBars.ScaleInterval + "]";
-				//}
-				Assembler.PopupException(msg + msig, null, false);
+				string howToFix = " SYNC_IMPLEMENTATION_WITH_IndicatorMovingAverageSimple OR_FRAMEWORK_BUG_ON_EDGE_BTW_BACKTEST_AND_LIVE";
+				Assembler.PopupException(msg + msig + howToFix, null, false);
 				return indicatorLegDrawn;
 			}
 //			return this.DrawValueIndicatorSpecific(g, bar, barPlaceholder);

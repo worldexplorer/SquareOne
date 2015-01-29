@@ -144,21 +144,15 @@ namespace Sq1.Gui {
 				}
 
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
-				//this.DockPanel.ResumeLayout(true);
-				//this.DockPanel.Size = this.ClientSize;
 				
 				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 					if (cfmgr.ChartForm == null) continue;
 					if (cfmgr.ChartForm.MniShowSourceCodeEditor.Enabled) {		//set to true in InitializeWithStrategy() << DeserializeDockContent() 20 lines above
 						cfmgr.ChartForm.MniShowSourceCodeEditor.Checked = cfmgr.ScriptEditorIsOnSurface;
 					}
-					if (cfmgr.ChartForm.ChartFormManager != cfmgr) {
-						string msg = "WEIRD_POINTER_LOOP RESTORE COMMENT 5 lines below";
-						#if DEBUG
-						Debugger.Break();
-						#endif
-					}
-					//WEIRD_POINTER_LOOP Strategy chartStrategy = cfmgr.ChartForm.ChartFormManager.Executor.Strategy;
+
+					cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
+
 					Strategy chartStrategy = cfmgr.Executor.Strategy;
 					if (chartStrategy == null) continue;
 					if (chartStrategy.ActivatedFromDll == false) {
@@ -186,15 +180,11 @@ namespace Sq1.Gui {
 					}
 					#endif
 
-					// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
-					// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
-					// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
-					//DOESNT_TRIGGER_RIGHT_SIZE cfmgr.ChartForm.ResumeLayout(true);
-					//cfmgr.ChartForm.Refresh();
-					//NOPE_WRONG_MOVE cfmgr.ChartForm.Size = this.DockPanel.ClientSize;
-
-					cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
-					cfmgr.Executor.DataSource.StreamingProvider.UpstreamConnect();
+					//if (cfmgr.DataSnapshot.ContextChart.IsStreaming == true) {
+					//	string msg = "CHART_SUBSCRIBED__BUT_SHOULD_CONNECT_AFTER_BACKTEST";
+					//} else {
+						cfmgr.Executor.DataSource.StreamingProvider.UpstreamConnect();
+					//}
 				}
 				
 				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>

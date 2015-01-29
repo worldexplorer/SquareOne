@@ -224,7 +224,7 @@ namespace Sq1.Core.Streaming {
 			foreach (SymbolScaleDistributionChannel channel in channelsForSymbol) {
 				// late quote should be within current StreamingBar, otherwize don't deliver for channel
 				if (lastQuote != null && quote.ServerTime < lastQuote.ServerTime) {
-					Bar streamingBar = channel.StreamingBarFactoryUnattached.StreamingBarUnattached;
+					Bar streamingBar = channel.StreamingBarFactoryUnattached.BarStreamingUnattached;
 					if (quote.ServerTime <= streamingBar.DateTimeOpen) {
 						string msg = "skipping old quote for quote.ServerTime[" + quote.ServerTime + "], can only accept for current"
 							+ " StreamingBar (" + streamingBar.DateTimeOpen + " .. " + streamingBar.DateTimeNextBarOpenUnconditional + "];"

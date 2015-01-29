@@ -61,8 +61,11 @@ namespace Sq1.Core.Indicators {
 			return null;
 		}
 		public override string ToString() {
-			return this.FullName + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
+			return this.FullName + ":" + this.ValuesAsString;
 		}
+		public string ValuesAsString { get {
+				return this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
+			} }
 		public void AbsorbCurrentFixBoundariesIfChanged(IndicatorParameter ctxParamToAbsorbCurrentAndFixBoundaries) {
 			if (this.ValueCurrent != ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent) {
 				string msg = "we collapsed IndicatorParameters into a single instance thing; are we back to duplicates?...";

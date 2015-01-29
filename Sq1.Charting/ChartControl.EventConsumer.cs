@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 using Sq1.Core;
@@ -106,16 +107,39 @@ namespace Sq1.Charting {
 			if (base.DesignMode) return;
 			if (this.ChartSettings == null) return;	// MAY_BE_REDUNDANT
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-				#if DEBUG
-				//Debugger.Break();	// NOT_REDUNDANT_DUE_TO_500_RESIZES_AT_FORM_LOAD_BY_DOCK_CONTENT_LIBRARY MAY_BE_REDUNDANT
-				#endif
-				return;
-			}
+			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			//	#if DEBUG
+			//	//Debugger.Break();	// NOT_REDUNDANT_DUE_TO_500_RESIZES_AT_FORM_LOAD_BY_DOCK_CONTENT_LIBRARY MAY_BE_REDUNDANT
+			//	#endif
+			//	return;
+			//}
+			//v1 BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
+			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			//	return;
+			//}
+			//v2 HACK http://stackoverflow.com/questions/10161088/get-elapsed-time-since-application-start-in-c-sharp
+			//try {
+			//    TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
+			//    if (sinceApplicationStart.Seconds <= 10) return;
+			//} catch (Exception ex) {
+			//    Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
+			//}
+			//v3
+			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
 			this.SerializeSplitterDistanceOrPanelName();
 		}
 		public void SerializeSplitterDistanceOrPanelName() {
+			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			//	return;
+			//}
 			this.ChartSettings.MultiSplitterPropertiesByPanelName = this.multiSplitContainer.SplitterPropertiesByPanelNameGet();
+			// that will show that 10s delay actually makes better sense than relying on MainFormDockFormsFullyDeserializedLayoutComplete in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized()
+			//try {
+			//	int justCurious = this.ChartSettings.MultiSplitterPropertiesByPanelName[this.panelVolume.PanelName].Distance;
+			//	Debugger.Break();
+			//} catch (Exception ex) {
+			//	Assembler.PopupException(null, ex);
+			//}
 			this.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 
