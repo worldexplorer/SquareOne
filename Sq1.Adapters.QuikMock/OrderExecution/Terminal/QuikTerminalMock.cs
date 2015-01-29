@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
-using Sq1.Core;
-using Sq1.Core.Execution;
-using Sq1.Core.DataTypes;
 using Sq1.Adapters.Quik.Terminal;
+using Sq1.Core;
+using Sq1.Core.Broker;
+using Sq1.Core.DataTypes;
+using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
-using System.Diagnostics;
 
 namespace Sq1.Adapters.QuikMock.Terminal {
 	public class QuikTerminalMock : QuikTerminal {
@@ -295,15 +296,25 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 		public override void SendTransactionOrderAsync(char opBuySell, char typeMarketLimitStop,
 				string SecCode, string ClassCode, double price, int quantity,
 				string GUID, out int SernoSession, out string msgSubmittedOut, out OrderState orderStateOut) {
-
-			//Debugger.Break();
+			string msig = " //QuikTerminal(" + this.DllName + ").SendTransactionOrderAsync("
+				+ SecCode + "." + ClassCode + " " + opBuySell + typeMarketLimitStop + ": " + quantity + "@" + price + ")";
 			if (!this.IsSubscribed(SecCode, ClassCode)) this.Subscribe(SecCode, ClassCode);
 			string trans = base.getOrderCommand(opBuySell, typeMarketLimitStop, SecCode, ClassCode, price, quantity, GUID, out SernoSession);
 			Order orderFound = base.BrokerQuik.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(GUID, OrderState.Submitting, trans);
 			orderStateOut = OrderState.Submitted;
 
-			string msig = " //QuikTerminal(" + this.DllName + ").SendTransactionOrderAsync(" + opBuySell + typeMarketLimitStop + quantity + "@" + price + ")";
 			msgSubmittedOut = "r[MOCK_SUCCESS] callbackErrorMsg[" + base.callbackErrorMsg + "] error[" + error + "]" + msig;
+			
+			// finding the problem in originating thread
+			OrderProcessorDataSnapshot snap = base.BrokerQuik.OrderProcessor.DataSnapshot;
+			string logOrEmpty = "";
+			Order order = snap.ScanRecentForGUID(GUID, snap.LanesForCallbackOrderState, out logOrEmpty);
+			if (order == null) {
+				string msg = "NO_ORDER[" + GUID + "] [" + logOrEmpty + "] LanesForCallbackOrderState" + snap.LanesForCallbackOrderState;
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+
 
 			QuikTerminalMockThreadParam tp = new QuikTerminalMockThreadParam();
 			tp.ClassCode = ClassCode;
