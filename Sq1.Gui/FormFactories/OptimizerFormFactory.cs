@@ -30,7 +30,7 @@ namespace Sq1.Gui.FormFactories {
 			ContextScript ctxAdding = e.ContextScript;
 			Strategy strategyOnChart = this.chartFormManager.Strategy;
 			strategyOnChart.ScriptContextAdd(ctxAdding.Name, ctxAdding, true);
-			this.chartFormManager.BacktesterRunSimulationRegular();
+			this.chartFormManager.BacktesterRunSimulation();
 			SlidersForm.Instance.Show();
 			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(ctxAdding.Name);
 		}
@@ -43,7 +43,7 @@ namespace Sq1.Gui.FormFactories {
 		}
 		void optimizerControl_OnCopyToContextDefaultBacktest(object sender, ContextScriptEventArgs e) {
 			this.optimizerControl_OnCopyToContextDefault(sender, e);
-			this.chartFormManager.BacktesterRunSimulationRegular();
+			this.chartFormManager.BacktesterRunSimulation();
 		}
 		void optimizerControl_OnCopyToContextDefault(object sender, ContextScriptEventArgs e) {
 			ContextScript ctxAdding = e.ContextScript;

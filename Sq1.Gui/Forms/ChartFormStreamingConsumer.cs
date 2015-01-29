@@ -288,19 +288,6 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
-			#region pasted from BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
-			//INVOCATION_WONT_DO_ANY_JOB this.simulatePendingFillPreExecuteEveryTick(null);
-			ExecutionDataSnapshot snap = this.Executor.ExecutionDataSnapshot;
-			foreach (Sq1.Core.Indicators.Indicator indicator in snap.IndicatorsReflectedScriptInstances.Values) {
-				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-				//if (indicator.NotOnChartBarsKey != null) {
-				//	string msg = "Generate quotes for the Non-Chart-Bars and feed them into your indicators!";
-				//	continue;
-				//}
-				indicator.OnNewStaticBarFormed(barLastFormed);
-			}
-			#endregion
-
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				try {
 					dataSourceSafe.PumpingAutoPauseFor(executorSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
@@ -353,16 +340,6 @@ namespace Sq1.Gui.Forms {
 			var chartFormSafe = this.ChartForm;
 			var executorSafe = this.Executor;
 
-			// copy-paste from BacktestQuoteBarConsumer.ConsumeQuoteOfStreamingBar; fixes TODO indicator interrupts at first Streaming bar (+msg)
-			ExecutionDataSnapshot snap = executorSafe.ExecutionDataSnapshot;
-			foreach (Indicator indicator in snap.IndicatorsReflectedScriptInstances.Values) {
-				try {
-					indicator.OnNewStreamingQuote(quote);
-				} catch (Exception ex) {
-					Assembler.PopupException("NEW_BAR_ADDED_DURING_BACKTEST__IMPLEMENT_STREAMING_ON_HOLD " + ex);
-				}
-			}
-
 			// STREAMING_BAR_IS_ALREADY_MERGED_IN_EARLY_BINDER_WITH_QUOTE_RECIPROCALLY
 			//try {
 			//    streamingSafe.InitializeStreamingOHLCVfromStreamingProvider(this.chartFormManager.Executor.Bars);
@@ -379,9 +356,26 @@ namespace Sq1.Gui.Forms {
 			chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = quote.Clone();
 
 			// #2/4 execute strategy in the thread of a StreamingProvider (DDE server for MockQuickProvider)
-			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
-				ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quote);
-				//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
+			if (executorSafe.Strategy != null) {
+				if (executorSafe.IsStreamingTriggeringScript) {
+					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quote);
+					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
+				} else {
+					// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EQCH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED
+					// copypaste from Executor.ExecuteOnNewBarOrNewQuote()
+					ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quote,
+														executorSafe.ExecutionDataSnapshot.AlertsNewAfterExec.Clone(),
+														executorSafe.ExecutionDataSnapshot.PositionsOpenedAfterExec.Clone(),
+														executorSafe.ExecutionDataSnapshot.PositionsClosedAfterExec.Clone(),
+														executorSafe.ExecutionDataSnapshot.PositionsOpenNow.Clone()
+													);
+
+					// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
+					if (pokeUnit.PositionsOpenNow.Count > 0) {
+						executorSafe.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executorSafe.ExecutionDataSnapshot.PositionsOpenNow);
+						executorSafe.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit);
+					}
+				}
 			}
 
 			// #3/4 trigger ChartControl to repaint candles with new positions and bid/ask lines

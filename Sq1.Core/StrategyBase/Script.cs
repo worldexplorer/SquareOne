@@ -72,13 +72,11 @@ namespace Sq1.Core.StrategyBase {
 		public void Initialize(ScriptExecutor scriptExecutor) {
 			this.Executor = scriptExecutor;
 		}
-		public void InitializeBacktestWithExecutorsBarsInstantiateIndicators() {
-			if (this.Bars == null) Debugger.Break();
-			//this.barsInitialContext = this.Bars;
-			//this.CreateOHLCVproxies();
-			// ALLOWED_TO_REMOVE_IMPLICIT_INDICATOR_CTORS_FROM_SCRIPT this.ma = new IndicatorAverageMovingSimple();
-			// CLEANER_INDICATORS MOVED_TO_PushScriptIndicatorsParametersIntoCurrentContext() this.IndicatorsInstantiateStoreInSnapshot();
- 
+		public void InitializeBacktestWrapper() {
+			if (this.Bars == null) {
+				string msg = "I_REFUSE_TO_INVOKE_CHILDS_InitializeBacktest() Bars=null " + this.ToString();
+				Assembler.PopupException(msg);
+			}
 			//this.executor.Backtester.Initialize(this.BacktestMode);
 
 			//MOVED_TO_ChartFormManager.InitializeStrategyAfterDeserialization() FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
@@ -91,20 +89,24 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException("FIX_YOUR_OVERRIDEN_METHOD Strategy[" + this.StrategyName + "].InitializeBacktest()", ex);
 				this.Executor.Backtester.RequestingBacktestAbort.Set();
 			}
-		}
+		}		
 		//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
-		public void PullParametersFromCurrentContextSaveStrategyIfAbsorbedFromScript() {
+		public void PushRegisteredScriptParametersIntoCurrentContextSaveStrategy() {
+			string msig = " //PushRegisteredScriptParametersIntoCurrentContextSaveStrategy()";
 			bool storeStrategySinceParametersGottenFromScript = false;
 			foreach (ScriptParameter scriptParam in this.ScriptParametersById.Values) {
 				if (this.Strategy.ScriptContextCurrent.ScriptParametersById.ContainsKey(scriptParam.Id)) {
 					double valueContext = this.Strategy.ScriptContextCurrent.ScriptParametersById[scriptParam.Id].ValueCurrent;
-					scriptParam.ValueCurrent = valueContext;
+					if (scriptParam.ValueCurrent != valueContext) {
+						string msg = "REPLACED_ScriptParameter[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "] => valueNow[" + valueContext + "] " + this.ToString();
+						Assembler.PopupException(msg + msig, null, false);
+						scriptParam.ValueCurrent = valueContext;
+						storeStrategySinceParametersGottenFromScript = true;
+					}
 				} else {
 					this.Strategy.ScriptContextCurrent.ScriptParametersById.Add(scriptParam.Id, scriptParam);
-					string msg = "added scriptParam[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "]"
-						+ " into Script[" + this.GetType().Name + "].Strategy.ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name + "]"
-						+ " /ScriptParametersMergedWithCurrentContext";
-					Assembler.PopupException(msg, null, false);
+					string msg = "ADDED_ScriptParameter[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "] " + this.ToString();
+					Assembler.PopupException(msg + msig, null, false);
 					storeStrategySinceParametersGottenFromScript = true;
 				}
 			}
@@ -112,7 +114,7 @@ namespace Sq1.Core.StrategyBase {
 				bool dontSaveWeOptimize = this.Strategy.ScriptContextCurrent.Name.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
 				if (dontSaveWeOptimize) {
 					string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_OPTIMIZER_PROVIDED_IN_SCRIPTCONTEXT";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 					return;
 				}
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
@@ -201,9 +203,6 @@ namespace Sq1.Core.StrategyBase {
 					object expectingConstructedNonNull = indicatorCandidate.GetValue(this);
 					if (expectingConstructedNonNull == null) {
 						string msg = "INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR Script[" + this.ToString();// + "].[" + variableIndicator.Name + "]";
-						#if DEBUG
-						Debugger.Break();
-						#endif
 						Assembler.PopupException(msg);
 						continue;
 					}
@@ -318,6 +317,15 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 			this.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
+		}
+		public override string ToString() {
+			string ret = "Script[" + this.GetType().Name + "].Strategy";
+			if (this.Strategy == null) {
+				ret += "[NULL_NONSENSE!!!]";
+			} else {
+				ret += ".ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name + "]";
+			}
+			return ret;
 		}
 	}
 }

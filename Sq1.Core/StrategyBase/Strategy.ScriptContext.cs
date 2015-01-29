@@ -47,7 +47,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.ContextMarkCurrentInListByName(scriptContextName);
 			if (this.Script != null) {
-				this.Script.PullParametersFromCurrentContextSaveStrategyIfAbsorbedFromScript();
+				this.Script.PushRegisteredScriptParametersIntoCurrentContextSaveStrategy();
 			}
 		}
 		public void ContextMarkCurrentInListByName(string scriptContextName) {

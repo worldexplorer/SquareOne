@@ -427,7 +427,12 @@ namespace Sq1.Charting {
 
 			ScriptExecutorObjects seo = this.ChartControl.ScriptExecutorObjects;
 			foreach (OnChartLabel label in seo.OnChartLabelsById.Values) {
-				base.DrawLabelOnNextLine(g, label.LabelText, label.Font, label.ColorForeground, label.ColorBackground);
+				try {
+					base.DrawLabelOnNextLine(g, label.LabelText, label.Font, label.ColorForeground, label.ColorBackground);
+				} catch (Exception ex) {
+					string msg = "WHAT_IS_NULL_HERE?";
+					Assembler.PopupException(msg, ex);
+				}
 			}
 		}
 		void renderOnChartBarAnnotations(Graphics g) {

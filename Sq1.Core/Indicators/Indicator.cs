@@ -12,104 +12,68 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Indicators {
 	public abstract partial class Indicator {
-		public string Name;
-		public ChartPanelType ChartPanelType;
+		public	string						Name;
+		public	ChartPanelType				ChartPanelType;
+		public	DataSeriesProxyableFromBars	DataSeriesProxyFor;
+		public	ScriptExecutor				Executor			{ get; protected set; }
+		public	DataSeriesTimeBased			OwnValuesCalculated	{ get; protected set; }
+		public	abstract int				FirstValidBarIndex	{ get; protected set; }	// FirstValidBarIndex::virtual>abstract koz inside base class (Indicator) it's still zero!!
 
-		public DataSeriesProxyableFromBars DataSeriesProxyFor;
-		public ScriptExecutor Executor;
-		public DataSeriesTimeBased OwnValuesCalculated;
-
-		// FirstValidBarIndex::virtual>abstract koz inside base class (Indicator) it's still zero!!
-		public abstract int FirstValidBarIndex { get; set; }
-
-		// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-		//public string NotOnChartDataSourceName;				//empty means the same as on the chart
-		//public string NotOnChartSymbol;						//empty means the same as on the chart
-		//public BarScaleInterval NotOnChartBarScaleInterval;	//null  means the same as on the chart
-		//public NotOnChartBarsKey NotOnChartBarsKey { get {
-		//		if (string.IsNullOrEmpty(this.NotOnChartSymbol)
-		//			//HACK SUBSTITUTED_DURING_BACKTEST_FROM_BACKTESTDATASOURCE_TO_MOCK && string.IsNullOrEmpty(this.NotOnChartDataSourceName)
-		//			&& this.NotOnChartBarScaleInterval == null) {
-		//			return null;
-		//		}
-		//		//if (this.Executor == null) {
-		//		//	// BactestStarting 
-		//		//	return null;
-		//		//}
-		//		try {
-		//			string symbol = string.IsNullOrEmpty(this.NotOnChartSymbol)
-		//							? this.Executor.Bars.Symbol : this.NotOnChartSymbol;
-		//			string dataSourceName = string.IsNullOrEmpty(this.NotOnChartDataSourceName)
-		//							? this.Executor.Bars.DataSource.Name : this.NotOnChartDataSourceName;
-		//			BarScaleInterval scaleInterval = this.NotOnChartBarScaleInterval == null
-		//							? this.Executor.Bars.ScaleInterval : this.NotOnChartBarScaleInterval;
-		//			// by saying {this.OwnValuesCalculated.ScaleInterval == scaleInterval } you invoke BarScaleInterval.{static bool operator ==} - UNDEBUGGABLE
-		//			if (scaleInterval != null && scaleInterval.Equals(this.OwnValuesCalculated.ScaleInterval) == false) {
-		//				this.OwnValuesCalculated.ScaleInterval = scaleInterval;
-		//			}
-		//			return new NotOnChartBarsKey(scaleInterval, symbol, dataSourceName);
-		//		} catch (Exception ex) {
-		//			Assembler.PopupException("Indicator.NotOnChartBarsKey_get()", ex);
-		//			return null;
-		//		}
-		//	} }
-		
-		private Bars barsEffective_cached;
-		public Bars BarsEffective { get {
+				Bars barsEffective_cached;
+		public	Bars BarsEffective								{ get {
 				if (this.Executor == null) {
 					string msg = "YOU_FORGOT_TO_INVOKE_INDICATOR.INITIALIZE()_OR_WAIT_UNTIL_ITLLBE_INVOKED_LATER Executor=null in Indicator.BarsEffective_get()";
 					Assembler.PopupException(msg);
 					return this.barsEffective_cached;
 				}
-				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-				//this.barsEffective_cached = null;
-				////if (this.barsEffective_cached == null) {
-				//	NotOnChartBarsKey key = this.NotOnChartBarsKey;
-				//	if (key != null) {
-				//		this.barsEffective_cached = this.Executor.NotOnChartBarsHelper.RescaledBarsGetRegisteredFor(key);
-				//		bool barsEffective_cachedNull = ReferenceEquals(this.barsEffective_cached, null);
-				//		if (barsEffective_cachedNull) {
-				//			this.barsEffective_cached = this.Executor.NotOnChartBarsHelper.RescaleBarsAndRegister(key);
-				//		}
-				//	}
-				//	bool barsEffective_cachedNull2 = ReferenceEquals(this.barsEffective_cached, null);
-				//	if (barsEffective_cachedNull2) {
-				//		this.barsEffective_cached = this.Executor.Bars;
-				//	}
-				////}
-				//return this.barsEffective_cached;
-				return this.Executor.Bars;
+				if (this.barsEffective_cached == null) {
+					this.barsEffective_cached = this.Executor.Bars;
+				}
+				if (this.barsEffective_cached != this.Executor.Bars) {
+					string msg = "INDICATOR_SWITCHED_BARS (Bars were replaced to Backtesting growing copy and create new Proxy)"
+						+ this.barsEffective_cached.ToString() + " => " + this.Executor.Bars.ToString();
+					Assembler.PopupException(msg, null, false);
+					this.barsEffective_cached = this.Executor.Bars;
+				}
+				return this.barsEffective_cached;
 			} }
-		private DataSeriesProxyBars closesProxyEffective_cached;
-		public DataSeriesProxyBars ClosesProxyEffective { get {
+
+				DataSeriesProxyBars closesProxyEffective_cached;
+		public	DataSeriesProxyBars ClosesProxyEffective		{ get {
 				if (this.closesProxyEffective_cached == null) {
+					this.closesProxyEffective_cached = new DataSeriesProxyBars(this.BarsEffective, this.DataSeriesProxyFor);
+				}
+				if (this.closesProxyEffective_cached.BarsBeingProxied != this.BarsEffective) {
+					string msg = "INDICATOR_SWITCHED_BARS (Bars were replaced to Backtesting growing copy and create new Proxy)"
+						+ this.closesProxyEffective_cached.ToString() + " => " + this.BarsEffective.ToString();
+					Assembler.PopupException(msg, null, false);
 					this.closesProxyEffective_cached = new DataSeriesProxyBars(this.BarsEffective, this.DataSeriesProxyFor);
 				}
 				return this.closesProxyEffective_cached;
 			} }
 		
-		public HostPanelForIndicator HostPanelForIndicator;
+		public	HostPanelForIndicator HostPanelForIndicator		{ get; protected set; }
 
-		private Color lineColor;
-		public Color LineColor {
+				Color lineColor;
+		public	Color LineColor {
 			get { return this.lineColor; }
 			set { this.lineColor = value; this.brushForeground = null; this.penForeground = null; }
 		}
-		private int lineWidth;
-		public int LineWidth {
+				int lineWidth;
+		public	int LineWidth {
 			get { return this.lineWidth; }
 			set { this.lineWidth = value; this.brushForeground = null; this.penForeground = null; }
 		}
 
-		private Brush brushForeground;
-		public Brush BrushForeground { get {
+				Brush brushForeground;
+		public	Brush BrushForeground							{ get {
 				if (this.brushForeground == null) {
 					this.brushForeground = new SolidBrush(this.LineColor);
 				}
 				return this.brushForeground;
 			} }
-		private Pen penForeground;
-		public Pen PenForeground { get {
+				Pen penForeground;
+		public	Pen PenForeground { get {
 				if (this.penForeground == null) {
 					this.penForeground = new Pen(this.LineColor, this.LineWidth);
 				}
@@ -117,22 +81,24 @@ namespace Sq1.Core.Indicators {
 			} }
 			
 		
-		public Dictionary<string, IndicatorParameter> ParametersByName { get {
+		public	Dictionary<string, IndicatorParameter> ParametersByName { get {
 				Dictionary<string, IndicatorParameter> ret = new Dictionary<string, IndicatorParameter>();
 				Type myChild = this.GetType();
-				PropertyInfo[] lookingForIndicatorParameterProperties = myChild.GetProperties();
-				foreach (PropertyInfo indicatorParameterPropertyInfo in lookingForIndicatorParameterProperties) {
-					Type expectingIndicatorParameterType = indicatorParameterPropertyInfo.PropertyType;
+				//v1
+				//PropertyInfo[] lookingForIndicatorParameterProperties = myChild.GetProperties();
+				//foreach (PropertyInfo indicatorParameterPropertyInfo in lookingForIndicatorParameterProperties) {
+				//	Type expectingIndicatorParameterType = indicatorParameter.PropertyType;
+				//v2
+				FieldInfo[] lookingForIndicatorParameterFields = myChild.GetFields();
+				foreach (FieldInfo indicatorParameter in lookingForIndicatorParameterFields) {
+					Type expectingIndicatorParameterType = indicatorParameter.FieldType;
 					bool isIndicatorParameterChild = typeof(IndicatorParameter).IsAssignableFrom(expectingIndicatorParameterType);
 					if (isIndicatorParameterChild == false) continue;
-					object expectingConstructedNonNull = indicatorParameterPropertyInfo.GetValue(this, null);
+					//object expectingConstructedNonNull = indicatorParameter.GetValue(this, null);
+					object expectingConstructedNonNull = indicatorParameter.GetValue(this);
 					if (expectingConstructedNonNull == null) {
 						string msg = "INDICATOR_DEVELOPER,INITIALIZE_INDICATOR_PARAMETER_IN_INDICATOR_CONSTRUCTOR Indicator[" + this.Name + "].ctor()"
-							+ " { iParamFound = new new IndicatorParameter([" + indicatorParameterPropertyInfo.Name + "], cur, min, max, increment); }";
-						Assembler.PopupException(msg);
-						#if DEBUG
-						Debugger.Break();
-						#endif
+							+ " { iParamFound = new new IndicatorParameter([" + indicatorParameter.Name + "], cur, min, max, increment); }";
 						Assembler.PopupException(msg);
 						continue;
 					}
@@ -144,69 +110,70 @@ namespace Sq1.Core.Indicators {
 				return ret;
 			} }
 		
-		public string parametersAsStringShort_cached;
-		public string ParametersAsStringShort { get {
-				//if (parametersAsStringShort_cached == null) {
+		public	string	parametersAsStringShort_cached;
+		public	string	ParametersAsStringShort					{ get {
+				if (parametersAsStringShort_cached == null) {
 					StringBuilder sb = new StringBuilder();
 					foreach (string paramName in this.ParametersByName.Keys) {
 						IndicatorParameter param = this.ParametersByName[paramName];
 						if (sb.Length > 0) sb.Append(",");
-						sb.Append(param.ToString());
+						sb.Append(paramName);
+						sb.Append(":");
+						string shortName = param.ValuesAsString;
+						sb.Append(shortName);
 					}
 					this.parametersAsStringShort_cached = sb.ToString();
-				//}
+				}
 				return this.parametersAsStringShort_cached;
 			} }
-//		public string ParametersAsStringLong { get ; }
 		
-		public string NameWithParameters { get {
+		public	string	NameWithParameters { get {
 				string parameters = this.ParametersAsStringShort;
 				if (string.IsNullOrEmpty(parameters)) parameters = "NOT_BUILT_YET_ParametersByName_DIDNT_INVOKE_BuildParametersFromAttributes()";
 				string ret = this.Name + " (" + parameters + ")";
-				// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-				//string otherSymbolTimeframe = "";
-				//if (string.IsNullOrEmpty(this.NotOnChartSymbol)) {
-				//	//if (this.NotOnChartBarScaleInterval != null) otherSymbolTimeframe += "~";			// "timeframe converted"
-				//	if (Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) == false) otherSymbolTimeframe += "~";			// "timeframe converted"
-				//	//otherSymbolTimeframe += (this.barsEffective_cached != null) ? this.barsEffective_cached.SymbolIntervalScale : "NULL";
-				//	//otherSymbolTimeframe += (this.BarsEffective != null) ? this.BarsEffective.SymbolIntervalScale : "NULL";
-				//	if (Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) == false) otherSymbolTimeframe += this.BarsEffective.SymbolIntervalScale;
-				//} else {
-				//	otherSymbolTimeframe += "(" + this.NotOnChartSymbol;
-				//	//if (this.NotOnChartBarScaleInterval != null) otherSymbolTimeframe += ":" + this.NotOnChartBarScaleInterval;
-				//	if (Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) == false) otherSymbolTimeframe += ":" + this.NotOnChartBarScaleInterval;
-				//	otherSymbolTimeframe += ")!";								// "Symbol is not from the chart"
-				//	//otherSymbolTimeframe += (this.NotOnChartBarScaleInterval == null) ? "=" : "~";		// "timeframe converted"
-				//	otherSymbolTimeframe += Object.ReferenceEquals(this.NotOnChartBarScaleInterval, null) ? "=" : "~";		// "timeframe converted"
-				//	otherSymbolTimeframe += (this.barsEffective_cached != null) ? this.barsEffective_cached.SymbolIntervalScale : "NULL";
-				//}
-				//ret += otherSymbolTimeframe;
 				return ret;
 			} }
 
-		public string IndicatorErrorsOnBacktestStarting;
+		public	string	IndicatorErrorsOnBacktestStarting		{ get; protected set; }
 		
-		public int DotsDrawnForCurrentSlidingWindow;		// nope I won't use a separate "responsibility" (I told you "SOLID principles are always misused" :)
-		public int DotsExistsForCurrentSlidingWindow;		// just because the object itself is the most convenient place to incapsulate it
+		public	int		DotsDrawnForCurrentSlidingWindow;									// nope I won't use a separate "responsibility" (I told you "SOLID principles are always misused" :)
+		public	int		DotsExistsForCurrentSlidingWindow		{ get; protected set; }		// just because the object itself is the most convenient place to incapsulate it
 		
 		public Indicator() {
 			Name = "INDICATOR_NAME_NOT_SET_IN_DERIVED_CONSTRUCTOR";
 			DataSeriesProxyFor = DataSeriesProxyableFromBars.Close;
 			ChartPanelType = ChartPanelType.PanelPrice;
-			// MOVED_TO_BacktestStarting();
-			this.OwnValuesCalculated = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), this.Name);
+			OwnValuesCalculated = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), this.Name);
 			LineColor = Color.Indigo;
 			LineWidth = 1;
 			Decimals = 2;
 		}
 
+		public virtual void ResetBarsEffectiveProxyForBacktestStartingOrSwitchToOriginalBarsContinueToLiveNorecalculateStopped() {
+			this.parametersAsStringShort_cached = null;
+			// muting INDICATOR_SWITCHED_BARS
+			this.barsEffective_cached = this.Executor.Bars;
+			this.closesProxyEffective_cached = new DataSeriesProxyBars(this.BarsEffective, this.DataSeriesProxyFor);
+
+			if (this.OwnValuesCalculated.Count == 0) {
+				string msg = "NO_NEED_TO_CLEAR";
+				//Assembler.PopupException(msg);
+			} else {
+				if (this.BarsEffective.Count == 0) {
+					string msg = "SORRY_FOR_THE_MESS__VALID_ONLY_FOR_MANUAL_REBACKTEST_DURING_LIVE";
+					this.OwnValuesCalculated.Clear();
+				}
+			}
+			if (this.OwnValuesCalculated.Description == this.NameWithParameters) {
+				string msg = "NO_NEED_TO_SET_SAME_DESCRIPTION";
+				//Assembler.PopupException(msg);
+			} else {
+				//this.OwnValuesCalculated.Description = this.Name;	//appears after .BuildParametersFromAttributes();
+				this.OwnValuesCalculated.Description = this.NameWithParameters;
+			}
+		}
 		public void Initialize(HostPanelForIndicator panelNamedFolding) {
 			this.HostPanelForIndicator = panelNamedFolding;
-			this.closesProxyEffective_cached = null;
-			this.barsEffective_cached = null;
-			//this.OwnValuesCalculated.Clear();
-			////this.OwnValuesCalculated.Description = this.Name;	//appears after .BuildParametersFromAttributes();
-			//this.OwnValuesCalculated.Description = this.NameWithParameters;
 		}
 		public void IndicatorErrorsOnBacktestStartingAppend(string msg, string separator = "; ") {
 			if (string.IsNullOrEmpty(msg)) return;
@@ -217,50 +184,15 @@ namespace Sq1.Core.Indicators {
 			this.Executor = executor;
 			string msig = " Indicator[" + this.NameWithParameters + "].BacktestStarting()";
 
-			// HACK new Indicator will be Initialize()d with an Executor having Bars generated by BacktestDataSource;
-			// HACK so that this.NotOnChartBarsKey won't help to pick up the Registered from NotOnChartBarsHelper;
-			// HACK I want the this.NotOnChartDataSourceName be the same as before backtest, from a real datasource ("MOCK")
-			// USE_NOT_ON_CHART_CONCEPT_WHEN_YOU_HIT_THE_NEED_IN_IT
-			//this.NotOnChartDataSourceName = executor.Bars.DataSource.Name;
-			//NotOnChartBarsKey key = this.NotOnChartBarsKey;
-			//if (string.IsNullOrEmpty(this.NotOnChartSymbol) == false) {
-			//	this.Executor.NotOnChartBarsHelper.FindNonChartBarsSubscribeRegisterForIndicator(key);
-			//	if (this.BarsEffective == null) {
-			//		string msg = "NOT_ON_CHART_BARS_HELPER_DOESNT_HAVE_BARS_REGISTERED[" + this.NotOnChartSymbol + "]";
-			//		this.IndicatorErrorsOnBacktestStartingAppend(msg);
-			//		Assembler.PopupException(msg + msig);
-			//	}
-			//} else {
-			//	if (this.NotOnChartBarScaleInterval != null) {
-			//		if (this.NotOnChartBarScaleInterval.Scale == BarScale.Unknown
-			//			&& this.NotOnChartBarScaleInterval == this.Executor.Bars.ScaleInterval) {
-			//			string msg = "SET_TO_NULL_IF_SAME_AS_EXECUTORS_BARS";
-			//			this.IndicatorErrorsOnBacktestStartingAppend(msg);
-			//			Assembler.PopupException(msg + msig);
-			//		}
-			//		// v2 self-registered earlier
-			//		Bars rescaled = this.Executor.NotOnChartBarsHelper.RescaledBarsGetRegisteredFor(key);
-			//		if (rescaled == null) {
-			//			// v1
-			//			rescaled = this.Executor.NotOnChartBarsHelper.RescaleBarsAndRegister(key);
-			//		}
-			//		if (rescaled == null) {
-			//			string msg = "BARS_NOT_RESCALABLE[" + this.Executor.Bars.SymbolIntervalScale + "]>[" + key + "]";
-			//			this.IndicatorErrorsOnBacktestStartingAppend(msg);
-			//			Assembler.PopupException(msg + msig);
-			//		}
-			//	}
-			//}
-
-			this.parametersAsStringShort_cached = null;
-			this.OwnValuesCalculated = new DataSeriesTimeBased(this.Executor.Bars.ScaleInterval, this.NameWithParameters);
+			this.ResetBarsEffectiveProxyForBacktestStartingOrSwitchToOriginalBarsContinueToLiveNorecalculateStopped();
+			this.OwnValuesCalculated = new DataSeriesTimeBased(this.BarsEffective.ScaleInterval, this.NameWithParameters);
 			
 			string paramerersAllValidatedErrors = this.ParametersAllValidate();
 			this.IndicatorErrorsOnBacktestStartingAppend(paramerersAllValidatedErrors);
 
-			this.Decimals = Math.Max(this.Executor.Bars.SymbolInfo.DecimalsPrice, 1);	// for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
-			
-			string indicatorSelfValidationErrors = this.BacktestStartingPreCheckErrors();
+			this.Decimals = Math.Max(this.BarsEffective.SymbolInfo.DecimalsPrice, 1);	// for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
+
+			string indicatorSelfValidationErrors = this.InitializeBacktestStartingPreCheckErrors();
 			this.IndicatorErrorsOnBacktestStartingAppend(indicatorSelfValidationErrors);
 			
 			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) {
@@ -289,15 +221,12 @@ namespace Sq1.Core.Indicators {
 
 			return ret;
 		}
-		public virtual string BacktestStartingPreCheckErrors() {
+		public virtual string InitializeBacktestStartingPreCheckErrors() {
 			return null;
 		}
 		public virtual double CalculateOwnValueOnNewStaticBarFormed(Bar newStaticBar) {
 			if (this.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) {
 				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(msg);
 			}
 			return double.NaN;
@@ -306,78 +235,87 @@ namespace Sq1.Core.Indicators {
 			return double.NaN;
 			//PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW return this.CalculateOwnValueOnNewStaticBarFormed(newStreamingQuote.ParentStreamingBar);
 		}
-		public void OnNewStaticBarFormed(Bar newStaticBar) {
+		bool canRunCalculation(bool popupException = false, Bar newStaticBar = null, Quote quote = null) {
+			bool ret = false;
+			if (this.OwnValuesCalculated == null) {
+				string msg = "HAPPENS_DURING_REBACKTEST_AFTER_ABORTION this.OwnValuesCalculated=null " + this.ToString();
+				Assembler.PopupException(msg);
+				return ret;
+			}
 			if (string.IsNullOrEmpty(this.IndicatorErrorsOnBacktestStarting) == false) {
-				return;
+				if (popupException) {
+					string msg = "I_REFUSE_TO_CALCULATE_DUE_TO_PREVIOUS_ERRORS Indicator.OnNewStaticBarFormed(" + newStaticBar + ")" + this.ToString();
+					Assembler.PopupException(msg);
+				}
+				return ret;
 			}
 
-			if (this.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) {
-				string msg = "base.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex";
-				Assembler.PopupException(msg);
-				return;
+			if (this.ClosesProxyEffective == null) {
+				if (popupException) {
+					string msg = "NO_BARS_FOR_INDICATOR this.ClosesProxyEffective=null" + this.ToString();
+					Assembler.PopupException(msg);
+				}
+				return ret;
 			}
-			if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) {
-				int barsToValidValue = this.FirstValidBarIndex - newStaticBar.ParentBarsIndex;
-				string msg = "barsToValidValue[" + barsToValidValue + "] newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex";
-				//Assembler.PopupException(msg, null, false);
+			if (this.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) {
+				//if (popupException) {
+				//    string msg = "DONT_INVOKE_ME__MAKE_THIS_CHECK_UPSTACK"
+				//        + " base.ClosesProxyEffective.Count-1[" + (this.ClosesProxyEffective.Count - 1)
+				//        + "] < this.FirstValidBarIndex[" + this.FirstValidBarIndex + "]"
+				//        + this.ToString();
+				//    Assembler.PopupException(msg);
+				//}
+				//if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) {
+				//    int barsWaitToFirstIndicatorValidIndex = this.FirstValidBarIndex - newStaticBar.ParentBarsIndex;
+				//    string msg = "barsWaitToFirstIndicatorValidIndex[" + barsWaitToFirstIndicatorValidIndex + "] newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex";
+				//    //Assembler.PopupException(msg, null, false);
+				//    return;
+				//}
+				return ret;
+			}
+			ret = true;
+			return ret;
+		}
+		public virtual void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar newStaticBar) {
+			bool canRunCalculation = this.canRunCalculation();
+			if (canRunCalculation == false) {
+				this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, double.NegativeInfinity);
 				return;
 			}
 
 			double derivedCalculated = this.CalculateOwnValueOnNewStaticBarFormed(newStaticBar);
 
-			int newStaticBarIndex = newStaticBar.ParentBarsIndex;
-			int differenceMustBeZero = newStaticBarIndex - this.OwnValuesCalculated.LastIndex;
-			if (differenceMustBeZero != 0) {
-				string msig = " OnNewStaticBarFormed(" + newStaticBar.ToString() + ")";
-				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS[" + differenceMustBeZero + "]";
+			int barsAheadOfIndicator = newStaticBar.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
+			if (barsAheadOfIndicator != 1) {
+				string msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + " //OnNewStaticBarFormed(" + newStaticBar.ToString() + ")";
+				string msg = (barsAheadOfIndicator == 0)
+					? "I_REFUSE_TO_REPLACE_STREAMING_VALUE__YOU_MUST_CALCULATE_OWN_VALUE_ONCE_PER_BAR_FOR_PREV_BAR"
+					: "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS";
 				Assembler.PopupException(msg + msig);
-				DateTime streamingBarDateTime = newStaticBar.DateTimeOpen;
-				this.OwnValuesCalculated.Append(streamingBarDateTime, derivedCalculated);
 				return;
 			}
-			//if (differenceMustBeZero <= 0) {
-				if (double.IsNaN(this.OwnValuesCalculated.LastValue) == false) {
-					string msg = "I_REFUSE_TO_REPLACE_STREAMING_VALUE__YOU_MUST_CALCULATE_OWN_VALUE_ONCE_PER_BAR_FOR_PREV_BAR"
-						+ " LastValue[" + this.OwnValuesCalculated.LastValue + "]"
-						+ " LastIndex[" + this.OwnValuesCalculated.LastIndex + "]"
-						+ " LastValueAppended[" + this.OwnValuesCalculated.LastValueAppended + "]"
-						+ " LastDateAppended[" + this.OwnValuesCalculated.LastDateAppended + "]"
-						+ " Count[" + this.OwnValuesCalculated.Count + "]"
-						;
-					Assembler.PopupException(msg);
-					return;
-				}
-				if (double.IsNaN(this.OwnValuesCalculated.LastValue) && double.IsNaN(derivedCalculated)) {
-					return;
-				}
-				this.OwnValuesCalculated.LastValue = derivedCalculated;
-			//	return;
-			//}
-			// ALREADY_APPENDED_IN_OnNewStreamingQuote() this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, derivedCalculated);
+			this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, derivedCalculated);
 		}
-		public void OnNewStreamingQuote(Quote newStreamingQuote) {
-			if (this.OwnValuesCalculated == null) {
-				string msg = "HAPPENS_DURING_REBACKTEST_AFTER_ABORTION";
-				return;
-			}
+		public virtual void OnNewStreamingQuote(Quote newStreamingQuote) {
+			bool canRunCalculation = this.canRunCalculation();
+			if (canRunCalculation == false) return;
 			
 			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote(newStreamingQuote);
 			
-			int streamingBarIndex = newStreamingQuote.ParentBarStreaming.ParentBarsIndex;
-			int differenceMustNotBeMoreThanOne = streamingBarIndex - this.OwnValuesCalculated.LastIndex;
-			if (differenceMustNotBeMoreThanOne > 1) {
-				string msig = " OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
-				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS[" + differenceMustNotBeMoreThanOne + "]";
-				Assembler.PopupException(msg + msig);
-			}
-			if (differenceMustNotBeMoreThanOne == 1) {
-				DateTime streamingBarDateTime = newStreamingQuote.ParentBarStreaming.DateTimeOpen;
-				this.OwnValuesCalculated.Append(streamingBarDateTime, derivedCalculated);
+			int barsAheadOfIndicator = newStreamingQuote.ParentBarStreaming.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
+			string msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + " //OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
+			if (barsAheadOfIndicator != 0) {
+				if (newStreamingQuote.IntraBarSerno == 0) {
+					string msg2 = "MUST_HAPPEN_UNFINISHED___??IM_GONNA_BE_INVOKED_ONCE_AGAIN_AFTER_OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
+					return;
+				}
+				string msg = "MUST_HAPPEN_UNFINISHED___I_REFUSE_TO_ADD_NEW_VALUE__INVOKE_FIRST_OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
+				//Assembler.PopupException(msg + msig);
 				return;
 			}
-			if (double.IsNaN(this.OwnValuesCalculated.LastValue) && double.IsNaN(derivedCalculated)) {
-				return;
-			}
+			string msg3 = "I_DIDNT_FINISH_CLEANING_UP_LIFECYLE";
+			Assembler.PopupException(msg3 + msig);
+			return;
 			this.OwnValuesCalculated.LastValue = derivedCalculated;
 		}
 		
@@ -391,10 +329,10 @@ namespace Sq1.Core.Indicators {
 		//	set { this.format = value; }
 		//}
 		//v2 begin
-		public string FormatForcedDecimalsIndependent;
-		public int Decimals;
+		public	string	FormatForcedDecimalsIndependent			{ get; protected set; }
+		public	int		Decimals								{ get; protected set; }
 		//v2 end
-		public string Format { get {
+		public	string	Format									{ get {
 				if (string.IsNullOrEmpty(this.FormatForcedDecimalsIndependent) == false) return this.FormatForcedDecimalsIndependent;
 				return "N" + this.Decimals;
 			} }
@@ -426,20 +364,15 @@ namespace Sq1.Core.Indicators {
 			return ret;
 		}
 		
-
+				string	indexesAsString							{ get {
+			return 	" LastValue[" + this.OwnValuesCalculated.LastValue.ToString(this.Format) + "]"
+					+ " LastIndex[" + this.OwnValuesCalculated.LastIndex + "]"
+					+ " LastValueAppended[" + this.OwnValuesCalculated.LastValueAppended.ToString(this.Format) + "]"
+					+ " LastDateAppended[" + this.OwnValuesCalculated.LastDateAppended + "]"
+					+ " Count[" + this.OwnValuesCalculated.Count + "]";
+		} }
 		public override string ToString() {
 			return this.NameWithParameters;
 		}
-//		public void SetExternalSymbolScaleInterval(string notOnChartDataSourceName, string notOnChartSymbol, BarScaleInterval notOnChartBarScaleInterval) {
-//			this.Executor.NotOnChartBarsHelper.RescaledBarsUnregisterFor(this.NotOnChartBarsKey);
-//			
-//			this.barsEffective_cached = null;
-//			this.closesProxyEffective_cached = null;
-//			
-//			this.NotOnChartDataSourceName = notOnChartDataSourceName;
-//			this.NotOnChartSymbol = notOnChartSymbol;
-//			this.NotOnChartBarScaleInterval = notOnChartBarScaleInterval;
-//		}
-		
 	}
 }

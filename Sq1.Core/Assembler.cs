@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 using Sq1.Core.Broker;
@@ -14,37 +15,37 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core {
 	public class Assembler {
-		public RepositoryJsonDataSource					RepositoryJsonDataSource;
-		public RepositorySerializerSymbolInfo			RepositorySymbolInfo;
-		public RepositorySerializerMarketInfo			RepositoryMarketInfo;
-		public RepositoryDllStreamingProvider			RepositoryDllStreamingProvider;
-		public RepositoryDllBrokerProvider				RepositoryDllBrokerProvider;
-		public RepositoryDllReporters					RepositoryDllReporters;
-		public RepositoryDllJsonStrategy				RepositoryDllJsonStrategy;
+		public	RepositoryJsonDataSource				RepositoryJsonDataSource;
+		public	RepositorySerializerSymbolInfo			RepositorySymbolInfo;
+		public	RepositorySerializerMarketInfo			RepositoryMarketInfo;
+		public	RepositoryDllStreamingProvider			RepositoryDllStreamingProvider;
+		public	RepositoryDllBrokerProvider				RepositoryDllBrokerProvider;
+		public	RepositoryDllReporters					RepositoryDllReporters;
+		public	RepositoryDllJsonStrategy				RepositoryDllJsonStrategy;
 
-		public RepositoryFoldersNoJson					WorkspacesRepository;
+		public	RepositoryFoldersNoJson					WorkspacesRepository;
 		
-		public OrderProcessor							OrderProcessor;
-		public IStatusReporter							StatusReporter;
-		//public DockContentImproved						ExecutionForm;
+		public	OrderProcessor							OrderProcessor;
+		public	IStatusReporter							StatusReporter;
+		//public	DockContentImproved						ExecutionForm;
 		
-		public DictionaryManyToOne<ChartShadow, Alert>	AlertsForChart;
-		public AssemblerDataSnapshot					AssemblerDataSnapshot;
-		public Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;		
+		public	DictionaryManyToOne<ChartShadow, Alert>	AlertsForChart;
+		public	AssemblerDataSnapshot					AssemblerDataSnapshot;
+		public	Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;		
 		
-		public const string								DateTimeFormatIndicatorHasNoValuesFor = "yyyy-MMM-dd ddd HH:mm";
-		public const string								DateTimeFormatLong = "HH:mm:ss.fff ddd dd MMM yyyy";
-		public const string								DateTimeFormatLongFilename = "yyyy-MMM-dd_ddd_HH.mm.ss";
+		public	const string							DateTimeFormatIndicatorHasNoValuesFor = "yyyy-MMM-dd ddd HH:mm";
+		public	const string							DateTimeFormatLong = "HH:mm:ss.fff ddd dd MMM yyyy";
+		public	const string							DateTimeFormatLongFilename = "yyyy-MMM-dd_ddd_HH.mm.ss";
 		
-		public static string FormattedLongFilename(DateTime dt) {
+		public	static string FormattedLongFilename(DateTime dt) {
 			return dt.ToString(Assembler.DateTimeFormatLongFilename);
 		}
 
-		public bool										MainFormClosingIgnoreReLayoutDockedForms = false;
-		public bool										MainFormDockFormsFullyDeserializedLayoutComplete = false;
+		public	bool									MainFormClosingIgnoreReLayoutDockedForms = false;
+		public	bool									MainFormDockFormsFullyDeserializedLayoutComplete = false;
 
-			   static Assembler							instance = null;
-		public static Assembler							InstanceInitialized { get {
+				static Assembler						instance = null;
+		public	static Assembler						InstanceInitialized { get {
 				string usage = "; use Assembler.InstanceUninitialized.Initialize(MainForm); this singleton requires IStatusReporter to get fully initialized";
 				if (Assembler.instance == null) {
 					throw (new Exception("Assembler.instance=null" + usage));
@@ -54,19 +55,19 @@ namespace Sq1.Core {
 				}
 				return Assembler.instance;
 			} }
-		public static bool								IsInitialized { get { return Assembler.instance != null && Assembler.instance.StatusReporter != null; } }
-		public static Assembler							InstanceUninitialized { get {
+		public	static bool								IsInitialized { get { return Assembler.instance != null && Assembler.instance.StatusReporter != null; } }
+		public	static Assembler						InstanceUninitialized { get {
 				if (Assembler.instance == null) {
 					Assembler.instance = new Assembler();
 				}
 				return instance;
 			} }
-		public string									AppStartupPath { get {
+		public	string									AppStartupPath { get {
 				string ret = Application.StartupPath;
 				if (ret.EndsWith(Path.DirectorySeparatorChar.ToString()) == false) ret += Path.DirectorySeparatorChar;
 				return ret;
 			} }
-		public List<Exception>							ExceptionsWhileInstantiating { get {
+		public	List<Exception>							ExceptionsWhileInstantiating { get {
 				List<Exception> ret = new List<Exception>();
 				ret.AddRange(this.RepositoryDllStreamingProvider.ExceptionsWhileScanning);
 				ret.AddRange(this.RepositoryDllBrokerProvider.ExceptionsWhileScanning);
@@ -76,41 +77,57 @@ namespace Sq1.Core {
 			} }
 #if DEBUG
 		// C:\Sq1\Data-debug
-		public readonly string DATA_FOLDER_DEBUG_RELEASE = ".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar
+		public	readonly string DATA_FOLDER_DEBUG_RELEASE = ".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar
 			+ "Data-debug";
 #else
 		// C:\Sq1\Sq1.Gui\bin\Debug\Data
-		public readonly string DATA_FOLDER_DEBUG_RELEASE = "Data";
+		public	readonly string DATA_FOLDER_DEBUG_RELEASE = "Data";
 #endif
-		public string									AppDataPath { get {
+		public	string									AppDataPath { get {
 				string ret = this.AppStartupPath + DATA_FOLDER_DEBUG_RELEASE;
 				//if (defined("DEBUG")) ret = Application.UserAppDataPath + "" + Path.DirectorySeparatorChar + "Data";
 				if (Directory.Exists(ret) == false) Directory.CreateDirectory(ret);
 				return ret;
 			} }
-//		[Obsolete("looks illogical, move IStatusReporter to Initialize() and use Assembler.InstanceInitialized instead of Assembler.Constructed")]
-//		protected Assembler(IStatusReporter mainForm) : this() {
-//			this.StatusReporter = mainForm;
-//			Assembler.instance = this;
-//		}
+
+		public	bool									SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished { get {
+				bool ret = false;
+				int sinceApplicationStartSeconds = -1;
+				try {
+					TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
+					sinceApplicationStartSeconds = sinceApplicationStart.Seconds;
+				} catch (Exception ex) {
+					Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
+					sinceApplicationStartSeconds = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
+				}
+				int secondsLeftToIgnore = this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch - sinceApplicationStartSeconds;
+				if (secondsLeftToIgnore < 0) {
+					ret = true;
+				} else {
+					Assembler.PopupException("SPLITTER_EVENTS_IGNORED_FOR_MORE_SECONDS " + secondsLeftToIgnore, null, false);
+				}
+				return ret;
+			} }
+
+				Stopwatch								stopWatchIfProcessUnsupported;
+		
 		public Assembler() {
-			this.RepositorySymbolInfo				= new RepositorySerializerSymbolInfo();
-			this.RepositoryMarketInfo				= new RepositorySerializerMarketInfo();
-			this.RepositoryJsonDataSource			= new RepositoryJsonDataSource();
-			this.RepositoryDllJsonStrategy			= new RepositoryDllJsonStrategy();
+			RepositorySymbolInfo			= new RepositorySerializerSymbolInfo();
+			RepositoryMarketInfo			= new RepositorySerializerMarketInfo();
+			RepositoryJsonDataSource		= new RepositoryJsonDataSource();
+			RepositoryDllJsonStrategy		= new RepositoryDllJsonStrategy();
 
-			this.RepositoryDllStreamingProvider		= new RepositoryDllStreamingProvider();
-			this.RepositoryDllBrokerProvider		= new RepositoryDllBrokerProvider();
-			this.RepositoryDllReporters				= new RepositoryDllReporters();
+			RepositoryDllStreamingProvider	= new RepositoryDllStreamingProvider();
+			RepositoryDllBrokerProvider		= new RepositoryDllBrokerProvider();
+			RepositoryDllReporters			= new RepositoryDllReporters();
 			
-			this.WorkspacesRepository				= new RepositoryFoldersNoJson();
+			WorkspacesRepository			= new RepositoryFoldersNoJson();
 
-			//this.ChartRendererConfigured			= new ChartRenderer();
-			this.OrderProcessor						= new OrderProcessor();
-			this.AlertsForChart						= new DictionaryManyToOne<ChartShadow, Alert>();
+			OrderProcessor					= new OrderProcessor();
+			AlertsForChart					= new DictionaryManyToOne<ChartShadow, Alert>();
 			
-			this.AssemblerDataSnapshot				= new AssemblerDataSnapshot();
-			this.AssemblerDataSnapshotSerializer	= new Serializer<AssemblerDataSnapshot>();
+			AssemblerDataSnapshot			= new AssemblerDataSnapshot();
+			AssemblerDataSnapshotSerializer	= new Serializer<AssemblerDataSnapshot>();
 		}
 		public Assembler Initialize(IStatusReporter mainForm) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
@@ -151,6 +168,18 @@ namespace Sq1.Core {
 			createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);
 			this.AssemblerDataSnapshot = this.AssemblerDataSnapshotSerializer.Deserialize();
 			
+			try {
+				TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
+				string msg = "ASSEMBLER_INITIALIZED_AFTER_MILLIS_RUNNING: "
+					+ Math.Round(sinceApplicationStart.Milliseconds / (decimal)1000, 2)
+					+ " [" + this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch
+					+ "]=SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch";
+				Assembler.PopupException(msg, null, false);
+			} catch (Exception ex) {
+				Assembler.PopupException("PLATFORM_DOESNT_SUPPORT_Process.GetCurrentProcess().StartTime_AS_DESCRIBED_IN_MSDN__LAUNCHING_STOPWATCH", ex);
+				this.stopWatchIfProcessUnsupported = Stopwatch.StartNew();
+			}
+
 			return Assembler.InstanceInitialized;
 		}
 		

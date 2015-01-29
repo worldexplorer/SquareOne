@@ -10,33 +10,33 @@ namespace Sq1.Core.StrategyBase {
 	public class ContextScript : ContextChart {
 		[JsonIgnore]	public const string DEFAULT_NAME = "Default";
 		
-		[JsonProperty]	public PositionSize PositionSize;
-		[JsonProperty]	public Dictionary<int, ScriptParameter> ScriptParametersById { get; set; }
-		[JsonProperty]	public Dictionary<string, List<IndicatorParameter>> IndicatorParametersByName { get; set; }	//  { get; set; } is needed for Json.Deserialize to really deserialize it
+		[JsonProperty]	public PositionSize					PositionSize;
+		[JsonProperty]	public Dictionary<int, ScriptParameter>				ScriptParametersById { get; set; }
+		[JsonProperty]	public Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName { get; set; }	//  { get; set; } is needed for Json.Deserialize to really deserialize it
 		
-		[JsonProperty]	public bool IsCurrent;
-		[JsonProperty]	public bool StrategyEmittingOrders;
+		[JsonProperty]	public bool							IsCurrent;
+		[JsonProperty]	public bool							StrategyEmittingOrders;
 
-		[JsonProperty]	public List<string> ReporterShortNamesUserInvokedJSONcheck;
-		[JsonProperty]	public bool BacktestOnRestart;
-		[JsonProperty]	public bool BacktestOnSelectorsChange;
-		[JsonProperty]	public bool BacktestOnDataSourceSaved;
-		[JsonProperty]	public Dictionary<string, object> ReportersSnapshots;
+		[JsonProperty]	public List<string>					ReporterShortNamesUserInvokedJSONcheck;
+		[JsonProperty]	public bool							BacktestOnRestart;
+		[JsonProperty]	public bool							BacktestOnSelectorsChange;
+		[JsonProperty]	public bool							BacktestOnDataSourceSaved;
+		[JsonProperty]	public Dictionary<string, object>	ReportersSnapshots;
 		
-		[JsonProperty]	public bool ApplyCommission;
-		[JsonProperty]	public bool EnableSlippage;
-		[JsonProperty]	public bool LimitOrderSlippage;
-		[JsonProperty]	public bool RoundEquityLots;
-		[JsonProperty]	public bool RoundEquityLotsToUpperHundred;
-		[JsonProperty]	public bool NoDecimalRoundingForLimitStopPrice;
-		[JsonProperty]	public double SlippageUnits;
-		[JsonProperty]	public int SlippageTicks;
-		[JsonProperty]	public int PriceLevelSizeForBonds;
+		[JsonProperty]	public bool							ApplyCommission;
+		[JsonProperty]	public bool							EnableSlippage;
+		[JsonProperty]	public bool							LimitOrderSlippage;
+		[JsonProperty]	public bool							RoundEquityLots;
+		[JsonProperty]	public bool							RoundEquityLotsToUpperHundred;
+		[JsonProperty]	public bool							NoDecimalRoundingForLimitStopPrice;
+		[JsonProperty]	public double						SlippageUnits;
+		[JsonProperty]	public int							SlippageTicks;
+		[JsonProperty]	public int							PriceLevelSizeForBonds;
 		
-		[JsonProperty]	public bool FillOutsideQuoteSpreadParanoidCheckThrow;
-		[JsonProperty]	public string SpreadModelerClassName;
-		[JsonProperty]	public double SpreadModelerPercent;
-		[JsonProperty]	public BacktestMode BacktestMode;
+		[JsonProperty]	public bool							FillOutsideQuoteSpreadParanoidCheckThrow;
+		[JsonProperty]	public string						SpreadModelerClassName;
+		[JsonProperty]	public double						SpreadModelerPercent;
+		[JsonProperty]	public BacktestMode					BacktestMode;
 
 
 		[JsonIgnore]	public List<IndicatorParameter> ParametersMerged { get {

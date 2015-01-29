@@ -20,13 +20,14 @@ namespace Sq1.Core.DataTypes {
 
 		public virtual double this[DateTime date] { get { return this.doublesByDate[date]; } }
 
-		protected DataSeriesTimeBased(BarScaleInterval scaleInterval) {	// NOT_USING_PARENTS_List<double>doubleValues      : base()
+		protected DataSeriesTimeBased(BarScaleInterval scaleInterval, int decimals = 2) {	// NOT_USING_PARENTS_List<double>doubleValues      : base()
 			doublesByDate = new SortedList<DateTime, double>();
 			ScaleInterval = scaleInterval;
 			LastDateAppended = DateTime.MinValue;
 			LastValueAppended = double.NaN;
+			base.Decimals = decimals;
 		}
-		public DataSeriesTimeBased(BarScaleInterval scaleInterval, string description) : this(scaleInterval) {
+		public DataSeriesTimeBased(BarScaleInterval scaleInterval, string description, int decimals = 2) : this(scaleInterval, decimals) {
 			this.Description = description;
 		}
 		public bool ContainsDate(DateTime dateTime) {
@@ -50,7 +51,8 @@ namespace Sq1.Core.DataTypes {
 			}
 		}
 		public override void Clear() {
-			// base.doubleValues_NOT_CONSTRUCTED_base.Clear()_WILL_THROW base.Clear();
+			// base.doubleValues_NOT_CONSTRUCTED_base.Clear()_WILL_THROW
+			base.Clear();
 			this.doublesByDate.Clear();
 			this.LastDateAppended = DateTime.MinValue;
 			this.LastValueAppended = double.NaN;
@@ -114,8 +116,8 @@ namespace Sq1.Core.DataTypes {
 //			this[indexFound] = valueExisting;
 //		}
 		public override string ToString() {
-			string ret = "[" + this.ScaleInterval + "]" + this.Count + "doublesByDate ";
-			ret += " Last[" + this.LastValueAppended + "]@[" + this.LastDateAppended + "]";
+			string ret = "[" + this.ScaleInterval + "]" + this.Count + "doublesByDate";
+			ret += " Last[" + this.LastValueAppended.ToString(base.Format) + "]@[" + this.LastDateAppended + "]";
 			ret += base.ToString();
 			return ret;
 		}

@@ -9,15 +9,15 @@ using Sq1.Core.Indicators.HelperSeries;
 
 namespace Sq1.Core.Indicators {
 	public class IndicatorAtrBand : Indicator {
-		public IndicatorParameter ParamMultiplier { get; set; }	// IndicatorParameter must be a property
-		public DataSeriesTimeBasedColorified BandLower;
-		public DataSeriesTimeBasedColorified BandUpper;
+		public IndicatorParameter				ParamMultiplier;	// Indicator searches for IndicatorParameter being fields, not properties
+		public DataSeriesTimeBasedColorified	BandLower;
+		public DataSeriesTimeBasedColorified	BandUpper;
 
 		Indicator atr;
 
 		public override int FirstValidBarIndex {
 			get { return (int)this.atr.FirstValidBarIndex; }
-			set { throw new Exception("I_DONT_ACCEPT_SETTING_OF_FirstValidBarIndex " + this.NameWithParameters); }
+			protected set { throw new Exception("I_DONT_ACCEPT_SETTING_OF_FirstValidBarIndex " + this.NameWithParameters); }
 		}
 		
 		public IndicatorAtrBand(Indicator atr) : base() {
@@ -30,7 +30,7 @@ namespace Sq1.Core.Indicators {
 			this.ParamMultiplier = new IndicatorParameter("Multiplier", 1, 0.1, 10, 0.1);
 		}
 		
-		public override string BacktestStartingPreCheckErrors() {
+		public override string InitializeBacktestStartingPreCheckErrors() {
 			if (this.ParamMultiplier.ValueCurrent <= 0) return "Multiplier[" + this.ParamMultiplier.ValueCurrent + "] MUST BE > 0";
 			this.BandLower = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, "BandLower for " + base.Name, base.LineColor);
 			this.BandUpper = new DataSeriesTimeBasedColorified(base.OwnValuesCalculated.ScaleInterval, "BandLower for " + base.Name, base.LineColor);

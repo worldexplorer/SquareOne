@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
@@ -25,10 +26,9 @@ namespace Sq1.Charting {
 			base.ForeColor = this.ChartControl.ChartSettings.VolumeColorBarDown;
 			this.renderBarsVolume(g);
 		}
-		//protected override void PaintBackgroundWholeSurfaceBarsNotEmpty(Graphics g) {
-		//	base.PaintBackgroundWholeSurfaceBarsNotEmpty(g);	// paints Right and Bottom gutter backgrounds
-		//	//this.PaintRightVolumeGutterAndGridLines(g);
-		//}
+//		protected override void OnPaintBackground(PaintEventArgs pe) {
+//			return;
+//		}
 		
 		#if USE_DATASERIES_MINMAX
 		public override double VisibleMinDoubleMaxValueUnsafe { get { return this.VisibleVolumeMinNew; } }
@@ -49,6 +49,11 @@ namespace Sq1.Charting {
 					return this.visibleVolumeMaxCurrent;
 				}
 				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
+//try {
+//				if (this.VisibleBarRight_cached == 0 && this.VisibleBarLeft_cached == 0) {
+//					this.visibleVolumeMinCurrent = 0;
+//					return this.visibleVolumeMinCurrent;
+//				}
 				for (int i = this.VisibleBarRight_cached; i >= this.VisibleBarLeft_cached; i--) {
 					Bar barCanBeStreamingWithNaNs = this.ChartControl.Bars[i];
 					double volume = barCanBeStreamingWithNaNs.Volume;
@@ -62,6 +67,9 @@ namespace Sq1.Charting {
 					//Debugger.Break();
 				}
 				#endif
+//} catch (Exception ex) {
+//	Debugger.Break();
+//}
 				return this.visibleVolumeMinCurrent;
 			} }
 		private double visibleVolumeMaxCurrent;

@@ -75,7 +75,7 @@ namespace Sq1.Gui.FormFactories {
 		void ScriptEditorControl_OnRun(object sender, ScriptEditorEventArgs e) {
 			try {
 				this.ScriptEditorControl_OnCompile(sender, e);
-				this.chartFormManager.BacktesterRunSimulationRegular();
+				this.chartFormManager.BacktesterRunSimulation();
 			} catch (Exception ex) {
 				Assembler.PopupException("ScriptEditorControl_OnRun", ex);
 			}

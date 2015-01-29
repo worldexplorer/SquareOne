@@ -6,16 +6,16 @@ using System.Text;
 
 namespace Sq1.Core.StrategyBase {
 	public class ContextChart {
-		[JsonProperty]	public string Name;
-		[JsonProperty]	public string Symbol;
-		[JsonProperty]	public string DataSourceName;
-		[JsonProperty]	public BarScaleInterval ScaleInterval;
-		[JsonProperty]	public BarDataRange DataRange;
+		[JsonProperty]	public string			Name;
+		[JsonProperty]	public string			Symbol;
+		[JsonProperty]	public string			DataSourceName;
+		[JsonProperty]	public BarScaleInterval	ScaleInterval;
+		[JsonProperty]	public BarDataRange		DataRange;
 
 		//public int ChartBarSpacing;
-		[JsonProperty]	public bool IsStreamingTriggeringScript;
-		[JsonProperty]	public bool ShowRangeBar;
-		[JsonProperty]	public bool IsStreaming;
+		[JsonProperty]	public bool				IsStreamingTriggeringScript;
+		[JsonProperty]	public bool				ShowRangeBar;
+		[JsonProperty]	public bool				IsStreaming;
 
 		public ContextChart(string name = "UNDEFINED") : this() {
 			Name = name;

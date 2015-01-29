@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Diagnostics;
+using System.Threading;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Backtesting {
 	public class Backtester {
@@ -43,22 +44,23 @@ namespace Sq1.Core.Backtesting {
 				bool signalled = this.BacktestAborted.WaitOne(0);
 				return signalled;
 			} }
-		public int						ExceptionsHappenedSinceBacktestStarted = 0;
+		public int						ExceptionsHappenedSinceBacktestStarted;
 
 		Backtester() {
-			setBacktestAborted = false;
-			RequestingBacktestAbort = new ManualResetEvent(false);
-			BacktestAborted = new ManualResetEvent(false);
-			BacktestIsRunning = new ManualResetEvent(false);
-			BacktestCompletedQuotesCanGo = new ManualResetEvent(true);
-			backtestQuoteBarConsumer = new BacktestQuoteBarConsumer(this);
-			BacktestDataSource = new BacktestDataSource();
+			setBacktestAborted				= false;
+			RequestingBacktestAbort			= new ManualResetEvent(false);
+			BacktestAborted					= new ManualResetEvent(false);
+			BacktestIsRunning				= new ManualResetEvent(false);
+			BacktestCompletedQuotesCanGo	= new ManualResetEvent(true);
+			backtestQuoteBarConsumer		= new BacktestQuoteBarConsumer(this);
+			BacktestDataSource				= new BacktestDataSource();
+			ExceptionsHappenedSinceBacktestStarted = 0;
 		}
 		public Backtester(ScriptExecutor executor) : this() {
-			this.Executor = executor;
-			if (this.Executor.Strategy == null) return;
-			if (this.Executor.Strategy.Script == null) return;
-			this.Initialize(this.Executor.Strategy.ScriptContextCurrent.BacktestMode);
+			Executor = executor;
+			if (Executor.Strategy == null) return;
+			if (Executor.Strategy.Script == null) return;
+			this.Initialize(Executor.Strategy.ScriptContextCurrent.BacktestMode);
 		}
 		public void Initialize(BacktestMode mode = BacktestMode.FourStrokeOHLC) {
 			this.BacktestMode = mode;
@@ -140,7 +142,8 @@ namespace Sq1.Core.Backtesting {
 				int repaintableChunk = (int)(this.BarsOriginal.Count / 20);
 				if (repaintableChunk <= 0) repaintableChunk = 1;
 				
-				for (int barNo = 0; barNo < this.BarsOriginal.Count; barNo++) {
+				int excludeLastBarStreamingWillTriggerIt = this.BarsOriginal.Count - 1;
+				for (int barNo = 0; barNo <= excludeLastBarStreamingWillTriggerIt; barNo++) {
 					Bar bar = this.BarsOriginal[barNo];
 
 					bool abortRequested = this.RequestingBacktestAbort.WaitOne(0);
@@ -156,12 +159,12 @@ namespace Sq1.Core.Backtesting {
 					
 					//MAKE_EXCEPTIONS_FORM_INSERT_DELAYED!!! Application.DoEvents();	// otherwize UI becomes irresponsible;
 					//COMMENTED_OUT_TO_SIMULATE_PROFILER_BEHAVIOUR MORE_EXCEPTIONS_DISPLAYED_IN_EXCEPTIONS_FORM_WOW Application.DoEvents();
-					#if DEBUG
+					//#if DEBUG
 					// UNCOMMENTED_FOR_SHARP_DEVELOP_TO_NOT_FREAK_OUT_FULLY_EXPAND_LOCAL_VARIABLES_AT_BREAKPOINTS_RANDOMLY_CONTINUE_ETC IRRELATED_TO_EXCEPTIONS_THERE_WAS_NONE
 					// COMMENTED_OUT_#DEVELOP_FREAKS_OUT_WHEN_YOU_MOVE_INNER_WINDOWS_SPLITTER Application.DoEvents();
 					// UNCOMMENTED_TO_KEEP_MOUSE_OVER_SLIDERS_RESPONSIVE
 					// NOT_NEEDED_WHEN_BACKTESTER_STARTS_WITHOUT_PARAMETERS Application.DoEvents();
-					#endif
+					//#endif
 				}
 
 				// see Indicator.DrawValue() "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED"
@@ -192,9 +195,6 @@ namespace Sq1.Core.Backtesting {
 					this.Executor.AlertKillPending(alertPending);
 				} catch (Exception e) {
 					string msg = "NOT_AN_ERROR BACKTEST_POSITION_FINALIZER: check innerException: most likely you got POSITION_ALREADY_CLOSED on counterparty alert's force-close?";
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					this.Executor.PopupException(msg, e);
 				}
 			}
@@ -304,6 +304,10 @@ namespace Sq1.Core.Backtesting {
 		}
 		void simulationPostBarsRestore() {
 			try {
+				StreamingProvider streamingBacktest = this.BacktestDataSource.StreamingProvider;
+				StreamingProvider streamingOriginal = this.BarsOriginal.DataSource.StreamingProvider;
+				streamingOriginal.AbsorbStreamingBarFactoryFrom(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
+			
 				this.BacktestDataSource.StreamingProvider.ConsumerQuoteUnSubscribe(
 					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
 				this.BacktestDataSource.StreamingProvider.ConsumerBarUnSubscribe(
@@ -421,6 +425,10 @@ namespace Sq1.Core.Backtesting {
 				}
 				#endif
 			}
+		}
+		public override string ToString() {
+			string ret = "BACKTESTER_FOR_" + this.Executor.ToString();
+			return ret;
 		}
 	}
 }

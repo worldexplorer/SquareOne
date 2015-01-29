@@ -6,9 +6,9 @@ namespace Sq1.Core.DataTypes {
 	public class DataSeriesBasic {
 		public			string			Description;
 						List<double>	doubleValues;
-		public virtual	IList<double>	Values { get { return this.doubleValues; } }
-		public virtual	int				LastIndex { get { return this.doubleValues.Count - 1; } }
-		public virtual	double			LastValue {
+		public virtual	IList<double>	Values			{ get { return this.doubleValues; } }
+		public virtual	int				LastIndex		{ get { return this.doubleValues.Count - 1; } }
+		public virtual	double			LastValue		{
 			get { return (this.doubleValues.Count == 0) ? double.NaN : this[this.doubleValues.Count - 1]; }
 			set {
 				if (this.doubleValues.Count == 0) {
@@ -21,7 +21,7 @@ namespace Sq1.Core.DataTypes {
 				this[this.doubleValues.Count - 1] = value;
 			}
 		}
-		public virtual	int				Count { get { return this.doubleValues.Count; } }
+		public virtual	int				Count			{ get { return this.doubleValues.Count; } }
 		public virtual	int				Capacity {
 			get { return this.doubleValues.Capacity; }
 			set { this.doubleValues.Capacity = value; }
@@ -34,8 +34,9 @@ namespace Sq1.Core.DataTypes {
 			}
 			#endif
 		}
-		protected DataSeriesBasic(string description) : this() {
+		protected DataSeriesBasic(string description, int decimals = 2) : this() {
 			this.Description = description;
+			this.Decimals = decimals;
 		}
 		// protected to make the childs expose this[int] method; may be it's gonna be inapplicable and only this[Position] will have to be public
 		// I thought I could replace Dictionary<Position, double> CumulativeProfitDollar, CumulativeProfitPercent in SystemPerformanceSlice but StreamingValue looks inappropriate at all   
@@ -77,10 +78,22 @@ namespace Sq1.Core.DataTypes {
 		public virtual void Append(double value) {
 			this.doubleValues.Add(value);
 		}
+
+		// copypaste from Indicator.cs
+		public string FormatForcedDecimalsIndependent { get; protected set; }
+		public int Decimals { get; protected set; }
+		public string Format { get {
+				if (string.IsNullOrEmpty(this.FormatForcedDecimalsIndependent) == false) return this.FormatForcedDecimalsIndependent;
+				return "N" + this.Decimals;
+			} }
+		public string FormatValue(double value) {
+			return value.ToString(this.Format);
+		}
+	
 		public override string ToString() {
 			string ret = this.Count + "doubleValues";
 			if (this.Count > 0) {
-				ret += " LastValue=[" + this.LastValue + "] @[" + this.LastIndex + "]";
+				ret += " LastValue=[" + this.LastValue.ToString(this.Format) + "] @[" + this.LastIndex + "]";
 			}
 			if (string.IsNullOrEmpty(this.Description) == false) ret += "/" + this.Description;
 			return ret;
