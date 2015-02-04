@@ -295,7 +295,10 @@ namespace Sq1.Gui.Forms {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
 				if (ctx.IsStreaming) {
-					string reason = "contextChart[" + ctx.ToString() + "].IsStreaming=true";
+					string reason = "contextChart[" + ctx.ToString() + "].IsStreaming=true;"
+						+ " OnApprestartBacktest will launch in another thread and I can't postpone subscription until it finishes"
+						+ " so the Pump should set paused now because UpstreamSubscribe should not invoke ChartFormStreamingConsumer"
+						+ " whenever StreamingProvider is ready, but only after all ScaleSymbol consuming backtesters are complete";
 					this.ChartStreamingConsumer.StreamingSubscribe(reason);
 				}
 			} catch (Exception ex) {
@@ -486,7 +489,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			//ONLY_ON_WORKSPACE_RESTORE??? this.ChartForm.PropagateContextChartOrScriptToLTB(this.Strategy.ScriptContextCurrent);
-			if (this.Strategy.ScriptContextCurrent.IsStreaming) this.ChartStreamingConsumer.StreamingSubscribe();
+			//ALREADY_SUBSCRIBED_ON_WORKSPACE_RESTORE if (this.Strategy.ScriptContextCurrent.IsStreaming) this.ChartStreamingConsumer.StreamingSubscribe();
 		}
 		public void InitializeChartNoStrategyAfterDeserialization() {
 			this.InitializeChartNoStrategy(null);

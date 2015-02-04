@@ -174,6 +174,7 @@ namespace Sq1.Core.StrategyBase {
 			// Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed +=
 			//	new EventHandler<DataSourceSymbolEventArgs>(Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed);
 		}
+		Bar barStaticExecutedLast;
 		public ReporterPokeUnit ExecuteOnNewBarOrNewQuote(Quote quoteForAlertsCreated, bool onNewQuoteTrue_onNewBarFalse = true) {
 			if (this.Strategy == null) {
 				string msg1 = "I_REFUSE_TO_EXECUTE_SCRIPT YOU_DIDNT_CHECK_MY_STRATEGY_IS_NULL";
@@ -206,6 +207,18 @@ namespace Sq1.Core.StrategyBase {
 					this.PopupException(ex.Message + msig, ex);
 				}
 			} else {
+				if (this.barStaticExecutedLast != null) {
+					int mustBeOne = this.Bars.BarStaticLastNullUnsafe.ParentBarsIndex - this.barStaticExecutedLast.ParentBarsIndex;
+					if (mustBeOne == 0) {
+						string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WILL_COMPLAIN_TOO";
+						Assembler.PopupException(msg2, null, false);
+					}
+					if (mustBeOne > 1) {
+						int skipped = mustBeOne - 1;
+						string msg2 = "HOLE_IN_SCRIPT_INVOCATION INDICATORS_WILL_COMPLAIN_TOO ALERTS_WILL_MISTMATCH_BARS ExecuteOnNewBar()_SKIPPED=[" + skipped + "]";
+						Assembler.PopupException(msg2, null, false);
+					}
+				}
 				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
 					try {
 						int barsAheadOfIndicator = this.Bars.BarStaticLastNullUnsafe.ParentBarsIndex - indicator.OwnValuesCalculated.LastIndex;
@@ -219,6 +232,7 @@ namespace Sq1.Core.StrategyBase {
 
 				try {
 					this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLastNullUnsafe);
+					this.barStaticExecutedLast = this.Bars.BarStaticLastNullUnsafe;
 				} catch (Exception ex) {
 					string msig = " //Script[" + this.Strategy.Script.GetType().Name + "].OnNewBarCallback(" + quoteForAlertsCreated + ")";
 					this.PopupException(ex.Message + msig, ex);
@@ -985,7 +999,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.preBacktestBars != null) {
 				string msg = "NOT_SAVING_IsStreamingTriggeringScript=ON_FOR_BACKTEST"
 					+ " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 			}
 			this.IsStreamingTriggeringScript = true;
 			//this.Strategy.ScriptBase.Initialize(this);
@@ -998,7 +1012,7 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "REMOVE_HOLES_IN_INDICATOR " + indicator;
 					Assembler.PopupException(msg);
 				}
-				indicator.ResetBarsEffectiveProxyForBacktestStartingOrSwitchToOriginalBarsContinueToLiveNorecalculateStopped();
+				indicator.BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate();
 			}
 
 			//this.DataSource = this.preDataSource;
@@ -1024,6 +1038,7 @@ namespace Sq1.Core.StrategyBase {
 
 		public void BacktesterRunSimulation() {
 			try {
+				this.barStaticExecutedLast = null;
 				this.ExecutionDataSnapshot.Initialize();
 				//MOVED_TO_CTOR() this.Performance = new SystemPerformance(this);
 				this.Performance.Initialize();

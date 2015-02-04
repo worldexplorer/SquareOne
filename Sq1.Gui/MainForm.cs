@@ -81,6 +81,11 @@ namespace Sq1.Gui {
 		}
 		public void WorkspaceLoad(string workspaceToLoad) {
 			try {
+				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
+				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
+				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
+				this.SuspendLayout();
+				
 				if (Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName != workspaceToLoad) {
 					Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName = workspaceToLoad;
 					Assembler.InstanceInitialized.AssemblerDataSnapshotSerializer.Serialize();
@@ -143,8 +148,9 @@ namespace Sq1.Gui {
 					ExceptionsForm.Instance.Show(this.DockPanel);
 				}
 
+			
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
-				
+
 				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 					if (cfmgr.ChartForm == null) continue;
 					if (cfmgr.ChartForm.MniShowSourceCodeEditor.Enabled) {		//set to true in InitializeWithStrategy() << DeserializeDockContent() 20 lines above
@@ -187,23 +193,32 @@ namespace Sq1.Gui {
 					//}
 				}
 				
-				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
-				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
-				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
-				//this.DockPanel.ResumeLayout(true);
-				//this.DockPanel.Invalidate();
-
 				//NOPE ExecutionForm.Instance.ExecutionTreeControl.MoveStateColumnToLeftmost();
 				if (ExecutionForm.Instance.IsShown) {
-					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized();
+					// MOVED_TO_AFTER_MAINFORM_RESUMELAYOUT ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized();
 					ExecutionForm.Instance.PopulateWindowText();
 				}
 				if (ExceptionsForm.Instance.IsShown) {
-					ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
+					// MOVED_TO_AFTER_MAINFORM_RESUMELAYOUT ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
 					ExceptionsForm.Instance.ExceptionControl.FlushListToTreeIfDockContentDeserialized();
 				}
 			} catch (Exception ex) {
-				Assembler.PopupException("WorkspaceLoad()", ex);
+				Assembler.PopupException("WorkspaceLoad#1()", ex);
+			} finally {
+				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
+				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
+				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
+				this.ResumeLayout(true);
+			}
+			try {
+				if (ExecutionForm.Instance.IsShown) {
+					ExecutionForm.Instance.ExecutionTreeControl.PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized();
+				}
+				if (ExceptionsForm.Instance.IsShown) {
+					ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
+				}
+			} catch (Exception ex) {
+				Assembler.PopupException("WorkspaceLoad#2()", ex);
 			}
 		}
 		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {

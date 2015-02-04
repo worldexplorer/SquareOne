@@ -19,23 +19,11 @@ namespace Sq1.Gui {
 			    return;
 			}
 			this.lblStatus.Text = Message;
-			this.lblStatus.Invalidate();
+			//this.lblStatus.Invalidate();
 		}
 
-		public void DisplayStatusConnected(bool reconnect) {
-			ExceptionsForm.Instance.PopupException(null, new NotImplementedException("DisplayStatusConnected"));
-		}
-
-		public void DisplayStatusConnected() {
-			ExceptionsForm.Instance.PopupException(null, new NotImplementedException("DisplayStatusConnected"));
-		}
-
-		public void DisplayStatusDisconnected() {
-			ExceptionsForm.Instance.PopupException(null, new NotImplementedException("DisplayStatusDisconnected"));
-		}
-
-		public void UpdateConnectionStatus(ConnectionState status, int StatusCode, string Message) {
-			//ExceptionsForm.Instance.PopupException(new NotImplementedException("UpdateConnectionStatus"));
+		public void DisplayConnectionStatus(ConnectionState status, string message) {
+		    this.DisplayStatus(status + " :: " + message);
 		}
 
 		List<Exception> ExceptionsDuringApplicationShutdown;

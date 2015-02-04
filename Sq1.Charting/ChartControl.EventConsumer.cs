@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 using Sq1.Core;
@@ -125,7 +124,7 @@ namespace Sq1.Charting {
 			//    Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
 			//v3
-			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
+			//MULTISPLITTER_IS_NOT_SPAMMED_BY_ONRESIZE if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
 			this.SerializeSplitterDistanceOrPanelName();
 		}
 		public void SerializeSplitterDistanceOrPanelName() {

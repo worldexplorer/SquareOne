@@ -26,7 +26,7 @@ namespace Sq1.Core.Indicators {
 			if (this.ParamPeriod.ValueCurrent <= 0) return "Period[" + this.ParamPeriod.ValueCurrent + "] MUST BE > 0";
 			// not in ctor because base.BarsEffective should not be null; initialized only now in Indicator.BacktestStarting() upstack
 			this.trueRangeSeries = new TrueRangeSeries(base.OwnValuesCalculated.ScaleInterval);
-			this.smaSeries = new MovingAverageSimple(this.trueRangeSeries, (int)this.ParamPeriod.ValueCurrent, base.OwnValuesCalculated.ScaleInterval, base.Decimals);
+			this.smaSeries = new MovingAverageSimple(this.trueRangeSeries, (int)this.ParamPeriod.ValueCurrent, base.Decimals);
 			//MOVED_UPSTACK_FOR_ATRBAND_TO_FORMAT_ITS_SMALL_VALUES_AS_WELL  base.Decimals = Math.Max(base.Executor.Bars.SymbolInfo.DecimalsPrice, 1);	// for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
 			return null;
 		}

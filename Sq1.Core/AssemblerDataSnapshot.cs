@@ -12,7 +12,7 @@ namespace Sq1.Core {
 		
 		public AssemblerDataSnapshot() {
 			CurrentWorkspaceName = "Default";
-			SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch = 0;	// = 0 on 3.1GHz restores exactly as it was saved
+			SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch = 10;	// = 0 on 3.1GHz restores exactly as it was saved; ZERO_HELPS_BUT_MEANS_NO_DELAY: for Charts but not for Exceptions and Execution 
 		}
 	}
 }

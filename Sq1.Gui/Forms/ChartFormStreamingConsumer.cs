@@ -168,20 +168,33 @@ namespace Sq1.Gui.Forms {
 		}
 		public void StreamingSubscribe(string reason = "NO_REASON_FOR_STREAMING_SUBSCRIBE") {
 			if (this.canSubscribeToStreamingProvider() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
-
 			this.msigForNpExceptions = " //ChartFormStreamingConsumer.StreamingSubscribe(" + this.ToString() + ")";
+
+			bool subscribedAlready = this.Subscribed;
+
+			ContextChart ctx = this.ChartFormManager.ContextCurrentChartOrStrategy;
+			//if (ctx.IsStreaming != subscribedAlready) {
+			//    string msg3 = "CTX_AND_GUI_UNSYNC ctx[" + ctx.ToString() + "] ChartFormStreaming.Subscribed=[" + subscribedAlready + "]";
+			//    Assembler.PopupException(msg3 + this.msigForNpExceptions);
+			//    ctx.IsStreaming = subscribedAlready;
+			//}
+
+			if (subscribedAlready == true) {
+				string msg = "CHART_STREAMING_ALREADY_SUBSCRIBED_OR_FORGOT_TO_DISCONNECT REMOVE_INVOCATION_UPSTACK";
+				// NOT_NEEDED_WHEN_I_SWITCH_STRATEGIES_IN_EXISTING_CHART
+				Assembler.PopupException(msg  + this.msigForNpExceptions);
+				//channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
+				//msg = "NOW_QUOTEPUMP_WILL_ASSIGN_THREAD_NAME afterBacktesterCompleteOnceOnWorkspaceRestore() " + msg;
+				return;
+			}
+
 			var executorSafe = this.Executor;
 			var symbolSafe = this.Symbol;
 			var scaleIntervalSafe = this.ScaleInterval;
 			var streamingSafe = this.StreamingProvider;
 			var streamingBarSafeCloneSafe = this.StreamingBarSafeClone;
 
-			bool subscribed = this.Subscribed;
-			if (subscribed == true) {
-				string msg = "CHART_STREAMING_ALREADY_SUBSCRIBED_OR_FORGOT_TO_DISCONNECT this.Subscribed=true";
-				// NOT_NEEDED_WHEN_I_SWITCH_STRATEGIES_IN_EXISTING_CHART Assembler.PopupException(msg  + this.msigForNpExceptions);
-				return;
-			}
+			SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelFor(symbolSafe, scaleIntervalSafe);
 
 			if (streamingSafe.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, this) == true) {
 				Assembler.PopupException("CHART_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_QUOTE" + this.msigForNpExceptions);
@@ -209,25 +222,50 @@ namespace Sq1.Gui.Forms {
 				}
 			}
 
-			subscribed = this.Subscribed;
+			bool subscribed = this.Subscribed;
 			if (subscribed == false) {
-				string msg = "CHART_STREAMING_DIDNT_SUBSCRIBE_BAR_OR_QUOTE_OR_BOTH StreamingProvider[" + streamingSafe.ToString() + "]";
+				string msg = "CHART_STREAMING_FAILED_SUBSCRIBE_BAR_OR_QUOTE_OR_BOTH StreamingProvider[" + streamingSafe.ToString() + "]";
 				Assembler.PopupException(msg + this.msigForNpExceptions);
+				return;
+			}
+			if (ctx.IsStreaming == subscribed) {
+				string msg3 = "ON_INITIALIZE_WITH_STRATEGY_I_CAUGHT_UP_WITH_CTX_SETTING"	// ?ALREADY_SUBSCRIBED ?CHART_STREAMING_UNSYNC_CTX"
+					+ " ctx[" + ctx.ToString() + "] ChartFormStreaming.Subscribed=[" + subscribedAlready + "]";
+				//Assembler.PopupException(msg3 + this.msigForNpExceptions, null, false);
 				return;
 			}
 			string msg2 = "CHART_STREAMING_SUBSCRIBED[" + subscribed + "] due to [" + reason + "]";
 			Assembler.PopupException(msg2 + this.msigForNpExceptions, null, false);
 			this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming = subscribed;
 
-			var chartFormSafe = this.ChartForm;
-			if (chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast != null) {
-				string msg = "CHART_STREAMING_SUBSCRIBED_CLEANED_UP_EXISTING_QUOTE_LAST WASNT_SHUA...";
-				Assembler.PopupException(msg + this.msigForNpExceptions, null, false);
-				chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = null;
-			}
+			// MAY_NEED_TO_REFACTOR_BROKER_MOCK__AND_OrderPostProcessorSequencerCloseThenOpen
+			// BROKER_MOCK_MUST_BE_PAUSED: DONT_INVOKE_ORDER_UPDATE_BEFORE_POSITION_WAS_REGISTERED_IN_OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForGUID
+			// IDEA_IS_TO_AVOID__WAITED_TOO_LONG_FOR_UNPAUSE_CONFIRMATION___BY_SETTING_UpdateThreadNameAfterMaxConsumersSubscribed=true
+			// safeSync this.Subscribed => ContextCurrentChartOrStrategy.IsStreaming, => channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed
+			//var chartFormSafe = this.ChartForm;
+			//if (chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast != null) {
+			//    string msg = "CHART_STREAMING_SUBSCRIBED_CLEANED_UP_EXISTING_QUOTE_LAST WASNT_SHUA...";
+			//    Assembler.PopupException(msg + this.msigForNpExceptions, null, false);
+			//    chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = null;
+			//}
+			// don't on BacktestOnRestart && IsStreaming
+			//bool runStartupBacktestDontChangePumpThreadNameKeepPaused = false;
+			//ContextChart ctxChart = this.chartFormManager.ContextCurrentChartOrStrategy;
+			//ContextScript ctxScript = ctxChart as ContextScript;
+			//if (ctxScript != null) {
+			//    runStartupBacktestDontChangePumpThreadNameKeepPaused =
+			//            true == ctxScript.WillBacktestOnAppRestart
+			//        && false == Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete;
 
-			SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelFor(symbolSafe, scaleIntervalSafe);
-			channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
+			//    if (runStartupBacktestDontChangePumpThreadNameKeepPaused
+			//        && channel.QuotePump.IshouldWaitConfirmationFromAnotherThread == true) {
+			//        string msg = "ON_APPRESTART_BACKTEST_PUMP_SHOULD_WAIT_UNPAUSING_FROM_THE SAME_BACKTESTING_THREAD";
+			//        Assembler.PopupException(msg);
+			//        return;
+			//    }
+			//}
+			//if (runStartupBacktestDontChangePumpThreadNameKeepPaused) return;
+			//channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
 		}
 		public bool Subscribed { get {
 				if (this.canSubscribeToStreamingProvider() == false) return false;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM

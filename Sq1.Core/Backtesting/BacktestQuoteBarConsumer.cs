@@ -44,12 +44,15 @@ namespace Sq1.Core.Backtesting {
 			ReporterPokeUnit pokeUnitNullUnsafe = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quote);
 		}
 		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
-			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(" + barLastFormed.ToString() + ")";
+			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended";
 			if (barLastFormed == null) {
-				string msg = "Backtester starts generating quotes => first StreamingBar is added; for first four Quotes there's no static barsFormed yet!! Isi";
-				Assembler.PopupException(msg + msig);
+				string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING"
+					+ " Backtester starts generating quotes => first StreamingBar is added;"
+					+ " for first four Quotes there's no static barsFormed yet!! Isi";
+				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
+			msig += "(" + barLastFormed.ToString() + ")";
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
 			ReporterPokeUnit pokeUnitNullUnsafe = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
 		}

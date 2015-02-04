@@ -32,13 +32,17 @@ namespace Sq1.Core.Streaming {
 
 		public void InitializeLastQuoteReceived(List<string> symbols) {
 			foreach (string symbol in symbols) {
-				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(symbol)) continue;
-				this.lastQuoteClonesReceivedUnboundBySymbol.Add(symbol, null);
+				//v1
+				//if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(symbol)) continue;
+				//this.lastQuoteClonesReceivedUnboundBySymbol.Add(symbol, null);
+				//v2
+				this.LastQuoteInitialize(symbol);
 			}
 		}
 		public void LastQuoteInitialize(string symbol) {
 			lock (lockLastQuote) {
 				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(symbol)) {
+					Quote prevQuote = this.lastQuoteClonesReceivedUnboundBySymbol[symbol];
 					this.lastQuoteClonesReceivedUnboundBySymbol[symbol] = null;
 				} else {
 					this.lastQuoteClonesReceivedUnboundBySymbol.Add(symbol, null);
@@ -48,6 +52,10 @@ namespace Sq1.Core.Streaming {
 		public void LastQuoteCloneSetForSymbol(Quote quote) {
 			string msig = " StreamingDataSnapshot.LastQuoteSetForSymbol(" + quote.ToString() + ")";
 
+			if (quote == null) {
+				string msg = "USE_LastQuoteInitialize_INSTEAD_OF_PASSING_NULL_TO_LastQuoteCloneSetForSymbol";
+				Assembler.PopupException(msg + msig);
+			}
 			if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(quote.Symbol) == false) {
 				this.lastQuoteClonesReceivedUnboundBySymbol.Add(quote.Symbol, null);
 				string msg = "SUBSCRIBER_SHOULD_HAVE_INVOKED_LastQuoteInitialize()__FOLLOW_THIS_LIFECYCLE__ITS_A_RELIGION_NOT_OPEN_FOR_DISCUSSION";
@@ -56,6 +64,8 @@ namespace Sq1.Core.Streaming {
 
 			Quote lastQuote = this.lastQuoteClonesReceivedUnboundBySymbol[quote.Symbol];
 			if (lastQuote == null) {
+				string msg = "RECEIVED_FIRST_QUOTE_EVER_FOR#2 symbol[" + quote.Symbol + "] SKIPPING_LASTQUOTE_ABSNO_CHECK SKIPPING_QUOTE<=LASTQUOTE_NEXT_CHECK";
+				//Assembler.PopupException(msg, null, false);
 				this.lastQuoteClonesReceivedUnboundBySymbol[quote.Symbol] = quote;
 				return;
 			}

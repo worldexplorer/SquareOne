@@ -22,7 +22,6 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]	public DataSource			DataSource			{ get; protected set; }
 		[JsonIgnore]	public OrderProcessor		OrderProcessor		{ get; protected set; }
 		[JsonIgnore]	public StreamingProvider	StreamingProvider	{ get; protected set; }
-		[JsonIgnore]	public IStatusReporter		StatusReporter		{ get; protected set; }
 //		[JsonIgnore]	public List<Account>		Accounts			{ get; protected set; }
 		[JsonProperty]	public Account				Account;
 		[JsonIgnore]	public Account				AccountAutoPropagate {
@@ -126,11 +125,6 @@ namespace Sq1.Core.Broker {
 				this.SubmitOrders(ordersFromAlerts);
 			} catch (Exception e) {
 				string msg = "SubmitOrdersThreadEntry default Exception Handler";
-				if (this.StatusReporter == null) {
-					msg += "; StatusReporter=null for " + this.Name;
-					Assembler.PopupException(msg, e);
-					return;
-				}
 				Assembler.PopupException(msg, e);
 			}
 		}

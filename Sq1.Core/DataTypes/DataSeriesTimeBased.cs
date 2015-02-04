@@ -20,7 +20,7 @@ namespace Sq1.Core.DataTypes {
 
 		public virtual double this[DateTime date] { get { return this.doublesByDate[date]; } }
 
-		protected DataSeriesTimeBased(BarScaleInterval scaleInterval, int decimals = 2) {	// NOT_USING_PARENTS_List<double>doubleValues      : base()
+		protected DataSeriesTimeBased(BarScaleInterval scaleInterval, int decimals = 2) : base() {	// NOT_USING_PARENTS_List<double>doubleValues_BUT_I_NEED_IT_NON_NULL_FOR_CLEAR()
 			doublesByDate = new SortedList<DateTime, double>();
 			ScaleInterval = scaleInterval;
 			LastDateAppended = DateTime.MinValue;

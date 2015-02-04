@@ -187,7 +187,7 @@ namespace Sq1.Reporters {
 		public override void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
 			if (base.SystemPerformance == null) {
 				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return;
 			} else {
 				this.lastKnownCashAvailable = base.SystemPerformance.SlicesShortAndLong.CashAvailable;
@@ -206,7 +206,7 @@ namespace Sq1.Reporters {
 		}
 		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
 			if (base.SystemPerformance == null) {
-				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES";
+				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES__QUOTES_PUMP_SHOULD_BE_UNPAUSED_AFTER_BACKTEST_COMPLETES";
 				Assembler.PopupException(msg);
 				return;
 			} else {

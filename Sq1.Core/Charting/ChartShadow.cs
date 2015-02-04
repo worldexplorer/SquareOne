@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+
+#if NON_DOUBLE_BUFFERED_reverted_to_compulsory_UserControl_no_buffering
 using System.Windows.Forms;
+#endif
 
 using Sq1.Core.Charting;
 using Sq1.Core.Charting.OnChart;

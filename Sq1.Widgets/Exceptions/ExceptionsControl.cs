@@ -23,8 +23,10 @@ namespace Sq1.Widgets.Exceptions {
 //				return ret;
 //			} }
 		Exception exceptionSelectedInTree { get { return this.treeExceptions.SelectedObject as Exception; } }
+		object lockedByTreeListView;
 
 		public ExceptionsControl() : base() {
+			this.lockedByTreeListView = new object();
 			this.Exceptions = new List<Exception>();
 			this.ExceptionTimes = new Dictionary<Exception, DateTime>();
 
@@ -61,16 +63,17 @@ namespace Sq1.Widgets.Exceptions {
 				Assembler.PopupException(msg);
 			} else {
 				try {
+					this.SuspendLayout();
 					if (this.DataSnapshot.SplitDistanceVertical > 0) {
 						string msg = "+51_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
-						int newVerticalDistance = this.DataSnapshot.SplitDistanceVertical + 51;	// + this.splitContainerVertical.SplitterWidth;
+						int newVerticalDistance = this.DataSnapshot.SplitDistanceVertical;	//  + 51 + this.splitContainerVertical.SplitterWidth;
 						if (this.splitContainerVertical.SplitterDistance != newVerticalDistance) {
 							this.splitContainerVertical.SplitterDistance =  newVerticalDistance;
 						}
 					}
 					if (this.DataSnapshot.SplitDistanceHorizontal > 0) {
 						string msg = "+67_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_HORIZONTAL";
-						int newHorizontalDistance = this.DataSnapshot.SplitDistanceHorizontal + 67;	// + this.splitContainerHorizontal.SplitterWidth; 
+						int newHorizontalDistance = this.DataSnapshot.SplitDistanceHorizontal;	// + 97 + this.splitContainerHorizontal.SplitterWidth;
 						if (this.splitContainerHorizontal.SplitterDistance != newHorizontalDistance) {
 							this.splitContainerHorizontal.SplitterDistance =  newHorizontalDistance;
 						}
@@ -78,21 +81,28 @@ namespace Sq1.Widgets.Exceptions {
 				} catch (Exception ex) {
 					string msg = "TRYING_TO_LOCALIZE_SPLITTER_MUST_BE_BETWEEN_0_AND_PANEL_MIN";
 					Assembler.PopupException(msg);
+				} finally {
+					this.ResumeLayout(true);
 				}
 			}
 			//late binding prevents SplitterMoved() induced by DockContent layouting LoadAsXml()ed docked forms 
-			this.splitContainerVertical.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitContainerVertical_SplitterMoved);
+			this.splitContainerVertical.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerVertical_SplitterMoved);
 			this.splitContainerHorizontal.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitContainerHorizontal_SplitterMoved);
 			this.mniRecentAlwaysSelected.Checked = this.DataSnapshot.RecentAlwaysSelected;
 			this.mniltbDelay.InputFieldValue = this.DataSnapshot.TreeRefreshDelayMsec.ToString();
 			this.mniTreeShowExceptionTime.Checked = this.DataSnapshot.TreeShowExceptionTime;
 			this.olvTime.Text = this.DataSnapshot.TreeShowExceptionTime ? "Time" : "Message";
 		}
-		public void InsertException(Exception exception) {
+		public void InsertException(Exception exception) { lock (this.lockedByTreeListView) {
 			if (exception == null) {
 				Debugger.Break();
 				return;
 			}
+			if (this.Exceptions.Count == 0) {
+				string msg = "SHOULD_HAPPEN_ONCE_PER_APP_LIFETIME";
+				//Debugger.Break();
+			}
+
 			this.ExceptionTimes.Add(exception, DateTime.Now);
 			this.Exceptions.Insert(0, exception);
 			
@@ -106,7 +116,7 @@ namespace Sq1.Widgets.Exceptions {
 //			this.treeExceptions.Expand(exception);
 //			// MAKES StrategiesTreeControl.CellClick invoke handlers 100 times!!! nonsense I know Application.DoEvents();	// TsiProgressBarETAClick doesn't get control when every quote there is an exception and user can't interrupt the backtest
 			// MOVED_TO_EXCEPTIONS_FORM this.FlushListToTreeIfDockContentDeserialized();
-		}
+		} }
 		void selectMostRecentException() {
 			if (this.treeExceptions.GetItemCount() == 0) return;
 			this.treeExceptions.SelectedIndex = 0;
@@ -136,7 +146,7 @@ namespace Sq1.Widgets.Exceptions {
 				this.lvStackTrace.EndUpdate();
 			}
 		}
-		public void FlushListToTreeIfDockContentDeserialized() {
+		public void FlushListToTreeIfDockContentDeserialized() { lock (this.lockedByTreeListView) {
 			// WINDOWS.FORMS.VISIBLE=FALSE_IS_SET_BY_DOCK_CONTENT_LUO ANALYZE_DockContentImproved.IsShown_INSTEAD if (this.Visible == false) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 				return;
@@ -151,7 +161,7 @@ namespace Sq1.Widgets.Exceptions {
 			}
 			this.treeExceptions.ExpandAll();
 			this.selectMostRecentException();
-		}
+		} }
 		public override string ToString() {
 			StringBuilder formattedException = new StringBuilder();
 			if (this.exceptionSelectedInTree != null) {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using System.Text;
@@ -12,6 +11,8 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Indicators {
 	public abstract partial class Indicator {
+		public	static	int AbsnoCurrent = 0;
+		public			int AbsnoInstance;
 		public	string						Name;
 		public	ChartPanelType				ChartPanelType;
 		public	DataSeriesProxyableFromBars	DataSeriesProxyFor;
@@ -30,9 +31,9 @@ namespace Sq1.Core.Indicators {
 					this.barsEffective_cached = this.Executor.Bars;
 				}
 				if (this.barsEffective_cached != this.Executor.Bars) {
-					string msg = "INDICATOR_SWITCHED_BARS (Bars were replaced to Backtesting growing copy and create new Proxy)"
+					string msg = "INDICATOR_SWITCHED_BARS_BarsEffective (Bars were replaced to Backtesting growing copy and create new Proxy)"
 						+ this.barsEffective_cached.ToString() + " => " + this.Executor.Bars.ToString();
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 					this.barsEffective_cached = this.Executor.Bars;
 				}
 				return this.barsEffective_cached;
@@ -44,9 +45,9 @@ namespace Sq1.Core.Indicators {
 					this.closesProxyEffective_cached = new DataSeriesProxyBars(this.BarsEffective, this.DataSeriesProxyFor);
 				}
 				if (this.closesProxyEffective_cached.BarsBeingProxied != this.BarsEffective) {
-					string msg = "INDICATOR_SWITCHED_BARS (Bars were replaced to Backtesting growing copy and create new Proxy)"
+					string msg = "INDICATOR_SWITCHED_BARS_ClosesProxyEffective (Bars were replaced to Backtesting growing copy and create new Proxy)"
 						+ this.closesProxyEffective_cached.ToString() + " => " + this.BarsEffective.ToString();
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 					this.closesProxyEffective_cached = new DataSeriesProxyBars(this.BarsEffective, this.DataSeriesProxyFor);
 				}
 				return this.closesProxyEffective_cached;
@@ -139,7 +140,8 @@ namespace Sq1.Core.Indicators {
 		public	int		DotsDrawnForCurrentSlidingWindow;									// nope I won't use a separate "responsibility" (I told you "SOLID principles are always misused" :)
 		public	int		DotsExistsForCurrentSlidingWindow		{ get; protected set; }		// just because the object itself is the most convenient place to incapsulate it
 		
-		public Indicator() {
+		protected Indicator() {
+			AbsnoInstance = ++AbsnoCurrent;
 			Name = "INDICATOR_NAME_NOT_SET_IN_DERIVED_CONSTRUCTOR";
 			DataSeriesProxyFor = DataSeriesProxyableFromBars.Close;
 			ChartPanelType = ChartPanelType.PanelPrice;
@@ -149,7 +151,9 @@ namespace Sq1.Core.Indicators {
 			Decimals = 2;
 		}
 
-		public virtual void ResetBarsEffectiveProxyForBacktestStartingOrSwitchToOriginalBarsContinueToLiveNorecalculateStopped() {
+		public virtual void BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate() {
+		}
+		public virtual void BacktestStartingResetBarsEffectiveProxy() {
 			this.parametersAsStringShort_cached = null;
 			// muting INDICATOR_SWITCHED_BARS
 			this.barsEffective_cached = this.Executor.Bars;
@@ -160,7 +164,8 @@ namespace Sq1.Core.Indicators {
 				//Assembler.PopupException(msg);
 			} else {
 				if (this.BarsEffective.Count == 0) {
-					string msg = "SORRY_FOR_THE_MESS__VALID_ONLY_FOR_MANUAL_REBACKTEST_DURING_LIVE";
+					string msg = "SO_WHY_ClearAllBeforeBacktest()_DIDNT_CLEAR_INDICATORS??? SORRY_FOR_THE_MESS__VALID_ONLY_FOR_MANUAL_REBACKTEST_DURING_LIVE";
+					Assembler.PopupException(msg, null, false);
 					this.OwnValuesCalculated.Clear();
 				}
 			}
@@ -181,11 +186,14 @@ namespace Sq1.Core.Indicators {
 			this.IndicatorErrorsOnBacktestStarting += msg;
 		}
 		public bool BacktestStartingConstructOwnValuesValidateParameters(ScriptExecutor executor) {
+			//string msg = "MADE_SURE_WE_WILL_INVOKE_BacktestStartingConstructOwnValuesValidateParameters()";
+			//Assembler.PopupException(msg, null, false);
+
 			this.Executor = executor;
 			string msig = " Indicator[" + this.NameWithParameters + "].BacktestStarting()";
 
-			this.ResetBarsEffectiveProxyForBacktestStartingOrSwitchToOriginalBarsContinueToLiveNorecalculateStopped();
 			this.OwnValuesCalculated = new DataSeriesTimeBased(this.BarsEffective.ScaleInterval, this.NameWithParameters);
+			this.BacktestStartingResetBarsEffectiveProxy();
 			
 			string paramerersAllValidatedErrors = this.ParametersAllValidate();
 			this.IndicatorErrorsOnBacktestStartingAppend(paramerersAllValidatedErrors);
@@ -372,7 +380,7 @@ namespace Sq1.Core.Indicators {
 					+ " Count[" + this.OwnValuesCalculated.Count + "]";
 		} }
 		public override string ToString() {
-			return this.NameWithParameters;
+			return "#" + this.AbsnoInstance + " " + this.NameWithParameters;
 		}
 	}
 }

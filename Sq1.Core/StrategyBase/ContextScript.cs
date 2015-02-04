@@ -59,6 +59,12 @@ namespace Sq1.Core.StrategyBase {
 				return ret;
 			} }
 
+		[JsonIgnore]	public bool WillBacktestOnAppRestart { get {
+				return	this.BacktestOnRestart
+					&&	this.IsStreaming
+					&&	this.IsStreamingTriggeringScript;
+		} }
+
 		public ContextScript(ContextChart upgradingFromSimpleChart = null, string name = "UNDEFINED") : this(name) {
 			base.AbsorbFrom(upgradingFromSimpleChart);
 		}
