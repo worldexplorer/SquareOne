@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+using System.Diagnostics;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Backtesting;
 
@@ -69,12 +70,26 @@ namespace Sq1.Core.Streaming {
 				string msg = "QUOTE_WAS_NOT_ENRICHED_BY_StreamingBarFactoryUnattached.EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar()";
 				Assembler.PopupException(msg);
 			}
-			if (quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == 0) {
-				if (StreamingBarFactoryUnattached.BarLastFormedUnattached != null
+	
+			bool firstQuoteOfABar = quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == 0;
+			bool notFirstEverQuote = quoteSernoEnrichedWithUnboundStreamingBar.AbsnoPerSymbol > 0;
+			bool barLastStaticFormedIsValid = !this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNotYetFormed;
+			bool streamingBarReadyToSpawn = this.StreamingBarFactoryUnattached.BarStreamingUnattached.DateTimeOpen
+															< quoteSernoEnrichedWithUnboundStreamingBar.ServerTime;
+			bool streamingBarWronglyRestoredAfterBacktest =
+				this.StreamingBarFactoryUnattached.BarStreamingUnattached.DateTimeOpen
+					> quoteSernoEnrichedWithUnboundStreamingBar.ServerTime;
+
+			if ((firstQuoteOfABar && notFirstEverQuote) || streamingBarWronglyRestoredAfterBacktest) {
+				if (streamingBarWronglyRestoredAfterBacktest) {
+					string msg = "FORCING_EXECUTE_ON_LASTFORMED_BY_RESETTING_LAST_FORMED_TO_PREVIOUSLY_EXECUTED_AFTER_BACKTEST";
+				}
+				if (barLastStaticFormedIsValid
+						//this.StreamingBarFactoryUnattached.BarLastFormedUnattached != null
 						//&& double.IsNaN(StreamingBarFactoryUnattached.LastBarFormedUnattached.Close) == true
-						&& this.StreamingBarFactoryUnattached.BarLastFormedUnattached.DateTimeOpen != DateTime.MinValue
+						//PAUSED_APPRESTART_BACKTEST_MinValue_HERE && this.StreamingBarFactoryUnattached.BarLastFormedUnattached.DateTimeOpen != DateTime.MinValue
 					) {
-					lock (lockConsumersBar) {
+					lock (this.lockConsumersBar) {
 						this.bindNewStreamingBarAppendPokeConsumersStaticFormed(quoteSernoEnrichedWithUnboundStreamingBar);
 					}
 				} else {
@@ -82,9 +97,10 @@ namespace Sq1.Core.Streaming {
 						+ quoteSernoEnrichedWithUnboundStreamingBar + "]"
 						+ " because it has initialized LastStaticBar=StreamingBar.Clone()"
 						+ " for " + this.StreamingBarFactoryUnattached;
-					//Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 				}
 			}
+
 			lock (lockConsumersQuote) {
 				this.bindStreamingBarForQuoteAndPushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar.Clone());
 			}
@@ -113,7 +129,12 @@ namespace Sq1.Core.Streaming {
 						continue;
 					}
 					try {
-						Bar lastBarFormedUnattached = this.StreamingBarFactoryUnattached.BarLastFormedUnattached.Clone();
+						if (this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNotYetFormed) {
+							string msg = "NONSENSE_HERE";
+							Assembler.PopupException(msg);
+							continue;
+						}
+						Bar lastBarFormedUnattached = this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe.Clone();
 						consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(lastBarFormedUnattached, null);
 					} catch (Exception e) {
 						string msg = "STREAMING_SOLIDIFIER_FAILED_TO_CONSUME_STATIC_JUST_FORMED";
@@ -137,8 +158,10 @@ namespace Sq1.Core.Streaming {
 				}
 				if (	consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe != null
 					 && consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe.DateTimeOpen == barStreamingUnattached.DateTimeOpen) {
-					string msg = "we are on 1st ever streaming quote: probably shouln't add it to avoid ALREADY_HAVE exception";
-					Assembler.PopupException(msg + msig);
+					string msg = "KEEP_THIS_NOT_HAPPENING_BY_LEAVING_STATIC_LAST_ON_APPRESTART_NULL_ON_LIVEBACKTEST_CONTAINING_LAST_INCOMING_QUOTE"
+						+ " we are on 1st ever streaming quote: probably shouln't add it to avoid ALREADY_HAVE exception";
+					//Debugger.Break();
+					Assembler.PopupException(msg + msig, null, false);
 					continue;
 				}
 
@@ -149,23 +172,23 @@ namespace Sq1.Core.Streaming {
 				}
 
 				StreamingEarlyBinder binder = this.earlyBinders[consumer];
-				Bar barLastFormedBound = null;
+				Bar barStreamingBound = null;
 				try {
-					barLastFormedBound = binder.BindBarToConsumerBarsAndAppend(barStreamingUnattached);
-					if (barLastFormedBound != consumer.ConsumerBarsToAppendInto.BarLast) {
-						string msg = "MUST_NEVER_HAPPEN_barLastFormedBound != consumer.ConsumerBarsToAppendInto.BarLast";
+					barStreamingBound = binder.BarStreamingBindToConsumerBarsAndAppend(barStreamingUnattached);
+					if (barStreamingBound != consumer.ConsumerBarsToAppendInto.BarLast) {
+						string msg = "MUST_NEVER_HAPPEN_barStreamingBound != consumer.ConsumerBarsToAppendInto.BarLast";
 						Assembler.PopupException(msg + msig);
 					}
-					if (barLastFormedBound == consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe) {
-						string msg = "MUST_NEVER_HAPPEN_barLastFormedBound == consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe";
+					if (barStreamingBound == consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe) {
+						string msg = "MUST_NEVER_HAPPEN_barStreamingBound == consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe";
 						Assembler.PopupException(msg + msig);
 					}
-					if (barLastFormedBound != consumer.ConsumerBarsToAppendInto.BarStreaming) {
-						string msg = "MUST_NEVER_HAPPEN_barLastFormedBound != consumer.ConsumerBarsToAppendInto.BarStreaming";
+					if (barStreamingBound != consumer.ConsumerBarsToAppendInto.BarStreaming) {
+						string msg = "MUST_NEVER_HAPPEN_barStreamingBound != consumer.ConsumerBarsToAppendInto.BarStreaming";
 						Assembler.PopupException(msg + msig);
 					}
 				} catch (Exception e) {
-					string msg = "BAR_BINDING_TO_PARENT_FAILED " + barLastFormedBound.ToString();
+					string msg = "BAR_BINDING_TO_PARENT_FAILED " + barStreamingBound.ToString();
 					Assembler.PopupException(msg + msig, e);
 					continue;
 				}
@@ -181,9 +204,14 @@ namespace Sq1.Core.Streaming {
 
 				try {
 					Bar barStaticLast	= consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
+					if (barStaticLast == null) {
+						string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
+						//Assembler.PopupException(msg);
+						continue;
+					}
 					consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStaticLast, quoteWithStreamingBarBound);
 				} catch (Exception e) {
-					string msg = "BOUND_BAR_PUSH_FAILED " + barLastFormedBound.ToString();
+					string msg = "BOUND_BAR_PUSH_FAILED " + barStreamingBound.ToString();
 					Assembler.PopupException(msg + msig, e);
 					continue;
 				}
@@ -259,7 +287,7 @@ namespace Sq1.Core.Streaming {
 					}
 					return ret;
 				} } }
-		public string ConsumersBarAsString { get { lock (lockConsumersBar) {
+		public string ConsumersBarAsString { get { lock (this.lockConsumersBar) {
 					string ret = "";
 					foreach (IStreamingConsumer consumer in this.consumersBar) {
 						if (ret != "") ret += ", ";
@@ -284,20 +312,20 @@ namespace Sq1.Core.Streaming {
 			} }
 		public int ConsumersQuoteCount { get { lock (lockConsumersQuote) { return this.consumersQuote.Count; } } }
 
-		public bool ConsumersBarContains(IStreamingConsumer consumer) { lock (lockConsumersBar) { return this.consumersBar.Contains(consumer); } }
-		public void ConsumersBarAdd(IStreamingConsumer consumer) { lock (lockConsumersBar) {
+		public bool ConsumersBarContains(IStreamingConsumer consumer) { lock (this.lockConsumersBar) { return this.consumersBar.Contains(consumer); } }
+		public void ConsumersBarAdd(IStreamingConsumer consumer) { lock (this.lockConsumersBar) {
 				this.consumersBar.Add(consumer);
 				if (earlyBinders.ContainsKey(consumer)) return;
 				earlyBinders.Add(consumer, new StreamingEarlyBinder(this.StreamingBarFactoryUnattached, consumer));
 			} }
-		public void ConsumersBarRemove(IStreamingConsumer consumer) { lock (lockConsumersBar) {
+		public void ConsumersBarRemove(IStreamingConsumer consumer) { lock (this.lockConsumersBar) {
 				this.consumersBar.Remove(consumer);
 				//if (earlyBinders.ContainsKey(consumer) && this.consumersQuote.Contains(consumer) == false) {
 				if (this.consumersQuote.Contains(consumer)) return;
 				if (earlyBinders.ContainsKey(consumer) == false) return;
 				earlyBinders.Remove(consumer);
 			} }
-		public int ConsumersBarCount { get { lock (lockConsumersBar) { return this.consumersBar.Count; } } }
+		public int ConsumersBarCount { get { lock (this.lockConsumersBar) { return this.consumersBar.Count; } } }
 
 		internal void UpstreamSubscribedToSymbolPokeConsumers(string symbol) {
 			foreach (IStreamingConsumer quoteConsumer in this.consumersQuote) quoteConsumer.UpstreamSubscribedToSymbolNotification(null);
@@ -331,7 +359,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public void PumpAutoResumeBacktesterCompleteRemove(Backtester backtesterRemoving) {
 			if (this.QuotePump.PushConsumersPaused == false) {
-				string msg = "YOU_RUINED_WHOLE_IDEA_OF_DISTRIBUTOR_CHANNEL_AUTORESUME_ITS_PUMP backtesterRemoving=[" + backtesterRemoving + "]";
+				string msg = "YOU_RUINED_WHOLE_IDEA_OF_DISTRIBUTOR_CHANNEL_TO_AUTORESUME_ITS_OWN_PUMP backtesterRemoving=[" + backtesterRemoving + "]";
 				Assembler.PopupException(msg);
 				return;
 			}

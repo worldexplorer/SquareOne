@@ -90,6 +90,13 @@ namespace Sq1.Gui.ReportersSupport {
 			}
 		}
 		public void UpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
+//			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+//				if (rep.SystemPerformance != null) continue;
+//				string msg = "AVOIDING_EXCEPTION_DOWNSTACK YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES__QUOTES_PUMP_SHOULD_BE_UNPAUSED_AFTER_BACKTEST_COMPLETES";
+//				Assembler.PopupException(msg);
+//				return;
+//			}
+	
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {
 				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(pokeUnit); });
 				return;

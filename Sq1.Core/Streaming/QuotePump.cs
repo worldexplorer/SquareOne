@@ -31,7 +31,7 @@ namespace Sq1.Core.Streaming {
 		const		int		WARN_AFTER_QUOTES_BUFFERED = 10;
 					int		timesThreadWasStarted;
 
-		public bool UpdateThreadNameAfterMaxConsumersSubscribed;
+		public		bool	UpdateThreadNameAfterMaxConsumersSubscribed;
 				Stopwatch	watchForPpausedQuotesProcessing;
 		
 		bool separatePushingThreadEnabled;
@@ -72,6 +72,11 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		bool pushConsumersPaused;
+		public bool IshouldWaitConfirmationFromAnotherThread { get { return
+					Thread.CurrentThread.Name != null
+				&&	Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false;
+			} }
+
 		public bool PushConsumersPaused {
 			get { return this.pushConsumersPaused; }
 			set {
@@ -83,6 +88,7 @@ namespace Sq1.Core.Streaming {
 						// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
 						return;
 					}
+					// Thread.CurrentThread.Name=null for Backtester.RunSimulation
 					if (value == true) {
 						this.confirmPaused.Reset();
 						if (this.SeparatePushingThreadEnabled == false) {
@@ -93,8 +99,7 @@ namespace Sq1.Core.Streaming {
 							string msg = "PUMPING_PAUSED_SINGLE_THREADED";
 							Assembler.PopupException(msg + msig, null, false);
 						} else {
-							// Thread.CurrentThread.Name=null for Backtester.RunSimulation
-							if (Thread.CurrentThread.Name != null && Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false) {
+							if (this.IshouldWaitConfirmationFromAnotherThread) {
 								this.pauseRequested = true;
 								this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process pauseRequested=true
 								bool pausedConfirmed = this.confirmPaused.WaitOne(this.heartbeatTimeout * 2);
@@ -106,7 +111,7 @@ namespace Sq1.Core.Streaming {
 									string msg = "added complimentary to PushConsumersPaused=false below => I didn't confirm unpausing because I just paused => for whoever might check Wait() un-timely";
 									this.confirmUnpaused.Reset();
 								}
-								string msg2 = "PAUSED_FROM_WITHIN_PUMPING_THREAD";
+								string msg2 = "PAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION";
 								//Assembler.PopupException(msg2 + msig, null, false);
 							}
 						}
@@ -120,8 +125,7 @@ namespace Sq1.Core.Streaming {
 							string msg2 = "PUMPING_UNPAUSED_SINGLE_THREADED";
 							Assembler.PopupException(msg2 + msig, null, false);
 						} else {
-							// Thread.CurrentThread.Name=null for Backtester.RunSimulation
-							if (Thread.CurrentThread.Name != null && Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false) {
+							if (this.IshouldWaitConfirmationFromAnotherThread) {
 								this.unPauseRequested = true;
 								this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process unPauseRequested=true
 								bool unPausedConfirmed = this.confirmUnpaused.WaitOne(this.heartbeatTimeout * 2);
@@ -134,7 +138,7 @@ namespace Sq1.Core.Streaming {
 										+ " ; I have to notify waiters can proceed via WaitUntilUnpaused, even if noone is WaitingOne()";
 									this.confirmUnpaused.Set();
 								}
-								string msg2 = "UNPAUSED_FROM_WITHIN_PUMPING_THREAD";
+								string msg2 = "UNPAUSED_FROM_WITHIN_PUMPING_THREAD__NO_NEED_TO_WAIT_CONFIRMATION";
 								//Assembler.PopupException(msg2 + msig, null, false);
 							}
 						}
@@ -285,7 +289,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		#region IDisposable implementation, just in case I'll need to abort the Pump when ChartFormsManager gets disposed
+		#region NOT_USED_YET if I'll need to stop the Pump+AllConsumers when ChartFormsManager gets disposed
 		void IDisposable.Dispose() {
 			this.exitPushingThreadRequested = true;
 			this.HasQuoteToPush = true;		// fake gateway open, just to let the thread process disposed=true; 

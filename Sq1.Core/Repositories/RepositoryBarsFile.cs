@@ -345,8 +345,9 @@ namespace Sq1.Core.Repositories {
 				DateTime dateTimeOpenLastStored = new DateTime(binaryReader.ReadInt64());
 				if (dateTimeOpenLastStored > barLastFormedStaticOrCurrentStreaming.DateTimeOpen) {
 					string msg = "I_REFUSE_TO_STORE_BAR_EARLIER_THAN_LAST_STORED barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
-						+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]";
-					Assembler.PopupException(msg);
+						+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
+						+ " IMPOSSIBLE_TO_CATCH_UPSTACK_KOZ_SOLIDIFIER_DOESNT_KEEP_BARS";
+					Assembler.PopupException(msg, null, false);
 					return saved;
 				}
 				long fileStreamLength = fileStream.Length;

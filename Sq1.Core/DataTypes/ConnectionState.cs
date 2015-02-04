@@ -5,7 +5,7 @@ namespace Sq1.Core.DataTypes {
 		//Warning
 		Unknown = 0,
 		JustInitialized = 1,
-		Connected = 2,
+		ConnectedUnsubscribed = 2,
 		Disconnected = 3,
 		SymbolSubscribed = 4,
 		SymbolUnsubscribed = 5,

@@ -37,7 +37,7 @@ namespace Sq1.Gui.Singletons {
 			});
 			t.ContinueWith(delegate {
 				string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
-				//Debugger.Break();
+				Debugger.Break();
 				//Assembler.PopupException(msg2, t.Exception);
 			}, TaskContinuationOptions.OnlyOnFaulted);
 			t.Start();
@@ -47,6 +47,10 @@ namespace Sq1.Gui.Singletons {
 			foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {
 				this.PopupException(null, beforeFormInstantiated, false);
 			}
+		}
+
+		internal void UpdateConnectionStatus(Core.DataTypes.ConnectionState status, int statusCode, string message) {
+			throw new NotImplementedException();
 		}
 	}
 }

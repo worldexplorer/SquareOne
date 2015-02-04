@@ -22,7 +22,7 @@ namespace Sq1.Core.Backtesting {
 		public ManualResetEvent			RequestingBacktestAbort			{ get; private set; }	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 		public ManualResetEvent			BacktestAborted					{ get; private set; }
 		public ManualResetEvent			BacktestIsRunning				{ get; private set; }
-		public ManualResetEvent			BacktestCompletedQuotesCanGo	{ get; private set; }
+		// REPLACED_BY_QUOTEPUMP_PAUSED public ManualResetEvent			BacktestCompletedQuotesCanGo	{ get; private set; }
 		
 
 		public int						BarsSimulatedSoFar				{ get; private set; }
@@ -51,7 +51,7 @@ namespace Sq1.Core.Backtesting {
 			RequestingBacktestAbort			= new ManualResetEvent(false);
 			BacktestAborted					= new ManualResetEvent(false);
 			BacktestIsRunning				= new ManualResetEvent(false);
-			BacktestCompletedQuotesCanGo	= new ManualResetEvent(true);
+			// REPLACED_BY_QUOTEPUMP_PAUSED		BacktestCompletedQuotesCanGo	= new ManualResetEvent(true);
 			backtestQuoteBarConsumer		= new BacktestQuoteBarConsumer(this);
 			BacktestDataSource				= new BacktestDataSource();
 			ExceptionsHappenedSinceBacktestStarted = 0;
@@ -107,10 +107,10 @@ namespace Sq1.Core.Backtesting {
 			msg = (aborted) ? "BACKTEST_ABORTED" : "BACKTESTER_DIDNT_ABORT_WITHIN_SECONDS[" + millisecondsToWait + "]";
 			Assembler.PopupException(msg + msig, null, false);
 		}
-		public void WaitUntilBacktestCompletes() {
-			if (this.IsBacktestingNow == false) return;
-			this.BacktestCompletedQuotesCanGo.WaitOne();
-		}
+		//public void WaitUntilBacktestCompletes() {
+		//	if (this.IsBacktestingNow == false) return;
+		//	// REPLACED_BY_QUOTEPUMP_PAUSEDthis.BacktestCompletedQuotesCanGo.WaitOne();
+		//}
 		public void SetRunningFalseNotifyWaitingThreadsBacktestCompleted() {
 			this.BacktestIsRunning.Reset();
 			//if (this.IsBacktestingNow) {
@@ -121,7 +121,7 @@ namespace Sq1.Core.Backtesting {
 			if (this.Executor.ChartShadow != null) this.Executor.ChartShadow.BacktestIsRunning.Reset();
 			// Calling ManualResetEvent.Set opens the gate,
 			// allowing any number of threads calling WaitOne to be let through
-			this.BacktestCompletedQuotesCanGo.Set();
+			// REPLACED_BY_QUOTEPUMP_PAUSED	this.BacktestCompletedQuotesCanGo.Set();
 		}
 
 		public void AbortBacktestIfExceptionsLimitReached() {
@@ -131,6 +131,9 @@ namespace Sq1.Core.Backtesting {
 			this.AbortRunningBacktestWaitAborted("AbortBacktestIfExceptionsLimitReached[" + this.Executor.Strategy.ExceptionsLimitToAbortBacktest + "]");
 		}
 		void substituteBarsAndRunSimulation() {
+			//string msg = "MAKE_SURE_WE_WILL_INVOKE_BacktestStartingConstructOwnValuesValidateParameters()";
+			//Assembler.PopupException(msg, null, false);
+
 			if (null == this.Executor.Bars) {
 				Assembler.PopupException("EXECUTOR_LOST_ITS_BARS_NONSENSE null==this.Executor.Bars SubstituteBarsAndRunSimulation()");
 				return;
@@ -223,7 +226,7 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 			if (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0) {
-				string msg = "CLOSING_LEFTOVER_POSITIONS_DIDNT_WORK_OUT snap.PositionsOpenNow.Count["
+				string msg = "DIDNT_CLOSE_BACKTEST_LEFTOVER_POSITIONS snap.PositionsOpenNow.Count["
 					+ this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count + "]";
 				Assembler.PopupException(msg, null, false);
 			}
@@ -299,15 +302,18 @@ namespace Sq1.Core.Backtesting {
 				if (this.Executor.ChartShadow != null) this.Executor.ChartShadow.BacktestIsRunning.Set();
 				// Calling ManualResetEvent.Reset closes the gate.
 				// Threads that call WaitOne on a closed gate will block
-				this.BacktestCompletedQuotesCanGo.Reset();
+				// REPLACED_BY_QUOTEPUMP_PAUSED this.BacktestCompletedQuotesCanGo.Reset();
 			}
 		}
 		void simulationPostBarsRestore() {
 			try {
 				StreamingProvider streamingBacktest = this.BacktestDataSource.StreamingProvider;
 				StreamingProvider streamingOriginal = this.BarsOriginal.DataSource.StreamingProvider;
-				streamingOriginal.AbsorbStreamingBarFactoryFrom(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
-			
+				string msg = "NOW_INSERT_BREAKPOINT_TO_this.channel.PushQuoteToConsumers(quoteDequeued) CATCHING_BACKTEST_END_UNPAUSE_PUMP";
+				//if (streamingOriginal.
+
+				streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
+
 				this.BacktestDataSource.StreamingProvider.ConsumerQuoteUnSubscribe(
 					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
 				this.BacktestDataSource.StreamingProvider.ConsumerBarUnSubscribe(

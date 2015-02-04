@@ -20,18 +20,7 @@ namespace Sq1.Gui {
 			}
 			try {
 				this.createWorkspacesManager();
-				
-				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
-				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
-				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
-				this.SuspendLayout();
-				
 				this.WorkspaceLoad(Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName);
-
-				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
-				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
-				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
-				this.ResumeLayout(true);
 			} catch (Exception ex) {
 				Assembler.PopupException("mainForm_Load()", ex);
 			}

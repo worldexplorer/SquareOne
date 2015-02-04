@@ -8,19 +8,19 @@ namespace Sq1.Core.Indicators.HelperSeries {
 		public DataSeriesTimeBased AverageFor;	// could be Bars, DataSeriesProxyBars or Indicator.OwnValues
 		public int Period;
 			
-		public MovingAverageSimple(DataSeriesTimeBased averageFor, int period, BarScaleInterval scaleInterval, int decimals = 2) : base(scaleInterval, decimals) {
+		public MovingAverageSimple(DataSeriesTimeBased averageFor, int period, int decimals = 2) : base(averageFor.ScaleInterval, decimals) {
 			AverageFor = averageFor;
 			Period = period;
 		}
-		public double CalculateAppendOwnValueForNewStaticBarFormedNanUnsafe(Bar newStaticBar) {
+		public double CalculateAppendOwnValueForNewStaticBarFormedNanUnsafe(Bar newStaticBar, bool allowExistingValueSame = false) {
 			double valueCalculated = this.CalculateOwnValue(newStaticBar);
 			if (base.ContainsDate(newStaticBar.DateTimeOpen)) {
 				double valueWeAlreadyHave = base[newStaticBar.DateTimeOpen];
-				if (valueCalculated == valueWeAlreadyHave) {
+				if (valueCalculated == valueWeAlreadyHave && allowExistingValueSame) {
 					return valueCalculated;
 				}
 				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]"
-					+ " thisBarValue[" + valueCalculated + "] valueWeAlreadyHave[" + valueWeAlreadyHave + "]";
+					+ " thisBarValue[" + valueCalculated.ToString(base.Format) + "] valueWeAlreadyHave[" + valueWeAlreadyHave + "]";
 				Assembler.PopupException(msg);
 				return double.NaN;
 			}
@@ -45,7 +45,8 @@ namespace Sq1.Core.Indicators.HelperSeries {
 					if (newStaticBar.ParentBarsIndex >= barsBehind.Count) {
 						msg = "AVOIDING_OUT_OF_BOUNDARY_EXCEPTION_FOR_this.AverageFor[i] " + msg;
 					}
-					Assembler.PopupException(msg);
+					Debugger.Break();
+					Assembler.PopupException(msg, null, false);
 				}
 			}
 

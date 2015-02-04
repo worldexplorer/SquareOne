@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Windows.Forms;
 
 using Sq1.Core.Broker;
@@ -92,19 +91,26 @@ namespace Sq1.Core {
 
 		public	bool									SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished { get {
 				bool ret = false;
+				//v1 looks like Process.GetCurrentProcess().StartTime counts the milliseconds elapsed by the processor for the app
+				//(1sec during last 2mins with 1% CPU load), while I need solarTimeNow minus solarTimeAppStarted => switching to Stopwatch
 				int sinceApplicationStartSeconds = -1;
 				try {
 					TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
 					sinceApplicationStartSeconds = sinceApplicationStart.Seconds;
+					//v2
+					//int sinceApplicationStartSeconds2 = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
 				} catch (Exception ex) {
 					Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 					sinceApplicationStartSeconds = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
 				}
+
 				int secondsLeftToIgnore = this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch - sinceApplicationStartSeconds;
 				if (secondsLeftToIgnore < 0) {
 					ret = true;
 				} else {
-					Assembler.PopupException("SPLITTER_EVENTS_IGNORED_FOR_MORE_SECONDS " + secondsLeftToIgnore, null, false);
+					string msg = "SPLITTER_EVENTS_IGNORED_FOR_MORE_SECONDS " + secondsLeftToIgnore + "/"
+						+ this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch;
+					Assembler.PopupException(msg, null, false);
 				}
 				return ret;
 			} }
@@ -168,17 +174,20 @@ namespace Sq1.Core {
 			createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);
 			this.AssemblerDataSnapshot = this.AssemblerDataSnapshotSerializer.Deserialize();
 			
+			//v1
 			try {
 				TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
 				string msg = "ASSEMBLER_INITIALIZED_AFTER_MILLIS_RUNNING: "
 					+ Math.Round(sinceApplicationStart.Milliseconds / (decimal)1000, 2)
 					+ " [" + this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch
 					+ "]=SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 			} catch (Exception ex) {
 				Assembler.PopupException("PLATFORM_DOESNT_SUPPORT_Process.GetCurrentProcess().StartTime_AS_DESCRIBED_IN_MSDN__LAUNCHING_STOPWATCH", ex);
 				this.stopWatchIfProcessUnsupported = Stopwatch.StartNew();
 			}
+			//v2
+			//this.stopWatchIfProcessUnsupported = Stopwatch.StartNew();
 
 			return Assembler.InstanceInitialized;
 		}
@@ -225,13 +234,9 @@ namespace Sq1.Core {
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
 		}
 
-		//internal static void PopupExecutionForm() {
-		//    if (Assembler.InstanceInitialized.ExecutionForm == null) {
-		//        string msg = "I_CAN_NOT_CONTINUE_WITHOUT_EXECUTION_FORM__ORDER_PROCESSOR_HAS_SOME_ORDERS_TO_DISPLAY";
-		//        Assembler.PopupException(msg);
-		//        return;
-		//    }
-		//    Assembler.InstanceInitialized.ExecutionForm.ShowPopupSwitchToGuiThread();
-		//}
+		public static void DisplayConnectionStatus(ConnectionState state, string msg) {
+			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
+			Assembler.InstanceInitialized.StatusReporter.DisplayConnectionStatus(state, msg);
+		}
 	}
 }

@@ -28,7 +28,7 @@ namespace Sq1.Core.DataTypes {
 		}
 		protected DataSeriesBasic() {
 			this.doubleValues = new List<double>();
-			#if DEBUG
+			#if DEBUG	// EMBEDDED_TEST_FOR_LastValue_MUST_BE_NAN 
 			if (double.IsNaN(this.LastValue) == false) {
 				Debugger.Break();
 			}

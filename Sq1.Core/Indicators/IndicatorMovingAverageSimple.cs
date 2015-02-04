@@ -1,5 +1,6 @@
 ﻿using System;
 
+using System.Diagnostics;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 using Sq1.Core.Indicators.HelperSeries;
@@ -19,42 +20,76 @@ namespace Sq1.Core.Indicators {
 			// NOW DEFAULT base.ChartPanelType = ChartPanelType.PanelPrice;
 			ParamPeriod = new IndicatorParameter("Period", 55, 11, 99, 11);
 		}
-
-		public override void ResetBarsEffectiveProxyForBacktestStartingOrSwitchToOriginalBarsContinueToLiveNorecalculateStopped() {
-			base.ResetBarsEffectiveProxyForBacktestStartingOrSwitchToOriginalBarsContinueToLiveNorecalculateStopped();
-
-			string state = (base.ClosesProxyEffective.Count == 0) ? "EMPTY_CLONE_BARS_AT_BACKTEST_START" : "ORIGINAL_BARS_AT_BACKTEST_END";
-			string msig = " WHILE_RESETTING_TO " + state;
-
-			if (this.smaSeries == null) {
-				this.smaSeries = new MovingAverageSimple(base.ClosesProxyEffective, (int)this.ParamPeriod.ValueCurrent, base.OwnValuesCalculated.ScaleInterval, base.Decimals);
-			} else {
-				string msg = "";
-				if (this.BarsEffective.Count == 0) {
-					//msg += "SORRY_FOR_THE_MESS__VALID_ONLY_FOR_MANUAL_REBACKTEST_DURING_LIVE";
-					this.smaSeries = new MovingAverageSimple(base.ClosesProxyEffective, (int)this.ParamPeriod.ValueCurrent, base.OwnValuesCalculated.ScaleInterval, base.Decimals);
-				}
-				if (this.smaSeries.AverageFor.Count != base.BarsEffective.Count) {
-					msg += "BARS_FOR_INDICATOR_AND_INTERNAL_SMA_MUST_BE_EQUAL_LENGTH ";
-				}
-				if (this.smaSeries.AverageFor.Count != base.ClosesProxyEffective.Count) {
-					msg += "BARS_UNDERNEATH_INDICATOR_HAVE_DIFFERENT_LENGTH_WITH_ABSORBED ";
-				}
-				if (this.smaSeries.AverageFor.Count > 0) {
-					if (this.smaSeries.AverageFor.Count != this.smaSeries.Count + (int)this.ParamPeriod.ValueCurrent) {
-						msg += "INTERNAL_SMA_MUST_HAVE_COUNT_EQUALS_BARS_MINUS_PERIOD ";
-					}
-					if (this.smaSeries.AverageFor.Count != this.OwnValuesCalculated.Count + 1) {
-						msg += "SOME_BARS_HAVE_NO_MATCHING_INDICATOR_CALCULATED ";
-					} else {
-						string hint = "indicator value for the current-last-bar will be calculated by next-bar incoming quote meaning official closing of current-last-bar";
-					}
-				}
-				if (string.IsNullOrEmpty(msg) == false) {
-					Assembler.PopupException(msg + msig);
-				}
-				this.smaSeries.AverageFor = base.ClosesProxyEffective;
+		void checkPopupOnResetAndSync(string msig) {
+			string msg = "";
+			if (this.BarsEffective.Count != this.ClosesProxyEffective.Count) {
+				msg = "IT_WASNT_A_PARANOID_CHECK";
+				Debugger.Break();
+				Assembler.PopupException(msg, null, false);
 			}
+
+			if (this.smaSeries.AverageFor.Count != base.BarsEffective.Count) {
+				msg += "BARS_FOR_INDICATOR_AND_INTERNAL_SMA_MUST_BE_EQUAL_LENGTH ";
+			}
+			if (this.smaSeries.AverageFor.Count != base.ClosesProxyEffective.Count) {
+				msg += "BARS_UNDERNEATH_INDICATOR_HAVE_DIFFERENT_LENGTH_WITH_ABSORBED ";
+			}
+			if (this.smaSeries.AverageFor.Count > 0) {
+				if (this.smaSeries.AverageFor.Count != this.smaSeries.Count + (int)this.ParamPeriod.ValueCurrent) {
+					msg += "INTERNAL_SMA_MUST_HAVE_COUNT_EQUALS_BARS_MINUS_PERIOD ";
+				}
+				if (this.smaSeries.AverageFor.Count != this.OwnValuesCalculated.Count + 1) {
+					msg += "SOME_BARS_HAVE_NO_MATCHING_INDICATOR_CALCULATED ";
+				} else {
+					string hint = "indicator value for the current-last-bar will be calculated by next-bar incoming quote meaning official closing of current-last-bar";
+				}
+			}
+			if (string.IsNullOrEmpty(msg)) return;
+			Assembler.PopupException(msg + msig);
+		}
+		public override void BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate() {
+			base.BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate();
+			
+			if (base.ClosesProxyEffective.Count == 0) {
+				string msg = "PARANOID AT_BACKTEST_CONTEXT_RESTORE_ClosesProxyEffective.Count_MUST_BE_NOT_0";
+				Assembler.PopupException(msg);
+			}
+			string msig = " //BacktestStartingResetBarsEffectiveProxy() ";
+
+			if (this.smaSeries.AverageFor == base.ClosesProxyEffective) {
+				string msg = "MISUSE_UPSTACK__NO_POINT_OF_INVOKING_ME MUST_BE_SAME_AND_ARE smaSeries.AverageFor=base.ClosesProxyEffective";
+				Assembler.PopupException(msg + msig);
+				this.checkPopupOnResetAndSync(msig);
+				return;
+			}
+			this.smaSeries.AverageFor = base.ClosesProxyEffective;
+			this.checkPopupOnResetAndSync(msig);
+		}
+		public override void BacktestStartingResetBarsEffectiveProxy() {
+			string msig = " //BacktestStartingResetBarsEffectiveProxy() EMPTY_CLONE_BARS_AT_BACKTEST_START ";
+			base.BacktestStartingResetBarsEffectiveProxy();
+
+			if (base.ClosesProxyEffective.Count != 0) {
+				string msg = "AT_BACKTEST_CONTEXT_INITIALIZE_ClosesProxyEffective.Count_MUST_BE_0";
+				Assembler.PopupException(msg);
+			}
+			
+			string state = "";
+			//if (this.smaSeries == null) {
+			//	state = "FIRST_BACKTEST_AFTER_APP_RESTART";
+				this.smaSeries = new MovingAverageSimple(base.ClosesProxyEffective, (int)this.ParamPeriod.ValueCurrent, base.Decimals);
+			//	return;
+			//}
+			//state = "SECOND_AND_FOLLOWING__BOTH_DISCONNECTED_OR_LIVE_BACKTESTS_AFTER_APP_RESTART";
+			
+			//if (this.smaSeries.AverageFor == base.ClosesProxyEffective) {
+			//	string msg = "MISUSE_UPSTACK__NO_POINT_OF_INVOKING_ME MUST_BE_SAME_AND_ARE smaSeries.AverageFor=base.ClosesProxyEffective";
+			//	Assembler.PopupException(msg + msig);
+			//	return;
+			//}
+
+			//this.smaSeries.AverageFor = base.ClosesProxyEffective;
+			this.checkPopupOnResetAndSync(msig + state);
 		}
 
 		public override string InitializeBacktestStartingPreCheckErrors() {

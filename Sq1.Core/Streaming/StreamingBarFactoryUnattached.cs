@@ -5,16 +5,23 @@ using System.Diagnostics;
 
 namespace Sq1.Core.Streaming {
 	public class StreamingBarFactoryUnattached {
-		public string			Symbol					{ get; private set; }
-		public BarScaleInterval ScaleInterval			{ get; set; }
-		public int				IntraBarSerno			{ get; private set; }
-		public Bar				BarStreamingUnattached	{ get; private set; }
-		public Bar				BarLastFormedUnattached	{ get; protected set; }
+		public string			Symbol								{ get; private set; }
+		public BarScaleInterval ScaleInterval						{ get; set; }
+		public int				IntraBarSerno						{ get; private set; }
+		public Bar				BarStreamingUnattached		{ get; private set; }
+
+		public Bar				BarLastFormedUnattachedNullUnsafe	{ get; protected set; }
+		public bool				BarLastFormedUnattachedNotYetFormed { get {
+			return
+					this.BarLastFormedUnattachedNullUnsafe == null
+				||	this.BarLastFormedUnattachedNullUnsafe.DateTimeOpen == DateTime.MinValue
+				||	double.IsNaN(this.BarLastFormedUnattachedNullUnsafe.Close);
+		} }
 
 		public StreamingBarFactoryUnattached(string symbol, BarScaleInterval scaleInterval) {
 			Symbol = symbol;
 			ScaleInterval = scaleInterval;
-			BarLastFormedUnattached = null;
+			BarLastFormedUnattachedNullUnsafe = null;
 			BarStreamingUnattached = new Bar(this.Symbol, this.ScaleInterval, DateTime.MinValue);
 			IntraBarSerno = 0;
 		}
@@ -41,10 +48,10 @@ namespace Sq1.Core.Streaming {
 			//SEE_BELOW }
 
 			if (quoteClone.ServerTime >= this.BarStreamingUnattached.DateTimeNextBarOpenUnconditional) {
-				if (this.BarLastFormedUnattached != null && this.BarLastFormedUnattached.DateTimeOpen == DateTime.MinValue) {
+				if (this.BarLastFormedUnattachedNullUnsafe != null && this.BarLastFormedUnattachedNullUnsafe.DateTimeOpen == DateTime.MinValue) {
 					string msg = "beware! on very first quote LastBarFormed.DateTimeOpen == DateTime.MinValue";
 				}
-				this.BarLastFormedUnattached = this.BarStreamingUnattached.Clone();
+				this.BarLastFormedUnattachedNullUnsafe = this.BarStreamingUnattached.Clone();
 
 				this.BarStreamingUnattached			= new Bar(this.Symbol, this.ScaleInterval, quoteClone.ServerTime);
 				this.BarStreamingUnattached.Open	= quoteClone.LastDealPrice;
@@ -127,12 +134,15 @@ namespace Sq1.Core.Streaming {
 			return this.Symbol + "_" + this.ScaleInterval.ToString() + ":StreamingBar[" + this.BarStreamingUnattached.ToString() + "]";
 		}
 
-		internal void AbsorbBarLastStaticFromChannel(SymbolScaleDistributionChannel channelBacktest) {
-			this.BarLastFormedUnattached = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattached.CloneDetached();
+		internal void AbsorbBarLastStaticFromChannelBacktesterComplete(SymbolScaleDistributionChannel channelBacktest) {
+			string msg = this.BarLastFormedUnattachedNullUnsafe.ToString();
+			this.BarLastFormedUnattachedNullUnsafe = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe.CloneDetached();
+			msg += " => " + this.BarLastFormedUnattachedNullUnsafe.ToString();
+			Assembler.PopupException(msg, null, false);
 		}
-
-		internal void AbsorbBarStreamingFromChannel(SymbolScaleDistributionChannel channelBacktest) {
-			this.BarStreamingUnattached = channelBacktest.StreamingBarFactoryUnattached.BarStreamingUnattached.CloneDetached();
-		}
+// KEEP_THIS_NOT_HAPPENING_BY_LEAVING_STATIC_LAST_ON_APPRESTART_NULL_ON_LIVEBACKTEST_CONTAINING_LAST_INCOMING_QUOTE
+//		internal void AbsorbBarStreamingFromChannel(SymbolScaleDistributionChannel channelBacktest) {
+//			this.BarStreamingUnattached = channelBacktest.StreamingBarFactoryUnattached.BarStreamingUnattached.CloneDetached();
+//		}
 	}
 }

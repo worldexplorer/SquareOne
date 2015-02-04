@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
@@ -91,54 +92,60 @@ namespace Sq1.Widgets.Execution {
 		}
 		//former public void Initialize(), replaced by InitializeWithShadowTreeRebuilt();
 		public void PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized() {
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-				return;
-			}
+			//IM_INVOKED_AFTER_WORKSPACE_LOAD
+			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			
-			this.mniToggleMessagesPaneSplitHorizontally.Checked = this.DataSnapshot.ToggleMessagePaneSplittedHorizontally;
-			Orientation newOrientation = this.DataSnapshot.ToggleMessagePaneSplittedHorizontally ? Orientation.Horizontal : Orientation.Vertical;
 			try {
-				if (this.splitContainerMessagePane.Orientation != newOrientation) {
-					this.splitContainerMessagePane.Orientation =  newOrientation;
-				}
-			} catch (Exception ex) {
-				string msg = "TRYING_TO_LOCALIZE_SPLITTER_MUST_BE_BETWEEN_0_AND_PANEL_MIN";
-				Assembler.PopupException(msg, ex);
-			}
-			
-			this.mniToggleMessagesPane.Checked = this.DataSnapshot.ToggleMessagesPane;
-			this.splitContainerMessagePane.Panel2Collapsed = !this.mniToggleMessagesPane.Checked;
-			if (this.Width == 0) {
-				string msg = "CANT_SET_SPLITTER_DISTANCE_FOR_UNSHOWN_CONTROL ExecutionTreeControl.Visible[" + this.Visible + "]; can't set SplitDistanceVertical, SplitDistanceHorizontal";
-				Assembler.PopupException(msg);
-			} else {
+				this.SuspendLayout();
+				this.mniToggleMessagesPaneSplitHorizontally.Checked = this.DataSnapshot.ToggleMessagePaneSplittedHorizontally;
+				Orientation newOrientation = this.DataSnapshot.ToggleMessagePaneSplittedHorizontally ? Orientation.Horizontal : Orientation.Vertical;			
 				try {
-					if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
-						if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal > 0) {
-							string msg = "+67_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_HORIZONTAL";
-							int newDistance = this.DataSnapshot.MessagePaneSplitDistanceHorizontal + 67;	//this.splitContainerMessagePane.SplitterWidth;
-							if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
-								this.splitContainerMessagePane.SplitterDistance =  newDistance;
-							}
-						}
-					} else {
-						if (this.DataSnapshot.MessagePaneSplitDistanceVertical > 0) {
-							string msg = "+151_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
-							int newDistance = this.DataSnapshot.MessagePaneSplitDistanceVertical + 151;		//this.splitContainerMessagePane.SplitterWidth;
-						    if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
-								this.splitContainerMessagePane.SplitterDistance =  newDistance;
-							}
-						}
+					if (this.splitContainerMessagePane.Orientation != newOrientation) {
+						this.splitContainerMessagePane.Orientation =  newOrientation;
 					}
 				} catch (Exception ex) {
 					string msg = "TRYING_TO_LOCALIZE_SPLITTER_MUST_BE_BETWEEN_0_AND_PANEL_MIN";
 					Assembler.PopupException(msg, ex);
 				}
+				
+				this.mniToggleMessagesPane.Checked = this.DataSnapshot.ToggleMessagesPane;
+				this.splitContainerMessagePane.Panel2Collapsed = !this.mniToggleMessagesPane.Checked;
+				if (this.Width == 0) {
+					string msg = "CANT_SET_SPLITTER_DISTANCE_FOR_UNSHOWN_CONTROL ExecutionTreeControl.Visible[" + this.Visible + "]; can't set SplitDistanceVertical, SplitDistanceHorizontal";
+					Assembler.PopupException(msg);
+				} else {
+					try {
+						if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
+							if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal > 0) {
+								string msg = "+67_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_HORIZONTAL";
+								int newDistance = this.DataSnapshot.MessagePaneSplitDistanceHorizontal;	// + 67 this.splitContainerMessagePane.SplitterWidth;
+				//Debugger.Break();
+								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
+									this.splitContainerMessagePane.SplitterDistance =  newDistance;
+								}
+							}
+						} else {
+							if (this.DataSnapshot.MessagePaneSplitDistanceVertical > 0) {
+								string msg = "+151_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
+								int newDistance = this.DataSnapshot.MessagePaneSplitDistanceVertical;		// + 151 this.splitContainerMessagePane.SplitterWidth;
+				//Debugger.Break();
+							    if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
+									this.splitContainerMessagePane.SplitterDistance =  newDistance;
+								}
+							}
+						}
+					} catch (Exception ex) {
+						string msg = "TRYING_TO_LOCALIZE_SPLITTER_MUST_BE_BETWEEN_0_AND_PANEL_MIN";
+						Assembler.PopupException(msg, ex);
+					}
+				}
+				//late binding prevents SplitterMoved() induced by DockContent layouting LoadAsXml()ed docked forms
+				//unbinding just in case, to avoid double handling in case of multiple PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized()
+				this.splitContainerMessagePane.SplitterMoved -= new System.Windows.Forms.SplitterEventHandler(this.splitContainerMessagePane_SplitterMoved);
+				this.splitContainerMessagePane.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerMessagePane_SplitterMoved);
+			} finally {
+				this.ResumeLayout(true);
 			}
-			//late binding prevents SplitterMoved() induced by DockContent layouting LoadAsXml()ed docked forms
-			//unbinding just in case, to avoid double handling in case of multiple PopulateDataSnapshotInitializeSplittersIfDockContentDeserialized()
-			this.splitContainerMessagePane.SplitterMoved -= new System.Windows.Forms.SplitterEventHandler(this.splitContainerMessagePane_SplitterMoved);
-			this.splitContainerMessagePane.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerMessagePane_SplitterMoved);
 			
 			this.mniToggleBrokerTime.Checked = this.DataSnapshot.ToggleBrokerTime;
 			this.mniToggleCompletedOrders.Checked = this.DataSnapshot.ToggleCompletedOrders;
@@ -158,10 +165,10 @@ namespace Sq1.Widgets.Execution {
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 			if (createdNewFile) {
 				this.DataSnapshot.ToggleMessagePaneSplittedHorizontally = (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) ? true : false;
-				this.DataSnapshot.MessagePaneSplitDistanceHorizontal = this.splitContainerMessagePane.SplitterDistance;
-				int newDistance = this.splitContainerMessagePane.SplitterDistance - this.splitContainerMessagePane.SplitterWidth;
-				this.DataSnapshot.MessagePaneSplitDistanceVertical = newDistance;
-				this.DataSnapshotSerializer.Serialize();
+				//this.DataSnapshot.MessagePaneSplitDistanceHorizontal = this.splitContainerMessagePane.SplitterDistance;
+				//int newDistance = this.splitContainerMessagePane.SplitterDistance - this.splitContainerMessagePane.SplitterWidth;
+				//this.DataSnapshot.MessagePaneSplitDistanceVertical = newDistance;
+				//this.DataSnapshotSerializer.Serialize();
 			} else {
 				//v1 prior to using this.OrdersTreeOLV.SaveState();
 //				// reversing "each cell go find one criminal to imprison" game; columnsByText will avoid full scan each column while setting 6 lines later  
@@ -268,6 +275,12 @@ namespace Sq1.Widgets.Execution {
 			//this.OrdersTree.RebuildAll(true);
 			//this.OrdersTree.Invalidate();
 			this.OrdersTreeOLV.Expand(orderParentToRepaint);
-		}		
+		}
+		public void SplitterDistanceResetToSaved() {
+			this.splitContainerMessagePane.SplitterDistance = 
+				this.splitContainerMessagePane.Orientation == Orientation.Horizontal
+				? this.DataSnapshot.MessagePaneSplitDistanceHorizontal
+				: this.DataSnapshot.MessagePaneSplitDistanceVertical;
+		}
 	}
 }
