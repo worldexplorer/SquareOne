@@ -123,7 +123,7 @@ namespace Sq1.Adapters.QuikMock {
 				waitedFor.Start();
 				bool unpaused = base.StreamingProvider.DataSource.PumpingWaitUntilUnpaused(order.Alert.Bars, 120000);
 				waitedFor.Stop();
-				string waited = "__WAITED_FOR_UNPAUSE_CONFIRMATION[" + waitedFor.ElapsedMilliseconds + "]ms ";
+				string waited = "__WAITED_TOO_LONG_FOR_UNPAUSE_CONFIRMATION[" + waitedFor.ElapsedMilliseconds + "]ms ";
 				if (waitedFor.ElapsedMilliseconds > 1000) {
 					string msg2 = "I_WISH_I_KNEW_WHO_TOOK_THAT_LONG_TO_KEEP_QUOTE_PUMP_PAUSED";
 					Assembler.PopupException(waited + msg2);

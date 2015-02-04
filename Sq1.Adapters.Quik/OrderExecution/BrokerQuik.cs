@@ -159,11 +159,11 @@ namespace Sq1.Adapters.Quik {
 		}
 
 		//[JsonIgnore]	[JsonIgnore]	[JsonIgnore]	
-		QuikConnectionState previousConnectionState = QuikConnectionState.None;
+		ConnectionState previousConnectionState = ConnectionState.Unknown;
 		int identicalConnectionStatesReported = 0;
 		int identicalConnectionStatesReportedLimit = 3;
-		public void callbackTerminalConnectionStateUpdated(QuikConnectionState state, string message) {
-			if (this.previousConnectionState == QuikConnectionState.None) {
+		public void callbackTerminalConnectionStateUpdated(ConnectionState state, string message) {
+			if (this.previousConnectionState == ConnectionState.Unknown) {
 				this.previousConnectionState = state;
 			}
 			if (this.previousConnectionState != state) {
@@ -174,15 +174,13 @@ namespace Sq1.Adapters.Quik {
 			if (identicalConnectionStatesReported > identicalConnectionStatesReportedLimit) {
 				return;
 			}
-			if (state != QuikConnectionState.DllConnected) {
-				Assembler.PopupException(Name + "::callbackConnectionUpdated(): state=[" + state + "] message=[" + message + "]", null, false);
+			if (state != ConnectionState.SymbolSubscribed) {
+				string msig = " //" + Name + "::callbackConnectionUpdated(): state=[" + state + "]"
+					+ " mustBe[" + ConnectionState.SymbolSubscribed + "] message=[" + message + "]";
+				Assembler.PopupException(message + msig, null, false);
 			}
 			string msg = state + " " + message;
-			if (base.StatusReporter != null) {
-				base.StatusReporter.UpdateConnectionStatus(ConnectionState.Connected, 0, msg);
-			} else {
-				//Assembler.PopupException("base.StatusReporter=null, reporting here: " + msg);
-			}
+			Assembler.DisplayConnectionStatus(state, msg);
 		}
 		public override void OrderSubmit(Order order) {
 			//Debugger.Break();

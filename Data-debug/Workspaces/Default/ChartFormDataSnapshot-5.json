@@ -21,7 +21,7 @@
       "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 75
+        "Distance": 28
       }
     },
     "ChartColorBackground": "White",

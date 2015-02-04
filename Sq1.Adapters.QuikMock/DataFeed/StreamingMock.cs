@@ -89,15 +89,15 @@ namespace Sq1.Adapters.QuikMock {
 		public override void UpstreamConnect() {
 			if (base.IsConnected == true) return;
 			string stats = this.subscribeAllSymbols();
-			base.ConnectionState = ConnectionState.Connected;
-			base.UpdateConnectionStatus(0, "Started [" + stats + "]");
+			base.ConnectionState = ConnectionState.ConnectedUnsubscribed;
+			Assembler.DisplayConnectionStatus(base.ConnectionState, "Started [" + stats + "]");
 			base.IsConnected = true;
 		}
 		public override void UpstreamDisconnect() {
 			if (base.IsConnected == false) return;
 			string stats = unsubscribeAllSymbols();
 			base.ConnectionState = ConnectionState.Disconnected;
-			base.UpdateConnectionStatus( 0, "Stopped [" + stats + "]");
+			Assembler.DisplayConnectionStatus(base.ConnectionState, "Stopped [" + stats + "]");
 			base.IsConnected = false;
 		}
 

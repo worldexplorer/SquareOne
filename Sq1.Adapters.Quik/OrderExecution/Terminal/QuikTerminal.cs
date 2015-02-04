@@ -7,6 +7,7 @@ using System.Threading;
 using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.Execution;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Adapters.Quik.Terminal {
 	public class QuikTerminal {
@@ -68,7 +69,7 @@ namespace Sq1.Adapters.Quik.Terminal {
 
 					ret = Trans2Quik.SET_CONNECTION_STATUS_CALLBACK(this.callbackConnectionStatus, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 					if (ret != Trans2Quik.Result.SUCCESS) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(QuikConnectionState.None, this.callbackErrorMsg.ToString());
+						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.Unknown, this.callbackErrorMsg.ToString());
 						msg = "1/5 FAILED: SET_CONNECTION_STATUS_CALLBACK(): error[" + error + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
 						Assembler.PopupException(msg);
 						//throw new Exception(msg);
@@ -77,7 +78,7 @@ namespace Sq1.Adapters.Quik.Terminal {
 
 					ret = Trans2Quik.SET_TRANSACTIONS_REPLY_CALLBACK(this.CallbackTransactionReply, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 					if (ret != Trans2Quik.Result.SUCCESS) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(QuikConnectionState.None, this.callbackErrorMsg.ToString());
+						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.Unknown, this.callbackErrorMsg.ToString());
 						msg = "2/5 FAILED: SET_TRANSACTIONS_REPLY_CALLBACK(): error[" + error + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
 						Assembler.PopupException(msg);
 						//throw new Exception(msg);
@@ -86,7 +87,7 @@ namespace Sq1.Adapters.Quik.Terminal {
 
 					ret = Trans2Quik.CONNECT(BrokerQuik.QuikFolder, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 					if (ret != Trans2Quik.Result.SUCCESS && ret != Trans2Quik.Result.ALREADY_CONNECTED_TO_QUIK) {
-						BrokerQuik.callbackTerminalConnectionStateUpdated(QuikConnectionState.None, this.callbackErrorMsg.ToString());
+						BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.Unknown, this.callbackErrorMsg.ToString());
 						msg = "3/5 FAILED: CONNECT(" + BrokerQuik.QuikFolder + "): error[" + error + "][" + callbackErrorMsg + "] ret[" + ret + "] != SUCCESS";
 						Assembler.PopupException(msg);
 						//throw new Exception(msg);
@@ -115,11 +116,11 @@ namespace Sq1.Adapters.Quik.Terminal {
 					}
 					*/
 					connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					msg = "#" + connectionAttempts + "//timeoutInfinite QuikTerminal(" + this.DllName + ") 2/2 " + QuikConnectionState.ConnectedUnsubscribed;
-					BrokerQuik.callbackTerminalConnectionStateUpdated(QuikConnectionState.ConnectedUnsubscribed, msg);
+					msg = "#" + connectionAttempts + "//timeoutInfinite QuikTerminal(" + this.DllName + ") 2/2 " + ConnectionState.ConnectedUnsubscribed;
+					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.ConnectedUnsubscribed, msg);
 					Assembler.PopupException(msg);
 				} catch (Exception e) {
-					BrokerQuik.callbackTerminalConnectionStateUpdated(QuikConnectionState.Exception, e.Message);
+					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.ErrorConnecting, e.Message);
 					Assembler.PopupException("Should we set a limit/timeout on trials?", e);
 					return;
 				}
@@ -201,8 +202,8 @@ namespace Sq1.Adapters.Quik.Terminal {
 			CurrentStatus = SymbolClassSubscribers.ToString();
 			Assembler.PopupException("Subscribed to Quik Execution Callbacks for [" + key + "]");
 	
-			BrokerQuik.callbackTerminalConnectionStateUpdated(QuikConnectionState.ConnectedSubscribed,
-				"QuikTerminal(" + this.DllName + ") 2/2 " + QuikConnectionState.ConnectedSubscribed +
+			BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.SymbolSubscribed,
+				"QuikTerminal(" + this.DllName + ") 2/2 " + ConnectionState.SymbolSubscribed +
 					" for SecCode[" + SecCode + "] ClassCode[" + ClassCode + "]");
 		}
 		public void Unsubscribe(string SecCode, string ClassCode) {
@@ -234,8 +235,8 @@ namespace Sq1.Adapters.Quik.Terminal {
 			SymbolClassSubscribers[key]--;
 			CurrentStatus = SymbolClassSubscribers.ToString();
 		
-			QuikConnectionState state = (SymbolClassSubscribers[key] > 0)
-				? QuikConnectionState.ConnectedSubscribed : QuikConnectionState.ConnectedUnsubscribed;
+			ConnectionState state = (SymbolClassSubscribers[key] > 0)
+				? ConnectionState.SymbolSubscribed : ConnectionState.SymbolUnsubscribed;
 			BrokerQuik.callbackTerminalConnectionStateUpdated(state,
 				"QuikTerminal(" + this.DllName + ") " + state + " for SecCode[" + SecCode + "] ClassCode[" + ClassCode + "]");
 		}

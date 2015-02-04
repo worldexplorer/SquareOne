@@ -65,9 +65,9 @@ namespace Sq1.Adapters.Quik {
 			if (base.IsConnected == true) return;
 			string symbolsSubscribed = subscribeAllSymbols();
 			this.DdeChannels.StartDdeServer();
-			base.ConnectionState = ConnectionState.Connected;
-			base.UpdateConnectionStatus(0, "Started symbolsSubscribed[" + symbolsSubscribed + "]");
-			Assembler.PopupException("QUIK started DdeChannels[" + this.DdeChannels.ToString() + "]");
+			base.ConnectionState = ConnectionState.ConnectedUnsubscribed;
+			//Assembler.DisplayConnectionStatus(base.ConnectionState, "Started symbolsSubscribed[" + symbolsSubscribed + "]");
+			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " started DdeChannels[" + this.DdeChannels.ToString() + "]");
 			base.IsConnected = true;
 		}
 		public override void UpstreamDisconnect() {
@@ -75,9 +75,9 @@ namespace Sq1.Adapters.Quik {
 			Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeChannels.ToString() + "]");
 			string symbolsUnsubscribed = unsubscribeAllSymbols();
 			base.ConnectionState = ConnectionState.Disconnected;
-			base.UpdateConnectionStatus(0, "Stopped symbolsUnsubscribed[" + symbolsUnsubscribed + "]");
+			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " Stopped symbolsUnsubscribed[" + symbolsUnsubscribed + "]");
 			this.DdeChannels.StopDdeServer();
-			Assembler.PopupException("QUIK stopped DdeChannels[" + this.DdeChannels.ToString() + "]");
+			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " stopped DdeChannels[" + this.DdeChannels.ToString() + "]");
 			base.IsConnected = false;
 		}
 

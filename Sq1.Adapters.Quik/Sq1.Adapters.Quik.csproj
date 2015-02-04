@@ -114,7 +114,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="OrderExecution\OrderCallbackDupesCheckerQuik.cs" />
-    <Compile Include="OrderExecution\Terminal\QuikConnectionState.cs" />
     <Compile Include="OrderExecution\Terminal\QuikTerminal.cs" />
     <Compile Include="OrderExecution\Terminal\Trans2Quik.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

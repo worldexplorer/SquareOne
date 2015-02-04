@@ -12,12 +12,12 @@ using Sq1.Core.Streaming;
 namespace Sq1.Adapters.QuikMock.Terminal {
 	public class QuikTerminalMock : QuikTerminal {
 		public override string DllName { get { return "QUIK_MOCK"; } }
-		
-		bool simulateUnexistingGUID				= false;
-		bool simulateUnexistingSernoExchange	= false;
-		bool simulateTradeStatus				= false;
-		bool simulateOrderStatusDupes			= false;
-		
+
+		bool simulateUnexistingGUID = false;
+		bool simulateUnexistingSernoExchange = false;
+		bool simulateTradeStatus = false;
+		bool simulateOrderStatusDupes = false;
+
 		BrokerMock mockBrokerProvider { get { return base.BrokerQuik as BrokerMock; } }
 
 		public QuikTerminalMock() {
@@ -25,7 +25,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 		}
 		public QuikTerminalMock(BrokerMock mockBrokerProvider) : base(mockBrokerProvider) {
 			base.BrokerQuik = mockBrokerProvider;
-			base.BrokerQuik.callbackTerminalConnectionStateUpdated(QuikConnectionState.DllConnected, "Connected to " + this.DllName);
+			base.BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.JustInitialized, "Connected to " + this.DllName);
 		}
 		public override void ConnectDll() {
 			DllConnected = true;
@@ -48,8 +48,8 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				if (this.SymbolClassSubscribers.Count == 0) CurrentStatus = "";
 				CurrentStatus = SymbolClassSubscribersAsString;
 
-				base.BrokerQuik.callbackTerminalConnectionStateUpdated(QuikConnectionState.ConnectedSubscribed,
-					"QuikTerminal(" + this.DllName + ") 2/2 " + QuikConnectionState.ConnectedSubscribed
+				base.BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.SymbolSubscribed,
+					"QUIK_MOCK_STATE_LAZY_SIMULATED " + "QuikTerminal(" + this.DllName + ") 2/2 " + ConnectionState.SymbolSubscribed
 					+ " for SecCode[" + SecCode + "] ClassCode[" + ClassCode + "]");
 			}
 		}
@@ -126,7 +126,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			bool abortThread = false;
 			Exception exCaught = null;
 
-// all the delays come before the sleep, becase after the sleep I'll notify BrokerProvider and it'll trigger PostProcess immediately
+			// all the delays come before the sleep, becase after the sleep I'll notify BrokerProvider and it'll trigger PostProcess immediately
 			//NOPE_WILL_SLEEP_IMMEDIATELY_PIOR_TO_Quik.CallbackOrderStatus() THIS_IS_DELAY_BEFORE_ORDER_PROCESSOR Thread.Sleep(this.mockBrokerProvider.ExecutionDelayMillis);
 
 			switch (order.State) {
@@ -304,7 +304,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			orderStateOut = OrderState.Submitted;
 
 			msgSubmittedOut = "r[MOCK_SUCCESS] callbackErrorMsg[" + base.callbackErrorMsg + "] error[" + error + "]" + msig;
-			
+
 			// finding the problem in originating thread
 			OrderProcessorDataSnapshot snap = base.BrokerQuik.OrderProcessor.DataSnapshot;
 			string logOrEmpty = "";
@@ -357,7 +357,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			//	Order orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.FindByGUID(KillerGUID.ToString());
 			//}
 			if (orderKiller == null) {
-				 orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(KillerGUID.ToString());
+				orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(KillerGUID.ToString());
 			}
 			int a = 1;
 			if (orderKiller == null) {
@@ -382,7 +382,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 			string trans = this.getOrderKillCommand(SecCode, ClassCode, victimWasStopOrder, VictimGUID, VictimSernoExchange, out SernoSession);
 			base.BrokerQuik.OrderProcessor.UpdateOrderStateDontPostProcess(orderKiller,
 				new OrderStateMessage(orderKiller, OrderState.KillerSubmitting, trans));
-			
+
 			victimMsgSubmitted = msig + "Trans2Quik.Result.SUCCESS    "
 				+ ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 			victimOrderState = OrderState.KillPending;
@@ -414,9 +414,9 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 				orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForGUID(t.KillerGUID.ToString());
 			}
 			if (orderKiller == null) {
-				 orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(t.KillerGUID.ToString());
+				orderKiller = base.BrokerQuik.OrderProcessor.DataSnapshot.OrdersAll.ScanRecentForGUID(t.KillerGUID.ToString());
 			}
-			int a =	1;
+			int a = 1;
 			try {
 				if (orderKiller == null) {
 					msg = "orderKiller==null, can't update with KillerBulletFlying";
