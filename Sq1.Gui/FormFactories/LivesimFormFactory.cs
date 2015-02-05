@@ -18,6 +18,11 @@ namespace Sq1.Gui.FormFactories {
 		public void CreateLivesimFormSubscribePushToManager(ChartFormManager chartFormsManager) {
 			this.LivesimForm = new LivesimForm(chartFormsManager);
 			this.LivesimForm.Disposed += LivesimForm_Disposed;
+			this.LivesimForm.LivesimControl.BtnStartLivesim.Click += new EventHandler(btnStartLivesim_Click);
+		}
+
+		void btnStartLivesim_Click(object sender, EventArgs e) {
+			this.chartFormManager.Executor.Livesimulator.Start();
 		}
 		void LivesimForm_Disposed(object sender, EventArgs e) {
 			// both at FormCloseByX and MainForm.onClose()

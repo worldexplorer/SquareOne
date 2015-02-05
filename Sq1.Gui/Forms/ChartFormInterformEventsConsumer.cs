@@ -142,7 +142,7 @@ namespace Sq1.Gui.Forms {
 
 			this.chartFormManager.ChartForm.TsiProgressBarETA.ETALabelText = this.chartFormManager.Executor.Backtester.ProgressStats;
 
-			//int quotesTotal = this.chartFormsManager.Executor.BacktesterFacade.Backtester.QuotesTotalToGenerate;
+			//int quotesTotal = this.chartFormsManager.Executor.Backtester.Backtester.QuotesTotalToGenerate;
 			//if (quotesTotal == -1) {
 			//	string msg = "Executor_BacktesterSimulationStarted: Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
 			//	this.chartFormsManager.MainForm.PopupException(msg);

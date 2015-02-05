@@ -3,13 +3,13 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Backtesting {
 	public class BacktestDataSource : DataSource {
-		public BacktestStreamingProvider BacktestStreamingProvider	{ get { return base.StreamingProvider as BacktestStreamingProvider; } }
-		public BacktestBrokerProvider	 BacktestBrokerProvider		{ get { return base.BrokerProvider as BacktestBrokerProvider; } }
+		public BacktestStreaming BacktestStreamingProvider	{ get { return base.StreamingProvider as BacktestStreaming; } }
+		public BacktestBroker	 BacktestBrokerProvider		{ get { return base.BrokerProvider as BacktestBroker; } }
 
 		public BacktestDataSource() {
 			base.Name = "BacktestDataSource";
-			base.StreamingProvider = new BacktestStreamingProvider();
-			base.BrokerProvider = new BacktestBrokerProvider();
+			base.StreamingProvider = new BacktestStreaming();
+			base.BrokerProvider = new BacktestBroker();
 		}
 		public void Initialize(Bars bars, BacktestSpreadModeler spreadModeler) {
 			base.MarketInfo = bars.MarketInfo;

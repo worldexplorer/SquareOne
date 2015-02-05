@@ -15,7 +15,7 @@ namespace Sq1.Core.Backtesting {
 
 		public Bars						BarsOriginal					{ get; private set; }
 		public Bars						BarsSimulating					{ get; private set; }
-		public BacktestDataSource		BacktestDataSource				{ get; private set; }
+		public BacktestDataSource		BacktestDataSource				{ get; protected set; }
 		   BacktestQuoteBarConsumer 	backtestQuoteBarConsumer;
 
 			   bool						setBacktestAborted;

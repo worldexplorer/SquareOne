@@ -3,7 +3,7 @@
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Livesim {
-	public partial class BrokerLivesimEditor {
+	public partial class LivesimBrokerEditor {
 //		public string QuikFolder {
 //			get { return this.txtQuikFolder.Text; }
 //			set { this.txtQuikFolder.Text = value; }
@@ -57,11 +57,11 @@ namespace Sq1.Core.Livesim {
 //				this.txtCashAvailableMicex.Text = value.CashAvailable.ToString();
 //			}
 //		}
-		BrokerLivesim brokerLivesim {
-			get { return base.brokerProvider as BrokerLivesim; }
+		LivesimBroker brokerLivesim {
+			get { return base.brokerProvider as LivesimBroker; }
 		}
 
-		public BrokerLivesimEditor() {
+		public LivesimBrokerEditor() {
 			this.InitializeComponent();
 		}
 		//public override void Initialize(BrokerProvider BrokerQuik, IDataSourceEditor dataSourceEditor) {

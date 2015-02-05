@@ -14,19 +14,21 @@ using Sq1.Core.Charting;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Indicators;
 using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
 		#region constructed (my own data)
 		public	ExecutionDataSnapshot			ExecutionDataSnapshot		{ get; protected set; }
 		public	SystemPerformance				Performance					{ get; protected set; }
-		public	Backtester						Backtester					{ get; private set; }
+		public	Backtester						Backtester;//					{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; private set; }
-		public	MarketsimLive					MarketsimLive			{ get; private set; }
+		public	MarketLive						MarketLive					{ get; private set; }
 		public	MarketsimBacktest				MarketsimBacktest			{ get; private set; }
 		public	ScriptExecutorEventGenerator	EventGenerator				{ get; private set; }
 		public	CommissionCalculator			CommissionCalculator;
 		public	Optimizer						Optimizer					{ get; protected set; }
+		public	Livesimulator					Livesimulator				{ get; private set; }
 		#endregion
 		
 		#region initialized (sort of Dependency Injection)
@@ -135,11 +137,12 @@ namespace Sq1.Core.StrategyBase {
 			//NOW_IRRELEVANT_MOVED_TO_BacktesterRunSimulation this.Performance = new SystemPerformance(this);
 			this.Backtester = new Backtester(this);
 			this.PositionPrototypeActivator = new PositionPrototypeActivator(this);
-			this.MarketsimLive = new MarketsimLive(this);
+			this.MarketLive = new MarketLive(this);
 			this.MarketsimBacktest = new MarketsimBacktest(this);
 			this.EventGenerator = new ScriptExecutorEventGenerator(this);
 			this.CommissionCalculator = new CommissionCalculatorZero(this);
 			this.Optimizer = new Optimizer(this);
+			this.Livesimulator = new Livesimulator(this);
 			this.OrderProcessor = Assembler.InstanceInitialized.OrderProcessor;
 			this.Performance = new SystemPerformance(this);
 		}
@@ -374,7 +377,7 @@ namespace Sq1.Core.StrategyBase {
 			Alert alert = null;
 			// real-time streaming should create its own Position after an Order gets filled
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.MarketsimLive.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
+				alert = this.MarketLive.EntryAlertCreate(entryBar, stopOrLimitPrice, entrySignalName,
 																  direction, entryMarketLimitStop);
 			} else {
 				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
@@ -451,7 +454,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.IsStreamingTriggeringScript) {
-				alert = this.MarketsimLive.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
+				alert = this.MarketLive.ExitAlertCreate(exitBar, position, stopOrLimitPrice, signalName,
 																 direction, exitMarketLimitStop);
 			} else {
 				//string msg = "YOU_DONT_EMIT_ORDERS_THEN_CONTINUE_BACKTEST_BASED_ON_LIVE_QUOTES";
@@ -478,7 +481,7 @@ namespace Sq1.Core.StrategyBase {
 					killed = this.MarketsimBacktest.AnnihilateCounterpartyAlert(alert);
 					//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
 				} else {
-					killed = this.MarketsimLive.AnnihilateCounterpartyAlert(alert);
+					killed = this.MarketLive.AnnihilateCounterpartyAlert(alert);
 				}
 			} else {
 				//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
@@ -698,7 +701,7 @@ namespace Sq1.Core.StrategyBase {
 				// 1. alert.PositionAffected.Prototype.StopLossAlertForAnnihilation and TP will get assigned
 				alertsNewAfterAlertFilled.AddRange(this.PositionPrototypeActivator.AlertFilledCreateSlTpOrAnnihilateCounterparty(alertFilled));
 				// quick check: there must be {SL+TP} OR Annihilator
-				//this.BacktesterFacade.IsBacktestingNow == false &&
+				//this.Backtester.IsBacktestingNow == false &&
 				if (alertFilled.IsEntryAlert) {
 					// DONT_SCREAM_SO_MUCH IF_OFFSETS_WERE_ZERO_OR_WRONG_POLARITY_NO_SL_TP_ARE_CREATED CreateStopLossFromPositionPrototype() CreateTakeProfitFromPositionPrototype()
 					//if (proto.StopLossAlertForAnnihilation == null) {
@@ -1082,7 +1085,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.Backtester.IsBacktestingNow) {
-				this.Backtester.AbortRunningBacktestWaitAborted("ALREADY_BACKTESTING_this.BacktesterFacade.IsBacktestingNow");
+				this.Backtester.AbortRunningBacktestWaitAborted("ALREADY_BACKTESTING_this.Backtester.IsBacktestingNow");
 			}
 
 			//???????
@@ -1214,7 +1217,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Backtester.IsBacktestingNow) {
 				this.MarketsimBacktest.SimulateAlertKillPending(alert);
 			} else {
-				this.MarketsimLive.AlertKillPending(alert);
+				this.MarketLive.AlertKillPending(alert);
 			}
 		}
 		public double PositionSizeCalculate(Bar bar, double priceScriptAligned) {

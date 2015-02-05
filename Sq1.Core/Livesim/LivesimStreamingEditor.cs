@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Sq1.Core.Livesim {
-	public partial class StreamingLivesimEditor {
+	public partial class LivesimStreamingEditor {
 //		public String DdeServerPrefix {
 //			get { return this.txtDdeServerPrefix.Text; }
 //			set { this.txtDdeServerPrefix.Text = value; }
@@ -18,11 +18,11 @@ namespace Sq1.Core.Livesim {
 //			get { return this.txtTopicPrefixDOM.Text; }
 //			set { this.txtTopicPrefixDOM.Text = value; }
 //		}
-		private StreamingLivesim streamingLivesim {
-			get { return base.streamingProvider as StreamingLivesim; }
+		private LivesimStreaming streamingLivesim {
+			get { return base.streamingProvider as LivesimStreaming; }
 		}
 
-		public StreamingLivesimEditor() {	//used in Design Mode for the descendands
+		public LivesimStreamingEditor() {	//used in Design Mode for the descendands
 			this.InitializeComponent();
 		}
 //		public override void Initialize(StreamingProvider quikStreamingProvider, IDataSourceEditor dataSourceEditor) {

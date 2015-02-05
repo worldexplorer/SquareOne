@@ -20,7 +20,7 @@ namespace Sq1.Core.StrategyBase {
 			//this.checkThrowPlacingProtoMakesSense(proto);
 			proto.checkTPOffsetThrowBeforeAbsorbing(proto.TakeProfitPositiveOffset);
 			proto.checkSLOffsetsThrowBeforeAbsorbing(proto.StopLossNegativeOffset, proto.StopLossActivationNegativeOffset);
-			//bool a = this.executor.BacktesterFacade.IsBacktestingNow;
+			//bool a = this.executor.Backtester.IsBacktestingNow;
 
 			Position posWithAlert = executor.BuyOrShortAlertCreateRegister (
 				executor.Bars.BarStreaming, proto.PriceEntry,

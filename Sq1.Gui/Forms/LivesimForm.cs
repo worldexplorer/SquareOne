@@ -17,7 +17,7 @@ namespace Sq1.Gui.Forms {
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos
 		// using ":" since "=" leads to an exception in DockPanelPersistor.cs
 		protected override string GetPersistString() {
-			return "LiveSim:" + this.liveSimControl.GetType().FullName + ",ChartSerno:" + this.chartFormManager.DataSnapshot.ChartSerno;
+			return "LiveSim:" + this.LivesimControl.GetType().FullName + ",ChartSerno:" + this.chartFormManager.DataSnapshot.ChartSerno;
 		}
 
 		internal void Initialize(ChartFormManager chartFormManager) {

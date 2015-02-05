@@ -94,7 +94,7 @@ namespace Sq1.Core.StrategyBase {
 
 			FillOutsideQuoteSpreadParanoidCheckThrow = false;
 			SpreadModelerClassName = typeof(BacktestSpreadModelerPercentage).Name;
-			SpreadModelerPercent = BacktestStreamingProvider.PERCENTAGE_DEFAULT;
+			SpreadModelerPercent = BacktestStreaming.PERCENTAGE_DEFAULT;
 			BacktestMode = BacktestMode.FourStrokeOHLC;
 		}
 		public void AbsorbFrom(ContextScript found, bool absorbScriptAndIndicatorParams = true) {

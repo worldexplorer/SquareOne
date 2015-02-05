@@ -4,9 +4,9 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
-	public class BrokerLivesim : BrokerProvider {
-		public BrokerLivesim() : base() {
-			base.Name = "BrokerLivesim";
+	public class LivesimBroker : BrokerProvider {
+		public LivesimBroker() : base() {
+			base.Name = "LivesimBroker";
 			base.AccountAutoPropagate = new Account("LIVESIM_ACCOUNT", -1000);
 			base.AccountAutoPropagate.Initialize(this);
 		}

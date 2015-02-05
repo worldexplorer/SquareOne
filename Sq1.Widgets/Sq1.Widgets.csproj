@@ -175,11 +175,11 @@
     <Compile Include="LabeledTextBox\MenuItemLabeledTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="LiveSim\LiveSimControl.cs">
+    <Compile Include="Livesim\LivesimControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="LiveSim\LiveSimControl.Designer.cs">
-      <DependentUpon>LiveSimControl.cs</DependentUpon>
+    <Compile Include="Livesim\LivesimControl.Designer.cs">
+      <DependentUpon>LivesimControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectListViewDemo\ShellUtilities.cs" />
     <Compile Include="Optimization\OptimizerControl.cs">
@@ -348,8 +348,8 @@
     <EmbeddedResource Include="LabeledTextBox\LabeledTextBoxControl.resx">
       <DependentUpon>LabeledTextBoxControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LiveSim\LiveSimControl.resx">
-      <DependentUpon>LiveSimControl.cs</DependentUpon>
+    <EmbeddedResource Include="Livesim\LivesimControl.resx">
+      <DependentUpon>LivesimControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Optimization\OptimizerControl.resx">
       <DependentUpon>OptimizerControl.Designer.cs</DependentUpon>
