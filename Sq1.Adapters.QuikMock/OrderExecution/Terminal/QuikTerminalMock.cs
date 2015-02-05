@@ -162,7 +162,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 						//    string msg2 = "WHY_DO_I_NEED_PUMP_UNPAUSED_HERE???";
 						//    Assembler.PopupException(msg2);
 						//}
-						filled = alert.Strategy.Script.Executor.MarketsimLive.AlertTryFillUsingBacktest(alert, out abortTryFill, out abortTryFillReason);
+						filled = alert.Strategy.Script.Executor.MarketLive.AlertTryFillUsingBacktest(alert, out abortTryFill, out abortTryFillReason);
 					} catch (Exception ex) {
 						msg = "FAILED_INNER_MarketSim.SimulateFillLive(" + order + ") " + msg;
 						exCaught = ex;
