@@ -6,9 +6,9 @@ using System.ComponentModel.Design;
 using Sq1.Core.Broker;
 
 namespace Sq1.Core.Livesim {
-	[ToolboxBitmap(typeof(BrokerLivesimEditor), "BrokerLivesimEditor")]
+	[ToolboxBitmap(typeof(LivesimBrokerEditor), "BrokerLivesimEditor")]
 	[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
-	public partial class BrokerLivesimEditor : BrokerEditor {
+	public partial class LivesimBrokerEditor : BrokerEditor {
         #region Component Designer generated code
 		private System.ComponentModel.IContainer components = null;
 		private System.Windows.Forms.GroupBox groupBox2;
@@ -147,7 +147,7 @@ namespace Sq1.Core.Livesim {
 			// groupBox2
 			// 
 			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox2.Controls.Add(this.label1);
 			this.groupBox2.Controls.Add(this.label2);
 			this.groupBox2.Controls.Add(this.textBox3);
@@ -217,7 +217,7 @@ namespace Sq1.Core.Livesim {
 			// checkBox1
 			// 
 			this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox1.Appearance = System.Windows.Forms.Appearance.Button;
 			this.checkBox1.Checked = true;
 			this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -264,7 +264,7 @@ namespace Sq1.Core.Livesim {
 			// groupBox3
 			// 
 			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox3.Controls.Add(this.label13);
 			this.groupBox3.Controls.Add(this.checkBox3);
 			this.groupBox3.Controls.Add(this.label14);
@@ -289,7 +289,7 @@ namespace Sq1.Core.Livesim {
 			// checkBox3
 			// 
 			this.checkBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox3.Appearance = System.Windows.Forms.Appearance.Button;
 			this.checkBox3.Checked = true;
 			this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -303,7 +303,7 @@ namespace Sq1.Core.Livesim {
 			// 
 			// label14
 			// 
-			this.label14.Location = new System.Drawing.Point(178, 20);
+			this.label14.Location = new System.Drawing.Point(167, 20);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(16, 15);
 			this.label14.TabIndex = 33;
@@ -312,7 +312,7 @@ namespace Sq1.Core.Livesim {
 			// textBox9
 			// 
 			this.textBox9.Enabled = false;
-			this.textBox9.Location = new System.Drawing.Point(196, 17);
+			this.textBox9.Location = new System.Drawing.Point(185, 17);
 			this.textBox9.Name = "textBox9";
 			this.textBox9.Size = new System.Drawing.Size(45, 20);
 			this.textBox9.TabIndex = 29;
@@ -320,14 +320,14 @@ namespace Sq1.Core.Livesim {
 			// textBox10
 			// 
 			this.textBox10.Enabled = false;
-			this.textBox10.Location = new System.Drawing.Point(130, 17);
+			this.textBox10.Location = new System.Drawing.Point(119, 17);
 			this.textBox10.Name = "textBox10";
 			this.textBox10.Size = new System.Drawing.Size(45, 20);
 			this.textBox10.TabIndex = 30;
 			// 
 			// label15
 			// 
-			this.label15.Location = new System.Drawing.Point(247, 20);
+			this.label15.Location = new System.Drawing.Point(236, 20);
 			this.label15.Name = "label15";
 			this.label15.Size = new System.Drawing.Size(89, 17);
 			this.label15.TabIndex = 31;
@@ -336,7 +336,7 @@ namespace Sq1.Core.Livesim {
 			// groupBox4
 			// 
 			this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox4.Controls.Add(this.label16);
 			this.groupBox4.Controls.Add(this.label17);
 			this.groupBox4.Controls.Add(this.textBox11);
@@ -406,7 +406,7 @@ namespace Sq1.Core.Livesim {
 			// checkBox4
 			// 
 			this.checkBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox4.Appearance = System.Windows.Forms.Appearance.Button;
 			this.checkBox4.Checked = true;
 			this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -453,7 +453,7 @@ namespace Sq1.Core.Livesim {
 			// groupBox5
 			// 
 			this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox5.Controls.Add(this.label22);
 			this.groupBox5.Controls.Add(this.label23);
 			this.groupBox5.Controls.Add(this.textBox15);
@@ -523,7 +523,7 @@ namespace Sq1.Core.Livesim {
 			// checkBox5
 			// 
 			this.checkBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox5.Appearance = System.Windows.Forms.Appearance.Button;
 			this.checkBox5.Checked = true;
 			this.checkBox5.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -570,7 +570,7 @@ namespace Sq1.Core.Livesim {
 			// groupBox1
 			// 
 			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.label3);
 			this.groupBox1.Controls.Add(this.label4);
 			this.groupBox1.Controls.Add(this.textBox1);
@@ -640,7 +640,7 @@ namespace Sq1.Core.Livesim {
 			// checkBox2
 			// 
 			this.checkBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox2.Appearance = System.Windows.Forms.Appearance.Button;
 			this.checkBox2.Checked = true;
 			this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -687,7 +687,7 @@ namespace Sq1.Core.Livesim {
 			// groupBox6
 			// 
 			this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox6.Controls.Add(this.label28);
 			this.groupBox6.Controls.Add(this.checkBox6);
 			this.groupBox6.Controls.Add(this.label29);
@@ -712,7 +712,7 @@ namespace Sq1.Core.Livesim {
 			// checkBox6
 			// 
 			this.checkBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox6.Appearance = System.Windows.Forms.Appearance.Button;
 			this.checkBox6.Checked = true;
 			this.checkBox6.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -756,7 +756,7 @@ namespace Sq1.Core.Livesim {
 			this.label30.TabIndex = 31;
 			this.label30.Text = "milliSeconds";
 			// 
-			// BrokerLivesimEditor
+			// LivesimBrokerEditor
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.AutoScroll = true;
@@ -767,7 +767,7 @@ namespace Sq1.Core.Livesim {
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.groupBox2);
-			this.Name = "BrokerLivesimEditor";
+			this.Name = "LivesimBrokerEditor";
 			this.Size = new System.Drawing.Size(351, 624);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();

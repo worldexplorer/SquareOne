@@ -6,7 +6,7 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Backtesting {
 	[SkipInstantiationAt(Startup = true)]
-	public class BacktestStreamingProvider : StreamingProvider {
+	public class BacktestStreaming : StreamingProvider {
 		public BacktestSpreadModeler SpreadModeler;
 		public const double PERCENTAGE_DEFAULT= 0.005;
 
@@ -14,7 +14,7 @@ namespace Sq1.Core.Backtesting {
 //			string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
 //			//throw new Exception(msg);
 //		}
-		public BacktestStreamingProvider() : base() {
+		public BacktestStreaming() : base() {
 			base.Name = "BacktestStreamingProvider";
 //			this.InitializeSpreadModelerPercentage(PERCENTAGE_DEFAULT);
 //		}
@@ -24,7 +24,7 @@ namespace Sq1.Core.Backtesting {
 			this.SpreadModeler = new BacktestSpreadModelerPercentage(PERCENTAGE_DEFAULT);
 		}
 
-		public void GeneratedQuoteEnrichSymmetricallyAndPush(QuoteGenerated quote, Bar bar2simulate, double priceForSymmetricFillAtOpenOrClose = -1) {
+		public virtual void GeneratedQuoteEnrichSymmetricallyAndPush(QuoteGenerated quote, Bar bar2simulate, double priceForSymmetricFillAtOpenOrClose = -1) {
 			if (this.SpreadModeler == null) {
 				string msg = "Don't leave quoteToReach.Bid and quoteToReach.Ask uninitialized!!!";
 				throw new Exception(msg);

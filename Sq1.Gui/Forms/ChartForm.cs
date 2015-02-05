@@ -158,18 +158,18 @@ namespace Sq1.Gui.Forms {
 			if (iconCanBeNull != null) {
 				this.btnStreamingTriggersScript.Image = iconCanBeNull;
 			}
-			// from btnStreaming_Click(); not related but visualises the last clicked state
-			if (this.btnStreamingTriggersScript.Checked) {
-				this.mniBacktestOnSelectorsChange.Enabled = false;
-				this.mniBacktestOnDataSourceSaved.Enabled = false;
-				this.mniBacktestNow.Enabled = false;
-				//this.btnStrategyEmittingOrders.Enabled = true;
-			} else {
-				this.mniBacktestOnSelectorsChange.Enabled = true;
-				this.mniBacktestOnDataSourceSaved.Enabled = true;
-				this.mniBacktestNow.Enabled = true;
-				//this.btnStrategyEmittingOrders.Enabled = false;
-			}
+			// ALWAYS_ENABLED_DUE_TO_QUOTE_PUMPfrom btnStreaming_Click(); not related but visualises the last clicked state
+			//if (this.btnStreamingTriggersScript.Checked) {
+			//    this.mniBacktestOnSelectorsChange.Enabled = false;
+			//    this.mniBacktestOnDataSourceSaved.Enabled = false;
+			//    this.mniBacktestNow.Enabled = false;
+			//    //this.btnStrategyEmittingOrders.Enabled = true;
+			//} else {
+			//    this.mniBacktestOnSelectorsChange.Enabled = true;
+			//    this.mniBacktestOnDataSourceSaved.Enabled = true;
+			//    this.mniBacktestNow.Enabled = true;
+			//    //this.btnStrategyEmittingOrders.Enabled = false;
+			//}
 
 			Bars barsClickedUpstack = this.ChartFormManager.Executor.Bars;
 			this.mniBarsStoredScaleInterval.Text = barsClickedUpstack != null

@@ -14,7 +14,7 @@ namespace Sq1.Gui.Forms
 		/// Designer variable used to keep track of non-visual components.
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
-		private Sq1.Widgets.LiveSim.LiveSimControl liveSimControl;
+		public Sq1.Widgets.Livesim.LivesimControl LivesimControl;
 		
 		/// <summary>
 		/// Disposes resources used by the form.
@@ -37,23 +37,23 @@ namespace Sq1.Gui.Forms
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.liveSimControl = new Sq1.Widgets.LiveSim.LiveSimControl();
+			this.LivesimControl = new Sq1.Widgets.Livesim.LivesimControl();
 			this.SuspendLayout();
 			// 
 			// liveSimControl1
 			// 
-			this.liveSimControl.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.liveSimControl.Location = new System.Drawing.Point(0, 0);
-			this.liveSimControl.Name = "liveSimControl1";
-			this.liveSimControl.Size = new System.Drawing.Size(917, 790);
-			this.liveSimControl.TabIndex = 0;
+			this.LivesimControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.LivesimControl.Location = new System.Drawing.Point(0, 0);
+			this.LivesimControl.Name = "liveSimControl1";
+			this.LivesimControl.Size = new System.Drawing.Size(917, 790);
+			this.LivesimControl.TabIndex = 0;
 			// 
 			// LivesimForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(917, 790);
-			this.Controls.Add(this.liveSimControl);
+			this.Controls.Add(this.LivesimControl);
 			this.Name = "LivesimForm";
 			this.Text = "LivesimForm";
 			this.ResumeLayout(false);

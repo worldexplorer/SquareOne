@@ -5,10 +5,10 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.StrategyBase {
-	public class MarketsimLive {
+	public class MarketLive {
 		ScriptExecutor executor;
 
-		public MarketsimLive(ScriptExecutor executor) {
+		public MarketLive(ScriptExecutor executor) {
 			this.executor = executor;
 		}
 

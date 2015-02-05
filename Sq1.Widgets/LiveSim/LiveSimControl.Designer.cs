@@ -6,9 +6,9 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
-namespace Sq1.Widgets.LiveSim
+namespace Sq1.Widgets.Livesim
 {
-	partial class LiveSimControl
+	partial class LivesimControl
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.
@@ -41,12 +41,12 @@ namespace Sq1.Widgets.LiveSim
 		{
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+			this.streamingLivesimEditor1 = new Sq1.Core.Livesim.LivesimStreamingEditor();
+			this.brokerLivesimEditor1 = new Sq1.Core.Livesim.LivesimBrokerEditor();
 			this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-			this.streamingLivesimEditor1 = new Sq1.Core.Livesim.StreamingLivesimEditor();
 			this.exceptionsControl1 = new Sq1.Widgets.Exceptions.ExceptionsControl();
 			this.exceptionsControl2 = new Sq1.Widgets.Exceptions.ExceptionsControl();
-			this.brokerLivesimEditor1 = new Sq1.Core.Livesim.BrokerLivesimEditor();
-			this.button1 = new System.Windows.Forms.Button();
+			this.BtnStartLivesim = new System.Windows.Forms.Button();
 			this.button2 = new System.Windows.Forms.Button();
 			this.panel1 = new System.Windows.Forms.Panel();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -108,6 +108,26 @@ namespace Sq1.Widgets.LiveSim
 			this.splitContainer2.SplitterDistance = 344;
 			this.splitContainer2.TabIndex = 0;
 			// 
+			// streamingLivesimEditor1
+			// 
+			this.streamingLivesimEditor1.AutoScroll = true;
+			this.streamingLivesimEditor1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.streamingLivesimEditor1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.streamingLivesimEditor1.Location = new System.Drawing.Point(0, 0);
+			this.streamingLivesimEditor1.Name = "streamingLivesimEditor1";
+			this.streamingLivesimEditor1.Size = new System.Drawing.Size(344, 629);
+			this.streamingLivesimEditor1.TabIndex = 0;
+			// 
+			// brokerLivesimEditor1
+			// 
+			this.brokerLivesimEditor1.AutoScroll = true;
+			this.brokerLivesimEditor1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.brokerLivesimEditor1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.brokerLivesimEditor1.Location = new System.Drawing.Point(0, 0);
+			this.brokerLivesimEditor1.Name = "brokerLivesimEditor1";
+			this.brokerLivesimEditor1.Size = new System.Drawing.Size(341, 629);
+			this.brokerLivesimEditor1.TabIndex = 0;
+			// 
 			// splitContainer3
 			// 
 			this.splitContainer3.BackColor = System.Drawing.SystemColors.ControlDark;
@@ -128,16 +148,6 @@ namespace Sq1.Widgets.LiveSim
 			this.splitContainer3.SplitterDistance = 344;
 			this.splitContainer3.TabIndex = 0;
 			// 
-			// streamingLivesimEditor1
-			// 
-			this.streamingLivesimEditor1.AutoScroll = true;
-			this.streamingLivesimEditor1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.streamingLivesimEditor1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.streamingLivesimEditor1.Location = new System.Drawing.Point(0, 0);
-			this.streamingLivesimEditor1.Name = "streamingLivesimEditor1";
-			this.streamingLivesimEditor1.Size = new System.Drawing.Size(344, 629);
-			this.streamingLivesimEditor1.TabIndex = 0;
-			// 
 			// exceptionsControl1
 			// 
 			this.exceptionsControl1.BackColor = System.Drawing.SystemColors.MenuHighlight;
@@ -156,24 +166,14 @@ namespace Sq1.Widgets.LiveSim
 			this.exceptionsControl2.Size = new System.Drawing.Size(341, 134);
 			this.exceptionsControl2.TabIndex = 0;
 			// 
-			// brokerLivesimEditor1
+			// btnStartLivesim
 			// 
-			this.brokerLivesimEditor1.AutoScroll = true;
-			this.brokerLivesimEditor1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.brokerLivesimEditor1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.brokerLivesimEditor1.Location = new System.Drawing.Point(0, 0);
-			this.brokerLivesimEditor1.Name = "brokerLivesimEditor1";
-			this.brokerLivesimEditor1.Size = new System.Drawing.Size(341, 629);
-			this.brokerLivesimEditor1.TabIndex = 0;
-			// 
-			// button1
-			// 
-			this.button1.Location = new System.Drawing.Point(3, 3);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(109, 23);
-			this.button1.TabIndex = 1;
-			this.button1.Text = "Start / Abort";
-			this.button1.UseVisualStyleBackColor = true;
+			this.BtnStartLivesim.Location = new System.Drawing.Point(3, 3);
+			this.BtnStartLivesim.Name = "btnStartLivesim";
+			this.BtnStartLivesim.Size = new System.Drawing.Size(109, 23);
+			this.BtnStartLivesim.TabIndex = 1;
+			this.BtnStartLivesim.Text = "Start / Abort";
+			this.BtnStartLivesim.UseVisualStyleBackColor = true;
 			// 
 			// button2
 			// 
@@ -187,20 +187,20 @@ namespace Sq1.Widgets.LiveSim
 			// panel1
 			// 
 			this.panel1.Controls.Add(this.button2);
-			this.panel1.Controls.Add(this.button1);
+			this.panel1.Controls.Add(this.BtnStartLivesim);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panel1.Location = new System.Drawing.Point(0, 770);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(689, 30);
 			this.panel1.TabIndex = 3;
 			// 
-			// LiveSimControl
+			// LivesimControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.splitContainer1);
-			this.Name = "LiveSimControl";
+			this.Name = "LivesimControl";
 			this.Size = new System.Drawing.Size(689, 800);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
@@ -219,12 +219,12 @@ namespace Sq1.Widgets.LiveSim
 
 		}
 
-		private Core.Livesim.StreamingLivesimEditor streamingLivesimEditor1;
+		private Core.Livesim.LivesimStreamingEditor streamingLivesimEditor1;
 		private Exceptions.ExceptionsControl exceptionsControl1;
 		private Exceptions.ExceptionsControl exceptionsControl2;
-		private Core.Livesim.BrokerLivesimEditor brokerLivesimEditor1;
-		private System.Windows.Forms.Button button1;
+		private Core.Livesim.LivesimBrokerEditor brokerLivesimEditor1;
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Panel panel1;
+		public System.Windows.Forms.Button BtnStartLivesim;
 	}
 }

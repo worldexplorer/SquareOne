@@ -138,27 +138,28 @@
     <Compile Include="Indicators\IndicatorMovingAverageSimple.cs" />
     <Compile Include="Indicators\IndicatorParameter.cs" />
     <Compile Include="Indicators\IndicatorParameterEventArgs.cs" />
-    <Compile Include="Livesim\BrokerLivesim.cs" />
+    <Compile Include="Livesim\LivesimBroker.cs" />
     <Compile Include="Livesim\LivesimDataSource.cs" />
-    <Compile Include="Livesim\StreamingLivesim.cs" />
-    <Compile Include="Livesim\BrokerLivesimEditor.cs">
+    <Compile Include="Livesim\LivesimStreaming.cs" />
+    <Compile Include="Livesim\LivesimBrokerEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Livesim\BrokerLivesimEditor.Designer.cs">
-      <DependentUpon>BrokerLivesimEditor.cs</DependentUpon>
+    <Compile Include="Livesim\LivesimBrokerEditor.Designer.cs">
+      <DependentUpon>LivesimBrokerEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Livesim\BrokerLivesimEditor.EventConsumer.cs">
-      <DependentUpon>BrokerLivesimEditor.cs</DependentUpon>
+    <Compile Include="Livesim\LivesimBrokerEditor.EventConsumer.cs">
+      <DependentUpon>LivesimBrokerEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Livesim\StreamingLivesimEditor.cs">
+    <Compile Include="Livesim\LivesimStreamingEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Livesim\StreamingLivesimEditor.Designer.cs">
-      <DependentUpon>StreamingLivesimEditor.cs</DependentUpon>
+    <Compile Include="Livesim\LivesimStreamingEditor.Designer.cs">
+      <DependentUpon>LivesimStreamingEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Livesim\StreamingLivesimEditor.EventConsumer.cs">
-      <DependentUpon>StreamingLivesimEditor.cs</DependentUpon>
+    <Compile Include="Livesim\Livesimulator.cs" />
+    <Compile Include="Livesim\LivesimStreamingEditor.EventConsumer.cs">
+      <DependentUpon>LivesimStreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -263,9 +264,9 @@
     <Compile Include="Streaming\StreamingEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Backtesting\BacktestBrokerProvider.cs" />
+    <Compile Include="Backtesting\BacktestBroker.cs" />
     <Compile Include="Backtesting\BacktestDataSource.cs" />
-    <Compile Include="Backtesting\BacktestStreamingProvider.cs" />
+    <Compile Include="Backtesting\BacktestStreaming.cs" />
     <Compile Include="DataFeed\DataSourceEventArgs.cs" />
     <Compile Include="DataFeed\DataSourceSymbolEventArgs.cs" />
     <Compile Include="DataTypes\DataSeriesProxyBars.cs" />
@@ -325,7 +326,7 @@
     <Compile Include="Execution\Direction.cs" />
     <Compile Include="StrategyBase\Script.cs" />
     <Compile Include="StrategyBase\ScriptCompiler.cs" />
-    <Compile Include="StrategyBase\MarketsimLive.cs" />
+    <Compile Include="StrategyBase\MarketLive.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
@@ -344,11 +345,11 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Livesim\BrokerLivesimEditor.resx">
-      <DependentUpon>BrokerLivesimEditor.cs</DependentUpon>
+    <EmbeddedResource Include="Livesim\LivesimBrokerEditor.resx">
+      <DependentUpon>LivesimBrokerEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Livesim\StreamingLivesimEditor.resx">
-      <DependentUpon>StreamingLivesimEditor.cs</DependentUpon>
+    <EmbeddedResource Include="Livesim\LivesimStreamingEditor.resx">
+      <DependentUpon>LivesimStreamingEditor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
