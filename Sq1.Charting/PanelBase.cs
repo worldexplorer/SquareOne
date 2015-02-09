@@ -63,6 +63,11 @@ namespace Sq1.Charting {
 					Debugger.Break();
 					return ret;
 				}
+				if (this.ValueIndexLastAvailableMinusOneUnsafe == -1) {
+					string msg = "BARS_COUNT_ZERO__I_HAVE_NO_VALUES_TO_DRAW";
+					Debugger.Break();
+					return ret;
+				}
 				ret = this.VisibleBarRight_cached <= this.ValueIndexLastAvailableMinusOneUnsafe;
 				return ret;
 			} }
@@ -211,7 +216,6 @@ namespace Sq1.Charting {
 			}
 			this.ChartControl.SyncHorizontalScrollToBarsCount();
 
-
 //			if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
 //				string msg = "MUST_BE_POSITIVE#2_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
 //				Assembler.PopupException(msg + msig);
@@ -273,9 +277,20 @@ namespace Sq1.Charting {
 			
 			string msig = " " + this.PanelName + ".PanelPrice,Volume.PaintWholeSurfaceBarsNotEmpty() "
 				+ this.BarsIdent + " " + this.Parent.ToString();
+
 			this.VisibleMin_cached = this.VisibleMinDoubleMaxValueUnsafe;
 			this.VisibleMax_cached = this.VisibleMaxDoubleMinValueUnsafe;
 			this.VisibleRange_cached = this.VisibleMax_cached - this.VisibleMin_cached;
+
+			if (this.VisibleMin_cached == Double.MaxValue) {
+				string msg = "PAINTING_ZERO_OR_FIRST_BAR_OF_LIVESIMULATION__CONITNUE_UNTIL_IT_WILL_GET_NORMALIZED_SOON";
+				return;
+			}
+			if (this.VisibleRange_cached == 0 && this.ChartControl.Bars.Count > 0) {
+				string msg = "RANGE_CAN_NOT_BE_ZERO_WHEN_YOU_HAVE_BARS.COUNT[" + this.ChartControl.Bars.Count + "] [" + this.ToString() + "].VisibleRange_cached=0";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
 
 			double pixelsSqueezedToPriceDistance = 0;
 			if (this.PaddingVerticalSqueeze > 0 && base.Height > 0) {
@@ -286,7 +301,7 @@ namespace Sq1.Charting {
 			this.VisibleMinMinusTopSqueezer_cached = this.VisibleMin_cached - pixelsSqueezedToPriceDistance;
 			this.VisibleMaxPlusBottomSqueezer_cached = this.VisibleMax_cached + pixelsSqueezedToPriceDistance;
 			// min-Top=10-10=0; max+Bottom=20+10=30; 20+10-(10-10) = 30-0; = max-min+padding*2=20-10+10*2 = 30 
-			this.VisibleRangeWithTwoSqueezers_cached = this.VisibleMaxPlusBottomSqueezer_cached - VisibleMinMinusTopSqueezer_cached;
+			this.VisibleRangeWithTwoSqueezers_cached = this.VisibleMaxPlusBottomSqueezer_cached - this.VisibleMinMinusTopSqueezer_cached;
 			
 			msig = " this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]:"
 				+ " [" + this.VisibleMinMinusTopSqueezer_cached + "]...[" + this.VisibleMaxPlusBottomSqueezer_cached + "]" + msig;
@@ -358,6 +373,10 @@ namespace Sq1.Charting {
 				
 				this.VisibleBarRight_cached = this.ChartControl.VisibleBarRight;
 				if (this.VisibleBarRight_cached == 0) {
+					if (this.ChartControl.Bars.Count == 0) {
+						string msg = "this.ChartControl.VisibleBarRight_MUST_BE_POSITIVE_KOZ_YOU_HAVE_BARS[" + this.ChartControl.Bars.Count  + "]";
+						Assembler.PopupException(msg, null, false);
+					}
 					return;
 				}
 				if (this.VisibleBarRight_cached < 0) {

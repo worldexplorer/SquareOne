@@ -88,16 +88,16 @@ namespace Sq1.Core.DataFeed {
 				int mustBeZero = this.BarsSave(barsEmpty, out millisElapsed, true);
 				Assembler.PopupException("BARS_INITIALIZED_EMPTY[" + mustBeZero + "] " + millisElapsed + " " + barsEmpty.ToString(), null, false);
 			}
-			
-			//this.BarsFolderPerst = new BarsFolder(this.FolderForBarDataStore, this.ScaleInterval, true, "dts");
 
+			//this.BarsFolderPerst = new BarsFolder(this.FolderForBarDataStore, this.ScaleInterval, true, "dts");
+			this.Initialize(orderProcessor);
+		}
+		public void Initialize(OrderProcessor orderProcessor) {
 			// works only for deserialized providers; for a newDataSource they are NULLs to be assigned in DataSourceEditor 
-			if (this.StreamingProvider != null) {
-				this.StreamingProvider.Initialize(this);
-				if (this.BrokerProvider != null) {
-					this.BrokerProvider.Initialize(this, this.StreamingProvider, orderProcessor);
-				}
-			}
+			if (this.StreamingProvider == null) return;
+			this.StreamingProvider.Initialize(this);
+			if (this.BrokerProvider == null) return;
+			this.BrokerProvider.Initialize(this, this.StreamingProvider, orderProcessor);
 		}
 		public override string ToString() {
 			return Name + "(" + this.ScaleInterval.ToString() + ")" + SymbolsCSV
@@ -342,6 +342,7 @@ namespace Sq1.Core.DataFeed {
 						string msg = "PUSHING_THREAD_ALREADY_UNPAUSED (review how you use QuotePump)";
 						Assembler.PopupException(msg);
 					}
+					//LET_UNPAUSE_THINGS_STILL_GO_THROUGH_DEVELOPER_ALREADY_NOTIFIED_HE_WAS_WRONG_THANX return;
 				}
 				channel.QuotePump.PushConsumersPaused = false;
 				return;

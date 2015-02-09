@@ -54,6 +54,8 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.Label label21;
 		private void InitializeComponent() {
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.textBox13 = new System.Windows.Forms.TextBox();
+			this.textBox14 = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.textBox1 = new System.Windows.Forms.TextBox();
@@ -94,8 +96,6 @@ namespace Sq1.Core.Livesim {
 			this.textBox11 = new System.Windows.Forms.TextBox();
 			this.textBox12 = new System.Windows.Forms.TextBox();
 			this.label21 = new System.Windows.Forms.Label();
-			this.textBox13 = new System.Windows.Forms.TextBox();
-			this.textBox14 = new System.Windows.Forms.TextBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -104,8 +104,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.textBox13);
 			this.groupBox1.Controls.Add(this.textBox14);
 			this.groupBox1.Controls.Add(this.label8);
@@ -117,18 +117,32 @@ namespace Sq1.Core.Livesim {
 			this.groupBox1.Controls.Add(this.checkBox2);
 			this.groupBox1.Controls.Add(this.label4);
 			this.groupBox1.Controls.Add(this.label3);
-			this.groupBox1.Location = new System.Drawing.Point(3, 196);
+			this.groupBox1.Location = new System.Drawing.Point(3, 159);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(345, 108);
+			this.groupBox1.Size = new System.Drawing.Size(345, 91);
 			this.groupBox1.TabIndex = 27;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Quote Generation Suspension (DataFeed freeze)";
+			// 
+			// textBox13
+			// 
+			this.textBox13.Location = new System.Drawing.Point(185, 19);
+			this.textBox13.Name = "textBox13";
+			this.textBox13.Size = new System.Drawing.Size(45, 20);
+			this.textBox13.TabIndex = 29;
+			// 
+			// textBox14
+			// 
+			this.textBox14.Location = new System.Drawing.Point(119, 19);
+			this.textBox14.Name = "textBox14";
+			this.textBox14.Size = new System.Drawing.Size(45, 20);
+			this.textBox14.TabIndex = 30;
 			// 
 			// label8
 			// 
 			this.label8.Location = new System.Drawing.Point(6, 22);
 			this.label8.Name = "label8";
-			this.label8.Size = new System.Drawing.Size(107, 17);
+			this.label8.Size = new System.Drawing.Size(96, 17);
 			this.label8.TabIndex = 28;
 			this.label8.Text = "Happens once per";
 			// 
@@ -142,7 +156,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox1
 			// 
-			this.textBox1.Enabled = false;
 			this.textBox1.Location = new System.Drawing.Point(185, 45);
 			this.textBox1.Name = "textBox1";
 			this.textBox1.Size = new System.Drawing.Size(45, 20);
@@ -150,7 +163,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox2
 			// 
-			this.textBox2.Enabled = false;
 			this.textBox2.Location = new System.Drawing.Point(119, 45);
 			this.textBox2.Name = "textBox2";
 			this.textBox2.Size = new System.Drawing.Size(45, 20);
@@ -174,17 +186,15 @@ namespace Sq1.Core.Livesim {
 			// 
 			// checkBox2
 			// 
-			this.checkBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.checkBox2.Appearance = System.Windows.Forms.Appearance.Button;
+			this.checkBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox2.Checked = true;
 			this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox2.Location = new System.Drawing.Point(6, 78);
+			this.checkBox2.Location = new System.Drawing.Point(6, 69);
 			this.checkBox2.Name = "checkBox2";
-			this.checkBox2.Size = new System.Drawing.Size(333, 24);
+			this.checkBox2.Size = new System.Drawing.Size(333, 17);
 			this.checkBox2.TabIndex = 21;
 			this.checkBox2.Text = "Enable Random DataFeed Freeze";
-			this.checkBox2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.checkBox2.UseVisualStyleBackColor = true;
 			// 
 			// label4
@@ -205,8 +215,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox2
 			// 
-			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox2.Controls.Add(this.label9);
 			this.groupBox2.Controls.Add(this.checkBox3);
 			this.groupBox2.Controls.Add(this.label10);
@@ -215,7 +225,7 @@ namespace Sq1.Core.Livesim {
 			this.groupBox2.Controls.Add(this.label11);
 			this.groupBox2.Location = new System.Drawing.Point(3, 3);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(345, 73);
+			this.groupBox2.Size = new System.Drawing.Size(345, 65);
 			this.groupBox2.TabIndex = 28;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Quote Generation Speed";
@@ -230,17 +240,15 @@ namespace Sq1.Core.Livesim {
 			// 
 			// checkBox3
 			// 
-			this.checkBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.checkBox3.Appearance = System.Windows.Forms.Appearance.Button;
+			this.checkBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox3.Checked = true;
 			this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox3.Location = new System.Drawing.Point(6, 43);
+			this.checkBox3.Location = new System.Drawing.Point(6, 42);
 			this.checkBox3.Name = "checkBox3";
-			this.checkBox3.Size = new System.Drawing.Size(333, 24);
+			this.checkBox3.Size = new System.Drawing.Size(333, 17);
 			this.checkBox3.TabIndex = 32;
 			this.checkBox3.Text = "Enable Random Delay between generated quotes";
-			this.checkBox3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.checkBox3.UseVisualStyleBackColor = true;
 			// 
 			// label10
@@ -253,7 +261,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox3
 			// 
-			this.textBox3.Enabled = false;
 			this.textBox3.Location = new System.Drawing.Point(196, 17);
 			this.textBox3.Name = "textBox3";
 			this.textBox3.Size = new System.Drawing.Size(45, 20);
@@ -261,7 +268,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox4
 			// 
-			this.textBox4.Enabled = false;
 			this.textBox4.Location = new System.Drawing.Point(130, 17);
 			this.textBox4.Name = "textBox4";
 			this.textBox4.Size = new System.Drawing.Size(45, 20);
@@ -277,8 +283,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox3
 			// 
-			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox3.Controls.Add(this.label1);
 			this.groupBox3.Controls.Add(this.label2);
 			this.groupBox3.Controls.Add(this.textBox5);
@@ -290,9 +296,9 @@ namespace Sq1.Core.Livesim {
 			this.groupBox3.Controls.Add(this.textBox7);
 			this.groupBox3.Controls.Add(this.textBox8);
 			this.groupBox3.Controls.Add(this.label15);
-			this.groupBox3.Location = new System.Drawing.Point(3, 310);
+			this.groupBox3.Location = new System.Drawing.Point(3, 250);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(345, 108);
+			this.groupBox3.Size = new System.Drawing.Size(345, 90);
 			this.groupBox3.TabIndex = 29;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Streaming Provider Disconnect";
@@ -301,7 +307,7 @@ namespace Sq1.Core.Livesim {
 			// 
 			this.label1.Location = new System.Drawing.Point(6, 22);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(107, 17);
+			this.label1.Size = new System.Drawing.Size(96, 17);
 			this.label1.TabIndex = 28;
 			this.label1.Text = "Happens once per";
 			// 
@@ -315,7 +321,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox5
 			// 
-			this.textBox5.Enabled = false;
 			this.textBox5.Location = new System.Drawing.Point(185, 45);
 			this.textBox5.Name = "textBox5";
 			this.textBox5.Size = new System.Drawing.Size(45, 20);
@@ -323,7 +328,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox6
 			// 
-			this.textBox6.Enabled = false;
 			this.textBox6.Location = new System.Drawing.Point(119, 45);
 			this.textBox6.Name = "textBox6";
 			this.textBox6.Size = new System.Drawing.Size(45, 20);
@@ -347,17 +351,15 @@ namespace Sq1.Core.Livesim {
 			// 
 			// checkBox1
 			// 
-			this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.checkBox1.Appearance = System.Windows.Forms.Appearance.Button;
+			this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox1.Checked = true;
 			this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox1.Location = new System.Drawing.Point(6, 78);
+			this.checkBox1.Location = new System.Drawing.Point(6, 67);
 			this.checkBox1.Name = "checkBox1";
-			this.checkBox1.Size = new System.Drawing.Size(333, 24);
+			this.checkBox1.Size = new System.Drawing.Size(333, 17);
 			this.checkBox1.TabIndex = 21;
 			this.checkBox1.Text = "Enable Random Streaming Provider Disconnect";
-			this.checkBox1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.checkBox1.UseVisualStyleBackColor = true;
 			// 
 			// label14
@@ -370,7 +372,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox7
 			// 
-			this.textBox7.Enabled = false;
 			this.textBox7.Location = new System.Drawing.Point(185, 19);
 			this.textBox7.Name = "textBox7";
 			this.textBox7.Size = new System.Drawing.Size(45, 20);
@@ -378,7 +379,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox8
 			// 
-			this.textBox8.Enabled = false;
 			this.textBox8.Location = new System.Drawing.Point(119, 19);
 			this.textBox8.Name = "textBox8";
 			this.textBox8.Size = new System.Drawing.Size(45, 20);
@@ -394,8 +394,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox4
 			// 
-			this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox4.Controls.Add(this.label16);
 			this.groupBox4.Controls.Add(this.label17);
 			this.groupBox4.Controls.Add(this.textBox9);
@@ -407,9 +407,9 @@ namespace Sq1.Core.Livesim {
 			this.groupBox4.Controls.Add(this.textBox11);
 			this.groupBox4.Controls.Add(this.textBox12);
 			this.groupBox4.Controls.Add(this.label21);
-			this.groupBox4.Location = new System.Drawing.Point(3, 82);
+			this.groupBox4.Location = new System.Drawing.Point(3, 68);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(345, 108);
+			this.groupBox4.Size = new System.Drawing.Size(345, 91);
 			this.groupBox4.TabIndex = 30;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Out-of-order Quote Delivery";
@@ -418,7 +418,7 @@ namespace Sq1.Core.Livesim {
 			// 
 			this.label16.Location = new System.Drawing.Point(6, 22);
 			this.label16.Name = "label16";
-			this.label16.Size = new System.Drawing.Size(107, 17);
+			this.label16.Size = new System.Drawing.Size(96, 17);
 			this.label16.TabIndex = 28;
 			this.label16.Text = "Happens once per";
 			// 
@@ -432,7 +432,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox9
 			// 
-			this.textBox9.Enabled = false;
 			this.textBox9.Location = new System.Drawing.Point(185, 45);
 			this.textBox9.Name = "textBox9";
 			this.textBox9.Size = new System.Drawing.Size(45, 20);
@@ -440,7 +439,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox10
 			// 
-			this.textBox10.Enabled = false;
 			this.textBox10.Location = new System.Drawing.Point(119, 45);
 			this.textBox10.Name = "textBox10";
 			this.textBox10.Size = new System.Drawing.Size(45, 20);
@@ -464,17 +462,15 @@ namespace Sq1.Core.Livesim {
 			// 
 			// checkBox4
 			// 
-			this.checkBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.checkBox4.Appearance = System.Windows.Forms.Appearance.Button;
+			this.checkBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox4.Checked = true;
 			this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox4.Location = new System.Drawing.Point(6, 78);
+			this.checkBox4.Location = new System.Drawing.Point(6, 70);
 			this.checkBox4.Name = "checkBox4";
-			this.checkBox4.Size = new System.Drawing.Size(333, 24);
+			this.checkBox4.Size = new System.Drawing.Size(333, 17);
 			this.checkBox4.TabIndex = 21;
 			this.checkBox4.Text = "Enable Random Out-of-order Quote Delivery";
-			this.checkBox4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.checkBox4.UseVisualStyleBackColor = true;
 			// 
 			// label20
@@ -487,7 +483,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox11
 			// 
-			this.textBox11.Enabled = false;
 			this.textBox11.Location = new System.Drawing.Point(185, 19);
 			this.textBox11.Name = "textBox11";
 			this.textBox11.Size = new System.Drawing.Size(45, 20);
@@ -495,7 +490,6 @@ namespace Sq1.Core.Livesim {
 			// 
 			// textBox12
 			// 
-			this.textBox12.Enabled = false;
 			this.textBox12.Location = new System.Drawing.Point(119, 19);
 			this.textBox12.Name = "textBox12";
 			this.textBox12.Size = new System.Drawing.Size(45, 20);
@@ -509,22 +503,6 @@ namespace Sq1.Core.Livesim {
 			this.label21.TabIndex = 20;
 			this.label21.Text = "quotes generated";
 			// 
-			// textBox13
-			// 
-			this.textBox13.Enabled = false;
-			this.textBox13.Location = new System.Drawing.Point(185, 19);
-			this.textBox13.Name = "textBox13";
-			this.textBox13.Size = new System.Drawing.Size(45, 20);
-			this.textBox13.TabIndex = 29;
-			// 
-			// textBox14
-			// 
-			this.textBox14.Enabled = false;
-			this.textBox14.Location = new System.Drawing.Point(119, 19);
-			this.textBox14.Name = "textBox14";
-			this.textBox14.Size = new System.Drawing.Size(45, 20);
-			this.textBox14.TabIndex = 30;
-			// 
 			// LivesimStreamingEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -536,7 +514,7 @@ namespace Sq1.Core.Livesim {
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Name = "LivesimStreamingEditor";
-			this.Size = new System.Drawing.Size(351, 624);
+			this.Size = new System.Drawing.Size(351, 345);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			this.groupBox2.ResumeLayout(false);

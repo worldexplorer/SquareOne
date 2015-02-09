@@ -1,29 +1,65 @@
 ﻿using System;
 using System.Threading;
+using System.Windows.Forms;
 
 using Sq1.Core.Backtesting;
+using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
 	public class LivesimStreaming : BacktestStreaming {
-		public ManualResetEvent StreamingLivesimUnpaused { get; private set; }
+		public ManualResetEvent Unpaused { get; private set; }
+		ChartShadow chartShadow;
+		LivesimDataSource livesimDataSource;
 
-		public LivesimStreaming() : base() {
-			base.Name = "StreamingLivesim";
-			this.StreamingLivesimUnpaused = new ManualResetEvent(true);
+		public LivesimStreaming(LivesimDataSource livesimDataSource) : base() {
+			base.Name = "LivesimStreaming";
+			base.StreamingSolidifier = null;
+			base.QuotePumpSeparatePushingThreadEnabled = false;
+			this.Unpaused = new ManualResetEvent(true);
+			this.livesimDataSource = livesimDataSource;
+		}
+
+		public void Initialize(ChartShadow chartShadow) {
+			this.chartShadow = chartShadow;
 		}
 
 		public override void GeneratedQuoteEnrichSymmetricallyAndPush(QuoteGenerated quote, Bar bar2simulate, double priceForSymmetricFillAtOpenOrClose = -1) {
-			bool isUnpaused = this.StreamingLivesimUnpaused.WaitOne(0);
-			if (isUnpaused == false) {
-				this.StreamingLivesimUnpaused.WaitOne();
+			if (quote.IntraBarSerno > Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
+				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
 			}
-			Thread.Sleep(10);
+			bool isUnpaused = this.Unpaused.WaitOne(0);
+			if (isUnpaused == false) {
+				string msg = "LIVESTREAMING_CAUGHT_PAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
+				Assembler.PopupException(msg, null, false);
+				this.Unpaused.WaitOne();
+				string msg2 = "LIVESTREAMING_CAUGHT_UNPAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
+				Assembler.PopupException(msg2, null, false);
+			}
 			base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate, priceForSymmetricFillAtOpenOrClose);
+			if (this.chartShadow == null) {
+				string msg = "YOU_FORGOT_TO_LET_LivesimStreaming_KNOW_ABOUT_CHART_CONTROL__TO_WAIT_FOR_REPAINT_COMPLETED_BEFORE_FEEDING_NEXT_QUOTE_TO_EXECUTOR_VIA_PUMP";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.chartShadow.RefreshAllPanelsWaitFinishedSoLivesimCouldGenerateNewQuote();
+			//WARNING WARNING WARNING!!!!!!!!!!!!! Application.DoEvents();
+			//NOT_ENOUGH_TO_UNFREEZE_PAUSE_BUTTON PAINTS_OKAY_AFTER_INVOKING_RangeBarCollapseToAccelerateLivesim()
+			// Thread.Sleep(1)_REDUCES_CPU_USAGE_DURING_LIVESIM_FROM_60%_TO_3%_DUAL_CORE__Application.DoEvents()_IS_USELESS
+			Thread.Sleep(500);	// LET_WinProc_TO_HANDLE_ALL_THE_MESSAGES I_HATE_Application.DoEvents()_IT_KEEPS_THE_FORM_FROZEN
+			this.livesimDataSource.BrokerAsLivesimNullUnsafe.ConsumeQuoteOfStreamingBarToFillPending(quote, bar2simulate);
 		}
-
+		#region DISABLING_SOLIDIFIER
+		public override void Initialize(DataSource dataSource) {
+			base.InitializeFromDataSource(dataSource);
+		}
+		protected override void SubscribeSolidifier() {
+			return;
+		}
+		#endregion
 	}
 }

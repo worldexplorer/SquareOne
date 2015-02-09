@@ -86,8 +86,11 @@ namespace Sq1.Widgets.Exceptions {
 				}
 			}
 			//late binding prevents SplitterMoved() induced by DockContent layouting LoadAsXml()ed docked forms 
+			this.splitContainerVertical.SplitterMoved -= new System.Windows.Forms.SplitterEventHandler(this.splitContainerVertical_SplitterMoved);
 			this.splitContainerVertical.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerVertical_SplitterMoved);
+			this.splitContainerHorizontal.SplitterMoved -= new System.Windows.Forms.SplitterEventHandler(this.SplitContainerHorizontal_SplitterMoved);
 			this.splitContainerHorizontal.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitContainerHorizontal_SplitterMoved);
+
 			this.mniRecentAlwaysSelected.Checked = this.DataSnapshot.RecentAlwaysSelected;
 			this.mniltbDelay.InputFieldValue = this.DataSnapshot.TreeRefreshDelayMsec.ToString();
 			this.mniTreeShowExceptionTime.Checked = this.DataSnapshot.TreeShowExceptionTime;

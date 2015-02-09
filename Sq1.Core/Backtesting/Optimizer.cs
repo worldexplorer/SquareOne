@@ -216,19 +216,15 @@ namespace Sq1.Core.Backtesting {
 			return this.BacktestsScheduled;
 		}
 		void afterBacktesterComplete(ScriptExecutor executorCompletePooled) {
-			string dbg = "complete: " + executorCompletePooled.Strategy.ScriptContextCurrent.Name + " "
-				+ executorCompletePooled.Strategy.Script.IndicatorParametersAsString;
-			string dbg2 = "";
-			foreach (string iName in executorCompletePooled.Performance.ScriptAndIndicatorParameterClonesByName.Keys) {
-				IndicatorParameter ip = executorCompletePooled.Performance.ScriptAndIndicatorParameterClonesByName[iName];
-				dbg2 += iName + "[" + ip.ValueCurrent + "]";
-			}
-			Assembler.PopupException(dbg + dbg2, null, false);
-
+			string msig = " //Optimizer.afterBacktesterComplete()";
 			if (executorCompletePooled == null) {
-				Debugger.Break();
+				string msg = "CAN_NOT_BE_NULL_executorCompletePooled";
+				Assembler.PopupException(msg + msig);
 				executorCompletePooled = this.executor;
 			}
+			msig = executorCompletePooled.ToStringWithCurrentParameters() + msig;
+			Assembler.PopupException("ANOTHER_IN_SEQUENCE_executorCompletePooled: " + msig, null, false);
+
 			if (executorCompletePooled.Bars == null) {
 				string msg = "DONT_RUN_BACKTEST_BEFORE_BARS_ARE_LOADED";
 				Assembler.PopupException(msg);
@@ -285,7 +281,7 @@ namespace Sq1.Core.Backtesting {
 					ex.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
 				}
 			} catch (Exception ex) {
-				Assembler.PopupException(dbg + dbg2, ex);
+				Assembler.PopupException(msig, ex);
 			} finally {
 				this.RaiseOnBacktestComplete(executorCompletePooled.Performance);
 				if (this.BacktestsCompleted >= this.BacktestsTotal) {

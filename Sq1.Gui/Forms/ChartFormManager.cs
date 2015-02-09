@@ -86,22 +86,24 @@ namespace Sq1.Gui.Forms {
 				}
 				return this.OptimizerForm;
 			} }
-		LivesimFormFactory livesimFormFactory;
+		//LivesimFormFactory livesimFormFactory;
 		public LivesimForm LivesimForm;
 		public LivesimForm LivesimFormConditionalInstance { get {
 				if (DockContentImproved.IsNullOrDisposed(this.LivesimForm)) {
 					if (this.Strategy == null) return null;
-					if (this.livesimFormFactory == null) {
-						#if DEBUG
-						Debugger.Break();
-						#endif
-						this.livesimFormFactory = new LivesimFormFactory(this);
-					}
-
-					this.livesimFormFactory.CreateLivesimFormSubscribePushToManager(this);
-					if (this.LivesimForm == null) {
-						throw new Exception("LivesimFormFactory.CreateAndSubscribe() failed to create LivesimForm in ChartFormsManager");
-					}
+					//v1 before I got rid of LivesimFormFactory - seemed useless, unlike ScriptEditorFormFactory which is useful enough to keep DigitalRune's library unmodified 
+					//if (this.livesimFormFactory == null) {
+					//	#if DEBUG
+					//	Debugger.Break();
+					//	#endif
+					//	this.livesimFormFactory = new LivesimFormFactory(this);
+					//}
+					//this.livesimFormFactory.CreateLivesimFormSubscribePushToManager(this);
+					//if (this.LivesimForm == null) {
+					//	throw new Exception("LivesimFormFactory.CreateAndSubscribe() failed to create LivesimForm in ChartFormsManager");
+					//}
+					//v2
+					this.LivesimForm = new LivesimForm(this);
 				}
 				return this.LivesimForm;
 			} }
@@ -160,7 +162,7 @@ namespace Sq1.Gui.Forms {
 			// never used in CHART_ONLY, but we have "Open In Current Chart" for Strategies
 			this.scriptEditorFormFactory = new ScriptEditorFormFactory(this);
 			this.optimizerFormFactory = new OptimizerFormFactory(this);
-			this.livesimFormFactory = new LivesimFormFactory(this);
+			//this.livesimFormFactory = new LivesimFormFactory(this);
 
 			this.DataSnapshotSerializer = new Serializer<ChartFormDataSnapshot>();
 		}

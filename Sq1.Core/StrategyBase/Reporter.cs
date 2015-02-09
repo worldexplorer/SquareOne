@@ -8,7 +8,7 @@ namespace Sq1.Core.StrategyBase {
 	public abstract class Reporter : UserControl {
 		public		string				TabText;
 		protected	ChartShadow			Chart;
-		public		SystemPerformance	SystemPerformance { get; protected set; }
+		public		SystemPerformance	SystemPerformance { get; private set; }
 		protected	string				FormatPrice { get { 
 				string ret = "C";
 				if (	this.SystemPerformance == null
@@ -26,14 +26,20 @@ namespace Sq1.Core.StrategyBase {
 			this.TabText = "UNKNOWN_REPORTER";
 		}
 		public Reporter(ChartShadow chart) : this() {
-			this.Initialize(chart, null);
+			this.Initialize(chart, null, null);
 		}
-		public virtual void Initialize(ChartShadow chart, object reportersOwnDataSnapshotInOut) {
+		public virtual void Initialize(ChartShadow chart, object reportersOwnDataSnapshotInOut, SystemPerformance performance = null) {
 			this.Chart = chart;
+
+			if (this.SystemPerformance != null && this.SystemPerformance == performance) {
+				string msg = "FYI_MOVED_TO__ChartFormManager.ReportersFormsManager.ReporterActivateShowRegisterMniTick()";
+				Assembler.PopupException(msg);
+			}
+			this.SystemPerformance = performance;
 		}
 
 		// dont make it runtime error, bring the error to the earliest stage!
-		public abstract void BuildFullOnBacktestFinished(SystemPerformance performance);
+		public abstract void BuildFullOnBacktestFinished();
 		//public virtual void BuildOnceAfterFullBlindBacktestFinished(SystemPerformance performance) {
 		//    string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildOnceAfterFullBlindBacktestFinished(SystemPerformance)" + this.TabText + "/" + this.GetType();
 		//    msg = "; don't forget to do base.SystemPerformance=performance so that Reporter.Format picks up DecimalsPrice";

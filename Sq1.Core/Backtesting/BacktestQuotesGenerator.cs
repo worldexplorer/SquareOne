@@ -42,7 +42,7 @@ namespace Sq1.Core.Backtesting {
 				case BidOrAsk.Bid:
 					ret.Bid = priceFromAlignedBar;
 					ret.LastDealBidOrAsk = BidOrAsk.Bid;
-					this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GenerateFillAskBasedOnBid(ret);
+					this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler.GenerateFillAskBasedOnBid(ret);
 					if (ret.Spread == 0) {
 						Debugger.Break();
 					}
@@ -50,13 +50,13 @@ namespace Sq1.Core.Backtesting {
 				case BidOrAsk.Ask:
 					ret.Ask = priceFromAlignedBar;
 					ret.LastDealBidOrAsk = BidOrAsk.Ask;
-					this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GenerateFillBidBasedOnAsk(ret);
+					this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler.GenerateFillBidBasedOnAsk(ret);
 					if (ret.Spread == 0) {
 						Debugger.Break();
 					}
 					break;
 				case BidOrAsk.UNKNOWN:
-					this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler.GeneratedQuoteFillBidAsk(ret, barSimulated, priceFromAlignedBar);
+					this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler.GeneratedQuoteFillBidAsk(ret, barSimulated, priceFromAlignedBar);
 					// I_DONT_KNOW_WHAT_TO_PUT_HERE
 					ret.LastDealBidOrAsk = BidOrAsk.Bid;
 					if (ret.Spread == 0) {
@@ -123,7 +123,7 @@ namespace Sq1.Core.Backtesting {
 				closestOnOurWay.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;		// DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
 				closestOnOurWay.IntraBarSerno += ret.Count;						// first quote has IntraBarSerno=-1, rimemba?
 
-				this.backtester.BacktestDataSource.BacktestStreamingProvider.PushQuoteReceived(closestOnOurWay);
+				this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.PushQuoteReceived(closestOnOurWay);
 				ret.Add(closestOnOurWay);
 
 				int pendingAfterInjected = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
@@ -158,7 +158,7 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			// PARANOINDAL_CHECK_IF_PREV_QUOTE_IS_QUOTE_TO_REACH copypaste
-			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.BacktestStreamingProvider.StreamingDataSnapshot
+			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
 				.LastQuoteCloneGetForSymbol(quoteToReach.Symbol);
 			QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
 			if (quotePrev == null) {
@@ -282,6 +282,11 @@ namespace Sq1.Core.Backtesting {
 			//FILLED_AT_ALERT_FILL ret.PriceLastDeal = (ret.Ask + ret.Bid) / 2;
 			ret.Size = quoteClosest.Size;
 			ret.Source = quoteClosest.Source;
+
+			//LIVESIM_HACK
+			//if (ret.ParentBarStreaming.ParentBars != null) {
+			//    ret.SetParentBarStreaming(null);
+			//}
 			return ret;
 		}
 		QuoteGenerated modelQuoteThatCouldFillAlert(Alert alert, DateTime localDateTimeBasedOnServerForBacktest, Bar bar2simulate) {
@@ -317,7 +322,7 @@ namespace Sq1.Core.Backtesting {
 			#endif
 
 
-			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.BacktestStreamingProvider.StreamingDataSnapshot
+			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
 				.LastQuoteCloneGetForSymbol(alert.Symbol);
 
 			QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
@@ -338,7 +343,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Ask = priceScriptAligned;
 							ret.LastDealBidOrAsk = BidOrAsk.Ask;
-							this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler
+							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
 								.GenerateFillBidBasedOnAsk(ret);
 							break;
 						case Direction.Short:
@@ -349,7 +354,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Bid = priceScriptAligned;
 							ret.LastDealBidOrAsk = BidOrAsk.Bid;
-							this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler
+							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
 								.GenerateFillAskBasedOnBid(ret);
 							break;
 						default:
@@ -366,7 +371,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Ask = priceScriptAligned;
 							ret.LastDealBidOrAsk = BidOrAsk.Ask;
-							this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler
+							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
 								.GenerateFillBidBasedOnAsk(ret);
 							break;
 						case Direction.Short:
@@ -377,7 +382,7 @@ namespace Sq1.Core.Backtesting {
 							}
 							ret.Bid = priceScriptAligned;
 							ret.LastDealBidOrAsk = BidOrAsk.Bid;
-							this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler
+							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
 								.GenerateFillAskBasedOnBid(ret);
 							break;
 						default:
@@ -390,14 +395,14 @@ namespace Sq1.Core.Backtesting {
 						case Direction.Cover:
 							ret.Ask = quotePrev.Ask;
 							ret.LastDealBidOrAsk = BidOrAsk.Ask;
-							this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler
+							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
 								.GenerateFillBidBasedOnAsk(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
 							ret.Bid = quotePrev.Bid;
 							ret.LastDealBidOrAsk = BidOrAsk.Bid;
-							this.backtester.BacktestDataSource.BacktestStreamingProvider.SpreadModeler
+							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
 								.GenerateFillAskBasedOnBid(ret);
 							break;
 						default:

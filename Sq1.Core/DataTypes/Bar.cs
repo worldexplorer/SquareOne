@@ -189,17 +189,17 @@ namespace Sq1.Core.DataTypes {
 			}
 			return msg;
 		}
-		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, ref string msg) {
+		public bool HasSameDOHLCVas(Bar bar, string barIdent, string thisIdent, ref string errRef) {
 			if (this.Symbol != bar.Symbol) {
 				#if VERBOSE_STRINGS_SLOW
-				msg = thisIdent + ".Symbol[" + this.Symbol + "] != " + barIdent + ".Symbol[" + bar.Symbol + "]";
+				errRef = thisIdent + ".Symbol[" + this.Symbol + "] != " + barIdent + ".Symbol[" + bar.Symbol + "]";
 				#endif
 				return false;
 			}
 
 			if (this.ScaleInterval != bar.ScaleInterval) {
 				#if VERBOSE_STRINGS_SLOW
-				msg = thisIdent + ".ScaleInterval[" + this.ScaleInterval + "] != "
+				errRef = thisIdent + ".ScaleInterval[" + this.ScaleInterval + "] != "
 					+ barIdent + ".ScaleInterval[" + bar.ScaleInterval + "]";
 				#endif
 				return false;
@@ -207,26 +207,60 @@ namespace Sq1.Core.DataTypes {
 
 			if (this.DateTimeOpen != bar.DateTimeOpen) {
 				#if VERBOSE_STRINGS_SLOW
-				msg = thisIdent + ".DateTimeOpen[" + this.DateTimeOpen + "] != " 
+				errRef = thisIdent + ".DateTimeOpen[" + this.DateTimeOpen + "] != " 
 					+ barIdent + ".DateTimeOpen[" + bar.DateTimeOpen + "]";
 				#endif
 				return false;
 			}
 
-			bool sameOHLCV = (this.Open == bar.Open && this.High == bar.High
-				&& this.Low == bar.Low && this.Close == bar.Close && this.Volume == bar.Volume);
-			if (sameOHLCV == false) {
+			//v1
+			//bool sameOHLCV = (this.Open == bar.Open && this.High == bar.High
+			//    && this.Low == bar.Low && this.Close == bar.Close && this.Volume == bar.Volume);
+			//if (sameOHLCV == false) {
+			//    #if VERBOSE_STRINGS_SLOW
+			//    msg = "OHLCV are different while DateTimeOpen is the same: "
+			//        + thisIdent + "[" + this + "] != " + barIdent + "[" + bar + "]";
+			//    #endif
+			//    return false;
+			//}
+			//v2
+			string OHLCV_msg = "";
+			if (this.Open != bar.Open) {
 				#if VERBOSE_STRINGS_SLOW
-				msg = "OHLCV are different while DateTimeOpen is the same: "
-					+ thisIdent + "[" + this + "] != " + barIdent + "[" + bar + "]";
+				OHLCV_msg += thisIdent + ".Open[" + this.Open + "] != " + barIdent + ".Open[" + bar.Open + "] ";
 				#endif
+			}
+			if (this.High != bar.High) {
+				#if VERBOSE_STRINGS_SLOW
+				OHLCV_msg += thisIdent + ".High[" + this.High + "] != " + barIdent + ".High[" + bar.High + "] ";
+				#endif
+			}
+			if (this.Low != bar.Low) {
+				#if VERBOSE_STRINGS_SLOW
+				OHLCV_msg += thisIdent + ".Low[" + this.Low + "] != " + barIdent + ".Low[" + bar.Low + "] ";
+				#endif
+			}
+			if (this.Close != bar.Close) {
+				#if VERBOSE_STRINGS_SLOW
+				OHLCV_msg += thisIdent + ".Close[" + this.Close + "] != " + barIdent + ".Close[" + bar.Close + "] ";
+				#endif
+			}
+			if (this.Volume != bar.Volume) {
+				#if VERBOSE_STRINGS_SLOW
+				OHLCV_msg += thisIdent + ".Volume[" + this.Volume + "] != " + barIdent + ".Volume[" + bar.Volume + "] ";
+				#endif
+			}
+			if (string.IsNullOrEmpty(OHLCV_msg) == false) {
+				errRef = OHLCV_msg;
 				return false;
 			}
+
+
 
 			bool sameParent = (this.ParentBars == bar.ParentBars && this.ParentBarsIndex == bar.ParentBarsIndex);
 			if (sameParent == false) {
 				#if VERBOSE_STRINGS_SLOW
-				msg = "CAN_SKIP_PARENT_DIFFERENT:"
+				errRef = "CAN_SKIP_PARENT_DIFFERENT:"
 					+ " " + thisIdent + ".ParentBars[" + this.ParentBarsIdent + "]"
 					+ " != " + bar + ".ParentBarsIndex[" + bar.ParentBarsIdent + "]"
 					+ " while lastStaticBar.DOHLCV=barAdding.DOHLCV";
@@ -235,7 +269,7 @@ namespace Sq1.Core.DataTypes {
 			}
 
 			#if VERBOSE_STRINGS_SLOW
-			msg = "lastStaticBar.DOHLCV=barAdding.DOHLCV";
+			errRef = "lastStaticBar.DOHLCV=barAdding.DOHLCV";
 			#endif
 			return true;
 		}

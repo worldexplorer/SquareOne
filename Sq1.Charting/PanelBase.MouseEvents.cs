@@ -99,7 +99,7 @@ namespace Sq1.Charting {
 			if (base.DesignMode) return;
 			if (this.ChartControl.IsBacktestingNow) {
 				this.Cursor = Cursors.WaitCursor;
-				return;
+				//return;
 			}
 			if (this.Cursor == Cursors.WaitCursor) this.Cursor = Cursors.Default;
 			try {

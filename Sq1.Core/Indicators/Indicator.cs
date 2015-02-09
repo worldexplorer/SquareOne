@@ -287,6 +287,7 @@ namespace Sq1.Core.Indicators {
 		public virtual void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar newStaticBar) {
 			bool canRunCalculation = this.canRunCalculation();
 			if (canRunCalculation == false) {
+				this.preAppendCheckThrow(newStaticBar);
 				this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, double.NegativeInfinity);
 				return;
 			}
@@ -302,7 +303,16 @@ namespace Sq1.Core.Indicators {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
+			this.preAppendCheckThrow(newStaticBar);
 			this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, derivedCalculated);
+		}
+		void preAppendCheckThrow(Bar newStaticBar) {
+			if (this.OwnValuesCalculated.LastIndex == newStaticBar.ParentBarsIndex - 1) return;
+			string msg = "INDICATOR_INDEX_AND_UNDERLYING_BARS_INDEX_MUST_BE_IN_SYNC"
+				+ " this.OwnValuesCalculated.LastIndex[" + this.OwnValuesCalculated.LastIndex + "] MUSTBE_EQUAL"
+				+ " newStaticBar.ParentBarsIndex-1=[" + (newStaticBar.ParentBarsIndex - 1) + "]";
+			Assembler.PopupException(msg);
+			throw new Exception(msg);
 		}
 		public virtual void OnNewStreamingQuote(Quote newStreamingQuote) {
 			bool canRunCalculation = this.canRunCalculation();

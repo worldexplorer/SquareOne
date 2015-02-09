@@ -104,7 +104,7 @@ namespace Sq1.Core.Broker {
 			Thread.Sleep(millis);
 			this.SubmitOrdersThreadEntry(ordersMillisAsObject);
 		}
-		public void SubmitOrdersThreadEntry(object ordersAsObject) {
+		public virtual void SubmitOrdersThreadEntry(object ordersAsObject) {
 			try {
 				object[] ordersObjectArray = (object[])ordersAsObject;
 				if (ordersObjectArray.Length < 1) {

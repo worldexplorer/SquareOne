@@ -123,10 +123,10 @@ namespace Sq1.Widgets.Optimization {
 		public string AspectGetterDelegateImplementor(object o) {
 			SystemPerformance systemPerformance = o as SystemPerformance;
 			if (systemPerformance == null) return colDynParamName + ".AspectGetter: systemPerformance=null";
-			if (systemPerformance.ScriptAndIndicatorParameterClonesByName.ContainsKey(colDynParamName) == false) {
+			if (systemPerformance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(colDynParamName) == false) {
 				return colDynParamName + ".AspectGetter: !systemPerformance.ScriptAndIndicatorParametersByName[" + colDynParamName + "]";
 			}
-			IndicatorParameter param = systemPerformance.ScriptAndIndicatorParameterClonesByName[colDynParamName];
+			IndicatorParameter param = systemPerformance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished[colDynParamName];
 			return param.ValueCurrent.ToString();
 		}
 	}

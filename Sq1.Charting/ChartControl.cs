@@ -12,9 +12,6 @@ using Sq1.Charting.MultiSplit;
 
 namespace Sq1.Charting {
 	public partial class ChartControl {
-		public Bars Bars { get; private set; }
-		public bool BarsEmpty { get { return this.Bars == null || this.Bars.Count == 0; } }
-		public bool BarsNotEmpty { get { return this.Bars != null && this.Bars.Count > 0; } }
 		List<PanelBase> panels;
 		public bool RangeBarCollapsed {
 			get { return this.splitContainerChartVsRange.Panel2Collapsed; }
@@ -90,11 +87,12 @@ namespace Sq1.Charting {
 			this.Initialize(generated);
 			#endregion
 		}
-		public void Initialize(Bars barsNotNull, bool invalidateAllPanels = true) {
+		public override void Initialize(Bars barsNotNull, bool invalidateAllPanels = true) {
 			this.barEventsDetach();
-			this.Bars = barsNotNull;
-			if (this.BarsNotEmpty == false) {
-				string msg = "DONT_PASS_EMPTY_BARS_TO_CHART_CONTROL ATTACHING_EVENTS_THOUGH";
+			base.Initialize(barsNotNull, invalidateAllPanels);
+			//if (this.BarsNotEmpty == false) {
+			if (this.Bars == null) {
+				string msg = "I_CANT_ATTACH_BAR_EVENTS_TO_NULL_BARS DONT_PASS_EMPTY_BARS_TO_CHART_CONTROL " + this.Bars.Count;
 				Assembler.PopupException(msg);
 				//return;
 			}
@@ -116,10 +114,25 @@ namespace Sq1.Charting {
 				return;
 			}
 			if (this.ChartSettings.ScrollPositionAtBarIndex > this.hScrollBar.Maximum) {
-				this.ChartSettings.ScrollPositionAtBarIndex = this.hScrollBar.Maximum;
+				if (this.hScrollBar.Maximum == -1) {
+					string msg = "USER_CLICKED_LIVESIM_START_I_WONT_RESET_THE_SERIALIZED_POSITION_TO_TEMPORARY";
+				} else {
+					this.ChartSettings.ScrollPositionAtBarIndex = this.hScrollBar.Maximum;
+				}
 			}
-			// I'm here 1) at ChartControl startup; 2) after I changed BarRange in MainForm 
-			this.hScrollBar.Value = this.ChartSettings.ScrollPositionAtBarIndex;
+			// I'm here 1) at ChartControl startup; 2) after I changed BarRange in MainForm
+			bool noExceptionsExpected = true;
+			if (this.ChartSettings.ScrollPositionAtBarIndex == -1) {
+				string msg = "WHY_LIVESIM_HAS_IT_-1???";
+				noExceptionsExpected = false;
+			}
+			if (this.ChartSettings.ScrollPositionAtBarIndex < this.hScrollBar.Minimum || this.ChartSettings.ScrollPositionAtBarIndex > this.hScrollBar.Maximum) {
+				string msg = "WHY_LIVESIM_HAS_IT_0_WHILE_MIN_IS_GREATER_THAN_0???";
+				noExceptionsExpected = false;
+			}
+			if (noExceptionsExpected) {
+				this.hScrollBar.Value = this.ChartSettings.ScrollPositionAtBarIndex;
+			}
 			foreach (PanelBase panel in this.panels) {	// at least PanelPrice and PanelVolume
 				panel.InitializeWithNonEmptyBars(this);
 			}
@@ -134,13 +147,14 @@ namespace Sq1.Charting {
 			if (this.hScrollBar.Maximum == this.Bars.Count - 1) return;
 			this.hScrollBar.Minimum = 0;						// index of first available Bar in this.Bars 
 			this.hScrollBar.Maximum = this.Bars.Count - 1;		// index of  last available Bar in this.Bars
+			this.hScrollBar.Value = this.hScrollBar.Maximum;
 		}
 		public void InvalidateAllPanels() {
 			if (base.InvokeRequired) {
 				base.BeginInvoke(new MethodInvoker(this.InvalidateAllPanels));
 				return;
 			}
-			if (this.IsBacktestingNow) return;
+			//LIVESIM_PAUSED_SHOULD_H_SCROLL__THIS_WAS_AN_OBSTACLE_NON_REPAINTING if (base.IsBacktestingNow) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
 			foreach (PanelBase panel in this.panels) {
@@ -150,6 +164,25 @@ namespace Sq1.Charting {
 			//this.TooltipPriceHide();
 			//this.TooltipPositionHide();
 			//this.InvalidatedByStreamingKeepTooltipsOpen = false;
+		}
+		public void RefreshAllPanelsNonBlockingRefreshNotYetStarted() {
+			// RESETTING_ASAP_IN_THIS_THREAD_AND_SETTING_IN_GUI_THREAD__SWITCHING_IS_SLOW
+			// AVOIDING_signalledAlready==true_IN_RefreshAllPanelsFinidhesWaiterSignalledLivesimCanProceedToGenerateNewQuote()
+			// WILL_RESET_AFTER_WAIT(0)_GETS_CONTROL base.RefreshAllPanelsFinishedWaiterReset();
+			if (base.RefreshAllPanelsIsSignalled == true) {
+				string msg = "VERY_LAZY_GUI_THREAD_SIGNALLED_FOR_PREV_REPAINT_SO_LATE??? MUST_BE_UNSIGNALLED_KOZ_IM_THE_ONLY_WHO_WILL_SIGNAL";
+				//Assembler.PopupException(msg, null, false);
+			}
+			if (base.InvokeRequired) {
+				base.BeginInvoke(new MethodInvoker(this.RefreshAllPanelsNonBlockingRefreshNotYetStarted));
+				return;
+			}
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			//WHY??? this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
+			foreach (PanelBase panel in this.panels) {
+				panel.Refresh();
+			}
+			base.RefreshAllPanelsFinishedWaiterNotifyAll();
 		}
 		void scrollToBarSafely(int bar) {
 			if (bar > this.hScrollBar.Maximum) bar = this.hScrollBar.Maximum;
@@ -225,9 +258,19 @@ namespace Sq1.Charting {
 				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarAddedUpdated_ShouldTriggerRepaint(sender, e); });
 				return;
 			}
-			if (this.VisibleBarRight != this.Bars.Count) return;	// move slider if only last bar is visible 
+			if (this.VisibleBarRight != this.Bars.Count - 1) {
+				string msg = "I_WILL_MOVE_SLIDER_IF_ONLY_LAST_BAR_IS_VISIBLE";
+				//I_WILL_MOVE_ANYWAYS__WE_ARE_HERE_WHEN_PAUSED_LIVESIM_WAS_HSCROLLED_BACKWARDS return;
+			}
+			string msg1 = "IM_MOVING_SLIDER_TO_THE_RIGHTMOST_BAR_KOZ_WE_ARE_ON_LAST_BAR";
 			this.SyncHorizontalScrollToBarsCount();
 			this.InvalidateAllPanels();
+
+			if (this.splitContainerChartVsRange.Panel2Collapsed == true) {
+				string msg = "YES_splitContainerChartVsRange.Panel2Collapsed_WAS_THE_ONE WAS_THAT_THE_RIGHT_VISIBILITY_CRITERION???";
+				//Assembler.PopupException(msg);
+				return;
+			}
 			this.RangeBar.Invalidate();
 		}
 
@@ -407,5 +450,8 @@ namespace Sq1.Charting {
 			return ret;
 		}
 
+		public override void RangeBarCollapseToAccelerateLivesim() {
+			this.splitContainerChartVsRange.Panel2Collapsed = true;
+		}
 	}
 }

@@ -68,7 +68,7 @@ namespace Sq1.Strategies.Demo {
 			if (this.Executor.Backtester.IsBacktestingNow == false) {
 				Bar bar = quote.ParentBarStreaming;
 				int barNo = bar.ParentBarsIndex;
-				if (barNo == -1) return;
+				if (barNo <= 0) return;
 				DateTime lastStaticBarDateTime = bar.ParentBars.BarStaticLastNullUnsafe.DateTimeOpen;
 				DateTime streamingBarDateTime = bar.DateTimeOpen;
 				Bar barNormalizedDateTimes = new Bar(bar.Symbol, bar.ScaleInterval, quote.ServerTime);
@@ -100,8 +100,8 @@ namespace Sq1.Strategies.Demo {
 			bool isLastPositionNotClosedYet = base.IsLastPositionNotClosedYet;
 			if (isLastPositionNotClosedYet) {
 				if (lastPos.EntryFilledBarIndex > barStaticFormed.ParentBarsIndex) {
-					string msg1 = "prev bar you placed on streaming, now that streaming is static and positionEntry is still in the future but you have it filled?...";
-					Debugger.Break();
+					string msg1 = "NOTIFIED_ABOUT_LAST_FORMED_WHILE_LAST_POST_FILLED_AT_STREAMING__LOOKS_OK";
+					//Debugger.Break();
 				}
 
 				if (lastPos.ExitAlert != null) {
