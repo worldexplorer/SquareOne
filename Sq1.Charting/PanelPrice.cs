@@ -50,6 +50,11 @@ namespace Sq1.Charting {
 				if (base.DesignMode || this.ChartControl.BarsEmpty) return 98;
 				this.visiblePriceMinCurrent = Double.MaxValue;
 				//int visibleOrReal = (this.VisibleBarRight > this.Bars.Count) ? this.VisibleBarRight : this.Bars.Count;
+				if (this.VisibleBarLeft_cached > this.VisibleBarRight_cached) {
+					string msg = "PAINTING_ZERO_OR_FIRST_BAR_OF_LIVESIMULATION__CONITNUE_UNTIL_IT_WILL_GET_NORMALIZED_SOON";
+					//Assembler.PopupException(msg);
+					return this.visiblePriceMinCurrent;
+				}
 				for (int i = this.VisibleBarRight_cached; i >= this.VisibleBarLeft_cached; i--) {
 					if (i >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 						string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
@@ -72,6 +77,11 @@ namespace Sq1.Charting {
 					string msg = "this.VisibleBarLeft_cached > this.VisibleBarRight_cached ?";
 					Debugger.Break();
 				}
+				if (double.IsPositiveInfinity(this.visiblePriceMinCurrent)) {
+					string msg = "PAINTING_ZERO_OR_FIRST_BAR_OF_LIVESIMULATION__CONITNUE_UNTIL_IT_WILL_GET_NORMALIZED_SOON";
+					Assembler.PopupException(msg);
+				}
+
 				return this.visiblePriceMinCurrent;
 			} }
 		#endregion

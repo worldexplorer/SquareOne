@@ -20,24 +20,42 @@ namespace Sq1.Charting {
 				int ret = this.hScrollBar.Value;
 				//v2
 				// http://stackoverflow.com/questions/2882789/net-vertical-scrollbar-not-respecting-maximum-property
-				float physicalMax = this.hScrollBar.Maximum - this.hScrollBar.LargeChange + 1;
+				int physicalMax = this.hScrollBar.Maximum - this.hScrollBar.LargeChange + 1;
 				if (physicalMax <= 0) {
 					string msg = "ALL_BARS_CAN_FIT_WITHOUT_SCROLLING ex: 10bars on FullScreen";
 					this.hScrollBar.Visible = false;	// LAZY if u change this.hScrollBar.Visible u must trigger Resize() once again (ReLayout somehow otherwize MultiSplitter doesn't get the space freed)  
-					#if DEBUG
-					//Debugger.Break();
-					#endif
 					return this.Bars.Count - 1;
 				}
+				string msg2 = "FIRST_BAR_THAT_DOESNT_FIT__WATCH_SCROLL_LOCK_NOW";
 				this.hScrollBar.Visible = true;			// LAZY when u change this.hScrollBar.Visible u must trigger Resize() once again
-				float part0to1 = this.hScrollBar.Value / physicalMax;
-				if (part0to1 > 1) part0to1 = 1;	//	NONSENSE: this.hScrollBar.Value=432, physicalMax=423 - am I still resizing?...
+				float part0to1 = this.hScrollBar.Value / (float)physicalMax;	// I_HATE_DIVISION_OF_TWO_INTEGERS_IN_C#!!!!!
+				if (part0to1 > 1) {
+					part0to1 = 1;
+					string msg = "NONSENSE: this.hScrollBar.Value=[" + this.hScrollBar.Value + "] > physicalMax=[" + physicalMax + "] - am I still resizing?...";
+				}
 				try {
-					ret = (int)(part0to1 * (this.Bars.Count - 1));
+					double catchingRightMost = (double)part0to1 * (this.Bars.Count - 1);
+					double roundedUp = Math.Round(catchingRightMost);
+					ret = (int)roundedUp;
+					if (ret != physicalMax) {
+						string msg = "WE_READ_VISIBLE_RIGHT_ON_HSCROLL_CLICK_WHY_IT_MUST_BE_EQUAL??? SCROLL_LOCK_BROKEN_DUE_TO_ROUNDING??";
+					}
 				} catch (Exception ex) {
 					string msg = "OVERFLOW???";
 					Debugger.Break();
 				}
+				//I_WILL_MOVE_ANYWAYS
+				//if (ret == 0 && this.Bars.Count > 0) {
+				//    ret = this.Bars.Count - 1;
+				//    try {
+				//        //I_WILL_MOVE_ANYWAYS this.hScrollBar.Value = ret;
+				//        if (this.hScrollBar.Maximum < this.hScrollBar.Value) {
+				//            this.hScrollBar.Maximum = this.hScrollBar.Value;
+				//        }
+				//    } catch (Exception ex) {
+				//        string msg = "STICKING_TO_RIGHT_EDGE_FAILED__SWITCH_GUI_THREAD??";
+				//    }
+				//}
 				return ret;
 			} }
 		public int VisibleBarLeft { get {
@@ -48,7 +66,7 @@ namespace Sq1.Charting {
 					ret = 0;
 				}
 				if (this.hScrollBar.Value == this.hScrollBar.Minimum && ret > 1) {
-					string msg = "VisibleBarLeft must be zero at ScrollBar.Minimum, doesn't it?...";
+					string msg = "NO_DECISION_FOR_THIS_PHENOMENON_YET VisibleBarLeft must be zero at ScrollBar.Minimum, mustn't it?...";
 					//Debugger.Break();
 				}
 				return ret;
@@ -68,6 +86,14 @@ namespace Sq1.Charting {
 			foreach (PanelBase panel in this.panels) {
 				if (panel.PanelHasValuesForVisibleBarWindow == false) continue;
 				double panelMax = panel.VisibleMaxDoubleMinValueUnsafe;
+				if (panelMax == double.MinValue) {
+					string msg = "COULD_BE_OKAY___PANEL.RIGHT_VISIBLE_MIGHT_BE_ZERO";
+					continue;
+				}
+				if (panelMax == double.MaxValue && this.Bars.Count == 0) {
+					string msg = "NO_WONDER__BUT_SHOULDVE_BEEN_CAUGHT_EARLIER_IN_panel.PanelHasValuesForVisibleBarWindow";
+					continue;
+				}
 				
 				#if DEBUG
 				//REDUNDANT_ALREADY_CHECKED_2_LINES_ABOVE 

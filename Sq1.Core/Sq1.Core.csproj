@@ -53,6 +53,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED;VERBOSE_STRINGS_SLOW;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Core">
@@ -86,6 +87,10 @@
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\OrdersAutoTree.cs" />
+    <Compile Include="Charting\ChartShadow.PaintSynchronizer.cs">
+      <DependentUpon>ChartShadow.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Charting\ChartPanelType.cs" />
     <Compile Include="Charting\ChartShadow.cs">
       <SubType>UserControl</SubType>
@@ -140,6 +145,9 @@
     <Compile Include="Indicators\IndicatorParameterEventArgs.cs" />
     <Compile Include="Livesim\LivesimBroker.cs" />
     <Compile Include="Livesim\LivesimDataSource.cs" />
+    <Compile Include="Livesim\LivesimQuoteBarConsumer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Livesim\LivesimStreaming.cs" />
     <Compile Include="Livesim\LivesimBrokerEditor.cs">
       <SubType>UserControl</SubType>
@@ -195,6 +203,9 @@
     <Compile Include="Charting\ContextChart.cs" />
     <Compile Include="StrategyBase\ContextScript.cs" />
     <Compile Include="StrategyBase\ContextScriptEventArgs.cs" />
+    <Compile Include="StrategyBase\ScriptExecutor.EventGenerator.cs">
+      <DependentUpon>ScriptExecutor.cs</DependentUpon>
+    </Compile>
     <Compile Include="StrategyBase\SystemPerformancePositionsTracking.cs" />
     <Compile Include="StrategyBase\Reporter.cs">
       <SubType>UserControl</SubType>

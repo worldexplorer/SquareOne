@@ -399,7 +399,7 @@ namespace Sq1.Gui.Forms {
 					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quote);
 					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 				} else {
-					// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EQCH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED
+					// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EACH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED
 					// copypaste from Executor.ExecuteOnNewBarOrNewQuote()
 					ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quote,
 														executorSafe.ExecutionDataSnapshot.AlertsNewAfterExec.Clone(),

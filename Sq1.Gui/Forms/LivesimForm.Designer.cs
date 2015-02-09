@@ -40,20 +40,21 @@ namespace Sq1.Gui.Forms
 			this.LivesimControl = new Sq1.Widgets.Livesim.LivesimControl();
 			this.SuspendLayout();
 			// 
-			// liveSimControl1
+			// LivesimControl
 			// 
 			this.LivesimControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.LivesimControl.Location = new System.Drawing.Point(0, 0);
-			this.LivesimControl.Name = "liveSimControl1";
-			this.LivesimControl.Size = new System.Drawing.Size(917, 790);
+			this.LivesimControl.Name = "LivesimControl";
+			this.LivesimControl.Size = new System.Drawing.Size(705, 577);
 			this.LivesimControl.TabIndex = 0;
 			// 
 			// LivesimForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(917, 790);
+			this.ClientSize = new System.Drawing.Size(705, 577);
 			this.Controls.Add(this.LivesimControl);
+			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Name = "LivesimForm";
 			this.Text = "LivesimForm";
 			this.ResumeLayout(false);

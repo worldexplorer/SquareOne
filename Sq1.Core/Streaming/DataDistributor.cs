@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Streaming {
-	public class DataDistributor {
+	public partial class DataDistributor {
 		StreamingProvider StreamingProvider { get; set; }
 		public Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>> DistributionChannels { get; protected set; }
 		object lockConsumersBySymbol;
@@ -17,7 +17,7 @@ namespace Sq1.Core.Streaming {
 			this.StreamingProvider = streamingProvider;
 		}
 
-		public void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = true) {
+		public void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled) {
 			lock (lockConsumersBySymbol) {
 				if (this.DistributionChannels.ContainsKey(symbol) == false) {
 					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled);
@@ -32,7 +32,7 @@ namespace Sq1.Core.Streaming {
 				}
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> channels = this.DistributionChannels[symbol];
 				if (channels.ContainsKey(scaleInterval) == false) {
-					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval);
+					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled);
 					newChannel.ConsumersQuoteAdd(consumer);
 					channels.Add(scaleInterval, newChannel);
 					return;
@@ -87,7 +87,7 @@ namespace Sq1.Core.Streaming {
 			return ret;
 		}
 
-		public void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = true) {
+		public void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled) {
 			lock (lockConsumersBySymbol) {
 				if (this.DistributionChannels.ContainsKey(symbol) == false) {
 					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled);
@@ -102,7 +102,7 @@ namespace Sq1.Core.Streaming {
 				}
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> channels = this.DistributionChannels[symbol];
 				if (channels.ContainsKey(scaleInterval) == false) {
-					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval);
+					SymbolScaleDistributionChannel newChannel = new SymbolScaleDistributionChannel(symbol, scaleInterval, quotePumpSeparatePushingThreadEnabled);
 					newChannel.ConsumersBarAdd(consumer);
 					channels.Add(scaleInterval, newChannel);
 					return;
@@ -237,6 +237,7 @@ namespace Sq1.Core.Streaming {
 				// then clone quote for every consumer and earlyBind() to BarStreaming, link it to BarsParent (variable on length of the history loaded into Bars)
 				channel.PushQuoteToPump(quote);
 			}
+			//this.RaiseOnQuoteAsyncPushedToAllDistributionChannels(quote);
 		}
 		public List<SymbolScaleDistributionChannel> GetDistributionChannelsFor(string symbol) {
 			List<SymbolScaleDistributionChannel> distributors = new List<SymbolScaleDistributionChannel>();

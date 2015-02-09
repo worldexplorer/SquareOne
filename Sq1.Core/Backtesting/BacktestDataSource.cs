@@ -3,8 +3,8 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Backtesting {
 	public class BacktestDataSource : DataSource {
-		public BacktestStreaming BacktestStreamingProvider	{ get { return base.StreamingProvider as BacktestStreaming; } }
-		public BacktestBroker	 BacktestBrokerProvider		{ get { return base.BrokerProvider as BacktestBroker; } }
+		public BacktestStreaming StreamingAsBacktestNullUnsafe	{ get { return base.StreamingProvider as BacktestStreaming; } }
+		public BacktestBroker	 BrokerAsBacktestNullUnsafe		{ get { return base.BrokerProvider as BacktestBroker; } }
 
 		public BacktestDataSource() {
 			base.Name = "BacktestDataSource";
@@ -17,7 +17,7 @@ namespace Sq1.Core.Backtesting {
 			base.Symbols.Clear();
 			base.Symbols.Add(bars.Symbol);
 			base.StreamingProvider.InitializeFromDataSource(this);
-			this.BacktestStreamingProvider.SpreadModeler = spreadModeler;
+			this.StreamingAsBacktestNullUnsafe.SpreadModeler = spreadModeler;
 			//base.BrokerProvider.Initialize(this, base.StreamingProvider, null, base.StatusReporter);
 		}
 

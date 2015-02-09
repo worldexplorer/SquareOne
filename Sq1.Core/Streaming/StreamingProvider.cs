@@ -34,6 +34,7 @@ namespace Sq1.Core.Streaming {
 			} }
 		[JsonIgnore]	protected object				BarsConsumersLock;
 		[JsonIgnore]	public ConnectionState			ConnectionState						{ get; protected set; }
+		[JsonIgnore]	public bool						QuotePumpSeparatePushingThreadEnabled { get; protected set; }
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingProvider() {
@@ -43,6 +44,7 @@ namespace Sq1.Core.Streaming {
 			DataDistributor = new DataDistributor(this);
 			StreamingDataSnapshot = new StreamingDataSnapshot(this);
 			StreamingSolidifier = new StreamingSolidifier();
+			QuotePumpSeparatePushingThreadEnabled = true;
 		}
 		public virtual void Initialize(DataSource dataSource) {
 			this.InitializeFromDataSource(dataSource);
@@ -52,7 +54,7 @@ namespace Sq1.Core.Streaming {
 			this.DataSource = dataSource;
 			this.StreamingDataSnapshot.InitializeLastQuoteReceived(this.DataSource.Symbols);
 		}
-		protected void SubscribeSolidifier() {
+		protected virtual void SubscribeSolidifier() {
 			//SOLIDIFIER_REPLACES_STATIC_PROVIDER_TO_STORE_REALTIME_QUOTES if (this.DataSource.StaticProvider == null) return;
 			this.StreamingSolidifier.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
@@ -142,7 +144,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = true) {
+		public virtual void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
 			if (scaleInterval.Scale == BarScale.Unknown) {
 				string msg = "Failed to ConsumerBarRegister(): scaleInterval.Scale=Unknown; returning";
 				Assembler.PopupException(msg);
@@ -155,7 +157,7 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 
-			this.DataDistributor.ConsumerBarSubscribe(symbol, scaleInterval, consumer, quotePumpSeparatePushingThreadEnabled);
+			this.DataDistributor.ConsumerBarSubscribe(symbol, scaleInterval, consumer, this.QuotePumpSeparatePushingThreadEnabled);
 		}
 		public virtual void ConsumerBarUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
 			this.DataDistributor.ConsumerBarUnSubscribe(symbol, scaleInterval, consumer);
@@ -166,14 +168,14 @@ namespace Sq1.Core.Streaming {
 		#endregion
 
 		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled = true) {
+		public virtual void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
 			bool alreadyRegistered = this.ConsumerQuoteIsSubscribed(symbol, scaleInterval, consumer);
 			if (alreadyRegistered) {
 				string msg = "AVOIDING_MULTIPLE_SUBSCRIPTION QUOTE_CONSUMER_ALREADY_REGISTERED[" + consumer.ToString() + "] symbol[" + symbol + "] scaleInterval[" + scaleInterval.ToString() + "] ";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			this.DataDistributor.ConsumerQuoteSubscribe(symbol, scaleInterval, consumer, quotePumpSeparatePushingThreadEnabled);
+			this.DataDistributor.ConsumerQuoteSubscribe(symbol, scaleInterval, consumer, this.QuotePumpSeparatePushingThreadEnabled);
 			this.StreamingDataSnapshot.LastQuoteInitialize(symbol);
 		}
 		public virtual void ConsumerQuoteUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer streamingConsumer) {
@@ -242,8 +244,12 @@ namespace Sq1.Core.Streaming {
 
 			//QUOTE_ABSNO_MUST_BE_-1__HERE_NOT_MODIFIED_AFTER_QUOTE.CTOR()
 			if (quote.AbsnoPerSymbol != -1) {
-				string msg = "THIS_WAS_REFACTORED__QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL__INITIALIZED_IN_STREAMING_PROVIDER";
-				Assembler.PopupException(msg, null, true);
+				if (quote.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
+					string msg = "INJECTED_QUOTES_HAVE_AbsnoPerSymbol!=-1_AND_THIS_IS_NOT_AN_ERROR";
+				} else {
+					string msg = "THIS_WAS_REFACTORED__QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL__INITIALIZED_IN_STREAMING_PROVIDER";
+					Assembler.PopupException(msg, null, true);
+				}
 
 				//QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_PROVIDER
 				//if (quote.AbsnoPerSymbol >= absnoPerSymbolNext) {

@@ -12,9 +12,10 @@ using Sq1.Core.Charting.OnChart;
 using Sq1.Core.DoubleBuffered;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Charting {
-	public class ChartShadow : 
+	public abstract partial class ChartShadow : 
 //COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH #if !NON_DOUBLE_BUFFERED_reverted_to_compulsory_UserControl_no_buffering
 	UserControlDoubleBuffered
 //#else
@@ -30,6 +31,10 @@ namespace Sq1.Core.Charting {
 		public ManualResetEvent BacktestIsRunning { get; private set; }
 		public bool IsBacktestingNow { get { return this.BacktestIsRunning.WaitOne(0); } }
 
+		public Bars Bars { get; private set; }
+		public bool BarsEmpty { get { return this.Bars == null || this.Bars.Count == 0; } }
+		public bool BarsNotEmpty { get { return this.Bars != null && this.Bars.Count > 0; } }
+
 		public ChartShadow() : base() {
 			BacktestIsRunning = new ManualResetEvent(false);
 //			this.ScriptToChartCommunicator = new ScriptToChartCommunicator();
@@ -40,6 +45,9 @@ namespace Sq1.Core.Charting {
 			if (dontAccessAssemblerWhileInDesignMode) return;
 			if (Assembler.InstanceUninitialized.StatusReporter == null) return;
 			Assembler.InstanceInitialized.AlertsForChart.Register(this);
+		}
+		public virtual void Initialize(Bars barsNotNull, bool invalidateAllPanels = true) {
+			this.Bars = barsNotNull;
 		}
 		
 		public virtual bool SelectPosition(Position position) {
@@ -85,66 +93,35 @@ namespace Sq1.Core.Charting {
 		
 #region there is no graphics-related (PositionArrows / LinesDrawnOnChart) DataSnapshot in Core; ChartControl knows how to handle your wishes in terms of Core objects
 		// "virtual" allows here to derive Control from ChartShadow and open it in Designer - it will be displayed without implementations; will start throwing in runtime and you'll see the stack then
-		public virtual void ClearAllScriptObjectsBeforeBacktest() {
-			throw new NotImplementedException();
-		}
-		
-		public virtual void PositionsBacktestAdd(List<Position> positionsMaster) {
-			throw new NotImplementedException();
-		}
-		public virtual void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) {
-			throw new NotImplementedException();
-		}
-		
-		public virtual void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
-			throw new NotImplementedException();
-		}
-		public virtual void PendingRealtimeAdd(ReporterPokeUnit pokeUnit) {
-			throw new NotImplementedException();
-		}
-		
-		public virtual OnChartObjectOperationStatus LineDrawModify(
+		public abstract void ClearAllScriptObjectsBeforeBacktest();
+
+		public abstract void PositionsBacktestAdd(List<Position> positionsMaster);
+		public abstract void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit);
+
+		public abstract void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy);
+		public abstract void PendingRealtimeAdd(ReporterPokeUnit pokeUnit);
+
+		public abstract OnChartObjectOperationStatus LineDrawModify(
 				string id, int barStart, double priceStart, int barEnd, double priceEnd,
-				Color color, int width, bool debugParametersDidntChange = false) {
-			throw new NotImplementedException();
-		}
-		public virtual bool BarBackgroundSet(int barIndex, Color colorBg) {
-			throw new NotImplementedException();
-		}
-		public virtual Color BarBackgroundGet(int barIndex) {
-			throw new NotImplementedException();
-		}
-		public virtual bool BarForegroundSet(int barIndex, Color colorFg) {
-			throw new NotImplementedException();
-		}
-		public virtual Color BarForegroundGet(int barIndex) {
-			throw new NotImplementedException();
-		}
-		public virtual OnChartObjectOperationStatus ChartLabelDrawOnNextLineModify(
+				Color color, int width, bool debugParametersDidntChange = false);
+		public abstract bool BarBackgroundSet(int barIndex, Color colorBg);
+		public abstract Color BarBackgroundGet(int barIndex);
+		public abstract bool BarForegroundSet(int barIndex, Color colorFg);
+		public abstract Color BarForegroundGet(int barIndex);
+		public abstract OnChartObjectOperationStatus ChartLabelDrawOnNextLineModify(
 				string labelId, string labelText,
-				Font font, Color colorFore, Color colorBack) {
-			throw new NotImplementedException();
-		}
-		public virtual OnChartObjectOperationStatus BarAnnotationDrawModify(
+				Font font, Color colorFore, Color colorBack);
+		public abstract OnChartObjectOperationStatus BarAnnotationDrawModify(
 				int barIndex, string barAnnotationId, string barAnnotationText,
-				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true, 
-				int verticalPadding = 5, bool reportDidntChangeStatus = false) {
-			throw new NotImplementedException();
-		}
-		public virtual void SyncBarsIdentDueToSymbolRename() {
-			throw new NotImplementedException();
-		}
+				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true,
+				int verticalPadding = 5, bool reportDidntChangeStatus = false);
+		public abstract void SyncBarsIdentDueToSymbolRename();
 #endregion
-		
-		public virtual HostPanelForIndicator HostPanelForIndicatorGet(Indicator indicator) {
-			throw new NotImplementedException();
-		}
-		public virtual void HostPanelForIndicatorClear() {
-			throw new NotImplementedException();
-		}
-		public virtual void SetIndicators(Dictionary<string, Indicator> indicators) {
-			throw new NotImplementedException();
-		}
-		
+
+		public abstract HostPanelForIndicator HostPanelForIndicatorGet(Indicator indicator);
+		public abstract void HostPanelForIndicatorClear();
+		public abstract void SetIndicators(Dictionary<string, Indicator> indicators);
+
+		public abstract void RangeBarCollapseToAccelerateLivesim();		
 	}	
 }

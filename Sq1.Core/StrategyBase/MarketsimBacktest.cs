@@ -395,7 +395,7 @@ namespace Sq1.Core.StrategyBase {
 			return true;
 		}
 
-		public int SimulateFillAllPendingAlerts(Quote quote) {
+		public int SimulateFillAllPendingAlerts(Quote quote, Action<Alert, double, double> executeAfterAlertFilled = null) {
 			this.checkThrowRealtimePendingQuote(quote);
 			// there is no userlevel API to kill orders; in your Script, you operate SellAt/BuyAt; protoActivator.StopMove
 			// killing orders is the privilege of Realtime: OrderManager kills orders by
@@ -425,7 +425,7 @@ namespace Sq1.Core.StrategyBase {
 					continue;
 				}
 
-				bool filled = this.SimulateFillPendingAlert(alert, quote);
+				bool filled = this.SimulateFillPendingAlert(alert, quote, executeAfterAlertFilled);
 				if (filled) {
 					if (alert.IsEntryAlert)	entriesFilled++;
 					else					exitsFilled++;
@@ -440,16 +440,17 @@ namespace Sq1.Core.StrategyBase {
 			return filledTotal;
 		}
 
-		public bool SimulateFillPendingAlert(Alert alert, Quote quote) {
+		public bool SimulateFillPendingAlert(Alert alert, Quote quote, Action<Alert, double, double> executeAfterAlertFilled = null) {
 			bool filled = false;
 			if (alert.IsEntryAlert) {
-				filled = this.simulatePendingFillEntry(alert, quote);
+				filled = this.simulatePendingFillEntry(alert, quote, executeAfterAlertFilled);
 			} else {
-				filled = this.simulatePendingFillExit(alert, quote);
+				filled = this.simulatePendingFillExit(alert, quote, executeAfterAlertFilled);
 			}
 			if (filled == false) return filled;
 			
-			if (this.executor.Backtester.IsBacktestingNow == false) {
+			//if (this.executor.Backtester.IsBacktestingNow == false) {
+			if (this.executor.Backtester.IsBacktestRunning == false) {
 				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
 				return filled;
 			}
@@ -518,7 +519,7 @@ namespace Sq1.Core.StrategyBase {
 			return msg;
 		}
 		void checkThrowRealtimePendingQuote(Quote quote) {
-			if (this.executor.Backtester.IsBacktestingNow == false) {
+			if (this.executor.Backtester.IsBacktestingNow == false && this.executor.Backtester.IsLivesimRunning == false) {
 				string msg = "SimulateFill*() should not be used for RealTime BrokerProviders and RealTime Mocks!"
 					+ " make sure you invoked executor.CallbackAlertFilledInvokeScript() from where you are now";
 				#if DEBUG
@@ -544,10 +545,13 @@ namespace Sq1.Core.StrategyBase {
 			if (quote.ParentBarStreaming.ParentBarsIndex != this.executor.Bars.Count - 1) {
 				string msg = "I refuse to serve this quoteToReach.ParentStreamingBar.ParentBarsIndex["
 					+ quote.ParentBarStreaming.ParentBarsIndex + "] != this.executor.Bars.Count-1[" + (this.executor.Bars.Count - 1) + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 		}
-		bool simulatePendingFillEntry(Alert alert, Quote quote) {
+		bool simulatePendingFillEntry(Alert alert, Quote quote, Action<Alert, double, double> executeAfterAlertFilled = null) {
 			double priceFill = -1;
 			double slippageFill = -1;
 			bool filled = this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
@@ -566,16 +570,25 @@ namespace Sq1.Core.StrategyBase {
 			double entryCommission = this.executor.OrderCommissionCalculate(alert.Direction,
 				alert.MarketLimitStop, priceFill, alert.Qty, alert.Bars);
 			
-			if (this.executor.Backtester.IsBacktestingNow == false) {
+			//if (this.executor.Backtester.IsBacktestingNow == false) {
+			if (this.executor.Backtester.IsBacktestRunning == false) {
 				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
 				return filled;
 			}
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
+			if (this.executor.Backtester.IsLivesimRunning) {
+				if (executeAfterAlertFilled != null) {
+					executeAfterAlertFilled(alert, priceFill, alert.Qty);
+				} else {
+					Assembler.PopupException("NOT_INVOKING_LIVESIM_BROKER_ON_ALERT_FILLED_ACTION");
+				}
+				return filled;
+			}
 			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote,
 				priceFill, alert.Qty, slippageFill, entryCommission);
 			return filled;
 		}
-		bool simulatePendingFillExit(Alert alert, Quote quote) {
+		bool simulatePendingFillExit(Alert alert, Quote quote, Action<Alert, double, double> executeAfterAlertFilled = null) {
 			double priceFill = -1;
 			double slippageFill = 1;
 			bool filled = this.CheckExitAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
@@ -589,11 +602,20 @@ namespace Sq1.Core.StrategyBase {
 				return filled;
 			}
 			
-			if (this.executor.Backtester.IsBacktestingNow == false) {
+			//if (this.executor.Backtester.IsBacktestingNow == false) {
+			if (this.executor.Backtester.IsBacktestRunning == false) {
 				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
 				return filled;
 			}
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
+			if (this.executor.Backtester.IsLivesimRunning) {
+				if (executeAfterAlertFilled != null) {
+					executeAfterAlertFilled(alert, priceFill, alert.Qty);
+				} else {
+					Assembler.PopupException("NOT_INVOKING_LIVESIM_BROKER_ON_ALERT_FILLED_ACTION");
+				}
+				return filled;
+			}
 			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote,
 				priceFill, alert.Qty, slippageFill, exitCommission);
 			return filled;

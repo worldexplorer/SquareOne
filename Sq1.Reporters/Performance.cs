@@ -26,13 +26,11 @@ namespace Sq1.Reporters {
 			WindowsFormsUtils.SetDoubleBuffered(this.lvPerformance);
 			this.objectListViewCustomize();
 		}
-		public override void BuildFullOnBacktestFinished(SystemPerformance performance) {
-			base.SystemPerformance = performance;
-			this.propagatePerformanceReport(performance);
+		public override void BuildFullOnBacktestFinished() {
+			this.propagatePerformanceReport();
 		}
-		void propagatePerformanceReport(SystemPerformance performance = null) {
-			if (performance == null) performance = base.SystemPerformance;
-			if (performance == null) {
+		void propagatePerformanceReport() {
+			if (base.SystemPerformance == null) {
 				string msg = "YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES";
 				Assembler.PopupException(msg);
 				return;
@@ -46,22 +44,22 @@ namespace Sq1.Reporters {
 				
 				this.currentColumn = 0;
 				this.currentRow = 0;
-				this.GenerateReportForOneColumn(performance.SlicesShortAndLong);
+				this.GenerateReportForOneColumn(base.SystemPerformance.SlicesShortAndLong);
 				
 				this.currentColumn++;
 				this.currentRow = 0;
-				this.GenerateReportForOneColumn(performance.SliceLong);
+				this.GenerateReportForOneColumn(base.SystemPerformance.SliceLong);
 				
 				this.currentColumn++;
 				this.currentRow = 0;
-				this.GenerateReportForOneColumn(performance.SliceShort);
+				this.GenerateReportForOneColumn(base.SystemPerformance.SliceShort);
 				
 				this.currentColumn++;
 				this.currentRow = 0;
-				this.GenerateReportForOneColumn(performance.SliceBuyHold);
-				
-				if (performance.BarsBuyAndHold != null) {
-					this.colBuyHold.Text = performance.BarsBuyAndHold.Symbol;
+				this.GenerateReportForOneColumn(base.SystemPerformance.SliceBuyHold);
+
+				if (base.SystemPerformance.BarsBuyAndHold != null) {
+					this.colBuyHold.Text = base.SystemPerformance.BarsBuyAndHold.Symbol;
 					this.colBuyHold.Width = 50;
 				} else {
 					this.colBuyHold.Text = "Buy & Hold";
@@ -210,8 +208,8 @@ namespace Sq1.Reporters {
 				Assembler.PopupException(msg);
 				return;
 			} else {
-				if (this.lastKnownCashAvailable == base.SystemPerformance.SlicesShortAndLong.CashAvailable) return;
-					this.lastKnownCashAvailable = base.SystemPerformance.SlicesShortAndLong.CashAvailable;
+				//if (this.lastKnownCashAvailable == base.SystemPerformance.SlicesShortAndLong.CashAvailable) return;
+				//	this.lastKnownCashAvailable = base.SystemPerformance.SlicesShortAndLong.CashAvailable;
 			}
 			this.propagatePerformanceReport();
 		}

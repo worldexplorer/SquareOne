@@ -30,8 +30,8 @@ namespace Sq1.Reporters {
 		public override object CreateSnapshotToStoreInScriptContext() {
 			return new PositionsDataSnapshot();
 		}
-		public override void Initialize(ChartShadow chart, object reportersOwnDataSnapshotInOut) {
-			base.Initialize(chart, reportersOwnDataSnapshotInOut);
+		public override void Initialize(ChartShadow chart, object reportersOwnDataSnapshotInOut, SystemPerformance performance) {
+			base.Initialize(chart, reportersOwnDataSnapshotInOut, performance);
 			PositionsDataSnapshot snapCasted = reportersOwnDataSnapshotInOut as PositionsDataSnapshot;
 			if (snapCasted == null) {
 				string msg = "INVOKER_MUST_HAVE_CALLED_MY_CREATE_SNAPSHOT_AND_REGISTERED_IT_IN_SCRIPT_CONTEXT invokerAssumed=ReportersFormManager.ReporterActivateShowRegisterMniTick()<FindOrCreateReportersSnapshot()";
@@ -59,8 +59,7 @@ namespace Sq1.Reporters {
 			}
 			this.olvPositions.RebuildColumns();
 		}
-		public override void BuildFullOnBacktestFinished(SystemPerformance performance) {
-			base.SystemPerformance = performance;
+		public override void BuildFullOnBacktestFinished() {
 			if (base.SystemPerformance.Bars == null) {
 				string msg = "REPORTERS.POSITIONS_CANT_PROCESS_SYSTEM_PERFORMANCE=NULL";
 				Assembler.PopupException(msg);

@@ -6,6 +6,7 @@ using System.Threading;
 using Sq1.Core.Accounting;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Broker {
 	public partial class OrderProcessor {
@@ -221,10 +222,17 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg);
 				return;
 			}
+
+			bool brokerIsLivesim = (broker as LivesimBroker) != null;
 			if (ordersAgnostic.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry ordersAgnostic[" + ordersAgnostic.Count + "] through [" + broker + "]";
 				//Assembler.PopupException(msg, null, false);
-				ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersAgnostic });
+				if (brokerIsLivesim) {
+					//broker.SubmitOrdersThreadEntry(new object[] { ordersAgnostic });
+					broker.SubmitOrders(ordersAgnostic);
+				} else {
+					ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersAgnostic });
+				}
 				return;
 			}
 			if (ordersClosing.Count > 0 && ordersOpening.Count == 0) {
@@ -578,7 +586,7 @@ namespace Sq1.Core.Broker {
 				}
 			}*/
 		}
-		public void PostProcessOrderState(Order order, double priceFill, double qtyFill) {
+		private void PostProcessOrderState(Order order, double priceFill, double qtyFill) {
 			string msig = "PostProcessOrderState(): ";
 			string msgException = order.State + " " + order.LastMessage;
 			//if (order.Alert.isExitAlert || order.IsEmergencyClose) {

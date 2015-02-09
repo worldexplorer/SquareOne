@@ -95,6 +95,16 @@ namespace Sq1.Core.Streaming {
 			}
 			if (quoteClone.ParentBarStreaming != null) {
 				string msg = "QUOTE_ALREADY_ENRICHED_WITH_PARENT_STREAMING_BAR; I think it's a pre- bindStreamingBarForQueue() atavism";
+
+				string curious = "NOT_FILLED_YET";
+				bool same = quoteClone.ParentBarStreaming.HasSameDOHLCVas(this.BarStreamingUnattached, "quoteClone.ParentBarStreaming", "this.BarStreamingUnattached", ref curious);
+				if (same == false) {
+					string msg1 = "YOUD_BERA_RESET_PARENT_BARS_HERE?..." + curious;
+					//Assembler.PopupException();
+				} else {
+					string msg1 = "LIVESIM_HACK_TRACE_BUT_NOT_USED_HERE";
+				}
+
 				//Assembler.PopupException(msg);
 			} else {
 				quoteClone.SetParentBarStreaming(this.BarStreamingUnattached);
@@ -104,7 +114,7 @@ namespace Sq1.Core.Streaming {
 				quoteClone.IntraBarSerno  = this.IntraBarSerno;
 			} else {
 				string msg = "ARE_YOU_SURE_ITS_REASONABLE_TO_SET_quoteClone.IntraBarSerno_OUTSIDE_StreamingBarFactory?..";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 			}
 			return quoteClone;
 		}

@@ -42,6 +42,6 @@ namespace Sq1.Core.Livesim {
 //			this.streamingLivesim.DdeTopicTrades = this.DdeTopicTrades;
 //			this.streamingLivesim.DdeTopicPrefixDom = this.DdeTopicPrefixDom;
 		}
-	
+
     }
 }

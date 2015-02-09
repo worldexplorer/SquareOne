@@ -130,13 +130,22 @@ namespace Sq1.Gui.Forms {
 			// CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END
 		}
 		internal void Executor_BacktesterChunkSimulatedStep3of4(object sender, EventArgs e) {
+			if (sender != this.chartFormManager.Executor.EventGenerator) return;
+			if (this.chartFormManager.ChartForm.InvokeRequired) {
+				this.chartFormManager.ChartForm.BeginInvoke(new MethodInvoker(delegate { this.Executor_BacktesterChunkSimulatedStep3of4(sender, e); }));
+				return;
+			}
+
 			if (this.chartFormManager.Executor == null) {
 				string msg = "invoked by Backtester.SubstituteAndRunSimulation() I don't remember whether Tag=null is ok or not...";
 				return;
 			}
-			if (sender != this.chartFormManager.Executor.EventGenerator) return;
-			if (this.chartFormManager.ChartForm.InvokeRequired) {
-				this.chartFormManager.ChartForm.BeginInvoke(new MethodInvoker(delegate { this.Executor_BacktesterChunkSimulatedStep3of4(sender, e); }));
+			if (this.chartFormManager.Executor.Backtester.IsBacktestingNow == false) {
+				string msg = "Livesimulator.afterBacktesterComplete()_ALREADY_RESTORED_BACKTESTER_WHILE_SWITCHING_TO_GUI_THREAD [base.Executor.Backtester = this.BacktesterBackup]";
+				return;
+			}
+			if (this.chartFormManager.Executor.Backtester.QuotesGenerator == null) {
+				string msg = "YOU_DIDNT_INVOKE_Backtester.Initialize() AVOIDING_EXCEPTIONS_IN_QuotesGeneratedSoFar";
 				return;
 			}
 

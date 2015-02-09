@@ -261,7 +261,6 @@ namespace Sq1.Core.StrategyBase {
 			//this.ExecutionDataSnapshot.PositionsOpenedAfterExec
 			//this.ExecutionDataSnapshot.PositionsClosedAfterExec
 
-			
 			bool willEmit = this.Backtester.IsBacktestingNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
 			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
 			if (willEmit) {
@@ -304,7 +303,8 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.Backtester.IsBacktestingNow && this.Backtester.WasBacktestAborted) return null;
-
+	
+			
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated,
 												this.ExecutionDataSnapshot.AlertsNewAfterExec.Clone(),
 												this.ExecutionDataSnapshot.PositionsOpenedAfterExec.Clone(),
@@ -320,13 +320,15 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			if (pokeUnit.PositionsPlusAlertsCount == 0) return null;
 			foreach (Alert alert in pokeUnit.AlertsNew.InnerList) {
 				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
 			}
-			if (this.Backtester.IsBacktestingNow) return pokeUnit;
+			//if (this.Backtester.IsBacktestingNow) return pokeUnit;
 			// NOPE PositionsMaster grows only in Callback: do this before this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads() to avoid REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert
 			// NOPE_REALTIME_FILLS_POSITIONS_ON_CALLBACK this.AddPositionsJustCreatedUnfilledToChartShadowAndPushToReportersAsyncUnsafe(pokeUnit);
+			
+			this.RaiseStrategyExecutionComplete(quoteForAlertsCreated);
+			if (pokeUnit.PositionsPlusAlertsCount == 0) return null;
 			return pokeUnit;
 		}
 
@@ -687,7 +689,7 @@ namespace Sq1.Core.StrategyBase {
 				positionsClosedAfterAlertFilled.AddClosed(positionClosedAfterAlertFilled);
 			}
 
-			bool willPlace = this.Backtester.IsBacktestingNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
+			bool willEmit = this.Backtester.IsBacktestingNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
 			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
 
 			PositionPrototype proto = alertFilled.PositionAffected.Prototype;
@@ -729,7 +731,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 
-				if (alertsNewAfterAlertFilled.Count > 0 && willPlace) {
+				if (alertsNewAfterAlertFilled.Count > 0 && willEmit) {
 					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsNewAfterAlertFilled.InnerList, setStatusSubmitting, true);
 
 					// 3. Script using proto might move SL and TP which require ORDERS to be moved, not NULLs
@@ -1012,8 +1014,8 @@ namespace Sq1.Core.StrategyBase {
 			foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
 				if (indicator.OwnValuesCalculated.Count != this.Bars.Count - 1) {
 					string state = "MA.OwnValues.Count=499, MA.BarsEffective.Count=500[0...499], MA.BarsEffective.BarStreaming=null <= that's why indicator has 1 less";
-					string msg = "REMOVE_HOLES_IN_INDICATOR " + indicator;
-					Assembler.PopupException(msg);
+					string msg = "YOU_ABORTED_LIVESIM_BUT_DIDNT_RECALCULATE_INDICATORS? REMOVE_HOLES_IN_INDICATOR " + indicator;
+					Assembler.PopupException(msg, null, false);
 				}
 				indicator.BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate();
 			}
@@ -1053,7 +1055,9 @@ namespace Sq1.Core.StrategyBase {
 				
 				this.Backtester.Initialize();
 				this.Backtester.RunSimulation();
-				this.Performance.BuildStatsOnBacktestFinished();
+				if (this.Backtester.IsLivesimRunning == false) {
+					this.Performance.BuildStatsOnBacktestFinished();
+				}
 			} catch (Exception ex) {
 				string msg = "RUN_SIMULATION_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Bars + "]";
 				Assembler.PopupException(msg, ex);
@@ -1214,7 +1218,8 @@ namespace Sq1.Core.StrategyBase {
 
 		}
 		public void AlertKillPending(Alert alert) {
-			if (this.Backtester.IsBacktestingNow) {
+			//if (this.Backtester.IsBacktestingNow) {
+			if (this.Backtester.IsBacktestingOrLivesimNow) {
 				this.MarketsimBacktest.SimulateAlertKillPending(alert);
 			} else {
 				this.MarketLive.AlertKillPending(alert);
@@ -1289,6 +1294,18 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Strategy.ScriptContextCurrent == null) return ret;
 			ret += " @ " + this.Strategy.ScriptContextCurrent.ToString();
 			return ret;
+		}
+		public string ToStringWithCurrentParameters() {
+			string dbg = this.Strategy.ScriptContextCurrent.Name + " "
+				+ this.Strategy.Script.IndicatorParametersAsString;
+			string dbg2 = "";
+			if (this.Performance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished != null) {
+				foreach (string iName in this.Performance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Keys) {
+					IndicatorParameter ip = this.Performance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished[iName];
+					dbg2 += iName + "[" + ip.ValueCurrent + "]";
+				}
+			}
+			return dbg + dbg2;
 		}
 	}
 }

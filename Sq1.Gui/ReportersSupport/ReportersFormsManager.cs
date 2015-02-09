@@ -43,6 +43,9 @@ namespace Sq1.Gui.ReportersSupport {
 		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
 
+			this.ChartFormManager.Executor.EventGenerator.BacktesterContextInitializedStep2of4 += new EventHandler<EventArgs>(
+				this.EventGenerator_BacktesterContextInitializedStep2of4);
+
 			this.ChartFormManager.Executor.EventGenerator.BrokerFilledAlertsOpeningForPositions_step1of3 += new EventHandler<ReporterPokeUnitEventArgs>(
 				this.EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3);
 
@@ -51,6 +54,10 @@ namespace Sq1.Gui.ReportersSupport {
 
 			this.ChartFormManager.Executor.EventGenerator.BrokerFilledAlertsClosingForPositions_step3of3 += new EventHandler<ReporterPokeUnitEventArgs>(
 				this.EventGenerator_BrokerFilledAlertsClosingForPositions_step3of3);
+		}
+
+		void EventGenerator_BacktesterContextInitializedStep2of4(object sender, EventArgs e) {
+			this.ClearAllReports_step0of3();
 		}
 
 		void EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(object sender, ReporterPokeUnitEventArgs e) {
@@ -62,6 +69,26 @@ namespace Sq1.Gui.ReportersSupport {
 		void EventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(object sender, ReporterPokeUnitEventArgs e) {
 			this.BuildIncrementalOnPositionsClosedAllReports_step3of3(e.PokeUnit);
 		}
+		public void ClearAllReports_step0of3() {
+			if (this.ChartFormManager.ChartForm.InvokeRequired) {
+				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.ClearAllReports_step0of3(); });
+				return;
+			}
+
+			SystemPerformanceSlice both = this.ChartFormManager.Executor.Performance.SlicesShortAndLong;
+			if (both.PositionsImTracking.Count > 0 || both.NetProfitForClosedPositionsBoth > 0) {
+				string msg = "SYSTEM_PERFORMANCE_MUST_BE_CLEAN_AFTER_USER_CLICKED_START_LIVESIMS";
+				Assembler.PopupException(msg);
+			}
+			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+				rep.BuildFullOnBacktestFinished();
+
+				// Reporters.Position should display "Positions (276)"
+				ReporterFormWrapper parent = rep.Parent as ReporterFormWrapper;
+				if (parent == null) continue;
+				parent.Text = rep.TabText + " :: " + this.ChartFormManager.ChartForm.Text;
+			}
+		}
 		public void BuildReportFullOnBacktestFinishedAllReporters(SystemPerformance performance) {
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {
 				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildReportFullOnBacktestFinishedAllReporters(performance); });
@@ -72,7 +99,7 @@ namespace Sq1.Gui.ReportersSupport {
 				Assembler.PopupException(msg);
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
-				rep.BuildFullOnBacktestFinished(performance);
+				rep.BuildFullOnBacktestFinished();
 				
 				// Reporters.Position should display "Positions (276)"
 				ReporterFormWrapper parent = rep.Parent as ReporterFormWrapper;
@@ -145,7 +172,8 @@ namespace Sq1.Gui.ReportersSupport {
 			string typeNameShort = this.reportersRepo.ShrinkTypeName(typeNameShortOrFullAutodetect);
 			Reporter reporterActivated = this.reportersRepo.ActivateFromTypeName(typeNameShortOrFullAutodetect);
 			object reportersSnapshot = this.findOrCreateReportersSnapshot(reporterActivated);
-			reporterActivated.Initialize(this.ChartFormManager.ChartForm.ChartControl as ChartShadow, reportersSnapshot);
+			reporterActivated.Initialize(this.ChartFormManager.ChartForm.ChartControl as ChartShadow, reportersSnapshot, this.ChartFormManager.Executor.Performance);
+
 			var ret = new ReporterFormWrapper(this, reporterActivated);
 			//ret.Text = reporterActivated.TabText + " :: " + this.ChartFormsManager.Strategy.Name;
 			ret.Text = reporterActivated.TabText + " :: " + this.ChartFormManager.ChartForm.Text;
@@ -161,7 +189,7 @@ namespace Sq1.Gui.ReportersSupport {
 				Assembler.PopupException(msg);
 				return ret;
 			}
-			reporterActivated.BuildFullOnBacktestFinished(this.ChartFormManager.Executor.Performance);
+			reporterActivated.BuildFullOnBacktestFinished();
 			return ret;
 		}
 		object findOrCreateReportersSnapshot(Reporter reporterActivated) {

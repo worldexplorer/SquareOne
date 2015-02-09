@@ -6,7 +6,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Streaming {
-	public class SymbolScaleDistributionChannel {
+	public partial class SymbolScaleDistributionChannel {
 		public	string							Symbol							{ get; protected set; }
 		public	BarScaleInterval				ScaleInterval					{ get; protected set; }
 		public	StreamingBarFactoryUnattached	StreamingBarFactoryUnattached	{ get; protected set; }
@@ -37,7 +37,7 @@ namespace Sq1.Core.Streaming {
 			// NOPE_ON_APP_RESTART_BACKTESTER_COMPLAINS_ITS_ALREADY_PAUSED
 			// moved BacktesterRunningAdd() to QuotePump.PushConsumersPaused = true;
 		}
-		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval, bool quotePumpSeparatePushingThreadEnabled = true) : this() {
+		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval, bool quotePumpSeparatePushingThreadEnabled) : this() {
 			Symbol = symbol;
 			ScaleInterval = scaleInterval;
 			StreamingBarFactoryUnattached = new StreamingBarFactoryUnattached(symbol, ScaleInterval);
@@ -59,10 +59,17 @@ namespace Sq1.Core.Streaming {
 
 			Quote quoteSernoEnrichedWithUnboundStreamingBar = this.StreamingBarFactoryUnattached.
 				EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar(quote2bClonedForEachConsumer);
+			if (quoteSernoEnrichedWithUnboundStreamingBar.ParentBarStreaming.ParentBars == null) {
+				string msg = "HERE_NULL_IS_OK___BINDER_WILL_BE_INVOKED_DOWNSTACK_SOON_FOR_QUOTE_CLONED StreamingEarlyBinder.BindStreamingBarForQuote()";
+			}
 
 			//v1 this.PushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
 			//v2 let the user re-backtest during live streaming using 1) QuotePump.OnHold=true; 2) RunBacktest(); 3) QuotePump.OnHold=false;
-			QuotePump.PushStraightOrBuffered(quoteSernoEnrichedWithUnboundStreamingBar);
+			this.QuotePump.PushStraightOrBuffered(quoteSernoEnrichedWithUnboundStreamingBar);
+
+			if (quoteSernoEnrichedWithUnboundStreamingBar.ParentBarStreaming.ParentBars != null) {
+				string msg = "HERE_NULL_IS_OK___BINDER_WAS_INVOKED_FOR_QUOTE_CLONED StreamingEarlyBinder.BindStreamingBarForQuote()";
+			}
 		}
 		[Obsolete("DANGER!!! QUOTE_MUST_BE_CLONED_AND_ENRICHED MAKE_SURE_this.PushQuoteToConsumers()_IS_INVOKED_THROUGH_PushQuoteToPump.PushStraightOrBuffered()_NOT_STRAIGHT_FROM_this.PushQuoteToDistributionChannels()")]
 		public void PushQuoteToConsumers(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
@@ -104,6 +111,7 @@ namespace Sq1.Core.Streaming {
 			lock (lockConsumersQuote) {
 				this.bindStreamingBarForQuoteAndPushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar.Clone());
 			}
+			//this.RaiseOnQuoteSyncPushedToAllConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
 		}
 
 		void bindNewStreamingBarAppendPokeConsumersStaticFormed(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
@@ -344,7 +352,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public void PumpAutoPauseBacktesterLaunchingAdd(Backtester backtesterAdding) {	// POTENTINALLY_THREAD_UNSAFE lock(this.lockPump) {
-			if (QuotePump.PushConsumersPaused == true) {
+			if (this.QuotePump.PushConsumersPaused == true) {
 				string msg = "PUMP_ALREADY_PAUSED_BY_ANOTHER_CONSUMERS_BACKTEST__LAZY_TO_FIND_ROOT_CAUSE_KOZ_NOT_AN_ERROR backtesterAdding=[" + backtesterAdding + "]";
 				Assembler.PopupException(msg, null, false);
 				return;
