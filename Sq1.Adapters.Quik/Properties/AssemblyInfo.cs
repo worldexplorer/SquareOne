@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Sq1.Adapters.Quik")]
-[assembly: AssemblyDescription("Streaming and Broker providers for http://quik.ru/eng/")]
+[assembly: AssemblyDescription("Streaming and Broker adaptders for http://quik.ru/eng/")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SquareTech")]
 [assembly: AssemblyProduct("Sq1.Adapters.Quik")]

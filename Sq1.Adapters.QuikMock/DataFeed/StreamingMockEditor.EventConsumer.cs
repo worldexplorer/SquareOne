@@ -9,7 +9,7 @@ namespace Sq1.Adapters.QuikMock {
 			} 
 		}
 		void txtQuoteDelay_TextChanged(object sender, EventArgs e) {
-			this.PushEditedSettingsToStreamingProvider();
+			this.PushEditedSettingsToStreamingAdapter();
 		}
 		void txtGenerateOnlySymbols_KeyDown(object sender, KeyEventArgs e) {
 			if (e.KeyData == Keys.Enter) {
@@ -17,11 +17,11 @@ namespace Sq1.Adapters.QuikMock {
 			}
 		}
 		void txtGenerateOnlySymbols_TextChanged(object sender, EventArgs e) {
-			this.PushEditedSettingsToStreamingProvider();
+			this.PushEditedSettingsToStreamingAdapter();
 		}
 
 		void cbxGeneratingNow_CheckedChanged(object sender, EventArgs e) {
-			this.PushEditedSettingsToStreamingProvider();
+			this.PushEditedSettingsToStreamingAdapter();
 		}
 	}
 }

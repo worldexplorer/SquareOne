@@ -23,7 +23,7 @@ namespace Sq1.Adapters.Quik.Terminal {
 		protected string CurrentStatus = "1/2 DLL not connected, 2/2 No Symbols subscribed";
 		public virtual string DllName { get { return "TRANS2QUIK.DLL"; } }
 		public QuikTerminal() {
-			throw new Exception("QuikTerminal doesn't support default constructor, use QuikTerminal(TradeManager, IStatusReporter)");
+			throw new Exception("QuikTerminal doesn't support default constructor, use QuikTerminal(BrokerQuik)");
 		}
 		public QuikTerminal(BrokerQuik BrokerQuik) {
 			tryingToConnectDllLock = new Object();
@@ -333,7 +333,7 @@ nTradeDescriptor Тип: Long. Дескриптор сделки, может и�
 			//BrokerQuik.PutOwnTrade(new OwnTrade(
 			//	new DateTime(year, month, day, hour, min, sec),
 			//	(long)SernoExchange, Price.GetInt(fillPrice), quantity));
-			//	ThreadPool.QueueUserWorkItem(new WaitCallback(order.Alert.DataSource.BrokerProvider.SubmitOrdersThreadEntry),
+			//	ThreadPool.QueueUserWorkItem(new WaitCallback(order.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
 			//		new object[] { ordersFromAlerts });
 			BrokerQuik.CallbackTradeStateReceivedQuik((long)SernoExchange, tradeDate, 
 				classCode, secCode, price, filled,
@@ -463,7 +463,6 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 				Assembler.PopupException(msg);
 				return;
 			}
-			//TradeManager.AppendMessageAndPropagate(orderSubmitting, msg);
 
 			orderSubmitting.SernoExchange = (long)SernoExchange;
 			OrderState newState = OrderState.Unknown;
@@ -476,10 +475,6 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			} else {
 				msg2 = "ERROR_SENDING_TRANSACTION: [" + msgQuik + "] r[" + r + "]  err[" + err + "] rc[" + rc + "]";
 				Assembler.PopupException(msg2 + msg);
-				//quikTransactionsAttemptedLog.Put(msg);
-				//BrokerQuik.callbackTerminalReceivedOrderState(OrderStatus.ErrorSubmittingBroker, orderSubmitting.GUID,
-				//	(long)SernoExchange, "NoClassCode", "NoSecCode");
-				//TradeManager.updateOrderStatusError(orderSubmitting, OrderState.ErrorSubmittingBroker, msg);
 				newState = OrderState.ErrorSubmittingBroker;
 			}
 			OrderStateMessage newOrderState = new OrderStateMessage(orderSubmitting, newState, msg2);
@@ -643,9 +638,9 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			//trans = ""
 			//	+ "TRANS_ID=" + Order.newGUID() + ";"	//MddHHmmssfff
 			//	+ "ACCOUNT=" + BrokerQuik.SettingsManager.Get(
-			//		"QuikStreamingProvider.QuikAccount", "SPBFUTxxxxx") + ";"
+			//		"QuikStreamingAdapter.QuikAccount", "SPBFUTxxxxx") + ";"
 			//	//+ "CLIENT_CODE=" + BrokerQuik.SettingsManager.Get(
-			//	//	"QuikStreamingProvider.QuikClientCode", "") + ";"
+			//	//	"QuikStreamingAdapter.QuikClientCode", "") + ";"
 			//	+ "SECCODE=" + SecCode + ";"
 			//	+ "CLASSCODE=" + ClassCode + ";"
 			//	+ "ACTION=KILL_ALL_FUTURES_ORDERS;";
@@ -658,9 +653,9 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			//trans = ""
 			//	+ "TRANS_ID=" + Order.newGUID() + ";"
 			//	+ "ACCOUNT=" + BrokerQuik.SettingsManager.Get(
-			//		"QuikStreamingProvider.QuikAccount", "SPBFUTxxxxx") + ";"
+			//		"QuikStreamingAdapter.QuikAccount", "SPBFUTxxxxx") + ";"
 			//	//+ "CLIENT_CODE=" + BrokerQuik.SettingsManager.Get(
-			//	//	"QuikStreamingProvider.QuikClientCode", "") + ";"
+			//	//	"QuikStreamingAdapter.QuikClientCode", "") + ";"
 			//	+ "SECCODE=" + SecCode + ";"
 			//	+ "CLASSCODE=" + ClassCode + ";"
 			//	+ "ACTION=KILL_ALL_STOP_ORDERS;";
@@ -672,9 +667,9 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			//trans = ""
 			//	+ "TRANS_ID=" + Order.newGUID() + ";"
 			//	+ "ACCOUNT=" + BrokerQuik.SettingsManager.Get(
-			//		"QuikStreamingProvider.QuikAccount", "SPBFUTxxxxx") + ";"
+			//		"QuikStreamingAdapter.QuikAccount", "SPBFUTxxxxx") + ";"
 			//	//+ "CLIENT_CODE=" + BrokerQuik.SettingsManager.Get(
-			//	//	"QuikStreamingProvider.QuikClientCode", "") + ";"
+			//	//	"QuikStreamingAdapter.QuikClientCode", "") + ";"
 			//	+ "SECCODE=" + SecCode + ";"
 			//	+ "CLASSCODE=" + ClassCode + ";"
 			//	+ "ACTION=KILL_ALL_ORDERS;";

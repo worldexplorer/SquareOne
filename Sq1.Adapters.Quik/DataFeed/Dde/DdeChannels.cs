@@ -6,7 +6,7 @@ using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
 	public class DdeChannels {
-		protected	StreamingQuik							quikStreamingProvider;
+		protected	StreamingQuik							quikStreamingAdapter;
 		public		ConnectionState							ConnectionState { get; protected set; }
 		
 					XlDdeServer								server;
@@ -15,17 +15,17 @@ namespace Sq1.Adapters.Quik.Dde {
 		public		DdeChannelTrades						ChannelTrades { get; protected set; }
 					Dictionary<string, List<XlDdeChannel>>	channelsBySymbols;
 		
-		public DdeChannels(StreamingQuik streamingProvider) {
-			this.quikStreamingProvider = streamingProvider;
-			this.server = new XlDdeServer(this.quikStreamingProvider.DdeServerPrefix);
+		public DdeChannels(StreamingQuik streamingAdapter) {
+			this.quikStreamingAdapter = streamingAdapter;
+			this.server = new XlDdeServer(this.quikStreamingAdapter.DdeServerPrefix);
 			this.channelsBySymbols = new Dictionary<string, List<XlDdeChannel>>();
 			this.ConnectionState = ConnectionState.JustInitialized;
 		}
 		public void AddIndividualSymbolChannels(string symbol) {
 			if (channelsBySymbols.ContainsKey(symbol)) return;
 			DdeChannelDepth channelDepth = null;
-			string domTopic = this.quikStreamingProvider.DdeServerPrefix + "-" + this.quikStreamingProvider.DdeTopicPrefixDom + "-" + symbol;
-			channelDepth = new DdeChannelDepth(domTopic, this.quikStreamingProvider, symbol);
+			string domTopic = this.quikStreamingAdapter.DdeServerPrefix + "-" + this.quikStreamingAdapter.DdeTopicPrefixDom + "-" + symbol;
+			channelDepth = new DdeChannelDepth(domTopic, this.quikStreamingAdapter, symbol);
 			server.AddChannel(domTopic, channelDepth);
 			channelsBySymbols.Add(symbol, new List<XlDdeChannel>() { channelDepth });
 			channelDepth.IsConnected = true;
@@ -62,11 +62,11 @@ namespace Sq1.Adapters.Quik.Dde {
 				return;
 			}
 
-			this.ChannelQuotes = new DdeChannelLastQuote(this.quikStreamingProvider.DdeTopicQuotes, this.quikStreamingProvider);
-			this.ChannelTrades = new DdeChannelTrades(this.quikStreamingProvider.DdeTopicTrades, this.quikStreamingProvider);
+			this.ChannelQuotes = new DdeChannelLastQuote(this.quikStreamingAdapter.DdeTopicQuotes, this.quikStreamingAdapter);
+			this.ChannelTrades = new DdeChannelTrades(this.quikStreamingAdapter.DdeTopicTrades, this.quikStreamingAdapter);
 
 			server.AddChannel(ChannelQuotes.Topic, ChannelQuotes);
-			server.AddChannel(this.quikStreamingProvider.DdeTopicTrades, this.ChannelTrades);
+			server.AddChannel(this.quikStreamingAdapter.DdeTopicTrades, this.ChannelTrades);
 
 			try {
 				server.Register();
@@ -111,7 +111,7 @@ namespace Sq1.Adapters.Quik.Dde {
 			Assembler.DisplayStatus(msg);
 		}
 		public override string ToString() {
-			string ret = "DdeServerPrefix[" + this.quikStreamingProvider.DdeServerPrefix + "]/[" + this.ConnectionState + "]:";
+			string ret = "DdeServerPrefix[" + this.quikStreamingAdapter.DdeServerPrefix + "]/[" + this.ConnectionState + "]:";
 			if (ChannelQuotes != null)  ret += " " + ChannelQuotes.ToString() + " ";
 			if (ChannelTrades != null) ret += " " + ChannelTrades.ToString();
 			string individualChannels = "";

@@ -67,37 +67,37 @@ namespace Sq1.Adapters.QuikMock {
 			}
 			set { this.txtExecutionDelayMillis.Text = value.ToString(); }
 		}
-		BrokerMock mockBrokerProvider { get { return base.brokerProvider as BrokerMock; } }
+		BrokerMock mockBrokerAdapter { get { return base.brokerAdapter as BrokerMock; } }
 
 		// Designer will call this
 		public BrokerMockEditor() {
 			this.InitializeComponent();
 		}
 
-		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => brokerProviderInstance.BrokerEditorInitialize() will call this
-		public BrokerMockEditor(BrokerMock mockBrokerProvider, IDataSourceEditor dataSourceEditor) : this() {
-			base.Initialize(mockBrokerProvider, dataSourceEditor);
+		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => brokerAdapterInstance.BrokerEditorInitialize() will call this
+		public BrokerMockEditor(BrokerMock mockBrokerAdapter, IDataSourceEditor dataSourceEditor) : this() {
+			base.Initialize(mockBrokerAdapter, dataSourceEditor);
 		}
 
-		public override void PushBrokerProviderSettingsToEditor() {
-			this.Account = this.mockBrokerProvider.AccountAutoPropagate;
+		public override void PushBrokerAdapterSettingsToEditor() {
+			this.Account = this.mockBrokerAdapter.AccountAutoPropagate;
 			// mock-specific
-			this.ExecutionDelayMillis = this.mockBrokerProvider.ExecutionDelayMillis;
-			this.RejectFirstNOrders = this.mockBrokerProvider.RejectFirstNOrders;
-			this.RejectRandomly = this.mockBrokerProvider.RejectRandomly;
-			this.RejectAllUpcoming = this.mockBrokerProvider.RejectAllUpcoming;
+			this.ExecutionDelayMillis = this.mockBrokerAdapter.ExecutionDelayMillis;
+			this.RejectFirstNOrders = this.mockBrokerAdapter.RejectFirstNOrders;
+			this.RejectRandomly = this.mockBrokerAdapter.RejectRandomly;
+			this.RejectAllUpcoming = this.mockBrokerAdapter.RejectAllUpcoming;
 			//this.QuikClientCode = this.editor.QuikClientCode;
 			//if (this.DataSource == null) return;	//changing market for ASCII DataProvider
 			//this.DataSource.DataSourceManager.DataSourceSaveTreeviewRefill(this.DataSource);
 		}
-		public override void PushEditedSettingsToBrokerProvider() {
+		public override void PushEditedSettingsToBrokerAdapter() {
 			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
-			this.mockBrokerProvider.AccountAutoPropagate = this.Account;
+			this.mockBrokerAdapter.AccountAutoPropagate = this.Account;
 			// mock-specific
-			this.mockBrokerProvider.ExecutionDelayMillis = this.ExecutionDelayMillis;
-			this.mockBrokerProvider.RejectFirstNOrders = this.RejectFirstNOrders;
-			this.mockBrokerProvider.RejectRandomly = this.RejectRandomly;
-			this.mockBrokerProvider.RejectAllUpcoming = this.RejectAllUpcoming;
+			this.mockBrokerAdapter.ExecutionDelayMillis = this.ExecutionDelayMillis;
+			this.mockBrokerAdapter.RejectFirstNOrders = this.RejectFirstNOrders;
+			this.mockBrokerAdapter.RejectRandomly = this.RejectRandomly;
+			this.mockBrokerAdapter.RejectAllUpcoming = this.RejectAllUpcoming;
 			//this.editor.QuikClientCode = this.QuikClientCode;
 		}
 	}

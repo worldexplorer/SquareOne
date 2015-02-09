@@ -13,7 +13,7 @@ namespace Sq1.Adapters.Quik {
 		[JsonProperty]	protected Dictionary<string, double> FortsPriceMin { get; private set; }
 		[JsonProperty]	protected Dictionary<string, double> FortsPriceMax { get; private set; }
 
-		public StreamingDataSnapshotQuik(StreamingProvider streamingProvider) : base(streamingProvider) {
+		public StreamingDataSnapshotQuik(StreamingAdapter streamingAdapter) : base(streamingAdapter) {
 			this.FortsDepositBuy	= new Dictionary<string, double>();
 			this.FortsDepositSell	= new Dictionary<string, double>();
 			this.FortsPriceMin		= new Dictionary<string, double>();

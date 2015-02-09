@@ -12,7 +12,7 @@
     "AsTimeSpanInSeconds": 60,
     "AsTimeSpan": "00:01:00"
   },
-  "StreamingProvider": {
+  "StreamingAdapter": {
     "$type": "Sq1.Adapters.QuikMock.StreamingMock, Sq1.Adapters.QuikMock",
     "QuoteDelay": 1000,
     "GenerateOnlySymbols": [],
@@ -42,7 +42,7 @@
       "SymbolsSubscribedAndReceiving": "autogen:NULL"
     }
   },
-  "BrokerProvider": {
+  "BrokerAdapter": {
     "$type": "Sq1.Adapters.QuikMock.BrokerMock, Sq1.Adapters.QuikMock",
     "Account": {
       "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
@@ -67,7 +67,7 @@
   },
   "MarketName": "MOCK",
   "Name": "Qmock",
-  "StreamingProviderName": "StreamingQuikMock",
-  "BrokerProviderName": "BrokerQuikMock",
+  "StreamingAdapterName": "StreamingQuikMock",
+  "BrokerAdapterName": "BrokerQuikMock",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
 }

@@ -60,18 +60,18 @@ namespace Sq1.Adapters.Quik {
 				this.txtCashAvailableMicex.Text = value.CashAvailable.ToString();
 			}
 		}
-		BrokerQuik BrokerQuik { get { return base.brokerProvider as BrokerQuik; } }
+		BrokerQuik BrokerQuik { get { return base.brokerAdapter as BrokerQuik; } }
 
 		// Designer will call this
 		public BrokerQuikEditor() {
 			this.InitializeComponent();
 		}
 
-		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => brokerProviderInstance.BrokerEditorInitialize() will call this
-		public BrokerQuikEditor(BrokerProvider brokerQuik, IDataSourceEditor dataSourceEditor) : this() {
+		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => brokerAdapterInstance.BrokerEditorInitialize() will call this
+		public BrokerQuikEditor(BrokerAdapter brokerQuik, IDataSourceEditor dataSourceEditor) : this() {
 		    base.Initialize(brokerQuik, dataSourceEditor);
 		}
-		public override void PushBrokerProviderSettingsToEditor() {
+		public override void PushBrokerAdapterSettingsToEditor() {
 			this.Account = this.BrokerQuik.AccountAutoPropagate;
 			// quik-specific
 			this.AccountMicex = this.BrokerQuik.AccountMicexAutoPopulated;
@@ -79,7 +79,7 @@ namespace Sq1.Adapters.Quik {
 			this.ReconnectTimeoutMillis = Convert.ToInt32(this.BrokerQuik.ReconnectTimeoutMillis);
 			//QuikClientCode = SettingsEditor.QuikClientCode;
 		}
-		public override void PushEditedSettingsToBrokerProvider() {
+		public override void PushEditedSettingsToBrokerAdapter() {
 			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
 			this.BrokerQuik.AccountAutoPropagate = this.Account;
 			// quik-specific

@@ -5,13 +5,13 @@ using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
 	public class DdeChannelLastQuote : XlDdeChannel {
-		protected StreamingQuik quikStreamingProvider;
+		protected StreamingQuik quikStreamingAdapter;
 		protected string quoteSource = "QUIK_DDE";
 		protected DateTime lastQuoteDateTimeForVolume = DateTime.MinValue;
 		protected double lastQuoteSizeForVolume = 0;
 
-		public DdeChannelLastQuote(string topic, StreamingQuik quikStreamingProvider) : base(topic) {
-			this.quikStreamingProvider = quikStreamingProvider;
+		public DdeChannelLastQuote(string topic, StreamingQuik quikStreamingAdapter) : base(topic) {
+			this.quikStreamingAdapter = quikStreamingAdapter;
 			base.columns = new List<XlColumn>() {
 				new XlColumn() { Name = "SHORTNAME",	TypeExpected = XlTable.BlockType.String,	Mandatory = true },
 				new XlColumn() { Name = "CLASS_CODE",	TypeExpected = XlTable.BlockType.String,	Mandatory = true },
@@ -63,10 +63,10 @@ namespace Sq1.Adapters.Quik.Dde {
 			//	lastQuoteSizeForVolume = sizeParsed;
 			//	quote.Size = sizeParsed;
 			//}
-			quikStreamingProvider.PushQuoteReceived(quikQuote);
+			quikStreamingAdapter.PushQuoteReceived(quikQuote);
 		}
 		public override string ToString() {
-			return "ChannelQuotes{Symbols[" + quikStreamingProvider.StreamingDataSnapshot.SymbolsSubscribedAndReceiving + "] " + base.ToString() + "}";
+			return "ChannelQuotes{Symbols[" + quikStreamingAdapter.StreamingDataSnapshot.SymbolsSubscribedAndReceiving + "] " + base.ToString() + "}";
 		}
 	}
 }

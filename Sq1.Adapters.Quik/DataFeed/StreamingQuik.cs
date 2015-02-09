@@ -10,7 +10,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik {
-	public class StreamingQuik : StreamingProvider {
+	public class StreamingQuik : StreamingAdapter {
 		[JsonProperty]	public	string		DdeServerPrefix		{ get; internal set; }
 		[JsonProperty]	public	string		DdeTopicQuotes		{ get; internal set; }
 		[JsonProperty]	public	string		DdeTopicTrades		{ get; internal set; }
@@ -29,7 +29,7 @@ namespace Sq1.Adapters.Quik {
 				if (base.StreamingDataSnapshot is StreamingDataSnapshotQuik == false) {
 					string msg = "base.StreamingDataSnapshot[" + base.StreamingDataSnapshot
 						+ "] got modified while should remain of type StreamingDataSnapshotQuik"
-						+ " since QuikStreamingProvider is constructed";
+						+ " since QuikStreamingAdapter is constructed";
 					throw new Exception(msg);
 				}
 				return base.StreamingDataSnapshot as StreamingDataSnapshotQuik;
@@ -46,8 +46,7 @@ namespace Sq1.Adapters.Quik {
 		
 		public StreamingQuik() : base() {
 			base.Name = "Quik StreamingDummy";
-			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingProvider;
-			base.PreferredStaticProviderName = "QuikStaticProvider";
+			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
 			this.DdeServerPrefix = "SQ1";
 			this.DdeTopicQuotes = "quotes";
 			this.DdeTopicTrades = "trades";

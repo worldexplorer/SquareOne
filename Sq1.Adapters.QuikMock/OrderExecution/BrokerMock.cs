@@ -22,15 +22,15 @@ namespace Sq1.Adapters.QuikMock {
 
 		public BrokerMock() : base() {
 			base.Name = "BrokerQuikMockDummy";
-			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStreamingProvider;
+			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStreamingAdapter;
 			base.QuikTerminal = new QuikTerminalMock(this);
 			this.ExecutionDelayMillis = 1000;
 			this.RejectFirstNOrders = 5;
 			this.RejectRandomly = true;
 			this.RejectAllUpcoming = false;
 		}
-		public override void Initialize(DataSource dataSource, StreamingProvider streamingProvider, OrderProcessor orderProcessor) {
-			base.Initialize(dataSource, streamingProvider, orderProcessor);
+		public override void Initialize(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
+			base.Initialize(dataSource, streamingAdapter, orderProcessor);
 			base.QuikTerminal.ConnectDll();
 			base.Name = "BrokerQuikMock";
 		}
@@ -40,19 +40,7 @@ namespace Sq1.Adapters.QuikMock {
 			return base.brokerEditorInstance;
 		}
 		public override void CancelReplace(Order order, Order newOrder) {
-			if (order.Alert.AccountNumber.StartsWith("Paper")) {
-				//this.paperBrokerProvider_0.CancelReplace(order, newOrder);
-				Assembler.PopupException("order[" + order + "].AccountNumber.StartsWith(Paper); returning");
-				return;
-			}
-			if (order.GUID.Length > 10) {
-				//base.TradeManager.updateOrderStatus(orderFromAlert.GUID, OrderStatus.Error, this.FidAuthProvider.GetFidelityTime()
-				//	, 0.0, 0.0, 0, "Error(s): Can'tp replace an orderFromAlert in submitted statusOut");
-				//base.TradeManager.updateOrderStatus(newOrder.GUID, OrderStatus.ErrorCancelReplace
-				//, this.FidAuthProvider.GetFidelityTime(), 0.0, 0.0, 0, "Error(s): Can'tp replace an orderFromAlert in submitted statusOut");
-				Assembler.PopupException("order.Guid.Length[" + order.GUID.Length + "] > 10; returning");
-				return;
-			}
+			Assembler.PopupException("NYI: CancelReplace(" + order.ToString() + ", " + newOrder.ToString() + ")");
 		}
 		public override void OrderSubmit(Order order) {
 			//Debugger.Break();
@@ -62,7 +50,7 @@ namespace Sq1.Adapters.QuikMock {
 			string msg = "";
 
 			// was the reason of TP/SL "sequenced" submit here?...
-			//if (this.Name == "Mock BrokerProvider") Thread.Sleep(1000);
+			//if (this.Name == "Mock BrokerAdapter") Thread.Sleep(1000);
 
 			char typeMarketLimitStop = '?';
 			switch (order.Alert.MarketLimitStop) {
@@ -95,7 +83,7 @@ namespace Sq1.Adapters.QuikMock {
 
 			if (order.Alert.MarketLimitStop == MarketLimitStop.Market) {
 				// TODO: paste link where did you take this piece of silliness (I promise!!)
-				StreamingMock quickBrokerAcceptsMarketOrdersOnlyWithMinOrMaxPrice = base.StreamingProvider as StreamingMock;
+				StreamingMock quickBrokerAcceptsMarketOrdersOnlyWithMinOrMaxPrice = base.StreamingAdapter as StreamingMock;
 				if (quickBrokerAcceptsMarketOrdersOnlyWithMinOrMaxPrice != null) {
 					double fortsPriceMin = quickBrokerAcceptsMarketOrdersOnlyWithMinOrMaxPrice.StreamingDataSnapshotQuik.FortsGetPriceMinForSymbol(order.Alert.Symbol);
 					double fortsPriceMax = quickBrokerAcceptsMarketOrdersOnlyWithMinOrMaxPrice.StreamingDataSnapshotQuik.FortsGetPriceMaxForSymbol(order.Alert.Symbol);
@@ -110,7 +98,7 @@ namespace Sq1.Adapters.QuikMock {
 				}
 			}
 
-			bool pausedToFinishBacktest = base.StreamingProvider.DataSource.PumpingPausedGet(order.Alert.Bars);
+			bool pausedToFinishBacktest = base.StreamingAdapter.DataSource.PumpingPausedGet(order.Alert.Bars);
 			bool backtestIsRunning = order.Alert.Strategy.Script.Executor.Backtester.IsBacktestingNow;
 
 			if (pausedToFinishBacktest) {
@@ -121,7 +109,7 @@ namespace Sq1.Adapters.QuikMock {
 
 				Stopwatch waitedFor = new Stopwatch();
 				waitedFor.Start();
-				bool unpaused = base.StreamingProvider.DataSource.PumpingWaitUntilUnpaused(order.Alert.Bars, 120000);
+				bool unpaused = base.StreamingAdapter.DataSource.PumpingWaitUntilUnpaused(order.Alert.Bars, 120000);
 				waitedFor.Stop();
 				string waited = "__WAITED_TOO_LONG_FOR_UNPAUSE_CONFIRMATION[" + waitedFor.ElapsedMilliseconds + "]ms ";
 				if (waitedFor.ElapsedMilliseconds > 1000) {

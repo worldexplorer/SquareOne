@@ -20,27 +20,27 @@ namespace Sq1.Adapters.Quik {
 			get { return this.txtTopicPrefixDOM.Text; }
 			set { this.txtTopicPrefixDOM.Text = value; }
 		}
-		private StreamingQuik quikStreamingProvider { get { return base.streamingProvider as StreamingQuik; } }
+		private StreamingQuik quikStreamingAdapter { get { return base.streamingAdapter as StreamingQuik; } }
 
 		public StreamingQuikEditor() {
 			this.InitializeComponent();
 		}
-		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => streamingProviderInstance.StreamingEditorInitialize() will call this
-		public StreamingQuikEditor(StreamingProvider quikStreamingProvider, IDataSourceEditor dataSourceEditor) : this() {
-			base.Initialize(quikStreamingProvider, dataSourceEditor);
+		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => streamingAdapterInstance.StreamingEditorInitialize() will call this
+		public StreamingQuikEditor(StreamingAdapter quikStreamingAdapter, IDataSourceEditor dataSourceEditor) : this() {
+			base.Initialize(quikStreamingAdapter, dataSourceEditor);
 		}
-		public override void PushStreamingProviderSettingsToEditor() {
-			this.DdeServerPrefix = this.quikStreamingProvider.DdeServerPrefix;
-			this.DdeTopicQuotes = this.quikStreamingProvider.DdeTopicQuotes;
-			this.DdeTopicTrades = this.quikStreamingProvider.DdeTopicTrades;
-			this.DdeTopicPrefixDom = this.quikStreamingProvider.DdeTopicPrefixDom;
+		public override void PushStreamingAdapterSettingsToEditor() {
+			this.DdeServerPrefix = this.quikStreamingAdapter.DdeServerPrefix;
+			this.DdeTopicQuotes = this.quikStreamingAdapter.DdeTopicQuotes;
+			this.DdeTopicTrades = this.quikStreamingAdapter.DdeTopicTrades;
+			this.DdeTopicPrefixDom = this.quikStreamingAdapter.DdeTopicPrefixDom;
 		}
-		public override void PushEditedSettingsToStreamingProvider() {
+		public override void PushEditedSettingsToStreamingAdapter() {
 			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
-			this.quikStreamingProvider.DdeServerPrefix = this.DdeServerPrefix;
-			this.quikStreamingProvider.DdeTopicQuotes = this.DdeTopicQuotes;
-			this.quikStreamingProvider.DdeTopicTrades = this.DdeTopicTrades;
-			this.quikStreamingProvider.DdeTopicPrefixDom = this.DdeTopicPrefixDom;
+			this.quikStreamingAdapter.DdeServerPrefix = this.DdeServerPrefix;
+			this.quikStreamingAdapter.DdeTopicQuotes = this.DdeTopicQuotes;
+			this.quikStreamingAdapter.DdeTopicTrades = this.DdeTopicTrades;
+			this.quikStreamingAdapter.DdeTopicPrefixDom = this.DdeTopicPrefixDom;
 		}
 	
     }

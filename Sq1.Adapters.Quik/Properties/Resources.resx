@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="imgQuikStaticProvider" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="imgQuikStaticAdapter" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         Qk02BAAAAAAAADYAAAAoAAAAEAAAABAAAAABACAAAAAAAAAAAADCDgAAwg4AAAAAAAAAAAAA/////5SU
         lP+UlJT/lJSU/5SUlP+UlJT/lJSU/5SUlP+UlJT/lJSU/4yMjP+UlJT/jIyM/5SUlP+UlJT//////5SU
@@ -140,7 +140,7 @@
         lP+UlJT/lJSU/5SUlP+UlJT/jIyM/4yMjP+MjIz/jIyM/5SUlP+UlJT/lJSU/5SUlP+UlJT//////w==
 </value>
   </data>
-  <data name="imgQuikStreamingProvider" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="imgQuikStreamingAdapter" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         Qk02AwAAAAAAADYAAAAoAAAAEAAAABAAAAABABgAAAAAAAAAAADDDgAAww4AAAAAAAAAAAAA////c4oa
         cooWcooWcooWcooWcooWcooWcooWcooWaX4YZXQsaoAYcooWcooW////dYwacooWcooWcooWcooWboQX

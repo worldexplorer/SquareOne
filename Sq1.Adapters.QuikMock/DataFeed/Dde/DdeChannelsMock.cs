@@ -11,8 +11,8 @@ namespace Sq1.Adapters.QuikMock.Dde {
 		public DdeChannelsMock(StreamingMock receiver, string symbol) {
 			this.Symbol = symbol;
 			this.ChannelQuote = new DdeChannelLastQuoteMock(receiver, symbol);
-			//this.ChannelDepth = new DdeChannelDepth(streamingProvider, symbol);
-			//this.ChannelHistory = new DdeChannelHistory(streamingProvider, quikTerminal, Symbol);
+			//this.ChannelDepth = new DdeChannelDepth(streamingAdapter, symbol);
+			//this.ChannelHistory = new DdeChannelHistory(streamingAdapter, quikTerminal, Symbol);
 		}
 		public string AllChannelsForSymbolStart() {
 			string ret = "START_STATUS_UNKONWN";

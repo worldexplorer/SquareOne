@@ -5,7 +5,7 @@ using Sq1.Core.Broker;
 
 namespace Sq1.Adapters.Quik {
 	public class OrderCallbackDupesCheckerQuik : OrderCallbackDupesChecker {
-		public OrderCallbackDupesCheckerQuik(BrokerProvider brokerProvider) : base(brokerProvider) {
+		public OrderCallbackDupesCheckerQuik(BrokerAdapter brokerAdapter) : base(brokerAdapter) {
 		}
 		public override string OrderCallbackIsDupeReson(Order order, OrderStateMessage newOrderStateMessage, double priceFill, double qtyFill) {
 			string whyIthinkBrokerIsSpammingMe = null;

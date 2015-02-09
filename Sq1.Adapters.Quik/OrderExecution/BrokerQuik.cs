@@ -14,7 +14,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik {
-	public class BrokerQuik : BrokerProvider {
+	public class BrokerQuik : BrokerAdapter {
 		[JsonIgnore]	public	QuikTerminal	QuikTerminal			{ get; protected set; }
 		[JsonProperty]	public	string			QuikFolder				{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 		[JsonProperty]	public	string			QuikDllName				{ get; protected set; }
@@ -32,25 +32,25 @@ namespace Sq1.Adapters.Quik {
 
 		public BrokerQuik() : base() {		// base() will be invoked anyways by .NET, just wanna make it obvious (reminder)
 			base.Name = "Quik BrokerDummy";
-			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingProvider;
+			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
 			this.QuikTerminal = new QuikTerminal(this);
 			this.QuikDllName = this.QuikTerminal.DllName;
 
 			this.AccountMicexAutoPopulated = new Account("QUIK_MICEX_ACCTNR_NOT_SET", -1001);
 			base.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerQuik(this);
 		}
-		public override void Initialize(DataSource dataSource, StreamingProvider streamingProvider, OrderProcessor orderProcessor) {
-			base.Initialize(dataSource, streamingProvider, orderProcessor);
+		public override void Initialize(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
+			base.Initialize(dataSource, streamingAdapter, orderProcessor);
 			base.Name = "Quik Broker";
 
 			if (String.IsNullOrEmpty(this.QuikFolder)) return;
 			if (Directory.Exists(this.QuikFolder) == false) {
-				string msg = "QuikStreamingProvider.QuikFolder[" + this.QuikFolder + "] doesn't exist; will not try to QuikTerminal.ConnectDll()";
+				string msg = "QuikStreamingAdapter.QuikFolder[" + this.QuikFolder + "] doesn't exist; will not try to QuikTerminal.ConnectDll()";
 				//Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 			if (File.Exists(this.QuikDllAbsPath) == false) {
-				string msg = "QuikStreamingProvider.QuikDllAbsPath[" + this.QuikDllAbsPath + "] doesn't exist; will not try to QuikTerminal.ConnectDll()";
+				string msg = "QuikStreamingAdapter.QuikDllAbsPath[" + this.QuikDllAbsPath + "] doesn't exist; will not try to QuikTerminal.ConnectDll()";
 				//Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
@@ -119,7 +119,7 @@ namespace Sq1.Adapters.Quik {
 			}
 
 			if (order.SernoExchange == 0) {
-				order.SernoExchange  = SernoExchange;	// link GUID to SernoExchange - the main role of QUIK broker provider :)
+				order.SernoExchange  = SernoExchange;	// link GUID to SernoExchange - the main role of QUIK broker adapter :)
 			}
 			if (newOrderStateReceived == OrderState.KillerDone || newOrderStateReceived == OrderState.Rejected) {
 				if (fillPrice != 0) {
@@ -134,7 +134,7 @@ namespace Sq1.Adapters.Quik {
 				}
 			}
 			
-			if (this.Name == "Mock BrokerProvider" 
+			if (this.Name == "Mock BrokerAdapter" 
 					&& order.Alert.MarketLimitStop == MarketLimitStop.Market 
 					&& order.Alert.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
 					&& (fillPrice != -999.99 && fillPrice != 0)) {
@@ -190,7 +190,7 @@ namespace Sq1.Adapters.Quik {
 			string msg = "";
 
 			// was the reason of TP/SL "sequenced" submit here?...
-			//if (this.Name == "Mock BrokerProvider") Thread.Sleep(1000);
+			//if (this.Name == "Mock BrokerAdapter") Thread.Sleep(1000);
 
 			char typeMarketLimitStop = '?';
 			switch (order.Alert.MarketLimitStop) {
@@ -270,7 +270,7 @@ namespace Sq1.Adapters.Quik {
 			string msg = "";
 			
 			if (order.Alert.QuoteCreatedThisAlert == null) {
-				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.StreamingProvider.StreamingDataSnapshot
+				Quote lastMayNotBeTheCreatorHereHavingNoParentBars = this.StreamingAdapter.StreamingDataSnapshot
 					.LastQuoteCloneGetForSymbol(order.Alert.Symbol);
 				order.Alert.QuoteCreatedThisAlert = lastMayNotBeTheCreatorHereHavingNoParentBars;
 				string msg2 = "AVOIDING_ORDER_MARKED_INCONSISTENT: " + order.Alert.QuoteCreatedThisAlert;

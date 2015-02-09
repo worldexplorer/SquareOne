@@ -36,32 +36,32 @@ namespace Sq1.Adapters.QuikMock {
 			get { return this.cbxGeneratingNow.Checked; }
 			set { this.cbxGeneratingNow.Checked = value; }
 		}
-		StreamingMock mockStreamingProvider { get { return base.streamingProvider as StreamingMock; } }
+		StreamingMock mockStreamingAdapter { get { return base.streamingAdapter as StreamingMock; } }
 
 		// Designer will call this
 		public StreamingMockEditor()  {
 			this.InitializeComponent();
 		}
-		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => streamingProviderInstance.StreamingEditorInitialize() will call this
-		public StreamingMockEditor(StreamingProvider mockStreamingProvider, IDataSourceEditor dataSourceEditor) : this() {
-			base.Initialize(mockStreamingProvider, dataSourceEditor);
+		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => streamingAdapterInstance.StreamingEditorInitialize() will call this
+		public StreamingMockEditor(StreamingAdapter mockStreamingAdapter, IDataSourceEditor dataSourceEditor) : this() {
+			base.Initialize(mockStreamingAdapter, dataSourceEditor);
 		}
-		public override void PushStreamingProviderSettingsToEditor() {
-			this.QuoteDelay				= this.mockStreamingProvider.QuoteDelayAutoPropagate;
-			this.GenerateOnlySymbols	= this.mockStreamingProvider.GenerateOnlySymbols;
-			// NB!!! assignment will trigger this.mockStreamingProvider.AllSymbolsGenerateStart() from cbxGeneratingNow_CheckedChanged
-			this.GeneratingNow			= this.mockStreamingProvider.GeneratingNow;
+		public override void PushStreamingAdapterSettingsToEditor() {
+			this.QuoteDelay				= this.mockStreamingAdapter.QuoteDelayAutoPropagate;
+			this.GenerateOnlySymbols	= this.mockStreamingAdapter.GenerateOnlySymbols;
+			// NB!!! assignment will trigger this.mockStreamingAdapter.AllSymbolsGenerateStart() from cbxGeneratingNow_CheckedChanged
+			this.GeneratingNow			= this.mockStreamingAdapter.GeneratingNow;
 		}
-		public override void PushEditedSettingsToStreamingProvider() {
+		public override void PushEditedSettingsToStreamingAdapter() {
 			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
 			if (this.QuoteDelay == 0) this.QuoteDelay = 1000;
-			this.mockStreamingProvider.QuoteDelayAutoPropagate		= this.QuoteDelay;
-			this.mockStreamingProvider.GenerateOnlySymbols			= this.GenerateOnlySymbols;
+			this.mockStreamingAdapter.QuoteDelayAutoPropagate		= this.QuoteDelay;
+			this.mockStreamingAdapter.GenerateOnlySymbols			= this.GenerateOnlySymbols;
 			try {
-				this.mockStreamingProvider.GeneratingNowAutoPropagate = this.GeneratingNow;
-				Assembler.InstanceInitialized.RepositoryJsonDataSource.SerializeSingle(this.mockStreamingProvider.DataSource);
+				this.mockStreamingAdapter.GeneratingNowAutoPropagate = this.GeneratingNow;
+				Assembler.InstanceInitialized.RepositoryJsonDataSource.SerializeSingle(this.mockStreamingAdapter.DataSource);
 			} catch (Exception ex) {
-				string msg = "PushEditedSettingsToStreamingProvider()";
+				string msg = "PushEditedSettingsToStreamingAdapter()";
 				Assembler.PopupException(msg, ex);
 			}
 		}

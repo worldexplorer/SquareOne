@@ -11,7 +11,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.QuikMock {
-	public class StreamingMock : StreamingProvider {
+	public class StreamingMock : StreamingAdapter {
 		[JsonIgnore]	protected	Dictionary<string, DdeChannelsMock> MockDdeChannelsBySymbol;
 		[JsonProperty]				int				QuoteDelay;
 		[JsonIgnore]	public		int				QuoteDelayAutoPropagate {
@@ -36,7 +36,7 @@ namespace Sq1.Adapters.QuikMock {
 				if (base.StreamingDataSnapshot is StreamingDataSnapshotQuik == false) {
 					string msg = "base.StreamingDataSnapshot[" + base.StreamingDataSnapshot
 						+ "] got modified while should remain of type StreamingDataSnapshotQuik"
-						+ " since QuikStreamingProvider is constructed";
+						+ " since QuikStreamingAdapter is constructed";
 					throw new Exception(msg);
 				}
 				return base.StreamingDataSnapshot as StreamingDataSnapshotQuik;
@@ -71,8 +71,7 @@ namespace Sq1.Adapters.QuikMock {
 			this.MockDdeChannelsBySymbol = new Dictionary<string, DdeChannelsMock>();
 			base.Name = "StreamingQuikMockDummy";
 			base.Description = "MOCK generating quotes, QuikTerminalMock is still used";
-			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStaticProvider;
-			base.PreferredStaticProviderName = "MockStaticProvider";
+			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStaticAdapter;
 			base.StreamingDataSnapshot = new StreamingDataSnapshotQuik(this);
 			StreamingDataSnapshotQuik throwAtEarlyStage = this.StreamingDataSnapshotQuik;
 		}

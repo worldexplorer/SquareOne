@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="imgMockQuikStaticProvider" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="imgMockQuikStaticAdapter" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         Qk02BAAAAAAAADYAAAAoAAAAEAAAABAAAAABACAAAAAAAAAAAADDDgAAww4AAAAAAAAAAAAA/////0Jr
         nP85a5z/OWuc/zlrnP85a5z/OWuc/zlrnP85a5z/OWuc/0JrlP9Sa4z/QmuU/zlrnP85a5z//////0Jz
@@ -140,7 +140,7 @@
         nP85a5z/OWuc/zlrnP85a5z/QmuU/0JrlP9Ca5T/QmuU/zlrnP85a5z/OWuc/zlrnP85a5z//////w==
 </value>
   </data>
-  <data name="imgMockQuikStreamingProvider" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="imgMockQuikStreamingAdapter" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         Qk02BAAAAAAAADYAAAAoAAAAEAAAABAAAAABACAAAAAAAAAAAADDDgAAww4AAAAAAAAAAAAA/////ykQ
         lP8pEJT/KRCU/ykQlP8pEJT/KRCU/ykQlP8pEJT/KRCU/ykQhP85KXv/KRCM/ykQlP8pEJT//////ykQ

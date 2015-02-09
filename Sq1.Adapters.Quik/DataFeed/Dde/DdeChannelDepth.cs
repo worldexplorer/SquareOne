@@ -10,13 +10,13 @@ namespace Sq1.Adapters.Quik.Dde {
 		int cAskVolume = -1, cBidVolume = -1, cPrice = -1;
 		bool columnsIdentified;
 
-		StreamingQuik quikStreamingProvider;
+		StreamingQuik quikStreamingAdapter;
 		string quoteSource = "QUIK_DDE";
 		string symbol;
 		Bars BarsReceivedForLifetime = null;
 
 		public DdeChannelDepth(string topic, StreamingQuik receiver, string SymbolSubscribing) : base (topic) {
-			this.quikStreamingProvider = receiver;
+			this.quikStreamingAdapter = receiver;
 			this.symbol = SymbolSubscribing;
 			this.columnsIdentified = false;
 		}
@@ -101,8 +101,8 @@ namespace Sq1.Adapters.Quik.Dde {
 			ddeQuotes[ask].Type = DdeQuoteType.BestAsk;
 			ddeQuotes[bid].Type = DdeQuoteType.BestBid;
 			//DdeSpread s = new DdeSpread(ddeQuotes[ask].Price, ddeQuotes[bid].Price);
-			//quikStreamingProvider.DdeDeliveredSpread(s, SymbolSubscribing);
-			//quikStreamingProvider.StreamingDataSnapshot.BestBidAskPutForSymbol(symbol, ddeQuotes[bid].Price, ddeQuotes[ask].Price);
+			//quikStreamingAdapter.DdeDeliveredSpread(s, SymbolSubscribing);
+			//quikStreamingAdapter.StreamingDataSnapshot.BestBidAskPutForSymbol(symbol, ddeQuotes[bid].Price, ddeQuotes[ask].Price);
 			string msg = "THIS_CLASS_SHOULD_BE_REFACTORER__ITS_DISABLED_IN_DDE_SERVER_HERE";
 			Assembler.PopupException(msg);
 		}

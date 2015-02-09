@@ -6,7 +6,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Adapters.QuikMock.Dde {
 	public class DdeChannelLastQuoteMock {	//: DdeChannelLastQuote
-		protected StreamingMock providerMock;
+		protected StreamingMock adapterMock;
 		protected string quoteSource = "QUIK_DDE";
 		protected string symbol = "RIZ2";
 
@@ -34,8 +34,8 @@ namespace Sq1.Adapters.QuikMock.Dde {
 		bool prevRandWasPositive = true;
 
 		public DdeChannelLastQuoteMock(StreamingMock providerMock, string SymbolSubscribing, bool autoStart = false) {
-			//: base(streamingProvider, SymbolSubscribing)
-			this.providerMock = providerMock;
+			//: base(streamingAdapter, SymbolSubscribing)
+			this.adapterMock = providerMock;
 			this.symbol = SymbolSubscribing;
 
 			this.initializeFromMiddle();
@@ -115,7 +115,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 			t.Change(nextQuoteDelayMs, 0);
 			this.running = true;
 			
-			providerMock.UpstreamSubscribedToSymbolPokeConsumersHelper(this.symbol);
+			adapterMock.UpstreamSubscribedToSymbolPokeConsumersHelper(this.symbol);
 		}
 
 		public void MockStop() {
@@ -124,7 +124,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 				return;
 			}
 			this.running = false;
-			providerMock.UpstreamUnSubscribedFromSymbolPokeConsumersHelper(this.symbol);
+			adapterMock.UpstreamUnSubscribedFromSymbolPokeConsumersHelper(this.symbol);
 		}
 
 		void pokeWithNewQuote(object state) {
@@ -151,7 +151,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 			QuoteQuik quikQuote = new QuoteQuik(DateTime.Now);
 			quikQuote.Source = quoteSource;
 			quikQuote.Symbol = symbol;
-			//quote.SymbolClass = providerMock.SettingsManager.Get("QuikStreamingProvider.SymbolClass", "SPBFUT");
+			//quote.SymbolClass = providerMock.SettingsManager.Get("QuikStreamingAdapter.SymbolClass", "SPBFUT");
 			quikQuote.SymbolClass = "SPBFUT";
 			//quote.ServerTime = DateTime.Now.AddHours(8);
 			quikQuote.FortsDepositBuy = 10000 + rnd.Next(10, 99);
@@ -184,8 +184,8 @@ namespace Sq1.Adapters.QuikMock.Dde {
 				//quikQuote.PriceLastDeal = 0;
 				Assembler.PopupException("MOCK_TEST_ONCE: setting Price=0 for quote[" + quikQuote + "]; watch CHART skipping it and ORDER with an ERROR");
 			}
-			this.providerMock.PushQuoteReceived(quikQuote);
-			//streamingProvider.putBestBidAskForSymbol(symbol, quote.Price - spread / 2, quote.Price + spread / 2);
+			this.adapterMock.PushQuoteReceived(quikQuote);
+			//streamingAdapter.putBestBidAskForSymbol(symbol, quote.Price - spread / 2, quote.Price + spread / 2);
 
 			t.Change(nextQuoteDelayMs, 0);
 			//Assembler.PopupException("Quote fillPrice=[" + priceStartFrom + "] size=[" + volumeStartFrom + "] delivered"
@@ -201,7 +201,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 		}
 
 		public override string ToString() {
-			return "[" + providerMock + "] quoteSource[" + quoteSource + "] symbol[" + symbol + "]";
+			return "[" + this.adapterMock + "] quoteSource[" + this.quoteSource + "] symbol[" + this.symbol + "]";
 		}
 	}
 }

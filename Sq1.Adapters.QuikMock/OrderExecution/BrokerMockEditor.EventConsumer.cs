@@ -7,10 +7,10 @@ namespace Sq1.Adapters.QuikMock {
 		void rbtnFellow_CheckedChanged(object sender, EventArgs e) {
 		}
 		void cbxRejectAllUpcoming_CheckedChanged(object sender, EventArgs e) {
-			this.PushEditedSettingsToBrokerProvider();
+			this.PushEditedSettingsToBrokerAdapter();
 		}
 		void txtExecutionDelayMillis_TextChanged(object sender, EventArgs e) {
-			this.PushEditedSettingsToBrokerProvider();
+			this.PushEditedSettingsToBrokerAdapter();
 		}
 	}
 }
