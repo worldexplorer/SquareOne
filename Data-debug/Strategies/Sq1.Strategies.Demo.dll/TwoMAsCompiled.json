@@ -29,12 +29,6 @@
         "Performance": null,
         "Positions": {
           "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
-          "ShowEntriesExits": true,
-          "ShowPercentage": true,
-          "ShowBarsHeld": true,
-          "ShowMaeMfe": true,
-          "ShowSignals": true,
-          "ShowCommission": true,
           "Colorify": true,
           "PositionsOlvStateBase64": ""
         }
@@ -88,7 +82,8 @@
             "ValueIncrement": 5.0,
             "ValueCurrent": 10.0,
             "BorderShown": false,
-            "NumericUpdownShown": true
+            "NumericUpdownShown": true,
+            "ValuesAsString": "10[10..20/5]"
           }
         ],
         "MAfast": [
@@ -100,7 +95,8 @@
             "ValueIncrement": 11.0,
             "ValueCurrent": 33.0,
             "BorderShown": false,
-            "NumericUpdownShown": true
+            "NumericUpdownShown": true,
+            "ValuesAsString": "33[11..33/11]"
           }
         ]
       }

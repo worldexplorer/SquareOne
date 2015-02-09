@@ -425,7 +425,9 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 			this.BrokerQuik.CallbackOrderStateReceivedQuik(newOrderStateReceived, GUID.ToString(),
 						(long)SernoExchange, classCode, secCode, priceFilled, qtyFilled);
 			if (newOrderStateReceived == OrderState.FilledPartially || newOrderStateReceived == OrderState.Filled) {
-				this.BrokerQuik.OrderProcessor.PostProcessOrderState(order, priceFilled, qtyFilled);
+				//v1 this.BrokerQuik.OrderProcessor.PostProcessOrderState(order, priceFilled, qtyFilled);
+				OrderStateMessage omsg = new OrderStateMessage(order, "BrokerQuik_UpdateOrderStateAndPostProcess:: " + newOrderStateReceived + "::" + this.DllName);
+				this.BrokerQuik.OrderProcessor.UpdateOrderStateAndPostProcess(order, omsg, priceFilled, qtyFilled);
 			}
 		}
 /* Функция TRANS2QUIK_TRANSACTIONS_REPLY_CALLBACK

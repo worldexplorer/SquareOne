@@ -16,39 +16,20 @@
     "$type": "Sq1.Adapters.QuikMock.StreamingMock, Sq1.Adapters.QuikMock",
     "QuoteDelay": 1000,
     "GenerateOnlySymbols": [],
-    "GeneratingNow": true,
+    "GeneratingNow": false,
     "StreamingDataSnapshot": {
       "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
       "lastQuoteClonesReceivedUnboundBySymbol": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
-        "autogen": {
-          "$type": "Sq1.Adapters.Quik.QuoteQuik, Sq1.Adapters.Quik",
-          "FortsDepositBuy": 10057.0,
-          "FortsDepositSell": 10083.0,
-          "FortsPriceMax": 160000.0,
-          "FortsPriceMin": 156000.0,
-          "Symbol": "autogen",
-          "SymbolClass": "SPBFUT",
-          "Source": "QUIK_DDE",
-          "ServerTime": "2015-01-20T02:39:41.5632",
-          "Bid": 158180.0,
-          "Ask": 158200.0,
-          "Size": 5.0,
-          "AbsnoPerSymbol": 2704,
-          "LastDealBidOrAsk": 2,
-          "LocalTimeCreated": "2015-01-20T02:39:41.5632-05:00",
-          "ParentBarIdent": "NO_PARENT_BAR",
-          "LastDealPrice": 158180.0,
-          "Spread": 20.0
-        }
+        "autogen": null
       },
       "FortsDepositSell": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 10083.0
+        "autogen": 10079.0
       },
       "FortsDepositBuy": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 10057.0
+        "autogen": 10043.0
       },
       "FortsPriceMin": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
@@ -58,7 +39,7 @@
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
         "autogen": 160000.0
       },
-      "SymbolsSubscribedAndReceiving": "autogen:2704"
+      "SymbolsSubscribedAndReceiving": "autogen:NULL"
     }
   },
   "BrokerProvider": {
