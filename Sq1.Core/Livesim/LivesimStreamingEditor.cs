@@ -2,46 +2,32 @@
 
 namespace Sq1.Core.Livesim {
 	public partial class LivesimStreamingEditor {
-//		public String DdeServerPrefix {
-//			get { return this.txtDdeServerPrefix.Text; }
-//			set { this.txtDdeServerPrefix.Text = value; }
-//		}
-//		public String DdeTopicQuotes {
-//			get { return this.txtTopicQuotes.Text; }
-//			set { this.txtTopicQuotes.Text = value; }
-//		}
-//		public String DdeTopicTrades {
-//			get { return this.txtTopicTrades.Text; }
-//			set { this.txtTopicTrades.Text = value; }
-//		}
-//		public String DdeTopicPrefixDom {
-//			get { return this.txtTopicPrefixDOM.Text; }
-//			set { this.txtTopicPrefixDOM.Text = value; }
-//		}
-		private LivesimStreaming streamingLivesim {
-			get { return base.streamingAdapter as LivesimStreaming; }
-		}
-
-		public LivesimStreamingEditor() {	//used in Design Mode for the descendands
+		LivesimStreamingSettings livesimStreamingSettings;
+		public LivesimStreamingEditor() {
 			this.InitializeComponent();
 		}
-//		public override void Initialize(StreamingAdapter quikStreamingAdapter, IDataSourceEditor dataSourceEditor) {
-//			base.Initialize(quikStreamingAdapter, dataSourceEditor);
-//			base.InitializeEditorFields();
-//		}
-		public override void PushStreamingAdapterSettingsToEditor() {
-//			this.DdeServerPrefix = this.streamingLivesim.DdeServerPrefix;
-//			this.DdeTopicQuotes = this.streamingLivesim.DdeTopicQuotes;
-//			this.DdeTopicTrades = this.streamingLivesim.DdeTopicTrades;
-//			this.DdeTopicPrefixDom = this.streamingLivesim.DdeTopicPrefixDom;
-		}
-		public override void PushEditedSettingsToStreamingAdapter() {
-			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
-//			this.streamingLivesim.DdeServerPrefix = this.DdeServerPrefix;
-//			this.streamingLivesim.DdeTopicQuotes = this.DdeTopicQuotes;
-//			this.streamingLivesim.DdeTopicTrades = this.DdeTopicTrades;
-//			this.streamingLivesim.DdeTopicPrefixDom = this.DdeTopicPrefixDom;
-		}
+		public void Initialize(LivesimStreamingSettings livesimStreamingSettings) {
+			this.livesimStreamingSettings = livesimStreamingSettings;
 
-    }
+			this.cbx_DelayBetweenSerialQuotesEnabled	.Checked = this.livesimStreamingSettings.DelayBetweenSerialQuotesEnabled;
+			this.cbx_OutOfOrderQuoteGenerationEnabled		.Checked = this.livesimStreamingSettings.OutOfOrderQuoteDeliveryEnabled;
+			this.cbx_QuoteGenerationFreezeEnabled		.Checked = this.livesimStreamingSettings.QuoteGenerationFreezeEnabled;
+			this.cbx_AdaperDisconnectEnabled			.Checked = this.livesimStreamingSettings.AdaperDisconnectEnabled;
+
+			this.txt_DelayBetweenSerialQuotesMin					.Text = this.livesimStreamingSettings.DelayBetweenSerialQuotesMin					.ToString();
+			this.txt_DelayBetweenSerialQuotesMax					.Text = this.livesimStreamingSettings.DelayBetweenSerialQuotesMax					.ToString();
+			this.txt_OutOfOrderQuoteGenerationHappensOncePerQuoteMin	.Text = this.livesimStreamingSettings.OutOfOrderQuoteGenerationHappensOncePerQuoteMin	.ToString();
+			this.txt_OutOfOrderQuoteGenerationHappensOncePerQuoteMax	.Text = this.livesimStreamingSettings.OutOfOrderQuoteGenerationHappensOncePerQuoteMax	.ToString();
+			this.txt_OutOfOrderQuoteGenerationDelayMillisMin			.Text = this.livesimStreamingSettings.OutOfOrderQuoteGenerationDelayMillisMin			.ToString();
+			this.txt_OutOfOrderQuoteGenerationDelayMillisMax			.Text = this.livesimStreamingSettings.OutOfOrderQuoteGenerationDelayMillisMax			.ToString();
+			this.txt_QuoteGenerationFreezeHappensOncePerQuoteMin	.Text = this.livesimStreamingSettings.QuoteGenerationFreezeHappensOncePerQuoteMin	.ToString();
+			this.txt_QuoteGenerationFreezeHappensOncePerQuoteMax	.Text = this.livesimStreamingSettings.QuoteGenerationFreezeHappensOncePerQuoteMax	.ToString();
+			this.txt_QuoteGenerationFreezeMillisMin					.Text = this.livesimStreamingSettings.QuoteGenerationFreezeMillisMin				.ToString();
+			this.txt_QuoteGenerationFreezeMillisMax					.Text = this.livesimStreamingSettings.QuoteGenerationFreezeMillisMax				.ToString();
+			this.txt_AdaperDisconnectHappensOncePerQuoteMin			.Text = this.livesimStreamingSettings.AdaperDisconnectHappensOncePerQuoteMin		.ToString();
+			this.txt_AdaperDisconnectHappensOncePerQuoteMax			.Text = this.livesimStreamingSettings.AdaperDisconnectHappensOncePerQuoteMax		.ToString();
+			this.txt_AdaperDisconnectReconnectsAfterMillisMin		.Text = this.livesimStreamingSettings.AdaperDisconnectReconnectsAfterMillisMin		.ToString();
+			this.txt_AdaperDisconnectReconnectsAfterMillisMax		.Text = this.livesimStreamingSettings.AdaperDisconnectReconnectsAfterMillisMax		.ToString();
+		}
+	}
 }

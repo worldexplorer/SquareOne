@@ -5,6 +5,7 @@ using System.IO;
 
 using Newtonsoft.Json;
 using Sq1.Core.Indicators;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class Strategy {
@@ -55,6 +56,8 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		[JsonIgnore]	public ScriptCompiler ScriptCompiler;
 		// I_DONT_WANT_TO_BRING_CHART_SETTINGS_TO_CORE public ChartSettings ChartSettings;
+		[JsonProperty]	public LivesimBrokerSettings	LivesimBrokerSettings;
+		[JsonProperty]	public LivesimStreamingSettings	LivesimStreamginSettings;
 		
 		// programmer's constructor
 		public Strategy(string name) : this() {
@@ -69,6 +72,8 @@ namespace Sq1.Core.StrategyBase {
 			this.ScriptCompiler = new ScriptCompiler();
 			this.ExceptionsLimitToAbortBacktest = 10;
 			this.scriptContextCurrentNameLock = new object();
+			this.LivesimBrokerSettings		= new LivesimBrokerSettings(this);
+			this.LivesimStreamginSettings	= new LivesimStreamingSettings(this);
 		}
 		public override string ToString() {
 			string ret = this.Name;
