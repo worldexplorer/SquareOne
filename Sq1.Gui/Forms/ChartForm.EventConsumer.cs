@@ -60,7 +60,7 @@ namespace Sq1.Gui.Forms {
 			try {
 				if (this.btnStreamingTriggersScript.Checked) {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStart();
-					// same idea as in mniSubscribedToStreamingProviderQuotesBars_Click();
+					// same idea as in mniSubscribedToStreamingAdapterQuotesBars_Click();
 					ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
 					if (this.ChartFormManager.Executor.Strategy.Script != null && ctxChart.IsStreamingTriggeringScript) {
 						this.ChartFormManager.BacktesterRunSimulation();
@@ -314,23 +314,23 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException("mnitlbSpreadGeneratorPct_UserTyped()", ex);
 			}
 		}
-		void mniSubscribedToStreamingProviderQuotesBars_Click(object sender, EventArgs e) {
+		void mniSubscribedToStreamingAdapterQuotesBars_Click(object sender, EventArgs e) {
 			try {
-				if (this.mniSubscribedToStreamingProviderQuotesBars.Checked == false) {
-					this.mniSubscribedToStreamingProviderQuotesBars.BackColor = Color.LightSalmon;
+				if (this.mniSubscribedToStreamingAdapterQuotesBars.Checked == false) {
+					this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
 					this.DdbBars.BackColor = Color.LightSalmon;
-					this.mniSubscribedToStreamingProviderQuotesBars.Text = "NOT Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingProvider.Name + "]";
+					this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapter.Name + "]";
 				} else {
-					this.mniSubscribedToStreamingProviderQuotesBars.BackColor = SystemColors.Control;
+					this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = SystemColors.Control;
 					this.DdbBars.BackColor = SystemColors.Control;
-					this.mniSubscribedToStreamingProviderQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingProvider.Name + "]";
+					this.mniSubscribedToStreamingAdapterQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapter.Name + "]";
 				}
 
 				ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
 				bool prevStreaming = ctxChart.IsStreaming;
 
-				string reason = "mniSubscribedToStreamingProviderQuotesBars.Checked[" + this.mniSubscribedToStreamingProviderQuotesBars.Checked + "]";
-				if (this.mniSubscribedToStreamingProviderQuotesBars.Checked) {
+				string reason = "mniSubscribedToStreamingAdapterQuotesBars.Checked[" + this.mniSubscribedToStreamingAdapterQuotesBars.Checked + "]";
+				if (this.mniSubscribedToStreamingAdapterQuotesBars.Checked) {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingSubscribe(reason);
 					if (this.ChartFormManager.Strategy != null && ctxChart.IsStreamingTriggeringScript) {
 						// without backtest here, Indicators aren't calculated if there was no "Backtest Now" or "Backtest on App Restart"
@@ -347,9 +347,9 @@ namespace Sq1.Gui.Forms {
 					string msg = "SHOULD_HAVE_CHANGED_BUT_STAYS_THE_SAME nowStreaming[" + nowStreaming + "] == prevStreaming[" + prevStreaming + "]";
 					Assembler.PopupException(msg);
 				}
-				if (nowStreaming != this.mniSubscribedToStreamingProviderQuotesBars.Checked) {
+				if (nowStreaming != this.mniSubscribedToStreamingAdapterQuotesBars.Checked) {
 					string msg = "MUST_BE_SYNCHRONIZED_BUT_STAYS_UNSYNC nowStreaming[" + nowStreaming
-						+ "] != this.mniSubscribedToStreamingProviderQuotesBars.Checked[" + this.mniSubscribedToStreamingProviderQuotesBars.Checked + "]";
+						+ "] != this.mniSubscribedToStreamingAdapterQuotesBars.Checked[" + this.mniSubscribedToStreamingAdapterQuotesBars.Checked + "]";
 					Assembler.PopupException(msg);
 				}
 

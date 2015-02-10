@@ -252,9 +252,9 @@ namespace Sq1.Core.Backtesting {
 				// kept it on the surface and didn't pass ScriptContextCurrent.SpreadModelerPercent to "new BacktestDataSource()" because later BacktestDataSource:
 				// 1) will support different SpreadModelers with not only 1 parameter like SpreadModelerPercentage;
 				// 2) will support different BacktestModes like 12strokes, not only 4Stroke 
-				// 3) will poke StreamingProvider-derived implementations 12 times a bar with platform-generated quotes for backtests with regulated poke delay
+				// 3) will poke StreamingAdapter-derived implementations 12 times a bar with platform-generated quotes for backtests with regulated poke delay
 				// 4) will need to be provide visualized 
-				// v1 this.BacktestDataSource.BacktestStreamingProvider.InitializeSpreadModelerPercentage(this.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
+				// v1 this.BacktestDataSource.BacktestStreamingAdapter.InitializeSpreadModelerPercentage(this.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
 				// v2 UI-controlled in the future, right now the stub  
 				ContextScript ctx = this.Executor.Strategy.ScriptContextCurrent;
 				string msig = "Strategy[" + this.Executor.Strategy + "].ScriptContextCurrent[" + ctx + "]";
@@ -275,10 +275,10 @@ namespace Sq1.Core.Backtesting {
 
 				this.BarsSimulating.DataSource = this.BacktestDataSource;
 
-				this.BacktestDataSource.StreamingProvider.ConsumerQuoteSubscribe(
+				this.BacktestDataSource.StreamingAdapter.ConsumerQuoteSubscribe(
 					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval,
 					this.backtestQuoteBarConsumer);
-				this.BacktestDataSource.StreamingProvider.ConsumerBarSubscribe(
+				this.BacktestDataSource.StreamingAdapter.ConsumerBarSubscribe(
 					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval,
 					this.backtestQuoteBarConsumer);
 				
@@ -334,16 +334,16 @@ namespace Sq1.Core.Backtesting {
 		}
 		protected virtual void SimulationPostBarsRestore() {
 			try {
-				StreamingProvider streamingBacktest = this.BacktestDataSource.StreamingProvider;
-				StreamingProvider streamingOriginal = this.BarsOriginal.DataSource.StreamingProvider;
+				StreamingAdapter streamingBacktest = this.BacktestDataSource.StreamingAdapter;
+				StreamingAdapter streamingOriginal = this.BarsOriginal.DataSource.StreamingAdapter;
 				string msg = "NOW_INSERT_BREAKPOINT_TO_this.channel.PushQuoteToConsumers(quoteDequeued) CATCHING_BACKTEST_END_UNPAUSE_PUMP";
 				//if (streamingOriginal.
 
 				streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
 
-				this.BacktestDataSource.StreamingProvider.ConsumerQuoteUnSubscribe(
+				this.BacktestDataSource.StreamingAdapter.ConsumerQuoteUnSubscribe(
 					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
-				this.BacktestDataSource.StreamingProvider.ConsumerBarUnSubscribe(
+				this.BacktestDataSource.StreamingAdapter.ConsumerBarUnSubscribe(
 					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
 
 				this.Executor.BacktestContextRestore();
@@ -367,7 +367,7 @@ namespace Sq1.Core.Backtesting {
 		void generateQuotesForBarAndPokeStreaming(Bar bar2simulate) {
 			if (bar2simulate == null) return;
 			if (bar2simulate.IsBarStreaming && double.IsNaN(bar2simulate.Open)) {
-				string msg = "it's ok for Bars.LastBar from StaticProvider to have no PartialValues;"
+				string msg = "IRRELEVANT_PARTIAL_VALUES_WERE_DEPRECATED it's ok for Bars.LastBar from Repository to have no PartialValues;"
 					+ " filled by Streaming, NA for Backtest, skipping LastBar";
 				//throw new Exception(msg);
 				Assembler.PopupException(msg);

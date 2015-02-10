@@ -49,7 +49,7 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 
-			double priceScript = replacement.Alert.DataSource.StreamingProvider.StreamingDataSnapshot
+			double priceScript = replacement.Alert.DataSource.StreamingAdapter.StreamingDataSnapshot
 				.GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(
 				replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, true);
 
@@ -97,7 +97,7 @@ namespace Sq1.Core.Broker {
 			//order.addMessage(new OrderMessage(msg));
 			//return null;
 			//}
-			if (rejectedOrderToReplace.hasBrokerProvider("CreateReplacementOrderInsteadOfRejected(): ") == false) {
+			if (rejectedOrderToReplace.hasBrokerAdapter("CreateReplacementOrderInsteadOfRejected(): ") == false) {
 				return null;
 			}
 			Order replacementOrder = rejectedOrderToReplace.DeriveReplacementOrder();
@@ -120,17 +120,17 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException("replacementOrder == null why did you call me?");
 				return;
 			}
-			if (replacementOrder.hasBrokerProvider("PlaceReplacementOrderInsteadOfRejected(): ") == false) {
+			if (replacementOrder.hasBrokerAdapter("PlaceReplacementOrderInsteadOfRejected(): ") == false) {
 				return;
 			}
 
 			string msg = "Scheduling SubmitOrdersThreadEntry [" + replacementOrder.ToString() + "] slippageIndex["
-				+ replacementOrder.SlippageIndex + "] through [" + replacementOrder.Alert.DataSource.BrokerProvider + "]";
+				+ replacementOrder.SlippageIndex + "] through [" + replacementOrder.Alert.DataSource.BrokerAdapter + "]";
 			OrderStateMessage newOrderState = new OrderStateMessage(replacementOrder, OrderState.PreSubmit, msg);
 			this.orderProcessor.UpdateOrderStateAndPostProcess(replacementOrder, newOrderState);
 
-			//this.BrokerProvider.SubmitOrdersThreadEntry(ordersFromAlerts);
-			ThreadPool.QueueUserWorkItem(new WaitCallback(replacementOrder.Alert.DataSource.BrokerProvider.SubmitOrdersThreadEntry),
+			//this.BrokerAdapter.SubmitOrdersThreadEntry(ordersFromAlerts);
+			ThreadPool.QueueUserWorkItem(new WaitCallback(replacementOrder.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
 				new object[] { new List<Order>() { replacementOrder } });
 
 			//this.orderProcessor.UpdateActiveOrdersCountEvent();

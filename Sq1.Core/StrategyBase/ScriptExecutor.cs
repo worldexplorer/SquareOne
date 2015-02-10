@@ -85,7 +85,7 @@ namespace Sq1.Core.StrategyBase {
 				
 				this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript = value;
 				// we are in beginning the backtest and will switch back to preBacktestIsStreaming after backtest finishes;
-				// if you AppKill during the backtest, you don't want btnStreaming be pressed (and disabled DataSource.StreamingProvider=null) after AppRestart 
+				// if you AppKill during the backtest, you don't want btnStreaming be pressed (and disabled DataSource.StreamingAdapter=null) after AppRestart 
 				if (this.preBacktestBars != null) {
 					//string msg = "NOT_SAVING_IsStreamingTriggeringScript=ON_FOR_BACKTEST"
 					//	+ " preBacktestIsStreaming[" + this.preBacktestIsStreaming + "] preBacktestBars[" + this.preBacktestBars + "]";
@@ -287,7 +287,7 @@ namespace Sq1.Core.StrategyBase {
 							+ " in ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
 						Assembler.PopupException(msg3);
 					}
-					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsNewAfterExecCopy, setStatusSubmitting, true);
+					this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsNewAfterExecCopy, setStatusSubmitting, true);
 					//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
 					// ^^^ this.DataSource.UnPausePumpingFor(this.Bars, true);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
 
@@ -324,7 +324,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
 			}
 			//if (this.Backtester.IsBacktestingNow) return pokeUnit;
-			// NOPE PositionsMaster grows only in Callback: do this before this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads() to avoid REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert
+			// NOPE PositionsMaster grows only in Callback: do this before this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads() to avoid REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert
 			// NOPE_REALTIME_FILLS_POSITIONS_ON_CALLBACK this.AddPositionsJustCreatedUnfilledToChartShadowAndPushToReportersAsyncUnsafe(pokeUnit);
 			
 			this.RaiseStrategyExecutionComplete(quoteForAlertsCreated);
@@ -623,7 +623,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alertFilled.Symbol);
+			alertFilled.QuoteLastWhenThisAlertFilled = this.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alertFilled.Symbol);
 
 			int barFillRelno  = alertFilled.Bars.Count - 1;
 			if (barFillRelno != alertFilled.Bars.BarStreaming.ParentBarsIndex) {
@@ -732,7 +732,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 
 				if (alertsNewAfterAlertFilled.Count > 0 && willEmit) {
-					this.OrderProcessor.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsNewAfterAlertFilled.InnerList, setStatusSubmitting, true);
+					this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsNewAfterAlertFilled.InnerList, setStatusSubmitting, true);
 
 					// 3. Script using proto might move SL and TP which require ORDERS to be moved, not NULLs
 					int twoMinutes = 120000;
@@ -874,7 +874,7 @@ namespace Sq1.Core.StrategyBase {
 			//bool checkPositionOpenNow = true;
 			//if (this.checkPositionCanBeClosed(alert, msig, checkPositionOpenNow) == false) return;
 
-			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerProvider knows to pass Bar here?...
+			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerAdapter knows to pass Bar here?...
 			//v1 STREAMING DOESNT BELONG??? Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
 			//v2 NO_I_NEED_STREAMING_BAR_NOT_THE_SAME_I_OPENED_THE_LEFTOVER_POSITION
 			Bar barFill = alert.Bars.BarStaticLastNullUnsafe;
@@ -892,7 +892,7 @@ namespace Sq1.Core.StrategyBase {
 		public void RemovePendingEntry(Alert alert) {
 			string msig = "RemovePendingEntry(): ";
 
-			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerProvider knows to pass Bar here?...
+			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerAdapter knows to pass Bar here?...
 			Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingEntryAlertClosePosition Forced";
@@ -973,10 +973,10 @@ namespace Sq1.Core.StrategyBase {
 		DataSource	preDataSource;
 		bool		preBacktestIsStreaming;
 		internal void BacktestContextInitialize(Bars bars) {
-			if (this.Bars.DataSource.StreamingProvider != null) {
+			if (this.Bars.DataSource.StreamingAdapter != null) {
 				this.Bars.DataSource.PumpingAutoPauseFor(this);
 			} else {
-				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingProvider=null //BacktestContextInitialize(" + bars + ")";
+				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + bars + ")";
 				Assembler.PopupException(msg, null, false);
 				// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = true;
 			}
@@ -1025,11 +1025,11 @@ namespace Sq1.Core.StrategyBase {
 			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
-			StreamingProvider streaming = this.DataSource.StreamingProvider;
+			StreamingAdapter streaming = this.DataSource.StreamingAdapter;
 			if (streaming != null) {
 				this.Bars.DataSource.PumpAutoResumeFor(this);
 			} else {
-				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingProvider=null //BacktestContextRestore(" + this.Bars + ")";
+				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextRestore(" + this.Bars + ")";
 				Assembler.PopupException(msg, null, false);
 				// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = false;
 			}

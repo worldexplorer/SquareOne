@@ -24,7 +24,7 @@ namespace Sq1.Core.Execution {
 		KillerPreSubmit = 600,
 		KillerSubmitting = 610,
 		KillerBulletFlying = 620,	// KillerBulletFlying = KillerSubmitted + KillerActive
-		KillerDone = 630,	// simulated in BrokerQuikProvider: victim is cancelled, no broker callback on a "virtual" KillerOrder
+		KillerDone = 630,	// simulated in BrokerQuik: victim is cancelled, no broker callback on a "virtual" KillerOrder
 		// the only Victim order StateFlow: KillPending => Killed
 		KillPending = 640,
 		Killed = 650,

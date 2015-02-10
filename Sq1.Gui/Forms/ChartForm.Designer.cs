@@ -41,7 +41,7 @@ namespace Sq1.Gui.Forms {
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.DdbBars = new System.Windows.Forms.ToolStripDropDownButton();
 			this.ctxBars = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.mniSubscribedToStreamingProviderQuotesBars = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniSubscribedToStreamingAdapterQuotesBars = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnitlbYearly = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mnitlbMonthly = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
@@ -307,7 +307,7 @@ namespace Sq1.Gui.Forms {
 			// ctxBars
 			// 
 			this.ctxBars.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniSubscribedToStreamingProviderQuotesBars,
+            this.mniSubscribedToStreamingAdapterQuotesBars,
             this.toolStripSeparator6,
             this.mnitlbYearly,
             this.mnitlbMonthly,
@@ -323,15 +323,15 @@ namespace Sq1.Gui.Forms {
 			this.ctxBars.Name = "ctxScaleInterval";
 			this.ctxBars.Size = new System.Drawing.Size(252, 256);
 			// 
-			// mniSubscribedToStreamingProviderQuotesBars
+			// mniSubscribedToStreamingAdapterQuotesBars
 			// 
-			this.mniSubscribedToStreamingProviderQuotesBars.Checked = true;
-			this.mniSubscribedToStreamingProviderQuotesBars.CheckOnClick = true;
-			this.mniSubscribedToStreamingProviderQuotesBars.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.mniSubscribedToStreamingProviderQuotesBars.Name = "mniSubscribedToStreamingProviderQuotesBars";
-			this.mniSubscribedToStreamingProviderQuotesBars.Size = new System.Drawing.Size(251, 22);
-			this.mniSubscribedToStreamingProviderQuotesBars.Text = "Subscribed to [StreamingDerived]";
-			this.mniSubscribedToStreamingProviderQuotesBars.Click += new System.EventHandler(this.mniSubscribedToStreamingProviderQuotesBars_Click);
+			this.mniSubscribedToStreamingAdapterQuotesBars.Checked = true;
+			this.mniSubscribedToStreamingAdapterQuotesBars.CheckOnClick = true;
+			this.mniSubscribedToStreamingAdapterQuotesBars.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.mniSubscribedToStreamingAdapterQuotesBars.Name = "mniSubscribedToStreamingAdapterQuotesBars";
+			this.mniSubscribedToStreamingAdapterQuotesBars.Size = new System.Drawing.Size(251, 22);
+			this.mniSubscribedToStreamingAdapterQuotesBars.Text = "Subscribed to [StreamingDerived]";
+			this.mniSubscribedToStreamingAdapterQuotesBars.Click += new System.EventHandler(this.mniSubscribedToStreamingAdapterQuotesBars_Click);
 			// 
 			// toolStripSeparator6
 			// 
@@ -510,8 +510,8 @@ namespace Sq1.Gui.Forms {
 			this.btnStrategyEmittingOrders.Name = "btnStrategyEmittingOrders";
 			this.btnStrategyEmittingOrders.Size = new System.Drawing.Size(70, 20);
 			this.btnStrategyEmittingOrders.Text = "EmitOrders";
-			this.btnStrategyEmittingOrders.ToolTipText = "ON=>Orders are submitted to BrokerProvider you chose in your DataSource, OFF=>Ord" +
-    "ers are routed to MarketSimStreaming through BacktestBrokerProvider";
+			this.btnStrategyEmittingOrders.ToolTipText = "ON=>Orders are submitted to BrokerAdapter you chose in your DataSource, OFF=>Ord" +
+    "ers are routed to MarketSimStreaming through BacktestBrokerAdapter";
 			this.btnStrategyEmittingOrders.Click += new System.EventHandler(this.btnStrategyEmittingOrders_Click);
 			// 
 			// ChartForm
@@ -571,7 +571,7 @@ namespace Sq1.Gui.Forms {
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripMenuItem mniFillOutsideQuoteSpreadParanoidCheckThrow;
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mnitlbSpreadGeneratorPct;
-		private System.Windows.Forms.ToolStripMenuItem mniSubscribedToStreamingProviderQuotesBars;
+		private System.Windows.Forms.ToolStripMenuItem mniSubscribedToStreamingAdapterQuotesBars;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripMenuItem mniBarsStoredScaleInterval;

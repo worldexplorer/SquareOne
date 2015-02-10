@@ -12,7 +12,7 @@ using Sq1.Core.Streaming;
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl : UserControl {
 		RepositoryJsonDataSource dataSourceRepository;
-		Dictionary<Type, int> imageIndexByStaticProviderType = new Dictionary<Type, int>();
+		Dictionary<Type, int> imageIndexByStreamingAdapterType = new Dictionary<Type, int>();
 
 		public DataSource DataSourceSelected;
 		public string SymbolSelected;
@@ -87,7 +87,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			var dataSources = dataSourceRepository.ItemsAsList;
 			this.imageList.Images.Clear();
 			foreach (DataSource ds in dataSources) {
-				StreamingProvider provider = ds.StreamingProvider;
+				StreamingAdapter provider = ds.StreamingAdapter;
 				if (provider == null) continue;
 				this.populateIconForDataSource(ds);
 			}
@@ -104,19 +104,19 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 		void populateIconForDataSource(DataSource ds) {
 			if (ds == null) return;
-			StreamingProvider provider = ds.StreamingProvider;
-			if (provider == null) return;
-			this.imageList.Images.Add(provider.Icon);
+			StreamingAdapter adapter = ds.StreamingAdapter;
+			if (adapter == null) return;
+			this.imageList.Images.Add(adapter.Icon);
 			int providerIconImageIndex = this.imageList.Images.Count - 1;
-			if (this.imageIndexByStaticProviderType.ContainsKey(provider.GetType()) == false) {
-				this.imageIndexByStaticProviderType.Add(provider.GetType(), providerIconImageIndex);
+			if (this.imageIndexByStreamingAdapterType.ContainsKey(adapter.GetType()) == false) {
+				this.imageIndexByStreamingAdapterType.Add(adapter.GetType(), providerIconImageIndex);
 			}
 		}
 		int getProviderImageIndexForDataSource(DataSource dataSource) {
-			var provider = dataSource.StreamingProvider;
-			if (provider == null) return -1;
-			if (this.imageIndexByStaticProviderType.ContainsKey(provider.GetType()) == false) return -1;
-			return this.imageIndexByStaticProviderType[provider.GetType()];
+			StreamingAdapter adapter = dataSource.StreamingAdapter;
+			if (adapter == null) return -1;
+			if (this.imageIndexByStreamingAdapterType.ContainsKey(adapter.GetType()) == false) return -1;
+			return this.imageIndexByStreamingAdapterType[adapter.GetType()];
 		}
 		void syncSymbolAndDataSourceSelectedFromRowIndexClicked(int itemRowIndex) {
 			string msig = " //DataSourcesTreeControl.syncSymbolAndDataSourceSelectedFromRowIndexClicked(" + itemRowIndex + ")";

@@ -25,8 +25,8 @@ namespace Sq1.Core.DataFeed {
 				return stringBuilder.ToString();
 			} }
 		[JsonProperty]	public BarScaleInterval		ScaleInterval;
-		[JsonProperty]	public StreamingProvider	StreamingProvider;
-		[JsonProperty]	public BrokerProvider		BrokerProvider;
+		[JsonProperty]	public StreamingAdapter	StreamingAdapter;
+		[JsonProperty]	public BrokerAdapter		BrokerAdapter;
 		[JsonProperty]	public string				MarketName;
 		[JsonIgnore]	public MarketInfo			marketInfo;
 		[JsonIgnore]	public MarketInfo			MarketInfo {
@@ -35,15 +35,13 @@ namespace Sq1.Core.DataFeed {
 				this.marketInfo = value;
 				MarketName = value.Name;
 			} }
-		[JsonProperty]	public string				StreamingProviderName	{ get {
-				if (StreamingProvider == null) return "PLEASE_ATTACH_AND_CONFIGURE_STREAMING_PROVIDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";
-				//return staticProvider.GetType().Name;
-				return StreamingProvider.Name;
+		[JsonProperty]	public string				StreamingAdapterName	{ get {
+				if (StreamingAdapter == null) return "PLEASE_ATTACH_AND_CONFIGURE_STREAMING_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";
+				return StreamingAdapter.Name;
 			} }
-		[JsonProperty]	public string				BrokerProviderName		{ get {
-				if (BrokerProvider == null) return "PLEASE_ATTACH_AND_CONFIGURE_BROKER_PROVIDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";
-				//return staticProvider.GetType().Name;
-				return BrokerProvider.Name;
+		[JsonProperty]	public string				BrokerAdapterName		{ get {
+				if (BrokerAdapter == null) return "PLEASE_ATTACH_AND_CONFIGURE_BROKER_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT";
+				return BrokerAdapter.Name;
 			} }
 		[JsonIgnore]	public bool					IsIntraday				{ get { return this.ScaleInterval.IsIntraday; } }
 		[JsonIgnore]	public RepositoryBarsSameScaleInterval	BarsRepository	{ get; protected set; }
@@ -93,15 +91,15 @@ namespace Sq1.Core.DataFeed {
 			this.Initialize(orderProcessor);
 		}
 		public void Initialize(OrderProcessor orderProcessor) {
-			// works only for deserialized providers; for a newDataSource they are NULLs to be assigned in DataSourceEditor 
-			if (this.StreamingProvider == null) return;
-			this.StreamingProvider.Initialize(this);
-			if (this.BrokerProvider == null) return;
-			this.BrokerProvider.Initialize(this, this.StreamingProvider, orderProcessor);
+			// works only for deserialized adapters; for a newDataSource they are NULLs to be assigned in DataSourceEditor 
+			if (this.StreamingAdapter == null) return;
+			this.StreamingAdapter.Initialize(this);
+			if (this.BrokerAdapter == null) return;
+			this.BrokerAdapter.Initialize(this, this.StreamingAdapter, orderProcessor);
 		}
 		public override string ToString() {
 			return Name + "(" + this.ScaleInterval.ToString() + ")" + SymbolsCSV
-				+ " {" + StreamingProviderName + ":" + BrokerProviderName + "}";
+				+ " {" + StreamingAdapterName + ":" + BrokerAdapterName + "}";
 		}
 
 		// internal => use only RepositoryJsonDataSource.SymbolAdd() which will notify subscribers about add operation
@@ -114,13 +112,6 @@ namespace Sq1.Core.DataFeed {
 		}
 		// internal => use only RepositoryJsonDataSource.SymbolRename() which will notify subscribers about rename operation
 		internal void SymbolRename(string oldSymbolName, string newSymbolName) {
-			// nope StaticProvider can subscribe to dataSourceRepository_OnSymbolRenamed() as well and do 
-			//if (this.StaticProvider != null) {
-			//	this.StaticProvider.SymbolRename(oldSymbolName, newSymbolName);
-			//	this.Symbols = this.StaticProvider.SymbolsStored;
-			//	return;
-			//}
-
 			if (this.Symbols.Contains(oldSymbolName) == false) {
 				throw new Exception("OLD_SYMBOL_DOESNT_EXIST[" + oldSymbolName + "] in [" + this.Name + "]");
 			}
@@ -304,7 +295,7 @@ namespace Sq1.Core.DataFeed {
 			return ret;
 		}
 		public void PumpingAutoPauseFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(executor.Bars.Symbol, executor.Bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelFor(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
@@ -331,7 +322,7 @@ namespace Sq1.Core.DataFeed {
 			channel.PumpAutoPauseBacktesterLaunchingAdd(executor.Backtester);
 		}
 		public void PumpAutoResumeFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingProvider.DataDistributor.GetDistributionChannelFor(executor.Bars.Symbol, executor.Bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelFor(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_UNPAUSE_DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
@@ -360,19 +351,19 @@ namespace Sq1.Core.DataFeed {
 		}
 
 		public bool PumpingPausedGet(Bars bars) {
-			DataDistributor distr = this.StreamingProvider.DataDistributor;
+			DataDistributor distr = this.StreamingAdapter.DataDistributor;
 			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 			bool paused = channel.QuotePump.PushConsumersPaused;
 			return paused;
 		}
 		public bool PumpingWaitUntilUnpaused(Bars bars, int maxWaitingMillis = 1000) {
-			DataDistributor distr = this.StreamingProvider.DataDistributor;
+			DataDistributor distr = this.StreamingAdapter.DataDistributor;
 			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 			bool unpaused = channel.QuotePump.WaitUntilUnpaused(maxWaitingMillis);
 			return unpaused;
 		}
 		public bool PumpingWaitUntilPaused(Bars bars, int maxWaitingMillis = 1000) {
-			DataDistributor distr = this.StreamingProvider.DataDistributor;
+			DataDistributor distr = this.StreamingAdapter.DataDistributor;
 			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 			bool paused = channel.QuotePump.WaitUntilPaused(maxWaitingMillis);
 			return paused;

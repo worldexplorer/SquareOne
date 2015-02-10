@@ -16,8 +16,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 				if (this.ds == null) return "NO_DATASOURCE_LOADED_FOR_EDITING";
 				return this.ds.Name;
 			} }
-		public Dictionary<string, StreamingProvider> StreamingProvidersByName { get; private set; }
-		public Dictionary<string, BrokerProvider> BrokerProvidersByName { get; private set; }
+		public Dictionary<string, StreamingAdapter> StreamingAdaptersByName { get; private set; }
+		public Dictionary<string, BrokerAdapter> BrokerAdaptersByName { get; private set; }
 		public string symbolsDefault;
 		public string windowTitleDefault;
 		Assembler assemblerInstance;
@@ -27,11 +27,11 @@ namespace Sq1.Widgets.DataSourceEditor {
 			InitializeComponent();
 		}
 
-		public void InitializeProviders(
-				Dictionary<string, StreamingProvider> streamingProvidersByName,
-				Dictionary<string, BrokerProvider> brokerProvidersByName) {
-			this.StreamingProvidersByName = streamingProvidersByName;
-			this.BrokerProvidersByName = brokerProvidersByName;
+		public void InitializeAdapters(
+				Dictionary<string, StreamingAdapter> streamingAdaptersByName,
+				Dictionary<string, BrokerAdapter> brokerAdaptersByName) {
+			this.StreamingAdaptersByName = streamingAdaptersByName;
+			this.BrokerAdaptersByName = brokerAdaptersByName;
 		}
 		public void InitializeContext(Assembler assembler) {
 			this.assemblerInstance = assembler;
@@ -54,14 +54,14 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.PopulateScaleIntervalFromDataSource();
 			this.PopulateStreamingBrokerListViewsFromDataSource();
 
-			if (this.ds.StreamingProvider != null) {
-				HighlightStreamingByName(this.ds.StreamingProvider.GetType().Name);
+			if (this.ds.StreamingAdapter != null) {
+				HighlightStreamingByName(this.ds.StreamingAdapter.GetType().Name);
 			} else {
-				HighlightStreamingByName(StreamingProvider.NO_STREAMING_PROVIDER);
+				HighlightStreamingByName(StreamingAdapter.NO_STREAMING_ADAPTER);
 			}
 
-			if (this.ds.BrokerProvider != null) HighlightBrokerByName(this.ds.BrokerProvider.GetType().Name);
-			else HighlightBrokerByName(BrokerProvider.NO_BROKER_PROVIDER);
+			if (this.ds.BrokerAdapter != null) HighlightBrokerByName(this.ds.BrokerAdapter.GetType().Name);
+			else HighlightBrokerByName(BrokerAdapter.NO_BROKER_ADAPTER);
 
 			this.marketInfoEditor.Initialize(ds, this.assemblerInstance.RepositoryJsonDataSource, this.assemblerInstance.RepositoryMarketInfo);
 		}
@@ -90,71 +90,71 @@ namespace Sq1.Widgets.DataSourceEditor {
 				return;
 			}
 			
-			this.lvStreamingProviders.Items.Clear();
+			this.lvStreamingAdapters.Items.Clear();
 			ListViewItem lviAbsentStreaming = new ListViewItem() {
-				Text = StreamingProvider.NO_STREAMING_PROVIDER,
-				Name = StreamingProvider.NO_STREAMING_PROVIDER,
+				Text = StreamingAdapter.NO_STREAMING_ADAPTER,
+				Name = StreamingAdapter.NO_STREAMING_ADAPTER,
 			};
-			this.lvStreamingProviders.Items.Add(lviAbsentStreaming);
-			foreach (StreamingProvider streamingProviderPrototype in StreamingProvidersByName.Values) {
+			this.lvStreamingAdapters.Items.Add(lviAbsentStreaming);
+			foreach (StreamingAdapter streamingAdapterPrototype in StreamingAdaptersByName.Values) {
 				try {
-					StreamingProvider streamingProviderInstance = null;	// streamingProviderPrototype;
-					if (ds.StreamingProvider != null && ds.StreamingProvider.GetType().FullName == streamingProviderPrototype.GetType().FullName) {
-						streamingProviderInstance = ds.StreamingProvider;
+					StreamingAdapter streamingAdapterInstance = null;	// streamingAdapterPrototype;
+					if (ds.StreamingAdapter != null && ds.StreamingAdapter.GetType().FullName == streamingAdapterPrototype.GetType().FullName) {
+						streamingAdapterInstance = ds.StreamingAdapter;
 					}
 					// I still want to get a new instance, so if user choses it, I'll Initialize() it and put into serialize-able DataSource
-					if (streamingProviderInstance == null) {
-						streamingProviderInstance = (StreamingProvider)Activator.CreateInstance(streamingProviderPrototype.GetType());
+					if (streamingAdapterInstance == null) {
+						streamingAdapterInstance = (StreamingAdapter)Activator.CreateInstance(streamingAdapterPrototype.GetType());
 					}
 
-					if (streamingProviderInstance.EditorInstanceInitialized == false) {
+					if (streamingAdapterInstance.EditorInstanceInitialized == false) {
 						try {
-							streamingProviderInstance.StreamingEditorInitialize(this);
+							streamingAdapterInstance.StreamingEditorInitialize(this);
 						} catch (Exception e) {
-							string msg = "can't initialize streamingProviderInstance[" + streamingProviderInstance + "]";
+							string msg = "can't initialize streamingAdapterInstance[" + streamingAdapterInstance + "]";
 							Assembler.PopupException(msg, e);
 							return;
 						}
 					}
 
 					ListViewItem lvi = new ListViewItem() {
-						Text = streamingProviderInstance.Name,
-						Name = streamingProviderInstance.GetType().Name,
-						Tag = streamingProviderInstance
+						Text = streamingAdapterInstance.Name,
+						Name = streamingAdapterInstance.GetType().Name,
+						Tag = streamingAdapterInstance
 					};
-					if (streamingProviderInstance.Icon != null) {
-						this.imglStreamingProviders.Images.Add(streamingProviderInstance.Icon);
-						lvi.ImageIndex = this.imglStreamingProviders.Images.Count - 1;
+					if (streamingAdapterInstance.Icon != null) {
+						this.imglStreamingAdapters.Images.Add(streamingAdapterInstance.Icon);
+						lvi.ImageIndex = this.imglStreamingAdapters.Images.Count - 1;
 					}
-					this.lvStreamingProviders.Items.Add(lvi);
+					this.lvStreamingAdapters.Items.Add(lvi);
 				} catch (Exception e) {
 					Assembler.PopupException(null, e);
 					return;
 				}
 			}
 
-			this.lvBrokerProviders.Items.Clear();
+			this.lvBrokerAdapters.Items.Clear();
 			ListViewItem lviAbsentBroker = new ListViewItem() {
-				Text = BrokerProvider.NO_BROKER_PROVIDER,
-				Name = BrokerProvider.NO_BROKER_PROVIDER,
+				Text = BrokerAdapter.NO_BROKER_ADAPTER,
+				Name = BrokerAdapter.NO_BROKER_ADAPTER,
 			};
-			this.lvBrokerProviders.Items.Add(lviAbsentBroker);
-			foreach (BrokerProvider brokerProviderPrototype in BrokerProvidersByName.Values) {
+			this.lvBrokerAdapters.Items.Add(lviAbsentBroker);
+			foreach (BrokerAdapter brokerAdapterPrototype in BrokerAdaptersByName.Values) {
 				try {
-					BrokerProvider brokerProviderInstance = null;	// brokerProviderPrototype;
-					if (ds.BrokerProvider != null && ds.BrokerProvider.GetType().FullName == brokerProviderPrototype.GetType().FullName) {
-						brokerProviderInstance = ds.BrokerProvider;
+					BrokerAdapter brokerAdapterInstance = null;	// brokerAdapterPrototype;
+					if (ds.BrokerAdapter != null && ds.BrokerAdapter.GetType().FullName == brokerAdapterPrototype.GetType().FullName) {
+						brokerAdapterInstance = ds.BrokerAdapter;
 					}
 					// I still want to get a new instance, so if user choses it, I'll Initialize() it and put into serialize-able DataSource
-					if (brokerProviderInstance == null) {
-						brokerProviderInstance = (BrokerProvider)Activator.CreateInstance(brokerProviderPrototype.GetType());
+					if (brokerAdapterInstance == null) {
+						brokerAdapterInstance = (BrokerAdapter)Activator.CreateInstance(brokerAdapterPrototype.GetType());
 					}
 
-					if (brokerProviderInstance.EditorInstanceInitialized == false) {
+					if (brokerAdapterInstance.EditorInstanceInitialized == false) {
 						try {
-							brokerProviderInstance.BrokerEditorInitialize(this);
+							brokerAdapterInstance.BrokerEditorInitialize(this);
 						} catch (Exception e) {
-							string msg = "can't initialize brokerProviderInstance[" + brokerProviderInstance + "]";
+							string msg = "can't initialize brokerAdapterInstance[" + brokerAdapterInstance + "]";
 							Assembler.PopupException(msg, e);
 							return;
 						}
@@ -165,15 +165,15 @@ namespace Sq1.Widgets.DataSourceEditor {
 
 
 					ListViewItem lvi = new ListViewItem() {
-						Text = brokerProviderInstance.Name,
-						Name = brokerProviderInstance.GetType().Name,
-						Tag = brokerProviderInstance
+						Text = brokerAdapterInstance.Name,
+						Name = brokerAdapterInstance.GetType().Name,
+						Tag = brokerAdapterInstance
 					};
-					if (brokerProviderInstance.Icon != null) {
-						this.imglBrokerProviders.Images.Add(brokerProviderInstance.Icon);
-						lvi.ImageIndex = this.imglBrokerProviders.Images.Count - 1;
+					if (brokerAdapterInstance.Icon != null) {
+						this.imglBrokerAdapters.Images.Add(brokerAdapterInstance.Icon);
+						lvi.ImageIndex = this.imglBrokerAdapters.Images.Count - 1;
 					}
-					this.lvBrokerProviders.Items.Add(lvi);
+					this.lvBrokerAdapters.Items.Add(lvi);
 				} catch (Exception e) {
 					Assembler.PopupException(null, e);
 					return;
@@ -181,24 +181,24 @@ namespace Sq1.Widgets.DataSourceEditor {
 			}
 		}
 		public void HighlightStreamingByName(string streamingName) {
-			int streamingIndex = this.lvStreamingProviders.Items.IndexOfKey(streamingName);
+			int streamingIndex = this.lvStreamingAdapters.Items.IndexOfKey(streamingName);
 			if (streamingIndex < 0) {
-				string msg = "streamingName[" + streamingName + "] not found in this.lvStreamingProviders";
+				string msg = "streamingName[" + streamingName + "] not found in this.lvStreamingAdapters";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.lvStreamingProviders.Items[streamingIndex].Selected = true;
-			lvStreamingProviders_SelectedIndexChanged(null, null);
+			this.lvStreamingAdapters.Items[streamingIndex].Selected = true;
+			lvStreamingAdapters_SelectedIndexChanged(null, null);
 		}
 		public void HighlightBrokerByName(string brokerName) {
-			int brokerIndex = this.lvBrokerProviders.Items.IndexOfKey(brokerName);
+			int brokerIndex = this.lvBrokerAdapters.Items.IndexOfKey(brokerName);
 			if (brokerIndex < 0) {
-				string msg = "brokerName[" + brokerName + "] not found in this.lvBrokerProviders";
+				string msg = "brokerName[" + brokerName + "] not found in this.lvBrokerAdapters";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.lvBrokerProviders.Items[brokerIndex].Selected = true;
-			lvBrokerProviders_SelectedIndexChanged(null, null);
+			this.lvBrokerAdapters.Items[brokerIndex].Selected = true;
+			lvBrokerAdapters_SelectedIndexChanged(null, null);
 		}
 		public void ApplyEditorsToDataSourceAndClose() {
 			if (this.txtDataSourceName.Text == "") {
@@ -226,8 +226,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 
 			ds.Name = this.txtDataSourceName.Text;
 			ds.Symbols = SymbolParser.ParseSymbols(this.txtSymbols.Text);
-			if (ds.StreamingProvider != null) ds.StreamingProvider.EditorInstance.PushEditedSettingsToStreamingProvider();
-			if (ds.BrokerProvider != null) ds.BrokerProvider.EditorInstance.PushEditedSettingsToBrokerProvider();
+			if (ds.StreamingAdapter != null) ds.StreamingAdapter.EditorInstance.PushEditedSettingsToStreamingAdapter();
+			if (ds.BrokerAdapter != null) ds.BrokerAdapter.EditorInstance.PushEditedSettingsToBrokerAdapter();
 			// for DataSource, nothing changed, but providers were assigned by user clicks, so DS will Initialize() each
 			ds.Initialize(this.assemblerInstance.RepositoryJsonDataSource.AbsPath, this.assemblerInstance.OrderProcessor);
 			this.assemblerInstance.RepositoryJsonDataSource.SerializeSingle(ds);

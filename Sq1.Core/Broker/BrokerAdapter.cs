@@ -11,8 +11,8 @@ using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Broker {
-	public partial class BrokerProvider {
-		public const string NO_BROKER_PROVIDER = "--- No Broker Provider ---";
+	public partial class BrokerAdapter {
+		public const string NO_BROKER_ADAPTER = "--- No Broker Adapter ---";
 
 		[JsonIgnore]		   object				lockSubmitOrders;
 		[JsonIgnore]	public string				Name				{ get; protected set; }
@@ -21,7 +21,7 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]	public Bitmap				Icon				{ get; protected set; }
 		[JsonIgnore]	public DataSource			DataSource			{ get; protected set; }
 		[JsonIgnore]	public OrderProcessor		OrderProcessor		{ get; protected set; }
-		[JsonIgnore]	public StreamingProvider	StreamingProvider	{ get; protected set; }
+		[JsonIgnore]	public StreamingAdapter	StreamingAdapter	{ get; protected set; }
 //		[JsonIgnore]	public List<Account>		Accounts			{ get; protected set; }
 		[JsonProperty]	public Account				Account;
 		[JsonIgnore]	public Account				AccountAutoPropagate {
@@ -46,23 +46,23 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]	public OrderCallbackDupesChecker OrderCallbackDupesChecker { get; protected set; }
 		[JsonIgnore]	public bool SignalToTerminateAllOrderTryFillLoopsInAllMocks = false;
 
-		public BrokerProvider() {
+		public BrokerAdapter() {
 			//Accounts = new List<Account>();
 			this.lockSubmitOrders = new object();
 			this.AccountAutoPropagate = new Account("ACCTNR_NOT_SET", -1000);
 			this.OrderCallbackDupesChecker = new OrderCallbackDupesCheckerTransparent(this);
 		}
-		public virtual void Initialize(DataSource dataSource, StreamingProvider streamingProvider, OrderProcessor orderProcessor) {
+		public virtual void Initialize(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
 			this.DataSource = dataSource;
-			this.StreamingProvider = streamingProvider;
+			this.StreamingAdapter = streamingAdapter;
 			this.OrderProcessor = orderProcessor;
 			this.AccountAutoPropagate.Initialize(this);
 		}
 		public virtual void Connect() {
-			throw new Exception("please override BrokerProvider::Connect() for BrokerProvider.Name=[" + Name + "]");
+			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");
 		}
 		public virtual void Disconnect() {
-			throw new Exception("please override BrokerProvider::Connect() for BrokerProvider.Name=[" + Name + "]");
+			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");
 		}
 		protected void checkOrderThrowInvalid(Order orderToCheck) {
 			if (orderToCheck.Alert == null) {
@@ -133,7 +133,7 @@ namespace Sq1.Core.Broker {
 			List<Order> ordersToExecute = new List<Order>();
 			foreach (Order order in orders) {
 				if (order.Alert.IsExecutorBacktestingNow == true || this.HasBacktestInName) {
-					string msg = "Backtesting orders should not be routed to AnyBrokerProviders, but simulated using MarketSim; order=[" + order + "]";
+					string msg = "Backtesting orders should not be routed to AnyBrokerAdapters, but simulated using MarketSim; order=[" + order + "]";
 					throw new Exception(msg);
 				}
 				if (String.IsNullOrEmpty(order.Alert.AccountNumber)) {
@@ -184,15 +184,15 @@ namespace Sq1.Core.Broker {
 			}
 		}
 		public virtual void OrderSubmit(Order order) {
-			throw new Exception("please override BrokerProvider::SubmitOrder() for BrokerProvider.Name=[" + Name + "]");
+			throw new Exception("please override BrokerAdapter::SubmitOrder() for BrokerAdapter.Name=[" + Name + "]");
 		}
 		public virtual void CancelReplace(Order order, Order newOrder) {
-			throw new Exception("please override BrokerProvider::CancelReplace() for BrokerProvider.Name=[" + Name + "]");
+			throw new Exception("please override BrokerAdapter::CancelReplace() for BrokerAdapter.Name=[" + Name + "]");
 		}
 		public virtual void KillSelectedOrders(IList<Order> victimOrders) {
 			foreach (Order victimOrder in victimOrders) {
 				if (victimOrder.Alert.IsExecutorBacktestingNow == true) {
-					string msg = "Backtesting orders should not be routed to MockBrokerProviders, but simulated using MarketSim; victimOrder=[" + victimOrder + "]";
+					string msg = "Backtesting orders should not be routed to MockBrokerAdapters, but simulated using MarketSim; victimOrder=[" + victimOrder + "]";
 					throw new Exception(msg);
 				}
 				this.OrderKillSubmit(victimOrder);
@@ -205,7 +205,7 @@ namespace Sq1.Core.Broker {
 		//}
 		[Obsolete("use OrderKillSubmitUsingKillerOrder instead; Execution will visualise the state of victim and killer separately")]
 		public virtual void OrderKillSubmit(Order victimOrder) {
-			throw new Exception("please override BrokerProvider::OrderKillSubmit() for BrokerProvider.Name=[" + Name + "]");
+			throw new Exception("please override BrokerAdapter::OrderKillSubmit() for BrokerAdapter.Name=[" + Name + "]");
 		}
 		public virtual void OrderKillSubmitUsingKillerOrder(Order killerOrder) {
 			if (string.IsNullOrEmpty(killerOrder.VictimGUID)) {
@@ -232,8 +232,8 @@ namespace Sq1.Core.Broker {
 			string msg = Name + "::OrderPreSubmitChecker():"
 				+ " Guid[" + order.GUID + "]" + " SernoExchange[" + order.SernoExchange + "]"
 				+ " SernoSession[" + order.SernoSession + "]";
-			if (this.StreamingProvider == null) {
-				msg = " StreamingProvider=null, can't get last/fellow/crossMarket price // " + msg;
+			if (this.StreamingAdapter == null) {
+				msg = " StreamingAdapter=null, can't get last/fellow/crossMarket price // " + msg;
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
 				this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
 				throw new Exception(msg);
@@ -248,7 +248,7 @@ namespace Sq1.Core.Broker {
 				throw new Exception(msg, ex);
 			}
 
-			order.AbsorbCurrentBidAskFromStreamingSnapshot(this.StreamingProvider.StreamingDataSnapshot);
+			order.AbsorbCurrentBidAskFromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
 
 			this.OrderPreSubmitEnrichBrokerSpecificInjection(order);
 
@@ -279,9 +279,9 @@ namespace Sq1.Core.Broker {
 				+ " SernoSession[" + order.SernoSession + "]";
 			string msg = "";
 
-			order.AbsorbCurrentBidAskFromStreamingSnapshot(this.StreamingProvider.StreamingDataSnapshot);
+			order.AbsorbCurrentBidAskFromStreamingSnapshot(this.StreamingAdapter.StreamingDataSnapshot);
 
-			double priceBestBidAsk = this.StreamingProvider.StreamingDataSnapshot.BidOrAskFor(
+			double priceBestBidAsk = this.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(
 				order.Alert.Symbol, order.Alert.PositionLongShortFromDirection);
 				
 			switch (order.Alert.MarketLimitStop) {
@@ -334,7 +334,7 @@ namespace Sq1.Core.Broker {
 					//if (order.Alert.Bars.SymbolInfo.OverrideMarketPriceToZero == true) {
 					//} else {
 					//	if (order.PriceRequested == 0) {
-					//		base.StreamingProvider.StreamingDataSnapshot.getAlignedBidOrAskTidalOrCrossMarketFromStreaming(
+					//		base.StreamingAdapter.StreamingDataSnapshot.getAlignedBidOrAskTidalOrCrossMarketFromStreaming(
 					//			order.Alert.Symbol, order.Alert.Direction, out order.PriceRequested, out order.SpreadSide, ???);
 					//		order.PriceRequested += order.Slippage;
 					//		order.PriceRequested = order.Alert.Bars.alignOrderPriceToPriceLevel(order.PriceRequested, order.Alert.Direction, order.Alert.MarketLimitStop);
@@ -399,7 +399,7 @@ namespace Sq1.Core.Broker {
 		}
 
 		public void CallbackOrderStateReceived(Order orderWithNewState) {
-			string msig = "BrokerProvider::CallbackOrderStateReceived(): orderExecuted.State=[" + orderWithNewState.State + "]: ";
+			string msig = "BrokerAdapter::CallbackOrderStateReceived(): orderExecuted.State=[" + orderWithNewState.State + "]: ";
 			string msg = "";
 			try {
 				switch (orderWithNewState.State) {
@@ -439,9 +439,9 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msig, e);
 			}
 			try {
-				this.OrderProcessor.InvokeHooksAndSubmitNewAlertsBackToBrokerProvider(orderWithNewState);
+				this.OrderProcessor.InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(orderWithNewState);
 			} catch (Exception e) {
-				Assembler.PopupException("InvokeHooksAndSubmitNewAlertsBackToBrokerProvider()" + msig, e);
+				Assembler.PopupException("InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter()" + msig, e);
 			}
 		}
 
@@ -496,21 +496,21 @@ namespace Sq1.Core.Broker {
 //				Assembler.PopupException(msg + msig);
 //				orderFound.Alert.DataSource = this.DataSource;
 //			}
-			if (orderFound.Alert.DataSource.BrokerProvider == null) {
+			if (orderFound.Alert.DataSource.BrokerAdapter == null) {
 				string msg = "ORDER_FOUND_HAS_BROKER_NULL__ASSIGNING_MYSELF orderFound[" + orderFound.ToString()
 					+ "] this[" + this.ToString() + "]";
-				orderFound.Alert.DataSource.BrokerProvider = this;
+				orderFound.Alert.DataSource.BrokerAdapter = this;
 			}
 			return orderFound;
 		}
 
 		public virtual void MoveStopLossOverrideable(PositionPrototype proto, double newActivationOffset, double newStopLossNegativeOffset) {
-			// broker providers might put some additional order processing,
+			// broker adapters might put some additional order processing,
 			// but they must call OrderProcessor.MoveStopLoss() or imitate similar mechanism
 			this.OrderProcessor.MoveStopLoss(proto, newActivationOffset, newStopLossNegativeOffset);
 		}
 		public void MoveTakeProfitOverrideable(PositionPrototype proto, double newTakeProfitPositiveOffset) {
-			// broker providers might put some additional order processing,
+			// broker adapters might put some additional order processing,
 			// but they must call OrderProcessor.MoveStopLoss() or imitate similar mechanism
 			this.OrderProcessor.MoveTakeProfit(proto, newTakeProfitPositiveOffset);
 		}

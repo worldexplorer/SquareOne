@@ -14,13 +14,11 @@
     "AsTimeSpanInSeconds": 300,
     "AsTimeSpan": "00:05:00"
   },
-  "StaticProvider": null,
-  "StreamingProvider": null,
-  "BrokerProvider": null,
+  "StreamingAdapter": null,
+  "BrokerAdapter": null,
   "MarketName": "MOCK",
   "Name": "STATIC",
-  "StaticProviderName": "STATIC_PROVIDER_NOT_INITIALIZED",
-  "StreamingProviderName": "STREAMING_PROVIDER_NOT_INITIALIZED",
-  "BrokerProviderName": "BROKER_PROVIDER_NOT_INITIALIZED",
+  "StreamingAdapterName": "STREAMING_PROVIDER_NOT_INITIALIZED",
+  "BrokerAdapterName": "BROKER_PROVIDER_NOT_INITIALIZED",
   "DataSourceAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\STATIC"
 }

@@ -145,7 +145,7 @@ namespace Sq1.Core.StrategyBase {
 			priceSpreadSide = OrderSpreadSide.Unknown;
 			switch (entryMarketLimitStop) {
 				case MarketLimitStop.Market:
-					priceForMarketAlert = this.executor.DataSource.StreamingProvider.StreamingDataSnapshot
+					priceForMarketAlert = this.executor.DataSource.StreamingAdapter.StreamingDataSnapshot
 						.GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(
 							this.executor.Bars.Symbol, direction, out priceSpreadSide, false);
 					break;
@@ -212,8 +212,8 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg, null, false);
 				return false;
 			}
-			if (alert.DataSource.BrokerProviderName.Contains("Mock") == false) {
-				string msg = "AlertTryFillUsingBacktest() should be called only from BrokerProvidersName.Contains(Mock)"
+			if (alert.DataSource.BrokerAdapterName.Contains("Mock") == false) {
+				string msg = "AlertTryFillUsingBacktest() should be called only from BrokerAdaptersName.Contains(Mock)"
 					+ "; here you have MOCK Realtime Streaming and Broker,"
 					+ " it's not a time-insensitive QuotesFromBar-generated Streaming Backtest"
 					+ " (both are routed to here, MarketSim, hypothetical order execution)";
@@ -229,10 +229,10 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			bool filled = false;
-			Quote quoteLast = this.executor.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alert.Symbol).Clone();
+			Quote quoteLast = this.executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(alert.Symbol).Clone();
 			if (quoteLast == null) {
 				string msg = "MAKE_YOUR_STREAMING_SAVE_LAST_QUOTE_TO_SNAP LastQuoteGetForSymbol("
-					+ alert.Symbol + ")=null StreamingProvider[" + this.executor.DataSource.StreamingProvider + "]"
+					+ alert.Symbol + ")=null StreamingAdapter[" + this.executor.DataSource.StreamingAdapter + "]"
 					+ " MARKET_SIM_NEEDS_QUOTE_TO_TRY_FILL_AND_SAY_IF_FILLED";
 				#if DEBUG
 				Debugger.Break();

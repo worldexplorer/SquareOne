@@ -20,7 +20,7 @@ namespace Sq1.Gui.Singletons {
 			
 			//this.executionTree.Initialize(this.orderProcessor.DataSnapshot.OrdersAll.SafeCopy);
 			this.ExecutionTreeControl.InitializeWithShadowTreeRebuilt(this.orderProcessor.DataSnapshot.OrdersAutoTree);
-			this.ExecutionTreeControl.PopulateAccountsMenuFromBrokerProvider(Assembler.InstanceInitialized.RepositoryJsonDataSource.CtxAccountsAllCheckedFromUnderlyingBrokerProviders);			
+			this.ExecutionTreeControl.PopulateAccountsMenuFromBrokerAdapter(Assembler.InstanceInitialized.RepositoryJsonDataSource.CtxAccountsAllCheckedFromUnderlyingBrokerAdapters);			
 		}
 		
 		[Obsolete("if the form is hidden mark it needs to be repopulated OnActivate() and do full TreeRebuild there")]

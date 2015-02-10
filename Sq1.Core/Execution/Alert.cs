@@ -29,7 +29,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	string				Symbol							{ get; protected set; }
 		[JsonProperty]	public	string				SymbolClass						{ get; protected set; }
 		[JsonProperty]	public	string				AccountNumber					{ get; protected set; }
-		[JsonProperty]	public	string				dataSourceName					{ get; protected set; }		// containsBidAsk BrokerProvider for further {new Order(Alert)} execution
+		[JsonProperty]	public	string				dataSourceName					{ get; protected set; }		// containsBidAsk BrokerAdapter for further {new Order(Alert)} execution
 		[JsonIgnore]	public	DataSource			DataSource						{ get {
 				if (this.Bars == null) {
 					throw new Exception("alert.Bars=null for alert[" + this + "]");
@@ -63,7 +63,7 @@ namespace Sq1.Core.Execution {
 		}
 		[JsonProperty]	public	double				PriceStopLimitActivationAligned	{ get; protected set; }
 		[JsonProperty]	public	double				Qty								{ get; protected set; }
-		[JsonProperty]	public	MarketLimitStop		MarketLimitStop;				//BROKER_PROVIDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
+		[JsonProperty]	public	MarketLimitStop		MarketLimitStop;				//BROKER_ADAPDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
 		[JsonProperty]	public	MarketOrderAs		MarketOrderAs					{ get; protected set; }
 		[JsonIgnore]	public	string 				MarketLimitStopAsString			{ get; protected set; }
 		[JsonProperty]	public	Direction			Direction						{ get; protected set; }
@@ -90,7 +90,7 @@ namespace Sq1.Core.Execution {
 					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this);
 				}
 				return this.Strategy.Script.Executor.Backtester.IsBacktestingNow;
-				//v2 WRONG_FOR_BrokerProvider.SubmitOrders() return this.Strategy.Script.Executor.Backtester.IsBacktestRunning;
+				//v2 WRONG_FOR_BrokerAdapter.SubmitOrders() return this.Strategy.Script.Executor.Backtester.IsBacktestRunning;
 			}
 		}
 		//[JsonIgnore]	public	bool				IsExecutorLivesimulatingNow		{ get {
@@ -293,9 +293,9 @@ namespace Sq1.Core.Execution {
 			}
 			
 			this.AccountNumber = "UNKNOWN_ACCOUNT";
-			if (this.DataSource.BrokerProvider != null && this.DataSource.BrokerProvider.AccountAutoPropagate != null
-				&& string.IsNullOrEmpty(this.Bars.DataSource.BrokerProvider.AccountAutoPropagate.AccountNumber) != false) {
-				this.AccountNumber = this.Bars.DataSource.BrokerProvider.AccountAutoPropagate.AccountNumber;
+			if (this.DataSource.BrokerAdapter != null && this.DataSource.BrokerAdapter.AccountAutoPropagate != null
+				&& string.IsNullOrEmpty(this.Bars.DataSource.BrokerAdapter.AccountAutoPropagate.AccountNumber) != false) {
+				this.AccountNumber = this.Bars.DataSource.BrokerAdapter.AccountAutoPropagate.AccountNumber;
 			}
 			
 

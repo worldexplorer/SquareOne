@@ -69,14 +69,14 @@ namespace Sq1.Gui.Forms {
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource=null");
 				return ret;
 			} }
-		StreamingProvider StreamingProvider { get {
-				StreamingProvider ret = this.DataSource.StreamingProvider;
-				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource.StreamingProvider=null STREAMING_PROVIDER_NOT_ASSIGNED_IN_DATASOURCE");
+		StreamingAdapter StreamingAdapter { get {
+				StreamingAdapter ret = this.DataSource.StreamingAdapter;
+				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource.StreamingAdapter=null STREAMING_ADAPDER_NOT_ASSIGNED_IN_DATASOURCE");
 				return ret;
 			} }
 		StreamingSolidifier StreamingSolidifierDeep { get {
-				var ret = this.StreamingProvider.StreamingSolidifier;
-				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource.StreamingProvider.StreamingSolidifier=null");
+				var ret = this.StreamingAdapter.StreamingSolidifier;
+				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource.StreamingAdapter.StreamingSolidifier=null");
 				return ret;
 			} }
 		ChartForm ChartForm { get {
@@ -106,14 +106,14 @@ namespace Sq1.Gui.Forms {
 		}
 		void action(string msgIfNull) {
 			string msg = msigForNpExceptions + msgIfNull;
-			Assembler.PopupException(msg);
+			Assembler.PopupException(msg, null, false);
 			//throw new Exception(msg);
 		}
-		bool canSubscribeToStreamingProvider() {
+		bool canSubscribeToStreamingAdapter() {
 			try {
 				var symbolSafe = this.Symbol;
 				var scaleSafe = this.Scale;
-				var streamingSafe = this.StreamingProvider;
+				var streamingSafe = this.StreamingAdapter;
 				var staticDeepSafe = this.StreamingSolidifierDeep;
 			} catch (Exception e) {
 				return false;
@@ -130,7 +130,7 @@ namespace Sq1.Gui.Forms {
 			var executorSafe = this.Executor;
 			var symbolSafe = this.Symbol;
 			var scaleIntervalSafe = this.ScaleInterval;
-			var streamingSafe = this.StreamingProvider;
+			var streamingSafe = this.StreamingAdapter;
 
 			bool subscribed = this.Subscribed;
 			if (subscribed == false) {
@@ -167,7 +167,7 @@ namespace Sq1.Gui.Forms {
 			chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = null;
 		}
 		public void StreamingSubscribe(string reason = "NO_REASON_FOR_STREAMING_SUBSCRIBE") {
-			if (this.canSubscribeToStreamingProvider() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
+			if (this.canSubscribeToStreamingAdapter() == false) return;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
 			this.msigForNpExceptions = " //ChartFormStreamingConsumer.StreamingSubscribe(" + this.ToString() + ")";
 
 			bool subscribedAlready = this.Subscribed;
@@ -191,7 +191,7 @@ namespace Sq1.Gui.Forms {
 			var executorSafe = this.Executor;
 			var symbolSafe = this.Symbol;
 			var scaleIntervalSafe = this.ScaleInterval;
-			var streamingSafe = this.StreamingProvider;
+			var streamingSafe = this.StreamingAdapter;
 			var streamingBarSafeCloneSafe = this.StreamingBarSafeClone;
 
 			SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelFor(symbolSafe, scaleIntervalSafe);
@@ -224,7 +224,7 @@ namespace Sq1.Gui.Forms {
 
 			bool subscribed = this.Subscribed;
 			if (subscribed == false) {
-				string msg = "CHART_STREAMING_FAILED_SUBSCRIBE_BAR_OR_QUOTE_OR_BOTH StreamingProvider[" + streamingSafe.ToString() + "]";
+				string msg = "CHART_STREAMING_FAILED_SUBSCRIBE_BAR_OR_QUOTE_OR_BOTH StreamingAdapter[" + streamingSafe.ToString() + "]";
 				Assembler.PopupException(msg + this.msigForNpExceptions);
 				return;
 			}
@@ -268,9 +268,9 @@ namespace Sq1.Gui.Forms {
 			//channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
 		}
 		public bool Subscribed { get {
-				if (this.canSubscribeToStreamingProvider() == false) return false;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
+				if (this.canSubscribeToStreamingAdapter() == false) return false;	// NULL_POINTERS_ARE_ALREADY_REPORTED_TO_EXCEPTIONS_FORM
 
-				var streamingSafe = this.StreamingProvider;
+				var streamingSafe = this.StreamingAdapter;
 				var symbolSafe = this.Symbol;
 				var scaleIntervalSafe = this.ScaleInterval;
 
@@ -374,13 +374,13 @@ namespace Sq1.Gui.Forms {
 			}
 			#endif	// TEST_INLINE_END
 
-			var streamingSafe = this.StreamingProvider;
+			var streamingSafe = this.StreamingAdapter;
 			var chartFormSafe = this.ChartForm;
 			var executorSafe = this.Executor;
 
 			// STREAMING_BAR_IS_ALREADY_MERGED_IN_EARLY_BINDER_WITH_QUOTE_RECIPROCALLY
 			//try {
-			//    streamingSafe.InitializeStreamingOHLCVfromStreamingProvider(this.chartFormManager.Executor.Bars);
+			//    streamingSafe.InitializeStreamingOHLCVfromStreamingAdapter(this.chartFormManager.Executor.Bars);
 			//} catch (Exception e) {
 			//    Assembler.PopupException("didn't merge with Partial, continuing", e, false);
 			//}
@@ -393,7 +393,7 @@ namespace Sq1.Gui.Forms {
 			chartFormSafe.PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution(quote);
 			chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = quote.Clone();
 
-			// #2/4 execute strategy in the thread of a StreamingProvider (DDE server for MockQuickProvider)
+			// #2/4 execute strategy in the thread of a StreamingAdapter (DDE server for MockQuickProvider)
 			if (executorSafe.Strategy != null) {
 				if (executorSafe.IsStreamingTriggeringScript) {
 					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quote);
@@ -442,7 +442,7 @@ namespace Sq1.Gui.Forms {
 			//return this.ChartFormManager.StreamingButtonIdent
 			//    //+ " [" + this.Strategy.ScriptContextCurrent.Symbol + " " + this.Strategy.ScriptContextCurrent.ScaleInterval + "]"
 			//    ////+ " chart[" + this.ChartContainer.Text + "]"
-			//    //+ " streaming[" + this.chartFormsManager.Executor.DataSource.StreamingProvider.Name + "]"
+			//    //+ " streaming[" + this.chartFormsManager.Executor.DataSource.StreamingAdapter.Name + "]"
 			//    //+ " static[" + this.chartFormsManager.Executor.DataSource.StaticProvider.Name + "]"
 			//    ;
 			//v2

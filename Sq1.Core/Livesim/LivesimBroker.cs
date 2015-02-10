@@ -11,7 +11,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
-	public class LivesimBroker : BrokerProvider {
+	public class LivesimBroker : BrokerAdapter {
 		List<Order> ordersSubmitted;
 		LivesimDataSource livesimDataSource;
 

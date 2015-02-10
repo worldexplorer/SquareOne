@@ -300,7 +300,7 @@ namespace Sq1.Gui.Forms {
 					string reason = "contextChart[" + ctx.ToString() + "].IsStreaming=true;"
 						+ " OnApprestartBacktest will launch in another thread and I can't postpone subscription until it finishes"
 						+ " so the Pump should set paused now because UpstreamSubscribe should not invoke ChartFormStreamingConsumer"
-						+ " whenever StreamingProvider is ready, but only after all ScaleSymbol consuming backtesters are complete";
+						+ " whenever StreamingAdapter is ready, but only after all ScaleSymbol consuming backtesters are complete";
 					this.ChartStreamingConsumer.StreamingSubscribe(reason);
 				}
 			} catch (Exception ex) {
@@ -402,7 +402,7 @@ namespace Sq1.Gui.Forms {
 			// set original Streaming Icon before we lost in simulationPreBarsSubstitute() and launched backtester in another thread
 			//V1 this.Executor.Performance.Initialize();
 			//V2_REPORTERS_NOT_REFRESHED this.Executor.BacktesterRunSimulation();
-			//var iconCanBeNull = this.Executor.DataSource.StreamingProvider != null ? this.Executor.DataSource.StreamingProvider.Icon : null;
+			//var iconCanBeNull = this.Executor.DataSource.StreamingAdapter != null ? this.Executor.DataSource.StreamingAdapter.Icon : null;
 			this.ChartForm.AbsorbContextBarsToGui();
 
 			// v1 already in ChartRenderer.OnNewBarsInjected event - commented out DoInvalidate();
@@ -554,7 +554,7 @@ namespace Sq1.Gui.Forms {
 			//v1 this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterCompleteOnceOnWorkspaceRestore), true);
 			//NOPE_ALREADY_POPULATED_UPSTACK this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsBacktestIfStrategy("InitializeStrategyAfterDeserialization()");
 			//v2
-			// same idea as in mniSubscribedToStreamingProviderQuotesBars_Click();
+			// same idea as in mniSubscribedToStreamingAdapterQuotesBars_Click();
 			// I see StreamingSubscribe() happening down the road since quotes are drawn, just want to avoid YOU_JUST_RESTARTED_APP_AND_DIDNT_EXECUTE_BACKTEST_PRIOR_TO_CONSUMING_STREAMING_QUOTES
 			if (willBacktest) {
 				this.BacktesterRunSimulation(true);

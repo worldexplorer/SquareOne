@@ -9,14 +9,13 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Streaming {
 	// TODO: it's not an abstract class because....
-	public partial class StreamingProvider {
-		[JsonIgnore]	public const string				NO_STREAMING_PROVIDER = "--- No Streaming Provider ---";
+	public partial class StreamingAdapter {
+		[JsonIgnore]	public const string				NO_STREAMING_ADAPTER = "--- No Streaming Adapter ---";
 		
 		[JsonIgnore]	public string					Name								{ get; protected set; }
 		[JsonIgnore]	public string					Description							{ get; protected set; }
 		[JsonIgnore]	public Bitmap					Icon								{ get; protected set; }
 		[JsonIgnore]	public bool						IsConnected							{ get; protected set; }
-		[JsonIgnore]	public string					PreferredStaticProviderName 		{ get; protected set; }
 		[JsonIgnore]	public StreamingSolidifier		StreamingSolidifier					{ get; protected set; }
 		[JsonIgnore]	public DataSource				DataSource;
 		[JsonIgnore]	public string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }
@@ -37,7 +36,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public bool						QuotePumpSeparatePushingThreadEnabled { get; protected set; }
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
-		public StreamingProvider() {
+		public StreamingAdapter() {
 			SymbolsSubscribedLock = new object();
 			BarsConsumersLock = new object();
 			SymbolsUpstreamSubscribed = new List<string>();
@@ -55,7 +54,6 @@ namespace Sq1.Core.Streaming {
 			this.StreamingDataSnapshot.InitializeLastQuoteReceived(this.DataSource.Symbols);
 		}
 		protected virtual void SubscribeSolidifier() {
-			//SOLIDIFIER_REPLACES_STATIC_PROVIDER_TO_STORE_REALTIME_QUOTES if (this.DataSource.StaticProvider == null) return;
 			this.StreamingSolidifier.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
 				string ident = "[" + this.StreamingSolidifier.ToString()
@@ -81,7 +79,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		#region the essence#1 of streaming provider
+		#region the essence#1 of streaming adapter
 		public virtual void UpstreamConnect() {
 			//StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorConnecting, 0, "ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD");
 			Assembler.DisplayStatus("ConnectStreaming(): NOT_OVERRIDEN_IN_CHILD " + this.ToString());
@@ -92,17 +90,17 @@ namespace Sq1.Core.Streaming {
 		}
 		#endregion
 
-		#region the essence#2 of streaming provider
+		#region the essence#2 of streaming adapter
 		public virtual void UpstreamSubscribe(string symbol) {
-			throw new Exception("please override StreamingProvider::UpstreamSubscribe()");
+			throw new Exception("please override StreamingAdapter::UpstreamSubscribe()");
 			//CHILDRENT_TEMPLATE: base.UpstreamSubscribeRegistryHelper(symbol);
 		}
 		public virtual void UpstreamUnSubscribe(string symbol) {
-			throw new Exception("please override StreamingProvider::UpstreamUnSubscribe()");
+			throw new Exception("please override StreamingAdapter::UpstreamUnSubscribe()");
 			//CHILDRENT_TEMPLATE: base.UpstreamUnSubscribeRegistryHelper(symbol);
 		}
 		public virtual bool UpstreamIsSubscribed(string symbol) {
-			throw new Exception("please override StreamingProvider::UpstreamIsSubscribed()");
+			throw new Exception("please override StreamingAdapter::UpstreamIsSubscribed()");
 			//CHILDRENT_TEMPLATE: return base.UpstreamIsSubscribedRegistryHelper(symbol);
 		}
 		#endregion
@@ -223,7 +221,7 @@ namespace Sq1.Core.Streaming {
 				//Assembler.PopupException(msg, null, false);
 			} else {
 				if (lastQuote.AbsnoPerSymbol == -1) {
-					string msg = "LAST_QUOTE_DIDNT_HAVE_ABSNO_SET_BY_STREAMING_PROVIDER_ON_PREV_ITERATION";
+					string msg = "LAST_QUOTE_DIDNT_HAVE_ABSNO_SET_BY_STREAMING_ADAPDER_ON_PREV_ITERATION";
 					Assembler.PopupException(msg, null, true);
 				}
 
@@ -247,11 +245,11 @@ namespace Sq1.Core.Streaming {
 				if (quote.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
 					string msg = "INJECTED_QUOTES_HAVE_AbsnoPerSymbol!=-1_AND_THIS_IS_NOT_AN_ERROR";
 				} else {
-					string msg = "THIS_WAS_REFACTORED__QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL__INITIALIZED_IN_STREAMING_PROVIDER";
+					string msg = "THIS_WAS_REFACTORED__QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL__INITIALIZED_IN_STREAMING_ADAPDER";
 					Assembler.PopupException(msg, null, true);
 				}
 
-				//QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_PROVIDER
+				//QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER
 				//if (quote.AbsnoPerSymbol >= absnoPerSymbolNext) {
 				//    string msg1 = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.AbsnoPerSymbol + "] >= lastQuote.Absno[" + lastQuote.AbsnoPerSymbol + "] + 1";
 				//    Assembler.PopupException(msg1, null, true);
@@ -259,7 +257,7 @@ namespace Sq1.Core.Streaming {
 			}
 			quote.AbsnoPerSymbol = absnoPerSymbolNext;
 
-			//OUTDATED?... BacktestStreamingProvider.EnrichGeneratedQuoteSaveSpreadInStreaming has updated lastQuote alredy...
+			//OUTDATED?... BacktestStreamingAdapter.EnrichGeneratedQuoteSaveSpreadInStreaming has updated lastQuote alredy...
 			//essence of PushQuoteReceived(); all above were pre-checks ensuring successfull completion of two lines below
 			// ALREADY_ENRICHED this.EnrichQuoteWithStreamingDependantDataSnapshot(quote);
 			this.StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
@@ -267,7 +265,7 @@ namespace Sq1.Core.Streaming {
 			try {
 				this.DataDistributor.PushQuoteToDistributionChannels(quote);
 			} catch (Exception e) {
-				string msg = "SOME_CONSUMERS_SOME_SCALEINTERVALS_FAILED_ON_ONE StreamingProvider.PushQuoteReceived()";
+				string msg = "SOME_CONSUMERS_SOME_SCALEINTERVALS_FAILED_ON_ONE StreamingAdapter.PushQuoteReceived()";
 				Assembler.PopupException(msg, e);
 			}
 		}
@@ -284,7 +282,7 @@ namespace Sq1.Core.Streaming {
 				channel.UpstreamUnSubscribedFromSymbolPokeConsumers(symbol, lastQuoteReceived);
 			}
 		}
-		public void InitializeStreamingOHLCVfromStreamingProvider(Bars chartBars) {
+		public void InitializeStreamingOHLCVfromStreamingAdapter(Bars chartBars) {
 			SymbolScaleDistributionChannel distributionChannel = this.DataDistributor
 				.GetDistributionChannelFor(chartBars.Symbol, chartBars.ScaleInterval);
 			//v1 
@@ -327,14 +325,14 @@ namespace Sq1.Core.Streaming {
 			//Assembler.PopupException(msg1, null, false);
 		}
 		public virtual void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {
-			// in Market-dependant StreamingProviders, put in the Quote-derived quote anything like QuikQuote.FortsDepositBuy ;
+			// in Market-dependant StreamingAdapters, put in the Quote-derived quote anything like QuikQuote.FortsDepositBuy ;
 		}
 
 		public override string ToString() {
 			return this.Name + "/[" + this.ConnectionState + "]: UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]";
 		}
 
-		internal void AbsorbStreamingBarFactoryFromBacktestComplete(StreamingProvider streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
+		internal void AbsorbStreamingBarFactoryFromBacktestComplete(StreamingAdapter streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
 			SymbolScaleDistributionChannel channelBacktest = streamingBacktest.DataDistributor.GetDistributionChannelFor(symbol, barScaleInterval);
 			Bar barLastFormedBacktest	 = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
 			Bar barStreamingBacktest	 = channelBacktest.StreamingBarFactoryUnattached.BarStreamingUnattached;

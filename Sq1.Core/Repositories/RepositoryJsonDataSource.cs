@@ -26,21 +26,12 @@ namespace Sq1.Core.Repositories {
 			if (dsDeserialized.MarketInfo == null && string.IsNullOrEmpty(dsDeserialized.MarketName) == false) {
 				dsDeserialized.MarketInfo = MarketInfoRepository.FindMarketInfoOrNew(dsDeserialized.MarketName);
 			}
-			// dsDeserialized.Initialize() knows better what's best for unconfigured DS
-//			if (dsDeserialized.StaticProvider == null) {
-//				string msg = "dsAdding[" + dsDeserialized.ToString() + "] has StaticProvider=null;"
-//					+ " FAILED to deserialize from " + thisOne + "; continuing with next DataSource";
-//				base.StatusReporter.PopupException(msg);
-//				return false;
-//			}
-
-			//string barDataStorePath = Path.Combine(base.RootPath, dsDeserialized.StaticProvider.GetType().Name);
 			try {
 				dsDeserialized.Initialize(base.AbsPath, this.OrderProcessor);
 			} catch (Exception ex) {
 				string msg = "FAILED to dsDeserialized.InitializeAndScan(" + base.AbsPath + ")"
 					//+ "; //Exception shouldn't break all DataSourceManager.DataSourcesDeserialize()"
-					//+ " and make other *Providers unusable"
+					//+ " and make other *Adaptders unusable"
 					+ " from " + thisOne + "; still adding to the Tree";
 				//base.StatusReporter.PopupException(msg, ex);
 				Assembler.PopupException(msg, ex);

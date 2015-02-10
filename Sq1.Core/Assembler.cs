@@ -17,8 +17,8 @@ namespace Sq1.Core {
 		public	RepositoryJsonDataSource				RepositoryJsonDataSource;
 		public	RepositorySerializerSymbolInfo			RepositorySymbolInfo;
 		public	RepositorySerializerMarketInfo			RepositoryMarketInfo;
-		public	RepositoryDllStreamingProvider			RepositoryDllStreamingProvider;
-		public	RepositoryDllBrokerProvider				RepositoryDllBrokerProvider;
+		public	RepositoryDllStreamingAdapter			RepositoryDllStreamingAdapter;
+		public	RepositoryDllBrokerAdapter				RepositoryDllBrokerAdapter;
 		public	RepositoryDllReporters					RepositoryDllReporters;
 		public	RepositoryDllJsonStrategy				RepositoryDllJsonStrategy;
 
@@ -68,8 +68,8 @@ namespace Sq1.Core {
 			} }
 		public	List<Exception>							ExceptionsWhileInstantiating { get {
 				List<Exception> ret = new List<Exception>();
-				ret.AddRange(this.RepositoryDllStreamingProvider.ExceptionsWhileScanning);
-				ret.AddRange(this.RepositoryDllBrokerProvider.ExceptionsWhileScanning);
+				ret.AddRange(this.RepositoryDllStreamingAdapter.ExceptionsWhileScanning);
+				ret.AddRange(this.RepositoryDllBrokerAdapter.ExceptionsWhileScanning);
 				ret.AddRange(this.RepositoryDllReporters.ExceptionsWhileScanning);
 				ret.AddRange(this.RepositoryDllJsonStrategy.ExceptionsWhileInstantiating);
 				return ret;
@@ -123,8 +123,8 @@ namespace Sq1.Core {
 			RepositoryJsonDataSource		= new RepositoryJsonDataSource();
 			RepositoryDllJsonStrategy		= new RepositoryDllJsonStrategy();
 
-			RepositoryDllStreamingProvider	= new RepositoryDllStreamingProvider();
-			RepositoryDllBrokerProvider		= new RepositoryDllBrokerProvider();
+			RepositoryDllStreamingAdapter	= new RepositoryDllStreamingAdapter();
+			RepositoryDllBrokerAdapter		= new RepositoryDllBrokerAdapter();
 			RepositoryDllReporters			= new RepositoryDllReporters();
 			
 			WorkspacesRepository			= new RepositoryFoldersNoJson();
@@ -155,8 +155,8 @@ namespace Sq1.Core {
 			
 			this.RepositoryDllJsonStrategy		.Initialize(this.AppDataPath, this.AppStartupPath);
 
-			this.RepositoryDllStreamingProvider	.InitializeAndScan(this.AppStartupPath);
-			this.RepositoryDllBrokerProvider	.InitializeAndScan(this.AppStartupPath);
+			this.RepositoryDllStreamingAdapter	.InitializeAndScan(this.AppStartupPath);
+			this.RepositoryDllBrokerAdapter	.InitializeAndScan(this.AppStartupPath);
 			this.RepositoryDllReporters			.InitializeAndScan(this.AppStartupPath);
 			
 			this.WorkspacesRepository			.Initialize(this.AppDataPath, "Workspaces", this.StatusReporter);
@@ -221,7 +221,7 @@ namespace Sq1.Core {
 
 			try {
 				// this is gonna throw from a non-GUI thread, right?!... (moved to MainForm.PopupException() with base.BeginInvoke() as first step)
-				// if I PopupException from a BrokerProvider thread, exceptionsForm.Visible and others should throw
+				// if I PopupException from a BrokerAdapter thread, exceptionsForm.Visible and others should throw
 				Form exceptionsForm = Assembler.InstanceInitialized.StatusReporter as Form;
 			} catch (Exception ex1) {
 				Debugger.Break();

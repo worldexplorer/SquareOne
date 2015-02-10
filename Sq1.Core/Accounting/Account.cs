@@ -9,7 +9,7 @@ namespace Sq1.Core.Accounting {
 		[JsonProperty]	public double CashAvailable;
 		[JsonProperty]	public DateTime AccountValueTimeStamp;
 		[JsonIgnore]	public bool IsDdeAccount;
-		[JsonIgnore]	public BrokerProvider BrokerProvider { get; private set; }
+		[JsonIgnore]	public BrokerAdapter BrokerAdapter { get; private set; }
 		
 		public Account() {
 			AccountNumber = "";
@@ -19,8 +19,8 @@ namespace Sq1.Core.Accounting {
 			AccountNumber = accountNumber;
 			CashAvailable = cashAvailable;
 		}
-		public void Initialize(BrokerProvider brokerProvider) {
-			this.BrokerProvider = brokerProvider;
+		public void Initialize(BrokerAdapter brokerAdapter) {
+			this.BrokerAdapter = brokerAdapter;
 		}
 		public override string ToString() {
 			return "AccountNumber[" + AccountNumber + "] "

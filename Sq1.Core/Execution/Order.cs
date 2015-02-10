@@ -10,7 +10,7 @@ using Sq1.Core.Streaming;
 namespace Sq1.Core.Execution {
 	public class Order {
 		[JsonProperty]	public DateTime		TimeCreatedBroker;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
-		[JsonProperty]	public double		PriceRequested;				// SET_IN_BROKER_PROVIDER	{ get; protected set; }
+		[JsonProperty]	public double		PriceRequested;				// SET_IN_BROKER_ADAPDER	{ get; protected set; }
 		[JsonProperty]	public double		PriceFill;					// SET_IN_ORDER_PROCESSOR   { get; protected set; }
 		[JsonProperty]	public double		QtyRequested;				// SET_IN_ORDER_PROCESSOR   { get; protected set; }
 		[JsonProperty]	public double		QtyFill;						// SET_IN_ORDER_PROCESSOR   { get; protected set; }
@@ -42,7 +42,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public int			SlippageIndex;				// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
 		[JsonProperty]	public double		CurrentAsk					{ get; protected set; }
 		[JsonProperty]	public double		CurrentBid					{ get; protected set; }
-		[JsonProperty]	public OrderSpreadSide SpreadSide;				// SET_IN_BROKER_PROVIDER	{ get; protected set; }
+		[JsonProperty]	public OrderSpreadSide SpreadSide;				// SET_IN_BROKER_ADAPDER	{ get; protected set; }
 		[JsonProperty]	public string		PriceSpreadSideAsString		{ get {
 				string ret = "";
 				switch (this.SpreadSide) {
@@ -263,9 +263,9 @@ namespace Sq1.Core.Execution {
 			this.SpreadSide				= alert.OrderSpreadSide;
 
 			// Bid/Ask Dictionaries are synchronized => no exceptions
-			if (alert.DataSource != null && alert.DataSource.StreamingProvider != null) {
-				this.CurrentBid = alert.DataSource.StreamingProvider.StreamingDataSnapshot.BestBidGetForMarketOrder(alert.Symbol);
-				this.CurrentAsk = alert.DataSource.StreamingProvider.StreamingDataSnapshot.BestAskGetForMarketOrder(alert.Symbol);
+			if (alert.DataSource != null && alert.DataSource.StreamingAdapter != null) {
+				this.CurrentBid = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestBidGetForMarketOrder(alert.Symbol);
+				this.CurrentAsk = alert.DataSource.StreamingAdapter.StreamingDataSnapshot.BestAskGetForMarketOrder(alert.Symbol);
 			}
 
 			this.Alert = alert;
@@ -404,14 +404,14 @@ namespace Sq1.Core.Execution {
 			if (this.EmittedByScript) ret += " EmittedByScript";
 			return ret;
 		}
-		public bool hasBrokerProvider(string callerMethod) {
+		public bool hasBrokerAdapter(string callerMethod) {
 			bool ret = true;
 			string errormsg = "";
 			if (this.Alert.DataSource == null) {
 				errormsg += "order.Alert[" + this.Alert + "].DataSource property must be set ";
 			}
-			if (this.Alert.DataSource.BrokerProvider == null) {
-				errormsg += "order.Alert.DataSource[" + this.Alert.DataSource + "].BrokerProvider property must be set ";
+			if (this.Alert.DataSource.BrokerAdapter == null) {
+				errormsg += "order.Alert.DataSource[" + this.Alert.DataSource + "].BrokerAdapter property must be set ";
 			}
 			if (errormsg != "") {
 				this.AppendMessage(callerMethod + errormsg);

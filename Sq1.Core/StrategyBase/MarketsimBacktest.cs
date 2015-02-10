@@ -520,7 +520,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		void checkThrowRealtimePendingQuote(Quote quote) {
 			if (this.executor.Backtester.IsBacktestingNow == false && this.executor.Backtester.IsLivesimRunning == false) {
-				string msg = "SimulateFill*() should not be used for RealTime BrokerProviders and RealTime Mocks!"
+				string msg = "SimulateFill*() should not be used for RealTime BrokerAdapters and RealTime Mocks!"
 					+ " make sure you invoked executor.CallbackAlertFilledInvokeScript() from where you are now";
 				#if DEBUG
 				Debugger.Break();

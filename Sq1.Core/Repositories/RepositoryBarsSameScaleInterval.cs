@@ -39,7 +39,7 @@ namespace Sq1.Core.Repositories {
 				List<BarScaleInterval> ret = new List<BarScaleInterval>();
 				string[] directories = Directory.GetDirectories(this.DataSourceAbspath);
 				foreach (string folderAbsname in directories) {
-					// \Data-debug\MockStaticProvider\Mock-debug\Minute-1\RIH3_Minute-1.BAR
+					// \Data-debug\DataSources\Mock-debug\Minute-1\RIH3_Minute-1.BAR
 					string folder = Path.GetFileName(folderAbsname);
 					if (folder.Contains("-")) {		// "Minute-1"
 						string[] intervalScale = folder.Split(new char[] { '-' });
@@ -112,7 +112,7 @@ namespace Sq1.Core.Repositories {
 		}
 		public string FileNameForSymbol(string symbol) {
 			// WHEN_CAPITALIZED_HERE_CAN_NOT_BE_FOUND_AFTER_USER_RENAMED symbol = symbol.ToUpper();
-			// Data-debug\MockStaticProvider\Mock-debug\Minute-1\RIM3_Minute-1.BAR
+			// Data-debug\DataSources\Mock-debug\Minute-1\RIM3_Minute-1.BAR
 			return symbol + "_" + this.SubfolderScaleInterval + "." + this.Extension;
 		}
 		public void SymbolDataFileAdd(string symbolToAdd, bool overwriteIfExistsDontThrow = false) {

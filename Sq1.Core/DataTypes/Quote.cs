@@ -34,10 +34,10 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public double		Spread				{ get { return this.Ask - this.Bid; } }
 
 
-		protected Quote() {	// make it proteted and use it when you'll need to super-modify a quote in StreamingProvider-derived 
+		protected Quote() {	// make it proteted and use it when you'll need to super-modify a quote in StreamingAdapter-derived 
 			ServerTime = DateTime.MinValue;
 			//Absno = ++AbsnoStaticCounterForAllSymbolsUseless;
-			AbsnoPerSymbol = -1;	// QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_PROVIDER
+			AbsnoPerSymbol = -1;	// QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER
 			IntraBarSerno = -1;
 			Bid = double.NaN;
 			Ask = double.NaN;

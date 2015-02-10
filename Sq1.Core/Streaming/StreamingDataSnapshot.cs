@@ -9,7 +9,7 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Streaming {
 	public class StreamingDataSnapshot {
-		[JsonIgnore]	StreamingProvider			streamingProvider;
+		[JsonIgnore]	StreamingAdapter			streamingAdapter;
 		[JsonIgnore]	object						lockLastQuote;
 		[JsonProperty]	Dictionary<string, Quote>	lastQuoteClonesReceivedUnboundBySymbol;	// { get; private set; }
 		[JsonProperty]	public string				SymbolsSubscribedAndReceiving		{ get {
@@ -26,8 +26,8 @@ namespace Sq1.Core.Streaming {
 			lockLastQuote = new object();
 		}
 
-		public StreamingDataSnapshot(StreamingProvider streamingProvider) : this() {
-			this.streamingProvider = streamingProvider;
+		public StreamingDataSnapshot(StreamingAdapter streamingAdapter) : this() {
+			this.streamingAdapter = streamingAdapter;
 		}
 
 		public void InitializeLastQuoteReceived(List<string> symbols) {
@@ -129,7 +129,7 @@ namespace Sq1.Core.Streaming {
 			double priceLastQuote = this.LastQuoteGetPriceForMarketOrder(symbol);
 			if (priceLastQuote == 0) {
 				string msg = "QuickCheck ZERO priceLastQuote=" + priceLastQuote + " for Symbol=[" + symbol + "]"
-					+ " from streamingProvider[" + this.streamingProvider.Name + "].StreamingDataSnapshot";
+					+ " from streamingAdapter[" + this.streamingAdapter.Name + "].StreamingDataSnapshot";
 				Assembler.PopupException(msg);
 				//throw new Exception(msg);
 			}
@@ -138,7 +138,7 @@ namespace Sq1.Core.Streaming {
 			if (currentBid == 0) {
 				string msg = "ZERO currentBid=" + currentBid + " for Symbol=[" + symbol + "]"
 					+ " while priceLastQuote=[" + priceLastQuote + "]"
-					+ " from streamingProvider[" + this.streamingProvider.Name + "].StreamingDataSnapshot";
+					+ " from streamingAdapter[" + this.streamingAdapter.Name + "].StreamingDataSnapshot";
 				;
 				Assembler.PopupException(msg);
 				//throw new Exception(msg);
@@ -146,7 +146,7 @@ namespace Sq1.Core.Streaming {
 			if (currentAsk == 0) {
 				string msg = "ZERO currentAsk=" + currentAsk + " for Symbol=[" + symbol + "]"
 					+ " while priceLastQuote=[" + priceLastQuote + "]"
-					+ " from streamingProvider[" + this.streamingProvider.Name + "].StreamingDataSnapshot";
+					+ " from streamingAdapter[" + this.streamingAdapter.Name + "].StreamingDataSnapshot";
 				Assembler.PopupException(msg);
 				//throw new Exception(msg);
 			}

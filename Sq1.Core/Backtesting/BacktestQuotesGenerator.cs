@@ -30,8 +30,8 @@ namespace Sq1.Core.Backtesting {
 				BidOrAsk bidOrAsk, double priceFromAlignedBar, double volume, Bar barSimulated) {
 			QuoteGenerated ret = new QuoteGenerated(serverTime);
 			ret.ServerTime = serverTime;
-			//FILLED_LATER_DONT_CONFUSE_STREAMING_PROVIDER ret.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;
-			//FILLED_LATER_DONT_CONFUSE_STREAMING_PROVIDER ret.IntraBarSerno = intraBarSerno;
+			//FILLED_LATER_DONT_CONFUSE_STREAMING_ADAPDER ret.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;
+			//FILLED_LATER_DONT_CONFUSE_STREAMING_ADAPDER ret.IntraBarSerno = intraBarSerno;
 			ret.Source = whoGenerated;
 			ret.Symbol = symbol;
 			ret.SymbolClass = this.backtester.BarsOriginal.SymbolInfo.SymbolClass;
@@ -115,7 +115,7 @@ namespace Sq1.Core.Backtesting {
 
 				#if DEBUG // INLINE TEST
 				if (closestOnOurWay.AbsnoPerSymbol != -1) {
-					string msg = "QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_PROVIDER";
+					string msg = "QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER";
 					Assembler.PopupException(msg);
 				}
 				#endif
@@ -275,7 +275,7 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 
-			//I_WILL_SPOIL_STREAMING_BAR_IF_I_ATTACH_LIKE_THIS QuoteGenerated quoteNextAttached = this.backtester.BacktestDataSource.BacktestStreamingProvider.(quoteToReach.Clone());
+			//I_WILL_SPOIL_STREAMING_BAR_IF_I_ATTACH_LIKE_THIS QuoteGenerated quoteNextAttached = this.backtester.BacktestDataSource.BacktestStreamingAdapter.(quoteToReach.Clone());
 			QuoteGenerated ret = quotePrev.DeriveIdenticalButFresh();
 			ret.Bid = quoteClosest.Bid;
 			ret.Ask = quoteClosest.Ask;
