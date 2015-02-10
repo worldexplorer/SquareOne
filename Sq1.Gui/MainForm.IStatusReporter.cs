@@ -86,7 +86,7 @@ namespace Sq1.Gui {
 				//MessageBox.Show(ex.Message, msg);
 				throw new Exception(msg2, exc);
 			}
-			//SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD if I PopupException from a BrokerProvider thread, exceptionsForm.Visible and others should throw
+			//SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD if I PopupException from a BrokerAdapter thread, exceptionsForm.Visible and others should throw
 //			// "you are trying to access WinForms.Component's properties within the thread", right?...
 //			if (exceptionsForm.Visible == false) {
 ////				//v1 throw (exc);

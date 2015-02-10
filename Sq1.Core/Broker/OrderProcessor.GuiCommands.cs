@@ -17,7 +17,7 @@ namespace Sq1.Core.Broker {
 				this.UpdateOrderStateAndPostProcess(order, newOrderState);
 			}
 			if (ordersEatable.Count > 0) {
-				BrokerProvider broker = extractSameBrokerProviderThrowIfDifferent(ordersEatable, "SubmitEatableOrders(): ");
+				BrokerAdapter broker = extractSameBrokerAdapterThrowIfDifferent(ordersEatable, "SubmitEatableOrders(): ");
 				broker.SubmitOrders(ordersEatable);
 			}
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
@@ -51,7 +51,7 @@ namespace Sq1.Core.Broker {
 				string msg = "NO_PENDING_ORDERS_TO_CANCEL__SHOULD_I_CHECK_ANOTHER_LANE?... OrdersPending.Count[" + ordersToCancel.Count + "]";
 				return;
 			}
-			BrokerProvider broker = this.extractSameBrokerProviderThrowIfDifferent(ordersToCancel, "CancelAll(): ");
+			BrokerAdapter broker = this.extractSameBrokerAdapterThrowIfDifferent(ordersToCancel, "CancelAll(): ");
 			this.KillPending(ordersToCancel);
 		}
 		public void CancelReplaceOrder(Order orderToReplace, Order orderReplacement) {
@@ -63,12 +63,12 @@ namespace Sq1.Core.Broker {
 			orderReplacement.IsReplacement = true;
 			this.DataSnapshot.OrderInsertNotifyGuiAsync(orderReplacement);
 
-			if (orderToReplace.hasBrokerProvider("CancelReplaceOrder(): ") == false) {
+			if (orderToReplace.hasBrokerAdapter("CancelReplaceOrder(): ") == false) {
 				string msg = "CRAZY #65";
 				Assembler.PopupException(msg);
 				return;
 			}
-			orderToReplace.Alert.DataSource.BrokerProvider.CancelReplace(orderToReplace, orderReplacement);
+			orderToReplace.Alert.DataSource.BrokerAdapter.CancelReplace(orderToReplace, orderReplacement);
 
 			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 		}

@@ -40,9 +40,9 @@ namespace Sq1.Core.Livesim {
 		        // kept it on the surface and didn't pass ScriptContextCurrent.SpreadModelerPercent to "new DataSourceAsLivesimNullUnsafe()" because later DataSourceAsLivesimNullUnsafe:
 		        // 1) will support different SpreadModelers with not only 1 parameter like SpreadModelerPercentage;
 		        // 2) will support different BacktestModes like 12strokes, not only 4Stroke 
-		        // 3) will poke StreamingProvider-derived implementations 12 times a bar with platform-generated quotes for backtests with regulated poke delay
+		        // 3) will poke StreamingAdapter-derived implementations 12 times a bar with platform-generated quotes for backtests with regulated poke delay
 		        // 4) will need to be provide visualized 
-		        // v1 this.DataSourceAsLivesimNullUnsafe.BacktestStreamingProvider.InitializeSpreadModelerPercentage(base.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
+		        // v1 this.DataSourceAsLivesimNullUnsafe.BacktestStreamingAdapter.InitializeSpreadModelerPercentage(base.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
 		        // v2 UI-controlled in the future, right now the stub  
 		        ContextScript ctx = base.Executor.Strategy.ScriptContextCurrent;
 		        string msig = "Strategy[" + base.Executor.Strategy + "].ScriptContextCurrent[" + ctx + "]";
@@ -63,10 +63,10 @@ namespace Sq1.Core.Livesim {
 
 		        base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;
 
-				this.DataSourceAsLivesimNullUnsafe.StreamingProvider.ConsumerQuoteSubscribe(
+				this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.ConsumerQuoteSubscribe(
 					base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval,
 					this.livesimQuoteBarConsumer);
-				this.DataSourceAsLivesimNullUnsafe.StreamingProvider.ConsumerBarSubscribe(
+				this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.ConsumerBarSubscribe(
 					base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval,
 					this.livesimQuoteBarConsumer);
 				
@@ -123,15 +123,15 @@ namespace Sq1.Core.Livesim {
 		protected override void SimulationPostBarsRestore() {
 		    try {
 		        LivesimStreaming streamingBacktest = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
-		        StreamingProvider streamingOriginal = base.BarsOriginal.DataSource.StreamingProvider;
+		        StreamingAdapter streamingOriginal = base.BarsOriginal.DataSource.StreamingAdapter;
 		        string msg = "NOW_INSERT_BREAKPOINT_TO_this.channel.PushQuoteToConsumers(quoteDequeued) CATCHING_BACKTEST_END_UNPAUSE_PUMP";
 		        //if (streamingOriginal.
 
 		        streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, base.BarsOriginal.Symbol, base.BarsOriginal.ScaleInterval);
 
-				this.DataSourceAsLivesimNullUnsafe.StreamingProvider.ConsumerQuoteUnSubscribe(
+				this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.ConsumerQuoteUnSubscribe(
 					base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
-				this.DataSourceAsLivesimNullUnsafe.StreamingProvider.ConsumerBarUnSubscribe(
+				this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.ConsumerBarUnSubscribe(
 					base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
 
 		        base.Executor.BacktestContextRestore();

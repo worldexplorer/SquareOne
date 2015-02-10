@@ -454,7 +454,7 @@ namespace Sq1.Core.Livesim {
 			this.groupBox5.Size = new System.Drawing.Size(356, 94);
 			this.groupBox5.TabIndex = 31;
 			this.groupBox5.TabStop = false;
-			this.groupBox5.Text = "Broker Provider Disconnect";
+			this.groupBox5.Text = "Broker Adapter Disconnect";
 			// 
 			// label22
 			// 
@@ -512,7 +512,7 @@ namespace Sq1.Core.Livesim {
 			this.checkBox5.Name = "checkBox5";
 			this.checkBox5.Size = new System.Drawing.Size(344, 17);
 			this.checkBox5.TabIndex = 21;
-			this.checkBox5.Text = "Enable Random Broker Provider Disconnect";
+			this.checkBox5.Text = "Enable Random Broker Adapter Disconnect";
 			this.checkBox5.UseVisualStyleBackColor = true;
 			// 
 			// label26

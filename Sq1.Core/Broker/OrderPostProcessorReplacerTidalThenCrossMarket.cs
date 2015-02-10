@@ -48,7 +48,7 @@ namespace Sq1.Core.Broker {
 								+ " by orderClose=[" + order + "]");
 							this.orderProcessor.UpdateOrderStateAndPostProcess(submitting, omsg);
 						}
-						BrokerProvider broker = ordersOpen[0].Alert.DataSource.BrokerProvider;
+						BrokerAdapter broker = ordersOpen[0].Alert.DataSource.BrokerAdapter;
 						ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpen });
 					}
 				}

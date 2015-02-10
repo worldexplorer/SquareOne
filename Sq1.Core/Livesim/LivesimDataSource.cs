@@ -7,13 +7,13 @@ namespace Sq1.Core.Livesim {
 	public class LivesimDataSource : BacktestDataSource {
 		public ScriptExecutor Executor;
 
-		public LivesimStreaming		StreamingAsLivesimNullUnsafe	{ get { return base.StreamingProvider	as LivesimStreaming; } }
-		public LivesimBroker	 	   BrokerAsLivesimNullUnsafe	{ get { return base.BrokerProvider		as LivesimBroker; } }
+		public LivesimStreaming		StreamingAsLivesimNullUnsafe	{ get { return base.StreamingAdapter	as LivesimStreaming; } }
+		public LivesimBroker	 	   BrokerAsLivesimNullUnsafe	{ get { return base.BrokerAdapter		as LivesimBroker; } }
 
 		public LivesimDataSource() {
 			base.Name				= "LivesimDataSource";
-			base.StreamingProvider	= new LivesimStreaming(this);
-			base.BrokerProvider		= new LivesimBroker(this);
+			base.StreamingAdapter	= new LivesimStreaming(this);
+			base.BrokerAdapter		= new LivesimBroker(this);
 		}
 
 		public LivesimDataSource(ScriptExecutor executor) : this() {

@@ -150,7 +150,7 @@ namespace Sq1.Core.Broker {
 			try {
 				this.OPPsequencer.ReplaceLockingCloseOrder(rejectedOrderToReplace, replacement);
 
-				double priceScript = replacement.Alert.DataSource.StreamingProvider.StreamingDataSnapshot
+				double priceScript = replacement.Alert.DataSource.StreamingAdapter.StreamingDataSnapshot
 					.GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(
 					replacement.Alert.Bars.Symbol, replacement.Alert.Direction, out replacement.SpreadSide, true);
 				replacement.Alert.PositionAffected.ExitPriceScript = priceScript;
@@ -175,11 +175,11 @@ namespace Sq1.Core.Broker {
 				replacement.PriceRequested = priceScript + slippage;
 
 				string msg = "Scheduling SubmitOrdersThreadEntry [" + replacement.ToString() + "] slippageIndex["
-					+ replacement.SlippageIndex + "] through [" + replacement.Alert.DataSource.BrokerProvider + "]";
+					+ replacement.SlippageIndex + "] through [" + replacement.Alert.DataSource.BrokerAdapter + "]";
 				OrderStateMessage omsg = new OrderStateMessage(replacement, OrderState.PreSubmit, msg);
 				this.orderProcessor.UpdateOrderStateAndPostProcess(replacement, omsg);
 
-				ThreadPool.QueueUserWorkItem(new WaitCallback(replacement.Alert.DataSource.BrokerProvider.SubmitOrdersThreadEntry),
+				ThreadPool.QueueUserWorkItem(new WaitCallback(replacement.Alert.DataSource.BrokerAdapter.SubmitOrdersThreadEntry),
 					new object[] { new List<Order>() { replacement } });
 			} catch (Exception e) {
 				Assembler.PopupException("Replacement wasn't submitted [" + replacement + "]", e);
@@ -200,7 +200,7 @@ namespace Sq1.Core.Broker {
 				this.orderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(rejectedOrderToReplace, msg);
 				return null;
 			}
-			if (rejectedOrderToReplace.hasBrokerProvider("CreateEmergencyCloseOrderInsteadOfRejected(): ") == false) {
+			if (rejectedOrderToReplace.hasBrokerAdapter("CreateEmergencyCloseOrderInsteadOfRejected(): ") == false) {
 				return null;
 			}
 			emergencyReplacement = rejectedOrderToReplace.DeriveReplacementOrder();

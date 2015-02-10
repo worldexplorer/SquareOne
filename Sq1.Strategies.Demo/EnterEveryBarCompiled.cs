@@ -113,7 +113,7 @@ namespace Sq1.Strategies.Demo {
 
 				if (barStaticFormed.ParentBarsIndex == 163) {
 					Debugger.Break();
-					StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingProvider.StreamingDataSnapshot;
+					StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
 					Quote lastQuote = streaming.LastQuoteCloneGetForSymbol(barStaticFormed.Symbol);
 					double priceForMarketOrder = streaming.LastQuoteGetPriceForMarketOrder(barStaticFormed.Symbol);
 				}
@@ -168,7 +168,7 @@ namespace Sq1.Strategies.Demo {
 		}
 		
 		public override void OnStreamingTriggeringScriptTurnedOnCallback() {
-			string msg = "SCRIPT_IS_NOW_AWARE_THAT_STREAMING_PROVIDER_WILL_TRIGGER_SCRIPT_METHODS"
+			string msg = "SCRIPT_IS_NOW_AWARE_THAT_STREAMING_ADAPDER_WILL_TRIGGER_SCRIPT_METHODS"
 				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript+ "]";
 			Assembler.PopupException(msg, null, false);
 			
@@ -178,18 +178,18 @@ namespace Sq1.Strategies.Demo {
 			Assembler.PopupException(msg2, null, false);
 		}
 		public override void OnStreamingTriggeringScriptTurnedOffCallback() {
-			string msg = "SCRIPT_IS_NOW_AWARE_THAT_STREAMING_PROVIDER_WILL_NOT_TRIGGER_SCRIPT_METHODS"
+			string msg = "SCRIPT_IS_NOW_AWARE_THAT_STREAMING_ADAPDER_WILL_NOT_TRIGGER_SCRIPT_METHODS"
 				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript+ "]";
 			Assembler.PopupException(msg, null, false);
 		}
 		
 		public override void OnStrategyEmittingOrdersTurnedOnCallback() {
-			string msg = "SCRIPT_IS_NOW_AWARE_THAT_ORDERS_WILL_START_SHOOTING_THROUGH_BROKER_PROVIDER"
+			string msg = "SCRIPT_IS_NOW_AWARE_THAT_ORDERS_WILL_START_SHOOTING_THROUGH_BROKER_ADAPDER"
 				+ " ScriptContextCurrent.StrategyEmittingOrders[" + this.Strategy.ScriptContextCurrent.StrategyEmittingOrders+ "]";
 			Assembler.PopupException(msg, null, false);
 		}
 		public override void OnStrategyEmittingOrdersTurnedOffCallback() {
-			string msg = "SCRIPT_IS_NOW_AWARE_THAT_ORDERS_WILL_STOP_SHOOTING_THROUGH_BROKER_PROVIDER"
+			string msg = "SCRIPT_IS_NOW_AWARE_THAT_ORDERS_WILL_STOP_SHOOTING_THROUGH_BROKER_ADAPDER"
 				+ " ScriptContextCurrent.StrategyEmittingOrders[" + this.Strategy.ScriptContextCurrent.StrategyEmittingOrders+ "]";
 			Assembler.PopupException(msg, null, false);
 		}

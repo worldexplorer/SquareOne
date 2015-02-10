@@ -84,7 +84,7 @@ namespace Sq1.Core.Broker {
 			}
 			Order newborn = new Order(alert, emittedByScript, false);
 			try {
-				newborn.Alert.DataSource.BrokerProvider.ModifyOrderTypeAccordingToMarketOrderAs(newborn);
+				newborn.Alert.DataSource.BrokerAdapter.ModifyOrderTypeAccordingToMarketOrderAs(newborn);
 			} catch (Exception e) {
 				string msg = "hoping that MarketOrderAs.MarketMinMax influenced order.Alert.MarketLimitStop["
 					+ newborn.Alert.MarketLimitStop + "]=MarketLimitStop.Limit for further match; PREV=" + newborn.LastMessage;
@@ -110,8 +110,8 @@ namespace Sq1.Core.Broker {
 			string newbornMessage = "alert[" + alert + "]";
 
 			if (setStatusSubmitting == true) {
-				if (newborn.hasBrokerProvider("CreatePropagateOrderFromAlert(): ") == false) {
-					string msg = "ORDER_HAS_NO_BROKER_PROVIDER__SELECT_AND_CONFIGURE_IN_DATASOURCE_EDITOR__DLL_MIGHT_HAVE_DISAPPEARED";
+				if (newborn.hasBrokerAdapter("CreatePropagateOrderFromAlert(): ") == false) {
+					string msg = "ORDER_HAS_NO_BROKER_ADAPDER__SELECT_AND_CONFIGURE_IN_DATASOURCE_EDITOR__DLL_MIGHT_HAVE_DISAPPEARED";
 					Assembler.PopupException(msg);
 					return null;
 				}
@@ -126,7 +126,7 @@ namespace Sq1.Core.Broker {
 			this.DataSnapshot.OrderInsertNotifyGuiAsync(newborn);
 			return newborn;
 		}
-		public void CreateOrdersSubmitToBrokerProviderInNewThreads(List<Alert> alertsBatch, bool setStatusSubmitting, bool emittedByScript) {
+		public void CreateOrdersSubmitToBrokerAdapterInNewThreads(List<Alert> alertsBatch, bool setStatusSubmitting, bool emittedByScript) {
 			if (alertsBatch.Count == 0) {
 				string msg = "no alerts to Add; why did you call me? make sure you invoke using a synchronized Queue";
 				Assembler.PopupException(msg);
@@ -141,7 +141,7 @@ namespace Sq1.Core.Broker {
 			List<Order> ordersAgnostic = new List<Order>();
 			List<Order> ordersClosing = new List<Order>();
 			List<Order> ordersOpening = new List<Order>();
-			BrokerProvider broker = null;
+			BrokerAdapter broker = null;
 			foreach (Alert alert in alertsBatch) {
 				// I only needed alert.OrderFollowed=newOrder... mb even CreatePropagateOrderFromAlert() should be reduced for backtest
 				if (alert.Strategy.Script.Executor.Backtester.IsBacktestingNow) {
@@ -178,11 +178,11 @@ namespace Sq1.Core.Broker {
 					continue;
 				}
 				if (broker == null) {
-					broker = alert.DataSource.BrokerProvider;
+					broker = alert.DataSource.BrokerAdapter;
 				} else {
-					if (broker != alert.DataSource.BrokerProvider) {
+					if (broker != alert.DataSource.BrokerAdapter) {
 						string msg = "CROSS_EXCHANGE_ALERTS_NYI alertsBatch MUST contain alerts for the same broker"
-							+ "; prevAlert.Broker[" + broker + "] while thisAlert.DataSource.BrokerProvider[" + alert.DataSource.BrokerProvider + "]";
+							+ "; prevAlert.Broker[" + broker + "] while thisAlert.DataSource.BrokerAdapter[" + alert.DataSource.BrokerAdapter + "]";
 						throw new Exception(msg);
 					}
 				}
@@ -273,18 +273,18 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg);
 			}
 		}
-		public BrokerProvider extractSameBrokerProviderThrowIfDifferent(List<Order> orders, string callerMethod) {
-			BrokerProvider broker = null;
+		public BrokerAdapter extractSameBrokerAdapterThrowIfDifferent(List<Order> orders, string callerMethod) {
+			BrokerAdapter broker = null;
 			foreach (Order order in orders) {
-				if (order.hasBrokerProvider(callerMethod) == false) {
+				if (order.hasBrokerAdapter(callerMethod) == false) {
 					string msg = "CRAZY #64";
 					Assembler.PopupException(msg);
 					continue;
 				}
-				if (broker == null) broker = order.Alert.DataSource.BrokerProvider;
-				if (broker != order.Alert.DataSource.BrokerProvider) {
+				if (broker == null) broker = order.Alert.DataSource.BrokerAdapter;
+				if (broker != order.Alert.DataSource.BrokerAdapter) {
 					throw new Exception(callerMethod + "NIY: orderProcessor can not handle orders for several brokers"
-						+ "; prevOrder.Broker[" + broker + "] while someOrderBroker[" + order.Alert.DataSource.BrokerProvider + "]");
+						+ "; prevOrder.Broker[" + broker + "] while someOrderBroker[" + order.Alert.DataSource.BrokerAdapter + "]");
 				}
 			}
 			return broker;
@@ -312,7 +312,7 @@ namespace Sq1.Core.Broker {
 				Assembler.PopupException(msg + msig);
 				return null;
 			}
-			if (victimOrder.hasBrokerProvider(msig) == false) {
+			if (victimOrder.hasBrokerAdapter(msig) == false) {
 				string msg = "VICTIM_DOESNT_HAVE_BROKER " + victimOrder;
 				Assembler.PopupException(msg + msig);
 				return null;
@@ -329,7 +329,7 @@ namespace Sq1.Core.Broker {
 		public void KillOrderUsingKillerOrder(Order victimOrder) {
 			Order killerOrder = this.CreateKillerOrder(victimOrder);
 			//killerOrder.FromAutoTrading = false;
-			if (killerOrder.hasBrokerProvider("KillOrder():") == false) {
+			if (killerOrder.hasBrokerAdapter("KillOrder():") == false) {
 				string msg = "CRAZY #63";
 				Assembler.PopupException(msg);
 				return;
@@ -338,7 +338,7 @@ namespace Sq1.Core.Broker {
 			OrderStateMessage newOrderStateVictim = new OrderStateMessage(victimOrder, OrderState.KillPending, msgVictim);
 			this.UpdateOrderStateAndPostProcess(victimOrder, newOrderStateVictim);
 
-			killerOrder.Alert.DataSource.BrokerProvider.OrderKillSubmitUsingKillerOrder(killerOrder);
+			killerOrder.Alert.DataSource.BrokerAdapter.OrderKillSubmitUsingKillerOrder(killerOrder);
 		}
 		public Order UpdateOrderStateByGuidNoPostProcess(string orderGUID, OrderState orderState, string message) {
 			Order orderFound = this.DataSnapshot.OrdersSubmitting.ScanRecentForGUID(orderGUID);
@@ -406,7 +406,7 @@ namespace Sq1.Core.Broker {
 					break;
 				default:
 					string msg = "no handler for victimOrder[" + victimOrder + "]'s state[" + victimOrder.State + "]"
-						+ "your BrokerProvider should call for Victim.States:{"
+						+ "your BrokerAdapter should call for Victim.States:{"
 						//+ OrderState.KillSubmitting + ","
 						+ OrderState.KillPending + ","
 						//+ OrderState.Killed + ","
@@ -428,7 +428,7 @@ namespace Sq1.Core.Broker {
 					break;
 				default:
 					string msg = "no handler for killerOrder[" + killerOrder + "]'s state[" + killerOrder.State + "]"
-						+ "your BrokerProvider should call for Killer.States:{"
+						+ "your BrokerAdapter should call for Killer.States:{"
 						+ OrderState.KillerBulletFlying + ","
 						+ OrderState.KillerDone + "}";
 					break;
@@ -459,7 +459,7 @@ namespace Sq1.Core.Broker {
 
 				// REPLACED_WITH_OUTER_this.orderUpdateLock
 				//if (newStateOmsg.State == OrderState.WaitingBrokerFill) {
-				//    // blocking the BrokerProvider thread updateing OrderState??? protecting against "thread twist" inside of BrokerProvider implementation?...
+				//    // blocking the BrokerAdapter thread updateing OrderState??? protecting against "thread twist" inside of BrokerAdapter implementation?...
 				//    bool signalled = order.MreActiveCanCome.WaitOne(-1);
 				//}
 
@@ -486,21 +486,21 @@ namespace Sq1.Core.Broker {
 					this.PostProcessVictimOrder(order, newStateOmsg);
 					return;
 				}
-				if (order.hasBrokerProvider("UpdateOrderStateAndPostProcess():") == false) {
+				if (order.hasBrokerAdapter("UpdateOrderStateAndPostProcess():") == false) {
 					string msg = "most likely QuikTerminal.CallbackOrderStatus got something wrong...";
 					Assembler.PopupException(msg);
 					return;
 				}
 
 				if (newStateOmsg.State == OrderState.Rejected && order.State == OrderState.EmergencyCloseLimitReached) {
-					string prePostErrorMsg = "BrokerProvider CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for EmergencyCloseLimitReached "
+					string prePostErrorMsg = "BrokerAdapter CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for EmergencyCloseLimitReached "
 						//+ "; skipping PostProcess for [" + order + "]"
 						;
 					this.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, prePostErrorMsg);
 					return;
 				}
 				if (newStateOmsg.State == OrderState.Rejected && order.InStateEmergency) {
-					string prePostErrorMsg = "BrokerProvider CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for"
+					string prePostErrorMsg = "BrokerAdapter CALLBACK DUPE: Status[" + newStateOmsg.State + "] delivered for"
 						+ " order.inEmergencyState[" + order.State + "] "
 						//+ "; skipping PostProcess for [" + order + "]"
 						;
@@ -508,7 +508,7 @@ namespace Sq1.Core.Broker {
 					return;
 				}
 
-				OrderCallbackDupesChecker dupesChecker = order.Alert.DataSource.BrokerProvider.OrderCallbackDupesChecker;
+				OrderCallbackDupesChecker dupesChecker = order.Alert.DataSource.BrokerAdapter.OrderCallbackDupesChecker;
 				if (dupesChecker != null) {
 					string whyIthinkBrokerIsSpammingMe = dupesChecker.OrderCallbackIsDupeReson(order, newStateOmsg, priceFill, qtyFill);
 					if (string.IsNullOrEmpty(whyIthinkBrokerIsSpammingMe) == false) {
@@ -569,7 +569,7 @@ namespace Sq1.Core.Broker {
 					log.Warn("Adding Shares[" + _SharesFilledDiff + "] to existing Position[" + positionAlready + "]");
 					positionAlready.QtyFill += _SharesFilledDiff;
 					// FIXME: UNCOMMENT AND FIX DataSource == null here...
-					order.Alert.DataSource.BrokerProvider.AccountPositionModified(account);
+					order.Alert.DataSource.BrokerAdapter.AccountPositionModified(account);
 					if (this.AccountPositionChanged != null) {
 						this.AccountPositionChanged(this, new AccountPositionEventArgs(positionAlready));
 					}
@@ -579,7 +579,7 @@ namespace Sq1.Core.Broker {
 					positionNew.Account = account;
 					account.Positions.Add(positionNew);
 					// FIXME: UNCOMMENT AND FIX DataSource == null here...
-					order.Alert.DataSource.BrokerProvider.AccountPositionAdded(account);
+					order.Alert.DataSource.BrokerAdapter.AccountPositionAdded(account);
 					if (this.AccountPositionAdded != null) {
 						this.AccountPositionAdded(this, new AccountPositionEventArgs(positionNew));
 					}
@@ -641,11 +641,11 @@ namespace Sq1.Core.Broker {
 						bool c = string.IsNullOrEmpty(order.ReplacedByGUID) == false;
 						if (b || c) {
 							string msg = "";
-							if (b) msg += " BrokerProvider CALLBACK DUPE: Rejected was already replaced by"
+							if (b) msg += " BrokerAdapter CALLBACK DUPE: Rejected was already replaced by"
 								+ " EmergencyReplacedByGUID[" + order.EmergencyReplacedByGUID + "]"
 								//+ "; skipping PostProcess for [" + order + "]"
 								;
-							if (c) msg += " BrokerProvider CALLBACK DUPE: Rejected was already replaced by"
+							if (c) msg += " BrokerAdapter CALLBACK DUPE: Rejected was already replaced by"
 								+ " ReplacedByGUID[" + order.ReplacedByGUID + "]"
 								//+ "; skipping PostProcess for [" + order + "]"
 								;
@@ -671,7 +671,7 @@ namespace Sq1.Core.Broker {
 					break;
 
 				case OrderState.Submitting:
-					string msg2 = "all Orders.State!=Submitting aren't sent to BrokerProvider;"
+					string msg2 = "all Orders.State!=Submitting aren't sent to BrokerAdapter;"
 						+ " we shouldn't be here in a broker-originated State change handler...";
 					break;
 				case OrderState.SubmittingSequenced:
@@ -767,8 +767,8 @@ namespace Sq1.Core.Broker {
 			position.Prototype.SetNewStopLossOffsets(newStopLossNegativeOffset, newActivationOffset);
 			msg += " => " + position.Prototype.ToString();
 			Alert replacement = executor.PositionPrototypeActivator.CreateStopLossFromPositionPrototype(position);
-			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerProvider();
-			//this.CreateOrdersSubmitToBrokerProviderInNewThreadGroups(new List<Alert>() {replacement}, true, true);
+			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter();
+			//this.CreateOrdersSubmitToBrokerAdapterInNewThreadGroups(new List<Alert>() {replacement}, true, true);
 			pokeUnit.AlertsNew.AddNoDupe(replacement);
 			msg += " newAlert[" + replacement + "]";
 			killedStopLoss.AppendMessage(msig + msg);
@@ -833,13 +833,13 @@ namespace Sq1.Core.Broker {
 			position.Prototype.SetNewTakeProfitOffset(newTakeProfitPositiveOffset);
 			msg += " => " + position.Prototype.ToString();
 			Alert replacement = executor.PositionPrototypeActivator.CreateTakeProfitFromPositionPrototype(position);
-			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerProvider();
-			//this.CreateOrdersSubmitToBrokerProviderInNewThreadGroups(new List<Alert>() { replacement }, true, true);
+			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter();
+			//this.CreateOrdersSubmitToBrokerAdapterInNewThreadGroups(new List<Alert>() { replacement }, true, true);
 			pokeUnit.AlertsNew.AddNoDupe(replacement);
 			msg += " newAlert[" + replacement + "]";
 			killedTakeProfit.AppendMessage(msig + msg);
 		}
-		public void InvokeHooksAndSubmitNewAlertsBackToBrokerProvider(Order orderWithNewState) {
+		public void InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(Order orderWithNewState) {
 			ScriptExecutor executor = orderWithNewState.Alert.Strategy.Script.Executor;
 			ReporterPokeUnit afterHooksInvokedPokeUnit = new ReporterPokeUnit();
 			int hooksInvoked = this.OPPstatusCallbacks.InvokeOnceHooksForOrderStateAndDelete(orderWithNewState, afterHooksInvokedPokeUnit);
@@ -852,7 +852,7 @@ namespace Sq1.Core.Broker {
 				return;
 			}
 			bool setStatusSubmitting = executor.IsStreamingTriggeringScript && executor.IsStrategyEmittingOrders;
-			this.CreateOrdersSubmitToBrokerProviderInNewThreads(alertsCreatedByHooks, setStatusSubmitting, true);
+			this.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsCreatedByHooks, setStatusSubmitting, true);
 			//ONLY_ON_FILL orderWithNewState.Alert.Strategy.Script.Executor.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(afterHooksInvokedPokeUnit);
 		}
 		public void RemovePendingAlertsForVictimOrderMustBePostKill(Order orderKilled, string msig) {

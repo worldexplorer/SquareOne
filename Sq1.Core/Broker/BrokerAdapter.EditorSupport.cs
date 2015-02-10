@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Broker {
-	public partial class BrokerProvider {
+	public partial class BrokerAdapter {
 		[JsonIgnore]	protected		IDataSourceEditor	dataSourceEditor;
 		[JsonIgnore]	protected		BrokerEditor		brokerEditorInstance;
 		[JsonIgnore]	public virtual	bool				EditorInstanceInitialized { get { return (brokerEditorInstance != null); } }
@@ -17,7 +17,7 @@ namespace Sq1.Core.Broker {
 			} }
 		
 		public virtual BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
-			throw new Exception("please override BrokerProvider::BrokerEditorInitialize() for [" + this + "]:"
+			throw new Exception("please override BrokerAdapter::BrokerEditorInitialize() for [" + this + "]:"
 				+ " 1) use base.BrokerEditorInitializeHelper()"
 				+ " 2) do base.BrokerEditorInstance=new FoobarBrokerEditor()");
 		}

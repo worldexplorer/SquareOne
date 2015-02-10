@@ -57,9 +57,9 @@ namespace Sq1.Gui {
 				this.GuiDataSnapshotSerializer = new Serializer<GuiDataSnapshot>();
 	
 				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeContext(Assembler.InstanceInitialized);
-				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeProviders(
-					Assembler.InstanceInitialized.RepositoryDllStreamingProvider.CloneableInstanceByClassName,
-					Assembler.InstanceInitialized.RepositoryDllBrokerProvider.CloneableInstanceByClassName);
+				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeAdapters(
+					Assembler.InstanceInitialized.RepositoryDllStreamingAdapter.CloneableInstanceByClassName,
+					Assembler.InstanceInitialized.RepositoryDllBrokerAdapter.CloneableInstanceByClassName);
 	
 				DataSourcesForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
 				StrategiesForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
@@ -189,7 +189,7 @@ namespace Sq1.Gui {
 					//if (cfmgr.DataSnapshot.ContextChart.IsStreaming == true) {
 					//	string msg = "CHART_SUBSCRIBED__BUT_SHOULD_CONNECT_AFTER_BACKTEST";
 					//} else {
-						cfmgr.Executor.DataSource.StreamingProvider.UpstreamConnect();
+						cfmgr.Executor.DataSource.StreamingAdapter.UpstreamConnect();
 					//}
 				}
 				

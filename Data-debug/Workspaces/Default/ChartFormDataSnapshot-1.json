@@ -1,13 +1,13 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "NO_STRATEGY_CHART_ONLY",
-  "StrategyNameJsonCheck": "NO_STRATEGY_CHART_ONLY",
-  "StrategyAbsPathJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "StrategyGuidJsonCheck": "7725f2be-42e2-495f-8d71-5ecd0c305d29",
+  "StrategyNameJsonCheck": "TwoMAs",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json",
   "ContextChart": {
     "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
-    "Name": "CHART_autogen",
-    "Symbol": "autogen",
-    "DataSourceName": "Qmock",
+    "Name": "CHART_RIM3",
+    "Symbol": "RIM3",
+    "DataSourceName": "MOCK",
     "ScaleInterval": {
       "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
       "Scale": 3,
@@ -19,8 +19,8 @@
     "DataRange": {
       "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
       "Range": 1,
-      "StartDate": "0001-01-01T00:00:00",
-      "EndDate": "9999-12-31T23:59:59.9999999",
+      "DateFrom": "0001-01-01T00:00:00",
+      "DateTill": "9999-12-31T23:59:59.9999999",
       "RecentBars": 500,
       "RecentTimeunits": 0
     },
@@ -45,7 +45,7 @@
       "Volume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 224
+        "Distance": 285
       }
     },
     "ChartColorBackground": "White",
@@ -121,6 +121,6 @@
     "SpreadLabelFont": "Consolas, 8pt",
     "SpreadLabelColor": "DarkGray"
   },
-  "ChartSerno": 6,
+  "ChartSerno": 1,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
 }

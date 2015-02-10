@@ -76,8 +76,8 @@
     <Compile Include="Backtesting\Optimizer.cs" />
     <Compile Include="Backtesting\OptimizerParametersSequencer.cs" />
     <Compile Include="Backtesting\QuoteGenerated.cs" />
-    <Compile Include="Broker\BrokerProvider.EditorSupport.cs">
-      <DependentUpon>BrokerProvider.cs</DependentUpon>
+    <Compile Include="Broker\BrokerAdapter.EditorSupport.cs">
+      <DependentUpon>BrokerAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
     <Compile Include="Broker\OrderProcessor.EventDistributor.cs">
@@ -230,8 +230,8 @@
     <Compile Include="Streaming\QuotePump.cs" />
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
     <Compile Include="Streaming\StreamingEarlyBinder.cs" />
-    <Compile Include="Streaming\StreamingProvider.EditorSupport.cs">
-      <DependentUpon>StreamingProvider.cs</DependentUpon>
+    <Compile Include="Streaming\StreamingAdapter.EditorSupport.cs">
+      <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\StreamingSolidifier.cs" />
     <Compile Include="Support\ConcurrentList.cs" />
@@ -298,7 +298,7 @@
     <Compile Include="Streaming\DataDistributor.cs" />
     <Compile Include="Streaming\StreamingDataSnapshot.cs" />
     <Compile Include="Streaming\SymbolScaleDistributionChannel.cs" />
-    <Compile Include="Streaming\StreamingProvider.cs" />
+    <Compile Include="Streaming\StreamingAdapter.cs" />
     <Compile Include="StrategyBase\StrategyEventArgs.cs" />
     <Compile Include="Support\SymbolParser.cs" />
     <Compile Include="Support\WindowsFormsUtils.cs" />
@@ -309,7 +309,7 @@
     <Compile Include="DataTypes\Bars.cs" />
     <Compile Include="DataTypes\BarScale.cs" />
     <Compile Include="DataTypes\BarsEventArgs.cs" />
-    <Compile Include="Broker\BrokerProvider.cs" />
+    <Compile Include="Broker\BrokerAdapter.cs" />
     <Compile Include="Broker\CommissionCalculator.cs" />
     <Compile Include="DataTypes\ConnectionState.cs" />
     <Compile Include="DataTypes\DataSeriesProxyableFromBars.cs" />

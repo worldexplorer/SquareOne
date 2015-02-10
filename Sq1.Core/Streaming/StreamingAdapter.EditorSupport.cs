@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Streaming {
-	public partial class StreamingProvider {
+	public partial class StreamingAdapter {
 		[JsonIgnore]	protected IDataSourceEditor dataSourceEditor;
 		[JsonIgnore]	protected StreamingEditor streamingEditorInstance;
 		[JsonIgnore]	public virtual bool EditorInstanceInitialized { get { return (streamingEditorInstance != null); } }
@@ -16,7 +16,7 @@ namespace Sq1.Core.Streaming {
 				return streamingEditorInstance;
 			} }
 		public virtual StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
-			throw new Exception("please override StreamingProvider::StreamingEditorInitialize():"
+			throw new Exception("please override StreamingAdapter::StreamingEditorInitialize():"
 				+ " 1) use base.StreamingEditorInitializeHelper()"
 				+ " 2) do base.streamingEditorInstance=new FoobarStreamingEditor()");
 		}

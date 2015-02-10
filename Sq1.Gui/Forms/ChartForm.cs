@@ -134,16 +134,16 @@ namespace Sq1.Gui.Forms {
 //				this.btnStrategyEmittingOrders.Enabled = false;
 //			}
 			
-			if (this.ChartFormManager.Executor.DataSource.StreamingProvider == null) {
-				this.btnStreamingTriggersScript.Text = "DataSource: [" + StreamingProvider.NO_STREAMING_PROVIDER + "]";
+			if (this.ChartFormManager.Executor.DataSource.StreamingAdapter == null) {
+				this.btnStreamingTriggersScript.Text = "DataSource: [" + StreamingAdapter.NO_STREAMING_ADAPTER + "]";
 				this.btnStreamingTriggersScript.Enabled = false;
-				this.mniSubscribedToStreamingProviderQuotesBars.Text = "NOT Subscribed: edit DataSource > attach StreamingProvider";
+				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed: edit DataSource > attach StreamingAdapter";
 			} else {
 				this.btnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent + " 00:00:00.000"; //+:: 00:00:00.000";
 				this.btnStreamingTriggersScript.Enabled = true;
 
 				// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
-				this.mniSubscribedToStreamingProviderQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingProvider.Name + "]";
+				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapter.Name + "]";
 			}
 		}
 		public void AbsorbContextBarsToGui() {
@@ -152,7 +152,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
-			StreamingProvider streaming = this.ChartFormManager.Executor.DataSource.StreamingProvider;
+			StreamingAdapter streaming = this.ChartFormManager.Executor.DataSource.StreamingAdapter;
 			Bitmap iconCanBeNull = streaming != null ? streaming.Icon : null;
 
 			if (iconCanBeNull != null) {
@@ -179,13 +179,13 @@ namespace Sq1.Gui.Forms {
 			// WAS_METHOD_PARAMETER_BUT_ACCESSIBLE_LIKE_THIS__NULL_CHECK_DONE_UPSTACK
 			ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
 
-			this.mniSubscribedToStreamingProviderQuotesBars.Checked = ctxChart.IsStreaming;
-			if (this.mniSubscribedToStreamingProviderQuotesBars.Checked == false) {
-				this.mniSubscribedToStreamingProviderQuotesBars.BackColor = Color.LightSalmon;
+			this.mniSubscribedToStreamingAdapterQuotesBars.Checked = ctxChart.IsStreaming;
+			if (this.mniSubscribedToStreamingAdapterQuotesBars.Checked == false) {
+				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
 				this.DdbBars.BackColor = Color.LightSalmon;
-				this.mniSubscribedToStreamingProviderQuotesBars.Text = "NOT " + this.mniSubscribedToStreamingProviderQuotesBars.Text;
+				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT " + this.mniSubscribedToStreamingAdapterQuotesBars.Text;
 			} else {
-				this.mniSubscribedToStreamingProviderQuotesBars.BackColor = SystemColors.Control;
+				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = SystemColors.Control;
 				this.DdbBars.BackColor = SystemColors.Control;
 			}
 			

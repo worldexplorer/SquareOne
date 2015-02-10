@@ -36,7 +36,7 @@ namespace Sq1.Gui.Forms {
 			try {
 				//LivesimDataSource livesimDS = this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe;
 				//LivesimStreaming livesimStreaming = livesimDS.StreamingAsLivesimNullUnsafe;
-				//v1: TOO_WIDE_UNTIL_StreamingAsLivesimNullUnsafe_ WE_ARE_GOING_TO_BE_NOTIFIED_ABOUT_ANY_SYMBOL_RECEIVED_BY_STREAMING_PROVIDER
+				//v1: TOO_WIDE_UNTIL_StreamingAsLivesimNullUnsafe_ WE_ARE_GOING_TO_BE_NOTIFIED_ABOUT_ANY_SYMBOL_RECEIVED_BY_STREAMING_ADAPDER
 				//livesimStreaming.QuotePushedToAllDistributionChannels += new EventHandler<QuoteEventArgs>(this.livesimulator_QuotePushedToDistributor);
 				//v2
 				//Bars bars = this.chartFormManager.Executor.Bars;

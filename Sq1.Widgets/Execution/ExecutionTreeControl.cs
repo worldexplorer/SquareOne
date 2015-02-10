@@ -192,10 +192,10 @@ namespace Sq1.Widgets.Execution {
 				}
 			}
 		}
-		public void PopulateAccountsMenuFromBrokerProvider(ToolStripMenuItem[] ctxAccountsAllCheckedFromUnderlyingBrokerProviders) {
+		public void PopulateAccountsMenuFromBrokerAdapter(ToolStripMenuItem[] ctxAccountsAllCheckedFromUnderlyingBrokerAdapters) {
 			this.ctxAccounts.SuspendLayout();
 			this.ctxAccounts.Items.Clear();
-			this.ctxAccounts.Items.AddRange(ctxAccountsAllCheckedFromUnderlyingBrokerProviders);
+			this.ctxAccounts.Items.AddRange(ctxAccountsAllCheckedFromUnderlyingBrokerAdapters);
 			this.ctxAccounts.ResumeLayout();
 		}	
 		public void OrderStateUpdateOLV(List<Order> orders) {

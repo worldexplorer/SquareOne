@@ -6,16 +6,16 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Backtesting {
 	[SkipInstantiationAt(Startup = true)]
-	public class BacktestStreaming : StreamingProvider {
+	public class BacktestStreaming : StreamingAdapter {
 		public BacktestSpreadModeler SpreadModeler;
 		public const double PERCENTAGE_DEFAULT= 0.005;
 
-//		public BacktestStreamingProvider() {
+//		public BacktestStreamingAdapter() {
 //			string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
 //			//throw new Exception(msg);
 //		}
 		public BacktestStreaming() : base() {
-			base.Name = "BacktestStreamingProvider";
+			base.Name = "BacktestStreamingAdapter";
 //			this.InitializeSpreadModelerPercentage(PERCENTAGE_DEFAULT);
 //		}
 //		public void InitializeSpreadModelerPercentage(double pct) {

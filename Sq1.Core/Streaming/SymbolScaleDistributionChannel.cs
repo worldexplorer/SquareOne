@@ -33,7 +33,7 @@ namespace Sq1.Core.Streaming {
 			backtestersRunningCausingPumpingPause = new List<Backtester>();
 			QuotePump = new QuotePump(this);
 			// avoiding YOU_FORGOT_TO_INVOKE_INDICATOR.INITIALIZE()_OR_WAIT_UNTIL_ITLLBE_INVOKED_LATER
-			// Assembler instantiates StreamingProviders early enough so these horses 
+			// Assembler instantiates StreamingAdapters early enough so these horses 
 			// NOPE_ON_APP_RESTART_BACKTESTER_COMPLAINS_ITS_ALREADY_PAUSED
 			// moved BacktesterRunningAdd() to QuotePump.PushConsumersPaused = true;
 		}
@@ -131,7 +131,7 @@ namespace Sq1.Core.Streaming {
 					streamingSolidifiersPoked++;
 					if (streamingSolidifiersPoked > 1) {
 						string msg = "two streaming charts open with same Symbol/Interval, both with their StreamingSolidifiers subscribed"
-							+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingProvider?..."
+							+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingAdapter?..."
 							+ " Save datasource must fully unregister consumers and register again to avoid StreamingSolidifier dupes";
 						Assembler.PopupException(msg + msig);
 						continue;
@@ -242,7 +242,7 @@ namespace Sq1.Core.Streaming {
 					streamingSolidifiersPoked++;
 					if (streamingSolidifiersPoked > 1) {
 						string msg = "two streaming charts open with same Symbol/Interval, both with their StreamingSolidifiers subscribed"
-							+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingProvider?...";
+							+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingAdapter?...";
 						Assembler.PopupException(msg + msig);
 						continue;
 					}

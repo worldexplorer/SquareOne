@@ -19,23 +19,23 @@ namespace Sq1.Core.Livesim {
 //			set { this.txtTopicPrefixDOM.Text = value; }
 //		}
 		private LivesimStreaming streamingLivesim {
-			get { return base.streamingProvider as LivesimStreaming; }
+			get { return base.streamingAdapter as LivesimStreaming; }
 		}
 
 		public LivesimStreamingEditor() {	//used in Design Mode for the descendands
 			this.InitializeComponent();
 		}
-//		public override void Initialize(StreamingProvider quikStreamingProvider, IDataSourceEditor dataSourceEditor) {
-//			base.Initialize(quikStreamingProvider, dataSourceEditor);
+//		public override void Initialize(StreamingAdapter quikStreamingAdapter, IDataSourceEditor dataSourceEditor) {
+//			base.Initialize(quikStreamingAdapter, dataSourceEditor);
 //			base.InitializeEditorFields();
 //		}
-		public override void PushStreamingProviderSettingsToEditor() {
+		public override void PushStreamingAdapterSettingsToEditor() {
 //			this.DdeServerPrefix = this.streamingLivesim.DdeServerPrefix;
 //			this.DdeTopicQuotes = this.streamingLivesim.DdeTopicQuotes;
 //			this.DdeTopicTrades = this.streamingLivesim.DdeTopicTrades;
 //			this.DdeTopicPrefixDom = this.streamingLivesim.DdeTopicPrefixDom;
 		}
-		public override void PushEditedSettingsToStreamingProvider() {
+		public override void PushEditedSettingsToStreamingAdapter() {
 			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
 //			this.streamingLivesim.DdeServerPrefix = this.DdeServerPrefix;
 //			this.streamingLivesim.DdeTopicQuotes = this.DdeTopicQuotes;

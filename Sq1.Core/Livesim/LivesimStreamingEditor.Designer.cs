@@ -301,7 +301,7 @@ namespace Sq1.Core.Livesim {
 			this.groupBox3.Size = new System.Drawing.Size(345, 90);
 			this.groupBox3.TabIndex = 29;
 			this.groupBox3.TabStop = false;
-			this.groupBox3.Text = "Streaming Provider Disconnect";
+			this.groupBox3.Text = "Streaming Adapter Disconnect";
 			// 
 			// label1
 			// 
@@ -359,7 +359,7 @@ namespace Sq1.Core.Livesim {
 			this.checkBox1.Name = "checkBox1";
 			this.checkBox1.Size = new System.Drawing.Size(333, 17);
 			this.checkBox1.TabIndex = 21;
-			this.checkBox1.Text = "Enable Random Streaming Provider Disconnect";
+			this.checkBox1.Text = "Enable Random Streaming Adapter Disconnect";
 			this.checkBox1.UseVisualStyleBackColor = true;
 			// 
 			// label14

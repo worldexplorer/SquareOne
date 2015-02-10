@@ -86,43 +86,32 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FormFactories\OptimizerFormFactory.cs" />
-    <Compile Include="Forms\ChartForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\ChartForm.cs" />
     <Compile Include="Forms\ChartForm.Designer.cs">
       <DependentUpon>ChartForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ChartForm.EventConsumer.cs">
       <DependentUpon>ChartForm.cs</DependentUpon>
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ChartForm.EventDistributor.cs">
       <DependentUpon>ChartForm.cs</DependentUpon>
-      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ChartFormDataSnapshot.cs" />
     <Compile Include="Forms\ChartFormManager.cs" />
     <Compile Include="Forms\ChartFormInterformEventsConsumer.cs" />
     <Compile Include="Forms\ChartFormStreamingConsumer.cs" />
-    <Compile Include="Forms\LivesimForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\LivesimForm.cs" />
     <Compile Include="Forms\LivesimForm.Designer.cs">
       <DependentUpon>LivesimForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\LivesimForm.EventsConsumer.cs">
       <DependentUpon>LivesimForm.cs</DependentUpon>
-      <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\OptimizerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\OptimizerForm.cs" />
     <Compile Include="Forms\OptimizerForm.Designer.cs">
       <DependentUpon>OptimizerForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ScriptEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\ScriptEditorForm.cs" />
     <Compile Include="Forms\ScriptEditorForm.Designer.cs">
       <DependentUpon>ScriptEditorForm.cs</DependentUpon>
     </Compile>
@@ -155,56 +144,38 @@
     <Compile Include="GuiDataSnapshot.cs" />
     <Compile Include="ReportersSupport\ReportersFormsManager.cs" />
     <Compile Include="ReportersSupport\MenuItemsProvider.cs" />
-    <Compile Include="ReportersSupport\ReporterFormWrapper.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="ReportersSupport\ReporterFormWrapper.cs" />
     <Compile Include="ReportersSupport\ReporterFormWrapper.Designer.cs">
       <DependentUpon>ReporterFormWrapper.cs</DependentUpon>
     </Compile>
-    <Compile Include="Singletons\CsvImporterForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Singletons\CsvImporterForm.cs" />
     <Compile Include="Singletons\CsvImporterForm.Designer.cs">
       <DependentUpon>CsvImporterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Singletons\DockContentSingleton.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Singletons\ExecutionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Singletons\DockContentSingleton.cs" />
+    <Compile Include="Singletons\ExecutionForm.cs" />
     <Compile Include="Singletons\ExecutionForm.Designer.cs">
       <DependentUpon>ExecutionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Singletons\StrategiesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Singletons\StrategiesForm.cs" />
     <Compile Include="Singletons\StrategiesForm.Designer.cs">
       <DependentUpon>StrategiesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Singletons\DataSourcesForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Singletons\DataSourcesForm.cs" />
     <Compile Include="Singletons\DataSourcesForm.Designer.cs">
       <DependentUpon>DataSourcesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Singletons\ExceptionsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Singletons\ExceptionsForm.cs" />
     <Compile Include="Singletons\ExceptionsForm.Designer.cs">
       <DependentUpon>ExceptionsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Singletons\DataSourceEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Singletons\DataSourceEditorForm.cs" />
     <Compile Include="Singletons\DataSourceEditorForm.Designer.cs">
       <DependentUpon>DataSourceEditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Singletons\SlidersForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Singletons\SlidersForm.cs" />
     <Compile Include="Singletons\SlidersForm.Designer.cs">
       <DependentUpon>SlidersForm.cs</DependentUpon>
     </Compile>

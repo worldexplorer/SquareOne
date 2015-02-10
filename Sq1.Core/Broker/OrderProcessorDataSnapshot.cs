@@ -28,7 +28,7 @@ namespace Sq1.Core.Broker {
 		public List<OrderLane>		LanesForCallbackOrderState					{ get; private set; }
 
 		protected OrderProcessorDataSnapshot() {
-			OrdersSubmitting		= new OrderLaneByState(OrderStatesCollections.AllowedForSubmissionToBrokerProvider);
+			OrdersSubmitting		= new OrderLaneByState(OrderStatesCollections.AllowedForSubmissionToBrokerAdapter);
 			OrdersPending			= new OrderLaneByState(OrderStatesCollections.NoInterventionRequired);
 			OrdersPendingFailed		= new OrderLaneByState(OrderStatesCollections.InterventionRequired);
 			OrdersCemeteryHealthy	= new OrderLaneByState(OrderStatesCollections.CemeteryHealthy);

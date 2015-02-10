@@ -302,7 +302,7 @@ namespace Sq1.Core.StrategyBase {
 						// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
 						executor.MarketsimBacktest.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
 					} else {
-						executor.DataSource.BrokerProvider.MoveStopLossOverrideable(proto, newActivationOffset, newStopLossNegativeOffset);
+						executor.DataSource.BrokerAdapter.MoveStopLossOverrideable(proto, newActivationOffset, newStopLossNegativeOffset);
 					}
 					break;
 					#endregion
@@ -312,7 +312,7 @@ namespace Sq1.Core.StrategyBase {
 						// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
 						executor.MarketsimBacktest.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
 					} else {
-						executor.DataSource.BrokerProvider.MoveStopLossOverrideable(proto, 0, newStopLossNegativeOffset);
+						executor.DataSource.BrokerAdapter.MoveStopLossOverrideable(proto, 0, newStopLossNegativeOffset);
 					}
 					break;
 				default:
@@ -343,7 +343,7 @@ namespace Sq1.Core.StrategyBase {
 				// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
 				executor.MarketsimBacktest.SimulateTakeProfitMoved(proto.TakeProfitAlertForAnnihilation);
 			} else {
-				executor.DataSource.BrokerProvider.MoveTakeProfitOverrideable(proto, newTakeProfitPositiveOffset);
+				executor.DataSource.BrokerAdapter.MoveTakeProfitOverrideable(proto, newTakeProfitPositiveOffset);
 			}
 		}
 		void checkThrowPlacingProtoMakesSense(PositionPrototype proto) {
@@ -375,9 +375,9 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		public string ReasonWhyPlacingProtoDoesntMakeSense(PositionPrototype proto, bool internalCallee = false) {
-			double lastPrice = executor.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteGetPriceForMarketOrder(proto.Symbol);
-			Quote quote = executor.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(proto.Symbol);
-			double priceBestBidAsk = executor.DataSource.StreamingProvider.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
+			double lastPrice = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteGetPriceForMarketOrder(proto.Symbol);
+			Quote quote = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(proto.Symbol);
+			double priceBestBidAsk = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
 			bool willBeExecutedImmediately = false;
 			MarketLimitStop planningEntryUsing = MarketConverter.EntryMarketLimitStopFromDirection(
 				executor.Bars.BarStreamingCloneReadonly.Close, proto.PriceEntry, proto.LongShort);
@@ -433,15 +433,15 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			string msg = "";
-			double priceBestBidAsk = executor.DataSource.StreamingProvider.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
+			double priceBestBidAsk = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
 			double newStopLossPrice = proto.OffsetToPrice(newStopLossNegativeOffset);
 			//switch (proto.StopLossAlertForAnnihilation.MarketLimitStop) {
 			switch (marketLimitStopPlanned) {
 				#region StopLimits are considered NYI; mess v1 implementation
 				case MarketLimitStop.StopLimit:
 					double newActivationOffset = proto.CalcActivationOffsetForNewClosing(newStopLossNegativeOffset);
-					//double lastPrice = executor.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteGetPriceForMarketOrder(proto.Symbol);
-					//Quote quote = executor.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteGetForSymbol(proto.Symbol);
+					//double lastPrice = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteGetPriceForMarketOrder(proto.Symbol);
+					//Quote quote = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteGetForSymbol(proto.Symbol);
 					double newActivationPrice = proto.OffsetToPrice(newActivationOffset);
 					bool willBeExecutedImmediately = false;
 					string ident = "StopLoss{old[" + proto.PriceStopLoss + "]:new[" + newStopLossPrice + "]}"
@@ -474,7 +474,7 @@ namespace Sq1.Core.StrategyBase {
 					string ident2 = "PureStopLoss{old[" + proto.PriceStopLoss + "]:new[" + newStopLossPrice + "]}";
 					switch (proto.StopLossAlertForAnnihilation.Direction) {
 						case Direction.Sell:
-							double ask = executor.DataSource.StreamingProvider.StreamingDataSnapshot.BestAskGetForMarketOrder(proto.Symbol);
+							double ask = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.BestAskGetForMarketOrder(proto.Symbol);
 							if (newStopLossPrice > ask) {
 								msg = "NEW_STOP_PRICE_BELOW_ASK_WILL_BE_REJECTED_BY_MARKET"
 									+ " newStopLossPrice[" + newStopLossPrice + "] < Ask[" + ask + "] " + ident2
@@ -482,7 +482,7 @@ namespace Sq1.Core.StrategyBase {
 							}
 							break;
 						case Direction.Cover:
-							double bid = executor.DataSource.StreamingProvider.StreamingDataSnapshot.BestBidGetForMarketOrder(proto.Symbol);
+							double bid = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.BestBidGetForMarketOrder(proto.Symbol);
 							if (newStopLossPrice < bid) {
 								msg = "NEW_STOP_PRICE_ABOVE_BID_WILL_BE_REJECTED_BY_MARKET"
 									+ " newStopLossPrice[" + newStopLossPrice + "] > Bid[" + bid + "] " + ident2
@@ -525,8 +525,8 @@ namespace Sq1.Core.StrategyBase {
 				#endif
 				throw new Exception(msg1);
 			}
-			Quote quote = executor.DataSource.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(proto.Symbol);
-			double priceBestBidAsk = executor.DataSource.StreamingProvider.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
+			Quote quote = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(proto.Symbol);
+			double priceBestBidAsk = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
 			double newTakeProfitPrice = proto.OffsetToPrice(newTakeProfitPositiveOffset);
 			bool willBeExecutedImmediately = false;
 			string ident = "TakeProfit{old[" + proto.PriceTakeProfit + "]:new[" + newTakeProfitPrice + "]}";

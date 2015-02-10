@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Sq1.Core.Execution {
 	public class OrderStatesCollections : List<OrderState> {
-		public static OrderStatesCollections AllowedForSubmissionToBrokerProvider =
+		public static OrderStatesCollections AllowedForSubmissionToBrokerAdapter =
 			new OrderStatesCollections(new List<OrderState>() {
 				OrderState.PreSubmit,
 				OrderState.Submitting,
@@ -11,7 +11,7 @@ namespace Sq1.Core.Execution {
 				OrderState.KillerPreSubmit,
 				OrderState.KillerSubmitting,
 				OrderState.SubmittingSequenced
-			}, "AllowedForSubmissionToBrokerProvider");
+			}, "AllowedForSubmissionToBrokerAdapter");
 
 		public static OrderStatesCollections NoInterventionRequired =
 			new OrderStatesCollections(new List<OrderState>() {

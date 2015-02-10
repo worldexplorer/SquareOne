@@ -5,7 +5,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Streaming {
 	public partial class DataDistributor {
-		StreamingProvider StreamingProvider { get; set; }
+		StreamingAdapter StreamingAdapter { get; set; }
 		public Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>> DistributionChannels { get; protected set; }
 		object lockConsumersBySymbol;
 
@@ -13,8 +13,8 @@ namespace Sq1.Core.Streaming {
 			DistributionChannels = new Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>();
 			lockConsumersBySymbol = new object();
 		}
-		public DataDistributor(StreamingProvider streamingProvider) : this() {
-			this.StreamingProvider = streamingProvider;
+		public DataDistributor(StreamingAdapter streamingAdapter) : this() {
+			this.StreamingAdapter = streamingAdapter;
 		}
 
 		public void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer, bool quotePumpSeparatePushingThreadEnabled) {
@@ -25,8 +25,8 @@ namespace Sq1.Core.Streaming {
 					Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 					newScaleChannels.Add(scaleInterval, newChannel);
 					this.DistributionChannels.Add(symbol, newScaleChannels);
-					if (this.StreamingProvider.UpstreamIsSubscribed(symbol) == false) {
-						this.StreamingProvider.UpstreamSubscribe(symbol);
+					if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
+						this.StreamingAdapter.UpstreamSubscribe(symbol);
 					}
 					return;
 				}
@@ -73,7 +73,7 @@ namespace Sq1.Core.Streaming {
 						//Assembler.PopupException("...removing[" + symbol + "] from this.DistributionChannels[" + this.DistributionChannels + "]");
 						this.DistributionChannels.Remove(symbol);
 						//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
-						this.StreamingProvider.UpstreamUnSubscribe(symbol);
+						this.StreamingAdapter.UpstreamUnSubscribe(symbol);
 					}
 				}
 			}
@@ -95,8 +95,8 @@ namespace Sq1.Core.Streaming {
 					Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> newScaleChannels = new Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>();
 					newScaleChannels.Add(scaleInterval, newChannel);
 					this.DistributionChannels.Add(symbol, newScaleChannels);
-					if (this.StreamingProvider.UpstreamIsSubscribed(symbol) == false) {
-						this.StreamingProvider.UpstreamSubscribe(symbol);
+					if (this.StreamingAdapter.UpstreamIsSubscribed(symbol) == false) {
+						this.StreamingAdapter.UpstreamSubscribe(symbol);
 					}
 					return;
 				}
@@ -143,7 +143,7 @@ namespace Sq1.Core.Streaming {
 						//Assembler.PopupException("...removing[" + symbol + "] from this.DistributionChannels[" + this.DistributionChannels + "]");
 						this.DistributionChannels.Remove(symbol);
 						//Assembler.PopupException("...UpstreamUnSubscribing [" + symbol + "]");
-						this.StreamingProvider.UpstreamUnSubscribe(symbol);
+						this.StreamingAdapter.UpstreamUnSubscribe(symbol);
 					}
 				}
 			}
@@ -219,7 +219,7 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException("quote[" + quote + "]'se Symbol is null or empty, returning");
 				return;
 			}
-			Quote lastQuote = this.StreamingProvider.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(quote.Symbol);
+			Quote lastQuote = this.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(quote.Symbol);
 			List<SymbolScaleDistributionChannel> channelsForSymbol = this.GetDistributionChannelsFor(quote.Symbol);
 			foreach (SymbolScaleDistributionChannel channel in channelsForSymbol) {
 				// late quote should be within current StreamingBar, otherwize don't deliver for channel
@@ -264,7 +264,7 @@ namespace Sq1.Core.Streaming {
 				string msg = "NO_SCALEINTERVAL_SUBSCRIBER DataDistributor[" + this
 					+ "].DistributionChannels[" + symbol + "].ContainsKey(" + barScaleInterval + ")=false";
 				Assembler.PopupException(msg);
-				//this.StreamingProvider.StatusReporter.PopupException(new Exception(msg));
+				//this.StreamingAdapter.StatusReporter.PopupException(new Exception(msg));
 				throw new Exception(msg);
 			}
 			return distributionChannels[barScaleInterval];

@@ -58,17 +58,17 @@ namespace Sq1.Core.Livesim {
 //			}
 //		}
 		LivesimBroker brokerLivesim {
-			get { return base.brokerProvider as LivesimBroker; }
+			get { return base.brokerAdapter as LivesimBroker; }
 		}
 
 		public LivesimBrokerEditor() {
 			this.InitializeComponent();
 		}
-		//public override void Initialize(BrokerProvider BrokerQuik, IDataSourceEditor dataSourceEditor) {
+		//public override void Initialize(BrokerAdapter BrokerQuik, IDataSourceEditor dataSourceEditor) {
 		//    base.Initialize(BrokerQuik, dataSourceEditor);
 		//    base.InitializeEditorFields();
 		//}
-		public override void PushBrokerProviderSettingsToEditor() {
+		public override void PushBrokerAdapterSettingsToEditor() {
 //			this.Account = this.brokerLivesim.AccountAutoPropagate;
 			// quik-specific
 //			this.AccountMicex = this.brokerLivesim.AccountMicexAutoPopulated;
@@ -76,7 +76,7 @@ namespace Sq1.Core.Livesim {
 //			this.ReconnectTimeoutMillis = Convert.ToInt32(this.brokerLivesim.ReconnectTimeoutMillis);
 			//QuikClientCode = SettingsEditor.QuikClientCode;
 		}
-		public override void PushEditedSettingsToBrokerProvider() {
+		public override void PushEditedSettingsToBrokerAdapter() {
 			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
 //			this.brokerLivesim.AccountAutoPropagate = this.Account;
 			// quik-specific
