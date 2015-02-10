@@ -1296,8 +1296,7 @@ namespace Sq1.Core.StrategyBase {
 			return ret;
 		}
 		public string ToStringWithCurrentParameters() {
-			string dbg = this.Strategy.ScriptContextCurrent.Name + " "
-				+ this.Strategy.Script.IndicatorParametersAsString;
+			string ret = this.Strategy.Script.IndicatorParametersAsString + " " + this.ToString();
 			string dbg2 = "";
 			if (this.Performance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished != null) {
 				foreach (string iName in this.Performance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Keys) {
@@ -1305,7 +1304,7 @@ namespace Sq1.Core.StrategyBase {
 					dbg2 += iName + "[" + ip.ValueCurrent + "]";
 				}
 			}
-			return dbg + dbg2;
+			return ret + dbg2;
 		}
 	}
 }

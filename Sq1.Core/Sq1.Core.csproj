@@ -170,6 +170,7 @@
       <DependentUpon>LivesimStreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Repositories\StrategySelfSaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataFeed\NamedObjectJsonSerializable.cs" />
     <Compile Include="Repositories\RepositoryBarsFile.cs" />
@@ -203,6 +204,8 @@
     <Compile Include="Charting\ContextChart.cs" />
     <Compile Include="StrategyBase\ContextScript.cs" />
     <Compile Include="StrategyBase\ContextScriptEventArgs.cs" />
+    <Compile Include="Livesim\LivesimBrokerSettings.cs" />
+    <Compile Include="Livesim\LivesimStreamingSettings.cs" />
     <Compile Include="StrategyBase\ScriptExecutor.EventGenerator.cs">
       <DependentUpon>ScriptExecutor.cs</DependentUpon>
     </Compile>

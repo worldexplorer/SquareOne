@@ -45,6 +45,8 @@ namespace Sq1.Gui.Forms {
 				//v3
 				this.chartFormManager.Executor.StrategyExecutionComplete += new EventHandler<QuoteEventArgs>(this.livesimForm_StrategyExecutionComplete);
 				this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Initialize(this.chartFormManager.ChartForm.ChartControl);
+				this.LivesimControl.StreamingLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimStreamginSettings);
+				this.LivesimControl.BrokerLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimBrokerSettings);
 			} catch (Exception ex) {
 				string msg = "SO_MANY_NULL_UNSAFES_RIGHT?...";
 				Assembler.PopupException(msg, ex);

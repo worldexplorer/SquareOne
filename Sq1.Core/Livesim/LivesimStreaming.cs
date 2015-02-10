@@ -15,6 +15,7 @@ namespace Sq1.Core.Livesim {
 		public ManualResetEvent Unpaused { get; private set; }
 		ChartShadow chartShadow;
 		LivesimDataSource livesimDataSource;
+		LivesimStreamingSettings settings { get { return this.livesimDataSource.Executor.Strategy.LivesimStreamginSettings; } }
 
 		public LivesimStreaming(LivesimDataSource livesimDataSource) : base() {
 			base.Name = "LivesimStreaming";
@@ -50,7 +51,17 @@ namespace Sq1.Core.Livesim {
 			//WARNING WARNING WARNING!!!!!!!!!!!!! Application.DoEvents();
 			//NOT_ENOUGH_TO_UNFREEZE_PAUSE_BUTTON PAINTS_OKAY_AFTER_INVOKING_RangeBarCollapseToAccelerateLivesim()
 			// Thread.Sleep(1)_REDUCES_CPU_USAGE_DURING_LIVESIM_FROM_60%_TO_3%_DUAL_CORE__Application.DoEvents()_IS_USELESS
-			Thread.Sleep(500);	// LET_WinProc_TO_HANDLE_ALL_THE_MESSAGES I_HATE_Application.DoEvents()_IT_KEEPS_THE_FORM_FROZEN
+			if (settings.DelayBetweenSerialQuotesEnabled) {
+				int delay = settings.DelayBetweenSerialQuotesMin;
+				if (settings.DelayBetweenSerialQuotesMax > 0) {
+					int range = Math.Abs(settings.DelayBetweenSerialQuotesMax - settings.DelayBetweenSerialQuotesMin);
+					double rnd0to1 = new Random().NextDouble();
+					int rangePart = (int) Math.Round(range * rnd0to1);
+					delay += rangePart;
+				}
+				Thread.Sleep(delay);
+			}
+			Thread.Sleep(50);	// LET_WinProc_TO_HANDLE_ALL_THE_MESSAGES I_HATE_Application.DoEvents()_IT_KEEPS_THE_FORM_FROZEN
 			this.livesimDataSource.BrokerAsLivesimNullUnsafe.ConsumeQuoteOfStreamingBarToFillPending(quote, bar2simulate);
 		}
 		#region DISABLING_SOLIDIFIER

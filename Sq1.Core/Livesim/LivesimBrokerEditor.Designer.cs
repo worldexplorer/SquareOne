@@ -14,127 +14,127 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.GroupBox groupBox2;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.TextBox textBox3;
-		private System.Windows.Forms.TextBox textBox4;
+		private System.Windows.Forms.TextBox txt_PartialFillPercentageFilledMax;
+		private System.Windows.Forms.TextBox txt_PartialFillPercentageFilledMin;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Label label10;
-		private System.Windows.Forms.CheckBox checkBox1;
+		private System.Windows.Forms.CheckBox cbx_PartialFillEnabled;
 		private System.Windows.Forms.Label label11;
-		private System.Windows.Forms.TextBox textBox5;
-		private System.Windows.Forms.TextBox textBox6;
+		private System.Windows.Forms.TextBox txt_PartialFillHappensOncePerQuoteMax;
+		private System.Windows.Forms.TextBox txt_PartialFillHappensOncePerQuoteMin;
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.TextBox textBox1;
-		private System.Windows.Forms.TextBox textBox2;
+		private System.Windows.Forms.TextBox txt_OutOfOrderFillDeliveredXordersLaterMax;
+		private System.Windows.Forms.TextBox txt_OutOfOrderFillDeliveredXordersLaterMin;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.CheckBox checkBox2;
+		private System.Windows.Forms.CheckBox cbx_OutOfOrderFillEnabled;
 		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.TextBox textBox7;
-		private System.Windows.Forms.TextBox textBox8;
+		private System.Windows.Forms.TextBox txt_OutOfOrderFillHappensOncePerQuoteMax;
+		private System.Windows.Forms.TextBox txt_OutOfOrderFillHappensOncePerQuoteMin;
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.Label label13;
-		private System.Windows.Forms.CheckBox checkBox3;
+		private System.Windows.Forms.CheckBox cbx_OrderRejectionEnabled;
 		private System.Windows.Forms.Label label14;
-		private System.Windows.Forms.TextBox textBox9;
-		private System.Windows.Forms.TextBox textBox10;
+		private System.Windows.Forms.TextBox txt_OrderRejectionHappensOncePerXordersMax;
+		private System.Windows.Forms.TextBox txt_OrderRejectionHappensOncePerXordersMin;
 		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.GroupBox groupBox4;
 		private System.Windows.Forms.Label label16;
 		private System.Windows.Forms.Label label17;
-		private System.Windows.Forms.TextBox textBox11;
-		private System.Windows.Forms.TextBox textBox12;
+		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax;
+		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin;
 		private System.Windows.Forms.Label label18;
 		private System.Windows.Forms.Label label19;
-		private System.Windows.Forms.CheckBox checkBox4;
+		private System.Windows.Forms.CheckBox cbx_PriceDeviationForMarketOrdersEnabled;
 		private System.Windows.Forms.Label label20;
-		private System.Windows.Forms.TextBox textBox13;
-		private System.Windows.Forms.TextBox textBox14;
+		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax;
+		private System.Windows.Forms.TextBox txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin;
 		private System.Windows.Forms.Label label21;
 		private System.Windows.Forms.GroupBox groupBox5;
 		private System.Windows.Forms.Label label22;
 		private System.Windows.Forms.Label label23;
-		private System.Windows.Forms.TextBox textBox15;
-		private System.Windows.Forms.TextBox textBox16;
+		private System.Windows.Forms.TextBox txt_AdaperDisconnectReconnectsAfterMillisMax;
+		private System.Windows.Forms.TextBox txt_AdaperDisconnectReconnectsAfterMillisMin;
 		private System.Windows.Forms.Label label24;
 		private System.Windows.Forms.Label label25;
-		private System.Windows.Forms.CheckBox checkBox5;
+		private System.Windows.Forms.CheckBox cbx_AdaperDisconnectEnabled;
 		private System.Windows.Forms.Label label26;
-		private System.Windows.Forms.TextBox textBox17;
-		private System.Windows.Forms.TextBox textBox18;
+		private System.Windows.Forms.TextBox txt_AdaperDisconnectHappensOncePerQuoteMax;
+		private System.Windows.Forms.TextBox txt_AdaperDisconnectHappensOncePerQuoteMin;
 		private System.Windows.Forms.Label label27;
 		private System.Windows.Forms.GroupBox groupBox6;
 		private System.Windows.Forms.Label label28;
-		private System.Windows.Forms.CheckBox checkBox6;
+		private System.Windows.Forms.CheckBox cbx_DelayBeforeFillEnabled;
 		private System.Windows.Forms.Label label29;
-		private System.Windows.Forms.TextBox textBox19;
-		private System.Windows.Forms.TextBox textBox20;
+		private System.Windows.Forms.TextBox txt_DelayBeforeFillMillisMax;
+		private System.Windows.Forms.TextBox txt_DelayBeforeFillMillisMin;
 		private System.Windows.Forms.Label label30;
 		private void InitializeComponent() {
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
-			this.textBox3 = new System.Windows.Forms.TextBox();
-			this.textBox4 = new System.Windows.Forms.TextBox();
+			this.txt_PartialFillPercentageFilledMax = new System.Windows.Forms.TextBox();
+			this.txt_PartialFillPercentageFilledMin = new System.Windows.Forms.TextBox();
 			this.label9 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
-			this.checkBox1 = new System.Windows.Forms.CheckBox();
+			this.cbx_PartialFillEnabled = new System.Windows.Forms.CheckBox();
 			this.label11 = new System.Windows.Forms.Label();
-			this.textBox5 = new System.Windows.Forms.TextBox();
-			this.textBox6 = new System.Windows.Forms.TextBox();
+			this.txt_PartialFillHappensOncePerQuoteMax = new System.Windows.Forms.TextBox();
+			this.txt_PartialFillHappensOncePerQuoteMin = new System.Windows.Forms.TextBox();
 			this.label12 = new System.Windows.Forms.Label();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.label13 = new System.Windows.Forms.Label();
-			this.checkBox3 = new System.Windows.Forms.CheckBox();
+			this.cbx_OrderRejectionEnabled = new System.Windows.Forms.CheckBox();
 			this.label14 = new System.Windows.Forms.Label();
-			this.textBox9 = new System.Windows.Forms.TextBox();
-			this.textBox10 = new System.Windows.Forms.TextBox();
+			this.txt_OrderRejectionHappensOncePerXordersMax = new System.Windows.Forms.TextBox();
+			this.txt_OrderRejectionHappensOncePerXordersMin = new System.Windows.Forms.TextBox();
 			this.label15 = new System.Windows.Forms.Label();
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.label16 = new System.Windows.Forms.Label();
 			this.label17 = new System.Windows.Forms.Label();
-			this.textBox11 = new System.Windows.Forms.TextBox();
-			this.textBox12 = new System.Windows.Forms.TextBox();
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax = new System.Windows.Forms.TextBox();
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin = new System.Windows.Forms.TextBox();
 			this.label18 = new System.Windows.Forms.Label();
 			this.label19 = new System.Windows.Forms.Label();
-			this.checkBox4 = new System.Windows.Forms.CheckBox();
+			this.cbx_PriceDeviationForMarketOrdersEnabled = new System.Windows.Forms.CheckBox();
 			this.label20 = new System.Windows.Forms.Label();
-			this.textBox13 = new System.Windows.Forms.TextBox();
-			this.textBox14 = new System.Windows.Forms.TextBox();
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax = new System.Windows.Forms.TextBox();
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin = new System.Windows.Forms.TextBox();
 			this.label21 = new System.Windows.Forms.Label();
 			this.groupBox5 = new System.Windows.Forms.GroupBox();
 			this.label22 = new System.Windows.Forms.Label();
 			this.label23 = new System.Windows.Forms.Label();
-			this.textBox15 = new System.Windows.Forms.TextBox();
-			this.textBox16 = new System.Windows.Forms.TextBox();
+			this.txt_AdaperDisconnectReconnectsAfterMillisMax = new System.Windows.Forms.TextBox();
+			this.txt_AdaperDisconnectReconnectsAfterMillisMin = new System.Windows.Forms.TextBox();
 			this.label24 = new System.Windows.Forms.Label();
 			this.label25 = new System.Windows.Forms.Label();
-			this.checkBox5 = new System.Windows.Forms.CheckBox();
+			this.cbx_AdaperDisconnectEnabled = new System.Windows.Forms.CheckBox();
 			this.label26 = new System.Windows.Forms.Label();
-			this.textBox17 = new System.Windows.Forms.TextBox();
-			this.textBox18 = new System.Windows.Forms.TextBox();
+			this.txt_AdaperDisconnectHappensOncePerQuoteMax = new System.Windows.Forms.TextBox();
+			this.txt_AdaperDisconnectHappensOncePerQuoteMin = new System.Windows.Forms.TextBox();
 			this.label27 = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
-			this.textBox1 = new System.Windows.Forms.TextBox();
-			this.textBox2 = new System.Windows.Forms.TextBox();
+			this.txt_OutOfOrderFillDeliveredXordersLaterMax = new System.Windows.Forms.TextBox();
+			this.txt_OutOfOrderFillDeliveredXordersLaterMin = new System.Windows.Forms.TextBox();
 			this.label5 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
-			this.checkBox2 = new System.Windows.Forms.CheckBox();
+			this.cbx_OutOfOrderFillEnabled = new System.Windows.Forms.CheckBox();
 			this.label7 = new System.Windows.Forms.Label();
-			this.textBox7 = new System.Windows.Forms.TextBox();
-			this.textBox8 = new System.Windows.Forms.TextBox();
+			this.txt_OutOfOrderFillHappensOncePerQuoteMax = new System.Windows.Forms.TextBox();
+			this.txt_OutOfOrderFillHappensOncePerQuoteMin = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
 			this.groupBox6 = new System.Windows.Forms.GroupBox();
 			this.label28 = new System.Windows.Forms.Label();
-			this.checkBox6 = new System.Windows.Forms.CheckBox();
+			this.cbx_DelayBeforeFillEnabled = new System.Windows.Forms.CheckBox();
 			this.label29 = new System.Windows.Forms.Label();
-			this.textBox19 = new System.Windows.Forms.TextBox();
-			this.textBox20 = new System.Windows.Forms.TextBox();
+			this.txt_DelayBeforeFillMillisMax = new System.Windows.Forms.TextBox();
+			this.txt_DelayBeforeFillMillisMin = new System.Windows.Forms.TextBox();
 			this.label30 = new System.Windows.Forms.Label();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -146,18 +146,18 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox2
 			// 
-			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox2.Controls.Add(this.label1);
 			this.groupBox2.Controls.Add(this.label2);
-			this.groupBox2.Controls.Add(this.textBox3);
-			this.groupBox2.Controls.Add(this.textBox4);
+			this.groupBox2.Controls.Add(this.txt_PartialFillPercentageFilledMax);
+			this.groupBox2.Controls.Add(this.txt_PartialFillPercentageFilledMin);
 			this.groupBox2.Controls.Add(this.label9);
 			this.groupBox2.Controls.Add(this.label10);
-			this.groupBox2.Controls.Add(this.checkBox1);
+			this.groupBox2.Controls.Add(this.cbx_PartialFillEnabled);
 			this.groupBox2.Controls.Add(this.label11);
-			this.groupBox2.Controls.Add(this.textBox5);
-			this.groupBox2.Controls.Add(this.textBox6);
+			this.groupBox2.Controls.Add(this.txt_PartialFillHappensOncePerQuoteMax);
+			this.groupBox2.Controls.Add(this.txt_PartialFillHappensOncePerQuoteMin);
 			this.groupBox2.Controls.Add(this.label12);
 			this.groupBox2.Location = new System.Drawing.Point(3, 132);
 			this.groupBox2.Name = "groupBox2";
@@ -182,19 +182,21 @@ namespace Sq1.Core.Livesim {
 			this.label2.TabIndex = 27;
 			this.label2.Text = "to";
 			// 
-			// textBox3
+			// txt_PartialFillPercentageFilledMax
 			// 
-			this.textBox3.Location = new System.Drawing.Point(185, 45);
-			this.textBox3.Name = "textBox3";
-			this.textBox3.Size = new System.Drawing.Size(45, 20);
-			this.textBox3.TabIndex = 24;
+			this.txt_PartialFillPercentageFilledMax.Location = new System.Drawing.Point(185, 45);
+			this.txt_PartialFillPercentageFilledMax.Name = "txt_PartialFillPercentageFilledMax";
+			this.txt_PartialFillPercentageFilledMax.Size = new System.Drawing.Size(45, 20);
+			this.txt_PartialFillPercentageFilledMax.TabIndex = 39;
+			this.txt_PartialFillPercentageFilledMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// textBox4
+			// txt_PartialFillPercentageFilledMin
 			// 
-			this.textBox4.Location = new System.Drawing.Point(119, 45);
-			this.textBox4.Name = "textBox4";
-			this.textBox4.Size = new System.Drawing.Size(45, 20);
-			this.textBox4.TabIndex = 25;
+			this.txt_PartialFillPercentageFilledMin.Location = new System.Drawing.Point(119, 45);
+			this.txt_PartialFillPercentageFilledMin.Name = "txt_PartialFillPercentageFilledMin";
+			this.txt_PartialFillPercentageFilledMin.Size = new System.Drawing.Size(45, 20);
+			this.txt_PartialFillPercentageFilledMin.TabIndex = 38;
+			this.txt_PartialFillPercentageFilledMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label9
 			// 
@@ -212,18 +214,19 @@ namespace Sq1.Core.Livesim {
 			this.label10.TabIndex = 23;
 			this.label10.Text = "How much gets filled";
 			// 
-			// checkBox1
+			// cbx_PartialFillEnabled
 			// 
-			this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.checkBox1.Checked = true;
-			this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox1.Location = new System.Drawing.Point(6, 68);
-			this.checkBox1.Name = "checkBox1";
-			this.checkBox1.Size = new System.Drawing.Size(344, 17);
-			this.checkBox1.TabIndex = 21;
-			this.checkBox1.Text = "Enable Random Partial Fills";
-			this.checkBox1.UseVisualStyleBackColor = true;
+			this.cbx_PartialFillEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_PartialFillEnabled.Checked = true;
+			this.cbx_PartialFillEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_PartialFillEnabled.Location = new System.Drawing.Point(6, 68);
+			this.cbx_PartialFillEnabled.Name = "cbx_PartialFillEnabled";
+			this.cbx_PartialFillEnabled.Size = new System.Drawing.Size(344, 17);
+			this.cbx_PartialFillEnabled.TabIndex = 40;
+			this.cbx_PartialFillEnabled.Text = "Enable Random Partial Fills";
+			this.cbx_PartialFillEnabled.UseVisualStyleBackColor = true;
+			this.cbx_PartialFillEnabled.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
 			// 
 			// label11
 			// 
@@ -233,19 +236,21 @@ namespace Sq1.Core.Livesim {
 			this.label11.TabIndex = 22;
 			this.label11.Text = "to";
 			// 
-			// textBox5
+			// txt_PartialFillHappensOncePerQuoteMax
 			// 
-			this.textBox5.Location = new System.Drawing.Point(185, 19);
-			this.textBox5.Name = "textBox5";
-			this.textBox5.Size = new System.Drawing.Size(45, 20);
-			this.textBox5.TabIndex = 13;
+			this.txt_PartialFillHappensOncePerQuoteMax.Location = new System.Drawing.Point(185, 19);
+			this.txt_PartialFillHappensOncePerQuoteMax.Name = "txt_PartialFillHappensOncePerQuoteMax";
+			this.txt_PartialFillHappensOncePerQuoteMax.Size = new System.Drawing.Size(45, 20);
+			this.txt_PartialFillHappensOncePerQuoteMax.TabIndex = 37;
+			this.txt_PartialFillHappensOncePerQuoteMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// textBox6
+			// txt_PartialFillHappensOncePerQuoteMin
 			// 
-			this.textBox6.Location = new System.Drawing.Point(119, 19);
-			this.textBox6.Name = "textBox6";
-			this.textBox6.Size = new System.Drawing.Size(45, 20);
-			this.textBox6.TabIndex = 16;
+			this.txt_PartialFillHappensOncePerQuoteMin.Location = new System.Drawing.Point(119, 19);
+			this.txt_PartialFillHappensOncePerQuoteMin.Name = "txt_PartialFillHappensOncePerQuoteMin";
+			this.txt_PartialFillHappensOncePerQuoteMin.Size = new System.Drawing.Size(45, 20);
+			this.txt_PartialFillHappensOncePerQuoteMin.TabIndex = 36;
+			this.txt_PartialFillHappensOncePerQuoteMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label12
 			// 
@@ -257,13 +262,13 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox3
 			// 
-			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox3.Controls.Add(this.label13);
-			this.groupBox3.Controls.Add(this.checkBox3);
+			this.groupBox3.Controls.Add(this.cbx_OrderRejectionEnabled);
 			this.groupBox3.Controls.Add(this.label14);
-			this.groupBox3.Controls.Add(this.textBox9);
-			this.groupBox3.Controls.Add(this.textBox10);
+			this.groupBox3.Controls.Add(this.txt_OrderRejectionHappensOncePerXordersMax);
+			this.groupBox3.Controls.Add(this.txt_OrderRejectionHappensOncePerXordersMin);
 			this.groupBox3.Controls.Add(this.label15);
 			this.groupBox3.Location = new System.Drawing.Point(3, 68);
 			this.groupBox3.Name = "groupBox3";
@@ -280,18 +285,19 @@ namespace Sq1.Core.Livesim {
 			this.label13.TabIndex = 34;
 			this.label13.Text = "Happens once per";
 			// 
-			// checkBox3
+			// cbx_OrderRejectionEnabled
 			// 
-			this.checkBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.checkBox3.Checked = true;
-			this.checkBox3.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox3.Location = new System.Drawing.Point(6, 40);
-			this.checkBox3.Name = "checkBox3";
-			this.checkBox3.Size = new System.Drawing.Size(344, 17);
-			this.checkBox3.TabIndex = 32;
-			this.checkBox3.Text = "Enable Random Order Rejection";
-			this.checkBox3.UseVisualStyleBackColor = true;
+			this.cbx_OrderRejectionEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_OrderRejectionEnabled.Checked = true;
+			this.cbx_OrderRejectionEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_OrderRejectionEnabled.Location = new System.Drawing.Point(6, 40);
+			this.cbx_OrderRejectionEnabled.Name = "cbx_OrderRejectionEnabled";
+			this.cbx_OrderRejectionEnabled.Size = new System.Drawing.Size(344, 17);
+			this.cbx_OrderRejectionEnabled.TabIndex = 35;
+			this.cbx_OrderRejectionEnabled.Text = "Enable Random Order Rejection";
+			this.cbx_OrderRejectionEnabled.UseVisualStyleBackColor = true;
+			this.cbx_OrderRejectionEnabled.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
 			// 
 			// label14
 			// 
@@ -301,19 +307,21 @@ namespace Sq1.Core.Livesim {
 			this.label14.TabIndex = 33;
 			this.label14.Text = "to";
 			// 
-			// textBox9
+			// txt_OrderRejectionHappensOncePerXordersMax
 			// 
-			this.textBox9.Location = new System.Drawing.Point(185, 17);
-			this.textBox9.Name = "textBox9";
-			this.textBox9.Size = new System.Drawing.Size(45, 20);
-			this.textBox9.TabIndex = 29;
+			this.txt_OrderRejectionHappensOncePerXordersMax.Location = new System.Drawing.Point(185, 17);
+			this.txt_OrderRejectionHappensOncePerXordersMax.Name = "txt_OrderRejectionHappensOncePerXordersMax";
+			this.txt_OrderRejectionHappensOncePerXordersMax.Size = new System.Drawing.Size(45, 20);
+			this.txt_OrderRejectionHappensOncePerXordersMax.TabIndex = 34;
+			this.txt_OrderRejectionHappensOncePerXordersMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// textBox10
+			// txt_OrderRejectionHappensOncePerXordersMin
 			// 
-			this.textBox10.Location = new System.Drawing.Point(119, 17);
-			this.textBox10.Name = "textBox10";
-			this.textBox10.Size = new System.Drawing.Size(45, 20);
-			this.textBox10.TabIndex = 30;
+			this.txt_OrderRejectionHappensOncePerXordersMin.Location = new System.Drawing.Point(119, 17);
+			this.txt_OrderRejectionHappensOncePerXordersMin.Name = "txt_OrderRejectionHappensOncePerXordersMin";
+			this.txt_OrderRejectionHappensOncePerXordersMin.Size = new System.Drawing.Size(45, 20);
+			this.txt_OrderRejectionHappensOncePerXordersMin.TabIndex = 33;
+			this.txt_OrderRejectionHappensOncePerXordersMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label15
 			// 
@@ -325,18 +333,18 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox4
 			// 
-			this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox4.Controls.Add(this.label16);
 			this.groupBox4.Controls.Add(this.label17);
-			this.groupBox4.Controls.Add(this.textBox11);
-			this.groupBox4.Controls.Add(this.textBox12);
+			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax);
+			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin);
 			this.groupBox4.Controls.Add(this.label18);
 			this.groupBox4.Controls.Add(this.label19);
-			this.groupBox4.Controls.Add(this.checkBox4);
+			this.groupBox4.Controls.Add(this.cbx_PriceDeviationForMarketOrdersEnabled);
 			this.groupBox4.Controls.Add(this.label20);
-			this.groupBox4.Controls.Add(this.textBox13);
-			this.groupBox4.Controls.Add(this.textBox14);
+			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax);
+			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin);
 			this.groupBox4.Controls.Add(this.label21);
 			this.groupBox4.Location = new System.Drawing.Point(3, 315);
 			this.groupBox4.Name = "groupBox4";
@@ -361,19 +369,21 @@ namespace Sq1.Core.Livesim {
 			this.label17.TabIndex = 27;
 			this.label17.Text = "to";
 			// 
-			// textBox11
+			// txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax
 			// 
-			this.textBox11.Location = new System.Drawing.Point(185, 45);
-			this.textBox11.Name = "textBox11";
-			this.textBox11.Size = new System.Drawing.Size(45, 20);
-			this.textBox11.TabIndex = 24;
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax.Location = new System.Drawing.Point(185, 45);
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax.Name = "txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax";
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax.Size = new System.Drawing.Size(45, 20);
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax.TabIndex = 49;
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// textBox12
+			// txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin
 			// 
-			this.textBox12.Location = new System.Drawing.Point(119, 45);
-			this.textBox12.Name = "textBox12";
-			this.textBox12.Size = new System.Drawing.Size(45, 20);
-			this.textBox12.TabIndex = 25;
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin.Location = new System.Drawing.Point(119, 45);
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin.Name = "txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin";
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin.Size = new System.Drawing.Size(45, 20);
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin.TabIndex = 48;
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label18
 			// 
@@ -391,18 +401,19 @@ namespace Sq1.Core.Livesim {
 			this.label19.TabIndex = 23;
 			this.label19.Text = "Price Deviation +/-";
 			// 
-			// checkBox4
+			// cbx_PriceDeviationForMarketOrdersEnabled
 			// 
-			this.checkBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.checkBox4.Checked = true;
-			this.checkBox4.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox4.Location = new System.Drawing.Point(6, 70);
-			this.checkBox4.Name = "checkBox4";
-			this.checkBox4.Size = new System.Drawing.Size(344, 17);
-			this.checkBox4.TabIndex = 21;
-			this.checkBox4.Text = "Enable Random Market Order Fill Price <=> Best Bid/Ask Deviation";
-			this.checkBox4.UseVisualStyleBackColor = true;
+			this.cbx_PriceDeviationForMarketOrdersEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_PriceDeviationForMarketOrdersEnabled.Checked = true;
+			this.cbx_PriceDeviationForMarketOrdersEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_PriceDeviationForMarketOrdersEnabled.Location = new System.Drawing.Point(6, 70);
+			this.cbx_PriceDeviationForMarketOrdersEnabled.Name = "cbx_PriceDeviationForMarketOrdersEnabled";
+			this.cbx_PriceDeviationForMarketOrdersEnabled.Size = new System.Drawing.Size(344, 17);
+			this.cbx_PriceDeviationForMarketOrdersEnabled.TabIndex = 50;
+			this.cbx_PriceDeviationForMarketOrdersEnabled.Text = "Enable Random Market Order Fill Price <=> Best Bid/Ask Deviation";
+			this.cbx_PriceDeviationForMarketOrdersEnabled.UseVisualStyleBackColor = true;
+			this.cbx_PriceDeviationForMarketOrdersEnabled.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
 			// 
 			// label20
 			// 
@@ -412,19 +423,21 @@ namespace Sq1.Core.Livesim {
 			this.label20.TabIndex = 22;
 			this.label20.Text = "to";
 			// 
-			// textBox13
+			// txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax
 			// 
-			this.textBox13.Location = new System.Drawing.Point(185, 19);
-			this.textBox13.Name = "textBox13";
-			this.textBox13.Size = new System.Drawing.Size(45, 20);
-			this.textBox13.TabIndex = 13;
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax.Location = new System.Drawing.Point(185, 19);
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax.Name = "txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax";
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax.Size = new System.Drawing.Size(45, 20);
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax.TabIndex = 47;
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// textBox14
+			// txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin
 			// 
-			this.textBox14.Location = new System.Drawing.Point(119, 19);
-			this.textBox14.Name = "textBox14";
-			this.textBox14.Size = new System.Drawing.Size(45, 20);
-			this.textBox14.TabIndex = 16;
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin.Location = new System.Drawing.Point(119, 19);
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin.Name = "txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin";
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin.Size = new System.Drawing.Size(45, 20);
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin.TabIndex = 46;
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label21
 			// 
@@ -436,18 +449,18 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox5
 			// 
-			this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox5.Controls.Add(this.label22);
 			this.groupBox5.Controls.Add(this.label23);
-			this.groupBox5.Controls.Add(this.textBox15);
-			this.groupBox5.Controls.Add(this.textBox16);
+			this.groupBox5.Controls.Add(this.txt_AdaperDisconnectReconnectsAfterMillisMax);
+			this.groupBox5.Controls.Add(this.txt_AdaperDisconnectReconnectsAfterMillisMin);
 			this.groupBox5.Controls.Add(this.label24);
 			this.groupBox5.Controls.Add(this.label25);
-			this.groupBox5.Controls.Add(this.checkBox5);
+			this.groupBox5.Controls.Add(this.cbx_AdaperDisconnectEnabled);
 			this.groupBox5.Controls.Add(this.label26);
-			this.groupBox5.Controls.Add(this.textBox17);
-			this.groupBox5.Controls.Add(this.textBox18);
+			this.groupBox5.Controls.Add(this.txt_AdaperDisconnectHappensOncePerQuoteMax);
+			this.groupBox5.Controls.Add(this.txt_AdaperDisconnectHappensOncePerQuoteMin);
 			this.groupBox5.Controls.Add(this.label27);
 			this.groupBox5.Location = new System.Drawing.Point(3, 412);
 			this.groupBox5.Name = "groupBox5";
@@ -472,19 +485,21 @@ namespace Sq1.Core.Livesim {
 			this.label23.TabIndex = 27;
 			this.label23.Text = "to";
 			// 
-			// textBox15
+			// txt_AdaperDisconnectReconnectsAfterMillisMax
 			// 
-			this.textBox15.Location = new System.Drawing.Point(185, 45);
-			this.textBox15.Name = "textBox15";
-			this.textBox15.Size = new System.Drawing.Size(45, 20);
-			this.textBox15.TabIndex = 24;
+			this.txt_AdaperDisconnectReconnectsAfterMillisMax.Location = new System.Drawing.Point(185, 45);
+			this.txt_AdaperDisconnectReconnectsAfterMillisMax.Name = "txt_AdaperDisconnectReconnectsAfterMillisMax";
+			this.txt_AdaperDisconnectReconnectsAfterMillisMax.Size = new System.Drawing.Size(45, 20);
+			this.txt_AdaperDisconnectReconnectsAfterMillisMax.TabIndex = 54;
+			this.txt_AdaperDisconnectReconnectsAfterMillisMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// textBox16
+			// txt_AdaperDisconnectReconnectsAfterMillisMin
 			// 
-			this.textBox16.Location = new System.Drawing.Point(119, 45);
-			this.textBox16.Name = "textBox16";
-			this.textBox16.Size = new System.Drawing.Size(45, 20);
-			this.textBox16.TabIndex = 25;
+			this.txt_AdaperDisconnectReconnectsAfterMillisMin.Location = new System.Drawing.Point(119, 45);
+			this.txt_AdaperDisconnectReconnectsAfterMillisMin.Name = "txt_AdaperDisconnectReconnectsAfterMillisMin";
+			this.txt_AdaperDisconnectReconnectsAfterMillisMin.Size = new System.Drawing.Size(45, 20);
+			this.txt_AdaperDisconnectReconnectsAfterMillisMin.TabIndex = 53;
+			this.txt_AdaperDisconnectReconnectsAfterMillisMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label24
 			// 
@@ -502,18 +517,19 @@ namespace Sq1.Core.Livesim {
 			this.label25.TabIndex = 23;
 			this.label25.Text = "ReConnect after";
 			// 
-			// checkBox5
+			// cbx_AdaperDisconnectEnabled
 			// 
-			this.checkBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.checkBox5.Checked = true;
-			this.checkBox5.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox5.Location = new System.Drawing.Point(6, 70);
-			this.checkBox5.Name = "checkBox5";
-			this.checkBox5.Size = new System.Drawing.Size(344, 17);
-			this.checkBox5.TabIndex = 21;
-			this.checkBox5.Text = "Enable Random Broker Adapter Disconnect";
-			this.checkBox5.UseVisualStyleBackColor = true;
+			this.cbx_AdaperDisconnectEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_AdaperDisconnectEnabled.Checked = true;
+			this.cbx_AdaperDisconnectEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_AdaperDisconnectEnabled.Location = new System.Drawing.Point(6, 70);
+			this.cbx_AdaperDisconnectEnabled.Name = "cbx_AdaperDisconnectEnabled";
+			this.cbx_AdaperDisconnectEnabled.Size = new System.Drawing.Size(344, 17);
+			this.cbx_AdaperDisconnectEnabled.TabIndex = 55;
+			this.cbx_AdaperDisconnectEnabled.Text = "Enable Random Broker Adapter Disconnect";
+			this.cbx_AdaperDisconnectEnabled.UseVisualStyleBackColor = true;
+			this.cbx_AdaperDisconnectEnabled.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
 			// 
 			// label26
 			// 
@@ -523,19 +539,21 @@ namespace Sq1.Core.Livesim {
 			this.label26.TabIndex = 22;
 			this.label26.Text = "to";
 			// 
-			// textBox17
+			// txt_AdaperDisconnectHappensOncePerQuoteMax
 			// 
-			this.textBox17.Location = new System.Drawing.Point(185, 19);
-			this.textBox17.Name = "textBox17";
-			this.textBox17.Size = new System.Drawing.Size(45, 20);
-			this.textBox17.TabIndex = 13;
+			this.txt_AdaperDisconnectHappensOncePerQuoteMax.Location = new System.Drawing.Point(185, 19);
+			this.txt_AdaperDisconnectHappensOncePerQuoteMax.Name = "txt_AdaperDisconnectHappensOncePerQuoteMax";
+			this.txt_AdaperDisconnectHappensOncePerQuoteMax.Size = new System.Drawing.Size(45, 20);
+			this.txt_AdaperDisconnectHappensOncePerQuoteMax.TabIndex = 52;
+			this.txt_AdaperDisconnectHappensOncePerQuoteMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// textBox18
+			// txt_AdaperDisconnectHappensOncePerQuoteMin
 			// 
-			this.textBox18.Location = new System.Drawing.Point(119, 19);
-			this.textBox18.Name = "textBox18";
-			this.textBox18.Size = new System.Drawing.Size(45, 20);
-			this.textBox18.TabIndex = 16;
+			this.txt_AdaperDisconnectHappensOncePerQuoteMin.Location = new System.Drawing.Point(119, 19);
+			this.txt_AdaperDisconnectHappensOncePerQuoteMin.Name = "txt_AdaperDisconnectHappensOncePerQuoteMin";
+			this.txt_AdaperDisconnectHappensOncePerQuoteMin.Size = new System.Drawing.Size(45, 20);
+			this.txt_AdaperDisconnectHappensOncePerQuoteMin.TabIndex = 51;
+			this.txt_AdaperDisconnectHappensOncePerQuoteMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label27
 			// 
@@ -547,18 +565,18 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.label3);
 			this.groupBox1.Controls.Add(this.label4);
-			this.groupBox1.Controls.Add(this.textBox1);
-			this.groupBox1.Controls.Add(this.textBox2);
+			this.groupBox1.Controls.Add(this.txt_OutOfOrderFillDeliveredXordersLaterMax);
+			this.groupBox1.Controls.Add(this.txt_OutOfOrderFillDeliveredXordersLaterMin);
 			this.groupBox1.Controls.Add(this.label5);
 			this.groupBox1.Controls.Add(this.label6);
-			this.groupBox1.Controls.Add(this.checkBox2);
+			this.groupBox1.Controls.Add(this.cbx_OutOfOrderFillEnabled);
 			this.groupBox1.Controls.Add(this.label7);
-			this.groupBox1.Controls.Add(this.textBox7);
-			this.groupBox1.Controls.Add(this.textBox8);
+			this.groupBox1.Controls.Add(this.txt_OutOfOrderFillHappensOncePerQuoteMax);
+			this.groupBox1.Controls.Add(this.txt_OutOfOrderFillHappensOncePerQuoteMin);
 			this.groupBox1.Controls.Add(this.label8);
 			this.groupBox1.Location = new System.Drawing.Point(3, 224);
 			this.groupBox1.Name = "groupBox1";
@@ -583,19 +601,21 @@ namespace Sq1.Core.Livesim {
 			this.label4.TabIndex = 27;
 			this.label4.Text = "to";
 			// 
-			// textBox1
+			// txt_OutOfOrderFillDeliveredXordersLaterMax
 			// 
-			this.textBox1.Location = new System.Drawing.Point(185, 45);
-			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(45, 20);
-			this.textBox1.TabIndex = 24;
+			this.txt_OutOfOrderFillDeliveredXordersLaterMax.Location = new System.Drawing.Point(185, 45);
+			this.txt_OutOfOrderFillDeliveredXordersLaterMax.Name = "txt_OutOfOrderFillDeliveredXordersLaterMax";
+			this.txt_OutOfOrderFillDeliveredXordersLaterMax.Size = new System.Drawing.Size(45, 20);
+			this.txt_OutOfOrderFillDeliveredXordersLaterMax.TabIndex = 44;
+			this.txt_OutOfOrderFillDeliveredXordersLaterMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// textBox2
+			// txt_OutOfOrderFillDeliveredXordersLaterMin
 			// 
-			this.textBox2.Location = new System.Drawing.Point(119, 45);
-			this.textBox2.Name = "textBox2";
-			this.textBox2.Size = new System.Drawing.Size(45, 20);
-			this.textBox2.TabIndex = 25;
+			this.txt_OutOfOrderFillDeliveredXordersLaterMin.Location = new System.Drawing.Point(119, 45);
+			this.txt_OutOfOrderFillDeliveredXordersLaterMin.Name = "txt_OutOfOrderFillDeliveredXordersLaterMin";
+			this.txt_OutOfOrderFillDeliveredXordersLaterMin.Size = new System.Drawing.Size(45, 20);
+			this.txt_OutOfOrderFillDeliveredXordersLaterMin.TabIndex = 43;
+			this.txt_OutOfOrderFillDeliveredXordersLaterMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label5
 			// 
@@ -613,18 +633,19 @@ namespace Sq1.Core.Livesim {
 			this.label6.TabIndex = 23;
 			this.label6.Text = "Fill Msg Arrives";
 			// 
-			// checkBox2
+			// cbx_OutOfOrderFillEnabled
 			// 
-			this.checkBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.checkBox2.Checked = true;
-			this.checkBox2.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox2.Location = new System.Drawing.Point(6, 68);
-			this.checkBox2.Name = "checkBox2";
-			this.checkBox2.Size = new System.Drawing.Size(344, 17);
-			this.checkBox2.TabIndex = 21;
-			this.checkBox2.Text = "Enable Random Out-of-order Fill Delivery";
-			this.checkBox2.UseVisualStyleBackColor = true;
+			this.cbx_OutOfOrderFillEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_OutOfOrderFillEnabled.Checked = true;
+			this.cbx_OutOfOrderFillEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_OutOfOrderFillEnabled.Location = new System.Drawing.Point(6, 68);
+			this.cbx_OutOfOrderFillEnabled.Name = "cbx_OutOfOrderFillEnabled";
+			this.cbx_OutOfOrderFillEnabled.Size = new System.Drawing.Size(344, 17);
+			this.cbx_OutOfOrderFillEnabled.TabIndex = 45;
+			this.cbx_OutOfOrderFillEnabled.Text = "Enable Random Out-of-order Fill Delivery";
+			this.cbx_OutOfOrderFillEnabled.UseVisualStyleBackColor = true;
+			this.cbx_OutOfOrderFillEnabled.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
 			// 
 			// label7
 			// 
@@ -634,19 +655,21 @@ namespace Sq1.Core.Livesim {
 			this.label7.TabIndex = 22;
 			this.label7.Text = "to";
 			// 
-			// textBox7
+			// txt_OutOfOrderFillHappensOncePerQuoteMax
 			// 
-			this.textBox7.Location = new System.Drawing.Point(185, 19);
-			this.textBox7.Name = "textBox7";
-			this.textBox7.Size = new System.Drawing.Size(45, 20);
-			this.textBox7.TabIndex = 13;
+			this.txt_OutOfOrderFillHappensOncePerQuoteMax.Location = new System.Drawing.Point(185, 19);
+			this.txt_OutOfOrderFillHappensOncePerQuoteMax.Name = "txt_OutOfOrderFillHappensOncePerQuoteMax";
+			this.txt_OutOfOrderFillHappensOncePerQuoteMax.Size = new System.Drawing.Size(45, 20);
+			this.txt_OutOfOrderFillHappensOncePerQuoteMax.TabIndex = 42;
+			this.txt_OutOfOrderFillHappensOncePerQuoteMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// textBox8
+			// txt_OutOfOrderFillHappensOncePerQuoteMin
 			// 
-			this.textBox8.Location = new System.Drawing.Point(119, 19);
-			this.textBox8.Name = "textBox8";
-			this.textBox8.Size = new System.Drawing.Size(45, 20);
-			this.textBox8.TabIndex = 16;
+			this.txt_OutOfOrderFillHappensOncePerQuoteMin.Location = new System.Drawing.Point(119, 19);
+			this.txt_OutOfOrderFillHappensOncePerQuoteMin.Name = "txt_OutOfOrderFillHappensOncePerQuoteMin";
+			this.txt_OutOfOrderFillHappensOncePerQuoteMin.Size = new System.Drawing.Size(45, 20);
+			this.txt_OutOfOrderFillHappensOncePerQuoteMin.TabIndex = 41;
+			this.txt_OutOfOrderFillHappensOncePerQuoteMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label8
 			// 
@@ -658,20 +681,20 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox6
 			// 
-			this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox6.Controls.Add(this.label28);
-			this.groupBox6.Controls.Add(this.checkBox6);
+			this.groupBox6.Controls.Add(this.cbx_DelayBeforeFillEnabled);
 			this.groupBox6.Controls.Add(this.label29);
-			this.groupBox6.Controls.Add(this.textBox19);
-			this.groupBox6.Controls.Add(this.textBox20);
+			this.groupBox6.Controls.Add(this.txt_DelayBeforeFillMillisMax);
+			this.groupBox6.Controls.Add(this.txt_DelayBeforeFillMillisMin);
 			this.groupBox6.Controls.Add(this.label30);
 			this.groupBox6.Location = new System.Drawing.Point(3, 3);
 			this.groupBox6.Name = "groupBox6";
 			this.groupBox6.Size = new System.Drawing.Size(356, 65);
 			this.groupBox6.TabIndex = 32;
 			this.groupBox6.TabStop = false;
-			this.groupBox6.Text = "Order Execution Delay";
+			this.groupBox6.Text = "Order Fill/Execution Delay";
 			// 
 			// label28
 			// 
@@ -679,20 +702,21 @@ namespace Sq1.Core.Livesim {
 			this.label28.Name = "label28";
 			this.label28.Size = new System.Drawing.Size(118, 17);
 			this.label28.TabIndex = 34;
-			this.label28.Text = "Delay between quotes";
+			this.label28.Text = "Delay before fill";
 			// 
-			// checkBox6
+			// cbx_DelayBeforeFillEnabled
 			// 
-			this.checkBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
-			this.checkBox6.Checked = true;
-			this.checkBox6.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox6.Location = new System.Drawing.Point(6, 41);
-			this.checkBox6.Name = "checkBox6";
-			this.checkBox6.Size = new System.Drawing.Size(344, 17);
-			this.checkBox6.TabIndex = 32;
-			this.checkBox6.Text = "Enable Random Order Generation Delay";
-			this.checkBox6.UseVisualStyleBackColor = true;
+			this.cbx_DelayBeforeFillEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_DelayBeforeFillEnabled.Checked = true;
+			this.cbx_DelayBeforeFillEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_DelayBeforeFillEnabled.Location = new System.Drawing.Point(6, 41);
+			this.cbx_DelayBeforeFillEnabled.Name = "cbx_DelayBeforeFillEnabled";
+			this.cbx_DelayBeforeFillEnabled.Size = new System.Drawing.Size(344, 17);
+			this.cbx_DelayBeforeFillEnabled.TabIndex = 32;
+			this.cbx_DelayBeforeFillEnabled.Text = "Enable Random Order Fill Delay";
+			this.cbx_DelayBeforeFillEnabled.UseVisualStyleBackColor = true;
+			this.cbx_DelayBeforeFillEnabled.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
 			// 
 			// label29
 			// 
@@ -702,19 +726,21 @@ namespace Sq1.Core.Livesim {
 			this.label29.TabIndex = 33;
 			this.label29.Text = "to";
 			// 
-			// textBox19
+			// txt_DelayBeforeFillMillisMax
 			// 
-			this.textBox19.Location = new System.Drawing.Point(196, 17);
-			this.textBox19.Name = "textBox19";
-			this.textBox19.Size = new System.Drawing.Size(45, 20);
-			this.textBox19.TabIndex = 29;
+			this.txt_DelayBeforeFillMillisMax.Location = new System.Drawing.Point(196, 17);
+			this.txt_DelayBeforeFillMillisMax.Name = "txt_DelayBeforeFillMillisMax";
+			this.txt_DelayBeforeFillMillisMax.Size = new System.Drawing.Size(45, 20);
+			this.txt_DelayBeforeFillMillisMax.TabIndex = 31;
+			this.txt_DelayBeforeFillMillisMax.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
-			// textBox20
+			// txt_DelayBeforeFillMillisMin
 			// 
-			this.textBox20.Location = new System.Drawing.Point(130, 17);
-			this.textBox20.Name = "textBox20";
-			this.textBox20.Size = new System.Drawing.Size(45, 20);
-			this.textBox20.TabIndex = 30;
+			this.txt_DelayBeforeFillMillisMin.Location = new System.Drawing.Point(130, 17);
+			this.txt_DelayBeforeFillMillisMin.Name = "txt_DelayBeforeFillMillisMin";
+			this.txt_DelayBeforeFillMillisMin.Size = new System.Drawing.Size(45, 20);
+			this.txt_DelayBeforeFillMillisMin.TabIndex = 30;
+			this.txt_DelayBeforeFillMillisMin.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
 			// 
 			// label30
 			// 

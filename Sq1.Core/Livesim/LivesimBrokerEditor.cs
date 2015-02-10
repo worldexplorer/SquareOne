@@ -4,86 +4,42 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Livesim {
 	public partial class LivesimBrokerEditor {
-//		public string QuikFolder {
-//			get { return this.txtQuikFolder.Text; }
-//			set { this.txtQuikFolder.Text = value; }
-//		}
-//		public int ReconnectTimeoutMillis {
-//			get {
-//				int ret = 0;
-//				try {
-//					ret = Convert.ToInt32(this.txtReconnectTimeoutMillis.Text);
-//					this.txtReconnectTimeoutMillis.BackColor = Color.White;
-//				} catch (Exception e) {
-//					this.txtReconnectTimeoutMillis.BackColor = Color.LightCoral;
-//					this.txtReconnectTimeoutMillis.Text = "1000";	// induce one more event?...
-//				}
-//				return ret;
-//			}
-//			set { this.txtReconnectTimeoutMillis.Text = value.ToString(); }
-//		}
-//		public Account Account {
-//			get {
-//				Account ret;
-//				try {
-//					ret = new Account(this.txtQuikAccount.Text,
-//						Convert.ToDouble(this.txtCashAvailable.Text));
-//				} catch (Exception e) {
-//					ret = new Account();
-//					ret.AccountNumber = this.txtQuikAccount.Text;
-//				}
-//				return ret;
-//			}
-//			set {
-//				if (value == null) return;
-//				this.txtQuikAccount.Text = value.AccountNumber;
-//				this.txtCashAvailable.Text = value.CashAvailable.ToString();
-//			}
-//		}
-//		public Account AccountMicex {
-//			get {
-//				Account ret;
-//				try {
-//					ret = new Account(this.txtQuikAccountMicex.Text, Convert.ToDouble(this.txtCashAvailableMicex.Text));
-//				} catch (Exception e) {
-//					ret = new Account();
-//					ret.AccountNumber = this.txtQuikAccountMicex.Text;
-//				}
-//				return ret;
-//			}
-//			set {
-//				if (value == null) return;
-//				this.txtQuikAccountMicex.Text = value.AccountNumber;
-//				this.txtCashAvailableMicex.Text = value.CashAvailable.ToString();
-//			}
-//		}
-		LivesimBroker brokerLivesim {
-			get { return base.brokerAdapter as LivesimBroker; }
-		}
+		LivesimBrokerSettings livesimBrokerSettings;
 
 		public LivesimBrokerEditor() {
 			this.InitializeComponent();
 		}
-		//public override void Initialize(BrokerAdapter BrokerQuik, IDataSourceEditor dataSourceEditor) {
-		//    base.Initialize(BrokerQuik, dataSourceEditor);
-		//    base.InitializeEditorFields();
-		//}
-		public override void PushBrokerAdapterSettingsToEditor() {
-//			this.Account = this.brokerLivesim.AccountAutoPropagate;
-			// quik-specific
-//			this.AccountMicex = this.brokerLivesim.AccountMicexAutoPopulated;
-//			this.QuikFolder = this.brokerLivesim.QuikFolder;
-//			this.ReconnectTimeoutMillis = Convert.ToInt32(this.brokerLivesim.ReconnectTimeoutMillis);
-			//QuikClientCode = SettingsEditor.QuikClientCode;
+
+		public void Initialize(LivesimBrokerSettings livesimBrokerSettings) {
+			this.livesimBrokerSettings = livesimBrokerSettings;
+
+			this.cbx_DelayBeforeFillEnabled					.Checked = this.livesimBrokerSettings.DelayBeforeFillEnabled;
+			this.cbx_OrderRejectionEnabled					.Checked = this.livesimBrokerSettings.OrderRejectionEnabled;
+			this.cbx_PartialFillEnabled						.Checked = this.livesimBrokerSettings.PartialFillEnabled;
+			this.cbx_OutOfOrderFillEnabled					.Checked = this.livesimBrokerSettings.OutOfOrderFillEnabled;
+			this.cbx_PriceDeviationForMarketOrdersEnabled	.Checked = this.livesimBrokerSettings.PriceDeviationForMarketOrdersEnabled;
+			this.cbx_AdaperDisconnectEnabled				.Checked = this.livesimBrokerSettings.AdaperDisconnectEnabled;
+
+			this.txt_DelayBeforeFillMillisMin								.Text = this.livesimBrokerSettings.DelayBeforeFillMillisMin									.ToString();
+			this.txt_DelayBeforeFillMillisMax								.Text = this.livesimBrokerSettings.DelayBeforeFillMillisMax									.ToString();
+			this.txt_OrderRejectionHappensOncePerXordersMin					.Text = this.livesimBrokerSettings.OrderRejectionHappensOncePerXordersMin					.ToString();
+			this.txt_OrderRejectionHappensOncePerXordersMax					.Text = this.livesimBrokerSettings.OrderRejectionHappensOncePerXordersMax					.ToString();
+			this.txt_PartialFillHappensOncePerQuoteMin						.Text = this.livesimBrokerSettings.PartialFillHappensOncePerQuoteMin						.ToString();
+			this.txt_PartialFillHappensOncePerQuoteMax						.Text = this.livesimBrokerSettings.PartialFillHappensOncePerQuoteMax						.ToString();
+			this.txt_PartialFillPercentageFilledMin							.Text = this.livesimBrokerSettings.PartialFillPercentageFilledMin							.ToString();
+			this.txt_PartialFillPercentageFilledMax							.Text = this.livesimBrokerSettings.PartialFillPercentageFilledMax							.ToString();
+			this.txt_OutOfOrderFillHappensOncePerQuoteMin					.Text = this.livesimBrokerSettings.OutOfOrderFillHappensOncePerQuoteMin						.ToString();
+			this.txt_OutOfOrderFillHappensOncePerQuoteMax					.Text = this.livesimBrokerSettings.OutOfOrderFillHappensOncePerQuoteMax						.ToString();
+			this.txt_OutOfOrderFillDeliveredXordersLaterMin					.Text = this.livesimBrokerSettings.OutOfOrderFillDeliveredXordersLaterMin					.ToString();
+			this.txt_OutOfOrderFillDeliveredXordersLaterMax					.Text = this.livesimBrokerSettings.OutOfOrderFillDeliveredXordersLaterMax					.ToString();
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin	.Text = this.livesimBrokerSettings.PriceDeviationForMarketOrdersHappensOncePerXordersMin	.ToString();
+			this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax	.Text = this.livesimBrokerSettings.PriceDeviationForMarketOrdersHappensOncePerXordersMax	.ToString();
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMin	.Text = this.livesimBrokerSettings.PriceDeviationForMarketOrdersPercentageOfBestPriceMin	.ToString();
+			this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax	.Text = this.livesimBrokerSettings.PriceDeviationForMarketOrdersPercentageOfBestPriceMax	.ToString();
+			this.txt_AdaperDisconnectHappensOncePerQuoteMin					.Text = this.livesimBrokerSettings.AdaperDisconnectHappensOncePerQuoteMin					.ToString();
+			this.txt_AdaperDisconnectHappensOncePerQuoteMax					.Text = this.livesimBrokerSettings.AdaperDisconnectHappensOncePerQuoteMax					.ToString();
+			this.txt_AdaperDisconnectReconnectsAfterMillisMin				.Text = this.livesimBrokerSettings.AdaperDisconnectReconnectsAfterMillisMin					.ToString();
+			this.txt_AdaperDisconnectReconnectsAfterMillisMax				.Text = this.livesimBrokerSettings.AdaperDisconnectReconnectsAfterMillisMax					.ToString();
 		}
-		public override void PushEditedSettingsToBrokerAdapter() {
-			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
-//			this.brokerLivesim.AccountAutoPropagate = this.Account;
-			// quik-specific
-//			this.brokerLivesim.AccountMicexAutoPopulated = this.AccountMicex;
-//			this.brokerLivesim.QuikFolder = QuikFolder;
-//			this.brokerLivesim.ReconnectTimeoutMillis = ReconnectTimeoutMillis;
-			//this.editor.QuikClientCode = QuikClientCode;
-		}
-    }
+	}
 }
