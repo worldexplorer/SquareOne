@@ -43,16 +43,16 @@ namespace Sq1.Gui.ReportersSupport {
 		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
 
-			this.ChartFormManager.Executor.EventGenerator.BacktesterContextInitializedStep2of4 += new EventHandler<EventArgs>(
+			this.ChartFormManager.Executor.EventGenerator.OnBacktesterContextInitializedStep2of4 += new EventHandler<EventArgs>(
 				this.EventGenerator_BacktesterContextInitializedStep2of4);
 
-			this.ChartFormManager.Executor.EventGenerator.BrokerFilledAlertsOpeningForPositions_step1of3 += new EventHandler<ReporterPokeUnitEventArgs>(
+			this.ChartFormManager.Executor.EventGenerator.OnBrokerFilledAlertsOpeningForPositions_step1of3 += new EventHandler<ReporterPokeUnitEventArgs>(
 				this.EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3);
 
-			this.ChartFormManager.Executor.EventGenerator.OpenPositionsUpdatedDueToStreamingNewQuote_step2of3 += new EventHandler<ReporterPokeUnitEventArgs>(
+			this.ChartFormManager.Executor.EventGenerator.OnOpenPositionsUpdatedDueToStreamingNewQuote_step2of3 += new EventHandler<ReporterPokeUnitEventArgs>(
 				this.EventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3);
 
-			this.ChartFormManager.Executor.EventGenerator.BrokerFilledAlertsClosingForPositions_step3of3 += new EventHandler<ReporterPokeUnitEventArgs>(
+			this.ChartFormManager.Executor.EventGenerator.OnBrokerFilledAlertsClosingForPositions_step3of3 += new EventHandler<ReporterPokeUnitEventArgs>(
 				this.EventGenerator_BrokerFilledAlertsClosingForPositions_step3of3);
 		}
 

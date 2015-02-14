@@ -125,7 +125,7 @@ namespace Sq1.Charting {
 			//}
 			//v3
 			//MULTISPLITTER_IS_NOT_SPAMMED_BY_ONRESIZE
-			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
+			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == true) return;
 			this.SerializeSplitterDistanceOrPanelName();
 		}
 		public void SerializeSplitterDistanceOrPanelName() {

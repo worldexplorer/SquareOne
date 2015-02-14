@@ -242,11 +242,11 @@ namespace Sq1.Core.Streaming {
 
 			//QUOTE_ABSNO_MUST_BE_-1__HERE_NOT_MODIFIED_AFTER_QUOTE.CTOR()
 			if (quote.AbsnoPerSymbol != -1) {
-				if (quote.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
+				if (quote.IamInjectedToFillPendingAlerts) {
 					string msg = "INJECTED_QUOTES_HAVE_AbsnoPerSymbol!=-1_AND_THIS_IS_NOT_AN_ERROR";
 				} else {
 					string msg = "THIS_WAS_REFACTORED__QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL__INITIALIZED_IN_STREAMING_ADAPDER";
-					Assembler.PopupException(msg, null, true);
+					//Assembler.PopupException(msg, null, true);
 				}
 
 				//QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER
@@ -284,7 +284,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public void InitializeStreamingOHLCVfromStreamingAdapter(Bars chartBars) {
 			SymbolScaleDistributionChannel distributionChannel = this.DataDistributor
-				.GetDistributionChannelFor(chartBars.Symbol, chartBars.ScaleInterval);
+				.GetDistributionChannelForNullUnsafe(chartBars.Symbol, chartBars.ScaleInterval);
 			//v1 
 			//Bar streamingBar = distributionChannel.StreamingBarFactoryUnattached.StreamingBarUnattached;
 			Bar streamingBar = chartBars.BarStreaming;
@@ -333,11 +333,11 @@ namespace Sq1.Core.Streaming {
 		}
 
 		internal void AbsorbStreamingBarFactoryFromBacktestComplete(StreamingAdapter streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
-			SymbolScaleDistributionChannel channelBacktest = streamingBacktest.DataDistributor.GetDistributionChannelFor(symbol, barScaleInterval);
+			SymbolScaleDistributionChannel channelBacktest = streamingBacktest.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
 			Bar barLastFormedBacktest	 = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
 			Bar barStreamingBacktest	 = channelBacktest.StreamingBarFactoryUnattached.BarStreamingUnattached;
 
-			SymbolScaleDistributionChannel channelOriginal = this.DataDistributor.GetDistributionChannelFor(symbol, barScaleInterval);
+			SymbolScaleDistributionChannel channelOriginal = this.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
 			Bar barLastFormedOriginal	 = channelOriginal.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
 			Bar barStreamingOriginal	 = channelOriginal.StreamingBarFactoryUnattached.BarStreamingUnattached;
 
@@ -386,6 +386,21 @@ namespace Sq1.Core.Streaming {
 			}
 			return;
 
+		}
+
+		internal void SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(string symbol, BarScaleInterval barScaleInterval) {
+			SymbolScaleDistributionChannel channel = this.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
+			if (channel == null) {
+				string msg = "SPLIT_QUOTE_PUMP_TO_SINGLE_THREADED_AND_SELF_LAUNCHING";
+				Assembler.PopupException(msg);
+				return;
+			}
+			QuotePump pump = channel.QuotePump;
+			if (this.QuotePumpSeparatePushingThreadEnabled == false) {
+				pump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
+			} else {
+				pump.SetThreadName();
+			}
 		}
 	}
 }

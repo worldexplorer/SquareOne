@@ -351,7 +351,7 @@ namespace Sq1.Charting {
 		}
 		void renderOnChartLines(Graphics g) {
 			// avoiding throwing "Dictionary.CopyTo target array wrong size" below during backtest & chartMouseOver
-			if (base.ChartControl.IsBacktestingNow) return;
+			if (base.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
 			
 			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";

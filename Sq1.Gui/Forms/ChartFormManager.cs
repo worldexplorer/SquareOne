@@ -448,7 +448,8 @@ namespace Sq1.Gui.Forms {
 		}
 		public void BacktesterRunSimulation(bool subscribeUpstreamOnWorkspaceRestore = false) {
 			try {
-				this.Executor.ChartShadow.BacktestIsRunning.Set();	//WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
+				//AVOIDING_"Collection was modified; enumeration operation may not execute."_BY_SETTING___PaintAllowed=false
+				//WILL_CALL_LATER_IN_Backtester.SimulationPreBarsSubstitute() this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = false;	//WONT_BE_SET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
 				if (this.Executor.Strategy.ActivatedFromDll == false) {
 					// ONLY_TO_MAKE_CHARTFORM_BACKTEST_NOW_WORK__FOR_F5_ITS_A_DUPLICATE__LAZY_TO_ENMESS_CHART_FORM_MANAGER_WITH_SCRIPT_EDITOR_FUNCTIONALITY
 					this.StrategyCompileActivatePopulateSlidersShow();

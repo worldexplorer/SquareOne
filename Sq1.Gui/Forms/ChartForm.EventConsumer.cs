@@ -305,7 +305,7 @@ namespace Sq1.Gui.Forms {
 				context.SpreadModelerPercent = userTypedDouble;
 				
 				if (this.ChartFormManager.Executor.Backtester.BacktestDataSource == null) {
-					this.ChartFormManager.Executor.Backtester.Initialize();
+					this.ChartFormManager.Executor.Backtester.InitializeAndCheck();
 				}
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");

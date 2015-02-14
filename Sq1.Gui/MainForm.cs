@@ -200,7 +200,7 @@ namespace Sq1.Gui {
 				}
 				if (ExceptionsForm.Instance.IsShown) {
 					// MOVED_TO_AFTER_MAINFORM_RESUMELAYOUT ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
-					ExceptionsForm.Instance.ExceptionControl.FlushListToTreeIfDockContentDeserialized();
+					ExceptionsForm.Instance.ExceptionControl.FlushListToTreeIfDockContentDeserialized_inGuiThread();
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("WorkspaceLoad#1()", ex);

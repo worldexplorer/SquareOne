@@ -206,9 +206,6 @@
     <Compile Include="StrategyBase\ContextScriptEventArgs.cs" />
     <Compile Include="Livesim\LivesimBrokerSettings.cs" />
     <Compile Include="Livesim\LivesimStreamingSettings.cs" />
-    <Compile Include="StrategyBase\ScriptExecutor.EventGenerator.cs">
-      <DependentUpon>ScriptExecutor.cs</DependentUpon>
-    </Compile>
     <Compile Include="StrategyBase\SystemPerformancePositionsTracking.cs" />
     <Compile Include="StrategyBase\Reporter.cs">
       <SubType>UserControl</SubType>
@@ -231,6 +228,7 @@
     </Compile>
     <Compile Include="StrategyBase\SystemPerformanceEventArgs.cs" />
     <Compile Include="Streaming\QuotePump.cs" />
+    <Compile Include="Streaming\QuoteQueue.cs" />
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
     <Compile Include="Streaming\StreamingEarlyBinder.cs" />
     <Compile Include="Streaming\StreamingAdapter.EditorSupport.cs">

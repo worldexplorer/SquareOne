@@ -9,7 +9,7 @@ namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
 		void form_OnLoad(object sender, System.EventArgs e) {
 			if (base.DesignMode) return;
-			this.FlushListToTreeIfDockContentDeserialized();
+			this.FlushListToTreeIfDockContentDeserialized_inGuiThread();
 		}
 		void tree_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.treeExceptions.SelectedObject == null) {
@@ -21,7 +21,7 @@ namespace Sq1.Widgets.Exceptions {
 		}
 		void mniClear_Click(object sender, EventArgs e) {
 			this.Exceptions.Clear();
-			this.FlushListToTreeIfDockContentDeserialized();
+			this.FlushListToTreeIfDockContentDeserialized_inGuiThread();
 		}
 		void mniCopy_Click(object sender, EventArgs e) {
 			this.CopyExceptionDataToClipboard();

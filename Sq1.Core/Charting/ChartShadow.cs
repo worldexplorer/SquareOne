@@ -28,15 +28,19 @@ namespace Sq1.Core.Charting {
 
 		// REASON_TO_EXIST: renderOnChartLines() was throwing "Dictionary.CopyTo target array wrong size" during backtest & chartMouseOver
 		// push-type notification from Backtester: ChartControl:ChartShadow doen't have access to Core.ScriptExecutor.BacktestIsRunning so Backtester mimics it here 
-		public ManualResetEvent BacktestIsRunning { get; private set; }
-		public bool IsBacktestingNow { get { return this.BacktestIsRunning.WaitOne(0); } }
+		public ManualResetEvent paintAllowed { get; private set; }
+		public bool PaintAllowedDuringLivesimOrAfterBacktestFinished {
+			get { return this.paintAllowed.WaitOne(0); }
+			set {	if (value)	this.paintAllowed.Set();
+					else		this.paintAllowed.Reset(); }
+		}
 
 		public Bars Bars { get; private set; }
 		public bool BarsEmpty { get { return this.Bars == null || this.Bars.Count == 0; } }
 		public bool BarsNotEmpty { get { return this.Bars != null && this.Bars.Count > 0; } }
 
 		public ChartShadow() : base() {
-			BacktestIsRunning = new ManualResetEvent(false);
+			paintAllowed = new ManualResetEvent(true);
 //			this.ScriptToChartCommunicator = new ScriptToChartCommunicator();
 			this.Register();
 		}

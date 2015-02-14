@@ -34,11 +34,16 @@ namespace Sq1.Core.Indicators {
 			if (this.smaSeries.AverageFor.Count != base.ClosesProxyEffective.Count) {
 				msg += "BARS_UNDERNEATH_INDICATOR_HAVE_DIFFERENT_LENGTH_WITH_ABSORBED ";
 			}
-			if (this.smaSeries.AverageFor.Count > 0) {
-				if (this.smaSeries.AverageFor.Count != this.smaSeries.Count + (int)this.ParamPeriod.ValueCurrent) {
-					msg += "INTERNAL_SMA_MUST_HAVE_COUNT_EQUALS_BARS_MINUS_PERIOD ";
+			bool unsyncHappenedNotAsResultOfAbort = this.smaSeries.AverageFor.Count > 0
+				&& this.Executor.Backtester.WasBacktestAborted == false;
+			if (unsyncHappenedNotAsResultOfAbort) {
+				//v1 if (this.smaSeries.AverageFor.Count != this.smaSeries.Count + (int)this.ParamPeriod.ValueCurrent) {
+				//v1 	msg += "INTERNAL_SMA_MUST_HAVE_COUNT_EQUALS_BARS_MINUS_PERIOD ";
+				//v1 }
+				if (this.smaSeries.AverageFor.Count - 1 != this.smaSeries.Count) {
+					msg += "ADD_BACKTEST_ABORTED_CONDITION_TO_";
 				}
-				if (this.smaSeries.AverageFor.Count != this.OwnValuesCalculated.Count + 1) {
+				if (this.smaSeries.AverageFor.Count - 1 != this.OwnValuesCalculated.Count) {
 					msg += "SOME_BARS_HAVE_NO_MATCHING_INDICATOR_CALCULATED ";
 				} else {
 					string hint = "indicator value for the current-last-bar will be calculated by next-bar incoming quote meaning official closing of current-last-bar";
@@ -49,7 +54,7 @@ namespace Sq1.Core.Indicators {
 		}
 		public override void BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate() {
 			base.BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate();
-			
+
 			if (base.ClosesProxyEffective.Count == 0) {
 				string msg = "PARANOID AT_BACKTEST_CONTEXT_RESTORE_ClosesProxyEffective.Count_MUST_BE_NOT_0";
 				Assembler.PopupException(msg);
@@ -63,6 +68,15 @@ namespace Sq1.Core.Indicators {
 				return;
 			}
 			this.smaSeries.AverageFor = base.ClosesProxyEffective;
+
+			if (this.smaSeries.Count != this.OwnValuesCalculated.Count) {
+				string msg = "STILL_ADD_NAN_TO_KEEP_INDEXES_SYNCED_WITH_OWN_VALUES";
+				Assembler.PopupException(msg);
+			}
+			if (this.smaSeries.Count == 0) {
+				string msg = "INTERNAL_SMA_MUST_NOT_BE_EMPTY_OR_FRESHLY_CONSTRUCTED__OTHERWIZE_checkPopupOnResetAndSync()_WILL_THROW";
+				Assembler.PopupException(msg);
+			}
 			this.checkPopupOnResetAndSync(msig);
 		}
 		public override void BacktestStartingResetBarsEffectiveProxy() {
@@ -97,7 +111,7 @@ namespace Sq1.Core.Indicators {
 			return null;
 		}
 		
-		public override double CalculateOwnValueOnNewStaticBarFormed(Bar newStaticBar) {
+		public override double CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
 			double ret = double.NaN;
 
 			//if (this.ParamPeriod.ValueCurrent <= 0) {
@@ -120,7 +134,9 @@ namespace Sq1.Core.Indicators {
 						msg = "DONT_INVOKE_ME_TWICE [" + base.OwnValuesCalculated.LastValueAppended + "]"
 							+ "newStaticBar.DateTimeOpen[" + newStaticBar.DateTimeOpen + "] < LastDateAppended[" + base.OwnValuesCalculated.LastDateAppended + "]";
 						Assembler.PopupException(msg);
-						return double.NaN;
+						//v1 return double.NaN;
+						//v2 STILL_ADD_NAN_TO_KEEP_INDEXES_SYNCED_WITH_OWN_VALUES 
+						// 1)I_DIDNT_CATCH_THE_EXCEPTION_ABOVE 2)RET_IS_ALREADY_NAN ret = double.NaN;
 					} else {
 						msg = "DURING_INCUBATION_EACH_QUOTE_ADDS_NAN_SO_ON_STATIC_FORMED_THERE_IS_LEGITIMATE_VALUE ";
 					}

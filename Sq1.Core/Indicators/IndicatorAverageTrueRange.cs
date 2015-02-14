@@ -31,7 +31,7 @@ namespace Sq1.Core.Indicators {
 			return null;
 		}
 		
-		public override double CalculateOwnValueOnNewStaticBarFormed(Bar newStaticBar) {
+		public override double CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
 			this.trueRangeSeries.CalculateAppendOwnValueForNewStaticBarFormed(newStaticBar);
 			if (this.ParamPeriod.ValueCurrent <= 0) return double.NaN;
 			double ret = this.smaSeries.CalculateAppendOwnValueForNewStaticBarFormedNanUnsafe(newStaticBar);

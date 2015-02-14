@@ -78,7 +78,10 @@ namespace Sq1.Core.Broker {
 			//MOVED_TO_RaiseAsyncOrderAddedExecutionFormShouldRebuildOLV() handler Assembler.PopupExecutionForm();
 
 			this.OrdersAll.Insert(orderToAdd);
-			this.SerializerLogrotateOrders.Insert(0, orderToAdd);
+			if (orderToAdd.Alert.Strategy.Script.Executor.Backtester.IsBacktestingLivesimNow == false) {
+				string msg1 = "DONT_SPAM_ORDER_LOG_WITH_LIVESIMULATOR_ORDERS";
+				this.SerializerLogrotateOrders.Insert(0, orderToAdd);
+			}
 
 			this.OrderCount++;
 			if (orderToAdd.InStateExpectingCallbackFromBroker) this.OrdersExpectingBrokerUpdateCount++;

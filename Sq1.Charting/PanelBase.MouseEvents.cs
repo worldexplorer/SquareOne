@@ -97,11 +97,11 @@ namespace Sq1.Charting {
 		}
 		protected override void OnMouseMove(MouseEventArgs e) {
 			if (base.DesignMode) return;
-			if (this.ChartControl.IsBacktestingNow) {
-				this.Cursor = Cursors.WaitCursor;
-				//return;
+			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
+				//this.Cursor = Cursors.WaitCursor;
+				return;
 			}
-			if (this.Cursor == Cursors.WaitCursor) this.Cursor = Cursors.Default;
+			//if (this.Cursor == Cursors.WaitCursor) this.Cursor = Cursors.Default;
 			try {
 				//if (this.DesignMode) return;				// so that Designer works
 				// if (base.DesignMode) this.ChartControl will be NULL

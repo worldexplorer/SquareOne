@@ -170,7 +170,9 @@ namespace Sq1.Charting {
 			// AVOIDING_signalledAlready==true_IN_RefreshAllPanelsFinidhesWaiterSignalledLivesimCanProceedToGenerateNewQuote()
 			// WILL_RESET_AFTER_WAIT(0)_GETS_CONTROL base.RefreshAllPanelsFinishedWaiterReset();
 			if (base.RefreshAllPanelsIsSignalled == true) {
-				string msg = "VERY_LAZY_GUI_THREAD_SIGNALLED_FOR_PREV_REPAINT_SO_LATE??? MUST_BE_UNSIGNALLED_KOZ_IM_THE_ONLY_WHO_WILL_SIGNAL";
+				string msg = "NO_SIGNALLING_HAPPENS_AFTER_QUOTE_BUT_ORDER_EXEC_ALSO_TRIGGERS_REPAINT_WHEN_LIVESIMULATION"
+					+ " VERY_LAZY_GUI_THREAD_SIGNALLED_FOR_PREV_REPAINT_SO_LATE???"
+					+ " MUST_BE_UNSIGNALLED_KOZ_IM_THE_ONLY_WHO_WILL_SIGNAL";
 				//Assembler.PopupException(msg, null, false);
 			}
 			if (base.InvokeRequired) {
@@ -179,10 +181,18 @@ namespace Sq1.Charting {
 			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			//WHY??? this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
-			foreach (PanelBase panel in this.panels) {
-				panel.Refresh();
+			PanelBase panelThrew = null;
+			try {
+				foreach (PanelBase panel in this.panels) {
+					panelThrew = panel;
+					panel.Refresh();
+				}
+			} catch (Exception ex) {
+				string msg = "panelThrew[" + panelThrew.ToString() + "].Refresh() //RefreshAllPanelsNonBlockingRefreshNotYetStarted()";
+				Assembler.PopupException(msg, ex);
+			} finally {
+				base.RefreshAllPanelsFinishedWaiterNotifyAll();
 			}
-			base.RefreshAllPanelsFinishedWaiterNotifyAll();
 		}
 		void scrollToBarSafely(int bar) {
 			if (bar > this.hScrollBar.Maximum) bar = this.hScrollBar.Maximum;

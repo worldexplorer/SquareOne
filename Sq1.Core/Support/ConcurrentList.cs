@@ -54,7 +54,7 @@ namespace Sq1.Core.Support {
 			bool added = false;
 			if (this.InnerList.Contains(alertOrPosition) && duplicateThrowsAnError) {
 				string msg = this.ReasonToExist + ": MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + alertOrPosition.ToString();
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return added;
 			}
 			this.InnerList.Add(alertOrPosition);

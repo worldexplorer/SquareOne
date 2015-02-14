@@ -126,7 +126,7 @@ namespace Sq1.Core.Broker {
 			this.DataSnapshot.OrderInsertNotifyGuiAsync(newborn);
 			return newborn;
 		}
-		public void CreateOrdersSubmitToBrokerAdapterInNewThreads(List<Alert> alertsBatch, bool setStatusSubmitting, bool emittedByScript) {
+		public List<Order> CreateOrdersSubmitToBrokerAdapterInNewThreads(List<Alert> alertsBatch, bool setStatusSubmitting, bool emittedByScript) {
 			if (alertsBatch.Count == 0) {
 				string msg = "no alerts to Add; why did you call me? make sure you invoke using a synchronized Queue";
 				Assembler.PopupException(msg);
@@ -144,7 +144,7 @@ namespace Sq1.Core.Broker {
 			BrokerAdapter broker = null;
 			foreach (Alert alert in alertsBatch) {
 				// I only needed alert.OrderFollowed=newOrder... mb even CreatePropagateOrderFromAlert() should be reduced for backtest
-				if (alert.Strategy.Script.Executor.Backtester.IsBacktestingNow) {
+				if (alert.Strategy.Script.Executor.Backtester.IsBacktestingNoLivesimNow) {
 					string msg = "BACKTEST_DOES_NOT_SUBMIT_ORDERS__CHECK_QUIK_MOCK_FOR_LIVE_SIMULATION";
 					Assembler.PopupException(msg);
 					alert.Strategy.Script.Executor.Backtester.AbortRunningBacktestWaitAborted(msg);
@@ -212,7 +212,7 @@ namespace Sq1.Core.Broker {
 					+ " && ordersClosing.Count[" + ordersClosing.Count + "]"
 					+   "  ordersOpening.Count[" + ordersOpening.Count + "]";
 				//ALREADY_COMPLAINED Assembler.PopupException(msg, null, false);
-				return;
+				return ordersAgnostic;
 			}
 
 			if (ordersAgnostic.Count > 0 && (ordersClosing.Count > 0 || ordersOpening.Count > 0)) {
@@ -220,7 +220,7 @@ namespace Sq1.Core.Broker {
 					+ "ordersAgnostic[" + ordersAgnostic.Count + "] :: ordersClosing[" + ordersClosing.Count
 					+ "] ordersOpening[" + ordersOpening.Count+ "]";
 				Assembler.PopupException(msg);
-				return;
+				return ordersAgnostic;
 			}
 
 			bool brokerIsLivesim = (broker as LivesimBroker) != null;
@@ -233,19 +233,19 @@ namespace Sq1.Core.Broker {
 				} else {
 					ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersAgnostic });
 				}
-				return;
+				return ordersAgnostic;
 			}
 			if (ordersClosing.Count > 0 && ordersOpening.Count == 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry ordersClosing[" + ordersClosing.Count + "] through [" + broker + "]";
 				Assembler.PopupException(msg, null, false);
 				ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersClosing });
-				return;
+				return ordersClosing;
 			}
 			if (ordersClosing.Count == 0 && ordersOpening.Count > 0) {
 				string msg = "Scheduling SubmitOrdersThreadEntry ordersOpening[" + ordersOpening.Count + "] through [" + broker + "]";
 				Assembler.PopupException(msg, null, false);
 				ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersOpening });
-				return;
+				return ordersClosing;
 			}
 
 			if (ordersClosingAllSameDirection == true && ordersOpeningAllSameDirection == true) {
@@ -255,23 +255,25 @@ namespace Sq1.Core.Broker {
 						+ "] through [" + broker + "], then  ordersOpening[" + ordersOpening.Count + "]";
 					Assembler.PopupException(msg, null, false);
 					ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersClosing });
-					return;
+					return ordersClosing;
 				} else {
 					List<Order> ordersMerged = new List<Order>(ordersClosing);
 					ordersMerged.AddRange(ordersOpening);
 					string msg = "Scheduling SubmitOrdersThreadEntry ordersMerged[" + ordersMerged.Count + "] through [" + broker + "]";
 					Assembler.PopupException(msg, null, false);
 					ThreadPool.QueueUserWorkItem(new WaitCallback(broker.SubmitOrdersThreadEntry), new object[] { ordersMerged });
-					return;
+					return ordersClosing;
 				}
-			} else {
-				string msg = "DANGEROUS MIX, NOT OPTIMIZED: Scheduling SubmitOrdersThreadEntry ordersAgnostic[" + ordersAgnostic.Count + "] through [" + broker + "]"
-					+ " (ordersClosingAllSameLongOrShort=[" + ordersClosingAllSameDirection + "]"
-					+ " && ordersOpeningAllSameLongOrShort=[" + ordersClosingAllSameDirection + "]"
-					+ " && ordersClosingPositionLongShort[" + ordersClosingPositionLongShort + "]"
-					+ " != ordersOpeningPositionLongShort[" + ordersOpeningPositionLongShort + "]) == FALSE";
-				Assembler.PopupException(msg);
 			}
+			string msg2 = "DONT_PASS_NULL_AS_LIST_OF_ORDERS_TO_EVENT_CONSUMERS"
+				+ " DANGEROUS MIX, NOT OPTIMIZED: Scheduling SubmitOrdersThreadEntry"
+				+ " ordersAgnostic[" + ordersAgnostic.Count + "] through [" + broker + "]"
+				+ " (ordersClosingAllSameLongOrShort=[" + ordersClosingAllSameDirection + "]"
+				+ " && ordersOpeningAllSameLongOrShort=[" + ordersClosingAllSameDirection + "]"
+				+ " && ordersClosingPositionLongShort[" + ordersClosingPositionLongShort + "]"
+				+ " != ordersOpeningPositionLongShort[" + ordersOpeningPositionLongShort + "]) == FALSE";
+			Assembler.PopupException(msg2);
+			return null;
 		}
 		public BrokerAdapter extractSameBrokerAdapterThrowIfDifferent(List<Order> orders, string callerMethod) {
 			BrokerAdapter broker = null;
@@ -843,7 +845,7 @@ namespace Sq1.Core.Broker {
 			ScriptExecutor executor = orderWithNewState.Alert.Strategy.Script.Executor;
 			ReporterPokeUnit afterHooksInvokedPokeUnit = new ReporterPokeUnit();
 			int hooksInvoked = this.OPPstatusCallbacks.InvokeOnceHooksForOrderStateAndDelete(orderWithNewState, afterHooksInvokedPokeUnit);
-			if (executor.Backtester.IsBacktestingNow) return;
+			if (executor.Backtester.IsBacktestingNoLivesimNow) return;
 
 			List<Alert> alertsCreatedByHooks = afterHooksInvokedPokeUnit.AlertsNew.InnerList;
 			if (alertsCreatedByHooks.Count == 0) {

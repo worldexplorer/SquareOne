@@ -19,16 +19,16 @@ namespace Sq1.Gui.Forms {
 		}
 		void ChartForm_Load(object sender, EventArgs e) {
 			// ON_DESERIALIZATION_BACKTESTER_LAUNCHES_FASTER_THAN_CHART_FORM_GETS_LOADED; see ON_REQUESTING_ABORT_TASK_DIES_WITHOUT_INVOKING_CONTINUE_WITH
-			this.chartFormManager.Executor.EventGenerator.BacktesterContextInitializedStep2of4 += this.Executor_BacktesterContextInitializedStep2of4;
-			this.chartFormManager.Executor.EventGenerator.BacktesterSimulatedChunkStep3of4 += this.Executor_BacktesterChunkSimulatedStep3of4;
-			this.chartFormManager.Executor.EventGenerator.BacktesterSimulatedAllBarsStep4of4 += this.Executor_BacktesterSimulatedAllBarsStep4of4;
-			//this.chartFormsManager.Executor.EventGenerator.BacktesterBarsChanged += this.Executor_BacktesterChangedQuotesWillGenerate;
+			this.chartFormManager.Executor.EventGenerator.OnBacktesterContextInitializedStep2of4 += this.Executor_BacktesterContextInitializedStep2of4;
+			this.chartFormManager.Executor.EventGenerator.OnBacktesterSimulatedChunkStep3of4 += this.Executor_BacktesterChunkSimulatedStep3of4;
+			this.chartFormManager.Executor.EventGenerator.OnBacktesterContextRestoredAfterExecutingAllBarsStep4of4 += this.Executor_BacktesterSimulatedAllBarsStep4of4;
+			//this.chartFormsManager.Executor.EventGenerator.OnBacktesterBarsChanged += this.Executor_BacktesterChangedQuotesWillGenerate;
 		}
 		void ChartForm_FormClosing(object sender, FormClosingEventArgs e) {
-			this.chartFormManager.Executor.EventGenerator.BacktesterContextInitializedStep2of4 -= this.Executor_BacktesterContextInitializedStep2of4;
-			this.chartFormManager.Executor.EventGenerator.BacktesterSimulatedChunkStep3of4 -= this.Executor_BacktesterChunkSimulatedStep3of4;
-			this.chartFormManager.Executor.EventGenerator.BacktesterSimulatedAllBarsStep4of4 -= this.Executor_BacktesterSimulatedAllBarsStep4of4;
-			//this.chartFormsManager.Executor.EventGenerator.BacktesterBarsChanged -= this.Executor_BacktesterChangedQuotesWillGenerate;
+			this.chartFormManager.Executor.EventGenerator.OnBacktesterContextInitializedStep2of4 -= this.Executor_BacktesterContextInitializedStep2of4;
+			this.chartFormManager.Executor.EventGenerator.OnBacktesterSimulatedChunkStep3of4 -= this.Executor_BacktesterChunkSimulatedStep3of4;
+			this.chartFormManager.Executor.EventGenerator.OnBacktesterContextRestoredAfterExecutingAllBarsStep4of4 -= this.Executor_BacktesterSimulatedAllBarsStep4of4;
+			//this.chartFormsManager.Executor.EventGenerator.OnBacktesterBarsChanged -= this.Executor_BacktesterChangedQuotesWillGenerate;
 			
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
 			string reporterCurrent = "";
@@ -140,9 +140,10 @@ namespace Sq1.Gui.Forms {
 				string msg = "invoked by Backtester.SubstituteAndRunSimulation() I don't remember whether Tag=null is ok or not...";
 				return;
 			}
-			if (this.chartFormManager.Executor.Backtester.IsBacktestingNow == false) {
-				string msg = "Livesimulator.afterBacktesterComplete()_ALREADY_RESTORED_BACKTESTER_WHILE_SWITCHING_TO_GUI_THREAD [base.Executor.Backtester = this.BacktesterBackup]";
-				return;
+			if (this.chartFormManager.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
+			//if (this.chartFormManager.ChartForm.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
+			//    string msg = "Livesimulator.afterBacktesterComplete()_ALREADY_RESTORED_BACKTESTER_WHILE_SWITCHING_TO_GUI_THREAD [base.Executor.Backtester = this.BacktesterBackup]";
+			//    return;
 			}
 			if (this.chartFormManager.Executor.Backtester.QuotesGenerator == null) {
 				string msg = "YOU_DIDNT_INVOKE_Backtester.Initialize() AVOIDING_EXCEPTIONS_IN_QuotesGeneratedSoFar";

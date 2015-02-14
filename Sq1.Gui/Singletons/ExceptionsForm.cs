@@ -26,13 +26,16 @@ namespace Sq1.Gui.Singletons {
 			#endif
 
 			if (msg != null) ex = new Exception(msg, ex);
-			this.ExceptionControl.InsertException(ex);
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 
+			//v1 SWITCHING_TO_GUI_THREAD_AS_ONE_STEP___MAY_GET_VERY_CLUMSY_WHEN_MANY_THREADS_POPUP_THEIR_EXCEPTIONS_AT_THE_SAME_TIME
+			//base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
+			//    this.ExceptionControl.InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(ex);
+			//}));
+			//v2 TRYING_TO_1)LET_INVOKER_GO_EARLIER_FOR_FURTHER_2)QUEUEING_OF_LISTVIEW_REPAINT__2)NYI
 			#region EXPERIMENTAL
 			Task t = new Task(delegate {
 				base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
-					this.ExceptionControl.FlushListToTreeIfDockContentDeserialized();
+					this.ExceptionControl.InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(ex);
 				}));
 			});
 			t.ContinueWith(delegate {

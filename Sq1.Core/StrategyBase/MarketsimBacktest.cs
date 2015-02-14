@@ -154,9 +154,9 @@ namespace Sq1.Core.StrategyBase {
 			
 			if (quote.PriceBetweenBidAsk(entryPriceOut) == false) {
 				string msig = " MUST_BE_BETWEEN: [" + quote.Bid + "] < [" + entryPriceOut + "] < [" + quote.Ask + "]";
-				if (this.executor.Backtester.IsBacktestingNow) {
+				if (this.executor.Backtester.IsBacktestingNoLivesimNow) {
 					string msg = "OBSOLETE I_DONT_UNDERSTAND_HOW_I_DIDNT_DROP_THIS_QUOTE_BEFORE_BUT_I_HAVE_TO_DROP_IT_NOW";
-					Assembler.PopupException(msg + msig, null);
+					Assembler.PopupException(msg + msig, null, false);
 				} else {
 					string msg = "QuikTerminalMock uses MarketSim.SimulateFill() for live-simulated mode => no surprise here";
 					//Assembler.PopupException(msg + msig, null);
@@ -341,7 +341,7 @@ namespace Sq1.Core.StrategyBase {
 				case MarketLimitStop.Market:
 				case MarketLimitStop.AtClose:
 					// WHY (IsBacktestingNow == true): market orders during LIVE could be filled at virtually ANY price
-					if (quote.PriceBetweenBidAsk(exitPriceOut) == false && this.executor.Backtester.IsBacktestingNow == true) {
+					if (quote.PriceBetweenBidAsk(exitPriceOut) == false && this.executor.Backtester.IsBacktestingNoLivesimNow == true) {
 						string msg = "this isn't enough: market orders are still executed outside the bar; we'll need to generate one more quote onTheWayTo exitPriceOut";
 						Assembler.PopupException(msg, null, false);
 						return false;
@@ -519,7 +519,7 @@ namespace Sq1.Core.StrategyBase {
 			return msg;
 		}
 		void checkThrowRealtimePendingQuote(Quote quote) {
-			if (this.executor.Backtester.IsBacktestingNow == false && this.executor.Backtester.IsLivesimRunning == false) {
+			if (this.executor.Backtester.IsBacktestRunning == false && this.executor.Backtester.WasBacktestAborted == false) {
 				string msg = "SimulateFill*() should not be used for RealTime BrokerAdapters and RealTime Mocks!"
 					+ " make sure you invoked executor.CallbackAlertFilledInvokeScript() from where you are now";
 				#if DEBUG
@@ -564,7 +564,7 @@ namespace Sq1.Core.StrategyBase {
 				return filled;
 			}
 			// making a derived quoteToReach look like "dedicated" specifically to the filled alertToBeKilled
-			if (quote.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
+			if (quote.IamInjectedToFillPendingAlerts) {
 				quote.Size = alert.Qty;
 			}
 			double entryCommission = this.executor.OrderCommissionCalculate(alert.Direction,

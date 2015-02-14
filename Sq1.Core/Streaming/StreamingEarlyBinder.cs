@@ -16,8 +16,22 @@ namespace Sq1.Core.Streaming {
 				return barLastFormedUnattached;
 			}
 			Bar barDetached = barLastFormedUnattached.CloneDetached();
-			Bar barAttached = this.consumer.ConsumerBarsToAppendInto.BarStreamingCreateNewOrAbsorb(barDetached);
-			return barAttached;
+			Bar barStreamingBound = this.consumer.ConsumerBarsToAppendInto.BarStreamingCreateNewOrAbsorb(barDetached);
+
+
+			if (barStreamingBound != this.consumer.ConsumerBarsToAppendInto.BarLast) {
+				string msg = "MUST_NEVER_HAPPEN_barStreamingBound != consumer.ConsumerBarsToAppendInto.BarLast";
+				throw new Exception(msg);
+			}
+			if (barStreamingBound == this.consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe) {
+				string msg = "MUST_NEVER_HAPPEN_barStreamingBound == consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe";
+				throw new Exception(msg);
+			}
+			if (barStreamingBound != this.consumer.ConsumerBarsToAppendInto.BarStreaming) {
+				string msg = "MUST_NEVER_HAPPEN_barStreamingBound != consumer.ConsumerBarsToAppendInto.BarStreaming";
+				throw new Exception(msg);
+			}
+			return barStreamingBound;
 		}
 		public Quote BindStreamingBarForQuote(Quote quoteCloneSernoEnrichedFactoryUnattachedStreamingBar) {
 			if (this.consumer.ConsumerBarsToAppendInto == null) {
@@ -37,12 +51,26 @@ namespace Sq1.Core.Streaming {
 			// 2) I get the customers' BarStreaming and update its DOHLCV
 			//v1
 
-//			if (this.consumer.ConsumerBarsToAppendInto.BarStreaming == null) {
-				string msg = "WHEN_SHOULD_I_ASSIGN_BarStreaming_AND_TO_WHAT?... FIRST_STREAMING_QUOTE_EVER_WILL_ADD_NEW_BAR_DOWNSTACK_I_CANT_KNOW_IT_HERE";
-				this.consumer.ConsumerBarsToAppendInto.BarStreamingCreateNewOrAbsorb(quoteCloneSernoEnrichedFactoryUnattachedStreamingBar.ParentBarStreaming);
-//			} else {
-//				this.consumer.ConsumerBarsToAppendInto.BarStreamingOverrideDOHLCVwith(quoteCloneSernoEnrichedFactoryUnattachedStreamingBar.ParentBarStreaming);
-//			}
+			if (this.consumer.ConsumerBarsToAppendInto.BarStreaming == null) {
+				string msg = "INITIALIZING_STREAMING_BAR_TO_NON_NULL_NEW_OR_LASTSTATIC"
+					+ " FIRST_STREAMING_QUOTE_PER_BACKTEST_ON_STREAMINGLESS_BARS_JUST_FORKED_FROM_BARS_ORIGINAL_AT_BACKTEST_INITIALIZATION";
+				//v1 I_LEFT_QUOTE_UNATTACHED_UPSTACK,ATTACHING_TO_FACTORY_HERE
+				//v1 this.consumer.ConsumerBarsToAppendInto.BarStreamingCreateNewOrAbsorb(quoteCloneSernoEnrichedFactoryUnattachedStreamingBar.ParentBarStreaming);
+				Bar streamingCreatedUnattached = this.consumer.ConsumerBarsToAppendInto.BarStreamingCreateNewOrAbsorb(this.streamingBarFactoryUnattached.BarStreamingUnattached);
+				if (streamingCreatedUnattached != this.consumer.ConsumerBarsToAppendInto.BarStreaming) {
+					string msg2 = "MUST_BE_THE_SAME_BAR PARANOID_CHECK";
+					Assembler.PopupException(msg2);
+				}
+			} else {
+				string msg = "ALL_OTHER_QUOTES_EXCEPT_FIRST_STREAMING_QUOTE_PER_BACKTEST";
+				//v1 this.consumer.ConsumerBarsToAppendInto.BarStreamingOverrideDOHLCVwith(quoteCloneSernoEnrichedFactoryUnattachedStreamingBar.ParentBarStreaming);
+				//v2 QUOTE_COMES_UNATTACHED_TAKE_STREAMING_HLCV_FROM_FACTORY
+				if (quoteCloneSernoEnrichedFactoryUnattachedStreamingBar.IntraBarSerno == 0) {
+					string msg2 = "AVOIDING_EXCEPTION NO_NEED_TO_ABSORB_ANYTHING__DESTINATION_HasSameDOHLCV";
+				} else {
+					this.consumer.ConsumerBarsToAppendInto.BarStreamingOverrideDOHLCVwith(this.streamingBarFactoryUnattached.BarStreamingUnattached);
+				}
+			}
 
 			//v2-WRONG Bar barAttached = consumer.ConsumerBarsToAppendInto.BarStreaming;
 			//v2-WRONG quoteSernoEnrichedWithStreamingBarUnattached.ParentStreamingBar = barAttached;
@@ -54,7 +82,8 @@ namespace Sq1.Core.Streaming {
 			return quoteAttachedToStreamingAttachedToConsumerBars;
 		}
 		public override string ToString() {
-			return base.ToString() + ",ParentBars[" + this.consumer.ConsumerBarsToAppendInto + "]";
+			return "BarFactory[" + this.streamingBarFactoryUnattached.ToString() + "]"
+				+ " for ConsumerBars[" + this.consumer.ConsumerBarsToAppendInto + "]";
 		}
 	}
 }

@@ -20,6 +20,8 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public BidOrAsk		ItriggeredFillAtBidOrAsk;
 		
 		[JsonIgnore]	public int			IntraBarSerno;
+		[JsonIgnore]	public bool			IamInjectedToFillPendingAlerts {
+			get { return this.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill; } }
 		[JsonProperty]	public int			AbsnoPerSymbol;
 
 		[JsonIgnore]	public Bar			ParentBarStreaming	{ get; protected set; }
@@ -51,6 +53,11 @@ namespace Sq1.Core.DataTypes {
 				? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
 		}
 		public void SetParentBarStreaming(Bar parentBar) {
+			if (parentBar.ParentBars == null) {
+				string msg = "UNATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE";
+			} else {
+				string msg = "ATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE";
+			}
 			if (this.Symbol != parentBar.Symbol) {
 				string msg = "SYMBOL_MISMATCH__CANT_SET_PARENT_BAR_FOR_QUOTE quote.Symbol[" + this.Symbol + "] != parentBar.Symbol[" + parentBar.Symbol + "]";
 				Assembler.PopupException(msg);
@@ -60,36 +67,18 @@ namespace Sq1.Core.DataTypes {
 
 		#region SORRY_FOR_THE_MESS__I_NEED_TO_DERIVE_IDENTICAL_ONLY_FOR_GENERATED__IF_YOU_NEED_IT_IN_BASE_QUOTE_MOVE_IT_THERE
 		public Quote Clone() {
-			return (Quote)this.MemberwiseClone();
+			string prefix = "MEMBERWISE_CLONE_OF_";
+			if (this.Source.Contains(prefix)) {
+				string msg = "WHERE_DO_YOU_NEED_CLONED_CLONE?";
+				Assembler.PopupException(msg);
+				return this;
+			}
+			Quote clone = (Quote)this.MemberwiseClone();
+			clone.Source = prefix + this.ToStringShort() + " " + clone.Source;
+			return clone;
 		}
-		//public Quote DeriveIdenticalButFresh() {
-		//	Quote identicalButFresh = new Quote();
-		//	identicalButFresh.Symbol = this.Symbol;
-		//	identicalButFresh.SymbolClass = this.SymbolClass;
-		//	identicalButFresh.Source = this.Source;
-		//	identicalButFresh.ServerTime = this.ServerTime.AddMilliseconds(911);
-		//	identicalButFresh.LocalTimeCreatedMillis = this.LocalTimeCreatedMillis.AddMilliseconds(911);
-		//	identicalButFresh.PriceLastDeal = this.PriceLastDeal;
-		//	identicalButFresh.Bid = this.Bid;
-		//	identicalButFresh.Ask = this.Ask;
-		//	identicalButFresh.Size = this.Size;
-		//	identicalButFresh.IntraBarSerno = this.IntraBarSerno + Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill;
-		//	identicalButFresh.ParentStreamingBar = this.ParentStreamingBar;
-		//	return identicalButFresh;
-		//}
 		#endregion
 
-		//public override string ToString() {
-		//    string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol;
-		//    //ret += " bid{" + Math.Round(this.Bid, 3) + "-" + Math.Round(this.Ask, 3) + "}ask"
-		//    //ret += " size{" + this.Size + "@" + Math.Round(this.PriceLastDeal, 3) + "}lastDeal";
-		//    ret += " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "@" + this.LastDealPrice + "}lastDeal";
-		//    if (ServerTime != null) ret += " SERVER[" + ServerTime.ToString("HH:mm:ss.fff") + "]";
-		//    ret += "[" + LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]LOCAL";
-		//    if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;
-		//    ret += " STR:" + this.ParentBarIdent;
-		//    return ret;
-		//}
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();
 			sb.Append("#");
@@ -155,6 +144,14 @@ namespace Sq1.Core.DataTypes {
 			sb.Append("}");
 			sb.Append(": ");
 			sb.Append(this.ParentBarIdent);
+			return sb.ToString();
+		}
+		public string ToStringShortest() {
+			StringBuilder sb = new StringBuilder();
+			sb.Append("G#");
+			sb.Append(this.IntraBarSerno);
+			sb.Append("/");
+			sb.Append(this.AbsnoPerSymbol);
 			return sb.ToString();
 		}
 		public bool SameBidAsk(Quote other) {

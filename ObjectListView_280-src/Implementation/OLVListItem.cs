@@ -243,11 +243,19 @@ namespace BrightIdeasSoftware {
         /// <param name="index">Index of the subitem to be returned</param>
         /// <returns>An OLVListSubItem</returns>
         public virtual OLVListSubItem GetSubItem(int index) {
-            if (index >= 0 && index < this.SubItems.Count)
-                return (OLVListSubItem)this.SubItems[index];
-            
-            return null;
-        }
+			//if (index >= 0 && index < this.SubItems.Count)
+			//    return (OLVListSubItem)this.SubItems[index];
+			//return null;
+			#region REFACTORED_BY_WORLDEXPLORER
+			if (index < 0 || index >= this.SubItems.Count) return null;
+			object unCasted = this.SubItems[index];
+			OLVListSubItem olvSubitem = unCasted as OLVListSubItem;
+			if (olvSubitem == null) {
+				string msg = "MUST_BE_OLVListSubItem_BUT_WE_GOT " + unCasted.GetType();
+			}
+			return olvSubitem;
+			#endregion
+		}
 
 
         /// <summary>
