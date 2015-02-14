@@ -16,7 +16,7 @@
     "$type": "Sq1.Adapters.QuikMock.StreamingMock, Sq1.Adapters.QuikMock",
     "QuoteDelay": 1000,
     "GenerateOnlySymbols": [],
-    "GeneratingNow": false,
+    "GeneratingNow": true,
     "StreamingDataSnapshot": {
       "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
       "lastQuoteClonesReceivedUnboundBySymbol": {

@@ -99,7 +99,7 @@ namespace Sq1.Adapters.QuikMock {
 			}
 
 			bool pausedToFinishBacktest = base.StreamingAdapter.DataSource.PumpingPausedGet(order.Alert.Bars);
-			bool backtestIsRunning = order.Alert.Strategy.Script.Executor.Backtester.IsBacktestingNow;
+			bool backtestIsRunning = order.Alert.Strategy.Script.Executor.Backtester.IsBacktestingNoLivesimNow;
 
 			if (pausedToFinishBacktest) {
 				if (backtestIsRunning == false) {
