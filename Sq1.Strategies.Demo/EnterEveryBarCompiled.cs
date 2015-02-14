@@ -65,7 +65,7 @@ namespace Sq1.Strategies.Demo {
 			//double slowStatic = this.MAslow.ClosesProxyEffective.LastStaticValue;
 			//DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
 
-			if (this.Executor.Backtester.IsBacktestingNow == false) {
+			if (this.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
 				Bar bar = quote.ParentBarStreaming;
 				int barNo = bar.ParentBarsIndex;
 				if (barNo <= 0) return;
@@ -87,7 +87,7 @@ namespace Sq1.Strategies.Demo {
 			//this.testBarAnnotations(barStaticFormed);
 			
 			Bar barStreaming = base.Bars.BarStreaming;
-			if (this.Executor.Backtester.IsBacktestingNow == false) {
+			if (this.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
 				//Debugger.Break();
 			}
 			if (barStaticFormed.ParentBarsIndex <= 2) return;

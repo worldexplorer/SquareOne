@@ -19,11 +19,10 @@ namespace Sq1.Core.Backtesting {
 		public BacktestDataSource		BacktestDataSource				{ get; protected set; }
 		   BacktestQuoteBarConsumer 	backtestQuoteBarConsumer;
 
-		protected bool					SetBacktestAborted;
+		protected bool					BacktestWasAbortedByUserInGui;
 		public ManualResetEvent			RequestingBacktestAbort			{ get; private set; }	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 		public ManualResetEvent			BacktestAborted					{ get; private set; }
 		public ManualResetEvent			BacktestIsRunning				{ get; private set; }
-		// REPLACED_BY_QUOTEPUMP_PAUSED public ManualResetEvent			BacktestCompletedQuotesCanGo	{ get; private set; }
 		
 
 		public int						BarsSimulatedSoFar				{ get; protected set; }
@@ -32,7 +31,10 @@ namespace Sq1.Core.Backtesting {
 				return this.BarsOriginal.Count * this.QuotesGenerator.QuotePerBarGenerates;
 			} }
 		public int						QuotesGeneratedSoFar			{ get { return BarsSimulatedSoFar * this.QuotesGenerator.QuotePerBarGenerates; } }
-		public BacktestMode				BacktestMode					{ get; private set; }
+		public BacktestMode				BacktestMode					{ get {
+			if (this.QuotesGenerator == null) return BacktestMode.Unknown;
+			else return this.QuotesGenerator.BacktestModeSuitsFor;
+		} }
 		public BacktestQuotesGenerator	QuotesGenerator					{ get; private set; }
 
 		public string					ProgressStats					{ get {
@@ -42,22 +44,24 @@ namespace Sq1.Core.Backtesting {
 
 		public bool						IsLivesimRunning				{ get { return (this as Livesimulator) != null; } }
 		public bool						IsBacktestRunning				{ get { return this.BacktestIsRunning.WaitOne(0); } }
-		public bool						IsBacktestingNow				{ get { return this.IsBacktestRunning == true && this.IsLivesimRunning == false; } }
-		public bool						IsBacktestingOrLivesimNow		{ get { return this.IsBacktestRunning == true || this.IsLivesimRunning == true; } }
+		public bool						IsBacktestingNoLivesimNow		{ get { return this.IsBacktestRunning == true && this.IsLivesimRunning == false; } }
+		public bool						IsBacktestingLivesimNow			{ get { return this.IsBacktestRunning == true && this.IsLivesimRunning == true; } }
 
 		public bool						WasBacktestAborted				{ get {
-				if (QuotesGenerator == null) return false;
+				if (this.QuotesGenerator == null) {
+				    string msg = "ABORTION_IS_A_FLAG_IRRELEVANT_TO_QUOTE_GENERATOR_LIFECYCLE WORKED_FOR_BACKTEST_BUT_SPOILED_LATE_LIVESIM_CHECK";
+				    return false;
+				}
 				bool signalled = this.BacktestAborted.WaitOne(0);
 				return signalled;
 			} }
 		public int						ExceptionsHappenedSinceBacktestStarted;
 
 		Backtester() {
-			SetBacktestAborted				= false;
+			BacktestWasAbortedByUserInGui	= false;
 			RequestingBacktestAbort			= new ManualResetEvent(false);
 			BacktestAborted					= new ManualResetEvent(false);
 			BacktestIsRunning				= new ManualResetEvent(false);
-			// REPLACED_BY_QUOTEPUMP_PAUSED		BacktestCompletedQuotesCanGo	= new ManualResetEvent(true);
 			backtestQuoteBarConsumer		= new BacktestQuoteBarConsumer(this);
 			BacktestDataSource				= new BacktestDataSource();
 			ExceptionsHappenedSinceBacktestStarted = 0;
@@ -66,43 +70,83 @@ namespace Sq1.Core.Backtesting {
 			Executor = executor;
 			if (Executor.Strategy == null) return;
 			if (Executor.Strategy.Script == null) return;
-			this.Initialize(Executor.Strategy.ScriptContextCurrent.BacktestMode);
+			this.InitializeAndCheck(Executor.Strategy.ScriptContextCurrent.BacktestMode);
 		}
-		public void Initialize(BacktestMode mode = BacktestMode.FourStrokeOHLC) {
-			this.BacktestMode = mode;
-			if (this.QuotesGenerator != null && this.QuotesGenerator.BacktestModeSuitsFor == mode) {
+		public void InitializeAndCheck(BacktestMode mode = BacktestMode.FourStrokeOHLC) {
+			if (this.Executor.Bars == null) {
+				string msg = "EXECUTOR_LOST_ITS_BARS_NONSENSE null==this.Executor.Bars SubstituteBarsAndRunSimulation()";
+				//Assembler.PopupException(msg);
+				throw new Exception(msg);
 				return;
 			}
-			switch (this.BacktestMode) {
+			if (this.Executor.Bars.Count < 1) {
+				string msg = "EXECUTOR_BARS_ARE_EMPTY_CAN_NOT_SUBSTITUTE_AND_REGENERATE";
+				//Assembler.PopupException(msg);
+				throw new Exception(msg);
+				return;
+			}
+
+			if (this.BacktestMode == mode) return;
+			switch (mode) {
 				case BacktestMode.FourStrokeOHLC:
 					this.QuotesGenerator = new BacktestQuotesGeneratorFourStroke(this);
 					break;
 				default:
 					string msg = "NYI: [" + this.Executor.Strategy.ScriptContextCurrent.BacktestMode + "]RunSimulation";
-					#if DEBUG
-					Debugger.Break();
-					#endif
+					Assembler.PopupException(msg);
 					throw new Exception(msg);
 			}
 		}
-		public void RunSimulation() {
-			if (this.QuotesGenerator == null) {
-				string msg = "backtestQuotesGenerator is not chosen / instantiated";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw new Exception(msg);
-				//this.Initialize(BacktestMode.FourStrokeOHLC);
-			}
+		public void SimulationRun() {
 			this.ExceptionsHappenedSinceBacktestStarted = 0;
-			this.substituteBarsAndRunSimulation();
+			//string msg = "MAKE_SURE_WE_WILL_INVOKE_BacktestStartingConstructOwnValuesValidateParameters()";
+			//Assembler.PopupException(msg, null, false);
+
+			int repaintableChunk = (int)(this.BarsOriginal.Count / 20);
+			if (repaintableChunk <= 0) repaintableChunk = 1;
+				
+			int excludeLastBarStreamingWillTriggerIt = this.BarsOriginal.Count - 1;
+			for (int barNo = 0; barNo <= excludeLastBarStreamingWillTriggerIt; barNo++) {
+				Bar bar = this.BarsOriginal[barNo];
+
+				bool abortRequested = this.RequestingBacktestAbort.WaitOne(0);
+				if (abortRequested) {
+					this.BacktestWasAbortedByUserInGui = true;
+					break;
+				}
+				this.generateQuotesForBarAndPokeStreaming(bar);
+				this.BarsSimulatedSoFar++;
+				if (this.BarsSimulatedSoFar % repaintableChunk == 0) {
+					this.Executor.EventGenerator.RaiseOnBacktesterSimulatedChunk_step3of4();
+				}
+					
+				//MAKE_EXCEPTIONS_FORM_INSERT_DELAYED!!! Application.DoEvents();	// otherwize UI becomes irresponsible;
+				//COMMENTED_OUT_TO_SIMULATE_PROFILER_BEHAVIOUR MORE_EXCEPTIONS_DISPLAYED_IN_EXCEPTIONS_FORM_WOW Application.DoEvents();
+				//#if DEBUG
+				// UNCOMMENTED_FOR_SHARP_DEVELOP_TO_NOT_FREAK_OUT_FULLY_EXPAND_LOCAL_VARIABLES_AT_BREAKPOINTS_RANDOMLY_CONTINUE_ETC IRRELATED_TO_EXCEPTIONS_THERE_WAS_NONE
+				// COMMENTED_OUT_#DEVELOP_FREAKS_OUT_WHEN_YOU_MOVE_INNER_WINDOWS_SPLITTER Application.DoEvents();
+				// UNCOMMENTED_TO_KEEP_MOUSE_OVER_SLIDERS_RESPONSIVE
+				// NOT_NEEDED_WHEN_BACKTESTER_STARTS_WITHOUT_PARAMETERS Application.DoEvents();
+				//#endif
+			}
+
+			string stats = " [" + this.BarsSimulatedSoFar + "/" + this.BarsOriginal.Count + "]";
+			if (this.BacktestWasAbortedByUserInGui) {
+				string msg = "USER_ABORTED_BACKTEST_IN_GUI_SOMEWHERE_BACKTESTED_ONLY_BARS" + stats;
+			} else {
+				string msg = "HERE_I_FINISHED_BACKTESTING_ALL_REQUIRED_BARS" + stats;
+			}
+
+			// see Indicator.DrawValue() "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED"
+			// this.QuotesGenerator.InjectFakeQuoteInNonExistingNextBarToSolidifyLastStaticBar(this.Executor.Bars.BarStaticLast);
+
 		}
 		public void AbortRunningBacktestWaitAborted(string whyAborted, int millisecondsToWait = 1000) {
-			if (this.IsBacktestingNow == false) return;
+			if (this.IsBacktestRunning == false) return;
 
-			bool abortIsAlreadyRequested = this.RequestingBacktestAbort.WaitOne(0);
+			//bool abortIsAlreadyRequested = this.RequestingBacktestAbort.WaitOne(0);
 			this.RequestingBacktestAbort.Set();
-			bool abortAlreadyRequestedNow = this.RequestingBacktestAbort.WaitOne(0);
+			//bool abortAlreadyRequestedNow = this.RequestingBacktestAbort.WaitOne(0);
 
 			string msig = " whyAborted=[" + whyAborted + "]: Strategy[" + this.Executor.Strategy + "] on Bars[" + this.Executor.Bars + "]";
 
@@ -113,82 +157,12 @@ namespace Sq1.Core.Backtesting {
 			msg = (aborted) ? "BACKTEST_ABORTED" : "BACKTESTER_DIDNT_ABORT_WITHIN_SECONDS[" + millisecondsToWait + "]";
 			Assembler.PopupException(msg + msig, null, false);
 		}
-		//public void WaitUntilBacktestCompletes() {
-		//	if (this.IsBacktestingNow == false) return;
-		//	// REPLACED_BY_QUOTEPUMP_PAUSEDthis.BacktestCompletedQuotesCanGo.WaitOne();
-		//}
-		public void SetRunningFalseNotifyWaitingThreadsBacktestCompleted() {
-			this.BacktestIsRunning.Reset();
-			//if (this.IsBacktestingNow) {
-			//	string msg = "IN_ORDER_TO_SIGNAL_FLAGGED_I_HAVE_TO_SET_INSTEAD_OF_RESET";
-			//	Debugger.Break();
-			//}
-
-			if (this.Executor.ChartShadow != null) this.Executor.ChartShadow.BacktestIsRunning.Reset();
-			// Calling ManualResetEvent.Set opens the gate,
-			// allowing any number of threads calling WaitOne to be let through
-			// REPLACED_BY_QUOTEPUMP_PAUSED	this.BacktestCompletedQuotesCanGo.Set();
-		}
 
 		public void AbortBacktestIfExceptionsLimitReached() {
-			if (this.IsBacktestingNow == false) return;
+			if (this.IsBacktestingNoLivesimNow == false) return;
 			this.ExceptionsHappenedSinceBacktestStarted++;
 			if (this.ExceptionsHappenedSinceBacktestStarted < this.Executor.Strategy.ExceptionsLimitToAbortBacktest) return;
 			this.AbortRunningBacktestWaitAborted("AbortBacktestIfExceptionsLimitReached[" + this.Executor.Strategy.ExceptionsLimitToAbortBacktest + "]");
-		}
-		void substituteBarsAndRunSimulation() {
-			//string msg = "MAKE_SURE_WE_WILL_INVOKE_BacktestStartingConstructOwnValuesValidateParameters()";
-			//Assembler.PopupException(msg, null, false);
-
-			if (null == this.Executor.Bars) {
-				Assembler.PopupException("EXECUTOR_LOST_ITS_BARS_NONSENSE null==this.Executor.Bars SubstituteBarsAndRunSimulation()");
-				return;
-			}
-			if (this.Executor.Bars.Count < 1) return;
-			try {
-				this.SimulationPreBarsSubstitute();
-	
-				int repaintableChunk = (int)(this.BarsOriginal.Count / 20);
-				if (repaintableChunk <= 0) repaintableChunk = 1;
-				
-				int excludeLastBarStreamingWillTriggerIt = this.BarsOriginal.Count - 1;
-				for (int barNo = 0; barNo <= excludeLastBarStreamingWillTriggerIt; barNo++) {
-					Bar bar = this.BarsOriginal[barNo];
-
-					bool abortRequested = this.RequestingBacktestAbort.WaitOne(0);
-					if (abortRequested) {
-						SetBacktestAborted = true;
-						break;
-					}
-					this.generateQuotesForBarAndPokeStreaming(bar);
-					this.BarsSimulatedSoFar++;
-					if (this.BarsSimulatedSoFar % repaintableChunk == 0) {
-						this.Executor.EventGenerator.RaiseBacktesterSimulatedChunkStep3of4();
-					}
-					
-					//MAKE_EXCEPTIONS_FORM_INSERT_DELAYED!!! Application.DoEvents();	// otherwize UI becomes irresponsible;
-					//COMMENTED_OUT_TO_SIMULATE_PROFILER_BEHAVIOUR MORE_EXCEPTIONS_DISPLAYED_IN_EXCEPTIONS_FORM_WOW Application.DoEvents();
-					//#if DEBUG
-					// UNCOMMENTED_FOR_SHARP_DEVELOP_TO_NOT_FREAK_OUT_FULLY_EXPAND_LOCAL_VARIABLES_AT_BREAKPOINTS_RANDOMLY_CONTINUE_ETC IRRELATED_TO_EXCEPTIONS_THERE_WAS_NONE
-					// COMMENTED_OUT_#DEVELOP_FREAKS_OUT_WHEN_YOU_MOVE_INNER_WINDOWS_SPLITTER Application.DoEvents();
-					// UNCOMMENTED_TO_KEEP_MOUSE_OVER_SLIDERS_RESPONSIVE
-					// NOT_NEEDED_WHEN_BACKTESTER_STARTS_WITHOUT_PARAMETERS Application.DoEvents();
-					//#endif
-				}
-
-				// see Indicator.DrawValue() "DONT_WANT_TO_HACK_WILL_DRAW_LAST_STATIC_BARS_INDICATOR_VALUE_AFTER_YOU_TURN_ON_STREAMING_SO_I_WILL_HAVE_NEW_QUOTE_PROVING_THE_LAST_BAR_IS_FORMED"
-				// this.QuotesGenerator.InjectFakeQuoteInNonExistingNextBarToSolidifyLastStaticBar(this.Executor.Bars.BarStaticLast);
-			} catch (Exception e) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				throw e;
-			} finally {
-				// I won't get here if youser :) closed an app during the backtest / optimization;
-				// but in pre-Backtest BacktestContextInitialize() sets preBacktestBars!=null so this.Streaming=true won't save Strategy.ScriptContextCurrent.ChartStreaming
-				this.SimulationPostBarsRestore();
-				this.closePositionsLeftOpenAfterBacktest();
-			}
 		}
 		void closePositionsLeftOpenAfterBacktest() {
 			//return;
@@ -237,15 +211,19 @@ namespace Sq1.Core.Backtesting {
 				Assembler.PopupException(msg, null, false);
 			}
 		}
-		protected virtual void SimulationPreBarsSubstitute() {
+		protected virtual void SimulationPreBarsSubstitute_overrideable() {
 			if (this.BarsOriginal == this.Executor.Bars) {
 				string msg = "DID_YOU_FORGET_TO_RESET_this.BarsOriginal_TO_NULL_AFTER_BACKTEST_FINISHED??";
 				Assembler.PopupException(msg);
 			}
 			try {
-				this.BarsOriginal	= this.Executor.Bars;
+				//COPIED_UPSTACK_FOR_BLOCKING_MOUSEMOVE_AFTER_BACKTEST_NOW_CLICK__BUT_ALSO_STAYS_HERE_FOR_SLIDER_CHANGE_NON_INVALIDATION
+				//WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
+				if (this.Executor.ChartShadow != null) this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = false;
+
+				this.BarsOriginal = this.Executor.Bars;
 				this.BarsSimulating = this.Executor.Bars.CloneNoBars(BARS_BACKTEST_CLONE_PREFIX + this.BarsOriginal);
-				this.Executor.EventGenerator.RaiseBacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4();
+				this.Executor.EventGenerator.RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4();
 				
 				#region candidate for this.BacktestDataSourceBuildFromUserSelection()
 				BacktestSpreadModeler spreadModeler;
@@ -275,12 +253,10 @@ namespace Sq1.Core.Backtesting {
 
 				this.BarsSimulating.DataSource = this.BacktestDataSource;
 
-				this.BacktestDataSource.StreamingAdapter.ConsumerQuoteSubscribe(
-					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval,
-					this.backtestQuoteBarConsumer);
-				this.BacktestDataSource.StreamingAdapter.ConsumerBarSubscribe(
-					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval,
-					this.backtestQuoteBarConsumer);
+				StreamingAdapter streaming = this.BacktestDataSource.StreamingAdapter;
+				streaming.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
+				streaming.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
+				streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
 				
 				this.Executor.BacktestContextInitialize(this.BarsSimulating);
 
@@ -309,30 +285,23 @@ namespace Sq1.Core.Backtesting {
 					Assembler.PopupException(msg);
 				}
 
-				this.Executor.EventGenerator.RaiseBacktesterSimulationContextInitializedStep2of4();
+				this.Executor.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
 			} catch (Exception ex) {
 				string msg = "PreBarsSubstitute(): Backtester caught a long beard...";
 				this.Executor.PopupException(msg, ex);
 			} finally {
 				this.BarsSimulatedSoFar = 0;
-				SetBacktestAborted = false;
+				this.BacktestWasAbortedByUserInGui = false;
 				this.BacktestAborted.Reset();
 				this.RequestingBacktestAbort.Reset();
 				this.BacktestIsRunning.Set();
-				//if (this.IsBacktestingNow == false) {
-				//	string msg = "IN_ORDER_TO_SIGNAL_UNFLAGGED_I_HAVE_TO_RESET_INSTEAD_OF_SET";
-				//	Debugger.Break();
-				//}
-
-				//COPIED_UPSTACK_FOR_BLOCKING_MOUSEMOVE_AFTER_BACKTEST_NOW_CLICK__BUT_ALSO_STAYS_HERE_FOR_SLIDER_CHANGE_NON_INVALIDATION
-				//WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
-				if (this.Executor.ChartShadow != null) this.Executor.ChartShadow.BacktestIsRunning.Set();
-				// Calling ManualResetEvent.Reset closes the gate.
-				// Threads that call WaitOne on a closed gate will block
-				// REPLACED_BY_QUOTEPUMP_PAUSED this.BacktestCompletedQuotesCanGo.Reset();
+				if (this.IsBacktestRunning == false) {
+					string msg = "IN_ORDER_TO_SIGNAL_UNFLAGGED_I_HAVE_TO_RESET_INSTEAD_OF_SET";
+					Assembler.PopupException(msg);
+				}
 			}
 		}
-		protected virtual void SimulationPostBarsRestore() {
+		protected virtual void SimulationPostBarsRestore_overrideable() {
 			try {
 				StreamingAdapter streamingBacktest = this.BacktestDataSource.StreamingAdapter;
 				StreamingAdapter streamingOriginal = this.BarsOriginal.DataSource.StreamingAdapter;
@@ -341,13 +310,13 @@ namespace Sq1.Core.Backtesting {
 
 				streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
 
-				this.BacktestDataSource.StreamingAdapter.ConsumerQuoteUnSubscribe(
-					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
-				this.BacktestDataSource.StreamingAdapter.ConsumerBarUnSubscribe(
-					this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
+				StreamingAdapter streaming = this.BacktestDataSource.StreamingAdapter;
+				streaming.ConsumerQuoteUnSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
+				streaming.ConsumerBarUnSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
 
 				this.Executor.BacktestContextRestore();
-				this.Executor.EventGenerator.RaiseBacktesterSimulatedAllBarsStep4of4();
+				this.BarsOriginal = null;
+				this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;
 			} catch (Exception e) {
 				#if DEBUG
 				Debugger.Break();
@@ -358,7 +327,7 @@ namespace Sq1.Core.Backtesting {
 				// allowing any number of threads calling WaitOne to be let through
 				//moved to this.NotifyWaitingThreads()
 				//this.BacktestCompletedQuotesCantGo.Set();
-				if (SetBacktestAborted) {
+				if (this.BacktestWasAbortedByUserInGui) {
 					this.BacktestAborted.Set();
 					this.RequestingBacktestAbort.Reset();
 				}
@@ -464,6 +433,23 @@ namespace Sq1.Core.Backtesting {
 		public override string ToString() {
 			string ret = "BACKTESTER_FOR_" + this.Executor.ToString();
 			return ret;
+		}
+
+		public void InitializeAndRun_step1of2() {
+			this.InitializeAndCheck();
+			this.SimulationPreBarsSubstitute_overrideable();
+			this.SimulationRun();
+		}
+		public void BacktestRestore_step2of2() {
+			this.SimulationPostBarsRestore_overrideable();
+			if (this.IsBacktestingLivesimNow == false) {
+				this.closePositionsLeftOpenAfterBacktest();
+			}
+			this.BacktestIsRunning.Reset();
+			if (this.IsBacktestRunning) {
+				string msg = "IN_ORDER_TO_SIGNAL_FLAGGED_I_HAVE_TO_SET_INSTEAD_OF_RESET";
+				Assembler.PopupException(msg);
+			}
 		}
 	}
 }

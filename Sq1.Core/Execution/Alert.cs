@@ -89,7 +89,7 @@ namespace Sq1.Core.Execution {
 				if (this.Strategy.Script.Executor.Backtester == null) {
 					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this);
 				}
-				return this.Strategy.Script.Executor.Backtester.IsBacktestingNow;
+				return this.Strategy.Script.Executor.Backtester.IsBacktestingNoLivesimNow;
 				//v2 WRONG_FOR_BrokerAdapter.SubmitOrders() return this.Strategy.Script.Executor.Backtester.IsBacktestRunning;
 			}
 		}

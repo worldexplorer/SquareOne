@@ -27,45 +27,51 @@ namespace Sq1.Core.Livesim {
 			this.ordersSubmitted.Add(order);
 		}
 
-		internal void ConsumeQuoteOfStreamingBarToFillPending(QuoteGenerated quote, Bar bar2simulate) {
+		internal void ConsumeQuoteOfStreamingBarToFillPending(QuoteGenerated quoteUnattached, Bar bar2simulate) {
 			ScriptExecutor executor = this.livesimDataSource.Executor;
-
-			//Bar barLastFormed = quoteToReach.ParentStreamingBar;
 			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
+			if (snap.AlertsPending.Count == 0) {
+				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!!";
+				Assembler.PopupException(msg);
+				return;
+			}
+			//var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
+			int dumped = snap.AlertsPending.ByBarPlaced.Count;
+			if (dumped > 0) {
+				//string msg = "here is at least one reason why dumping on fresh quoteToReach makes sense"
+				//	+ " if we never reach this breakpoint the remove dump() from here"
+				//	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
+				string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
+			}
+			int pendingCountPre = executor.ExecutionDataSnapshot.AlertsPending.Count;
+			QuoteGenerated quoteAttachedToStreamingToConsumerBars = quoteUnattached.DeriveIdenticalButFresh();
+			quoteAttachedToStreamingToConsumerBars.SetParentBarStreaming(this.livesimDataSource.Executor.Bars.BarStreaming);
+			quoteUnattached = quoteAttachedToStreamingToConsumerBars;
 
-			if (snap.AlertsPending.Count > 0) {
-				//var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
-				int dumped = snap.AlertsPending.ByBarPlaced.Count;
-				if (dumped > 0) {
-					//string msg = "here is at least one reason why dumping on fresh quoteToReach makes sense"
-					//	+ " if we never reach this breakpoint the remove dump() from here"
-					//	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
-					string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
-				}
-				int pendingCountPre = executor.ExecutionDataSnapshot.AlertsPending.Count;
-
-				if (quote.ParentBarStreaming.ParentBars == null) {
-					string msg = "STREAMING_BAR_UNATTACHED_REPLACED_TO_SIMULATED_BARS_STREAMING_BAR QUICK_AND_DIRTY_EARLY_BINDER_HERE";
-					string err = "NOT_FILLED_YET";
-					bool same = quote.ParentBarStreaming.HasSameDOHLCVas(this.livesimDataSource.Executor.Bars.BarStreaming, "Executor.Bars.BarStreaming", "quote.ParentBarStreaming", ref err);
-					if (same == false) {
-						Assembler.PopupException("CANT_SUBSTITUTE__EXCEPTIONS_COMING" + err);
-					} else {
-						quote.SetParentBarStreaming(this.livesimDataSource.Executor.Bars.BarStreaming);
-					}
-				}
-
-				int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(quote, new Action<Alert, double, double>(this.onAlertFilled));
-				int pendingCountNow = executor.ExecutionDataSnapshot.AlertsPending.Count;
-				if (pendingCountNow != pendingCountPre - pendingFilled) {
-					string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
-				}
-				if (pendingCountNow > 0) {
-					string msg = "pending=[" + pendingCountNow + "], it must be prototype-induced 2 closing TP & SL";
+			if (quoteAttachedToStreamingToConsumerBars.ParentBarStreaming.ParentBars == null) {
+				string msg = "STREAMING_BAR_UNATTACHED_REPLACED_TO_SIMULATED_BARS_STREAMING_BAR QUICK_AND_DIRTY_EARLY_BINDER_HERE";
+				Assembler.PopupException(msg);
+				string err = "NOT_FILLED_YET";
+				bool same = quoteAttachedToStreamingToConsumerBars.ParentBarStreaming.HasSameDOHLCVas(this.livesimDataSource.Executor.Bars.BarStreaming, "Executor.Bars.BarStreaming", "quote.ParentBarStreaming", ref err);
+				if (same == false) {
+					Assembler.PopupException("CANT_SUBSTITUTE__EXCEPTIONS_COMING" + err);
+				} else {
+					quoteAttachedToStreamingToConsumerBars.SetParentBarStreaming(this.livesimDataSource.Executor.Bars.BarStreaming);
 				}
 			}
+
+			int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(quoteAttachedToStreamingToConsumerBars, new Action<Alert, double, double>(this.onAlertFilled));
+			int pendingCountNow = executor.ExecutionDataSnapshot.AlertsPending.Count;
+			if (pendingCountNow != pendingCountPre - pendingFilled) {
+				string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
+			}
+			if (pendingCountNow > 0) {
+				string msg = "pending=[" + pendingCountNow + "], it must be prototype-induced 2 closing TP & SL";
+			}
 			//executor.Script.OnNewQuoteCallback(quoteToReach);
-			ReporterPokeUnit pokeUnitNullUnsafe = executor.ExecuteOnNewBarOrNewQuote(quote);
+
+			ReporterPokeUnit pokeUnitNullUnsafe = executor.ExecuteOnNewBarOrNewQuote(quoteAttachedToStreamingToConsumerBars);
+			//base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
 		}
 		private void onAlertFilled(Alert alertFilled, double priceFilled, double qtyFilled) {
 			Order order = alertFilled.OrderFollowed;

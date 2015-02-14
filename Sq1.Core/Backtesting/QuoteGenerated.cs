@@ -28,14 +28,11 @@ namespace Sq1.Core.Backtesting {
 		}
 
 		#region SORRY_FOR_THE_MESS__I_NEED_TO_DERIVE_IDENTICAL_ONLY_FOR_GENERATED__IF_YOU_NEED_IT_IN_BASE_QUOTE_MOVE_IT_THERE
-		//public QuoteGenerated Clone() {
-		//	return (QuoteGenerated)this.MemberwiseClone();
-		//}
 		public QuoteGenerated DeriveIdenticalButFresh() {
 			QuoteGenerated identicalButFresh = new QuoteGenerated(this.ServerTime);
 			identicalButFresh.Symbol = this.Symbol;
 			identicalButFresh.SymbolClass = this.SymbolClass;
-			identicalButFresh.Source = this.Source;
+			identicalButFresh.Source = "DERIVED_FROM_" + base.ToStringShort() + " " + this.Source;
 			identicalButFresh.ServerTime = this.ServerTime.AddMilliseconds(911);
 			identicalButFresh.LocalTimeCreated = this.LocalTimeCreated.AddMilliseconds(911);
 			identicalButFresh.LastDealBidOrAsk = this.LastDealBidOrAsk;
@@ -44,21 +41,13 @@ namespace Sq1.Core.Backtesting {
 			identicalButFresh.Ask = this.Ask;
 			identicalButFresh.Size = this.Size;
 			identicalButFresh.IntraBarSerno = this.IntraBarSerno + Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill;
+			identicalButFresh.AbsnoPerSymbol = ++this.AbsnoPerSymbol;		// HACK_TO_ALLOW_LIVESIM_BROKER_TO_FILL_PENDING_ALERTS
 			identicalButFresh.ParentBarSimulated = this.ParentBarSimulated;	// was there before I noticed "injected quotes don't seem to have ParentBarSimulated"
 			identicalButFresh.ParentBarStreaming = this.ParentBarStreaming;	// this may fix it injected quotes don't seem to have ParentBarSimulated
 			return identicalButFresh;
 		}
 		#endregion
 
-		//public override string ToString() {
-		//    string ret = "G#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol
-		//        + " bid{" + this.Bid + "-" + this.Ask + "}ask"
-		//        + " size{" + this.Size + "}";
-		//    ret += " SIM:" + this.ParentBarSimulated;		// ALLOW_NULL .ToString()
-		//    ret += " STR:" + this.ParentStreamingBar;		// ALLOW_NULL .ToString()
-		//    if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;
-		//    return ret;
-		//}
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();
 			sb.Append("G#");
@@ -84,18 +73,6 @@ namespace Sq1.Core.Backtesting {
 			}
 			return sb.ToString();
 		}
-		//public string ToStringLong() {
-		//    string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol
-		//        + " bid{" + Math.Round(this.Bid, 3) + "-" + Math.Round(this.Ask, 3) + "}ask"
-		//        + " size{" + this.Size + "@" + Math.Round(this.LastDealPrice, 3) + "}lastDeal";
-		//    if (ServerTime != null) ret += " SERVER[" + ServerTime.ToString("HH:mm:ss.fff") + "]";
-		//    ret += "[" + LocalTimeCreatedMillis.ToString("HH:mm:ss.fff") + "]LOCAL";
-		//    if (string.IsNullOrEmpty(this.Source) == false) ret += " " + Source;
-		//    ret += " WentThroughStreamingToScript[" + this.WentThroughStreamingToScript + "]";
-		//    ret += " SIM:" + this.ParentBarSimulated;
-		//    ret += " STR:" + this.ParentStreamingBar;
-		//    return ret;
-		//}
 		public string ToStringLong() {
 			StringBuilder sb = new StringBuilder();
 			sb.Append("G#");

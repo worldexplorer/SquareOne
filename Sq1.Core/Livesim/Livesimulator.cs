@@ -25,7 +25,7 @@ namespace Sq1.Core.Livesim {
 			this.livesimQuoteBarConsumer = new LivesimQuoteBarConsumer(this);
 		}
 
-		protected override void SimulationPreBarsSubstitute() {
+		protected override void SimulationPreBarsSubstitute_overrideable() {
 		    if (base.BarsOriginal == base.Executor.Bars) {
 		        string msg = "DID_YOU_FORGET_TO_RESET_base.BarsOriginal_TO_NULL_AFTER_BACKTEST_FINISHED??";
 		        Assembler.PopupException(msg);
@@ -33,7 +33,7 @@ namespace Sq1.Core.Livesim {
 		    try {
 		        base.BarsOriginal	= base.Executor.Bars;
 		        base.BarsSimulating = base.Executor.Bars.CloneNoBars(BARS_BACKTEST_CLONE_PREFIX + base.BarsOriginal);
-		        base.Executor.EventGenerator.RaiseBacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4();
+		        base.Executor.EventGenerator.RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4();
 				
 		        #region candidate for this.DataSourceAsLivesimNullUnsafeBuildFromUserSelection()
 		        BacktestSpreadModeler spreadModeler;
@@ -63,13 +63,11 @@ namespace Sq1.Core.Livesim {
 
 		        base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;
 
-				this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.ConsumerQuoteSubscribe(
-					base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval,
-					this.livesimQuoteBarConsumer);
-				this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.ConsumerBarSubscribe(
-					base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval,
-					this.livesimQuoteBarConsumer);
-				
+				StreamingAdapter streaming = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter;
+				streaming.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+				streaming.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+				streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
+
 		        base.Executor.BacktestContextInitialize(base.BarsSimulating);
 
 		        if (base.BarsOriginal == null) {
@@ -96,31 +94,26 @@ namespace Sq1.Core.Livesim {
 		            string msg = "consumers will expect base.Bars.Count = 0";
 		            Assembler.PopupException(msg);
 		        }
-
-		        base.Executor.EventGenerator.RaiseBacktesterSimulationContextInitializedStep2of4();
 		    } catch (Exception ex) {
 		        string msg = "PreBarsSubstitute(): Backtester caught a long beard...";
 		        base.Executor.PopupException(msg, ex);
 		    } finally {
 		        base.BarsSimulatedSoFar = 0;
-		        SetBacktestAborted = false;
+		        base.BacktestWasAbortedByUserInGui = false;
 		        base.BacktestAborted.Reset();
 		        base.RequestingBacktestAbort.Reset();
 		        base.BacktestIsRunning.Set();
-		        //if (this.IsBacktestingNow == false) {
-		        //	string msg = "IN_ORDER_TO_SIGNAL_UNFLAGGED_I_HAVE_TO_RESET_INSTEAD_OF_SET";
-		        //	Debugger.Break();
-		        //}
+				if (this.IsBacktestRunning == false) {
+					string msg = "IN_ORDER_TO_SIGNAL_UNFLAGGED_I_HAVE_TO_RESET_INSTEAD_OF_SET";
+					Assembler.PopupException(msg);
+				}
 
 		        //COPIED_UPSTACK_FOR_BLOCKING_MOUSEMOVE_AFTER_BACKTEST_NOW_CLICK__BUT_ALSO_STAYS_HERE_FOR_SLIDER_CHANGE_NON_INVALIDATION
 		        //WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
-		        if (base.Executor.ChartShadow != null) base.Executor.ChartShadow.BacktestIsRunning.Set();
-		        // Calling ManualResetEvent.Reset closes the gate.
-		        // Threads that call WaitOne on a closed gate will block
-		        // REPLACED_BY_QUOTEPUMP_PAUSED base.BacktestCompletedQuotesCanGo.Reset();
+				//if (base.Executor.ChartShadow != null) base.Executor.ChartShadow.PaintAllowedAfterBacktestFinished = true;
 		    }
 		}
-		protected override void SimulationPostBarsRestore() {
+		protected override void SimulationPostBarsRestore_overrideable() {
 		    try {
 		        LivesimStreaming streamingBacktest = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
 		        StreamingAdapter streamingOriginal = base.BarsOriginal.DataSource.StreamingAdapter;
@@ -129,13 +122,17 @@ namespace Sq1.Core.Livesim {
 
 		        streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, base.BarsOriginal.Symbol, base.BarsOriginal.ScaleInterval);
 
-				this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.ConsumerQuoteUnSubscribe(
-					base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
-				this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.ConsumerBarUnSubscribe(
-					base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+				StreamingAdapter streaming = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter;
+				streaming.ConsumerQuoteUnSubscribe	(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+				streaming.ConsumerBarUnSubscribe	(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
 
-		        base.Executor.BacktestContextRestore();
-		        base.Executor.EventGenerator.RaiseBacktesterSimulatedAllBarsStep4of4();
+				//v2 moved from 10 lines below and added unsyncHappenedNotAsResultOfAbort to IndicatorMovingAverageSimple.checkPopupOnResetAndSync()
+				if (base.BacktestWasAbortedByUserInGui) {
+				    base.BacktestAborted.Set();
+				    base.RequestingBacktestAbort.Reset();
+				}
+
+				base.Executor.BacktestContextRestore();
 		    } catch (Exception e) {
 		        #if DEBUG
 		        Debugger.Break();
@@ -146,11 +143,14 @@ namespace Sq1.Core.Livesim {
 		        // allowing any number of threads calling WaitOne to be let through
 		        //moved to this.NotifyWaitingThreads()
 		        //base.BacktestCompletedQuotesCantGo.Set();
-		        if (SetBacktestAborted) {
-		            base.BacktestAborted.Set();
-		            base.RequestingBacktestAbort.Reset();
-		        }
-		    }
+				//v2 moved to 10 lines above and added unsyncHappenedNotAsResultOfAbort to IndicatorMovingAverageSimple.checkPopupOnResetAndSync()
+				//if (base.BacktestWasAbortedByUserInGui) {
+				//    base.BacktestAborted.Set();
+				//    base.RequestingBacktestAbort.Reset();
+				//}
+				//v3 moved from Stop_inGuiThread koz there it's too early
+				base.Executor.Backtester = this.BacktesterBackup;
+			}
 		}
 	
 		
@@ -160,8 +160,8 @@ namespace Sq1.Core.Livesim {
 			this.chartShadow.RangeBarCollapseToAccelerateLivesim();
 			this.BacktesterBackup = base.Executor.Backtester;
 			base.Executor.Backtester = this;
-			base.Executor.EventGenerator.BacktesterContextInitializedStep2of4
-				+= new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
+			base.Executor.EventGenerator.OnBacktesterContextInitializedStep2of4 +=
+				new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
 			base.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
 		}
 		void executor_BacktesterContextInitializedStep2of4(object sender, EventArgs e) {
@@ -191,18 +191,20 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public void Stop_inGuiThread() {
+			string msig = "USER_CLICKED_STOP_IN_LIVESIM_FORM";
 			try {
 				ManualResetEvent unpausedMR = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Unpaused;
 				bool isUnpaused = unpausedMR.WaitOne(0);
 				if (isUnpaused == false) {
 					string msg = "AVOIDING_TO_WAIT_FOREVER: LivesimStreaming.GeneratedQuoteEnrichSymmetricallyAndPush()";
+					msg += " YOU_STOPPED_PAUSED_LIVESIM_FROM_GUI UNPAUSED_LIVESIM_QUOTE_PUMP__WOZU???_ORIGINAL_BARS_SOLIDIFIER_STILL_RUNNING_IN_ITS_THREAD";
 					unpausedMR.Set();
 				}
-				base.AbortRunningBacktestWaitAborted("USER_CLICKED_STOP_IN_LIVESIM_FORM TIME_TO_UNPAUSE_QUOTE_PUMP");
+				// LIVESIM_HAS_SINGLE_THREADED_QUOTE_PUMP__DONT_REQUEST_AND_DONT_WAIT_JUST_CONTINUE
+				base.AbortRunningBacktestWaitAborted(msig, 0);
 			} catch (Exception ex) {
 				Assembler.PopupException("Livesimulator.Stop_inGuiThread()", ex);
 			}
-			base.Executor.Backtester = this.BacktesterBackup;
 		}
 
 		public void Pause_inGuiThread() {

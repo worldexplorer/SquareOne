@@ -232,14 +232,14 @@ namespace Sq1.Core.Indicators {
 		public virtual string InitializeBacktestStartingPreCheckErrors() {
 			return null;
 		}
-		public virtual double CalculateOwnValueOnNewStaticBarFormed(Bar newStaticBar) {
+		public virtual double CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
 			if (this.OwnValuesCalculated.ContainsDate(newStaticBar.DateTimeOpen)) {
 				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]";
 				Assembler.PopupException(msg);
 			}
 			return double.NaN;
 		}
-		public virtual double CalculateOwnValueOnNewStreamingQuote(Quote newStreamingQuote) {
+		public virtual double CalculateOwnValueOnNewStreamingQuote_invokedAtEachQuoteNoExceptions_NoPeriodWaiting(Quote newStreamingQuote) {
 			return double.NaN;
 			//PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW return this.CalculateOwnValueOnNewStaticBarFormed(newStreamingQuote.ParentStreamingBar);
 		}
@@ -265,22 +265,22 @@ namespace Sq1.Core.Indicators {
 				}
 				return ret;
 			}
-			if (this.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) {
-				//if (popupException) {
-				//    string msg = "DONT_INVOKE_ME__MAKE_THIS_CHECK_UPSTACK"
-				//        + " base.ClosesProxyEffective.Count-1[" + (this.ClosesProxyEffective.Count - 1)
-				//        + "] < this.FirstValidBarIndex[" + this.FirstValidBarIndex + "]"
-				//        + this.ToString();
-				//    Assembler.PopupException(msg);
-				//}
-				//if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) {
-				//    int barsWaitToFirstIndicatorValidIndex = this.FirstValidBarIndex - newStaticBar.ParentBarsIndex;
-				//    string msg = "barsWaitToFirstIndicatorValidIndex[" + barsWaitToFirstIndicatorValidIndex + "] newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex";
-				//    //Assembler.PopupException(msg, null, false);
-				//    return;
-				//}
-				return ret;
-			}
+			//if (this.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) {
+			//    //if (popupException) {
+			//    //    string msg = "DONT_INVOKE_ME__MAKE_THIS_CHECK_UPSTACK"
+			//    //        + " base.ClosesProxyEffective.Count-1[" + (this.ClosesProxyEffective.Count - 1)
+			//    //        + "] < this.FirstValidBarIndex[" + this.FirstValidBarIndex + "]"
+			//    //        + this.ToString();
+			//    //    Assembler.PopupException(msg);
+			//    //}
+			//    //if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) {
+			//    //    int barsWaitToFirstIndicatorValidIndex = this.FirstValidBarIndex - newStaticBar.ParentBarsIndex;
+			//    //    string msg = "barsWaitToFirstIndicatorValidIndex[" + barsWaitToFirstIndicatorValidIndex + "] newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex";
+			//    //    //Assembler.PopupException(msg, null, false);
+			//    //    return;
+			//    //}
+			//    return ret;
+			//}
 			ret = true;
 			return ret;
 		}
@@ -291,8 +291,7 @@ namespace Sq1.Core.Indicators {
 				this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, double.NegativeInfinity);
 				return;
 			}
-
-			double derivedCalculated = this.CalculateOwnValueOnNewStaticBarFormed(newStaticBar);
+			double derivedCalculated = this.CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(newStaticBar);
 
 			int barsAheadOfIndicator = newStaticBar.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
 			if (barsAheadOfIndicator != 1) {
@@ -317,11 +316,31 @@ namespace Sq1.Core.Indicators {
 		public virtual void OnNewStreamingQuote(Quote newStreamingQuote) {
 			bool canRunCalculation = this.canRunCalculation();
 			if (canRunCalculation == false) return;
-			
-			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote(newStreamingQuote);
-			
+
+			string msig = " //OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
+
+			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote_invokedAtEachQuoteNoExceptions_NoPeriodWaiting(newStreamingQuote);
+
+			if (newStreamingQuote.ParentBarStreaming == null) {
+				if (newStreamingQuote.AbsnoPerSymbol == 0) {
+					string msg4 = "FIRST_QUOTE_OF_LIVESIM_HAS_NO_PARENT_STREAMING";
+				} else {
+					string msg2 = "DONT_FEED_ME_WITH_QUOTE_UNATTACHED";
+					Assembler.PopupException(msg2 + msig, null, false);
+				}
+				return;
+			}
+
+			//int barsAheadOfIndicator = newStreamingQuote.ParentBarStreaming.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
 			int barsAheadOfIndicator = newStreamingQuote.ParentBarStreaming.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
-			string msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + " //OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
+			msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + msig;
+
+			if (newStreamingQuote.ParentBarStreaming.ParentBars == null) {
+				string msg2 = "DONT_FEED_ME_WITH_BAR_UNATTACHED";
+				Assembler.PopupException(msg2 + msig, null, false);
+				return;
+			}
+
 			if (barsAheadOfIndicator != 0) {
 				if (newStreamingQuote.IntraBarSerno == 0) {
 					string msg2 = "MUST_HAPPEN_UNFINISHED___??IM_GONNA_BE_INVOKED_ONCE_AGAIN_AFTER_OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";

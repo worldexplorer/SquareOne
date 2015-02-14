@@ -37,7 +37,7 @@ namespace Sq1.Core.Indicators {
 			return null;
 		}
 		
-		public override double CalculateOwnValueOnNewStaticBarFormed(Bar newStaticBar) {
+		public override double CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar) {
 			double atrValue = double.NaN;
 			bool addNan = false;
 			

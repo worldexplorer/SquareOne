@@ -96,7 +96,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniTreeShowExceptionTime.Checked = this.DataSnapshot.TreeShowExceptionTime;
 			this.olvTime.Text = this.DataSnapshot.TreeShowExceptionTime ? "Time" : "Message";
 		}
-		public void InsertException(Exception exception) { lock (this.lockedByTreeListView) {
+		public void InsertExceptionBlocking(Exception exception) { lock (this.lockedByTreeListView) {
 			if (exception == null) {
 				Debugger.Break();
 				return;
@@ -149,12 +149,20 @@ namespace Sq1.Widgets.Exceptions {
 				this.lvStackTrace.EndUpdate();
 			}
 		}
-		public void FlushListToTreeIfDockContentDeserialized() { lock (this.lockedByTreeListView) {
+		public void InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(Exception ex) { lock (this.lockedByTreeListView) {
+			this.InsertExceptionBlocking(ex);
+			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			this.FlushListToTreeIfDockContentDeserialized_inGuiThread();
+		} }
+		public void FlushListToTreeIfDockContentDeserialized_inGuiThread() { lock (this.lockedByTreeListView) {
 			// WINDOWS.FORMS.VISIBLE=FALSE_IS_SET_BY_DOCK_CONTENT_LUO ANALYZE_DockContentImproved.IsShown_INSTEAD if (this.Visible == false) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 				return;
 			}
-			
+			if (this.Exceptions.Count > 0) {
+				Exception lastAdded = this.Exceptions[0];
+				string msg = "HELPS_TO_FIGURE_OUT_MESSAGE_WHILE_ALREADY_IN_GUI_THREAD";
+			}
 			this.treeExceptions.SetObjects(this.Exceptions);
 			this.treeExceptions.RebuildAll(true);
 			if (this.Exceptions.Count == 0) {

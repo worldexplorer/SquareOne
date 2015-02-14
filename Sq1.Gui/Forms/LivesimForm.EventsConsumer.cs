@@ -6,7 +6,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Gui.Forms {
 	public partial class LivesimForm {
-		void livesimForm_StrategyExecutionComplete(object sender, QuoteEventArgs e) {
+		void livesimForm_StrategyExecutedOneQuoteOrBarOrdersEmitted(object sender, EventArgs e) {
 			ChartControl chartControl = this.chartFormManager.ChartForm.ChartControl;
 			//v1 SKIPS_REPAINTING_KOZ_NOW_BACKTEST=TRUE chartControl.InvalidateAllPanels();
 			chartControl.RefreshAllPanelsNonBlockingRefreshNotYetStarted();

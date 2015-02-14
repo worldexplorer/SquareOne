@@ -22,7 +22,9 @@ namespace Sq1.Core.Indicators.HelperSeries {
 				string msg = "PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW DONT_INVOKE_ME_TWICE on[" + newStaticBar.DateTimeOpen + "]"
 					+ " thisBarValue[" + valueCalculated.ToString(base.Format) + "] valueWeAlreadyHave[" + valueWeAlreadyHave + "]";
 				Assembler.PopupException(msg);
-				return double.NaN;
+				//v1 return double.NaN;
+				//v2 STILL_ADD_NAN_TO_KEEP_INDEXES_SYNCED_WITH_OWN_VALUES 
+				valueCalculated = double.NaN;
 			}
 			base.Append(newStaticBar.DateTimeOpen, valueCalculated);
 			return valueCalculated;

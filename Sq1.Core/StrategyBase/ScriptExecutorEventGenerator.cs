@@ -1,44 +1,57 @@
 ﻿using System;
-using Sq1.Core.Execution;
 using System.Collections.Generic;
+
+using Sq1.Core.Execution;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.StrategyBase {
 	public class ScriptExecutorEventGenerator {
-		public event EventHandler<EventArgs> BacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4;
-		public event EventHandler<EventArgs> BacktesterContextInitializedStep2of4;
-		public event EventHandler<EventArgs> BacktesterSimulatedChunkStep3of4;
-		public event EventHandler<EventArgs> BacktesterSimulatedAllBarsStep4of4;
+		public event EventHandler<EventArgs>		OnBacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4;
+		public event EventHandler<EventArgs>		OnBacktesterContextInitializedStep2of4;
+		public event EventHandler<EventArgs>		OnBacktesterSimulatedChunkStep3of4;
+		public event EventHandler<EventArgs>		OnBacktesterContextRestoredAfterExecutingAllBarsStep4of4;
 
-		public event EventHandler<ReporterPokeUnitEventArgs>	BrokerFilledAlertsOpeningForPositions_step1of3;
+		public event EventHandler<QuoteEventArgs>	OnStrategyExecutedOneQuote;
+		public event EventHandler<BarEventArgs>		OnStrategyExecutedOneBar;
+		public event EventHandler<EventArgs>		OnStrategyExecutedOneQuoteOrBarOrdersEmitted;
+
+		public event EventHandler<ReporterPokeUnitEventArgs>	OnBrokerFilledAlertsOpeningForPositions_step1of3;
 		//YOU_KNOW_I_HATE_UNNECESSARY_EVENTS!!!__INVOKING_DIRECTLY_UpdateOpenPositionsDueToStreamingNewQuote()
-		public event EventHandler<ReporterPokeUnitEventArgs>	OpenPositionsUpdatedDueToStreamingNewQuote_step2of3;
-		public event EventHandler<ReporterPokeUnitEventArgs>	BrokerFilledAlertsClosingForPositions_step3of3;
+		public event EventHandler<ReporterPokeUnitEventArgs>	OnOpenPositionsUpdatedDueToStreamingNewQuote_step2of3;
+		public event EventHandler<ReporterPokeUnitEventArgs>	OnBrokerFilledAlertsClosingForPositions_step3of3;
 
 		private ScriptExecutor scriptExecutor;
 
 		public ScriptExecutorEventGenerator(ScriptExecutor scriptExecutor) {
 			this.scriptExecutor = scriptExecutor;
 		}
-		public void RaiseBacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4() {
-			if (this.BacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4 == null) return;
-			this.BacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4(this, null);
+
+		public void RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4() {
+			if (this.OnBacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4 == null) return;
+			this.OnBacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4(this, null);
 		}
-		internal void RaiseBacktesterSimulationContextInitializedStep2of4() {
-			if (this.BacktesterContextInitializedStep2of4 == null) return;
-			this.BacktesterContextInitializedStep2of4(this, null);
+		public void RaiseOnBacktesterSimulationContextInitialized_step2of4() {
+			if (this.OnBacktesterContextInitializedStep2of4 == null) return;
+			this.OnBacktesterContextInitializedStep2of4(this, null);
 		}
-		public void RaiseBacktesterSimulatedChunkStep3of4() {
-			if (this.BacktesterSimulatedChunkStep3of4 == null) return;
-			this.BacktesterSimulatedChunkStep3of4(this, null);
+		public void RaiseOnBacktesterSimulatedChunk_step3of4() {
+			if (this.OnBacktesterSimulatedChunkStep3of4 == null) return;
+			this.OnBacktesterSimulatedChunkStep3of4(this, null);
 		}
-		public void RaiseBacktesterSimulatedAllBarsStep4of4() {
-			if (this.BacktesterSimulatedAllBarsStep4of4 == null) return;
-			this.BacktesterSimulatedAllBarsStep4of4(this, null);
-		}
-		public void RaiseBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
+		public void RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(Quote quote) {
+			if (this.OnBacktesterContextRestoredAfterExecutingAllBarsStep4of4 == null) return;
 			try {
-				if (this.BrokerFilledAlertsOpeningForPositions_step1of3 == null) return;
-				this.BrokerFilledAlertsOpeningForPositions_step1of3(this, new ReporterPokeUnitEventArgs(pokeUnit));
+				this.OnBacktesterContextRestoredAfterExecutingAllBarsStep4of4(this, new QuoteEventArgs(quote));
+			} catch (Exception e) {
+				string msg = "EVENT_CONSUMER(USED_ONLY_FOR_LIVE_SIMULATOR)_THROWN //DataDistributor.RaiseQuotePushedToDistributor(" + quote + ")";
+				Assembler.PopupException(msg, e);
+			}
+		}
+
+		public void RaiseOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
+			try {
+				if (this.OnBrokerFilledAlertsOpeningForPositions_step1of3 == null) return;
+				this.OnBrokerFilledAlertsOpeningForPositions_step1of3(this, new ReporterPokeUnitEventArgs(pokeUnit));
 			} catch (Exception ex) {
 				string msg = "EVENT_SUBSCRIBER_THREW_WHILE_BeginInvoke__BrokerFilledAlertsOpeningForPositions_step1of3()";
 				Assembler.PopupException(msg, ex);
@@ -46,21 +59,34 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
 			try {
-				if (this.OpenPositionsUpdatedDueToStreamingNewQuote_step2of3 == null) return;
-				this.OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this, new ReporterPokeUnitEventArgs(pokeUnit));
+				if (this.OnOpenPositionsUpdatedDueToStreamingNewQuote_step2of3 == null) return;
+				this.OnOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this, new ReporterPokeUnitEventArgs(pokeUnit));
 			} catch (Exception ex) {
 				string msg = "EVENT_SUBSCRIBER_THREW_WHILE_BeginInvoke__OpenPositionsUpdatedDueToStreamingNewQuote_step2of3()";
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		public void RaiseBrokerFilledAlertsClosingForPositions_step3of3(ReporterPokeUnit pokeUnit) {
+		public void RaiseOnBrokerFilledAlertsClosingForPositions_step3of3(ReporterPokeUnit pokeUnit) {
 			try {
-				if (this.BrokerFilledAlertsClosingForPositions_step3of3 == null) return;
-				this.BrokerFilledAlertsClosingForPositions_step3of3(this, new ReporterPokeUnitEventArgs(pokeUnit));
+				if (this.OnBrokerFilledAlertsClosingForPositions_step3of3 == null) return;
+				this.OnBrokerFilledAlertsClosingForPositions_step3of3(this, new ReporterPokeUnitEventArgs(pokeUnit));
 			} catch (Exception ex) {
 				string msg = "EVENT_SUBSCRIBER_THREW_WHILE_BeginInvoke__BrokerFilledAlertsClosingForPositions_step3of3()";
 				Assembler.PopupException(msg, ex);
 			}
+		}
+
+		public void RaiseOnStrategyExecutedOneQuote(Quote quoteForAlertsCreated) {
+			if (this.OnStrategyExecutedOneQuote == null) return;
+			this.OnStrategyExecutedOneQuote(this, new QuoteEventArgs(quoteForAlertsCreated));
+		}
+		public void RaiseOnStrategyExecutedOneBar(Bar bar) {
+			if (this.OnStrategyExecutedOneBar == null) return;
+			this.OnStrategyExecutedOneBar(this, new BarEventArgs(bar));
+		}
+		public void RaiseOnStrategyExecutedOneQuoteOrBarOrdersEmitted(List<Order> ordersEmitted) {
+			if (this.OnStrategyExecutedOneQuoteOrBarOrdersEmitted == null) return;
+			this.OnStrategyExecutedOneQuoteOrBarOrdersEmitted(this, new OrdersListEventArgs(ordersEmitted));
 		}
 	}
 }

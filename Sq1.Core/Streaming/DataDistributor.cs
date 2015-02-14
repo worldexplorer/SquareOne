@@ -253,11 +253,12 @@ namespace Sq1.Core.Streaming {
 			return distributors;
 		}
 
-		public SymbolScaleDistributionChannel GetDistributionChannelFor(string symbol, BarScaleInterval barScaleInterval) {
+		public SymbolScaleDistributionChannel GetDistributionChannelForNullUnsafe(string symbol, BarScaleInterval barScaleInterval) {
 			if (this.DistributionChannels.ContainsKey(symbol) == false) {
 				string msg = "NO_SYMBOL_SUBSCRIBER DataDistributor[" + this + "].DistributionChannels.ContainsKey(" + symbol + ")=false";
 				Assembler.PopupException(msg);
-				throw new Exception(msg);
+				//throw new Exception(msg);
+				return null;
 			}
 			Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> distributionChannels = this.DistributionChannels[symbol];
 			if (distributionChannels.ContainsKey(barScaleInterval) == false) {
@@ -265,7 +266,8 @@ namespace Sq1.Core.Streaming {
 					+ "].DistributionChannels[" + symbol + "].ContainsKey(" + barScaleInterval + ")=false";
 				Assembler.PopupException(msg);
 				//this.StreamingAdapter.StatusReporter.PopupException(new Exception(msg));
-				throw new Exception(msg);
+				//throw new Exception(msg);
+				return null;
 			}
 			return distributionChannels[barScaleInterval];
 		}

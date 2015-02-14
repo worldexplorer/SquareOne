@@ -198,6 +198,7 @@ namespace Sq1.Charting {
 		//#endif
 			string msig = " " + this.PanelName + ".OnPaintDoubleBuffered()";
 			if (this.DesignMode) return;
+			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 			

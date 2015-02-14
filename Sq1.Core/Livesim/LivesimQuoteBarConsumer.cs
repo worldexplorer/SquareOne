@@ -18,29 +18,6 @@ namespace Sq1.Core.Livesim {
 		void IStreamingConsumer.UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
 		}
 		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Quote quote) {
-			//Bar barLastFormed = quoteToReach.ParentStreamingBar;
-			ExecutionDataSnapshot snap = this.livesimulator.Executor.ExecutionDataSnapshot;
-
-			if (snap.AlertsPending.Count > 0) {
-				//var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
-				int dumped = snap.AlertsPending.ByBarPlaced.Count;
-				if (dumped > 0) {
-					//string msg = "here is at least one reason why dumping on fresh quoteToReach makes sense"
-					//	+ " if we never reach this breakpoint the remove dump() from here"
-					//	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
-					string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
-				}
-				int pendingCountPre	= this.livesimulator.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-				//int pendingFilled	= this.livesimulator.Executor.MarketsimBacktest.SimulateFillAllPendingAlerts(quote);
-				int pendingCountNow	= this.livesimulator.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-				//if (pendingCountNow != pendingCountPre - pendingFilled) {
-				//    string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
-				//}
-				if (pendingCountNow > 0) {
-					string msg = "pending=[" + pendingCountNow + "], it must be prototype-induced 2 closing TP & SL";
-				}
-			}
-			//this.backtester.Executor.Script.OnNewQuoteCallback(quoteToReach);
 			ReporterPokeUnit pokeUnitNullUnsafe = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quote);
 		}
 		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {

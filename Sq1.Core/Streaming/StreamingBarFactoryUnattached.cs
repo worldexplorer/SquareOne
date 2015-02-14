@@ -68,7 +68,7 @@ namespace Sq1.Core.Streaming {
 					Debugger.Break();
 				}
 				if (quoteClone.IntraBarSerno != 0) {
-					if (quoteClone.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill) {
+					if (quoteClone.IamInjectedToFillPendingAlerts) {
 						string msg = "GENERATED_QUOTES_ARENT_SUPPOSED_TO_GO_TO_NEXT_BAR";
 						Debugger.Break();
 					}
@@ -107,7 +107,9 @@ namespace Sq1.Core.Streaming {
 
 				//Assembler.PopupException(msg);
 			} else {
-				quoteClone.SetParentBarStreaming(this.BarStreamingUnattached);
+				//v1 quoteClone.SetParentBarStreaming(this.BarStreamingUnattached);
+				//v2
+				string msg = "WHY_DO_YOU_NEED_PARENT_BAR_FOR_QUOTE_NOW?? WILL_BIND_IT_LATER_FOR_EACH_CONSUMER_TO_ITS_OWN_BAR_STREAMING_AND_ITS_PARENT_BARS";
 			}
 			
 			if (quoteClone.IntraBarSerno == -1) {

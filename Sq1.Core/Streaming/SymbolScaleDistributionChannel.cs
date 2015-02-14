@@ -24,14 +24,14 @@ namespace Sq1.Core.Streaming {
 		//		ability to control on per-consumer level costs more, including dissync between Solidifier.BarsStored and Executor.BarsInMemory
 		public	QuotePump						QuotePump						{ get; protected set; }
 
-		public SymbolScaleDistributionChannel() {
+		SymbolScaleDistributionChannel() {
 			lockConsumersQuote = new object();
 			lockConsumersBar = new object();
 			consumersQuote = new List<IStreamingConsumer>();
 			consumersBar = new List<IStreamingConsumer>();
 			earlyBinders = new Dictionary<IStreamingConsumer, StreamingEarlyBinder>();
 			backtestersRunningCausingPumpingPause = new List<Backtester>();
-			QuotePump = new QuotePump(this);
+			//QuotePump = new QuotePump(this);
 			// avoiding YOU_FORGOT_TO_INVOKE_INDICATOR.INITIALIZE()_OR_WAIT_UNTIL_ITLLBE_INVOKED_LATER
 			// Assembler instantiates StreamingAdapters early enough so these horses 
 			// NOPE_ON_APP_RESTART_BACKTESTER_COMPLAINS_ITS_ALREADY_PAUSED
@@ -41,11 +41,16 @@ namespace Sq1.Core.Streaming {
 			Symbol = symbol;
 			ScaleInterval = scaleInterval;
 			StreamingBarFactoryUnattached = new StreamingBarFactoryUnattached(symbol, ScaleInterval);
-			// delayed start to 1) give BacktestStreaming-created channels to not start PumpThread (both architecturally and for linear call stack in debugger)
-			// 2) set Thread.CurrentThread.Name = QuotePump.channel.ToString() ( == this[SymbolScaleDistributionChannel].ToString), without subscribers it looks lame now
-			if (this.QuotePump.SeparatePushingThreadEnabled != quotePumpSeparatePushingThreadEnabled) {
-				this.QuotePump.SeparatePushingThreadEnabled  = quotePumpSeparatePushingThreadEnabled;
-			}
+
+			//v1
+			//// delayed start to 1) give BacktestStreaming-created channels to not start PumpThread (both architecturally and for linear call stack in debugger)
+			//// 2) set Thread.CurrentThread.Name = QuotePump.channel.ToString() ( == this[SymbolScaleDistributionChannel].ToString), without subscribers it looks lame now
+			//if (this.QuotePump.SeparatePushingThreadEnabled != quotePumpSeparatePushingThreadEnabled) {
+			//    string msg = "I_MADE_IT_PROTECTED_TO_SET_THREAD_NAME_FOR_EASIER_DEBUGGING_IN_VISUAL_STUDIO";
+			//    //this.QuotePump.SeparatePushingThreadEnabled  = quotePumpSeparatePushingThreadEnabled;
+			//}
+			//v2 : SET_THREAD_NAME_FOR_EASIER_DEBUGGING_IN_VISUAL_STUDIO 1) default constructor this() made private, 2) QuotePump knows if it should launch pusherEntryPoint() now
+			QuotePump = new QuotePump(this, quotePumpSeparatePushingThreadEnabled);
 		}
 		public void PushQuoteToPump(Quote quote2bClonedForEachConsumer) {
 			if (String.IsNullOrEmpty(quote2bClonedForEachConsumer.Symbol)) {
@@ -59,7 +64,8 @@ namespace Sq1.Core.Streaming {
 
 			Quote quoteSernoEnrichedWithUnboundStreamingBar = this.StreamingBarFactoryUnattached.
 				EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar(quote2bClonedForEachConsumer);
-			if (quoteSernoEnrichedWithUnboundStreamingBar.ParentBarStreaming.ParentBars == null) {
+			if (	quoteSernoEnrichedWithUnboundStreamingBar.ParentBarStreaming == null
+				 || quoteSernoEnrichedWithUnboundStreamingBar.ParentBarStreaming.ParentBars == null) {
 				string msg = "HERE_NULL_IS_OK___BINDER_WILL_BE_INVOKED_DOWNSTACK_SOON_FOR_QUOTE_CLONED StreamingEarlyBinder.BindStreamingBarForQuote()";
 			}
 
@@ -67,8 +73,12 @@ namespace Sq1.Core.Streaming {
 			//v2 let the user re-backtest during live streaming using 1) QuotePump.OnHold=true; 2) RunBacktest(); 3) QuotePump.OnHold=false;
 			this.QuotePump.PushStraightOrBuffered(quoteSernoEnrichedWithUnboundStreamingBar);
 
-			if (quoteSernoEnrichedWithUnboundStreamingBar.ParentBarStreaming.ParentBars != null) {
-				string msg = "HERE_NULL_IS_OK___BINDER_WAS_INVOKED_FOR_QUOTE_CLONED StreamingEarlyBinder.BindStreamingBarForQuote()";
+			if (	quoteSernoEnrichedWithUnboundStreamingBar.ParentBarStreaming == null
+				 || quoteSernoEnrichedWithUnboundStreamingBar.ParentBarStreaming.ParentBars == null) {
+				string msg = "HERE_NULL_IS_OK___BINDER_WILL_BE_INVOKED_DOWNSTACK_SOON_FOR_QUOTE_CLONED StreamingEarlyBinder.BindStreamingBarForQuote()";
+			} else {
+				string msg = "STREAMING_FOR_QUOTE_MUST_NOT_BE_INITIALIZED_HERE";
+				Assembler.PopupException(msg);
 			}
 		}
 		[Obsolete("DANGER!!! QUOTE_MUST_BE_CLONED_AND_ENRICHED MAKE_SURE_this.PushQuoteToConsumers()_IS_INVOKED_THROUGH_PushQuoteToPump.PushStraightOrBuffered()_NOT_STRAIGHT_FROM_this.PushQuoteToDistributionChannels()")]
@@ -109,7 +119,7 @@ namespace Sq1.Core.Streaming {
 			}
 
 			lock (lockConsumersQuote) {
-				this.bindStreamingBarForQuoteAndPushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar.Clone());
+				this.bindStreamingBarForQuoteAndPushQuoteToConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
 			}
 			//this.RaiseOnQuoteSyncPushedToAllConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
 		}
@@ -117,8 +127,9 @@ namespace Sq1.Core.Streaming {
 		void bindNewStreamingBarAppendPokeConsumersStaticFormed(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
 			Bar barStreamingUnattached = this.StreamingBarFactoryUnattached.BarStreamingUnattached.Clone();
 			if (this.consumersBar.Count == 0) {
-				Assembler.PopupException("NO_BARS_CONSUMERS to push lastBarFormed[" + barStreamingUnattached.ToString() + "] SymbolScaleInterval["
-					+ SymbolScaleInterval + "]; returning");
+				string msg = "NO_BARS_CONSUMERS to push lastBarFormed[" + barStreamingUnattached.ToString() + "] SymbolScaleInterval["
+					+ SymbolScaleInterval + "]; returning";
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			int consumerSerno = 1;
@@ -183,38 +194,24 @@ namespace Sq1.Core.Streaming {
 				Bar barStreamingBound = null;
 				try {
 					barStreamingBound = binder.BarStreamingBindToConsumerBarsAndAppend(barStreamingUnattached);
-					if (barStreamingBound != consumer.ConsumerBarsToAppendInto.BarLast) {
-						string msg = "MUST_NEVER_HAPPEN_barStreamingBound != consumer.ConsumerBarsToAppendInto.BarLast";
-						Assembler.PopupException(msg + msig);
-					}
-					if (barStreamingBound == consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe) {
-						string msg = "MUST_NEVER_HAPPEN_barStreamingBound == consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe";
-						Assembler.PopupException(msg + msig);
-					}
-					if (barStreamingBound != consumer.ConsumerBarsToAppendInto.BarStreaming) {
-						string msg = "MUST_NEVER_HAPPEN_barStreamingBound != consumer.ConsumerBarsToAppendInto.BarStreaming";
-						Assembler.PopupException(msg + msig);
-					}
 				} catch (Exception e) {
 					string msg = "BAR_BINDING_TO_PARENT_FAILED " + barStreamingBound.ToString();
 					Assembler.PopupException(msg + msig, e);
 					continue;
 				}
-
 				Quote quoteWithStreamingBarBound = null;
 				try {
 					quoteWithStreamingBarBound = binder.BindStreamingBarForQuote(quoteSernoEnrichedWithUnboundStreamingBar);
 				} catch (Exception e) {
 					string msg = "QUOTE_BINDING_TO_PARENT_STREAMING_BAR_FAILED " + quoteWithStreamingBarBound.ToString();
-					Assembler.PopupException(msg + msig, e);
-					continue;
+					throw new Exception(msg, e);
 				}
 
 				try {
 					Bar barStaticLast	= consumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe;
 					if (barStaticLast == null) {
 						string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING";
-						//Assembler.PopupException(msg);
+						Assembler.PopupException(msg);
 						continue;
 					}
 					consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStaticLast, quoteWithStreamingBarBound);
@@ -227,8 +224,9 @@ namespace Sq1.Core.Streaming {
 		}
 		void bindStreamingBarForQuoteAndPushQuoteToConsumers(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
 			if (this.consumersQuote.Count == 0) {
-				Assembler.PopupException("Can't push quoteSernoEnriched[" + quoteSernoEnrichedWithUnboundStreamingBar + "]: no QuoteConsumers for symbol["
-					+ Symbol + "] + scaleInterval[" + ScaleInterval + "]; returning");
+				string msg = "NO_QUOTE_CONSUMERS Can't push quoteSernoEnriched[" + quoteSernoEnrichedWithUnboundStreamingBar + "]: no QuoteConsumers for symbol["
+					+ Symbol + "] + scaleInterval[" + ScaleInterval + "]; returning";
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			int consumerSerno = 1;

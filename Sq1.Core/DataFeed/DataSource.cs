@@ -295,7 +295,7 @@ namespace Sq1.Core.DataFeed {
 			return ret;
 		}
 		public void PumpingAutoPauseFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelFor(executor.Bars.Symbol, executor.Bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelForNullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
@@ -322,7 +322,7 @@ namespace Sq1.Core.DataFeed {
 			channel.PumpAutoPauseBacktesterLaunchingAdd(executor.Backtester);
 		}
 		public void PumpAutoResumeFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelFor(executor.Bars.Symbol, executor.Bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelForNullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_UNPAUSE_DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
@@ -352,19 +352,19 @@ namespace Sq1.Core.DataFeed {
 
 		public bool PumpingPausedGet(Bars bars) {
 			DataDistributor distr = this.StreamingAdapter.DataDistributor;
-			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelForNullUnsafe(bars.Symbol, bars.ScaleInterval);
 			bool paused = channel.QuotePump.PushConsumersPaused;
 			return paused;
 		}
 		public bool PumpingWaitUntilUnpaused(Bars bars, int maxWaitingMillis = 1000) {
 			DataDistributor distr = this.StreamingAdapter.DataDistributor;
-			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelForNullUnsafe(bars.Symbol, bars.ScaleInterval);
 			bool unpaused = channel.QuotePump.WaitUntilUnpaused(maxWaitingMillis);
 			return unpaused;
 		}
 		public bool PumpingWaitUntilPaused(Bars bars, int maxWaitingMillis = 1000) {
 			DataDistributor distr = this.StreamingAdapter.DataDistributor;
-			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelForNullUnsafe(bars.Symbol, bars.ScaleInterval);
 			bool paused = channel.QuotePump.WaitUntilPaused(maxWaitingMillis);
 			return paused;
 		}
