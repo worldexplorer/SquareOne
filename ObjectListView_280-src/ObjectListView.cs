@@ -7498,8 +7498,17 @@ namespace BrightIdeasSoftware
         /// <param name="index">Index of the column to be returned</param>
         /// <returns>An OLVColumn</returns>
         public virtual OLVColumn GetColumn(int index) {
-            return (OLVColumn)this.Columns[index];
-        }
+            //return (OLVColumn)this.Columns[index];
+			#region REFACTORED_BY_WORLDEXPLORER
+			if (index < 0 || index >= this.Columns.Count) return null;
+			object unCasted = this.Columns[index];
+			OLVColumn olvSubitem = unCasted as OLVColumn;
+			if (olvSubitem == null) {
+				string msg = "MUST_BE_OLVListSubItem_BUT_WE_GOT " + unCasted.GetType();
+			}
+			return olvSubitem;
+			#endregion
+		}
 
         /// <summary>
         /// Return the column at the given title.
