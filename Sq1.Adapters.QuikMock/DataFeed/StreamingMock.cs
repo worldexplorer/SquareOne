@@ -106,7 +106,7 @@ namespace Sq1.Adapters.QuikMock {
 					if (this.MockDdeChannelsBySymbol.ContainsKey(symbol) == false) {
 						DdeChannelsMock channels = new DdeChannelsMock(this, symbol);
 						string msg = "SHOULD_HAVE_BEEN_ADDED_ALREADY " + channels;
-						Assembler.PopupException(msg);
+						Assembler.PopupException(msg, null, false);
 						this.MockDdeChannelsBySymbol.Add(symbol, channels);
 					}
 					DdeChannelsMock ddeChannelsMock = this.MockDdeChannelsBySymbol[symbol];
