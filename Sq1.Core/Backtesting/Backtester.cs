@@ -27,7 +27,7 @@ namespace Sq1.Core.Backtesting {
 
 		public int						BarsSimulatedSoFar				{ get; protected set; }
 		public int						QuotesTotalToGenerate			{ get {
-				if (this.BarsOriginal == null) return -1;
+				if (this.BarsOriginal == null) return -1;	// I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL
 				return this.BarsOriginal.Count * this.QuotesGenerator.QuotePerBarGenerates;
 			} }
 		public int						QuotesGeneratedSoFar			{ get { return BarsSimulatedSoFar * this.QuotesGenerator.QuotePerBarGenerates; } }
@@ -188,19 +188,21 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			foreach (Position positionOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow.InnerListSafeCopy) {
-				//v1
-				//List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionCloseImmediately(positionOpen, );
-				//v2
-				//this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStaticLastNullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
-				// BETTER WOULD BE KILL PREVIOUS PENDING ALERT FROM A CALBACK AFTER MARKET EXIT ORDER GETS FILLED, IT'S UNRELIABLE EXIT IF WE KILL IT HERE
+				//v1 List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionCloseImmediately(positionOpen, );
+				//v2 WONT_CLOSE_POSITION_EARLIER_THAN_OPENED Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStaticLastNullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStreaming, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				if (exitAlert != positionOpen.ExitAlert) {
+					string msg = "FIXME_SOMEHOW";
+					Assembler.PopupException(msg);
+				}
+				// BETTER WOULD BE TO KILL PREVIOUS PENDING ALERT FROM A CALLBACK AFTER MARKET EXIT ORDER GETS FILLED, IT'S UNRELIABLE EXIT IF WE KILL IT HERE
 				// LOOK AT EMERGENCY CLASSES, SOLUTION MIGHT BE THERE ALREADY
 				//List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionKillExitAlert(positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
-				//v3
-				//this.Executor.ExecutionDataSnapshot.MovePositionOpenToClosed(positionOpen);
+				//v3 this.Executor.ExecutionDataSnapshot.MovePositionOpenToClosed(positionOpen);
 				//v4
 				if (positionOpen.ExitAlert == null) continue;
 				try {
-					this.Executor.RemovePendingExitAlertPastDueClosePosition(positionOpen.ExitAlert);
+					this.Executor.RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(positionOpen.ExitAlert);
 				} catch (Exception ex) {
 					Assembler.PopupException("closePositionsLeftOpenAfterBacktest()", ex, false);
 				}
@@ -254,8 +256,9 @@ namespace Sq1.Core.Backtesting {
 				this.BarsSimulating.DataSource = this.BacktestDataSource;
 
 				StreamingAdapter streaming = this.BacktestDataSource.StreamingAdapter;
-				streaming.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
-				streaming.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
+				DataDistributor distr = streaming.DataDistributor;
+				distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
+				distr.ConsumerBarSubscribe  (this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
 				streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
 				
 				this.Executor.BacktestContextInitialize(this.BarsSimulating);
@@ -285,7 +288,7 @@ namespace Sq1.Core.Backtesting {
 					Assembler.PopupException(msg);
 				}
 
-				this.Executor.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
+				//ALREADY_RAISED_INSIDE_CONTEXT_INITIALIZE() this.Executor.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
 			} catch (Exception ex) {
 				string msg = "PreBarsSubstitute(): Backtester caught a long beard...";
 				this.Executor.PopupException(msg, ex);
@@ -308,14 +311,14 @@ namespace Sq1.Core.Backtesting {
 				string msg = "NOW_INSERT_BREAKPOINT_TO_this.channel.PushQuoteToConsumers(quoteDequeued) CATCHING_BACKTEST_END_UNPAUSE_PUMP";
 				//if (streamingOriginal.
 
-				streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
+				string msg2 = "BRO_THIS_IS_NONSENSE!!!"; //streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
 
-				StreamingAdapter streaming = this.BacktestDataSource.StreamingAdapter;
-				streaming.ConsumerQuoteUnSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
-				streaming.ConsumerBarUnSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
+				DataDistributor distr = this.BacktestDataSource.StreamingAdapter.DataDistributor;
+				distr.ConsumerQuoteUnsubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
+				distr.ConsumerBarUnsubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
 
 				this.Executor.BacktestContextRestore();
-				this.BarsOriginal = null;
+				this.BarsOriginal = null;	// I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL WILL_AFFECT_ChartForm.TsiProgressBarETA
 				this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;
 			} catch (Exception e) {
 				#if DEBUG
@@ -430,8 +433,9 @@ namespace Sq1.Core.Backtesting {
 				#endif
 			}
 		}
+		public const string TO_STRING_PREFIX = "BACKTESTER_FOR_";
 		public override string ToString() {
-			string ret = "BACKTESTER_FOR_" + this.Executor.ToString();
+			string ret = TO_STRING_PREFIX + this.Executor.ToString();
 			return ret;
 		}
 
@@ -441,10 +445,10 @@ namespace Sq1.Core.Backtesting {
 			this.SimulationRun();
 		}
 		public void BacktestRestore_step2of2() {
-			this.SimulationPostBarsRestore_overrideable();
 			if (this.IsBacktestingLivesimNow == false) {
 				this.closePositionsLeftOpenAfterBacktest();
 			}
+			this.SimulationPostBarsRestore_overrideable();
 			this.BacktestIsRunning.Reset();
 			if (this.IsBacktestRunning) {
 				string msg = "IN_ORDER_TO_SIGNAL_FLAGGED_I_HAVE_TO_SET_INSTEAD_OF_RESET";

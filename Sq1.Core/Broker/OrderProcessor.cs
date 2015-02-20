@@ -97,7 +97,8 @@ namespace Sq1.Core.Broker {
 					string msg = "ALERT_INCONSISTENT_ORDER_PROCESSOR_DIDNT_SUBMIT reason[" + reason + "] " + alert;
 					Assembler.PopupException(msg, null, false);
 
-					alert.Strategy.Script.Executor.RemovePendingExitAlertPastDueClosePosition(alert);
+					string msg2 = "IM_USING_ALERTS_EXIT_BAR_NOW__NOT_STREAMING__DO_I_HAVE_TO_ADJUST_HERE?";
+					alert.Strategy.Script.Executor.RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(alert);
 					msg = "DID_I_CLOSE_THIS_PENDING_ALERT_HAVING_NO_LIVE_POSITION? " + alert;
 					Assembler.PopupException(msg, null, false);
 					return null;
@@ -538,7 +539,7 @@ namespace Sq1.Core.Broker {
 				this.PostProcessOrderState(order, priceFill, qtyFill);
 			} catch (Exception ex) {
 				string msg = "trying to figure out why SL is not getting placed - we didn't reach PostProcess??";
-				Assembler.PopupException(msg, ex);
+				Assembler.PopupException(msg, ex, false);
 			}
 		} }
 		void PostProcessAccounting(Order order, double qtyFill) {

@@ -20,7 +20,10 @@ namespace Sq1.Core.Serializers {
 				null, this.periodMillis, Timeout.Infinite);
 		}
 		void serializerThreadEntry(object stateWePassNullHere) {
-			if (Thread.CurrentThread.Name != "DataSnapshotSerializer") Thread.CurrentThread.Name = "DataSnapshotSerializer";
+			if (string.IsNullOrEmpty(Thread.CurrentThread.Name) &&
+				Thread.CurrentThread.Name != "DataSnapshotSerializer") {
+				//Thread.CurrentThread.Name = "DataSnapshotSerializer";
+			}
 			Stopwatch watch = new Stopwatch();
 			watch.Start();
 			try {

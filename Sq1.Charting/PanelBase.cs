@@ -199,6 +199,22 @@ namespace Sq1.Charting {
 			string msig = " " + this.PanelName + ".OnPaintDoubleBuffered()";
 			if (this.DesignMode) return;
 			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
+
+			//v1 if (this.VisibleBarLeft_cached != this.ChartControl.Bars.Count) {
+			if (this.VisibleBarLeft_cached != this.ChartControl.VisibleBarLeft) {
+				//if (this.ChartControl.RefreshAllPanelsIsSignalled == true) { }
+				string msg = ""
+					+ " VisibleBarLeft_cached[" + this.VisibleBarLeft_cached + "]!=VisibleBarLeft[" + this.ChartControl.VisibleBarLeft + "]"
+					+ " FORCING_BACKGROUND_PAINT_SYNC_KOZ_REFRESH()_INVOKES_ONLY_FOREGROUND"
+					//+ " ChartControl.RefreshAllPanelsIsSignalled=" + this.ChartControl.RefreshAllPanelsIsSignalled
+					//+ " ImPaintingBackgroundNow=" + this.ImPaintingBackgroundNow
+					//+ " ImPaintingForegroundNow=" + this.ImPaintingForegroundNow
+					;
+				this.OnPaintBackgroundDoubleBuffered(e);
+				msg = "GOT VisibleBarLeft_cached[" + this.VisibleBarLeft_cached + "] VisibleBarLeft[" + this.ChartControl.VisibleBarLeft + "] AFTER" + msg;
+				Assembler.PopupException(msg, null, false);
+			}
+
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 			
@@ -378,6 +394,12 @@ namespace Sq1.Charting {
 						string msg = "this.ChartControl.VisibleBarRight_MUST_BE_POSITIVE_KOZ_YOU_HAVE_BARS[" + this.ChartControl.Bars.Count  + "]";
 						Assembler.PopupException(msg, null, false);
 					}
+					//BETTER_LET_IT_COMPLAIN__RANGE_CAN_NOT_BE_ZERO_WHEN_YOU_HAVE_BARS.COUNT=1
+					//if (this.ChartControl.Bars.Count == 1) {
+					//    string msg = "AVOIDING RANGE_CAN_NOT_BE_ZERO_WHEN_YOU_HAVE_BARS.COUNT=1";
+					//    this.VisibleBarRight_cached = 1;
+					//}
+					this.VisibleBarLeft_cached = this.ChartControl.VisibleBarLeft;
 					return;
 				}
 				if (this.VisibleBarRight_cached < 0) {

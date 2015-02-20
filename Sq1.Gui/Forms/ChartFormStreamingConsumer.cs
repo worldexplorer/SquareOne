@@ -139,18 +139,18 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
-			if (streamingSafe.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, this) == false) {
+			if (streamingSafe.DataDistributor.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, this) == false) {
 				Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_QUOTE" + this.msigForNpExceptions);
 			} else {
 				//Assembler.PopupException("UnSubscribing QuoteConsumer [" + this + "]  to " + plug + "  (was subscribed)");
-				streamingSafe.ConsumerQuoteUnSubscribe(symbolSafe, scaleIntervalSafe, this);
+				streamingSafe.DataDistributor.ConsumerQuoteUnsubscribe(symbolSafe, scaleIntervalSafe, this);
 			}
 
-			if (streamingSafe.ConsumerBarIsSubscribed(symbolSafe, scaleIntervalSafe, this) == false) {
+			if (streamingSafe.DataDistributor.ConsumerBarIsSubscribed(symbolSafe, scaleIntervalSafe, this) == false) {
 				Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_BAR" + this.msigForNpExceptions);
 			} else {
 				//Assembler.PopupException("UnSubscribing BarsConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
-				streamingSafe.ConsumerBarUnSubscribe(symbolSafe, scaleIntervalSafe, this);
+				streamingSafe.DataDistributor.ConsumerBarUnsubscribe(symbolSafe, scaleIntervalSafe, this);
 			}
 
 			subscribed = this.Subscribed;
@@ -194,30 +194,30 @@ namespace Sq1.Gui.Forms {
 			var streamingSafe = this.StreamingAdapter;
 			var streamingBarSafeCloneSafe = this.StreamingBarSafeClone;
 
-			SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelForNullUnsafe(symbolSafe, scaleIntervalSafe);
+			//NPE_AFTER_SEPARATED_SOLIDIFIERS SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelForNullUnsafe(symbolSafe, scaleIntervalSafe);
 
-			if (streamingSafe.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, this) == true) {
+			if (streamingSafe.DataDistributor.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, this) == true) {
 				Assembler.PopupException("CHART_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_QUOTE" + this.msigForNpExceptions);
 			} else {
 				//Assembler.PopupException("Subscribing QuoteConsumer [" + this + "]  to " + plug + "  (wasn't registered)");
-				streamingSafe.ConsumerQuoteSubscribe(symbolSafe, scaleIntervalSafe, this);
+				streamingSafe.DataDistributor.ConsumerQuoteSubscribe(symbolSafe, scaleIntervalSafe, this, true);
 			}
 
-			if (streamingSafe.ConsumerBarIsSubscribed(symbolSafe, scaleIntervalSafe, this) == true) {
+			if (streamingSafe.DataDistributor.ConsumerBarIsSubscribed(symbolSafe, scaleIntervalSafe, this) == true) {
 				Assembler.PopupException("CHART_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_BAR" + this.msigForNpExceptions);
 			} else {
 				//Assembler.PopupException("Subscribing BarsConsumer [" + this + "] to " + this.ToString() + " (wasn't registered)");
 				if (this.chartFormManager.Executor.Bars == null) {
 					// in Initialize() this.ChartForm is requesting bars in a separate thread
-					streamingSafe.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, this);
+					streamingSafe.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, this, true);
 				} else {
 					// fully initialized, after streaming was stopped for a moment and resumed - append into PartialBar
 					if (double.IsNaN(streamingBarSafeCloneSafe.Open) == false) {
 						//streamingSafe.ConsumerBarRegister(symbolSafe, scaleIntervalSafe, this, streamingBarSafeCloneSafe);
-						streamingSafe.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, this);
+						streamingSafe.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, this, true);
 					} else {
 						//streamingSafe.ConsumerBarRegister(symbolSafe, scaleIntervalSafe, this, lastStaticBarSafe);
-						streamingSafe.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, this);
+						streamingSafe.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, this, true);
 					}
 				}
 			}
@@ -274,8 +274,8 @@ namespace Sq1.Gui.Forms {
 				var symbolSafe = this.Symbol;
 				var scaleIntervalSafe = this.ScaleInterval;
 
-				bool quote = streamingSafe.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, this);
-				bool bar = streamingSafe.ConsumerBarIsSubscribed(symbolSafe, scaleIntervalSafe, this);
+				bool quote	= streamingSafe.DataDistributor.ConsumerQuoteIsSubscribed(	symbolSafe, scaleIntervalSafe, this);
+				bool bar	= streamingSafe.DataDistributor.ConsumerBarIsSubscribed(	symbolSafe, scaleIntervalSafe, this);
 				bool ret = quote & bar;
 				return ret;
 			}}
@@ -328,12 +328,12 @@ namespace Sq1.Gui.Forms {
 
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				try {
-					dataSourceSafe.PumpingAutoPauseFor(executorSafe, true);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					bool thereWereNeighbours = dataSourceSafe.PumpPauseNeighborsIfAnyFor(executorSafe);		// NOW_FOR_LIVE_MOCK_BUFFERING
 					// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
 					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
 					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
 				} finally {
-					dataSourceSafe.PumpAutoResumeFor(executorSafe, true);	// NOW_FOR_LIVE_MOCK_BUFFERING
+					bool thereWereNeighbours = dataSourceSafe.PumpResumeNeighborsIfAnyFor(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
 				}
 			}
 
@@ -377,6 +377,7 @@ namespace Sq1.Gui.Forms {
 			var streamingSafe = this.StreamingAdapter;
 			var chartFormSafe = this.ChartForm;
 			var executorSafe = this.Executor;
+			var dataSourceSafe = this.DataSource;
 
 			// STREAMING_BAR_IS_ALREADY_MERGED_IN_EARLY_BINDER_WITH_QUOTE_RECIPROCALLY
 			//try {
@@ -396,8 +397,14 @@ namespace Sq1.Gui.Forms {
 			// #2/4 execute strategy in the thread of a StreamingAdapter (DDE server for MockQuickProvider)
 			if (executorSafe.Strategy != null) {
 				if (executorSafe.IsStreamingTriggeringScript) {
-					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quote);
-					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
+					try {
+						bool thereWereNeighbours = dataSourceSafe.PumpPauseNeighborsIfAnyFor(executorSafe);		// NOW_FOR_LIVE_MOCK_BUFFERING
+						// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
+						ReporterPokeUnit pokeUnitNullUnsafe1 = executorSafe.ExecuteOnNewBarOrNewQuote(quote, true);
+						//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
+					} finally {
+						bool thereWereNeighbours = dataSourceSafe.PumpResumeNeighborsIfAnyFor(executorSafe);	// NOW_FOR_LIVE_MOCK_BUFFERING
+					}
 				} else {
 					// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EACH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED
 					// copypaste from Executor.ExecuteOnNewBarOrNewQuote()

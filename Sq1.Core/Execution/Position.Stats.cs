@@ -58,7 +58,7 @@ namespace Sq1.Core.Execution {
 				int mfeBarIndex = -1;
 				for (int i = this.EntryFilledBarIndex; i <= barIndexExitOrStreaming; i++) {
 					Bar bar = this.Bars[i];
-					if (bar == null) throw new Exception("POSITION.MFE_BAR_BETWEEN_ENTRY_AND_EXIT_IS_NULL");
+					if (bar == null) throw new Exception("POSITION.MFE_BAR_BETWEEN_ENTRY_AND_EXIT_IS_NULL " + this.ToString());
 					double mfeAtBar = (this.PositionLongShort == PositionLongShort.Long)
 						? bar.High - this.EntryFilledPrice : this.EntryFilledPrice - bar.Low;
 					if (mfeAtBar < 0) continue;
@@ -93,7 +93,7 @@ namespace Sq1.Core.Execution {
 				int maeBarIndex = -1;
 				for (int i = this.EntryFilledBarIndex; i <= barExitOrStreaming; i++) {
 					Bar bar = this.Bars[i];
-					if (bar == null) throw new Exception("POSITION.MAE_BAR_BETWEEN_ENTRY_AND_EXIT_IS_NULL");
+					if (bar == null) throw new Exception("POSITION.MAE_BAR_BETWEEN_ENTRY_AND_EXIT_IS_NULL " + this.ToString());
 					double maeAtBar = (this.PositionLongShort == PositionLongShort.Long)
 						? bar.Low - this.EntryFilledPrice : this.EntryFilledPrice - bar.High;
 					if (maeAtBar > 0) continue;

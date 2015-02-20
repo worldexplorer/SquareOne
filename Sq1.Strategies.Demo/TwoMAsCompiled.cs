@@ -140,7 +140,7 @@ namespace Sq1.Strategies.Demo {
 			}
 
 			if (base.Executor.Backtester.BarsOriginal == null) {
-				string msg = "base.Executor.Backtester.BarsOriginal == null";
+				string msg = "I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL base.Executor.Backtester.BarsOriginal == null";
 				//Assembler.PopupException(msg + " //Script=" + this.ToString());
 				return;
 			}

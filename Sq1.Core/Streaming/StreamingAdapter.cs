@@ -20,6 +20,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public DataSource				DataSource;
 		[JsonIgnore]	public string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }
 		[JsonIgnore]	public DataDistributor			DataDistributor						{ get; protected set; }
+		[JsonIgnore]	public DataDistributor			DataDistributorSolidifiers		{ get; protected set; }
 		[JsonProperty]	public StreamingDataSnapshot	StreamingDataSnapshot				{ get; protected set; }
 		[JsonIgnore]	public virtual List<string>		SymbolsUpstreamSubscribed			{ get; private set; }
 		[JsonIgnore]	protected object				SymbolsSubscribedLock;
@@ -37,12 +38,13 @@ namespace Sq1.Core.Streaming {
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingAdapter() {
-			SymbolsSubscribedLock = new object();
-			BarsConsumersLock = new object();
-			SymbolsUpstreamSubscribed = new List<string>();
-			DataDistributor = new DataDistributor(this);
-			StreamingDataSnapshot = new StreamingDataSnapshot(this);
-			StreamingSolidifier = new StreamingSolidifier();
+			SymbolsSubscribedLock			= new object();
+			BarsConsumersLock				= new object();
+			SymbolsUpstreamSubscribed		= new List<string>();
+			DataDistributor			= new DataDistributorCharts(this);
+			DataDistributorSolidifiers		= new DataDistributorSolidifiers(this);
+			StreamingDataSnapshot			= new StreamingDataSnapshot(this);
+			StreamingSolidifier				= new StreamingSolidifier();
 			QuotePumpSeparatePushingThreadEnabled = true;
 		}
 		public virtual void Initialize(DataSource dataSource) {
@@ -56,26 +58,18 @@ namespace Sq1.Core.Streaming {
 		protected virtual void SubscribeSolidifier() {
 			this.StreamingSolidifier.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
-				string ident = "[" + this.StreamingSolidifier.ToString()
-					+ "] <= " + this.DataSource.Name + " :: " + symbol + " (" + this.DataSource.ScaleInterval + ")";
-
-				if (this.ConsumerBarIsSubscribed(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
-					string msg = "WONT_DUPLICATE_SUBSCRIPTION_SOLIDIFIER_BARS " + ident;
-					Assembler.PopupException(msg, null, false);
-				} else {
-					this.ConsumerBarSubscribe(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
-					string msg = "SUBSCRIBED_SOLIDIFIER_BARS " + ident;
-					//Assembler.PopupException(msg, null, false);
+				this.DataDistributorSolidifiers.ConsumerBarSubscribe(symbol,
+					this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
+				this.DataDistributorSolidifiers.ConsumerQuoteSubscribe(symbol,
+					this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
+				SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers.GetDistributionChannelForNullUnsafe(symbol, this.DataSource.ScaleInterval);
+				if (channel == null) {
+					string msg = "NONSENSE";
+					Assembler.PopupException(msg);
+					return;
 				}
-
-				if (this.ConsumerQuoteIsSubscribed(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier) == true) {
-					string msg = "WONT_DUPLICATE_SUBSCRIPTION_SOLIDIFIER_QUOTES " + ident;
-					Assembler.PopupException(msg, null, false);
-				} else {
-					this.ConsumerQuoteSubscribe(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
-					string msg = "SUBSCRIBED_SOLIDIFIER_QUOTES " + ident;
-					//Assembler.PopupException(msg, null, false);
-				}
+				channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
+				channel.QuotePump.PusherUnpause();
 			}
 		}
 
@@ -141,55 +135,13 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 
-		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerBarSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			if (scaleInterval.Scale == BarScale.Unknown) {
-				string msg = "Failed to ConsumerBarRegister(): scaleInterval.Scale=Unknown; returning";
-				Assembler.PopupException(msg);
-				throw new Exception(msg);
-			}
-			bool alreadyRegistered = this.ConsumerBarIsSubscribed(symbol, scaleInterval, consumer);
-			if (alreadyRegistered) {
-				string msg = "AVOIDING_MULTIPLE_SUBSCRIPTION BAR_CONSUMER_ALREADY_REGISTERED[" + consumer.ToString() + "] symbol[" + symbol + "] scaleInterval[" + scaleInterval.ToString() + "] ";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
-
-			this.DataDistributor.ConsumerBarSubscribe(symbol, scaleInterval, consumer, this.QuotePumpSeparatePushingThreadEnabled);
-		}
-		public virtual void ConsumerBarUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			this.DataDistributor.ConsumerBarUnSubscribe(symbol, scaleInterval, consumer);
-		}
-		public virtual bool ConsumerBarIsSubscribed(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			return this.DataDistributor.ConsumerBarIsSubscribed(symbol, scaleInterval, consumer);
-		}
-		#endregion
-
-		#region overridable proxy methods routed by default to DataDistributor
-		public virtual void ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			bool alreadyRegistered = this.ConsumerQuoteIsSubscribed(symbol, scaleInterval, consumer);
-			if (alreadyRegistered) {
-				string msg = "AVOIDING_MULTIPLE_SUBSCRIPTION QUOTE_CONSUMER_ALREADY_REGISTERED[" + consumer.ToString() + "] symbol[" + symbol + "] scaleInterval[" + scaleInterval.ToString() + "] ";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
-			this.DataDistributor.ConsumerQuoteSubscribe(symbol, scaleInterval, consumer, this.QuotePumpSeparatePushingThreadEnabled);
-			this.StreamingDataSnapshot.LastQuoteInitialize(symbol);
-		}
-		public virtual void ConsumerQuoteUnSubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer streamingConsumer) {
-			this.DataDistributor.ConsumerQuoteUnSubscribe(symbol, scaleInterval, streamingConsumer);
-			this.StreamingDataSnapshot.LastQuoteInitialize(symbol);
-		}
-		public virtual bool ConsumerQuoteIsSubscribed(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer consumer) {
-			return this.DataDistributor.ConsumerQuoteIsSubscribed(symbol, scaleInterval, consumer);
-		}
-		//public virtual void ConsumerUnregisterDead(IStreamingConsumer streamingConsumer) {
-		//    this.DataDistributor.ConsumerBarUnSubscribeDying(streamingConsumer);
-		//    this.DataDistributor.ConsumerQuoteUnSubscribeDying(streamingConsumer);
-		//}
-		#endregion
 
 		public virtual void PushQuoteReceived(Quote quote) {
+			bool dontSolidifyAndDontPushToCharts = this.DataDistributor.DistributionChannels.Count == 0;
+			if (dontSolidifyAndDontPushToCharts) {
+				return;
+			}
+
 			if (quote.ServerTime == DateTime.MinValue) {
 				quote.ServerTime = this.DataSource.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
 			}
@@ -263,6 +215,12 @@ namespace Sq1.Core.Streaming {
 			this.StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
 
 			try {
+				this.DataDistributorSolidifiers.PushQuoteToDistributionChannels(quote);
+			} catch (Exception e) {
+				string msg = "SOME_CONSUMERS_SOME_SCALEINTERVALS_FAILED_ON_ONE StreamingAdapter.PushQuoteReceived()";
+				Assembler.PopupException(msg, e);
+			}
+			try {
 				this.DataDistributor.PushQuoteToDistributionChannels(quote);
 			} catch (Exception e) {
 				string msg = "SOME_CONSUMERS_SOME_SCALEINTERVALS_FAILED_ON_ONE StreamingAdapter.PushQuoteReceived()";
@@ -283,26 +241,27 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		public void InitializeStreamingOHLCVfromStreamingAdapter(Bars chartBars) {
-			SymbolScaleDistributionChannel distributionChannel = this.DataDistributor
+			SymbolScaleDistributionChannel channel = this.DataDistributor
 				.GetDistributionChannelForNullUnsafe(chartBars.Symbol, chartBars.ScaleInterval);
+			if (channel == null) return;
 			//v1 
 			//Bar streamingBar = distributionChannel.StreamingBarFactoryUnattached.StreamingBarUnattached;
 			Bar streamingBar = chartBars.BarStreaming;
 			if (streamingBar == null) {
-				string msg = "STREAMING_NEVER_STARTED BarFactory.StreamingBar=null for distributionChannel[" + distributionChannel + "]";
+				string msg = "STREAMING_NEVER_STARTED BarFactory.StreamingBar=null for distributionChannel[" + channel + "]";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 			if (streamingBar.DateTimeOpen == DateTime.MinValue) {
 				string msg = "STREAMING_NEVER_STARTED streamingBar.DateTimeOpen=MinValue [" + streamingBar
-					+ "] for distributionChannel[" + distributionChannel + "]";
+					+ "] for distributionChannel[" + channel + "]";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 			}
 			if (chartBars.BarStaticLastNullUnsafe == null) {
 				// FAILED_FIXING_IN_DataDistributor
 				string msg = "BAR_STATIC_LAST_IS_NULL while streamingBar[" + streamingBar
-					+ "] for distributionChannel[" + distributionChannel + "]";
+					+ "] for distributionChannel[" + channel + "]";
 				// Assembler.PopupException(msg, null);
 				//throw new Exception(msg);
 				return;
@@ -332,61 +291,67 @@ namespace Sq1.Core.Streaming {
 			return this.Name + "/[" + this.ConnectionState + "]: UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]";
 		}
 
-		internal void AbsorbStreamingBarFactoryFromBacktestComplete(StreamingAdapter streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
-			SymbolScaleDistributionChannel channelBacktest = streamingBacktest.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
-			Bar barLastFormedBacktest	 = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
-			Bar barStreamingBacktest	 = channelBacktest.StreamingBarFactoryUnattached.BarStreamingUnattached;
+		//internal void AbsorbStreamingBarFactoryFromBacktestComplete(StreamingAdapter streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
+		//    SymbolScaleDistributionChannel channelBacktest = streamingBacktest.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
+		//    if (channelBacktest == null) return;
+		//    Bar barLastFormedBacktest = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
+		//    if (barLastFormedBacktest == null) return;
 
-			SymbolScaleDistributionChannel channelOriginal = this.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
-			Bar barLastFormedOriginal	 = channelOriginal.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
-			Bar barStreamingOriginal	 = channelOriginal.StreamingBarFactoryUnattached.BarStreamingUnattached;
+		//    Bar barStreamingBacktest	 = channelBacktest.StreamingBarFactoryUnattached.BarStreamingUnattached;
 
-			if (barLastFormedOriginal == null) {
-				string msg = "NO_NEED_TO_RESET_STREAMING_BAR_FACTORY__NO_QUOTE_WAS_PUMPED_IN_YET_SINCE_APPRESTART__FIRST_EVER_AUTOBACKTEST_COMPLETE";
-				Assembler.PopupException(msg, null, false);
-				//channelOriginal.StreamingBarFactoryUnattached.AbsorbBarLastStaticFromChannel(channelBacktest);
-				//NOPE_LEAVE_IT_MINE__ON_APPRESTART_NULL__IN_MID_LIVE_BACKTEST_SHOULD_HAVE_LAST_INCOMING_QUOTE KEEP_THIS_NOT_HAPPENING_BY_LEAVING_STATIC_LAST_ON_APPRESTART_NULL_ON_LIVEBACKTEST_CONTAINING_LAST_INCOMING_QUOTE channelOriginal.StreamingBarFactoryUnattached.AbsorbBarStreamingFromChannel(channelBacktest);
-				return;
-			}
-			if (barStreamingOriginal.DateTimeOpen == DateTime.MinValue) {
-				string msg = "LIVE_STREAMING_NEVER_STARTED_SINCE_APPRESTART__NO_NEED_TO_FORCE_EXECUTE_ON_LASTFORMED_WILL_BE_TRIGGERED_BY_ITSELF";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
-			if (barLastFormedOriginal.DateTimeOpen == DateTime.MinValue) {
-				string msg = "LIVE_STREAMING_STARTED_BUT_LAST_FORMED_NEVER_GENERATED_SINCE_APPRESTART___NO_NEED_TO_FORCE_EXECUTE_ON_LASTFORMED_WILL_BE_TRIGGERED_BY_ITSELF";
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
-			// UNATTACHED_MEANS_NO_PARENT_BARS_AT_ALL
-			//int mustBeOneToForceLastFormedExec = barLastFormedBacktest.ParentBarsIndex - barLastFormedOriginal.ParentBarsIndex;
-			//if (mustBeOneToForceLastFormedExec != 1) {
+		//    SymbolScaleDistributionChannel channelOriginal = this.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
+		//    if (channelOriginal == null) return;
+		//    Bar barLastFormedOriginal = channelOriginal.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
+		//    if (barLastFormedOriginal == null) return;
 
-			//NEW_BAR_CREATION_CONDITION: if (quoteClone.ServerTime >= this.BarStreamingUnattached.DateTimeNextBarOpenUnconditional) {
-			bool canTriggerNewBarCreation = barStreamingOriginal.DateTimeOpen > barStreamingBacktest.DateTimeOpen;
-			//bool canTriggerNewBarCreation = barStreamingOriginal.DateTimeOpen < barStreamingOriginal.DateTimeNextBarOpenUnconditional;
-			if (canTriggerNewBarCreation) {
-				string msg2 = "ANY_NEW_QUOTE_WILL_TRIGGER_LASTBAR_EXECUTION?";
-				string msg1 = "FORCING_EXECUTE_ON_LASTFORMED_BY_RESETTING_LAST_FORMED_TO_PREVIOUSLY_EXECUTED_AFTER_BACKTEST";
-				//Assembler.PopupException(msg2);
-				channelOriginal.StreamingBarFactoryUnattached.AbsorbBarLastStaticFromChannelBacktesterComplete(channelBacktest);
-			}
+		//    Bar barStreamingOriginal = channelOriginal.StreamingBarFactoryUnattached.BarStreamingUnattached;
 
-			string difference = "";
-			bool hasSame = barLastFormedOriginal.HasSameDOHLCVas(barLastFormedBacktest, "barLastBacktest", "barLastOriginal", ref difference);
-			if (hasSame) {
-				string msg = "MUST_BE_DIFFERENT_FOR_MID_LIVE_BACKTEST_SINCE_QUOTES_MUST_HAVE_BEEN_PAUSED " + difference;
-				//Assembler.PopupException(msg);
-			}
+		//    if (barLastFormedOriginal == null) {
+		//        string msg = "NO_NEED_TO_RESET_STREAMING_BAR_FACTORY__NO_QUOTE_WAS_PUMPED_IN_YET_SINCE_APPRESTART__FIRST_EVER_AUTOBACKTEST_COMPLETE";
+		//        Assembler.PopupException(msg, null, false);
+		//        //channelOriginal.StreamingBarFactoryUnattached.AbsorbBarLastStaticFromChannel(channelBacktest);
+		//        //NOPE_LEAVE_IT_MINE__ON_APPRESTART_NULL__IN_MID_LIVE_BACKTEST_SHOULD_HAVE_LAST_INCOMING_QUOTE KEEP_THIS_NOT_HAPPENING_BY_LEAVING_STATIC_LAST_ON_APPRESTART_NULL_ON_LIVEBACKTEST_CONTAINING_LAST_INCOMING_QUOTE channelOriginal.StreamingBarFactoryUnattached.AbsorbBarStreamingFromChannel(channelBacktest);
+		//        return;
+		//    }
+		//    if (barStreamingOriginal.DateTimeOpen == DateTime.MinValue) {
+		//        string msg = "LIVE_STREAMING_NEVER_STARTED_SINCE_APPRESTART__NO_NEED_TO_FORCE_EXECUTE_ON_LASTFORMED_WILL_BE_TRIGGERED_BY_ITSELF";
+		//        Assembler.PopupException(msg, null, false);
+		//        return;
+		//    }
+		//    if (barLastFormedOriginal.DateTimeOpen == DateTime.MinValue) {
+		//        string msg = "LIVE_STREAMING_STARTED_BUT_LAST_FORMED_NEVER_GENERATED_SINCE_APPRESTART___NO_NEED_TO_FORCE_EXECUTE_ON_LASTFORMED_WILL_BE_TRIGGERED_BY_ITSELF";
+		//        Assembler.PopupException(msg, null, false);
+		//        return;
+		//    }
+		//    // UNATTACHED_MEANS_NO_PARENT_BARS_AT_ALL
+		//    //int mustBeOneToForceLastFormedExec = barLastFormedBacktest.ParentBarsIndex - barLastFormedOriginal.ParentBarsIndex;
+		//    //if (mustBeOneToForceLastFormedExec != 1) {
 
-			hasSame = barStreamingOriginal.HasSameDOHLCVas(barStreamingBacktest, "barStreamingOriginal", "barStreamingBacktest", ref difference);
-			if (hasSame) {
-				string msg = "MUST_BE_DIFFERENT_FOR_MID_LIVE_BACKTEST_SINCE_QUOTES_MUST_HAVE_BEEN_PAUSED " + difference;
-				Assembler.PopupException(msg);
-			}
-			return;
+		//    //NEW_BAR_CREATION_CONDITION: if (quoteClone.ServerTime >= this.BarStreamingUnattached.DateTimeNextBarOpenUnconditional) {
+		//    bool canTriggerNewBarCreation = barStreamingOriginal.DateTimeOpen > barStreamingBacktest.DateTimeOpen;
+		//    //bool canTriggerNewBarCreation = barStreamingOriginal.DateTimeOpen < barStreamingOriginal.DateTimeNextBarOpenUnconditional;
+		//    if (canTriggerNewBarCreation) {
+		//        string msg2 = "ANY_NEW_QUOTE_WILL_TRIGGER_LASTBAR_EXECUTION?";
+		//        string msg1 = "FORCING_EXECUTE_ON_LASTFORMED_BY_RESETTING_LAST_FORMED_TO_PREVIOUSLY_EXECUTED_AFTER_BACKTEST";
+		//        //Assembler.PopupException(msg2);
+		//        channelOriginal.StreamingBarFactoryUnattached.AbsorbBarLastStaticFromChannelBacktesterComplete(channelBacktest);
+		//    }
 
-		}
+		//    string difference = "";
+		//    bool hasSame = barLastFormedOriginal.HasSameDOHLCVas(barLastFormedBacktest, "barLastBacktest", "barLastOriginal", ref difference);
+		//    if (hasSame) {
+		//        string msg = "MUST_BE_DIFFERENT_FOR_MID_LIVE_BACKTEST_SINCE_QUOTES_MUST_HAVE_BEEN_PAUSED " + difference;
+		//        //Assembler.PopupException(msg);
+		//    }
+
+		//    hasSame = barStreamingOriginal.HasSameDOHLCVas(barStreamingBacktest, "barStreamingOriginal", "barStreamingBacktest", ref difference);
+		//    if (hasSame) {
+		//        string msg = "MUST_BE_DIFFERENT_FOR_MID_LIVE_BACKTEST_SINCE_QUOTES_MUST_HAVE_BEEN_PAUSED " + difference;
+		//        Assembler.PopupException(msg);
+		//    }
+		//    return;
+
+		//}
 
 		internal void SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(string symbol, BarScaleInterval barScaleInterval) {
 			SymbolScaleDistributionChannel channel = this.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
@@ -395,11 +360,10 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg);
 				return;
 			}
-			QuotePump pump = channel.QuotePump;
-			if (this.QuotePumpSeparatePushingThreadEnabled == false) {
-				pump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
+			if (this.QuotePumpSeparatePushingThreadEnabled) {
+				channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
 			} else {
-				pump.SetThreadName();
+				channel.QuotePump.SetThreadName();
 			}
 		}
 	}

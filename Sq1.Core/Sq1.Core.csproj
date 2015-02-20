@@ -227,10 +227,12 @@
       <DependentUpon>Strategy.cs</DependentUpon>
     </Compile>
     <Compile Include="StrategyBase\SystemPerformanceEventArgs.cs" />
-    <Compile Include="Streaming\QuotePump.cs" />
-    <Compile Include="Streaming\QuoteQueue.cs" />
+    <Compile Include="Streaming\DataDistributorCharts.cs" />
+    <Compile Include="Streaming\DataDistributorSolidifiers.cs" />
+    <Compile Include="Streaming\QuotePumpPerChannel.cs" />
+    <Compile Include="Streaming\QuoteQueuePerChannel.cs" />
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
-    <Compile Include="Streaming\StreamingEarlyBinder.cs" />
+    <Compile Include="Streaming\StreamingLateBinder.cs" />
     <Compile Include="Streaming\StreamingAdapter.EditorSupport.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>

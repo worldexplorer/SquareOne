@@ -177,6 +177,7 @@ namespace Sq1.Core.StrategyBase {
 			// Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRenamed +=
 			//	new EventHandler<DataSourceSymbolEventArgs>(Assembler_InstanceInitialized_RepositoryJsonDataSource_OnSymbolRenamed);
 		}
+		Quote quoteExecutedLast;
 		Bar barStaticExecutedLast;
 		public ReporterPokeUnit ExecuteOnNewBarOrNewQuote(Quote quoteForAlertsCreated, bool onNewQuoteTrue_onNewBarFalse = true) {
 			if (this.Strategy == null) {
@@ -189,6 +190,19 @@ namespace Sq1.Core.StrategyBase {
 
 			//if (quote != null) {
 			if (onNewQuoteTrue_onNewBarFalse == true) {
+				if (this.quoteExecutedLast != null) {
+					int mustBeOne = quoteForAlertsCreated.AbsnoPerSymbol - quoteExecutedLast.AbsnoPerSymbol;
+					if (mustBeOne == 0) {
+						string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WONT_COMPLAIN_TOO";
+						Assembler.PopupException(msg2, null, false);
+					}
+					if (mustBeOne > 1) {
+						int skipped = mustBeOne - 1;
+						string msg2 = "HOLE_IN_SCRIPT_INVOCATION";
+						Assembler.PopupException(msg2, null, false);
+					}
+				}
+				//INDICATOR_ADDING_STREAMING_DOESNT_KNOW_FROM_QUOTE_WHAT_DATE_OPEN_TO_PUT
 				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
 					try {
 						indicator.OnNewStreamingQuote(quoteForAlertsCreated);
@@ -213,10 +227,10 @@ namespace Sq1.Core.StrategyBase {
 			} else {
 				if (this.barStaticExecutedLast != null) {
 					int mustBeOne = this.Bars.BarStaticLastNullUnsafe.ParentBarsIndex - this.barStaticExecutedLast.ParentBarsIndex;
-					if (mustBeOne == 0) {
-						string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WILL_COMPLAIN_TOO";
-						Assembler.PopupException(msg2, null, false);
-					}
+					//if (mustBeOne == 0) {
+					//    string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WILL_COMPLAIN_TOO";
+					//    Assembler.PopupException(msg2, null, false);
+					//}
 					if (mustBeOne > 1) {
 						int skipped = mustBeOne - 1;
 						string msg2 = "HOLE_IN_SCRIPT_INVOCATION INDICATORS_WILL_COMPLAIN_TOO ALERTS_WILL_MISTMATCH_BARS ExecuteOnNewBar()_SKIPPED=[" + skipped + "]";
@@ -225,9 +239,6 @@ namespace Sq1.Core.StrategyBase {
 				}
 				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
 					try {
-						int barsAheadOfIndicator = this.Bars.BarStaticLastNullUnsafe.ParentBarsIndex - indicator.OwnValuesCalculated.LastIndex;
-						if (barsAheadOfIndicator == 0) continue;
-
 						indicator.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended(this.Bars.BarStaticLastNullUnsafe);
 					} catch (Exception ex) {
 						Assembler.PopupException("INDICATOR_ON_NEW_BAR " + indicator.ToString(), ex);
@@ -282,13 +293,16 @@ namespace Sq1.Core.StrategyBase {
 					//Debugger.Break();
 					ContextScript ctx = this.Strategy.ScriptContextCurrent;
 
-					//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
-					// ^^^ this.DataSource.PausePumpingFor(this.Bars, true);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
-					bool paused = this.Bars.DataSource.PumpingWaitUntilPaused(this.Bars, 0);
-					if (paused == true) {
-						string msg3 = "YOU_WANT_ONE_STRATEGY_PER_SYMBOL_LIVE MAKE_SURE_YOU_HAVE_ONLY_ONE_SYMBOL:INTERVAL_ACROSS_ALL_OPEN_CHARTS PUMP_SHOULD_HAVE_BEEN_PAUSED_EARLIER"
-							+ " in ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
-						Assembler.PopupException(msg3);
+					bool noNeedToUnpauseLivesimKozItsNeverPaused = this.Bars.DataSource is LivesimDataSource;
+					if (noNeedToUnpauseLivesimKozItsNeverPaused == false) {
+						//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
+						// ^^^ this.DataSource.PausePumpingFor(this.Bars, true);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
+						bool paused = this.Bars.DataSource.PumpingWaitUntilPaused(this.Bars, 0);
+						if (paused == true) {
+							string msg3 = "YOU_WANT_ONE_STRATEGY_PER_SYMBOL_LIVE MAKE_SURE_YOU_HAVE_ONLY_ONE_SYMBOL:INTERVAL_ACROSS_ALL_OPEN_CHARTS PUMP_SHOULD_HAVE_BEEN_PAUSED_EARLIER"
+								+ " in ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
+							Assembler.PopupException(msg3, null, false);
+						}
 					}
 					ordersEmitted = this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsNewAfterExecCopy, setStatusSubmitting, true);
 					//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
@@ -555,8 +569,9 @@ namespace Sq1.Core.StrategyBase {
 				this.RemovePendingEntry(alert);
 				this.ClosePositionWithAlertClonedFromEntryBacktestEnded(alert);
 			} else {
-				string msg = "checkPositionCanBeClosed() will later interrupt the flow saying {Sorry I don't serve alerts.IsExitAlert=true}";
-				this.RemovePendingExitAlertPastDueClosePosition(alert);
+				string msg = "IM_USING_ALERTS_EXIT_BAR_NOW__NOT_STREAMING__DO_I_HAVE_TO_ADJUST_HERE?"
+					+ "checkPositionCanBeClosed() will later interrupt the flow saying {Sorry I don't serve alerts.IsExitAlert=true}";
+				this.RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(alert);
 			}
 			if (this.Strategy.Script == null) return;
 			try {
@@ -873,19 +888,20 @@ namespace Sq1.Core.StrategyBase {
 			// OrderFollowed=null when executeStrategyBacktestEntryPoint() is in the call stack
 			this.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(alert.OrderFollowed, msig + msg);
 		}
-		public void RemovePendingExitAlertPastDueClosePosition(Alert alert) {
-			string msig = "RemovePendingEntryCloneToExitAlertClosePosition(): ";
+		public void RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(Alert alert) {
+			string msig = "RemovePendingExitAlertAndClosePositionAfterBacktestLeftItHanging(): ";
 			this.RemovePendingExitAlert(alert, msig);
 			//bool checkPositionOpenNow = true;
 			//if (this.checkPositionCanBeClosed(alert, msig, checkPositionOpenNow) == false) return;
 
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerAdapter knows to pass Bar here?...
 			//v1 STREAMING DOESNT BELONG??? Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
-			//v2 NO_I_NEED_STREAMING_BAR_NOT_THE_SAME_I_OPENED_THE_LEFTOVER_POSITION
-			Bar barFill = alert.Bars.BarStaticLastNullUnsafe;
+			//v2 NO_I_NEED_STREAMING_BAR_NOT_THE_SAME_I_OPENED_THE_LEFTOVER_POSITION Bar barFill = alert.Bars.BarStaticLastNullUnsafe;
 			// HACK adding streaming LIVE to where BACKTEST_BARS_CLONED_FOR_ just ended; to avoid NPE at "if (exitBar.Open != this.ExitBar.Open) {"
 			//v3 alert.Bars.BarCreateAppendBindStatic(barFill.DateTimeOpen, barFill.Open, barFill.High, barFill.Low, barFill.Close, barFill.Volume);
 			//v4 alert.Bars.BarStreamingCreateNewOrAbsorb(this.Bars.BarStreaming);
+			//v5 IM_USING_ALERTS_EXIT_BAR_NOW__NOT_STREAMING
+			Bar barFill = (alert.PlacedBar != null) ? alert.PlacedBar : alert.Bars.BarStaticLastNullUnsafe;
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
 			alert.SignalName += " RemovePendingExitAlertClosePosition Forced";
 			// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR we can exit by TP or SL - position doesn't have an ExitAlert assigned until Position.EntryAlert was filled!!!
@@ -979,11 +995,10 @@ namespace Sq1.Core.StrategyBase {
 		bool		preBacktestIsStreaming;
 		internal void BacktestContextInitialize(Bars bars) {
 			if (this.Bars.DataSource.StreamingAdapter != null) {
-				this.Bars.DataSource.PumpingAutoPauseFor(this, this.Backtester.IsBacktestingNoLivesimNow);
+				bool thereWereNeighbours = this.Bars.DataSource.PumpPauseNeighborsIfAnyFor(this, this.Backtester.IsBacktestingNoLivesimNow);
 			} else {
 				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + bars + ")";
 				Assembler.PopupException(msg, null, false);
-				// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = true;
 			}
 			
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
@@ -1014,12 +1029,12 @@ namespace Sq1.Core.StrategyBase {
 			this.IsStreamingTriggeringScript = true;
 			//this.Strategy.ScriptBase.Initialize(this);
 
-			this.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();	
+			this.EventGenerator.RaiseOnBacktesterSimulationContextInitialized_step2of4();
 		}
 		internal void BacktestContextRestore() {
 			this.Bars = this.preBacktestBars;
 			foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
-				if (indicator.OwnValuesCalculated.Count != this.Bars.Count - 1) {
+				if (indicator.OwnValuesCalculated.Count != this.Bars.Count) {
 					string state = "MA.OwnValues.Count=499, MA.BarsEffective.Count=500[0...499], MA.BarsEffective.BarStreaming=null <= that's why indicator has 1 less";
 					string msg = "YOU_ABORTED_LIVESIM_BUT_DIDNT_RECALCULATE_INDICATORS? REMOVE_HOLES_IN_INDICATOR " + indicator;
 					Assembler.PopupException(msg, null, false);
@@ -1032,9 +1047,8 @@ namespace Sq1.Core.StrategyBase {
 			// MOVED_HERE_AFTER_ASSIGNING_IS_STREAMING_TO"avoiding saving strategy each backtest due to streaming simulation switch on/off"
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
-			StreamingAdapter streaming = this.DataSource.StreamingAdapter;
-			if (streaming != null) {
-				this.Bars.DataSource.PumpAutoResumeFor(this);
+			if (this.DataSource.StreamingAdapter != null) {
+				bool thereWereNeighbours = this.Bars.DataSource.PumpResumeNeighborsIfAnyFor(this);
 			} else {
 				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextRestore(" + this.Bars + ")";
 				Assembler.PopupException(msg, null, false);

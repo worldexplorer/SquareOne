@@ -6,10 +6,10 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.StrategyBase {
 	public class ScriptExecutorEventGenerator {
-		public event EventHandler<EventArgs>		OnBacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4;
-		public event EventHandler<EventArgs>		OnBacktesterContextInitializedStep2of4;
-		public event EventHandler<EventArgs>		OnBacktesterSimulatedChunkStep3of4;
-		public event EventHandler<EventArgs>		OnBacktesterContextRestoredAfterExecutingAllBarsStep4of4;
+		public event EventHandler<EventArgs>		OnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4;
+		public event EventHandler<EventArgs>		OnBacktesterContextInitialized_step2of4;
+		public event EventHandler<EventArgs>		OnBacktesterSimulatedChunk_step3of4;
+		public event EventHandler<EventArgs>		OnBacktesterContextRestoredAfterExecutingAllBars_step4of4;
 
 		public event EventHandler<QuoteEventArgs>	OnStrategyExecutedOneQuote;
 		public event EventHandler<BarEventArgs>		OnStrategyExecutedOneBar;
@@ -27,21 +27,21 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		public void RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4() {
-			if (this.OnBacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4 == null) return;
-			this.OnBacktesterBarsIdenticalButEmptySubstitutedToGrowStep1of4(this, null);
+			if (this.OnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4 == null) return;
+			this.OnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4(this, null);
 		}
 		public void RaiseOnBacktesterSimulationContextInitialized_step2of4() {
-			if (this.OnBacktesterContextInitializedStep2of4 == null) return;
-			this.OnBacktesterContextInitializedStep2of4(this, null);
+			if (this.OnBacktesterContextInitialized_step2of4 == null) return;
+			this.OnBacktesterContextInitialized_step2of4(this, null);
 		}
 		public void RaiseOnBacktesterSimulatedChunk_step3of4() {
-			if (this.OnBacktesterSimulatedChunkStep3of4 == null) return;
-			this.OnBacktesterSimulatedChunkStep3of4(this, null);
+			if (this.OnBacktesterSimulatedChunk_step3of4 == null) return;
+			this.OnBacktesterSimulatedChunk_step3of4(this, null);
 		}
 		public void RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(Quote quote) {
-			if (this.OnBacktesterContextRestoredAfterExecutingAllBarsStep4of4 == null) return;
+			if (this.OnBacktesterContextRestoredAfterExecutingAllBars_step4of4 == null) return;
 			try {
-				this.OnBacktesterContextRestoredAfterExecutingAllBarsStep4of4(this, new QuoteEventArgs(quote));
+				this.OnBacktesterContextRestoredAfterExecutingAllBars_step4of4(this, new QuoteEventArgs(quote));
 			} catch (Exception e) {
 				string msg = "EVENT_CONSUMER(USED_ONLY_FOR_LIVE_SIMULATOR)_THROWN //DataDistributor.RaiseQuotePushedToDistributor(" + quote + ")";
 				Assembler.PopupException(msg, e);

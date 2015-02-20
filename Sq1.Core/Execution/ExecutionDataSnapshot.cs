@@ -96,7 +96,7 @@ namespace Sq1.Core.Execution {
 			}
 		} }
 		public void MovePositionOpenToClosed(Position positionClosing, bool absenseInPositionsOpenNowIsAnError = true) { lock (this.positionsMasterLock) {
-			this.PositionsMaster.AddToClosedDictionary_step2of2(positionClosing);
+			bool added = this.PositionsMaster.AddToClosedDictionary_step2of2(positionClosing, absenseInPositionsOpenNowIsAnError);
 			this.PositionsClosedAfterExec.AddClosed(positionClosing);
 			this.PositionsOpenNow.Remove(positionClosing);
 		} }

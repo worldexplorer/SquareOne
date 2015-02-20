@@ -382,6 +382,7 @@ namespace Sq1.Core.Execution {
 			if (this.PositionAffected != null) {
 				msg.Append("; PositionAffected=[");
 				//msg.Append(this.PositionAffected.ToString());
+				msg.Append("LONG_STRING");
 				msg.Append("]");
 			}
 			return msg.ToString();
