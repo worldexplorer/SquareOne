@@ -43,8 +43,8 @@ namespace Sq1.Gui.ReportersSupport {
 		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
 
-			this.ChartFormManager.Executor.EventGenerator.OnBacktesterContextInitializedStep2of4 += new EventHandler<EventArgs>(
-				this.EventGenerator_BacktesterContextInitializedStep2of4);
+			this.ChartFormManager.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(
+				this.EventGenerator_BacktesterContextInitialized_step2of4);
 
 			this.ChartFormManager.Executor.EventGenerator.OnBrokerFilledAlertsOpeningForPositions_step1of3 += new EventHandler<ReporterPokeUnitEventArgs>(
 				this.EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3);
@@ -56,8 +56,8 @@ namespace Sq1.Gui.ReportersSupport {
 				this.EventGenerator_BrokerFilledAlertsClosingForPositions_step3of3);
 		}
 
-		void EventGenerator_BacktesterContextInitializedStep2of4(object sender, EventArgs e) {
-			this.ClearAllReports_step0of3();
+		void EventGenerator_BacktesterContextInitialized_step2of4(object sender, EventArgs e) {
+			this.ClearAllReportsSincePerformanceGotCleared_step0of3();
 		}
 
 		void EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(object sender, ReporterPokeUnitEventArgs e) {
@@ -69,17 +69,32 @@ namespace Sq1.Gui.ReportersSupport {
 		void EventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(object sender, ReporterPokeUnitEventArgs e) {
 			this.BuildIncrementalOnPositionsClosedAllReports_step3of3(e.PokeUnit);
 		}
-		public void ClearAllReports_step0of3() {
+		public void ClearAllReportsSincePerformanceGotCleared_step0of3() {
+			SystemPerformanceSlice both = this.ChartFormManager.Executor.Performance.SlicesShortAndLong;
+			bool amIlaunchingLivesim = this.ChartFormManager.Executor.Backtester.IsLivesimRunning;
+			if (amIlaunchingLivesim) {
+				if (both.PositionsImTracking.Count > 0 || both.NetProfitForClosedPositionsBoth > 0) {
+					string msg = "I_REFUSE_CLEAR_ALL_REPORTS__SYSTEM_PERFORMANCE_MUST_BE_CLEAN_AFTER_USER_CLICKED_START_LIVESIM_DURING_REAL_LIVE";
+					Assembler.PopupException(msg, null, false);
+					return;
+				}
+			}
+
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {
-				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.ClearAllReports_step0of3(); });
+				if (amIlaunchingLivesim == false) {
+					if (both.PositionsImTracking.Count > 0 || both.NetProfitForClosedPositionsBoth > 0) {
+						string msg2 = "ERROR__SYSTEM_PERFORMANCE_MUST_BE_CLEAN__RUNNING_BACKTEST_ON_APP_RESTART_OR_F8";
+						Assembler.PopupException(msg2, null, false);
+					} else {
+						string msg = "OK_HERE__OFFLINE_BACKTEST_RESETTING_REPORTERS_TO_ZERO__AFTER_BACKTEST_CONTEXT_INITIALIZE";
+						//Assembler.PopupException(msg, null, false);
+					}
+				}
+
+				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.ClearAllReportsSincePerformanceGotCleared_step0of3(); });
 				return;
 			}
 
-			SystemPerformanceSlice both = this.ChartFormManager.Executor.Performance.SlicesShortAndLong;
-			if (both.PositionsImTracking.Count > 0 || both.NetProfitForClosedPositionsBoth > 0) {
-				string msg = "SYSTEM_PERFORMANCE_MUST_BE_CLEAN_AFTER_USER_CLICKED_START_LIVESIMS";
-				Assembler.PopupException(msg);
-			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 				rep.BuildFullOnBacktestFinished();
 

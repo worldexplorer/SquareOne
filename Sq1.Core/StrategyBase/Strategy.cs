@@ -168,7 +168,7 @@ namespace Sq1.Core.StrategyBase {
 				this.Script.AbsorbScriptAndIndicatorParametersFromSelfCloneConstructed();
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 				string msg = "Successfully reset ScriptContextCurrentName[" + this.ScriptContextCurrentName + "] for strategy[" + this + "]";
-				Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+				Assembler.DisplayStatus(msg);
 			} catch (Exception ex) {
 				Assembler.PopupException("ResetScriptAndIndicatorParametersToScriptDefaults()", ex);
 			}

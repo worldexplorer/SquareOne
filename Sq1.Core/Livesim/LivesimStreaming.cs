@@ -72,7 +72,7 @@ namespace Sq1.Core.Livesim {
 			if (snap.AlertsPending.Count == 0) return;
 			if (quote.ParentBarStreaming != null) {
 				string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 			}
 			this.livesimDataSource.BrokerAsLivesimNullUnsafe.ConsumeQuoteOfStreamingBarToFillPending(quote, bar2simulate);
 		}

@@ -257,7 +257,13 @@ namespace Sq1.Core.Indicators {
 				}
 				return ret;
 			}
-
+			if (this.Executor == null) {
+				if (popupException) {
+					string msg = "NO_EXECUTOR_FOR_INDICATOR this.Executor=null" + this.ToString();
+					Assembler.PopupException(msg);
+				}
+				return ret;
+			}
 			if (this.ClosesProxyEffective == null) {
 				if (popupException) {
 					string msg = "NO_BARS_FOR_INDICATOR this.ClosesProxyEffective=null" + this.ToString();
@@ -285,40 +291,44 @@ namespace Sq1.Core.Indicators {
 			return ret;
 		}
 		public virtual void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar newStaticBar) {
-			bool canRunCalculation = this.canRunCalculation();
+			string msig = " //OnNewStaticBarFormed(" + newStaticBar.ToString() + ")";
+			bool canRunCalculation = this.canRunCalculation(true);
 			if (canRunCalculation == false) {
-				this.preAppendCheckThrow(newStaticBar);
 				this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, double.NegativeInfinity);
 				return;
 			}
 			double derivedCalculated = this.CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(newStaticBar);
 
 			int barsAheadOfIndicator = newStaticBar.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
-			if (barsAheadOfIndicator != 1) {
-				string msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + " //OnNewStaticBarFormed(" + newStaticBar.ToString() + ")";
-				string msg = (barsAheadOfIndicator == 0)
-					? "I_REFUSE_TO_REPLACE_STREAMING_VALUE__YOU_MUST_CALCULATE_OWN_VALUE_ONCE_PER_BAR_FOR_PREV_BAR"
-					: "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS";
-				Assembler.PopupException(msg + msig);
+			msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + msig;
+
+			string msg;
+			if (barsAheadOfIndicator == 0) {
+				msg = "PREV_QUOTE_ADDED_LAST_VALUE_PREVENTIVELY__I_WILL_REPLACE_STREAMING_VALUE";
+				if (this.OwnValuesCalculated.LastDateAppended != newStaticBar.DateTimeOpen) {
+					msg = "UNSYNC#1_FIX_ME " + msg;
+					Assembler.PopupException(msg + msig, null, false);
+					return;
+				}
+				this.OwnValuesCalculated.LastValue = derivedCalculated;
+			} else if (barsAheadOfIndicator == 1) {
+				msg = "PREV_QUOTE_DIDNT_ADD_STREAMING_OWN_VALUE_PREVENTIVELY_ADDING_NOW";
+				if (this.OwnValuesCalculated.LastDateAppended == newStaticBar.DateTimeOpen) {
+					msg = "UNSYNC#2_FIX_ME " + msg;
+					Assembler.PopupException(msg + msig, null, false);
+					return;
+				}
+				this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, derivedCalculated);
+			} else {
+				msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS";
+				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
-			this.preAppendCheckThrow(newStaticBar);
-			this.OwnValuesCalculated.Append(newStaticBar.DateTimeOpen, derivedCalculated);
-		}
-		void preAppendCheckThrow(Bar newStaticBar) {
-			if (this.OwnValuesCalculated.LastIndex == newStaticBar.ParentBarsIndex - 1) return;
-			string msg = "INDICATOR_INDEX_AND_UNDERLYING_BARS_INDEX_MUST_BE_IN_SYNC"
-				+ " this.OwnValuesCalculated.LastIndex[" + this.OwnValuesCalculated.LastIndex + "] MUSTBE_EQUAL"
-				+ " newStaticBar.ParentBarsIndex-1=[" + (newStaticBar.ParentBarsIndex - 1) + "]";
-			Assembler.PopupException(msg);
-			throw new Exception(msg);
 		}
 		public virtual void OnNewStreamingQuote(Quote newStreamingQuote) {
-			bool canRunCalculation = this.canRunCalculation();
-			if (canRunCalculation == false) return;
-
 			string msig = " //OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
-
+			bool canRunCalculation = this.canRunCalculation(true);
+			if (canRunCalculation == false) return;
 			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote_invokedAtEachQuoteNoExceptions_NoPeriodWaiting(newStreamingQuote);
 
 			if (newStreamingQuote.ParentBarStreaming == null) {
@@ -331,29 +341,40 @@ namespace Sq1.Core.Indicators {
 				return;
 			}
 
-			//int barsAheadOfIndicator = newStreamingQuote.ParentBarStreaming.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
-			int barsAheadOfIndicator = newStreamingQuote.ParentBarStreaming.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
-			msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + msig;
-
 			if (newStreamingQuote.ParentBarStreaming.ParentBars == null) {
 				string msg2 = "DONT_FEED_ME_WITH_BAR_UNATTACHED";
 				Assembler.PopupException(msg2 + msig, null, false);
 				return;
 			}
 
-			if (barsAheadOfIndicator != 0) {
-				if (newStreamingQuote.IntraBarSerno == 0) {
-					string msg2 = "MUST_HAPPEN_UNFINISHED___??IM_GONNA_BE_INVOKED_ONCE_AGAIN_AFTER_OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
+			int barsAheadOfIndicator = newStreamingQuote.ParentBarStreaming.ParentBarsIndex - this.OwnValuesCalculated.LastIndex;
+			msig = " barsAheadOfIndicator[" + barsAheadOfIndicator + "]" + this.indexesAsString + msig;
+			if (barsAheadOfIndicator == 0) {
+				string msg = "UPDATING_STREAMING_VALUE";
+				if (this.OwnValuesCalculated.LastDateAppended != newStreamingQuote.ParentBarStreaming.DateTimeOpen) {
+					msg = "UNSYNC#1 " + msg;
+					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
-				string msg = "MUST_HAPPEN_UNFINISHED___I_REFUSE_TO_ADD_NEW_VALUE__INVOKE_FIRST_OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
-				//Assembler.PopupException(msg + msig);
+				if (double.IsNaN(this.OwnValuesCalculated.LastValue) && this.OwnValuesCalculated.LastValue == derivedCalculated) {
+					msg = "WONT_UPDATE_NAN " + msg;
+					//Assembler.PopupException(msg + msig, null, false);
+					return;
+				}
+				this.OwnValuesCalculated.LastValue = derivedCalculated;
+			} else if (barsAheadOfIndicator == 1) {
+				string msg = "PREVENTIVE_ADD";
+				if (this.OwnValuesCalculated.LastDateAppended >= newStreamingQuote.ParentBarStreaming.DateTimeOpen) {
+					msg = "UNSYNC#2_FIX_ME " + msg;
+					Assembler.PopupException(msg + msig, null, false);
+					return;
+				}
+				this.OwnValuesCalculated.Append(newStreamingQuote.ParentBarStreaming.DateTimeOpen, derivedCalculated);
+			} else {
+				string msg = "INDICATOR_CALCULATE_OWN_VALUE_WASNT_CALLED_WITHIN_LAST_BARS";
+				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
-			string msg3 = "I_DIDNT_FINISH_CLEANING_UP_LIFECYLE";
-			Assembler.PopupException(msg3 + msig);
-			return;
-			this.OwnValuesCalculated.LastValue = derivedCalculated;
 		}
 		
 		//v1

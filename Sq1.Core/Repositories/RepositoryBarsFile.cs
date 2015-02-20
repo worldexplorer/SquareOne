@@ -130,7 +130,15 @@ namespace Sq1.Core.Repositories {
 				//http://stackoverflow.com/questions/58380/avoiding-first-chance-exception-messages-when-the-exception-is-safely-handled
 				//for (int barsRead = 0; barsRead<barsStored; barsRead++) {
 				while (binaryReader.BaseStream.Position < binaryReader.BaseStream.Length) {
-					DateTime dateTimeOpen = new DateTime(binaryReader.ReadInt64());
+					long ticks = binaryReader.ReadInt64();
+					DateTime dateTimeOpen;
+					try {
+						dateTimeOpen = new DateTime(ticks);
+					} catch (Exception ex) {
+						string msg = "FAILED_TO_CONVERT_TO_DATE_TICKS=[" + ticks + "]";
+						Assembler.PopupException(msg, ex, false);
+						break;
+					}
 					double open		= binaryReader.ReadDouble();
 					double high		= binaryReader.ReadDouble();
 					double low		= binaryReader.ReadDouble();
@@ -211,7 +219,8 @@ namespace Sq1.Core.Repositories {
 			int barsSaved = -1;
 			lock (this.fileReadWriteSequentialLock) {
 				barsSaved = this.barsSave(bars);
-				//Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
+				string msg = "barsSaved[" + barsSaved + "] " + this.Symbol + ":" + this.barsRepository.ScaleInterval;
+				Assembler.PopupException(msg, null, false);
 			}
 			return barsSaved;
 		}
@@ -300,7 +309,8 @@ namespace Sq1.Core.Repositories {
 			int barsAppendedOrReplaced = -1;
 			lock (this.fileReadWriteSequentialLock) {
 				barsAppendedOrReplaced = this.barAppendStaticOrReplaceStreaming(barLastFormed);
-				//Assembler.PopupException("Saved [ " + bars.Count + "] bars; symbol[" + bars.Symbol + "] scaleInterval[" + bars.ScaleInterval + "]");
+				string msg = "barsAppendedOrReplaced[" + barsAppendedOrReplaced + "] " + this.Symbol + ":" + this.barsRepository.ScaleInterval;
+				Assembler.PopupException(msg, null, false);
 			}
 			return barsAppendedOrReplaced;
 		}

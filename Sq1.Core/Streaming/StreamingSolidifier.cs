@@ -10,7 +10,8 @@ namespace Sq1.Core.Streaming {
 		DateTime	barStreamingLastDumpedLocal;
 		string		barStreamingLastDumpedLocalAsString;
 
-		//IMPORTANT_SPLITTED_TO_CTOR+INITIALIZE_FOR_EDITED_DATASOURCE_TO_NOT_SUBSCRIBE_MY_MULTIPLE_INSTANCES public StreamingSolidifier(DataSource dataSource) {
+		//IMPORTANT_SPLITTED_TO_CTOR+INITIALIZE_FOR_EDITED_DATASOURCE_TO_NOT_SUBSCRIBE_MY_MULTIPLE_INSTANCES
+		public StreamingSolidifier() { }
 
 		public void Initialize(DataSource dataSource, double barStreamingDumpIntervalSeconds = 10) {
 			if (dataSource == null) {

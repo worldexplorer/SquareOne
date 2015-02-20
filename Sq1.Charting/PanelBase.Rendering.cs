@@ -422,8 +422,13 @@ namespace Sq1.Charting {
 				
 				// UNNECESSARY_BUT_HELPS_CATCH_BUGS begin
 				if (indicator.DotsDrawnForCurrentSlidingWindow <= 0) {
-					Bar barLeft = this.ChartControl.Bars[this.VisibleBarLeft_cached];
-					string dateRq = barLeft.DateTimeOpen.ToString(Assembler.DateTimeFormatIndicatorHasNoValuesFor);
+					try {
+						Bar barLeft = this.ChartControl.Bars[this.VisibleBarLeft_cached];
+						string dateRq = barLeft.DateTimeOpen.ToString(Assembler.DateTimeFormatIndicatorHasNoValuesFor);
+					} catch (Exception ex) {
+						string msg = "CATCHING_NPE__PLEASE_DO_FORCING_BACKGROUND_PAINT_SYNC";
+						Assembler.PopupException(msg, ex, false);
+					}
 					if (indicator.BarsEffective.BarFirst == null) {	// happens after I edited DataSource and removed ",Sun" from DaysMarketOpen
 						#if DEBUG
 						Debugger.Break();

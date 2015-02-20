@@ -25,7 +25,7 @@ namespace Sq1.Core.DataFeed {
 				return stringBuilder.ToString();
 			} }
 		[JsonProperty]	public BarScaleInterval		ScaleInterval;
-		[JsonProperty]	public StreamingAdapter	StreamingAdapter;
+		[JsonProperty]	public StreamingAdapter		StreamingAdapter;
 		[JsonProperty]	public BrokerAdapter		BrokerAdapter;
 		[JsonProperty]	public string				MarketName;
 		[JsonIgnore]	public MarketInfo			marketInfo;
@@ -294,66 +294,37 @@ namespace Sq1.Core.DataFeed {
 
 			return ret;
 		}
-		public void PumpingAutoPauseFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
+		public bool PumpPauseNeighborsIfAnyFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
 			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelForNullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
-			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
+			if (channel == null) return false;
+
+			if (channel.QuotePump.HasSeparatePushingThread == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_PAUSE_DANGEROUS_DROPPING_INCOMING_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg);
 				}
-				if (channel.QuotePump.PushConsumersPaused == true) {
-					if (wrongUsagePopup == true) {
-						string msg = "PUSHING_THREAD_ALREADY_PAUSED (review how you use QuotePump)";
-						Assembler.PopupException(msg);
-					}
-				}
-				channel.QuotePump.PushConsumersPaused = true;
-				return;
 			}
-			// v1 UNFINISHED_PARALLEL_BACKTESTS_SHOULD_NOT_GET_NEW_QUOTES
-			//if (channel.QuotePump.PushConsumersPaused == true) {
-			//    if (wrongUsagePopup == true) {
-			//        string msg = "PUSHING_THREAD_ALREADY_PAUSED (review how you use QuotePump)";
-			//        Assembler.PopupException(msg, null, true);
-			//    }
-			//    return;
-			//}
-			//channel.QuotePump.PushConsumersPaused = true;
-			channel.PumpAutoPauseBacktesterLaunchingAdd(executor.Backtester);
+			channel.PumpPauseBacktesterLaunchingAdd(executor.Backtester);
+			return true;
 		}
-		public void PumpAutoResumeFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
+		public bool PumpResumeNeighborsIfAnyFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
 			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelForNullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
-			if (channel.QuotePump.SeparatePushingThreadEnabled == false) {
+			if (channel == null) return false;
+
+			if (channel.QuotePump.HasSeparatePushingThread == false) {
 				if (wrongUsagePopup == true) {
 					string msg = "WILL_UNPAUSE_DANGEROUS_I_MIGHT_HAVE_DROPPED_ALREADY_A_FEW_QUOTES__PUSHING_THREAD_HAVENT_STARTED (review how you use QuotePump)";
 					Assembler.PopupException(msg, null, false);
 				}
-				if (channel.QuotePump.PushConsumersPaused == false) {
-					if (wrongUsagePopup == true) {
-						string msg = "PUSHING_THREAD_ALREADY_UNPAUSED (review how you use QuotePump)";
-						Assembler.PopupException(msg);
-					}
-					//LET_UNPAUSE_THINGS_STILL_GO_THROUGH_DEVELOPER_ALREADY_NOTIFIED_HE_WAS_WRONG_THANX return;
-				}
-				channel.QuotePump.PushConsumersPaused = false;
-				return;
 			}
-			// v1 UNFINISHED_PARALLEL_BACKTESTS_SHOULD_NOT_GET_NEW_QUOTES
-			//if (channel.QuotePump.PushConsumersPaused == false) {
-			//    if (wrongUsagePopup == true) {
-			//        string msg = "PUSHING_THREAD_ALREADY_UNPAUSED (review how you use QuotePump)";
-			//        Assembler.PopupException(msg, null, true);
-			//    }
-			//    return;
-			//}
-			//channel.QuotePump.PushConsumersPaused = false;
-			channel.PumpAutoResumeBacktesterCompleteRemove(executor.Backtester);
+			channel.PumpResumeBacktesterFinishedRemove(executor.Backtester);
+			return true;
 		}
 
 		public bool PumpingPausedGet(Bars bars) {
 			DataDistributor distr = this.StreamingAdapter.DataDistributor;
 			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelForNullUnsafe(bars.Symbol, bars.ScaleInterval);
-			bool paused = channel.QuotePump.PushConsumersPaused;
+			bool paused = channel.QuotePump.Paused;
 			return paused;
 		}
 		public bool PumpingWaitUntilUnpaused(Bars bars, int maxWaitingMillis = 1000) {

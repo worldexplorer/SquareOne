@@ -59,49 +59,45 @@ namespace Sq1.Core.DataTypes {
 			ret.DataSource = this.DataSource;
 			return ret;
 		}
-		public Bar BarStreamingCreateNewOrAbsorb(Bar barToMergeToStreaming) {
-			lock (base.BarsLock) {
-				bool shouldAppend = this.BarLast == null || barToMergeToStreaming.DateTimeOpen >= this.BarLast.DateTimeNextBarOpenUnconditional;
-				if (shouldAppend) {	// if this.BarStreaming == null I'll have just one bar in Bars which will be streaming and no static 
-					Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, barToMergeToStreaming.DateTimeOpen);
-					barAdding.SetOHLCValigned(barToMergeToStreaming.Open, barToMergeToStreaming.High,
-						barToMergeToStreaming.Low, barToMergeToStreaming.Close, barToMergeToStreaming.Volume, this.SymbolInfo);
-					this.BarAppendBind(barAdding);
-					this.BarStreaming = barAdding;
-					this.RaiseBarStreamingAdded(barAdding);
-				} else {
-					if (this.BarStreaming == null) {
-						this.BarStreaming = this.BarLast;
-					}
-					//base.BarAbsorbAppend(this.StreamingBar, open, high, low, close, volume);
-					this.BarStreaming.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming, false);	// duplicated volume for just added bar; moved up
-					this.RaiseBarStreamingUpdated(barToMergeToStreaming);
-				}
-				return this.BarStreaming;
-			}
-		}
-		public Bar BarCreateAppendBindStatic(DateTime dateTime, double open, double high, double low, double close, double volume, bool exceptionPullUpstack = false) {
-			lock (base.BarsLock) {
-				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
-				barAdding.SetOHLCValigned(open, high, low, close, volume, this.SymbolInfo);
-				this.BarAppendBindStatic(barAdding, true);
-				return barAdding;
-			}
-		}
-		public void BarAppendBindStatic(Bar barAdding, bool exceptionPullUpstack = false) {
-			lock (base.BarsLock) {
-				try {
-					barAdding.CheckOHLCVthrow();
-				} catch (Exception ex) {
-					string msg = "NOT_APPENDING_ZERO_BAR BarAppendBindStatic(" + barAdding + ")";
-					if (exceptionPullUpstack) throw new Exception(msg, ex);
-					Assembler.PopupException(msg, ex, false);
-				}
-				this.BarStreaming = null;
+		public Bar BarStreamingCreateNewOrAbsorb(Bar barToMergeToStreaming) { lock (base.BarsLock) {
+			bool shouldAppend = this.BarLast == null || barToMergeToStreaming.DateTimeOpen >= this.BarLast.DateTimeNextBarOpenUnconditional;
+			if (shouldAppend) {	// if this.BarStreaming == null I'll have just one bar in Bars which will be streaming and no static 
+				Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, barToMergeToStreaming.DateTimeOpen);
+				barAdding.SetOHLCValigned(barToMergeToStreaming.Open, barToMergeToStreaming.High,
+					barToMergeToStreaming.Low, barToMergeToStreaming.Close, barToMergeToStreaming.Volume, this.SymbolInfo);
 				this.BarAppendBind(barAdding);
-				this.RaiseBarStaticAdded(barAdding);
+				this.BarStreaming = barAdding;
+				this.RaiseBarStreamingAdded(barAdding);
+			} else {
+				if (this.BarStreaming == null) {
+					this.BarStreaming = this.BarLast;
+				}
+				//base.BarAbsorbAppend(this.StreamingBar, open, high, low, close, volume);
+				this.BarStreaming.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming, false);	// duplicated volume for just added bar; moved up
+				this.RaiseBarStreamingUpdated(barToMergeToStreaming);
 			}
-		}
+			return this.BarStreaming;
+		} }
+		public Bar BarCreateAppendBindStatic(DateTime dateTime,
+				double open, double high, double low, double close, double volume,
+				bool exceptionPullUpstack = false) { lock (base.BarsLock) {
+			Bar barAdding = new Bar(this.Symbol, this.ScaleInterval, dateTime);
+			barAdding.SetOHLCValigned(open, high, low, close, volume, this.SymbolInfo);
+			this.BarAppendBindStatic(barAdding, true);
+			return barAdding;
+		} }
+		public void BarAppendBindStatic(Bar barAdding, bool exceptionPullUpstack = false) { lock (base.BarsLock) {
+			try {
+				barAdding.CheckOHLCVthrow();
+			} catch (Exception ex) {
+				string msg = "NOT_APPENDING_ZERO_BAR BarAppendBindStatic(" + barAdding + ")";
+				if (exceptionPullUpstack) throw new Exception(msg, ex);
+				Assembler.PopupException(msg, ex, false);
+			}
+			this.BarStreaming = null;
+			this.BarAppendBind(barAdding);
+			this.RaiseBarStaticAdded(barAdding);
+		} }
 		protected override void CheckThrowDateIsNotLessThanScaleDictates(DateTime dateAdding) {
 			if (this.Count == 0) return;
 			if (dateAdding >= this.BarLast.DateTimeNextBarOpenUnconditional) return;
@@ -109,24 +105,22 @@ namespace Sq1.Core.DataTypes {
 				+ ": dateAdding[" + dateAdding + "]<this.BarStaticLast.DateTimeNextBarOpenUnconditional["
 				+ this.BarLast.DateTimeNextBarOpenUnconditional + "]");
 		}
-		protected void BarAppendBind(Bar barAdding) {
-			lock (base.BarsLock) {
-				try {
-					base.BarAppend(barAdding);
-				} catch (Exception e) {
-					string msg = "BARS_UNSCALED_IS_NOT_SATISFIED Bars.BarAppendBind[" + barAdding + "] to " + this;
-					Assembler.PopupException(msg, e);
-					return;
-				}
-				try {
-					barAdding.SetParentForBackwardUpdate(this, base.Count - 1);
-				} catch (Exception e) {
-					string msg = "BACKWARD_UPDATE_FAILED adding bar[" + barAdding + "] to " + this;
-					Assembler.PopupException(msg, e);
-					return;
-				}
+		protected void BarAppendBind(Bar barAdding) { lock (base.BarsLock) {
+			try {
+				base.BarAppend(barAdding);
+			} catch (Exception e) {
+				string msg = "BARS_UNSCALED_IS_NOT_SATISFIED Bars.BarAppendBind[" + barAdding + "] to " + this;
+				Assembler.PopupException(msg, e);
+				return;
 			}
-		}
+			try {
+				barAdding.SetParentForBackwardUpdate(this, base.Count - 1);
+			} catch (Exception e) {
+				string msg = "BACKWARD_UPDATE_FAILED adding bar[" + barAdding + "] to " + this;
+				Assembler.PopupException(msg, e);
+				return;
+			}
+		} }
 		public void BarStreamingOverrideDOHLCVwith(Bar bar) {
 			if (bar == null) {
 				string msg = "I_DONT_ACCEPT_NULL_BARS_TO OverrideStreamingDOHLCVwith(" + bar + ")";

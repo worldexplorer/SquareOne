@@ -43,7 +43,7 @@ namespace Sq1.Core.Indicators {
 				if (this.smaSeries.AverageFor.Count - 1 != this.smaSeries.Count) {
 					msg += "ADD_BACKTEST_ABORTED_CONDITION_TO_";
 				}
-				if (this.smaSeries.AverageFor.Count - 1 != this.OwnValuesCalculated.Count) {
+				if (this.smaSeries.AverageFor.Count != this.OwnValuesCalculated.Count) {
 					msg += "SOME_BARS_HAVE_NO_MATCHING_INDICATOR_CALCULATED ";
 				} else {
 					string hint = "indicator value for the current-last-bar will be calculated by next-bar incoming quote meaning official closing of current-last-bar";
@@ -69,7 +69,7 @@ namespace Sq1.Core.Indicators {
 			}
 			this.smaSeries.AverageFor = base.ClosesProxyEffective;
 
-			if (this.smaSeries.Count != this.OwnValuesCalculated.Count) {
+			if (this.smaSeries.Count != this.OwnValuesCalculated.Count - 1) {
 				string msg = "STILL_ADD_NAN_TO_KEEP_INDEXES_SYNCED_WITH_OWN_VALUES";
 				Assembler.PopupException(msg);
 			}

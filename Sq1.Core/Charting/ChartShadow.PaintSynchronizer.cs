@@ -12,7 +12,7 @@ namespace Sq1.Core.Charting {
 		//    if (resetAlreadyInNonGuiThread) return;
 		//    this.paintAllPanelsComplete.Reset();
 		//}
-		protected bool RefreshAllPanelsIsSignalled { get {
+		public bool RefreshAllPanelsIsSignalled { get {
 			return this.paintAllPanelsComplete.WaitOne(0);
 		} }
 		protected void RefreshAllPanelsFinishedWaiterNotifyAll() {
