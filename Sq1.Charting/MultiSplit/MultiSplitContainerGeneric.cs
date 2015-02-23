@@ -75,6 +75,11 @@ namespace Sq1.Charting.MultiSplit {
 				}
 				#endregion
 				int sernoFromObservable = this.splitters.IndexOf(s);
+				if (s.PanelBelow == null) {
+					string msg = "AVOIDING_NPE //SplitterPropertiesByPanelNameGet()";
+					Assembler.PopupException(msg, null, false);
+					continue;
+				}
 				ret.Add(s.PanelBelow.PanelName, new MultiSplitterProperties(sernoFromObservable, s.Location.Y));
 			}
 			return ret;
@@ -119,10 +124,14 @@ try {
 				if (splitterFoundIndex == prop.ManualOrder) {
 					continue;
 				}
-				// very illogical way to sync-up; splitters may have holes and implies MultiSplitterPropertiesByPanelName.*.ManualOrder must have no holes/duplicates
-				this.panels.Move(splitterFoundIndex, prop.ManualOrder);
-				this.splitters.Move(splitterFoundIndex, prop.ManualOrder);
-	   		}
+				try {
+					this.panels.Move(splitterFoundIndex, prop.ManualOrder);
+					this.splitters.Move(splitterFoundIndex, prop.ManualOrder);
+				} catch (Exception ex) {
+					string msg = "very illogical way to sync-up; splitters may have holes and implies MultiSplitterPropertiesByPanelName.*.ManualOrder must have no holes/duplicates";
+					Assembler.PopupException(msg, ex, false);
+				}
+			}
 			
 			// align panels to splitters; I need to know the prevSplitterLocationY to set panelHeight
 			int y = 0;
@@ -181,8 +190,8 @@ try {
 			#endif
 			
 } catch (Exception ex) {
-	string msg = "I_THOUGHT_SplitterPropertiesByPanelNameSet()_WAS_EXCEPTION_FREE";
-	Assembler.PopupException(msg, ex);
+	string msg = "YOU_GOT_PANES_DECLARED_FOR_NON-YET_INSTANTIATED_INDICATORS MOVING_PANES_ON_DESERIALIZATION_TO_RESTORE_LAYOUT_NYI";
+	Assembler.PopupException(msg, ex, false);
 }
 		}
 		

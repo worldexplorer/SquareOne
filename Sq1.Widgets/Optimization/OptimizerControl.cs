@@ -115,7 +115,7 @@ namespace Sq1.Widgets.Optimization {
 			return null;
 		}
 		void populateColumns() {
-			this.olvBacktests.Items.Clear();
+			//DONT_CLEAR_RESULTS_AFTER_TAB_SWITCHING_ONLY_RUN_WILL_CLEAR_OLD_TABLE this.olvBacktests.Items.Clear();
 			this.columnsDynParam.Clear();
 			
 			List<OLVColumn> colParametersToClear = new List<OLVColumn>();

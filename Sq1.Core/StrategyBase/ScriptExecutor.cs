@@ -258,7 +258,8 @@ namespace Sq1.Core.StrategyBase {
 					this.EventGenerator.RaiseOnStrategyExecutedOneBar(this.Bars.BarStaticLastNullUnsafe);
 					this.barStaticExecutedLast = this.Bars.BarStaticLastNullUnsafe;
 				} catch (Exception ex) {
-					string msig = " //Script[" + this.Strategy.Script.GetType().Name + "].OnNewBarCallback(" + quoteForAlertsCreated + ")";
+					string msig = " //Script[" + this.Strategy.Script.GetType().Name
+						+ "].OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(" + quoteForAlertsCreated + ")";
 					this.PopupException(ex.Message + msig, ex);
 				}
 			}
@@ -368,8 +369,8 @@ namespace Sq1.Core.StrategyBase {
 					this.PopupException(msg);
 					continue;
 				}
-				int alertIsLateNbars = quote.ParentBarStreaming.ParentBarsIndex - alert.PlacedBarIndex;
-				if (alertIsLateNbars != 0) {
+				int alertIsLateNbars = alert.PlacedBarIndex - quote.ParentBarStreaming.ParentBarsIndex;
+				if (alertIsLateNbars > 0) {
 					string msg = "I_REFUSE_TO_ENRICH_ALERT_WITH_QUOTE alertIsLateNbars[" + alertIsLateNbars + "] alert[" + alert + "]";
 					this.PopupException(msg);
 					continue;
@@ -537,9 +538,9 @@ namespace Sq1.Core.StrategyBase {
 			orderPrice = bars.SymbolInfo.AlignAlertToPriceLevel(orderPrice, buyOrShort, positionLongShort0, marketLimitStop0);
 			return orderPrice;
 		}
-		
-		public void PopupException(string msg, Exception ex = null) {
-			Assembler.PopupException(msg, ex);
+
+		public void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
+			Assembler.PopupException(msg, ex, debuggingBreak);
 			this.Backtester.AbortBacktestIfExceptionsLimitReached();
 		}
 
@@ -1267,7 +1268,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void AlertKillPending(Alert alert) {
 			//if (this.Backtester.IsBacktestingNow) {
-			if (this.Backtester.IsBacktestingLivesimNow) {
+			if (this.Backtester.IsBacktestingNoLivesimNow) {
 				this.MarketsimBacktest.SimulateAlertKillPending(alert);
 			} else {
 				this.MarketLive.AlertKillPending(alert);

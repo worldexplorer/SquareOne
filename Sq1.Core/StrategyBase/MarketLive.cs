@@ -201,7 +201,8 @@ namespace Sq1.Core.StrategyBase {
 			return true;
 		}
 		public bool AlertKillPending(Alert alert) {
-			throw new NotImplementedException();
+			string msg = "NYI MarketLive.AlertKillPending(" + alert + ")";
+			throw new Exception(msg);
 		}
 		
 		public bool AlertTryFillUsingBacktest(Alert alert, out bool abortTryFill, out string abortTryFillReason) {

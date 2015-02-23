@@ -162,7 +162,13 @@ namespace Sq1.Charting {
 						PanelIndicator panel = new PanelIndicator(indicator);
 						
 						panel.Initialize(this);		// WHICH_ONE_IS_APPROPRIATE??? ITS_LATE_INSTANTIATION_WE_MAY_ALREADY_HAVE_BARS_NOT_EMPTY
-						panel.InitializeWithNonEmptyBars(this);
+						if (this.Bars == null) {
+							string msg = "DESERIALIZATION_RECREATES_LAYOUT_BARS_LOADING_FOLLOWS_LATER";
+							panel.Initialize(this);
+						} else {
+							string msg = "I_COMPILED_SCRIPT_WHICH_ADDED_INDICATOR_PANEL";
+							panel.InitializeWithNonEmptyBars(this);
+						}
 						
 						this.PanelsByIndicator.Add(indicator, panel);
 						this.panels.Add(panel);

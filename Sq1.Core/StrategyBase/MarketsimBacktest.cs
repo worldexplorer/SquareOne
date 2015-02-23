@@ -418,7 +418,7 @@ namespace Sq1.Core.StrategyBase {
 					if (thisAlertWasAnnihilated) continue;
 				}
 				string reasonRefuseTryFill = this.checkAlertFillable(alert);
-				if (String.IsNullOrEmpty(reasonRefuseTryFill) == false) {
+				if (string.IsNullOrEmpty(reasonRefuseTryFill) == false) {
 					this.executor.PopupException(reasonRefuseTryFill);
 					continue;
 				}

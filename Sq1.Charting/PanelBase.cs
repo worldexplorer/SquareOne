@@ -65,15 +65,21 @@ namespace Sq1.Charting {
 				return ret;
 			} }
 		public virtual bool PanelHasValuesForVisibleBarWindow { get {
+				string msig = this.ToString();
 				bool ret = false;
 				if (this.VisibleBarRight_cached == -1) {
 					string msg = "VISIBLE_RIGHT_MUST_BE_POSITIVE CHECK_UPSTACK_INVALID_STATE";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 					return ret;
 				}
 				if (this.ValueIndexLastAvailableMinusOneUnsafe == -1) {
 					string msg = "BARS_COUNT_ZERO__I_HAVE_NO_VALUES_TO_DRAW";
-					Assembler.PopupException(msg);
+					if (this as PanelIndicator != null) {
+						msg = "INDICATOR_WASNT_ATTACHED_TO_PANEL_YET BACKTEST_ON_APPRESTART=FALSE_AND_WE_JUST_DESERIALIZED" + msg;
+						//NOT_AN_ERROR Assembler.PopupException(msg + msig, null, false);
+					} else {
+						Assembler.PopupException(msg + msig, null, false);
+					}
 					return ret;
 				}
 				ret = this.VisibleBarRight_cached <= this.ValueIndexLastAvailableMinusOneUnsafe;
@@ -513,8 +519,9 @@ namespace Sq1.Charting {
 		public int ValueToYinverted(double priceOrVolume) {			//200
 			if (this.ChartControl.BarsEmpty) return 666;
 			if (double.IsNaN(priceOrVolume)) {
-				string msg = "NEVER_HAPPENED_SO_FAR MUST_NOT_BE_NAN priceOrVolume[" + priceOrVolume + "]";
-				Assembler.PopupException(msg);
+				string msg = "CHECK_IT_UPSTACK INDICATOR_MAY_HAS_NAN_FOR_BARS<PERIOD priceOrVolume[" + priceOrVolume + "]";
+				Assembler.PopupException(msg, null, false);
+				return 0;
 			}
 			double min = this.VisibleMinMinusTopSqueezer_cached;		//100
 			double max = this.VisibleMaxPlusBottomSqueezer_cached;		//250

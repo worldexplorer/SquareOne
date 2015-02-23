@@ -24,10 +24,15 @@ namespace Sq1.Core.StrategyBase {
 		public SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
 
 		public string						EssentialsForScriptContextNewName	{ get {
-				return "Net[" + this.SlicesShortAndLong.NetProfitForClosedPositionsBoth + "]"
-				+ " PF[" + this.SlicesShortAndLong.ProfitFactor + "]"
-				+ " RF[" + this.SlicesShortAndLong.RecoveryFactor + "]";
-			} }
+				string netFormatted = Math.Round(this.SlicesShortAndLong.NetProfitForClosedPositionsBoth, 2).ToString();
+				if (this.Bars != null) netFormatted = this.Bars.FormatValue(this.SlicesShortAndLong.NetProfitForClosedPositionsBoth);
+				netFormatted.Replace(",", "");	// saving comma Net[4,072] will throw SPLITTER_COULDNT_RECOGNIZE_KEY and fail to restore ChartForm
+				string ret = "Net[" + netFormatted +"]"
+					+ " PF[" + this.SlicesShortAndLong.ProfitFactor + "]"
+					+ " RF[" + this.SlicesShortAndLong.RecoveryFactor + "]";
+				return ret;
+			}
+		}
 
 		public SystemPerformance(ScriptExecutor scriptExecutor) {
 			if (scriptExecutor == null) {

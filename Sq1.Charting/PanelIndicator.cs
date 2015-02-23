@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.Charting;
@@ -37,6 +38,14 @@ namespace Sq1.Charting {
 			base.ForeColor = indicator.LineColor;
 			base.MinimumSize = new Size(20, 15);	// only height matters for MultiSplitContainer
 		}
+		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
+			if (this.IndicatorEmpty) {
+				string msg = "FOR_PANELS_DESERIALIZED_BUT_NO_BACKTEST_RUN_YET_MOUSEOVER_WILL_THROW";
+				return;
+			}
+			base.OnPaintDoubleBuffered(e);
+		}
+
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
 			// PanelIndicator should not append "ATR (Period:5[1..11/2]) " twice (?) below PanelName 
 			// EACH_RENDERS_ITSELF__HAD_OLIVE_INDICATOR_NAME_DRAWN_TWICE_ON_ATR_OWN_PANEL base.RenderIndicators(g);

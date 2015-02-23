@@ -133,7 +133,7 @@ namespace Sq1.Core.Backtesting {
 				}
 
 				#if DEBUG // INLINE TEST
-				if (closestOnOurWay.AbsnoPerSymbol != -1) {
+				if (closestOnOurWay.AbsnoPerSymbol == -1) {
 					string msg = "QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER";
 					Assembler.PopupException(msg);
 				}
@@ -148,7 +148,7 @@ namespace Sq1.Core.Backtesting {
 				int pendingAfterInjected = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingsToFillInitially != pendingAfterInjected) {
 					string msg = "it looks like the quoteInjected triggered something";
-					Assembler.PopupException(msg);
+					//Assembler.PopupException(msg, null, false);
 				}
 				if (ret.Count > iterationsLimit) {
 					string msg = "InjectQuotesToFillPendingAlerts(): quotesInjected["
@@ -335,12 +335,15 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 			//long check, switch marketSim calculations to alert.PriceScriptAligned 
-			if (priceScriptAligned != alert.PriceScriptAligned) {
+			//v1 if (priceScriptAligned != alert.PriceScriptAligned) {
+			//v2 
+			bool alignedDifferently_iHateDoublesComparison = Math.Round(priceScriptAligned, 1) != Math.Round(alert.PriceScriptAligned, 1);
+			if (alignedDifferently_iHateDoublesComparison) {
 				string msg = "FIX_Alert.PriceScriptAligned";
 				Assembler.PopupException(msg);
 			} else {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg, null, false);
 			}
 			#endif
 
