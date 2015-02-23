@@ -105,10 +105,12 @@ namespace Sq1.Core.StrategyBase {
 		public List<Alert> PositionKillExitAlert(Position position, string signalName) {
 			List<Alert> alertsSubmittedToKill = new List<Alert>();
 			if (position.IsEntryFilled == false) {
-				Debugger.Break();
+				string msg = "I_REFUSE_TO_KILL_UNFILLED_ENTRY_ALERT position[" + position + "]";
+				Assembler.PopupException(msg);
 				return alertsSubmittedToKill;
 			}
-			if (null == position.ExitAlert) {	// for prototyped position, position.ExitAlert contains TakeProfit 
+			if (null == position.ExitAlert) {
+				string msg = "FIXME I_REFUSE_TO_KILL_UNFILLED_EXIT_ALERT {for prototyped position, position.ExitAlert contains TakeProfit} position[" + position + "]";
 				Debugger.Break();
 				return alertsSubmittedToKill;
 			}

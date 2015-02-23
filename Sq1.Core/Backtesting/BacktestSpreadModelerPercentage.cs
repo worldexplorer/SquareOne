@@ -50,10 +50,12 @@ namespace Sq1.Core.Backtesting {
 
 			this.AlignBidAskToPriceLevel(quote, PriceLevelRoundingMode.RoundToClosest, spreadAligned);
 			if (double.IsNaN(quote.Spread)) {
-				Debugger.Break();
+				string msg = "SPREAD_MUST_NOT_BE_NAN for " + quote;
+				Assembler.PopupException(msg);
 			}
 			if (quote.Spread == 0) {
-				Debugger.Break();
+				string msg = "SPREAD_MUST_NOT_BE_ZERO for " + quote;
+				Assembler.PopupException(msg);
 			}
 			return spreadAligned;
 		}

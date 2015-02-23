@@ -89,7 +89,8 @@ namespace Sq1.Core.Streaming {
 			Quote lastQuote = LastQuoteCloneGetForSymbol(Symbol);
 			if (lastQuote == null) return 0;
 			if (lastQuote.LastDealBidOrAsk == BidOrAsk.UNKNOWN) {
-				Debugger.Break();
+				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK lastQuote.LastDealBidOrAsk[" + lastQuote.LastDealBidOrAsk + "]=BidOrAsk.UNKNOWN";
+				Assembler.PopupException(msg);
 				return 0;
 			}
 			return lastQuote.LastDealPrice;
@@ -223,6 +224,7 @@ namespace Sq1.Core.Streaming {
 			}
 
 			if (double.IsNaN(price)) {
+				string msg = "NEVER_HAPPENED_SO_FAR PRICE_MUST_BE_POSITIVE_NOT_NAN";
 				Debugger.Break();
 			}
 			symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(symbol);

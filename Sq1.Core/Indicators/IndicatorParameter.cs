@@ -73,28 +73,24 @@ namespace Sq1.Core.Indicators {
 				this.ValueCurrent = ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent;
 			}
 			if (this.ValueCurrent < this.ValueMin || this.ValueCurrent > this.ValueMax)  {
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				string msg = "OBSERVED_AS_NEVER_HAPPENING";
+				Assembler.PopupException(msg);
 				this.ValueCurrent = this.ValueMin;
 			}
 			if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueMin != this.ValueMin) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMin  = this.ValueMin;
+				string msg = "OBSERVED_AS_NEVER_HAPPENING";
+				Assembler.PopupException(msg);
+				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMin = this.ValueMin;
 			}
 			if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueMax != this.ValueMax) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMax  = this.ValueMax;
+				string msg = "OBSERVED_AS_NEVER_HAPPENING";
+				Assembler.PopupException(msg);
+				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMax = this.ValueMax;
 			}
             if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement != this.ValueIncrement) {
-				#if DEBUG
-				//Debugger.Break();
-				#endif
-                ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement = this.ValueIncrement;
+				string msg = "OBSERVED_AS_ALWAYS_HAPPENING";
+				//Assembler.PopupException(msg, null, false);
+				ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement = this.ValueIncrement;
 			}
 		}
 		// USED_TO_SEPARATE_LONG_LIVING_SCRIPT_INDICATOR_PARAMETER_INSTANCE__FROM_SWITCHING_CONTEXT_INDICATOR_SETTINGS

@@ -28,7 +28,7 @@ namespace Sq1.Core.DataTypes {
 		}
 		protected DataSeriesBasic() {
 			this.doubleValues = new List<double>();
-			#if DEBUG	// EMBEDDED_TEST_FOR_LastValue_MUST_BE_NAN 
+			#if DEBUG	// PARANOID EMBEDDED_TEST_FOR_LastValue_MUST_BE_NAN 
 			if (double.IsNaN(this.LastValue) == false) {
 				Debugger.Break();
 			}
@@ -51,7 +51,9 @@ namespace Sq1.Core.DataTypes {
 				}
 				if (barIndex == this.doubleValues.Count) {
 					string msg = "DEPRECATED_NOTATION this[this.Count]_get; STREAMING_VALUE_IS_NOW_AT_this[this.Count-1]";
+					#if DEBUG
 					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 					//return this.doubleValues[barIndex - 1];
 				}
@@ -60,11 +62,16 @@ namespace Sq1.Core.DataTypes {
 			set {
 				if (barIndex < 0 || barIndex > this.Count) {
 					string msg = "[" + barIndex + "] is out of bounds: " + this;
+					#if DEBUG
+					Debugger.Break();
+					#endif
 					throw new ArgumentOutOfRangeException(msg);
 				}
 				if (barIndex == this.doubleValues.Count) {
 					string msg = "DEPRECATED_NOTATION this[this.Count]_set; STREAMING_VALUE_IS_NOW_AT_this[this.Count-1]";
+					#if DEBUG
 					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 					//this.StreamingValue = value;
 					//return;

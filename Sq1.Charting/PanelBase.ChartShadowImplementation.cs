@@ -15,9 +15,6 @@ namespace Sq1.Charting {
 				if (barIndex >= this.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 					Assembler.PopupException("MOVE_THIS_CHECK_UPSTACK renderBarsPrice(): " + msg);
-					#if DEBUG
-					Debugger.Break();
-					#endif
 					continue;
 				}
 				

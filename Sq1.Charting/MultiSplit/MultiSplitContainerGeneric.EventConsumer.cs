@@ -43,7 +43,8 @@ namespace Sq1.Charting.MultiSplit {
 					//panel.Invalidate();	// base.OnPaint() did it already
 				}
 			} catch (Exception ex) {
-				Debugger.Break();
+				string msg = "CONTROL.INVALIDATE()_IS_VERY_UNLIKELY_TO_THROW //MultiSplitContainerGeneric<PANEL_BASE>.OnPaintBackground()";
+				Assembler.PopupException(msg, ex);
 			}
 		}
 //WHEN_INHERITED_FROM_REGULAR_USERCONTROL
@@ -57,7 +58,8 @@ namespace Sq1.Charting.MultiSplit {
 					//panel.Invalidate();	// base.OnPaint() did it already
 					
 					if (i >= this.splitters.Count) {
-						Debugger.Break();
+						string msg = "YOU_GOT_MORE_(DESERIALIZED)_SPLITTERS_THAN_PANELS__MUST_BE_EQUAL  //MultiSplitContainerGeneric<PANEL_BASE>.OnPaint()";
+						Assembler.PopupException(msg);
 						continue;
 					}
 					MultiSplitter splitter = this.splitters[i];
@@ -72,17 +74,18 @@ namespace Sq1.Charting.MultiSplit {
 				//Point location = new Point(0, 0);
 				//e.Graphics.DrawString(this.panelText, this.Font, SystemBrushes.ControlText, location);
 			} catch (Exception ex) {
-				Debugger.Break();
+				string msg = "CONTROL.INVALIDATE()_IS_VERY_UNLIKELY_TO_THROW //MultiSplitContainerGeneric<PANEL_BASE>.OnPaint()";
+				Assembler.PopupException(msg, ex);
 			}
 		}
-		protected override void OnMouseMove(MouseEventArgs e) {
-			// all my nested this.panels intercept their own OnMouseMove()s so I'm receiving only mouse-above-splitters here
-			//Debugger.Break();
-			//base.Invalidate();
-		}
-		protected override void OnMouseDown(MouseEventArgs e) {
-			Debugger.Break();
-		}
+		//protected override void OnMouseMove(MouseEventArgs e) {
+		//    // all my nested this.panels intercept their own OnMouseMove()s so I'm receiving only mouse-above-splitters here
+		//    //Debugger.Break();
+		//    //base.Invalidate();
+		//}
+		//protected override void OnMouseDown(MouseEventArgs e) {
+		//    Debugger.Break();
+		//}
 		
 		string panelText { get { return this.panelMouseIsOverNow != null ? this.panelMouseIsOverNow.Text : "<none>"; } }
 		PANEL_BASE panelMouseIsOverNow;
@@ -95,7 +98,8 @@ namespace Sq1.Charting.MultiSplit {
 			}
 			PANEL_BASE panel = sender as PANEL_BASE;
 			if (panel == null) {
-				Debugger.Break();
+				string msg = "I_MUST_BE_SUBSCRIBED_TO_TYPE " + typeof(PANEL_BASE) + "; got sender[" + sender.GetType() + "] //panel_MouseEnter()";
+				Assembler.PopupException(msg);
 				return;
 			}
 			this.panelMouseIsOverNow = panel;
@@ -109,21 +113,25 @@ namespace Sq1.Charting.MultiSplit {
 			this.Invalidate();
 		}		
 		void panel_MouseLeave(object sender, EventArgs e) {
+			string msig = " //panel_MouseLeave()";
 			panelMouseIsOverNow = null;
 			panelMouseIsOverNowIndexDropTarget = -1;
 			
 			PANEL_BASE panel = sender as PANEL_BASE;
 			if (panel == null) {
-				Debugger.Break();
+				string msg = "I_MUST_BE_SUBSCRIBED_TO_TYPE " + typeof(PANEL_BASE)
+					+ "; got sender[" + sender.GetType() + "]";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			int panelIndex = this.panels.IndexOf(panel);
 			if (panelIndex == -1 || this.splitters.Count < panelIndex) {
-				Debugger.Break();
+				string msg = "I_REFUSE_TO_INVALIDATE_SPLITTER CANT_FIND_SPLITTER_FOR_PANEL";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			MultiSplitter splitterForThisPanel = this.splitters[panelIndex];
-			if (DebugSplitter) {
+			if (this.DebugSplitter) {
 				splitterForThisPanel.Text = "<leftThisPanel>";
 			}
 			//NOT_ENOUGH splitterForThisPanel.Invalidate();
@@ -152,7 +160,8 @@ namespace Sq1.Charting.MultiSplit {
 		void splitter_MouseMove(object sender, MouseEventArgs e) {			
 			MultiSplitter splitter = sender as MultiSplitter;
 			if (splitter == null) {
-				Debugger.Break();
+				string msg = "I_MUST_BE_SUBSCRIBED_TO_MultiSplitter, got sender[" + splitter.GetType() + "] //splitter_MouseMove()";
+				Assembler.PopupException(msg);
 				return;
 			}
 			if (DebugSplitter) {
@@ -177,7 +186,8 @@ namespace Sq1.Charting.MultiSplit {
 		void splitter_MouseEnter(object sender, EventArgs e) {
 			MultiSplitter splitter = sender as MultiSplitter;
 			if (splitter == null) {
-				Debugger.Break();
+				string msg = "I_MUST_BE_SUBSCRIBED_TO_MultiSplitter, got sender[" + splitter.GetType() + "] //splitter_MouseEnter()";
+				Assembler.PopupException(msg);
 				return;
 			}
 			splitterMouseIsOverNow = splitter;
@@ -187,7 +197,8 @@ namespace Sq1.Charting.MultiSplit {
 		void splitter_MouseLeave(object sender, EventArgs e) {
 			MultiSplitter splitter = sender as MultiSplitter;
 			if (splitter == null) {
-				Debugger.Break();
+				string msg = "I_MUST_BE_SUBSCRIBED_TO_MultiSplitter, got sender[" + splitter.GetType() + "] //splitter_MouseLeave()";
+				Assembler.PopupException(msg);
 				return;
 			}
 			if (splitterStartedResizeOrDrag != null) {
@@ -213,7 +224,8 @@ namespace Sq1.Charting.MultiSplit {
 		void splitter_MouseDown(object sender, MouseEventArgs e) {
 			MultiSplitter splitter = sender as MultiSplitter;
 			if (splitter == null) {
-				Debugger.Break();
+				string msg = "I_MUST_BE_SUBSCRIBED_TO_MultiSplitter, got sender[" + splitter.GetType() + "] //splitter_MouseDown()";
+				Assembler.PopupException(msg);
 				return;
 			}
 			
@@ -237,9 +249,8 @@ namespace Sq1.Charting.MultiSplit {
 		void splitter_MouseUp(object sender, MouseEventArgs e) {
 			MultiSplitter splitter = sender as MultiSplitter;
 			if (splitter == null) {
-		  		#if DEBUG
-		  		Debugger.Break();
-				#endif
+				string msg = "I_MUST_BE_SUBSCRIBED_TO_MultiSplitter, got sender[" + splitter.GetType() + "] //splitter_MouseUp()";
+				Assembler.PopupException(msg);
 				return;
 			}
 			if (splitterIsDraggingNow) {

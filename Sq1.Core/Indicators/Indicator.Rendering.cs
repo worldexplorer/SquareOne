@@ -66,17 +66,13 @@ namespace Sq1.Core.Indicators {
 			int y = this.HostPanelForIndicator.ValueToYinverted(calculated);
 			if (y == 0)  {
 				string msg = "INDICATOR_VALUE_TOO_BIG_INVERTED SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
-				#if DEBUG
-				//Debugger.Break();
-				#endif
+				//Assembler.PopupException(msg + msig, null, false);
 				//return indicatorLegDrawn;
 			}
 			int max = this.HostPanelForIndicator.ValueToYinverted(0);
 			if (y == max) {
 				string msg = "INDICATOR_VALUE_TOO_SMALL_INVERTED SKIPPING_DRAWING_OUTSIDE_HOST_PANEL";
-				#if DEBUG
-				//Debugger.Break();
-				#endif
+				//Assembler.PopupException(msg + msig, null, false);
 				//return indicatorLegDrawn;
 			}
 
@@ -137,8 +133,8 @@ namespace Sq1.Core.Indicators {
 			bool willDrawUpper = this.checkBandValue(barIndex, bandUpper, "bandUpper");
 			try {
 				if (willDrawLower) {
-					double valueLower = bandLower[barIndex];
-					double prevLower = bandLower[barIndex - 1];
+					double valueLower	= bandLower[barIndex];
+					double prevLower	= bandLower[barIndex - 1];
 					this.DrawValueSingleLine(g, bar, valueLower, prevLower);
 				}
 				if (willDrawUpper) {
@@ -147,9 +143,8 @@ namespace Sq1.Core.Indicators {
 					this.DrawValueSingleLine(g, bar, valueUpper, prevUpper);
 				}
 			} catch (Exception ex) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				string msg = "UPPER_OR_LOWER_OUT_OF_BOUNDARY OR DrawValueSingleLine_THROWN";
+				Assembler.PopupException(msg, ex);
 			}
 			
 			if (willDrawLower || willDrawUpper) indicatorLegDrawn = true;
@@ -157,34 +152,26 @@ namespace Sq1.Core.Indicators {
 		}
 
 		bool checkBandValue(int barIndex, DataSeriesTimeBased bandLowerOrUpper, string bandSeriesName = "bandLower") {
+			string msig = " //checkBandValue(" + barIndex + ", " + bandLowerOrUpper + ", " + bandSeriesName + ")";
 			bool valueOk = true;
 			if (valueOk == true && bandLowerOrUpper.Count < 2) {
-				string msg = "INDICATOR_BAND_PREVIOUS_VALUE_DOESNT_EXIST " + bandSeriesName + ".Count=[" + bandLowerOrUpper.Count
-					+ "] must be >= 2";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				//Assembler.PopupException(msg + msig);
+				string msg = "INDICATOR_BAND_PREVIOUS_VALUE_DOESNT_EXIST " + bandSeriesName
+					 + ".Count=[" + bandLowerOrUpper.Count + "] must be >= 2";
+				Assembler.PopupException(msg + msig);
 				valueOk = false;
 			}
 	
 			if (valueOk == true && bandLowerOrUpper.Count < this.FirstValidBarIndex) {
 				string msg = "INDICATOR_BAND_INCUBATOR_STATE " + bandSeriesName + ".Count=[" + bandLowerOrUpper.Count
 					+ "] must be > this.FirstValidBarIndex[" + this.FirstValidBarIndex + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				//Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				valueOk = false;
 			}
 
 			if (valueOk == true && barIndex >= bandLowerOrUpper.Count) {
 				string msg = "INDICATOR_BAND_VALUE_REQUESTED_BEYOND_EXISTING barIndexRequested[" + barIndex
 					+ "] must be < " + bandSeriesName + ".Count=[" + bandLowerOrUpper.Count + "]";
-				#if DEBUG
-				//Debugger.Break();
-				#endif
-				//Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				valueOk = false;
 			}
 			
@@ -195,19 +182,13 @@ namespace Sq1.Core.Indicators {
 
 			if (double.IsNaN(value)) {
 				string msg = "INDICATOR_VALUE_IS_NAN " + bandSeriesName + "[" + barIndex + "]";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				//Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				valueOk = false;
 			}
 
 			if (double.IsNaN(valuePrevious)) {
 				string msg = "INDICATOR_VALUE_PREVIOUS_IS_NAN " + bandSeriesName + "[" + (barIndex - 1) + "]";
-				#if DEBUG
-				//Debugger.Break();
-				#endif
-				//Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig);
 				valueOk = false;
 			}
 

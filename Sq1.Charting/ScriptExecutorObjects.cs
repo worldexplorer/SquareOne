@@ -145,13 +145,17 @@ namespace Sq1.Charting {
 			this.AlertsPendingHistorySafeCopy = alertsPendingHistorySafeCopy;
 		}
 		public void PendingRealtimeAdd(ReporterPokeUnit pokeUnit) {
-			Debugger.Break();	//should I NOT assign this.AlertsPendingHistorySafeCopy=alertsPendingHistorySafeCopy;?
+			string msig = " // PendingRealtimeAdd(" + pokeUnit + ")";
+			string msg = "should I NOT assign this.AlertsPendingHistorySafeCopy=alertsPendingHistorySafeCopy?";
+			Assembler.PopupException(msg + msig);
 			if (null == pokeUnit.QuoteGeneratedThisUnit) {
-				Debugger.Break();
+				msg = "NEVER_HAPPENED_SO_FAR pokeUnit.QuoteGeneratedThisUnit=null";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			if (null == pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming) {
-				Debugger.Break();
+				msg = "NEVER_HAPPENED_SO_FAR pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming=null";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 			int barIndex = pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming.ParentBarsIndex;

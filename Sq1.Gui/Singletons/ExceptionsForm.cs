@@ -11,7 +11,9 @@ namespace Sq1.Gui.Singletons {
 			
 			// below I want to avoid {Assembler.instance=null}-related exception in DesignMode
 			if (base.DesignMode) {
+				#if DEBUG
 				Debugger.Break();
+				#endif
 				throw new Exception("I doubt that a Form.ctor() could ever have base.DesignMode=true" +
 					"; base() has not been informed yet that the form IS in DesignMode, right?...");
 				//return; 
@@ -40,8 +42,11 @@ namespace Sq1.Gui.Singletons {
 			});
 			t.ContinueWith(delegate {
 				string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
-				Debugger.Break();
-				//Assembler.PopupException(msg2, t.Exception);
+				#if DEBUG
+					Debugger.Break();
+				#else
+					Assembler.PopupException(msg2, t.Exception);
+				#endif
 			}, TaskContinuationOptions.OnlyOnFaulted);
 			t.Start();
 			#endregion

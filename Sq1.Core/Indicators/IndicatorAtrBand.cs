@@ -105,8 +105,7 @@ namespace Sq1.Core.Indicators {
 					+ " " + this.Executor.Backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler.ToString()
 					;
 				int a = 1;
-				Debugger.Break();
-				//Assembler.PopupException(msg);
+				Assembler.PopupException(msg);
 			}
 			#endif
 

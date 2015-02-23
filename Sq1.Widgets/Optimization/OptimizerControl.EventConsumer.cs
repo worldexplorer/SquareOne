@@ -46,9 +46,9 @@ namespace Sq1.Widgets.Optimization {
 //			}
 //			this.splitContainer1.SplitterDistance = heightCollapsed;
 //		}
-		void optimizer_OnBacktestComplete(object sender, SystemPerformanceEventArgs e) {
+		void optimizer_OnBacktestFinished(object sender, SystemPerformanceEventArgs e) {
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.optimizer_OnBacktestComplete(sender, e); });
+				base.BeginInvoke((MethodInvoker)delegate { this.optimizer_OnBacktestFinished(sender, e); });
 				return;
 			}
 			this.backtests.Add(e.SystemPerformance);
@@ -143,18 +143,21 @@ namespace Sq1.Widgets.Optimization {
 
 				var iDisplayedByName = this.optimizer.ScriptAndIndicatorParametersMergedByName;
 				if (iDisplayedByName.ContainsKey(iParamName) == false) {
-					Debugger.Break();
+					string msg = "NEVER_HAPPENED_SO_FAR iDisplayedByName.ContainsKey(" +  iParamName + ") == false";
+					Assembler.PopupException(msg);
 				}
 				IndicatorParameter iDisplayed = iDisplayedByName[iParamName];
 
 				var iPropagatingByName = selected.ParametersMergedByName;
 				if (iPropagatingByName.ContainsKey(iParamName) == false) {
-					Debugger.Break();
+					string msg = "NEVER_HAPPENED_SO_FAR iPropagatingByName.ContainsKey(" + iParamName + ") == false";
+					Assembler.PopupException(msg);
 				}
 				IndicatorParameter iPropagating = iPropagatingByName[iParamName];
 
 				if (iDisplayed.ValueCurrent != iPropagating.ValueCurrent) {
-					Debugger.Break();	// both are wrong; I clicked on MaSlow=20,MaFast=11; iDisplayed=MaFast=33, iPropagating=MaFast=22; replacing executorPool with newExecutor() each backtest
+					string msg = "both are wrong; I clicked on MaSlow=20,MaFast=11; iDisplayed=MaFast=33, iPropagating=MaFast=22; replacing executorPool with newExecutor() each backtest";
+					Assembler.PopupException(msg, null, false);
 				}
 			}
 			#endif

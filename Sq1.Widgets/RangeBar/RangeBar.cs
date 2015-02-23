@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core.DoubleBuffered;
+using Sq1.Core;
 
 namespace Sq1.Widgets.RangeBar {
 	public abstract class RangeBar<T> : UserControlDoubleBuffered {
@@ -186,6 +187,7 @@ namespace Sq1.Widgets.RangeBar {
 		}
 		//WHEN_INHERITED_FROM_REGULAR_USERCONTROL protected override void OnPaint(PaintEventArgs e) {
 		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
+			string msig = " //OnPaintDoubleBuffered() " + this.ToString();
 			this.checkThrowOnPaint();
 			Graphics g = e.Graphics;
 			if (this.LabelHeight == 0) this.LabelHeight = this.RoundInt(g.MeasureString("ABC~`gj123", this.Font).Height);
@@ -211,7 +213,7 @@ namespace Sq1.Widgets.RangeBar {
 				//DOUBLEBUFFERED_PARENT_DID_THAT base.OnPaint(e);
 			} catch (Exception ex) {
 				string msg = "WindProc won't catch your exceptions; keep a breakpoint here";
-				Debugger.Break();
+				Assembler.PopupException(msg + msig, ex);
 				throw ex;
 			}
 		}
@@ -369,13 +371,12 @@ namespace Sq1.Widgets.RangeBar {
 			this.dragging = false;
 		}
 		protected override void OnMouseUp(MouseEventArgs e) {
+			string msig = " //OnMouseUp() " + this.ToString();
 			if (e.Button != MouseButtons.Left) return;
 			try {
 				if (this.ValueMouseOverRangePercentage > 1) {
-					string msg = "Houston we have a problem";
-					#if DEBUG
-					Debugger.Break();
-					#endif
+					string msg = "NEVER_OBSERVED_BEFORE Houston we have a problem";
+					Assembler.PopupException(msg + msig);
 				}
 				if (this.dragging == false) {
 					if (this.ValueMouseOverRangePercentage < this.ValueMinMaxMedianPercentage) {
@@ -408,6 +409,7 @@ namespace Sq1.Widgets.RangeBar {
 				this.dragButtonPressed = false;
 			} catch (Exception ex) {
 				string msg = "WindProc won't catch your exceptions; keep a breakpoint here";
+				Assembler.PopupException(msg + msig, ex);
 				throw ex;
 			}
 			base.OnMouseUp(e);

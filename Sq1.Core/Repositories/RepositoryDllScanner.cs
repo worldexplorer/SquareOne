@@ -84,18 +84,12 @@ namespace Sq1.Core.Repositories {
 						string msg = "ReflectionTypeLoadException/LOADFILE_FAILED";
 						// add topStack and continue
 						//this.ExceptionsWhileScanning.Add(loaderEx);
-						//#if DEBUG
-						//Debugger.Break();
-						//#endif
 						Assembler.PopupException(msg + msig, loaderEx);
 						break;
 					}
 					continue;
 				} catch (Exception ex) {
 					//this.ExceptionsWhileScanning.Add(ex);
-					//#if DEBUG
-					//Debugger.Break();
-					//#endif
 					string msg = "Exception/LOADFILE_FAILED";
 					Assembler.PopupException(msg + msig, ex);
 					continue;
@@ -166,9 +160,6 @@ namespace Sq1.Core.Repositories {
 			string msg = "typeNameShort[" + typeNameShort + "] has duplicates "
 				+ " containing in dllNames[" + dllNames + "]";
 			//this.ExceptionsWhileScanning.Add(new Exception(msg));
-			//#if DEBUG
-			//Debugger.Break();
-			//#endif
 			Assembler.PopupException(msg);
 			return true;
 		}

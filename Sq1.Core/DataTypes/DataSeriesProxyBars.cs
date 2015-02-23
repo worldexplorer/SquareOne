@@ -26,12 +26,15 @@ namespace Sq1.Core.DataTypes {
 		public override double this[int barIndex] {
 			get {
 				if (this.BarsBeingProxied == null) {
-					Debugger.Break();
+					string msg = "PARANOID_KOZ_CTOR_BARS_PARAMETER_NOT_NULLABLE_BUT_THIS_HAPPENED!!!";
+					Assembler.PopupException(msg);
 					return double.NaN;
 				}
 				if (barIndex >= this.BarsBeingProxied.Count) {
-					string msg = "DEPRECATED_NOTATION this[this.Count]_get; STREAMING_VALUE_IS_NOW_AT_this[this.Count-1]";
+					string msg = "REFACTOR_INVOKER! DEPRECATED_NOTATION this[this.Count]_get; STREAMING_VALUE_IS_NOW_AT_this[this.Count-1]";
+					#if DEBUG
 					Debugger.Break();
+					#endif
 					throw new Exception(msg);
 					//return double.NaN;
 				}

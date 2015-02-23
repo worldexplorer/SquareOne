@@ -33,8 +33,16 @@ namespace Sq1.Charting {
 		int chartLabelsUpperLeftYincremental;
 		
 		// price, volume or indicator-calculated; not abstract for Designer to throw less exceptions
-		[Browsable(false)] public virtual double VisibleMinDoubleMaxValueUnsafe { get { Debugger.Break(); throw new NotImplementedException(); } }
-		[Browsable(false)] public virtual double VisibleMaxDoubleMinValueUnsafe { get { Debugger.Break(); throw new NotImplementedException(); } }
+		[Browsable(false)] public virtual double VisibleMinDoubleMaxValueUnsafe { get {
+			#if DEBUG
+			Debugger.Break();
+			#endif
+			throw new NotImplementedException(); } }
+		[Browsable(false)] public virtual double VisibleMaxDoubleMinValueUnsafe { get {
+			#if DEBUG
+			Debugger.Break();
+			#endif
+			throw new NotImplementedException(); } }
 		// USE_CACHED_VARIABLE_INSTEAD [Browsable(false)] public virtual double VisibleRange { get { return this.VisibleMax - this.VisibleMin; } }
 		[Browsable(false)] public virtual double FirstNonNanBetweenLeftRight { get {
 				double ret = double.NaN;
@@ -60,24 +68,34 @@ namespace Sq1.Charting {
 				bool ret = false;
 				if (this.VisibleBarRight_cached == -1) {
 					string msg = "VISIBLE_RIGHT_MUST_BE_POSITIVE CHECK_UPSTACK_INVALID_STATE";
-					Debugger.Break();
+					Assembler.PopupException(msg);
 					return ret;
 				}
 				if (this.ValueIndexLastAvailableMinusOneUnsafe == -1) {
 					string msg = "BARS_COUNT_ZERO__I_HAVE_NO_VALUES_TO_DRAW";
-					Debugger.Break();
+					Assembler.PopupException(msg);
 					return ret;
 				}
 				ret = this.VisibleBarRight_cached <= this.ValueIndexLastAvailableMinusOneUnsafe;
 				return ret;
 			} }
 		public virtual double ValueGetNaNunsafe(int barIndex) {
+			#if DEBUG
+			Debugger.Break();
+			#endif
 			throw new NotImplementedException();
 		}
 		// REASON_TO_EXIST: for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
-		public virtual int Decimals { get { Debugger.Break(); throw new NotImplementedException(); } }
+		public virtual int Decimals { get {
+			#if DEBUG
+			Debugger.Break();
+			#endif
+			throw new NotImplementedException(); } }
 		public string Format { get { return "N" + (this.Decimals + 1); } }
 		public virtual int ValueIndexLastAvailableMinusOneUnsafe { get {
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new NotImplementedException();
 			} }
 		
@@ -220,7 +238,7 @@ namespace Sq1.Charting {
 			
 			if (this.ChartControl == null) {
 				string msg = "PanelNamedFolding[" + this.PanelName + "].ChartControl=null; invoke PanelNamedFolding.Initialize() from derived.ctor()";
-				Debugger.Break();
+				Assembler.PopupException(msg);
 				this.DrawError(e.Graphics, msg);
 				return;
 			}
@@ -245,8 +263,8 @@ namespace Sq1.Charting {
 				
 				if (this.PanelHasValuesForVisibleBarWindow == false) {
 					string msg = "PANEL_BASE_PAINT_ENTRY_POINT_PROTECTS_DERIVED_FROM_INVOKING_PaintWholeSurfaceBarsNotEmpty()"
-						+ " occurs for JSON-Scripted Strategies with PanelIndicator* open without indicator's data";
-					//Debugger.Break();	// moving beyond right bar makes all panels blank
+						+ " occurs for JSON-Scripted Strategies with PanelIndicator* open without indicator's data"
+						+ " moving beyond right bar makes all panels blank";
 					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
@@ -277,7 +295,6 @@ namespace Sq1.Charting {
 				}
 			} catch (Exception ex) {
 				string msg = "OnPaintDoubleBuffered(): caught[" + ex.Message + "]";
-				Debugger.Break();
 				Assembler.PopupException(msg + msig, ex);
 				this.DrawError(e.Graphics, msg);
 			} finally {
@@ -324,20 +341,17 @@ namespace Sq1.Charting {
 				+ " [" + this.VisibleMinMinusTopSqueezer_cached + "]...[" + this.VisibleMaxPlusBottomSqueezer_cached + "]" + msig;
 			if (double.IsNegativeInfinity(this.VisibleRangeWithTwoSqueezers_cached)) {
 				string msg = "[" + this.PanelName + "]-RANGE_MUST_BE_NON_NEGATIVE_INFINITY";
-				//Debugger.Break();
 				Assembler.PopupException(msg + msig);
 				return;
 			}
 			if (double.IsNaN(this.VisibleRangeWithTwoSqueezers_cached)) {
 				string msg = "[" + this.PanelName + "]-RANGE_MUST_BE_NON_NAN";
-				Debugger.Break();
 				Assembler.PopupException(msg + msig);
 				return;
 			}
 			if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
 				// gridStep will throw an ArithmeticException
 				string msg = "[" + this.PanelName + "]-RANGE_MUST_BE_POSITIVE";
-				//Debugger.Break();
 				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
@@ -373,10 +387,10 @@ namespace Sq1.Charting {
 			}
 			
 			if (this.ChartControl.BarsCanFitForCurrentWidth <= 0) {
-				string msg = "still resizing?...";
+				string msg = "NEVER_HAPPENED_SO_FAR still resizing?...";
+				Assembler.PopupException(msg, null, false);
 				e.Graphics.Clear(base.BackColor);
 				this.DrawError(e.Graphics, msig + msg);
-				//Debugger.Break();
 				return;
 			}
 			this.chartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
@@ -403,7 +417,8 @@ namespace Sq1.Charting {
 					return;
 				}
 				if (this.VisibleBarRight_cached < 0) {
-					Debugger.Break();
+					string msg = "NEVER_HAPPENED_SO_FAR this.VisibleBarRight_cached[" + this.VisibleBarRight_cached + "] < 0";
+					Assembler.PopupException(msg);
 				}
 				//v1
 				if (this.VisibleBarRight_cached > this.ValueIndexLastAvailableMinusOneUnsafe) {
@@ -418,8 +433,8 @@ namespace Sq1.Charting {
 				this.VisibleBarLeft_cached = this.ChartControl.VisibleBarLeft;
 				this.VisibleBarsCount_cached = this.VisibleBarRight_cached - this.VisibleBarLeft_cached;
 				if (this.VisibleBarsCount_cached <= 0) {
-					string msg = "already checked this.BarsCanFitForCurrentWidth <= 0";
-					Debugger.Break();
+					string msg = "NEVER_HAPPENED_SO_FAR already checked this.BarsCanFitForCurrentWidth <= 0";
+					Assembler.PopupException(msg);
 					return;
 				}
 	
@@ -443,7 +458,6 @@ namespace Sq1.Charting {
 				string msg = "OnPaintBackgroundDoubleBuffered(): caught[" + ex.Message + "]";
 				Assembler.PopupException(msg, ex);
 				this.DrawError(e.Graphics, msg);
-				Debugger.Break();
 			} finally {
 				this.ImPaintingBackgroundNow = false;
 			}
@@ -498,7 +512,10 @@ namespace Sq1.Charting {
 		}
 		public int ValueToYinverted(double priceOrVolume) {			//200
 			if (this.ChartControl.BarsEmpty) return 666;
-			if (double.IsNaN(priceOrVolume)) Debugger.Break();
+			if (double.IsNaN(priceOrVolume)) {
+				string msg = "NEVER_HAPPENED_SO_FAR MUST_NOT_BE_NAN priceOrVolume[" + priceOrVolume + "]";
+				Assembler.PopupException(msg);
+			}
 			double min = this.VisibleMinMinusTopSqueezer_cached;		//100
 			double max = this.VisibleMaxPlusBottomSqueezer_cached;		//250
 			double rangeMinMax = this.VisibleRangeWithTwoSqueezers_cached;			//150

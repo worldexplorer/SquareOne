@@ -197,7 +197,8 @@ try {
 			int y = 0;
 			for (int i=0; i<this.panels.Count; i++) {
 				if (i >= this.splitters.Count) {
-					Debugger.Break();
+					string msg = "YOU_GOT_MORE_PANELS_(DESERIALIZED)_THAN_SPLITTERS MUST_BE_EQUAL";
+					Assembler.PopupException(msg);
 					break;
 				}
 				
@@ -280,8 +281,9 @@ try {
 					if (y + panel.Height > baseHeight) {
 						panel.Height = baseHeight - y;
 						if (panel.Height < 0) {
-							Debugger.Break();
-							return;		// WTF
+							string msg = "STILL_RESIZING_IN_GUI_THREAD???  panel.Height[" + panel.Height + "] < 0";
+							Assembler.PopupException(msg);
+							return;
 						}
 					}
 				}

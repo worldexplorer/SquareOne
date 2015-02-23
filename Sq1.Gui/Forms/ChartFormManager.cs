@@ -177,7 +177,9 @@ namespace Sq1.Gui.Forms {
 				Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 			if (this.DataSnapshot == null) {
-				Debugger.Break();
+				string msg = "I_REFUSE_CTOR_SERIALIZATION AVOIDING_NPE this.DataSnapshot[" + this.DataSnapshot + "]=null";
+				Assembler.PopupException(msg);
+				return;
 			}
 			this.DataSnapshot.ChartSerno = charSernoDeserialized;
 			this.DataSnapshotSerializer.Serialize();
@@ -569,8 +571,8 @@ namespace Sq1.Gui.Forms {
 			}
 
 			if (this.Strategy.ActivatedFromDll == false) {
-				string msg = "WILL_DEBUG_THIS_LATER";
-				Debugger.Break();
+				string msg = "DEBUG_ME_NOW this.Strategy.ActivatedFromDll == false";
+				Assembler.PopupException(msg);
 				// MOVED_20_LINES_UP this.StrategyCompileActivateBeforeShow();	// if it was streaming at exit, we should have it ready
 			}
 		}
@@ -700,8 +702,13 @@ namespace Sq1.Gui.Forms {
 			this.Executor.Optimizer.Initialize();						// removes "optimizerInitializedProperly == false" on app restart => Optimizer fills up with Script&Indicator Prarmeters for a JSON-based strategy
 		}
 		public void StrategyCompileActivatePopulateSlidersShow() {
-			if (this.Strategy.ActivatedFromDll == false) this.StrategyCompileActivateBeforeShow();
-			else Debugger.Break();
+			if (this.Strategy.ActivatedFromDll == false) {
+				this.StrategyCompileActivateBeforeShow();
+			} else {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+			}
 
 			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
 				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();

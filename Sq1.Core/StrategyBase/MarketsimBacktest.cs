@@ -234,9 +234,7 @@ namespace Sq1.Core.StrategyBase {
 				case MarketLimitStop.StopLimit:
 					if (quote.ParentBarStreaming == null) {
 						string msg = "quoteToReach must be bound here!!!";
-						//Debugger.Break();
-					} else {
-						if (quote.ParentBarStreaming.ParentBarsIndex == 133) Debugger.Break();
+						Assembler.PopupException(msg);
 					}
 
 					//v2

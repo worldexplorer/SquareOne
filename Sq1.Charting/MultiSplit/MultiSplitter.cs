@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using Sq1.Core;
 
 namespace Sq1.Charting.MultiSplit {
 	public class MultiSplitter : UserControl {
@@ -35,7 +36,8 @@ namespace Sq1.Charting.MultiSplit {
 					}
 				}
 			} catch (Exception ex) {
-				Debugger.Break();
+				string msg = "I_ONLY_DID_g.DrawString()_AND_g.FillRectangle() //MultiSplitter.OnPaint()";
+				Assembler.PopupException(msg, ex);
 			}
 		}
 		
@@ -45,7 +47,9 @@ namespace Sq1.Charting.MultiSplit {
 			try {
 				e.Graphics.Clear(this.BackColor);
 			} catch (Exception ex) {
-				Debugger.Break();
+				string msig = " //MultiSplitter.OnPaintBackground()";
+				string msg = "SHOULD_NEVER_HAPPEN I_DONT_THINK_GRAPHICS.CLEAR_WOULD_EVER_THROW";
+				Assembler.PopupException(msg + msig, ex, false);
 			}
 		}
 
