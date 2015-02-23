@@ -89,7 +89,8 @@ namespace Sq1.Charting {
 			msig = " this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]:"
 				+ " [" + this.VisibleMinMinusTopSqueezer_cached + "]...[" + this.VisibleMaxPlusBottomSqueezer_cached + "]" + msig;
 			if (double.IsNegativeInfinity(this.VisibleRangeWithTwoSqueezers_cached)) {
-				Debugger.Break();
+				string msg = "NEVER_HAPPENED_SO_FAR [" + this.ToString() + "]-INDICATOR_RANGE_MUST_BE_NON_NEGATIVE_INFINITY";
+				Assembler.PopupException(msg + msig);
 			}
 			if (double.IsNaN(this.VisibleRangeWithTwoSqueezers_cached)) {
 				string msg = "[" + this.ToString() + "]-INDICATOR_RANGE_MUST_BE_NON_NAN";

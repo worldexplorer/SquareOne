@@ -136,7 +136,19 @@ namespace Sq1.Core.Repositories {
 						dateTimeOpen = new DateTime(ticks);
 					} catch (Exception ex) {
 						string msg = "FAILED_TO_CONVERT_TO_DATE_TICKS=[" + ticks + "]";
-						Assembler.PopupException(msg, ex, false);
+						long leftBoundaryOffendedBy = DateTime.MinValue.Ticks - ticks;
+						if (leftBoundaryOffendedBy > 0) {
+							msg += " leftBoundaryOffendedBy[" + leftBoundaryOffendedBy + "]";
+						}
+						long rightBoundaryOffendedBy = ticks - DateTime.MaxValue.Ticks;
+						if (rightBoundaryOffendedBy > 0) {
+							msg += " rightBoundaryOffendedBy[" + rightBoundaryOffendedBy + "]";
+						}
+
+						string illiteracyDive = ""
+							+ " DateTime.MinValue.Ticks[" + DateTime.MinValue.Ticks+ "] ..."
+							+ " DateTime.MaxValue.Ticks[" + DateTime.MaxValue.Ticks + "]";
+						Assembler.PopupException(msg + illiteracyDive, ex, false);
 						break;
 					}
 					double open		= binaryReader.ReadDouble();

@@ -23,7 +23,7 @@ namespace Sq1.Core.DoubleBuffered {
 		//} }
 
 		public PanelDoubleBuffered() : base() {
-			Application.ApplicationExit += new EventHandler(DisposeAndNullifyToRecreateInPaint);
+			Application.ApplicationExit += new EventHandler(disposeAndNullifyToRecreateInPaint);
 			base.SetStyle( ControlStyles.AllPaintingInWmPaint
 						 | ControlStyles.OptimizedDoubleBuffer
 					//	 | ControlStyles.UserPaint
@@ -31,11 +31,11 @@ namespace Sq1.Core.DoubleBuffered {
 					, true);
 			this.graphicManager = BufferedGraphicsManager.Current;
 		}
-		private void InitializeBuffer() {
+		void initializeBuffer() {
 			this.graphicManager.MaximumBuffer =  new Size(base.Width + 1, base.Height + 1);
 			this.bufferedGraphics = this.graphicManager.Allocate(this.CreateGraphics(),  base.ClientRectangle);
 		}
-		private void DisposeAndNullifyToRecreateInPaint(object sender, EventArgs e) {
+		void disposeAndNullifyToRecreateInPaint(object sender, EventArgs e) {
 			if (this.bufferedGraphics == null) return;
 			this.bufferedGraphics.Dispose();
 			this.bufferedGraphics = null;
@@ -44,7 +44,7 @@ namespace Sq1.Core.DoubleBuffered {
 			try {
 				// overhead here since we need to call this.InitializeBuffer() in ctor() after
 				// UserControlChild.InitializeComponents() where UserControl.Width and UserControl.Height are set
-				if (this.bufferedGraphics == null) this.InitializeBuffer();
+				if (this.bufferedGraphics == null) this.initializeBuffer();
 	
 				// let the child draw on BufferedGraphics
 				PaintEventArgs peSubstituted = new PaintEventArgs(bufferedGraphics.Graphics, pe.ClipRectangle);
@@ -59,19 +59,33 @@ namespace Sq1.Core.DoubleBuffered {
 				// now we spit BufferedGraphics into the screen
 				this.bufferedGraphics.Render(pe.Graphics);
 			} catch (Exception ex) {
-				Debugger.Break();
+				string msg = "PANEL_DOUBLE_BUFFERED.OnPaint()_HAS_PROBLEMS_WITH_DOUBLE_BUFFERING_API"
+					+ " OTHERWIZE_REFACTOR_CHILDREN_TO_CATCH_THEIR_OWN_EXCEPTIONS";
+				Assembler.PopupException(msg, ex);
 			}
 		}
 		protected override void OnPaintBackground(PaintEventArgs pe) {
 			// overhead here since we need to call this.InitializeBuffer() in ctor() after
 			// UserControlChild.InitializeComponents() where UserControl.Width and UserControl.Height are set
-			if (this.bufferedGraphics == null) this.InitializeBuffer();
-			PaintEventArgs peSubstituted = new PaintEventArgs(bufferedGraphics.Graphics, pe.ClipRectangle);
-			this.OnPaintBackgroundDoubleBuffered(peSubstituted);
+			try {
+				if (this.bufferedGraphics == null) this.initializeBuffer();
+				PaintEventArgs peSubstituted = new PaintEventArgs(bufferedGraphics.Graphics, pe.ClipRectangle);
+				this.OnPaintBackgroundDoubleBuffered(peSubstituted);
+			} catch (Exception ex) {
+				string msg = "PANEL_DOUBLE_BUFFERED.OnPaintBackground()_HAS_PROBLEMS_WITH_DOUBLE_BUFFERING_API"
+					+ " OTHERWIZE_REFACTOR_CHILDREN_TO_CATCH_THEIR_OWN_EXCEPTIONS";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 		protected override void OnResize(EventArgs e) {
-			this.DisposeAndNullifyToRecreateInPaint(this, e);
-			this.Invalidate();
+			try {
+				this.disposeAndNullifyToRecreateInPaint(this, e);
+				this.Invalidate();
+			} catch (Exception ex) {
+				string msg = "PANEL_DOUBLE_BUFFERED.OnResize()_HAS_PROBLEMS_WITH_DOUBLE_BUFFERING_API"
+					+ " OTHERWIZE_REFACTOR_CHILDREN_TO_CATCH_THEIR_OWN_EXCEPTIONS";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 	}
 }

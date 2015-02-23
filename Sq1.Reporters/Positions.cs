@@ -36,7 +36,6 @@ namespace Sq1.Reporters {
 			if (snapCasted == null) {
 				string msg = "INVOKER_MUST_HAVE_CALLED_MY_CREATE_SNAPSHOT_AND_REGISTERED_IT_IN_SCRIPT_CONTEXT invokerAssumed=ReportersFormManager.ReporterActivateShowRegisterMniTick()<FindOrCreateReportersSnapshot()";
 				Assembler.PopupException(msg);
-				Debugger.Break();
 				return;	// this.snap already initialized in ctor();
 			}
 			this.snap = snapCasted;

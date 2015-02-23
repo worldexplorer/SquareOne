@@ -20,24 +20,19 @@ namespace Sq1.Core.Backtesting {
 
 			if (quote.ItriggeredFillAtBidOrAsk != BidOrAsk.UNKNOWN) {
 				string msg = "I_REFUSE_TO_GENERATE_BIDASK THIS_QUOTE_ALREADY_TRIGGERED_SOME_FILL";
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(msg);
 				return;
 			}
 
 			if (double.IsNaN(quote.Bid) == false && double.IsNaN(quote.Ask) == false) {
 				string msg = "I_REFUSE_TO_GENERATE_BIDASK THIS_QUOTE_ALREADY_HAS_BID_AND_ASK";
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				Assembler.PopupException(msg);
 				return;
 			}
 
 			if (double.IsNaN(quote.Bid) && double.IsNaN(quote.Ask)) {
-				string msg = "WARNING_IMPRECISE_QUOTE_MODELING: at Open or Close stroke when I don't have to keep bar boundaries very precise; check generateNewQuoteChildrenHelper() for BidOrAsk=UNKNOWN";
+				string msg = "WARNING_IMPRECISE_QUOTE_MODELING: at Open or Close stroke when I don't have to keep"
+					+ " bar boundaries very precise; check generateNewQuoteChildrenHelper() for BidOrAsk=UNKNOWN";
 				//Assembler.PopupException(msg);
 				
 				double spreadAligned = this.GenerateFillBidAskSymmetrically(quote, priceFromAlignedBarForSymmetricFillAtOpenOrClose, barSimulated);
@@ -136,7 +131,7 @@ namespace Sq1.Core.Backtesting {
 					double quoteSreadAligned2 = symbolInfo.AlignToPriceLevel(askAligned - bidAligned, PriceLevelRoundingMode.RoundUp);
 					if (quoteSreadAligned2 > spreadAligned) {
 						string msg = "place to cheat it once again to avoid ContainsBidAskForQuoteGenerated() to fail us";
-						Debugger.Break();
+						Assembler.PopupException(msg);
 					}
 				}
 			}

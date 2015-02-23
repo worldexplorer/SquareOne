@@ -139,9 +139,6 @@ namespace Sq1.Core.DataTypes {
 					+ "; EXPECTING_BARS_WERE_APPENDED_WITHOUT_SCALEINTERVAL_CHANGE"
 					+ "; WILL_NOT_RETURN_EARLIER_DATE: implement scanForEarlier if you need to pass ScaleInterval-unaligned or non-existing Date to find an existing one";
 				Assembler.PopupException(msg);
-				#if DEBUG
-				Debugger.Break();
-				#endif
 				return ret;
 			}
 			int indexToStartScanningBackwards = base.IndexOfDate(startScanFrom);
@@ -185,6 +182,7 @@ namespace Sq1.Core.DataTypes {
 				return ret;
 			} }
 		public int BarIndexSinceTodayMarketOpenSuggestForwardFor(DateTime dateTimeToFind) {
+			string msig = " //BarIndexSinceTodayMarketOpenSuggestForwardFor(" + dateTimeToFind + ") USEFUL_ONLY_IN_SCRIPT";
 			int ret = -1;
 			if (this.MarketInfo == null) return ret;
 			// v1: MarketInfo.MarketOpenServerTime may contain only Hour:Minute:Second and all the rest is 01-Jan-01 => use than ReplaceTimeOpenWith() 
@@ -203,10 +201,7 @@ namespace Sq1.Core.DataTypes {
 			if (dateTimeToFind < todayMarketOpenServerTime) {
 				string msg = "BAR_INVALID_MARKET_IS_NOT_OPEN_YET bar.DateTimeOpen[" + dateTimeToFind + 
 					"] while MarketInfo.MarketOpenServerTime[" + marketOpenServerTime + "]";
-				Assembler.PopupException(msg);
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				Assembler.PopupException(msg + msig);
 				return ret;
 			}
 			//FIRST_BAR_WILL_BECOME_ZERO ret = 0;
@@ -216,9 +211,8 @@ namespace Sq1.Core.DataTypes {
 				 		  forwardFromMarketOpenToCurrentBar <= dateTimeToFind;
 				 		  forwardFromMarketOpenToCurrentBar = forwardFromMarketOpenToCurrentBar.Add(distanceBetweenBars)) {
 				if (ret > barsMaxDayCanFit) {
-					#if DEBUG
-					Debugger.Break();
-					#endif
+					string msg = "BAR_INDEX_BEYOND_DAY_CAN_FIT ret[" + ret + "] > barsMaxDayCanFit[" + barsMaxDayCanFit + "]";
+					Assembler.PopupException(msg + msig);
 					return ret;
 				}
 				DateTime nextBarWillOpen = forwardFromMarketOpenToCurrentBar.Add(distanceBetweenBars);
@@ -228,6 +222,7 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		public int BarIndexExpectedMarketClosesTodaySinceMarketOpenSuggestBackwardForDateLaterOrEqual(DateTime dateTimeToFind) {
+			string msig = " //BarIndexExpectedMarketClosesTodaySinceMarketOpenSuggestBackwardForDateLaterOrEqual(" + dateTimeToFind + ") USEFUL_ONLY_IN_SCRIPT";
 			int ret = -1;
 			if (this.MarketInfo == null) return ret;
 			// TODO: use Weekends, year-dependent irregular Holidays
@@ -238,10 +233,7 @@ namespace Sq1.Core.DataTypes {
 			if (dateTimeToFind > todayMarketCloseServerTime) {
 				string msg = "BAR_INVALID_MARKET_IS_ALREADY_CLOSED bar.DateTimeOpen[" + dateTimeToFind + 
 					"] while MarketInfo.MarketCloseServerTime[" + this.MarketInfo.MarketCloseServerTime + "]";
-				Assembler.PopupException(msg);
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				Assembler.PopupException(msg + msig);
 				return ret;
 			}
 			//FIRST_BAR_WILL_BECOME_ZERO ret = 0;
@@ -251,9 +243,8 @@ namespace Sq1.Core.DataTypes {
 				 		  backFromDayCloseToCurrentBar > dateTimeToFind;
 				 		  backFromDayCloseToCurrentBar = backFromDayCloseToCurrentBar.Subtract(distanceBetweenBars)) {
 				if (ret > barsMaxDayCanFit) {
-					#if DEBUG
-					Debugger.Break();
-					#endif
+					string msg = "BAR_INDEX_BEYOND_DAY_CAN_FIT ret[" + ret + "] > barsMaxDayCanFit[" + barsMaxDayCanFit + "]";
+					Assembler.PopupException(msg + msig);
 					return ret;
 				}
 				DateTime thisBarWillOpen = backFromDayCloseToCurrentBar.Subtract(distanceBetweenBars);

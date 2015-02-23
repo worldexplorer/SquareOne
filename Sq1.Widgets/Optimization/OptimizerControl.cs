@@ -66,9 +66,9 @@ namespace Sq1.Widgets.Optimization {
 			//SETTING_COLLAPSED_FROM_BTN_RUN_CLICK this.optimizer.OnBacktestStarted -= new EventHandler<EventArgs>(optimizer_OnBacktestStarted);
 			//SETTING_COLLAPSED_FROM_BTN_RUN_CLICK this.optimizer.OnBacktestStarted += new EventHandler<EventArgs>(optimizer_OnBacktestStarted);
 			
-			this.optimizer.OnBacktestComplete -= new EventHandler<SystemPerformanceEventArgs>(this.optimizer_OnBacktestComplete);
+			this.optimizer.OnBacktestFinished -= new EventHandler<SystemPerformanceEventArgs>(this.optimizer_OnBacktestFinished);
 			// since Optimizer.backtests is multithreaded list, I keep own copy here OptimizerControl.backtests for ObjectListView to freely crawl over it without interference (instead of providing Optimizer.BacktestsThreadSafeCopy)  
-			this.optimizer.OnBacktestComplete += new EventHandler<SystemPerformanceEventArgs>(this.optimizer_OnBacktestComplete);
+			this.optimizer.OnBacktestFinished += new EventHandler<SystemPerformanceEventArgs>(this.optimizer_OnBacktestFinished);
 			
 			this.optimizer.OnOptimizationComplete -= new EventHandler<EventArgs>(Optimizer_OnOptimizationComplete);
 			this.optimizer.OnOptimizationComplete += new EventHandler<EventArgs>(Optimizer_OnOptimizationComplete);

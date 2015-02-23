@@ -98,16 +98,17 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg);
 			}
 	
-			bool firstQuoteOfABar = quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == 0;
-			bool notFirstEverQuote = quoteSernoEnrichedWithUnboundStreamingBar.AbsnoPerSymbol > 0;
-			bool barLastStaticFormedIsValid = !this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNotYetFormed;
-			bool streamingBarReadyToSpawn = this.StreamingBarFactoryUnattached.BarStreamingUnattached.DateTimeOpen
+			bool firstQuoteOfABar	= quoteSernoEnrichedWithUnboundStreamingBar.IntraBarSerno == 0;
+			bool firstEverQuote		= quoteSernoEnrichedWithUnboundStreamingBar.AbsnoPerSymbol == 0;
+			bool barLastStaticFormedIsValid		= !this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNotYetFormed;
+			bool streamingBarReadyToSpawn		=  this.StreamingBarFactoryUnattached.BarStreamingUnattached.DateTimeOpen
 															< quoteSernoEnrichedWithUnboundStreamingBar.ServerTime;
 			bool streamingBarWronglyRestoredAfterBacktest =
 				this.StreamingBarFactoryUnattached.BarStreamingUnattached.DateTimeOpen
 					> quoteSernoEnrichedWithUnboundStreamingBar.ServerTime;
 
-			if ((firstQuoteOfABar && notFirstEverQuote) || streamingBarWronglyRestoredAfterBacktest) {
+			//if ((firstQuoteOfABar && firstEverQuote == false) || streamingBarWronglyRestoredAfterBacktest) {
+			if (firstQuoteOfABar || streamingBarWronglyRestoredAfterBacktest) {
 				if (streamingBarWronglyRestoredAfterBacktest) {
 					string msg = "FORCING_EXECUTE_ON_LASTFORMED_BY_RESETTING_LAST_FORMED_TO_PREVIOUSLY_EXECUTED_AFTER_BACKTEST";
 				}
@@ -120,11 +121,11 @@ namespace Sq1.Core.Streaming {
 						this.bindConsumeLastStaticFormed(quoteSernoEnrichedWithUnboundStreamingBar);
 					}
 				} else {
-					string msg = "I won't push LastStaticBar(DateTime.MinValue, NaN*5) on first quoteSernoEnrichedWithUnboundStreamingBar["
-						+ quoteSernoEnrichedWithUnboundStreamingBar + "]"
-						+ " because it has initialized LastStaticBar=StreamingBar.Clone()"
+					string msg = "I_REFUSE_BIND_AND_PUSH_LAST_STATIC_FORMED [" + this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe + "]"
+						//+ " I won't push LastStaticBar(DateTime.MinValue, NaN*5) because it has initialized LastStaticBar=StreamingBar.Clone()"
+						+ " on first quoteSernoEnrichedWithUnboundStreamingBar[" + quoteSernoEnrichedWithUnboundStreamingBar + "]"
 						+ " for " + this.StreamingBarFactoryUnattached;
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 				}
 			}
 

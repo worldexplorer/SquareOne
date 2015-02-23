@@ -276,10 +276,6 @@ namespace Sq1.Core.StrategyBase {
 			PositionPrototype proto = position.Prototype;
 			if (proto == null) {
 				string msg = "StopLossNewNegativeOffsetUpdateActivate() can't update StopLoss for a position.Prototype=null: position=[" + position + "]";
-				//#if DEBUG
-				//Debugger.Break();
-				//#endif
-				//throw new Exception(msg);
 				Assembler.PopupException(msg, null, false);
 			}
 			try {
@@ -501,7 +497,7 @@ namespace Sq1.Core.StrategyBase {
 					Debugger.Break();
 					#endif
 					throw new Exception(msg);
-					break;
+					//break;
 			}
 			if (internalCallee == true) {
 				msg += " (Script is strongly recommented to check SL price first so we don't pass unexpected position closures to the Market)";
@@ -560,39 +556,35 @@ namespace Sq1.Core.StrategyBase {
 			if (proto.StopLossNegativeOffset == 0) return double.NaN;
 			Alert SLalert = proto.StopLossAlertForAnnihilation;
 			if (SLalert == null) {
-				string msg = "WHEN?";
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				string msg = "CHECK_UPSTACK_WHAT_LED_TO_proto.StopLossAlertForAnnihilation=NULL";
+				Assembler.PopupException(msg);
 				return double.NaN;
 			}
 			if (SLalert.MarketLimitStop != MarketLimitStop.Stop && SLalert.MarketLimitStop != MarketLimitStop.StopLimit) {
-				string msg = "WHEN?";
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				string msg = "CHECK_UPSTACK_WHAT_LED_TO_SLalert.MarketLimitStop=" + SLalert.MarketLimitStop;
+				Assembler.PopupException(msg);
 				return double.NaN;
 			}
 			return SLalert.PriceScriptAligned;
 		}
-		[Obsolete("USELESS & UNTESTED")]
-		public double StopLossCurrentNegativeOffsetGetNaNunsafe(PositionPrototype proto) {
-			double SL = this.StopLossCurrentGetNaNunsafe(proto);
-			if (double.IsNaN(SL)) return SL;
+		//[Obsolete("USELESS & UNTESTED")]
+		//public double StopLossCurrentNegativeOffsetGetNaNunsafe(PositionPrototype proto) {
+		//    double SL = this.StopLossCurrentGetNaNunsafe(proto);
+		//    if (double.IsNaN(SL)) return SL;
 
-			Bar bar = this.executor.Bars.BarStreamingCloneReadonly;
-			if (bar == null) {
-				string msg = "WHEN?";
-				#if DEBUG
-				Debugger.Break();
-				#endif
-				return double.NaN;
-			}
-			// long has SLalert.PriceScriptAligned < bar.Close; we need NEGATIVE
-			double ret = SL - bar.Close;
-			Alert SLalert = proto.StopLossAlertForAnnihilation;
-			if (SLalert.Direction == Direction.Cover) ret = -ret;
-			return ret;
-		}
+		//    Bar bar = this.executor.Bars.BarStreamingCloneReadonly;
+		//    if (bar == null) {
+		//        string msg = "WHEN?";
+		//        #if DEBUG
+		//        Debugger.Break();
+		//        #endif
+		//        return double.NaN;
+		//    }
+		//    // long has SLalert.PriceScriptAligned < bar.Close; we need NEGATIVE
+		//    double ret = SL - bar.Close;
+		//    Alert SLalert = proto.StopLossAlertForAnnihilation;
+		//    if (SLalert.Direction == Direction.Cover) ret = -ret;
+		//    return ret;
+		//}
 	}
 }

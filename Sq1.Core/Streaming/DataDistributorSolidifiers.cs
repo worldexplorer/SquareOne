@@ -39,6 +39,7 @@ namespace Sq1.Core.Streaming {
 
 			return ret;
 		}
+		#if DEBUG
 		public override bool ConsumerBarUnsubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer solidifier) {
 			string msig = " //SolidifierConsumerBarUnsubscribe([" + symbol + "] [" + scaleInterval + "] [" + solidifier + "])";
 			bool ret = base.ConsumerBarUnsubscribe(symbol, scaleInterval, solidifier);
@@ -46,6 +47,7 @@ namespace Sq1.Core.Streaming {
 			Assembler.PopupException(msg2 + msig, null, false);
 			return ret;
 		}
+		#endif
 		public override bool ConsumerQuoteSubscribe(string symbol, BarScaleInterval scaleInterval,
 										IStreamingConsumer solidifier, bool quotePumpSeparatePushingThreadEnabled) {
 			bool ret = false;
@@ -77,6 +79,7 @@ namespace Sq1.Core.Streaming {
 
 			return ret;
 		}
+		#if DEBUG
 		public override bool ConsumerQuoteUnsubscribe(string symbol, BarScaleInterval scaleInterval, IStreamingConsumer solidifier) {
 			string msig = " //SolidifierConsumerQuoteUnsubscribe(" + symbol + ":" + scaleInterval + "[" + solidifier + "])";
 			bool ret = base.ConsumerQuoteUnsubscribe(symbol, scaleInterval, solidifier);
@@ -84,5 +87,6 @@ namespace Sq1.Core.Streaming {
 			Assembler.PopupException(msg2 + msig, null, false);
 			return ret;
 		}
+		#endif
 	}
 }

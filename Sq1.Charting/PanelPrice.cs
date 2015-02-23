@@ -38,9 +38,13 @@ namespace Sq1.Charting {
 				}
 				#if TEST_COMPATIBILITY
 				if (this.visiblePriceMaxCurrent != this.VisiblePriceMaxNew) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 				} else {
+					#if DEBUG
 					//Debugger.Break();
+					#endif
 				}
 				#endif
 				return this.visiblePriceMaxCurrent;
@@ -68,14 +72,18 @@ namespace Sq1.Charting {
 				}
 				#if TEST_COMPATIBILITY
 				if (this.visiblePriceMinCurrent != this.VisiblePriceMinNew) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 				} else {
+					#if DEBUG
 					//Debugger.Break();
+					#endif
 				}
 				#endif
 				if (Math.Abs(this.visiblePriceMinCurrent) > 1000000) {
 					string msg = "this.VisibleBarLeft_cached > this.VisibleBarRight_cached ?";
-					Debugger.Break();
+					Assembler.PopupException(msg);
 				}
 				if (double.IsPositiveInfinity(this.visiblePriceMinCurrent)) {
 					string msg = "PAINTING_ZERO_OR_FIRST_BAR_OF_LIVESIMULATION__CONITNUE_UNTIL_IT_WILL_GET_NORMALIZED_SOON";
@@ -126,7 +134,9 @@ namespace Sq1.Charting {
 			//}
 			//v2
 			if (this.PanelHasValuesForVisibleBarWindow == false) {
-				Debugger.Break();
+				string msig = " //PanelPrice.PaintWholeSurfaceBarsNotEmpty()";
+				string msg = "NEVER_HAPPENED_SO_FAR PanelHasValuesForVisibleBarWindow=false";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 

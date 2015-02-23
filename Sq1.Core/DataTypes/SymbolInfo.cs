@@ -235,7 +235,9 @@ namespace Sq1.Core.DataTypes {
 			//double upperLevel = (price == lowerLevel) ? lowerLevel : lowerLevel + this.PriceMinimalStepFromDecimal;
 			if (price == lowerLevel) {
 				string msg = "ALREADY_ROUNDED_NO_REMAINDER_AFTER_DIVISION_TO_STEPS";
+				#if DEBUG
 				Debugger.Break();
+				#endif
 				return price;
 			}
 			double upperLevel = lowerLevel + this.PriceMinimalStepFromDecimal;

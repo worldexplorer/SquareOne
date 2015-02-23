@@ -23,9 +23,10 @@ namespace Sq1.Core.Indicators {
 		void checkPopupOnResetAndSync(string msig) {
 			string msg = "";
 			if (this.BarsEffective.Count != this.ClosesProxyEffective.Count) {
-				msg = "IT_WASNT_A_PARANOID_CHECK";
-				Debugger.Break();
-				Assembler.PopupException(msg, null, false);
+				msg = "IT_WASNT_A_PARANOID_CHECK"
+					+ " this.BarsEffective.Count[" + this.BarsEffective.Count
+					+ "] != this.ClosesProxyEffective.Count[" + this.ClosesProxyEffective.Count + "]";
+				Assembler.PopupException(msg + msig);
 			}
 
 			if (this.smaSeries.AverageFor.Count != base.BarsEffective.Count) {
@@ -158,21 +159,29 @@ namespace Sq1.Core.Indicators {
 			for (int i = slidingWindowLeftBar; i <= slidingWindowRightBar; i++) {
 				double eachBarCloses = base.ClosesProxyEffective[i];
 				if (double.IsNaN(eachBarCloses)) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 					continue;
 				}
 				sum += eachBarCloses;
 				barsProcessedCheck++;
 			}
 			if (barsProcessedCheck != this.ParamPeriod.ValueCurrent) {
+				#if DEBUG
 				Debugger.Break();
+				#endif
 			}
 			double retOld = sum / this.ParamPeriod.ValueCurrent;
 			
 			if (retOld != ret) {
+				#if DEBUG
 				Debugger.Break();
+				#endif
 			} else {
+				#if DEBUG
 				//Debugger.Break();
+				#endif
 			}
 			#endif
 			#endregion

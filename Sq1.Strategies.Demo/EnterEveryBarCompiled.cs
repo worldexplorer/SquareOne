@@ -35,7 +35,9 @@ namespace Sq1.Strategies.Demo {
 			//this.PadBars(0);
 			if (base.Strategy == null) {
 				log("CANT_SET_EXCEPTIONS_LIMIT: base.Strategy == null");
+				#if DEBUG
 				Debugger.Break();
+				#endif
 				return;
 			}
 			base.Strategy.ExceptionsLimitToAbortBacktest = 10;
@@ -93,7 +95,9 @@ namespace Sq1.Strategies.Demo {
 			if (barStaticFormed.ParentBarsIndex <= 2) return;
 			if (barStaticFormed.IsBarStreaming) {
 				string msg = "SHOULD_NEVER_HAPPEN triggered@barStaticFormed.IsBarStreaming[" + barStaticFormed + "] while Streaming[" + barStreaming + "]";
+				#if DEBUG
 				Debugger.Break();
+				#endif
 			}
 
 			Position lastPos = base.LastPosition;
@@ -107,12 +111,16 @@ namespace Sq1.Strategies.Demo {
 				if (lastPos.ExitAlert != null) {
 					string msg1 = "you want to avoid POSITION_ALREADY_HAS_AN_EXIT_ALERT_REPLACE_INSTEAD_OF_ADDING_SECOND"
 						+ " ExitAtMarket by throwing [can't have two closing alerts for one positionExit] Strategy[" + this.Strategy.ToString() + "]";
+					#if DEBUG
 					Debugger.Break();
+					#endif
 					return;
 				}
 
 				if (barStaticFormed.ParentBarsIndex == 163) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 					StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
 					Quote lastQuote = streaming.LastQuoteCloneGetForSymbol(barStaticFormed.Symbol);
 					double priceForMarketOrder = streaming.LastQuoteGetPriceForMarketOrder(barStaticFormed.Symbol);
@@ -201,23 +209,31 @@ namespace Sq1.Strategies.Demo {
 			}
 		}
 		public override void OnAlertKilledCallback(Alert alertKilled) {
+			#if DEBUG
 			Debugger.Break();
+			#endif
 		}
 		public override void OnAlertNotSubmittedCallback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
+			#if DEBUG
 			Debugger.Break();
+			#endif
 		}
 		public override void OnPositionOpenedCallback(Position positionOpened) {
 			if (positionOpened.EntryFilledBarIndex == 37) {
+				#if DEBUG
 				Debugger.Break();
+				#endif
 			}
 		}
 		public override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedByPrototype) {
+			#if DEBUG
 			Debugger.Break();
+			#endif
 		}
 		public override void OnPositionClosedCallback(Position positionClosed) {
-			if (positionClosed.EntryFilledBarIndex == 37) {
-				Debugger.Break();
-			}
+			//if (positionClosed.EntryFilledBarIndex == 37) {
+			//    Debugger.Break();
+			//}
 		}
 		void testBarAnnotations(Bar barStaticFormed) {
 			int barIndex = barStaticFormed.ParentBarsIndex;

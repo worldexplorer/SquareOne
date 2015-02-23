@@ -28,6 +28,8 @@ namespace Sq1.Core.Backtesting {
 
 		protected QuoteGenerated generateNewQuoteChildrenHelper(int intraBarSerno, string whoGenerated, string symbol, DateTime serverTime,
 				BidOrAsk bidOrAsk, double priceFromAlignedBar, double volume, Bar barSimulated) {
+
+			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler;
 			QuoteGenerated ret = new QuoteGenerated(serverTime);
 			ret.ServerTime = serverTime;
 			//FILLED_LATER_DONT_CONFUSE_STREAMING_ADAPDER ret.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;
@@ -38,29 +40,45 @@ namespace Sq1.Core.Backtesting {
 			ret.Size = volume;
 			ret.ParentBarSimulated = barSimulated;
 			//v1 ret.PriceLastDeal = price;
+
 			switch (bidOrAsk) {
 				case BidOrAsk.Bid:
 					ret.Bid = priceFromAlignedBar;
 					ret.LastDealBidOrAsk = BidOrAsk.Bid;
-					this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler.GenerateFillAskBasedOnBid(ret);
+					modeler.GenerateFillAskBasedOnBid(ret);
 					if (ret.Spread == 0) {
+						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
+						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GenerateFillAskBasedOnBid()";
+						Assembler.PopupException(msg + msig);
+						#if DEBUG
 						Debugger.Break();
+						#endif
 					}
 					break;
 				case BidOrAsk.Ask:
 					ret.Ask = priceFromAlignedBar;
 					ret.LastDealBidOrAsk = BidOrAsk.Ask;
-					this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler.GenerateFillBidBasedOnAsk(ret);
+					modeler.GenerateFillBidBasedOnAsk(ret);
 					if (ret.Spread == 0) {
+						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
+						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GenerateFillAskBasedOnBid()";
+						Assembler.PopupException(msg + msig);
+						#if DEBUG
 						Debugger.Break();
+						#endif
 					}
 					break;
 				case BidOrAsk.UNKNOWN:
-					this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler.GeneratedQuoteFillBidAsk(ret, barSimulated, priceFromAlignedBar);
+					modeler.GeneratedQuoteFillBidAsk(ret, barSimulated, priceFromAlignedBar);
 					// I_DONT_KNOW_WHAT_TO_PUT_HERE
 					ret.LastDealBidOrAsk = BidOrAsk.Bid;
 					if (ret.Spread == 0) {
+						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
+						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GeneratedQuoteFillBidAsk()";
+						Assembler.PopupException(msg + msig);
+						#if DEBUG
 						Debugger.Break();
+						#endif
 					}
 					break;
 			}
@@ -105,11 +123,12 @@ namespace Sq1.Core.Backtesting {
 
 			QuoteGenerated closestOnOurWay  = this.GenerateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach, bar2simulate);
 			while (closestOnOurWay != null) {
-				// GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #2/2
+				// 
 				//v1 if (bar2simulate.ContainsBidAskForQuoteGenerated(closestOnOurWay) == false) {
 				if (bar2simulate.HighLowDistance > 0 && bar2simulate.HighLowDistance > closestOnOurWay.Spread
 						&& bar2simulate.ContainsBidAskForQuoteGenerated(closestOnOurWay) == false) {
-					Debugger.Break();
+					string msg = "GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #2/2";
+					Assembler.PopupException(msg);
 					continue;
 				}
 
@@ -129,14 +148,14 @@ namespace Sq1.Core.Backtesting {
 				int pendingAfterInjected = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingsToFillInitially != pendingAfterInjected) {
 					string msg = "it looks like the quoteInjected triggered something";
-					//Debugger.Break();
+					Assembler.PopupException(msg);
 				}
 				if (ret.Count > iterationsLimit) {
 					string msg = "InjectQuotesToFillPendingAlerts(): quotesInjected["
 						+ ret + "] > iterationsLimit[" + iterationsLimit + "]"
 						+ " pendingNow[" + this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count + "]"
 						+ " quoteToReach[" + quoteToReach + "]";
-					//throw new Exception(msg);
+					Assembler.PopupException(msg);
 					break;
 				}
 				bool abortRequested = this.backtester.RequestingBacktestAbort.WaitOne(0);
@@ -157,14 +176,13 @@ namespace Sq1.Core.Backtesting {
 				return null;
 			}
 
-			// PARANOINDAL_CHECK_IF_PREV_QUOTE_IS_QUOTE_TO_REACH copypaste
+			// 
 			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
 				.LastQuoteCloneGetForSymbol(quoteToReach.Symbol);
 			QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
 			if (quotePrev == null) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				string msg = "PARANOINDAL_CHECK_IF_PREV_QUOTE_IS_QUOTE_TO_REACH copypaste";
+				Assembler.PopupException(msg);
 			}
 
 			if (bar2simulate.HighLowDistance > 0) {
@@ -172,8 +190,10 @@ namespace Sq1.Core.Backtesting {
 				//if (bar2simulate.HighLowDistance > quotePrev.Spread && bar2simulate.ContainsBidAskForQuoteGenerated(quotePrev) == false) {
 				//	Debugger.Break();
 				//}
-				if (bar2simulate.HighLowDistance > quoteToReach.Spread && bar2simulate.ContainsBidAskForQuoteGenerated(quoteToReach) == false) {
-					Debugger.Break();
+				if (bar2simulate.HighLowDistance > quoteToReach.Spread
+					&& bar2simulate.ContainsBidAskForQuoteGenerated(quoteToReach) == false) {
+				string msg = "SPREAD_IS_SO_HUGE_THAT_QUOTE_WENT_OUT_OF_BAR_HILO";
+				Assembler.PopupException(msg);
 				}
 			}
 			// PARANOINDAL_CHECK_IF_PREV_QUOTE_IS_QUOTE_TO_REACH
@@ -258,20 +278,20 @@ namespace Sq1.Core.Backtesting {
 			if (scanningDown) {
 				if (quoteClosest.Bid > quotePrev.Bid) {
 					string msg = "WHILE_SCANNING_DOWN_RETURNING_QUOTE_HIGHER_THAN_PREVIOUS_IS_WRONG";
-					Debugger.Break();
+					Assembler.PopupException(msg);
 				}
 				if (quoteClosest.Bid < quoteToReach.Bid) {
 					string msg = "WHILE_SCANNING_DOWN_RETURNING_QUOTE_LOWER_THAN_TARGET_IS_WRONG";
-					Debugger.Break();
+					Assembler.PopupException(msg);
 				}
 			} else {
 				if (quoteClosest.Ask < quotePrev.Ask) {
 					string msg = "WHILE_SCANNING_UP_RETURNING_QUOTE_LOWER_THAN_PREVIOUS_IS_WRONG";
-					Debugger.Break();
+					Assembler.PopupException(msg);
 				}
 				if (quoteClosest.Ask > quoteToReach.Ask) {
 					string msg = "WHILE_SCANNING_UP_RETURNING_QUOTE_HIGHER_THAN_TARGET_IS_WRONG";
-					Debugger.Break();
+					Assembler.PopupException(msg);
 				}
 			}
 
@@ -289,7 +309,9 @@ namespace Sq1.Core.Backtesting {
 			//}
 			return ret;
 		}
-		QuoteGenerated modelQuoteThatCouldFillAlert(Alert alert, DateTime localDateTimeBasedOnServerForBacktest, Bar bar2simulate) {
+		QuoteGenerated modelQuoteThatCouldFillAlert(Alert alert,
+					DateTime localDateTimeBasedOnServerForBacktest, Bar bar2simulate) {
+			string msig = " //modelQuoteThatCouldFillAlert(alert[" + alert+ "] bar2simulate[" +bar2simulate+ "])";
 			string err;
 
 			QuoteGenerated ret = new QuoteGenerated(localDateTimeBasedOnServerForBacktest);
@@ -309,15 +331,16 @@ namespace Sq1.Core.Backtesting {
 			if (priceScriptAligned1 != alert.PriceScript) {
 				if (alert.MarketLimitStop == MarketLimitStop.Market) {
 					string msg = "WHY_YOU_DID_CHANGE_THE_PRICE__PRICE_SCRIPT_MUST_BE_ALREADY_GOOD";
-					Debugger.Break();
+					Assembler.PopupException(msg);
 				}
 			}
 			//long check, switch marketSim calculations to alert.PriceScriptAligned 
 			if (priceScriptAligned != alert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
-				Debugger.Break();
+				Assembler.PopupException(msg);
 			} else {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
+				Assembler.PopupException(msg);
 			}
 			#endif
 
@@ -327,9 +350,8 @@ namespace Sq1.Core.Backtesting {
 
 			QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
 			if (quotePrev == null) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				string msg = "PREV_QUOTE_NULL";
+				Assembler.PopupException(msg + msig);
 			}
 
 			switch (alert.MarketLimitStop) {
@@ -358,7 +380,9 @@ namespace Sq1.Core.Backtesting {
 								.GenerateFillAskBasedOnBid(ret);
 							break;
 						default:
-							throw new Exception("ALERT_LIMIT_DIRECTION_UNKNOWN direction[" + alert.Direction + "] is not Buy/Cover/Short/Sell modelQuoteThatCouldFillAlert()");
+							string msg = "ALERT_LIMIT_DIRECTION_UNKNOWN direction[" + alert.Direction
+								+ "] is not Buy/Cover/Short/Sell modelQuoteThatCouldFillAlert()";
+							throw new Exception(msg + msig);
 					}
 					break;
 				case MarketLimitStop.Stop:
@@ -386,7 +410,9 @@ namespace Sq1.Core.Backtesting {
 								.GenerateFillAskBasedOnBid(ret);
 							break;
 						default:
-							throw new Exception("ALERT_STOP_DIRECTION_UNKNOWN direction[" + alert.Direction + "] is not Buy/Cover/Short/Sell modelQuoteThatCouldFillAlert()");
+							string msg = "ALERT_STOP_DIRECTION_UNKNOWN direction[" + alert.Direction
+								+ "] is not Buy/Cover/Short/Sell modelQuoteThatCouldFillAlert()";
+							throw new Exception(msg + msig);
 					}
 					break;
 				case MarketLimitStop.Market:
@@ -406,13 +432,15 @@ namespace Sq1.Core.Backtesting {
 								.GenerateFillAskBasedOnBid(ret);
 							break;
 						default:
-							throw new Exception("ALERT_MARKET_DIRECTION_UNKNOWN direction[" + alert.Direction + "] is not Buy/Cover/Short/Sell modelQuoteThatCouldFillAlert()");
+							string msg = "ALERT_MARKET_DIRECTION_UNKNOWN direction[" + alert.Direction
+								+ "] is not Buy/Cover/Short/Sell modelQuoteThatCouldFillAlert()";
+							throw new Exception(msg + msig);
 					}
 					break;
 				case MarketLimitStop.StopLimit: // HACK one QuoteGenerated might satisfy SLactivation, the other one might fill it; time to introduce state of SL into Alert???
-					string msg = "STOP_LIMIT_QUOTE_FILLING_GENERATION_REQUIRES_TWO_STEPS_NYI"
+					string msg2 = "STOP_LIMIT_QUOTE_FILLING_GENERATION_REQUIRES_TWO_STEPS_NYI"
 						+ "; pass SLActivation=0 to PositionPrototypeActivator so that it generates STOP instead of STOPLOSS which I can't generate yet";
-					//Debugger.Break();
+					Assembler.PopupException(msg2 + msig, null, false);
 					break;
 				case MarketLimitStop.AtClose:
 				default:
@@ -436,7 +464,6 @@ namespace Sq1.Core.Backtesting {
 				}
 			}
 			if (volumeOneQuarterOfBar == 0) {
-				Debugger.Break();
 				volumeOneQuarterOfBar = 1;
 			}
 

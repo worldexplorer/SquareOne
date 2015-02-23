@@ -48,11 +48,13 @@ namespace Sq1.Widgets.SteppingSlider {
 			get { return valueCurrent; }
 			set {
 				if (value > this.ValueMax) {
-					Debugger.Break();
+					string msg = "I_REFUSE_OUT_OF_BOUNDARY_ASSIGNMENT value[" + value + "] > this.ValueMax[" + this.ValueMax + "]";
+					Assembler.PopupException(msg);
 					return;
 				}
 				if (value < this.ValueMin) {
-					Debugger.Break();
+					string msg = "I_REFUSE_OUT_OF_BOUNDARY_ASSIGNMENT value[" + value + "] < this.ValueMin[" + this.ValueMin + "]";
+					Assembler.PopupException(msg);
 					return;
 				}
                 decimal roundedChangesSliders = this.RoundToClosestStep(value);
@@ -337,16 +339,19 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.FilledPercentageMouseOver = 100 * ((float)mouseRange / range);
 			base.Invalidate();
 		}
-		// I_HATE_HACKING_F_WINDOWS_FORMS
-		protected override void OnDragOver(System.Windows.Forms.DragEventArgs e) {
+		protected override void OnDragOver(DragEventArgs e) {
+			// I_HATE_HACKING_F_WINDOWS_FORMS
 			base.OnDragOver(e);
 			this.OnMouseMove(new MouseEventArgs(MouseButtons.Left, 1, e.X, e.Y, 0));
 			if (this.ValueCurrent != this.ValueMouseOver) {
-				Debugger.Break();
+				string msg = "this.ValueCurrent[" + this.ValueCurrent + "] != this.ValueMouseOver[" + this.ValueMouseOver + "]";
+				Assembler.PopupException(msg);
 				this.ValueCurrent = this.ValueMouseOver;
 			}
 		}
 		public decimal RoundToClosestStep(decimal rawValue) {
+			string msig = " //RoundToClosestStep(" + rawValue + ")";
+
 			// rawValue = 61, ValueMin=30, ValueIncrement=20
 			//rawValue = (decimal) 6.1;
 			decimal distFromMin = Math.Abs(rawValue - this.ValueMin);							// distFromMin = 61 - 30 = 31
@@ -366,11 +371,13 @@ namespace Sq1.Widgets.SteppingSlider {
 			//}
 
 			if (ret > this.ValueMax) {
-				Debugger.Break();
+				string msg = "ret(" + ret + ") > this.ValueMax(" + this.ValueMax + ")";
+				Assembler.PopupException(msg + msig);
 				return rawValue;
 			}
 			if (ret < this.ValueMin) {
-				Debugger.Break();
+				string msg = "ret(" + ret + ") < this.ValueMin(" + this.ValueMin + ")";
+				Assembler.PopupException(msg + msig);
 				return rawValue;
 			}
 			return ret;

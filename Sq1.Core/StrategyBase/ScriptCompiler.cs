@@ -102,7 +102,8 @@ namespace Sq1.Core.StrategyBase {
 					assembliesFound.Add(assembly);
 					dllsFound.Add(fileInfo.Name);
 				} catch (Exception ex) {
-					Debugger.Break();
+					string msg = "ASSEMBLY_NOT_FOUND_IN_APP_FOLDER Assembly.LoadFile(" + dllAbsPath + ")";
+					Assembler.PopupException(msg, ex);
 					throw ex;
 				}
 			}

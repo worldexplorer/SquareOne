@@ -14,7 +14,9 @@ namespace Sq1.Charting {
 		}
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
 			if (base.PanelHasValuesForVisibleBarWindow == false) {
-				Debugger.Break();
+				string msig = " //PanelVolume.PaintWholeSurfaceBarsNotEmpty()";
+				string msg = "NEVER_HAPPENED_SO_FAR PanelHasValuesForVisibleBarWindow=false";
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 				
@@ -62,9 +64,13 @@ namespace Sq1.Charting {
 				}
 				#if TEST_COMPATIBILITY
 				if (this.visibleVolumeMinCurrent != this.VisibleVolumeMinNew) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 				} else {
+					#if DEBUG
 					//Debugger.Break();
+					#endif
 				}
 				#endif
 //} catch (Exception ex) {
@@ -91,9 +97,13 @@ namespace Sq1.Charting {
 				}
 				#if TEST_COMPATIBILITY
 				if (this.visibleVolumeMaxCurrent != this.VisibleVolumeMaxNew) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 				} else {
+					#if DEBUG
 					//Debugger.Break();
+					#endif
 				}
 				#endif
 				return this.visibleVolumeMaxCurrent;

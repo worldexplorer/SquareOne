@@ -13,13 +13,19 @@ namespace Sq1.Core.Support {
 		} } }
 		public T LastNullUnsafe { get { lock(this.LockObject) {
 			T ret = default(T);
-			if (ret != null) Debugger.Break();		// I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL
+			if (ret != null) {
+				string msg = "PARANOID I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL";
+				Assembler.PopupException(msg);
+			}
 			if (this.InnerList.Count > 0) ret = this.InnerList[this.InnerList.Count - 1];
 			return ret;
 		} } }
 		public T PreLastNullUnsafe { get { lock(this.LockObject) {
 			T ret = default(T);
-			if (ret != null) Debugger.Break();		// I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL
+			if (ret != null) {
+				string msg = "PARANOID I_WANT_NULL_HERE!!! NOT_TRUSTING_default(T)_AND_GENERIC_TYPE_CAN_NOT_BE_ASSIGNED_TO_NULL";
+				Assembler.PopupException(msg);
+			}
 			if (this.InnerList.Count > 1) ret = this.InnerList[this.InnerList.Count - 2];
 			return ret;
 		} } }

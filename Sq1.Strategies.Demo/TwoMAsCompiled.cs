@@ -12,16 +12,16 @@ using Sq1.Core.StrategyBase;
 namespace Sq1.Strategies.Demo {
 	public class TwoMAsCompiled : Script {
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
-		public IndicatorMovingAverageSimple MAslow;
 		public IndicatorMovingAverageSimple MAfast;
+		public IndicatorMovingAverageSimple MAslow;
 
 		public TwoMAsCompiled() {
 			MAfast = new IndicatorMovingAverageSimple();
-			MAfast.ParamPeriod = new IndicatorParameter("Period", 22, 11, 33, 11);
+			MAfast.ParamPeriod = new IndicatorParameter("Period", 22, 11, 33, 3);	//11);
 			MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
 
 			MAslow = new IndicatorMovingAverageSimple();
-			MAslow.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 5);
+			MAslow.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 2);	//5);
 			MAslow.LineColor = System.Drawing.Color.LightCoral;
 		}
 		
@@ -70,7 +70,6 @@ namespace Sq1.Strategies.Demo {
 			if (fastCrossedUp && fastCrossedDown) {
 				string msg = "TWO_CROSSINGS_SHOULD_NEVER_HAPPEN_SIMULTANEOUSLY";
 				Assembler.PopupException(msg);
-				Debugger.Break();
 			}
 			bool crossed = fastCrossedUp || fastCrossedDown;
 				
@@ -135,7 +134,8 @@ namespace Sq1.Strategies.Demo {
 					barStaticFormed.ParentBarsIndex, upperLimit,
 					Color.Brown, 3);
 				if (status != OnChartObjectOperationStatus.OnChartObjectJustCreated) {
-					Debugger.Break();
+					string msg = "NEVER_HAPPENED_SO_FAR status[" + status + "] != OnChartObjectOperationStatus.OnChartObjectJustCreated";
+					Assembler.PopupException(msg);
 				}
 			}
 

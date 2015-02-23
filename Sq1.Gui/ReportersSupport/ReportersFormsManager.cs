@@ -186,7 +186,7 @@ namespace Sq1.Gui.ReportersSupport {
 		public ReporterFormWrapper ReporterActivateShowRegisterMniTick(string typeNameShortOrFullAutodetect, bool show=true) {
 			string typeNameShort = this.reportersRepo.ShrinkTypeName(typeNameShortOrFullAutodetect);
 			Reporter reporterActivated = this.reportersRepo.ActivateFromTypeName(typeNameShortOrFullAutodetect);
-			object reportersSnapshot = this.findOrCreateReportersSnapshot(reporterActivated);
+			object reportersSnapshot = this.findOrCreateReportersSnapshotNullUnsafe(reporterActivated);
 			reporterActivated.Initialize(this.ChartFormManager.ChartForm.ChartControl as ChartShadow, reportersSnapshot, this.ChartFormManager.Executor.Performance);
 
 			var ret = new ReporterFormWrapper(this, reporterActivated);
@@ -207,21 +207,24 @@ namespace Sq1.Gui.ReportersSupport {
 			reporterActivated.BuildFullOnBacktestFinished();
 			return ret;
 		}
-		object findOrCreateReportersSnapshot(Reporter reporterActivated) {
+		object findOrCreateReportersSnapshotNullUnsafe(Reporter reporterActivated) {
 			Strategy strategy = this.ChartFormManager.Executor.Strategy;
 			if (strategy == null) {
 				string msg = "STRATEGY_MUST_NOT_BE_NULL ChartFormManager.Executor.Strategy";
-				Debugger.Break();
+				Assembler.PopupException(msg);
+				return null;
 			}
 			ContextScript ctx = strategy.ScriptContextCurrent;
 			if (ctx == null) {
 				string msg = "CONTEXT_MUST_NOT_BE_NULL ChartFormManager.Executor.Strategy.ScriptContextCurrent";
-				Debugger.Break();
+				Assembler.PopupException(msg);
+				return null;
 			}
 			Dictionary<string, object> snapshots = ctx.ReportersSnapshots;
 			if (snapshots == null) {
 				string msg = "REPORTERS_SNAPSHOTS_MUST_NOT_BE_NULL ChartFormManager.Executor.Strategy.ScriptContextCurrent.ReporterSnapshots";
-				Debugger.Break();
+				Assembler.PopupException(msg);
+				return null;
 			}
 			return ctx.FindOrCreateReportersSnapshot(reporterActivated);
 		}

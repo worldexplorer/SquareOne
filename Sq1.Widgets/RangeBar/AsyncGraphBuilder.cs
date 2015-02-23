@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Threading;
 using System.Timers;
+using Sq1.Core;
 
 namespace Sq1.Widgets.RangeBar {
 	public abstract class AsyncGraphBuilder<T> {
@@ -80,6 +81,7 @@ namespace Sq1.Widgets.RangeBar {
 			this.RangeBarWithGraph.Invalidate();
 		}
 		protected void BuildGraphTimeConsuming() {
+			string msig = " //AsyncGraphBuilder<T>.BuildGraphTimeConsuming()";
 			if (this.RangeBarWithGraph.BufferedGraphics == null) return;
 			if (this.HasDataToDraw == false) {
 				if (this.ValueYinvertedForGraphicsWidth != null) {
@@ -124,12 +126,12 @@ namespace Sq1.Widgets.RangeBar {
 							yInverted += graphYposition;
 							this.ValueYinvertedForGraphicsWidth[i] = yInverted;
 						} catch (Exception ex) {
+							Assembler.PopupException("INNER_LOOP_AT" + msig, ex);
 							continue;
-							//Debugger.Break();
 						}
 					}
-				//} catch (Exception ex) {
-				//	Debugger.Break();
+				} catch (Exception ex) {
+					Assembler.PopupException("OUTER_CAUGHT_AT" + msig, ex);
 				} finally {
 					this.IsCalculating = false;
 				}

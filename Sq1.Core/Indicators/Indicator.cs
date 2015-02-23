@@ -243,6 +243,10 @@ namespace Sq1.Core.Indicators {
 			return double.NaN;
 			//PROHIBITED_TO_CALCULATE_EACH_QUOTE_SLOW return this.CalculateOwnValueOnNewStaticBarFormed(newStreamingQuote.ParentStreamingBar);
 		}
+		//public abstract double CalculateOwnValueOnNewStaticBarFormed_invokedAtEachBarNoExceptions_NoPeriodWaiting(Bar newStaticBar);
+		//public abstract double CalculateOwnValueOnNewStreamingQuote_invokedAtEachQuoteNoExceptions_NoPeriodWaiting(Quote newStreamingQuote);
+
+
 		bool canRunCalculation(bool popupException = false, Bar newStaticBar = null, Quote quote = null) {
 			bool ret = false;
 			if (this.OwnValuesCalculated == null) {

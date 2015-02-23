@@ -42,7 +42,8 @@ namespace Sq1.Charting {
 			if (this.ChartControl.BarsEmpty) return;
 			if (this.VisibleMax_cached == 0) return;	//it's a cached version for once-per-render calculation
 			if (double.IsNegativeInfinity(this.VisibleRangeWithTwoSqueezers_cached)) {
-				Debugger.Break();
+				string msg = "NEVER_HAPPENED_SO_FAR MUST_NOT_BE_NEGATIVE_INFINITY this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "]";
+				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
 			if (this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
@@ -288,8 +289,8 @@ namespace Sq1.Charting {
 
 			// calculate most significant digit of the new step size
 			if (magPow == -0.5) {
-				string msg = "DONT_INVOKE_ME_FOR_PANEL_HEIGHT_ZERO";
-				Debugger.Break();
+				string msg = "NEVER_HAPPENED_SO_FAR magPow[" + magPow + "]=-0.5";
+				Assembler.PopupException(msg, null, false);
 				return 0;
 			}
 			
@@ -297,7 +298,8 @@ namespace Sq1.Charting {
 			try {
 				magMsd = (int)(tempStep / magPow + 0.5);
 			} catch (Exception ex) {
-				Debugger.Break();
+				string msg = "NEVER_HAPPENED_SO_FAR tempStep[" + tempStep + "] / magPow[" + magPow + "] + 0.5";
+				Assembler.PopupException(msg, ex, false);
 				return 10;
 			}
 			// promote the MSD to either 1, 2, or 5
@@ -309,7 +311,10 @@ namespace Sq1.Charting {
 		}
 		protected void RenderBarHistogram(Graphics graphics, int barX, int barYVolumeInverted, bool fillDownCandleBody) {
 			int histogramBarHeight = this.PanelHeightMinusGutterBottomHeight_cached - barYVolumeInverted;		// height is measured DOWN the screen from candleBodyInverted.Y, not UP
-			if (histogramBarHeight < 0)  Debugger.Break();
+			if (histogramBarHeight < 0) {
+				string msg = "NEVER_HAPPENED_SO_FAR histogramBarHeight[" + histogramBarHeight + "] < 0";
+				Assembler.PopupException(msg);
+			}
 			if (histogramBarHeight == 0) return;	//candleBodyInverted.Height = 1;
 
 			Rectangle histogramBarInverted = default(Rectangle);
@@ -331,18 +336,23 @@ namespace Sq1.Charting {
 			}
 		}
 		protected void RenderBarCandle(Graphics graphics, int barX, int barYOpenInverted, int barYHighInverted, int barYLowInverted, int barYCloseInverted, bool fillDownCandleBody) {
+			string msig = " //PanelBase.RenderBarCandle()";
 			int candleBodyLower = barYOpenInverted;	// assuming it is a white candle (rising price)
 			int candleBodyHigher = barYCloseInverted;
 			if (barYOpenInverted > barYCloseInverted) {
-				if (fillDownCandleBody == true) {		//FIXIT: should be false
-					Debugger.Break();
+				if (fillDownCandleBody == true) {
+					string msg = "MUST_BE_FALSE_HER fillDownCandleBody[" + fillDownCandleBody + "]";
+					Assembler.PopupException(msg + msig);
 				}
 				candleBodyLower = barYCloseInverted;	// nope it's a black candle (falling price)
 				candleBodyHigher = barYOpenInverted;
 			}
 			
 			int candleBodyHeight = candleBodyHigher - candleBodyLower;		// height is measured DOWN the screen from candleBodyInverted.Y, not UP
-			if (candleBodyHeight < 0) Debugger.Break();
+			if (candleBodyHeight < 0) {
+				string msg = "NEVER_HAPPENED_SO_FAR candleBodyHeight[" + candleBodyHeight + "] < 0";
+				Assembler.PopupException(msg + msig);
+			}
 			if (candleBodyHeight == 0) candleBodyHeight = 1;
 
 			Rectangle candleBodyInverted = default(Rectangle);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using Sq1.Core;
 
 namespace Sq1.Charting {
 	public partial class ChartControl  {
@@ -41,8 +42,8 @@ namespace Sq1.Charting {
 						string msg = "WE_READ_VISIBLE_RIGHT_ON_HSCROLL_CLICK_WHY_IT_MUST_BE_EQUAL??? SCROLL_LOCK_BROKEN_DUE_TO_ROUNDING??";
 					}
 				} catch (Exception ex) {
-					string msg = "OVERFLOW???";
-					Debugger.Break();
+					string msg = "NEVER_HAPPENED_SO_FAR OVERFLOW???";
+					Assembler.PopupException(msg, ex, false);
 				}
 				//I_WILL_MOVE_ANYWAYS
 				//if (ret == 0 && this.Bars.Count > 0) {
@@ -122,7 +123,8 @@ namespace Sq1.Charting {
 				string visibleMaxFormatted = panel.FormatValue(panelMax);
 				int panelValueFormatted = (int)g.MeasureString(visibleMaxFormatted, this.ChartSettings.GutterRightFont).Width;
 				if (panelValueFormatted > base.Width) {
-					Debugger.Break();
+					string msg = "panelValueFormatted[panelValueFormatted] > base.Width[" + base.Width + "]";
+					Assembler.PopupException(msg);
 					double f11intoit = panel.VisibleMaxDoubleMinValueUnsafe;
 					continue;
 				}

@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core;
 
 namespace Sq1.Charting {
 	public partial class PanelBase {
@@ -272,9 +273,8 @@ namespace Sq1.Charting {
 					if (this.TooltipPositionShown == false) this.handleTooltipPrice(e);
 				}
 			} catch (Exception ex) {
-				string msg = "WindProc won't catch your exceptions; keep a breakpoint here";
-				//throw ex;
-				Debugger.Break();
+				string msg = "WindProc won't catch your exceptions; //PanelBase.OnMouseMove()";
+				Assembler.PopupException(msg, ex);
 			} finally {
 				base.OnMouseMove(e);
 			}

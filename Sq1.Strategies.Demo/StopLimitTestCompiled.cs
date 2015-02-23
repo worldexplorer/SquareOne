@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
+using Sq1.Core;
 
 namespace Sq1.Strategies.Demo {
 	public class StopLimitTestCompiled : Script {
@@ -73,7 +74,8 @@ namespace Sq1.Strategies.Demo {
 			//Debugger.Break();
 		}
 		public override void OnAlertNotSubmittedCallback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
-			Debugger.Break();
+			string msig = " //OnAlertNotSubmittedCallback(" + alertNotSubmitted + ", " + barNotSubmittedRelno + ")";
+			Assembler.PopupException("NEVER_HAPPENED_SO_FAR " + msig);
 		}
 		public override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedProto) {
 			PositionPrototype proto = positionOpenedProto.Prototype;
@@ -100,8 +102,8 @@ namespace Sq1.Strategies.Demo {
 			//Debugger.Break();
 		}
 		public override void OnPositionOpenedCallback(Position positionOpened) {
-			// NEVER_INVOKED_SINCE_I_USE_POSITION_PROTOTYPES_ONLY no direct BuyAt* or SellAt*
-			Debugger.Break();
+			string msg = " NEVER_INVOKED_SINCE_I_USE_POSITION_PROTOTYPES_ONLY no direct BuyAt* or SellAt*";
+			Assembler.PopupException(msg);
 		}
 	}
 }

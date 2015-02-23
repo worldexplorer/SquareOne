@@ -74,7 +74,11 @@ namespace Sq1.Widgets.SteppingSlider {
 					Assembler.PopupException(msg);
 				}
 				foreach (ToolStripMenuItem mni in this.tsiScriptContextsDynamic.Values) {
-					if (mni.IsDisposed) System.Diagnostics.Debugger.Break();
+					if (mni.IsDisposed) {
+						#if DEBUG
+						Debugger.Break();
+						#endif
+					}
 				}
 
 				return new List<ToolStripMenuItem>(this.tsiScriptContextsDynamic.Values).ToArray();
@@ -121,7 +125,9 @@ namespace Sq1.Widgets.SteppingSlider {
 				ret.Add(this.mniltbParametersBagNewWithDefaults);
 
 				if (this.toolStripSeparator2.IsDisposed) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 					this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 				}
 				ret.Add(this.toolStripSeparator2);

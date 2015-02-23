@@ -65,7 +65,8 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 
 		void domainUpDown_Scroll(object sender, ScrollEventArgs e) {
-			Debugger.Break();
+			string msg = "NYI SliderComboControl.domainUpDown_Scroll()";
+			Assembler.PopupException(msg);
 		}
 		void mnitlbAll_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string typed = e.StringUserTyped;
@@ -150,7 +151,6 @@ namespace Sq1.Widgets.SteppingSlider {
 					this.ctxSlider.Items.Add(mni);
 				}
 			} catch (Exception ex) {
-				Debugger.Break();
 				Assembler.PopupException("ctxSlider_Opening()", ex);
 			} finally {
 				this.ctxSlider.ResumeLayout(true);

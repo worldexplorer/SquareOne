@@ -379,7 +379,8 @@ namespace Sq1.Core.DataTypes {
 			if (quoteClone.Ask > this.High) this.High = quoteClone.Ask;
 			if (quoteClone.Bid < this.Low) this.Low = quoteClone.Bid;
 			if (double.IsNaN(quoteClone.LastDealPrice)) {
-				Debugger.Break();
+				string msg = "FYI LAST_DEAL_PRICE_IS_NAN WHILE_MERGING_QUOTE_INTO_STREAMING_BAR quoteClone[" +
+					quoteClone + "] => " + this.ToString();
 			}
 			this.Close = quoteClone.LastDealPrice;
 			this.Volume += quoteClone.Size;
@@ -505,7 +506,9 @@ namespace Sq1.Core.DataTypes {
 			}
 			
 			if (quote.Size > this.Volume) {
+				#if DEBUG
 				Debugger.Break();
+				#endif
 				return false;
 			}
 			return true;

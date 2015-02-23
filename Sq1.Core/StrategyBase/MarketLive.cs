@@ -217,6 +217,9 @@ namespace Sq1.Core.StrategyBase {
 					+ "; here you have MOCK Realtime Streaming and Broker,"
 					+ " it's not a time-insensitive QuotesFromBar-generated Streaming Backtest"
 					+ " (both are routed to here, MarketSim, hypothetical order execution)";
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw new Exception(msg);
 			}
 
@@ -284,10 +287,10 @@ namespace Sq1.Core.StrategyBase {
 				try {
 					//filled = this.CheckExitAlertWillBeFilledByQuote(alert, quote, out priceFill, out slippageFill);
 					filled = this.executor.MarketsimBacktest.SimulateFillPendingAlert(alert, quoteLast);
-				} catch (Exception e) {
-					#if DEBUG
-					Debugger.Break();
-					#endif
+				} catch (Exception ex) {
+					string msig = " //AlertTryFillUsingBacktest(" + alert + ", " + abortTryFill + ", " + abortTryFillReason + ")";
+					string msg = "THROWN_INSIDE_executor.MarketsimBacktest.SimulateFillPendingAlert(" + alert + ", " + quoteLast + ")";
+					Assembler.PopupException(msg + msig, ex);
 				}
 			}
 			return filled;

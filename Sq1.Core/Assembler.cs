@@ -224,7 +224,9 @@ namespace Sq1.Core {
 				// if I PopupException from a BrokerAdapter thread, exceptionsForm.Visible and others should throw
 				Form exceptionsForm = Assembler.InstanceInitialized.StatusReporter as Form;
 			} catch (Exception ex1) {
+				#if DEBUG
 				Debugger.Break();
+				#endif
 			}
 
 			Assembler.InstanceInitialized.StatusReporter.PopupException(msg, ex, debuggingBreak);

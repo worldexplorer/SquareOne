@@ -85,10 +85,6 @@ namespace Sq1.Core.Backtesting {
 				if (this.slowIndex == this.paramsMerged.Count) {
 					string over = "slowest parameter's ValueMax reached; outer loop shouldn't go that far (stepXY)";
 					this.logDump(over);
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					//throw new Exception(over);
 					Assembler.PopupException(over);
 					return;
 				}

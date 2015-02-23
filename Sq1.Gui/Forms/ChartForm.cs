@@ -68,7 +68,7 @@ namespace Sq1.Gui.Forms {
 		void ChartControl_ContextScriptChangedContainerShouldSerialize(object sender, EventArgs e) {
 			if (this.ChartFormManager.Strategy == null) {
 				string msg = "I_INVOKED_YOU_FROM_REPORTER_NOT_POSSIBLE_STRATEGY_DISAPPEARED_NOW";
-				Debugger.Break();
+				Assembler.PopupException(msg);
 			}
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
 		}
@@ -301,7 +301,8 @@ namespace Sq1.Gui.Forms {
 			if (strategyClicked == null) return;
 
 			//do not disturb a streaming chart with selector's changes (disable selectors if streaming; for script-free charts strategy=null)
-			bool enableForNonStreaming = !strategyClicked.ScriptContextCurrent.IsStreamingTriggeringScript;
+			//v1 WASNT_ENABLED_FOR_NULL_STREAMING_PROVIDER bool enableForNonStreaming = !strategyClicked.ScriptContextCurrent.IsStreamingTriggeringScript;
+			bool enableForNonStreaming = true;
 			
 			//DataSourcesForm.Instance.DataSourcesTree.Enabled = enableForNonStreaming;
 			

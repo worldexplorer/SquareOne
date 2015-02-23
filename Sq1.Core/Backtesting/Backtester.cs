@@ -309,9 +309,11 @@ namespace Sq1.Core.Backtesting {
 				StreamingAdapter streamingBacktest = this.BacktestDataSource.StreamingAdapter;
 				StreamingAdapter streamingOriginal = this.BarsOriginal.DataSource.StreamingAdapter;
 				string msg = "NOW_INSERT_BREAKPOINT_TO_this.channel.PushQuoteToConsumers(quoteDequeued) CATCHING_BACKTEST_END_UNPAUSE_PUMP";
-				//if (streamingOriginal.
 
-				string msg2 = "BRO_THIS_IS_NONSENSE!!!"; //streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
+				if (streamingOriginal != null) {
+					string msg2 = "BRO_THIS_IS_NONSENSE!!!";
+					streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
+				}
 
 				DataDistributor distr = this.BacktestDataSource.StreamingAdapter.DataDistributor;
 				distr.ConsumerQuoteUnsubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
@@ -319,6 +321,10 @@ namespace Sq1.Core.Backtesting {
 
 				this.Executor.BacktestContextRestore();
 				this.BarsOriginal = null;	// I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL WILL_AFFECT_ChartForm.TsiProgressBarETA
+				if (this.Executor.ChartShadow == null) {
+					string msg3 = "IAM_IN_OPTIMIZER_HAVING_NO_CHART_ASSOCIATED";
+					return;
+				}
 				this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;
 			} catch (Exception e) {
 				#if DEBUG

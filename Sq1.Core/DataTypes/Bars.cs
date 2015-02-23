@@ -134,8 +134,11 @@ namespace Sq1.Core.DataTypes {
 			bool sameDOHLCV = this.BarStreaming.HasSameDOHLCVas(bar, "barAbsorbed", "BarStreaming", ref msgSame);
 			if (sameDOHLCV) {
 				string msg = "NO_NEED_TO_ABSORB_ANYTHING__DESTINATION_HasSameDOHLCV msgSame[" + msgSame + "]";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				return;
+			} else {
+				string msg = "THERE_IS_NEED_TO_ABSORB_ANYTHING__DESTINATION_HasSameDOHLCV msgSame[" + msgSame + "]";
+				//Assembler.PopupException(msg, null, false);
 			}
 			//this.streamingBar.DateTimeOpen = bar.DateTimeOpen;
 			this.BarStreaming.AbsorbOHLCVfrom(bar);
