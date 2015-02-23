@@ -41,6 +41,9 @@ namespace Sq1.Gui {
 
 		public MainForm() {
 			InitializeComponent();
+			#if DEBUG
+			this.lblSpace.Text = "   ||   ";
+			#endif
 
 			//string currentThreadName;
 			//try {
