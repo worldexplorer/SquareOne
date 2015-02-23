@@ -520,6 +520,7 @@ namespace Sq1.Gui.Forms {
 
 			ContextChart ctxChart = this.ContextCurrentChartOrStrategy;
 			bool streamingAsContinuationOfBacktest = ctxChart.IsStreaming && ctxChart.IsStreamingTriggeringScript;
+			streamingAsContinuationOfBacktest &= this.Executor.DataSource.StreamingAdapter != null;
 			bool willBacktest = streamingAsContinuationOfBacktest || this.Strategy.ScriptContextCurrent.BacktestOnRestart;
 
 			if (willBacktest == false) {
@@ -572,7 +573,7 @@ namespace Sq1.Gui.Forms {
 
 			if (this.Strategy.ActivatedFromDll == false) {
 				string msg = "DEBUG_ME_NOW this.Strategy.ActivatedFromDll == false";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 				// MOVED_20_LINES_UP this.StrategyCompileActivateBeforeShow();	// if it was streaming at exit, we should have it ready
 			}
 		}

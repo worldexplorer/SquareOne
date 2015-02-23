@@ -231,8 +231,9 @@ namespace Sq1.Widgets.Optimization {
 			}
 			string ident = perf.EssentialsForScriptContextNewName;
 			this.mniInfo.Text = ident + " => " + stratIdent;
-			this.mniltbCopyToNewContext.InputFieldValue = ident;
-			this.mniltbCopyToNewContextBacktest.InputFieldValue = ident;
+			string ctxName = ident;	//DUNNO_WHY_NOT_DISPLAYED_INSIDE_InputFieldValue  +" //" + stratIdent;
+			this.mniltbCopyToNewContext.InputFieldValue = ctxName;
+			this.mniltbCopyToNewContextBacktest.InputFieldValue = ctxName;
 		}
 	}
 }

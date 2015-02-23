@@ -72,7 +72,12 @@ namespace Sq1.Charting {
 						int lastIndex = this.ValueIndexLastAvailableMinusOneUnsafe;
 						if (double.IsNaN(lastIndex) == false) {
 							double lastValue = this.ValueGetNaNunsafe(lastIndex);
-							mouseY = this.ValueToYinverted(lastValue);
+							if (double.IsNaN(lastValue)) {
+								msg = "INDICATOR_MAY_HAS_NAN_FOR_BARS<PERIOD lastValue[" + lastValue + "] " + msg;
+								//Assembler.PopupException(msg, null, false);
+							} else {
+								mouseY = this.ValueToYinverted(lastValue);
+							}
 						}
 					}
 				}
@@ -115,7 +120,12 @@ namespace Sq1.Charting {
 							int lastIndex = this.ValueIndexLastAvailableMinusOneUnsafe;
 							if (double.IsNaN(lastIndex) == false) {
 								double lastValue = this.ValueGetNaNunsafe(lastIndex);
-								mouseY = this.ValueToYinverted(lastValue);
+								if (double.IsNaN(lastValue)) {
+									msg = "INDICATOR_MAY_HAS_NAN_FOR_BARS<PERIOD lastValue[" + lastValue + "] " + msg;
+									//Assembler.PopupException(msg, null, false);
+								} else {
+									mouseY = this.ValueToYinverted(lastValue);
+								}
 							}
 						}
 					}

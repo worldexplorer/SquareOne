@@ -372,12 +372,12 @@ namespace Sq1.Widgets.SteppingSlider {
 
 			if (ret > this.ValueMax) {
 				string msg = "ret(" + ret + ") > this.ValueMax(" + this.ValueMax + ")";
-				Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig, null, false);
 				return rawValue;
 			}
 			if (ret < this.ValueMin) {
 				string msg = "ret(" + ret + ") < this.ValueMin(" + this.ValueMin + ")";
-				Assembler.PopupException(msg + msig);
+				Assembler.PopupException(msg + msig, null, false);
 				return rawValue;
 			}
 			return ret;

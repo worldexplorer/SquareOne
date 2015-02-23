@@ -99,7 +99,9 @@ namespace Sq1.Core.StrategyBase {
 					double valueContext = this.Strategy.ScriptContextCurrent.ScriptParametersById[scriptParam.Id].ValueCurrent;
 					if (scriptParam.ValueCurrent != valueContext) {
 						string msg = "REPLACED_ScriptParameter[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "] => valueNow[" + valueContext + "] " + this.ToString();
+						#if DEBUG
 						Assembler.PopupException(msg + msig, null, false);
+						#endif
 						scriptParam.ValueCurrent = valueContext;
 						storeStrategySinceParametersGottenFromScript = true;
 					}
@@ -114,7 +116,7 @@ namespace Sq1.Core.StrategyBase {
 				bool dontSaveWeOptimize = this.Strategy.ScriptContextCurrent.Name.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
 				if (dontSaveWeOptimize) {
 					string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_OPTIMIZER_PROVIDED_IN_SCRIPTCONTEXT";
-					Assembler.PopupException(msg + msig);
+					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
 				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);

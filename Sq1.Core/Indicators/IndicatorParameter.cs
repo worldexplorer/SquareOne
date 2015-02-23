@@ -74,22 +74,22 @@ namespace Sq1.Core.Indicators {
 			}
 			if (this.ValueCurrent < this.ValueMin || this.ValueCurrent > this.ValueMax)  {
 				string msg = "OBSERVED_AS_NEVER_HAPPENING";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 				this.ValueCurrent = this.ValueMin;
 			}
 			if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueMin != this.ValueMin) {
 				string msg = "OBSERVED_AS_NEVER_HAPPENING";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMin = this.ValueMin;
 			}
 			if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueMax != this.ValueMax) {
 				string msg = "OBSERVED_AS_NEVER_HAPPENING";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMax = this.ValueMax;
 			}
             if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement != this.ValueIncrement) {
 				string msg = "OBSERVED_AS_ALWAYS_HAPPENING";
-				//Assembler.PopupException(msg, null, false);
+				////Assembler.PopupException(msg, null, false);
 				ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement = this.ValueIncrement;
 			}
 		}

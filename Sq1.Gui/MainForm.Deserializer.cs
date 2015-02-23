@@ -20,6 +20,7 @@ namespace Sq1.Gui {
 		ChartFormManager chartFormManagerDeserialized;
 	
 		IDockContent persistStringInstantiator(string persistedTypeFullName) {
+			string msig = " //persistStringInstantiator(" + persistedTypeFullName + ")";
 			IDockContent ret = null;
 			try {
 				if (persistedTypeFullName == typeof(ExceptionsForm).ToString()) {
@@ -55,8 +56,8 @@ namespace Sq1.Gui {
 
 					return dummyDoc;*/
 				}
-			} catch (Exception e) {
-				Assembler.PopupException("PersistStringInstantiator", e);
+			} catch (Exception ex) {
+				Assembler.PopupException("FORM_HANDLER_THROWN" + msig, ex);
 			}
 			if (ret == null) {
 				string msg = "returning null will confuse DockPanel; instead, return an instance and initialize it later";
@@ -163,19 +164,30 @@ namespace Sq1.Gui {
 			return ret;
 		}
 		public Dictionary<string, string> parseAsHash(string input, string fieldDelimiter = ",", string keyValueSeparator = ":") {
+			string msig = " //parseAsHash(input[" + input + "] fieldDelimiter[" + fieldDelimiter + "] keyValueSeparator[" + keyValueSeparator + "])";
 			Dictionary<string, string> ret = new Dictionary<string, string>();
 			string[] parsedStrings = input.Split(fieldDelimiter.ToCharArray());
 			foreach (string keyValue in parsedStrings) {
 				// using ":" since "=" leads to an exception in DockPanelPersistor.cs
 				string[] parsedKeyValue = keyValue.Split(keyValueSeparator.ToCharArray());
+				if (parsedKeyValue.Length < 1) {
+					string msg = "SPLITTER_COULDNT_RECOGNIZE_KEY";
+					Assembler.PopupException(msg + msig);
+					throw new Exception(msg);
+				}
+				if (parsedKeyValue.Length < 2) {
+					string msg = "SPLITTER_COULDNT_RECOGNIZE_VALUE";
+					Assembler.PopupException(msg + msig);
+					throw new Exception(msg);
+				}
 				try {
 					string key = parsedKeyValue[0];
 					string value = parsedKeyValue[1];
 					key = key.TrimEnd(keyValueSeparator.ToCharArray());
 					ret.Add(key, value);
-				} catch (Exception e) {
-					Assembler.PopupException("parseAsHash(" + input + ")", e);
-					throw e;
+				} catch (Exception ex) {
+					Assembler.PopupException("UNPREDICTED_ERROR " + msig, ex);
+					throw ex;
 				}
 			}
 			return ret;

@@ -458,9 +458,10 @@ namespace Sq1.Core.DataTypes {
 		}
 		public bool ContainsBidAskForQuoteGenerated(Quote quote, bool feedingGarbageAndIknowItDontBreak = false) {
 			if (quote.Spread > this.HighLowDistance) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				string msg = "CONSIDER_REDUCING_SPREAD_SIZE_IN_Chart>Strategy>SpreadModeler"
+					+ " quote.Spread[" + quote.Spread + "] > this.HighLowDistance[" + this.HighLowDistance + "]"
+					+ " for quote[" + quote.ToString() + "] bar[" + this.ToString() + "]";
+				Assembler.PopupException(msg, null, false);
 				return false;
 			}
 			
