@@ -33,6 +33,7 @@
     <Optimize>false</Optimize>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>full</DebugType>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <ErrorReport>prompt</ErrorReport>

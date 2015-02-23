@@ -1,7 +1,9 @@
 {
   "$type": "Sq1.Widgets.StrategiesTree.StrategiesTreeDataSnapshot, Sq1.Widgets",
   "StrategyFoldersExpanded": [
-    "Sq1.Strategies.Demo.dll"
+    "Sq1.Strategies.Demo.dll",
+    "WellKnown",
+    "my"
   ],
   "ShowHeader": false,
   "ShowSearchBar": false

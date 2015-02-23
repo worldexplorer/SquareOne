@@ -322,9 +322,11 @@ namespace Sq1.Adapters.Quik {
 							msg = "Price=Quote.FortsPriceMax[" + priceMax + "]=ZERO for"
 								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
 								+ " (Slippage=" + order.SlippageFill + ")";
-							Debugger.Break();
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
 							this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
+							#if DEBUG
+							Debugger.Break();
+							#endif
 							throw new Exception(msg);
 						}
 						order.PriceRequested = priceMax;
@@ -339,9 +341,11 @@ namespace Sq1.Adapters.Quik {
 							msg = "Price=Quote.FortsPriceMin[" + priceMin + "]=ZERO for"
 								+ " Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]"
 								+ " (Slippage=" + order.SlippageFill + ")";
-							Debugger.Break();
 							OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.ErrorOrderInconsistent, msg);
 							this.OrderProcessor.UpdateOrderStateAndPostProcess(order, newOrderState);
+							#if DEBUG
+							Debugger.Break();
+							#endif
 							throw new Exception(msg);
 						}
 						order.PriceRequested = priceMin;
