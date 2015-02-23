@@ -41,7 +41,7 @@ namespace Sq1.Core.Streaming {
 			SymbolsSubscribedLock			= new object();
 			BarsConsumersLock				= new object();
 			SymbolsUpstreamSubscribed		= new List<string>();
-			DataDistributor			= new DataDistributorCharts(this);
+			DataDistributor					= new DataDistributorCharts(this);
 			DataDistributorSolidifiers		= new DataDistributorSolidifiers(this);
 			StreamingDataSnapshot			= new StreamingDataSnapshot(this);
 			StreamingSolidifier				= new StreamingSolidifier();
@@ -49,7 +49,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public virtual void Initialize(DataSource dataSource) {
 			this.InitializeFromDataSource(dataSource);
-			//this.SubscribeSolidifier();
+			this.SubscribeSolidifier();
 		}
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;
