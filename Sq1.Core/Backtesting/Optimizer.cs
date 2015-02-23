@@ -14,7 +14,7 @@ namespace Sq1.Core.Backtesting {
 
 		public event EventHandler<EventArgs>					OnBacktestStarted;
 		// since Optimizer.backtests is multithreaded list, I imply OptimizerControl.backtests to keep its own copy for ObjectListView to freely crawl over it without interference (instead of providing Optimizer.BacktestsThreadSafeCopy)  
-		public event EventHandler<SystemPerformanceEventArgs>	OnBacktestComplete;
+		public event EventHandler<SystemPerformanceEventArgs>	OnBacktestFinished;
 		public event EventHandler<EventArgs>					OnOptimizationComplete;
 		public event EventHandler<EventArgs>					OnOptimizationAborted;
 		
@@ -223,7 +223,8 @@ namespace Sq1.Core.Backtesting {
 				executorCompletePooled = this.executor;
 			}
 			msig = executorCompletePooled.ToStringWithCurrentParameters() + msig;
-			Assembler.PopupException("ANOTHER_IN_SEQUENCE_executorCompletePooled: " + msig, null, false);
+			string msg2 = " ANOTHER_IN_SEQUENCE_executorCompletePooled";
+			//Assembler.PopupException(msg2 + msig, null, false);
 
 			if (executorCompletePooled.Bars == null) {
 				string msg = "DONT_RUN_BACKTEST_BEFORE_BARS_ARE_LOADED";
@@ -283,13 +284,12 @@ namespace Sq1.Core.Backtesting {
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
-				this.RaiseOnBacktestComplete(executorCompletePooled.Performance);
+				this.RaiseOnBacktestFinished(executorCompletePooled.Performance);
 				if (this.BacktestsCompleted >= this.BacktestsTotal) {
-					#if DEBUG
 					if (this.executorsRunning.Count > 0) {
-						Debugger.Break();
+						string msg = "FYI AFTER_OPTIMIZATION_ITERATION_FINISHED_YOU_STILL_HAVE_MORE_EXECUTORS_RUNNING " + this.executorsRunning.Count;
+						Assembler.PopupException(msg);
 					}
-					#endif
 					this.RaiseOnOptimizationComplete();
 				}
 			}
@@ -308,23 +308,23 @@ namespace Sq1.Core.Backtesting {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		public void RaiseOnBacktestComplete(SystemPerformance clone) {
+		public void RaiseOnBacktestFinished(SystemPerformance clone) {
 			if (this.AbortedDontScheduleNewBacktests) return;
-			if (this.OnBacktestComplete == null) {
+			if (this.OnBacktestFinished == null) {
 				string msg = "OPTIMIZER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_BACKTEST_COMPLETED";
 				Assembler.PopupException(msg);
 				return;
 			}
 			try {
 				this.BacktestsSecondsElapsed = (float) Math.Round(stopWatch.ElapsedMilliseconds / 1000d, 1);
-				this.OnBacktestComplete(this, new SystemPerformanceEventArgs(clone));
+				this.OnBacktestFinished(this, new SystemPerformanceEventArgs(clone));
 			} catch (Exception ex) {
 				string msg = "OPTIMIZER_CONTROL_THREW_ON_BACKTEST_COMPLETE";
 				Assembler.PopupException(msg, ex);
 			}
 		}
 		public void RaiseOnOptimizationComplete() {
-			if (this.OnBacktestComplete == null) {
+			if (this.OnBacktestFinished == null) {
 				string msg = "OPTIMIZER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_OPTIMIZATION_COMPLETE";
 				Assembler.PopupException(msg);
 				return;

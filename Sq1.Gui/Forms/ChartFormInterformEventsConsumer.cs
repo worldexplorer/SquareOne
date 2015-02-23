@@ -99,18 +99,24 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		internal void Executor_BacktesterContextInitialized_step2of4(object sender, EventArgs e) {
+			string msig = " Executor_BacktesterContextInitialized_step2of4()" + this.chartFormManager.ToString();
 			if (this.chartFormManager.ChartForm == null) return;
 			if (this.chartFormManager.Executor == null) return;
 			if (this.chartFormManager.Executor.Backtester.BarsOriginal == null) {
 				string msg = "I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL";
-				Assembler.PopupException(msg, null, false);
+				if (this.chartFormManager.ChartForm.InvokeRequired == false) {
+					msg = "NO_NEED_TO_REPORT_ITS_NOT_AN_ERROR  I_REFUSE_TO_CALCULATE_PERCENTAGE_COMPLETED BACKTEST_ALREADY_FINISHED_WHILE_SWTICHING_TO_GUI_THREAD";
+					//Assembler.PopupException(msg + msig, null, false);
+				} else {
+					Assembler.PopupException(msg + msig, null, false);
+				}
 				return;
 			}
 
 			if (this.chartFormManager.Executor.Backtester.QuotesGenerator == null) return;
 			int quotesTotal = this.chartFormManager.Executor.Backtester.QuotesTotalToGenerate;
 			if (quotesTotal == -1) {
-				string msg = "I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL Executor_BacktesterSimulationStarted: Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
+				string msg = "I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL: Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -136,54 +142,53 @@ namespace Sq1.Gui.Forms {
 			// CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END
 		}
 		internal void Executor_BacktesterChunkSimulated_step3of4(object sender, EventArgs e) {
+			string msig = " //Executor_BacktesterChunkSimulated_step3of4() " + this.chartFormManager.ToString();
 			if (sender != this.chartFormManager.Executor.EventGenerator) return;
+			if (this.chartFormManager.Executor == null) {
+				string msg = "invoked by Backtester.SubstituteAndRunSimulation() I don't remember whether Tag=null is ok or not...";
+				return;
+			}
+			//if (this.chartFormManager.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
+			//if (this.chartFormManager.ChartForm.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
+			//    string msg = "Livesimulator.afterBacktesterComplete()_ALREADY_RESTORED_BACKTESTER_WHILE_SWITCHING_TO_GUI_THREAD [base.Executor.Backtester = this.BacktesterBackup]";
+			//    return;
+			//}
+			if (this.chartFormManager.Executor.Backtester.QuotesGenerator == null) {
+				string msg = "YOU_DIDNT_INVOKE_Backtester.Initialize() AVOIDING_EXCEPTIONS_IN_QuotesGeneratedSoFar";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+
+			int quotesTotal = this.chartFormManager.Executor.Backtester.QuotesTotalToGenerate;
+			if (quotesTotal == -1) {
+				string msg = "CANT_CALCULATE_PERCENTAGE_KOZ_BARS_ORIGINAL_NULL"
+					+ " : Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
+				//Assembler.PopupException(msg + msig, null, false);
+				return;
+			}
+
 			if (this.chartFormManager.ChartForm.InvokeRequired) {
 				this.chartFormManager.ChartForm.BeginInvoke(new MethodInvoker(delegate { this.Executor_BacktesterChunkSimulated_step3of4(sender, e); }));
 				return;
 			}
 
-			if (this.chartFormManager.Executor == null) {
-				string msg = "invoked by Backtester.SubstituteAndRunSimulation() I don't remember whether Tag=null is ok or not...";
-				return;
-			}
-			if (this.chartFormManager.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
-			//if (this.chartFormManager.ChartForm.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
-			//    string msg = "Livesimulator.afterBacktesterComplete()_ALREADY_RESTORED_BACKTESTER_WHILE_SWITCHING_TO_GUI_THREAD [base.Executor.Backtester = this.BacktesterBackup]";
-			//    return;
-			}
-			if (this.chartFormManager.Executor.Backtester.QuotesGenerator == null) {
-				string msg = "YOU_DIDNT_INVOKE_Backtester.Initialize() AVOIDING_EXCEPTIONS_IN_QuotesGeneratedSoFar";
-				return;
-			}
-
-			this.chartFormManager.ChartForm.TsiProgressBarETA.ETALabelText = this.chartFormManager.Executor.Backtester.ProgressStats;
-
-			//int quotesTotal = this.chartFormsManager.Executor.Backtester.Backtester.QuotesTotalToGenerate;
-			//if (quotesTotal == -1) {
-			//	string msg = "Executor_BacktesterSimulationStarted: Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
-			//	this.chartFormsManager.MainForm.PopupException(msg);
-			//	return;
-			//}
-			
-			
 			// HACK FOR CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED BEGIN COPYPASTE
 			if (this.chartFormManager.ChartForm.TsiProgressBarETA.Visible == false) {
-				int quotesTotal = this.chartFormManager.Executor.Backtester.QuotesTotalToGenerate;
-				if (quotesTotal == -1) {
-					string msg = "Executor_BacktesterSimulationStarted: Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
-					Assembler.PopupException(msg);
-					return;
-				}
-	
+				//int quotesTotal = this.chartFormManager.Executor.Backtester.QuotesTotalToGenerate;
+				//if (quotesTotal == -1) {
+				//    string msg = "Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
+				//    Assembler.PopupException(msg + msig);
+				//    return;
+				//}
 				this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarMaximum = quotesTotal;
-	
 				this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;
-				
 				this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
 				this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
 				this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 			}
 			// HACK FOR CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END COPYPASTE
+
+			this.chartFormManager.ChartForm.TsiProgressBarETA.ETALabelText = this.chartFormManager.Executor.Backtester.ProgressStats;
 			
 
 			int currentValue = this.chartFormManager.Executor.Backtester.QuotesGeneratedSoFar;

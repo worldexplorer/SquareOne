@@ -189,7 +189,9 @@ namespace Sq1.Gui {
 					//if (cfmgr.DataSnapshot.ContextChart.IsStreaming == true) {
 					//	string msg = "CHART_SUBSCRIBED__BUT_SHOULD_CONNECT_AFTER_BACKTEST";
 					//} else {
+					if (cfmgr.Executor.DataSource.StreamingAdapter != null) {
 						cfmgr.Executor.DataSource.StreamingAdapter.UpstreamConnect();
+					}
 					//}
 				}
 				

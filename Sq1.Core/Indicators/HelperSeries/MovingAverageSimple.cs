@@ -23,8 +23,9 @@ namespace Sq1.Core.Indicators.HelperSeries {
 					+ " thisBarValue[" + valueCalculated.ToString(base.Format) + "] valueWeAlreadyHave[" + valueWeAlreadyHave + "]";
 				Assembler.PopupException(msg);
 				//v1 return double.NaN;
-				//v2 STILL_ADD_NAN_TO_KEEP_INDEXES_SYNCED_WITH_OWN_VALUES 
-				valueCalculated = double.NaN;
+				//v2 ALREADY_HAVE_ADDED  STILL_ADD_NAN_TO_KEEP_INDEXES_SYNCED_WITH_OWN_VALUES 
+				//valueCalculated = double.NaN;
+				return valueCalculated;
 			}
 			base.Append(newStaticBar.DateTimeOpen, valueCalculated);
 			return valueCalculated;
@@ -35,6 +36,7 @@ namespace Sq1.Core.Indicators.HelperSeries {
 		}
 
 		public double CalculateOwnValue(Bar newStaticBar) {
+			string msig = " // CalculateOwnValue(" + newStaticBar + ") " + this.ToString();
 			// COPYPASTE_FROM_IndicatorAverageMovingSimple:Indicator BEGIN
 			if (this.Period <= 0) return double.NaN;
 			if (this.AverageFor.Count - 1 < this.Period) return double.NaN;
@@ -47,8 +49,7 @@ namespace Sq1.Core.Indicators.HelperSeries {
 					if (newStaticBar.ParentBarsIndex >= barsBehind.Count) {
 						msg = "AVOIDING_OUT_OF_BOUNDARY_EXCEPTION_FOR_this.AverageFor[i] " + msg;
 					}
-					Debugger.Break();
-					Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg + msig);
 				}
 			}
 
@@ -59,14 +60,16 @@ namespace Sq1.Core.Indicators.HelperSeries {
 			for (int i = slidingWindowLeftBar; i <= slidingWindowRightBar; i++) {
 				double eachBarInSlidingWindow = this.AverageFor[i];
 				if (double.IsNaN(eachBarInSlidingWindow)) {
-					Debugger.Break();
+					string msg = "IGNORING_NAN_BAR_CLOSE_FOR_SMA.AverageFor[" + i + "]";
+					Assembler.PopupException(msg + msig);
 					continue;
 				}
 				sum += eachBarInSlidingWindow;
 				barsProcessedCheck++;
 			}
 			if (barsProcessedCheck != this.Period) {
-				Debugger.Break();
+				string msg = "FYI barsProcessedCheck[" + barsProcessedCheck + "] != this.Period[" + this.Period + "]";
+				Assembler.PopupException(msg + msig, null, false);
 			}
 			double ret = sum / this.Period;
 			return ret;

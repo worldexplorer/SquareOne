@@ -195,11 +195,17 @@ namespace Sq1.Core.StrategyBase {
 					if (mustBeOne == 0) {
 						string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WONT_COMPLAIN_TOO";
 						Assembler.PopupException(msg2, null, false);
+						return null;
 					}
 					if (mustBeOne > 1) {
 						int skipped = mustBeOne - 1;
 						string msg2 = "HOLE_IN_SCRIPT_INVOCATION";
 						Assembler.PopupException(msg2, null, false);
+						return null;
+					}
+				} else {
+					if (this.Backtester.IsBacktestRunning == false) {
+						string msg4 = "IM_AT_APPRESTART_BACKTEST_PRIOR_TO_LIVE__HERE_I_SHOULD_HAVE_EXECUTED_ON_LASTBAR__DID_SO_AT_BRO_THIS_IS_NONSENSE!!!FINALLY";
 					}
 				}
 				//INDICATOR_ADDING_STREAMING_DOESNT_KNOW_FROM_QUOTE_WHAT_DATE_OPEN_TO_PUT
@@ -227,14 +233,16 @@ namespace Sq1.Core.StrategyBase {
 			} else {
 				if (this.barStaticExecutedLast != null) {
 					int mustBeOne = this.Bars.BarStaticLastNullUnsafe.ParentBarsIndex - this.barStaticExecutedLast.ParentBarsIndex;
-					//if (mustBeOne == 0) {
-					//    string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WILL_COMPLAIN_TOO";
-					//    Assembler.PopupException(msg2, null, false);
-					//}
+					if (mustBeOne == 0) {
+						string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WILL_COMPLAIN_TOO";
+						Assembler.PopupException(msg2, null, false);
+						return null;
+					}
 					if (mustBeOne > 1) {
 						int skipped = mustBeOne - 1;
 						string msg2 = "HOLE_IN_SCRIPT_INVOCATION INDICATORS_WILL_COMPLAIN_TOO ALERTS_WILL_MISTMATCH_BARS ExecuteOnNewBar()_SKIPPED=[" + skipped + "]";
 						Assembler.PopupException(msg2, null, false);
+						return null;
 					}
 				}
 				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
@@ -254,7 +262,8 @@ namespace Sq1.Core.StrategyBase {
 					this.PopupException(ex.Message + msig, ex);
 				}
 			}
-			string msg = "DONT_REMOVE_ALERT_SHOULD_LEAVE_ITS_TRAIL_DURING_LIFETIME_TO_PUT_UNFILLED_DOTS_ON_CHART";
+
+			string msg5 = "DONT_REMOVE_ALERT_SHOULD_LEAVE_ITS_TRAIL_DURING_LIFETIME_TO_PUT_UNFILLED_DOTS_ON_CHART";
 			//int alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
 //			int alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.AlertsPending.Count;
 //			if (alertsDumpedForStreamingBar > 0) {
@@ -299,9 +308,10 @@ namespace Sq1.Core.StrategyBase {
 						// ^^^ this.DataSource.PausePumpingFor(this.Bars, true);		// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
 						bool paused = this.Bars.DataSource.PumpingWaitUntilPaused(this.Bars, 0);
 						if (paused == true) {
-							string msg3 = "YOU_WANT_ONE_STRATEGY_PER_SYMBOL_LIVE MAKE_SURE_YOU_HAVE_ONLY_ONE_SYMBOL:INTERVAL_ACROSS_ALL_OPEN_CHARTS PUMP_SHOULD_HAVE_BEEN_PAUSED_EARLIER"
+							string msg3 = "YES_I_PAUSED_THIS_PUMP_MYSELF_UPSTACK_IN_PumpPauseNeighborsIfAnyFor()"
+								+ "YOU_WANT_ONE_STRATEGY_PER_SYMBOL_LIVE MAKE_SURE_YOU_HAVE_ONLY_ONE_SYMBOL:INTERVAL_ACROSS_ALL_OPEN_CHARTS PUMP_SHOULD_HAVE_BEEN_PAUSED_EARLIER"
 								+ " in ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
-							Assembler.PopupException(msg3, null, false);
+							//Assembler.PopupException(msg3, null, false);
 						}
 					}
 					ordersEmitted = this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsNewAfterExecCopy, setStatusSubmitting, true);
@@ -505,7 +515,8 @@ namespace Sq1.Core.StrategyBase {
 				}
 			} else {
 				//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
-				Debugger.Break();
+				string msg = "NYI_FOR IsStreamingTriggeringScript=false //AnnihilateCounterpartyAlertDispatched()";
+				Assembler.PopupException(msg);
 			}
 			return killed;
 		}
@@ -998,7 +1009,7 @@ namespace Sq1.Core.StrategyBase {
 				bool thereWereNeighbours = this.Bars.DataSource.PumpPauseNeighborsIfAnyFor(this, this.Backtester.IsBacktestingNoLivesimNow);
 			} else {
 				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + bars + ")";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 			}
 			
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
@@ -1051,7 +1062,7 @@ namespace Sq1.Core.StrategyBase {
 				bool thereWereNeighbours = this.Bars.DataSource.PumpResumeNeighborsIfAnyFor(this);
 			} else {
 				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextRestore(" + this.Bars + ")";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = false;
 			}
 			this.EventGenerator.RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(null);
@@ -1314,7 +1325,9 @@ namespace Sq1.Core.StrategyBase {
 
 			Strategy strategyClone = this.Strategy.CloneWithNewScriptInstanceResetContextsToSingle(ctxNext, executorClone);
 			if (strategyClone == this.Strategy) {
-				Debugger.Break();
+				string msig = "CloneForOptimizer(ContextScript ctxNext)";
+				string msg = "PARANOID CLONE_MUST_BE_A_NEW_POINTER_NOT_THE_SAME";
+				Assembler.PopupException(msg + msig);
 			}
 			strategyClone.Script.Initialize(executorClone);
 			executorClone.Initialize(null, strategyClone);
