@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+using Sq1.Core;
+using Sq1.Core.Optimization;
+using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Backtesting;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl : UserControl {
-		Optimizer optimizer;
-		List<string> colMetricsShouldStay;
-		List<SystemPerformance> backtests;
-		List<OLVColumn> columnsDynParam;
+				Optimizer							optimizer;
+				List<string>						colMetricsShouldStay;
+				List<SystemPerformanceRestoreAble>	backtests;
+				List<OLVColumn>						columnsDynParam;
+		public	RepositoryJsonOptimizationResults	RepositoryDllJsonOptimizationResults		{ get; private set;}
+		
 
 		public OptimizerControl() {
 			InitializeComponent();
@@ -48,8 +53,9 @@ namespace Sq1.Widgets.Optimization {
 //			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveWinners);
 //			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveLosers);
 
-			backtests = new List<SystemPerformance>();
+			backtests = new List<SystemPerformanceRestoreAble>();
 			columnsDynParam = new List<OLVColumn>();
+			RepositoryDllJsonOptimizationResults	= new RepositoryJsonOptimizationResults();
 		}
 		public void Initialize(Optimizer optimizer) {
 			this.optimizer = optimizer;
@@ -66,23 +72,65 @@ namespace Sq1.Widgets.Optimization {
 			//SETTING_COLLAPSED_FROM_BTN_RUN_CLICK this.optimizer.OnBacktestStarted -= new EventHandler<EventArgs>(optimizer_OnBacktestStarted);
 			//SETTING_COLLAPSED_FROM_BTN_RUN_CLICK this.optimizer.OnBacktestStarted += new EventHandler<EventArgs>(optimizer_OnBacktestStarted);
 			
-			this.optimizer.OnBacktestFinished -= new EventHandler<SystemPerformanceEventArgs>(this.optimizer_OnBacktestFinished);
+			this.optimizer.OnOneBacktestFinished -= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(this.optimizer_OnOneBacktestFinished);
 			// since Optimizer.backtests is multithreaded list, I keep own copy here OptimizerControl.backtests for ObjectListView to freely crawl over it without interference (instead of providing Optimizer.BacktestsThreadSafeCopy)  
-			this.optimizer.OnBacktestFinished += new EventHandler<SystemPerformanceEventArgs>(this.optimizer_OnBacktestFinished);
+			this.optimizer.OnOneBacktestFinished += new EventHandler<SystemPerformanceRestoreAbleEventArgs>(this.optimizer_OnOneBacktestFinished);
 			
-			this.optimizer.OnOptimizationComplete -= new EventHandler<EventArgs>(Optimizer_OnOptimizationComplete);
-			this.optimizer.OnOptimizationComplete += new EventHandler<EventArgs>(Optimizer_OnOptimizationComplete);
+			this.optimizer.OnAllBacktestsFinished -= new EventHandler<EventArgs>(this.optimizer_OnAllBacktestsFinished);
+			this.optimizer.OnAllBacktestsFinished += new EventHandler<EventArgs>(this.optimizer_OnAllBacktestsFinished);
 			
-			this.optimizer.OnOptimizationAborted -= new EventHandler<EventArgs>(Optimizer_OnOptimizationAborted);
-			this.optimizer.OnOptimizationAborted += new EventHandler<EventArgs>(Optimizer_OnOptimizationAborted);
+			this.optimizer.OnOptimizationAborted -= new EventHandler<EventArgs>(this.optimizer_OnOptimizationAborted);
+			this.optimizer.OnOptimizationAborted += new EventHandler<EventArgs>(this.optimizer_OnOptimizationAborted);
 
-            this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild -= new EventHandler<EventArgs>(Optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
-            this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild += new EventHandler<EventArgs>(Optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
+            this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild -= new EventHandler<EventArgs>(this.optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
+            this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild += new EventHandler<EventArgs>(this.optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
             
             this.PopulateTextboxesFromExecutorsState();
 			
 			this.populateColumns();
-			this.objectListViewCustomize();
+			this.olvBacktestsCustomize();
+			
+			this.olvHistoryCustomize();
+			string strategyRelname = Path.Combine(this.optimizer.Executor.Strategy.StoredInFolderRelName, this.optimizer.Executor.StrategyName);
+			this.RepositoryDllJsonOptimizationResults.Initialize(Assembler.InstanceInitialized.AppDataPath, Path.Combine("OptimizationResults", strategyRelname));
+			string symbolScaleRange = this.optimizer.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+			this.olvHistoryRescanRefillSelect(symbolScaleRange);
+				
+			this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
+		}
+		void olvHistoryRescanRefillSelect(string symbolScaleRange) {
+			this.RepositoryDllJsonOptimizationResults.RescanFolderStoreNamesFound();
+			this.olvHistory.SetObjects(this.RepositoryDllJsonOptimizationResults.ItemsFound);
+			FnameDateSize found = null;
+			foreach (FnameDateSize each in this.RepositoryDllJsonOptimizationResults.ItemsFound) {
+				if (each.Name != symbolScaleRange) continue;
+				found = each;
+				break;
+			}
+			if (found == null) {
+				this.olvHistory.SelectedIndex = -1;
+			} else {
+				this.olvHistory.SelectObject(found, true);
+			}
+		}
+		public void SyncBacktestAndListWithOptimizationResultsByContextIdent() {
+			Strategy strategy = this.optimizer.Executor.Strategy;
+			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+			//v1
+			//if (strategy.OptimizationResultsByContextIdent.ContainsKey(symbolScaleRange)) {
+			//	this.backtests = strategy.OptimizationResultsByContextIdent[symbolScaleRange];
+			//} else {
+			//	this.backtests.Clear();
+			//}
+			//v2
+			if (this.RepositoryDllJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) {
+				this.backtests = this.RepositoryDllJsonOptimizationResults.DeserializeList(symbolScaleRange);
+			} else {
+				this.backtests.Clear();
+			}
+			this.olvBacktests.SetObjects(this.backtests); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
+			this.olvHistoryRescanRefillSelect(symbolScaleRange);
+			this.PopulateTextboxesFromExecutorsState();
 		}
 		public string PopulateTextboxesFromExecutorsState() {
 			if (this.splitContainer1.SplitterDistance != this.heightExpanded) {
@@ -90,27 +138,27 @@ namespace Sq1.Widgets.Optimization {
 			}
 			
 			string staleReason = this.optimizer.StaleReason;
-			if (string.IsNullOrEmpty(staleReason) == false) {
-				return staleReason;
-			}
-			
-			this.txtDataRange.Text = this.optimizer.DataRangeAsString;
-			this.txtPositionSize.Text = this.optimizer.PositionSizeAsString;
-			this.txtStrategy.Text = this.optimizer.StrategyAsString;
-			this.txtSymbol.Text = this.optimizer.SymbolScaleIntervalAsString;
-			this.txtScriptParameterTotalNr.Text = this.optimizer.ScriptParametersTotalNr.ToString();
-			this.txtIndicatorParameterTotalNr.Text = this.optimizer.IndicatorParameterTotalNr.ToString();
+			//if (string.IsNullOrEmpty(staleReason) == false) {
+			//    return staleReason;
+			//}
+			this.txtStaleReason.Text				= staleReason;
+			this.txtDataRange.Text					= this.optimizer.DataRangeAsString;
+			this.txtPositionSize.Text				= this.optimizer.PositionSizeAsString;
+			this.txtStrategy.Text					= this.optimizer.StrategyAsString;
+			this.txtSymbol.Text						= this.optimizer.SymbolScaleIntervalAsString;
+			this.txtScriptParameterTotalNr.Text		= this.optimizer.ScriptParametersTotalNr.ToString();
+			this.txtIndicatorParameterTotalNr.Text	= this.optimizer.IndicatorParameterTotalNr.ToString();
 
-			int backtestsTotal = this.optimizer.BacktestsTotal;
-			this.btnRunCancel.Text = "Run " + backtestsTotal + " backtests";
-			this.lblStats.Text = "0% complete    0/" + backtestsTotal;
-			this.progressBar1.Value = 0;
-			this.progressBar1.Maximum = backtestsTotal;
+			int backtestsTotal						= this.optimizer.BacktestsTotal;
+			this.btnRunCancel.Text					= "Run " + backtestsTotal + " backtests";
+			this.lblStats.Text						= "0% complete    0/" + backtestsTotal;
+			this.progressBar1.Value					= 0;
+			this.progressBar1.Maximum				= backtestsTotal;
 			
-			this.nudThreadsToRun.Value = this.optimizer.ThreadsToUse;
+			this.nudThreadsToRun.Value				= this.optimizer.ThreadsToUse;
 			
-			this.btnRunCancel.Enabled = true;
-			this.btnPauseResume.Enabled = false;
+			this.btnRunCancel.Enabled				= true;
+			this.btnPauseResume.Enabled				= false;
 
 			return null;
 		}
@@ -172,9 +220,13 @@ namespace Sq1.Widgets.Optimization {
 			}
 		}
 		
-		int heightExpanded { get { return this.splitContainer1.Panel1MinSize * 5; } }
+		int heightExpanded { get { return this.splitContainer1.Panel1MinSize * 8; } }
 		int heightCollapsed { get { return this.splitContainer1.Panel1MinSize; } }
 		public void NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize() {
+			Strategy strategy = this.optimizer.Executor.Strategy;
+			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+			if (this.RepositoryDllJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) return;
+
 			string staleReason = this.optimizer.StaleReason;
 			this.txtStaleReason.Text = staleReason; // TextBox doesn't display "null" for null-string
 			
@@ -186,5 +238,6 @@ namespace Sq1.Widgets.Optimization {
 			this.btnRunCancel.Text = userClickedAnotherSymbolScaleIntervalRangePositionSize
 				? "Clear to Optimize" : "Run " + this.optimizer.BacktestsTotal + " backtests";
 		}
+
 	}
 }

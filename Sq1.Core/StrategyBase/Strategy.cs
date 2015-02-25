@@ -6,42 +6,43 @@ using System.IO;
 using Newtonsoft.Json;
 using Sq1.Core.Indicators;
 using Sq1.Core.Livesim;
+using Sq1.Core.Optimization;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class Strategy {
 		[JsonProperty]	public Guid Guid;
-		[JsonProperty]	public string Name;
-		[JsonProperty]	public string ScriptSourceCode;
-		[JsonProperty]	public string DotNetReferences;
-		[JsonProperty]	public string DllPathIfNoSourceCode;
-		[JsonProperty]	public int ExceptionsLimitToAbortBacktest;
+		[JsonProperty]	public string								Name;
+		[JsonProperty]	public string								ScriptSourceCode;
+		[JsonProperty]	public string								DotNetReferences;
+		[JsonProperty]	public string								DllPathIfNoSourceCode;
+		[JsonProperty]	public int									ExceptionsLimitToAbortBacktest;
 
-		[JsonProperty]	public string StoredInJsonAbspath;
-		[JsonIgnore]	public string StoredInFolderRelName	{ get { return Path.GetFileName(Path.GetDirectoryName(this.StoredInJsonAbspath)); } }
-		[JsonIgnore]	public string StoredInJsonRelName	{ get { return Path.GetFileName(this.StoredInJsonAbspath); } }
+		[JsonProperty]	public string								StoredInJsonAbspath;
+		[JsonIgnore]	public string								StoredInFolderRelName	{ get { return Path.GetFileName(Path.GetDirectoryName(this.StoredInJsonAbspath)); } }
+		[JsonIgnore]	public string								StoredInJsonRelName		{ get { return Path.GetFileName(this.StoredInJsonAbspath); } }
 		
-		[JsonIgnore]	public bool ActivatedFromDll { get {
+		[JsonIgnore]	public bool									ActivatedFromDll { get {
 				if (string.IsNullOrEmpty(this.DllPathIfNoSourceCode)) return false;
 				if (this.DllPathIfNoSourceCode.Length <= 4) return false;
 				string substr = this.DllPathIfNoSourceCode.Substring(DllPathIfNoSourceCode.Length - 4);
 				return substr.ToUpper() == ".DLL";
 			} }
-		[JsonProperty]	public bool HasChartOnly { get { return string.IsNullOrEmpty(this.StoredInFolderRelName); } }
-		[JsonIgnore]	public Script Script;
+		[JsonProperty]	public bool									HasChartOnly { get { return string.IsNullOrEmpty(this.StoredInFolderRelName); } }
+		[JsonIgnore]	public Script								Script;
 		//CANT_DESERIALIZE_JsonException public Dictionary<int, ScriptParameter> ScriptParametersByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
 		//					return this.Script.ParametersById;
 		//				} }
-		[JsonIgnore]	public string ScriptParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+		[JsonIgnore]	public string								ScriptParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
 				if (this.Script == null) return null;
 				return this.Script.ScriptParametersByIdAsString;
 			} }
-		[JsonIgnore]	public string IndicatorParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+		[JsonIgnore]	public string								IndicatorParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
 				if (this.Script == null) return null;
 				return this.Script.IndicatorParametersAsString;
 			} }
-		[JsonProperty]	public string ScriptContextCurrentName;	// if you restrict SET, serializer won't be able to restore from JSON { get; private set; }
-		[JsonProperty]	public Dictionary<string, ContextScript> ScriptContextsByName;
-		[JsonIgnore]	public ContextScript ScriptContextCurrent { get {
+		[JsonProperty]	public string								ScriptContextCurrentName;	// if you restrict SET, serializer won't be able to restore from JSON { get; private set; }
+		[JsonProperty]	public Dictionary<string, ContextScript>	ScriptContextsByName;
+		[JsonIgnore]	public ContextScript						ScriptContextCurrent { get {
 				lock (this.ScriptContextCurrentName) {	// Monitor shouldn't care whether I change the variable that I use for exclusive access...
 				//v2 lock (this.scriptContextCurrentNameLock) {
 					if (this.ScriptContextsByName.ContainsKey(ScriptContextCurrentName) == false)  {
@@ -54,11 +55,13 @@ namespace Sq1.Core.StrategyBase {
 					return this.ScriptContextsByName[this.ScriptContextCurrentName];
 				}
 			} }
-		[JsonIgnore]	public ScriptCompiler ScriptCompiler;
+		[JsonIgnore]	public ScriptCompiler						ScriptCompiler;
 		// I_DONT_WANT_TO_BRING_CHART_SETTINGS_TO_CORE public ChartSettings ChartSettings;
-		[JsonProperty]	public LivesimBrokerSettings	LivesimBrokerSettings;
-		[JsonProperty]	public LivesimStreamingSettings	LivesimStreamginSettings;
-		
+		[JsonProperty]	public LivesimBrokerSettings				LivesimBrokerSettings;
+		[JsonProperty]	public LivesimStreamingSettings				LivesimStreamginSettings;
+		//v1 [JsonProperty]	public Dictionary<string, List<SystemPerformanceRestoreAble>>	OptimizationResultsByContextIdent;
+
+	
 		// programmer's constructor
 		public Strategy(string name) : this() {
 			this.Name = name;
@@ -66,14 +69,15 @@ namespace Sq1.Core.StrategyBase {
 		// deserializer's constructor
 		public Strategy() {
 			this.Guid = Guid.NewGuid();
-			this.ScriptContextCurrentName = ContextScript.DEFAULT_NAME;
-			this.ScriptContextsByName = new Dictionary<string, ContextScript>();
+			this.ScriptContextCurrentName			= ContextScript.DEFAULT_NAME;
+			this.ScriptContextsByName				= new Dictionary<string, ContextScript>();
 			this.ScriptContextsByName.Add(this.ScriptContextCurrentName, new ContextScript(this.ScriptContextCurrentName));
-			this.ScriptCompiler = new ScriptCompiler();
-			this.ExceptionsLimitToAbortBacktest = 10;
-			this.scriptContextCurrentNameLock = new object();
-			this.LivesimBrokerSettings		= new LivesimBrokerSettings(this);
-			this.LivesimStreamginSettings	= new LivesimStreamingSettings(this);
+			this.ScriptCompiler						= new ScriptCompiler();
+			this.ExceptionsLimitToAbortBacktest 	= 10;
+			this.scriptContextCurrentNameLock		= new object();
+			this.LivesimBrokerSettings				= new LivesimBrokerSettings(this);
+			this.LivesimStreamginSettings			= new LivesimStreamingSettings(this);
+			//v1this.OptimizationResultsByContextIdent	= new Dictionary<string, List<SystemPerformanceRestoreAble>>();
 		}
 		public override string ToString() {
 			string ret = this.Name;
@@ -166,12 +170,15 @@ namespace Sq1.Core.StrategyBase {
 			}
 			try {
 				this.Script.AbsorbScriptAndIndicatorParametersFromSelfCloneConstructed();
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+				this.Serialize();
 				string msg = "Successfully reset ScriptContextCurrentName[" + this.ScriptContextCurrentName + "] for strategy[" + this + "]";
 				Assembler.DisplayStatus(msg);
 			} catch (Exception ex) {
 				Assembler.PopupException("ResetScriptAndIndicatorParametersToScriptDefaults()", ex);
 			}
+		}
+		public void Serialize() {
+			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 		}
 	}
 }

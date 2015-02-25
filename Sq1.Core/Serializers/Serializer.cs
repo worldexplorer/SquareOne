@@ -6,12 +6,12 @@ using Newtonsoft.Json;
 namespace Sq1.Core.Serializers {
 	// http://stackoverflow.com/questions/1727346/what-is-the-use-of-default-keyword-in-c
 	public class Serializer<T> where T : new() {
-		public string OfWhat { get { return typeof(T).Name; } }
+		public string OfWhat			{ get { return typeof(T).Name; } }
 		
-		public string RootPath { get; protected set; }
-		public string Subfolder { get; protected set; }
-		public string WorkspaceName { get; protected set; }
-		public string AbsPath { get {
+		public string RootPath			{ get; protected set; }
+		public string Subfolder			{ get; protected set; }
+		public string WorkspaceName		{ get; protected set; }
+		public string AbsPath			{ get {
 				//string ret = this.RootPath + this.Subfolder + this.WorkspaceName + Path.DirectorySeparatorChar;
 				string ret = this.RootPath;
 				if (String.IsNullOrEmpty(this.Subfolder) == false) {
@@ -23,9 +23,9 @@ namespace Sq1.Core.Serializers {
 				//if (ret.EndsWith(Path.DirectorySeparatorChar) == false) ret += Path.DirectorySeparatorChar;
 				return ret;
 			} }
-		public string FnameRelpath { get; protected set; }
-		public string JsonAbsFile { get { return Path.Combine(this.AbsPath, FnameRelpath); } }
-		public T Entity { get; protected set; }
+		public string FnameRelpath		{ get; protected set; }
+		public string JsonAbsFile		{ get { return Path.Combine(this.AbsPath, FnameRelpath); } }
+		public T Entity					{ get; protected set; }
 		public Action<T> ActionAfterDeserialized;
 
 		public Serializer() {

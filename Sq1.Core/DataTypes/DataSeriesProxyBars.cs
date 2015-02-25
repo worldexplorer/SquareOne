@@ -26,7 +26,7 @@ namespace Sq1.Core.DataTypes {
 		public override double this[int barIndex] {
 			get {
 				if (this.BarsBeingProxied == null) {
-					string msg = "PARANOID_KOZ_CTOR_BARS_PARAMETER_NOT_NULLABLE_BUT_THIS_HAPPENED!!!";
+					string msg = "CTOR_BARS_PARAMETER_WAS_NULL?";
 					Assembler.PopupException(msg);
 					return double.NaN;
 				}

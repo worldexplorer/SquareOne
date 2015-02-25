@@ -14,13 +14,14 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core {
 	public class Assembler {
-		public	RepositoryJsonDataSource				RepositoryJsonDataSource;
 		public	RepositorySerializerSymbolInfo			RepositorySymbolInfo;
 		public	RepositorySerializerMarketInfo			RepositoryMarketInfo;
+		public	RepositoryDllJsonStrategy				RepositoryDllJsonStrategy;
+		public	RepositoryJsonDataSource				RepositoryJsonDataSource;
+
 		public	RepositoryDllStreamingAdapter			RepositoryDllStreamingAdapter;
 		public	RepositoryDllBrokerAdapter				RepositoryDllBrokerAdapter;
 		public	RepositoryDllReporters					RepositoryDllReporters;
-		public	RepositoryDllJsonStrategy				RepositoryDllJsonStrategy;
 
 		public	RepositoryFoldersNoJson					WorkspacesRepository;
 		
@@ -118,22 +119,22 @@ namespace Sq1.Core {
 				Stopwatch								stopWatchIfProcessUnsupported;
 		
 		public Assembler() {
-			RepositorySymbolInfo			= new RepositorySerializerSymbolInfo();
-			RepositoryMarketInfo			= new RepositorySerializerMarketInfo();
-			RepositoryJsonDataSource		= new RepositoryJsonDataSource();
-			RepositoryDllJsonStrategy		= new RepositoryDllJsonStrategy();
+			RepositorySymbolInfo					= new RepositorySerializerSymbolInfo();
+			RepositoryMarketInfo					= new RepositorySerializerMarketInfo();
+			RepositoryDllJsonStrategy				= new RepositoryDllJsonStrategy();
+			RepositoryJsonDataSource				= new RepositoryJsonDataSource();
 
-			RepositoryDllStreamingAdapter	= new RepositoryDllStreamingAdapter();
-			RepositoryDllBrokerAdapter		= new RepositoryDllBrokerAdapter();
-			RepositoryDllReporters			= new RepositoryDllReporters();
+			RepositoryDllStreamingAdapter			= new RepositoryDllStreamingAdapter();
+			RepositoryDllBrokerAdapter				= new RepositoryDllBrokerAdapter();
+			RepositoryDllReporters					= new RepositoryDllReporters();
 			
-			WorkspacesRepository			= new RepositoryFoldersNoJson();
+			WorkspacesRepository					= new RepositoryFoldersNoJson();
 
-			OrderProcessor					= new OrderProcessor();
-			AlertsForChart					= new DictionaryManyToOne<ChartShadow, Alert>();
+			OrderProcessor							= new OrderProcessor();
+			AlertsForChart							= new DictionaryManyToOne<ChartShadow, Alert>();
 			
-			AssemblerDataSnapshot			= new AssemblerDataSnapshot();
-			AssemblerDataSnapshotSerializer	= new Serializer<AssemblerDataSnapshot>();
+			AssemblerDataSnapshot					= new AssemblerDataSnapshot();
+			AssemblerDataSnapshotSerializer			= new Serializer<AssemblerDataSnapshot>();			
 		}
 		public Assembler Initialize(IStatusReporter mainForm) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
@@ -156,7 +157,7 @@ namespace Sq1.Core {
 			this.RepositoryDllJsonStrategy		.Initialize(this.AppDataPath, this.AppStartupPath);
 
 			this.RepositoryDllStreamingAdapter	.InitializeAndScan(this.AppStartupPath);
-			this.RepositoryDllBrokerAdapter	.InitializeAndScan(this.AppStartupPath);
+			this.RepositoryDllBrokerAdapter		.InitializeAndScan(this.AppStartupPath);
 			this.RepositoryDllReporters			.InitializeAndScan(this.AppStartupPath);
 			
 			this.WorkspacesRepository			.Initialize(this.AppDataPath, "Workspaces", this.StatusReporter);
@@ -167,10 +168,9 @@ namespace Sq1.Core {
 			//v1 this.RepositoryJsonDataSource	.Initialize(this.AppDataPath);
 			//v1 this.RepositoryJsonDataSource	.DataSourcesDeserialize(this.MarketInfoRepository, this.OrderProcessor, this.StatusReporter);
 			
-			this.RepositoryJsonDataSource		.Initialize(this.AppDataPath, "DataSources",
-				this.StatusReporter, this.RepositoryMarketInfo, this.OrderProcessor);
+			this.RepositoryJsonDataSource		.Initialize(this.AppDataPath, "DataSources", this.RepositoryMarketInfo, this.OrderProcessor);
 			this.RepositoryJsonDataSource		.DeserializeJsonsInFolder();
-
+			
 			createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);
 			this.AssemblerDataSnapshot = this.AssemblerDataSnapshotSerializer.Deserialize();
 			

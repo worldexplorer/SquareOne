@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
+using Newtonsoft.Json;
 using Sq1.Core.Backtesting;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
+using Sq1.Core.Optimization;
 
 namespace Sq1.Core.StrategyBase {
 	public class ContextScript : ContextChart {
 		[JsonIgnore]	public const string DEFAULT_NAME = "Default";
 		
 		[JsonProperty]	public PositionSize					PositionSize;
-		[JsonProperty]	public Dictionary<int, ScriptParameter>				ScriptParametersById { get; set; }
-		[JsonProperty]	public Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName { get; set; }	//  { get; set; } is needed for Json.Deserialize to really deserialize it
+		[JsonProperty]	public Dictionary<int, ScriptParameter>					ScriptParametersById;
+		[JsonProperty]	public Dictionary<string, List<IndicatorParameter>>		IndicatorParametersByName;
 		
 		[JsonProperty]	public bool							IsCurrent;
 		[JsonProperty]	public bool							StrategyEmittingOrders;
@@ -72,62 +73,76 @@ namespace Sq1.Core.StrategyBase {
 			this.Name = name;
 		}
 		protected ContextScript() : base() {
-			PositionSize = new PositionSize(PositionSizeMode.SharesConstantEachTrade, 1);
-			ScriptParametersById = new Dictionary<int, ScriptParameter>();
-			IndicatorParametersByName = new Dictionary<string, List<IndicatorParameter>>();
+			PositionSize				= new PositionSize(PositionSizeMode.SharesConstantEachTrade, 1);
+			ScriptParametersById		= new Dictionary<int, ScriptParameter>();
+			IndicatorParametersByName	= new Dictionary<string, List<IndicatorParameter>>();
 			
-			IsCurrent = false;
-			StrategyEmittingOrders = false;
-			BacktestOnRestart = false;
-			BacktestOnSelectorsChange = true;
-			BacktestOnDataSourceSaved = true;
-			ReporterShortNamesUserInvokedJSONcheck = new List<string>();
-			ReportersSnapshots = new Dictionary<string, object>();
+			IsCurrent					= false;
+			StrategyEmittingOrders		= false;
+			BacktestOnRestart			= false;
+			BacktestOnSelectorsChange	= true;
+			BacktestOnDataSourceSaved	= true;
 			
-			ApplyCommission = false;
-			EnableSlippage = false;
-			LimitOrderSlippage = false;
-			RoundEquityLots = false;
-			RoundEquityLotsToUpperHundred = false;
-			SlippageTicks = 1;
-			SlippageUnits = 1.0;
+			ReporterShortNamesUserInvokedJSONcheck	= new List<string>();
+			ReportersSnapshots						= new Dictionary<string, object>();
+			
+			ApplyCommission					= false;
+			EnableSlippage					= false;
+			LimitOrderSlippage				= false;
+			RoundEquityLots					= false;
+			RoundEquityLotsToUpperHundred	= false;
+			SlippageTicks					= 1;
+			SlippageUnits					= 1.0;
 
 			FillOutsideQuoteSpreadParanoidCheckThrow = false;
-			SpreadModelerClassName = typeof(BacktestSpreadModelerPercentage).Name;
-			SpreadModelerPercent = BacktestStreaming.PERCENTAGE_DEFAULT;
-			BacktestMode = BacktestMode.FourStrokeOHLC;
+			SpreadModelerClassName		= typeof(BacktestSpreadModelerPercentage).Name;
+			SpreadModelerPercent		= BacktestStreaming.PERCENTAGE_DEFAULT;
+			BacktestMode				= BacktestMode.FourStrokeOHLC;
+		}
+		
+		public ContextScript CloneAndAbsorbFromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized) {
+			Assembler.PopupException("TESTME //CloneAndAbsorbFromSystemPerformanceRestoreAble()");
+			ContextScript clone = this.MemberwiseCloneMadePublic();
+			clone.AbsorbScriptAndIndicatorParamsOnlyFrom(
+				sysPerfOptimized.ScriptParametersById_BuiltOnBacktestFinished,
+				sysPerfOptimized.IndicatorParametersByName_BuiltOnBacktestFinished);
+			return clone;
+		}
+		public void AbsorbScriptAndIndicatorParamsOnlyFrom(
+					Dictionary<int, ScriptParameter>				scriptParametersById,
+					Dictionary<string, List<IndicatorParameter>>	indicatorParametersByName) {
+			this.ScriptParametersById			= scriptParametersById;
+			this.IndicatorParametersByName		= indicatorParametersByName;
+			this.CloneReferenceTypes(false);
 		}
 		public void AbsorbFrom(ContextScript found, bool absorbScriptAndIndicatorParams = true) {
 			if (found == null) return;
 			//KEEP_CLONE_UNDEFINED this.Name = found.Name;
-//			this.Symbol = found.Symbol;
-//			this.DataSourceName = found.DataSourceName;
-//			this.ScaleInterval = found.ScaleInterval.Clone();
-//			this.DataRange = found.DataRange.Clone();
-//			this.ChartStreaming = found.ChartStreaming;
-//			this.ShowRangeBar = found.ShowRangeBar;
 			base.AbsorbFrom(found);
 			
 			this.PositionSize = found.PositionSize.Clone();
 			if (absorbScriptAndIndicatorParams) {
-				//this.ScriptParametersById = new Dictionary<int, ScriptParameter>(found.ScriptParametersById);
-				//this.IndicatorParametersByName = new Dictionary<string, List<IndicatorParameter>>(found.IndicatorParametersByName);
-				this.ScriptParametersById = found.ScriptParametersById;
-				this.IndicatorParametersByName = found.IndicatorParametersByName;
-				this.CloneReferenceTypes(false);
+				//v1
+				//this.ScriptParametersById					= new Dictionary<int, ScriptParameter>(found.ScriptParametersById);
+				//this.IndicatorParametersByName			= new Dictionary<string, List<IndicatorParameter>>(found.IndicatorParametersByName);
+				//v2
+				//this.ScriptParametersById					= found.ScriptParametersById;
+				//this.IndicatorParametersByName			= found.IndicatorParametersByName;
+				//this.CloneReferenceTypes(false);
+				this.AbsorbScriptAndIndicatorParamsOnlyFrom(found.ScriptParametersById, found.IndicatorParametersByName);
 			}
 			
 			//some of these guys can easily be absorbed by object.MemberwiseClone(), why do I prefer to maintain the growing list manually?... 
-			//this.ChartBarSpacing = found.ChartBarSpacing;
-			this.StrategyEmittingOrders = found.StrategyEmittingOrders;
-			this.BacktestOnRestart = found.BacktestOnRestart;
-			this.BacktestOnSelectorsChange = found.BacktestOnSelectorsChange;
-			this.BacktestOnDataSourceSaved = found.BacktestOnDataSourceSaved;
-			this.ReporterShortNamesUserInvokedJSONcheck = new List<string>(found.ReporterShortNamesUserInvokedJSONcheck);
-			this.FillOutsideQuoteSpreadParanoidCheckThrow = found.FillOutsideQuoteSpreadParanoidCheckThrow;
-			this.BacktestMode = found.BacktestMode;
-			this.SpreadModelerClassName = found.SpreadModelerClassName;
-			this.SpreadModelerPercent = found.SpreadModelerPercent;
+			//this.ChartBarSpacing							= found.ChartBarSpacing;
+			this.StrategyEmittingOrders						= found.StrategyEmittingOrders;
+			this.BacktestOnRestart							= found.BacktestOnRestart;
+			this.BacktestOnSelectorsChange					= found.BacktestOnSelectorsChange;
+			this.BacktestOnDataSourceSaved					= found.BacktestOnDataSourceSaved;
+			this.ReporterShortNamesUserInvokedJSONcheck		= new List<string>(found.ReporterShortNamesUserInvokedJSONcheck);
+			this.FillOutsideQuoteSpreadParanoidCheckThrow	= found.FillOutsideQuoteSpreadParanoidCheckThrow;
+			this.BacktestMode								= found.BacktestMode;
+			this.SpreadModelerClassName						= found.SpreadModelerClassName;
+			this.SpreadModelerPercent						= found.SpreadModelerPercent;
 		}
 		public new ContextScript MemberwiseCloneMadePublic() {
 			return (ContextScript)base.MemberwiseClone();
@@ -172,7 +187,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return this.ReportersSnapshots[reporterName];
 		}
-		public string ToStringEssentialsForScriptContextNewName() {
+		public string ToStringSymbolScaleIntervalDataRangeForScriptContextNewName() {
 			string ret = this.Symbol + " " + this.ScaleInterval + " " + this.DataRange;
 			return ret;
 		}

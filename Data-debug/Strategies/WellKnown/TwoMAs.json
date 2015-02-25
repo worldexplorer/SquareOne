@@ -7,7 +7,7 @@
   "DllPathIfNoSourceCode": null,
   "ExceptionsLimitToAbortBacktest": 10,
   "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json",
-  "ScriptContextCurrentName": "Default",
+  "ScriptContextCurrentName": "Net[-1018] PF[0.72] RF[0.46]",
   "ScriptContextsByName": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
     "Default": {
@@ -18,13 +18,45 @@
         "DollarsConstantEachTrade": 0.0,
         "SharesConstantEachTrade": 1.0
       },
+      "ScriptParametersById": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+      },
+      "IndicatorParametersByName": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+        "MAslow": [
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "Name": "Period",
+            "ValueMin": 10.0,
+            "ValueMax": 20.0,
+            "ValueIncrement": 2.0,
+            "ValueCurrent": 14.0,
+            "BorderShown": false,
+            "NumericUpdownShown": true,
+            "ValuesAsString": "14[10..20/2]"
+          }
+        ],
+        "MAfast": [
+          {
+            "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+            "Name": "Period",
+            "ValueMin": 11.0,
+            "ValueMax": 33.0,
+            "ValueIncrement": 3.0,
+            "ValueCurrent": 32.0,
+            "BorderShown": false,
+            "NumericUpdownShown": true,
+            "ValuesAsString": "32[11..33/3]"
+          }
+        ]
+      },
       "IsCurrent": false,
       "StrategyEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [
         "Positions",
         "Performance"
       ],
-      "BacktestOnRestart": false,
+      "BacktestOnRestart": true,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
@@ -65,12 +97,21 @@
         "Range": 1,
         "DateFrom": "0001-01-01T00:00:00",
         "DateTill": "9999-12-31T23:59:59.9999999",
-        "RecentBars": 9999,
+        "RecentBars": 500,
         "RecentTimeunits": 0
       },
       "IsStreamingTriggeringScript": false,
       "ShowRangeBar": false,
-      "IsStreaming": false,
+      "IsStreaming": false
+    },
+    "Net[-1018] PF[0.72] RF[0.46]": {
+      "$type": "Sq1.Core.StrategyBase.ContextScript, Sq1.Core",
+      "PositionSize": {
+        "$type": "Sq1.Core.Execution.PositionSize, Sq1.Core",
+        "Mode": 1,
+        "DollarsConstantEachTrade": 0.0,
+        "SharesConstantEachTrade": 1.0
+      },
       "ScriptParametersById": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
       },
@@ -83,9 +124,10 @@
             "ValueMin": 10.0,
             "ValueMax": 20.0,
             "ValueIncrement": 2.0,
-            "ValueCurrent": 14.0,
+            "ValueCurrent": 12.0,
             "BorderShown": false,
             "NumericUpdownShown": true,
+            "ValuesAsString": "12[10..20/2]"
           }
         ],
         "MAfast": [
@@ -95,12 +137,60 @@
             "ValueMin": 11.0,
             "ValueMax": 33.0,
             "ValueIncrement": 3.0,
-            "ValueCurrent": 32.0,
+            "ValueCurrent": 11.0,
             "BorderShown": false,
             "NumericUpdownShown": true,
+            "ValuesAsString": "11[11..33/3]"
           }
         ]
-      }
+      },
+      "IsCurrent": true,
+      "StrategyEmittingOrders": false,
+      "ReporterShortNamesUserInvokedJSONcheck": [
+        "Positions",
+        "Performance"
+      ],
+      "BacktestOnRestart": false,
+      "BacktestOnSelectorsChange": true,
+      "BacktestOnDataSourceSaved": true,
+      "ReportersSnapshots": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
+      },
+      "ApplyCommission": false,
+      "EnableSlippage": false,
+      "LimitOrderSlippage": false,
+      "RoundEquityLots": false,
+      "RoundEquityLotsToUpperHundred": false,
+      "NoDecimalRoundingForLimitStopPrice": false,
+      "SlippageUnits": 1.0,
+      "SlippageTicks": 1,
+      "PriceLevelSizeForBonds": 0,
+      "FillOutsideQuoteSpreadParanoidCheckThrow": false,
+      "SpreadModelerClassName": "BacktestSpreadModelerPercentage",
+      "SpreadModelerPercent": 0.005,
+      "BacktestMode": 4,
+      "Name": "Net[-1018] PF[0.72] RF[0.46]",
+      "Symbol": "RIM3",
+      "DataSourceName": "MOCK",
+      "ScaleInterval": {
+        "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+        "Scale": 3,
+        "Interval": 10,
+        "IsIntraday": true,
+        "AsTimeSpanInSeconds": 600,
+        "AsTimeSpan": "00:10:00"
+      },
+      "DataRange": {
+        "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
+        "Range": 1,
+        "DateFrom": "0001-01-01T00:00:00",
+        "DateTill": "9999-12-31T23:59:59.9999999",
+        "RecentBars": 1500,
+        "RecentTimeunits": 0
+      },
+      "IsStreamingTriggeringScript": false,
+      "ShowRangeBar": false,
+      "IsStreaming": true
     }
   },
   "LivesimBrokerSettings": {

@@ -8,6 +8,7 @@ using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
+using Sq1.Core.Optimization;
 
 namespace Sq1.Core.StrategyBase {
 	public abstract partial class Script {
@@ -119,7 +120,7 @@ namespace Sq1.Core.StrategyBase {
 					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+				this.Strategy.Serialize();
 			}
 		}
 		#endregion
@@ -261,7 +262,7 @@ namespace Sq1.Core.StrategyBase {
 				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartConditionalHostPanelForIndicatorGet(indicatorInstance);
 				indicatorInstance.Initialize(priceOrItsOwnPanel);
 			}
-			if (strategySaveRequired) Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+			if (strategySaveRequired) this.Strategy.Serialize();
 		}
 		#endregion
 

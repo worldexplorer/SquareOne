@@ -4,30 +4,31 @@ using System.Diagnostics;
 
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Optimization;
 
-namespace Sq1.Core.Backtesting {
+namespace Sq1.Core.Optimization {
 	public class Optimizer {
 		public static string OPTIMIZATION_CONTEXT_PREFIX = "OptimizationIteration";
 
-		ScriptExecutor executor;
-		OptimizerParametersSequencer parametersSequencer;
+		public	ScriptExecutor												Executor { get; private set; }
+				OptimizerParametersSequencer								parametersSequencer;
 
-		public event EventHandler<EventArgs>					OnBacktestStarted;
+		public event EventHandler<EventArgs>								OnOneBacktestStarted;
 		// since Optimizer.backtests is multithreaded list, I imply OptimizerControl.backtests to keep its own copy for ObjectListView to freely crawl over it without interference (instead of providing Optimizer.BacktestsThreadSafeCopy)  
-		public event EventHandler<SystemPerformanceEventArgs>	OnBacktestFinished;
-		public event EventHandler<EventArgs>					OnOptimizationComplete;
-		public event EventHandler<EventArgs>					OnOptimizationAborted;
+		public event EventHandler<SystemPerformanceRestoreAbleEventArgs>	OnOneBacktestFinished;
+		public event EventHandler<EventArgs>								OnAllBacktestsFinished;
+		public event EventHandler<EventArgs>								OnOptimizationAborted;
 		
-		public string DataRangeAsString { get { return executor.Strategy.ScriptContextCurrent.DataRange.ToString(); } }
-		public string PositionSizeAsString { get { return executor.Strategy.ScriptContextCurrent.PositionSize.ToString(); } }
+		public string DataRangeAsString { get { return Executor.Strategy.ScriptContextCurrent.DataRange.ToString(); } }
+		public string PositionSizeAsString { get { return Executor.Strategy.ScriptContextCurrent.PositionSize.ToString(); } }
 		public string StrategyAsString { get {
-				return executor.Strategy.Name
+				return Executor.Strategy.Name
 					//+ "   " + executor.Strategy.ScriptParametersAsStringByIdJSONcheck
 					//+ executor.Strategy.IndicatorParametersAsStringByIdJSONcheck
 				;
 			} }
 		public string SymbolScaleIntervalAsString { get {
-				ContextScript ctx = this.executor.Strategy.ScriptContextCurrent;
+				ContextScript ctx = this.Executor.Strategy.ScriptContextCurrent;
 				return ctx.DataSourceName
 					+ " :: " + ctx.Symbol
 					+ " [" + ctx.ScaleInterval.ToString() + "]";
@@ -35,7 +36,7 @@ namespace Sq1.Core.Backtesting {
 		
 		public int ScriptParametersTotalNr { get {
 				int ret = 0;
-				foreach (ScriptParameter sp in executor.Strategy.Script.ScriptParametersById.Values) {
+				foreach (ScriptParameter sp in Executor.Strategy.Script.ScriptParametersById.Values) {
 					if (sp.NumberOfRuns == 0) continue;
 					if (ret == 0) ret = 1;
 					ret *= sp.NumberOfRuns;
@@ -46,14 +47,14 @@ namespace Sq1.Core.Backtesting {
 		public int IndicatorParameterTotalNr { get {
 				int ret = 0;
 				//foreach (Indicator i in executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {	//looks empty on Deserialization
-				foreach (IndicatorParameter ip in executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+				foreach (IndicatorParameter ip in Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
 					if (ip.NumberOfRuns == 0) continue;
 					if (ret == 0) ret = 1;
 					ret *= ip.NumberOfRuns;
 				}
 				return ret;
 			} }
-		public SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParametersMergedByName { get { return this.executor.Strategy.ScriptContextCurrent.ParametersMergedByName; } }
+		public SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParametersMergedByName { get { return this.Executor.Strategy.ScriptContextCurrent.ParametersMergedByName; } }
 
 		public int BacktestsTotal;
 		public int BacktestsRemaining { get { return this.BacktestsTotal - this.BacktestsCompleted; } }
@@ -101,7 +102,7 @@ namespace Sq1.Core.Backtesting {
 		}
 		
 		public Optimizer(ScriptExecutor executor) {
-			this.executor = executor;
+			this.Executor = executor;
 			backtests = new List<SystemPerformance>();
 			executorsRunning = new List<ScriptExecutor>();
 			backtestsLock = new object();
@@ -117,25 +118,25 @@ namespace Sq1.Core.Backtesting {
 		public void Initialize() {
 			//this.BacktestsRemaining = -1;
 			this.InitializedProperly = false;
-			if (this.executor.Strategy == null) {
+			if (this.Executor.Strategy == null) {
 				string msg = "Optimizer.executor.Strategy == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.executor.Strategy.Script == null) {
+			if (this.Executor.Strategy.Script == null) {
 				string msg = "Optimizer.executor.Strategy.Script == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.executor.Strategy.Script.ScriptParametersById == null) {
+			if (this.Executor.Strategy.Script.ScriptParametersById == null) {
 				string msg = "Optimizer.executor.Strategy.Script.ParametersById == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.ParametersById = this.executor.Strategy.Script.ScriptParametersById;
+			this.ParametersById = this.Executor.Strategy.Script.ScriptParametersById;
 
 
-			if (this.executor.ExecutionDataSnapshot == null) {
+			if (this.Executor.ExecutionDataSnapshot == null) {
 				string msg = "Optimizer.executor.ExecutionDataSnapshot == null";
 				Assembler.PopupException(msg);
 				return;
@@ -145,12 +146,12 @@ namespace Sq1.Core.Backtesting {
 //				Assembler.PopupException(msg);
 //				return;
 //			}
-			if (this.executor.Strategy.ScriptContextCurrent.IndicatorParametersByName == null) {
+			if (this.Executor.Strategy.ScriptContextCurrent.IndicatorParametersByName == null) {
 				string msg = "Optimizer.executor.Strategy.ScriptContextCurrent.IndicatorParametersByName == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders = this.executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
+			this.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders = this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
 			this.InitializedProperly = true;
 
 			int scriptParametersTotalNr = this.ScriptParametersTotalNr;
@@ -184,7 +185,7 @@ namespace Sq1.Core.Backtesting {
 			this.RaiseOnOptimizationAborted();
 		}
 		public int OptimizationRun() {
-			this.parametersSequencer = new OptimizerParametersSequencer(this.executor.Strategy.ScriptContextCurrent);
+			this.parametersSequencer = new OptimizerParametersSequencer(this.Executor.Strategy.ScriptContextCurrent);
 			this.BacktestsCompleted = 0;
 			this.BacktestsScheduled = 0;
 			lock(this.backtestsLock) {
@@ -199,7 +200,7 @@ namespace Sq1.Core.Backtesting {
 					ContextScript ctxNext = (i == 0)
 						? this.parametersSequencer.GetFirstScriptContext(ctxName)
 						: this.parametersSequencer.GetNextScriptContextSequenced(ctxName);
-					ScriptExecutor ex = this.executor.CloneForOptimizer(ctxNext);
+					ScriptExecutor ex = this.Executor.CloneForOptimizer(ctxNext);
 					this.executorsRunning.Add(ex);
 					ex.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
 					this.BacktestsScheduled++;
@@ -220,7 +221,7 @@ namespace Sq1.Core.Backtesting {
 			if (executorCompletePooled == null) {
 				string msg = "CAN_NOT_BE_NULL_executorCompletePooled";
 				Assembler.PopupException(msg + msig);
-				executorCompletePooled = this.executor;
+				executorCompletePooled = this.Executor;
 			}
 			msig = executorCompletePooled.ToStringWithCurrentParameters() + msig;
 			string msg2 = " ANOTHER_IN_SEQUENCE_executorCompletePooled";
@@ -250,7 +251,7 @@ namespace Sq1.Core.Backtesting {
 							if (this.AbortedDontScheduleNewBacktests) break;
 							string ctxName1 = OPTIMIZATION_CONTEXT_PREFIX + " " + (this.BacktestsScheduled + 1 + i) + "/" + this.BacktestsTotal;
 							ContextScript ctxNext1 = this.parametersSequencer.GetNextScriptContextSequenced(ctxName1);
-							ScriptExecutor ex1 = this.executor.CloneForOptimizer(ctxNext1);
+							ScriptExecutor ex1 = this.Executor.CloneForOptimizer(ctxNext1);
 							this.executorsRunning.Add(ex1);
 							this.BacktestsScheduled++;
 							ex1.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
@@ -276,7 +277,7 @@ namespace Sq1.Core.Backtesting {
 					//v2 
 					//WENT_UP this.executorsRunning.Remove(executorCompletePooled);
 					ContextScript ctxNext = this.parametersSequencer.GetNextScriptContextSequenced(ctxName);
-					ScriptExecutor ex = this.executor.CloneForOptimizer(ctxNext);
+					ScriptExecutor ex = this.Executor.CloneForOptimizer(ctxNext);
 					this.executorsRunning.Add(ex);
 					this.BacktestsScheduled++;
 					ex.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
@@ -284,47 +285,48 @@ namespace Sq1.Core.Backtesting {
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
-				this.RaiseOnBacktestFinished(executorCompletePooled.Performance);
+				this.RaiseOnOneBacktestFinished(executorCompletePooled.Performance);
 				if (this.BacktestsCompleted >= this.BacktestsTotal) {
 					if (this.executorsRunning.Count > 0) {
 						string msg = "FYI AFTER_OPTIMIZATION_ITERATION_FINISHED_YOU_STILL_HAVE_MORE_EXECUTORS_RUNNING " + this.executorsRunning.Count;
 						Assembler.PopupException(msg);
 					}
-					this.RaiseOnOptimizationComplete();
+					this.RaiseOnAllBacktestsFinished();
 				}
 			}
 		}
 		public void RaiseOnBacktestStarted() {
 			if (this.AbortedDontScheduleNewBacktests) return;
-			if (this.OnBacktestStarted == null) {
+			if (this.OnOneBacktestStarted == null) {
 				string msg = "OPTIMIZER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_BACKTEST_STARTED";
 				//SETTING_COLLAPSED_FROM_BTN_RUN_CLICK  Assembler.PopupException(msg);
 				return;
 			}
 			try {
-				this.OnBacktestStarted(this, EventArgs.Empty);
+				this.OnOneBacktestStarted(this, EventArgs.Empty);
 			} catch (Exception ex) {
 				string msg = "OPTIMIZER_CONTROL_THREW_ON_BACKTEST_STARTED";
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		public void RaiseOnBacktestFinished(SystemPerformance clone) {
+		public void RaiseOnOneBacktestFinished(SystemPerformance sysPerf) {
 			if (this.AbortedDontScheduleNewBacktests) return;
-			if (this.OnBacktestFinished == null) {
+			if (this.OnOneBacktestFinished == null) {
 				string msg = "OPTIMIZER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_BACKTEST_COMPLETED";
 				Assembler.PopupException(msg);
 				return;
 			}
 			try {
 				this.BacktestsSecondsElapsed = (float) Math.Round(stopWatch.ElapsedMilliseconds / 1000d, 1);
-				this.OnBacktestFinished(this, new SystemPerformanceEventArgs(clone));
+				SystemPerformanceRestoreAble performanceEssence = new SystemPerformanceRestoreAble(sysPerf);
+				this.OnOneBacktestFinished(this, new SystemPerformanceRestoreAbleEventArgs(performanceEssence));
 			} catch (Exception ex) {
 				string msg = "OPTIMIZER_CONTROL_THREW_ON_BACKTEST_COMPLETE";
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		public void RaiseOnOptimizationComplete() {
-			if (this.OnBacktestFinished == null) {
+		public void RaiseOnAllBacktestsFinished() {
+			if (this.OnAllBacktestsFinished == null) {
 				string msg = "OPTIMIZER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_OPTIMIZATION_COMPLETE";
 				Assembler.PopupException(msg);
 				return;
@@ -332,7 +334,7 @@ namespace Sq1.Core.Backtesting {
 			try {
 				stopWatch.Stop();
 				this.BacktestsSecondsElapsed = (float) Math.Round(stopWatch.ElapsedMilliseconds / 1000d, 1);
-				this.OnOptimizationComplete(this, EventArgs.Empty);
+				this.OnAllBacktestsFinished(this, EventArgs.Empty);
 			} catch (Exception ex) {
 				string msg = "OPTIMIZER_CONTROL_THREW_ON_OPTIMIZATION_COMPLETE";
 				Assembler.PopupException(msg, ex);

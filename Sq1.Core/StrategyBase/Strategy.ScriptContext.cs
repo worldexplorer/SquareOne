@@ -1,7 +1,7 @@
 using System;
-
 using Newtonsoft.Json;
-using Sq1.Core.Backtesting;
+
+using Sq1.Core.Optimization;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class Strategy {
@@ -27,14 +27,14 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 		}
-		public ContextScript ContextAppendHardcopyFromCurrentToNamed(string scriptContextNameNew) {
-			this.checkThrowContextNameShouldNotExist(scriptContextNameNew);
-			ContextScript clone = this.ScriptContextCurrent.MemberwiseCloneMadePublic();
-			clone.Name = scriptContextNameNew;
-			this.ScriptContextsByName.Add(clone.Name, clone);
-			this.ContextMarkCurrentInListByName(scriptContextNameNew);
-			return clone;
-		}
+		//public ContextScript ContextAppendHardcopyFromCurrentToNamed(string scriptContextNameNew) {
+		//	this.checkThrowContextNameShouldNotExist(scriptContextNameNew);
+		//	ContextScript clone = this.ScriptContextCurrent.MemberwiseCloneMadePublic();
+		//	clone.Name = scriptContextNameNew;
+		//	this.ScriptContextsByName.Add(clone.Name, clone);
+		//	this.ContextMarkCurrentInListByName(scriptContextNameNew);
+		//	return clone;
+		//}
 		public void ContextSwitchCurrentToNamedAndSerialize(string scriptContextName, bool shouldSave = true) {
 			lock (this.ScriptContextCurrentName) {	// Monitor shouldn't care whether I change the variable that I use for exclusive access...
 			//v2 lock (this.scriptContextCurrentNameLock) {
@@ -43,7 +43,7 @@ namespace Sq1.Core.StrategyBase {
 				this.ScriptContextCurrentName = found.Name;
 			}
 			if (shouldSave) {
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+				this.Serialize();
 			}
 			this.ContextMarkCurrentInListByName(scriptContextName);
 			if (this.Script != null) {
@@ -84,7 +84,7 @@ namespace Sq1.Core.StrategyBase {
 			if (dontSaveWeOptimize) {
 				return;
 			}
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+			this.Serialize();
 			string msg2 = "scriptContextName[" + newScriptContextName + "] added for strategy[" + this + "]";
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg2);
 		}
@@ -104,7 +104,7 @@ namespace Sq1.Core.StrategyBase {
 				//e.Cancel = true;
 			}
 			this.ScriptContextsByName.Remove(scriptContextName);
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+			this.Serialize();
 			string msg2 = "scriptContextName[" + scriptContextName + "] deleted for strategy[" + this + "]";
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg2);
 		}
@@ -134,7 +134,7 @@ namespace Sq1.Core.StrategyBase {
 				msig = "Successfully renamed scriptContextName[" + oldName + "]=>[" + scriptContextNewName + "] for strategy[" + this + "]";
 			}
 			
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+			this.Serialize();
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msig);
 		}
 	}

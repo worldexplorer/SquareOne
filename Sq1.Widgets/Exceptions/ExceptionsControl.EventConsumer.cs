@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 using Sq1.Core;

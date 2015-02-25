@@ -98,7 +98,7 @@ namespace Sq1.Widgets.Exceptions {
 		}
 		public void InsertExceptionBlocking(Exception exception) { lock (this.lockedByTreeListView) {
 			if (exception == null) {
-				string msg = "NON_NULLABLE_MUST_GUARANTEE_ITS_NOT_NULL SO_I_DONT_NEED_THIS_CHECK_RIGHT?";
+				string msg = "DONT_INVOKE_ME_WITH_NULL";
 				Assembler.PopupException(msg);
 				return;
 			}

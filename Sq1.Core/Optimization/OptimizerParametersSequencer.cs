@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
-namespace Sq1.Core.Backtesting {
+namespace Sq1.Core.Optimization {
 	public class OptimizerParametersSequencer {
 		public ContextScript ContextScriptIterated;
 		object getNextLock;

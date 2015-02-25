@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 using BrightIdeasSoftware;
 using Sq1.Core.Indicators;
-using Sq1.Core.StrategyBase;
+using Sq1.Core.Optimization;
+using Sq1.Core.Repositories;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl {
@@ -11,13 +13,13 @@ namespace Sq1.Widgets.Optimization {
 		Color colorBackgroundGreen;
 		
 		void olvBacktests_FormatRow(object sender, FormatRowEventArgs e) {
-			SystemPerformance systemPerformance = e.Model as SystemPerformance;
-			if (systemPerformance == null) return;
-			e.Item.BackColor = (systemPerformance.SlicesShortAndLong.NetProfitForClosedPositionsBoth > 0.0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			SystemPerformanceRestoreAble systemPerformanceRestoreAble = e.Model as SystemPerformanceRestoreAble;
+			if (systemPerformanceRestoreAble == null) return;
+			e.Item.BackColor = (systemPerformanceRestoreAble.NetProfitForClosedPositionsBoth > 0.0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			//if (value == ethalonRedIfLessBlueIfGreater) return this.ForeColor;
 			//return (value > ethalonRedIfLessBlueIfGreater) ? Color.Blue : Color.Red;
 		}
-		void objectListViewCustomizeColors() {
+		void olvBacktestsCustomizeColors() {
 			//if (this.snap.Colorify) {
 				this.colorBackgroundRed = Color.FromArgb(255, 230, 230);
 				this.colorBackgroundGreen = Color.FromArgb(230, 255, 230);
@@ -28,66 +30,57 @@ namespace Sq1.Widgets.Optimization {
 			//	this.olvPositions.FormatRow -= new EventHandler<FormatRowEventArgs>(olvPositions_FormatRow);
 			//}
 		}
-		void objectListViewCustomize() {
-			this.objectListViewCustomizeColors();
+		void olvBacktestsCustomize() {
+			this.olvBacktestsCustomizeColors();
 			this.olvcSerno.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcSerno.AspectGetter: systemPerformance=null";
-				return (this.backtests.IndexOf(systemPerformance) + 1).ToString();
+				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				if (systemPerformanceRestoreAble == null) return "olvcSerno.AspectGetter: SystemPerformanceRestoreAble=null";
+				return (this.backtests.IndexOf(systemPerformanceRestoreAble) + 1).ToString();
 			};
 			this.olvcNetProfit.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcNetProfit.AspectGetter: systemPerformance=null";
-				string format = systemPerformance.Bars.SymbolInfo.FormatPrice;
-				return systemPerformance.SlicesShortAndLong.NetProfitForClosedPositionsBoth.ToString(format);
+				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				if (systemPerformanceRestoreAble == null) return "olvcNetProfit.AspectGetter: SystemPerformanceRestoreAble=null";
+				return systemPerformanceRestoreAble.NetProfitForClosedPositionsBothFormatted;
 			};
 			this.olvcTotalTrades.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcTotalTrades.AspectGetter: systemPerformance=null";
-				return systemPerformance.SlicesShortAndLong.PositionsCountBoth.ToString();
+				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				if (systemPerformanceRestoreAble == null) return "olvcTotalTrades.AspectGetter: SystemPerformanceRestoreAble=null";
+				return systemPerformanceRestoreAble.PositionsCountBothFormatted;
 			};
 			this.olvcAverageProfit.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcAverageProfit.AspectGetter: systemPerformance=null";
-				string format = systemPerformance.Bars.SymbolInfo.FormatPrice;
-				return systemPerformance.SlicesShortAndLong.AvgProfitBoth.ToString(format);
-			};
-			this.olvcNetProfit.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcNetProfit.AspectGetter: systemPerformance=null";
-				string format = systemPerformance.Bars.SymbolInfo.FormatPrice;
-				return systemPerformance.SlicesShortAndLong.NetProfitForClosedPositionsBoth.ToString(format);
+				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				if (systemPerformanceRestoreAble == null) return "olvcAverageProfit.AspectGetter: SystemPerformanceRestoreAble=null";
+				return systemPerformanceRestoreAble.AvgProfitBothFormatted;
 			};
 			this.olvcWinLoss.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcWinLoss.AspectGetter: systemPerformance=null";
-				return systemPerformance.SlicesShortAndLong.WinLossRatio.ToString();
+				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				if (systemPerformanceRestoreAble == null) return "olvcWinLoss.AspectGetter: SystemPerformanceRestoreAble=null";
+				return systemPerformanceRestoreAble.WinLossRatioFormatted;
 			};
 			this.olvcProfitFactor.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcProfitFactor.AspectGetter: systemPerformance=null";
-				return systemPerformance.SlicesShortAndLong.ProfitFactor.ToString();
+				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				if (systemPerformanceRestoreAble == null) return "olvcProfitFactor.AspectGetter: SystemPerformanceRestoreAble=null";
+				return systemPerformanceRestoreAble.ProfitFactorFormatted;
 			};
 			this.olvcRecoveryFactor.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcRecoveryFactor.AspectGetter: systemPerformance=null";
-				return systemPerformance.SlicesShortAndLong.RecoveryFactor.ToString();
+				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				if (systemPerformanceRestoreAble == null) return "olvcRecoveryFactor.AspectGetter: SystemPerformanceRestoreAble=null";
+				return systemPerformanceRestoreAble.RecoveryFactorFormatted;
 			};
 			this.olvcMaxDrawdown.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcMaxDrawdown.AspectGetter: systemPerformance=null";
-				string format = systemPerformance.Bars.SymbolInfo.FormatPrice;
-				return systemPerformance.SlicesShortAndLong.MaxDrawDown.ToString(format);
+				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				if (systemPerformanceRestoreAble == null) return "olvcMaxDrawdown.AspectGetter: SystemPerformanceRestoreAble=null";
+				return systemPerformanceRestoreAble.MaxDrawDownFormatted;
 			};
 			this.olvcMaxConsecutiveWinners.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcMaxConsecutiveWinners.AspectGetter: systemPerformance=null";
-				return systemPerformance.SlicesShortAndLong.MaxConsecWinners.ToString();
+				SystemPerformanceRestoreAble SystemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				if (SystemPerformanceRestoreAble == null) return "olvcMaxConsecutiveWinners.AspectGetter: SystemPerformanceRestoreAble=null";
+				return SystemPerformanceRestoreAble.MaxConsecWinnersFormatted;
 			};
 			this.olvcMaxConsecutiveLosers.AspectGetter = delegate(object o) {
-				SystemPerformance systemPerformance = o as SystemPerformance;
-				if (systemPerformance == null) return "olvcMaxConsecutiveLosers.AspectGetter: systemPerformance=null";
-				return systemPerformance.SlicesShortAndLong.MaxConsecLosers.ToString();
+				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				if (systemPerformanceRestoreAble == null) return "olvcMaxConsecutiveLosers.AspectGetter: SystemPerformanceRestoreAble=null";
+				return systemPerformanceRestoreAble.MaxConsecLosersFormatted;
 			};
 			
 			foreach (OLVColumn colDynParam in this.columnsDynParam) {
@@ -101,12 +94,12 @@ namespace Sq1.Widgets.Optimization {
 				//        //Debugger.Break();	// THIS_IS_WHY_I_HATE_LAMBDAS
 				//    }
 
-				//    SystemPerformance systemPerformance = o as SystemPerformance;
-				//    if (systemPerformance == null) return colDynParamNameStatic + ".AspectGetter: systemPerformance=null";
-				//    if (systemPerformance.ScriptAndIndicatorParameterClonesByName.ContainsKey(colDynParamNameStatic) == false) {
-				//        return colDynParamNameStatic + ".AspectGetter: !systemPerformance.ScriptAndIndicatorParametersByName[" + colDynParamNameStatic + "]";
+				//    SystemPerformanceRestoreAble SystemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				//    if (SystemPerformanceRestoreAble == null) return colDynParamNameStatic + ".AspectGetter: SystemPerformanceRestoreAble=null";
+				//    if (SystemPerformanceRestoreAble.ScriptAndIndicatorParameterClonesByName.ContainsKey(colDynParamNameStatic) == false) {
+				//        return colDynParamNameStatic + ".AspectGetter: !SystemPerformanceRestoreAble.ScriptAndIndicatorParametersByName[" + colDynParamNameStatic + "]";
 				//    }
-				//    IndicatorParameter param = systemPerformance.ScriptAndIndicatorParameterClonesByName[colDynParamNameStatic];
+				//    IndicatorParameter param = SystemPerformanceRestoreAble.ScriptAndIndicatorParameterClonesByName[colDynParamNameStatic];
 				//    return param.ValueCurrent.ToString();
 				//};
 				// v2: cool but it didn't help
@@ -114,6 +107,26 @@ namespace Sq1.Widgets.Optimization {
 				colDynParam.AspectGetter = (AspectGetterDelegate) individualDelgateForEachColumn.AspectGetterDelegateImplementor;
 			}
 		}
+		
+		
+		void olvHistoryCustomize() {
+			this.olvcHistoryDate.AspectGetter = delegate(object o) {
+				FnameDateSize fnameDateSize = o as FnameDateSize;
+				if (fnameDateSize == null) return "olvcHistoryDate.AspectGetter: fnameDateSize=null";
+				return fnameDateSize.DateSmart;
+			};
+			this.olvcHistorySymbolScaleRange.AspectGetter = delegate(object o) {
+				FnameDateSize fnameDateSize = o as FnameDateSize;
+				if (fnameDateSize == null) return "olvcHistorySymbolScaleRange.AspectGetter: fnameDateSize=null";
+				return fnameDateSize.Name;
+			};
+			this.olvcHistorySize.AspectGetter = delegate(object o) {
+				FnameDateSize fnameDateSize = o as FnameDateSize;
+				if (fnameDateSize == null) return "olvcHistorySize.AspectGetter: fnameDateSize=null";
+				return fnameDateSize.SizeMb;
+			};
+		}
+		
 	}
 	class AspectGetterDelegateWrapper {
 		string colDynParamName;
@@ -121,12 +134,12 @@ namespace Sq1.Widgets.Optimization {
 			this.colDynParamName = colDynParamName;
 		}
 		public string AspectGetterDelegateImplementor(object o) {
-			SystemPerformance systemPerformance = o as SystemPerformance;
-			if (systemPerformance == null) return colDynParamName + ".AspectGetter: systemPerformance=null";
-			if (systemPerformance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(colDynParamName) == false) {
-				return colDynParamName + ".AspectGetter: !systemPerformance.ScriptAndIndicatorParametersByName[" + colDynParamName + "]";
+			SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+			if (systemPerformanceRestoreAble == null) return colDynParamName + ".AspectGetter: SystemPerformanceRestoreAble=null";
+			if (systemPerformanceRestoreAble.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(colDynParamName) == false) {
+				return colDynParamName + ".AspectGetter: !SystemPerformanceRestoreAble.ScriptAndIndicatorParametersByName[" + colDynParamName + "]";
 			}
-			IndicatorParameter param = systemPerformance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished[colDynParamName];
+			IndicatorParameter param = systemPerformanceRestoreAble.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished[colDynParamName];
 			return param.ValueCurrent.ToString();
 		}
 	}

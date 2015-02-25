@@ -21,12 +21,15 @@ namespace Sq1.Core.StrategyBase {
 		public SystemPerformanceSlice		SliceLong			{ get; private set; }
 		public SystemPerformanceSlice		SliceShort			{ get; private set; }
 		public SystemPerformanceSlice		SliceBuyHold		{ get; private set; }
-		public SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
+		
+		public SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished		{ get; private set; }
+		public Dictionary<int, ScriptParameter>		ScriptParametersById_BuiltOnBacktestFinished								{ get; private set; }
+		public Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished					{ get; private set; }
 
-		public string						EssentialsForScriptContextNewName	{ get {
+		public string						NetProfitRecoveryForScriptContextNewName	{ get {
 				string netFormatted = Math.Round(this.SlicesShortAndLong.NetProfitForClosedPositionsBoth, 2).ToString();
 				if (this.Bars != null) netFormatted = this.Bars.FormatValue(this.SlicesShortAndLong.NetProfitForClosedPositionsBoth);
-				netFormatted.Replace(",", "");	// saving comma Net[4,072] will throw SPLITTER_COULDNT_RECOGNIZE_KEY and fail to restore ChartForm
+				netFormatted = netFormatted.Replace(",", "");	// saving comma Net[4,072] will throw SPLITTER_COULDNT_RECOGNIZE_KEY and fail to restore ChartForm
 				string ret = "Net[" + netFormatted +"]"
 					+ " PF[" + this.SlicesShortAndLong.ProfitFactor + "]"
 					+ " RF[" + this.SlicesShortAndLong.RecoveryFactor + "]";
@@ -95,34 +98,55 @@ namespace Sq1.Core.StrategyBase {
 			int absorbedBoth	= this.SlicesShortAndLong	.BuildStatsOnBacktestFinished(pokeUnit);
 			int absorbedBH		= this.SliceBuyHold			.BuildStatsOnBacktestFinished(pokeUnit);
 
-			if (this.Executor.Strategy.Script.ScriptParametersById == null) {
+			Strategy strategy = this.Executor.Strategy;
+			Script script = strategy.Script;
+			if (script.ScriptParametersById == null) {
 				string msg = "CANT_GRAB_";
 				Assembler.PopupException(msg);
 				return;
 			}
 			//WRONG this.ScriptAndIndicatorParameterClonesByName.Clear();
 			this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished = new SortedDictionary<string, IndicatorParameter>();
+			this.ScriptParametersById_BuiltOnBacktestFinished = new Dictionary<int, ScriptParameter>();
 
-			string pids = this.Executor.Strategy.Script.ScriptParametersByIdAsString;
-			foreach (ScriptParameter sp in this.Executor.Strategy.Script.ScriptParametersById.Values) {
+			string pids = script.ScriptParametersByIdAsString;
+			foreach (ScriptParameter sp in script.ScriptParametersById.Values) {
 				if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(sp.Name)) {
 					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_ScriptParameter[" + sp.Name + "]: " + pids;
 					Assembler.PopupException(msg);
 					continue;
 				}
-				this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(sp.Name, sp.Clone());
+				ScriptParameter clone = sp.Clone();
+				this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(sp.Name, clone);
+				this.ScriptParametersById_BuiltOnBacktestFinished.Add(sp.Id, clone);
 			}
 
 			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
-			string iids = this.Executor.Strategy.Script.IndicatorParametersAsString;
-			foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+			string iids = script.IndicatorParametersAsString;
+			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+			foreach (IndicatorParameter ip in script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
 				if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(ip.FullName)) {
 					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_IndicatorParameter[" + ip.Name + "]: " + iids;
 					Assembler.PopupException(msg);
 					continue;
 				}
-				this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(ip.FullName, ip.Clone());
+				IndicatorParameter clone = ip.Clone();
+				this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(ip.FullName, clone);
 			}
+
+			this.IndicatorParametersByName_BuiltOnBacktestFinished = new Dictionary<string, List<IndicatorParameter>>();
+			ContextScript ctx = strategy.ScriptContextCurrent;
+			foreach (string iParamName in ctx.IndicatorParametersByName.Keys) {
+				List<IndicatorParameter> iParams = ctx.IndicatorParametersByName[iParamName];
+				List<IndicatorParameter> iParamsCloned = new List<IndicatorParameter>();
+				foreach (IndicatorParameter ip in iParams) {
+					IndicatorParameter clone = ip.Clone();
+					iParamsCloned.Add(clone);
+				}
+				this.IndicatorParametersByName_BuiltOnBacktestFinished.Add(iParamName, iParamsCloned);
+			}
+
+
 		}
 		internal void BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(Position position) {
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) {
@@ -162,7 +186,7 @@ namespace Sq1.Core.StrategyBase {
 		//    return ret;
 		//}
 		public override string ToString() {
-			return this.EssentialsForScriptContextNewName;
+			return this.NetProfitRecoveryForScriptContextNewName;
 		}
 	}
 }

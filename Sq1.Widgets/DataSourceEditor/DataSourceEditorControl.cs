@@ -54,14 +54,11 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.PopulateScaleIntervalFromDataSource();
 			this.PopulateStreamingBrokerListViewsFromDataSource();
 
-			if (this.ds.StreamingAdapter != null) {
-				HighlightStreamingByName(this.ds.StreamingAdapter.GetType().Name);
-			} else {
-				HighlightStreamingByName(StreamingAdapter.NO_STREAMING_ADAPTER);
-			}
+			if (this.ds.StreamingAdapter != null) 	this.highlightStreamingByName(this.ds.StreamingAdapter.GetType().Name);
+			else									this.highlightStreamingByName(StreamingAdapter.NO_STREAMING_ADAPTER);
 
-			if (this.ds.BrokerAdapter != null) HighlightBrokerByName(this.ds.BrokerAdapter.GetType().Name);
-			else HighlightBrokerByName(BrokerAdapter.NO_BROKER_ADAPTER);
+			if (this.ds.BrokerAdapter != null)		this.highlightBrokerByName(this.ds.BrokerAdapter.GetType().Name);
+			else 									this.highlightBrokerByName(BrokerAdapter.NO_BROKER_ADAPTER);
 
 			this.marketInfoEditor.Initialize(ds, this.assemblerInstance.RepositoryJsonDataSource, this.assemblerInstance.RepositoryMarketInfo);
 		}
@@ -180,7 +177,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				}
 			}
 		}
-		public void HighlightStreamingByName(string streamingName) {
+		void highlightStreamingByName(string streamingName) {
 			int streamingIndex = this.lvStreamingAdapters.Items.IndexOfKey(streamingName);
 			if (streamingIndex < 0) {
 				string msg = "streamingName[" + streamingName + "] not found in this.lvStreamingAdapters";
@@ -190,7 +187,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.lvStreamingAdapters.Items[streamingIndex].Selected = true;
 			lvStreamingAdapters_SelectedIndexChanged(null, null);
 		}
-		public void HighlightBrokerByName(string brokerName) {
+		void highlightBrokerByName(string brokerName) {
 			int brokerIndex = this.lvBrokerAdapters.Items.IndexOfKey(brokerName);
 			if (brokerIndex < 0) {
 				string msg = "brokerName[" + brokerName + "] not found in this.lvBrokerAdapters";

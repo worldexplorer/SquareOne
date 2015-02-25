@@ -9,11 +9,11 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Execution;
 using Sq1.Core.Backtesting;
+using Sq1.Core.Optimization;
 using Sq1.Core.Broker;
 using Sq1.Core.Charting;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Indicators;
-using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
 
 namespace Sq1.Core.StrategyBase {
@@ -92,7 +92,7 @@ namespace Sq1.Core.StrategyBase {
 					//Assembler.PopupException(msg, null, false);
 					return;
 				}
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+				this.Strategy.Serialize();
 				
 				if (value == true) {
 					this.Strategy.Script.OnStreamingTriggeringScriptTurnedOnCallback();
@@ -119,7 +119,7 @@ namespace Sq1.Core.StrategyBase {
 					return;
 				}
 				this.Strategy.ScriptContextCurrent.StrategyEmittingOrders = value;
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+				this.Strategy.Serialize();
 				
 				if (value == true) {
 					this.Strategy.Script.OnStrategyEmittingOrdersTurnedOnCallback();
@@ -1263,7 +1263,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Strategy == null) return;
 			if (this.Strategy.ScriptContextCurrent.Symbol == this.Bars.Symbol) return;
 			this.Strategy.ScriptContextCurrent.Symbol  = this.Bars.Symbol;
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+			this.Strategy.Serialize();
 
 		}
 		public void AlertKillPending(Alert alert) {
