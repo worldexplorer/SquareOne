@@ -239,20 +239,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
-      <Project>{82541DA4-EE4A-4078-BF05-63B48A8AA51E}</Project>
-      <Name>CsvHelper35</Name>
-    </ProjectReference>
     <ProjectReference Include="..\dockpanelsuite290-master\WinFormsUI\WinFormsUI.csproj">
       <Project>{E580A3F0-6BED-4649-A159-58998CC077F3}</Project>
       <Name>WinFormsUI</Name>
     </ProjectReference>
     <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
-      <Project>81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3</Project>
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
     <ProjectReference Include="..\ObjectListView_280-src\ObjectListView2010.csproj">
-      <Project>4D212185-B8CA-41A5-B7F0-A764A1EE27C7</Project>
+      <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
       <Name>ObjectListView2010</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sq1.Charting\Sq1.Charting.csproj">

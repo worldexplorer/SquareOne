@@ -6,8 +6,8 @@ using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Repositories {
-	public partial class RepositoryJsonsInFolderSimple<DATASOURCE>  /* hack for ItemRename() */ where DATASOURCE : NamedObjectJsonSerializable {
-		public string	OfWhat						{ get { return typeof(DATASOURCE).Name; } }
+	public partial class RepositoryJsonsInFolderSimple<SYSTEM_PERFORMANCE_RESTORE_ABLE>  /* hack for ItemRename() */ where SYSTEM_PERFORMANCE_RESTORE_ABLE : NamedObjectJsonSerializable {
+		public string	OfWhat						{ get { return typeof(SYSTEM_PERFORMANCE_RESTORE_ABLE).Name; } }
 
 		public string	RootPath					{ get; protected set; }
 		public string	Subfolder					{ get; protected set; }
@@ -32,7 +32,7 @@ namespace Sq1.Core.Repositories {
 		}
 
 		public void Initialize(string rootPath,
-					string subfolder = "DataSources",
+					string subfolder = "OptimizationResults",
 					string mask = "*.json",
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {
 
@@ -107,14 +107,14 @@ namespace Sq1.Core.Repositories {
 			this.RescanFolderStoreNamesFound();
 			return ret;
 		}
-		public virtual List<DATASOURCE> DeserializeList(string fname) {
-			List<DATASOURCE> tmp = null;
-			List<DATASOURCE> ret = null;
+		public virtual List<SYSTEM_PERFORMANCE_RESTORE_ABLE> DeserializeList(string fname) {
+			List<SYSTEM_PERFORMANCE_RESTORE_ABLE> tmp = null;
+			List<SYSTEM_PERFORMANCE_RESTORE_ABLE> ret = null;
 			string jsonAbsfile = Path.Combine(this.AbsPath, fname + this.Extension);
 			if (File.Exists(jsonAbsfile) == false) return ret;
 			try {
 				string json = File.ReadAllText(jsonAbsfile);
-				ret = JsonConvert.DeserializeObject<List<DATASOURCE>>(json, new JsonSerializerSettings {
+				ret = JsonConvert.DeserializeObject<List<SYSTEM_PERFORMANCE_RESTORE_ABLE>>(json, new JsonSerializerSettings {
 					TypeNameHandling = TypeNameHandling.Objects
 				});
 			} catch (Exception ex) {
@@ -125,7 +125,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return ret;
 		}
-		public virtual void SerializeList(List<DATASOURCE> backtests, string jsonRelname) {
+		public virtual void SerializeList(List<SYSTEM_PERFORMANCE_RESTORE_ABLE> backtests, string jsonRelname) {
 			jsonRelname += this.Extension;
 			string jsonAbsname = Path.Combine(this.AbsPath, jsonRelname);
 			try {

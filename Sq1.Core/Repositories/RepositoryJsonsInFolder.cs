@@ -138,22 +138,6 @@ namespace Sq1.Core.Repositories {
 				return;
 			}
 		}
-		public virtual void SerializeList(List<DATASOURCE> backtests, string jsonRelname) {
-			jsonRelname += ".json";
-			string jsonAbsname = Path.Combine(this.AbsPath, jsonRelname);
-			try {
-				string json = JsonConvert.SerializeObject(backtests, Formatting.Indented,
-					new JsonSerializerSettings {
-						TypeNameHandling = TypeNameHandling.Objects
-					});
-				File.WriteAllText(jsonAbsname, json);
-			} catch (Exception ex) {
-				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeList(): ";
-				string msg = "FAILED_SerializeList_WITH_this.jsonAbsname[" + jsonAbsname + "]";
-				Assembler.PopupException(msg + msig, ex);
-				return;
-			}
-		}
 		public void SerializeAll() {
 			foreach (DATASOURCE current in this.ItemsByName.Values) {
 				this.SerializeSingle(current);
