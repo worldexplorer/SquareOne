@@ -18,12 +18,12 @@ namespace Sq1.Widgets.SteppingSlider {
 				if (scriptParameterChanged != null) {		// check ScriptParameter first because it's derived (same as "catch most fine grained Exceptions first")
 					// single instance, no need to synchronize between Slider and ScriptContext
 					scriptParameterChanged.ValueCurrent = (double)slider.ValueCurrent;
-					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+					this.Strategy.Serialize();
 					this.RaiseOnSliderChangedScriptParameterValue(scriptParameterChanged);
 				} else {
 					// single instance, no need to synchronize between Slider and ScriptContext
 					indicatorParameterChanged.ValueCurrent = (double) slider.ValueCurrent;
-					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+					this.Strategy.Serialize();
 					this.RaiseOnSliderChangedIndicatorParametersValue(indicatorParameterChanged);
 				}
 			} catch (Exception ex) {
@@ -42,7 +42,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 
 				indicatorParameterChanged.BorderShown = userChoseEnableBorder;
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+				this.Strategy.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException("slider_ShowBorderChanged()", ex);
 			}
@@ -59,7 +59,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 	
 				indicatorParameterChanged.NumericUpdownShown = userChoseEnableNumeric;
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+				this.Strategy.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException("slider_ShowNumericUpdownChanged()", ex);
 			}
@@ -79,7 +79,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					slider.EnableBorder = borderShown;
 					indicatorParameterChanged.BorderShown = borderShown;
 				}
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+				this.Strategy.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniAllParamsShowBorder_Click()", ex);
 			}
@@ -97,7 +97,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					slider.EnableNumeric = numericShown;
 					indicatorParameterChanged.NumericUpdownShown = numericShown;
 				}
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+				this.Strategy.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniAllParamsShowNumeric_Click()", ex);
 			}

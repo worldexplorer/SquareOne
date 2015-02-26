@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Repositories {
@@ -9,7 +10,7 @@ namespace Sq1.Core.Repositories {
 			this.strategy = strategy;
 		}
 		public void SaveStrategy() {
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.strategy);
+			this.strategy.Serialize();
 		}
 	}
 }

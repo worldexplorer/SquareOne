@@ -3,21 +3,20 @@ using System;
 using Sq1.Core.Broker;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Support;
 
 namespace Sq1.Core.Repositories {
 	// the hackiest class in the whole solution :(
 	public partial class RepositoryJsonDataSource : RepositoryJsonsInFolder<DataSource> {
-		public RepositorySerializerMarketInfo MarketInfoRepository;
-		public OrderProcessor OrderProcessor;
+		public RepositorySerializerMarketInfo	MarketInfoRepository;
+		public OrderProcessor					OrderProcessor;
 
 		public RepositoryJsonDataSource() : base() {
 			base.CheckIfValidAndShouldBeAddedAfterDeserialized = this.dataSourceDeserializedInitializePriorToAdding;
 		}
 		
-		public void Initialize(string rootPath, string subfolder, IStatusReporter statusReporter,
+		public void Initialize(string rootPath, string subfolder,
 				RepositorySerializerMarketInfo marketInfoRepository, OrderProcessor orderProcessor) {
-			base.Initialize(rootPath, subfolder, statusReporter, this.dataSourceDeserializedInitializePriorToAdding);
+			base.Initialize(rootPath, subfolder, this.dataSourceDeserializedInitializePriorToAdding);
 			this.MarketInfoRepository = marketInfoRepository;
 			this.OrderProcessor = orderProcessor;
 		}

@@ -18,33 +18,33 @@ namespace Sq1.Core.StrategyBase {
 			
 			compilerParameters.GenerateInMemory = true;
 			//DISABLED_SINCE_DOESNT_HELP_FOR_EXCEPTIONS_TO_HAVE_LINE_NUMBER_IN_EXCEPTIONS_CONTROL
-			//if (string.IsNullOrWhiteSpace(tmpFolder) == false) {
-			//	// http://stackoverflow.com/questions/875723/how-to-debug-break-in-codedom-compiled-code
-			//	compilerParameters.GenerateInMemory = false;
-			//	string tmpAbsPath = Path.Combine(Assembler.InstanceInitialized.RepositoryDllJsonStrategy.RootPath, tmpFolder);
-			//	bool attemptedToCreateDirectory = false;
-			//	try {
-			//		if (Directory.Exists(tmpAbsPath) == false) {
-			//			attemptedToCreateDirectory = true;
-			//			Directory.CreateDirectory(tmpAbsPath);
-			//		}
-			//	} catch (Exception ex) {
-			//		string msg = "I_CANNOT_CREATE_TEMP_DIRECTORY_CHECK_PERMISSIONS_AND_DISK_QUOTE tmpAbsPath[" + tmpAbsPath + "]";
-			//		#if DEBUG
-			//		Debugger.Break();
-			//		#endif
-			//		throw new Exception(msg + " ScriptCompiler.CompileSourceReturnInstance()", ex);
-			//	}
-			//	if (Directory.Exists(tmpAbsPath) == false) {
-			//		string msg = "TEMP_DIRECTORY_DOES_NOT_EXISTS attemptedToCreateDirectory[" + attemptedToCreateDirectory + "] tmpAbsPath[" + tmpAbsPath + "]";
-			//		#if DEBUG
-			//		Debugger.Break();
-			//		#endif
-			//		throw new Exception(msg + " ScriptCompiler.CompileSourceReturnInstance()");
-			//	}
-			//	compilerParameters.TempFiles = new TempFileCollection(tmpAbsPath, true);
-			//	compilerParameters.IncludeDebugInformation = true;
-			//}
+			if (string.IsNullOrWhiteSpace(tmpFolder) == false) {
+				// http://stackoverflow.com/questions/875723/how-to-debug-break-in-codedom-compiled-code
+				compilerParameters.GenerateInMemory = false;
+				string tmpAbsPath = Path.Combine(Assembler.InstanceInitialized.RepositoryDllJsonStrategy.RootPath, tmpFolder);
+				bool attemptedToCreateDirectory = false;
+				try {
+					if (Directory.Exists(tmpAbsPath) == false) {
+						attemptedToCreateDirectory = true;
+						Directory.CreateDirectory(tmpAbsPath);
+					}
+				} catch (Exception ex) {
+					string msg = "I_CANNOT_CREATE_TEMP_DIRECTORY_CHECK_PERMISSIONS_AND_DISK_QUOTE tmpAbsPath[" + tmpAbsPath + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					throw new Exception(msg + " ScriptCompiler.CompileSourceReturnInstance()", ex);
+				}
+				if (Directory.Exists(tmpAbsPath) == false) {
+					string msg = "TEMP_DIRECTORY_DOES_NOT_EXISTS attemptedToCreateDirectory[" + attemptedToCreateDirectory + "] tmpAbsPath[" + tmpAbsPath + "]";
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					throw new Exception(msg + " ScriptCompiler.CompileSourceReturnInstance()");
+				}
+				compilerParameters.TempFiles = new TempFileCollection(tmpAbsPath, true);
+				compilerParameters.IncludeDebugInformation = true;
+			}
 			compilerParameters.IncludeDebugInformation = false;
 			compilerParameters.ReferencedAssemblies.Add("System.dll");
 			compilerParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");

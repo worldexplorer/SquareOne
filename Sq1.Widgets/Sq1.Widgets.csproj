@@ -51,9 +51,11 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CsvImporter\ColumnCatcher.cs" />
@@ -397,10 +399,6 @@
     <ProjectReference Include="..\ObjectListView_280-src\ObjectListView2010.csproj">
       <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
       <Name>ObjectListView2010</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Sq1.Adapters.QuikMock\Sq1.Adapters.QuikMock.csproj">
-      <Project>{2CB6E9D9-1ABB-4E92-9094-F8395711143B}</Project>
-      <Name>Sq1.Adapters.QuikMock</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
       <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>

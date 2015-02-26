@@ -69,7 +69,7 @@ namespace Sq1.Gui.Forms {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStop();
 				}
 				this.PopulateBtnStreamingTriggersScriptAfterBarsLoaded();
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
+				this.ChartFormManager.Strategy.Serialize();
 				//WHO_ELSE_NEEDS_IT? this.RaiseStreamingButtonStateChanged();
 				this.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 			} catch (Exception ex) {
@@ -79,7 +79,7 @@ namespace Sq1.Gui.Forms {
 		void btnStrategyEmittingOrders_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnAutoSubmit.CheckOnClick=True this.BtnAutoSubmit.Checked = !this.BtnAutoSubmit.Checked;;
 			this.ChartFormManager.Executor.IsStrategyEmittingOrders = this.btnStrategyEmittingOrders.Checked;
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
+			this.ChartFormManager.Strategy.Serialize();
 		}
 		void mniBacktestOnEveryChange_Click(object sender, System.EventArgs e) {
 			try {
@@ -87,7 +87,7 @@ namespace Sq1.Gui.Forms {
 				if (strategy == null) return;
 				strategy.ScriptContextCurrent.BacktestOnSelectorsChange = this.mniBacktestOnSelectorsChange.Checked;
 				strategy.ScriptContextCurrent.BacktestOnDataSourceSaved = this.mniBacktestOnDataSourceSaved.Checked;
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(strategy);
+				strategy.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestOnEveryChange_Click()", ex);
 			}
@@ -97,7 +97,7 @@ namespace Sq1.Gui.Forms {
 				Strategy strategy = this.ChartFormManager.Executor.Strategy;
 				if (strategy == null) return;
 				strategy.ScriptContextCurrent.BacktestOnRestart = this.mniBacktestOnRestart.Checked;
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(strategy);
+				strategy.Serialize();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestOnRestart_Click()", ex);
 			}
@@ -222,7 +222,7 @@ namespace Sq1.Gui.Forms {
 				this.ChartControl.RangeBarCollapsed = !this.mniShowBarRange.Checked; 
 				if (this.ChartFormManager.Strategy != null) {
 					this.ChartFormManager.Strategy.ScriptContextCurrent.ShowRangeBar = this.mniShowBarRange.Checked;
-					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
+					this.ChartFormManager.Strategy.Serialize();
 				} else {
 					this.ChartFormManager.DataSnapshot.ContextChart.ShowRangeBar = this.mniShowBarRange.Checked;
 					this.ChartFormManager.DataSnapshotSerializer.Serialize();
@@ -284,7 +284,7 @@ namespace Sq1.Gui.Forms {
 		void mniOutsideQuoteFillCheckThrow_Click(object sender, EventArgs e) {
 			ContextScript context = this.ChartFormManager.Strategy.ScriptContextCurrent;
 			context.FillOutsideQuoteSpreadParanoidCheckThrow = this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Checked;
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
+			this.ChartFormManager.Strategy.Serialize();
 			this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mniOutOfQuoteFillThrow_Click");
 		}
 		void mnitlbSpreadGeneratorPct_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
@@ -319,11 +319,11 @@ namespace Sq1.Gui.Forms {
 				if (this.mniSubscribedToStreamingAdapterQuotesBars.Checked == false) {
 					this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
 					this.DdbBars.BackColor = Color.LightSalmon;
-					this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapter.Name + "]";
+					this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapterName + "]";
 				} else {
 					this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = SystemColors.Control;
 					this.DdbBars.BackColor = SystemColors.Control;
-					this.mniSubscribedToStreamingAdapterQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapter.Name + "]";
+					this.mniSubscribedToStreamingAdapterQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapterName + "]";
 				}
 
 				ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
@@ -358,7 +358,7 @@ namespace Sq1.Gui.Forms {
 					this.ChartFormManager.DataSnapshotSerializer.Serialize();
 				} else {
 					// .IsStreaming {that we just changed by StreamingSubscribe()/StreamingUnSubscribe()} is in ContextScript => saving Strategy
-					Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
+					this.ChartFormManager.Strategy.Serialize();
 				}
 
 			} catch (Exception ex) {

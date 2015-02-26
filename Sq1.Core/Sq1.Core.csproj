@@ -73,8 +73,6 @@
     <Compile Include="Backtesting\BacktestQuotesGeneratorFourStroke.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Backtesting\Optimizer.cs" />
-    <Compile Include="Backtesting\OptimizerParametersSequencer.cs" />
     <Compile Include="Backtesting\QuoteGenerated.cs" />
     <Compile Include="Broker\BrokerAdapter.EditorSupport.cs">
       <DependentUpon>BrokerAdapter.cs</DependentUpon>
@@ -170,6 +168,13 @@
       <DependentUpon>LivesimStreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Optimization\Optimizer.cs" />
+    <Compile Include="Optimization\OptimizerParametersSequencer.cs" />
+    <Compile Include="Optimization\SystemPerformanceRestoreAbleEventArgs.cs" />
+    <Compile Include="Optimization\SystemPerformanceRestoreAble.cs" />
+    <Compile Include="Repositories\RepositoryJsonsInFolderSimple.cs" />
+    <Compile Include="Repositories\FnameDateSize.cs" />
+    <Compile Include="Repositories\RepositoryJsonOptimizationResults.cs" />
     <Compile Include="Repositories\StrategySelfSaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataFeed\NamedObjectJsonSerializable.cs" />
@@ -226,7 +231,6 @@
     <Compile Include="StrategyBase\Strategy.ScriptContext.cs">
       <DependentUpon>Strategy.cs</DependentUpon>
     </Compile>
-    <Compile Include="StrategyBase\SystemPerformanceEventArgs.cs" />
     <Compile Include="Streaming\DataDistributorCharts.cs" />
     <Compile Include="Streaming\DataDistributorSolidifiers.cs" />
     <Compile Include="Streaming\QuotePumpPerChannel.cs" />

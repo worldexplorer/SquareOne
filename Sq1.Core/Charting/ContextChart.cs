@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Text;
 
 using Sq1.Core.DataTypes;
 using Newtonsoft.Json;
-using System.Text;
 
 namespace Sq1.Core.StrategyBase {
 	public class ContextChart {
@@ -33,14 +33,14 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void AbsorbFrom(ContextChart found) {
 			if (found == null) return;
-			//KEEP_CLONE_UNDEFINED this.Name = found.Name;
-			this.Symbol = found.Symbol;
-			this.DataSourceName = found.DataSourceName;
-			this.ScaleInterval = found.ScaleInterval.Clone();
-			this.DataRange = found.DataRange.Clone();
-			//this.ChartBarSpacing = found.ChartBarSpacing;
-			this.IsStreamingTriggeringScript = found.IsStreamingTriggeringScript;
-			this.ShowRangeBar = found.ShowRangeBar;
+			//KEEP_CLONE_UNDEFINED this.Name	= found.Name;
+			this.Symbol							= found.Symbol;
+			this.DataSourceName					= found.DataSourceName;
+			this.ScaleInterval					= found.ScaleInterval.Clone();
+			this.DataRange						= found.DataRange.Clone();
+			//this.ChartBarSpacing				= found.ChartBarSpacing;
+			this.IsStreamingTriggeringScript	= found.IsStreamingTriggeringScript;
+			this.ShowRangeBar					= found.ShowRangeBar;
 		}
 //		public ChartContext MemberwiseClone() {
 //			return (ChartContext)base.MemberwiseClone();

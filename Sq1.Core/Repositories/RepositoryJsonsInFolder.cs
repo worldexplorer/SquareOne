@@ -4,16 +4,14 @@ using System.IO;
 
 using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
-using Sq1.Core.Support;
 
 namespace Sq1.Core.Repositories {
 	public partial class RepositoryJsonsInFolder<DATASOURCE>  /* hack for ItemRename() */ where DATASOURCE : NamedObjectJsonSerializable {
-		public string OfWhat { get { return typeof(DATASOURCE).Name; } }
+		public string	OfWhat						{ get { return typeof(DATASOURCE).Name; } }
 
-		protected IStatusReporter StatusReporter;
-		public string RootPath { get; protected set; }
-		public string Subfolder { get; protected set; }
-		public string AbsPath { get {
+		public string	RootPath					{ get; protected set; }
+		public string	Subfolder					{ get; protected set; }
+		public string	AbsPath						{ get {
 				//string ret = this.RootPath + this.Subfolder + this.WorkspaceName + Path.DirectorySeparatorChar;
 				string ret = this.RootPath;
 				if (String.IsNullOrEmpty(this.Subfolder) == false) {
@@ -22,28 +20,26 @@ namespace Sq1.Core.Repositories {
 				//if (ret.EndsWith(Path.DirectorySeparatorChar) == false) ret += Path.DirectorySeparatorChar;
 				return ret;
 			} }
-		public string Mask { get; protected set; }
-		public string MaskRel { get { return Path.Combine(this.Subfolder, Mask); } }
-		public string MaskAbs { get { return Path.Combine(this.AbsPath, Mask); } }
+		public string	Mask						{ get; protected set; }
+		public string	MaskRel						{ get { return Path.Combine(this.Subfolder, Mask); } }
+		public string	MaskAbs						{ get { return Path.Combine(this.AbsPath, Mask); } }
+		public string	Extension					{ get { return Path.GetExtension(this.Mask); } }
 		
-		protected Dictionary<string, DATASOURCE> ItemsByName;
-		public List<DATASOURCE> ItemsAsList { get {
+		protected Dictionary<string, DATASOURCE>	ItemsByName;
+		public List<DATASOURCE>						ItemsAsList		{ get {
 				return new List<DATASOURCE>(this.ItemsByName.Values);
 			} }
 	
-		public Func<string, DATASOURCE, bool> CheckIfValidAndShouldBeAddedAfterDeserialized;
+		public Func<string, DATASOURCE, bool>		CheckIfValidAndShouldBeAddedAfterDeserialized;
 
 		public RepositoryJsonsInFolder() {
-			this.ItemsByName = new Dictionary<string, DATASOURCE>();			
+			ItemsByName 	= new Dictionary<string, DATASOURCE>();			
 		}
-		public void Initialize(string rootPath,
+		public virtual void Initialize(string rootPath,
 					string subfolder = "DataSources",
-					IStatusReporter statusReporter = null,
 					Func<string, DATASOURCE, bool> checkIfValidAndShouldBeAddedAfterDeserialized = null,
 					string mask = "*.json",
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {
-			
-			this.StatusReporter = statusReporter;
 			
 			string msig = "RepositoryJsonsInFolder<" + this.OfWhat + ">::Initialize("
 					+ "rootPath=[" + rootPath + "], subfolder=[" + subfolder + "],"
@@ -89,17 +85,17 @@ namespace Sq1.Core.Repositories {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			string[] files = Directory.GetFiles(this.AbsPath, this.Mask);
-			for (int i = 0; i < files.Length; i++) {
-				string fileName = files[i];
-				string thisOne = "[" + fileName + "]=[" + i + "]/[" + files.Length + "]";
-				DATASOURCE deserialized = this.DeserializeSingle(fileName);
+			string[] absFileNames = Directory.GetFiles(this.AbsPath, this.Mask);
+			for (int i = 0; i < absFileNames.Length; i++) {
+				string absFileName = absFileNames[i];
+				string thisOne = "[" + absFileName + "]=[" + i + "]/[" + absFileNames.Length + "]";
+				DATASOURCE deserialized = this.DeserializeSingle(absFileName);
 				if (deserialized == null) {
 					string msg = "FAILED_TO_DESERIALIZE_ONE_OF_MANY_JSONS " + thisOne;
 					Assembler.PopupException(msg + msig);
 					continue;
 				}
-				string key = this.ExtractKeyFromJsonAbsname(fileName);
+				string key = this.ExtractKeyFromJsonAbsname(absFileName);
 				//v1 this.ItemsByName.Add(key, deserialized);
 				//v2
 				this.ItemAdd(deserialized);
@@ -152,7 +148,7 @@ namespace Sq1.Core.Repositories {
 			return Path.GetFileNameWithoutExtension(jsonAbsfile);
 		}
 		public string jsonRelnameForItem(DATASOURCE itemStored) {
-			return itemStored.Name + ".json";
+			return itemStored.Name + this.Extension;
 		}
 		public void ItemAdd(DATASOURCE itemCandidate, object sender = null, bool serialize = false) {
 			if (sender == null) sender = this;

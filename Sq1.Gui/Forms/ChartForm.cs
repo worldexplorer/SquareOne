@@ -70,7 +70,7 @@ namespace Sq1.Gui.Forms {
 				string msg = "I_INVOKED_YOU_FROM_REPORTER_NOT_POSSIBLE_STRATEGY_DISAPPEARED_NOW";
 				Assembler.PopupException(msg);
 			}
-			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.ChartFormManager.Strategy);
+			this.ChartFormManager.Strategy.Serialize();
 		}
 		void ChartControl_ChartSettingsChangedContainerShouldSerialize(object sender, EventArgs e) {
 			this.ChartFormManager.DataSnapshotSerializer.Serialize();

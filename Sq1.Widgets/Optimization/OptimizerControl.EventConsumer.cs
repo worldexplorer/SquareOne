@@ -1,13 +1,14 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
 using Sq1.Core;
-using Sq1.Core.StrategyBase;
 using Sq1.Core.Indicators;
+using Sq1.Core.Optimization;
+using Sq1.Core.StrategyBase;
 using Sq1.Widgets.LabeledTextBox;
+using Sq1.Core.Repositories;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl {
@@ -19,19 +20,22 @@ namespace Sq1.Widgets.Optimization {
 			}
 			
 			string staleReason = this.optimizer.StaleReason;
-			bool clickedToClearAndPrepareForNewOptimization = string.IsNullOrEmpty(staleReason) == false;
-			if (clickedToClearAndPrepareForNewOptimization) {
-				this.backtests.Clear();
-				this.olvBacktests.SetObjects(this.backtests, true);
-				this.optimizer.ClearIWasRunFor();
-				this.PopulateTextboxesFromExecutorsState();
-				this.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
-				this.btnPauseResume.Text = "Pause/Resume";
-				return;
-			}
+			//bool clickedToClearAndPrepareForNewOptimization = string.IsNullOrEmpty(staleReason) == false;
+			//if (clickedToClearAndPrepareForNewOptimization) {
+			//    //this.backtests.Clear();
+			//    //this.olvBacktests.SetObjects(this.backtests, true);
+			//    this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
+			//    this.optimizer.ClearIWasRunFor();
+			//    this.PopulateTextboxesFromExecutorsState();
+			//    this.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
+			//    this.btnPauseResume.Text = "Pause/Resume";
+			//    return;
+			//}
 			
 			this.backtests.Clear();
 			this.olvBacktests.SetObjects(this.backtests, true);
+			//this.olvBacktests.RebuildColumns();
+			//this.olvBacktests.BuildList();
 			int threadsLaunched = this.optimizer.OptimizationRun();
 			this.btnRunCancel.Text = "Cancel " + this.optimizer.BacktestsRemaining + " backtests";
 			//this.btnPauseResume.Enabled = true;
@@ -46,12 +50,12 @@ namespace Sq1.Widgets.Optimization {
 //			}
 //			this.splitContainer1.SplitterDistance = heightCollapsed;
 //		}
-		void optimizer_OnBacktestFinished(object sender, SystemPerformanceEventArgs e) {
+		void optimizer_OnOneBacktestFinished(object sender, SystemPerformanceRestoreAbleEventArgs e) {
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.optimizer_OnBacktestFinished(sender, e); });
+				base.BeginInvoke((MethodInvoker)delegate { this.optimizer_OnOneBacktestFinished(sender, e); });
 				return;
 			}
-			this.backtests.Add(e.SystemPerformance);
+			this.backtests.Add(e.SystemPerformanceRestoreAble);
 			this.olvBacktests.SetObjects(this.backtests, true); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
 			//this.olvBacktests.Refresh();
 			
@@ -66,9 +70,9 @@ namespace Sq1.Widgets.Optimization {
 			}
 			this.btnPauseResume.Text = this.optimizer.BacktestsSecondsElapsed + " seconds elapsed";
 		}
-		void Optimizer_OnOptimizationComplete(object sender, EventArgs e) {
+		void optimizer_OnAllBacktestsFinished(object sender, EventArgs e) {
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.Optimizer_OnOptimizationComplete(sender, e); });
+				base.BeginInvoke((MethodInvoker)delegate { this.optimizer_OnAllBacktestsFinished(sender, e); });
 				return;
 			}
 			this.btnPauseResume.Enabled = false;
@@ -79,11 +83,25 @@ namespace Sq1.Widgets.Optimization {
 			//this.progressBar1.Value = 0;
 			//this.olvBacktests.UseWaitCursor = false;
 			this.btnPauseResume.Text = this.optimizer.BacktestsSecondsElapsed + " seconds elapsed";
+			
+			Strategy strategy = this.optimizer.Executor.Strategy;
+			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+			//v1
+			//if (strategy.OptimizationResultsByContextIdent.ContainsKey(symbolScaleRange) == false) {
+			//    strategy.OptimizationResultsByContextIdent.Add(symbolScaleRange, this.backtests);
+			//} else {
+			//    strategy.OptimizationResultsByContextIdent[symbolScaleRange] = this.backtests;
+			//}
+			//strategy.Serialize();
+			//v2
+			this.RepositoryDllJsonOptimizationResults.SerializeList(this.backtests, symbolScaleRange);
+			this.olvHistoryRescanRefillSelect(symbolScaleRange);
+			this.splitContainer1.SplitterDistance = this.heightExpanded;
 		}
-		void Optimizer_OnOptimizationAborted(object sender, EventArgs e) {
-			this.Optimizer_OnOptimizationComplete(sender, e);
+		void optimizer_OnOptimizationAborted(object sender, EventArgs e) {
+			this.optimizer_OnAllBacktestsFinished(sender, e);
 		}
-        void Optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild(object sender, EventArgs e) {
+        void optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild(object sender, EventArgs e) {
             this.txtScriptParameterTotalNr.Text = this.optimizer.ScriptParametersTotalNr.ToString();
             this.txtIndicatorParameterTotalNr.Text = this.optimizer.IndicatorParameterTotalNr.ToString();
             int backtestsTotal = this.optimizer.BacktestsTotal;
@@ -108,35 +126,39 @@ namespace Sq1.Widgets.Optimization {
 		}
 		void mniCopyToDefaultCtxBacktest_Click(object sender, EventArgs e) {
 			string msig = " /mniCopyToDefaultCtxBacktest_Click()";
-			SystemPerformance perf = (SystemPerformance)this.olvBacktests.SelectedObject;
-			if (perf == null) {
-				string msg = "IS_NULL (SystemPerformance)this.olvBacktests.SelectedObject";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			ContextScript selected = perf.Executor.Strategy.ScriptContextCurrent;
-			if (selected == null) {
-				string msg = "IS_NULL (ContextScript) this.olvBacktests.SelectedObject";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			ContextScript selectedClone = selected.CloneThatUserPushesFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
+			ContextScript selectedClone = this.convertOptimizationResultToScriptContext(msig);
+			if (selectedClone == null) return;
 			this.RaiseOnCopyToContextDefaultBacktest(selectedClone);
 		}
 		void mniCopyToDefaultCtx_Click(object sender, EventArgs e) {
 			string msig = " /mniCopyToDefaultCtx_Click()";
-			SystemPerformance perf = (SystemPerformance)this.olvBacktests.SelectedObject;
-			if (perf == null) {
-				string msg = "IS_NULL (SystemPerformance)this.olvBacktests.SelectedObject";
+			ContextScript selectedClone = this.convertOptimizationResultToScriptContext(msig);
+			if (selectedClone == null) return;
+			this.RaiseOnCopyToContextDefault(selectedClone);
+		}
+		void mniltbCopyToNewContext_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string scriptContextNewName = e.StringUserTyped;
+			string msig = " /mniltbCopyToNewContext_UserTyped() scriptContextNewName[" + scriptContextNewName + "]";
+			ContextScript selectedClone = this.convertOptimizationResultToScriptContext(msig);
+			if (selectedClone == null) return;
+			this.RaiseOnCopyToContextNew(selectedClone);
+		}
+		void mniltbCopyToNewContextBacktest_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string scriptContextNewName = e.StringUserTyped;
+			string msig = " /mniltbCopyToNewContextBacktest_UserTyped() scriptContextNewName[" + scriptContextNewName + "]";
+			ContextScript selectedClone = this.convertOptimizationResultToScriptContext(msig);
+			if (selectedClone == null) return;
+			this.RaiseOnCopyToContextNewBacktest(selectedClone);
+		}
+		
+		ContextScript convertOptimizationResultToScriptContext(string msig) {
+			SystemPerformanceRestoreAble sysPerfRestoreAble = (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject;
+			if (sysPerfRestoreAble == null) {
+				string msg = "IS_NULL (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject";
 				Assembler.PopupException(msg + msig);
-				return;
+				return null;
 			}
-			ContextScript selected = perf.Executor.Strategy.ScriptContextCurrent;
-			if (selected == null) {
-				string msg = "IS_NULL (ContextScript) this.olvBacktests.SelectedObject";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
+			
 			#if DEBUG	// inline unittest
 			foreach (OLVColumn olvc in this.columnsDynParam) {
 				string iParamName = olvc.Text;
@@ -148,7 +170,7 @@ namespace Sq1.Widgets.Optimization {
 				}
 				IndicatorParameter iDisplayed = iDisplayedByName[iParamName];
 
-				var iPropagatingByName = selected.ParametersMergedByName;
+				var iPropagatingByName = sysPerfRestoreAble.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
 				if (iPropagatingByName.ContainsKey(iParamName) == false) {
 					string msg = "NEVER_HAPPENED_SO_FAR iPropagatingByName.ContainsKey(" + iParamName + ") == false";
 					Assembler.PopupException(msg);
@@ -161,46 +183,14 @@ namespace Sq1.Widgets.Optimization {
 				}
 			}
 			#endif
-			ContextScript selectedClone = selected.CloneThatUserPushesFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
-			this.RaiseOnCopyToContextDefault(selectedClone);
-		}
-		void mniltbCopyToNewContext_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			string scriptContextNewName = e.StringUserTyped;
-			string msig = " /mniltbCopyToNewContext_UserTyped() scriptContextNewName[" + scriptContextNewName + "]";
 
-			SystemPerformance perf = (SystemPerformance)this.olvBacktests.SelectedObject;
-			if (perf == null) {
-				string msg = "IS_NULL (SystemPerformance)this.olvBacktests.SelectedObject";
+			if (sysPerfRestoreAble.ScriptParametersById_BuiltOnBacktestFinished == null) {
+				string msg = "BACKTEST_WAS_ABORTED_CANT_POPUPLATE";
 				Assembler.PopupException(msg + msig);
-				return;
+				return null;
 			}
-			ContextScript selected = perf.Executor.Strategy.ScriptContextCurrent;
-			if (selected == null) {
-				string msg = "IS_NULL (ContextScript) this.olvBacktests.SelectedObject";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			ContextScript selectedClone = selected.CloneThatUserPushesFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
-			this.RaiseOnCopyToContextNew(selectedClone);
-		}
-		void mniltbCopyToNewContextBacktest_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
-			string scriptContextNewName = e.StringUserTyped;
-			string msig = " /mniltbCopyToNewContextBacktest_UserTyped() scriptContextNewName[" + scriptContextNewName + "]";
-
-			SystemPerformance perf = (SystemPerformance)this.olvBacktests.SelectedObject;
-			if (perf == null) {
-				string msg = "IS_NULL (SystemPerformance)this.olvBacktests.SelectedObject";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			ContextScript selected = perf.Executor.Strategy.ScriptContextCurrent;
-			if (selected == null) {
-				string msg = "IS_NULL (ContextScript) this.olvBacktests.SelectedObject";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			ContextScript selectedClone = selected.CloneThatUserPushesFromOptimizerToStrategy(perf.EssentialsForScriptContextNewName);
-			this.RaiseOnCopyToContextNewBacktest(selectedClone);
+			ContextScript selectedClone = this.optimizer.Executor.Strategy.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(sysPerfRestoreAble);
+			return selectedClone;
 		}
 		void olvBacktests_CellClick(object sender, CellClickEventArgs e) {
 		}
@@ -208,32 +198,31 @@ namespace Sq1.Widgets.Optimization {
 			if (e.RowIndex == -1) return;	// right click on the blank space (not on a row with data)
 			e.MenuStrip = this.ctxOneBacktestResult;
 		}
-		private void mniCopyToClipboard_Click(object sender, EventArgs e) {
+		void mniCopyToClipboard_Click(object sender, EventArgs e) {
 		}
-		private void mniSaveCsv_Click(object sender, EventArgs e) {
+		void mniSaveCsv_Click(object sender, EventArgs e) {
 		}
 		void ctxOneBacktestResult_Opening(object sender, CancelEventArgs e) {
 			string msig = " /ctxOneBacktestResult_Opening()";
-			SystemPerformance perf = (SystemPerformance)this.olvBacktests.SelectedObject;
-			if (perf == null) {
-				string msg = "IS_NULL (SystemPerformance)this.olvBacktests.SelectedObject";
+			SystemPerformanceRestoreAble sysPerfRestoreAble = (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject;
+			if (sysPerfRestoreAble == null) {
+				string msg = "IS_NULL (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			string stratIdent = perf.Executor.StrategyName;
-			ContextScript selected = perf.Executor.Strategy.ScriptContextCurrent;
-			if (selected == null) {
-				string msg = "IS_NULL (ContextScript) this.olvBacktests.SelectedObject";
-				Assembler.PopupException(msg + msig);
-				//return;
-			} else {
-				stratIdent += " " + selected.ToStringEssentialsForScriptContextNewName();
-			}
-			string ident = perf.EssentialsForScriptContextNewName;
-			this.mniInfo.Text = ident + " => " + stratIdent;
-			string ctxName = ident;	//DUNNO_WHY_NOT_DISPLAYED_INSIDE_InputFieldValue  +" //" + stratIdent;
-			this.mniltbCopyToNewContext.InputFieldValue = ctxName;
-			this.mniltbCopyToNewContextBacktest.InputFieldValue = ctxName;
+			
+			string uniqueBacktestNumbers						= sysPerfRestoreAble.NetProfitRecovery;
+			this.mniltbCopyToNewContext.InputFieldValue			= uniqueBacktestNumbers;
+			this.mniltbCopyToNewContextBacktest.InputFieldValue	= uniqueBacktestNumbers;
+
+			string stratSymbolScaleRange	= sysPerfRestoreAble.StrategyName + " " + sysPerfRestoreAble.SymbolScaleIntervalDataRange;
+			this.mniInfo.Text				= uniqueBacktestNumbers + " => " + stratSymbolScaleRange;
+		}
+		void olvHistory_ItemActivate(object sender, EventArgs e) {
+			FnameDateSize fname = this.olvHistory.SelectedObject as FnameDateSize;
+			if (fname == null) return;
+			this.backtests = this.RepositoryDllJsonOptimizationResults.DeserializeList(fname.Name);
+			this.olvBacktests.SetObjects(this.backtests, true);
 		}
 	}
 }

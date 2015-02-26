@@ -1,31 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 
 using Sq1.Core;
-using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
 using Sq1.Gui.Forms;
-using Sq1.Gui.Singletons;
-using Sq1.Widgets;
 using Sq1.Widgets.ScriptEditor;
 
 namespace Sq1.Gui.FormFactories {
 	public class ScriptEditorFormFactory {	// REASON_TO_EXIST: allows to run backtest in ChartForm context, stores Strategy.SourceCode in JSON, bridges Sq1.Widgets.dll and Sq1.Core.dll
-		private const string prefixWhenNeedsToBeSaved = "* ";
-		private RepositoryDllJsonStrategy strategyRepository;
-		private ChartFormManager chartFormManager;
-		private ScriptEditorForm scriptEditorForm {
+		const string prefixWhenNeedsToBeSaved = "* ";
+		ChartFormManager chartFormManager;
+		ScriptEditorForm scriptEditorForm {
 			get { return this.chartFormManager.ScriptEditorFormConditionalInstance; }
 			set { this.chartFormManager.ScriptEditorForm = value; }
 		}
-		private Strategy strategy {
+		Strategy strategy {
 			get { return this.chartFormManager.Strategy; }
 			set { this.chartFormManager.Strategy = value; }
 		}
 		public ScriptEditorFormFactory(ChartFormManager chartFormsManager) {
 			this.chartFormManager = chartFormsManager;
-			this.strategyRepository = Assembler.InstanceInitialized.RepositoryDllJsonStrategy;
 		}
 		public void CreateEditorFormSubscribePushToManager(ChartFormManager chartFormsManager) {
 			this.scriptEditorForm = new ScriptEditorForm(chartFormsManager);
@@ -48,7 +42,7 @@ namespace Sq1.Gui.FormFactories {
 		void ScriptEditorControl_OnSave(object sender, ScriptEditorEventArgs e) {
 			try {
 				this.strategy.ScriptSourceCode = e.ScriptText;
-				this.strategyRepository.StrategySave(this.strategy);
+				this.strategy.Serialize();
 				this.chartFormManager.MainForm.DisplayStatus("Strategy [" + Path.Combine(this.strategy.StoredInFolderRelName, this.strategy.StoredInJsonRelName) + "] saved");
 				this.chartFormManager.ScriptEditedNeedsSaving = false;
 				this.chartFormManager.PopulateWindowTitlesFromChartContextOrStrategy();
@@ -65,6 +59,8 @@ namespace Sq1.Gui.FormFactories {
 			try {
 				this.chartFormManager.StrategyCompileActivatePopulateSlidersShow();
 				this.chartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+				//v1 this.chartFormManager.Strategy.OptimizationResultsByContextIdent.Clear();
+				this.chartFormManager.OptimizerForm.OptimizerControl.RepositoryDllJsonOptimizationResults.ItemsFoundDeleteAll();
 			} catch (Exception ex) {
 				Assembler.PopupException("COMPILING_STRATEGY_SOURCE_CODE_FAILED //ScriptEditorControl_OnCompile() << StrategyCompileActivatePopulateSlidersShow() has thrown", ex);
 			}

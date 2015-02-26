@@ -8,6 +8,7 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
+using Sq1.Widgets.Optimization;
 using Sq1.Gui.FormFactories;
 using Sq1.Gui.Forms;
 using Sq1.Gui.ReportersSupport;
@@ -418,7 +419,7 @@ namespace Sq1.Gui.Forms {
 
 			if (saveStrategyRequired) {
 				// StrategySave is here koz I'm invoked for ~10 user-click GUI events; only Deserialization shouldn't save anything
-				Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this.Strategy);
+				this.Strategy.Serialize();
 			}
 			//bool wontBacktest = skipBacktest || this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false;
 			if (willBacktest == false) {
@@ -754,22 +755,18 @@ namespace Sq1.Gui.Forms {
 		public void OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults() {
 			if (this.OptimizerForm == null) {
 				string msg = "ADDED_CONDITION_UPSTACK_TO_AVOID JUST_WANNA_KNOW_IF_I_EVER_CHECK_FOR_STALE_BEFORE_FORM_IS_CREATED";
-				#if DEBUG
-				//Assembler.PopupException(msg);
-				#endif
+				Assembler.PopupException(msg);
 				return;
 			}
 			
-			string staleReason = null;
-			staleReason = this.OptimizerFormConditionalInstance.OptimizerControl.PopulateTextboxesFromExecutorsState();
-			
-			bool clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize = string.IsNullOrEmpty(staleReason) == false;
-			if (clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize == false) {
-				int a = 1;
-				//return;
-			}
-			this.OptimizerFormConditionalInstance.OptimizerControl
-				.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
+			OptimizerControl control = this.OptimizerFormConditionalInstance.OptimizerControl;
+			control.SyncBacktestAndListWithOptimizationResultsByContextIdent();
+
+			//string staleReason = control.PopulateTextboxesFromExecutorsState();
+			//bool clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize = string.IsNullOrEmpty(staleReason) == false;
+			//if (clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize == true) {
+			//    control.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
+			//}
 		}
 	}
 }

@@ -82,7 +82,7 @@
             "ValueIncrement": 2.0,
             "ValueCurrent": 10.0,
             "BorderShown": false,
-            "NumericUpdownShown": true
+            "NumericUpdownShown": true,
             "ValuesAsString": "10[10..20/5]"
           }
         ],
@@ -95,7 +95,7 @@
             "ValueIncrement": 3.0,
             "ValueCurrent": 33.0,
             "BorderShown": false,
-            "NumericUpdownShown": true
+            "NumericUpdownShown": true,
             "ValuesAsString": "33[11..33/11]"
           }
         ]
