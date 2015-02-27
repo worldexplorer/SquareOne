@@ -109,7 +109,7 @@
 			// mniRun
 			// 
 			this.mniRun.Name = "mniRun";
-			this.mniRun.ShortcutKeys = System.Windows.Forms.Keys.F5;
+			this.mniRun.ShortcutKeys = System.Windows.Forms.Keys.F7;
 			this.mniRun.Size = new System.Drawing.Size(138, 22);
 			this.mniRun.Text = "Run";
 			this.mniRun.Click += new System.EventHandler(this.mniRun_Click);

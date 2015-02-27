@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
@@ -13,19 +14,17 @@ namespace Sq1.Gui.FormFactories {
 			this.chartFormManager = chartFormsManager;
 		}
 
-		OptimizerForm OptimizerForm {
-			get { return this.chartFormManager.OptimizerFormConditionalInstance; }
-			set { this.chartFormManager.OptimizerForm = value; }
+		public OptimizerForm CreateOptimizerFormSubscribe() {
+			OptimizerForm optimizerForm = new OptimizerForm(this.chartFormManager);
+			optimizerForm.OptimizerControl.OnCopyToContextDefault			+= new EventHandler<ContextScriptEventArgs>(optimizerControl_OnCopyToContextDefault);
+			optimizerForm.OptimizerControl.OnCopyToContextDefaultBacktest	+= new EventHandler<ContextScriptEventArgs>(optimizerControl_OnCopyToContextDefaultBacktest);
+			optimizerForm.OptimizerControl.OnCopyToContextNew				+= new EventHandler<ContextScriptEventArgs>(optimizerControl_OnCopyToContextNew);
+			optimizerForm.OptimizerControl.OnCopyToContextNewBacktest		+= new EventHandler<ContextScriptEventArgs>(optimizerControl_OnCopyToContextNewBacktest);
+			optimizerForm.FormClosing										+= new FormClosingEventHandler(optimizerForm_FormClosing);
+			optimizerForm.FormClosed										+= new  FormClosedEventHandler(optimizerForm_FormClosed);
+			return optimizerForm;
 		}
 
-		public void CreateOptimizerFormSubscribePushToManager(ChartFormManager chartFormsManager) {
-			this.OptimizerForm = new OptimizerForm(chartFormsManager);
-			this.OptimizerForm.OptimizerControl.OnCopyToContextDefault			+= new EventHandler<ContextScriptEventArgs>(optimizerControl_OnCopyToContextDefault);
-			this.OptimizerForm.OptimizerControl.OnCopyToContextDefaultBacktest	+= new EventHandler<ContextScriptEventArgs>(optimizerControl_OnCopyToContextDefaultBacktest);
-			this.OptimizerForm.OptimizerControl.OnCopyToContextNew				+= new EventHandler<ContextScriptEventArgs>(optimizerControl_OnCopyToContextNew);
-			this.OptimizerForm.OptimizerControl.OnCopyToContextNewBacktest		+= new EventHandler<ContextScriptEventArgs>(optimizerControl_OnCopyToContextNewBacktest);
-			this.OptimizerForm.Disposed += optimizerForm_Disposed;
-		}
 		void optimizerControl_OnCopyToContextNewBacktest(object sender, ContextScriptEventArgs e) {
 			ContextScript ctxAdding = e.ContextScript;
 			Strategy strategyOnChart = this.chartFormManager.Strategy;
@@ -58,10 +57,22 @@ namespace Sq1.Gui.FormFactories {
 			SlidersForm.Instance.Initialize(SlidersForm.Instance.SlidersAutoGrowControl.Strategy);
 			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(ContextScript.DEFAULT_NAME);
 		}
-		void optimizerForm_Disposed(object sender, EventArgs e) {
+		void optimizerForm_FormClosing(object sender, FormClosingEventArgs e) {
+			// only when user closed => allow scriptEditorForm_FormClosed() to serialize
+			if (this.chartFormManager.MainForm.MainFormClosingSkipChartFormsRemoval) {
+				e.Cancel = true;
+				return;
+			}
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
+				e.Cancel = true;
+				return;
+			}
+		}
+		void optimizerForm_FormClosed(object sender, FormClosedEventArgs e) {
 			// both at FormCloseByX and MainForm.onClose()
 			this.chartFormManager.ChartForm.MniShowOptimizer.Checked = false;
-			this.OptimizerForm = null;
+			this.chartFormManager.MainForm.MainFormSerialize();
 		}
+
 	}
 }

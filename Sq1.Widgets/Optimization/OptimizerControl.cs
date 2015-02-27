@@ -16,7 +16,7 @@ namespace Sq1.Widgets.Optimization {
 				List<string>						colMetricsShouldStay;
 				List<SystemPerformanceRestoreAble>	backtests;
 				List<OLVColumn>						columnsDynParam;
-		public	RepositoryJsonOptimizationResults	RepositoryDllJsonOptimizationResults		{ get; private set;}
+		public	RepositoryJsonOptimizationResults	RepositoryJsonOptimizationResults		{ get; private set;}
 		
 
 		public OptimizerControl() {
@@ -53,9 +53,9 @@ namespace Sq1.Widgets.Optimization {
 //			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveWinners);
 //			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveLosers);
 
-			backtests = new List<SystemPerformanceRestoreAble>();
-			columnsDynParam = new List<OLVColumn>();
-			RepositoryDllJsonOptimizationResults	= new RepositoryJsonOptimizationResults();
+			backtests								= new List<SystemPerformanceRestoreAble>();
+			columnsDynParam							= new List<OLVColumn>();
+			RepositoryJsonOptimizationResults		= new RepositoryJsonOptimizationResults();
 		}
 		public void Initialize(Optimizer optimizer) {
 			this.optimizer = optimizer;
@@ -89,20 +89,20 @@ namespace Sq1.Widgets.Optimization {
 			
 			this.populateColumns();
 			this.olvBacktestsCustomize();
-			
+		
 			this.olvHistoryCustomize();
-			string strategyRelname = Path.Combine(this.optimizer.Executor.Strategy.StoredInFolderRelName, this.optimizer.Executor.StrategyName);
-			this.RepositoryDllJsonOptimizationResults.Initialize(Assembler.InstanceInitialized.AppDataPath, Path.Combine("OptimizationResults", strategyRelname));
+			this.RepositoryJsonOptimizationResults.Initialize(Assembler.InstanceInitialized.AppDataPath, Path.Combine("OptimizationResults", this.optimizer.Executor.Strategy.RelPathAndNameForOptimizationResults));
 			string symbolScaleRange = this.optimizer.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
-			this.olvHistoryRescanRefillSelect(symbolScaleRange);
+			//this.olvHistoryRescanRefillSelect(symbolScaleRange);
 				
 			this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
 		}
+
 		void olvHistoryRescanRefillSelect(string symbolScaleRange) {
-			this.RepositoryDllJsonOptimizationResults.RescanFolderStoreNamesFound();
-			this.olvHistory.SetObjects(this.RepositoryDllJsonOptimizationResults.ItemsFound);
-			FnameDateSize found = null;
-			foreach (FnameDateSize each in this.RepositoryDllJsonOptimizationResults.ItemsFound) {
+			this.RepositoryJsonOptimizationResults.RescanFolderStoreNamesFound();
+			this.olvHistory.SetObjects(this.RepositoryJsonOptimizationResults.ItemsFound);
+			FnameDateSizeColor found = null;
+			foreach (FnameDateSizeColor each in this.RepositoryJsonOptimizationResults.ItemsFound) {
 				if (each.Name != symbolScaleRange) continue;
 				found = each;
 				break;
@@ -112,8 +112,36 @@ namespace Sq1.Widgets.Optimization {
 			} else {
 				this.olvHistory.SelectObject(found, true);
 			}
+			this.olvHistoryComputeAverage();
+		}
+		void olvHistoryComputeAverage() {
+			foreach (FnameDateSizeColor each in this.RepositoryJsonOptimizationResults.ItemsFound) {
+				double profitFactorTotal = 0;		// netProfit could overflow outside double for 1000000000 backtests in one deserialized list; profit factor is expected [-10...10];
+				int backtestsInOptimization = 0;
+				List<SystemPerformanceRestoreAble> eachOptimization = this.RepositoryJsonOptimizationResults.DeserializeList(each.Name);
+				foreach (SystemPerformanceRestoreAble backtest in eachOptimization) {
+					if (double.IsNaN(backtest.ProfitFactor)) continue;
+					if (double.IsPositiveInfinity(backtest.ProfitFactor)) continue;
+					if (double.IsNegativeInfinity(backtest.ProfitFactor)) continue;
+					profitFactorTotal += backtest.ProfitFactor;
+					backtestsInOptimization++;
+				}
+				double profitFactorAverage = 0;
+				if (backtestsInOptimization > 0) {		// AVOIDING_OUR_GOOD_FRIEND_DIVISION_TO_ZERO_EXCEPTION
+					profitFactorAverage = profitFactorTotal / (double)backtestsInOptimization;
+				}
+				each.PFavg = Math.Round(profitFactorAverage, 2);
+				if (profitFactorTotal == 0) {
+					string msg= "SystemPerformanceRestoreAble didn't have ProfitFactor calculated/deserialized for[" + each + "] //olvHistoryComputeAverage()";
+					Assembler.PopupException(msg, null, false);
+				}
+			}
 		}
 		public void SyncBacktestAndListWithOptimizationResultsByContextIdent() {
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.SyncBacktestAndListWithOptimizationResultsByContextIdent(); });
+				return;
+			}
 			Strategy strategy = this.optimizer.Executor.Strategy;
 			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//v1
@@ -123,8 +151,8 @@ namespace Sq1.Widgets.Optimization {
 			//	this.backtests.Clear();
 			//}
 			//v2
-			if (this.RepositoryDllJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) {
-				this.backtests = this.RepositoryDllJsonOptimizationResults.DeserializeList(symbolScaleRange);
+			if (this.RepositoryJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) {
+				this.backtests = this.RepositoryJsonOptimizationResults.DeserializeList(symbolScaleRange);
 			} else {
 				this.backtests.Clear();
 			}
@@ -225,7 +253,7 @@ namespace Sq1.Widgets.Optimization {
 		public void NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize() {
 			Strategy strategy = this.optimizer.Executor.Strategy;
 			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
-			if (this.RepositoryDllJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) return;
+			if (this.RepositoryJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) return;
 
 			string staleReason = this.optimizer.StaleReason;
 			this.txtStaleReason.Text = staleReason; // TextBox doesn't display "null" for null-string

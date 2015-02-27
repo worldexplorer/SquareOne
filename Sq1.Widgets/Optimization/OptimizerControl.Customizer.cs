@@ -110,21 +110,37 @@ namespace Sq1.Widgets.Optimization {
 		
 		
 		void olvHistoryCustomize() {
+			this.olvHistoryCustomizeColors();
 			this.olvcHistoryDate.AspectGetter = delegate(object o) {
-				FnameDateSize fnameDateSize = o as FnameDateSize;
+				FnameDateSizeColor fnameDateSize = o as FnameDateSizeColor;
 				if (fnameDateSize == null) return "olvcHistoryDate.AspectGetter: fnameDateSize=null";
 				return fnameDateSize.DateSmart;
 			};
 			this.olvcHistorySymbolScaleRange.AspectGetter = delegate(object o) {
-				FnameDateSize fnameDateSize = o as FnameDateSize;
+				FnameDateSizeColor fnameDateSize = o as FnameDateSizeColor;
 				if (fnameDateSize == null) return "olvcHistorySymbolScaleRange.AspectGetter: fnameDateSize=null";
 				return fnameDateSize.Name;
 			};
 			this.olvcHistorySize.AspectGetter = delegate(object o) {
-				FnameDateSize fnameDateSize = o as FnameDateSize;
+				FnameDateSizeColor fnameDateSize = o as FnameDateSizeColor;
 				if (fnameDateSize == null) return "olvcHistorySize.AspectGetter: fnameDateSize=null";
 				return fnameDateSize.SizeMb;
 			};
+			this.olvcPFavg.AspectGetter = delegate(object o) {
+				FnameDateSizeColor fnameDateSize = o as FnameDateSizeColor;
+				if (fnameDateSize == null) return "olvcProfitFactor.AspectGetter: fnameDateSize=null";
+				return fnameDateSize.PFavg.ToString();
+			};
+			this.olvBacktests.ShowItemToolTips = true;
+		}
+		void olvHistoryCustomizeColors() {
+			this.olvHistory.FormatRow += new EventHandler<FormatRowEventArgs>(olvHistory_FormatRow);
+		}
+		void olvHistory_FormatRow(object sender, FormatRowEventArgs e) {
+			FnameDateSizeColor fname = e.Model as FnameDateSizeColor;
+			if (fname == null) return;
+			if (fname.PFavg == 0) return;	// SystemPerformanceRestoreAble didn't have ProfitFactor calculated/deserialized
+			e.Item.BackColor = (fname.PFavg >= 1) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 		}
 		
 	}

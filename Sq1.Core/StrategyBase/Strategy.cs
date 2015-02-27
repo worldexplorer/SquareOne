@@ -20,6 +20,7 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public string								StoredInJsonAbspath;
 		[JsonIgnore]	public string								StoredInFolderRelName	{ get { return Path.GetFileName(Path.GetDirectoryName(this.StoredInJsonAbspath)); } }
 		[JsonIgnore]	public string								StoredInJsonRelName		{ get { return Path.GetFileName(this.StoredInJsonAbspath); } }
+		[JsonIgnore]	public string								RelPathAndNameForOptimizationResults			{ get { return Path.Combine(this.StoredInFolderRelName, this.Name); } }
 		
 		[JsonIgnore]	public bool									ActivatedFromDll { get {
 				if (string.IsNullOrEmpty(this.DllPathIfNoSourceCode)) return false;
@@ -58,7 +59,7 @@ namespace Sq1.Core.StrategyBase {
 		[JsonIgnore]	public ScriptCompiler						ScriptCompiler;
 		// I_DONT_WANT_TO_BRING_CHART_SETTINGS_TO_CORE public ChartSettings ChartSettings;
 		[JsonProperty]	public LivesimBrokerSettings				LivesimBrokerSettings;
-		[JsonProperty]	public LivesimStreamingSettings				LivesimStreamginSettings;
+		[JsonProperty]	public LivesimStreamingSettings				LivesimStreamingSettings;
 		//v1 [JsonProperty]	public Dictionary<string, List<SystemPerformanceRestoreAble>>	OptimizationResultsByContextIdent;
 
 	
@@ -76,7 +77,7 @@ namespace Sq1.Core.StrategyBase {
 			this.ExceptionsLimitToAbortBacktest 	= 10;
 			this.scriptContextCurrentNameLock		= new object();
 			this.LivesimBrokerSettings				= new LivesimBrokerSettings(this);
-			this.LivesimStreamginSettings			= new LivesimStreamingSettings(this);
+			this.LivesimStreamingSettings			= new LivesimStreamingSettings(this);
 			//v1this.OptimizationResultsByContextIdent	= new Dictionary<string, List<SystemPerformanceRestoreAble>>();
 		}
 		public override string ToString() {

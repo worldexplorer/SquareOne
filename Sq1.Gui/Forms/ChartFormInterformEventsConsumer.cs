@@ -7,6 +7,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Widgets.RangeBar;
 using WeifenLuo.WinFormsUI.Docking;
+using Sq1.Widgets;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormInterformEventsConsumer {
@@ -58,7 +59,7 @@ namespace Sq1.Gui.Forms {
 				if (contextChart.DataSourceName != e.DataSource.Name)	contextChart.DataSourceName = e.DataSource.Name; 
 				if (contextChart.Symbol			!= e.Symbol) 			contextChart.Symbol 		= e.Symbol;
 				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("DataSourcesTree_OnSymbolSelected");
-				this.chartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+				this.chartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("DataSourcesTree_OnSymbolSelected()", ex);
 			}
@@ -87,12 +88,15 @@ namespace Sq1.Gui.Forms {
 			this.chartFormManager.ReportersFormsManager.PopupReporters_OnParentChartActivated(sender, e);
 			this.chartFormManager.ChartForm.ChartControl.RangeBar.Enabled = false;
 			
-			if (this.chartFormManager.OptimizerForm == null) {
+			//if (this.chartFormManager.OptimizerForm == null) {
+			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.OptimizerForm) == true) {
 				string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
 			} else {
 				this.chartFormManager.OptimizerFormShow(true);
 			}
-			if (this.chartFormManager.LivesimForm == null) {
+
+			//if (this.chartFormManager.LivesimForm == null) {
+			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.LivesimForm) == true) {
 				string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
 			} else {
 				this.chartFormManager.LivesimFormShow(true);
@@ -220,7 +224,7 @@ namespace Sq1.Gui.Forms {
 			BarDataRange newRange = new BarDataRange(e.ValueMin.Date, e.ValueMax.Date);
 			try {
 				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("ChartRangeBar_AnyValueChanged");
-				this.chartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+				this.chartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("ChartRangeBar_AnyValueChanged", ex);
 			}

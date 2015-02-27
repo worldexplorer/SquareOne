@@ -97,11 +97,22 @@ namespace Sq1.Gui.ReportersSupport {
 
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 				rep.BuildFullOnBacktestFinished();
+			}
+			this.WindowTitlePullFromStrategy_allReporterWrappers();
+		}
 
+		public void WindowTitlePullFromStrategy_allReporterWrappers() {
+			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 				// Reporters.Position should display "Positions (276)"
 				ReporterFormWrapper parent = rep.Parent as ReporterFormWrapper;
 				if (parent == null) continue;
-				parent.Text = rep.TabText + " :: " + this.ChartFormManager.ChartForm.Text;
+
+				string windowTitle = rep.TabText + " :: " + this.ChartFormManager.ChartForm.Text;
+				if (this.ChartFormManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
+				if (this.ChartFormManager.ScriptEditedNeedsSaving) {
+					windowTitle = ChartFormManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
+				}
+				parent.Text = windowTitle;
 			}
 		}
 		public void BuildReportFullOnBacktestFinishedAllReporters(SystemPerformance performance) {
@@ -233,6 +244,7 @@ namespace Sq1.Gui.ReportersSupport {
 			this.ReporterShortNamesUserInvoked.Remove(reporterShortName);
 			this.ChartFormManager.ReportersDumpCurrentForSerialization();
 			this.MenuItemsProvider.FindMniByShortNameAndTick(reporterShortName, false);
+			this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 
 		public void PopupReporters_OnParentChartActivated(object sender, EventArgs e) {

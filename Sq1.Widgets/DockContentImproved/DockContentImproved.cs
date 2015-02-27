@@ -247,7 +247,7 @@ namespace Sq1.Widgets {
 			}
 			#if DEBUG
 			string thisName = this.GetType().Name;
-			if (thisName == "ExceptionsForm") {
+			if (thisName == "ExceptionsForm" && base.Parent != null) {
 				if (base.Width != base.Parent.Width) {
 					string msg = "PLACED_EXCEPTION_TEXTAREA_TO_HORIZONTAL_SPLITTER_TOP_PANEL reason for unsused space on the right before the form edge?";
 				}

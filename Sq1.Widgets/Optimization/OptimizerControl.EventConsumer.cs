@@ -94,7 +94,7 @@ namespace Sq1.Widgets.Optimization {
 			//}
 			//strategy.Serialize();
 			//v2
-			this.RepositoryDllJsonOptimizationResults.SerializeList(this.backtests, symbolScaleRange);
+			this.RepositoryJsonOptimizationResults.SerializeList(this.backtests, symbolScaleRange);
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
 			this.splitContainer1.SplitterDistance = this.heightExpanded;
 		}
@@ -219,9 +219,9 @@ namespace Sq1.Widgets.Optimization {
 			this.mniInfo.Text				= uniqueBacktestNumbers + " => " + stratSymbolScaleRange;
 		}
 		void olvHistory_ItemActivate(object sender, EventArgs e) {
-			FnameDateSize fname = this.olvHistory.SelectedObject as FnameDateSize;
+			FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
 			if (fname == null) return;
-			this.backtests = this.RepositoryDllJsonOptimizationResults.DeserializeList(fname.Name);
+			this.backtests = this.RepositoryJsonOptimizationResults.DeserializeList(fname.Name);
 			this.olvBacktests.SetObjects(this.backtests, true);
 		}
 	}

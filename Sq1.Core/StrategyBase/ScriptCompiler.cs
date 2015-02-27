@@ -10,38 +10,75 @@ using Microsoft.CSharp;
 namespace Sq1.Core.StrategyBase {
 	public class ScriptCompiler {
 		public CompilerErrorCollection CompilerErrors;
+		public string TempFolderInAppData;
+		public string TempFolderAbsPath { get {
+			string ret = null;
+			if (string.IsNullOrEmpty(this.TempFolderInAppData)) return ret;
+			ret = Path.Combine(Assembler.InstanceInitialized.RepositoryDllJsonStrategy.RootPath, this.TempFolderInAppData);
+			return ret;
+		} }
+		object avoidingMessIfInstantiatedInAssembler;
 
-		public Script CompileSourceReturnInstance(string sourceCode, string dotNetReferences, string tmpFolder="_StrategiesCompiledOnTheFlyInsecure") {
+		public ScriptCompiler() {
+			avoidingMessIfInstantiatedInAssembler = new object();
+		}
+
+		//NOT USED
+		private ScriptCompiler(string tmpFolder = "_StrategiesCompiledOnTheFlyInsecure") : this() {
+
+			//DISABLED_SINCE_DOESNT_HELP_FOR_EXCEPTIONS_TO_HAVE_LINE_NUMBER_IN_EXCEPTIONS_CONTROL
+			tmpFolder = null;
+
+			TempFolderInAppData = tmpFolder;
+			if (string.IsNullOrWhiteSpace(this.TempFolderInAppData)) return;
+			bool attemptedToCreateDirectory = false;
+			try {
+				if (Directory.Exists(this.TempFolderAbsPath) == false) {
+					attemptedToCreateDirectory = true;
+					Directory.CreateDirectory(this.TempFolderAbsPath);
+				}
+			} catch (Exception ex) {
+				string msg = "I_CANNOT_CREATE_TEMP_DIRECTORY_CHECK_PERMISSIONS_AND_DISK_QUOTE tmpAbsPath["
+					+ this.TempFolderAbsPath + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg + " ScriptCompiler.CompileSourceReturnInstance()", ex);
+			}
+			if (Directory.Exists(this.TempFolderAbsPath) == false) {
+				string msg = "TEMP_DIRECTORY_DOES_NOT_EXISTS attemptedToCreateDirectory["
+					+ attemptedToCreateDirectory + "] tmpAbsPath[" + this.TempFolderAbsPath + "]";
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new Exception(msg + " ScriptCompiler.CompileSourceReturnInstance()");
+			}
+			this.CleanTempFolder();
+		}
+
+		public int CleanTempFolder(bool keepDllsUndeleted = false) {
+			int ret = 0;
+			DirectoryInfo directoryInfo = new DirectoryInfo(this.TempFolderAbsPath);
+			FileInfo[] allFoundFiles = directoryInfo.GetFiles();
+			foreach (FileInfo fileInfo in allFoundFiles) {
+				if (keepDllsUndeleted == true && fileInfo.Name.ToUpper().EndsWith(".DLL")) {
+					continue;
+				}
+				File.Delete(fileInfo.FullName);
+				ret++;
+			}
+			return ret;
+		}
+
+		public Script CompileSourceReturnInstance(string sourceCode, string dotNetReferences) { lock (this.avoidingMessIfInstantiatedInAssembler) {
 			CodeDomProvider codeDomProvider = new CSharpCodeProvider();
 			CompilerParameters compilerParameters = new CompilerParameters();
 			compilerParameters.GenerateExecutable = false;
-			
 			compilerParameters.GenerateInMemory = true;
-			//DISABLED_SINCE_DOESNT_HELP_FOR_EXCEPTIONS_TO_HAVE_LINE_NUMBER_IN_EXCEPTIONS_CONTROL
-			if (string.IsNullOrWhiteSpace(tmpFolder) == false) {
+			if (string.IsNullOrWhiteSpace(this.TempFolderInAppData) == false) {
 				// http://stackoverflow.com/questions/875723/how-to-debug-break-in-codedom-compiled-code
 				compilerParameters.GenerateInMemory = false;
-				string tmpAbsPath = Path.Combine(Assembler.InstanceInitialized.RepositoryDllJsonStrategy.RootPath, tmpFolder);
-				bool attemptedToCreateDirectory = false;
-				try {
-					if (Directory.Exists(tmpAbsPath) == false) {
-						attemptedToCreateDirectory = true;
-						Directory.CreateDirectory(tmpAbsPath);
-					}
-				} catch (Exception ex) {
-					string msg = "I_CANNOT_CREATE_TEMP_DIRECTORY_CHECK_PERMISSIONS_AND_DISK_QUOTE tmpAbsPath[" + tmpAbsPath + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					throw new Exception(msg + " ScriptCompiler.CompileSourceReturnInstance()", ex);
-				}
-				if (Directory.Exists(tmpAbsPath) == false) {
-					string msg = "TEMP_DIRECTORY_DOES_NOT_EXISTS attemptedToCreateDirectory[" + attemptedToCreateDirectory + "] tmpAbsPath[" + tmpAbsPath + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					throw new Exception(msg + " ScriptCompiler.CompileSourceReturnInstance()");
-				}
+				string tmpAbsPath = Path.Combine(Assembler.InstanceInitialized.RepositoryDllJsonStrategy.RootPath, this.TempFolderInAppData);
 				compilerParameters.TempFiles = new TempFileCollection(tmpAbsPath, true);
 				compilerParameters.IncludeDebugInformation = true;
 			}
@@ -49,7 +86,7 @@ namespace Sq1.Core.StrategyBase {
 			compilerParameters.ReferencedAssemblies.Add("System.dll");
 			compilerParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
 			compilerParameters.ReferencedAssemblies.Add("System.Drawing.dll");
-			this.AddApplicationAssemblies(compilerParameters);
+			this.addApplicationAssemblies(compilerParameters);
 			if (string.IsNullOrEmpty(dotNetReferences) == false) {
 				string[] referencesSplitted = dotNetReferences.Split(new char[] { ';' });
 				foreach (string reference in referencesSplitted) {
@@ -86,8 +123,8 @@ namespace Sq1.Core.StrategyBase {
 				break;
 			}
 			return result;
-		}
-		public void AddApplicationAssemblies(CompilerParameters compilerParameters) {
+		} }
+		void addApplicationAssemblies(CompilerParameters compilerParameters) {
 			//Debugger.Break();	//TESTED
 			List<string> dllsFound = new List<string>();
 			List<Assembly> assembliesFound = new List<Assembly>();

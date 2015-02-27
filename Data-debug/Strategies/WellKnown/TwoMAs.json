@@ -154,7 +154,13 @@
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
+        "Positions": {
+          "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
+          "Colorify": true,
+          "PositionsOlvStateBase64": ""
+        },
+        "Performance": null
       },
       "ApplyCommission": false,
       "EnableSlippage": false,
@@ -175,20 +181,20 @@
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "Scale": 3,
-        "Interval": 10,
+        "Interval": 1,
         "IsIntraday": true,
-        "AsTimeSpanInSeconds": 600,
-        "AsTimeSpan": "00:10:00"
+        "AsTimeSpanInSeconds": 60,
+        "AsTimeSpan": "00:01:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
         "Range": 1,
         "DateFrom": "0001-01-01T00:00:00",
         "DateTill": "9999-12-31T23:59:59.9999999",
-        "RecentBars": 1500,
+        "RecentBars": 610,
         "RecentTimeunits": 0
       },
-      "IsStreamingTriggeringScript": false,
+      "IsStreamingTriggeringScript": true,
       "ShowRangeBar": false,
       "IsStreaming": true
     }
@@ -222,7 +228,7 @@
     "AdaperDisconnectReconnectsAfterMillisMax": 0,
     "AdaperDisconnectEnabled": true
   },
-  "LivesimStreamginSettings": {
+  "LivesimStreamingSettings": {
     "$type": "Sq1.Core.Livesim.LivesimStreamingSettings, Sq1.Core",
     "DelayBetweenSerialQuotesMin": 0,
     "DelayBetweenSerialQuotesMax": 0,

@@ -1,10 +1,11 @@
 ﻿using System;
 
 namespace Sq1.Core.Repositories {
-	public class FnameDateSize {
+	public class FnameDateSizeColor {
 		public string	Name	{ get; private set; }
 		public DateTime	Date	{ get; private set; }
 		public long		Size	{ get; private set; }
+		public double	PFavg;
 		
 		public string	DateSmart	{ get {
 				if (this.Date.Date == DateTime.Now.Date) {
@@ -17,7 +18,7 @@ namespace Sq1.Core.Repositories {
 		public string	SizeKb	{ get { return Math.Round(this.Size / (double)1024).ToString("N0") + " Kb"; } }
 		public string	SizeMb	{ get { return Math.Round(this.Size / (double)(1024 * 1024), 2).ToString("N2") + " Mb"; } }
 		
-		public FnameDateSize(string name, DateTime date, long size) {
+		public FnameDateSizeColor(string name, DateTime date, long size) {
 			Name = name;
 			Date = date;
 			Size = size;

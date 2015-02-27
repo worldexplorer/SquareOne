@@ -28,7 +28,7 @@ namespace Sq1.Core.Optimization {
 		[JsonProperty]	public	string	AvgProfitBothFormatted;
 		[JsonIgnore]	private	double	WinLossRatio;
 		[JsonProperty]	public	string	WinLossRatioFormatted;
-		[JsonIgnore]	private	double	ProfitFactor;
+		[JsonProperty]	public	double	ProfitFactor;
 		[JsonProperty]	public	string	ProfitFactorFormatted;
 		[JsonIgnore]	private	double	RecoveryFactor;
 		[JsonProperty]	public	string	RecoveryFactorFormatted;

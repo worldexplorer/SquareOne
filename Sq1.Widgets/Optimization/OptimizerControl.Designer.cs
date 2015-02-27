@@ -16,6 +16,7 @@ namespace Sq1.Widgets.Optimization {
 			this.components = new System.ComponentModel.Container();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.olvHistory = new BrightIdeasSoftware.FastObjectListView();
+			this.olvcPFavg = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcHistorySymbolScaleRange = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcHistoryDate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcHistorySize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -61,11 +62,11 @@ namespace Sq1.Widgets.Optimization {
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniCopyToDefaultCtxBacktest = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniCopyToDefaultCtx = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniltbCopyToNewContextBacktest = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
-			this.mniltbCopyToNewContext = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniSaveCsv = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniltbCopyToNewContextBacktest = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.mniltbCopyToNewContext = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -123,6 +124,7 @@ namespace Sq1.Widgets.Optimization {
 			// olvHistory
 			// 
 			this.olvHistory.Activation = System.Windows.Forms.ItemActivation.OneClick;
+			this.olvHistory.AllColumns.Add(this.olvcPFavg);
 			this.olvHistory.AllColumns.Add(this.olvcHistorySymbolScaleRange);
 			this.olvHistory.AllColumns.Add(this.olvcHistoryDate);
 			this.olvHistory.AllColumns.Add(this.olvcHistorySize);
@@ -135,6 +137,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.CellEditEnterChangesRows = true;
 			this.olvHistory.CellEditTabChangesRows = true;
 			this.olvHistory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.olvcPFavg,
             this.olvcHistorySymbolScaleRange,
             this.olvcHistoryDate,
             this.olvcHistorySize});
@@ -148,7 +151,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.Location = new System.Drawing.Point(413, 54);
 			this.olvHistory.Name = "olvHistory";
 			this.olvHistory.ShowCommandMenuOnRightClick = true;
-			this.olvHistory.ShowGroups = false;
+			this.olvHistory.ShowItemToolTips = true;
 			this.olvHistory.Size = new System.Drawing.Size(267, 223);
 			this.olvHistory.TabIndex = 42;
 			this.olvHistory.TintSortColumn = true;
@@ -165,20 +168,32 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.VirtualMode = true;
 			this.olvHistory.ItemActivate += new System.EventHandler(this.olvHistory_ItemActivate);
 			// 
+			// olvcPFavg
+			// 
+			this.olvcPFavg.IsEditable = false;
+			this.olvcPFavg.Text = "PFavg";
+			this.olvcPFavg.ToolTipText = "Average Profit Factor among all the backtests in the optimization";
+			this.olvcPFavg.Width = 45;
+			// 
 			// olvcHistorySymbolScaleRange
 			// 
 			this.olvcHistorySymbolScaleRange.FillsFreeSpace = true;
-			this.olvcHistorySymbolScaleRange.Text = "ScriptContext";
+			this.olvcHistorySymbolScaleRange.Text = "Symbol Scale Range";
+			this.olvcHistorySymbolScaleRange.ToolTipText = "Script Context settings taken at the moment of optimization";
 			this.olvcHistorySymbolScaleRange.Width = 160;
 			// 
 			// olvcHistoryDate
 			// 
-			this.olvcHistoryDate.Text = "Date";
+			this.olvcHistoryDate.IsEditable = false;
+			this.olvcHistoryDate.Text = "Modified";
+			this.olvcHistoryDate.ToolTipText = "Reminder when you did it";
 			this.olvcHistoryDate.Width = 55;
 			// 
 			// olvcHistorySize
 			// 
+			this.olvcHistorySize.IsEditable = false;
 			this.olvcHistorySize.Text = "Size";
+			this.olvcHistorySize.ToolTipText = "JSON file size";
 			this.olvcHistorySize.Width = 55;
 			// 
 			// fastOLVparametersYesNoMinMaxStep
@@ -597,6 +612,27 @@ namespace Sq1.Widgets.Optimization {
 			this.mniCopyToDefaultCtx.Text = "Copy To Default Context";
 			this.mniCopyToDefaultCtx.Click += new System.EventHandler(this.mniCopyToDefaultCtx_Click);
 			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(440, 6);
+			// 
+			// mniCopyToClipboard
+			// 
+			this.mniCopyToClipboard.Enabled = false;
+			this.mniCopyToClipboard.Name = "mniCopyToClipboard";
+			this.mniCopyToClipboard.Size = new System.Drawing.Size(443, 22);
+			this.mniCopyToClipboard.Text = "Copy To Clipboard (Paste-able to Excel)";
+			this.mniCopyToClipboard.Click += new System.EventHandler(this.mniCopyToClipboard_Click);
+			// 
+			// mniSaveCsv
+			// 
+			this.mniSaveCsv.Enabled = false;
+			this.mniSaveCsv.Name = "mniSaveCsv";
+			this.mniSaveCsv.Size = new System.Drawing.Size(443, 22);
+			this.mniSaveCsv.Text = "Save as CSV...";
+			this.mniSaveCsv.Click += new System.EventHandler(this.mniSaveCsv_Click);
+			// 
 			// mniltbCopyToNewContextBacktest
 			// 
 			this.mniltbCopyToNewContextBacktest.BackColor = System.Drawing.Color.Transparent;
@@ -628,27 +664,6 @@ namespace Sq1.Widgets.Optimization {
 			this.mniltbCopyToNewContext.TextRed = false;
 			this.mniltbCopyToNewContext.TextWidth = 128;
 			this.mniltbCopyToNewContext.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContext_UserTyped);
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(440, 6);
-			// 
-			// mniCopyToClipboard
-			// 
-			this.mniCopyToClipboard.Enabled = false;
-			this.mniCopyToClipboard.Name = "mniCopyToClipboard";
-			this.mniCopyToClipboard.Size = new System.Drawing.Size(443, 22);
-			this.mniCopyToClipboard.Text = "Copy To Clipboard (Paste-able to Excel)";
-			this.mniCopyToClipboard.Click += new System.EventHandler(this.mniCopyToClipboard_Click);
-			// 
-			// mniSaveCsv
-			// 
-			this.mniSaveCsv.Enabled = false;
-			this.mniSaveCsv.Name = "mniSaveCsv";
-			this.mniSaveCsv.Size = new System.Drawing.Size(443, 22);
-			this.mniSaveCsv.Text = "Save as CSV...";
-			this.mniSaveCsv.Click += new System.EventHandler(this.mniSaveCsv_Click);
 			// 
 			// OptimizerControl
 			// 
@@ -725,5 +740,6 @@ namespace Sq1.Widgets.Optimization {
 		private BrightIdeasSoftware.OLVColumn olvcHistoryDate;
 		private BrightIdeasSoftware.OLVColumn olvcHistorySymbolScaleRange;
 		private BrightIdeasSoftware.OLVColumn olvcHistorySize;
+		private BrightIdeasSoftware.OLVColumn olvcPFavg;
 	}
 }

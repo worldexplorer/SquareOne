@@ -169,11 +169,14 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Optimization\Optimizer.cs" />
+    <Compile Include="Optimization\Optimizer.EventGenerator.cs">
+      <DependentUpon>Optimizer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Optimization\OptimizerParametersSequencer.cs" />
     <Compile Include="Optimization\SystemPerformanceRestoreAbleEventArgs.cs" />
     <Compile Include="Optimization\SystemPerformanceRestoreAble.cs" />
     <Compile Include="Repositories\RepositoryJsonsInFolderSimple.cs" />
-    <Compile Include="Repositories\FnameDateSize.cs" />
+    <Compile Include="Repositories\FnameDateSizeColor.cs" />
     <Compile Include="Repositories\RepositoryJsonOptimizationResults.cs" />
     <Compile Include="Repositories\StrategySelfSaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -67,6 +67,7 @@
     "PositionsCountBothFormatted": "129",
     "AvgProfitBothFormatted": "45.8",
     "WinLossRatioFormatted": "0.8",
+    "ProfitFactor": 1.89,
     "ProfitFactorFormatted": "1.89",
     "RecoveryFactorFormatted": "2.6",
     "MaxDrawDownFormatted": "-2,275.0",
@@ -142,6 +143,7 @@
     "PositionsCountBothFormatted": "183",
     "AvgProfitBothFormatted": "43.6",
     "WinLossRatioFormatted": "1.0",
+    "ProfitFactor": 2.04,
     "ProfitFactorFormatted": "2.04",
     "RecoveryFactorFormatted": "3.86",
     "MaxDrawDownFormatted": "-2,065.0",
@@ -217,6 +219,7 @@
     "PositionsCountBothFormatted": "321",
     "AvgProfitBothFormatted": "12.7",
     "WinLossRatioFormatted": "1.0",
+    "ProfitFactor": 1.29,
     "ProfitFactorFormatted": "1.29",
     "RecoveryFactorFormatted": "1.29",
     "MaxDrawDownFormatted": "-3,162.0",
@@ -292,6 +295,7 @@
     "PositionsCountBothFormatted": "317",
     "AvgProfitBothFormatted": "-27.6",
     "WinLossRatioFormatted": "1.0",
+    "ProfitFactor": 0.56,
     "ProfitFactorFormatted": "0.56",
     "RecoveryFactorFormatted": "0.84",
     "MaxDrawDownFormatted": "-10,482.0",
@@ -367,86 +371,12 @@
     "PositionsCountBothFormatted": "0",
     "AvgProfitBothFormatted": "0.0",
     "WinLossRatioFormatted": "NaN",
+    "ProfitFactor": "Infinity",
     "ProfitFactorFormatted": "Infinity",
     "RecoveryFactorFormatted": "Infinity",
     "MaxDrawDownFormatted": "0.0",
     "MaxConsecWinnersFormatted": "0",
     "MaxConsecLosersFormatted": "0",
-    "Name": "RIM3 5-Minute 1,000 Bars"
-  },
-  {
-    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
-    "ScriptParametersById_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-    },
-    "IndicatorParametersByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 20.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "20[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 33.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 11.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "11[11..33/3]"
-        }
-      ]
-    },
-    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
-      "MAfast.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 11.0,
-        "ValueMax": 33.0,
-        "ValueIncrement": 3.0,
-        "ValueCurrent": 11.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "11[11..33/3]"
-      },
-      "MAslow.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 10.0,
-        "ValueMax": 20.0,
-        "ValueIncrement": 2.0,
-        "ValueCurrent": 20.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "20[10..20/2]"
-      }
-    },
-    "NetProfitRecovery": "Net[2321] PF[1.32] RF[0.86]",
-    "StrategyName": "TwoMAs",
-    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
-    "Format": "N1",
-    "NetProfitForClosedPositionsBoth": 2321.0,
-    "NetProfitForClosedPositionsBothFormatted": "2,321.0",
-    "PositionsCountBothFormatted": "111",
-    "AvgProfitBothFormatted": "20.9",
-    "WinLossRatioFormatted": "0.6",
-    "ProfitFactorFormatted": "1.32",
-    "RecoveryFactorFormatted": "0.86",
-    "MaxDrawDownFormatted": "-2,698.0",
-    "MaxConsecWinnersFormatted": "3",
-    "MaxConsecLosersFormatted": "10",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -517,11 +447,88 @@
     "PositionsCountBothFormatted": "165",
     "AvgProfitBothFormatted": "-49.7",
     "WinLossRatioFormatted": "0.9",
+    "ProfitFactor": 0.47,
     "ProfitFactorFormatted": "0.47",
     "RecoveryFactorFormatted": "0.92",
     "MaxDrawDownFormatted": "-8,885.0",
     "MaxConsecWinnersFormatted": "4",
     "MaxConsecLosersFormatted": "6",
+    "Name": "RIM3 5-Minute 1,000 Bars"
+  },
+  {
+    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
+    "ScriptParametersById_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+    },
+    "IndicatorParametersByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+      "MAslow": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 2.0,
+          "ValueCurrent": 20.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "20[10..20/2]"
+        }
+      ],
+      "MAfast": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 33.0,
+          "ValueIncrement": 3.0,
+          "ValueCurrent": 11.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "11[11..33/3]"
+        }
+      ]
+    },
+    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
+      "MAfast.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 11.0,
+        "ValueMax": 33.0,
+        "ValueIncrement": 3.0,
+        "ValueCurrent": 11.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "11[11..33/3]"
+      },
+      "MAslow.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 10.0,
+        "ValueMax": 20.0,
+        "ValueIncrement": 2.0,
+        "ValueCurrent": 20.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "20[10..20/2]"
+      }
+    },
+    "NetProfitRecovery": "Net[2321] PF[1.32] RF[0.86]",
+    "StrategyName": "TwoMAs",
+    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
+    "Format": "N1",
+    "NetProfitForClosedPositionsBoth": 2321.0,
+    "NetProfitForClosedPositionsBothFormatted": "2,321.0",
+    "PositionsCountBothFormatted": "111",
+    "AvgProfitBothFormatted": "20.9",
+    "WinLossRatioFormatted": "0.6",
+    "ProfitFactor": 1.32,
+    "ProfitFactorFormatted": "1.32",
+    "RecoveryFactorFormatted": "0.86",
+    "MaxDrawDownFormatted": "-2,698.0",
+    "MaxConsecWinnersFormatted": "3",
+    "MaxConsecLosersFormatted": "10",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -592,6 +599,7 @@
     "PositionsCountBothFormatted": "107",
     "AvgProfitBothFormatted": "55.0",
     "WinLossRatioFormatted": "0.8",
+    "ProfitFactor": 2.06,
     "ProfitFactorFormatted": "2.06",
     "RecoveryFactorFormatted": "2.84",
     "MaxDrawDownFormatted": "-2,068.0",
@@ -613,10 +621,10 @@
           "ValueMin": 10.0,
           "ValueMax": 20.0,
           "ValueIncrement": 2.0,
-          "ValueCurrent": 16.0,
+          "ValueCurrent": 12.0,
           "BorderShown": false,
           "NumericUpdownShown": true,
-          "ValuesAsString": "16[10..20/2]"
+          "ValuesAsString": "12[10..20/2]"
         }
       ],
       "MAfast": [
@@ -652,101 +660,27 @@
         "ValueMin": 10.0,
         "ValueMax": 20.0,
         "ValueIncrement": 2.0,
-        "ValueCurrent": 16.0,
+        "ValueCurrent": 12.0,
         "BorderShown": false,
         "NumericUpdownShown": true,
-        "ValuesAsString": "16[10..20/2]"
+        "ValuesAsString": "12[10..20/2]"
       }
     },
-    "NetProfitRecovery": "Net[3862] PF[1.39] RF[1.72]",
+    "NetProfitRecovery": "Net[-5436] PF[0.64] RF[0.87]",
     "StrategyName": "TwoMAs",
     "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
     "Format": "N1",
-    "NetProfitForClosedPositionsBoth": 3862.0,
-    "NetProfitForClosedPositionsBothFormatted": "3,862.0",
-    "PositionsCountBothFormatted": "213",
-    "AvgProfitBothFormatted": "18.1",
-    "WinLossRatioFormatted": "0.8",
-    "ProfitFactorFormatted": "1.39",
-    "RecoveryFactorFormatted": "1.72",
-    "MaxDrawDownFormatted": "-2,243.0",
-    "MaxConsecWinnersFormatted": "6",
-    "MaxConsecLosersFormatted": "5",
-    "Name": "RIM3 5-Minute 1,000 Bars"
-  },
-  {
-    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
-    "ScriptParametersById_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-    },
-    "IndicatorParametersByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 20.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "20[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 33.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 14.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "14[11..33/3]"
-        }
-      ]
-    },
-    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
-      "MAfast.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 11.0,
-        "ValueMax": 33.0,
-        "ValueIncrement": 3.0,
-        "ValueCurrent": 14.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "14[11..33/3]"
-      },
-      "MAslow.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 10.0,
-        "ValueMax": 20.0,
-        "ValueIncrement": 2.0,
-        "ValueCurrent": 20.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "20[10..20/2]"
-      }
-    },
-    "NetProfitRecovery": "Net[4959] PF[1.84] RF[3.49]",
-    "StrategyName": "TwoMAs",
-    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
-    "Format": "N1",
-    "NetProfitForClosedPositionsBoth": 4959.0,
-    "NetProfitForClosedPositionsBothFormatted": "4,959.0",
-    "PositionsCountBothFormatted": "111",
-    "AvgProfitBothFormatted": "44.7",
-    "WinLossRatioFormatted": "0.7",
-    "ProfitFactorFormatted": "1.84",
-    "RecoveryFactorFormatted": "3.49",
-    "MaxDrawDownFormatted": "-1,419.0",
-    "MaxConsecWinnersFormatted": "3",
-    "MaxConsecLosersFormatted": "7",
+    "NetProfitForClosedPositionsBoth": -5436.0,
+    "NetProfitForClosedPositionsBothFormatted": "-5,436.0",
+    "PositionsCountBothFormatted": "241",
+    "AvgProfitBothFormatted": "-22.6",
+    "WinLossRatioFormatted": "1.1",
+    "ProfitFactor": 0.64,
+    "ProfitFactorFormatted": "0.64",
+    "RecoveryFactorFormatted": "0.87",
+    "MaxDrawDownFormatted": "-6,213.0",
+    "MaxConsecWinnersFormatted": "7",
+    "MaxConsecLosersFormatted": "4",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -817,6 +751,7 @@
     "PositionsCountBothFormatted": "143",
     "AvgProfitBothFormatted": "43.6",
     "WinLossRatioFormatted": "1.1",
+    "ProfitFactor": 1.95,
     "ProfitFactorFormatted": "1.95",
     "RecoveryFactorFormatted": "4.99",
     "MaxDrawDownFormatted": "-1,250.0",
@@ -892,6 +827,7 @@
     "PositionsCountBothFormatted": "113",
     "AvgProfitBothFormatted": "-57.8",
     "WinLossRatioFormatted": "1.2",
+    "ProfitFactor": 0.47,
     "ProfitFactorFormatted": "0.47",
     "RecoveryFactorFormatted": "0.94",
     "MaxDrawDownFormatted": "-6,989.0",
@@ -913,10 +849,10 @@
           "ValueMin": 10.0,
           "ValueMax": 20.0,
           "ValueIncrement": 2.0,
-          "ValueCurrent": 14.0,
+          "ValueCurrent": 20.0,
           "BorderShown": false,
           "NumericUpdownShown": true,
-          "ValuesAsString": "14[10..20/2]"
+          "ValuesAsString": "20[10..20/2]"
         }
       ],
       "MAfast": [
@@ -926,10 +862,10 @@
           "ValueMin": 11.0,
           "ValueMax": 33.0,
           "ValueIncrement": 3.0,
-          "ValueCurrent": 17.0,
+          "ValueCurrent": 14.0,
           "BorderShown": false,
           "NumericUpdownShown": true,
-          "ValuesAsString": "17[11..33/3]"
+          "ValuesAsString": "14[11..33/3]"
         }
       ]
     },
@@ -941,10 +877,10 @@
         "ValueMin": 11.0,
         "ValueMax": 33.0,
         "ValueIncrement": 3.0,
-        "ValueCurrent": 17.0,
+        "ValueCurrent": 14.0,
         "BorderShown": false,
         "NumericUpdownShown": true,
-        "ValuesAsString": "17[11..33/3]"
+        "ValuesAsString": "14[11..33/3]"
       },
       "MAslow.Period": {
         "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
@@ -952,26 +888,103 @@
         "ValueMin": 10.0,
         "ValueMax": 20.0,
         "ValueIncrement": 2.0,
-        "ValueCurrent": 14.0,
+        "ValueCurrent": 20.0,
         "BorderShown": false,
         "NumericUpdownShown": true,
-        "ValuesAsString": "14[10..20/2]"
+        "ValuesAsString": "20[10..20/2]"
       }
     },
-    "NetProfitRecovery": "Net[-5757] PF[0.55] RF[0.85]",
+    "NetProfitRecovery": "Net[4959] PF[1.84] RF[3.49]",
     "StrategyName": "TwoMAs",
     "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
     "Format": "N1",
-    "NetProfitForClosedPositionsBoth": -5757.0,
-    "NetProfitForClosedPositionsBothFormatted": "-5,757.0",
-    "PositionsCountBothFormatted": "163",
-    "AvgProfitBothFormatted": "-35.3",
-    "WinLossRatioFormatted": "0.9",
-    "ProfitFactorFormatted": "0.55",
-    "RecoveryFactorFormatted": "0.85",
-    "MaxDrawDownFormatted": "-6,768.0",
+    "NetProfitForClosedPositionsBoth": 4959.0,
+    "NetProfitForClosedPositionsBothFormatted": "4,959.0",
+    "PositionsCountBothFormatted": "111",
+    "AvgProfitBothFormatted": "44.7",
+    "WinLossRatioFormatted": "0.7",
+    "ProfitFactor": 1.84,
+    "ProfitFactorFormatted": "1.84",
+    "RecoveryFactorFormatted": "3.49",
+    "MaxDrawDownFormatted": "-1,419.0",
+    "MaxConsecWinnersFormatted": "3",
+    "MaxConsecLosersFormatted": "7",
+    "Name": "RIM3 5-Minute 1,000 Bars"
+  },
+  {
+    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
+    "ScriptParametersById_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+    },
+    "IndicatorParametersByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+      "MAslow": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 2.0,
+          "ValueCurrent": 16.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "16[10..20/2]"
+        }
+      ],
+      "MAfast": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 33.0,
+          "ValueIncrement": 3.0,
+          "ValueCurrent": 14.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "14[11..33/3]"
+        }
+      ]
+    },
+    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
+      "MAfast.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 11.0,
+        "ValueMax": 33.0,
+        "ValueIncrement": 3.0,
+        "ValueCurrent": 14.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "14[11..33/3]"
+      },
+      "MAslow.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 10.0,
+        "ValueMax": 20.0,
+        "ValueIncrement": 2.0,
+        "ValueCurrent": 16.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "16[10..20/2]"
+      }
+    },
+    "NetProfitRecovery": "Net[3862] PF[1.39] RF[1.72]",
+    "StrategyName": "TwoMAs",
+    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
+    "Format": "N1",
+    "NetProfitForClosedPositionsBoth": 3862.0,
+    "NetProfitForClosedPositionsBothFormatted": "3,862.0",
+    "PositionsCountBothFormatted": "213",
+    "AvgProfitBothFormatted": "18.1",
+    "WinLossRatioFormatted": "0.8",
+    "ProfitFactor": 1.39,
+    "ProfitFactorFormatted": "1.39",
+    "RecoveryFactorFormatted": "1.72",
+    "MaxDrawDownFormatted": "-2,243.0",
     "MaxConsecWinnersFormatted": "6",
-    "MaxConsecLosersFormatted": "6",
+    "MaxConsecLosersFormatted": "5",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -1042,6 +1055,7 @@
     "PositionsCountBothFormatted": "129",
     "AvgProfitBothFormatted": "-50.1",
     "WinLossRatioFormatted": "1.3",
+    "ProfitFactor": 0.48,
     "ProfitFactorFormatted": "0.48",
     "RecoveryFactorFormatted": "0.9",
     "MaxDrawDownFormatted": "-7,147.0",
@@ -1063,10 +1077,10 @@
           "ValueMin": 10.0,
           "ValueMax": 20.0,
           "ValueIncrement": 2.0,
-          "ValueCurrent": 18.0,
+          "ValueCurrent": 14.0,
           "BorderShown": false,
           "NumericUpdownShown": true,
-          "ValuesAsString": "18[10..20/2]"
+          "ValuesAsString": "14[10..20/2]"
         }
       ],
       "MAfast": [
@@ -1102,25 +1116,102 @@
         "ValueMin": 10.0,
         "ValueMax": 20.0,
         "ValueIncrement": 2.0,
-        "ValueCurrent": 18.0,
+        "ValueCurrent": 14.0,
         "BorderShown": false,
         "NumericUpdownShown": true,
-        "ValuesAsString": "18[10..20/2]"
+        "ValuesAsString": "14[10..20/2]"
       }
     },
-    "NetProfitRecovery": "Net[3844] PF[1.35] RF[1.85]",
+    "NetProfitRecovery": "Net[-5757] PF[0.55] RF[0.85]",
     "StrategyName": "TwoMAs",
     "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
     "Format": "N1",
-    "NetProfitForClosedPositionsBoth": 3844.0,
-    "NetProfitForClosedPositionsBothFormatted": "3,844.0",
-    "PositionsCountBothFormatted": "279",
-    "AvgProfitBothFormatted": "13.8",
-    "WinLossRatioFormatted": "0.8",
-    "ProfitFactorFormatted": "1.35",
-    "RecoveryFactorFormatted": "1.85",
-    "MaxDrawDownFormatted": "-2,075.0",
-    "MaxConsecWinnersFormatted": "7",
+    "NetProfitForClosedPositionsBoth": -5757.0,
+    "NetProfitForClosedPositionsBothFormatted": "-5,757.0",
+    "PositionsCountBothFormatted": "163",
+    "AvgProfitBothFormatted": "-35.3",
+    "WinLossRatioFormatted": "0.9",
+    "ProfitFactor": 0.55,
+    "ProfitFactorFormatted": "0.55",
+    "RecoveryFactorFormatted": "0.85",
+    "MaxDrawDownFormatted": "-6,768.0",
+    "MaxConsecWinnersFormatted": "6",
+    "MaxConsecLosersFormatted": "6",
+    "Name": "RIM3 5-Minute 1,000 Bars"
+  },
+  {
+    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
+    "ScriptParametersById_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+    },
+    "IndicatorParametersByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+      "MAslow": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 2.0,
+          "ValueCurrent": 20.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "20[10..20/2]"
+        }
+      ],
+      "MAfast": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 33.0,
+          "ValueIncrement": 3.0,
+          "ValueCurrent": 17.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "17[11..33/3]"
+        }
+      ]
+    },
+    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
+      "MAfast.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 11.0,
+        "ValueMax": 33.0,
+        "ValueIncrement": 3.0,
+        "ValueCurrent": 17.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "17[11..33/3]"
+      },
+      "MAslow.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 10.0,
+        "ValueMax": 20.0,
+        "ValueIncrement": 2.0,
+        "ValueCurrent": 20.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "20[10..20/2]"
+      }
+    },
+    "NetProfitRecovery": "Net[4443] PF[1.57] RF[2.19]",
+    "StrategyName": "TwoMAs",
+    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
+    "Format": "N1",
+    "NetProfitForClosedPositionsBoth": 4443.0,
+    "NetProfitForClosedPositionsBothFormatted": "4,443.0",
+    "PositionsCountBothFormatted": "135",
+    "AvgProfitBothFormatted": "32.9",
+    "WinLossRatioFormatted": "0.6",
+    "ProfitFactor": 1.57,
+    "ProfitFactorFormatted": "1.57",
+    "RecoveryFactorFormatted": "2.19",
+    "MaxDrawDownFormatted": "-2,027.0",
+    "MaxConsecWinnersFormatted": "3",
     "MaxConsecLosersFormatted": "7",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
@@ -1192,6 +1283,7 @@
     "PositionsCountBothFormatted": "291",
     "AvgProfitBothFormatted": "-23.9",
     "WinLossRatioFormatted": "0.9",
+    "ProfitFactor": 0.57,
     "ProfitFactorFormatted": "0.57",
     "RecoveryFactorFormatted": "0.9",
     "MaxDrawDownFormatted": "-7,746.0",
@@ -1213,10 +1305,10 @@
           "ValueMin": 10.0,
           "ValueMax": 20.0,
           "ValueIncrement": 2.0,
-          "ValueCurrent": 20.0,
+          "ValueCurrent": 18.0,
           "BorderShown": false,
           "NumericUpdownShown": true,
-          "ValuesAsString": "20[10..20/2]"
+          "ValuesAsString": "18[10..20/2]"
         }
       ],
       "MAfast": [
@@ -1252,25 +1344,26 @@
         "ValueMin": 10.0,
         "ValueMax": 20.0,
         "ValueIncrement": 2.0,
-        "ValueCurrent": 20.0,
+        "ValueCurrent": 18.0,
         "BorderShown": false,
         "NumericUpdownShown": true,
-        "ValuesAsString": "20[10..20/2]"
+        "ValuesAsString": "18[10..20/2]"
       }
     },
-    "NetProfitRecovery": "Net[4443] PF[1.57] RF[2.19]",
+    "NetProfitRecovery": "Net[3844] PF[1.35] RF[1.85]",
     "StrategyName": "TwoMAs",
     "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
     "Format": "N1",
-    "NetProfitForClosedPositionsBoth": 4443.0,
-    "NetProfitForClosedPositionsBothFormatted": "4,443.0",
-    "PositionsCountBothFormatted": "135",
-    "AvgProfitBothFormatted": "32.9",
-    "WinLossRatioFormatted": "0.6",
-    "ProfitFactorFormatted": "1.57",
-    "RecoveryFactorFormatted": "2.19",
-    "MaxDrawDownFormatted": "-2,027.0",
-    "MaxConsecWinnersFormatted": "3",
+    "NetProfitForClosedPositionsBoth": 3844.0,
+    "NetProfitForClosedPositionsBothFormatted": "3,844.0",
+    "PositionsCountBothFormatted": "279",
+    "AvgProfitBothFormatted": "13.8",
+    "WinLossRatioFormatted": "0.8",
+    "ProfitFactor": 1.35,
+    "ProfitFactorFormatted": "1.35",
+    "RecoveryFactorFormatted": "1.85",
+    "MaxDrawDownFormatted": "-2,075.0",
+    "MaxConsecWinnersFormatted": "7",
     "MaxConsecLosersFormatted": "7",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
@@ -1342,6 +1435,7 @@
     "PositionsCountBothFormatted": "103",
     "AvgProfitBothFormatted": "-51.4",
     "WinLossRatioFormatted": "1.6",
+    "ProfitFactor": 0.52,
     "ProfitFactorFormatted": "0.52",
     "RecoveryFactorFormatted": "0.93",
     "MaxDrawDownFormatted": "-5,680.0",
@@ -1417,6 +1511,7 @@
     "PositionsCountBothFormatted": "111",
     "AvgProfitBothFormatted": "-32.3",
     "WinLossRatioFormatted": "1.8",
+    "ProfitFactor": 0.65,
     "ProfitFactorFormatted": "0.65",
     "RecoveryFactorFormatted": "0.93",
     "MaxDrawDownFormatted": "-3,846.0",
@@ -1492,86 +1587,12 @@
     "PositionsCountBothFormatted": "111",
     "AvgProfitBothFormatted": "-51.6",
     "WinLossRatioFormatted": "1.3",
+    "ProfitFactor": 0.49,
     "ProfitFactorFormatted": "0.49",
     "RecoveryFactorFormatted": "0.94",
     "MaxDrawDownFormatted": "-6,066.0",
     "MaxConsecWinnersFormatted": "7",
     "MaxConsecLosersFormatted": "3",
-    "Name": "RIM3 5-Minute 1,000 Bars"
-  },
-  {
-    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
-    "ScriptParametersById_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-    },
-    "IndicatorParametersByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 16.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "16[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 33.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 20.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "20[11..33/3]"
-        }
-      ]
-    },
-    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
-      "MAfast.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 11.0,
-        "ValueMax": 33.0,
-        "ValueIncrement": 3.0,
-        "ValueCurrent": 20.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "20[11..33/3]"
-      },
-      "MAslow.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 10.0,
-        "ValueMax": 20.0,
-        "ValueIncrement": 2.0,
-        "ValueCurrent": 16.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "16[10..20/2]"
-      }
-    },
-    "NetProfitRecovery": "Net[-7643] PF[0.41] RF[0.97]",
-    "StrategyName": "TwoMAs",
-    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
-    "Format": "N1",
-    "NetProfitForClosedPositionsBoth": -7643.0,
-    "NetProfitForClosedPositionsBothFormatted": "-7,643.0",
-    "PositionsCountBothFormatted": "119",
-    "AvgProfitBothFormatted": "-64.2",
-    "WinLossRatioFormatted": "0.7",
-    "ProfitFactorFormatted": "0.41",
-    "RecoveryFactorFormatted": "0.97",
-    "MaxDrawDownFormatted": "-7,906.0",
-    "MaxConsecWinnersFormatted": "5",
-    "MaxConsecLosersFormatted": "6",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -1642,6 +1663,7 @@
     "PositionsCountBothFormatted": "0",
     "AvgProfitBothFormatted": "0.0",
     "WinLossRatioFormatted": "NaN",
+    "ProfitFactor": "Infinity",
     "ProfitFactorFormatted": "Infinity",
     "RecoveryFactorFormatted": "Infinity",
     "MaxDrawDownFormatted": "0.0",
@@ -1663,10 +1685,10 @@
           "ValueMin": 10.0,
           "ValueMax": 20.0,
           "ValueIncrement": 2.0,
-          "ValueCurrent": 18.0,
+          "ValueCurrent": 16.0,
           "BorderShown": false,
           "NumericUpdownShown": true,
-          "ValuesAsString": "18[10..20/2]"
+          "ValuesAsString": "16[10..20/2]"
         }
       ],
       "MAfast": [
@@ -1702,26 +1724,27 @@
         "ValueMin": 10.0,
         "ValueMax": 20.0,
         "ValueIncrement": 2.0,
-        "ValueCurrent": 18.0,
+        "ValueCurrent": 16.0,
         "BorderShown": false,
         "NumericUpdownShown": true,
-        "ValuesAsString": "18[10..20/2]"
+        "ValuesAsString": "16[10..20/2]"
       }
     },
-    "NetProfitRecovery": "Net[-5447] PF[0.6] RF[0.94]",
+    "NetProfitRecovery": "Net[-7643] PF[0.41] RF[0.97]",
     "StrategyName": "TwoMAs",
     "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
     "Format": "N1",
-    "NetProfitForClosedPositionsBoth": -5447.0,
-    "NetProfitForClosedPositionsBothFormatted": "-5,447.0",
-    "PositionsCountBothFormatted": "167",
-    "AvgProfitBothFormatted": "-32.6",
-    "WinLossRatioFormatted": "1.1",
-    "ProfitFactorFormatted": "0.6",
-    "RecoveryFactorFormatted": "0.94",
-    "MaxDrawDownFormatted": "-5,798.0",
+    "NetProfitForClosedPositionsBoth": -7643.0,
+    "NetProfitForClosedPositionsBothFormatted": "-7,643.0",
+    "PositionsCountBothFormatted": "119",
+    "AvgProfitBothFormatted": "-64.2",
+    "WinLossRatioFormatted": "0.7",
+    "ProfitFactor": 0.41,
+    "ProfitFactorFormatted": "0.41",
+    "RecoveryFactorFormatted": "0.97",
+    "MaxDrawDownFormatted": "-7,906.0",
     "MaxConsecWinnersFormatted": "5",
-    "MaxConsecLosersFormatted": "5",
+    "MaxConsecLosersFormatted": "6",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -1792,11 +1815,88 @@
     "PositionsCountBothFormatted": "99",
     "AvgProfitBothFormatted": "-40.2",
     "WinLossRatioFormatted": "1.9",
+    "ProfitFactor": 0.61,
     "ProfitFactorFormatted": "0.61",
     "RecoveryFactorFormatted": "0.93",
     "MaxDrawDownFormatted": "-4,292.0",
     "MaxConsecWinnersFormatted": "8",
     "MaxConsecLosersFormatted": "3",
+    "Name": "RIM3 5-Minute 1,000 Bars"
+  },
+  {
+    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
+    "ScriptParametersById_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+    },
+    "IndicatorParametersByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+      "MAslow": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 2.0,
+          "ValueCurrent": 18.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "18[10..20/2]"
+        }
+      ],
+      "MAfast": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 33.0,
+          "ValueIncrement": 3.0,
+          "ValueCurrent": 20.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "20[11..33/3]"
+        }
+      ]
+    },
+    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
+      "MAfast.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 11.0,
+        "ValueMax": 33.0,
+        "ValueIncrement": 3.0,
+        "ValueCurrent": 20.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "20[11..33/3]"
+      },
+      "MAslow.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 10.0,
+        "ValueMax": 20.0,
+        "ValueIncrement": 2.0,
+        "ValueCurrent": 18.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "18[10..20/2]"
+      }
+    },
+    "NetProfitRecovery": "Net[-5447] PF[0.6] RF[0.94]",
+    "StrategyName": "TwoMAs",
+    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
+    "Format": "N1",
+    "NetProfitForClosedPositionsBoth": -5447.0,
+    "NetProfitForClosedPositionsBothFormatted": "-5,447.0",
+    "PositionsCountBothFormatted": "167",
+    "AvgProfitBothFormatted": "-32.6",
+    "WinLossRatioFormatted": "1.1",
+    "ProfitFactor": 0.6,
+    "ProfitFactorFormatted": "0.6",
+    "RecoveryFactorFormatted": "0.94",
+    "MaxDrawDownFormatted": "-5,798.0",
+    "MaxConsecWinnersFormatted": "5",
+    "MaxConsecLosersFormatted": "5",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -1867,6 +1967,7 @@
     "PositionsCountBothFormatted": "103",
     "AvgProfitBothFormatted": "-41.3",
     "WinLossRatioFormatted": "2.2",
+    "ProfitFactor": 0.6,
     "ProfitFactorFormatted": "0.6",
     "RecoveryFactorFormatted": "0.93",
     "MaxDrawDownFormatted": "-4,560.0",
@@ -1942,6 +2043,7 @@
     "PositionsCountBothFormatted": "99",
     "AvgProfitBothFormatted": "-45.5",
     "WinLossRatioFormatted": "1.2",
+    "ProfitFactor": 0.59,
     "ProfitFactorFormatted": "0.59",
     "RecoveryFactorFormatted": "0.81",
     "MaxDrawDownFormatted": "-5,562.0",
@@ -2017,6 +2119,7 @@
     "PositionsCountBothFormatted": "95",
     "AvgProfitBothFormatted": "-52.7",
     "WinLossRatioFormatted": "1.1",
+    "ProfitFactor": 0.56,
     "ProfitFactorFormatted": "0.56",
     "RecoveryFactorFormatted": "0.85",
     "MaxDrawDownFormatted": "-5,876.0",
@@ -2092,236 +2195,12 @@
     "PositionsCountBothFormatted": "95",
     "AvgProfitBothFormatted": "-44.6",
     "WinLossRatioFormatted": "1.1",
+    "ProfitFactor": 0.62,
     "ProfitFactorFormatted": "0.62",
     "RecoveryFactorFormatted": "0.8",
     "MaxDrawDownFormatted": "-5,312.0",
     "MaxConsecWinnersFormatted": "5",
     "MaxConsecLosersFormatted": "4",
-    "Name": "RIM3 5-Minute 1,000 Bars"
-  },
-  {
-    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
-    "ScriptParametersById_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-    },
-    "IndicatorParametersByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 20.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "20[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 33.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 23.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "23[11..33/3]"
-        }
-      ]
-    },
-    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
-      "MAfast.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 11.0,
-        "ValueMax": 33.0,
-        "ValueIncrement": 3.0,
-        "ValueCurrent": 23.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "23[11..33/3]"
-      },
-      "MAslow.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 10.0,
-        "ValueMax": 20.0,
-        "ValueIncrement": 2.0,
-        "ValueCurrent": 20.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "20[10..20/2]"
-      }
-    },
-    "NetProfitRecovery": "Net[-5883] PF[0.54] RF[0.89]",
-    "StrategyName": "TwoMAs",
-    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
-    "Format": "N1",
-    "NetProfitForClosedPositionsBoth": -5883.0,
-    "NetProfitForClosedPositionsBothFormatted": "-5,883.0",
-    "PositionsCountBothFormatted": "143",
-    "AvgProfitBothFormatted": "-41.1",
-    "WinLossRatioFormatted": "0.9",
-    "ProfitFactorFormatted": "0.54",
-    "RecoveryFactorFormatted": "0.89",
-    "MaxDrawDownFormatted": "-6,612.0",
-    "MaxConsecWinnersFormatted": "4",
-    "MaxConsecLosersFormatted": "4",
-    "Name": "RIM3 5-Minute 1,000 Bars"
-  },
-  {
-    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
-    "ScriptParametersById_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-    },
-    "IndicatorParametersByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 12.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "12[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 33.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 14.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "14[11..33/3]"
-        }
-      ]
-    },
-    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
-      "MAfast.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 11.0,
-        "ValueMax": 33.0,
-        "ValueIncrement": 3.0,
-        "ValueCurrent": 14.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "14[11..33/3]"
-      },
-      "MAslow.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 10.0,
-        "ValueMax": 20.0,
-        "ValueIncrement": 2.0,
-        "ValueCurrent": 12.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "12[10..20/2]"
-      }
-    },
-    "NetProfitRecovery": "Net[-5436] PF[0.64] RF[0.87]",
-    "StrategyName": "TwoMAs",
-    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
-    "Format": "N1",
-    "NetProfitForClosedPositionsBoth": -5436.0,
-    "NetProfitForClosedPositionsBothFormatted": "-5,436.0",
-    "PositionsCountBothFormatted": "241",
-    "AvgProfitBothFormatted": "-22.6",
-    "WinLossRatioFormatted": "1.1",
-    "ProfitFactorFormatted": "0.64",
-    "RecoveryFactorFormatted": "0.87",
-    "MaxDrawDownFormatted": "-6,213.0",
-    "MaxConsecWinnersFormatted": "7",
-    "MaxConsecLosersFormatted": "4",
-    "Name": "RIM3 5-Minute 1,000 Bars"
-  },
-  {
-    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
-    "ScriptParametersById_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-    },
-    "IndicatorParametersByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 10.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "10[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 33.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 26.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "26[11..33/3]"
-        }
-      ]
-    },
-    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
-      "MAfast.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 11.0,
-        "ValueMax": 33.0,
-        "ValueIncrement": 3.0,
-        "ValueCurrent": 26.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "26[11..33/3]"
-      },
-      "MAslow.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 10.0,
-        "ValueMax": 20.0,
-        "ValueIncrement": 2.0,
-        "ValueCurrent": 10.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "10[10..20/2]"
-      }
-    },
-    "NetProfitRecovery": "Net[-5488] PF[0.48] RF[0.99]",
-    "StrategyName": "TwoMAs",
-    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
-    "Format": "N1",
-    "NetProfitForClosedPositionsBoth": -5488.0,
-    "NetProfitForClosedPositionsBothFormatted": "-5,488.0",
-    "PositionsCountBothFormatted": "93",
-    "AvgProfitBothFormatted": "-59.0",
-    "WinLossRatioFormatted": "1.3",
-    "ProfitFactorFormatted": "0.48",
-    "RecoveryFactorFormatted": "0.99",
-    "MaxDrawDownFormatted": "-5,530.0",
-    "MaxConsecWinnersFormatted": "6",
-    "MaxConsecLosersFormatted": "5",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -2392,11 +2271,164 @@
     "PositionsCountBothFormatted": "93",
     "AvgProfitBothFormatted": "-49.4",
     "WinLossRatioFormatted": "1.6",
+    "ProfitFactor": 0.57,
     "ProfitFactorFormatted": "0.57",
     "RecoveryFactorFormatted": "1",
     "MaxDrawDownFormatted": "-4,594.0",
     "MaxConsecWinnersFormatted": "6",
     "MaxConsecLosersFormatted": "3",
+    "Name": "RIM3 5-Minute 1,000 Bars"
+  },
+  {
+    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
+    "ScriptParametersById_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+    },
+    "IndicatorParametersByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+      "MAslow": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 2.0,
+          "ValueCurrent": 10.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "10[10..20/2]"
+        }
+      ],
+      "MAfast": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 33.0,
+          "ValueIncrement": 3.0,
+          "ValueCurrent": 26.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "26[11..33/3]"
+        }
+      ]
+    },
+    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
+      "MAfast.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 11.0,
+        "ValueMax": 33.0,
+        "ValueIncrement": 3.0,
+        "ValueCurrent": 26.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "26[11..33/3]"
+      },
+      "MAslow.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 10.0,
+        "ValueMax": 20.0,
+        "ValueIncrement": 2.0,
+        "ValueCurrent": 10.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "10[10..20/2]"
+      }
+    },
+    "NetProfitRecovery": "Net[-5488] PF[0.48] RF[0.99]",
+    "StrategyName": "TwoMAs",
+    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
+    "Format": "N1",
+    "NetProfitForClosedPositionsBoth": -5488.0,
+    "NetProfitForClosedPositionsBothFormatted": "-5,488.0",
+    "PositionsCountBothFormatted": "93",
+    "AvgProfitBothFormatted": "-59.0",
+    "WinLossRatioFormatted": "1.3",
+    "ProfitFactor": 0.48,
+    "ProfitFactorFormatted": "0.48",
+    "RecoveryFactorFormatted": "0.99",
+    "MaxDrawDownFormatted": "-5,530.0",
+    "MaxConsecWinnersFormatted": "6",
+    "MaxConsecLosersFormatted": "5",
+    "Name": "RIM3 5-Minute 1,000 Bars"
+  },
+  {
+    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
+    "ScriptParametersById_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+    },
+    "IndicatorParametersByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+      "MAslow": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 2.0,
+          "ValueCurrent": 20.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "20[10..20/2]"
+        }
+      ],
+      "MAfast": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 33.0,
+          "ValueIncrement": 3.0,
+          "ValueCurrent": 23.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "23[11..33/3]"
+        }
+      ]
+    },
+    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
+      "MAfast.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 11.0,
+        "ValueMax": 33.0,
+        "ValueIncrement": 3.0,
+        "ValueCurrent": 23.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "23[11..33/3]"
+      },
+      "MAslow.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 10.0,
+        "ValueMax": 20.0,
+        "ValueIncrement": 2.0,
+        "ValueCurrent": 20.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "20[10..20/2]"
+      }
+    },
+    "NetProfitRecovery": "Net[-5883] PF[0.54] RF[0.89]",
+    "StrategyName": "TwoMAs",
+    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
+    "Format": "N1",
+    "NetProfitForClosedPositionsBoth": -5883.0,
+    "NetProfitForClosedPositionsBothFormatted": "-5,883.0",
+    "PositionsCountBothFormatted": "143",
+    "AvgProfitBothFormatted": "-41.1",
+    "WinLossRatioFormatted": "0.9",
+    "ProfitFactor": 0.54,
+    "ProfitFactorFormatted": "0.54",
+    "RecoveryFactorFormatted": "0.89",
+    "MaxDrawDownFormatted": "-6,612.0",
+    "MaxConsecWinnersFormatted": "4",
+    "MaxConsecLosersFormatted": "4",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -2467,10 +2499,87 @@
     "PositionsCountBothFormatted": "83",
     "AvgProfitBothFormatted": "-82.5",
     "WinLossRatioFormatted": "1.2",
+    "ProfitFactor": 0.42,
     "ProfitFactorFormatted": "0.42",
     "RecoveryFactorFormatted": "1",
     "MaxDrawDownFormatted": "-6,845.0",
     "MaxConsecWinnersFormatted": "5",
+    "MaxConsecLosersFormatted": "4",
+    "Name": "RIM3 5-Minute 1,000 Bars"
+  },
+  {
+    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
+    "ScriptParametersById_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+    },
+    "IndicatorParametersByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+      "MAslow": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 2.0,
+          "ValueCurrent": 18.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "18[10..20/2]"
+        }
+      ],
+      "MAfast": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 33.0,
+          "ValueIncrement": 3.0,
+          "ValueCurrent": 26.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "26[11..33/3]"
+        }
+      ]
+    },
+    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
+      "MAfast.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 11.0,
+        "ValueMax": 33.0,
+        "ValueIncrement": 3.0,
+        "ValueCurrent": 26.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "26[11..33/3]"
+      },
+      "MAslow.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 10.0,
+        "ValueMax": 20.0,
+        "ValueIncrement": 2.0,
+        "ValueCurrent": 18.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "18[10..20/2]"
+      }
+    },
+    "NetProfitRecovery": "Net[-2994] PF[0.7] RF[0.69]",
+    "StrategyName": "TwoMAs",
+    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
+    "Format": "N1",
+    "NetProfitForClosedPositionsBoth": -2994.0,
+    "NetProfitForClosedPositionsBothFormatted": "-2,994.0",
+    "PositionsCountBothFormatted": "89",
+    "AvgProfitBothFormatted": "-33.6",
+    "WinLossRatioFormatted": "1.1",
+    "ProfitFactor": 0.7,
+    "ProfitFactorFormatted": "0.7",
+    "RecoveryFactorFormatted": "0.69",
+    "MaxDrawDownFormatted": "-4,342.0",
+    "MaxConsecWinnersFormatted": "3",
     "MaxConsecLosersFormatted": "4",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
@@ -2542,86 +2651,12 @@
     "PositionsCountBothFormatted": "85",
     "AvgProfitBothFormatted": "-43.4",
     "WinLossRatioFormatted": "1.3",
+    "ProfitFactor": 0.64,
     "ProfitFactorFormatted": "0.64",
     "RecoveryFactorFormatted": "0.75",
     "MaxDrawDownFormatted": "-4,888.0",
     "MaxConsecWinnersFormatted": "9",
     "MaxConsecLosersFormatted": "3",
-    "Name": "RIM3 5-Minute 1,000 Bars"
-  },
-  {
-    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
-    "ScriptParametersById_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-    },
-    "IndicatorParametersByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 18.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "18[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 33.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 26.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "26[11..33/3]"
-        }
-      ]
-    },
-    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
-      "MAfast.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 11.0,
-        "ValueMax": 33.0,
-        "ValueIncrement": 3.0,
-        "ValueCurrent": 26.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "26[11..33/3]"
-      },
-      "MAslow.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 10.0,
-        "ValueMax": 20.0,
-        "ValueIncrement": 2.0,
-        "ValueCurrent": 18.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "18[10..20/2]"
-      }
-    },
-    "NetProfitRecovery": "Net[-2994] PF[0.7] RF[0.69]",
-    "StrategyName": "TwoMAs",
-    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
-    "Format": "N1",
-    "NetProfitForClosedPositionsBoth": -2994.0,
-    "NetProfitForClosedPositionsBothFormatted": "-2,994.0",
-    "PositionsCountBothFormatted": "89",
-    "AvgProfitBothFormatted": "-33.6",
-    "WinLossRatioFormatted": "1.1",
-    "ProfitFactorFormatted": "0.7",
-    "RecoveryFactorFormatted": "0.69",
-    "MaxDrawDownFormatted": "-4,342.0",
-    "MaxConsecWinnersFormatted": "3",
-    "MaxConsecLosersFormatted": "4",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -2692,86 +2727,12 @@
     "PositionsCountBothFormatted": "91",
     "AvgProfitBothFormatted": "-53.3",
     "WinLossRatioFormatted": "1.4",
+    "ProfitFactor": 0.52,
     "ProfitFactorFormatted": "0.52",
     "RecoveryFactorFormatted": "0.75",
     "MaxDrawDownFormatted": "-6,421.0",
     "MaxConsecWinnersFormatted": "5",
     "MaxConsecLosersFormatted": "3",
-    "Name": "RIM3 5-Minute 1,000 Bars"
-  },
-  {
-    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
-    "ScriptParametersById_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-    },
-    "IndicatorParametersByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 14.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "14[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 33.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 29.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "29[11..33/3]"
-        }
-      ]
-    },
-    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
-      "MAfast.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 11.0,
-        "ValueMax": 33.0,
-        "ValueIncrement": 3.0,
-        "ValueCurrent": 29.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "29[11..33/3]"
-      },
-      "MAslow.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 10.0,
-        "ValueMax": 20.0,
-        "ValueIncrement": 2.0,
-        "ValueCurrent": 14.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "14[10..20/2]"
-      }
-    },
-    "NetProfitRecovery": "Net[-5190] PF[0.51] RF[0.82]",
-    "StrategyName": "TwoMAs",
-    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
-    "Format": "N1",
-    "NetProfitForClosedPositionsBoth": -5190.0,
-    "NetProfitForClosedPositionsBothFormatted": "-5,190.0",
-    "PositionsCountBothFormatted": "81",
-    "AvgProfitBothFormatted": "-64.1",
-    "WinLossRatioFormatted": "1.2",
-    "ProfitFactorFormatted": "0.51",
-    "RecoveryFactorFormatted": "0.82",
-    "MaxDrawDownFormatted": "-6,318.0",
-    "MaxConsecWinnersFormatted": "4",
-    "MaxConsecLosersFormatted": "4",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -2842,6 +2803,7 @@
     "PositionsCountBothFormatted": "89",
     "AvgProfitBothFormatted": "-58.6",
     "WinLossRatioFormatted": "1.3",
+    "ProfitFactor": 0.5,
     "ProfitFactorFormatted": "0.5",
     "RecoveryFactorFormatted": "0.98",
     "MaxDrawDownFormatted": "-5,324.0",
@@ -2917,11 +2879,88 @@
     "PositionsCountBothFormatted": "81",
     "AvgProfitBothFormatted": "-72.0",
     "WinLossRatioFormatted": "1.2",
+    "ProfitFactor": 0.46,
     "ProfitFactorFormatted": "0.46",
     "RecoveryFactorFormatted": "0.99",
     "MaxDrawDownFormatted": "-5,862.0",
     "MaxConsecWinnersFormatted": "3",
     "MaxConsecLosersFormatted": "3",
+    "Name": "RIM3 5-Minute 1,000 Bars"
+  },
+  {
+    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
+    "ScriptParametersById_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+    },
+    "IndicatorParametersByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+      "MAslow": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 2.0,
+          "ValueCurrent": 14.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "14[10..20/2]"
+        }
+      ],
+      "MAfast": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 33.0,
+          "ValueIncrement": 3.0,
+          "ValueCurrent": 29.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "29[11..33/3]"
+        }
+      ]
+    },
+    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
+      "MAfast.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 11.0,
+        "ValueMax": 33.0,
+        "ValueIncrement": 3.0,
+        "ValueCurrent": 29.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "29[11..33/3]"
+      },
+      "MAslow.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 10.0,
+        "ValueMax": 20.0,
+        "ValueIncrement": 2.0,
+        "ValueCurrent": 14.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "14[10..20/2]"
+      }
+    },
+    "NetProfitRecovery": "Net[-5190] PF[0.51] RF[0.82]",
+    "StrategyName": "TwoMAs",
+    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
+    "Format": "N1",
+    "NetProfitForClosedPositionsBoth": -5190.0,
+    "NetProfitForClosedPositionsBothFormatted": "-5,190.0",
+    "PositionsCountBothFormatted": "81",
+    "AvgProfitBothFormatted": "-64.1",
+    "WinLossRatioFormatted": "1.2",
+    "ProfitFactor": 0.51,
+    "ProfitFactorFormatted": "0.51",
+    "RecoveryFactorFormatted": "0.82",
+    "MaxDrawDownFormatted": "-6,318.0",
+    "MaxConsecWinnersFormatted": "4",
+    "MaxConsecLosersFormatted": "4",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -2992,6 +3031,7 @@
     "PositionsCountBothFormatted": "81",
     "AvgProfitBothFormatted": "-53.6",
     "WinLossRatioFormatted": "1.1",
+    "ProfitFactor": 0.54,
     "ProfitFactorFormatted": "0.54",
     "RecoveryFactorFormatted": "0.74",
     "MaxDrawDownFormatted": "-5,894.0",
@@ -3067,6 +3107,7 @@
     "PositionsCountBothFormatted": "81",
     "AvgProfitBothFormatted": "-57.6",
     "WinLossRatioFormatted": "1.0",
+    "ProfitFactor": 0.55,
     "ProfitFactorFormatted": "0.55",
     "RecoveryFactorFormatted": "0.74",
     "MaxDrawDownFormatted": "-6,296.0",
@@ -3142,10 +3183,87 @@
     "PositionsCountBothFormatted": "65",
     "AvgProfitBothFormatted": "-73.6",
     "WinLossRatioFormatted": "1.0",
+    "ProfitFactor": 0.52,
     "ProfitFactorFormatted": "0.52",
     "RecoveryFactorFormatted": "0.81",
     "MaxDrawDownFormatted": "-5,938.0",
     "MaxConsecWinnersFormatted": "3",
+    "MaxConsecLosersFormatted": "3",
+    "Name": "RIM3 5-Minute 1,000 Bars"
+  },
+  {
+    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
+    "ScriptParametersById_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+    },
+    "IndicatorParametersByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+      "MAslow": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 2.0,
+          "ValueCurrent": 10.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "10[10..20/2]"
+        }
+      ],
+      "MAfast": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 33.0,
+          "ValueIncrement": 3.0,
+          "ValueCurrent": 32.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "32[11..33/3]"
+        }
+      ]
+    },
+    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
+      "MAfast.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 11.0,
+        "ValueMax": 33.0,
+        "ValueIncrement": 3.0,
+        "ValueCurrent": 32.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "32[11..33/3]"
+      },
+      "MAslow.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 10.0,
+        "ValueMax": 20.0,
+        "ValueIncrement": 2.0,
+        "ValueCurrent": 10.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "10[10..20/2]"
+      }
+    },
+    "NetProfitRecovery": "Net[-5040] PF[0.51] RF[0.98]",
+    "StrategyName": "TwoMAs",
+    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
+    "Format": "N1",
+    "NetProfitForClosedPositionsBoth": -5040.0,
+    "NetProfitForClosedPositionsBothFormatted": "-5,040.0",
+    "PositionsCountBothFormatted": "89",
+    "AvgProfitBothFormatted": "-56.6",
+    "WinLossRatioFormatted": "1.4",
+    "ProfitFactor": 0.51,
+    "ProfitFactorFormatted": "0.51",
+    "RecoveryFactorFormatted": "0.98",
+    "MaxDrawDownFormatted": "-5,122.0",
+    "MaxConsecWinnersFormatted": "4",
     "MaxConsecLosersFormatted": "3",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
@@ -3217,86 +3335,12 @@
     "PositionsCountBothFormatted": "65",
     "AvgProfitBothFormatted": "-93.3",
     "WinLossRatioFormatted": "1.1",
+    "ProfitFactor": 0.41,
     "ProfitFactorFormatted": "0.41",
     "RecoveryFactorFormatted": "0.94",
     "MaxDrawDownFormatted": "-6,470.0",
     "MaxConsecWinnersFormatted": "3",
     "MaxConsecLosersFormatted": "4",
-    "Name": "RIM3 5-Minute 1,000 Bars"
-  },
-  {
-    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
-    "ScriptParametersById_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-    },
-    "IndicatorParametersByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 10.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "10[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 33.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 32.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "32[11..33/3]"
-        }
-      ]
-    },
-    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
-      "MAfast.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 11.0,
-        "ValueMax": 33.0,
-        "ValueIncrement": 3.0,
-        "ValueCurrent": 32.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "32[11..33/3]"
-      },
-      "MAslow.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 10.0,
-        "ValueMax": 20.0,
-        "ValueIncrement": 2.0,
-        "ValueCurrent": 10.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "10[10..20/2]"
-      }
-    },
-    "NetProfitRecovery": "Net[-5040] PF[0.51] RF[0.98]",
-    "StrategyName": "TwoMAs",
-    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
-    "Format": "N1",
-    "NetProfitForClosedPositionsBoth": -5040.0,
-    "NetProfitForClosedPositionsBothFormatted": "-5,040.0",
-    "PositionsCountBothFormatted": "89",
-    "AvgProfitBothFormatted": "-56.6",
-    "WinLossRatioFormatted": "1.4",
-    "ProfitFactorFormatted": "0.51",
-    "RecoveryFactorFormatted": "0.98",
-    "MaxDrawDownFormatted": "-5,122.0",
-    "MaxConsecWinnersFormatted": "4",
-    "MaxConsecLosersFormatted": "3",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -3367,6 +3411,7 @@
     "PositionsCountBothFormatted": "69",
     "AvgProfitBothFormatted": "-83.6",
     "WinLossRatioFormatted": "1.1",
+    "ProfitFactor": 0.43,
     "ProfitFactorFormatted": "0.43",
     "RecoveryFactorFormatted": "0.88",
     "MaxDrawDownFormatted": "-6,528.0",
@@ -3442,86 +3487,12 @@
     "PositionsCountBothFormatted": "65",
     "AvgProfitBothFormatted": "-98.0",
     "WinLossRatioFormatted": "0.8",
+    "ProfitFactor": 0.39,
     "ProfitFactorFormatted": "0.39",
     "RecoveryFactorFormatted": "0.93",
     "MaxDrawDownFormatted": "-6,880.0",
     "MaxConsecWinnersFormatted": "3",
     "MaxConsecLosersFormatted": "5",
-    "Name": "RIM3 5-Minute 1,000 Bars"
-  },
-  {
-    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
-    "ScriptParametersById_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-    },
-    "IndicatorParametersByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 20.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "20[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 33.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 32.0,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "ValuesAsString": "32[11..33/3]"
-        }
-      ]
-    },
-    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
-      "MAfast.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 11.0,
-        "ValueMax": 33.0,
-        "ValueIncrement": 3.0,
-        "ValueCurrent": 32.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "32[11..33/3]"
-      },
-      "MAslow.Period": {
-        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-        "Name": "Period",
-        "ValueMin": 10.0,
-        "ValueMax": 20.0,
-        "ValueIncrement": 2.0,
-        "ValueCurrent": 20.0,
-        "BorderShown": false,
-        "NumericUpdownShown": true,
-        "ValuesAsString": "20[10..20/2]"
-      }
-    },
-    "NetProfitRecovery": "Net[-5053] PF[0.48] RF[0.72]",
-    "StrategyName": "TwoMAs",
-    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
-    "Format": "N1",
-    "NetProfitForClosedPositionsBoth": -5053.0,
-    "NetProfitForClosedPositionsBothFormatted": "-5,053.0",
-    "PositionsCountBothFormatted": "65",
-    "AvgProfitBothFormatted": "-77.7",
-    "WinLossRatioFormatted": "1.3",
-    "ProfitFactorFormatted": "0.48",
-    "RecoveryFactorFormatted": "0.72",
-    "MaxDrawDownFormatted": "-6,983.0",
-    "MaxConsecWinnersFormatted": "3",
-    "MaxConsecLosersFormatted": "3",
     "Name": "RIM3 5-Minute 1,000 Bars"
   },
   {
@@ -3592,11 +3563,88 @@
     "PositionsCountBothFormatted": "65",
     "AvgProfitBothFormatted": "-70.6",
     "WinLossRatioFormatted": "1.1",
+    "ProfitFactor": 0.54,
     "ProfitFactorFormatted": "0.54",
     "RecoveryFactorFormatted": "0.74",
     "MaxDrawDownFormatted": "-6,182.0",
     "MaxConsecWinnersFormatted": "3",
     "MaxConsecLosersFormatted": "4",
+    "Name": "RIM3 5-Minute 1,000 Bars"
+  },
+  {
+    "$type": "Sq1.Core.Optimization.SystemPerformanceRestoreAble, Sq1.Core",
+    "ScriptParametersById_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
+    },
+    "IndicatorParametersByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
+      "MAslow": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 10.0,
+          "ValueMax": 20.0,
+          "ValueIncrement": 2.0,
+          "ValueCurrent": 20.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "20[10..20/2]"
+        }
+      ],
+      "MAfast": [
+        {
+          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+          "Name": "Period",
+          "ValueMin": 11.0,
+          "ValueMax": 33.0,
+          "ValueIncrement": 3.0,
+          "ValueCurrent": 32.0,
+          "BorderShown": false,
+          "NumericUpdownShown": true,
+          "ValuesAsString": "32[11..33/3]"
+        }
+      ]
+    },
+    "ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished": {
+      "$type": "System.Collections.Generic.SortedDictionary`2[[System.String, mscorlib],[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], System",
+      "MAfast.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 11.0,
+        "ValueMax": 33.0,
+        "ValueIncrement": 3.0,
+        "ValueCurrent": 32.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "32[11..33/3]"
+      },
+      "MAslow.Period": {
+        "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
+        "Name": "Period",
+        "ValueMin": 10.0,
+        "ValueMax": 20.0,
+        "ValueIncrement": 2.0,
+        "ValueCurrent": 20.0,
+        "BorderShown": false,
+        "NumericUpdownShown": true,
+        "ValuesAsString": "20[10..20/2]"
+      }
+    },
+    "NetProfitRecovery": "Net[-5053] PF[0.48] RF[0.72]",
+    "StrategyName": "TwoMAs",
+    "SymbolScaleIntervalDataRange": "RIM3 5-Minute 1,000 Bars",
+    "Format": "N1",
+    "NetProfitForClosedPositionsBoth": -5053.0,
+    "NetProfitForClosedPositionsBothFormatted": "-5,053.0",
+    "PositionsCountBothFormatted": "65",
+    "AvgProfitBothFormatted": "-77.7",
+    "WinLossRatioFormatted": "1.3",
+    "ProfitFactor": 0.48,
+    "ProfitFactorFormatted": "0.48",
+    "RecoveryFactorFormatted": "0.72",
+    "MaxDrawDownFormatted": "-6,983.0",
+    "MaxConsecWinnersFormatted": "3",
+    "MaxConsecLosersFormatted": "3",
     "Name": "RIM3 5-Minute 1,000 Bars"
   }
 ]

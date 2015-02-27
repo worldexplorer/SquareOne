@@ -1,27 +1,8 @@
-﻿/*
- * Created by SharpDevelop.
- * User: worldexplorer
- * Date: 03-Dec-14
- * Time: 10:34 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
-namespace Sq1.Gui.Forms
-{
-	partial class LivesimForm
-	{
-		/// <summary>
-		/// Designer variable used to keep track of non-visual components.
-		/// </summary>
+﻿namespace Sq1.Gui.Forms {
+	partial class LivesimForm {
 		private System.ComponentModel.IContainer components = null;
 		public Sq1.Widgets.Livesim.LivesimControl LivesimControl;
-		
-		/// <summary>
-		/// Disposes resources used by the form.
-		/// </summary>
-		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-		protected override void Dispose(bool disposing)
-		{
+		protected override void Dispose(bool disposing) {
 			if (disposing) {
 				if (components != null) {
 					components.Dispose();
@@ -29,14 +10,7 @@ namespace Sq1.Gui.Forms
 			}
 			base.Dispose(disposing);
 		}
-		
-		/// <summary>
-		/// This method is required for Windows Forms designer support.
-		/// Do not change the method contents inside the source code editor. The Forms designer might
-		/// not be able to load this method if it was changed manually.
-		/// </summary>
-		private void InitializeComponent()
-		{
+		private void InitializeComponent() {
 			this.LivesimControl = new Sq1.Widgets.Livesim.LivesimControl();
 			this.SuspendLayout();
 			// 
@@ -54,11 +28,10 @@ namespace Sq1.Gui.Forms
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(705, 577);
 			this.Controls.Add(this.LivesimControl);
-			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Name = "LivesimForm";
 			this.Text = "LivesimForm";
+			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockTopAutoHide;
 			this.ResumeLayout(false);
-
 		}
 	}
 }

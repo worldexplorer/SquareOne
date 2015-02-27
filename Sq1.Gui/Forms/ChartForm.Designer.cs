@@ -79,8 +79,6 @@ namespace Sq1.Gui.Forms {
 			this.ctxBacktest.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnitlbSpreadGeneratorPct,
             this.mniFillOutsideQuoteSpreadParanoidCheckThrow,
-            this.toolStripSeparator7,
-            this.MniShowLivesim,
             this.toolStripSeparator4,
             this.mniBacktestOnDataSourceSaved,
             this.mniBacktestOnRestart,
@@ -127,7 +125,8 @@ namespace Sq1.Gui.Forms {
 			this.MniShowLivesim.Name = "MniShowLivesim";
 			this.MniShowLivesim.ShortcutKeys = System.Windows.Forms.Keys.F9;
 			this.MniShowLivesim.Size = new System.Drawing.Size(307, 22);
-			this.MniShowLivesim.Text = "Show Simulator (Experimental)";
+			this.MniShowLivesim.Text = "Show Live Simulator";
+			this.MniShowLivesim.CheckOnClick = true;
 			this.MniShowLivesim.Click += new System.EventHandler(this.MniShowLivesim_Click);
 			// 
 			// toolStripSeparator4
@@ -168,7 +167,7 @@ namespace Sq1.Gui.Forms {
 			// mniBacktestNow
 			// 
 			this.mniBacktestNow.Name = "mniBacktestNow";
-			this.mniBacktestNow.ShortcutKeys = System.Windows.Forms.Keys.F8;
+			this.mniBacktestNow.ShortcutKeys = System.Windows.Forms.Keys.F5;
 			this.mniBacktestNow.Size = new System.Drawing.Size(307, 22);
 			this.mniBacktestNow.Text = "Backtest Now";
 			this.mniBacktestNow.Click += new System.EventHandler(this.mniBacktestNow_Click);
@@ -234,7 +233,7 @@ namespace Sq1.Gui.Forms {
 			// 
 			this.MniShowSourceCodeEditor.CheckOnClick = true;
 			this.MniShowSourceCodeEditor.Name = "MniShowSourceCodeEditor";
-			this.MniShowSourceCodeEditor.ShortcutKeys = System.Windows.Forms.Keys.F7;
+			this.MniShowSourceCodeEditor.ShortcutKeys = System.Windows.Forms.Keys.F4;
 			this.MniShowSourceCodeEditor.Size = new System.Drawing.Size(248, 22);
 			this.MniShowSourceCodeEditor.Text = "Show Source Code Editor";
 			this.MniShowSourceCodeEditor.Click += new System.EventHandler(this.MniShowSourceCodeEditor_Click);
@@ -254,6 +253,7 @@ namespace Sq1.Gui.Forms {
             this.mniStrategyContextLoad,
             this.mniStrategyRemove,
             this.toolStripSeparator3,
+            this.MniShowLivesim,
             this.MniShowOptimizer,
             this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
