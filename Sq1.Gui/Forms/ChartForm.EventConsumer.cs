@@ -9,6 +9,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Widgets.LabeledTextBox;
+using Sq1.Widgets;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
@@ -19,7 +20,8 @@ namespace Sq1.Gui.Forms {
 			//_preCalcPricesHandleTradeMenuItemsGuiThread();
 		}
 		void ctxStrategy_Opening(object sender, CancelEventArgs e) {
-			this.MniShowOptimizer.Checked = this.ChartFormManager.OptimizerIsOnSurface;
+			this.MniShowLivesim		.Checked = this.ChartFormManager.LivesimFormIsOnSurface;
+			this.MniShowOptimizer	.Checked = this.ChartFormManager.OptimizerIsOnSurface;
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
 		}
@@ -30,30 +32,54 @@ namespace Sq1.Gui.Forms {
 			if (this.MniShowSourceCodeEditor.Checked) {
 				// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.EditorFormShow(false);
+				this.ChartFormManager.MainForm.MainFormSerialize();
 			} else {
-				this.ChartFormManager.ScriptEditorFormConditionalInstance.ToggleAutoHide();
+				//v1 this.ChartFormManager.ScriptEditorFormConditionalInstance.ToggleAutoHide();
+				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.ScriptEditorForm)) {
+					string msg = "YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_SCRIPT_EDITOR_FORM_WAS_CLOSED_BY_X";
+					Assembler.PopupException(msg);
+				} else {
+					this.ChartFormManager.ScriptEditorForm.Close();
+				}
 			}
-			this.ChartFormManager.MainForm.MainFormSerialize();
+			// DUPLICATE_XML_SERIALIZATION_AFTER ScriptEditorForm.OnFormClosed()
+			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 		void MniShowOptimizer_Click(object sender, System.EventArgs e) {
 			if (this.MniShowOptimizer.Checked) {
 				// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.OptimizerFormShow(false);
+				this.ChartFormManager.MainForm.MainFormSerialize();
 			} else {
-				this.ChartFormManager.OptimizerFormConditionalInstance.ToggleAutoHide();
+				//v1 this.ChartFormManager.OptimizerFormConditionalInstance.ToggleAutoHide();
+				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.OptimizerForm)) {
+					string msg = "YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_OPTIMIZER_FORM_WAS_CLOSED_BY_X";
+					Assembler.PopupException(msg);
+				} else {
+					this.ChartFormManager.OptimizerForm.Close();
+				}
 			}
-			this.ChartFormManager.MainForm.MainFormSerialize();
+			// DUPLICATE_XML_SERIALIZATION_AFTER OptimizerForm.OnFormClosed()
+			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 		void MniShowLivesim_Click(object sender, EventArgs e) {
 			if (this.MniShowLivesim.Checked) {
 				// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.LivesimFormShow(false);
+				this.ChartFormManager.MainForm.MainFormSerialize();
 			} else {
-				//this.ChartFormManager.LivesimFormConditionalInstance.ToggleAutoHide();
 				//this.ChartFormManager.LivesimFormConditionalInstance.Visible = true;
-				this.ChartFormManager.LivesimFormShow(false);
+				//this.ChartFormManager.LivesimFormShow(false);
+				//v1 this.ChartFormManager.LivesimFormConditionalInstance.ToggleAutoHide();
+				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.LivesimForm)) {
+					string msg = "YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_LIVESIM_FORM_WAS_CLOSED_BY_X";
+					Assembler.PopupException(msg);
+				} else {
+					this.ChartFormManager.LivesimForm.Close();
+				}
 			}
-			this.ChartFormManager.MainForm.MainFormSerialize();
+			// DUPLICATE_XML_SERIALIZATION_AFTER LivesimForm.OnFormClosed()
+			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 		void btnStreamingWillTriggerScript_Click(object sender, EventArgs e) {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
@@ -157,7 +183,7 @@ namespace Sq1.Gui.Forms {
 				context.ScaleInterval = scaleIntervalUserEntered;
 				
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mniltbAll_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniltbMinutes_UserTyped()", ex);
 			}
@@ -207,7 +233,7 @@ namespace Sq1.Gui.Forms {
 				this.mniShowBarRange_Click(sender, null);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbShowLastBars_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbShowLastBars_UserTyped()", ex);
 			}
@@ -251,7 +277,7 @@ namespace Sq1.Gui.Forms {
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbPositionSizeSharesConstant_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeSharesConstant_UserTyped()", ex);
 			}
@@ -276,7 +302,7 @@ namespace Sq1.Gui.Forms {
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped()", ex);
 			}
@@ -309,7 +335,7 @@ namespace Sq1.Gui.Forms {
 				}
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbSpreadGeneratorPct_UserTyped()", ex);
 			}

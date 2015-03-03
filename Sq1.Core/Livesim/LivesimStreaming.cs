@@ -17,7 +17,7 @@ namespace Sq1.Core.Livesim {
 		public ManualResetEvent Unpaused { get; private set; }
 		ChartShadow chartShadow;
 		LivesimDataSource livesimDataSource;
-		LivesimStreamingSettings settings { get { return this.livesimDataSource.Executor.Strategy.LivesimStreamginSettings; } }
+		LivesimStreamingSettings settings { get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
 
 		public LivesimStreaming(LivesimDataSource livesimDataSource) : base() {
 			base.Name = "LivesimStreaming";

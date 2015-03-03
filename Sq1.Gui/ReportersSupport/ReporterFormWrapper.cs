@@ -4,11 +4,12 @@ using System.Windows.Forms;
 
 using Sq1.Widgets;
 using Sq1.Core.StrategyBase;
+using Sq1.Gui.Forms;
 
 namespace Sq1.Gui.ReportersSupport {
 	public partial class ReporterFormWrapper : DockContentImproved {
-		private Reporter reporter;
-		private ReportersFormsManager reportersFormsManager;
+		Reporter reporter;
+		ReportersFormsManager reportersFormsManager;
 
 		protected ReporterFormWrapper() {
 			InitializeComponent();

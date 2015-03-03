@@ -15,6 +15,8 @@ using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
+using Sq1.Core.Repositories;
+using System.IO;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormManager {
@@ -31,8 +33,9 @@ namespace Sq1.Gui.Forms {
 		public ReportersFormsManager ReportersFormsManager;
 
 		public ChartForm ChartForm;
-		
-		
+
+
+		ScriptEditorFormFactory scriptEditorFormFactory;
 		public ScriptEditorForm ScriptEditorForm;
 		public ScriptEditorForm ScriptEditorFormConditionalInstance { get {
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm)) {
@@ -51,7 +54,6 @@ namespace Sq1.Gui.Forms {
 				}
 				return this.ScriptEditorForm;
 			} }
-		public bool EditorFormIsNotDisposed { get { return (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm) == false); } }
 		public bool ScriptEditorIsOnSurface { get {
 				bool editorMustBeActivated = true;
 				ScriptEditorForm editor = this.ScriptEditorForm;
@@ -65,7 +67,6 @@ namespace Sq1.Gui.Forms {
 				editorMustBeActivated = editor.IsCoveredOrAutoHidden;
 				return !editorMustBeActivated;
 			} }
-		ScriptEditorFormFactory scriptEditorFormFactory;
 		
 		
 		OptimizerFormFactory optimizerFormFactory;
@@ -80,40 +81,32 @@ namespace Sq1.Gui.Forms {
 						this.optimizerFormFactory = new OptimizerFormFactory(this);
 					}
 
-					this.optimizerFormFactory.CreateOptimizerFormSubscribePushToManager(this);
+					this.OptimizerForm = this.optimizerFormFactory.CreateOptimizerFormSubscribe();
 					if (this.OptimizerForm == null) {
 						throw new Exception("OptimizerFormFactory.CreateAndSubscribe() failed to create OptimizerForm in ChartFormsManager");
 					}
 				}
 				return this.OptimizerForm;
 			} }
-		//LivesimFormFactory livesimFormFactory;
-		public LivesimForm LivesimForm;
-		public LivesimForm LivesimFormConditionalInstance { get {
-				if (DockContentImproved.IsNullOrDisposed(this.LivesimForm)) {
-					if (this.Strategy == null) return null;
-					//v1 before I got rid of LivesimFormFactory - seemed useless, unlike ScriptEditorFormFactory which is useful enough to keep DigitalRune's library unmodified 
-					//if (this.livesimFormFactory == null) {
-					//	#if DEBUG
-					//	Debugger.Break();
-					//	#endif
-					//	this.livesimFormFactory = new LivesimFormFactory(this);
-					//}
-					//this.livesimFormFactory.CreateLivesimFormSubscribePushToManager(this);
-					//if (this.LivesimForm == null) {
-					//	throw new Exception("LivesimFormFactory.CreateAndSubscribe() failed to create LivesimForm in ChartFormsManager");
-					//}
-					//v2
-					this.LivesimForm = new LivesimForm(this);
-				}
-				return this.LivesimForm;
-			} }
-		public bool OptimizerFormIsNotDisposed { get { return (DockContentImproved.IsNullOrDisposed(this.OptimizerForm) == false); } }
 		public bool OptimizerIsOnSurface { get {
 				OptimizerForm optimizer = this.OptimizerForm;
 				bool optimizerNotInstantiated = DockContentImproved.IsNullOrDisposed(optimizer);
 				bool optimizerMustBeActivated = optimizerNotInstantiated ? true : optimizer.MustBeActivated;
 				return !optimizerMustBeActivated;
+			} }
+		public LivesimForm LivesimForm;
+		public LivesimForm LivesimFormConditionalInstance { get {
+				if (DockContentImproved.IsNullOrDisposed(this.LivesimForm)) {
+					if (this.Strategy == null) return null;
+					this.LivesimForm = new LivesimForm(this);
+				}
+				return this.LivesimForm;
+			} }
+		public bool LivesimFormIsOnSurface { get {
+				LivesimForm livesim = this.LivesimForm;
+				bool livesimNotInstantiated = DockContentImproved.IsNullOrDisposed(livesim);
+				bool livesimMustBeActivated = livesimNotInstantiated ? true : livesim.MustBeActivated;
+				return !livesimMustBeActivated;
 			} }
 		
 		public ChartFormInterformEventsConsumer InterformEventsConsumer;
@@ -294,7 +287,8 @@ namespace Sq1.Gui.Forms {
 				// ALL_SORT_OF_STARTUP_ERRORS this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, false);
 				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, skipBacktestDuringDeserialization, false);
 				if (skipBacktestDuringDeserialization == false) {
-					this.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults();
+					string msg = "YOU_DID_NOT_SWITCH_TO_GUI_THREAD...";
+					this.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 				}
 				//v1 if (this.Strategy.ScriptContextCurrent.IsStreaming) {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
@@ -529,6 +523,8 @@ namespace Sq1.Gui.Forms {
 				if (this.Strategy.Script != null && this.Strategy.ActivatedFromDll) {
 					this.Strategy.Script.PushRegisteredScriptParametersIntoCurrentContextSaveStrategy();
 				}
+				//this.OptimizerFormShow(true);
+				//this.LivesimFormShow(true);
 				return;
 			}
 
@@ -629,27 +625,29 @@ namespace Sq1.Gui.Forms {
 				break;
 			}
 			this.OptimizerFormConditionalInstance.Show(mainPanelOrAnotherOptimizersPanel);
-			this.OptimizerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
-			this.OptimizerFormConditionalInstance.OptimizerControl.Refresh();	// olvBacktest doens't repaint while having results?...
+			this.OptimizerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, false);
+			//this.OptimizerFormConditionalInstance.OptimizerControl.Refresh();	// olvBacktest doens't repaint while having results?...
+			this.OptimizerFormConditionalInstance.OptimizerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}
 		public void LivesimFormShow(bool keepAutoHidden = true) {
 			this.LivesimFormConditionalInstance.Initialize(this);
 
 			DockPanel mainPanelOrAnotherLivesimsPanel = this.dockPanel;
-			LivesimForm anotherOptimizer = null;
+			LivesimForm anotherLivesim = null;
 			foreach (DockContent form in this.dockPanel.Contents) {
-				anotherOptimizer = form as LivesimForm;
-				if (anotherOptimizer == null) continue;
-				if (anotherOptimizer.Pane == null) continue;
-				mainPanelOrAnotherLivesimsPanel = anotherOptimizer.Pane.DockPanel;
+				anotherLivesim = form as LivesimForm;
+				if (anotherLivesim == null) continue;
+				if (anotherLivesim.Pane == null) continue;
+				mainPanelOrAnotherLivesimsPanel = anotherLivesim.Pane.DockPanel;
 				break;
 			}
 			this.LivesimFormConditionalInstance.Show(mainPanelOrAnotherLivesimsPanel);
-			this.LivesimFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+			this.LivesimFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, false);
 			//this.LivesimFormConditionalInstance.OptimizerControl.Refresh();	// olvBacktest doens't repaint while having results?...
+			//this.LivesimFormConditionalInstance.OptimizerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}
 		
-		const string prefixWhenNeedsToBeSaved = "* ";
+		public const string PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE = "* ";
 		internal void PopulateWindowTitlesFromChartContextOrStrategy() {
 			if (this.Strategy == null) {
 				//string msg = "ChartFormsManager doesn't have a pointer to Strategy; Opening a Chart without Strategy is NYI";
@@ -664,7 +662,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			string windowTitle = this.Strategy.Name;
-			if (this.ScriptEditedNeedsSaving) windowTitle = prefixWhenNeedsToBeSaved + windowTitle;
+			if (this.ScriptEditedNeedsSaving) windowTitle = PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
 			if (this.ScriptEditorForm != null) {
 				this.ScriptEditorForm.Text = windowTitle;
 			}
@@ -673,6 +671,14 @@ namespace Sq1.Gui.Forms {
 			if (this.Strategy.ActivatedFromDll == true) this.ChartForm.Text += "-DLL";
 			this.ChartForm.IsHidden = false;
 			//}
+
+			this.ReportersFormsManager.WindowTitlePullFromStrategy_allReporterWrappers();
+			if (DockContentImproved.IsNullOrDisposed(this.OptimizerForm) == false) {
+				this.OptimizerForm.WindowTitlePullFromStrategy();
+			}
+			if (DockContentImproved.IsNullOrDisposed(this.LivesimForm) == false) {
+				this.LivesimForm.WindowTitlePullFromStrategy();
+			}
 		}
 		public void StrategyCompileActivateBeforeShow() {
 			if (this.Strategy.ActivatedFromDll) {
@@ -697,11 +703,11 @@ namespace Sq1.Gui.Forms {
 				}
 				this.Strategy.Script.Initialize(this.Executor);
                 this.Executor.Optimizer.RaiseScriptRecompiledUpdateHeaderPostponeColumnsRebuild();
+				this.Executor.Optimizer.Initialize();						// removes "optimizerInitializedProperly == false" on app restart => Optimizer fills up with Script&Indicator Prarmeters for a JSON-based strategy
 			}
 			// moved to StrategyCompileActivatePopulateSlidersShow() because no need to PopulateSliders during Deserialization
 			//SlidersForm.Instance.Initialize(this.Strategy);
 			this.Executor.ChartShadow.HostPanelForIndicatorClear();		//non-DLL-strategy multiple F5s add PanelIndicator endlessly
-			this.Executor.Optimizer.Initialize();						// removes "optimizerInitializedProperly == false" on app restart => Optimizer fills up with Script&Indicator Prarmeters for a JSON-based strategy
 		}
 		public void StrategyCompileActivatePopulateSlidersShow() {
 			if (this.Strategy.ActivatedFromDll == false) {
@@ -752,10 +758,29 @@ namespace Sq1.Gui.Forms {
 		}
 
 		
-		public void OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResults() {
+		public void OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory(bool deleteOptimizationHistory = false) {
+			if (deleteOptimizationHistory) {
+				//v1 this.Strategy.OptimizationResultsByContextIdent.Clear();
+				if (this.OptimizerForm != null) {
+					this.OptimizerForm.OptimizerControl.RepositoryJsonOptimizationResults.ItemsFoundDeleteAll();
+				} else {
+					try {
+						RepositoryJsonOptimizationResults repositoryJsonOptimizationResults = new RepositoryJsonOptimizationResults();
+						repositoryJsonOptimizationResults.Initialize(Assembler.InstanceInitialized.AppDataPath,
+							Path.Combine("OptimizationResults", this.Strategy.RelPathAndNameForOptimizationResults));
+						int deleted = repositoryJsonOptimizationResults.ItemsFoundDeleteAll();
+						string msg = "RECOMPILATION_ERASED_OPTIMIZATION_HISTORY [" + deleted + "] optimizations deleted (with many backtests each)";
+						Assembler.DisplayStatus(msg);
+					} catch (Exception ex) {
+						string msg = "RECOMPILATION_COULD_NOT_ERASE_OPTIMIZATION_HISTORY";
+						Assembler.PopupException(msg, ex);
+					}
+				}
+			}
+
 			if (this.OptimizerForm == null) {
-				string msg = "ADDED_CONDITION_UPSTACK_TO_AVOID JUST_WANNA_KNOW_IF_I_EVER_CHECK_FOR_STALE_BEFORE_FORM_IS_CREATED";
-				Assembler.PopupException(msg);
+				string msg = "JUST_WANNA_KNOW_IF_I_EVER_CHECK_FOR_STALE_BEFORE_FORM_IS_CREATED";
+				//Assembler.PopupException(msg);
 				return;
 			}
 			

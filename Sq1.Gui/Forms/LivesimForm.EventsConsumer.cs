@@ -3,6 +3,7 @@ using System.Windows.Forms;
 
 using Sq1.Charting;
 using Sq1.Core.DataTypes;
+using Sq1.Core;
 
 namespace Sq1.Gui.Forms {
 	public partial class LivesimForm {
@@ -49,9 +50,27 @@ namespace Sq1.Gui.Forms {
 				btnPauseResume.Enabled = true;
 			}
 		}
-		void LivesimForm_Disposed(object sender, EventArgs e) {
+		//void LivesimForm_Disposed(object sender, EventArgs e) {
+		//    if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
+		//    // both at FormCloseByX and MainForm.onClose()
+		//    this.chartFormManager.ChartForm.MniShowLivesim.Checked = false;
+		//    this.chartFormManager.MainForm.MainFormSerialize();
+		//}
+		void livesimForm_FormClosing(object sender, FormClosingEventArgs e) {
+			// only when user closed => allow scriptEditorForm_FormClosed() to serialize
+			if (this.chartFormManager.MainForm.MainFormClosingSkipChartFormsRemoval) {
+				e.Cancel = true;
+				return;
+			}
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
+				e.Cancel = true;
+				return;
+			}
+		}
+		void livesimForm_FormClosed(object sender, FormClosedEventArgs e) {
 			// both at FormCloseByX and MainForm.onClose()
 			this.chartFormManager.ChartForm.MniShowLivesim.Checked = false;
+			this.chartFormManager.MainForm.MainFormSerialize();
 		}
 	}
 }

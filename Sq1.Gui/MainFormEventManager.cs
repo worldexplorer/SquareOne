@@ -8,6 +8,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Support;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
+using Sq1.Widgets;
 
 namespace Sq1.Gui {
 	public class MainFormEventManager {
@@ -97,7 +98,7 @@ namespace Sq1.Gui {
 				// chartFormsManager lifecycle ends here
 				this.mainForm.GuiDataSnapshot.ChartFormManagers.Remove(chartFormManager.DataSnapshot.ChartSerno);
 
-				if (chartFormManager.EditorFormIsNotDisposed == false) chartFormManager.ScriptEditorFormConditionalInstance.Close();
+				if (DockContentImproved.IsNullOrDisposed(chartFormManager.ScriptEditorForm) == false) chartFormManager.ScriptEditorFormConditionalInstance.Close();
 				//foreach (Reporter reporter in chartFormsManager.Reporters.Values) {
 				//	Control reporterAsControl = reporter as Control;
 				//	Control reporterParent = reporterAsControl.Parent;

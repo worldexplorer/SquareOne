@@ -11,6 +11,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.Repositories;
 using Sq1.Core.Serializers;
 using Sq1.Core.Support;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core {
 	public class Assembler {
@@ -31,7 +32,8 @@ namespace Sq1.Core {
 		
 		public	DictionaryManyToOne<ChartShadow, Alert>	AlertsForChart;
 		public	AssemblerDataSnapshot					AssemblerDataSnapshot;
-		public	Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;		
+		public	Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;
+
 		
 		public	const string							DateTimeFormatIndicatorHasNoValuesFor = "yyyy-MMM-dd ddd HH:mm";
 		public	const string							DateTimeFormatLong = "HH:mm:ss.fff ddd dd MMM yyyy";
@@ -134,7 +136,7 @@ namespace Sq1.Core {
 			AlertsForChart							= new DictionaryManyToOne<ChartShadow, Alert>();
 			
 			AssemblerDataSnapshot					= new AssemblerDataSnapshot();
-			AssemblerDataSnapshotSerializer			= new Serializer<AssemblerDataSnapshot>();			
+			AssemblerDataSnapshotSerializer			= new Serializer<AssemblerDataSnapshot>();
 		}
 		public Assembler Initialize(IStatusReporter mainForm) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {

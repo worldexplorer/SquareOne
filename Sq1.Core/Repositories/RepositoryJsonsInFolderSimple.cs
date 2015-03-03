@@ -25,10 +25,10 @@ namespace Sq1.Core.Repositories {
 		public string	MaskAbs						{ get { return Path.Combine(this.AbsPath, Mask); } }
 		public string	Extension					{ get { return Path.GetExtension(this.Mask); } }
 		
-		public List<FnameDateSize> ItemsFound { get; protected set; }
+		public List<FnameDateSizeColor> ItemsFound { get; protected set; }
 
 		public RepositoryJsonsInFolderSimple() {
-			ItemsFound = new List<FnameDateSize>();
+			ItemsFound = new List<FnameDateSizeColor>();
 		}
 
 		public void Initialize(string rootPath,
@@ -81,13 +81,13 @@ namespace Sq1.Core.Repositories {
 				DateTime dateModified = finfo.LastWriteTime;
 				long size = finfo.Length;
 				string fname = Path.GetFileNameWithoutExtension(absFileName);
-				FnameDateSize fnameDateSize = new FnameDateSize(fname, dateModified, size);
+				FnameDateSizeColor fnameDateSize = new FnameDateSizeColor(fname, dateModified, size);
 				this.ItemsFound.Add(fnameDateSize);
 			}
 		}
 		public bool ItemsFoundContainsName(string name) {
 			bool ret = false;
-			foreach (FnameDateSize each in this.ItemsFound) {
+			foreach (FnameDateSizeColor each in this.ItemsFound) {
 				if (each.Name != name) continue;
 				ret = true;
 				break;
@@ -95,11 +95,11 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		public string AbsFnameFor(string fname) {
-			return Path.Combine(this.AbsPath, fname, this.Extension);
+			return Path.Combine(this.AbsPath, fname + this.Extension);
 		}
 		public int ItemsFoundDeleteAll() {
 			int ret = 0;
-			foreach (FnameDateSize each in this.ItemsFound) {
+			foreach (FnameDateSizeColor each in this.ItemsFound) {
 				string absFname = this.AbsFnameFor(each.Name);
 				File.Delete(absFname);
 				ret++;

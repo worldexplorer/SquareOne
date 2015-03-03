@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Windows.Forms;
 
 using Sq1.Widgets;
+using Sq1.Core;
 
 namespace Sq1.Gui.Forms {
 	public partial class ScriptEditorForm : DockContentImproved {
-		private ChartFormManager chartFormManager;
+		ChartFormManager chartFormManager;
 
 		// don't use this constuctor outside this class!
 		private ScriptEditorForm() {

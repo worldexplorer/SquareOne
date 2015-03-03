@@ -1,6 +1,7 @@
 ﻿namespace Sq1.Gui.Forms {
 	partial class OptimizerForm {
 		private System.ComponentModel.IContainer components = null;
+		public Sq1.Widgets.Optimization.OptimizerControl OptimizerControl;
 		protected override void Dispose(bool disposing) {
 			if (disposing) {
 				if (components != null) {
@@ -33,6 +34,5 @@
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRightAutoHide;
 			this.ResumeLayout(false);
 		}
-		public Sq1.Widgets.Optimization.OptimizerControl OptimizerControl;
 	}
 }
