@@ -45,7 +45,7 @@
       "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 67
+        "Distance": 20
       }
     },
     "ChartColorBackground": "White",
@@ -83,7 +83,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 0,
+    "ScrollPositionAtBarIndex": 6,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,

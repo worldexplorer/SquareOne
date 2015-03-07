@@ -1,12 +1,376 @@
 [
   {
     "$type": "Sq1.Core.Execution.Order, Sq1.Core",
+    "TimeCreatedBroker": "2015-03-02T22:43:13.6652",
+    "PriceRequested": 160000.0,
+    "PriceFill": 158025.0,
+    "QtyRequested": 1.0,
+    "QtyFill": 1.0,
+    "State": 400,
+    "StateUpdateLastTimeLocal": "2015-03-02T22:43:15.4436-05:00",
+    "SernoSession": 2,
+    "SernoExchange": 1000001,
+    "IsReplacement": false,
+    "IsEmergencyClose": false,
+    "EmergencyCloseAttemptSerno": 0,
+    "EmergencyReplacementForGUID": null,
+    "EmergencyReplacedByGUID": null,
+    "DateServerLastFillUpdate": "0001-01-01T00:00:00",
+    "SlippageFill": 0.0,
+    "SlippageIndex": 0,
+    "SpreadSide": 7,
+    "DerivedFrom": null,
+    "AddedToOrdersListCounter": 58,
+    "absno": 2957,
+    "GUID": "224313695",
+    "ReplacementForGUID": "",
+    "ReplacedByGUID": "",
+    "IsKiller": false,
+    "VictimGUID": "",
+    "KillerGUID": "",
+    "EmittedByScript": true,
+    "CurrentAsk": 158025.0,
+    "CurrentBid": 158005.0,
+    "PriceSpreadSideAsString": "MaxPrice bid[158005] ask[158025]",
+    "Alert": {
+      "$type": "Sq1.Core.Execution.Alert, Sq1.Core",
+      "QuoteCreatedThisAlertServerTime": "2015-03-02T22:43:13.634",
+      "MarketLimitStop": 1,
+      "SignalName": "BuyAtMarket@StaticBarLast#51/52",
+      "OrderSpreadSide": 7,
+      "QuoteCreatedThisAlert": {
+        "$type": "Sq1.Adapters.Quik.QuoteQuik, Sq1.Adapters.Quik",
+        "FortsDepositBuy": 10039.0,
+        "FortsDepositSell": 10056.0,
+        "FortsPriceMax": 160000.0,
+        "FortsPriceMin": 156000.0,
+        "Symbol": "autogen",
+        "SymbolClass": "SPBFUT",
+        "Source": "QUIK_DDE",
+        "ServerTime": "2015-03-02T22:43:13.634",
+        "Bid": 158005.0,
+        "Ask": 158025.0,
+        "Size": 5.0,
+        "AbsnoPerSymbol": 2,
+        "LastDealBidOrAsk": 2,
+        "LocalTimeCreated": "2015-03-02T22:43:13.634-05:00",
+        "ParentBarIdent": "NO_PARENT_BAR",
+        "LastDealPrice": 158005.0,
+        "Spread": 20.0
+      },
+      "QuoteFilledThisAlertDuringBacktestNotLive": null,
+      "QuoteLastWhenThisAlertFilled": null,
+      "PriceDeposited": 10039.0,
+      "IsKilled": false,
+      "PlacedBar": {
+        "$type": "Sq1.Core.DataTypes.Bar, Sq1.Core",
+        "Open": 158005.0,
+        "High": 158075.0,
+        "Low": 158005.0,
+        "Close": 158035.0,
+        "Volume": 35.0,
+        "DaySerial": 2,
+        "Symbol": "autogen",
+        "ScaleInterval": {
+          "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+          "Scale": 3,
+          "Interval": 1,
+          "IsIntraday": true,
+          "AsTimeSpanInSeconds": 60,
+          "AsTimeSpan": "00:01:00"
+        },
+        "DateTimeOpen": "2015-03-02T22:43:00",
+        "DateTimeNextBarOpenUnconditional": "2015-03-02T22:44:00",
+        "DateTimePreviousBarOpenUnconditional": "2015-03-02T22:42:00",
+        "ParentBarsIdent": "NO_PARENT_BARS"
+      },
+      "PlacedBarIndex": 52,
+      "FilledBar": null,
+      "FilledBarSnapshotFrozenAtFill": null,
+      "FilledBarIndex": -1,
+      "PlacedDateTime": "2015-03-02T22:43:00",
+      "Symbol": "autogen",
+      "SymbolClass": "NO_SYMBOL_CLASS",
+      "AccountNumber": "UNKNOWN_ACCOUNT",
+      "dataSourceName": "Qmock",
+      "PriceScript": 158025.0,
+      "PriceScriptAligned": 158025.0,
+      "PriceStopLimitActivation": 0.0,
+      "PriceStopLimitActivationAligned": 0.0,
+      "Qty": 1.0,
+      "MarketOrderAs": 3,
+      "Direction": 1,
+      "StrategyID": "05d850ff-a502-42f0-a65c-43695a409f16",
+      "StrategyName": "EnterEveryBarCompiled",
+      "BarsScaleInterval": {
+        "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+        "Scale": 3,
+        "Interval": 1,
+        "IsIntraday": true,
+        "AsTimeSpanInSeconds": 60,
+        "AsTimeSpan": "00:01:00"
+      },
+      "IsFilled": false,
+      "BidOrAskWillFillMe": 1,
+      "MyBrokerIsLivesim": false,
+      "GuiHasTimeRebuildReportersAndExecution": true
+    },
+    "MessagesSerializationProxy": [
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:43:13.6652-05:00",
+        "State": 1,
+        "Message": "BROKER_SPECIFIC_CONVERSION_MarketMinMaxSentToBroker: [Market]=>[Market](MarketMinMaxSentToBroker) brokerSpecificDetails[Setting PriceRequested=[160000]=Quote.FortsPriceMax since MarketOrderAs=[MarketMinMaxSentToBroker]] //BrokerQuikMock::ModifyOrderTypeAccordingToMarketOrderAs(): Guid[224313695] SernoExchange[0] SernoSession[0]"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:43:13.6652-05:00",
+        "State": 210,
+        "Message": "alert[bar#52: Buy Market 1*autogen@158025:UNFILLED; PositionAffected=[LONG_STRING]]"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:43:13.712-05:00",
+        "State": 210,
+        "Message": "BrokerQuikMock::SubmitOrders(): Guid[224313695] SernoExchange[0] SernoSession[0]"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:43:13.712-05:00",
+        "State": 210,
+        "Message": "OPERATION=B;ACTION=NEW_ORDER;TYPE=M;PRICE=158025;QUANTITY=1;SECCODE=autogen;CLASSCODE=NO_SYMBOL_CLASS;TRANS_ID=224313695;ACCOUNT=ACCTNR_NOT_SET;CLIENT_CODE=;"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:43:13.712-05:00",
+        "State": 240,
+        "Message": "r[MOCK_SUCCESS] callbackErrorMsg[] error[0] //QuikTerminal(QUIK_MOCK).SendTransactionOrderAsync(autogen.NO_SYMBOL_CLASS BM: 1@158025)order.SernoSession[0]=>[2]  //BrokerQuikMock::OrderSubmit(): Guid[224313695] SernoExchange[0] SernoSession[0]"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:43:13.712-05:00",
+        "State": 250,
+        "Message": "fillPrice[-999.99] fillQnty[1] autogen/NO_SYMBOL_CLASS SernoExchange=[1000001] GUID=[224313695] //BrokerQuikMock:CallbackOrderStateReceivedQuik()"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:43:13.712-05:00",
+        "State": 250,
+        "Message": "DELAY_DELIVERING_FILL[1729]ms QuikStatus[0] State[WaitingBrokerFill] //QuikTerminalMock(QUIK_MOCK)::OrderFilled()"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:43:15.4436-05:00",
+        "State": 400,
+        "Message": "fillPrice[158025] fillQnty[1] autogen/NO_SYMBOL_CLASS SernoExchange=[1000001] GUID=[224313695] //BrokerQuikMock:CallbackOrderStateReceivedQuik()"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:43:19.6712-05:00",
+        "State": 400,
+        "Message": "THREAD_FILLED_ORDER__SUCCESSFULLY_COMPLETED_OrderFilledNotifyLikeTerminalCallback()  //QuikTerminalMock(QUIK_MOCK).orderSimulateFillLoopStep(order[224313695 Buy Market autogen/NO_SYMBOL_CLASS @ 160,000.0 WaitingBrokerFill SernoSession[2] EmittedByScript] tp[Sq1.Adapters.QuikMock.Terminal.QuikTerminalMockThreadParam])"
+      }
+    ],
+    "DerivedOrdersGuids": [],
+    "InStateCanBeReplacedLimitStop": false,
+    "InStateExpectingCallbackFromBroker": false,
+    "InStateChangeableToSubmitted": false,
+    "InStateEmergency": false,
+    "InStateErrorComplementaryEmergencyState": 700,
+    "InStateChangeableToEmergency": false,
+    "LastMessage": "BROKER_SPECIFIC_CONVERSION_MarketMinMaxSentToBroker: [Market]=>[Market](MarketMinMaxSentToBroker) brokerSpecificDetails[Setting PriceRequested=[160000]=Quote.FortsPriceMax since MarketOrderAs=[MarketMinMaxSentToBroker]] //BrokerQuikMock::ModifyOrderTypeAccordingToMarketOrderAs(): Guid[224313695] SernoExchange[0] SernoSession[0]",
+    "CommissionFill": 0.0
+  },
+  {
+    "$type": "Sq1.Core.Execution.Order, Sq1.Core",
+    "TimeCreatedBroker": "2015-03-02T22:42:44.9456",
+    "PriceRequested": 156000.0,
+    "PriceFill": 157990.0,
+    "QtyRequested": 1.0,
+    "QtyFill": 1.0,
+    "State": 400,
+    "StateUpdateLastTimeLocal": "2015-03-02T22:42:46.4588-05:00",
+    "SernoSession": 1,
+    "SernoExchange": 1000000,
+    "IsReplacement": false,
+    "IsEmergencyClose": false,
+    "EmergencyCloseAttemptSerno": 0,
+    "EmergencyReplacementForGUID": null,
+    "EmergencyReplacedByGUID": null,
+    "DateServerLastFillUpdate": "0001-01-01T00:00:00",
+    "SlippageFill": 0.0,
+    "SlippageIndex": 0,
+    "SpreadSide": 6,
+    "DerivedFrom": null,
+    "AddedToOrdersListCounter": 58,
+    "absno": 2957,
+    "GUID": "224244974",
+    "ReplacementForGUID": "",
+    "ReplacedByGUID": "",
+    "IsKiller": false,
+    "VictimGUID": "",
+    "KillerGUID": "",
+    "EmittedByScript": true,
+    "CurrentAsk": 158010.0,
+    "CurrentBid": 157990.0,
+    "PriceSpreadSideAsString": "MinPrice bid[157990] ask[158010]",
+    "Alert": {
+      "$type": "Sq1.Core.Execution.Alert, Sq1.Core",
+      "QuoteCreatedThisAlertServerTime": "2015-03-02T22:42:44.93",
+      "MarketLimitStop": 1,
+      "SignalName": "ShortAtMarket@StaticBarLast#50/51",
+      "OrderSpreadSide": 6,
+      "QuoteCreatedThisAlert": {
+        "$type": "Sq1.Adapters.Quik.QuoteQuik, Sq1.Adapters.Quik",
+        "FortsDepositBuy": 10037.0,
+        "FortsDepositSell": 10030.0,
+        "FortsPriceMax": 160000.0,
+        "FortsPriceMin": 156000.0,
+        "Symbol": "autogen",
+        "SymbolClass": "SPBFUT",
+        "Source": "QUIK_DDE",
+        "ServerTime": "2015-03-02T22:42:44.93",
+        "Bid": 157990.0,
+        "Ask": 158010.0,
+        "Size": 5.0,
+        "AbsnoPerSymbol": 0,
+        "LastDealBidOrAsk": 2,
+        "LocalTimeCreated": "2015-03-02T22:42:44.93-05:00",
+        "ParentBarIdent": "NO_PARENT_BAR",
+        "LastDealPrice": 157990.0,
+        "Spread": 20.0
+      },
+      "QuoteFilledThisAlertDuringBacktestNotLive": null,
+      "QuoteLastWhenThisAlertFilled": null,
+      "PriceDeposited": -10030.0,
+      "IsKilled": false,
+      "PlacedBar": {
+        "$type": "Sq1.Core.DataTypes.Bar, Sq1.Core",
+        "Open": 157990.0,
+        "High": 158040.0,
+        "Low": 157990.0,
+        "Close": 158020.0,
+        "Volume": 10.0,
+        "DaySerial": 2,
+        "Symbol": "autogen",
+        "ScaleInterval": {
+          "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+          "Scale": 3,
+          "Interval": 1,
+          "IsIntraday": true,
+          "AsTimeSpanInSeconds": 60,
+          "AsTimeSpan": "00:01:00"
+        },
+        "DateTimeOpen": "2015-03-02T22:42:00",
+        "DateTimeNextBarOpenUnconditional": "2015-03-02T22:43:00",
+        "DateTimePreviousBarOpenUnconditional": "2015-03-02T22:41:00",
+        "ParentBarsIdent": "NO_PARENT_BARS"
+      },
+      "PlacedBarIndex": 51,
+      "FilledBar": null,
+      "FilledBarSnapshotFrozenAtFill": null,
+      "FilledBarIndex": -1,
+      "PlacedDateTime": "2015-03-02T22:42:00",
+      "Symbol": "autogen",
+      "SymbolClass": "NO_SYMBOL_CLASS",
+      "AccountNumber": "UNKNOWN_ACCOUNT",
+      "dataSourceName": "Qmock",
+      "PriceScript": 157990.0,
+      "PriceScriptAligned": 157990.0,
+      "PriceStopLimitActivation": 0.0,
+      "PriceStopLimitActivationAligned": 0.0,
+      "Qty": 1.0,
+      "MarketOrderAs": 3,
+      "Direction": 3,
+      "StrategyID": "05d850ff-a502-42f0-a65c-43695a409f16",
+      "StrategyName": "EnterEveryBarCompiled",
+      "BarsScaleInterval": {
+        "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+        "Scale": 3,
+        "Interval": 1,
+        "IsIntraday": true,
+        "AsTimeSpanInSeconds": 60,
+        "AsTimeSpan": "00:01:00"
+      },
+      "IsFilled": false,
+      "BidOrAskWillFillMe": 2,
+      "MyBrokerIsLivesim": false,
+      "GuiHasTimeRebuildReportersAndExecution": true
+    },
+    "MessagesSerializationProxy": [
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:42:44.9456-05:00",
+        "State": 1,
+        "Message": "BROKER_SPECIFIC_CONVERSION_MarketMinMaxSentToBroker: [Market]=>[Market](MarketMinMaxSentToBroker) brokerSpecificDetails[Setting PriceRequested=[156000]=Quote.FortsPriceMin; since Alert.MarketOrderAs=[MarketMinMaxSentToBroker]] //BrokerQuikMock::ModifyOrderTypeAccordingToMarketOrderAs(): Guid[224244974] SernoExchange[0] SernoSession[0]"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:42:44.9456-05:00",
+        "State": 210,
+        "Message": "alert[bar#51: Short Market 1*autogen@157990:UNFILLED; PositionAffected=[LONG_STRING]]"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:42:44.9768-05:00",
+        "State": 210,
+        "Message": "BrokerQuikMock::SubmitOrders(): Guid[224244974] SernoExchange[0] SernoSession[0]"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:42:44.9924-05:00",
+        "State": 210,
+        "Message": "OPERATION=S;ACTION=NEW_ORDER;TYPE=M;PRICE=157990;QUANTITY=1;SECCODE=autogen;CLASSCODE=NO_SYMBOL_CLASS;TRANS_ID=224244974;ACCOUNT=ACCTNR_NOT_SET;CLIENT_CODE=;"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:42:44.9924-05:00",
+        "State": 240,
+        "Message": "r[MOCK_SUCCESS] callbackErrorMsg[] error[0] //QuikTerminal(QUIK_MOCK).SendTransactionOrderAsync(autogen.NO_SYMBOL_CLASS SM: 1@157990)order.SernoSession[0]=>[1]  //BrokerQuikMock::OrderSubmit(): Guid[224244974] SernoExchange[0] SernoSession[0]"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:42:45.008-05:00",
+        "State": 250,
+        "Message": "fillPrice[-999.99] fillQnty[1] autogen/NO_SYMBOL_CLASS SernoExchange=[1000000] GUID=[224244974] //BrokerQuikMock:CallbackOrderStateReceivedQuik()"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:42:45.0236-05:00",
+        "State": 250,
+        "Message": "DELAY_DELIVERING_FILL[1433]ms QuikStatus[0] State[WaitingBrokerFill] //QuikTerminalMock(QUIK_MOCK)::OrderFilled()"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:42:46.4588-05:00",
+        "State": 400,
+        "Message": "fillPrice[157990] fillQnty[1] autogen/NO_SYMBOL_CLASS SernoExchange=[1000000] GUID=[224244974] //BrokerQuikMock:CallbackOrderStateReceivedQuik()"
+      },
+      {
+        "$type": "Sq1.Core.Execution.OrderStateMessage, Sq1.Core",
+        "DateTime": "2015-03-02T22:43:13.634-05:00",
+        "State": 400,
+        "Message": "THREAD_FILLED_ORDER__SUCCESSFULLY_COMPLETED_OrderFilledNotifyLikeTerminalCallback()  //QuikTerminalMock(QUIK_MOCK).orderSimulateFillLoopStep(order[224244974 Short Market autogen/NO_SYMBOL_CLASS @ 156,000.0 WaitingBrokerFill SernoSession[1] EmittedByScript] tp[Sq1.Adapters.QuikMock.Terminal.QuikTerminalMockThreadParam])"
+      }
+    ],
+    "DerivedOrdersGuids": [],
+    "InStateCanBeReplacedLimitStop": false,
+    "InStateExpectingCallbackFromBroker": false,
+    "InStateChangeableToSubmitted": false,
+    "InStateEmergency": false,
+    "InStateErrorComplementaryEmergencyState": 700,
+    "InStateChangeableToEmergency": false,
+    "LastMessage": "BROKER_SPECIFIC_CONVERSION_MarketMinMaxSentToBroker: [Market]=>[Market](MarketMinMaxSentToBroker) brokerSpecificDetails[Setting PriceRequested=[156000]=Quote.FortsPriceMin; since Alert.MarketOrderAs=[MarketMinMaxSentToBroker]] //BrokerQuikMock::ModifyOrderTypeAccordingToMarketOrderAs(): Guid[224244974] SernoExchange[0] SernoSession[0]",
+    "CommissionFill": 0.0
+  },
+  {
+    "$type": "Sq1.Core.Execution.Order, Sq1.Core",
     "TimeCreatedBroker": "2015-01-20T02:42:00.9804",
     "PriceRequested": 156000.0,
     "PriceFill": 0.0,
     "QtyRequested": 1.0,
     "QtyFill": 0.0,
-    "State": 250,
+    "State": 708,
     "StateUpdateLastTimeLocal": "2015-01-20T02:42:00.9804-05:00",
     "SernoSession": 8,
     "SernoExchange": 1000007,
@@ -40,8 +404,8 @@
       "SlippageIndex": 0,
       "SpreadSide": 7,
       "DerivedFrom": null,
-      "AddedToOrdersListCounter": 3,
-      "absno": 28,
+      "AddedToOrdersListCounter": 59,
+      "absno": 2957,
       "GUID": "24100136",
       "ReplacementForGUID": "",
       "ReplacedByGUID": "",
@@ -74,7 +438,7 @@
           "AbsnoPerSymbol": 2782,
           "LastDealBidOrAsk": 2,
           "LocalTimeCreated": "2015-01-20T02:41:00.0936-05:00",
-          "ParentBarIdent": "StaticBarLast#507/508",
+          "ParentBarIdent": "NO_PARENT_BAR",
           "LastDealPrice": 158315.0,
           "Spread": 20.0
         },
@@ -121,7 +485,7 @@
           "DateTimeOpen": "2015-01-20T02:41:00",
           "DateTimeNextBarOpenUnconditional": "2015-01-20T02:42:00",
           "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:40:00",
-          "ParentBarsIdent": "StaticBarLast#507/508"
+          "ParentBarsIdent": "NO_PARENT_BARS"
         },
         "PlacedBarIndex": 507,
         "FilledBar": {
@@ -144,7 +508,7 @@
           "DateTimeOpen": "2015-01-20T02:41:00",
           "DateTimeNextBarOpenUnconditional": "2015-01-20T02:42:00",
           "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:40:00",
-          "ParentBarsIdent": "StaticBar#507/508"
+          "ParentBarsIdent": "NO_PARENT_BARS"
         },
         "FilledBarSnapshotFrozenAtFill": {
           "$type": "Sq1.Core.DataTypes.Bar, Sq1.Core",
@@ -166,7 +530,7 @@
           "DateTimeOpen": "2015-01-20T02:41:00",
           "DateTimeNextBarOpenUnconditional": "2015-01-20T02:42:00",
           "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:40:00",
-          "ParentBarsIdent": "StaticBar#507/508"
+          "ParentBarsIdent": "NO_PARENT_BARS"
         },
         "FilledBarIndex": 507,
         "PlacedDateTime": "2015-01-20T02:41:00",
@@ -191,8 +555,10 @@
           "AsTimeSpanInSeconds": 60,
           "AsTimeSpan": "00:01:00"
         },
-        "IsFilled": true,
-        "BidOrAskWillFillMe": 1
+        "IsFilled": false,
+        "BidOrAskWillFillMe": 1,
+        "MyBrokerIsLivesim": false,
+        "GuiHasTimeRebuildReportersAndExecution": true
       },
       "MessagesSerializationProxy": [
         {
@@ -263,7 +629,7 @@
       "CommissionFill": 0.0
     },
     "AddedToOrdersListCounter": 2,
-    "absno": 28,
+    "absno": 2957,
     "GUID": "24201008",
     "ReplacementForGUID": "",
     "ReplacedByGUID": "",
@@ -296,7 +662,7 @@
         "AbsnoPerSymbol": 2842,
         "LastDealBidOrAsk": 2,
         "LocalTimeCreated": "2015-01-20T02:42:00.9804-05:00",
-        "ParentBarIdent": "BarStreaming#508/508",
+        "ParentBarIdent": "NO_PARENT_BAR",
         "LastDealPrice": 158125.0,
         "Spread": 20.0
       },
@@ -324,7 +690,7 @@
         "DateTimeOpen": "2015-01-20T02:42:00",
         "DateTimeNextBarOpenUnconditional": "2015-01-20T02:43:00",
         "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:41:00",
-        "ParentBarsIdent": "BarStreaming#508/508"
+        "ParentBarsIdent": "NO_PARENT_BARS"
       },
       "PlacedBarIndex": 508,
       "FilledBar": null,
@@ -353,7 +719,9 @@
         "AsTimeSpan": "00:01:00"
       },
       "IsFilled": false,
-      "BidOrAskWillFillMe": 2
+      "BidOrAskWillFillMe": 2,
+      "MyBrokerIsLivesim": false,
+      "GuiHasTimeRebuildReportersAndExecution": true
     },
     "MessagesSerializationProxy": [
       {
@@ -400,8 +768,8 @@
       }
     ],
     "DerivedOrdersGuids": [],
-    "InStateCanBeReplacedLimitStop": true,
-    "InStateExpectingCallbackFromBroker": true,
+    "InStateCanBeReplacedLimitStop": false,
+    "InStateExpectingCallbackFromBroker": false,
     "InStateChangeableToSubmitted": false,
     "InStateEmergency": false,
     "InStateErrorComplementaryEmergencyState": 700,
@@ -430,8 +798,8 @@
     "SlippageIndex": 0,
     "SpreadSide": 7,
     "DerivedFrom": null,
-    "AddedToOrdersListCounter": 3,
-    "absno": 28,
+    "AddedToOrdersListCounter": 59,
+    "absno": 2957,
     "GUID": "24100136",
     "ReplacementForGUID": "",
     "ReplacedByGUID": "",
@@ -464,7 +832,7 @@
         "AbsnoPerSymbol": 2782,
         "LastDealBidOrAsk": 2,
         "LocalTimeCreated": "2015-01-20T02:41:00.0936-05:00",
-        "ParentBarIdent": "StaticBarLast#507/508",
+        "ParentBarIdent": "NO_PARENT_BAR",
         "LastDealPrice": 158315.0,
         "Spread": 20.0
       },
@@ -511,7 +879,7 @@
         "DateTimeOpen": "2015-01-20T02:41:00",
         "DateTimeNextBarOpenUnconditional": "2015-01-20T02:42:00",
         "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:40:00",
-        "ParentBarsIdent": "StaticBarLast#507/508"
+        "ParentBarsIdent": "NO_PARENT_BARS"
       },
       "PlacedBarIndex": 507,
       "FilledBar": {
@@ -534,7 +902,7 @@
         "DateTimeOpen": "2015-01-20T02:41:00",
         "DateTimeNextBarOpenUnconditional": "2015-01-20T02:42:00",
         "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:40:00",
-        "ParentBarsIdent": "StaticBar#507/508"
+        "ParentBarsIdent": "NO_PARENT_BARS"
       },
       "FilledBarSnapshotFrozenAtFill": {
         "$type": "Sq1.Core.DataTypes.Bar, Sq1.Core",
@@ -556,7 +924,7 @@
         "DateTimeOpen": "2015-01-20T02:41:00",
         "DateTimeNextBarOpenUnconditional": "2015-01-20T02:42:00",
         "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:40:00",
-        "ParentBarsIdent": "StaticBar#507/508"
+        "ParentBarsIdent": "NO_PARENT_BARS"
       },
       "FilledBarIndex": 507,
       "PlacedDateTime": "2015-01-20T02:41:00",
@@ -581,8 +949,10 @@
         "AsTimeSpanInSeconds": 60,
         "AsTimeSpan": "00:01:00"
       },
-      "IsFilled": true,
-      "BidOrAskWillFillMe": 1
+      "IsFilled": false,
+      "BidOrAskWillFillMe": 1,
+      "MyBrokerIsLivesim": false,
+      "GuiHasTimeRebuildReportersAndExecution": true
     },
     "MessagesSerializationProxy": [
       {
@@ -694,7 +1064,7 @@
       "SpreadSide": 7,
       "DerivedFrom": null,
       "AddedToOrdersListCounter": 3,
-      "absno": 28,
+      "absno": 2957,
       "GUID": "23900123",
       "ReplacementForGUID": "",
       "ReplacedByGUID": "",
@@ -727,7 +1097,7 @@
           "AbsnoPerSymbol": 2325,
           "LastDealBidOrAsk": 2,
           "LocalTimeCreated": "2015-01-20T02:39:00.0984-05:00",
-          "ParentBarIdent": "StaticBar#505/508",
+          "ParentBarIdent": "NO_PARENT_BAR",
           "LastDealPrice": 158150.0,
           "Spread": 20.0
         },
@@ -774,7 +1144,7 @@
           "DateTimeOpen": "2015-01-20T02:39:00",
           "DateTimeNextBarOpenUnconditional": "2015-01-20T02:40:00",
           "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:38:00",
-          "ParentBarsIdent": "StaticBar#505/508"
+          "ParentBarsIdent": "NO_PARENT_BARS"
         },
         "PlacedBarIndex": 505,
         "FilledBar": {
@@ -797,7 +1167,7 @@
           "DateTimeOpen": "2015-01-20T02:39:00",
           "DateTimeNextBarOpenUnconditional": "2015-01-20T02:40:00",
           "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:38:00",
-          "ParentBarsIdent": "StaticBar#505/508"
+          "ParentBarsIdent": "NO_PARENT_BARS"
         },
         "FilledBarSnapshotFrozenAtFill": {
           "$type": "Sq1.Core.DataTypes.Bar, Sq1.Core",
@@ -819,7 +1189,7 @@
           "DateTimeOpen": "2015-01-20T02:39:00",
           "DateTimeNextBarOpenUnconditional": "2015-01-20T02:40:00",
           "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:38:00",
-          "ParentBarsIdent": "StaticBar#505/508"
+          "ParentBarsIdent": "NO_PARENT_BARS"
         },
         "FilledBarIndex": 505,
         "PlacedDateTime": "2015-01-20T02:39:00",
@@ -844,8 +1214,10 @@
           "AsTimeSpanInSeconds": 60,
           "AsTimeSpan": "00:01:00"
         },
-        "IsFilled": true,
-        "BidOrAskWillFillMe": 1
+        "IsFilled": false,
+        "BidOrAskWillFillMe": 1,
+        "MyBrokerIsLivesim": false,
+        "GuiHasTimeRebuildReportersAndExecution": true
       },
       "MessagesSerializationProxy": [
         {
@@ -915,8 +1287,8 @@
       "LastMessage": "BROKER_SPECIFIC_CONVERSION_MarketMinMaxSentToBroker: [Market]=>[Market](MarketMinMaxSentToBroker) brokerSpecificDetails[Setting PriceRequested=[160000]=Quote.FortsPriceMax since MarketOrderAs=[MarketMinMaxSentToBroker]] //BrokerQuikMock::ModifyOrderTypeAccordingToMarketOrderAs(): Guid[23900123] SernoExchange[0] SernoSession[0]",
       "CommissionFill": 0.0
     },
-    "AddedToOrdersListCounter": 2,
-    "absno": 28,
+    "AddedToOrdersListCounter": 58,
+    "absno": 2957,
     "GUID": "24000044",
     "ReplacementForGUID": "",
     "ReplacedByGUID": "",
@@ -949,7 +1321,7 @@
         "AbsnoPerSymbol": 2723,
         "LastDealBidOrAsk": 2,
         "LocalTimeCreated": "2015-01-20T02:40:00.018-05:00",
-        "ParentBarIdent": "StaticBar#506/508",
+        "ParentBarIdent": "NO_PARENT_BAR",
         "LastDealPrice": 158275.0,
         "Spread": 20.0
       },
@@ -996,7 +1368,7 @@
         "DateTimeOpen": "2015-01-20T02:40:00",
         "DateTimeNextBarOpenUnconditional": "2015-01-20T02:41:00",
         "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:39:00",
-        "ParentBarsIdent": "StaticBar#506/508"
+        "ParentBarsIdent": "NO_PARENT_BARS"
       },
       "PlacedBarIndex": 506,
       "FilledBar": {
@@ -1019,7 +1391,7 @@
         "DateTimeOpen": "2015-01-20T02:40:00",
         "DateTimeNextBarOpenUnconditional": "2015-01-20T02:41:00",
         "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:39:00",
-        "ParentBarsIdent": "StaticBar#506/508"
+        "ParentBarsIdent": "NO_PARENT_BARS"
       },
       "FilledBarSnapshotFrozenAtFill": {
         "$type": "Sq1.Core.DataTypes.Bar, Sq1.Core",
@@ -1041,7 +1413,7 @@
         "DateTimeOpen": "2015-01-20T02:40:00",
         "DateTimeNextBarOpenUnconditional": "2015-01-20T02:41:00",
         "DateTimePreviousBarOpenUnconditional": "2015-01-20T02:39:00",
-        "ParentBarsIdent": "StaticBar#506/508"
+        "ParentBarsIdent": "NO_PARENT_BARS"
       },
       "FilledBarIndex": 506,
       "PlacedDateTime": "2015-01-20T02:40:00",
@@ -1066,8 +1438,10 @@
         "AsTimeSpanInSeconds": 60,
         "AsTimeSpan": "00:01:00"
       },
-      "IsFilled": true,
-      "BidOrAskWillFillMe": 2
+      "IsFilled": false,
+      "BidOrAskWillFillMe": 2,
+      "MyBrokerIsLivesim": false,
+      "GuiHasTimeRebuildReportersAndExecution": true
     },
     "MessagesSerializationProxy": [
       {
