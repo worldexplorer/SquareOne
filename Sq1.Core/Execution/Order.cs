@@ -209,36 +209,36 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public ManualResetEvent MreActiveCanCome	{ get; protected set; }		// JSON restore of a ManualResetEvent makes GC thread throw SEHException (thanx for a great free library anyway)
 
  		public Order() {	// called by Json.Deserialize(); what if I'll make it protected?
-			this.GUID = newGUID();
-			this.messages = new ConcurrentQueue<OrderStateMessage>();
-			this.PriceRequested = 0;
-			this.PriceFill = 0;
-			this.QtyRequested = 0;
-			this.QtyFill = 0;
+			GUID = newGUID();
+			messages = new ConcurrentQueue<OrderStateMessage>();
+			PriceRequested = 0;
+			PriceFill = 0;
+			QtyRequested = 0;
+			QtyFill = 0;
 
-			this.State = OrderState.Unknown;
-			this.SernoSession = 0;		//QUIK
-			this.SernoExchange = 0;		//QUIK
+			State = OrderState.Unknown;
+			SernoSession = 0;		//QUIK
+			SernoExchange = 0;		//QUIK
 
-			this.IsReplacement = false;
-			this.ReplacementForGUID = "";
-			this.ReplacedByGUID = "";
+			IsReplacement = false;
+			ReplacementForGUID = "";
+			ReplacedByGUID = "";
 
-			this.IsKiller = false;
-			this.VictimGUID = "";
-			this.KillerGUID = "";
+			IsKiller = false;
+			VictimGUID = "";
+			KillerGUID = "";
 
-			//this.StateImageIndex = 0;
-			this.StateUpdateLastTimeLocal = DateTime.MinValue;
-			this.EmittedByScript = false;
-			this.SlippageFill = 0;
-			this.SlippageIndex = 0;
-			this.CurrentAsk = 0;
-			this.CurrentBid = 0;
-			this.SpreadSide = OrderSpreadSide.Unknown;
-			this.MreActiveCanCome = new ManualResetEvent(false);
-			this.DerivedOrders = new List<Order>();
-			this.DerivedOrdersGuids = new List<string>();
+			//StateImageIndex = 0;
+			StateUpdateLastTimeLocal = DateTime.MinValue;
+			EmittedByScript = false;
+			SlippageFill = 0;
+			SlippageIndex = 0;
+			CurrentAsk = 0;
+			CurrentBid = 0;
+			SpreadSide = OrderSpreadSide.Unknown;
+			MreActiveCanCome = new ManualResetEvent(false);
+			DerivedOrders = new List<Order>();
+			DerivedOrdersGuids = new List<string>();
 		}
 		public Order(Alert alert, bool emittedByScript, bool forceOverwriteAlertOrderFollowedToNewlyCreatedOrder = false) : this() {
 			if (alert == null) {
@@ -402,6 +402,7 @@ namespace Sq1.Core.Execution {
 			if (this.PriceFill != 0.0) ret += " PriceFilled[" + this.PriceFill.ToString(formatPrice) + "]";
 			//if (this.Alert.PriceDeposited != 0) ret += " PricePaid[" + this.Alert.PriceDeposited + "]";
 			if (this.EmittedByScript) ret += " EmittedByScript";
+			if (this.Alert.MyBrokerIsLivesim) ret += " Livesim";
 			return ret;
 		}
 		public bool hasBrokerAdapter(string callerMethod) {
@@ -431,9 +432,9 @@ namespace Sq1.Core.Execution {
 			// NOPE THATS_WHATS_WHAT_CallbackAlertFilledMoveAroundInvokeScript_WILL_DO_LATER_IN_OrderProcessor
 			//Bar barStreaming = this.Alert.Bars.BarStreaming;
 			//if (barStreaming == null) {
-			//    string msg = "ORDER_FILLED_HAS_ALERT_WITHOUT_STREAMING_BAR order[" + this.ToString() + "].Alert[" + this.Alert + "]";
-			//    Assembler.PopupException(msg);
-			//    return;
+			//	string msg = "ORDER_FILLED_HAS_ALERT_WITHOUT_STREAMING_BAR order[" + this.ToString() + "].Alert[" + this.Alert + "]";
+			//	Assembler.PopupException(msg);
+			//	return;
 			//}
 			//this.Alert.FillPositionAffectedEntryOrExitRespectively(barStreaming, -1, priceFill, qtyFill, slippageFill, commissionFill);
 		}

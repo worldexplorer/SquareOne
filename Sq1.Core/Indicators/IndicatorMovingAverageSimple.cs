@@ -116,9 +116,9 @@ namespace Sq1.Core.Indicators {
 			double ret = double.NaN;
 
 			//if (this.ParamPeriod.ValueCurrent <= 0) {
-			//    string msg = "this.ParamPeriod.ValueCurrent <= 0";
-			//    Assembler.PopupException(msg);
-			//    return ret;
+			//	string msg = "this.ParamPeriod.ValueCurrent <= 0";
+			//	Assembler.PopupException(msg);
+			//	return ret;
 			//}
 
 			#region DELETEME_AFTER_COMPATIBILITY_TEST

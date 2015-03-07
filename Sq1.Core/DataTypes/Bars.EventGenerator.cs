@@ -12,7 +12,7 @@ namespace Sq1.Core.DataTypes {
 			try {
 				this.BarStaticAdded(this, new BarEventArgs(barAdding));
 			} catch (Exception ex) {
-				string msg = "BarsBasic.BarStaticAdded(bar[" + barAdding + "])";
+				string msg = "Bars.BarStaticAdded(bar[" + barAdding + "])";
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
@@ -21,7 +21,7 @@ namespace Sq1.Core.DataTypes {
 			try {
 				this.BarStreamingAdded(this, new BarEventArgs(barAdding));
 			} catch (Exception ex) {
-				string msg = "BarsBasic.BarStreamingAdded(bar[" + barAdding + "])";
+				string msg = "Bars.BarStreamingAdded(bar[" + barAdding + "])";
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
@@ -30,7 +30,7 @@ namespace Sq1.Core.DataTypes {
 			try {
 				this.BarStreamingUpdatedMerged(this, new BarEventArgs(barUpdated));
 			} catch (Exception ex) {
-				string msg = "BarsBasic.BarStreamingUpdated(bar[" + barUpdated + "])";
+				string msg = "Bars.BarStreamingUpdated(bar[" + barUpdated + "])";
 				Assembler.PopupException(msg, ex, false);
 			}
 		}

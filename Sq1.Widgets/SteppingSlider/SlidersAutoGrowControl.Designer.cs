@@ -50,10 +50,10 @@ namespace Sq1.Widgets.SteppingSlider {
 			// ctxOperations
 			// 
 			this.ctxOperations.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripSeparator1,
-            this.mniltbParameterBagRenameTo,
-            this.mniltbParameterBagDuplicateTo,
-            this.mniParameterBagDelete});
+			this.toolStripSeparator1,
+			this.mniltbParameterBagRenameTo,
+			this.mniltbParameterBagDuplicateTo,
+			this.mniParameterBagDelete});
 			this.ctxOperations.Name = "ctxOperations";
 			this.ctxOperations.Size = new System.Drawing.Size(241, 102);
 			// 
@@ -98,14 +98,14 @@ namespace Sq1.Widgets.SteppingSlider {
 			// ctxScriptContexts
 			// 
 			this.ctxScriptContexts.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniParameterBagsNotHighlighted,
-            this.mniParameterBag_test1,
-            this.mniParameterBag_test2,
-            this.mniltbParametersBagNewWithDefaults,
-            this.toolStripSeparator2,
-            this.mniAllParamsResetToScriptDefaults,
-            this.mniAllParamsShowBorder,
-            this.mniAllParamsShowNumeric});
+			this.mniParameterBagsNotHighlighted,
+			this.mniParameterBag_test1,
+			this.mniParameterBag_test2,
+			this.mniltbParametersBagNewWithDefaults,
+			this.toolStripSeparator2,
+			this.mniAllParamsResetToScriptDefaults,
+			this.mniAllParamsShowBorder,
+			this.mniAllParamsShowNumeric});
 			this.ctxScriptContexts.Name = "ctxScriptContexts";
 			this.ctxScriptContexts.Size = new System.Drawing.Size(274, 162);
 			this.ctxScriptContexts.Opening += new System.ComponentModel.CancelEventHandler(this.ctxScriptContexts_Opening);
@@ -177,7 +177,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			// templateSliderControl
 			// 
 			this.templateSliderControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.templateSliderControl.ColorBgMouseOverEnabled = System.Drawing.Color.YellowGreen;
 			this.templateSliderControl.ColorBgValueCurrent = System.Drawing.Color.LightSteelBlue;
 			this.templateSliderControl.ColorFgParameterLabel = System.Drawing.Color.White;
@@ -194,25 +194,25 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.templateSliderControl.Size = new System.Drawing.Size(245, 17);
 			this.templateSliderControl.TabIndex = 0;
 			this.templateSliderControl.ValueCurrent = new decimal(new int[] {
-            200,
-            0,
-            0,
-            0});
+			200,
+			0,
+			0,
+			0});
 			this.templateSliderControl.ValueIncrement = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
+			100,
+			0,
+			0,
+			0});
 			this.templateSliderControl.ValueMax = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
+			500,
+			0,
+			0,
+			0});
 			this.templateSliderControl.ValueMin = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
+			10,
+			0,
+			0,
+			0});
 			// 
 			// toolStripSeparator1
 			// 

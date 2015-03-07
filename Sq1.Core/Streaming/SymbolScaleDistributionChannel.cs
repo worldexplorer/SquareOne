@@ -46,8 +46,8 @@ namespace Sq1.Core.Streaming {
 			//// delayed start to 1) give BacktestStreaming-created channels to not start PumpThread (both architecturally and for linear call stack in debugger)
 			//// 2) set Thread.CurrentThread.Name = QuotePump.channel.ToString() ( == this[SymbolScaleDistributionChannel].ToString), without subscribers it looks lame now
 			//if (this.QuotePump.SeparatePushingThreadEnabled != quotePumpSeparatePushingThreadEnabled) {
-			//    string msg = "I_MADE_IT_PROTECTED_TO_SET_THREAD_NAME_FOR_EASIER_DEBUGGING_IN_VISUAL_STUDIO";
-			//    //this.QuotePump.SeparatePushingThreadEnabled  = quotePumpSeparatePushingThreadEnabled;
+			//	string msg = "I_MADE_IT_PROTECTED_TO_SET_THREAD_NAME_FOR_EASIER_DEBUGGING_IN_VISUAL_STUDIO";
+			//	//this.QuotePump.SeparatePushingThreadEnabled  = quotePumpSeparatePushingThreadEnabled;
 			//}
 			//v2 : SET_THREAD_NAME_FOR_EASIER_DEBUGGING_IN_VISUAL_STUDIO 1) default constructor this() made private, 2) QuotePump knows if it should launch pusherEntryPoint() now
 			//QuotePump = new QuotePumpPerChannel(this, quotePumpSeparatePushingThreadEnabled);
@@ -151,39 +151,39 @@ namespace Sq1.Core.Streaming {
 
 				#if DEBUG
 				#region MOVED_TO_DataDistributorSolidifiers__SPECIAL_CASE_SINGLE_POSSIBLE_SOLIDIFIER_DOESNT_HAVE_ConsumerBarsToAppendInto__NO_EARLY_BINDING_NECESSARY
-				if (barConsumer is StreamingSolidifier) {
-					streamingSolidifiersPoked++;
-					if (streamingSolidifiersPoked > 1) {
-						string msg = "two streaming charts open with same Symbol/Interval, both with their StreamingSolidifiers subscribed"
-							+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingAdapter?..."
-							+ " Save datasource must fully unregister consumers and register again to avoid StreamingSolidifier dupes";
-						Assembler.PopupException(msg + msig);
-						continue;
-					}
-					try {
-						if (this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNotYetFormed) {
-							string msg = "NONSENSE_HERE";
-							Assembler.PopupException(msg);
-							continue;
-						}
-						Bar lastBarFormedUnattached = this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe.Clone();
-						barConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(lastBarFormedUnattached, null);
-					} catch (Exception e) {
-						string msg = "STREAMING_SOLIDIFIER_FAILED_TO_CONSUME_STATIC_JUST_FORMED";
-						Assembler.PopupException(msg + msig, e);
-					}
-					continue;
-				}
+				//if (barConsumer is StreamingSolidifier) {
+				//	streamingSolidifiersPoked++;
+				//	if (streamingSolidifiersPoked > 1) {
+				//		string msg = "two streaming charts open with same Symbol/Interval, both with their StreamingSolidifiers subscribed"
+				//			+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingAdapter?..."
+				//			+ " Save datasource must fully unregister consumers and register again to avoid StreamingSolidifier dupes";
+				//		Assembler.PopupException(msg + msig);
+				//		continue;
+				//	}
+				//	try {
+				//		if (this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNotYetFormed) {
+				//			string msg = "NONSENSE_HERE";
+				//			Assembler.PopupException(msg);
+				//			continue;
+				//		}
+				//		Bar lastBarFormedUnattached = this.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe.Clone();
+				//		barConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(lastBarFormedUnattached, null);
+				//	} catch (Exception e) {
+				//		string msg = "STREAMING_SOLIDIFIER_FAILED_TO_CONSUME_STATIC_JUST_FORMED";
+				//		Assembler.PopupException(msg + msig, e);
+				//	}
+				//	continue;
+				//}
 				#endregion
 				#endif
 				
 				if (barConsumer.ConsumerBarsToAppendInto == null) {
 					//try {
-					//    //NOPE_FRESH_STREAMING_CONTAINING_JUST_ONE_QUOTE_I_WILL_POKE_QUOTES_FROM_IT consumer.ConsumeBarLastFormed(barLastFormedBound);
-					//    consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStreamingUnattached);
+					//	//NOPE_FRESH_STREAMING_CONTAINING_JUST_ONE_QUOTE_I_WILL_POKE_QUOTES_FROM_IT consumer.ConsumeBarLastFormed(barLastFormedBound);
+					//	consumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStreamingUnattached);
 					//} catch (Exception e) {
-					//    string msg = "CHART_OR_BACKTESTER_WITHOUT_BARS_TO_BIND_AS_PARENT";
-					//    Assembler.PopupException(msg + msig, e);
+					//	string msg = "CHART_OR_BACKTESTER_WITHOUT_BARS_TO_BIND_AS_PARENT";
+					//	Assembler.PopupException(msg + msig, e);
 					//}
 					string msg = "INVESTIGATE_THIS";
 					Assembler.PopupException(msg + msig);
@@ -259,24 +259,24 @@ namespace Sq1.Core.Streaming {
 
 				#if DEBUG
 				#region MOVED_TO_DataDistributorSolidifiers__SPECIAL_CASE_SINGLE_POSSIBLE_SOLIDIFIER_DOESNT_HAVE_ConsumerBarsToAppendInto__NO_EARLY_BINDING_NECESSARY
-				if (quoteConsumer is StreamingSolidifier) {
-					streamingSolidifiersPoked++;
-					if (streamingSolidifiersPoked > 1) {
-						string msg = "two streaming charts open with same Symbol/Interval, both with their StreamingSolidifiers subscribed"
-							+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingAdapter?...";
-						Assembler.PopupException(msg + msig);
-						continue;
-					}
-					try {
-						//MADE_PUBLIC_TO_EXAMINE_IN_DEBUGGER binderForConsumer.StreamingBarFactoryUnattached;
-						quoteSernoEnrichedWithUnboundStreamingBar.SetParentBarStreaming(binderForConsumer.StreamingBarFactoryUnattached.BarStreamingUnattached);
-						quoteConsumer.ConsumeQuoteOfStreamingBar(quoteSernoEnrichedWithUnboundStreamingBar);
-					} catch (Exception e) {
-						string msg = "STREAMING_SOLIDIFIER_FAILED_CONSUME_STATIC_JUST_FORMED";
-						Assembler.PopupException(msg + msig, e);
-					}
-					continue;
-				}
+				//if (quoteConsumer is StreamingSolidifier) {
+				//	streamingSolidifiersPoked++;
+				//	if (streamingSolidifiersPoked > 1) {
+				//		string msg = "two streaming charts open with same Symbol/Interval, both with their StreamingSolidifiers subscribed"
+				//			+ " but StreamingSolidifier Should be subscribed only once per Symbol/Interval, in StreamingAdapter?...";
+				//		Assembler.PopupException(msg + msig);
+				//		continue;
+				//	}
+				//	try {
+				//		//MADE_PUBLIC_TO_EXAMINE_IN_DEBUGGER binderForConsumer.StreamingBarFactoryUnattached;
+				//		quoteSernoEnrichedWithUnboundStreamingBar.SetParentBarStreaming(binderForConsumer.StreamingBarFactoryUnattached.BarStreamingUnattached);
+				//		quoteConsumer.ConsumeQuoteOfStreamingBar(quoteSernoEnrichedWithUnboundStreamingBar);
+				//	} catch (Exception e) {
+				//		string msg = "STREAMING_SOLIDIFIER_FAILED_CONSUME_STATIC_JUST_FORMED";
+				//		Assembler.PopupException(msg + msig, e);
+				//	}
+				//	continue;
+				//}
 				#endregion
 				#endif
 				

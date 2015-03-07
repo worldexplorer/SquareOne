@@ -33,8 +33,8 @@ namespace Sq1.Core.Streaming {
 		public bool IshouldWaitConfirmationFromAnotherThread { get {
 				//v1
 				//return
-				//        Thread.CurrentThread.Name != null
-				//    &&	Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false;
+				//		Thread.CurrentThread.Name != null
+				//	&&	Thread.CurrentThread.Name.StartsWith(THREAD_PREFIX) == false;
 				//v2 NOPE_ITS_TOO_THICK_FOR_POST_CONSTRUCTOR_TIMES if (this.bufferPusherThreadId == 0) return false;	// ALL_PUMPS_AT_BIRTH_ARE_PAUSED__AVOIDING_INDICATORS_NOT_HAVING_EXECUTOR_AT_APP_RESTART_BACKTEST
 				return this.bufferPusherThreadId != Thread.CurrentThread.ManagedThreadId;
 			} }

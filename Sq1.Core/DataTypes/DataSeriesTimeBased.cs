@@ -14,8 +14,8 @@ namespace Sq1.Core.DataTypes {
 			set { base[barIndex] = value; }
 		}
 		//public virtual double this[int barIndex] {
-		//    get { return this.doublesByDate[this.doublesByDate.Keys[barIndex]]; }
-		//    set { this.doublesByDate[this.doublesByDate.Keys[barIndex]] = value; }
+		//	get { return this.doublesByDate[this.doublesByDate.Keys[barIndex]]; }
+		//	set { this.doublesByDate[this.doublesByDate.Keys[barIndex]] = value; }
 		//}
 
 		public virtual double this[DateTime date] { get { return this.doublesByDate[date]; } }

@@ -276,20 +276,20 @@ namespace Sq1.Core.Indicators {
 				return ret;
 			}
 			//if (this.ClosesProxyEffective.Count - 1 < this.FirstValidBarIndex) {
-			//    //if (popupException) {
-			//    //    string msg = "DONT_INVOKE_ME__MAKE_THIS_CHECK_UPSTACK"
-			//    //        + " base.ClosesProxyEffective.Count-1[" + (this.ClosesProxyEffective.Count - 1)
-			//    //        + "] < this.FirstValidBarIndex[" + this.FirstValidBarIndex + "]"
-			//    //        + this.ToString();
-			//    //    Assembler.PopupException(msg);
-			//    //}
-			//    //if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) {
-			//    //    int barsWaitToFirstIndicatorValidIndex = this.FirstValidBarIndex - newStaticBar.ParentBarsIndex;
-			//    //    string msg = "barsWaitToFirstIndicatorValidIndex[" + barsWaitToFirstIndicatorValidIndex + "] newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex";
-			//    //    //Assembler.PopupException(msg, null, false);
-			//    //    return;
-			//    //}
-			//    return ret;
+			//	//if (popupException) {
+			//	//	string msg = "DONT_INVOKE_ME__MAKE_THIS_CHECK_UPSTACK"
+			//	//		+ " base.ClosesProxyEffective.Count-1[" + (this.ClosesProxyEffective.Count - 1)
+			//	//		+ "] < this.FirstValidBarIndex[" + this.FirstValidBarIndex + "]"
+			//	//		+ this.ToString();
+			//	//	Assembler.PopupException(msg);
+			//	//}
+			//	//if (newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex) {
+			//	//	int barsWaitToFirstIndicatorValidIndex = this.FirstValidBarIndex - newStaticBar.ParentBarsIndex;
+			//	//	string msg = "barsWaitToFirstIndicatorValidIndex[" + barsWaitToFirstIndicatorValidIndex + "] newStaticBar.ParentBarsIndex - 1 < this.FirstValidBarIndex";
+			//	//	//Assembler.PopupException(msg, null, false);
+			//	//	return;
+			//	//}
+			//	return ret;
 			//}
 			ret = true;
 			return ret;

@@ -112,7 +112,7 @@ namespace Sq1.Core.StrategyBase {
 			//Debugger.Break();
 			//ret.ScriptContextsByName = new Dictionary<string, ContextScript>();
 			//if (ret.ScriptContextsByName.Count == this.ScriptContextsByName.Count) {
-			//    Debugger.Break();
+			//	Debugger.Break();
 			//}
 			//ret.ScriptContextAdd(ctxNext.Name, ctxNext, true);
 			//MOVED_UPSTACK ret.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);

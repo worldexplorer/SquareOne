@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Livesim;
+using Sq1.Core.Charting;
 
 namespace Sq1.Core.Execution {
 	public	class Alert {
@@ -94,21 +96,21 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		//[JsonIgnore]	public	bool				IsExecutorLivesimulatingNow		{ get {
-		//        if (this.Strategy == null) {
-		//            string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL__ADDED_[JsonIgnore]";
-		//            return false;
-		//        }
-		//        if (this.Strategy.Script == null) {
-		//            throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script=null for " + this);
-		//        }
-		//        if (this.Strategy.Script.Executor == null) {
-		//            throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor=null for " + this);
-		//        }
-		//        if (this.Strategy.Script.Executor.Backtester == null) {
-		//            throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this);
-		//        }
-		//        return this.Strategy.Script.Executor.Backtester.IsLivesimRunning;
-		//    } }
+		//		if (this.Strategy == null) {
+		//			string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL__ADDED_[JsonIgnore]";
+		//			return false;
+		//		}
+		//		if (this.Strategy.Script == null) {
+		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script=null for " + this);
+		//		}
+		//		if (this.Strategy.Script.Executor == null) {
+		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor=null for " + this);
+		//		}
+		//		if (this.Strategy.Script.Executor.Backtester == null) {
+		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this);
+		//		}
+		//		return this.Strategy.Script.Executor.Backtester.IsLivesimRunning;
+		//	} }
 		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }
 		[JsonProperty]	public	OrderSpreadSide		OrderSpreadSide;
 		[JsonProperty]	public	Quote				QuoteCreatedThisAlert;
@@ -232,9 +234,31 @@ namespace Sq1.Core.Execution {
 				#endif
 				return outsideQuote;
 			} }
-		[JsonProperty]	public	BidOrAsk BidOrAskWillFillMe{ get {
+		[JsonProperty]	public	BidOrAsk BidOrAskWillFillMe { get {
 				return MarketConverter.BidOrAskWillFillAlert(this);
 			}}
+		
+		[JsonProperty]	public	bool		MyBrokerIsLivesim { get {
+			if (this.Bars == null) return false;
+			if (this.DataSource == null) return false;
+			if (this.DataSource.BrokerAdapter is LivesimBroker) return true;
+			return false;
+		} }
+		[JsonProperty]	public	bool		GuiHasTimeRebuildReportersAndExecution { get {
+			bool ret = true;
+			if (this.MyBrokerIsLivesim == false) return ret;
+			try {
+				ChartShadow chartShadow = Assembler.InstanceInitialized.AlertsForChart.FindContainerFor(this);
+				ScriptExecutor executor = chartShadow.Executor;
+				bool livesimSleeping = executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
+				ret = livesimSleeping;
+			} catch (Exception ex) {
+				Assembler.PopupException("DESERIALIZED_ALERT_DOESNT_HAVE_CHART " + this.ToString(), ex);
+				return ret;
+			}
+			return ret;
+		} }
+
 
 		public	Alert() {	// called by Json.Deserialize()
 			PlacedBarIndex				= -1;
@@ -408,6 +432,7 @@ namespace Sq1.Core.Execution {
 				+ " " + Symbol
 				// not SymbolClass coz stack overflow
 				+ "/" + SymbolClass;
+			//if (this.MyBrokerIsLivesim) msg += " Livesim";
 			return msg;
 		}
 		public	bool IsIdenticalOrderlessPriceless(Alert alert) {

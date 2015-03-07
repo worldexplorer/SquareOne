@@ -49,8 +49,8 @@ namespace Sq1.Core.Backtesting {
 
 		public bool						WasBacktestAborted				{ get {
 				if (this.QuotesGenerator == null) {
-				    string msg = "ABORTION_IS_A_FLAG_IRRELEVANT_TO_QUOTE_GENERATOR_LIFECYCLE WORKED_FOR_BACKTEST_BUT_SPOILED_LATE_LIVESIM_CHECK";
-				    return false;
+					string msg = "ABORTION_IS_A_FLAG_IRRELEVANT_TO_QUOTE_GENERATOR_LIFECYCLE WORKED_FOR_BACKTEST_BUT_SPOILED_LATE_LIVESIM_CHECK";
+					return false;
 				}
 				bool signalled = this.BacktestAborted.WaitOne(0);
 				return signalled;
@@ -326,6 +326,7 @@ namespace Sq1.Core.Backtesting {
 					return;
 				}
 				this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;
+				// DOESNT_HELP_HOPE_ON_OnBacktestedAllBars() in InterForm this.Executor.ChartShadow.Invalidate();
 			} catch (Exception e) {
 				#if DEBUG
 				Debugger.Break();
@@ -353,9 +354,14 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			List<QuoteGenerated> quotesGenerated = this.QuotesGenerator.GenerateQuotesFromBarAvoidClearing(bar2simulate);
+
 			if (quotesGenerated == null) return;
 			for (int i = 0; i < quotesGenerated.Count; i++) {
-				if (this.IsBacktestRunning == false) break;
+				if (this.IsBacktestRunning == false) {
+					string msg = "BACKTEST_INTERRUPTED_ON quote[" + (i+1) + "/" + quotesGenerated.Count + "] IsBacktestRunning == false";
+					Assembler.PopupException(msg, null, false);
+					break;
+				}
 
 				QuoteGenerated quote = quotesGenerated[i];
 				

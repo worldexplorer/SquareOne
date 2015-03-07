@@ -153,7 +153,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 
 				this.ctxOperations.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-		            this.toolStripSeparator1,
+					this.toolStripSeparator1,
 					this.mniltbParameterBagRenameTo,
 					this.mniltbParameterBagDuplicateTo,
 					this.mniParameterBagDelete});

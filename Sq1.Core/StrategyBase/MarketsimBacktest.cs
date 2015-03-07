@@ -452,7 +452,8 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
 				return filled;
 			}
-			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
+			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded"
+				+ " logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
 			
 			if (this.executor.ExecutionDataSnapshot.AlertsPending.ContainsInInnerList(alert) == true) {
 				string msg = "ALERT_MUST_HAVE_BEEN_REMOVED_FROM_PENDINGS_AFTER_FILL"
@@ -573,9 +574,10 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "OrderProcessor.PostProcessOrderState() will invoke CallbackAlertFilledMoveAroundInvokeScript() for filled orders";
 				return filled;
 			}
-			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
+			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime multithreaded"
+				+ " logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
 			if (this.executor.Backtester.IsLivesimRunning) {
-				if (executeAfterAlertFilled != null) {
+				if (executeAfterAlertFilled != null && alert.OrderFollowed != null) {
 					executeAfterAlertFilled(alert, priceFill, alert.Qty);
 				} else {
 					Assembler.PopupException("NOT_INVOKING_LIVESIM_BROKER_ON_ALERT_FILLED_ACTION");

@@ -269,8 +269,8 @@ namespace Sq1.Widgets.Execution {
 
 			//v1 if (Assembler.InstanceInitialized.AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)) return;
 			//v2 ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL
-			if (order.Alert.Bars != null) return;
-			e.Item.ForeColor = Color.DimGray;
+			if (order.Alert.Bars == null) e.Item.ForeColor = Color.DimGray;
+			if (order.Alert.MyBrokerIsLivesim) e.Item.BackColor = Color.Gainsboro;
 		}
 		// WRONG WAY TO MOVE COLUMNS AROUND: AFTER I did RestoreState(), Column(3) is not State and I add State twice => exception
 //		public void MoveStateColumnToLeftmost() {

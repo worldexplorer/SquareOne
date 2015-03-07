@@ -14,20 +14,20 @@ using Sq1.Support;
 
 namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
-		public ExecutionTreeDataSnapshot				DataSnapshot;
-		public Serializer<ExecutionTreeDataSnapshot>	DataSnapshotSerializer;
-		Dictionary<ToolStripMenuItem, List<OLVColumn>>	columnsByFilters;
-		OrdersAutoTree									ordersTree;
-		public Order									OrderSelected			{ get {
+		public	ExecutionTreeDataSnapshot						DataSnapshot;
+		public	Serializer<ExecutionTreeDataSnapshot>			DataSnapshotSerializer;
+				Dictionary<ToolStripMenuItem, List<OLVColumn>>	columnsByFilters;
+				OrdersAutoTree									ordersTree;
+		public	Order											OrderSelected			{ get {
 				if (this.OrdersTreeOLV.SelectedObjects.Count != 1) return null;
 				return this.OrdersTreeOLV.SelectedObjects[0] as Order;
 			} }
-		public List<Order>								OrdersSelected			{ get {
+		public	List<Order>										OrdersSelected			{ get {
 				List<Order> ret = new List<Order>();
 				foreach (object obj in this.OrdersTreeOLV.SelectedObjects) ret.Add(obj as Order);
 				return ret;
 			} }
-		public List<string>								SelectedAccountNumbers	{ get {
+		public	List<string>									SelectedAccountNumbers	{ get {
 				var ret = new List<string>();
 				foreach (ToolStripItem mni in this.ctxAccounts.Items) {
 					if (mni.Selected == false) continue;
@@ -129,7 +129,7 @@ namespace Sq1.Widgets.Execution {
 								string msg = "+151_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
 								int newDistance = this.DataSnapshot.MessagePaneSplitDistanceVertical;		// + 151 this.splitContainerMessagePane.SplitterWidth;
 				//Debugger.Break();
-							    if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
+								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
 									this.splitContainerMessagePane.SplitterDistance =  newDistance;
 								}
 							}
@@ -241,12 +241,17 @@ namespace Sq1.Widgets.Execution {
 
 //				//	order.Messages.Sort((x, y) => y.DateTime.CompareTo(x.DateTime));
 		}
-		public void OrderInsertToListView(Order order) {
-			this.RebuildAllTreeFocusOnTopmost();
-		}
+		//public void OrderInsertToListView(Order order) {
+		//	this.RebuildAllTreeFocusOnTopmost();
+		//}
 		public void OrderRemoveFromListView(List<Order> orders) {
-			this.ordersTree.RemoveAll(orders);
-			this.OrdersTreeOLV.RemoveObjects(orders);
+			if (orders.Count == 0) {
+				string msg = "WILL_JUST_OrdersTreeOLV.RebuildAll(true)_IN_OrderRemoveFromListView()";
+			} else {
+				this.ordersTree.RemoveAll(orders);
+				this.OrdersTreeOLV.RemoveObjects(orders);
+			}
+			this.RebuildAllTreeFocusOnTopmost();
 		}
 		public void RebuildAllTreeFocusOnTopmost() {
 			this.OrdersTreeOLV.SetObjects(this.ordersTree.InnerOrderList);

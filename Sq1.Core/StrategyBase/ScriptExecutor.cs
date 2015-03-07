@@ -284,7 +284,25 @@ namespace Sq1.Core.StrategyBase {
 			//this.ExecutionDataSnapshot.PositionsOpenedAfterExec
 			//this.ExecutionDataSnapshot.PositionsClosedAfterExec
 
-			bool willEmit = this.Backtester.IsBacktestingNoLivesimNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
+			bool willEmit = true;
+			if (this.Backtester.IsBacktestingNoLivesimNow) {
+				string msg = "will NOT emit for static backtests";
+				willEmit = false;
+			} else {
+				 // will emit for livestreaming (it is a backtest!) only if 
+				if (this.OrderProcessor == null) {
+					willEmit = false;
+					string msg = "SHOULD_NEVER_HAPPEN__LIVESIMULATOR_SHOULD_HAVE_ORDER_PROCESSOR_NON_NULL";
+					Assembler.PopupException(msg, null, false);
+				} else {
+					if (this.Backtester.IsBacktestingLivesimNow) {
+						willEmit = true;
+					} else {
+						string msg3 = "REALTIME_LIVE_DEPENDS_ON_CHARTFORM_BUTTON";
+						willEmit = this.IsStrategyEmittingOrders;
+					}
+				}
+			}
 			bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
 			if (willEmit) {
 				string msg3 = "Breakpoint";
@@ -294,6 +312,12 @@ namespace Sq1.Core.StrategyBase {
 
 			List<Alert> alertsNewAfterExecCopy = this.ExecutionDataSnapshot.AlertsNewAfterExec.InnerListSafeCopy;
 			List<Order> ordersEmitted = null;
+
+			bool guiHasTime = false;
+			foreach (Alert alert in this.ExecutionDataSnapshot.AlertsNewAfterExec.InnerList) {
+				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
+				if (guiHasTime == false) guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
+			}
 
 			if (alertsNewAfterExecCopy.Count > 0) {
 				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecCopy, quoteForAlertsCreated);
@@ -340,18 +364,17 @@ namespace Sq1.Core.StrategyBase {
 												this.ExecutionDataSnapshot.PositionsClosedAfterExec.Clone(),
 												this.ExecutionDataSnapshot.PositionsOpenNow.Clone()
 											);
+			//MOVED_UPSTACK_TO_LivesimQuoteBarConsumer
+			//if (this.Backtester.IsBacktestRunning && this.Backtester.IsLivesimRunning) {
+			//	// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
+			//	if (pokeUnit.PositionsOpenNow.Count > 0) {
+			//		this.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this.ExecutionDataSnapshot.PositionsOpenNow);
+			//		if (guiHasTime) {
+			//			this.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit);
+			//		}
+			//	}
+			//}
 
-			if (this.Backtester.IsBacktestingNoLivesimNow == false) {
-				// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
-				if (pokeUnit.PositionsOpenNow.Count > 0) {
-					this.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this.ExecutionDataSnapshot.PositionsOpenNow);
-					this.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit);
-				}
-			}
-
-			foreach (Alert alert in pokeUnit.AlertsNew.InnerList) {
-				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
-			}
 			//if (this.Backtester.IsBacktestingNow) return pokeUnit;
 			// NOPE PositionsMaster grows only in Callback: do this before this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads() to avoid REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert
 			// NOPE_REALTIME_FILLS_POSITIONS_ON_CALLBACK this.AddPositionsJustCreatedUnfilledToChartShadowAndPushToReportersAsyncUnsafe(pokeUnit);
@@ -819,20 +842,24 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteFilledThisAlertNullForLive, alertsNewAfterAlertFilled,
-			                                                 positionsOpenedAfterAlertFilled,
-			                                                 positionsClosedAfterAlertFilled,
-			                                                 null
-			                                                );
+															 positionsOpenedAfterAlertFilled,
+															 positionsClosedAfterAlertFilled,
+															 null
+															);
 			//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
 			if (positionOpenedAfterAlertFilled != null) {
 				this.Performance.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(positionOpenedAfterAlertFilled);
-				// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
-				this.EventGenerator.RaiseOnBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+				//if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
+					// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
+					this.EventGenerator.RaiseOnBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+				//}
 			}
 			if (positionClosedAfterAlertFilled != null) {
 				this.Performance.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(positionClosedAfterAlertFilled);
-				// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
-				this.EventGenerator.RaiseOnBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+				if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
+					// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
+					this.EventGenerator.RaiseOnBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
+				}
 			}
 			this.ChartShadow.PositionsRealtimeAdd(pokeUnit);
 

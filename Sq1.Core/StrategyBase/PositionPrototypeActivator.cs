@@ -569,22 +569,22 @@ namespace Sq1.Core.StrategyBase {
 		}
 		//[Obsolete("USELESS & UNTESTED")]
 		//public double StopLossCurrentNegativeOffsetGetNaNunsafe(PositionPrototype proto) {
-		//    double SL = this.StopLossCurrentGetNaNunsafe(proto);
-		//    if (double.IsNaN(SL)) return SL;
+		//	double SL = this.StopLossCurrentGetNaNunsafe(proto);
+		//	if (double.IsNaN(SL)) return SL;
 
-		//    Bar bar = this.executor.Bars.BarStreamingCloneReadonly;
-		//    if (bar == null) {
-		//        string msg = "WHEN?";
-		//        #if DEBUG
-		//        Debugger.Break();
-		//        #endif
-		//        return double.NaN;
-		//    }
-		//    // long has SLalert.PriceScriptAligned < bar.Close; we need NEGATIVE
-		//    double ret = SL - bar.Close;
-		//    Alert SLalert = proto.StopLossAlertForAnnihilation;
-		//    if (SLalert.Direction == Direction.Cover) ret = -ret;
-		//    return ret;
+		//	Bar bar = this.executor.Bars.BarStreamingCloneReadonly;
+		//	if (bar == null) {
+		//		string msg = "WHEN?";
+		//		#if DEBUG
+		//		Debugger.Break();
+		//		#endif
+		//		return double.NaN;
+		//	}
+		//	// long has SLalert.PriceScriptAligned < bar.Close; we need NEGATIVE
+		//	double ret = SL - bar.Close;
+		//	Alert SLalert = proto.StopLossAlertForAnnihilation;
+		//	if (SLalert.Direction == Direction.Cover) ret = -ret;
+		//	return ret;
 		//}
 	}
 }

@@ -44,44 +44,47 @@ namespace Sq1.Gui.ReportersSupport {
 			this.ChartFormManager = chartFormManager;
 
 			this.ChartFormManager.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(
-				this.EventGenerator_BacktesterContextInitialized_step2of4);
+				this.eventGenerator_BacktesterContextInitialized_step2of4);
 
 			this.ChartFormManager.Executor.EventGenerator.OnBrokerFilledAlertsOpeningForPositions_step1of3 += new EventHandler<ReporterPokeUnitEventArgs>(
-				this.EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3);
+				this.eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3);
 
 			this.ChartFormManager.Executor.EventGenerator.OnOpenPositionsUpdatedDueToStreamingNewQuote_step2of3 += new EventHandler<ReporterPokeUnitEventArgs>(
-				this.EventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3);
+				this.eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3);
 
 			this.ChartFormManager.Executor.EventGenerator.OnBrokerFilledAlertsClosingForPositions_step3of3 += new EventHandler<ReporterPokeUnitEventArgs>(
-				this.EventGenerator_BrokerFilledAlertsClosingForPositions_step3of3);
+				this.eventGenerator_BrokerFilledAlertsClosingForPositions_step3of3);
 		}
 
-		void EventGenerator_BacktesterContextInitialized_step2of4(object sender, EventArgs e) {
+		void eventGenerator_BacktesterContextInitialized_step2of4(object sender, EventArgs e) {
 			this.ClearAllReportsSincePerformanceGotCleared_step0of3();
 		}
 
-		void EventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(object sender, ReporterPokeUnitEventArgs e) {
+		void eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(object sender, ReporterPokeUnitEventArgs e) {
+			if (e.PokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild == false) return;
 			this.BuildIncrementalOnPositionsOpenedAllReports_step1of3(e.PokeUnit);
 		}
-		void EventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(object sender, ReporterPokeUnitEventArgs e) {
-		    this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(e.PokeUnit);
+		void eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(object sender, ReporterPokeUnitEventArgs e) {
+			if (e.PokeUnit.PositionsOpenNow.AlertsOpenNow.GuiHasTimeToRebuild == false) return;
+			this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(e.PokeUnit);
 		}
-		void EventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(object sender, ReporterPokeUnitEventArgs e) {
+		void eventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(object sender, ReporterPokeUnitEventArgs e) {
+			if (e.PokeUnit.PositionsClosed.AlertsExit.GuiHasTimeToRebuild == false) return;
 			this.BuildIncrementalOnPositionsClosedAllReports_step3of3(e.PokeUnit);
 		}
 		public void ClearAllReportsSincePerformanceGotCleared_step0of3() {
 			SystemPerformanceSlice both = this.ChartFormManager.Executor.Performance.SlicesShortAndLong;
-			bool amIlaunchingLivesim = this.ChartFormManager.Executor.Backtester.IsLivesimRunning;
-			if (amIlaunchingLivesim) {
-				if (both.PositionsImTracking.Count > 0 || both.NetProfitForClosedPositionsBoth > 0) {
-					string msg = "I_REFUSE_CLEAR_ALL_REPORTS__SYSTEM_PERFORMANCE_MUST_BE_CLEAN_AFTER_USER_CLICKED_START_LIVESIM_DURING_REAL_LIVE";
-					Assembler.PopupException(msg, null, false);
-					return;
-				}
-			}
+			//bool amIlaunchingLivesim = this.ChartFormManager.Executor.Backtester.IsLivesimRunning;
+			//if (amIlaunchingLivesim) {
+			//	if (both.PositionsImTracking.Count > 0 || both.NetProfitForClosedPositionsBoth > 0) {
+			//		string msg = "I_REFUSE_CLEAR_ALL_REPORTS__SYSTEM_PERFORMANCE_MUST_BE_CLEAN_AFTER_USER_CLICKED_START_LIVESIM_DURING_REAL_LIVE";
+			//		Assembler.PopupException(msg, null, false);
+			//		return;
+			//	}
+			//}
 
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {
-				if (amIlaunchingLivesim == false) {
+				//if (amIlaunchingLivesim == false) {
 					if (both.PositionsImTracking.Count > 0 || both.NetProfitForClosedPositionsBoth > 0) {
 						string msg2 = "ERROR__SYSTEM_PERFORMANCE_MUST_BE_CLEAN__RUNNING_BACKTEST_ON_APP_RESTART_OR_F8";
 						Assembler.PopupException(msg2, null, false);
@@ -89,7 +92,7 @@ namespace Sq1.Gui.ReportersSupport {
 						string msg = "OK_HERE__OFFLINE_BACKTEST_RESETTING_REPORTERS_TO_ZERO__AFTER_BACKTEST_CONTEXT_INITIALIZE";
 						//Assembler.PopupException(msg, null, false);
 					}
-				}
+				//}
 
 				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.ClearAllReportsSincePerformanceGotCleared_step0of3(); });
 				return;

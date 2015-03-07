@@ -10,7 +10,7 @@ namespace Sq1.Core.Broker {
 		public void SubmitEatableOrdersFromGui(List<Order> orders) {
 			List<Order> ordersEatable = new List<Order>();
 			foreach (Order order in orders) {
-				if (this.IsOrderEatable(order) == false) continue;
+				if (this.isOrderEatable(order) == false) continue;
 				ordersEatable.Add(order);
 				string msg = "Submitting Eatable Order From Gui";
 				OrderStateMessage newOrderState = new OrderStateMessage(order, OrderState.Submitting, msg);

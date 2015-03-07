@@ -41,19 +41,19 @@ namespace Sq1.Core.StrategyBase {
 		// dont make it runtime error, bring the error to the earliest stage!
 		public abstract void BuildFullOnBacktestFinished();
 		//public virtual void BuildOnceAfterFullBlindBacktestFinished(SystemPerformance performance) {
-		//    string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildOnceAfterFullBlindBacktestFinished(SystemPerformance)" + this.TabText + "/" + this.GetType();
-		//    msg = "; don't forget to do base.SystemPerformance=performance so that Reporter.Format picks up DecimalsPrice";
-		//    throw new NotImplementedException(msg);
+		//	string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildOnceAfterFullBlindBacktestFinished(SystemPerformance)" + this.TabText + "/" + this.GetType();
+		//	msg = "; don't forget to do base.SystemPerformance=performance so that Reporter.Format picks up DecimalsPrice";
+		//	throw new NotImplementedException(msg);
 		//}
 		public abstract void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit);
 		//public virtual void BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit pokeUnit) {
-		//    string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
-		//    throw new NotImplementedException(msg);
+		//	string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
+		//	throw new NotImplementedException(msg);
 		//}
 		public abstract void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit);
 		//public virtual void OpenPositionsUpdatedDueToStreamingNewQuote(ReporterPokeUnit pokeUnit) {
-		//    string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
-		//    throw new NotImplementedException(msg);
+		//	string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
+		//	throw new NotImplementedException(msg);
 		//}
 		public abstract void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit);
 		public virtual object CreateSnapshotToStoreInScriptContext() {

@@ -152,20 +152,20 @@ namespace Sq1.Core.StrategyBase {
 
 				//List<Indicator> indicatorsInitializedInDerivedConstructor = this.IndicatorsInitializedInDerivedConstructor; 
 				//bool mustBeMergedIfAny = indicatorsInitializedInDerivedConstructor.Count > 0
-				//    //&& parametersByIndicatorName.Count != indicatorsInitializedInDerivedConstructor.Count
-				//    ;
+				//	//&& parametersByIndicatorName.Count != indicatorsInitializedInDerivedConstructor.Count
+				//	;
 				//if (mustBeMergedIfAny) {
-				//    #if DEBUG
-				//    Debugger.Break();
-				//    this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
-				//    parametersByIndicatorName = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
-				//    #endif
-				//    if (parametersByIndicatorName.Count == 0) {
-				//        #if DEBUG
-				//        Debugger.Break();
-				//        #endif
-				//        return ret;
-				//    }
+				//	#if DEBUG
+				//	Debugger.Break();
+				//	this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
+				//	parametersByIndicatorName = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
+				//	#endif
+				//	if (parametersByIndicatorName.Count == 0) {
+				//		#if DEBUG
+				//		Debugger.Break();
+				//		#endif
+				//		return ret;
+				//	}
 				//}
 				foreach (string indicatorName in parametersByIndicatorName.Keys) {
 					List<IndicatorParameter> indicatorParameters = parametersByIndicatorName[indicatorName];

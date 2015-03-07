@@ -61,14 +61,14 @@
 			// ctxTools
 			// 
 			this.ctxTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniCsvImporter,
-            this.mniExecution,
-            this.mniSliders,
-            this.mniStrategies,
-            this.mniSymbols,
-            this.mniExceptions,
-            this.toolStripSeparator1,
-            this.mniExit});
+			this.mniCsvImporter,
+			this.mniExecution,
+			this.mniSliders,
+			this.mniStrategies,
+			this.mniSymbols,
+			this.mniExceptions,
+			this.toolStripSeparator1,
+			this.mniExit});
 			this.ctxTools.Name = "ctxmsTools";
 			this.ctxTools.Size = new System.Drawing.Size(186, 164);
 			// 
@@ -204,12 +204,12 @@
 			// mainFormStatusStrip
 			// 
 			this.mainFormStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniMainMenu,
-            this.btnWindows,
-            this.btnWorkSpaces,
-            this.btnFullScreen,
-            this.lblSpace,
-            this.lblStatus});
+			this.mniMainMenu,
+			this.btnWindows,
+			this.btnWorkSpaces,
+			this.btnFullScreen,
+			this.lblSpace,
+			this.lblStatus});
 			this.mainFormStatusStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
 			this.mainFormStatusStrip.Location = new System.Drawing.Point(0, 401);
 			this.mainFormStatusStrip.Name = "mainFormStatusStrip";
@@ -248,11 +248,11 @@
 			// CtxWorkspaces
 			// 
 			this.CtxWorkspaces.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniWorkspaceDeleteCurrent,
-            this.mniltbWorklspaceNewBlank,
-            this.mniltbWorklspaceCloneTo,
-            this.mniltbWorklspaceRenameTo,
-            this.toolStripSeparator2});
+			this.mniWorkspaceDeleteCurrent,
+			this.mniltbWorklspaceNewBlank,
+			this.mniltbWorklspaceCloneTo,
+			this.mniltbWorklspaceRenameTo,
+			this.toolStripSeparator2});
 			this.CtxWorkspaces.Name = "ctxWorkspaces";
 			this.CtxWorkspaces.OwnerItem = this.btnWorkSpaces;
 			this.CtxWorkspaces.Size = new System.Drawing.Size(223, 101);

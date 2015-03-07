@@ -305,7 +305,7 @@ namespace Sq1.Core.Backtesting {
 
 			//LIVESIM_HACK
 			//if (ret.ParentBarStreaming.ParentBars != null) {
-			//    ret.SetParentBarStreaming(null);
+			//	ret.SetParentBarStreaming(null);
 			//}
 			return ret;
 		}

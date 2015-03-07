@@ -62,11 +62,11 @@ namespace Sq1.Widgets.Optimization {
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniCopyToDefaultCtxBacktest = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniCopyToDefaultCtx = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniltbCopyToNewContextBacktest = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.mniltbCopyToNewContext = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniSaveCsv = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniltbCopyToNewContextBacktest = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
-			this.mniltbCopyToNewContext = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -129,18 +129,16 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.AllColumns.Add(this.olvcHistoryDate);
 			this.olvHistory.AllColumns.Add(this.olvcHistorySize);
 			this.olvHistory.AllowColumnReorder = true;
-			this.olvHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.olvHistory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.olvHistory.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvHistory.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
 			this.olvHistory.CellEditEnterChangesRows = true;
 			this.olvHistory.CellEditTabChangesRows = true;
 			this.olvHistory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvcPFavg,
-            this.olvcHistorySymbolScaleRange,
-            this.olvcHistoryDate,
-            this.olvcHistorySize});
+			this.olvcPFavg,
+			this.olvcHistorySymbolScaleRange});
 			this.olvHistory.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvHistory.EmptyListMsg = "OPTIMIZATION_HISTORY_IS_EMPTY Never optimized since last script recompilation";
 			this.olvHistory.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -151,6 +149,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.Location = new System.Drawing.Point(413, 54);
 			this.olvHistory.Name = "olvHistory";
 			this.olvHistory.ShowCommandMenuOnRightClick = true;
+			this.olvHistory.ShowGroups = false;
 			this.olvHistory.ShowItemToolTips = true;
 			this.olvHistory.Size = new System.Drawing.Size(267, 223);
 			this.olvHistory.TabIndex = 42;
@@ -184,14 +183,18 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// olvcHistoryDate
 			// 
+			this.olvcHistoryDate.DisplayIndex = 2;
 			this.olvcHistoryDate.IsEditable = false;
+			this.olvcHistoryDate.IsVisible = false;
 			this.olvcHistoryDate.Text = "Modified";
 			this.olvcHistoryDate.ToolTipText = "Reminder when you did it";
 			this.olvcHistoryDate.Width = 55;
 			// 
 			// olvcHistorySize
 			// 
+			this.olvcHistorySize.DisplayIndex = 3;
 			this.olvcHistorySize.IsEditable = false;
+			this.olvcHistorySize.IsVisible = false;
 			this.olvcHistorySize.Text = "Size";
 			this.olvcHistorySize.ToolTipText = "JSON file size";
 			this.olvcHistorySize.Width = 55;
@@ -204,16 +207,16 @@ namespace Sq1.Widgets.Optimization {
 			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvOptimizeYesNo);
 			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvParameter);
 			this.fastOLVparametersYesNoMinMaxStep.AllowColumnReorder = true;
-			this.fastOLVparametersYesNoMinMaxStep.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+			this.fastOLVparametersYesNoMinMaxStep.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)));
 			this.fastOLVparametersYesNoMinMaxStep.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.fastOLVparametersYesNoMinMaxStep.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.SingleClick;
 			this.fastOLVparametersYesNoMinMaxStep.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvMinimum,
-            this.olvMaximum,
-            this.olvStep,
-            this.olvOptimizeYesNo,
-            this.olvParameter});
+			this.olvMinimum,
+			this.olvMaximum,
+			this.olvStep,
+			this.olvOptimizeYesNo,
+			this.olvParameter});
 			this.fastOLVparametersYesNoMinMaxStep.EmptyListMsg = "NO_PARAMETERS_TO_OPTIMIZE Edit Strategy\'s Script to add parameters or indicators";
 			this.fastOLVparametersYesNoMinMaxStep.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.fastOLVparametersYesNoMinMaxStep.IncludeColumnHeadersInCopy = true;
@@ -290,10 +293,10 @@ namespace Sq1.Widgets.Optimization {
 			this.nudThreadsToRun.Size = new System.Drawing.Size(40, 20);
 			this.nudThreadsToRun.TabIndex = 33;
 			this.nudThreadsToRun.Value = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
+			4,
+			0,
+			0,
+			0});
 			this.nudThreadsToRun.ValueChanged += new System.EventHandler(this.nudCpuCoresToUse_ValueChanged);
 			// 
 			// lblIndicatorParameterTotalNr
@@ -361,15 +364,15 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// txtStrategy
 			// 
-			this.txtStrategy.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtStrategy.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtStrategy.Enabled = false;
 			this.txtStrategy.Location = new System.Drawing.Point(238, 33);
 			this.txtStrategy.Name = "txtStrategy";
 			this.txtStrategy.Size = new System.Drawing.Size(442, 20);
 			this.txtStrategy.TabIndex = 25;
 			this.txtStrategy.Text = "MA_ATRComplied (UserStop=1,ActivateLog=3) (ATR.Period=14,ATRband.Multiplier=1.56)" +
-    "";
+				"";
 			// 
 			// lblPositionSize
 			// 
@@ -434,12 +437,12 @@ namespace Sq1.Widgets.Optimization {
 			this.lblStats.Name = "lblStats";
 			this.lblStats.Size = new System.Drawing.Size(150, 16);
 			this.lblStats.TabIndex = 35;
-			this.lblStats.Text = "48% complete    450044/18900";
+			this.lblStats.Text = "48% complete	450044/18900";
 			// 
 			// progressBar1
 			// 
-			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.progressBar1.Location = new System.Drawing.Point(162, 6);
 			this.progressBar1.Name = "progressBar1";
 			this.progressBar1.Size = new System.Drawing.Size(360, 16);
@@ -451,16 +454,16 @@ namespace Sq1.Widgets.Optimization {
 			this.olvBacktests.AllowColumnReorder = true;
 			this.olvBacktests.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvBacktests.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvcSerno,
-            this.olvcTotalTrades,
-            this.olvcAverageProfit,
-            this.olvcNetProfit,
-            this.olvcWinLoss,
-            this.olvcProfitFactor,
-            this.olvcRecoveryFactor,
-            this.olvcMaxDrawdown,
-            this.olvcMaxConsecutiveWinners,
-            this.olvcMaxConsecutiveLosers});
+			this.olvcSerno,
+			this.olvcTotalTrades,
+			this.olvcAverageProfit,
+			this.olvcNetProfit,
+			this.olvcWinLoss,
+			this.olvcProfitFactor,
+			this.olvcRecoveryFactor,
+			this.olvcMaxDrawdown,
+			this.olvcMaxConsecutiveWinners,
+			this.olvcMaxConsecutiveLosers});
 			this.olvBacktests.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvBacktests.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvBacktests.EmptyListMsg = "";
@@ -573,15 +576,15 @@ namespace Sq1.Widgets.Optimization {
 			// ctxOneBacktestResult
 			// 
 			this.ctxOneBacktestResult.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniInfo,
-            this.toolStripSeparator1,
-            this.mniCopyToDefaultCtxBacktest,
-            this.mniCopyToDefaultCtx,
-            this.mniltbCopyToNewContextBacktest,
-            this.mniltbCopyToNewContext,
-            this.toolStripSeparator2,
-            this.mniCopyToClipboard,
-            this.mniSaveCsv});
+			this.mniInfo,
+			this.toolStripSeparator1,
+			this.mniCopyToDefaultCtxBacktest,
+			this.mniCopyToDefaultCtx,
+			this.mniltbCopyToNewContextBacktest,
+			this.mniltbCopyToNewContext,
+			this.toolStripSeparator2,
+			this.mniCopyToClipboard,
+			this.mniSaveCsv});
 			this.ctxOneBacktestResult.Name = "ctxOneBacktestResult";
 			this.ctxOneBacktestResult.Size = new System.Drawing.Size(444, 176);
 			this.ctxOneBacktestResult.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOneBacktestResult_Opening);
@@ -612,6 +615,38 @@ namespace Sq1.Widgets.Optimization {
 			this.mniCopyToDefaultCtx.Text = "Copy To Default Context";
 			this.mniCopyToDefaultCtx.Click += new System.EventHandler(this.mniCopyToDefaultCtx_Click);
 			// 
+			// mniltbCopyToNewContextBacktest
+			// 
+			this.mniltbCopyToNewContextBacktest.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbCopyToNewContextBacktest.InputFieldAlignedRight = false;
+			this.mniltbCopyToNewContextBacktest.InputFieldEditable = true;
+			this.mniltbCopyToNewContextBacktest.InputFieldOffsetX = 180;
+			this.mniltbCopyToNewContextBacktest.InputFieldValue = "";
+			this.mniltbCopyToNewContextBacktest.InputFieldWidth = 200;
+			this.mniltbCopyToNewContextBacktest.Name = "mniltbCopyToNewContextBacktest";
+			this.mniltbCopyToNewContextBacktest.Size = new System.Drawing.Size(383, 22);
+			this.mniltbCopyToNewContextBacktest.Text = "Copy To New Context, Backtest:";
+			this.mniltbCopyToNewContextBacktest.TextOffsetX = 0;
+			this.mniltbCopyToNewContextBacktest.TextRed = false;
+			this.mniltbCopyToNewContextBacktest.TextWidth = 164;
+			this.mniltbCopyToNewContextBacktest.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContextBacktest_UserTyped);
+			// 
+			// mniltbCopyToNewContext
+			// 
+			this.mniltbCopyToNewContext.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbCopyToNewContext.InputFieldAlignedRight = false;
+			this.mniltbCopyToNewContext.InputFieldEditable = true;
+			this.mniltbCopyToNewContext.InputFieldOffsetX = 180;
+			this.mniltbCopyToNewContext.InputFieldValue = "";
+			this.mniltbCopyToNewContext.InputFieldWidth = 200;
+			this.mniltbCopyToNewContext.Name = "mniltbCopyToNewContext";
+			this.mniltbCopyToNewContext.Size = new System.Drawing.Size(383, 22);
+			this.mniltbCopyToNewContext.Text = "Copy To New Context:";
+			this.mniltbCopyToNewContext.TextOffsetX = 0;
+			this.mniltbCopyToNewContext.TextRed = false;
+			this.mniltbCopyToNewContext.TextWidth = 116;
+			this.mniltbCopyToNewContext.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContext_UserTyped);
+			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -632,38 +667,6 @@ namespace Sq1.Widgets.Optimization {
 			this.mniSaveCsv.Size = new System.Drawing.Size(443, 22);
 			this.mniSaveCsv.Text = "Save as CSV...";
 			this.mniSaveCsv.Click += new System.EventHandler(this.mniSaveCsv_Click);
-			// 
-			// mniltbCopyToNewContextBacktest
-			// 
-			this.mniltbCopyToNewContextBacktest.BackColor = System.Drawing.Color.Transparent;
-			this.mniltbCopyToNewContextBacktest.InputFieldAlignedRight = false;
-			this.mniltbCopyToNewContextBacktest.InputFieldEditable = true;
-			this.mniltbCopyToNewContextBacktest.InputFieldOffsetX = 180;
-			this.mniltbCopyToNewContextBacktest.InputFieldValue = "";
-			this.mniltbCopyToNewContextBacktest.InputFieldWidth = 200;
-			this.mniltbCopyToNewContextBacktest.Name = "mniltbCopyToNewContextBacktest";
-			this.mniltbCopyToNewContextBacktest.Size = new System.Drawing.Size(383, 22);
-			this.mniltbCopyToNewContextBacktest.Text = "Copy To New Context, Backtest:";
-			this.mniltbCopyToNewContextBacktest.TextOffsetX = 0;
-			this.mniltbCopyToNewContextBacktest.TextRed = false;
-			this.mniltbCopyToNewContextBacktest.TextWidth = 178;
-			this.mniltbCopyToNewContextBacktest.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContextBacktest_UserTyped);
-			// 
-			// mniltbCopyToNewContext
-			// 
-			this.mniltbCopyToNewContext.BackColor = System.Drawing.Color.Transparent;
-			this.mniltbCopyToNewContext.InputFieldAlignedRight = false;
-			this.mniltbCopyToNewContext.InputFieldEditable = true;
-			this.mniltbCopyToNewContext.InputFieldOffsetX = 180;
-			this.mniltbCopyToNewContext.InputFieldValue = "";
-			this.mniltbCopyToNewContext.InputFieldWidth = 200;
-			this.mniltbCopyToNewContext.Name = "mniltbCopyToNewContext";
-			this.mniltbCopyToNewContext.Size = new System.Drawing.Size(383, 22);
-			this.mniltbCopyToNewContext.Text = "Copy To New Context:";
-			this.mniltbCopyToNewContext.TextOffsetX = 0;
-			this.mniltbCopyToNewContext.TextRed = false;
-			this.mniltbCopyToNewContext.TextWidth = 128;
-			this.mniltbCopyToNewContext.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContext_UserTyped);
 			// 
 			// OptimizerControl
 			// 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Threading;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 using Sq1.Core.Charting;
 using Sq1.Core.Backtesting;
@@ -8,21 +10,26 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 using Sq1.Core.Streaming;
-using System.Diagnostics;
+using Sq1.Core.Execution;
 
 namespace Sq1.Core.Livesim {
 	public class Livesimulator : Backtester {
 		public	Backtester				BacktesterBackup				{ get; private set; }
 		public	LivesimDataSource		DataSourceAsLivesimNullUnsafe	{ get { return base.BacktestDataSource as LivesimDataSource; } }
 				Button					btnStartStop;
+				Button					btnPauseResume;
 				ChartShadow				chartShadow;
 				LivesimQuoteBarConsumer livesimQuoteBarConsumer;
+				Stopwatch				stopWatch;
+
 
 		public Livesimulator(ScriptExecutor executor) : base(executor) {
 			base.BacktestDataSource = new LivesimDataSource(executor);
 			base.BacktestDataSource.Initialize(Assembler.InstanceInitialized.OrderProcessor);
 			//base.SeparatePushingThreadEnabled = false;
 			this.livesimQuoteBarConsumer = new LivesimQuoteBarConsumer(this);
+			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
+			stopWatch = new Stopwatch();
 		}
 
 		protected override void SimulationPreBarsSubstitute_overrideable() {
@@ -139,7 +146,13 @@ namespace Sq1.Core.Livesim {
 				distr.ConsumerQuoteUnsubscribe(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
 				distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
 
+				// down there, OnAllBarsBacktested will be raised and ChartFormManager will push performance to reporters.
 				base.Executor.BacktestContextRestore();
+
+				//if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.settings.DelayBetweenSerialQuotesEnabled) {
+				if (base.Executor.Strategy.LivesimStreamingSettings.DelayBetweenSerialQuotesEnabled == false) {
+					base.Executor.OrderProcessor.RaiseDelaylessLivesimEndedShouldRebuildOLV(this);
+				}
 			} catch (Exception e) {
 				#if DEBUG
 				Debugger.Break();
@@ -159,24 +172,42 @@ namespace Sq1.Core.Livesim {
 				base.Executor.Backtester = this.BacktesterBackup;
 			}
 		}
-	
-		
-		public void Start_inGuiThread(Button btnStartStop, ChartShadow chartShadow) {
+
+
+		public void Start_inGuiThread(Button btnStartStop, Button btnPauseResume, ChartShadow chartShadow) {
 			this.btnStartStop = btnStartStop;
+			this.btnPauseResume = btnPauseResume;
 			this.chartShadow = chartShadow;
 			this.chartShadow.RangeBarCollapseToAccelerateLivesim();
 			this.BacktesterBackup = base.Executor.Backtester;
 			base.Executor.Backtester = this;
-			base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 +=
-				new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
+
+			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_IT_THEN_INAPPROPRIETLY!!!  WITHOUT_UNSUBSCRIPTON_I_WAS_GETTING_MANY_INVOCATIONS_BAD
+			base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 -= new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
+			base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
+	
 			base.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
 		}
+
 		void executor_BacktesterContextInitializedStep2of4(object sender, EventArgs e) {
 			if (this.chartShadow.InvokeRequired) {
+				// will always InvokeRequied since we RaiseOnBacktesterSimulationContextInitialized_step2of4
+				// from a just started thread with a new Backtest BacktesterRunSimulation_threadEntry_exceptionCatcher() SEE_CALL_STACK_NOW
+				// too late to do it in GUI thread; switch takes a tons of time; do gui-unrelated preparations NOW
+				List<Order> ordersStale = this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe.OrdersSubmittedForOneLivesimBacktest;
+				if (ordersStale.Count > 0) {
+					this.Executor.OrderProcessor.DataSnapshot.OrdersRemove(ordersStale);
+					ordersStale.Clear();
+				}
+				this.stopWatch.Restart();
+
 				this.chartShadow.BeginInvoke((MethodInvoker)delegate { this.executor_BacktesterContextInitializedStep2of4(sender, e); });
 				return;
 			}
 			this.chartShadow.Initialize(base.Executor.Bars, true);
+
+			this.btnPauseResume.Enabled = true;
+			this.btnPauseResume.Text = "Pause";
 		}
 		void afterBacktesterComplete(ScriptExecutor executorCompletePooled) {
 			string msig = " //Livesimulator.afterBacktesterComplete()";
@@ -194,6 +225,10 @@ namespace Sq1.Core.Livesim {
 			this.btnStartStop.BeginInvoke((MethodInvoker)delegate {
 				this.btnStartStop.Text = "Start";
 				this.chartShadow.Initialize(base.Executor.Bars, true);
+
+				float seconds = (float)Math.Round(stopWatch.ElapsedMilliseconds / 1000d, 1);
+				this.btnPauseResume.Text = seconds.ToString() + " sec";
+				this.btnPauseResume.Enabled = false;
 			});
 		}
 
@@ -221,10 +256,10 @@ namespace Sq1.Core.Livesim {
 			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Unpaused.Set();
 		}
 		public const string TO_STRING_PREFIX = "LIVESIMULATOR_FOR_";
+		public bool LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
 		public override string ToString() {
 			string ret = TO_STRING_PREFIX + base.Executor.ToString();
 			return ret;
 		}
-
 	}
 }

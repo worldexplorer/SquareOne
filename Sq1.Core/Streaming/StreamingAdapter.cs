@@ -140,9 +140,7 @@ namespace Sq1.Core.Streaming {
 			string msig = " //StreamingAdapter.PushQuoteReceived()" + this.ToString();
 			
 			bool dontSolidifyAndDontPushToCharts = this.DataDistributor.DistributionChannels.Count == 0;
-			if (dontSolidifyAndDontPushToCharts) {
-				return;
-			}
+			if (dontSolidifyAndDontPushToCharts) return;
 
 			if (quote.ServerTime == DateTime.MinValue) {
 				quote.ServerTime = this.DataSource.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
@@ -205,8 +203,8 @@ namespace Sq1.Core.Streaming {
 
 				//QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER
 				//if (quote.AbsnoPerSymbol >= absnoPerSymbolNext) {
-				//    string msg1 = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.AbsnoPerSymbol + "] >= lastQuote.Absno[" + lastQuote.AbsnoPerSymbol + "] + 1";
-				//    Assembler.PopupException(msg + msig, null, true);
+				//	string msg1 = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.AbsnoPerSymbol + "] >= lastQuote.Absno[" + lastQuote.AbsnoPerSymbol + "] + 1";
+				//	Assembler.PopupException(msg + msig, null, true);
 				//}
 			}
 			quote.AbsnoPerSymbol = absnoPerSymbolNext;

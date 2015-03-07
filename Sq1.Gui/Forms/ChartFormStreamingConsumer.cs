@@ -174,9 +174,9 @@ namespace Sq1.Gui.Forms {
 
 			ContextChart ctx = this.ChartFormManager.ContextCurrentChartOrStrategy;
 			//if (ctx.IsStreaming != subscribedAlready) {
-			//    string msg3 = "CTX_AND_GUI_UNSYNC ctx[" + ctx.ToString() + "] ChartFormStreaming.Subscribed=[" + subscribedAlready + "]";
-			//    Assembler.PopupException(msg3 + this.msigForNpExceptions);
-			//    ctx.IsStreaming = subscribedAlready;
+			//	string msg3 = "CTX_AND_GUI_UNSYNC ctx[" + ctx.ToString() + "] ChartFormStreaming.Subscribed=[" + subscribedAlready + "]";
+			//	Assembler.PopupException(msg3 + this.msigForNpExceptions);
+			//	ctx.IsStreaming = subscribedAlready;
 			//}
 
 			if (subscribedAlready == true) {
@@ -244,25 +244,25 @@ namespace Sq1.Gui.Forms {
 			// safeSync this.Subscribed => ContextCurrentChartOrStrategy.IsStreaming, => channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed
 			//var chartFormSafe = this.ChartForm;
 			//if (chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast != null) {
-			//    string msg = "CHART_STREAMING_SUBSCRIBED_CLEANED_UP_EXISTING_QUOTE_LAST WASNT_SHUA...";
-			//    Assembler.PopupException(msg + this.msigForNpExceptions, null, false);
-			//    chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = null;
+			//	string msg = "CHART_STREAMING_SUBSCRIBED_CLEANED_UP_EXISTING_QUOTE_LAST WASNT_SHUA...";
+			//	Assembler.PopupException(msg + this.msigForNpExceptions, null, false);
+			//	chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = null;
 			//}
 			// don't on BacktestOnRestart && IsStreaming
 			//bool runStartupBacktestDontChangePumpThreadNameKeepPaused = false;
 			//ContextChart ctxChart = this.chartFormManager.ContextCurrentChartOrStrategy;
 			//ContextScript ctxScript = ctxChart as ContextScript;
 			//if (ctxScript != null) {
-			//    runStartupBacktestDontChangePumpThreadNameKeepPaused =
-			//            true == ctxScript.WillBacktestOnAppRestart
-			//        && false == Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete;
+			//	runStartupBacktestDontChangePumpThreadNameKeepPaused =
+			//			true == ctxScript.WillBacktestOnAppRestart
+			//		&& false == Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete;
 
-			//    if (runStartupBacktestDontChangePumpThreadNameKeepPaused
-			//        && channel.QuotePump.IshouldWaitConfirmationFromAnotherThread == true) {
-			//        string msg = "ON_APPRESTART_BACKTEST_PUMP_SHOULD_WAIT_UNPAUSING_FROM_THE SAME_BACKTESTING_THREAD";
-			//        Assembler.PopupException(msg);
-			//        return;
-			//    }
+			//	if (runStartupBacktestDontChangePumpThreadNameKeepPaused
+			//		&& channel.QuotePump.IshouldWaitConfirmationFromAnotherThread == true) {
+			//		string msg = "ON_APPRESTART_BACKTEST_PUMP_SHOULD_WAIT_UNPAUSING_FROM_THE SAME_BACKTESTING_THREAD";
+			//		Assembler.PopupException(msg);
+			//		return;
+			//	}
 			//}
 			//if (runStartupBacktestDontChangePumpThreadNameKeepPaused) return;
 			//channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
@@ -381,9 +381,9 @@ namespace Sq1.Gui.Forms {
 
 			// STREAMING_BAR_IS_ALREADY_MERGED_IN_EARLY_BINDER_WITH_QUOTE_RECIPROCALLY
 			//try {
-			//    streamingSafe.InitializeStreamingOHLCVfromStreamingAdapter(this.chartFormManager.Executor.Bars);
+			//	streamingSafe.InitializeStreamingOHLCVfromStreamingAdapter(this.chartFormManager.Executor.Bars);
 			//} catch (Exception e) {
-			//    Assembler.PopupException("didn't merge with Partial, continuing", e, false);
+			//	Assembler.PopupException("didn't merge with Partial, continuing", e, false);
 			//}
 
 			if (quote.ParentBarStreaming.ParentBarsIndex > quote.ParentBarStreaming.ParentBars.Count) {
@@ -424,14 +424,15 @@ namespace Sq1.Gui.Forms {
 			}
 
 			// #3/4 trigger ChartControl to repaint candles with new positions and bid/ask lines
-			if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {
-				chartFormSafe.ChartControl.InvalidateAllPanels();
-			}
+			// ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
+			//if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {
+			//	chartFormSafe.ChartControl.InvalidateAllPanels();
+			//}
 
 			// MOVED_TO_ScriptExecutor_USING_RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
 			//List<Position> positionsOpenNowSafeCopy = executorSafe.ExecutionDataSnapshot.PositionsOpenNowSafeCopy;
 			//if (positionsOpenNowSafeCopy.Count > 0) {
-			//    this.ChartFormManager.ReportersFormsManager.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(positionsOpenNowSafeCopy);
+			//	this.ChartFormManager.ReportersFormsManager.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(positionsOpenNowSafeCopy);
 			//}
 		}
 		#endregion
@@ -447,33 +448,33 @@ namespace Sq1.Gui.Forms {
 			//if (this.chartFormManager.Executor.Strategy.ScriptContextCurrent == null) return "ChartStreamingConsumer::chartFormsManager.Executor.Strategy.ScriptContextCurrent=null";
 			//if (String.IsNullOrEmpty(this.chartFormManager.Executor.Strategy.ScriptContextCurrent.Symbol)) return "SYMBOL_EMPTY_NOT_SUBSCRIBED";
 			//return this.ChartFormManager.StreamingButtonIdent
-			//    //+ " [" + this.Strategy.ScriptContextCurrent.Symbol + " " + this.Strategy.ScriptContextCurrent.ScaleInterval + "]"
-			//    ////+ " chart[" + this.ChartContainer.Text + "]"
-			//    //+ " streaming[" + this.chartFormsManager.Executor.DataSource.StreamingAdapter.Name + "]"
-			//    //+ " static[" + this.chartFormsManager.Executor.DataSource.StaticProvider.Name + "]"
-			//    ;
+			//	//+ " [" + this.Strategy.ScriptContextCurrent.Symbol + " " + this.Strategy.ScriptContextCurrent.ScaleInterval + "]"
+			//	////+ " chart[" + this.ChartContainer.Text + "]"
+			//	//+ " streaming[" + this.chartFormsManager.Executor.DataSource.StreamingAdapter.Name + "]"
+			//	//+ " static[" + this.chartFormsManager.Executor.DataSource.StaticProvider.Name + "]"
+			//	;
 			//v2
 			var symbolSafe = this.Symbol;
 			var chartFormSafe = this.ChartForm;
 			var scaleIntervalSafe = this.ScaleInterval;
 			string ret = "ChartForm.Symbol[" + symbolSafe + "](" + scaleIntervalSafe + ")";
 
-            //HANGS_ON_STARTUP__#D_STACK_IS_BLANK__VS2010_HINTED_IM_ACCESSING_this.ChartForm.Text_FROM_DDE_QUOTE_GENERATOR (!?!?!)
-            if (chartFormSafe.InvokeRequired == false) {
-                ret += " CHART.TEXT[" + chartFormSafe.Text + "]";
-            } else {
-//            	ChartFormDataSnapshot snap = this.chartFormManager.DataSnapshot;
-//            	if (snap == null) {
-//            		Assembler.PopupException(null);
-//            	}
-//            	ContextChart ctx = this.chartFormManager.DataSnapshot.ContextChart;
-                ret += (this.Executor.Strategy != null)
+			//HANGS_ON_STARTUP__#D_STACK_IS_BLANK__VS2010_HINTED_IM_ACCESSING_this.ChartForm.Text_FROM_DDE_QUOTE_GENERATOR (!?!?!)
+			if (chartFormSafe.InvokeRequired == false) {
+				ret += " CHART.TEXT[" + chartFormSafe.Text + "]";
+			} else {
+//				ChartFormDataSnapshot snap = this.chartFormManager.DataSnapshot;
+//				if (snap == null) {
+//					Assembler.PopupException(null);
+//				}
+//				ContextChart ctx = this.chartFormManager.DataSnapshot.ContextChart;
+				ret += (this.Executor.Strategy != null)
 					? " ScriptContextCurrent[" + this.Executor.Strategy.ScriptContextCurrent.ToString() + "]"
-                	: " ContextChart[" + this.chartFormManager.DataSnapshot.ContextChart.ToString() + "]"
-                	;
-            }
+					: " ContextChart[" + this.chartFormManager.DataSnapshot.ContextChart.ToString() + "]"
+					;
+			}
 
-            return "{" + ret + "}";
+			return "{" + ret + "}";
 		}
 	}
 }

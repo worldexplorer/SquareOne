@@ -359,7 +359,7 @@ namespace Sq1.Core.Repositories {
 					// THIS_WAS_GENERATING_ZERO_BAR__YOU_WANTED_TO_PASS_NEGATIVE_VALUE_RELATIVE_TO_END_TO_SEEK_BACK_AND_ANALYZE_DATE_IF_STREAMING_SHOULD_BE_OVERWRITTEN_OR_STATIC_APPENDED fileStream.Seek(barSize, SeekOrigin.End);
 					fileStream.Seek(-barSize, SeekOrigin.End);
 				} catch (Exception ex) {
-			        string msg = "2/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
+					string msg = "2/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
 					Assembler.PopupException(msg + msig, ex);
 					return saved;
 				}
@@ -374,7 +374,7 @@ namespace Sq1.Core.Repositories {
 				}
 				long fileStreamLength = fileStream.Length;
 				if (barLastFormedStaticOrCurrentStreaming.DateTimeOpen == dateTimeOpenLastStored) {
-				    try {
+					try {
 						long fileStreamPositionAfterSeekToLastBar = fileStream.Seek(-barSize, SeekOrigin.End);
 						string msg = "DEBUGGINNG__OVERWRITING_LAST_BAR_WITH_STREAMING barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
 							+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] == dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
@@ -382,23 +382,23 @@ namespace Sq1.Core.Repositories {
 							;
 						//Assembler.PopupException(msg, null, false);
 					} catch (Exception ex) {
-				        string msg = "3/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
-				        Assembler.PopupException(msg + msig, ex);
-				        return saved;
-				    }
+						string msg = "3/4_FILESTREAM_SEEK_ONE_BAR_FROM_END_THROWN barSize[" + barSize + "]";
+						Assembler.PopupException(msg + msig, ex);
+						return saved;
+					}
 				} else {
-				    try {
+					try {
 						long fileStreamPositionAfterSeekToEnd = fileStream.Seek(0, SeekOrigin.End);
 						string msg = "DEBUGGINNG__APPENDING_FRESHLY_FORMED_STATIC_BAR: barLastFormedStaticOrCurrentStreaming.DateTimeOpen["
 							+ barLastFormedStaticOrCurrentStreaming.DateTimeOpen + "] > dateTimeOpenLastStored[" + dateTimeOpenLastStored + "]"
 							+ " fileStreamPositionAfterSeekToEnd[" + fileStreamPositionAfterSeekToEnd + "] fileStreamLength[" + fileStreamLength + "]"
 							;
 						//Assembler.PopupException(msg, null, false);
-				    } catch (Exception ex) {
-				        string msg = "3/4_FILESTREAM_SEEK_END_THROWN";
-				        Assembler.PopupException(msg + msig, ex);
-				        return saved;
-				    }
+					} catch (Exception ex) {
+						string msg = "3/4_FILESTREAM_SEEK_END_THROWN";
+						Assembler.PopupException(msg + msig, ex);
+						return saved;
+					}
 				}
 				try {
 					binaryWriter.Write(barLastFormedStaticOrCurrentStreaming.DateTimeOpen.Ticks);

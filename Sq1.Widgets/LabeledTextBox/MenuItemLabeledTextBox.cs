@@ -46,8 +46,8 @@ namespace Sq1.Widgets.LabeledTextBox {
 		}
 		//[Browsable(true)]
 		//public bool TextAutoSize {
-		//    get { return this.LabeledTextBoxControl.TextAutoSize; }
-		//    set { this.LabeledTextBoxControl.TextAutoSize = value; }
+		//	get { return this.LabeledTextBoxControl.TextAutoSize; }
+		//	set { this.LabeledTextBoxControl.TextAutoSize = value; }
 		//}
 		[Browsable(true)]
 		public int InputFieldWidth {

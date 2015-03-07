@@ -78,7 +78,7 @@
       <DependentUpon>BrokerAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
-    <Compile Include="Broker\OrderProcessor.EventDistributor.cs">
+    <Compile Include="Broker\OrderProcessor.EventGenerator.cs">
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\OrderProcessor.GuiCommands.cs">

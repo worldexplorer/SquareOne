@@ -71,11 +71,22 @@ namespace Sq1.Core.Broker {
 			string stats = "DERIVEDS_MOVED[" + derivedsFound + "] = ordersFlat.Count[" + ordersFlat.InnerOrderList.Count + "] - base.Count[" + base.InnerOrderList.Count + "]";
 			//Assembler.PopupException(stats + msig);
 		}
-		
-		public void RemoveFromRootLevelKeepOrderPointers(List<Order> ordersToRemove) {
-			foreach (Order order in ordersToRemove) {
-				if (order.DerivedFrom != null) continue;
-				base.Remove(order);
+
+		public void RemoveFromRootLevelKeepOrderPointers(List<Order> ordersToRemove, bool popupIfDoesntContain = true) {
+			foreach (Order orderRemoving in ordersToRemove) {
+				if (orderRemoving.DerivedFrom != null) continue;
+				if (base.Contains(orderRemoving) == false) {
+					if (orderRemoving.Alert.MyBrokerIsLivesim) {
+						string msg = "DID_I_CLEAR_LIVESIM_ORDERS_EARLIER??WHEN?";
+						continue;
+					}
+					if (popupIfDoesntContain) {
+						string msg = "ORDER_AUTOTREE_DOESNT_CONTAIN_ORDER_YOU_WILLING_TO_REMOVE " + this.ToStringCount() + " orderRemoving" + orderRemoving;
+						Assembler.PopupException(msg);
+					}
+					continue;
+				}
+				base.Remove(orderRemoving);
 			}
 		}
 	}

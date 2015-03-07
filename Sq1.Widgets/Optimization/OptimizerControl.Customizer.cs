@@ -89,18 +89,18 @@ namespace Sq1.Widgets.Optimization {
 				//colDynParam.AspectGetter = individualDelgateForEachColumn
 				//string colDynParamNameStatic = colDynParam.Name;
 				//colDynParam.AspectGetter = new AspectGetterDelegate(object o) {
-				//    string colDynParamNameStatic2 = colDynParam.Name;
-				//    if (colDynParamNameStatic2 != colDynParamNameStatic) {
-				//        //Debugger.Break();	// THIS_IS_WHY_I_HATE_LAMBDAS
-				//    }
+				//	string colDynParamNameStatic2 = colDynParam.Name;
+				//	if (colDynParamNameStatic2 != colDynParamNameStatic) {
+				//		//Debugger.Break();	// THIS_IS_WHY_I_HATE_LAMBDAS
+				//	}
 
-				//    SystemPerformanceRestoreAble SystemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
-				//    if (SystemPerformanceRestoreAble == null) return colDynParamNameStatic + ".AspectGetter: SystemPerformanceRestoreAble=null";
-				//    if (SystemPerformanceRestoreAble.ScriptAndIndicatorParameterClonesByName.ContainsKey(colDynParamNameStatic) == false) {
-				//        return colDynParamNameStatic + ".AspectGetter: !SystemPerformanceRestoreAble.ScriptAndIndicatorParametersByName[" + colDynParamNameStatic + "]";
-				//    }
-				//    IndicatorParameter param = SystemPerformanceRestoreAble.ScriptAndIndicatorParameterClonesByName[colDynParamNameStatic];
-				//    return param.ValueCurrent.ToString();
+				//	SystemPerformanceRestoreAble SystemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
+				//	if (SystemPerformanceRestoreAble == null) return colDynParamNameStatic + ".AspectGetter: SystemPerformanceRestoreAble=null";
+				//	if (SystemPerformanceRestoreAble.ScriptAndIndicatorParameterClonesByName.ContainsKey(colDynParamNameStatic) == false) {
+				//		return colDynParamNameStatic + ".AspectGetter: !SystemPerformanceRestoreAble.ScriptAndIndicatorParametersByName[" + colDynParamNameStatic + "]";
+				//	}
+				//	IndicatorParameter param = SystemPerformanceRestoreAble.ScriptAndIndicatorParameterClonesByName[colDynParamNameStatic];
+				//	return param.ValueCurrent.ToString();
 				//};
 				// v2: cool but it didn't help
 				AspectGetterDelegateWrapper individualDelgateForEachColumn = new AspectGetterDelegateWrapper(colDynParam.Name);

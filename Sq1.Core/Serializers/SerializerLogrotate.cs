@@ -113,15 +113,13 @@ namespace Sq1.Core.Serializers {
 			}
 			this.HasChangesToSave = true;
 		}
-		public void Remove(List<T> ordersToRemove) {
-			lock (this.entityLock) {
+		public void Remove(List<T> ordersToRemove) { lock (this.entityLock) {
 				foreach (T orderRemoving in ordersToRemove) {
 					if (base.Entity.Contains(orderRemoving)) {
 						base.Entity.Remove(orderRemoving);
 					}
 				}
-			}
 			this.HasChangesToSave = true;
-		}
+		} }
 	}
 }

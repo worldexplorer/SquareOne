@@ -47,15 +47,15 @@ namespace Sq1.Charting {
 				}
 				//I_WILL_MOVE_ANYWAYS
 				//if (ret == 0 && this.Bars.Count > 0) {
-				//    ret = this.Bars.Count - 1;
-				//    try {
-				//        //I_WILL_MOVE_ANYWAYS this.hScrollBar.Value = ret;
-				//        if (this.hScrollBar.Maximum < this.hScrollBar.Value) {
-				//            this.hScrollBar.Maximum = this.hScrollBar.Value;
-				//        }
-				//    } catch (Exception ex) {
-				//        string msg = "STICKING_TO_RIGHT_EDGE_FAILED__SWITCH_GUI_THREAD??";
-				//    }
+				//	ret = this.Bars.Count - 1;
+				//	try {
+				//		//I_WILL_MOVE_ANYWAYS this.hScrollBar.Value = ret;
+				//		if (this.hScrollBar.Maximum < this.hScrollBar.Value) {
+				//			this.hScrollBar.Maximum = this.hScrollBar.Value;
+				//		}
+				//	} catch (Exception ex) {
+				//		string msg = "STICKING_TO_RIGHT_EDGE_FAILED__SWITCH_GUI_THREAD??";
+				//	}
 				//}
 				return ret;
 			} }

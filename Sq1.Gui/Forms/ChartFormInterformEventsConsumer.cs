@@ -12,6 +12,7 @@ using Sq1.Widgets;
 namespace Sq1.Gui.Forms {
 	public class ChartFormInterformEventsConsumer {
 		ChartFormManager chartFormManager;
+		private bool backtestAlreadyFinished;
 
 		public ChartFormInterformEventsConsumer(ChartFormManager chartFormManager, ChartForm chartFormNotAssignedToManagerInTheFactoryYet = null) {
 			this.chartFormManager = chartFormManager;
@@ -91,13 +92,15 @@ namespace Sq1.Gui.Forms {
 			//if (this.chartFormManager.OptimizerForm == null) {
 			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.OptimizerForm) == true) {
 				string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
+				Assembler.PopupException(msg, null, false);
 			} else {
 				this.chartFormManager.OptimizerFormShow(true);
 			}
 
 			//if (this.chartFormManager.LivesimForm == null) {
 			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.LivesimForm) == true) {
-				string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
+				string msg = "don't even try to access LivesimFormConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
+				Assembler.PopupException(msg, null, false);
 			} else {
 				this.chartFormManager.LivesimFormShow(true);
 			}
@@ -125,6 +128,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
+			this.backtestAlreadyFinished = false;
 			if (this.chartFormManager.ChartForm.InvokeRequired) {
 				this.chartFormManager.ChartForm.BeginInvoke(new MethodInvoker(delegate { this.Executor_BacktesterContextInitialized_step2of4(sender, e); }));
 				return;
@@ -154,9 +158,10 @@ namespace Sq1.Gui.Forms {
 			}
 			//if (this.chartFormManager.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
 			//if (this.chartFormManager.ChartForm.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
-			//    string msg = "Livesimulator.afterBacktesterComplete()_ALREADY_RESTORED_BACKTESTER_WHILE_SWITCHING_TO_GUI_THREAD [base.Executor.Backtester = this.BacktesterBackup]";
-			//    return;
-			//}
+			if (this.backtestAlreadyFinished) {
+				string msg = "Livesimulator.afterBacktesterComplete()_ALREADY_RESTORED_BACKTESTER_WHILE_SWITCHING_TO_GUI_THREAD [base.Executor.Backtester = this.BacktesterBackup]";
+				return;
+			}
 			if (this.chartFormManager.Executor.Backtester.QuotesGenerator == null) {
 				string msg = "YOU_DIDNT_INVOKE_Backtester.Initialize() AVOIDING_EXCEPTIONS_IN_QuotesGeneratedSoFar";
 				Assembler.PopupException(msg, null, false);
@@ -180,9 +185,9 @@ namespace Sq1.Gui.Forms {
 			if (this.chartFormManager.ChartForm.TsiProgressBarETA.Visible == false) {
 				//int quotesTotal = this.chartFormManager.Executor.Backtester.QuotesTotalToGenerate;
 				//if (quotesTotal == -1) {
-				//    string msg = "Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
-				//    Assembler.PopupException(msg + msig);
-				//    return;
+				//	string msg = "Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
+				//	Assembler.PopupException(msg + msig);
+				//	return;
 				//}
 				this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarMaximum = quotesTotal;
 				this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;
@@ -207,6 +212,8 @@ namespace Sq1.Gui.Forms {
 		internal void Executor_BacktesterSimulatedAllBars_step4of4(object sender, EventArgs e) {
 			if (this.chartFormManager.Executor == null) return;
 			if (sender != this.chartFormManager.Executor.EventGenerator) return;
+			this.backtestAlreadyFinished = true;
+
 			if (this.chartFormManager.ChartForm.InvokeRequired) {
 				this.chartFormManager.ChartForm.BeginInvoke(new MethodInvoker(delegate { this.Executor_BacktesterSimulatedAllBars_step4of4(sender, e); }));
 				return;
@@ -219,6 +226,8 @@ namespace Sq1.Gui.Forms {
 			this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
 			this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
 			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
+
+			this.chartFormManager.OnBacktestedOrLivesimmed();
 		}
 		internal void ChartRangeBar_AnyValueChanged(object sender, RangeArgs<DateTime> e) {
 			BarDataRange newRange = new BarDataRange(e.ValueMin.Date, e.ValueMax.Date);
