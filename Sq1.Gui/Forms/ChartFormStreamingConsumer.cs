@@ -424,9 +424,10 @@ namespace Sq1.Gui.Forms {
 			}
 
 			// #3/4 trigger ChartControl to repaint candles with new positions and bid/ask lines
-			if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {
-				chartFormSafe.ChartControl.InvalidateAllPanels();
-			}
+			// ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
+			//if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {
+			//    chartFormSafe.ChartControl.InvalidateAllPanels();
+			//}
 
 			// MOVED_TO_ScriptExecutor_USING_RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
 			//List<Position> positionsOpenNowSafeCopy = executorSafe.ExecutionDataSnapshot.PositionsOpenNowSafeCopy;

@@ -328,7 +328,7 @@ namespace Sq1.Charting {
 			}
 			if (this.VisibleRange_cached == 0 && this.ChartControl.Bars.Count > 0) {
 				string msg = "RANGE_CAN_NOT_BE_ZERO_WHEN_YOU_HAVE_BARS.COUNT[" + this.ChartControl.Bars.Count + "] [" + this.ToString() + "].VisibleRange_cached=0";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				return;
 			}
 

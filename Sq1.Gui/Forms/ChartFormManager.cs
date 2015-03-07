@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.IO;
+using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
 using Sq1.Core.DataFeed;
@@ -14,30 +16,23 @@ using Sq1.Gui.Forms;
 using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets;
-using WeifenLuo.WinFormsUI.Docking;
 using Sq1.Core.Repositories;
-using System.IO;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormManager {
-		public MainForm MainForm;
-		public ChartFormDataSnapshot DataSnapshot;
-		public Serializer<ChartFormDataSnapshot> DataSnapshotSerializer;
-		
-		public bool StrategyFoundDuringDeserialization { get; private set; }
-		// private shortcuts
-		DockPanel dockPanel { get { return this.MainForm.DockPanel; } }
-
-		public Strategy Strategy;
-		public ScriptExecutor Executor;
-		public ReportersFormsManager ReportersFormsManager;
-
-		public ChartForm ChartForm;
-
-
-		ScriptEditorFormFactory scriptEditorFormFactory;
-		public ScriptEditorForm ScriptEditorForm;
-		public ScriptEditorForm ScriptEditorFormConditionalInstance { get {
+		public	MainForm							MainForm;
+		public	ChartFormDataSnapshot				DataSnapshot;
+		public	Serializer<ChartFormDataSnapshot>	DataSnapshotSerializer;
+		public	bool								StrategyFoundDuringDeserialization		{ get; private set; }
+		public	Strategy							Strategy;
+		public	ScriptExecutor						Executor;
+		public	ReportersFormsManager				ReportersFormsManager;
+		public	ChartForm							ChartForm;
+				DockPanel							dockPanel								{ get { return this.MainForm.DockPanel; } }
+				ScriptEditorFormFactory				scriptEditorFormFactory;
+				
+		public ScriptEditorForm						ScriptEditorForm;
+		public ScriptEditorForm						ScriptEditorFormConditionalInstance		{ get {
 				if (DockContentImproved.IsNullOrDisposed(this.ScriptEditorForm)) {
 					if (this.Strategy == null) return null;
 					if (this.Strategy.ActivatedFromDll == true) return null;
@@ -54,7 +49,7 @@ namespace Sq1.Gui.Forms {
 				}
 				return this.ScriptEditorForm;
 			} }
-		public bool ScriptEditorIsOnSurface { get {
+		public	bool								ScriptEditorIsOnSurface					{ get {
 				bool editorMustBeActivated = true;
 				ScriptEditorForm editor = this.ScriptEditorForm;
 				bool editorNotInstantiated = DockContentImproved.IsNullOrDisposed(editor);
@@ -69,9 +64,9 @@ namespace Sq1.Gui.Forms {
 			} }
 		
 		
-		OptimizerFormFactory optimizerFormFactory;
-		public OptimizerForm OptimizerForm;
-		public OptimizerForm OptimizerFormConditionalInstance { get {
+				OptimizerFormFactory				optimizerFormFactory;
+		public	OptimizerForm						OptimizerForm;
+		public	OptimizerForm						OptimizerFormConditionalInstance		{ get {
 				if (DockContentImproved.IsNullOrDisposed(this.OptimizerForm)) {
 					if (this.Strategy == null) return null;
 					if (this.optimizerFormFactory == null) {
@@ -88,32 +83,32 @@ namespace Sq1.Gui.Forms {
 				}
 				return this.OptimizerForm;
 			} }
-		public bool OptimizerIsOnSurface { get {
+		public	bool								OptimizerIsOnSurface				{ get {
 				OptimizerForm optimizer = this.OptimizerForm;
 				bool optimizerNotInstantiated = DockContentImproved.IsNullOrDisposed(optimizer);
 				bool optimizerMustBeActivated = optimizerNotInstantiated ? true : optimizer.MustBeActivated;
 				return !optimizerMustBeActivated;
 			} }
-		public LivesimForm LivesimForm;
-		public LivesimForm LivesimFormConditionalInstance { get {
+		public	LivesimForm LivesimForm;
+		public	LivesimForm LivesimFormConditionalInstance { get {
 				if (DockContentImproved.IsNullOrDisposed(this.LivesimForm)) {
 					if (this.Strategy == null) return null;
 					this.LivesimForm = new LivesimForm(this);
 				}
 				return this.LivesimForm;
 			} }
-		public bool LivesimFormIsOnSurface { get {
+		public	bool								LivesimFormIsOnSurface				{ get {
 				LivesimForm livesim = this.LivesimForm;
 				bool livesimNotInstantiated = DockContentImproved.IsNullOrDisposed(livesim);
 				bool livesimMustBeActivated = livesimNotInstantiated ? true : livesim.MustBeActivated;
 				return !livesimMustBeActivated;
 			} }
 		
-		public ChartFormInterformEventsConsumer InterformEventsConsumer;
-		public bool ScriptEditedNeedsSaving;
-		public ChartFormStreamingConsumer ChartStreamingConsumer;
+		public	ChartFormInterformEventsConsumer	InterformEventsConsumer;
+		public	bool								ScriptEditedNeedsSaving;
+		public	ChartFormStreamingConsumer			ChartStreamingConsumer;
 		
-		public Dictionary<string, DockContentImproved> FormsAllRelated { get {
+		public	Dictionary<string, DockContentImproved>	FormsAllRelated						{ get {
 				var ret = new Dictionary<string, DockContentImproved>();
 				if (this.ChartForm			!= null) ret.Add("Chart",		this.ChartForm);
 				if (this.ScriptEditorForm	!= null) ret.Add("Source Code",	this.ScriptEditorForm);
@@ -124,7 +119,7 @@ namespace Sq1.Gui.Forms {
 				}
 				return ret;
 			} }
-		public string StreamingButtonIdent { get {
+		public	string								StreamingButtonIdent				{ get {
 				if (this.ContextCurrentChartOrStrategy == null) {
 					string msg = "StreamingButtonIdent_UNKNOWN__INVOKED_TOO_EARLY_ContextChart_WASNT_INITIALIZED_YET";
 					//Assembler.PopupException(msg);
@@ -141,8 +136,10 @@ namespace Sq1.Gui.Forms {
 
 				return emptyChartOrStrategy + onOff;
 			} }
-		public ContextChart ContextCurrentChartOrStrategy { get { return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart; } }
+		public	ContextChart						ContextCurrentChartOrStrategy		{ get {
+				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart; } }
 
+		// I dont want it "internal" when "private" is omitted
 		private ChartFormManager() {
 			this.StrategyFoundDuringDeserialization = false;
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
@@ -180,6 +177,7 @@ namespace Sq1.Gui.Forms {
 		}
 		ChartForm chartFormFactory() {
 			ChartForm ret = new ChartForm(this);
+			ret.ChartControl.SetExecutor(this.Executor);
 			
 			// sequence of invocation matters otherwise "Delegate to an instance method cannot have null 'this'."
 			// at Sq1.Gui.Forms.ChartForm.ChartFormEventsToChartFormManagerDetach() in C:\SquareOne\Sq1.Gui\Forms\ChartForm.cs:line 61
@@ -304,6 +302,10 @@ namespace Sq1.Gui.Forms {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
 				Assembler.PopupException(msg + msig, ex);
 			}
+		}
+
+		void executor_OnBacktesterContextRestoredAfterExecutingAllBars_step4of4(object sender, EventArgs e) {
+			throw new NotImplementedException();
 		}
 		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyRequired = true) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
@@ -452,44 +454,65 @@ namespace Sq1.Gui.Forms {
 					this.StrategyCompileActivatePopulateSlidersShow();
 				}
 				if (subscribeUpstreamOnWorkspaceRestore == true) {
+					//v1 LOSING_ARROWS_AND_REPORTERS_SINCE_INVOKED_TWICE
 					this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterCompleteOnceOnWorkspaceRestore), true);
+					//this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
 				} else {
-					this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
+					//v1 this.Executor.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), true);
+					//v2 
+					this.Executor.BacktesterRunSimulationTrampoline(null, true);
 				}
 			} catch (Exception ex) {
 				string msg = "RUN_SIMULATION_TRAMPOLINE_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Executor.Bars + "]";
 				Assembler.PopupException(msg, ex);
 			}
 		}
+		public void OnBacktestedOrLivesimmed() {
+			this.afterBacktesterComplete(this.Executor);
+		}
 		void afterBacktesterComplete(ScriptExecutor myOwnExecutorIgnoring) {
-			if (this.Executor.Bars == null) {
-				string msg = "DONT_RUN_BACKTEST_BEFORE_BARS_ARE_LOADED";
-				Assembler.PopupException(msg);
-				return;
-			}
-			if (this.ChartForm.InvokeRequired) {
-				this.ChartForm.BeginInvoke((MethodInvoker)delegate { this.afterBacktesterComplete(myOwnExecutorIgnoring); });
-				return;
-			}
-			//this.clonePositionsForChartPickupBacktest(this.Executor.ExecutionDataSnapshot.PositionsMaster);
-			this.ChartForm.ChartControl.PositionsBacktestAdd(this.Executor.ExecutionDataSnapshot.PositionsMaster.InnerList);
-			//this.ChartForm.ChartControl.PendingHistoryBacktestAdd(this.Executor.ExecutionDataSnapshot.AlertsPendingHistorySafeCopy);
-			this.ChartForm.ChartControl.PendingHistoryBacktestAdd(this.Executor.ExecutionDataSnapshot.AlertsPending.ByBarPlaced);
-			this.ChartForm.ChartControl.InvalidateAllPanels();
+			try {
+				if (this.Executor.Bars == null) {
+					string msg = "DONT_RUN_BACKTEST_BEFORE_BARS_ARE_LOADED";
+					Assembler.PopupException(msg);
+					return;
+				}
+				if (this.ChartForm.InvokeRequired) {
+					this.ChartForm.BeginInvoke((MethodInvoker)delegate { this.afterBacktesterComplete(myOwnExecutorIgnoring); });
+					return;
+				}
+				//this.clonePositionsForChartPickupBacktest(this.Executor.ExecutionDataSnapshot.PositionsMaster);
+				this.ChartForm.ChartControl.PositionsBacktestAdd(this.Executor.ExecutionDataSnapshot.PositionsMaster.InnerList);
+				//this.ChartForm.ChartControl.PendingHistoryBacktestAdd(this.Executor.ExecutionDataSnapshot.AlertsPendingHistorySafeCopy);
+				this.ChartForm.ChartControl.PendingHistoryBacktestAdd(this.Executor.ExecutionDataSnapshot.AlertsPending.ByBarPlaced);
+				this.ChartForm.ChartControl.InvalidateAllPanels();
 			
-			//this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);
-			// MOVED_TO_BacktesterRunSimulation() this.Executor.Performance.BuildStatsOnBacktestFinished();
-			this.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters(this.Executor.Performance);
+				//this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);
+				// MOVED_TO_BacktesterRunSimulation() this.Executor.Performance.BuildStatsOnBacktestFinished();
+				this.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters(this.Executor.Performance);
+			} catch (Exception ex) {
+				string msig = "Strategy[" + this.Strategy + "] on Bars[" + this.Executor.Bars + "]"
+						+ " //afterBacktesterComplete(" + myOwnExecutorIgnoring + ")";
+				string msg = "THREAD_ISOLATED_EXCEPTION";
+				Assembler.PopupException(msg + msig, ex);
+			}
 		}
 		void afterBacktesterCompleteOnceOnWorkspaceRestore(ScriptExecutor myOwnExecutorIgnoring) {
-			this.afterBacktesterComplete(myOwnExecutorIgnoring);
+			try {
+				this.afterBacktesterComplete(myOwnExecutorIgnoring);
 			
-			if (this.Strategy == null) {
-				Assembler.PopupException("this should never happen this.Strategy=null in afterBacktesterCompleteOnceOnRestart()");
-				return;
+				if (this.Strategy == null) {
+					Assembler.PopupException("this should never happen this.Strategy=null in afterBacktesterCompleteOnceOnRestart()");
+					return;
+				}
+				//ONLY_ON_WORKSPACE_RESTORE??? this.ChartForm.PropagateContextChartOrScriptToLTB(this.Strategy.ScriptContextCurrent);
+				//ALREADY_SUBSCRIBED_ON_WORKSPACE_RESTORE if (this.Strategy.ScriptContextCurrent.IsStreaming) this.ChartStreamingConsumer.StreamingSubscribe();
+			} catch (Exception ex) {
+				string msig = "Strategy[" + this.Strategy + "] on Bars[" + this.Executor.Bars + "]"
+						+ " //afterBacktesterCompleteOnceOnWorkspaceRestore(" + myOwnExecutorIgnoring + ")";
+				string msg = "THREAD_ISOLATED_EXCEPTION";
+				Assembler.PopupException(msg + msig, ex);
 			}
-			//ONLY_ON_WORKSPACE_RESTORE??? this.ChartForm.PropagateContextChartOrScriptToLTB(this.Strategy.ScriptContextCurrent);
-			//ALREADY_SUBSCRIBED_ON_WORKSPACE_RESTORE if (this.Strategy.ScriptContextCurrent.IsStreaming) this.ChartStreamingConsumer.StreamingSubscribe();
 		}
 		public void InitializeChartNoStrategyAfterDeserialization() {
 			this.InitializeChartNoStrategy(null);
@@ -625,7 +648,7 @@ namespace Sq1.Gui.Forms {
 				break;
 			}
 			this.OptimizerFormConditionalInstance.Show(mainPanelOrAnotherOptimizersPanel);
-			this.OptimizerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, false);
+			this.OptimizerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
 			//this.OptimizerFormConditionalInstance.OptimizerControl.Refresh();	// olvBacktest doens't repaint while having results?...
 			this.OptimizerFormConditionalInstance.OptimizerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}
@@ -642,7 +665,7 @@ namespace Sq1.Gui.Forms {
 				break;
 			}
 			this.LivesimFormConditionalInstance.Show(mainPanelOrAnotherLivesimsPanel);
-			this.LivesimFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, false);
+			this.LivesimFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
 			//this.LivesimFormConditionalInstance.OptimizerControl.Refresh();	// olvBacktest doens't repaint while having results?...
 			//this.LivesimFormConditionalInstance.OptimizerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}

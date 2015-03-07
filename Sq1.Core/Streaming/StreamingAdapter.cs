@@ -140,9 +140,7 @@ namespace Sq1.Core.Streaming {
 			string msig = " //StreamingAdapter.PushQuoteReceived()" + this.ToString();
 			
 			bool dontSolidifyAndDontPushToCharts = this.DataDistributor.DistributionChannels.Count == 0;
-			if (dontSolidifyAndDontPushToCharts) {
-				return;
-			}
+			if (dontSolidifyAndDontPushToCharts) return;
 
 			if (quote.ServerTime == DateTime.MinValue) {
 				quote.ServerTime = this.DataSource.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);

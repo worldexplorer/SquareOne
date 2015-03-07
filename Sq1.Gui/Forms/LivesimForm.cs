@@ -46,8 +46,10 @@ namespace Sq1.Gui.Forms {
 				//SymbolScaleDistributionChannel channel = livesimStreaming.DataDistributor.GetDistributionChannelFor(bars.Symbol, bars.ScaleInterval);
 				//channel.QuoteSyncPushedToAllConsumers += new EventHandler<QuoteEventArgs>(this.livesimulator_QuotePushedToDistributor);
 				//v3
-				this.chartFormManager.Executor.EventGenerator.OnStrategyExecutedOneQuoteOrBarOrdersEmitted +=
-					new EventHandler<EventArgs>(this.livesimForm_StrategyExecutedOneQuoteOrBarOrdersEmitted);
+				// ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
+				//this.chartFormManager.Executor.EventGenerator.OnStrategyExecutedOneQuoteOrBarOrdersEmitted +=
+				//    new EventHandler<EventArgs>(this.livesimForm_StrategyExecutedOneQuoteOrBarOrdersEmitted);
+
 				this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Initialize(this.chartFormManager.ChartForm.ChartControl);
 				this.LivesimControl.StreamingLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimStreamingSettings);
 				this.LivesimControl.   BrokerLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimBrokerSettings);

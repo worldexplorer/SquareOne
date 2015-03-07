@@ -78,7 +78,7 @@
       <DependentUpon>BrokerAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\CommissionCalculatorZero.cs" />
-    <Compile Include="Broker\OrderProcessor.EventDistributor.cs">
+    <Compile Include="Broker\OrderProcessor.EventGenerator.cs">
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\OrderProcessor.GuiCommands.cs">
@@ -355,7 +355,7 @@
       <Name>CsvHelper35</Name>
     </ProjectReference>
     <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
-      <Project>81C0AB0C-941A-4DE3-9EE9-7B91D4C157E3</Project>
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
   </ItemGroup>

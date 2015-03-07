@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using Sq1.Core.Execution;
 using Sq1.Core.Serializers;
+using Sq1.Core.Charting;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Broker {
 	public class OrderProcessorDataSnapshot {
@@ -17,7 +19,7 @@ namespace Sq1.Core.Broker {
 		public OrderLane			OrdersAll									{ get; private set; }
 
 			   OrderProcessor		orderProcessor;
-		public int					OrderCount						{ get; private set; }
+		public int					OrderCount									{ get; private set; }
 		public int					OrdersExpectingBrokerUpdateCount;			//{ get; private set; }
 		public OrdersAutoTree		OrdersAutoTree								{ get; private set; }
 			   object				orderSwitchingLanesLock;
@@ -87,11 +89,20 @@ namespace Sq1.Core.Broker {
 			if (orderToAdd.InStateExpectingCallbackFromBroker) this.OrdersExpectingBrokerUpdateCount++;
 			
 			this.OrdersAutoTree.InsertToRoot(orderToAdd);
+
+			if (orderToAdd.Alert.GuiHasTimeRebuildReportersAndExecution == false) return;
 			this.orderProcessor.RaiseAsyncOrderAddedExecutionFormShouldRebuildOLV(this, new List<Order>(){orderToAdd});
 		}
 		public void OrdersRemove(List<Order> ordersToRemove, bool serializeSinceThisIsNotBatchRemove = true) {
 			this.OrdersAll.RemoveAll(ordersToRemove);
 			this.OrdersAutoTree.RemoveFromRootLevelKeepOrderPointers(ordersToRemove);
+
+			this.OrdersSubmitting		.RemoveAll(ordersToRemove, true);
+			this.OrdersPending			.RemoveAll(ordersToRemove, true);
+			this.OrdersPendingFailed	.RemoveAll(ordersToRemove, true);
+			this.OrdersCemeteryHealthy	.RemoveAll(ordersToRemove, true);
+			this.OrdersCemeterySick		.RemoveAll(ordersToRemove, true);
+
 			this.orderProcessor.RaiseAsyncOrderRemovedExecutionFormExecutionFormShouldRebuildOLV(this, ordersToRemove);
 			this.SerializerLogrotateOrders.Remove(ordersToRemove);
 			if (serializeSinceThisIsNotBatchRemove == false) {

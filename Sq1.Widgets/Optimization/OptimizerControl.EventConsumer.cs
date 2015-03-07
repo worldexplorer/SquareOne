@@ -41,7 +41,11 @@ namespace Sq1.Widgets.Optimization {
 			//this.btnPauseResume.Enabled = true;
 			this.olvBacktests.EmptyListMsg = threadsLaunched + " threads launched";
 			//this.olvBacktests.UseWaitCursor = true;
-			this.splitContainer1.SplitterDistance = this.heightCollapsed;
+			try {
+				this.splitContainer1.SplitterDistance = this.heightCollapsed;
+			} catch (Exception ex) {
+				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
+			}
 		}
 //		void optimizer_OnBacktestStarted(object sender, EventArgs e) {
 //			if (base.InvokeRequired) {
@@ -96,7 +100,11 @@ namespace Sq1.Widgets.Optimization {
 			//v2
 			this.RepositoryJsonOptimizationResults.SerializeList(this.backtests, symbolScaleRange);
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
-			this.splitContainer1.SplitterDistance = this.heightExpanded;
+			try {
+				this.splitContainer1.SplitterDistance = this.heightExpanded;
+			} catch (Exception ex) {
+				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
+			}
 		}
 		void optimizer_OnOptimizationAborted(object sender, EventArgs e) {
 			this.optimizer_OnAllBacktestsFinished(sender, e);

@@ -145,8 +145,6 @@ namespace Sq1.Core.StrategyBase {
 				}
 				this.IndicatorParametersByName_BuiltOnBacktestFinished.Add(iParamName, iParamsCloned);
 			}
-
-
 		}
 		internal void BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(Position position) {
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) {
@@ -186,6 +184,7 @@ namespace Sq1.Core.StrategyBase {
 		//    return ret;
 		//}
 		public override string ToString() {
+			string msg = "HAS_MEANINFULL_VALUE_ONLY_AFTER int absorbedBH = this.SliceBuyHold.BuildStatsOnBacktestFinished(pokeUnit)";
 			return this.NetProfitRecoveryForScriptContextNewName;
 		}
 	}

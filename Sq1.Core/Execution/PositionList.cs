@@ -18,6 +18,34 @@ namespace Sq1.Core.Execution {
 			foreach (int bar in this.ByEntryBarFilled.Keys) ret.Add(bar, new List<Position>(this.ByEntryBarFilled[bar]));
 			return ret;
 		} } }
+		public AlertList AlertsEntry { get {
+			AlertList ret = new AlertList("AlertsEntry");
+			foreach (List<Position> positionsOpened in this.ByEntryBarFilled.Values) {
+				foreach (Position position in positionsOpened) {
+					if (position.EntryAlert == null) continue;
+					ret.AddNoDupe(position.EntryAlert);
+				}
+			}
+			return ret;
+		} }
+		public AlertList AlertsExit { get {
+			AlertList ret = new AlertList("AlertsExit");
+			foreach (List<Position> positionsClosed in this.ByExitBarFilled.Values) {
+				foreach (Position position in positionsClosed) {
+					if (position.ExitAlert == null) continue;
+					ret.AddNoDupe(position.ExitAlert);
+				}
+			}
+			return ret;
+		} }
+		public AlertList AlertsOpenNow { get {
+			AlertList ret = new AlertList("AlertsOpenNow");
+			foreach (Position position in this.InnerList) {
+				if (position.ExitAlert == null) continue;
+				ret.AddNoDupe(position.ExitAlert);
+			}
+			return ret;
+		} }
 
 		public int LastBarIndexEntry;
 		public int LastBarIndexExit;

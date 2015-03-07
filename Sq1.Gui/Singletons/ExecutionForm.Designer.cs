@@ -48,9 +48,9 @@ namespace Sq1.Gui.Singletons {
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockBottomAutoHide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.WindowsDefaultBounds;
 			this.Text = "Order Execution";
-			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ExecutionForm_Closing);
-			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ExecutionForm_Closed);
-			this.Load += new System.EventHandler(this.ExecutionForm_Load);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.executionForm_Closing);
+			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.executionForm_Closed);
+			this.Load += new System.EventHandler(this.executionForm_Load);
 			this.ResumeLayout(false);
 		}
 		public Sq1.Widgets.Execution.ExecutionTreeControl ExecutionTreeControl;

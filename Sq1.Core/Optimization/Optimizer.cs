@@ -282,6 +282,7 @@ namespace Sq1.Core.Optimization {
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			} finally {
+				//I_DONT_NEED_REPORTERS_TO_BE_REBUILT__OPTIMIZATION_CONTROLS_CHARTLESS_BACKTESTS
 				this.RaiseOnOneBacktestFinished(executorCompletePooled.Performance);
 				if (this.BacktestsCompleted >= this.BacktestsTotal) {
 					if (this.executorsRunning.Count > 0) {

@@ -5,6 +5,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 using Sq1.Core.Indicators;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Livesim {
 	public class LivesimQuoteBarConsumer : IStreamingConsumer {
@@ -18,7 +19,21 @@ namespace Sq1.Core.Livesim {
 		void IStreamingConsumer.UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
 		}
 		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Quote quote) {
+			bool guiHasTime = this.livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
+			ScriptExecutor executor = this.livesimulator.Executor;
 			ReporterPokeUnit pokeUnitNullUnsafe = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quote);
+			if (pokeUnitNullUnsafe != null && pokeUnitNullUnsafe.PositionsOpenNow.Count > 0) {
+				executor.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executor.ExecutionDataSnapshot.PositionsOpenNow);
+				if (guiHasTime) {
+					executor.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnitNullUnsafe);
+				}
+			}
+			if (guiHasTime) {
+				// ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
+				//executor.ChartShadow.Invalidate();
+				//executor.ChartShadow.InvalidateAllPanels();
+				//executor.ChartShadow.RefreshAllPanelsWaitFinishedSoLivesimCouldGenerateNewQuote(0);
+			}
 		}
 		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
 			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended";

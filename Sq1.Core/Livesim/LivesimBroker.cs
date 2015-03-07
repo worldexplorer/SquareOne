@@ -12,19 +12,19 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
 	public class LivesimBroker : BrokerAdapter {
-		List<Order> ordersSubmitted;
-		LivesimDataSource livesimDataSource;
+		public	List<Order>			OrdersSubmittedForOneLivesimBacktest	{ get; private set; }
+				LivesimDataSource	livesimDataSource;
 
 		public LivesimBroker(LivesimDataSource livesimDataSource) : base() {
 			base.Name = "LivesimBroker";
 			base.AccountAutoPropagate = new Account("LIVESIM_ACCOUNT", -1000);
 			base.AccountAutoPropagate.Initialize(this);
-			this.ordersSubmitted = new List<Order>();
+			this.OrdersSubmittedForOneLivesimBacktest = new List<Order>();
 			this.livesimDataSource = livesimDataSource;
 		}
 
 		public override void OrderSubmit(Order order) {
-			this.ordersSubmitted.Add(order);
+			this.OrdersSubmittedForOneLivesimBacktest.Add(order);
 		}
 
 		internal void ConsumeQuoteOfStreamingBarToFillPending(QuoteGenerated quoteUnattached, Bar bar2simulate) {
@@ -60,7 +60,8 @@ namespace Sq1.Core.Livesim {
 				}
 			}
 
-			int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(quoteAttachedToStreamingToConsumerBars, new Action<Alert, double, double>(this.onAlertFilled));
+			int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(
+					quoteAttachedToStreamingToConsumerBars, new Action<Alert, double, double>(this.onAlertFilled));
 			int pendingCountNow = executor.ExecutionDataSnapshot.AlertsPending.Count;
 			if (pendingCountNow != pendingCountPre - pendingFilled) {
 				string msg = "NOT_ONLY it looks like AnnihilateCounterparty worked out!";
@@ -73,7 +74,7 @@ namespace Sq1.Core.Livesim {
 			ReporterPokeUnit pokeUnitNullUnsafe = executor.ExecuteOnNewBarOrNewQuote(quoteAttachedToStreamingToConsumerBars);
 			//base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
 		}
-		private void onAlertFilled(Alert alertFilled, double priceFilled, double qtyFilled) {
+		void onAlertFilled(Alert alertFilled, double priceFilled, double qtyFilled) {
 			Order order = alertFilled.OrderFollowed;
 			OrderStateMessage osm = new OrderStateMessage(order, OrderState.Filled, "LIVESIM_FILLED_THROUGH_MARKETSIM_BACKTEST");
 			OrderProcessor orderProcessor = Assembler.InstanceInitialized.OrderProcessor;

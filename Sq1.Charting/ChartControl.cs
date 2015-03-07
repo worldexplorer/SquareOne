@@ -149,7 +149,7 @@ namespace Sq1.Charting {
 			this.hScrollBar.Maximum = this.Bars.Count - 1;		// index of  last available Bar in this.Bars
 			this.hScrollBar.Value = this.hScrollBar.Maximum;
 		}
-		public void InvalidateAllPanels() {
+		public override void InvalidateAllPanels() {
 			if (base.InvokeRequired) {
 				base.BeginInvoke(new MethodInvoker(this.InvalidateAllPanels));
 				return;
@@ -165,7 +165,7 @@ namespace Sq1.Charting {
 			//this.TooltipPositionHide();
 			//this.InvalidatedByStreamingKeepTooltipsOpen = false;
 		}
-		public void RefreshAllPanelsNonBlockingRefreshNotYetStarted() {
+		public override void RefreshAllPanelsNonBlockingRefreshNotYetStarted() {
 			// RESETTING_ASAP_IN_THIS_THREAD_AND_SETTING_IN_GUI_THREAD__SWITCHING_IS_SLOW
 			// AVOIDING_signalledAlready==true_IN_RefreshAllPanelsFinidhesWaiterSignalledLivesimCanProceedToGenerateNewQuote()
 			// WILL_RESET_AFTER_WAIT(0)_GETS_CONTROL base.RefreshAllPanelsFinishedWaiterReset();
@@ -253,14 +253,14 @@ namespace Sq1.Charting {
 		void barEventsAttach() {
 			if (this.Bars == null) return; 
 			this.Bars.BarStaticAdded			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);		// quite useless since I don't plan to append-statically to displayed-bars 
-			this.Bars.BarStreamingAdded			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint); 
-			this.Bars.BarStreamingUpdatedMerged	+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);  
+			this.Bars.BarStreamingAdded			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStreamingUpdatedMerged	+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
 		}
 		void barEventsDetach() {
-			if (this.Bars == null) return; 
-			this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);  
-			this.Bars.BarStreamingAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);  
-			this.Bars.BarStaticAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint); 
+			if (this.Bars == null) return;
+			this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStreamingAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStaticAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
 		}
 		void chartControl_BarAddedUpdated_ShouldTriggerRepaint(object sender, BarEventArgs e) {
 			// if I was designing events for WinForms, I would switch to GUI thread automatically

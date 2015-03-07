@@ -224,37 +224,46 @@ namespace Sq1.Core.DataTypes {
 			//    return false;
 			//}
 			//v2
+			bool OHLCV_different = false;
 			string OHLCV_msg = "";
 			if (this.Open != bar.Open) {
+				OHLCV_different = true;
 				#if VERBOSE_STRINGS_SLOW
 				OHLCV_msg += thisIdent + ".Open[" + this.Open + "] != " + barIdent + ".Open[" + bar.Open + "] ";
 				#endif
 			}
 			if (this.High != bar.High) {
+				OHLCV_different = true;
 				#if VERBOSE_STRINGS_SLOW
 				OHLCV_msg += thisIdent + ".High[" + this.High + "] != " + barIdent + ".High[" + bar.High + "] ";
 				#endif
 			}
 			if (this.Low != bar.Low) {
+				OHLCV_different = true;
 				#if VERBOSE_STRINGS_SLOW
 				OHLCV_msg += thisIdent + ".Low[" + this.Low + "] != " + barIdent + ".Low[" + bar.Low + "] ";
 				#endif
 			}
 			if (this.Close != bar.Close) {
+				OHLCV_different = true;
 				#if VERBOSE_STRINGS_SLOW
 				OHLCV_msg += thisIdent + ".Close[" + this.Close + "] != " + barIdent + ".Close[" + bar.Close + "] ";
 				#endif
 			}
 			if (this.Volume != bar.Volume) {
+				OHLCV_different = true;
 				#if VERBOSE_STRINGS_SLOW
 				OHLCV_msg += thisIdent + ".Volume[" + this.Volume + "] != " + barIdent + ".Volume[" + bar.Volume + "] ";
 				#endif
 			}
-			if (string.IsNullOrEmpty(OHLCV_msg) == false) {
+			if (OHLCV_different == true) {
+				#if VERBOSE_STRINGS_SLOW
 				errRef = OHLCV_msg;
+				#else
+				errRef = "ENABLE_CONDITIONAL_COMPILATION_SYMBOL_TO_SEE_ERROR: VERBOSE_STRINGS_SLOW";
+				#endif
 				return false;
 			}
-
 
 
 			bool sameParent = (this.ParentBars == bar.ParentBars && this.ParentBarsIndex == bar.ParentBarsIndex);

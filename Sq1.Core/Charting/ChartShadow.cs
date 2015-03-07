@@ -13,6 +13,7 @@ using Sq1.Core.DoubleBuffered;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.DataTypes;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Charting {
 	public abstract partial class ChartShadow : 
@@ -35,9 +36,10 @@ namespace Sq1.Core.Charting {
 					else		this.paintAllowed.Reset(); }
 		}
 
-		public Bars Bars { get; private set; }
-		public bool BarsEmpty { get { return this.Bars == null || this.Bars.Count == 0; } }
-		public bool BarsNotEmpty { get { return this.Bars != null && this.Bars.Count > 0; } }
+		public Bars				Bars			{ get; private set; }
+		public bool				BarsEmpty		{ get { return this.Bars == null || this.Bars.Count == 0; } }
+		public bool				BarsNotEmpty	{ get { return this.Bars != null && this.Bars.Count > 0; } }
+		public ScriptExecutor	Executor		{ get; private set; }
 
 		public ChartShadow() : base() {
 			paintAllowed = new ManualResetEvent(true);
@@ -49,6 +51,9 @@ namespace Sq1.Core.Charting {
 			if (dontAccessAssemblerWhileInDesignMode) return;
 			if (Assembler.InstanceUninitialized.StatusReporter == null) return;
 			Assembler.InstanceInitialized.AlertsForChart.Register(this);
+		}
+		public virtual void SetExecutor(ScriptExecutor executor) {
+			this.Executor = executor;
 		}
 		public virtual void Initialize(Bars barsNotNull, bool invalidateAllPanels = true) {
 			this.Bars = barsNotNull;
@@ -126,6 +131,10 @@ namespace Sq1.Core.Charting {
 		public abstract void HostPanelForIndicatorClear();
 		public abstract void SetIndicators(Dictionary<string, Indicator> indicators);
 
-		public abstract void RangeBarCollapseToAccelerateLivesim();		
+		public abstract void RangeBarCollapseToAccelerateLivesim();
+
+		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
+		public abstract void InvalidateAllPanels();
+		public abstract void RefreshAllPanelsNonBlockingRefreshNotYetStarted();
 	}	
 }

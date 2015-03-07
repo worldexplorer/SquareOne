@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Sq1.Core.Support;
+using Sq1.Core.Charting;
 
 namespace Sq1.Core.Execution {
 	public class AlertList : ConcurrentList<Alert> {
@@ -94,5 +95,13 @@ namespace Sq1.Core.Execution {
 		//    return ret;
 		//} }
 
+		public bool GuiHasTimeToRebuild { get {
+			bool guiHasTime = false;
+			foreach (Alert alert in this.InnerList) {
+				guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
+				if (guiHasTime) break;
+			}
+			return guiHasTime;
+		} }
 	}
 }
