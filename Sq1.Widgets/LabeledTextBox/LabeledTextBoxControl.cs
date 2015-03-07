@@ -16,8 +16,8 @@ namespace Sq1.Widgets.LabeledTextBox {
 //		}
 		//[Browsable(true)]
 		//public TextBox InternalTextBox {
-		//    get { return this.TextBox; }
-		//    set { this.TextBox = value; }
+		//	get { return this.TextBox; }
+		//	set { this.TextBox = value; }
 		//}
 //		[Browsable(true)]
 //		public Label InternalLabel {
@@ -46,8 +46,8 @@ namespace Sq1.Widgets.LabeledTextBox {
 		}
 		//[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		//public bool TextAutoSize {
-		//    get { return this.Label.AutoSize; }
-		//    set { this.Label.AutoSize = value; }
+		//	get { return this.Label.AutoSize; }
+		//	set { this.Label.AutoSize = value; }
 		//}
 		[Browsable(true)]
 		public string InputFieldValue {

@@ -47,13 +47,13 @@ namespace Sq1.Core.StrategyBase {
 //		}
 		public override string ToString() {
 			//return this.Name;
-            //v1
-            //string ret = this.DataSourceName + " :: " + this.Symbol;
-            //if (typeof(ContextChart) != this.GetType()) {	//append ContextScript name, not for ContextChart
-            //    ret += " ctx/" + this.Name;
-            //}
-            //return ret;
-            //v2
+			//v1
+			//string ret = this.DataSourceName + " :: " + this.Symbol;
+			//if (typeof(ContextChart) != this.GetType()) {	//append ContextScript name, not for ContextChart
+			//	ret += " ctx/" + this.Name;
+			//}
+			//return ret;
+			//v2
 			StringBuilder sb = new StringBuilder();
 			sb.Append(this.DataSourceName);
 			sb.Append(" :: ");
@@ -66,6 +66,6 @@ namespace Sq1.Core.StrategyBase {
 				sb.Append(this.Name);
 			}
 			return sb.ToString();
-        }
+		}
 	}
 }

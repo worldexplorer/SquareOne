@@ -20,7 +20,7 @@ namespace Sq1.Core.Optimization {
 			//paramsMerged = new List<IndicatorParameter>();
 			//paramsMerged.AddRange(this.ContextScriptIterated.ScriptParametersById.Values);
 			//foreach (List<IndicatorParameter> iParams in this.ContextScriptIterated.IndicatorParametersByName.Values) {
-			//    paramsMerged.AddRange(iParams);
+			//	paramsMerged.AddRange(iParams);
 			//}
 			//v2 moved to ContextScript.ParametersMerged; Sq1.Widgets.SlidersAutoGrowControl.MenuProvider.EventConsumer.DumpScriptIndicatorParametersToMenuItems() uses the same mechanism
 			paramsMerged = ContextScriptIterated.ParametersMerged;

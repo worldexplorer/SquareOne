@@ -15,29 +15,29 @@ namespace Sq1.Core.Broker {
 		public event EventHandler<EventArgs>						OnDelaylessLivesimEndedShouldRebuildOLV;
 
 		//bool someAlertsDontHaveTimeToRebuildGui(List<Order> ordersAdded) {
-		//    bool shouldRebuild = false;
-		//    int liveSimOrdersCount = 0;
-		//    foreach (Order o in ordersAdded) {
-		//        if (o.Alert.MyBrokerIsLivesim == false) continue;
-		//        liveSimOrdersCount++;
+		//	bool shouldRebuild = false;
+		//	int liveSimOrdersCount = 0;
+		//	foreach (Order o in ordersAdded) {
+		//		if (o.Alert.MyBrokerIsLivesim == false) continue;
+		//		liveSimOrdersCount++;
 
-		//        ChartShadow chartShadow = Assembler.InstanceInitialized.AlertsForChart.FindContainerFor(o.Alert);
-		//        ScriptExecutor executor = chartShadow.Executor;
-		//        bool guiHasTime = executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
-		//        if (shouldRebuild == false) shouldRebuild = guiHasTime;
-		//        if (shouldRebuild) break;
-		//    }
-		//    if (liveSimOrdersCount == 0) return true;
-		//    return shouldRebuild;
+		//		ChartShadow chartShadow = Assembler.InstanceInitialized.AlertsForChart.FindContainerFor(o.Alert);
+		//		ScriptExecutor executor = chartShadow.Executor;
+		//		bool guiHasTime = executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
+		//		if (shouldRebuild == false) shouldRebuild = guiHasTime;
+		//		if (shouldRebuild) break;
+		//	}
+		//	if (liveSimOrdersCount == 0) return true;
+		//	return shouldRebuild;
 		//}
 		public void RaiseAsyncOrderAddedExecutionFormShouldRebuildOLV(object sender, List<Order> ordersAdded) {
 			if (this.OnOrderAddedExecutionFormNotification == null) return;
 
 			//bool shouldRebuild = someAlertsDontHaveTimeToRebuildGui(ordersAdded);
 			//if (shouldRebuild == false) {
-			//    string msg = "don't rebuild if we do livesimulation with quoteDelay=0 or disabled";
-			//    Assembler.PopupException(msg);
-			//    return;
+			//	string msg = "don't rebuild if we do livesimulation with quoteDelay=0 or disabled";
+			//	Assembler.PopupException(msg);
+			//	return;
 			//}
 
 			#region EXPERIMENTAL

@@ -432,9 +432,9 @@ namespace Sq1.Core.Execution {
 			// NOPE THATS_WHATS_WHAT_CallbackAlertFilledMoveAroundInvokeScript_WILL_DO_LATER_IN_OrderProcessor
 			//Bar barStreaming = this.Alert.Bars.BarStreaming;
 			//if (barStreaming == null) {
-			//    string msg = "ORDER_FILLED_HAS_ALERT_WITHOUT_STREAMING_BAR order[" + this.ToString() + "].Alert[" + this.Alert + "]";
-			//    Assembler.PopupException(msg);
-			//    return;
+			//	string msg = "ORDER_FILLED_HAS_ALERT_WITHOUT_STREAMING_BAR order[" + this.ToString() + "].Alert[" + this.Alert + "]";
+			//	Assembler.PopupException(msg);
+			//	return;
 			//}
 			//this.Alert.FillPositionAffectedEntryOrExitRespectively(barStreaming, -1, priceFill, qtyFill, slippageFill, commissionFill);
 		}

@@ -22,7 +22,7 @@ namespace Sq1.Gui.Singletons {
 			//}
 			if (e.Orders.Count == 0) return;
 			//foreach (Order o in e.Orders) {
-			//    this.ExecutionTreeControl.OrderInsertToListView(o);
+			//	this.ExecutionTreeControl.OrderInsertToListView(o);
 			//}
 			this.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
 			this.PopulateWindowText();

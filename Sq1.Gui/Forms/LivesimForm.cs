@@ -48,7 +48,7 @@ namespace Sq1.Gui.Forms {
 				//v3
 				// ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 				//this.chartFormManager.Executor.EventGenerator.OnStrategyExecutedOneQuoteOrBarOrdersEmitted +=
-				//    new EventHandler<EventArgs>(this.livesimForm_StrategyExecutedOneQuoteOrBarOrdersEmitted);
+				//	new EventHandler<EventArgs>(this.livesimForm_StrategyExecutedOneQuoteOrBarOrdersEmitted);
 
 				this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Initialize(this.chartFormManager.ChartForm.ChartControl);
 				this.LivesimControl.StreamingLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimStreamingSettings);

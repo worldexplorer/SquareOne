@@ -122,10 +122,10 @@ namespace Sq1.Core.DataTypes {
 			return sb.ToString();
 		}
 		//public string ToStringShort() {
-		//    string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol
-		//        + " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "}"
-		//        + ": " + this.ParentBarIdent;
-		//    return ret;
+		//	string ret = "#" + this.IntraBarSerno + "/" + this.Absno + " " + this.Symbol
+		//		+ " bid{" + this.Bid + "-" + this.Ask + "}ask size{" + this.Size + "}"
+		//		+ ": " + this.ParentBarIdent;
+		//	return ret;
 		//}
 		public string ToStringShort() {
 			StringBuilder sb = new StringBuilder();
@@ -172,9 +172,9 @@ namespace Sq1.Core.DataTypes {
 				// moved to post-fill check upstack:
 				// if (filled == 1 && this.fillOutsideQuoteSpreadParanoidCheckThrow == true) {alert.IsFilledOutsideQuote_DEBUG_CHECK;alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK;}
 				//if (ret == false) {
-				//    #if DEBUG
-				//    Debugger.Break();	// ENABLE_BREAK_UPSTACK_IF_YOU_COMMENT_IT_OUT_HERE
-				//    #endif
+				//	#if DEBUG
+				//	Debugger.Break();	// ENABLE_BREAK_UPSTACK_IF_YOU_COMMENT_IT_OUT_HERE
+				//	#endif
 				//}
 			}
 			return ret;

@@ -96,31 +96,31 @@ namespace Sq1.Widgets.Execution {
 			// OrdersTreeOLV
 			// 
 			this.OrdersTreeOLV.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colheGUID,
-            this.colheReplacedByGUID,
-            this.colheKilledByGUID,
-            this.colheState,
-            this.colheStateTime,
-            this.colheBarNum,
-            this.colheOrderCreated,
-            this.colheSymbol,
-            this.colheDirection,
-            this.colheOrderType,
-            this.colheSpreadSide,
-            this.colhePriceScript,
-            this.colheSlippage,
-            this.colhePriceScriptRequested,
-            this.colhePriceFilled,
-            this.colhePriceDeposited,
-            this.colheQtyRequested,
-            this.colheQtyFilled,
-            this.colheSernoSession,
-            this.colheSernoExchange,
-            this.colheStrategyName,
-            this.colheSignalName,
-            this.colheScale,
-            this.colheAccount,
-            this.colheLastMessage});
+			this.colheGUID,
+			this.colheReplacedByGUID,
+			this.colheKilledByGUID,
+			this.colheState,
+			this.colheStateTime,
+			this.colheBarNum,
+			this.colheOrderCreated,
+			this.colheSymbol,
+			this.colheDirection,
+			this.colheOrderType,
+			this.colheSpreadSide,
+			this.colhePriceScript,
+			this.colheSlippage,
+			this.colhePriceScriptRequested,
+			this.colhePriceFilled,
+			this.colhePriceDeposited,
+			this.colheQtyRequested,
+			this.colheQtyFilled,
+			this.colheSernoSession,
+			this.colheSernoExchange,
+			this.colheStrategyName,
+			this.colheSignalName,
+			this.colheScale,
+			this.colheAccount,
+			this.colheLastMessage});
 			this.OrdersTreeOLV.AllowColumnReorder = true;
 			this.OrdersTreeOLV.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.OrdersTreeOLV.CausesValidation = false;
@@ -308,19 +308,19 @@ namespace Sq1.Widgets.Execution {
 			// ctxOrder
 			// 
 			this.ctxOrder.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniKillPending,
-            this.mniKillAllPending,
-            this.mniKillPendingAllStopEmitting,
-            this.sepCancel,
-            this.mniOrderReplace,
-            this.mniStopEmergencyClose,
-            this.toolStripSeparator3,
-            this.mniFilterColumns,
-            this.mniFilterOrderStates,
-            this.mniFilterAccounts,
-            this.mniVisualOptions,
-            this.toolStripSeparator1,
-            this.mniWipeWhiteboard});
+			this.mniKillPending,
+			this.mniKillAllPending,
+			this.mniKillPendingAllStopEmitting,
+			this.sepCancel,
+			this.mniOrderReplace,
+			this.mniStopEmergencyClose,
+			this.toolStripSeparator3,
+			this.mniFilterColumns,
+			this.mniFilterOrderStates,
+			this.mniFilterAccounts,
+			this.mniVisualOptions,
+			this.toolStripSeparator1,
+			this.mniWipeWhiteboard});
 			this.ctxOrder.Name = "popupOrders";
 			this.ctxOrder.Size = new System.Drawing.Size(233, 264);
 			// 
@@ -381,15 +381,15 @@ namespace Sq1.Widgets.Execution {
 			// ctxColumns
 			// 
 			this.ctxColumns.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniShowWhenWhat,
-            this.mniShowKilledReplaced,
-            this.mniShowPrice,
-            this.mniShowQty,
-            this.mniShowExchange,
-            this.mniShowOrigin,
-            this.mniShowExtra,
-            this.mniShowPosition,
-            this.mniShowLastMessage});
+			this.mniShowWhenWhat,
+			this.mniShowKilledReplaced,
+			this.mniShowPrice,
+			this.mniShowQty,
+			this.mniShowExchange,
+			this.mniShowOrigin,
+			this.mniShowExtra,
+			this.mniShowPosition,
+			this.mniShowLastMessage});
 			this.ctxColumns.Name = "ctxColumns";
 			this.ctxColumns.Size = new System.Drawing.Size(189, 202);
 			this.ctxColumns.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ctxColumns_ItemClicked);
@@ -469,7 +469,7 @@ namespace Sq1.Widgets.Execution {
 			// mniFilterOrderStates
 			// 
 			this.mniFilterOrderStates.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem4});
+			this.toolStripMenuItem4});
 			this.mniFilterOrderStates.Name = "mniFilterOrderStates";
 			this.mniFilterOrderStates.Size = new System.Drawing.Size(232, 22);
 			this.mniFilterOrderStates.Text = "Filter Order States";
@@ -503,15 +503,15 @@ namespace Sq1.Widgets.Execution {
 			// ctxListControl
 			// 
 			this.ctxListControl.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniToggleBrokerTime,
-            this.mniToggleCompletedOrders,
-            this.mniToggleMessagesPane,
-            this.mniToggleMessagesPaneSplitHorizontally,
-            this.mniToggleSyncWithChart,
-            this.toolStripSeparator2,
-            this.mniExpandAll,
-            this.mniCollapseAll,
-            this.mniRebuildAll});
+			this.mniToggleBrokerTime,
+			this.mniToggleCompletedOrders,
+			this.mniToggleMessagesPane,
+			this.mniToggleMessagesPaneSplitHorizontally,
+			this.mniToggleSyncWithChart,
+			this.toolStripSeparator2,
+			this.mniExpandAll,
+			this.mniCollapseAll,
+			this.mniRebuildAll});
 			this.ctxListControl.Name = "ctxListControl";
 			this.ctxListControl.OwnerItem = this.mniVisualOptions;
 			this.ctxListControl.Size = new System.Drawing.Size(254, 186);
@@ -613,9 +613,9 @@ namespace Sq1.Widgets.Execution {
 			this.olvMessages.CausesValidation = false;
 			this.olvMessages.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
 			this.olvMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colheMessageDateTime,
-            this.colheMessageState,
-            this.colheMessageText});
+			this.colheMessageDateTime,
+			this.colheMessageState,
+			this.colheMessageText});
 			this.olvMessages.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvMessages.EmptyListMsg = "";
 			this.olvMessages.FullRowSelect = true;

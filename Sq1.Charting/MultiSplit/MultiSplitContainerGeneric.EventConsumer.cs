@@ -79,12 +79,12 @@ namespace Sq1.Charting.MultiSplit {
 			}
 		}
 		//protected override void OnMouseMove(MouseEventArgs e) {
-		//    // all my nested this.panels intercept their own OnMouseMove()s so I'm receiving only mouse-above-splitters here
-		//    //Debugger.Break();
-		//    //base.Invalidate();
+		//	// all my nested this.panels intercept their own OnMouseMove()s so I'm receiving only mouse-above-splitters here
+		//	//Debugger.Break();
+		//	//base.Invalidate();
 		//}
 		//protected override void OnMouseDown(MouseEventArgs e) {
-		//    Debugger.Break();
+		//	Debugger.Break();
 		//}
 		
 		string panelText { get { return this.panelMouseIsOverNow != null ? this.panelMouseIsOverNow.Text : "<none>"; } }

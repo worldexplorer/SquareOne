@@ -478,12 +478,12 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (barDateTime == DateTime.MinValue) {
-			    string msg2 = "NO_POSITIONS_AFTER_FILTERING_IS_MINE " + this.PositionLongShortImTracking;
+				string msg2 = "NO_POSITIONS_AFTER_FILTERING_IS_MINE " + this.PositionLongShortImTracking;
 				if (positionsOpenAbsorbedBoth != 0) {
 					string msg = "THIS_MUST_BE_ZERO " + positionsOpenAbsorbedBoth;
 					Assembler.PopupException(msg);
 				}
-			    return positionsOpenAbsorbedBoth;
+				return positionsOpenAbsorbedBoth;
 			}
 			
 			this.CashAvailable							+= cashBalanceAtBar;

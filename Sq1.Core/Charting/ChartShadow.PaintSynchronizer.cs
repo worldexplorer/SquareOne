@@ -7,10 +7,10 @@ namespace Sq1.Core.Charting {
 		ManualResetEvent paintAllPanelsComplete = new ManualResetEvent(false);
 		
 		//protected void RefreshAllPanelsFinishedWaiterReset() {
-		//    bool signalledAlready = this.paintAllPanelsComplete.WaitOne(0);
-		//    bool resetAlreadyInNonGuiThread = !signalledAlready;
-		//    if (resetAlreadyInNonGuiThread) return;
-		//    this.paintAllPanelsComplete.Reset();
+		//	bool signalledAlready = this.paintAllPanelsComplete.WaitOne(0);
+		//	bool resetAlreadyInNonGuiThread = !signalledAlready;
+		//	if (resetAlreadyInNonGuiThread) return;
+		//	this.paintAllPanelsComplete.Reset();
 		//}
 		public bool RefreshAllPanelsIsSignalled { get {
 			return this.paintAllPanelsComplete.WaitOne(0);

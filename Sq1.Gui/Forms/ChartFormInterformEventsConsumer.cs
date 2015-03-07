@@ -159,8 +159,8 @@ namespace Sq1.Gui.Forms {
 			//if (this.chartFormManager.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
 			//if (this.chartFormManager.ChartForm.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
 			if (this.backtestAlreadyFinished) {
-			    string msg = "Livesimulator.afterBacktesterComplete()_ALREADY_RESTORED_BACKTESTER_WHILE_SWITCHING_TO_GUI_THREAD [base.Executor.Backtester = this.BacktesterBackup]";
-			    return;
+				string msg = "Livesimulator.afterBacktesterComplete()_ALREADY_RESTORED_BACKTESTER_WHILE_SWITCHING_TO_GUI_THREAD [base.Executor.Backtester = this.BacktesterBackup]";
+				return;
 			}
 			if (this.chartFormManager.Executor.Backtester.QuotesGenerator == null) {
 				string msg = "YOU_DIDNT_INVOKE_Backtester.Initialize() AVOIDING_EXCEPTIONS_IN_QuotesGeneratedSoFar";
@@ -185,9 +185,9 @@ namespace Sq1.Gui.Forms {
 			if (this.chartFormManager.ChartForm.TsiProgressBarETA.Visible == false) {
 				//int quotesTotal = this.chartFormManager.Executor.Backtester.QuotesTotalToGenerate;
 				//if (quotesTotal == -1) {
-				//    string msg = "Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
-				//    Assembler.PopupException(msg + msig);
-				//    return;
+				//	string msg = "Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
+				//	Assembler.PopupException(msg + msig);
+				//	return;
 				//}
 				this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarMaximum = quotesTotal;
 				this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;

@@ -49,8 +49,8 @@ namespace Sq1.Core.Backtesting {
 
 		public bool						WasBacktestAborted				{ get {
 				if (this.QuotesGenerator == null) {
-				    string msg = "ABORTION_IS_A_FLAG_IRRELEVANT_TO_QUOTE_GENERATOR_LIFECYCLE WORKED_FOR_BACKTEST_BUT_SPOILED_LATE_LIVESIM_CHECK";
-				    return false;
+					string msg = "ABORTION_IS_A_FLAG_IRRELEVANT_TO_QUOTE_GENERATOR_LIFECYCLE WORKED_FOR_BACKTEST_BUT_SPOILED_LATE_LIVESIM_CHECK";
+					return false;
 				}
 				bool signalled = this.BacktestAborted.WaitOne(0);
 				return signalled;

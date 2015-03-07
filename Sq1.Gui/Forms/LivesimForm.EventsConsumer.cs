@@ -9,9 +9,9 @@ namespace Sq1.Gui.Forms {
 	public partial class LivesimForm {
 		// ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 		//void livesimForm_StrategyExecutedOneQuoteOrBarOrdersEmitted(object sender, EventArgs e) {
-		//    ChartControl chartControl = this.chartFormManager.ChartForm.ChartControl;
-		//    //v1 SKIPS_REPAINTING_KOZ_NOW_BACKTEST=TRUE chartControl.InvalidateAllPanels();
-		//    //chartControl.RefreshAllPanelsNonBlockingRefreshNotYetStarted();
+		//	ChartControl chartControl = this.chartFormManager.ChartForm.ChartControl;
+		//	//v1 SKIPS_REPAINTING_KOZ_NOW_BACKTEST=TRUE chartControl.InvalidateAllPanels();
+		//	//chartControl.RefreshAllPanelsNonBlockingRefreshNotYetStarted();
 		//}
 
 		void btnStartStop_Click(object sender, EventArgs e) {
@@ -52,10 +52,10 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		//void LivesimForm_Disposed(object sender, EventArgs e) {
-		//    if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-		//    // both at FormCloseByX and MainForm.onClose()
-		//    this.chartFormManager.ChartForm.MniShowLivesim.Checked = false;
-		//    this.chartFormManager.MainForm.MainFormSerialize();
+		//	if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
+		//	// both at FormCloseByX and MainForm.onClose()
+		//	this.chartFormManager.ChartForm.MniShowLivesim.Checked = false;
+		//	this.chartFormManager.MainForm.MainFormSerialize();
 		//}
 		void livesimForm_FormClosing(object sender, FormClosingEventArgs e) {
 			// only when user closed => allow scriptEditorForm_FormClosed() to serialize

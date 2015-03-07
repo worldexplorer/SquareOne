@@ -203,8 +203,8 @@ namespace Sq1.Core.Streaming {
 
 				//QUOTE_ABSNO_MUST_BE_SEQUENTIAL_PER_SYMBOL INITIALIZED_IN_STREAMING_ADAPDER
 				//if (quote.AbsnoPerSymbol >= absnoPerSymbolNext) {
-				//    string msg1 = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.AbsnoPerSymbol + "] >= lastQuote.Absno[" + lastQuote.AbsnoPerSymbol + "] + 1";
-				//    Assembler.PopupException(msg + msig, null, true);
+				//	string msg1 = "DONT_FEED_ME_WITH_SAME_QUOTE_BACKTESTER quote.Absno[" + quote.AbsnoPerSymbol + "] >= lastQuote.Absno[" + lastQuote.AbsnoPerSymbol + "] + 1";
+				//	Assembler.PopupException(msg + msig, null, true);
 				//}
 			}
 			quote.AbsnoPerSymbol = absnoPerSymbolNext;

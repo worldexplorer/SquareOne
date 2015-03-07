@@ -66,8 +66,8 @@ namespace Sq1.Gui.Forms {
 			// ChartControl
 			// 
 			this.ChartControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Left) 
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.ChartControl.Location = new System.Drawing.Point(0, 0);
 			this.ChartControl.Name = "ChartControl";
 			this.ChartControl.RangeBarCollapsed = false;
@@ -77,16 +77,16 @@ namespace Sq1.Gui.Forms {
 			// ctxBacktest
 			// 
 			this.ctxBacktest.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnitlbSpreadGeneratorPct,
-            this.mniFillOutsideQuoteSpreadParanoidCheckThrow,
-            this.toolStripSeparator4,
-            this.mniBacktestOnDataSourceSaved,
-            this.mniBacktestOnRestart,
-            this.mniBacktestOnSelectorsChange,
-            this.mniBacktestNow,
-            this.toolStripSeparator1,
-            this.mnitlbPositionSizeSharesConstantEachTrade,
-            this.mnitlbPositionSizeDollarsEachTradeConstant});
+			this.mnitlbSpreadGeneratorPct,
+			this.mniFillOutsideQuoteSpreadParanoidCheckThrow,
+			this.toolStripSeparator4,
+			this.mniBacktestOnDataSourceSaved,
+			this.mniBacktestOnRestart,
+			this.mniBacktestOnSelectorsChange,
+			this.mniBacktestNow,
+			this.toolStripSeparator1,
+			this.mnitlbPositionSizeSharesConstantEachTrade,
+			this.mnitlbPositionSizeDollarsEachTradeConstant});
 			this.ctxBacktest.Name = "ctxBacktest";
 			this.ctxBacktest.Size = new System.Drawing.Size(308, 226);
 			this.ctxBacktest.Opening += new System.ComponentModel.CancelEventHandler(this.ctxBacktest_Opening);
@@ -250,12 +250,12 @@ namespace Sq1.Gui.Forms {
 			// ctxStrategy
 			// 
 			this.ctxStrategy.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniStrategyContextLoad,
-            this.mniStrategyRemove,
-            this.toolStripSeparator3,
-            this.MniShowLivesim,
-            this.MniShowOptimizer,
-            this.MniShowSourceCodeEditor});
+			this.mniStrategyContextLoad,
+			this.mniStrategyRemove,
+			this.toolStripSeparator3,
+			this.MniShowLivesim,
+			this.MniShowOptimizer,
+			this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
 			this.ctxStrategy.Size = new System.Drawing.Size(249, 98);
 			this.ctxStrategy.Opening += new System.ComponentModel.CancelEventHandler(this.ctxStrategy_Opening);
@@ -282,12 +282,12 @@ namespace Sq1.Gui.Forms {
 			// statusStrip
 			// 
 			this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.DdbBars,
-            this.DdbStrategy,
-            this.DdbBacktest,
-            this.TsiProgressBarETA,
-            this.btnStreamingTriggersScript,
-            this.btnStrategyEmittingOrders});
+			this.DdbBars,
+			this.DdbStrategy,
+			this.DdbBacktest,
+			this.TsiProgressBarETA,
+			this.btnStreamingTriggersScript,
+			this.btnStrategyEmittingOrders});
 			this.statusStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
 			this.statusStrip.Location = new System.Drawing.Point(0, 286);
 			this.statusStrip.Name = "statusStrip";
@@ -307,19 +307,19 @@ namespace Sq1.Gui.Forms {
 			// ctxBars
 			// 
 			this.ctxBars.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniSubscribedToStreamingAdapterQuotesBars,
-            this.toolStripSeparator6,
-            this.mnitlbYearly,
-            this.mnitlbMonthly,
-            this.mnitlbWeekly,
-            this.mnitlbDaily,
-            this.mnitlbHourly,
-            this.mnitlbMinutes,
-            this.toolStripSeparator5,
-            this.mniBarsStoredScaleInterval,
-            this.toolStripSeparator2,
-            this.mnitlbShowLastBars,
-            this.mniShowBarRange});
+			this.mniSubscribedToStreamingAdapterQuotesBars,
+			this.toolStripSeparator6,
+			this.mnitlbYearly,
+			this.mnitlbMonthly,
+			this.mnitlbWeekly,
+			this.mnitlbDaily,
+			this.mnitlbHourly,
+			this.mnitlbMinutes,
+			this.toolStripSeparator5,
+			this.mniBarsStoredScaleInterval,
+			this.toolStripSeparator2,
+			this.mnitlbShowLastBars,
+			this.mniShowBarRange});
 			this.ctxBars.Name = "ctxScaleInterval";
 			this.ctxBars.Size = new System.Drawing.Size(252, 256);
 			// 
@@ -498,7 +498,7 @@ namespace Sq1.Gui.Forms {
 			this.btnStreamingTriggersScript.Size = new System.Drawing.Size(65, 20);
 			this.btnStreamingTriggersScript.Text = "Streaming";
 			this.btnStreamingTriggersScript.ToolTipText = "ON=>Strategy will be invoked each Bar/Quote; OFF=>Strategy will never be invoked;" +
-    " CHART draws streaming bars no matter what";
+	" CHART draws streaming bars no matter what";
 			this.btnStreamingTriggersScript.Click += new System.EventHandler(this.btnStreamingWillTriggerScript_Click);
 			// 
 			// btnStrategyEmittingOrders
@@ -511,7 +511,7 @@ namespace Sq1.Gui.Forms {
 			this.btnStrategyEmittingOrders.Size = new System.Drawing.Size(70, 20);
 			this.btnStrategyEmittingOrders.Text = "EmitOrders";
 			this.btnStrategyEmittingOrders.ToolTipText = "ON=>Orders are submitted to BrokerAdapter you chose in your DataSource, OFF=>Ord" +
-    "ers are routed to MarketSimStreaming through BacktestBrokerAdapter";
+	"ers are routed to MarketSimStreaming through BacktestBrokerAdapter";
 			this.btnStrategyEmittingOrders.Click += new System.EventHandler(this.btnStrategyEmittingOrders_Click);
 			// 
 			// ChartForm

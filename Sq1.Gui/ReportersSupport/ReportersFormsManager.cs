@@ -76,11 +76,11 @@ namespace Sq1.Gui.ReportersSupport {
 			SystemPerformanceSlice both = this.ChartFormManager.Executor.Performance.SlicesShortAndLong;
 			//bool amIlaunchingLivesim = this.ChartFormManager.Executor.Backtester.IsLivesimRunning;
 			//if (amIlaunchingLivesim) {
-			//    if (both.PositionsImTracking.Count > 0 || both.NetProfitForClosedPositionsBoth > 0) {
-			//        string msg = "I_REFUSE_CLEAR_ALL_REPORTS__SYSTEM_PERFORMANCE_MUST_BE_CLEAN_AFTER_USER_CLICKED_START_LIVESIM_DURING_REAL_LIVE";
-			//        Assembler.PopupException(msg, null, false);
-			//        return;
-			//    }
+			//	if (both.PositionsImTracking.Count > 0 || both.NetProfitForClosedPositionsBoth > 0) {
+			//		string msg = "I_REFUSE_CLEAR_ALL_REPORTS__SYSTEM_PERFORMANCE_MUST_BE_CLEAN_AFTER_USER_CLICKED_START_LIVESIM_DURING_REAL_LIVE";
+			//		Assembler.PopupException(msg, null, false);
+			//		return;
+			//	}
 			//}
 
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {

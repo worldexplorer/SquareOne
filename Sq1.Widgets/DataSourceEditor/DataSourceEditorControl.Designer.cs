@@ -382,18 +382,18 @@
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.nmrInterval.Location = new System.Drawing.Point(72, 75);
 			this.nmrInterval.Maximum = new decimal(new int[] {
-            9999,
-            0,
-            0,
-            0});
+			9999,
+			0,
+			0,
+			0});
 			this.nmrInterval.Name = "nmrInterval";
 			this.nmrInterval.Size = new System.Drawing.Size(62, 20);
 			this.nmrInterval.TabIndex = 2;
 			this.nmrInterval.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
+			5,
+			0,
+			0,
+			0});
 			this.nmrInterval.ValueChanged += new System.EventHandler(this.nmrInterval_ValueChanged);
 			// 
 			// txtSymbols
@@ -415,15 +415,15 @@
 			this.cmbScale.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cmbScale.FormattingEnabled = true;
 			this.cmbScale.Items.AddRange(new object[] {
-            "Unknown",
-            "Tick",
-            "Second",
-            "Minute",
-            "Daily",
-            "Weekly",
-            "Monthly",
-            "Quarterly",
-            "Yearly"});
+			"Unknown",
+			"Tick",
+			"Second",
+			"Minute",
+			"Daily",
+			"Weekly",
+			"Monthly",
+			"Quarterly",
+			"Yearly"});
 			this.cmbScale.Location = new System.Drawing.Point(72, 48);
 			this.cmbScale.Name = "cmbScale";
 			this.cmbScale.Size = new System.Drawing.Size(62, 21);

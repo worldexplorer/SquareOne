@@ -232,7 +232,7 @@ namespace Sq1.Strategies.Demo {
 		}
 		public override void OnPositionClosedCallback(Position positionClosed) {
 			//if (positionClosed.EntryFilledBarIndex == 37) {
-			//    Debugger.Break();
+			//	Debugger.Break();
 			//}
 		}
 		void testBarAnnotations(Bar barStaticFormed) {

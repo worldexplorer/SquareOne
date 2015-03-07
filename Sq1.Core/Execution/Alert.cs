@@ -96,21 +96,21 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		//[JsonIgnore]	public	bool				IsExecutorLivesimulatingNow		{ get {
-		//        if (this.Strategy == null) {
-		//            string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL__ADDED_[JsonIgnore]";
-		//            return false;
-		//        }
-		//        if (this.Strategy.Script == null) {
-		//            throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script=null for " + this);
-		//        }
-		//        if (this.Strategy.Script.Executor == null) {
-		//            throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor=null for " + this);
-		//        }
-		//        if (this.Strategy.Script.Executor.Backtester == null) {
-		//            throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this);
-		//        }
-		//        return this.Strategy.Script.Executor.Backtester.IsLivesimRunning;
-		//    } }
+		//		if (this.Strategy == null) {
+		//			string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL__ADDED_[JsonIgnore]";
+		//			return false;
+		//		}
+		//		if (this.Strategy.Script == null) {
+		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script=null for " + this);
+		//		}
+		//		if (this.Strategy.Script.Executor == null) {
+		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor=null for " + this);
+		//		}
+		//		if (this.Strategy.Script.Executor.Backtester == null) {
+		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this);
+		//		}
+		//		return this.Strategy.Script.Executor.Backtester.IsLivesimRunning;
+		//	} }
 		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }
 		[JsonProperty]	public	OrderSpreadSide		OrderSpreadSide;
 		[JsonProperty]	public	Quote				QuoteCreatedThisAlert;

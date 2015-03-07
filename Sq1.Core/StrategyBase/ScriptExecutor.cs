@@ -366,13 +366,13 @@ namespace Sq1.Core.StrategyBase {
 											);
 			//MOVED_UPSTACK_TO_LivesimQuoteBarConsumer
 			//if (this.Backtester.IsBacktestRunning && this.Backtester.IsLivesimRunning) {
-			//    // FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
-			//    if (pokeUnit.PositionsOpenNow.Count > 0) {
-			//        this.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this.ExecutionDataSnapshot.PositionsOpenNow);
-			//        if (guiHasTime) {
-			//            this.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit);
-			//        }
-			//    }
+			//	// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
+			//	if (pokeUnit.PositionsOpenNow.Count > 0) {
+			//		this.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(this.ExecutionDataSnapshot.PositionsOpenNow);
+			//		if (guiHasTime) {
+			//			this.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnit);
+			//		}
+			//	}
 			//}
 
 			//if (this.Backtester.IsBacktestingNow) return pokeUnit;
@@ -842,10 +842,10 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteFilledThisAlertNullForLive, alertsNewAfterAlertFilled,
-			                                                 positionsOpenedAfterAlertFilled,
-			                                                 positionsClosedAfterAlertFilled,
-			                                                 null
-			                                                );
+															 positionsOpenedAfterAlertFilled,
+															 positionsClosedAfterAlertFilled,
+															 null
+															);
 			//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
 			if (positionOpenedAfterAlertFilled != null) {
 				this.Performance.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(positionOpenedAfterAlertFilled);

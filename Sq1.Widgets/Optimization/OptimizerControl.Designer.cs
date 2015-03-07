@@ -137,8 +137,8 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.CellEditEnterChangesRows = true;
 			this.olvHistory.CellEditTabChangesRows = true;
 			this.olvHistory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvcPFavg,
-            this.olvcHistorySymbolScaleRange});
+			this.olvcPFavg,
+			this.olvcHistorySymbolScaleRange});
 			this.olvHistory.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvHistory.EmptyListMsg = "OPTIMIZATION_HISTORY_IS_EMPTY Never optimized since last script recompilation";
 			this.olvHistory.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -212,11 +212,11 @@ namespace Sq1.Widgets.Optimization {
 			this.fastOLVparametersYesNoMinMaxStep.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.fastOLVparametersYesNoMinMaxStep.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.SingleClick;
 			this.fastOLVparametersYesNoMinMaxStep.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvMinimum,
-            this.olvMaximum,
-            this.olvStep,
-            this.olvOptimizeYesNo,
-            this.olvParameter});
+			this.olvMinimum,
+			this.olvMaximum,
+			this.olvStep,
+			this.olvOptimizeYesNo,
+			this.olvParameter});
 			this.fastOLVparametersYesNoMinMaxStep.EmptyListMsg = "NO_PARAMETERS_TO_OPTIMIZE Edit Strategy\'s Script to add parameters or indicators";
 			this.fastOLVparametersYesNoMinMaxStep.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.fastOLVparametersYesNoMinMaxStep.IncludeColumnHeadersInCopy = true;
@@ -293,10 +293,10 @@ namespace Sq1.Widgets.Optimization {
 			this.nudThreadsToRun.Size = new System.Drawing.Size(40, 20);
 			this.nudThreadsToRun.TabIndex = 33;
 			this.nudThreadsToRun.Value = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
+			4,
+			0,
+			0,
+			0});
 			this.nudThreadsToRun.ValueChanged += new System.EventHandler(this.nudCpuCoresToUse_ValueChanged);
 			// 
 			// lblIndicatorParameterTotalNr
@@ -437,7 +437,7 @@ namespace Sq1.Widgets.Optimization {
 			this.lblStats.Name = "lblStats";
 			this.lblStats.Size = new System.Drawing.Size(150, 16);
 			this.lblStats.TabIndex = 35;
-			this.lblStats.Text = "48% complete    450044/18900";
+			this.lblStats.Text = "48% complete	450044/18900";
 			// 
 			// progressBar1
 			// 
@@ -454,16 +454,16 @@ namespace Sq1.Widgets.Optimization {
 			this.olvBacktests.AllowColumnReorder = true;
 			this.olvBacktests.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvBacktests.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.olvcSerno,
-            this.olvcTotalTrades,
-            this.olvcAverageProfit,
-            this.olvcNetProfit,
-            this.olvcWinLoss,
-            this.olvcProfitFactor,
-            this.olvcRecoveryFactor,
-            this.olvcMaxDrawdown,
-            this.olvcMaxConsecutiveWinners,
-            this.olvcMaxConsecutiveLosers});
+			this.olvcSerno,
+			this.olvcTotalTrades,
+			this.olvcAverageProfit,
+			this.olvcNetProfit,
+			this.olvcWinLoss,
+			this.olvcProfitFactor,
+			this.olvcRecoveryFactor,
+			this.olvcMaxDrawdown,
+			this.olvcMaxConsecutiveWinners,
+			this.olvcMaxConsecutiveLosers});
 			this.olvBacktests.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvBacktests.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvBacktests.EmptyListMsg = "";
@@ -576,15 +576,15 @@ namespace Sq1.Widgets.Optimization {
 			// ctxOneBacktestResult
 			// 
 			this.ctxOneBacktestResult.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mniInfo,
-            this.toolStripSeparator1,
-            this.mniCopyToDefaultCtxBacktest,
-            this.mniCopyToDefaultCtx,
-            this.mniltbCopyToNewContextBacktest,
-            this.mniltbCopyToNewContext,
-            this.toolStripSeparator2,
-            this.mniCopyToClipboard,
-            this.mniSaveCsv});
+			this.mniInfo,
+			this.toolStripSeparator1,
+			this.mniCopyToDefaultCtxBacktest,
+			this.mniCopyToDefaultCtx,
+			this.mniltbCopyToNewContextBacktest,
+			this.mniltbCopyToNewContext,
+			this.toolStripSeparator2,
+			this.mniCopyToClipboard,
+			this.mniSaveCsv});
 			this.ctxOneBacktestResult.Name = "ctxOneBacktestResult";
 			this.ctxOneBacktestResult.Size = new System.Drawing.Size(444, 176);
 			this.ctxOneBacktestResult.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOneBacktestResult_Opening);

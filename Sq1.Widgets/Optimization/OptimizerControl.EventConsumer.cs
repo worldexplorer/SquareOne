@@ -22,14 +22,14 @@ namespace Sq1.Widgets.Optimization {
 			string staleReason = this.optimizer.StaleReason;
 			//bool clickedToClearAndPrepareForNewOptimization = string.IsNullOrEmpty(staleReason) == false;
 			//if (clickedToClearAndPrepareForNewOptimization) {
-			//    //this.backtests.Clear();
-			//    //this.olvBacktests.SetObjects(this.backtests, true);
-			//    this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
-			//    this.optimizer.ClearIWasRunFor();
-			//    this.PopulateTextboxesFromExecutorsState();
-			//    this.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
-			//    this.btnPauseResume.Text = "Pause/Resume";
-			//    return;
+			//	//this.backtests.Clear();
+			//	//this.olvBacktests.SetObjects(this.backtests, true);
+			//	this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
+			//	this.optimizer.ClearIWasRunFor();
+			//	this.PopulateTextboxesFromExecutorsState();
+			//	this.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
+			//	this.btnPauseResume.Text = "Pause/Resume";
+			//	return;
 			//}
 			
 			this.backtests.Clear();
@@ -68,7 +68,7 @@ namespace Sq1.Widgets.Optimization {
 			int backtestsCompleted	= this.optimizer.BacktestsCompleted;  
 			this.btnRunCancel.Text = "Cancel " + backtestsRemaninig + " backtests";
 			double pctComplete = (backtestsTotal > 0) ? Math.Round(100 * backtestsCompleted / (double)backtestsTotal) : 0;
-			this.lblStats.Text = pctComplete + "% complete    " + backtestsCompleted + "/" + backtestsTotal;
+			this.lblStats.Text = pctComplete + "% complete	" + backtestsCompleted + "/" + backtestsTotal;
 			if (backtestsCompleted >= this.progressBar1.Minimum && backtestsCompleted <= this.progressBar1.Maximum) {
 				this.progressBar1.Value = backtestsCompleted;
 			}
@@ -92,9 +92,9 @@ namespace Sq1.Widgets.Optimization {
 			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//v1
 			//if (strategy.OptimizationResultsByContextIdent.ContainsKey(symbolScaleRange) == false) {
-			//    strategy.OptimizationResultsByContextIdent.Add(symbolScaleRange, this.backtests);
+			//	strategy.OptimizationResultsByContextIdent.Add(symbolScaleRange, this.backtests);
 			//} else {
-			//    strategy.OptimizationResultsByContextIdent[symbolScaleRange] = this.backtests;
+			//	strategy.OptimizationResultsByContextIdent[symbolScaleRange] = this.backtests;
 			//}
 			//strategy.Serialize();
 			//v2
@@ -109,12 +109,12 @@ namespace Sq1.Widgets.Optimization {
 		void optimizer_OnOptimizationAborted(object sender, EventArgs e) {
 			this.optimizer_OnAllBacktestsFinished(sender, e);
 		}
-        void optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild(object sender, EventArgs e) {
-            this.txtScriptParameterTotalNr.Text = this.optimizer.ScriptParametersTotalNr.ToString();
-            this.txtIndicatorParameterTotalNr.Text = this.optimizer.IndicatorParameterTotalNr.ToString();
-            int backtestsTotal = this.optimizer.BacktestsTotal;
-            this.btnRunCancel.Text = "Run " + backtestsTotal + " backtests";
-        }
+		void optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild(object sender, EventArgs e) {
+			this.txtScriptParameterTotalNr.Text = this.optimizer.ScriptParametersTotalNr.ToString();
+			this.txtIndicatorParameterTotalNr.Text = this.optimizer.IndicatorParameterTotalNr.ToString();
+			int backtestsTotal = this.optimizer.BacktestsTotal;
+			this.btnRunCancel.Text = "Run " + backtestsTotal + " backtests";
+		}
 		void btnPauseResume_Click(object sender, EventArgs e) {
 			Assembler.PopupException(null, new NotImplementedException());
 		}

@@ -45,8 +45,8 @@ namespace Sq1.Core.StrategyBase {
 
 			this.Executor			= scriptExecutor;
 			//if (this.Executor.Bars == null) {
-			//    string msg = "we shouldn't execute strategy on this.Executor.Bars == null";
-			//    throw new Exception(msg);
+			//	string msg = "we shouldn't execute strategy on this.Executor.Bars == null";
+			//	throw new Exception(msg);
 			//}
 
 			this.SliceLong			= new SystemPerformanceSlice(SystemPerformancePositionsTracking.LongOnly,		"StatsForLongPositionsOnly");
@@ -176,12 +176,12 @@ namespace Sq1.Core.StrategyBase {
 			return (SystemPerformance)base.MemberwiseClone();
 		}
 		//public SystemPerformance CloneForReporter() {
-		//    // Sq1.Reporters.Performance needs full deep copy to maintain its own lists to avoid "Collection Modified Exceptions"
-		//    // instead of making ScriptExecutor.DataSnapshot.PositionsMaster and everything synchronized (slows down adding by strategy?),
-		//    // each report receives PokeUnit and messes up its own data at its own risk in its own address space
-		//    SystemPerformance ret = (SystemPerformance)base.MemberwiseClone();
-		//    ret.
-		//    return ret;
+		//	// Sq1.Reporters.Performance needs full deep copy to maintain its own lists to avoid "Collection Modified Exceptions"
+		//	// instead of making ScriptExecutor.DataSnapshot.PositionsMaster and everything synchronized (slows down adding by strategy?),
+		//	// each report receives PokeUnit and messes up its own data at its own risk in its own address space
+		//	SystemPerformance ret = (SystemPerformance)base.MemberwiseClone();
+		//	ret.
+		//	return ret;
 		//}
 		public override string ToString() {
 			string msg = "HAS_MEANINFULL_VALUE_ONLY_AFTER int absorbedBH = this.SliceBuyHold.BuildStatsOnBacktestFinished(pokeUnit)";

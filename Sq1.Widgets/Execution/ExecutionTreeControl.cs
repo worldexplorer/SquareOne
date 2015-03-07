@@ -129,7 +129,7 @@ namespace Sq1.Widgets.Execution {
 								string msg = "+151_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
 								int newDistance = this.DataSnapshot.MessagePaneSplitDistanceVertical;		// + 151 this.splitContainerMessagePane.SplitterWidth;
 				//Debugger.Break();
-							    if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
+								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
 									this.splitContainerMessagePane.SplitterDistance =  newDistance;
 								}
 							}
@@ -242,7 +242,7 @@ namespace Sq1.Widgets.Execution {
 //				//	order.Messages.Sort((x, y) => y.DateTime.CompareTo(x.DateTime));
 		}
 		//public void OrderInsertToListView(Order order) {
-		//    this.RebuildAllTreeFocusOnTopmost();
+		//	this.RebuildAllTreeFocusOnTopmost();
 		//}
 		public void OrderRemoveFromListView(List<Order> orders) {
 			if (orders.Count == 0) {

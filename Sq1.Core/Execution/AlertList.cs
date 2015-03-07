@@ -86,13 +86,13 @@ namespace Sq1.Core.Execution {
 		} }
 		// UNCOMMENT_WHEN_NEEDED
 		//public Dictionary<int, List<Alert>> SafeCopyRangeForRenderer(int barIndexLeftVisible, int barIndexRightVisible) { lock(base.LockObject) {
-		//    //if (barIndexRightVisible == -1) barIndexRightVisible = this.executor.Bars.Count;
-		//    Dictionary<int, List<Alert>> ret = new Dictionary<int, List<Alert>>();
-		//    for (int barNo = barIndexLeftVisible; barNo <= barIndexRightVisible; barNo++) {
-		//        if (this.ByBarPlaced.ContainsKey(barNo) == false) continue;
-		//        ret.Add(barNo, new List<Alert>(this.ByBarPlaced[barNo]));
-		//    }
-		//    return ret;
+		//	//if (barIndexRightVisible == -1) barIndexRightVisible = this.executor.Bars.Count;
+		//	Dictionary<int, List<Alert>> ret = new Dictionary<int, List<Alert>>();
+		//	for (int barNo = barIndexLeftVisible; barNo <= barIndexRightVisible; barNo++) {
+		//		if (this.ByBarPlaced.ContainsKey(barNo) == false) continue;
+		//		ret.Add(barNo, new List<Alert>(this.ByBarPlaced[barNo]));
+		//	}
+		//	return ret;
 		//} }
 
 		public bool GuiHasTimeToRebuild { get {

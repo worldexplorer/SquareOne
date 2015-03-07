@@ -725,7 +725,7 @@ namespace Sq1.Gui.Forms {
 					this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerSuccess();
 				}
 				this.Strategy.Script.Initialize(this.Executor);
-                this.Executor.Optimizer.RaiseScriptRecompiledUpdateHeaderPostponeColumnsRebuild();
+				this.Executor.Optimizer.RaiseScriptRecompiledUpdateHeaderPostponeColumnsRebuild();
 				this.Executor.Optimizer.Initialize();						// removes "optimizerInitializedProperly == false" on app restart => Optimizer fills up with Script&Indicator Prarmeters for a JSON-based strategy
 			}
 			// moved to StrategyCompileActivatePopulateSlidersShow() because no need to PopulateSliders during Deserialization
@@ -813,7 +813,7 @@ namespace Sq1.Gui.Forms {
 			//string staleReason = control.PopulateTextboxesFromExecutorsState();
 			//bool clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize = string.IsNullOrEmpty(staleReason) == false;
 			//if (clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize == true) {
-			//    control.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
+			//	control.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
 			//}
 		}
 	}

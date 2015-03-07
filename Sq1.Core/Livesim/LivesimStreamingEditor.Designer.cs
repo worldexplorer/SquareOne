@@ -105,7 +105,7 @@ namespace Sq1.Core.Livesim {
 			// groupBox1
 			// 
 			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.txt_QuoteGenerationFreezeHappensOncePerQuoteMax);
 			this.groupBox1.Controls.Add(this.txt_QuoteGenerationFreezeHappensOncePerQuoteMin);
 			this.groupBox1.Controls.Add(this.label8);
@@ -195,7 +195,7 @@ namespace Sq1.Core.Livesim {
 			// cbx_QuoteGenerationFreezeEnabled
 			// 
 			this.cbx_QuoteGenerationFreezeEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_QuoteGenerationFreezeEnabled.Checked = true;
 			this.cbx_QuoteGenerationFreezeEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.cbx_QuoteGenerationFreezeEnabled.Location = new System.Drawing.Point(6, 69);
@@ -225,7 +225,7 @@ namespace Sq1.Core.Livesim {
 			// groupBox2
 			// 
 			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox2.Controls.Add(this.label9);
 			this.groupBox2.Controls.Add(this.cbx_DelayBetweenSerialQuotesEnabled);
 			this.groupBox2.Controls.Add(this.label10);
@@ -250,7 +250,7 @@ namespace Sq1.Core.Livesim {
 			// cbx_DelayBetweenSerialQuotesEnabled
 			// 
 			this.cbx_DelayBetweenSerialQuotesEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_DelayBetweenSerialQuotesEnabled.Checked = true;
 			this.cbx_DelayBetweenSerialQuotesEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.cbx_DelayBetweenSerialQuotesEnabled.Location = new System.Drawing.Point(6, 42);
@@ -298,7 +298,7 @@ namespace Sq1.Core.Livesim {
 			// groupBox3
 			// 
 			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox3.Controls.Add(this.label1);
 			this.groupBox3.Controls.Add(this.label2);
 			this.groupBox3.Controls.Add(this.txt_AdaperDisconnectReconnectsAfterMillisMax);
@@ -370,7 +370,7 @@ namespace Sq1.Core.Livesim {
 			// cbx_AdaperDisconnectEnabled
 			// 
 			this.cbx_AdaperDisconnectEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_AdaperDisconnectEnabled.Checked = true;
 			this.cbx_AdaperDisconnectEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.cbx_AdaperDisconnectEnabled.Location = new System.Drawing.Point(6, 67);
@@ -418,7 +418,7 @@ namespace Sq1.Core.Livesim {
 			// groupBox4
 			// 
 			this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox4.Controls.Add(this.label16);
 			this.groupBox4.Controls.Add(this.label17);
 			this.groupBox4.Controls.Add(this.txt_OutOfOrderQuoteGenerationDelayMillisMax);
@@ -490,7 +490,7 @@ namespace Sq1.Core.Livesim {
 			// cbx_OutOfOrderQuoteGenerationEnabled
 			// 
 			this.cbx_OutOfOrderQuoteGenerationEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_OutOfOrderQuoteGenerationEnabled.Checked = true;
 			this.cbx_OutOfOrderQuoteGenerationEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.cbx_OutOfOrderQuoteGenerationEnabled.Location = new System.Drawing.Point(6, 70);
@@ -558,15 +558,15 @@ namespace Sq1.Core.Livesim {
 			this.ResumeLayout(false);
 
 		}
-        protected override void Dispose(bool disposing) {
-            if (disposing && (components != null)) {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-        #endregion
+		protected override void Dispose(bool disposing) {
+			if (disposing && (components != null)) {
+				components.Dispose();
+			}
+			base.Dispose(disposing);
+		}
+		#endregion
 
 		private System.Windows.Forms.TextBox txt_QuoteGenerationFreezeHappensOncePerQuoteMax;
 		private System.Windows.Forms.TextBox txt_QuoteGenerationFreezeHappensOncePerQuoteMin;
-    }
+	}
 }

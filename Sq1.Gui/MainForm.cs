@@ -47,12 +47,12 @@ namespace Sq1.Gui {
 
 			//string currentThreadName;
 			//try {
-			//    currentThreadName = Thread.CurrentThread.Name;	// SharpDevelop4.4 Debugger doesn't evaluate, so I assign to visualize it 
-			//    Thread.CurrentThread.Name = GUI_THREAD_NAME;
-			//    currentThreadName = Thread.CurrentThread.Name;
+			//	currentThreadName = Thread.CurrentThread.Name;	// SharpDevelop4.4 Debugger doesn't evaluate, so I assign to visualize it 
+			//	Thread.CurrentThread.Name = GUI_THREAD_NAME;
+			//	currentThreadName = Thread.CurrentThread.Name;
 			//} catch (Exception ex) {
-			//    string msg = "FAILED_TO_SET_GUI_THREAD_NAME Thread.CurrentThread.Name=[" + GUI_THREAD_NAME + "] //MainForm()";
-			//    Assembler.PopupException(msg, ex);
+			//	string msg = "FAILED_TO_SET_GUI_THREAD_NAME Thread.CurrentThread.Name=[" + GUI_THREAD_NAME + "] //MainForm()";
+			//	Assembler.PopupException(msg, ex);
 			//}
 
 			try {

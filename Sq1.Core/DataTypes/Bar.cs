@@ -215,13 +215,13 @@ namespace Sq1.Core.DataTypes {
 
 			//v1
 			//bool sameOHLCV = (this.Open == bar.Open && this.High == bar.High
-			//    && this.Low == bar.Low && this.Close == bar.Close && this.Volume == bar.Volume);
+			//	&& this.Low == bar.Low && this.Close == bar.Close && this.Volume == bar.Volume);
 			//if (sameOHLCV == false) {
-			//    #if VERBOSE_STRINGS_SLOW
-			//    msg = "OHLCV are different while DateTimeOpen is the same: "
-			//        + thisIdent + "[" + this + "] != " + barIdent + "[" + bar + "]";
-			//    #endif
-			//    return false;
+			//	#if VERBOSE_STRINGS_SLOW
+			//	msg = "OHLCV are different while DateTimeOpen is the same: "
+			//		+ thisIdent + "[" + this + "] != " + barIdent + "[" + bar + "]";
+			//	#endif
+			//	return false;
 			//}
 			//v2
 			bool OHLCV_different = false;

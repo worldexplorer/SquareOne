@@ -82,10 +82,10 @@ namespace Sq1.Widgets.Optimization {
 			this.optimizer.OnOptimizationAborted -= new EventHandler<EventArgs>(this.optimizer_OnOptimizationAborted);
 			this.optimizer.OnOptimizationAborted += new EventHandler<EventArgs>(this.optimizer_OnOptimizationAborted);
 
-            this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild -= new EventHandler<EventArgs>(this.optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
-            this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild += new EventHandler<EventArgs>(this.optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
-            
-            this.PopulateTextboxesFromExecutorsState();
+			this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild -= new EventHandler<EventArgs>(this.optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
+			this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild += new EventHandler<EventArgs>(this.optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
+			
+			this.PopulateTextboxesFromExecutorsState();
 			
 			this.populateColumns();
 			this.olvBacktestsCustomize();
@@ -167,7 +167,7 @@ namespace Sq1.Widgets.Optimization {
 			
 			string staleReason = this.optimizer.StaleReason;
 			//if (string.IsNullOrEmpty(staleReason) == false) {
-			//    return staleReason;
+			//	return staleReason;
 			//}
 			this.txtStaleReason.Text				= staleReason;
 			this.txtDataRange.Text					= this.optimizer.DataRangeAsString;
@@ -179,7 +179,7 @@ namespace Sq1.Widgets.Optimization {
 
 			int backtestsTotal						= this.optimizer.BacktestsTotal;
 			this.btnRunCancel.Text					= "Run " + backtestsTotal + " backtests";
-			this.lblStats.Text						= "0% complete    0/" + backtestsTotal;
+			this.lblStats.Text						= "0% complete	0/" + backtestsTotal;
 			this.progressBar1.Value					= 0;
 			this.progressBar1.Maximum				= backtestsTotal;
 			

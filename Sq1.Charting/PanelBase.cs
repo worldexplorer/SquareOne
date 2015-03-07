@@ -416,8 +416,8 @@ namespace Sq1.Charting {
 					}
 					//BETTER_LET_IT_COMPLAIN__RANGE_CAN_NOT_BE_ZERO_WHEN_YOU_HAVE_BARS.COUNT=1
 					//if (this.ChartControl.Bars.Count == 1) {
-					//    string msg = "AVOIDING RANGE_CAN_NOT_BE_ZERO_WHEN_YOU_HAVE_BARS.COUNT=1";
-					//    this.VisibleBarRight_cached = 1;
+					//	string msg = "AVOIDING RANGE_CAN_NOT_BE_ZERO_WHEN_YOU_HAVE_BARS.COUNT=1";
+					//	this.VisibleBarRight_cached = 1;
 					//}
 					this.VisibleBarLeft_cached = this.ChartControl.VisibleBarLeft;
 					return;
@@ -454,7 +454,7 @@ namespace Sq1.Charting {
 //					Debugger.Break();
 //				}
 //				if (this.PanelHeightMinusGutterBottomHeight_cached != 0
-//					    && this.PanelHeightMinusGutterBottomHeight_cached != this.PanelHeightMinusGutterBottomHeight) {
+//						&& this.PanelHeightMinusGutterBottomHeight_cached != this.PanelHeightMinusGutterBottomHeight) {
 //					Debugger.Break();
 //				}
 				this.PanelHeightMinusGutterBottomHeight_cached = this.PanelHeightMinusGutterBottomHeight;

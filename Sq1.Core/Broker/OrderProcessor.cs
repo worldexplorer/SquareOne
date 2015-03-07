@@ -468,8 +468,8 @@ namespace Sq1.Core.Broker {
 
 			// REPLACED_WITH_OUTER_this.orderUpdateLock
 			//if (newStateOmsg.State == OrderState.WaitingBrokerFill) {
-			//    // blocking the BrokerAdapter thread updateing OrderState??? protecting against "thread twist" inside of BrokerAdapter implementation?...
-			//    bool signalled = order.MreActiveCanCome.WaitOne(-1);
+			//	// blocking the BrokerAdapter thread updateing OrderState??? protecting against "thread twist" inside of BrokerAdapter implementation?...
+			//	bool signalled = order.MreActiveCanCome.WaitOne(-1);
 			//}
 
 			OrderState orderStatePriorToUpdate = order.State;

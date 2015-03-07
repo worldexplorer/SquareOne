@@ -155,13 +155,13 @@ namespace Sq1.Core.Broker {
 				}
 			} }
 		//public OrderLaneByState FindStateLaneDoesntContain(Order order) {
-		//    OrderLaneByState expectedToNotContain = this.SuggestLaneByOrderState(order.State);
-		//    if (expectedToNotContain.Contains(order)) {
-		//        string msg = "HOW_WILL_YOU_USE_UNKNOWN???";
-		//        Assembler.PopupException(msg);
-		//        expectedToNotContain = new OrderLaneByState(OrderStatesCollections.Unknown);
-		//    }
-		//    return expectedToNotContain;
+		//	OrderLaneByState expectedToNotContain = this.SuggestLaneByOrderState(order.State);
+		//	if (expectedToNotContain.Contains(order)) {
+		//		string msg = "HOW_WILL_YOU_USE_UNKNOWN???";
+		//		Assembler.PopupException(msg);
+		//		expectedToNotContain = new OrderLaneByState(OrderStatesCollections.Unknown);
+		//	}
+		//	return expectedToNotContain;
 		//}
 
 		public Order ScanRecentForGUID(string GUID, List<OrderLane> lanes, out string logOrEmpty) {

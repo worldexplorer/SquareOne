@@ -32,10 +32,10 @@ namespace Sq1.Widgets.Exceptions {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			//v2 HACK http://stackoverflow.com/questions/10161088/get-elapsed-time-since-application-start-in-c-sharp
 			//try {
-			//    TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
-			//    if (sinceApplicationStart.Seconds <= 10) return;
+			//	TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
+			//	if (sinceApplicationStart.Seconds <= 10) return;
 			//} catch (Exception ex) {
-			//    Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
+			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
 			//v3
 			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
@@ -51,10 +51,10 @@ namespace Sq1.Widgets.Exceptions {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			//v2 HACK http://stackoverflow.com/questions/10161088/get-elapsed-time-since-application-start-in-c-sharp
 			//try {
-			//    TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
-			//    if (sinceApplicationStart.Seconds <= 10) return;
+			//	TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
+			//	if (sinceApplicationStart.Seconds <= 10) return;
 			//} catch (Exception ex) {
-			//    Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
+			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
 			//v3
 			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;

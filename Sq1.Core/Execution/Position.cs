@@ -341,7 +341,7 @@ namespace Sq1.Core.Execution {
 				bool skipWhenRemovingPendingAlertBacktestLeftOpen = this.EntryBar.ParentBars.ReasonToExist.Contains(Backtester.BARS_BACKTEST_CLONE_PREFIX)
 					&& exitBar.ParentBars.ReasonToExist.Contains(Backtester.BARS_BACKTEST_CLONE_PREFIX) == false;
 				if (skipWhenRemovingPendingAlertBacktestLeftOpen) {
-				    string msg = "NOW_LOOK_AT_CALLSTACK__3_LEVELS_LOWER_YOU_SHOULD_SEE__ScriptExecutor.RemovePendingExitAlertPastDueClosePosition()";
+					string msg = "NOW_LOOK_AT_CALLSTACK__3_LEVELS_LOWER_YOU_SHOULD_SEE__ScriptExecutor.RemovePendingExitAlertPastDueClosePosition()";
 				} else {
 					string msg = "PARENTS_OF_BAR_FILLED_POSITION_EXIT_MUST_BE_SAME_AS_ENTRY_BAR_PARENTS exitBar.ParentBars["
 						+ exitBar.ParentBars + "] != this.EntryBar.ParentBars[" + this.EntryBar.ParentBars + "]";
