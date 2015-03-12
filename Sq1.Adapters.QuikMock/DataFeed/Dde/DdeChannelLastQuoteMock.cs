@@ -175,7 +175,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 			//quikQuote.Bid = quikQuote.PriceLastDeal - spread / 2;
 			//quikQuote.Ask = quikQuote.PriceLastDeal + spread / 2;
 			//v2
-			quikQuote.LastDealBidOrAsk = BidOrAsk.Bid;
+			quikQuote.TradedAt = BidOrAsk.Bid;
 			quikQuote.Bid = priceStartFrom;
 			quikQuote.Ask = quikQuote.Bid + this.spread;
 

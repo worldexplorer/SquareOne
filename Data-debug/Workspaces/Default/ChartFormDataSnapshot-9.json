@@ -45,11 +45,11 @@
       "Price": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 20
+        "Distance": 30
       }
     },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 17,
+    "BarWidthIncludingPadding": 30,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -73,7 +73,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 50,
+    "SqueezeVerticalPaddingPx": 0,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -83,7 +83,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 6,
+    "ScrollPositionAtBarIndex": 0,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
