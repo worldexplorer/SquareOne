@@ -3,7 +3,6 @@ using System.Threading;
 
 using Sq1.Core.Backtesting;
 using Sq1.Core.Charting;
-using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
 using Sq1.Core.DataFeed;
 using Sq1.Core.StrategyBase;
@@ -29,7 +28,7 @@ namespace Sq1.Core.Livesim {
 			this.chartShadow = chartShadow;
 		}
 
-		public override void GeneratedQuoteEnrichSymmetricallyAndPush(QuoteGenerated quote, Bar bar2simulate, double priceForSymmetricFillAtOpenOrClose = -1) {
+		public override void PushQuoteGenerated(QuoteGenerated quote) {
 			if (quote.IamInjectedToFillPendingAlerts) {
 				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
 			}
@@ -57,7 +56,7 @@ namespace Sq1.Core.Livesim {
 			if (delay > 0) {
 				executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
 			}
-			base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate, priceForSymmetricFillAtOpenOrClose);
+			base.PushQuoteGenerated(quote);
 	
 			if (this.chartShadow == null) {
 				string msg = "YOU_FORGOT_TO_LET_LivesimStreaming_KNOW_ABOUT_CHART_CONTROL__TO_WAIT_FOR_REPAINT_COMPLETED_BEFORE_FEEDING_NEXT_QUOTE_TO_EXECUTOR_VIA_PUMP";
@@ -76,17 +75,25 @@ namespace Sq1.Core.Livesim {
 			//NOT_ENOUGH_TO_UNFREEZE_PAUSE_BUTTON PAINTS_OKAY_AFTER_INVOKING_RangeBarCollapseToAccelerateLivesim()
 			// Thread.Sleep(1)_REDUCES_CPU_USAGE_DURING_LIVESIM_FROM_60%_TO_3%_DUAL_CORE__Application.DoEvents()_IS_USELESS
 
-			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
-			if (snap.AlertsPending.Count > 0) {
+			//v1 WORKED_FOR_NON_LIVE_BACKTEST
+			//ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
+			//if (snap.AlertsPending.Count > 0) {
+			//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
+			LivesimBroker liveBro = this.livesimDataSource.BrokerAsLivesimNullUnsafe;
+			LivesimBrokerDataSnapshot snap = liveBro.DataSnapshot;
+			AlertList notYetScheduled = snap.AlertsNotYetScheduledForDelayedFillBy(quote);
+			if (notYetScheduled.Count > 0) {
 				if (quote.ParentBarStreaming != null) {
 					string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
 					//Assembler.PopupException(msg);
 				}
-				this.livesimDataSource.BrokerAsLivesimNullUnsafe.ConsumeQuoteOfStreamingBarToFillPending(quote, bar2simulate);
+				this.livesimDataSource.BrokerAsLivesimNullUnsafe.ConsumeQuoteOfStreamingBarToFillPending(quote, notYetScheduled);
+			} else {
+				string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
 			}
 
 			if (delay > 0) {
-				System.Windows.Forms.Application.DoEvents();
+				//Application.DoEvents();
 				Thread.Sleep(delay);
 			}
 			executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;

@@ -29,6 +29,7 @@ namespace Sq1.Core.StrategyBase {
 		public	CommissionCalculator			CommissionCalculator;
 		public	Optimizer						Optimizer					{ get; protected set; }
 		public	Livesimulator					Livesimulator				{ get; private set; }
+		public	string							LastBacktestStatus;
 		#endregion
 		
 		#region initialized (sort of Dependency Injection)
@@ -95,9 +96,19 @@ namespace Sq1.Core.StrategyBase {
 				this.Strategy.Serialize();
 				
 				if (value == true) {
-					this.Strategy.Script.OnStreamingTriggeringScriptTurnedOnCallback();
+					try {
+						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOn = true;
+						this.Strategy.Script.OnStreamingTriggeringScriptTurnedOnCallback();
+					} finally {
+						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOn = false;
+					}
 				} else {
-					this.Strategy.Script.OnStreamingTriggeringScriptTurnedOffCallback();
+					try {
+						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOff = true;
+						this.Strategy.Script.OnStreamingTriggeringScriptTurnedOffCallback();
+					} finally {
+						this.ExecutionDataSnapshot.IsScriptRunningOnStrategyEmittingOrdersTurnedOff = false;
+					}
 				}
 			}
 		}
@@ -122,9 +133,19 @@ namespace Sq1.Core.StrategyBase {
 				this.Strategy.Serialize();
 				
 				if (value == true) {
-					this.Strategy.Script.OnStrategyEmittingOrdersTurnedOnCallback();
+					try {
+						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOn = true;
+						this.Strategy.Script.OnStrategyEmittingOrdersTurnedOnCallback();
+					} finally {
+						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOn = false;
+					}
 				} else {
-					this.Strategy.Script.OnStrategyEmittingOrdersTurnedOffCallback();
+					try {
+						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOff = true;
+						this.Strategy.Script.OnStrategyEmittingOrdersTurnedOffCallback();
+					} finally {
+						this.ExecutionDataSnapshot.IsScriptRunningOnStreamingTriggeringScriptTurnedOff = false;
+					}
 				}
 			}
 		}
@@ -218,7 +239,12 @@ namespace Sq1.Core.StrategyBase {
 				}
 
 				try {
-					this.Strategy.Script.OnNewQuoteOfStreamingBarCallback(quoteForAlertsCreated);
+					try {
+						this.ExecutionDataSnapshot.IsScriptRunningOnNewQuote = true;
+						this.Strategy.Script.OnNewQuoteOfStreamingBarCallback(quoteForAlertsCreated);
+					} finally {
+						this.ExecutionDataSnapshot.IsScriptRunningOnNewQuote = false;
+					}
 					//alertsDumpedForStreamingBar = this.ExecutionDataSnapshot.DumpPendingAlertsIntoPendingHistoryByBar();
 					//if (alertsDumpedForStreamingBar > 0) {
 					//	string msg = "ITS OK HERE since prev quote has created prototype-based alerts"
@@ -254,7 +280,12 @@ namespace Sq1.Core.StrategyBase {
 				}
 
 				try {
-					this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLastNullUnsafe);
+					try {
+						this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = true;
+						this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLastNullUnsafe);
+					} finally {
+						this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = false;
+					}
 					this.EventGenerator.RaiseOnStrategyExecutedOneBar(this.Bars.BarStaticLastNullUnsafe);
 					this.barStaticExecutedLast = this.Bars.BarStaticLastNullUnsafe;
 				} catch (Exception ex) {
@@ -610,7 +641,12 @@ namespace Sq1.Core.StrategyBase {
 			}
 			if (this.Strategy.Script == null) return;
 			try {
-				this.Strategy.Script.OnAlertNotSubmittedCallback(alert, barNotSubmittedRelno);
+				try {
+					this.ExecutionDataSnapshot.IsScriptRunningOnAlertNotSubmitted = true;
+					this.Strategy.Script.OnAlertNotSubmittedCallback(alert, barNotSubmittedRelno);
+				} finally {
+					this.ExecutionDataSnapshot.IsScriptRunningOnAlertNotSubmitted = false;
+				}
 			} catch (Exception e) {
 				string msg = "fix your OnAlertNotSubmittedCallback() in script[" + this.Strategy.Script.StrategyName + "]"
 					+ "; was invoked with alert[" + alert + "] and barNotSubmittedRelno["
@@ -629,13 +665,22 @@ namespace Sq1.Core.StrategyBase {
 				//throw new Exception(msg);
 				Assembler.PopupException(msg);
 			}
-			alert.Strategy.Script.OnAlertKilledCallback(alert);
+			try {
+				this.ExecutionDataSnapshot.IsScriptRunningOnAlertKilled = true;
+				//v1 NO!!! DIRECT_KILLED_TO_EXECUTOR_UPSTACK alert.Strategy.Script.OnAlertKilledCallback(alert);
+				if (this.Strategy.Script != alert.Strategy.Script) {
+					Assembler.PopupException("NONSENSE this.Strategy.Script != alert.Strategy.Script");
+				}
+				this.Strategy.Script.OnAlertKilledCallback(alert);
+			} finally {
+				this.ExecutionDataSnapshot.IsScriptRunningOnAlertKilled = false;
+			}
 		}
 		public void CallbackAlertFilledMoveAroundInvokeScript(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
 					 double priceFill, double qtyFill, double slippageFill, double commissionFill) {
 			string msig = " CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
-			
-			AlertList alertsNewAfterAlertFilled = new AlertList("alertsNewAfterAlertFilled");
+
+			AlertList alertsNewAfterAlertFilled = new AlertList("alertsNewAfterAlertFilled", this.ExecutionDataSnapshot);
 			Position positionOpenedAfterAlertFilled = null;
 			Position positionClosedAfterAlertFilled = null;
 
@@ -731,8 +776,8 @@ namespace Sq1.Core.StrategyBase {
 				#endif
 			}
 
-			PositionList positionsOpenedAfterAlertFilled = new PositionList("positionsOpenedAfterAlertFilled");
-			PositionList positionsClosedAfterAlertFilled = new PositionList("positionsClosedAfterAlertFilled");
+			PositionList positionsOpenedAfterAlertFilled = new PositionList("positionsOpenedAfterAlertFilled", this.ExecutionDataSnapshot);
+			PositionList positionsClosedAfterAlertFilled = new PositionList("positionsClosedAfterAlertFilled", this.ExecutionDataSnapshot);
 
 			if (alertFilled.IsEntryAlert) {
 				this.ExecutionDataSnapshot.PositionsMasterOpenNewAdd(alertFilled.PositionAffected);
@@ -875,7 +920,12 @@ namespace Sq1.Core.StrategyBase {
 		void invokeScriptEvents(Alert alert) {
 			if (this.Strategy.Script == null) return;
 			try {
-				this.Strategy.Script.OnAlertFilledCallback(alert);
+				try {
+					this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilled = true;
+					this.Strategy.Script.OnAlertFilledCallback(alert);
+				} finally {
+					this.ExecutionDataSnapshot.IsScriptRunningOnAlertFilled = false;
+				}
 			} catch (Exception e) {
 				string msg = "fix your OnAlertFilledCallback() in script[" + this.Strategy.Script.StrategyName + "]"
 					+ "; was invoked with alert[" + alert + "]";
@@ -884,9 +934,19 @@ namespace Sq1.Core.StrategyBase {
 			if (alert.IsEntryAlert) {
 				try {
 					if (alert.PositionAffected.Prototype != null) {
-						this.Strategy.Script.OnPositionOpenedPrototypeSlTpPlacedCallback(alert.PositionAffected);
+						try {
+							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlaced = true;
+							this.Strategy.Script.OnPositionOpenedPrototypeSlTpPlacedCallback(alert.PositionAffected);
+						} finally {
+							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpenedPrototypeSlTpPlaced = false;
+						}
 					} else {
-						this.Strategy.Script.OnPositionOpenedCallback(alert.PositionAffected);
+						try {
+							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpened = true;
+							this.Strategy.Script.OnPositionOpenedCallback(alert.PositionAffected);
+						} finally {
+							this.ExecutionDataSnapshot.IsScriptRunningOnPositionOpened = false;
+						}
 					}
 				} catch (Exception e) {
 					string msg = "fix your ExecuteOnPositionOpened() in script[" + this.Strategy.Script.StrategyName + "]"
@@ -895,7 +955,12 @@ namespace Sq1.Core.StrategyBase {
 				}
 			} else {
 				try {
-					this.Strategy.Script.OnPositionClosedCallback(alert.PositionAffected);
+					try {
+						this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosed = true;
+						this.Strategy.Script.OnPositionClosedCallback(alert.PositionAffected);
+					} finally {
+						this.ExecutionDataSnapshot.IsScriptRunningOnPositionClosed = false;
+					}
 				} catch (Exception e) {
 					string msg = "fix your OnPositionClosedCallback() in script[" + this.Strategy.Script.StrategyName + "]"
 						+ "; was invoked with PositionAffected[" + alert.PositionAffected + "]";
@@ -1101,7 +1166,6 @@ namespace Sq1.Core.StrategyBase {
 			this.Backtester.AbortRunningBacktestWaitAborted("USER_CHANGED_SELECTORS_IN_GUI_NEW_BACKTEST_IS_ALMOST_TASK.SCHEDULED");
 			//ALREADY_RESTORED_BY_simulationPostBarsRestore() this.BacktestContextRestore();
 		}
-
 		public void BacktesterRunSimulation_threadEntry_exceptionCatcher() {
 			Exception backtestException = null;
 			try {

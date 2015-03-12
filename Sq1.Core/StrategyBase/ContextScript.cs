@@ -37,7 +37,7 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public bool							FillOutsideQuoteSpreadParanoidCheckThrow;
 		[JsonProperty]	public string						SpreadModelerClassName;
 		[JsonProperty]	public double						SpreadModelerPercent;
-		[JsonProperty]	public BacktestMode					BacktestMode;
+		[JsonProperty]	public BacktestStrokesPerBar					BacktestStrokesPerBar;
 
 
 		[JsonIgnore]	public List<IndicatorParameter> ParametersMerged { get {
@@ -97,7 +97,7 @@ namespace Sq1.Core.StrategyBase {
 			FillOutsideQuoteSpreadParanoidCheckThrow = false;
 			SpreadModelerClassName		= typeof(BacktestSpreadModelerPercentage).Name;
 			SpreadModelerPercent		= BacktestStreaming.PERCENTAGE_DEFAULT;
-			BacktestMode				= BacktestMode.FourStrokeOHLC;
+			BacktestStrokesPerBar				= BacktestStrokesPerBar.FourStrokeOHLC;
 		}
 		
 		public ContextScript CloneAndAbsorbFromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized) {
@@ -140,7 +140,7 @@ namespace Sq1.Core.StrategyBase {
 			this.BacktestOnDataSourceSaved					= found.BacktestOnDataSourceSaved;
 			this.ReporterShortNamesUserInvokedJSONcheck		= new List<string>(found.ReporterShortNamesUserInvokedJSONcheck);
 			this.FillOutsideQuoteSpreadParanoidCheckThrow	= found.FillOutsideQuoteSpreadParanoidCheckThrow;
-			this.BacktestMode								= found.BacktestMode;
+			this.BacktestStrokesPerBar								= found.BacktestStrokesPerBar;
 			this.SpreadModelerClassName						= found.SpreadModelerClassName;
 			this.SpreadModelerPercent						= found.SpreadModelerPercent;
 		}

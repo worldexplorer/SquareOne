@@ -314,15 +314,18 @@ namespace Sq1.Core.Broker {
 									+ ") brokerSpecificDetails[" + brokerSpecificDetails + "]";
 							} else {
 								order.Alert.MarketLimitStop = MarketLimitStop.Limit;
+								order.Alert.MarketLimitStopAsString += " => " + order.Alert.MarketLimitStop + " (" + order.Alert.MarketOrderAs + ")";
 								msg = "SYMBOL_INFO_CONVERSION_MarketMinMaxSentToBroker: [" + beforeBrokerSpecific + "]=>[" + order.Alert.MarketLimitStop + "](" + order.Alert.MarketOrderAs + ")";
 							}
 							break;
 						case MarketOrderAs.LimitCrossMarket:
 							order.Alert.MarketLimitStop = MarketLimitStop.Limit;
+							order.Alert.MarketLimitStopAsString += " => " + order.Alert.MarketLimitStop + " (" + order.Alert.MarketOrderAs + ")";
 							msg = "PreSubmit_LimitCrossMarket: doing nothing for Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]";
 							break;
 						case MarketOrderAs.LimitTidal:
 							order.Alert.MarketLimitStop = MarketLimitStop.Limit;
+							order.Alert.MarketLimitStopAsString += " => " + order.Alert.MarketLimitStop + " (" + order.Alert.MarketOrderAs + ")";
 							msg = "PreSubmit_LimitTidal: doing nothing for Alert.MarketOrderAs=[" + order.Alert.MarketOrderAs + "]";
 							break;
 						default:

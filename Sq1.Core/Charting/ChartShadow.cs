@@ -136,5 +136,41 @@ namespace Sq1.Core.Charting {
 		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 		public abstract void InvalidateAllPanels();
 		public abstract void RefreshAllPanelsNonBlockingRefreshNotYetStarted();
+		
+		/* will let you open ChartControl in windows forms Designer (remove "abstract" from class declaration as well) 
+		public virtual void ClearAllScriptObjectsBeforeBacktest() { }
+
+		public virtual void PositionsBacktestAdd(List<Position> positionsMaster) { }
+		public virtual void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) { }
+
+		public virtual void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) { }
+		public virtual void PendingRealtimeAdd(ReporterPokeUnit pokeUnit) { }
+
+		public virtual OnChartObjectOperationStatus LineDrawModify(
+				string id, int barStart, double priceStart, int barEnd, double priceEnd,
+				Color color, int width, bool debugParametersDidntChange = false) { return OnChartObjectOperationStatus.Unknown; }
+		public virtual bool BarBackgroundSet(int barIndex, Color colorBg) { return true; }
+		public virtual Color BarBackgroundGet(int barIndex) { return Color.Black; }
+		public virtual bool BarForegroundSet(int barIndex, Color colorFg) { return true; }
+		public virtual Color BarForegroundGet(int barIndex) { return Color.Black; }
+		public virtual OnChartObjectOperationStatus ChartLabelDrawOnNextLineModify(
+				string labelId, string labelText,
+				Font font, Color colorFore, Color colorBack) { return OnChartObjectOperationStatus.Unknown; }
+		public virtual OnChartObjectOperationStatus BarAnnotationDrawModify(
+				int barIndex, string barAnnotationId, string barAnnotationText,
+				Font font, Color colorForeground, Color colorBackground, bool aboveBar = true,
+				int verticalPadding = 5, bool reportDidntChangeStatus = false) { return OnChartObjectOperationStatus.Unknown; }
+		public virtual void SyncBarsIdentDueToSymbolRename() { }
+
+		public virtual HostPanelForIndicator HostPanelForIndicatorGet(Indicator indicator) { return null; }
+		public virtual void HostPanelForIndicatorClear() { }
+		public virtual void SetIndicators(Dictionary<string, Indicator> indicators) { }
+
+		public virtual void RangeBarCollapseToAccelerateLivesim() { }
+
+		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
+		public virtual void InvalidateAllPanels() { }
+		public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
+		*/
 	}	
 }

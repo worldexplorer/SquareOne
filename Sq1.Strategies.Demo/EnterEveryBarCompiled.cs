@@ -127,18 +127,19 @@ namespace Sq1.Strategies.Demo {
 				}
 
 				string msg = "ExitAtMarket@" + barStaticFormed.ParentBarsIdent;
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = false;
 				Alert exitPlaced = ExitAtMarket(barStreaming, lastPos, msg);
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = true;
 				log("Execute(): " + msg);
 			}
 
 			ExecutionDataSnapshot snap = base.Executor.ExecutionDataSnapshot;
-			int alertsPendingCount = snap.AlertsPending.Count;
-			int positionsOpenNowCount = snap.PositionsOpenNow.Count;
 
-			//if (base.HasAlertsPendingOrPositionsOpenNow) {
-			if (base.HasAlertsPendingAndPositionsOpenNow) {
-				if (alertsPendingCount > 0) {
-					Alert firstPendingAlert = snap.AlertsPending.InnerList[0];
+			if (base.HasAlertsPendingOrPositionsOpenNow) {
+			//if (base.HasAlertsPendingAndPositionsOpenNow) {
+				if (snap.AlertsPending.Count > 0) {
+					//GOT_OUT_OF_BOUNDADRY_EXCEPTION_ONCE Alert firstPendingAlert = snap.AlertsPending.InnerList[0];
+					Alert firstPendingAlert = snap.AlertsPending.LastNullUnsafe;
 					Alert lastPosEntryAlert = lastPos != null ? lastPos.EntryAlert : null;
 					Alert lastPosExitAlert  = lastPos != null ? lastPos.ExitAlert : null;
 					if (firstPendingAlert == lastPosEntryAlert) {
@@ -152,8 +153,8 @@ namespace Sq1.Strategies.Demo {
 						this.log(msg);
 					}
 				}
-				if (positionsOpenNowCount > 1) {
-					string msg = "EXPECTED: I got multiple positions[" + positionsOpenNowCount + "]";
+				if (snap.PositionsOpenNow.Count > 1) {
+					string msg = "EXPECTED: I got multiple positions[" + snap.PositionsOpenNow.Count + "]";
 					if (snap.PositionsOpenNow.InnerList[0] == lastPos) {
 						msg += "50/50: positionsMaster.Last = positionsOpenNow.First";
 					}
@@ -164,12 +165,16 @@ namespace Sq1.Strategies.Demo {
 
 			if (barStaticFormed.Close > barStaticFormed.Open) {
 				string msg = "BuyAtMarket@" + barStaticFormed.ParentBarsIdent;
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = false;
 				Position buyPlaced = BuyAtMarket(barStreaming, msg);
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = true;
 				//Debugger.Break();
 				this.log(msg);
 			} else {
 				string msg = "ShortAtMarket@" + barStaticFormed.ParentBarsIdent;
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = false;
 				Position shortPlaced = ShortAtMarket(barStreaming, msg);
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = true;
 				//Debugger.Break();
 				this.log(msg);
 			}

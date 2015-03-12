@@ -138,8 +138,8 @@ namespace Sq1.Core.StrategyBase {
 			
 			CumulativeNetProfitDollar	= new Dictionary<Position, double>();
 			CumulativeNetProfitPercent = new Dictionary<Position, double>();
-			
-			PositionsImTracking = new PositionList("PositionsImTracking");
+
+			PositionsImTracking = new PositionList("PositionsImTracking", null);
 			//v1 PositionLongShortImTracking = PositionLongShort.Unknown;	// direction not specified => it means "both short and long" here
 			//v2
 			PositionLongShortImTracking = SystemPerformancePositionsTracking.LongAndShort;

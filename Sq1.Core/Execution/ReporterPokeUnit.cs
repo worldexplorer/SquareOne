@@ -15,10 +15,10 @@ namespace Sq1.Core.Execution {
 		public int				PositionsPlusAlertsCount	{ get { return this.PositionsCount + this.AlertsNew.Count; } }
 		
 		public ReporterPokeUnit() {
-			AlertsNew			= new AlertList("AlertsNew");
-			PositionsOpened		= new PositionList("PositionsOpened");
-			PositionsClosed		= new PositionList("PositionsClosed");
-			PositionsOpenNow	= new PositionList("PositionsOpenNow");
+			AlertsNew			= new AlertList("AlertsNew", null);
+			PositionsOpened		= new PositionList("PositionsOpened", null);
+			PositionsClosed		= new PositionList("PositionsClosed", null);
+			PositionsOpenNow	= new PositionList("PositionsOpenNow", null);
 		}
 		public ReporterPokeUnit(Quote quote, AlertList alertsNew, PositionList positionsOpened, PositionList positionsClosed, PositionList positionsOpenNow = null) : this() {
 			if (quote				!= null) QuoteGeneratedThisUnit	= quote;

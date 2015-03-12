@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using Sq1.Core.Support;
-using Sq1.Core.Charting;
 
 namespace Sq1.Core.Execution {
 	public class AlertList : ConcurrentList<Alert> {
@@ -13,53 +12,64 @@ namespace Sq1.Core.Execution {
 			foreach (int bar in this.ByBarPlaced.Keys) ret.Add(bar, new List<Alert>(this.ByBarPlaced[bar]));
 			return ret;
 		} } }
-		public AlertList(string reasonToExist) : base(reasonToExist) {
+		public AlertList(string reasonToExist, ExecutionDataSnapshot snap = null) : base(reasonToExist, snap) {
 			ByBarPlaced	= new Dictionary<int, List<Alert>>();
 		}
 		public void Clear() { lock(base.LockObject) {
+			base.Snap.PopupIfRunning(" //" + this.ToString() + ".Clear()");
 			base					.ClearInnerList();
 			this.ByBarPlacedSafeCopy.Clear();
 		} }
 		public void AddRange(List<Alert> alerts) {
+			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".AddRange(" + alerts.Count + ")");
 			foreach (Alert alert in alerts) this.AddNoDupe(alert);
 		}
-		public ByBarDumpStatus AddNoDupe(Alert alert, bool duplicateThrowsAnError = true) { lock (base.LockObject) {
-			bool newBarAddedInHistory = false;
-			bool added = base.AddToInnerList(alert, duplicateThrowsAnError);
-			if (added == false) return ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd;
+		public ByBarDumpStatus AddNoDupe(Alert alert, bool duplicateThrowsAnError = true) {
+			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".AddNoDupe(" + alert.ToString() + ")");
+			lock (base.LockObject) {
+				bool newBarAddedInHistory = false;
+				bool added = base.AddToInnerList(alert, duplicateThrowsAnError);
+				if (added == false) return ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd;
 
-			//int barIndexAlertStillPending = alert.Bars.Count - 1;
-			int barIndexPlaced = alert.PlacedBarIndex;
-			if (this.ByBarPlaced.ContainsKey(barIndexPlaced) == false) {
-				this.ByBarPlaced.Add(barIndexPlaced, new List<Alert>());
-				newBarAddedInHistory = true;
-			}
-			List<Alert> slot = this.ByBarPlaced[barIndexPlaced];
-			if (slot.Contains(alert)) return ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd;
-			if (slot.Count > 0) {
-				string msg = "appending second StopLossDot to the same bar [" + alert + "]";
-			}
-			slot.Add(alert);
-			return (newBarAddedInHistory) ? ByBarDumpStatus.OneNewAlertAddedForNewBarInHistory
-				: ByBarDumpStatus.SequentialAlertAddedForExistingBarInHistory;
-		} }
-		public bool Remove(Alert alert, bool absenseThrowsAnError = true) { lock(base.LockObject) {
-			bool removed = base.RemoveFromInnerList(alert, absenseThrowsAnError);
-			int barIndexPlaced = alert.PlacedBarIndex;
-			if (this.ByBarPlaced.ContainsKey(barIndexPlaced)) {
+				//int barIndexAlertStillPending = alert.Bars.Count - 1;
+				int barIndexPlaced = alert.PlacedBarIndex;
+				if (this.ByBarPlaced.ContainsKey(barIndexPlaced) == false) {
+					this.ByBarPlaced.Add(barIndexPlaced, new List<Alert>());
+					newBarAddedInHistory = true;
+				}
 				List<Alert> slot = this.ByBarPlaced[barIndexPlaced];
-				if (slot.Contains(alert)) slot.Remove(alert);
-				if (slot.Count == 0) this.ByBarPlaced.Remove(barIndexPlaced);
+				if (slot.Contains(alert)) return ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd;
+				if (slot.Count > 0) {
+					string msg = "appending second StopLossDot to the same bar [" + alert + "]";
+				}
+				slot.Add(alert);
+				return (newBarAddedInHistory) ? ByBarDumpStatus.OneNewAlertAddedForNewBarInHistory
+					: ByBarDumpStatus.SequentialAlertAddedForExistingBarInHistory;
 			}
-			return removed;
-		} }
-		public AlertList Clone() { lock(base.LockObject) {
-			AlertList ret = new AlertList(this.ReasonToExist + "_CLONE");
-			//ret.AddRange(this.InnerList);
-			ret.InnerList = base.InnerListSafeCopy;
-			ret.ByBarPlaced = this.ByBarPlacedSafeCopy;
-			return ret;
-		} }
+		}
+		public bool Remove(Alert alert, bool absenseThrowsAnError = true) {
+			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".Remove(" + alert.ToString() + ")");
+			lock (base.LockObject) {
+				bool removed = base.RemoveFromInnerList(alert, absenseThrowsAnError);
+				int barIndexPlaced = alert.PlacedBarIndex;
+				if (this.ByBarPlaced.ContainsKey(barIndexPlaced)) {
+					List<Alert> slot = this.ByBarPlaced[barIndexPlaced];
+					if (slot.Contains(alert)) slot.Remove(alert);
+					if (slot.Count == 0) this.ByBarPlaced.Remove(barIndexPlaced);
+				}
+				return removed;
+			}
+		}
+		public AlertList Clone() {
+			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".Clone()");
+			lock (base.LockObject) {
+				AlertList ret = new AlertList(this.ReasonToExist + "_CLONE", base.Snap);
+				//ret.AddRange(this.InnerList);
+				ret.InnerList = base.InnerListSafeCopy;
+				ret.ByBarPlaced = this.ByBarPlacedSafeCopy;
+				return ret;
+			}
+		}
 
 
 		public bool ContainsIdentical(Alert maybeAlready, bool onlyUnfilled = true) { lock(base.LockObject) {

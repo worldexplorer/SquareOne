@@ -19,6 +19,11 @@ namespace Sq1.Core.StrategyBase {
 			this.stopLossesActivatedOnPreviousQuotes.Clear();
 			this.FillOutsideQuoteSpreadParanoidCheckThrow = fillOutsideQuoteSpreadParanoidCheckThrow;
 		}
+		public bool CheckAlertWillBeFilledByQuote(Alert alert, Quote quote, out double entryPriceOut, out double entrySlippageOutNotUsed) {
+			return alert.IsEntryAlert
+				? this.CheckEntryAlertWillBeFilledByQuote(alert, quote, out entryPriceOut, out entrySlippageOutNotUsed)
+				: this.CheckExitAlertWillBeFilledByQuote(alert, quote, out entryPriceOut, out entrySlippageOutNotUsed);
+		}
 		public bool CheckEntryAlertWillBeFilledByQuote(Alert entryAlert, Quote quote, out double entryPriceOut, out double entrySlippageOutNotUsed) {
 			// if entry is triggered, call position.EnterFinalize(entryPrice, entrySlippage, entryCommission);
 			//v2
@@ -464,10 +469,11 @@ namespace Sq1.Core.StrategyBase {
 			} else {
 				//Debugger.Break();
 			}
-			if (this.FillOutsideQuoteSpreadParanoidCheckThrow == true) {
-				bool isFilledOutsideQuote = alert.IsFilledOutsideQuote_DEBUG_CHECK;
-				bool isFilledOutsideBar = alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK;
-				Assembler.PopupException("ALERT_FILLED_OUSIDE_QUOTE");
+			if (this.FillOutsideQuoteSpreadParanoidCheckThrow == true && this.executor.Backtester.IsLivesim == false) {
+				string msg = "";
+				if (alert.IsFilledOutsideQuote_DEBUG_CHECK)				msg += "ALERT_FILLED_OUSIDE_QUOTE " + quote;
+				if (alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK) msg += "ALERT_FILLED_OUSIDE_BAR " + quote.ParentBarStreaming;
+				if (string.IsNullOrEmpty(msg) == false) Assembler.PopupException(msg + " " + alert);
 			}
 			return filled;
 		}
@@ -576,7 +582,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime multithreaded"
 				+ " logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
-			if (this.executor.Backtester.IsLivesimRunning) {
+			if (this.executor.Backtester.IsLivesim) {
 				if (executeAfterAlertFilled != null && alert.OrderFollowed != null) {
 					executeAfterAlertFilled(alert, priceFill, alert.Qty);
 				} else {
@@ -608,7 +614,7 @@ namespace Sq1.Core.StrategyBase {
 				return filled;
 			}
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
-			if (this.executor.Backtester.IsLivesimRunning) {
+			if (this.executor.Backtester.IsLivesim) {
 				if (executeAfterAlertFilled != null) {
 					executeAfterAlertFilled(alert, priceFill, alert.Qty);
 				} else {

@@ -12,7 +12,7 @@ namespace Sq1.Core.Backtesting {
 			Percentage = percentage;
 			PartOfPrice = percentage / 100;
 		}
-		public override double GenerateFillBidAskSymmetrically(QuoteGenerated quote, double openOrClosePrice, Bar barSimulated) {
+		public override double FillBidAskSymmetrically(QuoteGenerated quote, double openOrClosePrice, Bar barSimulated) {
 			string msig = " " + this.GetType().Name + ".GenerateFillBidAskSymmetrically(" + quote.ToString() + ")";
 			SymbolInfo symbolInfo;
 			try {
@@ -59,7 +59,7 @@ namespace Sq1.Core.Backtesting {
 			}
 			return spreadAligned;
 		}
-		public override void GenerateFillAskBasedOnBid(QuoteGenerated quote) {
+		public override void FillAskBasedOnBid(QuoteGenerated quote) {
 			string msig = " " + this.GetType().Name + ".GenerateFillBidAskSymmetrically(" + quote.ToString() + ")";
 			SymbolInfo symbolInfo;
 			try {
@@ -83,7 +83,7 @@ namespace Sq1.Core.Backtesting {
 			//base.AlignBidAskToPriceLevel(quote, PriceLevelRoundingMode.RoundUp, spreadAligned);
 			//if (quote.Spread == 0) Debugger.Break();
 		}
-		public override void GenerateFillBidBasedOnAsk(QuoteGenerated quote) {
+		public override void FillBidBasedOnAsk(QuoteGenerated quote) {
 			string msig = " " + this.GetType().Name + ".GenerateFillBidAskSymmetrically(" + quote.ToString() + ")";
 			SymbolInfo symbolInfo;
 			try {

@@ -67,7 +67,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	double				Qty								{ get; protected set; }
 		[JsonProperty]	public	MarketLimitStop		MarketLimitStop;				//BROKER_ADAPDER_CAN_REPLACE_ORIGINAL_ALERT_TYPE { get; protected set; }
 		[JsonProperty]	public	MarketOrderAs		MarketOrderAs					{ get; protected set; }
-		[JsonIgnore]	public	string 				MarketLimitStopAsString			{ get; protected set; }
+		[JsonProperty]	public	string 				MarketLimitStopAsString;		//BROKER_ADAPDER_LEAVES_COMMENTS_WHEN_CHANGING__ORIGINAL_ALERT_TYPE { get; protected set; }
 		[JsonProperty]	public	Direction			Direction						{ get; protected set; }
 		[JsonIgnore]	public	string				DirectionAsString				{ get; protected set; }
 		[JsonIgnore]	public	PositionLongShort	PositionLongShortFromDirection	{ get { return MarketConverter.LongShortFromDirection(this.Direction); } }
@@ -166,49 +166,57 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	bool IsKilled;
 		[JsonIgnore]	public	bool IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK { get {
 				bool notFilled = (this.FilledBarSnapshotFrozenAtFill == null);
-				#if DEBUG
 				if (notFilled) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 					return true;
 				}
-				#endif
+
+				bool noQuoteFilled = (this.QuoteFilledThisAlertDuringBacktestNotLive == null);
+				if (noQuoteFilled) {
+					#if DEBUG
+					Debugger.Break();
+					#endif
+					return true;
+				}
 
 
 				bool fillAtSlimBarIsWithinSpread = this.FilledBarSnapshotFrozenAtFill.FillAtSlimBarIsWithinSpread(
 					this.PriceFilledThroughPosition, this.QuoteFilledThisAlertDuringBacktestNotLive.Spread);
-				#if DEBUG
 				if (!fillAtSlimBarIsWithinSpread) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 					return true;
 				}
-				#endif
 
 				if (fillAtSlimBarIsWithinSpread == false) {
 					bool insideBar = this.FilledBarSnapshotFrozenAtFill.ContainsPrice(this.PriceFilledThroughPosition);
 					bool outsideBar = !insideBar;
-					#if DEBUG
 					if (outsideBar) {
+						#if DEBUG
 						Debugger.Break();
+						#endif
 						return true;
 					}
-					#endif
 
 					bool containsBidAsk = this.FilledBarSnapshotFrozenAtFill.ContainsBidAskForQuoteGenerated(this.QuoteFilledThisAlertDuringBacktestNotLive);
-					#if DEBUG
 					if (!containsBidAsk && fillAtSlimBarIsWithinSpread) {
+						#if DEBUG
 						Debugger.Break();
+						#endif
 						return true;
 					}
-					#endif
 				}
 				
 				bool priceBetweenFilledQuotesBidAsk = this.QuoteFilledThisAlertDuringBacktestNotLive.PriceBetweenBidAsk(this.PriceFilledThroughPosition);
-				#if DEBUG
 				if (!priceBetweenFilledQuotesBidAsk) {
+					#if DEBUG
 					Debugger.Break();
+					#endif
 					return true;
 				}
-				#endif
 
 				return false;	// false = ok, filledInsideBarShapshotFrozen
 			} }
@@ -482,6 +490,13 @@ namespace Sq1.Core.Execution {
 				string msg = "ALERT_ALREADY_FILLED_EARLIER_CANT_OVERRIDE @FilledBarIndex[" + this.FilledBarIndex + "]"
 						+ ", duplicateFill @[" + barFill + "]";
 				throw new Exception(msg);
+			}
+			if (this.MyBrokerIsLivesim) {
+				if (barFill.DateTimeOpen != this.PlacedBar.DateTimeOpen) {
+					string msg = "FOR_DELAYED_LIVESIM_FILLS_PUT_BAR_FILL_BACK_TO_PLACED";
+					//Assembler.PopupException(msg, null, false);
+					barFill = this.PlacedBar;
+				}
 			}
 			this.FilledBarSnapshotFrozenAtFill = barFill.Clone();		//BarsStreaming#130 becomes BarStatic#130
 			this.FilledBar = barFill;

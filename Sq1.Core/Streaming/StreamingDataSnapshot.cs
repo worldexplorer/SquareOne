@@ -83,17 +83,18 @@ namespace Sq1.Core.Streaming {
 		}
 		public Quote LastQuoteCloneGetForSymbol(string Symbol) { lock (this.lockLastQuote) {
 				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol) == false) return null;
-				return this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
+				Quote weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy = this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
+				return weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy;
 			} }
 		public double LastQuoteGetPriceForMarketOrder(string Symbol) {
 			Quote lastQuote = LastQuoteCloneGetForSymbol(Symbol);
 			if (lastQuote == null) return 0;
-			if (lastQuote.LastDealBidOrAsk == BidOrAsk.UNKNOWN) {
-				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK lastQuote.LastDealBidOrAsk[" + lastQuote.LastDealBidOrAsk + "]=BidOrAsk.UNKNOWN";
+			if (lastQuote.TradedAt == BidOrAsk.UNKNOWN) {
+				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK lastQuote.TradeOccuredAt[" + lastQuote.TradedAt + "]=BidOrAsk.UNKNOWN";
 				Assembler.PopupException(msg);
 				return 0;
 			}
-			return lastQuote.LastDealPrice;
+			return lastQuote.TradedPrice;
 		}
 
 		public double BestBidGetForMarketOrder(string Symbol) { lock (this.lockLastQuote) {

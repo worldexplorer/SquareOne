@@ -73,6 +73,8 @@
     <Compile Include="Backtesting\BacktestQuotesGeneratorFourStroke.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Backtesting\BacktestQuotesGeneratorTenStroke.cs" />
+    <Compile Include="Backtesting\BacktestQuotesGeneratorSixteenStroke.cs" />
     <Compile Include="Backtesting\QuoteGenerated.cs" />
     <Compile Include="Broker\BrokerAdapter.EditorSupport.cs">
       <DependentUpon>BrokerAdapter.cs</DependentUpon>
@@ -123,6 +125,9 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Execution\AlertList.cs" />
+    <Compile Include="Execution\ExecutionDataSnapshot.ScriptExecWatchdog.cs">
+      <DependentUpon>ExecutionDataSnapshot.cs</DependentUpon>
+    </Compile>
     <Compile Include="Execution\PositionList.cs" />
     <Compile Include="Execution\OrderEventArgs.cs" />
     <Compile Include="Execution\OrderStateMessageEventArgs.cs" />
@@ -168,6 +173,7 @@
       <DependentUpon>LivesimStreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Livesim\LivesimBrokerDataSnapshot.cs" />
     <Compile Include="Optimization\Optimizer.cs" />
     <Compile Include="Optimization\Optimizer.EventGenerator.cs">
       <DependentUpon>Optimizer.cs</DependentUpon>
@@ -175,6 +181,9 @@
     <Compile Include="Optimization\OptimizerParametersSequencer.cs" />
     <Compile Include="Optimization\SystemPerformanceRestoreAbleEventArgs.cs" />
     <Compile Include="Optimization\SystemPerformanceRestoreAble.cs" />
+    <Compile Include="Repositories\RepositoryBarsFile.Obsolete.cs">
+      <DependentUpon>RepositoryBarsFile.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\RepositoryJsonsInFolderSimple.cs" />
     <Compile Include="Repositories\FnameDateSizeColor.cs" />
     <Compile Include="Repositories\RepositoryJsonOptimizationResults.cs" />
@@ -182,9 +191,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataFeed\NamedObjectJsonSerializable.cs" />
     <Compile Include="Repositories\RepositoryBarsFile.cs" />
-    <Compile Include="Repositories\RepositoryBarsFile.Obsolete.cs">
-      <DependentUpon>RepositoryBarsFile.cs</DependentUpon>
-    </Compile>
     <Compile Include="Repositories\RepositoryBarsSameScaleInterval.cs" />
     <Compile Include="Repositories\RepositoryJsonDataSource.DynamicProperties.cs">
       <DependentUpon>RepositoryJsonDataSource.cs</DependentUpon>
@@ -300,7 +306,7 @@
     <Compile Include="Broker\OrderPostProcessorEmergencyLock.cs" />
     <Compile Include="Broker\OrderPostProcessorEmergency.cs" />
     <Compile Include="Broker\OrderPostProcessorRejected.cs" />
-    <Compile Include="Backtesting\BacktestMode.cs" />
+    <Compile Include="Backtesting\BacktestStrokesPerBar.cs" />
     <Compile Include="Backtesting\BacktestSpreadModeler.cs" />
     <Compile Include="Backtesting\BacktestSpreadModelerPercentage.cs" />
     <Compile Include="Backtesting\BacktestQuotesGenerator.cs" />
