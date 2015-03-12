@@ -48,7 +48,9 @@ namespace Sq1.Core {
 
 				static Assembler						instance = null;
 		public	static Assembler						InstanceInitialized { get {
-				string usage = "; use Assembler.InstanceUninitialized.Initialize(MainForm); this singleton requires IStatusReporter to get fully initialized";
+				string usage = "; use Assembler.InstanceUninitialized.Initialize(MainForm)"
+					+ "; this singleton requires IStatusReporter to get fully initialized"
+					+ "; if you see me in ChartForm designer, uncomment in ChartShadow: [will let you open ChartControl in windows forms Designer]";
 				if (Assembler.instance == null) {
 					throw (new Exception("Assembler.instance=null" + usage));
 				}

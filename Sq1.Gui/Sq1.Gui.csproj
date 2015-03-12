@@ -93,7 +93,11 @@
     <Compile Include="Forms\ChartForm.EventConsumer.cs">
       <DependentUpon>ChartForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\ChartForm.EventDistributor.cs">
+    <Compile Include="Forms\ChartForm.EventGenerator.cs">
+      <DependentUpon>ChartForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChartForm.QuoteGeneratorMniFactory.cs">
       <DependentUpon>ChartForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ChartFormDataSnapshot.cs" />

@@ -26,8 +26,8 @@ namespace Sq1.Core.Streaming {
 			IntraBarSerno = 0;
 		}
 		public virtual Quote EnrichQuoteWithSernoUpdateStreamingBarCreateNewBar(Quote quoteClone) {
-			if (quoteClone.LastDealBidOrAsk == BidOrAsk.UNKNOWN) {
-				string msg = "CANT_FILL_STREAMING_CLOSE_FROM_BID_OR_ASK_UNKNOWN quote.PriceLastDeal[" + quoteClone.LastDealPrice + "];"
+			if (quoteClone.TradedAt == BidOrAsk.UNKNOWN) {
+				string msg = "CANT_FILL_STREAMING_CLOSE_FROM_BID_OR_ASK_UNKNOWN quote.PriceLastDeal[" + quoteClone.TradedPrice + "];"
 					+ "what kind of quote is that?... (" + quoteClone + ")";
 				#if DEBUG
 				Debugger.Break();
@@ -59,10 +59,10 @@ namespace Sq1.Core.Streaming {
 				this.BarLastFormedUnattachedNullUnsafe = this.BarStreamingUnattached.Clone();
 
 				this.BarStreamingUnattached			= new Bar(this.Symbol, this.ScaleInterval, quoteClone.ServerTime);
-				this.BarStreamingUnattached.Open	= quoteClone.LastDealPrice;
-				this.BarStreamingUnattached.High	= quoteClone.LastDealPrice;
-				this.BarStreamingUnattached.Low		= quoteClone.LastDealPrice;
-				this.BarStreamingUnattached.Close	= quoteClone.LastDealPrice;
+				this.BarStreamingUnattached.Open	= quoteClone.TradedPrice;
+				this.BarStreamingUnattached.High	= quoteClone.TradedPrice;
+				this.BarStreamingUnattached.Low		= quoteClone.TradedPrice;
+				this.BarStreamingUnattached.Close	= quoteClone.TradedPrice;
 				this.BarStreamingUnattached.Volume	= quoteClone.Size;
 				this.IntraBarSerno = 0;
 
@@ -87,11 +87,11 @@ namespace Sq1.Core.Streaming {
 				if (double.IsNaN(this.BarStreamingUnattached.Open) || this.BarStreamingUnattached.Open == 0.0) {
 					string msg = "we should've had StreamingBar already initialized with first quote of a bar"
 						+ "; should only happen on first quote of first bar ever of a symbol freshly added to DataSource";
-					if (double.IsNaN(quoteClone.LastDealPrice)) {
+					if (double.IsNaN(quoteClone.TradedPrice)) {
 						msg = "INITIALIZED_OPEN_WITH_NAN_FROM_quoteClone.LastDealPrice " + msg;
 					}
 					Assembler.PopupException(msg, null, false);
-					this.BarStreamingUnattached.Open = quoteClone.LastDealPrice;
+					this.BarStreamingUnattached.Open = quoteClone.TradedPrice;
 					//this.StreamingBarUnattached.High = quoteClone.LastDealPrice;
 					//this.StreamingBarUnattached.Low = quoteClone.LastDealPrice;
 				}

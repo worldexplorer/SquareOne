@@ -468,9 +468,9 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		public void OnBacktestedOrLivesimmed() {
-			this.afterBacktesterComplete(this.Executor);
+			this.afterBacktestComplete(this.Executor);
 		}
-		void afterBacktesterComplete(ScriptExecutor myOwnExecutorIgnoring) {
+		void afterBacktestComplete(ScriptExecutor myOwnExecutorIgnoring) {
 			try {
 				if (this.Executor.Bars == null) {
 					string msg = "DONT_RUN_BACKTEST_BEFORE_BARS_ARE_LOADED";
@@ -478,7 +478,7 @@ namespace Sq1.Gui.Forms {
 					return;
 				}
 				if (this.ChartForm.InvokeRequired) {
-					this.ChartForm.BeginInvoke((MethodInvoker)delegate { this.afterBacktesterComplete(myOwnExecutorIgnoring); });
+					this.ChartForm.BeginInvoke((MethodInvoker)delegate { this.afterBacktestComplete(myOwnExecutorIgnoring); });
 					return;
 				}
 				//this.clonePositionsForChartPickupBacktest(this.Executor.ExecutionDataSnapshot.PositionsMaster);
@@ -490,6 +490,8 @@ namespace Sq1.Gui.Forms {
 				//this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);
 				// MOVED_TO_BacktesterRunSimulation() this.Executor.Performance.BuildStatsOnBacktestFinished();
 				this.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters(this.Executor.Performance);
+
+				Assembler.DisplayStatus(this.Executor.LastBacktestStatus);
 			} catch (Exception ex) {
 				string msig = "Strategy[" + this.Strategy + "] on Bars[" + this.Executor.Bars + "]"
 						+ " //afterBacktesterComplete(" + myOwnExecutorIgnoring + ")";
@@ -499,7 +501,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void afterBacktesterCompleteOnceOnWorkspaceRestore(ScriptExecutor myOwnExecutorIgnoring) {
 			try {
-				this.afterBacktesterComplete(myOwnExecutorIgnoring);
+				this.afterBacktestComplete(myOwnExecutorIgnoring);
 			
 				if (this.Strategy == null) {
 					Assembler.PopupException("this should never happen this.Strategy=null in afterBacktesterCompleteOnceOnRestart()");

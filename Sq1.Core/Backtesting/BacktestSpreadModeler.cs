@@ -5,9 +5,9 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Backtesting {
 	public abstract class BacktestSpreadModeler {
-		public abstract double GenerateFillBidAskSymmetrically(QuoteGenerated quote, double medianPrice, Bar barSimulated);
-		public abstract void GenerateFillAskBasedOnBid(QuoteGenerated quote);
-		public abstract void GenerateFillBidBasedOnAsk(QuoteGenerated quote);
+		public abstract double	FillBidAskSymmetrically(QuoteGenerated quote, double medianPrice, Bar barSimulated);
+		public abstract void	FillAskBasedOnBid(QuoteGenerated quote);
+		public abstract void	FillBidBasedOnAsk(QuoteGenerated quote);
 
 		public bool AlignToPriceLevel;
 		
@@ -16,14 +16,16 @@ namespace Sq1.Core.Backtesting {
 		}
 		
 		public void GeneratedQuoteFillBidAsk(QuoteGenerated quote, Bar barSimulated, double priceFromAlignedBarForSymmetricFillAtOpenOrClose = -1) {
-			if (quote == null) return;
-
+			if (quote == null) {
+				string msg = "I_REFUSE_TO_GENERATE_BIDASK QUOTE_NULL";
+				Assembler.PopupException(msg);
+				return;
+			}
 			if (quote.ItriggeredFillAtBidOrAsk != BidOrAsk.UNKNOWN) {
 				string msg = "I_REFUSE_TO_GENERATE_BIDASK THIS_QUOTE_ALREADY_TRIGGERED_SOME_FILL";
 				Assembler.PopupException(msg);
 				return;
 			}
-
 			if (double.IsNaN(quote.Bid) == false && double.IsNaN(quote.Ask) == false) {
 				string msg = "I_REFUSE_TO_GENERATE_BIDASK THIS_QUOTE_ALREADY_HAS_BID_AND_ASK";
 				Assembler.PopupException(msg);
@@ -35,7 +37,7 @@ namespace Sq1.Core.Backtesting {
 					+ " bar boundaries very precise; check generateNewQuoteChildrenHelper() for BidOrAsk=UNKNOWN";
 				//Assembler.PopupException(msg);
 				
-				double spreadAligned = this.GenerateFillBidAskSymmetrically(quote, priceFromAlignedBarForSymmetricFillAtOpenOrClose, barSimulated);
+				double spreadAligned = this.FillBidAskSymmetrically(quote, priceFromAlignedBarForSymmetricFillAtOpenOrClose, barSimulated);
 				
 				// QUOTEGEN_PROBLEM#2 : at Open/Close, when they are == to Low/High, the Symmetrical quote will go beoynd bar boundaries => MarketSim will freak out
 				if (quote.Ask > barSimulated.High) {
@@ -61,15 +63,15 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			if (double.IsNaN(quote.Bid)) {
-				this.GenerateFillAskBasedOnBid(quote);
+				this.FillAskBasedOnBid(quote);
 				return;
 			}
 			if (double.IsNaN(quote.Ask)) {
-				this.GenerateFillBidBasedOnAsk(quote);
+				this.FillBidBasedOnAsk(quote);
 				return;
 			}			
 		}
-		public void AlignBidAskToPriceLevel(QuoteGenerated quote, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.DontRoundPrintLowerUpper,
+		protected void AlignBidAskToPriceLevel(QuoteGenerated quote, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.DontRoundPrintLowerUpper,
 											double spreadAlignedToMaintain = -1, double dontGoBeyond = -1) {
 			string msig = " " + this.GetType().Name + ".AlignBidAskToPriceLevel(" + quote.ToString() + ")";
 			try {

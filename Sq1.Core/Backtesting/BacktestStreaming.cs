@@ -25,13 +25,14 @@ namespace Sq1.Core.Backtesting {
 			base.QuotePumpSeparatePushingThreadEnabled = false;
 		}
 
-		public virtual void GeneratedQuoteEnrichSymmetricallyAndPush(QuoteGenerated quote, Bar bar2simulate, double priceForSymmetricFillAtOpenOrClose = -1) {
+		public virtual void PushQuoteGenerated(QuoteGenerated quote) {
 			if (this.SpreadModeler == null) {
 				string msg = "Don't leave quoteToReach.Bid and quoteToReach.Ask uninitialized!!!";
 				throw new Exception(msg);
 			}
 			//ALREADY_FILLED_BY_GENERATOR this.SpreadModeler.GeneratedQuoteFillBidAsk(quote, bar2simulate, priceForSymmetricFillAtOpenOrClose);
 			base.PushQuoteReceived(quote);
+			quote.WentThroughStreamingToScript = true;
 		}
 
 		public override void UpstreamSubscribe(string symbol) {

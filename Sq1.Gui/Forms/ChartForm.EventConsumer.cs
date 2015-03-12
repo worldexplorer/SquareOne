@@ -28,7 +28,8 @@ namespace Sq1.Gui.Forms {
 		void ctxBacktest_Opening(object sender, CancelEventArgs e) {
 		}
 
-		void MniShowSourceCodeEditor_Click(object sender, System.EventArgs e) {
+		void mniShowSourceCodeEditor_Click(object sender, System.EventArgs e) {
+			this.ctxStrategy.Visible = true;
 			if (this.MniShowSourceCodeEditor.Checked) {
 				// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.EditorFormShow(false);
@@ -45,16 +46,19 @@ namespace Sq1.Gui.Forms {
 			// DUPLICATE_XML_SERIALIZATION_AFTER ScriptEditorForm.OnFormClosed()
 			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
-		void MniShowOptimizer_Click(object sender, System.EventArgs e) {
-			if (this.MniShowOptimizer.Checked) {
+		void mniShowOptimizer_Click(object sender, System.EventArgs e) {
+			this.ctxStrategy.Visible = true;
+			if (this.MniShowOptimizer.Checked == false) {
+				this.MniShowOptimizer.Checked = true;
 				// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.OptimizerFormShow(false);
 				this.ChartFormManager.MainForm.MainFormSerialize();
 			} else {
+				this.MniShowOptimizer.Checked = false;
 				//v1 this.ChartFormManager.OptimizerFormConditionalInstance.ToggleAutoHide();
 				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.OptimizerForm)) {
-					string msg = "YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_OPTIMIZER_FORM_WAS_CLOSED_BY_X";
-					Assembler.PopupException(msg);
+					string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_OPTIMIZER_FORM_WAS_CLOSED_BY_X";
+					//Assembler.PopupException(msg);
 				} else {
 					this.ChartFormManager.OptimizerForm.Close();
 				}
@@ -62,12 +66,15 @@ namespace Sq1.Gui.Forms {
 			// DUPLICATE_XML_SERIALIZATION_AFTER OptimizerForm.OnFormClosed()
 			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
-		void MniShowLivesim_Click(object sender, EventArgs e) {
-			if (this.MniShowLivesim.Checked) {
+		void mniShowLivesim_Click(object sender, EventArgs e) {
+			this.ctxStrategy.Visible = true;
+			if (this.MniShowLivesim.Checked == false) {
+				this.MniShowLivesim.Checked = true;
 				// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.LivesimFormShow(false);
 				this.ChartFormManager.MainForm.MainFormSerialize();
 			} else {
+				this.MniShowLivesim.Checked = false;
 				//this.ChartFormManager.LivesimFormConditionalInstance.Visible = true;
 				//this.ChartFormManager.LivesimFormShow(false);
 				//v1 this.ChartFormManager.LivesimFormConditionalInstance.ToggleAutoHide();
@@ -109,6 +116,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void mniBacktestOnEveryChange_Click(object sender, System.EventArgs e) {
 			try {
+				this.ctxBacktest.Visible = true;
 				Strategy strategy = this.ChartFormManager.Executor.Strategy;
 				if (strategy == null) return;
 				strategy.ScriptContextCurrent.BacktestOnSelectorsChange = this.mniBacktestOnSelectorsChange.Checked;
@@ -120,6 +128,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void mniBacktestOnRestart_Click(object sender, System.EventArgs e) {
 			try {
+				this.ctxBacktest.Visible = true;
 				Strategy strategy = this.ChartFormManager.Executor.Strategy;
 				if (strategy == null) return;
 				strategy.ScriptContextCurrent.BacktestOnRestart = this.mniBacktestOnRestart.Checked;
@@ -130,6 +139,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void mniBacktestNow_Click(object sender, System.EventArgs e) {
 			try {
+				// AFTER_F5_PANEL_SHOWS_UP_OUTSIDE_APP_WINDOW this.ctxBacktest.Visible = true;
 				this.ChartFormManager.BacktesterRunSimulation();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestNow_Click()", ex);
@@ -142,6 +152,7 @@ namespace Sq1.Gui.Forms {
 			this.ChartFormManager.DataSnapshotSerializer.DeleteJsonFile();
 		}
 		void mnitlbAll_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			this.ctxBars.Visible = true;
 			try {
 				string userTyped = e.StringUserTyped;
 				int userTypedInteger;
@@ -212,6 +223,7 @@ namespace Sq1.Gui.Forms {
 		}
 		
 		void mnitlbShowLastBars_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			this.ctxBars.Visible = true;
 			try {
 				string userTyped = e.StringUserTyped;
 				int userTypedInteger;
@@ -239,6 +251,7 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		void mniShowBarRange_Click(object sender, EventArgs e) {
+			this.ctxBars.Visible = true;
 			try {
 				if (e != null) {
 					this.mnitlbShowLastBars.BackColor = Color.White;
@@ -258,6 +271,7 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		void mnitlbPositionSizeSharesConstantEachTrade_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			this.ctxBacktest.Visible = true;
 			try {
 				string userTyped = e.StringUserTyped;
 				double userTypedDouble;
@@ -308,12 +322,14 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		void mniOutsideQuoteFillCheckThrow_Click(object sender, EventArgs e) {
+			this.ctxBacktest.Visible = true;
 			ContextScript context = this.ChartFormManager.Strategy.ScriptContextCurrent;
 			context.FillOutsideQuoteSpreadParanoidCheckThrow = this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Checked;
 			this.ChartFormManager.Strategy.Serialize();
 			this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mniOutOfQuoteFillThrow_Click");
 		}
 		void mnitlbSpreadGeneratorPct_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			this.ctxBacktest.Visible = true;
 			try {
 				string userTyped = e.StringUserTyped;
 				double userTypedDouble;
@@ -331,7 +347,7 @@ namespace Sq1.Gui.Forms {
 				context.SpreadModelerPercent = userTypedDouble;
 				
 				if (this.ChartFormManager.Executor.Backtester.BacktestDataSource == null) {
-					this.ChartFormManager.Executor.Backtester.InitializeAndCheck();
+					this.ChartFormManager.Executor.Backtester.InitializeQuoteGenerator();
 				}
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");
@@ -341,6 +357,7 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		void mniSubscribedToStreamingAdapterQuotesBars_Click(object sender, EventArgs e) {
+			this.ctxBars.Visible = true;
 			try {
 				if (this.mniSubscribedToStreamingAdapterQuotesBars.Checked == false) {
 					this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;

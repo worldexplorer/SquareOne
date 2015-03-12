@@ -11,6 +11,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Widgets.LabeledTextBox;
+using System.ComponentModel;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
@@ -47,6 +48,8 @@ namespace Sq1.Gui.Forms {
 			// right now this.ChartFormsManager.Executor IS NULL, will create and Chart.Initialize() upstack :((
 			//this.Chart.Initialize(this.ChartFormsManager.Executor);
 			// TOO_EARLY_NO_BARS_SET_WILL_BE_THROWN this.PopulateBtnStreamingText();
+
+			this.ctxStrokesForQuoteGenerator.Opening += new CancelEventHandler(ctxStrokesForQuoteGenerator_Opening_SelectCurrent);
 		}
 		public void ChartFormEventsToChartFormManagerAttach() {
 			this.ChartControl.RangeBar.ValueMinChanged += this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
@@ -316,6 +319,8 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbShowLastBars.Enabled = enableForNonStreaming;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.Enabled = enableForNonStreaming;
 			this.mnitlbPositionSizeSharesConstantEachTrade.Enabled = enableForNonStreaming;
+
+			this.ctxStrokesPopulateOrSelectCurrent();
 		}
 
 		public void Initialize(bool containsStrategy, bool strategyActivatedFromDll = false) {

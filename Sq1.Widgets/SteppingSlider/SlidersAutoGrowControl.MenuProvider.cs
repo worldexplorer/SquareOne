@@ -13,7 +13,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		// http://stackoverflow.com/questions/8307959/toolstripmenuitem-for-multiple-contextmenustrip?rq=1
 		// http://stackoverflow.com/questions/6275120/toolstripmenuitem-added-to-several-places?rq=1
 		// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening first time opened we locate common menu items from GrandParent, then we move them to the current slider; cool?
-		private Dictionary<string, ToolStripMenuItem> tsiScriptContextsDynamic = new Dictionary<string, ToolStripMenuItem>();
+		Dictionary<string, ToolStripMenuItem> tsiScriptContextsDynamic = new Dictionary<string, ToolStripMenuItem>();
 		public ToolStripItem[] TsiScriptContextsDynamic { get {
 				List<string> ctx2remove = new List<string>();
 				foreach (string ctxName in this.tsiScriptContextsDynamic.Keys) {

@@ -45,6 +45,11 @@ namespace Sq1.Core.DataTypes {
 			} }
 		// Perst deserializer invokes default ctor()
 		[JsonProperty]	public int DaySerial;
+
+		[JsonIgnore]	public double	HighLowDistance		{ get { return this.High - this.Low; } }
+		[JsonIgnore]	public bool		IsWhiteCandle		{ get { return this.Close > this.Open; } }
+
+
 		public Bar() {
 			// ChartRenderer would update its max/min if NaN
 			this.ParentBarsIndex = -1;
@@ -387,11 +392,11 @@ namespace Sq1.Core.DataTypes {
 			//if (quoteClone.PriceLastDeal < this.Low) this.Low = quoteClone.PriceLastDeal;
 			if (quoteClone.Ask > this.High) this.High = quoteClone.Ask;
 			if (quoteClone.Bid < this.Low) this.Low = quoteClone.Bid;
-			if (double.IsNaN(quoteClone.LastDealPrice)) {
+			if (double.IsNaN(quoteClone.TradedPrice)) {
 				string msg = "FYI LAST_DEAL_PRICE_IS_NAN WHILE_MERGING_QUOTE_INTO_STREAMING_BAR quoteClone[" +
 					quoteClone + "] => " + this.ToString();
 			}
-			this.Close = quoteClone.LastDealPrice;
+			this.Close = quoteClone.TradedPrice;
 			this.Volume += quoteClone.Size;
 		}
 		public override string ToString() {
@@ -545,7 +550,5 @@ namespace Sq1.Core.DataTypes {
 			}
 			return !outsideSpread;
 		}
-
-		[JsonIgnore]	public double HighLowDistance { get { return this.High - this.Low; } }
 	}
 }

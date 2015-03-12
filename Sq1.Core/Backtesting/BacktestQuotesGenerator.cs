@@ -6,46 +6,61 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Backtesting {
-	public class BacktestQuotesGenerator {
-		Backtester backtester;
-		public readonly BacktestMode BacktestModeSuitsFor;
-		public readonly int QuotePerBarGenerates;
-		List<QuoteGenerated> QuotesGeneratedForOneBar;
+	public abstract class BacktestQuotesGenerator {
+		public readonly BacktestStrokesPerBar	BacktestStrokesPerBar;
+		public readonly int						BacktestStrokesPerBarAsInt;
 
-		// IMPLEMENTED_BELOW_UNABSTRACTED_THIS_CLASS protected public abstract SortedList<int, QuoteGenerated> GenerateQuotesFromBarAvoidClearing(Bar bar);
-		public int LastGeneratedAbsnoPerSymbol;
+		public		string					REASON_TO_EXIST										{ get; protected set; }
+		public		int						LastGeneratedAbsnoPerSymbol;
+		public		string					WhoGeneratedQuote									{ get; protected set; }
+		protected	List<QuoteGenerated>	QuotesGeneratedForOneBarAmountDependsOnEngineType;
+					Backtester				backtester;
 
-		protected string GeneratorName;
+		protected BacktestQuotesGenerator(BacktestStrokesPerBar engineType) {
+			this.REASON_TO_EXIST				= "DUMMY_GENERATOR_TO_BE_CLONED_AND_INITIALIZED__YOU_SELECT_ME_FROM_CHART_FORM_CONTEXT_MENU";
+			this.BacktestStrokesPerBar			= engineType;
+			this.BacktestStrokesPerBarAsInt		= (int) this.BacktestStrokesPerBar;
+			this.QuotesGeneratedForOneBarAmountDependsOnEngineType		= new List<QuoteGenerated>();
+			this.LastGeneratedAbsnoPerSymbol	= -1;
 
-		protected BacktestQuotesGenerator(Backtester backtester, int quotesPerBar, BacktestMode mode) {
-			this.backtester = backtester;
-			this.QuotePerBarGenerates = quotesPerBar;
-			this.BacktestModeSuitsFor = mode;
-			this.QuotesGeneratedForOneBar = new List<QuoteGenerated>();
-			this.LastGeneratedAbsnoPerSymbol = -1;
-			this.GeneratorName = this.GetType().Name;
+			string subclassName = this.GetType().Name;
+			//string BacktestQuotesGeneratorString = base.GetType().Name;	// assuming no grand-children; inheritance tree is ONE level deep
+			//if (subclassName.StartsWith(BacktestQuotesGeneratorString)) {
+			//    subclassName = this.WhoGeneratedThisQuote.Remove(0, BacktestQuotesGeneratorString.Length);
+			//}
+			string strokesEnum = Enum.GetName(typeof(BacktestStrokesPerBar), this.BacktestStrokesPerBar);
+			this.WhoGeneratedQuote = strokesEnum + ":" + subclassName + ".cs";
 		}
+		void initialize(string reasonToExist, Backtester backtester) {
+			this.REASON_TO_EXIST = reasonToExist;
+			this.backtester = backtester;
+		}
+		//public BacktestQuotesGenerator CloneAndInitialize(Backtester backtester) {
+		//    BacktestQuotesGenerator initializedFromMni = (BacktestQuotesGenerator)Activator.CreateInstance(this.GetType());
+		//    initializedFromMni.initialize(backtester);
+		//    return initializedFromMni;
+		//}
 
-		protected QuoteGenerated generateNewQuoteChildrenHelper(int intraBarSerno, string whoGenerated, string symbol, DateTime serverTime,
+		protected QuoteGenerated GenerateNewQuoteChildrenHelper(int intraBarSerno, string symbol, DateTime serverTime,
 				BidOrAsk bidOrAsk, double priceFromAlignedBar, double volume, Bar barSimulated) {
 
-			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler;
 			QuoteGenerated ret = new QuoteGenerated(serverTime);
 			ret.ServerTime = serverTime;
 			//FILLED_LATER_DONT_CONFUSE_STREAMING_ADAPDER ret.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;
 			//FILLED_LATER_DONT_CONFUSE_STREAMING_ADAPDER ret.IntraBarSerno = intraBarSerno;
-			ret.Source = whoGenerated;
+			ret.Source = this.WhoGeneratedQuote;
 			ret.Symbol = symbol;
 			ret.SymbolClass = this.backtester.BarsOriginal.SymbolInfo.SymbolClass;
 			ret.Size = volume;
 			ret.ParentBarSimulated = barSimulated;
 			//v1 ret.PriceLastDeal = price;
 
+			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler;
 			switch (bidOrAsk) {
 				case BidOrAsk.Bid:
 					ret.Bid = priceFromAlignedBar;
-					ret.LastDealBidOrAsk = BidOrAsk.Bid;
-					modeler.GenerateFillAskBasedOnBid(ret);
+					ret.TradedAt = BidOrAsk.Bid;
+					modeler.FillAskBasedOnBid(ret);
 					if (ret.Spread == 0) {
 						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GenerateFillAskBasedOnBid()";
@@ -57,8 +72,8 @@ namespace Sq1.Core.Backtesting {
 					break;
 				case BidOrAsk.Ask:
 					ret.Ask = priceFromAlignedBar;
-					ret.LastDealBidOrAsk = BidOrAsk.Ask;
-					modeler.GenerateFillBidBasedOnAsk(ret);
+					ret.TradedAt = BidOrAsk.Ask;
+					modeler.FillBidBasedOnAsk(ret);
 					if (ret.Spread == 0) {
 						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GenerateFillAskBasedOnBid()";
@@ -71,7 +86,7 @@ namespace Sq1.Core.Backtesting {
 				case BidOrAsk.UNKNOWN:
 					modeler.GeneratedQuoteFillBidAsk(ret, barSimulated, priceFromAlignedBar);
 					// I_DONT_KNOW_WHAT_TO_PUT_HERE
-					ret.LastDealBidOrAsk = BidOrAsk.Bid;
+					ret.TradedAt = BidOrAsk.Bid;
 					if (ret.Spread == 0) {
 						string msig = " returned by modeler[" + modeler + "] for quote[" + ret + "]";
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GeneratedQuoteFillBidAsk()";
@@ -82,6 +97,12 @@ namespace Sq1.Core.Backtesting {
 					}
 					break;
 			}
+
+			//if (barSimulated.HighLowDistance > 0 && barSimulated.HighLowDistance > ret.Spread) {
+				if (barSimulated.ContainsBidAskForQuoteGenerated(ret, true) == false) {
+					Assembler.PopupException("TEST_EMBEDDED GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #0/2", null, false);
+				}
+			//}
 
 			// see QUOTEGEN_PROBLEM#2 : at Open/Close, when they are == to Low/High, the Symmetrical quote will go beoynd bar boundaries => MarketSim will freak out
 			// 1) moved to GeneratedQuoteFillBidAsk() //replaced by BacktestQuoteGenerator.AlignBidAskToPriceLevel
@@ -101,10 +122,11 @@ namespace Sq1.Core.Backtesting {
 			return ret;
 		}
 
-		public virtual List<QuoteGenerated> InjectQuotesToFillPendingAlerts(QuoteGenerated quoteToReach, Bar bar2simulate, int iterationsLimit = 5) {
-			List<QuoteGenerated> ret = new List<QuoteGenerated>();
+		public virtual List<QuoteGenerated> InjectQuotesToFillPendingAlertsAndPush(
+				QuoteGenerated quoteToReach, Bar bar2simulate, int iterationsLimit = 1) {
+			List<QuoteGenerated> injectedPushed = new List<QuoteGenerated>();
 			int pendingsToFillInitially = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
-			if (pendingsToFillInitially == 0) return ret;
+			if (pendingsToFillInitially == 0) return injectedPushed;
 
 			// hard to debug but I hate while(){} loops
 			//for (QuoteGenerated closestOnOurWay  = this.generateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach);
@@ -113,17 +135,16 @@ namespace Sq1.Core.Backtesting {
 
 			if (bar2simulate.HighLowDistance == 0) {
 				string msg = "WEIRD_BAR_SHOULDNT_FAIL_FOLLOWING_QUOTE_CHECK ContainsBidAskForQuoteGenerated(quoteToReach)";
-				return ret;
+				return injectedPushed;
 			}
 
 			if (bar2simulate.ContainsBidAskForQuoteGenerated(quoteToReach) == false) {
 				string msg = "KEEP_ME_HERE_DONT_MAKE_LOOP_UPSTACK_COMPLICATED";
-				return ret;
+				return injectedPushed;
 			}
 
-			QuoteGenerated closestOnOurWay  = this.GenerateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach, bar2simulate);
+			QuoteGenerated closestOnOurWay  = this.generateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach, bar2simulate);
 			while (closestOnOurWay != null) {
-				// 
 				//v1 if (bar2simulate.ContainsBidAskForQuoteGenerated(closestOnOurWay) == false) {
 				if (bar2simulate.HighLowDistance > 0 && bar2simulate.HighLowDistance > closestOnOurWay.Spread
 						&& bar2simulate.ContainsBidAskForQuoteGenerated(closestOnOurWay) == false) {
@@ -140,46 +161,50 @@ namespace Sq1.Core.Backtesting {
 				#endif
 
 				closestOnOurWay.AbsnoPerSymbol = ++this.LastGeneratedAbsnoPerSymbol;		// DONT_FORGET_TO_ASSIGN_LATEST_ABSNO_TO_QUOTE_TO_REACH
-				closestOnOurWay.IntraBarSerno += ret.Count;						// first quote has IntraBarSerno=-1, rimemba?
+				closestOnOurWay.IntraBarSerno += injectedPushed.Count;						// first quote has IntraBarSerno=-1, rimemba?
 
-				this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.PushQuoteReceived(closestOnOurWay);
-				ret.Add(closestOnOurWay);
+				//v1 "Received" is for Quik/InteractiveBrokers; "Generated" is for Backtest/Livesim  this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.PushQuoteReceived(closestOnOurWay);
+				//v2 1) LivesimBroker will push it delayed; 2) register closestOnOurWay as Streaming.LastQuoteReceived[Symbol]
+				this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.PushQuoteGenerated(closestOnOurWay);
+
+				injectedPushed.Add(closestOnOurWay);
 
 				int pendingAfterInjected = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingsToFillInitially != pendingAfterInjected) {
 					string msg = "it looks like the quoteInjected triggered something";
 					//Assembler.PopupException(msg, null, false);
+					if (this.backtester.IsLivesim && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
+						msg = "NO_ORDER_MUST_HAVE_BEEN_FILLED_WHILE_INJECTING__KOZ_LIVESIM_BROKER_EXECUTION_IS_DELAYED" + msg;
+						Assembler.PopupException(msg, null, false);
+					}
 				}
-				if (ret.Count > iterationsLimit) {
+				if (injectedPushed.Count >= iterationsLimit) {
 					string msg = "InjectQuotesToFillPendingAlerts(): quotesInjected["
-						+ ret + "] > iterationsLimit[" + iterationsLimit + "]"
-						+ " pendingNow[" + this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count + "]"
+						+ injectedPushed + "] > iterationsLimit[" + iterationsLimit + "]"
+						+ " pendingAfterInjected[" + pendingAfterInjected + "]"
 						+ " quoteToReach[" + quoteToReach + "]";
-					Assembler.PopupException(msg);
+					//Assembler.PopupException(msg);
 					break;
 				}
 				bool abortRequested = this.backtester.RequestingBacktestAbort.WaitOne(0);
-				if (abortRequested) {
-					break;
-				}
+				if (abortRequested) break;
 				bool backtestAborted = this.backtester.BacktestAborted.WaitOne(0);
-				if (backtestAborted) {
-					break;
-				}
-				closestOnOurWay = this.GenerateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach, bar2simulate);
+				if (backtestAborted) break;
+				closestOnOurWay = this.generateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach, bar2simulate);
 			}
-			return ret;
+			return injectedPushed;
 		}
-		public QuoteGenerated GenerateClosestQuoteForEachPendingAlertOnOurWayTo(QuoteGenerated quoteToReach, Bar bar2simulate) {
+		QuoteGenerated  generateClosestQuoteForEachPendingAlertOnOurWayTo(QuoteGenerated quoteToReach, Bar bar2simulate) {
 			if (this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count == 0) {
 				string msg = "it looks like no Pending alerts are left anymore";
 				return null;
 			}
 
-			// 
 			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
 				.LastQuoteCloneGetForSymbol(quoteToReach.Symbol);
 			QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
+
+			#region PARANOID_CHECKS_HERE
 			if (quotePrev == null) {
 				string msg = "PARANOINDAL_CHECK_IF_PREV_QUOTE_IS_QUOTE_TO_REACH copypaste";
 				Assembler.PopupException(msg);
@@ -208,6 +233,7 @@ namespace Sq1.Core.Backtesting {
 				string msg = "WE_REACHED_QUOTE_TO_REACH_SAME_SERVERTIME_NOTHING_ELSE_TO_GENERATE";
 				return null;
 			}
+			#endregion
 
 			bool scanningDown = quoteToReach.Bid < quotePrev.Bid;
 			QuoteGenerated quoteClosest = null;
@@ -223,8 +249,13 @@ namespace Sq1.Core.Backtesting {
 				//	bool executedAtBid = alert.Direction == Direction.Short || alert.Direction == Direction.Sell;
 				//	if (executedAtBid && alert.MarketLimitStop == MarketLimitStop.Stop) continue;
 				//}
-				QuoteGenerated quoteThatWillFillAlert = this.modelQuoteThatCouldFillAlert(alert, new DateTime(quoteToReach.LocalTimeCreated.Ticks - 911), bar2simulate);
-				if (quoteThatWillFillAlert == null) continue;
+				string errModelingQuoteThatCouldFill;
+				QuoteGenerated quoteThatWillFillAlert = this.modelQuoteThatCouldFillAlert(alert,
+					new DateTime(quoteToReach.LocalTimeCreated.Ticks - 911), bar2simulate, out errModelingQuoteThatCouldFill);
+				if (quoteThatWillFillAlert == null) {
+					Assembler.PopupException(errModelingQuoteThatCouldFill);
+					continue;
+				}
 
 				// trying to keep QuoteGenerated within the original simulated Bar (lazy to attach StreamingBar to QuoteGenerated now)
 				if (scanningDown) {
@@ -259,17 +290,17 @@ namespace Sq1.Core.Backtesting {
 
 				if (quoteClosest == null) {
 					quoteClosest = quoteThatWillFillAlert;
+					continue;
+				}
+				if (scanningDown) {
+					// while GEN'ing closest to the top, pick the highest possible
+					// while scanning down, I'm looking for the QuoteGenerated with highest Ask that will trigger the closest pending
+					if (quoteThatWillFillAlert.Bid < quoteClosest.Bid) continue;
+					quoteClosest = quoteThatWillFillAlert;
 				} else {
-					if (scanningDown) {
-						// while GEN'ing closest to the top, pick the highest possible
-						// while scanning down, I'm looking for the QuoteGenerated with highest Ask that will trigger the closest pending
-						if (quoteThatWillFillAlert.Bid < quoteClosest.Bid) continue;
-						quoteClosest = quoteThatWillFillAlert;
-					} else {
-						// while GEN'ing closest to the bottom, pick the lowest possible
-						if (quoteThatWillFillAlert.Ask > quoteClosest.Ask) continue;
-						quoteClosest = quoteThatWillFillAlert;
-					}
+					// while GEN'ing closest to the bottom, pick the lowest possible
+					if (quoteThatWillFillAlert.Ask > quoteClosest.Ask) continue;
+					quoteClosest = quoteThatWillFillAlert;
 				}
 			}
 
@@ -309,10 +340,10 @@ namespace Sq1.Core.Backtesting {
 			//}
 			return ret;
 		}
-		QuoteGenerated modelQuoteThatCouldFillAlert(Alert alert,
-					DateTime localDateTimeBasedOnServerForBacktest, Bar bar2simulate) {
+		QuoteGenerated modelQuoteThatCouldFillAlert(Alert alert, DateTime localDateTimeBasedOnServerForBacktest, Bar bar2simulate
+				, out string errOut, bool checkAgainstPrevReceivedQuote = false) {
 			string msig = " //modelQuoteThatCouldFillAlert(alert[" + alert+ "] bar2simulate[" +bar2simulate+ "])";
-			string err;
+			errOut = "NO_ERROR__QUOTE_MODELLED_MUST_BE_NON_NULL";
 
 			QuoteGenerated ret = new QuoteGenerated(localDateTimeBasedOnServerForBacktest);
 			//ret.Source = "GENERATED_TO_FILL_" + alert.ToString();			// PROFILER_SAID_TOO_SLOW + alert.ToString();
@@ -345,6 +376,11 @@ namespace Sq1.Core.Backtesting {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 				//Assembler.PopupException(msg, null, false);
 			}
+
+			if (alert.MarketLimitStop.ToString() != alert.MarketLimitStopAsString) {
+				string msg = "IT_WAS_TIDAL_OR_OTHER_EXOTIC_MARKET_ORDER";
+				//Assembler.PopupException(msg);
+			}
 			#endif
 
 
@@ -357,30 +393,29 @@ namespace Sq1.Core.Backtesting {
 				Assembler.PopupException(msg + msig);
 			}
 
+			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler;
 			switch (alert.MarketLimitStop) {
 				case MarketLimitStop.Limit:
 					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
-							if (priceScriptAligned > quotePrev.Ask) {
-								err = "INVALID_PRICESCRIPT_FOR_LIMIT_BUY_MUST_NOT_BE_ABOVE_CURRENT_ASK";
+							if (priceScriptAligned > quotePrev.Ask && checkAgainstPrevReceivedQuote) {
+								errOut = "INVALID_PRICESCRIPT_FOR_LIMIT_BUY_MUST_NOT_BE_ABOVE_CURRENT_ASK";
 								return null;
 							}
 							ret.Ask = priceScriptAligned;
-							ret.LastDealBidOrAsk = BidOrAsk.Ask;
-							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
-								.GenerateFillBidBasedOnAsk(ret);
+							ret.TradedAt = BidOrAsk.Ask;
+							modeler.FillBidBasedOnAsk(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
-							if (priceScriptAligned < quotePrev.Bid) {
-								err = "INVALID_PRICESCRIPT_FOR_LIMIT_SELL_MUST_NOT_BE_BELOW_CURRENT_BID";
+							if (priceScriptAligned < quotePrev.Bid && checkAgainstPrevReceivedQuote) {
+								errOut = "INVALID_PRICESCRIPT_FOR_LIMIT_SELL_MUST_NOT_BE_BELOW_CURRENT_BID";
 								return null;
 							}
 							ret.Bid = priceScriptAligned;
-							ret.LastDealBidOrAsk = BidOrAsk.Bid;
-							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
-								.GenerateFillAskBasedOnBid(ret);
+							ret.TradedAt = BidOrAsk.Bid;
+							modeler.FillAskBasedOnBid(ret);
 							break;
 						default:
 							string msg = "ALERT_LIMIT_DIRECTION_UNKNOWN direction[" + alert.Direction
@@ -392,25 +427,23 @@ namespace Sq1.Core.Backtesting {
 					switch (alert.Direction) {
 						case Direction.Buy:
 						case Direction.Cover:
-							if (priceScriptAligned < quotePrev.Ask) {
-								err = "INVALID_PRICESCRIPT_FOR_STOP_BUY_MUST_NOT_BE_BELOW_CURRENT_ASK";
+							if (priceScriptAligned < quotePrev.Ask && checkAgainstPrevReceivedQuote) {
+								errOut = "INVALID_PRICESCRIPT_FOR_STOP_BUY_MUST_NOT_BE_BELOW_CURRENT_ASK";
 								return null;
 							}
 							ret.Ask = priceScriptAligned;
-							ret.LastDealBidOrAsk = BidOrAsk.Ask;
-							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
-								.GenerateFillBidBasedOnAsk(ret);
+							ret.TradedAt = BidOrAsk.Ask;
+							modeler.FillBidBasedOnAsk(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
-							if (priceScriptAligned > quotePrev.Bid) {
-								err = "INVALID_PRICESCRIPT_FOR_STOP_SELL_MUST_NOT_BE_ABOVE_CURRENT_BID";
+							if (priceScriptAligned > quotePrev.Bid && checkAgainstPrevReceivedQuote) {
+								errOut = "INVALID_PRICESCRIPT_FOR_STOP_SELL_MUST_NOT_BE_ABOVE_CURRENT_BID";
 								return null;
 							}
 							ret.Bid = priceScriptAligned;
-							ret.LastDealBidOrAsk = BidOrAsk.Bid;
-							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
-								.GenerateFillAskBasedOnBid(ret);
+							ret.TradedAt = BidOrAsk.Bid;
+							modeler.FillAskBasedOnBid(ret);
 							break;
 						default:
 							string msg = "ALERT_STOP_DIRECTION_UNKNOWN direction[" + alert.Direction
@@ -423,16 +456,14 @@ namespace Sq1.Core.Backtesting {
 						case Direction.Buy:
 						case Direction.Cover:
 							ret.Ask = quotePrev.Ask;
-							ret.LastDealBidOrAsk = BidOrAsk.Ask;
-							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
-								.GenerateFillBidBasedOnAsk(ret);
+							ret.TradedAt = BidOrAsk.Ask;
+							modeler.FillBidBasedOnAsk(ret);
 							break;
 						case Direction.Short:
 						case Direction.Sell:
 							ret.Bid = quotePrev.Bid;
-							ret.LastDealBidOrAsk = BidOrAsk.Bid;
-							this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler
-								.GenerateFillAskBasedOnBid(ret);
+							ret.TradedAt = BidOrAsk.Bid;
+							modeler.FillAskBasedOnBid(ret);
 							break;
 						default:
 							string msg = "ALERT_MARKET_DIRECTION_UNKNOWN direction[" + alert.Direction
@@ -453,9 +484,9 @@ namespace Sq1.Core.Backtesting {
 			return ret;
 		}
 		public virtual List<QuoteGenerated> GenerateQuotesFromBarAvoidClearing(Bar barSimulated) {
-			this.QuotesGeneratedForOneBar.Clear();
+			this.QuotesGeneratedForOneBarAmountDependsOnEngineType.Clear();
 
-			double volumeOneQuarterOfBar = barSimulated.Volume / this.QuotePerBarGenerates;
+			double volumeOneQuarterOfBar = barSimulated.Volume / this.BacktestStrokesPerBarAsInt;
 			if (barSimulated.ParentBars != null && barSimulated.ParentBars.SymbolInfo != null) {
 				volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, barSimulated.ParentBars.SymbolInfo.DecimalsVolume);
 				if (volumeOneQuarterOfBar == 0) {
@@ -482,86 +513,61 @@ namespace Sq1.Core.Backtesting {
 			}
 
 			TimeSpan leftTillNextBar = barOpenNext - barOpenOrResume;
-			int incrementSeconds = ((int)(leftTillNextBar.TotalSeconds / this.QuotePerBarGenerates));	// WRONG -1 one second less to not have exactly next bar opening at last stroke but 4 seconds before
-			TimeSpan increment = new TimeSpan(0, 0, incrementSeconds);
-			TimeSpan cumulativeOffset = new TimeSpan(0);
+			int incrementSeconds = ((int)(leftTillNextBar.TotalSeconds / this.BacktestStrokesPerBarAsInt));	// WRONG -1 one second less to not have exactly next bar opening at last stroke but 4 seconds before
+			TimeSpan timespanIncrementInterquote = new TimeSpan(0, 0, incrementSeconds);
+			TimeSpan timespanBarBeginningOffsetCumulative = new TimeSpan(0);
 			
-			for (int stroke = 0; stroke < this.QuotePerBarGenerates; stroke++) {
-				bool whiteCandle = barSimulated.Close > barSimulated.Open;
+			for (int stroke = 0; stroke < this.BacktestStrokesPerBarAsInt; stroke++) {
 				double price = 0;
 				BidOrAsk bidOrAsk = BidOrAsk.UNKNOWN;
-				switch (stroke) {
-					case 0:
-						price		= barSimulated.Open;
-						bidOrAsk	= BidOrAsk.UNKNOWN;
-						// QUOTEGEN_PROBLEM#1 : here we don't know the derived.Spread, trying to avoid SymmetricFill 
-						// don't fail Bar.ContainsBidAskForQuoteGenerated() check CANT_BE_LESS_OR_GREATER_ONLY_EQUAL_BUT_DOUBLE_VALUES_HAVE_TINY_TAILS
-						if (barSimulated.Open <= barSimulated.Low)		bidOrAsk = BidOrAsk.Bid; 
-						if (barSimulated.Open >= barSimulated.High)		bidOrAsk = BidOrAsk.Ask; 
-						break;
-					case 1:
-						price		= whiteCandle ? barSimulated.Low : barSimulated.High;
-						bidOrAsk	= whiteCandle ? BidOrAsk.Bid : BidOrAsk.Ask;
-						break;
-					case 2:
-						price		= whiteCandle ? barSimulated.High : barSimulated.Low;
-						bidOrAsk	= whiteCandle ? BidOrAsk.Ask : BidOrAsk.Bid;
-						break;
-					case 3:
-						price		= barSimulated.Close;
-						bidOrAsk	= BidOrAsk.UNKNOWN;
-						// QUOTEGEN_PROBLEM#1 : here we don't know the derived.Spread, trying to avoid SymmetricFill 
-						// don't fail Bar.ContainsBidAskForQuoteGenerated() check CANT_BE_LESS_OR_GREATER_ONLY_EQUAL_BUT_DOUBLE_VALUES_HAVE_TINY_TAILS
-						if (barSimulated.Close <= barSimulated.Low)		bidOrAsk = BidOrAsk.Bid;
-						if (barSimulated.Close >= barSimulated.High)	bidOrAsk = BidOrAsk.Ask; 
-						break;
-					default:
-						throw new Exception("Stroke[" + stroke + "] isn't supported in 4-stroke QuotesGenerator");
-				}
+				this.AssignPriceAndBidOrAskDependingOnQuotesPerBarForStroke(barSimulated, stroke, out price, out bidOrAsk);
 
-				DateTime serverTime = barOpenOrResume + cumulativeOffset;
-				DateTime clearingResumes = marketInfo.GetClearingResumes(serverTime);
-				if (clearingResumes >= barOpenNext) {	// NO_NEED_TO_BIND_CLEARING_TO_BARS
-					#if DEBUG	// TEST_EMBEDDED
-					string msg = "CLEARING_EXTENDS_BEOYND_SIMULATED_BAR I_STOP_GENERATING_HERE_AND_EXPECT_BAR_INCREASE_UPSTACK";
-					//TESTED Debugger.Break();
-					#endif
+				DateTime timeServerForStroke = barOpenOrResume + timespanBarBeginningOffsetCumulative;
+				// for clearing[14:00...14:03].GetClearingResumes(14:00)=14:03, will be shifted now
+				DateTime timeClearingResumes = marketInfo.GetClearingResumes(timeServerForStroke);
+				if (timeClearingResumes >= barOpenNext) {
+					string msg = "CLEARING_EXTENDS_BEOYND_BAR_SIMULATED SKIPPING_QUOTE_GENERATION_TILL_END_OF_BAR EXPECTING_BAR_INCREASE_UPSTACK";
+					Assembler.PopupException(msg, null, false);
 					break;
 				}
 				
-				bool recalcShrunkenIncrement = false;
-				if (serverTime != clearingResumes) {
-					serverTime = clearingResumes;
-					recalcShrunkenIncrement = true;
+				bool recalcShrunkenIncrementDueToIntrabarClearing = false;
+				if (timeServerForStroke < timeClearingResumes) {
+					// 4quotes 1bar 5min @14:00: clearing[14:00...14:03] should produce 14:03.00 14:03.30 14:04.00 14:04.30
+					timeServerForStroke = timeClearingResumes;
+					recalcShrunkenIncrementDueToIntrabarClearing = true;
 				}
 				
-				string generatorName = Enum.GetName(typeof(BacktestMode), this.BacktestModeSuitsFor);		//"RunSimulationFourStrokeOHLC";
-				QuoteGenerated quote = this.generateNewQuoteChildrenHelper(stroke, generatorName,
-					barSimulated.Symbol, serverTime, bidOrAsk, price, volumeOneQuarterOfBar, barSimulated);
-				this.QuotesGeneratedForOneBar.Add(quote);
-				
-				if (stroke == this.QuotePerBarGenerates - 1) break;		// avoiding expensive {cumulativeOffset += increment} at last stroke 
+				QuoteGenerated quote = this.GenerateNewQuoteChildrenHelper(stroke, barSimulated.Symbol,
+					timeServerForStroke, BidOrAsk.UNKNOWN, price, volumeOneQuarterOfBar, barSimulated);
+				this.QuotesGeneratedForOneBarAmountDependsOnEngineType.Add(quote);
 
-				// below goes "stroke++" brother
-				if (recalcShrunkenIncrement == false) {
-					cumulativeOffset += increment;
+				if (stroke == this.BacktestStrokesPerBarAsInt - 1) break;		// avoiding expensive {cumulativeOffset += increment} at last stroke 
+
+				if (recalcShrunkenIncrementDueToIntrabarClearing == false) {
+					timespanBarBeginningOffsetCumulative += timespanIncrementInterquote;
 					continue;
 				}
+
+				TimeSpan timespanIncrementInterquoteOld = timespanIncrementInterquote;
+				leftTillNextBar = barOpenNext - timeClearingResumes;
+				int quotesLeft = this.BacktestStrokesPerBarAsInt - stroke;
+				timespanIncrementInterquote = new TimeSpan(0, 0, ((int)(leftTillNextBar.TotalSeconds / quotesLeft)));
 				
-				#if DEBUG	// TEST_EMBEDDED
-				//string whereAmI = "GOT_INTRABAR_CLEARING RECALC_SHRINKEN_INCREMENT_FOR_NEXT_LOOPS";
-				//TESTED Debugger.Break();
+				TimeSpan clearingResumesOffset = timeClearingResumes - barOpenOrResume;
+				timespanBarBeginningOffsetCumulative = clearingResumesOffset + timespanIncrementInterquote;
+
+				#if DEBUG
+				MarketClearingTimespan clearing1 = marketInfo.GetSingleClearingTimespanIfMarketSuspendedDuringBar(barSimulated.DateTimeOpen, barSimulated.DateTimeOpen);
+				string whereAmI = "INTRABAR_CLEARING @" + barSimulated.DateTimeOpen.TimeOfDay
+					+ " clearing" + clearing1
+					+ " barOpenOrResume[" + barOpenOrResume.TimeOfDay + "]=>[" + timeClearingResumes.TimeOfDay + "]"
+					+ " timespanIncrementInterquote[" + timespanIncrementInterquoteOld + "]=>[" + timespanIncrementInterquote + "]";
+				//Assembler.PopupException(whereAmI, null, false);
 				#endif
-				
-				leftTillNextBar = barOpenNext - clearingResumes;
-				int quotesLeft = this.QuotePerBarGenerates - stroke;
-				increment = new TimeSpan(0, 0, ((int)(leftTillNextBar.TotalSeconds / quotesLeft)));
-				
-				TimeSpan clearingResumesOffset = clearingResumes - barOpenOrResume;
-				cumulativeOffset = clearingResumesOffset + increment;
-				
+
 				// WRONG -1 one second less to not have exactly next bar opening at last stroke but 4 seconds before
-				// BAR_WITHOUT_INTRABAR_CLEARING	11:00
+				// BAR_WITHOUT_INTRABAR_CLEARING	4quotes 1bar 5min 11:00 => 11:05
 			  	// stroke0 increment (5:00 / 4 = 1:15): 11:00:00
 			  	// stroke1 increment (5:00 / 4 = 1:15): 11:01:15
 			  	// stroke2 increment (5:00 / 4 = 1:15): 11:02:30
@@ -572,7 +578,31 @@ namespace Sq1.Core.Backtesting {
 				// stroke2 increment (2:00 / 4 = 0:30): 14:04:00
 				// stroke3 increment (2:00 / 4 = 0:30): 14:04:30 (next stroke4 would be 14:05:00 which next bar/invocation)
 			}
-			return this.QuotesGeneratedForOneBar;
+			return this.QuotesGeneratedForOneBarAmountDependsOnEngineType;
+		}
+
+		protected abstract void AssignPriceAndBidOrAskDependingOnQuotesPerBarForStroke(
+			Bar barSimulated, int stroke, out double price, out BidOrAsk bidOrAsk);
+
+		public static BacktestQuotesGenerator CreateForQuotesPerBarAndInitialize(BacktestStrokesPerBar backtestStrokesPerBar, Backtester backtester) {
+			BacktestQuotesGenerator ret = new BacktestQuotesGeneratorFourStroke();
+			switch (backtestStrokesPerBar) {
+				case BacktestStrokesPerBar.FourStrokeOHLC:
+					//DEFAULT ret = new BacktestQuotesGeneratorFourStroke(reasonToExist);
+					break;
+				case BacktestStrokesPerBar.TenStroke:
+					ret = new BacktestQuotesGeneratorTenStroke();
+					break;
+				case BacktestStrokesPerBar.SixteenStroke:
+					ret = new BacktestQuotesGeneratorSixteenStroke();
+					break;
+				default:
+					string msg = "NYI: [" + backtestStrokesPerBar + "] //CreateForQuotesPerBarAndInitialize() " + ret.ToString();
+					Assembler.PopupException(msg, null, false);
+					break;
+			}
+			ret.initialize("STRATEGY_INDUCED_OR_USER_CLICKED", backtester);
+			return ret;
 		}
 	}
 }

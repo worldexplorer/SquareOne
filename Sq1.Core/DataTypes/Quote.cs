@@ -17,7 +17,6 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public double		Bid;
 		[JsonProperty]	public double		Ask;
 		[JsonProperty]	public double		Size;
-		[JsonIgnore]	public BidOrAsk		ItriggeredFillAtBidOrAsk;
 		
 		[JsonIgnore]	public int			IntraBarSerno;
 		[JsonIgnore]	public bool			IamInjectedToFillPendingAlerts {
@@ -28,10 +27,12 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public bool			HasParentBar		{ get { return this.ParentBarStreaming != null; } }
 		[JsonProperty]	public string		ParentBarIdent		{ get { return (this.HasParentBar) ? this.ParentBarStreaming.ParentBarsIdent : "NO_PARENT_BAR"; } }
 
-		[JsonProperty]	public BidOrAsk		LastDealBidOrAsk;
-		[JsonProperty]	public double		LastDealPrice		{ get {		//WRITTEN_ONLY_BY_QUOTE_GENERATOR MADE_READONLY_COZ_WRITING_IS_A_WRONG_CONCEPT
-				if (this.LastDealBidOrAsk == BidOrAsk.UNKNOWN) return double.NaN;
-				return (this.LastDealBidOrAsk == BidOrAsk.Bid) ? this.Bid : this.Ask;
+		[Obsolete("NOT_REALLY_USED")]
+		[JsonIgnore]	public BidOrAsk		ItriggeredFillAtBidOrAsk;
+		[JsonProperty]	public BidOrAsk		TradedAt;
+		[JsonProperty]	public double		TradedPrice			{ get {		//WRITTEN_ONLY_BY_QUOTE_GENERATOR MADE_READONLY_COZ_WRITING_IS_A_WRONG_CONCEPT
+				if (this.TradedAt == BidOrAsk.UNKNOWN) return double.NaN;
+				return (this.TradedAt == BidOrAsk.Bid) ? this.Bid : this.Ask;
 			} }
 		[JsonProperty]	public double		Spread				{ get { return this.Ask - this.Bid; } }
 
@@ -45,7 +46,7 @@ namespace Sq1.Core.DataTypes {
 			Ask = double.NaN;
 			Size = -1;
 			ItriggeredFillAtBidOrAsk = BidOrAsk.UNKNOWN;
-			LastDealBidOrAsk = BidOrAsk.UNKNOWN;
+			TradedAt = BidOrAsk.UNKNOWN;
 		}
 		public Quote(DateTime localTimeEqualsToServerTimeForGenerated) : this() {
 			// PROFILER_SAID_DATETIME.NOW_IS_SLOW__I_DONT_NEED_IT_FOR_BACKTEST_ANYWAY
@@ -94,9 +95,9 @@ namespace Sq1.Core.DataTypes {
 			sb.Append("}ask size{");
 			sb.Append(this.Size);
 			sb.Append("@");
-			sb.Append(this.LastDealPrice);
+			sb.Append(this.TradedPrice);
 			sb.Append("}lastDeal");
-			sb.Append(this.LastDealBidOrAsk);
+			sb.Append(this.TradedAt);
 			sb.Append(" ");
 			bool timesAreDifferent = true;
 			if (this.ServerTime != null) {

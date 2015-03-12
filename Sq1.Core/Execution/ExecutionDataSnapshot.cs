@@ -1,42 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Execution {
-	public class ExecutionDataSnapshot {
+	public partial class ExecutionDataSnapshot {
 			   ScriptExecutor					executor;
 			   object 							alertsMasterLock;
 			   object							positionsMasterLock;
 		
-		public AlertList						AlertsMaster				{ get; private set; }
-		public AlertList						AlertsNewAfterExec			{ get; private set; }
-		public AlertList						AlertsPending				{ get; private set; }
-		//public Dictionary<int, List<Alert>>		AlertsPendingHistorySafeCopy { get { return this.AlertsPendingHistorySafeCopyForRenderer(0, -1); } }
+		public	AlertList						AlertsMaster				{ get; private set; }
+		public	AlertList						AlertsNewAfterExec			{ get; private set; }
+		public	AlertList						AlertsPending				{ get; private set; }
+		//public Dictionary<int, List<Alert>>	AlertsPendingHistorySafeCopy { get { return this.AlertsPendingHistorySafeCopyForRenderer(0, -1); } }
 
-		public int								positionSernoAbs			{ get; private set; }
-		public PositionList						PositionsMaster				{ get; private set; }
-		public PositionList						PositionsOpenedAfterExec	{ get; private set; }
-		public PositionList						PositionsClosedAfterExec	{ get; private set; }
-		public PositionList						PositionsOpenNow			{ get; private set; }
+		public	int								positionSernoAbs			{ get; private set; }
+		public	PositionList					PositionsMaster				{ get; private set; }
+		public	PositionList					PositionsOpenedAfterExec	{ get; private set; }
+		public	PositionList					PositionsClosedAfterExec	{ get; private set; }
+		public	PositionList					PositionsOpenNow			{ get; private set; }
 
-		public Dictionary<string, Indicator>	IndicatorsReflectedScriptInstances;
+		public	Dictionary<string, Indicator>	IndicatorsReflectedScriptInstances;
 
 		public ExecutionDataSnapshot(ScriptExecutor strategyExecutor) {
 			this.executor						= strategyExecutor;
 			alertsMasterLock					= new object();
 			positionsMasterLock					= new object();
-			AlertsPending						= new AlertList("AlertsPending");
-			AlertsMaster						= new AlertList("AlertsMaster");
-			AlertsNewAfterExec					= new AlertList("AlertsNewAfterExec");
+			AlertsPending = new AlertList("AlertsPending", this);
+			AlertsMaster = new AlertList("AlertsMaster", this);
+			AlertsNewAfterExec = new AlertList("AlertsNewAfterExec", this);
 			positionSernoAbs					= 0;
-			PositionsMaster						= new PositionList("PositionsMaster");
-			PositionsOpenNow					= new PositionList("PositionsOpenNow");
-			PositionsOpenedAfterExec			= new PositionList("PositionsOpenedAfterExec");
-			PositionsClosedAfterExec			= new PositionList("PositionsClosedAfterExec");
+			PositionsMaster = new PositionList("PositionsMaster", this);
+			PositionsOpenNow = new PositionList("PositionsOpenNow", this);
+			PositionsOpenedAfterExec = new PositionList("PositionsOpenedAfterExec", this);
+			PositionsClosedAfterExec = new PositionList("PositionsClosedAfterExec", this);
 			IndicatorsReflectedScriptInstances	= new Dictionary<string, Indicator>();
+			this.initializeScriptExecWatchdog();
 		}
 
 		public void Initialize() { lock (this.positionsMasterLock) {

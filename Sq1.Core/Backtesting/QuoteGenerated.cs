@@ -35,7 +35,7 @@ namespace Sq1.Core.Backtesting {
 			identicalButFresh.Source = "DERIVED_FROM_" + base.ToStringShort() + " " + this.Source;
 			identicalButFresh.ServerTime = this.ServerTime.AddMilliseconds(911);
 			identicalButFresh.LocalTimeCreated = this.LocalTimeCreated.AddMilliseconds(911);
-			identicalButFresh.LastDealBidOrAsk = this.LastDealBidOrAsk;
+			identicalButFresh.TradedAt = this.TradedAt;
 			identicalButFresh.ItriggeredFillAtBidOrAsk = this.ItriggeredFillAtBidOrAsk;
 			identicalButFresh.Bid = this.Bid;
 			identicalButFresh.Ask = this.Ask;
@@ -54,6 +54,8 @@ namespace Sq1.Core.Backtesting {
 			sb.Append(this.IntraBarSerno);
 			sb.Append("/");
 			sb.Append(this.AbsnoPerSymbol);
+			sb.Append("@");
+			sb.Append(this.ServerTime.TimeOfDay);
 			sb.Append(" ");
 			sb.Append(this.Symbol);
 			sb.Append(" bid{");
@@ -88,8 +90,8 @@ namespace Sq1.Core.Backtesting {
 			sb.Append("}ask size{");
 			sb.Append(this.Size);
 			sb.Append("@");
-			sb.Append(Math.Round(this.LastDealPrice, 3));
-			sb.Append("}lastDeal");
+			sb.Append(Math.Round(this.TradedPrice, 3));
+			sb.Append("}traded");
 			if (ServerTime != null) {
 				sb.Append(" SERVER[");
 				sb.Append(ServerTime.ToString("HH:mm:ss.fff"));

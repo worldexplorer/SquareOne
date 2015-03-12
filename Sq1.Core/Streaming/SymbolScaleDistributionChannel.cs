@@ -229,9 +229,9 @@ namespace Sq1.Core.Streaming {
 						continue;
 					}
 					barConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStaticLast, quoteWithStreamingBarBound);
-				} catch (Exception e) {
+				} catch (Exception ex) {
 					string msg = "BOUND_BAR_PUSH_FAILED " + barStreamingAttached.ToString();
-					Assembler.PopupException(msg + msig, e);
+					Assembler.PopupException(msg + msig, ex);
 					continue;
 				}
 			}

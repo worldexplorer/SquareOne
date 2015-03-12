@@ -20,7 +20,6 @@ namespace Sq1.Core.Livesim {
 				Button					btnPauseResume;
 				ChartShadow				chartShadow;
 				LivesimQuoteBarConsumer livesimQuoteBarConsumer;
-				Stopwatch				stopWatch;
 
 
 		public Livesimulator(ScriptExecutor executor) : base(executor) {
@@ -29,7 +28,6 @@ namespace Sq1.Core.Livesim {
 			//base.SeparatePushingThreadEnabled = false;
 			this.livesimQuoteBarConsumer = new LivesimQuoteBarConsumer(this);
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
-			stopWatch = new Stopwatch();
 		}
 
 		protected override void SimulationPreBarsSubstitute_overrideable() {
@@ -146,6 +144,18 @@ namespace Sq1.Core.Livesim {
 				distr.ConsumerQuoteUnsubscribe(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
 				distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
 
+				//if (this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar != this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar) {
+				//    string msg2 = "PARANOID_CHECK QuotesGenerator.BacktestStrokesPerBar[" + this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar
+				//        + "] != ScriptContextCurrent.BacktestStrokesPerBar[" + this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar + "]";
+				//    msg += "BacktestContextRestore will DisplayStatus how many StrokesPerBar was backtested; but since in GUI thread QuoteGenerator will be reset, I do equality check here :(";
+				//    Assembler.PopupException(msg2);
+				//}
+
+				double sec = Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);
+				string strokesPerBar = base.QuotesGenerator.BacktestStrokesPerBar + "/Bar";
+				string stats = "Livesim took [" + sec + "]sec at " + strokesPerBar;
+				this.Executor.LastBacktestStatus = stats + this.Executor.LastBacktestStatus;
+
 				// down there, OnAllBarsBacktested will be raised and ChartFormManager will push performance to reporters.
 				base.Executor.BacktestContextRestore();
 
@@ -199,7 +209,7 @@ namespace Sq1.Core.Livesim {
 					this.Executor.OrderProcessor.DataSnapshot.OrdersRemove(ordersStale);
 					ordersStale.Clear();
 				}
-				this.stopWatch.Restart();
+				base.Stopwatch.Restart();
 
 				this.chartShadow.BeginInvoke((MethodInvoker)delegate { this.executor_BacktesterContextInitializedStep2of4(sender, e); });
 				return;
@@ -226,7 +236,7 @@ namespace Sq1.Core.Livesim {
 				this.btnStartStop.Text = "Start";
 				this.chartShadow.Initialize(base.Executor.Bars, true);
 
-				float seconds = (float)Math.Round(stopWatch.ElapsedMilliseconds / 1000d, 1);
+				float seconds = (float)Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 1);
 				this.btnPauseResume.Text = seconds.ToString() + " sec";
 				this.btnPauseResume.Enabled = false;
 			});
