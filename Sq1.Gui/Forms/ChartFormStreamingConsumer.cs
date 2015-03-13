@@ -1,13 +1,12 @@
 using System;
-using System.Threading;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
-using System.Collections.Generic;
-using Sq1.Core.Indicators;
+
 
 namespace Sq1.Gui.Forms {
 	// ANY_STRATEGY_WILL_RUN_WITH_A_CHART_ITS_NOT_A_SERVER_APPLICATION
@@ -115,7 +114,7 @@ namespace Sq1.Gui.Forms {
 				var scaleSafe = this.Scale;
 				var streamingSafe = this.StreamingAdapter;
 				var staticDeepSafe = this.StreamingSolidifierDeep;
-			} catch (Exception e) {
+			} catch (Exception ex) {
 				return false;
 			}
 			return true;

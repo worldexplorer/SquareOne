@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 using Sq1.Core.Backtesting;
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
-using System.ComponentModel;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {

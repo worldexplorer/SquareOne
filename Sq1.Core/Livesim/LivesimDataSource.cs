@@ -1,6 +1,4 @@
 ﻿using Sq1.Core.Backtesting;
-using Sq1.Core.DataTypes;
-using Sq1.Core.DataFeed;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Livesim {

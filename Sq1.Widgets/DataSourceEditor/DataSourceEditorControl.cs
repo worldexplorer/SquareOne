@@ -37,7 +37,6 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.assemblerInstance = assembler;
 		}
 		public void Initialize(DataSource dsEdit) {
-			this.panel_0 = this.pnlIntro;
 			if (dsEdit == null) {
 				throw new Exception("DataSourceEditor can not create the DataSource; pass an existing datasource for editing, not NULL");
 			}

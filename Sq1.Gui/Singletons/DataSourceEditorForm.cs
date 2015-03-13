@@ -1,7 +1,4 @@
 using System;
-using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.DataFeed;

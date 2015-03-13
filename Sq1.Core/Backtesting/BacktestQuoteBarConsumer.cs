@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
-using Sq1.Core.Indicators;
 
 namespace Sq1.Core.Backtesting {
 	public class BacktestQuoteBarConsumer : IStreamingConsumer {

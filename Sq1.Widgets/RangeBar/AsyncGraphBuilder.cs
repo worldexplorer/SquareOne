@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Threading;
 using System.Timers;
+
 using Sq1.Core;
 
 namespace Sq1.Widgets.RangeBar {

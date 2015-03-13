@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 using Sq1.Core.Execution;
 using Sq1.Core.Serializers;
-using Sq1.Core.Charting;
-using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Broker {
 	public class OrderProcessorDataSnapshot {

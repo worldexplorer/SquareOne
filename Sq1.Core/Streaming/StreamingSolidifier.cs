@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 

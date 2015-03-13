@@ -1,5 +1,5 @@
 using System;
-using Sq1.Widgets;
+
 using Sq1.Widgets.Exceptions;
 
 namespace Sq1.Gui.Singletons {

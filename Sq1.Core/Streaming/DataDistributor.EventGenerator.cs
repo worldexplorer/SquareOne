@@ -1,7 +1,5 @@
 using System;
 
-using Sq1.Core.DataTypes;
-
 namespace Sq1.Core.Streaming {
 	public partial class DataDistributor {
 		public event EventHandler<QuoteEventArgs> OnQuoteAsyncPushedToAllDistributionChannels;

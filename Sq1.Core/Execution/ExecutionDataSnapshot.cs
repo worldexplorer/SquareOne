@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
 
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;

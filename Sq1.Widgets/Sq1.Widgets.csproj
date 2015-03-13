@@ -323,7 +323,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CsvImporter\CsvImporterControl.resx">
-      <DependentUpon>CsvImporterControl.Designer.cs</DependentUpon>
+      <DependentUpon>CsvImporterControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CsvImporter\ImportSourceFileBrowser.resx">
       <DependentUpon>ImportSourceFileBrowser.cs</DependentUpon>
@@ -345,7 +345,7 @@
       <DependentUpon>ExceptionsControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Execution\ExecutionTreeControl.resx">
-      <DependentUpon>ExecutionTreeControl.Designer.cs</DependentUpon>
+      <DependentUpon>ExecutionTreeControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LabeledTextBox\LabeledTextBoxControl.resx">
       <DependentUpon>LabeledTextBoxControl.cs</DependentUpon>
@@ -354,7 +354,7 @@
       <DependentUpon>LivesimControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Optimization\OptimizerControl.resx">
-      <DependentUpon>OptimizerControl.Designer.cs</DependentUpon>
+      <DependentUpon>OptimizerControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProgressBacktestETA\ProgressBarAndLabel.resx">
       <DependentUpon>ProgressBarAndLabel.cs</DependentUpon>

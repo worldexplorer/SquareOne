@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
-using Sq1.Core.Serializers;
 using Sq1.Core.Support;
 using Sq1.Gui.Singletons;
 
@@ -26,8 +23,6 @@ namespace Sq1.Gui {
 			this.DisplayStatus(status + " :: " + message);
 		}
 
-		List<Exception> ExceptionsDuringApplicationShutdown;
-		Serializer<List<Exception>> ExceptionsDuringApplicationShutdownSerializer;
 		public void PopupException(string msg, Exception exc = null, bool debuggingBreak = true) {
 			//if (this.DockPanel == null) return;
 			
@@ -109,19 +104,7 @@ namespace Sq1.Gui {
 			//}
 
 			if (this.MainFormClosingSkipChartFormsRemoval) {
-				if (this.ExceptionsDuringApplicationShutdown == null) {
-					//v1: produced useless "[ null ]" file
-					//this.ExceptionsDuringApplicationShutdown = new List<Exception>();
-					//this.ExceptionsDuringApplicationShutdownSerializer = new Serializer<List<Exception>>();
-					//string now = Assembler.FormattedLongFilename(DateTime.Now);
-					//bool createdNewFile = this.ExceptionsDuringApplicationShutdownSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
-					//	"ExceptionsDuringApplicationShutdown-" + now + ".json", "Exceptions", null, true, true);
-					//this.ExceptionsDuringApplicationShutdown = this.ExceptionsDuringApplicationShutdownSerializer.Deserialize(); 
-					//v2
-					return;
-				}
-				this.ExceptionsDuringApplicationShutdown.Insert(0, exc);
-				this.ExceptionsDuringApplicationShutdownSerializer.Serialize();
+				Assembler.ExceptionsDuringApplicationShutdown_InsertAndSerialize(exc);
 			}
 			try {
 				exceptionsForm.PopupException(msg, exc, debuggingBreak);

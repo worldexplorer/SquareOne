@@ -45,7 +45,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.ignoreSelectionEventDuringPopulate = true;
 			switch (columnNameChanged) {
 				case "colMarketName":
-					if (string.IsNullOrEmpty(cellValueAsString) != null) {
+					if (string.IsNullOrEmpty(cellValueAsString) != false) {
 						marketInfo.Name = cellValueAsString;
 						this.marketInfoRepository.RenameMarketInfoRearrangeDictionary(marketInfo);
 					} else {

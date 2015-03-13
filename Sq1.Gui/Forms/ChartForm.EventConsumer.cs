@@ -8,8 +8,8 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
-using Sq1.Widgets.LabeledTextBox;
 using Sq1.Widgets;
+using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {

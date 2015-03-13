@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {

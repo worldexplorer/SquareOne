@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Windows.Forms;
 
 using Sq1.Core.StrategyBase;
 using Sq1.Gui.Forms;

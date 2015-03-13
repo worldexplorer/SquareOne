@@ -149,7 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ChartControl.resx">
-      <DependentUpon>ChartControl.Designer.cs</DependentUpon>
+      <DependentUpon>ChartControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MultiSplit\MultiSplitter.resx">
       <DependentUpon>MultiSplitter.cs</DependentUpon>

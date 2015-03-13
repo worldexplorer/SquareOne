@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Widgets;
 using Sq1.Core.StrategyBase;
-using Sq1.Gui.Forms;
 
 namespace Sq1.Gui.ReportersSupport {
 	public partial class ReporterFormWrapper : DockContentImproved {

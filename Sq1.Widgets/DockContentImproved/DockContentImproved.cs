@@ -5,7 +5,6 @@ using System.Windows.Forms;
 
 using WeifenLuo.WinFormsUI.Docking;
 using Sq1.Core;
-using System.Threading;
 
 namespace Sq1.Widgets {
 	public class DockContentImproved : DockContent {

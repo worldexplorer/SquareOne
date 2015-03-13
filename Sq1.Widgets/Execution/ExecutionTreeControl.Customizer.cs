@@ -75,7 +75,7 @@ namespace Sq1.Widgets.Execution {
 				var order = o as Order;
 				if (order == null) return "colheDatetime.AspectGetter: order=null";
 				DateTime orderCreated;
-				if (true) {		//this.mniBrokerTime.Checked
+				if (this.mniToggleBrokerTime.Checked) {
 					orderCreated = (order.Alert.QuoteCreatedThisAlertServerTime != DateTime.MinValue)
 						? order.Alert.QuoteCreatedThisAlertServerTime : order.TimeCreatedBroker;
 				} else {
