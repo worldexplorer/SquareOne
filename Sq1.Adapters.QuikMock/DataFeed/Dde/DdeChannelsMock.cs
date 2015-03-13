@@ -1,7 +1,4 @@
-﻿using Sq1.Core;
-using Sq1.Core.Support;
-
-namespace Sq1.Adapters.QuikMock.Dde {
+﻿namespace Sq1.Adapters.QuikMock.Dde {
 	public class DdeChannelsMock {
 		public DdeChannelLastQuoteMock	ChannelQuote		{ get; protected set; }
 		public string					Symbol				{ get; protected set; }

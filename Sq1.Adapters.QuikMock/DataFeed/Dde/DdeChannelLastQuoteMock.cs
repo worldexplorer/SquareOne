@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+
 using Sq1.Adapters.Quik;
 using Sq1.Core;
 using Sq1.Core.DataTypes;

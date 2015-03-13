@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Diagnostics;
 
 using Newtonsoft.Json;
 using Sq1.Core;
@@ -7,10 +8,8 @@ using Sq1.Core.Broker;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
-
 using Sq1.Adapters.Quik;
 using Sq1.Adapters.QuikMock.Terminal;
-using System.Diagnostics;
 
 namespace Sq1.Adapters.QuikMock {
 	public class BrokerMock : BrokerQuik {

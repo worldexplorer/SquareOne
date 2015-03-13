@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 
 using Sq1.Adapters.Quik.Terminal;
@@ -7,7 +6,6 @@ using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.QuikMock.Terminal {
 	public class QuikTerminalMock : QuikTerminal {

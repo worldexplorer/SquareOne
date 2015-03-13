@@ -1,6 +1,6 @@
-﻿using Sq1.Core.DataTypes;
-using Sq1.Adapters.Quik.Dde.XlDde;
+﻿using Sq1.Adapters.Quik.Dde.XlDde;
 using Sq1.Core;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Adapters.Quik.Dde {
 	public class DdeChannelDepth : XlDdeChannel {

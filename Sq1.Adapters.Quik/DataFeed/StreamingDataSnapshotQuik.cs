@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 
 using Newtonsoft.Json;
-using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
-using Sq1.Core;
 
 namespace Sq1.Adapters.Quik {
 	public class StreamingDataSnapshotQuik : StreamingDataSnapshot {
