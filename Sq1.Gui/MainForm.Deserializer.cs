@@ -17,7 +17,6 @@ namespace Sq1.Gui {
 		const string dockContentLayoutXmlInitial = "Sq1.Gui.Layout.Initial.xml";
 		public string LayoutXml { get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXml); } }
 		public string LayoutXmlInitial { get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXmlInitial); } }
-		ChartFormManager chartFormManagerDeserialized;
 	
 		IDockContent persistStringInstantiator(string persistedTypeFullName) {
 			string msig = " //persistStringInstantiator(" + persistedTypeFullName + ")";

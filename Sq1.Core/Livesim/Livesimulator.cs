@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using Sq1.Core.Charting;
 using Sq1.Core.Backtesting;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.DataTypes;
-using Sq1.Core.Indicators;
 using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
 

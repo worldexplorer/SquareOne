@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
+
 using Sq1.Core;
 
 namespace Sq1.Gui.ReportersSupport {

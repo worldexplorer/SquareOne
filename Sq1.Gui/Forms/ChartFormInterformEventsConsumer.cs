@@ -6,8 +6,8 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Widgets.RangeBar;
-using WeifenLuo.WinFormsUI.Docking;
 using Sq1.Widgets;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormInterformEventsConsumer {

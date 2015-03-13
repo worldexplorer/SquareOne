@@ -568,7 +568,6 @@ namespace Sq1.Gui.Forms {
 
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mnitlbShowLastBars;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-		private System.Windows.Forms.ToolStripMenuItem mniStrategyOptimize;
 		private System.Windows.Forms.ToolStripMenuItem mniStrategyContextLoad;
 		public System.Windows.Forms.ToolStripMenuItem MniShowSourceCodeEditor;
 		public System.Windows.Forms.ToolStripMenuItem MniShowOptimizer;

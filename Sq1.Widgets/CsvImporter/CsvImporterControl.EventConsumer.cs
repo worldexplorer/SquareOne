@@ -55,8 +55,10 @@ namespace Sq1.Widgets.CsvImporter {
 					//cb.Width = 95;
 					break;
 				default:
-					throw new Exception("this.olvFieldSetup should contain exactly TWO identical rows; OLV should've passed rowIndex into AspectGetter and CellEdit");
-					break;
+					string msg = "this.olvFieldSetup should contain exactly TWO identical rows; OLV should've passed rowIndex into AspectGetter and CellEdit";
+					//throw new Exception(msg);
+					Assembler.PopupException(msg);
+					return;
 			}
 			if (cb != null) {
 				if (cb.Width - 20 > 90) cb.Width -= 20;
@@ -102,7 +104,9 @@ namespace Sq1.Widgets.CsvImporter {
 					iCatcherEdited.Parser.CsvTypeFormat = selectedFormat;
 					break;
 				default:
-					throw new Exception("this.olvFieldSetup should contain exactly TWO identical rows; OLV should've passed rowIndex into AspectGetter and CellEdit");
+					string msg = "this.olvFieldSetup should contain exactly TWO identical rows; OLV should've passed rowIndex into AspectGetter and CellEdit";
+					//throw new Exception(msg);
+					Assembler.PopupException(msg);
 					break;
 			}
 			editor.SelectedIndexChanged -= cb_SelectedIndexChanged;

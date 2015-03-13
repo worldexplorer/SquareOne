@@ -1,4 +1,5 @@
 using System.ComponentModel;
+
 using Sq1.Core;
 
 namespace Sq1.Gui.Singletons {
@@ -28,6 +29,7 @@ namespace Sq1.Gui.Singletons {
 			base.Dispose(disposing);
 		}
 		private void InitializeComponent() {
+			this.components = new System.ComponentModel.Container();
 			this.ExecutionTreeControl = new Sq1.Widgets.Execution.ExecutionTreeControl();
 			this.SuspendLayout();
 			// 

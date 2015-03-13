@@ -1,7 +1,5 @@
 ﻿using System;
 
-using Sq1.Core.DataFeed;
-
 namespace Sq1.Core.Livesim {
 	public partial class LivesimBrokerEditor {
 		LivesimBrokerSettings livesimBrokerSettings;

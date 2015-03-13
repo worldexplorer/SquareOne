@@ -8,15 +8,15 @@ using WeifenLuo.WinFormsUI.Docking;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
+using Sq1.Core.Repositories;
 using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
-using Sq1.Widgets.Optimization;
-using Sq1.Gui.FormFactories;
 using Sq1.Gui.Forms;
+using Sq1.Gui.FormFactories;
 using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets;
-using Sq1.Core.Repositories;
+using Sq1.Widgets.Optimization;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormManager {

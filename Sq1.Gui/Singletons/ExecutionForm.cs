@@ -3,8 +3,7 @@ using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.Broker;
-using Sq1.Core.Charting;
-using Sq1.Core.Execution;
+
 
 namespace Sq1.Gui.Singletons {
 	public partial class ExecutionForm : DockContentSingleton<ExecutionForm> {

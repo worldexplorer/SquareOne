@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-using System.Diagnostics;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Backtesting;
 

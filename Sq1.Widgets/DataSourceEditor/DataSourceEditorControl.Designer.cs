@@ -1,7 +1,5 @@
 ﻿namespace Sq1.Widgets.DataSourceEditor {
 	partial class DataSourceEditorControl {
-		private System.Windows.Forms.Panel panel_0;
-		private System.Windows.Forms.UserControl userControl_0;
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.Panel pnlIntro;
 		private System.Windows.Forms.Panel pnlContent;

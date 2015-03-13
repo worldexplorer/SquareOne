@@ -6,7 +6,6 @@ using System.IO;
 using Newtonsoft.Json;
 using Sq1.Core.Indicators;
 using Sq1.Core.Livesim;
-using Sq1.Core.Optimization;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class Strategy {

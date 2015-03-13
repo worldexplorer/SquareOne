@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
-using Sq1.Core.Backtesting;
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;

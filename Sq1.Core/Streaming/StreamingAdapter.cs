@@ -5,7 +5,6 @@ using System.Drawing;
 using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
-using Sq1.Core.Support;
 
 namespace Sq1.Core.Streaming {
 	// TODO: it's not an abstract class because....

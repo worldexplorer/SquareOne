@@ -2,9 +2,6 @@
 using System.Windows.Forms;
 
 using Sq1.Core;
-using Sq1.Core.DataTypes;
-using Sq1.Core.Livesim;
-using Sq1.Core.Streaming;
 using Sq1.Widgets;
 
 namespace Sq1.Gui.Forms {

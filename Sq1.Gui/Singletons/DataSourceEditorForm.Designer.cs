@@ -1,7 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Windows.Forms;
-using Sq1.Core;
-using Sq1.Core.DataTypes;
 
 namespace Sq1.Gui.Singletons {
 	public partial class DataSourceEditorForm {
@@ -13,6 +10,7 @@ namespace Sq1.Gui.Singletons {
 			base.Dispose(disposing);
 		}
 		private void InitializeComponent() {
+			this.components = new System.ComponentModel.Container();
 			this.DataSourceEditorControl = new Sq1.Widgets.DataSourceEditor.DataSourceEditorControl();
 			this.SuspendLayout();
 			// 

@@ -5,7 +5,7 @@ using System.Windows.Forms;
 namespace Sq1.Charting {
 	[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
 	public partial class TooltipPosition : UserControl {
-		private IContainer component;
+		private IContainer components;
 		private Label lblEntry;
 		private Label lblExit;
 		private Label lblDistancePoints;
@@ -32,12 +32,13 @@ namespace Sq1.Charting {
 		private Label lblEntrySignalVal;
 		private Label lblExitSignalVal;
 		protected override void Dispose(bool disposing) {
-			if (disposing && this.component != null) {
-				this.component.Dispose();
+			if (disposing && this.components != null) {
+				this.components.Dispose();
 			}
 			base.Dispose(disposing);
 		}
 		private void InitializeComponent() {
+			this.components = new System.ComponentModel.Container();
 			this.lblEntry = new System.Windows.Forms.Label();
 			this.lblExit = new System.Windows.Forms.Label();
 			this.lblDistancePoints = new System.Windows.Forms.Label();

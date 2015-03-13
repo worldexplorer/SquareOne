@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using Sq1.Charting;
-using Sq1.Core.DataTypes;
 using Sq1.Core;
 
 namespace Sq1.Gui.Forms {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 using Newtonsoft.Json;
 using Sq1.Core.DataTypes;

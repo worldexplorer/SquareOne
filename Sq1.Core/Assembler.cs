@@ -11,7 +11,6 @@ using Sq1.Core.Execution;
 using Sq1.Core.Repositories;
 using Sq1.Core.Serializers;
 using Sq1.Core.Support;
-using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core {
 	public class Assembler {
@@ -34,7 +33,6 @@ namespace Sq1.Core {
 		public	AssemblerDataSnapshot					AssemblerDataSnapshot;
 		public	Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;
 
-		
 		public	const string							DateTimeFormatIndicatorHasNoValuesFor = "yyyy-MMM-dd ddd HH:mm";
 		public	const string							DateTimeFormatLong = "HH:mm:ss.fff ddd dd MMM yyyy";
 		public	const string							DateTimeFormatLongFilename = "yyyy-MMM-dd_ddd_HH.mm.ss";
@@ -139,6 +137,7 @@ namespace Sq1.Core {
 			
 			AssemblerDataSnapshot					= new AssemblerDataSnapshot();
 			AssemblerDataSnapshotSerializer			= new Serializer<AssemblerDataSnapshot>();
+
 		}
 		public Assembler Initialize(IStatusReporter mainForm) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
@@ -244,5 +243,30 @@ namespace Sq1.Core {
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
 			Assembler.InstanceInitialized.StatusReporter.DisplayConnectionStatus(state, msg);
 		}
+
+		#region self-managed, no need to construct nor initialize
+		public static void ExceptionsDuringApplicationShutdown_InsertAndSerialize(Exception exc, int indexToInsert = 0) {
+			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
+			Assembler.InstanceInitialized.exceptionsDuringApplicationShutdown_InsertAndSerialize(exc, indexToInsert);
+		}
+		
+		public	List<Exception>							ExceptionsDuringApplicationShutdown;
+		public	Serializer<List<Exception>>				ExceptionsDuringApplicationShutdownSerializer;
+		public void exceptionsDuringApplicationShutdown_InsertAndSerialize(Exception exc, int indexToInsert = 0) {
+			if (this.ExceptionsDuringApplicationShutdown == null) {
+				//v1 TRYING_TO_FIX_BY_MOVING_TO_ASSEMBLER produced useless "[ null ]" file
+				this.ExceptionsDuringApplicationShutdown = new List<Exception>();
+				this.ExceptionsDuringApplicationShutdownSerializer = new Serializer<List<Exception>>();
+				string now = Assembler.FormattedLongFilename(DateTime.Now);
+				bool createdNewFile = this.ExceptionsDuringApplicationShutdownSerializer.Initialize(this.AppDataPath,
+					"ExceptionsDuringApplicationShutdown-" + now + ".json", "Exceptions", null, true, true);
+				this.ExceptionsDuringApplicationShutdown = this.ExceptionsDuringApplicationShutdownSerializer.Deserialize(); 
+				//v2
+				//return;
+			}
+			this.ExceptionsDuringApplicationShutdown.Insert(0, exc);
+			this.ExceptionsDuringApplicationShutdownSerializer.Serialize();
+		}
+		#endregion
 	}
 }
