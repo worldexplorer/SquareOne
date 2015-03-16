@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -8,43 +9,43 @@ using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.DoubleBuffered;
+using Sq1.Charting.MultiSplit;
 
 namespace Sq1.Charting {
 	public partial class PanelBase :
-		//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH #if NON_DOUBLE_BUFFERED
-		//Panel
-		//#else
-		PanelDoubleBuffered
-		//UserControlDoubleBuffered
-		//#endif
-		, HostPanelForIndicator
-	{
-		//[Browsable(true), EditorBrowsable(EditorBrowsableState.Always)]
-		public string PanelName { get; set; }
-		[Browsable(false)] public string BarsIdent { get; set; }		//if a public field isn't a property, Designer will crash
-		public bool GutterRightDraw { get; set; }
-		public bool GutterBottomDraw { get; set; }
-		
-		public bool ImPaintingForegroundNow = false;
-		public bool ImPaintingBackgroundNow = false;
+#if NON_DOUBLE_BUFFERED
+//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH Panel
+#else
+			PanelDoubleBuffered //UserControlDoubleBuffered
+#endif
+			, HostPanelForIndicator {
 
-		[Browsable(false)] public string PanelNameAndSymbol { get { return this.PanelName + " " + this.BarsIdent; } }
-		[Browsable(false)] public ChartControl ChartControl;	//{ get { return base.Parent as ChartControl; } }
-		int chartLabelsUpperLeftYincremental;
+		//[Browsable(true), EditorBrowsable(EditorBrowsableState.Always)]
+							public	string			PanelName			{ get; set; }
+		[Browsable(false)]	public	string			BarsIdent			{ get; set; }		//if a public field isn't a property, Designer will crash
+							public	bool			GutterRightDraw		{ get; set; }
+							public	bool			GutterBottomDraw	{ get; set; }
+		
+							public	bool			ImPaintingForegroundNow = false;
+							public	bool			ImPaintingBackgroundNow = false;
+
+		[Browsable(false)]	public	string			PanelNameAndSymbol	{ get { return this.PanelName + " " + this.BarsIdent; } }
+		[Browsable(false)]	public	ChartControl	ChartControl;		//{ get { return base.Parent as ChartControl; } }
+							protected int			ChartLabelsUpperLeftYincremental;
 		
 		// price, volume or indicator-calculated; not abstract for Designer to throw less exceptions
-		[Browsable(false)] public virtual double VisibleMinDoubleMaxValueUnsafe { get {
+		[Browsable(false)]	public	virtual	double	VisibleMinDoubleMaxValueUnsafe { get {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 			throw new NotImplementedException(); } }
-		[Browsable(false)] public virtual double VisibleMaxDoubleMinValueUnsafe { get {
+		[Browsable(false)]	public	virtual	double	VisibleMaxDoubleMinValueUnsafe { get {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 			throw new NotImplementedException(); } }
 		// USE_CACHED_VARIABLE_INSTEAD [Browsable(false)] public virtual double VisibleRange { get { return this.VisibleMax - this.VisibleMin; } }
-		[Browsable(false)] public virtual double FirstNonNanBetweenLeftRight { get {
+		[Browsable(false)]	public	virtual	double	FirstNonNanBetweenLeftRight { get {
 				double ret = double.NaN;
 				if (this.VisibleBarRight_cached > this.ValueIndexLastAvailableMinusOneUnsafe) return ret;
 				for (int i=this.VisibleBarLeft_cached; i<this.VisibleBarRight_cached; i++) {
@@ -58,13 +59,13 @@ namespace Sq1.Charting {
 		// PanelPrice		must return bars[barIndexMouseOvered].Close
 		// PanelVolume		must return bars[barIndexMouseOvered].Volume
 		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
-		public virtual double PanelValueForBarMouseOveredNaNunsafe { get {
+							public	virtual	double	PanelValueForBarMouseOveredNaNunsafe { get {
 				double ret = double.NaN;
 				if (this.ChartControl.BarIndexMouseIsOverNow == -1) return ret;
 				ret = this.ValueGetNaNunsafe(this.ChartControl.BarIndexMouseIsOverNow);
 				return ret;
 			} }
-		public virtual bool PanelHasValuesForVisibleBarWindow { get {
+							public	virtual	bool	PanelHasValuesForVisibleBarWindow { get {
 				string msig = this.ToString();
 				bool ret = false;
 				if (this.VisibleBarRight_cached == -1) {
@@ -85,29 +86,28 @@ namespace Sq1.Charting {
 				ret = this.VisibleBarRight_cached <= this.ValueIndexLastAvailableMinusOneUnsafe;
 				return ret;
 			} }
-		public virtual double ValueGetNaNunsafe(int barIndex) {
+							public	virtual	double	ValueGetNaNunsafe(int barIndex) {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 			throw new NotImplementedException();
 		}
 		// REASON_TO_EXIST: for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
-		public virtual int Decimals { get {
+							public	virtual	int		Decimals { get {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 			throw new NotImplementedException(); } }
-		public string Format { get { return "N" + (this.Decimals + 1); } }
-		public virtual int ValueIndexLastAvailableMinusOneUnsafe { get {
+							public			string	Format { get { return "N" + (this.Decimals + 1); } }
+							public	virtual	int		ValueIndexLastAvailableMinusOneUnsafe { get {
 				#if DEBUG
 				Debugger.Break();
 				#endif
 				throw new NotImplementedException();
 			} }
 		
-		#region Panel.Width and Panel.Height - dependant (cache and recalculate once per Resize/Paint))
-		[Browsable(false)]
-		public int PanelHeightMinusGutterBottomHeight { get {
+		#region Panel.Width and Panel.Height - dependant
+		[Browsable(false)]	public			int		PanelHeightMinusGutterBottomHeight { get {
 				int ret = base.Height;
 				if (this.GutterBottomDraw) {
 					if (this.GutterBottomHeight_cached <= 0) {
@@ -119,58 +119,33 @@ namespace Sq1.Charting {
 				}
 				return ret;
 			} }
-		[Browsable(false)]
-		private int PanelWidthMinusRightPriceGutter { get {
+		[Browsable(false)]	private			int		PanelWidthMinusRightPriceGutter { get {
 				int ret = base.Width;
 				// if (base.DesignMode) this.ChartControl will be NULL
 				if (this.GutterRightDraw) ret -= (this.ChartControl != null) ? this.ChartControl.GutterRightWidth_cached : 60;
 				return ret;
 			} }
-		
-		protected int VisibleBarRight_cached;
-		protected int VisibleBarLeft_cached;
-		protected int VisibleBarsCount_cached;
 
-		protected double VisibleMin_cached;
-		protected double VisibleMax_cached;
-		protected double VisibleRange_cached;
-		
-		protected double VisibleMinMinusTopSqueezer_cached;
-		protected double VisibleMaxPlusBottomSqueezer_cached;
-		protected double VisibleRangeWithTwoSqueezers_cached;
-		
-		
-		protected int BarWidthIncludingPadding_cached;
-		protected int BarWidthMinusRightPadding_cached;
-		protected int BarShadowXoffset_cached;
-		protected int PanelHeightMinusGutterBottomHeight_cached;
-		
-	 	protected int GutterRightFontHeight_cached = -1;
-	 	protected int GutterRightFontHeightHalf_cached = -1;
-	 	protected int GutterBottomFontHeight_cached = -1;
-	 	protected int GutterBottomHeight_cached = -1;
 		#endregion
 		
-		public bool ThisPanelIsPricePanel;
-		public bool ThisPanelIsVolumePanel;
-		public bool ThisPanelIsIndicatorPanel;
+							public			bool	ThisPanelIsPricePanel;
+							public			bool	ThisPanelIsVolumePanel;
+							public			bool	ThisPanelIsIndicatorPanel;
 
-		[Browsable(false)] public virtual int PaddingVerticalSqueeze { get { return 0; } }
+		[Browsable(false)]	public	virtual	int		PaddingVerticalSqueeze { get { return 0; } }
 
-		[Browsable(false)]
-		public int VisibleBarRightExisting { get {
+		[Browsable(false)]	public			int		VisibleBarRightExisting { get {
 				int ret = this.VisibleBarRight_cached;
 				if (this.VisibleBarRight_cached >= this.ChartControl.Bars.Count) ret = this.ChartControl.Bars.Count - 1;
 				return ret;
 			} }
-		[Browsable(false)]
-		public int VisibleBarLeftExisting { get {
+		[Browsable(false)]	public			int		VisibleBarLeftExisting { get {
 				int ret = this.VisibleBarLeft_cached;
 				if (this.VisibleBarLeft_cached >= this.ChartControl.Bars.Count) ret = this.ChartControl.Bars.Count - 1;
 				return ret;
 			} }
 
-		string formatForBars { get {
+											string	formatForBars { get {
 				string ret = "FORMAT_FOR_BARS_UNDEFINED";
 				Bars bars = this.ChartControl.Bars;
 				switch (bars.ScaleInterval.Scale) {
@@ -184,7 +159,29 @@ namespace Sq1.Charting {
 				}
 				return ret;
 			} }
-		public int BarShadowOffset { get { return this.ChartControl.ChartSettings.BarShadowXoffset; } }
+							public			int		BarShadowOffset { get { return this.ChartControl.ChartSettings.BarShadowXoffset; } }
+
+							// only used in PanelLeve2 to grow to the left if PanelLeve2 is on the left of PanelPrice, or grow to the right if PanelLeve2 is on the right of PanelPrice
+							protected		MultiSplitContainer ParentMultiSplitContainerNullUnsafe { get {return base.Parent as MultiSplitContainer; } }
+							protected		List<Control>		ParentMultiSplitSiblings { get {
+								return this.ParentMultiSplitContainerNullUnsafe != null
+									? this.ParentMultiSplitContainerNullUnsafe.ControlsContained
+									: new List<Control>(); } }
+							protected		bool	ParentMultiSplitIamFirst { get { return this.ParentMultiSplitSiblings.IndexOf(this) == 0; } }
+							protected		bool	ParentMultiSplitIamLast  { get { return this.ParentMultiSplitSiblings.IndexOf(this) == this.ParentMultiSplitSiblings.Count - 1; } }
+							public			Point	ParentMultiSplitMyLocationAmongAllPanels { get {
+								Point ret = new Point(-1, -1);
+								foreach (Control meOrMySibling in this.ParentMultiSplitSiblings) {
+									if (meOrMySibling != this) continue;
+									ret = meOrMySibling.Location;
+									break;
+								}
+								if (ret.X == -1) {
+									string msg = "I_MUST_BE_IN_THE_LIST_OF_MULTISPLITTER_CONTENT_BUT_NOT_FOUND_NONSENSE";
+									Assembler.PopupException(msg);
+								}
+								return ret;
+							} }
 
 		public PanelBase() {
 			this.PanelName = "UNINITIALIZED_PANEL_NAME_PanelNamedFolding";
@@ -201,7 +198,7 @@ namespace Sq1.Charting {
 			this.ChartControl = chartControl;
 			this.BarsIdent = barsIdent;
 		}
-		public void InitializeWithNonEmptyBars(ChartControl chartControl) {
+		public virtual void InitializeWithNonEmptyBars(ChartControl chartControl) {
 			string barsIdent = chartControl.Bars.ToString();
 			barsIdent = chartControl.Bars.SymbolIntervalScale;
 			this.Initialize(chartControl, barsIdent);
@@ -209,19 +206,33 @@ namespace Sq1.Charting {
 		public void DrawError(Graphics g, string msg) {
 			this.DrawLabelOnNextLine(g, msg, null, Color.Red, Color.Empty);
 		}
-		//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD #if NON_DOUBLE_BUFFERED
-		//protected override void OnResize(EventArgs e) {	//PanelDoubleBuffered does this already to DisposeAndNullify managed Graphics
-		//	if (base.DesignMode) return;
-		//	base.OnResize(e);	// empty inside but who knows what useful job it does?
-		//	base.Invalidate();	// SplitterMoved => repaint; Panel and UserControl don't have that (why?)
-		//}
-		//protected override void OnPaint(PaintEventArgs e) {
-		//	base.OnPaint(e);
-		//#else
+
+//#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD
+//		protected override void OnResize(EventArgs e) {	//PanelDoubleBuffered does this already to DisposeAndNullify managed Graphics
+//			if (base.DesignMode) return;
+//			base.OnResize(e);	// empty inside but who knows what useful job it does?
+//			base.Invalidate();	// SplitterMoved => repaint; Panel and UserControl don't have that (why?)
+//		}
+//		protected override void OnPaint(PaintEventArgs e) {
+//			base.OnPaint(e);
+//#else
 		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
-		//#endif
+//#endif
 			string msig = " " + this.PanelName + ".OnPaintDoubleBuffered()";
 			if (this.DesignMode) return;
+			if (this.ChartControl == null) {
+				string msg = "PanelNamedFolding[" + this.PanelName + "].ChartControl=null; invoke PanelNamedFolding.Initialize() from derived.ctor()";
+				Assembler.PopupException(msg + msig, null, false);
+				this.DrawError(e.Graphics, msg);
+				return;
+			}
+			if (this.ChartControl.BarsEmpty) {
+				string msg = "CHART_CONTROL_BARS_NULL_OR_EMPTY: this.ChartControl.BarsEmpty ";
+				//if (this.ChartControl.Bars != null) msg = "BUG: bars=[" + this.ChartControl.Bars + "]";
+				Assembler.PopupException(msg + msig, null, false);
+				this.DrawError(e.Graphics, msg + msig);
+				return;
+			}
 			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
 
 			//v1 if (this.VisibleBarLeft_cached != this.ChartControl.Bars.Count) {
@@ -242,19 +253,6 @@ namespace Sq1.Charting {
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 			
-			if (this.ChartControl == null) {
-				string msg = "PanelNamedFolding[" + this.PanelName + "].ChartControl=null; invoke PanelNamedFolding.Initialize() from derived.ctor()";
-				Assembler.PopupException(msg);
-				this.DrawError(e.Graphics, msg);
-				return;
-			}
-			if (this.ChartControl.BarsEmpty) {
-				string msg = "CHART_CONTROL_BARS_NULL_OR_EMPTY: this.ChartControl.BarsEmpty ";
-				//if (this.ChartControl.Bars != null) msg = "BUG: bars=[" + this.ChartControl.Bars + "]";
-				Assembler.PopupException(msg + msig, null, false);
-				this.DrawError(e.Graphics, msg + msig);
-				return;
-			}
 			this.ChartControl.SyncHorizontalScrollToBarsCount();
 
 //			if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
@@ -366,12 +364,12 @@ namespace Sq1.Charting {
 		}
 
 
-		//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD #if NON_DOUBLE_BUFFERED
-		//protected override void OnPaintBackground(PaintEventArgs e) {
-		//	base.OnPaintBackground(e);
-		//#else
+//#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
+//		protected override void OnPaintBackground(PaintEventArgs e) {
+//			base.OnPaintBackground(e);
+//#else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
-		//#endif
+//#endif
 			string msig = " " + this.PanelName + ".OnPaintBackgroundDoubleBuffered()";
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			//if (this.DesignMode) return;
@@ -399,7 +397,7 @@ namespace Sq1.Charting {
 				this.DrawError(e.Graphics, msig + msg);
 				return;
 			}
-			this.chartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
+			this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
 			//if (this.ChartControl.BarsNotEmpty) {}
 			this.ChartControl.SyncHorizontalScrollToBarsCount();
 			

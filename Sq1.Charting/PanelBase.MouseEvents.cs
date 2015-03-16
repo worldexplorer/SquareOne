@@ -33,6 +33,7 @@ namespace Sq1.Charting {
 		protected override void OnMouseEnter(EventArgs e) {
 			if (base.DesignMode) return;
 			base.OnMouseEnter(e);
+			if (this.ChartControl == null) return;
 			this.scrollingHorizontally = false;
 			this.squeezingHorizontally = false;
 			this.squeezingVertically = false;
@@ -44,6 +45,7 @@ namespace Sq1.Charting {
 		protected override void OnMouseLeave(EventArgs e) {
 			if (base.DesignMode) return;
 			base.OnMouseLeave(e);
+			if (this.ChartControl == null) return;
 			
 			//this.ChartControl.TooltipPrice.ClientRectangle.Contains(e.
 			//if (this.ChartControl.TooltipPriceShown && ) {
@@ -77,6 +79,7 @@ namespace Sq1.Charting {
 			this.ChartControl.InvalidateAllPanels();	//	DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES
 		}
 		protected override void OnMouseDown(MouseEventArgs e) {
+			if (this.ChartControl == null) return;
 			if (e.Button != MouseButtons.Left) return;
 			this.dragButtonPressed = true;
 			this.scrollingHorizontally = false;
@@ -84,6 +87,7 @@ namespace Sq1.Charting {
 			this.squeezingVertically = false;
 		}
 		protected override void OnMouseUp(MouseEventArgs e) {
+			if (this.ChartControl == null) return;
 			if (e.Button != MouseButtons.Left) return;
 			if (this.scrollingHorizontally || this.squeezingHorizontally || this.squeezingVertically) {
 				this.ChartControl.RaiseChartSettingsChangedContainerShouldSerialize();
@@ -97,6 +101,8 @@ namespace Sq1.Charting {
 		}
 		protected override void OnMouseMove(MouseEventArgs e) {
 			if (base.DesignMode) return;
+			if (this.ChartControl == null) return;
+			
 			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
 				//this.Cursor = Cursors.WaitCursor;
 				return;
@@ -247,6 +253,7 @@ namespace Sq1.Charting {
 						this.Cursor = Cursors.PanSouth;
 						this.ChartControl.DragUpUnsqueeze();
 					}
+					this.RaisePanelPriceSqueezed();
 				}
 				
 				if (this.moveHorizontalXprev == e.X && this.moveHorizontalYprev == e.Y) {

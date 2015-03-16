@@ -5,23 +5,31 @@ using Newtonsoft.Json;
 namespace Sq1.Core.DataTypes {
 	public partial class Bars {
 		[JsonIgnore]	public Bar BarStaticFirstNullUnsafe { get {
-				Bar last = base.BarFirst;
-				if (last == null) return null; 
-				if (last != this.BarStreaming) return last;
-				return null;
-				//throw new Exception("Bars.BarLast point to Bars.StreamingBar???");
-			} }
+			Bar last = base.BarFirst;
+			if (last == null) return null; 
+			if (last != this.BarStreaming) return last;
+			return null;
+			//throw new Exception("Bars.BarLast point to Bars.StreamingBar???");
+		} }
 		[JsonIgnore]	public Bar BarStaticLastNullUnsafe { get {
-				Bar last = base.BarLast;
-				if (last == null) return null; 
-				if (last != this.BarStreaming) return last;
-				Bar preLast = base.BarPreLast;
-				if (preLast == null) return null;
-				if (preLast != this.BarStreaming) return preLast;
-				//return null;
-				throw new Exception("both Bars.BarLast and Bars.BarPreLast point to Bars.StreamingBar???");
-			}
-		}
+			Bar last = base.BarLast;
+			if (last == null) return null; 
+			if (last != this.BarStreaming) return last;
+			Bar preLast = base.BarPreLast;
+			if (preLast == null) return null;
+			if (preLast != this.BarStreaming) return preLast;
+			//return null;
+			throw new Exception("both Bars.BarLast and Bars.BarPreLast point to Bars.StreamingBar???");
+		} }
+		public Quote LastQuoteCloneNullUnsafe { get {
+			Quote ret = null;
+			if (this.DataSource == null) return ret;
+			if (this.DataSource.StreamingAdapter == null) return ret;
+			if (this.DataSource.StreamingAdapter.StreamingDataSnapshot == null) return ret;
+			ret = this.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(this.Symbol);
+			return ret;
+		} }
+
 //		public Bar BarMarketClosedTodayScanBackward(Bar barLastToday) {
 //			Bar ret = null;
 //			if (barLastToday == null) return ret;

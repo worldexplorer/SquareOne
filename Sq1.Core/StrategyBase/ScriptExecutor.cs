@@ -581,14 +581,6 @@ namespace Sq1.Core.StrategyBase {
 		public double AlignAlertPriceToPriceLevel(Bars bars, double orderPrice, bool buyOrShort, PositionLongShort positionLongShort0, MarketLimitStop marketLimitStop0) {
 			if (this.Strategy.ScriptContextCurrent.NoDecimalRoundingForLimitStopPrice) return orderPrice;
 			if (bars == null) bars = this.Bars;
-			if (bars.SymbolInfo.PriceLevelSizeForBonds == 0.0) {
-				string text = "1";
-				if (this.Strategy.ScriptContextCurrent.PriceLevelSizeForBonds > 0) {
-					text = text.PadRight(this.Strategy.ScriptContextCurrent.PriceLevelSizeForBonds + 1, '0');
-					bars.SymbolInfo.PriceLevelSizeForBonds = 1.0 / (double)Convert.ToInt32(text);
-				}
-				return orderPrice;
-			}
 			orderPrice = bars.SymbolInfo.AlignAlertToPriceLevel(orderPrice, buyOrShort, positionLongShort0, marketLimitStop0);
 			return orderPrice;
 		}
@@ -609,7 +601,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Strategy.ScriptContextCurrent.EnableSlippage == false) return 0.0;
 			if (isLimitOrder && this.Strategy.ScriptContextCurrent.LimitOrderSlippage == false) return 0.0;
 			if (this.Bars.SymbolInfo.SecurityType == SecurityType.Future) {
-				return (double)this.Strategy.ScriptContextCurrent.SlippageTicks * this.Bars.SymbolInfo.PriceLevelSizeForBonds;
+				return (double)this.Strategy.ScriptContextCurrent.SlippageTicks * this.Bars.SymbolInfo.PriceStep;
 			}
 			double ret = 0.01 * this.Strategy.ScriptContextCurrent.SlippageUnits * priceAligned;
 			//if (direction == Direction.Short || direction == Direction.Sell) ret = -ret;

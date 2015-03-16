@@ -390,8 +390,8 @@ namespace Sq1.Gui.Forms {
 			}
 
 			// #1/4 launch update in GUI thread
+			//MOVED_TO_chartControl_BarAddedUpdated_ShouldTriggerRepaint chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = quote.Clone();
 			chartFormSafe.PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution(quote);
-			chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = quote.Clone();
 
 			// #2/4 execute strategy in the thread of a StreamingAdapter (DDE server for MockQuickProvider)
 			if (executorSafe.Strategy != null) {

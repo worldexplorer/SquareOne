@@ -26,12 +26,15 @@ namespace Sq1.Core.Livesim {
 		[JsonProperty]	public	int		AdaperDisconnectReconnectsAfterMillisMax;
 		[JsonProperty]	public	bool	AdaperDisconnectEnabled;
 
+		[JsonProperty]	public	int		LevelTwoLevelsToGenerate;
+
 		public LivesimStreamingSettings(Strategy strategy) : base() {
 			base.Initialize(strategy);
 			DelayBetweenSerialQuotesEnabled = true;
 			OutOfOrderQuoteDeliveryEnabled = true;
 			QuoteGenerationFreezeEnabled = true;
 			AdaperDisconnectEnabled = true;
+			LevelTwoLevelsToGenerate = 10;
 		}
 	}
 }

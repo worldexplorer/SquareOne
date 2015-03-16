@@ -104,15 +104,15 @@ namespace Sq1.Charting {
 			Position positionToPopup = arrowFoundForPosition.Position;
 			bool placeAtLeft = arrowFoundForPosition.ArrowIsForPositionEntry;
 
-			if (this.panelPrice == null) {
+			if (this.PanelPrice == null) {
 				#if DEBUG
 				Debugger.Break();
 				#endif
-				string msg = "NEED_NON_NULL_PANEL_PRICE_TO_GET_X_OF_BAR this.panelPrice[" + this.panelPrice + "]";
+				string msg = "NEED_NON_NULL_PANEL_PRICE_TO_GET_X_OF_BAR this.panelPrice[" + this.PanelPrice + "]";
 				return tooltipPositionShown;
 			}
 			
-			int barX = this.panelPrice.BarToX(barIndex);		// HACK NPE-vulnerable
+			int barX = this.PanelPrice.BarToX(barIndex);		// HACK NPE-vulnerable
 			Rectangle rectangleYarrowXbar = new Rectangle();
 			rectangleYarrowXbar.X		= barX;
 			rectangleYarrowXbar.Width	= this.ChartSettings.BarWidthIncludingPadding;		//arrowFoundForMouse.Width;
@@ -146,15 +146,15 @@ namespace Sq1.Charting {
 		Dictionary<Indicator, PanelIndicator> PanelsByIndicator = new Dictionary<Indicator, PanelIndicator>();
 		public override void HostPanelForIndicatorClear() {
 			foreach (PanelIndicator panel in this.PanelsByIndicator.Values) {
-				this.panels.Remove(panel);
-				this.multiSplitContainer.PanelRemove(panel);
+				this.panelsInvalidateAll.Remove(panel);
+				this.multiSplitContainerRows.PanelRemove(panel);
 			}
 			this.PanelsByIndicator.Clear();
 		}
 		public override HostPanelForIndicator HostPanelForIndicatorGet(Indicator indicator) {
 			bool needToReReadSplitterPositionsSinceIndicatorsWereAdded = false;
 			switch (indicator.ChartPanelType) {
-				case ChartPanelType.PanelPrice: return this.panelPrice;
+				case ChartPanelType.PanelPrice: return this.PanelPrice;
 				case ChartPanelType.PanelVolume: return this.panelVolume;
 				case ChartPanelType.PanelIndicatorSingle:
 					PanelIndicator ret;
@@ -171,8 +171,8 @@ namespace Sq1.Charting {
 						}
 						
 						this.PanelsByIndicator.Add(indicator, panel);
-						this.panels.Add(panel);
-						this.multiSplitContainer.PanelAddSplitterCreateAdd(panel, true);		//, this.ChartSettings.MultiSplitterPropertiesByPanelName);
+						this.panelsInvalidateAll.Add(panel);
+						this.multiSplitContainerRows.PanelAddSplitterCreateAdd(panel, true);		//, this.ChartSettings.MultiSplitterPropertiesByPanelName);
 						needToReReadSplitterPositionsSinceIndicatorsWereAdded = true;
 					}
 					ret = this.PanelsByIndicator[indicator];
@@ -284,7 +284,7 @@ namespace Sq1.Charting {
 			return barAnnotation.Status;
 		}
 		public override void SyncBarsIdentDueToSymbolRename() {
-			foreach (PanelBase panelFolding in this.panels) {	// at least PanelPrice and PanelVolume
+			foreach (PanelBase panelFolding in this.panelsInvalidateAll) {	// at least PanelPrice and PanelVolume
 				panelFolding.InitializeWithNonEmptyBars(this);
 				panelFolding.Invalidate();
 			}

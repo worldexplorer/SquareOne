@@ -35,17 +35,30 @@
     "GutterBottomDateFormatDaily": "ddd dd-MMM",
     "GutterBottomDateFormatWeekly": "MMM-yy",
     "GutterBottomDateFormatYearly": "yyyy",
-    "MultiSplitterPropertiesByPanelName": {
+    "MultiSplitterRowsPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "Volume": {
+      "panelVolume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0
       },
-      "Price": {
+      "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 30
+        "Distance": 33
+      }
+    },
+    "MultiSplitterColumnsPropertiesByPanelName": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
+      "multiSplitContainerRows": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 0,
+        "Distance": 0
+      },
+      "panelLevel2": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 555
       }
     },
     "ChartColorBackground": "White",
@@ -119,7 +132,15 @@
     "SpreadAskLineColorAlpha": 64,
     "SpreadAskLineWidth": 1,
     "SpreadLabelFont": "Consolas, 8pt",
-    "SpreadLabelColor": "DarkGray"
+    "SpreadLabelColor": "DarkGray",
+    "LevelTwoColorBackgroundStreamingHasNoLastQuote": "DarkGray",
+    "LevelTwoColorBackground": "White",
+    "LevelTwoLotsColorBackground": "WhiteSmoke",
+    "LevelTwoLotsColorForeground": "Black",
+    "LevelTwoAskColorBackground": "255, 230, 230",
+    "LevelTwoAskColorContour": "205, 180, 180",
+    "LevelTwoBidColorBackground": "230, 255, 230",
+    "LevelTwoBidColorContour": "180, 205, 180"
   },
   "ChartSerno": 9,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"

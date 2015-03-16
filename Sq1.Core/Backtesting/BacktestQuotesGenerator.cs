@@ -494,7 +494,7 @@ namespace Sq1.Core.Backtesting {
 					//TESTED Debugger.Break();
 					//double minimalValue = Math.Pow(1, -decimalsVolume);		// 1^(-2) = 0.01
 					#endif
-					volumeOneQuarterOfBar = barSimulated.ParentBars.SymbolInfo.VolumeMinimalStepFromDecimal;
+					volumeOneQuarterOfBar = barSimulated.ParentBars.SymbolInfo.VolumeStepFromDecimal;
 				}
 			}
 			if (volumeOneQuarterOfBar == 0) {

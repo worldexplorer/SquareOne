@@ -38,7 +38,7 @@ namespace Sq1.Widgets.Exceptions {
 			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
 			//v3
-			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
+			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
 			if (this.DataSnapshot.SplitDistanceVertical == this.splitContainerVertical.SplitterDistance) return;
 			this.DataSnapshot.SplitDistanceVertical = this.splitContainerVertical.SplitterDistance;
 			this.DataSnapshotSerializer.Serialize();
@@ -57,7 +57,7 @@ namespace Sq1.Widgets.Exceptions {
 			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
 			//v3
-			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
+			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
 			if (this.DataSnapshot.SplitDistanceHorizontal == this.splitContainerHorizontal.SplitterDistance) return;
 			this.DataSnapshot.SplitDistanceHorizontal = this.splitContainerHorizontal.SplitterDistance;
 			this.DataSnapshotSerializer.Serialize();

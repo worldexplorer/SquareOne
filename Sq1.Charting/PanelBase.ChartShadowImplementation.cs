@@ -40,7 +40,7 @@ namespace Sq1.Charting {
 			//if (this.DesignMode) return;
 			// if (base.DesignMode) this.ChartControl will be NULL
 			int x = (this.ChartControl != null) ? this.ChartControl.ChartSettings.ChartLabelsUpperLeftX : 5;
-			int y = this.chartLabelsUpperLeftYincremental;
+			int y = this.ChartLabelsUpperLeftYincremental;
 
 			SizeF measurements = this.DrawLabel(g, x, y, msg, font, colorForeground, colorBackground, drawIndicatorSquare);
 			
@@ -53,10 +53,10 @@ namespace Sq1.Charting {
 
 			int lineSpacing = (int) labelHeightMeasured / 8;
 			if (lineSpacing == 0) lineSpacing = 1; 
-			this.chartLabelsUpperLeftYincremental += labelHeightMeasured + lineSpacing;
+			this.ChartLabelsUpperLeftYincremental += labelHeightMeasured + lineSpacing;
 			if (drawBackgroundRectangle) {
 				// if (base.DesignMode) this.ChartControl will be NULL
-				this.chartLabelsUpperLeftYincremental += (this.ChartControl != null) ? this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2 : 15;
+				this.ChartLabelsUpperLeftYincremental += (this.ChartControl != null) ? this.ChartControl.ChartSettings.ChartLabelsUpperLeftPlatePadding * 2 : 15;
 			}
 		}
 		public SizeF DrawLabel(Graphics g, int x, int y, string msg,
@@ -74,10 +74,10 @@ namespace Sq1.Charting {
 			if (y < 0) y = 0;
 
 			// Y_BEYOUND_VISIBLE_DUE_TO_EXCEEDED_BAR_ANNOTATION_PADDING
-			if (y > this.PanelHeightMinusGutterBottomHeight_cached) {
+			if (this.PanelHeightMinusGutterBottomHeight_cached > 0 && y > this.PanelHeightMinusGutterBottomHeight_cached) {
 				y = this.PanelHeightMinusGutterBottomHeight_cached - labelMeasuredHeight;
 			}
-			if (x > this.PanelWidthMinusRightPriceGutter) {
+			if (this.PanelHeightMinusGutterBottomHeight_cached > 0 && x > this.PanelWidthMinusRightPriceGutter) {
 				x = this.PanelHeightMinusGutterBottomHeight_cached - labelMeasuredHeight;
 			}
 			
@@ -107,7 +107,7 @@ namespace Sq1.Charting {
 					//x += this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding;
 					Rectangle square = new Rectangle();
 					square.X = x;
-					square.Y = this.chartLabelsUpperLeftYincremental + this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding;
+					square.Y = this.ChartLabelsUpperLeftYincremental + this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquarePadding;
 					square.Width = this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquareSize;
 					square.Height = this.ChartControl.ChartSettings.ChartLabelsUpperLeftIndicatorSquareSize;
 					g.FillRectangle(brushLabel, square);

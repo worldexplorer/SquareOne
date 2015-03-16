@@ -3,46 +3,40 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Charting.MultiSplit {
-	public class MultiSplitter : UserControl {
-		public PanelBase PanelAbove;
-		public PanelBase PanelBelow;
-
-		int GrabHandleWidth;
-		Color GrabHandleColor;
-		bool DebugSplitter;
+	public class MultiSplitter
+#if NON_DOUBLE_BUFFERED
+//#Dev doesn't F12 on PanelAbove 			: UserControl
+#else
+			: UserControlDoubleBuffered
+#endif
+			/* where PANEL_BASE : Control */ {
 		
-		public MultiSplitter(int grabHandleWidth, Color grabHandleColor, bool debugSplitter = false) {
-			GrabHandleWidth = grabHandleWidth;
-			GrabHandleColor = grabHandleColor;
-			DebugSplitter = debugSplitter;
+		
+		public	Control	PanelAbove;
+		public	Control	PanelBelow;
+
+				int		grabHandleWidth;
+				Color	grabHandleColor;
+				bool	debugSplitter;
+				bool	verticalizeAllLogic;
+		
+		public MultiSplitter(int grabHandleWidth, Color grabHandleColor, bool verticalizeAllLogic = false, bool debugSplitter = false) {
+			this.grabHandleWidth = grabHandleWidth;
+			this.grabHandleColor = grabHandleColor;
+			this.verticalizeAllLogic = verticalizeAllLogic;
+			this.debugSplitter = debugSplitter;
 		}
 
-		protected override void OnPaint(PaintEventArgs e) {
-			base.OnPaint(e);
-			if (base.DesignMode) return;
-			try {
-				Graphics g = e.Graphics;
-				Rectangle grabRect = new Rectangle(0, 0, this.GrabHandleWidth, base.Height);
-				using (SolidBrush grabBrush = new SolidBrush(this.GrabHandleColor)) {
-					g.FillRectangle(grabBrush, grabRect);
-				}
-				//this.DrawGripForSplitter(g);
-				if (this.DebugSplitter) {
-					if (string.IsNullOrEmpty(base.Text)) return;
-					using (SolidBrush textBrush = new SolidBrush(this.ForeColor)) {
-						g.DrawString(base.Text, base.Font, textBrush, 0, 0);
-					}
-				}
-			} catch (Exception ex) {
-				string msg = "I_ONLY_DID_g.DrawString()_AND_g.FillRectangle() //MultiSplitter.OnPaint()";
-				Assembler.PopupException(msg, ex);
-			}
-		}
-		
+#if NON_DOUBLE_BUFFERED		//WHEN_INHERITED_FROM_REGULAR_USERCONTROL
 		protected override void OnPaintBackground(PaintEventArgs e) {
-			base.OnPaint(e);
+			base.OnPaintBackground(e);
+			// before_went_doublebuffered??? base.OnPaint(e);
+#else						//WHEN_INHERITED_FROM_USERCONTROL_DOUBLEBUFFERED
+		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
+#endif
 			if (base.DesignMode) return;
 			try {
 				e.Graphics.Clear(this.BackColor);
@@ -53,34 +47,56 @@ namespace Sq1.Charting.MultiSplit {
 			}
 		}
 
-		public void DrawGripForSplitter(Graphics g) {
-			Rectangle splitterRectangle = base.ClientRectangle;
-			Point centerPoint = new Point(splitterRectangle.Left - 1 + splitterRectangle.Width / 2, splitterRectangle.Top - 1 + splitterRectangle.Height / 2);
-			int dotSize = 2;
-			//Rectangle dotRect = new Rectangle(dotSize, dotSize);
-			using (Brush myFore = new SolidBrush(this.ForeColor)) {
-				g.FillEllipse(myFore, centerPoint.X, centerPoint.Y, dotSize, dotSize);
-				g.FillEllipse(myFore, centerPoint.X - 10, centerPoint.Y, dotSize, dotSize);
-				g.FillEllipse(myFore, centerPoint.X + 10, centerPoint.Y, dotSize, dotSize);
+#if NON_DOUBLE_BUFFERED		//WHEN_INHERITED_FROM_REGULAR_USERCONTROL
+		protected override void OnPaint(PaintEventArgs e) {
+			base.OnPaint(e);
+#else						//WHEN_INHERITED_FROM_USERCONTROL_DOUBLEBUFFERED
+		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
+#endif
+			if (base.DesignMode) return;
+			try {
+				Graphics g = e.Graphics;
+				Rectangle grabRect = this.verticalizeAllLogic == false
+					? new Rectangle(0, 0, this.grabHandleWidth, base.Height)
+					: new Rectangle(0, 0, base.Width, this.grabHandleWidth);
+				using (SolidBrush grabBrush = new SolidBrush(this.grabHandleColor)) {
+					g.FillRectangle(grabBrush, grabRect);
+				}
+				//this.DrawGripForSplitter(g);
+				if (this.debugSplitter) {
+					if (string.IsNullOrEmpty(base.Text)) return;
+					using (SolidBrush textBrush = new SolidBrush(this.ForeColor)) {
+						g.DrawString(base.Text, base.Font, textBrush, 0, 0);
+					}
+				}
+			} catch (Exception ex) {
+				string msg = "I_ONLY_DID_g.DrawString()_AND_g.FillRectangle() //MultiSplitter.OnPaint()";
+				Assembler.PopupException(msg, ex);
 			}
 		}
+		//public void DrawGripForSplitter(Graphics g) {
+		//	Rectangle splitterRectangle = base.ClientRectangle;
+		//	Point centerPoint = new Point(splitterRectangle.Left - 1 + splitterRectangle.Width / 2, splitterRectangle.Top - 1 + splitterRectangle.Height / 2);
+		//	int dotSize = 2;
+		//	//Rectangle dotRect = new Rectangle(dotSize, dotSize);
+		//	using (Brush myFore = new SolidBrush(this.ForeColor)) {
+		//		g.FillEllipse(myFore, centerPoint.X, centerPoint.Y, dotSize, dotSize);
+		//		g.FillEllipse(myFore, centerPoint.X - 10, centerPoint.Y, dotSize, dotSize);
+		//		g.FillEllipse(myFore, centerPoint.X + 10, centerPoint.Y, dotSize, dotSize);
+		//	}
+		//}
 		public override string ToString() {
 			string ret = "PANEL_BELOW_SPLITTER_IS_NULL";
 			if (this.PanelBelow == null) return ret;
-			ret = this.PanelBelow.PanelName;
+			ret = this.PanelBelow.Name;
 			ret += ":" + this.Location.Y + "+" + this.Height + "=" + (this.Location.Y + this.Height);
 			return ret;
 		}
-
 		private void InitializeComponent() {
 			this.SuspendLayout();
-			// 
-			// MultiSplitter
-			// 
 			this.Name = "MultiSplitter";
 			this.Size = new System.Drawing.Size(783, 10);
 			this.ResumeLayout(false);
-
 		}
 	}
 }

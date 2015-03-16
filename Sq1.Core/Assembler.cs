@@ -92,14 +92,14 @@ namespace Sq1.Core {
 				return ret;
 			} }
 
-		public	bool									SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished { get {
+		public	bool									SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished { get {
 				bool ret = false;
 				//v1 looks like Process.GetCurrentProcess().StartTime counts the milliseconds elapsed by the processor for the app
 				//(1sec during last 2mins with 1% CPU load), while I need solarTimeNow minus solarTimeAppStarted => switching to Stopwatch
-				int sinceApplicationStartSeconds = -1;
+				double sinceApplicationStartSeconds = -1;
 				try {
 					TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
-					sinceApplicationStartSeconds = sinceApplicationStart.Seconds;
+					sinceApplicationStartSeconds = sinceApplicationStart.TotalSeconds;
 					//v2
 					//int sinceApplicationStartSeconds2 = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
 				} catch (Exception ex) {
@@ -107,13 +107,13 @@ namespace Sq1.Core {
 					sinceApplicationStartSeconds = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
 				}
 
-				int secondsLeftToIgnore = this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch - sinceApplicationStartSeconds;
-				if (secondsLeftToIgnore < 0) {
-					ret = true;
-				} else {
+				double secondsLeftToIgnore = this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch - sinceApplicationStartSeconds;
+				if (secondsLeftToIgnore > 0) {
 					string msg = "SPLITTER_EVENTS_IGNORED_FOR_MORE_SECONDS " + secondsLeftToIgnore + "/"
 						+ this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch;
 					Assembler.PopupException(msg, null, false);
+				} else {
+					ret = true;
 				}
 				return ret;
 			} }
@@ -208,6 +208,7 @@ namespace Sq1.Core {
 		}
 		
 		public static void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
+			if (Assembler.IsInitialized == false) return;
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
 			
 			//v1-SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD 
@@ -253,6 +254,7 @@ namespace Sq1.Core {
 		public	List<Exception>							ExceptionsDuringApplicationShutdown;
 		public	Serializer<List<Exception>>				ExceptionsDuringApplicationShutdownSerializer;
 		public void exceptionsDuringApplicationShutdown_InsertAndSerialize(Exception exc, int indexToInsert = 0) {
+			if (exc == null) return;
 			if (this.ExceptionsDuringApplicationShutdown == null) {
 				//v1 TRYING_TO_FIX_BY_MOVING_TO_ASSEMBLER produced useless "[ null ]" file
 				this.ExceptionsDuringApplicationShutdown = new List<Exception>();
@@ -266,6 +268,9 @@ namespace Sq1.Core {
 			}
 			this.ExceptionsDuringApplicationShutdown.Insert(0, exc);
 			this.ExceptionsDuringApplicationShutdownSerializer.Serialize();
+
+			//DIDNT_CHECK http://stackoverflow.com/questions/7613576/how-to-open-text-in-notepad-from-net
+			Process.Start("notepad.exe ", this.ExceptionsDuringApplicationShutdownSerializer.AbsPath);
 		}
 		#endregion
 	}

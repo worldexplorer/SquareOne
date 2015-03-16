@@ -148,6 +148,7 @@
     <Compile Include="Indicators\IndicatorParameterEventArgs.cs" />
     <Compile Include="Livesim\LivesimBroker.cs" />
     <Compile Include="Livesim\LivesimDataSource.cs" />
+    <Compile Include="Livesim\LivesimLevelTwoGenerator.cs" />
     <Compile Include="Livesim\LivesimQuoteBarConsumer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -242,6 +243,8 @@
     </Compile>
     <Compile Include="Streaming\DataDistributorCharts.cs" />
     <Compile Include="Streaming\DataDistributorSolidifiers.cs" />
+    <Compile Include="Streaming\LevelTwoHalf.cs" />
+    <Compile Include="Streaming\LevelTwoHalfFrozen.cs" />
     <Compile Include="Streaming\QuotePumpPerChannel.cs" />
     <Compile Include="Streaming\QuoteQueuePerChannel.cs" />
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
@@ -250,7 +253,9 @@
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\StreamingSolidifier.cs" />
+    <Compile Include="Support\ConcurrentDictionaryGeneric.cs" />
     <Compile Include="Support\ConcurrentList.cs" />
+    <Compile Include="Support\ConcurrentWatchdog.cs" />
     <Compile Include="Support\ObjectListViewStateSerializer.cs" />
     <Compile Include="Support\SkipInstantiationAt.cs" />
     <Compile Include="Broker\OrderLaneByType.cs" />

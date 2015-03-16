@@ -20,13 +20,13 @@ namespace Sq1.Core.DataTypes {
 				this._Point2Dollar = value;
 			}
 		}
-		[JsonProperty]	public double			PriceLevelSizeForBonds;
+		[JsonProperty]	public double			PriceStep;
 		[JsonProperty]	public int				DecimalsPrice;
 		[JsonProperty]	public int				DecimalsVolume;					// valid for partial Forex lots and Bitcoins; for stocks/options/futures its always (int)1
 
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
-		[JsonProperty]	public double			PriceMinimalStepFromDecimal		{ get { return Math.Pow(10, -this.DecimalsPrice); } }			// 10^(-2) = 0.01
-		[JsonProperty]	public double			VolumeMinimalStepFromDecimal	{ get { return Math.Pow(10, -this.DecimalsVolume); } }		// 10^(-2) = 0.01
+		[JsonIgnore]	public double			PriceStepFromDecimal	{ get { return Math.Pow(10, -this.DecimalsPrice); } }			// 10^(-2) = 0.01
+		[JsonIgnore]	public double			VolumeStepFromDecimal	{ get { return Math.Pow(10, -this.DecimalsVolume); } }		// 10^(-2) = 0.01
 		
 		[JsonProperty]	public bool				SameBarPolarCloseThenOpen;
 		[JsonProperty]	public int				SequencedOpeningAfterClosedDelayMillis;
@@ -57,6 +57,8 @@ namespace Sq1.Core.DataTypes {
 				this._Margin = value;
 			}
 		}
+		[JsonIgnore]	public	string			FormatPrice		{ get { return "N" + (this.DecimalsPrice + 1); } }
+		[JsonIgnore]	public	string			FormatVolume	{ get { return "N" + (this.DecimalsVolume + 1); } }
 
 		public SymbolInfo() { 		// used by JSONdeserialize() /  XMLdeserialize()
 			//this.MarketName = "US Equities";
@@ -65,7 +67,7 @@ namespace Sq1.Core.DataTypes {
 			this.Point2Dollar = 1.0;
 			this.DecimalsPrice = 2;
 			this.DecimalsVolume = 0;	// if your Forex Symbol uses lotMin=0.001, DecimalsVolume = 3 
-			this.PriceLevelSizeForBonds = 1.0;
+			this.PriceStep = 1.0;
 			this.SameBarPolarCloseThenOpen = true;
 			this.SequencedOpeningAfterClosedDelayMillis = 1000;
 			this.MarketOrderAs = MarketOrderAs.Unknown;
@@ -134,8 +136,6 @@ namespace Sq1.Core.DataTypes {
 		public SymbolInfo Clone() {
 			return (SymbolInfo)this.MemberwiseClone();
 		}
-		public string FormatPrice { get { return "N" + (this.DecimalsPrice + 1); } }
-		public string FormatVolume { get { return "N" + (this.DecimalsVolume + 1); } }
 
 		[Obsolete("REMOVE_ONCE_NEW_ALIGNMENT_MATURES_DECEMBER_15TH_2014 used only in tidal calculations")]
 		public double AlignOrderToPriceLevel(double orderPrice, Direction direction, MarketLimitStop marketLimitStop) {
@@ -310,7 +310,7 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		public override string ToString() {
-			string ret = this.Symbol + ":" + this.PriceMinimalStepFromDecimal;
+			string ret = this.Symbol + ":" + this.PriceStep;
 			ret += "(" + Enum.GetName(typeof(SecurityType), this.SecurityType) + ")";
 			return ret;
 		}

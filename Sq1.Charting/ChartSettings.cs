@@ -88,9 +88,20 @@ namespace Sq1.Charting {
 		[JsonProperty]	public Font		SpreadLabelFont { get; set; }
 		[JsonProperty]	public Color	SpreadLabelColor { get; set; }
 
+		[JsonProperty]	public Color	LevelTwoColorBackgroundStreamingHasNoLastQuote { get; set; }
+		[JsonProperty]	public Color	LevelTwoColorBackground { get; set; }
+		[JsonProperty]	public Color	LevelTwoLotsColorBackground { get; set; }
+		[JsonProperty]	public Color	LevelTwoLotsColorForeground { get; set; }
+		[JsonProperty]	public Color	LevelTwoAskColorBackground { get; set; }
+		[JsonProperty]	public Color	LevelTwoAskColorContour { get; set; }
+		[JsonProperty]	public Color	LevelTwoBidColorBackground { get; set; }
+		[JsonProperty]	public Color	LevelTwoBidColorContour { get; set; }
+
+
 
 		// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
-		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterPropertiesByPanelName;
+		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterRowsPropertiesByPanelName;
+		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterColumnsPropertiesByPanelName;
 		
 		// DONE_IN_RenderBarsPrice_KISS cache them all until user edits this.BarTotalWidthPx so they won't be calculated again with the same result for each bar
 		[JsonIgnore]	public int BarPaddingRight { get {
@@ -312,7 +323,47 @@ namespace Sq1.Charting {
 				if (this.spreadLabelBrush == null) this.spreadLabelBrush = new SolidBrush(this.SpreadLabelColor);
 				return this.spreadLabelBrush;
 			} }
-		
+
+		[JsonIgnore]	SolidBrush brushLevelTwoLotsColorBackground;
+		//[Browsable(false)]
+		[JsonIgnore]	public SolidBrush BrushLevelTwoLotsColorBackground { get {
+				if (this.brushLevelTwoLotsColorBackground == null) this.brushLevelTwoLotsColorBackground =
+					new SolidBrush(this.LevelTwoLotsColorBackground);
+				return this.brushLevelTwoLotsColorBackground;
+			} }
+
+		[JsonIgnore]	SolidBrush brushLevelTwoAskColorBackground;
+		//[Browsable(false)]
+		[JsonIgnore]	public SolidBrush BrushLevelTwoAskColorBackground { get {
+				if (this.brushLevelTwoAskColorBackground == null) this.brushLevelTwoAskColorBackground =
+					new SolidBrush(this.LevelTwoAskColorBackground);
+				return this.brushLevelTwoAskColorBackground;
+			} }
+
+		[JsonIgnore]	SolidBrush brushLevelTwoBidColorBackground;
+		//[Browsable(false)]
+		[JsonIgnore]	public SolidBrush BrushLevelTwoBidColorBackground { get {
+				if (this.brushLevelTwoBidColorBackground == null) this.brushLevelTwoBidColorBackground =
+					new SolidBrush(this.LevelTwoBidColorBackground);
+				return this.brushLevelTwoBidColorBackground;
+			} }
+
+		[JsonIgnore]	Pen penLevelTwoAskColorContour;
+		//[Browsable(false)]
+		[JsonIgnore]	public Pen PenLevelTwoAskColorContour { get {
+				if (this.penLevelTwoAskColorContour == null) this.penLevelTwoAskColorContour =
+					new Pen(this.LevelTwoAskColorContour);
+				return this.penLevelTwoAskColorContour;
+			} }
+
+		[JsonIgnore]	Pen penLevelTwoBidColorContour;
+		//[Browsable(false)]
+		[JsonIgnore]	public Pen PenLevelTwoBidColorContour { get {
+				if (this.penLevelTwoBidColorContour == null) this.penLevelTwoBidColorContour =
+					new Pen(this.LevelTwoBidColorContour);
+				return this.penLevelTwoBidColorContour;
+			} }
+	
 		public ChartSettings()	{
 			ChartColorBackground = Color.White;
 			BarWidthIncludingPadding = 8;
@@ -384,7 +435,7 @@ namespace Sq1.Charting {
 			OnChartBarAnnotationsVerticalAwayFromPositionArrows = 3;
 
 			// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
-			MultiSplitterPropertiesByPanelName = new Dictionary<string, MultiSplitterProperties>();
+			MultiSplitterRowsPropertiesByPanelName = new Dictionary<string, MultiSplitterProperties>();
 
 			SpreadBidLineColor = Color.Gray;
 			SpreadBidLineColorAlpha = 64;
@@ -394,6 +445,15 @@ namespace Sq1.Charting {
 			SpreadAskLineWidth = 1;
 			SpreadLabelFont = new Font("Consolas", 8f);
 			SpreadLabelColor = Color.DarkGray;
+
+			LevelTwoColorBackgroundStreamingHasNoLastQuote = Color.DarkGray;
+			LevelTwoColorBackground		= Color.White;
+			LevelTwoLotsColorBackground = Color.WhiteSmoke;
+			LevelTwoLotsColorForeground	= Color.Black;
+			LevelTwoAskColorBackground	= Color.FromArgb(255, 230, 230);
+			LevelTwoAskColorContour		= Color.FromArgb(this.LevelTwoAskColorBackground.R - 50, this.LevelTwoAskColorBackground.G - 50, this.LevelTwoAskColorBackground.B - 50);
+			LevelTwoBidColorBackground	= Color.FromArgb(230, 255, 230);
+			LevelTwoBidColorContour		= Color.FromArgb(this.LevelTwoBidColorBackground.R - 50, this.LevelTwoBidColorBackground.G - 50, this.LevelTwoBidColorBackground.B - 50);
 		}
 		
 		public static Color ColorReverse(Color color) {

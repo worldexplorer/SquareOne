@@ -6,7 +6,7 @@
  * 
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
-namespace Sq1.Charting.MultiSplit
+namespace Sq1.Charting.Demo
 {
 	partial class MultiSplitTest
 	{
@@ -36,11 +36,14 @@ namespace Sq1.Charting.MultiSplit
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.multiSplitContainer1 = new Sq1.Charting.MultiSplit.MultiSplitContainerGeneric<System.Windows.Forms.Panel>();
+			this.multiSplitContainer1 = new Sq1.Charting.MultiSplit.MultiSplitContainer();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.panel3 = new System.Windows.Forms.Panel();
 			this.panel4 = new System.Windows.Forms.Panel();
+			this.multiSplitContainerOfPanelBase1 = new Sq1.Charting.MultiSplit.MultiSplitContainer();
+			this.panel5 = new System.Windows.Forms.Panel();
+			this.panel6 = new System.Windows.Forms.Panel();
 			this.SuspendLayout();
 			// 
 			// multiSplitContainer1
@@ -54,43 +57,69 @@ namespace Sq1.Charting.MultiSplit
 			// 
 			// panel1
 			// 
-			this.panel1.BackColor = System.Drawing.Color.DarkKhaki;
-			this.panel1.Location = new System.Drawing.Point(45, 31);
+			this.panel1.BackColor = System.Drawing.Color.Green;
+			this.panel1.Location = new System.Drawing.Point(186, 11);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(220, 67);
 			this.panel1.TabIndex = 1;
 			// 
 			// panel2
 			// 
-			this.panel2.BackColor = System.Drawing.Color.Cyan;
-			this.panel2.Location = new System.Drawing.Point(25, 104);
+			this.panel2.BackColor = System.Drawing.Color.Yellow;
+			this.panel2.Location = new System.Drawing.Point(148, 57);
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(200, 100);
 			this.panel2.TabIndex = 2;
 			// 
 			// panel3
 			// 
-			this.panel3.BackColor = System.Drawing.Color.OrangeRed;
-			this.panel3.Location = new System.Drawing.Point(115, 210);
+			this.panel3.BackColor = System.Drawing.Color.Red;
+			this.panel3.Location = new System.Drawing.Point(23, 30);
 			this.panel3.Name = "panel3";
 			this.panel3.Size = new System.Drawing.Size(200, 100);
 			this.panel3.TabIndex = 3;
 			// 
 			// panel4
 			// 
-			this.panel4.BackColor = System.Drawing.Color.DarkOrchid;
-			this.panel4.Location = new System.Drawing.Point(230, 317);
+			this.panel4.BackColor = System.Drawing.Color.DodgerBlue;
+			this.panel4.Location = new System.Drawing.Point(228, 250);
 			this.panel4.Name = "panel4";
 			this.panel4.Size = new System.Drawing.Size(200, 100);
 			this.panel4.TabIndex = 4;
+			// 
+			// multiSplitContainerOfPanelBase1
+			// 
+			this.multiSplitContainerOfPanelBase1.Location = new System.Drawing.Point(25, 317);
+			this.multiSplitContainerOfPanelBase1.Name = "multiSplitContainerOfPanelBase1";
+			this.multiSplitContainerOfPanelBase1.Size = new System.Drawing.Size(150, 150);
+			this.multiSplitContainerOfPanelBase1.TabIndex = 5;
+			// 
+			// panel5
+			// 
+			this.panel5.BackColor = System.Drawing.Color.MediumBlue;
+			this.panel5.Location = new System.Drawing.Point(192, 356);
+			this.panel5.Name = "panel5";
+			this.panel5.Size = new System.Drawing.Size(200, 100);
+			this.panel5.TabIndex = 5;
+			// 
+			// panel6
+			// 
+			this.panel6.BackColor = System.Drawing.Color.MediumSlateBlue;
+			this.panel6.Location = new System.Drawing.Point(206, 285);
+			this.panel6.Name = "panel6";
+			this.panel6.Size = new System.Drawing.Size(200, 100);
+			this.panel6.TabIndex = 6;
 			// 
 			// MultiSplitTest
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(461, 505);
-			this.Controls.Add(this.panel4);
+			this.Controls.Add(this.panel6);
 			this.Controls.Add(this.panel3);
+			this.Controls.Add(this.panel5);
+			this.Controls.Add(this.multiSplitContainerOfPanelBase1);
+			this.Controls.Add(this.panel4);
 			this.Controls.Add(this.panel2);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.multiSplitContainer1);
@@ -98,10 +127,13 @@ namespace Sq1.Charting.MultiSplit
 			this.Text = "MultiSplitTest";
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.Panel panel6;
+		private System.Windows.Forms.Panel panel5;
+		private Sq1.Charting.MultiSplit.MultiSplitContainer multiSplitContainerOfPanelBase1;
 		private System.Windows.Forms.Panel panel4;
 		private System.Windows.Forms.Panel panel3;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.Panel panel1;
-		private Sq1.Charting.MultiSplit.MultiSplitContainerGeneric<System.Windows.Forms.Panel> multiSplitContainer1;
+		private Sq1.Charting.MultiSplit.MultiSplitContainer multiSplitContainer1;
 	}
 }

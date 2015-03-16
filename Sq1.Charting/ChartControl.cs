@@ -12,7 +12,7 @@ using Sq1.Charting.MultiSplit;
 
 namespace Sq1.Charting {
 	public partial class ChartControl {
-		List<PanelBase> panels;
+		List<ScrollableControl> panelsInvalidateAll;
 		public bool RangeBarCollapsed {
 			get { return this.splitContainerChartVsRange.Panel2Collapsed; }
 			set { this.splitContainerChartVsRange.Panel2Collapsed = value; }
@@ -38,28 +38,49 @@ namespace Sq1.Charting {
 			//when previous line doesn't help and Designer still throws exceptions return;
 			
 			// moved here from Designer to Make ChartForm work is Designer (third button)  
-			this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelVolume);
-			this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelPrice);
+			//this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelVolume);
+			//this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelPrice);
 
 			// doesn't live well in InitializeComponent(), designer barks 
-			this.multiSplitContainer.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
-			this.multiSplitContainer.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitContainerRows.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerRows_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitContainerRows.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerRows_OnResizing_OnSplitterMoveOrDragEnded);
 
+			this.multiSplitContainerColumns.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitContainerColumns.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded);
 
 			this.AutoScroll = false;
 			//this.HScroll = true;
 			this.hScrollBar.SmallChange = this.ChartSettings.ScrollNBarsPerOneKeyPress;
 
-			panels = new List<PanelBase>();
-			panels.Add(this.panelPrice);
-			panels.Add(this.panelVolume);
+			panelsInvalidateAll = new List<ScrollableControl>();
+			panelsInvalidateAll.Add(this.PanelPrice);
+			panelsInvalidateAll.Add(this.panelVolume);
+			panelsInvalidateAll.Add(this.panelLevel2);
 
 			//v1 1/2 making ChartForm editable in Designer: exit to avoid InitializeCreateSplittersDistributeFor() below throw
 			//if (base.DesignMode) return; // Generics in InitializeComponent() cause Designer to throw up (new Sq1.Charting.MultiSplit.MultiSplitContainer<PanelBase>())
 			//v2 uncomment if you are opening ChartForm in Designer to make it editable; v1 doens't work!?!!
 			// return;	// ENABLE_CHART_CONTROL_DESIGNER <= keyword for easy find
 
-			this.multiSplitContainer.InitializeCreateSplittersDistributeFor(panels);
+			
+			this.PanelPrice.Initialize(this);
+			this.panelVolume.Initialize(this);
+			this.panelLevel2.Initialize(this);
+
+			List<Control> controlsRows = new List<Control>() {
+				this.panelVolume,
+				this.PanelPrice
+			};
+			this.multiSplitContainerRows.InitializeCreateSplittersDistributeFor(controlsRows);
+
+			List<Control> controlsColumns = new List<Control>() {
+				this.panelLevel2,
+				this.multiSplitContainerRows
+			};
+			this.multiSplitContainerColumns.Dock = DockStyle.Fill;
+			this.multiSplitContainerColumns.VerticalizeAllLogic = true;
+			this.multiSplitContainerColumns.InitializeCreateSplittersDistributeFor(controlsColumns);
+
 
 			// Splitter might still notify them for Resize() during startup (while only multiSplitter's size should generate Resize in nested controls)  
 			// trying to leave only multiSplitter to react on Panel2.Collapsed = true/false;
@@ -68,9 +89,6 @@ namespace Sq1.Charting {
 			this.splitContainerChartVsRange.Panel1.Controls.Remove(this.lblWinFormDesignerComment);
 
 			// TOO_EARLY_MOVED_TO_PropagateSettingSplitterDistancePriceVsVolume this.multiSplitContainer.SplitterPositionsByManorder = this.ChartSettings.SplitterPositionsByManorder;
-			
-			this.panelPrice.Initialize(this);
-			this.panelVolume.Initialize(this);
 
 			BarIndexMouseIsOverNow = -1;	//if I didn't mouseover after app start, streaming values don't show up
 
@@ -133,7 +151,7 @@ namespace Sq1.Charting {
 			if (noExceptionsExpected) {
 				this.hScrollBar.Value = this.ChartSettings.ScrollPositionAtBarIndex;
 			}
-			foreach (PanelBase panel in this.panels) {	// at least PanelPrice and PanelVolume
+			foreach (PanelBase panel in this.panelsInvalidateAll) {	// at least PanelPrice and PanelVolume
 				panel.InitializeWithNonEmptyBars(this);
 			}
 			if (invalidateAllPanels == false) return;
@@ -157,7 +175,7 @@ namespace Sq1.Charting {
 			//LIVESIM_PAUSED_SHOULD_H_SCROLL__THIS_WAS_AN_OBSTACLE_NON_REPAINTING if (base.IsBacktestingNow) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
-			foreach (PanelBase panel in this.panels) {
+			foreach (PanelBase panel in this.panelsInvalidateAll) {
 				panel.Invalidate();
 			}
 			//if (this.InvalidatedByStreamingKeepTooltipsOpen == true) return;
@@ -183,7 +201,7 @@ namespace Sq1.Charting {
 			//WHY??? this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
 			PanelBase panelThrew = null;
 			try {
-				foreach (PanelBase panel in this.panels) {
+				foreach (PanelBase panel in this.panelsInvalidateAll) {
 					panelThrew = panel;
 					panel.Refresh();
 				}
@@ -267,6 +285,8 @@ namespace Sq1.Charting {
 			if (base.InvokeRequired == true) {
 				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarAddedUpdated_ShouldTriggerRepaint(sender, e); });
 				return;
+			} else {
+				this.ScriptExecutorObjects.QuoteLast = this.Bars.LastQuoteCloneNullUnsafe;
 			}
 			if (this.VisibleBarRight != this.Bars.Count - 1) {
 				string msg = "I_WILL_MOVE_SLIDER_IF_ONLY_LAST_BAR_IS_VISIBLE";
@@ -302,14 +322,14 @@ namespace Sq1.Charting {
 //				this.BarWidthDecrement();
 //				return;
 //			}
-			this.panelPrice.Invalidate();
+			this.PanelPrice.Invalidate();
 			//base.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 		public void DragUpUnsqueeze() {
 			if (this.ChartSettings.SqueezeVerticalPaddingPx < this.ChartSettings.SqueezeVerticalPaddingStep) return;
 			this.ChartSettings.SqueezeVerticalPaddingPx -= this.ChartSettings.SqueezeVerticalPaddingStep;
 //			this.BarWidthIncrement();
-			this.panelPrice.Invalidate();
+			this.PanelPrice.Invalidate();
 			//base.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 		public void TooltipPriceShowAlone(Bar barToPopulate, Rectangle barWithShadowsRectangle) {
@@ -425,7 +445,8 @@ namespace Sq1.Charting {
 			//}
 			//v3
 			//MULTISPLITTER_IS_NOT_SPAMMED_BY_ONRESIZE if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
-			this.multiSplitContainer.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterPropertiesByPanelName);
+			this.multiSplitContainerRows.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterRowsPropertiesByPanelName);
+			this.multiSplitContainerColumns.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName);
 		}
 		public AlertArrow TooltipPositionShownForAlertArrow { get {
 				AlertArrow ret = null;
