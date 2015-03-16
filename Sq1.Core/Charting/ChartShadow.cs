@@ -16,7 +16,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Charting {
-	public abstract partial class ChartShadow : 
+	public partial class ChartShadow : 
 //COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH #if !NON_DOUBLE_BUFFERED_reverted_to_compulsory_UserControl_no_buffering
 	UserControlDoubleBuffered
 //#else
@@ -99,7 +99,7 @@ namespace Sq1.Core.Charting {
 			}
 		}
 		
-		
+		/*
 #region there is no graphics-related (PositionArrows / LinesDrawnOnChart) DataSnapshot in Core; ChartControl knows how to handle your wishes in terms of Core objects
 		// "virtual" allows here to derive Control from ChartShadow and open it in Designer - it will be displayed without implementations; will start throwing in runtime and you'll see the stack then
 		public abstract void ClearAllScriptObjectsBeforeBacktest();
@@ -136,8 +136,9 @@ namespace Sq1.Core.Charting {
 		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 		public abstract void InvalidateAllPanels();
 		public abstract void RefreshAllPanelsNonBlockingRefreshNotYetStarted();
-		
-		/* will let you open ChartControl in windows forms Designer (remove "abstract" from class declaration as well) 
+		*/
+
+		// will let you open ChartControl in windows forms Designer (remove "abstract" from class declaration as well) 
 		public virtual void ClearAllScriptObjectsBeforeBacktest() { }
 
 		public virtual void PositionsBacktestAdd(List<Position> positionsMaster) { }
@@ -171,6 +172,6 @@ namespace Sq1.Core.Charting {
 		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 		public virtual void InvalidateAllPanels() { }
 		public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
-		*/
+		
 	}	
 }

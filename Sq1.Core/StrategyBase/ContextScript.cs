@@ -32,7 +32,7 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public bool							NoDecimalRoundingForLimitStopPrice;
 		[JsonProperty]	public double						SlippageUnits;
 		[JsonProperty]	public int							SlippageTicks;
-		[JsonProperty]	public int							PriceLevelSizeForBonds;
+		[JsonProperty]	public int							PriceStep;
 		
 		[JsonProperty]	public bool							FillOutsideQuoteSpreadParanoidCheckThrow;
 		[JsonProperty]	public string						SpreadModelerClassName;

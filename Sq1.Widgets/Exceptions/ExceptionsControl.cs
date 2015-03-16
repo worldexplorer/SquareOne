@@ -40,6 +40,9 @@ namespace Sq1.Widgets.Exceptions {
 		}
 
 		public void Initialize() {
+			if (this.DesignMode) return;
+			if (Assembler.IsInitialized == false) return;
+				
 			this.DataSnapshotSerializer = new Serializer<ExceptionsControlDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 				"Sq1.Widgets.ExceptionsControlDataSnapshot.json", "Workspaces",
@@ -158,6 +161,10 @@ namespace Sq1.Widgets.Exceptions {
 		public void FlushListToTreeIfDockContentDeserialized_inGuiThread() { lock (this.lockedByTreeListView) {
 			// WINDOWS.FORMS.VISIBLE=FALSE_IS_SET_BY_DOCK_CONTENT_LUO ANALYZE_DockContentImproved.IsShown_INSTEAD if (this.Visible == false) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				return;
+			}
+			if (this.InvokeRequired) {
+				this.BeginInvoke((MethodInvoker) delegate() { this.FlushListToTreeIfDockContentDeserialized_inGuiThread(); });
 				return;
 			}
 			if (this.Exceptions.Count > 0) {

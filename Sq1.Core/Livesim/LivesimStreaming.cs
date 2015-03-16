@@ -15,6 +15,7 @@ namespace Sq1.Core.Livesim {
 				ChartShadow					chartShadow;
 				LivesimDataSource			livesimDataSource;
 				LivesimStreamingSettings	settings			{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
+				LivesimLevelTwoGenerator	level2gen;
 
 		public LivesimStreaming(LivesimDataSource livesimDataSource) : base() {
 			base.Name = "LivesimStreaming";
@@ -22,13 +23,19 @@ namespace Sq1.Core.Livesim {
 			base.QuotePumpSeparatePushingThreadEnabled = false;
 			this.Unpaused = new ManualResetEvent(true);
 			this.livesimDataSource = livesimDataSource;
+			this.level2gen = new LivesimLevelTwoGenerator(this);
 		}
 
 		public void Initialize(ChartShadow chartShadow) {
 			this.chartShadow = chartShadow;
+			double stepPrice = this.chartShadow.Bars.SymbolInfo.PriceStep;
+			double stepSize = this.chartShadow.Bars.SymbolInfo.VolumeStepFromDecimal;
+			this.level2gen.Initialize(chartShadow.Executor.Strategy.LivesimStreamingSettings.LevelTwoLevelsToGenerate, stepPrice, stepSize);
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
+			this.level2gen.GenerateAndStoreInStreamingSnap(quote);
+
 			if (quote.IamInjectedToFillPendingAlerts) {
 				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
 			}

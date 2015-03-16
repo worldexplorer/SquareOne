@@ -99,40 +99,27 @@ namespace Sq1.Charting {
 		}
 		#endregion
 
-		// WHERE_IS_RESIZE_ENDED_IN_F_WINDOWS_FORMS?? SAVING_CHART_SETTINGS_ON_EACH_TINY_RESIZE_FOR_ALL_OPEN_CHARTS this.multiSplitContainer.Resize += new EventHandler(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
-		void multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {		//MultiSplitterEventArgs e
-			//v1 this.ChartSettings.PriceVsVolumeSplitterDistance = this.splitContainerPriceVsVolume.SplitterDistance;
-			//v2
+		void multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {
 			if (base.DesignMode) return;
 			if (this.ChartSettings == null) return;	// MAY_BE_REDUNDANT
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-			//	#if DEBUG
-			//	//Debugger.Break();	// NOT_REDUNDANT_DUE_TO_500_RESIZES_AT_FORM_LOAD_BY_DOCK_CONTENT_LIBRARY MAY_BE_REDUNDANT
-			//	#endif
-			//	return;
-			//}
-			//v1 BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
-			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-			//	return;
-			//}
-			//v2 HACK http://stackoverflow.com/questions/10161088/get-elapsed-time-since-application-start-in-c-sharp
-			//try {
-			//	TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
-			//	if (sinceApplicationStart.Seconds <= 10) return;
-			//} catch (Exception ex) {
-			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
-			//}
-			//v3
-			//MULTISPLITTER_IS_NOT_SPAMMED_BY_ONRESIZE
-			//TOO_NOISY_NO_EFFECT  if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == true) return;
+			//WORKS_WHEN_COMMENTED_SURPRISE if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
+			this.SerializeSplitterDistanceOrPanelName();
+		}
+		// WHERE_IS_RESIZE_ENDED_IN_F_WINDOWS_FORMS?? SAVING_CHART_SETTINGS_ON_EACH_TINY_RESIZE_FOR_ALL_OPEN_CHARTS this.multiSplitContainer.Resize += new EventHandler(multiSplitContainer_OnResizing_OnSplitterMoveOrDragEnded);
+		void multiSplitContainerRows_OnResizing_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {		//MultiSplitterEventArgs e
+			if (base.DesignMode) return;
+			if (this.ChartSettings == null) return;	// MAY_BE_REDUNDANT
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
+			//WORKS_WHEN_COMMENTED_SURPRISE if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
 			this.SerializeSplitterDistanceOrPanelName();
 		}
 		public void SerializeSplitterDistanceOrPanelName() {
 			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 			//	return;
 			//}
-			this.ChartSettings.MultiSplitterPropertiesByPanelName = this.multiSplitContainer.SplitterPropertiesByPanelNameGet();
+			this.ChartSettings.MultiSplitterRowsPropertiesByPanelName = this.multiSplitContainerRows.SplitterPropertiesByPanelNameGet();
+			this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName = this.multiSplitContainerColumns.SplitterPropertiesByPanelNameGet();
 			// that will show that 10s delay actually makes better sense than relying on MainFormDockFormsFullyDeserializedLayoutComplete in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized()
 			//try {
 			//	int justCurious = this.ChartSettings.MultiSplitterPropertiesByPanelName[this.panelVolume.PanelName].Distance;

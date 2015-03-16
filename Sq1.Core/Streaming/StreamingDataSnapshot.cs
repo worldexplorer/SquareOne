@@ -5,12 +5,14 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.Streaming {
 	public class StreamingDataSnapshot {
 		[JsonIgnore]	StreamingAdapter			streamingAdapter;
 		[JsonIgnore]	object						lockLastQuote;
 		[JsonProperty]	Dictionary<string, Quote>	lastQuoteClonesReceivedUnboundBySymbol;	// { get; private set; }
+
 		[JsonProperty]	public string				SymbolsSubscribedAndReceiving		{ get {
 				string ret = "";
 				foreach (string symbol in lastQuoteClonesReceivedUnboundBySymbol.Keys) {
@@ -19,10 +21,18 @@ namespace Sq1.Core.Streaming {
 				}
 				return ret;
 			} }
+		//[JsonIgnore]	public ConcurrentDictionarySorted<double, double>	LevelTwoAsks;
+		//[JsonIgnore]	public ConcurrentDictionarySorted<double, double>	LevelTwoBids;
+		[JsonIgnore]	public LevelTwoHalf	LevelTwoAsks;
+		[JsonIgnore]	public LevelTwoHalf	LevelTwoBids;
 
 		private StreamingDataSnapshot() {
 			lastQuoteClonesReceivedUnboundBySymbol = new Dictionary<string, Quote>();
 			lockLastQuote = new object();
+			//LevelTwoAsks = new ConcurrentDictionarySorted<double, double>("LevelTwoAsks", new ConcurrentDictionarySorted<double, double>.ASC());
+			//LevelTwoBids = new ConcurrentDictionarySorted<double, double>("LevelTwoBids", new ConcurrentDictionarySorted<double, double>.DESC());
+			LevelTwoAsks = new LevelTwoHalf("LevelTwoAsks");
+			LevelTwoBids = new LevelTwoHalf("LevelTwoBids");
 		}
 
 		public StreamingDataSnapshot(StreamingAdapter streamingAdapter) : this() {
@@ -38,16 +48,14 @@ namespace Sq1.Core.Streaming {
 				this.LastQuoteInitialize(symbol);
 			}
 		}
-		public void LastQuoteInitialize(string symbol) {
-			lock (lockLastQuote) {
+		public void LastQuoteInitialize(string symbol) { lock (lockLastQuote) {
 				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(symbol)) {
 					Quote prevQuote = this.lastQuoteClonesReceivedUnboundBySymbol[symbol];
 					this.lastQuoteClonesReceivedUnboundBySymbol[symbol] = null;
 				} else {
 					this.lastQuoteClonesReceivedUnboundBySymbol.Add(symbol, null);
 				}
-			}
-		}
+			} }
 		public void LastQuoteCloneSetForSymbol(Quote quote) {
 			string msig = " StreamingDataSnapshot.LastQuoteSetForSymbol(" + quote.ToString() + ")";
 

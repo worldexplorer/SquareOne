@@ -4,23 +4,27 @@
     <ProjectGuid>{5F3ADF2A-7480-4C2B-919A-ABC017B66CFC}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputType>Library</OutputType>
     <RootNamespace>Sq1.Charting</RootNamespace>
     <AssemblyName>Sq1.Charting</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <NoWin32Manifest>False</NoWin32Manifest>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
     <WarningLevel>4</WarningLevel>
+    <SignAssembly>False</SignAssembly>
+    <DelaySign>False</DelaySign>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <SourceAnalysisOverrideSettingsFile>C:\Users\PChuchkalov\AppData\Roaming\ICSharpCode\SharpDevelop5\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <OutputType>Library</OutputType>
+    <NoWin32Manifest>False</NoWin32Manifest>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <BaseAddress>4194304</BaseAddress>
     <RegisterForComInterop>False</RegisterForComInterop>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -32,7 +36,7 @@
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG;TRACE;NON_DOUBLE_BUFFERED_is_default;DEBUG_HEAVY_disabled;TEST_COMPATIBILITY_disabled;USE_DATASERIES_MINMAX_disabled</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;NON_DOUBLE_BUFFERED_disabled;DEBUG_HEAVY_disabled;TEST_COMPATIBILITY_disabled;USE_DATASERIES_MINMAX_disabled</DefineConstants>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <StartAction>Project</StartAction>
   </PropertyGroup>
@@ -43,6 +47,13 @@
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -62,11 +73,15 @@
     <Compile Include="ChartControl.Designer.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ChartControl.DynamicVariables.cs">
+    <Compile Include="ChartControl.CachedForEachPaint.cs">
       <SubType>UserControl</SubType>
       <DependentUpon>ChartControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ChartControl.EventConsumer.cs">
+      <DependentUpon>ChartControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ChartControl.UpdatedEachResize.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
@@ -75,7 +90,33 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MultiSplit\MultiSplitContainerOfPanelBase.cs">
+    <Compile Include="Demo\ExceptionsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Demo\ExceptionsForm.Designer.cs">
+      <DependentUpon>ExceptionsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Demo\MultiSplitTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Demo\MultiSplitTest.Designer.cs">
+      <DependentUpon>MultiSplitTest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Demo\Panels.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Demo\Panels.Designer.cs">
+      <DependentUpon>Panels.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Demo\Program.cs" />
+    <Compile Include="MultiSplit\MultiSplitContainerGeneric.EventGenerator.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MultiSplit\MultiSplitContainerGeneric.Persistence.cs">
+      <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MultiSplit\MultiSplitContainer.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="MultiSplit\MultiSplitContainerGeneric.cs">
@@ -85,28 +126,21 @@
       <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MultiSplit\MultiSplitContainerGeneric.EventGenerator.cs">
-      <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="MultiSplit\MultiSplitContainerOfPanelBase.EventGenerator.cs">
-      <DependentUpon>MultiSplitContainerOfPanelBase.cs</DependentUpon>
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="MultiSplit\MultiSplitterEventArgs.cs" />
     <Compile Include="MultiSplit\MultiSplitter.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MultiSplit\MultiSplitTest.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="MultiSplit\MultiSplitTest.Designer.cs">
-      <DependentUpon>MultiSplitTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MultiSplit\Program.cs" />
     <Compile Include="OnChart\OnChartBarAnnotation.cs" />
     <Compile Include="OnChart\OnChartLabel.cs" />
     <Compile Include="OnChart\OnChartLine.cs" />
+    <Compile Include="PanelBase.EventGenerator.cs">
+      <DependentUpon>PanelBase.cs</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PanelBase.RecalculatedEachPaint.cs">
+      <DependentUpon>PanelBase.cs</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="PanelIndicator.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -125,7 +159,26 @@
       <DependentUpon>PanelBase.cs</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="PanelLevel2.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="PanelPrice.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PanelPrice.CachedForEachPaint.cs">
+      <DependentUpon>PanelPrice.cs</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PanelPrice.UpdatedEachResize.cs">
+      <DependentUpon>PanelPrice.cs</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PanelPrice.UpdatedEachResizeSqueeze.cs">
+      <DependentUpon>PanelPrice.cs</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PanelPrice.Rendering.cs">
+      <DependentUpon>PanelPrice.cs</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="PanelVolume.cs">
@@ -151,11 +204,17 @@
     <EmbeddedResource Include="ChartControl.resx">
       <DependentUpon>ChartControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Demo\ExceptionsForm.resx">
+      <DependentUpon>ExceptionsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Demo\MultiSplitTest.resx">
+      <DependentUpon>MultiSplitTest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Demo\Panels.resx">
+      <DependentUpon>Panels.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MultiSplit\MultiSplitter.resx">
       <DependentUpon>MultiSplitter.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MultiSplit\MultiSplitTest.resx">
-      <DependentUpon>MultiSplitTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <DependentUpon>Resources.cs</DependentUpon>

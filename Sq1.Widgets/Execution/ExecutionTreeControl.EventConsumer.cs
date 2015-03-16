@@ -202,7 +202,7 @@ namespace Sq1.Widgets.Execution {
 			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
 			//v3
-			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
+			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
 			//Debugger.Break();
 			if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
 				//if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;

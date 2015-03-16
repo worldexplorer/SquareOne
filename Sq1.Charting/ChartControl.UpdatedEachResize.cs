@@ -12,7 +12,8 @@ namespace Sq1.Charting {
 				if (this.GutterRightWidth_cached == -1) {
 					//DONT_RETURN_ZERO return 0;	// BEFORE_FIRST_PAINT_SETS_GUTTER_WIDTH ONLY_WHEN_BACKTEST_ON_RESTART_BUT_HOW???
 				}
-				int ret = base.Width - this.GutterRightWidth_cached;
+				//v1 pre-panelLevel2 int ret = base.Width - this.GutterRightWidth_cached;
+				int ret = this.PanelPrice.Width - this.GutterRightWidth_cached;
 				return ret;
 			} }
 		public int BarsCanFitForCurrentWidth { get { return this.ChartWidthMinusGutterRightPrice / this.ChartSettings.BarWidthIncludingPadding; } }
@@ -85,7 +86,7 @@ namespace Sq1.Charting {
 //			int ret = Math.Max(maxPrice, maxVolume);
 
 			int ret = 0;
-			foreach (PanelBase panel in this.panels) {
+			foreach (PanelBase panel in this.panelsInvalidateAll) {
 				if (panel.PanelHasValuesForVisibleBarWindow == false) continue;
 				double panelMax = panel.VisibleMaxDoubleMinValueUnsafe;
 				if (panelMax == double.MinValue) {

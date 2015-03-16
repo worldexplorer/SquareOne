@@ -53,7 +53,9 @@ namespace Sq1.Core.DataTypes {
 				? localTimeEqualsToServerTimeForGenerated : DateTime.Now;
 		}
 		public void SetParentBarStreaming(Bar parentBar) {
-			if (parentBar.ParentBars == null) {
+			if (parentBar == null) {
+				string msg = "NULL_BAR_NOT_ATTACHED_TO_THIS_QUOTE";
+			} else  if (parentBar.ParentBars == null) {
 				string msg = "UNATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE";
 			} else {
 				string msg = "ATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE";

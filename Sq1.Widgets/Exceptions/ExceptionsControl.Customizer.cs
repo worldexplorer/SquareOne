@@ -18,7 +18,9 @@ namespace Sq1.Widgets.Exceptions {
 				var ex = o as Exception;
 				if (ex == null) return o.ToString();
 				string messageOrNameOrTime = "";
-				if (this.DataSnapshot.TreeShowExceptionTime) {
+				// this.DataSnapshot is null when ExceptionsForm is used outside Sq1.Gui / MainForm / Assembler lifecycle
+				bool showTime = this.DataSnapshot != null ? this.DataSnapshot.TreeShowExceptionTime : true;
+				if (showTime) {
 					if (this.ExceptionTimes.ContainsKey(ex)) {
 						DateTime exTime = this.ExceptionTimes[ex];
 						messageOrNameOrTime = exTime.ToString("HH:mm:ss.fff ddd dd MMM yyyy");
