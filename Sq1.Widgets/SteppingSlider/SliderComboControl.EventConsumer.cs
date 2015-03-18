@@ -8,10 +8,9 @@ using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SliderComboControl {
-
 		void domainUpDown_KeyDown(object sender, KeyEventArgs e) {
 			if (e.KeyCode != Keys.Enter) return;
-			this.DomainUpDown.Select();
+			this.DomainUpDown.Select(0, this.DomainUpDown.Text.Length);
 			decimal parsed;
 			try {
 				parsed = Decimal.Parse(this.DomainUpDown.Text);
@@ -31,6 +30,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.DomainUpDown.BackColor = Color.White;
 			parsed = this.PanelFillSlider.RoundToClosestStep(parsed);
 			this.ValueCurrent = parsed;
+			this.RaiseValueChanged();
 		}
 		void domainUpDown_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e) {
 			if (e.KeyCode == Keys.Up) {
@@ -47,6 +47,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				parsed -= this.ValueIncrement;
 				if (parsed < this.ValueMinRtlSafe) return;
 				this.ValueCurrent = parsed;
+				this.RaiseValueChanged();
 			} catch (Exception ex) {
 				this.DomainUpDown.BackColor = Color.LightSalmon;
 			}
@@ -58,14 +59,19 @@ namespace Sq1.Widgets.SteppingSlider {
 				parsed += this.ValueIncrement;
 				if (parsed > this.ValueMaxRtlSafe) return;
 				this.ValueCurrent = parsed;
+				this.RaiseValueChanged();
 			} catch (Exception ex) {
 				this.DomainUpDown.BackColor = Color.LightSalmon;
 			}
 		}
 
 		void domainUpDown_Scroll(object sender, ScrollEventArgs e) {
-			string msg = "NYI SliderComboControl.domainUpDown_Scroll()";
-			Assembler.PopupException(msg);
+			if (e.ScrollOrientation != ScrollOrientation.VerticalScroll) return;
+			if (e.NewValue > e.OldValue) {
+				this.domainUpDown_OnArrowUpStepAdd(this, null);
+			} else {
+				this.domainUpDown_OnArrowDownStepSubstract(this, null);
+			}
 		}
 		void mnitlbAll_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string typed = e.StringUserTyped;
@@ -90,6 +96,7 @@ namespace Sq1.Widgets.SteppingSlider {
 						this.ValueCurrent = parsed;
 						//YOU_STICK_TO_SETTING_VALUE_CURRENT_IT_WILL_RAISE_THE_SAME_EVENT this.ValueCurrentChanged(this, EventArgs.Empty);
 						this.ctxSlider_Opening(this, null);		// not sure how textbox gets multiline input inside!!! may be this will help as for ScriptContexts
+						this.RaiseValueChanged();
 						break;
 					case "mniltbValueStep":			this.ValueIncrement		= parsed; break;
 					default:	Assembler.PopupException("mnitlbAll_UserTyped(): add handler for senderMinMaxCurrentStep.Name[" + senderMinMaxCurrentStep.Name + "]"); break;
@@ -97,6 +104,10 @@ namespace Sq1.Widgets.SteppingSlider {
 			} catch (Exception ex) {
 				e.HighlightTextWithRed = true;
 			}
+		}
+	
+		void domainUpDown_GotFocus (object sender, EventArgs e) {
+			this.DomainUpDown.Select(0, this.DomainUpDown.Text.Length);
 		}
 
 		void PanelFillSlider_ValueCurrentChanged(object sender, EventArgs e) {
@@ -106,14 +117,14 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.RaiseValueChanged();
 		}
 
-		protected override void OnLoad(EventArgs e) {
-			this.DomainUpDown.Text = this.format(this.ValueCurrent);
-			this.mniltbValueCurrent.InputFieldValue = this.format(this.ValueCurrent);
-			this.mniltbValueMin.InputFieldValue = this.format(this.ValueMin);
-			this.mniltbValueMax.InputFieldValue = this.format(this.ValueMax);
-			this.mniltbValueStep.InputFieldValue = this.format(this.ValueIncrement);
-			this.mniHeaderNonHighlighted.Text = this.LabelText;
-		}
+//		protected override void OnLoad(EventArgs e) {
+//			this.DomainUpDown.Text = this.format(this.ValueCurrent);
+//			this.mniltbValueCurrent.InputFieldValue = this.format(this.ValueCurrent);
+//			this.mniltbValueMin.InputFieldValue = this.format(this.ValueMin);
+//			this.mniltbValueMax.InputFieldValue = this.format(this.ValueMax);
+//			this.mniltbValueStep.InputFieldValue = this.format(this.ValueIncrement);
+//			this.mniHeaderNonHighlighted.Text = this.LabelText;
+//		}
 
 		void mniAutoClose_Click(object sender, EventArgs e) {
 			this.ctxSlider.AutoClose = this.mniAutoClose.Checked; 
@@ -128,7 +139,15 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 
 		void ctxSlider_Opening(object sender, CancelEventArgs e) {
-			SlidersAutoGrowControl slidersAutoGrow = base.Parent as SlidersAutoGrowControl;
+			this.DomainUpDown.Text = this.format(this.ValueCurrent);
+			this.mniltbValueCurrent.InputFieldValue = this.format(this.ValueCurrent);
+			this.mniltbValueMin.InputFieldValue = this.format(this.ValueMin);
+			this.mniltbValueMax.InputFieldValue = this.format(this.ValueMax);
+			this.mniltbValueStep.InputFieldValue = this.format(this.ValueIncrement);
+			this.mniHeaderNonHighlighted.Text = this.LabelText;
+
+			//v1 ???base.Parent is NULL here:  SlidersAutoGrowControl slidersAutoGrow = base.Parent as SlidersAutoGrowControl;
+			SlidersAutoGrowControl slidersAutoGrow = this.ParentAutoGrowControl;
 			if (slidersAutoGrow == null) {
 				string msg = "SliderCombo should be added into SlidersAutoGrow"
 					+ " to get SlidersAutoGrow's menu and append it to rightClick on a slider";

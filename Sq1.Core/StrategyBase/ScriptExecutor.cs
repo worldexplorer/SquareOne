@@ -1238,7 +1238,7 @@ namespace Sq1.Core.StrategyBase {
 				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true
 				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
 			//}
-			this.Strategy.Script.PushRegisteredScriptParametersIntoCurrentContextSaveStrategy();
+			this.Strategy.Script.ScriptParametersPushReflectedIntoCurrentContextSaveStrategy();
 			
 			//inNewThread = false;
 			if (inNewThread) {
@@ -1430,7 +1430,10 @@ namespace Sq1.Core.StrategyBase {
 			return ret;
 		}
 		public string ToStringWithCurrentParameters() {
-			string ret = this.Strategy.Script.IndicatorParametersAsString + " " + this.ToString();
+			string ret = "";
+			// this.Strategy.Script==null for an {editor-based + compilation failed} Script
+			if (this.Strategy.Script != null) ret += this.Strategy.Script.IndicatorParametersAsString + " ";
+			ret += this.ToString();
 			string dbg2 = "";
 			if (this.Performance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished != null) {
 				foreach (string iName in this.Performance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Keys) {

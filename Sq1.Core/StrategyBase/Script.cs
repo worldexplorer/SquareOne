@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 
 using Sq1.Core.Charting;
@@ -40,10 +39,10 @@ namespace Sq1.Core.StrategyBase {
 		public		bool			HasPositionsOpenNow					{ get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
 		#endregion
 		
-		public	SortedDictionary<int, ScriptParameter>	ScriptParametersById;
+		public	SortedDictionary<int, ScriptParameter>	ScriptParametersById_ReflectedCached;
 		public	Dictionary<string, ScriptParameter>		ScriptParametersByNameInlineCopy { get {
 				Dictionary<string, ScriptParameter> ret = new Dictionary<string, ScriptParameter>();
-				foreach (ScriptParameter param in ScriptParametersById.Values) {
+				foreach (ScriptParameter param in ScriptParametersById_ReflectedCached.Values) {
 					if (ret.ContainsKey(param.Name)) {
 						string msg = "PARAMETER_NAME_NOT_UNIQUE[" + param.Name + "], prev[" + ret[param.Name].ToString() + "] this[" + param.ToString() + "]";
 						Assembler.PopupException(msg + " //Script.ParametersByName");
@@ -54,10 +53,10 @@ namespace Sq1.Core.StrategyBase {
 				return ret;
 			} }
 		public	string				ScriptParametersByIdAsString		{ get {
-				if (this.ScriptParametersById.Count == 0) return "(NoScriptParameters)";
+				if (this.ScriptParametersById_ReflectedCached.Count == 0) return "(NoScriptParameters)";
 				string ret = "";
-				foreach (int id in this.ScriptParametersById.Keys) {
-					ret += this.ScriptParametersById[id].Name + "=" + this.ScriptParametersById[id].ValueCurrent + ",";
+				foreach (int id in this.ScriptParametersById_ReflectedCached.Keys) {
+					ret += this.ScriptParametersById_ReflectedCached[id].Name + "=" + this.ScriptParametersById_ReflectedCached[id].ValueCurrent + ",";
 				}
 				ret = ret.TrimEnd(",".ToCharArray());
 				return "(" + ret + ")";
@@ -65,12 +64,21 @@ namespace Sq1.Core.StrategyBase {
 
 		// that's a smart suggestion SharpDevelop pops up: "Constructors in abstract classes should not be public"
 		protected Script() {
-			ScriptParametersById = new SortedDictionary<int, ScriptParameter>();
+			ScriptParametersById_ReflectedCached = new SortedDictionary<int, ScriptParameter>();
 		}
 
 		#region Initializers
 		public void Initialize(ScriptExecutor scriptExecutor) {
 			this.Executor = scriptExecutor;
+			// TODO: simplify or justify/explain why ScriptParametersById is so complicated; it's a cached reflection, but so many identical structures / copying / sync...
+			if (this.ScriptParametersById_ReflectedCached.Count != 0) {
+				string msg = "DUPLICATE_SCRIPT_INITIALIZATION__INVOKE_ME_ONLY_ONCE_PER_MY_LIFETIME__CLEARING_AND_REFILLING_MY_SCRIPT_PARAMETERS";
+				Assembler.PopupException(msg);
+				this.ScriptParametersById_ReflectedCached.Clear();
+			}
+			foreach(KeyValuePair<int, ScriptParameter> keyValue in this.ScriptParametersInitializedInDerivedConstructor) {
+				this.ScriptParametersById_ReflectedCached.Add(keyValue.Key, keyValue.Value);
+			}
 		}
 		public void InitializeBacktestWrapper() {
 			if (this.Bars == null) {
@@ -91,57 +99,143 @@ namespace Sq1.Core.StrategyBase {
 			}
 		}		
 		//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
-		public void PushRegisteredScriptParametersIntoCurrentContextSaveStrategy() {
-			string msig = " //PushRegisteredScriptParametersIntoCurrentContextSaveStrategy()";
-			bool storeStrategySinceParametersGottenFromScript = false;
-			foreach (ScriptParameter scriptParam in this.ScriptParametersById.Values) {
-				if (this.Strategy.ScriptContextCurrent.ScriptParametersById.ContainsKey(scriptParam.Id)) {
-					double valueContext = this.Strategy.ScriptContextCurrent.ScriptParametersById[scriptParam.Id].ValueCurrent;
-					if (scriptParam.ValueCurrent != valueContext) {
-						string msg = "REPLACED_ScriptParameter[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "] => valueNow[" + valueContext + "] " + this.ToString();
-						#if DEBUG
-						Assembler.PopupException(msg + msig, null, false);
-						#endif
-						scriptParam.ValueCurrent = valueContext;
-						storeStrategySinceParametersGottenFromScript = true;
-					}
-				} else {
-					this.Strategy.ScriptContextCurrent.ScriptParametersById.Add(scriptParam.Id, scriptParam);
-					string msg = "ADDED_ScriptParameter[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "] " + this.ToString();
+//		public void ScriptParametersPushCurrentContextIntoReflectedSaveStrategy() {
+//			string msig = " //ScriptParametersPushCurrentContextIntoReflectedSaveStrategy()";
+//			bool storeStrategySinceParametersGottenFromScript = false;
+//			foreach (ScriptParameter scriptParam in this.ScriptParametersById_ReflectedCached.Values) {
+//				if (this.Strategy.ScriptContextCurrent.ScriptParametersById.ContainsKey(scriptParam.Id)) {
+//					double valueCurrentContext = this.Strategy.ScriptContextCurrent.ScriptParametersById[scriptParam.Id].ValueCurrent;
+//					if (scriptParam.ValueCurrent != valueCurrentContext) {
+//					string msg = "REPLACED_ScriptParameter[Id=" + scriptParam.Id + " ValueCurrent=" + scriptParam.ValueCurrent + "] => valueCurrentContext[" + valueCurrentContext + "] " + this.ToString();
+//						#if DEBUG
+//						Assembler.PopupException(msg + msig, null, false);
+//						#endif
+//						scriptParam.ValueCurrent = valueCurrentContext;
+//						storeStrategySinceParametersGottenFromScript = true;
+//					}
+//					double valueMaxContext = this.Strategy.ScriptContextCurrent.ScriptParametersById[scriptParam.Id].ValueMax;
+//					if (scriptParam.ValueMax != valueMaxContext) {
+//						string msg = "REPLACED_ScriptParameter[Id=" + scriptParam.Id + " ValueMax=" + scriptParam.ValueMax + "] => valueMaxContext[" + valueMaxContext + "] " + this.ToString();
+//						#if DEBUG
+//						Assembler.PopupException(msg + msig, null, false);
+//						#endif
+//						scriptParam.ValueMax = valueMaxContext;
+//						storeStrategySinceParametersGottenFromScript = true;
+//					}
+//					double valueMinContext = this.Strategy.ScriptContextCurrent.ScriptParametersById[scriptParam.Id].ValueMin;
+//					if (scriptParam.ValueMin != valueMinContext) {
+//						string msg = "REPLACED_ScriptParameter[Id=" + scriptParam.Id + " ValueMin=" + scriptParam.ValueMin + "] => valueMinContext[" + valueMinContext + "] " + this.ToString();
+//						#if DEBUG
+//						Assembler.PopupException(msg + msig, null, false);
+//						#endif
+//						scriptParam.ValueMin = valueMinContext;
+//						storeStrategySinceParametersGottenFromScript = true;
+//					}
+//					string nameContext = this.Strategy.ScriptContextCurrent.ScriptParametersById[scriptParam.Id].Name;
+//					if (scriptParam.Name != nameContext) {
+//						string msg = "REPLACED_ScriptParameter[Id=" + scriptParam.Id + " Name=" + scriptParam.Name + "] => nameContext[" + nameContext + "] " + this.ToString();
+//						#if DEBUG
+//						Assembler.PopupException(msg + msig, null, false);
+//						#endif
+//						scriptParam.Name = nameContext;
+//						storeStrategySinceParametersGottenFromScript = true;
+//					}
+//				} else {
+//					this.Strategy.ScriptContextCurrent.ScriptParametersById.Add(scriptParam.Id, scriptParam);
+//					string msg = "ADDED_ScriptParameter[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "] " + this.ToString();
+//					#if DEBUG
+//					Assembler.PopupException(msg + msig, null, false);
+//					#endif
+//					storeStrategySinceParametersGottenFromScript = true;
+//				}
+//			}
+//			if (storeStrategySinceParametersGottenFromScript) {
+//				bool dontSaveWeOptimize = this.Strategy.ScriptContextCurrent.Name.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
+//				if (dontSaveWeOptimize) {
+//					string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_OPTIMIZER_PROVIDED_IN_SCRIPTCONTEXT";
+//					Assembler.PopupException(msg + msig, null, false);
+//					return;
+//				}
+//				this.Strategy.Serialize();
+//			}
+//		}
+	public void ScriptParametersPushReflectedIntoCurrentContextSaveStrategy() {
+		string msig = " //PushRegisteredScriptParametersIntoCurrentContextSaveStrategy()";
+		bool storeStrategySinceParametersGottenFromScript = false;
+		foreach (ScriptParameter spReflected in this.ScriptParametersById_ReflectedCached.Values) {
+			if (this.Strategy.ScriptContextCurrent.ScriptParametersById.ContainsKey(spReflected.Id)) {
+				ScriptParameter spContext = this.Strategy.ScriptContextCurrent.ScriptParametersById[spReflected.Id];
+				if (spContext.ValueCurrent != spReflected.ValueCurrent) {
+					string msg = "REPLACED_ScriptParameter[Id=" + spReflected.Id + " spContext.ValueCurrent=[" + spContext.ValueCurrent + "] => spReflected.ValueCurrent[" + spReflected.ValueCurrent + "] " + this.ToString();
+					#if DEBUG
 					Assembler.PopupException(msg + msig, null, false);
+					#endif
+					spContext.ValueCurrent = spReflected.ValueCurrent;
 					storeStrategySinceParametersGottenFromScript = true;
 				}
-			}
-			if (storeStrategySinceParametersGottenFromScript) {
-				bool dontSaveWeOptimize = this.Strategy.ScriptContextCurrent.Name.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
-				if (dontSaveWeOptimize) {
-					string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_OPTIMIZER_PROVIDED_IN_SCRIPTCONTEXT";
+				if (spContext.ValueMax != spReflected.ValueMax) {
+					string msg = "REPLACED_ScriptParameter[Id=" + spReflected.Id + " spContext.ValueMax=[" + spContext.ValueMax + "] => spReflected.ValueMax[" + spReflected.ValueMax + "] " + this.ToString();
+					#if DEBUG
 					Assembler.PopupException(msg + msig, null, false);
-					return;
+					#endif
+					spContext.ValueCurrent = spReflected.ValueMax;
+					storeStrategySinceParametersGottenFromScript = true;
 				}
-				this.Strategy.Serialize();
+				if (spContext.ValueMin != spReflected.ValueMin) {
+					string msg = "REPLACED_ScriptParameter[Id=" + spReflected.Id + " spContext.ValueMin=" + spContext.ValueMin + "] => spReflected.ValueMin[" + spReflected.ValueMin + "] " + this.ToString();
+					#if DEBUG
+					Assembler.PopupException(msg + msig, null, false);
+					#endif
+					spContext.ValueMin = spReflected.ValueMin;
+					storeStrategySinceParametersGottenFromScript = true;
+				}
+				if (spContext.Name != spReflected.Name) {
+					string msg = "REPLACED_ScriptParameter[Id=" + spReflected.Id + " spContext.Name=[" + spContext.Name + "] => spReflected.Name[" + spReflected.Name + "] " + this.ToString();
+					#if DEBUG
+					Assembler.PopupException(msg + msig, null, false);
+					#endif
+					spContext.Name = spReflected.Name;
+					storeStrategySinceParametersGottenFromScript = true;
+				}
+			} else {
+				this.Strategy.ScriptContextCurrent.ScriptParametersById.Add(spReflected.Id, spReflected);
+				string msg = "ADDED_ScriptParameter[Id=" + spReflected.Id + " value=" + spReflected.ValueCurrent + "] " + this.ToString();
+				#if DEBUG
+				Assembler.PopupException(msg + msig, null, false);
+				#endif
+				storeStrategySinceParametersGottenFromScript = true;
 			}
 		}
+		if (storeStrategySinceParametersGottenFromScript) {
+			bool dontSaveWeOptimize = this.Strategy.ScriptContextCurrent.Name.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
+			if (dontSaveWeOptimize) {
+				string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_OPTIMIZER_PROVIDED_IN_SCRIPTCONTEXT";
+				Assembler.PopupException(msg + msig, null, false);
+				return;
+			}
+			this.Strategy.Serialize();
+		}
+	}
 		#endregion
 
 		#region script parameters and indicator parameter userland-invokable helper
-		public ScriptParameter ScriptParameterCreateRegister(int id, string name, double value, double min, double max, double increment, string reasonToExist="NO_REASON_TO_EXIST") {
-			this.checkThrowScriptParameterAlreadyRegistered(id, name);
-			ScriptParameter strategyParameter = new ScriptParameter(id, name, value, min, max, increment, reasonToExist);
-			this.ScriptParametersById.Add(id, strategyParameter);
-			return strategyParameter;
-		}
-		protected void checkThrowScriptParameterAlreadyRegistered(int id, string name) {
-			if (this.ScriptParametersById.ContainsKey(id) == false) return;
-			ScriptParameter param = this.ScriptParametersById[id];
-			string msg = "Script[" + this.StrategyName + "] already had parameter {id[" + param.Id + "] name[" + param.Name + "]}"
-				+ " while adding {id[" + id + "] name[" + name + "]}; edit source code and make IDs unique for every parameter";
-			#if DEBUG
-			Debugger.Break();
-			#endif
-			throw new Exception(msg);
-		}
-
+//		[Obsolete("JUST_DECLARE_YOUR_PARAMETER_AS_CLASS_VARIABLE__INTROSPECTION_WILL_PICK_IT_UP")]
+//		public ScriptParameter ScriptParameterCreateRegister(int id, string name, double value, double min, double max, double increment, string reasonToExist="NO_REASON_TO_EXIST") {
+//			ScriptParameter strategyParameter = new ScriptParameter(id, name, value, min, max, increment, reasonToExist);
+//			this.checkThrowScriptParameterAlreadyRegistered(id, name);
+//			this.ScriptParametersById_ReflectedCached.Add(id, strategyParameter);
+//			return strategyParameter;
+//		}
+//		protected void checkThrowScriptParameterAlreadyRegistered(int id, string name) {
+//			if (this.ScriptParametersById.ContainsKey(id) == false) return;
+//			ScriptParameter param = this.ScriptParametersById[id];
+//			string msg = "Script[" + this.StrategyName + "] already had parameter {id[" + param.Id + "] name[" + param.Name + "]}"
+//				+ " while adding {id[" + id + "] name[" + name + "]}; edit source code and make IDs unique for every parameter";
+//			#if DEBUG
+//			Debugger.Break();
+//			#endif
+//			throw new Exception(msg);
+//		}
 		#endregion
 
 		#region all Indicator-related is grouped here
@@ -196,7 +290,12 @@ namespace Sq1.Core.StrategyBase {
 				
 				Type myChild = this.GetType();
 				//PropertyInfo[] lookingForIndicators = myChild.GetProperties();
-				FieldInfo[] lookingForIndicators = myChild.GetFields();
+				FieldInfo[] lookingForIndicators = myChild.GetFields(
+															  BindingFlags.Public
+															| BindingFlags.NonPublic
+															| BindingFlags.DeclaredOnly
+															| BindingFlags.Instance
+														);
 				foreach (FieldInfo indicatorCandidate in lookingForIndicators) {
 					Type indicatorConcreteType = indicatorCandidate.FieldType;
 					bool isIndicatorChild = typeof(Indicator).IsAssignableFrom(indicatorConcreteType);
@@ -209,8 +308,42 @@ namespace Sq1.Core.StrategyBase {
 						continue;
 					}
 					Indicator variableIndicator = expectingConstructedNonNull as Indicator;
-					variableIndicator.Name = indicatorCandidate.Name;
+					// if Script constructed a ScriptParameter with "null" as it second ctor() parameter, take introspected variable name as declared in Script
+					if (string.IsNullOrEmpty(variableIndicator.Name)) {
+//						string msg = "IT_WILL_WORK_RELAX WHERE_DID_INDICATORS_NAME_SET_TO_A_RANDOM_NAME_HAS_GONE??? IVE_EXPLICITLY_SET_IT_FOR_SECOND_LEVEL_INTROSPECTION_NAMING_NOT_TO_FAIL MaFast.Period; ";
+//						Assembler.PopupException(msg);
+						variableIndicator.Name = indicatorCandidate.Name;
+					}
 					ret.Add(variableIndicator);
+				}
+				return ret;
+			} }
+		public SortedDictionary<int, ScriptParameter> ScriptParametersInitializedInDerivedConstructor { get {
+				SortedDictionary<int, ScriptParameter> ret = new SortedDictionary<int, ScriptParameter>();
+				
+				Type myChild = this.GetType();
+				//PropertyInfo[] lookingForScriptParameters = myChild.GetProperties();
+				FieldInfo[] lookingForScriptParameters = myChild.GetFields(
+															  BindingFlags.Public
+															| BindingFlags.NonPublic
+															| BindingFlags.DeclaredOnly
+															| BindingFlags.Instance
+														);
+				foreach (FieldInfo scriptParameterCandidate in lookingForScriptParameters) {
+					Type scriptParameterConcreteType = scriptParameterCandidate.FieldType;
+					bool isIndicatorChild = typeof(ScriptParameter).IsAssignableFrom(scriptParameterConcreteType);
+					if (isIndicatorChild == false) continue;
+					ScriptParameter scriptParameterInstance = null;
+					object expectingConstructedNonNull = scriptParameterCandidate.GetValue(this);
+					if (expectingConstructedNonNull == null) {
+						string msg = "SCRIPT_PARAMETER_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR Script[" + this.ToString();// + "].[" + variableIndicator.Name + "]";
+						Assembler.PopupException(msg);
+						continue;
+					}
+					ScriptParameter variableScriptParameter = expectingConstructedNonNull as ScriptParameter;
+					// if Script constructed a ScriptParameter with "null" as it second ctor() parameter, take introspected variable name as declared in Script
+					if (string.IsNullOrEmpty(variableScriptParameter.Name)) variableScriptParameter.Name = scriptParameterCandidate.Name;
+					ret.Add(variableScriptParameter.Id, variableScriptParameter);
 				}
 				return ret;
 			} }
@@ -275,7 +408,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			// first half of the job
-			SortedDictionary<int, ScriptParameter> cloneScriptParametersFrom = clone.ScriptParametersById;
+			SortedDictionary<int, ScriptParameter> cloneScriptParametersFrom = clone.ScriptParametersById_ReflectedCached;
 			Dictionary<int, ScriptParameter>	   myctxScriptParametersTo	 = this.Strategy.ScriptContextCurrent.ScriptParametersById;
 			foreach (int cloneSPindex in cloneScriptParametersFrom.Keys) {
 				ScriptParameter cloneSparam = cloneScriptParametersFrom[cloneSPindex];

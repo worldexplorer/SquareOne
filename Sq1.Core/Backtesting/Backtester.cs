@@ -32,8 +32,8 @@ namespace Sq1.Core.Backtesting {
 			} }
 		public int						QuotesGeneratedSoFar			{ get { return BarsSimulatedSoFar * this.QuotesGenerator.BacktestStrokesPerBarAsInt; } }
 		//public BacktestQuotesPerBar		BacktestQuotesPerBar			{ get {
-		//    if (this.QuotesGenerator == null) return BacktestQuotesPerBar.Unknown;
-		//    else return this.QuotesGenerator.BacktestStrokesPerBar;
+		//	if (this.QuotesGenerator == null) return BacktestQuotesPerBar.Unknown;
+		//	else return this.QuotesGenerator.BacktestStrokesPerBar;
 		//} }
 		public BacktestQuotesGenerator	QuotesGenerator					{ get; private set; }
 

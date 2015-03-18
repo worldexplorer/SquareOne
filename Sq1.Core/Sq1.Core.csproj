@@ -21,7 +21,7 @@
     <RootNamespace>Sq1.Core</RootNamespace>
     <SignAssembly>False</SignAssembly>
     <DelaySign>False</DelaySign>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
@@ -361,13 +361,13 @@
     <Compile Include="StrategyBase\MarketLive.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
-      <Project>{82541DA4-EE4A-4078-BF05-63B48A8AA51E}</Project>
-      <Name>CsvHelper35</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json.Net20</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
+      <Project>{82541DA4-EE4A-4078-BF05-63B48A8AA51E}</Project>
+      <Name>CsvHelper35</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

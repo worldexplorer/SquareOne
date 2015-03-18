@@ -100,7 +100,7 @@ namespace Sq1.Core.StrategyBase {
 
 			Strategy strategy = this.Executor.Strategy;
 			Script script = strategy.Script;
-			if (script.ScriptParametersById == null) {
+			if (script.ScriptParametersById_ReflectedCached == null) {
 				string msg = "CANT_GRAB_";
 				Assembler.PopupException(msg);
 				return;
@@ -110,7 +110,7 @@ namespace Sq1.Core.StrategyBase {
 			this.ScriptParametersById_BuiltOnBacktestFinished = new Dictionary<int, ScriptParameter>();
 
 			string pids = script.ScriptParametersByIdAsString;
-			foreach (ScriptParameter sp in script.ScriptParametersById.Values) {
+			foreach (ScriptParameter sp in script.ScriptParametersById_ReflectedCached.Values) {
 				if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(sp.Name)) {
 					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_ScriptParameter[" + sp.Name + "]: " + pids;
 					Assembler.PopupException(msg);

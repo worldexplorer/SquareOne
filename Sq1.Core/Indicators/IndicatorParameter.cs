@@ -1,49 +1,61 @@
 ﻿using System;
 
 using Newtonsoft.Json;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Indicators {
 	public class IndicatorParameter {
-		[JsonIgnore]	public string IndicatorName;
-		[JsonIgnore]	public virtual string FullName { get { return this.IndicatorName + "." + this.Name; } } // "MAslow.Period" for indicators, plain Name for StrategyParams
+		[JsonIgnore]	public string			IndicatorName;
+		[JsonIgnore]	public virtual string	FullName { get { return this.IndicatorName + "." + this.Name; } } // "MAslow.Period" for indicators, plain Name for StrategyParams
 		
-		[JsonProperty]	public string Name;	// unlike user-editable ScriptParameter, IndicatorParameter.Name is compiled and remains constant (no need for Id)
-		[JsonProperty]	public double ValueMin;
-		[JsonProperty]	public double ValueMax;
-		[JsonProperty]	public double ValueIncrement;
-		[JsonProperty]	public double ValueCurrent;
+		[JsonProperty]	public string			Name;	// unlike user-editable ScriptParameter, IndicatorParameter.Name is compiled and remains constant (no need for Id)
+		[JsonProperty]	public double			ValueMin;
+		[JsonProperty]	public double			ValueMax;
+		[JsonProperty]	public double			ValueIncrement;
+		[JsonProperty]	public double			ValueCurrent;
+		[JsonIgnore]	public int				ValueCurrentAsInteger { get { return (int) Math.Round(this.ValueCurrent); } }
 		
-		// NOT_USED_YET; waiting for optimizer
-//		[JsonIgnore]	public bool IsInteger { get {
-//				return this.ValueMin == (double)((int)this.ValueMin)
-//					&& this.ValueMax == (double)((int)this.ValueMax)
-//					&& this.ValueIncrement == (double)((int)this.ValueIncrement)
-//					&& this.ValueCurrent == (double)this.ValueCurrent;
-//			} }
-		[JsonIgnore]	public int NumberOfRuns { get {
-				if (this.ValueIncrement <= 0.0) return 1;
-				int ret = (int)Math.Floor((this.ValueMax - this.ValueMin) / this.ValueIncrement) + 1;
-                return ret;
+		[JsonProperty]	public int				NumberOfRuns { get {
+				// got "Arithmetic opertation resulted in an overflow" when a Script wasn't built (IndicatorParameters restored from StrategyContext?)
+				int ret = 1;
+				if (this.ValueIncrement <= 0.0) return ret;
+				if (double.IsNaN(this.ValueMax)) return ret;
+				if (double.IsNaN(this.ValueMin)) return ret;
+				if (double.IsNaN(this.ValueIncrement)) return ret;
+				try {
+					ret = (int)Math.Floor(Math.Abs((this.ValueMax - this.ValueMin)) / this.ValueIncrement) + 1;
+				} catch (Exception ex) {
+					Assembler.PopupException("fix NaNs and overflow", ex);
+				}
+				return ret;
 			} }
 
 		//public string ValueString;
 		//public BarScaleInterval ValueBarScaleInterval;
 
-		[JsonProperty]	public bool BorderShown;
-		[JsonProperty]	public bool NumericUpdownShown;
+		[JsonProperty]	public bool		BorderShown;
+		[JsonProperty]	public bool		NumericUpdownShown;
 
 		// DESPITE_NOT_INVOKED_EXPLICITLY__I_GUESS_INITIALIZING_VALUES_USING_OTHER_CONSTRUCTOR_MAY_CORRUPT_JSON_DESERIALIZATION
 		public IndicatorParameter() {
 			BorderShown = false;
 			NumericUpdownShown = true;
 		}
-		public IndicatorParameter(string name = "NAME_NOT_INITIALIZED",
-		                          double valueCurrent = double.NaN, double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) : this() {
-			Name = name;
-			ValueCurrent = valueCurrent;
-			ValueMin = valueMin;
-			ValueMax = valueMax;
-			ValueIncrement = valueIncrement;
+		public IndicatorParameter(string name, double valueCurrent = double.NaN,
+								  double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) : this() {
+//			if (name == null) {
+//				if (this is IndicatorParameter) {
+//					name = "INDICATOR_PARAMETER_NAME_NOT_INITIALIZED:" + new Random().Next(1000, 9999);
+//				}
+//				if (this is ScriptParameter) {
+//					string msg = "SCRIPT_PARAMETER_NAME_CAN_BE_NULL ScriptParametersInitializedInDerivedConstructor will fix this by assigning my name to variable name I'm assigned to";
+//				}
+//			}
+			Name			= name;
+			ValueCurrent	= valueCurrent;
+			ValueMin		= valueMin;
+			ValueMax		= valueMax;
+			ValueIncrement	= valueIncrement;
 		}
 		//public IndicatorParameter(string name = "NAME_NOT_INITIALIZED", string value = "STRING_VALUE_NOT_INITIALIZED") {
 		//	this.Name = name;
@@ -54,9 +66,9 @@ namespace Sq1.Core.Indicators {
 		//	this.ValueBarScaleInterval = value;
 		//}
 		public string ValidateSelf() {
-			if (this.ValueMin > this.ValueMax)		return "ValueMin[" + this.ValueMin + "] > ValueMax[" + this.ValueMax + "]";
-			if (this.ValueCurrent > this.ValueMax)	return "ValueCurrent[" + this.ValueCurrent + "] > ValueMax[" + this.ValueMax + "]";
-			if (this.ValueCurrent < this.ValueMin)	return "ValueCurrent[" + this.ValueCurrent + "] < ValueMin[" + this.ValueMin + "]";
+			if (this.ValueMin		> this.ValueMax)	return "ValueMin["		+ this.ValueMin		+ "] > ValueMax["		+ this.ValueMax + "]";
+			if (this.ValueCurrent	> this.ValueMax)	return "ValueCurrent["	+ this.ValueCurrent	+ "] > ValueMax["		+ this.ValueMax + "]";
+			if (this.ValueCurrent	< this.ValueMin)	return "ValueCurrent["	+ this.ValueCurrent	+ "] < ValueCurrent["	+ this.ValueCurrent + "]";
 			return null;
 		}
 		public override string ToString() {
@@ -86,7 +98,7 @@ namespace Sq1.Core.Indicators {
 				//Assembler.PopupException(msg);
 				ctxParamToAbsorbCurrentAndFixBoundaries.ValueMax = this.ValueMax;
 			}
-            if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement != this.ValueIncrement) {
+			if (ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement != this.ValueIncrement) {
 				string msg = "OBSERVED_AS_ALWAYS_HAPPENING";
 				////Assembler.PopupException(msg, null, false);
 				ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement = this.ValueIncrement;

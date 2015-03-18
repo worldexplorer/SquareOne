@@ -55,9 +55,9 @@ namespace Sq1.Core.Support {
 				}
 				//bool mustBeUnlocked = this.isLocked.WaitOne(waitMillis);
 				//if (mustBeUnlocked == false) {
-				//    string msg = this.ReasonToExist + ": LOCK_NOT_RELEASED_WITIN_MILLIS: [" + waitMillis + "] LOCK_HELD_BY[" + this.LockOwner + "]/[" + this.LockPurpose + "]";
-				//    Assembler.PopupException(msg);
-				//    return false;
+				//	string msg = this.ReasonToExist + ": LOCK_NOT_RELEASED_WITIN_MILLIS: [" + waitMillis + "] LOCK_HELD_BY[" + this.LockOwner + "]/[" + this.LockPurpose + "]";
+				//	Assembler.PopupException(msg);
+				//	return false;
 				//}
 			}
 			lock (this.LockObject) {

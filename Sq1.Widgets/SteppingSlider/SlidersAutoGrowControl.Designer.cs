@@ -28,6 +28,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.ctxOperations = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniltbParameterBagRenameTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniltbParameterBagDuplicateTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniParameterBagDelete = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,7 +43,6 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowBorder = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniAllParamsShowNumeric = new System.Windows.Forms.ToolStripMenuItem();
 			this.templateSliderControl = new Sq1.Widgets.SteppingSlider.SliderComboControl();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.ctxOperations.SuspendLayout();
 			this.ctxScriptContexts.SuspendLayout();
 			this.SuspendLayout();
@@ -55,30 +55,43 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbParameterBagDuplicateTo,
 			this.mniParameterBagDelete});
 			this.ctxOperations.Name = "ctxOperations";
-			this.ctxOperations.Size = new System.Drawing.Size(241, 102);
+			this.ctxOperations.Size = new System.Drawing.Size(241, 80);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(237, 6);
 			// 
 			// mniltbParameterBagRenameTo
 			// 
 			this.mniltbParameterBagRenameTo.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbParameterBagRenameTo.InputFieldAlignedRight = false;
+			this.mniltbParameterBagRenameTo.InputFieldEditable = true;
 			this.mniltbParameterBagRenameTo.InputFieldOffsetX = 80;
 			this.mniltbParameterBagRenameTo.InputFieldValue = "";
 			this.mniltbParameterBagRenameTo.InputFieldWidth = 85;
 			this.mniltbParameterBagRenameTo.Name = "mniltbParameterBagRenameTo";
 			this.mniltbParameterBagRenameTo.Size = new System.Drawing.Size(168, 21);
 			this.mniltbParameterBagRenameTo.Text = "Rename To:";
+			this.mniltbParameterBagRenameTo.TextOffsetX = 0;
 			this.mniltbParameterBagRenameTo.TextRed = false;
+			this.mniltbParameterBagRenameTo.TextWidth = 72;
 			this.mniltbParameterBagRenameTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextRenameTo_UserTyped);
 			// 
 			// mniltbParameterBagDuplicateTo
 			// 
 			this.mniltbParameterBagDuplicateTo.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbParameterBagDuplicateTo.InputFieldAlignedRight = false;
+			this.mniltbParameterBagDuplicateTo.InputFieldEditable = true;
 			this.mniltbParameterBagDuplicateTo.InputFieldOffsetX = 80;
 			this.mniltbParameterBagDuplicateTo.InputFieldValue = "";
 			this.mniltbParameterBagDuplicateTo.InputFieldWidth = 85;
 			this.mniltbParameterBagDuplicateTo.Name = "mniltbParameterBagDuplicateTo";
 			this.mniltbParameterBagDuplicateTo.Size = new System.Drawing.Size(168, 21);
 			this.mniltbParameterBagDuplicateTo.Text = "Duplicate To:";
+			this.mniltbParameterBagDuplicateTo.TextOffsetX = 0;
 			this.mniltbParameterBagDuplicateTo.TextRed = false;
+			this.mniltbParameterBagDuplicateTo.TextWidth = 79;
 			this.mniltbParameterBagDuplicateTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextDuplicateTo_UserTyped);
 			// 
 			// mniParameterBagDelete
@@ -107,7 +120,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowBorder,
 			this.mniAllParamsShowNumeric});
 			this.ctxScriptContexts.Name = "ctxScriptContexts";
-			this.ctxScriptContexts.Size = new System.Drawing.Size(274, 162);
+			this.ctxScriptContexts.Size = new System.Drawing.Size(274, 184);
 			this.ctxScriptContexts.Opening += new System.ComponentModel.CancelEventHandler(this.ctxScriptContexts_Opening);
 			// 
 			// mniParameterBagsNotHighlighted
@@ -115,7 +128,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniParameterBagsNotHighlighted.BackColor = System.Drawing.Color.Transparent;
 			this.mniParameterBagsNotHighlighted.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.mniParameterBagsNotHighlighted.Name = "mniParameterBagsNotHighlighted";
-			this.mniParameterBagsNotHighlighted.Size = new System.Drawing.Size(100, 23);
+			this.mniParameterBagsNotHighlighted.Size = new System.Drawing.Size(93, 15);
 			this.mniParameterBagsNotHighlighted.Text = "Script Contexts";
 			// 
 			// mniParameterBag_test1
@@ -137,13 +150,17 @@ namespace Sq1.Widgets.SteppingSlider {
 			// mniltbParametersBagNewWithDefaults
 			// 
 			this.mniltbParametersBagNewWithDefaults.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbParametersBagNewWithDefaults.InputFieldAlignedRight = false;
+			this.mniltbParametersBagNewWithDefaults.InputFieldEditable = true;
 			this.mniltbParametersBagNewWithDefaults.InputFieldOffsetX = 80;
 			this.mniltbParametersBagNewWithDefaults.InputFieldValue = "";
 			this.mniltbParametersBagNewWithDefaults.InputFieldWidth = 85;
 			this.mniltbParametersBagNewWithDefaults.Name = "mniltbParametersBagNewWithDefaults";
 			this.mniltbParametersBagNewWithDefaults.Size = new System.Drawing.Size(168, 21);
 			this.mniltbParametersBagNewWithDefaults.Text = "New clean";
+			this.mniltbParametersBagNewWithDefaults.TextOffsetX = 0;
 			this.mniltbParametersBagNewWithDefaults.TextRed = false;
+			this.mniltbParametersBagNewWithDefaults.TextWidth = 64;
 			this.mniltbParametersBagNewWithDefaults.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextNewWithDefaults_UserTyped);
 			// 
 			// toolStripSeparator2
@@ -213,11 +230,6 @@ namespace Sq1.Widgets.SteppingSlider {
 			0,
 			0,
 			0});
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(237, 6);
 			// 
 			// SlidersAutoGrowControl
 			// 

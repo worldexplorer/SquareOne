@@ -181,10 +181,17 @@ namespace Sq1.Widgets.Optimization {
 			this.btnRunCancel.Text					= "Run " + backtestsTotal + " backtests";
 			this.lblStats.Text						= "0% complete	0/" + backtestsTotal;
 			this.progressBar1.Value					= 0;
-			this.progressBar1.Maximum				= backtestsTotal;
+			this.progressBar1.Maximum				= (backtestsTotal != -1) ? backtestsTotal : 0;
 			
 			this.nudThreadsToRun.Value				= this.optimizer.ThreadsToUse;
-			
+
+			if (backtestsTotal == -1) {
+				this.olvBacktests.EmptyListMsg =  "RUN_-1_BACKTESTS_IS_DUE_TO MULTIPLICATION_OF_POSSIBLE_PARAMETERS"
+					+ " IS_MORE_THAN_2,14_BLN_COMBINATIONS WENT_OUT_OF_INT32_CAPACITY"
+					+ " SEE_EXCEPTIONS_FORM_FOR_OFFENSIVE_PARAMETERS DECREASE_RANGE_OR_INCREASE_STEP_FOR_xxx RECOMPILE";
+			}
+
+						
 			this.btnRunCancel.Enabled				= true;
 			this.btnPauseResume.Enabled				= false;
 

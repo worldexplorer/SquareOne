@@ -12,8 +12,8 @@ using Sq1.Core.StrategyBase;
 namespace Sq1.Strategies.Demo {
 	public class TwoMAsCompiled : Script {
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
-		public IndicatorMovingAverageSimple MAfast;
-		public IndicatorMovingAverageSimple MAslow;
+		IndicatorMovingAverageSimple MAfast;
+		IndicatorMovingAverageSimple MAslow;
 
 		public TwoMAsCompiled() {
 			MAfast = new IndicatorMovingAverageSimple();

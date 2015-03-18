@@ -23,9 +23,8 @@ namespace Sq1.Core.StrategyBase {
 			avoidingMessIfInstantiatedInAssembler = new object();
 		}
 
-		//NOT USED
-		private ScriptCompiler(string tmpFolder = "_StrategiesCompiledOnTheFlyInsecure") : this() {
-
+		// NOT_USED__MIGHT_BE_USEFUL_TO_TRANSFER_DLL_OVER_NETWORK_FOR_CLOUD_COMPUTING__IMPLEMENT_YOUR_OWN_PRIVACY_AND_SECURITY_POLICIES
+		ScriptCompiler(string tmpFolder = "_StrategiesCompiledOnTheFlyInsecure") : this() {
 			//DISABLED_SINCE_DOESNT_HELP_FOR_EXCEPTIONS_TO_HAVE_LINE_NUMBER_IN_EXCEPTIONS_CONTROL
 			tmpFolder = null;
 
@@ -83,9 +82,9 @@ namespace Sq1.Core.StrategyBase {
 				compilerParameters.IncludeDebugInformation = true;
 			}
 			compilerParameters.IncludeDebugInformation = false;
-			compilerParameters.ReferencedAssemblies.Add("System.dll");
-			compilerParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
-			compilerParameters.ReferencedAssemblies.Add("System.Drawing.dll");
+			//compilerParameters.ReferencedAssemblies.Add("System.dll");
+			//compilerParameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
+			//compilerParameters.ReferencedAssemblies.Add("System.Drawing.dll");
 			this.addApplicationAssemblies(compilerParameters);
 			if (string.IsNullOrEmpty(dotNetReferences) == false) {
 				string[] referencesSplitted = dotNetReferences.Split(new char[] { ';' });

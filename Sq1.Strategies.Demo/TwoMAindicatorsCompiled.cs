@@ -9,8 +9,8 @@ namespace Sq1.Strategies.Demo {
 	public class TwoMAindicatorsCompiled : Script {
 
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
-		public IndicatorMovingAverageSimple MAslow;
-		public IndicatorMovingAverageSimple MAfast;
+		IndicatorMovingAverageSimple MAslow;
+		IndicatorMovingAverageSimple MAfast;
 
 		public TwoMAindicatorsCompiled() {
 			MAfast = new IndicatorMovingAverageSimple();

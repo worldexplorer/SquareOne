@@ -35,6 +35,7 @@ namespace Sq1.Core.StrategyBase {
 		//	this.ContextMarkCurrentInListByName(scriptContextNameNew);
 		//	return clone;
 		//}
+		[Obsolete("REDUNDANT_MEANINGLESS_UNCLEAR_COPYING_HERE")]
 		public void ContextSwitchCurrentToNamedAndSerialize(string scriptContextName, bool shouldSave = true) {
 			lock (this.ScriptContextCurrentName) {	// Monitor shouldn't care whether I change the variable that I use for exclusive access...
 			//v2 lock (this.scriptContextCurrentNameLock) {
@@ -47,7 +48,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.ContextMarkCurrentInListByName(scriptContextName);
 			if (this.Script != null) {
-				this.Script.PushRegisteredScriptParametersIntoCurrentContextSaveStrategy();
+				this.Script.ScriptParametersPushReflectedIntoCurrentContextSaveStrategy();
 			}
 		}
 		public void ContextMarkCurrentInListByName(string scriptContextName) {

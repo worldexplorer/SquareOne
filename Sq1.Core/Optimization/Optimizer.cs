@@ -34,10 +34,17 @@ namespace Sq1.Core.Optimization {
 		
 		public	int			ScriptParametersTotalNr { get {
 				int ret = 0;
-				foreach (ScriptParameter sp in Executor.Strategy.Script.ScriptParametersById.Values) {
+				foreach (ScriptParameter sp in Executor.Strategy.Script.ScriptParametersById_ReflectedCached.Values) {
 					if (sp.NumberOfRuns == 0) continue;
 					if (ret == 0) ret = 1;
-					ret *= sp.NumberOfRuns;
+					try {
+						ret *= sp.NumberOfRuns;
+					} catch (Exception ex) {
+						//Debugger.Break();
+						Assembler.PopupException("DECREASE_RANGE_OR_INCREASE_STEP_FOR_SCRIPT_PARAMETERS_PRIOR_TO " + sp.ToString(), ex, false);
+						ret = -1;
+						break;
+					}
 				}
 				return ret;
 			} }
@@ -47,7 +54,14 @@ namespace Sq1.Core.Optimization {
 				foreach (IndicatorParameter ip in Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
 					if (ip.NumberOfRuns == 0) continue;
 					if (ret == 0) ret = 1;
-					ret *= ip.NumberOfRuns;
+					try {
+						ret *= ip.NumberOfRuns;
+					} catch (Exception ex) {
+						//Debugger.Break();
+						Assembler.PopupException("INCREASE_STEP_FOR_INDICATOR_PARAMETERS_PRIOR_TO " + ip.ToString(), ex, false);
+						ret = -1;
+						break;
+					}
 				}
 				return ret;
 			} }
@@ -130,12 +144,12 @@ namespace Sq1.Core.Optimization {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.Executor.Strategy.Script.ScriptParametersById == null) {
+			if (this.Executor.Strategy.Script.ScriptParametersById_ReflectedCached == null) {
 				string msg = "Optimizer.executor.Strategy.Script.ParametersById == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.ParametersById = this.Executor.Strategy.Script.ScriptParametersById;
+			this.ParametersById = this.Executor.Strategy.Script.ScriptParametersById_ReflectedCached;
 
 
 			if (this.Executor.ExecutionDataSnapshot == null) {

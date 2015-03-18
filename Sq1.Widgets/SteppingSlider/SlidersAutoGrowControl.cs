@@ -44,7 +44,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 				return ret;
 			}
-			set { }
+			set { }		// Designer adds .CurrentParametersFromChildSliders = null;
 		}
 		
 		[Browsable(true)]
@@ -88,12 +88,17 @@ namespace Sq1.Widgets.SteppingSlider {
 				foreach (ScriptParameter parameter in this.Strategy.ScriptContextCurrent.ScriptParametersById.Values) {
 					SliderComboControl slider = this.SliderComboFactory(parameter);
 					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
+					string mustBeMe = slider.Parent.ToString();
+					if (mustBeMe != this.ToString()) {
+						System.Diagnostics.Debugger.Break();
+						string msg = "WHO_THEN???";
+					}
 				}
 
 				//SWITCHED_TO_PUSH this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
 				Dictionary<string, IndicatorParameter> parametersByName = this.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;	// dont make me calculate it twice 
 				if (parametersByName.Count > 0) {
-					this.AddSpacingBeforeIndicatorParameters();
+					this.addSpacingBeforeIndicatorParameters();
 				}
 				foreach (string indicatorNameDotParameterName in parametersByName.Keys) {																// #1
 					IndicatorParameter parameter = parametersByName[indicatorNameDotParameterName];														// #2
@@ -109,13 +114,13 @@ namespace Sq1.Widgets.SteppingSlider {
 			}
 		}
 
-		private void AddSpacingBeforeIndicatorParameters() {
+		void addSpacingBeforeIndicatorParameters() {
 			Panel ret = new Panel();
 			ret.Size = new System.Drawing.Size(this.Width, 8);
 			//base.Controls.Add(ret);
 		}
 		
-		private void syncMniAllParamsShowBorderAndNumeric() {
+		void syncMniAllParamsShowBorderAndNumeric() {
 			bool atLeastOneBorderShown = false;
 			bool atLeastOneNumericShown = false;
 
@@ -131,7 +136,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowNumeric.Text = atLeastOneNumericShown ? "All Params -> HideNumeric" : "All Params -> ShowNumeric";
 		}
 
-		private SliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptparameter, string indicatorNameDotParameterName = null) {
+		SliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptparameter, string indicatorNameDotParameterName = null) {
 			//v1 WOULD_BE_TOO_EASY ret = this.templateSliderControl.Clone();
 			//BEGIN merged with SlidersAutoGrow.Designer.cs:InitializeComponent()
 			SliderComboControl ret = new SliderComboControl();
@@ -169,17 +174,21 @@ namespace Sq1.Widgets.SteppingSlider {
 			ret.LabelText = nameForScriptDotSeparatedForIndicator;
 			ret.Name = "parameter_" + nameForScriptDotSeparatedForIndicator;
 			
+			//v1 ValueCurrent="200" set initially, impedes setting ValueMax=10
 			//sequence matters! ret.ValueCurrent checks that you didn't set it outside the boundaries AND within the Increment; fix manually designer-generated SliderComboControl.InitializeComponents() as well 
-			ret.ValueIncrement = new decimal(indicatorOrScriptparameter.ValueIncrement);
-			ret.ValueMin = new decimal(indicatorOrScriptparameter.ValueMin);
-			ret.ValueMax = new decimal(indicatorOrScriptparameter.ValueMax);
-			ret.ValueCurrent = new decimal(indicatorOrScriptparameter.ValueCurrent);
+			ret.ValueIncrement	= new decimal(indicatorOrScriptparameter.ValueIncrement);
+			ret.ValueMin		= new decimal(indicatorOrScriptparameter.ValueMin);
+			ret.ValueMax		= new decimal(indicatorOrScriptparameter.ValueMax);
+			ret.ValueCurrent	= new decimal(indicatorOrScriptparameter.ValueCurrent);
+			//v2
+			//ret.ValidateValuesAndAbsorbFrom(indicatorOrScriptparameter);
 			
 			//DOESNT_WORK?... ret.PanelFillSlider.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			//ret.PaddingPanelSlider = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			ret.Location = new System.Drawing.Point(0, this.PreferredHeight + this.VerticalSpaceBetweenSliders);
 			ret.Size = new System.Drawing.Size(this.Width, ret.Size.Height);
 			ret.Tag = indicatorOrScriptparameter;
+			ret.ParentAutoGrowControl = this;
 			ret.ValueCurrentChanged += slider_ValueCurrentChanged;
 			// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening
 			

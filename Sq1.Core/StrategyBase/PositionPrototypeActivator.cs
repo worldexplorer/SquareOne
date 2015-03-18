@@ -465,10 +465,12 @@ namespace Sq1.Core.StrategyBase {
 							break;
 					}
 					break;
-				#endregion
+					#endregion
 				case MarketLimitStop.Stop:
 					string ident2 = "PureStopLoss{old[" + proto.PriceStopLoss + "]:new[" + newStopLossPrice + "]}";
-					switch (proto.StopLossAlertForAnnihilation.Direction) {
+					Direction slDirectionAssumedOrActualIfFilled = proto.LongShort == PositionLongShort.Long ? Direction.Sell : Direction.Cover;
+					if (proto.StopLossAlertForAnnihilation != null) slDirectionAssumedOrActualIfFilled = proto.StopLossAlertForAnnihilation.Direction;
+					switch (slDirectionAssumedOrActualIfFilled) {
 						case Direction.Sell:
 							double ask = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.BestAskGetForMarketOrder(proto.Symbol);
 							if (newStopLossPrice > ask) {

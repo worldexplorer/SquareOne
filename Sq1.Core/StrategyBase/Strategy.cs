@@ -121,19 +121,19 @@ namespace Sq1.Core.StrategyBase {
 			//ScriptParameters are only identical objects between script context and sliders.tags, while every click-change is pushed into Script.ParametersByID)
 			int paramId = scriptParameter.Id;
 			double valueNew = scriptParameter.ValueCurrent;
-			if (this.Script.ScriptParametersById.ContainsKey(paramId) == false) {
+			if (this.Script.ScriptParametersById_ReflectedCached.ContainsKey(paramId) == false) {
 				string msg = "YOU_CHANGED_SCRIPT_PARAMETER_WHICH_NO_LONGER_EXISTS_IN_SCRIPT";
 				Assembler.PopupException(msg);
 				return;
 			}
 
-			double valueOld = this.Script.ScriptParametersById[paramId].ValueCurrent;
+			double valueOld = this.Script.ScriptParametersById_ReflectedCached[paramId].ValueCurrent;
 			if (valueOld == valueNew) {
 				string msg = "SLIDER_CHANGED_TO_VALUE_SCRIPT_PARAMETER_ALREADY_HAD [" + valueOld + "]=[" + valueNew + "]";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			this.Script.ScriptParametersById[paramId].ValueCurrent = valueNew;
+			this.Script.ScriptParametersById_ReflectedCached[paramId].ValueCurrent = valueNew;
 		}
 		public void PushChangedIndicatorParameterValueToScriptAndSerialize(IndicatorParameter iParamChangedCtx) {
 			//new concept that IndicatorParameters are only identical objects between script context and sliders.tags, while every click-change is absorbed by snapshot.IndicatorsInstancesReflected

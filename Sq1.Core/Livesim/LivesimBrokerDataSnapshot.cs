@@ -18,12 +18,12 @@ namespace Sq1.Core.StrategyBase {
 		public	AlertList			AlertsScheduledForDelayedFill;
 		
 		//public	AlertList	AlertsNotYetScheduledForDelayedFill { get {
-		//    AlertList ret = new AlertList("ALERTS_PENDING_MINUS_SCHEDULED_FOR_DELAYED_FILL");
-		//    foreach (Alert eachPending in this.alertsPending.InnerList) {
-		//        if (this.AlertsScheduledForDelayedFill.InnerList.Contains(eachPending)) continue;
-		//        ret.AddNoDupe(eachPending);
-		//    }
-		//    return ret;
+		//	AlertList ret = new AlertList("ALERTS_PENDING_MINUS_SCHEDULED_FOR_DELAYED_FILL");
+		//	foreach (Alert eachPending in this.alertsPending.InnerList) {
+		//		if (this.AlertsScheduledForDelayedFill.InnerList.Contains(eachPending)) continue;
+		//		ret.AddNoDupe(eachPending);
+		//	}
+		//	return ret;
 		//} }
 		public AlertList AlertsNotYetScheduledForDelayedFillBy(QuoteGenerated quote) {
 			MarketsimBacktest marketsim = this.livesimDataSource.Executor.MarketsimBacktest;

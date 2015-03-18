@@ -12,6 +12,14 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Livesim {
 	public class Livesimulator : Backtester {
+		const string REASON_TO_EXIST = "VISUALLY CONFIRM THAT CORE CAN COPE WITH FOUR THREADS SIMULTANEOUSLY:"
+			+ " 1) STREAMING_ADAPTER"
+			+ " 2) ITS QUOTE_PUMP INVOKING SCRIPT.OVERRIDES"
+			+ " 3) BROKER_ADAPTER ALSO INVOKING SCRIPT.OVERRIDES WITHOUT TASKS"
+			+ " 4) CHARTING/REPORTING IN GUI THREAD;"
+			+ " ALL OF THOSE SEQUENTIALLY AND NON-CONTRADICTIVELY DEALING WITH EXECUTION_DATA_SNAPSHOT"
+			+ " AND OTHER INTERNALS AT 1000 QUOTES/SECOND WOULD BE CONSIDERED A HUGE SUCCESS";
+
 		public	Backtester				BacktesterBackup				{ get; private set; }
 		public	LivesimDataSource		DataSourceAsLivesimNullUnsafe	{ get { return base.BacktestDataSource as LivesimDataSource; } }
 				Button					btnStartStop;
@@ -143,10 +151,10 @@ namespace Sq1.Core.Livesim {
 				distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
 
 				//if (this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar != this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar) {
-				//    string msg2 = "PARANOID_CHECK QuotesGenerator.BacktestStrokesPerBar[" + this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar
-				//        + "] != ScriptContextCurrent.BacktestStrokesPerBar[" + this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar + "]";
-				//    msg += "BacktestContextRestore will DisplayStatus how many StrokesPerBar was backtested; but since in GUI thread QuoteGenerator will be reset, I do equality check here :(";
-				//    Assembler.PopupException(msg2);
+				//	string msg2 = "PARANOID_CHECK QuotesGenerator.BacktestStrokesPerBar[" + this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar
+				//		+ "] != ScriptContextCurrent.BacktestStrokesPerBar[" + this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar + "]";
+				//	msg += "BacktestContextRestore will DisplayStatus how many StrokesPerBar was backtested; but since in GUI thread QuoteGenerator will be reset, I do equality check here :(";
+				//	Assembler.PopupException(msg2);
 				//}
 
 				double sec = Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);

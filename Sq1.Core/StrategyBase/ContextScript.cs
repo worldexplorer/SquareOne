@@ -49,11 +49,12 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return ret;
 			} }
-		[JsonIgnore]	public List<IndicatorParameter> ParametersMergedCloned { get {
-				List<IndicatorParameter> ret = new List<IndicatorParameter>();
-				foreach (IndicatorParameter iParam in this.ParametersMerged) ret.Add(iParam.Clone());
-				return ret;
-			} }
+		//PARASITE! clicking on a slider directly affects strategy.Context and re-backtests it; no clones
+		//[JsonIgnore]	public List<IndicatorParameter> ParametersMergedCloned { get {
+		//		List<IndicatorParameter> ret = new List<IndicatorParameter>();
+		//		foreach (IndicatorParameter iParam in this.ParametersMerged) ret.Add(iParam.Clone());
+		//		return ret;
+		//	} }
 		[JsonIgnore]	public SortedDictionary<string, IndicatorParameter> ParametersMergedByName { get {
 				SortedDictionary<string, IndicatorParameter> ret = new SortedDictionary<string, IndicatorParameter>();
 				foreach (IndicatorParameter iParam in this.ParametersMerged) ret.Add(iParam.FullName, iParam);

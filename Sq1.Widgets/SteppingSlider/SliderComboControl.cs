@@ -102,6 +102,9 @@ namespace Sq1.Widgets.SteppingSlider {
 			
 		public SliderComboControl() {
 			InitializeComponent();
+			//this.mniltbValueMin.InputFieldEditable = false;
+			//this.mniltbValueMax.InputFieldEditable = false;
+			//this.mniltbValueStep.InputFieldEditable = false;
 		}
 
 		[Browsable(true)]
@@ -158,6 +161,8 @@ namespace Sq1.Widgets.SteppingSlider {
 		//v2  SteppingSlider_RTL branch: SteppingSlider if Max < Min then draw filled part from right to left
 		public decimal ValueMinRtlSafe { get { return Math.Min(this.ValueMin, this.ValueMax); } }
 		public decimal ValueMaxRtlSafe { get { return Math.Max(this.ValueMin, this.ValueMax); } }
+
+		public SlidersAutoGrowControl ParentAutoGrowControl;
 
 		public override string ToString() {
 			string ret = "UNDERLYING_PANEL_FILL_SLIDER_NOT_YET_INITIALIZED";

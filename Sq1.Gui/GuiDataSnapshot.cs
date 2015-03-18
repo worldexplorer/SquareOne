@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.Serialization;
 
 using Newtonsoft.Json;
 using Sq1.Gui.Forms;
-using Sq1.Widgets;
 
 //using Newtonsoft.Json;
 //	[DataContract]

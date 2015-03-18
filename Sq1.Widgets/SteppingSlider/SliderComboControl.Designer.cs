@@ -71,6 +71,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.DomainUpDown.Scroll += new System.Windows.Forms.ScrollEventHandler(this.domainUpDown_Scroll);
 			this.DomainUpDown.KeyDown += new System.Windows.Forms.KeyEventHandler(this.domainUpDown_KeyDown);
 			this.DomainUpDown.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.domainUpDown_PreviewKeyDown);
+			this.DomainUpDown.GotFocus += new System.EventHandler(this.domainUpDown_GotFocus);
 			// 
 			// PanelFillSlider
 			// 
@@ -145,7 +146,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbValueMin.InputFieldWidth = 44;
 			this.mniltbValueMin.Margin = new System.Windows.Forms.Padding(0);
 			this.mniltbValueMin.Name = "mniltbValueMin";
-			this.mniltbValueMin.Size = new System.Drawing.Size(164, 18);
+			this.mniltbValueMin.Size = new System.Drawing.Size(164, 21);
 			this.mniltbValueMin.Text = "Min";
 			this.mniltbValueMin.TextRed = false;
 			this.mniltbValueMin.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
@@ -157,7 +158,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbValueCurrent.InputFieldValue = "";
 			this.mniltbValueCurrent.InputFieldWidth = 44;
 			this.mniltbValueCurrent.Name = "mniltbValueCurrent";
-			this.mniltbValueCurrent.Size = new System.Drawing.Size(164, 18);
+			this.mniltbValueCurrent.Size = new System.Drawing.Size(164, 21);
 			this.mniltbValueCurrent.Text = "Current";
 			this.mniltbValueCurrent.TextRed = false;
 			this.mniltbValueCurrent.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
@@ -169,7 +170,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbValueMax.InputFieldValue = "";
 			this.mniltbValueMax.InputFieldWidth = 44;
 			this.mniltbValueMax.Name = "mniltbValueMax";
-			this.mniltbValueMax.Size = new System.Drawing.Size(164, 18);
+			this.mniltbValueMax.Size = new System.Drawing.Size(164, 21);
 			this.mniltbValueMax.Text = "Max";
 			this.mniltbValueMax.TextRed = false;
 			this.mniltbValueMax.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
@@ -181,7 +182,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbValueStep.InputFieldValue = "";
 			this.mniltbValueStep.InputFieldWidth = 44;
 			this.mniltbValueStep.Name = "mniltbValueStep";
-			this.mniltbValueStep.Size = new System.Drawing.Size(164, 18);
+			this.mniltbValueStep.Size = new System.Drawing.Size(164, 21);
 			this.mniltbValueStep.Text = "Step";
 			this.mniltbValueStep.TextRed = false;
 			this.mniltbValueStep.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
@@ -243,6 +244,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.ctxSlider.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+
 		private System.Windows.Forms.ToolStripSeparator mniSepAddContextScriptsAfter;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem mniAutoClose;

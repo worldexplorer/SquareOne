@@ -26,7 +26,7 @@ namespace Sq1.Core.Backtesting {
 			string subclassName = this.GetType().Name;
 			//string BacktestQuotesGeneratorString = base.GetType().Name;	// assuming no grand-children; inheritance tree is ONE level deep
 			//if (subclassName.StartsWith(BacktestQuotesGeneratorString)) {
-			//    subclassName = this.WhoGeneratedThisQuote.Remove(0, BacktestQuotesGeneratorString.Length);
+			//	subclassName = this.WhoGeneratedThisQuote.Remove(0, BacktestQuotesGeneratorString.Length);
 			//}
 			string strokesEnum = Enum.GetName(typeof(BacktestStrokesPerBar), this.BacktestStrokesPerBar);
 			this.WhoGeneratedQuote = strokesEnum + ":" + subclassName + ".cs";
@@ -36,9 +36,9 @@ namespace Sq1.Core.Backtesting {
 			this.backtester = backtester;
 		}
 		//public BacktestQuotesGenerator CloneAndInitialize(Backtester backtester) {
-		//    BacktestQuotesGenerator initializedFromMni = (BacktestQuotesGenerator)Activator.CreateInstance(this.GetType());
-		//    initializedFromMni.initialize(backtester);
-		//    return initializedFromMni;
+		//	BacktestQuotesGenerator initializedFromMni = (BacktestQuotesGenerator)Activator.CreateInstance(this.GetType());
+		//	initializedFromMni.initialize(backtester);
+		//	return initializedFromMni;
 		//}
 
 		protected QuoteGenerated GenerateNewQuoteChildrenHelper(int intraBarSerno, string symbol, DateTime serverTime,

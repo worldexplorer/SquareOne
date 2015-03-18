@@ -27,14 +27,14 @@ namespace Sq1.Core.Execution {
 			this.executor						= strategyExecutor;
 			alertsMasterLock					= new object();
 			positionsMasterLock					= new object();
-			AlertsPending = new AlertList("AlertsPending", this);
-			AlertsMaster = new AlertList("AlertsMaster", this);
-			AlertsNewAfterExec = new AlertList("AlertsNewAfterExec", this);
+			AlertsPending						= new AlertList("AlertsPending"					, this);	// monitored
+			AlertsMaster						= new AlertList("AlertsMaster"					, this);	// monitored
+			AlertsNewAfterExec					= new AlertList("AlertsNewAfterExec"			, this);	// monitored
 			positionSernoAbs					= 0;
-			PositionsMaster = new PositionList("PositionsMaster", this);
-			PositionsOpenNow = new PositionList("PositionsOpenNow", this);
-			PositionsOpenedAfterExec = new PositionList("PositionsOpenedAfterExec", this);
-			PositionsClosedAfterExec = new PositionList("PositionsClosedAfterExec", this);
+			PositionsMaster						= new PositionList("PositionsMaster"			, this);	// monitored
+			PositionsOpenNow					= new PositionList("PositionsOpenNow"			, this);	// monitored
+			PositionsOpenedAfterExec			= new PositionList("PositionsOpenedAfterExec"	, this);	// monitored
+			PositionsClosedAfterExec			= new PositionList("PositionsClosedAfterExec"	, this);	// monitored
 			IndicatorsReflectedScriptInstances	= new Dictionary<string, Indicator>();
 			this.initializeScriptExecWatchdog();
 		}

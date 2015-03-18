@@ -114,8 +114,27 @@ namespace Sq1.Core.Execution {
 		}
 		public void PopupIfRunning(string msig) {
 			if (this.AnyScriptOverridenMethodIsRunningNow == false) return;
+			if (this.executor.Backtester.IsBacktestingNoLivesimNow) {
+				string msg1 = "SKIPPING_CHECKS_FOR_BACKTESTER_SINCE_ITS_SINGLE_THREADED";
+				return;
+			}
 			string msg = this.WhatScriptOverridenMethodsAreRunningNow;
-			Assembler.PopupException(msg + msig, null, false);
+			// I want to provide script overridden methods collections-not-modified guarantee;
+			// collision might happen when 2 event happen simultaneously:
+			// 1) Streaming delivered a new quote => Script.OnNewQuote invokees Buy/Sell which modifies AlertsPending
+			// 2) Broker delivered an OrderFill => Core adds a PositionsOpenedNow and invokes Script.OnAlertFilled
+
+			// current implementation is rather verbose and "preventive" for easy lifecycle debugging, than sober and consise:
+			// 1) Core, before modifying AlertsPending / PositionsOpenNow (as a result of BrokerAdapter.AlertFilledNotifyCore)
+			// 2) checks if any Script's *Callback is executed now (during which I want to avoid CollectionModified Exception)
+			// 3) if there Script's override was indeed running - adds a detailed message into ExceptionForm
+			// 4) and locks on ConcurrentList.LockObject for the ConcurrentList it's trying to modify
+
+			// deadlocks still have chance to evolve:
+			// 1) Broker=>OrderFilledCallback locks on AlertsPending, Streaming=>Strategy.OnNewQuote=>Buy has queued on AlertPending, while Performance in GUI reads AlertsPending.Count and throws
+			// 2) all three require Core's smart decision simultaneously: script.OnPrototypeSLfilled, streaming.OnNewQuote, broker.OnAnotherAlertFilled
+			// 3) strategy accessing two symbols is doomed (multi-strike options strategies tam biem)
+			Assembler.PopupException("POTENTIAL_RACE_CONDITION " + msg + msig, null, false);
 		}
 	}
 }

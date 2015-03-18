@@ -22,7 +22,10 @@ namespace Sq1.Charting.MultiSplit {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 				return;
 			}
-			
+			//if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished) {
+			//	return;
+			//}
+
 			if (this.panels.Count == 0) return;
 			try {
 				this.DistributePanelsAndSplitters();

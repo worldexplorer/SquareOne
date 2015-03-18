@@ -69,6 +69,9 @@ try {
 					//LET_IT_SPARSELY_ASSIGN_PANEL_HEIGHTS__OR_RECONSTRUCT_PANELS_HERE_FORCIBLY? Assembler.PopupException(msg);
 					continue;
 				}
+				//if (this.VerticalizeAllLogic) {
+				//	Debugger.Break();
+				//}
 				splitterFound.Location = this.VerticalizeAllLogic == false
 					? new Point(splitterFound.Location.X, prop.Distance)
 					: new Point(prop.Distance, splitterFound.Location.Y);
