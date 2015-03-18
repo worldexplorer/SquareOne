@@ -231,10 +231,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json.Net20</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
       <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
       <Name>Sq1.Core</Name>
@@ -242,6 +238,10 @@
     <ProjectReference Include="..\Sq1.Widgets\Sq1.Widgets.csproj">
       <Project>{E4E3D133-E335-4437-B85E-89D6738B3FA2}</Project>
       <Name>Sq1.Widgets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
