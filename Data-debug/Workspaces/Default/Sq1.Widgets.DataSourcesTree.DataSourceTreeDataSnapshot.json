@@ -2,7 +2,8 @@
   "$type": "Sq1.Widgets.DataSourcesTree.DataSourceTreeDataSnapshot, Sq1.Widgets",
   "DataSourceFoldersExpanded": [
     "MOCK",
-    "Qmock"
+    "Qmock",
+    "STATIC"
   ],
   "ShowHeader": false,
   "ShowSearchBar": false
