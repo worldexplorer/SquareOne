@@ -44,19 +44,19 @@ namespace Sq1.Core.Support {
 			InnerList			= new List<T>();
 		}
 		public bool ContainsInInnerList(T position) {
-			if (this.Snap != null) this.Snap.PopupIfRunning(" //" + this.ToString() + ".ContainsInInnerList(" + position.ToString() + ")");
+			if (this.Snap != null) this.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".ContainsInInnerList(" + position.ToString() + ")");
 			lock (this.LockObject) {
 				return this.InnerList.Contains(position);
 			}
 		}
 		protected virtual void ClearInnerList() {
-			if (this.Snap != null) this.Snap.PopupIfRunning(" //" + this.ToString() + ".ClearInnerList()");
+			if (this.Snap != null) this.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".ClearInnerList()");
 			lock (this.LockObject) {
 				this.InnerList.Clear();
 			}
 		}
 		protected virtual bool RemoveFromInnerList(T position, bool absenseThrowsAnError = true) {
-			if (this.Snap != null) this.Snap.PopupIfRunning(" //" + this.ToString() + "RemoveFromInnerList(" + position.ToString() + ")");
+			if (this.Snap != null) this.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "RemoveFromInnerList(" + position.ToString() + ")");
 			lock(this.LockObject) {
 				bool removed = false;
 				if (this.InnerList.Contains(position) == false) {
@@ -72,7 +72,7 @@ namespace Sq1.Core.Support {
 			}
 		}
 		protected virtual bool AddToInnerList(T alertOrPosition, bool duplicateThrowsAnError = true) {
-			if (this.Snap != null) this.Snap.PopupIfRunning(" //" + this.ToString() + "AddToInnerList(" + alertOrPosition.ToString() + ")");
+			if (this.Snap != null) this.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "AddToInnerList(" + alertOrPosition.ToString() + ")");
 			lock (this.LockObject) {
 				bool added = false;
 				if (this.InnerList.Contains(alertOrPosition) && duplicateThrowsAnError) {

@@ -36,7 +36,7 @@ namespace Sq1.Gui.Singletons {
 			if (this.IsHiddenHandlingRepopulate) return;
 			//this.executionTree.OrderInsertMessage(e.OrderStateMessage);
 			//this.executionTree.PopulateMessagesFromSelectedOrder(e.OrderStateMessage.Order);
-			this.ExecutionTreeControl.PopulateMessagesFromSelectedOrder(e.OrderStateMessage.Order);
+			this.ExecutionTreeControl.SelectOrderAndOrPopulateMessages(e.OrderStateMessage.Order);
 			this.PopulateWindowText();
 		}
 		void orderProcessor_OrderStateChanged(object sender, OrdersListEventArgs e) {
@@ -55,7 +55,7 @@ namespace Sq1.Gui.Singletons {
 				return;
 			}
 			if (this.IsHiddenHandlingRepopulate) return;
-			this.ExecutionTreeControl.OrderRemoveFromListView(e.Orders);
+			this.ExecutionTreeControl.OrderAlreadyRemovedFromBothLists_JustRebuildListView(e.Orders);
 			this.PopulateWindowText();
 		}
 		void orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV(object sender, EventArgs e) {

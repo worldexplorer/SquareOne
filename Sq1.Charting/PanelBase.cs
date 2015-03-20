@@ -59,13 +59,13 @@ namespace Sq1.Charting {
 		// PanelPrice		must return bars[barIndexMouseOvered].Close
 		// PanelVolume		must return bars[barIndexMouseOvered].Volume
 		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
-							public	virtual	double	PanelValueForBarMouseOveredNaNunsafe { get {
+		[Browsable(true)]	public	virtual	double	PanelValueForBarMouseOveredNaNunsafe { get {
 				double ret = double.NaN;
 				if (this.ChartControl.BarIndexMouseIsOverNow == -1) return ret;
 				ret = this.ValueGetNaNunsafe(this.ChartControl.BarIndexMouseIsOverNow);
 				return ret;
 			} }
-							public	virtual	bool	PanelHasValuesForVisibleBarWindow { get {
+		[Browsable(true)]	public	virtual	bool	PanelHasValuesForVisibleBarWindow { get {
 				string msig = this.ToString();
 				bool ret = false;
 				if (this.VisibleBarRight_cached == -1) {
@@ -86,20 +86,40 @@ namespace Sq1.Charting {
 				ret = this.VisibleBarRight_cached <= this.ValueIndexLastAvailableMinusOneUnsafe;
 				return ret;
 			} }
-							public	virtual	double	ValueGetNaNunsafe(int barIndex) {
+		[Browsable(true)]	public	virtual	double	ValueGetNaNunsafe(int barIndex) {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 			throw new NotImplementedException();
 		}
+
+
 		// REASON_TO_EXIST: for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
-							public	virtual	int		Decimals { get {
-			#if DEBUG
-			Debugger.Break();
-			#endif
-			throw new NotImplementedException(); } }
-							public			string	Format { get { return "N" + (this.Decimals + 1); } }
-							public	virtual	int		ValueIndexLastAvailableMinusOneUnsafe { get {
+		[Browsable(true)]	public	virtual	int		PriceDecimals { get {
+				return 	  this.ChartControl.Bars.SymbolInfo != null
+					? this.ChartControl.Bars.SymbolInfo.PriceDecimals
+					: 5; } }
+		[Browsable(true)]	public			string	PriceFormat { get {
+				return 	  this.ChartControl.Bars.SymbolInfo != null
+					? this.ChartControl.Bars.SymbolInfo.PriceFormat
+					: "N" + (this.PriceDecimals + 1); } }
+
+		[Browsable(true)]	public	virtual	int		VolumeDecimals { get {
+				return 	  this.ChartControl.Bars.SymbolInfo != null
+					? this.ChartControl.Bars.SymbolInfo.VolumeDecimals
+					: 1; } }
+		[Browsable(true)]	public			string	VolumeFormat { get {
+				return 	  this.ChartControl.Bars.SymbolInfo != null
+					? this.ChartControl.Bars.SymbolInfo.VolumeFormat
+					: "N" + (this.VolumeDecimals + 1); } }
+
+		[Browsable(true)]	public 	virtual	double	PriceStep						{ get {
+			return	  this.ChartControl.Bars.SymbolInfo != null
+					? this.ChartControl.Bars.SymbolInfo.PriceStep
+					: -1d; } }
+
+
+		[Browsable(true)]	public	virtual	int		ValueIndexLastAvailableMinusOneUnsafe { get {
 				#if DEBUG
 				Debugger.Break();
 				#endif
@@ -609,26 +629,29 @@ namespace Sq1.Charting {
 		}
 
 		public string FormatValue(double value, bool shorten = false) {
+			// on right gutter, indicators will also show MA="13" for SymbolInfo.DecimalsPrice=0
+			string format = this.ThisPanelIsVolumePanel ? this.VolumeFormat : this.PriceFormat;
+
 			if (shorten) {
 				double num = Math.Abs(value);
 				if (num >= 1000000000000.0) {
 					value /= 1000000000000.0;
-					return value.ToString(this.Format) + "T";
+					return value.ToString(format) + "T";
 				}
 				if (num >= 1000000000.0) {
 					value /= 1000000000.0;
-					return value.ToString(this.Format) + "B";
+					return value.ToString(format) + "B";
 				}
 				if (num >= 1000000.0) {
 					value /= 1000000.0;
-					return value.ToString(this.Format) + "M";
+					return value.ToString(format) + "M";
 				}
 				if (num >= 10000.0) {
 					value /= 1000.0;
-					return value.ToString(this.Format) + "K";
+					return value.ToString(format) + "K";
 				}
 			}
-			return value.ToString(this.Format);
+			return value.ToString(format);
 		}
 	}
 }

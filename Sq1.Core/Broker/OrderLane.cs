@@ -87,6 +87,9 @@ namespace Sq1.Core.Broker {
 			this.InnerOrderList.Insert(0, order);
 			this.OrdersGuids.Insert(0, order.GUID);
 		} }
+		public int Count { get { lock (this.OrdersLock) {
+			return this.InnerOrderList.Count;
+		} } } 
 		public bool Contains(Order order) { lock (this.OrdersLock) {
 			//return base.Contains(order);
 			return this.OrdersGuids.Contains(order.GUID);

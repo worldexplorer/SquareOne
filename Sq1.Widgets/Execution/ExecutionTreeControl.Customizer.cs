@@ -110,12 +110,12 @@ namespace Sq1.Widgets.Execution {
 			this.colheSpreadSide.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colheSpreadSide.AspectGetter: order=null";
-				return order.IsKiller ? "" : formatOrderPriceSpreadSide(order, this.DataSnapshot.pricingDecimalForSymbol);
+				return order.IsKiller ? "" : formatOrderPriceSpreadSide(order, this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.colhePriceScript.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colhePriceScript.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.Alert.PriceScript.ToString("N" + this.DataSnapshot.pricingDecimalForSymbol);
+				return order.IsKiller ? "" : order.Alert.PriceScript.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.colheSlippage.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -125,12 +125,12 @@ namespace Sq1.Widgets.Execution {
 			this.colhePriceScriptRequested.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colhePriceScriptRequested.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.PriceRequested.ToString("N" + this.DataSnapshot.pricingDecimalForSymbol);
+				return order.IsKiller ? "" : order.PriceRequested.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.colhePriceFilled.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colhePriceFilled.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.PriceFill.ToString("N" + this.DataSnapshot.pricingDecimalForSymbol);
+				return order.IsKiller ? "" : order.PriceFill.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.colheStateTime.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -155,7 +155,7 @@ namespace Sq1.Widgets.Execution {
 			this.colhePriceDeposited.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colhePriceDeposited.AspectGetter: order=null";
-				return (order.QtyFill == 0) ? "0" : order.Alert.PriceDeposited.ToString("N" + this.DataSnapshot.pricingDecimalForSymbol);
+				return (order.QtyFill == 0) ? "0" : order.Alert.PriceDeposited.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.colheQtyRequested.AspectGetter = delegate(object o) {
 				var order = o as Order;

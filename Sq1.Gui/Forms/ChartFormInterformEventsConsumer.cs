@@ -144,8 +144,8 @@ namespace Sq1.Gui.Forms {
 
 			this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;
 			
-			this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
-			this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
+			//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
+			//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
 			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 			// CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END
 		}
@@ -191,8 +191,8 @@ namespace Sq1.Gui.Forms {
 				//}
 				this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarMaximum = quotesTotal;
 				this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;
-				this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
-				this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
+				//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
+				//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
 				this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 			}
 			// HACK FOR CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END COPYPASTE
@@ -223,8 +223,8 @@ namespace Sq1.Gui.Forms {
 			this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarValue = 0;
 			this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = false;
 			
-			this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
-			this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
+			//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
+			//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
 			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 
 			this.chartFormManager.OnBacktestedOrLivesimmed();

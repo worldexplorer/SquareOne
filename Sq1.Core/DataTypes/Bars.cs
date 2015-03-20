@@ -167,7 +167,7 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		public string ValueFormatted(double ohlc) {
-			return ohlc.ToString(this.SymbolInfo.FormatPrice);
+			return ohlc.ToString(this.SymbolInfo.PriceFormat);
 		}
 		public override bool Equals(object another) {
 			Bars bars = (Bars)another;

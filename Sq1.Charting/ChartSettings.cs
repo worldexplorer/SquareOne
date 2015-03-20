@@ -8,94 +8,100 @@ using Sq1.Core.Charting;
 namespace Sq1.Charting {
 	// why ChartSettings inherits Component? F4 on ChartSettings will allow you to edit colors visually
 	// REMOVE ": Component" when you're done with visual editing to stop Designer flooding ChartControl.Designer.cs
-	public class ChartSettings {	//: Component {
-		[JsonProperty]	public Color	ChartColorBackground { get; set; }
-		[JsonProperty]	public int		BarWidthIncludingPadding { get; set; }
-		[JsonProperty]	public int		BarWidthIncludingPaddingMax { get; set; }
-		[JsonProperty]	public Font		PanelNameAndSymbolFont { get; set; }
-		[JsonProperty]	public Color	PriceColorBarUp { get; set; }
-		[JsonProperty]	public Color	PriceColorBarDown { get; set; }
-		[JsonProperty]	public Color	VolumeColorBarUp { get; set; }
-		[JsonProperty]	public Color	VolumeColorBarDown { get; set; }
-		[JsonProperty]	public Color	GutterRightColorBackground { get; set; }
-		[JsonProperty]	public Color	GutterRightColorForeground { get; set; }
-		[JsonProperty]	public int		GutterRightPadding { get; set; }
-		[JsonProperty]	public Font		GutterRightFont { get; set; }
-		[JsonProperty]	public Color	GutterBottomColorBackground { get; set; }
-		[JsonProperty]	public Color	GutterBottomColorForeground { get; set; }
-		[JsonProperty]	public Color	GutterBottomNewDateColorForeground { get; set; }
-		[JsonProperty]	public int		GutterBottomPadding { get; set; }
-		[JsonProperty]	public Font		GutterBottomFont { get; set; }
+	public class ChartSettings { //: Component {
+		[JsonProperty]	public Color	ChartColorBackground;
+		[JsonProperty]	public int		BarWidthIncludingPadding;
+		[JsonProperty]	public int		BarWidthIncludingPaddingMax;
+		[JsonProperty]	public Font		PanelNameAndSymbolFont;
+		[JsonProperty]	public Color	PriceColorBarUp;
+		[JsonProperty]	public Color	PriceColorBarDown;
+		[JsonProperty]	public Color	VolumeColorBarUp;
+		[JsonProperty]	public Color	VolumeColorBarDown;
+		[JsonProperty]	public Color	GutterRightColorBackground;
+		[JsonProperty]	public Color	GutterRightColorForeground;
+		[JsonProperty]	public int		GutterRightPadding;
+		[JsonProperty]	public Font		GutterRightFont;
+		[JsonProperty]	public Color	GutterBottomColorBackground;
+		[JsonProperty]	public Color	GutterBottomColorForeground;
+		[JsonProperty]	public Color	GutterBottomNewDateColorForeground;
+		[JsonProperty]	public int		GutterBottomPadding;
+		[JsonProperty]	public Font		GutterBottomFont;
 		[JsonProperty]	public string	GutterBottomDateFormatDayOpener;
 		[JsonProperty]	public string	GutterBottomDateFormatIntraday;
 		[JsonProperty]	public string	GutterBottomDateFormatDaily;
 		[JsonProperty]	public string	GutterBottomDateFormatWeekly;
 		[JsonProperty]	public string	GutterBottomDateFormatYearly;
-		[JsonProperty]	public Color	GridlinesHorizontalColor { get; set; }
-		[JsonProperty]	public Color	GridlinesVerticalColor { get; set; }
-		[JsonProperty]	public Color	GridlinesVerticalNewDateColor { get; set; }
-		[JsonProperty]	public bool		GridlinesHorizontalShow { get; set; }
-		[JsonProperty]	public bool		GridlinesVerticalShow { get; set; }
-		[JsonProperty]	public int		ScrollSqueezeMouseDragSensitivityPx { get; set; }
-		[JsonProperty]	public int		ScrollNBarsPerOneDragMouseEvent { get; set; }
-		[JsonProperty]	public int		ScrollNBarsPerOneKeyPress { get; set; }
-		[JsonProperty]	public int		SqueezeVerticalPaddingPx { get; set; }
-		[JsonProperty]	public int		SqueezeVerticalPaddingStep { get; set; }
-		[JsonProperty]	public int		SqueezeHorizontalStep { get; set; }
-		[JsonProperty]	public int		SqueezeHorizontalMouse1pxDistanceReceivedToOneStep { get; set; }
-		[JsonProperty]	public int		SqueezeHorizontalKeyOnePressReceivedToOneStep { get; set; }
-		[JsonProperty]	public bool		TooltipPriceShow { get; set; }
-		[JsonProperty]	public bool		TooltipPriceShowOnlyWhenMouseTouchesCandle { get; set; }
-		[JsonProperty]	public bool		TooltipPositionShow { get; set; }
-		[JsonProperty]	public int		TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave { get; set; }
-		[JsonProperty]	public int		PositionArrowPaddingVertical { get; set; }
-		[JsonProperty]	public int		ScrollPositionAtBarIndex { get; set; }
-		[JsonProperty]	public int		TooltipBordersMarginToKeepBordersVisible { get; set; }
-		[JsonProperty]	public Color	PositionPlannedEllipseColor { get; set; }
-		[JsonProperty]	public int		PositionPlannedEllipseColorAlpha { get; set; }
-		[JsonProperty]	public int		PositionPlannedEllipseDiameter { get; set; }
-		[JsonProperty]	public Color	PositionFilledDotColor { get; set; }
-		[JsonProperty]	public int		PositionFilledDotColorAlpha { get; set; }
-		[JsonProperty]	public int		PositionFilledDotDiameter { get; set; }
-		[JsonProperty]	public int		PositionLineHighlightedWidth { get; set; }
-		[JsonProperty]	public int		PositionLineHighlightedAlpha { get; set; }
-		[JsonProperty]	public Color	PositionLineNoExitYetColor { get; set; }
-		[JsonProperty]	public int		PositionLineNoExitYetColorAlpha { get; set; }
-		[JsonProperty]	public Color	PositionLineProfitableColor { get; set; }
-		[JsonProperty]	public int		PositionLineProfitableColorAlpha { get; set; }
-		[JsonProperty]	public Color	PositionLineLossyColor { get; set; }
-		[JsonProperty]	public int		PositionLineLossyColorAlpha { get; set; }
-		[JsonProperty]	public int 		PriceVsVolumeSplitterDistance { get; set; }
-		[JsonProperty]	public Color	AlertPendingEllipseColor { get; set; }
-		[JsonProperty]	public int		AlertPendingEllipseColorAlpha { get; set; }
-		[JsonProperty]	public int		AlertPendingEllipseWidth { get; set; }
-		[JsonProperty]	public bool		MousePositionTrackOnGutters { get; set; }
-		[JsonProperty]	public Color	MousePositionTrackOnGuttersColor { get; set; }
-		[JsonProperty]	public int		BarsBackgroundTransparencyAlpha { get; set; }
-		[JsonProperty]	public int		ChartLabelsUpperLeftYstartTopmost { get; set; }
-		[JsonProperty]	public int		ChartLabelsUpperLeftX { get; set; }
-		[JsonProperty]	public int		ChartLabelsUpperLeftPlatePadding { get; set; }
-		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquarePadding { get; set; }
-		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquareSize { get; set; }
-		[JsonProperty]	public int		OnChartBarAnnotationsVerticalAwayFromPositionArrows { get; set; }
+		[JsonProperty]	public Color	GridlinesHorizontalColor;
+		[JsonProperty]	public Color	GridlinesVerticalColor;
+		[JsonProperty]	public Color	GridlinesVerticalNewDateColor;
+		[JsonProperty]	public bool		GridlinesHorizontalShow;
+		[JsonProperty]	public bool		GridlinesVerticalShow;
+		[JsonProperty]	public int		ScrollSqueezeMouseDragSensitivityPx;
+		[JsonProperty]	public int		ScrollNBarsPerOneDragMouseEvent;
+		[JsonProperty]	public int		ScrollNBarsPerOneKeyPress;
+		[JsonProperty]	public int		SqueezeVerticalPaddingPx;
+		[JsonProperty]	public int		SqueezeVerticalPaddingStep;
+		[JsonProperty]	public int		SqueezeHorizontalStep;
+		[JsonProperty]	public int		SqueezeHorizontalMouse1pxDistanceReceivedToOneStep;
+		[JsonProperty]	public int		SqueezeHorizontalKeyOnePressReceivedToOneStep;
+		[JsonProperty]	public bool		TooltipPriceShow;
+		[JsonProperty]	public bool		TooltipPriceShowOnlyWhenMouseTouchesCandle;
+		[JsonProperty]	public bool		TooltipPositionShow;
+		[JsonProperty]	public int		TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave;
+		[JsonProperty]	public int		PositionArrowPaddingVertical;
+		[JsonProperty]	public int		ScrollPositionAtBarIndex;
+		[JsonProperty]	public int		TooltipBordersMarginToKeepBordersVisible;
+		[JsonProperty]	public Color	PositionPlannedEllipseColor;
+		[JsonProperty]	public int		PositionPlannedEllipseColorAlpha;
+		[JsonProperty]	public int		PositionPlannedEllipseDiameter;
+		[JsonProperty]	public Color	PositionFilledDotColor;
+		[JsonProperty]	public int		PositionFilledDotColorAlpha;
+		[JsonProperty]	public int		PositionFilledDotDiameter;
+		[JsonProperty]	public int		PositionLineHighlightedWidth;
+		[JsonProperty]	public int		PositionLineHighlightedAlpha;
+		[JsonProperty]	public Color	PositionLineNoExitYetColor;
+		[JsonProperty]	public int		PositionLineNoExitYetColorAlpha;
+		[JsonProperty]	public Color	PositionLineProfitableColor;
+		[JsonProperty]	public int		PositionLineProfitableColorAlpha;
+		[JsonProperty]	public Color	PositionLineLossyColor;
+		[JsonProperty]	public int		PositionLineLossyColorAlpha;
+		[JsonProperty]	public int 		PriceVsVolumeSplitterDistance;
+		[JsonProperty]	public Color	AlertPendingEllipseColor;
+		[JsonProperty]	public int		AlertPendingEllipseColorAlpha;
+		[JsonProperty]	public int		AlertPendingEllipseWidth;
+		[JsonProperty]	public bool		MousePositionTrackOnGutters;
+		[JsonProperty]	public Color	MousePositionTrackOnGuttersColor;
+		[JsonProperty]	public int		BarsBackgroundTransparencyAlpha;
+		[JsonProperty]	public int		ChartLabelsUpperLeftYstartTopmost;
+		[JsonProperty]	public int		ChartLabelsUpperLeftX;
+		[JsonProperty]	public int		ChartLabelsUpperLeftPlatePadding;
+		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquarePadding;
+		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquareSize;
+		[JsonProperty]	public int		OnChartBarAnnotationsVerticalAwayFromPositionArrows;
 
-		[JsonProperty]	public Color	SpreadBidLineColor { get; set; }
-		[JsonProperty]	public int		SpreadBidLineColorAlpha { get; set; }
-		[JsonProperty]	public int		SpreadBidLineWidth { get; set; }
-		[JsonProperty]	public Color	SpreadAskLineColor { get; set; }
-		[JsonProperty]	public int		SpreadAskLineColorAlpha { get; set; }
-		[JsonProperty]	public int		SpreadAskLineWidth { get; set; }
-		[JsonProperty]	public Font		SpreadLabelFont { get; set; }
-		[JsonProperty]	public Color	SpreadLabelColor { get; set; }
+		[JsonProperty]	public Color	SpreadBidLineColor;
+		[JsonProperty]	public int		SpreadBidLineColorAlpha;
+		[JsonProperty]	public int		SpreadBidLineWidth;
+		[JsonProperty]	public Color	SpreadAskLineColor;
+		[JsonProperty]	public int		SpreadAskLineColorAlpha;
+		[JsonProperty]	public int		SpreadAskLineWidth;
+		[JsonProperty]	public Font		SpreadLabelFont;
+		[JsonProperty]	public Color	SpreadLabelColor;
 
-		[JsonProperty]	public Color	LevelTwoColorBackgroundStreamingHasNoLastQuote { get; set; }
-		[JsonProperty]	public Color	LevelTwoColorBackground { get; set; }
-		[JsonProperty]	public Color	LevelTwoLotsColorBackground { get; set; }
-		[JsonProperty]	public Color	LevelTwoLotsColorForeground { get; set; }
-		[JsonProperty]	public Color	LevelTwoAskColorBackground { get; set; }
-		[JsonProperty]	public Color	LevelTwoAskColorContour { get; set; }
-		[JsonProperty]	public Color	LevelTwoBidColorBackground { get; set; }
-		[JsonProperty]	public Color	LevelTwoBidColorContour { get; set; }
+		[JsonProperty]	public Color	LevelTwoColorBackgroundStreamingHasNoLastQuote;
+		[JsonProperty]	public Color	LevelTwoColorBackground;
+		[JsonProperty]	public Color	LevelTwoLotsColorBackground;
+		[JsonProperty]	public Color	LevelTwoLotsColorForeground;
+		[JsonProperty]	public Color	LevelTwoAskColorBackground;
+		[JsonProperty]	public Color	LevelTwoAskColorContour;
+		[JsonProperty]	public Color	LevelTwoBidColorBackground;
+		[JsonProperty]	public Color	LevelTwoBidColorContour;
+
+		[JsonProperty]	public int		LevelTwoMinimumPriceLevelThicknessRendered;
+		[JsonProperty]	public bool		LevelTwoLotDrawString;
+		[JsonProperty]	public Font		LevelTwoLotFont;
+		[JsonProperty]	public Color	LevelTwoLotColor;
+		[JsonProperty]	public int		LevelTwoLotPaddingHorizontal;
 
 
 
@@ -318,10 +324,10 @@ namespace Sq1.Charting {
 				return this.penSpreadAsk;
 			} }
 
-		[JsonIgnore]	Brush spreadLabelBrush;
-		[JsonIgnore]	public Brush SpreadLabelBrush { get {
-				if (this.spreadLabelBrush == null) this.spreadLabelBrush = new SolidBrush(this.SpreadLabelColor);
-				return this.spreadLabelBrush;
+		[JsonIgnore]	Brush brushSpreadLabel;
+		[JsonIgnore]	public Brush BrushSpreadLabel { get {
+				if (this.brushSpreadLabel == null) this.brushSpreadLabel = new SolidBrush(this.SpreadLabelColor);
+				return this.brushSpreadLabel;
 			} }
 
 		[JsonIgnore]	SolidBrush brushLevelTwoLotsColorBackground;
@@ -363,6 +369,13 @@ namespace Sq1.Charting {
 					new Pen(this.LevelTwoBidColorContour);
 				return this.penLevelTwoBidColorContour;
 			} }
+
+		[JsonIgnore]	Brush brushLevelTwoLot;
+		[JsonIgnore]	public Brush BrushLevelTwoLot { get {
+				if (this.brushLevelTwoLot == null) this.brushLevelTwoLot = new SolidBrush(this.LevelTwoLotColor);
+				return this.brushLevelTwoLot;
+			} }
+
 	
 		public ChartSettings()	{
 			ChartColorBackground = Color.White;
@@ -454,8 +467,14 @@ namespace Sq1.Charting {
 			LevelTwoAskColorContour		= Color.FromArgb(this.LevelTwoAskColorBackground.R - 50, this.LevelTwoAskColorBackground.G - 50, this.LevelTwoAskColorBackground.B - 50);
 			LevelTwoBidColorBackground	= Color.FromArgb(230, 255, 230);
 			LevelTwoBidColorContour		= Color.FromArgb(this.LevelTwoBidColorBackground.R - 50, this.LevelTwoBidColorBackground.G - 50, this.LevelTwoBidColorBackground.B - 50);
+
+			LevelTwoMinimumPriceLevelThicknessRendered = 14;
+			LevelTwoLotDrawString = true;
+			LevelTwoLotFont = new Font("Microsoft Sans Serif", 8.25f);
+			LevelTwoLotColor = Color.Black;
+			LevelTwoLotPaddingHorizontal = 3;
 		}
-		
+
 		public static Color ColorReverse(Color color) {
 			int red = 255 - color.R;
 			int green = 255 - color.G;

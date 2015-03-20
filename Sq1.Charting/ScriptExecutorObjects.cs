@@ -9,6 +9,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.Charting.OnChart;
 using Sq1.Charting.OnChart;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Charting {
 	public class ScriptExecutorObjects {
@@ -27,6 +28,8 @@ namespace Sq1.Charting {
 		public Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
 
 		public Quote QuoteLast;
+		public LevelTwoHalfFrozen Bids_cachedForOnePaint;
+		public LevelTwoHalfFrozen Asks_cachedForOnePaint;
 
 		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
 		public bool IndicatorsAllHaveNoOwnValues { get {

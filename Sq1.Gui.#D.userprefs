@@ -1,1 +1,17 @@
-﻿<Properties StartupItem="Sq1.Gui\Sq1.Gui.csproj" />
+﻿<Properties StartupItem="Sq1.Gui\Sq1.Gui.csproj">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="c:\SquareOne\Sq1.Core\Support\ConcurrentDictionaryGeneric.cs">
+    <Files>
+      <File FileName="c:\SquareOne\Sq1.Core\Support\ConcurrentWatchdog.cs" Line="34" Column="34" />
+      <File FileName="Sq1.Core\StrategyBase\ScriptExecutor.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\Livesim\LivesimBroker.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\Support\ConcurrentDictionaryGeneric.cs" Line="1" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="C:\SquareOne\Sq1.Core\StrategyBase\ScriptExecutor.cs" line="963" column="8" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

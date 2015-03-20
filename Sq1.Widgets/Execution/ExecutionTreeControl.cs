@@ -150,7 +150,7 @@ namespace Sq1.Widgets.Execution {
 			this.mniToggleCompletedOrders.Checked = this.DataSnapshot.ToggleCompletedOrders;
 			this.mniToggleSyncWithChart.Checked = this.DataSnapshot.ToggleSingleClickSyncWithChart;
 			
-			this.DataSnapshot.firstRowShouldStaySelected = true;
+			this.DataSnapshot.FirstRowShouldStaySelected = true;
 			this.RebuildAllTreeFocusOnTopmost();
 		}
 		public void InitializeWithShadowTreeRebuilt(OrdersAutoTree ordersTree) {
@@ -206,18 +206,36 @@ namespace Sq1.Widgets.Execution {
 			this.OrdersTreeOLV.Invalidate();
 			//this.OrdersTree.Refresh();
 			Order firstOrNull =  (orders.Count > 0) ? orders[0] : null;
-			this.PopulateMessagesFromSelectedOrder(firstOrNull);
+			this.SelectOrderAndOrPopulateMessages(firstOrNull);
 			//this.lvOrders_SelectedIndexChanged(this.lvOrders, EventArgs.Empty);
 		}
-		public void PopulateMessagesFromSelectedOrder(Order orderNullMeansClear) {
-			if (this.splitContainerMessagePane.Panel2Collapsed == true) return;
-			string msig = " PopulateMessagesFromSelectedOrder(" + orderNullMeansClear + ")";
-			if (this.olvMessages == null) {
-				string msg = "this.lvMessages=null";
-				//throw new Exception(msg);
-				Assembler.PopupException(msg + msig);
-				return;
+		public void SelectOrderAndOrPopulateMessages(Order orderNullMeansClear) {
+			bool firstRowShouldStaySelected = true;
+			if (this.DataSnapshot != null) firstRowShouldStaySelected = this.DataSnapshot.FirstRowShouldStaySelected;
+			
+			if (firstRowShouldStaySelected == true) {
+				//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectObject(orderTopmost, true);
+				//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectedIndex = 0;
+				// as far as I remember, this doesn't work: this.OrdersTreeOLV.SelectedItem = orderNullMeansClear;
+				int indexToSelect = this.OrdersTreeOLV.IndexOf(orderNullMeansClear);
+				if (indexToSelect != -1) {
+					this.OrdersTreeOLV.SelectedIndex = indexToSelect;
+					this.OrdersTreeOLV.RefreshSelectedObjects();
+					// SelectedIndex=X above will invoke ordersTree_SelectedIndexChanged() => populateMessagesFor(theSameOrderWeJustSelected) 
+				}
+			} else {
+				this.populateMessagesFor(orderNullMeansClear);
 			}
+		}
+		void populateMessagesFor(Order orderNullMeansClear) {
+			string msig = " PopulateMessagesFromSelectedOrder(" + orderNullMeansClear + ")";
+			//if (this.olvMessages == null) {
+			//	string msg = "this.lvMessages=null";
+			//	//throw new Exception(msg);
+			//	Assembler.PopupException(msg + msig);
+			//	return;
+			//}
+
 			if (orderNullMeansClear == null) {
 				//string msg = "order=null || (OrdersTree.SelectedObject as Order)=null";
 				//throw new Exception(msg);
@@ -225,6 +243,8 @@ namespace Sq1.Widgets.Execution {
 				this.olvMessages.Clear();
 				return;
 			}
+
+			if (this.splitContainerMessagePane.Panel2Collapsed == true) return;
 			ConcurrentQueue<OrderStateMessage> messagesSafeCopy = orderNullMeansClear.MessagesSafeCopy;
 			if (messagesSafeCopy == null) {
 				string msg = "order.MessagesSafeCopy=null; must be at least empty list";
@@ -234,44 +254,55 @@ namespace Sq1.Widgets.Execution {
 			}
 			
 			// TODO: neutralize Sort() downstack 
-			this.olvMessages.SetObjects(messagesSafeCopy);
+			this.olvMessages.SetObjects(messagesSafeCopy, true);
 			// SetObjects() doesn't require Invalidate(), unlike RefreshObject()  
 			//this.lvMessages.Invalidate();
+			this.olvMessages.Refresh();
+			//this.olvMessages.RebuildColumns();	// TIRED_OF_FORGETTING_THAT_SET_OBJECTS_DOESNT_REFRESH_ITSELF
 
-//				//	order.Messages.Sort((x, y) => y.DateTime.CompareTo(x.DateTime));
+			//	order.Messages.Sort((x, y) => y.DateTime.CompareTo(x.DateTime));
 		}
 		//public void OrderInsertToListView(Order order) {
 		//	this.RebuildAllTreeFocusOnTopmost();
 		//}
-		public void OrderRemoveFromListView(List<Order> orders) {
-			if (orders.Count == 0) {
-				string msg = "WILL_JUST_OrdersTreeOLV.RebuildAll(true)_IN_OrderRemoveFromListView()";
-			} else {
-				this.ordersTree.RemoveAll(orders);
-				this.OrdersTreeOLV.RemoveObjects(orders);
+		public void OrderAlreadyRemovedFromBothLists_JustRebuildListView(List<Order> orders) {
+			try {
+				if (orders.Count == 0) {
+					string msg = "WILL_JUST_OrdersTreeOLV.RebuildAll(true)_IN_OrderRemoveFromListView()";
+				} else {
+					//AREADY_REMOVED_EH??? this.ordersTree.RemoveAll(orders);
+					this.OrdersTreeOLV.RemoveObjects(orders);
+				}
+				//v1 this.RebuildAllTreeFocusOnTopmost();
+				//v2 this.populateLastOrderMessages();
+			} catch (Exception ex) {
+				string msg = " //ExecutionTreeControl.OrderRemoveFromListView()";
+				Assembler.PopupException(msg, ex, false);
 			}
-			this.RebuildAllTreeFocusOnTopmost();
 		}
 		public void RebuildAllTreeFocusOnTopmost() {
-			this.OrdersTreeOLV.SetObjects(this.ordersTree.InnerOrderList);
-			this.OrdersTreeOLV.RebuildAll(true);
-			//foreach (var order in this.ordersShadowTree) this.OrdersTree.ToggleExpansion(order);
-			this.OrdersTreeOLV.ExpandAll();
-			this.populateLastOrderMessages();
+			try {
+				this.OrdersTreeOLV.SetObjects(this.ordersTree.SafeCopy);
+				//this.OrdersTreeOLV.RebuildAll();	//, true we will refocus
+				this.OrdersTreeOLV.Refresh();
+				//this.OrdersTreeOLV.RebuildColumns();
+				//foreach (var order in this.ordersShadowTree) this.OrdersTree.ToggleExpansion(order);
+				this.OrdersTreeOLV.ExpandAll();
+				this.selectLastOrderPopulateMessagesSafe();
+			} catch (Exception ex) {
+				string msg = " //ExecutionTreeControl.RebuildAllTreeFocusOnTopmost()";
+				Assembler.PopupException(msg, ex, false);
+			}
 		}
-		public void populateLastOrderMessages() {
-			if (this.DataSnapshot == null) return;
-			if (this.DataSnapshot.firstRowShouldStaySelected == false) return;
+		void selectLastOrderPopulateMessagesSafe() {
 			//NOPE I WANT TO CLEAR MESSAGES AFTER I WIPED OUT ALL THE ORDERS if (this.ordersTree.InnerOrderList.Count == 0) return;
-			if (this.OrdersTreeOLV == null) return;
 			if (this.ordersTree.InnerOrderList.Count == 0) {
-				this.OrdersTreeOLV.Clear();
+				//DONT_MIX_RESPONSIBILITIES this.OrdersTreeOLV.Clear();
+				this.SelectOrderAndOrPopulateMessages(null);
 				return;
 			}
 			var orderTopmost = this.ordersTree.InnerOrderList[0];
-			//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectObject(orderTopmost, true);
-			//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectedIndex = 0;
-			this.PopulateMessagesFromSelectedOrder(orderTopmost);
+			this.SelectOrderAndOrPopulateMessages(orderTopmost);
 		}
 		public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {
 			this.OrdersTreeOLV.RefreshObject(orderParentToRepaint);

@@ -30,39 +30,8 @@
   },
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
-    "GutterBottomDateFormatDayOpener": "ddd dd-MMM-yyyy",
-    "GutterBottomDateFormatIntraday": "HH:mm",
-    "GutterBottomDateFormatDaily": "ddd dd-MMM",
-    "GutterBottomDateFormatWeekly": "MMM-yy",
-    "GutterBottomDateFormatYearly": "yyyy",
-    "MultiSplitterRowsPropertiesByPanelName": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "panelVolume": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 0,
-        "Distance": 0
-      },
-      "panelPrice": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 1,
-        "Distance": 20
-      }
-    },
-    "MultiSplitterColumnsPropertiesByPanelName": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "panelLevel2": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 0,
-        "Distance": 0
-      },
-      "multiSplitContainerRows": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 1,
-        "Distance": 45
-      }
-    },
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 14,
+    "BarWidthIncludingPadding": 52,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -78,6 +47,11 @@
     "GutterBottomNewDateColorForeground": "Green",
     "GutterBottomPadding": 2,
     "GutterBottomFont": "Consolas, 8pt",
+    "GutterBottomDateFormatDayOpener": "ddd dd-MMM-yyyy",
+    "GutterBottomDateFormatIntraday": "HH:mm",
+    "GutterBottomDateFormatDaily": "ddd dd-MMM",
+    "GutterBottomDateFormatWeekly": "MMM-yy",
+    "GutterBottomDateFormatYearly": "yyyy",
     "GridlinesHorizontalColor": "WhiteSmoke",
     "GridlinesVerticalColor": "WhiteSmoke",
     "GridlinesVerticalNewDateColor": "Lime",
@@ -86,7 +60,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 0,
+    "SqueezeVerticalPaddingPx": 400,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -140,8 +114,39 @@
     "LevelTwoAskColorBackground": "255, 230, 230",
     "LevelTwoAskColorContour": "205, 180, 180",
     "LevelTwoBidColorBackground": "230, 255, 230",
-    "LevelTwoBidColorContour": "180, 205, 180"
+    "LevelTwoBidColorContour": "180, 205, 180",
+    "LevelTwoMinimumPriceLevelThicknessRendered": 14,
+    "LevelTwoLotDrawString": true,
+    "LevelTwoLotFont": "Microsoft Sans Serif, 8.25pt",
+    "LevelTwoLotColor": "Black",
+    "LevelTwoLotPaddingHorizontal": 3,
+    "MultiSplitterRowsPropertiesByPanelName": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
+      "panelVolume": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 0,
+        "Distance": 0
+      },
+      "panelPrice": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 28
+      }
+    },
+    "MultiSplitterColumnsPropertiesByPanelName": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
+      "multiSplitContainerRows": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 0,
+        "Distance": 0
+      },
+      "panelLevel2": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 437
+      }
+    }
   },
-  "ChartSerno": 12,
+  "ChartSerno": 1,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
 }

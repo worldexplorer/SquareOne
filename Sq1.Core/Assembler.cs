@@ -111,7 +111,7 @@ namespace Sq1.Core {
 				if (secondsLeftToIgnore > 0) {
 					string msg = "SPLITTER_EVENTS_IGNORED_FOR_MORE_SECONDS " + secondsLeftToIgnore + "/"
 						+ this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch;
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 				} else {
 					ret = true;
 				}

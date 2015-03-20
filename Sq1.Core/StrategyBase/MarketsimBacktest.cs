@@ -547,7 +547,7 @@ namespace Sq1.Core.StrategyBase {
 				#endif
 				throw new Exception(msg);
 			}
-			if (quote.ParentBarStreaming.ParentBarsIndex != this.executor.Bars.Count - 1) {
+			if (this.executor.Backtester.IsLivesim == false && quote.ParentBarStreaming.ParentBarsIndex != this.executor.Bars.Count - 1) {
 				string msg = "I refuse to serve this quoteToReach.ParentStreamingBar.ParentBarsIndex["
 					+ quote.ParentBarStreaming.ParentBarsIndex + "] != this.executor.Bars.Count-1[" + (this.executor.Bars.Count - 1) + "]";
 				#if DEBUG
@@ -590,7 +590,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return filled;
 			}
-			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote,
+			this.executor.CallbackAlertFilledMoveAroundInvokeScriptNonReenterably(alert, quote,
 				priceFill, alert.Qty, slippageFill, entryCommission);
 			return filled;
 		}
@@ -622,7 +622,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return filled;
 			}
-			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote,
+			this.executor.CallbackAlertFilledMoveAroundInvokeScriptNonReenterably(alert, quote,
 				priceFill, alert.Qty, slippageFill, exitCommission);
 			return filled;
 		}
@@ -655,7 +655,7 @@ namespace Sq1.Core.StrategyBase {
 		
 		public void SimulateAlertKillPending(Alert alert) {
 			alert.IsKilled = true;
-			this.executor.CallbackAlertKilledInvokeScript(alert);
+			this.executor.CallbackAlertKilledInvokeScriptNonReenterably(alert);
 		}
 	}
 }

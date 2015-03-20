@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
@@ -26,11 +27,11 @@ namespace Sq1.Strategies.Demo {
 			test = new ScriptParameter(1, "test", 0, 0, 10, 1);
 
 			//base.ScriptParameterCreateRegister(2, "verbose", 0, 0, 1, 1, "set to 0 if you don't want log() to spam your Exceptions window");
-			test = new ScriptParameter(1, "verbose", 0, 0, 10, 1, "set to 0 if you don't want log() to spam your Exceptions window");
+			verbose = new ScriptParameter(2, "verbose", 0, 0, 10, 1, "set to 0 if you don't want log() to spam your Exceptions window");
 		}
 		
 		protected void log(string msg) {
-			if (this.ScriptParametersById_ReflectedCached[2].ValueCurrent == 0.0) {
+			if (this.verbose.ValueCurrent == 0) {
 				return;
 			}
 			string whereIam = "\n\r\n\rEnterEveryBar.cs now=[" + DateTime.Now.ToString("ddd dd-MMM-yyyy HH:mm:ss.fff") + "]";
@@ -56,22 +57,17 @@ namespace Sq1.Strategies.Demo {
 			testChartLabelDrawOnNextLineModify();
 		}
 		void testChartLabelDrawOnNextLineModify() {
-			string parameterNameToLookup = "test";
-			if (base.ScriptParametersByNameInlineCopy.ContainsKey(parameterNameToLookup) == false) {
-				string msg = "if you renamed parameter [" + parameterNameToLookup + "] please ajdust the name here as well";
-				Assembler.PopupException(msg);
-			}
-			ScriptParameter param = base.ScriptParametersByNameInlineCopy[parameterNameToLookup];
-			double paramValue = param.ValueCurrent;
 			//Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
 			//base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);
 			Font font = new Font("Consolas", 8, FontStyle.Bold);
-			base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", parameterNameToLookup + "[" + paramValue + "]", font, Color.Brown, Color.Beige);
+			base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test["
+				+ this.test.ValueCurrent + "]", font, Color.Brown, Color.Beige);
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 			//double slowStreaming = this.MAslow.BarClosesProxied.StreamingValue;
 			//double slowStatic = this.MAslow.ClosesProxyEffective.LastStaticValue;
 			//DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
+
 
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
 				Bar bar = quote.ParentBarStreaming;
@@ -94,6 +90,8 @@ namespace Sq1.Strategies.Demo {
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
 			//this.testBarAnnotations(barStaticFormed);
 			
+			//Thread.Sleep(500);
+
 			Bar barStreaming = base.Bars.BarStreaming;
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
 				//Debugger.Break();
@@ -123,19 +121,19 @@ namespace Sq1.Strategies.Demo {
 					return;
 				}
 
-				if (barStaticFormed.ParentBarsIndex == 163) {
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
-					Quote lastQuote = streaming.LastQuoteCloneGetForSymbol(barStaticFormed.Symbol);
-					double priceForMarketOrder = streaming.LastQuoteGetPriceForMarketOrder(barStaticFormed.Symbol);
-				}
+				//if (barStaticFormed.ParentBarsIndex == 163) {
+				//	#if DEBUG
+				//	Debugger.Break();
+				//	#endif
+				//	StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
+				//	Quote lastQuote = streaming.LastQuoteCloneGetForSymbol(barStaticFormed.Symbol);
+				//	double priceForMarketOrder = streaming.LastQuoteGetPriceForMarketOrder(barStaticFormed.Symbol);
+				//}
 
 				string msg = "ExitAtMarket@" + barStaticFormed.ParentBarsIdent;
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = false;
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
 				Alert exitPlaced = ExitAtMarket(barStreaming, lastPos, msg);
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = true;
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
 				log("Execute(): " + msg);
 			}
 
@@ -171,16 +169,16 @@ namespace Sq1.Strategies.Demo {
 
 			if (barStaticFormed.Close > barStaticFormed.Open) {
 				string msg = "BuyAtMarket@" + barStaticFormed.ParentBarsIdent;
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = false;
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
 				Position buyPlaced = BuyAtMarket(barStreaming, msg);
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = true;
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
 				//Debugger.Break();
 				this.log(msg);
 			} else {
 				string msg = "ShortAtMarket@" + barStaticFormed.ParentBarsIdent;
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = false;
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
 				Position shortPlaced = ShortAtMarket(barStreaming, msg);
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = true;
+				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
 				//Debugger.Break();
 				this.log(msg);
 			}
@@ -230,11 +228,11 @@ namespace Sq1.Strategies.Demo {
 			#endif
 		}
 		public override void OnPositionOpenedCallback(Position positionOpened) {
-			if (positionOpened.EntryFilledBarIndex == 37) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
-			}
+			//if (positionOpened.EntryFilledBarIndex == 37) {
+			//	#if DEBUG
+			//	Debugger.Break();
+			//	#endif
+			//}
 		}
 		public override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedByPrototype) {
 			#if DEBUG

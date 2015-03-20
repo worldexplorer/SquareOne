@@ -118,6 +118,7 @@ namespace Sq1.Widgets.StrategiesTree {
 		public void UnSelectStrategy() {
 			//this.tree.SelectSelectObject(null);
 			this.tree.SelectedIndex = -1;
+			this.tree.RefreshSelectedObjects();
 		}
 		public void SelectStrategy(Strategy strategy) {
 			if (strategy == null) {

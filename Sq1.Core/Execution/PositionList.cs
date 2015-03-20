@@ -9,7 +9,7 @@ namespace Sq1.Core.Execution {
 		public Dictionary<int, List<Position>>	ByExitBarFilled		{ get; protected set; }
 		
 		public Dictionary<int, List<Position>>	ByExitBarFilledSafeCopy { get {
-			base.Snap.PopupIfRunning(" //" + this.ToString() + "ByExitBarFilledSafeCopy()");
+			base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "ByExitBarFilledSafeCopy()");
 			lock (base.LockObject) {
 				Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
 				foreach (int bar in this.ByExitBarFilled.Keys) ret.Add(bar, new List<Position>(this.ByExitBarFilled[bar]));
@@ -17,7 +17,7 @@ namespace Sq1.Core.Execution {
 			}
 		} }
 		public Dictionary<int, List<Position>>	ByEntryBarFilledSafeCopy { get {
-			base.Snap.PopupIfRunning(" //" + this.ToString() + "ByExitBarFilledSafeCopy()");
+			base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "ByExitBarFilledSafeCopy()");
 			lock (base.LockObject) {
 				Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
 				foreach (int bar in this.ByEntryBarFilled.Keys) ret.Add(bar, new List<Position>(this.ByEntryBarFilled[bar]));
@@ -77,7 +77,7 @@ namespace Sq1.Core.Execution {
 			this.AddToClosedDictionary_step2of2(position);
 		} }
 		public bool AddOpened_step1of2(Position positionOpened, bool duplicateThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + "AddOpened_step1of2(" + positionOpened.ToString() + ")");
+			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "AddOpened_step1of2(" + positionOpened.ToString() + ")");
 			lock (base.LockObject) {
 				bool added = false;
 				if (positionOpened == null) {
@@ -131,7 +131,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public bool AddToClosedDictionary_step2of2(Position positionClosed, bool absenseThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + "AddToClosedDictionary_step2of2(" + positionClosed.ToString() + ")");
+			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "AddToClosedDictionary_step2of2(" + positionClosed.ToString() + ")");
 			lock (base.LockObject) {
 				bool added = false;
 				if (positionClosed.ExitAlert == null) {
@@ -169,7 +169,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public bool Remove(Position position, bool absenseThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + "Remove(" + position.ToString() + ")");
+			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "Remove(" + position.ToString() + ")");
 			lock (base.LockObject) {
 				bool removed = base.RemoveFromInnerList(position, absenseThrowsAnError);
 				if (this.ByEntryBarFilled.ContainsKey(position.EntryFilledBarIndex)) {
@@ -186,7 +186,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public PositionList Clone() {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + "Clone()");
+			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "Clone()");
 			lock (base.LockObject) {
 				PositionList ret		= new PositionList(this.ReasonToExist + "_CLONE", base.Snap);
 				ret.InnerList			= this.InnerListSafeCopy;

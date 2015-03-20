@@ -18,7 +18,7 @@ namespace Sq1.Charting {
 			this.AlertArrow = arrow;
 			Position position = arrow.Position;
 			Bars bars = position.Bars;
-			string priceFormat = bars.SymbolInfo.FormatPrice;
+			string priceFormat = bars.SymbolInfo.PriceFormat;
 
 			if (position.PositionLongShort == PositionLongShort.Long) {
 				lblEntry.Text = "Long" + position.EntryMarketLimitStop.ToString().Substring(0, 1);

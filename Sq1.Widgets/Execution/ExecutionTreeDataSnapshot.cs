@@ -4,14 +4,14 @@ using Newtonsoft.Json;
 
 namespace Sq1.Widgets.Execution {
 	public class ExecutionTreeDataSnapshot {
-		[JsonProperty]	public bool	firstRowShouldStaySelected				= true;
-		[JsonProperty]	public int	pricingDecimalForSymbol					= 0;
+		[JsonProperty]	public bool	FirstRowShouldStaySelected				= true;
+		[JsonProperty]	public int	PricingDecimalForSymbol					= 0;
 		
 		[JsonProperty]	public bool ToggleBrokerTime						= false;
 		[JsonProperty]	public bool ToggleCompletedOrders					= true;
 		[JsonProperty]	public bool ToggleMessagesPane						= true;
 		[JsonProperty]	public bool ToggleMessagePaneSplittedHorizontally	= false;
-		[JsonProperty]	public bool	ToggleSingleClickSyncWithChart			= true;
+		[JsonProperty]	public bool	ToggleSingleClickSyncWithChart			= false;
 		
 		[JsonProperty]	public int	MessagePaneSplitDistanceHorizontal		= 0;
 		[JsonProperty]	public int	MessagePaneSplitDistanceVertical		= 0;

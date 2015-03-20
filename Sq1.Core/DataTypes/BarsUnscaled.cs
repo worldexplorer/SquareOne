@@ -19,8 +19,6 @@ namespace Sq1.Core.DataTypes {
 			set { this.symbolInfo = value; }	//it's initialized in ctor(), SymbolInfo=null will initiate repository scan on next get{}
 		}
 
-		public string Format { get { return "N" + this.SymbolInfo.DecimalsPrice; } }
-
 		public Bar BarFirst { get { return (base.Count >= 1) ? this[0] : null; } }
 		public Bar BarLast { get { return (base.Count >= 1) ? this[this.Count - 1] : null; } }
 		public Bar BarPreLast { get { return (base.Count >= 2) ? this[this.Count - 2] : null; } }
@@ -146,7 +144,7 @@ namespace Sq1.Core.DataTypes {
 //			return ret;
 //		}
 		public string FormatValue(double value) {
-			return value.ToString(this.Format);
+			return value.ToString(this.SymbolInfo.PriceFormat);
 		}
 		public override string ToString() {
 			string ret = "[" + this.Symbol + "]" + this.Count + "bars";

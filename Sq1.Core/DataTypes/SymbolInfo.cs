@@ -21,12 +21,12 @@ namespace Sq1.Core.DataTypes {
 			}
 		}
 		[JsonProperty]	public double			PriceStep;
-		[JsonProperty]	public int				DecimalsPrice;
-		[JsonProperty]	public int				DecimalsVolume;					// valid for partial Forex lots and Bitcoins; for stocks/options/futures its always (int)1
+		[JsonProperty]	public int				PriceDecimals;
+		[JsonProperty]	public int				VolumeDecimals;					// valid for partial Forex lots and Bitcoins; for stocks/options/futures its always (int)1
 
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
-		[JsonIgnore]	public double			PriceStepFromDecimal	{ get { return Math.Pow(10, -this.DecimalsPrice); } }			// 10^(-2) = 0.01
-		[JsonIgnore]	public double			VolumeStepFromDecimal	{ get { return Math.Pow(10, -this.DecimalsVolume); } }		// 10^(-2) = 0.01
+		[JsonIgnore]	public double			PriceStepFromDecimal	{ get { return Math.Pow(10, -this.PriceDecimals); } }			// 10^(-2) = 0.01
+		[JsonIgnore]	public double			VolumeStepFromDecimal	{ get { return Math.Pow(10, -this.VolumeDecimals); } }		// 10^(-2) = 0.01
 		
 		[JsonProperty]	public bool				SameBarPolarCloseThenOpen;
 		[JsonProperty]	public int				SequencedOpeningAfterClosedDelayMillis;
@@ -57,16 +57,16 @@ namespace Sq1.Core.DataTypes {
 				this._Margin = value;
 			}
 		}
-		[JsonIgnore]	public	string			FormatPrice		{ get { return "N" + (this.DecimalsPrice + 1); } }
-		[JsonIgnore]	public	string			FormatVolume	{ get { return "N" + (this.DecimalsVolume + 1); } }
+		[JsonIgnore]	public	string			PriceFormat		{ get { return "N" + (this.PriceDecimals + 1); } }
+		[JsonIgnore]	public	string			VolumeFormat	{ get { return "N" + (this.VolumeDecimals + 1); } }
 
 		public SymbolInfo() { 		// used by JSONdeserialize() /  XMLdeserialize()
 			//this.MarketName = "US Equities";
 			this.SecurityType = SecurityType.Stock;
 			this.SymbolClass = "";
 			this.Point2Dollar = 1.0;
-			this.DecimalsPrice = 2;
-			this.DecimalsVolume = 0;	// if your Forex Symbol uses lotMin=0.001, DecimalsVolume = 3 
+			this.PriceDecimals = 2;
+			this.VolumeDecimals = 0;	// if your Forex Symbol uses lotMin=0.001, DecimalsVolume = 3 
 			this.PriceStep = 1.0;
 			this.SameBarPolarCloseThenOpen = true;
 			this.SequencedOpeningAfterClosedDelayMillis = 1000;
@@ -85,7 +85,7 @@ namespace Sq1.Core.DataTypes {
 		public SymbolInfo(string symbol, SecurityType securityType, int decimals) : this() {
 			this.Symbol = symbol;
 			this.SecurityType = securityType;
-			this.DecimalsPrice = decimals;
+			this.PriceDecimals = decimals;
 		}
 		public SymbolInfo(string symbol, SecurityType securityType, int decimals, string ClassCode) : this(symbol, securityType, decimals) {
 				//,, double priceLevelSizeForBonds, double margin, double point2Dollar
@@ -277,14 +277,14 @@ namespace Sq1.Core.DataTypes {
 		}
 		#else
 		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
-			if (this.DecimalsPrice < 0) {
+			if (this.PriceDecimals < 0) {
 				#if DEBUG
 				Debugger.Break();
 				#endif
 				throw new NotImplementedException();
 			}
-			int integefier = (int)Math.Pow(10, this.DecimalsPrice);		// 10 ^ 2 = 100;
-			decimal ret = (decimal) price * integefier; 							// 90.145 => 9014.5
+			int integefier = (int)Math.Pow(10, this.PriceDecimals);		// 10 ^ 2 = 100;
+			decimal ret = (decimal) price * integefier; 				// 90.145 => 9014.5
 			switch (upOrDown) {
 				case PriceLevelRoundingMode.RoundDown:		ret = Math.Floor(ret);		break;		// 9014.5 => 9014.0
 				case PriceLevelRoundingMode.RoundUp:		ret = Math.Ceiling(ret);	break;		// 9014.5 => 9015.0
@@ -296,15 +296,42 @@ namespace Sq1.Core.DataTypes {
 					Assembler.PopupException(msg);
 					return price;
 				default:
-					throw new NotImplementedException("RoundAlertPriceToPriceLevel() for PriceLevelRoundingMode." + upOrDown);
+				throw new NotImplementedException("AlignToPriceLevel() for PriceLevelRoundingMode." + upOrDown);
 			}
 			ret /= integefier;	// 9015.0 => 90.15
-			ret = Math.Round(ret, this.DecimalsPrice);
+			ret = Math.Round(ret, this.PriceDecimals);
 			return (double)ret;
 		}
 		#endif
+		public double AlignToVolumeStep(double volume, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
+			if (this.VolumeDecimals < 0) {
+				#if DEBUG
+				Debugger.Break();
+				#endif
+				throw new NotImplementedException();
+			}
+			int integefier = (int)Math.Pow(10, this.VolumeDecimals);		// 10 ^ 2 = 100;
+			decimal ret = (decimal) volume * integefier; 					// 90.145 => 9014.5
+			switch (upOrDown) {
+				case PriceLevelRoundingMode.RoundDown:		ret = Math.Floor(ret);		break;		// 9014.5 => 9014.0
+				case PriceLevelRoundingMode.RoundUp:		ret = Math.Ceiling(ret);	break;		// 9014.5 => 9015.0
+				case PriceLevelRoundingMode.RoundToClosest:	ret = Math.Round(ret);		break;		// 9014.5 => 9015.0
+				case PriceLevelRoundingMode.DontRoundPrintLowerUpper:
+				double lowerLevel = this.AlignToVolumeStep(volume, PriceLevelRoundingMode.RoundDown);
+				double upperLevel = this.AlignToVolumeStep(volume, PriceLevelRoundingMode.RoundUp);
+					string msg = "DontRound=>returning[" + volume + "] RoundDown[" + lowerLevel + "] RoundUp[" + upperLevel + "] ";
+					Assembler.PopupException(msg);
+					return volume;
+				default:
+				throw new NotImplementedException("AlignToVolumeStep() for PriceLevelRoundingMode." + upOrDown);
+			}
+			ret /= integefier;	// 9015.0 => 90.15
+			ret = Math.Round(ret, this.VolumeDecimals);
+			return (double)ret;
+		}
+
 		public double PriceRoundFractionsBeyondDecimals(double orderPrice) {
-			double decimalPointShifterBeforeRounding = Math.Pow(10, this.DecimalsPrice);		// 2 => 100
+			double decimalPointShifterBeforeRounding = Math.Pow(10, this.PriceDecimals);		// 2 => 100
 			// assuming this.DecimalsPrice=2: orderPrice=156.633,27272 => 15.663.327,272 => 15.663.327 => 156.633,27[tailTruncated] 
 			double ret = Math.Round(orderPrice * decimalPointShifterBeforeRounding, 0) / decimalPointShifterBeforeRounding;
 			return ret;

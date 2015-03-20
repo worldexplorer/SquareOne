@@ -57,7 +57,7 @@ namespace Sq1.Core.Optimization {
 			this.SymbolScaleIntervalDataRange	= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			base.Name							= this.SymbolScaleIntervalDataRange;
 			
-			this.Format = sysPerfBacktestResult.Bars.SymbolInfo.FormatPrice;
+			this.Format = sysPerfBacktestResult.Bars.SymbolInfo.PriceFormat;
 			
 			this.NetProfitForClosedPositionsBoth = sysPerfBacktestResult.SlicesShortAndLong.NetProfitForClosedPositionsBoth;
 			this.NetProfitForClosedPositionsBothFormatted = this.NetProfitForClosedPositionsBoth.ToString(this.Format);

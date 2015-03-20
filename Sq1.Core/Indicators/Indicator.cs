@@ -198,7 +198,7 @@ namespace Sq1.Core.Indicators {
 			string paramerersAllValidatedErrors = this.ParametersAllValidate();
 			this.IndicatorErrorsOnBacktestStartingAppend(paramerersAllValidatedErrors);
 
-			this.Decimals = Math.Max(this.BarsEffective.SymbolInfo.DecimalsPrice, 1);	// for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
+			this.Decimals = Math.Max(this.BarsEffective.SymbolInfo.PriceDecimals, 1);	// for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
 
 			string indicatorSelfValidationErrors = this.InitializeBacktestStartingPreCheckErrors();
 			this.IndicatorErrorsOnBacktestStartingAppend(indicatorSelfValidationErrors);

@@ -166,7 +166,7 @@ namespace Sq1.Core.Broker {
 				}
 				if (newOrder.State != OrderState.Submitting) {
 					if (newOrder.State == OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted) {
-						alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScript(alert, alert.Bars.Count);
+						alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScriptNonReenterably(alert, alert.Bars.Count);
 						continue;
 					}
 					if (newOrder.State == OrderState.AutoSubmitNotEnabled) continue;
@@ -616,7 +616,7 @@ namespace Sq1.Core.Broker {
 					}
 					this.OPPsequencer.OrderFilledUnlockSequenceSubmitOpening(order);
 					try {
-						order.Alert.Strategy.Script.Executor.CallbackAlertFilledMoveAroundInvokeScript(order.Alert, null,
+						order.Alert.Strategy.Script.Executor.CallbackAlertFilledMoveAroundInvokeScriptNonReenterably(order.Alert, null,
 							order.PriceFill, order.QtyFill, order.SlippageFill, order.CommissionFill);
 					} catch (Exception ex) {
 						string msg = "PostProcessOrderState caught from CallbackAlertFilledMoveAroundInvokeScript() " + msgException;
@@ -890,7 +890,7 @@ namespace Sq1.Core.Broker {
 			}
 			ScriptExecutor executor = alertForOrder.Strategy.Script.Executor;
 			try {
-				executor.CallbackAlertKilledInvokeScript(alertForOrder);
+				executor.CallbackAlertKilledInvokeScriptNonReenterably(alertForOrder);
 				msg = orderKilled.State + " => AlertsPending.Remove.Remove(orderExecuted.Alert)'d";
 				orderKilled.AppendMessage(msig + msg);
 			} catch (Exception e) {

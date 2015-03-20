@@ -94,7 +94,7 @@ namespace Sq1.Core.Indicators {
 			//double roundingError = Math.Abs(diffCloseToLowerRounded - diffCloseToUpperRounded);
 			
 			double roundingError = Math.Abs(diffCloseToLower - diffCloseToUpper);
-			roundingError = Math.Round(roundingError, newStaticBar.ParentBars.SymbolInfo.DecimalsPrice);
+			roundingError = Math.Round(roundingError, newStaticBar.ParentBars.SymbolInfo.PriceDecimals);
 			if (roundingError > newStaticBar.ParentBars.SymbolInfo.PriceStep) {
 			//if (diffCloseToLower != diffCloseToUpper) {
 				//greater than BacktestSpreadModelerPercentageOfMedian(0.01) will make ATRband inconsistent! you'll see in TooltipPrice (Close+ATR != C+Upper) & SPREAD_MODELER_SHOULD_GENERATE_TIGHTER_SPREADS

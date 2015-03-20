@@ -56,9 +56,7 @@
     <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED;VERBOSE_STRINGS_SLOW;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Web" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -255,7 +253,6 @@
     <Compile Include="Streaming\StreamingSolidifier.cs" />
     <Compile Include="Support\ConcurrentDictionaryGeneric.cs" />
     <Compile Include="Support\ConcurrentList.cs" />
-    <Compile Include="Support\ConcurrentWatchdog.cs" />
     <Compile Include="Support\ObjectListViewStateSerializer.cs" />
     <Compile Include="Support\SkipInstantiationAt.cs" />
     <Compile Include="Broker\OrderLaneByType.cs" />
@@ -359,6 +356,7 @@
     <Compile Include="StrategyBase\Script.cs" />
     <Compile Include="StrategyBase\ScriptCompiler.cs" />
     <Compile Include="StrategyBase\MarketLive.cs" />
+    <Compile Include="c:\SquareOne\Sq1.Core\Support\ConcurrentWatchdog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">

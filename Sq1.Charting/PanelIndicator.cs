@@ -155,6 +155,6 @@ namespace Sq1.Charting {
 			double indicatorValue = this.Indicator.OwnValuesCalculated[barIndex];
 			return indicatorValue;
 		}
-		public override int Decimals { get { return this.Indicator.Decimals; } }
+		public override int PriceDecimals { get { return this.Indicator.Decimals; } }
 	}
 }

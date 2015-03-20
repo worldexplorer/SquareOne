@@ -11,12 +11,13 @@ namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
 		void ordersTree_SelectedIndexChanged(object sender, EventArgs e) {
 			try {
-				this.DataSnapshot.firstRowShouldStaySelected = (this.OrdersTreeOLV.SelectedIndex == 0) ? true : false;
+				this.DataSnapshot.FirstRowShouldStaySelected = (this.OrdersTreeOLV.SelectedIndex == 0) ? true : false;
 				int selectedIndex = this.OrdersTreeOLV.SelectedIndex;
 				if (selectedIndex == -1) return;		// when selection changes, old selected is unselected; we got here twice on every click
 				
-				this.OrdersTreeOLV.RedrawItems(selectedIndex, selectedIndex, true);
-				this.PopulateMessagesFromSelectedOrder(this.OrdersTreeOLV.SelectedObject as Order);
+				//this.OrdersTreeOLV.RedrawItems(selectedIndex, selectedIndex, true);
+				this.OrdersTreeOLV.RefreshSelectedObjects();
+				this.populateMessagesFor(this.OrdersTreeOLV.SelectedObject as Order);
 				
 				/*bool removeEmergencyLockEnabled = false;
 				foreach (Order selectedOrder in this.OrdersSelected) {

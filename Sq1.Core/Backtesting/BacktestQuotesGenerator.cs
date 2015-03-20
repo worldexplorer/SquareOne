@@ -171,7 +171,7 @@ namespace Sq1.Core.Backtesting {
 
 				int pendingAfterInjected = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingsToFillInitially != pendingAfterInjected) {
-					string msg = "it looks like the quoteInjected triggered something";
+					string msg = " it looks like the quoteInjected triggered something";
 					//Assembler.PopupException(msg, null, false);
 					if (this.backtester.IsLivesim && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
 						msg = "NO_ORDER_MUST_HAVE_BEEN_FILLED_WHILE_INJECTING__KOZ_LIVESIM_BROKER_EXECUTION_IS_DELAYED" + msg;
@@ -488,7 +488,7 @@ namespace Sq1.Core.Backtesting {
 
 			double volumeOneQuarterOfBar = barSimulated.Volume / this.BacktestStrokesPerBarAsInt;
 			if (barSimulated.ParentBars != null && barSimulated.ParentBars.SymbolInfo != null) {
-				volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, barSimulated.ParentBars.SymbolInfo.DecimalsVolume);
+				volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, barSimulated.ParentBars.SymbolInfo.VolumeDecimals);
 				if (volumeOneQuarterOfBar == 0) {
 					#if DEBUG	// TEST_EMBEDDED
 					//TESTED Debugger.Break();

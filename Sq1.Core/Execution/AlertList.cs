@@ -16,16 +16,20 @@ namespace Sq1.Core.Execution {
 			ByBarPlaced	= new Dictionary<int, List<Alert>>();
 		}
 		public void Clear() { lock(base.LockObject) {
-			base.Snap.PopupIfRunning(" //" + this.ToString() + ".Clear()");
-			base					.ClearInnerList();
-			this.ByBarPlacedSafeCopy.Clear();
+			base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".Clear()");
+			lock (base.LockObject) {
+				base					.ClearInnerList();
+				this.ByBarPlacedSafeCopy.Clear();
+			}
 		} }
 		public void AddRange(List<Alert> alerts) {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".AddRange(" + alerts.Count + ")");
-			foreach (Alert alert in alerts) this.AddNoDupe(alert);
+			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".AddRange(" + alerts.Count + ")");
+			lock (base.LockObject) {
+				foreach (Alert alert in alerts) this.AddNoDupe(alert);
+			}
 		}
 		public ByBarDumpStatus AddNoDupe(Alert alert, bool duplicateThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".AddNoDupe(" + alert.ToString() + ")");
+			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".AddNoDupe(" + alert.ToString() + ")");
 			lock (base.LockObject) {
 				bool newBarAddedInHistory = false;
 				bool added = base.AddToInnerList(alert, duplicateThrowsAnError);
@@ -48,7 +52,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public bool Remove(Alert alert, bool absenseThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".Remove(" + alert.ToString() + ")");
+			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".Remove(" + alert.ToString() + ")");
 			lock (base.LockObject) {
 				bool removed = base.RemoveFromInnerList(alert, absenseThrowsAnError);
 				int barIndexPlaced = alert.PlacedBarIndex;
@@ -61,7 +65,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public AlertList Clone() {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".Clone()");
+			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".Clone()");
 			lock (base.LockObject) {
 				AlertList ret = new AlertList(this.ReasonToExist + "_CLONE", base.Snap);
 				//ret.AddRange(this.InnerList);
@@ -73,26 +77,32 @@ namespace Sq1.Core.Execution {
 
 
 		public bool ContainsIdentical(Alert maybeAlready, bool onlyUnfilled = true) { lock(base.LockObject) {
-			foreach (Alert each in this.InnerList) {
-				if (maybeAlready.IsIdenticalOrderlessPriceless(each) == false) continue;
-				if (onlyUnfilled && each.IsFilled) continue;
-				return true;
+			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".ContainsIdentical(" + maybeAlready + ", " + onlyUnfilled + ")");
+			lock (base.LockObject) {
+				foreach (Alert each in this.InnerList) {
+					if (maybeAlready.IsIdenticalOrderlessPriceless(each) == false) continue;
+					if (onlyUnfilled && each.IsFilled) continue;
+					return true;
+				}
+				return false;
 			}
-			return false;
 		} }
 		public Alert FindSimilarNotSameIdenticalForOrdersPending(Alert alert) { lock(base.LockObject) {
-			Alert similar = null;
-			foreach (Alert alertSimilar in this.InnerList) {
-				if (alertSimilar == alert) continue;
-				if (alertSimilar.IsIdenticalForOrdersPending(alert)) {
-					if (similar != null) {
-						string msg = "there are 2 or more " + this.ReasonToExist + " Alerts similar to " + alert;
-						throw new Exception(msg);
+				if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".FindSimilarNotSameIdenticalForOrdersPending(" + alert + ")");
+			lock (base.LockObject) {
+				Alert similar = null;
+				foreach (Alert alertSimilar in this.InnerList) {
+					if (alertSimilar == alert) continue;
+					if (alertSimilar.IsIdenticalForOrdersPending(alert)) {
+						if (similar != null) {
+							string msg = "there are 2 or more " + this.ReasonToExist + " Alerts similar to " + alert;
+							throw new Exception(msg);
+						}
+						similar = alertSimilar;
 					}
-					similar = alertSimilar;
 				}
+				return similar;
 			}
-			return similar;
 		} }
 		// UNCOMMENT_WHEN_NEEDED
 		//public Dictionary<int, List<Alert>> SafeCopyRangeForRenderer(int barIndexLeftVisible, int barIndexRightVisible) { lock(base.LockObject) {
@@ -106,12 +116,15 @@ namespace Sq1.Core.Execution {
 		//} }
 
 		public bool GuiHasTimeToRebuild { get {
-			bool guiHasTime = false;
-			foreach (Alert alert in this.InnerList) {
-				guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
-				if (guiHasTime) break;
+			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".GuiHasTimeToRebuild");
+			lock (base.LockObject) {
+				bool guiHasTime = false;
+				foreach (Alert alert in this.InnerList) {
+					guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
+					if (guiHasTime) break;
+				}
+				return guiHasTime;
 			}
-			return guiHasTime;
 		} }
 	}
 }

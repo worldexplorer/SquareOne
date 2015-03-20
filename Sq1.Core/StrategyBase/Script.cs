@@ -40,18 +40,18 @@ namespace Sq1.Core.StrategyBase {
 		#endregion
 		
 		public	SortedDictionary<int, ScriptParameter>	ScriptParametersById_ReflectedCached;
-		public	Dictionary<string, ScriptParameter>		ScriptParametersByNameInlineCopy { get {
-				Dictionary<string, ScriptParameter> ret = new Dictionary<string, ScriptParameter>();
-				foreach (ScriptParameter param in ScriptParametersById_ReflectedCached.Values) {
-					if (ret.ContainsKey(param.Name)) {
-						string msg = "PARAMETER_NAME_NOT_UNIQUE[" + param.Name + "], prev[" + ret[param.Name].ToString() + "] this[" + param.ToString() + "]";
-						Assembler.PopupException(msg + " //Script.ParametersByName");
-						continue;
-					}
-					ret.Add(param.Name, param);
-				}
-				return ret;
-			} }
+//		private	Dictionary<string, ScriptParameter>		scriptParametersByNameInlineCopy { get {
+//				Dictionary<string, ScriptParameter> ret = new Dictionary<string, ScriptParameter>();
+//				foreach (ScriptParameter param in ScriptParametersById_ReflectedCached.Values) {
+//					if (ret.ContainsKey(param.Name)) {
+//						string msg = "PARAMETER_NAME_NOT_UNIQUE[" + param.Name + "], prev[" + ret[param.Name].ToString() + "] this[" + param.ToString() + "]";
+//						Assembler.PopupException(msg + " //Script.ParametersByName");
+//						continue;
+//					}
+//					ret.Add(param.Name, param);
+//				}
+//				return ret;
+//			} }
 		public	string				ScriptParametersByIdAsString		{ get {
 				if (this.ScriptParametersById_ReflectedCached.Count == 0) return "(NoScriptParameters)";
 				string ret = "";
@@ -343,7 +343,13 @@ namespace Sq1.Core.StrategyBase {
 					ScriptParameter variableScriptParameter = expectingConstructedNonNull as ScriptParameter;
 					// if Script constructed a ScriptParameter with "null" as it second ctor() parameter, take introspected variable name as declared in Script
 					if (string.IsNullOrEmpty(variableScriptParameter.Name)) variableScriptParameter.Name = scriptParameterCandidate.Name;
-					ret.Add(variableScriptParameter.Id, variableScriptParameter);
+					try {
+						ret.Add(variableScriptParameter.Id, variableScriptParameter);
+					} catch (Exception ex) {
+						string msg = "SCRIPT_PARAMETER_ID_SHOULD_BE_UNIQUE_FOR_EACH id[" + variableScriptParameter.Id
+							+ "] is declared by two parameters 1) [" + ret[variableScriptParameter.Id] + "] 2) [" + variableScriptParameter + "]";
+						Assembler.PopupException(msg, null, false);
+					}
 				}
 				return ret;
 			} }

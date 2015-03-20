@@ -5,14 +5,15 @@ using System.Windows.Forms;
 
 using Sq1.Core.Streaming;
 using Sq1.Core.DataTypes;
+using Sq1.Core;
 
 namespace Sq1.Charting {
 	public class PanelLevel2 : PanelBase {
 		const string REASON_TO_EXIST = "besides my own Panel, paint also on a clipped Graphics to draw below candles on PanelPrice (intensivity of layers might be controlled by sliders))";
 
-		public override bool					PanelHasValuesForVisibleBarWindow { get { return false;	/* this will cancel drawing right gutter */ } }
-		public override int						ValueIndexLastAvailableMinusOneUnsafe { get { return -1; } }
-		public			StreamingDataSnapshot	StreamingDataSnapshotNullUnsafe { get {
+		public override bool					PanelHasValuesForVisibleBarWindow		{ get { return false;	/* this will cancel drawing right gutter */ } }
+		public override int						ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
+		public			StreamingDataSnapshot	StreamingDataSnapshotNullUnsafe			{ get {
 			if (base.ChartControl.Executor.DataSource.StreamingAdapter == null) return null;
 			return base.ChartControl.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
 		} }
@@ -90,6 +91,7 @@ namespace Sq1.Charting {
 
 			try {
 				this.renderLevel2(pe.Graphics, lastQuote);
+				this.renderBidAsk(pe.Graphics);
 			} catch (Exception ex) {
 				base.DrawError(pe.Graphics, ex.ToString());
 			}
@@ -107,17 +109,11 @@ namespace Sq1.Charting {
 			//    + "]/VisibleMaxPlusBottomSqueezer_cached[" + panelPrice.VisibleMaxPlusBottomSqueezer_cached + "]";
 			//base.DrawError(g, msgCalc);
 
-			LevelTwoHalfFrozen bids_cachedForOnePaint = new LevelTwoHalfFrozen(
-				"BIDS_FROZEN",
-				this.StreamingDataSnapshotNullUnsafe.LevelTwoBids.SafeCopy(this, "CLONING_BIDS_FOR_PAINT_FOREGROUND_ON_PanelLevel2"),
-				new LevelTwoHalfFrozen.DESC());
-			LevelTwoHalfFrozen asks_cachedForOnePaint = new LevelTwoHalfFrozen(
-				"ASKS_FROZEN",
-				this.StreamingDataSnapshotNullUnsafe.LevelTwoAsks.SafeCopy(this, "CLONING_ASKS_FOR_PAINT_FOREGROUND_ON_PanelLevel2"),
-				new LevelTwoHalfFrozen.ASC());
+			LevelTwoHalfFrozen asks_cachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Asks_cachedForOnePaint;
+			LevelTwoHalfFrozen bids_cachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Bids_cachedForOnePaint;
 
 			double	priceMax = Math.Max(bids_cachedForOnePaint.PriceMax, asks_cachedForOnePaint.PriceMax);
-			double	priceMin = Math.Min(bids_cachedForOnePaint.PriceMin, asks_cachedForOnePaint.PriceMin);
+			double	askQuote = Math.Min(bids_cachedForOnePaint.PriceMin, asks_cachedForOnePaint.PriceMin);
 			//double	priceRangeToDisplay = priceMax - priceMin;
 
 			double	lotsMax = Math.Max(bids_cachedForOnePaint.LotSum, asks_cachedForOnePaint.LotSum);
@@ -126,9 +122,9 @@ namespace Sq1.Charting {
 
 			//double	pxPerLot_Width = base.Width / lotRangeToDisplay;
 			double pxPerLot_Width = base.Width / lotsMax;
-			int pxPerPriceStep_Height = panelPrice.PixelsPerPriceStep3pxLeast_cached;
-			int		pxPricePanelVertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongAllPanels.Y;
-			if     (pxPricePanelVertialOffset == -1) {
+			int pxPerPriceStep_Height = panelPrice.PixelsPerPriceStep5pxLeast_cached;
+			int pxPricePanelVertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongAllPanels.Y;
+			if (pxPricePanelVertialOffset == -1) {
 				string msg = "PARANOID__PANEL_PRICE_MUST_BE_IN_THE_LIST_OF_MULTISPLITTER_CONTENT_BUT_NOT_FOUND_NONSENSE";
 				throw new Exception(msg);
 			}
@@ -141,51 +137,87 @@ namespace Sq1.Charting {
 
 			//using (Pen black = new Pen(Color.Black)) g.DrawLine(black, 0, pxPricePanelVertialOffset, base.Width, pxPricePanelVertialOffset);
 
-			double askQuote = lastQuote.Ask;
-			askQuote = priceMin;
-			int priceMinY = panelPrice.ValueToYinverted(priceMin) + pxPricePanelVertialOffset;
+			double quoteAsk = lastQuote.Ask;
+			quoteAsk = quoteAsk;
+			int quoteAskYoffsetted = panelPrice.ValueToYinverted(quoteAsk) + pxPricePanelVertialOffset;
 
+			double quoteBid = lastQuote.Bid;
+			//quoteBid = priceMax;
+			int quoteBidYofsetted = panelPrice.ValueToYinverted(quoteBid) + pxPricePanelVertialOffset;
+
+			bool allowUnproportional = true;
 			//v1 foreach (double ask in asks_cachedForOnePaint.Keys) {		// Keys may be unsorted in a regular Dictionary => rendering price levels randomly
 			//	double lotAbsolute = asks_cachedForOnePaint[ask];
 			foreach (KeyValuePair<double, double> keyValue in asks_cachedForOnePaint) {
 				double ask = keyValue.Key;
 				double lotAbsolute = keyValue.Value;
 				double lotCumulative	= asks_cachedForOnePaint.LotsCumulative[ask];
-				double lotsRelative		= lotCumulative;// -lotsMin;
-				int askY = panelPrice.ValueToYinverted(ask);
-				if (askY <= 0) {
-					string msg = "FIRST_EVER_BAR_IS_BUGGY__NOT_PAINTED_PROPERLY_ON_PANEL_PRICE";
-					continue;
-				}
-				askY += pxPricePanelVertialOffset;
-				//using (Pen gray = new Pen(Color.Gainsboro)) g.DrawLine(gray, 0, askY, base.Width, askY);
-				//continue;
+				double lotsRelative = lotCumulative;// -lotsMin;
 
-				//double diffFromMin = ask - priceMin;
-				//int diffFromMinAsPriceStepsAway = (int)Math.Ceiling(diffFromMin / priceStep);
-				//int diffFromMinY = diffFromMinAsPriceStepsAway * pxPerPriceStep_Height;
-				//askY = priceMinY - diffFromMinY + pxPricePanelVertialOffset;
-				//askY -= diffFromMinAsPriceStepsAway * pxPerPriceStep_Height;
+				int yAsk = -1;
+				if (allowUnproportional) {
+					// using panelPrice.PixelsPerPriceStep5pxLeast_cached as minimal step (making price level wider on PanelLevel2 than price level displayed on PanelPrice for visual convenience)
+					double diffFromQuoteAsk = ask - quoteAsk;
+					int diffFromQuoteAskAsPriceStepsAway = (int)Math.Ceiling(diffFromQuoteAsk / priceStep);
+					int diffFromQuoteAskY = diffFromQuoteAskAsPriceStepsAway * pxPerPriceStep_Height;
+					yAsk = quoteAskYoffsetted - diffFromQuoteAskY;
+					//v1 askY -= diffFromMinAsPriceStepsAway * pxPerPriceStep_Height;
+				} else {
+					panelPrice.ValueToYinverted(ask);
+					if (yAsk <= 0) {
+						string msg = "FIRST_EVER_BAR_IS_BUGGY__NOT_PAINTED_PROPERLY_ON_PANEL_PRICE";
+						continue;
+					}
+					yAsk += pxPricePanelVertialOffset;
+					//using (Pen gray = new Pen(Color.Gainsboro)) g.DrawLine(gray, 0, askY, base.Width, askY);
+					//continue;
+				}
 
 				int lotsRelativeWidth = (int)Math.Round(lotsRelative * pxPerLot_Width);
 
-				Rectangle horizontalBar =  base.ParentMultiSplitIamLast
-					? new Rectangle(0, askY - pxPerPriceStep_Height, lotsRelativeWidth, pxPerPriceStep_Height)
-					: new Rectangle(base.Width - lotsRelativeWidth, askY - pxPerPriceStep_Height, lotsRelativeWidth, pxPerPriceStep_Height);
+				Rectangle horizontalBar = base.ParentMultiSplitIamLast
+					? new Rectangle(0, yAsk - pxPerPriceStep_Height, lotsRelativeWidth, pxPerPriceStep_Height)
+					: new Rectangle(base.Width - lotsRelativeWidth, yAsk - pxPerPriceStep_Height, lotsRelativeWidth, pxPerPriceStep_Height);
+				//if (base.ClientRectangle.Contains(horizontalBar) == false) continue;
+				if (base.ClientRectangle.IntersectsWith(horizontalBar) == false) continue;
 
 				g.FillRectangle(this.ChartControl.ChartSettings.BrushLevelTwoAskColorBackground, horizontalBar);
 
 				Point[] leftUpContour = new Point[3];
 				leftUpContour[0] = base.ParentMultiSplitIamLast
-					? new Point(0, askY)
-					: new Point(base.Width, askY);
+					? new Point(0, yAsk)
+					: new Point(base.Width, yAsk);
 				leftUpContour[1] = base.ParentMultiSplitIamLast
-					? new Point(lotsRelativeWidth, askY)
-					: new Point(base.Width - lotsRelativeWidth, askY);
+					? new Point(lotsRelativeWidth, yAsk)
+					: new Point(base.Width - lotsRelativeWidth, yAsk);
 				leftUpContour[2] = base.ParentMultiSplitIamLast
-					? new Point(lotsRelativeWidth, askY - pxPerPriceStep_Height)
-					: new Point(base.Width - lotsRelativeWidth, askY - pxPerPriceStep_Height);
+					? new Point(lotsRelativeWidth, yAsk - pxPerPriceStep_Height)
+					: new Point(base.Width - lotsRelativeWidth, yAsk - pxPerPriceStep_Height);
 				g.DrawLines(this.ChartControl.ChartSettings.PenLevelTwoAskColorContour, leftUpContour);
+
+				string lotCumulativeFormatted = lotCumulative.ToString(base.VolumeFormat);
+				SizeF labelMeasurements = g.MeasureString(lotCumulativeFormatted, base.ChartControl.ChartSettings.LevelTwoLotFont);
+				int labelMeasurementsWidth = (int)Math.Round(labelMeasurements.Width);
+				int xLabel = base.ParentMultiSplitIamLast
+					? lotsRelativeWidth - labelMeasurementsWidth - base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal
+					: base.Width - lotsRelativeWidth + base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal;
+				if (xLabel > base.Width) xLabel = base.Width;
+				if (base.ParentMultiSplitIamLast) {
+					if (xLabel < 0) xLabel = 0;
+				} else {
+					if (xLabel + labelMeasurementsWidth + base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal > base.Width) {
+						xLabel = base.Width - labelMeasurementsWidth - base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal;
+					}
+				}
+
+				//int middleOfBar = (int)(pxPerPriceStep_Height / 2d);
+				//int middleOfLabel = (int)(labelMeasurements.Height / 2d);
+				int yLabel = yAsk - (int)labelMeasurements.Height;	//Math.Min(middleOfBar, middleOfLabel);	// volume drawn inside the horizontalBar, above actual ask
+				if (yLabel > base.Height) yLabel = base.Height;
+				g.DrawString(lotCumulativeFormatted,
+					base.ChartControl.ChartSettings.SpreadLabelFont,
+					base.ChartControl.ChartSettings.BrushLevelTwoLot, xLabel, yLabel);
+
 			}
 
 			//int askY = panelPrice.ValueToYinverted(this.lastQuote_cached.Ask);
@@ -194,42 +226,112 @@ namespace Sq1.Charting {
 				double lotAbsolute = keyValue.Value;
 				double lotCumulative = bids_cachedForOnePaint.LotsCumulative[bid];
 				double lotsRelative = lotCumulative;// -lotsMin;
-				int bidY = panelPrice.ValueToYinverted(bid);
-				if (bidY <= 0) {
-					string msg = "FIRST_EVER_BAR_IS_BUGGY__NOT_PAINTED_PROPERLY_ON_PANEL_PRICE";
-					continue;
-				}
-				bidY += pxPricePanelVertialOffset;
-				//using (Pen gray = new Pen(Color.Gainsboro)) g.DrawLine(gray, 0, askY, base.Width, askY);
-				//continue;
 
-				//double diffFromMin = ask - priceMin;
-				//int diffFromMinAsPriceStepsAway = (int)Math.Ceiling(diffFromMin / priceStep);
-				//int diffFromMinY = diffFromMinAsPriceStepsAway * pxPerPriceStep_Height;
-				//askY = priceMinY - diffFromMinY + pxPricePanelVertialOffset;
-				//askY -= diffFromMinAsPriceStepsAway * pxPerPriceStep_Height;
+				int yBid = -1;
+				if (allowUnproportional) {
+					// using panelPrice.PixelsPerPriceStep5pxLeast_cached as minimal step (making price level wider on PanelLevel2 than price level displayed on PanelPrice for visual convenience)
+					double diffFromQuoteBid = quoteBid - bid;
+					int diffFromQuoteBidAsPriceStepsAway = (int)Math.Ceiling(diffFromQuoteBid / priceStep);
+					int diffFromQuoteBidY = diffFromQuoteBidAsPriceStepsAway * pxPerPriceStep_Height;
+					yBid = quoteBidYofsetted + diffFromQuoteBidY;
+					//v1 bidY -= diffFromMinAsPriceStepsAway * pxPerPriceStep_Height;
+				} else {
+					panelPrice.ValueToYinverted(bid);
+					if (yBid <= 0) {
+						string msg = "FIRST_EVER_BAR_IS_BUGGY__NOT_PAINTED_PROPERLY_ON_PANEL_PRICE";
+						continue;
+					}
+					yBid += pxPricePanelVertialOffset;
+					//using (Pen gray = new Pen(Color.Gainsboro)) g.DrawLine(gray, 0, askY, base.Width, askY);
+					//continue;
+				}
 
 				int lotsRelativeWidth = (int)Math.Round(lotsRelative * pxPerLot_Width);
 
 				Rectangle horizontalBar = base.ParentMultiSplitIamLast
-					? new Rectangle(0, bidY, lotsRelativeWidth, pxPerPriceStep_Height)
-					: new Rectangle(base.Width - lotsRelativeWidth, bidY, lotsRelativeWidth, pxPerPriceStep_Height);
+					? new Rectangle(0, yBid, lotsRelativeWidth, pxPerPriceStep_Height)
+					: new Rectangle(base.Width - lotsRelativeWidth, yBid, lotsRelativeWidth, pxPerPriceStep_Height);
+				//if (base.ClientRectangle.Contains(horizontalBar) == false) continue;
+				if (base.ClientRectangle.IntersectsWith(horizontalBar) == false) continue;
 
 				g.FillRectangle(this.ChartControl.ChartSettings.BrushLevelTwoBidColorBackground, horizontalBar);
 
 				Point[] leftDownContour = new Point[3];
 				leftDownContour[0] = base.ParentMultiSplitIamLast
-					? new Point(0, bidY)
-					: new Point(base.Width, bidY);
+					? new Point(0, yBid)
+					: new Point(base.Width, yBid);
 				leftDownContour[1] = base.ParentMultiSplitIamLast
-					? new Point(lotsRelativeWidth, bidY)
-					: new Point(base.Width - lotsRelativeWidth, bidY);
+					? new Point(lotsRelativeWidth, yBid)
+					: new Point(base.Width - lotsRelativeWidth, yBid);
 				leftDownContour[2] = base.ParentMultiSplitIamLast
-					? new Point(lotsRelativeWidth, bidY + pxPerPriceStep_Height)
-					: new Point(base.Width - lotsRelativeWidth, bidY + pxPerPriceStep_Height);
+					? new Point(lotsRelativeWidth, yBid + pxPerPriceStep_Height)
+					: new Point(base.Width - lotsRelativeWidth, yBid + pxPerPriceStep_Height);
 				g.DrawLines(this.ChartControl.ChartSettings.PenLevelTwoBidColorContour, leftDownContour);
+
+				string lotCumulativeFormatted = lotCumulative.ToString(base.VolumeFormat);
+				SizeF labelMeasurements = g.MeasureString(lotCumulativeFormatted, base.ChartControl.ChartSettings.LevelTwoLotFont);
+				int labelMeasurementsWidth = (int)Math.Round(labelMeasurements.Width);
+				int xLabel = base.ParentMultiSplitIamLast
+					? lotsRelativeWidth - labelMeasurementsWidth - base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal
+					: base.Width - lotsRelativeWidth + base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal;
+				if (base.ParentMultiSplitIamLast) {
+					if (xLabel < 0) xLabel = 0;
+				} else {
+					if (xLabel + labelMeasurementsWidth + base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal > base.Width) {
+						xLabel = base.Width - labelMeasurementsWidth - base.ChartControl.ChartSettings.LevelTwoLotPaddingHorizontal;
+					}
+				}
+
+				//int middleOfBar = (int)(pxPerPriceStep_Height / 2d);
+				//int middleOfLabel = (int)(labelMeasurements.Height / 2d);
+				int yLabel = yBid + 1;	//Math.Min(middleOfBar, middleOfLabel);	// volume drawn inside the horizontalBar, below actual bid
+				if (yLabel < 0) yLabel = 0;
+				g.DrawString(lotCumulativeFormatted,
+					base.ChartControl.ChartSettings.SpreadLabelFont,
+					base.ChartControl.ChartSettings.BrushLevelTwoLot, xLabel, yLabel);
 			}
 
+		}
+		void renderBidAsk(Graphics g) {
+			if (base.ChartControl.ChartSettings.SpreadLabelColor == Color.Empty) return;
+
+			Quote quoteLast = base.ChartControl.ScriptExecutorObjects.QuoteLast;
+			if (quoteLast == null) return;
+
+			//Quote quoteLastFromDictionary = this.StreamingDataSnapshotNullUnsafe.LastQuoteCloneGetForSymbol(this.ChartControl.Bars.Symbol);
+			//if (quoteLast.SameBidAsk(quoteLastFromDictionary) == false) {
+			//	string msg = "GOOD_THAT_YOU_CACHED DATASNAP_UNSYNCED_EXECOBJ quoteLast[" + quoteLast + "] != quoteLastFromDictionary[" + quoteLastFromDictionary + "]";
+			//	Assembler.PopupException(msg, null, false);
+			//	//return;
+			//}
+
+			double spread = quoteLast.Spread;
+			if (double.IsNaN(spread) == true) return;
+
+			PanelPrice panelPrice = this.ChartControl.PanelPrice;
+			int		pxPricePanelVertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongAllPanels.Y;
+
+			int yBid = 0;
+			double bid = quoteLast.Bid;
+			double ask = quoteLast.Ask;
+			if (double.IsNaN(bid) == false) {
+				yBid = panelPrice.ValueToYinverted(bid) + pxPricePanelVertialOffset;
+				g.DrawLine(base.ChartControl.ChartSettings.PenSpreadBid, 0, yBid, base.Width, yBid);
+			}
+			if (double.IsNaN(ask) == false) {
+				int yAsk = panelPrice.ValueToYinverted(ask) + pxPricePanelVertialOffset;
+				g.DrawLine(base.ChartControl.ChartSettings.PenSpreadAsk, 0, yAsk, base.Width, yAsk);
+			}
+
+			string spreadFormatted = spread.ToString(base.PriceFormat);
+			string label = "spread[" + spreadFormatted + "]";
+			int labelWidthMeasured = (int)g.MeasureString(label, base.ChartControl.ChartSettings.SpreadLabelFont).Width;
+			int xLabel = base.ParentMultiSplitIamLast
+				? base.Width - labelWidthMeasured - 5
+				: 5;
+			g.DrawString(label,
+				base.ChartControl.ChartSettings.SpreadLabelFont,
+				base.ChartControl.ChartSettings.BrushSpreadLabel, xLabel, yBid + 3);
 		}
 	}
 }

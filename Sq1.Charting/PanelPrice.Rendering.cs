@@ -383,10 +383,10 @@ namespace Sq1.Charting {
 
 			double spread = quoteLast.Spread;
 			if (double.IsNaN(spread) == false && base.ChartControl.ChartSettings.SpreadLabelColor != Color.Empty) {
-				string spreadFormatted = spread.ToString("N" + this.Decimals);
+				string spreadFormatted = spread.ToString(this.PriceFormat);
 				g.DrawString("spread[" + spreadFormatted + "]",
 					base.ChartControl.ChartSettings.SpreadLabelFont,
-					base.ChartControl.ChartSettings.SpreadLabelBrush, 5, yBid + 3);
+					base.ChartControl.ChartSettings.BrushSpreadLabel, 5, yBid + 3);
 			}
 		}
 	}

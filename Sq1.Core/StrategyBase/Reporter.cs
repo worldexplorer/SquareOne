@@ -19,7 +19,7 @@ namespace Sq1.Core.StrategyBase {
 					//Assembler.PopupException(msg);
 					return ret;
 				}
-				return this.SystemPerformance.Bars.SymbolInfo.FormatPrice;
+				return this.SystemPerformance.Bars.SymbolInfo.PriceFormat;
 			} }
 
 		public Reporter() {

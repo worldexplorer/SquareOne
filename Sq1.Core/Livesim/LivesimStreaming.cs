@@ -7,6 +7,7 @@ using Sq1.Core.Support;
 using Sq1.Core.DataFeed;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Execution;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
@@ -30,7 +31,9 @@ namespace Sq1.Core.Livesim {
 			this.chartShadow = chartShadow;
 			double stepPrice = this.chartShadow.Bars.SymbolInfo.PriceStep;
 			double stepSize = this.chartShadow.Bars.SymbolInfo.VolumeStepFromDecimal;
-			this.level2gen.Initialize(chartShadow.Executor.Strategy.LivesimStreamingSettings.LevelTwoLevelsToGenerate, stepPrice, stepSize);
+			SymbolInfo symbolInfo = this.chartShadow.Executor.Bars.SymbolInfo;	//LivesimLevelTwoGenerator needs to align price and volume to Levels
+			int howMany = chartShadow.Executor.Strategy.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
+			this.level2gen.Initialize(symbolInfo, howMany, stepPrice, stepSize);
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {

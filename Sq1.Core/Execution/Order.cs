@@ -390,7 +390,7 @@ namespace Sq1.Core.Execution {
 			}
 
 			string formatPrice = "N0";
-			if (this.Alert.Bars != null) formatPrice = this.Alert.Bars.SymbolInfo.FormatPrice;
+			if (this.Alert.Bars != null) formatPrice = this.Alert.Bars.SymbolInfo.PriceFormat;
 
 			ret += " @ " + this.PriceRequested.ToString(formatPrice);
 			ret += " " + this.State;

@@ -12,16 +12,7 @@ namespace Sq1.Charting {
 		List<Position> PositionLineAlreadyDrawnFromOneOfTheEnds;
 
 		public override int ValueIndexLastAvailableMinusOneUnsafe	{ get { return base.ChartControl.Bars.Count - 1; } }
-		public override int Decimals								{ get {
-			return 	  base.ChartControl.Bars.SymbolInfo != null
-					? base.ChartControl.Bars.SymbolInfo.DecimalsPrice
-					: 5; } }
-		public 			double PriceStep							{ get {
-			return	  base.ChartControl.Bars.SymbolInfo != null
-					? base.ChartControl.Bars.SymbolInfo.PriceStep
-					: -1d; } }
 
-		
 		public PanelPrice() : base() {
 			this.PositionLineAlreadyDrawnFromOneOfTheEnds = new List<Position>();
 			base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS

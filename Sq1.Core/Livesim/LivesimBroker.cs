@@ -9,6 +9,7 @@ using Sq1.Core.Support;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Backtesting;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
@@ -75,7 +76,7 @@ namespace Sq1.Core.Livesim {
 				AlertList afterDelay = snap.AlertsPending;
 				//if (afterDelay.Count == 0) return;
 				if (priorDelayedFill.Count != afterDelay.Count) {
-					string msg = "WHO_FILLED_WHILE_I_WAS_SLEEPING???";
+					string msg = "COUNT_MIGHT_HAVE_DECREASED_FOR_MULTIPLE_OPEN_POSITIONS/STRATEGY_IN_ANOTHER_FILLING_THREAD WHO_FILLED_WHILE_I_WAS_SLEEPING???";
 					//Assembler.PopupException(msg);
 					return;
 				}
@@ -103,12 +104,41 @@ namespace Sq1.Core.Livesim {
 		} }
 		void consumeQuoteOfStreamingBarToFillPendingAsync(QuoteGenerated quoteUnattached) {
 			ScriptExecutor executor = this.livesimDataSource.Executor;
+			Bar barStreaming = executor.Bars.BarStreaming;
+			if (barStreaming == null) {
+				string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_WITH_BAR_STREAMING_NULL__END_OF_LIVESIM?";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			if (executor.Backtester.IsBacktestingLivesimNow == false) {
+				string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_LIVESIM_NOT_RUNNING__PROBABLY_STOPPED/ABORTED?";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
 			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
 			if (snap.AlertsPending.Count == 0) {
 				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0";
 				Assembler.PopupException(msg);
 				return;
 			}
+
+			QuoteGenerated quoteAttachedToStreamingToConsumerBars = quoteUnattached.DeriveIdenticalButFresh();
+			quoteAttachedToStreamingToConsumerBars.SetParentBarStreaming(barStreaming);
+			// same pointer gets a cloned quote ATTACHED; anyone is listening for the change? it's not OUT
+			//quoteUnattached = quoteAttachedToStreamingToConsumerBars;
+			//if (quoteAttachedToStreamingToConsumerBars.ParentBarStreaming.ParentBars == null) {
+			//	string msg = "STREAMING_BAR_UNATTACHED_REPLACED_TO_SIMULATED_BARS_STREAMING_BAR QUICK_AND_DIRTY_EARLY_BINDER_HERE";
+			//	Assembler.PopupException(msg);
+			//	string err = "NOT_FILLED_YET";
+			//	bool same = quoteAttachedToStreamingToConsumerBars.ParentBarStreaming.HasSameDOHLCVas(
+			//					barStreaming, "Executor.Bars.BarStreaming", "quote.ParentBarStreaming", ref err);
+			//	if (same == false) {
+			//		Assembler.PopupException("CANT_SUBSTITUTE__EXCEPTIONS_COMING" + err);
+			//	} else {
+			//		quoteAttachedToStreamingToConsumerBars.SetParentBarStreaming(this.livesimDataSource.Executor.Bars.BarStreaming);
+			//	}
+			//}
+
 			//var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
 			int dumped = snap.AlertsPending.ByBarPlaced.Count;
 			if (dumped > 0) {
@@ -118,22 +148,6 @@ namespace Sq1.Core.Livesim {
 				string msg = "DUMPED_PRIOR_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
 			}
 			int pendingCountPre = executor.ExecutionDataSnapshot.AlertsPending.Count;
-			QuoteGenerated quoteAttachedToStreamingToConsumerBars = quoteUnattached.DeriveIdenticalButFresh();
-			quoteAttachedToStreamingToConsumerBars.SetParentBarStreaming(this.livesimDataSource.Executor.Bars.BarStreaming);
-			quoteUnattached = quoteAttachedToStreamingToConsumerBars;
-
-			if (quoteAttachedToStreamingToConsumerBars.ParentBarStreaming.ParentBars == null) {
-				string msg = "STREAMING_BAR_UNATTACHED_REPLACED_TO_SIMULATED_BARS_STREAMING_BAR QUICK_AND_DIRTY_EARLY_BINDER_HERE";
-				Assembler.PopupException(msg);
-				string err = "NOT_FILLED_YET";
-				bool same = quoteAttachedToStreamingToConsumerBars.ParentBarStreaming.HasSameDOHLCVas(this.livesimDataSource.Executor.Bars.BarStreaming, "Executor.Bars.BarStreaming", "quote.ParentBarStreaming", ref err);
-				if (same == false) {
-					Assembler.PopupException("CANT_SUBSTITUTE__EXCEPTIONS_COMING" + err);
-				} else {
-					quoteAttachedToStreamingToConsumerBars.SetParentBarStreaming(this.livesimDataSource.Executor.Bars.BarStreaming);
-				}
-			}
-
 			int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(
 					quoteAttachedToStreamingToConsumerBars, new Action<Alert, double, double>(this.onAlertFilled));
 			int pendingCountNow = executor.ExecutionDataSnapshot.AlertsPending.Count;

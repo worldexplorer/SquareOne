@@ -122,7 +122,7 @@ namespace Sq1.Reporters {
 		void addCurrency(double value, string label, string tooltip,
 				Color backColor, Color labelFontColor, Color itemFontColor,
 				FontStyle labelFontStyle = FontStyle.Regular, FontStyle itemFontStyle = FontStyle.Regular) {
-			string format = SystemPerformance.Bars.SymbolInfo.FormatPrice;
+			string format = SystemPerformance.Bars.SymbolInfo.PriceFormat;
 			string valueFormatted = value.ToString(format);
 			this.addLvi(valueFormatted, label, tooltip, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
 		}

@@ -491,13 +491,14 @@ namespace Sq1.Core.Execution {
 						+ ", duplicateFill @[" + barFill + "]";
 				throw new Exception(msg);
 			}
-			if (this.MyBrokerIsLivesim) {
-				if (barFill.DateTimeOpen != this.PlacedBar.DateTimeOpen) {
-					string msg = "FOR_DELAYED_LIVESIM_FILLS_PUT_BAR_FILL_BACK_TO_PLACED";
-					//Assembler.PopupException(msg, null, false);
-					barFill = this.PlacedBar;
-				}
-			}
+			//WHY_DID_YOU_REWIND_IT??? DELAY_IN_BROKER_EXACTLY_MENT_TO_MODEL_VERY_LATE_FILLS
+			//if (this.MyBrokerIsLivesim) {
+			//	if (barFill.DateTimeOpen != this.PlacedBar.DateTimeOpen) {
+			//		string msg = "FOR_DELAYED_LIVESIM_FILLS_PUT_BAR_FILL_BACK_TO_PLACED";
+			//		//Assembler.PopupException(msg, null, false);
+			//		barFill = this.PlacedBar;
+			//	}
+			//}
 			this.FilledBarSnapshotFrozenAtFill = barFill.Clone();		//BarsStreaming#130 becomes BarStatic#130
 			this.FilledBar = barFill;
 			this.FilledBarIndex = barFillRelno;

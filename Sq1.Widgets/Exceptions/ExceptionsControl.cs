@@ -127,6 +127,7 @@ namespace Sq1.Widgets.Exceptions {
 		void selectMostRecentException() {
 			if (this.treeExceptions.GetItemCount() == 0) return;
 			this.treeExceptions.SelectedIndex = 0;
+			this.treeExceptions.RefreshSelectedObjects();
 			this.treeExceptions.EnsureVisible(0);
 		}
 		void displayStackTrace() {

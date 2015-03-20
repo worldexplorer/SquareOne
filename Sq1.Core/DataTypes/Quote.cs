@@ -60,7 +60,7 @@ namespace Sq1.Core.DataTypes {
 			} else {
 				string msg = "ATTACHED_BAR_ASSIGNED_INTO_THIS_QUOTE";
 			}
-			if (this.Symbol != parentBar.Symbol) {
+			if (parentBar != null && this.Symbol != parentBar.Symbol) {
 				string msg = "SYMBOL_MISMATCH__CANT_SET_PARENT_BAR_FOR_QUOTE quote.Symbol[" + this.Symbol + "] != parentBar.Symbol[" + parentBar.Symbol + "]";
 				Assembler.PopupException(msg);
 			}

@@ -111,6 +111,7 @@ namespace Sq1.Widgets.Optimization {
 				this.olvHistory.SelectedIndex = -1;
 			} else {
 				this.olvHistory.SelectObject(found, true);
+				this.olvHistory.RefreshSelectedObjects();
 			}
 			this.olvHistoryComputeAverage();
 		}

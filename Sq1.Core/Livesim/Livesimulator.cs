@@ -212,7 +212,13 @@ namespace Sq1.Core.Livesim {
 				// too late to do it in GUI thread; switch takes a tons of time; do gui-unrelated preparations NOW
 				List<Order> ordersStale = this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe.OrdersSubmittedForOneLivesimBacktest;
 				if (ordersStale.Count > 0) {
+					int beforeCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
 					this.Executor.OrderProcessor.DataSnapshot.OrdersRemove(ordersStale);
+					int afterCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
+					if (beforeCleanup > 0 && beforeCleanup <= afterCleanup)  {
+						string msg = "STALE_ORDER_CLEANUP_DOESNT_WORK__LIVESIM";
+						Assembler.PopupException(msg);
+					}
 					ordersStale.Clear();
 				}
 				base.Stopwatch.Restart();
