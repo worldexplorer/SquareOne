@@ -1,16 +1,39 @@
 ﻿<Properties StartupItem="Sq1.Gui\Sq1.Gui.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="c:\SquareOne\Sq1.Core\Support\ConcurrentDictionaryGeneric.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="c:\SquareOne\Sq1.Gui\Singletons\ExceptionsForm.cs">
     <Files>
-      <File FileName="c:\SquareOne\Sq1.Core\Support\ConcurrentWatchdog.cs" Line="34" Column="34" />
-      <File FileName="Sq1.Core\StrategyBase\ScriptExecutor.cs" Line="1" Column="1" />
-      <File FileName="c:\SquareOne\Sq1.Core\Livesim\LivesimBroker.cs" Line="1" Column="1" />
-      <File FileName="c:\SquareOne\Sq1.Core\Support\ConcurrentDictionaryGeneric.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\Support\ConcurrentWatchdog.cs" Line="11" Column="11" />
+      <File FileName="c:\SquareOne\Sq1.Core\Assembler.cs" Line="22" Column="22" />
+      <File FileName="c:\SquareOne\Sq1.Core\Support\ConcurrentDictionaryGeneric.cs" Line="63" Column="63" />
+      <File FileName="c:\SquareOne\Sq1.Charting\ChartControl.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Core\Livesim\LivesimBroker.cs" Line="72" Column="72" />
+      <File FileName="Sq1.Core\Execution\AlertList.cs" Line="3" Column="3" />
+      <File FileName="Sq1.Core\Support\ConcurrentListWD.cs" Line="3" Column="3" />
+      <File FileName="c:\SquareOne\Sq1.Gui\Singletons\ExceptionsForm.cs" Line="35" Column="35" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Sq1.Charting" expanded="True" />
+          <Node name="Sq1.Core" expanded="True">
+            <Node name="Execution" expanded="True" />
+            <Node name="Livesim" expanded="True" />
+            <Node name="Streaming" expanded="True" />
+            <Node name="Support" expanded="True" />
+          </Node>
+          <Node name="Sq1.Gui" expanded="True">
+            <Node name="Singletons" expanded="True">
+              <Node name="ExceptionsForm.cs" selected="True" />
+            </Node>
+          </Node>
+          <Node name="Sq1.Strategies.Demo" expanded="True" />
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="C:\SquareOne\Sq1.Core\StrategyBase\ScriptExecutor.cs" line="963" column="8" />
+      <Breakpoint file="C:\SquareOne\Sq1.Core\Livesim\LivesimBroker.cs" line="88" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

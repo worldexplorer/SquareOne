@@ -4,35 +4,51 @@ using System.Collections.Generic;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Execution {
-	public class AlertList : ConcurrentList<Alert> {
-		public Dictionary<int, List<Alert>>	ByBarPlaced		{ get; protected set; }
+	public class AlertList : ConcurrentListWD<Alert> {
+		protected Dictionary<int, List<Alert>>	ByBarPlaced		{ get; private set; }
 		
-		public Dictionary<int, List<Alert>>	ByBarPlacedSafeCopy { get { lock (base.LockObject) {
+		public Dictionary<int, List<Alert>>	ByBarPlacedSafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			Dictionary<int, List<Alert>> ret = new Dictionary<int, List<Alert>>();
-			foreach (int bar in this.ByBarPlaced.Keys) ret.Add(bar, new List<Alert>(this.ByBarPlaced[bar]));
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				foreach (int bar in this.ByBarPlaced.Keys) ret.Add(bar, new List<Alert>(this.ByBarPlaced[bar]));
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
 			return ret;
-		} } }
+		}
+		public AlertList(string reasonToExist, ExecutionDataSnapshot snap = null, List<Alert> copyFrom = null) : this(reasonToExist, snap) {
+			if (copyFrom == null) return;
+			this.InnerList.AddRange(copyFrom);
+		}
 		public AlertList(string reasonToExist, ExecutionDataSnapshot snap = null) : base(reasonToExist, snap) {
 			ByBarPlaced	= new Dictionary<int, List<Alert>>();
 		}
-		public void Clear() { lock(base.LockObject) {
-			base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".Clear()");
-			lock (base.LockObject) {
-				base					.ClearInnerList();
-				this.ByBarPlacedSafeCopy.Clear();
-			}
-		} }
-		public void AddRange(List<Alert> alerts) {
-			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".AddRange(" + alerts.Count + ")");
-			lock (base.LockObject) {
-				foreach (Alert alert in alerts) this.AddNoDupe(alert);
+		public void Clear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + this.ToString() + ".Clear()";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				base			.Clear(owner, lockPurpose, waitMillis);
+				this.ByBarPlaced.Clear();
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public ByBarDumpStatus AddNoDupe(Alert alert, bool duplicateThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".AddNoDupe(" + alert.ToString() + ")");
-			lock (base.LockObject) {
+		public void AddRange(List<Alert> alerts, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + this.ToString() + ".AddRange(" + alerts.Count + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				foreach (Alert alert in alerts) this.AddNoDupe(alert, owner, lockPurpose, waitMillis);
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+		}
+		public ByBarDumpStatus AddNoDupe(Alert alert, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+			lockPurpose += " //" + this.ToString() + ".AddNoDupe(" + alert.ToString() + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool newBarAddedInHistory = false;
-				bool added = base.AddToInnerList(alert, duplicateThrowsAnError);
+				bool added = base.Add(alert, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
 				if (added == false) return ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd;
 
 				//int barIndexAlertStillPending = alert.Bars.Count - 1;
@@ -49,12 +65,15 @@ namespace Sq1.Core.Execution {
 				slot.Add(alert);
 				return (newBarAddedInHistory) ? ByBarDumpStatus.OneNewAlertAddedForNewBarInHistory
 					: ByBarDumpStatus.SequentialAlertAddedForExistingBarInHistory;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public bool Remove(Alert alert, bool absenseThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".Remove(" + alert.ToString() + ")");
-			lock (base.LockObject) {
-				bool removed = base.RemoveFromInnerList(alert, absenseThrowsAnError);
+		public bool Remove(Alert alert, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenseThrowsAnError = true) {
+			lockPurpose += " //" + this.ToString() + ".Remove(" + alert.ToString() + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				bool removed = base.Remove(alert, owner, lockPurpose, waitMillis, absenseThrowsAnError);
 				int barIndexPlaced = alert.PlacedBarIndex;
 				if (this.ByBarPlaced.ContainsKey(barIndexPlaced)) {
 					List<Alert> slot = this.ByBarPlaced[barIndexPlaced];
@@ -62,34 +81,30 @@ namespace Sq1.Core.Execution {
 					if (slot.Count == 0) this.ByBarPlaced.Remove(barIndexPlaced);
 				}
 				return removed;
-			}
-		}
-		public AlertList Clone() {
-			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".Clone()");
-			lock (base.LockObject) {
-				AlertList ret = new AlertList(this.ReasonToExist + "_CLONE", base.Snap);
-				//ret.AddRange(this.InnerList);
-				ret.InnerList = base.InnerListSafeCopy;
-				ret.ByBarPlaced = this.ByBarPlacedSafeCopy;
-				return ret;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
 		}
 
 
-		public bool ContainsIdentical(Alert maybeAlready, bool onlyUnfilled = true) { lock(base.LockObject) {
-			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".ContainsIdentical(" + maybeAlready + ", " + onlyUnfilled + ")");
-			lock (base.LockObject) {
-				foreach (Alert each in this.InnerList) {
+		public bool ContainsIdentical(Alert maybeAlready, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool onlyUnfilled = true) {
+			lockPurpose += " //" + this.ToString() + ".ContainsIdentical(" + maybeAlready + ", " + onlyUnfilled + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				foreach (Alert each in base.InnerList) {
 					if (maybeAlready.IsIdenticalOrderlessPriceless(each) == false) continue;
 					if (onlyUnfilled && each.IsFilled) continue;
 					return true;
 				}
 				return false;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
-		} }
-		public Alert FindSimilarNotSameIdenticalForOrdersPending(Alert alert) { lock(base.LockObject) {
-				if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".FindSimilarNotSameIdenticalForOrdersPending(" + alert + ")");
-			lock (base.LockObject) {
+		}
+		public Alert FindSimilarNotSameIdenticalForOrdersPending(Alert alert, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + this.ToString() + ".FindSimilarNotSameIdenticalForOrdersPending(" + alert + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				Alert similar = null;
 				foreach (Alert alertSimilar in this.InnerList) {
 					if (alertSimilar == alert) continue;
@@ -102,8 +117,10 @@ namespace Sq1.Core.Execution {
 					}
 				}
 				return similar;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
-		} }
+		}
 		// UNCOMMENT_WHEN_NEEDED
 		//public Dictionary<int, List<Alert>> SafeCopyRangeForRenderer(int barIndexLeftVisible, int barIndexRightVisible) { lock(base.LockObject) {
 		//	//if (barIndexRightVisible == -1) barIndexRightVisible = this.executor.Bars.Count;
@@ -115,16 +132,35 @@ namespace Sq1.Core.Execution {
 		//	return ret;
 		//} }
 
-		public bool GuiHasTimeToRebuild { get {
-			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + ".GuiHasTimeToRebuild");
-			lock (base.LockObject) {
+		public bool GuiHasTimeToRebuild(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + this.ToString() + ".GuiHasTimeToRebuild";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool guiHasTime = false;
 				foreach (Alert alert in this.InnerList) {
 					guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
 					if (guiHasTime) break;
 				}
 				return guiHasTime;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
-		} }
+		}
+		public AlertList Clone(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + this.ToString() + "Clone()";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				AlertList ret		= new AlertList("CLONE_" + base.ReasonToExist, base.Snap, this.InnerList);
+				ret.ByBarPlaced		= this.ByBarPlacedSafeCopy(this, "Clone(WAIT)");
+				return ret;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+		}
+		public override string ToString() {
+			string ret = base.ToString()
+				+ " ByBarPlaced.Bars[" + ByBarPlaced.Keys.Count + "]";
+			return ret;
+		}
 	}
 }

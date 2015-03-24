@@ -24,14 +24,10 @@ namespace Sq1.Core.StrategyBase {
 				return (pos.ExitMarketLimitStop == MarketLimitStop.Unknown);
 			} }
 		public		Position		LastPositionOpenNow					{ get {
-				List<Position> positionsOpenNow = this.Executor.ExecutionDataSnapshot.PositionsOpenNow.InnerList;
-				if (positionsOpenNow.Count == 0) return null;
-				return positionsOpenNow[positionsOpenNow.Count - 1];
+				return this.Executor.ExecutionDataSnapshot.PositionsOpenNow.LastNullUnsafe(this, "//LastPositionOpenNowWAIT");
 			} }
 		public		Position		LastPosition						{ get {
-				List<Position> positionsMaster = this.Executor.ExecutionDataSnapshot.PositionsMaster.InnerList;
-				if (positionsMaster.Count == 0) return null;
-				return positionsMaster[positionsMaster.Count - 1];
+				return this.Executor.ExecutionDataSnapshot.PositionsMaster.LastNullUnsafe(this, "//LastPositionWAIT");
 			} }
 		public		bool			HasAlertsPendingAndPositionsOpenNow	{ get { return this.HasAlertsPending && this.HasPositionsOpenNow; } }
 		public		bool			HasAlertsPendingOrPositionsOpenNow	{ get { return this.HasAlertsPending || this.HasPositionsOpenNow; } }

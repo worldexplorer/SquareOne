@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Sq1.Core.Backtesting;
 using Sq1.Core.Execution;
@@ -29,15 +30,16 @@ namespace Sq1.Core.StrategyBase {
 			MarketsimBacktest marketsim = this.livesimDataSource.Executor.MarketsimBacktest;
 
 			AlertList ret = new AlertList("ALERTS_PENDING_MINUS_SCHEDULED_FOR_DELAYED_FILL", null);
-			foreach (Alert eachPending in this.alertsPending.InnerList) {
-				if (this.AlertsScheduledForDelayedFill.InnerList.Contains(eachPending)) continue;
+			List<Alert> pendingSafe = this.alertsPending.SafeCopy(this, " //AlertsNotYetScheduledForDelayedFillBy(WAIT)");
+			foreach (Alert eachPending in pendingSafe) {
+				if (this.AlertsScheduledForDelayedFill.Contains(eachPending, this, "AlertsNotYetScheduledForDelayedFillBy(WAIT)")) continue;
 				
 				double priceFill = -1;
 				double slippageFill = -1;
 				bool filled = marketsim.CheckAlertWillBeFilledByQuote(eachPending, quote, out priceFill, out slippageFill);
 				if (filled == false) continue;
 
-				ret.AddNoDupe(eachPending);
+				ret.AddNoDupe(eachPending, this, "AlertsNotYetScheduledForDelayedFillBy(WAIT)");
 			}
 			return ret;
 		}

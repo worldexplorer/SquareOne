@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.Execution {
 	public partial class ExecutionDataSnapshot {
@@ -40,19 +41,19 @@ namespace Sq1.Core.Execution {
 		}
 
 		public void Initialize() { lock (this.positionsMasterLock) {
-			this.AlertsMaster				.Clear();
-			this.AlertsNewAfterExec			.Clear();
-			this.AlertsPending				.Clear();
+			this.AlertsMaster				.Clear(this, "Initialize(WAIT)");
+			this.AlertsNewAfterExec			.Clear(this, "Initialize(WAIT)");
+			this.AlertsPending				.Clear(this, "Initialize(WAIT)");
 			this.positionSernoAbs			= 0;
-			this.PositionsMaster			.Clear();
-			this.PositionsOpenedAfterExec	.Clear();
-			this.PositionsClosedAfterExec	.Clear();
-			this.PositionsOpenNow			.Clear();
+			this.PositionsMaster			.Clear(this, "Initialize(WAIT)");
+			this.PositionsOpenedAfterExec	.Clear(this, "Initialize(WAIT)");
+			this.PositionsClosedAfterExec	.Clear(this, "Initialize(WAIT)");
+			this.PositionsOpenNow			.Clear(this, "Initialize(WAIT)");
 		} }
 		internal void PreExecutionOnNewBarOrNewQuoteClear() { lock (this.positionsMasterLock) {
-			this.AlertsNewAfterExec.Clear();
-			this.PositionsOpenedAfterExec.Clear();
-			this.PositionsClosedAfterExec.Clear();
+			this.AlertsNewAfterExec.Clear(this, "PreExecutionOnNewBarOrNewQuoteClear(WAIT)");
+			this.PositionsOpenedAfterExec.Clear(this, "PreExecutionOnNewBarOrNewQuoteClear(WAIT)");
+			this.PositionsClosedAfterExec.Clear(this, "PreExecutionOnNewBarOrNewQuoteClear(WAIT)");
 		} }
 		internal void PositionsMasterOpenNewAdd(Position positionOpening) { lock (this.positionsMasterLock) {
 			if (positionOpening.EntryFilledBarIndex == -1) {
@@ -63,9 +64,9 @@ namespace Sq1.Core.Execution {
 			}
 				
 			positionOpening.SernoAbs = ++this.positionSernoAbs;
-			this.PositionsMaster.AddOpened_step1of2(positionOpening);
-			this.PositionsOpenedAfterExec.AddOpened_step1of2(positionOpening);
-			this.PositionsOpenNow.AddOpened_step1of2(positionOpening);
+			this.PositionsMaster			.AddOpened_step1of2(positionOpening, this, "PositionsMasterOpenNewAdd(WAIT)");
+			this.PositionsOpenedAfterExec	.AddOpened_step1of2(positionOpening, this, "PositionsMasterOpenNewAdd(WAIT)");
+			this.PositionsOpenNow			.AddOpened_step1of2(positionOpening, this, "PositionsMasterOpenNewAdd(WAIT)");
 		} }
 		public void AlertEnrichedRegister(Alert alert, bool registerInNewAfterExec = false) { lock (this.alertsMasterLock) {
 			if (alert.Qty == 0.0) {
@@ -75,16 +76,16 @@ namespace Sq1.Core.Execution {
 			if (alert.Strategy.Script == null) {
 				string msg = "TODO NYI alert submitted from mni / onChartTrading";
 			}
-			if (this.AlertsMaster.ContainsIdentical(alert)) {
+			if (this.AlertsMaster.ContainsIdentical(alert, this, "AlertEnrichedRegister(WAIT)")) {
 				string msg = "AlertsMasterContainsIdentical=>won't add NewPending;"
 					+ " 1) broker's order status dupe? 2) are you using CoverAtStop() in your strategy?"
 					+ " //" + alert;
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.AlertsMaster.AddNoDupe(alert);
-			if (registerInNewAfterExec == true) this.AlertsNewAfterExec.AddNoDupe(alert);
-			ByBarDumpStatus dumped = this.AlertsPending.AddNoDupe(alert);
+			this.AlertsMaster.AddNoDupe(alert, this, "AlertEnrichedRegister(WAIT)");
+			if (registerInNewAfterExec == true) this.AlertsNewAfterExec.AddNoDupe(alert, this, "AlertEnrichedRegister(WAIT)");
+			ByBarDumpStatus dumped = this.AlertsPending.AddNoDupe(alert, this, "AlertEnrichedRegister(WAIT)");
 			switch (dumped) {
 				case ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd:
 					string msg1 = "DUPE while adding JUST CREATED??? alert[" + alert + "]";
@@ -96,9 +97,9 @@ namespace Sq1.Core.Execution {
 			}
 		} }
 		public void MovePositionOpenToClosed(Position positionClosing, bool absenseInPositionsOpenNowIsAnError = true) { lock (this.positionsMasterLock) {
-			bool added = this.PositionsMaster.AddToClosedDictionary_step2of2(positionClosing, absenseInPositionsOpenNowIsAnError);
-			this.PositionsClosedAfterExec.AddClosed(positionClosing);
-			this.PositionsOpenNow.Remove(positionClosing);
+			bool added = this.PositionsMaster.AddToClosedDictionary_step2of2(positionClosing, this, "PositionsMasterOpenNewAdd(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, absenseInPositionsOpenNowIsAnError);
+			this.PositionsClosedAfterExec.AddClosed(positionClosing, this, "PositionsMasterOpenNewAdd(WAIT)");
+			this.PositionsOpenNow.Remove(positionClosing, this, "PositionsMasterOpenNewAdd(WAIT)");
 		} }
 	}
 }

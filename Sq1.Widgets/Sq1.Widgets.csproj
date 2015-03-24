@@ -254,6 +254,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SteppingSlider\PanelFillSlider.EventConsumer.cs">
       <DependentUpon>PanelFillSlider.cs</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="SteppingSlider\PanelFillSlider.EventGenerator.cs">
       <DependentUpon>PanelFillSlider.cs</DependentUpon>
@@ -261,6 +262,7 @@
     </Compile>
     <Compile Include="SteppingSlider\PanelFillSlider.Rendering.cs">
       <DependentUpon>PanelFillSlider.cs</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="SteppingSlider\SliderComboControl.EventConsumer.cs">
       <DependentUpon>SliderComboControl.cs</DependentUpon>

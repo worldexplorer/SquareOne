@@ -158,7 +158,8 @@ namespace Sq1.Core.Backtesting {
 		}
 		void closePositionsLeftOpenAfterBacktest() {
 			//return;
-			foreach (Alert alertPending in this.Executor.ExecutionDataSnapshot.AlertsPending.InnerListSafeCopy) {
+			List<Alert> alertsSafe = this.Executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "closePositionsLeftOpenAfterBacktest(WAIT)");
+			foreach (Alert alertPending in alertsSafe) {
 				try {
 					//if (alertPending.IsEntryAlert) {
 					//	this.Executor.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
@@ -179,7 +180,8 @@ namespace Sq1.Core.Backtesting {
 				Assembler.PopupException(msg, null, false);
 			}
 
-			foreach (Position positionOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow.InnerListSafeCopy) {
+			List<Position> positionsSafe = this.Executor.ExecutionDataSnapshot.PositionsOpenNow.SafeCopy(this, "closePositionsLeftOpenAfterBacktest(WAIT)");
+			foreach (Position positionOpen in positionsSafe) {
 				//v1 List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionCloseImmediately(positionOpen, );
 				//v2 WONT_CLOSE_POSITION_EARLIER_THAN_OPENED Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStaticLastNullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
 				Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStreaming, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");

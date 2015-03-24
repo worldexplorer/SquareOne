@@ -408,10 +408,10 @@ namespace Sq1.Gui.Forms {
 					// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EACH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED
 					// copypaste from Executor.ExecuteOnNewBarOrNewQuote()
 					ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quote,
-														executorSafe.ExecutionDataSnapshot.AlertsNewAfterExec.Clone(),
-														executorSafe.ExecutionDataSnapshot.PositionsOpenedAfterExec.Clone(),
-														executorSafe.ExecutionDataSnapshot.PositionsClosedAfterExec.Clone(),
-														executorSafe.ExecutionDataSnapshot.PositionsOpenNow.Clone()
+														executorSafe.ExecutionDataSnapshot.AlertsNewAfterExec.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
+														executorSafe.ExecutionDataSnapshot.PositionsOpenedAfterExec.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
+														executorSafe.ExecutionDataSnapshot.PositionsClosedAfterExec.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
+														executorSafe.ExecutionDataSnapshot.PositionsOpenNow.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)")
 													);
 
 					// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background

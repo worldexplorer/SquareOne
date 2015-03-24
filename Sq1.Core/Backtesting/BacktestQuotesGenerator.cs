@@ -237,8 +237,8 @@ namespace Sq1.Core.Backtesting {
 
 			bool scanningDown = quoteToReach.Bid < quotePrev.Bid;
 			QuoteGenerated quoteClosest = null;
-
-			foreach (Alert alert in this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.InnerListSafeCopy) {
+			List<Alert> alertsSafe = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "generateClosestQuoteForEachPendingAlertOnOurWayTo(WAIT)");
+			foreach (Alert alert in alertsSafe) {
 				// DONT_EXPECT_THEM_TO_BE_FILLED_YOU_SHOULD_FILL_ALL_RELEVANT_NOW
 				//if (scanningDown) {
 				//	// while GEN'ing down, all BUY/COVER STOPs pending were already triggered & executed

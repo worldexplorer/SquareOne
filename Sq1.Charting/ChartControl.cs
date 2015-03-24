@@ -26,14 +26,14 @@ namespace Sq1.Charting {
 	 	public int GutterRightWidth_cached = -1;
 		public int GutterBottomHeight_cached = -1;
 		public ChartSettings ChartSettings;
-		public ScriptExecutorObjects ScriptExecutorObjects;
+		public ChartControlFrozenForRendering ScriptExecutorObjects;
 
 		public int HeightMinusBottomHscrollbar { get { return base.Height - this.hScrollBar.Height; } }
 		public int BarIndexMouseIsOverNow;
 
 		public ChartControl() {
 			this.ChartSettings = new ChartSettings(); // was a component, used at InitializeComponent() (to draw SampleBars)
-			this.ScriptExecutorObjects = new ScriptExecutorObjects();
+			this.ScriptExecutorObjects = new ChartControlFrozenForRendering();
 
 			InitializeComponent();
 			//when previous line doesn't help and Designer still throws exceptions return;

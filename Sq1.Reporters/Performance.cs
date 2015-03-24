@@ -77,7 +77,7 @@ namespace Sq1.Reporters {
 			}
 		}
 		protected virtual void GenerateReportForOneColumn(SystemPerformanceSlice slice) {
-			IList<Position> positionsAllReadOnly = slice.PositionsImTrackingReadonly;  
+			List<Position> positionsAllReadOnly = slice.PositionsImTrackingReadonly;  
 
 			// NO_FORMATTING_PRINT_AS_IT_IS !!!! YOULL_NEVER_FIND_ROUNDING_ERROR_IF_YOU_ROUND_JUST_BEFORE_PRINTING
 			this.addCurrency(		slice.NetProfitForClosedPositionsBoth, "Net Profit", "NetProfitForClosedPositionsBoth", Color.Empty, Color.Empty, this.getLviForeColor(slice.NetProfitForClosedPositionsBoth), FontStyle.Bold, FontStyle.Regular);

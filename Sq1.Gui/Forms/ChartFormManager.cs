@@ -482,9 +482,9 @@ namespace Sq1.Gui.Forms {
 					return;
 				}
 				//this.clonePositionsForChartPickupBacktest(this.Executor.ExecutionDataSnapshot.PositionsMaster);
-				this.ChartForm.ChartControl.PositionsBacktestAdd(this.Executor.ExecutionDataSnapshot.PositionsMaster.InnerList);
+				this.ChartForm.ChartControl.PositionsBacktestAdd(this.Executor.ExecutionDataSnapshot.PositionsMaster.SafeCopy(this, "afterBacktestComplete(WAIT"));
 				//this.ChartForm.ChartControl.PendingHistoryBacktestAdd(this.Executor.ExecutionDataSnapshot.AlertsPendingHistorySafeCopy);
-				this.ChartForm.ChartControl.PendingHistoryBacktestAdd(this.Executor.ExecutionDataSnapshot.AlertsPending.ByBarPlaced);
+				this.ChartForm.ChartControl.PendingHistoryBacktestAdd(this.Executor.ExecutionDataSnapshot.AlertsPending.ByBarPlacedSafeCopy(this, "afterBacktestComplete(WAIT"));
 				this.ChartForm.ChartControl.InvalidateAllPanels();
 			
 				//this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);

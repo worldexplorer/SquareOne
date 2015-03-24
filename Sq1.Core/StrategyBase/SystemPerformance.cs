@@ -75,21 +75,23 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 
-			PositionList positionsClosed = this.Executor.ExecutionDataSnapshot.PositionsMaster.Clone();
-			foreach (Position posOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow.InnerList) {
-				if (positionsClosed.ContainsInInnerList(posOpen) == false) {
+			// OVERKILL_OPTIMIZE_ME__HAPPENS_ONCE__NO_MULTIPLE_THREADS_INVOLVED__RIGHT?
+			PositionList positionsClosedSafe = this.Executor.ExecutionDataSnapshot.PositionsMaster.Clone(this, "BuildStatsOnBacktestFinished(WAIT)");
+			List<Position> positionsOpenSafe = this.Executor.ExecutionDataSnapshot.PositionsOpenNow.SafeCopy(this, "BuildStatsOnBacktestFinished(WAIT)");
+			foreach (Position posOpen in positionsOpenSafe) {
+				if (positionsClosedSafe.Contains(posOpen, this, "BuildStatsOnBacktestFinished(WAIT)") == false) {
 					#if DEBUG
 					Debugger.Break();
 					#endif
 					continue;
 				}
-				positionsClosed.Remove(posOpen);
+				positionsClosedSafe.Remove(posOpen, this, "BuildStatsOnBacktestFinished(WAIT)");
 			}
 			// at the end of backtest, I closed all positions, last may be still open 
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(null, null,
 					//this.Executor.ExecutionDataSnapshot.PositionsOpenNow,
 					this.Executor.ExecutionDataSnapshot.PositionsMaster,
-					positionsClosed,
+					positionsClosedSafe,
 					this.Executor.ExecutionDataSnapshot.PositionsOpenNow
 				);
 			

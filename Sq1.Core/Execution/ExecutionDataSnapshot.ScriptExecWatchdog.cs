@@ -112,7 +112,7 @@ namespace Sq1.Core.Execution {
 			ScriptRunningOnStrategyEmittingOrdersTurnedOn		= new ManualResetEvent(false);
 			ScriptRunningOnStrategyEmittingOrdersTurnedOff		= new ManualResetEvent(false);
 		}
-		public void PopupIfAnyScriptOverrideIsRunning(string msig) {
+		public void BarkIfAnyScriptOverrideIsRunning(string msig) {
 			return;	//just disabled it here; POTENTIAL_RACE_CONDITIONs are all followed by lock(){} upstack, right?
 
 

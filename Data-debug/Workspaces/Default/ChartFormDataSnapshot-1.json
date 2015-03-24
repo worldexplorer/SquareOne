@@ -60,7 +60,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 400,
+    "SqueezeVerticalPaddingPx": 140,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -70,12 +70,12 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 0,
+    "ScrollPositionAtBarIndex": 43,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
     "PositionPlannedEllipseDiameter": 6,
-    "PositionFilledDotColor": "Olive",
+    "PositionFilledDotColor": "Chocolate",
     "PositionFilledDotColorAlpha": 200,
     "PositionFilledDotDiameter": 4,
     "PositionLineHighlightedWidth": 2,
@@ -87,9 +87,10 @@
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
     "PriceVsVolumeSplitterDistance": 0,
-    "AlertPendingEllipseColor": "Maroon",
-    "AlertPendingEllipseColorAlpha": 160,
-    "AlertPendingEllipseWidth": 1,
+    "AlertPlacedEllipseColor": "DarkBlue",
+    "AlertPlacedEllipseColorAlpha": 190,
+    "AlertPlacedEllipsePenWidth": 2,
+    "AlertPlacedEllipseRadius": 3,
     "MousePositionTrackOnGutters": true,
     "MousePositionTrackOnGuttersColor": "LightGray",
     "BarsBackgroundTransparencyAlpha": 24,
@@ -130,7 +131,7 @@
       "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 28
+        "Distance": 21
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -143,7 +144,7 @@
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 437
+        "Distance": 580
       }
     }
   },

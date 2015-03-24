@@ -256,7 +256,7 @@ namespace Sq1.Core.Execution {
 			bool ret = true;
 			if (this.MyBrokerIsLivesim == false) return ret;
 			try {
-				ChartShadow chartShadow = Assembler.InstanceInitialized.AlertsForChart.FindContainerFor(this);
+				ChartShadow chartShadow = Assembler.InstanceInitialized.AlertsForChart.FindContainerForNull(this);
 				ScriptExecutor executor = chartShadow.Executor;
 				bool livesimSleeping = executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
 				ret = livesimSleeping;

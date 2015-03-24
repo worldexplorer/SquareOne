@@ -355,17 +355,17 @@ namespace Sq1.Core.StrategyBase {
 				//#D_FREEZE Assembler.PopupException(msg3, null, false);
 			}
 
-			List<Alert> alertsNewAfterExecCopy = this.ExecutionDataSnapshot.AlertsNewAfterExec.InnerListSafeCopy;
+			List<Alert> alertsNewAfterExecSafeCopy = this.ExecutionDataSnapshot.AlertsNewAfterExec.SafeCopy(this, "ReporterPokeUnit(WAIT)");
 			List<Order> ordersEmitted = null;
 
 			bool guiHasTime = false;
-			foreach (Alert alert in this.ExecutionDataSnapshot.AlertsNewAfterExec.InnerList) {
+			foreach (Alert alert in alertsNewAfterExecSafeCopy) {
 				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
 				if (guiHasTime == false) guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
 			}
 
-			if (alertsNewAfterExecCopy.Count > 0) {
-				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecCopy, quoteForAlertsCreated);
+			if (alertsNewAfterExecSafeCopy.Count > 0) {
+				this.enrichAlertsWithQuoteCreated(alertsNewAfterExecSafeCopy, quoteForAlertsCreated);
 				if (willEmit) {
 					string msg2 = "Breakpoint";
 					//#D_FREEZE Assembler.PopupException(msg2);
@@ -384,19 +384,20 @@ namespace Sq1.Core.StrategyBase {
 							//Assembler.PopupException(msg3, null, false);
 						}
 					}
-					ordersEmitted = this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsNewAfterExecCopy, setStatusSubmitting, true);
+					ordersEmitted = this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsNewAfterExecSafeCopy, setStatusSubmitting, true);
 					//MOVED_TO_ChartFomStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()
 					// ^^^ this.DataSource.UnPausePumpingFor(this.Bars, true);	// ONLY_DURING_DEVELOPMENT__FOR_#D_TO_HANDLE_MY_BREAKPOINTS
 
-					foreach (Alert alert in alertsNewAfterExecCopy) {
+					foreach (Alert alert in alertsNewAfterExecSafeCopy) {
 						if (alert.OrderFollowed != null) continue;
-						bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert);
+						bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "ExecuteOnNewBarOrNewQuote(WAIT)");
 						if (removed == false) {
 							string msg3 = "FAILED_TO_REMOVE_INCONSISTENT_ALERT_FROM_PENDING removed=" + removed;
 							Assembler.PopupException(msg3);
 						}
 					}
 				}
+				this.ChartShadow.AlertsPlacedRealtimeAdd(alertsNewAfterExecSafeCopy);
 			}
 
 			if (this.Backtester.WasBacktestAborted) return null;
@@ -404,10 +405,10 @@ namespace Sq1.Core.StrategyBase {
 	
 			
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated,
-												this.ExecutionDataSnapshot.AlertsNewAfterExec.Clone(),
-												this.ExecutionDataSnapshot.PositionsOpenedAfterExec.Clone(),
-												this.ExecutionDataSnapshot.PositionsClosedAfterExec.Clone(),
-												this.ExecutionDataSnapshot.PositionsOpenNow.Clone()
+												this.ExecutionDataSnapshot.AlertsNewAfterExec.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
+												this.ExecutionDataSnapshot.PositionsOpenedAfterExec.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
+												this.ExecutionDataSnapshot.PositionsClosedAfterExec.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)"),
+												this.ExecutionDataSnapshot.PositionsOpenNow.Clone(this, "ExecuteOnNewBarOrNewQuote(WAIT)")
 											);
 			//MOVED_UPSTACK_TO_LivesimQuoteBarConsumer
 			//if (this.Backtester.IsBacktestRunning && this.Backtester.IsLivesimRunning) {
@@ -484,7 +485,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 				return null;
 			}
-			Alert similar = this.ExecutionDataSnapshot.AlertsPending.FindSimilarNotSameIdenticalForOrdersPending(alert);
+			Alert similar = this.ExecutionDataSnapshot.AlertsPending.FindSimilarNotSameIdenticalForOrdersPending(alert, this, "BuyOrShortAlertCreateRegister(WAIT)");
 			if (similar != null) {
 				string msg = "DUPLICATE_ALERT_FOUND similar[" + similar + "]";
 				Assembler.PopupException(msg + msig);
@@ -542,7 +543,9 @@ namespace Sq1.Core.StrategyBase {
 					this.PopupException(msg);
 					return position.ExitAlert;
 				}
-				foreach (Alert closingAlertForPosition in this.ExecutionDataSnapshot.AlertsPending.InnerList) {
+
+				List<Alert> pendingSafe = this.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "//SellOrCoverAlertCreateRegister(WAIT)");
+				foreach (Alert closingAlertForPosition in pendingSafe) {
 					if (closingAlertForPosition.PositionAffected == position && closingAlertForPosition.IsExitAlert) {
 						string msg = "PENDING_EXIT_ALERT_FOUND_WHILE_POSITION.EXITALERT=NULL"
 							+ "; position.ExitAlert[" + position.ExitAlert + "] != closingAlertForPosition[" + closingAlertForPosition + "]";
@@ -668,9 +671,9 @@ namespace Sq1.Core.StrategyBase {
 			}
 			try {
 				//v1 NO!!! DIRECT_KILLED_TO_EXECUTOR_UPSTACK alert.Strategy.Script.OnAlertKilledCallback(alert);
-				this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnAlertKilledCallback(WAIT)");
-				if (this.ExecutionDataSnapshot.AlertsPending.ContainsInInnerList(alert)) {
-					bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert);
+				this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
+				if (this.ExecutionDataSnapshot.AlertsPending.Contains(alert, this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)")) {
+					bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "CallbackAlertKilledInvokeScriptNonReenterably(WAIT)");
 					if (removed) alert.IsKilled = true;
 				} else {
 					string msg = "KILLED_ALERT_WAS_NOT_FOUND_IN_snap.AlertsPending DELETED_EARLIER_OR_NEVER_BEEN_ADDED;"
@@ -793,7 +796,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "REMOVE_FILLED_FROM_PENDING? DONT_USE_Bar.ContainsPrice()?";
 				Assembler.PopupException(msg + msig, ex);
 			}
-			bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertFilled);
+			bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertFilled, this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
 			if (removed == false) {
 				#if DEBUG
 				Debugger.Break();
@@ -806,11 +809,11 @@ namespace Sq1.Core.StrategyBase {
 			if (alertFilled.IsEntryAlert) {
 				this.ExecutionDataSnapshot.PositionsMasterOpenNewAdd(alertFilled.PositionAffected);
 				positionOpenedAfterAlertFilled = alertFilled.PositionAffected;
-				positionsOpenedAfterAlertFilled.AddOpened_step1of2(positionOpenedAfterAlertFilled);
+				positionsOpenedAfterAlertFilled.AddOpened_step1of2(positionOpenedAfterAlertFilled, this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
 			} else {
 				this.ExecutionDataSnapshot.MovePositionOpenToClosed(alertFilled.PositionAffected);
 				positionClosedAfterAlertFilled = alertFilled.PositionAffected;
-				positionsClosedAfterAlertFilled.AddClosed(positionClosedAfterAlertFilled);
+				positionsClosedAfterAlertFilled.AddClosed(positionClosedAfterAlertFilled, this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
 			}
 
 			bool willEmit = this.Backtester.IsBacktestingNoLivesimNow == false && this.OrderProcessor != null && this.IsStrategyEmittingOrders;
@@ -825,7 +828,7 @@ namespace Sq1.Core.StrategyBase {
 					alertFilled.PositionAffected.ExitAlertAttach(alertFilled);
 				}
 				// 1. alert.PositionAffected.Prototype.StopLossAlertForAnnihilation and TP will get assigned
-				alertsNewAfterAlertFilled.AddRange(this.PositionPrototypeActivator.AlertFilledCreateSlTpOrAnnihilateCounterparty(alertFilled));
+				alertsNewAfterAlertFilled.AddRange(this.PositionPrototypeActivator.AlertFilledCreateSlTpOrAnnihilateCounterparty(alertFilled), this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
 				// quick check: there must be {SL+TP} OR Annihilator
 				//this.Backtester.IsBacktestingNow == false &&
 				if (alertFilled.IsEntryAlert) {
@@ -856,7 +859,8 @@ namespace Sq1.Core.StrategyBase {
 				}
 
 				if (alertsNewAfterAlertFilled.Count > 0 && willEmit) {
-					this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads(alertsNewAfterAlertFilled.InnerList, setStatusSubmitting, true);
+					List<Alert> newAfterFilledSafe = alertsNewAfterAlertFilled.SafeCopy(this, "//callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
+					this.OrderProcessor.CreateOrdersSubmitToBrokerAdapterInNewThreads(newAfterFilledSafe, setStatusSubmitting, true);
 
 					// 3. Script using proto might move SL and TP which require ORDERS to be moved, not NULLs
 					int twoMinutes = 120000;
@@ -940,6 +944,14 @@ namespace Sq1.Core.StrategyBase {
 			// 2.2. Script.OnAlertFilledCallback(alert)
 			// 2.3. Script.OnPositionOpenedPrototypeSlTpPlacedCallback(alert.PositionAffected)
 			// 2.4. Script.OnPositionClosedCallback(alert.PositionAffected)
+
+			if (pokeUnit.AlertsNew.Count > 0) {
+				string msg = "I_THOUGHT_NEW_ALERTS_ARE_CREATED_UPSTACK_BUT_APPARENTLY_IM_WRONG";
+				Assembler.PopupException(msg);
+			}
+
+			// filled alerts should be immediately be reflected with an arrow on PricePanel
+			this.ChartShadow.InvalidateAllPanels();
 		}
 		void invokeScriptEvents(Alert alert) {
 			if (this.Strategy.Script == null) return;
@@ -1005,8 +1017,8 @@ namespace Sq1.Core.StrategyBase {
 			ExecutionDataSnapshot snap = alert.Strategy.Script.Executor.ExecutionDataSnapshot;
 			//this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
 			string orderState = (alert.OrderFollowed == null) ? "alert.OrderFollowed=NULL" : alert.OrderFollowed.State.ToString();
-			if (snap.AlertsPending.ContainsInInnerList(alert)) {
-				bool removed = snap.AlertsPending.Remove(alert);
+			if (snap.AlertsPending.Contains(alert, this, "RemovePendingExitAlert(WAIT)")) {
+				bool removed = snap.AlertsPending.Remove(alert, this, "RemovePendingExitAlert(WAIT)");
 				msg = "REMOVED " + orderState + " Pending alert[" + alert + "] ";
 			} else {
 				msg = "CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alert + "] ";
@@ -1090,7 +1102,7 @@ namespace Sq1.Core.StrategyBase {
 				return false;
 			}
 			if (checkPositionOpenNow == true) {
-				bool shouldRemove = this.ExecutionDataSnapshot.PositionsOpenNow.ContainsInInnerList(alert.PositionAffected);
+				bool shouldRemove = this.ExecutionDataSnapshot.PositionsOpenNow.Contains(alert.PositionAffected, this, "checkPositionCanBeClosed(WAIT)");
 
 				if (alert.FilledBarIndex > -1) {
 					if (shouldRemove) {

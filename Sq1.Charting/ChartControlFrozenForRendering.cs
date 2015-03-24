@@ -12,10 +12,10 @@ using Sq1.Charting.OnChart;
 using Sq1.Core.Streaming;
 
 namespace Sq1.Charting {
-	public class ScriptExecutorObjects {
+	public class ChartControlFrozenForRendering {
 		public Dictionary<int, List<AlertArrow>>	AlertArrowsListByBar			{ get; private set; }
 		public Dictionary<string, Indicator>		Indicators						{ get; set; }
-		public Dictionary<int, List<Alert>>			AlertsPendingHistorySafeCopy	{ get; private set; }
+		public Dictionary<int, List<Alert>>			AlertsPlaced	{ get; private set; }
 
 		public Dictionary<string, OnChartLine>		LinesById						{ get; private set; }
 		public Dictionary<int, List<OnChartLine>>	LinesByLeftBar					{ get; private set; }
@@ -50,10 +50,10 @@ namespace Sq1.Charting {
 				return ret;
 			} }
 		
-		public ScriptExecutorObjects() {
+		public ChartControlFrozenForRendering() {
 			AlertArrowsListByBar		= new Dictionary<int, List<AlertArrow>>();
 			Indicators					= new Dictionary<string, Indicator>();
-			AlertsPendingHistorySafeCopy= new Dictionary<int, List<Alert>>();
+			AlertsPlaced				= new Dictionary<int, List<Alert>>();
 			
 			LinesById					= new Dictionary<string, OnChartLine>();
 			LinesByLeftBar				= new Dictionary<int, List<OnChartLine>>();
@@ -75,7 +75,7 @@ namespace Sq1.Charting {
 				//each.BacktestStartingConstructOwnValuesValidateParameters();
 			}
 			
-			this.AlertsPendingHistorySafeCopy.Clear();
+			this.AlertsPlaced.Clear();
 			
 			this.LinesById.Clear();
 			this.LinesByLeftBar.Clear();
@@ -124,8 +124,8 @@ namespace Sq1.Charting {
 			return mustBeNull == null;
 		}
 		public void PositionArrowsRealtimeAdd(ReporterPokeUnit pokeUnit) {
-			this.PositionArrowsBacktestAdd(pokeUnit.PositionsOpened.InnerList);
-			this.PositionArrowsBacktestAdd(pokeUnit.PositionsClosed.InnerList);
+			this.PositionArrowsBacktestAdd(pokeUnit.PositionsOpened.SafeCopy(this, "PositionArrowsRealtimeAdd(WAIT)"));
+			this.PositionArrowsBacktestAdd(pokeUnit.PositionsClosed.SafeCopy(this, "PositionArrowsRealtimeAdd(WAIT)"));
 //		NO_NEED_TO_CACHE_OPENING_ALERT_BITMAP_FOR_JUST_CLOSED_POSITIONS AlertArrow.Bitmap is dynamic for EntryAlerts until the position is closed;
 //			foreach (AlertArrow eachNewClosed in pokeUnit.PositionsClosed) {
 //				if (this.AlertArrowsListByBar.ContainsKey[eachNewClosed.EntryBarIndex] == false) {
@@ -144,25 +144,32 @@ namespace Sq1.Charting {
 				indicator.DotsDrawnForCurrentSlidingWindow = -1;
 			}
 		}
-		public void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
-			this.AlertsPendingHistorySafeCopy = alertsPendingHistorySafeCopy;
+		public void AlertsPlacedBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
+			this.AlertsPlaced = alertsPendingHistorySafeCopy;
 		}
-		public void PendingRealtimeAdd(ReporterPokeUnit pokeUnit) {
-			string msig = " // PendingRealtimeAdd(" + pokeUnit + ")";
-			string msg = "should I NOT assign this.AlertsPendingHistorySafeCopy=alertsPendingHistorySafeCopy?";
-			Assembler.PopupException(msg + msig);
-			if (null == pokeUnit.QuoteGeneratedThisUnit) {
-				msg = "NEVER_HAPPENED_SO_FAR pokeUnit.QuoteGeneratedThisUnit=null";
-				Assembler.PopupException(msg + msig);
-				return;
+		public void AlertsPlacedRealtimeAdd(List<Alert> alertsNewPlacedSafeCopy) {
+			//string msig = " // PendingRealtimeAdd(" + pokeUnit + ")";
+			//string msg = "should I NOT assign this.AlertsPendingHistorySafeCopy=alertsPendingHistorySafeCopy?";
+			//Assembler.PopupException(msg + msig);
+			//if (null == pokeUnit.QuoteGeneratedThisUnit) {
+			//    msg = "NEVER_HAPPENED_SO_FAR pokeUnit.QuoteGeneratedThisUnit=null";
+			//    Assembler.PopupException(msg + msig);
+			//    return;
+			//}
+			//if (null == pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming) {
+			//    msg = "NEVER_HAPPENED_SO_FAR pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming=null";
+			//    Assembler.PopupException(msg + msig);
+			//    return;
+			//}
+			//int barIndex = pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming.ParentBarsIndex;
+			//this.AlertsPendingHistorySafeCopy.Add(barIndex, pokeUnit.AlertsNew.SafeCopy(this, "PendingRealtimeAdd(WAIT)"));
+			foreach (Alert alert in alertsNewPlacedSafeCopy) {
+				if (this.AlertsPlaced.ContainsKey(alert.PlacedBarIndex) == false) {
+					this.AlertsPlaced.Add(alert.PlacedBarIndex, new List<Alert>());
+				}
+				List<Alert> pendingsForBar = this.AlertsPlaced[alert.PlacedBarIndex];
+				pendingsForBar.Add(alert);
 			}
-			if (null == pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming) {
-				msg = "NEVER_HAPPENED_SO_FAR pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming=null";
-				Assembler.PopupException(msg + msig);
-				return;
-			}
-			int barIndex = pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming.ParentBarsIndex;
-			this.AlertsPendingHistorySafeCopy.Add(barIndex, pokeUnit.AlertsNew.InnerList);
 		}
 		
 		public OnChartLine LineAddOrModify(string lineId, int barLeft, double priceLeft, int barRight, double priceRight,

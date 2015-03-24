@@ -110,8 +110,15 @@ namespace Sq1.Widgets.Execution {
 				this.mniToggleMessagesPane.Checked = this.DataSnapshot.ToggleMessagesPane;
 				this.splitContainerMessagePane.Panel2Collapsed = !this.mniToggleMessagesPane.Checked;
 				if (this.Width == 0) {
-					string msg = "CANT_SET_SPLITTER_DISTANCE_FOR_UNSHOWN_CONTROL ExecutionTreeControl.Visible[" + this.Visible + "]; can't set SplitDistanceVertical, SplitDistanceHorizontal";
-					Assembler.PopupException(msg);
+					DockContentImproved executionForm = base.Parent as DockContentImproved;
+					if (executionForm != null) {
+						if (executionForm.IsCoveredOrAutoHidden) {
+							string msg = "INTAO_HIDDEN_HAS_NO_WIDTH";
+						}
+					} else {
+						string msg = "IDENTIFY_AND_WRITE_IMPLICITLY MY_PARENT_CANT_SET_SPLITTER_DISTANCE_FOR_UNSHOWN_CONTROL ExecutionTreeControl.Visible[" + this.Visible + "]; can't set SplitDistanceVertical, SplitDistanceHorizontal";
+						Assembler.PopupException(msg);
+					}
 				} else {
 					try {
 						if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {

@@ -67,12 +67,11 @@ namespace Sq1.Widgets.Livesim
 			// 
 			// splitContainer1
 			// 
-			this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainer1.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+			this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
 			this.splitContainer1.Name = "splitContainer1";
 			this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
 			// 
@@ -86,8 +85,9 @@ namespace Sq1.Widgets.Livesim
 			this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
 			this.splitContainer1.Panel2MinSize = 1;
-			this.splitContainer1.Size = new System.Drawing.Size(689, 518);
-			this.splitContainer1.SplitterDistance = 489;
+			this.splitContainer1.Size = new System.Drawing.Size(919, 678);
+			this.splitContainer1.SplitterDistance = 599;
+			this.splitContainer1.SplitterWidth = 5;
 			this.splitContainer1.TabIndex = 0;
 			// 
 			// splitContainer2
@@ -95,6 +95,7 @@ namespace Sq1.Widgets.Livesim
 			this.splitContainer2.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+			this.splitContainer2.Margin = new System.Windows.Forms.Padding(4);
 			this.splitContainer2.Name = "splitContainer2";
 			// 
 			// splitContainer2.Panel1
@@ -106,8 +107,9 @@ namespace Sq1.Widgets.Livesim
 			// 
 			this.splitContainer2.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer2.Panel2.Controls.Add(this.BrokerLivesimEditor);
-			this.splitContainer2.Size = new System.Drawing.Size(689, 489);
-			this.splitContainer2.SplitterDistance = 338;
+			this.splitContainer2.Size = new System.Drawing.Size(919, 599);
+			this.splitContainer2.SplitterDistance = 449;
+			this.splitContainer2.SplitterWidth = 5;
 			this.splitContainer2.TabIndex = 0;
 			// 
 			// StreamingLivesimEditor
@@ -116,8 +118,9 @@ namespace Sq1.Widgets.Livesim
 			this.StreamingLivesimEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.StreamingLivesimEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.StreamingLivesimEditor.Location = new System.Drawing.Point(0, 0);
+			this.StreamingLivesimEditor.Margin = new System.Windows.Forms.Padding(5);
 			this.StreamingLivesimEditor.Name = "StreamingLivesimEditor";
-			this.StreamingLivesimEditor.Size = new System.Drawing.Size(338, 489);
+			this.StreamingLivesimEditor.Size = new System.Drawing.Size(449, 599);
 			this.StreamingLivesimEditor.TabIndex = 0;
 			// 
 			// BrokerLivesimEditor
@@ -126,8 +129,9 @@ namespace Sq1.Widgets.Livesim
 			this.BrokerLivesimEditor.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.BrokerLivesimEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.BrokerLivesimEditor.Location = new System.Drawing.Point(0, 0);
+			this.BrokerLivesimEditor.Margin = new System.Windows.Forms.Padding(4);
 			this.BrokerLivesimEditor.Name = "BrokerLivesimEditor";
-			this.BrokerLivesimEditor.Size = new System.Drawing.Size(347, 489);
+			this.BrokerLivesimEditor.Size = new System.Drawing.Size(465, 599);
 			this.BrokerLivesimEditor.TabIndex = 0;
 			// 
 			// splitContainer3
@@ -135,6 +139,7 @@ namespace Sq1.Widgets.Livesim
 			this.splitContainer3.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.splitContainer3.Location = new System.Drawing.Point(0, 0);
+			this.splitContainer3.Margin = new System.Windows.Forms.Padding(4);
 			this.splitContainer3.Name = "splitContainer3";
 			// 
 			// splitContainer3.Panel1
@@ -146,8 +151,9 @@ namespace Sq1.Widgets.Livesim
 			// 
 			this.splitContainer3.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer3.Panel2.Controls.Add(this.exceptionsControl4);
-			this.splitContainer3.Size = new System.Drawing.Size(689, 25);
-			this.splitContainer3.SplitterDistance = 338;
+			this.splitContainer3.Size = new System.Drawing.Size(919, 74);
+			this.splitContainer3.SplitterDistance = 449;
+			this.splitContainer3.SplitterWidth = 5;
 			this.splitContainer3.TabIndex = 0;
 			// 
 			// exceptionsControl3
@@ -155,8 +161,9 @@ namespace Sq1.Widgets.Livesim
 			this.exceptionsControl3.BackColor = System.Drawing.SystemColors.MenuHighlight;
 			this.exceptionsControl3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.exceptionsControl3.Location = new System.Drawing.Point(0, 0);
+			this.exceptionsControl3.Margin = new System.Windows.Forms.Padding(4);
 			this.exceptionsControl3.Name = "exceptionsControl3";
-			this.exceptionsControl3.Size = new System.Drawing.Size(338, 25);
+			this.exceptionsControl3.Size = new System.Drawing.Size(449, 74);
 			this.exceptionsControl3.TabIndex = 0;
 			// 
 			// exceptionsControl4
@@ -164,15 +171,17 @@ namespace Sq1.Widgets.Livesim
 			this.exceptionsControl4.BackColor = System.Drawing.SystemColors.MenuHighlight;
 			this.exceptionsControl4.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.exceptionsControl4.Location = new System.Drawing.Point(0, 0);
+			this.exceptionsControl4.Margin = new System.Windows.Forms.Padding(4);
 			this.exceptionsControl4.Name = "exceptionsControl4";
-			this.exceptionsControl4.Size = new System.Drawing.Size(347, 25);
+			this.exceptionsControl4.Size = new System.Drawing.Size(465, 74);
 			this.exceptionsControl4.TabIndex = 0;
 			// 
 			// BtnStartStop
 			// 
-			this.BtnStartStop.Location = new System.Drawing.Point(3, 3);
+			this.BtnStartStop.Location = new System.Drawing.Point(4, 4);
+			this.BtnStartStop.Margin = new System.Windows.Forms.Padding(4);
 			this.BtnStartStop.Name = "BtnStartStop";
-			this.BtnStartStop.Size = new System.Drawing.Size(109, 23);
+			this.BtnStartStop.Size = new System.Drawing.Size(145, 28);
 			this.BtnStartStop.TabIndex = 1;
 			this.BtnStartStop.Text = "Start";
 			this.BtnStartStop.UseVisualStyleBackColor = true;
@@ -180,9 +189,10 @@ namespace Sq1.Widgets.Livesim
 			// BtnPauseResume
 			// 
 			this.BtnPauseResume.Enabled = false;
-			this.BtnPauseResume.Location = new System.Drawing.Point(118, 3);
+			this.BtnPauseResume.Location = new System.Drawing.Point(157, 4);
+			this.BtnPauseResume.Margin = new System.Windows.Forms.Padding(4);
 			this.BtnPauseResume.Name = "BtnPauseResume";
-			this.BtnPauseResume.Size = new System.Drawing.Size(111, 23);
+			this.BtnPauseResume.Size = new System.Drawing.Size(148, 28);
 			this.BtnPauseResume.TabIndex = 2;
 			this.BtnPauseResume.Text = "Pause";
 			this.BtnPauseResume.UseVisualStyleBackColor = true;
@@ -193,28 +203,31 @@ namespace Sq1.Widgets.Livesim
 			this.panel1.Controls.Add(this.BtnPauseResume);
 			this.panel1.Controls.Add(this.BtnStartStop);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(0, 521);
+			this.panel1.Location = new System.Drawing.Point(0, 641);
+			this.panel1.Margin = new System.Windows.Forms.Padding(4);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(689, 30);
+			this.panel1.Size = new System.Drawing.Size(919, 37);
 			this.panel1.TabIndex = 3;
 			// 
 			// LblStrategyAsString
 			// 
 			this.LblStrategyAsString.AutoSize = true;
-			this.LblStrategyAsString.Location = new System.Drawing.Point(235, 8);
+			this.LblStrategyAsString.Location = new System.Drawing.Point(313, 10);
+			this.LblStrategyAsString.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.LblStrategyAsString.Name = "LblStrategyAsString";
-			this.LblStrategyAsString.Size = new System.Drawing.Size(271, 13);
+			this.LblStrategyAsString.Size = new System.Drawing.Size(358, 17);
 			this.LblStrategyAsString.TabIndex = 3;
 			this.LblStrategyAsString.Text = "EntryEveryBar Default MAfast[10] MAslow[40] SLtype[3]";
 			// 
 			// LivesimControl
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.splitContainer1);
+			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "LivesimControl";
-			this.Size = new System.Drawing.Size(689, 551);
+			this.Size = new System.Drawing.Size(919, 678);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -232,11 +245,9 @@ namespace Sq1.Widgets.Livesim
 			this.ResumeLayout(false);
 
 		}
-		private Exceptions.ExceptionsControl exceptionsControl1;
-		private Exceptions.ExceptionsControl exceptionsControl2;
-		public System.Windows.Forms.Button BtnPauseResume;
 		private System.Windows.Forms.Panel panel1;
 		public System.Windows.Forms.Button BtnStartStop;
+		public System.Windows.Forms.Button BtnPauseResume;
 		public System.Windows.Forms.Label LblStrategyAsString;
 		private Exceptions.ExceptionsControl exceptionsControl3;
 		private Exceptions.ExceptionsControl exceptionsControl4;

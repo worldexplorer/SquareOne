@@ -4,32 +4,38 @@ using System.Collections.Generic;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Execution {
-	public class PositionList : ConcurrentList<Position> {
+	public class PositionList : ConcurrentListWD<Position> {
 		public Dictionary<int, List<Position>>	ByEntryBarFilled	{ get; protected set; }
 		public Dictionary<int, List<Position>>	ByExitBarFilled		{ get; protected set; }
 		
-		public Dictionary<int, List<Position>>	ByExitBarFilledSafeCopy { get {
-			base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "ByExitBarFilledSafeCopy()");
-			lock (base.LockObject) {
-				Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
+		public Dictionary<int, List<Position>>	ByExitBarFilledSafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + this.ToString() + ".ByExitBarFilledSafeCopy()";
+			Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				foreach (int bar in this.ByExitBarFilled.Keys) ret.Add(bar, new List<Position>(this.ByExitBarFilled[bar]));
-				return ret;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
-		} }
-		public Dictionary<int, List<Position>>	ByEntryBarFilledSafeCopy { get {
-			base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "ByExitBarFilledSafeCopy()");
-			lock (base.LockObject) {
-				Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
+			return ret;
+		}
+		public Dictionary<int, List<Position>>	ByEntryBarFilledSafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + this.ToString() + "ByExitBarFilledSafeCopy()";
+			Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				foreach (int bar in this.ByEntryBarFilled.Keys) ret.Add(bar, new List<Position>(this.ByEntryBarFilled[bar]));
-				return ret;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
-		} }
+			return ret;
+		}
 		public AlertList AlertsEntry { get {
 			AlertList ret = new AlertList("AlertsEntry", base.Snap);
 			foreach (List<Position> positionsOpened in this.ByEntryBarFilled.Values) {
 				foreach (Position position in positionsOpened) {
 					if (position.EntryAlert == null) continue;
-					ret.AddNoDupe(position.EntryAlert);
+					ret.AddNoDupe(position.EntryAlert, this, "AlertsEntry(WAIT)");
 				}
 			}
 			return ret;
@@ -39,7 +45,7 @@ namespace Sq1.Core.Execution {
 			foreach (List<Position> positionsClosed in this.ByExitBarFilled.Values) {
 				foreach (Position position in positionsClosed) {
 					if (position.ExitAlert == null) continue;
-					ret.AddNoDupe(position.ExitAlert);
+					ret.AddNoDupe(position.ExitAlert, this, "AlertsExit(WAIT)");
 				}
 			}
 			return ret;
@@ -48,7 +54,7 @@ namespace Sq1.Core.Execution {
 			AlertList ret = new AlertList("AlertsOpenNow", base.Snap);
 			foreach (Position position in this.InnerList) {
 				if (position.ExitAlert == null) continue;
-				ret.AddNoDupe(position.ExitAlert);
+				ret.AddNoDupe(position.ExitAlert, this, "AlertsOpenNow(WAIT)");
 			}
 			return ret;
 		} }
@@ -56,29 +62,34 @@ namespace Sq1.Core.Execution {
 		public int LastBarIndexEntry;
 		public int LastBarIndexExit;
 
+		public PositionList(string reasonToExist, ExecutionDataSnapshot snap = null, List<Position> copyFrom = null) : this(reasonToExist, snap) {
+			if (copyFrom == null) return;
+			this.InnerList.AddRange(copyFrom);
+		}
 		public PositionList(string reasonToExist, ExecutionDataSnapshot snap = null) : base(reasonToExist, snap) {
 			ByEntryBarFilled	= new Dictionary<int, List<Position>>();
 			ByExitBarFilled		= new Dictionary<int, List<Position>>();
 			LastBarIndexEntry	= -1;
 			LastBarIndexExit	= -1;
 		}
-		public void Clear() { lock(base.LockObject) {
-			base					.ClearInnerList();
+		public void Clear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			base					.Clear(owner, lockPurpose, waitMillis);
 			this.ByEntryBarFilled	.Clear();
 			this.ByExitBarFilled	.Clear();
 			this.LastBarIndexEntry	= -1;
 			this.LastBarIndexExit	= -1;
-		} }
+		}
 		// NEVER_USED__UNCOMMENT_WHEN_YOU_NEED_IT public void AddRangeOpened(List<Position> positions) {
 		//	foreach (Position position in positions) this.AddOpened_step1of2(position);
 		//}
-		public void AddClosed(Position position) { lock(base.LockObject) {
-			this.AddOpened_step1of2(position);
-			this.AddToClosedDictionary_step2of2(position);
-		} }
-		public bool AddOpened_step1of2(Position positionOpened, bool duplicateThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "AddOpened_step1of2(" + positionOpened.ToString() + ")");
-			lock (base.LockObject) {
+		public void AddClosed(Position position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			this.AddOpened_step1of2(position, owner, lockPurpose, waitMillis);
+			this.AddToClosedDictionary_step2of2(position, owner, lockPurpose, waitMillis);
+		}
+		public bool AddOpened_step1of2(Position positionOpened, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+			lockPurpose += " //" + this.ToString() + "AddOpened_step1of2(" + positionOpened.ToString() + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool added = false;
 				if (positionOpened == null) {
 					string msg = "ADD_ONLY_FILLED_POSITION_NOT_NULL position[" + positionOpened + "]";
@@ -113,7 +124,7 @@ namespace Sq1.Core.Execution {
 				//	return added;
 				//}
 				//v2
-				added = base.AddToInnerList(positionOpened, duplicateThrowsAnError);
+				added = base.Add(positionOpened, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
 				if (added == false) {
 					string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH?";
 					Assembler.PopupException(msg);
@@ -128,11 +139,14 @@ namespace Sq1.Core.Execution {
 				List<Position> byEntrySlot = this.ByEntryBarFilled[positionOpened.EntryFilledBarIndex];
 				byEntrySlot.Add(positionOpened);
 				return added;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public bool AddToClosedDictionary_step2of2(Position positionClosed, bool absenseThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "AddToClosedDictionary_step2of2(" + positionClosed.ToString() + ")");
-			lock (base.LockObject) {
+		public bool AddToClosedDictionary_step2of2(Position positionClosed, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenseThrowsAnError = true) {
+			lockPurpose += " //" + this.ToString() + "AddToClosedDictionary_step2of2(" + positionClosed.ToString() + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool added = false;
 				if (positionClosed.ExitAlert == null) {
 					string msg = "POSITION_ATBAR_HAS_NO_EXIT_ALERT";
@@ -166,12 +180,15 @@ namespace Sq1.Core.Execution {
 				if (this.LastBarIndexExit < positionClosed.ExitFilledBarIndex) this.LastBarIndexExit = positionClosed.ExitFilledBarIndex;
 			
 				return added;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public bool Remove(Position position, bool absenseThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "Remove(" + position.ToString() + ")");
-			lock (base.LockObject) {
-				bool removed = base.RemoveFromInnerList(position, absenseThrowsAnError);
+		public bool Remove(Position position, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenseThrowsAnError = true) {
+			lockPurpose += " //" + this.ToString() + "Remove(" + position.ToString() + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				bool removed = base.Remove(position, owner, lockPurpose, waitMillis, absenseThrowsAnError);
 				if (this.ByEntryBarFilled.ContainsKey(position.EntryFilledBarIndex)) {
 					List<Position> byEntrySlot = this.ByEntryBarFilled[position.EntryFilledBarIndex];
 					if (byEntrySlot.Contains(position)) byEntrySlot.Remove(position);
@@ -183,23 +200,27 @@ namespace Sq1.Core.Execution {
 					if (byExitSlot.Count == 0) this.ByEntryBarFilled.Remove(position.ExitFilledBarIndex);
 				}
 				return removed;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public PositionList Clone() {
-			if (base.Snap != null) base.Snap.PopupIfAnyScriptOverrideIsRunning(" //" + this.ToString() + "Clone()");
-			lock (base.LockObject) {
-				PositionList ret		= new PositionList(this.ReasonToExist + "_CLONE", base.Snap);
-				ret.InnerList			= this.InnerListSafeCopy;
-				ret.ByEntryBarFilled	= this.ByEntryBarFilledSafeCopy;
-				ret.ByExitBarFilled		= this.ByExitBarFilledSafeCopy;
+		public PositionList Clone(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + this.ToString() + "Clone()";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				PositionList ret		= new PositionList("CLONE_" + base.ReasonToExist, base.Snap, this.InnerList);
+				ret.ByEntryBarFilled	= this.ByEntryBarFilledSafeCopy(this, "Clone(WAIT)");
+				ret.ByExitBarFilled		= this.ByExitBarFilledSafeCopy(this, "Clone(WAIT)");
 				return ret;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public override string ToString() { lock(base.LockObject) {
+		public override string ToString() {
 			string ret = base.ToString()
 				+ " ByEntryFilled.Bars[" + ByEntryBarFilled.Keys.Count + "]"
 				+ "  ByExitFilled.Bars[" +  ByExitBarFilled.Keys.Count+ "]";
 			return ret;
-		} }
+		}
 	}
 }

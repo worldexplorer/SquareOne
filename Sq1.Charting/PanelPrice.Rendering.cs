@@ -49,24 +49,25 @@ namespace Sq1.Charting {
 			}
 		}
 		void renderPendingAlertsIfExistForBar(int barIndex, int shadowX, Graphics g) {
-			Dictionary<int, List<Alert>> alertPendingListByBar = base.ChartControl.ScriptExecutorObjects.AlertsPendingHistorySafeCopy;
+			Dictionary<int, List<Alert>> alertPendingListByBar = base.ChartControl.ScriptExecutorObjects.AlertsPlaced;
 			if (alertPendingListByBar.ContainsKey(barIndex) == false) return;
 			List<Alert> alertsPending = alertPendingListByBar[barIndex];
-			if (alertsPending.Count > 1 || barIndex == 443) {
-				string msg = "TRYING_TO_DRAW_MISSING_STOP_LOSSES";
-				//Debugger.Break();
-			}
+
+			Pen pen		= base.ChartControl.ChartSettings.PenAlertPendingEllipse;
+			int radius	= base.ChartControl.ChartSettings.AlertPlacedEllipseRadius;
+			int diameter = radius * 2;
+
 			foreach (Alert pending in alertsPending) {
 				double pendingAlertPrice = pending.PriceScript;
 				int pendingY = base.ValueToYinverted(pendingAlertPrice);
-				Rectangle entryPlannedRect = new Rectangle(shadowX-2, pendingY-2, 4, 4);
-				g.DrawEllipse(base.ChartControl.ChartSettings.PenAlertPendingEllipse, entryPlannedRect);
+				Rectangle entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
+				g.DrawEllipse(pen, entryPlannedRect);
 
 				if (pending.MarketLimitStop == MarketLimitStop.StopLimit) {
 					double pendingStopActivationPrice = pending.PriceStopLimitActivation;
 					pendingY = base.ValueToYinverted(pendingStopActivationPrice);
-					entryPlannedRect = new Rectangle(shadowX - 2, pendingY - 2, 4, 4);
-					g.DrawEllipse(base.ChartControl.ChartSettings.PenAlertPendingEllipse, entryPlannedRect);
+					entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
+					g.DrawEllipse(pen, entryPlannedRect);
 				}
 			}
 		}
@@ -185,7 +186,7 @@ namespace Sq1.Charting {
 
 			//int barX = base.ChartControl.ChartWidthMinusGutterRightPrice;
 
-			ScriptExecutorObjects seo = base.ChartControl.ScriptExecutorObjects;
+			ChartControlFrozenForRendering seo = base.ChartControl.ScriptExecutorObjects;
 			List<OnChartLine> linesToDraw = new List<OnChartLine>();		// helps to avoid drawing the same line twice
 
 			// v1 - buggy because it doesn't display lines started way before and ended way later the visible barWindow
@@ -258,7 +259,7 @@ namespace Sq1.Charting {
 			}
 			// DO_I_NEED_SIMILAR_CHECK_HERE???? MOST_LIKELY_I_DONT this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
-			ScriptExecutorObjects seo = base.ChartControl.ScriptExecutorObjects;
+			ChartControlFrozenForRendering seo = base.ChartControl.ScriptExecutorObjects;
 			foreach (OnChartLabel label in seo.OnChartLabelsById.Values) {
 				try {
 					base.DrawLabelOnNextLine(g, label.LabelText, label.Font, label.ColorForeground, label.ColorBackground);
@@ -278,7 +279,7 @@ namespace Sq1.Charting {
 			// DO_I_NEED_SIMILAR_CHECK_HERE???? MOST_LIKELY_I_DONT this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
 			int barXshadow = base.ChartControl.ChartWidthMinusGutterRightPrice + base.BarShadowXoffset_cached;
-			ScriptExecutorObjects seo = base.ChartControl.ScriptExecutorObjects;
+			ChartControlFrozenForRendering seo = base.ChartControl.ScriptExecutorObjects;
 
 			for (int barIndex = base.VisibleBarRight_cached; barIndex > base.VisibleBarLeft_cached; barIndex--) {
 				if (barIndex >= base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside

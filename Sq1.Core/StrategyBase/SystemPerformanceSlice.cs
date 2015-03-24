@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.StrategyBase {
 	public class SystemPerformanceSlice {
@@ -18,7 +19,7 @@ namespace Sq1.Core.StrategyBase {
 		public	Dictionary<Position, double> CumulativeNetProfitPercent;
 		
 		public	PositionList		PositionsImTracking				{ get; private set; }
-		public	IList<Position>		PositionsImTrackingReadonly		{ get { return this.PositionsImTracking.InnerList.AsReadOnly(); } }
+		public	List<Position>		PositionsImTrackingReadonly		{ get { return this.PositionsImTracking.SafeCopy(this, "//PositionsImTrackingReadonly(WAIT)"); } }
 
 		public	double				CashAvailable;
 
@@ -149,7 +150,7 @@ namespace Sq1.Core.StrategyBase {
 			ReasonToExist = reasonToExist;
 		}
 		internal void Initialize(double startingCapital = -1) {
-			this.PositionsImTracking.Clear();
+			this.PositionsImTracking.Clear(this, "Clear");
 			this.CashCurve.Clear();
 			this.CashAvailable = 0;
 
@@ -208,7 +209,7 @@ namespace Sq1.Core.StrategyBase {
 			double prevCumProfitDollar = 0;
 			double prevCumProfitPercent = 0;
 
-			Position preLastPositionTracked = this.PositionsImTracking.PreLastNullUnsafe;
+			Position preLastPositionTracked = this.PositionsImTracking.PreLastNullUnsafe(this, "CumulativeAppendOrReplaceForPositionClosedOrOpenNow(WAIT)");
 			if (preLastPositionTracked != null) {
 				if (this.CumulativeNetProfitDollar.ContainsKey(preLastPositionTracked) == false) {
 					if (this.CumulativeNetProfitDollar.Count > this.PositionsImTracking.Count - 2) {
@@ -255,7 +256,7 @@ namespace Sq1.Core.StrategyBase {
 		internal int BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(Position positionOpened) {
 			int positionsOpenAbsorbedBoth = 0;
 			if (this.positionIsMineShouldAppendAndUpdate(positionOpened) == false) return positionsOpenAbsorbedBoth;
-			bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, true);
+			bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, this, "BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
 			if (added == false) {
 				string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH?";
 				Assembler.PopupException(msg);
@@ -274,7 +275,7 @@ namespace Sq1.Core.StrategyBase {
 		internal int BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(Position positionClosed) {
 			int positionsClosedAbsorbedBoth = 0;
 			if (this.positionIsMineShouldAppendAndUpdate(positionClosed) == false) return positionsClosedAbsorbedBoth; 
-			bool added = this.PositionsImTracking.AddToClosedDictionary_step2of2(positionClosed, true);
+			bool added = this.PositionsImTracking.AddToClosedDictionary_step2of2(positionClosed, this, "BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
 			if (added == false) {
 				return positionsClosedAbsorbedBoth;
 			}
@@ -315,9 +316,10 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public int BuildStatsOnBacktestFinished(ReporterPokeUnit pokeUnit) {
 			int positionsOpenedAbsorbedToInternal = 0;
-			foreach (Position positionOpened in pokeUnit.PositionsOpened.InnerList) {
+			List<Position> openedSafe = pokeUnit.PositionsOpened.SafeCopy(this, "//BuildStatsOnBacktestFinished(WAIT)");
+			foreach (Position positionOpened in openedSafe) {
 				if (this.positionIsMineShouldAppendAndUpdate(positionOpened) == false) continue;
-				bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, true);
+				bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, this, "BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
 				if (added == false) {
 					string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH? SHOULD_I_CLEAR_BEFORE_BuildStatsOnBacktestFinished()?";
 					Assembler.PopupException(msg);
@@ -325,15 +327,16 @@ namespace Sq1.Core.StrategyBase {
 				}
 				positionsOpenedAbsorbedToInternal++;
 			}
-			if (positionsOpenedAbsorbedToInternal != pokeUnit.PositionsOpened.InnerList.Count) {
+			if (positionsOpenedAbsorbedToInternal != openedSafe.Count) {
 					string msg = "IS_THERE_ANY_PROBLEM?";
-					//Assembler.PopupException(msg);
+					Assembler.PopupException(msg);
 			}
 			
 			int positionsClosedAbsorbedToInternal = 0;
-			foreach (Position positionClosed in pokeUnit.PositionsClosed.InnerList) {
+			List<Position> closedSafe = pokeUnit.PositionsClosed.SafeCopy(this, "//BuildStatsOnBacktestFinished(WAIT)");
+			foreach (Position positionClosed in closedSafe) {
 				if (this.positionIsMineShouldAppendAndUpdate(positionClosed) == false) continue; 
-				bool added = this.PositionsImTracking.AddToClosedDictionary_step2of2(positionClosed, true);
+				bool added = this.PositionsImTracking.AddToClosedDictionary_step2of2(positionClosed, this, "BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
 				if (added == false) {
 					string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH? SHOULD_I_CLEAR_BEFORE_BuildStatsOnBacktestFinished()?";
 					Assembler.PopupException(msg);
@@ -341,7 +344,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				positionsClosedAbsorbedToInternal++;
 			}
-			if (positionsClosedAbsorbedToInternal != pokeUnit.PositionsClosed.InnerList.Count) {
+			if (positionsClosedAbsorbedToInternal != closedSafe.Count) {
 					string msg = "IS_THERE_ANY_PROBLEM?";
 					//Assembler.PopupException(msg);
 			}

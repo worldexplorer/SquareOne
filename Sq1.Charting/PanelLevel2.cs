@@ -33,6 +33,8 @@ namespace Sq1.Charting {
 			base.ChartControl.PanelPrice.OnPanelPriceSqueezed += new EventHandler<EventArgs>(panelPrice_OnPanelPriceSqueezed);
 			base.ChartControl.PanelPrice.MouseMove -= new MouseEventHandler(panelPrice_MouseMove);
 			base.ChartControl.PanelPrice.MouseMove += new MouseEventHandler(panelPrice_MouseMove);
+			//temp reset to measure through Graphics.MeasureString()
+			base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered = -1;
 		}
 
 		void panelPrice_MouseMove(object sender, MouseEventArgs e) {
@@ -54,6 +56,13 @@ namespace Sq1.Charting {
 //		protected override void OnPaint(PaintEventArgs pe) {
 			//ONLY_FOR_PRICE_PANEL?? //base.OnPaintBackgroundDoubleBuffered(pe);	 //base.DrawError drew label only lowest 2px shown from top of panel
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs pe) {
+			//temp pickup to measure through Graphics.MeasureString()
+			if (base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered != -1) return;
+
+			SizeF labelMeasurements = pe.Graphics.MeasureString("ABC123`'jg]", base.ChartControl.ChartSettings.LevelTwoLotFont);
+			//int labelMeasurementsWidth = (int)Math.Round(labelMeasurements.Width);
+			int labelMeasurementsHeight = (int)Math.Round(labelMeasurements.Height);
+			base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered = labelMeasurementsHeight;
 		}
 		protected override void OnPaintDoubleBuffered(PaintEventArgs pe) {
 			this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;

@@ -29,10 +29,10 @@ namespace Sq1.Core.Execution {
 		}
 		public ReporterPokeUnit Clone() {
 			ReporterPokeUnit ret = new ReporterPokeUnit(this.QuoteGeneratedThisUnit,
-				this.AlertsNew.Clone(),
-				this.PositionsOpened.Clone(),
-				this.PositionsClosed.Clone(),
-				this.PositionsOpenNow.Clone()
+				this.AlertsNew.Clone(this, "ReporterPokeUnit.Clone"),
+				this.PositionsOpened.Clone(this, "ReporterPokeUnit.Clone"),
+				this.PositionsClosed.Clone(this, "ReporterPokeUnit.Clone"),
+				this.PositionsOpenNow.Clone(this, "ReporterPokeUnit.Clone")
 			);
 			return ret;
 		}

@@ -776,7 +776,7 @@ namespace Sq1.Core.Broker {
 			Alert replacement = executor.PositionPrototypeActivator.CreateStopLossFromPositionPrototype(position);
 			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter();
 			//this.CreateOrdersSubmitToBrokerAdapterInNewThreadGroups(new List<Alert>() {replacement}, true, true);
-			pokeUnit.AlertsNew.AddNoDupe(replacement);
+			pokeUnit.AlertsNew.AddNoDupe(replacement, this, "onStopLossKilledCreateNewStopLossAndAddToPokeUnit(WAIT)");
 			msg += " newAlert[" + replacement + "]";
 			killedStopLoss.AppendMessage(msig + msg);
 		}
@@ -842,7 +842,7 @@ namespace Sq1.Core.Broker {
 			Alert replacement = executor.PositionPrototypeActivator.CreateTakeProfitFromPositionPrototype(position);
 			// dont CreateAndSubmit, pokeUnit will be submitted with oneNewAlertPerState in InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter();
 			//this.CreateOrdersSubmitToBrokerAdapterInNewThreadGroups(new List<Alert>() { replacement }, true, true);
-			pokeUnit.AlertsNew.AddNoDupe(replacement);
+			pokeUnit.AlertsNew.AddNoDupe(replacement, this, "onTakeProfitKilledCreateNewTakeProfitAndAddToPokeUnit(WAIT)");
 			msg += " newAlert[" + replacement + "]";
 			killedTakeProfit.AppendMessage(msig + msg);
 		}
@@ -852,7 +852,7 @@ namespace Sq1.Core.Broker {
 			int hooksInvoked = this.OPPstatusCallbacks.InvokeOnceHooksForOrderStateAndDelete(orderWithNewState, afterHooksInvokedPokeUnit);
 			if (executor.Backtester.IsBacktestingNoLivesimNow) return;
 
-			List<Alert> alertsCreatedByHooks = afterHooksInvokedPokeUnit.AlertsNew.InnerList;
+			List<Alert> alertsCreatedByHooks = afterHooksInvokedPokeUnit.AlertsNew.SafeCopy(this, "InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(WAIT)");
 			if (alertsCreatedByHooks.Count == 0) {
 				string msg = "NOT_AN_ERROR: ZERO alerts from [" + hooksInvoked + "] hooks invoked; order[" + orderWithNewState + "]";
 				//this.PopupException(new Exception(msg));

@@ -61,15 +61,15 @@ namespace Sq1.Gui.ReportersSupport {
 		}
 
 		void eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(object sender, ReporterPokeUnitEventArgs e) {
-			if (e.PokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild == false) return;
+			if (e.PokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild(this, "eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(WAIT)") == false) return;
 			this.BuildIncrementalOnPositionsOpenedAllReports_step1of3(e.PokeUnit);
 		}
 		void eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(object sender, ReporterPokeUnitEventArgs e) {
-			if (e.PokeUnit.PositionsOpenNow.AlertsOpenNow.GuiHasTimeToRebuild == false) return;
+			if (e.PokeUnit.PositionsOpenNow.AlertsOpenNow.GuiHasTimeToRebuild(this, "eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(WAIT)") == false) return;
 			this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(e.PokeUnit);
 		}
 		void eventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(object sender, ReporterPokeUnitEventArgs e) {
-			if (e.PokeUnit.PositionsClosed.AlertsExit.GuiHasTimeToRebuild == false) return;
+			if (e.PokeUnit.PositionsClosed.AlertsExit.GuiHasTimeToRebuild(this, "eventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(WAIT)") == false) return;
 			this.BuildIncrementalOnPositionsClosedAllReports_step3of3(e.PokeUnit);
 		}
 		public void ClearAllReportsSincePerformanceGotCleared_step0of3() {

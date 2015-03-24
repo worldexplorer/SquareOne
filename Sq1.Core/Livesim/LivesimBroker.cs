@@ -99,8 +99,9 @@ namespace Sq1.Core.Livesim {
 				string msg = "DELAYED_FILL_THREAD_DIDNT_SIGNAL_THAT_QUOTE_POINTER_WAS_COPIED_DURING_1SECOND";
 				Assembler.PopupException(msg);
 			}
-			
-			this.DataSnapshot.AlertsScheduledForDelayedFill.AddRange(willBeFilled.InnerList);
+
+			List<Alert> safe = willBeFilled.SafeCopy(this, "//ConsumeQuoteOfStreamingBarToFillPending()");
+			this.DataSnapshot.AlertsScheduledForDelayedFill.AddRange(safe, this, "ConsumeQuoteOfStreamingBarToFillPending(WAIT)");
 		} }
 		void consumeQuoteOfStreamingBarToFillPendingAsync(QuoteGenerated quoteUnattached) {
 			ScriptExecutor executor = this.livesimDataSource.Executor;
@@ -117,8 +118,8 @@ namespace Sq1.Core.Livesim {
 			}
 			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
 			if (snap.AlertsPending.Count == 0) {
-				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0";
-				Assembler.PopupException(msg);
+				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //consumeQuoteOfStreamingBarToFillPendingAsync()";
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 
@@ -140,13 +141,13 @@ namespace Sq1.Core.Livesim {
 			//}
 
 			//var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
-			int dumped = snap.AlertsPending.ByBarPlaced.Count;
-			if (dumped > 0) {
-				//string msg = "here is at least one reason why dumping on fresh quoteToReach makes sense"
-				//	+ " if we never reach this breakpoint the remove dump() from here"
-				//	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
-				string msg = "DUMPED_PRIOR_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
-			}
+			//int dumped = snap.AlertsPending.ByBarPlaced.Count;
+			//if (dumped > 0) {
+			//    //string msg = "here is at least one reason why dumping on fresh quoteToReach makes sense"
+			//    //	+ " if we never reach this breakpoint the remove dump() from here"
+			//    //	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
+			//    string msg = "DUMPED_PRIOR_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
+			//}
 			int pendingCountPre = executor.ExecutionDataSnapshot.AlertsPending.Count;
 			int pendingFilled = executor.MarketsimBacktest.SimulateFillAllPendingAlerts(
 					quoteAttachedToStreamingToConsumerBars, new Action<Alert, double, double>(this.onAlertFilled));
@@ -163,7 +164,7 @@ namespace Sq1.Core.Livesim {
 			//base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
 		}
 		void onAlertFilled(Alert alertFilled, double priceFilled, double qtyFilled) {
-			this.DataSnapshot.AlertsScheduledForDelayedFill.Remove(alertFilled);
+			this.DataSnapshot.AlertsScheduledForDelayedFill.Remove(alertFilled, this, "onAlertFilled(WAIT)");
 
 			Order order = alertFilled.OrderFollowed;
 			OrderStateMessage osm = new OrderStateMessage(order, OrderState.Filled, "LIVESIM_FILLED_THROUGH_MARKETSIM_BACKTEST");

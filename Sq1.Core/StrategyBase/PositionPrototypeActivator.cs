@@ -48,8 +48,9 @@ namespace Sq1.Core.StrategyBase {
 			posWithAlert.Prototype = proto;
 		}
 
-		private bool checkPrototypeAlreadyPlaced(PositionPrototype proto) {
-			foreach (Alert alert in executor.ExecutionDataSnapshot.AlertsPending.InnerList) {
+		bool checkPrototypeAlreadyPlaced(PositionPrototype proto) {
+			List<Alert> pendingSafe = this.executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, " //checkPrototypeAlreadyPlaced(WAIT)");
+			foreach (Alert alert in pendingSafe) {
 				Position pos = alert.PositionAffected;
 				if (pos == null) continue;
 				if (pos.Prototype == null) continue;
@@ -57,9 +58,10 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return false;
 		}
-		private bool checkPendingEntryPositionAlreadyPlaced(Position entryPosition) {
+		bool checkPendingEntryPositionAlreadyPlaced(Position entryPosition) {
 			if (entryPosition.EntryAlert == null) return false;
-			foreach (Alert alert in executor.ExecutionDataSnapshot.AlertsPending.InnerList) {
+			List<Alert> pendingSafe = this.executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, " //checkPendingEntryPositionAlreadyPlaced(WAIT)");
+			foreach (Alert alert in pendingSafe) {
 				Position pos = alert.PositionAffected;
 				if (pos == null) continue;
 				if (pos.EntryAlert == null) continue;

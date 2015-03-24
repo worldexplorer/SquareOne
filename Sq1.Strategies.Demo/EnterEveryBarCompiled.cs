@@ -143,7 +143,7 @@ namespace Sq1.Strategies.Demo {
 			//if (base.HasAlertsPendingAndPositionsOpenNow) {
 				if (snap.AlertsPending.Count > 0) {
 					//GOT_OUT_OF_BOUNDADRY_EXCEPTION_ONCE Alert firstPendingAlert = snap.AlertsPending.InnerList[0];
-					Alert firstPendingAlert = snap.AlertsPending.LastNullUnsafe;
+					Alert firstPendingAlert = snap.AlertsPending.LastNullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
 					Alert lastPosEntryAlert = lastPos != null ? lastPos.EntryAlert : null;
 					Alert lastPosExitAlert  = lastPos != null ? lastPos.ExitAlert : null;
 					if (firstPendingAlert == lastPosEntryAlert) {
@@ -159,7 +159,7 @@ namespace Sq1.Strategies.Demo {
 				}
 				if (snap.PositionsOpenNow.Count > 1) {
 					string msg = "EXPECTED: I got multiple positions[" + snap.PositionsOpenNow.Count + "]";
-					if (snap.PositionsOpenNow.InnerList[0] == lastPos) {
+					if (snap.PositionsOpenNow.FirstNullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)") == lastPos) {
 						msg += "50/50: positionsMaster.Last = positionsOpenNow.First";
 					}
 					this.log(msg);

@@ -1,121 +1,213 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics;
 using System.Threading;
 
 using Sq1.Core.Execution;
+using System;
 
 namespace Sq1.Core.Support {
 	public class ConcurrentWatchdog {
-		public		string				reasonToExist				{ get; protected set; }
-					object				atomiticity;
+		public		const int TIMEOUT_DEFAULT = 3000;
+
+		public		string					ReasonToExist { get; protected set; }
+		protected	ExecutionDataSnapshot	Snap;
+
+					object				customerLockingQueue;
 					ManualResetEvent	isFree;
 					object				lockOwner;
-					string				lockPurpose;
+					string				lockPurposeFirstInTheStack;
 					Thread				lockThread;
-					int					sameThreadRequestedLocks;
+					int					sameThreadLocksRequestedStackDepth;
+					Stopwatch			stopwatchLock;
+					Stopwatch			stopwatchUnlock;
 
-		public ConcurrentWatchdog(string reasonToExist) {
-			this.reasonToExist	= reasonToExist;
-			this.atomiticity	= new object();
-			this.isFree			= new ManualResetEvent(true);
+					//ManualResetEvent	isLocked;
+					object				customerUnLockingQueue;
+					object				unlockedClass;
+					string				unlockedAfter;
+					Thread				unlockedThread;
+
+		public string Ident { get { lock(this.customerLockingQueue) {
+				string ret = "";
+				ret += "LOCK_HELD_BY";
+				if (this.lockThread != null) {
+					ret += "_managed[" + this.lockThread.ManagedThreadId + "]";
+					if (string.IsNullOrEmpty(this.lockThread.Name) == false) ret += ":[" + this.lockThread.Name + "]";
+				}
+				ret += "owner[" + this.lockOwner + "]lockedFor[" + this.lockPurposeFirstInTheStack + "]";
+				//ret += "ConcurrentWatchdog[" + this.ReasonToExist + "]";
+				//if (this is typeof(ConcurrentListWD) == false) {
+					ret += "NOW:" + this.ToString();
+				//}
+				return ret;
+			} } }
+		public string IdentUnlocked { get { lock(this.customerUnLockingQueue) {
+				string ret = " ";
+				ret += "LOCK_WAS_RELEASED_BY";
+				if (this.unlockedThread != null) {
+					ret += "_managed[" + this.unlockedThread.ManagedThreadId + "]";
+					if (string.IsNullOrEmpty(this.unlockedThread.Name) == false) ret += ":[" + this.unlockedThread.Name + "]";
+				}
+				ret += "unlockedClass[" + this.unlockedClass + "]unlockedAfter[" + this.unlockedAfter + "]";
+				//ret += "ConcurrentWatchdog[" + this.ReasonToExist + "]";
+				//if (this is typeof(ConcurrentListWD) == false) {
+					ret += ":" + this.ToString();
+				//}
+				return ret;
+			} } }
+		public ConcurrentWatchdog(string reasonToExist, ExecutionDataSnapshot snap = null) {
+			this.ReasonToExist			= reasonToExist;
+			this.Snap					= snap;
+			this.customerLockingQueue	= new object();
+			this.isFree					= new ManualResetEvent(true);
+			//this.isLocked				= new ManualResetEvent(false);
+			this.stopwatchLock			= new Stopwatch();
+			this.stopwatchUnlock		= new Stopwatch();
+			this.customerUnLockingQueue = new object();
 		}
 		public bool WaitAndLockFor(object owner, string lockPurpose,
-		                           int waitMillis = 2000, bool engageWaitingForEva = true) {
+					int waitMillis = TIMEOUT_DEFAULT, bool engageWaitingForEva = true) {
+			// lock(){} above WAS DEADLY when, between two stack frames, another thread locked me
+			// 1. Thread1,stack1shallow: locked, unlock to come on top level;
+			// 2. Thread2 came in, engagedWaitingForEva
+			// 3. Thread1,stack2deeper came in and it was held at the lock(){} above
+			// 4. Thread1: stack unable to unwind and unlock Thread2 => checkmate in two!
 			if (this.lockThread == Thread.CurrentThread) {
-				this.sameThreadRequestedLocks++;
-				return true;
+				this.sameThreadLocksRequestedStackDepth++;
+				return false;
 			}
-			bool hadToWaitWasLockedAtFirst = false;
-			bool unlocked = this.isFree.WaitOne(waitMillis);
-			if (unlocked == false && engageWaitingForEva) {
-				hadToWaitWasLockedAtFirst = true;
-				if (waitMillis == -1) {
-					string msg = "ENGAGING_WAITING_INDEFINITELY_FOR_UNLOCK " + this.ToString()
-						+ " IF_THREAD_FROZE_FOREVER_USE_WAIT_MILLIS_TO_FIGURE_OUT_WHO_IS_STILL_KEEPING_THE_LOCK_IF_YOU_ARE_SURE_ITS_NOT_THE_GUY_JUST_REPORTED";
-					this.isFree.WaitOne(waitMillis);
-				} else {
-					while (unlocked == false) {
-						unlocked = this.isFree.WaitOne(waitMillis);
-						if (unlocked) break;
-						string msg = "LOCK_NOT_AQUIRED_WITHIN_MILLIS: [" + waitMillis + "] ";
-						Assembler.PopupException(msg + this.ToString(), null, false);
+			lock (this.customerLockingQueue) {		// keep same-stack-return above first ever lock() {}
+				bool unlocked = this.isFree.WaitOne(waitMillis);
+				if (unlocked == false && this.Snap != null) {
+					this.Snap.BarkIfAnyScriptOverrideIsRunning("TRYING_TO_LOCK_FOR[" + lockPurpose + "]"
+						+ " while ALREADY_LOCKED_FOR[" + this.lockPurposeFirstInTheStack + "]");
+				}
+
+				bool hadToWaitWasLockedAtFirst = false;
+				this.stopwatchLock.Restart();
+				if (unlocked == false && engageWaitingForEva) {
+					hadToWaitWasLockedAtFirst = true;
+					if (waitMillis == -1) {
+						string msg = "ENGAGING_WAITING_INDEFINITELY_FOR_UNLOCK "
+							//+ " IF_THREAD_FROZE_FOREVER_USE_WAIT_MILLIS_TO_FIGURE_OUT_WHO_IS_STILL_KEEPING_THE_LOCK_IF_YOU_ARE_SURE_ITS_NOT_THE_GUY_JUST_REPORTED"
+							;
+						this.isFree.WaitOne(waitMillis);
+					} else {
+						while (unlocked == false) {
+							unlocked = this.isFree.WaitOne(waitMillis);
+							if (unlocked) break;
+							string msg = "LOCK_NOT_ACQUIRED_WITHIN_MILLIS: [" + this.stopwatchLock.ElapsedMilliseconds + "]/[" + waitMillis + "] ";
+							Assembler.PopupException(msg + this.Ident, null, false);
+						}
 					}
 				}
-			}
-			lock (this.atomiticity) {
+				this.stopwatchLock.Stop();
+				if (hadToWaitWasLockedAtFirst) {
+					string msg = "LOCKED_AFTER_WAITING_FOR[" + this.stopwatchLock.ElapsedMilliseconds + "]ms FOR ";
+					Assembler.PopupException(msg + this.Ident);
+				}
+
 				this.lockThread = Thread.CurrentThread;
 				this.lockOwner = owner;
-				this.lockPurpose = lockPurpose;
+				this.lockPurposeFirstInTheStack = lockPurpose;
+				this.sameThreadLocksRequestedStackDepth++;
+
 				this.isFree.Reset();
-				this.sameThreadRequestedLocks++;
-				if (hadToWaitWasLockedAtFirst) {
-					string msg = "LOCKED_AFTER_WAITING_FOR ";
-					Assembler.PopupException (msg + this.ToString());
-				}
+				//this.isLocked.Set();
+
+				return true;
 			}
-			return true;
 		}
 		public bool UnLockFor(object owner, string releasingAfter = null, bool reportViolation = false,
-									int waitMillis = 2000, bool engageWaitingForEva = true) {
-			if (string.IsNullOrEmpty(releasingAfter)) {
-				releasingAfter = this.lockPurpose;
-			} else {
-				if (releasingAfter != this.lockPurpose) {
-					string msg = "releasingAfter[" + releasingAfter + "] != this.LockPurpose[" + this.lockPurpose + "]";
-					Assembler.PopupException(msg + this.ToString());
-				}
-			}
+						int waitMillis = TIMEOUT_DEFAULT, bool engageWaitingForEva = true) {
+			// lock(){} above WAS DEADLY when, between two stack frames, another thread locked me
+			// 1. Thread1,stack1shallow: locked, unlock to come on top level;
+			// 2. Thread2 came in, engagedWaitingForEva
+			// 3. Thread1,stack2deeper came in and it was held at the lock(){} above
+			// 4. Thread1: stack unable to unwind and unlock Thread2 => checkmate in two!
 			if (this.lockThread == Thread.CurrentThread) {
-				this.sameThreadRequestedLocks--;
-				if (this.sameThreadRequestedLocks > 0) {
-					return true;
+				this.sameThreadLocksRequestedStackDepth--;
+				if (this.sameThreadLocksRequestedStackDepth > 0) {
+					return false;
 				} // if no stacked locks from the same owner - unlock it! 6 last lines
-			} else {
-				// SURE YOULL FIND YOUR DEADLOCK HERE
-				//bool hadToWaitWasLockedAtFirst = false;
-				//bool unlocked = this.isFree.WaitOne(waitMillis);
-				//if (unlocked == false && engageWaitingForEva) {
-				//	hadToWaitWasLockedAtFirst = true;
-				//	if (waitMillis == -1) {
-				//		string msg = this.ReasonToExist + ": ENGAGING_WAITING_INDEFINITELY_FOR_UNLOCK LOCK_HELD_BY[" + this.LockOwner
-				//			+ "]/[" + this.LockPurpose + "]"
-				//			+ " IF_THREAD_FROZE_FOREVER_USE_WAIT_MILLIS_TO_FIGURE_OUT_WHO_IS_STILL_KEEPING_THE_LOCK_IF_YOU_ARE_SURE_ITS_NOT_THE_GUY_JUST_REPORTED";
-				//		this.isFree.WaitOne(waitMillis);
-				//	} else {
-				//		while (unlocked == false) {
-				//			unlocked = this.isFree.WaitOne(waitMillis);
-				//			if (unlocked) break;
-				//			string msg = this.ReasonToExist + ": LOCK_NOT_AQUIRED_WITHIN_MILLIS: [" + waitMillis + "] LOCK_HELD_BY[" + this.LockOwner + "]/[" + this.LockPurpose + "]";
-				//			Assembler.PopupException(msg, null, false);
-				//		}
-				//	}
-				//}
-				bool mustBeLocked = this.isFree.WaitOne(0);
-				if (mustBeLocked) {
-					string msg = "WILL_UNLOCK_BUT_YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED YOU_ARE[" + owner + "]/[" + releasingAfter + "]";
-					Assembler.PopupException(msg + this.ToString());
-				} else {
-					string msg = "MUST_BE_UNLOCKED_UNPROOF_OF_CONCEPT YOU_ARE[" + owner + "]/[" + releasingAfter + "]";
-					Assembler.PopupException(msg + this.ToString());
-				}
 			}
-			lock (this.atomiticity) {
+			lock (this.customerUnLockingQueue) {		// keep same-stack-return above first ever lock() {}
+				if (string.IsNullOrEmpty(releasingAfter)) {
+					releasingAfter = this.lockPurposeFirstInTheStack;
+				} else {
+					if (releasingAfter != this.lockPurposeFirstInTheStack) {
+						string msg2 = "releasingAfter[" + releasingAfter + "] != this.LockPurpose[" + this.lockPurposeFirstInTheStack + "]";
+						Assembler.PopupException(msg2 + this.Ident, null, false);
+					}
+				}
+				//bool locked = false;
+
+				//bool iAmUnlockedOrLockedToMyself = false;
+				string msg = null;
+				//bool hadToWaitWasUnLockedAtFirst = false;
+				string youAre = " YOU_ARE_managed[" + Thread.CurrentThread.ManagedThreadId + "]owner[" + owner + "]releasingAfter[" + releasingAfter + "] ";
+				//this.stopwatchUnlock.Restart();
+				//while (iAmUnlockedOrLockedToMyself == false) {
+					//locked = this.isLocked.WaitOne(0);
+					bool unlocked = this.isFree.WaitOne(0);
+					if (unlocked) {
+						msg = "MUST_BE_LOCKED_UNPROOF_OF_CONCEPT";
+						throw new Exception(msg);
+					} else {
+						if (this.lockOwner != owner) {
+							msg = "YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED this.lockOwner[" + this.lockOwner + "] != owner[" + owner + "]";
+							throw new Exception(msg);
+						}
+						if (this.lockPurposeFirstInTheStack != releasingAfter) {
+							msg = "YOUR_UNLOCK_REASON_MUST_BE_THE_SAME_AS_LOCKED_REASON this.lockPurposeFirstInTheStack["
+								+ this.lockPurposeFirstInTheStack + "] != releasingAfter[" + releasingAfter + "]";
+							throw new Exception(msg);
+						}
+					}
+					//if (string.IsNullOrEmpty(msg)) {
+					//    iAmUnlockedOrLockedToMyself = true;
+					//    break;
+					//}
+					//if (engageWaitingForEva) {
+					//    if (waitMillis == -1) {
+					//        msg = " ENGAGING_WAITING_INDEFINITELY_FOR_UNLOCK "
+					//            //+ " IF_THREAD_FROZE_FOREVER_USE_WAIT_MILLIS_TO_FIGURE_OUT_WHO_IS_STILL_KEEPING_THE_LOCK_IF_YOU_ARE_SURE_ITS_NOT_THE_GUY_JUST_REPORTED"
+					//            + msg;
+					//        Assembler.PopupException(msg + youAre + this.Ident + this.IdentUnlocked, null, false);
+					//        hadToWaitWasUnLockedAtFirst = true;
+					//        this.isLocked.WaitOne(waitMillis);
+					//        iAmUnlockedOrLockedToMyself = true;
+					//        break;
+					//    }
+					//    if (hadToWaitWasUnLockedAtFirst) {
+					//        msg = "UNLOCK_WAITED_FOR_LOCK_WITHIN_MILLIS: [" + this.stopwatchUnlock.ElapsedMilliseconds + "]/[" + waitMillis + "] " + msg;
+					//        Assembler.PopupException(msg + youAre + this.Ident + this.IdentUnlocked, null, false);
+					//    } else {
+					//        hadToWaitWasUnLockedAtFirst = true;
+					//    }
+					//    //this.isLocked.WaitOne(waitMillis);
+					//    Thread.Sleep(waitMillis);
+					//}
+				//}
+				//this.stopwatchUnlock.Stop();
+				//if (hadToWaitWasUnLockedAtFirst) {
+				//    msg = "UNLOCKED_AFTER_WAITING_FOR[" + this.stopwatchUnlock.ElapsedMilliseconds + "]ms FOR ";
+				//    Assembler.PopupException(msg + youAre + this.Ident + this.IdentUnlocked, null, false);
+				//}
+
+				this.unlockedClass = owner;
+				this.unlockedAfter = releasingAfter;
+				this.unlockedThread = Thread.CurrentThread;
+
 				this.lockThread = null;
 				this.lockOwner = null;
-				this.lockPurpose = "UNLOCKED_AFTER_" + releasingAfter;
-				this.isFree.Set();
+				//this.lockPurposeFirstInTheStack = "UNLOCKED_AFTER_" + releasingAfter;
+				this.lockPurposeFirstInTheStack = null;
+
+				//this.isLocked.Reset();
+				this.isFree.Set();	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
+				return true;
 			}
-			return true;
 		}
-		
-		public override string ToString() {
-			string ret = "ConcurrentWatchdog[" + this.reasonToExist + "]";
-			ret  += "LOCK_HELD_BY[" + this.lockOwner + "]/[" + this.lockPurpose + "]";
-			if (this.lockThread != null) {
-				ret += "managed[" + this.lockThread.ManagedThreadId + "]";
-				if (string.IsNullOrEmpty(this.lockThread.Name) == false) ret += ":[" + this.lockThread.Name + "]";
-			}
-			return ret;
-		}
+		public override string ToString() { return "USE_IDENT"; }
 	}
 }

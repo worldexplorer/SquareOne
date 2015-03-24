@@ -21,13 +21,13 @@ namespace Sq1.Core.Backtesting {
 
 			if (snap.AlertsPending.Count > 0) {
 				//var dumped = snap.DumpPendingAlertsIntoPendingHistoryByBar();
-				int dumped = snap.AlertsPending.ByBarPlaced.Count;
-				if (dumped > 0) {
-					//string msg = "here is at least one reason why dumping on fresh quoteToReach makes sense"
-					//	+ " if we never reach this breakpoint the remove dump() from here"
-					//	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
-					string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
-				}
+				//int dumped = snap.AlertsPending.ByBarPlaced.Count;
+				//if (dumped > 0) {
+				//    //string msg = "here is at least one reason why dumping on fresh quoteToReach makes sense"
+				//    //	+ " if we never reach this breakpoint the remove dump() from here"
+				//    //	+ " but I don't see a need to invoke it since we dumped pendings already after OnNewBarCallback";
+				//    string msg = "DUMPED_BEFORE_SCRIPT_EXECUTION_ON_NEW_BAR_OR_QUOTE";
+				//}
 				int pendingCountPre	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				int pendingFilled	= this.backtester.Executor.MarketsimBacktest.SimulateFillAllPendingAlerts(quote);
 				int pendingCountNow	= this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;

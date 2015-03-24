@@ -66,9 +66,10 @@ namespace Sq1.Charting {
 		[JsonProperty]	public Color	PositionLineLossyColor;
 		[JsonProperty]	public int		PositionLineLossyColorAlpha;
 		[JsonProperty]	public int 		PriceVsVolumeSplitterDistance;
-		[JsonProperty]	public Color	AlertPendingEllipseColor;
-		[JsonProperty]	public int		AlertPendingEllipseColorAlpha;
-		[JsonProperty]	public int		AlertPendingEllipseWidth;
+		[JsonProperty]	public Color	AlertPlacedEllipseColor;
+		[JsonProperty]	public int		AlertPlacedEllipseColorAlpha;
+		[JsonProperty]	public int		AlertPlacedEllipsePenWidth;
+		[JsonProperty]	public int		AlertPlacedEllipseRadius;
 		[JsonProperty]	public bool		MousePositionTrackOnGutters;
 		[JsonProperty]	public Color	MousePositionTrackOnGuttersColor;
 		[JsonProperty]	public int		BarsBackgroundTransparencyAlpha;
@@ -298,7 +299,7 @@ namespace Sq1.Charting {
 		//[Browsable(false)]
 		[JsonIgnore]	public Pen PenAlertPendingEllipse { get {
 				if (this.penAlertPendingEllipse == null) this.penAlertPendingEllipse =
-					new Pen(Color.FromArgb(this.AlertPendingEllipseColorAlpha, this.AlertPendingEllipseColor), this.AlertPendingEllipseWidth);
+					new Pen(Color.FromArgb(this.AlertPlacedEllipseColorAlpha, this.AlertPlacedEllipseColor), this.AlertPlacedEllipsePenWidth);
 				return this.penAlertPendingEllipse;
 			} }
 
@@ -422,7 +423,7 @@ namespace Sq1.Charting {
 			PositionPlannedEllipseColor = Color.Aqua;
 			PositionPlannedEllipseColorAlpha = 90;
 			PositionPlannedEllipseDiameter = 6;
-			PositionFilledDotColor = Color.Olive;
+			PositionFilledDotColor = Color.Chocolate;
 			PositionFilledDotColorAlpha = 200;
 			PositionFilledDotDiameter = 4;
 			PositionLineHighlightedWidth = 2;
@@ -434,9 +435,10 @@ namespace Sq1.Charting {
 			PositionLineLossyColor = Color.Salmon;
 			PositionLineLossyColorAlpha = 100;
 			PriceVsVolumeSplitterDistance = 0;
-			AlertPendingEllipseColor = Color.Maroon;
-			AlertPendingEllipseColorAlpha = 160;
-			AlertPendingEllipseWidth = 1;
+			AlertPlacedEllipseColor = Color.DarkBlue;
+			AlertPlacedEllipseColorAlpha = 190;
+			AlertPlacedEllipsePenWidth = 2;
+			AlertPlacedEllipseRadius = 3;
 			MousePositionTrackOnGutters = true;
 			MousePositionTrackOnGuttersColor = Color.LightGray;
 			BarsBackgroundTransparencyAlpha = 24;

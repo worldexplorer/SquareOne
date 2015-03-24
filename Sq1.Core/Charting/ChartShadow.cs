@@ -145,7 +145,7 @@ namespace Sq1.Core.Charting {
 		public virtual void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) { }
 
 		public virtual void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) { }
-		public virtual void PendingRealtimeAdd(ReporterPokeUnit pokeUnit) { }
+		public virtual void AlertsPlacedRealtimeAdd(List<Alert> alertsNewPlaced) { }
 
 		public virtual OnChartObjectOperationStatus LineDrawModify(
 				string id, int barStart, double priceStart, int barEnd, double priceEnd,
