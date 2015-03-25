@@ -301,6 +301,40 @@ namespace Sq1.Widgets.Execution {
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
+		public void OrderInsertToListView(Order order) {
+			if (this.OrdersTreeOLV.Items.Count == 0) {
+				this.RebuildAllTreeFocusOnTopmost();
+				return;
+			}
+			if (order.DerivedFrom == null) {
+				// copypaste from BuildList()
+	            this.OrdersTreeOLV.BeginUpdate();
+	            try {
+					OLVListItem lvi = new OLVListItem(order);
+					this.OrdersTreeOLV.Items.Insert(0, lvi);
+	            } finally {
+	                this.OrdersTreeOLV.EndUpdate();
+	            }
+				this.SelectOrderAndOrPopulateMessages(order);
+			} else {
+				int index = this.OrdersTreeOLV.TreeModel.GetObjectIndex(order.DerivedFrom);
+				if (index == -1) {
+					this.RebuildAllTreeFocusOnTopmost();
+					return;
+				}
+				// copypaste from BuildList()
+	            try {
+					OLVListItem lvi = new OLVListItem(order);
+					// when in virtual mode, use model :(
+					this.OrdersTreeOLV.Items.Insert(index + 1, lvi);
+	            } finally {
+	                this.OrdersTreeOLV.EndUpdate();
+	            }
+				this.SelectOrderAndOrPopulateMessages(order);
+				this.RebuildOneRootNodeChildAdded(order.DerivedFrom);
+			}
+		}
+
 		void selectLastOrderPopulateMessagesSafe() {
 			//NOPE I WANT TO CLEAR MESSAGES AFTER I WIPED OUT ALL THE ORDERS if (this.ordersTree.InnerOrderList.Count == 0) return;
 			if (this.ordersTree.InnerOrderList.Count == 0) {

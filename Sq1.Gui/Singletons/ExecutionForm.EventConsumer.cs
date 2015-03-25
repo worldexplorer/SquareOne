@@ -20,10 +20,14 @@ namespace Sq1.Gui.Singletons {
 			//	this.executionTree_OnOrderDoubleClickedChartFormNotification(sender, e);
 			//}
 			if (e.Orders.Count == 0) return;
+			
+			//v1 when in virtual mode, use model :(
 			//foreach (Order o in e.Orders) {
 			//	this.ExecutionTreeControl.OrderInsertToListView(o);
 			//}
+			//v2 TOO_SLOW
 			this.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
+			
 			this.PopulateWindowText();
 		}
 		void orderProcessor_OrderMessageAdded(object sender, OrderStateMessageEventArgs e) {
@@ -82,10 +86,6 @@ namespace Sq1.Gui.Singletons {
 			this.orderProcessor.OnOrderStateChangedExecutionFormNotification	+= this.orderProcessor_OrderStateChanged;
 			this.orderProcessor.OnOrderMessageAddedExecutionFormNotification	+= this.orderProcessor_OrderMessageAdded;
 			this.orderProcessor.OnDelaylessLivesimEndedShouldRebuildOLV			+= this.orderProcessor_OnDelaylessLivesimEndedShouldRebuildOLV;
-//			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderAddedExecutionFormNotification += this.orderProcessor_OrderAdded;
-//			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderRemovedExecutionFormNotification += this.orderProcessor_OrderRemoved;
-//			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderStateChangedExecutionFormNotification += this.orderProcessor_OrderStateChanged;
-//			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderMessageAddedExecutionFormNotification += this.orderProcessor_OrderMessageAdded;
 
 			//this.ExecutionTreeControl.OnOrderStatsChangedRecalculateWindowTitleExecutionFormNotification += delegate { this.PopulateWindowText(); };
 			this.ExecutionTreeControl.OnOrderDoubleClickedChartFormNotification += this.executionTree_OnOrderDoubleClickedChartFormNotification;
@@ -102,10 +102,6 @@ namespace Sq1.Gui.Singletons {
 			this.orderProcessor.OnOrderRemovedExecutionFormNotification -= this.orderProcessor_OrderRemoved;
 			this.orderProcessor.OnOrderStateChangedExecutionFormNotification -= this.orderProcessor_OrderStateChanged;
 			this.orderProcessor.OnOrderMessageAddedExecutionFormNotification -= this.orderProcessor_OrderMessageAdded;
-//			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderAddedExecutionFormNotification -= this.orderProcessor_OrderAdded;
-//			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderRemovedExecutionFormNotification -= this.orderProcessor_OrderRemoved;
-//			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderStateChangedExecutionFormNotification -= this.orderProcessor_OrderStateChanged;
-//			this.orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderMessageAddedExecutionFormNotification -= this.orderProcessor_OrderMessageAdded;
 			string msg = "ExecutionForm_Closed(): unsubscribed from orderProcessor.DataSnapshot.OrdersTree.OrderEventDistributor.OnOrderAddedExecutionFormNotification";
 			Assembler.PopupException(msg);
 		}

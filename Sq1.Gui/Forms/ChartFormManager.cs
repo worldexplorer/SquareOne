@@ -489,7 +489,8 @@ namespace Sq1.Gui.Forms {
 			
 				//this.Executor.Performance.BuildStatsOnBacktestFinished(this.Executor.ExecutionDataSnapshot.PositionsMaster);
 				// MOVED_TO_BacktesterRunSimulation() this.Executor.Performance.BuildStatsOnBacktestFinished();
-				this.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters(this.Executor.Performance);
+				//this.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters(this.Executor.Performance);
+				this.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters();
 
 				Assembler.DisplayStatus(this.Executor.LastBacktestStatus);
 			} catch (Exception ex) {

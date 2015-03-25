@@ -20,7 +20,6 @@ namespace Sq1.Core.Support {
 					Stopwatch			stopwatchLock;
 					Stopwatch			stopwatchUnlock;
 
-					//ManualResetEvent	isLocked;
 					object				customerUnLockingQueue;
 					object				unlockedClass;
 					string				unlockedAfter;
@@ -59,7 +58,6 @@ namespace Sq1.Core.Support {
 			this.Snap					= snap;
 			this.customerLockingQueue	= new object();
 			this.isFree					= new ManualResetEvent(true);
-			//this.isLocked				= new ManualResetEvent(false);
 			this.stopwatchLock			= new Stopwatch();
 			this.stopwatchUnlock		= new Stopwatch();
 			this.customerUnLockingQueue = new object();
@@ -110,10 +108,7 @@ namespace Sq1.Core.Support {
 				this.lockOwner = owner;
 				this.lockPurposeFirstInTheStack = lockPurpose;
 				this.sameThreadLocksRequestedStackDepth++;
-
 				this.isFree.Reset();
-				//this.isLocked.Set();
-
 				return true;
 			}
 		}
@@ -139,60 +134,24 @@ namespace Sq1.Core.Support {
 						Assembler.PopupException(msg2 + this.Ident, null, false);
 					}
 				}
-				//bool locked = false;
 
-				//bool iAmUnlockedOrLockedToMyself = false;
 				string msg = null;
-				//bool hadToWaitWasUnLockedAtFirst = false;
 				string youAre = " YOU_ARE_managed[" + Thread.CurrentThread.ManagedThreadId + "]owner[" + owner + "]releasingAfter[" + releasingAfter + "] ";
-				//this.stopwatchUnlock.Restart();
-				//while (iAmUnlockedOrLockedToMyself == false) {
-					//locked = this.isLocked.WaitOne(0);
-					bool unlocked = this.isFree.WaitOne(0);
-					if (unlocked) {
-						msg = "MUST_BE_LOCKED_UNPROOF_OF_CONCEPT";
+				bool unlocked = this.isFree.WaitOne(0);
+				if (unlocked) {
+					msg = "MUST_BE_LOCKED_UNPROOF_OF_CONCEPT";
+					throw new Exception(msg);
+				} else {
+					if (this.lockOwner != owner) {
+						msg = "YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED this.lockOwner[" + this.lockOwner + "] != owner[" + owner + "]";
 						throw new Exception(msg);
-					} else {
-						if (this.lockOwner != owner) {
-							msg = "YOU_MUST_BE_THE_SAME_OBJECT_WHO_LOCKED this.lockOwner[" + this.lockOwner + "] != owner[" + owner + "]";
-							throw new Exception(msg);
-						}
-						if (this.lockPurposeFirstInTheStack != releasingAfter) {
-							msg = "YOUR_UNLOCK_REASON_MUST_BE_THE_SAME_AS_LOCKED_REASON this.lockPurposeFirstInTheStack["
-								+ this.lockPurposeFirstInTheStack + "] != releasingAfter[" + releasingAfter + "]";
-							throw new Exception(msg);
-						}
 					}
-					//if (string.IsNullOrEmpty(msg)) {
-					//    iAmUnlockedOrLockedToMyself = true;
-					//    break;
-					//}
-					//if (engageWaitingForEva) {
-					//    if (waitMillis == -1) {
-					//        msg = " ENGAGING_WAITING_INDEFINITELY_FOR_UNLOCK "
-					//            //+ " IF_THREAD_FROZE_FOREVER_USE_WAIT_MILLIS_TO_FIGURE_OUT_WHO_IS_STILL_KEEPING_THE_LOCK_IF_YOU_ARE_SURE_ITS_NOT_THE_GUY_JUST_REPORTED"
-					//            + msg;
-					//        Assembler.PopupException(msg + youAre + this.Ident + this.IdentUnlocked, null, false);
-					//        hadToWaitWasUnLockedAtFirst = true;
-					//        this.isLocked.WaitOne(waitMillis);
-					//        iAmUnlockedOrLockedToMyself = true;
-					//        break;
-					//    }
-					//    if (hadToWaitWasUnLockedAtFirst) {
-					//        msg = "UNLOCK_WAITED_FOR_LOCK_WITHIN_MILLIS: [" + this.stopwatchUnlock.ElapsedMilliseconds + "]/[" + waitMillis + "] " + msg;
-					//        Assembler.PopupException(msg + youAre + this.Ident + this.IdentUnlocked, null, false);
-					//    } else {
-					//        hadToWaitWasUnLockedAtFirst = true;
-					//    }
-					//    //this.isLocked.WaitOne(waitMillis);
-					//    Thread.Sleep(waitMillis);
-					//}
-				//}
-				//this.stopwatchUnlock.Stop();
-				//if (hadToWaitWasUnLockedAtFirst) {
-				//    msg = "UNLOCKED_AFTER_WAITING_FOR[" + this.stopwatchUnlock.ElapsedMilliseconds + "]ms FOR ";
-				//    Assembler.PopupException(msg + youAre + this.Ident + this.IdentUnlocked, null, false);
-				//}
+					if (this.lockPurposeFirstInTheStack != releasingAfter) {
+						msg = "YOUR_UNLOCK_REASON_MUST_BE_THE_SAME_AS_LOCKED_REASON this.lockPurposeFirstInTheStack["
+							+ this.lockPurposeFirstInTheStack + "] != releasingAfter[" + releasingAfter + "]";
+						throw new Exception(msg);
+					}
+				}
 
 				this.unlockedClass = owner;
 				this.unlockedAfter = releasingAfter;
@@ -203,7 +162,6 @@ namespace Sq1.Core.Support {
 				//this.lockPurposeFirstInTheStack = "UNLOCKED_AFTER_" + releasingAfter;
 				this.lockPurposeFirstInTheStack = null;
 
-				//this.isLocked.Reset();
 				this.isFree.Set();	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 				return true;
 			}

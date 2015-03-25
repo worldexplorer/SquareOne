@@ -211,7 +211,13 @@ namespace Sq1.Reporters {
 				//if (this.lastKnownCashAvailable == base.SystemPerformance.SlicesShortAndLong.CashAvailable) return;
 				//	this.lastKnownCashAvailable = base.SystemPerformance.SlicesShortAndLong.CashAvailable;
 			}
-			this.propagatePerformanceReport();
+			//v1 this.propagatePerformanceReport();
+			//v2 ACCELERATING_ON_POSITION_FILLED
+			if (this.lvPerformance.Items.Count == 0) {
+				 this.propagatePerformanceReport();
+			} else {
+				this.lvPerformance.Refresh();
+			}
 		}
 	}
 }

@@ -65,6 +65,7 @@ namespace Sq1.Gui.ReportersSupport {
 			this.BuildIncrementalOnPositionsOpenedAllReports_step1of3(e.PokeUnit);
 		}
 		void eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(object sender, ReporterPokeUnitEventArgs e) {
+			//I_WANT_REPORTERS_TO_REBUILD!!OPTIMIZED_THEM
 			if (e.PokeUnit.PositionsOpenNow.AlertsOpenNow.GuiHasTimeToRebuild(this, "eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(WAIT)") == false) return;
 			this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(e.PokeUnit);
 		}
@@ -118,7 +119,10 @@ namespace Sq1.Gui.ReportersSupport {
 				parent.Text = windowTitle;
 			}
 		}
-		public void BuildReportFullOnBacktestFinishedAllReporters(SystemPerformance performance) {
+		public void BuildReportFullOnBacktestFinishedAllReporters(SystemPerformance performance = null) {
+			if (performance == null) {
+				performance = this.ChartFormManager.Executor.Performance;
+			}
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {
 				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildReportFullOnBacktestFinishedAllReporters(performance); });
 				return;

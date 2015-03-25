@@ -174,7 +174,7 @@ namespace Sq1.Core.Backtesting {
 					string msg = " it looks like the quoteInjected triggered something";
 					//Assembler.PopupException(msg, null, false);
 					if (this.backtester.IsLivesim && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
-						msg = "NO_ORDER_MUST_HAVE_BEEN_FILLED_WHILE_INJECTING__KOZ_LIVESIM_BROKER_EXECUTION_IS_DELAYED" + msg;
+						msg = "SEPARATE_MARKET_MODEL_WOULD_HELP_LAZY NO_ORDER_MUST_HAVE_BEEN_FILLED_WHILE_INJECTING__KOZ_LIVESIM_BROKER_EXECUTION_IS_DELAYED" + msg;
 						Assembler.PopupException(msg, null, false);
 					}
 				}

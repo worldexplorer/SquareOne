@@ -52,7 +52,7 @@ namespace Sq1.Core.Execution {
 		} }
 		public AlertList AlertsOpenNow { get {
 			AlertList ret = new AlertList("AlertsOpenNow", base.Snap);
-			foreach (Position position in this.InnerList) {
+			foreach (Position position in base.InnerList) {
 				if (position.ExitAlert == null) continue;
 				ret.AddNoDupe(position.ExitAlert, this, "AlertsOpenNow(WAIT)");
 			}
@@ -64,7 +64,8 @@ namespace Sq1.Core.Execution {
 
 		public PositionList(string reasonToExist, ExecutionDataSnapshot snap = null, List<Position> copyFrom = null) : this(reasonToExist, snap) {
 			if (copyFrom == null) return;
-			this.InnerList.AddRange(copyFrom);
+			base.InnerList.AddRange(copyFrom);
+			Count = base.InnerList.Count;
 		}
 		public PositionList(string reasonToExist, ExecutionDataSnapshot snap = null) : base(reasonToExist, snap) {
 			ByEntryBarFilled	= new Dictionary<int, List<Position>>();
@@ -204,13 +205,14 @@ namespace Sq1.Core.Execution {
 				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public PositionList Clone(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public new PositionList Clone(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			lockPurpose += " //" + this.ToString() + "Clone()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				PositionList ret		= new PositionList("CLONE_" + base.ReasonToExist, base.Snap, this.InnerList);
+				PositionList ret		= new PositionList("CLONE_" + base.ReasonToExist, base.Snap, base.InnerList);
 				ret.ByEntryBarFilled	= this.ByEntryBarFilledSafeCopy(this, "Clone(WAIT)");
 				ret.ByExitBarFilled		= this.ByExitBarFilledSafeCopy(this, "Clone(WAIT)");
+				ret.Count				= this.Count;
 				return ret;
 			} finally {
 				base.UnLockFor(owner, lockPurpose);

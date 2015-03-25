@@ -426,7 +426,9 @@ namespace Sq1.Core.StrategyBase {
 			// NOPE_REALTIME_FILLS_POSITIONS_ON_CALLBACK this.AddPositionsJustCreatedUnfilledToChartShadowAndPushToReportersAsyncUnsafe(pokeUnit);
 
 			this.EventGenerator.RaiseOnStrategyExecutedOneQuoteOrBarOrdersEmitted(ordersEmitted);
-			if (pokeUnit.PositionsPlusAlertsCount == 0) return null;
+			
+			// lets Execute() return non-null PokeUnit => Reporters are notified on quoteUpdatedPositions if !GuiIsBusy
+			if (pokeUnit.PositionsNowPlusOpenedPlusClosedAfterExecPlusAlertsNewCount == 0) return null;
 			return pokeUnit;
 		}
 

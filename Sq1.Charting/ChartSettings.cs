@@ -436,7 +436,7 @@ namespace Sq1.Charting {
 			PositionLineLossyColorAlpha = 100;
 			PriceVsVolumeSplitterDistance = 0;
 			AlertPlacedEllipseColor = Color.DarkBlue;
-			AlertPlacedEllipseColorAlpha = 190;
+			AlertPlacedEllipseColorAlpha = 180;
 			AlertPlacedEllipsePenWidth = 2;
 			AlertPlacedEllipseRadius = 3;
 			MousePositionTrackOnGutters = true;

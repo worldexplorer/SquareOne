@@ -15,11 +15,11 @@ namespace Sq1.Strategies.Demo {
 		public TwoMAindicatorsCompiled() {
 			MAfast = new IndicatorMovingAverageSimple();
 			MAfast.ParamPeriod = new IndicatorParameter("Period", 55, 11, 88, 11);
-			MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
+			MAfast.LineColor = Color.LightSeaGreen;
 
 			MAslow = new IndicatorMovingAverageSimple();
 			MAslow.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 1);
-			MAslow.LineColor = System.Drawing.Color.LightCoral;
+			MAslow.LineColor = Color.LightCoral;
 		}
 
 		public override void InitializeBacktest() {

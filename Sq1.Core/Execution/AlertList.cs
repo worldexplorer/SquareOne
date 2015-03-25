@@ -19,7 +19,7 @@ namespace Sq1.Core.Execution {
 		}
 		public AlertList(string reasonToExist, ExecutionDataSnapshot snap = null, List<Alert> copyFrom = null) : this(reasonToExist, snap) {
 			if (copyFrom == null) return;
-			this.InnerList.AddRange(copyFrom);
+			base.InnerList.AddRange(copyFrom);
 		}
 		public AlertList(string reasonToExist, ExecutionDataSnapshot snap = null) : base(reasonToExist, snap) {
 			ByBarPlaced	= new Dictionary<int, List<Alert>>();
@@ -106,7 +106,7 @@ namespace Sq1.Core.Execution {
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				Alert similar = null;
-				foreach (Alert alertSimilar in this.InnerList) {
+				foreach (Alert alertSimilar in base.InnerList) {
 					if (alertSimilar == alert) continue;
 					if (alertSimilar.IsIdenticalForOrdersPending(alert)) {
 						if (similar != null) {
@@ -137,7 +137,7 @@ namespace Sq1.Core.Execution {
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool guiHasTime = false;
-				foreach (Alert alert in this.InnerList) {
+				foreach (Alert alert in base.InnerList) {
 					guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
 					if (guiHasTime) break;
 				}
@@ -146,11 +146,11 @@ namespace Sq1.Core.Execution {
 				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public AlertList Clone(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public new AlertList Clone(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			lockPurpose += " //" + this.ToString() + "Clone()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				AlertList ret		= new AlertList("CLONE_" + base.ReasonToExist, base.Snap, this.InnerList);
+				AlertList ret		= new AlertList("CLONE_" + base.ReasonToExist, base.Snap, base.InnerList);
 				ret.ByBarPlaced		= this.ByBarPlacedSafeCopy(this, "Clone(WAIT)");
 				return ret;
 			} finally {

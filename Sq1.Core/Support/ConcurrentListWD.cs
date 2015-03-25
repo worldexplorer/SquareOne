@@ -3,9 +3,9 @@
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Support {
-	public class ConcurrentListWD<T> : ConcurrentWatchdog {		
-		protected	List<T>					InnerList	{ get; private set; }
-		public		int						Count		{ get; protected set; }
+	public class ConcurrentListWD<T> : ConcurrentWatchdog {
+		protected	List<T>		InnerList	{ get; private set; }
+		public		int			Count		{ get; protected set; }
 
 		public T FirstNullUnsafe(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			T ret = default(T);
@@ -52,15 +52,6 @@ namespace Sq1.Core.Support {
 			}
 		    return ret;
 		}
-//		public List<T> SafeCopy1(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-//			lockPurpose += " //" + this.ToString() + ".SafeCopy()";
-//			try {
-//				base.WaitAndLockFor(owner, lockPurpose, waitMillis, true);
-//				return new List<T>(this.InnerList);
-//			} finally {
-//				base.UnLockFor(owner, lockPurpose);
-//			}
-//		}
 		public List<T> SafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
 			List<T> ret = new List<T>();
 			lockPurpose += " //" + this.ToString() + ".SafeCopy()";
@@ -72,20 +63,10 @@ namespace Sq1.Core.Support {
 			}
 			return ret;
 		}
-		//public List<T> ListUntraceable { get {
-		//    object owner = this;
-		//    string lockPurpose = " //" + this.ToString() + ".ListUntraceable";
-		//    int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT;
-		//    try {
-		//        base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-		//        return this.InnerList;
-		//    } finally {
-		//        base.UnLockFor(owner, lockPurpose);
-		//    }
-		//} }
 		ConcurrentListWD(string reasonToExist, ExecutionDataSnapshot snap, List<T> copyFrom) : this(reasonToExist, snap) {
 			InnerList	= new List<T>();
 			InnerList.AddRange(copyFrom);
+			Count = InnerList.Count;
 		}
 		public ConcurrentListWD(string reasonToExist, ExecutionDataSnapshot snap = null) : base(reasonToExist, snap) {
 			Snap		= snap;

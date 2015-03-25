@@ -12,9 +12,8 @@ using Sq1.Support;
 
 namespace Sq1.Reporters {
 	public partial class Positions : Reporter {
-		PositionsDataSnapshot snap;
-		
-		IList<Position> positionsAllReversedCached;
+		PositionsDataSnapshot	snap;
+		IList<Position>			positionsAllReversedCached;
 
 		public Positions() : base() {
 			this.positionsAllReversedCached = new List<Position>();
@@ -86,13 +85,17 @@ namespace Sq1.Reporters {
 		}
 		void rebuildOLVproperly() {
 			try {
-				this.olvPositions.SetObjects(this.positionsAllReversedCached);
-				this.olvPositions.RebuildColumns();
-				this.olvPositions.BuildList();
+				//DOESNT_MAKE_SENSE  this.olvPositions.SuspendLayout();
+				this.olvPositions.SetObjects(this.positionsAllReversedCached, false);
+				//TOO_MUCH__CLEARS_ITEMS_COLUMNS__ADDS_RANGE__SORTS___UPDATES_FILTERING this.olvPositions.RebuildColumns();
+				//CLEARS_ADDS_RANGE_SORTS__ALREADY_INVOKED_FROM_SetObjects() this.olvPositions.BuildList(false);
+				//DOESNT_MAKE_SENSE this.olvPositions.Invalidate();
 				base.TabText = "Positions (" + this.positionsAllReversedCached.Count + ")";
 			} catch (Exception ex) {
 				string msg = "I_KNEW_OLV_WILL_REFUSE_TO_REFRESH_POSITIONS_IT_DOESNT_HAVE";
 				Assembler.PopupException(msg);
+				//DOESNT_MAKE_SENSE } finally {
+				//DOESNT_MAKE_SENSE  	this.olvPositions.ResumeLayout();
 			}
 		}
 		public override void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
@@ -104,8 +107,20 @@ namespace Sq1.Reporters {
 					continue;
 				}
 				this.positionsAllReversedCached.Insert(0, pos);
+				
+				//v2 ACCELERATING_ON_POSITION_FILLED copypaste from BuildList()
+				//this.olvPositions.BeginUpdate();
+				//try {
+				//	OLVListItem lvi = new OLVListItem(pos);
+				//	this.olvPositions.Items.Insert(0, lvi);
+				//} finally {
+				//	this.olvPositions.EndUpdate();
+				//}
 			}
-			this.rebuildOLVproperly();
+			//v1 this.rebuildOLVproperly();
+			//DOESNT_INSERT__REPLACES_EXISTING_LISTVIEW_ITEMS_IF_FOUND_IN_MODEL this.olvPositions.RefreshObjects(safeCopy);
+			//v3
+            this.olvPositions.InsertObjects(0, safeCopy);
 		}
 		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
 			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsClosed.SafeCopy(this, "BuildIncrementalOnPositionsOpenedClosed_step3of3(WAIT)");

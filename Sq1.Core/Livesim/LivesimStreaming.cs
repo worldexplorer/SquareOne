@@ -46,10 +46,10 @@ namespace Sq1.Core.Livesim {
 			bool isUnpaused = this.Unpaused.WaitOne(0);
 			if (isUnpaused == false) {
 				string msg = "LIVESTREAMING_CAUGHT_PAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				this.Unpaused.WaitOne();
 				string msg2 = "LIVESTREAMING_CAUGHT_UNPAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
-				Assembler.PopupException(msg2, null, false);
+				//Assembler.PopupException(msg2, null, false);
 			}
 
 			ScriptExecutor executor = this.livesimDataSource.Executor;

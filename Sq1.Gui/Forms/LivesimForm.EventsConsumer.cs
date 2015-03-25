@@ -41,6 +41,9 @@ namespace Sq1.Gui.Forms {
 				this.chartFormManager.Executor.Livesimulator.Pause_inGuiThread();
 				btnPauseResume.Text = "Resume";
 				btnPauseResume.Enabled = true;
+				
+				// when quote delay = 2..4, reporters are staying empty (probably GuiIsBusy) - clear&flush each like afterBacktestEnded
+				this.chartFormManager.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters();
 			} else {
 				btnPauseResume.Text = "Resuming";
 				btnPauseResume.Enabled = false;

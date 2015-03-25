@@ -90,7 +90,7 @@ namespace Sq1.Strategies.Demo {
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
 			//this.testBarAnnotations(barStaticFormed);
 			
-			//Thread.Sleep(500);
+			Thread.Sleep(500);
 
 			Bar barStreaming = base.Bars.BarStreaming;
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
