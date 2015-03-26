@@ -21,11 +21,13 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcHistoryDate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcHistorySize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.fastOLVparametersYesNoMinMaxStep = new BrightIdeasSoftware.FastObjectListView();
-			this.olvMinimum = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvMaximum = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvStep = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvOptimizeYesNo = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvParameter = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamNumberOfRuns = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamValueMin = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamValueCurrent = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamValueMax = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamStep = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamWillBeSequenced = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.lblStaleReason = new System.Windows.Forms.Label();
 			this.txtStaleReason = new System.Windows.Forms.TextBox();
 			this.btnPauseResume = new System.Windows.Forms.Button();
@@ -136,9 +138,10 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
 			this.olvHistory.CellEditEnterChangesRows = true;
 			this.olvHistory.CellEditTabChangesRows = true;
+			this.olvHistory.CheckBoxes = true;
 			this.olvHistory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.olvcPFavg,
-			this.olvcHistorySymbolScaleRange});
+            this.olvcPFavg,
+            this.olvcHistorySymbolScaleRange});
 			this.olvHistory.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvHistory.EmptyListMsg = "OPTIMIZATION_HISTORY_IS_EMPTY Never optimized since last script recompilation";
 			this.olvHistory.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -150,6 +153,8 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.Name = "olvHistory";
 			this.olvHistory.ShowCommandMenuOnRightClick = true;
 			this.olvHistory.ShowGroups = false;
+			this.olvHistory.ShowImagesOnSubItems = true;
+			this.olvHistory.ShowItemCountOnGroups = true;
 			this.olvHistory.ShowItemToolTips = true;
 			this.olvHistory.Size = new System.Drawing.Size(267, 223);
 			this.olvHistory.TabIndex = 42;
@@ -201,64 +206,107 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// fastOLVparametersYesNoMinMaxStep
 			// 
-			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvMinimum);
-			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvMaximum);
-			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvStep);
-			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvOptimizeYesNo);
-			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvParameter);
+			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvcParamName);
+			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvcParamNumberOfRuns);
+			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvcParamValueMin);
+			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvcParamValueCurrent);
+			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvcParamValueMax);
+			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvcParamStep);
+			this.fastOLVparametersYesNoMinMaxStep.AllColumns.Add(this.olvcParamWillBeSequenced);
 			this.fastOLVparametersYesNoMinMaxStep.AllowColumnReorder = true;
 			this.fastOLVparametersYesNoMinMaxStep.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)));
 			this.fastOLVparametersYesNoMinMaxStep.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.fastOLVparametersYesNoMinMaxStep.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.SingleClick;
+			this.fastOLVparametersYesNoMinMaxStep.CellEditEnterChangesRows = true;
+			this.fastOLVparametersYesNoMinMaxStep.CellEditTabChangesRows = true;
+			this.fastOLVparametersYesNoMinMaxStep.CheckBoxes = true;
 			this.fastOLVparametersYesNoMinMaxStep.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.olvMinimum,
-			this.olvMaximum,
-			this.olvStep,
-			this.olvOptimizeYesNo,
-			this.olvParameter});
+            this.olvcParamName,
+            this.olvcParamNumberOfRuns,
+            this.olvcParamValueMin,
+            this.olvcParamValueCurrent,
+            this.olvcParamValueMax,
+            this.olvcParamStep});
+			this.fastOLVparametersYesNoMinMaxStep.Cursor = System.Windows.Forms.Cursors.Default;
 			this.fastOLVparametersYesNoMinMaxStep.EmptyListMsg = "NO_PARAMETERS_TO_OPTIMIZE Edit Strategy\'s Script to add parameters or indicators";
 			this.fastOLVparametersYesNoMinMaxStep.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.fastOLVparametersYesNoMinMaxStep.FullRowSelect = true;
+			this.fastOLVparametersYesNoMinMaxStep.GridLines = true;
+			this.fastOLVparametersYesNoMinMaxStep.HideSelection = false;
 			this.fastOLVparametersYesNoMinMaxStep.IncludeColumnHeadersInCopy = true;
+			this.fastOLVparametersYesNoMinMaxStep.IncludeHiddenColumnsInDataTransfer = true;
 			this.fastOLVparametersYesNoMinMaxStep.Location = new System.Drawing.Point(4, 140);
 			this.fastOLVparametersYesNoMinMaxStep.Name = "fastOLVparametersYesNoMinMaxStep";
 			this.fastOLVparametersYesNoMinMaxStep.ShowCommandMenuOnRightClick = true;
 			this.fastOLVparametersYesNoMinMaxStep.ShowGroups = false;
+			this.fastOLVparametersYesNoMinMaxStep.ShowImagesOnSubItems = true;
+			this.fastOLVparametersYesNoMinMaxStep.ShowItemToolTips = true;
 			this.fastOLVparametersYesNoMinMaxStep.Size = new System.Drawing.Size(403, 133);
 			this.fastOLVparametersYesNoMinMaxStep.TabIndex = 41;
+			this.fastOLVparametersYesNoMinMaxStep.TintSortColumn = true;
+			this.fastOLVparametersYesNoMinMaxStep.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.HotTrack;
+			this.fastOLVparametersYesNoMinMaxStep.UnfocusedHighlightForegroundColor = System.Drawing.SystemColors.HighlightText;
 			this.fastOLVparametersYesNoMinMaxStep.UseCompatibleStateImageBehavior = false;
 			this.fastOLVparametersYesNoMinMaxStep.UseFilterIndicator = true;
 			this.fastOLVparametersYesNoMinMaxStep.UseFiltering = true;
+			this.fastOLVparametersYesNoMinMaxStep.UseHotItem = true;
+			this.fastOLVparametersYesNoMinMaxStep.UseTranslucentHotItem = true;
 			this.fastOLVparametersYesNoMinMaxStep.View = System.Windows.Forms.View.Details;
 			this.fastOLVparametersYesNoMinMaxStep.VirtualMode = true;
+			this.fastOLVparametersYesNoMinMaxStep.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.fastOLVparametersYesNoMinMaxStep_ItemCheck);
+			this.fastOLVparametersYesNoMinMaxStep.Click += new System.EventHandler(this.fastOLVparametersYesNoMinMaxStep_Click);
 			// 
-			// olvMinimum
+			// olvcParamName
 			// 
-			this.olvMinimum.Text = "Minimum";
+			this.olvcParamName.FillsFreeSpace = true;
+			this.olvcParamName.HeaderCheckBox = true;
+			this.olvcParamName.Text = "Parameter";
+			this.olvcParamName.Width = 120;
 			// 
-			// olvMaximum
+			// olvcParamNumberOfRuns
 			// 
-			this.olvMaximum.Text = "Maximum";
+			this.olvcParamNumberOfRuns.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcParamNumberOfRuns.Text = "#Runs";
+			this.olvcParamNumberOfRuns.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcParamNumberOfRuns.Width = 46;
 			// 
-			// olvStep
+			// olvcParamValueMin
 			// 
-			this.olvStep.Text = "Step";
+			this.olvcParamValueMin.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcParamValueMin.Text = "Minimum";
+			this.olvcParamValueMin.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcParamValueMin.Width = 55;
 			// 
-			// olvOptimizeYesNo
+			// olvcParamValueCurrent
 			// 
-			this.olvOptimizeYesNo.CheckBoxes = true;
-			this.olvOptimizeYesNo.HeaderCheckState = System.Windows.Forms.CheckState.Checked;
-			this.olvOptimizeYesNo.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvOptimizeYesNo.Text = "Optimize";
-			this.olvOptimizeYesNo.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvOptimizeYesNo.TriStateCheckBoxes = true;
-			this.olvOptimizeYesNo.Width = 55;
+			this.olvcParamValueCurrent.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcParamValueCurrent.Text = "Current";
+			this.olvcParamValueCurrent.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcParamValueCurrent.Width = 55;
 			// 
-			// olvParameter
+			// olvcParamValueMax
 			// 
-			this.olvParameter.FillsFreeSpace = true;
-			this.olvParameter.Text = "Parameter";
-			this.olvParameter.Width = 120;
+			this.olvcParamValueMax.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcParamValueMax.Text = "Maximum";
+			this.olvcParamValueMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			// 
+			// olvcParamStep
+			// 
+			this.olvcParamStep.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcParamStep.Text = "Step";
+			this.olvcParamStep.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcParamStep.Width = 35;
+			// 
+			// olvcParamWillBeSequenced
+			// 
+			this.olvcParamWillBeSequenced.CheckBoxes = true;
+			this.olvcParamWillBeSequenced.DisplayIndex = 5;
+			this.olvcParamWillBeSequenced.HeaderCheckState = System.Windows.Forms.CheckState.Checked;
+			this.olvcParamWillBeSequenced.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcParamWillBeSequenced.IsVisible = false;
+			this.olvcParamWillBeSequenced.Text = "Optimize";
+			this.olvcParamWillBeSequenced.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.olvcParamWillBeSequenced.Width = 55;
 			// 
 			// lblStaleReason
 			// 
@@ -293,10 +341,10 @@ namespace Sq1.Widgets.Optimization {
 			this.nudThreadsToRun.Size = new System.Drawing.Size(40, 20);
 			this.nudThreadsToRun.TabIndex = 33;
 			this.nudThreadsToRun.Value = new decimal(new int[] {
-			4,
-			0,
-			0,
-			0});
+            4,
+            0,
+            0,
+            0});
 			this.nudThreadsToRun.ValueChanged += new System.EventHandler(this.nudCpuCoresToUse_ValueChanged);
 			// 
 			// lblIndicatorParameterTotalNr
@@ -437,7 +485,7 @@ namespace Sq1.Widgets.Optimization {
 			this.lblStats.Name = "lblStats";
 			this.lblStats.Size = new System.Drawing.Size(150, 16);
 			this.lblStats.TabIndex = 35;
-			this.lblStats.Text = "48% complete	450044/18900";
+			this.lblStats.Text = "48% complete\t450044/18900";
 			// 
 			// progressBar1
 			// 
@@ -454,16 +502,16 @@ namespace Sq1.Widgets.Optimization {
 			this.olvBacktests.AllowColumnReorder = true;
 			this.olvBacktests.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvBacktests.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.olvcSerno,
-			this.olvcTotalTrades,
-			this.olvcAverageProfit,
-			this.olvcNetProfit,
-			this.olvcWinLoss,
-			this.olvcProfitFactor,
-			this.olvcRecoveryFactor,
-			this.olvcMaxDrawdown,
-			this.olvcMaxConsecutiveWinners,
-			this.olvcMaxConsecutiveLosers});
+            this.olvcSerno,
+            this.olvcTotalTrades,
+            this.olvcAverageProfit,
+            this.olvcNetProfit,
+            this.olvcWinLoss,
+            this.olvcProfitFactor,
+            this.olvcRecoveryFactor,
+            this.olvcMaxDrawdown,
+            this.olvcMaxConsecutiveWinners,
+            this.olvcMaxConsecutiveLosers});
 			this.olvBacktests.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvBacktests.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvBacktests.EmptyListMsg = "";
@@ -477,6 +525,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvBacktests.Name = "olvBacktests";
 			this.olvBacktests.ShowCommandMenuOnRightClick = true;
 			this.olvBacktests.ShowGroups = false;
+			this.olvBacktests.ShowItemCountOnGroups = true;
 			this.olvBacktests.Size = new System.Drawing.Size(685, 391);
 			this.olvBacktests.TabIndex = 0;
 			this.olvBacktests.TintSortColumn = true;
@@ -576,15 +625,15 @@ namespace Sq1.Widgets.Optimization {
 			// ctxOneBacktestResult
 			// 
 			this.ctxOneBacktestResult.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniInfo,
-			this.toolStripSeparator1,
-			this.mniCopyToDefaultCtxBacktest,
-			this.mniCopyToDefaultCtx,
-			this.mniltbCopyToNewContextBacktest,
-			this.mniltbCopyToNewContext,
-			this.toolStripSeparator2,
-			this.mniCopyToClipboard,
-			this.mniSaveCsv});
+            this.mniInfo,
+            this.toolStripSeparator1,
+            this.mniCopyToDefaultCtxBacktest,
+            this.mniCopyToDefaultCtx,
+            this.mniltbCopyToNewContextBacktest,
+            this.mniltbCopyToNewContext,
+            this.toolStripSeparator2,
+            this.mniCopyToClipboard,
+            this.mniSaveCsv});
 			this.ctxOneBacktestResult.Name = "ctxOneBacktestResult";
 			this.ctxOneBacktestResult.Size = new System.Drawing.Size(444, 176);
 			this.ctxOneBacktestResult.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOneBacktestResult_Opening);
@@ -734,15 +783,17 @@ namespace Sq1.Widgets.Optimization {
 		private System.Windows.Forms.ToolStripMenuItem mniCopyToClipboard;
 		private System.Windows.Forms.ToolStripMenuItem mniSaveCsv;
 		private BrightIdeasSoftware.FastObjectListView fastOLVparametersYesNoMinMaxStep;
-		private BrightIdeasSoftware.OLVColumn olvOptimizeYesNo;
-		private BrightIdeasSoftware.OLVColumn olvParameter;
-		private BrightIdeasSoftware.OLVColumn olvMinimum;
-		private BrightIdeasSoftware.OLVColumn olvMaximum;
-		private BrightIdeasSoftware.OLVColumn olvStep;
+		private BrightIdeasSoftware.OLVColumn olvcParamWillBeSequenced;
+		private BrightIdeasSoftware.OLVColumn olvcParamName;
+		private BrightIdeasSoftware.OLVColumn olvcParamValueMin;
+		private BrightIdeasSoftware.OLVColumn olvcParamValueMax;
+		private BrightIdeasSoftware.OLVColumn olvcParamStep;
 		private BrightIdeasSoftware.FastObjectListView olvHistory;
 		private BrightIdeasSoftware.OLVColumn olvcHistoryDate;
 		private BrightIdeasSoftware.OLVColumn olvcHistorySymbolScaleRange;
 		private BrightIdeasSoftware.OLVColumn olvcHistorySize;
 		private BrightIdeasSoftware.OLVColumn olvcPFavg;
+		private BrightIdeasSoftware.OLVColumn olvcParamValueCurrent;
+		private BrightIdeasSoftware.OLVColumn olvcParamNumberOfRuns;
 	}
 }

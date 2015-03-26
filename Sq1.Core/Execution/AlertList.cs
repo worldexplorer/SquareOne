@@ -25,7 +25,7 @@ namespace Sq1.Core.Execution {
 			ByBarPlaced	= new Dictionary<int, List<Alert>>();
 		}
 		public void Clear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-			lockPurpose += " //" + this.ToString() + ".Clear()";
+			lockPurpose += " //" + base.ReasonToExist + ".Clear()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				base			.Clear(owner, lockPurpose, waitMillis);
@@ -35,7 +35,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public void AddRange(List<Alert> alerts, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-			lockPurpose += " //" + this.ToString() + ".AddRange(" + alerts.Count + ")";
+			lockPurpose += " //" + base.ReasonToExist + ".AddRange(" + alerts.Count + ")";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				foreach (Alert alert in alerts) this.AddNoDupe(alert, owner, lockPurpose, waitMillis);
@@ -44,7 +44,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public ByBarDumpStatus AddNoDupe(Alert alert, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
-			lockPurpose += " //" + this.ToString() + ".AddNoDupe(" + alert.ToString() + ")";
+			lockPurpose += " //" + base.ReasonToExist + ".AddNoDupe(" + alert.ToString() + ")";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool newBarAddedInHistory = false;
@@ -70,7 +70,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public bool Remove(Alert alert, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenseThrowsAnError = true) {
-			lockPurpose += " //" + this.ToString() + ".Remove(" + alert.ToString() + ")";
+			lockPurpose += " //" + base.ReasonToExist + ".Remove(" + alert.ToString() + ")";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool removed = base.Remove(alert, owner, lockPurpose, waitMillis, absenseThrowsAnError);
@@ -88,7 +88,7 @@ namespace Sq1.Core.Execution {
 
 
 		public bool ContainsIdentical(Alert maybeAlready, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool onlyUnfilled = true) {
-			lockPurpose += " //" + this.ToString() + ".ContainsIdentical(" + maybeAlready + ", " + onlyUnfilled + ")";
+			lockPurpose += " //" + base.ReasonToExist + ".ContainsIdentical(" + maybeAlready + ", " + onlyUnfilled + ")";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				foreach (Alert each in base.InnerList) {
@@ -102,7 +102,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public Alert FindSimilarNotSameIdenticalForOrdersPending(Alert alert, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-			lockPurpose += " //" + this.ToString() + ".FindSimilarNotSameIdenticalForOrdersPending(" + alert + ")";
+			lockPurpose += " //" + base.ReasonToExist + ".FindSimilarNotSameIdenticalForOrdersPending(" + alert + ")";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				Alert similar = null;
@@ -133,7 +133,7 @@ namespace Sq1.Core.Execution {
 		//} }
 
 		public bool GuiHasTimeToRebuild(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-			lockPurpose += " //" + this.ToString() + ".GuiHasTimeToRebuild";
+			lockPurpose += " //" + base.ReasonToExist + ".GuiHasTimeToRebuild";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool guiHasTime = false;
@@ -147,7 +147,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public new AlertList Clone(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-			lockPurpose += " //" + this.ToString() + "Clone()";
+			lockPurpose += " //" + base.ReasonToExist + "Clone()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				AlertList ret		= new AlertList("CLONE_" + base.ReasonToExist, base.Snap, base.InnerList);
@@ -158,9 +158,7 @@ namespace Sq1.Core.Execution {
 			}
 		}
 		public override string ToString() {
-			string ret = base.ToString()
-				+ " ByBarPlaced.Bars[" + ByBarPlaced.Keys.Count + "]";
-			return ret;
+			return base.ToString() + " ByBarPlaced.Bars[" + ByBarPlaced.Keys.Count + "]";
 		}
 	}
 }

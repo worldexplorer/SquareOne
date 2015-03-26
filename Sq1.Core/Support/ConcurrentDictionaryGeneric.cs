@@ -98,8 +98,7 @@ namespace Sq1.Core.Support {
 			return updated;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
 		}
 		public override string ToString() {
-			string ret = string.Format("{0}:InnerDictionary[{1}]", ReasonToExist, this.InnerDictionary.Count);
-			return ret;	//I'm sucpiscious about returning inside try{}; when outside I know finally{} has unlocked before popping up the stack; otherwize I'm not sure what/when finalizer did
+			return this.ReasonToExist + ":InnerDictionary[" + this.InnerDictionary.Count + "]";
 		}
 	}
 }

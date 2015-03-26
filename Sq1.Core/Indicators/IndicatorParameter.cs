@@ -14,7 +14,7 @@ namespace Sq1.Core.Indicators {
 		[JsonProperty]	public double			ValueIncrement;
 		[JsonProperty]	public double			ValueCurrent;
 		[JsonIgnore]	public int				ValueCurrentAsInteger { get { return (int) Math.Round(this.ValueCurrent); } }
-		
+		[JsonProperty]	public bool				WillBeSequencedDuringOptimization;
 		[JsonProperty]	public int				NumberOfRuns { get {
 				// got "Arithmetic opertation resulted in an overflow" when a Script wasn't built (IndicatorParameters restored from StrategyContext?)
 				int ret = 1;

@@ -13,8 +13,10 @@ namespace Sq1.Gui.Forms {
 		//}
 
 		void btnStartStop_Click(object sender, EventArgs e) {
-			Button btnPauseResume = this.LivesimControl.BtnPauseResume;
-			Button btnStartStop = this.LivesimControl.BtnStartStop;
+			//Button btnPauseResume = this.LivesimControl.BtnPauseResume;
+			//Button btnStartStop = this.LivesimControl.BtnStartStop;
+			ToolStripButton btnPauseResume = this.LivesimControl.TssBtnPauseResume;
+			ToolStripButton btnStartStop = this.LivesimControl.TssBtnStartStop;
 			bool clickedStart = btnStartStop.Text.Contains("Start");
 			if (clickedStart) {
 				btnStartStop.Text = "Starting";
@@ -33,7 +35,8 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		void btnPauseResume_Click(object sender, EventArgs e) {
-			Button btnPauseResume = this.LivesimControl.BtnPauseResume;
+			//Button btnPauseResume = this.LivesimControl.BtnPauseResume;
+			ToolStripButton btnPauseResume = this.LivesimControl.TssBtnPauseResume;
 			bool clickedPause = btnPauseResume.Text.Contains("Pause");
 			if (clickedPause) {
 				btnPauseResume.Text = "Pausing";

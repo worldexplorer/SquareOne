@@ -171,7 +171,7 @@ namespace Sq1.Core.Charting {
 
 		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 		public virtual void InvalidateAllPanels() { }
-		public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
+		//public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
 		
 	}	
 }

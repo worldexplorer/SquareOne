@@ -6,16 +6,16 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Optimization {
 	public class OptimizerParametersSequencer {
-		public ContextScript ContextScriptIterated;
-		object getNextLock;
-		List<IndicatorParameter> paramsMerged;
-		int slowIndex;
-		int fastIndex;
-		string log;
+		public	ContextScript				ContextScriptCloneIterateable;
+				object						getNextLock;
+				List<IndicatorParameter>	paramsMerged;
+				int							slowIndex;
+				int							fastIndex;
+				string						log;
 		
 		public OptimizerParametersSequencer(ContextScript contextScript) {
 			getNextLock = new object();
-			ContextScriptIterated = contextScript.CloneResetAllToMinForOptimizer();
+			ContextScriptCloneIterateable = contextScript.CloneResetAllToMinForOptimizer();
 			//v1
 			//paramsMerged = new List<IndicatorParameter>();
 			//paramsMerged.AddRange(this.ContextScriptIterated.ScriptParametersById.Values);
@@ -23,7 +23,7 @@ namespace Sq1.Core.Optimization {
 			//	paramsMerged.AddRange(iParams);
 			//}
 			//v2 moved to ContextScript.ParametersMerged; Sq1.Widgets.SlidersAutoGrowControl.MenuProvider.EventConsumer.DumpScriptIndicatorParametersToMenuItems() uses the same mechanism
-			paramsMerged = ContextScriptIterated.ParametersMerged;
+			paramsMerged = ContextScriptCloneIterateable.ScriptAndIndicatorParametersMergedClonedForSequencer;
 			slowIndex = 0; 
 			fastIndex = 0;
 			log = "";
@@ -32,7 +32,7 @@ namespace Sq1.Core.Optimization {
 			lock (this.getNextLock) {
 				ContextScript ret = new ContextScript(ctxName);
 				this.logDump(ctxName);
-				ret.AbsorbFrom(this.ContextScriptIterated);
+				ret.AbsorbFrom(this.ContextScriptCloneIterateable);
 				return ret;
 			}
 		}
@@ -41,7 +41,7 @@ namespace Sq1.Core.Optimization {
 				ContextScript ret = new ContextScript(ctxName);
 				this.nextMerged();
 				this.logDump(ctxName);
-				ret.AbsorbFrom(this.ContextScriptIterated);
+				ret.AbsorbFrom(this.ContextScriptCloneIterateable);
 				return ret;
 			}
 		}
@@ -64,6 +64,8 @@ namespace Sq1.Core.Optimization {
 		
 		void nextMerged() {
 			IndicatorParameter paramFast = this.paramsMerged[this.fastIndex];
+			if (paramFast.WillBeSequencedDuringOptimization == false) return;
+
 			paramFast.ValueCurrent += paramFast.ValueIncrement;
 			if (paramFast.ValueCurrent <= paramFast.ValueMax) {
 				string msg = "increased fastIndex[0] when slowIndex[1] (step1...step3)";
@@ -89,6 +91,7 @@ namespace Sq1.Core.Optimization {
 				}
 				for (int i=0; i<=slowIndex; i++) {
 					IndicatorParameter paramToMin = this.paramsMerged[i];
+					if (paramToMin.WillBeSequencedDuringOptimization == false) continue;
 					paramToMin.ValueCurrent = paramToMin.ValueMin;
 				}
 				this.fastIndex++;

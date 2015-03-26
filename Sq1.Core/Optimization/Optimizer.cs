@@ -10,32 +10,33 @@ namespace Sq1.Core.Optimization {
 	public partial class Optimizer {
 		public static string OPTIMIZATION_CONTEXT_PREFIX = "OptimizationIteration";
 
-		public	ScriptExecutor	Executor { get; private set; }
+		public	ScriptExecutor					Executor	{ get; private set; }
 				OptimizerParametersSequencer	parametersSequencer;
 				object							backtestsLock;
 				List<SystemPerformance>			backtests;
 				List<ScriptExecutor>			executorsRunning;
 		
 
-		public	string		DataRangeAsString { get { return Executor.Strategy.ScriptContextCurrent.DataRange.ToString(); } }
-		public	string		PositionSizeAsString { get { return Executor.Strategy.ScriptContextCurrent.PositionSize.ToString(); } }
-		public	string		StrategyAsString { get {
-				return Executor.Strategy.Name
+		public	string		DataRangeAsString				{ get { return this.Executor.Strategy.ScriptContextCurrent.DataRange.ToString(); } }
+		public	string		PositionSizeAsString			{ get { return this.Executor.Strategy.ScriptContextCurrent.PositionSize.ToString(); } }
+		public	string		StrategyAsString				{ get {
+				return this.Executor.Strategy.Name
 					//+ "   " + executor.Strategy.ScriptParametersAsStringByIdJSONcheck
 					//+ executor.Strategy.IndicatorParametersAsStringByIdJSONcheck
 				;
 			} }
-		public	string		SymbolScaleIntervalAsString { get {
+		public	string		SymbolScaleIntervalAsString		{ get {
 				ContextScript ctx = this.Executor.Strategy.ScriptContextCurrent;
 				return ctx.DataSourceName
 					+ " :: " + ctx.Symbol
 					+ " [" + ctx.ScaleInterval.ToString() + "]";
 			} }
 		
-		public	int			ScriptParametersTotalNr { get {
+		public	int			ScriptParametersTotalNr			{ get {
 				int ret = 0;
-				foreach (ScriptParameter sp in Executor.Strategy.Script.ScriptParametersById_ReflectedCached.Values) {
+				foreach (ScriptParameter sp in this.Executor.Strategy.Script.ScriptParametersById_ReflectedCached.Values) {
 					if (sp.NumberOfRuns == 0) continue;
+					if (sp.WillBeSequencedDuringOptimization == false) continue;
 					if (ret == 0) ret = 1;
 					try {
 						ret *= sp.NumberOfRuns;
@@ -48,11 +49,12 @@ namespace Sq1.Core.Optimization {
 				}
 				return ret;
 			} }
-		public	int			IndicatorParameterTotalNr { get {
+		public	int			IndicatorParameterTotalNr		{ get {
 				int ret = 0;
 				//foreach (Indicator i in executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {	//looks empty on Deserialization
-				foreach (IndicatorParameter ip in Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+				foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
 					if (ip.NumberOfRuns == 0) continue;
+					if (ip.WillBeSequencedDuringOptimization == false) continue;
 					if (ret == 0) ret = 1;
 					try {
 						ret *= ip.NumberOfRuns;
@@ -66,7 +68,8 @@ namespace Sq1.Core.Optimization {
 				return ret;
 			} }
 
-		public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParametersMergedByName { get { return this.Executor.Strategy.ScriptContextCurrent.ParametersMergedByName; } }
+		public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParametersMergedByName { get {
+			return this.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerByName; } }
 		
 		public	SortedDictionary<int, ScriptParameter>			ParametersById;
 		public	Dictionary<string, IndicatorParameter>			IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
@@ -169,7 +172,10 @@ namespace Sq1.Core.Optimization {
 			}
 			this.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders = this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
 			this.InitializedProperly = true;
+			TotalsCalculate();
+		}
 
+		public void TotalsCalculate() {
 			int scriptParametersTotalNr = this.ScriptParametersTotalNr;
 			int indicatorParameterTotalNr = this.IndicatorParameterTotalNr;
 			if (scriptParametersTotalNr == 0) {

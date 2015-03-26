@@ -98,8 +98,8 @@ namespace Sq1.Core.Support {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				if (this.InnerList.Contains(position) == false) {
 					if (absenseThrowsAnError == true) {
-						string msg = "CANT_REMOVE_REMOVED_EARLIER_OR_WASNT_ADDED " + lockPurpose;
-						Assembler.PopupException(msg);
+						string msg = "CANT_REMOVE_REMOVED_EARLIER_OR_WASNT_ADDED position[" + position + "] ";
+						Assembler.PopupException(msg + this.ToString());
 					}
 				} else {
 					removed = this.InnerList.Remove(position);

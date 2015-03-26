@@ -177,6 +177,7 @@
     <Compile Include="Optimization\Optimizer.EventGenerator.cs">
       <DependentUpon>Optimizer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Optimization\OptimizerOneParameter.cs" />
     <Compile Include="Optimization\OptimizerParametersSequencer.cs" />
     <Compile Include="Optimization\SystemPerformanceRestoreAbleEventArgs.cs" />
     <Compile Include="Optimization\SystemPerformanceRestoreAble.cs" />

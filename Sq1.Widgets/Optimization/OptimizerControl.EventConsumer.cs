@@ -232,5 +232,25 @@ namespace Sq1.Widgets.Optimization {
 			this.backtests = this.RepositoryJsonOptimizationResults.DeserializeList(fname.Name);
 			this.olvBacktests.SetObjects(this.backtests, true);
 		}
+
+		void fastOLVparametersYesNoMinMaxStep_Click(object sender, EventArgs e) {
+			IndicatorParameter paramClicked = this.fastOLVparametersYesNoMinMaxStep.SelectedObject as IndicatorParameter;
+			if (paramClicked == null) return;
+			// ITEM_CHECKED_WILL_BE_GENERATED paramClicked.WillBeSequencedDuringOptimization = !paramClicked.WillBeSequencedDuringOptimization;
+			if (paramClicked.WillBeSequencedDuringOptimization) {
+				this.fastOLVparametersYesNoMinMaxStep.UncheckObject(paramClicked);
+			} else {
+				this.fastOLVparametersYesNoMinMaxStep.CheckObject(paramClicked);
+			}
+			this.fastOLVparametersYesNoMinMaxStep.Refresh();
+		}
+		void fastOLVparametersYesNoMinMaxStep_ItemCheck(object sender, System.Windows.Forms.ItemCheckEventArgs e) {
+			//IndicatorParameter paramClicked = this.fastOLVparametersYesNoMinMaxStep.SelectedObject as IndicatorParameter;
+			if (e.Index < 0 || e.Index >= this.scriptAndIndicatorParametersMergedCloned.Count) return;
+			IndicatorParameter paramClicked = this.scriptAndIndicatorParametersMergedCloned[e.Index];
+			paramClicked.WillBeSequencedDuringOptimization = e.NewValue.CompareTo(CheckState.Checked) == 0;
+			this.optimizer.TotalsCalculate();
+			this.totalsPropagate();
+		}
 	}
 }

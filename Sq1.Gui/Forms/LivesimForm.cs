@@ -17,8 +17,12 @@ namespace Sq1.Gui.Forms {
 			//ERASES_LINE_IN_DOCK_CONTENT_XML_IF_WITHOUT_IGNORING this.Disposed += this.LivesimForm_Disposed;
 			this.FormClosing							+= new FormClosingEventHandler(this.livesimForm_FormClosing);
 			this.FormClosed								+= new  FormClosedEventHandler(this.livesimForm_FormClosed);
-			this.LivesimControl.BtnStartStop.Click		+= new EventHandler(this.btnStartStop_Click);
-			this.LivesimControl.BtnPauseResume.Click	+= new EventHandler(this.btnPauseResume_Click);
+			//v1
+			//this.LivesimControl.BtnStartStop.Click		+= new EventHandler(this.btnStartStop_Click);
+			//this.LivesimControl.BtnPauseResume.Click	+= new EventHandler(this.btnPauseResume_Click);
+			//v2
+			this.LivesimControl.TssBtnStartStop.Click	+= new EventHandler(this.btnStartStop_Click);
+			this.LivesimControl.TssBtnPauseResume.Click	+= new EventHandler(this.btnPauseResume_Click);
 		}
 
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos

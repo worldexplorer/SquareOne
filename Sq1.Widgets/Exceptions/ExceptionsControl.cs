@@ -12,18 +12,18 @@ using Sq1.Support;
 
 namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
-		public ExceptionsControlDataSnapshot DataSnapshot;
-		public Serializer<ExceptionsControlDataSnapshot> DataSnapshotSerializer;
+				object		lockedByTreeListView;
+				Exception	exceptionSelectedInTree { get { return this.treeExceptions.SelectedObject as Exception; } }
 
-		public List<Exception> Exceptions { get; protected set; }
-		public Dictionary<Exception, DateTime> ExceptionTimes  { get; protected set; }
-//		public List<Exception> FirstExceptionAsList { get {
+		public	ExceptionsControlDataSnapshot				DataSnapshot;
+		public	Serializer<ExceptionsControlDataSnapshot>	DataSnapshotSerializer;
+		public	List<Exception>								Exceptions				{ get; protected set; }
+		public	Dictionary<Exception, DateTime>				ExceptionTimes			{ get; protected set; }
+//		public	List<Exception>					FirstExceptionAsList { get {
 //				var ret = new List<Exception>();
 //				if (this.Exceptions.Count > 0) ret.Add(this.Exceptions[0]);
 //				return ret;
 //			} }
-		Exception exceptionSelectedInTree { get { return this.treeExceptions.SelectedObject as Exception; } }
-		object lockedByTreeListView;
 
 		public ExceptionsControl() : base() {
 			this.lockedByTreeListView = new object();
@@ -40,8 +40,9 @@ namespace Sq1.Widgets.Exceptions {
 		}
 
 		public void Initialize() {
-			if (this.DesignMode) return;
-			if (Assembler.IsInitialized == false) return;
+			//WARNING! LiveSimControl uses non-ExceptionsForm-singleton MULTIPLE ExceptionsControls for LivesimStreamingEditor and LivesimBrokerEditor
+			//LivesimControl throws here in Designer (unbelieabable though)
+			//if (Assembler.IsInitialized == false) return;
 				
 			this.DataSnapshotSerializer = new Serializer<ExceptionsControlDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
@@ -160,6 +161,8 @@ namespace Sq1.Widgets.Exceptions {
 			this.FlushListToTreeIfDockContentDeserialized_inGuiThread();
 		} }
 		public void FlushListToTreeIfDockContentDeserialized_inGuiThread() { lock (this.lockedByTreeListView) {
+			if (base.DesignMode) return;
+			if (Assembler.IsInitialized == false) return; //I_HATE_LIVESIM_FORM_THROWING_EXCEPTIONS_IN_DESIGN_MODE
 			// WINDOWS.FORMS.VISIBLE=FALSE_IS_SET_BY_DOCK_CONTENT_LUO ANALYZE_DockContentImproved.IsShown_INSTEAD if (this.Visible == false) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 				return;

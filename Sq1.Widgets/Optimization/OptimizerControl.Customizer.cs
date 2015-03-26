@@ -141,7 +141,44 @@ namespace Sq1.Widgets.Optimization {
 			if (fname.PFavg == 0) return;	// SystemPerformanceRestoreAble didn't have ProfitFactor calculated/deserialized
 			e.Item.BackColor = (fname.PFavg >= 1) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 		}
-		
+
+		void olvParameterSelectorCustomize() {
+			this.olvcParamName.AspectGetter = delegate(object o) {
+				IndicatorParameter param = o as IndicatorParameter;
+				if (param == null) return "olvcParamName.AspectGetter: param=null";
+				return param.FullName;
+			};
+			this.olvcParamNumberOfRuns.AspectGetter = delegate(object o) {
+				IndicatorParameter param = o as IndicatorParameter;
+				if (param == null) return "olvcParamNumberOfRuns.AspectGetter: param=null";
+				return param.NumberOfRuns;
+			};
+			this.olvcParamValueMin.AspectGetter = delegate(object o) {
+				IndicatorParameter param = o as IndicatorParameter;
+				if (param == null) return "olvcParamValueMin.AspectGetter: param=null";
+				return param.ValueMin;
+			};
+			this.olvcParamValueCurrent.AspectGetter = delegate(object o) {
+				IndicatorParameter param = o as IndicatorParameter;
+				if (param == null) return "olvcParamValueCurrent.AspectGetter: param=null";
+				return param.ValueCurrent;
+			};
+			this.olvcParamValueMax.AspectGetter = delegate(object o) {
+				IndicatorParameter param = o as IndicatorParameter;
+				if (param == null) return "olvcParamValueMax.AspectGetter: param=null";
+				return param.ValueMax;
+			};
+			this.olvcParamStep.AspectGetter = delegate(object o) {
+				IndicatorParameter param = o as IndicatorParameter;
+				if (param == null) return "olvcParamStep.AspectGetter: param=null";
+				return param.ValueIncrement;
+			};
+			this.olvcParamWillBeSequenced.AspectGetter = delegate(object o) {
+				IndicatorParameter param = o as IndicatorParameter;
+				if (param == null) return "olvcParamWillBeSequenced.AspectGetter: param=null";
+				return param.WillBeSequencedDuringOptimization;
+			};
+		}
 	}
 	class AspectGetterDelegateWrapper {
 		string colDynParamName;

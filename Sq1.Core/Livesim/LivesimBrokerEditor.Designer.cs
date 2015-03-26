@@ -146,8 +146,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox2
 			// 
-			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox2.Controls.Add(this.label1);
 			this.groupBox2.Controls.Add(this.label2);
 			this.groupBox2.Controls.Add(this.txt_PartialFillPercentageFilledMax);
@@ -216,8 +216,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// cbx_PartialFillEnabled
 			// 
-			this.cbx_PartialFillEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_PartialFillEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_PartialFillEnabled.Checked = true;
 			this.cbx_PartialFillEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.cbx_PartialFillEnabled.Location = new System.Drawing.Point(6, 68);
@@ -262,8 +262,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox3
 			// 
-			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox3.Controls.Add(this.label13);
 			this.groupBox3.Controls.Add(this.cbx_OrderRejectionEnabled);
 			this.groupBox3.Controls.Add(this.label14);
@@ -287,8 +287,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// cbx_OrderRejectionEnabled
 			// 
-			this.cbx_OrderRejectionEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_OrderRejectionEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_OrderRejectionEnabled.Checked = true;
 			this.cbx_OrderRejectionEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.cbx_OrderRejectionEnabled.Location = new System.Drawing.Point(6, 40);
@@ -333,8 +333,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox4
 			// 
-			this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox4.Controls.Add(this.label16);
 			this.groupBox4.Controls.Add(this.label17);
 			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax);
@@ -403,8 +403,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// cbx_PriceDeviationForMarketOrdersEnabled
 			// 
-			this.cbx_PriceDeviationForMarketOrdersEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_PriceDeviationForMarketOrdersEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_PriceDeviationForMarketOrdersEnabled.Checked = true;
 			this.cbx_PriceDeviationForMarketOrdersEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.cbx_PriceDeviationForMarketOrdersEnabled.Location = new System.Drawing.Point(6, 70);
@@ -449,8 +449,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox5
 			// 
-			this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox5.Controls.Add(this.label22);
 			this.groupBox5.Controls.Add(this.label23);
 			this.groupBox5.Controls.Add(this.txt_AdaperDisconnectReconnectsAfterMillisMax);
@@ -519,8 +519,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// cbx_AdaperDisconnectEnabled
 			// 
-			this.cbx_AdaperDisconnectEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_AdaperDisconnectEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_AdaperDisconnectEnabled.Checked = true;
 			this.cbx_AdaperDisconnectEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.cbx_AdaperDisconnectEnabled.Location = new System.Drawing.Point(6, 70);
@@ -565,8 +565,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.label3);
 			this.groupBox1.Controls.Add(this.label4);
 			this.groupBox1.Controls.Add(this.txt_OutOfOrderFillDeliveredXordersLaterMax);
@@ -635,8 +635,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// cbx_OutOfOrderFillEnabled
 			// 
-			this.cbx_OutOfOrderFillEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_OutOfOrderFillEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_OutOfOrderFillEnabled.Checked = true;
 			this.cbx_OutOfOrderFillEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.cbx_OutOfOrderFillEnabled.Location = new System.Drawing.Point(6, 68);
@@ -681,8 +681,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// groupBox6
 			// 
-			this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox6.Controls.Add(this.label28);
 			this.groupBox6.Controls.Add(this.cbx_DelayBeforeFillEnabled);
 			this.groupBox6.Controls.Add(this.label29);
@@ -706,8 +706,8 @@ namespace Sq1.Core.Livesim {
 			// 
 			// cbx_DelayBeforeFillEnabled
 			// 
-			this.cbx_DelayBeforeFillEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_DelayBeforeFillEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.cbx_DelayBeforeFillEnabled.Checked = true;
 			this.cbx_DelayBeforeFillEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.cbx_DelayBeforeFillEnabled.Location = new System.Drawing.Point(6, 41);
@@ -762,7 +762,7 @@ namespace Sq1.Core.Livesim {
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.groupBox2);
 			this.Name = "LivesimBrokerEditor";
-			this.Size = new System.Drawing.Size(362, 511);
+			this.Size = new System.Drawing.Size(362, 547);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
 			this.groupBox3.ResumeLayout(false);

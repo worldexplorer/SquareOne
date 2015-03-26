@@ -37,10 +37,10 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public bool							FillOutsideQuoteSpreadParanoidCheckThrow;
 		[JsonProperty]	public string						SpreadModelerClassName;
 		[JsonProperty]	public double						SpreadModelerPercent;
-		[JsonProperty]	public BacktestStrokesPerBar					BacktestStrokesPerBar;
+		[JsonProperty]	public BacktestStrokesPerBar		BacktestStrokesPerBar;
 
 
-		[JsonIgnore]	public List<IndicatorParameter> ParametersMerged { get {
+		[JsonIgnore]	public List<IndicatorParameter>		ScriptAndIndicatorParametersMergedClonedForSequencer { get {
 				// MAKE_SURE_YOU_DONT_KEEP_THE_REFERENCE; use ParametersMergedCloned otherwize
 				List<IndicatorParameter> ret = new List<IndicatorParameter>();
 				ret.AddRange(this.ScriptParametersById.Values);
@@ -55,9 +55,9 @@ namespace Sq1.Core.StrategyBase {
 		//		foreach (IndicatorParameter iParam in this.ParametersMerged) ret.Add(iParam.Clone());
 		//		return ret;
 		//	} }
-		[JsonIgnore]	public SortedDictionary<string, IndicatorParameter> ParametersMergedByName { get {
+		[JsonIgnore]	public SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParametersMergedClonedForSequencerByName { get {
 				SortedDictionary<string, IndicatorParameter> ret = new SortedDictionary<string, IndicatorParameter>();
-				foreach (IndicatorParameter iParam in this.ParametersMerged) ret.Add(iParam.FullName, iParam);
+				foreach (IndicatorParameter iParam in this.ScriptAndIndicatorParametersMergedClonedForSequencer) ret.Add(iParam.FullName, iParam);
 				return ret;
 			} }
 
@@ -114,7 +114,7 @@ namespace Sq1.Core.StrategyBase {
 					Dictionary<string, List<IndicatorParameter>>	indicatorParametersByName) {
 			this.ScriptParametersById			= scriptParametersById;
 			this.IndicatorParametersByName		= indicatorParametersByName;
-			this.CloneReferenceTypes(false);
+			this.cloneReferenceTypes(false);
 		}
 		public void AbsorbFrom(ContextScript found, bool absorbScriptAndIndicatorParams = true) {
 			if (found == null) return;
@@ -150,7 +150,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public ContextScript CloneResetAllToMinForOptimizer() {
 			ContextScript ret = (ContextScript)base.MemberwiseClone();
-			ret.CloneReferenceTypes();
+			ret.cloneReferenceTypes();
 			return ret;
 		}
 		public ContextScript CloneThatUserPushesFromOptimizerToStrategy(string scriptContextNewName) {
@@ -158,7 +158,7 @@ namespace Sq1.Core.StrategyBase {
 			ret.AbsorbFrom(this);
 			return ret;
 		}
-		public void CloneReferenceTypes(bool resetAllToMin = true) {
+		void cloneReferenceTypes(bool resetAllToMin = true) {
 			Dictionary<int, ScriptParameter> scriptParametersByIdClonedReset = new Dictionary<int, ScriptParameter>();
 			foreach (int id in this.ScriptParametersById.Keys) {
 				ScriptParameter sp = this.ScriptParametersById[id];
@@ -192,6 +192,5 @@ namespace Sq1.Core.StrategyBase {
 			string ret = this.Symbol + " " + this.ScaleInterval + " " + this.DataRange;
 			return ret;
 		}
-
 	}
 }

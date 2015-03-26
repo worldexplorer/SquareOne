@@ -82,30 +82,40 @@ namespace Sq1.Widgets.SteppingSlider {
 			try {
 				if (this.Strategy == null) return;
 				if (this.Strategy.Script == null) return;
-				//v1 TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
-				// foreach (ScriptParameter parameter in this.Strategy.ScriptParametersMergedWithCurrentContext.Values) {
-				//foreach (ScriptParameter parameter in this.Strategy.Script.ParametersById.Values) {
-				foreach (ScriptParameter parameter in this.Strategy.ScriptContextCurrent.ScriptParametersById.Values) {
-					SliderComboControl slider = this.SliderComboFactory(parameter);
-					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
-					string mustBeMe = slider.Parent.ToString();
-					if (mustBeMe != this.ToString()) {
-						System.Diagnostics.Debugger.Break();
-						string msg = "WHO_THEN???";
+
+				//v1
+				//Dictionary<string, IndicatorParameter> parametersByName = this.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;	// dont make me calculate it twice 
+				//foreach (string indicatorNameDotParameterName in parametersByName.Keys) {																// #1
+				//    IndicatorParameter parameter = parametersByName[indicatorNameDotParameterName];														// #2
+				//    parameter.IndicatorName = indicatorNameDotParameterName.Substring(0, indicatorNameDotParameterName.IndexOf('.'));
+				//    SliderComboControl slider = this.SliderComboFactory(parameter, indicatorNameDotParameterName);
+				//    base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
+				//}
+				//foreach (ScriptParameter parameter in this.Strategy.ScriptContextCurrent.ScriptParametersById.Values) {
+				//    SliderComboControl slider = this.SliderComboFactory(parameter);
+				//    base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
+				//    string mustBeMe = slider.Parent.ToString();
+				//    if (mustBeMe != this.ToString()) {
+				//        System.Diagnostics.Debugger.Break();
+				//        string msg = "WHO_THEN???";
+				//    }
+				//}
+
+				//v2
+				IndicatorParameter parameterPrevToFeelChangeAndAddSpacing = null;
+				List<IndicatorParameter> parameters = this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencer;	// dont make me calculate it twice 
+				foreach (IndicatorParameter param in parameters) {
+					if (parameterPrevToFeelChangeAndAddSpacing == null) {
+						parameterPrevToFeelChangeAndAddSpacing = param;
 					}
+					if (parameterPrevToFeelChangeAndAddSpacing.GetType() != param.GetType()) {
+						this.addSpacingBeforeIndicatorParameters();
+					}
+					parameterPrevToFeelChangeAndAddSpacing = param;
+					SliderComboControl slider = this.SliderComboFactory(param);
+					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				}
 
-				//SWITCHED_TO_PUSH this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
-				Dictionary<string, IndicatorParameter> parametersByName = this.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;	// dont make me calculate it twice 
-				if (parametersByName.Count > 0) {
-					this.addSpacingBeforeIndicatorParameters();
-				}
-				foreach (string indicatorNameDotParameterName in parametersByName.Keys) {																// #1
-					IndicatorParameter parameter = parametersByName[indicatorNameDotParameterName];														// #2
-					parameter.IndicatorName = indicatorNameDotParameterName.Substring(0, indicatorNameDotParameterName.IndexOf('.'));
-					SliderComboControl slider = this.SliderComboFactory(parameter, indicatorNameDotParameterName);
-					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
-				}
 				// while switching ActiveDocument (ChartForm), tsiScriptContextsDynamic.Clear() and don't complain about missing ScriptContexts
 				this.tsiScriptContextsDynamic.Clear();
 			} finally {

@@ -22,8 +22,13 @@ namespace Sq1.Core.Livesim {
 
 		public	Backtester				BacktesterBackup				{ get; private set; }
 		public	LivesimDataSource		DataSourceAsLivesimNullUnsafe	{ get { return base.BacktestDataSource as LivesimDataSource; } }
-				Button					btnStartStop;
-				Button					btnPauseResume;
+				//v1
+				// Button					btnStartStop;
+				// Button					btnPauseResume;
+				//v2
+				ToolStripButton			btnStartStop;
+				ToolStripButton			btnPauseResume;
+
 				ChartShadow				chartShadow;
 				LivesimQuoteBarConsumer livesimQuoteBarConsumer;
 
@@ -190,7 +195,8 @@ namespace Sq1.Core.Livesim {
 		}
 
 
-		public void Start_inGuiThread(Button btnStartStop, Button btnPauseResume, ChartShadow chartShadow) {
+		//v1 public void Start_inGuiThread(Button btnStartStop, Button btnPauseResume, ChartShadow chartShadow) {
+		public void Start_inGuiThread(ToolStripButton btnStartStop, ToolStripButton btnPauseResume, ChartShadow chartShadow) {
 			this.btnStartStop = btnStartStop;
 			this.btnPauseResume = btnPauseResume;
 			this.chartShadow = chartShadow;
@@ -244,7 +250,8 @@ namespace Sq1.Core.Livesim {
 			base.Executor.Backtester = this.BacktesterBackup;
 			base.BarsOriginal = null;	// I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL WILL_AFFECT_ChartForm.TsiProgressBarETA
 
-			this.btnStartStop.BeginInvoke((MethodInvoker)delegate {
+			//v1 this.btnStartStop.BeginInvoke((MethodInvoker)delegate {
+			this.chartShadow.BeginInvoke((MethodInvoker)delegate {
 				this.btnStartStop.Text = "Start";
 				this.chartShadow.Initialize(base.Executor.Bars, true);
 

@@ -9,6 +9,8 @@ using Sq1.Core;
 using Sq1.Core.Optimization;
 using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
+using System.Diagnostics;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl : UserControl {
@@ -16,8 +18,8 @@ namespace Sq1.Widgets.Optimization {
 				List<string>						colMetricsShouldStay;
 				List<SystemPerformanceRestoreAble>	backtests;
 				List<OLVColumn>						columnsDynParam;
-		public	RepositoryJsonOptimizationResults	RepositoryJsonOptimizationResults		{ get; private set;}
-		
+		public	RepositoryJsonOptimizationResults	RepositoryJsonOptimizationResults			{ get; private set;}
+				List<IndicatorParameter>			scriptAndIndicatorParametersMergedCloned;
 
 		public OptimizerControl() {
 			InitializeComponent();
@@ -86,18 +88,25 @@ namespace Sq1.Widgets.Optimization {
 			this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild += new EventHandler<EventArgs>(this.optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
 			
 			this.PopulateTextboxesFromExecutorsState();
-			
+
+			this.olvParameterSelectorCustomize();
+			this.olvParameterPopulate();
+
 			this.populateColumns();
 			this.olvBacktestsCustomize();
 		
 			this.olvHistoryCustomize();
-			this.RepositoryJsonOptimizationResults.Initialize(Assembler.InstanceInitialized.AppDataPath, Path.Combine("OptimizationResults", this.optimizer.Executor.Strategy.RelPathAndNameForOptimizationResults));
+			this.RepositoryJsonOptimizationResults.Initialize(Assembler.InstanceInitialized.AppDataPath
+				, Path.Combine("OptimizationResults", this.optimizer.Executor.Strategy.RelPathAndNameForOptimizationResults));
 			string symbolScaleRange = this.optimizer.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//this.olvHistoryRescanRefillSelect(symbolScaleRange);
 				
 			this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
 		}
-
+		void olvParameterPopulate() {
+			this.scriptAndIndicatorParametersMergedCloned = this.optimizer.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencer;
+			this.fastOLVparametersYesNoMinMaxStep.SetObjects(this.scriptAndIndicatorParametersMergedCloned);
+		}
 		void olvHistoryRescanRefillSelect(string symbolScaleRange) {
 			this.RepositoryJsonOptimizationResults.RescanFolderStoreNamesFound();
 			this.olvHistory.SetObjects(this.RepositoryJsonOptimizationResults.ItemsFound);
@@ -161,11 +170,15 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
 			this.PopulateTextboxesFromExecutorsState();
 		}
+
 		public string PopulateTextboxesFromExecutorsState() {
 			if (this.splitContainer1.SplitterDistance != this.heightExpanded) {
 				this.splitContainer1.SplitterDistance  = this.heightExpanded;
 			}
 			
+			this.btnRunCancel.Enabled				= true;
+			this.btnPauseResume.Enabled				= false;
+
 			string staleReason = this.optimizer.StaleReason;
 			//if (string.IsNullOrEmpty(staleReason) == false) {
 			//	return staleReason;
@@ -175,28 +188,29 @@ namespace Sq1.Widgets.Optimization {
 			this.txtPositionSize.Text				= this.optimizer.PositionSizeAsString;
 			this.txtStrategy.Text					= this.optimizer.StrategyAsString;
 			this.txtSymbol.Text						= this.optimizer.SymbolScaleIntervalAsString;
-			this.txtScriptParameterTotalNr.Text		= this.optimizer.ScriptParametersTotalNr.ToString();
-			this.txtIndicatorParameterTotalNr.Text	= this.optimizer.IndicatorParameterTotalNr.ToString();
+			this.totalsPropagate();
+						
+			return null;
+		}
 
-			int backtestsTotal						= this.optimizer.BacktestsTotal;
-			this.btnRunCancel.Text					= "Run " + backtestsTotal + " backtests";
-			this.lblStats.Text						= "0% complete	0/" + backtestsTotal;
-			this.progressBar1.Value					= 0;
-			this.progressBar1.Maximum				= (backtestsTotal != -1) ? backtestsTotal : 0;
-			
-			this.nudThreadsToRun.Value				= this.optimizer.ThreadsToUse;
+		void totalsPropagate() {
+			this.txtScriptParameterTotalNr.Text = this.optimizer.ScriptParametersTotalNr.ToString();
+			this.txtIndicatorParameterTotalNr.Text = this.optimizer.IndicatorParameterTotalNr.ToString();
+
+			int backtestsTotal = this.optimizer.BacktestsTotal;
+			this.btnRunCancel.Text = "Run " + backtestsTotal + " backtests";
+			this.btnRunCancel.Enabled = backtestsTotal > 0 ? true : false;
+			this.lblStats.Text = "0% complete   0/" + backtestsTotal;
+			this.progressBar1.Value = 0;
+			this.progressBar1.Maximum = (backtestsTotal != -1) ? backtestsTotal : 0;
+
+			this.nudThreadsToRun.Value = this.optimizer.ThreadsToUse;
 
 			if (backtestsTotal == -1) {
-				this.olvBacktests.EmptyListMsg =  "RUN_-1_BACKTESTS_IS_DUE_TO MULTIPLICATION_OF_POSSIBLE_PARAMETERS"
+				this.olvBacktests.EmptyListMsg = "RUN_-1_BACKTESTS_IS_DUE_TO MULTIPLICATION_OF_POSSIBLE_PARAMETERS"
 					+ " IS_MORE_THAN_2,14_BLN_COMBINATIONS WENT_OUT_OF_INT32_CAPACITY"
 					+ " SEE_EXCEPTIONS_FORM_FOR_OFFENSIVE_PARAMETERS DECREASE_RANGE_OR_INCREASE_STEP_FOR_xxx RECOMPILE";
 			}
-
-						
-			this.btnRunCancel.Enabled				= true;
-			this.btnPauseResume.Enabled				= false;
-
-			return null;
 		}
 		void populateColumns() {
 			//DONT_CLEAR_RESULTS_AFTER_TAB_SWITCHING_ONLY_RUN_WILL_CLEAR_OLD_TABLE this.olvBacktests.Items.Clear();
@@ -274,6 +288,5 @@ namespace Sq1.Widgets.Optimization {
 			this.btnRunCancel.Text = userClickedAnotherSymbolScaleIntervalRangePositionSize
 				? "Clear to Optimize" : "Run " + this.optimizer.BacktestsTotal + " backtests";
 		}
-
 	}
 }

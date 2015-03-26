@@ -132,7 +132,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				this.ctxOperations.SuspendLayout();
 				this.ctxOperations.Items.Clear();
 
-				foreach (IndicatorParameter param in ctx.ParametersMerged) {
+				foreach (IndicatorParameter param in ctx.ScriptAndIndicatorParametersMergedClonedForSequencer) {
 					//v1
 					//ToolStripMenuItem mni = new ToolStripMenuItem();
 					//mni.CheckOnClick = false;
