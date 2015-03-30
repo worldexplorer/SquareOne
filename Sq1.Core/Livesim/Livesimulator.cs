@@ -253,9 +253,10 @@ namespace Sq1.Core.Livesim {
 			//v1 this.btnStartStop.BeginInvoke((MethodInvoker)delegate {
 			this.chartShadow.BeginInvoke((MethodInvoker)delegate {
 				this.btnStartStop.Text = "Start";
+				this.btnStartStop.CheckState = CheckState.Unchecked;
 				this.chartShadow.Initialize(base.Executor.Bars, true);
 
-				float seconds = (float)Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 1);
+				float seconds = (float)Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);
 				this.btnPauseResume.Text = seconds.ToString() + " sec";
 				this.btnPauseResume.Enabled = false;
 			});

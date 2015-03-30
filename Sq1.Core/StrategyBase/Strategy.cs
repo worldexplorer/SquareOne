@@ -139,7 +139,7 @@ namespace Sq1.Core.StrategyBase {
 			//new concept that IndicatorParameters are only identical objects between script context and sliders.tags, while every click-change is absorbed by snapshot.IndicatorsInstancesReflected
 			string indicatorName = iParamChangedCtx.IndicatorName;
 			string indicatorParameterName = iParamChangedCtx.Name;
-			Dictionary<string, Indicator> indicatorsByName = this.Script.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances;
+			Dictionary<string, Indicator> indicatorsByName = this.Script.IndicatorsByName_ReflectedCached;
 			if (indicatorsByName.ContainsKey(indicatorName) == false) {
 				string msg = "WILL_PICK_UP_ON_BACKTEST__INDICATOR_NOT_FOUND_IN_INDICATORS_REFLECTED: " + indicatorName;
 				Assembler.PopupException(msg);
@@ -169,7 +169,7 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			try {
-				this.Script.AbsorbScriptAndIndicatorParametersFromSelfCloneConstructed();
+				this.Script.SwitchToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed();
 				this.Serialize();
 				string msg = "Successfully reset ScriptContextCurrentName[" + this.ScriptContextCurrentName + "] for strategy[" + this + "]";
 				Assembler.DisplayStatus(msg);
@@ -179,6 +179,25 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void Serialize() {
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+		}
+
+		public void ScriptParametersAbsorbMergeFromReflected_StoreInCurrentContext_SaveStrategy_notSameObjects_usedForResettingToDefault() {
+			bool storeStrategySinceParametersGottenFromScript = this.ScriptContextCurrent
+				//.ScriptParametersAbsorbMergeFromReflected_halfMerge_doesntRemoveExisting(
+				.ScriptParametersAbsorbFromReflectedReplace(
+					this.Script.ScriptParametersById_ReflectedCached);
+			if (storeStrategySinceParametersGottenFromScript == false) return;
+			this.Serialize();
+		}
+
+		internal void IndicatorParamsAbsorbMergeFromReflected_StoreInCurrenctContext_SaveStrategy() {
+			bool strategySaveRequired = this.ScriptContextCurrent
+				//.IndicatorParamsAbsorbMergeFromReflected_halfSync_doesntRemoveLeftoversAfterRecompilation(
+				//	this.Script.IndicatorsByName_ReflectedCached);
+				.IndicatorParamsAbsorbFromReflectedReplace(
+					this.Script.IndicatorParametersByIndicator_ReflectedCached);
+			if (strategySaveRequired == false) return;
+			this.Serialize();
 		}
 	}
 }

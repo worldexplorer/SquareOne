@@ -40,6 +40,7 @@ namespace Sq1.Core.Indicators {
 		public IndicatorParameter() {
 			BorderShown = false;
 			NumericUpdownShown = true;
+			IndicatorName = "NOT_ATTACHED_TO_ANY_INDICATOR_YET will be replaced in Indicator.cs:118.ParametersByNameParametersByName";
 		}
 		public IndicatorParameter(string name, double valueCurrent = double.NaN,
 								  double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) : this() {
@@ -78,6 +79,10 @@ namespace Sq1.Core.Indicators {
 				return this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
 			} }
 		public void AbsorbCurrentFixBoundariesIfChanged(IndicatorParameter ctxParamToAbsorbCurrentAndFixBoundaries) {
+			this.WillBeSequencedDuringOptimization	= ctxParamToAbsorbCurrentAndFixBoundaries.WillBeSequencedDuringOptimization;
+			this.BorderShown						= ctxParamToAbsorbCurrentAndFixBoundaries.BorderShown;
+			this.NumericUpdownShown					= ctxParamToAbsorbCurrentAndFixBoundaries.NumericUpdownShown;
+
 			if (this.ValueCurrent != ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent) {
 				string msg = "we collapsed IndicatorParameters into a single instance thing; are we back to duplicates?...";
 				//Debugger.Break();
@@ -106,7 +111,9 @@ namespace Sq1.Core.Indicators {
 		}
 		// USED_TO_SEPARATE_LONG_LIVING_SCRIPT_INDICATOR_PARAMETER_INSTANCE__FROM_SWITCHING_CONTEXT_INDICATOR_SETTINGS
 		public IndicatorParameter Clone() {
-			return (IndicatorParameter)base.MemberwiseClone();
+			IndicatorParameter ret = (IndicatorParameter)base.MemberwiseClone();
+			ret.Name = "CLONE_" + ret.Name;
+			return ret;
 		}
 	}
 }

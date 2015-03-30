@@ -13,7 +13,16 @@ namespace Sq1.Core.Execution {
 			Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				foreach (int bar in this.ByExitBarFilled.Keys) ret.Add(bar, new List<Position>(this.ByExitBarFilled[bar]));
+				foreach (int bar in this.ByExitBarFilled.Keys) {
+					if (ret.ContainsKey(bar) == false) {
+						ret.Add(bar, new List<Position>(this.ByExitBarFilled[bar]));
+					} else {
+						string msg = "INVESTIGATE_THIS";
+						Assembler.PopupException(msg + lockPurpose);
+						List<Position> alreadyThere = ret[bar];
+						alreadyThere.AddRange(this.ByExitBarFilled[bar]);
+					}
+				}
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
@@ -24,7 +33,16 @@ namespace Sq1.Core.Execution {
 			Dictionary<int, List<Position>> ret = new Dictionary<int, List<Position>>();
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				foreach (int bar in this.ByEntryBarFilled.Keys) ret.Add(bar, new List<Position>(this.ByEntryBarFilled[bar]));
+				foreach (int bar in this.ByEntryBarFilled.Keys) {
+					if (ret.ContainsKey(bar) == false) {
+						ret.Add(bar, new List<Position>(this.ByEntryBarFilled[bar]));
+					} else {
+						string msg = "INVESTIGATE_THIS";
+						Assembler.PopupException(msg + lockPurpose);
+						List<Position> alreadyThere = ret[bar];
+						alreadyThere.AddRange(this.ByEntryBarFilled[bar]);
+					}
+				}
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}

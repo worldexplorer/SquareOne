@@ -32,14 +32,17 @@ namespace Sq1.Core.Livesim {
 
 		public override void OrderSubmit(Order order) {
 			this.OrdersSubmittedForOneLivesimBacktest.Add(order);
+			string msg = "IS_ASYNC_CALLBACK_NEEDED? THREAD_ID " + Thread.CurrentThread.ManagedThreadId;
+			base.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(order.GUID, OrderState.Submitted, msg);
 		}
 
 		internal void ConsumeQuoteOfStreamingBarToFillPending(QuoteGenerated quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
 			ScriptExecutor executor = this.livesimDataSource.Executor;
 			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
 			if (snap.AlertsPending.Count == 0) {
-				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0";
-				Assembler.PopupException(msg);
+				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //ConsumeQuoteOfStreamingBarToFillPending(" + willBeFilled + ") ";
+				//DISABLED_TO_SEE_WHAT_THAT_WILL_BRING
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 
@@ -54,7 +57,7 @@ namespace Sq1.Core.Livesim {
 				}
 			}
 			if (delay == 0) {
-				this.consumeQuoteOfStreamingBarToFillPendingAsync(quoteUnattachedVolatilePointer);
+				this.consumeQuoteOfStreamingBarToFillPendingAsync(quoteUnattachedVolatilePointer, willBeFilled);
 				return;
 			}
 
@@ -74,13 +77,13 @@ namespace Sq1.Core.Livesim {
 				//Application.DoEvents();
 				Thread.Sleep(delay);
 				AlertList afterDelay = snap.AlertsPending;
-				//if (afterDelay.Count == 0) return;
+				if (afterDelay.Count == 0) return;
 				if (priorDelayedFill.Count != afterDelay.Count) {
 					string msg = "COUNT_MIGHT_HAVE_DECREASED_FOR_MULTIPLE_OPEN_POSITIONS/STRATEGY_IN_ANOTHER_FILLING_THREAD WHO_FILLED_WHILE_I_WAS_SLEEPING???";
 					//Assembler.PopupException(msg);
 					return;
 				}
-				this.consumeQuoteOfStreamingBarToFillPendingAsync(quoteUnattachedLocalScoped);
+				this.consumeQuoteOfStreamingBarToFillPendingAsync(quoteUnattachedLocalScoped, willBeFilled);
 				executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 			});
 			t.ContinueWith(delegate {
@@ -103,7 +106,7 @@ namespace Sq1.Core.Livesim {
 			List<Alert> safe = willBeFilled.SafeCopy(this, "//ConsumeQuoteOfStreamingBarToFillPending()");
 			this.DataSnapshot.AlertsScheduledForDelayedFill.AddRange(safe, this, "ConsumeQuoteOfStreamingBarToFillPending(WAIT)");
 		} }
-		void consumeQuoteOfStreamingBarToFillPendingAsync(QuoteGenerated quoteUnattached) {
+		void consumeQuoteOfStreamingBarToFillPendingAsync(QuoteGenerated quoteUnattached, AlertList expectingToFill) {
 			ScriptExecutor executor = this.livesimDataSource.Executor;
 			Bar barStreaming = executor.Bars.BarStreaming;
 			if (barStreaming == null) {
@@ -118,7 +121,7 @@ namespace Sq1.Core.Livesim {
 			}
 			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
 			if (snap.AlertsPending.Count == 0) {
-				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //consumeQuoteOfStreamingBarToFillPendingAsync()";
+				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //consumeQuoteOfStreamingBarToFillPendingAsync(" + expectingToFill + ")";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
@@ -164,8 +167,14 @@ namespace Sq1.Core.Livesim {
 			//base.GeneratedQuoteEnrichSymmetricallyAndPush(quote, bar2simulate);
 		}
 		void onAlertFilled(Alert alertFilled, double priceFilled, double qtyFilled) {
-			this.DataSnapshot.AlertsScheduledForDelayedFill.Remove(alertFilled, this, "onAlertFilled(WAIT)");
-
+			try {
+				this.DataSnapshot.AlertsScheduledForDelayedFill.WaitAndLockFor(this, "onAlertFilled(WAIT)");
+				if (this.DataSnapshot.AlertsScheduledForDelayedFill.Contains(alertFilled, this, "onAlertFilled(WAIT)")) {
+					this.DataSnapshot.AlertsScheduledForDelayedFill.Remove(alertFilled, this, "onAlertFilled(WAIT)");
+				}
+			} finally {
+				this.DataSnapshot.AlertsScheduledForDelayedFill.UnLockFor(this, "onAlertFilled(WAIT)");
+			}
 			Order order = alertFilled.OrderFollowed;
 			OrderStateMessage osm = new OrderStateMessage(order, OrderState.Filled, "LIVESIM_FILLED_THROUGH_MARKETSIM_BACKTEST");
 			OrderProcessor orderProcessor = Assembler.InstanceInitialized.OrderProcessor;

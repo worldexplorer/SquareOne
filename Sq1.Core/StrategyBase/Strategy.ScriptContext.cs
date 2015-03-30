@@ -48,7 +48,8 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.ContextMarkCurrentInListByName(scriptContextName);
 			if (this.Script != null) {
-				this.Script.ScriptParametersPushReflectedIntoCurrentContextSaveStrategy();
+				this.ScriptParametersAbsorbMergeFromReflected_StoreInCurrentContext_SaveStrategy_notSameObjects_usedForResettingToDefault();
+				this.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 			}
 		}
 		public void ContextMarkCurrentInListByName(string scriptContextName) {

@@ -96,7 +96,7 @@ namespace Sq1.Core.Backtesting {
 			//string msg = "MAKE_SURE_WE_WILL_INVOKE_BacktestStartingConstructOwnValuesValidateParameters()";
 			//Assembler.PopupException(msg, null, false);
 
-			int repaintableChunk = (int)(this.BarsOriginal.Count / 20);
+			int repaintableChunk = (int)(this.BarsOriginal.Count / 10);
 			if (repaintableChunk <= 0) repaintableChunk = 1;
 				
 			int excludeLastBarStreamingWillTriggerIt = this.BarsOriginal.Count - 1;

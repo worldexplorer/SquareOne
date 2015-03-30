@@ -23,7 +23,7 @@ namespace Sq1.Core.StrategyBase {
 		public SystemPerformanceSlice		SliceBuyHold		{ get; private set; }
 		
 		public SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished		{ get; private set; }
-		public Dictionary<int, ScriptParameter>		ScriptParametersById_BuiltOnBacktestFinished								{ get; private set; }
+		public SortedDictionary<int, ScriptParameter>		ScriptParametersById_BuiltOnBacktestFinished						{ get; private set; }
 		public Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished					{ get; private set; }
 
 		public string						NetProfitRecoveryForScriptContextNewName	{ get {
@@ -109,7 +109,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			//WRONG this.ScriptAndIndicatorParameterClonesByName.Clear();
 			this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished = new SortedDictionary<string, IndicatorParameter>();
-			this.ScriptParametersById_BuiltOnBacktestFinished = new Dictionary<int, ScriptParameter>();
+			this.ScriptParametersById_BuiltOnBacktestFinished = new SortedDictionary<int, ScriptParameter>();
 
 			string pids = script.ScriptParametersByIdAsString;
 			foreach (ScriptParameter sp in script.ScriptParametersById_ReflectedCached.Values) {
@@ -126,7 +126,7 @@ namespace Sq1.Core.StrategyBase {
 			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
 			string iids = script.IndicatorParametersAsString;
 			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
-			foreach (IndicatorParameter ip in script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+			foreach (IndicatorParameter ip in script.IndicatorsParameters_ReflectedCached.Values) {
 				if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(ip.FullName)) {
 					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_IndicatorParameter[" + ip.Name + "]: " + iids;
 					Assembler.PopupException(msg);

@@ -290,12 +290,14 @@ namespace Sq1.Core.StrategyBase {
 		internal int BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(PositionList positionsOpenNow) {
 			int positionsUpdatedAbsorbed = 0;
 
-			List<int> barIndexesAsc = new List<int>(positionsOpenNow.ByEntryBarFilled.Keys);
+			var byEntryBarFilledSafeCopySafeCopy = positionsOpenNow.ByEntryBarFilledSafeCopy(
+				this, "//BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(WAIT)");
+			List<int> barIndexesAsc = new List<int>(byEntryBarFilledSafeCopySafeCopy.Keys);
 			barIndexesAsc.Sort();
 
 			List<Position> positionsClosedAtBar = new List<Position>();
 			foreach (int barIndex in barIndexesAsc) {
-				List<Position> positionsOpenedAtBar = positionsOpenNow.ByEntryBarFilled[barIndex];
+				List<Position> positionsOpenedAtBar = byEntryBarFilledSafeCopySafeCopy[barIndex];
 				foreach (Position positionOpenedAtBar in positionsOpenedAtBar) {
 					if (positionsOpenedAtBar.Count != 1) {
 						string msg = "MULTIPLE_POSITIONS_OPEN_FOR_ONE_BAR[" + barIndex + "] positionOpenedAtBar[" + positionOpenedAtBar + "]";
@@ -328,8 +330,8 @@ namespace Sq1.Core.StrategyBase {
 				positionsOpenedAbsorbedToInternal++;
 			}
 			if (positionsOpenedAbsorbedToInternal != openedSafe.Count) {
-					string msg = "IS_THERE_ANY_PROBLEM?";
-					Assembler.PopupException(msg);
+				string msg = "IS_THERE_ANY_PROBLEM? positionsOpenedAbsorbedToInternal[" + positionsOpenedAbsorbedToInternal + "] != openedSafe.Count[" + openedSafe.Count + "]";
+				Assembler.PopupException(msg, null, false);
 			}
 			
 			int positionsClosedAbsorbedToInternal = 0;
@@ -348,10 +350,10 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "IS_THERE_ANY_PROBLEM?";
 					//Assembler.PopupException(msg);
 			}
-			
 
-			Dictionary<int, List<Position>> positionsOpenedAfterExec	= pokeUnit.PositionsOpened.ByEntryBarFilled;
-			Dictionary<int, List<Position>> positionsClosedAfterExec	= pokeUnit.PositionsClosed.ByExitBarFilled;
+
+			Dictionary<int, List<Position>> positionsOpenedAfterExec	= pokeUnit.PositionsOpened.ByEntryBarFilledSafeCopy(this, "BuildStatsOnBacktestFinished(WAIT)");
+			Dictionary<int, List<Position>> positionsClosedAfterExec	= pokeUnit.PositionsClosed.ByExitBarFilledSafeCopy(this, "BuildStatsOnBacktestFinished(WAIT)");
 			
 			int positionsOpenAbsorbed = 0;
 

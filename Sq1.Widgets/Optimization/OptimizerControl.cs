@@ -55,6 +55,8 @@ namespace Sq1.Widgets.Optimization {
 //			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveWinners);
 //			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveLosers);
 
+			//this.fastOLVparametersYesNoMinMaxStep.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.fastOLVparametersYesNoMinMaxStep_ItemCheck);
+
 			backtests								= new List<SystemPerformanceRestoreAble>();
 			columnsDynParam							= new List<OLVColumn>();
 			RepositoryJsonOptimizationResults		= new RepositoryJsonOptimizationResults();
@@ -87,7 +89,7 @@ namespace Sq1.Widgets.Optimization {
 			this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild -= new EventHandler<EventArgs>(this.optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
 			this.optimizer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild += new EventHandler<EventArgs>(this.optimizer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
 			
-			this.PopulateTextboxesFromExecutorsState();
+			this.populateTextboxesFromExecutorsState();
 
 			this.olvParameterSelectorCustomize();
 			this.olvParameterPopulate();
@@ -97,14 +99,14 @@ namespace Sq1.Widgets.Optimization {
 		
 			this.olvHistoryCustomize();
 			this.RepositoryJsonOptimizationResults.Initialize(Assembler.InstanceInitialized.AppDataPath
-				, Path.Combine("OptimizationResults", this.optimizer.Executor.Strategy.RelPathAndNameForOptimizationResults));
-			string symbolScaleRange = this.optimizer.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+				, Path.Combine("OptimizationResults", this.optimizer.ExecutorCloneToBeSpawned.Strategy.RelPathAndNameForOptimizationResults));
+			string symbolScaleRange = this.optimizer.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//this.olvHistoryRescanRefillSelect(symbolScaleRange);
 				
 			this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
 		}
 		void olvParameterPopulate() {
-			this.scriptAndIndicatorParametersMergedCloned = this.optimizer.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencer;
+			this.scriptAndIndicatorParametersMergedCloned = this.optimizer.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders;
 			this.fastOLVparametersYesNoMinMaxStep.SetObjects(this.scriptAndIndicatorParametersMergedCloned);
 		}
 		void olvHistoryRescanRefillSelect(string symbolScaleRange) {
@@ -152,7 +154,7 @@ namespace Sq1.Widgets.Optimization {
 				base.BeginInvoke((MethodInvoker)delegate { this.SyncBacktestAndListWithOptimizationResultsByContextIdent(); });
 				return;
 			}
-			Strategy strategy = this.optimizer.Executor.Strategy;
+			Strategy strategy = this.optimizer.ExecutorCloneToBeSpawned.Strategy;
 			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//v1
 			//if (strategy.OptimizationResultsByContextIdent.ContainsKey(symbolScaleRange)) {
@@ -168,10 +170,10 @@ namespace Sq1.Widgets.Optimization {
 			}
 			this.olvBacktests.SetObjects(this.backtests); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
-			this.PopulateTextboxesFromExecutorsState();
+			this.populateTextboxesFromExecutorsState();
 		}
 
-		public string PopulateTextboxesFromExecutorsState() {
+		void populateTextboxesFromExecutorsState() {
 			if (this.splitContainer1.SplitterDistance != this.heightExpanded) {
 				this.splitContainer1.SplitterDistance  = this.heightExpanded;
 			}
@@ -188,12 +190,10 @@ namespace Sq1.Widgets.Optimization {
 			this.txtPositionSize.Text				= this.optimizer.PositionSizeAsString;
 			this.txtStrategy.Text					= this.optimizer.StrategyAsString;
 			this.txtSymbol.Text						= this.optimizer.SymbolScaleIntervalAsString;
-			this.totalsPropagate();
-						
-			return null;
+			this.totalsPropagateAdjustSplitterDistance();
 		}
 
-		void totalsPropagate() {
+		void totalsPropagateAdjustSplitterDistance() {
 			this.txtScriptParameterTotalNr.Text = this.optimizer.ScriptParametersTotalNr.ToString();
 			this.txtIndicatorParameterTotalNr.Text = this.optimizer.IndicatorParameterTotalNr.ToString();
 
@@ -211,6 +211,21 @@ namespace Sq1.Widgets.Optimization {
 					+ " IS_MORE_THAN_2,14_BLN_COMBINATIONS WENT_OUT_OF_INT32_CAPACITY"
 					+ " SEE_EXCEPTIONS_FORM_FOR_OFFENSIVE_PARAMETERS DECREASE_RANGE_OR_INCREASE_STEP_FOR_xxx RECOMPILE";
 			}
+
+			this.adjustSplitterDistanceToNumberOfParameters_invokeMeAfterRecompiled();
+		}
+
+		void adjustSplitterDistanceToNumberOfParameters_invokeMeAfterRecompiled() {
+			//int rowsShown = this.fastOLVparametersYesNoMinMaxStep.RowsPerPage;
+			int splitterDistanceForThreeLines = 220;
+			int allParameterLinesToDraw = this.optimizer.AllParameterLinesToDraw;
+			if (allParameterLinesToDraw <= 3) {
+				this.splitContainer1.SplitterDistance = splitterDistanceForThreeLines;
+				return;
+			}
+			int heightEachNewLine = this.fastOLVparametersYesNoMinMaxStep.RowHeightEffective;
+			int inAdditionToThree = (allParameterLinesToDraw - 3) * heightEachNewLine;
+			this.splitContainer1.SplitterDistance = splitterDistanceForThreeLines + inAdditionToThree;
 		}
 		void populateColumns() {
 			//DONT_CLEAR_RESULTS_AFTER_TAB_SWITCHING_ONLY_RUN_WILL_CLEAR_OLD_TABLE this.olvBacktests.Items.Clear();
@@ -225,22 +240,21 @@ namespace Sq1.Widgets.Optimization {
 				this.olvBacktests.Columns.Remove(col);
 				this.olvBacktests.AllColumns.Remove(col);
 			}
-			
-			
 			if (this.optimizer == null) {
 				this.olvBacktests.EmptyListMsg = "this.optimizer == null";
 				return;
 			}
-			if (this.optimizer.ParametersById == null) {
-				this.olvBacktests.EmptyListMsg = "this.optimizer.ParametersById == null";
-				return;
-			}
-			
-			var sparams = this.optimizer.ParametersById;
+			var sparams = this.optimizer.ExecutorCloneToBeSpawned.Strategy.Script.ScriptParametersById_ReflectedCached;
 			if (sparams == null) {
-				this.olvBacktests.EmptyListMsg = "this.optimizer.ParametersById == null";
+				this.olvBacktests.EmptyListMsg = "this.optimizer.ExecutorCloneToBeSpawned.Strategy.Script.ScriptParametersById_ReflectedCached == null";
 				return;
 			}
+			var iparams = this.optimizer.ExecutorCloneToBeSpawned.Strategy.Script.IndicatorsByName_ReflectedCached;
+			if (iparams == null) {
+				this.olvBacktests.EmptyListMsg = "this.optimizer.ExecutorCloneToBeSpawned.Strategy.Script.IndicatorsByName_ReflectedCached == null";
+				return;
+			}
+
 			foreach (ScriptParameter sp in sparams.Values) {
 				OLVColumn olvcSP = new OLVColumn();
 				olvcSP.Name = sp.Name;
@@ -250,12 +264,6 @@ namespace Sq1.Widgets.Optimization {
 				this.olvBacktests.Columns.Add(olvcSP);
 				//this.olvBacktests.AllColumns.Add(olvcSP);
 				this.columnsDynParam.Add(olvcSP);
-			}
-			
-			var iparams = this.optimizer.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
-			if (iparams == null) {
-				this.olvBacktests.EmptyListMsg = "this.optimizer.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders == null";
-				return;
 			}
 			
 			foreach (string indicatorDotParameter in iparams.Keys) {
@@ -273,7 +281,7 @@ namespace Sq1.Widgets.Optimization {
 		int heightExpanded { get { return this.splitContainer1.Panel1MinSize * 8; } }
 		int heightCollapsed { get { return this.splitContainer1.Panel1MinSize; } }
 		public void NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize() {
-			Strategy strategy = this.optimizer.Executor.Strategy;
+			Strategy strategy = this.optimizer.ExecutorCloneToBeSpawned.Strategy;
 			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			if (this.RepositoryJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) return;
 

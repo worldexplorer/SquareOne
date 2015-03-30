@@ -31,7 +31,7 @@
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 49,
+    "BarWidthIncludingPadding": 29,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -60,7 +60,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 310,
+    "SqueezeVerticalPaddingPx": 50,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -70,7 +70,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 52,
+    "ScrollPositionAtBarIndex": 491,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -94,7 +94,7 @@
     "MousePositionTrackOnGutters": true,
     "MousePositionTrackOnGuttersColor": "LightGray",
     "BarsBackgroundTransparencyAlpha": 24,
-    "ChartLabelsUpperLeftYstartTopmost": 18,
+    "ChartLabelsUpperLeftYstartTopmost": 5,
     "ChartLabelsUpperLeftX": 5,
     "ChartLabelsUpperLeftPlatePadding": 1,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
@@ -131,7 +131,7 @@
       "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 35
+        "Distance": 21
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -144,7 +144,7 @@
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 341
+        "Distance": 344
       }
     }
   },

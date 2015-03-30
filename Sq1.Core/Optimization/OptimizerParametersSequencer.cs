@@ -23,7 +23,7 @@ namespace Sq1.Core.Optimization {
 			//	paramsMerged.AddRange(iParams);
 			//}
 			//v2 moved to ContextScript.ParametersMerged; Sq1.Widgets.SlidersAutoGrowControl.MenuProvider.EventConsumer.DumpScriptIndicatorParametersToMenuItems() uses the same mechanism
-			paramsMerged = ContextScriptCloneIterateable.ScriptAndIndicatorParametersMergedClonedForSequencer;
+			paramsMerged = ContextScriptCloneIterateable.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders;
 			slowIndex = 0; 
 			fastIndex = 0;
 			log = "";

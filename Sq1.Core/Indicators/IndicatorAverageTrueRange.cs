@@ -7,17 +7,17 @@ using Sq1.Core.Indicators.HelperSeries;
 
 namespace Sq1.Core.Indicators {
 	public class IndicatorAverageTrueRange : Indicator {
-		public	IndicatorParameter	ParamPeriod;	// Indicator searches for IndicatorParameter being fields, not properties
-				TrueRangeSeries		trueRangeSeries;
-				MovingAverageSimple	smaSeries;
+		public	IndicatorParameter		ParamPeriod;	// Indicator searches for IndicatorParameter being fields, not properties
+				TrueRangeSeries			trueRangeSeries;
+				MovingAverageSimple		smaSeries;
 
 		public override int FirstValidBarIndex {
-			get { return (int)this.ParamPeriod.ValueCurrent; }		// Period = 15, 0..14 are NaN, index=15 has valueCalculated
-			protected set { throw new Exception("I_DONT_ACCEPT_SETTING_OF_FirstValidBarIndex " + this.NameWithParameters); }
+						get { return (int)this.ParamPeriod.ValueCurrent; }		// Period = 15, 0..14 are NaN, index=15 has valueCalculated
+			protected	set { throw new Exception("I_DONT_ACCEPT_SETTING_OF_FirstValidBarIndex " + this.NameWithParameters); }
 		}
 		
 		public IndicatorAverageTrueRange() : base() {
-			base.Name = "ATR";
+			base.Name = "ATR //will be replaced by Script.cs:179.IndicatorsByName_ReflectedCached";
 			base.ChartPanelType = ChartPanelType.PanelIndicatorSingle;
 			ParamPeriod = new IndicatorParameter("Period", 5, 1, 11, 2);
 		}

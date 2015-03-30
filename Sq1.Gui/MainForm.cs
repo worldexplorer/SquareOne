@@ -181,8 +181,9 @@ namespace Sq1.Gui {
 					//}
 					//v2
 					#if DEBUG
-					if (chartStrategy.Script.IndicatorsInitializedInDerivedConstructor.Count > 0) {
-						bool mergedIfAny = chartStrategy.ScriptContextCurrent.IndicatorParametersByName.Count == chartStrategy.Script.IndicatorsInitializedInDerivedConstructor.Count;
+					int indicatorsReflectedCount = chartStrategy.Script.IndicatorsByName_ReflectedCached.Count;
+					if (indicatorsReflectedCount > 0) {
+						bool mergedIfAny = chartStrategy.ScriptContextCurrent.IndicatorParametersByName.Count == indicatorsReflectedCount;
 						if (mergedIfAny == false) Debugger.Break();
 					}
 					#endif

@@ -547,7 +547,8 @@ namespace Sq1.Gui.Forms {
 			if (willBacktest == false) {
 				// COPYFROM_StrategyCompileActivatePopulateSlidersShow()
 				if (this.Strategy.Script != null && this.Strategy.ActivatedFromDll) {
-					this.Strategy.Script.ScriptParametersPushReflectedIntoCurrentContextSaveStrategy();
+					this.Strategy.ScriptParametersAbsorbMergeFromReflected_StoreInCurrentContext_SaveStrategy_notSameObjects_usedForResettingToDefault();
+					this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 				}
 				//this.OptimizerFormShow(true);
 				//this.LivesimFormShow(true);
@@ -745,8 +746,8 @@ namespace Sq1.Gui.Forms {
 			}
 
 			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
-				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
-				this.Strategy.Script.ScriptParametersPushReflectedIntoCurrentContextSaveStrategy();
+				this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
+				this.Strategy.ScriptParametersAbsorbMergeFromReflected_StoreInCurrentContext_SaveStrategy_notSameObjects_usedForResettingToDefault();
 			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.PopulateSliders();

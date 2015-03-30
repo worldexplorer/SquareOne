@@ -22,7 +22,6 @@ namespace Sq1.Core.Execution {
 		public	PositionList					PositionsClosedAfterExec	{ get; private set; }
 		public	PositionList					PositionsOpenNow			{ get; private set; }
 
-		public	Dictionary<string, Indicator>	IndicatorsReflectedScriptInstances;
 
 		public ExecutionDataSnapshot(ScriptExecutor strategyExecutor) {
 			this.executor						= strategyExecutor;
@@ -36,7 +35,6 @@ namespace Sq1.Core.Execution {
 			PositionsOpenNow					= new PositionList("PositionsOpenNow"			, this);	// monitored
 			PositionsOpenedAfterExec			= new PositionList("PositionsOpenedAfterExec"	, this);	// monitored
 			PositionsClosedAfterExec			= new PositionList("PositionsClosedAfterExec"	, this);	// monitored
-			IndicatorsReflectedScriptInstances	= new Dictionary<string, Indicator>();
 			this.initializeScriptExecWatchdog();
 		}
 

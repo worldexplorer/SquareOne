@@ -2,7 +2,7 @@
 
 
 namespace Sq1.Charting {
-	public partial class PanelPrice : PanelBase {
+	public partial class PanelPrice {
 
 		//public double	PriceRangeShown_cached					{ get { return this.VisibleMinDoubleMaxValueUnsafe - this.VisibleMaxDoubleMinValueUnsafe; } }
 		public double	PriceRangeShownPlusSqueezers_cached		{ get { return base.VisibleMaxPlusBottomSqueezer_cached - base.VisibleMinMinusTopSqueezer_cached; } }

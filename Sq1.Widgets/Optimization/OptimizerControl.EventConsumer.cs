@@ -88,7 +88,7 @@ namespace Sq1.Widgets.Optimization {
 			//this.olvBacktests.UseWaitCursor = false;
 			this.btnPauseResume.Text = this.optimizer.BacktestsSecondsElapsed + " seconds elapsed";
 			
-			Strategy strategy = this.optimizer.Executor.Strategy;
+			Strategy strategy = this.optimizer.ExecutorCloneToBeSpawned.Strategy;
 			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//v1
 			//if (strategy.OptimizationResultsByContextIdent.ContainsKey(symbolScaleRange) == false) {
@@ -197,7 +197,7 @@ namespace Sq1.Widgets.Optimization {
 				Assembler.PopupException(msg + msig);
 				return null;
 			}
-			ContextScript selectedClone = this.optimizer.Executor.Strategy.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(sysPerfRestoreAble);
+			ContextScript selectedClone = this.optimizer.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(sysPerfRestoreAble);
 			return selectedClone;
 		}
 		void olvBacktests_CellClick(object sender, CellClickEventArgs e) {
@@ -244,13 +244,16 @@ namespace Sq1.Widgets.Optimization {
 			}
 			this.fastOLVparametersYesNoMinMaxStep.Refresh();
 		}
-		void fastOLVparametersYesNoMinMaxStep_ItemCheck(object sender, System.Windows.Forms.ItemCheckEventArgs e) {
-			//IndicatorParameter paramClicked = this.fastOLVparametersYesNoMinMaxStep.SelectedObject as IndicatorParameter;
-			if (e.Index < 0 || e.Index >= this.scriptAndIndicatorParametersMergedCloned.Count) return;
-			IndicatorParameter paramClicked = this.scriptAndIndicatorParametersMergedCloned[e.Index];
-			paramClicked.WillBeSequencedDuringOptimization = e.NewValue.CompareTo(CheckState.Checked) == 0;
-			this.optimizer.TotalsCalculate();
-			this.totalsPropagate();
-		}
+		// implemented as this.fastOLVparametersYesNoMinMaxStep.CheckStatePutter = delegate(object o, CheckState newState) {}
+		//void fastOLVparametersYesNoMinMaxStep_ItemCheck(object sender, System.Windows.Forms.ItemCheckEventArgs e) {
+		//    //IndicatorParameter paramClicked = this.fastOLVparametersYesNoMinMaxStep.SelectedObject as IndicatorParameter;
+		//    if (e.Index < 0 || e.Index >= this.scriptAndIndicatorParametersMergedCloned.Count) return;
+		//    IndicatorParameter paramClicked = this.scriptAndIndicatorParametersMergedCloned[e.Index];
+		//    paramClicked.WillBeSequencedDuringOptimization = e.NewValue.CompareTo(CheckState.Checked) == 0;
+		//    this.optimizer.TotalsCalculate();
+		//    this.totalsPropagateAdjustSplitterDistance();
+		//    // for HeaderAllCheckBox.Clicked => Strategy.Serialize()d as many times as you got (Script+Indicator)Parameters
+		//    this.optimizer.ExecutorCloneToBeSpawned.Strategy.Serialize();
+		//}
 	}
 }

@@ -196,6 +196,53 @@ namespace Sq1.Core.StrategyBase {
 					//	msg = "InitializeStrategyAfterDeserialization will Script.Initialize(this) later with bars";
 				} else {
 					this.Strategy.Script.Initialize(this);
+
+					#region PARANOID
+					#if DEBUG
+					var reflected = this.Strategy.Script.ScriptParametersById_ReflectedCached;
+					var ctx = this.Strategy.ScriptContextCurrent.ScriptParametersById;
+					if (reflected.Count != ctx.Count) {
+						string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+						Assembler.PopupException(msg2);
+					}
+					foreach (int id in reflected.Keys) {
+						if (ctx.ContainsKey(id) == false) {
+							string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+							Assembler.PopupException(msg2);
+							continue;
+						}
+						if (ctx[id] != reflected[id]) {
+							string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+							Assembler.PopupException(msg2);
+							continue;
+						}
+					}
+
+					//v1: CRAZY_TYPES_CONVERSION,CONSIDER_CONTEXT_SAVE_IN_SAME_FORMAT_AS_REFLECTED_OR_INTRODUCE_ARTIFICIAL_SIMILAR_NEXT_TO_REFLECTED
+					//var iReflected = this.Strategy.Script.IndicatorsByName_ReflectedCached;
+					//var iCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
+					//if (reflected.Count != ctx.Count) {
+					//    string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+					//    Assembler.PopupException(msg2);
+					//}
+					//foreach (int id in reflected.Keys) {
+					//    if (ctx.ContainsKey(id) == false) {
+					//        string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+					//        Assembler.PopupException(msg2);
+					//        continue;
+					//    }
+					//    if (ctx[id] != reflected[id]) {
+					//        string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+					//        Assembler.PopupException(msg2);
+					//        continue;
+					//    }
+					//}
+					//v2 just force it and find duplicate calls in debugger...
+					this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
+					#endif
+					#endregion
+
+					// here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference
 					this.Optimizer.Initialize();	//otherwize this.Optimizer.InitializedProperly = false; => can't optimize anything
 				}
 			}
@@ -240,7 +287,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 				//INDICATOR_ADDING_STREAMING_DOESNT_KNOW_FROM_QUOTE_WHAT_DATE_OPEN_TO_PUT
-				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
+				foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
 					try {
 						indicator.OnNewStreamingQuote(quoteForAlertsCreated);
 					} catch (Exception ex) {
@@ -283,7 +330,7 @@ namespace Sq1.Core.StrategyBase {
 						return null;
 					}
 				}
-				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
+				foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
 					try {
 						indicator.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppended(this.Bars.BarStaticLastNullUnsafe);
 					} catch (Exception ex) {
@@ -728,24 +775,21 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 
-			Bar barFill = (this.IsStreamingTriggeringScript) ? alertFilled.Bars.BarStreamingCloneReadonly : alertFilled.Bars.BarStaticLastNullUnsafe;
+			Bar barFill = (this.IsStreamingTriggeringScript)
+				? alertFilled.Bars.BarStreamingCloneReadonly
+				: alertFilled.Bars.BarStaticLastNullUnsafe;
+
 			if (alertFilled.IsEntryAlert) {
 				if (alertFilled.PositionAffected.EntryFilledBarIndex != -1) {
 					string msg = "DUPE: CallbackAlertFilled can't do its job: alert.PositionAffected.EntryBar!=-1 for alert [" + alertFilled + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					throw new Exception(msg);
+					Assembler.PopupException(msg, null, false);
 				} else {
 					string msg = "initializing EntryBar=[" + barFill + "] on AlertFilled";
 				}
 			} else {
 				if (alertFilled.PositionAffected.ExitFilledBarIndex != -1) {
 					string msg = "DUPE: CallbackAlertFilled can't do its job: alert.PositionAffected.ExitBar!=-1 for alert [" + alertFilled + "]";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					throw new Exception(msg);
+					Assembler.PopupException(msg, null, false);
 				} else {
 					string msg = "initializing ExitBar=[" + barFill + "] on AlertFilled";
 				}
@@ -1161,7 +1205,7 @@ namespace Sq1.Core.StrategyBase {
 			} else {
 				this.Bars = bars;
 				bool indicatorsHaveNoErrorsCanStartBacktesting = true;
-				foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
+				foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
 					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStartingConstructOwnValuesValidateParameters(this);
 				}
 				if (indicatorsHaveNoErrorsCanStartBacktesting == false) {
@@ -1183,7 +1227,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		internal void BacktestContextRestore() {
 			this.Bars = this.preBacktestBars;
-			foreach (Indicator indicator in this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {
+			foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
 				if (indicator.OwnValuesCalculated.Count != this.Bars.Count) {
 					string state = "MA.OwnValues.Count=499, MA.BarsEffective.Count=500[0...499], MA.BarsEffective.BarStreaming=null <= that's why indicator has 1 less";
 					string msg = "YOU_ABORTED_LIVESIM_BUT_DIDNT_RECALCULATE_INDICATORS? REMOVE_HOLES_IN_INDICATOR " + indicator;
@@ -1220,7 +1264,7 @@ namespace Sq1.Core.StrategyBase {
 				this.Performance.Initialize();
 				this.Strategy.Script.InitializeBacktestWrapper();
 
-				if (this.ChartShadow != null) this.ChartShadow.SetIndicators(this.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances);
+				if (this.ChartShadow != null) this.ChartShadow.SetIndicators(this.Strategy.Script.IndicatorsByName_ReflectedCached);
 
 				this.Backtester.InitializeAndRun_step1of2();
 			} catch (Exception exBacktest) {
@@ -1290,9 +1334,9 @@ namespace Sq1.Core.StrategyBase {
 			//if (this.Strategy.ActivatedFromDll) {
 				// FIXED "EnterEveryBar doesn't draw MAfast"; editor-typed strategies already have indicators in SNAP after pre-backtest compilation
 				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true
-				this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
+				this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 			//}
-			this.Strategy.Script.ScriptParametersPushReflectedIntoCurrentContextSaveStrategy();
+			this.Strategy.ScriptParametersAbsorbMergeFromReflected_StoreInCurrentContext_SaveStrategy_notSameObjects_usedForResettingToDefault();
 			
 			//inNewThread = false;
 			if (inNewThread) {

@@ -25,7 +25,9 @@ namespace Sq1.Core.StrategyBase {
 //			return this.Name + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
 //		}
 		public ScriptParameter Clone() {
-			return (ScriptParameter)base.MemberwiseClone();
+			ScriptParameter ret = (ScriptParameter)base.MemberwiseClone();
+			ret.ReasonToExist = "CLONE_" + ret.ReasonToExist;
+			return ret;
 		}
 	}
 }

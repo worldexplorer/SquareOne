@@ -462,7 +462,10 @@ namespace Sq1.Core.Broker {
 			}
 			if (order.State == newStateOmsg.State) {
 				string msg = "Replace with AppendOrderMessage()! UpdateOrderStateNoPostProcess(): got the same OrderState[" + order.State + "]?";
-				throw new Exception(msg);
+				//ROUGH_BRO throw new Exception(msg);
+				Assembler.PopupException(msg);
+				this.appendOrderMessageAndPropagate(order, newStateOmsg);
+				return;
 			}
 
 			// REPLACED_WITH_OUTER_this.orderUpdateLock
@@ -485,6 +488,11 @@ namespace Sq1.Core.Broker {
 								double priceFill = 0, double qtyFill = 0) { lock (this.orderUpdateLock) {
 			string msig = "UpdateOrderStateAndPostProcess(): ";
 			try {
+				if (order == null) {
+					string msg = "POSSIBLE_END_OF_LIVESIM_LATE_FILL_AFTER_CTX_RESTORED_LIVEBROKER_GONE " + newStateOmsg.ToString();
+					Assembler.PopupException(msg);
+					return;
+				}
 				if (order.VictimToBeKilled != null) {
 					this.postProcessKillerOrder(order, newStateOmsg);
 					return;
@@ -539,7 +547,11 @@ namespace Sq1.Core.Broker {
 						}
 					}
 				}
-				this.UpdateOrderStateDontPostProcess(order, newStateOmsg);
+				if (order.State == newStateOmsg.State) {
+					this.appendOrderMessageAndPropagate(order, newStateOmsg);
+				} else {
+					this.UpdateOrderStateDontPostProcess(order, newStateOmsg);
+				}
 				this.postProcessOrderState(order, priceFill, qtyFill);
 			} catch (Exception ex) {
 				string msg = "trying to figure out why SL is not getting placed - we didn't reach PostProcess??";

@@ -15,7 +15,7 @@ namespace Sq1.Core.Indicators {
 		}
 		
 		public IndicatorMovingAverageSimple() : base() {
-			base.Name = "MA";
+			base.Name = "MA //will be replaced by Script.IndicatorsByName_ReflectedCached()";
 			// NOW DEFAULT base.ChartPanelType = ChartPanelType.PanelPrice;
 			ParamPeriod = new IndicatorParameter("Period", 55, 11, 99, 11);
 		}

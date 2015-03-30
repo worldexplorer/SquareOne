@@ -8,7 +8,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Charting {
-	public partial class PanelPrice : PanelBase {
+	public partial class PanelPrice {
 		void renderBarsPrice(Graphics g) {
 			//for (int i = 0; i < base.ChartControl.BarsCanFitForCurrentWidth; i++) {
 			//	int barFromRight = base.ChartControl.BarsCanFitForCurrentWidth - i - 1;
@@ -175,7 +175,7 @@ namespace Sq1.Charting {
 		}
 		void renderOnChartLines(Graphics g) {
 			// avoiding throwing "Dictionary.CopyTo target array wrong size" below during backtest & chartMouseOver
-			if (base.ChartControl != null && base.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
+			//if (base.ChartControl != null && base.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
 			
 			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";

@@ -25,9 +25,6 @@ namespace Sq1.Charting {
 		[Browsable(false)]	public	string			BarsIdent			{ get; set; }		//if a public field isn't a property, Designer will crash
 							public	bool			GutterRightDraw		{ get; set; }
 							public	bool			GutterBottomDraw	{ get; set; }
-		
-							public	bool			ImPaintingForegroundNow = false;
-							public	bool			ImPaintingBackgroundNow = false;
 
 		[Browsable(false)]	public	string			PanelNameAndSymbol	{ get { return this.PanelName + " " + this.BarsIdent; } }
 		[Browsable(false)]	public	ChartControl	ChartControl;		//{ get { return base.Parent as ChartControl; } }
@@ -270,21 +267,18 @@ namespace Sq1.Charting {
 				Assembler.PopupException(msg, null, false);
 			}
 
-			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
-			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
-			
-			this.ChartControl.SyncHorizontalScrollToBarsCount();
-
-//			if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
-//				string msg = "MUST_BE_POSITIVE#2_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
-//				Assembler.PopupException(msg + msig);
-//				return;
-//			}
-			
-			if (this.ImPaintingForegroundNow) return;
 			try {
-				this.ImPaintingForegroundNow = true;
-				
+				//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
+				e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
+			
+				this.ChartControl.SyncHorizontalScrollToBarsCount();
+
+				//if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
+				//	string msg = "MUST_BE_POSITIVE#2_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
+				//	Assembler.PopupException(msg + msig);
+				//	return;
+				//}
+			
 				if (this.PanelHasValuesForVisibleBarWindow == false) {
 					string msg = "PANEL_BASE_PAINT_ENTRY_POINT_PROTECTS_DERIVED_FROM_INVOKING_PaintWholeSurfaceBarsNotEmpty()"
 						+ " occurs for JSON-Scripted Strategies with PanelIndicator* open without indicator's data"
@@ -292,6 +286,8 @@ namespace Sq1.Charting {
 					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
+				
+				this.RepaintSernoForeground++;
 				
 				this.PaintWholeSurfaceBarsNotEmpty(e.Graphics);	// GOOD: we get here once per panel
 				// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
@@ -321,8 +317,6 @@ namespace Sq1.Charting {
 				string msg = "OnPaintDoubleBuffered(): caught[" + ex.Message + "]";
 				Assembler.PopupException(msg + msig, ex);
 				this.DrawError(e.Graphics, msg);
-			} finally {
-				this.ImPaintingForegroundNow = false;
 			}
 		}
 		protected virtual void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
@@ -383,6 +377,8 @@ namespace Sq1.Charting {
 			this.GutterGridLinesRightBottomDrawForeground(g);
 		}
 
+		protected	int RepaintSernoForeground;
+		protected	int RepaintSernoBackground;
 
 //#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
 //		protected override void OnPaintBackground(PaintEventArgs e) {
@@ -394,7 +390,6 @@ namespace Sq1.Charting {
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			//if (this.DesignMode) return;
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
-			if (this.ImPaintingBackgroundNow) return;
 			if (this.ChartControl == null) {
 				//e.Graphics.Clear(SystemColors.Control);
 				e.Graphics.Clear(base.BackColor);
@@ -417,13 +412,23 @@ namespace Sq1.Charting {
 				this.DrawError(e.Graphics, msig + msg);
 				return;
 			}
-			this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
-			//if (this.ChartControl.BarsNotEmpty) {}
-			this.ChartControl.SyncHorizontalScrollToBarsCount();
-			
 			try {
-				this.ImPaintingBackgroundNow = true;
+				this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
+				//if (this.ChartControl.BarsNotEmpty) {}
+				this.ChartControl.SyncHorizontalScrollToBarsCount();
+			
 				e.Graphics.Clear(this.ChartControl.ChartSettings.ChartColorBackground);
+				
+				this.RepaintSernoBackground++;
+				if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
+					this.DrawError(e.Graphics, "BACKTEST_IS_RUNNING_WAIT");
+					string msgRepaint = "repaintFore#" + this.RepaintSernoForeground + "/Back#" + this.RepaintSernoBackground;
+					this.DrawError(e.Graphics, msgRepaint);
+					if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
+				}
+				if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.Default;
+
+				
 				// TODO: we get here 4 times per Panel: DockContentHandler.SetVisible, set_FlagClipWindow, WndProc * 2
 				
 				this.VisibleBarRight_cached = this.ChartControl.VisibleBarRight;
@@ -482,8 +487,6 @@ namespace Sq1.Charting {
 				string msg = "OnPaintBackgroundDoubleBuffered(): caught[" + ex.Message + "]";
 				Assembler.PopupException(msg, ex);
 				this.DrawError(e.Graphics, msg);
-			} finally {
-				this.ImPaintingBackgroundNow = false;
 			}
 		}
 

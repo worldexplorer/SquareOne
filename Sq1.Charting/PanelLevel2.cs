@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Sq1.Core;
 using Sq1.Core.Streaming;
 using Sq1.Core.DataTypes;
-using Sq1.Core;
 
 namespace Sq1.Charting {
 	public class PanelLevel2 : PanelBase {
@@ -44,8 +44,6 @@ namespace Sq1.Charting {
 			base.Invalidate();
 		}
 
-		int repaintSerno;
-
 		//using (var brush = new SolidBrush(Color.Red)) {
 		//	Font font = (this.ChartControl != null) ? this.ChartControl.ChartSettings.PanelNameAndSymbolFont : this.Font;
 		//	g.DrawString(msgRepaint, font, brush, new Point(60, 60));
@@ -56,20 +54,43 @@ namespace Sq1.Charting {
 //		protected override void OnPaint(PaintEventArgs pe) {
 			//ONLY_FOR_PRICE_PANEL?? //base.OnPaintBackgroundDoubleBuffered(pe);	 //base.DrawError drew label only lowest 2px shown from top of panel
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs pe) {
-			//temp pickup to measure through Graphics.MeasureString()
-			if (base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered != -1) return;
+			this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
+			Graphics g = pe.Graphics;
+			g.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
+			
+			try {
+				g.Clear(this.ChartControl.ChartSettings.LevelTwoColorBackground);
+				
+				base.RepaintSernoBackground++;
+				if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
+					this.DrawError(g, "BACKTEST_IS_RUNNING_WAIT");
+					string msgRepaint = "repaintFore#" + this.RepaintSernoForeground + "/Back#" + this.RepaintSernoBackground;
+					this.DrawError(g, msgRepaint);
+					if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
+				}
+				if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.Default;
+				
+				//temp pickup to measure through Graphics.MeasureString()
+				if (base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered != -1) return;
+	
+				// same as PanelBase.ensureFontMetricsAreCalculated(e.Graphics);
+				SizeF labelMeasurements = pe.Graphics.MeasureString("ABC123`'jg]", base.ChartControl.ChartSettings.LevelTwoLotFont);
+				//int labelMeasurementsWidth = (int)Math.Round(labelMeasurements.Width);
+				int labelMeasurementsHeight = (int)Math.Round(labelMeasurements.Height);
+				base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered = labelMeasurementsHeight;
 
-			SizeF labelMeasurements = pe.Graphics.MeasureString("ABC123`'jg]", base.ChartControl.ChartSettings.LevelTwoLotFont);
-			//int labelMeasurementsWidth = (int)Math.Round(labelMeasurements.Width);
-			int labelMeasurementsHeight = (int)Math.Round(labelMeasurements.Height);
-			base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered = labelMeasurementsHeight;
+			} catch (Exception ex) {
+				string msg = "OnPaintBackgroundDoubleBuffered(): caught[" + ex.Message + "]";
+				Assembler.PopupException(msg, ex);
+				this.DrawError(g, msg);
+			}
+
 		}
 		protected override void OnPaintDoubleBuffered(PaintEventArgs pe) {
-			this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
-			pe.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
+			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
 
 			Graphics g = pe.Graphics;
-			g.Clear(this.BackColor);
+			g.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 
 			this.errorDetected = false;
 			if (this.StreamingDataSnapshotNullUnsafe == null) {
@@ -84,19 +105,19 @@ namespace Sq1.Charting {
 			if (this.errorDetected == false) {
 				lastQuote = this.StreamingDataSnapshotNullUnsafe.LastQuoteCloneGetForSymbol(this.ChartControl.Bars.Symbol);
 				if (lastQuote == null) {
-					//g.Clear(this.ChartControl.ChartSettings.LevelTwoColorBackgroundStreamingHasNoLastQuote);
 					base.DrawError(g, "CONNECT_STREAMING__OR__CHART>BARS>SUBSCRIBE");
 					this.errorDetected = true;
 				}
 			}
 
-			this.repaintSerno++;
-			string msgRepaint = "L2 repaint#" + this.repaintSerno + "//" + base.ParentMultiSplitIamFirst + ":" + base.ParentMultiSplitIamLast;
-			base.DrawError(g, msgRepaint);
-			if (this.errorDetected) return;
-
-			g.Clear(this.ChartControl.ChartSettings.LevelTwoColorBackground);
-			//base.DrawError(g, msgRepaint);
+			base.RepaintSernoForeground++;
+			if (this.errorDetected) {
+				string whoAmI = "Leve2 first[" + base.ParentMultiSplitIamFirst + "] last[" + base.ParentMultiSplitIamLast + "]";
+				base.DrawError(g, whoAmI);
+				string msgRepaint = "repaintFore#" + this.RepaintSernoForeground + "/Back#" + this.RepaintSernoBackground;
+				base.DrawError(g, msgRepaint);
+				return;
+			}
 
 			try {
 				this.renderLevel2(pe.Graphics, lastQuote);
@@ -120,6 +141,9 @@ namespace Sq1.Charting {
 
 			LevelTwoHalfFrozen asks_cachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Asks_cachedForOnePaint;
 			LevelTwoHalfFrozen bids_cachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Bids_cachedForOnePaint;
+
+			if (asks_cachedForOnePaint == null) return;		//it's coming; I don't understand how I happen to be here then :(
+			if (bids_cachedForOnePaint == null) return;		//it's coming
 
 			double	priceMax = Math.Max(bids_cachedForOnePaint.PriceMax, asks_cachedForOnePaint.PriceMax);
 			double	askQuote = Math.Min(bids_cachedForOnePaint.PriceMin, asks_cachedForOnePaint.PriceMin);

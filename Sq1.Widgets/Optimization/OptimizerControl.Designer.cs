@@ -119,8 +119,8 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			this.splitContainer1.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer1.Panel2.Controls.Add(this.olvBacktests);
-			this.splitContainer1.Size = new System.Drawing.Size(685, 671);
-			this.splitContainer1.SplitterDistance = 276;
+			this.splitContainer1.Size = new System.Drawing.Size(633, 473);
+			this.splitContainer1.SplitterDistance = 220;
 			this.splitContainer1.TabIndex = 0;
 			// 
 			// olvHistory
@@ -156,7 +156,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.ShowImagesOnSubItems = true;
 			this.olvHistory.ShowItemCountOnGroups = true;
 			this.olvHistory.ShowItemToolTips = true;
-			this.olvHistory.Size = new System.Drawing.Size(267, 223);
+			this.olvHistory.Size = new System.Drawing.Size(215, 167);
 			this.olvHistory.TabIndex = 42;
 			this.olvHistory.TintSortColumn = true;
 			this.olvHistory.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.HotTrack;
@@ -241,7 +241,7 @@ namespace Sq1.Widgets.Optimization {
 			this.fastOLVparametersYesNoMinMaxStep.ShowGroups = false;
 			this.fastOLVparametersYesNoMinMaxStep.ShowImagesOnSubItems = true;
 			this.fastOLVparametersYesNoMinMaxStep.ShowItemToolTips = true;
-			this.fastOLVparametersYesNoMinMaxStep.Size = new System.Drawing.Size(403, 133);
+			this.fastOLVparametersYesNoMinMaxStep.Size = new System.Drawing.Size(403, 77);
 			this.fastOLVparametersYesNoMinMaxStep.TabIndex = 41;
 			this.fastOLVparametersYesNoMinMaxStep.TintSortColumn = true;
 			this.fastOLVparametersYesNoMinMaxStep.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.HotTrack;
@@ -253,7 +253,6 @@ namespace Sq1.Widgets.Optimization {
 			this.fastOLVparametersYesNoMinMaxStep.UseTranslucentHotItem = true;
 			this.fastOLVparametersYesNoMinMaxStep.View = System.Windows.Forms.View.Details;
 			this.fastOLVparametersYesNoMinMaxStep.VirtualMode = true;
-			this.fastOLVparametersYesNoMinMaxStep.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.fastOLVparametersYesNoMinMaxStep_ItemCheck);
 			this.fastOLVparametersYesNoMinMaxStep.Click += new System.EventHandler(this.fastOLVparametersYesNoMinMaxStep_Click);
 			// 
 			// olvcParamName
@@ -417,7 +416,7 @@ namespace Sq1.Widgets.Optimization {
 			this.txtStrategy.Enabled = false;
 			this.txtStrategy.Location = new System.Drawing.Point(238, 33);
 			this.txtStrategy.Name = "txtStrategy";
-			this.txtStrategy.Size = new System.Drawing.Size(442, 20);
+			this.txtStrategy.Size = new System.Drawing.Size(390, 20);
 			this.txtStrategy.TabIndex = 25;
 			this.txtStrategy.Text = "MA_ATRComplied (UserStop=1,ActivateLog=3) (ATR.Period=14,ATRband.Multiplier=1.56)" +
 				"";
@@ -481,7 +480,7 @@ namespace Sq1.Widgets.Optimization {
 			// lblStats
 			// 
 			this.lblStats.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblStats.Location = new System.Drawing.Point(528, 7);
+			this.lblStats.Location = new System.Drawing.Point(476, 7);
 			this.lblStats.Name = "lblStats";
 			this.lblStats.Size = new System.Drawing.Size(150, 16);
 			this.lblStats.TabIndex = 35;
@@ -493,7 +492,7 @@ namespace Sq1.Widgets.Optimization {
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.progressBar1.Location = new System.Drawing.Point(162, 6);
 			this.progressBar1.Name = "progressBar1";
-			this.progressBar1.Size = new System.Drawing.Size(360, 16);
+			this.progressBar1.Size = new System.Drawing.Size(308, 16);
 			this.progressBar1.TabIndex = 34;
 			this.progressBar1.Value = 48;
 			// 
@@ -526,7 +525,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvBacktests.ShowCommandMenuOnRightClick = true;
 			this.olvBacktests.ShowGroups = false;
 			this.olvBacktests.ShowItemCountOnGroups = true;
-			this.olvBacktests.Size = new System.Drawing.Size(685, 391);
+			this.olvBacktests.Size = new System.Drawing.Size(633, 249);
 			this.olvBacktests.TabIndex = 0;
 			this.olvBacktests.TintSortColumn = true;
 			this.olvBacktests.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.HotTrack;
@@ -724,7 +723,7 @@ namespace Sq1.Widgets.Optimization {
 			this.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.Controls.Add(this.splitContainer1);
 			this.Name = "OptimizerControl";
-			this.Size = new System.Drawing.Size(685, 671);
+			this.Size = new System.Drawing.Size(633, 473);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel1.PerformLayout();
 			this.splitContainer1.Panel2.ResumeLayout(false);

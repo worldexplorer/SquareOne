@@ -1,20 +1,25 @@
 ﻿<Properties StartupItem="Sq1.Gui\Sq1.Gui.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="c:\SquareOne\Sq1.Gui\Singletons\ExceptionsForm.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="c:\SquareOne\Sq1.Charting\ChartControl.cs">
     <Files>
-      <File FileName="c:\SquareOne\Sq1.Core\Support\ConcurrentWatchdog.cs" Line="1" Column="1" />
-      <File FileName="c:\SquareOne\Sq1.Core\Assembler.cs" Line="1" Column="1" />
-      <File FileName="c:\SquareOne\Sq1.Core\Support\ConcurrentDictionaryGeneric.cs" Line="1" Column="1" />
       <File FileName="c:\SquareOne\Sq1.Charting\ChartControl.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Core\Livesim\LivesimBroker.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Core\Execution\AlertList.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Core\Support\ConcurrentListWD.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Charting\PanelBase.Rendering.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Core\Backtesting\Backtester.cs" Line="1" Column="1" />
       <File FileName="c:\SquareOne\Sq1.Gui\Singletons\ExceptionsForm.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Gui\Forms\ChartForm.EventConsumer.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Gui\Forms\ChartFormInterformEventsConsumer.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Gui\Forms\ChartFormStreamingConsumer.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\Assembler.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\StrategyBase\SystemPerformanceSlice.cs" Line="1" Column="1" />
+      <File FileName="ObjectListView_280-src\ObjectListView.cs" Line="70" Column="70" />
+      <File FileName="Sq1.Core\DataTypes\Bars.cs" Line="9" Column="9" />
+      <File FileName="Sq1.Core\DataTypes\Bar.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Core\DataTypes\Bars.EventGenerator.cs" Line="34" Column="34" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="C:\SquareOne\Sq1.Core\Livesim\LivesimBroker.cs" line="88" column="1" />
+      <Breakpoint file="C:\SquareOne\Sq1.Core\Livesim\LivesimBroker.cs" line="90" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />

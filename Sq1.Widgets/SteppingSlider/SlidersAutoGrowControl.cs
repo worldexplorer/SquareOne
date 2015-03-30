@@ -103,7 +103,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				//v2
 				IndicatorParameter parameterPrevToFeelChangeAndAddSpacing = null;
-				List<IndicatorParameter> parameters = this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencer;	// dont make me calculate it twice 
+				List<IndicatorParameter> parameters = this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders;	// dont make me calculate it twice 
 				foreach (IndicatorParameter param in parameters) {
 					if (parameterPrevToFeelChangeAndAddSpacing == null) {
 						parameterPrevToFeelChangeAndAddSpacing = param;

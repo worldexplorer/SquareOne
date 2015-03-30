@@ -4,11 +4,10 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Sq1.Core;
-using Sq1.Core.Charting;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Charting {
-	public class PanelIndicator : PanelBase, HostPanelForIndicator {
+	public class PanelIndicator : PanelBase {
 		public Indicator Indicator;
 		public bool IndicatorEmpty { get {
 				if (this.Indicator == null) {

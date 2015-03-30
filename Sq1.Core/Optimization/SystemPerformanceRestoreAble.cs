@@ -10,7 +10,7 @@ namespace Sq1.Core.Optimization {
 	public class SystemPerformanceRestoreAble : NamedObjectJsonSerializable {
 		[JsonIgnore]	public	bool		DontForgetEverythingNonIgnoredIsSerialized;
 
-		[JsonProperty]	public	Dictionary<int, ScriptParameter>				ScriptParametersById_BuiltOnBacktestFinished;
+		[JsonProperty]	public	SortedDictionary<int, ScriptParameter>			ScriptParametersById_BuiltOnBacktestFinished;
 		[JsonProperty]	public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished;
 		[JsonProperty]	public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
 		

@@ -5,6 +5,7 @@ using BrightIdeasSoftware;
 using Sq1.Core.Indicators;
 using Sq1.Core.Optimization;
 using Sq1.Core.Repositories;
+using System.Windows.Forms;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl {
@@ -178,6 +179,24 @@ namespace Sq1.Widgets.Optimization {
 				if (param == null) return "olvcParamWillBeSequenced.AspectGetter: param=null";
 				return param.WillBeSequencedDuringOptimization;
 			};
+
+			this.fastOLVparametersYesNoMinMaxStep.CheckStateGetter = delegate(object o) {
+				IndicatorParameter param = o as IndicatorParameter;
+				if (param == null) return CheckState.Indeterminate;
+				return param.WillBeSequencedDuringOptimization ? CheckState.Checked : CheckState.Unchecked;
+			};
+
+			this.fastOLVparametersYesNoMinMaxStep.CheckStatePutter = delegate(object o, CheckState newState) {
+				IndicatorParameter param = o as IndicatorParameter;
+				if (param == null) return CheckState.Indeterminate;
+				param.WillBeSequencedDuringOptimization = newState.CompareTo(CheckState.Checked) == 0;
+				this.optimizer.TotalsCalculate();
+				this.totalsPropagateAdjustSplitterDistance();
+				// for HeaderAllCheckBox.Clicked => Strategy.Serialize()d as many times as you got (Script+Indicator)Parameters
+				this.optimizer.ExecutorCloneToBeSpawned.Strategy.Serialize();
+				return newState;
+			};
+
 		}
 	}
 	class AspectGetterDelegateWrapper {

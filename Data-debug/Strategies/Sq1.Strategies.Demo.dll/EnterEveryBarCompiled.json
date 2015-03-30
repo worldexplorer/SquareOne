@@ -19,7 +19,7 @@
         "SharesConstantEachTrade": 1.0
       },
       "ScriptParametersById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib",
+        "$type": "System.Collections.Generic.SortedDictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], System",
         "1": {
           "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
           "Id": 1,
@@ -28,12 +28,12 @@
           "ValueMin": 0.0,
           "ValueMax": 10.0,
           "ValueIncrement": 1.0,
-          "ValueCurrent": 0.0,
-          "WillBeSequencedDuringOptimization": false,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
+          "ValueCurrent": 8.0,
+          "WillBeSequencedDuringOptimization": true,
+          "BorderShown": true,
+          "NumericUpdownShown": false,
           "NumberOfRuns": 11,
-          "ValuesAsString": "0[0..10/1]"
+          "ValuesAsString": "8[0..10/1]"
         },
         "2": {
           "$type": "Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core",
@@ -44,16 +44,16 @@
           "ValueMax": 10.0,
           "ValueIncrement": 1.0,
           "ValueCurrent": 0.0,
-          "WillBeSequencedDuringOptimization": false,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
+          "WillBeSequencedDuringOptimization": true,
+          "BorderShown": true,
+          "NumericUpdownShown": false,
           "NumberOfRuns": 11,
           "ValuesAsString": "0[0..10/1]"
         }
       },
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-        "MA": [
+        "MAfast": [
           {
             "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
             "Name": "Period",
@@ -76,7 +76,7 @@
       ],
       "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": false,
-      "BacktestOnDataSourceSaved": true,
+      "BacktestOnDataSourceSaved": false,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
         "Performance": null,
@@ -98,7 +98,7 @@
       "FillOutsideQuoteSpreadParanoidCheckThrow": false,
       "SpreadModelerClassName": "BacktestSpreadModelerPercentage",
       "SpreadModelerPercent": 0.005,
-      "BacktestStrokesPerBar": 16,
+      "BacktestStrokesPerBar": 4,
       "Name": "Default",
       "Symbol": "RIM3",
       "DataSourceName": "MOCK",
@@ -125,7 +125,7 @@
   },
   "LivesimBrokerSettings": {
     "$type": "Sq1.Core.Livesim.LivesimBrokerSettings, Sq1.Core",
-    "DelayBeforeFillMillisMin": 10,
+    "DelayBeforeFillMillisMin": 20,
     "DelayBeforeFillMillisMax": 13,
     "DelayBeforeFillEnabled": true,
     "OrderRejectionHappensOncePerXordersMin": 0,
@@ -155,7 +155,7 @@
   "LivesimStreamingSettings": {
     "$type": "Sq1.Core.Livesim.LivesimStreamingSettings, Sq1.Core",
     "DelayBetweenSerialQuotesMin": 4,
-    "DelayBetweenSerialQuotesMax": 8,
+    "DelayBetweenSerialQuotesMax": 9,
     "DelayBetweenSerialQuotesEnabled": true,
     "OutOfOrderQuoteGenerationHappensOncePerQuoteMin": 0,
     "OutOfOrderQuoteGenerationHappensOncePerQuoteMax": 0,

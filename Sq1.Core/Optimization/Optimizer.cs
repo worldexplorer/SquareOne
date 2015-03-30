@@ -10,23 +10,23 @@ namespace Sq1.Core.Optimization {
 	public partial class Optimizer {
 		public static string OPTIMIZATION_CONTEXT_PREFIX = "OptimizationIteration";
 
-		public	ScriptExecutor					Executor	{ get; private set; }
+		public	ScriptExecutor					ExecutorCloneToBeSpawned	{ get; private set; }
 				OptimizerParametersSequencer	parametersSequencer;
 				object							backtestsLock;
 				List<SystemPerformance>			backtests;
 				List<ScriptExecutor>			executorsRunning;
 		
 
-		public	string		DataRangeAsString				{ get { return this.Executor.Strategy.ScriptContextCurrent.DataRange.ToString(); } }
-		public	string		PositionSizeAsString			{ get { return this.Executor.Strategy.ScriptContextCurrent.PositionSize.ToString(); } }
+		public	string		DataRangeAsString				{ get { return this.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent.DataRange.ToString(); } }
+		public	string		PositionSizeAsString			{ get { return this.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent.PositionSize.ToString(); } }
 		public	string		StrategyAsString				{ get {
-				return this.Executor.Strategy.Name
+				return this.ExecutorCloneToBeSpawned.Strategy.Name
 					//+ "   " + executor.Strategy.ScriptParametersAsStringByIdJSONcheck
 					//+ executor.Strategy.IndicatorParametersAsStringByIdJSONcheck
 				;
 			} }
 		public	string		SymbolScaleIntervalAsString		{ get {
-				ContextScript ctx = this.Executor.Strategy.ScriptContextCurrent;
+				ContextScript ctx = this.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent;
 				return ctx.DataSourceName
 					+ " :: " + ctx.Symbol
 					+ " [" + ctx.ScaleInterval.ToString() + "]";
@@ -34,7 +34,7 @@ namespace Sq1.Core.Optimization {
 		
 		public	int			ScriptParametersTotalNr			{ get {
 				int ret = 0;
-				foreach (ScriptParameter sp in this.Executor.Strategy.Script.ScriptParametersById_ReflectedCached.Values) {
+				foreach (ScriptParameter sp in this.ExecutorCloneToBeSpawned.Strategy.Script.ScriptParametersById_ReflectedCached.Values) {
 					if (sp.NumberOfRuns == 0) continue;
 					if (sp.WillBeSequencedDuringOptimization == false) continue;
 					if (ret == 0) ret = 1;
@@ -51,8 +51,8 @@ namespace Sq1.Core.Optimization {
 			} }
 		public	int			IndicatorParameterTotalNr		{ get {
 				int ret = 0;
-				//foreach (Indicator i in executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Values) {	//looks empty on Deserialization
-				foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+				//foreach (Indicator i in executor.Strategy.Script.indicatorsByName_ReflectedCached.Values) {	//looks empty on Deserialization
+				foreach (IndicatorParameter ip in this.ExecutorCloneToBeSpawned.Strategy.Script.IndicatorsParameters_ReflectedCached.Values) {
 					if (ip.NumberOfRuns == 0) continue;
 					if (ip.WillBeSequencedDuringOptimization == false) continue;
 					if (ret == 0) ret = 1;
@@ -67,12 +67,14 @@ namespace Sq1.Core.Optimization {
 				}
 				return ret;
 			} }
+		public	int			AllParameterLinesToDraw			{ get {
+				return this.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders.Count;
+			} }
 
 		public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParametersMergedByName { get {
-			return this.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerByName; } }
+			return this.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerByName; } }
 		
 		public	SortedDictionary<int, ScriptParameter>			ParametersById;
-		public	Dictionary<string, IndicatorParameter>			IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
 
 		public	int			BacktestsTotal;
 		public	int			BacktestsRemaining { get { return this.BacktestsTotal - this.BacktestsCompleted; } }
@@ -85,7 +87,7 @@ namespace Sq1.Core.Optimization {
 		public	int			ThreadsToUse;
 		public	bool		InitializedProperly;
 		
-		public	Stopwatch	stopWatch;
+				Stopwatch	stopWatch;
 		
 				string		iWasRunForSymbolScaleIntervalAsString;
 				string		iWasRunForDataRangeAsString;
@@ -124,7 +126,7 @@ namespace Sq1.Core.Optimization {
 		}
 		
 		public Optimizer(ScriptExecutor executor) {
-			this.Executor = executor;
+			this.ExecutorCloneToBeSpawned = executor;
 			backtests = new List<SystemPerformance>();
 			executorsRunning = new List<ScriptExecutor>();
 			backtestsLock = new object();
@@ -137,42 +139,38 @@ namespace Sq1.Core.Optimization {
 		public void Initialize() {
 			//this.BacktestsRemaining = -1;
 			this.InitializedProperly = false;
-			if (this.Executor.Strategy == null) {
+			if (this.ExecutorCloneToBeSpawned.Strategy == null) {
 				string msg = "Optimizer.executor.Strategy == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.Executor.Strategy.Script == null) {
+			if (this.ExecutorCloneToBeSpawned.Strategy.Script == null) {
 				string msg = "Optimizer.executor.Strategy.Script == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.Executor.Strategy.Script.ScriptParametersById_ReflectedCached == null) {
+			if (this.ExecutorCloneToBeSpawned.Strategy.Script.ScriptParametersById_ReflectedCached == null) {
 				string msg = "Optimizer.executor.Strategy.Script.ParametersById == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.ParametersById = this.Executor.Strategy.Script.ScriptParametersById_ReflectedCached;
-
-
-			if (this.Executor.ExecutionDataSnapshot == null) {
+			if (this.ExecutorCloneToBeSpawned.ExecutionDataSnapshot == null) {
 				string msg = "Optimizer.executor.ExecutionDataSnapshot == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-//			if (this.executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances == null) {
-//				string msg = "Optimizer.executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances == null";
-//				Assembler.PopupException(msg);
-//				return;
-//			}
-			if (this.Executor.Strategy.ScriptContextCurrent.IndicatorParametersByName == null) {
-				string msg = "Optimizer.executor.Strategy.ScriptContextCurrent.IndicatorParametersByName == null";
+			if (this.ExecutorCloneToBeSpawned.Strategy.Script.IndicatorsByName_ReflectedCached == null) {
+				string msg = "Optimizer.executor.Strategy.Script.IndicatorsByName_ReflectedCached == null";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders = this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
+			if (this.ExecutorCloneToBeSpawned.Strategy.Script.ScriptParametersById_ReflectedCached == null) {
+				string msg = "Optimizer.executor.Strategy.Script.ScriptParametersById_ReflectedCached == null";
+				Assembler.PopupException(msg);
+				return;
+			}
 			this.InitializedProperly = true;
-			TotalsCalculate();
+			this.TotalsCalculate();
 		}
 
 		public void TotalsCalculate() {
@@ -202,7 +200,7 @@ namespace Sq1.Core.Optimization {
 			this.RaiseOnOptimizationAborted();
 		}
 		public int OptimizationRun() {
-			this.parametersSequencer = new OptimizerParametersSequencer(this.Executor.Strategy.ScriptContextCurrent);
+			this.parametersSequencer = new OptimizerParametersSequencer(this.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent);
 			this.BacktestsCompleted = 0;
 			this.BacktestsScheduled = 0;
 			lock(this.backtestsLock) {
@@ -217,7 +215,7 @@ namespace Sq1.Core.Optimization {
 					ContextScript ctxNext = (i == 0)
 						? this.parametersSequencer.GetFirstScriptContext(ctxName)
 						: this.parametersSequencer.GetNextScriptContextSequenced(ctxName);
-					ScriptExecutor ex = this.Executor.CloneForOptimizer(ctxNext);
+					ScriptExecutor ex = this.ExecutorCloneToBeSpawned.CloneForOptimizer(ctxNext);
 					this.executorsRunning.Add(ex);
 					ex.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
 					this.BacktestsScheduled++;
@@ -238,7 +236,7 @@ namespace Sq1.Core.Optimization {
 			if (executorCompletePooled == null) {
 				string msg = "CAN_NOT_BE_NULL_executorCompletePooled";
 				Assembler.PopupException(msg + msig);
-				executorCompletePooled = this.Executor;
+				executorCompletePooled = this.ExecutorCloneToBeSpawned;
 			}
 			msig = executorCompletePooled.ToStringWithCurrentParameters() + msig;
 			string msg2 = " ANOTHER_IN_SEQUENCE_executorCompletePooled";
@@ -268,7 +266,7 @@ namespace Sq1.Core.Optimization {
 							if (this.AbortedDontScheduleNewBacktests) break;
 							string ctxName1 = OPTIMIZATION_CONTEXT_PREFIX + " " + (this.BacktestsScheduled + 1 + i) + "/" + this.BacktestsTotal;
 							ContextScript ctxNext1 = this.parametersSequencer.GetNextScriptContextSequenced(ctxName1);
-							ScriptExecutor ex1 = this.Executor.CloneForOptimizer(ctxNext1);
+							ScriptExecutor ex1 = this.ExecutorCloneToBeSpawned.CloneForOptimizer(ctxNext1);
 							this.executorsRunning.Add(ex1);
 							this.BacktestsScheduled++;
 							ex1.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);
@@ -294,7 +292,7 @@ namespace Sq1.Core.Optimization {
 					//v2 
 					//WENT_UP this.executorsRunning.Remove(executorCompletePooled);
 					ContextScript ctxNext = this.parametersSequencer.GetNextScriptContextSequenced(ctxName);
-					ScriptExecutor ex = this.Executor.CloneForOptimizer(ctxNext);
+					ScriptExecutor ex = this.ExecutorCloneToBeSpawned.CloneForOptimizer(ctxNext);
 					this.executorsRunning.Add(ex);
 					this.BacktestsScheduled++;
 					ex.BacktesterRunSimulationTrampoline(new Action<ScriptExecutor>(this.afterBacktesterComplete), this.inNewThread);

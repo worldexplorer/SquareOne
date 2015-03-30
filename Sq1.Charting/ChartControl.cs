@@ -282,6 +282,8 @@ namespace Sq1.Charting {
 			this.Bars.BarStaticAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
 		}
 		void chartControl_BarAddedUpdated_ShouldTriggerRepaint(object sender, BarEventArgs e) {
+			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) return;
+
 			// if I was designing events for WinForms, I would switch to GUI thread automatically
 			if (base.InvokeRequired == true) {
 				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarAddedUpdated_ShouldTriggerRepaint(sender, e); });

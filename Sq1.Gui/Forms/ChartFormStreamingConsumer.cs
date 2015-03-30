@@ -336,6 +336,14 @@ namespace Sq1.Gui.Forms {
 				}
 			}
 
+			#if DEBUG
+			if (this.ChartFormManager.Executor.Backtester.IsBacktestingNoLivesimNow) {
+				string msg = "SHOULD_NEVER_HAPPEN IsBacktestingNoLivesimNow[true] //ChartFormStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
+				Assembler.PopupException(msg);
+				return;
+			}
+			#endif
+
 			if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming) {
 				chartFormSafe.ChartControl.InvalidateAllPanels();
 			}

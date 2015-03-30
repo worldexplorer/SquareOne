@@ -175,7 +175,7 @@ namespace Sq1.Core.Backtesting {
 					//Assembler.PopupException(msg, null, false);
 					if (this.backtester.IsLivesim && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
 						msg = "SEPARATE_MARKET_MODEL_WOULD_HELP_LAZY NO_ORDER_MUST_HAVE_BEEN_FILLED_WHILE_INJECTING__KOZ_LIVESIM_BROKER_EXECUTION_IS_DELAYED" + msg;
-						Assembler.PopupException(msg, null, false);
+						// NOTHING_WRONG_WITH_ALERT_FILLED_DURING_LIVESIM Assembler.PopupException(msg, null, false);
 					}
 				}
 				if (injectedPushed.Count >= iterationsLimit) {

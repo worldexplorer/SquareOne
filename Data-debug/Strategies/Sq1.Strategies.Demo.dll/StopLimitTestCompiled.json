@@ -62,9 +62,7 @@
       "IsStreamingTriggeringScript": false,
       "ShowRangeBar": false,
       "IsStreaming": true,
-      "ScriptParametersById": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], mscorlib"
-      },
+
       "IndicatorParametersByName": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib"
       }

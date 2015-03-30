@@ -75,7 +75,7 @@ namespace Sq1.Core.Support {
 				this.stopwatchLock.Stop();
 				if (hadToWaitWasLockedAtFirst) {
 					string msg = "LOCKED_AFTER_WAITING_FOR[" + this.stopwatchLock.ElapsedMilliseconds + "]ms FOR ";
-					Assembler.PopupException(msg + this.CurrentStateAsString);
+					Assembler.PopupException(msg + this.CurrentStateAsString, null, false);
 				}
 
 				this.lockedThread = Thread.CurrentThread;

@@ -7,8 +7,8 @@ using Sq1.Core.Livesim;
 
 namespace Sq1.Core.StrategyBase {
 	public class LivesimBrokerDataSnapshot {
-				LivesimDataSource	livesimDataSource;
-		private	AlertList			alertsPending { get {
+		LivesimDataSource	livesimDataSource;
+		AlertList			alertsPending { get {
 			AlertList ret = new AlertList("ALERTS_PENDING_ORIGINAL_NOT_ACCESSIBLE_YET", null);
 			if (livesimDataSource == null) return ret;
 			if (livesimDataSource.Executor == null) return ret;
@@ -46,7 +46,7 @@ namespace Sq1.Core.StrategyBase {
 		
 		public LivesimBrokerDataSnapshot(LivesimDataSource livesimDataSource) {
 			this.livesimDataSource = livesimDataSource;	// LAZY_TO_SPLIT_TO_CTOR_AND_INITIALIZE() null for dummies, non-null for clone() { Activator.Create() } 'd LivesimBrokers
-			AlertsScheduledForDelayedFill = new AlertList("SCHEDULED_FOR_DELAYED_FILL", null);
+			this.AlertsScheduledForDelayedFill = new AlertList("SCHEDULED_FOR_DELAYED_FILL", null);
 		}
 	}
 }

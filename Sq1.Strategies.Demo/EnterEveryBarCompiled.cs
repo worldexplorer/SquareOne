@@ -35,7 +35,7 @@ namespace Sq1.Strategies.Demo {
 				return;
 			}
 			string whereIam = "\n\r\n\rEnterEveryBar.cs now=[" + DateTime.Now.ToString("ddd dd-MMM-yyyy HH:mm:ss.fff") + "]";
-			this.Executor.PopupException(msg + whereIam);
+			//this.Executor.PopupException(msg + whereIam);
 		}
 		public override void InitializeBacktest() {
 			//Debugger.Break();

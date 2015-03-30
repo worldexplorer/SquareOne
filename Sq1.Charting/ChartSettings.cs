@@ -442,7 +442,7 @@ namespace Sq1.Charting {
 			MousePositionTrackOnGutters = true;
 			MousePositionTrackOnGuttersColor = Color.LightGray;
 			BarsBackgroundTransparencyAlpha = 24;
-			ChartLabelsUpperLeftYstartTopmost = 18;
+			ChartLabelsUpperLeftYstartTopmost = 5;
 			ChartLabelsUpperLeftX = 5;
 			ChartLabelsUpperLeftPlatePadding = 1;
 			ChartLabelsUpperLeftIndicatorSquarePadding = 4;
