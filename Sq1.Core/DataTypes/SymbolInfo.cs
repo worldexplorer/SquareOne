@@ -25,7 +25,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public int				VolumeDecimals;					// valid for partial Forex lots and Bitcoins; for stocks/options/futures its always (int)1
 
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
-		[JsonIgnore]	public double			PriceStepFromDecimal	{ get { return Math.Pow(10, -this.PriceDecimals); } }			// 10^(-2) = 0.01
+		[JsonIgnore]	public double			PriceStepFromDecimal	{ get { return Math.Pow(10, -this.PriceDecimals); } }		// 10^(-2) = 0.01
 		[JsonIgnore]	public double			VolumeStepFromDecimal	{ get { return Math.Pow(10, -this.VolumeDecimals); } }		// 10^(-2) = 0.01
 		
 		[JsonProperty]	public bool				SameBarPolarCloseThenOpen;
@@ -82,22 +82,22 @@ namespace Sq1.Core.DataTypes {
 			this.EmergencyCloseAttemptsMax = 5;
 			this.LeverageForFutures = 1;
 		}
-		public SymbolInfo(string symbol, SecurityType securityType, int decimals) : this() {
-			this.Symbol = symbol;
-			this.SecurityType = securityType;
-			this.PriceDecimals = decimals;
-		}
-		public SymbolInfo(string symbol, SecurityType securityType, int decimals, string ClassCode) : this(symbol, securityType, decimals) {
-				//,, double priceLevelSizeForBonds, double margin, double point2Dollar
-				//bool overrideMarketPriceToZero, //bool reSubmitRejected, bool reSubmittedUsesNextSlippage) {
-			//this.LeverageForFutures = margin;
-			//this.Point2Dollar = point2Dollar;
-			//this.PriceLevelSizeForBonds = priceLevelSizeForBonds;
-			this.SymbolClass = ClassCode;
-			//this.OverrideMarketPriceToZero = overrideMarketPriceToZero;
-			//this.ReSubmitRejected = reSubmitRejected;
-			//this.ReSubmittedUsesNextSlippage = reSubmittedUsesNextSlippage;
-		}
+//		public SymbolInfo(string symbol, SecurityType securityType, int decimals) : this() {
+//			this.Symbol = symbol;
+//			this.SecurityType = securityType;
+//			this.PriceDecimals = decimals;
+//		}
+//		public SymbolInfo(string symbol, SecurityType securityType, int decimals, string ClassCode) : this(symbol, securityType, decimals) {
+//				//,, double priceLevelSizeForBonds, double margin, double point2Dollar
+//				//bool overrideMarketPriceToZero, //bool reSubmitRejected, bool reSubmittedUsesNextSlippage) {
+//			//this.LeverageForFutures = margin;
+//			//this.Point2Dollar = point2Dollar;
+//			//this.PriceLevelSizeForBonds = priceLevelSizeForBonds;
+//			this.SymbolClass = ClassCode;
+//			//this.OverrideMarketPriceToZero = overrideMarketPriceToZero;
+//			//this.ReSubmitRejected = reSubmitRejected;
+//			//this.ReSubmittedUsesNextSlippage = reSubmittedUsesNextSlippage;
+//		}
 		public int getSlippageIndexMax(Direction direction) {
 			int ret = -1;
 			string slippagesCommaSeparated = (direction == Direction.Buy || direction == Direction.Cover)

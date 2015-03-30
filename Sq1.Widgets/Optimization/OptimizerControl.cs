@@ -224,6 +224,7 @@ namespace Sq1.Widgets.Optimization {
 				return;
 			}
 			int heightEachNewLine = this.fastOLVparametersYesNoMinMaxStep.RowHeightEffective;
+			if (this.fastOLVparametersYesNoMinMaxStep.GridLines) heightEachNewLine++;
 			int inAdditionToThree = (allParameterLinesToDraw - 3) * heightEachNewLine;
 			this.splitContainer1.SplitterDistance = splitterDistanceForThreeLines + inAdditionToThree;
 		}

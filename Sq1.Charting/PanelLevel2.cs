@@ -67,8 +67,9 @@ namespace Sq1.Charting {
 					string msgRepaint = "repaintFore#" + this.RepaintSernoForeground + "/Back#" + this.RepaintSernoBackground;
 					this.DrawError(g, msgRepaint);
 					if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
+					return;
 				}
-				if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.Default;
+				if (this.Cursor != Cursors.Default) this.Cursor = Cursors.Default;
 				
 				//temp pickup to measure through Graphics.MeasureString()
 				if (base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered != -1) return;

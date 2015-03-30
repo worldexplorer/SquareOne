@@ -6,6 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 using Sq1.Core.Indicators;
 using Sq1.Core.Livesim;
+using Sq1.Core.Charting;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class Strategy {
@@ -106,7 +107,8 @@ namespace Sq1.Core.StrategyBase {
 				//WILL_THROW: public Strategy Strategy { get { return this.Executor.Strategy } }
 				ret.Script = (Script) Activator.CreateInstance(ret.Script.GetType());
 				//ret.Script = ret.Script.Clo);
-				ret.Script.Initialize(executorCloneForOptimizer);
+				//executorCloneForOptimizer.Initialize(executorCloneForOptimizer.ChartShadow, ret);		//sets ret.Script.Strategy = ret;
+				//ret.Script.Initialize(executorCloneForOptimizer);
 			}
 			//Debugger.Break();
 			//ret.ScriptContextsByName = new Dictionary<string, ContextScript>();

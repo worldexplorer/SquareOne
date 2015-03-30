@@ -27,9 +27,10 @@ namespace Sq1.Core.Optimization {
 			} }
 		public	string		SymbolScaleIntervalAsString		{ get {
 				ContextScript ctx = this.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent;
-				return ctx.DataSourceName
-					+ " :: " + ctx.Symbol
-					+ " [" + ctx.ScaleInterval.ToString() + "]";
+				string ret = "[" + ctx.ScaleInterval.ToString() + "] "
+					+ ctx.Symbol
+					+ " :: " + ctx.DataSourceName;
+				return ret;
 			} }
 		
 		public	int			ScriptParametersTotalNr			{ get {

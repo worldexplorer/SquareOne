@@ -8,12 +8,19 @@ namespace Sq1.Core.Repositories {
 	public class RepositorySerializerSymbolInfo : Serializer<List<SymbolInfo>> {
 		public RepositorySerializerSymbolInfo() {}
 		public SymbolInfo FindSymbolInfo(string symbol) {
-			if (string.IsNullOrEmpty(symbol)) return null;
-			foreach (SymbolInfo current in base.Entity) {
-				if (current.Symbol.ToUpper() == symbol.ToUpper()) return current;
-				if (Regex.IsMatch(symbol, "^" + current.Symbol + "$")) return current;
+			SymbolInfo ret = null;
+			if (string.IsNullOrEmpty(symbol)) return ret;
+			foreach (SymbolInfo eachSymbolInfo in base.Entity) {
+				if (eachSymbolInfo.Symbol.ToUpper() == symbol.ToUpper()) {
+					ret = eachSymbolInfo;
+					break;
+				}
+				if (Regex.IsMatch(symbol, "^" + eachSymbolInfo.Symbol + "$")) {
+					ret = eachSymbolInfo;
+					break;
+				}
 			}
-			return null;
+			return ret;
 		}
 		public SymbolInfo FindSymbolInfoOrNew(string symbol) {
 			SymbolInfo ret = this.FindSymbolInfo(symbol);

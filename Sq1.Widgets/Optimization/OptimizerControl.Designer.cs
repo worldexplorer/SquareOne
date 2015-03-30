@@ -138,7 +138,6 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.DoubleClick;
 			this.olvHistory.CellEditEnterChangesRows = true;
 			this.olvHistory.CellEditTabChangesRows = true;
-			this.olvHistory.CheckBoxes = true;
 			this.olvHistory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvcPFavg,
             this.olvcHistorySymbolScaleRange});
@@ -484,7 +483,7 @@ namespace Sq1.Widgets.Optimization {
 			this.lblStats.Name = "lblStats";
 			this.lblStats.Size = new System.Drawing.Size(150, 16);
 			this.lblStats.TabIndex = 35;
-			this.lblStats.Text = "48% complete\t450044/18900";
+			this.lblStats.Text = "48% complete   450044/18900";
 			// 
 			// progressBar1
 			// 

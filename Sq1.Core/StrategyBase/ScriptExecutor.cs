@@ -1504,6 +1504,8 @@ namespace Sq1.Core.StrategyBase {
 			ScriptExecutor executorClone = new ScriptExecutor();
 			executorClone.Bars = this.Bars;
 			executorClone.OrderProcessor = null;
+			ChartShadow chartStub = new ChartShadow();
+			chartStub.SetExecutor(executorClone);
 
 			Strategy strategyClone = this.Strategy.CloneWithNewScriptInstanceResetContextsToSingle(ctxNext, executorClone);
 			if (strategyClone == this.Strategy) {
@@ -1511,8 +1513,8 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "PARANOID CLONE_MUST_BE_A_NEW_POINTER_NOT_THE_SAME";
 				Assembler.PopupException(msg + msig);
 			}
-			strategyClone.Script.Initialize(executorClone);
-			executorClone.Initialize(null, strategyClone);
+			executorClone.Initialize(chartStub, strategyClone);
+			//ALREADY_IN_Strategy.executorClone.Initialize strategyClone.Script.Initialize(executorClone);
 			//KEEP_DOWNSTACK strategyClone.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);
 
 			strategyClone.ScriptContextsByName = new Dictionary<string, ContextScript>();

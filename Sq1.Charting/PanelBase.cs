@@ -425,8 +425,9 @@ namespace Sq1.Charting {
 					string msgRepaint = "repaintFore#" + this.RepaintSernoForeground + "/Back#" + this.RepaintSernoBackground;
 					this.DrawError(e.Graphics, msgRepaint);
 					if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
+					return;
 				}
-				if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.Default;
+				if (this.Cursor != Cursors.Default) this.Cursor = Cursors.Default;
 
 				
 				// TODO: we get here 4 times per Panel: DockContentHandler.SetVisible, set_FlagClipWindow, WndProc * 2

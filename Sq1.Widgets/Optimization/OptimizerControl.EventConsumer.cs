@@ -68,7 +68,7 @@ namespace Sq1.Widgets.Optimization {
 			int backtestsCompleted	= this.optimizer.BacktestsCompleted;  
 			this.btnRunCancel.Text = "Cancel " + backtestsRemaninig + " backtests";
 			double pctComplete = (backtestsTotal > 0) ? Math.Round(100 * backtestsCompleted / (double)backtestsTotal) : 0;
-			this.lblStats.Text = pctComplete + "% complete	" + backtestsCompleted + "/" + backtestsTotal;
+			this.lblStats.Text = pctComplete + "% complete   " + backtestsCompleted + "/" + backtestsTotal;
 			if (backtestsCompleted >= this.progressBar1.Minimum && backtestsCompleted <= this.progressBar1.Maximum) {
 				this.progressBar1.Value = backtestsCompleted;
 			}
