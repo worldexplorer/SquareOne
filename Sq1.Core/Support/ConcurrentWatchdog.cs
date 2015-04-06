@@ -1,8 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Text;
 using System.Threading;
 
 using Sq1.Core.Execution;
-using System;
 
 namespace Sq1.Core.Support {
 	public class ConcurrentWatchdog {
@@ -28,13 +29,14 @@ namespace Sq1.Core.Support {
 		public string CurrentStateAsString { get; private set; }
 
 		public ConcurrentWatchdog(string reasonToExist, ExecutionDataSnapshot snap = null) {
-			this.ReasonToExist			= reasonToExist;
-			this.Snap					= snap;
-			this.customerLockingQueue	= new object();
-			this.isFree					= new ManualResetEvent(true);
-			this.stopwatchLock			= new Stopwatch();
-			this.stopwatchUnlock		= new Stopwatch();
-			this.customerUnLockingQueue = new object();
+			ReasonToExist			= reasonToExist;
+			Snap					= snap;
+			customerLockingQueue	= new object();
+			isFree					= new ManualResetEvent(true);
+			stopwatchLock			= new Stopwatch();
+			stopwatchUnlock			= new Stopwatch();
+			customerUnLockingQueue	= new object();
+			CurrentStateAsString	= "STRING_OPERATIONS_DISABLED_IN_RELEASE_SWITCH_TO_DEBUG";
 		}
 		public bool WaitAndLockFor(object owner, string lockPurpose,
 					int waitMillis = TIMEOUT_DEFAULT, bool engageWaitingForEva = true) {
@@ -81,7 +83,9 @@ namespace Sq1.Core.Support {
 				this.lockedThread = Thread.CurrentThread;
 				this.lockedClass = owner;
 				this.lockedPurposeFirstInTheStack = lockPurpose;
+				#if VERBOSE_STRINGS_SLOW
 				this.saveCurrentStateAsString();
+				#endif
 
 				this.sameThreadLocksRequestedStackDepth++;
 				this.isFree.Reset();
@@ -136,36 +140,58 @@ namespace Sq1.Core.Support {
 				this.unlockedClass = owner;
 				this.unlockedAfter = releasingAfter;
 				this.unlockedThread = Thread.CurrentThread;
+				#if VERBOSE_STRINGS_SLOW
 				this.saveCurrentStateAsString();
+				#endif
 
 				this.isFree.Set();	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 				return true;
 			}
 		}
 		void saveCurrentStateAsString() {
-			string ret = " ";
+			StringBuilder sb = new StringBuilder();
 			if (this.lockedThread != null) {
-				ret += "LOCK_HELD_BY";
-				ret += "_managed[" + this.lockedThread.ManagedThreadId + "]";
-				if (string.IsNullOrEmpty(this.lockedThread.Name) == false) ret += ":[" + this.lockedThread.Name + "]";
-				ret += "lockedClass[" + this.lockedClass + "]lockedFor[" + this.lockedPurposeFirstInTheStack + "]";
+				sb.Append("LOCK_HELD_BY _managed[");
+				sb.Append(this.lockedThread.ManagedThreadId);
+				sb.Append("]");
+				if (string.IsNullOrEmpty(this.lockedThread.Name) == false) {
+					sb.Append(":[");
+					sb.Append(this.lockedThread.Name);
+					sb.Append("]");
+				}
+				sb.Append("lockedClass[");
+				sb.Append(this.lockedClass);
+				sb.Append("]lockedFor[");
+				sb.Append(this.lockedPurposeFirstInTheStack);
+				sb.Append("]");
 				//ret += "ConcurrentWatchdog[" + this.ReasonToExist + "]";
 				//if (this is typeof(ConcurrentListWD) == false) {
-				ret += "NOW:" + this.ToString();
+				sb.Append("NOW:");
+				sb.Append(this.ToString());
 				//}
-				this.CurrentStateAsString = ret;
+				this.CurrentStateAsString = sb.ToString();
 				return;
 			}
 			if (this.unlockedThread != null) {
-				ret += "LOCK_WAS_RELEASED_BY";
-				ret += "_managed[" + this.unlockedThread.ManagedThreadId + "]";
-				if (string.IsNullOrEmpty(this.unlockedThread.Name) == false) ret += ":[" + this.unlockedThread.Name + "]";
-				ret += "unlockedClass[" + this.unlockedClass + "]unlockedAfter[" + this.unlockedAfter + "]";
+				sb.Append("LOCK_WAS_RELEASED_BY_managed[");
+				sb.Append(this.unlockedThread.ManagedThreadId);
+				sb.Append("]");
+				if (string.IsNullOrEmpty(this.unlockedThread.Name) == false) {
+					sb.Append(":[");
+					sb.Append(this.unlockedThread.Name);
+					sb.Append("]");
+				}
+				sb.Append("unlockedClass[");
+				sb.Append(this.unlockedClass);
+				sb.Append("]unlockedAfter[");
+				sb.Append(this.unlockedAfter);
+				sb.Append("]");
 				//ret += "ConcurrentWatchdog[" + this.ReasonToExist + "]";
 				//if (this is typeof(ConcurrentListWD) == false) {
-				ret += "WAS:" + this.ToString();
+				sb.Append("WAS:");
+				sb.Append(this.ToString());
 				//}
-				this.CurrentStateAsString = ret;
+				this.CurrentStateAsString = sb.ToString();
 				return;
 			}
 			string msg = "SYNCHRONIZATION_MESSED_UP_customerLockingQueue/customerUnLockingQueue";

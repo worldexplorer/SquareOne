@@ -35,6 +35,7 @@ namespace Sq1.Reporters {
 			if (oLVColumn == null) return;
 			byte[] olvStateBinary = this.olvPositions.SaveState();
 			this.snap.PositionsOlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			base.RaiseContextScriptChangedContainerShouldSerialize();
 		}
 		void objectListViewCustomize() {

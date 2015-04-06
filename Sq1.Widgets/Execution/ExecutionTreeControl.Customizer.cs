@@ -260,11 +260,15 @@ namespace Sq1.Widgets.Execution {
 				return omsg.DateTime.ToString(Assembler.DateTimeFormatLong);
 			};
 		}
+
+		FontCache fontCache;
+
 		void tree_FormatRow(object sender, BrightIdeasSoftware.FormatRowEventArgs e) {
 			Order order = e.Model as Order;
 			if (order == null) return;
 			if (order.InStateExpectingCallbackFromBroker) {
-				e.Item.Font = new Font(e.Item.Font, FontStyle.Bold);
+				//v1 e.Item.Font = new Font(e.Item.Font, FontStyle.Bold);
+				e.Item.Font = this.fontCache.Bolden();
 			}
 
 			//v1 if (Assembler.InstanceInitialized.AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)) return;

@@ -14,19 +14,21 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public ScriptParameter(int id, string name, double current, double min, double max, double increment, string reasonToExist)
 				: base(name, current, min, max, increment) {
-			this.Id = id;
-			this.ReasonToExist = reasonToExist;
-			base.IndicatorName = "THIS_IS_A_STRATEGY_PARAMETER";
+			Id = id;
+			ReasonToExist = reasonToExist;
+			ReasonToClone = "";
+			IndicatorName = "THIS_IS_A_STRATEGY_PARAMETER";
 		}
-		public ScriptParameter(int id, string name, double current, double min, double max, double increment)
-			: this(id, name, current, min, max, increment, "") {
-		}
-//		public override string ToString() {
-//			return this.Name + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
-//		}
-		public ScriptParameter Clone() {
+		//[Obsolete("Sorry bro no parameter without the reason to exist => hopefully will go to Slider's tooltip");
+		//public ScriptParameter(int id, string name, double current, double min, double max, double increment)
+		//    : this(id, name, current, min, max, increment, "") {
+		//}
+		//public override string ToString() {
+		//	return this.Name + ":" + this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
+		//}
+		public ScriptParameter CloneAsScriptParameter(string reasonToClone) {
 			ScriptParameter ret = (ScriptParameter)base.MemberwiseClone();
-			ret.ReasonToExist = "CLONE_" + ret.ReasonToExist;
+			ret.ReasonToClone = "CLONE[" + reasonToClone + "]_" + ret.ReasonToClone;
 			return ret;
 		}
 	}

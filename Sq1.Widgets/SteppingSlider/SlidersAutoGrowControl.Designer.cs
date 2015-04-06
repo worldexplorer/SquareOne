@@ -72,10 +72,10 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbParameterBagRenameTo.InputFieldWidth = 85;
 			this.mniltbParameterBagRenameTo.Name = "mniltbParameterBagRenameTo";
 			this.mniltbParameterBagRenameTo.Size = new System.Drawing.Size(168, 21);
-			this.mniltbParameterBagRenameTo.Text = "Rename To:";
-			this.mniltbParameterBagRenameTo.TextOffsetX = 0;
+			this.mniltbParameterBagRenameTo.TextLeft = "Rename To:";
+			this.mniltbParameterBagRenameTo.TextLeftOffsetX = 0;
 			this.mniltbParameterBagRenameTo.TextRed = false;
-			this.mniltbParameterBagRenameTo.TextWidth = 72;
+			this.mniltbParameterBagRenameTo.TextLeftWidth = 72;
 			this.mniltbParameterBagRenameTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextRenameTo_UserTyped);
 			// 
 			// mniltbParameterBagDuplicateTo
@@ -88,10 +88,10 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbParameterBagDuplicateTo.InputFieldWidth = 85;
 			this.mniltbParameterBagDuplicateTo.Name = "mniltbParameterBagDuplicateTo";
 			this.mniltbParameterBagDuplicateTo.Size = new System.Drawing.Size(168, 21);
-			this.mniltbParameterBagDuplicateTo.Text = "Duplicate To:";
-			this.mniltbParameterBagDuplicateTo.TextOffsetX = 0;
+			this.mniltbParameterBagDuplicateTo.TextLeft = "Duplicate To:";
+			this.mniltbParameterBagDuplicateTo.TextLeftOffsetX = 0;
 			this.mniltbParameterBagDuplicateTo.TextRed = false;
-			this.mniltbParameterBagDuplicateTo.TextWidth = 79;
+			this.mniltbParameterBagDuplicateTo.TextLeftWidth = 79;
 			this.mniltbParameterBagDuplicateTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextDuplicateTo_UserTyped);
 			// 
 			// mniParameterBagDelete
@@ -157,10 +157,10 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniltbParametersBagNewWithDefaults.InputFieldWidth = 85;
 			this.mniltbParametersBagNewWithDefaults.Name = "mniltbParametersBagNewWithDefaults";
 			this.mniltbParametersBagNewWithDefaults.Size = new System.Drawing.Size(168, 21);
-			this.mniltbParametersBagNewWithDefaults.Text = "New clean";
-			this.mniltbParametersBagNewWithDefaults.TextOffsetX = 0;
+			this.mniltbParametersBagNewWithDefaults.TextLeft = "New clean";
+			this.mniltbParametersBagNewWithDefaults.TextLeftOffsetX = 0;
 			this.mniltbParametersBagNewWithDefaults.TextRed = false;
-			this.mniltbParametersBagNewWithDefaults.TextWidth = 64;
+			this.mniltbParametersBagNewWithDefaults.TextLeftWidth = 64;
 			this.mniltbParametersBagNewWithDefaults.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextNewWithDefaults_UserTyped);
 			// 
 			// toolStripSeparator2

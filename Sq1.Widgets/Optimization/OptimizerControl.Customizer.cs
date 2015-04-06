@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 using BrightIdeasSoftware;
 using Sq1.Core.Indicators;
 using Sq1.Core.Optimization;
 using Sq1.Core.Repositories;
-using System.Windows.Forms;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl {
@@ -35,7 +35,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcSerno.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcSerno.AspectGetter: SystemPerformanceRestoreAble=null";
-				return (this.backtests.IndexOf(systemPerformanceRestoreAble) + 1).ToString();
+				return (this.backtestsLocalEasierToSync.IndexOf(systemPerformanceRestoreAble) + 1).ToString();
 			};
 			this.olvcNetProfit.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
@@ -207,6 +207,9 @@ namespace Sq1.Widgets.Optimization {
 		public string AspectGetterDelegateImplementor(object o) {
 			SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 			if (systemPerformanceRestoreAble == null) return colDynParamName + ".AspectGetter: SystemPerformanceRestoreAble=null";
+			if (systemPerformanceRestoreAble.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished == null) {
+				return "WASNT_INVOKED:SystemPerformance.BuildStatsOnBacktestFinished()";
+			}
 			if (systemPerformanceRestoreAble.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(colDynParamName) == false) {
 				return colDynParamName + ".AspectGetter: !SystemPerformanceRestoreAble.ScriptAndIndicatorParametersByName[" + colDynParamName + "]";
 			}

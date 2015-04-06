@@ -343,7 +343,12 @@ namespace Sq1.Core.Indicators {
 			}
 		}
 		public virtual void OnNewStreamingQuote(Quote newStreamingQuote) {
+			#if VERBOSE_STRINGS_SLOW
 			string msig = " //OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
+			#else
+			string msig = " //OnNewStreamingQuote()";
+			#endif
+			
 			bool canRunCalculation = this.canRunCalculation(true);
 			if (canRunCalculation == false) return;
 			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote_invokedAtEachQuoteNoExceptions_NoPeriodWaiting(newStreamingQuote);

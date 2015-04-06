@@ -6,8 +6,8 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Gui.ReportersSupport {
 	public partial class ReporterFormWrapper : DockContentImproved {
-		Reporter reporter;
-		ReportersFormsManager reportersFormsManager;
+					Reporter				reporter;
+					ReportersFormsManager	reportersFormsManager;
 
 		protected ReporterFormWrapper() {
 			InitializeComponent();

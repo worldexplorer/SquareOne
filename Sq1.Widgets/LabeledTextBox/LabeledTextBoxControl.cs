@@ -5,10 +5,8 @@ using System.Windows.Forms;
 
 namespace Sq1.Widgets.LabeledTextBox {
 	public partial class LabeledTextBoxControl : UserControl {
-		public LabeledTextBoxControl() {
-			InitializeComponent();
-			//base.Size = new Size(base.Width, base.Height - 3);
-		}
+		public ToolStripControlHost ParentToolStripControlHost;
+		
 //		[Browsable(true)]
 //		public new Size Size {
 //			get { return new Size(base.Size.Width, base.Size.Height - 2); }
@@ -25,24 +23,39 @@ namespace Sq1.Widgets.LabeledTextBox {
 //			set { this.Label = value; }
 //		}
 		[Browsable(true)]
-		public new string Text {
-			get { return this.Label.Text; }
-			set { this.Label.Text = value; }
+		public string TextLeft {
+			get { return this.LabelLeft.Text; }
+			set { this.LabelLeft.Text = value; }
+		}
+		[Browsable(true)]
+		public string TextRight {
+			get { return this.LabelRight.Text; }
+			set { this.LabelRight.Text = value; this.LabelRight.Visible = true; }
 		}
 		[Browsable(true)]
 		public bool TextRed {
-			get { return this.Label.ForeColor == Color.Red; }
-			set { this.Label.ForeColor = value ? Color.Red : Color.Black; }
+			get { return this.LabelLeft.ForeColor == Color.Red; }
+			set { this.LabelLeft.ForeColor = value ? Color.Red : Color.Black; }
 		}
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
-		public int TextOffsetX {
-			get { return this.Label.Location.X; }
-			set { this.Label.Location = new Point(value, this.Label.Location.Y); }
+		public int TextLeftOffsetX {
+			get { return this.LabelLeft.Location.X; }
+			set { this.LabelLeft.Location = new Point(value, this.LabelLeft.Location.Y); }
 		}
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
-		public int TextWidth {
-			get { return this.Label.Width; }
-			set { this.Label.Width = value; }
+		public int TextLeftWidth {
+			get { return this.LabelLeft.Width; }
+			set { this.LabelLeft.Width = value; }
+		}
+		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		public int TextRightOffsetX {
+			get { return this.LabelRight.Location.X; }
+			set { this.LabelRight.Location = new Point(value, this.LabelRight.Location.Y); }
+		}
+		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
+		public int TextRightWidth {
+			get { return this.LabelRight.Width; }
+			set { this.LabelRight.Width = value; }
 		}
 		//[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		//public bool TextAutoSize {
@@ -62,7 +75,8 @@ namespace Sq1.Widgets.LabeledTextBox {
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public int InputFieldWidth {
 			get { return this.TextBox.Width; }
-			set { this.TextBox.Width = value; }
+			set { this.TextBox.Width = value;
+				  this.TextRightOffsetX = this.InputFieldOffsetX + this.InputFieldWidth + 3; }
 		}
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public bool InputFieldEditable {
@@ -74,6 +88,12 @@ namespace Sq1.Widgets.LabeledTextBox {
 			get { return this.TextBox.TextAlign == HorizontalAlignment.Right; }
 			set { this.TextBox.TextAlign = (value == true) ? HorizontalAlignment.Right : HorizontalAlignment.Left; }
 		}
-		public ToolStripControlHost ParentToolStripControlHost;
+		
+		public LabeledTextBoxControl() {
+			InitializeComponent();
+			//base.Size = new Size(base.Width, base.Height - 3);
+			this.LabelRight.Visible = false;
+		}
+		
 	}
 }

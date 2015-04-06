@@ -60,24 +60,35 @@ namespace Sq1.Core.Charting {
 		}
 		
 		public void Add(CHART chart, ALERTS alert) {
-			string msig = " //DictionaryManyToOne::Add(chart[" + chart + "], alert[" + alert + "])";
+			ALERTS alertPointerCopy = alert;		// at some point alert=null and Dictionary.Insert() throws NullReferenceException
+			string msig = " //DictionaryManyToOne::Add(chart[" + chart + "], alertPointerCopy[" + alertPointerCopy + "])";
+			if (chart == null) {
+				string msg = "I_REFUSE_TO_ADD_CHART_NULL__FILTER_ME_OUT_UPSTACK_OR_CREATE_EMPTY_CHART_SHADOW";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (alertPointerCopy == null) {
+				string msg = "I_REFUSE_TO_ADD_alertPointerCopy_NULL__FILTER_ME_OUT_UPSTACK";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
 			if (this.Lookup.ContainsKey(chart) == false) {
 				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			if (this.Lookup[chart].Contains(alert)) {
-				string msg = "ALREADY_ADDED_INTO_this.Lookup[chart] alert[" + alert + "]";
+			if (this.Lookup[chart].Contains(alertPointerCopy)) {
+				string msg = "ALREADY_ADDED_INTO_this.Lookup[chart] alertPointerCopy[" + alertPointerCopy + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			if (this.Reverse.ContainsKey(alert)) {
-				string msg = "ALREADY_ADDED_INTO_this.Reverse alert[" + alert + "]";
+			if (this.Reverse.ContainsKey(alertPointerCopy)) {
+				string msg = "ALREADY_ADDED_INTO_this.Reverse alertPointerCopy[" + alertPointerCopy + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			this.Lookup[chart].Add(alert);
-			this.Reverse.Add(alert, chart);
+			this.Lookup[chart].Add(alertPointerCopy);
+			this.Reverse.Add(alertPointerCopy, chart);
 		}
 		
 //		public void AddRange(CHART chart, List<ALERTS> alerts) {

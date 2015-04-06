@@ -1,26 +1,52 @@
 using System;
+using System.Text;
+
+using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public class BarScaleInterval {
-		public BarScale Scale;
-		public int Interval;
-		public bool IsIntraday {
-			get {
+		[JsonProperty]	public	string		AsString_cached;
+		[JsonProperty]	public	BarScale	Scale;
+		[JsonProperty]	public	int			Interval;
+		[JsonProperty]	public	bool		IsIntraday { get {
 				if (this.Scale == BarScale.Hour) return true;
 				if (this.Scale == BarScale.Minute) return true;
 				if (this.Scale == BarScale.Second) return true;
 				if (this.Scale == BarScale.Tick) return true;
 				return false;
-			}
-		}
+			} }
+		[JsonProperty]	public int AsTimeSpanInSeconds { get {
+				int ret = -1;
+				int yearly = (365 + 1/4) * 24 * 60 * 60;
+				switch(this.Scale) {
+					case BarScale.Yearly:		ret = yearly;			break;
+					case BarScale.Quarterly:	ret = yearly / 4;		break;
+					case BarScale.Monthly:		ret = yearly / 12;		break;
+					case BarScale.Weekly:		ret = 60 * 60 * 24 * 7;	break;
+					case BarScale.Daily:		ret = 60 * 60 * 24;		break;
+					case BarScale.Hour:			ret = 60 * 60;			break;
+					case BarScale.Minute:		ret = 60;				break;
+					case BarScale.Second:		ret = 1;				break;
+
+					case BarScale.Unknown:
+					case BarScale.Tick:
+					default:
+						break;
+				}
+				ret *= this.Interval;
+				return ret;
+			} }
+		[JsonProperty]	public TimeSpan AsTimeSpan { get { return new TimeSpan(0, 0, this.AsTimeSpanInSeconds); } }
+
+		// keep public ctor for JSON_DESERIALIZER :((
 		public BarScaleInterval() {
 			this.Scale = BarScale.Unknown;
 			this.Interval = 0;
 		}
 		public BarScaleInterval(BarScale scale, int barInterval) : this() {
 			if (scale != BarScale.Unknown && barInterval <= 0) throw new Exception("please mention barInterval for scale[" + scale + "]");
-			this.Scale = scale;
-			this.Interval = barInterval;
+			Scale = scale;
+			Interval = barInterval;
 		}
 		public static BarScaleInterval Parse(string str) {
 			if (str == null) {
@@ -159,34 +185,18 @@ namespace Sq1.Core.DataTypes {
 			ret.Scale = BarScale.Tick;
 			return ret;
 		}
-		public int AsTimeSpanInSeconds { get {
-				int ret = -1;
-				int yearly = (365 + 1/4) * 24 * 60 * 60;
-				switch(this.Scale) {
-					case BarScale.Yearly:		ret = yearly;			break;
-					case BarScale.Quarterly:	ret = yearly / 4;		break;
-					case BarScale.Monthly:		ret = yearly / 12;		break;
-					case BarScale.Weekly:		ret = 60 * 60 * 24 * 7;	break;
-					case BarScale.Daily:		ret = 60 * 60 * 24;		break;
-					case BarScale.Hour:			ret = 60 * 60;			break;
-					case BarScale.Minute:		ret = 60;				break;
-					case BarScale.Second:		ret = 1;				break;
-
-					case BarScale.Unknown:
-					case BarScale.Tick:
-					default:
-						break;
-				}
-				ret *= this.Interval;
-				return ret;
-			} }
-		public TimeSpan AsTimeSpan { get { return new TimeSpan(0, 0, this.AsTimeSpanInSeconds); } }
+		
 		public override string ToString() {
-			string str = "";
-			if (this.IsIntraday) {
-				str = this.Interval + "-";
+			if (this.AsString_cached == null) {
+				StringBuilder sb = new StringBuilder();
+				if (this.IsIntraday) {
+					sb.Append(this.Interval);
+					sb.Append("-");
+				}
+				sb.Append(this.Scale.ToString());
+				this.AsString_cached = sb.ToString();
 			}
-			return str + this.Scale.ToString();
+			return this.AsString_cached; 
 		}
 		public BarScaleInterval Clone() {
 			return (BarScaleInterval)this.MemberwiseClone();

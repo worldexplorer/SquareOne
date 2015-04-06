@@ -12,7 +12,6 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public BarScaleInterval	ScaleInterval;
 		[JsonProperty]	public BarDataRange		DataRange;
 
-		//public int ChartBarSpacing;
 		[JsonProperty]	public bool				IsStreamingTriggeringScript;
 		[JsonProperty]	public bool				ShowRangeBar;
 		[JsonProperty]	public bool				IsStreaming;
@@ -24,7 +23,7 @@ namespace Sq1.Core.StrategyBase {
 			Name = "UNDEFINED";
 			Symbol = "UNDEFINED";
 			DataSourceName = "UNDEFINED";
-			ScaleInterval = new BarScaleInterval();
+			ScaleInterval = new BarScaleInterval(BarScale.Unknown, -1);
 			DataRange = new BarDataRange(500);
 			//ChartBarSpacing = 6;
 			IsStreamingTriggeringScript = false;
@@ -42,9 +41,6 @@ namespace Sq1.Core.StrategyBase {
 			this.IsStreamingTriggeringScript	= found.IsStreamingTriggeringScript;
 			this.ShowRangeBar					= found.ShowRangeBar;
 		}
-//		public ChartContext MemberwiseClone() {
-//			return (ChartContext)base.MemberwiseClone();
-//		}
 		public override string ToString() {
 			//return this.Name;
 			//v1
@@ -59,7 +55,7 @@ namespace Sq1.Core.StrategyBase {
 			sb.Append(" :: ");
 			sb.Append(this.Symbol);
 			sb.Append(" [");
-			sb.Append(this.ScaleInterval.ToString());
+			if (this.ScaleInterval != null) sb.Append(this.ScaleInterval.ToString());
 			sb.Append(" ]");
 			if (typeof(ContextChart) != this.GetType()) {	//append ContextScript name, not for ContextChart
 				sb.Append(" ctx/");

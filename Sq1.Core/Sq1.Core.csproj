@@ -53,11 +53,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED;VERBOSE_STRINGS_SLOW;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled</DefineConstants>
+    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED_disabled;VERBOSE_STRINGS_SLOW_disabled;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled</DefineConstants>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -110,11 +110,11 @@
       <DependentUpon>Bars.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\Bars.EventGenerator.cs">
-      <DependentUpon>Bar.cs</DependentUpon>
+      <DependentUpon>Bars.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\BarsUnscaled.cs" />
     <Compile Include="DataTypes\BarsUnscaledEventArgs.cs" />
-    <Compile Include="DataTypes\BarsUnscaledList.cs" />
+    <Compile Include="DataTypes\BarsUnscaledListTwins.cs" />
     <Compile Include="DataTypes\BidOrAsk.cs" />
     <Compile Include="DoubleBuffered\PanelDoubleBuffered.cs">
       <SubType>Component</SubType>
@@ -253,6 +253,10 @@
     <Compile Include="Streaming\StreamingSolidifier.cs" />
     <Compile Include="Support\ConcurrentDictionaryGeneric.cs" />
     <Compile Include="Support\ConcurrentListWD.cs" />
+    <Compile Include="Support\ConcurrentWatchdog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Support\FontCache.cs" />
     <Compile Include="Support\ObjectListViewStateSerializer.cs" />
     <Compile Include="Support\SkipInstantiationAt.cs" />
     <Compile Include="Broker\OrderLaneByType.cs" />
@@ -356,7 +360,6 @@
     <Compile Include="StrategyBase\Script.cs" />
     <Compile Include="StrategyBase\ScriptCompiler.cs" />
     <Compile Include="StrategyBase\MarketLive.cs" />
-    <Compile Include="c:\SquareOne\Sq1.Core\Support\ConcurrentWatchdog.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CsvHelper261-master\src\CsvHelper35\CsvHelper35.csproj">
@@ -383,4 +386,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
 </Project>

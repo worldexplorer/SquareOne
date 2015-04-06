@@ -175,15 +175,17 @@ namespace Sq1.Widgets.Execution {
 			//otherwize if you'll see REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR - dont forget to use Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
 			this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTreeOLV.SelectedObject as Order);
 		}
-		void mniTreeExpandAll_Click(object sender, EventArgs e) {
-			this.OrdersTreeOLV.ExpandAll();
-		}
+
+
 		void mniTreeCollapseAll_Click(object sender, EventArgs e) {
 			this.OrdersTreeOLV.CollapseAll();
 		}
-		void mniRebuildAll_Click(object sender, EventArgs e) {
-			this.OrdersTreeOLV.RebuildAll(true);
-		}		
+		void mniTreeExpandAll_Click(object sender, EventArgs e) {
+			this.OrdersTreeOLV.ExpandAll();
+		}
+		void mniTreeRebuildAll_Click(object sender, EventArgs e) {
+			this.RebuildAllTreeFocusOnTopmost();
+		}
 		
 		void splitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {
 			if (this.DataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()

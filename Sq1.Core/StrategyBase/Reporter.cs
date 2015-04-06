@@ -59,6 +59,10 @@ namespace Sq1.Core.StrategyBase {
 		public virtual object CreateSnapshotToStoreInScriptContext() {
 			return null;
 		}
+
+		public virtual void StashWindowTextSuffixInBaseTabText_usefulToUpdateAutohiddenStatsWithoutRebuildingFullReport_OLVisSlow() { }
+		public virtual void RebuildingFullReportForced_onLivesimPaused() { }
+
 		public void RaiseContextScriptChangedContainerShouldSerialize() {
 			this.Chart.RaiseContextScriptChangedContainerShouldSerialize();
 		}

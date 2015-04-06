@@ -126,7 +126,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniltbDelay.InputFieldWidth = 0;
 			this.mniltbDelay.Name = "mniltbDelay";
 			this.mniltbDelay.Size = new System.Drawing.Size(165, 21);
-			this.mniltbDelay.Text = "Delay, msec:";
+			this.mniltbDelay.TextLeft = "Delay, msec:";
 			this.mniltbDelay.TextRed = false;
 			this.mniltbDelay.Visible = false;
 			this.mniltbDelay.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDelay_UserTyped);

@@ -79,11 +79,13 @@ namespace Sq1.Charting {
 			foreach (AlertArrow arrow in arrows) {
 				//g.DrawImage(position.Bitmap, new Point(shadowX, position.Ytransient));
 				//MOVED_TO_AlignVisiblePositionArrowsAndCountMaxOutstanding() position.XBarMiddle = shadowX;
-				g.DrawImage(arrow.Bitmap, arrow.Location);
-				//g.DrawImageUnscaled(position.Bitmap, position.Location);
-				//http://stackoverflow.com/questions/7690546/replace-gdi-drawimage-with-pinvoked-gdi-and-transparent-pngs
-				//http://stackoverflow.com/questions/264720/gdi-graphicsdrawimage-really-slow
-				//g.FillRectangle(position.BitmapTextureBrush, position.ClientRectangle);
+				if (arrow.Bitmap != null) {
+					g.DrawImage(arrow.Bitmap, arrow.Location);
+					//g.DrawImageUnscaled(position.Bitmap, position.Location);
+					//http://stackoverflow.com/questions/7690546/replace-gdi-drawimage-with-pinvoked-gdi-and-transparent-pngs
+					//http://stackoverflow.com/questions/264720/gdi-graphicsdrawimage-really-slow
+					//g.FillRectangle(position.BitmapTextureBrush, position.ClientRectangle);
+				}
 
 				this.renderPositionLineForArrow(arrow, g, false);
 
@@ -301,7 +303,7 @@ namespace Sq1.Charting {
 				if (alertArrowsListByBar.ContainsKey(barIndex)) {
 					List<AlertArrow> arrows = alertArrowsListByBar[barIndex];
 					foreach (AlertArrow arrow in arrows) {
-						int arrowHeight = arrow.Bitmap.Height + base.ChartControl.ChartSettings.PositionArrowPaddingVertical;
+						int arrowHeight = arrow.Height + base.ChartControl.ChartSettings.PositionArrowPaddingVertical;
 						if (arrow.AboveBar) yForLabelsAbove -= arrowHeight + base.ChartControl.ChartSettings.PositionArrowPaddingVertical; 
 						else yForLabelsBelow += arrowHeight; 
 					}

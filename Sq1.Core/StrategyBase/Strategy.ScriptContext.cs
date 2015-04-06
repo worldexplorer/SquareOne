@@ -48,7 +48,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.ContextMarkCurrentInListByName(scriptContextName);
 			if (this.Script != null) {
-				this.ScriptParametersAbsorbMergeFromReflected_StoreInCurrentContext_SaveStrategy_notSameObjects_usedForResettingToDefault();
+				this.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
 				this.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 			}
 		}
@@ -58,7 +58,7 @@ namespace Sq1.Core.StrategyBase {
 				ctx.IsCurrent = (ctx.Name == scriptContextName) ? true : false;
 			}
 		}
-		public void ScriptContextAdd(string newScriptContextName, ContextScript absorbParamsFrom = null, bool setAddedAsCurrent = false) {
+		public void ScriptContextAdd_duplicatedInSliders_or_importedFromOptimizer(string newScriptContextName, ContextScript duplicateAbsorbParamsFrom = null, bool setAddedAsCurrent = false) {
 			if (this.ScriptContextsByName.ContainsKey(newScriptContextName)) {
 				string msg = "CANT_ADD_EXISTING scriptContextName[" + newScriptContextName + "] already exists for strategy[" + this + "]";
 				//Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
@@ -67,8 +67,8 @@ namespace Sq1.Core.StrategyBase {
 				//e.Cancel = true;
 			}
 			ContextScript newScriptContext = new ContextScript(newScriptContextName);
-			if (absorbParamsFrom != null) {
-				newScriptContext.AbsorbFrom(absorbParamsFrom, true);
+			if (duplicateAbsorbParamsFrom != null) {
+				newScriptContext.AbsorbFrom_duplicatedInSliders_or_importedFromOptimizer(duplicateAbsorbParamsFrom, true);
 			} else {
 				newScriptContext.DataSourceName = this.ScriptContextCurrent.DataSourceName;
 				newScriptContext.Symbol = this.ScriptContextCurrent.Symbol;

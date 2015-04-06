@@ -428,6 +428,5 @@
   <ItemGroup>
     <None Include="Resources\TextFile.ico" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

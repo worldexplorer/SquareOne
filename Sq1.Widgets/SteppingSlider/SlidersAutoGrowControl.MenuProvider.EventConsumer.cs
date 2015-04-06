@@ -33,14 +33,14 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		void mniltbScriptContextNewWithDefaults_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string newScriptContextName = e.StringUserTyped;
-			this.Strategy.ScriptContextAdd(newScriptContextName);
+			this.Strategy.ScriptContextAdd_duplicatedInSliders_or_importedFromOptimizer(newScriptContextName);
 			this.RaiseOnScriptContextCreated(newScriptContextName);
 			this.ctxScriptContexts_Opening(this, null);
 		}
 		void mniltbScriptContextDuplicateTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string dupeScriptContextName = e.StringUserTyped;
 			ContextScript scriptContextToDuplicate = this.ScriptContextFromMniTag(sender);
-			this.Strategy.ScriptContextAdd(dupeScriptContextName, scriptContextToDuplicate);
+			this.Strategy.ScriptContextAdd_duplicatedInSliders_or_importedFromOptimizer(dupeScriptContextName, scriptContextToDuplicate);
 			this.RaiseOnScriptContextDuplicated(dupeScriptContextName);
 			this.ctxScriptContexts_Opening(this, null);
 		}
@@ -140,8 +140,8 @@ namespace Sq1.Widgets.SteppingSlider {
 
 					//v2
 					MenuItemLabeledTextBox mni = new MenuItemLabeledTextBox();
-					mni.Text = param.FullName;
-					mni.TextOffsetX = 42;
+					mni.TextLeft = param.FullName;
+					mni.TextLeftOffsetX = 42;
 					//mni.TextWidth = 200;
 					//TODO MAKE_IT_STRETCH mni.TextAutoSize = true;
 					mni.InputFieldValue = param.ValueCurrent.ToString();

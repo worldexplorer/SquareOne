@@ -6,7 +6,6 @@ using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
-using Sq1.Core.Optimization;
 
 namespace Sq1.Core.StrategyBase {
 	public abstract partial class Script {
@@ -35,7 +34,7 @@ namespace Sq1.Core.StrategyBase {
 		public		bool			HasPositionsOpenNow					{ get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
 		#endregion
 		
-		public	string				ScriptParametersByIdAsString		{ get {
+		public	string				ScriptParametersAsString		{ get {
 				if (this.ScriptParametersById_ReflectedCached.Count == 0) return "(NoScriptParameters)";
 				string ret = "";
 				foreach (int id in this.ScriptParametersById_ReflectedCached.Keys) {
@@ -54,7 +53,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		#region Initializers
-		public void Initialize(ScriptExecutor scriptExecutor) {
+		public void Initialize(ScriptExecutor scriptExecutor, bool saveStrategy_falseForOptimizer = true) {
 			this.Executor = scriptExecutor;
 
 			this.scriptParametersById_ReflectionForced = true;
@@ -63,8 +62,8 @@ namespace Sq1.Core.StrategyBase {
 			this.indicatorParametersByIndicator_ReflectionForced = true;
 
 			//v1
-			this.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
-			this.Executor.Strategy.ScriptParametersAbsorbMergeFromReflected_StoreInCurrentContext_SaveStrategy_notSameObjects_usedForResettingToDefault();
+			this.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(saveStrategy_falseForOptimizer);
+			this.Executor.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(saveStrategy_falseForOptimizer);
 			//v2
 			//this.AbsorbValuesFromCurrentContextAndReplacePointers();
 		}
@@ -244,8 +243,8 @@ namespace Sq1.Core.StrategyBase {
 				return scriptParametersById_ReflectedCached;
 			} }
 
-		public void IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel() {
-			this.Strategy.IndicatorParamsAbsorbMergeFromReflected_StoreInCurrenctContext_SaveStrategy();
+		public void IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(bool saveStrategy_falseForOptimizer = true) {
+			this.Strategy.IndicatorParametersReflectedAbsorbMergeFromCurrenctContext_SaveStrategy(saveStrategy_falseForOptimizer);
 			foreach (Indicator indicatorInstance in this.IndicatorsByName_ReflectedCached.Values) {
 				// moved from upstairs coz: after absorbing all deserialized indicator parameters from ScriptContext, GetHostPanelForIndicator will return an pre-instantiated PanelIndicator
 				// otherwize GetHostPanelForIndicator created a new one for an indicator with default Indicator parameters;
@@ -272,10 +271,10 @@ namespace Sq1.Core.StrategyBase {
 			foreach (int cloneSPindex in cloneScriptParametersFrom.Keys) {
 				ScriptParameter cloneSparam = cloneScriptParametersFrom[cloneSPindex];
 				if (myctxScriptParametersTo.ContainsKey(cloneSPindex) == false) {
-					string msg = "myctxScriptParametersTo.ContainsKey(" + cloneSPindex + ") == false; Script.ScriptParametersAsString=" + this.ScriptParametersByIdAsString;
+					string msg = "myctxScriptParametersTo.ContainsKey(" + cloneSPindex + ") == false; Script.ScriptParametersAsString=" + this.ScriptParametersAsString;
 					Assembler.PopupException(msg);
 					//continue;
-					myctxScriptParametersTo.Add(cloneSPindex, cloneSparam.Clone());
+					myctxScriptParametersTo.Add(cloneSPindex, cloneSparam.CloneAsScriptParameter("REFACTOR_SwitchedToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed"));
 				} else {
 					myctxScriptParametersTo[cloneSPindex].AbsorbCurrentFixBoundariesIfChanged(cloneSparam);
 				}
@@ -303,7 +302,7 @@ namespace Sq1.Core.StrategyBase {
 						string msg = "myctxIparamsLookup.ContainsKey(" + cloneIparam.Name + ") == false";
 						Assembler.PopupException(msg);
 						//continue;
-						myctxIparams.Add(cloneIparam.Clone());
+						myctxIparams.Add(cloneIparam.CloneAsIndicatorParameter("REFACTOR_SwitchedToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed"));
 					} else {
 						IndicatorParameter myctxIparam = myctxIparamsLookup[cloneIparam.Name];
 						myctxIparam.AbsorbCurrentFixBoundariesIfChanged(cloneIparam);

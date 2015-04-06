@@ -12,14 +12,24 @@ using Sq1.Core.Repositories;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl {
-		void btnRunCancel_Click(object sender, EventArgs e) {
+		void cbxRunCancel_Click(object sender, EventArgs e) {
 			if (this.optimizer.IsRunningNow) {
-				this.optimizer.OptimizationAbort();
-				this.btnPauseResume.Enabled = false;
+				if (this.optimizer.Unpaused == false) {
+					// WHILE_AVOIDING_DEADLOCK__DISABLE_BUTTONS_FOR_USER_NOT_TO_WORSEN__LET_ALL_SCHEDULED_PAUSED_STILL_INERTIOUSLY_FINISH
+					this.cbxRunCancel.Enabled = false;
+					this.cbxPauseResume.Enabled = false;
+				}
+				this.optimizer.OptimizationAbort();		// WILL_UNPAUSE_AND__LET_ALL_SCHEDULED_PAUSED_STILL_INERTIOUSLY_FINISH
+				this.cbxPauseResume.Enabled = false;
+				this.cbxPauseResume.Checked = false;
+				this.olvBacktests.UseWaitCursor = false;
+				this.cbxRunCancel.Enabled = true;		// NOW_UNPAUSED_ABORTED_AND_READY_TO_RUN_AGAIN
+				this.cbxRunCancel.Checked = this.optimizer.IsRunningNow;
+				//ALREADY_DUNNO_WHO this.expand();
 				return;
 			}
 			
-			string staleReason = this.optimizer.StaleReason;
+			//string staleReason = this.optimizer.StaleReason;
 			//bool clickedToClearAndPrepareForNewOptimization = string.IsNullOrEmpty(staleReason) == false;
 			//if (clickedToClearAndPrepareForNewOptimization) {
 			//	//this.backtests.Clear();
@@ -32,21 +42,28 @@ namespace Sq1.Widgets.Optimization {
 			//	return;
 			//}
 			
-			this.backtests.Clear();
-			this.olvBacktests.SetObjects(this.backtests, true);
+			this.backtestsLocalEasierToSync.Clear();
+			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync, true);
 			//this.olvBacktests.RebuildColumns();
 			//this.olvBacktests.BuildList();
 			int threadsLaunched = this.optimizer.OptimizationRun();
-			this.btnRunCancel.Text = "Cancel " + this.optimizer.BacktestsRemaining + " backtests";
-			//this.btnPauseResume.Enabled = true;
+
+			int backtestsRemaninig	= this.optimizer.BacktestsRemaining;
+			//int backtestsTotal		= this.optimizer.BacktestsTotal;
+			//int backtestsCompleted	= this.optimizer.BacktestsCompleted;  
+			this.cbxRunCancel.Text = "Cancel " + backtestsRemaninig + " backtests";
+			this.cbxRunCancel.Checked = this.optimizer.IsRunningNow;
+			this.lblStats.Text = threadsLaunched + " THREADS LAUNCHED";
+			this.progressBar1.Value = 0;
+
+			this.cbxRunCancel.Text = "Cancel " + this.optimizer.BacktestsRemaining + " backtests";
+			this.cbxPauseResume.Enabled = true;
 			this.olvBacktests.EmptyListMsg = threadsLaunched + " threads launched";
-			//this.olvBacktests.UseWaitCursor = true;
-			try {
-				this.splitContainer1.SplitterDistance = this.heightCollapsed;
-			} catch (Exception ex) {
-				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
-			}
+			this.olvBacktests.UseWaitCursor = true;
+			
+			this.statsAndHistoryCollapse();
 		}
+
 //		void optimizer_OnBacktestStarted(object sender, EventArgs e) {
 //			if (base.InvokeRequired) {
 //				base.BeginInvoke((MethodInvoker)delegate { this.optimizer_OnBacktestStarted(sender, e); });
@@ -59,35 +76,37 @@ namespace Sq1.Widgets.Optimization {
 				base.BeginInvoke((MethodInvoker)delegate { this.optimizer_OnOneBacktestFinished(sender, e); });
 				return;
 			}
-			this.backtests.Add(e.SystemPerformanceRestoreAble);
-			this.olvBacktests.SetObjects(this.backtests, true); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
-			//this.olvBacktests.Refresh();
+			this.backtestsLocalEasierToSync.Add(e.SystemPerformanceRestoreAble);
+			//v1 this.olvBacktests.SetObjects(this.backtests, true); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
+			this.olvBacktests.AddObject(e.SystemPerformanceRestoreAble);
 			
 			int backtestsRemaninig	= this.optimizer.BacktestsRemaining;
 			int backtestsTotal		= this.optimizer.BacktestsTotal;
 			int backtestsCompleted	= this.optimizer.BacktestsCompleted;  
-			this.btnRunCancel.Text = "Cancel " + backtestsRemaninig + " backtests";
+			this.cbxRunCancel.Text = "Cancel " + backtestsRemaninig + " backtests";
 			double pctComplete = (backtestsTotal > 0) ? Math.Round(100 * backtestsCompleted / (double)backtestsTotal) : 0;
 			this.lblStats.Text = pctComplete + "% complete   " + backtestsCompleted + "/" + backtestsTotal;
 			if (backtestsCompleted >= this.progressBar1.Minimum && backtestsCompleted <= this.progressBar1.Maximum) {
 				this.progressBar1.Value = backtestsCompleted;
 			}
-			this.btnPauseResume.Text = this.optimizer.BacktestsSecondsElapsed + " seconds elapsed";
+			if (this.optimizer.Unpaused == false) return;
+			this.cbxPauseResume.Text = this.optimizer.BacktestsSecondsElapsed + " seconds elapsed";
 		}
 		void optimizer_OnAllBacktestsFinished(object sender, EventArgs e) {
 			if (base.InvokeRequired) {
 				base.BeginInvoke((MethodInvoker)delegate { this.optimizer_OnAllBacktestsFinished(sender, e); });
 				return;
 			}
-			this.btnPauseResume.Enabled = false;
 			int totalBacktests = this.optimizer.BacktestsTotal;
-			this.btnRunCancel.Text = "Run " + totalBacktests + " backtests";
+			this.cbxRunCancel.Text = "Run " + totalBacktests + " backtests";
 			this.olvBacktests.EmptyListMsg = "";
 			//this.lblStats.Text = "0% complete   0/" + totalBacktests;
 			//this.progressBar1.Value = 0;
-			//this.olvBacktests.UseWaitCursor = false;
-			this.btnPauseResume.Text = this.optimizer.BacktestsSecondsElapsed + " seconds elapsed";
-			
+			this.olvBacktests.UseWaitCursor = false;
+			this.cbxPauseResume.Text = this.optimizer.BacktestsSecondsElapsed + " seconds elapsed";
+			this.cbxPauseResume.Enabled = false;
+			this.cbxRunCancel.Checked = this.optimizer.IsRunningNow;
+
 			Strategy strategy = this.optimizer.ExecutorCloneToBeSpawned.Strategy;
 			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//v1
@@ -98,13 +117,9 @@ namespace Sq1.Widgets.Optimization {
 			//}
 			//strategy.Serialize();
 			//v2
-			this.RepositoryJsonOptimizationResults.SerializeList(this.backtests, symbolScaleRange);
+			this.RepositoryJsonOptimizationResults.SerializeList(this.backtestsLocalEasierToSync, symbolScaleRange);
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
-			try {
-				this.splitContainer1.SplitterDistance = this.heightExpanded;
-			} catch (Exception ex) {
-				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
-			}
+			this.statsAndHistoryExpand();
 		}
 		void optimizer_OnOptimizationAborted(object sender, EventArgs e) {
 			this.optimizer_OnAllBacktestsFinished(sender, e);
@@ -113,10 +128,12 @@ namespace Sq1.Widgets.Optimization {
 			this.txtScriptParameterTotalNr.Text = this.optimizer.ScriptParametersTotalNr.ToString();
 			this.txtIndicatorParameterTotalNr.Text = this.optimizer.IndicatorParameterTotalNr.ToString();
 			int backtestsTotal = this.optimizer.BacktestsTotal;
-			this.btnRunCancel.Text = "Run " + backtestsTotal + " backtests";
+			this.cbxRunCancel.Text = "Run " + backtestsTotal + " backtests";
 		}
-		void btnPauseResume_Click(object sender, EventArgs e) {
-			Assembler.PopupException(null, new NotImplementedException());
+		void cbxPauseResume_Click(object sender, EventArgs e) {
+			this.optimizer.Unpaused		= !this.optimizer.Unpaused;
+			this.cbxPauseResume.Text	 = this.optimizer.Unpaused ? "Pause" : "Resume";
+			this.cbxPauseResume.Checked = !this.optimizer.Unpaused; 
 		}
 		void nudCpuCoresToUse_ValueChanged(object sender, EventArgs e) {
 			int newValue = (int)this.nudThreadsToRun.Value;
@@ -229,10 +246,32 @@ namespace Sq1.Widgets.Optimization {
 		void olvHistory_ItemActivate(object sender, EventArgs e) {
 			FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
 			if (fname == null) return;
-			this.backtests = this.RepositoryJsonOptimizationResults.DeserializeList(fname.Name);
-			this.olvBacktests.SetObjects(this.backtests, true);
+			this.backtestsLocalEasierToSync = this.RepositoryJsonOptimizationResults.DeserializeList(fname.Name);
+			if (this.backtestsLocalEasierToSync == null) {
+				string msg = "NO_BACKTEST_INSIDE_FILE " + fname.Name;
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync, true);
 		}
-
+		void olvHistory_KeyDown(object sender, KeyEventArgs e) {
+			try {
+				if (e.KeyCode == Keys.Delete) {
+					FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
+					if (fname == null) return;
+					bool deleted = this.RepositoryJsonOptimizationResults.ItemDelete_dirtyImplementation(fname);
+					if (deleted == false) {
+						string msg = "FIXME/REFACTOR RepositoryJsonOptimizationResults.ItemDelete_dirtyImplementation(" + fname + ") //olvHistory_KeyDown()";
+						Assembler.PopupException(msg);
+					}
+					this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
+				}
+			} catch (Exception ex) {
+				string msg = "FIXME //olvHistory_KeyDown()";
+				Assembler.PopupException(msg, ex);
+			}
+		}
+		
 		void fastOLVparametersYesNoMinMaxStep_Click(object sender, EventArgs e) {
 			IndicatorParameter paramClicked = this.fastOLVparametersYesNoMinMaxStep.SelectedObject as IndicatorParameter;
 			if (paramClicked == null) return;
@@ -255,5 +294,12 @@ namespace Sq1.Widgets.Optimization {
 		//    // for HeaderAllCheckBox.Clicked => Strategy.Serialize()d as many times as you got (Script+Indicator)Parameters
 		//    this.optimizer.ExecutorCloneToBeSpawned.Strategy.Serialize();
 		//}
+		void cbxExpandCollapse_CheckedChanged(object sender, EventArgs e) {
+			if (this.cbxExpandCollapse.Checked == true) {
+				this.statsAndHistoryExpand();
+			} else {
+				this.statsAndHistoryCollapse();
+			}
+		}
 	}
 }

@@ -32,16 +32,19 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public bool HasParentBars { get { return this.ParentBars != null; } }
 		[JsonProperty]	public string ParentBarsIdent { get {
 				if (this.HasParentBars == false) return "NO_PARENT_BARS";
-				string ret = "StaticBar";
+				StringBuilder sb = new StringBuilder("StaticBar");
 				//if (this.ParentBarsIndex <  this.ParentBars.Count - 1) ret = this.ParentBarsIndex.ToString();
 				//if (this.ParentBarsIndex == this.ParentBars.Count - 1) ret = "LastStaticBar";// +this.ParentBarsIndex;
 				//if (this.ParentBarsIndex == this.ParentBars.Count) ret = "StreamingBar";// +this.ParentBarsIndex;
 				//if (this.ParentBarsIndex >  this.ParentBars.Count) ret = "ScaryGhostBar:" + this.ParentBarsIndex;
-				if (this.IsBarStreaming) ret = "BarStreaming";// +this.ParentBarsIndex;
-				if (this.IsBarStaticLast) ret = "StaticBarLast";// +this.ParentBarsIndex;
-				if (this.IsBarStaticFirst) ret = "StaticBarFist";// +this.ParentBarsIndex;
-				ret += "#" + this.ParentBarsIndex + "/" + (this.ParentBars.Count-1);
-				return ret;
+				if (this.IsBarStreaming)	sb.Append("BarStreaming");// +this.ParentBarsIndex;
+				if (this.IsBarStaticLast)	sb.Append("StaticBarLast");// +this.ParentBarsIndex;
+				if (this.IsBarStaticFirst)	sb.Append("StaticBarFist");// +this.ParentBarsIndex;
+				sb.Append("#");
+				sb.Append(this.ParentBarsIndex);
+				sb.Append("/");
+				sb.Append((this.ParentBars.Count-1));
+				return sb.ToString();
 			} }
 		// Perst deserializer invokes default ctor()
 		[JsonProperty]	public int DaySerial;

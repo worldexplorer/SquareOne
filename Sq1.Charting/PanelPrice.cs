@@ -76,12 +76,12 @@ namespace Sq1.Charting {
 					if (arrow.AboveBar) {
 						positionsAboveBar++;
 						increment += base.ChartControl.ChartSettings.PositionArrowPaddingVertical * positionsAboveBar;
-						increment += arrow.Bitmap.Height * positionsAboveBar;
+						increment += arrow.Height * positionsAboveBar;
 						increment = -increment;
 					} else {
 						positionsBelowBar++;
 						increment += base.ChartControl.ChartSettings.PositionArrowPaddingVertical * positionsBelowBar;
-						increment += arrow.Bitmap.Height * (positionsBelowBar - 1);
+						increment += arrow.Height * (positionsBelowBar - 1);
 					}
 					arrow.Ytransient += increment;
 					arrow.Ytransient = base.AdjustToPanelHeight(arrow.Ytransient);

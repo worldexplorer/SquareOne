@@ -116,12 +116,13 @@ namespace Sq1.Gui.Forms {
 		}
 		void mniBacktestOnEveryChange_Click(object sender, System.EventArgs e) {
 			try {
-				this.ctxBacktest.Visible = true;
 				Strategy strategy = this.ChartFormManager.Executor.Strategy;
 				if (strategy == null) return;
 				strategy.ScriptContextCurrent.BacktestOnSelectorsChange = this.mniBacktestOnSelectorsChange.Checked;
 				strategy.ScriptContextCurrent.BacktestOnDataSourceSaved = this.mniBacktestOnDataSourceSaved.Checked;
 				strategy.Serialize();
+
+				this.ctxBacktest.Visible = true;
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestOnEveryChange_Click()", ex);
 			}
@@ -345,6 +346,7 @@ namespace Sq1.Gui.Forms {
 				
 				ContextScript context = this.ChartFormManager.Strategy.ScriptContextCurrent;
 				context.SpreadModelerPercent = userTypedDouble;
+				this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
 				
 				if (this.ChartFormManager.Executor.Backtester.BacktestDataSource == null) {
 					this.ChartFormManager.Executor.Backtester.InitializeQuoteGenerator();

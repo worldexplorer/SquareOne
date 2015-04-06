@@ -156,10 +156,10 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.mniltbStrategyDuplicateTo.InputFieldWidth = 85;
 			this.mniltbStrategyDuplicateTo.Name = "mniltbStrategyDuplicateTo";
 			this.mniltbStrategyDuplicateTo.Size = new System.Drawing.Size(168, 21);
-			this.mniltbStrategyDuplicateTo.Text = "Duplicate To:";
-			this.mniltbStrategyDuplicateTo.TextOffsetX = 0;
+			this.mniltbStrategyDuplicateTo.TextLeft = "Duplicate To:";
+			this.mniltbStrategyDuplicateTo.TextLeftOffsetX = 0;
 			this.mniltbStrategyDuplicateTo.TextRed = false;
-			this.mniltbStrategyDuplicateTo.TextWidth = 73;
+			this.mniltbStrategyDuplicateTo.TextLeftWidth = 73;
 			// 
 			// sepStrategy
 			// 
@@ -192,10 +192,10 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.mniltbStrategyRenameTo.InputFieldWidth = 85;
 			this.mniltbStrategyRenameTo.Name = "mniltbStrategyRenameTo";
 			this.mniltbStrategyRenameTo.Size = new System.Drawing.Size(168, 21);
-			this.mniltbStrategyRenameTo.Text = "Rename To:";
-			this.mniltbStrategyRenameTo.TextOffsetX = 0;
+			this.mniltbStrategyRenameTo.TextLeft = "Rename To:";
+			this.mniltbStrategyRenameTo.TextLeftOffsetX = 0;
 			this.mniltbStrategyRenameTo.TextRed = false;
-			this.mniltbStrategyRenameTo.TextWidth = 68;
+			this.mniltbStrategyRenameTo.TextLeftWidth = 68;
 			// 
 			// mniStrategyDelete
 			// 
@@ -242,10 +242,10 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.mniltbFolderCreate.InputFieldWidth = 85;
 			this.mniltbFolderCreate.Name = "mniltbFolderCreate";
 			this.mniltbFolderCreate.Size = new System.Drawing.Size(168, 21);
-			this.mniltbFolderCreate.Text = "Create Folder";
-			this.mniltbFolderCreate.TextOffsetX = 0;
+			this.mniltbFolderCreate.TextLeft = "Create Folder";
+			this.mniltbFolderCreate.TextLeftOffsetX = 0;
 			this.mniltbFolderCreate.TextRed = false;
-			this.mniltbFolderCreate.TextWidth = 72;
+			this.mniltbFolderCreate.TextLeftWidth = 72;
 			// 
 			// mniFolderRename
 			// 
@@ -266,10 +266,10 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.mniltbFolderRename.InputFieldWidth = 85;
 			this.mniltbFolderRename.Name = "mniltbFolderRename";
 			this.mniltbFolderRename.Size = new System.Drawing.Size(168, 21);
-			this.mniltbFolderRename.Text = "Rename To";
-			this.mniltbFolderRename.TextOffsetX = 0;
+			this.mniltbFolderRename.TextLeft = "Rename To";
+			this.mniltbFolderRename.TextLeftOffsetX = 0;
 			this.mniltbFolderRename.TextRed = false;
-			this.mniltbFolderRename.TextWidth = 65;
+			this.mniltbFolderRename.TextLeftWidth = 65;
 			// 
 			// mniFolderDelete
 			// 
@@ -302,10 +302,10 @@ namespace Sq1.Widgets.StrategiesTree {
 			this.mniltbStrategyCreate.InputFieldWidth = 85;
 			this.mniltbStrategyCreate.Name = "mniltbStrategyCreate";
 			this.mniltbStrategyCreate.Size = new System.Drawing.Size(168, 21);
-			this.mniltbStrategyCreate.Text = "New Strategy";
-			this.mniltbStrategyCreate.TextOffsetX = 0;
+			this.mniltbStrategyCreate.TextLeft = "New Strategy";
+			this.mniltbStrategyCreate.TextLeftOffsetX = 0;
 			this.mniltbStrategyCreate.TextRed = false;
-			this.mniltbStrategyCreate.TextWidth = 73;
+			this.mniltbStrategyCreate.TextLeftWidth = 73;
 			// 
 			// toolStripSeparator2
 			// 

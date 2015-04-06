@@ -337,13 +337,13 @@ namespace Sq1.Charting {
 				? this.ChartControl.ChartSettings.BrushVolumeBarDown
 				: this.ChartControl.ChartSettings.BrushVolumeBarUp;
 			//if (fillDownCandleBody) histogramBarInverted.Width--;	// SYNC_WITH_RenderBarCandle drawing using a pen produces 1px narrower rectangle that drawing using a brush???...
-			if (this.ForeColor != Color.Empty) {
-				using (SolidBrush brushNonVolume = new SolidBrush(this.ForeColor)) {
-					graphics.FillRectangle(brushNonVolume, histogramBarInverted);
-				}
-			} else {
+			//if (this.ForeColor != Color.Empty) {
+			//	using (SolidBrush brushNonVolume = new SolidBrush(this.ForeColor)) {
+			//		graphics.FillRectangle(brushNonVolume, histogramBarInverted);
+			//	}
+			//} else {
 				graphics.FillRectangle(brushDown, histogramBarInverted);
-			}
+			//}
 		}
 		protected void RenderBarCandle(Graphics graphics, int barX, int barYOpenInverted, int barYHighInverted, int barYLowInverted, int barYCloseInverted, bool fillDownCandleBody) {
 			string msig = " //PanelBase.RenderBarCandle()";

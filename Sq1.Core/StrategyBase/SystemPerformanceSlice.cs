@@ -312,7 +312,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = " SOME_POSITIONS_NOT_ABSORBED_BY " + this.ToString()
 					+ " positionsUpdatedAbsorbed[" + positionsUpdatedAbsorbed + "]"
 					+ " positionsOpenNow[" + positionsOpenNow.Count + "]";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 			return positionsUpdatedAbsorbed;
 		}
@@ -330,8 +330,8 @@ namespace Sq1.Core.StrategyBase {
 				positionsOpenedAbsorbedToInternal++;
 			}
 			if (positionsOpenedAbsorbedToInternal != openedSafe.Count) {
-				string msg = "IS_THERE_ANY_PROBLEM? positionsOpenedAbsorbedToInternal[" + positionsOpenedAbsorbedToInternal + "] != openedSafe.Count[" + openedSafe.Count + "]";
-				Assembler.PopupException(msg, null, false);
+				string msg = "NO_ITS_FINE IS_THERE_ANY_PROBLEM? positionsOpenedAbsorbedToInternal[" + positionsOpenedAbsorbedToInternal + "] != openedSafe.Count[" + openedSafe.Count + "]";
+				//Assembler.PopupException(msg, null, false);
 			}
 			
 			int positionsClosedAbsorbedToInternal = 0;

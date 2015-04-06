@@ -45,6 +45,8 @@ namespace Sq1.Widgets.Execution {
 			WindowsFormsUtils.SetDoubleBuffered(this.OrdersTreeOLV);
 			WindowsFormsUtils.SetDoubleBuffered(this.olvMessages);
 			WindowsFormsUtils.SetDoubleBuffered(this);
+
+			this.fontCache = new FontCache(this.Font);
 		}
 		void buildMniShortcutsAfterInitializeComponent() {
 			columnsByFilters = new Dictionary<ToolStripMenuItem, List<OLVColumn>>();
@@ -301,39 +303,39 @@ namespace Sq1.Widgets.Execution {
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
-		public void OrderInsertToListView(Order order) {
-			if (this.OrdersTreeOLV.Items.Count == 0) {
-				this.RebuildAllTreeFocusOnTopmost();
-				return;
-			}
-			if (order.DerivedFrom == null) {
-				// copypaste from BuildList()
-	            this.OrdersTreeOLV.BeginUpdate();
-	            try {
-					OLVListItem lvi = new OLVListItem(order);
-					this.OrdersTreeOLV.Items.Insert(0, lvi);
-	            } finally {
-	                this.OrdersTreeOLV.EndUpdate();
-	            }
-				this.SelectOrderAndOrPopulateMessages(order);
-			} else {
-				int index = this.OrdersTreeOLV.TreeModel.GetObjectIndex(order.DerivedFrom);
-				if (index == -1) {
-					this.RebuildAllTreeFocusOnTopmost();
-					return;
-				}
-				// copypaste from BuildList()
-	            try {
-					OLVListItem lvi = new OLVListItem(order);
-					// when in virtual mode, use model :(
-					this.OrdersTreeOLV.Items.Insert(index + 1, lvi);
-	            } finally {
-	                this.OrdersTreeOLV.EndUpdate();
-	            }
-				this.SelectOrderAndOrPopulateMessages(order);
-				this.RebuildOneRootNodeChildAdded(order.DerivedFrom);
-			}
-		}
+//		public void OrderInsertToListView(Order order) {
+//			if (this.OrdersTreeOLV.Items.Count == 0) {
+//				this.RebuildAllTreeFocusOnTopmost();
+//				return;
+//			}
+//			if (order.DerivedFrom == null) {
+//				// copypaste from BuildList()
+//	            this.OrdersTreeOLV.BeginUpdate();
+//	            try {
+//					OLVListItem lvi = new OLVListItem(order);
+//					this.OrdersTreeOLV.Items.Insert(0, lvi);
+//	            } finally {
+//	                this.OrdersTreeOLV.EndUpdate();
+//	            }
+//				this.SelectOrderAndOrPopulateMessages(order);
+//			} else {
+//				int index = this.OrdersTreeOLV.TreeModel.GetObjectIndex(order.DerivedFrom);
+//				if (index == -1) {
+//					this.RebuildAllTreeFocusOnTopmost();
+//					return;
+//				}
+//				// copypaste from BuildList()
+//	            try {
+//					OLVListItem lvi = new OLVListItem(order);
+//					// when in virtual mode, use model :(
+//					this.OrdersTreeOLV.Items.Insert(index + 1, lvi);
+//	            } finally {
+//	                this.OrdersTreeOLV.EndUpdate();
+//	            }
+//				this.SelectOrderAndOrPopulateMessages(order);
+//				this.RebuildOneRootNodeChildAdded(order.DerivedFrom);
+//			}
+//		}
 
 		void selectLastOrderPopulateMessagesSafe() {
 			//NOPE I WANT TO CLEAR MESSAGES AFTER I WIPED OUT ALL THE ORDERS if (this.ordersTree.InnerOrderList.Count == 0) return;
@@ -345,13 +347,13 @@ namespace Sq1.Widgets.Execution {
 			var orderTopmost = this.ordersTree.InnerOrderList[0];
 			this.SelectOrderAndOrPopulateMessages(orderTopmost);
 		}
-		public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {
-			this.OrdersTreeOLV.RefreshObject(orderParentToRepaint);
-			// apparently, a node with a child, doesn't require RebuildAdd/Invalidate/Refresh...
-			//this.OrdersTree.RebuildAll(true);
-			//this.OrdersTree.Invalidate();
-			this.OrdersTreeOLV.Expand(orderParentToRepaint);
-		}
+//		public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {
+//			this.OrdersTreeOLV.RefreshObject(orderParentToRepaint);
+//			// apparently, a node with a child, doesn't require RebuildAdd/Invalidate/Refresh...
+//			//this.OrdersTree.RebuildAll(true);
+//			//this.OrdersTree.Invalidate();
+//			this.OrdersTreeOLV.Expand(orderParentToRepaint);
+//		}
 		public void SplitterDistanceResetToSaved() {
 			this.splitContainerMessagePane.SplitterDistance = 
 				this.splitContainerMessagePane.Orientation == Orientation.Horizontal

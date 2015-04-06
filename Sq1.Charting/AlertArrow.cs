@@ -80,21 +80,21 @@ namespace Sq1.Charting {
 				return this.bitmap;
 			} }
 		
-		private TextureBrush bitmapTextureBrush_cached;
-		public TextureBrush BitmapTextureBrush { get {
-				if (bitmapTextureBrush_cached == null && this.Bitmap != null) {
-					bitmapTextureBrush_cached = new TextureBrush(this.Bitmap, WrapMode.TileFlipY);	//, this.ClientRectangle
-				}
-				return bitmapTextureBrush_cached;
-			} }
+		//private TextureBrush bitmapTextureBrush_cached;
+		//public TextureBrush BitmapTextureBrush { get {
+		//        if (bitmapTextureBrush_cached == null && this.Bitmap != null) {
+		//            bitmapTextureBrush_cached = new TextureBrush(this.Bitmap, WrapMode.TileFlipY);	//, this.ClientRectangle
+		//        }
+		//        return bitmapTextureBrush_cached;
+		//    } }
 		public Rectangle ClientRectangle { get { return new Rectangle(this.Xtransient, this.Ytransient,
 																		(this.bitmap == null) ? 0 : this.Width,
 																		(this.bitmap == null) ? 0 : this.Height); } }
 		//public Rectangle ClientRectangle { get { return new Rectangle(this.Xtransient, this.Ytransient, 12, 12); } }
-		public Point Location { get { return new Point(this.Xtransient, this.Ytransient); } }
+		public Point Location	{ get { return new Point(this.Xtransient, this.Ytransient); } }
 
-		public int Width { get { return this.Bitmap.Width; } }
-		public int Height { get { return this.Bitmap.Height; } }
+		public int Width		{ get { return this.Bitmap != null ? this.Bitmap.Width : 10; } }
+		public int Height		{ get { return this.Bitmap != null ? this.Bitmap.Height : 10; } }
 		
 		public AlertArrow(Position position, bool arrowIsForPositionEntry) {
 			this.Position = position;
@@ -103,6 +103,18 @@ namespace Sq1.Charting {
 			this.XBarMiddle = 99;
 			//this.Location = new Point(0, 0);
 		}
+		~AlertArrow() {
+			this.DisposeBitmap();
+		}
+
+		public bool DisposeBitmap() {
+			bool ret = false;
+			if (this.bitmap == null) return ret;
+			this.bitmap.Dispose();
+			ret = true;
+			return ret;
+		}
+
 		public override string ToString() {
 			string ret = "ArrowFor" + ((this.ArrowIsForPositionEntry) ? "Entry" : "Exit");
 			ret += this.Position.ToString();

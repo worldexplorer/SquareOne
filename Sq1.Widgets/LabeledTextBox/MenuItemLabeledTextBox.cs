@@ -9,15 +9,16 @@ namespace Sq1.Widgets.LabeledTextBox {
 	public class MenuItemLabeledTextBox : ToolStripControlHost {		//http://stackoverflow.com/questions/5549895/toolstriptextbox-customisation
 		public event EventHandler<LabeledTextBoxUserTypedArgs> UserTyped;
 		private LabeledTextBoxControl LabeledTextBoxControl; // { get; private set; }
-		public MenuItemLabeledTextBox() : base(new LabeledTextBoxControl()) {
-			this.LabeledTextBoxControl = this.Control as LabeledTextBoxControl;
-			this.LabeledTextBoxControl.ParentToolStripControlHost = this;	// to calculate ((ToolStripControlHost as ToolStipItem).Tag as ScriptContext) from LabeledTextBox.TextBox.OnKeyPress 
-			this.LabeledTextBoxControl.TextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
+		
+		[Browsable(true)]
+		public new string TextLeft {
+			get { return this.LabeledTextBoxControl.TextLeft; }
+			set { this.LabeledTextBoxControl.TextLeft = value; }
 		}
 		[Browsable(true)]
-		public new string Text {
-			get { return this.LabeledTextBoxControl.Text; }
-			set { this.LabeledTextBoxControl.Text = value; }
+		public new string TextRight {
+			get { return this.LabeledTextBoxControl.TextRight; }
+			set { this.LabeledTextBoxControl.TextRight = value; }
 		}
 		[Browsable(true)]
 		public string InputFieldValue {
@@ -35,14 +36,24 @@ namespace Sq1.Widgets.LabeledTextBox {
 			set { this.LabeledTextBoxControl.InputFieldOffsetX = value; }
 		}
 		[Browsable(true)]
-		public int TextOffsetX {
-			get { return this.LabeledTextBoxControl.TextOffsetX; }
-			set { this.LabeledTextBoxControl.TextOffsetX = value; }
+		public int TextLeftOffsetX {
+			get { return this.LabeledTextBoxControl.TextLeftOffsetX; }
+			set { this.LabeledTextBoxControl.TextLeftOffsetX = value; }
 		}
 		[Browsable(true)]
-		public int TextWidth {
-			get { return this.LabeledTextBoxControl.TextWidth; }
-			set { this.LabeledTextBoxControl.TextWidth = value; }
+		public int TextLeftWidth {
+			get { return this.LabeledTextBoxControl.TextLeftWidth; }
+			set { this.LabeledTextBoxControl.TextLeftWidth = value; }
+		}
+		[Browsable(true)]
+		public int TextRightOffsetX {
+			get { return this.LabeledTextBoxControl.TextRightOffsetX; }
+			set { this.LabeledTextBoxControl.TextRightOffsetX = value; }
+		}
+		[Browsable(true)]
+		public int TextRightWidth {
+			get { return this.LabeledTextBoxControl.TextRightWidth; }
+			set { this.LabeledTextBoxControl.TextRightWidth = value; }
 		}
 		//[Browsable(true)]
 		//public bool TextAutoSize {
@@ -64,6 +75,13 @@ namespace Sq1.Widgets.LabeledTextBox {
 			get { return this.LabeledTextBoxControl.InputFieldAlignedRight; }
 			set { this.LabeledTextBoxControl.InputFieldAlignedRight = value; }
 		}
+
+		public MenuItemLabeledTextBox() : base(new LabeledTextBoxControl()) {
+			this.LabeledTextBoxControl = this.Control as LabeledTextBoxControl;
+			this.LabeledTextBoxControl.ParentToolStripControlHost = this;	// to calculate ((ToolStripControlHost as ToolStipItem).Tag as ScriptContext) from LabeledTextBox.TextBox.OnKeyPress 
+			this.LabeledTextBoxControl.TextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
+		}
+		
 		void TextBox_KeyDown(object sender, KeyEventArgs e) {
 			if (e.KeyCode != Keys.Enter) return;
 			e.Handled = e.SuppressKeyPress = true;

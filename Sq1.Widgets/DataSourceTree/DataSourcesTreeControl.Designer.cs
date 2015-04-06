@@ -93,10 +93,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniltbDataSourceAddNew.InputFieldWidth = 85;
 			this.mniltbDataSourceAddNew.Name = "mniltbDataSourceAddNew";
 			this.mniltbDataSourceAddNew.Size = new System.Drawing.Size(165, 21);
-			this.mniltbDataSourceAddNew.Text = "Add New:";
-			this.mniltbDataSourceAddNew.TextOffsetX = 0;
+			this.mniltbDataSourceAddNew.TextLeft = "Add New:";
+			this.mniltbDataSourceAddNew.TextLeftOffsetX = 0;
 			this.mniltbDataSourceAddNew.TextRed = false;
-			this.mniltbDataSourceAddNew.TextWidth = 56;
+			this.mniltbDataSourceAddNew.TextLeftWidth = 56;
 			this.mniltbDataSourceAddNew.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDataSourceAddNew_UserTyped);
 			// 
 			// toolStripSeparator1
@@ -122,10 +122,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniltbDataSourceRename.InputFieldWidth = 85;
 			this.mniltbDataSourceRename.Name = "mniltbDataSourceRename";
 			this.mniltbDataSourceRename.Size = new System.Drawing.Size(165, 21);
-			this.mniltbDataSourceRename.Text = "Rename To:";
-			this.mniltbDataSourceRename.TextOffsetX = 0;
+			this.mniltbDataSourceRename.TextLeft = "Rename To:";
+			this.mniltbDataSourceRename.TextLeftOffsetX = 0;
 			this.mniltbDataSourceRename.TextRed = false;
-			this.mniltbDataSourceRename.TextWidth = 68;
+			this.mniltbDataSourceRename.TextLeftWidth = 68;
 			this.mniltbDataSourceRename.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDataSourceRename_UserTyped);
 			// 
 			// mniDataSourceDelete
@@ -147,10 +147,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniltbSymbolAdd.InputFieldWidth = 85;
 			this.mniltbSymbolAdd.Name = "mniltbSymbolAdd";
 			this.mniltbSymbolAdd.Size = new System.Drawing.Size(165, 21);
-			this.mniltbSymbolAdd.Text = "Add Symbol:";
-			this.mniltbSymbolAdd.TextOffsetX = 0;
+			this.mniltbSymbolAdd.TextLeft = "Add Symbol:";
+			this.mniltbSymbolAdd.TextLeftOffsetX = 0;
 			this.mniltbSymbolAdd.TextRed = false;
-			this.mniltbSymbolAdd.TextWidth = 68;
+			this.mniltbSymbolAdd.TextLeftWidth = 68;
 			this.mniltbSymbolAdd.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbSymbolAdd_UserTyped);
 			// 
 			// sepNewDS
@@ -227,10 +227,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mnitlbSymbolRenameTo.InputFieldWidth = 85;
 			this.mnitlbSymbolRenameTo.Name = "mnitlbSymbolRenameTo";
 			this.mnitlbSymbolRenameTo.Size = new System.Drawing.Size(165, 21);
-			this.mnitlbSymbolRenameTo.Text = "Rename To:";
-			this.mnitlbSymbolRenameTo.TextOffsetX = 0;
+			this.mnitlbSymbolRenameTo.TextLeft = "Rename To:";
+			this.mnitlbSymbolRenameTo.TextLeftOffsetX = 0;
 			this.mnitlbSymbolRenameTo.TextRed = false;
-			this.mnitlbSymbolRenameTo.TextWidth = 68;
+			this.mnitlbSymbolRenameTo.TextLeftWidth = 68;
 			this.mnitlbSymbolRenameTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbSymbolRenameTo_UserTyped);
 			// 
 			// mniShowHeader

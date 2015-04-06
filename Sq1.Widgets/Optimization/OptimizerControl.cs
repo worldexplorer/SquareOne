@@ -16,7 +16,7 @@ namespace Sq1.Widgets.Optimization {
 	public partial class OptimizerControl : UserControl {
 				Optimizer							optimizer;
 				List<string>						colMetricsShouldStay;
-				List<SystemPerformanceRestoreAble>	backtests;
+				List<SystemPerformanceRestoreAble>	backtestsLocalEasierToSync;
 				List<OLVColumn>						columnsDynParam;
 		public	RepositoryJsonOptimizationResults	RepositoryJsonOptimizationResults			{ get; private set;}
 				List<IndicatorParameter>			scriptAndIndicatorParametersMergedCloned;
@@ -57,7 +57,7 @@ namespace Sq1.Widgets.Optimization {
 
 			//this.fastOLVparametersYesNoMinMaxStep.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.fastOLVparametersYesNoMinMaxStep_ItemCheck);
 
-			backtests								= new List<SystemPerformanceRestoreAble>();
+			backtestsLocalEasierToSync				= new List<SystemPerformanceRestoreAble>();
 			columnsDynParam							= new List<OLVColumn>();
 			RepositoryJsonOptimizationResults		= new RepositoryJsonOptimizationResults();
 		}
@@ -111,6 +111,7 @@ namespace Sq1.Widgets.Optimization {
 		}
 		void olvHistoryRescanRefillSelect(string symbolScaleRange) {
 			this.RepositoryJsonOptimizationResults.RescanFolderStoreNamesFound();
+			this.olvHistoryComputeAverage();
 			this.olvHistory.SetObjects(this.RepositoryJsonOptimizationResults.ItemsFound);
 			FnameDateSizeColor found = null;
 			foreach (FnameDateSizeColor each in this.RepositoryJsonOptimizationResults.ItemsFound) {
@@ -124,7 +125,6 @@ namespace Sq1.Widgets.Optimization {
 				this.olvHistory.SelectObject(found, true);
 				this.olvHistory.RefreshSelectedObjects();
 			}
-			this.olvHistoryComputeAverage();
 		}
 		void olvHistoryComputeAverage() {
 			foreach (FnameDateSizeColor each in this.RepositoryJsonOptimizationResults.ItemsFound) {
@@ -164,11 +164,11 @@ namespace Sq1.Widgets.Optimization {
 			//}
 			//v2
 			if (this.RepositoryJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) {
-				this.backtests = this.RepositoryJsonOptimizationResults.DeserializeList(symbolScaleRange);
+				this.backtestsLocalEasierToSync = this.RepositoryJsonOptimizationResults.DeserializeList(symbolScaleRange);
 			} else {
-				this.backtests.Clear();
+				this.backtestsLocalEasierToSync.Clear();
 			}
-			this.olvBacktests.SetObjects(this.backtests); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
+			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
 			this.populateTextboxesFromExecutorsState();
 		}
@@ -178,18 +178,20 @@ namespace Sq1.Widgets.Optimization {
 				this.splitContainer1.SplitterDistance  = this.heightExpanded;
 			}
 			
-			this.btnRunCancel.Enabled				= true;
-			this.btnPauseResume.Enabled				= false;
+			this.cbxRunCancel.Enabled				= true;
+			this.cbxPauseResume.Enabled				= false;
 
 			string staleReason = this.optimizer.StaleReason;
 			//if (string.IsNullOrEmpty(staleReason) == false) {
 			//	return staleReason;
 			//}
-			this.txtStaleReason.Text				= staleReason;
-			this.txtDataRange.Text					= this.optimizer.DataRangeAsString;
-			this.txtPositionSize.Text				= this.optimizer.PositionSizeAsString;
-			this.txtStrategy.Text					= this.optimizer.StrategyAsString;
-			this.txtSymbol.Text						= this.optimizer.SymbolScaleIntervalAsString;
+			this.lblStats.Text				= staleReason;
+			this.txtDataRange.Text			= this.optimizer.DataRangeAsString;
+			this.txtPositionSize.Text		= this.optimizer.PositionSizeAsString;
+			this.txtStrategy.Text			= this.optimizer.StrategyAsString;
+			this.txtSymbol.Text				= this.optimizer.SymbolScaleIntervalAsString;
+			this.txtSpread.Text				= this.optimizer.SpreadPips;
+			this.txtQuotesGenerator.Text	= this.optimizer.BacktestStrokesPerBar;
 			this.totalsPropagateAdjustSplitterDistance();
 		}
 
@@ -198,8 +200,8 @@ namespace Sq1.Widgets.Optimization {
 			this.txtIndicatorParameterTotalNr.Text = this.optimizer.IndicatorParameterTotalNr.ToString();
 
 			int backtestsTotal = this.optimizer.BacktestsTotal;
-			this.btnRunCancel.Text = "Run " + backtestsTotal + " backtests";
-			this.btnRunCancel.Enabled = backtestsTotal > 0 ? true : false;
+			this.cbxRunCancel.Text = "Run " + backtestsTotal + " backtests";
+			this.cbxRunCancel.Enabled = backtestsTotal > 0 ? true : false;
 			this.lblStats.Text = "0% complete   0/" + backtestsTotal;
 			this.progressBar1.Value = 0;
 			this.progressBar1.Maximum = (backtestsTotal != -1) ? backtestsTotal : 0;
@@ -217,16 +219,18 @@ namespace Sq1.Widgets.Optimization {
 
 		void adjustSplitterDistanceToNumberOfParameters_invokeMeAfterRecompiled() {
 			//int rowsShown = this.fastOLVparametersYesNoMinMaxStep.RowsPerPage;
-			int splitterDistanceForThreeLines = 220;
+			int splitterDistanceForThreeLines = 212;
 			int allParameterLinesToDraw = this.optimizer.AllParameterLinesToDraw;
+			int heightEachNewLine = this.fastOLVparametersYesNoMinMaxStep.RowHeightEffective;
+			if (this.fastOLVparametersYesNoMinMaxStep.GridLines) heightEachNewLine++;
+			int inAdditionToThree = (allParameterLinesToDraw - 3) * heightEachNewLine;
+			this.heightExpanded = splitterDistanceForThreeLines + inAdditionToThree;
+			
 			if (allParameterLinesToDraw <= 3) {
 				this.splitContainer1.SplitterDistance = splitterDistanceForThreeLines;
 				return;
 			}
-			int heightEachNewLine = this.fastOLVparametersYesNoMinMaxStep.RowHeightEffective;
-			if (this.fastOLVparametersYesNoMinMaxStep.GridLines) heightEachNewLine++;
-			int inAdditionToThree = (allParameterLinesToDraw - 3) * heightEachNewLine;
-			this.splitContainer1.SplitterDistance = splitterDistanceForThreeLines + inAdditionToThree;
+			this.statsAndHistoryExpand();
 		}
 		void populateColumns() {
 			//DONT_CLEAR_RESULTS_AFTER_TAB_SWITCHING_ONLY_RUN_WILL_CLEAR_OLD_TABLE this.olvBacktests.Items.Clear();
@@ -245,12 +249,12 @@ namespace Sq1.Widgets.Optimization {
 				this.olvBacktests.EmptyListMsg = "this.optimizer == null";
 				return;
 			}
-			var sparams = this.optimizer.ExecutorCloneToBeSpawned.Strategy.Script.ScriptParametersById_ReflectedCached;
+			SortedDictionary<int, ScriptParameter> sparams = this.optimizer.ExecutorCloneToBeSpawned.Strategy.Script.ScriptParametersById_ReflectedCached;
 			if (sparams == null) {
 				this.olvBacktests.EmptyListMsg = "this.optimizer.ExecutorCloneToBeSpawned.Strategy.Script.ScriptParametersById_ReflectedCached == null";
 				return;
 			}
-			var iparams = this.optimizer.ExecutorCloneToBeSpawned.Strategy.Script.IndicatorsByName_ReflectedCached;
+			Dictionary<string, IndicatorParameter> iparams = this.optimizer.ExecutorCloneToBeSpawned.Strategy.Script.IndicatorsParameters_ReflectedCached;
 			if (iparams == null) {
 				this.olvBacktests.EmptyListMsg = "this.optimizer.ExecutorCloneToBeSpawned.Strategy.Script.IndicatorsByName_ReflectedCached == null";
 				return;
@@ -279,7 +283,7 @@ namespace Sq1.Widgets.Optimization {
 			}
 		}
 		
-		int heightExpanded { get { return this.splitContainer1.Panel1MinSize * 8; } }
+		int heightExpanded;	//REPLACED_BY_this.adjustSplitterDistanceToNumberOfParameters_invokeMeAfterRecompiled() { get { return this.splitContainer1.Panel1MinSize * 8; } }
 		int heightCollapsed { get { return this.splitContainer1.Panel1MinSize; } }
 		public void NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize() {
 			Strategy strategy = this.optimizer.ExecutorCloneToBeSpawned.Strategy;
@@ -287,15 +291,34 @@ namespace Sq1.Widgets.Optimization {
 			if (this.RepositoryJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) return;
 
 			string staleReason = this.optimizer.StaleReason;
-			this.txtStaleReason.Text = staleReason; // TextBox doesn't display "null" for null-string
+			this.lblStats.Text = staleReason; // TextBox doesn't display "null" for null-string
 			
 			bool userClickedAnotherSymbolScaleIntervalRangePositionSize = string.IsNullOrEmpty(staleReason) == false;
 			this.splitContainer1.Panel1.BackColor = userClickedAnotherSymbolScaleIntervalRangePositionSize
 				? Color.LightSalmon : SystemColors.Control;
-			this.splitContainer1.SplitterDistance = userClickedAnotherSymbolScaleIntervalRangePositionSize || this.backtests.Count == 0
+			this.splitContainer1.SplitterDistance = userClickedAnotherSymbolScaleIntervalRangePositionSize || this.backtestsLocalEasierToSync.Count == 0
 			 	? this.heightExpanded : this.heightCollapsed;
-			this.btnRunCancel.Text = userClickedAnotherSymbolScaleIntervalRangePositionSize
+			this.cbxRunCancel.Text = userClickedAnotherSymbolScaleIntervalRangePositionSize
 				? "Clear to Optimize" : "Run " + this.optimizer.BacktestsTotal + " backtests";
+		}
+		
+		void statsAndHistoryExpand() {
+			try {
+				this.splitContainer1.SplitterDistance = this.heightExpanded;
+				this.cbxExpandCollapse.Text = "-";
+				this.cbxExpandCollapse.Checked = true;
+			} catch (Exception ex) {
+				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
+			}
+		}
+		void statsAndHistoryCollapse() {
+			try {
+				this.splitContainer1.SplitterDistance = this.heightCollapsed;
+				this.cbxExpandCollapse.Text = "+";
+				this.cbxExpandCollapse.Checked = false;
+			} catch (Exception ex) {
+				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
+			}
 		}
 	}
 }

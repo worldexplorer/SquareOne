@@ -34,7 +34,7 @@ namespace Sq1.Charting {
 		public override double VisibleMinDoubleMaxValueUnsafe { get { return this.VisibleVolumeMinNew; } }
 		public override double VisibleMaxDoubleMinValueUnsafe { get { return this.VisibleVolumeMaxNew; } }
 		#else
-		public override double VisibleMinDoubleMaxValueUnsafe { get { return this.VisibleVolumeMinOld; } }
+		public override double VisibleMinDoubleMaxValueUnsafe { get { return 0; /* AVOIDING_LOWERING_BARS return this.VisibleVolumeMinOld; */ } }
 		public override double VisibleMaxDoubleMinValueUnsafe { get { return this.VisibleVolumeMaxOld; } }
 		#endif
 		

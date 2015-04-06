@@ -9,12 +9,15 @@ using Sq1.Core.Charting;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Support;
+using Sq1.Core.Support;
 
 namespace Sq1.Reporters {
 	public partial class Performance : Reporter {
 		int currentColumn;
 		int currentRow;
-		Dictionary<FontStyle, Font> fontsByStyle;
+
+		//v1 Dictionary<FontStyle, Font> fontsByStyle_dontDisposeReusableGDI;
+		FontCache fontCache;
 
 		public Performance(ChartShadow chart): this() {
 			this.Initialize(chart, null);
@@ -22,9 +25,10 @@ namespace Sq1.Reporters {
 		public Performance() : base() {
 			base.TabText = "Performance";
 			this.InitializeComponent();
-			this.fontsByStyle = new Dictionary<FontStyle, Font>();
+			//this.fontsByStyle_dontDisposeReusableGDI = new Dictionary<FontStyle, Font>();
 			WindowsFormsUtils.SetDoubleBuffered(this.lvPerformance);
 			this.objectListViewCustomize();
+			fontCache = new FontCache(this.Font);
 		}
 		public override void BuildFullOnBacktestFinished() {
 			this.propagatePerformanceReport();
@@ -36,8 +40,8 @@ namespace Sq1.Reporters {
 				return;
 			}
 			
-			this.fontsByStyle.Clear();
-			this.fontsByStyle.Add(this.Font.Style, this.Font);
+			//this.fontsByStyle_dontDisposeReusableGDI.Clear();
+			//this.fontsByStyle_dontDisposeReusableGDI.Add(this.Font.Style, this.Font);
 			try {
 				this.lvPerformance.BeginUpdate();
 				this.lvPerformance.Items.Clear();
@@ -151,11 +155,15 @@ namespace Sq1.Reporters {
 				lvi.UseItemStyleForSubItems = false;
 				if (colorForeLabel != Color.Empty) lvi.ForeColor = colorForeLabel;
 				if (colorBack != Color.Empty) lvi.BackColor = colorBack;
-				if (this.fontsByStyle.ContainsKey(labelFontStyle) == false) {
-					Font font = new Font(this.Font, labelFontStyle);
-					this.fontsByStyle.Add(labelFontStyle, font);
-				}
-				lvi.Font = this.fontsByStyle[labelFontStyle];
+
+				//v1
+				//if (this.fontsByStyle_dontDisposeReusableGDI.ContainsKey(labelFontStyle) == false) {
+				//    Font font = new Font(this.Font, labelFontStyle);
+				//    this.fontsByStyle_dontDisposeReusableGDI.Add(labelFontStyle, font);
+				//}
+				//lvi.Font = this.fontsByStyle_dontDisposeReusableGDI[labelFontStyle];
+				//v2
+				lvi.Font = this.fontCache.GetCachedFontWithStyle(labelFontStyle);
 			} else {
 				if (this.currentRow >= this.lvPerformance.Items.Count) {
 					#if DEBUG
@@ -166,12 +174,16 @@ namespace Sq1.Reporters {
 				lvi = this.lvPerformance.Items[this.currentRow];
 				this.currentRow++;
 			}
-			
-			if (this.fontsByStyle.ContainsKey(itemFontStyle) == false) {
-				Font newFont = new Font(this.Font, itemFontStyle);
-				this.fontsByStyle.Add(itemFontStyle, newFont);
-			}
-			Font subLviFont = this.fontsByStyle[itemFontStyle];
+
+			//v1
+			//if (this.fontsByStyle_dontDisposeReusableGDI.ContainsKey(itemFontStyle) == false) {
+			//    Font newFont = new Font(this.Font, itemFontStyle);
+			//    this.fontsByStyle_dontDisposeReusableGDI.Add(itemFontStyle, newFont);
+			//}
+			//Font subLviFont = this.fontsByStyle_dontDisposeReusableGDI[itemFontStyle];
+			//v2
+			Font subLviFont = this.fontCache.GetCachedFontWithStyle(itemFontStyle);
+
 			ListViewItem.ListViewSubItem subLvi = new ListViewItem.ListViewSubItem(lvi, valueAlreadyFormatted, colorFore, colorBack, subLviFont);
 //			subLvi.ToolTipText = tooltip;
 //			if (colorBack	!= Color.Empty) subLvi.BackColor = colorBack;

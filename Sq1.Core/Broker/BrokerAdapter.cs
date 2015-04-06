@@ -131,7 +131,7 @@ namespace Sq1.Core.Broker {
 			string msig = this.Name + "::SubmitOrders(): ";
 			List<Order> ordersToExecute = new List<Order>();
 			foreach (Order order in orders) {
-				if (order.Alert.IsExecutorBacktestingNow == true || this.HasBacktestInName) {
+				if (order.Alert.IsBacktestingNoLivesimNow_FalseIfNoBacktester == true || this.HasBacktestInName) {
 					string msg = "Backtesting orders should not be routed to AnyBrokerAdapters, but simulated using MarketSim; order=[" + order + "]";
 					throw new Exception(msg);
 				}
@@ -190,7 +190,7 @@ namespace Sq1.Core.Broker {
 		}
 		public virtual void KillSelectedOrders(IList<Order> victimOrders) {
 			foreach (Order victimOrder in victimOrders) {
-				if (victimOrder.Alert.IsExecutorBacktestingNow == true) {
+				if (victimOrder.Alert.IsBacktestingNoLivesimNow_FalseIfNoBacktester == true) {
 					string msg = "Backtesting orders should not be routed to MockBrokerAdapters, but simulated using MarketSim; victimOrder=[" + victimOrder + "]";
 					throw new Exception(msg);
 				}

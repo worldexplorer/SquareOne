@@ -21,14 +21,22 @@ namespace Sq1.Gui.Singletons {
 			//}
 			if (e.Orders.Count == 0) return;
 			
+			this.PopulateWindowText();
+			
 			//v1 when in virtual mode, use model :(
 			//foreach (Order o in e.Orders) {
 			//	this.ExecutionTreeControl.OrderInsertToListView(o);
 			//}
-			//v2 TOO_SLOW
+			//v2 ADDED_anyHasTime_FILTER__SAFE_ENOUGH_TO_SKIP_SOME_SINCE_ENDOFBACKTEST_WILL_RUIBUILD_FULLY  TOO_SLOW
+			bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
+			foreach (Order order in e.Orders) {
+				if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
+				if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
+				safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
+				break;
+			}
+			if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
 			this.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
-			
-			this.PopulateWindowText();
 		}
 		void orderProcessor_OrderMessageAdded(object sender, OrderStateMessageEventArgs e) {
 			if (base.IsDisposed) return;
@@ -40,8 +48,14 @@ namespace Sq1.Gui.Singletons {
 			if (this.IsHiddenHandlingRepopulate) return;
 			//this.executionTree.OrderInsertMessage(e.OrderStateMessage);
 			//this.executionTree.PopulateMessagesFromSelectedOrder(e.OrderStateMessage.Order);
-			this.ExecutionTreeControl.SelectOrderAndOrPopulateMessages(e.OrderStateMessage.Order);
+
 			this.PopulateWindowText();
+
+			Alert alert = e.OrderStateMessage.Order.Alert;
+			bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = (alert.IsBacktestingLivesimNow_FalseIfNoBacktester == true && alert.GuiHasTimeRebuildReportersAndExecution == false);
+			if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
+
+			this.ExecutionTreeControl.SelectOrderAndOrPopulateMessages(e.OrderStateMessage.Order);
 		}
 		void orderProcessor_OrderStateChanged(object sender, OrdersListEventArgs e) {
 			if (base.IsDisposed) return;
@@ -50,8 +64,19 @@ namespace Sq1.Gui.Singletons {
 				return;
 			}
 			if (this.IsHiddenHandlingRepopulate) return;	// could've been checked before switching to gui thread?...
-			this.ExecutionTreeControl.OrderStateUpdateOLV(e.Orders);
+
 			this.PopulateWindowText();
+
+			bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
+			foreach (Order order in e.Orders) {
+				if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
+				//if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
+				safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
+				break;
+			}
+			if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
+
+			this.ExecutionTreeControl.OrderStateUpdateOLV(e.Orders);
 		}
 		void orderProcessor_OrderRemoved(object sender, OrdersListEventArgs e) {
 			if (this.InvokeRequired) {

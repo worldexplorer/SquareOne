@@ -66,6 +66,16 @@ namespace Sq1.Charting {
 			OnChartBarAnnotationsByBar	= new Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>>();		
 		}
 		public void ClearAllBeforeBacktest() {
+			int bitmapsDisposed = 0;
+			foreach (List<AlertArrow> eachBarsArrows in this.AlertArrowsListByBar.Values) {
+				foreach (AlertArrow handlerHolder in eachBarsArrows) {
+					bool disposed = handlerHolder.DisposeBitmap();
+					if (disposed) bitmapsDisposed++;
+				}
+			}
+			string msg = "bitmapsDisposed[" + bitmapsDisposed + "] LEAKED_HANDLERS_HUNTER //ClearAllBeforeBacktest()";
+			//Assembler.PopupException(msg, null, false);
+
 			this.AlertArrowsListByBar.Clear();
 			//STUPPIDO_DES_NE??? this.Indicators.Clear();
 			foreach (Indicator each in this.Indicators.Values) {

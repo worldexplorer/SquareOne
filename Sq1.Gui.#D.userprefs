@@ -1,26 +1,21 @@
 ﻿<Properties StartupItem="Sq1.Gui\Sq1.Gui.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="c:\SquareOne\Sq1.Charting\ChartControl.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Sq1.Core\Optimization\OptimizerParametersSequencer.cs">
     <Files>
-      <File FileName="c:\SquareOne\Sq1.Charting\ChartControl.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Charting\PanelBase.Rendering.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Core\Backtesting\Backtester.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Core\Optimization\OptimizerParametersSequencer.cs" Line="71" Column="71" />
+      <File FileName="c:\SquareOne\Sq1.Core\Streaming\QuoteQueuePerChannel.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\StrategyBase\ScriptExecutor.cs" Line="1" Column="1" />
       <File FileName="c:\SquareOne\Sq1.Gui\Singletons\ExceptionsForm.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Gui\Forms\ChartForm.EventConsumer.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Gui\Forms\ChartFormInterformEventsConsumer.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Gui\Forms\ChartFormStreamingConsumer.cs" Line="1" Column="1" />
-      <File FileName="c:\SquareOne\Sq1.Core\Assembler.cs" Line="1" Column="1" />
-      <File FileName="c:\SquareOne\Sq1.Core\StrategyBase\SystemPerformanceSlice.cs" Line="1" Column="1" />
-      <File FileName="ObjectListView_280-src\ObjectListView.cs" Line="70" Column="70" />
-      <File FileName="Sq1.Core\DataTypes\Bars.cs" Line="9" Column="9" />
-      <File FileName="Sq1.Core\DataTypes\Bar.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Core\DataTypes\Bars.EventGenerator.cs" Line="34" Column="34" />
+      <File FileName="c:\SquareOne\Sq1.Core\Charting\DictionaryManyToOne.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Gui\Forms\OptimizerForm.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Widgets\Optimization\OptimizerControl.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Widgets\Optimization\OptimizerControl.EventConsumer.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="C:\SquareOne\Sq1.Core\Livesim\LivesimBroker.cs" line="90" column="1" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches>
+    <Watch file="Sq1.Charting\ChartControl.EventConsumer.cs" line="121" offsetX="1026" offsetY="912" expression="this.ChartSettings.MultiSplitterRowsPropertiesByPanelName" liveUpdate="False" />
+  </MonoDevelop.Ide.DebuggingService.PinnedWatches>
 </Properties>

@@ -81,16 +81,19 @@ namespace Sq1.Reporters {
 				}
 				this.positionsAllReversedCached.Insert(0, pos);
 			}
-			this.rebuildOLVproperly();
+			this.RebuildingFullReportForced_onLivesimPaused();
 		}
-		void rebuildOLVproperly() {
+		public override void RebuildingFullReportForced_onLivesimPaused() {
 			try {
 				//DOESNT_MAKE_SENSE  this.olvPositions.SuspendLayout();
 				this.olvPositions.SetObjects(this.positionsAllReversedCached, false);
 				//TOO_MUCH__CLEARS_ITEMS_COLUMNS__ADDS_RANGE__SORTS___UPDATES_FILTERING this.olvPositions.RebuildColumns();
 				//CLEARS_ADDS_RANGE_SORTS__ALREADY_INVOKED_FROM_SetObjects() this.olvPositions.BuildList(false);
 				//DOESNT_MAKE_SENSE this.olvPositions.Invalidate();
-				base.TabText = "Positions (" + this.positionsAllReversedCached.Count + ")";
+
+				//v1 base.TabText = "Positions (" + this.positionsAllReversedCached.Count + ")";
+				//v2 this.StashWindowTextSuffix();
+				this.StashWindowTextSuffixInBaseTabText_usefulToUpdateAutohiddenStatsWithoutRebuildingFullReport_OLVisSlow();
 			} catch (Exception ex) {
 				string msg = "I_KNEW_OLV_WILL_REFUSE_TO_REFRESH_POSITIONS_IT_DOESNT_HAVE";
 				Assembler.PopupException(msg);
@@ -98,8 +101,17 @@ namespace Sq1.Reporters {
 				//DOESNT_MAKE_SENSE  	this.olvPositions.ResumeLayout();
 			}
 		}
+		public override void StashWindowTextSuffixInBaseTabText_usefulToUpdateAutohiddenStatsWithoutRebuildingFullReport_OLVisSlow() {
+			base.TabText = "Positions (" + this.positionsAllReversedCached.Count + ")";
+		}
 		public override void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
+			//v1
 			List<Position> safeCopy = pokeUnit.PositionsOpened.SafeCopy(this, "BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)");
+			//v2
+			#if DEBUG
+			PositionList positionsOpenedSafeCopy = pokeUnit.PositionsOpened.Clone(this, "BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)");
+			#endif
+			//List<Position> safeCopy = positionsOpenedSafeCopy.SafeCopy(this, "BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)");
 			foreach (Position pos in safeCopy) {
 				if (this.positionsAllReversedCached.Contains(pos)) {
 					string msg3 = "REPORTERS.POSITIONS_ALREADY_ADDED_BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3()";
@@ -117,6 +129,21 @@ namespace Sq1.Reporters {
 				//	this.olvPositions.EndUpdate();
 				//}
 			}
+			this.StashWindowTextSuffixInBaseTabText_usefulToUpdateAutohiddenStatsWithoutRebuildingFullReport_OLVisSlow();
+ 			//v1
+			bool livesimStreamingIsSleeping = pokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild(this, "Reporters.Positions.BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)");
+			#if DEBUG
+ 			//v2
+			bool livesimStreamingIsSleeping2 = positionsOpenedSafeCopy.AlertsEntry.GuiHasTimeToRebuild(this, "Reporters.Positions.BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)");
+			if (livesimStreamingIsSleeping != livesimStreamingIsSleeping2) {
+				string msg = "NONSENSE";
+				//Assembler.PopupException(msg);
+			}
+			#endif
+ 			if (livesimStreamingIsSleeping == false) {
+				return;
+			}
+			if (base.Visible == false) return;		//DockContent is minimized / "autohidden"
 			//v1 this.rebuildOLVproperly();
 			//DOESNT_INSERT__REPLACES_EXISTING_LISTVIEW_ITEMS_IF_FOUND_IN_MODEL this.olvPositions.RefreshObjects(safeCopy);
 			//v3
@@ -124,11 +151,26 @@ namespace Sq1.Reporters {
 		}
 		public override void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
 			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsClosed.SafeCopy(this, "BuildIncrementalOnPositionsOpenedClosed_step3of3(WAIT)");
+
+			//v1 NO_NEED_TO_UPDATE_STASHED_POSITION_COUNTER_IT_DIDNT_CHANGE_ON_step2of3
+			//this.StashWindowTextSuffixInBaseTabText();
+ 			//bool livesimStreamingIsSleeping = pokeUnit.PositionsOpenNow.AlertsOpenNow.GuiHasTimeToRebuild(this, "Reporters.Positions.BuildIncrementalOnPositionsOpenedClosed_step3of3(WAIT)");
+ 			//if (livesimStreamingIsSleeping == false) return;
+
+			if (base.Visible == false) return;		//DockContent is minimized / "autohidden"
+			// CORE_HAS_NO_IDEA_ABOUT_WIDGETS__ASK_WINDOWS_FORMS_IF_IM_VISIBLE if (base..... ReporterFormWrapper.ParentDockContentIsCoveredOrAutoHidden)
 			// NOPE_SOMETIMES_CLOSING_PRICE_NOT_SHOWN ALREADY_REFRESHED_DURING_STEP2
 			this.olvPositions.RefreshObjects(positionsUpdatedDueToStreamingNewQuote);
 		}
 		public override void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
 			List<Position> positionsUpdatedDueToStreamingNewQuote = pokeUnit.PositionsOpenNow.SafeCopy(this, "BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(WAIT)");
+
+			//v1 NO_NEED_TO_UPDATE_STASHED_POSITION_COUNTER_IT_DIDNT_CHANGE_ON_step2of3
+			//this.StashWindowTextSuffixInBaseTabText();
+			//bool livesimStreamingIsSleeping = pokeUnit.PositionsOpenNow.AlertsOpenNow.GuiHasTimeToRebuild(this, "Reporters.Positions.BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(WAIT)");
+ 			//if (livesimStreamingIsSleeping == false) return;
+
+			if (base.Visible == false) return;		//DockContent is minimized / "autohidden"
 			//v1 SLOW? this.rebuildOLVproperly();
 			//v2 hoping ObjectListView uses Dictionary to locate changed positions
 			this.olvPositions.RefreshObjects(positionsUpdatedDueToStreamingNewQuote);

@@ -61,16 +61,16 @@ namespace Sq1.Gui.ReportersSupport {
 		}
 
 		void eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(object sender, ReporterPokeUnitEventArgs e) {
-			if (e.PokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild(this, "eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(WAIT)") == false) return;
+			//DELEGATED_TO_REPORTER_WRAPPER if (e.PokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild(this, "eventGenerator_BrokerFilledAlertsOpeningForPositions_step1of3(WAIT)") == false) return;
 			this.BuildIncrementalOnPositionsOpenedAllReports_step1of3(e.PokeUnit);
 		}
 		void eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(object sender, ReporterPokeUnitEventArgs e) {
 			//I_WANT_REPORTERS_TO_REBUILD!!OPTIMIZED_THEM
-			if (e.PokeUnit.PositionsOpenNow.AlertsOpenNow.GuiHasTimeToRebuild(this, "eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(WAIT)") == false) return;
+			//DELEGATED_TO_REPORTER_WRAPPER if (e.PokeUnit.PositionsOpenNow.AlertsOpenNow.GuiHasTimeToRebuild(this, "eventGenerator_OpenPositionsUpdatedDueToStreamingNewQuote_step2of3(WAIT)") == false) return;
 			this.UpdateOpenPositionsDueToStreamingNewQuote_step2of3(e.PokeUnit);
 		}
 		void eventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(object sender, ReporterPokeUnitEventArgs e) {
-			if (e.PokeUnit.PositionsClosed.AlertsExit.GuiHasTimeToRebuild(this, "eventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(WAIT)") == false) return;
+			//DELEGATED_TO_REPORTER_WRAPPER if (e.PokeUnit.PositionsClosed.AlertsExit.GuiHasTimeToRebuild(this, "eventGenerator_BrokerFilledAlertsClosingForPositions_step3of3(WAIT)") == false) return;
 			this.BuildIncrementalOnPositionsClosedAllReports_step3of3(e.PokeUnit);
 		}
 		public void ClearAllReportsSincePerformanceGotCleared_step0of3() {
@@ -112,7 +112,7 @@ namespace Sq1.Gui.ReportersSupport {
 				if (parent == null) continue;
 
 				string windowTitle = rep.TabText + " :: " + this.ChartFormManager.ChartForm.Text;
-				if (this.ChartFormManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
+				//ALREADY_APPENDED if (this.ChartFormManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
 				if (this.ChartFormManager.ScriptEditedNeedsSaving) {
 					windowTitle = ChartFormManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
 				}
@@ -133,12 +133,15 @@ namespace Sq1.Gui.ReportersSupport {
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 				rep.BuildFullOnBacktestFinished();
-				
+				this.populateWindowTextFromTabTextStashed(rep);
+			}
+		}
+
+		void populateWindowTextFromTabTextStashed(Reporter rep) {
 				// Reporters.Position should display "Positions (276)"
 				ReporterFormWrapper parent = rep.Parent as ReporterFormWrapper;
-				if (parent == null) continue;
+				if (parent == null) return;
 				parent.Text = rep.TabText + " :: " + this.ChartFormManager.ChartForm.Text;
-			}
 		}
 		public void BuildIncrementalOnPositionsClosedAllReports_step3of3(ReporterPokeUnit pokeUnit) {
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {
@@ -147,6 +150,7 @@ namespace Sq1.Gui.ReportersSupport {
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 				rep.BuildIncrementalOnPositionsOpenedClosed_step3of3(pokeUnit);
+				this.populateWindowTextFromTabTextStashed(rep);
 			}
 		}
 		public void UpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
@@ -163,6 +167,7 @@ namespace Sq1.Gui.ReportersSupport {
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 				rep.BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(pokeUnit);
+				this.populateWindowTextFromTabTextStashed(rep);
 			}
 		}
 		public void BuildIncrementalOnPositionsOpenedAllReports_step1of3(ReporterPokeUnit pokeUnit) {
@@ -172,8 +177,22 @@ namespace Sq1.Gui.ReportersSupport {
 			}
 			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
 				rep.BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit);
+				this.populateWindowTextFromTabTextStashed(rep);
 			}
 		}
+
+		public void RebuildingFullReportForced_onLivesimPaused() {
+			if (this.ChartFormManager.ChartForm.InvokeRequired) {
+				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.RebuildingFullReportForced_onLivesimPaused(); });
+				return;
+			}
+			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+				rep.StashWindowTextSuffixInBaseTabText_usefulToUpdateAutohiddenStatsWithoutRebuildingFullReport_OLVisSlow();
+				this.populateWindowTextFromTabTextStashed(rep);
+				rep.RebuildingFullReportForced_onLivesimPaused();
+			}
+		}
+
 		public void ChartForm_OnReporterMniClicked(object sender, EventArgs e) {
 			var mniClicked = sender as ToolStripMenuItem;
 			if (mniClicked == null) {
@@ -267,6 +286,21 @@ namespace Sq1.Gui.ReportersSupport {
 				}
 				// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE form.Activate();
 				dockContentImproved.ActivateDockContentPopupAutoHidden(false, true);
+			}
+		}
+
+		public void LivesimStartedOrUnpaused_AutoHideReporters() {
+			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+				ReporterFormWrapper wrapper = rep.Parent as ReporterFormWrapper;
+				if (wrapper == null) continue;
+				if (wrapper.IsCoveredOrAutoHidden == false) wrapper.ToggleAutoHide();
+			}
+		}
+		public void LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenReporters() {
+			foreach (Reporter rep in this.ReporterShortNamesUserInvoked.Values) {
+				ReporterFormWrapper wrapper = rep.Parent as ReporterFormWrapper;
+				if (wrapper == null) continue;
+				if (wrapper.IsCoveredOrAutoHidden == true) wrapper.ToggleAutoHide();
 			}
 		}
 	}

@@ -28,7 +28,7 @@ namespace Sq1.Strategies.Demo {
 			// ALREADY_COPIED_FROM_ATR_BY_CTOR this.ATRband.LineColor = Color.RosyBrown;
 
 			//base.ScriptParameterCreateRegister(1, "test", 0, 0, 10, 1);
-			test = new ScriptParameter(1, "test", 0, 0, 10, 1);
+			test = new ScriptParameter(1, "test", 0, 0, 10, 1, "hopefully this will go to the tooltip");
 		}
 		public override void InitializeBacktest() {
 		}

@@ -107,6 +107,14 @@ namespace Sq1.Core.Repositories {
 			this.RescanFolderStoreNamesFound();
 			return ret;
 		}
+		public bool ItemDelete_dirtyImplementation(FnameDateSizeColor mustExist) {
+			bool ret = false;
+			string absFname = this.AbsFnameFor(mustExist.Name);
+			File.Delete(absFname);
+			ret = true;
+			this.RescanFolderStoreNamesFound();
+			return ret;
+		}
 		public virtual List<SYSTEM_PERFORMANCE_RESTORE_ABLE> DeserializeList(string fname) {
 			List<SYSTEM_PERFORMANCE_RESTORE_ABLE> tmp = null;
 			List<SYSTEM_PERFORMANCE_RESTORE_ABLE> ret = null;

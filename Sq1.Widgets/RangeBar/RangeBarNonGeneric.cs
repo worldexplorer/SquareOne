@@ -68,11 +68,11 @@ namespace Sq1.Widgets.RangeBar {
 		public int RangeYposition { get { return base.Height - this.LabelHeight - this.LineSpacing - this.PaddingInner.Bottom; } } 
 		
 		public RangeBarNonGeneric() {
-			this.SetStyle(
-				ControlStyles.UserPaint |
-				ControlStyles.AllPaintingInWmPaint |
-				ControlStyles.OptimizedDoubleBuffer |
-				ControlStyles.ResizeRedraw, true);
+			//this.SetStyle(
+			//    ControlStyles.UserPaint |
+			//    ControlStyles.AllPaintingInWmPaint |
+			//    ControlStyles.OptimizedDoubleBuffer |
+			//    ControlStyles.ResizeRedraw, true);
 			this.RangeMin = 100;
 			this.RangeMax = 500;
 			this.ValueMin = 220;

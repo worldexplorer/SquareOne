@@ -22,7 +22,7 @@ namespace Sq1.Core.StrategyBase {
 		#region constructed (my own data)
 		public	ExecutionDataSnapshot			ExecutionDataSnapshot		{ get; protected set; }
 		public	SystemPerformance				Performance					{ get; protected set; }
-		public	Backtester						Backtester;//					{ get; private set; }
+		public	Backtester						Backtester;					//{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; private set; }
 		public	MarketLive						MarketLive					{ get; private set; }
 		public	MarketsimBacktest				MarketsimBacktest			{ get; private set; }
@@ -159,7 +159,24 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 		}
-
+		public	string		SpreadPips	{ get {
+				string ret = "CANT_REACH_BARS_NOR_CURRENT_CONTEXT";
+				double pct = -1;
+				if (this.Strategy != null) {
+					pct = this.Strategy.ScriptContextCurrent.SpreadModelerPercent;
+					ret = pct + "%";
+				}
+				if (this.Bars != null) {
+					Bar lastBar = this.Bars.BarStaticLastNullUnsafe;
+					if (lastBar != null) {
+						double lastClose = lastBar.Close;
+						double spreadPips = lastClose * pct / 100d;
+						spreadPips = this.Bars.SymbolInfo.AlignToPriceLevel(spreadPips);
+						ret = "~= " + spreadPips; 
+					}
+				}
+				return ret;
+			} }
 		public ScriptExecutor() {
 			// CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING				this.IsStreamingTriggeringScript = false;
 			// CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_EMITTING_MOUSE_ORDERS	this.IsStrategyEmittingOrders = false;
@@ -178,7 +195,7 @@ namespace Sq1.Core.StrategyBase {
 			ScriptIsRunningCantAlterInternalLists = new ConcurrentWatchdog("WAITING_FOR_SCRIPT_OVERRIDDEN_METHOD_TO_RETURN");
 		}
 
-		public void Initialize(ChartShadow chartShadow, Strategy strategy) {
+		public void Initialize(ChartShadow chartShadow, Strategy strategy, bool saveStrategy_falseForOptimizer = true) {
 			string msg = " at this time, FOR SURE this.Bars==null, strategy.Script?=null";
 			this.ChartShadow = chartShadow;
 			this.Strategy = strategy;
@@ -195,7 +212,7 @@ namespace Sq1.Core.StrategyBase {
 					//} else if (this.Bars == null) {
 					//	msg = "InitializeStrategyAfterDeserialization will Script.Initialize(this) later with bars";
 				} else {
-					this.Strategy.Script.Initialize(this);
+					this.Strategy.Script.Initialize(this, saveStrategy_falseForOptimizer);
 
 					#region PARANOID
 					#if DEBUG
@@ -238,7 +255,7 @@ namespace Sq1.Core.StrategyBase {
 					//    }
 					//}
 					//v2 just force it and find duplicate calls in debugger...
-					this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
+					//OPTIMIZER_ALREADY_DONE_IT_CloneForOptimizer this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 					#endif
 					#endregion
 
@@ -405,10 +422,22 @@ namespace Sq1.Core.StrategyBase {
 			List<Alert> alertsNewAfterExecSafeCopy = this.ExecutionDataSnapshot.AlertsNewAfterExec.SafeCopy(this, "ReporterPokeUnit(WAIT)");
 			List<Order> ordersEmitted = null;
 
-			bool guiHasTime = false;
-			foreach (Alert alert in alertsNewAfterExecSafeCopy) {
-				Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
-				if (guiHasTime == false) guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
+			if (this.ChartShadow != null) {
+				//bool guiHasTime = false;
+				foreach (Alert alert in alertsNewAfterExecSafeCopy) {
+					try {
+						Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, alert);
+					//if (guiHasTime == false) guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
+					} catch (Exception ex) {
+						string msg = "ADDING_TO_DICTIONARY_MANY_TO_ONE";
+						Assembler.PopupException(msg, ex);
+					}
+				}
+			} else {
+				if (this.Optimizer.IsRunningNow == false) {
+					string msg = "CHART_SHADOW_MUST_BE_NULL_ONLY_WHEN_OPTIMIZING__BACKTEST_AND_LIVESIM_MUST_HAVE_CHART_SHADOW_ASSOCIATED";
+					Assembler.PopupException(msg);
+				}
 			}
 
 			if (alertsNewAfterExecSafeCopy.Count > 0) {
@@ -741,7 +770,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void CallbackAlertFilledMoveAroundInvokeScriptNonReenterably(Alert alertFilled, Quote quoteFilledThisAlertNullForLive,
 					 double priceFill, double qtyFill, double slippageFill, double commissionFill) {
-			string msig = " CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
+			//SLOW string msig = " CallbackAlertFilledMoveAroundInvokeScript(" + alertFilled + ", " + quoteFilledThisAlertNullForLive + ")";
 
 			//avoiding two alertsFilled and messing script-overrides; despite all script invocations downstack are sequential, guaranteed for 1 alertFilled
 			try {
@@ -1334,9 +1363,9 @@ namespace Sq1.Core.StrategyBase {
 			//if (this.Strategy.ActivatedFromDll) {
 				// FIXED "EnterEveryBar doesn't draw MAfast"; editor-typed strategies already have indicators in SNAP after pre-backtest compilation
 				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true
-				this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
+//OPTIMIZER_ALREADY_DONE_IT_CloneForOptimizer				this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 			//}
-			this.Strategy.ScriptParametersAbsorbMergeFromReflected_StoreInCurrentContext_SaveStrategy_notSameObjects_usedForResettingToDefault();
+//OPTIMIZER_ALREADY_DONE_IT_CloneForOptimizer			this.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
 			
 			//inNewThread = false;
 			if (inNewThread) {
@@ -1502,24 +1531,25 @@ namespace Sq1.Core.StrategyBase {
 			//ScriptExecutor clone = base.MemberwiseClone();
 			// detach the chart clone.On
 			ScriptExecutor executorClone = new ScriptExecutor();
+			executorClone.Optimizer = this.Optimizer;	// so that {if (this.Executor.Optimizer.IsRunningNow) return;} works koz will refer to {non-default but mine} optimizer
 			executorClone.Bars = this.Bars;
 			executorClone.OrderProcessor = null;
 			ChartShadow chartStub = new ChartShadow();
 			chartStub.SetExecutor(executorClone);
 
-			Strategy strategyClone = this.Strategy.CloneWithNewScriptInstanceResetContextsToSingle(ctxNext, executorClone);
+			Strategy strategyClone = this.Strategy.CloneWithNewScriptInstanceResetContextsToSingle_clonedForOptimizer(ctxNext, executorClone);
 			if (strategyClone == this.Strategy) {
 				string msig = "CloneForOptimizer(ContextScript ctxNext)";
 				string msg = "PARANOID CLONE_MUST_BE_A_NEW_POINTER_NOT_THE_SAME";
 				Assembler.PopupException(msg + msig);
 			}
-			executorClone.Initialize(chartStub, strategyClone);
+			executorClone.Initialize(chartStub, strategyClone, false);
+			//ALREADY_INVOKED strategyClone.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(false);
+			//ALREADY_INVOKED strategyClone.IndicatorParametersReflectedAbsorbMergeFromCurrenctContext_SaveStrategy(false);
+
 			//ALREADY_IN_Strategy.executorClone.Initialize strategyClone.Script.Initialize(executorClone);
 			//KEEP_DOWNSTACK strategyClone.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);
-
-			strategyClone.ScriptContextsByName = new Dictionary<string, ContextScript>();
-			strategyClone.ScriptContextAdd(ctxNext.Name, ctxNext, true);
-
+			//strategyClone.SccriptContextAdd_duplicatedInSliders_or_importedFromOptimizer(ctxNext.Name, ctxNext, true);
 			return executorClone;
 		}
 		public override string ToString() {

@@ -70,10 +70,16 @@
   <ItemGroup>
     <Compile Include="ATRbandCompiled.cs" />
     <Compile Include="TwoMAindicatorsCompiled.cs" />
+    <Compile Include="TwoMAindicatorsCompiled.Rendering.cs">
+      <DependentUpon>TwoMAindicatorsCompiled.cs</DependentUpon>
+    </Compile>
     <Compile Include="TwoMAsCompiled.cs" />
     <Compile Include="StopLimitTestCompiled.cs" />
     <Compile Include="EnterEveryBarCompiled.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TwoMAsCompiled.Rendering.cs">
+      <DependentUpon>TwoMAsCompiled.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">

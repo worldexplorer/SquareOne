@@ -2,7 +2,7 @@
 
 namespace Sq1.Core.DataTypes {
 	// #DEVELOP_PROFILER_SAYS_DATETIME>.COMPARE_IS_VERY_SLOW_DURING_BACKTEST  public class BarsUnscaled : BarsUnscaledSortedList_DEPRECATED {
-	public class BarsUnscaled : BarsUnscaledList {
+	public class BarsUnscaled : BarsUnscaledListTwins {
 		public event EventHandler<BarsUnscaledEventArgs> BarsRenamed_SEEMS_EXCESSIVE;
 	
 		public string Symbol { get; protected set; }
@@ -19,9 +19,9 @@ namespace Sq1.Core.DataTypes {
 			set { this.symbolInfo = value; }	//it's initialized in ctor(), SymbolInfo=null will initiate repository scan on next get{}
 		}
 
-		public Bar BarFirst { get { return (base.Count >= 1) ? this[0] : null; } }
-		public Bar BarLast { get { return (base.Count >= 1) ? this[this.Count - 1] : null; } }
-		public Bar BarPreLast { get { return (base.Count >= 2) ? this[this.Count - 2] : null; } }
+		public Bar BarFirst		{ get { return (base.Count >= 1) ? this[0] : null; } }
+		public Bar BarLast		{ get { return (base.Count >= 1) ? this[this.Count - 1] : null; } }
+		public Bar BarPreLast	{ get { return (base.Count >= 2) ? this[this.Count - 2] : null; } }
 
 
 		public BarsUnscaled(string symbol, string reasonToExist = "NOREASON") : base() {

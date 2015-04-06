@@ -1,7 +1,6 @@
 ﻿using System;
 
 using Newtonsoft.Json;
-using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Indicators {
 	public class IndicatorParameter {
@@ -9,6 +8,7 @@ namespace Sq1.Core.Indicators {
 		[JsonIgnore]	public virtual string	FullName { get { return this.IndicatorName + "." + this.Name; } } // "MAslow.Period" for indicators, plain Name for StrategyParams
 		
 		[JsonProperty]	public string			Name;	// unlike user-editable ScriptParameter, IndicatorParameter.Name is compiled and remains constant (no need for Id)
+		[JsonIgnore]	public string			ReasonToClone;
 		[JsonProperty]	public double			ValueMin;
 		[JsonProperty]	public double			ValueMax;
 		[JsonProperty]	public double			ValueIncrement;
@@ -73,20 +73,24 @@ namespace Sq1.Core.Indicators {
 			return null;
 		}
 		public override string ToString() {
-			return this.FullName + ":" + this.ValuesAsString;
+			string ret = this.FullName + ":" + this.ValuesAsString;
+			if (string.IsNullOrEmpty(this.ReasonToClone) == false) ret += " // " + this.ReasonToClone;
+			return ret;
 		}
 		public string ValuesAsString { get {
 				return this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
 			} }
-		public void AbsorbCurrentFixBoundariesIfChanged(IndicatorParameter ctxParamToAbsorbCurrentAndFixBoundaries) {
+		public bool AbsorbCurrentFixBoundariesIfChanged(IndicatorParameter ctxParamToAbsorbCurrentAndFixBoundaries) {
 			this.WillBeSequencedDuringOptimization	= ctxParamToAbsorbCurrentAndFixBoundaries.WillBeSequencedDuringOptimization;
 			this.BorderShown						= ctxParamToAbsorbCurrentAndFixBoundaries.BorderShown;
 			this.NumericUpdownShown					= ctxParamToAbsorbCurrentAndFixBoundaries.NumericUpdownShown;
+			bool ret = false;
 
 			if (this.ValueCurrent != ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent) {
 				string msg = "we collapsed IndicatorParameters into a single instance thing; are we back to duplicates?...";
 				//Debugger.Break();
 				this.ValueCurrent = ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent;
+				ret = true;
 			}
 			if (this.ValueCurrent < this.ValueMin || this.ValueCurrent > this.ValueMax)  {
 				string msg = "OBSERVED_AS_NEVER_HAPPENING";
@@ -108,11 +112,12 @@ namespace Sq1.Core.Indicators {
 				////Assembler.PopupException(msg, null, false);
 				ctxParamToAbsorbCurrentAndFixBoundaries.ValueIncrement = this.ValueIncrement;
 			}
+			return ret;
 		}
 		// USED_TO_SEPARATE_LONG_LIVING_SCRIPT_INDICATOR_PARAMETER_INSTANCE__FROM_SWITCHING_CONTEXT_INDICATOR_SETTINGS
-		public IndicatorParameter Clone() {
+		public IndicatorParameter CloneAsIndicatorParameter(string reasonToClone) {
 			IndicatorParameter ret = (IndicatorParameter)base.MemberwiseClone();
-			ret.Name = "CLONE_" + ret.Name;
+			ret.ReasonToClone = "CLONE[" + reasonToClone + "]_" + ret.ReasonToClone;
 			return ret;
 		}
 	}

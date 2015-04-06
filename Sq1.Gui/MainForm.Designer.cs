@@ -273,10 +273,10 @@
 			this.mniltbWorklspaceNewBlank.InputFieldWidth = 79;
 			this.mniltbWorklspaceNewBlank.Name = "mniltbWorklspaceNewBlank";
 			this.mniltbWorklspaceNewBlank.Size = new System.Drawing.Size(162, 20);
-			this.mniltbWorklspaceNewBlank.Text = "New Blank";
-			this.mniltbWorklspaceNewBlank.TextOffsetX = 0;
+			this.mniltbWorklspaceNewBlank.TextLeft = "New Blank";
+			this.mniltbWorklspaceNewBlank.TextLeftOffsetX = 0;
 			this.mniltbWorklspaceNewBlank.TextRed = false;
-			this.mniltbWorklspaceNewBlank.TextWidth = 65;
+			this.mniltbWorklspaceNewBlank.TextLeftWidth = 65;
 			// 
 			// mniltbWorklspaceCloneTo
 			// 
@@ -288,10 +288,10 @@
 			this.mniltbWorklspaceCloneTo.InputFieldWidth = 79;
 			this.mniltbWorklspaceCloneTo.Name = "mniltbWorklspaceCloneTo";
 			this.mniltbWorklspaceCloneTo.Size = new System.Drawing.Size(162, 20);
-			this.mniltbWorklspaceCloneTo.Text = "Clone To";
-			this.mniltbWorklspaceCloneTo.TextOffsetX = 0;
+			this.mniltbWorklspaceCloneTo.TextLeft = "Clone To";
+			this.mniltbWorklspaceCloneTo.TextLeftOffsetX = 0;
 			this.mniltbWorklspaceCloneTo.TextRed = false;
-			this.mniltbWorklspaceCloneTo.TextWidth = 57;
+			this.mniltbWorklspaceCloneTo.TextLeftWidth = 57;
 			// 
 			// mniltbWorklspaceRenameTo
 			// 
@@ -303,10 +303,10 @@
 			this.mniltbWorklspaceRenameTo.InputFieldWidth = 79;
 			this.mniltbWorklspaceRenameTo.Name = "mniltbWorklspaceRenameTo";
 			this.mniltbWorklspaceRenameTo.Size = new System.Drawing.Size(162, 20);
-			this.mniltbWorklspaceRenameTo.Text = "RenameTo";
-			this.mniltbWorklspaceRenameTo.TextOffsetX = 0;
+			this.mniltbWorklspaceRenameTo.TextLeft = "RenameTo";
+			this.mniltbWorklspaceRenameTo.TextLeftOffsetX = 0;
 			this.mniltbWorklspaceRenameTo.TextRed = false;
-			this.mniltbWorklspaceRenameTo.TextWidth = 66;
+			this.mniltbWorklspaceRenameTo.TextLeftWidth = 66;
 			// 
 			// toolStripSeparator2
 			// 

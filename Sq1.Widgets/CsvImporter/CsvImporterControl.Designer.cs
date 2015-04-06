@@ -205,7 +205,7 @@ namespace Sq1.Widgets.CsvImporter {
 			this.mniltbCsvSeparator.InputFieldWidth = 20;
 			this.mniltbCsvSeparator.Name = "mniltbCsvSeparator";
 			this.mniltbCsvSeparator.Size = new System.Drawing.Size(165, 21);
-			this.mniltbCsvSeparator.Text = "CSV Separator:";
+			this.mniltbCsvSeparator.TextLeft = "CSV Separator:";
 			this.mniltbCsvSeparator.TextRed = false;
 			this.mniltbCsvSeparator.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCsvSeparator_UserTyped);
 			// 

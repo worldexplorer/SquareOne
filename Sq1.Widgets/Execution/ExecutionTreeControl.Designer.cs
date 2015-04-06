@@ -42,10 +42,10 @@ namespace Sq1.Widgets.Execution {
 			this.colheLastMessage = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxOrder = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniKillPending = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniOrderReplace = new System.Windows.Forms.ToolStripMenuItem();
-			this.sepCancel = new System.Windows.Forms.ToolStripSeparator();
 			this.mniKillAllPending = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniKillPendingAllStopEmitting = new System.Windows.Forms.ToolStripMenuItem();
+			this.sepCancel = new System.Windows.Forms.ToolStripSeparator();
+			this.mniOrderReplace = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniStopEmergencyClose = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniFilterColumns = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,18 +70,18 @@ namespace Sq1.Widgets.Execution {
 			this.mniToggleMessagesPane = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniToggleMessagesPaneSplitHorizontally = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniToggleSyncWithChart = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.mniExpandAll = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniRebuildAll = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.mniWipeWhiteboard = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniRemoveSeleted = new System.Windows.Forms.ToolStripMenuItem();
 			this.imgListOrderDirection = new System.Windows.Forms.ImageList(this.components);
 			this.olvMessages = new BrightIdeasSoftware.ObjectListView();
 			this.colheMessageDateTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.colheMessageState = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.colheMessageText = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.splitContainerMessagePane = new System.Windows.Forms.SplitContainer();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniExpandAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniRebuildAll = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.OrdersTreeOLV)).BeginInit();
 			this.ctxOrder.SuspendLayout();
 			this.ctxColumns.SuspendLayout();
@@ -95,36 +95,36 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// OrdersTreeOLV
 			// 
-			this.OrdersTreeOLV.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.colheGUID,
-			this.colheReplacedByGUID,
-			this.colheKilledByGUID,
-			this.colheState,
-			this.colheStateTime,
-			this.colheBarNum,
-			this.colheOrderCreated,
-			this.colheSymbol,
-			this.colheDirection,
-			this.colheOrderType,
-			this.colheSpreadSide,
-			this.colhePriceScript,
-			this.colheSlippage,
-			this.colhePriceScriptRequested,
-			this.colhePriceFilled,
-			this.colhePriceDeposited,
-			this.colheQtyRequested,
-			this.colheQtyFilled,
-			this.colheSernoSession,
-			this.colheSernoExchange,
-			this.colheStrategyName,
-			this.colheSignalName,
-			this.colheScale,
-			this.colheAccount,
-			this.colheLastMessage});
 			this.OrdersTreeOLV.AllowColumnReorder = true;
 			this.OrdersTreeOLV.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.OrdersTreeOLV.CausesValidation = false;
 			this.OrdersTreeOLV.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
+			this.OrdersTreeOLV.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colheGUID,
+            this.colheReplacedByGUID,
+            this.colheKilledByGUID,
+            this.colheState,
+            this.colheStateTime,
+            this.colheBarNum,
+            this.colheOrderCreated,
+            this.colheSymbol,
+            this.colheDirection,
+            this.colheOrderType,
+            this.colheSpreadSide,
+            this.colhePriceScript,
+            this.colheSlippage,
+            this.colhePriceScriptRequested,
+            this.colhePriceFilled,
+            this.colhePriceDeposited,
+            this.colheQtyRequested,
+            this.colheQtyFilled,
+            this.colheSernoSession,
+            this.colheSernoExchange,
+            this.colheStrategyName,
+            this.colheSignalName,
+            this.colheScale,
+            this.colheAccount,
+            this.colheLastMessage});
 			this.OrdersTreeOLV.ContextMenuStrip = this.ctxOrder;
 			this.OrdersTreeOLV.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.OrdersTreeOLV.FullRowSelect = true;
@@ -132,10 +132,10 @@ namespace Sq1.Widgets.Execution {
 			this.OrdersTreeOLV.IncludeColumnHeadersInCopy = true;
 			this.OrdersTreeOLV.IncludeHiddenColumnsInDataTransfer = true;
 			this.OrdersTreeOLV.Location = new System.Drawing.Point(0, 0);
-			this.OrdersTreeOLV.MultiSelect = true;
 			this.OrdersTreeOLV.Name = "OrdersTreeOLV";
-			this.OrdersTreeOLV.ShowGroups = false;
+			this.OrdersTreeOLV.OwnerDraw = true;
 			this.OrdersTreeOLV.ShowCommandMenuOnRightClick = true;
+			this.OrdersTreeOLV.ShowGroups = false;
 			this.OrdersTreeOLV.ShowItemToolTips = true;
 			this.OrdersTreeOLV.Size = new System.Drawing.Size(334, 411);
 			this.OrdersTreeOLV.SmallImageList = this.imgListOrderDirection;
@@ -148,6 +148,7 @@ namespace Sq1.Widgets.Execution {
 			this.OrdersTreeOLV.UseHotItem = true;
 			this.OrdersTreeOLV.UseTranslucentHotItem = true;
 			this.OrdersTreeOLV.View = System.Windows.Forms.View.Details;
+			this.OrdersTreeOLV.VirtualMode = true;
 			this.OrdersTreeOLV.FormatRow += new System.EventHandler<BrightIdeasSoftware.FormatRowEventArgs>(this.tree_FormatRow);
 			this.OrdersTreeOLV.SelectedIndexChanged += new System.EventHandler(this.ordersTree_SelectedIndexChanged);
 			this.OrdersTreeOLV.DoubleClick += new System.EventHandler(this.ordersTree_DoubleClick);
@@ -308,21 +309,25 @@ namespace Sq1.Widgets.Execution {
 			// ctxOrder
 			// 
 			this.ctxOrder.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniKillPending,
-			this.mniKillAllPending,
-			this.mniKillPendingAllStopEmitting,
-			this.sepCancel,
-			this.mniOrderReplace,
-			this.mniStopEmergencyClose,
-			this.toolStripSeparator3,
-			this.mniFilterColumns,
-			this.mniFilterOrderStates,
-			this.mniFilterAccounts,
-			this.mniVisualOptions,
-			this.toolStripSeparator1,
-			this.mniWipeWhiteboard});
+            this.mniKillPending,
+            this.mniKillAllPending,
+            this.mniKillPendingAllStopEmitting,
+            this.sepCancel,
+            this.mniOrderReplace,
+            this.mniStopEmergencyClose,
+            this.toolStripSeparator3,
+            this.mniFilterColumns,
+            this.mniFilterOrderStates,
+            this.mniFilterAccounts,
+            this.mniVisualOptions,
+            this.toolStripSeparator1,
+            this.mniRemoveSeleted,
+            this.toolStripSeparator2,
+            this.mniExpandAll,
+            this.mniCollapseAll,
+            this.mniRebuildAll});
 			this.ctxOrder.Name = "popupOrders";
-			this.ctxOrder.Size = new System.Drawing.Size(233, 264);
+			this.ctxOrder.Size = new System.Drawing.Size(233, 336);
 			// 
 			// mniKillPending
 			// 
@@ -330,18 +335,6 @@ namespace Sq1.Widgets.Execution {
 			this.mniKillPending.Size = new System.Drawing.Size(232, 22);
 			this.mniKillPending.Text = "Kill Pending";
 			this.mniKillPending.Click += new System.EventHandler(this.mniOrderKill_Click);
-			// 
-			// mniOrderReplace
-			// 
-			this.mniOrderReplace.Name = "mniOrderReplace";
-			this.mniOrderReplace.Size = new System.Drawing.Size(232, 22);
-			this.mniOrderReplace.Text = "Replace NYI";
-			this.mniOrderReplace.Click += new System.EventHandler(this.mniOrderReplace_Click);
-			// 
-			// sepCancel
-			// 
-			this.sepCancel.Name = "sepCancel";
-			this.sepCancel.Size = new System.Drawing.Size(229, 6);
 			// 
 			// mniKillAllPending
 			// 
@@ -358,6 +351,18 @@ namespace Sq1.Widgets.Execution {
 			this.mniKillPendingAllStopEmitting.Text = "Kill Pending All, Stop Emitting";
 			this.mniKillPendingAllStopEmitting.ToolTipText = "Kill all (even Completed) Orders and DISABLE AutoSubmit";
 			this.mniKillPendingAllStopEmitting.Click += new System.EventHandler(this.mniKillAllStopAutoSubmit_Click);
+			// 
+			// sepCancel
+			// 
+			this.sepCancel.Name = "sepCancel";
+			this.sepCancel.Size = new System.Drawing.Size(229, 6);
+			// 
+			// mniOrderReplace
+			// 
+			this.mniOrderReplace.Name = "mniOrderReplace";
+			this.mniOrderReplace.Size = new System.Drawing.Size(232, 22);
+			this.mniOrderReplace.Text = "Replace NYI";
+			this.mniOrderReplace.Click += new System.EventHandler(this.mniOrderReplace_Click);
 			// 
 			// mniStopEmergencyClose
 			// 
@@ -381,15 +386,15 @@ namespace Sq1.Widgets.Execution {
 			// ctxColumns
 			// 
 			this.ctxColumns.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniShowWhenWhat,
-			this.mniShowKilledReplaced,
-			this.mniShowPrice,
-			this.mniShowQty,
-			this.mniShowExchange,
-			this.mniShowOrigin,
-			this.mniShowExtra,
-			this.mniShowPosition,
-			this.mniShowLastMessage});
+            this.mniShowWhenWhat,
+            this.mniShowKilledReplaced,
+            this.mniShowPrice,
+            this.mniShowQty,
+            this.mniShowExchange,
+            this.mniShowOrigin,
+            this.mniShowExtra,
+            this.mniShowPosition,
+            this.mniShowLastMessage});
 			this.ctxColumns.Name = "ctxColumns";
 			this.ctxColumns.Size = new System.Drawing.Size(189, 202);
 			this.ctxColumns.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.ctxColumns_ItemClicked);
@@ -469,7 +474,7 @@ namespace Sq1.Widgets.Execution {
 			// mniFilterOrderStates
 			// 
 			this.mniFilterOrderStates.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.toolStripMenuItem4});
+            this.toolStripMenuItem4});
 			this.mniFilterOrderStates.Name = "mniFilterOrderStates";
 			this.mniFilterOrderStates.Size = new System.Drawing.Size(232, 22);
 			this.mniFilterOrderStates.Text = "Filter Order States";
@@ -503,18 +508,13 @@ namespace Sq1.Widgets.Execution {
 			// ctxListControl
 			// 
 			this.ctxListControl.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniToggleBrokerTime,
-			this.mniToggleCompletedOrders,
-			this.mniToggleMessagesPane,
-			this.mniToggleMessagesPaneSplitHorizontally,
-			this.mniToggleSyncWithChart,
-			this.toolStripSeparator2,
-			this.mniExpandAll,
-			this.mniCollapseAll,
-			this.mniRebuildAll});
+            this.mniToggleBrokerTime,
+            this.mniToggleCompletedOrders,
+            this.mniToggleMessagesPane,
+            this.mniToggleMessagesPaneSplitHorizontally,
+            this.mniToggleSyncWithChart});
 			this.ctxListControl.Name = "ctxListControl";
-			this.ctxListControl.OwnerItem = this.mniVisualOptions;
-			this.ctxListControl.Size = new System.Drawing.Size(254, 186);
+			this.ctxListControl.Size = new System.Drawing.Size(254, 114);
 			// 
 			// mniToggleBrokerTime
 			// 
@@ -560,32 +560,6 @@ namespace Sq1.Widgets.Execution {
 			this.mniToggleSyncWithChart.Text = "Show PositionAffected On Chart";
 			this.mniToggleSyncWithChart.Click += new System.EventHandler(this.mniToggleSyncWithChart_Click);
 			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(250, 6);
-			// 
-			// mniExpandAll
-			// 
-			this.mniExpandAll.Name = "mniExpandAll";
-			this.mniExpandAll.Size = new System.Drawing.Size(253, 22);
-			this.mniExpandAll.Text = "Expand All";
-			this.mniExpandAll.Click += new System.EventHandler(this.mniTreeExpandAll_Click);
-			// 
-			// mniCollapseAll
-			// 
-			this.mniCollapseAll.Name = "mniCollapseAll";
-			this.mniCollapseAll.Size = new System.Drawing.Size(253, 22);
-			this.mniCollapseAll.Text = "Collapse All";
-			this.mniCollapseAll.Click += new System.EventHandler(this.mniTreeCollapseAll_Click);
-			// 
-			// mniRebuildAll
-			// 
-			this.mniRebuildAll.Name = "mniRebuildAll";
-			this.mniRebuildAll.Size = new System.Drawing.Size(253, 22);
-			this.mniRebuildAll.Text = "Rebuild All";
-			this.mniRebuildAll.Click += new System.EventHandler(this.mniRebuildAll_Click);
-			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
@@ -593,11 +567,11 @@ namespace Sq1.Widgets.Execution {
 			// 
 			// mniWipeWhiteboard
 			// 
-			this.mniWipeWhiteboard.Name = "mniWipeWhiteboard";
-			this.mniWipeWhiteboard.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-			this.mniWipeWhiteboard.Size = new System.Drawing.Size(232, 22);
-			this.mniWipeWhiteboard.Text = "Wipe Whiteboard";
-			this.mniWipeWhiteboard.Click += new System.EventHandler(this.mniOrdersRemoveSelected_Click);
+			this.mniRemoveSeleted.Name = "mniRemoveSeleted";
+			this.mniRemoveSeleted.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
+			this.mniRemoveSeleted.Size = new System.Drawing.Size(232, 22);
+			this.mniRemoveSeleted.Text = "Remove Selected Non-Pending";
+			this.mniRemoveSeleted.Click += new System.EventHandler(this.mniOrdersRemoveSelected_Click);
 			// 
 			// imgListOrderDirection
 			// 
@@ -613,9 +587,9 @@ namespace Sq1.Widgets.Execution {
 			this.olvMessages.CausesValidation = false;
 			this.olvMessages.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
 			this.olvMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.colheMessageDateTime,
-			this.colheMessageState,
-			this.colheMessageText});
+            this.colheMessageDateTime,
+            this.colheMessageState,
+            this.colheMessageText});
 			this.olvMessages.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvMessages.EmptyListMsg = "";
 			this.olvMessages.FullRowSelect = true;
@@ -669,8 +643,36 @@ namespace Sq1.Widgets.Execution {
 			this.splitContainerMessagePane.Panel2.Controls.Add(this.olvMessages);
 			this.splitContainerMessagePane.Size = new System.Drawing.Size(833, 411);
 			this.splitContainerMessagePane.SplitterDistance = 334;
-			//this.splitContainerMessagePane.SplitterIncrement = 20;
 			this.splitContainerMessagePane.TabIndex = 22;
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(229, 6);
+			// 
+			// mniExpandAll
+			// 
+			this.mniExpandAll.Name = "mniExpandAll";
+			this.mniExpandAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.E)));
+			this.mniExpandAll.Size = new System.Drawing.Size(232, 22);
+			this.mniExpandAll.Text = "Expand All";
+			this.mniExpandAll.Click += new System.EventHandler(this.mniTreeExpandAll_Click);
+			// 
+			// mniCollapseAll
+			// 
+			this.mniCollapseAll.Name = "mniCollapseAll";
+			this.mniCollapseAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
+			this.mniCollapseAll.Size = new System.Drawing.Size(232, 22);
+			this.mniCollapseAll.Text = "Collapse All";
+			this.mniCollapseAll.Click += new System.EventHandler(this.mniTreeCollapseAll_Click);
+			// 
+			// mniRebuildAll
+			// 
+			this.mniRebuildAll.Name = "mniRebuildAll";
+			this.mniRebuildAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
+			this.mniRebuildAll.Size = new System.Drawing.Size(232, 22);
+			this.mniRebuildAll.Text = "Rebuild All";
+			this.mniRebuildAll.Click += new System.EventHandler(this.mniTreeRebuildAll_Click);
 			// 
 			// ExecutionTreeControl
 			// 
@@ -689,7 +691,6 @@ namespace Sq1.Widgets.Execution {
 			this.ResumeLayout(false);
 
 		}
-		private System.Windows.Forms.ToolStripMenuItem mniRebuildAll;
 		private System.Windows.Forms.ToolStripMenuItem mniToggleBrokerTime;
 		private System.Windows.Forms.ToolStripMenuItem mniFilterAccounts;
 		private System.Windows.Forms.ToolStripMenuItem mniFilterOrderStates;
@@ -701,9 +702,6 @@ namespace Sq1.Widgets.Execution {
 		private System.Windows.Forms.ToolStripMenuItem mniToggleSyncWithChart;
 		private System.Windows.Forms.ToolStripMenuItem mniVisualOptions;
 		private System.Windows.Forms.ContextMenuStrip ctxListControl;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-		private System.Windows.Forms.ToolStripMenuItem mniCollapseAll;
-		private System.Windows.Forms.ToolStripMenuItem mniExpandAll;
 		private System.Windows.Forms.SplitContainer splitContainerMessagePane;
 		private BrightIdeasSoftware.OLVColumn colheMessageText;
 		private BrightIdeasSoftware.OLVColumn colheMessageState;
@@ -725,7 +723,7 @@ namespace Sq1.Widgets.Execution {
 		private System.Windows.Forms.ToolStripMenuItem mniShowPrice;
 		private System.Windows.Forms.ToolStripMenuItem mniShowWhenWhat;
 		private System.Windows.Forms.ContextMenuStrip ctxColumns;
-		private System.Windows.Forms.ToolStripMenuItem mniWipeWhiteboard;
+		private System.Windows.Forms.ToolStripMenuItem mniRemoveSeleted;
 		private System.Windows.Forms.ToolStripSeparator sepCancel;
 		private System.Windows.Forms.ToolStripMenuItem mniOrderReplace;
 		private System.Windows.Forms.ToolStripMenuItem mniKillPending;
@@ -758,5 +756,9 @@ namespace Sq1.Widgets.Execution {
 		private BrightIdeasSoftware.OLVColumn colheScale;
 		private BrightIdeasSoftware.OLVColumn colheAccount;
 		private BrightIdeasSoftware.OLVColumn colheLastMessage;
+		private ToolStripSeparator toolStripSeparator2;
+		private ToolStripMenuItem mniExpandAll;
+		private ToolStripMenuItem mniCollapseAll;
+		private ToolStripMenuItem mniRebuildAll;
 	}
 }

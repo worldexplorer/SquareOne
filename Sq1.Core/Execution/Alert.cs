@@ -9,6 +9,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Livesim;
 using Sq1.Core.Charting;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Execution {
 	public	class Alert {
@@ -77,40 +78,46 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	Guid				StrategyID						{ get; protected set; }
 		[JsonProperty]	public	string				StrategyName					{ get; protected set; }
 		[JsonIgnore]	public	Strategy			Strategy						{ get; protected set; }
-		[JsonIgnore]	public	bool				IsExecutorBacktestingNow		{ get {
+
+		[JsonIgnore]			Backtester			BacktesterNullUnsafeForDeserialized			{ get {
 				if (this.Strategy == null) {
 					string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL__ADDED_[JsonIgnore]";
-					return false;
+					Assembler.PopupException(msg);
+					return null;
 				}
 				if (this.Strategy.Script == null) {
-					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script=null for " + this);
+					string msg = "IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script=null for " + this;
+					Assembler.PopupException(msg);
+					return null;
 				}
 				if (this.Strategy.Script.Executor == null) {
-					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor=null for " + this);
+					string msg = "IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor=null for " + this;
+					Assembler.PopupException(msg);
+					return null;
 				}
 				if (this.Strategy.Script.Executor.Backtester == null) {
-					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this);
+					string msg = "IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this;
+					Assembler.PopupException(msg);
+					return null;
 				}
-				return this.Strategy.Script.Executor.Backtester.IsBacktestingNoLivesimNow;
-				//v2 WRONG_FOR_BrokerAdapter.SubmitOrders() return this.Strategy.Script.Executor.Backtester.IsBacktestRunning;
-			}
+				return this.Strategy.Script.Executor.Backtester;
+			} }
+		[JsonIgnore]	public	bool				IsBacktestRunning_FalseIfNoBacktester		{ get {
+				Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
+				if (backtester == null) return false;
+				return backtester.IsBacktestRunning;
+			} }
+		[JsonIgnore]	public	bool				IsBacktestingNoLivesimNow_FalseIfNoBacktester		{ get {
+		        Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
+		        if (backtester == null) return false;
+		        return backtester.IsBacktestingNoLivesimNow;
+		    } }
+		[JsonIgnore]	public	bool				IsBacktestingLivesimNow_FalseIfNoBacktester		{ get {
+		        Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
+		        if (backtester == null) return false;
+		        return this.Strategy.Script.Executor.Backtester.IsBacktestingLivesimNow;
+		    }
 		}
-		//[JsonIgnore]	public	bool				IsExecutorLivesimulatingNow		{ get {
-		//		if (this.Strategy == null) {
-		//			string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL__ADDED_[JsonIgnore]";
-		//			return false;
-		//		}
-		//		if (this.Strategy.Script == null) {
-		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script=null for " + this);
-		//		}
-		//		if (this.Strategy.Script.Executor == null) {
-		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor=null for " + this);
-		//		}
-		//		if (this.Strategy.Script.Executor.Backtester == null) {
-		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this);
-		//		}
-		//		return this.Strategy.Script.Executor.Backtester.IsLivesimRunning;
-		//	} }
 		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }
 		[JsonProperty]	public	OrderSpreadSide		OrderSpreadSide;
 		[JsonProperty]	public	Quote				QuoteCreatedThisAlert;
@@ -458,6 +465,7 @@ namespace Sq1.Core.Execution {
 				&& this.PlacedBarIndex == alert.PlacedBarIndex
 				;
 			if (alert.PlacedBarIndex == alert.Bars.Count) {
+				string msg = "AM_I_HERE_DURING_LIVESIM_FOR_DELAYED_FILLS??? IF_NOT_THEN_BARS.COUNT_IS_TOO_EXPENSIVE";
 				return basic;
 			}
 			bool streamingBarMayBeDifferent = this.PriceScript == alert.PriceScript;

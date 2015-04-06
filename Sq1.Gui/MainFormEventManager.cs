@@ -5,7 +5,6 @@ using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Support;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets;
@@ -263,21 +262,23 @@ namespace Sq1.Gui {
 				return;
 			}
 
-			ScriptParameterEventArgs scripParamChanged = e as ScriptParameterEventArgs;
-			if (scripParamChanged != null) {
-				strategyToSaveAndRun.PushChangedScriptParameterValueToScriptAndSerialize(scripParamChanged.ScriptParameter);
-			} else {
-				strategyToSaveAndRun.PushChangedIndicatorParameterValueToScriptAndSerialize(e.IndicatorParameter);
-			}
+// CHANGING_SLIDERS_ALREADY_AFFECTS_SCRIPT_AND_INDICATOR_PARAMS_KOZ_THERE_ARE_NO_CLONES_ANYMORE
+//			ScriptParameterEventArgs scripParamChanged = e as ScriptParameterEventArgs;
+//			if (scripParamChanged != null) {
+//				strategyToSaveAndRun.PushChangedScriptParameterValueToScriptAndSerialize(scripParamChanged.ScriptParameter);
+//			} else {
+//				strategyToSaveAndRun.PushChangedIndicatorParameterValueToScriptAndSerialize(e.IndicatorParameter);
+//			}
 			chartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
-			
-			ScriptParameterEventArgs demuxScriptParameterEventArgs = e as ScriptParameterEventArgs;   
-			if (demuxScriptParameterEventArgs == null) {
-				string msg = "MultiSplitterPropertiesByPanelName[ATR (Period:5[1..11/2]) ] key should be synchronized when user clicks Period 5=>7";
-				chartFormActive.ChartControl.SerializeSplitterDistanceOrPanelName();
-			} else {
-				string msg = "DO_NOTHING_ELSE_INDICATOR_PANEL_SPLITTER_POSITIONS_SHOULDNT_BE_SAVED_HERE";
-			}
+
+// NO_FREAKING_IDEA_WHY_THIS_WAS_TYPED_IN_HERE			
+//			ScriptParameterEventArgs demuxScriptParameterEventArgs = e as ScriptParameterEventArgs;   
+//			if (demuxScriptParameterEventArgs == null) {
+//				string msg = "MultiSplitterPropertiesByPanelName[ATR (Period:5[1..11/2]) ] key should be synchronized when user clicks Period 5=>7";
+//				chartFormActive.ChartControl.SerializeSplitterDistanceOrPanelName();
+//			} else {
+//				string msg = "DO_NOTHING_ELSE_INDICATOR_PANEL_SPLITTER_POSITIONS_SHOULDNT_BE_SAVED_HERE";
+//			}
 		}
 		#endregion SlidersForm.Instance.SlidersAutoGrow
 

@@ -21,17 +21,21 @@ namespace Sq1.Gui.Forms {
 			if (clickedStart) {
 				btnStartStop.Text = "Starting";
 				btnStartStop.Enabled = false;
+				this.chartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
 				this.chartFormManager.Executor.Livesimulator.Start_inGuiThread(btnStartStop, btnPauseResume, this.chartFormManager.ChartForm.ChartControl);
 				btnStartStop.Text = "Stop";
 				btnStartStop.Enabled = true;
 				btnPauseResume.Enabled = true;
+				btnPauseResume.Checked = false;
 			} else {
 				btnStartStop.Text = "Stopping";
 				btnStartStop.Enabled = false;
 				this.chartFormManager.Executor.Livesimulator.Stop_inGuiThread();
+				this.chartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
 				btnStartStop.Text = "Start";
 				btnStartStop.Enabled = true;
 				btnPauseResume.Enabled = false;
+				btnPauseResume.Checked = false;
 			}
 		}
 		void btnPauseResume_Click(object sender, EventArgs e) {
@@ -42,14 +46,18 @@ namespace Sq1.Gui.Forms {
 				btnPauseResume.Text = "Pausing";
 				btnPauseResume.Enabled = false;
 				this.chartFormManager.Executor.Livesimulator.Pause_inGuiThread();
+				this.chartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
+				this.chartFormManager.ReportersFormsManager.RebuildingFullReportForced_onLivesimPaused();
 				btnPauseResume.Text = "Resume";
 				btnPauseResume.Enabled = true;
 				
 				// when quote delay = 2..4, reporters are staying empty (probably GuiIsBusy) - clear&flush each like afterBacktestEnded
 				this.chartFormManager.ReportersFormsManager.BuildReportFullOnBacktestFinishedAllReporters();
+				//?this.chartFormManager.ReportersFormsManager.RebuildingFullReportForced_onLivesimPausedStoppedEnded();
 			} else {
 				btnPauseResume.Text = "Resuming";
 				btnPauseResume.Enabled = false;
+				this.chartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
 				this.chartFormManager.Executor.Livesimulator.Unpause_inGuiThread();
 				btnPauseResume.Text = "Pause";
 				btnPauseResume.Enabled = true;

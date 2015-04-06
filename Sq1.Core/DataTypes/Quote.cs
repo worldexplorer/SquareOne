@@ -150,7 +150,7 @@ namespace Sq1.Core.DataTypes {
 		}
 		public string ToStringShortest() {
 			StringBuilder sb = new StringBuilder();
-			sb.Append("G#");
+			sb.Append("#");
 			sb.Append(this.IntraBarSerno);
 			sb.Append("/");
 			sb.Append(this.AbsnoPerSymbol);

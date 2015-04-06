@@ -26,17 +26,17 @@ namespace Sq1.Gui.FormFactories {
 		}
 
 		void optimizerControl_OnCopyToContextNewBacktest(object sender, ContextScriptEventArgs e) {
-			ContextScript ctxAdding = e.ContextScript;
+			ContextScript ctxAdding = e.CtxCloneOfCurrentAbsorbedFromOptimizer;
 			Strategy strategyOnChart = this.chartFormManager.Strategy;
-			strategyOnChart.ScriptContextAdd(ctxAdding.Name, ctxAdding, true);
+			strategyOnChart.ScriptContextAdd_duplicatedInSliders_or_importedFromOptimizer(ctxAdding.Name, ctxAdding, true);
 			this.chartFormManager.BacktesterRunSimulation();
 			SlidersForm.Instance.Show();
 			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(ctxAdding.Name);
 		}
 		void optimizerControl_OnCopyToContextNew(object sender, ContextScriptEventArgs e) {
-			ContextScript ctxAdding = e.ContextScript;
+			ContextScript ctxAdding = e.CtxCloneOfCurrentAbsorbedFromOptimizer;
 			Strategy strategyOnChart = this.chartFormManager.Strategy;
-			strategyOnChart.ScriptContextAdd(ctxAdding.Name, ctxAdding, false);
+			strategyOnChart.ScriptContextAdd_duplicatedInSliders_or_importedFromOptimizer(ctxAdding.Name, ctxAdding, false);
 			SlidersForm.Instance.Show();
 			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(ctxAdding.Name);
 		}
@@ -45,7 +45,7 @@ namespace Sq1.Gui.FormFactories {
 			this.chartFormManager.BacktesterRunSimulation();
 		}
 		void optimizerControl_OnCopyToContextDefault(object sender, ContextScriptEventArgs e) {
-			ContextScript ctxAdding = e.ContextScript;
+			ContextScript ctxAdding = e.CtxCloneOfCurrentAbsorbedFromOptimizer;
 			Strategy strategyOnChart = this.chartFormManager.Strategy;
 			if (strategyOnChart.ScriptContextsByName.ContainsKey(ContextScript.DEFAULT_NAME) == false) {
 				string msg = "strategyOnChart.ScriptContextsByName.ContainsKey(Default) == false";

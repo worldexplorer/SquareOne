@@ -28,23 +28,28 @@ namespace Sq1.Core.Optimization {
 			fastIndex = 0;
 			log = "";
 		}
-		public ContextScript GetFirstScriptContext(string ctxName) {
-			lock (this.getNextLock) {
-				ContextScript ret = new ContextScript(ctxName);
-				this.logDump(ctxName);
-				ret.AbsorbFrom(this.ContextScriptCloneIterateable);
-				return ret;
-			}
-		}
-		public ContextScript GetNextScriptContextSequenced(string ctxName) {
-			lock (this.getNextLock) {
-				ContextScript ret = new ContextScript(ctxName);
-				this.nextMerged();
-				this.logDump(ctxName);
-				ret.AbsorbFrom(this.ContextScriptCloneIterateable);
-				return ret;
-			}
-		}
+		public ContextScript GetFirstScriptContext(string ctxName) { lock (this.getNextLock) {
+			this.fastIndex = this.confirmOrFindNextParameterMarkedForSequencing(this.fastIndex);
+			this.slowIndex = this.confirmOrFindNextParameterMarkedForSequencing(this.slowIndex);
+
+			ContextScript ret = new ContextScript(ctxName);
+			this.logDump(ctxName);
+			//ret.AbsorbFrom(this.ContextScriptCloneIterateable);
+			ret.AbsorbScriptAndIndicatorParamsOnlyFrom("FOR_userClickedDuplicateCtx"
+			                                           , this.ContextScriptCloneIterateable.ScriptParametersById
+			                                           , this.ContextScriptCloneIterateable.IndicatorParametersByName);
+			return ret;
+		} }
+		public ContextScript GetNextScriptContextSequenced(string ctxName) { lock (this.getNextLock) {
+			ContextScript ret = new ContextScript(ctxName);
+			this.nextMerged();
+			//ret.AbsorbFrom(this.ContextScriptCloneIterateable);
+			ret.AbsorbScriptAndIndicatorParamsOnlyFrom("FOR_userClickedDuplicateCtx"
+			                                           , this.ContextScriptCloneIterateable.ScriptParametersById
+			                                           , this.ContextScriptCloneIterateable.IndicatorParametersByName);
+			this.logDump(ctxName);
+			return ret;
+		} }
 		// a[0...2/1] b[0...10/5] c[0...30]/10
 		// step1   0  0  0
 		// step2   1  0  0
@@ -63,8 +68,8 @@ namespace Sq1.Core.Optimization {
 		// stepXY  0  0  0
 		
 		void nextMerged() {
+			this.fastIndex = this.confirmOrFindNextParameterMarkedForSequencing(this.fastIndex);
 			IndicatorParameter paramFast = this.paramsMerged[this.fastIndex];
-			if (paramFast.WillBeSequencedDuringOptimization == false) return;
 
 			paramFast.ValueCurrent += paramFast.ValueIncrement;
 			if (paramFast.ValueCurrent <= paramFast.ValueMax) {
@@ -83,6 +88,7 @@ namespace Sq1.Core.Optimization {
 			if (this.fastIndex == this.slowIndex) {
 				string msg = "overflow in fastIndex[1] when slowIndex[1], moving slowIndex[1]=>[2], resetting [0]...slowIndex[1]=>[Min] (step 10)";
 				this.slowIndex++;
+				this.slowIndex = this.confirmOrFindNextParameterMarkedForSequencing(this.slowIndex);
 				if (this.slowIndex == this.paramsMerged.Count) {
 					string over = "slowest parameter's ValueMax reached; outer loop shouldn't go that far (stepXY)";
 					this.logDump(over);
@@ -100,9 +106,33 @@ namespace Sq1.Core.Optimization {
 				return;
 			}
 			if (this.fastIndex > this.slowIndex) {
-				string msg = "we should never get here";
-				throw new Exception(msg);
+				string msg = "ADJUSTING_SLOW this.fastIndex[" + this.fastIndex + "] > this.slowIndex[" + this.slowIndex + "]";
+				this.slowIndex = this.confirmOrFindNextParameterMarkedForSequencing(this.slowIndex);
+				if (this.fastIndex > this.slowIndex) {
+					string msg2 = "...DIDNT_HELP this.fastIndex[" + this.fastIndex + "] > this.slowIndex[" + this.slowIndex + "]";
+					throw new Exception(msg2);
+				}
 			}
+		}
+		int confirmOrFindNextParameterMarkedForSequencing(int fastindex) {
+			int ret = fastIndex;
+			IndicatorParameter paramFast = this.paramsMerged[fastIndex];
+			bool paramToSequenceFound = paramFast.WillBeSequencedDuringOptimization;
+			if (paramToSequenceFound == true) return ret; 
+			for (int i = fastIndex; i < this.paramsMerged.Count; i++) {
+				paramFast = this.paramsMerged[i];
+				paramToSequenceFound = paramFast.WillBeSequencedDuringOptimization;
+				if (paramToSequenceFound == true) {
+					ret = i;
+					break;
+				}
+			}
+			//if (i == this.paramsMerged.Count - 1) {
+			if (paramToSequenceFound == false) {
+				string msg = "DONT_RUN_NEXT_MERGED_WHEN_NO_PARAMETER_TO_SEQUENCE_WAS_CHECKED";
+				Assembler.PopupException(msg);
+			}
+			return ret;
 		}
 		void logDump(string ctxName) {
 			string iteration = ctxName; 

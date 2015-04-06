@@ -23,16 +23,20 @@ namespace Sq1.Core.DoubleBuffered {
 
 		public PanelDoubleBuffered() : base() {
 			Application.ApplicationExit += new EventHandler(disposeAndNullifyToRecreateInPaint);
-			base.SetStyle( ControlStyles.AllPaintingInWmPaint
-						 | ControlStyles.OptimizedDoubleBuffer
-					//	 | ControlStyles.UserPaint
-					//	 | ControlStyles.ResizeRedraw
-					, true);
+			//base.SetStyle( ControlStyles.AllPaintingInWmPaint
+			//             | ControlStyles.OptimizedDoubleBuffer
+			//        //	 | ControlStyles.UserPaint
+			//        //	 | ControlStyles.ResizeRedraw
+			//        , true);
 			this.graphicManager = BufferedGraphicsManager.Current;
 		}
 		void initializeBuffer() {
 			this.graphicManager.MaximumBuffer =  new Size(base.Width + 1, base.Height + 1);
-			this.bufferedGraphics = this.graphicManager.Allocate(this.CreateGraphics(),  base.ClientRectangle);
+			//v1 this.bufferedGraphics = this.graphicManager.Allocate(this.CreateGraphics(),  base.ClientRectangle);
+			// http://dotnetfacts.blogspot.ca/2008/03/things-you-must-dispose.html
+			Graphics gNew = this.CreateGraphics();
+			this.bufferedGraphics = this.graphicManager.Allocate(gNew, base.ClientRectangle);
+			gNew.Dispose();
 		}
 		void disposeAndNullifyToRecreateInPaint(object sender, EventArgs e) {
 			if (this.bufferedGraphics == null) return;

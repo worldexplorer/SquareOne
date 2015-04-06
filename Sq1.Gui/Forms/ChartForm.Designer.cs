@@ -126,10 +126,10 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbSpreadGeneratorPct.InputFieldWidth = 60;
 			this.mnitlbSpreadGeneratorPct.Name = "mnitlbSpreadGeneratorPct";
 			this.mnitlbSpreadGeneratorPct.Size = new System.Drawing.Size(163, 21);
-			this.mnitlbSpreadGeneratorPct.Text = "Spread %price";
-			this.mnitlbSpreadGeneratorPct.TextOffsetX = 0;
+			this.mnitlbSpreadGeneratorPct.TextLeft = "Spread %price";
+			this.mnitlbSpreadGeneratorPct.TextLeftOffsetX = 0;
 			this.mnitlbSpreadGeneratorPct.TextRed = false;
-			this.mnitlbSpreadGeneratorPct.TextWidth = 84;
+			this.mnitlbSpreadGeneratorPct.TextLeftWidth = 84;
 			this.mnitlbSpreadGeneratorPct.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbSpreadGeneratorPct_UserTyped);
 			// 
 			// mniFillOutsideQuoteSpreadParanoidCheckThrow
@@ -198,10 +198,10 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeSharesConstantEachTrade.InputFieldWidth = 85;
 			this.mnitlbPositionSizeSharesConstantEachTrade.Name = "mnitlbPositionSizeSharesConstantEachTrade";
 			this.mnitlbPositionSizeSharesConstantEachTrade.Size = new System.Drawing.Size(168, 21);
-			this.mnitlbPositionSizeSharesConstantEachTrade.Text = "Shares";
-			this.mnitlbPositionSizeSharesConstantEachTrade.TextOffsetX = 0;
+			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeft = "Shares";
+			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeftOffsetX = 0;
 			this.mnitlbPositionSizeSharesConstantEachTrade.TextRed = false;
-			this.mnitlbPositionSizeSharesConstantEachTrade.TextWidth = 43;
+			this.mnitlbPositionSizeSharesConstantEachTrade.TextLeftWidth = 43;
 			this.mnitlbPositionSizeSharesConstantEachTrade.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbPositionSizeSharesConstantEachTrade_UserTyped);
 			// 
 			// mnitlbPositionSizeDollarsEachTradeConstant
@@ -214,10 +214,10 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbPositionSizeDollarsEachTradeConstant.InputFieldWidth = 85;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.Name = "mnitlbPositionSizeDollarsEachTradeConstant";
 			this.mnitlbPositionSizeDollarsEachTradeConstant.Size = new System.Drawing.Size(168, 21);
-			this.mnitlbPositionSizeDollarsEachTradeConstant.Text = "$$ Each Trade";
-			this.mnitlbPositionSizeDollarsEachTradeConstant.TextOffsetX = 0;
+			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeft = "$$ Each Trade";
+			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeftOffsetX = 0;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.TextRed = false;
-			this.mnitlbPositionSizeDollarsEachTradeConstant.TextWidth = 82;
+			this.mnitlbPositionSizeDollarsEachTradeConstant.TextLeftWidth = 82;
 			this.mnitlbPositionSizeDollarsEachTradeConstant.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbPositionSizeDollarsConstantEachTrade_UserTyped);
 			// 
 			// toolStripSeparator7
@@ -376,10 +376,10 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbYearly.InputFieldWidth = 40;
 			this.mnitlbYearly.Name = "mnitlbYearly";
 			this.mnitlbYearly.Size = new System.Drawing.Size(91, 21);
-			this.mnitlbYearly.Text = "Yearly";
-			this.mnitlbYearly.TextOffsetX = 47;
+			this.mnitlbYearly.TextLeft = "Yearly";
+			this.mnitlbYearly.TextLeftOffsetX = 47;
 			this.mnitlbYearly.TextRed = false;
-			this.mnitlbYearly.TextWidth = 41;
+			this.mnitlbYearly.TextLeftWidth = 41;
 			this.mnitlbYearly.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
 			// 
 			// mnitlbMonthly
@@ -392,10 +392,10 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbMonthly.InputFieldWidth = 40;
 			this.mnitlbMonthly.Name = "mnitlbMonthly";
 			this.mnitlbMonthly.Size = new System.Drawing.Size(104, 21);
-			this.mnitlbMonthly.Text = "Monthly";
-			this.mnitlbMonthly.TextOffsetX = 47;
+			this.mnitlbMonthly.TextLeft = "Monthly";
+			this.mnitlbMonthly.TextLeftOffsetX = 47;
 			this.mnitlbMonthly.TextRed = false;
-			this.mnitlbMonthly.TextWidth = 54;
+			this.mnitlbMonthly.TextLeftWidth = 54;
 			this.mnitlbMonthly.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
 			// 
 			// mnitlbWeekly
@@ -408,10 +408,10 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbWeekly.InputFieldWidth = 40;
 			this.mnitlbWeekly.Name = "mnitlbWeekly";
 			this.mnitlbWeekly.Size = new System.Drawing.Size(97, 21);
-			this.mnitlbWeekly.Text = "Weekly";
-			this.mnitlbWeekly.TextOffsetX = 47;
+			this.mnitlbWeekly.TextLeft = "Weekly";
+			this.mnitlbWeekly.TextLeftOffsetX = 47;
 			this.mnitlbWeekly.TextRed = false;
-			this.mnitlbWeekly.TextWidth = 47;
+			this.mnitlbWeekly.TextLeftWidth = 47;
 			this.mnitlbWeekly.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
 			// 
 			// mnitlbDaily
@@ -424,10 +424,10 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbDaily.InputFieldWidth = 40;
 			this.mnitlbDaily.Name = "mnitlbDaily";
 			this.mnitlbDaily.Size = new System.Drawing.Size(85, 21);
-			this.mnitlbDaily.Text = "Daily";
-			this.mnitlbDaily.TextOffsetX = 47;
+			this.mnitlbDaily.TextLeft = "Daily";
+			this.mnitlbDaily.TextLeftOffsetX = 47;
 			this.mnitlbDaily.TextRed = false;
-			this.mnitlbDaily.TextWidth = 35;
+			this.mnitlbDaily.TextLeftWidth = 35;
 			this.mnitlbDaily.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
 			// 
 			// mnitlbHourly
@@ -440,10 +440,10 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbHourly.InputFieldWidth = 40;
 			this.mnitlbHourly.Name = "mnitlbHourly";
 			this.mnitlbHourly.Size = new System.Drawing.Size(95, 21);
-			this.mnitlbHourly.Text = "Hourly";
-			this.mnitlbHourly.TextOffsetX = 47;
+			this.mnitlbHourly.TextLeft = "Hourly";
+			this.mnitlbHourly.TextLeftOffsetX = 47;
 			this.mnitlbHourly.TextRed = false;
-			this.mnitlbHourly.TextWidth = 45;
+			this.mnitlbHourly.TextLeftWidth = 45;
 			this.mnitlbHourly.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
 			// 
 			// mnitlbMinutes
@@ -456,10 +456,10 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbMinutes.InputFieldWidth = 40;
 			this.mnitlbMinutes.Name = "mnitlbMinutes";
 			this.mnitlbMinutes.Size = new System.Drawing.Size(102, 21);
-			this.mnitlbMinutes.Text = "Minutes";
-			this.mnitlbMinutes.TextOffsetX = 47;
+			this.mnitlbMinutes.TextLeft = "Minutes";
+			this.mnitlbMinutes.TextLeftOffsetX = 47;
 			this.mnitlbMinutes.TextRed = false;
-			this.mnitlbMinutes.TextWidth = 52;
+			this.mnitlbMinutes.TextLeftWidth = 52;
 			this.mnitlbMinutes.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbAll_UserTyped);
 			// 
 			// toolStripSeparator5
@@ -488,10 +488,10 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbShowLastBars.InputFieldWidth = 40;
 			this.mnitlbShowLastBars.Name = "mnitlbShowLastBars";
 			this.mnitlbShowLastBars.Size = new System.Drawing.Size(105, 21);
-			this.mnitlbShowLastBars.Text = "Last Bars";
-			this.mnitlbShowLastBars.TextOffsetX = 47;
+			this.mnitlbShowLastBars.TextLeft = "Last Bars";
+			this.mnitlbShowLastBars.TextLeftOffsetX = 47;
 			this.mnitlbShowLastBars.TextRed = false;
-			this.mnitlbShowLastBars.TextWidth = 55;
+			this.mnitlbShowLastBars.TextLeftWidth = 55;
 			this.mnitlbShowLastBars.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mnitlbShowLastBars_UserTyped);
 			// 
 			// mniShowBarRange

@@ -273,7 +273,7 @@ namespace Sq1.Gui.Forms {
 			#endregion
 			this.ChartForm.Initialize(true, this.Strategy.ActivatedFromDll);
 
-			this.Executor.Initialize(this.ChartForm.ChartControl, this.Strategy);
+			this.Executor.Initialize(this.ChartForm.ChartControl, this.Strategy, false);
 
 			try {
 				// Click on strategy should open new chart,  
@@ -547,7 +547,7 @@ namespace Sq1.Gui.Forms {
 			if (willBacktest == false) {
 				// COPYFROM_StrategyCompileActivatePopulateSlidersShow()
 				if (this.Strategy.Script != null && this.Strategy.ActivatedFromDll) {
-					this.Strategy.ScriptParametersAbsorbMergeFromReflected_StoreInCurrentContext_SaveStrategy_notSameObjects_usedForResettingToDefault();
+					this.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
 					this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 				}
 				//this.OptimizerFormShow(true);
@@ -747,7 +747,7 @@ namespace Sq1.Gui.Forms {
 
 			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
 				this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
-				this.Strategy.ScriptParametersAbsorbMergeFromReflected_StoreInCurrentContext_SaveStrategy_notSameObjects_usedForResettingToDefault();
+				this.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
 			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.PopulateSliders();
@@ -819,6 +819,18 @@ namespace Sq1.Gui.Forms {
 			//if (clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize == true) {
 			//	control.NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize();
 			//}
+		}
+
+		public void LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters() {
+			ExecutionForm exec = ExecutionForm.Instance;
+			if (exec.IsCoveredOrAutoHidden == false) exec.ToggleAutoHide();
+			this.ReportersFormsManager.LivesimStartedOrUnpaused_AutoHideReporters();
+		}
+		public void LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters() {
+			ExecutionForm exec = ExecutionForm.Instance;
+			if (exec.IsCoveredOrAutoHidden == true) exec.ToggleAutoHide();
+			exec.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
+			this.ReportersFormsManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenReporters();
 		}
 	}
 }
