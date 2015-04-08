@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 
-using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Execution {
 	public partial class ExecutionDataSnapshot {
 			   ScriptExecutor					executor;
-			   object 							alertsMasterLock;
+			   object 							addingSynchronouslyToAlertsMasterPendingNew;
 			   object							positionsMasterLock;
 		
 		public	AlertList						AlertsMaster				{ get; private set; }
@@ -25,7 +23,7 @@ namespace Sq1.Core.Execution {
 
 		public ExecutionDataSnapshot(ScriptExecutor strategyExecutor) {
 			this.executor						= strategyExecutor;
-			alertsMasterLock					= new object();
+			addingSynchronouslyToAlertsMasterPendingNew					= new object();
 			positionsMasterLock					= new object();
 			AlertsPending						= new AlertList("AlertsPending"					, this);	// monitored
 			AlertsMaster						= new AlertList("AlertsMaster"					, this);	// monitored
@@ -39,14 +37,14 @@ namespace Sq1.Core.Execution {
 		}
 
 		public void Initialize() { lock (this.positionsMasterLock) {
-			this.AlertsMaster				.Clear(this, "Initialize(WAIT)");
-			this.AlertsNewAfterExec			.Clear(this, "Initialize(WAIT)");
-			this.AlertsPending				.Clear(this, "Initialize(WAIT)");
+			this.AlertsMaster				.DisposeWaitHandlesAndClear(this, "Initialize(WAIT)");
+			this.AlertsNewAfterExec			.DisposeWaitHandlesAndClear(this, "Initialize(WAIT)");
+			this.AlertsPending				.DisposeWaitHandlesAndClear(this, "Initialize(WAIT)");
 			this.positionSernoAbs			= 0;
-			this.PositionsMaster			.Clear(this, "Initialize(WAIT)");
-			this.PositionsOpenedAfterExec	.Clear(this, "Initialize(WAIT)");
-			this.PositionsClosedAfterExec	.Clear(this, "Initialize(WAIT)");
-			this.PositionsOpenNow			.Clear(this, "Initialize(WAIT)");
+			this.PositionsMaster			.DisposeTwoRelatedAlertsAndClear(this, "Initialize(WAIT)");
+			this.PositionsOpenedAfterExec	.DisposeTwoRelatedAlertsAndClear(this, "Initialize(WAIT)");
+			this.PositionsClosedAfterExec	.DisposeTwoRelatedAlertsAndClear(this, "Initialize(WAIT)");
+			this.PositionsOpenNow			.DisposeTwoRelatedAlertsAndClear(this, "Initialize(WAIT)");
 		} }
 		internal void PreExecutionOnNewBarOrNewQuoteClear() { lock (this.positionsMasterLock) {
 			this.AlertsNewAfterExec.Clear(this, "PreExecutionOnNewBarOrNewQuoteClear(WAIT)");
@@ -66,7 +64,7 @@ namespace Sq1.Core.Execution {
 			this.PositionsOpenedAfterExec	.AddOpened_step1of2(positionOpening, this, "PositionsMasterOpenNewAdd(WAIT)");
 			this.PositionsOpenNow			.AddOpened_step1of2(positionOpening, this, "PositionsMasterOpenNewAdd(WAIT)");
 		} }
-		public void AlertEnrichedRegister(Alert alert, bool registerInNewAfterExec = false) { lock (this.alertsMasterLock) {
+		public void AlertEnrichedRegister(Alert alert, bool registerInNewAfterExec = false) { lock (this.addingSynchronouslyToAlertsMasterPendingNew) {
 			if (alert.Qty == 0.0) {
 				string msg = "alert[" + alert + "].Qty==0; hopefully will be displayed but not executed...";
 				throw new Exception(msg);

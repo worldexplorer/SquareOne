@@ -41,7 +41,7 @@ namespace Sq1.Strategies.Demo {
 				//this.testBarAnnotations(barStaticFormed);
 			}
 			
-			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming;
+			Bar barStreaming = barStaticFormed.ParentBars.BarStreamingNullUnsafe;
 			if (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;
 
 			if (this.MAslow.OwnValuesCalculated == null) {

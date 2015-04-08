@@ -248,7 +248,7 @@ namespace Sq1.Core.Streaming {
 			if (channel == null) return;
 			//v1 
 			//Bar streamingBar = distributionChannel.StreamingBarFactoryUnattached.StreamingBarUnattached;
-			Bar streamingBar = chartBars.BarStreaming;
+			Bar streamingBar = chartBars.BarStreamingNullUnsafe;
 			if (streamingBar == null) {
 				string msg = "STREAMING_NEVER_STARTED BarFactory.StreamingBar=null for distributionChannel[" + channel + "]";
 				Assembler.PopupException(msg);
@@ -282,7 +282,7 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 			chartBars.BarStreamingOverrideDOHLCVwith(streamingBar);
-			string msg1 = "StreamingOHLCV Overwritten: Bars.StreamingBar[" + chartBars.BarStreamingCloneReadonly + "] taken from streamingBar[" + streamingBar + "]";
+			string msg1 = "StreamingOHLCV Overwritten: Bars.StreamingBar[" + chartBars.BarStreamingNullUnsafeCloneReadonly + "] taken from streamingBar[" + streamingBar + "]";
 			//Assembler.PopupException(msg1, null, false);
 		}
 		public virtual void EnrichQuoteWithStreamingDependantDataSnapshot(Quote quote) {

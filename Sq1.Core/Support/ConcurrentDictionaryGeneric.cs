@@ -69,7 +69,7 @@ namespace Sq1.Core.Support {
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				if (this.ContainsKey(priceLevel, owner, lockPurpose, ConcurrentWatchdog.TIMEOUT_DEFAULT) && duplicateThrowsAnError) {
-					string msg = this.ReasonToExist + ": MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + priceLevel.ToString();
+					string msg = this.ReasonToExist + ": CDG_MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + priceLevel.ToString();
 					Assembler.PopupException(msg, null, false);
 				} else {
 					this.InnerDictionary.Add(priceLevel, totalLots);

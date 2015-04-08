@@ -7,13 +7,14 @@ using Sq1.Core.Execution;
 namespace Sq1.Core.Broker {
 	// REASON_TO_EXIST: 1) organize Find* to search RecentlyAdded first;	//Insert(), 
 	// Popup when you Find something logically located in another lane;		//suggestLanePopupException()
-	public class OrderLane {
-		readonly OrderProcessorDataSnapshot neighborLanesWhenOrdersAll;
-		readonly string		ident;
-		protected object	OrdersLock;
-		public List<Order>	InnerOrderList			{ get; protected set; }
-		public List<Order>	SafeCopy				{ get { lock (this.OrdersLock) { return new List<Order>(this.InnerOrderList); } } }
-		public string		SessionSernosAsString	{ get { lock (this.OrdersLock) {
+	public class OrderLane {	// TODO : OrderListWD
+		readonly	OrderProcessorDataSnapshot neighborLanesWhenOrdersAll;
+		readonly	string		ident;
+
+		protected	object	OrdersLock;
+		protected	List<Order>	InnerOrderList			{ get; private set; }
+		public		List<Order>	SafeCopy				{ get { lock (this.OrdersLock) { return new List<Order>(this.InnerOrderList); } } }
+		public		string		SessionSernosAsString	{ get { lock (this.OrdersLock) {
 					//const string sessionSernos = "";
 					//return this.Aggregate(sessionSernos, (current, order) => current + (" " + order.SernoSession));
 					string ret = "";
@@ -21,7 +22,12 @@ namespace Sq1.Core.Broker {
 					ret.TrimEnd(" ,".ToCharArray());
 					return ret;
 				} } }
-		public List<string>	OrdersGuids				{ get; protected set; }
+		public		List<string>	OrdersGuids				{ get; protected set; }
+		public Order FirstNullUnsafe { get { lock (this.OrdersLock) {
+			Order ret = null;
+			if (this.Count > 0) ret = this.InnerOrderList[0];
+			return ret;
+		} } }
 
 		public OrderLane(string ident, List<Order> ordersInit, OrderProcessorDataSnapshot neighborLanes = null) : this(ident, neighborLanes) {
 			this.InnerOrderList.InsertRange(0, ordersInit);

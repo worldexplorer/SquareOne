@@ -116,7 +116,7 @@ namespace Sq1.Core.Support {
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				if (this.InnerList.Contains(alertOrPosition) && duplicateThrowsAnError) {
-					string msg = base.ReasonToExist + ": MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + alertOrPosition.ToString();
+					string msg = base.ReasonToExist + ": CLWD_MUST_BE_ADDED_ONLY_ONCE__ALREADY_ADDED_BEFORE " + alertOrPosition.ToString();
 					Assembler.PopupException(msg, null, false);
 				}
 				this.InnerList.Add(alertOrPosition);

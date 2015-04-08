@@ -136,11 +136,14 @@ namespace Sq1.Charting {
 //		public override void PendingHistoryClearBacktestStarting() {
 //			this.ScriptExecutorObjects.PendingHistoryClearBacktestStarting();
 //		}
-		public override void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
+		public override void PendingHistoryBacktestAdd(Dictionary<int, AlertList> alertsPendingHistorySafeCopy) {
 			this.ScriptExecutorObjects.AlertsPlacedBacktestAdd(alertsPendingHistorySafeCopy);
 		}
 		public override void AlertsPlacedRealtimeAdd(List<Alert> alertsNewPlaced) {
 			this.ScriptExecutorObjects.AlertsPlacedRealtimeAdd(alertsNewPlaced);
+		}
+		public override void AlertsPendingStillNotFilledForBarAdd(int barIndex, List<Alert> alertsPendingAtCurrentBarSafeCopy) {
+			this.ScriptExecutorObjects.AlertsPendingStillNotFilledForBarAdd(barIndex, alertsPendingAtCurrentBarSafeCopy);
 		}
 		
 		Dictionary<Indicator, PanelIndicator> PanelsByIndicator = new Dictionary<Indicator, PanelIndicator>();

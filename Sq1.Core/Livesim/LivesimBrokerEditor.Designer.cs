@@ -73,6 +73,13 @@ namespace Sq1.Core.Livesim {
 		private System.Windows.Forms.TextBox txt_DelayBeforeFillMillisMax;
 		private System.Windows.Forms.TextBox txt_DelayBeforeFillMillisMin;
 		private System.Windows.Forms.Label label30;
+		private System.Windows.Forms.GroupBox grp_KillPendingDelay;
+		private System.Windows.Forms.Label label31;
+		private System.Windows.Forms.CheckBox cbx_KillPendingDelayEnabled;
+		private System.Windows.Forms.Label label32;
+		private System.Windows.Forms.TextBox txt_KillPendingDelay_max;
+		private System.Windows.Forms.TextBox txt_KillPendingDelay_min;
+		private System.Windows.Forms.Label lbl_KillPendingDelay;
 		private void InitializeComponent() {
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.label1 = new System.Windows.Forms.Label();
@@ -136,12 +143,20 @@ namespace Sq1.Core.Livesim {
 			this.txt_DelayBeforeFillMillisMax = new System.Windows.Forms.TextBox();
 			this.txt_DelayBeforeFillMillisMin = new System.Windows.Forms.TextBox();
 			this.label30 = new System.Windows.Forms.Label();
+			this.grp_KillPendingDelay = new System.Windows.Forms.GroupBox();
+			this.label31 = new System.Windows.Forms.Label();
+			this.cbx_KillPendingDelayEnabled = new System.Windows.Forms.CheckBox();
+			this.label32 = new System.Windows.Forms.Label();
+			this.txt_KillPendingDelay_max = new System.Windows.Forms.TextBox();
+			this.txt_KillPendingDelay_min = new System.Windows.Forms.TextBox();
+			this.lbl_KillPendingDelay = new System.Windows.Forms.Label();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.groupBox4.SuspendLayout();
 			this.groupBox5.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.groupBox6.SuspendLayout();
+			this.grp_KillPendingDelay.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// groupBox2
@@ -159,7 +174,8 @@ namespace Sq1.Core.Livesim {
 			this.groupBox2.Controls.Add(this.txt_PartialFillHappensOncePerQuoteMax);
 			this.groupBox2.Controls.Add(this.txt_PartialFillHappensOncePerQuoteMin);
 			this.groupBox2.Controls.Add(this.label12);
-			this.groupBox2.Location = new System.Drawing.Point(3, 132);
+			this.groupBox2.Enabled = false;
+			this.groupBox2.Location = new System.Drawing.Point(3, 198);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(356, 90);
 			this.groupBox2.TabIndex = 28;
@@ -270,7 +286,8 @@ namespace Sq1.Core.Livesim {
 			this.groupBox3.Controls.Add(this.txt_OrderRejectionHappensOncePerXordersMax);
 			this.groupBox3.Controls.Add(this.txt_OrderRejectionHappensOncePerXordersMin);
 			this.groupBox3.Controls.Add(this.label15);
-			this.groupBox3.Location = new System.Drawing.Point(3, 68);
+			this.groupBox3.Enabled = false;
+			this.groupBox3.Location = new System.Drawing.Point(3, 134);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(356, 64);
 			this.groupBox3.TabIndex = 30;
@@ -346,7 +363,8 @@ namespace Sq1.Core.Livesim {
 			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMax);
 			this.groupBox4.Controls.Add(this.txt_PriceDeviationForMarketOrdersHappensOncePerXordersMin);
 			this.groupBox4.Controls.Add(this.label21);
-			this.groupBox4.Location = new System.Drawing.Point(3, 315);
+			this.groupBox4.Enabled = false;
+			this.groupBox4.Location = new System.Drawing.Point(3, 379);
 			this.groupBox4.Name = "groupBox4";
 			this.groupBox4.Size = new System.Drawing.Size(356, 91);
 			this.groupBox4.TabIndex = 29;
@@ -462,7 +480,8 @@ namespace Sq1.Core.Livesim {
 			this.groupBox5.Controls.Add(this.txt_AdaperDisconnectHappensOncePerQuoteMax);
 			this.groupBox5.Controls.Add(this.txt_AdaperDisconnectHappensOncePerQuoteMin);
 			this.groupBox5.Controls.Add(this.label27);
-			this.groupBox5.Location = new System.Drawing.Point(3, 412);
+			this.groupBox5.Enabled = false;
+			this.groupBox5.Location = new System.Drawing.Point(3, 471);
 			this.groupBox5.Name = "groupBox5";
 			this.groupBox5.Size = new System.Drawing.Size(356, 94);
 			this.groupBox5.TabIndex = 31;
@@ -578,7 +597,8 @@ namespace Sq1.Core.Livesim {
 			this.groupBox1.Controls.Add(this.txt_OutOfOrderFillHappensOncePerQuoteMax);
 			this.groupBox1.Controls.Add(this.txt_OutOfOrderFillHappensOncePerQuoteMin);
 			this.groupBox1.Controls.Add(this.label8);
-			this.groupBox1.Location = new System.Drawing.Point(3, 224);
+			this.groupBox1.Enabled = false;
+			this.groupBox1.Location = new System.Drawing.Point(3, 288);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(356, 91);
 			this.groupBox1.TabIndex = 30;
@@ -750,11 +770,83 @@ namespace Sq1.Core.Livesim {
 			this.label30.TabIndex = 31;
 			this.label30.Text = "milliSeconds";
 			// 
+			// grp_KillPendingDelay
+			// 
+			this.grp_KillPendingDelay.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.grp_KillPendingDelay.Controls.Add(this.label31);
+			this.grp_KillPendingDelay.Controls.Add(this.cbx_KillPendingDelayEnabled);
+			this.grp_KillPendingDelay.Controls.Add(this.label32);
+			this.grp_KillPendingDelay.Controls.Add(this.txt_KillPendingDelay_max);
+			this.grp_KillPendingDelay.Controls.Add(this.txt_KillPendingDelay_min);
+			this.grp_KillPendingDelay.Controls.Add(this.lbl_KillPendingDelay);
+			this.grp_KillPendingDelay.Location = new System.Drawing.Point(3, 69);
+			this.grp_KillPendingDelay.Name = "grp_KillPendingDelay";
+			this.grp_KillPendingDelay.Size = new System.Drawing.Size(356, 65);
+			this.grp_KillPendingDelay.TabIndex = 35;
+			this.grp_KillPendingDelay.TabStop = false;
+			this.grp_KillPendingDelay.Text = "Order KillPending Delay";
+			// 
+			// label31
+			// 
+			this.label31.Location = new System.Drawing.Point(6, 20);
+			this.label31.Name = "label31";
+			this.label31.Size = new System.Drawing.Size(107, 17);
+			this.label31.TabIndex = 34;
+			this.label31.Text = "Delay before kill";
+			// 
+			// cbx_KillPendingDelayEnabled
+			// 
+			this.cbx_KillPendingDelayEnabled.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.cbx_KillPendingDelayEnabled.Checked = true;
+			this.cbx_KillPendingDelayEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbx_KillPendingDelayEnabled.Location = new System.Drawing.Point(6, 41);
+			this.cbx_KillPendingDelayEnabled.Name = "cbx_KillPendingDelayEnabled";
+			this.cbx_KillPendingDelayEnabled.Size = new System.Drawing.Size(344, 17);
+			this.cbx_KillPendingDelayEnabled.TabIndex = 32;
+			this.cbx_KillPendingDelayEnabled.Text = "Enable Random Order KillPending Delay";
+			this.cbx_KillPendingDelayEnabled.UseVisualStyleBackColor = true;
+			this.cbx_KillPendingDelayEnabled.CheckedChanged += new System.EventHandler(this.anyCheckBox_CheckedChanged);
+			// 
+			// label32
+			// 
+			this.label32.Location = new System.Drawing.Point(155, 20);
+			this.label32.Name = "label32";
+			this.label32.Size = new System.Drawing.Size(16, 15);
+			this.label32.TabIndex = 33;
+			this.label32.Text = "to";
+			// 
+			// txt_KillPendingDelay_max
+			// 
+			this.txt_KillPendingDelay_max.Location = new System.Drawing.Point(173, 17);
+			this.txt_KillPendingDelay_max.Name = "txt_KillPendingDelay_max";
+			this.txt_KillPendingDelay_max.Size = new System.Drawing.Size(33, 20);
+			this.txt_KillPendingDelay_max.TabIndex = 31;
+			this.txt_KillPendingDelay_max.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			// 
+			// txt_KillPendingDelay_min
+			// 
+			this.txt_KillPendingDelay_min.Location = new System.Drawing.Point(119, 17);
+			this.txt_KillPendingDelay_min.Name = "txt_KillPendingDelay_min";
+			this.txt_KillPendingDelay_min.Size = new System.Drawing.Size(30, 20);
+			this.txt_KillPendingDelay_min.TabIndex = 30;
+			this.txt_KillPendingDelay_min.KeyUp += new System.Windows.Forms.KeyEventHandler(this.anyTextBox_KeyUp);
+			// 
+			// lbl_KillPendingDelay
+			// 
+			this.lbl_KillPendingDelay.Location = new System.Drawing.Point(212, 21);
+			this.lbl_KillPendingDelay.Name = "lbl_KillPendingDelay";
+			this.lbl_KillPendingDelay.Size = new System.Drawing.Size(68, 17);
+			this.lbl_KillPendingDelay.TabIndex = 31;
+			this.lbl_KillPendingDelay.Text = "milliSeconds";
+			// 
 			// LivesimBrokerEditor
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.AutoScroll = true;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Controls.Add(this.grp_KillPendingDelay);
 			this.Controls.Add(this.groupBox6);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.groupBox5);
@@ -762,7 +854,7 @@ namespace Sq1.Core.Livesim {
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.groupBox2);
 			this.Name = "LivesimBrokerEditor";
-			this.Size = new System.Drawing.Size(362, 547);
+			this.Size = new System.Drawing.Size(362, 569);
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
 			this.groupBox3.ResumeLayout(false);
@@ -775,6 +867,8 @@ namespace Sq1.Core.Livesim {
 			this.groupBox1.PerformLayout();
 			this.groupBox6.ResumeLayout(false);
 			this.groupBox6.PerformLayout();
+			this.grp_KillPendingDelay.ResumeLayout(false);
+			this.grp_KillPendingDelay.PerformLayout();
 			this.ResumeLayout(false);
 
 		}

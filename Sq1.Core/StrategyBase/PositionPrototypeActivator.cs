@@ -23,11 +23,11 @@ namespace Sq1.Core.StrategyBase {
 			//bool a = this.executor.Backtester.IsBacktestingNow;
 
 			Position posWithAlert = executor.BuyOrShortAlertCreateRegister (
-				executor.Bars.BarStreaming, proto.PriceEntry,
+				executor.Bars.BarStreamingNullUnsafe, proto.PriceEntry,
 				proto.SignalEntry + "protoEntry@" + proto.PriceEntry,
 				MarketConverter.EntryDirectionFromLongShort(proto.LongShort),
 				MarketConverter.EntryMarketLimitStopFromDirection(
-					executor.Bars.BarStreamingCloneReadonly.Close, proto.PriceEntry, proto.LongShort)
+					executor.Bars.BarStreamingNullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort)
 				);
 			if (posWithAlert == null) {
 				string msg = "man I don't understand this null; out-of-bar limit should still leave a pending Alert.PositionAffected";
@@ -113,7 +113,7 @@ namespace Sq1.Core.StrategyBase {
 				proto.PriceEntryAbsorb(position.EntryFilledPrice);
 			}
 			Alert alertStopLoss = executor.SellOrCoverAlertCreateDontRegisterInNew (
-				executor.Bars.BarStreaming,
+				executor.Bars.BarStreamingNullUnsafe,
 				position, proto.PriceStopLoss,
 				proto.SignalStopLoss + "protoStopLossExit:" + proto.StopLossActivationNegativeOffset
 					+ "@" + proto.StopLossNegativeOffset + " for " + position.EntrySignal,
@@ -150,7 +150,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			Alert alertTakeProfit = executor.SellOrCoverAlertCreateDontRegisterInNew (
-				executor.Bars.BarStreaming,
+				executor.Bars.BarStreamingNullUnsafe,
 				position, proto.PriceTakeProfit,
 				proto.SignalTakeProfit + "protoTakeProfitExit:" + proto.TakeProfitPositiveOffset
 					+ "@" + proto.PriceTakeProfit + " for " + position.EntrySignal,
@@ -378,7 +378,7 @@ namespace Sq1.Core.StrategyBase {
 			double priceBestBidAsk = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
 			bool willBeExecutedImmediately = false;
 			MarketLimitStop planningEntryUsing = MarketConverter.EntryMarketLimitStopFromDirection(
-				executor.Bars.BarStreamingCloneReadonly.Close, proto.PriceEntry, proto.LongShort);
+				executor.Bars.BarStreamingNullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort);
 
 			string msg = "";
 			Direction dir = MarketConverter.EntryDirectionFromLongShort(proto.LongShort);

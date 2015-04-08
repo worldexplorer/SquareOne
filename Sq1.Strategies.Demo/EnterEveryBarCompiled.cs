@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Threading;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Strategies.Demo {
 	public class EnterEveryBarCompiled : Script {
@@ -106,7 +104,7 @@ namespace Sq1.Strategies.Demo {
 			//this.testBarAnnotations(barStaticFormed);
 			//Thread.Sleep(500);
 
-			Bar barStreaming = base.Bars.BarStreaming;
+			Bar barStreaming = base.Bars.BarStreamingNullUnsafe;
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
 				//Debugger.Break();
 			}

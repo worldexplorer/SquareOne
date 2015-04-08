@@ -122,7 +122,7 @@ namespace Sq1.Reporters {
 				var position = o as Position;
 				if (position == null) return "olvcEntryDate.AspectGetter: position=null";
 				string format = (position.Bars.IsIntraday) ? "dd-MMM-yyyy HH:mm:ss" : "dd-MMM-yyyy";
-				return position.EntryDate.ToString(format);
+				return position.EntryDateBarTimeOpen.ToString(format);
 			};
 			this.olvcEntryPrice.AspectGetter = delegate(object o) {
 				var position = o as Position;
@@ -144,9 +144,9 @@ namespace Sq1.Reporters {
 			this.olvcExitDate.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "olvcExitDate.AspectGetter: position=null";
-				if (position.ExitDate == DateTime.MinValue) return "STILL_OPEN";
+				if (position.ExitDateBarTimeOpen == DateTime.MinValue) return "STILL_OPEN";
 				string format = (position.Bars.IsIntraday) ? "dd-MMM-yyyy HH:mm:ss" : "dd-MMM-yyyy";
-				return position.EntryDate.ToString(format);
+				return position.EntryDateBarTimeOpen.ToString(format);
 			};
 			this.olvcExitPrice.AspectGetter = delegate(object o) {
 				var position = o as Position;
@@ -158,13 +158,13 @@ namespace Sq1.Reporters {
 			this.olvcExitOrder.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "olvcExitOrder.AspectGetter: position=null";
-				if (position.ExitDate == DateTime.MinValue) return "STILL_OPEN";
+				if (position.ExitDateBarTimeOpen == DateTime.MinValue) return "STILL_OPEN";
 				return position.ExitMarketLimitStop.ToString();
 			};
 			this.olvcExitSignalName.AspectGetter = delegate(object o) {
 				var position = o as Position;
 				if (position == null) return "olvcExitSignalName.AspectGetter: position=null";
-				if (position.ExitDate == DateTime.MinValue) return null;
+				if (position.ExitDateBarTimeOpen == DateTime.MinValue) return null;
 				return position.ExitSignal.ToString();
 			};
 

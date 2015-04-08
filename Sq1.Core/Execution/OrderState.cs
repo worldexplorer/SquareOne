@@ -1,53 +1,60 @@
 namespace Sq1.Core.Execution {
 	public enum OrderState {
-		JustCreated = 0,
-		Unknown = 1,
-		LeaveTheSame = 2,
+		JustConstructed			= 0,
+		Unknown					= 1,
+		LeaveTheSame			= 2,
+
 		AlertCreatedOnPreviousBarNotAutoSubmitted = 100,
-		AutoSubmitNotEnabled = 110,
-		MarketClosed = 120,
-		PreSubmit = 200,
-		Submitting = 210,
-		//Rejected and other *PostProcessors should consider SubmittingAsync equivalent to Submitting
-		//SubmittingAsync = 220,
-		SubmittingSequenced = 230,
-		Submitted = 240,
-		WaitingBrokerFill = 250,
-		Rejected = 300,
-		RejectedLimitReached = 330,
-		Filled = 400,
-		FilledPartially = 410,
-		TradeStatus = 450,
-		//too much of details, like for SubmittingAsync
-		//KillSubmittingAsync = 610,
-		// the only Killer order StateFlow: KillerSubmitting => KillerBulletFlying => KillerDone
-		KillerPreSubmit = 600,
-		KillerSubmitting = 610,
-		KillerBulletFlying = 620,	// KillerBulletFlying = KillerSubmitted + KillerActive
-		KillerDone = 630,	// simulated in BrokerQuik: victim is cancelled, no broker callback on a "virtual" KillerOrder
-		// the only Victim order StateFlow: KillPending => Killed
-		KillPending = 640,
-		Killed = 650,
-		SLAnnihilated = 660,
-		TPAnnihilated = 661,
-		Error = 700,
-		ErrorOrderInconsistent = 701,
-		ErrorSubmitOrder = 702,
-		ErrorSubmittingNotEatable = 703,
-		ErrorMarketPriceZero = 704,
-		ErrorSlippageCalc = 705,
-		ErrorCancelReplace = 706,
-		ErrorSubmittingBroker = 707,
-		SubmittedNoFeedback = 708,
-		IRefuseToCloseNonStreamingPosition = 800,
-		IRefuseToCloseUnfilledEntry = 801,
-		IRefuseOpenTillEmergencyCloses = 802,
-		EmergencyCloseSheduledForNoReason = 900,
-		EmergencyCloseSheduledForRejected = 901,
-		EmergencyCloseSheduledForRejectedLimitReached = 902,
-		EmergencyCloseSheduledForErrorSubmittingBroker = 903,
-		EmergencyCloseComplete = 910,
-		EmergencyCloseUserInterrupted = 911,
-		EmergencyCloseLimitReached = 912
+		AutoSubmitNotEnabled	= 110,
+		MarketClosed			= 120,
+
+		PreSubmit				= 200,
+		Submitting				= 210,
+		//SubmittingAsync		= 220,		// Rejected and other *PostProcessors should consider SubmittingAsync equivalent to Submitting
+		SubmittingSequenced		= 230,
+		Submitted				= 240,
+		WaitingBrokerFill		= 250,
+
+		Rejected				= 300,
+		RejectedLimitReached	= 330,
+		Filled					= 400,
+		FilledPartially			= 410,
+		TradeStatus				= 450,
+
+		//KillSubmittingAsync	= 610,	// everything is Async! like for SubmittingAsync
+		KillPendingPreSubmit	= 500,
+		KillPendingSubmitting	= 510,
+		KillPendingSubmitted	= 520,
+		KilledPending			= 530,		// a Limit order that wasn't Filled yet - doesn't need a KillerOrder to be KilledPending
+
+		KillerPreSubmit			= 610,		// Market order that is Filled - needs a KillerOrder to be Killed (most likely another Market with inverted Size)
+		KillerSubmitting		= 620,
+		KillerBulletFlying		= 630,		// KillerBulletFlying = KillerSubmitted + KillerActive
+		KillerDone				= 640,		// simulated in BrokerQuik: victim is cancelled, no broker callback on a "virtual" KillerOrder
+
+		SLAnnihilated			= 680,
+		TPAnnihilated			= 681,
+
+		Error						= 700,
+		ErrorOrderInconsistent		= 701,
+		ErrorSubmitOrder			= 702,
+		ErrorSubmittingNotEatable	= 703,
+		ErrorMarketPriceZero		= 704,
+		ErrorSlippageCalc			= 705,
+		ErrorCancelReplace			= 706,
+		ErrorSubmittingBroker		= 707,
+		SubmittedNoFeedback			= 708,
+
+		IRefuseToCloseNonStreamingPosition	= 800,
+		IRefuseToCloseUnfilledEntry			= 801,
+		IRefuseOpenTillEmergencyCloses		= 802,
+
+		EmergencyCloseSheduledForNoReason				= 900,
+		EmergencyCloseSheduledForRejected				= 901,
+		EmergencyCloseSheduledForRejectedLimitReached	= 902,
+		EmergencyCloseSheduledForErrorSubmittingBroker	= 903,
+		EmergencyCloseComplete							= 910,
+		EmergencyCloseUserInterrupted					= 911,
+		EmergencyCloseLimitReached						= 912
 	}
 }

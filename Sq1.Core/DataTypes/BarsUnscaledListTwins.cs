@@ -9,7 +9,7 @@ namespace Sq1.Core.DataTypes {
 
 		// two parallel structures with same Bars inside:
 		protected	List<Bar>					BarsList;	// List<Bar> for fast this[int]
-		public		IList<Bar>					Values		{ get { lock (this.BarsLock) { return this.BarsList; } } }
+		//public		IList<Bar>					Values		{ get { lock (this.BarsLock) { return this.BarsList; } } }
 		public		int							Count		{ get { lock (this.BarsLock) { return this.BarsList.Count; } } }
 		
 		//protected List<DateTime> DateTimeList;				// List<DateTime> for DataSeriesProxyBars.DateTimes

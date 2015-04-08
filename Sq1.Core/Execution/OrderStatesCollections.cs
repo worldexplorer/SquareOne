@@ -8,6 +8,8 @@ namespace Sq1.Core.Execution {
 				OrderState.PreSubmit,
 				OrderState.Submitting,
 				OrderState.SubmittingSequenced,
+				OrderState.KillPendingPreSubmit,
+				OrderState.KillPendingSubmitting,
 				OrderState.KillerPreSubmit,
 				OrderState.KillerSubmitting,
 				OrderState.SubmittingSequenced
@@ -20,7 +22,7 @@ namespace Sq1.Core.Execution {
 				OrderState.WaitingBrokerFill,
 				OrderState.TradeStatus,
 				OrderState.KillerBulletFlying,
-				OrderState.KillPending,
+				OrderState.KillPendingSubmitted,
 				OrderState.IRefuseOpenTillEmergencyCloses,
 			}, "NoInterventionRequired");
 
@@ -42,7 +44,7 @@ namespace Sq1.Core.Execution {
 				OrderState.RejectedLimitReached,
 				OrderState.Filled,
 				OrderState.KillerDone,
-				OrderState.Killed,
+				OrderState.KilledPending,
 				OrderState.SLAnnihilated,
 				OrderState.TPAnnihilated,
 				OrderState.RejectedLimitReached,

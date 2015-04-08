@@ -361,7 +361,7 @@ namespace Sq1.Core.Streaming {
 			}
 			foreach (IStreamingConsumer barConsumer in this.consumersBar) {
 				if (barConsumer is StreamingSolidifier == false) {
-					lastQuoteReceived.SetParentBarStreaming(barConsumer.ConsumerBarsToAppendInto.BarStreaming);
+					lastQuoteReceived.SetParentBarStreaming(barConsumer.ConsumerBarsToAppendInto.BarStreamingNullUnsafe);
 				}
 				barConsumer.UpstreamUnSubscribedFromSymbolNotification(lastQuoteReceived);
 			}

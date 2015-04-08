@@ -94,12 +94,12 @@ namespace Sq1.Core.StrategyBase {
 		public ContextScript CloneAndAbsorbFromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized) {
 			Assembler.PopupException("TESTME //CloneAndAbsorbFromSystemPerformanceRestoreAble()");
 			ContextScript clone = (ContextScript)base.MemberwiseClone();
-			clone.AbsorbScriptAndIndicatorParamsOnlyFrom("FOR_ImportedFromOptimizer",
+			clone.AbsorbOnlyScriptAndIndicatorParamsFrom("FOR_ImportedFromOptimizer",
 				sysPerfOptimized.ScriptParametersById_BuiltOnBacktestFinished,
 				sysPerfOptimized.IndicatorParametersByName_BuiltOnBacktestFinished);
 			return clone;
 		}
-		public void AbsorbScriptAndIndicatorParamsOnlyFrom(string reasonToClone,
+		public void AbsorbOnlyScriptAndIndicatorParamsFrom(string reasonToClone,
 					SortedDictionary<int, ScriptParameter>			scriptParametersById,
 					Dictionary<string, List<IndicatorParameter>>	indicatorParametersByName) {
 			this.ScriptParametersById			= scriptParametersById;
@@ -113,7 +113,7 @@ namespace Sq1.Core.StrategyBase {
 			
 			this.PositionSize = found.PositionSize.Clone();
 			if (absorbScriptAndIndicatorParams) {
-				this.AbsorbScriptAndIndicatorParamsOnlyFrom("FOR_userClickedDuplicateCtx", found.ScriptParametersById, found.IndicatorParametersByName);
+				this.AbsorbOnlyScriptAndIndicatorParamsFrom("FOR_userClickedDuplicateCtx", found.ScriptParametersById, found.IndicatorParametersByName);
 			}
 			
 			//some of these guys can easily be absorbed by object.MemberwiseClone(), why do I prefer to maintain the growing list manually?... 
@@ -130,16 +130,22 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public ContextScript CloneResetAllToMinForOptimizer() {
 			ContextScript ret = (ContextScript)base.MemberwiseClone();
-			ret.replaceWithClonesScriptAndIndicatorParameters("FOR_OptimizerParametersSequencer");
+			ret.replaceWithClonesScriptAndIndicatorParameters("FOR_OptimizerParametersSequencer", true, true);
 			return ret;
 		}
-		void replaceWithClonesScriptAndIndicatorParameters(string reasonToClone, bool resetAllToMin = true) {
+		void replaceWithClonesScriptAndIndicatorParameters(string reasonToClone, bool resetAllToMin = true, bool leaveNonSequencedAsCurrent = true) {
 			//this.ScriptParametersByIdNonCloned = this.ScriptParametersById;
 			SortedDictionary<int, ScriptParameter> scriptParametersByIdClonedReset = new SortedDictionary<int, ScriptParameter>();
 			foreach (int id in this.ScriptParametersById.Keys) {
 				ScriptParameter sp = this.ScriptParametersById[id];
 				ScriptParameter spClone = sp.CloneAsScriptParameter(reasonToClone);
-				if (resetAllToMin) spClone.ValueCurrent = spClone.ValueMin;
+				if (resetAllToMin) {
+					if (spClone.WillBeSequencedDuringOptimization == false && leaveNonSequencedAsCurrent == true) {
+						// don't reset to min
+					} else {
+						spClone.ValueCurrent = spClone.ValueMin;
+					}
+				}
 				scriptParametersByIdClonedReset.Add(id, spClone);
 			}
 			this.ScriptParametersById = scriptParametersByIdClonedReset;
@@ -151,11 +157,46 @@ namespace Sq1.Core.StrategyBase {
 				indicatorParametersByNameClonedReset.Add(indicatorName, iParamsCloned);
 				foreach (IndicatorParameter iParam in iParams) {
 					IndicatorParameter ipClone = iParam.CloneAsIndicatorParameter(reasonToClone);
-					if (resetAllToMin) ipClone.ValueCurrent = ipClone.ValueMin;
+					if (resetAllToMin) {
+						if (ipClone.WillBeSequencedDuringOptimization == false && leaveNonSequencedAsCurrent == true) {
+							// don't reset to min
+						} else {
+							ipClone.ValueCurrent = ipClone.ValueMin;
+						}
+					}
 					iParamsCloned.Add(ipClone);
 				}
 			}
 			this.IndicatorParametersByName = indicatorParametersByNameClonedReset;
+		}
+		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_backToStrategyFromOptimizer_noChecksDirtyImplementation(ContextScript ctxOptimized) {
+			int ret = 0;
+			try {
+				foreach (int id in ctxOptimized.ScriptParametersById.Keys) {
+					ScriptParameter spOpt  = ctxOptimized	.ScriptParametersById[id];
+					ScriptParameter spMine = this			.ScriptParametersById[id];
+					if (spMine.ValueCurrent == spOpt.ValueCurrent) continue;	//looks stupig but inserting breakpoint on next line is useful
+					spMine.ValueCurrent = spOpt.ValueCurrent;
+					ret++;
+				}
+				foreach (string indicatorName in ctxOptimized.IndicatorParametersByName.Keys) {
+					List<IndicatorParameter> ipsOpt  = ctxOptimized	.IndicatorParametersByName[indicatorName];
+					List<IndicatorParameter> ipsMine = this			.IndicatorParametersByName[indicatorName];
+					foreach (IndicatorParameter ipOpt in ipsOpt) {
+						foreach (IndicatorParameter ipMine in ipsMine) {
+							if (ipMine.FullName != ipOpt.FullName) continue;
+							if (ipMine.ValueCurrent == ipOpt.ValueCurrent) continue;	//looks stupig but inserting breakpoint on next line is useful
+							ipMine.ValueCurrent = ipOpt.ValueCurrent;
+							ret++;
+							break;
+						}
+					}
+				}
+			} catch (Exception ex) {
+				string msg = "SCRIPT_RECOMPILED_OPTIMIZATOR_WAS_NOT_NOTIFIED_ABOUT_CHANGED_SCRIPT_OR_INDICATOR_PARAMETERS";
+				Assembler.PopupException(msg);
+			}
+			return ret;
 		}
 		public object FindOrCreateReportersSnapshot(Reporter reporterActivated) {
 			string reporterName = reporterActivated.TabText;

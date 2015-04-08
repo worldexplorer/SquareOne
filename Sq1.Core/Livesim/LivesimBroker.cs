@@ -36,6 +36,75 @@ namespace Sq1.Core.Livesim {
 			base.OrderProcessor.UpdateOrderStateByGuidNoPostProcess(order.GUID, OrderState.Submitted, msg);
 		}
 
+//		public override void OrderKillSubmitUsingKillerOrder(Order killerOrder) {
+//			string msig = " //LivesimBroker.OrderKillSubmitUsingKillerOrder()";
+//			if (string.IsNullOrEmpty(killerOrder.VictimGUID)) {
+//				throw new Exception("killerOrder.KillerForGUID=EMPTY");
+//			}
+//			if (killerOrder.VictimToBeKilled == null) {
+//				throw new Exception("killerOrder.VictimToBeKilled=null");
+//			}
+//
+//			string msg = "State[" + killerOrder.State + "]"
+//				+ " [" + killerOrder.Alert.Symbol + "/" + killerOrder.Alert.SymbolClass + "]"
+//				+ " VictimToBeKilled.SernoExchange[" + killerOrder.VictimToBeKilled.SernoExchange + "]";
+//			//Assembler.PopupException(msg + msig);
+//			OrderStateMessage omsgKiller = new OrderStateMessage(killerOrder, OrderState.KillerPreSubmit, msg);
+//			this.OrderProcessor.UpdateOrderStateAndPostProcess(killerOrder, omsgKiller);
+//		}
+
+		public override void OrderPendingKillWithoutKillerSubmit(Order orderPendingToKill) {
+			string msig = " //LivesimBroker.OrderPendingKillWithoutKillerSubmit()";
+			
+			string orderGUID = orderPendingToKill.GUID;
+			Order orderPendingFound = base.ScanEvidentLanesForGuidNullUnsafe(orderGUID);
+			if (orderPendingFound != orderPendingToKill) {
+				string msg = "PARANOID_SCAN_FAILED orderPendingFound[" + orderPendingFound + "] != orderPendingToKill[" + orderPendingToKill + "]";
+				Assembler.PopupException(msg);
+			}
+
+			var omsg2 = new OrderStateMessage(orderPendingToKill, OrderState.KillPendingSubmitting, "Step#2");
+			base.OrderProcessor.UpdateOrderStateDontPostProcess(orderPendingToKill, omsg2);
+
+			var omsg3 = new OrderStateMessage(orderPendingToKill, OrderState.KillPendingSubmitted, "Step#3");
+			base.OrderProcessor.UpdateOrderStateDontPostProcess(orderPendingToKill, omsg3);
+
+			int delay = 0;
+			if (this.settings.KillPendingDelayEnabled) {
+				delay = settings.KillPendingDelayMillisMin;
+				if (settings.KillPendingDelayMillisMax > 0) {
+					int range = Math.Abs(settings.KillPendingDelayMillisMax - settings.KillPendingDelayMillisMin);
+					double rnd0to1 = new Random().NextDouble();
+					int rangePart = (int)Math.Round(range * rnd0to1);
+					delay += rangePart;
+				}
+			}
+			if (delay == 0) {
+				var omsg = new OrderStateMessage(orderPendingToKill, OrderState.KilledPending, "DELAY_PENDING_KILL_ZERO");
+				base.OrderProcessor.UpdateOrderStateDontPostProcess(orderPendingToKill, omsg);
+				base.OrderProcessor.PostKillWithoutKiller_removeAlertsPendingFromExecutorDataSnapshot(orderPendingToKill, msig);
+				return;
+			}
+
+			Task t = new Task(delegate() {
+				try {
+					Thread.CurrentThread.Name = "DELAYED_PENDING_KILL " + orderPendingToKill.ToString();
+				} catch (Exception ex) {
+					Assembler.PopupException("CANT_SET_THREAD_NAME //LivesimBroker", ex, false);
+				}
+
+				Thread.Sleep(delay);
+				var omsg = new OrderStateMessage(orderPendingToKill, OrderState.KilledPending, "DELAY_PENDING_KILL[" + delay + "]ms");
+				base.OrderProcessor.UpdateOrderStateDontPostProcess(orderPendingToKill, omsg);
+				base.OrderProcessor.PostKillWithoutKiller_removeAlertsPendingFromExecutorDataSnapshot(orderPendingToKill, msig);
+			});
+			t.ContinueWith(delegate {
+				string msg = "TASK_THREW";
+				Assembler.PopupException(msg + msig, t.Exception);
+			}, TaskContinuationOptions.OnlyOnFaulted);
+			t.Start();
+		}
+
 		internal void ConsumeQuoteOfStreamingBarToFillPending(QuoteGenerated quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
 			ScriptExecutor executor = this.livesimDataSource.Executor;
 			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
@@ -108,7 +177,7 @@ namespace Sq1.Core.Livesim {
 		} }
 		void consumeQuoteOfStreamingBarToFillPendingAsync(QuoteGenerated quoteUnattached, AlertList expectingToFill) {
 			ScriptExecutor executor = this.livesimDataSource.Executor;
-			Bar barStreaming = executor.Bars.BarStreaming;
+			Bar barStreaming = executor.Bars.BarStreamingNullUnsafe;
 			if (barStreaming == null) {
 				string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_WITH_BAR_STREAMING_NULL__END_OF_LIVESIM?";
 				Assembler.PopupException(msg, null, false);
@@ -176,6 +245,11 @@ namespace Sq1.Core.Livesim {
 				this.DataSnapshot.AlertsScheduledForDelayedFill.UnLockFor(this, "onAlertFilled(WAIT)");
 			}
 			Order order = alertFilled.OrderFollowed;
+			if (order == null && alertFilled.SignalName.StartsWith("proto")) {
+				string msg = "CORE_FORGOT_TO_CREATE_TWO_ORDERS_FOR_POSITION_PROTOTYPE";
+				Assembler.PopupException(msg);
+				return;
+			}
 			OrderStateMessage osm = new OrderStateMessage(order, OrderState.Filled, "LIVESIM_FILLED_THROUGH_MARKETSIM_BACKTEST");
 			OrderProcessor orderProcessor = Assembler.InstanceInitialized.OrderProcessor;
 			orderProcessor.UpdateOrderStateAndPostProcess(order, osm, priceFilled, qtyFilled);

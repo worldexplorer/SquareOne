@@ -215,7 +215,7 @@ namespace Sq1.Core.Broker {
 				emergencyReplacement.EmergencyCloseAttemptSerno = 1;
 			}
 			DateTime serverTimeNow = rejectedOrderToReplace.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
-			emergencyReplacement.TimeCreatedBroker = serverTimeNow;
+			emergencyReplacement.CreatedBrokerTime = serverTimeNow;
 
 			this.orderProcessor.DataSnapshot.OrderInsertNotifyGuiAsync(emergencyReplacement);
 			this.orderProcessor.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){rejectedOrderToReplace});

@@ -37,10 +37,10 @@ namespace Sq1.Charting {
 			if (bars.IsIntraday) {
 				//text = text + " " + bars.Date[barNumber].ToShortTimeString();
 				//text = text + bars[bar].DateTimeOpen.ToString("HH:mm ");
-				text = text + position.EntryDate.ToString("HH:mm ");
+				text = text + position.EntryDateBarTimeOpen.ToString("HH:mm ");
 			}
 			//text = text + bars[bar].DateTimeOpen.ToString("ddd dd-MMM-yyyy");
-			text = text + position.EntryDate.ToString("ddd dd-MMM-yyyy");
+			text = text + position.EntryDateBarTimeOpen.ToString("ddd dd-MMM-yyyy");
 			this.lblDateVal.Text = text;
 
 			this.lblEntryVal.Text = position.EntryFilledPrice.ToString(priceFormat);

@@ -265,6 +265,14 @@
       <Project>{E580A3F0-6BED-4649-A159-58998CC077F3}</Project>
       <Name>WinFormsUI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json.Net20</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ObjectListView_280-src\ObjectListView2010.csproj">
+      <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
+      <Name>ObjectListView2010</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sq1.Charting\Sq1.Charting.csproj">
       <Project>{5F3ADF2A-7480-4C2B-919A-ABC017B66CFC}</Project>
       <Name>Sq1.Charting</Name>
@@ -280,14 +288,6 @@
     <ProjectReference Include="..\Sq1.Widgets\Sq1.Widgets.csproj">
       <Project>{E4E3D133-E335-4437-B85E-89D6738B3FA2}</Project>
       <Name>Sq1.Widgets</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json.Net20</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ObjectListView_280-src\ObjectListView2010.csproj">
-      <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
-      <Name>ObjectListView2010</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

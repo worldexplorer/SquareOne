@@ -417,7 +417,7 @@ namespace Sq1.Core.StrategyBase {
 				//v1 if (this.PositionLongShortImTracking != PositionLongShort.Unknown && entryPosition.PositionLongShort != this.PositionLongShortImTracking) continue;
 				if (this.positionIsMineShouldAppendAndUpdate(positionOpened) == false) continue;
 				if (barDateTime == DateTime.MinValue) barDateTime = positionOpened.EntryBar.DateTimeOpen;
-				if (positionOpened.EntryDate != barDateTime) {
+				if (positionOpened.EntryDateBarTimeOpen != barDateTime) {
 					string msg = "YOU_GOT_POSITIONS_WITH_ALL_DIFFERENT_DATES_WHILE_MUST_BE_SAME_FOR_positionsOpenedAtBar";
 					Assembler.PopupException(msg);
 				}
@@ -446,7 +446,7 @@ namespace Sq1.Core.StrategyBase {
 				//v1 if (this.PositionLongShortImTracking != PositionLongShort.Unknown && exitPosition.PositionLongShort != this.PositionLongShortImTracking) continue;
 				if (this.positionIsMineShouldAppendAndUpdate(positionClosed) == false) continue;
 				if (barDateTime == DateTime.MinValue) barDateTime = positionClosed.ExitBar.DateTimeOpen;
-				if (positionClosed.ExitDate != barDateTime) {
+				if (positionClosed.ExitDateBarTimeOpen != barDateTime) {
 					string msg = "YOU_GOT_POSITIONS_WITH_ALL_DIFFERENT_DATES_WHILE_MUST_BE_SAME_FOR_positionsClosedAtBar barDateTime[" + barDateTime + "] " + positionClosed;
 					Assembler.PopupException(msg);
 				}

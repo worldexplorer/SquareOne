@@ -95,7 +95,7 @@ namespace Sq1.Core.DataTypes {
 		public virtual void RenameSymbol(string symbolNew) {
 			// TODO test rename during streaming OR disable renaming feature in GUI while streaming
 			this.Symbol = symbolNew;
-			foreach (Bar barRegardlessScaledOrNot in this.Values) {
+			foreach (Bar barRegardlessScaledOrNot in this.BarsList) {
 				barRegardlessScaledOrNot.Symbol = symbolNew;
 			}
 			this.RaiseBarsRenamed_SEEMS_EXCESSIVE();

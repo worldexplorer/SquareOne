@@ -125,7 +125,7 @@ namespace Sq1.Core.Execution {
 					Assembler.PopupException(msg);
 					return added;
 				}
-				if (positionOpened.EntryDate == DateTime.MinValue) {
+				if (positionOpened.EntryDateBarTimeOpen == DateTime.MinValue) {
 					string msg = "POSITION_ATBAR_HAS_NO_ENTRY_DATE"
 						+ " while EntryAlert.FilledBar.DateTimeOpen[" + positionOpened.EntryAlert.FilledBar.DateTimeOpen + "]";
 					Assembler.PopupException(msg);
@@ -172,7 +172,7 @@ namespace Sq1.Core.Execution {
 					Assembler.PopupException(msg);
 					return added;
 				}
-				if (positionClosed.ExitDate == DateTime.MinValue) {
+				if (positionClosed.ExitDateBarTimeOpen == DateTime.MinValue) {
 					string msg = "POSITION_ATBAR_HAS_NO_EXIT_DATE"
 						+ " while ExitAlert.FilledBar.DateTimeOpen[" + positionClosed.ExitAlert.FilledBar.DateTimeOpen + "]";
 					Assembler.PopupException(msg);
@@ -240,6 +240,17 @@ namespace Sq1.Core.Execution {
 			return base.ToString()
 				+ " ByEntryFilled.Bars[" + ByEntryBarFilled.Keys.Count + "]"
 				+ "  ByExitFilled.Bars[" +  ByExitBarFilled.Keys.Count+ "]";
+		}
+
+		public void DisposeTwoRelatedAlertsAndClear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + base.ReasonToExist + ".DisposeTwoRelatedAlertsAndClear()";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				foreach (Position pos in base.InnerList) pos.Dispose();
+				this.Clear(owner, lockPurpose, waitMillis);
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
 		}
 	}
 }

@@ -131,6 +131,7 @@ namespace Sq1.Core.Livesim {
 			this.groupBox1.Controls.Add(this.cbx_QuoteGenerationFreezeEnabled);
 			this.groupBox1.Controls.Add(this.label4);
 			this.groupBox1.Controls.Add(this.label3);
+			this.groupBox1.Enabled = false;
 			this.groupBox1.Location = new System.Drawing.Point(3, 159);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(345, 91);
@@ -324,6 +325,7 @@ namespace Sq1.Core.Livesim {
 			this.groupBox3.Controls.Add(this.txt_AdaperDisconnectHappensOncePerQuoteMax);
 			this.groupBox3.Controls.Add(this.txt_AdaperDisconnectHappensOncePerQuoteMin);
 			this.groupBox3.Controls.Add(this.label15);
+			this.groupBox3.Enabled = false;
 			this.groupBox3.Location = new System.Drawing.Point(3, 250);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(345, 90);
@@ -444,6 +446,7 @@ namespace Sq1.Core.Livesim {
 			this.groupBox4.Controls.Add(this.txt_OutOfOrderQuoteGenerationHappensOncePerQuoteMax);
 			this.groupBox4.Controls.Add(this.txt_OutOfOrderQuoteGenerationHappensOncePerQuoteMin);
 			this.groupBox4.Controls.Add(this.label21);
+			this.groupBox4.Enabled = false;
 			this.groupBox4.Location = new System.Drawing.Point(3, 68);
 			this.groupBox4.Name = "groupBox4";
 			this.groupBox4.Size = new System.Drawing.Size(345, 91);
@@ -565,6 +568,7 @@ namespace Sq1.Core.Livesim {
 			this.groupBox5.Controls.Add(this.textBox3);
 			this.groupBox5.Controls.Add(this.textBox4);
 			this.groupBox5.Controls.Add(this.label27);
+			this.groupBox5.Enabled = false;
 			this.groupBox5.Location = new System.Drawing.Point(3, 346);
 			this.groupBox5.Name = "groupBox5";
 			this.groupBox5.Size = new System.Drawing.Size(345, 115);

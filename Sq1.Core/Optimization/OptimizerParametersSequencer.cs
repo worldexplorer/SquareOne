@@ -35,7 +35,7 @@ namespace Sq1.Core.Optimization {
 			ContextScript ret = new ContextScript(ctxName);
 			this.logDump(ctxName);
 			//ret.AbsorbFrom(this.ContextScriptCloneIterateable);
-			ret.AbsorbScriptAndIndicatorParamsOnlyFrom("FOR_userClickedDuplicateCtx"
+			ret.AbsorbOnlyScriptAndIndicatorParamsFrom("FOR_userClickedDuplicateCtx"
 			                                           , this.ContextScriptCloneIterateable.ScriptParametersById
 			                                           , this.ContextScriptCloneIterateable.IndicatorParametersByName);
 			return ret;
@@ -44,7 +44,7 @@ namespace Sq1.Core.Optimization {
 			ContextScript ret = new ContextScript(ctxName);
 			this.nextMerged();
 			//ret.AbsorbFrom(this.ContextScriptCloneIterateable);
-			ret.AbsorbScriptAndIndicatorParamsOnlyFrom("FOR_userClickedDuplicateCtx"
+			ret.AbsorbOnlyScriptAndIndicatorParamsFrom("FOR_userClickedDuplicateCtx"
 			                                           , this.ContextScriptCloneIterateable.ScriptParametersById
 			                                           , this.ContextScriptCloneIterateable.IndicatorParametersByName);
 			this.logDump(ctxName);

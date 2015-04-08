@@ -7,15 +7,18 @@ namespace Sq1.Core.Execution {
 	public class AlertList : ConcurrentListWD<Alert> {
 		protected Dictionary<int, List<Alert>>	ByBarPlaced		{ get; private set; }
 		
-		public Dictionary<int, List<Alert>>	ByBarPlacedSafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-			Dictionary<int, List<Alert>> ret = new Dictionary<int, List<Alert>>();
+		public Dictionary<int, AlertList>	ByBarPlacedSafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			Dictionary<int, AlertList> ret = new Dictionary<int, AlertList>();
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				foreach (int bar in this.ByBarPlaced.Keys) ret.Add(bar, new List<Alert>(this.ByBarPlaced[bar]));
+				foreach (int bar in this.ByBarPlaced.Keys) ret.Add(bar, new AlertList("ByBarPlacedSafeCopy", null, this.ByBarPlaced[bar]));
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
 			return ret;
+		}
+		public List<Alert> SafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			return base.SafeCopy(owner, lockPurpose, waitMillis);
 		}
 		public AlertList(string reasonToExist, ExecutionDataSnapshot snap = null, List<Alert> copyFrom = null) : this(reasonToExist, snap) {
 			if (copyFrom == null) return;
@@ -34,11 +37,21 @@ namespace Sq1.Core.Execution {
 				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public void AddRange(List<Alert> alerts, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+		public void DisposeWaitHandlesAndClear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + base.ReasonToExist + ".DisposeWaitHandlesAndClear()";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				foreach (Alert alert in base.InnerList) alert.Dispose();
+				this.Clear(owner, lockPurpose, waitMillis);
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+		}
+		public void AddRange(List<Alert> alerts, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
 			lockPurpose += " //" + base.ReasonToExist + ".AddRange(" + alerts.Count + ")";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				foreach (Alert alert in alerts) this.AddNoDupe(alert, owner, lockPurpose, waitMillis);
+				foreach (Alert alert in alerts) this.AddNoDupe(alert, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
 			} finally {
 				base.UnLockFor(owner, lockPurpose);
 			}
@@ -151,7 +164,10 @@ namespace Sq1.Core.Execution {
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				AlertList ret		= new AlertList("CLONE_" + base.ReasonToExist, base.Snap, base.InnerList);
-				ret.ByBarPlaced		= this.ByBarPlacedSafeCopy(this, "Clone(WAIT)");
+				//v1 ret.ByBarPlaced		= this.ByBarPlacedSafeCopy(this, "Clone(WAIT)");
+				foreach (int bar in this.ByBarPlaced.Keys) {
+					ret.ByBarPlaced.Add(bar, new List<Alert>(this.ByBarPlaced[bar]));
+				}
 				return ret;
 			} finally {
 				base.UnLockFor(owner, lockPurpose);

@@ -90,7 +90,7 @@ namespace Sq1.Widgets.Livesim
 			this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
 			this.splitContainer1.Panel2Collapsed = true;
 			this.splitContainer1.Panel2MinSize = 1;
-			this.splitContainer1.Size = new System.Drawing.Size(689, 533);
+			this.splitContainer1.Size = new System.Drawing.Size(689, 593);
 			this.splitContainer1.SplitterDistance = 25;
 			this.splitContainer1.TabIndex = 0;
 			// 
@@ -110,7 +110,7 @@ namespace Sq1.Widgets.Livesim
 			// 
 			this.splitContainer2.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer2.Panel2.Controls.Add(this.BrokerLivesimEditor);
-			this.splitContainer2.Size = new System.Drawing.Size(689, 533);
+			this.splitContainer2.Size = new System.Drawing.Size(689, 593);
 			this.splitContainer2.SplitterDistance = 346;
 			this.splitContainer2.TabIndex = 0;
 			// 
@@ -122,7 +122,7 @@ namespace Sq1.Widgets.Livesim
 			this.StreamingLivesimEditor.Location = new System.Drawing.Point(0, 0);
 			this.StreamingLivesimEditor.Margin = new System.Windows.Forms.Padding(4);
 			this.StreamingLivesimEditor.Name = "StreamingLivesimEditor";
-			this.StreamingLivesimEditor.Size = new System.Drawing.Size(346, 533);
+			this.StreamingLivesimEditor.Size = new System.Drawing.Size(346, 593);
 			this.StreamingLivesimEditor.TabIndex = 0;
 			// 
 			// BrokerLivesimEditor
@@ -132,7 +132,7 @@ namespace Sq1.Widgets.Livesim
 			this.BrokerLivesimEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.BrokerLivesimEditor.Location = new System.Drawing.Point(0, 0);
 			this.BrokerLivesimEditor.Name = "BrokerLivesimEditor";
-			this.BrokerLivesimEditor.Size = new System.Drawing.Size(339, 533);
+			this.BrokerLivesimEditor.Size = new System.Drawing.Size(339, 593);
 			this.BrokerLivesimEditor.TabIndex = 0;
 			// 
 			// splitContainer3
@@ -219,7 +219,7 @@ namespace Sq1.Widgets.Livesim
             this.TssBtnStartStop,
             this.TssBtnPauseResume,
             this.TssLblStrategyAsString});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 511);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 571);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(689, 22);
 			this.statusStrip1.TabIndex = 4;
@@ -246,7 +246,7 @@ namespace Sq1.Widgets.Livesim
 			this.TssLblStrategyAsString.Name = "TssLblStrategyAsString";
 			this.TssLblStrategyAsString.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
 			this.TssLblStrategyAsString.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.TssLblStrategyAsString.Size = new System.Drawing.Size(566, 17);
+			this.TssLblStrategyAsString.Size = new System.Drawing.Size(597, 17);
 			this.TssLblStrategyAsString.Spring = true;
 			this.TssLblStrategyAsString.Text = "EntryEveryBar Default MAfast[10] MAslow[40] SLtype[3]";
 			this.TssLblStrategyAsString.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -259,7 +259,7 @@ namespace Sq1.Widgets.Livesim
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.splitContainer1);
 			this.Name = "LivesimControl";
-			this.Size = new System.Drawing.Size(689, 533);
+			this.Size = new System.Drawing.Size(689, 593);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

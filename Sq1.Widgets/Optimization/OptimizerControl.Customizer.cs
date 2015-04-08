@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
+using Sq1.Core;
 using Sq1.Core.Indicators;
 using Sq1.Core.Optimization;
 using Sq1.Core.Repositories;
@@ -42,12 +43,12 @@ namespace Sq1.Widgets.Optimization {
 				if (systemPerformanceRestoreAble == null) return "olvcNetProfit.AspectGetter: SystemPerformanceRestoreAble=null";
 				return systemPerformanceRestoreAble.NetProfitForClosedPositionsBothFormatted;
 			};
-			this.olvcTotalTrades.AspectGetter = delegate(object o) {
+			this.olvcTotalPositions.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcTotalTrades.AspectGetter: SystemPerformanceRestoreAble=null";
 				return systemPerformanceRestoreAble.PositionsCountBothFormatted;
 			};
-			this.olvcAverageProfit.AspectGetter = delegate(object o) {
+			this.olvcProfitPerPosition.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcAverageProfit.AspectGetter: SystemPerformanceRestoreAble=null";
 				return systemPerformanceRestoreAble.AvgProfitBothFormatted;
@@ -83,7 +84,13 @@ namespace Sq1.Widgets.Optimization {
 				return systemPerformanceRestoreAble.MaxConsecLosersFormatted;
 			};
 			
-			foreach (OLVColumn colDynParam in this.columnsDynParam) {
+			//v1
+			foreach (OLVColumn colDynParam in this.columnsDynParams) {
+			//v2
+			//foreach (string fullNameHopefullySortedAsAdded in this.columnsDynByParamName.Keys) {
+			//	OLVColumn colDynParam = this.columnsDynByParamName[fullNameHopefullySortedAsAdded];
+			//v3 hopefully Values are also sorted as added, 
+			//foreach (OLVColumn colDynParam in this.columnsDynByParamName.Values) {
 				//v1
 				//AspectGetterDelegateWrapper individualDelgateForEachColumn = new AspectGetterDelegateWrapper(colDynParam.Name);
 				//colDynParam.AspectGetter = individualDelgateForEachColumn
@@ -143,7 +150,8 @@ namespace Sq1.Widgets.Optimization {
 			e.Item.BackColor = (fname.PFavg >= 1) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 		}
 
-		void olvParameterSelectorCustomize() {
+		void olvParametersCustomize() {
+			this.olvPrametersCustomizeBold();
 			this.olvcParamName.AspectGetter = delegate(object o) {
 				IndicatorParameter param = o as IndicatorParameter;
 				if (param == null) return "olvcParamName.AspectGetter: param=null";
@@ -180,23 +188,57 @@ namespace Sq1.Widgets.Optimization {
 				return param.WillBeSequencedDuringOptimization;
 			};
 
-			this.fastOLVparametersYesNoMinMaxStep.CheckStateGetter = delegate(object o) {
+			this.olvPrameters.CheckStateGetter = delegate(object o) {
 				IndicatorParameter param = o as IndicatorParameter;
 				if (param == null) return CheckState.Indeterminate;
 				return param.WillBeSequencedDuringOptimization ? CheckState.Checked : CheckState.Unchecked;
 			};
-
-			this.fastOLVparametersYesNoMinMaxStep.CheckStatePutter = delegate(object o, CheckState newState) {
+			this.olvPrameters.CheckStatePutter = delegate(object o, CheckState newState) {
 				IndicatorParameter param = o as IndicatorParameter;
 				if (param == null) return CheckState.Indeterminate;
 				param.WillBeSequencedDuringOptimization = newState.CompareTo(CheckState.Checked) == 0;
+				this.olvPrameters.RefreshObject(param);
 				this.optimizer.TotalsCalculate();
 				this.totalsPropagateAdjustSplitterDistance();
 				// for HeaderAllCheckBox.Clicked => Strategy.Serialize()d as many times as you got (Script+Indicator)Parameters
-				this.optimizer.ExecutorCloneToBeSpawned.Strategy.Serialize();
+				this.optimizer.Executor.Strategy.Serialize();
 				return newState;
 			};
+		}
 
+		void olvPrametersCustomizeBold() {
+			this.olvPrameters.UseCellFormatEvents = true;
+			this.olvPrameters.FormatCell += new EventHandler<FormatCellEventArgs>(olvPrameters_FormatCell);
+		}
+		void olvPrameters_FormatCell(object sender, FormatCellEventArgs e) {
+			IndicatorParameter imMouseOver = e.Model as IndicatorParameter;
+			if (imMouseOver == null) {
+				string msg = "MUST_BE_IndicatorParameter_OR_ScriptParameter";
+				//e.CellValue = msg;
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (imMouseOver.WillBeSequencedDuringOptimization) {
+				if (e.Column == this.olvcParamValueCurrent) {
+					e.SubItem.Font = new Font(e.Item.Font, FontStyle.Regular);
+				}
+				if (e.Column == this.olvcParamValueMin) {
+					e.SubItem.Font = new Font(e.Item.Font, FontStyle.Bold);
+				}
+				if (e.Column == this.olvcParamValueMax) {
+					e.SubItem.Font = new Font(e.Item.Font, FontStyle.Bold);
+				}
+			} else {
+				if (e.Column == this.olvcParamValueCurrent) {
+					e.SubItem.Font = new Font(e.Item.Font, FontStyle.Bold);
+				}
+				if (e.Column == this.olvcParamValueMin) {
+					e.SubItem.Font = new Font(e.Item.Font, FontStyle.Regular);
+				}
+				if (e.Column == this.olvcParamValueMax) {
+					e.SubItem.Font = new Font(e.Item.Font, FontStyle.Regular);
+				}
+			}
 		}
 	}
 	class AspectGetterDelegateWrapper {

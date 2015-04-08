@@ -313,6 +313,7 @@ namespace Sq1.Charting {
 						e.Graphics.DrawString(this.PanelNameAndSymbol, font, brush, new Point(2, 2));
 					}
 				}
+				//this.ChartControl.ChartSettings.DisposeAllGDIs_handlesLeakHunter();
 			} catch (Exception ex) {
 				string msg = "OnPaintDoubleBuffered(): caught[" + ex.Message + "]";
 				Assembler.PopupException(msg + msig, ex);
@@ -484,6 +485,7 @@ namespace Sq1.Charting {
 				this.PanelHeightMinusGutterBottomHeight_cached = this.PanelHeightMinusGutterBottomHeight;
 				
 				this.PaintBackgroundWholeSurfaceBarsNotEmpty(e.Graphics);
+				//this.ChartControl.ChartSettings.DisposeAllGDIs_handlesLeakHunter();
 			} catch (Exception ex) {
 				string msg = "OnPaintBackgroundDoubleBuffered(): caught[" + ex.Message + "]";
 				Assembler.PopupException(msg, ex);

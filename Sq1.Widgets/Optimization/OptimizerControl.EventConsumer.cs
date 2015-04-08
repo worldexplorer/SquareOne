@@ -82,12 +82,12 @@ namespace Sq1.Widgets.Optimization {
 			
 			int backtestsRemaninig	= this.optimizer.BacktestsRemaining;
 			int backtestsTotal		= this.optimizer.BacktestsTotal;
-			int backtestsCompleted	= this.optimizer.BacktestsCompleted;  
+			int backtestsFinished	= this.optimizer.BacktestsFinished;
 			this.cbxRunCancel.Text = "Cancel " + backtestsRemaninig + " backtests";
-			double pctComplete = (backtestsTotal > 0) ? Math.Round(100 * backtestsCompleted / (double)backtestsTotal) : 0;
-			this.lblStats.Text = pctComplete + "% complete   " + backtestsCompleted + "/" + backtestsTotal;
-			if (backtestsCompleted >= this.progressBar1.Minimum && backtestsCompleted <= this.progressBar1.Maximum) {
-				this.progressBar1.Value = backtestsCompleted;
+			double pctComplete = (backtestsTotal > 0) ? Math.Round(100 * backtestsFinished / (double)backtestsTotal) : 0;
+			this.lblStats.Text = pctComplete + "% complete   " + backtestsFinished + "/" + backtestsTotal;
+			if (backtestsFinished >= this.progressBar1.Minimum && backtestsFinished <= this.progressBar1.Maximum) {
+				this.progressBar1.Value = backtestsFinished;
 			}
 			if (this.optimizer.Unpaused == false) return;
 			this.cbxPauseResume.Text = this.optimizer.BacktestsSecondsElapsed + " seconds elapsed";
@@ -107,7 +107,7 @@ namespace Sq1.Widgets.Optimization {
 			this.cbxPauseResume.Enabled = false;
 			this.cbxRunCancel.Checked = this.optimizer.IsRunningNow;
 
-			Strategy strategy = this.optimizer.ExecutorCloneToBeSpawned.Strategy;
+			Strategy strategy = this.optimizer.Executor.Strategy;
 			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//v1
 			//if (strategy.OptimizationResultsByContextIdent.ContainsKey(symbolScaleRange) == false) {
@@ -154,12 +154,14 @@ namespace Sq1.Widgets.Optimization {
 			ContextScript selectedClone = this.convertOptimizationResultToScriptContext(msig);
 			if (selectedClone == null) return;
 			this.RaiseOnCopyToContextDefaultBacktest(selectedClone);
+			this.olvPrameters.Refresh();	//otherwize you'll see CURRENT changed only after mouseover on the CHANGEDs	MUST_BE_AN_INTERFORM_EVENT_BUT_LAZY
 		}
 		void mniCopyToDefaultCtx_Click(object sender, EventArgs e) {
 			string msig = " /mniCopyToDefaultCtx_Click()";
 			ContextScript selectedClone = this.convertOptimizationResultToScriptContext(msig);
 			if (selectedClone == null) return;
 			this.RaiseOnCopyToContextDefault(selectedClone);
+			this.olvPrameters.Refresh();	//otherwize you'll see CURRENT changed only after mouseover on the CHANGEDs	MUST_BE_AN_INTERFORM_EVENT_BUT_LAZY
 		}
 		void mniltbCopyToNewContext_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string scriptContextNewName = e.StringUserTyped;
@@ -167,6 +169,7 @@ namespace Sq1.Widgets.Optimization {
 			ContextScript selectedClone = this.convertOptimizationResultToScriptContext(msig);
 			if (selectedClone == null) return;
 			this.RaiseOnCopyToContextNew(selectedClone);
+			this.olvPrameters.Refresh();	//otherwize you'll see CURRENT changed only after mouseover on the CHANGEDs	MUST_BE_AN_INTERFORM_EVENT_BUT_LAZY
 		}
 		void mniltbCopyToNewContextBacktest_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string scriptContextNewName = e.StringUserTyped;
@@ -174,6 +177,7 @@ namespace Sq1.Widgets.Optimization {
 			ContextScript selectedClone = this.convertOptimizationResultToScriptContext(msig);
 			if (selectedClone == null) return;
 			this.RaiseOnCopyToContextNewBacktest(selectedClone);
+			this.olvPrameters.Refresh();	//otherwize you'll see CURRENT changed only after mouseover on the CHANGEDs	MUST_BE_AN_INTERFORM_EVENT_BUT_LAZY
 		}
 		
 		ContextScript convertOptimizationResultToScriptContext(string msig) {
@@ -185,7 +189,7 @@ namespace Sq1.Widgets.Optimization {
 			}
 			
 			#if DEBUG	// inline unittest
-			foreach (OLVColumn olvc in this.columnsDynParam) {
+			foreach (OLVColumn olvc in this.columnsDynParams) {
 				string iParamName = olvc.Text;
 
 				var iDisplayedByName = this.optimizer.ScriptAndIndicatorParametersMergedByName;
@@ -214,7 +218,7 @@ namespace Sq1.Widgets.Optimization {
 				Assembler.PopupException(msg + msig);
 				return null;
 			}
-			ContextScript selectedClone = this.optimizer.ExecutorCloneToBeSpawned.Strategy.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(sysPerfRestoreAble);
+			ContextScript selectedClone = this.optimizer.Executor.Strategy.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(sysPerfRestoreAble);
 			return selectedClone;
 		}
 		void olvBacktests_CellClick(object sender, CellClickEventArgs e) {
@@ -272,16 +276,31 @@ namespace Sq1.Widgets.Optimization {
 			}
 		}
 		
-		void fastOLVparametersYesNoMinMaxStep_Click(object sender, EventArgs e) {
-			IndicatorParameter paramClicked = this.fastOLVparametersYesNoMinMaxStep.SelectedObject as IndicatorParameter;
+		void olvParameters_Click(object sender, EventArgs e) {
+			IndicatorParameter paramClicked = this.olvPrameters.SelectedObject as IndicatorParameter;
 			if (paramClicked == null) return;
 			// ITEM_CHECKED_WILL_BE_GENERATED paramClicked.WillBeSequencedDuringOptimization = !paramClicked.WillBeSequencedDuringOptimization;
 			if (paramClicked.WillBeSequencedDuringOptimization) {
-				this.fastOLVparametersYesNoMinMaxStep.UncheckObject(paramClicked);
+				this.olvPrameters.UncheckObject(paramClicked);
 			} else {
-				this.fastOLVparametersYesNoMinMaxStep.CheckObject(paramClicked);
+				this.olvPrameters.CheckObject(paramClicked);
 			}
-			this.fastOLVparametersYesNoMinMaxStep.Refresh();
+			OLVColumn found = null;
+			foreach (OLVColumn each in columnsDynParams) {
+				if (each.Name != paramClicked.FullName) continue;
+				found = each;
+				break;
+			}
+			if (found == null) {
+				string msg = "MUST_EXIST_columnsDynParams[" + paramClicked.FullName+ "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			found.IsVisible = paramClicked.WillBeSequencedDuringOptimization;
+			this.olvBacktests.RebuildColumns();
+			//v2
+			//CHANGING_COLUMN_VISIBILITY_INSTEAD this.populateColumns_onlyWillBeSequencedDuringOptimization_orAll();
+			//CHANGING_COLUMN_VISIBILITY_INSTEAD this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync);
 		}
 		// implemented as this.fastOLVparametersYesNoMinMaxStep.CheckStatePutter = delegate(object o, CheckState newState) {}
 		//void fastOLVparametersYesNoMinMaxStep_ItemCheck(object sender, System.Windows.Forms.ItemCheckEventArgs e) {
@@ -300,6 +319,13 @@ namespace Sq1.Widgets.Optimization {
 			} else {
 				this.statsAndHistoryCollapse();
 			}
+		}
+		bool showAllScriptIndicatorParametersInOptimizationResults;
+		void mni_showAllScriptIndicatorParametersInOptimizationResultsClick(object sender, EventArgs e) {
+			this.showAllScriptIndicatorParametersInOptimizationResults = this.mni_showAllScriptIndicatorParametersInOptimizationResults.Checked;
+			this.olvPrameters.Refresh();
+			//CHANGING_COLUMN_VISIBILITY_INSTEAD this.populateColumns_onlyWillBeSequencedDuringOptimization_orAll();
+			//CHANGING_COLUMN_VISIBILITY_INSTEAD this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync);
 		}
 	}
 }

@@ -194,15 +194,19 @@ namespace Sq1.Core.StrategyBase {
 				newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.TPAnnihilated, msg);
 			}
 			executor.OrderProcessor.UpdateOrderStateDontPostProcess(alert.OrderFollowed, newOrderState);
-			executor.OrderProcessor.KillOrderUsingKillerOrder(alert.OrderFollowed);
+			executor.OrderProcessor.KillPendingOrderWithoutKiller(alert.OrderFollowed);
 
+			//string msg2 = "MARKET_LIVE_ASSUMES_A_CALLBACK_REMOVES_FROM_DATASNAPSHOT_AFTER_BROKER_SAYS_YES_HE_KILLED_PENDING";
+			//Assembler.PopupException(msg2);
 			//this.executor.RemovePendingExitAlert(alert, "MarketRealtime:AnnihilateCounterparty(): ");
-			bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "AnnihilateCounterpartyAlert(WAIT)");
+			//bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "AnnihilateCounterpartyAlert(WAIT)");
 			return true;
 		}
 		public bool AlertKillPending(Alert alert) {
-			string msg = "NYI MarketLive.AlertKillPending(" + alert + ")";
-			throw new Exception(msg);
+			string msg = "AlertKillPending";
+			//OrderStateMessage newOrderState = new OrderStateMessage(alert.OrderFollowed, OrderState.KillerSubmitting, msg);
+			executor.OrderProcessor.KillPendingOrderWithoutKiller(alert.OrderFollowed);
+			return false;
 		}
 		
 		public bool AlertTryFillUsingBacktest(Alert alert, out bool abortTryFill, out string abortTryFillReason) {
@@ -244,7 +248,7 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 
-			quoteLast.SetParentBarStreaming(alert.Bars.BarStreaming.Clone());
+			quoteLast.SetParentBarStreaming(alert.Bars.BarStreamingNullUnsafe.Clone());
 			if (quoteLast.ParentBarStreaming.ParentBarsIndex == -1) {
 				string msg = "EARLY_BINDER_DIDNT_DO_ITS_JOB#1 quote.ParentStreamingBar.ParentBarsIndex=-1 ";
 				#if DEBUG

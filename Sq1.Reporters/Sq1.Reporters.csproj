@@ -92,17 +92,17 @@
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
-      <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
-      <Name>Sq1.Core</Name>
+    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
     <ProjectReference Include="..\ObjectListView_280-src\ObjectListView2010.csproj">
       <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
       <Name>ObjectListView2010</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json.Net20</Name>
+    <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
+      <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
+      <Name>Sq1.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

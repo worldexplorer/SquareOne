@@ -49,15 +49,28 @@ namespace Sq1.Charting {
 			}
 		}
 		void renderPendingAlertsIfExistForBar(int barIndex, int shadowX, Graphics g) {
-			Dictionary<int, List<Alert>> alertPendingListByBar = base.ChartControl.ScriptExecutorObjects.AlertsPlaced;
+			Dictionary<int, AlertList> alertPendingListByBar = base.ChartControl.ScriptExecutorObjects.AlertsPlacedByBar;
 			if (alertPendingListByBar.ContainsKey(barIndex) == false) return;
-			List<Alert> alertsPending = alertPendingListByBar[barIndex];
+			List<Alert> alertsPending = alertPendingListByBar[barIndex].SafeCopy(this, "//renderPendingAlertsIfExistForBar(WAIT)");
 
-			Pen pen		= base.ChartControl.ChartSettings.PenAlertPendingEllipse;
-			int radius	= base.ChartControl.ChartSettings.AlertPlacedEllipseRadius;
-			int diameter = radius * 2;
+			Pen penPending	= base.ChartControl.ChartSettings.PenAlertPendingEllipse;
+			Pen penTP		= base.ChartControl.ChartSettings.PenAlertPendingProtoTakeProfitEllipse;
+			Pen penSL		= base.ChartControl.ChartSettings.PenAlertPendingProtoStopLossEllipse;
+			int radius		= base.ChartControl.ChartSettings.AlertPendingEllipseRadius;
+			int diameter	= radius * 2;
 
 			foreach (Alert pending in alertsPending) {
+				Pen pen = penPending;
+				if (pending.PositionAffected != null && pending.PositionAffected.Prototype != null) {
+					if (pending == pending.PositionAffected.Prototype.StopLossAlertForAnnihilation) {
+						//Assembler.PopupException("SL_CIRCLE_RED");
+						pen = penSL;
+					}
+					if (pending == pending.PositionAffected.Prototype.TakeProfitAlertForAnnihilation) {
+						//Assembler.PopupException("TP_CIRCLE_GREEN");
+						pen = penTP;
+					}
+				}
 				double pendingAlertPrice = pending.PriceScript;
 				int pendingY = base.ValueToYinverted(pendingAlertPrice);
 				Rectangle entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
@@ -144,7 +157,7 @@ namespace Sq1.Charting {
 				} else {
 					// BarStreaming, end up on GutterRight
 					oppositeEndX = base.ChartControl.ChartWidthMinusGutterRightPrice;
-					oppositeEndY = base.ValueToYinverted(position.Bars.BarStreaming.Close);
+					oppositeEndY = base.ValueToYinverted(position.Bars.BarStreamingNullUnsafe.Close);
 				}
 			} else {
 				// Exit

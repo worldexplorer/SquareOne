@@ -46,10 +46,10 @@ namespace Sq1.Core.StrategyBase {
 
 		// that's a smart suggestion SharpDevelop pops up: "Constructors in abstract classes should not be public"
 		protected Script() {
-			scriptParametersById_ReflectedCached = new SortedDictionary<int, ScriptParameter>();
-			indicatorsByName_ReflectedCached = new Dictionary<string, Indicator>();
-			indicatorsParameters_ReflectedCached = new Dictionary<string, IndicatorParameter>();
-			indicatorParametersByIndicator_ReflectedCached = new Dictionary<string, List<IndicatorParameter>>();
+			scriptParametersById_ReflectedCached			= new SortedDictionary<int, ScriptParameter>();
+			indicatorsByName_ReflectedCached				= new Dictionary<string, Indicator>();
+			indicatorsParameters_ReflectedCached			= new Dictionary<string, IndicatorParameter>();
+			indicatorParametersByIndicator_ReflectedCached	= new Dictionary<string, List<IndicatorParameter>>();
 		}
 
 		#region Initializers

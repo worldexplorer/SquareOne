@@ -202,27 +202,30 @@ namespace Sq1.Core.Broker {
 		//		this.SubmitKillOrder(victimOrder);
 		//	}
 		//}
-		[Obsolete("use OrderKillSubmitUsingKillerOrder instead; Execution will visualise the state of victim and killer separately")]
 		public virtual void OrderKillSubmit(Order victimOrder) {
 			throw new Exception("please override BrokerAdapter::OrderKillSubmit() for BrokerAdapter.Name=[" + Name + "]");
 		}
+		public virtual void OrderPendingKillWithoutKillerSubmit(Order victimOrder) {
+			throw new Exception("please override BrokerAdapter::OrderPendingKillSubmit() for BrokerAdapter.Name=[" + Name + "]");
+		}
 		public virtual void OrderKillSubmitUsingKillerOrder(Order killerOrder) {
-			if (string.IsNullOrEmpty(killerOrder.VictimGUID)) {
-				throw new Exception("killerOrder.KillerForGUID=EMPTY");
-			}
-			if (killerOrder.VictimToBeKilled == null) {
-				throw new Exception("killerOrder.VictimToBeKilled=null");
-			}
-
-			string msg = "State[" + killerOrder.State + "]"
-				+ " [" + killerOrder.Alert.Symbol + "/" + killerOrder.Alert.SymbolClass + "]"
-				+ " VictimToBeKilled.SernoExchange[" + killerOrder.VictimToBeKilled.SernoExchange + "]";
-			msg = Name + "::UsingKillerOrder(): " + msg;
-			Assembler.PopupException(msg);
-			OrderStateMessage omsgKiller = new OrderStateMessage(killerOrder, OrderState.KillerPreSubmit, msg);
-			this.OrderProcessor.UpdateOrderStateAndPostProcess(killerOrder, omsgKiller);
-
-			this.OrderKillSubmit(killerOrder.VictimToBeKilled);
+//TEMPLATE_BEGIN__DONT_WANT_ANOTHER_PROTECTED_CHECKTHROW
+//			if (string.IsNullOrEmpty(killerOrder.VictimGUID)) {
+//				throw new Exception("killerOrder.KillerForGUID=EMPTY");
+//			}
+//			if (killerOrder.VictimToBeKilled == null) {
+//				throw new Exception("killerOrder.VictimToBeKilled=null");
+//			}
+//
+//			string msg = "State[" + killerOrder.State + "]"
+//				+ " [" + killerOrder.Alert.Symbol + "/" + killerOrder.Alert.SymbolClass + "]"
+//				+ " VictimToBeKilled.SernoExchange[" + killerOrder.VictimToBeKilled.SernoExchange + "]";
+//			msg = Name + "::UsingKillerOrder(): " + msg;
+//			Assembler.PopupException(msg);
+//			OrderStateMessage omsgKiller = new OrderStateMessage(killerOrder, OrderState.KillerPreSubmit, msg);
+//			this.OrderProcessor.UpdateOrderStateAndPostProcess(killerOrder, omsgKiller);
+//TEMPLATE_END__DONT_WANT_ANOTHER_PROTECTED_CHECKTHROW
+			throw new Exception("please override BrokerAdapter::OrderKillSubmitUsingKillerOrder() for BrokerAdapter.Name=[" + Name + "]");
 		}
 
 		public virtual void OrderPreSubmitEnrichBrokerSpecificInjection(Order order) {
@@ -400,70 +403,74 @@ namespace Sq1.Core.Broker {
 			order.AppendMessage(msg + msig);
 		}
 
-		public void CallbackOrderStateReceived(Order orderWithNewState) {
-			string msig = "BrokerAdapter::CallbackOrderStateReceived(): orderExecuted.State=[" + orderWithNewState.State + "]: ";
-			string msg = "";
-			try {
-				switch (orderWithNewState.State) {
-					case OrderState.WaitingBrokerFill:
-						Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForSimilarNotSamePendingOrder(orderWithNewState);
-						//Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersAll.FindSimilarNotSamePendingOrder(orderWithNewState);
-						if (mustBeSame == null) break;
-						bool identical = mustBeSame.Alert.IsIdenticalOrderlessPriceless(orderWithNewState.Alert);
-						if (identical == false) {
-							msg += "PENDING_MISSING: How come it wasn't added in OrderSubmit()??? orderExecuted["
-								+ orderWithNewState + "] mustBeSame[" + mustBeSame + "]";
-							//orderExecuted.AppendMessage(msig + msg);
-							//Assembler.PopupException(msg);
-						} else {
-							msg += "SECOND_PENDING_ADDED_OK";
-							//orderExecuted.AppendMessage(msig + msg);
-							//Assembler.PopupException(msg);
-						}
-						break;
-					case OrderState.Killed:
-						this.removeOrdersPendingOnFilledCallback(orderWithNewState, msig);
-						this.OrderProcessor.RemovePendingAlertsForVictimOrderMustBePostKill(orderWithNewState, msig);
-						break;
-					case OrderState.Rejected:
-					case OrderState.SLAnnihilated:
-					case OrderState.TPAnnihilated:
-					case OrderState.FilledPartially:
-					case OrderState.Filled:
-						//this.RemoveOrdersPendingOnFilledCallback(orderWithNewState, msig);
-						break;
-					default:
-						msg += "STATE_UNEXPECTED";
-						orderWithNewState.AppendMessage(msig + msg);
-						break;
-				}
-			} catch (Exception e) {
-				Assembler.PopupException(msig, e);
-			}
-			try {
-				this.OrderProcessor.InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(orderWithNewState);
-			} catch (Exception e) {
-				Assembler.PopupException("InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter()" + msig, e);
-			}
-		}
-
-		void removeOrdersPendingOnFilledCallback(Order orderExecuted, string msig) {
-			msig = "RemoveOrdersPendingOnFilledCallback(): ";
-			//if (OrderStatesCollections.CemeteryHealthy.OrderStates.Contains(orderExecuted.State) == false) return;
-
-			//string msg = this.OrderProcessor.DataSnapshot.OrdersPending.ToStringSummary();
-			//bool removed = this.OrderProcessor.DataSnapshot.OrdersPending.Remove(orderExecuted);
-			//msg += " ...REMOVED(" + removed + ")=> " + this.OrderProcessor.DataSnapshot.OrdersPending.ToStringSummary();
-			OrderLaneByState lane = this.OrderProcessor.DataSnapshot.SuggestLaneByOrderStateNullUnsafe(orderExecuted.State);
-			string msg = (lane != null) ? lane.ToString() : "NO_SUGGESTION_FOR[" + orderExecuted.State + "]";
-
-			if (orderExecuted.Alert.IsExitAlert && orderExecuted.Alert.PositionAffected.IsExitFilled == false) {
-				msg = "WARNING_POSITION_STILL_OPEN "
-					//+ " Alert.isExitAlert && PositionAffected.IsExitFilled=false"
-					+ msg;
-			}
-			orderExecuted.AppendMessage(msig + msg);
-		}
+// NOT_USE_AND_DONT_STEAL_THE_JOB_FROM_ORDER_PROCESSOR
+//		public void CallbackOrderStateReceived(Order orderWithNewState) {
+//			string msig = "BrokerAdapter::CallbackOrderStateReceived(): orderExecuted.State=[" + orderWithNewState.State + "]: ";
+//			string msg = "";
+//			try {
+//				switch (orderWithNewState.State) {
+//					case OrderState.WaitingBrokerFill:
+//						Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersPending.ScanRecentForSimilarNotSamePendingOrder(orderWithNewState);
+//						//Order mustBeSame = this.OrderProcessor.DataSnapshot.OrdersAll.FindSimilarNotSamePendingOrder(orderWithNewState);
+//						if (mustBeSame == null) break;
+//						bool identical = mustBeSame.Alert.IsIdenticalOrderlessPriceless(orderWithNewState.Alert);
+//						if (identical == false) {
+//							msg += "PENDING_MISSING: How come it wasn't added in OrderSubmit()??? orderExecuted["
+//								+ orderWithNewState + "] mustBeSame[" + mustBeSame + "]";
+//							//orderExecuted.AppendMessage(msig + msg);
+//							//Assembler.PopupException(msg);
+//						} else {
+//							msg += "SECOND_PENDING_ADDED_OK";
+//							//orderExecuted.AppendMessage(msig + msg);
+//							//Assembler.PopupException(msg);
+//						}
+//						break;
+//					case OrderState.KilledPending:
+//						//DONT_STEAL_JOB_FROM_ORDER_PROCESSOR this.removeOrdersPendingOnFilledCallback(orderWithNewState, msig);
+//						this.OrderProcessor.PostKillWithoutKiller_removeAlertsPendingFromExecutorDataSnapshot(orderWithNewState, msig);
+//						break;
+//					case OrderState.KillerDone:
+//						this.OrderProcessor.PostKillUsingKiller_forBothKillerAndVictim_removeAlertsPendingFromExecutorDataSnapshot(orderWithNewState, msig);
+//						break;
+//					case OrderState.Rejected:
+//					case OrderState.SLAnnihilated:
+//					case OrderState.TPAnnihilated:
+//					case OrderState.FilledPartially:
+//					case OrderState.Filled:
+//						//this.RemoveOrdersPendingOnFilledCallback(orderWithNewState, msig);
+//						break;
+//					default:
+//						msg += "STATE_UNEXPECTED";
+//						orderWithNewState.AppendMessage(msig + msg);
+//						break;
+//				}
+//			} catch (Exception e) {
+//				Assembler.PopupException(msig, e);
+//			}
+//			try {
+//				this.OrderProcessor.InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(orderWithNewState);
+//			} catch (Exception e) {
+//				Assembler.PopupException("InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter()" + msig, e);
+//			}
+//		}
+//DONT_STEAL_THE_JOB_FROM_ORDER_PROCESSOR 
+//		void removeOrdersPendingOnFilledCallback(Order orderExecuted, string msig) {
+//			msig = "RemoveOrdersPendingOnFilledCallback(): ";
+//			//if (OrderStatesCollections.CemeteryHealthy.OrderStates.Contains(orderExecuted.State) == false) return;
+//
+//			//string msg = this.OrderProcessor.DataSnapshot.OrdersPending.ToStringSummary();
+//			//bool removed = this.OrderProcessor.DataSnapshot.OrdersPending.Remove(orderExecuted);
+//			//msg += " ...REMOVED(" + removed + ")=> " + this.OrderProcessor.DataSnapshot.OrdersPending.ToStringSummary();
+//			OrderLaneByState lane = this.OrderProcessor.DataSnapshot.SuggestLaneByOrderStateNullUnsafe(orderExecuted.State);
+//			string msg = (lane != null) ? lane.ToString() : "NO_SUGGESTION_FOR[" + orderExecuted.State + "]";
+//
+//			if (orderExecuted.Alert.IsExitAlert && orderExecuted.Alert.PositionAffected.IsExitFilled == false) {
+//				msg = "WARNING_POSITION_STILL_OPEN "
+//					//+ " Alert.isExitAlert && PositionAffected.IsExitFilled=false"
+//					+ msg;
+//			}
+//			orderExecuted.AppendMessage(msig + msg);
+//		}
 		public Order ScanEvidentLanesForGuidNullUnsafe(string GUID, List<OrderLane> orderLanes = null, char separator = ';') {
 			string msig = " //" + this.Name;
 			string orderLanesSearchedAsString = "";

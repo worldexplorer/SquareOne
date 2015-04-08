@@ -66,10 +66,20 @@ namespace Sq1.Charting {
 		[JsonProperty]	public Color	PositionLineLossyColor;
 		[JsonProperty]	public int		PositionLineLossyColorAlpha;
 		[JsonProperty]	public int 		PriceVsVolumeSplitterDistance;
-		[JsonProperty]	public Color	AlertPlacedEllipseColor;
-		[JsonProperty]	public int		AlertPlacedEllipseColorAlpha;
-		[JsonProperty]	public int		AlertPlacedEllipsePenWidth;
-		[JsonProperty]	public int		AlertPlacedEllipseRadius;
+		
+		[JsonProperty]	public Color	AlertPendingEllipseColor;
+		[JsonProperty]	public int		AlertPendingEllipseColorAlpha;
+		[JsonProperty]	public int		AlertPendingEllipsePenWidth;
+		[JsonProperty]	public int		AlertPendingEllipseRadius;
+
+		[JsonProperty]	public Color	AlertPendingProtoTakeProfitEllipseColor;
+		[JsonProperty]	public int		AlertPendingProtoTakeProfitEllipseColorAlpha;
+		[JsonProperty]	public int		AlertPendingProtoTakeProfitEllipsePenWidth;
+		
+		[JsonProperty]	public Color	AlertPendingProtoStopLossEllipseColor;
+		[JsonProperty]	public int		AlertPendingProtoStopLossEllipseColorAlpha;
+		[JsonProperty]	public int		AlertPendingProtoStopLossEllipsePenWidth;
+
 		[JsonProperty]	public bool		MousePositionTrackOnGutters;
 		[JsonProperty]	public Color	MousePositionTrackOnGuttersColor;
 		[JsonProperty]	public int		BarsBackgroundTransparencyAlpha;
@@ -299,10 +309,26 @@ namespace Sq1.Charting {
 		//[Browsable(false)]
 		[JsonIgnore]	public Pen PenAlertPendingEllipse { get {
 				if (this.penAlertPendingEllipse == null) this.penAlertPendingEllipse =
-					new Pen(Color.FromArgb(this.AlertPlacedEllipseColorAlpha, this.AlertPlacedEllipseColor), this.AlertPlacedEllipsePenWidth);
+					new Pen(Color.FromArgb(this.AlertPendingEllipseColorAlpha, this.AlertPendingEllipseColor), this.AlertPendingEllipsePenWidth);
 				return this.penAlertPendingEllipse;
 			} }
 
+		[JsonIgnore]	Pen penAlertPendingProtoTakeProfitEllipse;
+		//[Browsable(false)]
+		[JsonIgnore]	public Pen PenAlertPendingProtoTakeProfitEllipse { get {
+				if (this.penAlertPendingProtoTakeProfitEllipse == null) this.penAlertPendingProtoTakeProfitEllipse =
+					new Pen(Color.FromArgb(this.AlertPendingProtoTakeProfitEllipseColorAlpha, this.AlertPendingProtoTakeProfitEllipseColor), this.AlertPendingProtoTakeProfitEllipsePenWidth);
+				return this.penAlertPendingProtoTakeProfitEllipse;
+			} }
+
+		[JsonIgnore]	Pen penAlertPendingProtoStopLossEllipse;
+		//[Browsable(false)]
+		[JsonIgnore]	public Pen PenAlertPendingProtoStopLossEllipse { get {
+				if (this.penAlertPendingProtoStopLossEllipse == null) this.penAlertPendingProtoStopLossEllipse =
+					new Pen(Color.FromArgb(this.AlertPendingProtoStopLossEllipseColorAlpha, this.AlertPendingProtoStopLossEllipseColor), this.AlertPendingProtoStopLossEllipsePenWidth);
+				return this.penAlertPendingProtoStopLossEllipse;
+			} }
+			
 		[JsonIgnore]	Pen penMousePositionTrackOnGutters;
 		//[Browsable(false)]
 		[JsonIgnore]	public Pen PenMousePositionTrackOnGutters { get {
@@ -435,10 +461,20 @@ namespace Sq1.Charting {
 			PositionLineLossyColor = Color.Salmon;
 			PositionLineLossyColorAlpha = 100;
 			PriceVsVolumeSplitterDistance = 0;
-			AlertPlacedEllipseColor = Color.DarkBlue;
-			AlertPlacedEllipseColorAlpha = 180;
-			AlertPlacedEllipsePenWidth = 2;
-			AlertPlacedEllipseRadius = 3;
+			
+			AlertPendingEllipseColor = Color.DarkBlue;
+			AlertPendingEllipseColorAlpha = 180;
+			AlertPendingEllipsePenWidth = 2;
+			AlertPendingEllipseRadius = 3;
+
+			AlertPendingProtoTakeProfitEllipseColor = Color.Green;
+			AlertPendingProtoTakeProfitEllipseColorAlpha = 100;
+			AlertPendingProtoTakeProfitEllipsePenWidth = 2;
+
+			AlertPendingProtoStopLossEllipseColor = Color.Red;
+			AlertPendingProtoStopLossEllipseColorAlpha = 100;
+			AlertPendingProtoStopLossEllipsePenWidth = 2;
+
 			MousePositionTrackOnGutters = true;
 			MousePositionTrackOnGuttersColor = Color.LightGray;
 			BarsBackgroundTransparencyAlpha = 24;
@@ -482,6 +518,44 @@ namespace Sq1.Charting {
 			int green = 255 - color.G;
 			int blue = 255 - color.B;
 			return Color.FromArgb((int)red, (int)green, (int)blue);
+		}
+		
+		public void DisposeAllGDIs_handlesLeakHunter() {
+			if (this.penAlertPendingEllipse						!= null) this.penAlertPendingEllipse.Dispose();
+			if (this.penAlertPendingProtoStopLossEllipse		!= null) this.penAlertPendingProtoStopLossEllipse.Dispose();
+			if (this.penAlertPendingProtoTakeProfitEllipse		!= null) this.penAlertPendingProtoTakeProfitEllipse.Dispose();
+			if (this.penGridlinesHorizontal						!= null) this.penGridlinesHorizontal.Dispose();
+			if (this.penGridlinesVertical						!= null) this.penGridlinesVertical.Dispose();
+			if (this.penGridlinesVerticalNewDate				!= null) this.penGridlinesVerticalNewDate.Dispose();
+			if (this.penLevelTwoAskColorContour					!= null) this.penLevelTwoAskColorContour.Dispose();
+			if (this.penLevelTwoBidColorContour					!= null) this.penLevelTwoBidColorContour.Dispose();
+			if (this.penMousePositionTrackOnGutters				!= null) this.penMousePositionTrackOnGutters.Dispose();
+			if (this.penPositionFilledDot						!= null) this.penPositionFilledDot.Dispose();
+			if (this.penPositionLineEntryExitConnectedLoss		!= null) this.penPositionLineEntryExitConnectedLoss.Dispose();
+			if (this.penPositionLineEntryExitConnectedProfit	!= null) this.penPositionLineEntryExitConnectedProfit.Dispose();
+			if (this.penPositionLineEntryExitConnectedUnknown	!= null) this.penPositionLineEntryExitConnectedUnknown.Dispose();
+			if (this.penPositionPlannedEllipse					!= null) this.penPositionPlannedEllipse.Dispose();
+			if (this.penPriceBarDown							!= null) this.penPriceBarDown.Dispose();
+			if (this.penPriceBarUp								!= null) this.penPriceBarUp.Dispose();
+			if (this.penSpreadAsk								!= null) this.penSpreadAsk.Dispose();
+			if (this.penSpreadBid								!= null) this.penSpreadBid.Dispose();
+
+			if (this.brushBackground							!= null) this.brushBackground.Dispose();
+			if (this.brushBackgroundReversed					!= null) this.brushBackgroundReversed.Dispose();
+			if (this.brushGutterBottomBackground				!= null) this.brushGutterBottomBackground.Dispose();
+			if (this.brushGutterBottomNewDateForeground			!= null) this.brushGutterBottomNewDateForeground.Dispose();
+			if (this.brushGutterRightBackground					!= null) this.brushGutterRightBackground.Dispose();
+			if (this.brushGutterRightForeground					!= null) this.brushGutterRightForeground.Dispose();
+			if (this.brushLevelTwoAskColorBackground			!= null) this.brushLevelTwoAskColorBackground.Dispose();
+			if (this.brushLevelTwoBidColorBackground			!= null) this.brushLevelTwoBidColorBackground.Dispose();
+			if (this.brushLevelTwoLot							!= null) this.brushLevelTwoLot.Dispose();
+			if (this.brushLevelTwoLotsColorBackground			!= null) this.brushLevelTwoLotsColorBackground.Dispose();
+			if (this.brushPositionFilledDot						!= null) this.brushPositionFilledDot.Dispose();
+			if (this.brushPriceBarDown							!= null) this.brushPriceBarDown.Dispose();
+			if (this.brushPriceBarUp							!= null) this.brushPriceBarUp.Dispose();
+			if (this.brushSpreadLabel							!= null) this.brushSpreadLabel.Dispose();
+			if (this.brushVolumeBarDown							!= null) this.brushVolumeBarDown.Dispose();
+			if (this.brushVolumeBarUp							!= null) this.brushVolumeBarUp.Dispose();
 		}
 	}
 }

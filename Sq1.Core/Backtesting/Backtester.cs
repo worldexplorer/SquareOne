@@ -184,7 +184,7 @@ namespace Sq1.Core.Backtesting {
 			foreach (Position positionOpen in positionsSafe) {
 				//v1 List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionCloseImmediately(positionOpen, );
 				//v2 WONT_CLOSE_POSITION_EARLIER_THAN_OPENED Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStaticLastNullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
-				Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStreaming, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStreamingNullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
 				if (exitAlert != positionOpen.ExitAlert) {
 					string msg = "FIXME_SOMEHOW";
 					Assembler.PopupException(msg);
@@ -326,11 +326,11 @@ namespace Sq1.Core.Backtesting {
 				}
 				this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;
 				// DOESNT_HELP_HOPE_ON_OnBacktestedAllBars() in InterForm this.Executor.ChartShadow.Invalidate();
-			} catch (Exception e) {
+			} catch (Exception ex) {
 				#if DEBUG
 				Debugger.Break();
 				#endif
-				throw e;
+				throw ex;
 			} finally {
 				// Calling ManualResetEvent.Set opens the gate,
 				// allowing any number of threads calling WaitOne to be let through
@@ -435,7 +435,7 @@ namespace Sq1.Core.Backtesting {
 				#endif
 			}
 		}
-		public const string TO_STRING_PREFIX = "BACKTESTER_FOR_";
+		public string TO_STRING_PREFIX = "BACKTESTER_FOR_";
 		public override string ToString() {
 			string ret = TO_STRING_PREFIX + this.Executor.ToString();
 			return ret;

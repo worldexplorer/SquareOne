@@ -22,7 +22,7 @@ namespace Sq1.Widgets.Execution {
 //			}
 			byte[] olvStateBinary = this.OrdersTreeOLV.SaveState();
 			this.DataSnapshot.OrdersTreeOlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
-
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.DataSnapshotSerializer.Serialize();
 		}
 
@@ -77,12 +77,12 @@ namespace Sq1.Widgets.Execution {
 				DateTime orderCreated;
 				if (this.mniToggleBrokerTime.Checked) {
 					orderCreated = (order.Alert.QuoteCreatedThisAlertServerTime != DateTime.MinValue)
-						? order.Alert.QuoteCreatedThisAlertServerTime : order.TimeCreatedBroker;
+						? order.Alert.QuoteCreatedThisAlertServerTime : order.CreatedBrokerTime;
 				} else {
 					if (order.Alert.Bars != null) {
-						orderCreated = order.Alert.Bars.MarketInfo.ConvertServerTimeToLocal(order.TimeCreatedBroker);
+						orderCreated = order.Alert.Bars.MarketInfo.ConvertServerTimeToLocal(order.CreatedBrokerTime);
 					} else {
-						orderCreated = order.TimeCreatedBroker;
+						orderCreated = order.CreatedBrokerTime;
 					}
 				}
 				return orderCreated.ToString(Assembler.DateTimeFormatLong);

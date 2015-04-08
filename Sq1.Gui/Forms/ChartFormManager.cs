@@ -172,11 +172,18 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.DataSnapshot.ChartSerno = charSernoDeserialized;
-			this.DataSnapshotSerializer.Serialize();
+			if (this.DataSnapshot.ChartSerno != charSernoDeserialized) {
+				this.DataSnapshot.ChartSerno = charSernoDeserialized;
+				if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
+					string msg = "NEVER_INVOKED_SINCE_CHART_FORM_MANAGER_GOT_SERNO_FROM_XML_WHICH_MUST_BE_EQUAL_TO_SNAP";
+					Assembler.PopupException(msg);
+					this.DataSnapshotSerializer.Serialize();
+				}
+			}
 		}
 		ChartForm chartFormFactory() {
 			ChartForm ret = new ChartForm(this);
+			//MOVED_TO_Executor.Initialize()
 			ret.ChartControl.SetExecutor(this.Executor);
 			
 			// sequence of invocation matters otherwise "Delegate to an instance method cannot have null 'this'."
@@ -254,7 +261,9 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshot.StrategyGuidJsonCheck = strategy.Guid.ToString();
 			this.DataSnapshot.StrategyNameJsonCheck = strategy.Name;
 			this.DataSnapshot.StrategyAbsPathJsonCheck = strategy.StoredInJsonAbspath;
-			this.DataSnapshotSerializer.Serialize();
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
+				this.DataSnapshotSerializer.Serialize();
+			}
 			
 			if (this.ChartForm == null) this.ChartForm = this.chartFormFactory();
 			#region TODO merge this region from InitializeWithStrategy() and InitializeChartNoStrategy() into chartFormFactory()
@@ -273,7 +282,7 @@ namespace Sq1.Gui.Forms {
 			#endregion
 			this.ChartForm.Initialize(true, this.Strategy.ActivatedFromDll);
 
-			this.Executor.Initialize(this.ChartForm.ChartControl, this.Strategy, false);
+			this.Executor.Initialize(this.Strategy, this.ChartForm.ChartControl, false);
 
 			try {
 				// Click on strategy should open new chart,  

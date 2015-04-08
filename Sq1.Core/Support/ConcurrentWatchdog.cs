@@ -7,7 +7,7 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.Support {
 	public class ConcurrentWatchdog {
-		public		const int TIMEOUT_DEFAULT = 3000;
+		public		const int		TIMEOUT_DEFAULT				= 3000;
 
 		public		string					ReasonToExist { get; protected set; }
 		protected	ExecutionDataSnapshot	Snap;
@@ -26,8 +26,6 @@ namespace Sq1.Core.Support {
 					string				unlockedAfter;
 					Thread				unlockedThread;
 
-		public string CurrentStateAsString { get; private set; }
-
 		public ConcurrentWatchdog(string reasonToExist, ExecutionDataSnapshot snap = null) {
 			ReasonToExist			= reasonToExist;
 			Snap					= snap;
@@ -36,7 +34,6 @@ namespace Sq1.Core.Support {
 			stopwatchLock			= new Stopwatch();
 			stopwatchUnlock			= new Stopwatch();
 			customerUnLockingQueue	= new object();
-			CurrentStateAsString	= "STRING_OPERATIONS_DISABLED_IN_RELEASE_SWITCH_TO_DEBUG";
 		}
 		public bool WaitAndLockFor(object owner, string lockPurpose,
 					int waitMillis = TIMEOUT_DEFAULT, bool engageWaitingForEva = true) {
@@ -66,26 +63,25 @@ namespace Sq1.Core.Support {
 							;
 						this.isFree.WaitOne(waitMillis);
 					} else {
+						string msig = "LOCK_REQUESTED_BY[" + owner.ToString() + "]_FOR[" + lockPurpose + "] ";
 						while (unlocked == false) {
 							unlocked = this.isFree.WaitOne(waitMillis);
 							if (unlocked) break;
 							string msg = "LOCK_NOT_ACQUIRED_WITHIN_MILLIS: [" + this.stopwatchLock.ElapsedMilliseconds + "]/[" + waitMillis + "] ";
-							Assembler.PopupException(msg + this.CurrentStateAsString, null, false);
+							Assembler.PopupException(msig + msg + this.Ident, null, false);
 						}
 					}
 				}
 				this.stopwatchLock.Stop();
 				if (hadToWaitWasLockedAtFirst) {
-					string msg = "LOCKED_AFTER_WAITING_FOR[" + this.stopwatchLock.ElapsedMilliseconds + "]ms FOR ";
-					Assembler.PopupException(msg + this.CurrentStateAsString, null, false);
+					string msig = "LOCK_REQUESTED_BY[" + owner.ToString() + "]_FOR[" + lockPurpose + "] ";
+					string msg = "AQUIRED_AFTER[" + this.stopwatchLock.ElapsedMilliseconds + "]ms ";
+					Assembler.PopupException(msig + msg + this.Ident, null, false);
 				}
 
 				this.lockedThread = Thread.CurrentThread;
 				this.lockedClass = owner;
 				this.lockedPurposeFirstInTheStack = lockPurpose;
-				#if VERBOSE_STRINGS_SLOW
-				this.saveCurrentStateAsString();
-				#endif
 
 				this.sameThreadLocksRequestedStackDepth++;
 				this.isFree.Reset();
@@ -111,7 +107,7 @@ namespace Sq1.Core.Support {
 				} else {
 					if (releasingAfter != this.lockedPurposeFirstInTheStack) {
 						string msg2 = "releasingAfter[" + releasingAfter + "] != this.LockPurpose[" + this.lockedPurposeFirstInTheStack + "]";
-						Assembler.PopupException(msg2 + this.CurrentStateAsString, null, false);
+						Assembler.PopupException(msg2 + this.Ident, null, false);
 					}
 				}
 
@@ -140,15 +136,13 @@ namespace Sq1.Core.Support {
 				this.unlockedClass = owner;
 				this.unlockedAfter = releasingAfter;
 				this.unlockedThread = Thread.CurrentThread;
-				#if VERBOSE_STRINGS_SLOW
-				this.saveCurrentStateAsString();
-				#endif
 
 				this.isFree.Set();	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 				return true;
 			}
 		}
-		void saveCurrentStateAsString() {
+
+		public string Ident { get {
 			StringBuilder sb = new StringBuilder();
 			if (this.lockedThread != null) {
 				sb.Append("LOCK_HELD_BY _managed[");
@@ -166,11 +160,9 @@ namespace Sq1.Core.Support {
 				sb.Append("]");
 				//ret += "ConcurrentWatchdog[" + this.ReasonToExist + "]";
 				//if (this is typeof(ConcurrentListWD) == false) {
-				sb.Append("NOW:");
-				sb.Append(this.ToString());
+				//sb.Append("NOW:");
+				//sb.Append(this.ToString());
 				//}
-				this.CurrentStateAsString = sb.ToString();
-				return;
 			}
 			if (this.unlockedThread != null) {
 				sb.Append("LOCK_WAS_RELEASED_BY_managed[");
@@ -188,15 +180,12 @@ namespace Sq1.Core.Support {
 				sb.Append("]");
 				//ret += "ConcurrentWatchdog[" + this.ReasonToExist + "]";
 				//if (this is typeof(ConcurrentListWD) == false) {
-				sb.Append("WAS:");
-				sb.Append(this.ToString());
+				//sb.Append("WAS:");
+				//sb.Append(this.Ident());
 				//}
-				this.CurrentStateAsString = sb.ToString();
-				return;
 			}
-			string msg = "SYNCHRONIZATION_MESSED_UP_customerLockingQueue/customerUnLockingQueue";
-			Assembler.PopupException(msg);
-		}
-		public override string ToString() { return this.CurrentStateAsString; }
+			return sb.ToString();
+		} }
+
 	}
 }

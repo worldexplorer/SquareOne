@@ -6,7 +6,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Execution {
-	public partial class Position {
+	public partial class Position : IDisposable {
 		public int SernoAbs;
 		
 		public bool					IsLong					{ get { return this.PositionLongShort == PositionLongShort.Long; } }
@@ -52,13 +52,13 @@ namespace Sq1.Core.Execution {
 			} }
 		//public bool EntrySafeToPaint { get { return (this.EntryBar > -1 && this.EntryBar < this.Bars.Count); } }
 		//public bool ExitSafeToPaint { get { return (this.ExitBar > -1 && this.ExitBar < this.Bars.Count); } }
-		public DateTime EntryDate { get {
+		public DateTime EntryDateBarTimeOpen { get {
 				//if (this.EntryBarIndex < 0 || this.EntryBarIndex > this.Bars.Count) return DateTime.MinValue;
 				Bar barEntry = this.EntryBar;		// don't take it from Alert! dateFilled depends on the market, not on your strategy
 				if (barEntry == null) return DateTime.MinValue;
 				return barEntry.DateTimeOpen;
 			} }
-		public DateTime ExitDate { get {
+		public DateTime ExitDateBarTimeOpen { get {
 				Bar barExit = this.ExitBar;		// don't take it from this.ExitAlert! dateFilled depends on the market, not on your strategy
 				if (barExit == null) return DateTime.MinValue;
 				return barExit.DateTimeOpen;
@@ -75,10 +75,10 @@ namespace Sq1.Core.Execution {
 				if (this.ExitFilledPrice != 0 && this.ExitFilledPrice != -1) {	//-1 is a standard for justInitialized nonFilled position's Entry/Exit Prices and Bars;
 					ret = this.ExitFilledPrice;
 				} else {
-					if (this.Bars.BarStreaming == null) {
+					if (this.Bars.BarStreamingNullUnsafe == null) {
 						throw new Exception("Position.ExitOrStreamingPrice: this.Bars.StreamingBar=null; @ExitBar[" + this.ExitFilledBarIndex + "] position=[" + this + "]; ");
 					}
-					ret = this.Bars.BarStreaming.Close;
+					ret = this.Bars.BarStreamingNullUnsafe.Close;
 				}
 				if (this.ExitFilledSlippage != -1) ret += this.ExitFilledSlippage;
 				return ret;
@@ -196,6 +196,13 @@ namespace Sq1.Core.Execution {
 			this.EntryMarketLimitStop = alertEntry.MarketLimitStop;
 			this.EntryPriceScript = alertEntry.PriceScript;
 			this.EntrySignal = alertEntry.SignalName;
+		}
+		~ Position() {
+			//Debugger.Break();
+		}
+		public void Dispose() {
+			if (this.EntryAlert != null) this.EntryAlert.Dispose();
+			if (this.ExitAlert != null) this.ExitAlert.Dispose();
 		}
 		public void ExitAlertAttach(Alert alertExit) {
 			if (this.Prototype == null) {

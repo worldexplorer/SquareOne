@@ -7,24 +7,25 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
-using Sq1.Core.Charting.OnChart;
-using Sq1.Charting.OnChart;
 using Sq1.Core.Streaming;
+using Sq1.Core.Charting.OnChart;
+using Sq1.Core.Support;
+using Sq1.Charting.OnChart;
 
 namespace Sq1.Charting {
 	public class ChartControlFrozenForRendering {
-		public Dictionary<int, List<AlertArrow>>	AlertArrowsListByBar			{ get; private set; }
-		public Dictionary<string, Indicator>		Indicators						{ get; set; }
-		public Dictionary<int, List<Alert>>			AlertsPlaced	{ get; private set; }
+		public Dictionary<int, List<AlertArrow>>	AlertArrowsListByBar	{ get; private set; }
+		public Dictionary<string, Indicator>		Indicators				{ get; set; }
+		public Dictionary<int, AlertList>			AlertsPlacedByBar		{ get; private set; }
 
-		public Dictionary<string, OnChartLine>		LinesById						{ get; private set; }
-		public Dictionary<int, List<OnChartLine>>	LinesByLeftBar					{ get; private set; }
-		public Dictionary<int, List<OnChartLine>>	LinesByRightBar					{ get; private set; }
+		public Dictionary<string, OnChartLine>		LinesById				{ get; private set; }
+		public Dictionary<int, List<OnChartLine>>	LinesByLeftBar			{ get; private set; }
+		public Dictionary<int, List<OnChartLine>>	LinesByRightBar			{ get; private set; }
 
-		public Dictionary<int, Color>				BarBackgroundsByBar				{ get; private set; }
-		public Dictionary<int, Color>				BarForegroundsByBar				{ get; private set; }
+		public Dictionary<int, Color>				BarBackgroundsByBar		{ get; private set; }
+		public Dictionary<int, Color>				BarForegroundsByBar		{ get; private set; }
 
-		public Dictionary<string, OnChartLabel>		OnChartLabelsById				{ get; private set; }
+		public Dictionary<string, OnChartLabel>		OnChartLabelsById		{ get; private set; }
 		public Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
 
 		public Quote QuoteLast;
@@ -53,7 +54,7 @@ namespace Sq1.Charting {
 		public ChartControlFrozenForRendering() {
 			AlertArrowsListByBar		= new Dictionary<int, List<AlertArrow>>();
 			Indicators					= new Dictionary<string, Indicator>();
-			AlertsPlaced				= new Dictionary<int, List<Alert>>();
+			AlertsPlacedByBar			= new Dictionary<int, AlertList>();
 			
 			LinesById					= new Dictionary<string, OnChartLine>();
 			LinesByLeftBar				= new Dictionary<int, List<OnChartLine>>();
@@ -85,7 +86,7 @@ namespace Sq1.Charting {
 				//each.BacktestStartingConstructOwnValuesValidateParameters();
 			}
 			
-			this.AlertsPlaced.Clear();
+			this.AlertsPlacedByBar.Clear();
 			
 			this.LinesById.Clear();
 			this.LinesByLeftBar.Clear();
@@ -154,8 +155,8 @@ namespace Sq1.Charting {
 				indicator.DotsDrawnForCurrentSlidingWindow = -1;
 			}
 		}
-		public void AlertsPlacedBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
-			this.AlertsPlaced = alertsPendingHistorySafeCopy;
+		public void AlertsPlacedBacktestAdd(Dictionary<int, AlertList> alertsPendingHistorySafeCopy) {
+			this.AlertsPlacedByBar = alertsPendingHistorySafeCopy;
 		}
 		public void AlertsPlacedRealtimeAdd(List<Alert> alertsNewPlacedSafeCopy) {
 			//string msig = " // PendingRealtimeAdd(" + pokeUnit + ")";
@@ -174,13 +175,27 @@ namespace Sq1.Charting {
 			//int barIndex = pokeUnit.QuoteGeneratedThisUnit.ParentBarStreaming.ParentBarsIndex;
 			//this.AlertsPendingHistorySafeCopy.Add(barIndex, pokeUnit.AlertsNew.SafeCopy(this, "PendingRealtimeAdd(WAIT)"));
 			foreach (Alert alert in alertsNewPlacedSafeCopy) {
-				if (this.AlertsPlaced.ContainsKey(alert.PlacedBarIndex) == false) {
-					this.AlertsPlaced.Add(alert.PlacedBarIndex, new List<Alert>());
+				int placedBarIndex = alert.PlacedBarIndex;
+				if (this.AlertsPlacedByBar.ContainsKey(placedBarIndex) == false) {
+					this.AlertsPlacedByBar.Add(placedBarIndex, new AlertList("ALERTS_FOR_PlacedBarIndex[" + placedBarIndex + "]", null, null));
 				}
-				List<Alert> pendingsForBar = this.AlertsPlaced[alert.PlacedBarIndex];
-				pendingsForBar.Add(alert);
+				AlertList pendingsForBar = this.AlertsPlacedByBar[placedBarIndex];
+				pendingsForBar.AddNoDupe(alert, this, "//AlertsPlacedRealtimeAdd(WAIT)[" + placedBarIndex + "]", ConcurrentWatchdog.TIMEOUT_DEFAULT, false);
 			}
 		}
+		public void AlertsPendingStillNotFilledForBarAdd(int barIndexStillNotFilled, List<Alert> alertsPendingAtCurrentBarSafeCopy) {
+			if (this.AlertsPlacedByBar.ContainsKey(barIndexStillNotFilled) == false) {
+				string msg = "MOST_LIKELY_INVOKED_FROM_CALLBACK_WITH_PREVIOUS_BAR_INDEX MUST_HAVE_BEEN_ADDED_BY_AlertsPlacedRealtimeAdd(): AlertsPlacedByBar[" + barIndexStillNotFilled + "]";
+				//Assembler.PopupException(msg);
+				this.AlertsPlacedByBar.Add(barIndexStillNotFilled, new AlertList("ALERTS_FOR_barIndexStillNotFilled[" + barIndexStillNotFilled + "]", null, null));
+				//return;
+			}
+			AlertList pendingsForBar = this.AlertsPlacedByBar[barIndexStillNotFilled];
+			pendingsForBar.AddRange(alertsPendingAtCurrentBarSafeCopy, this
+									, "//AlertsPendingStillNotFilledForBarAdd(WAIT)[" + barIndexStillNotFilled + "]"
+									, ConcurrentWatchdog.TIMEOUT_DEFAULT, false);
+		}
+
 		
 		public OnChartLine LineAddOrModify(string lineId, int barLeft, double priceLeft, int barRight, double priceRight,
 					Color color, int width = 1, bool debugParametersDidntChange = false) {

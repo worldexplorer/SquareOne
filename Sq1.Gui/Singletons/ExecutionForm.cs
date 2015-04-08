@@ -39,12 +39,12 @@ namespace Sq1.Gui.Singletons {
 			}
 			string ret = "";
 			int itemsCnt			= this.ExecutionTreeControl.OrdersTreeOLV.Items.Count;
-			int allCnt				= this.orderProcessor.DataSnapshot.OrdersAll.InnerOrderList.Count;
-			int submittingCnt		= this.orderProcessor.DataSnapshot.OrdersSubmitting.InnerOrderList.Count;
-			int pendingCnt			= this.orderProcessor.DataSnapshot.OrdersPending.InnerOrderList.Count;
-			int pendingFailedCnt	= this.orderProcessor.DataSnapshot.OrdersPendingFailed.InnerOrderList.Count;
-			int cemeteryHealtyCnt	= this.orderProcessor.DataSnapshot.OrdersCemeteryHealthy.InnerOrderList.Count;
-			int cemeterySickCnt		= this.orderProcessor.DataSnapshot.OrdersCemeterySick.InnerOrderList.Count;
+			int allCnt				= this.orderProcessor.DataSnapshot.OrdersAll.Count;
+			int submittingCnt		= this.orderProcessor.DataSnapshot.OrdersSubmitting.Count;
+			int pendingCnt			= this.orderProcessor.DataSnapshot.OrdersPending.Count;
+			int pendingFailedCnt	= this.orderProcessor.DataSnapshot.OrdersPendingFailed.Count;
+			int cemeteryHealtyCnt	= this.orderProcessor.DataSnapshot.OrdersCemeteryHealthy.Count;
+			int cemeterySickCnt		= this.orderProcessor.DataSnapshot.OrdersCemeterySick.Count;
 			int fugitive			= allCnt - (submittingCnt + pendingCnt + pendingFailedCnt + cemeteryHealtyCnt + cemeterySickCnt);
 
 										ret +=		   cemeteryHealtyCnt + " Filled/Killed/Killers";

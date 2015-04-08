@@ -52,7 +52,16 @@ namespace Sq1.Gui.FormFactories {
 				Assembler.PopupException(msg);
 				return;
 			}
-			strategyOnChart.ScriptContextsByName[ContextScript.DEFAULT_NAME].AbsorbFrom(ctxAdding);
+			ContextChart  ctxChart  = strategyOnChart.ScriptContextsByName[ContextScript.DEFAULT_NAME];
+			ContextScript ctxScript = ctxChart as ContextScript;
+			if (ctxScript != null) {
+				int paramsAbsorbed = ctxScript.AbsorbOnlyScriptAndIndicatorParameterCurrentValues_backToStrategyFromOptimizer_noChecksDirtyImplementation(ctxAdding);
+			} else {
+				string msg = "NONSENSE_THAT_YOU_WERE_OPTIMIZING_CHART_HAVING_NO_SCRIPT_CONTEXT...";
+				Assembler.PopupException(msg);
+				ctxChart.AbsorbFrom(ctxAdding);
+			}
+			strategyOnChart.Serialize();
 			SlidersForm.Instance.Show();
 			SlidersForm.Instance.Initialize(SlidersForm.Instance.SlidersAutoGrowControl.Strategy);
 			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(ContextScript.DEFAULT_NAME);

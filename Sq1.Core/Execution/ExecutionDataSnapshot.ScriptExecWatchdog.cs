@@ -113,8 +113,7 @@ namespace Sq1.Core.Execution {
 			ScriptRunningOnStrategyEmittingOrdersTurnedOff		= new ManualResetEvent(false);
 		}
 		public void BarkIfAnyScriptOverrideIsRunning(string msig) {
-			return;	//just disabled it here; POTENTIAL_RACE_CONDITIONs are all followed by lock(){} upstack, right?
-
+			//WHATS_THE_POINT_THEN return;	//EXPLAIN_BETTER  POTENTIAL_RACE_CONDITIONs are all followed by lock(){} upstack, right?
 
 			if (this.AnyScriptOverridenMethodIsRunningNowBlockingRead == false) return;
 			if (this.executor.Backtester.IsBacktestingNoLivesimNow) {

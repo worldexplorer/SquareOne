@@ -17,8 +17,8 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public bool IsIntraday { get { return this.ScaleInterval.IsIntraday; } }
 		[JsonIgnore]	public string SymbolIntervalScale { get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
 
-		[JsonIgnore]	public Bar BarStreaming { get; private set; }
-		[JsonIgnore]	public Bar BarStreamingCloneReadonly { get {
+		[JsonIgnore]	public Bar BarStreamingNullUnsafe { get; private set; }
+		[JsonIgnore]	public Bar BarStreamingNullUnsafeCloneReadonly { get {
 				//v1
 //				Bar lastStatic = this.BarStaticLast;
 //				DateTime lastStaticOrServerNow = (lastStatic != null)
@@ -34,10 +34,22 @@ namespace Sq1.Core.DataTypes {
 //				return ret;
 				
 				//v2
-				if (this.BarStreaming == null) return null;
-				return this.BarStreaming.Clone();
+				if (this.BarStreamingNullUnsafe == null) return null;
+				return this.BarStreamingNullUnsafe.Clone();
 			} }
-		private Bars(string symbol, string reasonToExist = "NOREASON") : base(symbol, reasonToExist) {
+
+		public Bars SafeCopy_safeToUseOneCopyForAllDisposableExecutors { get { lock (base.BarsLock) {
+			Bars ret = new Bars(this.Symbol, this.ScaleInterval, "SafeToUseOneCopyForAllDisposableExecutors");
+			foreach (Bar each in this.BarsList) {
+				Bar cloneBar = each.CloneDetached();
+				ret.BarAppendBind(cloneBar);
+			}
+			ret.DataSource = this.DataSource;
+			ret.MarketInfo = this.MarketInfo;
+			return ret;
+		} } }
+
+		Bars(string symbol, string reasonToExist = "NOREASON") : base(symbol, reasonToExist) {
 			ScaleInterval = new BarScaleInterval(BarScale.Unknown, 0);
 			SymbolHumanReadable = "";
 			InstanceAbsno++;
@@ -66,17 +78,17 @@ namespace Sq1.Core.DataTypes {
 				barAdding.SetOHLCValigned(barToMergeToStreaming.Open, barToMergeToStreaming.High,
 					barToMergeToStreaming.Low, barToMergeToStreaming.Close, barToMergeToStreaming.Volume, this.SymbolInfo);
 				this.BarAppendBind(barAdding);
-				this.BarStreaming = barAdding;
+				this.BarStreamingNullUnsafe = barAdding;
 				this.RaiseBarStreamingAdded(barAdding);
 			} else {
-				if (this.BarStreaming == null) {
-					this.BarStreaming = this.BarLast;
+				if (this.BarStreamingNullUnsafe == null) {
+					this.BarStreamingNullUnsafe = this.BarLast;
 				}
 				//base.BarAbsorbAppend(this.StreamingBar, open, high, low, close, volume);
-				this.BarStreaming.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming, false);	// duplicated volume for just added bar; moved up
+				this.BarStreamingNullUnsafe.MergeExpandHLCVwhileCompressingManyBarsToOne(barToMergeToStreaming, false);	// duplicated volume for just added bar; moved up
 				this.RaiseBarStreamingUpdated(barToMergeToStreaming);
 			}
-			return this.BarStreaming;
+			return this.BarStreamingNullUnsafe;
 		} }
 		public Bar BarCreateAppendBindStatic(DateTime dateTime,
 				double open, double high, double low, double close, double volume,
@@ -94,7 +106,7 @@ namespace Sq1.Core.DataTypes {
 				if (exceptionPullUpstack) throw new Exception(msg, ex);
 				Assembler.PopupException(msg, ex, false);
 			}
-			this.BarStreaming = null;
+			this.BarStreamingNullUnsafe = null;
 			this.BarAppendBind(barAdding);
 			this.RaiseBarStaticAdded(barAdding);
 		} }
@@ -126,12 +138,12 @@ namespace Sq1.Core.DataTypes {
 				string msg = "I_DONT_ACCEPT_NULL_BARS_TO OverrideStreamingDOHLCVwith(" + bar + ")";
 				throw new Exception(msg);
 			}
-			if (this.BarStreaming == null) {
+			if (this.BarStreamingNullUnsafe == null) {
 				string msg = "CAN_ONLY_OVERRIDE_STREAMING_NOT_NULL_WHILE_NOW_IT_IS_NULL OverrideStreamingDOHLCVwith(" + bar + "): this.streamingBar == null";
 				throw new Exception(msg);
 			}
 			string msgSame = "BARS_IDENTICAL";
-			bool sameDOHLCV = this.BarStreaming.HasSameDOHLCVas(bar, "barAbsorbed", "BarStreaming", ref msgSame);
+			bool sameDOHLCV = this.BarStreamingNullUnsafe.HasSameDOHLCVas(bar, "barAbsorbed", "BarStreaming", ref msgSame);
 			if (sameDOHLCV) {
 				string msg = "NO_NEED_TO_ABSORB_ANYTHING__DESTINATION_HasSameDOHLCV msgSame[" + msgSame + "]";
 				Assembler.PopupException(msg, null, false);
@@ -141,25 +153,33 @@ namespace Sq1.Core.DataTypes {
 				//Assembler.PopupException(msg, null, false);
 			}
 			//this.streamingBar.DateTimeOpen = bar.DateTimeOpen;
-			this.BarStreaming.AbsorbOHLCVfrom(bar);
+			this.BarStreamingNullUnsafe.AbsorbOHLCVfrom(bar);
 			// IMPORTANT!! this.BarStreamingCloneReadonly freezes changes in the clone so that subscribers get the same StreamingBar
-			this.RaiseBarStreamingUpdated(this.BarStreamingCloneReadonly);
+			this.RaiseBarStreamingUpdated(this.BarStreamingNullUnsafeCloneReadonly);
 		}
 		public override string ToString() {
 			string ret = this.SymbolIntervalScale + base.Count + "bars";
 			if (base.Count > 0) {
-				try {
-					Bar barLastStatic = this.BarStaticLastNullUnsafe;
-					ret += " LastStaticClose=[" + this.ValueFormatted(barLastStatic.Close) + "] @[" + barLastStatic.DateTimeOpen + "]";
-				} catch (Exception e) {
-					ret += " BARS_STATIC[" + (base.Count - 1) + "]_EXCEPTION";
-				}
-				try {
-					Bar barStreaming = this.BarStreamingCloneReadonly;
-					ret += " StreamingClose=[" + this.ValueFormatted(barStreaming.Close) + "] @[" + barStreaming.DateTimeOpen + "]";
-				} catch (Exception e) {
-					ret += " BARS_STREAMING[" + base.Count + "]_EXCEPTION";
-				}
+				//try {
+					string barLastStaticAsString = "BAR_STATIC_NULL";
+ 					Bar barLastStatic = this.BarStaticLastNullUnsafe;
+					if (barLastStatic != null) {
+						barLastStaticAsString = this.ValueFormatted(barLastStatic.Close) + "] @[" + barLastStatic.DateTimeOpen;
+					}
+					ret += " LastStaticClose=[" + barLastStaticAsString + "]";
+				//} catch (Exception e) {
+				//	ret += " BARS_STATIC[" + (base.Count - 1) + "]_EXCEPTION";
+				//}
+				//try {
+					string barStreamingAsString = "BAR_STREAMING_NULL";
+ 					Bar barStreaming = this.BarStreamingNullUnsafeCloneReadonly;
+					if (barStreaming != null) {
+						barStreamingAsString = this.ValueFormatted(barStreaming.Close) + "] @[" + barStreaming.DateTimeOpen;
+					}
+					ret += " StreamingClose=[" + barStreamingAsString + "]";
+				//} catch (Exception e) {
+				//	ret += " BARS_STREAMING[" + base.Count + "]_EXCEPTION";
+				//}
 			}
 			ret += " //Instance#" + InstanceAbsno;
 			if (string.IsNullOrEmpty(ReasonToExist) == false) ret += ":" + ReasonToExist;

@@ -339,12 +339,12 @@ namespace Sq1.Widgets.Execution {
 
 		void selectLastOrderPopulateMessagesSafe() {
 			//NOPE I WANT TO CLEAR MESSAGES AFTER I WIPED OUT ALL THE ORDERS if (this.ordersTree.InnerOrderList.Count == 0) return;
-			if (this.ordersTree.InnerOrderList.Count == 0) {
+			if (this.ordersTree.Count == 0) {
 				//DONT_MIX_RESPONSIBILITIES this.OrdersTreeOLV.Clear();
 				this.SelectOrderAndOrPopulateMessages(null);
 				return;
 			}
-			var orderTopmost = this.ordersTree.InnerOrderList[0];
+			var orderTopmost = this.ordersTree.FirstNullUnsafe;
 			this.SelectOrderAndOrPopulateMessages(orderTopmost);
 		}
 //		public void RebuildOneRootNodeChildAdded(Order orderParentToRepaint) {

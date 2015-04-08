@@ -33,7 +33,7 @@ namespace Sq1.Core.Indicators {
 					string msg2 = "YOU_HAD_BACKTESTONSELECTORS_OFF_AND_CLICKED_ANOTHER_SYMBOL? SKIPPING_RENDERING BUT_BETTER_TO_SET_OWN_VALUES_TO_NULL_AT_SYMBOL_CHANGE";
 					return indicatorLegDrawn;
 				}
-				if (bar == this.BarsEffective.BarStaticLastNullUnsafe && this.BarsEffective.BarStreaming == null) {
+				if (bar == this.BarsEffective.BarStaticLastNullUnsafe && this.BarsEffective.BarStreamingNullUnsafe == null) {
 					string msg2 = "WHEN_YOU_START_STREAMING_LAST_STATIC_BAR_WILL_BE_DRAWN";
 					return indicatorLegDrawn;
 				}

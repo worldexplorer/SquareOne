@@ -12,14 +12,14 @@ using Sq1.Core.Charting;
 using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Execution {
-	public	class Alert {
+	public	class Alert : IDisposable {
 		[JsonIgnore]	public	Bars				Bars;
 		[JsonProperty]	public	Bar					PlacedBar						{ get; protected set; }
 		[JsonProperty]	public	int					PlacedBarIndex					{ get; protected set; }
 		[JsonProperty]	public	Bar					FilledBar						{ get; protected set; }
 		[JsonProperty]	public	Bar					FilledBarSnapshotFrozenAtFill	{ get; protected set; }
 		[JsonProperty]	public	int					FilledBarIndex					{ get; protected set; }
-		[JsonProperty]	public	DateTime			PlacedDateTime					{ get {
+		[JsonProperty]	public	DateTime			PlacedDateTimeBarAligned		{ get {
 				if (this.PlacedBar == null) return DateTime.MinValue;
 //				if (this.PlacedBarIndex == -1 || this.PlacedBarIndex > this.Bars.Count) return PlacedDateTime.MinValue;
 //				if (this.PlacedBarIndex == this.Bars.Count) {
@@ -124,8 +124,8 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public	Quote				QuoteFilledThisAlertDuringBacktestNotLive;
 		[JsonProperty]	public	Quote				QuoteLastWhenThisAlertFilled;
 		[JsonIgnore]	public	Position			PositionAffected;
-		[JsonIgnore]	public	DateTime			PositionEntryDate				{ get {
-				if (this.PositionAffected != null) return this.PositionAffected.EntryDate;
+		[JsonIgnore]	public	DateTime			PositionEntryDateTimeBarAligned				{ get {
+				if (this.PositionAffected != null) return this.PositionAffected.EntryDateBarTimeOpen;
 				return DateTime.MinValue;
 			} }
 		[JsonIgnore]	public	Order				OrderFollowed;			// set on Order(alert).executed;
@@ -264,6 +264,10 @@ namespace Sq1.Core.Execution {
 			if (this.MyBrokerIsLivesim == false) return ret;
 			try {
 				ChartShadow chartShadow = Assembler.InstanceInitialized.AlertsForChart.FindContainerForNull(this);
+					if (chartShadow == null) {
+						string msg = "LOOKS_LIKE_PROTOTYPED_ALERTS_WERENT_ADDED_FOR_CHART_IN_callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected";
+						return false;
+					}
 				ScriptExecutor executor = chartShadow.Executor;
 				bool livesimSleeping = executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
 				ret = livesimSleeping;
@@ -274,7 +278,11 @@ namespace Sq1.Core.Execution {
 			return ret;
 		} }
 
-
+		~Alert() { this.Dispose(); }
+		public void Dispose() {
+			if (this.MreOrderFollowedIsAssignedNow == null) return;
+			this.MreOrderFollowedIsAssignedNow.Dispose();	// BASTARDO !!!! LEAKED_HANDLES_HUNTER
+		}
 		public	Alert() {	// called by Json.Deserialize()
 			PlacedBarIndex				= -1;
 			FilledBarIndex				= -1;
@@ -291,7 +299,7 @@ namespace Sq1.Core.Execution {
 			Direction					= Direction.Unknown;
 			SignalName					= "";
 			StrategyID					= Guid.Empty;
-			StrategyName				= "NO_STRATEGY"; 
+			StrategyName				= "NO_STRATEGY";
 			BarsScaleInterval			= new BarScaleInterval(BarScale.Unknown, 0);
 			OrderFollowed				= null;
 			MreOrderFollowedIsAssignedNow	= new ManualResetEvent(false);
@@ -419,9 +427,9 @@ namespace Sq1.Core.Execution {
 				msg.Append(this.QtyFilledThroughPosition);
 			}
 			if (this.PositionAffected != null) {
-				msg.Append("; PositionAffected=[");
+				msg.Append("; PositionAffected=[#");
 				//msg.Append(this.PositionAffected.ToString());
-				msg.Append("LONG_STRING");
+				msg.Append(this.PositionAffected.SernoAbs);
 				msg.Append("]");
 			}
 			return msg.ToString();
@@ -461,7 +469,7 @@ namespace Sq1.Core.Execution {
 				&& this.Qty == alert.Qty
 				&& this.PriceScript == alert.PriceScript		// added for SimulateStopLossMoved()
 				&& this.SignalName == alert.SignalName
-				&& this.PositionEntryDate == alert.PositionEntryDate
+				&& this.PositionEntryDateTimeBarAligned == alert.PositionEntryDateTimeBarAligned
 				&& this.PlacedBarIndex == alert.PlacedBarIndex
 				;
 			if (alert.PlacedBarIndex == alert.Bars.Count) {

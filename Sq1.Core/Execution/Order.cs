@@ -8,7 +8,11 @@ using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Execution {
 	public class Order {
-		[JsonProperty]	public DateTime		TimeCreatedBroker;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		[JsonProperty]	public DateTime		CreatedBrokerTime;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+//SEARCH_MESSAGES_FOR_STATE_YOU_NEED		[JsonProperty]	public DateTime		PlacedBrokerTime;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+//SEARCH_MESSAGES_FOR_STATE_YOU_NEED		[JsonProperty]	public DateTime		FilledBrokerTime;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+//SEARCH_MESSAGES_FOR_STATE_YOU_NEED 		[JsonProperty]	public DateTime		KilledBrokerTime;			// SET_IN_POSTPROCESSOR_EMERGENCY	{ get; protected set; }
+		
 		[JsonProperty]	public double		PriceRequested;				// SET_IN_BROKER_ADAPDER	{ get; protected set; }
 		[JsonProperty]	public double		PriceFill;					// SET_IN_ORDER_PROCESSOR   { get; protected set; }
 		[JsonProperty]	public double		QtyRequested;				// SET_IN_ORDER_PROCESSOR   { get; protected set; }
@@ -106,13 +110,20 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public bool				InStateCanBeReplacedLimitStop { get {
 				return this.State == OrderState.WaitingBrokerFill
 					|| this.State == OrderState.Submitted
-					|| this.State == OrderState.FilledPartially;
+					|| this.State == OrderState.FilledPartially
+					;
 			} }
 		[JsonProperty]	public bool				InStateExpectingCallbackFromBroker { get {
 				return this.State == OrderState.WaitingBrokerFill
 					|| this.State == OrderState.Submitting
 					|| this.State == OrderState.Submitted
-					|| this.State == OrderState.KillPending;
+				//	|| this.State == OrderState.KillerPreSubmit
+					|| this.State == OrderState.KillerSubmitting
+					|| this.State == OrderState.KillerBulletFlying
+				//	|| this.State == OrderState.KillPendingPreSubmit
+					|| this.State == OrderState.KillPendingSubmitting
+					|| this.State == OrderState.KillPendingSubmitted
+					;
 			} }
 		[JsonProperty]	public bool				InStateChangeableToSubmitted { get {
 				if (this.State == OrderState.PreSubmit
@@ -205,7 +216,7 @@ namespace Sq1.Core.Execution {
 
 		[JsonProperty]	static int absno = 0;
 		[JsonProperty]	public double CommissionFill				{ get; protected set; }
-		[JsonIgnore]	public ManualResetEvent MreActiveCanCome	{ get; protected set; }		// JSON restore of a ManualResetEvent makes GC thread throw SEHException (thanx for a great free library anyway)
+		//[JsonIgnore]	public ManualResetEvent MreActiveCanCome	{ get; protected set; }		// JSON restore of a ManualResetEvent makes GC thread throw SEHException (thanx for a great free library anyway)
 
  		public Order() {	// called by Json.Deserialize(); what if I'll make it protected?
 			GUID = newGUID();
@@ -235,7 +246,7 @@ namespace Sq1.Core.Execution {
 			CurrentAsk = 0;
 			CurrentBid = 0;
 			SpreadSide = OrderSpreadSide.Unknown;
-			MreActiveCanCome = new ManualResetEvent(false);
+			//MreActiveCanCome = new ManualResetEvent(false);
 			DerivedOrders = new List<Order>();
 			DerivedOrdersGuids = new List<string>();
 		}
@@ -249,15 +260,19 @@ namespace Sq1.Core.Execution {
 				alert.OrderFollowed.AppendMessage(msg);
 				throw new Exception(msg);
 			}
-			if (alert.QuoteCreatedThisAlert.ParentBarStreaming.ParentBars == null) {
-				string msg = "EARLY_BINDER_DIDN_DO_ITS_JOB#5";
+			
+			if (		alert.QuoteCreatedThisAlert != null
+					 && alert.QuoteCreatedThisAlert.ParentBarStreaming != null
+					 && alert.QuoteCreatedThisAlert.ParentBarStreaming.ParentBars == null) {
+				string msg = "FOR_PROTOTYPED_ALERTS_ACTIVATED_ON_TRIGGERING_FILL__CHECK_ONCE_AGAIN__EXECUTOR.CALLBACK_FILL_BLABLABLA";
 				Assembler.PopupException(msg);
 			}
+			
 			this.PriceRequested			= alert.PriceScript;
 			this.QtyRequested			= alert.Qty;
 			this.EmittedByScript		= emittedByScript;
 			//due to serverTime lagging, replacements orders are born before the original order... this.TimeCreatedServer = alert.TimeCreatedLocal;
-			this.TimeCreatedBroker		= alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
+			this.CreatedBrokerTime		= alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
 			//Order.PositionFollowed will be created when order.State becomes OrderState.Filled this.PositionFollowed		= new Position()
 			this.SpreadSide				= alert.OrderSpreadSide;
 
@@ -294,7 +309,7 @@ namespace Sq1.Core.Execution {
 				throw new Exception(msg);
 			}
 			Order killer = new Order(this.Alert, this.EmittedByScript, true);
-			killer.State = OrderState.JustCreated;
+			killer.State = OrderState.JustConstructed;
 			killer.PriceRequested = 0;
 			killer.PriceFill = 0;
 			killer.QtyRequested = 0;
@@ -310,7 +325,7 @@ namespace Sq1.Core.Execution {
 			this.DerivedOrdersAdd(killer);
 			
 			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
-			killer.TimeCreatedBroker = serverTimeNow;
+			killer.CreatedBrokerTime = serverTimeNow;
 
 			return killer;
 		}
@@ -320,7 +335,7 @@ namespace Sq1.Core.Execution {
 				throw new Exception(msg);
 			}
 			Order replacement = new Order(this.Alert, this.EmittedByScript, true);
-			replacement.State = OrderState.JustCreated;
+			replacement.State = OrderState.JustConstructed;
 			replacement.SlippageIndex = this.SlippageIndex;
 			replacement.ReplacementForGUID = this.GUID;
 			this.ReplacedByGUID = replacement.GUID;
@@ -328,7 +343,7 @@ namespace Sq1.Core.Execution {
 			this.DerivedOrdersAdd(replacement);
 
 			DateTime serverTimeNow = this.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
-			replacement.TimeCreatedBroker = serverTimeNow;
+			replacement.CreatedBrokerTime = serverTimeNow;
 
 			return replacement;
 		}

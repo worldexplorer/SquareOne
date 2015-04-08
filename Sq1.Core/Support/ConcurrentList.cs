@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Sq1.Core.Execution;
-
 namespace Sq1.Core.Support {
 	public class ConcurrentList<T> {
 		protected	object					LockObject;
 		protected	ExecutionDataSnapshot	Snap;
 		public		string					ReasonToExist		{ get; protected set; }
-		public		List<T>					InnerList			{ get; protected set; }
+		protected	List<T>					InnerList			{ get; private set; }
 		
 		public int Count { get { lock(this.LockObject) {
 			return this.InnerList.Count;

@@ -7,7 +7,6 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
 
-
 namespace Sq1.Gui.Forms {
 	// ANY_STRATEGY_WILL_RUN_WITH_A_CHART_ITS_NOT_A_SERVER_APPLICATION
 	public class ChartFormStreamingConsumer : IStreamingConsumer {
@@ -89,7 +88,7 @@ namespace Sq1.Gui.Forms {
 				return ret;
 			} }
 		Bar StreamingBarSafeClone { get {
-				var ret = this.Bars.BarStreamingCloneReadonly;
+				var ret = this.Bars.BarStreamingNullUnsafeCloneReadonly;
 				//this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Bars.StreamingBarSafeClone=null");
 				if (ret == null) ret = new Bar();
 				return ret;
@@ -366,14 +365,14 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			string msg2 = "BARS_IDENTICAL";
-			bool sameDOHLCV = barsSafe.BarStreaming.HasSameDOHLCVas(quote.ParentBarStreaming, "quote.ParentStreamingBar", "barsSafe.BarStreaming", ref msg2);
+			bool sameDOHLCV = barsSafe.BarStreamingNullUnsafe.HasSameDOHLCVas(quote.ParentBarStreaming, "quote.ParentStreamingBar", "barsSafe.BarStreaming", ref msg2);
 			if (sameDOHLCV == false) {
-				string msg = "FIXME_MUST_BE_THE_SAME EARLY_BINDER_DIDNT_DO_ITS_JOB#3 [" + msg2 + "] this.Executor.Bars.BarStreaming[" + barsSafe.BarStreaming
+				string msg = "FIXME_MUST_BE_THE_SAME EARLY_BINDER_DIDNT_DO_ITS_JOB#3 [" + msg2 + "] this.Executor.Bars.BarStreaming[" + barsSafe.BarStreamingNullUnsafe
 					+ "].HasSameDOHLCVas(quote.ParentStreamingBar[" + quote.ParentBarStreaming + "])=false";
 				Assembler.PopupException(msg + this.msigForNpExceptions);
 				return;
 			}
-			if (barsSafe.BarStreaming != quote.ParentBarStreaming) {
+			if (barsSafe.BarStreamingNullUnsafe != quote.ParentBarStreaming) {
 				string msg = "SHOULD_THEY_BE_CLONES_OR_SAME? EARLY_BINDER_DIDNT_DO_ITS_JOB#3 bars[" + barsSafe
 					+ "] quote.ParentStreamingBar[" + quote.ParentBarStreaming + "]";
 				Assembler.PopupException(msg + this.msigForNpExceptions);

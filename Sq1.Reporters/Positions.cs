@@ -189,10 +189,10 @@ namespace Sq1.Reporters {
 				sb.Append(position.Shares.ToString("N0"));
 				sb.Append("\t");
 				if (base.SystemPerformance.Bars.IsIntraday) {
-					sb.Append(position.EntryDate.ToShortDateString() + " " + position.EntryDate.ToShortTimeString());
+					sb.Append(position.EntryDateBarTimeOpen.ToShortDateString() + " " + position.EntryDateBarTimeOpen.ToShortTimeString());
 					sb.Append("\t");
 				} else {
-					sb.Append(position.EntryDate.ToShortDateString());
+					sb.Append(position.EntryDateBarTimeOpen.ToShortDateString());
 					sb.Append("\t");
 				}
 				sb.Append(position.EntryFilledPrice.ToString(base.FormatPrice));
@@ -204,10 +204,10 @@ namespace Sq1.Reporters {
 					sb.Append("\t");
 				} else {
 					if (base.SystemPerformance.Bars.IsIntraday) {
-						sb.Append(position.ExitDate.ToShortDateString() + " " + position.ExitDate.ToShortTimeString());
+						sb.Append(position.ExitDateBarTimeOpen.ToShortDateString() + " " + position.ExitDateBarTimeOpen.ToShortTimeString());
 						sb.Append("\t");
 					} else {
-						sb.Append(position.ExitDate.ToShortDateString());
+						sb.Append(position.ExitDateBarTimeOpen.ToShortDateString());
 						sb.Append("\t");
 					}
 					sb.Append(position.ExitFilledPrice.ToString(base.FormatPrice));
