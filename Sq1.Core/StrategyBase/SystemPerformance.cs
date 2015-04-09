@@ -8,23 +8,35 @@ using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public class SystemPerformance {
-		public ScriptExecutor				Executor			{ get; private set; }
-		public Bars							BarsBuyAndHold		{ get { return this.Bars; } }
-		public Bars							Bars				{ get {
+		public	ScriptExecutor				Executor			{ get; private set; }
+		public	Bars						BarsBuyAndHold		{ get { return this.Bars; } }
+		public	Bars						Bars				{ get {
 				if (this.Executor.Bars == null) {
 					string msg = "don't execute any SystemPerformance calculations before calling InitializeAndScan(): this.Executor.Bars == null";
 					throw new Exception(msg);
 				}
 				return this.Executor.Bars;
 			} }
-		public SystemPerformanceSlice		SlicesShortAndLong	{ get; private set; }
-		public SystemPerformanceSlice		SliceLong			{ get; private set; }
-		public SystemPerformanceSlice		SliceShort			{ get; private set; }
-		public SystemPerformanceSlice		SliceBuyHold		{ get; private set; }
+		public	SystemPerformanceSlice		SlicesShortAndLong	{ get; private set; }
+		public	SystemPerformanceSlice		SliceLong			{ get; private set; }
+		public	SystemPerformanceSlice		SliceShort			{ get; private set; }
+		public	SystemPerformanceSlice		SliceBuyHold		{ get; private set; }
 		
-		public SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished		{ get; private set; }
-		public SortedDictionary<int, ScriptParameter>		ScriptParametersById_BuiltOnBacktestFinished						{ get; private set; }
-		public Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished					{ get; private set; }
+		public	SortedDictionary<int, ScriptParameter>			ScriptParametersById_BuiltOnBacktestFinished						{ get; private set; }
+		public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished					{ get; private set; }
+		public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished		{ get; private set; }
+		public	string											ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished_AsString { get {
+				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
+				if (merged == null) return "(NotOptimizedYet)";
+				if (merged.Count == 0) return "(NoParameters)";
+				string ret = "";
+				foreach (string indicatorDotParameter in merged.Keys) {
+					ret += indicatorDotParameter + "=" + merged[indicatorDotParameter].ValueCurrent + ",";
+				}
+				ret = ret.TrimEnd(",".ToCharArray());
+				return "(" + ret + ")";
+			} }
+
 
 		public string						NetProfitRecoveryForScriptContextNewName	{ get {
 				string netFormatted = Math.Round(this.SlicesShortAndLong.NetProfitForClosedPositionsBoth, 2).ToString();
@@ -154,10 +166,10 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 				return;
 			}
-			int absorbedOpenLong	= this.SliceLong			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
-			int absorbedOpenShort	= this.SliceShort			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
-			int absorbedOpenBoth	= this.SlicesShortAndLong	.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
-			int absorbedOpenBH		= this.SliceBuyHold			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
+			int absorbedOpenLong		= this.SliceLong			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
+			int absorbedOpenShort		= this.SliceShort			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
+			int absorbedOpenBoth		= this.SlicesShortAndLong	.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
+			int absorbedOpenBH			= this.SliceBuyHold			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
 		}
 		public void BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(PositionList positions) {
 			int absorbedUpdatedLong		= this.SliceLong			.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);
@@ -166,10 +178,10 @@ namespace Sq1.Core.StrategyBase {
 			int absorbedUpdatedBH		= this.SliceBuyHold			.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);
 		}
 		internal void BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(Position position) {
-			int absorbedClosedLong	= this.SliceLong			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
-			int absorbedClosedShort	= this.SliceShort			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
-			int absorbedClosedBoth	= this.SlicesShortAndLong	.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
-			int absorbedClosedBH	= this.SliceBuyHold			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
+			int absorbedClosedLong		= this.SliceLong			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
+			int absorbedClosedShort		= this.SliceShort			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
+			int absorbedClosedBoth		= this.SlicesShortAndLong	.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
+			int absorbedClosedBH		= this.SliceBuyHold			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
 		}
 
 		public SystemPerformance CloneForOptimizer() {
@@ -187,7 +199,7 @@ namespace Sq1.Core.StrategyBase {
 		//}
 		public override string ToString() {
 			string msg = "HAS_MEANINFULL_VALUE_ONLY_AFTER int absorbedBH = this.SliceBuyHold.BuildStatsOnBacktestFinished(pokeUnit)";
-			return this.NetProfitRecoveryForScriptContextNewName;
+			return this.NetProfitRecoveryForScriptContextNewName + " " + this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished_AsString;
 		}
 	}
 }

@@ -20,8 +20,9 @@ using Sq1.Core.Support;
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
 		#region constructed (my own data)
+		public	string							ReasonToExist				{ get; protected set; }
 		public	ExecutionDataSnapshot			ExecutionDataSnapshot		{ get; protected set; }
-		public	SystemPerformance				Performance					{ get; protected set; }
+		public	SystemPerformance				PerformanceAfterBacktest					{ get; protected set; }
 		public	Backtester						Backtester;					//{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; protected set; }
 		public	MarketLive						MarketLive					{ get; protected set; }
@@ -204,10 +205,11 @@ namespace Sq1.Core.StrategyBase {
 		} }
 
 
-		public ScriptExecutor() {
+		public ScriptExecutor(string reasonToExist) {
 			// CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING				this.IsStreamingTriggeringScript = false;
 			// CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_EMITTING_MOUSE_ORDERS	this.IsStrategyEmittingOrders = false;
 
+			ReasonToExist				= reasonToExist;
 			ExecutionDataSnapshot		= new ExecutionDataSnapshot(this);
 			Backtester					= new Backtester(this);
 			PositionPrototypeActivator	= new PositionPrototypeActivator(this);
@@ -218,7 +220,7 @@ namespace Sq1.Core.StrategyBase {
 			Optimizer					= new Optimizer(this);
 			Livesimulator				= new Livesimulator(this);
 			OrderProcessor				= Assembler.InstanceInitialized.OrderProcessor;
-			Performance					= new SystemPerformance(this);
+			PerformanceAfterBacktest					= new SystemPerformance(this);
 			ScriptIsRunningCantAlterInternalLists = new ConcurrentWatchdog("WAITING_FOR_SCRIPT_OVERRIDDEN_METHOD_TO_RETURN");
 		}
 
@@ -298,7 +300,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.ExecutionDataSnapshot.Initialize();
 			// SO_WHAT??? Executor.Bars are NULL in ScriptExecutor.ctor() and NOT NULL in SetBars
-			this.Performance.Initialize();
+			this.PerformanceAfterBacktest.Initialize();
 			this.MarketsimBacktest.Initialize(this.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
 			//v1, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
 			// if I listen to DataSourceRepository, all ScriptExecutors receive same notification including irrelated to my Bars
@@ -1057,14 +1059,14 @@ namespace Sq1.Core.StrategyBase {
 															);
 			//v1 this.AddPositionsToChartShadowAndPushPositionsOpenedClosedToReportersAsyncUnsafe(pokeUnit);
 			if (positionOpenedAfterAlertFilled != null) {
-				this.Performance.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(positionOpenedAfterAlertFilled);
+				this.PerformanceAfterBacktest.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(positionOpenedAfterAlertFilled);
 				//if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
 					// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
 					this.EventGenerator.RaiseOnBrokerFilledAlertsOpeningForPositions_step1of3(pokeUnit);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
 				//}
 			}
 			if (positionClosedAfterAlertFilled != null) {
-				this.Performance.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(positionClosedAfterAlertFilled);
+				this.PerformanceAfterBacktest.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(positionClosedAfterAlertFilled);
 				if (alertFilled.GuiHasTimeRebuildReportersAndExecution) {
 					// Sq1.Core.DLL doesn't know anything about ReportersFormsManager => Events
 					this.EventGenerator.RaiseOnBrokerFilledAlertsClosingForPositions_step3of3(pokeUnit);		// WHOLE_POKE_UNIT_BECAUSE_EVENT_HANLDER_MAY_NEED_POSITIONS_CLOSED_AND_OPENED_TOGETHER
@@ -1347,7 +1349,7 @@ namespace Sq1.Core.StrategyBase {
 			try {
 				this.barStaticExecutedLast = null;
 				this.ExecutionDataSnapshot.Initialize();
-				this.Performance.Initialize();
+				this.PerformanceAfterBacktest.Initialize();
 				this.Strategy.Script.InitializeBacktestWrapper();
 
 				if (this.ChartShadow != null) this.ChartShadow.SetIndicators(this.Strategy.Script.IndicatorsByName_ReflectedCached);
@@ -1362,7 +1364,7 @@ namespace Sq1.Core.StrategyBase {
 			if (backtestException == null) {
 				if (this.Backtester.IsBacktestingLivesimNow == false) {		// && this.WasBacktestAborted
 					try {
-						this.Performance.BuildStatsOnBacktestFinished();
+						this.PerformanceAfterBacktest.BuildStatsOnBacktestFinished();
 					} catch (Exception exPerformance) {
 						string msg = "PERFORMANCE_THREW_AFTER_BACKTEST_FINISHED_OKAY__NOT_RE-THROWING_NEED_TO_RESTORE_BACKTEST_CONTEXT_FINALLY";
 						Assembler.PopupException(msg, exPerformance);
@@ -1589,32 +1591,6 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return ret;
 		}
-		//MOVED_TO_DisposableExecutor(ScriptExecutor scriptExecutor)
-		//public ScriptExecutor CloneForOptimizer(ContextScript ctxNext) {	// HACKY_BUT_NOT_TOO_BAD
-		//    //ScriptExecutor clone = base.MemberwiseClone();
-		//    // detach the chart clone.On
-		//    ScriptExecutor executorClone = new ScriptExecutor();
-		//    executorClone.Optimizer = this.Optimizer;	// so that {if (this.Executor.Optimizer.IsRunningNow) return;} works koz will refer to {non-default but mine} optimizer
-		//    executorClone.Bars = this.Bars;
-		//    executorClone.OrderProcessor = null;
-		//    ChartShadow chartStub = new ChartShadow();
-		//    chartStub.SetExecutor(executorClone);
-
-		//    Strategy strategyClone = this.Strategy.CloneWithNewScriptInstanceResetContextsToSingle_clonedForOptimizer(ctxNext, executorClone);
-		//    if (strategyClone == this.Strategy) {
-		//        string msig = "CloneForOptimizer(ContextScript ctxNext)";
-		//        string msg = "PARANOID CLONE_MUST_BE_A_NEW_POINTER_NOT_THE_SAME";
-		//        Assembler.PopupException(msg + msig);
-		//    }
-		//    executorClone.Initialize(chartStub, strategyClone, false);
-		//    //ALREADY_INVOKED strategyClone.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(false);
-		//    //ALREADY_INVOKED strategyClone.IndicatorParametersReflectedAbsorbMergeFromCurrenctContext_SaveStrategy(false);
-
-		//    //ALREADY_IN_Strategy.executorClone.Initialize strategyClone.Script.Initialize(executorClone);
-		//    //KEEP_DOWNSTACK strategyClone.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);
-		//    //strategyClone.SccriptContextAdd_duplicatedInSliders_or_importedFromOptimizer(ctxNext.Name, ctxNext, true);
-		//    return executorClone;
-		//}
 		public override string ToString() {
 			string ret = this.StrategyName;
 			if (this.Strategy == null) return ret;
@@ -1625,16 +1601,10 @@ namespace Sq1.Core.StrategyBase {
 		public string ToStringWithCurrentParameters() {
 			string ret = "";
 			// this.Strategy.Script==null for an {editor-based + compilation failed} Script
-			if (this.Strategy.Script != null) ret += this.Strategy.Script.IndicatorParametersAsString + " ";
+			if (this.Strategy.Script != null) ret += this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerByName_AsString + " ";
 			ret += this.ToString();
-			string dbg2 = "";
-			if (this.Performance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished != null) {
-				foreach (string iName in this.Performance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Keys) {
-					IndicatorParameter ip = this.Performance.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished[iName];
-					dbg2 += iName + "[" + ip.ValueCurrent + "]";
-				}
-			}
-			return ret + dbg2;
+			//ret += " why???PerformanceAfterBacktest:" + this.PerformanceAfterBacktest.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished_AsString;
+			return ret;
 		}
 	}
 }

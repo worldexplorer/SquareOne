@@ -1,60 +1,64 @@
 ﻿using System;
-using System.Threading;
 using System.Collections.Generic;
 
-using Sq1.Core.Indicators;
 using Sq1.Core.Optimization;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Optimization {
 	public class DisposableExecutorsPool : IDisposable {
-		Optimizer						optimizer;
-		OptimizerParametersSequencer	parametersSequencer;
-		DisposableExecutor				executorEthalon;
-		List<DisposableExecutor>		executorsSpawned;
-		List<DisposableExecutor>		executorsRunningNow;
-		List<DisposableExecutor>		executorsIdlingNow;
-		object							oneLockForAllLists;
-		public	bool					IsDisposed;
+		public	bool							IsDisposed 			{ get; private set; }
+		public	int								ExecutorsSpawnedNow { get; private set; }
+		public	int								ExecutorsRunningNow { get; private set; }
+		public	int								ExecutorsIdlingNow	{ get; private set; }
 
-		public int ExecutorsSpawnedNow { get { lock(this.oneLockForAllLists) {
-			return this.executorsSpawned.Count;
-		} } }
-
-		public int ExecutorsRunningNow { get { lock(this.oneLockForAllLists) {
-			return this.executorsRunningNow.Count;
-		} } }
-
-		public int ExecutorsIdlingNow { get { lock(this.oneLockForAllLists) {
-			return this.executorsIdlingNow.Count;
-		} } }
+				Optimizer						optimizer;
+				OptimizerParametersSequencer	parametersSequencer;
+				DisposableExecutor				executorEthalonWithDetachedBars;
+				List<DisposableExecutor>		executorsSpawned;
+				List<DisposableExecutor>		executorsRunningNow;
+				List<DisposableExecutor>		executorsIdlingNow;
+				object							oneLockForAllLists;
 
 		DisposableExecutorsPool() {
 			oneLockForAllLists	= new object();
-			executorsRunningNow		= new List<DisposableExecutor>();
-			executorsIdlingNow		= new List<DisposableExecutor>();
-			executorsSpawned		= new List<DisposableExecutor>();
+			executorsRunningNow	= new List<DisposableExecutor>();
+			executorsIdlingNow	= new List<DisposableExecutor>();
+			executorsSpawned	= new List<DisposableExecutor>();
 		}
 		public DisposableExecutorsPool(Optimizer optimizer) : this() {
 			this.optimizer = optimizer;
-			executorEthalon = new DisposableExecutor(this.optimizer.Executor);
-			parametersSequencer = new OptimizerParametersSequencer(executorEthalon.Strategy.ScriptContextCurrent);
+			executorEthalonWithDetachedBars = new DisposableExecutor("DISPOSABLE_EHTALON", this.optimizer.Executor);
+			parametersSequencer = new OptimizerParametersSequencer(executorEthalonWithDetachedBars.Strategy.ScriptContextCurrent);
 			IsDisposed = false;
 		}
 
-		public void Dispose() {
+		public void Dispose() { lock (this.oneLockForAllLists) {
+			var parametersMustNotBeZero = executorEthalonWithDetachedBars.Strategy.ScriptContextCurrent;
+			if (parametersMustNotBeZero.ScriptAndIndicatorParametersMergedClonedForSequencerByName.Count == 0) {
+				string msg = "I_FIXED_IT_BY_REPLACING_THIS_TO_RET_IN_Strategy.CloneMinimalForEachThread_forEachDisposableExecutorInOptimizerPool()";
+				Assembler.PopupException(msg);
+			}
+
+			if (this.IsDisposed == true) {
+				string msg = "POOL_WAS_AREADY_FULLY_DISPOSED__RECREATE_POOL_AGAIN_UPSTACK__USING_ME_AGAIN_WILL_THROW_NPE";
+				Assembler.PopupException(msg);
+			}
 			foreach (DisposableExecutor executorSpawned in this.executorsSpawned) {
 				executorSpawned.Dispose();
 				//HEHE executorSpawned = null;
 			}
-			this.executorEthalon.Dispose();
+			this.executorsSpawned.Clear();
+			this.executorsSpawned = null;
+
+			this.executorEthalonWithDetachedBars.Dispose();
+			this.executorEthalonWithDetachedBars = null;
 			this.IsDisposed = true;
-		}
+		} }
 
 		internal void AbortAllTasksAndDispose() { lock (this.oneLockForAllLists) {
 			foreach (DisposableExecutor disposable in this.executorsRunningNow) {
 				string msg = "DISPOSABLE_ABORTED " + this.executorsRunningNow.IndexOf(disposable) + "/" + this.executorsRunningNow.Count;
-				disposable.Backtester.AbortRunningBacktestWaitAborted(msg, 0);
+				disposable.Backtester.AbortRunningBacktestWaitAborted(msg);
 			}
 			this.Dispose();
 		} }
@@ -81,10 +85,14 @@ namespace Sq1.Core.Optimization {
 				return;
 			}
 			for (int i = this.ExecutorsSpawnedNow; i < threadsToUse; i++) {
-				DisposableExecutor executorSpawned = executorEthalon.SpawnEthalonForEachThread_forEachDisposableExecutorInOptimizerPool();
-				executorSpawned.Backtester.TO_STRING_PREFIX = "DISPOSABLE_" + (i+1) + "/" +  threadsToUse;
+				string reasonToExist = "DISPOSABLE_" + (i+1) + "/" +  threadsToUse;
+				DisposableExecutor executorSpawned = executorEthalonWithDetachedBars.SpawnEthalonForEachThread_forEachDisposableExecutorInOptimizerPool(reasonToExist);
+
 				this.executorsSpawned.Add(executorSpawned);
+				this.ExecutorsSpawnedNow = this.executorsSpawned.Count;
 				this.executorsIdlingNow.Add(executorSpawned);
+				this.ExecutorsIdlingNow = this.executorsIdlingNow.Count;
+
 			}
 		} }
 
@@ -99,14 +107,15 @@ namespace Sq1.Core.Optimization {
 			}
 			for (int i = this.ExecutorsRunningNow; i < threadsToUse; i++) {
 				string ctxName = Optimizer.OPTIMIZATION_CONTEXT_PREFIX + " " + (this.optimizer.BacktestsFinished + 1) + "/" + this.optimizer.BacktestsTotal;
-				ContextScript ctxNext = (this.optimizer.BacktestsFinished == 0)
-					? this.parametersSequencer.GetFirstScriptContext(ctxName)
-					: this.parametersSequencer.GetNextScriptContextSequenced(ctxName);
-
+				ContextScript ctxNext = this.parametersSequencer.GetFirstOrNextScriptContext(ctxName);
 				DisposableExecutor launchingIdle = this.executorsIdlingNow[0];
+
 				this.executorsIdlingNow.Remove(launchingIdle);
+				this.ExecutorsIdlingNow = this.executorsIdlingNow.Count;
 				this.executorsRunningNow.Add(launchingIdle);
-				launchingIdle.InitializeAndPushParametersToCurrentContext(ctxNext);
+				this.ExecutorsRunningNow = this.executorsRunningNow.Count;
+
+				launchingIdle.InitializeAndPushParameters_toDefaultContextCurrent_fromNextSequenced(ctxNext);
 				//WHOLE REASON OF THIS POOL IS TO DISPOSE ALERTS launchingIdle.ExecutionDataSnapshot.Initialize();	// LEAKED_HANDLES_HUNTER for v2
 				//string ctxParamsAsString = launchingIdle.ToStringWithCurrentParameters();
 
@@ -133,15 +142,17 @@ namespace Sq1.Core.Optimization {
 			}
 
 			this.executorsRunningNow.Remove(disposableFinished);
+			this.ExecutorsRunningNow = this.executorsRunningNow.Count;
 			this.executorsIdlingNow.Add(disposableFinished);
+			this.ExecutorsIdlingNow = this.executorsIdlingNow.Count;
 
 			if (this.optimizer.AbortedDontScheduleNewBacktests) {
 				string msg = "CHECK_ANOTHER_THREAD_IT_MUST_BE_RUNNING_AbortAllTasksAndDispose()";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg);
 				return;
 			}
 
-			this.optimizer.PoolFinishedBacktestOne(disposableFinished.Performance);
+			this.optimizer.PoolFinishedBacktestOne(disposableFinished.PerformanceAfterBacktest);
 		} }
 	}
 }

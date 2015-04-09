@@ -34,7 +34,7 @@ namespace Sq1.Gui.ReportersSupport {
 				return ret;
 			} }
 
-		private ReportersFormsManager() {
+		ReportersFormsManager() {
 			// ALREADY_THERE deserializeIndex = 0;
 			reportersRepo = Assembler.InstanceInitialized.RepositoryDllReporters;
 			ReporterShortNamesUserInvoked = new Dictionary<string, Reporter>();
@@ -74,7 +74,7 @@ namespace Sq1.Gui.ReportersSupport {
 			this.BuildIncrementalOnPositionsClosedAllReports_step3of3(e.PokeUnit);
 		}
 		public void ClearAllReportsSincePerformanceGotCleared_step0of3() {
-			SystemPerformanceSlice both = this.ChartFormManager.Executor.Performance.SlicesShortAndLong;
+			SystemPerformanceSlice both = this.ChartFormManager.Executor.PerformanceAfterBacktest.SlicesShortAndLong;
 			//bool amIlaunchingLivesim = this.ChartFormManager.Executor.Backtester.IsLivesimRunning;
 			//if (amIlaunchingLivesim) {
 			//	if (both.PositionsImTracking.Count > 0 || both.NetProfitForClosedPositionsBoth > 0) {
@@ -121,7 +121,7 @@ namespace Sq1.Gui.ReportersSupport {
 		}
 		public void BuildReportFullOnBacktestFinishedAllReporters(SystemPerformance performance = null) {
 			if (performance == null) {
-				performance = this.ChartFormManager.Executor.Performance;
+				performance = this.ChartFormManager.Executor.PerformanceAfterBacktest;
 			}
 			if (this.ChartFormManager.ChartForm.InvokeRequired) {
 				this.ChartFormManager.ChartForm.BeginInvoke((MethodInvoker)delegate { this.BuildReportFullOnBacktestFinishedAllReporters(performance); });
@@ -224,7 +224,7 @@ namespace Sq1.Gui.ReportersSupport {
 			string typeNameShort = this.reportersRepo.ShrinkTypeName(typeNameShortOrFullAutodetect);
 			Reporter reporterActivated = this.reportersRepo.ActivateFromTypeName(typeNameShortOrFullAutodetect);
 			object reportersSnapshot = this.findOrCreateReportersSnapshotNullUnsafe(reporterActivated);
-			reporterActivated.Initialize(this.ChartFormManager.ChartForm.ChartControl as ChartShadow, reportersSnapshot, this.ChartFormManager.Executor.Performance);
+			reporterActivated.Initialize(this.ChartFormManager.ChartForm.ChartControl as ChartShadow, reportersSnapshot, this.ChartFormManager.Executor.PerformanceAfterBacktest);
 
 			var ret = new ReporterFormWrapper(this, reporterActivated);
 			//ret.Text = reporterActivated.TabText + " :: " + this.ChartFormsManager.Strategy.Name;
@@ -236,7 +236,7 @@ namespace Sq1.Gui.ReportersSupport {
 			
 			// avoiding unnesessary Reporters' calculation when there was no backtest invoked yet; I don't mind absolutely blank Performance Report without headers
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return ret;
-			if (this.ChartFormManager.Executor.Performance == null) {
+			if (this.ChartFormManager.Executor.PerformanceAfterBacktest == null) {
 				string msg = "SO_WHEN_IT_HAPPENS_IF_EVER?..";
 				Assembler.PopupException(msg);
 				return ret;

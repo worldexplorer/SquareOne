@@ -164,7 +164,21 @@ namespace Sq1.Core.Execution {
 				#endif
 				throw new Exception(msg);
 			} }
+		
+		public void Dispose() {
+			if (this.EntryAlert != null) {
+				this.EntryAlert.Dispose();
+				//LATE_CALLBACKS_TOO_NOISY this.EntryAlert = null;
+			}
+			if (this.ExitAlert != null) {
+				this.ExitAlert.Dispose();
+				//LATE_CALLBACKS_TOO_NOISY this.ExitAlert = null;
+			}
+		}
+		~ Position() { this.Dispose(); }
 		public Position() {
+			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
+			
 			PositionLongShort = PositionLongShort.Unknown;
 			StrategyID = "STRATEGY_ID_NOT_INITIALIZED";
 
@@ -182,7 +196,7 @@ namespace Sq1.Core.Execution {
 			ExitFilledSlippage = -1;
 			ExitFilledCommission = -1;
 		}
-		private Position(Bars bars, PositionLongShort positionLongShort, string strategyID, double basisPrice, double shares) : this() {
+		Position(Bars bars, PositionLongShort positionLongShort, string strategyID, double basisPrice, double shares) : this() {
 			this.Bars = bars;
 			this.PositionLongShort = positionLongShort;
 			this.StrategyID = strategyID;
@@ -196,13 +210,6 @@ namespace Sq1.Core.Execution {
 			this.EntryMarketLimitStop = alertEntry.MarketLimitStop;
 			this.EntryPriceScript = alertEntry.PriceScript;
 			this.EntrySignal = alertEntry.SignalName;
-		}
-		~ Position() {
-			//Debugger.Break();
-		}
-		public void Dispose() {
-			if (this.EntryAlert != null) this.EntryAlert.Dispose();
-			if (this.ExitAlert != null) this.ExitAlert.Dispose();
 		}
 		public void ExitAlertAttach(Alert alertExit) {
 			if (this.Prototype == null) {

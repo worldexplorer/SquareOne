@@ -33,14 +33,14 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		void mniltbScriptContextNewWithDefaults_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string newScriptContextName = e.StringUserTyped;
-			this.Strategy.ScriptContextAdd_duplicatedInSliders_or_importedFromOptimizer(newScriptContextName);
+			this.Strategy.ScriptContextAdd_duplicatedInSliders(newScriptContextName);
 			this.RaiseOnScriptContextCreated(newScriptContextName);
 			this.ctxScriptContexts_Opening(this, null);
 		}
 		void mniltbScriptContextDuplicateTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string dupeScriptContextName = e.StringUserTyped;
 			ContextScript scriptContextToDuplicate = this.ScriptContextFromMniTag(sender);
-			this.Strategy.ScriptContextAdd_duplicatedInSliders_or_importedFromOptimizer(dupeScriptContextName, scriptContextToDuplicate);
+			this.Strategy.ScriptContextAdd_duplicatedInSliders(dupeScriptContextName, scriptContextToDuplicate);
 			this.RaiseOnScriptContextDuplicated(dupeScriptContextName);
 			this.ctxScriptContexts_Opening(this, null);
 		}

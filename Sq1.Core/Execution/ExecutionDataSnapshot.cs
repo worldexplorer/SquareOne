@@ -41,10 +41,16 @@ namespace Sq1.Core.Execution {
 			this.AlertsNewAfterExec			.DisposeWaitHandlesAndClear(this, "Initialize(WAIT)");
 			this.AlertsPending				.DisposeWaitHandlesAndClear(this, "Initialize(WAIT)");
 			this.positionSernoAbs			= 0;
-			this.PositionsMaster			.DisposeTwoRelatedAlertsAndClear(this, "Initialize(WAIT)");
-			this.PositionsOpenedAfterExec	.DisposeTwoRelatedAlertsAndClear(this, "Initialize(WAIT)");
-			this.PositionsClosedAfterExec	.DisposeTwoRelatedAlertsAndClear(this, "Initialize(WAIT)");
-			this.PositionsOpenNow			.DisposeTwoRelatedAlertsAndClear(this, "Initialize(WAIT)");
+			//v1
+			//this.PositionsMaster			.Clear(this, "Initialize(WAIT)");
+			//this.PositionsOpenedAfterExec	.Clear(this, "Initialize(WAIT)");
+			//this.PositionsClosedAfterExec	.Clear(this, "Initialize(WAIT)");
+			//this.PositionsOpenNow			.Clear(this, "Initialize(WAIT)");
+			//v2 ALERT_WAS_ALERADY_DISPOSED
+			this.PositionsMaster			.DisposeTwoRelatedAlertsWaitHandlesAndClear(this, "Initialize(WAIT)");
+			this.PositionsOpenedAfterExec	.DisposeTwoRelatedAlertsWaitHandlesAndClear(this, "Initialize(WAIT)");
+			this.PositionsClosedAfterExec	.DisposeTwoRelatedAlertsWaitHandlesAndClear(this, "Initialize(WAIT)");
+			this.PositionsOpenNow			.DisposeTwoRelatedAlertsWaitHandlesAndClear(this, "Initialize(WAIT)");
 		} }
 		internal void PreExecutionOnNewBarOrNewQuoteClear() { lock (this.positionsMasterLock) {
 			this.AlertsNewAfterExec.Clear(this, "PreExecutionOnNewBarOrNewQuoteClear(WAIT)");

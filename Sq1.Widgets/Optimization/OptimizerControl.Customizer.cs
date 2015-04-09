@@ -188,16 +188,16 @@ namespace Sq1.Widgets.Optimization {
 				return param.WillBeSequencedDuringOptimization;
 			};
 
-			this.olvPrameters.CheckStateGetter = delegate(object o) {
+			this.olvParameters.CheckStateGetter = delegate(object o) {
 				IndicatorParameter param = o as IndicatorParameter;
 				if (param == null) return CheckState.Indeterminate;
 				return param.WillBeSequencedDuringOptimization ? CheckState.Checked : CheckState.Unchecked;
 			};
-			this.olvPrameters.CheckStatePutter = delegate(object o, CheckState newState) {
+			this.olvParameters.CheckStatePutter = delegate(object o, CheckState newState) {
 				IndicatorParameter param = o as IndicatorParameter;
 				if (param == null) return CheckState.Indeterminate;
 				param.WillBeSequencedDuringOptimization = newState.CompareTo(CheckState.Checked) == 0;
-				this.olvPrameters.RefreshObject(param);
+				this.olvParameters.RefreshObject(param);
 				this.optimizer.TotalsCalculate();
 				this.totalsPropagateAdjustSplitterDistance();
 				// for HeaderAllCheckBox.Clicked => Strategy.Serialize()d as many times as you got (Script+Indicator)Parameters
@@ -207,8 +207,8 @@ namespace Sq1.Widgets.Optimization {
 		}
 
 		void olvPrametersCustomizeBold() {
-			this.olvPrameters.UseCellFormatEvents = true;
-			this.olvPrameters.FormatCell += new EventHandler<FormatCellEventArgs>(olvPrameters_FormatCell);
+			this.olvParameters.UseCellFormatEvents = true;
+			this.olvParameters.FormatCell += new EventHandler<FormatCellEventArgs>(olvPrameters_FormatCell);
 		}
 		void olvPrameters_FormatCell(object sender, FormatCellEventArgs e) {
 			IndicatorParameter imMouseOver = e.Model as IndicatorParameter;

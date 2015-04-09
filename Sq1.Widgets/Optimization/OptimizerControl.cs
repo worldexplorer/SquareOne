@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -108,7 +107,7 @@ namespace Sq1.Widgets.Optimization {
 		}
 		void olvParameterPopulate() {
 			this.scriptAndIndicatorParametersMergedCloned = this.optimizer.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders;
-			this.olvPrameters.SetObjects(this.scriptAndIndicatorParametersMergedCloned);
+			this.olvParameters.SetObjects(this.scriptAndIndicatorParametersMergedCloned);
 		}
 		void olvHistoryRescanRefillSelect(string symbolScaleRange) {
 			this.RepositoryJsonOptimizationResults.RescanFolderStoreNamesFound();
@@ -222,8 +221,8 @@ namespace Sq1.Widgets.Optimization {
 			//int rowsShown = this.fastOLVparametersYesNoMinMaxStep.RowsPerPage;
 			int splitterDistanceForThreeLines = 212;
 			int allParameterLinesToDraw = this.optimizer.AllParameterLinesToDraw;
-			int heightEachNewLine = this.olvPrameters.RowHeightEffective;
-			if (this.olvPrameters.GridLines) heightEachNewLine++;
+			int heightEachNewLine = this.olvParameters.RowHeightEffective;
+			if (this.olvParameters.GridLines) heightEachNewLine++;
 			int inAdditionToThree = (allParameterLinesToDraw - 3) * heightEachNewLine;
 			this.heightExpanded = splitterDistanceForThreeLines + inAdditionToThree;
 			

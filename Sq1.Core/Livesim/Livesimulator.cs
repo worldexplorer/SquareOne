@@ -273,7 +273,7 @@ namespace Sq1.Core.Livesim {
 					unpausedMR.Set();
 				}
 				string msg2 = " LIVESIM_HAS_SINGLE_THREADED_QUOTE_PUMP__DONT_REQUEST_AND_DONT_WAIT_JUST_CONTINUE";
-				base.AbortRunningBacktestWaitAborted(msig + msg2, 0);
+				base.AbortRunningBacktestWaitAborted(msig + msg2);
 			} catch (Exception ex) {
 				Assembler.PopupException("Livesimulator.Stop_inGuiThread()", ex);
 			}

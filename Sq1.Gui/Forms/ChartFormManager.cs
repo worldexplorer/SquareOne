@@ -139,14 +139,14 @@ namespace Sq1.Gui.Forms {
 		public	ContextChart						ContextCurrentChartOrStrategy		{ get {
 				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart; } }
 
-		// I dont want it "internal" when "private" is omitted
-		private ChartFormManager() {
+		// WHATTTTT???? I dont want it "internal" when "private" is omitted
+		ChartFormManager() {
 			this.StrategyFoundDuringDeserialization = false;
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
 			this.ScriptEditedNeedsSaving = false;
 			//			this.Executor = new ScriptExecutor(Assembler.InstanceInitialized.ScriptExecutorConfig
 			//				, this.ChartForm.ChartControl, null, Assembler.InstanceInitialized.OrderProcessor, Assembler.InstanceInitialized.StatusReporter);
-			this.Executor = new ScriptExecutor();
+			this.Executor = new ScriptExecutor("EXECUTOR_FOR_AN_OPENED_CHART_UNCLONED");
 			this.ReportersFormsManager = new ReportersFormsManager(this);
 			this.ChartStreamingConsumer = new ChartFormStreamingConsumer(this);
 

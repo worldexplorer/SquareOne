@@ -38,7 +38,7 @@ namespace Sq1.Core.DataTypes {
 				return this.BarStreamingNullUnsafe.Clone();
 			} }
 
-		public Bars SafeCopy_safeToUseOneCopyForAllDisposableExecutors { get { lock (base.BarsLock) {
+		public Bars SafeCopy_oneCopyForEachDisposableExecutors(string reasonToExist) { lock (base.BarsLock) {
 			Bars ret = new Bars(this.Symbol, this.ScaleInterval, "SafeToUseOneCopyForAllDisposableExecutors");
 			foreach (Bar each in this.BarsList) {
 				Bar cloneBar = each.CloneDetached();
@@ -46,8 +46,9 @@ namespace Sq1.Core.DataTypes {
 			}
 			ret.DataSource = this.DataSource;
 			ret.MarketInfo = this.MarketInfo;
+			base.ReasonToExist = reasonToExist + "_CLONED_FROM_" + base.ReasonToExist;
 			return ret;
-		} } }
+		} }
 
 		Bars(string symbol, string reasonToExist = "NOREASON") : base(symbol, reasonToExist) {
 			ScaleInterval = new BarScaleInterval(BarScale.Unknown, 0);

@@ -58,17 +58,17 @@ namespace Sq1.Core.StrategyBase {
 				ctx.IsCurrent = (ctx.Name == scriptContextName) ? true : false;
 			}
 		}
-		public void ScriptContextAdd_duplicatedInSliders_or_importedFromOptimizer(string newScriptContextName, ContextScript duplicateAbsorbParamsFrom = null, bool setAddedAsCurrent = false) {
+		public void ScriptContextAdd_duplicatedInSliders(string newScriptContextName,
+						ContextScript absorbParamsFrom = null, bool setAddedAsCurrent = false) {
 			if (this.ScriptContextsByName.ContainsKey(newScriptContextName)) {
 				string msg = "CANT_ADD_EXISTING scriptContextName[" + newScriptContextName + "] already exists for strategy[" + this + "]";
 				//Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
 				Assembler.PopupException(msg, null, false);
 				return;
-				//e.Cancel = true;
 			}
 			ContextScript newScriptContext = new ContextScript(newScriptContextName);
-			if (duplicateAbsorbParamsFrom != null) {
-				newScriptContext.AbsorbFrom_duplicatedInSliders_or_importedFromOptimizer(duplicateAbsorbParamsFrom, true);
+			if (absorbParamsFrom != null) {
+				newScriptContext.AbsorbFrom_duplicatedInSliders_or_importedFromOptimizer(absorbParamsFrom, true);
 			} else {
 				newScriptContext.DataSourceName = this.ScriptContextCurrent.DataSourceName;
 				newScriptContext.Symbol = this.ScriptContextCurrent.Symbol;
@@ -76,6 +76,29 @@ namespace Sq1.Core.StrategyBase {
 				//newScriptContext.ScaleInterval = this.ScriptContextCurrent.Da;
 			}
 			//ABSORBS_TO_CURRENT_INSTEAD_OF_NEW var forceParametersFillScriptContext = this.ScriptParametersMergedWithCurrentContext;
+			this.ScriptContextsByName.Add(newScriptContextName, newScriptContext);
+
+			bool dontSaveWeOptimize = newScriptContextName.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
+			bool shouldSave = !dontSaveWeOptimize; 
+			if (setAddedAsCurrent) {
+				this.ContextSwitchCurrentToNamedAndSerialize(newScriptContextName, shouldSave);
+			}
+			if (dontSaveWeOptimize) {
+				return;
+			}
+			this.Serialize();
+			string msg2 = "scriptContextName[" + newScriptContextName + "] added for strategy[" + this + "]";
+			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg2);
+		}
+		public void ScriptContextAdd_cloneAndAbsorbCurrentValuesFromOptimizer(string newScriptContextName,
+						SystemPerformanceRestoreAble absorbParamsFrom, bool setAddedAsCurrent = false) {
+			if (this.ScriptContextsByName.ContainsKey(newScriptContextName)) {
+				string msg = "CANT_ADD_EXISTING scriptContextName[" + newScriptContextName + "] already exists for strategy[" + this + "]";
+				//Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			ContextScript newScriptContext = this.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(absorbParamsFrom, newScriptContextName);
 			this.ScriptContextsByName.Add(newScriptContextName, newScriptContext);
 
 			bool dontSaveWeOptimize = newScriptContextName.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);

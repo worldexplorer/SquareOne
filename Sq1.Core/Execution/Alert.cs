@@ -277,13 +277,23 @@ namespace Sq1.Core.Execution {
 			}
 			return ret;
 		} }
+		[JsonIgnore]	public	bool				IsDisposed;
 
-		~Alert() { this.Dispose(); }
 		public void Dispose() {
-			if (this.MreOrderFollowedIsAssignedNow == null) return;
-			this.MreOrderFollowedIsAssignedNow.Dispose();	// BASTARDO !!!! LEAKED_HANDLES_HUNTER
+			if (this.IsDisposed || this.MreOrderFollowedIsAssignedNow == null) {
+				string msg = "ALERT_WAS_ALREADY_DISPOSED__ACCESSING_WAIT_HANDLE_WILL_THROW_NPE " + this.ToString();
+				//Assembler.PopupException(msg);
+				return;
+			}
+			this.MreOrderFollowedIsAssignedNow.Dispose();	// BASTARDO_ESTA_AQUI !!!! LEAKED_HANDLES_HUNTER
+			this.MreOrderFollowedIsAssignedNow = null;
+			this.IsDisposed = true;
 		}
-		public	Alert() {	// called by Json.Deserialize()
+		
+		~Alert() { this.Dispose(); }
+		public	Alert() {
+			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
+			
 			PlacedBarIndex				= -1;
 			FilledBarIndex				= -1;
 			//TimeCreatedServerBar		= DateTime.MinValue;

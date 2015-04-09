@@ -1,15 +1,25 @@
 ﻿<Properties StartupItem="Sq1.Gui\Sq1.Gui.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Sq1.Core\Optimization\OptimizerParametersSequencer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="c:\SquareOne\Sq1.Core\StrategyBase\SystemPerformanceSlice.cs">
     <Files>
-      <File FileName="Sq1.Core\Optimization\OptimizerParametersSequencer.cs" Line="71" Column="71" />
-      <File FileName="c:\SquareOne\Sq1.Core\Streaming\QuoteQueuePerChannel.cs" Line="1" Column="1" />
-      <File FileName="c:\SquareOne\Sq1.Core\StrategyBase\ScriptExecutor.cs" Line="1" Column="1" />
-      <File FileName="c:\SquareOne\Sq1.Gui\Singletons\ExceptionsForm.cs" Line="1" Column="1" />
-      <File FileName="c:\SquareOne\Sq1.Core\Charting\DictionaryManyToOne.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Gui\Forms\OptimizerForm.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\OptimizerControl.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\Optimization\Optimizer.cs" Line="241" Column="1" />
+      <File FileName="Sq1.Core\Optimization\DisposableExecutorsPool.cs" Line="155" Column="1" />
       <File FileName="Sq1.Widgets\Optimization\OptimizerControl.EventConsumer.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Core\Optimization\OptimizerParametersSequencer.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Core\StrategyBase\ContextScript.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Widgets\Optimization\OptimizerControl.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\StrategyBase\Strategy.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Gui\Singletons\ExceptionsForm.cs" Line="26" Column="1" />
+      <File FileName="Sq1.Core\Optimization\DisposableExecutor.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\StrategyBase\ScriptExecutor.cs" Line="1367" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\Streaming\QuoteQueuePerChannel.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\Execution\Alert.cs" Line="1" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\Indicators\IndicatorMovingAverageSimple.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Core\Execution\PositionList.cs" Line="176" Column="3" />
+      <File FileName="Sq1.Core\Execution\ExecutionDataSnapshot.cs" Line="50" Column="1" />
+      <File FileName="Sq1.Core\Execution\Position.cs" Line="169" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\StrategyBase\SystemPerformanceSlice.cs" Line="344" Column="1" />
+      <File FileName="c:\SquareOne\Sq1.Core\StrategyBase\SystemPerformance.cs" Line="111" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

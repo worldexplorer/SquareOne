@@ -14,9 +14,9 @@ namespace Sq1.Core.Streaming {
 		protected	ConcurrentQueue<Quote>			QQ;
 					Stopwatch						waitedForBacktestToFinish;
 
-		public			bool	UpdateThreadNameAfterMaxConsumersSubscribed;
-		public			bool	HasSeparatePushingThread	{ get { return this is QuotePumpPerChannel; } }
-		public virtual	bool	Paused			{ get {
+		public			bool						UpdateThreadNameAfterMaxConsumersSubscribed;
+		public			bool						HasSeparatePushingThread						{ get { return this is QuotePumpPerChannel; } }
+		public virtual	bool						Paused											{ get {
 				#if DEBUG
 				Debugger.Break();
 				#endif

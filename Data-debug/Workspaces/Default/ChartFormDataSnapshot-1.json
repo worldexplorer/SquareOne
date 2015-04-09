@@ -32,7 +32,7 @@
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 22,
+    "BarWidthIncludingPadding": 15,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -71,7 +71,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 496,
+    "ScrollPositionAtBarIndex": 469,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -88,10 +88,16 @@
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
     "PriceVsVolumeSplitterDistance": 0,
-    "AlertPlacedEllipseColor": "DarkBlue",
-    "AlertPlacedEllipseColorAlpha": 180,
-    "AlertPlacedEllipsePenWidth": 2,
-    "AlertPlacedEllipseRadius": 3,
+    "AlertPendingEllipseColor": "DarkBlue",
+    "AlertPendingEllipseColorAlpha": 180,
+    "AlertPendingEllipsePenWidth": 2,
+    "AlertPendingEllipseRadius": 3,
+    "AlertPendingProtoTakeProfitEllipseColor": "Green",
+    "AlertPendingProtoTakeProfitEllipseColorAlpha": 100,
+    "AlertPendingProtoTakeProfitEllipsePenWidth": 2,
+    "AlertPendingProtoStopLossEllipseColor": "Red",
+    "AlertPendingProtoStopLossEllipseColorAlpha": 100,
+    "AlertPendingProtoStopLossEllipsePenWidth": 2,
     "MousePositionTrackOnGutters": true,
     "MousePositionTrackOnGuttersColor": "LightGray",
     "BarsBackgroundTransparencyAlpha": 24,
@@ -132,7 +138,7 @@
       "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 44
+        "Distance": 31
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -145,7 +151,7 @@
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 245
+        "Distance": 587
       }
     }
   },

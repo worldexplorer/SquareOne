@@ -98,6 +98,17 @@ namespace Sq1.Core.Execution {
 			this.LastBarIndexEntry	= -1;
 			this.LastBarIndexExit	= -1;
 		}
+		public void DisposeTwoRelatedAlertsWaitHandlesAndClear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + base.ReasonToExist + ".DisposeTwoRelatedAlertsWaitHandlesAndClear()";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				foreach (Position pos in base.InnerList) pos.Dispose();
+				this.Clear(owner, lockPurpose, waitMillis);
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+		}
+
 		// NEVER_USED__UNCOMMENT_WHEN_YOU_NEED_IT public void AddRangeOpened(List<Position> positions) {
 		//	foreach (Position position in positions) this.AddOpened_step1of2(position);
 		//}
@@ -240,17 +251,6 @@ namespace Sq1.Core.Execution {
 			return base.ToString()
 				+ " ByEntryFilled.Bars[" + ByEntryBarFilled.Keys.Count + "]"
 				+ "  ByExitFilled.Bars[" +  ByExitBarFilled.Keys.Count+ "]";
-		}
-
-		public void DisposeTwoRelatedAlertsAndClear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
-			lockPurpose += " //" + base.ReasonToExist + ".DisposeTwoRelatedAlertsAndClear()";
-			try {
-				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				foreach (Position pos in base.InnerList) pos.Dispose();
-				this.Clear(owner, lockPurpose, waitMillis);
-			} finally {
-				base.UnLockFor(owner, lockPurpose);
-			}
 		}
 	}
 }

@@ -133,7 +133,7 @@ namespace Sq1.Core.Backtesting {
 				: "";					// "BACKTESTED_ALL_REQUIRED_BARS";
 			return msg;
 		}
-		public void AbortRunningBacktestWaitAborted(string whyAborted, int millisecondsToWait = 1000) {
+		public void AbortRunningBacktestWaitAborted(string whyAborted, int millisecondsToWait = 3000) {
 			if (this.IsBacktestRunning == false) return;
 
 			//bool abortIsAlreadyRequested = this.RequestingBacktestAbort.WaitOne(0);
@@ -435,7 +435,7 @@ namespace Sq1.Core.Backtesting {
 				#endif
 			}
 		}
-		public string TO_STRING_PREFIX = "BACKTESTER_FOR_";
+		public const string TO_STRING_PREFIX = "BACKTESTER_FOR_";
 		public override string ToString() {
 			string ret = TO_STRING_PREFIX + this.Executor.ToString();
 			return ret;

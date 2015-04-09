@@ -67,13 +67,6 @@ namespace Sq1.Core.StrategyBase {
 			//v2
 			//this.AbsorbValuesFromCurrentContextAndReplacePointers();
 		}
-
-		//private void AbsorbValuesFromCurrentContextAndReplacePointers() {
-		//	ContextScript jsonDeserialized = this.Executor.Strategy.ScriptContextCurrent;
-		//	foreach (ScriptParameter param in this.ScriptParametersById_ReflectedCached.Values) {
-		//		if (jsonDeserialized.
-		//	}
-		//}
 		public void InitializeBacktestWrapper() {
 			if (this.Bars == null) {
 				string msg = "I_REFUSE_TO_INVOKE_CHILDS_InitializeBacktest() Bars=null " + this.ToString();
@@ -92,28 +85,8 @@ namespace Sq1.Core.StrategyBase {
 				this.Executor.Backtester.RequestingBacktestAbort.Set();
 			}
 		}		
-
 		#endregion
 
-		#region script parameters and indicator parameter userland-invokable helper
-//		[Obsolete("JUST_DECLARE_YOUR_PARAMETER_AS_CLASS_VARIABLE__INTROSPECTION_WILL_PICK_IT_UP")]
-//		public ScriptParameter ScriptParameterCreateRegister(int id, string name, double value, double min, double max, double increment, string reasonToExist="NO_REASON_TO_EXIST") {
-//			ScriptParameter strategyParameter = new ScriptParameter(id, name, value, min, max, increment, reasonToExist);
-//			this.checkThrowScriptParameterAlreadyRegistered(id, name);
-//			this.ScriptParametersById_ReflectedCached.Add(id, strategyParameter);
-//			return strategyParameter;
-//		}
-//		protected void checkThrowScriptParameterAlreadyRegistered(int id, string name) {
-//			if (this.ScriptParametersById.ContainsKey(id) == false) return;
-//			ScriptParameter param = this.ScriptParametersById[id];
-//			string msg = "Script[" + this.StrategyName + "] already had parameter {id[" + param.Id + "] name[" + param.Name + "]}"
-//				+ " while adding {id[" + id + "] name[" + name + "]}; edit source code and make IDs unique for every parameter";
-//			#if DEBUG
-//			Debugger.Break();
-//			#endif
-//			throw new Exception(msg);
-//		}
-		#endregion
 
 		#region all Indicator-related is grouped here
 		public	string IndicatorParametersAsString { get {
@@ -127,7 +100,6 @@ namespace Sq1.Core.StrategyBase {
 				ret = ret.TrimEnd(",".ToCharArray());
 				return "(" + ret + ")";
 			} }
-
 
 				bool indicatorParametersByIndicator_ReflectionForced;
 				Dictionary<string, List<IndicatorParameter>>	indicatorParametersByIndicator_ReflectedCached;

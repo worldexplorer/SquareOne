@@ -218,7 +218,6 @@
     <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="Charting\ContextChart.cs" />
     <Compile Include="StrategyBase\ContextScript.cs" />
-    <Compile Include="StrategyBase\ContextScriptEventArgs.cs" />
     <Compile Include="Livesim\LivesimBrokerSettings.cs" />
     <Compile Include="Livesim\LivesimStreamingSettings.cs" />
     <Compile Include="StrategyBase\SystemPerformancePositionsTracking.cs" />

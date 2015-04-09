@@ -16,19 +16,20 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public bool				ShowRangeBar;
 		[JsonProperty]	public bool				IsStreaming;
 
-		public ContextChart(string name = "UNDEFINED") : this() {
+		public ContextChart(string name) : this() {
 			Name = name;
 		}
-		protected ContextChart() {
-			Name = "UNDEFINED";
-			Symbol = "UNDEFINED";
-			DataSourceName = "UNDEFINED";
-			ScaleInterval = new BarScaleInterval(BarScale.Unknown, -1);
-			DataRange = new BarDataRange(500);
-			//ChartBarSpacing = 6;
-			IsStreamingTriggeringScript = false;
-			ShowRangeBar = false;
-			IsStreaming = true;
+		public ContextChart() {
+			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
+			
+			Name						= 			"NAME_UNDEFINED__CTX_JUST_CREATED";
+			Symbol						= 		  "SYMBOL_UNDEFINED__CTX_JUST_CREATED";
+			DataSourceName				= "DATASOURCENAME_UNDEFINED__CTX_JUST_CREATED";
+			ScaleInterval				= new BarScaleInterval(BarScale.Unknown, -1);
+			DataRange					= new BarDataRange(500);
+			IsStreamingTriggeringScript	= false;
+			ShowRangeBar				= false;
+			IsStreaming					= true;
 		}
 		public void AbsorbFrom(ContextChart found) {
 			if (found == null) return;

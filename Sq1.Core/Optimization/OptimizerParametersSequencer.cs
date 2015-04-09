@@ -6,7 +6,8 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Optimization {
 	public class OptimizerParametersSequencer {
-		public	ContextScript				ContextScriptCloneIterateable;
+				ContextScript				contextScriptCloneIterateable;
+		public	int							IncrementsDone					{ get; private set; }
 				object						getNextLock;
 				List<IndicatorParameter>	paramsMerged;
 				int							slowIndex;
@@ -15,38 +16,34 @@ namespace Sq1.Core.Optimization {
 		
 		public OptimizerParametersSequencer(ContextScript contextScript) {
 			getNextLock = new object();
-			ContextScriptCloneIterateable = contextScript.CloneResetAllToMinForOptimizer();
-			//v1
-			//paramsMerged = new List<IndicatorParameter>();
-			//paramsMerged.AddRange(this.ContextScriptIterated.ScriptParametersById.Values);
-			//foreach (List<IndicatorParameter> iParams in this.ContextScriptIterated.IndicatorParametersByName.Values) {
-			//	paramsMerged.AddRange(iParams);
-			//}
-			//v2 moved to ContextScript.ParametersMerged; Sq1.Widgets.SlidersAutoGrowControl.MenuProvider.EventConsumer.DumpScriptIndicatorParametersToMenuItems() uses the same mechanism
-			paramsMerged = ContextScriptCloneIterateable.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders;
+			contextScriptCloneIterateable = contextScript.CloneResetAllToMin_ForOptimizer("FOR_OptimizerParametersSequencer");
+			paramsMerged = contextScriptCloneIterateable.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders;
 			slowIndex = 0; 
 			fastIndex = 0;
 			log = "";
+			IncrementsDone = 0;
 		}
-		public ContextScript GetFirstScriptContext(string ctxName) { lock (this.getNextLock) {
+		public ContextScript GetFirstOrNextScriptContext(string ctxName) {
+			return (this.IncrementsDone == 0)
+					? this.getFirstScriptContext(ctxName)
+					: this.getNextScriptContextSequenced(ctxName);
+		}
+
+		ContextScript getFirstScriptContext(string ctxName) { lock (this.getNextLock) {
 			this.fastIndex = this.confirmOrFindNextParameterMarkedForSequencing(this.fastIndex);
 			this.slowIndex = this.confirmOrFindNextParameterMarkedForSequencing(this.slowIndex);
 
 			ContextScript ret = new ContextScript(ctxName);
+			ret.AbsorbOnlyScriptAndIndicatorParamsFrom_usedByOptimizerSequencerOnly("FOR_userClickedDuplicateCtx", this.contextScriptCloneIterateable);
+			this.IncrementsDone++;
 			this.logDump(ctxName);
-			//ret.AbsorbFrom(this.ContextScriptCloneIterateable);
-			ret.AbsorbOnlyScriptAndIndicatorParamsFrom("FOR_userClickedDuplicateCtx"
-			                                           , this.ContextScriptCloneIterateable.ScriptParametersById
-			                                           , this.ContextScriptCloneIterateable.IndicatorParametersByName);
 			return ret;
 		} }
-		public ContextScript GetNextScriptContextSequenced(string ctxName) { lock (this.getNextLock) {
+		ContextScript getNextScriptContextSequenced(string ctxName) { lock (this.getNextLock) {
 			ContextScript ret = new ContextScript(ctxName);
 			this.nextMerged();
-			//ret.AbsorbFrom(this.ContextScriptCloneIterateable);
-			ret.AbsorbOnlyScriptAndIndicatorParamsFrom("FOR_userClickedDuplicateCtx"
-			                                           , this.ContextScriptCloneIterateable.ScriptParametersById
-			                                           , this.ContextScriptCloneIterateable.IndicatorParametersByName);
+			ret.AbsorbOnlyScriptAndIndicatorParamsFrom_usedByOptimizerSequencerOnly("FOR_userClickedDuplicateCtx", this.contextScriptCloneIterateable);
+			this.IncrementsDone++;
 			this.logDump(ctxName);
 			return ret;
 		} }

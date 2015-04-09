@@ -13,6 +13,16 @@ namespace Sq1.Core.Optimization {
 		[JsonProperty]	public	SortedDictionary<int, ScriptParameter>			ScriptParametersById_BuiltOnBacktestFinished;
 		[JsonProperty]	public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished;
 		[JsonProperty]	public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
+		[JsonProperty]	public	string											ParametersAsString { get {
+				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
+				if (merged.Count == 0) return "(NoParameters)";
+				string ret = "";
+				foreach (string indicatorDotParameter in merged.Keys) {
+					ret += indicatorDotParameter + "=" + merged[indicatorDotParameter].ValueCurrent + ",";
+				}
+				ret = ret.TrimEnd(",".ToCharArray());
+				return "(" + ret + ")";
+			} }
 		
 		[JsonProperty]	public	string	NetProfitRecovery;
 		[JsonProperty]	public	string	StrategyName;
@@ -39,23 +49,26 @@ namespace Sq1.Core.Optimization {
 		[JsonIgnore]	private	double	MaxConsecLosers;
 		[JsonProperty]	public	string	MaxConsecLosersFormatted;
 		
+		[JsonProperty]	public	string	OptimizationIterationName;
+
 		public SystemPerformanceRestoreAble() {
-			string msg = "IF_THIS_CONSTRUCTOR_IS_ABSENT_JSON_CREATOR_WILL_INVOKE_THE_OTHER_WITH_NULL_PARAMETER. WHY_NOT_USE_DEFAULT(TYPE)???";
+			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
 		}
 		public SystemPerformanceRestoreAble(SystemPerformance sysPerfBacktestResult) {
 			if (sysPerfBacktestResult == null) {
 				Assembler.PopupException("DONT_INVOKE_ME_WITH_NULL AVOIDING_NPE");
 				return;
 			}
-			this.ScriptParametersById_BuiltOnBacktestFinished		= sysPerfBacktestResult.ScriptParametersById_BuiltOnBacktestFinished;
-			this.IndicatorParametersByName_BuiltOnBacktestFinished	= sysPerfBacktestResult.IndicatorParametersByName_BuiltOnBacktestFinished;
-			this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished = sysPerfBacktestResult.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
+			this.ScriptParametersById_BuiltOnBacktestFinished						= sysPerfBacktestResult.ScriptParametersById_BuiltOnBacktestFinished;
+			this.IndicatorParametersByName_BuiltOnBacktestFinished					= sysPerfBacktestResult.IndicatorParametersByName_BuiltOnBacktestFinished;
+			this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished	= sysPerfBacktestResult.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
 				
 			this.NetProfitRecovery				= sysPerfBacktestResult.NetProfitRecoveryForScriptContextNewName;
 			this.StrategyName					= sysPerfBacktestResult.Executor.StrategyName;
 			//this.ContextScript				= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent;
 			this.SymbolScaleIntervalDataRange	= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			base.Name							= this.SymbolScaleIntervalDataRange;
+			this.OptimizationIterationName		= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent.OptimizationIterationName;
 			
 			this.Format = sysPerfBacktestResult.Bars.SymbolInfo.PriceFormat;
 			

@@ -50,20 +50,32 @@ namespace Sq1.Core.StrategyBase {
 				foreach (IndicatorParameter iParam in this.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders) ret.Add(iParam.FullName, iParam);
 				return ret;
 			} }
+		[JsonProperty]	public	string										ScriptAndIndicatorParametersMergedClonedForSequencerByName_AsString { get {
+				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParametersMergedClonedForSequencerByName;
+				if (merged.Count == 0) return "(NoParameters)";
+				string ret = "";
+				foreach (string indicatorDotParameter in merged.Keys) {
+					ret += indicatorDotParameter + "=" + merged[indicatorDotParameter].ValueCurrent + ",";
+				}
+				ret = ret.TrimEnd(",".ToCharArray());
+				return "(" + ret + ")";
+			} }
 
 		[JsonIgnore]	public bool WillBacktestOnAppRestart { get {
 				return	this.BacktestOnRestart
 					&&	this.IsStreaming
 					&&	this.IsStreamingTriggeringScript;
 		} }
+		[JsonProperty]	public string						OptimizationIterationName;
 
 		public ContextScript(ContextChart upgradingFromSimpleChart = null, string name = "UNDEFINED") : this(name) {
 			base.AbsorbFrom(upgradingFromSimpleChart);
 		}
 		public ContextScript(string name = "UNDEFINED") : this() {
+			string msig = "THIS_CTOR_IS_IVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC";
 			this.Name = name;
 		}
-		protected ContextScript() : base() {
+		ContextScript() : base() {
 			PositionSize							= new PositionSize(PositionSizeMode.SharesConstantEachTrade, 1);
 			ScriptParametersById					= new SortedDictionary<int, ScriptParameter>();
 			IndicatorParametersByName				= new Dictionary<string, List<IndicatorParameter>>();
@@ -91,19 +103,20 @@ namespace Sq1.Core.StrategyBase {
 			BacktestStrokesPerBar					= BacktestStrokesPerBar.FourStrokeOHLC;
 		}
 		
-		public ContextScript CloneAndAbsorbFromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized) {
+		public ContextScript CloneAndAbsorbFromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized, string newScriptContextName = null) {
 			Assembler.PopupException("TESTME //CloneAndAbsorbFromSystemPerformanceRestoreAble()");
 			ContextScript clone = (ContextScript)base.MemberwiseClone();
-			clone.AbsorbOnlyScriptAndIndicatorParamsFrom("FOR_ImportedFromOptimizer",
-				sysPerfOptimized.ScriptParametersById_BuiltOnBacktestFinished,
-				sysPerfOptimized.IndicatorParametersByName_BuiltOnBacktestFinished);
+			if (string.IsNullOrEmpty(newScriptContextName) == false) {
+				clone.Name = newScriptContextName;
+			}
+			clone.ScriptParametersById			= sysPerfOptimized.ScriptParametersById_BuiltOnBacktestFinished;
+			clone.IndicatorParametersByName		= sysPerfOptimized.IndicatorParametersByName_BuiltOnBacktestFinished;
+			clone.replaceWithClonesScriptAndIndicatorParameters("NEW_CTX_FROM_OPTIMIZED", false);
 			return clone;
 		}
-		public void AbsorbOnlyScriptAndIndicatorParamsFrom(string reasonToClone,
-					SortedDictionary<int, ScriptParameter>			scriptParametersById,
-					Dictionary<string, List<IndicatorParameter>>	indicatorParametersByName) {
-			this.ScriptParametersById			= scriptParametersById;
-			this.IndicatorParametersByName		= indicatorParametersByName;
+		public void AbsorbOnlyScriptAndIndicatorParamsFrom_usedByOptimizerSequencerOnly(string reasonToClone, ContextScript found) {
+			this.ScriptParametersById			= found.ScriptParametersById;
+			this.IndicatorParametersByName		= found.IndicatorParametersByName;
 			this.replaceWithClonesScriptAndIndicatorParameters("FOR_" + reasonToClone, false);
 		}
 		public void AbsorbFrom_duplicatedInSliders_or_importedFromOptimizer(ContextScript found, bool absorbScriptAndIndicatorParams = true) {
@@ -113,7 +126,7 @@ namespace Sq1.Core.StrategyBase {
 			
 			this.PositionSize = found.PositionSize.Clone();
 			if (absorbScriptAndIndicatorParams) {
-				this.AbsorbOnlyScriptAndIndicatorParamsFrom("FOR_userClickedDuplicateCtx", found.ScriptParametersById, found.IndicatorParametersByName);
+				this.AbsorbOnlyScriptAndIndicatorParamsFrom_usedByOptimizerSequencerOnly("FOR_userClickedDuplicateCtx", found);
 			}
 			
 			//some of these guys can easily be absorbed by object.MemberwiseClone(), why do I prefer to maintain the growing list manually?... 
@@ -128,9 +141,9 @@ namespace Sq1.Core.StrategyBase {
 			this.SpreadModelerClassName						= found.SpreadModelerClassName;
 			this.SpreadModelerPercent						= found.SpreadModelerPercent;
 		}
-		public ContextScript CloneResetAllToMinForOptimizer() {
+		public ContextScript CloneResetAllToMin_ForOptimizer(string reasonToClone) {
 			ContextScript ret = (ContextScript)base.MemberwiseClone();
-			ret.replaceWithClonesScriptAndIndicatorParameters("FOR_OptimizerParametersSequencer", true, true);
+			ret.replaceWithClonesScriptAndIndicatorParameters(reasonToClone, true, true);
 			return ret;
 		}
 		void replaceWithClonesScriptAndIndicatorParameters(string reasonToClone, bool resetAllToMin = true, bool leaveNonSequencedAsCurrent = true) {
@@ -169,19 +182,20 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.IndicatorParametersByName = indicatorParametersByNameClonedReset;
 		}
-		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_backToStrategyFromOptimizer_noChecksDirtyImplementation(ContextScript ctxOptimized) {
+		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toDisposableFromSequencer(ContextScript ctxOptimizerSequenced) {
 			int ret = 0;
 			try {
-				foreach (int id in ctxOptimized.ScriptParametersById.Keys) {
-					ScriptParameter spOpt  = ctxOptimized	.ScriptParametersById[id];
-					ScriptParameter spMine = this			.ScriptParametersById[id];
+				this.OptimizationIterationName = ctxOptimizerSequenced.Name;
+				foreach (int id in ctxOptimizerSequenced.ScriptParametersById.Keys) {
+					ScriptParameter spOpt  = ctxOptimizerSequenced	.ScriptParametersById[id];
+					ScriptParameter spMine = this					.ScriptParametersById[id];
 					if (spMine.ValueCurrent == spOpt.ValueCurrent) continue;	//looks stupig but inserting breakpoint on next line is useful
 					spMine.ValueCurrent = spOpt.ValueCurrent;
 					ret++;
 				}
-				foreach (string indicatorName in ctxOptimized.IndicatorParametersByName.Keys) {
-					List<IndicatorParameter> ipsOpt  = ctxOptimized	.IndicatorParametersByName[indicatorName];
-					List<IndicatorParameter> ipsMine = this			.IndicatorParametersByName[indicatorName];
+				foreach (string indicatorName in ctxOptimizerSequenced.IndicatorParametersByName.Keys) {
+					List<IndicatorParameter> ipsOpt  = ctxOptimizerSequenced	.IndicatorParametersByName[indicatorName];
+					List<IndicatorParameter> ipsMine = this						.IndicatorParametersByName[indicatorName];
 					foreach (IndicatorParameter ipOpt in ipsOpt) {
 						foreach (IndicatorParameter ipMine in ipsMine) {
 							if (ipMine.FullName != ipOpt.FullName) continue;
@@ -193,7 +207,36 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 			} catch (Exception ex) {
-				string msg = "SCRIPT_RECOMPILED_OPTIMIZATOR_WAS_NOT_NOTIFIED_ABOUT_CHANGED_SCRIPT_OR_INDICATOR_PARAMETERS";
+				string msg = "SCRIPT_RECOMPILED_OPTIMIZATION_SEQUENCER_WAS_NOT_NOTIFIED_ABOUT_CHANGED_SCRIPT_OR_INDICATOR_PARAMETERS";
+				Assembler.PopupException(msg);
+			}
+			return ret;
+		}
+		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_fromOptimizer(SystemPerformanceRestoreAble sperfParametersToAbsorbIntoDefault) {
+			int ret = 0;
+			try {
+				foreach (int id in sperfParametersToAbsorbIntoDefault.ScriptParametersById_BuiltOnBacktestFinished.Keys) {
+					ScriptParameter spOpt  = sperfParametersToAbsorbIntoDefault	.ScriptParametersById_BuiltOnBacktestFinished[id];
+					ScriptParameter spMine = this								.ScriptParametersById[id];
+					if (spMine.ValueCurrent == spOpt.ValueCurrent) continue;	//looks stupig but inserting breakpoint on next line is useful
+					spMine.ValueCurrent = spOpt.ValueCurrent;
+					ret++;
+				}
+				foreach (string indicatorName in sperfParametersToAbsorbIntoDefault.IndicatorParametersByName_BuiltOnBacktestFinished.Keys) {
+					List<IndicatorParameter> ipsOpt  = sperfParametersToAbsorbIntoDefault	.IndicatorParametersByName_BuiltOnBacktestFinished[indicatorName];
+					List<IndicatorParameter> ipsMine = this									.IndicatorParametersByName[indicatorName];
+					foreach (IndicatorParameter ipOpt in ipsOpt) {
+						foreach (IndicatorParameter ipMine in ipsMine) {
+							if (ipMine.FullName != ipOpt.FullName) continue;
+							if (ipMine.ValueCurrent == ipOpt.ValueCurrent) continue;	//looks stupig but inserting breakpoint on next line is useful
+							ipMine.ValueCurrent = ipOpt.ValueCurrent;
+							ret++;
+							break;
+						}
+					}
+				}
+			} catch (Exception ex) {
+				string msg = "SCRIPT_RECOMPILED_OPTIMIZATION_SEQUENCER_WAS_NOT_NOTIFIED_ABOUT_CHANGED_SCRIPT_OR_INDICATOR_PARAMETERS";
 				Assembler.PopupException(msg);
 			}
 			return ret;

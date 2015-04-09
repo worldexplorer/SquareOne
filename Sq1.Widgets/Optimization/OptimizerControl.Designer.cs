@@ -20,7 +20,7 @@ namespace Sq1.Widgets.Optimization {
 			this.lblSpread = new System.Windows.Forms.Label();
 			this.txtQuotesGenerator = new System.Windows.Forms.TextBox();
 			this.txtSpread = new System.Windows.Forms.TextBox();
-			this.olvPrameters = new BrightIdeasSoftware.FastObjectListView();
+			this.olvParameters = new BrightIdeasSoftware.FastObjectListView();
 			this.olvcParamName = new BrightIdeasSoftware.OLVColumn();
 			this.olvcParamNumberOfRuns = new BrightIdeasSoftware.OLVColumn();
 			this.olvcParamValueMin = new BrightIdeasSoftware.OLVColumn();
@@ -82,7 +82,7 @@ namespace Sq1.Widgets.Optimization {
 			this.splitContainer2.Panel1.SuspendLayout();
 			this.splitContainer2.Panel2.SuspendLayout();
 			this.splitContainer2.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.olvPrameters)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.olvParameters)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudThreadsToRun)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.olvHistory)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.olvBacktests)).BeginInit();
@@ -132,7 +132,7 @@ namespace Sq1.Widgets.Optimization {
 			this.splitContainer2.Panel1.Controls.Add(this.lblSpread);
 			this.splitContainer2.Panel1.Controls.Add(this.txtQuotesGenerator);
 			this.splitContainer2.Panel1.Controls.Add(this.txtSpread);
-			this.splitContainer2.Panel1.Controls.Add(this.olvPrameters);
+			this.splitContainer2.Panel1.Controls.Add(this.olvParameters);
 			this.splitContainer2.Panel1.Controls.Add(this.lblDataRange);
 			this.splitContainer2.Panel1.Controls.Add(this.txtStrategy);
 			this.splitContainer2.Panel1.Controls.Add(this.lblSymbol);
@@ -197,57 +197,57 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// olvPrameters
 			// 
-			this.olvPrameters.AllColumns.Add(this.olvcParamName);
-			this.olvPrameters.AllColumns.Add(this.olvcParamNumberOfRuns);
-			this.olvPrameters.AllColumns.Add(this.olvcParamValueMin);
-			this.olvPrameters.AllColumns.Add(this.olvcParamValueCurrent);
-			this.olvPrameters.AllColumns.Add(this.olvcParamValueMax);
-			this.olvPrameters.AllColumns.Add(this.olvcParamStep);
-			this.olvPrameters.AllColumns.Add(this.olvcParamWillBeSequenced);
-			this.olvPrameters.AllowColumnReorder = true;
-			this.olvPrameters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.olvParameters.AllColumns.Add(this.olvcParamName);
+			this.olvParameters.AllColumns.Add(this.olvcParamNumberOfRuns);
+			this.olvParameters.AllColumns.Add(this.olvcParamValueMin);
+			this.olvParameters.AllColumns.Add(this.olvcParamValueCurrent);
+			this.olvParameters.AllColumns.Add(this.olvcParamValueMax);
+			this.olvParameters.AllColumns.Add(this.olvcParamStep);
+			this.olvParameters.AllColumns.Add(this.olvcParamWillBeSequenced);
+			this.olvParameters.AllowColumnReorder = true;
+			this.olvParameters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 			| System.Windows.Forms.AnchorStyles.Left) 
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.olvPrameters.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.olvPrameters.CellEditEnterChangesRows = true;
-			this.olvPrameters.CellEditTabChangesRows = true;
-			this.olvPrameters.CheckBoxes = true;
-			this.olvPrameters.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.olvParameters.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.olvParameters.CellEditEnterChangesRows = true;
+			this.olvParameters.CellEditTabChangesRows = true;
+			this.olvParameters.CheckBoxes = true;
+			this.olvParameters.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
 			this.olvcParamName,
 			this.olvcParamNumberOfRuns,
 			this.olvcParamValueMin,
 			this.olvcParamValueCurrent,
 			this.olvcParamValueMax,
 			this.olvcParamStep});
-			this.olvPrameters.Cursor = System.Windows.Forms.Cursors.Default;
-			this.olvPrameters.EmptyListMsg = "NO_PARAMETERS_TO_OPTIMIZE Edit Strategy\'s Script to add parameters or indicators";
-			this.olvPrameters.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.olvPrameters.FullRowSelect = true;
-			this.olvPrameters.GridLines = true;
-			this.olvPrameters.HideSelection = false;
-			this.olvPrameters.HighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
-			this.olvPrameters.HighlightForegroundColor = System.Drawing.Color.Black;
-			this.olvPrameters.IncludeColumnHeadersInCopy = true;
-			this.olvPrameters.IncludeHiddenColumnsInDataTransfer = true;
-			this.olvPrameters.Location = new System.Drawing.Point(0, 109);
-			this.olvPrameters.Name = "olvPrameters";
-			this.olvPrameters.ShowCommandMenuOnRightClick = true;
-			this.olvPrameters.ShowGroups = false;
-			this.olvPrameters.ShowImagesOnSubItems = true;
-			this.olvPrameters.ShowItemToolTips = true;
-			this.olvPrameters.Size = new System.Drawing.Size(415, 77);
-			this.olvPrameters.TabIndex = 41;
-			this.olvPrameters.TintSortColumn = true;
-			this.olvPrameters.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
-			this.olvPrameters.UnfocusedHighlightForegroundColor = System.Drawing.Color.Black;
-			this.olvPrameters.UseCompatibleStateImageBehavior = false;
-			this.olvPrameters.UseFilterIndicator = true;
-			this.olvPrameters.UseFiltering = true;
-			this.olvPrameters.UseHotItem = true;
-			this.olvPrameters.UseTranslucentHotItem = true;
-			this.olvPrameters.View = System.Windows.Forms.View.Details;
-			this.olvPrameters.VirtualMode = true;
-			this.olvPrameters.Click += new System.EventHandler(this.olvParameters_Click);
+			this.olvParameters.Cursor = System.Windows.Forms.Cursors.Default;
+			this.olvParameters.EmptyListMsg = "NO_PARAMETERS_TO_OPTIMIZE Edit Strategy\'s Script to add parameters or indicators";
+			this.olvParameters.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.olvParameters.FullRowSelect = true;
+			this.olvParameters.GridLines = true;
+			this.olvParameters.HideSelection = false;
+			this.olvParameters.HighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
+			this.olvParameters.HighlightForegroundColor = System.Drawing.Color.Black;
+			this.olvParameters.IncludeColumnHeadersInCopy = true;
+			this.olvParameters.IncludeHiddenColumnsInDataTransfer = true;
+			this.olvParameters.Location = new System.Drawing.Point(0, 109);
+			this.olvParameters.Name = "olvPrameters";
+			this.olvParameters.ShowCommandMenuOnRightClick = true;
+			this.olvParameters.ShowGroups = false;
+			this.olvParameters.ShowImagesOnSubItems = true;
+			this.olvParameters.ShowItemToolTips = true;
+			this.olvParameters.Size = new System.Drawing.Size(415, 77);
+			this.olvParameters.TabIndex = 41;
+			this.olvParameters.TintSortColumn = true;
+			this.olvParameters.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
+			this.olvParameters.UnfocusedHighlightForegroundColor = System.Drawing.Color.Black;
+			this.olvParameters.UseCompatibleStateImageBehavior = false;
+			this.olvParameters.UseFilterIndicator = true;
+			this.olvParameters.UseFiltering = true;
+			this.olvParameters.UseHotItem = true;
+			this.olvParameters.UseTranslucentHotItem = true;
+			this.olvParameters.View = System.Windows.Forms.View.Details;
+			this.olvParameters.VirtualMode = true;
+			this.olvParameters.Click += new System.EventHandler(this.olvParameters_Click);
 			// 
 			// olvcParamName
 			// 
@@ -319,8 +319,7 @@ namespace Sq1.Widgets.Optimization {
 			this.txtStrategy.Name = "txtStrategy";
 			this.txtStrategy.Size = new System.Drawing.Size(336, 20);
 			this.txtStrategy.TabIndex = 25;
-			this.txtStrategy.Text = "MA_ATRComplied (UserStop=1,ActivateLog=3) (ATR.Period=14,ATRband.Multiplier=1.56)" +
-	"";
+			this.txtStrategy.Text = "MA_ATRComplied (UserStop=1,ActivateLog=3) (ATR.Period=14,ATRband.Multiplier=1.56)";
 			// 
 			// lblSymbol
 			// 
@@ -545,7 +544,7 @@ namespace Sq1.Widgets.Optimization {
 			this.cbxRunCancel.Name = "cbxRunCancel";
 			this.cbxRunCancel.Size = new System.Drawing.Size(136, 23);
 			this.cbxRunCancel.TabIndex = 19;
-			this.cbxRunCancel.Text = "Cancel 529832 backtests";
+			this.cbxRunCancel.Text = "Cancel 528397 backtests";
 			this.cbxRunCancel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.cbxRunCancel.UseVisualStyleBackColor = true;
 			this.cbxRunCancel.Click += new System.EventHandler(this.cbxRunCancel_Click);
@@ -625,7 +624,6 @@ namespace Sq1.Widgets.Optimization {
 			this.olvBacktests.UseHotItem = true;
 			this.olvBacktests.UseTranslucentHotItem = true;
 			this.olvBacktests.View = System.Windows.Forms.View.Details;
-			this.olvBacktests.CellClick += new System.EventHandler<BrightIdeasSoftware.CellClickEventArgs>(this.olvBacktests_CellClick);
 			this.olvBacktests.CellRightClick += new System.EventHandler<BrightIdeasSoftware.CellRightClickEventArgs>(this.olvBacktests_CellRightClick);
 			// 
 			// olvcSerno
@@ -835,7 +833,7 @@ namespace Sq1.Widgets.Optimization {
 			this.splitContainer2.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
 			this.splitContainer2.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.olvPrameters)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.olvParameters)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudThreadsToRun)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.olvHistory)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.olvBacktests)).EndInit();
@@ -891,7 +889,7 @@ namespace Sq1.Widgets.Optimization {
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem mniCopyToClipboard;
 		private System.Windows.Forms.ToolStripMenuItem mniSaveCsv;
-		private BrightIdeasSoftware.FastObjectListView olvPrameters;
+		private BrightIdeasSoftware.FastObjectListView olvParameters;
 		private BrightIdeasSoftware.OLVColumn olvcParamWillBeSequenced;
 		private BrightIdeasSoftware.OLVColumn olvcParamName;
 		private BrightIdeasSoftware.OLVColumn olvcParamValueMin;

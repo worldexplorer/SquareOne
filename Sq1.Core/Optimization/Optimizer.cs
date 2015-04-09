@@ -77,17 +77,22 @@ namespace Sq1.Core.Optimization {
 		public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParametersMergedByName { get {
 			return this.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerByName; } }
 		
-		public	int			BacktestsTotal				{ get; private set; }
-		public	int			BacktestsRemaining			{ get { return this.BacktestsTotal - this.BacktestsFinished; } }
-		public	int			BacktestsRunningNow			{ get {
+		public	int			BacktestsTotal					{ get; private set; }
+		public	int			BacktestsRemaining				{ get { return this.BacktestsTotal - this.BacktestsFinished; } }
+		public	int			DisposableExecutorsRunningNow	{ get {
 				return (this.disposableExecutorsPool != null)
 					? this.disposableExecutorsPool.ExecutorsRunningNow
 					: 0;
 			} }
-		public	int			BacktestsFinished			{ get; private set; }
-		public	float		BacktestsSecondsElapsed		{ get; private set; }
+		public	int			DisposableExecutorsSpawnedNow	{ get {
+				return (this.disposableExecutorsPool != null)
+					? this.disposableExecutorsPool.ExecutorsSpawnedNow
+					: 0;
+			} }
+		public	int			BacktestsFinished				{ get; private set; }
+		public	float		BacktestsSecondsElapsed			{ get; private set; }
 
-		public	int			CpuCoresAvailable			{ get; private set; }
+		public	int			CpuCoresAvailable				{ get; private set; }
 		public	int			ThreadsToUse;	// UPDATED_FROM_GUI	{ get; private set; }
 		public	bool		InitializedProperly_executorHasScript_readyToOptimize;
 		
@@ -97,7 +102,7 @@ namespace Sq1.Core.Optimization {
 				string		iWasRunForDataRangeAsString;
 				string		iWasRunForPositionSizeAsString;
 		
-		public	bool		IsRunningNow					{ get { return this.BacktestsRunningNow > 0; } }
+		public	bool		IsRunningNow					{ get { return this.DisposableExecutorsRunningNow > 0; } }
 		public	bool		AbortedDontScheduleNewBacktests { get; private set; }
 		
 				ManualResetEvent unpaused;
@@ -193,7 +198,7 @@ namespace Sq1.Core.Optimization {
 			this.iWasRunForPositionSizeAsString = this.PositionSizeAsString;
 			this.RaiseOnBacktestStarted();
 
-			return this.BacktestsRunningNow;
+			return this.DisposableExecutorsRunningNow;
 		}
 
 		public void OptimizationAbort() {
@@ -223,8 +228,12 @@ namespace Sq1.Core.Optimization {
 				return;
 			}
 
-			if (this.BacktestsFinished > this.BacktestsTotal) {
+			if (this.BacktestsFinished >= this.BacktestsTotal) {
 				this.PoolFinishedBacktestsAll();
+				return;
+			}
+
+			if (this.BacktestsFinished + this.DisposableExecutorsRunningNow >= this.BacktestsTotal) {
 				return;
 			}
 
