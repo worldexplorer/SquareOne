@@ -67,6 +67,7 @@ namespace Sq1.Core.StrategyBase {
 					&&	this.IsStreamingTriggeringScript;
 		} }
 		[JsonProperty]	public string						OptimizationIterationName;
+		[JsonProperty]	public int							OptimizationIterationSerno;
 
 		public ContextScript(ContextChart upgradingFromSimpleChart = null, string name = "UNDEFINED") : this(name) {
 			base.AbsorbFrom(upgradingFromSimpleChart);
@@ -101,6 +102,9 @@ namespace Sq1.Core.StrategyBase {
 			SpreadModelerClassName					= typeof(BacktestSpreadModelerPercentage).Name;
 			SpreadModelerPercent					= BacktestStreaming.PERCENTAGE_DEFAULT;
 			BacktestStrokesPerBar					= BacktestStrokesPerBar.FourStrokeOHLC;
+
+			OptimizationIterationName = "it was a F5 GUI invoked backtest, not an optimization";
+			OptimizationIterationSerno = -1;	// it was a F5 GUI invoked backtest, not an optimization;
 		}
 		
 		public ContextScript CloneAndAbsorbFromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized, string newScriptContextName = null) {
@@ -186,6 +190,7 @@ namespace Sq1.Core.StrategyBase {
 			int ret = 0;
 			try {
 				this.OptimizationIterationName = ctxOptimizerSequenced.Name;
+				this.OptimizationIterationSerno = ctxOptimizerSequenced.OptimizationIterationSerno;
 				foreach (int id in ctxOptimizerSequenced.ScriptParametersById.Keys) {
 					ScriptParameter spOpt  = ctxOptimizerSequenced	.ScriptParametersById[id];
 					ScriptParameter spMine = this					.ScriptParametersById[id];

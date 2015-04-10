@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
+
+using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
 using Sq1.Core.Optimization;
@@ -21,9 +24,27 @@ namespace Sq1.Gui.FormFactories {
 			optimizerForm.OptimizerControl.OnCopyToContextDefaultBacktest	+= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(optimizerControl_OnCopyToContextDefaultBacktest);
 			optimizerForm.OptimizerControl.OnCopyToContextNew				+= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(optimizerControl_OnCopyToContextNew);
 			optimizerForm.OptimizerControl.OnCopyToContextNewBacktest		+= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(optimizerControl_OnCopyToContextNewBacktest);
+			optimizerForm.OptimizerControl.OnAllParametersControlOpen		+= new EventHandler<SystemPerformanceRestoreAbleListEventArgs>(optimizerControl_OnAllParametersControlOpen);
 			optimizerForm.FormClosing										+= new FormClosingEventHandler(optimizerForm_FormClosing);
-			optimizerForm.FormClosed										+= new  FormClosedEventHandler(optimizerForm_FormClosed);
+			optimizerForm.FormClosed										+= new FormClosedEventHandler(optimizerForm_FormClosed);
 			return optimizerForm;
+		}
+
+		void optimizerControl_OnAllParametersControlOpen(object sender, SystemPerformanceRestoreAbleListEventArgs e) {
+			AllParametersForm allParametersForm = new AllParametersForm(this.chartFormManager, e);
+			DockState designedDockState = allParametersForm.ShowHint;
+			if (designedDockState != DockState.Float) {
+				designedDockState  = DockState.Float;
+			}
+			allParametersForm.Text = chartFormManager.Strategy.Name + " :: " + e.FileName;
+			Size designedSize = allParametersForm.Size;
+			allParametersForm.Show(this.chartFormManager.MainForm.DockPanel, designedDockState);
+			//allParametersForm.Size = designedSize;
+			//allParametersForm.FloatPane.Size = designedSize;
+			//allParametersForm.Pane.Size = designedSize;
+			//NULL allParametersForm.PanelPane.Size = designedSize;
+			//allParametersForm.DockPanel.Size = designedSize;
+			//allParametersForm.ParentForm.Size = designedSize;
 		}
 
 		void optimizerControl_OnCopyToContextNewBacktest(object sender, SystemPerformanceRestoreAbleEventArgs e) {

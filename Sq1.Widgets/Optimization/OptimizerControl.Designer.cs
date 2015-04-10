@@ -21,13 +21,13 @@ namespace Sq1.Widgets.Optimization {
 			this.txtQuotesGenerator = new System.Windows.Forms.TextBox();
 			this.txtSpread = new System.Windows.Forms.TextBox();
 			this.olvParameters = new BrightIdeasSoftware.FastObjectListView();
-			this.olvcParamName = new BrightIdeasSoftware.OLVColumn();
-			this.olvcParamNumberOfRuns = new BrightIdeasSoftware.OLVColumn();
-			this.olvcParamValueMin = new BrightIdeasSoftware.OLVColumn();
-			this.olvcParamValueCurrent = new BrightIdeasSoftware.OLVColumn();
-			this.olvcParamValueMax = new BrightIdeasSoftware.OLVColumn();
-			this.olvcParamStep = new BrightIdeasSoftware.OLVColumn();
-			this.olvcParamWillBeSequenced = new BrightIdeasSoftware.OLVColumn();
+			this.olvcParamName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamNumberOfRuns = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamValueMin = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamValueCurrent = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamValueMax = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamStep = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcParamWillBeSequenced = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.lblDataRange = new System.Windows.Forms.Label();
 			this.txtStrategy = new System.Windows.Forms.TextBox();
 			this.lblSymbol = new System.Windows.Forms.Label();
@@ -43,26 +43,26 @@ namespace Sq1.Widgets.Optimization {
 			this.txtScriptParameterTotalNr = new System.Windows.Forms.TextBox();
 			this.txtIndicatorParameterTotalNr = new System.Windows.Forms.TextBox();
 			this.olvHistory = new BrightIdeasSoftware.FastObjectListView();
-			this.olvcPFavg = new BrightIdeasSoftware.OLVColumn();
-			this.olvcHistorySymbolScaleRange = new BrightIdeasSoftware.OLVColumn();
-			this.olvcHistoryDate = new BrightIdeasSoftware.OLVColumn();
-			this.olvcHistorySize = new BrightIdeasSoftware.OLVColumn();
+			this.olvcPFavg = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcHistorySymbolScaleRange = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcHistoryDate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcHistorySize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.cbxPauseResume = new System.Windows.Forms.CheckBox();
 			this.cbxRunCancel = new System.Windows.Forms.CheckBox();
 			this.lblStats = new System.Windows.Forms.Label();
 			this.progressBar1 = new System.Windows.Forms.ProgressBar();
 			this.cbxExpandCollapse = new System.Windows.Forms.CheckBox();
 			this.olvBacktests = new BrightIdeasSoftware.ObjectListView();
-			this.olvcSerno = new BrightIdeasSoftware.OLVColumn();
-			this.olvcTotalPositions = new BrightIdeasSoftware.OLVColumn();
-			this.olvcProfitPerPosition = new BrightIdeasSoftware.OLVColumn();
-			this.olvcNetProfit = new BrightIdeasSoftware.OLVColumn();
-			this.olvcWinLoss = new BrightIdeasSoftware.OLVColumn();
-			this.olvcProfitFactor = new BrightIdeasSoftware.OLVColumn();
-			this.olvcRecoveryFactor = new BrightIdeasSoftware.OLVColumn();
-			this.olvcMaxDrawdown = new BrightIdeasSoftware.OLVColumn();
-			this.olvcMaxConsecutiveWinners = new BrightIdeasSoftware.OLVColumn();
-			this.olvcMaxConsecutiveLosers = new BrightIdeasSoftware.OLVColumn();
+			this.olvcSerno = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcTotalPositions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcProfitPerPosition = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcNetProfit = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcProfitFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcRecoveryFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMaxDrawdown = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMaxConsecutiveWinners = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxOneBacktestResult = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniInfo = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -118,9 +118,9 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// splitContainer2
 			// 
-			this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-			| System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainer2.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.splitContainer2.Location = new System.Drawing.Point(0, 27);
 			this.splitContainer2.Name = "splitContainer2";
@@ -176,8 +176,8 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// txtQuotesGenerator
 			// 
-			this.txtQuotesGenerator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtQuotesGenerator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtQuotesGenerator.Enabled = false;
 			this.txtQuotesGenerator.Location = new System.Drawing.Point(78, 87);
 			this.txtQuotesGenerator.Name = "txtQuotesGenerator";
@@ -195,7 +195,7 @@ namespace Sq1.Widgets.Optimization {
 			this.txtSpread.TabIndex = 44;
 			this.txtSpread.Text = "7";
 			// 
-			// olvPrameters
+			// olvParameters
 			// 
 			this.olvParameters.AllColumns.Add(this.olvcParamName);
 			this.olvParameters.AllColumns.Add(this.olvcParamNumberOfRuns);
@@ -205,20 +205,20 @@ namespace Sq1.Widgets.Optimization {
 			this.olvParameters.AllColumns.Add(this.olvcParamStep);
 			this.olvParameters.AllColumns.Add(this.olvcParamWillBeSequenced);
 			this.olvParameters.AllowColumnReorder = true;
-			this.olvParameters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-			| System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.olvParameters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.olvParameters.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvParameters.CellEditEnterChangesRows = true;
 			this.olvParameters.CellEditTabChangesRows = true;
 			this.olvParameters.CheckBoxes = true;
 			this.olvParameters.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.olvcParamName,
-			this.olvcParamNumberOfRuns,
-			this.olvcParamValueMin,
-			this.olvcParamValueCurrent,
-			this.olvcParamValueMax,
-			this.olvcParamStep});
+            this.olvcParamName,
+            this.olvcParamNumberOfRuns,
+            this.olvcParamValueMin,
+            this.olvcParamValueCurrent,
+            this.olvcParamValueMax,
+            this.olvcParamStep});
 			this.olvParameters.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvParameters.EmptyListMsg = "NO_PARAMETERS_TO_OPTIMIZE Edit Strategy\'s Script to add parameters or indicators";
 			this.olvParameters.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -230,7 +230,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvParameters.IncludeColumnHeadersInCopy = true;
 			this.olvParameters.IncludeHiddenColumnsInDataTransfer = true;
 			this.olvParameters.Location = new System.Drawing.Point(0, 109);
-			this.olvParameters.Name = "olvPrameters";
+			this.olvParameters.Name = "olvParameters";
 			this.olvParameters.ShowCommandMenuOnRightClick = true;
 			this.olvParameters.ShowGroups = false;
 			this.olvParameters.ShowImagesOnSubItems = true;
@@ -312,14 +312,15 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// txtStrategy
 			// 
-			this.txtStrategy.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtStrategy.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtStrategy.Enabled = false;
 			this.txtStrategy.Location = new System.Drawing.Point(79, 3);
 			this.txtStrategy.Name = "txtStrategy";
 			this.txtStrategy.Size = new System.Drawing.Size(336, 20);
 			this.txtStrategy.TabIndex = 25;
-			this.txtStrategy.Text = "MA_ATRComplied (UserStop=1,ActivateLog=3) (ATR.Period=14,ATRband.Multiplier=1.56)";
+			this.txtStrategy.Text = "MA_ATRComplied (UserStop=1,ActivateLog=3) (ATR.Period=14,ATRband.Multiplier=1.56)" +
+				"";
 			// 
 			// lblSymbol
 			// 
@@ -347,10 +348,10 @@ namespace Sq1.Widgets.Optimization {
 			this.nudThreadsToRun.Size = new System.Drawing.Size(40, 20);
 			this.nudThreadsToRun.TabIndex = 33;
 			this.nudThreadsToRun.Value = new decimal(new int[] {
-			4,
-			0,
-			0,
-			0});
+            4,
+            0,
+            0,
+            0});
 			this.nudThreadsToRun.ValueChanged += new System.EventHandler(this.nudCpuCoresToUse_ValueChanged);
 			// 
 			// lblPositionSize
@@ -374,8 +375,8 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// txtSymbol
 			// 
-			this.txtSymbol.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtSymbol.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtSymbol.Enabled = false;
 			this.txtSymbol.Location = new System.Drawing.Point(79, 24);
 			this.txtSymbol.Name = "txtSymbol";
@@ -395,8 +396,8 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// txtDataRange
 			// 
-			this.txtDataRange.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtDataRange.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtDataRange.Enabled = false;
 			this.txtDataRange.Location = new System.Drawing.Point(79, 45);
 			this.txtDataRange.Name = "txtDataRange";
@@ -416,8 +417,8 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// txtPositionSize
 			// 
-			this.txtPositionSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.txtPositionSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtPositionSize.Enabled = false;
 			this.txtPositionSize.Location = new System.Drawing.Point(79, 66);
 			this.txtPositionSize.Name = "txtPositionSize";
@@ -458,8 +459,8 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.CellEditEnterChangesRows = true;
 			this.olvHistory.CellEditTabChangesRows = true;
 			this.olvHistory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.olvcPFavg,
-			this.olvcHistorySymbolScaleRange});
+            this.olvcPFavg,
+            this.olvcHistorySymbolScaleRange});
 			this.olvHistory.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvHistory.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvHistory.EmptyListMsg = "OPTIMIZATION_HISTORY_IS_EMPTY Never optimized since last script recompilation";
@@ -490,6 +491,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.View = System.Windows.Forms.View.Details;
 			this.olvHistory.VirtualMode = true;
 			this.olvHistory.ItemActivate += new System.EventHandler(this.olvHistory_ItemActivate);
+			this.olvHistory.DoubleClick += new System.EventHandler(this.olvHistory_DoubleClick);
 			this.olvHistory.KeyDown += new System.Windows.Forms.KeyEventHandler(this.olvHistory_KeyDown);
 			// 
 			// olvcPFavg
@@ -560,8 +562,8 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			// progressBar1
 			// 
-			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.progressBar1.Location = new System.Drawing.Point(318, 6);
 			this.progressBar1.Name = "progressBar1";
 			this.progressBar1.Size = new System.Drawing.Size(161, 16);
@@ -587,16 +589,16 @@ namespace Sq1.Widgets.Optimization {
 			this.olvBacktests.AllowColumnReorder = true;
 			this.olvBacktests.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvBacktests.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.olvcSerno,
-			this.olvcTotalPositions,
-			this.olvcProfitPerPosition,
-			this.olvcNetProfit,
-			this.olvcWinLoss,
-			this.olvcProfitFactor,
-			this.olvcRecoveryFactor,
-			this.olvcMaxDrawdown,
-			this.olvcMaxConsecutiveWinners,
-			this.olvcMaxConsecutiveLosers});
+            this.olvcSerno,
+            this.olvcTotalPositions,
+            this.olvcProfitPerPosition,
+            this.olvcNetProfit,
+            this.olvcWinLoss,
+            this.olvcProfitFactor,
+            this.olvcRecoveryFactor,
+            this.olvcMaxDrawdown,
+            this.olvcMaxConsecutiveWinners,
+            this.olvcMaxConsecutiveLosers});
 			this.olvBacktests.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvBacktests.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvBacktests.EmptyListMsg = "";
@@ -709,16 +711,16 @@ namespace Sq1.Widgets.Optimization {
 			// ctxOneBacktestResult
 			// 
 			this.ctxOneBacktestResult.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniInfo,
-			this.toolStripSeparator1,
-			this.mniCopyToDefaultCtxBacktest,
-			this.mniCopyToDefaultCtx,
-			this.mniltbCopyToNewContextBacktest,
-			this.mniltbCopyToNewContext,
-			this.toolStripSeparator2,
-			this.mni_showAllScriptIndicatorParametersInOptimizationResults,
-			this.mniCopyToClipboard,
-			this.mniSaveCsv});
+            this.mniInfo,
+            this.toolStripSeparator1,
+            this.mniCopyToDefaultCtxBacktest,
+            this.mniCopyToDefaultCtx,
+            this.mniltbCopyToNewContextBacktest,
+            this.mniltbCopyToNewContext,
+            this.toolStripSeparator2,
+            this.mni_showAllScriptIndicatorParametersInOptimizationResults,
+            this.mniCopyToClipboard,
+            this.mniSaveCsv});
 			this.ctxOneBacktestResult.Name = "ctxOneBacktestResult";
 			this.ctxOneBacktestResult.Size = new System.Drawing.Size(509, 198);
 			this.ctxOneBacktestResult.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOneBacktestResult_Opening);
@@ -761,11 +763,11 @@ namespace Sq1.Widgets.Optimization {
 			this.mniltbCopyToNewContextBacktest.Size = new System.Drawing.Size(448, 22);
 			this.mniltbCopyToNewContextBacktest.TextLeft = "Copy To New Context, Backtest:";
 			this.mniltbCopyToNewContextBacktest.TextLeftOffsetX = 0;
-			this.mniltbCopyToNewContextBacktest.TextLeftWidth = 178;
+			this.mniltbCopyToNewContextBacktest.TextLeftWidth = 164;
 			this.mniltbCopyToNewContextBacktest.TextRed = false;
 			this.mniltbCopyToNewContextBacktest.TextRight = "~= 121pips";
 			this.mniltbCopyToNewContextBacktest.TextRightOffsetX = 383;
-			this.mniltbCopyToNewContextBacktest.TextRightWidth = 68;
+			this.mniltbCopyToNewContextBacktest.TextRightWidth = 62;
 			this.mniltbCopyToNewContextBacktest.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContextBacktest_UserTyped);
 			// 
 			// mniltbCopyToNewContext
@@ -780,11 +782,11 @@ namespace Sq1.Widgets.Optimization {
 			this.mniltbCopyToNewContext.Size = new System.Drawing.Size(448, 22);
 			this.mniltbCopyToNewContext.TextLeft = "Copy To New Context:";
 			this.mniltbCopyToNewContext.TextLeftOffsetX = 0;
-			this.mniltbCopyToNewContext.TextLeftWidth = 128;
+			this.mniltbCopyToNewContext.TextLeftWidth = 116;
 			this.mniltbCopyToNewContext.TextRed = false;
 			this.mniltbCopyToNewContext.TextRight = "~= 121pips";
 			this.mniltbCopyToNewContext.TextRightOffsetX = 383;
-			this.mniltbCopyToNewContext.TextRightWidth = 68;
+			this.mniltbCopyToNewContext.TextRightWidth = 62;
 			this.mniltbCopyToNewContext.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContext_UserTyped);
 			// 
 			// toolStripSeparator2

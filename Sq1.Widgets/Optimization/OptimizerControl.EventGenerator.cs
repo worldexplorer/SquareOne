@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Sq1.Core;
 using Sq1.Core.Optimization;
@@ -9,7 +10,9 @@ namespace Sq1.Widgets.Optimization {
 		public event EventHandler<SystemPerformanceRestoreAbleEventArgs> OnCopyToContextDefaultBacktest;
 		public event EventHandler<SystemPerformanceRestoreAbleEventArgs> OnCopyToContextNew;
 		public event EventHandler<SystemPerformanceRestoreAbleEventArgs> OnCopyToContextNewBacktest;
-		
+
+		public event EventHandler<SystemPerformanceRestoreAbleListEventArgs> OnAllParametersControlOpen;
+
 		public void RaiseOnCopyToContextDefault(SystemPerformanceRestoreAble scriptAndParametersHolder) {
 			if (this.OnCopyToContextDefault == null) return;
 			try {
@@ -40,6 +43,15 @@ namespace Sq1.Widgets.Optimization {
 				this.OnCopyToContextNewBacktest(this, new SystemPerformanceRestoreAbleEventArgs(scriptAndParametersHolder, scriptContextNewName));
 			} catch (Exception ex) {
 				Assembler.PopupException("RaiseOnCopyToContextNewBacktest(" + scriptAndParametersHolder + ")", ex);
+			}
+		}
+		private void RaiseOnAllParametersControlOpen(List<SystemPerformanceRestoreAble> deserialized, string fnameDoubleClicked) {
+			if (this.OnAllParametersControlOpen == null) return;
+			try {
+				var eventArg = new SystemPerformanceRestoreAbleListEventArgs(deserialized, fnameDoubleClicked);
+				this.OnAllParametersControlOpen(this, eventArg);
+			} catch (Exception ex) {
+				Assembler.PopupException("RaiseOnAllParametersControlOpen(" + fnameDoubleClicked + ":" + deserialized.Count + "deserialized)", ex);
 			}
 		}
 	}

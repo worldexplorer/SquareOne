@@ -36,7 +36,7 @@ namespace Sq1.Widgets.Optimization {
 			this.olvcSerno.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcSerno.AspectGetter: SystemPerformanceRestoreAble=null";
-				return (this.backtestsLocalEasierToSync.IndexOf(systemPerformanceRestoreAble) + 1).ToString();
+				return systemPerformanceRestoreAble.OptimizationIterationSerno.ToString();
 			};
 			this.olvcNetProfit.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;

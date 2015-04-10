@@ -182,6 +182,34 @@
       <DependentUpon>LivesimControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectListViewDemo\ShellUtilities.cs" />
+    <Compile Include="Optimization\AllParametersControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Optimization\AllParametersControl.Designer.cs">
+      <DependentUpon>AllParametersControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Optimization\KPIs.cs" />
+    <Compile Include="Optimization\OneParameterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Optimization\OneParameterControl.Customizer.cs">
+      <DependentUpon>OneParameterControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Optimization\OneParameterControl.Designer.cs">
+      <DependentUpon>OneParameterControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Optimization\OneParameterAllValuesAveraged.cs" />
+    <Compile Include="Optimization\OneParameterControl.EventConsumer.cs">
+      <DependentUpon>OneParameterControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Optimization\OneParameterControl.EventGenerator.cs">
+      <DependentUpon>OneParameterControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Optimization\OneParameterOneValue.cs" />
+    <Compile Include="Optimization\OptimizationResultsTransposer.cs" />
     <Compile Include="Optimization\OptimizerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -358,6 +386,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Livesim\LivesimControl.resx">
       <DependentUpon>LivesimControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Optimization\AllParametersControl.resx">
+      <DependentUpon>AllParametersControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Optimization\OneParameterControl.resx">
+      <DependentUpon>OneParameterControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Optimization\OptimizerControl.resx">
       <DependentUpon>OptimizerControl.cs</DependentUpon>

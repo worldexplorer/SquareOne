@@ -280,6 +280,16 @@ namespace Sq1.Widgets.Optimization {
 			}
 			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync, true);
 		}
+		private void olvHistory_DoubleClick(object sender, EventArgs e) {
+			FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
+			if (fname == null) return;
+			if (this.backtestsLocalEasierToSync.Count == 0) {
+				string msg = "NO_RECORDS_IN_OPTIMIZATION_HISTORY_FILE[" + fname.ToString() + "]_DESERIALIZATION_HAPPES_ON_ITEM_ACTIVATE__DOUBLECLICK_AGAIN";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.RaiseOnAllParametersControlOpen(this.backtestsLocalEasierToSync, fname.Name);
+		}
 		void olvHistory_KeyDown(object sender, KeyEventArgs e) {
 			try {
 				if (e.KeyCode == Keys.Delete) {

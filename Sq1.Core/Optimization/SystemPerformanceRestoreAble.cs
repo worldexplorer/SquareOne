@@ -29,27 +29,30 @@ namespace Sq1.Core.Optimization {
 		[JsonProperty]	public	string	SymbolScaleIntervalDataRange;
 		
 		// REMOVE_NON-FORMATTED_AFTER_YOU_FIND_OUT_SORTING_IN_OBJECTLISTVIEW
+		// BAD_PLAN??? MOVED_TO_KPIs for easy base.MemberwiseClone
+
 		[JsonProperty]	public	string	Format;
 		[JsonProperty]	public	double	NetProfitForClosedPositionsBoth;
 		[JsonProperty]	public	string	NetProfitForClosedPositionsBothFormatted;
-		[JsonIgnore]	private	double	PositionsCountBoth;
+		[JsonIgnore]	public	double	PositionsCountBoth { get; private set; }
 		[JsonProperty]	public	string	PositionsCountBothFormatted;
-		[JsonIgnore]	private	double	AvgProfitBoth;
+		[JsonIgnore]	public	double	AvgProfitBoth { get; private set; }
 		[JsonProperty]	public	string	AvgProfitBothFormatted;
-		[JsonIgnore]	private	double	WinLossRatio;
+		[JsonIgnore]	public	double	WinLossRatio { get; private set; }
 		[JsonProperty]	public	string	WinLossRatioFormatted;
-		[JsonProperty]	public	double	ProfitFactor;
+		[JsonProperty]	public	double	ProfitFactor { get; private set; }
 		[JsonProperty]	public	string	ProfitFactorFormatted;
-		[JsonIgnore]	private	double	RecoveryFactor;
+		[JsonIgnore]	public	double	RecoveryFactor { get; private set; }
 		[JsonProperty]	public	string	RecoveryFactorFormatted;
-		[JsonIgnore]	private	double	MaxDrawDown;
+		[JsonIgnore]	public	double	MaxDrawDown { get; private set; }
 		[JsonProperty]	public	string	MaxDrawDownFormatted;
-		[JsonIgnore]	private	double	MaxConsecWinners;
+		[JsonIgnore]	public	double	MaxConsecWinners { get; private set; }
 		[JsonProperty]	public	string	MaxConsecWinnersFormatted;
-		[JsonIgnore]	private	double	MaxConsecLosers;
+		[JsonIgnore]	public	double	MaxConsecLosers { get; private set; }
 		[JsonProperty]	public	string	MaxConsecLosersFormatted;
 		
 		[JsonProperty]	public	string	OptimizationIterationName;
+		[JsonProperty]	public	int		OptimizationIterationSerno;
 
 		public SystemPerformanceRestoreAble() {
 			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
@@ -69,7 +72,8 @@ namespace Sq1.Core.Optimization {
 			this.SymbolScaleIntervalDataRange	= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			base.Name							= this.SymbolScaleIntervalDataRange;
 			this.OptimizationIterationName		= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent.OptimizationIterationName;
-			
+			this.OptimizationIterationSerno		= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent.OptimizationIterationSerno;
+
 			this.Format = sysPerfBacktestResult.Bars.SymbolInfo.PriceFormat;
 			
 			this.NetProfitForClosedPositionsBoth = sysPerfBacktestResult.SlicesShortAndLong.NetProfitForClosedPositionsBoth;

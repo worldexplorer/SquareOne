@@ -36,6 +36,7 @@ namespace Sq1.Core.Optimization {
 			ContextScript ret = new ContextScript(ctxName);
 			ret.AbsorbOnlyScriptAndIndicatorParamsFrom_usedByOptimizerSequencerOnly("FOR_userClickedDuplicateCtx", this.contextScriptCloneIterateable);
 			this.IncrementsDone++;
+			ret.OptimizationIterationSerno = this.IncrementsDone;
 			this.logDump(ctxName);
 			return ret;
 		} }
@@ -44,6 +45,7 @@ namespace Sq1.Core.Optimization {
 			this.nextMerged();
 			ret.AbsorbOnlyScriptAndIndicatorParamsFrom_usedByOptimizerSequencerOnly("FOR_userClickedDuplicateCtx", this.contextScriptCloneIterateable);
 			this.IncrementsDone++;
+			ret.OptimizationIterationSerno = this.IncrementsDone;
 			this.logDump(ctxName);
 			return ret;
 		} }

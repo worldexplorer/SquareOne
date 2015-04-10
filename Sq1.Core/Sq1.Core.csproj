@@ -182,6 +182,7 @@
     <Compile Include="Optimization\OptimizerParametersSequencer.cs" />
     <Compile Include="Optimization\SystemPerformanceRestoreAbleEventArgs.cs" />
     <Compile Include="Optimization\SystemPerformanceRestoreAble.cs" />
+    <Compile Include="Optimization\SystemPerformanceRestoreAbleListEventArgs.cs" />
     <Compile Include="Repositories\RepositoryBarsFile.Obsolete.cs">
       <DependentUpon>RepositoryBarsFile.cs</DependentUpon>
     </Compile>
