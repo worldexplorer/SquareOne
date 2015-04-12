@@ -209,18 +209,18 @@
     <Compile Include="Sequencing\SequencerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Sequencing\OptimizerControl.Customizer.cs">
+    <Compile Include="Sequencing\SequencerControl.Customizer.cs">
       <DependentUpon>SequencerControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Sequencing\SequencerControl.Designer.cs">
       <DependentUpon>SequencerControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Sequencing\OptimizerControl.EventConsumer.cs">
+    <Compile Include="Sequencing\SequencerControl.EventConsumer.cs">
       <DependentUpon>SequencerControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Sequencing\OptimizerControl.EventGenerator.cs">
+    <Compile Include="Sequencing\SequencerControl.EventGenerator.cs">
       <DependentUpon>SequencerControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
