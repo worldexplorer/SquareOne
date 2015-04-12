@@ -23,7 +23,7 @@
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			this.allParametersControl1 = new Sq1.Widgets.Optimization.AllParametersControl();
+			this.allParametersControl1 = new Sq1.Widgets.Correlation.AllParametersControl();
 			this.SuspendLayout();
 			// 
 			// allParametersControl1
@@ -50,6 +50,6 @@
 
 		#endregion
 
-		private Widgets.Optimization.AllParametersControl allParametersControl1;
+		private Sq1.Widgets.Correlation.AllParametersControl allParametersControl1;
 	}
 }

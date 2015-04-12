@@ -21,7 +21,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void ctxStrategy_Opening(object sender, CancelEventArgs e) {
 			this.MniShowLivesim		.Checked = this.ChartFormManager.LivesimFormIsOnSurface;
-			this.MniShowOptimizer	.Checked = this.ChartFormManager.OptimizerIsOnSurface;
+			this.MniShowSequencer	.Checked = this.ChartFormManager.SequencerIsOnSurface;
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
 		}
@@ -46,24 +46,24 @@ namespace Sq1.Gui.Forms {
 			// DUPLICATE_XML_SERIALIZATION_AFTER ScriptEditorForm.OnFormClosed()
 			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
-		void mniShowOptimizer_Click(object sender, System.EventArgs e) {
+		void mniShowSequencer_Click(object sender, System.EventArgs e) {
 			this.ctxStrategy.Visible = true;
-			if (this.MniShowOptimizer.Checked == false) {
-				this.MniShowOptimizer.Checked = true;
+			if (this.MniShowSequencer.Checked == false) {
+				this.MniShowSequencer.Checked = true;
 				// if autohidden => popup and keepAutoHidden=false
-				this.ChartFormManager.OptimizerFormShow(false);
+				this.ChartFormManager.SequencerFormShow(false);
 				this.ChartFormManager.MainForm.MainFormSerialize();
 			} else {
-				this.MniShowOptimizer.Checked = false;
-				//v1 this.ChartFormManager.OptimizerFormConditionalInstance.ToggleAutoHide();
-				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.OptimizerForm)) {
-					string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_OPTIMIZER_FORM_WAS_CLOSED_BY_X";
+				this.MniShowSequencer.Checked = false;
+				//v1 this.ChartFormManager.SequencerFormConditionalInstance.ToggleAutoHide();
+				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.SequencerForm)) {
+					string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_SEQUENCER_FORM_WAS_CLOSED_BY_X";
 					//Assembler.PopupException(msg);
 				} else {
-					this.ChartFormManager.OptimizerForm.Close();
+					this.ChartFormManager.SequencerForm.Close();
 				}
 			}
-			// DUPLICATE_XML_SERIALIZATION_AFTER OptimizerForm.OnFormClosed()
+			// DUPLICATE_XML_SERIALIZATION_AFTER SequencerForm.OnFormClosed()
 			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 		void mniShowLivesim_Click(object sender, EventArgs e) {
@@ -195,7 +195,7 @@ namespace Sq1.Gui.Forms {
 				context.ScaleInterval = scaleIntervalUserEntered;
 				
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mniltbAll_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniltbMinutes_UserTyped()", ex);
 			}
@@ -246,7 +246,7 @@ namespace Sq1.Gui.Forms {
 				this.mniShowBarRange_Click(sender, null);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbShowLastBars_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbShowLastBars_UserTyped()", ex);
 			}
@@ -292,7 +292,7 @@ namespace Sq1.Gui.Forms {
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbPositionSizeSharesConstant_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeSharesConstant_UserTyped()", ex);
 			}
@@ -317,7 +317,7 @@ namespace Sq1.Gui.Forms {
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped()", ex);
 			}
@@ -353,7 +353,7 @@ namespace Sq1.Gui.Forms {
 				}
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbSpreadGeneratorPct_UserTyped()", ex);
 			}

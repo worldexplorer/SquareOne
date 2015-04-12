@@ -132,11 +132,11 @@ namespace Sq1.Gui {
 					ret = parentChart.ScriptEditorFormConditionalInstance;
 					break;
 
-				case ("Optimizer"):
-					//return "Optimizer:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
+				case ("Sequencer"):
+					//return "Sequencer:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
 					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
-					ret = parentChart.OptimizerFormConditionalInstance;
+					ret = parentChart.SequencerFormConditionalInstance;
 					break;
 
 				case ("LiveSim"):

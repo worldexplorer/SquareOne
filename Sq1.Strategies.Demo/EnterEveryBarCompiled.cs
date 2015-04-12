@@ -60,14 +60,14 @@ namespace Sq1.Strategies.Demo {
 			//this.MAslow.LineWidth = 2;
 			//this.MAslow.LineColor = System.Drawing.Color.LightCoral;
 
-			//if (this.Executor.Optimizer.IsRunningNow == false) {
-			//    string msg = "OPTIMIZER_IS_ALREADY_RUN_KOZ_4CORES-SPAWNED_EXECUTORS(WHOS_MY_FATER)_ARE_POINTING_TO_SAME_OPTIMIZER";
+			//if (this.Executor.Sequencer.IsRunningNow == false) {
+			//    string msg = "SEQUENCER_IS_ALREADY_RUN_KOZ_4CORES-SPAWNED_EXECUTORS(WHOS_MY_FATER)_ARE_POINTING_TO_SAME_SEQUENCER";
 			//    Assembler.PopupException(msg);
 			//}
 			testChartLabelDrawOnNextLineModify();
 		}
 		void testChartLabelDrawOnNextLineModify() {
-			if (this.Executor.Optimizer.IsRunningNow) return;
+			if (this.Executor.Sequencer.IsRunningNow) return;
 			//DISPOSE_OR_TURN_TO_CLASS_VAR Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
 			//base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);
 			base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test["
@@ -78,7 +78,7 @@ namespace Sq1.Strategies.Demo {
 			//double slowStatic = this.MAslow.ClosesProxyEffective.LastStaticValue;
 			//DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
 
-			if (this.Executor.Optimizer.IsRunningNow) return;
+			if (this.Executor.Sequencer.IsRunningNow) return;
 
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
 				Bar bar = quote.ParentBarStreaming;

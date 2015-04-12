@@ -53,7 +53,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		#region Initializers
-		public void Initialize(ScriptExecutor scriptExecutor, bool saveStrategy_falseForOptimizer = true) {
+		public void Initialize(ScriptExecutor scriptExecutor, bool saveStrategy_falseForSequencer = true) {
 			this.Executor = scriptExecutor;
 
 			this.scriptParametersById_ReflectionForced = true;
@@ -62,8 +62,8 @@ namespace Sq1.Core.StrategyBase {
 			this.indicatorParametersByIndicator_ReflectionForced = true;
 
 			//v1
-			this.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(saveStrategy_falseForOptimizer);
-			this.Executor.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(saveStrategy_falseForOptimizer);
+			this.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(saveStrategy_falseForSequencer);
+			this.Executor.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(saveStrategy_falseForSequencer);
 			//v2
 			//this.AbsorbValuesFromCurrentContextAndReplacePointers();
 		}
@@ -215,8 +215,8 @@ namespace Sq1.Core.StrategyBase {
 				return scriptParametersById_ReflectedCached;
 			} }
 
-		public void IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(bool saveStrategy_falseForOptimizer = true) {
-			this.Strategy.IndicatorParametersReflectedAbsorbMergeFromCurrenctContext_SaveStrategy(saveStrategy_falseForOptimizer);
+		public void IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(bool saveStrategy_falseForSequencer = true) {
+			this.Strategy.IndicatorParametersReflectedAbsorbMergeFromCurrenctContext_SaveStrategy(saveStrategy_falseForSequencer);
 			foreach (Indicator indicatorInstance in this.IndicatorsByName_ReflectedCached.Values) {
 				// moved from upstairs coz: after absorbing all deserialized indicator parameters from ScriptContext, GetHostPanelForIndicator will return an pre-instantiated PanelIndicator
 				// otherwize GetHostPanelForIndicator created a new one for an indicator with default Indicator parameters;

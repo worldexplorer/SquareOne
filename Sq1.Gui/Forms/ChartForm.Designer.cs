@@ -36,7 +36,7 @@ namespace Sq1.Gui.Forms {
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniStrategyRemove = new System.Windows.Forms.ToolStripMenuItem();
 			this.MniShowSourceCodeEditor = new System.Windows.Forms.ToolStripMenuItem();
-			this.MniShowOptimizer = new System.Windows.Forms.ToolStripMenuItem();
+			this.MniShowSequencer = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxStrategy = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniStrategyContextLoad = new System.Windows.Forms.ToolStripMenuItem();
 			this.DdbStrategy = new System.Windows.Forms.ToolStripDropDownButton();
@@ -264,14 +264,14 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSourceCodeEditor.Text = "Show Source Code Editor";
 			this.MniShowSourceCodeEditor.Click += new System.EventHandler(this.mniShowSourceCodeEditor_Click);
 			// 
-			// MniShowOptimizer
+			// MniShowSequencer
 			// 
-			this.MniShowOptimizer.CheckOnClick = true;
-			this.MniShowOptimizer.Name = "MniShowOptimizer";
-			this.MniShowOptimizer.ShortcutKeys = System.Windows.Forms.Keys.F8;
-			this.MniShowOptimizer.Size = new System.Drawing.Size(248, 22);
-			this.MniShowOptimizer.Text = "Show Optimizer";
-			this.MniShowOptimizer.Click += new System.EventHandler(this.mniShowOptimizer_Click);
+			this.MniShowSequencer.CheckOnClick = true;
+			this.MniShowSequencer.Name = "MniShowSequencer";
+			this.MniShowSequencer.ShortcutKeys = System.Windows.Forms.Keys.F8;
+			this.MniShowSequencer.Size = new System.Drawing.Size(248, 22);
+			this.MniShowSequencer.Text = "Show Sequencer";
+			this.MniShowSequencer.Click += new System.EventHandler(this.mniShowSequencer_Click);
 			// 
 			// ctxStrategy
 			// 
@@ -280,7 +280,7 @@ namespace Sq1.Gui.Forms {
             this.mniStrategyRemove,
             this.toolStripSeparator3,
             this.MniShowLivesim,
-            this.MniShowOptimizer,
+            this.MniShowSequencer,
             this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
 			this.ctxStrategy.Size = new System.Drawing.Size(249, 120);
@@ -575,7 +575,7 @@ namespace Sq1.Gui.Forms {
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem mniStrategyContextLoad;
 		public System.Windows.Forms.ToolStripMenuItem MniShowSourceCodeEditor;
-		public System.Windows.Forms.ToolStripMenuItem MniShowOptimizer;
+		public System.Windows.Forms.ToolStripMenuItem MniShowSequencer;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripMenuItem mniStrategyRemove;
 		private System.Windows.Forms.ToolStripMenuItem mniShowBarRange;

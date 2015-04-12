@@ -103,7 +103,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		//v2 I_NEED_SCRIPT_ONLY__WILL_FULLY_RECONSTRUCT_CONTEXT_FROM_PARAMETERS_SEQUENCER
-		internal Strategy CloneMinimalForEachThread_forEachDisposableExecutorInOptimizerPool() {
+		internal Strategy CloneMinimalForEachThread_forEachDisposableExecutorInSequencerPool() {
 			Strategy ret = (Strategy)base.MemberwiseClone();
 
 			// I don't want ScriptDerived's own List and Dictionaries to refer to the Strategy.Script running live now;
@@ -113,8 +113,8 @@ namespace Sq1.Core.StrategyBase {
 			ret.ScriptContextsByName = new Dictionary<string, ContextScript>();
 			ret.ScriptContextsByName.Add(this.ScriptContextCurrentName, new ContextScript(this.ScriptContextCurrentName));
 			ret.ScriptContextCurrentName = ContextScript.DEFAULT_NAME;
-			//v1 ret.ScriptContextCurrent..CloneResetAllToMin_ForOptimizer("FOR_EACH_DISPOSABLE_EXECUTOR");
-			ret.ScriptContextCurrent.AbsorbOnlyScriptAndIndicatorParamsFrom_usedByOptimizerSequencerOnly("FRESH_DEFAULT_CTX_FOR_EACH_DISPOSABLE", this.ScriptContextCurrent);
+			//v1 ret.ScriptContextCurrent..CloneResetAllToMin_ForSequencer("FOR_EACH_DISPOSABLE_EXECUTOR");
+			ret.ScriptContextCurrent.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly("FRESH_DEFAULT_CTX_FOR_EACH_DISPOSABLE", this.ScriptContextCurrent);
 
 			ret.ScriptCompiler				= null;
 			ret.LivesimBrokerSettings		= null;

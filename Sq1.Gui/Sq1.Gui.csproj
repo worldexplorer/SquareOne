@@ -86,7 +86,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormFactories\OptimizerFormFactory.cs" />
+    <Compile Include="FormFactories\SequencerFormFactory.cs" />
     <Compile Include="Forms\AllParametersForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,11 +125,11 @@
       <DependentUpon>LivesimForm.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\OptimizerForm.cs">
+    <Compile Include="Forms\SequencerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\OptimizerForm.Designer.cs">
-      <DependentUpon>OptimizerForm.cs</DependentUpon>
+    <Compile Include="Forms\SequencerForm.Designer.cs">
+      <DependentUpon>SequencerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ScriptEditorForm.cs">
       <SubType>Form</SubType>
@@ -235,8 +235,8 @@
     <EmbeddedResource Include="Forms\LivesimForm.resx">
       <DependentUpon>LivesimForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\OptimizerForm.resx">
-      <DependentUpon>OptimizerForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\SequencerForm.resx">
+      <DependentUpon>SequencerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ScriptEditorForm.resx">
       <DependentUpon>ScriptEditorForm.cs</DependentUpon>

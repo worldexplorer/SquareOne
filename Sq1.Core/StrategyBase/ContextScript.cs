@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Sq1.Core.Backtesting;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
-using Sq1.Core.Optimization;
+using Sq1.Core.Sequencing;
 
 namespace Sq1.Core.StrategyBase {
 	public class ContextScript : ContextChart {
@@ -118,19 +118,19 @@ namespace Sq1.Core.StrategyBase {
 			clone.replaceWithClonesScriptAndIndicatorParameters("NEW_CTX_FROM_OPTIMIZED", false);
 			return clone;
 		}
-		public void AbsorbOnlyScriptAndIndicatorParamsFrom_usedByOptimizerSequencerOnly(string reasonToClone, ContextScript found) {
+		public void AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly(string reasonToClone, ContextScript found) {
 			this.ScriptParametersById			= found.ScriptParametersById;
 			this.IndicatorParametersByName		= found.IndicatorParametersByName;
 			this.replaceWithClonesScriptAndIndicatorParameters("FOR_" + reasonToClone, false);
 		}
-		public void AbsorbFrom_duplicatedInSliders_or_importedFromOptimizer(ContextScript found, bool absorbScriptAndIndicatorParams = true) {
+		public void AbsorbFrom_duplicatedInSliders_or_importedFromSequencer(ContextScript found, bool absorbScriptAndIndicatorParams = true) {
 			if (found == null) return;
 			//KEEP_CLONE_UNDEFINED this.Name = found.Name;
 			base.AbsorbFrom(found);
 			
 			this.PositionSize = found.PositionSize.Clone();
 			if (absorbScriptAndIndicatorParams) {
-				this.AbsorbOnlyScriptAndIndicatorParamsFrom_usedByOptimizerSequencerOnly("FOR_userClickedDuplicateCtx", found);
+				this.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly("FOR_userClickedDuplicateCtx", found);
 			}
 			
 			//some of these guys can easily be absorbed by object.MemberwiseClone(), why do I prefer to maintain the growing list manually?... 
@@ -145,7 +145,7 @@ namespace Sq1.Core.StrategyBase {
 			this.SpreadModelerClassName						= found.SpreadModelerClassName;
 			this.SpreadModelerPercent						= found.SpreadModelerPercent;
 		}
-		public ContextScript CloneResetAllToMin_ForOptimizer(string reasonToClone) {
+		public ContextScript CloneResetAllToMin_ForSequencer(string reasonToClone) {
 			ContextScript ret = (ContextScript)base.MemberwiseClone();
 			ret.replaceWithClonesScriptAndIndicatorParameters(reasonToClone, true, true);
 			return ret;
@@ -186,20 +186,20 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.IndicatorParametersByName = indicatorParametersByNameClonedReset;
 		}
-		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toDisposableFromSequencer(ContextScript ctxOptimizerSequenced) {
+		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toDisposableFromSequencer(ContextScript ctxSequencerSequenced) {
 			int ret = 0;
 			try {
-				this.OptimizationIterationName = ctxOptimizerSequenced.Name;
-				this.OptimizationIterationSerno = ctxOptimizerSequenced.OptimizationIterationSerno;
-				foreach (int id in ctxOptimizerSequenced.ScriptParametersById.Keys) {
-					ScriptParameter spOpt  = ctxOptimizerSequenced	.ScriptParametersById[id];
+				this.OptimizationIterationName = ctxSequencerSequenced.Name;
+				this.OptimizationIterationSerno = ctxSequencerSequenced.OptimizationIterationSerno;
+				foreach (int id in ctxSequencerSequenced.ScriptParametersById.Keys) {
+					ScriptParameter spOpt  = ctxSequencerSequenced	.ScriptParametersById[id];
 					ScriptParameter spMine = this					.ScriptParametersById[id];
 					if (spMine.ValueCurrent == spOpt.ValueCurrent) continue;	//looks stupig but inserting breakpoint on next line is useful
 					spMine.ValueCurrent = spOpt.ValueCurrent;
 					ret++;
 				}
-				foreach (string indicatorName in ctxOptimizerSequenced.IndicatorParametersByName.Keys) {
-					List<IndicatorParameter> ipsOpt  = ctxOptimizerSequenced	.IndicatorParametersByName[indicatorName];
+				foreach (string indicatorName in ctxSequencerSequenced.IndicatorParametersByName.Keys) {
+					List<IndicatorParameter> ipsOpt  = ctxSequencerSequenced	.IndicatorParametersByName[indicatorName];
 					List<IndicatorParameter> ipsMine = this						.IndicatorParametersByName[indicatorName];
 					foreach (IndicatorParameter ipOpt in ipsOpt) {
 						foreach (IndicatorParameter ipMine in ipsMine) {
@@ -217,7 +217,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return ret;
 		}
-		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_fromOptimizer(SystemPerformanceRestoreAble sperfParametersToAbsorbIntoDefault) {
+		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_fromSequencer(SystemPerformanceRestoreAble sperfParametersToAbsorbIntoDefault) {
 			int ret = 0;
 			try {
 				foreach (int id in sperfParametersToAbsorbIntoDefault.ScriptParametersById_BuiltOnBacktestFinished.Keys) {
@@ -268,9 +268,9 @@ namespace Sq1.Core.StrategyBase {
 				if (valueCurrentAbsorbed) ret++;
 			}
 			this.ScriptParametersById = scriptParametersById_ReflectedCached;
-//			bool dontSaveWeOptimize = this.Name.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
+//			bool dontSaveWeOptimize = this.Name.Contains(Sequencer.OPTIMIZATION_CONTEXT_PREFIX);
 //			if (dontSaveWeOptimize) {
-//				string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_OPTIMIZER_PROVIDED_IN_SCRIPTCONTEXT #1";
+//				string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_SEQUENCER_PROVIDED_IN_SCRIPTCONTEXT #1";
 //				Assembler.PopupException(msg + msig, null, true);
 //				//strategySerializeRequired = false;
 //			}
@@ -300,9 +300,9 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 			this.IndicatorParametersByName = indicatorParametersByIndicator_ReflectedCached;
-//			bool dontSaveWeOptimize = this.Name.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
+//			bool dontSaveWeOptimize = this.Name.Contains(Sequencer.OPTIMIZATION_CONTEXT_PREFIX);
 //			if (dontSaveWeOptimize) {
-//				string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_OPTIMIZER_PROVIDED_IN_SCRIPTCONTEXT #2";
+//				string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_SEQUENCER_PROVIDED_IN_SCRIPTCONTEXT #2";
 //				Assembler.PopupException(msg + msig, null, true);
 //				//strategySerializeRequired = false;
 //			}

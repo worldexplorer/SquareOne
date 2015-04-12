@@ -34,7 +34,7 @@ namespace Sq1.Gui.Forms {
 		internal void Initialize(ChartFormManager chartFormManager) {
 			this.chartFormManager = chartFormManager;
 			this.WindowTitlePullFromStrategy();
-			//this.liveSimControl.Initialize(this.chartFormManager.Executor.Optimizer);
+			//this.liveSimControl.Initialize(this.chartFormManager.Executor.Sequencer);
 			this.LivesimControl.LblStrategyAsString.Text = this.chartFormManager.Executor.ToStringWithCurrentParameters();
 			
 			try {

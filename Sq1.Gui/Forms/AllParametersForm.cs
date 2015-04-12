@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
-using Sq1.Core.Optimization;
+using Sq1.Core.Sequencing;
 using Sq1.Widgets;
-using Sq1.Widgets.Optimization;
+using Sq1.Widgets.Sequencing;
 
 namespace Sq1.Gui.Forms {
 	public partial class AllParametersForm : DockContentImproved {

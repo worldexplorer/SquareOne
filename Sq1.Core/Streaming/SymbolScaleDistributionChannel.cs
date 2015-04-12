@@ -18,7 +18,7 @@ namespace Sq1.Core.Streaming {
 
 		//NB#1	QuotePump.PushStraightOrBuffered replaced this.PushQuoteToConsumers to:
 		//		1) set Streaming free without necessity to wait for Script.OnNewQuote/Bar and deliver the next quote ASAP;
-		//		2) pause the Live trading and re-Backtest with new parameters imported from Optimizer, and continue Live with them (handling open positions at the edge NYI)
+		//		2) pause the Live trading and re-Backtest with new parameters imported from Sequencer, and continue Live with them (handling open positions at the edge NYI)
 		//NB#2	QuotePump.PushConsumersPaused will freeze max all opened charts and one Solidifier per DataSource:Symbol:ScaleInterval;
 		//		ability to control on per-consumer level costs more, including dissync between Solidifier.BarsStored and Executor.BarsInMemory
 		public	QuoteQueuePerChannel						QuotePump						{ get; protected set; }

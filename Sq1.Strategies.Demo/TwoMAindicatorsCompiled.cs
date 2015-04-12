@@ -26,7 +26,7 @@ namespace Sq1.Strategies.Demo {
 		public override void InitializeBacktest() {
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
-			if (this.Executor.Optimizer.IsRunningNow) return;
+			if (this.Executor.Sequencer.IsRunningNow) return;
 
 			this.testBarBackground(barStaticFormed);
 			this.testBarAnnotationsMarkBarsShiftedDueToMissedBar(barStaticFormed);

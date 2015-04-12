@@ -97,6 +97,18 @@
     <Compile Include="Charting\HostPanelForIndicator.cs" />
     <Compile Include="Charting\MultiSplitterProperties.cs" />
     <Compile Include="Charting\OnChartObjectOperationStatus.cs" />
+    <Compile Include="Correlation\KPIs.cs" />
+    <Compile Include="Correlation\OneParameterAllValuesAveraged.cs" />
+    <Compile Include="Correlation\OneParameterAllValuesAveraged.EventGenerator.cs">
+      <DependentUpon>OneParameterAllValuesAveraged.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Correlation\OneParameterAllValuesAveragedEventArgs.cs" />
+    <Compile Include="Correlation\OneParameterOneValue.cs" />
+    <Compile Include="Correlation\OneParameterOneValueEventArgs.cs" />
+    <Compile Include="Correlation\Correlator.cs" />
+    <Compile Include="Correlation\Optimizer2.EventGenerator.cs">
+      <DependentUpon>Correlator.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataFeed\DataSource.EventGenerator.cs">
       <DependentUpon>DataSource.cs</DependentUpon>
     </Compile>
@@ -173,17 +185,17 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerDataSnapshot.cs" />
-    <Compile Include="Optimization\MaximizationCriterion.cs" />
-    <Compile Include="Optimization\Optimizer.cs" />
-    <Compile Include="Optimization\Optimizer.EventGenerator.cs">
-      <DependentUpon>Optimizer.cs</DependentUpon>
+    <Compile Include="Sequencing\MaximizationCriterion.cs" />
+    <Compile Include="Sequencing\Sequencer.cs" />
+    <Compile Include="Sequencing\Optimizer.EventGenerator.cs">
+      <DependentUpon>Sequencer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Optimization\DisposableExecutor.cs" />
-    <Compile Include="Optimization\DisposableExecutorsPool.cs" />
-    <Compile Include="Optimization\OptimizerParametersSequencer.cs" />
-    <Compile Include="Optimization\SystemPerformanceRestoreAbleEventArgs.cs" />
-    <Compile Include="Optimization\SystemPerformanceRestoreAble.cs" />
-    <Compile Include="Optimization\SystemPerformanceRestoreAbleListEventArgs.cs" />
+    <Compile Include="Sequencing\DisposableExecutor.cs" />
+    <Compile Include="Sequencing\DisposableExecutorsPool.cs" />
+    <Compile Include="Sequencing\ParametersSequencer.cs" />
+    <Compile Include="Sequencing\SystemPerformanceRestoreAbleEventArgs.cs" />
+    <Compile Include="Sequencing\SystemPerformanceRestoreAble.cs" />
+    <Compile Include="Sequencing\SystemPerformanceRestoreAbleListEventArgs.cs" />
     <Compile Include="Repositories\RepositoryBarsFile.Obsolete.cs">
       <DependentUpon>RepositoryBarsFile.cs</DependentUpon>
     </Compile>

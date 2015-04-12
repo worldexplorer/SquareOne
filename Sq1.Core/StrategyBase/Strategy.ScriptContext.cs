@@ -1,7 +1,7 @@
 using System;
 using Newtonsoft.Json;
 
-using Sq1.Core.Optimization;
+using Sq1.Core.Sequencing;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class Strategy {
@@ -68,7 +68,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			ContextScript newScriptContext = new ContextScript(newScriptContextName);
 			if (absorbParamsFrom != null) {
-				newScriptContext.AbsorbFrom_duplicatedInSliders_or_importedFromOptimizer(absorbParamsFrom, true);
+				newScriptContext.AbsorbFrom_duplicatedInSliders_or_importedFromSequencer(absorbParamsFrom, true);
 			} else {
 				newScriptContext.DataSourceName = this.ScriptContextCurrent.DataSourceName;
 				newScriptContext.Symbol = this.ScriptContextCurrent.Symbol;
@@ -78,7 +78,7 @@ namespace Sq1.Core.StrategyBase {
 			//ABSORBS_TO_CURRENT_INSTEAD_OF_NEW var forceParametersFillScriptContext = this.ScriptParametersMergedWithCurrentContext;
 			this.ScriptContextsByName.Add(newScriptContextName, newScriptContext);
 
-			bool dontSaveWeOptimize = newScriptContextName.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
+			bool dontSaveWeOptimize = newScriptContextName.Contains(Sequencer.OPTIMIZATION_CONTEXT_PREFIX);
 			bool shouldSave = !dontSaveWeOptimize; 
 			if (setAddedAsCurrent) {
 				this.ContextSwitchCurrentToNamedAndSerialize(newScriptContextName, shouldSave);
@@ -90,7 +90,7 @@ namespace Sq1.Core.StrategyBase {
 			string msg2 = "scriptContextName[" + newScriptContextName + "] added for strategy[" + this + "]";
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg2);
 		}
-		public void ScriptContextAdd_cloneAndAbsorbCurrentValuesFromOptimizer(string newScriptContextName,
+		public void ScriptContextAdd_cloneAndAbsorbCurrentValuesFromSequencer(string newScriptContextName,
 						SystemPerformanceRestoreAble absorbParamsFrom, bool setAddedAsCurrent = false) {
 			if (this.ScriptContextsByName.ContainsKey(newScriptContextName)) {
 				string msg = "CANT_ADD_EXISTING scriptContextName[" + newScriptContextName + "] already exists for strategy[" + this + "]";
@@ -101,7 +101,7 @@ namespace Sq1.Core.StrategyBase {
 			ContextScript newScriptContext = this.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(absorbParamsFrom, newScriptContextName);
 			this.ScriptContextsByName.Add(newScriptContextName, newScriptContext);
 
-			bool dontSaveWeOptimize = newScriptContextName.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
+			bool dontSaveWeOptimize = newScriptContextName.Contains(Sequencer.OPTIMIZATION_CONTEXT_PREFIX);
 			bool shouldSave = !dontSaveWeOptimize; 
 			if (setAddedAsCurrent) {
 				this.ContextSwitchCurrentToNamedAndSerialize(newScriptContextName, shouldSave);

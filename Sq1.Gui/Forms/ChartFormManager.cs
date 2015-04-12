@@ -15,8 +15,8 @@ using Sq1.Gui.Forms;
 using Sq1.Gui.FormFactories;
 using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
+using Sq1.Widgets.Sequencing;
 using Sq1.Widgets;
-using Sq1.Widgets.Optimization;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormManager {
@@ -64,30 +64,30 @@ namespace Sq1.Gui.Forms {
 			} }
 		
 		
-				OptimizerFormFactory				optimizerFormFactory;
-		public	OptimizerForm						OptimizerForm;
-		public	OptimizerForm						OptimizerFormConditionalInstance		{ get {
-				if (DockContentImproved.IsNullOrDisposed(this.OptimizerForm)) {
+				SequencerFormFactory				sequencerFormFactory;
+		public	SequencerForm						SequencerForm;
+		public	SequencerForm						SequencerFormConditionalInstance		{ get {
+				if (DockContentImproved.IsNullOrDisposed(this.SequencerForm)) {
 					if (this.Strategy == null) return null;
-					if (this.optimizerFormFactory == null) {
+					if (this.sequencerFormFactory == null) {
 						#if DEBUG
 						Debugger.Break();
 						#endif
-						this.optimizerFormFactory = new OptimizerFormFactory(this);
+						this.sequencerFormFactory = new SequencerFormFactory(this);
 					}
 
-					this.OptimizerForm = this.optimizerFormFactory.CreateOptimizerFormSubscribe();
-					if (this.OptimizerForm == null) {
-						throw new Exception("OptimizerFormFactory.CreateAndSubscribe() failed to create OptimizerForm in ChartFormsManager");
+					this.SequencerForm = this.sequencerFormFactory.CreateSequencerFormSubscribe();
+					if (this.SequencerForm == null) {
+						throw new Exception("SequencerFormFactory.CreateAndSubscribe() failed to create SequencerForm in ChartFormsManager");
 					}
 				}
-				return this.OptimizerForm;
+				return this.SequencerForm;
 			} }
-		public	bool								OptimizerIsOnSurface				{ get {
-				OptimizerForm optimizer = this.OptimizerForm;
-				bool optimizerNotInstantiated = DockContentImproved.IsNullOrDisposed(optimizer);
-				bool optimizerMustBeActivated = optimizerNotInstantiated ? true : optimizer.MustBeActivated;
-				return !optimizerMustBeActivated;
+		public	bool								SequencerIsOnSurface				{ get {
+				SequencerForm sequencer = this.SequencerForm;
+				bool sequencerNotInstantiated = DockContentImproved.IsNullOrDisposed(sequencer);
+				bool sequencerMustBeActivated = sequencerNotInstantiated ? true : sequencer.MustBeActivated;
+				return !sequencerMustBeActivated;
 			} }
 		public	LivesimForm LivesimForm;
 		public	LivesimForm LivesimFormConditionalInstance { get {
@@ -112,7 +112,7 @@ namespace Sq1.Gui.Forms {
 				var ret = new Dictionary<string, DockContentImproved>();
 				if (this.ChartForm			!= null) ret.Add("Chart",		this.ChartForm);
 				if (this.ScriptEditorForm	!= null) ret.Add("Source Code",	this.ScriptEditorForm);
-				if (this.OptimizerForm		!= null) ret.Add("Optimizer",	this.OptimizerForm);
+				if (this.SequencerForm		!= null) ret.Add("Sequencer",	this.SequencerForm);
 				if (this.LivesimForm		!= null) ret.Add("LiveSim",		this.LivesimForm);
 				foreach (string textForMenuItem in this.ReportersFormsManager.FormsAllRelated.Keys) {
 					ret.Add(textForMenuItem, this.ReportersFormsManager.FormsAllRelated[textForMenuItem]);
@@ -152,7 +152,7 @@ namespace Sq1.Gui.Forms {
 
 			// never used in CHART_ONLY, but we have "Open In Current Chart" for Strategies
 			this.scriptEditorFormFactory = new ScriptEditorFormFactory(this);
-			this.optimizerFormFactory = new OptimizerFormFactory(this);
+			this.sequencerFormFactory = new SequencerFormFactory(this);
 			//this.livesimFormFactory = new LivesimFormFactory(this);
 
 			this.DataSnapshotSerializer = new Serializer<ChartFormDataSnapshot>();
@@ -295,7 +295,7 @@ namespace Sq1.Gui.Forms {
 				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, skipBacktestDuringDeserialization, false);
 				if (skipBacktestDuringDeserialization == false) {
 					string msg = "YOU_DID_NOT_SWITCH_TO_GUI_THREAD...";
-					this.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+					this.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 				}
 				//v1 if (this.Strategy.ScriptContextCurrent.IsStreaming) {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
@@ -559,7 +559,7 @@ namespace Sq1.Gui.Forms {
 					this.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
 					this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 				}
-				//this.OptimizerFormShow(true);
+				//this.SequencerFormShow(true);
 				//this.LivesimFormShow(true);
 				return;
 			}
@@ -600,7 +600,7 @@ namespace Sq1.Gui.Forms {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete) {
 				string msg = "WILL_NEVER_HAPPEN?";
 				Assembler.PopupException(msg);
-				this.OptimizerFormShow(false);
+				this.SequencerFormShow(false);
 				this.LivesimFormShow(false);
 			}
 
@@ -648,22 +648,22 @@ namespace Sq1.Gui.Forms {
 			//this.ScriptEditorFormConditionalInstance.Show(this.dockPanel, DockState.Document);
 			//useless: will be re-calculated in ctxStrategy_Opening(); this.ChartForm.MniShowSourceCodeEditor.Checked = this.ScriptEditorIsOnSurface;
 		}
-		public void OptimizerFormShow(bool keepAutoHidden = true) {
-			this.OptimizerFormConditionalInstance.Initialize(this);
+		public void SequencerFormShow(bool keepAutoHidden = true) {
+			this.SequencerFormConditionalInstance.Initialize(this);
 
-			DockPanel mainPanelOrAnotherOptimizersPanel = this.dockPanel;
-			OptimizerForm anotherOptimizer = null;
+			DockPanel mainPanelOrAnotherSequencersPanel = this.dockPanel;
+			SequencerForm anotherSequencer = null;
 			foreach (DockContent form in this.dockPanel.Contents) {
-				anotherOptimizer = form as OptimizerForm;
-				if (anotherOptimizer == null) continue;
-				if (anotherOptimizer.Pane == null) continue;
-				mainPanelOrAnotherOptimizersPanel = anotherOptimizer.Pane.DockPanel;
+				anotherSequencer = form as SequencerForm;
+				if (anotherSequencer == null) continue;
+				if (anotherSequencer.Pane == null) continue;
+				mainPanelOrAnotherSequencersPanel = anotherSequencer.Pane.DockPanel;
 				break;
 			}
-			this.OptimizerFormConditionalInstance.Show(mainPanelOrAnotherOptimizersPanel);
-			this.OptimizerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
-			//this.OptimizerFormConditionalInstance.OptimizerControl.Refresh();	// olvBacktest doens't repaint while having results?...
-			this.OptimizerFormConditionalInstance.OptimizerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
+			this.SequencerFormConditionalInstance.Show(mainPanelOrAnotherSequencersPanel);
+			this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+			//this.SequencerFormConditionalInstance.SequencerControl.Refresh();	// olvBacktest doens't repaint while having results?...
+			this.SequencerFormConditionalInstance.SequencerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}
 		public void LivesimFormShow(bool keepAutoHidden = true) {
 			this.LivesimFormConditionalInstance.Initialize(this);
@@ -679,8 +679,8 @@ namespace Sq1.Gui.Forms {
 			}
 			this.LivesimFormConditionalInstance.Show(mainPanelOrAnotherLivesimsPanel);
 			this.LivesimFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
-			//this.LivesimFormConditionalInstance.OptimizerControl.Refresh();	// olvBacktest doens't repaint while having results?...
-			//this.LivesimFormConditionalInstance.OptimizerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
+			//this.LivesimFormConditionalInstance.SequencerControl.Refresh();	// olvBacktest doens't repaint while having results?...
+			//this.LivesimFormConditionalInstance.SequencerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}
 		
 		public const string PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE = "* ";
@@ -709,8 +709,8 @@ namespace Sq1.Gui.Forms {
 			//}
 
 			this.ReportersFormsManager.WindowTitlePullFromStrategy_allReporterWrappers();
-			if (DockContentImproved.IsNullOrDisposed(this.OptimizerForm) == false) {
-				this.OptimizerForm.WindowTitlePullFromStrategy();
+			if (DockContentImproved.IsNullOrDisposed(this.SequencerForm) == false) {
+				this.SequencerForm.WindowTitlePullFromStrategy();
 			}
 			if (DockContentImproved.IsNullOrDisposed(this.LivesimForm) == false) {
 				this.LivesimForm.WindowTitlePullFromStrategy();
@@ -738,8 +738,8 @@ namespace Sq1.Gui.Forms {
 					this.ScriptEditorFormConditionalInstance.ScriptEditorControl.PopulateCompilerSuccess();
 				}
 				this.Strategy.Script.Initialize(this.Executor);
-				this.Executor.Optimizer.RaiseScriptRecompiledUpdateHeaderPostponeColumnsRebuild();
-				this.Executor.Optimizer.Initialize();						// removes "optimizerInitializedProperly == false" on app restart => Optimizer fills up with Script&Indicator Prarmeters for a JSON-based strategy
+				this.Executor.Sequencer.RaiseScriptRecompiledUpdateHeaderPostponeColumnsRebuild();
+				this.Executor.Sequencer.Initialize();						// removes "sequencerInitializedProperly == false" on app restart => Sequencer fills up with Script&Indicator Prarmeters for a JSON-based strategy
 			}
 			// moved to StrategyCompileActivatePopulateSlidersShow() because no need to PopulateSliders during Deserialization
 			//SlidersForm.Instance.Initialize(this.Strategy);
@@ -794,11 +794,11 @@ namespace Sq1.Gui.Forms {
 		}
 
 		
-		public void OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory(bool deleteOptimizationHistory = false) {
+		public void SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory(bool deleteOptimizationHistory = false) {
 			if (deleteOptimizationHistory) {
 				//v1 this.Strategy.OptimizationResultsByContextIdent.Clear();
-				if (this.OptimizerForm != null) {
-					this.OptimizerForm.OptimizerControl.RepositoryJsonOptimizationResults.ItemsFoundDeleteAll();
+				if (this.SequencerForm != null) {
+					this.SequencerForm.SequencerControl.RepositoryJsonOptimizationResults.ItemsFoundDeleteAll();
 				} else {
 					try {
 						RepositoryJsonOptimizationResults repositoryJsonOptimizationResults = new RepositoryJsonOptimizationResults();
@@ -814,13 +814,13 @@ namespace Sq1.Gui.Forms {
 				}
 			}
 
-			if (this.OptimizerForm == null) {
+			if (this.SequencerForm == null) {
 				string msg = "JUST_WANNA_KNOW_IF_I_EVER_CHECK_FOR_STALE_BEFORE_FORM_IS_CREATED";
 				//Assembler.PopupException(msg);
 				return;
 			}
 			
-			OptimizerControl control = this.OptimizerFormConditionalInstance.OptimizerControl;
+			SequencerControl control = this.SequencerFormConditionalInstance.SequencerControl;
 			control.SyncBacktestAndListWithOptimizationResultsByContextIdent();
 
 			//string staleReason = control.PopulateTextboxesFromExecutorsState();

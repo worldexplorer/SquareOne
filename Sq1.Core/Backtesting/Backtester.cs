@@ -321,7 +321,7 @@ namespace Sq1.Core.Backtesting {
 				this.Executor.BacktestContextRestore();
 				this.BarsOriginal = null;	// I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL WILL_AFFECT_ChartForm.TsiProgressBarETA
 				if (this.Executor.ChartShadow == null) {
-					string msg3 = "IAM_IN_OPTIMIZER_HAVING_NO_CHART_ASSOCIATED";
+					string msg3 = "IAM_IN_SEQUENCER_HAVING_NO_CHART_ASSOCIATED";
 					return;
 				}
 				this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;

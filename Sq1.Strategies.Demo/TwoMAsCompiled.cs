@@ -35,7 +35,7 @@ namespace Sq1.Strategies.Demo {
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
-			if (this.Executor.Optimizer.IsRunningNow == false) {
+			if (this.Executor.Sequencer.IsRunningNow == false) {
 				this.drawLinesSample(barStaticFormed);
 				//this.testBarBackground(barStaticFormed);
 				//this.testBarAnnotations(barStaticFormed);

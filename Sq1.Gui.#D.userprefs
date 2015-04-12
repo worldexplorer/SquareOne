@@ -1,38 +1,18 @@
 ﻿<Properties StartupItem="Sq1.Gui\Sq1.Gui.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Sq1.Widgets\Optimization\KPIs.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Sq1.Widgets\Optimization\OneParameterAllValuesAveraged.cs">
     <Files>
-      <File FileName="Sq1.Widgets\Optimization\AllParametersControl.cs" Line="34" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterControl.cs" Line="45" Column="21" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterOneValue.cs" Line="90" Column="39" />
-      <File FileName="Sq1.Widgets\Optimization\OptimizationResultsTransposer.cs" Line="39" Column="68" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterControl.Customizer.cs" Line="87" Column="52" />
+      <File FileName="Sq1.Widgets\Optimization\AllParametersControl.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Widgets\Optimization\OneParameterControl.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Widgets\Optimization\OneParameterOneValue.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Widgets\Optimization\OneParameterControl.Customizer.cs" Line="1" Column="1" />
       <File FileName="Sq1.Widgets\Optimization\OneParameterControl.EventGenerator.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterAllValuesAveraged.cs" Line="52" Column="42" />
-      <File FileName="Sq1.Widgets\Optimization\KPIs.cs" Line="68" Column="55" />
-      <File FileName="Sq1.Widgets\Optimization\OptimizerControl.EventConsumer.cs" Line="296" Column="4" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterControl.Designer.cs" Line="54" Column="55" />
+      <File FileName="Sq1.Widgets\Optimization\OneParameterAllValuesAveraged.cs" Line="43" Column="1" />
+      <File FileName="Sq1.Widgets\Optimization\KPIs.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Widgets\Optimization\OptimizerControl.EventConsumer.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Widgets\Optimization\OneParameterControl.Designer.cs" Line="1" Column="1" />
+      <File FileName="Sq1.Widgets\Optimization\Optimizer2.cs" Line="1" Column="1" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State expanded="True">
-          <Node name="Sq1.Core" expanded="True">
-            <Node name="Optimization" expanded="True" />
-            <Node name="StrategyBase" expanded="True" />
-          </Node>
-          <Node name="Sq1.Gui" expanded="True">
-            <Node name="Singletons" expanded="True" />
-          </Node>
-          <Node name="Sq1.Widgets" expanded="True">
-            <Node name="Optimization" expanded="True">
-              <Node name="KPIs.cs" selected="True" />
-              <Node name="OneParameterControl.cs" expanded="True" />
-              <Node name="OptimizerControl.cs" expanded="True" />
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

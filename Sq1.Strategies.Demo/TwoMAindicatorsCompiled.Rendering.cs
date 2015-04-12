@@ -10,13 +10,13 @@ namespace Sq1.Strategies.Demo {
 		Font fontArial7;
 		
 		void testBarBackground(Bar barStaticFormed) {
-			if (this.Executor.Optimizer.IsRunningNow) return;
+			if (this.Executor.Sequencer.IsRunningNow) return;
 			
 			Color bg = (barStaticFormed.Open > barStaticFormed.Close) ? Color.LightGreen : Color.LightSalmon;
 			base.Executor.ChartConditionalBarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
 		}
 		void testBarAnnotationsMarkBarsShiftedDueToMissedBar(Bar barStaticFormed) {
-			if (this.Executor.Optimizer.IsRunningNow) return;
+			if (this.Executor.Sequencer.IsRunningNow) return;
 			
 			if (barStaticFormed.BarIndexAfterMidnightReceived == barStaticFormed.BarIndexExpectedSinceTodayMarketOpen) return; 
 			

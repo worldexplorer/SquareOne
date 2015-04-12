@@ -184,9 +184,9 @@ namespace Sq1.Core.StrategyBase {
 			int absorbedClosedBH		= this.SliceBuyHold			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
 		}
 
-		public SystemPerformance CloneForOptimizer() {
-			// Optimizer takes Clone with Slices ready to use; same (parent) SystemPerformance.Initialize() overwrites with new Slices,
-			// while clone keeps pointers to old Slices => Optimizer is happy   
+		public SystemPerformance CloneForSequencer() {
+			// Sequencer takes Clone with Slices ready to use; same (parent) SystemPerformance.Initialize() overwrites with new Slices,
+			// while clone keeps pointers to old Slices => Sequencer is happy   
 			return (SystemPerformance)base.MemberwiseClone();
 		}
 		//public SystemPerformance CloneForReporter() {

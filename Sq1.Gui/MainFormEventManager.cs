@@ -188,7 +188,7 @@ namespace Sq1.Gui {
 		}
 		internal void RepositoryJsonDataSource_OnDataSourceRemoved(object sender, NamedObjectJsonEventArgs<DataSource> e) {
 			int a = 1;
-			//if a running optimizer / backtester / streaming chart had DataSource, possibly shut them down?
+			//if a running sequencer / backtester / streaming chart had DataSource, possibly shut them down?
 		}
 		internal void DataSourcesTree_OnDataSourceEditClicked(object sender, DataSourceEventArgs e) {
 			//DataSourceEditorForm.Instance.DataSourceEditorControl.Initialize(e.DataSource);

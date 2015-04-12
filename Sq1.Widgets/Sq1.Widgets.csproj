@@ -182,51 +182,46 @@
       <DependentUpon>LivesimControl.cs</DependentUpon>
     </Compile>
     <Compile Include="ObjectListViewDemo\ShellUtilities.cs" />
-    <Compile Include="Optimization\AllParametersControl.cs">
+    <Compile Include="Correlation\CorrelatorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Optimization\AllParametersControl.Designer.cs">
-      <DependentUpon>AllParametersControl.cs</DependentUpon>
+    <Compile Include="Correlation\CorrelatorControl.Designer.cs">
+      <DependentUpon>CorrelatorControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Optimization\KPIs.cs" />
-    <Compile Include="Optimization\OneParameterAllValuesAveragedEventArgs.cs" />
-    <Compile Include="Optimization\OneParameterControl.cs">
+    <Compile Include="Correlation\OneParameterControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Optimization\OneParameterControl.Customizer.cs">
+    <Compile Include="Correlation\OneParameterControl.Customizer.cs">
       <DependentUpon>OneParameterControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Optimization\OneParameterControl.Designer.cs">
+    <Compile Include="Correlation\OneParameterControl.Designer.cs">
       <DependentUpon>OneParameterControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Optimization\OneParameterAllValuesAveraged.cs" />
-    <Compile Include="Optimization\OneParameterControl.EventConsumer.cs">
-      <DependentUpon>OneParameterControl.cs</DependentUpon>
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Optimization\OneParameterControl.EventGenerator.cs">
+    <Compile Include="Correlation\OneParameterControl.EventConsumer.cs">
       <DependentUpon>OneParameterControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Optimization\OneParameterOneValue.cs" />
-    <Compile Include="Optimization\Optimizer2.cs" />
-    <Compile Include="Optimization\OptimizerControl.cs">
+    <Compile Include="Correlation\OneParameterControl.EventGenerator.cs">
+      <DependentUpon>OneParameterControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Optimization\OptimizerControl.Customizer.cs">
-      <DependentUpon>OptimizerControl.cs</DependentUpon>
+    <Compile Include="Sequencing\SequencerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Optimization\OptimizerControl.Designer.cs">
-      <DependentUpon>OptimizerControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Optimization\OptimizerControl.EventConsumer.cs">
-      <DependentUpon>OptimizerControl.cs</DependentUpon>
+    <Compile Include="Sequencing\OptimizerControl.Customizer.cs">
+      <DependentUpon>SequencerControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Optimization\OptimizerControl.EventGenerator.cs">
-      <DependentUpon>OptimizerControl.cs</DependentUpon>
+    <Compile Include="Sequencing\SequencerControl.Designer.cs">
+      <DependentUpon>SequencerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sequencing\OptimizerControl.EventConsumer.cs">
+      <DependentUpon>SequencerControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Sequencing\OptimizerControl.EventGenerator.cs">
+      <DependentUpon>SequencerControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ProgressBacktestETA\ProgressBarAndLabel.cs">
@@ -355,7 +350,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="StrategiesTree\StrategiesTreeDataSnapshot.cs" />
-    <Compile Include="Optimization\OneParameterOneValueEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CsvImporter\CsvImporterControl.resx">
@@ -389,14 +383,14 @@
     <EmbeddedResource Include="Livesim\LivesimControl.resx">
       <DependentUpon>LivesimControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Optimization\AllParametersControl.resx">
-      <DependentUpon>AllParametersControl.cs</DependentUpon>
+    <EmbeddedResource Include="Correlation\CorrelatorControl.resx">
+      <DependentUpon>CorrelatorControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Optimization\OneParameterControl.resx">
+    <EmbeddedResource Include="Correlation\OneParameterControl.resx">
       <DependentUpon>OneParameterControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Optimization\OptimizerControl.resx">
-      <DependentUpon>OptimizerControl.cs</DependentUpon>
+    <EmbeddedResource Include="Sequencing\SequencerControl.resx">
+      <DependentUpon>SequencerControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProgressBacktestETA\ProgressBarAndLabel.resx">
       <DependentUpon>ProgressBarAndLabel.cs</DependentUpon>

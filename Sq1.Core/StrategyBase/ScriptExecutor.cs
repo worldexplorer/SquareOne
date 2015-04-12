@@ -9,7 +9,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Execution;
 using Sq1.Core.Backtesting;
-using Sq1.Core.Optimization;
+using Sq1.Core.Sequencing;
 using Sq1.Core.Broker;
 using Sq1.Core.Charting;
 using Sq1.Core.StrategyBase;
@@ -29,7 +29,7 @@ namespace Sq1.Core.StrategyBase {
 		public	MarketsimBacktest				MarketsimBacktest			{ get; protected set; }
 		public	ScriptExecutorEventGenerator	EventGenerator				{ get; protected set; }
 		public	CommissionCalculator			CommissionCalculator;
-		public	Optimizer						Optimizer					{ get; protected set; }
+		public	Sequencer						Sequencer					{ get; protected set; }
 		public	Livesimulator					Livesimulator				{ get; protected set; }
 		public	string							LastBacktestStatus;
 		public	ConcurrentWatchdog				ScriptIsRunningCantAlterInternalLists	{ get; protected set; }
@@ -217,14 +217,14 @@ namespace Sq1.Core.StrategyBase {
 			MarketsimBacktest			= new MarketsimBacktest(this);
 			EventGenerator				= new ScriptExecutorEventGenerator(this);
 			CommissionCalculator		= new CommissionCalculatorZero(this);
-			Optimizer					= new Optimizer(this);
+			Sequencer					= new Sequencer(this);
 			Livesimulator				= new Livesimulator(this);
 			OrderProcessor				= Assembler.InstanceInitialized.OrderProcessor;
 			PerformanceAfterBacktest					= new SystemPerformance(this);
 			ScriptIsRunningCantAlterInternalLists = new ConcurrentWatchdog("WAITING_FOR_SCRIPT_OVERRIDDEN_METHOD_TO_RETURN");
 		}
 
-		public void Initialize(Strategy strategy, ChartShadow chartContol = null, bool saveStrategy_falseForOptimizer = false) {
+		public void Initialize(Strategy strategy, ChartShadow chartContol = null, bool saveStrategy_falseForSequencer = false) {
 			string msg = " at this time, FOR SURE this.Bars==null, strategy.Script?=null";
 			if (chartContol == null) {
 				string msg2 = "EXECUTOR_MUST_HAVE_CHART_SHADOW__CREATING_STUB_TO_ROUTE_DRAWING_COMMANDS_FROM_STRATEGY";
@@ -235,7 +235,7 @@ namespace Sq1.Core.StrategyBase {
 			this.ChartShadow.SetExecutor(this);
 			this.Strategy = strategy;
 			
-			this.Optimizer.InitializedProperly_executorHasScript_readyToOptimize = false;
+			this.Sequencer.InitializedProperly_executorHasScript_readyToOptimize = false;
 
 			if (this.Strategy != null) {
 				if (this.Bars != null) {
@@ -247,7 +247,7 @@ namespace Sq1.Core.StrategyBase {
 					//} else if (this.Bars == null) {
 					//	msg = "InitializeStrategyAfterDeserialization will Script.Initialize(this) later with bars";
 				} else {
-					this.Strategy.Script.Initialize(this, saveStrategy_falseForOptimizer);
+					this.Strategy.Script.Initialize(this, saveStrategy_falseForSequencer);
 
 					#region PARANOID
 					#if DEBUG
@@ -290,12 +290,12 @@ namespace Sq1.Core.StrategyBase {
 					//	}
 					//}
 					//v2 just force it and find duplicate calls in debugger...
-					//OPTIMIZER_ALREADY_DONE_IT_CloneForOptimizer this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
+					//SEQUENCER_ALREADY_DONE_IT_CloneForSequencer this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 					#endif
 					#endregion
 
 					// here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference
-					this.Optimizer.Initialize();	//otherwize this.Optimizer.InitializedProperly = false; => can't optimize anything
+					this.Sequencer.Initialize();	//otherwize this.Sequencer.InitializedProperly = false; => can't optimize anything
 				}
 			}
 			this.ExecutionDataSnapshot.Initialize();
@@ -449,7 +449,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 			} else {
-				if (this.Optimizer.IsRunningNow == false) {
+				if (this.Sequencer.IsRunningNow == false) {
 					string msg = "CHART_SHADOW_MUST_BE_NULL_ONLY_WHEN_OPTIMIZING__BACKTEST_AND_LIVESIM_MUST_HAVE_CHART_SHADOW_ASSOCIATED";
 					Assembler.PopupException(msg);
 				}
@@ -982,7 +982,7 @@ namespace Sq1.Core.StrategyBase {
 							}
 						}
 					} else {
-						if (this.Optimizer.IsRunningNow == false) {
+						if (this.Sequencer.IsRunningNow == false) {
 							string msg = "CHART_SHADOW_MUST_BE_NULL_ONLY_WHEN_OPTIMIZING__BACKTEST_AND_LIVESIM_MUST_HAVE_CHART_SHADOW_ASSOCIATED";
 							Assembler.PopupException(msg);
 						}
@@ -1422,9 +1422,9 @@ namespace Sq1.Core.StrategyBase {
 			//if (this.Strategy.ActivatedFromDll) {
 				// FIXED "EnterEveryBar doesn't draw MAfast"; editor-typed strategies already have indicators in SNAP after pre-backtest compilation
 				// DONT_COMMENT_LINE_BELOW indicators get lost when BacktestOnRestart = true
-				//OPTIMIZER_ALREADY_DONE_IT_CloneForOptimizer this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
+				//SEQUENCER_ALREADY_DONE_IT_CloneForSequencer this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 			//}
-			//OPTIMIZER_ALREADY_DONE_IT_CloneForOptimizer this.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
+			//SEQUENCER_ALREADY_DONE_IT_CloneForSequencer this.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
 			
 			//inNewThread = false;
 			if (inNewThread) {
@@ -1503,7 +1503,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.Bars = barsClicked;
 			if (this.Bars.DataSource == null) {
-				string msg = "BARS_CLONED_FOR_OPTIMIZER_DONT_HAVE_DATASOURCE[" + this.Bars.ReasonToExist + "]";
+				string msg = "BARS_CLONED_FOR_SEQUENCER_DONT_HAVE_DATASOURCE[" + this.Bars.ReasonToExist + "]";
 				Assembler.PopupException(msg);
 				return;
 			}
