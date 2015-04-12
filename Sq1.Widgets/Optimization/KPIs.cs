@@ -1,91 +1,91 @@
-﻿using Sq1.Core.DataFeed;
-
-using Sq1.Core.Optimization;
+﻿using Sq1.Core.Optimization;
 
 namespace Sq1.Widgets.Optimization {
 	public class KPIs {
-		public string Format;
-
-		public double NetProfit;
-		public string NetProfitFormatted;
-
 		public double PositionsCount;
-		public string PositionsCountFormatted;
-
 		public double PositionAvgProfit;
-		public string PositionAvgProfitFormatted;
-
+		public double NetProfit;
 		public double WinLossRatio;
-		public string WinLossRatioFormatted;
-
 		public double ProfitFactor;
-		public string ProfitFactorFormatted;
-
 		public double RecoveryFactor;
-		public string RecoveryFactorFormatted;
-
 		public double MaxDrawDown;
-		public string MaxDrawDownFormatted;
-
 		public double MaxConsecWinners;
-		public string MaxConsecWinnersFormatted;
-
 		public double MaxConsecLosers;
-		public string MaxConsecLosersFormatted;
 
-		public KPIs(SystemPerformanceRestoreAble firstRun) {
-			this.Format = firstRun.Format;
+		public void Reset() {
+			this.PositionsCount = 0;
+			this.PositionAvgProfit = 0;
+			this.NetProfit = 0;
+			this.WinLossRatio = 0;
+			this.ProfitFactor = 0;
+			this.RecoveryFactor = 0;
+			this.MaxDrawDown = 0;
+			this.MaxConsecWinners = 0;
+			this.MaxConsecLosers = 0;
+		}
 
-			this.NetProfit = firstRun.NetProfitForClosedPositionsBoth;
-			this.PositionsCount = firstRun.PositionsCountBoth;
-			this.PositionAvgProfit = firstRun.AvgProfitBoth;
-			this.WinLossRatio = firstRun.WinLossRatio;
-			this.ProfitFactor = firstRun.ProfitFactor;
-			this.RecoveryFactor = firstRun.RecoveryFactor;
-			this.MaxDrawDown = firstRun.MaxDrawDown;
-			this.MaxConsecWinners = firstRun.MaxConsecWinners;
-			this.MaxConsecLosers = firstRun.MaxConsecLosers;
+		public KPIs() {
 		}
 
 		internal void AddKPIs(SystemPerformanceRestoreAble anotherRun) {
-			this.NetProfit += anotherRun.NetProfitForClosedPositionsBoth;
 			this.PositionsCount += anotherRun.PositionsCountBoth;
 			this.PositionAvgProfit += anotherRun.AvgProfitBoth;
-			this.WinLossRatio += anotherRun.WinLossRatio;
-			this.ProfitFactor += anotherRun.ProfitFactor;
-			this.RecoveryFactor += anotherRun.RecoveryFactor;
+			this.NetProfit += anotherRun.NetProfitForClosedPositionsBoth;
+
+			if (double.IsNaN(anotherRun.WinLossRatio) || double.IsInfinity(anotherRun.WinLossRatio) || double.IsNegativeInfinity(anotherRun.WinLossRatio)) {
+				//System.Diagnostics.Debugger.Break();
+			} else {
+				this.WinLossRatio += anotherRun.WinLossRatio;
+			}
+
+			if (double.IsNaN(anotherRun.ProfitFactor) || double.IsInfinity(anotherRun.ProfitFactor) || double.IsNegativeInfinity(anotherRun.ProfitFactor)) {
+				//System.Diagnostics.Debugger.Break();
+			} else {
+				this.ProfitFactor += anotherRun.ProfitFactor;
+			}
+
+			if (double.IsNaN(anotherRun.RecoveryFactor) || double.IsInfinity(anotherRun.RecoveryFactor) || double.IsNegativeInfinity(anotherRun.RecoveryFactor)) {
+				//System.Diagnostics.Debugger.Break();
+			} else {
+				this.RecoveryFactor += anotherRun.RecoveryFactor;
+			}
+
 			this.MaxDrawDown += anotherRun.MaxDrawDown;
 			this.MaxConsecWinners += anotherRun.MaxConsecWinners;
 			this.MaxConsecLosers += anotherRun.MaxConsecLosers;
 		}
 
-		internal void NoMoreParameters_DivideTotalByCount(int totalCountItotalled) {
+		internal void DivideTotalByCount(int totalCountItotalled) {
 			double dontRoundDivisionToInt = (double) totalCountItotalled;
-			this.NetProfit /= dontRoundDivisionToInt;
-			this.PositionsCount /= dontRoundDivisionToInt;
-			this.PositionAvgProfit /= dontRoundDivisionToInt;
-			this.WinLossRatio /= dontRoundDivisionToInt;
-			this.ProfitFactor /= dontRoundDivisionToInt;
-			this.RecoveryFactor /= dontRoundDivisionToInt;
-			this.MaxDrawDown /= dontRoundDivisionToInt;
-			this.MaxConsecWinners /= dontRoundDivisionToInt;
-			this.MaxConsecLosers /= dontRoundDivisionToInt;
+			this.PositionsCount		/= dontRoundDivisionToInt;
+			this.PositionAvgProfit	/= dontRoundDivisionToInt;
+			this.NetProfit			/= dontRoundDivisionToInt;
+			this.WinLossRatio		/= dontRoundDivisionToInt;
+			this.ProfitFactor		/= dontRoundDivisionToInt;
+			this.RecoveryFactor		/= dontRoundDivisionToInt;
+			this.MaxDrawDown		/= dontRoundDivisionToInt;
+			this.MaxConsecWinners	/= dontRoundDivisionToInt;
+			this.MaxConsecLosers	/= dontRoundDivisionToInt;
 
-			this.FormatStrings();
-		}
-		public void FormatStrings() {
-			this.NetProfitFormatted = this.NetProfit.ToString(this.Format);
-			this.PositionsCountFormatted = this.PositionsCount.ToString();
-			this.PositionAvgProfitFormatted = this.PositionAvgProfit.ToString(this.Format);
-			this.WinLossRatioFormatted = this.WinLossRatio.ToString(this.Format);
-			this.ProfitFactorFormatted = this.ProfitFactor.ToString();
-			this.RecoveryFactorFormatted = this.RecoveryFactor.ToString();
-			this.MaxDrawDownFormatted = this.MaxDrawDown.ToString(this.Format);
-			this.MaxConsecLosersFormatted = this.MaxConsecLosers.ToString();
-			this.MaxConsecWinnersFormatted = this.MaxConsecWinners.ToString();
+			//if (double.IsNaN(this.WinLossRatio)) System.Diagnostics.Debugger.Break();
+			//if (double.IsNaN(this.ProfitFactor)) System.Diagnostics.Debugger.Break();
+			//if (double.IsNaN(this.RecoveryFactor)) System.Diagnostics.Debugger.Break();
 		}
 		public KPIs Clone() {
 			return (KPIs)base.MemberwiseClone();
+		}
+
+
+		internal void AddKPIs(KPIs kpis) {
+			this.PositionsCount += kpis.PositionsCount;
+			this.PositionAvgProfit += kpis.PositionAvgProfit;
+			this.NetProfit += kpis.NetProfit;
+			this.WinLossRatio += kpis.WinLossRatio;
+			this.ProfitFactor += kpis.ProfitFactor;
+			this.RecoveryFactor += kpis.RecoveryFactor;
+			this.MaxDrawDown += kpis.MaxDrawDown;
+			this.MaxConsecWinners += kpis.MaxConsecWinners;
+			this.MaxConsecLosers += kpis.MaxConsecLosers;
 		}
 	}
 }

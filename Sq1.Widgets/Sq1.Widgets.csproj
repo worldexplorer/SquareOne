@@ -189,6 +189,7 @@
       <DependentUpon>AllParametersControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Optimization\KPIs.cs" />
+    <Compile Include="Optimization\OneParameterAllValuesAveragedEventArgs.cs" />
     <Compile Include="Optimization\OneParameterControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -209,7 +210,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Optimization\OneParameterOneValue.cs" />
-    <Compile Include="Optimization\OptimizationResultsTransposer.cs" />
+    <Compile Include="Optimization\Optimizer2.cs" />
     <Compile Include="Optimization\OptimizerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -354,6 +355,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="StrategiesTree\StrategiesTreeDataSnapshot.cs" />
+    <Compile Include="Optimization\OneParameterOneValueEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CsvImporter\CsvImporterControl.resx">

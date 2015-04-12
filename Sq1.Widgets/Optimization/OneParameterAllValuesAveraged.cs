@@ -2,66 +2,92 @@
 
 using Sq1.Core.Optimization;
 
+using System;
+using Sq1.Core;
+
 namespace Sq1.Widgets.Optimization {
 	public class OneParameterAllValuesAveraged {
+
+		public event EventHandler<OneParameterAllValuesAveragedEventArgs> OnParameterRecalculatedLocalsAndDeltas;
+		public void RaiseOnEachParameterRecalculatedLocalsAndDeltas() {
+			if (this.OnParameterRecalculatedLocalsAndDeltas == null) return;
+			try {
+				this.OnParameterRecalculatedLocalsAndDeltas(this, new OneParameterAllValuesAveragedEventArgs(this));
+			} catch (Exception ex) {
+				string msg = "OneParameterControl_WASNT_READY_TO_GET_BACK_RECALCULATED_KPIs //RaiseOnEachParameterRecalculatedLocalsAndDeltas()";
+				Assembler.PopupException(msg, ex);
+			}
+		}
+
 		public const string ARTIFICIAL_AVERAGE = "Average";
 		public const string ARTIFICIAL_AVERAGE_DISPERSION = "Dispersion";
-		public const string ARTIFICIAL_AVERAGE_EXCENTRICITY = "Excentricity";
+		public const string ARTIFICIAL_AVERAGE_Kurtosis = "Kurtosis";
 
-		public string ParameterName { get; private set; }
+		public Optimizer2					Optimizer;
+		public string						ParameterName				{ get; private set; }
+		public MaximizationCriterion		MaximizationCriterion;
 
-		public SortedDictionary<double, OneParameterOneValue> AllValuesForOneParameter { get; private set; }
-		public SortedDictionary<int, SystemPerformanceRestoreAble> AllUnderlyingForDispersion { get; private set; }
+		public SortedDictionary<double, OneParameterOneValue> ValuesByParam { get; private set; }
 
-		public OneParameterOneValue ArtificialRowForAllKPIsAverage { get; private set; }
-		public OneParameterOneValue ArtificialRowForAllKPIsAverageDispersion { get; private set; }
-		public OneParameterOneValue ArtificialRowForAllKPIsAverageExcentricity { get; private set; }
-		public List<OneParameterOneValue> AllValuesForOneParameterWithAverages { get; private set; }
+		public OneParameterOneValue			ArtificialRowAverage		{ get; private set; }
+		public OneParameterOneValue			ArtificialRowDispersion		{ get; private set; }
+		public OneParameterOneValue			ArtificialRowKurtosis		{ get; private set; }
+		public List<OneParameterOneValue>	AllValuesWithArtificials	{ get; private set; }
 
-		public OneParameterAllValuesAveraged(string parameterName) {
+		public OneParameterAllValuesAveraged(Optimizer2 optimizer, string parameterName, string format) {
+			this.Optimizer = optimizer;
 			this.ParameterName = parameterName;
-			AllValuesForOneParameterWithAverages = new List<OneParameterOneValue>();
-			AllValuesForOneParameter = new SortedDictionary<double, OneParameterOneValue>();
+			AllValuesWithArtificials = new List<OneParameterOneValue>();
+			ValuesByParam = new SortedDictionary<double, OneParameterOneValue>();
 
-			ArtificialRowForAllKPIsAverage = new OneParameterOneValue(parameterName, 0, ARTIFICIAL_AVERAGE);
-			ArtificialRowForAllKPIsAverageDispersion = new OneParameterOneValue(parameterName, 0, ARTIFICIAL_AVERAGE_DISPERSION);
-			ArtificialRowForAllKPIsAverageExcentricity = new OneParameterOneValue(parameterName, 0, ARTIFICIAL_AVERAGE_EXCENTRICITY);
-			AllUnderlyingForDispersion = new SortedDictionary<int, SystemPerformanceRestoreAble>();
+			ArtificialRowAverage	= new OneParameterOneValue(this, 0, ARTIFICIAL_AVERAGE);
+			ArtificialRowDispersion	= new OneParameterOneValue(this, 0, ARTIFICIAL_AVERAGE_DISPERSION);
+			ArtificialRowKurtosis	= new OneParameterOneValue(this, 0, ARTIFICIAL_AVERAGE_Kurtosis);
 		}
 
-		internal void AddKPIsForIndicatorValue(double optimizedValue, SystemPerformanceRestoreAble eachRun) {
-			if (this.AllValuesForOneParameter.ContainsKey(optimizedValue) == false) {
-				this.AllValuesForOneParameter.Add(optimizedValue, new OneParameterOneValue(this.ParameterName, optimizedValue));
+		internal void AddBacktestForValue_KPIsGlobalAddForIndicatorValue(double optimizedValue, SystemPerformanceRestoreAble eachRun) {
+			if (this.ValuesByParam.ContainsKey(optimizedValue) == false) {
+				this.ValuesByParam.Add(optimizedValue, new OneParameterOneValue(this, optimizedValue));
 			}
-			OneParameterOneValue kpisForValue = this.AllValuesForOneParameter[optimizedValue];
-			kpisForValue.AddKPIsGlobal(eachRun);
+			OneParameterOneValue paramValue = this.ValuesByParam[optimizedValue];
+			paramValue.AddBacktestForValue_AddKPIsGlobal(eachRun);
 
-			this.ArtificialRowForAllKPIsAverage.AddKPIsGlobal(eachRun);
-			this.AllUnderlyingForDispersion.Add(eachRun.OptimizationIterationSerno, eachRun);
+			//this.ArtificialRowForAllKPIsAverage.AddKPIsGlobal(eachRun);
 		}
 
-		internal void NoMoreGlobalParameters_DivideTotalsByCount() {
-			foreach (OneParameterOneValue kpisForValue in AllValuesForOneParameter.Values) {
-				kpisForValue.NoMoreGlobalParameters_DivideTotalsByCount();
+
+		internal void KPIsGlobalNoMoreParameters_DivideTotalsByCount() {
+			foreach (OneParameterOneValue kpisForValue in this.ValuesByParam.Values) {
+				kpisForValue.KPIsGlobal_DivideTotalsByCount();
 			}
 
-			this.AllValuesForOneParameterWithAverages = new List<OneParameterOneValue>(this.AllValuesForOneParameter.Values);
+			this.AllValuesWithArtificials = new List<OneParameterOneValue>(this.ValuesByParam.Values);
 
-			this.ArtificialRowForAllKPIsAverage.NoMoreGlobalParameters_DivideTotalsByCount();
-			this.ArtificialRowForAllKPIsAverage.KPIsGlobal.FormatStrings();
-			this.AllValuesForOneParameterWithAverages.Add(this.ArtificialRowForAllKPIsAverage);
+			this.ArtificialRowAverage.CalculateGlobalsForArtificial_Average();
+			this.ArtificialRowAverage.CalculateLocalsAndDeltasForArtificial_Average();
+			this.AllValuesWithArtificials.Add(this.ArtificialRowAverage);
 
-			//this.calcDispersionKPIsGlobal();
-			//this.AllValuesForOneParameterWithAverages.Add(this.ArtificialRowForAllKPIsAverageDispersion);
+			this.ArtificialRowDispersion.CalculateGlobalsForArtificial_Dispersion();
+			this.ArtificialRowDispersion.CalculateLocalsAndDeltasForArtificial_Dispersion();
+			this.AllValuesWithArtificials.Add(this.ArtificialRowDispersion);
 
-			//this.calcExcentricityKPIsGlobal();
-			//this.AllValuesForOneParameterWithAverages.Add(this.ArtificialRowForAllKPIsAverageExcentricity);
+			this.ArtificialRowKurtosis.CalculateGlobalsForArtificial_Kurtsotis();
+			this.ArtificialRowKurtosis.CalculateLocalsAndDeltasForArtificial_Kurtsotis();
+			this.AllValuesWithArtificials.Add(this.ArtificialRowKurtosis);
 		}
 
-		private void calcExcentricityKPIsGlobal() {
+		internal void CalculateLocalsAndDeltas() {
+			foreach (OneParameterOneValue eachValue in this.ValuesByParam.Values) {
+				eachValue.CalculateLocalsAndDeltas();
+			}
+
+			this.ArtificialRowAverage.CalculateLocalsAndDeltasForArtificial_Average();
+			this.ArtificialRowDispersion.CalculateLocalsAndDeltasForArtificial_Dispersion();
+			this.ArtificialRowKurtosis.CalculateLocalsAndDeltasForArtificial_Kurtsotis();
 		}
 
-		private void calcDispersionKPIsGlobal() {
+		public override string ToString() {
+			return this.ParameterName + ":" + this.ValuesByParam.Count + "values";
 		}
 	}
 }

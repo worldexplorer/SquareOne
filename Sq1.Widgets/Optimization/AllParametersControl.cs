@@ -4,11 +4,13 @@ using System.ComponentModel;
 using System.Windows.Forms;
 
 using Sq1.Core.Optimization;
+using Sq1.Core;
 
 namespace Sq1.Widgets.Optimization {
 	public partial class AllParametersControl : UserControl {
 		private SystemPerformanceRestoreAbleListEventArgs originalOptimizationResults;
-		private OptimizationResultsTransposer transposer;
+		public Optimizer2 Optimizer { get; private set; }
+		public string PriceFormat { get; private set; }
 
 		public AllParametersControl() {
 			InitializeComponent();
@@ -16,23 +18,36 @@ namespace Sq1.Widgets.Optimization {
 
 		public void Initialize(SystemPerformanceRestoreAbleListEventArgs originalOptimizationResults) {
 			this.originalOptimizationResults = originalOptimizationResults;
-			this.transposer = new OptimizationResultsTransposer(originalOptimizationResults.SystemPerformanceRestoreAbleList);
+			if (this.originalOptimizationResults.SystemPerformanceRestoreAbleList.Count > 0) {
+				int i = 0;
+				int scanFirstLimit = 200;
+				string symbolFound = null;
+				foreach (SystemPerformanceRestoreAble firstScanned in this.originalOptimizationResults.SystemPerformanceRestoreAbleList) {
+					if (string.IsNullOrEmpty(firstScanned.Symbol) == false) {
+						symbolFound = firstScanned.Symbol;
+					}
+					this.PriceFormat = firstScanned.PriceFormat;
+					if (string.IsNullOrEmpty(this.PriceFormat) == false) break;
+					if (++i >= scanFirstLimit) break;
+				}
+				if (string.IsNullOrEmpty(this.PriceFormat) && string.IsNullOrEmpty(symbolFound) == false) {
+					this.PriceFormat = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(symbolFound).PriceFormat;
+				}
+			}
+			if (string.IsNullOrEmpty(this.PriceFormat)) {
+				this.PriceFormat = "N1";
+			}
+
+			this.Optimizer = new Optimizer2(originalOptimizationResults.SystemPerformanceRestoreAbleList);
 
 			this.flowLayoutPanel1.Controls.Clear();
-			foreach (string parameterName in this.transposer.KPIsAveragedForEachParameterValues.Keys) {
-				OneParameterAllValuesAveraged oneParamForOneOLV = this.transposer.KPIsAveragedForEachParameterValues[parameterName];
+			foreach (string parameterName in this.Optimizer.ParametersByName.Keys) {
+				OneParameterAllValuesAveraged oneParamForOneOLV = this.Optimizer.ParametersByName[parameterName];
+				if (oneParamForOneOLV.ValuesByParam.Count <= 1) continue;
 				//List<OneParameterOneValue> objectsForList = oneParamForOneOLV.AllValuesForOneParameterWithAverages;
-				OneParameterControl adding = new OneParameterControl(oneParamForOneOLV);
-				adding.OnKPIsLocalRecalculate += new EventHandler<EventArgs>(adding_OnKPIsLocalRecalculate);
+				OneParameterControl adding = new OneParameterControl(this, oneParamForOneOLV);
 				this.flowLayoutPanel1.Controls.Add(adding);
 			}
 		}
-
-		void adding_OnKPIsLocalRecalculate(object sender, EventArgs e) {
-			OneParameterControl refreshMe = sender as OneParameterControl;
-			transposer.OneParameterOneValueUserSelectedChanged_recalculateAllKPIsLocal();
-			refreshMe.KPIsLocalRecalculateDone_refreshOLV();
-		}
-
 	}
 }

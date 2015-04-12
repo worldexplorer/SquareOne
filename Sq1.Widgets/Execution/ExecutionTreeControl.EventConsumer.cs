@@ -45,8 +45,8 @@ namespace Sq1.Widgets.Execution {
 				return;
 			}
 			mni.Checked = !mni.Checked;
-			if (columnsByFilters.ContainsKey(mni) == false) {
-				string msg = "Add ToolStripMenuItem[" + mni.Name + "] into columnsByFilters";
+			if (columnsByFilter.ContainsKey(mni) == false) {
+				string msg = "Add ToolStripMenuItem[" + mni.Name + "] into columnsByFilter";
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -55,7 +55,7 @@ namespace Sq1.Widgets.Execution {
 //			this.settingsManager.Set("ExecutionForm." + mni.Name + ".Checked", mni.Checked);
 //			this.settingsManager.SaveSettings();
 
-			List<OLVColumn> columns = columnsByFilters[mni];
+			List<OLVColumn> columns = columnsByFilter[mni];
 			if (columns.Count == 0) return;
 
 			foreach (OLVColumn column in columns) {

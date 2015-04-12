@@ -15,7 +15,7 @@ namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
 		public	ExecutionTreeDataSnapshot						DataSnapshot;
 		public	Serializer<ExecutionTreeDataSnapshot>			DataSnapshotSerializer;
-				Dictionary<ToolStripMenuItem, List<OLVColumn>>	columnsByFilters;
+				Dictionary<ToolStripMenuItem, List<OLVColumn>>	columnsByFilter;
 				OrdersAutoTree									ordersTree;
 		public	Order											OrderSelected			{ get {
 				if (this.OrdersTreeOLV.SelectedObjects.Count != 1) return null;
@@ -49,29 +49,29 @@ namespace Sq1.Widgets.Execution {
 			this.fontCache = new FontCache(this.Font);
 		}
 		void buildMniShortcutsAfterInitializeComponent() {
-			columnsByFilters = new Dictionary<ToolStripMenuItem, List<OLVColumn>>();
-			columnsByFilters.Add(this.mniShowWhenWhat, new List<OLVColumn>() {
+			columnsByFilter = new Dictionary<ToolStripMenuItem, List<OLVColumn>>();
+			columnsByFilter.Add(this.mniShowWhenWhat, new List<OLVColumn>() {
 				this.colheBarNum,
 				this.colheOrderCreated,
 				this.colheSymbol,
 				this.colheDirection,
 				this.colheOrderType
 				});
-			columnsByFilters.Add(this.mniShowKilledReplaced, new List<OLVColumn>() {
+			columnsByFilter.Add(this.mniShowKilledReplaced, new List<OLVColumn>() {
 				this.colheReplacedByGUID,
 				this.colheKilledByGUID
 				});
-			columnsByFilters.Add(this.mniShowPrice, new List<OLVColumn>() {
+			columnsByFilter.Add(this.mniShowPrice, new List<OLVColumn>() {
 				this.colhePriceScript,
 				this.colheSpreadSide,
 				this.colhePriceScriptRequested,
 				this.colhePriceFilled
 				});
-			columnsByFilters.Add(this.mniShowQty, new List<OLVColumn>() {
+			columnsByFilter.Add(this.mniShowQty, new List<OLVColumn>() {
 				this.colheQtyRequested,
 				this.colheQtyFilled
 				});
-			columnsByFilters.Add(this.mniShowExchange, new List<OLVColumn>() {
+			columnsByFilter.Add(this.mniShowExchange, new List<OLVColumn>() {
 				this.colhePriceDeposited,
 				this.colheSernoSession,
 				this.colheSernoExchange,
@@ -79,15 +79,15 @@ namespace Sq1.Widgets.Execution {
 				this.colheReplacedByGUID,
 				this.colheKilledByGUID
 				});
-			columnsByFilters.Add(this.mniShowOrigin, new List<OLVColumn>() {
+			columnsByFilter.Add(this.mniShowOrigin, new List<OLVColumn>() {
 				this.colheStrategyName,
 				this.colheSignalName,
 				this.colheScale
 				});
-			columnsByFilters.Add(this.mniShowPosition, new List<OLVColumn>() { });
-			columnsByFilters.Add(this.mniShowExtra, new List<OLVColumn>() {
+			columnsByFilter.Add(this.mniShowPosition, new List<OLVColumn>() { });
+			columnsByFilter.Add(this.mniShowExtra, new List<OLVColumn>() {
 				});
-			columnsByFilters.Add(this.mniShowLastMessage, new List<OLVColumn>() {
+			columnsByFilter.Add(this.mniShowLastMessage, new List<OLVColumn>() {
 				this.colheLastMessage
 				});
 		}

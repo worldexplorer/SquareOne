@@ -122,6 +122,7 @@ namespace Sq1.Widgets.Optimization {
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainer2.BackColor = System.Drawing.SystemColors.ControlDark;
+			this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
 			this.splitContainer2.Location = new System.Drawing.Point(0, 27);
 			this.splitContainer2.Name = "splitContainer2";
 			// 
@@ -460,7 +461,9 @@ namespace Sq1.Widgets.Optimization {
 			this.olvHistory.CellEditTabChangesRows = true;
 			this.olvHistory.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvcPFavg,
-            this.olvcHistorySymbolScaleRange});
+            this.olvcHistorySymbolScaleRange,
+			this.olvcHistoryDate,
+			this.olvcHistorySize});
 			this.olvHistory.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvHistory.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvHistory.EmptyListMsg = "OPTIMIZATION_HISTORY_IS_EMPTY Never optimized since last script recompilation";
@@ -512,7 +515,7 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			this.olvcHistoryDate.DisplayIndex = 2;
 			this.olvcHistoryDate.IsEditable = false;
-			this.olvcHistoryDate.IsVisible = false;
+			this.olvcHistoryDate.IsVisible = true;
 			this.olvcHistoryDate.Text = "Modified";
 			this.olvcHistoryDate.ToolTipText = "Reminder when you did it";
 			this.olvcHistoryDate.Width = 55;
@@ -521,7 +524,7 @@ namespace Sq1.Widgets.Optimization {
 			// 
 			this.olvcHistorySize.DisplayIndex = 3;
 			this.olvcHistorySize.IsEditable = false;
-			this.olvcHistorySize.IsVisible = false;
+			this.olvcHistorySize.IsVisible = true;
 			this.olvcHistorySize.Text = "Size";
 			this.olvcHistorySize.ToolTipText = "JSON file size";
 			this.olvcHistorySize.Width = 55;

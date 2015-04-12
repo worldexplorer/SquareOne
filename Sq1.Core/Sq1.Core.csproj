@@ -173,6 +173,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerDataSnapshot.cs" />
+    <Compile Include="Optimization\MaximizationCriterion.cs" />
     <Compile Include="Optimization\Optimizer.cs" />
     <Compile Include="Optimization\Optimizer.EventGenerator.cs">
       <DependentUpon>Optimizer.cs</DependentUpon>

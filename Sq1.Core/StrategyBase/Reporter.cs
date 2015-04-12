@@ -9,18 +9,32 @@ namespace Sq1.Core.StrategyBase {
 		public		string				TabText;
 		protected	ChartShadow			Chart;
 		public		SystemPerformance	SystemPerformance { get; private set; }
+
 		protected	string				FormatPrice { get { 
 				string ret = "C";
 				if (	this.SystemPerformance == null
 					 || this.SystemPerformance.Bars == null
 					 || this.SystemPerformance.Bars.SymbolInfo == null) {
 					string msig = " " + this.GetType().FullName;
-					string msg = "DEVELOPER_OF_[" + msig + "], don't forget to do base.SystemPerformance=performance as first line of overriden BuildOnceAfterFullBlindBacktestFinished() so that Reporter.Format picks up DecimalsPrice";
+					string msg = "DEVELOPER_OF_[" + msig + "], don't forget to do base.SystemPerformance=performance as first line of overriden BuildOnceAfterFullBlindBacktestFinished() so that Reporter.FormatPrice picks up DecimalsPrice";
 					//Assembler.PopupException(msg);
 					return ret;
 				}
 				return this.SystemPerformance.Bars.SymbolInfo.PriceFormat;
 			} }
+		protected	string				FormatVolume {
+			get {
+				string ret = "C";
+				if (	this.SystemPerformance == null
+					 || this.SystemPerformance.Bars == null
+					 || this.SystemPerformance.Bars.SymbolInfo == null) {
+					string msig = " " + this.GetType().FullName;
+					string msg = "DEVELOPER_OF_[" + msig + "], don't forget to do base.SystemPerformance=performance as first line of overriden BuildOnceAfterFullBlindBacktestFinished() so that Reporter.VolumeFormat picks up DecimalsVolume";
+					//Assembler.PopupException(msg);
+					return ret;
+				}
+				return this.SystemPerformance.Bars.SymbolInfo.VolumeFormat;
+		} }
 
 		public Reporter() {
 			this.TabText = "UNKNOWN_REPORTER";

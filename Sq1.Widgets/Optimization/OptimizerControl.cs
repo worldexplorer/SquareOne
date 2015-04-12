@@ -165,6 +165,11 @@ namespace Sq1.Widgets.Optimization {
 			//v2
 			if (this.RepositoryJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) {
 				this.backtestsLocalEasierToSync = this.RepositoryJsonOptimizationResults.DeserializeList(symbolScaleRange);
+				if (this.backtestsLocalEasierToSync == null || this.backtestsLocalEasierToSync.Count == 0) {
+					string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + symbolScaleRange;
+					Assembler.PopupException(msg);
+					return;
+				}
 			} else {
 				this.backtestsLocalEasierToSync.Clear();
 			}

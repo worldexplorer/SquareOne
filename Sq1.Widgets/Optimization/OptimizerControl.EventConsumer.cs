@@ -272,9 +272,10 @@ namespace Sq1.Widgets.Optimization {
 		void olvHistory_ItemActivate(object sender, EventArgs e) {
 			FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
 			if (fname == null) return;
+
 			this.backtestsLocalEasierToSync = this.RepositoryJsonOptimizationResults.DeserializeList(fname.Name);
-			if (this.backtestsLocalEasierToSync == null) {
-				string msg = "NO_BACKTEST_INSIDE_FILE " + fname.Name;
+			if (this.backtestsLocalEasierToSync == null || this.backtestsLocalEasierToSync.Count == 0) {
+				string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + fname.Name;
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -301,6 +302,9 @@ namespace Sq1.Widgets.Optimization {
 						Assembler.PopupException(msg);
 					}
 					this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
+				}
+				if (e.KeyCode == Keys.Enter) {
+					this.olvHistory_DoubleClick(this, null);
 				}
 			} catch (Exception ex) {
 				string msg = "FIXME //olvHistory_KeyDown()";

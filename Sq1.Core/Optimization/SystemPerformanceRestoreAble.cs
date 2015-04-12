@@ -10,9 +10,9 @@ namespace Sq1.Core.Optimization {
 	public class SystemPerformanceRestoreAble : NamedObjectJsonSerializable {
 		[JsonIgnore]	public	bool		DontForgetEverythingNonIgnoredIsSerialized;
 
-		[JsonProperty]	public	SortedDictionary<int, ScriptParameter>			ScriptParametersById_BuiltOnBacktestFinished;
-		[JsonProperty]	public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished;
-		[JsonProperty]	public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
+		[JsonProperty]	public	SortedDictionary<int, ScriptParameter>			ScriptParametersById_BuiltOnBacktestFinished	{ get; private set; }
+		[JsonProperty]	public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished	{ get; private set; }
+		[JsonProperty]	public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished	{ get; private set; }
 		[JsonProperty]	public	string											ParametersAsString { get {
 				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
 				if (merged.Count == 0) return "(NoParameters)";
@@ -24,35 +24,26 @@ namespace Sq1.Core.Optimization {
 				return "(" + ret + ")";
 			} }
 		
-		[JsonProperty]	public	string	NetProfitRecovery;
-		[JsonProperty]	public	string	StrategyName;
-		[JsonProperty]	public	string	SymbolScaleIntervalDataRange;
+		[JsonProperty]	public	string	NetProfitRecovery				{ get; private set; }
+		[JsonProperty]	public	string	StrategyName					{ get; private set; }
+		// if PriceFormat.IsNullOrEmpty, grab from RepositorySymbolInfo.FindSymbolInfoOrNew(first.Symbol)
+		[JsonProperty]	public	string	Symbol							{ get; private set; }
+		[JsonProperty]	public	string	SymbolScaleIntervalDataRange 	{ get; private set; }
 		
-		// REMOVE_NON-FORMATTED_AFTER_YOU_FIND_OUT_SORTING_IN_OBJECTLISTVIEW
-		// BAD_PLAN??? MOVED_TO_KPIs for easy base.MemberwiseClone
+		[JsonProperty]	public	string	PriceFormat						{ get; private set; }
 
-		[JsonProperty]	public	string	Format;
-		[JsonProperty]	public	double	NetProfitForClosedPositionsBoth;
-		[JsonProperty]	public	string	NetProfitForClosedPositionsBothFormatted;
-		[JsonIgnore]	public	double	PositionsCountBoth { get; private set; }
-		[JsonProperty]	public	string	PositionsCountBothFormatted;
-		[JsonIgnore]	public	double	AvgProfitBoth { get; private set; }
-		[JsonProperty]	public	string	AvgProfitBothFormatted;
-		[JsonIgnore]	public	double	WinLossRatio { get; private set; }
-		[JsonProperty]	public	string	WinLossRatioFormatted;
-		[JsonProperty]	public	double	ProfitFactor { get; private set; }
-		[JsonProperty]	public	string	ProfitFactorFormatted;
-		[JsonIgnore]	public	double	RecoveryFactor { get; private set; }
-		[JsonProperty]	public	string	RecoveryFactorFormatted;
-		[JsonIgnore]	public	double	MaxDrawDown { get; private set; }
-		[JsonProperty]	public	string	MaxDrawDownFormatted;
-		[JsonIgnore]	public	double	MaxConsecWinners { get; private set; }
-		[JsonProperty]	public	string	MaxConsecWinnersFormatted;
-		[JsonIgnore]	public	double	MaxConsecLosers { get; private set; }
-		[JsonProperty]	public	string	MaxConsecLosersFormatted;
+		[JsonProperty]	public	int		PositionsCountBoth				{ get; private set; }
+		[JsonProperty]	public	double	AvgProfitBoth					{ get; private set; }
+		[JsonProperty]	public	double	NetProfitForClosedPositionsBoth	{ get; private set; }
+		[JsonProperty]	public	double	WinLossRatio					{ get; private set; }
+		[JsonProperty]	public	double	ProfitFactor					{ get; private set; }
+		[JsonProperty]	public	double	RecoveryFactor					{ get; private set; }
+		[JsonProperty]	public	double	MaxDrawDown						{ get; private set; }
+		[JsonProperty]	public	double	MaxConsecWinners				{ get; private set; }
+		[JsonProperty]	public	double	MaxConsecLosers					{ get; private set; }
 		
-		[JsonProperty]	public	string	OptimizationIterationName;
-		[JsonProperty]	public	int		OptimizationIterationSerno;
+		[JsonProperty]	public	string	OptimizationIterationName		{ get; private set; }
+		[JsonProperty]	public	int		OptimizationIterationSerno;		//ASSIGNED_FROM_ABROAD { get; private set; }
 
 		public SystemPerformanceRestoreAble() {
 			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
@@ -69,39 +60,23 @@ namespace Sq1.Core.Optimization {
 			this.NetProfitRecovery				= sysPerfBacktestResult.NetProfitRecoveryForScriptContextNewName;
 			this.StrategyName					= sysPerfBacktestResult.Executor.StrategyName;
 			//this.ContextScript				= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent;
+			this.StrategyName					= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent.Symbol;
 			this.SymbolScaleIntervalDataRange	= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			base.Name							= this.SymbolScaleIntervalDataRange;
 			this.OptimizationIterationName		= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent.OptimizationIterationName;
 			this.OptimizationIterationSerno		= sysPerfBacktestResult.Executor.Strategy.ScriptContextCurrent.OptimizationIterationSerno;
 
-			this.Format = sysPerfBacktestResult.Bars.SymbolInfo.PriceFormat;
+			this.PriceFormat = sysPerfBacktestResult.Bars.SymbolInfo.PriceFormat;
 			
+			this.PositionsCountBoth	= sysPerfBacktestResult.SlicesShortAndLong.PositionsCountBoth;
+			this.AvgProfitBoth		= sysPerfBacktestResult.SlicesShortAndLong.AvgProfitBoth;
 			this.NetProfitForClosedPositionsBoth = sysPerfBacktestResult.SlicesShortAndLong.NetProfitForClosedPositionsBoth;
-			this.NetProfitForClosedPositionsBothFormatted = this.NetProfitForClosedPositionsBoth.ToString(this.Format);
-			
-			this.PositionsCountBoth = sysPerfBacktestResult.SlicesShortAndLong.PositionsCountBoth;
-			this.PositionsCountBothFormatted = this.PositionsCountBoth.ToString();
-			
-			this.AvgProfitBoth = sysPerfBacktestResult.SlicesShortAndLong.AvgProfitBoth;
-			this.AvgProfitBothFormatted = this.AvgProfitBoth.ToString(this.Format);
-			
 			this.WinLossRatio = sysPerfBacktestResult.SlicesShortAndLong.WinLossRatio;
-			this.WinLossRatioFormatted = this.WinLossRatio.ToString(this.Format);
-			
-			this.ProfitFactor = sysPerfBacktestResult.SlicesShortAndLong.ProfitFactor;
-			this.ProfitFactorFormatted = this.ProfitFactor.ToString();
-			
-			this.RecoveryFactor = sysPerfBacktestResult.SlicesShortAndLong.RecoveryFactor;
-			this.RecoveryFactorFormatted = this.RecoveryFactor.ToString();
-			
-			this.MaxDrawDown = sysPerfBacktestResult.SlicesShortAndLong.MaxDrawDown;
-			this.MaxDrawDownFormatted = this.MaxDrawDown.ToString(this.Format);
-			
-			this.MaxConsecWinners = sysPerfBacktestResult.SlicesShortAndLong.MaxConsecWinners;
-			this.MaxConsecWinnersFormatted = this.MaxConsecWinners.ToString();
-			
-			this.MaxConsecLosers = sysPerfBacktestResult.SlicesShortAndLong.MaxConsecLosers;
-			this.MaxConsecLosersFormatted = this.MaxConsecLosers.ToString();
+			this.ProfitFactor		= sysPerfBacktestResult.SlicesShortAndLong.ProfitFactor;
+			this.RecoveryFactor		= sysPerfBacktestResult.SlicesShortAndLong.RecoveryFactor;
+			this.MaxDrawDown		= sysPerfBacktestResult.SlicesShortAndLong.MaxDrawDown;
+			this.MaxConsecWinners	= sysPerfBacktestResult.SlicesShortAndLong.MaxConsecWinners;
+			this.MaxConsecLosers	= sysPerfBacktestResult.SlicesShortAndLong.MaxConsecLosers;
 		}
 	}
 }
