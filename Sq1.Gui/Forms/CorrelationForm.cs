@@ -7,18 +7,18 @@ using Sq1.Widgets;
 using Sq1.Widgets.Sequencing;
 
 namespace Sq1.Gui.Forms {
-	public partial class AllParametersForm : DockContentImproved {
+	public partial class CorrelationForm : DockContentImproved {
 		private ChartFormManager chartFormManager;
 
-		public AllParametersForm() {
+		public CorrelationForm() {
 			InitializeComponent();
 		}
 
-		public AllParametersForm(ChartFormManager chartFormManager) : this () {
+		CorrelationForm(ChartFormManager chartFormManager) : this () {
 			this.chartFormManager = chartFormManager;
 		}
 
-		public AllParametersForm(ChartFormManager chartFormManager
+		public CorrelationForm(ChartFormManager chartFormManager
 				, SystemPerformanceRestoreAbleListEventArgs originalOptimizationResults) : this(chartFormManager) {
 			this.chartFormManager = chartFormManager;
 			this.allParametersControl1.Initialize(originalOptimizationResults);

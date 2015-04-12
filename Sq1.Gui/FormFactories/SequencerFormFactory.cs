@@ -31,12 +31,12 @@ namespace Sq1.Gui.FormFactories {
 		}
 
 		void sequencerControl_OnAllParametersControlOpen(object sender, SystemPerformanceRestoreAbleListEventArgs e) {
-			AllParametersForm allParametersForm = new AllParametersForm(this.chartFormManager, e);
+			CorrelationForm allParametersForm = new CorrelationForm(this.chartFormManager, e);
 			DockState designedDockState = allParametersForm.ShowHint;
 			if (designedDockState != DockState.Float) {
 				designedDockState  = DockState.Float;
 			}
-			allParametersForm.Text = chartFormManager.Strategy.Name + " :: " + e.FileName;
+			allParametersForm.Text = "Correlator :: " + chartFormManager.Strategy.Name + " :: " + e.FileName;
 			Size designedSize = allParametersForm.Size;
 			allParametersForm.Show(this.chartFormManager.MainForm.DockPanel, designedDockState);
 			//allParametersForm.Size = designedSize;

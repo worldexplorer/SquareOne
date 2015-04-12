@@ -6,7 +6,7 @@ namespace Sq1.Core.Correlation {
 	public partial class OneParameterAllValuesAveraged {
 		public const string ARTIFICIAL_AVERAGE				= "Average";
 		public const string ARTIFICIAL_AVERAGE_DISPERSION	= "Dispersion";
-		public const string ARTIFICIAL_AVERAGE_KURTOSIS 	= "Kurtosis";
+		public const string ARTIFICIAL_AVERAGE_VARIANCE 	= "Variance";
 
 		public Correlator					Sequencer;
 		public string						ParameterName				{ get; private set; }
@@ -16,7 +16,7 @@ namespace Sq1.Core.Correlation {
 
 		public OneParameterOneValue			ArtificialRowAverage		{ get; private set; }
 		public OneParameterOneValue			ArtificialRowDispersion		{ get; private set; }
-		public OneParameterOneValue			ArtificialRowKurtosis		{ get; private set; }
+		public OneParameterOneValue			ArtificialRowVariance		{ get; private set; }
 		public List<OneParameterOneValue>	AllValuesWithArtificials	{ get; private set; }
 
 		OneParameterAllValuesAveraged() {
@@ -25,8 +25,8 @@ namespace Sq1.Core.Correlation {
 
 			ArtificialRowAverage		= new OneParameterOneValue(this, 0, ARTIFICIAL_AVERAGE);
 			ArtificialRowDispersion		= new OneParameterOneValue(this, 0, ARTIFICIAL_AVERAGE_DISPERSION);
-			ArtificialRowKurtosis		= new OneParameterOneValue(this, 0, ARTIFICIAL_AVERAGE_KURTOSIS);
-			MaximizationCriterion		= MaximizationCriterion.ProfitFactor;
+			ArtificialRowVariance		= new OneParameterOneValue(this, 0, ARTIFICIAL_AVERAGE_VARIANCE);
+			MaximizationCriterion		= MaximizationCriterion.UNKNOWN;
 		}
 		public OneParameterAllValuesAveraged(Correlator sequencer, string parameterName) : this() {
 			this.Sequencer = sequencer;
@@ -56,9 +56,9 @@ namespace Sq1.Core.Correlation {
 			this.ArtificialRowDispersion.CalculateLocalsAndDeltasForArtificial_Dispersion();
 			this.AllValuesWithArtificials.Add(this.ArtificialRowDispersion);
 
-			this.ArtificialRowKurtosis.CalculateGlobalsForArtificial_Kurtsotis();
-			this.ArtificialRowKurtosis.CalculateLocalsAndDeltasForArtificial_Kurtsotis();
-			this.AllValuesWithArtificials.Add(this.ArtificialRowKurtosis);
+			this.ArtificialRowVariance.CalculateGlobalsForArtificial_Variance();
+			this.ArtificialRowVariance.CalculateLocalsAndDeltasForArtificial_Variance();
+			this.AllValuesWithArtificials.Add(this.ArtificialRowVariance);
 		}
 
 		internal void CalculateLocalsAndDeltas() {
@@ -68,7 +68,7 @@ namespace Sq1.Core.Correlation {
 
 			this.ArtificialRowAverage.CalculateLocalsAndDeltasForArtificial_Average();
 			this.ArtificialRowDispersion.CalculateLocalsAndDeltasForArtificial_Dispersion();
-			this.ArtificialRowKurtosis.CalculateLocalsAndDeltasForArtificial_Kurtsotis();
+			this.ArtificialRowVariance.CalculateLocalsAndDeltasForArtificial_Variance();
 		}
 
 		public override string ToString() {

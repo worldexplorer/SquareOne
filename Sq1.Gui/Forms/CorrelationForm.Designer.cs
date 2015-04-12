@@ -1,5 +1,5 @@
 ﻿namespace Sq1.Gui.Forms {
-	partial class AllParametersForm {
+	partial class CorrelationForm {
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>

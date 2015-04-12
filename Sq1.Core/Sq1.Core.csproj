@@ -104,11 +104,11 @@
     </Compile>
     <Compile Include="Correlation\OneParameterAllValuesAveragedEventArgs.cs" />
     <Compile Include="Correlation\OneParameterOneValue.cs" />
-    <Compile Include="Correlation\OneParameterOneValueEventArgs.cs" />
     <Compile Include="Correlation\Correlator.cs" />
     <Compile Include="Correlation\Correlator.EventGenerator.cs">
       <DependentUpon>Correlator.cs</DependentUpon>
     </Compile>
+    <Compile Include="Correlation\Stats.cs" />
     <Compile Include="DataFeed\DataSource.EventGenerator.cs">
       <DependentUpon>DataSource.cs</DependentUpon>
     </Compile>

@@ -21,6 +21,8 @@ namespace Sq1.Widgets.Correlation {
 
 		public OneParameterControl() {
 			InitializeComponent();
+			//	this.olvcParamValues.HeaderTriStateCheckBox = true;
+
 			// in case Designer drops them and I won't have any column selector by colheader rightclick anymore
 			//this.olv.AllColumns.Add(this.olvcParamValues);
 			//this.olv.AllColumns.Add(this.olvcTotalPositions);

@@ -79,7 +79,6 @@ namespace Sq1.Widgets.Correlation {
 			// 
 			this.olvcParamValues.HeaderCheckBox = true;
 			this.olvcParamValues.HeaderCheckState = System.Windows.Forms.CheckState.Checked;
-			this.olvcParamValues.HeaderTriStateCheckBox = true;
 			this.olvcParamValues.Text = "MaSlow.Period=13";
 			this.olvcParamValues.ToolTipText = "Parameter Values Optimized";
 			this.olvcParamValues.Width = 200;

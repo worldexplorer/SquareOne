@@ -1,6 +1,6 @@
 ﻿namespace Sq1.Core.Sequencing {
 	public enum MaximizationCriterion {
-		Unknown				= 0,
+		UNKNOWN				= 0,
 
 		PositionsCount		= 1,
 		PositionAvgProfit	= 2,

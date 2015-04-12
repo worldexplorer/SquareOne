@@ -19,9 +19,10 @@ namespace Sq1.Widgets.Correlation {
 				return;
 			}
 			if (mniClicked.Checked) {
-				this.parameter.MaximizationCriterion = MaximizationCriterion.Unknown;
+				this.parameter.MaximizationCriterion = MaximizationCriterion.UNKNOWN;
 				mniClicked.Checked = false;
 				this.olv.Unsort();
+				return;
 			}
 			this.checkOneMniForMaximizationCriterionUncheckOthers(mniClicked);
 			// MOVED_TO_WHERE_THE_OLV_ISNT_EMPTY__DOESNT_SORT_ON_EMPTY_STOMACH
