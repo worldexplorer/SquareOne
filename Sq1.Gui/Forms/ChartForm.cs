@@ -14,7 +14,7 @@ using System.ComponentModel;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
-		public ChartFormManager ChartFormManager;
+		public ChartFormsManager ChartFormManager;
 
 		List<string> GroupScaleLabeledTextboxes;
 		List<string> GroupPositionSizeLabeledTextboxes;
@@ -42,7 +42,7 @@ namespace Sq1.Gui.Forms {
 			//OVERRODE_IN_CHART_CONTROL_DONT_CARE_HERE_NOW: override bool ProcessCmdKey //base.KeyPreview = true;
 		}
 		//programmer's constructor
-		public ChartForm(ChartFormManager chartFormManager) : this() {
+		public ChartForm(ChartFormsManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
 			// right now this.ChartFormsManager.Executor IS NULL, will create and Chart.Initialize() upstack :((
 			//this.Chart.Initialize(this.ChartFormsManager.Executor);

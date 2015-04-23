@@ -11,10 +11,10 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormInterformEventsConsumer {
-		ChartFormManager chartFormManager;
+		ChartFormsManager chartFormManager;
 		private bool backtestAlreadyFinished;
 
-		public ChartFormInterformEventsConsumer(ChartFormManager chartFormManager, ChartForm chartFormNotAssignedToManagerInTheFactoryYet = null) {
+		public ChartFormInterformEventsConsumer(ChartFormsManager chartFormManager, ChartForm chartFormNotAssignedToManagerInTheFactoryYet = null) {
 			this.chartFormManager = chartFormManager;
 			chartFormNotAssignedToManagerInTheFactoryYet.FormClosing += ChartForm_FormClosing;
 			chartFormNotAssignedToManagerInTheFactoryYet.Load += ChartForm_Load;
@@ -97,7 +97,15 @@ namespace Sq1.Gui.Forms {
 				this.chartFormManager.SequencerFormShow(true);
 			}
 
-			//if (this.chartFormManager.LivesimForm == null) {
+            //if (this.chartFormManager.CorrelatorForm == null) {
+            if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.CorrelatorForm) == true) {
+                string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
+                Assembler.PopupException(msg, null, false);
+            } else {
+                this.chartFormManager.CorrelatorFormShow(true);
+            }
+
+            //if (this.chartFormManager.LivesimForm == null) {
 			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.LivesimForm) == true) {
 				string msg = "don't even try to access LivesimFormConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
 				Assembler.PopupException(msg, null, false);

@@ -44,30 +44,30 @@ namespace Sq1.Reporters {
 		void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.olvPositions = new BrightIdeasSoftware.ObjectListView();
-			this.olvcPosition = new BrightIdeasSoftware.OLVColumn();
-			this.olvcSerno = new BrightIdeasSoftware.OLVColumn();
-			this.olvcSymbol = new BrightIdeasSoftware.OLVColumn();
-			this.olvcQuantity = new BrightIdeasSoftware.OLVColumn();
-			this.olvcCost = new BrightIdeasSoftware.OLVColumn();
-			this.olvcEntryDate = new BrightIdeasSoftware.OLVColumn();
-			this.olvcEntryPrice = new BrightIdeasSoftware.OLVColumn();
-			this.olvcEntryOrder = new BrightIdeasSoftware.OLVColumn();
-			this.olvcExitDate = new BrightIdeasSoftware.OLVColumn();
-			this.olvcExitPrice = new BrightIdeasSoftware.OLVColumn();
-			this.olvcExitOrder = new BrightIdeasSoftware.OLVColumn();
-			this.olvcProfitPct = new BrightIdeasSoftware.OLVColumn();
-			this.olvcProfitDollar = new BrightIdeasSoftware.OLVColumn();
-			this.olvcBarsHeld = new BrightIdeasSoftware.OLVColumn();
-			this.olvcProfitPerBar = new BrightIdeasSoftware.OLVColumn();
-			this.olvcEntrySignalName = new BrightIdeasSoftware.OLVColumn();
-			this.olvcExitSignalName = new BrightIdeasSoftware.OLVColumn();
-			this.olvcMae = new BrightIdeasSoftware.OLVColumn();
-			this.olvcMfe = new BrightIdeasSoftware.OLVColumn();
-			this.olvcMaePct = new BrightIdeasSoftware.OLVColumn();
-			this.olvcMfePct = new BrightIdeasSoftware.OLVColumn();
-			this.olvcCumNetProfitPct = new BrightIdeasSoftware.OLVColumn();
-			this.olvcCumNetProfitDollar = new BrightIdeasSoftware.OLVColumn();
-			this.olvcComission = new BrightIdeasSoftware.OLVColumn();
+			this.olvcPosition = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSerno = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcSymbol = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcQuantity = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcCost = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcEntryDate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcEntryPrice = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcEntryOrder = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcExitDate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcExitPrice = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcExitOrder = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcProfitPct = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcProfitDollar = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcBarsHeld = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcProfitPerBar = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcEntrySignalName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcExitSignalName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMaePct = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMfePct = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMae = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMfe = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcCumNetProfitPct = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcCumNetProfitDollar = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcComission = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxPopup = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniColorify = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,49 +77,48 @@ namespace Sq1.Reporters {
 			// 
 			// olvPositions
 			// 
-			this.olvPositions.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.olvcPosition,
-			this.olvcSerno,
-			this.olvcSymbol,
-			this.olvcQuantity,
-			this.olvcCost,
-			this.olvcEntryDate,
-			this.olvcEntryPrice,
-			this.olvcEntryOrder,
-			this.olvcExitDate,
-			this.olvcExitPrice,
-			this.olvcExitOrder,
-			this.olvcProfitPct,
-			this.olvcProfitDollar,
-			this.olvcBarsHeld,
-			this.olvcProfitPerBar,
-			this.olvcEntrySignalName,
-			this.olvcExitSignalName,
-			this.olvcMaePct,
-			this.olvcMfePct,
-			this.olvcMae,
-			this.olvcMfe,
-			this.olvcCumNetProfitPct,
-			this.olvcCumNetProfitDollar,
-			this.olvcComission});
 			this.olvPositions.AllowColumnReorder = true;
 			this.olvPositions.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvPositions.CausesValidation = false;
 			this.olvPositions.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
+			this.olvPositions.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.olvcPosition,
+            this.olvcSerno,
+            this.olvcSymbol,
+            this.olvcQuantity,
+            this.olvcCost,
+            this.olvcEntryDate,
+            this.olvcEntryPrice,
+            this.olvcEntryOrder,
+            this.olvcExitDate,
+            this.olvcExitPrice,
+            this.olvcExitOrder,
+            this.olvcProfitPct,
+            this.olvcProfitDollar,
+            this.olvcBarsHeld,
+            this.olvcProfitPerBar,
+            this.olvcEntrySignalName,
+            this.olvcExitSignalName,
+            this.olvcMaePct,
+            this.olvcMfePct,
+            this.olvcMae,
+            this.olvcMfe,
+            this.olvcCumNetProfitPct,
+            this.olvcCumNetProfitDollar,
+            this.olvcComission});
 			this.olvPositions.ContextMenuStrip = this.ctxPopup;
+			this.olvPositions.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvPositions.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.olvPositions.FullRowSelect = true;
 			this.olvPositions.HideSelection = false;
 			this.olvPositions.IncludeColumnHeadersInCopy = true;
 			this.olvPositions.IncludeHiddenColumnsInDataTransfer = true;
 			this.olvPositions.Location = new System.Drawing.Point(0, 0);
-			this.olvPositions.MultiSelect = false;
 			this.olvPositions.Name = "olvPositions";
-			this.olvPositions.ShowGroups = false;
 			this.olvPositions.ShowCommandMenuOnRightClick = true;
+			this.olvPositions.ShowGroups = false;
 			this.olvPositions.ShowItemToolTips = true;
 			this.olvPositions.Size = new System.Drawing.Size(905, 303);
-			//this.OrdersTreeOLV.SmallImageList = this.imgListOrderDirection;
 			this.olvPositions.TabIndex = 0;
 			this.olvPositions.TintSortColumn = true;
 			this.olvPositions.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -155,12 +154,11 @@ namespace Sq1.Reporters {
 			this.olvcQuantity.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcQuantity.Width = 15;
 			// 
-			// olvcPositionCost
+			// olvcCost
 			// 
 			this.olvcCost.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcCost.Text = "$Cost";
 			this.olvcCost.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcCost.Width = 60;
 			// 
 			// olvcEntryDate
 			// 
@@ -174,7 +172,6 @@ namespace Sq1.Reporters {
 			this.olvcEntryPrice.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcEntryPrice.Text = "Entry Price";
 			this.olvcEntryPrice.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcEntryPrice.Width = 60;
 			// 
 			// olvcEntryOrder
 			// 
@@ -193,7 +190,6 @@ namespace Sq1.Reporters {
 			this.olvcExitPrice.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcExitPrice.Text = "Exit Price";
 			this.olvcExitPrice.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcExitPrice.Width = 60;
 			// 
 			// olvcExitOrder
 			// 
@@ -238,20 +234,6 @@ namespace Sq1.Reporters {
 			this.olvcExitSignalName.Text = "Exit Signal";
 			this.olvcExitSignalName.Width = 70;
 			// 
-			// olvcMae
-			// 
-			this.olvcMae.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMae.Text = "$MAE";
-			this.olvcMae.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMae.Width = 47;
-			// 
-			// olvcMfe
-			// 
-			this.olvcMfe.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMfe.Text = "$MFE";
-			this.olvcMfe.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMfe.Width = 47;
-			// 
 			// olvcMaePct
 			// 
 			this.olvcMaePct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -266,14 +248,28 @@ namespace Sq1.Reporters {
 			this.olvcMfePct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMfePct.Width = 47;
 			// 
-			// olvcCumProfitPct
+			// olvcMae
+			// 
+			this.olvcMae.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMae.Text = "$MAE";
+			this.olvcMae.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMae.Width = 47;
+			// 
+			// olvcMfe
+			// 
+			this.olvcMfe.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMfe.Text = "$MFE";
+			this.olvcMfe.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMfe.Width = 47;
+			// 
+			// olvcCumNetProfitPct
 			// 
 			this.olvcCumNetProfitPct.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcCumNetProfitPct.Text = "%ProfitCumulative";
 			this.olvcCumNetProfitPct.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcCumNetProfitPct.Width = 46;
 			// 
-			// olvcCumProfitDollar
+			// olvcCumNetProfitDollar
 			// 
 			this.olvcCumNetProfitDollar.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcCumNetProfitDollar.Text = "$ProfitCumulative";
@@ -290,10 +286,10 @@ namespace Sq1.Reporters {
 			// ctxPopup
 			// 
 			this.ctxPopup.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniColorify,
-			this.mniCopyToClipboard});
+            this.mniColorify,
+            this.mniCopyToClipboard});
 			this.ctxPopup.Name = "contextMenuStrip1";
-			this.ctxPopup.Size = new System.Drawing.Size(243, 214);
+			this.ctxPopup.Size = new System.Drawing.Size(152, 48);
 			// 
 			// mniColorify
 			// 
@@ -301,7 +297,7 @@ namespace Sq1.Reporters {
 			this.mniColorify.CheckOnClick = true;
 			this.mniColorify.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniColorify.Name = "mniColorify";
-			this.mniColorify.Size = new System.Drawing.Size(242, 22);
+			this.mniColorify.Size = new System.Drawing.Size(151, 22);
 			this.mniColorify.Text = "Colorify (slow)";
 			this.mniColorify.Click += new System.EventHandler(this.mniColorify_Click);
 			// 
@@ -309,7 +305,7 @@ namespace Sq1.Reporters {
 			// 
 			this.mniCopyToClipboard.Name = "mniCopyToClipboard";
 			this.mniCopyToClipboard.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.mniCopyToClipboard.Size = new System.Drawing.Size(242, 22);
+			this.mniCopyToClipboard.Size = new System.Drawing.Size(151, 22);
 			this.mniCopyToClipboard.Text = "Copy";
 			this.mniCopyToClipboard.Click += new System.EventHandler(this.mniCopyToClipboard_Click);
 			// 

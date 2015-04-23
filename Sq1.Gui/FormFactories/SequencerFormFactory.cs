@@ -12,9 +12,9 @@ using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.FormFactories {
 	public class SequencerFormFactory {	// REASON_TO_EXIST: way to refresh Sliders and run Chart.Backtest() for added ContextScript from Sq1.Widgets.dll:OptimizationControl
-		ChartFormManager chartFormManager;
+		ChartFormsManager chartFormManager;
 
-		public SequencerFormFactory(ChartFormManager chartFormsManager) {
+		public SequencerFormFactory(ChartFormsManager chartFormsManager) {
 			this.chartFormManager = chartFormsManager;
 		}
 
@@ -24,27 +24,30 @@ namespace Sq1.Gui.FormFactories {
 			sequencerForm.SequencerControl.OnCopyToContextDefaultBacktest	+= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(sequencerControl_OnCopyToContextDefaultBacktest);
 			sequencerForm.SequencerControl.OnCopyToContextNew				+= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(sequencerControl_OnCopyToContextNew);
 			sequencerForm.SequencerControl.OnCopyToContextNewBacktest		+= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(sequencerControl_OnCopyToContextNewBacktest);
-			sequencerForm.SequencerControl.OnAllParametersControlOpen		+= new EventHandler<SystemPerformanceRestoreAbleListEventArgs>(sequencerControl_OnAllParametersControlOpen);
+			sequencerForm.SequencerControl.OnCorrelatorShouldPopulate		+= new EventHandler<SystemPerformanceRestoreAbleListEventArgs>(sequencerControl_OnCorrelatorShouldPopulate);
 			sequencerForm.FormClosing										+= new FormClosingEventHandler(sequencerForm_FormClosing);
 			sequencerForm.FormClosed										+= new FormClosedEventHandler(sequencerForm_FormClosed);
 			return sequencerForm;
 		}
 
-		void sequencerControl_OnAllParametersControlOpen(object sender, SystemPerformanceRestoreAbleListEventArgs e) {
-			CorrelationForm allParametersForm = new CorrelationForm(this.chartFormManager, e);
-			DockState designedDockState = allParametersForm.ShowHint;
-			if (designedDockState != DockState.Float) {
-				designedDockState  = DockState.Float;
-			}
-			allParametersForm.Text = "Correlator :: " + chartFormManager.Strategy.Name + " :: " + e.FileName;
-			Size designedSize = allParametersForm.Size;
-			allParametersForm.Show(this.chartFormManager.MainForm.DockPanel, designedDockState);
-			//allParametersForm.Size = designedSize;
-			//allParametersForm.FloatPane.Size = designedSize;
-			//allParametersForm.Pane.Size = designedSize;
-			//NULL allParametersForm.PanelPane.Size = designedSize;
-			//allParametersForm.DockPanel.Size = designedSize;
-			//allParametersForm.ParentForm.Size = designedSize;
+		void sequencerControl_OnCorrelatorShouldPopulate(object sender, SystemPerformanceRestoreAbleListEventArgs e) {
+			CorrelatorForm correlatorForm = this.chartFormManager.CorrelatorFormConditionalInstance;
+			correlatorForm.PopulateSequencedHistory(e);
+			correlatorForm.ActivateDockContentPopupAutoHidden(false);
+
+			//DockState designedDockState = allParametersForm.ShowHint;
+			//if (designedDockState != DockState.Float) {
+			//	designedDockState  = DockState.Float;
+			//}
+			//allParametersForm.Text = "Correlator :: " + chartFormManager.Strategy.Name + " :: " + e.FileName;
+			//Size designedSize = allParametersForm.Size;
+			//allParametersForm.Show(this.chartFormManager.MainForm.DockPanel, designedDockState);
+			////allParametersForm.Size = designedSize;
+			////allParametersForm.FloatPane.Size = designedSize;
+			////allParametersForm.Pane.Size = designedSize;
+			////NULL allParametersForm.PanelPane.Size = designedSize;
+			////allParametersForm.DockPanel.Size = designedSize;
+			////allParametersForm.ParentForm.Size = designedSize;
 		}
 
 		void sequencerControl_OnCopyToContextNewBacktest(object sender, SystemPerformanceRestoreAbleEventArgs e) {

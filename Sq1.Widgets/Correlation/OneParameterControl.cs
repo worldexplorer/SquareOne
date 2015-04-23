@@ -16,8 +16,8 @@ namespace Sq1.Widgets.Correlation {
 		Dictionary<MaximizationCriterion, ToolStripMenuItem>	mniToCheckForMaximizationCriterion;
 		MaximizationCriterion sortBy;
 
-		private Correlator sequencer { get { return this.allParametersControl.Sequencer; } }
-		private AllParametersControl allParametersControl;
+		private Correlator sequencer { get { return this.allParametersControl.Correlator; } }
+		private CorrelatorControl allParametersControl;
 
 		public OneParameterControl() {
 			InitializeComponent();
@@ -43,6 +43,106 @@ namespace Sq1.Widgets.Correlation {
 			//this.olv.AllColumns.Add(this.olvcMaxConsecutiveWinnersLocal);
 			//this.olv.AllColumns.Add(this.olvcMaxConsecutiveLosers);
 			//this.olv.AllColumns.Add(this.olvcMaxConsecutiveLosersLocal);
+
+			//this.olv.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			//this.olvcParamValues,
+
+			//this.olvcTotalPositionsGlobal,
+			//this.olvcTotalPositionsLocal,
+			//this.olvcTotalPositionsDelta,
+			//this.olvcMomentumsAverageTotalPositions,
+			//this.olvcMomentumsDispersionTotalPositions,
+			//this.olvcMomentumsVarianceTotalPositions,
+
+			//this.olvcProfitPerPositionGlobal,
+			//this.olvcProfitPerPositionLocal,
+			//this.olvcProfitPerPositionDelta,
+			//this.olvcMomentumsAverageProfitPerPosition,
+			//this.olvcMomentumsDispersionProfitPerPosition,
+			//this.olvcMomentumsDispersionProfitPerPosition,
+
+			//this.olvcNetProfitGlobal,
+			//this.olvcNetProfitLocal,
+			//this.olvcNetProfitDelta,
+			//this.olvcMomentumsAverageNetProfit,
+			//this.olvcMomentumsDispersionNetProfit,
+			//this.olvcMomentumsVarianceNetProfit,
+
+			//this.olvcWinLossGlobal,
+			//this.olvcWinLossLocal,
+			//this.olvcWinLossDelta,
+			//this.olvcMomentumsAverageWinLoss,
+			//this.olvcMomentumsDispersionWinLoss,
+			//this.olvcMomentumsVarianceWinLoss,
+
+			//this.olvcProfitFactorGlobal,
+			//this.olvcProfitFactorLocal,
+			//this.olvcProfitFactorDelta,
+			//this.olvcMomentumsAverageProfitFactor,
+			//this.olvcMomentumsDispersionProfitFactor,
+			//this.olvcMomentumsVarianceProfitFactor,
+
+			//this.olvcRecoveryFactorGlobal,
+			//this.olvcRecoveryFactorLocal,
+			//this.olvcRecoveryFactorDelta,
+			//this.olvcMomentumsAverageRecoveryFactor,
+			//this.olvcMomentumsDispersionRecoveryFactor,
+			//this.olvcMomentumsVarianceRecoveryFactor,
+
+			//this.olvcMaxDrawdownGlobal,
+			//this.olvcMaxDrawdownLocal,
+			//this.olvcMaxDrawdownDelta,
+			//this.olvcMomentumsAverageMaxDrawdown,
+			//this.olvcMomentumsDispersionMaxDrawdown,
+			//this.olvcMomentumsVarianceMaxDrawdown,
+
+			//this.olvcMaxConsecutiveWinnersGlobal,
+			//this.olvcMaxConsecutiveWinnersLocal,
+			//this.olvcMaxConsecutiveWinnersDelta,
+			//this.olvcMomentumsAverageMaxConsecutiveWinners,
+			//this.olvcMomentumsDispersionMaxConsecutiveWinners,
+			//this.olvcMomentumsVarianceMaxConsecutiveWinners,
+
+			//this.olvcMaxConsecutiveLosersGlobal,
+			//this.olvcMaxConsecutiveLosersLocal,
+			//this.olvcMaxConsecutiveLosersDelta,
+			//this.olvcMomentumsAverageMaxConsecutiveLosers,
+			//this.olvcMomentumsDispersionMaxConsecutiveLosers,
+			//this.olvcMomentumsVarianceMaxConsecutiveLosers
+			//});
+
+			//this.olv.AllColumns.Add(this.olvcParamValues);
+			//this.olv.AllColumns.Add(this.olvcTotalPositionsGlobal);
+			//this.olv.AllColumns.Add(this.olvcTotalPositionsLocal);
+			//this.olv.AllColumns.Add(this.olvcTotalPositionsDelta);
+			//this.olv.AllColumns.Add(this.olvcTotalPositionsGlobal);
+			//this.olv.AllColumns.Add(this.olvcTotalPositionsLocal);
+			//this.olv.AllColumns.Add(this.olvcTotalPositionsDelta);
+			//this.olv.AllColumns.Add(this.olvcProfitPerPositionGlobal);
+			//this.olv.AllColumns.Add(this.olvcProfitPerPositionLocal);
+			//this.olv.AllColumns.Add(this.olvcProfitPerPositionDelta);
+			//this.olv.AllColumns.Add(this.olvcNetProfitGlobal);
+			//this.olv.AllColumns.Add(this.olvcNetProfitLocal);
+			//this.olv.AllColumns.Add(this.olvcNetProfitDelta);
+			//this.olv.AllColumns.Add(this.olvcWinLossGlobal);
+			//this.olv.AllColumns.Add(this.olvcWinLossLocal);
+			//this.olv.AllColumns.Add(this.olvcWinLossDelta);
+			//this.olv.AllColumns.Add(this.olvcProfitFactorGlobal);
+			//this.olv.AllColumns.Add(this.olvcProfitFactorLocal);
+			//this.olv.AllColumns.Add(this.olvcProfitFactorDelta);
+			//this.olv.AllColumns.Add(this.olvcRecoveryFactorGlobal);
+			//this.olv.AllColumns.Add(this.olvcRecoveryFactorLocal);
+			//this.olv.AllColumns.Add(this.olvcRecoveryFactorDelta);
+			//this.olv.AllColumns.Add(this.olvcMaxDrawdownGlobal);
+			//this.olv.AllColumns.Add(this.olvcMaxDrawdownLocal);
+			//this.olv.AllColumns.Add(this.olvcMaxDrawdownDelta);
+			//this.olv.AllColumns.Add(this.olvcMaxConsecutiveWinnersGlobal);
+			//this.olv.AllColumns.Add(this.olvcMaxConsecutiveWinnersLocal);
+			//this.olv.AllColumns.Add(this.olvcMaxConsecutiveWinnersDelta);
+			//this.olv.AllColumns.Add(this.olvcMaxConsecutiveLosersGlobal);
+			//this.olv.AllColumns.Add(this.olvcMaxConsecutiveLosersLocal);
+			//this.olv.AllColumns.Add(this.olvcMaxConsecutiveLosersDelta);
+
 
 			this.mniToCheckForMaximizationCriterion = new Dictionary<MaximizationCriterion,		ToolStripMenuItem>();
 			this.mniToCheckForMaximizationCriterion.Add(MaximizationCriterion.PositionsCount,		this.mniMaximiseDeltaTotalPositions);
@@ -143,6 +243,45 @@ namespace Sq1.Widgets.Correlation {
 				this.olvcMaxConsecutiveLosersDelta
 				});
 
+
+			this.mniShowMomentumsAverage.Click += new EventHandler(this.mniShowColumnByFilter_Click);
+			columnsByFilter.Add(this.mniShowMomentumsAverage, new List<OLVColumn>() {
+				this.olvcMomentumsAverageTotalPositions,
+				this.olvcMomentumsAverageProfitPerPosition,
+				this.olvcMomentumsAverageNetProfit,
+				this.olvcMomentumsAverageWinLoss,
+				this.olvcMomentumsAverageProfitFactor,
+				this.olvcMomentumsAverageRecoveryFactor,
+				this.olvcMomentumsAverageMaxDrawdown,
+				this.olvcMomentumsAverageMaxConsecutiveWinners,
+				this.olvcMomentumsAverageMaxConsecutiveLosers
+				});
+
+			this.mniShowMomentumsDispersion.Click += new EventHandler(this.mniShowColumnByFilter_Click);
+			columnsByFilter.Add(this.mniShowMomentumsDispersion, new List<OLVColumn>() {
+				this.olvcMomentumsDispersionTotalPositions,
+				this.olvcMomentumsDispersionProfitPerPosition,
+				this.olvcMomentumsDispersionNetProfit,
+				this.olvcMomentumsDispersionWinLoss,
+				this.olvcMomentumsDispersionProfitFactor,
+				this.olvcMomentumsDispersionRecoveryFactor,
+				this.olvcMomentumsDispersionMaxDrawdown,
+				this.olvcMomentumsDispersionMaxConsecutiveWinners,
+				this.olvcMomentumsDispersionMaxConsecutiveLosers
+				});
+
+			this.mniShowMomentumsVariance.Click += new EventHandler(this.mniShowColumnByFilter_Click);
+			columnsByFilter.Add(this.mniShowMomentumsVariance, new List<OLVColumn>() {
+				this.olvcMomentumsVarianceTotalPositions,
+				this.olvcMomentumsVarianceProfitPerPosition,
+				this.olvcMomentumsVarianceNetProfit,
+				this.olvcMomentumsVarianceWinLoss,
+				this.olvcMomentumsVarianceProfitFactor,
+				this.olvcMomentumsVarianceRecoveryFactor,
+				this.olvcMomentumsVarianceMaxDrawdown,
+				this.olvcMomentumsVarianceMaxConsecutiveWinners,
+				this.olvcMomentumsVarianceMaxConsecutiveLosers
+				});
 			// hide columns that aren't Checked in Designer
 			foreach (ToolStripMenuItem mni in this.columnsByFilter.Keys) {
 				List<OLVColumn> columns = this.columnsByFilter[mni];
@@ -151,7 +290,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olv.RebuildColumns();
 		}
 
-		public OneParameterControl(AllParametersControl allParametersControl, OneParameterAllValuesAveraged parameter) : this() {
+		public OneParameterControl(CorrelatorControl allParametersControl, OneParameterAllValuesAveraged parameter) : this() {
 			this.allParametersControl = allParametersControl;
 			this.parameter = parameter;
 			this.olvcParamValues.Text = this.parameter.ParameterName;

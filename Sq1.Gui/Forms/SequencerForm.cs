@@ -1,16 +1,17 @@
 ﻿using System;
 
+using Sq1.Core.Sequencing;
 using Sq1.Widgets;
 
 namespace Sq1.Gui.Forms {
 	public partial class SequencerForm : DockContentImproved {
-		ChartFormManager chartFormManager;
+		ChartFormsManager chartFormManager;
 		
 		public SequencerForm() {
 			InitializeComponent();
 		}
 		
-		public SequencerForm(ChartFormManager chartFormManager) : this() {
+		public SequencerForm(ChartFormsManager chartFormManager) : this() {
 			this.Initialize(chartFormManager);
 		}
 
@@ -20,7 +21,7 @@ namespace Sq1.Gui.Forms {
 			return "Sequencer:" + this.SequencerControl.GetType().FullName + ",ChartSerno:" + this.chartFormManager.DataSnapshot.ChartSerno;
 		}
 
-		internal void Initialize(ChartFormManager chartFormManager) {
+		internal void Initialize(ChartFormsManager chartFormManager) {
 			this.chartFormManager = chartFormManager;
 			this.WindowTitlePullFromStrategy();
 			this.SequencerControl.Initialize(this.chartFormManager.Executor.Sequencer);
@@ -30,7 +31,7 @@ namespace Sq1.Gui.Forms {
 			string windowTitle = "Sequencer :: " + this.chartFormManager.Strategy.Name;
 			if (this.chartFormManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
 			if (this.chartFormManager.ScriptEditedNeedsSaving) {
-				windowTitle = ChartFormManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
+				windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
 			}
 			this.Text = windowTitle;
 		}

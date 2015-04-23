@@ -11,7 +11,7 @@ namespace Sq1.Widgets.Sequencing {
 		public event EventHandler<SystemPerformanceRestoreAbleEventArgs> OnCopyToContextNew;
 		public event EventHandler<SystemPerformanceRestoreAbleEventArgs> OnCopyToContextNewBacktest;
 
-		public event EventHandler<SystemPerformanceRestoreAbleListEventArgs> OnAllParametersControlOpen;
+		public event EventHandler<SystemPerformanceRestoreAbleListEventArgs> OnCorrelatorShouldPopulate;
 
 		public void RaiseOnCopyToContextDefault(SystemPerformanceRestoreAble scriptAndParametersHolder) {
 			if (this.OnCopyToContextDefault == null) return;
@@ -45,13 +45,16 @@ namespace Sq1.Widgets.Sequencing {
 				Assembler.PopupException("RaiseOnCopyToContextNewBacktest(" + scriptAndParametersHolder + ")", ex);
 			}
 		}
-		private void RaiseOnAllParametersControlOpen(List<SystemPerformanceRestoreAble> deserialized, string fnameDoubleClicked) {
-			if (this.OnAllParametersControlOpen == null) return;
+		private void RaiseOnCorrelatorShouldPopulate(List<SystemPerformanceRestoreAble> deserialized, string fnameDoubleClicked) {
+			if (this.OnCorrelatorShouldPopulate == null) return;
 			try {
+				this.olvBacktests.UseWaitCursor = true;
 				var eventArg = new SystemPerformanceRestoreAbleListEventArgs(deserialized, fnameDoubleClicked);
-				this.OnAllParametersControlOpen(this, eventArg);
+				this.OnCorrelatorShouldPopulate(this, eventArg);
 			} catch (Exception ex) {
-				Assembler.PopupException("RaiseOnAllParametersControlOpen(" + fnameDoubleClicked + ":" + deserialized.Count + "deserialized)", ex);
+                Assembler.PopupException("RaiseOnCorrelatorShouldOpen(" + fnameDoubleClicked + ":" + deserialized.Count + "deserialized)", ex);
+			} finally {
+				this.olvBacktests.UseWaitCursor = false;
 			}
 		}
 	}

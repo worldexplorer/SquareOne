@@ -1,5 +1,5 @@
 ﻿namespace Sq1.Widgets.Correlation {
-	partial class AllParametersControl {
+	partial class CorrelatorControl {
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>

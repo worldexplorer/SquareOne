@@ -19,7 +19,7 @@ using Sq1.Widgets.Sequencing;
 using Sq1.Widgets;
 
 namespace Sq1.Gui.Forms {
-	public class ChartFormManager {
+	public class ChartFormsManager {
 		public	MainForm							MainForm;
 		public	ChartFormDataSnapshot				DataSnapshot;
 		public	Serializer<ChartFormDataSnapshot>	DataSnapshotSerializer;
@@ -70,9 +70,8 @@ namespace Sq1.Gui.Forms {
 				if (DockContentImproved.IsNullOrDisposed(this.SequencerForm)) {
 					if (this.Strategy == null) return null;
 					if (this.sequencerFormFactory == null) {
-						#if DEBUG
-						Debugger.Break();
-						#endif
+						string msg = "SHOULD_NEVER_HAPPEN_this.sequencerFormFactory=null";
+						Assembler.PopupException(msg);
 						this.sequencerFormFactory = new SequencerFormFactory(this);
 					}
 
@@ -89,6 +88,7 @@ namespace Sq1.Gui.Forms {
 				bool sequencerMustBeActivated = sequencerNotInstantiated ? true : sequencer.MustBeActivated;
 				return !sequencerMustBeActivated;
 			} }
+
 		public	LivesimForm LivesimForm;
 		public	LivesimForm LivesimFormConditionalInstance { get {
 				if (DockContentImproved.IsNullOrDisposed(this.LivesimForm)) {
@@ -102,6 +102,21 @@ namespace Sq1.Gui.Forms {
 				bool livesimNotInstantiated = DockContentImproved.IsNullOrDisposed(livesim);
 				bool livesimMustBeActivated = livesimNotInstantiated ? true : livesim.MustBeActivated;
 				return !livesimMustBeActivated;
+			} }
+
+		public	CorrelatorForm CorrelatorForm;
+		public	CorrelatorForm CorrelatorFormConditionalInstance { get {
+				if (DockContentImproved.IsNullOrDisposed(this.CorrelatorForm)) {
+					if (this.Strategy == null) return null;
+					this.CorrelatorForm = new CorrelatorForm(this);
+				}
+				return this.CorrelatorForm;
+			} }
+		public	bool								CorrelatorFormIsOnSurface				{ get {
+				CorrelatorForm Correlator = this.CorrelatorForm;
+				bool CorrelatorNotInstantiated = DockContentImproved.IsNullOrDisposed(Correlator);
+				bool CorrelatorMustBeActivated = CorrelatorNotInstantiated ? true : Correlator.MustBeActivated;
+				return !CorrelatorMustBeActivated;
 			} }
 		
 		public	ChartFormInterformEventsConsumer	InterformEventsConsumer;
@@ -140,7 +155,7 @@ namespace Sq1.Gui.Forms {
 				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart; } }
 
 		// WHATTTTT???? I dont want it "internal" when "private" is omitted
-		ChartFormManager() {
+		ChartFormsManager() {
 			this.StrategyFoundDuringDeserialization = false;
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
 			this.ScriptEditedNeedsSaving = false;
@@ -157,7 +172,7 @@ namespace Sq1.Gui.Forms {
 
 			this.DataSnapshotSerializer = new Serializer<ChartFormDataSnapshot>();
 		}
-		public ChartFormManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {
+		public ChartFormsManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {
 			this.MainForm = mainForm;
 			if (charSernoDeserialized == -1) {
 				this.DataSnapshot = new ChartFormDataSnapshot();
@@ -601,6 +616,7 @@ namespace Sq1.Gui.Forms {
 				string msg = "WILL_NEVER_HAPPEN?";
 				Assembler.PopupException(msg);
 				this.SequencerFormShow(false);
+				this.CorrelatorFormShow(false);
 				this.LivesimFormShow(false);
 			}
 
@@ -663,7 +679,28 @@ namespace Sq1.Gui.Forms {
 			this.SequencerFormConditionalInstance.Show(mainPanelOrAnotherSequencersPanel);
 			this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
 			//this.SequencerFormConditionalInstance.SequencerControl.Refresh();	// olvBacktest doens't repaint while having results?...
-			this.SequencerFormConditionalInstance.SequencerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
+			//this.SequencerFormConditionalInstance.SequencerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
+		}
+		public void CorrelatorFormShow(bool keepAutoHidden = true) {
+			this.CorrelatorFormConditionalInstance.Initialize(this);
+
+			if (this.SequencerFormConditionalInstance.MustBeActivated) {
+				this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(false, true);
+			}
+			DockPane underneathSequencer = this.SequencerFormConditionalInstance.Pane;
+			if (underneathSequencer != null) {
+				this.CorrelatorFormConditionalInstance.Show(underneathSequencer, DockAlignment.Bottom, 0.5);
+			} else {
+				// Sequencer isn't shown at all
+				this.CorrelatorFormConditionalInstance.Show(this.dockPanel);
+			}
+			this.CorrelatorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+
+			// WILL_RAISE_BUT_AND_CORRELATOR_ALREADY_CATCHES_IT this.SequencerFormConditionalInstance.SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
+			this.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.SequencerFormConditionalInstance.SequencerControl.PushToCorrelator);
+			//DONT_INIT_IF_I_HAVE_NON_DEFAULT_SCALEINTERVAL_SELECTED this.SequencerFormShow(false);
+			this.CorrelatorFormConditionalInstance.CorrelatorControl.Correlator.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
+			this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(false, true);
 		}
 		public void LivesimFormShow(bool keepAutoHidden = true) {
 			this.LivesimFormConditionalInstance.Initialize(this);
@@ -798,12 +835,12 @@ namespace Sq1.Gui.Forms {
 			if (deleteOptimizationHistory) {
 				//v1 this.Strategy.OptimizationResultsByContextIdent.Clear();
 				if (this.SequencerForm != null) {
-					this.SequencerForm.SequencerControl.RepositoryJsonOptimizationResults.ItemsFoundDeleteAll();
+					this.SequencerForm.SequencerControl.RepositoryJsonSequencer.ItemsFoundDeleteAll();
 				} else {
 					try {
-						RepositoryJsonOptimizationResults repositoryJsonOptimizationResults = new RepositoryJsonOptimizationResults();
+						RepositoryJsonSimpleSequencer repositoryJsonOptimizationResults = new RepositoryJsonSimpleSequencer();
 						repositoryJsonOptimizationResults.Initialize(Assembler.InstanceInitialized.AppDataPath,
-							Path.Combine("OptimizationResults", this.Strategy.RelPathAndNameForOptimizationResults));
+							Path.Combine("OptimizationResults", this.Strategy.RelPathAndNameForSequencerResults));
 						int deleted = repositoryJsonOptimizationResults.ItemsFoundDeleteAll();
 						string msg = "RECOMPILATION_ERASED_OPTIMIZATION_HISTORY [" + deleted + "] optimizations deleted (with many backtests each)";
 						Assembler.DisplayStatus(msg);
@@ -821,7 +858,7 @@ namespace Sq1.Gui.Forms {
 			}
 			
 			SequencerControl control = this.SequencerFormConditionalInstance.SequencerControl;
-			control.SyncBacktestAndListWithOptimizationResultsByContextIdent();
+			control.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 
 			//string staleReason = control.PopulateTextboxesFromExecutorsState();
 			//bool clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize = string.IsNullOrEmpty(staleReason) == false;

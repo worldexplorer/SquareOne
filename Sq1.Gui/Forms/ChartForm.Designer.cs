@@ -36,7 +36,8 @@ namespace Sq1.Gui.Forms {
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniStrategyRemove = new System.Windows.Forms.ToolStripMenuItem();
 			this.MniShowSourceCodeEditor = new System.Windows.Forms.ToolStripMenuItem();
-			this.MniShowSequencer = new System.Windows.Forms.ToolStripMenuItem();
+            this.MniShowSequencer = new System.Windows.Forms.ToolStripMenuItem();
+            this.MniShowCorrelator = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxStrategy = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniStrategyContextLoad = new System.Windows.Forms.ToolStripMenuItem();
 			this.DdbStrategy = new System.Windows.Forms.ToolStripDropDownButton();
@@ -229,7 +230,7 @@ namespace Sq1.Gui.Forms {
 			// 
 			this.MniShowLivesim.CheckOnClick = true;
 			this.MniShowLivesim.Name = "MniShowLivesim";
-			this.MniShowLivesim.ShortcutKeys = System.Windows.Forms.Keys.F9;
+			this.MniShowLivesim.ShortcutKeys = System.Windows.Forms.Keys.F10;
 			this.MniShowLivesim.Size = new System.Drawing.Size(248, 22);
 			this.MniShowLivesim.Text = "Show Live Simulator";
 			this.MniShowLivesim.Click += new System.EventHandler(this.mniShowLivesim_Click);
@@ -272,7 +273,16 @@ namespace Sq1.Gui.Forms {
 			this.MniShowSequencer.Size = new System.Drawing.Size(248, 22);
 			this.MniShowSequencer.Text = "Show Sequencer";
 			this.MniShowSequencer.Click += new System.EventHandler(this.mniShowSequencer_Click);
-			// 
+            // 
+            // MniShowCorrelator
+            // 
+            this.MniShowCorrelator.CheckOnClick = true;
+            this.MniShowCorrelator.Name = "MniShowCorrelator";
+            this.MniShowCorrelator.ShortcutKeys = System.Windows.Forms.Keys.F9;
+            this.MniShowCorrelator.Size = new System.Drawing.Size(248, 22);
+            this.MniShowCorrelator.Text = "Show Correlator";
+            this.MniShowCorrelator.Click += new System.EventHandler(this.mniShowCorrelator_Click);
+            // 
 			// ctxStrategy
 			// 
 			this.ctxStrategy.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -280,6 +290,7 @@ namespace Sq1.Gui.Forms {
             this.mniStrategyRemove,
             this.toolStripSeparator3,
             this.MniShowLivesim,
+            this.MniShowCorrelator,
             this.MniShowSequencer,
             this.MniShowSourceCodeEditor});
 			this.ctxStrategy.Name = "ctxPositionSize";
@@ -575,7 +586,8 @@ namespace Sq1.Gui.Forms {
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem mniStrategyContextLoad;
 		public System.Windows.Forms.ToolStripMenuItem MniShowSourceCodeEditor;
-		public System.Windows.Forms.ToolStripMenuItem MniShowSequencer;
+        public System.Windows.Forms.ToolStripMenuItem MniShowSequencer;
+        public System.Windows.Forms.ToolStripMenuItem MniShowCorrelator;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripMenuItem mniStrategyRemove;
 		private System.Windows.Forms.ToolStripMenuItem mniShowBarRange;

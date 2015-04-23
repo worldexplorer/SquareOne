@@ -58,7 +58,7 @@ namespace Sq1.Gui.Singletons {
 		}
 
 		//internal void UpdateConnectionStatus(Core.DataTypes.ConnectionState status, int statusCode, string message) {
-		//    throw new NotImplementedException();
+		//	throw new NotImplementedException();
 		//}
 	}
 }

@@ -16,9 +16,9 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public int									ExceptionsLimitToAbortBacktest;
 
 		[JsonProperty]	public string								StoredInJsonAbspath;
-		[JsonIgnore]	public string								StoredInFolderRelName	{ get { return Path.GetFileName(Path.GetDirectoryName(this.StoredInJsonAbspath)); } }
-		[JsonIgnore]	public string								StoredInJsonRelName		{ get { return Path.GetFileName(this.StoredInJsonAbspath); } }
-		[JsonIgnore]	public string								RelPathAndNameForOptimizationResults			{ get { return Path.Combine(this.StoredInFolderRelName, this.Name); } }
+		[JsonIgnore]	public string								StoredInFolderRelName				{ get { return Path.GetFileName(Path.GetDirectoryName(this.StoredInJsonAbspath)); } }
+		[JsonIgnore]	public string								StoredInJsonRelName					{ get { return Path.GetFileName(this.StoredInJsonAbspath); } }
+		[JsonIgnore]	public string								RelPathAndNameForSequencerResults	{ get { return Path.Combine(this.StoredInFolderRelName, this.Name); } }
 		
 		[JsonIgnore]	public bool									ActivatedFromDll { get {
 				if (string.IsNullOrEmpty(this.DllPathIfNoSourceCode)) return false;

@@ -124,7 +124,7 @@ namespace Sq1.Widgets.Sequencing {
 			//}
 			//strategy.Serialize();
 			//v2
-			this.RepositoryJsonOptimizationResults.SerializeList(this.backtestsLocalEasierToSync, symbolScaleRange);
+			this.RepositoryJsonSequencer.SerializeList(this.backtestsLocalEasierToSync, symbolScaleRange);
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
 			this.statsAndHistoryExpand();
 		}
@@ -270,41 +270,26 @@ namespace Sq1.Widgets.Sequencing {
 			this.mniInfo.Text				= uniqueBacktestNumbers + " => " + stratSymbolScaleRange;
 		}
 		void olvHistory_ItemActivate(object sender, EventArgs e) {
-			FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
-			if (fname == null) return;
-
-			this.backtestsLocalEasierToSync = this.RepositoryJsonOptimizationResults.DeserializeList(fname.Name);
-			if (this.backtestsLocalEasierToSync == null || this.backtestsLocalEasierToSync.Count == 0) {
-				string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + fname.Name;
-				Assembler.PopupException(msg);
-				return;
+			try {
+				FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
+				if (fname == null) return;
+                this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(fname.Name);
+			} catch (Exception ex) {
+				string msg = "FIXME //olvHistory_ItemActivate()";
+				Assembler.PopupException(msg, ex);
 			}
-			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync, true);
-		}
-		private void olvHistory_DoubleClick(object sender, EventArgs e) {
-			FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
-			if (fname == null) return;
-			if (this.backtestsLocalEasierToSync.Count == 0) {
-				string msg = "NO_RECORDS_IN_OPTIMIZATION_HISTORY_FILE[" + fname.ToString() + "]_DESERIALIZATION_HAPPES_ON_ITEM_ACTIVATE__DOUBLECLICK_AGAIN";
-				Assembler.PopupException(msg);
-				return;
-			}
-			this.RaiseOnAllParametersControlOpen(this.backtestsLocalEasierToSync, fname.Name);
 		}
 		void olvHistory_KeyDown(object sender, KeyEventArgs e) {
 			try {
 				if (e.KeyCode == Keys.Delete) {
 					FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
 					if (fname == null) return;
-					bool deleted = this.RepositoryJsonOptimizationResults.ItemDelete_dirtyImplementation(fname);
+					bool deleted = this.RepositoryJsonSequencer.ItemDelete_dirtyImplementation(fname);
 					if (deleted == false) {
 						string msg = "FIXME/REFACTOR RepositoryJsonOptimizationResults.ItemDelete_dirtyImplementation(" + fname + ") //olvHistory_KeyDown()";
 						Assembler.PopupException(msg);
 					}
-					this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
-				}
-				if (e.KeyCode == Keys.Enter) {
-					this.olvHistory_DoubleClick(this, null);
+					this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 				}
 			} catch (Exception ex) {
 				string msg = "FIXME //olvHistory_KeyDown()";
@@ -340,14 +325,14 @@ namespace Sq1.Widgets.Sequencing {
 		}
 		// implemented as this.fastOLVparametersYesNoMinMaxStep.CheckStatePutter = delegate(object o, CheckState newState) {}
 		//void fastOLVparametersYesNoMinMaxStep_ItemCheck(object sender, System.Windows.Forms.ItemCheckEventArgs e) {
-		//    //IndicatorParameter paramClicked = this.fastOLVparametersYesNoMinMaxStep.SelectedObject as IndicatorParameter;
-		//    if (e.Index < 0 || e.Index >= this.scriptAndIndicatorParametersMergedCloned.Count) return;
-		//    IndicatorParameter paramClicked = this.scriptAndIndicatorParametersMergedCloned[e.Index];
-		//    paramClicked.WillBeSequencedDuringOptimization = e.NewValue.CompareTo(CheckState.Checked) == 0;
-		//    this.sequencer.TotalsCalculate();
-		//    this.totalsPropagateAdjustSplitterDistance();
-		//    // for HeaderAllCheckBox.Clicked => Strategy.Serialize()d as many times as you got (Script+Indicator)Parameters
-		//    this.sequencer.ExecutorCloneToBeSpawned.Strategy.Serialize();
+		//	//IndicatorParameter paramClicked = this.fastOLVparametersYesNoMinMaxStep.SelectedObject as IndicatorParameter;
+		//	if (e.Index < 0 || e.Index >= this.scriptAndIndicatorParametersMergedCloned.Count) return;
+		//	IndicatorParameter paramClicked = this.scriptAndIndicatorParametersMergedCloned[e.Index];
+		//	paramClicked.WillBeSequencedDuringOptimization = e.NewValue.CompareTo(CheckState.Checked) == 0;
+		//	this.sequencer.TotalsCalculate();
+		//	this.totalsPropagateAdjustSplitterDistance();
+		//	// for HeaderAllCheckBox.Clicked => Strategy.Serialize()d as many times as you got (Script+Indicator)Parameters
+		//	this.sequencer.ExecutorCloneToBeSpawned.Strategy.Serialize();
 		//}
 		void cbxExpandCollapse_CheckedChanged(object sender, EventArgs e) {
 			if (this.cbxExpandCollapse.Checked == true) {
@@ -358,10 +343,16 @@ namespace Sq1.Widgets.Sequencing {
 		}
 		bool showAllScriptIndicatorParametersInOptimizationResults;
 		void mni_showAllScriptIndicatorParametersInOptimizationResultsClick(object sender, EventArgs e) {
-			this.showAllScriptIndicatorParametersInOptimizationResults = this.mni_showAllScriptIndicatorParametersInOptimizationResults.Checked;
-			this.olvParameters.Refresh();
+			if (this.mni_showAllScriptIndicatorParametersInOptimizationResults.Checked == true) {
+				string msg = "ChartForm > Menu > Show Correlator > Click any checkbox to shrink again";
+				Assembler.PopupException(msg);
+				return;
+			}
+			//this.showAllScriptIndicatorParametersInOptimizationResults = this.mni_showAllScriptIndicatorParametersInOptimizationResults.Checked;
+			//this.olvParameters.Refresh();
 			//CHANGING_COLUMN_VISIBILITY_INSTEAD this.populateColumns_onlyWillBeSequencedDuringOptimization_orAll();
 			//CHANGING_COLUMN_VISIBILITY_INSTEAD this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync);
+			this.BacktestsRestoreCorrelatedClosed();	// can't access here: chartFormsManager.CorrelatorFormConditionalInstance.Close();
 		}
 	}
 }

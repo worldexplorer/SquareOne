@@ -1,44 +1,52 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+using Newtonsoft.Json;
 using Sq1.Core;
 using Sq1.Core.Sequencing;
-using System;
 
 namespace Sq1.Core.Correlation {
 	public class OneParameterOneValue {
-		OneParameterAllValuesAveraged oneParameterAllValuesAveraged;
+		[JsonIgnore]	OneParameterAllValuesAveraged oneParameterAllValuesAveraged;
 
-		public string	ArtificialName		{ get; private set; }
-		public bool		IsArtificialRow		{ get { return string.IsNullOrEmpty(this.ArtificialName) == false; } }
+		[JsonIgnore]	public string	ArtificialName		{ get; private set; }
+		[JsonIgnore]	public bool		IsArtificialRow		{ get { return string.IsNullOrEmpty(this.ArtificialName) == false; } }
 
-		public double	ValueSequenced		{ get; private set; }
-		public string	ParameterName		{ get { return this.oneParameterAllValuesAveraged.ParameterName; } }
-		public string	ParameterNameValue	{ get {
+		[JsonProperty]	public double	ValueSequenced		{ get; private set; }
+		[JsonIgnore]	public string	ParameterName		{ get { return this.oneParameterAllValuesAveraged.ParameterName; } }
+		[JsonIgnore]	public string	ParameterNameValue	{ get {
 				if (this.IsArtificialRow) return this.ArtificialName;			//"Average" / "Dispersion""
 				string ret = this.oneParameterAllValuesAveraged.ParameterName + "=" + this.ValueSequenced;	//"MaFast.Period=10"
 				return ret;
 			} }
 
 
-		SortedDictionary<int, SystemPerformanceRestoreAble> backtestsWithMyValue;
+		[JsonIgnore]	SortedDictionary<int, SystemPerformanceRestoreAble> backtestsWithMyValue;
+		[JsonProperty]	int													BacktestsWithMyValueCount { get {
+			return this.backtestsWithMyValue.Count; } }
 
-		SortedDictionary<int, SystemPerformanceRestoreAble> backtestsWithMyValueAndOnlyChosenOtherValues_cached;
-		SortedDictionary<int, SystemPerformanceRestoreAble> backtestsWithMyValueAndOnlyChosenOtherValues { get {
+		[JsonIgnore]	SortedDictionary<int, SystemPerformanceRestoreAble> backtestsWithMyValueAndOnlyChosenOtherValues_cached;
+		[JsonIgnore]	SortedDictionary<int, SystemPerformanceRestoreAble> backtestsWithMyValueAndOnlyChosenOtherValues { get {
 			if (this.backtestsWithMyValueAndOnlyChosenOtherValues_cached != null) return this.backtestsWithMyValueAndOnlyChosenOtherValues_cached;
 			this.backtestsWithMyValueAndOnlyChosenOtherValues_cached = new SortedDictionary<int, SystemPerformanceRestoreAble>();
 			foreach (SystemPerformanceRestoreAble eachRegardless in this.backtestsWithMyValue.Values) {
-				if (oneParameterAllValuesAveraged.Sequencer.HasUnchosenParametersExceptFor(eachRegardless, this.oneParameterAllValuesAveraged)) continue;
+				if (oneParameterAllValuesAveraged.Correlator.HasUnchosenParametersExceptFor(eachRegardless, this.oneParameterAllValuesAveraged)) continue;
 				backtestsWithMyValueAndOnlyChosenOtherValues_cached.Add(eachRegardless.OptimizationIterationSerno, eachRegardless);
 			}
 			return this.backtestsWithMyValueAndOnlyChosenOtherValues_cached;
 		} }
+		[JsonProperty]	int													BacktestsWithMyValueAndOnlyChosenOtherValuesCount { get {
+			return this.backtestsWithMyValueAndOnlyChosenOtherValues.Count; } }
+		[JsonProperty]	string												BacktestsWithMyValueAndOnlyChosenOtherValueAsString { get {
+			return this.keysAsString(this.backtestsWithMyValueAndOnlyChosenOtherValues); } }
 
-		public KPIs KPIsGlobal	{ get; private set; }
-		public KPIs KPIsLocal	{ get; private set; }
-		public bool Chosen;
+		[JsonIgnore]	public	KPIs	KPIsGlobal	{ get; private set; }
+		[JsonIgnore]	public	KPIs	KPIsLocal	{ get; private set; }
+		[JsonProperty]	public	bool	Chosen;
 
-		KPIs kPIsLocalMinusGlobal_cached;
-		public KPIs KPIsDelta { get {
+
+		[JsonIgnore]			KPIs	kPIsLocalMinusGlobal_cached;
+		[JsonIgnore]	public	KPIs	KPIsDelta { get {
 				if (this.kPIsLocalMinusGlobal_cached != null) return this.kPIsLocalMinusGlobal_cached;
 				KPIs ret = new KPIs();
 				ret.NetProfit			= this.KPIsLocal.NetProfit			- this.KPIsGlobal.NetProfit;
@@ -54,11 +62,21 @@ namespace Sq1.Core.Correlation {
 				return ret;
 			} }
 
+		// controlled by AvgCorMomentumsCalculator => MomentumsAveragedByParameter.getter => AvgCorMomentums.ctor()
+		[JsonIgnore]	public	KPIs	KPIsMomentumsAverage;
+		[JsonIgnore]	public	KPIs	KPIsMomentumsDispersion;
+		[JsonIgnore]	public	KPIs	KPIsMomentumsVariance;
+
 		OneParameterOneValue() {
 			Chosen = true;
 			backtestsWithMyValue = new SortedDictionary<int, SystemPerformanceRestoreAble>();
 			KPIsGlobal = new KPIs();
 			KPIsLocal = new KPIs();
+
+			// will be reassigned soon; just want to avoid NPE in Customiser.cs
+			KPIsMomentumsAverage = new KPIs();
+			KPIsMomentumsDispersion = new KPIs();
+			KPIsMomentumsVariance = new KPIs();
 		}
 
 		public OneParameterOneValue(OneParameterAllValuesAveraged oneParameterAllValuesAveraged
@@ -91,7 +109,21 @@ namespace Sq1.Core.Correlation {
 				return;
 			}
 
-			this.backtestsWithMyValueAndOnlyChosenOtherValues_cached = null;
+			SortedDictionary<int, SystemPerformanceRestoreAble> backupToSeeChanges = this.backtestsWithMyValueAndOnlyChosenOtherValues;
+
+			this.backtestsWithMyValueAndOnlyChosenOtherValues_cached = null;	// rebuild and cache
+
+			#if DEBUG
+			string backtestsOld = this.keysAsString(backupToSeeChanges);
+			string backtestsNew = this.BacktestsWithMyValueAndOnlyChosenOtherValueAsString;
+			if (backtestsOld == backtestsNew) {
+				string msg = "SAME_BACKTESTS_AS_BEFORE__CHOSEN_MUST_NOT_BE_THE_SAME";
+				//Assembler.PopupException(msg);
+			} else {
+				string msg = "I_NEED_TO_BE_HERE_FOR_MOMENTUMS_CALCULATOR";
+			}
+			#endif
+
 			this.KPIsLocal.Reset();
 			foreach (SystemPerformanceRestoreAble eachChosen in this.backtestsWithMyValueAndOnlyChosenOtherValues.Values) {
 				this.KPIsLocal.AddKPIs(eachChosen);
@@ -104,6 +136,15 @@ namespace Sq1.Core.Correlation {
 			}
 			this.KPIsLocal.DivideTotalByCount(noDivisionToZero);
 			this.kPIsLocalMinusGlobal_cached = null;
+		}
+
+		string keysAsString(SortedDictionary<int, SystemPerformanceRestoreAble> backtestsWithMyValue) {
+			string ret = "";
+			foreach (int eachKey in backtestsWithMyValue.Keys) {
+				ret += eachKey + ",";
+			}
+			if (string.IsNullOrEmpty(ret) == false) ret = ret.TrimEnd(",".ToCharArray());
+			return ret;
 		}
 
 		internal void CalculateLocalsAndDeltasForArtificial_Average() {

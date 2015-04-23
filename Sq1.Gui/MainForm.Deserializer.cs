@@ -78,7 +78,7 @@ namespace Sq1.Gui {
 			// DockContent.Layout.xml contains definitions of "ReporterWrapped" and "ScriptEditor" next lines AFTER parent ChartFormsManager,
 			// so we must've had parent chart deserialized on the previous invocation at {case ("Chart"):}
 			// if too unreliable, then switch back to GuiDataSnapshot.ChartFormsManagers + GuiDataSnapshot.RebuildDeserializedChartFormsManagers()
-			ChartFormManager parentChart = null;
+			ChartFormsManager parentChart = null;
 
 			switch (managedFormCase) {
 				case ("Chart"):
@@ -91,7 +91,7 @@ namespace Sq1.Gui {
 						// who knows why LoadFromXml invokes me twice?
 						return ret;
 					}
-					ChartFormManager chartFormsManagerDeserialized = new ChartFormManager(this, chartSerno);
+					ChartFormsManager chartFormsManagerDeserialized = new ChartFormsManager(this, chartSerno);
 					//chartFormsManagerDeserialized.Initialize(this, strategy);
 					string strategyGuid;
 					bool existsGuid = persistedParsedToHash.TryGetValue("StrategyGuid", out strategyGuid);
@@ -144,6 +144,13 @@ namespace Sq1.Gui {
 					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
 					ret = parentChart.LivesimFormConditionalInstance;
+					break;
+
+				case ("Correlator"):
+					//return "Livesim:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
+					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					if (parentChart.StrategyFoundDuringDeserialization == false) break;
+					ret = parentChart.CorrelatorFormConditionalInstance;
 					break;
 
 				case ("DataSourceEditor"):

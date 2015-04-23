@@ -21,6 +21,7 @@ namespace Sq1.Gui.Forms {
 		}
 		void ctxStrategy_Opening(object sender, CancelEventArgs e) {
 			this.MniShowLivesim		.Checked = this.ChartFormManager.LivesimFormIsOnSurface;
+			this.MniShowCorrelator	.Checked = this.ChartFormManager.CorrelatorFormIsOnSurface;
 			this.MniShowSequencer	.Checked = this.ChartFormManager.SequencerIsOnSurface;
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
@@ -64,6 +65,26 @@ namespace Sq1.Gui.Forms {
 				}
 			}
 			// DUPLICATE_XML_SERIALIZATION_AFTER SequencerForm.OnFormClosed()
+			//this.ChartFormManager.MainForm.MainFormSerialize();
+		}
+		void mniShowCorrelator_Click(object sender, System.EventArgs e) {
+			this.ctxStrategy.Visible = true;
+			if (this.MniShowCorrelator.Checked == false) {
+				this.MniShowCorrelator.Checked = true;
+				// if autohidden => popup and keepAutoHidden=false
+				this.ChartFormManager.CorrelatorFormShow(false);
+				this.ChartFormManager.MainForm.MainFormSerialize();
+			} else {
+				this.MniShowCorrelator.Checked = false;
+				//v1 this.ChartFormManager.CorrelatorFormConditionalInstance.ToggleAutoHide();
+				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.CorrelatorForm)) {
+					string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_Correlator_FORM_WAS_CLOSED_BY_X";
+					//Assembler.PopupException(msg);
+				} else {
+					this.ChartFormManager.CorrelatorForm.Close();
+				}
+			}
+			// DUPLICATE_XML_SERIALIZATION_AFTER CorrelatorForm.OnFormClosed()
 			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 		void mniShowLivesim_Click(object sender, EventArgs e) {

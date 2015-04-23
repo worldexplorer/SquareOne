@@ -16,8 +16,11 @@ namespace Sq1.Widgets.Sequencing {
 				List<string>						colMetricsShouldStay;
 				List<SystemPerformanceRestoreAble>	backtestsLocalEasierToSync;
 				List<OLVColumn>						columnsDynParams;
-		public	RepositoryJsonOptimizationResults	RepositoryJsonOptimizationResults			{ get; private set;}
+		public	RepositoryJsonSimpleSequencer		RepositoryJsonSequencer					{ get; private set; }
 				List<IndicatorParameter>			scriptAndIndicatorParametersMergedCloned;
+
+		public SystemPerformanceRestoreAbleListEventArgs PushToCorrelator { get {
+			return new SystemPerformanceRestoreAbleListEventArgs(this.backtestsLocalEasierToSync, this.SymbolScaleRangeSelected); } } 
 
 		public SequencerControl() {
 			InitializeComponent();
@@ -33,33 +36,26 @@ namespace Sq1.Widgets.Sequencing {
 				this.olvcMaxConsecutiveWinners.Name,
 				this.olvcMaxConsecutiveLosers.Name
 			};
+			
+			// in case if Designer clears out all the columns all of a sudden
 			// IF_NOT_ADDED_CLICKING_PARAMETER_WILL_REMOVE_THESE_ADDED_FOREVER_OLV_GLITCH this will enable show/hide columns by right click on header
-			this.olvBacktests.AllColumns.AddRange(new OLVColumn[] {
-				this.olvcSerno,
-				this.olvcTotalPositions,
-				this.olvcProfitPerPosition,
-				this.olvcNetProfit,
-				this.olvcWinLoss,
-				this.olvcProfitFactor,
-				this.olvcRecoveryFactor,
-				this.olvcMaxDrawdown,
-				this.olvcMaxConsecutiveWinners,
-				this.olvcMaxConsecutiveLosers});
-//			this.olvBacktests.AllColumns.Add(this.olvcNetProfit);
-//			this.olvBacktests.AllColumns.Add(this.olvcWinLoss);
-//			this.olvBacktests.AllColumns.Add(this.olvcProfitFactor);
-//			this.olvBacktests.AllColumns.Add(this.olvcRecoveryFactor);
-//			this.olvBacktests.AllColumns.Add(this.olvcTotalTrades);
-//			this.olvBacktests.AllColumns.Add(this.olvcAverageProfit);
-//			this.olvBacktests.AllColumns.Add(this.olvcMaxDrawdown);
-//			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveWinners);
-//			this.olvBacktests.AllColumns.Add(this.olvcMaxConsecutiveLosers);
+			//this.olvBacktests.AllColumns.AddRange(new BrightIdeasSoftware.OLVColumn[] {
+			//	this.olvcSerno,
+			//	this.olvcTotalPositions,
+			//	this.olvcProfitPerPosition,
+			//	this.olvcNetProfit,
+			//	this.olvcWinLoss,
+			//	this.olvcProfitFactor,
+			//	this.olvcRecoveryFactor,
+			//	this.olvcMaxDrawdown,
+			//	this.olvcMaxConsecutiveWinners,
+			//	this.olvcMaxConsecutiveLosers});
 
 			//this.fastOLVparametersYesNoMinMaxStep.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.fastOLVparametersYesNoMinMaxStep_ItemCheck);
 
-			backtestsLocalEasierToSync				= new List<SystemPerformanceRestoreAble>();
-			columnsDynParams						= new List<OLVColumn>();
-			RepositoryJsonOptimizationResults		= new RepositoryJsonOptimizationResults();
+			backtestsLocalEasierToSync	= new List<SystemPerformanceRestoreAble>();
+			columnsDynParams			= new List<OLVColumn>();
+			RepositoryJsonSequencer		= new RepositoryJsonSimpleSequencer();
 		}
 		public void Initialize(Sequencer sequencer) {
 			this.sequencer = sequencer;
@@ -98,23 +94,24 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvBacktestsCustomize();
 		
 			this.olvHistoryCustomize();
-			this.RepositoryJsonOptimizationResults.Initialize(Assembler.InstanceInitialized.AppDataPath
-				, Path.Combine("OptimizationResults", this.sequencer.Executor.Strategy.RelPathAndNameForOptimizationResults));
-			string symbolScaleRange = this.sequencer.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+			this.RepositoryJsonSequencer.Initialize(Assembler.InstanceInitialized.AppDataPath
+				, Path.Combine("Sequencer", this.sequencer.Executor.Strategy.RelPathAndNameForSequencerResults));
+			
+			//string symbolScaleRange = this.sequencer.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//this.olvHistoryRescanRefillSelect(symbolScaleRange);
 				
-			this.SyncBacktestAndListWithOptimizationResultsByContextIdent();
+			this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 		}
 		void olvParameterPopulate() {
 			this.scriptAndIndicatorParametersMergedCloned = this.sequencer.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders;
 			this.olvParameters.SetObjects(this.scriptAndIndicatorParametersMergedCloned);
 		}
 		void olvHistoryRescanRefillSelect(string symbolScaleRange) {
-			this.RepositoryJsonOptimizationResults.RescanFolderStoreNamesFound();
+			this.RepositoryJsonSequencer.RescanFolderStoreNamesFound();
 			this.olvHistoryComputeAverage();
-			this.olvHistory.SetObjects(this.RepositoryJsonOptimizationResults.ItemsFound);
+			this.olvHistory.SetObjects(this.RepositoryJsonSequencer.ItemsFound);
 			FnameDateSizeColor found = null;
-			foreach (FnameDateSizeColor each in this.RepositoryJsonOptimizationResults.ItemsFound) {
+			foreach (FnameDateSizeColor each in this.RepositoryJsonSequencer.ItemsFound) {
 				if (each.Name != symbolScaleRange) continue;
 				found = each;
 				break;
@@ -127,10 +124,10 @@ namespace Sq1.Widgets.Sequencing {
 			}
 		}
 		void olvHistoryComputeAverage() {
-			foreach (FnameDateSizeColor each in this.RepositoryJsonOptimizationResults.ItemsFound) {
+			foreach (FnameDateSizeColor each in this.RepositoryJsonSequencer.ItemsFound) {
 				double profitFactorTotal = 0;		// netProfit could overflow outside double for 1000000000 backtests in one deserialized list; profit factor is expected [-10...10];
 				int backtestsInOptimization = 0;
-				List<SystemPerformanceRestoreAble> eachOptimization = this.RepositoryJsonOptimizationResults.DeserializeList(each.Name);
+				List<SystemPerformanceRestoreAble> eachOptimization = this.RepositoryJsonSequencer.DeserializeList(each.Name);
 				foreach (SystemPerformanceRestoreAble backtest in eachOptimization) {
 					if (double.IsNaN(backtest.ProfitFactor)) continue;
 					if (double.IsPositiveInfinity(backtest.ProfitFactor)) continue;
@@ -149,33 +146,42 @@ namespace Sq1.Widgets.Sequencing {
 				}
 			}
 		}
-		public void SyncBacktestAndListWithOptimizationResultsByContextIdent() {
+		public void SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(string symbolScaleRange = null) {
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.SyncBacktestAndListWithOptimizationResultsByContextIdent(); });
+				base.BeginInvoke((MethodInvoker)delegate { this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(); });
 				return;
 			}
-			Strategy strategy = this.sequencer.Executor.Strategy;
-			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
-			//v1
-			//if (strategy.OptimizationResultsByContextIdent.ContainsKey(symbolScaleRange)) {
-			//	this.backtests = strategy.OptimizationResultsByContextIdent[symbolScaleRange];
-			//} else {
-			//	this.backtests.Clear();
-			//}
-			//v2
-			if (this.RepositoryJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) {
-				this.backtestsLocalEasierToSync = this.RepositoryJsonOptimizationResults.DeserializeList(symbolScaleRange);
+
+			if (string.IsNullOrEmpty(symbolScaleRange)) {
+				Strategy strategy = this.sequencer.Executor.Strategy;
+				symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+			} else {
+				this.SymbolScaleRangeSelected = symbolScaleRange;
+			}
+
+			this.olvHistory.UseWaitCursor = true;
+			this.olvBacktests.UseWaitCursor = true;
+
+			if (this.RepositoryJsonSequencer.ItemsFoundContainsName(symbolScaleRange)) {
+				this.backtestsLocalEasierToSync = this.RepositoryJsonSequencer.DeserializeList(symbolScaleRange);
 				if (this.backtestsLocalEasierToSync == null || this.backtestsLocalEasierToSync.Count == 0) {
 					string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + symbolScaleRange;
 					Assembler.PopupException(msg);
+					this.olvHistory.UseWaitCursor = false;
+					this.olvBacktests.UseWaitCursor = false;
 					return;
 				}
 			} else {
 				this.backtestsLocalEasierToSync.Clear();
 			}
-			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
+			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync, true); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
+			this.RaiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync, symbolScaleRange);
+
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
 			this.populateTextboxesFromExecutorsState();
+
+			this.olvHistory.UseWaitCursor = false;
+			this.olvBacktests.UseWaitCursor = false;
 		}
 
 		void populateTextboxesFromExecutorsState() {
@@ -300,22 +306,23 @@ namespace Sq1.Widgets.Sequencing {
 		}
 		
 		int heightExpanded;	//REPLACED_BY_this.adjustSplitterDistanceToNumberOfParameters_invokeMeAfterRecompiled() { get { return this.splitContainer1.Panel1MinSize * 8; } }
+		public string SymbolScaleRangeSelected { get; private set; }
 		int heightCollapsed { get { return this.splitContainer1.Panel1MinSize; } }
 		public void NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize() {
 			Strategy strategy = this.sequencer.Executor.Strategy;
 			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
-			if (this.RepositoryJsonOptimizationResults.ItemsFoundContainsName(symbolScaleRange)) return;
+			if (this.RepositoryJsonSequencer.ItemsFoundContainsName(symbolScaleRange)) return;
 
 			//string staleReason = this.sequencer.StaleReason;
 			//this.lblStats.Text = staleReason; // TextBox doesn't display "null" for null-string
 			
 			//bool userClickedAnotherSymbolScaleIntervalRangePositionSize = string.IsNullOrEmpty(staleReason) == false;
 			//this.splitContainer1.Panel1.BackColor = userClickedAnotherSymbolScaleIntervalRangePositionSize
-			//    ? Color.LightSalmon : SystemColors.Control;
+			//	? Color.LightSalmon : SystemColors.Control;
 			//this.splitContainer1.SplitterDistance = userClickedAnotherSymbolScaleIntervalRangePositionSize || this.backtestsLocalEasierToSync.Count == 0
-			//    ? this.heightExpanded : this.heightCollapsed;
+			//	? this.heightExpanded : this.heightCollapsed;
 			//this.cbxRunCancel.Text = userClickedAnotherSymbolScaleIntervalRangePositionSize
-			//    ? "Clear to Optimize" : "Run " + this.sequencer.BacktestsTotal + " backtests";
+			//	? "Clear to Optimize" : "Run " + this.sequencer.BacktestsTotal + " backtests";
 		}
 		
 		void statsAndHistoryExpand() {
@@ -335,6 +342,15 @@ namespace Sq1.Widgets.Sequencing {
 			} catch (Exception ex) {
 				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
 			}
+		}
+
+		public void BacktestsReplaceWithCorrelated(List<SystemPerformanceRestoreAble> list) {
+			this.olvBacktests.SetObjects(list, true);
+			this.mni_showAllScriptIndicatorParametersInOptimizationResults.Checked = false;
+		}
+
+		public void BacktestsRestoreCorrelatedClosed() {
+			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync, true);
 		}
 	}
 }

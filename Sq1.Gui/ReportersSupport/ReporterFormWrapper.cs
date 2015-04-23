@@ -25,7 +25,7 @@ namespace Sq1.Gui.ReportersSupport {
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos
 		// using ":" since "=" leads to an exception in DockPanelPersistor.cs
 		protected override string GetPersistString() {
-			return "ReporterWrapped:" + this.reporter.GetType().FullName + ",ChartSerno:" + this.reportersFormsManager.ChartFormManager.DataSnapshot.ChartSerno;
+			return "ReporterWrapped:" + this.reporter.GetType().FullName + ",ChartSerno:" + this.reportersFormsManager.ChartFormsManager.DataSnapshot.ChartSerno;
 		}
 		private void ReporterFormWrapper_FormClosing(object sender, FormClosingEventArgs e) {
 			this.reportersFormsManager.ReporterClosingUnregisterMniUntick(reporter.GetType().Name);

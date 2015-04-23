@@ -30,7 +30,7 @@ namespace Sq1.Gui {
 					//throw new Exception(msg);
 					return null;
 				}
-				foreach (ChartFormManager chartFormDataSnap in this.GuiDataSnapshot.ChartFormManagers.Values) {
+				foreach (ChartFormsManager chartFormDataSnap in this.GuiDataSnapshot.ChartFormManagers.Values) {
 					if (chartFormDataSnap.ChartForm == ret) return ret;
 				}
 				string msg2 = "MainForm.DockPanel.ActiveDocument is [" + ret.ToString() + "] but it's not found among MainForm.ChartFormsManagers registry;"
@@ -153,7 +153,7 @@ namespace Sq1.Gui {
 			
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 
-				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
+				foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 					if (cfmgr.ChartForm == null) continue;
 					if (cfmgr.ChartForm.MniShowSourceCodeEditor.Enabled) {		//set to true in InitializeWithStrategy() << DeserializeDockContent() 20 lines above
 						cfmgr.ChartForm.MniShowSourceCodeEditor.Checked = cfmgr.ScriptEditorIsOnSurface;

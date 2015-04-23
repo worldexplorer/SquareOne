@@ -78,20 +78,31 @@
     <ApplicationIcon>Sq1-64.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FormFactories\SequencerFormFactory.cs" />
-    <Compile Include="Forms\CorrelationForm.cs">
+    <Compile Include="Forms\CorrelatorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\CorrelationForm.Designer.cs">
-      <DependentUpon>CorrelationForm.cs</DependentUpon>
+    <Compile Include="Forms\CorrelatorForm.Designer.cs">
+      <DependentUpon>CorrelatorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ChartForm.cs">
       <SubType>Form</SubType>
@@ -112,9 +123,13 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ChartFormDataSnapshot.cs" />
-    <Compile Include="Forms\ChartFormManager.cs" />
+    <Compile Include="Forms\ChartFormsManager.cs" />
     <Compile Include="Forms\ChartFormInterformEventsConsumer.cs" />
     <Compile Include="Forms\ChartFormStreamingConsumer.cs" />
+    <Compile Include="Forms\CorrelatorForm.EventConsumer.cs">
+      <DependentUpon>CorrelatorForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\LivesimForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -226,8 +241,8 @@
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Forms\CorrelationForm.resx">
-      <DependentUpon>CorrelationForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\CorrelatorForm.resx">
+      <DependentUpon>CorrelatorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ChartForm.resx">
       <DependentUpon>ChartForm.cs</DependentUpon>

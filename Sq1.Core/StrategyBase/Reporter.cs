@@ -5,7 +5,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.Charting;
 
 namespace Sq1.Core.StrategyBase {
-	public abstract class Reporter : UserControl {
+	public /*abstract*/ class Reporter : UserControl {
 		public		string				TabText;
 		protected	ChartShadow			Chart;
 		public		SystemPerformance	SystemPerformance { get; private set; }
@@ -22,8 +22,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return this.SystemPerformance.Bars.SymbolInfo.PriceFormat;
 			} }
-		protected	string				FormatVolume {
-			get {
+		protected	string				FormatVolume { get {
 				string ret = "C";
 				if (	this.SystemPerformance == null
 					 || this.SystemPerformance.Bars == null
@@ -53,23 +52,29 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		// dont make it runtime error, bring the error to the earliest stage!
-		public abstract void BuildFullOnBacktestFinished();
-		//public virtual void BuildOnceAfterFullBlindBacktestFinished(SystemPerformance performance) {
-		//	string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildOnceAfterFullBlindBacktestFinished(SystemPerformance)" + this.TabText + "/" + this.GetType();
-		//	msg = "; don't forget to do base.SystemPerformance=performance so that Reporter.Format picks up DecimalsPrice";
-		//	throw new NotImplementedException(msg);
-		//}
-		public abstract void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit);
-		//public virtual void BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit pokeUnit) {
-		//	string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
-		//	throw new NotImplementedException(msg);
-		//}
-		public abstract void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit);
-		//public virtual void OpenPositionsUpdatedDueToStreamingNewQuote(ReporterPokeUnit pokeUnit) {
-		//	string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalAfterPositionsChangedInRealTime(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
-		//	throw new NotImplementedException(msg);
-		//}
-		public abstract void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit);
+		//The designer must create an instance of type 'Sq1.Core.StrategyBase.Reporter' but it cannot because the type is declared as abstract. 
+		//public abstract void BuildFullOnBacktestFinished();
+		public virtual void BuildFullOnBacktestFinished() {
+			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildFullOnBacktestFinished()" + this.TabText + "/" + this.GetType();
+			msg = "; don't forget to do base.SystemPerformance=performance so that Reporter.Format picks up DecimalsPrice";
+			throw new NotImplementedException(msg);
+		}
+		//public abstract void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit);
+		public virtual void BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit pokeUnit) {
+			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalOnPositionsOpenedClosed_step3of3(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
+			throw new NotImplementedException(msg);
+		}
+		//public abstract void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit);
+		public virtual void BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(ReporterPokeUnit pokeUnit) {
+			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT OpenPositionsUpdatedDueToStreamingNewQuote(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
+			throw new NotImplementedException(msg);
+		}
+		//public abstract void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit);
+		public virtual void BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit pokeUnit) {
+			string msg = "DERIVED_REPORTERS_MUST_IMPLEMENT BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(ReporterPokeUnit)" + this.TabText + "/" + this.GetType();
+			throw new NotImplementedException(msg);
+		}
+
 		public virtual object CreateSnapshotToStoreInScriptContext() {
 			return null;
 		}

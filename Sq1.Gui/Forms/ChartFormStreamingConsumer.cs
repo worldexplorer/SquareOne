@@ -13,11 +13,11 @@ namespace Sq1.Gui.Forms {
 		//public event EventHandler<BarEventArgs> NewBar;
 		//public event EventHandler<QuoteEventArgs> NewQuote;
 		//public event EventHandler<BarsEventArgs> BarsLocked;
-		ChartFormManager chartFormManager;
+		ChartFormsManager chartFormManager;
 		string msigForNpExceptions = "Failed to StreamingSubscribe(): ";
 
 		#region CASCADED_INITIALIZATION_ALL_CHECKING_CONSISTENCY_FROM_ONE_METHOD begin
-		ChartFormManager ChartFormManager { get {
+		ChartFormsManager ChartFormManager { get {
 				var ret = this.chartFormManager;
 				this.actionForNullPointer(ret, "this.chartFormsManager=null");
 				return ret;
@@ -120,7 +120,7 @@ namespace Sq1.Gui.Forms {
 		}
 		#endregion
 
-		public ChartFormStreamingConsumer(ChartFormManager chartFormManager) {
+		public ChartFormStreamingConsumer(ChartFormsManager chartFormManager) {
 			this.chartFormManager = chartFormManager;
 		}
 		public void StreamingUnsubscribe(string reason = "NO_REASON_FOR_STREAMING_UNSUBSCRIBE") {
