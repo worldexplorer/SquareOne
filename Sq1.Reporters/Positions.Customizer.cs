@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Sq1.Core;
 using Sq1.Core.Execution;
-using Sq1.Core.Support;
 
 namespace Sq1.Reporters {
 	public partial class Positions {
@@ -29,44 +28,14 @@ namespace Sq1.Reporters {
 				this.olvPositions.FormatRow -= new EventHandler<FormatRowEventArgs>(olvPositions_FormatRow);
 			}
 		}
-		
 		void oLVColumn_VisibilityChanged(object sender, EventArgs e) {
 			OLVColumn oLVColumn = sender as OLVColumn;
 			if (oLVColumn == null) return;
-			byte[] olvStateBinary = this.olvPositions.SaveState();
-			this.snap.PositionsOlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-			base.RaiseContextScriptChangedContainerShouldSerialize();
+			this.olvBinaryStateSaveRaiseStrategySerialize();
 		}
-
 		void objectListViewCustomize() {
 			this.objectListViewCustomizeColors();
-			
-			try {
-				// #1/2 OBJECTLISTVIEW_HACK__SEQUENCE_MATTERS!!!! otherwize RestoreState() doesn't restore after restart
-				// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
-				List<OLVColumn> allColumnsOtherwizeEmptyListAndRowFormatException = new List<OLVColumn>();
-				foreach (ColumnHeader columnHeader in this.olvPositions.Columns) {
-					OLVColumn oLVColumn = columnHeader as OLVColumn; 
-					oLVColumn.VisibilityChanged += oLVColumn_VisibilityChanged;
-					if (oLVColumn == null) continue;
-					//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
-					if (this.olvPositions.AllColumns.Contains(oLVColumn)) continue;
-					allColumnsOtherwizeEmptyListAndRowFormatException.Add(oLVColumn);
-				}
-				if (allColumnsOtherwizeEmptyListAndRowFormatException.Count > 0) {
-					//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
-					this.olvPositions.AllColumns.AddRange(allColumnsOtherwizeEmptyListAndRowFormatException);
-				}
-				// #2/2 OBJECTLISTVIEW_HACK__SEQUENCE_MATTERS!!!! otherwize RestoreState() doesn't restore after restart
-				if (this.snap.PositionsOlvStateBase64.Length > 0) {
-					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.snap.PositionsOlvStateBase64);
-					this.olvPositions.RestoreState(olvStateBinary);
-				}
-			} catch (Exception ex) {
-				string msg = "this.olvPositions.RestoreState(olvStateBinary)";
-				Assembler.PopupException(msg, ex);
-			}
+			this.olvBinaryStateRestore();
 
 			this.olvcPosition.ImageGetter = delegate(object o) {
 				var position = o as Position;
@@ -278,6 +247,11 @@ namespace Sq1.Reporters {
 			};
 			this.olvcComission.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
 
+			this.olvPositions.ColumnWidthChanged += new ColumnWidthChangedEventHandler(olvPositions_ColumnWidthChanged);
+		}
+
+		void olvPositions_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e) {
+			this.olvBinaryStateSaveRaiseStrategySerialize();
 		}
 	}
 }

@@ -1,15 +1,15 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Windows.Forms;
 
 using Sq1.Core.Sequencing;
 using Sq1.Widgets;
 using Sq1.Widgets.Sequencing;
 using Sq1.Core;
+using System.Threading.Tasks;
 
 namespace Sq1.Gui.Forms {
 	public partial class CorrelatorForm : DockContentImproved {
-		private ChartFormsManager chartFormsManager;
+		ChartFormsManager chartFormsManager;
 
 		// INVOKED_BY_DOCKCONTENT.DESERIALIZE_FROM_XML
 		public CorrelatorForm() {
@@ -37,6 +37,7 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg);
 			}
             this.chartFormsManager = chartFormManagerPassed;
+			this.CorrelatorControl.Initialize(this.chartFormsManager.Executor.Correlator);
 			this.WindowTitlePullFromStrategy();
 		}
 
@@ -56,24 +57,35 @@ namespace Sq1.Gui.Forms {
 
 		// INVOKED_AT_USER_CLICK
 		public void PopulateSequencedHistory(SystemPerformanceRestoreAbleListEventArgs originalOptimizationResults) {
-			this.CorrelatorControl.Initialize(originalOptimizationResults
-				, this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
-				, originalOptimizationResults.FileName);
+			string msig = " //CorrelatorForm.PopulateSequencedHistory()";
 
 			// UNSUBSCRIBE_FIRST__JUST_IN_CASE
-			this.CorrelatorControl.Correlator
+			this.chartFormsManager.Executor.Correlator
 				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
 					-= new EventHandler<SystemPerformanceRestoreAbleListEventArgs>(
 						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 
-			this.CorrelatorControl.Correlator
+			this.chartFormsManager.Executor.Correlator
 				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
 					+= new EventHandler<SystemPerformanceRestoreAbleListEventArgs>(
 						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 
-			this.CorrelatorControl.Correlator.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
-			//this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsReplaceWithCorrelated();
+			Task letGuiDraw = new Task(delegate() {
+				this.CorrelatorControl.Initialize(originalOptimizationResults
+					, this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
+					, originalOptimizationResults.FileName);
 
+				// WAS_ALREADY_INVOKED??? this.chartFormsManager.Executor.Correlator
+				//	.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
+			});
+			letGuiDraw.ContinueWith(delegate {
+				string msg = "TASK_THREW";
+				Assembler.PopupException(msg + msig, letGuiDraw.Exception);
+			}, TaskContinuationOptions.OnlyOnFaulted);
+			letGuiDraw.Start();
+
+			//this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsReplaceWithCorrelated();
+			//this.IsMdiContainer = true;	// trying to cheat DockPanel's "MdiContainers should be on TOP level" XML deserialization error
 		}
 	}
 }

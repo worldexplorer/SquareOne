@@ -16,7 +16,7 @@ namespace Sq1.Gui.Singletons {
 				#endif
 				throw new Exception("I doubt that a Form.ctor() could ever have base.DesignMode=true" +
 					"; base() has not been informed yet that the form IS in DesignMode, right?...");
-				//return; 
+				//return;
 			}
 			this.ExceptionControl.Initialize();
 		}

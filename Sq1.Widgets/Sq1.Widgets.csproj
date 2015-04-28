@@ -67,6 +67,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Correlation\UserControlInner.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Correlation\UserControlInner.Designer.cs">
+      <DependentUpon>UserControlInner.cs</DependentUpon>
+    </Compile>
     <Compile Include="CsvImporter\ColumnCatcher.cs" />
     <Compile Include="CsvImporter\CsvBar.cs" />
     <Compile Include="CsvImporter\CsvImporterControl.cs">
@@ -138,6 +144,12 @@
     <Compile Include="DataSourceTree\DataSourceTreeDataSnapshot.cs" />
     <Compile Include="DockContentImproved\DockContentImproved.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Correlation\UserControlResizeable.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Correlation\UserControlResizeable.Designer.cs">
+      <DependentUpon>UserControlResizeable.cs</DependentUpon>
     </Compile>
     <Compile Include="Exceptions\ExceptionsControlDataSnapshot.cs" />
     <Compile Include="Exceptions\ExceptionsControl.cs">
@@ -342,6 +354,9 @@
       <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="SteppingSlider\ToolStripItemSteppingSlider.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="StrategiesTree\StrategiesTreeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -361,6 +376,15 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="StrategiesTree\StrategiesTreeDataSnapshot.cs" />
+    <Compile Include="ToolStripTrackBar\TrackBarControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ToolStripTrackBar\TrackBarControl.Designer.cs">
+      <DependentUpon>TrackBarControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ToolStripTrackBar\ToolStripItemTrackBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CsvImporter\CsvImporterControl.resx">
@@ -381,6 +405,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DataSourceTree\DataSourcesTreeControl.resx">
       <DependentUpon>DataSourcesTreeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Correlation\UserControlResizeable.resx">
+      <DependentUpon>UserControlResizeable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Exceptions\ExceptionsControl.resx">
       <DependentUpon>ExceptionsControl.cs</DependentUpon>
@@ -427,6 +454,9 @@
     <EmbeddedResource Include="StrategiesTree\StrategiesTreeControl.resx">
       <DependentUpon>StrategiesTreeControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ToolStripTrackBar\TrackBarControl.resx">
+      <DependentUpon>TrackBarControl.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DigitalRune-TextEditor-1.3.1\DigitalRune.Windows.TextEditor\DigitalRune.Windows.TextEditor.csproj">
@@ -469,5 +499,6 @@
   <ItemGroup>
     <None Include="Resources\TextFile.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

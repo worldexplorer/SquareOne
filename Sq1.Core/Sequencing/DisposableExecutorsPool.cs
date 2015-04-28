@@ -33,7 +33,7 @@ namespace Sq1.Core.Sequencing {
 
 		public void Dispose() { lock (this.oneLockForAllLists) {
 			var parametersMustNotBeZero = executorEthalonWithDetachedBars.Strategy.ScriptContextCurrent;
-			if (parametersMustNotBeZero.ScriptAndIndicatorParametersMergedClonedForSequencerByName.Count == 0) {
+			if (parametersMustNotBeZero.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.Count == 0) {
 				string msg = "I_FIXED_IT_BY_REPLACING_THIS_TO_RET_IN_Strategy.CloneMinimalForEachThread_forEachDisposableExecutorInSequencerPool()";
 				Assembler.PopupException(msg);
 			}

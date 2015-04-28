@@ -282,7 +282,7 @@ namespace Sq1.Core.Livesim {
 		public void Pause_inGuiThread() {
 			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Unpaused.Reset();
 			string msg = "AlertsScheduledForDelayedFill.Count=" + this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe.DataSnapshot.AlertsScheduledForDelayedFill.Count  + " LEAKED_HANDLES_HUNTER";
-			Assembler.PopupException(msg);
+			//Assembler.PopupException(msg);
 		}
 		public void Unpause_inGuiThread() {
 			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Unpaused.Set();

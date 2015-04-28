@@ -39,19 +39,19 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public double						SpreadModelerPercent;
 		[JsonProperty]	public BacktestStrokesPerBar		BacktestStrokesPerBar;
 
-		[JsonIgnore]	public List<IndicatorParameter>		ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders { get {
+		[JsonIgnore]	public List<IndicatorParameter>		ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders { get {
 				List<IndicatorParameter> ret = new List<IndicatorParameter>();
 				ret.AddRange(this.ScriptParametersById.Values);
 				foreach (List<IndicatorParameter> iParams in this.IndicatorParametersByName.Values) ret.AddRange(iParams);
 				return ret;
 			} }
-		[JsonIgnore]	public SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParametersMergedClonedForSequencerByName { get {
+		[JsonIgnore]	public SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParametersMergedUnclonedForSequencerByName { get {
 				SortedDictionary<string, IndicatorParameter> ret = new SortedDictionary<string, IndicatorParameter>();
-				foreach (IndicatorParameter iParam in this.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders) ret.Add(iParam.FullName, iParam);
+				foreach (IndicatorParameter iParam in this.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders) ret.Add(iParam.FullName, iParam);
 				return ret;
 			} }
-		[JsonProperty]	public	string										ScriptAndIndicatorParametersMergedClonedForSequencerByName_AsString { get {
-				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParametersMergedClonedForSequencerByName;
+		[JsonProperty]	public	string										ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString { get {
+				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName;
 				if (merged.Count == 0) return "(NoParameters)";
 				string ret = "";
 				foreach (string indicatorDotParameter in merged.Keys) {

@@ -11,6 +11,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Repositories;
 using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Livesim;
 using Sq1.Gui.Forms;
 using Sq1.Gui.FormFactories;
 using Sq1.Gui.ReportersSupport;
@@ -574,7 +575,9 @@ namespace Sq1.Gui.Forms {
 					this.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
 					this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 				}
+				// candidate to be moved to MainForm.cs:156 into foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				//this.SequencerFormShow(true);
+				//this.CorrelatorFormShow(true);
 				//this.LivesimFormShow(true);
 				return;
 			}
@@ -697,7 +700,7 @@ namespace Sq1.Gui.Forms {
 			this.CorrelatorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
 
 			// WILL_RAISE_BUT_AND_CORRELATOR_ALREADY_CATCHES_IT this.SequencerFormConditionalInstance.SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
-			this.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.SequencerFormConditionalInstance.SequencerControl.PushToCorrelator);
+			//NEXT_LINE_RAISE_WILL_PUSH_IT_BUT_SECOND_CLICK_WILL_SHOW_ZEROES this.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.SequencerFormConditionalInstance.SequencerControl.PushToCorrelator);
 			//DONT_INIT_IF_I_HAVE_NON_DEFAULT_SCALEINTERVAL_SELECTED this.SequencerFormShow(false);
 			this.CorrelatorFormConditionalInstance.CorrelatorControl.Correlator.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
 			this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(false, true);
@@ -868,6 +871,8 @@ namespace Sq1.Gui.Forms {
 		}
 
 		public void LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters() {
+			LivesimStreamingSettings stream = this.ChartForm.ChartFormManager.Executor.Strategy.LivesimStreamingSettings;
+			if (stream.DelayBetweenSerialQuotesEnabled && stream.DelayBetweenSerialQuotesMin >= 50) return;
 			ExecutionForm exec = ExecutionForm.Instance;
 			if (exec.IsCoveredOrAutoHidden == false) exec.ToggleAutoHide();
 			this.ReportersFormsManager.LivesimStartedOrUnpaused_AutoHideReporters();

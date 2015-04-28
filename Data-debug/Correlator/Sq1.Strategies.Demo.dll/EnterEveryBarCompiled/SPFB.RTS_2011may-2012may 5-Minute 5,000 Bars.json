@@ -29,91 +29,91 @@
         "Chosen": false,
         "ValueSequenced": 0.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1089"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1100,1111,1122,1134,1144,1155,1166,1177,1187,1199"
       },
       "1": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 1.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1090"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1101,1112,1123,1133,1145,1156,1167,1178,1189,1200"
       },
       "2": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 2.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1091"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1103,1113,1124,1135,1146,1157,1168,1179,1190,1201"
       },
       "3": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": true,
+        "Chosen": false,
         "ValueSequenced": 3.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1092"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1102,1114,1125,1136,1147,1158,1169,1180,1191,1202"
       },
       "4": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 4.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1093"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1105,1115,1126,1137,1148,1159,1170,1181,1192,1203"
       },
       "5": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 5.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1095"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1104,1116,1127,1138,1149,1160,1171,1182,1193,1205"
       },
       "6": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 6.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1094"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1106,1117,1128,1139,1150,1161,1172,1183,1194,1204"
       },
       "7": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 7.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1096"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1107,1118,1129,1140,1151,1162,1173,1184,1195,1206"
       },
       "8": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 8.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1097"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1108,1119,1130,1141,1152,1163,1174,1185,1196,1207"
       },
       "9": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 9.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1098"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1109,1120,1131,1142,1153,1164,1175,1186,1197,1208"
       },
       "10": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 10.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1099"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 10,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1110,1121,1132,1143,1154,1165,1176,1188,1198,1209"
       }
     },
-    "ChosenAsString": "3",
+    "ChosenAsString": "1",
     "ChosenCount": 1
   },
   "EA EntryAllowedSinceDayOpen": {
@@ -124,103 +124,103 @@
       "$type": "System.Collections.Generic.SortedDictionary`2[[System.Double, mscorlib],[Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core]], System",
       "0": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 0.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "981"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1100,1101,1102,1103,1104,1105,1106,1107,1108,1109,1110"
       },
       "1": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 1.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "992"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1111,1112,1113,1114,1115,1116,1117,1118,1119,1120,1121"
       },
       "2": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 2.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1002"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1122,1123,1124,1125,1126,1127,1128,1129,1130,1131,1132"
       },
       "3": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 3.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1015"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1133,1134,1135,1136,1137,1138,1139,1140,1141,1142,1143"
       },
       "4": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 4.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1025"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1144,1145,1146,1147,1148,1149,1150,1151,1152,1153,1154"
       },
       "5": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 5.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1036"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1155,1156,1157,1158,1159,1160,1161,1162,1163,1164,1165"
       },
       "6": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 6.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1047"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1166,1167,1168,1169,1170,1171,1172,1173,1174,1175,1176"
       },
       "7": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 7.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1058"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1177,1178,1179,1180,1181,1182,1183,1184,1185,1186,1188"
       },
       "8": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 8.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1069"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1187,1189,1190,1191,1192,1193,1194,1195,1196,1197,1198"
       },
       "9": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 9.0,
         "BacktestsWithMyValueCount": 110,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1080"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1199,1200,1201,1202,1203,1204,1205,1206,1207,1208,1209"
       },
       "10": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": true,
         "ValueSequenced": 10.0,
         "BacktestsWithMyValueCount": 99,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1091"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 0,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       },
       "11": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 11.0,
         "BacktestsWithMyValueCount": 11,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 0,
         "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       }
     },
-    "ChosenAsString": "10",
-    "ChosenCount": 1
+    "ChosenAsString": "0,1,2,3,4,5,6,7,8,9,10,11",
+    "ChosenCount": 12
   },
   "ED EntryDeniedAfterAllowed": {
     "$type": "Sq1.Core.Correlation.OneParameterAllValuesAveraged, Sq1.Core",
@@ -233,72 +233,72 @@
         "Chosen": false,
         "ValueSequenced": 1.0,
         "BacktestsWithMyValueCount": 132,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "112"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 11,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "121,122,123,124,125,126,127,128,129,130,131"
       },
       "2": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 2.0,
         "BacktestsWithMyValueCount": 121,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "244"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 0,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       },
       "3": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 3.0,
         "BacktestsWithMyValueCount": 121,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "365"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 0,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       },
       "4": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 4.0,
         "BacktestsWithMyValueCount": 121,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "485"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 0,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       },
       "5": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 5.0,
         "BacktestsWithMyValueCount": 121,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "607"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 0,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       },
       "6": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 6.0,
         "BacktestsWithMyValueCount": 121,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "728"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 0,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       },
       "7": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 7.0,
         "BacktestsWithMyValueCount": 121,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "849"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 0,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       },
       "8": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": false,
         "ValueSequenced": 8.0,
         "BacktestsWithMyValueCount": 121,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "970"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 0,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       },
       "9": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
         "Chosen": true,
         "ValueSequenced": 9.0,
         "BacktestsWithMyValueCount": 121,
-        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
-        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "1091"
+        "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 0,
+        "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       },
       "10": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",

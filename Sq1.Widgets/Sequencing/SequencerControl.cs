@@ -103,7 +103,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 		}
 		void olvParameterPopulate() {
-			this.scriptAndIndicatorParametersMergedCloned = this.sequencer.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders;
+			this.scriptAndIndicatorParametersMergedCloned = this.sequencer.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders;
 			this.olvParameters.SetObjects(this.scriptAndIndicatorParametersMergedCloned);
 		}
 		void olvHistoryRescanRefillSelect(string symbolScaleRange) {
@@ -230,15 +230,15 @@ namespace Sq1.Widgets.Sequencing {
 
 		void adjustSplitterDistanceToNumberOfParameters_invokeMeAfterRecompiled() {
 			//int rowsShown = this.fastOLVparametersYesNoMinMaxStep.RowsPerPage;
-			int splitterDistanceForThreeLines = 212;
+			int splitterDistanceForTwoLines = 196;
 			int allParameterLinesToDraw = this.sequencer.AllParameterLinesToDraw;
 			int heightEachNewLine = this.olvParameters.RowHeightEffective;
 			if (this.olvParameters.GridLines) heightEachNewLine++;
-			int inAdditionToThree = (allParameterLinesToDraw - 3) * heightEachNewLine;
-			this.heightExpanded = splitterDistanceForThreeLines + inAdditionToThree;
+			int inAdditionToTwo = (allParameterLinesToDraw - 2) * heightEachNewLine;
+			this.heightExpanded = splitterDistanceForTwoLines + inAdditionToTwo;
 			
 			if (allParameterLinesToDraw <= 3) {
-				this.splitContainer1.SplitterDistance = splitterDistanceForThreeLines;
+				this.splitContainer1.SplitterDistance = splitterDistanceForTwoLines;
 				return;
 			}
 			this.statsAndHistoryExpand();

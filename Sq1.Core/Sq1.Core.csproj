@@ -154,6 +154,7 @@
     <Compile Include="Execution\Position.Stats.cs">
       <DependentUpon>Position.cs</DependentUpon>
     </Compile>
+    <Compile Include="Correlation\CorrelatorOneParameterSnapshot.cs" />
     <Compile Include="Indicators\HelperSeries\DataSeriesTimeBasedColorified.cs" />
     <Compile Include="Indicators\HelperSeries\MovingAverageSimple.cs" />
     <Compile Include="Indicators\HelperSeries\TrueRange.cs" />

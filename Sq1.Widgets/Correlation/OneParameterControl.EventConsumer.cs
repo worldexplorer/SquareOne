@@ -9,7 +9,6 @@ using Sq1.Core.Correlation;
 
 namespace Sq1.Widgets.Correlation {
 	public partial class OneParameterControl {
-
 		void mniMaximizationKPISortDescendingBy_Click(object sender, EventArgs e) {
 			string msig = " //mniMaximizationKPISortDescendingBy_CheckStateChanged()";
 			ToolStripMenuItem mniClicked = sender as ToolStripMenuItem;
@@ -53,16 +52,48 @@ namespace Sq1.Widgets.Correlation {
 			List<OLVColumn> columns = this.columnsByFilter[mni];
 			if (columns.Count == 0) return;
 
-			foreach (OLVColumn column in columns) {
-				column.IsVisible = newCheckedState;
+			this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised = true;
+			try {
+				foreach (OLVColumn column in columns) {
+					column.IsVisible = newCheckedState;
+				}
+				this.olv.RebuildColumns();
+				this.AlignBaseSizeToDisplayedCells();
+				this.ctxOneParameterControl.Show();	//I like when it stays open, but AutoClose=false results in not opening at all
+
+				CorrelatorOneParameterSnapshot snap = this.indicatorParameterNullUnsafe.CorrelatorSnap;
+				if (mni == this.mniShowAllBacktestedParams) {
+					snap.MniShowAllBacktestsChecked = mni.Checked;
+				} else if (mni == this.mniShowChosenParams) {
+					snap.MniShowChosenChecked = mni.Checked;
+				} else if (mni == this.mniShowDeltasBtwAllAndChosenParams) {
+					snap.MniShowDeltaChecked = mni.Checked;
+
+				} else if (mni == this.mniShowMomentumsAverage) {
+					snap.MniShowMomentumsAverageChecked = mni.Checked;
+				} else if (mni == this.mniShowMomentumsDispersion) {
+					snap.MniShowMomentumsDispersionChecked = mni.Checked;
+				} else if (mni == this.mniShowMomentumsVariance) {
+					snap.MniShowMomentumsVarianceChecked = mni.Checked;
+				} else {
+					string msg = "I_DONT_HAVE_A_PLACE_IN_CorrelatorOneParameterSnapshot_TO_SAVE_STATE_OF_YOUR_MNI[" + mni.Text + "]";
+					Assembler.PopupException(msg);
+				}
+
+				// shortest path to serialize CorrelationSnapshot
+				this.allParametersControl.Correlator.Executor.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+			} catch (Exception ex) {
+				string msg = "STRATEGY_SERIALIZATION_FAILED";
+				Assembler.PopupException(msg + msig, ex);
+			} finally {
+				this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised = false;
 			}
-			this.olv.RebuildColumns();
-			this.ctxOneParameterControl.Show();	//I like when it stays open, but AutoClose=false results in not opening at all
 		}
-
 		void parameter_ParameterRecalculatedLocalsAndDeltas(object sender, OneParameterAllValuesAveragedEventArgs e) {
-			Initialize();
+			this.Initialize();
 		}
-
+		void mniShowAllVisibleCells_Click(object sender, EventArgs e) {
+			this.AlignBaseSizeToDisplayedCells();
+		}
 	}
 }

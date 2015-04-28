@@ -223,13 +223,27 @@ namespace Sq1.Reporters {
 				//if (this.lastKnownCashAvailable == base.SystemPerformance.SlicesShortAndLong.CashAvailable) return;
 				//	this.lastKnownCashAvailable = base.SystemPerformance.SlicesShortAndLong.CashAvailable;
 			}
-			//v1 this.propagatePerformanceReport();
-			//v2 ACCELERATING_ON_POSITION_FILLED
-			if (this.lvPerformance.Items.Count == 0) {
-				 this.propagatePerformanceReport();
-			} else {
-				this.lvPerformance.Refresh();
-			}
+			//PERFORMANCE_ISNT_CHANGED_ON_EACH_QUOTE__RECALCULATED_ONCE_AFTER_POSITION_CLOSE_AND_STAYS_UNCHANGED
+			return;
+
+			////v1 this.propagatePerformanceReport();
+			////v2 ACCELERATING_ON_POSITION_FILLED
+			//if (this.lvPerformance.Items.Count == 0) {
+			//     this.propagatePerformanceReport();
+			//     return;
+			//}
+
+			//if (pokeUnit.PositionsOpened.Count == 0) return;
+
+			//// MINIMIZED_IF_STREAMING_QUOTE_DELAY<100ms_UNMINIMIZE_AND_WATCH__REALTIME_UNAFFECTED
+			////bool livesimStreamingIsSleeping = pokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild(
+			////    this, "Reporters.Performance.BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(WAIT)");
+			////if (livesimStreamingIsSleeping == false) {
+			////    return;
+			////}
+			//if (base.Visible == false) return;		//DockContent is minimized / "autohidden"
+			//this.propagatePerformanceReport();
+			//this.lvPerformance.Refresh();
 		}
 	}
 }

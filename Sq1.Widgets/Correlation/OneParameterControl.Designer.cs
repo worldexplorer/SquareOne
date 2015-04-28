@@ -102,9 +102,14 @@ namespace Sq1.Widgets.Correlation {
 			this.mniMaximiseDeltaMaxConsecutiveLosers = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniMaximiseDeltaAutoRunAfterSequencerFinished = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniResizeToShowAllVisibleCells = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.olv)).BeginInit();
 			this.ctxOneParameterControl.SuspendLayout();
 			this.SuspendLayout();
+			// 
+			// UserControlInner
+			// 
+			this.UserControlInner.Size = new System.Drawing.Size(584, 276);
 			// 
 			// olv
 			// 
@@ -234,7 +239,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olv.SelectedColumnTint = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(185)))), ((int)(((byte)(209)))), ((int)(((byte)(234)))));
 			this.olv.ShowCommandMenuOnRightClick = true;
 			this.olv.ShowGroups = false;
-			this.olv.Size = new System.Drawing.Size(590, 282);
+			this.olv.Size = new System.Drawing.Size(592, 284);
 			this.olv.TabIndex = 1;
 			this.olv.TintSortColumn = true;
 			this.olv.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -511,7 +516,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcRecoveryFactorLocal.Text = "rf chosen";
 			this.olvcRecoveryFactorLocal.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcRecoveryFactorLocal.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown chosen(selected wi" +
-    "th checkboxes)";
+				"th checkboxes)";
 			this.olvcRecoveryFactorLocal.Width = 32;
 			// 
 			// olvcRecoveryFactorDelta
@@ -520,7 +525,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcRecoveryFactorDelta.Text = "rf delta";
 			this.olvcRecoveryFactorDelta.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcRecoveryFactorDelta.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown delta=AllBackteste" +
-    "d-Chosen";
+				"d-Chosen";
 			this.olvcRecoveryFactorDelta.Width = 32;
 			// 
 			// olvcMomentumsAverageRecoveryFactor
@@ -537,7 +542,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsDispersionRecoveryFactor.Text = "rf MomDisp";
 			this.olvcMomentumsDispersionRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMomentumsDispersionRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown MomDisp(selected w" +
-    "ith checkboxes)";
+				"ith checkboxes)";
 			this.olvcMomentumsDispersionRecoveryFactor.Width = 32;
 			// 
 			// olvcMomentumsVarianceRecoveryFactor
@@ -546,7 +551,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsVarianceRecoveryFactor.Text = "rf MomVari";
 			this.olvcMomentumsVarianceRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMomentumsVarianceRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown MomVari=AllBacktes" +
-    "ted-Chosen";
+				"ted-Chosen";
 			this.olvcMomentumsVarianceRecoveryFactor.Width = 32;
 			// 
 			// olvcMaxDrawdownGlobal
@@ -714,9 +719,10 @@ namespace Sq1.Widgets.Correlation {
             this.mniMaximiseDeltaMaxConsecutiveWinners,
             this.mniMaximiseDeltaMaxConsecutiveLosers,
             this.toolStripSeparator3,
-            this.mniMaximiseDeltaAutoRunAfterSequencerFinished});
+            this.mniMaximiseDeltaAutoRunAfterSequencerFinished,
+            this.mniResizeToShowAllVisibleCells});
 			this.ctxOneParameterControl.Name = "ctxOneParameterControl";
-			this.ctxOneParameterControl.Size = new System.Drawing.Size(343, 396);
+			this.ctxOneParameterControl.Size = new System.Drawing.Size(343, 418);
 			// 
 			// mniShowAllBacktestedParams
 			// 
@@ -749,7 +755,7 @@ namespace Sq1.Widgets.Correlation {
 			this.mniShowMomentumsAverage.CheckOnClick = true;
 			this.mniShowMomentumsAverage.Name = "mniShowMomentumsAverage";
 			this.mniShowMomentumsAverage.Size = new System.Drawing.Size(342, 22);
-			this.mniShowMomentumsAverage.Text = "Show Momentums: Average";
+			this.mniShowMomentumsAverage.Text = "Show Momentums: Mean";
 			// 
 			// mniShowMomentumsDispersion
 			// 
@@ -758,7 +764,7 @@ namespace Sq1.Widgets.Correlation {
 			this.mniShowMomentumsDispersion.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniShowMomentumsDispersion.Name = "mniShowMomentumsDispersion";
 			this.mniShowMomentumsDispersion.Size = new System.Drawing.Size(342, 22);
-			this.mniShowMomentumsDispersion.Text = "Show Momentums: Dispersion";
+			this.mniShowMomentumsDispersion.Text = "Show Momentums: Standard Deviation";
 			// 
 			// mniShowMomentumsVariance
 			// 
@@ -840,7 +846,6 @@ namespace Sq1.Widgets.Correlation {
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
 			this.toolStripSeparator3.Size = new System.Drawing.Size(339, 6);
-			this.toolStripSeparator3.Visible = false;
 			// 
 			// mniMaximiseDeltaAutoRunAfterSequencerFinished
 			// 
@@ -852,14 +857,22 @@ namespace Sq1.Widgets.Correlation {
 			this.mniMaximiseDeltaAutoRunAfterSequencerFinished.Text = "Maximise Delta: Auto-Run after Sequencer finished";
 			this.mniMaximiseDeltaAutoRunAfterSequencerFinished.Visible = false;
 			// 
+			// mniResizeToShowAllVisibleCells
+			// 
+			this.mniResizeToShowAllVisibleCells.Name = "mniResizeToShowAllVisibleCells";
+			this.mniResizeToShowAllVisibleCells.Size = new System.Drawing.Size(342, 22);
+			this.mniResizeToShowAllVisibleCells.Text = "Resize To Show All Visible Cells";
+			this.mniResizeToShowAllVisibleCells.Click += new System.EventHandler(this.mniShowAllVisibleCells_Click);
+			// 
 			// OneParameterControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.Controls.Add(this.olv);
 			this.Name = "OneParameterControl";
-			this.Size = new System.Drawing.Size(590, 282);
+			this.Size = new System.Drawing.Size(592, 284);
+			this.Controls.SetChildIndex(this.olv, 0);
+			this.Controls.SetChildIndex(this.UserControlInner, 0);
 			((System.ComponentModel.ISupportInitialize)(this.olv)).EndInit();
 			this.ctxOneParameterControl.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -952,5 +965,6 @@ namespace Sq1.Widgets.Correlation {
 		private System.Windows.Forms.ToolStripMenuItem mniShowMomentumsDispersion;
 		private System.Windows.Forms.ToolStripMenuItem mniShowMomentumsVariance;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripMenuItem mniResizeToShowAllVisibleCells;
 	}
 }

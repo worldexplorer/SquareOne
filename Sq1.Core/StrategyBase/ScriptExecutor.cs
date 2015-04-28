@@ -16,6 +16,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Indicators;
 using Sq1.Core.Livesim;
 using Sq1.Core.Support;
+using Sq1.Core.Correlation;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class ScriptExecutor {
@@ -33,6 +34,7 @@ namespace Sq1.Core.StrategyBase {
 		public	Livesimulator					Livesimulator				{ get; protected set; }
 		public	string							LastBacktestStatus;
 		public	ConcurrentWatchdog				ScriptIsRunningCantAlterInternalLists	{ get; protected set; }
+		public	Correlator						Correlator					{ get; private set; }
 		#endregion
 		
 		#region initialized (sort of Dependency Injection)
@@ -220,8 +222,9 @@ namespace Sq1.Core.StrategyBase {
 			Sequencer					= new Sequencer(this);
 			Livesimulator				= new Livesimulator(this);
 			OrderProcessor				= Assembler.InstanceInitialized.OrderProcessor;
-			PerformanceAfterBacktest					= new SystemPerformance(this);
+			PerformanceAfterBacktest	= new SystemPerformance(this);
 			ScriptIsRunningCantAlterInternalLists = new ConcurrentWatchdog("WAITING_FOR_SCRIPT_OVERRIDDEN_METHOD_TO_RETURN");
+			Correlator					= new Correlator(this);
 		}
 
 		public void Initialize(Strategy strategy, ChartShadow chartContol = null, bool saveStrategy_falseForSequencer = false) {
@@ -1601,7 +1604,7 @@ namespace Sq1.Core.StrategyBase {
 		public string ToStringWithCurrentParameters() {
 			string ret = "";
 			// this.Strategy.Script==null for an {editor-based + compilation failed} Script
-			if (this.Strategy.Script != null) ret += this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerByName_AsString + " ";
+			if (this.Strategy.Script != null) ret += this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString + " ";
 			ret += this.ToString();
 			//ret += " why???PerformanceAfterBacktest:" + this.PerformanceAfterBacktest.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished_AsString;
 			return ret;

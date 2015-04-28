@@ -9,6 +9,7 @@ using Sq1.Core.Charting;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Support;
+using Sq1.Core.Support;
 
 namespace Sq1.Reporters {
 	public partial class Positions : Reporter {
@@ -130,19 +131,20 @@ namespace Sq1.Reporters {
 				//}
 			}
 			this.StashWindowTextSuffixInBaseTabText_usefulToUpdateAutohiddenStatsWithoutRebuildingFullReport_OLVisSlow();
- 			//v1
-			bool livesimStreamingIsSleeping = pokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild(this, "Reporters.Positions.BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)");
-			#if DEBUG
- 			//v2
-			bool livesimStreamingIsSleeping2 = positionsOpenedSafeCopy.AlertsEntry.GuiHasTimeToRebuild(this, "Reporters.Positions.BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)");
-			if (livesimStreamingIsSleeping != livesimStreamingIsSleeping2) {
-				string msg = "NONSENSE";
-				//Assembler.PopupException(msg);
-			}
-			#endif
- 			if (livesimStreamingIsSleeping == false) {
-				return;
-			}
+			// MINIMIZED_IF_STREAMING_QUOTE_DELAY<100ms_UNMINIMIZE_AND_WATCH__REALTIME_UNAFFECTED
+			////v1
+			//bool livesimStreamingIsSleeping = pokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild(this, "Reporters.Positions.BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)");
+			//#if DEBUG
+			////v2
+			//bool livesimStreamingIsSleeping2 = positionsOpenedSafeCopy.AlertsEntry.GuiHasTimeToRebuild(this, "Reporters.Positions.BuildIncrementalOnBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)");
+			//if (livesimStreamingIsSleeping != livesimStreamingIsSleeping2) {
+			//    string msg = "NONSENSE";
+			//    //Assembler.PopupException(msg);
+			//}
+			//#endif
+			//if (livesimStreamingIsSleeping == false) {
+			//    return;
+			//}
 			if (base.Visible == false) return;		//DockContent is minimized / "autohidden"
 			//v1 this.rebuildOLVproperly();
 			//DOESNT_INSERT__REPLACES_EXISTING_LISTVIEW_ITEMS_IF_FOUND_IN_MODEL this.olvPositions.RefreshObjects(safeCopy);
@@ -240,6 +242,39 @@ namespace Sq1.Reporters {
 				sb.Append("\n");
 			}
 			return sb.ToString();
+		}
+		void olvBinaryStateRestore() {
+			try {
+				// #1/2 OBJECTLISTVIEW_HACK__SEQUENCE_MATTERS!!!! otherwize RestoreState() doesn't restore after restart
+				// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
+				List<OLVColumn> allColumnsOtherwizeEmptyListAndRowFormatException = new List<OLVColumn>();
+				foreach (ColumnHeader columnHeader in this.olvPositions.Columns) {
+					OLVColumn oLVColumn = columnHeader as OLVColumn;
+					if (oLVColumn == null) continue;
+					oLVColumn.VisibilityChanged += oLVColumn_VisibilityChanged;
+					//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
+					if (this.olvPositions.AllColumns.Contains(oLVColumn)) continue;
+					allColumnsOtherwizeEmptyListAndRowFormatException.Add(oLVColumn);
+				}
+				if (allColumnsOtherwizeEmptyListAndRowFormatException.Count > 0) {
+					//THROWS_ADDING_ALL_REGARDLESS_AFTER_OrdersTreeOLV.RestoreState(base64Decoded)_ADDED_FILTER_IN_OUTER_LOOP 
+					this.olvPositions.AllColumns.AddRange(allColumnsOtherwizeEmptyListAndRowFormatException);
+				}
+				// #2/2 OBJECTLISTVIEW_HACK__SEQUENCE_MATTERS!!!! otherwize RestoreState() doesn't restore after restart
+				if (this.snap.PositionsOlvStateBase64.Length > 0) {
+					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.snap.PositionsOlvStateBase64);
+					this.olvPositions.RestoreState(olvStateBinary);
+				}
+			} catch (Exception ex) {
+				string msg = "this.olvPositions.RestoreState(olvStateBinary)";
+				Assembler.PopupException(msg, ex);
+			}
+		}
+		void olvBinaryStateSaveRaiseStrategySerialize() {
+			byte[] olvStateBinary = this.olvPositions.SaveState();
+			this.snap.PositionsOlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			base.RaiseContextScriptChangedContainerShouldSerialize();
 		}
 	}
 }

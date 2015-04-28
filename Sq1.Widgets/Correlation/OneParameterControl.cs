@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 
 using BrightIdeasSoftware;
 using Sq1.Core;
 using Sq1.Core.Sequencing;
 using Sq1.Core.Correlation;
+using Sq1.Core.Indicators;
+using Sq1.Core.Support;
 
 namespace Sq1.Widgets.Correlation {
-	public partial class OneParameterControl : UserControl {
+	public partial class OneParameterControl : UserControlResizeable {
 		OneParameterAllValuesAveraged parameter;
 
 		Dictionary<ToolStripMenuItem, List<OLVColumn>>			columnsByFilter;
@@ -16,10 +19,43 @@ namespace Sq1.Widgets.Correlation {
 		Dictionary<MaximizationCriterion, ToolStripMenuItem>	mniToCheckForMaximizationCriterion;
 		MaximizationCriterion sortBy;
 
-		private Correlator sequencer { get { return this.allParametersControl.Correlator; } }
-		private CorrelatorControl allParametersControl;
+		CorrelatorControl	allParametersControl;
+		Correlator			correlator						{ get {
+			if (this.allParametersControl == null) {
+				string msg = "YOU_WANTED_TO_CATCH_IT";
+				Assembler.PopupException(msg);
+			}
+			return this.allParametersControl.Correlator; } }
+		IndicatorParameter	indicatorParameterNullUnsafe	{ get { 
+			IndicatorParameter ret = null;
+			if (this.correlator.Executor == null) {
+				string msg = "OneParameterControl.correlator.Executor == null";
+				Assembler.PopupException(msg);
+				return ret;
+			}
+			if (this.correlator.Executor.Strategy == null) {
+				string msg = "OneParameterControl.correlator.Executor.Strategy == null";
+				Assembler.PopupException(msg);
+				return ret;
+			}
+			if (this.correlator.Executor.Strategy.ScriptContextCurrent == null) {
+				string msg = "OneParameterControl.correlator.Executor.Strategy.ScriptContextCurrent == null";
+				Assembler.PopupException(msg);
+				return ret;
+			}
+			SortedDictionary<string, IndicatorParameter> parametersByFullName =
+				this.correlator.Executor.Strategy.ScriptContextCurrent
+					.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName;
+			if (parametersByFullName.ContainsKey(this.parameter.ParameterName) == false) {
+				string msg = "OneParameterControl.correlator.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedOriginalForCorrelator.ContainsKey(" + this.parameter.ParameterName + ") == false";
+				Assembler.PopupException(msg);
+				return ret;
+			}
+			ret = parametersByFullName[this.parameter.ParameterName];
+			return ret;
+		} }
 
-		public OneParameterControl() {
+		public OneParameterControl() : base() {
 			InitializeComponent();
 			//	this.olvcParamValues.HeaderTriStateCheckBox = true;
 
@@ -157,6 +193,10 @@ namespace Sq1.Widgets.Correlation {
 
 			this.buildMniFilteringAfterInitializeComponent();
 			this.buildMniSortingAfterInitializeComponent();
+
+			string msg = "should see parametrized ctor() upstack";
+			//WILL_THROW_EXCEPTIOINS_FOR_IS_DISPOSED__FATAL Assembler.PopupException(msg);
+
 		}
 		void buildMniSortingAfterInitializeComponent() {
 			this.columnToSortDescendingByMaximizationMni = new Dictionary<ToolStripMenuItem, OLVColumn>();
@@ -282,10 +322,18 @@ namespace Sq1.Widgets.Correlation {
 				this.olvcMomentumsVarianceMaxConsecutiveWinners,
 				this.olvcMomentumsVarianceMaxConsecutiveLosers
 				});
+
+			//this.propagateColumnVisibilityFromMni();
+			// correlator will be NPE this.olvStateBinaryRestoreAllValuesForOneParam();
+		}
+		void propagateColumnVisibilityFromMni() {
 			// hide columns that aren't Checked in Designer
 			foreach (ToolStripMenuItem mni in this.columnsByFilter.Keys) {
 				List<OLVColumn> columns = this.columnsByFilter[mni];
-				foreach (OLVColumn column in columns) column.IsVisible = mni.Checked;
+				foreach (OLVColumn column in columns) {
+					if (column.IsVisible == mni.Checked) continue;
+					column.IsVisible = mni.Checked;
+				}
 			}
 			this.olv.RebuildColumns();
 		}
@@ -297,6 +345,8 @@ namespace Sq1.Widgets.Correlation {
 			this.olvAllValuesForOneParamCustomize();
 			this.olv.SetObjects(this.parameter.AllValuesWithArtificials);
 			parameter.OnParameterRecalculatedLocalsAndDeltas += new EventHandler<OneParameterAllValuesAveragedEventArgs>(parameter_ParameterRecalculatedLocalsAndDeltas);
+			base.Initialize_byMovingControlsToInner();
+			this.AlignBaseSizeToDisplayedCells();
 		}
 
 		void Initialize() {
@@ -313,22 +363,70 @@ namespace Sq1.Widgets.Correlation {
 		internal void KPIsLocalRecalculateDone_refreshOLV() {
 			this.olv.SetObjects(this.parameter.AllValuesWithArtificials, true);
 			this.olv.UseWaitCursor = false;
-
-			//NO_NEED_TO_RESORT_ONCE_SORTED
-			//if (this.mniMaximiseDeltaAutoRunAfterSequencerFinished.Checked == false) return;
-			//bool firstCheckedFound = false;
-			//foreach (ToolStripMenuItem mniEachDisableCheckedUncheckOthers in this.columnToSortDescendingByMaximizationKPI.Keys) {
-			//    if (firstCheckedFound == false && mniEachDisableCheckedUncheckOthers.Checked) {
-			//        firstCheckedFound = true;
-			//        //DISABLED_HAS_NO_TICK_WEIRD mniEachDisableCheckedUncheckOthers.Enabled = false;
-			//        OLVColumn sortBy = this.columnToSortDescendingByMaximizationKPI[mniEachDisableCheckedUncheckOthers];
-			//        this.olvAllValuesForOneParam.Sort(sortBy, SortOrder.Descending);
-			//        continue;
-			//    }
-			//    //DISABLED_HAS_NO_TICK_WEIRD mniEachDisableCheckedUncheckOthers.Enabled = true;
-			//    mniEachDisableCheckedUncheckOthers.Checked = false;
-			//}
 		}
+		public void AlignBaseSizeToDisplayedCells() {
+			int oneRowFullHeight = this.olv.RowHeightEffective;
+			oneRowFullHeight += (this.olv.CellPadding != null)
+						? this.olv.CellPadding.Value.Top + this.olv.CellPadding.Value.Bottom
+						: 2;
+			int rowsPlusArtificials = this.parameter.ValuesByParam.Count + 3;
+			int parentResizeableBordersTopBottom = base.PaddingMouseReceiving.Top + base.PaddingMouseReceiving.Bottom;
+			int headerAssumedHeight = oneRowFullHeight - 4;		//28;	// enough to fit hscrollbar...
+			//	headerAssumedHeight += 12;	// enough to fit hscrollbar...
+			int visibleRowsHeight = oneRowFullHeight * rowsPlusArtificials + parentResizeableBordersTopBottom + headerAssumedHeight;
+			base.Height = visibleRowsHeight;
 
+			//int visibleRowsWidth	= this.olv.RowHeightEffective * this.parameter.ValuesByParam.Count + 20;
+			if (this.olv.ColumnsInDisplayOrder.Count == 0) {
+				string msg = "AVOIDING_NPE_DUE_TO_ZERO_COLUMNS_SHOWN";
+				Assembler.PopupException(msg);
+			}
+			OLVColumn olvcLastVisible = this.olv.ColumnsInDisplayOrder[this.olv.ColumnsInDisplayOrder.Count - 1];
+			Rectangle lastVisibleRectangle = this.olv.CalculateColumnVisibleBounds(base.ClientRectangle, olvcLastVisible);
+			int parentResizeableBordersLeftRight = base.PaddingMouseReceiving.Left + base.PaddingMouseReceiving.Right;
+			base.Width = lastVisibleRectangle.Right + parentResizeableBordersLeftRight;
+		}
+		void olvStateBinaryRestoreAllValuesForOneParam() {
+			if (this.indicatorParameterNullUnsafe == null) {
+				this.propagateColumnVisibilityFromMni();
+				return;
+			}
+
+			try {
+				CorrelatorOneParameterSnapshot snap = this.indicatorParameterNullUnsafe.CorrelatorSnap;
+				this.mniShowAllBacktestedParams			.Checked = snap.MniShowAllBacktestsChecked;
+				this.mniShowChosenParams				.Checked = snap.MniShowChosenChecked;
+				this.mniShowDeltasBtwAllAndChosenParams	.Checked = snap.MniShowDeltaChecked;
+
+				this.mniShowDeltasBtwAllAndChosenParams	.Checked = snap.MniShowMomentumsAverageChecked;
+				this.mniShowMomentumsDispersion			.Checked = snap.MniShowMomentumsDispersionChecked;
+				this.mniShowMomentumsVariance			.Checked = snap.MniShowMomentumsVarianceChecked;
+
+				this.propagateColumnVisibilityFromMni();
+
+				// #1/2 OBJECTLISTVIEW_HACK__SEQUENCE_MATTERS!!!! otherwize RestoreState() doesn't restore after restart
+				// adds columns to filter in the header (right click - unselect garbage columns); there might be some BrightIdeasSoftware.SyncColumnsToAllColumns()?...
+				foreach (ColumnHeader columnHeader in this.olv.AllColumns) {
+					OLVColumn oLVColumn = columnHeader as OLVColumn;
+					if (oLVColumn == null) continue;
+					oLVColumn.VisibilityChanged += oLVColumn_VisibilityChanged;
+				}
+				// #2/2 OBJECTLISTVIEW_HACK__SEQUENCE_MATTERS!!!! otherwize RestoreState() doesn't restore after restart
+				if (this.indicatorParameterNullUnsafe.CorrelatorSnap.OlvStateBase64.Length > 0) {
+					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.indicatorParameterNullUnsafe.CorrelatorSnap.OlvStateBase64);
+					this.olv.RestoreState(olvStateBinary);
+				}
+			} catch (Exception ex) {
+				string msg = "this.olv.RestoreState(olvStateBinary)";
+				Assembler.PopupException(msg, ex);
+			}
+		}
+		void olvStateBinaryStateSaveAndRaiseStrategySerialize() {
+			byte[] olvStateBinary = this.olv.SaveState();
+			this.indicatorParameterNullUnsafe.CorrelatorSnap.OlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised) return;
+			this.allParametersControl.Correlator.Executor.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+		}
 	}
 }

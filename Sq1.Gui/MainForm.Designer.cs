@@ -61,15 +61,16 @@
 			// ctxTools
 			// 
 			this.ctxTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniCsvImporter,
-			this.mniExecution,
-			this.mniSliders,
-			this.mniStrategies,
-			this.mniSymbols,
-			this.mniExceptions,
-			this.toolStripSeparator1,
-			this.mniExit});
+            this.mniCsvImporter,
+            this.mniExecution,
+            this.mniSliders,
+            this.mniStrategies,
+            this.mniSymbols,
+            this.mniExceptions,
+            this.toolStripSeparator1,
+            this.mniExit});
 			this.ctxTools.Name = "ctxmsTools";
+			this.ctxTools.OwnerItem = this.mniMainMenu;
 			this.ctxTools.Size = new System.Drawing.Size(186, 164);
 			// 
 			// mniCsvImporter
@@ -204,16 +205,17 @@
 			// mainFormStatusStrip
 			// 
 			this.mainFormStatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniMainMenu,
-			this.btnWindows,
-			this.btnWorkSpaces,
-			this.btnFullScreen,
-			this.lblSpace,
-			this.lblStatus});
+            this.mniMainMenu,
+            this.btnWindows,
+            this.btnWorkSpaces,
+            this.btnFullScreen,
+            this.lblSpace,
+            this.lblStatus});
 			this.mainFormStatusStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
 			this.mainFormStatusStrip.Location = new System.Drawing.Point(0, 401);
 			this.mainFormStatusStrip.Name = "mainFormStatusStrip";
 			this.mainFormStatusStrip.Size = new System.Drawing.Size(774, 22);
+			this.mainFormStatusStrip.SizingGrip = false;
 			this.mainFormStatusStrip.TabIndex = 5;
 			this.mainFormStatusStrip.Text = "mainFormStatusStrip";
 			// 
@@ -248,11 +250,11 @@
 			// CtxWorkspaces
 			// 
 			this.CtxWorkspaces.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniWorkspaceDeleteCurrent,
-			this.mniltbWorklspaceNewBlank,
-			this.mniltbWorklspaceCloneTo,
-			this.mniltbWorklspaceRenameTo,
-			this.toolStripSeparator2});
+            this.mniWorkspaceDeleteCurrent,
+            this.mniltbWorklspaceNewBlank,
+            this.mniltbWorklspaceCloneTo,
+            this.mniltbWorklspaceRenameTo,
+            this.toolStripSeparator2});
 			this.CtxWorkspaces.Name = "ctxWorkspaces";
 			this.CtxWorkspaces.OwnerItem = this.btnWorkSpaces;
 			this.CtxWorkspaces.Size = new System.Drawing.Size(223, 101);
@@ -275,8 +277,11 @@
 			this.mniltbWorklspaceNewBlank.Size = new System.Drawing.Size(162, 20);
 			this.mniltbWorklspaceNewBlank.TextLeft = "New Blank";
 			this.mniltbWorklspaceNewBlank.TextLeftOffsetX = 0;
-			this.mniltbWorklspaceNewBlank.TextRed = false;
 			this.mniltbWorklspaceNewBlank.TextLeftWidth = 65;
+			this.mniltbWorklspaceNewBlank.TextRed = false;
+			this.mniltbWorklspaceNewBlank.TextRight = "~= 121pips";
+			this.mniltbWorklspaceNewBlank.TextRightOffsetX = 162;
+			this.mniltbWorklspaceNewBlank.TextRightWidth = 68;
 			// 
 			// mniltbWorklspaceCloneTo
 			// 
@@ -290,8 +295,11 @@
 			this.mniltbWorklspaceCloneTo.Size = new System.Drawing.Size(162, 20);
 			this.mniltbWorklspaceCloneTo.TextLeft = "Clone To";
 			this.mniltbWorklspaceCloneTo.TextLeftOffsetX = 0;
-			this.mniltbWorklspaceCloneTo.TextRed = false;
 			this.mniltbWorklspaceCloneTo.TextLeftWidth = 57;
+			this.mniltbWorklspaceCloneTo.TextRed = false;
+			this.mniltbWorklspaceCloneTo.TextRight = "~= 121pips";
+			this.mniltbWorklspaceCloneTo.TextRightOffsetX = 162;
+			this.mniltbWorklspaceCloneTo.TextRightWidth = 68;
 			// 
 			// mniltbWorklspaceRenameTo
 			// 
@@ -305,8 +313,11 @@
 			this.mniltbWorklspaceRenameTo.Size = new System.Drawing.Size(162, 20);
 			this.mniltbWorklspaceRenameTo.TextLeft = "RenameTo";
 			this.mniltbWorklspaceRenameTo.TextLeftOffsetX = 0;
-			this.mniltbWorklspaceRenameTo.TextRed = false;
 			this.mniltbWorklspaceRenameTo.TextLeftWidth = 66;
+			this.mniltbWorklspaceRenameTo.TextRed = false;
+			this.mniltbWorklspaceRenameTo.TextRight = "~= 121pips";
+			this.mniltbWorklspaceRenameTo.TextRightOffsetX = 162;
+			this.mniltbWorklspaceRenameTo.TextRightWidth = 68;
 			// 
 			// toolStripSeparator2
 			// 

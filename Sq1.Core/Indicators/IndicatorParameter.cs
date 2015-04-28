@@ -1,5 +1,6 @@
 ﻿using System;
 
+using Sq1.Core.Correlation;
 using Newtonsoft.Json;
 
 namespace Sq1.Core.Indicators {
@@ -35,12 +36,14 @@ namespace Sq1.Core.Indicators {
 
 		[JsonProperty]	public bool		BorderShown;
 		[JsonProperty]	public bool		NumericUpdownShown;
+		[JsonProperty]	public CorrelatorOneParameterSnapshot	CorrelatorSnap;
 
 		// DESPITE_NOT_INVOKED_EXPLICITLY__I_GUESS_INITIALIZING_VALUES_USING_OTHER_CONSTRUCTOR_MAY_CORRUPT_JSON_DESERIALIZATION
 		public IndicatorParameter() {
 			BorderShown = false;
 			NumericUpdownShown = true;
 			IndicatorName = "NOT_ATTACHED_TO_ANY_INDICATOR_YET will be replaced in Indicator.cs:118.ParametersByNameParametersByName";
+			CorrelatorSnap = new CorrelatorOneParameterSnapshot();
 		}
 		public IndicatorParameter(string name, double valueCurrent = double.NaN,
 								  double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) : this() {
@@ -84,6 +87,8 @@ namespace Sq1.Core.Indicators {
 			this.WillBeSequencedDuringOptimization	= ctxParamToAbsorbCurrentAndFixBoundaries.WillBeSequencedDuringOptimization;
 			this.BorderShown						= ctxParamToAbsorbCurrentAndFixBoundaries.BorderShown;
 			this.NumericUpdownShown					= ctxParamToAbsorbCurrentAndFixBoundaries.NumericUpdownShown;
+			this.CorrelatorSnap						= ctxParamToAbsorbCurrentAndFixBoundaries.CorrelatorSnap;
+
 			bool ret = false;
 
 			if (this.ValueCurrent != ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent) {

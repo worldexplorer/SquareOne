@@ -9,11 +9,16 @@ namespace Sq1.Widgets.Correlation {
 	public partial class CorrelatorControl : UserControl {
 				SystemPerformanceRestoreAbleListEventArgs	sequencedOriginal;
 				SystemPerformanceRestoreAbleListEventArgs	sequencedChosen;
-		public	Correlator									Correlator					{ get; private set; }
-		public  string										PriceFormat					{ get; private set; }
+		public	Correlator									Correlator			{ get; private set; }
+		public  string										PriceFormat			{ get; private set; }
 
 		public CorrelatorControl() {
 			InitializeComponent();
+		}
+
+		public void Initialize(Correlator correlator) {
+			this.Correlator = correlator;
+			this.oneParameterControl1.Initialize_byMovingControlsToInner();
 		}
 
 		public void Initialize(SystemPerformanceRestoreAbleListEventArgs originalOptimizationResults
@@ -40,21 +45,46 @@ namespace Sq1.Widgets.Correlation {
 			}
 
 			try {
-				this.Cursor = Cursors.WaitCursor;
-				this.Correlator = new Correlator(originalOptimizationResults.SystemPerformanceRestoreAbleList
-				, relPathAndNameForSequencerResults, fileName);
-
-				this.flowLayoutPanel1.Controls.Clear();
-				foreach (string parameterName in this.Correlator.ParametersByName.Keys) {
-					OneParameterAllValuesAveraged oneParamForOneOLV = this.Correlator.ParametersByName[parameterName];
-					if (oneParamForOneOLV.ValuesByParam.Count <= 1) continue;
-					//List<OneParameterOneValue> objectsForList = oneParamForOneOLV.AllValuesForOneParameterWithAverages;
-					OneParameterControl adding = new OneParameterControl(this, oneParamForOneOLV);
-					this.flowLayoutPanel1.Controls.Add(adding);
-				}
+				this.setCursorWait();
+				this.Correlator.Initialize(originalOptimizationResults.SystemPerformanceRestoreAbleList
+													, relPathAndNameForSequencerResults, fileName);
+				this.flushCalculationsToGui();
 			} finally {
-				this.Cursor = Cursors.Default;
+				this.setCursorDefault();
 			}
+		}
+
+		void flushCalculationsToGui() {
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.flushCalculationsToGui(); });
+				return;
+			}
+			this.flowLayoutPanel1.Controls.Clear();
+			foreach (string parameterName in this.Correlator.ParametersByName.Keys) {
+				OneParameterAllValuesAveraged oneParamForOneOLV = this.Correlator.ParametersByName[parameterName];
+				if (oneParamForOneOLV.ValuesByParam.Count <= 1) continue;
+				//List<OneParameterOneValue> objectsForList = oneParamForOneOLV.AllValuesForOneParameterWithAverages;
+				OneParameterControl adding = new OneParameterControl(this, oneParamForOneOLV);
+				//OneParameterControlAsMdiForm adding = new OneParameterControlAsMdiForm(this, oneParamForOneOLV);
+				//OneParameterControl adding = resizableWrapper.OneParameterControl;
+				this.flowLayoutPanel1.Controls.Add(adding);
+			}
+		}
+
+		void setCursorDefault() {
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.setCursorDefault(); });
+				return;
+			}
+			this.Cursor = Cursors.Default;
+		}
+
+		void setCursorWait() {
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.setCursorWait(); });
+				return;
+			}
+			this.Cursor = Cursors.WaitCursor;
 		}
 	}
 }

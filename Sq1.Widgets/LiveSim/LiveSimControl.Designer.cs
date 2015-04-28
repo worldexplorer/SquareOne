@@ -222,6 +222,7 @@ namespace Sq1.Widgets.Livesim
 			this.statusStrip1.Location = new System.Drawing.Point(0, 571);
 			this.statusStrip1.Name = "statusStrip1";
 			this.statusStrip1.Size = new System.Drawing.Size(689, 22);
+			this.statusStrip1.SizingGrip = false;
 			this.statusStrip1.TabIndex = 4;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
@@ -246,7 +247,7 @@ namespace Sq1.Widgets.Livesim
 			this.TssLblStrategyAsString.Name = "TssLblStrategyAsString";
 			this.TssLblStrategyAsString.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
 			this.TssLblStrategyAsString.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.TssLblStrategyAsString.Size = new System.Drawing.Size(597, 17);
+			this.TssLblStrategyAsString.Size = new System.Drawing.Size(566, 17);
 			this.TssLblStrategyAsString.Spring = true;
 			this.TssLblStrategyAsString.Text = "EntryEveryBar Default MAfast[10] MAslow[40] SLtype[3]";
 			this.TssLblStrategyAsString.TextAlign = System.Drawing.ContentAlignment.MiddleRight;

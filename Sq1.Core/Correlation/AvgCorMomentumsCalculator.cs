@@ -68,7 +68,7 @@ namespace Sq1.Core.Correlation {
 						#endif
 
 						//v1 SAME_MOMENTUMS_ACROSS_ALL_VALUES
-						this.correlator.InvalidateBactestsMinusUnchosen();
+						this.correlator.InvalidateBacktestsMinusUnchosen();
 						eachParamExceptForVarying.CalculateLocalsAndDeltas_forEachValue_and3artificials();
 						//foreach (OneParameterAllValuesAveraged eachParam in this.ParametersByName.Values) {
 						//    eachParam.CalculateLocalsAndDeltas();
@@ -117,30 +117,37 @@ namespace Sq1.Core.Correlation {
 			var valueSecond	= paramVarying.Values[1];
 
 			if (valueFirst.KPIsMomentumsAverage.NetProfit == valueSecond.KPIsMomentumsAverage.NetProfit) {
+				if (valueFirst.KPIsMomentumsAverage.NetProfit == 0) {
+					string msg1 = "YOU_FORGOT_TO_RESET_SOMETHING_IN_CORRELATOR__SECOND_CLICK_ON_SEQUENCER_RESULTS";
+					Assembler.PopupException(msg1);
+					return;
+				}
 				string msg = "TRYING_TO_CATCH_WHERE_MOMENTUMS_BECOME_EQUAL_WHILE_THEY_MUSTNT_BE";
 				Assembler.PopupException(msg);
 			}
 			#endif
 		}
-
 		void chooseAllOthersFullOnExcept(OneParameterAllValuesAveraged varyingThisWhileOthersFullyChosen) {
 			foreach (OneParameterAllValuesAveraged eachParam in this.ParametersByName.Values) {
 				if (eachParam == varyingThisWhileOthersFullyChosen) continue;
 				eachParam.chooseAllValues();
 			}
 		}
-
 		void reset() {
+			this.momentumsAveragedByParameter_cached = null;
+			if (this.ParametersByName.Count == 0) {
+				string msg = "NOTHING_TO_RESET ParametersByName.Count=0 //AvgCorMomentumsCalculator.reset()";
+				Assembler.PopupException(msg);
+			}
 			foreach (OneParameterAllValuesAveraged varyingThisWhileOthersFullyChosen in this.ParametersByName.Values) {
 				if (varyingThisWhileOthersFullyChosen.ValuesByParam.Count <= 1) continue;
 				OneParameterAllAvgCorMomentums momentumsForVariatedParameter = this.MomentumsAveragedByParameter[varyingThisWhileOthersFullyChosen.ParameterName];
 				foreach (double oneValueCheckedOthersOff in varyingThisWhileOthersFullyChosen.ValuesByParam.Keys) {
 					OneParameterOneValue thisCheckedOthersOff = varyingThisWhileOthersFullyChosen.ValuesByParam[oneValueCheckedOthersOff];
-					varyingThisWhileOthersFullyChosen.chooseThisUnchooseOthers(thisCheckedOthersOff);
 					AvgCorMomentums momentumForVariatedValue = momentumsForVariatedParameter.MomentumsByValue[oneValueCheckedOthersOff];
-					momentumForVariatedValue.KPIsAvgAverage.Reset();
-					momentumForVariatedValue.KPIsAvgDispersion.Reset();
-					momentumForVariatedValue.KPIsAvgVariance.Reset();
+					momentumForVariatedValue.KPIsAvgAverage		.Reset();
+					momentumForVariatedValue.KPIsAvgDispersion	.Reset();
+					momentumForVariatedValue.KPIsAvgVariance	.Reset();
 				}
 			}
 		}

@@ -32,6 +32,7 @@ namespace Sq1.Widgets.Sequencing {
 			//}
 		}
 		string priceFormat { get { return this.sequencer.Executor.Bars.SymbolInfo.PriceFormat; } }
+		string kpiFormat { get { return "N2"; } }
 
 		void olvBacktestsCustomize() {
 			this.olvBacktestsCustomizeColors();
@@ -53,7 +54,8 @@ namespace Sq1.Widgets.Sequencing {
 				if (systemPerformanceRestoreAble == null) return "olvcTotalTrades.AspectGetter: SystemPerformanceRestoreAble=null";
 				return systemPerformanceRestoreAble.PositionsCountBoth;
 			};
-			this.olvcTotalPositions.AspectToStringFormat = "{0:" + this.priceFormat + "}";
+			//this.olvcTotalPositions.AspectToStringFormat = "{0:" + this.priceFormat + "}";
+			this.olvcTotalPositions.AspectToStringFormat = "{0:N0}";
 
 			this.olvcProfitPerPosition.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
@@ -67,21 +69,21 @@ namespace Sq1.Widgets.Sequencing {
 				if (systemPerformanceRestoreAble == null) return "olvcWinLoss.AspectGetter: SystemPerformanceRestoreAble=null";
 				return systemPerformanceRestoreAble.WinLossRatio;
 			};
-			this.olvcWinLoss.AspectToStringFormat = "{0:" + this.priceFormat + "}";
+			this.olvcWinLoss.AspectToStringFormat = "{0:" + this.kpiFormat + "}";
 
 			this.olvcProfitFactor.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcProfitFactor.AspectGetter: SystemPerformanceRestoreAble=null";
 				return systemPerformanceRestoreAble.ProfitFactor;
 			};
-			this.olvcProfitFactor.AspectToStringFormat = "{0:" + this.priceFormat + "}";
+			this.olvcProfitFactor.AspectToStringFormat = "{0:" + this.kpiFormat + "}";
 
 			this.olvcRecoveryFactor.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcRecoveryFactor.AspectGetter: SystemPerformanceRestoreAble=null";
 				return systemPerformanceRestoreAble.RecoveryFactor;
 			};
-			this.olvcRecoveryFactor.AspectToStringFormat = "{0:" + this.priceFormat + "}";
+			this.olvcRecoveryFactor.AspectToStringFormat = "{0:" + this.kpiFormat + "}";
 
 			this.olvcMaxDrawdown.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
@@ -95,14 +97,14 @@ namespace Sq1.Widgets.Sequencing {
 				if (SystemPerformanceRestoreAble == null) return "olvcMaxConsecutiveWinners.AspectGetter: SystemPerformanceRestoreAble=null";
 				return SystemPerformanceRestoreAble.MaxConsecWinners;
 			};
-			this.olvcMaxConsecutiveWinners.AspectToStringFormat = "{0:" + this.priceFormat + "}";
+			this.olvcMaxConsecutiveWinners.AspectToStringFormat = "{0:N0}";
 
 			this.olvcMaxConsecutiveLosers.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcMaxConsecutiveLosers.AspectGetter: SystemPerformanceRestoreAble=null";
 				return systemPerformanceRestoreAble.MaxConsecLosers;
 			};
-			this.olvcMaxConsecutiveLosers.AspectToStringFormat = "{0:" + this.priceFormat + "}";
+			this.olvcMaxConsecutiveLosers.AspectToStringFormat = "{0:N0}";
 
 			
 			//v1

@@ -70,11 +70,11 @@ namespace Sq1.Core.Sequencing {
 		public	string		BacktestStrokesPerBar			{ get { return this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar.ToString(); } }
 
 		public	int			AllParameterLinesToDraw			{ get {
-				return this.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders.Count;
+				return this.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders.Count;
 			} }
 
 		public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParametersMergedByName { get {
-			return this.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerByName; } }
+			return this.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName; } }
 		
 		public	int			BacktestsTotal					{ get; private set; }
 		public	int			BacktestsRemaining				{ get { return this.BacktestsTotal - this.BacktestsFinished; } }

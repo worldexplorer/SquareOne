@@ -103,7 +103,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				//v2
 				IndicatorParameter parameterPrevToFeelChangeAndAddSpacing = null;
-				List<IndicatorParameter> parameters = this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedClonedForSequencerAndSliders;	// dont make me calculate it twice 
+				List<IndicatorParameter> parameters = this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders;	// dont make me calculate it twice 
 				foreach (IndicatorParameter param in parameters) {
 					if (parameterPrevToFeelChangeAndAddSpacing == null) {
 						parameterPrevToFeelChangeAndAddSpacing = param;
@@ -180,7 +180,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			//END merged
 
 			string nameForScriptDotSeparatedForIndicator = indicatorNameDotParameterName;
-			if (string.IsNullOrEmpty(nameForScriptDotSeparatedForIndicator)) nameForScriptDotSeparatedForIndicator = indicatorOrScriptparameter.Name; 
+			if (string.IsNullOrEmpty(nameForScriptDotSeparatedForIndicator)) nameForScriptDotSeparatedForIndicator = indicatorOrScriptparameter.FullName; 
 			ret.LabelText = nameForScriptDotSeparatedForIndicator;
 			ret.Name = "parameter_" + nameForScriptDotSeparatedForIndicator;
 			

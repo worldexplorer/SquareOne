@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Sq1.Core.Repositories;
 using Sq1.Core.Indicators;
 using Sq1.Core.Sequencing;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Correlation {
 	public partial class Correlator {
@@ -82,17 +83,22 @@ namespace Sq1.Core.Correlation {
 
 			return  this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached;
 		} } }
+		public ScriptExecutor Executor	{ get; private set; } 
 
 		
 		Correlator() {
 			ParametersByName = new Dictionary<string, OneParameterAllValuesAveraged>();
-			valuesUnchosenByParameter_cached = new Dictionary<string, List<double>>();
+			//MUST_BE_NULL__HANDLED_INSIDE_ValuesUnchosenByParameter.get valuesUnchosenByParameter_cached = new Dictionary<string, List<double>>();
 			lockForAllRecalculations = new object();
 			repositoryJsonCorrelator = new RepositoryJsonCorrelator();
 			AvgMomentumsCalculator = new AvgCorMomentumsCalculator(this);
 		}
-		public Correlator(List<SystemPerformanceRestoreAble> optimizationResults
-				, string relPathAndNameForSequencerResults, string fileName) : this() {
+		public Correlator(StrategyBase.ScriptExecutor scriptExecutor) : this() {
+			this.Executor = scriptExecutor;
+		}
+
+		public void Initialize(List<SystemPerformanceRestoreAble> optimizationResults
+				, string relPathAndNameForSequencerResults, string fileName) {
 			this.sequencedBacktestsOriginal = optimizationResults;
 
 			this.repositoryJsonCorrelator.Initialize(Assembler.InstanceInitialized.AppDataPath
@@ -100,10 +106,14 @@ namespace Sq1.Core.Correlation {
 
 			this.keepDeserializedChosen = this.repositoryJsonCorrelator.DeserializeSortedDictionary();
 
+			//INVOKED_DOWNSTACK this.InvalidateBacktestsMinusUnchosen();
+			//INVOKED_DOWNSTACK this.AvgMomentumsCalculator.reset();
+			//FIXES_ZEROES_AFTER_SECOND_CLICK_BUT_MOVED_TO_AvgMomentumsCalculator.reset() this.AvgMomentumsCalculator = new AvgCorMomentumsCalculator(this);
+
 			this.initialize_classifyAndCalculateGlobals_runMomentumCalculator();
 		}
 
-		void initialize_classifyAndCalculateGlobals_runMomentumCalculator() { lock(this.lockForAllRecalculations) {
+		void initialize_classifyAndCalculateGlobals_runMomentumCalculator() { // DEADLOCK_OTHERWIZE_WHEN_CALCULATOR_RUN_IN_A_SEPARATE_TASK lock(this.lockForAllRecalculations) {
 			int chosenWereFound_runCalculateLocalAndDeltas = 0;
 
 			int iterationCouter_fixBadDeserialization = 0;
@@ -112,44 +122,6 @@ namespace Sq1.Core.Correlation {
 			foreach (SystemPerformanceRestoreAble eachRun in this.sequencedBacktestsOriginal) {
 				if (eachRun.OptimizationIterationSerno == 0) eachRun.OptimizationIterationSerno = iterationCouter_fixBadDeserialization;
 				iterationCouter_fixBadDeserialization++;
-
-				//v1
-				//foreach (string indicatorDotParameter in eachRun.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Keys) {
-				//    IndicatorParameter eachIndicator = eachRun.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished[indicatorDotParameter];
-				//    string parameterName = indicatorDotParameter;	// eachIndicator.Name is "NOT_ATTACHED_TO_ANY_INDICATOR_YET" when deserialized
-				//    double backtestedValue = eachIndicator.ValueCurrent;
-
-				//    if (this.ParametersByName.ContainsKey(parameterName) == false) {
-				//        this.ParametersByName.Add(parameterName, new OneParameterAllValuesAveraged(this, parameterName));
-				//    }
-				//    OneParameterAllValuesAveraged relatedParameter = this.ParametersByName[parameterName];
-				//    relatedParameter.AddBacktestForValue_KPIsGlobalAddForIndicatorValue(backtestedValue, eachRun);
-				//}
-
-				//v2
-				//foreach (string indicatorDotParameter in	eachRun.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Keys) {
-				//    IndicatorParameter eachIndicator =		eachRun.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished[indicatorDotParameter];
-				//    string parameterName = indicatorDotParameter;	// eachIndicator.Name is "NOT_ATTACHED_TO_ANY_INDICATOR_YET" when deserialized
-				//    double backtestedValue = eachIndicator.ValueCurrent;
-
-				//    if (rebuilt.ContainsKey(parameterName) == false) {
-				//        rebuilt.Add(parameterName, new OneParameterAllValuesAveraged(this, parameterName));
-				//    }
-				//    OneParameterAllValuesAveraged eachParameterRebuilt = rebuilt[parameterName];
-
-				//    bool chosen = true;
-				//    if (this.ParametersByName.ContainsKey(parameterName)) {
-				//        var allValues = this.ParametersByName[parameterName];
-				//        if (allValues.ValuesByParam.ContainsKey(backtestedValue)) {
-				//            chosen = allValues.ValuesByParam[backtestedValue].Chosen;
-				//            chosenWereFound_runCalculateLocalAndDeltas++;
-				//        }
-				//    }
-
-				//    eachParameterRebuilt.AddBacktestForValue_KPIsGlobalAddForIndicatorValue(backtestedValue, chosen, eachRun);
-				//}
-
-				//v3
 				foreach (string indicatorDotParameter in eachRun.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Keys) {
 					IndicatorParameter eachIndicator = eachRun.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished[indicatorDotParameter];
 					string parameterName = indicatorDotParameter;	// eachIndicator.Name is "NOT_ATTACHED_TO_ANY_INDICATOR_YET" when deserialized
@@ -167,33 +139,15 @@ namespace Sq1.Core.Correlation {
 			foreach (OneParameterAllValuesAveraged eachParameter in this.ParametersByName.Values) {
 				eachParameter.KPIsGlobalNoMoreParameters_DivideTotalsByCount();
 			}
-			this.CalculateLocalsAndDeltas(false);
+			this.calculateLocalsAndDeltas(false);
 
 			this.AvgMomentumsCalculator.Initialize_runEachValueAgainstAllParametersFullyChosen();
 
-			//v3
-			//this.ParametersByName = keepDeserializedChosen;
 			chosenWereFound_runCalculateLocalAndDeltas = this.absorbChosenFlagFromDeserialized();
-
-			// LAZY_DO_CLEAN_UP_FROM_EXCEPTIONS
-			//List<string> keysWithOneValue = new List<string>();
-			//foreach (string indicatorParameterName in rebuilt.Keys) {
-			//    OneParameterAllValuesAveraged eachParameter = this.ParametersByName[indicatorParameterName];
-			//    if (eachParameter.ValuesByParam.Count > 1) continue;
-			//    keysWithOneValue.Add(indicatorParameterName);
-			//}
-			//foreach (string indicatorParameterName in keysWithOneValue) {
-			//    rebuilt.Remove(indicatorParameterName);
-			//}
-
-			//foreach (OneParameterAllValuesAveraged eachParameter in this.ParametersByName.Values) {
-			//	eachParameter.KPIsGlobalNoMoreParameters_DivideTotalsByCount();
-			//}
 			if (chosenWereFound_runCalculateLocalAndDeltas > 0) {
-				this.CalculateLocalsAndDeltas();
+				this.calculateLocalsAndDeltas();
 			}
-
-		} }
+		} //}
 
 		int absorbChosenFlagFromDeserialized() {
 			int chosenWereFound_runCalculateLocalAndDeltas = 0;
@@ -220,7 +174,7 @@ namespace Sq1.Core.Correlation {
 		}
 
 		public void OneParameterOneValueUserSelectedChanged_recalculateAllKPIsLocal(OneParameterOneValue oneParameterOneValueUserSelectedChanged) {
-			this.CalculateLocalsAndDeltas();
+			this.calculateLocalsAndDeltas();
 		}
 
 		public void ChooseThisOneResetOthers_RecalculateAllKPIsLocalAndDelta(OneParameterOneValue onlyOneParamValueClicked) {
@@ -231,29 +185,29 @@ namespace Sq1.Core.Correlation {
 					eachValue.Chosen  = willSetTo;		// breakpoint to confirm on one click just one gets selected and just one gets deselected
 				}
 			}
-			this.CalculateLocalsAndDeltas();
+			this.calculateLocalsAndDeltas();
 		}
 
-		public void CalculateLocalsAndDeltas(bool raiseAllEvents = true, bool isUserClick_Serialize = true) { lock(this.lockForAllRecalculations) {
+		void calculateLocalsAndDeltas(bool raiseAllEvents = true, bool isUserClick_Serialize = true) {
 			if (isUserClick_Serialize) this.repositoryJsonCorrelator.SerializeSortedDictionary(this.ParametersByName);
+			lock (this.lockForAllRecalculations) {
+				this.valuesUnchosenByParameter_cached = null;	//"ExceptFor"_WORKS_IF_CACHED_WAS_RESET
+				this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached = null;
 
-			this.valuesUnchosenByParameter_cached = null;	//"ExceptFor"_WORKS_IF_CACHED_WAS_RESET
-			this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached = null;
-
-			foreach (OneParameterAllValuesAveraged eachParam in this.ParametersByName.Values) {
-				if (eachParam.ValuesByParam.Count <= 1) continue;
-				eachParam.CalculateLocalsAndDeltas_forEachValue_and3artificials();
+				foreach (OneParameterAllValuesAveraged eachParam in this.ParametersByName.Values) {
+					if (eachParam.ValuesByParam.Count <= 1) continue;
+					eachParam.CalculateLocalsAndDeltas_forEachValue_and3artificials();
+				}
 			}
 
 			if (raiseAllEvents == false) return;
-
 			foreach (OneParameterAllValuesAveraged eachParameter in this.ParametersByName.Values) {
 				eachParameter.RaiseOnEachParameterRecalculatedLocalsAndDeltas();
 			}
 			this.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
-		} }
+		}
 
-		public void InvalidateBactestsMinusUnchosen() {
+		public void InvalidateBacktestsMinusUnchosen() {
 			this.valuesUnchosenByParameter_cached = null;	//"ExceptFor"_WORKS_IF_CACHED_WAS_RESET
 			this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached = null;
 		}

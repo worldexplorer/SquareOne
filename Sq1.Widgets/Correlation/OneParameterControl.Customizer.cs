@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections;
+using System.Collections.Generic;
 
 using BrightIdeasSoftware;
 using Sq1.Core;
@@ -12,6 +12,7 @@ namespace Sq1.Widgets.Correlation {
 	public partial class OneParameterControl {
 		Color colorBackgroundRed;
 		Color colorBackgroundGreen;
+		bool dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised;
 		
 		void olv_FormatRow(object sender, FormatRowEventArgs e) {
 			OneParameterOneValue oneParameterOneValue = e.Model as OneParameterOneValue;
@@ -193,19 +194,25 @@ namespace Sq1.Widgets.Correlation {
 
 			OneParameterOneValue paramValueClicked = e.Model as OneParameterOneValue;
 			this.olv.UseWaitCursor = true;
-			this.sequencer.ChooseThisOneResetOthers_RecalculateAllKPIsLocalAndDelta(paramValueClicked);
+			this.correlator.ChooseThisOneResetOthers_RecalculateAllKPIsLocalAndDelta(paramValueClicked);
 		}
 
-		string formatterPriceFormat(object cellValue) {
+		string formatterPriceFormatter(object cellValue) {
 			if (cellValue is double == false) return cellValue.ToString();
 			double asDouble = (double) cellValue;
 			string doubleFormatted = asDouble.ToString(this.allParametersControl.PriceFormat);		// format is "0,000.0"
 			return doubleFormatted;
 		}
+		string formatterKpiFormatter(object cellValue) {
+			if (cellValue is double == false) return cellValue.ToString();
+			double asDouble = (double)cellValue;
+			string doubleFormatted = asDouble.ToString("N1");
+			return doubleFormatted;
+		}
 		string formatterPriceFormatDelta_addPlusSign(object cellValue) {
 			if (cellValue is double == false) return cellValue.ToString();
 			double asDouble = (double)cellValue;
-			string doubleFormatted = this.formatterPriceFormat(asDouble);
+			string doubleFormatted = this.formatterPriceFormatter(asDouble);
 
 			if (asDouble > 0			// can be negative for KPIsDelta
 					&& double.IsInfinity(asDouble) == false
@@ -213,8 +220,23 @@ namespace Sq1.Widgets.Correlation {
 
 			return doubleFormatted;
 		}
+		string formatterKpiFormatDelta_addPlusSign(object cellValue) {
+			if (cellValue is double == false) return cellValue.ToString();
+			double asDouble = (double)cellValue;
+			string doubleFormatted = this.formatterKpiFormatter(asDouble);
+
+			if (asDouble > 0			// can be negative for KPIsDelta
+					&& double.IsInfinity(asDouble) == false
+					&& double.IsNaN(asDouble) == false) doubleFormatted = "+" + doubleFormatted;
+
+			return doubleFormatted;
+		}
+		string formatMomentums = "{0:N1}";
+
 		void olvAllValuesForOneParamCustomize() {
 			this.olvAllValuesForOneParamCustomizeColors();
+			//this.olvStateBinaryRestoreAllValuesForOneParam();
+
 			this.olvcParamValues.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcParamValues.AspectGetter: OneParameterOneValue=null";
@@ -227,63 +249,66 @@ namespace Sq1.Widgets.Correlation {
 				if (oneParameterOneValue == null) return "olvcTotalPositionsGlobal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsGlobal.PositionsCount;
 			};
-			this.olvcTotalPositionsGlobal.AspectToStringConverter = this.formatterPriceFormat;
+			//this.olvcTotalPositionsGlobal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcTotalPositionsGlobal.AspectToStringFormat = "{0:N0}";
 
 			this.olvcProfitPerPositionGlobal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcProfitPerPositionGlobal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsGlobal.PositionAvgProfit;
 			};
-			this.olvcProfitPerPositionGlobal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcProfitPerPositionGlobal.AspectToStringConverter = this.formatterPriceFormatter;
 
 			this.olvcNetProfitGlobal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcNetProfitGlobal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsGlobal.NetProfit;
 			};
-			this.olvcNetProfitGlobal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcNetProfitGlobal.AspectToStringConverter = this.formatterPriceFormatter;
 
 			this.olvcWinLossGlobal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcWinLossGlobal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsGlobal.WinLossRatio;
 			};
-			this.olvcWinLossGlobal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcWinLossGlobal.AspectToStringConverter = this.formatterKpiFormatter;
 
 			this.olvcProfitFactorGlobal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcProfitFactorGlobal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsGlobal.ProfitFactor;
 			};
-			this.olvcProfitFactorGlobal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcProfitFactorGlobal.AspectToStringConverter = this.formatterKpiFormatter;
 
 			this.olvcRecoveryFactorGlobal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcRecoveryFactorGlobal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsGlobal.RecoveryFactor;
 			};
-			this.olvcRecoveryFactorGlobal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcRecoveryFactorGlobal.AspectToStringConverter = this.formatterKpiFormatter;
 
 			this.olvcMaxDrawdownGlobal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMaxDrawdownGlobal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsGlobal.MaxDrawDown;
 			};
-			this.olvcMaxDrawdownGlobal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMaxDrawdownGlobal.AspectToStringConverter = this.formatterPriceFormatter;
 
 			this.olvcMaxConsecutiveWinnersGlobal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMaxConsecutiveWinnersGlobal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsGlobal.MaxConsecWinners;
 			};
-			this.olvcMaxConsecutiveWinnersGlobal.AspectToStringConverter = this.formatterPriceFormat;
+			//this.olvcMaxConsecutiveWinnersGlobal.AspectToStringConverter = this.formatterKpiFormat;
+			this.olvcMaxConsecutiveWinnersGlobal.AspectToStringFormat = "{0:N0}";
 
 			this.olvcMaxConsecutiveLosersGlobal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMaxConsecutiveLosersGlobal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsGlobal.MaxConsecLosers;
 			};
-			this.olvcMaxConsecutiveLosersGlobal.AspectToStringConverter = this.formatterPriceFormat;
+			//this.olvcMaxConsecutiveLosersGlobal.AspectToStringConverter = this.formatterKpiFormat;
+			this.olvcMaxConsecutiveLosersGlobal.AspectToStringFormat = "{0:N0}";
 			#endregion
 
 			#region Local
@@ -292,63 +317,66 @@ namespace Sq1.Widgets.Correlation {
 				if (oneParameterOneValue == null) return "olvcTotalPositionsLocal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsLocal.PositionsCount;
 			};
-			this.olvcTotalPositionsLocal.AspectToStringConverter = this.formatterPriceFormat;
+			//this.olvcTotalPositionsLocal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcTotalPositionsLocal.AspectToStringFormat = "{0:N0}";
 
 			this.olvcProfitPerPositionLocal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcProfitPerPositionLocal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsLocal.PositionAvgProfit;
 			};
-			this.olvcProfitPerPositionLocal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcProfitPerPositionLocal.AspectToStringConverter = this.formatterPriceFormatter;
 
 			this.olvcNetProfitLocal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcNetProfitLocal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsLocal.NetProfit;
 			};
-			this.olvcNetProfitLocal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcNetProfitLocal.AspectToStringConverter = this.formatterPriceFormatter;
 
 			this.olvcWinLossLocal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcWinLossLocal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsLocal.WinLossRatio;
 			};
-			this.olvcWinLossLocal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcWinLossLocal.AspectToStringConverter = this.formatterKpiFormatter;
 
 			this.olvcProfitFactorLocal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcProfitFactorLocal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsLocal.ProfitFactor;
 			};
-			this.olvcProfitFactorLocal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcProfitFactorLocal.AspectToStringConverter = this.formatterKpiFormatter;
 
 			this.olvcRecoveryFactorLocal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcRecoveryFactorLocal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsLocal.RecoveryFactor;
 			};
-			this.olvcRecoveryFactorLocal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcRecoveryFactorLocal.AspectToStringConverter = this.formatterKpiFormatter;
 
 			this.olvcMaxDrawdownLocal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMaxDrawdownLocal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsLocal.MaxDrawDown;
 			};
-			this.olvcMaxDrawdownLocal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMaxDrawdownLocal.AspectToStringConverter = this.formatterPriceFormatter;
 
 			this.olvcMaxConsecutiveWinnersLocal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMaxConsecutiveWinnersLocal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsLocal.MaxConsecWinners;
 			};
-			this.olvcMaxConsecutiveWinnersLocal.AspectToStringConverter = this.formatterPriceFormat;
+			//this.olvcMaxConsecutiveWinnersLocal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMaxConsecutiveWinnersLocal.AspectToStringFormat = "{0:N0}";
 
 			this.olvcMaxConsecutiveLosersLocal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMaxConsecutiveLosersLocal.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsLocal.MaxConsecLosers;
 			};
-			this.olvcMaxConsecutiveLosersLocal.AspectToStringConverter = this.formatterPriceFormat;
+			//this.olvcMaxConsecutiveLosersLocal.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMaxConsecutiveLosersLocal.AspectToStringFormat = "{0:N0}";
 			#endregion
 
 			#region Delta
@@ -358,7 +386,7 @@ namespace Sq1.Widgets.Correlation {
 				//return oneParameterOneValue.KPIsDelta.PositionsCountFormatted;
 				return oneParameterOneValue.KPIsDelta.PositionsCount;
 			};
-			this.olvcTotalPositionsDelta.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcTotalPositionsDelta.AspectToStringConverter = this.formatterKpiFormatDelta_addPlusSign;
 
 			this.olvcProfitPerPositionDelta.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
@@ -382,42 +410,42 @@ namespace Sq1.Widgets.Correlation {
 				if (oneParameterOneValue == null) return "olvcWinLossDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsDelta.WinLossRatio;
 			};
-			this.olvcWinLossDelta.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcWinLossDelta.AspectToStringConverter = this.formatterKpiFormatDelta_addPlusSign;
 
 			this.olvcProfitFactorDelta.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcProfitFactorDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsDelta.ProfitFactor;
 			};
-			this.olvcProfitFactorDelta.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcProfitFactorDelta.AspectToStringConverter = this.formatterKpiFormatDelta_addPlusSign;
 
 			this.olvcRecoveryFactorDelta.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcRecoveryFactorDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsDelta.RecoveryFactor;
 			};
-			this.olvcRecoveryFactorDelta.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcRecoveryFactorDelta.AspectToStringConverter = this.formatterKpiFormatDelta_addPlusSign;
 
 			this.olvcMaxDrawdownDelta.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMaxDrawdownDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsDelta.MaxDrawDown;
 			};
-			this.olvcMaxDrawdownDelta.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMaxDrawdownDelta.AspectToStringConverter = this.formatterKpiFormatDelta_addPlusSign;
 
 			this.olvcMaxConsecutiveWinnersDelta.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMaxConsecutiveWinnersDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsDelta.MaxConsecWinners;
 			};
-			this.olvcMaxConsecutiveWinnersDelta.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMaxConsecutiveWinnersDelta.AspectToStringConverter = this.formatterKpiFormatDelta_addPlusSign;
 
 			this.olvcMaxConsecutiveLosersDelta.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMaxConsecutiveLosersDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsDelta.MaxConsecLosers;
 			};
-			this.olvcMaxConsecutiveLosersDelta.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMaxConsecutiveLosersDelta.AspectToStringConverter = this.formatterKpiFormatDelta_addPlusSign;
 			#endregion
 
 
@@ -428,63 +456,63 @@ namespace Sq1.Widgets.Correlation {
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageTotalPositions.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsAverage.PositionsCount;
 			};
-			this.olvcMomentumsAverageTotalPositions.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsAverageTotalPositions.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageProfitPerPosition.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageProfitPerPosition.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsAverage.PositionAvgProfit;
 			};
-			this.olvcMomentumsAverageProfitPerPosition.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsAverageProfitPerPosition.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageNetProfit.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageNetProfit.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsAverage.NetProfit;
 			};
-			this.olvcMomentumsAverageNetProfit.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsAverageNetProfit.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageWinLoss.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageWinLoss.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsAverage.WinLossRatio;
 			};
-			this.olvcMomentumsAverageWinLoss.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsAverageWinLoss.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageProfitFactor.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageProfitFactor.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsAverage.ProfitFactor;
 			};
-			this.olvcMomentumsAverageProfitFactor.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsAverageProfitFactor.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageRecoveryFactor.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageRecoveryFactor.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsAverage.RecoveryFactor;
 			};
-			this.olvcMomentumsAverageRecoveryFactor.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsAverageRecoveryFactor.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageMaxDrawdown.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageMaxDrawdown.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsAverage.MaxDrawDown;
 			};
-			this.olvcMomentumsAverageMaxDrawdown.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsAverageMaxDrawdown.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageMaxConsecutiveWinners.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageMaxConsecutiveWinners.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsAverage.MaxConsecWinners;
 			};
-			this.olvcMomentumsAverageMaxConsecutiveWinners.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsAverageMaxConsecutiveWinners.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageMaxConsecutiveLosers.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageMaxConsecutiveLosers.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsAverage.MaxConsecLosers;
 			};
-			this.olvcMomentumsAverageMaxConsecutiveLosers.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsAverageMaxConsecutiveLosers.AspectToStringFormat = this.formatMomentums;
 			#endregion
 
 			#region Momentums: Dispersion
@@ -493,63 +521,63 @@ namespace Sq1.Widgets.Correlation {
 				if (oneParameterOneValue == null) return "olvcMomentumsDispersionTotalPositions.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsDispersion.PositionsCount;
 			};
-			this.olvcMomentumsDispersionTotalPositions.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsDispersionTotalPositions.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsDispersionProfitPerPosition.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsDispersionProfitPerPosition.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsDispersion.PositionAvgProfit;
 			};
-			this.olvcMomentumsDispersionProfitPerPosition.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsDispersionProfitPerPosition.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsDispersionNetProfit.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsDispersionNetProfit.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsDispersion.NetProfit;
 			};
-			this.olvcMomentumsDispersionNetProfit.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsDispersionNetProfit.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsDispersionWinLoss.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsDispersionWinLoss.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsDispersion.WinLossRatio;
 			};
-			this.olvcMomentumsDispersionWinLoss.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsDispersionWinLoss.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsDispersionProfitFactor.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsDispersionProfitFactor.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsDispersion.ProfitFactor;
 			};
-			this.olvcMomentumsDispersionProfitFactor.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsDispersionProfitFactor.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsDispersionRecoveryFactor.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsDispersionRecoveryFactor.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsDispersion.RecoveryFactor;
 			};
-			this.olvcMomentumsDispersionRecoveryFactor.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsDispersionRecoveryFactor.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsDispersionMaxDrawdown.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsDispersionMaxDrawdown.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsDispersion.MaxDrawDown;
 			};
-			this.olvcMomentumsDispersionMaxDrawdown.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsDispersionMaxDrawdown.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsDispersionMaxConsecutiveWinners.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsDispersionMaxConsecutiveWinners.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsDispersion.MaxConsecWinners;
 			};
-			this.olvcMomentumsDispersionMaxConsecutiveWinners.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsDispersionMaxConsecutiveWinners.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsDispersionMaxConsecutiveLosers.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsDispersionMaxConsecutiveLosers.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsDispersion.MaxConsecLosers;
 			};
-			this.olvcMomentumsDispersionMaxConsecutiveLosers.AspectToStringConverter = this.formatterPriceFormat;
+			this.olvcMomentumsDispersionMaxConsecutiveLosers.AspectToStringFormat = this.formatMomentums;
 			#endregion
 
 			#region Momentums: Variance
@@ -559,7 +587,7 @@ namespace Sq1.Widgets.Correlation {
 				//return oneParameterOneValue.KPIsMomentumsVariance.PositionsCountFormatted;
 				return oneParameterOneValue.KPIsMomentumsVariance.PositionsCount;
 			};
-			this.olvcMomentumsVarianceTotalPositions.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMomentumsVarianceTotalPositions.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsVarianceProfitPerPosition.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
@@ -568,14 +596,14 @@ namespace Sq1.Widgets.Correlation {
 				return oneParameterOneValue.KPIsMomentumsVariance.PositionAvgProfit;
 			};
 			// PRINTED_N1 this.olvcMomentumsVarianceProfitPerPosition.AspectToStringFormat = "N1";
-			this.olvcMomentumsVarianceProfitPerPosition.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMomentumsVarianceProfitPerPosition.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsVarianceNetProfit.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceNetProfitDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsVariance.NetProfit;
 			};
-			this.olvcMomentumsVarianceNetProfit.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMomentumsVarianceNetProfit.AspectToStringFormat = this.formatMomentums;
 			// DIDNT_MAKE_ANY_CHANGE this.olvcMomentumsVarianceNetProfit.DataType = typeof(int);
 
 			this.olvcMomentumsVarianceWinLoss.AspectGetter = delegate(object o) {
@@ -583,42 +611,42 @@ namespace Sq1.Widgets.Correlation {
 				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceWinLossDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsVariance.WinLossRatio;
 			};
-			this.olvcMomentumsVarianceWinLoss.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMomentumsVarianceWinLoss.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsVarianceProfitFactor.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceProfitFactorDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsVariance.ProfitFactor;
 			};
-			this.olvcMomentumsVarianceProfitFactor.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMomentumsVarianceProfitFactor.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsVarianceRecoveryFactor.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceRecoveryFactorDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsVariance.RecoveryFactor;
 			};
-			this.olvcMomentumsVarianceRecoveryFactor.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMomentumsVarianceRecoveryFactor.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsVarianceMaxDrawdown.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceMaxDrawdownDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsVariance.MaxDrawDown;
 			};
-			this.olvcMomentumsVarianceMaxDrawdown.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMomentumsVarianceMaxDrawdown.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsVarianceMaxConsecutiveWinners.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceMaxConsecutiveWinnersDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsVariance.MaxConsecWinners;
 			};
-			this.olvcMomentumsVarianceMaxConsecutiveWinners.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMomentumsVarianceMaxConsecutiveWinners.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsVarianceMaxConsecutiveLosers.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceMaxConsecutiveLosersDelta.AspectGetter: OneParameterOneValue=null";
 				return oneParameterOneValue.KPIsMomentumsVariance.MaxConsecLosers;
 			};
-			this.olvcMomentumsVarianceMaxConsecutiveLosers.AspectToStringConverter = this.formatterPriceFormatDelta_addPlusSign;
+			this.olvcMomentumsVarianceMaxConsecutiveLosers.AspectToStringFormat = this.formatMomentums;
 			#endregion
 
 
@@ -649,10 +677,21 @@ namespace Sq1.Widgets.Correlation {
 				oneParameterOneValue.Chosen = newState.CompareTo(CheckState.Checked) == 0;
 				this.olv.RefreshObject(oneParameterOneValue);
 				this.olv.UseWaitCursor = true;
-				this.sequencer.OneParameterOneValueUserSelectedChanged_recalculateAllKPIsLocal(oneParameterOneValue);
+				this.correlator.OneParameterOneValueUserSelectedChanged_recalculateAllKPIsLocal(oneParameterOneValue);
 				return newState;
 			};
-			
+
+			this.olv.ColumnWidthChanged += new ColumnWidthChangedEventHandler(olv_ColumnWidthChanged);
+		}
+		void olv_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e) {
+			this.olvStateBinaryStateSaveAndRaiseStrategySerialize();
+			this.AlignBaseSizeToDisplayedCells();
+		}
+		void oLVColumn_VisibilityChanged(object sender, EventArgs e) {
+			if (this.indicatorParameterNullUnsafe == null) return;
+			OLVColumn oLVColumn = sender as OLVColumn;
+			if (oLVColumn == null) return;
+			this.olvStateBinaryStateSaveAndRaiseStrategySerialize();
 		}
 	}
 	// USED_AspectToStringConverter_INSTEAD_OF_CUSTOM_SORTING

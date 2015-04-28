@@ -195,6 +195,10 @@ namespace Sq1.Gui {
 						cfmgr.Executor.DataSource.StreamingAdapter.UpstreamConnect();
 					}
 					//}
+
+					cfmgr.SequencerFormShow(true);
+					cfmgr.CorrelatorFormShow(true);
+					cfmgr.LivesimFormShow(true);
 				}
 				
 				//NOPE ExecutionForm.Instance.ExecutionTreeControl.MoveStateColumnToLeftmost();

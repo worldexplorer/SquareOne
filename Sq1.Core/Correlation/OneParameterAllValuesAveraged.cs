@@ -7,8 +7,8 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Correlation {
 	public partial class OneParameterAllValuesAveraged : NamedObjectJsonSerializable {
-		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE				= "Average";
-		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE_DISPERSION	= "Dispersion";
+		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE				= "Mean";
+		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE_DISPERSION	= "Stdandard Deviation";
 		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE_VARIANCE 	= "Variance";
 
 		[JsonIgnore]	public Correlator					Correlator;
