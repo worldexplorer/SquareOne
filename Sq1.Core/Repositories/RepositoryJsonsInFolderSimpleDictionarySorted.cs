@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Repositories {
-	public partial class RepositoryJsonsInFolderSimpleSortedDictionary<SYSTEM_PERFORMANCE_RESTORE_ABLE>
+	public partial class RepositoryJsonsInFolderSimpleDictionarySorted<SYSTEM_PERFORMANCE_RESTORE_ABLE>
 			: RepositoryJsonsInFolderSimple<SYSTEM_PERFORMANCE_RESTORE_ABLE>
-			where SYSTEM_PERFORMANCE_RESTORE_ABLE : NamedObjectJsonSerializable {
+			where SYSTEM_PERFORMANCE_RESTORE_ABLE : NamedObjectJsonSerializable, new() {
 
 		public virtual SortedDictionary<string, SYSTEM_PERFORMANCE_RESTORE_ABLE> DeserializeSortedDictionary(string fname) {
 			SortedDictionary<string, SYSTEM_PERFORMANCE_RESTORE_ABLE> tmp = null;

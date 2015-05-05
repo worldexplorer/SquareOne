@@ -8,7 +8,7 @@ using Sq1.Core.DataFeed;
 namespace Sq1.Core.Repositories {
 	public partial class RepositoryJsonsInFolderSimpleDictionary<SYSTEM_PERFORMANCE_RESTORE_ABLE>
 			: RepositoryJsonsInFolderSimple<SYSTEM_PERFORMANCE_RESTORE_ABLE>
-			where SYSTEM_PERFORMANCE_RESTORE_ABLE : NamedObjectJsonSerializable {
+			where SYSTEM_PERFORMANCE_RESTORE_ABLE : NamedObjectJsonSerializable, new() {
 
 		public virtual Dictionary<string, SYSTEM_PERFORMANCE_RESTORE_ABLE> DeserializeDictionary(string fname) {
 			Dictionary<string, SYSTEM_PERFORMANCE_RESTORE_ABLE> tmp = null;

@@ -8,7 +8,7 @@ using Sq1.Core.DataFeed;
 namespace Sq1.Core.Correlation {
 	public partial class OneParameterAllValuesAveraged : NamedObjectJsonSerializable {
 		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE				= "Mean";
-		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE_DISPERSION	= "Stdandard Deviation";
+		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE_DISPERSION	= "Standard Deviation";
 		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE_VARIANCE 	= "Variance";
 
 		[JsonIgnore]	public Correlator					Correlator;
@@ -47,7 +47,8 @@ namespace Sq1.Core.Correlation {
 			return ret;
 		} }
 
-		OneParameterAllValuesAveraged() {
+		// "public" for RepositoryBlaBlaBla where T : new()
+		public OneParameterAllValuesAveraged() {
 			AllValuesWithArtificials	= new List<OneParameterOneValue>();
 			ValuesByParam				= new SortedDictionary<double, OneParameterOneValue>();
 
@@ -61,18 +62,24 @@ namespace Sq1.Core.Correlation {
 			this.ParameterName = parameterName;
 		}
 
-		internal void AddBacktestForValue_KPIsGlobalAddForIndicatorValue(double optimizedValue, SystemPerformanceRestoreAble eachRun) {
+		internal void ClearBacktestsForAllMyValue_step1of3() {
+			foreach (OneParameterOneValue paramValue in this.ValuesByParam.Values) {
+				paramValue.ClearBacktestsWithMyValue_step1of3();
+			}
+		}
+
+		internal void AddBacktestForValue_KPIsGlobalAddForIndicatorValue_step2of3(double optimizedValue, SystemPerformanceRestoreAble eachRun) {
 			if (this.ValuesByParam.ContainsKey(optimizedValue) == false) {
 				this.ValuesByParam		  .Add(optimizedValue, new OneParameterOneValue	(this, optimizedValue));
 				//this.AvgMomentumsByParam  .Add(optimizedValue, new AvgCorMomentums		(this, optimizedValue));
 			}
 			OneParameterOneValue paramValue = this.ValuesByParam[optimizedValue];
-			paramValue.AddBacktestForValue_AddKPIsGlobal(eachRun);
+			paramValue.AddBacktestForValue_AddKPIsGlobal_step2of3(eachRun);
 		}
 
-		internal void KPIsGlobalNoMoreParameters_DivideTotalsByCount() {
+		internal void KPIsGlobalNoMoreParameters_DivideTotalsByCount_step3of3() {
 			foreach (OneParameterOneValue kpisForValue in this.ValuesByParam.Values) {
-				kpisForValue.KPIsGlobal_DivideTotalsByCount();
+				kpisForValue.KPIsGlobal_DivideTotalsByCount_step3of3();
 			}
 
 			this.AllValuesWithArtificials = new List<OneParameterOneValue>(this.ValuesByParam.Values);
@@ -87,7 +94,7 @@ namespace Sq1.Core.Correlation {
 
 			this.ArtificialRowVariance.CalculateGlobalsForArtificial_Variance();
 			this.ArtificialRowVariance.CalculateLocalsAndDeltasForArtificial_Variance();
-			this.AllValuesWithArtificials.Add(this.ArtificialRowVariance);
+			//REPLACE_WITH_max(avg(Net)),min(StDev(Net))_ALIGNED_WITH_MaximizationCriterion this.AllValuesWithArtificials.Add(this.ArtificialRowVariance);
 		}
 
 		internal void CalculateLocalsAndDeltas_forEachValue_and3artificials() {

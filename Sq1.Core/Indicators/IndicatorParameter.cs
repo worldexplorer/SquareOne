@@ -15,7 +15,7 @@ namespace Sq1.Core.Indicators {
 		[JsonProperty]	public double			ValueIncrement;
 		[JsonProperty]	public double			ValueCurrent;
 		[JsonIgnore]	public int				ValueCurrentAsInteger { get { return (int) Math.Round(this.ValueCurrent); } }
-		[JsonProperty]	public bool				WillBeSequencedDuringOptimization;
+		[JsonProperty]	public bool				WillBeSequenced;
 		[JsonProperty]	public int				NumberOfRuns { get {
 				// got "Arithmetic opertation resulted in an overflow" when a Script wasn't built (IndicatorParameters restored from StrategyContext?)
 				int ret = 1;
@@ -84,7 +84,7 @@ namespace Sq1.Core.Indicators {
 				return this.ValueCurrent + "[" + this.ValueMin + ".." + this.ValueMax + "/" + this.ValueIncrement + "]";
 			} }
 		public bool AbsorbCurrentFixBoundariesIfChanged(IndicatorParameter ctxParamToAbsorbCurrentAndFixBoundaries) {
-			this.WillBeSequencedDuringOptimization	= ctxParamToAbsorbCurrentAndFixBoundaries.WillBeSequencedDuringOptimization;
+			this.WillBeSequenced	= ctxParamToAbsorbCurrentAndFixBoundaries.WillBeSequenced;
 			this.BorderShown						= ctxParamToAbsorbCurrentAndFixBoundaries.BorderShown;
 			this.NumericUpdownShown					= ctxParamToAbsorbCurrentAndFixBoundaries.NumericUpdownShown;
 			this.CorrelatorSnap						= ctxParamToAbsorbCurrentAndFixBoundaries.CorrelatorSnap;
@@ -125,5 +125,10 @@ namespace Sq1.Core.Indicators {
 			ret.ReasonToClone = "CLONE[" + reasonToClone + "]_" + ret.ReasonToClone;
 			return ret;
 		}
+		
+		public void ShrinkForSerialization() {
+			this.CorrelatorSnap = null;
+		}
+
 	}
 }

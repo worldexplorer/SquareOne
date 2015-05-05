@@ -42,12 +42,12 @@ namespace Sq1.Core.StrategyBase {
 				return Math.Round(Math.Abs(this.NetProfitForClosedPositionsBoth / this.MaxDrawDown), 2);
 			} }
 		public double WinRatePct	{ get {
-				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
-				return Math.Round(100 * this.PositionsCountWinners / (double)this.PositionsCountBoth, 1);
+				if (this.PositionsCount == 0) return double.PositiveInfinity;
+				return Math.Round(100 * this.PositionsCountWinners / (double)this.PositionsCount, 1);
 			} }
 		public double LossRatePct	{ get {
-				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
-				return Math.Round(100 * this.PositionsCountLosers / (double)this.PositionsCountBoth, 2);
+				if (this.PositionsCount == 0) return double.PositiveInfinity;
+				return Math.Round(100 * this.PositionsCountLosers / (double)this.PositionsCount, 2);
 			} }
 		public double WinLossRatio  { get {
 				double ret = double.NaN;
@@ -69,18 +69,18 @@ namespace Sq1.Core.StrategyBase {
 				if (this.BarsHeldTotalForClosedPositionsBoth == 0) return 0;
 				return Math.Round(this.NetProfitForClosedPositionsBoth / (double)this.BarsHeldTotalForClosedPositionsBoth, 2);
 			} }
-		public int PositionsCountBoth;
+		public int PositionsCount;
 		public double AvgProfitBoth { get {
-				if (this.PositionsCountBoth == 0) return 0;
-				return Math.Round(this.NetProfitForClosedPositionsBoth / (double)this.PositionsCountBoth, 2);
+				if (this.PositionsCount == 0) return 0;
+				return Math.Round(this.NetProfitForClosedPositionsBoth / (double)this.PositionsCount, 2);
 			} }
 		public double AvgProfitPctBoth { get {
-				if (this.PositionsCountBoth == 0) return 0;
-				return Math.Round(this.NetProfitPctForClosedPositionsBoth / (double)this.PositionsCountBoth, 2);
+				if (this.PositionsCount == 0) return 0;
+				return Math.Round(this.NetProfitPctForClosedPositionsBoth / (double)this.PositionsCount, 2);
 			} }
 		public double AvgBarsHeldBoth { get {
-				if (this.PositionsCountBoth == 0) return 0;
-				return Math.Round(this.BarsHeldTotalForClosedPositionsBoth / (double)this.PositionsCountBoth, 1);
+				if (this.PositionsCount == 0) return 0;
+				return Math.Round(this.BarsHeldTotalForClosedPositionsBoth / (double)this.PositionsCount, 1);
 			} }
 		#endregion
 
@@ -132,18 +132,22 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		#endregion
 
+		public SortedDictionary<DateTime, KPIs> KPIsCumulativeByDate { get; private set; }
+		int positionsCountPrevStep_MustIncreaseOnly;
+	
 		protected SystemPerformanceSlice() {
 			ReasonToExist = "NO_REASON_TO_EXIST";
 			// LOOKS_STUPID_BUT_DONT_SUGGEST_BRINGING_EXECUTOR_HERE: new BarScaleInterval(BarScale.Unknown, 0)
 			CashCurve	= new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), "Cash");
 			
-			CumulativeNetProfitDollar	= new Dictionary<Position, double>();
-			CumulativeNetProfitPercent = new Dictionary<Position, double>();
+			CumulativeNetProfitDollar		= new Dictionary<Position, double>();
+			CumulativeNetProfitPercent		= new Dictionary<Position, double>();
 
 			PositionsImTracking = new PositionList("PositionsImTracking", null);
 			//v1 PositionLongShortImTracking = PositionLongShort.Unknown;	// direction not specified => it means "both short and long" here
 			//v2
-			PositionLongShortImTracking = SystemPerformancePositionsTracking.LongAndShort;
+			PositionLongShortImTracking		= SystemPerformancePositionsTracking.LongAndShort;
+			KPIsCumulativeByDate			= new SortedDictionary<DateTime, KPIs>();
 		}
 		public SystemPerformanceSlice(SystemPerformancePositionsTracking positionLongShortImTracking, string reasonToExist) : this() {
 			PositionLongShortImTracking = positionLongShortImTracking;
@@ -157,27 +161,30 @@ namespace Sq1.Core.StrategyBase {
 			this.CumulativeNetProfitDollar.Clear();
 			this.CumulativeNetProfitPercent.Clear();
 
-			this.MaxDrawDownLastLossDate = DateTime.MinValue;
-			this.MaxDrawDown = 0;
-			this.NetProfitPeakDate = DateTime.MinValue;
-			this.NetProfitPeak = 0;
+			this.MaxDrawDownLastLossDate				= DateTime.MinValue;
+			this.MaxDrawDown							= 0;
+			this.NetProfitPeakDate						= DateTime.MinValue;
+			this.NetProfitPeak							= 0;
 
-			this.curConsecWinners = 0;
-			this.curConsecLosers = 0;
-			this.MaxConsecWinners = 0;
-			this.MaxConsecLosers = 0;
+			this.curConsecWinners						= 0;
+			this.curConsecLosers						= 0;
+			this.MaxConsecWinners						= 0;
+			this.MaxConsecLosers						= 0;
 
-			this.NetProfitForClosedPositionsBoth = 0;
-			this.BarsHeldTotalForClosedPositionsBoth = 0;
-			this.PositionsCountBoth = 0;
+			this.NetProfitForClosedPositionsBoth		= 0;
+			this.BarsHeldTotalForClosedPositionsBoth	= 0;
+			this.PositionsCount						= 0;
 
-			this.NetProfitWinners = 0;
-			this.BarsHeldTotalForClosedPositionsWinners = 0;
-			this.PositionsCountWinners = 0;
+			this.NetProfitWinners						= 0;
+			this.BarsHeldTotalForClosedPositionsWinners	= 0;
+			this.PositionsCountWinners					= 0;
 
-			this.NetLossLosers = 0;
-			this.BarsHeldTotalForClosedPositionsLosers = 0;
-			this.PositionsCountLosers = 0;
+			this.NetLossLosers							= 0;
+			this.BarsHeldTotalForClosedPositionsLosers	= 0;
+			this.PositionsCountLosers					= 0;
+
+			this.KPIsCumulativeByDate.Clear();
+			this.positionsCountPrevStep_MustIncreaseOnly = 0;
 		}
 		[Obsolete("GET_RID_OF_ME__IM_TOO_EXPENSIVE__REPLACE_WITH_RANGED_updateStatsForBar+CumulativeAppendForPositionClosed")]
 		public void BuildStatsCumulativeOnBacktestFinished() {
@@ -437,6 +444,12 @@ namespace Sq1.Core.StrategyBase {
 			int positionsClosedAbsorbedBoth = 0;
 
 			foreach (Position positionClosed in positionsClosedAtBar) {
+				if (positionClosed.ExitAlert == null) {
+					string msg = "QUE_BOI_HACER_HERMA? positionClosed.ExitAlert=null";
+					Assembler.PopupException(msg);
+					continue;
+				}
+				if (positionClosed.ExitAlert.ForcefullyClosedBacktestLastPosition) continue;
 				if (positionsClosedAccounted.Contains(positionClosed)) {
 					string msg = "SHOULD_BE_INVOKED_FOR_LIVE_CLOSED_POSITION_ONCE";
 					Assembler.PopupException(msg);
@@ -495,7 +508,8 @@ namespace Sq1.Core.StrategyBase {
 			this.CashCurve	.SumupOrAppend(barDateTime, cashBalanceAtBar);
 
 			this.CommissionBoth							+= commissionWinners + commissionLosers;
-			this.PositionsCountBoth						+= positionsOpenAbsorbedBoth + positionsClosedAbsorbedBoth;
+			//this.PositionsCountBoth						+= positionsOpenAbsorbedBoth + positionsClosedAbsorbedBoth;
+			this.PositionsCount							+= positionsClosedAbsorbedBoth;
 			this.BarsHeldTotalForClosedPositionsBoth	+= barsHeldAtBarBoth;
 			this.NetProfitForClosedPositionsBoth		+= netProfitAtBarBoth;
 			this.NetProfitPctForClosedPositionsBoth		+= netProfitPctAtBarBoth;
@@ -521,6 +535,30 @@ namespace Sq1.Core.StrategyBase {
 			if (this.MaxDrawDown > drawDown) {
 				this.MaxDrawDown = drawDown;
 				this.MaxDrawDownLastLossDate = barDateTime;
+			}
+
+			if (this.PositionLongShortImTracking != SystemPerformancePositionsTracking.LongAndShort) return positionsOpenAbsorbedBoth;
+
+			KPIs kpisForBar = new KPIs(this.ReasonToExist, 
+				this.PositionsCount, this.NetProfitForClosedPositionsBoth,
+				this.WinLossRatio, this.ProfitFactor, this.RecoveryFactor,
+				this.MaxDrawDown, this.MaxConsecWinners, this.MaxConsecLosers);
+
+			if (this.KPIsCumulativeByDate.ContainsKey(barDateTime) == false) {
+				if (this.positionsCountPrevStep_MustIncreaseOnly >= this.PositionsCount && this.PositionsCount > 0) {
+					string msg = "POSITIONS_COUNT_CANT_DECREASE ["
+						+ this.positionsCountPrevStep_MustIncreaseOnly + "]MUST_BE_LESS_THAN[" + kpisForBar.PositionsCount + "]";
+					Assembler.PopupException(msg, null, false);
+				}
+				this.positionsCountPrevStep_MustIncreaseOnly = this.PositionsCount;
+
+				this.KPIsCumulativeByDate.Add(barDateTime, kpisForBar);
+			} else {
+				string msg = "NONSENSE_BUT_ADDING__MUST_NOT_BE_DUPLICATES_KOZ_INVOKING_ONCE_PER_BAR barDateTime[" + barDateTime + "]";
+				//Assembler.PopupException(msg, null, false);
+
+				KPIs existing = this.KPIsCumulativeByDate[barDateTime];
+				existing.AddKPIs(kpisForBar);
 			}
 
 			return positionsOpenAbsorbedBoth;

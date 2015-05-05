@@ -3,7 +3,6 @@ using System.Windows.Forms;
 
 using Sq1.Core.Sequencing;
 using Sq1.Widgets;
-using Sq1.Widgets.Sequencing;
 using Sq1.Core;
 using System.Threading.Tasks;
 
@@ -56,33 +55,37 @@ namespace Sq1.Gui.Forms {
 		}
 
 		// INVOKED_AT_USER_CLICK
-		public void PopulateSequencedHistory(SystemPerformanceRestoreAbleListEventArgs originalOptimizationResults) {
+		public void PopulateSequencedHistory(SequencedBacktests originalSequencedBacktests) {
 			string msig = " //CorrelatorForm.PopulateSequencedHistory()";
 
 			// UNSUBSCRIBE_FIRST__JUST_IN_CASE
 			this.chartFormsManager.Executor.Correlator
 				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
-					-= new EventHandler<SystemPerformanceRestoreAbleListEventArgs>(
+					-= new EventHandler<SequencedBacktestsEventArgs>(
 						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 
 			this.chartFormsManager.Executor.Correlator
 				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
-					+= new EventHandler<SystemPerformanceRestoreAbleListEventArgs>(
+					+= new EventHandler<SequencedBacktestsEventArgs>(
 						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 
-			Task letGuiDraw = new Task(delegate() {
-				this.CorrelatorControl.Initialize(originalOptimizationResults
-					, this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
-					, originalOptimizationResults.FileName);
-
-				// WAS_ALREADY_INVOKED??? this.chartFormsManager.Executor.Correlator
-				//	.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
-			});
-			letGuiDraw.ContinueWith(delegate {
-				string msg = "TASK_THREW";
-				Assembler.PopupException(msg + msig, letGuiDraw.Exception);
-			}, TaskContinuationOptions.OnlyOnFaulted);
-			letGuiDraw.Start();
+			//v1
+			this.CorrelatorControl.Initialize(originalSequencedBacktests
+				, this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
+				, originalSequencedBacktests.FileName);
+			//v2 COULDNT_SET_SUBSET_PERCENTAGE
+			//Task letGuiDraw = new Task(delegate() {
+			//    this.CorrelatorControl.Initialize(originalOptimizationResults
+			//        , this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
+			//        , originalOptimizationResults.FileName);
+			//    // WAS_ALREADY_INVOKED??? this.chartFormsManager.Executor.Correlator
+			//    //	.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
+			//});
+			//letGuiDraw.ContinueWith(delegate {
+			//    string msg = "TASK_THREW";
+			//    Assembler.PopupException(msg + msig, letGuiDraw.Exception);
+			//}, TaskContinuationOptions.OnlyOnFaulted);
+			//letGuiDraw.Start();
 
 			//this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsReplaceWithCorrelated();
 			//this.IsMdiContainer = true;	// trying to cheat DockPanel's "MdiContainers should be on TOP level" XML deserialization error

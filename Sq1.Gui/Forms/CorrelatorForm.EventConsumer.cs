@@ -23,8 +23,8 @@ namespace Sq1.Gui.Forms {
             this.chartFormsManager.MainForm.MainFormSerialize();
 			this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsRestoreCorrelatedClosed();
         }
-		void correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt(object sender, SystemPerformanceRestoreAbleListEventArgs e) {
-			this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsReplaceWithCorrelated(e.SystemPerformanceRestoreAbleList);
+		void correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt(object sender, SequencedBacktestsEventArgs e) {
+			this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsReplaceWithCorrelated(e.SequencedBacktests.BacktestsReadonly);
 		}
 
 	}

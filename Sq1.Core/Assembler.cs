@@ -33,9 +33,10 @@ namespace Sq1.Core {
 		public	AssemblerDataSnapshot					AssemblerDataSnapshot;
 		public	Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;
 
-		public	const string							DateTimeFormatIndicatorHasNoValuesFor = "yyyy-MMM-dd ddd HH:mm";
-		public	const string							DateTimeFormatLong = "HH:mm:ss.fff ddd dd MMM yyyy";
-		public	const string							DateTimeFormatLongFilename = "yyyy-MMM-dd_ddd_HH.mm.ss";
+		public	const string							DateTimeFormatIndicatorHasNoValuesFor 	= "yyyy-MMM-dd ddd HH:mm";
+		public	const string							DateTimeFormatToMinutes				 	= "yyyy-MMM-dd HH:mm";
+		public	const string							DateTimeFormatLong						= "HH:mm:ss.fff ddd dd MMM yyyy";
+		public	const string							DateTimeFormatLongFilename				= "yyyy-MMM-dd_ddd_HH.mm.ss";
 		
 		public	static string FormattedLongFilename(DateTime dt) {
 			return dt.ToString(Assembler.DateTimeFormatLongFilename);

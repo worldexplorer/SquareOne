@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
-
-using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
 using Sq1.Core.Sequencing;
@@ -24,15 +21,15 @@ namespace Sq1.Gui.FormFactories {
 			sequencerForm.SequencerControl.OnCopyToContextDefaultBacktest	+= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(sequencerControl_OnCopyToContextDefaultBacktest);
 			sequencerForm.SequencerControl.OnCopyToContextNew				+= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(sequencerControl_OnCopyToContextNew);
 			sequencerForm.SequencerControl.OnCopyToContextNewBacktest		+= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(sequencerControl_OnCopyToContextNewBacktest);
-			sequencerForm.SequencerControl.OnCorrelatorShouldPopulate		+= new EventHandler<SystemPerformanceRestoreAbleListEventArgs>(sequencerControl_OnCorrelatorShouldPopulate);
+			sequencerForm.SequencerControl.OnCorrelatorShouldPopulate		+= new EventHandler<SequencedBacktestsEventArgs>(sequencerControl_OnCorrelatorShouldPopulate);
 			sequencerForm.FormClosing										+= new FormClosingEventHandler(sequencerForm_FormClosing);
 			sequencerForm.FormClosed										+= new FormClosedEventHandler(sequencerForm_FormClosed);
 			return sequencerForm;
 		}
 
-		void sequencerControl_OnCorrelatorShouldPopulate(object sender, SystemPerformanceRestoreAbleListEventArgs e) {
+		void sequencerControl_OnCorrelatorShouldPopulate(object sender, SequencedBacktestsEventArgs e) {
 			CorrelatorForm correlatorForm = this.chartFormManager.CorrelatorFormConditionalInstance;
-			correlatorForm.PopulateSequencedHistory(e);
+			correlatorForm.PopulateSequencedHistory(e.SequencedBacktests);
 			correlatorForm.ActivateDockContentPopupAutoHidden(false);
 
 			//DockState designedDockState = allParametersForm.ShowHint;
@@ -60,7 +57,7 @@ namespace Sq1.Gui.FormFactories {
 			Strategy strategyOnChart = this.chartFormManager.Strategy;
 			strategyOnChart.ScriptContextAdd_cloneAndAbsorbCurrentValuesFromSequencer(scriptContextNewName, ctxAdding, false);
 			SlidersForm.Instance.Show();
-			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(ctxAdding.Name);
+			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(e.ScriptContextNewName);
 		}
 		void sequencerControl_OnCopyToContextDefaultBacktest(object sender, SystemPerformanceRestoreAbleEventArgs e) {
 			this.sequencerControl_OnCopyToContextDefault(sender, e);

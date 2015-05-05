@@ -91,7 +91,7 @@ namespace Sq1.Reporters {
 			this.addNumeric(		slice.PayoffRatio,			"Payout", "Payout = Abs(AvgProfitPctBoth / AvgLossPctLosers)", this.getLviForeColor(slice.ProfitFactor, 1));
 			this.addCurrency(	   -slice.CommissionBoth,		"Commission", "-CommissionBoth", this.getLviForeColor(-slice.CommissionBoth));
 
-			this.addNumeric(		slice.PositionsCountBoth,	 "All Trades", "PositionsCountBoth", Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
+			this.addNumeric(		slice.PositionsCount,		 "All Trades", "PositionsCountClosed", Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
 			this.addNumeric(		slice.AvgProfitBoth,		"Avg Profit", "Avg Profit = NetProfitForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.AvgProfitBoth));
 			this.addPercent(		slice.AvgProfitPctBoth,		"Avg Profit %", "Avg Profit % = NetProfitPctForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.AvgProfitPctBoth));
 			this.addNumeric(		slice.AvgBarsHeldBoth,		"Avg Bars Held", "Avg Bars Held = BarsHeldTotalForClosedPositionsBoth / PositionsCountBoth");

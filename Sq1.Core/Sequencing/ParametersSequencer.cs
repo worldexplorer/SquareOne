@@ -36,7 +36,7 @@ namespace Sq1.Core.Sequencing {
 			ContextScript ret = new ContextScript(ctxName);
 			ret.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly("FOR_userClickedDuplicateCtx", this.contextScriptCloneIterateable);
 			this.IncrementsDone++;
-			ret.OptimizationIterationSerno = this.IncrementsDone;
+			ret.SequenceIterationSerno = this.IncrementsDone;
 			this.logDump(ctxName);
 			return ret;
 		} }
@@ -45,7 +45,7 @@ namespace Sq1.Core.Sequencing {
 			this.nextMerged();
 			ret.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly("FOR_userClickedDuplicateCtx", this.contextScriptCloneIterateable);
 			this.IncrementsDone++;
-			ret.OptimizationIterationSerno = this.IncrementsDone;
+			ret.SequenceIterationSerno = this.IncrementsDone;
 			this.logDump(ctxName);
 			return ret;
 		} }
@@ -96,7 +96,7 @@ namespace Sq1.Core.Sequencing {
 				}
 				for (int i=0; i<=slowIndex; i++) {
 					IndicatorParameter paramToMin = this.paramsMerged[i];
-					if (paramToMin.WillBeSequencedDuringOptimization == false) continue;
+					if (paramToMin.WillBeSequenced == false) continue;
 					paramToMin.ValueCurrent = paramToMin.ValueMin;
 				}
 				this.fastIndex++;
@@ -116,11 +116,11 @@ namespace Sq1.Core.Sequencing {
 		int confirmOrFindNextParameterMarkedForSequencing(int fastindex) {
 			int ret = fastIndex;
 			IndicatorParameter paramFast = this.paramsMerged[fastIndex];
-			bool paramToSequenceFound = paramFast.WillBeSequencedDuringOptimization;
+			bool paramToSequenceFound = paramFast.WillBeSequenced;
 			if (paramToSequenceFound == true) return ret; 
 			for (int i = fastIndex; i < this.paramsMerged.Count; i++) {
 				paramFast = this.paramsMerged[i];
-				paramToSequenceFound = paramFast.WillBeSequencedDuringOptimization;
+				paramToSequenceFound = paramFast.WillBeSequenced;
 				if (paramToSequenceFound == true) {
 					ret = i;
 					break;

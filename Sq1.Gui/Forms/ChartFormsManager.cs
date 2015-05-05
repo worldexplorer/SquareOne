@@ -690,11 +690,19 @@ namespace Sq1.Gui.Forms {
 			if (this.SequencerFormConditionalInstance.MustBeActivated) {
 				this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(false, true);
 			}
-			DockPane underneathSequencer = this.SequencerFormConditionalInstance.Pane;
-			if (underneathSequencer != null) {
-				this.CorrelatorFormConditionalInstance.Show(underneathSequencer, DockAlignment.Bottom, 0.5);
+
+			if (this.SequencerFormConditionalInstance.IsShown) {
+				this.CorrelatorFormConditionalInstance.Show(this.SequencerFormConditionalInstance.Pane, DockAlignment.Bottom, 0.8);
 			} else {
-				// Sequencer isn't shown at all
+				DockPanel mainPanelOrAnotherCorrelatorPanel = this.dockPanel;
+				CorrelatorForm anotherCorrelator = null;
+				foreach (DockContent form in this.dockPanel.Contents) {
+					anotherCorrelator = form as CorrelatorForm;
+					if (anotherCorrelator == null) continue;
+					if (anotherCorrelator.Pane == null) continue;
+					mainPanelOrAnotherCorrelatorPanel = anotherCorrelator.Pane.DockPanel;
+					break;
+				}
 				this.CorrelatorFormConditionalInstance.Show(this.dockPanel);
 			}
 			this.CorrelatorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
@@ -834,17 +842,17 @@ namespace Sq1.Gui.Forms {
 		}
 
 		
-		public void SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory(bool deleteOptimizationHistory = false) {
-			if (deleteOptimizationHistory) {
+		public void SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory(bool deleteSequencedBacktest = false) {
+			if (deleteSequencedBacktest) {
 				//v1 this.Strategy.OptimizationResultsByContextIdent.Clear();
 				if (this.SequencerForm != null) {
 					this.SequencerForm.SequencerControl.RepositoryJsonSequencer.ItemsFoundDeleteAll();
 				} else {
 					try {
-						RepositoryJsonSimpleSequencer repositoryJsonOptimizationResults = new RepositoryJsonSimpleSequencer();
-						repositoryJsonOptimizationResults.Initialize(Assembler.InstanceInitialized.AppDataPath,
-							Path.Combine("OptimizationResults", this.Strategy.RelPathAndNameForSequencerResults));
-						int deleted = repositoryJsonOptimizationResults.ItemsFoundDeleteAll();
+						RepositoryJsonsInFolderSimpleDictionarySequencer repositoryJsonSequencer = new RepositoryJsonsInFolderSimpleDictionarySequencer();
+						repositoryJsonSequencer.Initialize(Assembler.InstanceInitialized.AppDataPath,
+							Path.Combine("Sequencer", this.Strategy.RelPathAndNameForSequencerResults));
+						int deleted = repositoryJsonSequencer.ItemsFoundDeleteAll();
 						string msg = "RECOMPILATION_ERASED_OPTIMIZATION_HISTORY [" + deleted + "] optimizations deleted (with many backtests each)";
 						Assembler.DisplayStatus(msg);
 					} catch (Exception ex) {

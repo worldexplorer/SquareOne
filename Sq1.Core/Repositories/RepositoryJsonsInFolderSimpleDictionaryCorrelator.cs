@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using Sq1.Core.Correlation;
 
 namespace Sq1.Core.Repositories {
-	public class RepositoryJsonCorrelator : RepositoryJsonsInFolderSimpleDictionary<OneParameterAllValuesAveraged> {
+	public class RepositoryJsonCorrelator
+			: RepositoryJsonsInFolderSimpleDictionary<OneParameterAllValuesAveraged> {
+
 		public RepositoryJsonCorrelator() : base()	{
 		}
 

@@ -7,13 +7,15 @@ using Sq1.Core.Correlation;
 
 namespace Sq1.Widgets.Correlation {
 	public partial class CorrelatorControl : UserControl {
-				SystemPerformanceRestoreAbleListEventArgs	sequencedOriginal;
-				SystemPerformanceRestoreAbleListEventArgs	sequencedChosen;
-		public	Correlator									Correlator			{ get; private set; }
-		public  string										PriceFormat			{ get; private set; }
+				SequencedBacktests		sequencedOriginal;
+				SequencedBacktests		sequencedChosen;
+		public	Correlator				Correlator			{ get; private set; }
+		public  string					PriceFormat			{ get; private set; }
 
 		public CorrelatorControl() {
 			InitializeComponent();
+			this.toolStripItemTrackBar1.ValueCurrentChanged += new EventHandler<EventArgs>(toolStripItemTrackBar1_ValueCurrentChanged);
+			this.toolStripItemTrackBar1.WalkForwardCheckedChanged += new EventHandler<EventArgs>(toolStripItemTrackBar1_WalkForwardCheckedChanged);
 		}
 
 		public void Initialize(Correlator correlator) {
@@ -21,21 +23,23 @@ namespace Sq1.Widgets.Correlation {
 			this.oneParameterControl1.Initialize_byMovingControlsToInner();
 		}
 
-		public void Initialize(SystemPerformanceRestoreAbleListEventArgs originalOptimizationResults
+		public void Initialize(SequencedBacktests originalSequencedBacktests
 					, string relPathAndNameForSequencerResults, string fileName) {
-			this.sequencedOriginal = originalOptimizationResults;
-			if (this.sequencedOriginal.SystemPerformanceRestoreAbleList.Count > 0) {
-				int i = 0;
-				int scanFirstLimit = 200;
-				string symbolFound = null;
-				foreach (SystemPerformanceRestoreAble firstScanned in this.sequencedOriginal.SystemPerformanceRestoreAbleList) {
-					if (string.IsNullOrEmpty(firstScanned.Symbol) == false) {
-						symbolFound = firstScanned.Symbol;
-					}
-					this.PriceFormat = firstScanned.PriceFormat;
-					if (string.IsNullOrEmpty(this.PriceFormat) == false) break;
-					if (++i >= scanFirstLimit) break;
-				}
+			this.sequencedOriginal = originalSequencedBacktests;
+			if (this.sequencedOriginal.Count > 0) {
+				//v1
+//				int i = 0;
+//				int scanFirstLimit = 200;
+//				string symbolFound = null;
+//				foreach (SystemPerformanceRestoreAble firstScanned in this.sequencedOriginal.Backtests) {
+//					if (string.IsNullOrEmpty(firstScanned.Symbol) == false) {
+//						symbolFound = firstScanned.Symbol;
+//					}
+//					this.PriceFormat = firstScanned.PriceFormat;
+//					if (string.IsNullOrEmpty(this.PriceFormat) == false) break;
+//					if (++i >= scanFirstLimit) break;
+//				}
+				string symbolFound = this.sequencedOriginal.Symbol;
 				if (string.IsNullOrEmpty(this.PriceFormat) && string.IsNullOrEmpty(symbolFound) == false) {
 					this.PriceFormat = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(symbolFound).PriceFormat;
 				}
@@ -46,8 +50,12 @@ namespace Sq1.Widgets.Correlation {
 
 			try {
 				this.setCursorWait();
-				this.Correlator.Initialize(originalOptimizationResults.SystemPerformanceRestoreAbleList
-													, relPathAndNameForSequencerResults, fileName);
+				this.Correlator.Initialize(originalSequencedBacktests, relPathAndNameForSequencerResults, fileName);
+
+				// only available after Correlator.Initialize otherwize NPE due to this.sequencedOriginal=null
+				this.toolStripItemTrackBar1.ValueCurrent = (decimal)this.Correlator.SubsetPercentage;
+				this.toolStripItemTrackBar1.WalkForwardChecked = this.Correlator.SubsetPercentageFromEnd;
+
 				this.flushCalculationsToGui();
 			} finally {
 				this.setCursorDefault();

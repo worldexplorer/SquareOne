@@ -62,7 +62,8 @@ namespace Sq1.Core.Correlation {
 
 						#if DEBUG		// inline test
 						if (eachParamExceptForVarying.ChosenCount != eachParamExceptForVarying.ValuesByParam.Count) {
-							string msg = "ALL_MUST_BE_CHOSEN ChosenCount[" + eachParamExceptForVarying.ChosenCount + "] MUST_BE_EQUAL_TO [" + eachParamExceptForVarying.ValuesByParam.Count + "]";
+							string msg = "ALL_MUST_BE_CHOSEN ChosenCount[" + eachParamExceptForVarying.ChosenCount
+								+ "] MUST_BE_EQUAL_TO [" + eachParamExceptForVarying.ValuesByParam.Count + "]";
 							Assembler.PopupException(msg);
 						}
 						#endif
@@ -116,14 +117,14 @@ namespace Sq1.Core.Correlation {
 			var valueFirst	= paramVarying.Values[0];
 			var valueSecond	= paramVarying.Values[1];
 
-			if (valueFirst.KPIsMomentumsAverage.NetProfit == valueSecond.KPIsMomentumsAverage.NetProfit) {
-				if (valueFirst.KPIsMomentumsAverage.NetProfit == 0) {
-					string msg1 = "YOU_FORGOT_TO_RESET_SOMETHING_IN_CORRELATOR__SECOND_CLICK_ON_SEQUENCER_RESULTS";
-					Assembler.PopupException(msg1);
+			if (valueFirst.KPIsMomentumsAverage.PositionsCount == valueSecond.KPIsMomentumsAverage.PositionsCount) {
+				if (valueFirst.KPIsMomentumsAverage.PositionsCount == 0) {
+					string msg1 = "FIXED_BY_OneParameterAllValuesAveraged.ClearBacktestsForAllMyValue_step1of3() YOU_FORGOT_TO_RESET_SOMETHING_IN_CORRELATOR__SECOND_CLICK_ON_SEQUENCER_RESULTS";
+					Assembler.PopupException(msg1, null, false);
 					return;
 				}
 				string msg = "TRYING_TO_CATCH_WHERE_MOMENTUMS_BECOME_EQUAL_WHILE_THEY_MUSTNT_BE";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 			#endif
 		}

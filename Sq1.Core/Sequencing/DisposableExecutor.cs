@@ -58,7 +58,11 @@ namespace Sq1.Core.Sequencing {
 
 		internal void InitializeAndPushParameters_toDefaultContextCurrent_fromNextSequenced(ContextScript ctxNext) {
 			base.ExecutionDataSnapshot.Initialize();
+
+			//MULTITHREADING_ISSUE__YOU_MUST_PASS_CLONE_AND_THEN_LET_OTHER_DISPOSABLE_EXECUTOR_TO_RUN_ANOTHER_BACKTEST
+			base.PerformanceAfterBacktest = new SystemPerformance(this);
 			base.PerformanceAfterBacktest.Initialize();
+
 			base.Strategy.Script.Initialize(this, false);
 			base.MarketsimBacktest.Initialize(base.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
 			base.Strategy.ScriptContextCurrent.AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toDisposableFromSequencer(ctxNext);

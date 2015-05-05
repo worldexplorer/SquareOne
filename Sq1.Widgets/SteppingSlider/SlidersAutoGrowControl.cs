@@ -166,11 +166,11 @@ namespace Sq1.Widgets.SteppingSlider {
 			//ret.ColorFgParameterLabel = System.Drawing.Color.White;
 			//ret.ColorFgValues = System.Drawing.Color.DeepPink;
 			//Designer!
-			ret.ColorBgMouseOverEnabled = this.templateSliderControl.ColorBgMouseOverEnabled;
-//			ret.ColorBgMouseOverDisabled = this.templateSliderControl.ColorBgMouseOverDisabled;
-			ret.ColorBgValueCurrent = this.templateSliderControl.ColorBgValueCurrent;
-			ret.ColorFgParameterLabel = this.templateSliderControl.ColorFgParameterLabel;
-			ret.ColorFgValues = this.templateSliderControl.ColorFgValues;
+//			ret.ColorBgMouseOverEnabled = this.templateSliderControl.ColorBgMouseOverEnabled;
+////			ret.ColorBgMouseOverDisabled = this.templateSliderControl.ColorBgMouseOverDisabled;
+//			ret.ColorBgValueCurrent = this.templateSliderControl.ColorBgValueCurrent;
+//			ret.ColorFgParameterLabel = this.templateSliderControl.ColorFgParameterLabel;
+//			ret.ColorFgValues = this.templateSliderControl.ColorFgValues;
 
 			//ret.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right);
 			//ret.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);

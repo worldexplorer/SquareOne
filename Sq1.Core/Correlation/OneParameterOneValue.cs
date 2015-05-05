@@ -31,7 +31,7 @@ namespace Sq1.Core.Correlation {
 			this.backtestsWithMyValueAndOnlyChosenOtherValues_cached = new SortedDictionary<int, SystemPerformanceRestoreAble>();
 			foreach (SystemPerformanceRestoreAble eachRegardless in this.backtestsWithMyValue.Values) {
 				if (oneParameterAllValuesAveraged.Correlator.HasUnchosenParametersExceptFor(eachRegardless, this.oneParameterAllValuesAveraged)) continue;
-				backtestsWithMyValueAndOnlyChosenOtherValues_cached.Add(eachRegardless.OptimizationIterationSerno, eachRegardless);
+				backtestsWithMyValueAndOnlyChosenOtherValues_cached.Add(eachRegardless.SequenceIterationSerno, eachRegardless);
 			}
 			return this.backtestsWithMyValueAndOnlyChosenOtherValues_cached;
 		} }
@@ -40,15 +40,15 @@ namespace Sq1.Core.Correlation {
 		[JsonProperty]	string												BacktestsWithMyValueAndOnlyChosenOtherValueAsString { get {
 			return this.keysAsString(this.backtestsWithMyValueAndOnlyChosenOtherValues); } }
 
-		[JsonIgnore]	public	KPIs	KPIsGlobal	{ get; private set; }
-		[JsonIgnore]	public	KPIs	KPIsLocal	{ get; private set; }
-		[JsonProperty]	public	bool	Chosen;
+		[JsonIgnore]	public	KPIsAveraged	KPIsGlobal	{ get; private set; }
+		[JsonIgnore]	public	KPIsAveraged	KPIsLocal	{ get; private set; }
+		[JsonProperty]	public	bool			Chosen;
 
 
-		[JsonIgnore]			KPIs	kPIsLocalMinusGlobal_cached;
-		[JsonIgnore]	public	KPIs	KPIsDelta { get {
+		[JsonIgnore]			KPIsAveraged	kPIsLocalMinusGlobal_cached;
+		[JsonIgnore]	public	KPIsAveraged	KPIsDelta { get {
 				if (this.kPIsLocalMinusGlobal_cached != null) return this.kPIsLocalMinusGlobal_cached;
-				KPIs ret = new KPIs();
+				KPIsAveraged ret		= new KPIsAveraged();
 				ret.NetProfit			= this.KPIsLocal.NetProfit			- this.KPIsGlobal.NetProfit;
 				ret.PositionsCount		= this.KPIsLocal.PositionsCount		- this.KPIsGlobal.PositionsCount;
 				ret.PositionAvgProfit	= this.KPIsLocal.PositionAvgProfit	- this.KPIsGlobal.PositionAvgProfit;
@@ -63,20 +63,20 @@ namespace Sq1.Core.Correlation {
 			} }
 
 		// controlled by AvgCorMomentumsCalculator => MomentumsAveragedByParameter.getter => AvgCorMomentums.ctor()
-		[JsonIgnore]	public	KPIs	KPIsMomentumsAverage;
-		[JsonIgnore]	public	KPIs	KPIsMomentumsDispersion;
-		[JsonIgnore]	public	KPIs	KPIsMomentumsVariance;
+		[JsonIgnore]	public	KPIsAveraged	KPIsMomentumsAverage;
+		[JsonIgnore]	public	KPIsAveraged	KPIsMomentumsDispersion;
+		[JsonIgnore]	public	KPIsAveraged	KPIsMomentumsVariance;
 
 		OneParameterOneValue() {
-			Chosen = true;
-			backtestsWithMyValue = new SortedDictionary<int, SystemPerformanceRestoreAble>();
-			KPIsGlobal = new KPIs();
-			KPIsLocal = new KPIs();
+			Chosen					= true;
+			backtestsWithMyValue	= new SortedDictionary<int, SystemPerformanceRestoreAble>();
+			KPIsGlobal				= new KPIsAveraged();
+			KPIsLocal				= new KPIsAveraged();
 
 			// will be reassigned soon; just want to avoid NPE in Customiser.cs
-			KPIsMomentumsAverage = new KPIs();
-			KPIsMomentumsDispersion = new KPIs();
-			KPIsMomentumsVariance = new KPIs();
+			KPIsMomentumsAverage	= new KPIsAveraged();
+			KPIsMomentumsDispersion	= new KPIsAveraged();
+			KPIsMomentumsVariance	= new KPIsAveraged();
 		}
 
 		public OneParameterOneValue(OneParameterAllValuesAveraged oneParameterAllValuesAveraged
@@ -86,16 +86,19 @@ namespace Sq1.Core.Correlation {
 			this.ArtificialName = artificialName;
 		}
 
-		internal void AddBacktestForValue_AddKPIsGlobal(SystemPerformanceRestoreAble eachRun) {
-			if (this.backtestsWithMyValue.ContainsKey(eachRun.OptimizationIterationSerno)) {
+		internal void ClearBacktestsWithMyValue_step1of3() {
+			this.backtestsWithMyValue.Clear();
+		}
+		internal void AddBacktestForValue_AddKPIsGlobal_step2of3(SystemPerformanceRestoreAble eachRun) {
+			if (this.backtestsWithMyValue.ContainsKey(eachRun.SequenceIterationSerno)) {
 				string msg = "DUPLICATE";
 				Assembler.PopupException(msg);
 			}
-			this.backtestsWithMyValue.Add(eachRun.OptimizationIterationSerno, eachRun);
+			this.backtestsWithMyValue.Add(eachRun.SequenceIterationSerno, eachRun);
 			this.KPIsGlobal.AddKPIs(eachRun);
 		}
 
-		internal void KPIsGlobal_DivideTotalsByCount() {
+		internal void KPIsGlobal_DivideTotalsByCount_step3of3() {
 			int noDivisionToZero = this.backtestsWithMyValue.Count;
 			if (noDivisionToZero == 0) return;
 			KPIsGlobal.DivideTotalByCount(noDivisionToZero);
@@ -131,7 +134,8 @@ namespace Sq1.Core.Correlation {
 
 			int noDivisionToZero = this.backtestsWithMyValueAndOnlyChosenOtherValues.Count;
 			if (noDivisionToZero == 0) {
-				//Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO");
+				Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO", null, false);
+				this.kPIsLocalMinusGlobal_cached = null;
 				return;
 			}
 			this.KPIsLocal.DivideTotalByCount(noDivisionToZero);

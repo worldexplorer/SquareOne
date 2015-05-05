@@ -13,6 +13,8 @@ using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Execution {
 	public	class Alert : IDisposable {
+		[JsonIgnore]	public const string FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION = "IGNORED_FOR_KPIs__FORCEFULLY_CLOSED_BY_BACKTESTER";
+
 		[JsonIgnore]	public	Bars				Bars;
 		[JsonProperty]	public	Bar					PlacedBar						{ get; protected set; }
 		[JsonProperty]	public	int					PlacedBarIndex					{ get; protected set; }
@@ -74,7 +76,10 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public	PositionLongShort	PositionLongShortFromDirection	{ get { return MarketConverter.LongShortFromDirection(this.Direction); } }
 		[JsonIgnore]	public	bool				IsExitAlert						{ get { return !IsEntryAlert; } }
 		[JsonIgnore]	public	bool				IsEntryAlert					{ get { return MarketConverter.IsEntryFromDirection(this.Direction); } }
+
 		[JsonProperty]	public	string				SignalName;						//ORDER_SETS_NAME_FOR_KILLER_ALERTS { get; protected set; }
+		[JsonIgnore]	public	bool				ForcefullyClosedBacktestLastPosition { get { return this.SignalName.Contains(Alert.FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION); } }
+
 		[JsonProperty]	public	Guid				StrategyID						{ get; protected set; }
 		[JsonProperty]	public	string				StrategyName					{ get; protected set; }
 		[JsonIgnore]	public	Strategy			Strategy						{ get; protected set; }

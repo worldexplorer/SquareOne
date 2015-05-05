@@ -23,7 +23,7 @@ namespace Sq1.Core.StrategyBase {
 		#region constructed (my own data)
 		public	string							ReasonToExist				{ get; protected set; }
 		public	ExecutionDataSnapshot			ExecutionDataSnapshot		{ get; protected set; }
-		public	SystemPerformance				PerformanceAfterBacktest					{ get; protected set; }
+		public	SystemPerformance				PerformanceAfterBacktest	{ get; protected set; }
 		public	Backtester						Backtester;					//{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; protected set; }
 		public	MarketLive						MarketLive					{ get; protected set; }
@@ -1188,7 +1188,7 @@ namespace Sq1.Core.StrategyBase {
 			//v5 IM_USING_ALERTS_EXIT_BAR_NOW__NOT_STREAMING
 			Bar barFill = (alert.PlacedBar != null) ? alert.PlacedBar : alert.Bars.BarStaticLastNullUnsafe;
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
-			alert.SignalName += " RemovePendingExitAlertClosePosition Forced";
+			alert.SignalName += " RemovePendingExitAlertClosePosition " + Alert.FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION;
 			// REFACTORED_POSITION_HAS_AN_ALERT_AFTER_ALERTS_CONSTRUCTOR we can exit by TP or SL - position doesn't have an ExitAlert assigned until Position.EntryAlert was filled!!!
 			//alert.PositionAffected.ExitAlertAttach(alert);
 
@@ -1201,7 +1201,7 @@ namespace Sq1.Core.StrategyBase {
 			//"Excuse me, what bar is it now?" I'm just guessing! does BrokerAdapter knows to pass Bar here?...
 			Bar barFill = (this.IsStreamingTriggeringScript) ? alert.Bars.BarStreamingNullUnsafeCloneReadonly : alert.Bars.BarStaticLastNullUnsafe;
 			alert.FillPositionAffectedEntryOrExitRespectively(barFill, barFill.ParentBarsIndex, barFill.Close, alert.Qty, 0, 0);
-			alert.SignalName += " RemovePendingEntryAlertClosePosition Forced";
+			alert.SignalName += " RemovePendingEntryAlertClosePosition " + Alert.FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION;
 		}
 		public void ClosePositionWithAlertClonedFromEntryBacktestEnded(Alert alert) {
 			string msig = " ClosePositionWithAlertClonedFromEntryBacktestEnded():";
@@ -1460,7 +1460,10 @@ namespace Sq1.Core.StrategyBase {
 				//v3
 				Task backtesterTask = new Task(this.BacktesterRunSimulation_threadEntry_exceptionCatcher);
 				if (executeAfterSimulationEvenIfIFailed != null) {
-					backtesterTask.ContinueWith((t) => { executeAfterSimulationEvenIfIFailed(this); });
+					backtesterTask.ContinueWith((t) => {
+						executeAfterSimulationEvenIfIFailed(this);
+						//this.PerformanceAfterBacktest = new SystemPerformance(this);	// MULTITHREADING_ISSUE__YOU_MUST_PASS_CLONE_AND_THEN_LET_OTHER_DISPOSABLE_EXECUTOR_TO_RUN_ANOTHER_BACKTEST
+					});
 				}
 				//ON_REQUESTING_ABORT_TASK_DIES_WITHOUT_INVOKING_CONTINUE_WITH started.Start(TaskScheduler.FromCurrentSynchronizationContext());
 				backtesterTask.Start();

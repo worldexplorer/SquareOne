@@ -8,7 +8,7 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Sequencing {
 	public partial class Sequencer {
-		public static string OPTIMIZATION_CONTEXT_PREFIX = "OptimizationIteration";
+		public static string OPTIMIZATION_CONTEXT_PREFIX = "ITERATION_";
 
 		public	ScriptExecutor					Executor	{ get; private set; }
 				DisposableExecutorsPool			disposableExecutorsPool;
@@ -34,7 +34,7 @@ namespace Sq1.Core.Sequencing {
 				int ret = 0;
 				foreach (ScriptParameter sp in this.Executor.Strategy.Script.ScriptParametersById_ReflectedCached.Values) {
 					if (sp.NumberOfRuns == 0) continue;
-					if (sp.WillBeSequencedDuringOptimization == false) continue;
+					if (sp.WillBeSequenced == false) continue;
 					if (ret == 0) ret = 1;
 					try {
 						ret *= sp.NumberOfRuns;
@@ -52,7 +52,7 @@ namespace Sq1.Core.Sequencing {
 				//foreach (Indicator i in executor.Strategy.Script.indicatorsByName_ReflectedCached.Values) {	//looks empty on Deserialization
 				foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParameters_ReflectedCached.Values) {
 					if (ip.NumberOfRuns == 0) continue;
-					if (ip.WillBeSequencedDuringOptimization == false) continue;
+					if (ip.WillBeSequenced == false) continue;
 					if (ret == 0) ret = 1;
 					try {
 						ret *= ip.NumberOfRuns;
@@ -185,7 +185,7 @@ namespace Sq1.Core.Sequencing {
 			}
 		}
 
-		public int OptimizationRun() {
+		public int SequencerRun() {
 			this.AbortedDontScheduleNewBacktests = false;
 			this.BacktestsFinished = 0;
 			this.disposableExecutorsPool = new DisposableExecutorsPool(this);
@@ -200,7 +200,7 @@ namespace Sq1.Core.Sequencing {
 			return this.DisposableExecutorsRunningNow;
 		}
 
-		public void OptimizationAbort() {
+		public void SequencerAbort() {
 			this.AbortedDontScheduleNewBacktests = true;
 			if (this.Unpaused == false) {
 				this.Unpaused = true;	// DEADLOCK_OTHERWIZE__LET_ALL_SCHEDULED_PAUSED_STILL_INERTIOUSLY_FINISH__DISABLE_BUTTONS_FOR_USER_NOT_TO_WORSEN
@@ -212,7 +212,7 @@ namespace Sq1.Core.Sequencing {
 				this.disposableExecutorsPool.AbortAllTasksAndDispose();
 				this.disposableExecutorsPool = null;
 			}
-			this.RaiseOnOptimizationAborted();
+			this.RaiseOnSequencerAborted();
 		}
 
 		internal void PoolFinishedBacktestOne(SystemPerformance systemPerformance) {
@@ -222,7 +222,7 @@ namespace Sq1.Core.Sequencing {
 
 			if (this.AbortedDontScheduleNewBacktests) {
 				string msg = "DONT_INVOKE_PoolFinishedBacktestOne_FROM_POOL"
-					+ ",POOL_INTERRUPTS_ALL_TASKS_AND_DISPOSES_ITSELF_AQAP_TO_UNBLOCK_OptimizationAbort()";
+					+ ",POOL_INTERRUPTS_ALL_TASKS_AND_DISPOSES_ITSELF_AQAP_TO_UNBLOCK_SequencerAbort()";
 				Assembler.PopupException(msg);
 				return;
 			}

@@ -8,7 +8,7 @@ namespace Sq1.Core.Sequencing {
 		// since Sequencer.backtests is multithreaded list, I imply SequencerControl.backtests to keep its own copy for ObjectListView to freely crawl over it without interference (instead of providing Sequencer.BacktestsThreadSafeCopy)  
 		public event	EventHandler<SystemPerformanceRestoreAbleEventArgs>	OnOneBacktestFinished;
 		public event	EventHandler<EventArgs>								OnAllBacktestsFinished;
-		public event	EventHandler<EventArgs>								OnOptimizationAborted;
+		public event	EventHandler<EventArgs>								OnSequencerAborted;
 		public 			EventHandler<EventArgs>								OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild;
 		
 
@@ -57,14 +57,14 @@ namespace Sq1.Core.Sequencing {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		public void RaiseOnOptimizationAborted() {
-			if (this.OnOptimizationAborted == null) {
+		public void RaiseOnSequencerAborted() {
+			if (this.OnSequencerAborted == null) {
 				string msg = "SEQUENCER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_OPTIMIZATION_ABORTED";
 				Assembler.PopupException(msg);
 				return;
 			}
 			try {
-				this.OnOptimizationAborted(this, EventArgs.Empty);
+				this.OnSequencerAborted(this, EventArgs.Empty);
 			} catch (Exception ex) {
 				string msg = "SEQUENCER_CONTROL_THREW_ON_OPTIMIZATION_ABORTED";
 				Assembler.PopupException(msg, ex);

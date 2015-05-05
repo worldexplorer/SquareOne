@@ -11,7 +11,7 @@ namespace Sq1.Widgets.Sequencing {
 		public event EventHandler<SystemPerformanceRestoreAbleEventArgs> OnCopyToContextNew;
 		public event EventHandler<SystemPerformanceRestoreAbleEventArgs> OnCopyToContextNewBacktest;
 
-		public event EventHandler<SystemPerformanceRestoreAbleListEventArgs> OnCorrelatorShouldPopulate;
+		public event EventHandler<SequencedBacktestsEventArgs> OnCorrelatorShouldPopulate;
 
 		public void RaiseOnCopyToContextDefault(SystemPerformanceRestoreAble scriptAndParametersHolder) {
 			if (this.OnCopyToContextDefault == null) return;
@@ -45,14 +45,14 @@ namespace Sq1.Widgets.Sequencing {
 				Assembler.PopupException("RaiseOnCopyToContextNewBacktest(" + scriptAndParametersHolder + ")", ex);
 			}
 		}
-		private void RaiseOnCorrelatorShouldPopulate(List<SystemPerformanceRestoreAble> deserialized, string fnameDoubleClicked) {
+		void RaiseOnCorrelatorShouldPopulate(SequencedBacktests deserialized) {
 			if (this.OnCorrelatorShouldPopulate == null) return;
 			try {
 				this.olvBacktests.UseWaitCursor = true;
-				var eventArg = new SystemPerformanceRestoreAbleListEventArgs(deserialized, fnameDoubleClicked);
+				var eventArg = new SequencedBacktestsEventArgs(deserialized);
 				this.OnCorrelatorShouldPopulate(this, eventArg);
 			} catch (Exception ex) {
-                Assembler.PopupException("RaiseOnCorrelatorShouldOpen(" + fnameDoubleClicked + ":" + deserialized.Count + "deserialized)", ex);
+                Assembler.PopupException("RaiseOnCorrelatorShouldOpen(" + deserialized.FileName + ":" + deserialized.Count + "deserialized)", ex);
 			} finally {
 				this.olvBacktests.UseWaitCursor = false;
 			}

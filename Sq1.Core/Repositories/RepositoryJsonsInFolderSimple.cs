@@ -6,7 +6,8 @@ using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Repositories {
-	public partial class RepositoryJsonsInFolderSimple<SYSTEM_PERFORMANCE_RESTORE_ABLE>  /* hack for ItemRename() */ where SYSTEM_PERFORMANCE_RESTORE_ABLE : NamedObjectJsonSerializable {
+	public class RepositoryJsonsInFolderSimple<SYSTEM_PERFORMANCE_RESTORE_ABLE>
+		/* hack for ItemRename() */ where SYSTEM_PERFORMANCE_RESTORE_ABLE : NamedObjectJsonSerializable, new() {
 		public string	OfWhat						{ get { return typeof(SYSTEM_PERFORMANCE_RESTORE_ABLE).Name; } }
 
 		public string	RootPath					{ get; protected set; }
@@ -32,7 +33,7 @@ namespace Sq1.Core.Repositories {
 		}
 
 		public void Initialize(string rootPath,
-					string subfolder = "OptimizationResults",
+					string subfolder = "Sequencer",
 					string mask = "*.json",
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {
 
@@ -115,25 +116,25 @@ namespace Sq1.Core.Repositories {
 			this.RescanFolderStoreNamesFound();
 			return ret;
 		}
-		public virtual List<SYSTEM_PERFORMANCE_RESTORE_ABLE> DeserializeList(string fname) {
-			List<SYSTEM_PERFORMANCE_RESTORE_ABLE> tmp = null;
-			List<SYSTEM_PERFORMANCE_RESTORE_ABLE> ret = null;
+		
+		public virtual SYSTEM_PERFORMANCE_RESTORE_ABLE DeserializeSingle(string fname) {
+			SYSTEM_PERFORMANCE_RESTORE_ABLE ret = new SYSTEM_PERFORMANCE_RESTORE_ABLE();
 			string jsonAbsfile = Path.Combine(this.AbsPath, fname + this.Extension);
 			if (File.Exists(jsonAbsfile) == false) return ret;
 			try {
 				string json = File.ReadAllText(jsonAbsfile);
-				ret = JsonConvert.DeserializeObject<List<SYSTEM_PERFORMANCE_RESTORE_ABLE>>(json, new JsonSerializerSettings {
+				ret = JsonConvert.DeserializeObject<SYSTEM_PERFORMANCE_RESTORE_ABLE>(json, new JsonSerializerSettings {
 					TypeNameHandling = TypeNameHandling.Objects
 				});
 			} catch (Exception ex) {
-				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::DeserializeList(): ";
+				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::DeserializeSingle(): ";
 				string msg = "FAILED_DeserializeList_WITH_jsonAbsfile[" + jsonAbsfile + "]";
 				Assembler.PopupException(msg + msig, ex);
 				return ret;
 			}
 			return ret;
 		}
-		public virtual void SerializeList(List<SYSTEM_PERFORMANCE_RESTORE_ABLE> backtests, string jsonRelname) {
+		public virtual void SerializeSingle(SYSTEM_PERFORMANCE_RESTORE_ABLE backtests, string jsonRelname) {
 			jsonRelname += this.Extension;
 			string jsonAbsname = Path.Combine(this.AbsPath, jsonRelname);
 			try {
@@ -143,11 +144,45 @@ namespace Sq1.Core.Repositories {
 					});
 				File.WriteAllText(jsonAbsname, json);
 			} catch (Exception ex) {
-				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeList(): ";
+				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeSingle(): ";
 				string msg = "FAILED_SerializeList_WITH_this.jsonAbsname[" + jsonAbsname + "]";
 				Assembler.PopupException(msg + msig, ex);
 				return;
 			}
 		}
+		// was used for RepositoryJsonsInFolderSimple<SystemPerformanceRestoreAble>; replaced by *Single for RepositoryJsonsInFolderSimple<SequencedBacktests>
+//		public virtual List<SYSTEM_PERFORMANCE_RESTORE_ABLE> DeserializeList(string fname) {
+//			List<SYSTEM_PERFORMANCE_RESTORE_ABLE> ret = null;
+//			string jsonAbsfile = Path.Combine(this.AbsPath, fname + this.Extension);
+//			if (File.Exists(jsonAbsfile) == false) return ret;
+//			try {
+//				string json = File.ReadAllText(jsonAbsfile);
+//				ret = JsonConvert.DeserializeObject<List<SYSTEM_PERFORMANCE_RESTORE_ABLE>>(json, new JsonSerializerSettings {
+//					TypeNameHandling = TypeNameHandling.Objects
+//				});
+//			} catch (Exception ex) {
+//				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::DeserializeList(): ";
+//				string msg = "FAILED_DeserializeList_WITH_jsonAbsfile[" + jsonAbsfile + "]";
+//				Assembler.PopupException(msg + msig, ex);
+//				return ret;
+//			}
+//			return ret;
+//		}
+//		public virtual void SerializeList(List<SYSTEM_PERFORMANCE_RESTORE_ABLE> backtests, string jsonRelname) {
+//			jsonRelname += this.Extension;
+//			string jsonAbsname = Path.Combine(this.AbsPath, jsonRelname);
+//			try {
+//				string json = JsonConvert.SerializeObject(backtests, Formatting.Indented,
+//					new JsonSerializerSettings {
+//						TypeNameHandling = TypeNameHandling.Objects
+//					});
+//				File.WriteAllText(jsonAbsname, json);
+//			} catch (Exception ex) {
+//				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeList(): ";
+//				string msg = "FAILED_SerializeList_WITH_this.jsonAbsname[" + jsonAbsname + "]";
+//				Assembler.PopupException(msg + msig, ex);
+//				return;
+//			}
+//		}
 	}
 }

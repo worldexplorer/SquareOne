@@ -31,22 +31,22 @@ namespace Sq1.Gui.Singletons {
 
 			//v1 SWITCHING_TO_GUI_THREAD_AS_ONE_STEP___MAY_GET_VERY_CLUMSY_WHEN_MANY_THREADS_POPUP_THEIR_EXCEPTIONS_AT_THE_SAME_TIME
 			//base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
-			//	this.ExceptionControl.InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(ex);
+			//    this.ExceptionControl.InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(ex);
 			//}));
 			//v2 TRYING_TO_1)LET_INVOKER_GO_EARLIER_FOR_FURTHER_2)QUEUEING_OF_LISTVIEW_REPAINT__2)NYI
 			#region EXPERIMENTAL
 			Task t = new Task(delegate {
-				base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
-					this.ExceptionControl.InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(ex);
-				}));
+			    base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
+			        this.ExceptionControl.InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(ex);
+			    }));
 			});
 			t.ContinueWith(delegate {
-				string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
-				#if DEBUG
-					Debugger.Break();
-				#else
-					Assembler.PopupException(msg2, t.Exception);
-				#endif
+			    string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
+			    #if DEBUG
+			        Debugger.Break();
+			    #else
+			        Assembler.PopupException(msg2, t.Exception);
+			    #endif
 			}, TaskContinuationOptions.OnlyOnFaulted);
 			t.Start();
 			#endregion

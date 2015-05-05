@@ -9,15 +9,15 @@ namespace Sq1.Core.Correlation {
 		[JsonIgnore]			OneParameterOneValue			parentValue;
 		[JsonIgnore]			double							optimizedValue		{ get { return this.parentValue.ValueSequenced; } }
 
-		[JsonIgnore]	public	KPIs							KPIsAvgAverage		{ get; private set; }
-		[JsonIgnore]	public	KPIs							KPIsAvgDispersion	{ get; private set; }
-		[JsonIgnore]	public	KPIs							KPIsAvgVariance		{ get; private set; }
+		[JsonIgnore]	public	KPIsAveraged					KPIsAvgAverage		{ get; private set; }
+		[JsonIgnore]	public	KPIsAveraged					KPIsAvgDispersion	{ get; private set; }
+		[JsonIgnore]	public	KPIsAveraged					KPIsAvgVariance		{ get; private set; }
 
 
 		AvgCorMomentums() {
-			KPIsAvgAverage		= new KPIs();
-			KPIsAvgDispersion	= new KPIs();
-			KPIsAvgVariance		= new KPIs();
+			KPIsAvgAverage		= new KPIsAveraged(KPIsAveraged.KPIS_AVG_AVERAGE);
+			KPIsAvgDispersion	= new KPIsAveraged(KPIsAveraged.KPIS_AVG_DISPERSION);
+			KPIsAvgVariance		= new KPIsAveraged(KPIsAveraged.KPIS_AVG_VARIANCE);
 		}
 
 		public AvgCorMomentums(OneParameterAllAvgCorMomentums parentMomentums

@@ -67,6 +67,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Correlation\CorrelatorControl.EventConsumer.cs">
+      <DependentUpon>CorrelatorControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Correlation\CorrelatorControl.EventGenerator.cs">
+      <DependentUpon>CorrelatorControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Correlation\UserControlInner.cs">
       <SubType>UserControl</SubType>
     </Compile>

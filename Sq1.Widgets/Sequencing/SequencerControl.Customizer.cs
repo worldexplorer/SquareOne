@@ -16,7 +16,7 @@ namespace Sq1.Widgets.Sequencing {
 		void olvBacktests_FormatRow(object sender, FormatRowEventArgs e) {
 			SystemPerformanceRestoreAble systemPerformanceRestoreAble = e.Model as SystemPerformanceRestoreAble;
 			if (systemPerformanceRestoreAble == null) return;
-			e.Item.BackColor = (systemPerformanceRestoreAble.NetProfitForClosedPositionsBoth > 0.0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			e.Item.BackColor = (systemPerformanceRestoreAble.NetProfit > 0.0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			//if (value == ethalonRedIfLessBlueIfGreater) return this.ForeColor;
 			//return (value > ethalonRedIfLessBlueIfGreater) ? Color.Blue : Color.Red;
 		}
@@ -39,12 +39,12 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvcSerno.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcSerno.AspectGetter: SystemPerformanceRestoreAble=null";
-				return systemPerformanceRestoreAble.OptimizationIterationSerno.ToString();
+				return systemPerformanceRestoreAble.SequenceIterationSerno.ToString();
 			};
 			this.olvcNetProfit.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcNetProfit.AspectGetter: SystemPerformanceRestoreAble=null";
-				return systemPerformanceRestoreAble.NetProfitForClosedPositionsBoth;
+				return systemPerformanceRestoreAble.NetProfit;
 			};
 			//v2 VARIABLE_RENAMING_UNSAFE=>AspectGetter,notAspectName this.olvcNetProfit.AspectName = "NetProfitForClosedPositionsBoth";
 			this.olvcNetProfit.AspectToStringFormat = "{0:" + this.priceFormat + "}";
@@ -52,7 +52,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvcTotalPositions.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcTotalTrades.AspectGetter: SystemPerformanceRestoreAble=null";
-				return systemPerformanceRestoreAble.PositionsCountBoth;
+				return systemPerformanceRestoreAble.PositionsCount;
 			};
 			//this.olvcTotalPositions.AspectToStringFormat = "{0:" + this.priceFormat + "}";
 			this.olvcTotalPositions.AspectToStringFormat = "{0:N0}";
@@ -60,7 +60,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvcProfitPerPosition.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcAverageProfit.AspectGetter: SystemPerformanceRestoreAble=null";
-				return systemPerformanceRestoreAble.AvgProfitBoth;
+				return systemPerformanceRestoreAble.PositionAvgProfit;
 			};
 			this.olvcProfitPerPosition.AspectToStringFormat = "{0:" + this.priceFormat + "}";
 
@@ -208,18 +208,18 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvcParamWillBeSequenced.AspectGetter = delegate(object o) {
 				IndicatorParameter param = o as IndicatorParameter;
 				if (param == null) return "olvcParamWillBeSequenced.AspectGetter: param=null";
-				return param.WillBeSequencedDuringOptimization;
+				return param.WillBeSequenced;
 			};
 
 			this.olvParameters.CheckStateGetter = delegate(object o) {
 				IndicatorParameter param = o as IndicatorParameter;
 				if (param == null) return CheckState.Indeterminate;
-				return param.WillBeSequencedDuringOptimization ? CheckState.Checked : CheckState.Unchecked;
+				return param.WillBeSequenced ? CheckState.Checked : CheckState.Unchecked;
 			};
 			this.olvParameters.CheckStatePutter = delegate(object o, CheckState newState) {
 				IndicatorParameter param = o as IndicatorParameter;
 				if (param == null) return CheckState.Indeterminate;
-				param.WillBeSequencedDuringOptimization = newState.CompareTo(CheckState.Checked) == 0;
+				param.WillBeSequenced = newState.CompareTo(CheckState.Checked) == 0;
 				this.olvParameters.RefreshObject(param);
 				this.sequencer.TotalsCalculate();
 				this.totalsPropagateAdjustSplitterDistance();
@@ -241,7 +241,7 @@ namespace Sq1.Widgets.Sequencing {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (imMouseOver.WillBeSequencedDuringOptimization) {
+			if (imMouseOver.WillBeSequenced) {
 				if (e.Column == this.olvcParamValueCurrent) {
 					e.SubItem.Font = new Font(e.Item.Font, FontStyle.Regular);
 				}

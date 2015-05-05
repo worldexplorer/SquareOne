@@ -109,7 +109,7 @@ namespace Sq1.Widgets.Correlation {
 			// 
 			// UserControlInner
 			// 
-			this.UserControlInner.Size = new System.Drawing.Size(584, 276);
+			this.UserControlInner.Size = new System.Drawing.Size(584, 284);
 			// 
 			// olv
 			// 
@@ -239,7 +239,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olv.SelectedColumnTint = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(185)))), ((int)(((byte)(209)))), ((int)(((byte)(234)))));
 			this.olv.ShowCommandMenuOnRightClick = true;
 			this.olv.ShowGroups = false;
-			this.olv.Size = new System.Drawing.Size(592, 284);
+			this.olv.Size = new System.Drawing.Size(592, 292);
 			this.olv.TabIndex = 1;
 			this.olv.TintSortColumn = true;
 			this.olv.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -516,7 +516,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcRecoveryFactorLocal.Text = "rf chosen";
 			this.olvcRecoveryFactorLocal.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcRecoveryFactorLocal.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown chosen(selected wi" +
-				"th checkboxes)";
+    "th checkboxes)";
 			this.olvcRecoveryFactorLocal.Width = 32;
 			// 
 			// olvcRecoveryFactorDelta
@@ -525,7 +525,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcRecoveryFactorDelta.Text = "rf delta";
 			this.olvcRecoveryFactorDelta.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcRecoveryFactorDelta.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown delta=AllBackteste" +
-				"d-Chosen";
+    "d-Chosen";
 			this.olvcRecoveryFactorDelta.Width = 32;
 			// 
 			// olvcMomentumsAverageRecoveryFactor
@@ -542,7 +542,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsDispersionRecoveryFactor.Text = "rf MomDisp";
 			this.olvcMomentumsDispersionRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMomentumsDispersionRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown MomDisp(selected w" +
-				"ith checkboxes)";
+    "ith checkboxes)";
 			this.olvcMomentumsDispersionRecoveryFactor.Width = 32;
 			// 
 			// olvcMomentumsVarianceRecoveryFactor
@@ -551,7 +551,7 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsVarianceRecoveryFactor.Text = "rf MomVari";
 			this.olvcMomentumsVarianceRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMomentumsVarianceRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown MomVari=AllBacktes" +
-				"ted-Chosen";
+    "ted-Chosen";
 			this.olvcMomentumsVarianceRecoveryFactor.Width = 32;
 			// 
 			// olvcMaxDrawdownGlobal
@@ -722,7 +722,7 @@ namespace Sq1.Widgets.Correlation {
             this.mniMaximiseDeltaAutoRunAfterSequencerFinished,
             this.mniResizeToShowAllVisibleCells});
 			this.ctxOneParameterControl.Name = "ctxOneParameterControl";
-			this.ctxOneParameterControl.Size = new System.Drawing.Size(343, 418);
+			this.ctxOneParameterControl.Size = new System.Drawing.Size(343, 396);
 			// 
 			// mniShowAllBacktestedParams
 			// 
@@ -870,7 +870,7 @@ namespace Sq1.Widgets.Correlation {
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.olv);
 			this.Name = "OneParameterControl";
-			this.Size = new System.Drawing.Size(592, 284);
+			this.Size = new System.Drawing.Size(592, 292);
 			this.Controls.SetChildIndex(this.olv, 0);
 			this.Controls.SetChildIndex(this.UserControlInner, 0);
 			((System.ComponentModel.ISupportInitialize)(this.olv)).EndInit();

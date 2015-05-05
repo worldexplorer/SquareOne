@@ -1,0 +1,10 @@
+{
+  "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
+  "StrategyGuidJsonCheck": "05d850ff-a502-42f0-a65c-43695a409f16",
+  "StrategyNameJsonCheck": "EnterEveryBarCompiled",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json",
+  "ContextChart": null,
+  "ChartSettings": null,
+  "ChartSerno": 2,
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json], ScriptContextCurrentName[?Default?]"
+}

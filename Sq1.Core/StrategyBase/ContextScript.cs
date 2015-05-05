@@ -66,8 +66,8 @@ namespace Sq1.Core.StrategyBase {
 					&&	this.IsStreaming
 					&&	this.IsStreamingTriggeringScript;
 		} }
-		[JsonProperty]	public string						OptimizationIterationName;
-		[JsonProperty]	public int							OptimizationIterationSerno;
+		[JsonProperty]	public string						SequenceIterationName;
+		[JsonProperty]	public int							SequenceIterationSerno;
 
 		public ContextScript(ContextChart upgradingFromSimpleChart = null, string name = "UNDEFINED") : this(name) {
 			base.AbsorbFrom(upgradingFromSimpleChart);
@@ -103,8 +103,8 @@ namespace Sq1.Core.StrategyBase {
 			SpreadModelerPercent					= BacktestStreaming.PERCENTAGE_DEFAULT;
 			BacktestStrokesPerBar					= BacktestStrokesPerBar.FourStrokeOHLC;
 
-			OptimizationIterationName = "it was a F5 GUI invoked backtest, not an optimization";
-			OptimizationIterationSerno = -1;	// it was a F5 GUI invoked backtest, not an optimization;
+			SequenceIterationName = "it was a F5 GUI invoked backtest, not an optimization";
+			SequenceIterationSerno = -1;	// it was a F5 GUI invoked backtest, not an optimization;
 		}
 		
 		public ContextScript CloneAndAbsorbFromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized, string newScriptContextName = null) {
@@ -157,7 +157,7 @@ namespace Sq1.Core.StrategyBase {
 				ScriptParameter sp = this.ScriptParametersById[id];
 				ScriptParameter spClone = sp.CloneAsScriptParameter(reasonToClone);
 				if (resetAllToMin) {
-					if (spClone.WillBeSequencedDuringOptimization == false && leaveNonSequencedAsCurrent == true) {
+					if (spClone.WillBeSequenced == false && leaveNonSequencedAsCurrent == true) {
 						// don't reset to min
 					} else {
 						spClone.ValueCurrent = spClone.ValueMin;
@@ -175,7 +175,7 @@ namespace Sq1.Core.StrategyBase {
 				foreach (IndicatorParameter iParam in iParams) {
 					IndicatorParameter ipClone = iParam.CloneAsIndicatorParameter(reasonToClone);
 					if (resetAllToMin) {
-						if (ipClone.WillBeSequencedDuringOptimization == false && leaveNonSequencedAsCurrent == true) {
+						if (ipClone.WillBeSequenced == false && leaveNonSequencedAsCurrent == true) {
 							// don't reset to min
 						} else {
 							ipClone.ValueCurrent = ipClone.ValueMin;
@@ -189,8 +189,8 @@ namespace Sq1.Core.StrategyBase {
 		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toDisposableFromSequencer(ContextScript ctxSequencerSequenced) {
 			int ret = 0;
 			try {
-				this.OptimizationIterationName = ctxSequencerSequenced.Name;
-				this.OptimizationIterationSerno = ctxSequencerSequenced.OptimizationIterationSerno;
+				this.SequenceIterationName = ctxSequencerSequenced.Name;
+				this.SequenceIterationSerno = ctxSequencerSequenced.SequenceIterationSerno;
 				foreach (int id in ctxSequencerSequenced.ScriptParametersById.Keys) {
 					ScriptParameter spOpt  = ctxSequencerSequenced	.ScriptParametersById[id];
 					ScriptParameter spMine = this					.ScriptParametersById[id];

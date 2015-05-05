@@ -14,13 +14,13 @@ namespace Sq1.Widgets.Sequencing {
 	public partial class SequencerControl : UserControl {
 				Sequencer							sequencer;
 				List<string>						colMetricsShouldStay;
-				List<SystemPerformanceRestoreAble>	backtestsLocalEasierToSync;
+				SequencedBacktests					backtestsLocalEasierToSync;
 				List<OLVColumn>						columnsDynParams;
-		public	RepositoryJsonSimpleSequencer		RepositoryJsonSequencer					{ get; private set; }
+		public	RepositoryJsonsInFolderSimpleDictionarySequencer		RepositoryJsonSequencer					{ get; private set; }
 				List<IndicatorParameter>			scriptAndIndicatorParametersMergedCloned;
 
-		public SystemPerformanceRestoreAbleListEventArgs PushToCorrelator { get {
-			return new SystemPerformanceRestoreAbleListEventArgs(this.backtestsLocalEasierToSync, this.SymbolScaleRangeSelected); } } 
+		public SequencedBacktestsEventArgs PushToCorrelator { get {
+			return new SequencedBacktestsEventArgs(this.backtestsLocalEasierToSync); } } 
 
 		public SequencerControl() {
 			InitializeComponent();
@@ -53,9 +53,9 @@ namespace Sq1.Widgets.Sequencing {
 
 			//this.fastOLVparametersYesNoMinMaxStep.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.fastOLVparametersYesNoMinMaxStep_ItemCheck);
 
-			backtestsLocalEasierToSync	= new List<SystemPerformanceRestoreAble>();
+			backtestsLocalEasierToSync	= new SequencedBacktests();
 			columnsDynParams			= new List<OLVColumn>();
-			RepositoryJsonSequencer		= new RepositoryJsonSimpleSequencer();
+			RepositoryJsonSequencer		= new RepositoryJsonsInFolderSimpleDictionarySequencer();
 		}
 		public void Initialize(Sequencer sequencer) {
 			this.sequencer = sequencer;
@@ -79,8 +79,8 @@ namespace Sq1.Widgets.Sequencing {
 			this.sequencer.OnAllBacktestsFinished -= new EventHandler<EventArgs>(this.sequencer_OnAllBacktestsFinished);
 			this.sequencer.OnAllBacktestsFinished += new EventHandler<EventArgs>(this.sequencer_OnAllBacktestsFinished);
 			
-			this.sequencer.OnOptimizationAborted -= new EventHandler<EventArgs>(this.sequencer_OnOptimizationAborted);
-			this.sequencer.OnOptimizationAborted += new EventHandler<EventArgs>(this.sequencer_OnOptimizationAborted);
+			this.sequencer.OnSequencerAborted -= new EventHandler<EventArgs>(this.sequencer_OnSequencerAborted);
+			this.sequencer.OnSequencerAborted += new EventHandler<EventArgs>(this.sequencer_OnSequencerAborted);
 
 			this.sequencer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild -= new EventHandler<EventArgs>(this.sequencer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
 			this.sequencer.OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild += new EventHandler<EventArgs>(this.sequencer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild);
@@ -124,20 +124,27 @@ namespace Sq1.Widgets.Sequencing {
 			}
 		}
 		void olvHistoryComputeAverage() {
+			return;
+
 			foreach (FnameDateSizeColor each in this.RepositoryJsonSequencer.ItemsFound) {
 				double profitFactorTotal = 0;		// netProfit could overflow outside double for 1000000000 backtests in one deserialized list; profit factor is expected [-10...10];
-				int backtestsInOptimization = 0;
-				List<SystemPerformanceRestoreAble> eachOptimization = this.RepositoryJsonSequencer.DeserializeList(each.Name);
-				foreach (SystemPerformanceRestoreAble backtest in eachOptimization) {
+				int backtestSequence = 0;
+				SequencedBacktests eachSequence = this.RepositoryJsonSequencer.DeserializeSingle(each.Name);
+				if (eachSequence == null || this.backtestsLocalEasierToSync.Count == 0) {
+					string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + each.Name;
+					Assembler.PopupException(msg);
+					continue;
+				}
+				foreach (SystemPerformanceRestoreAble backtest in eachSequence.BacktestsReadonly) {
 					if (double.IsNaN(backtest.ProfitFactor)) continue;
 					if (double.IsPositiveInfinity(backtest.ProfitFactor)) continue;
 					if (double.IsNegativeInfinity(backtest.ProfitFactor)) continue;
 					profitFactorTotal += backtest.ProfitFactor;
-					backtestsInOptimization++;
+					backtestSequence++;
 				}
 				double profitFactorAverage = 0;
-				if (backtestsInOptimization > 0) {		// AVOIDING_OUR_GOOD_FRIEND_DIVISION_TO_ZERO_EXCEPTION
-					profitFactorAverage = profitFactorTotal / (double)backtestsInOptimization;
+				if (backtestSequence > 0) {		// AVOIDING_OUR_GOOD_FRIEND_DIVISION_TO_ZERO_EXCEPTION
+					profitFactorAverage = profitFactorTotal / (double)backtestSequence;
 				}
 				each.PFavg = Math.Round(profitFactorAverage, 2);
 				if (profitFactorTotal == 0) {
@@ -163,7 +170,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvBacktests.UseWaitCursor = true;
 
 			if (this.RepositoryJsonSequencer.ItemsFoundContainsName(symbolScaleRange)) {
-				this.backtestsLocalEasierToSync = this.RepositoryJsonSequencer.DeserializeList(symbolScaleRange);
+				this.backtestsLocalEasierToSync = this.RepositoryJsonSequencer.DeserializeSingle(symbolScaleRange);
 				if (this.backtestsLocalEasierToSync == null || this.backtestsLocalEasierToSync.Count == 0) {
 					string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + symbolScaleRange;
 					Assembler.PopupException(msg);
@@ -171,11 +178,19 @@ namespace Sq1.Widgets.Sequencing {
 					this.olvBacktests.UseWaitCursor = false;
 					return;
 				}
+				this.backtestsLocalEasierToSync.FileName = symbolScaleRange;
+				this.backtestsLocalEasierToSync.CheckPositionsCountMustIncreaseOnly();
 			} else {
-				this.backtestsLocalEasierToSync.Clear();
+				if (this.backtestsLocalEasierToSync.Count > 0) {
+					string msg = "MOVE_CLEAR_TO_SEQUENCED_BACKTESTS___BUT_IF_NEVER_CALLED_THEN_REMOVE_COMPLETELY";
+					Assembler.PopupException(msg);
+					this.backtestsLocalEasierToSync.Clear();
+				}
 			}
-			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync, true); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
-			this.RaiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync, symbolScaleRange);
+			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
+			if (backtestsLocalEasierToSync.Count > 0) {
+				this.RaiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
+			}
 
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
 			this.populateTextboxesFromExecutorsState();
@@ -280,7 +295,7 @@ namespace Sq1.Widgets.Sequencing {
 				olvcSP.Text = sp.Name;
 				olvcSP.Width = 85;
 				olvcSP.TextAlign = HorizontalAlignment.Right;
-				olvcSP.IsVisible = sp.WillBeSequencedDuringOptimization;
+				olvcSP.IsVisible = sp.WillBeSequenced;
 				this.olvBacktests.Columns.Add(olvcSP);
 				this.olvBacktests.AllColumns.Add(olvcSP);
 				this.columnsDynParams.Add(olvcSP);
@@ -297,7 +312,7 @@ namespace Sq1.Widgets.Sequencing {
 				olvcIP.Width = 85;
 				olvcIP.TextAlign = HorizontalAlignment.Right;
 				IndicatorParameter ip = iparams[indicatorDotParameter];
-				olvcIP.IsVisible = ip.WillBeSequencedDuringOptimization;
+				olvcIP.IsVisible = ip.WillBeSequenced;
 				this.olvBacktests.Columns.Add(olvcIP);
 				this.olvBacktests.AllColumns.Add(olvcIP);
 				this.columnsDynParams.Add(olvcIP);
@@ -344,13 +359,13 @@ namespace Sq1.Widgets.Sequencing {
 			}
 		}
 
-		public void BacktestsReplaceWithCorrelated(List<SystemPerformanceRestoreAble> list) {
+		public void BacktestsReplaceWithCorrelated(IEnumerable<SystemPerformanceRestoreAble> list) {
 			this.olvBacktests.SetObjects(list, true);
-			this.mni_showAllScriptIndicatorParametersInOptimizationResults.Checked = false;
+			this.mni_showAllScriptIndicatorParametersInSequencedBacktest.Checked = false;
 		}
 
 		public void BacktestsRestoreCorrelatedClosed() {
-			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync, true);
+			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true);
 		}
 	}
 }

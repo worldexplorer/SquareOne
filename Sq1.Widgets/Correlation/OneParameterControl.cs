@@ -369,7 +369,7 @@ namespace Sq1.Widgets.Correlation {
 			oneRowFullHeight += (this.olv.CellPadding != null)
 						? this.olv.CellPadding.Value.Top + this.olv.CellPadding.Value.Bottom
 						: 2;
-			int rowsPlusArtificials = this.parameter.ValuesByParam.Count + 3;
+			int rowsPlusArtificials = this.parameter.ValuesByParam.Count + 2;	// 3		//REPLACE_WITH_max(avg(Net)),min(StDev(Net))_ALIGNED_WITH_MaximizationCriterion 
 			int parentResizeableBordersTopBottom = base.PaddingMouseReceiving.Top + base.PaddingMouseReceiving.Bottom;
 			int headerAssumedHeight = oneRowFullHeight - 4;		//28;	// enough to fit hscrollbar...
 			//	headerAssumedHeight += 12;	// enough to fit hscrollbar...

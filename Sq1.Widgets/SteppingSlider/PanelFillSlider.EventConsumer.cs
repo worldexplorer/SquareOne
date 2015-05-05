@@ -56,6 +56,15 @@ namespace Sq1.Widgets.SteppingSlider {
 			//COMMENTED_TO_FIX_END
 			
 			this.FilledPercentageMouseOver = 100 * ((float)mouseRange / range);
+
+			if (leftMouseButtonHeldDown) {
+				if (this.ValueCurrent != this.ValueMouseOver) {
+					string msg = "this.ValueCurrent[" + this.ValueCurrent + "] != this.ValueMouseOver[" + this.ValueMouseOver + "]";
+					//Assembler.PopupException(msg);
+					this.ValueCurrent = this.ValueMouseOver;
+				}
+			}
+
 			base.Invalidate();
 		}
 		protected override void OnDragOver(DragEventArgs e) {

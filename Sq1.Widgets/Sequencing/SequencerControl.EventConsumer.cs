@@ -19,7 +19,7 @@ namespace Sq1.Widgets.Sequencing {
 					this.cbxRunCancel.Enabled = false;
 					this.cbxPauseResume.Enabled = false;
 				}
-				this.sequencer.OptimizationAbort();		// WILL_UNPAUSE_AND__LET_ALL_SCHEDULED_PAUSED_STILL_INERTIOUSLY_FINISH
+				this.sequencer.SequencerAbort();		// WILL_UNPAUSE_AND__LET_ALL_SCHEDULED_PAUSED_STILL_INERTIOUSLY_FINISH
 				this.cbxPauseResume.Enabled = false;
 				this.cbxPauseResume.Checked = false;
 				this.olvBacktests.UseWaitCursor = false;
@@ -41,12 +41,12 @@ namespace Sq1.Widgets.Sequencing {
 			//	this.btnPauseResume.Text = "Pause/Resume";
 			//	return;
 			//}
-			
+
 			this.backtestsLocalEasierToSync.Clear();
-			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync, true);
+			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true);
 			//this.olvBacktests.RebuildColumns();
 			//this.olvBacktests.BuildList();
-			int threadsLaunched = this.sequencer.OptimizationRun();
+			int threadsLaunched = this.sequencer.SequencerRun();
 
 			this.lblStats.Text = threadsLaunched + " THREADS LAUNCHED";
 
@@ -124,11 +124,13 @@ namespace Sq1.Widgets.Sequencing {
 			//}
 			//strategy.Serialize();
 			//v2
-			this.RepositoryJsonSequencer.SerializeList(this.backtestsLocalEasierToSync, symbolScaleRange);
+			this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync, symbolScaleRange);
+			this.backtestsLocalEasierToSync.CheckPositionsCountMustIncreaseOnly();
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
 			this.statsAndHistoryExpand();
+			this.RaiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
 		}
-		void sequencer_OnOptimizationAborted(object sender, EventArgs e) {
+		void sequencer_OnSequencerAborted(object sender, EventArgs e) {
 			this.sequencer_OnAllBacktestsFinished(sender, e);
 		}
 		void sequencer_OnScriptRecompiledUpdateHeaderPostponeColumnsRebuild(object sender, EventArgs e) {
@@ -266,7 +268,8 @@ namespace Sq1.Widgets.Sequencing {
 			this.mniltbCopyToNewContext.InputFieldValue			= uniqueBacktestNumbers;
 			this.mniltbCopyToNewContextBacktest.InputFieldValue	= uniqueBacktestNumbers;
 
-			string stratSymbolScaleRange	= sysPerfRestoreAble.StrategyName + " " + sysPerfRestoreAble.SymbolScaleIntervalDataRange;
+			//string stratSymbolScaleRange	= sysPerfRestoreAble.StrategyName + " " + sysPerfRestoreAble.SymbolScaleIntervalDataRange;
+			string stratSymbolScaleRange	= "FIX_MY_StrategyName + sysPerfRestoreAble.SymbolScaleIntervalDataRange";
 			this.mniInfo.Text				= uniqueBacktestNumbers + " => " + stratSymbolScaleRange;
 		}
 		void olvHistory_ItemActivate(object sender, EventArgs e) {
@@ -301,7 +304,7 @@ namespace Sq1.Widgets.Sequencing {
 			IndicatorParameter paramClicked = this.olvParameters.SelectedObject as IndicatorParameter;
 			if (paramClicked == null) return;
 			// ITEM_CHECKED_WILL_BE_GENERATED paramClicked.WillBeSequencedDuringOptimization = !paramClicked.WillBeSequencedDuringOptimization;
-			if (paramClicked.WillBeSequencedDuringOptimization) {
+			if (paramClicked.WillBeSequenced) {
 				this.olvParameters.UncheckObject(paramClicked);
 			} else {
 				this.olvParameters.CheckObject(paramClicked);
@@ -317,7 +320,7 @@ namespace Sq1.Widgets.Sequencing {
 				Assembler.PopupException(msg);
 				return;
 			}
-			found.IsVisible = paramClicked.WillBeSequencedDuringOptimization;
+			found.IsVisible = paramClicked.WillBeSequenced;
 			this.olvBacktests.RebuildColumns();
 			//v2
 			//CHANGING_COLUMN_VISIBILITY_INSTEAD this.populateColumns_onlyWillBeSequencedDuringOptimization_orAll();
@@ -341,9 +344,9 @@ namespace Sq1.Widgets.Sequencing {
 				this.statsAndHistoryCollapse();
 			}
 		}
-		bool showAllScriptIndicatorParametersInOptimizationResults;
-		void mni_showAllScriptIndicatorParametersInOptimizationResultsClick(object sender, EventArgs e) {
-			if (this.mni_showAllScriptIndicatorParametersInOptimizationResults.Checked == true) {
+		bool showAllScriptIndicatorParametersInSequencedBacktest;
+		void mni_showAllScriptIndicatorParametersInSequencedBacktestClick(object sender, EventArgs e) {
+			if (this.mni_showAllScriptIndicatorParametersInSequencedBacktest.Checked == true) {
 				string msg = "ChartForm > Menu > Show Correlator > Click any checkbox to shrink again";
 				Assembler.PopupException(msg);
 				return;

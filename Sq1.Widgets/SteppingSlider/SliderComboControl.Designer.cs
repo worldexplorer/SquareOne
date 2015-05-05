@@ -78,10 +78,10 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.PanelFillSlider.BackColor = System.Drawing.Color.LightGray;
 			this.PanelFillSlider.BorderOn = true;
 			this.PanelFillSlider.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.PanelFillSlider.ColorBgMouseOverEnabled = System.Drawing.Color.Thistle;
-			this.PanelFillSlider.ColorBgValueCurrentDisabled = System.Drawing.Color.DarkGray;
+			this.PanelFillSlider.ColorBgMouseOverEnabled = System.Drawing.Color.YellowGreen;
 			this.PanelFillSlider.ColorBgValueCurrentEnabled = System.Drawing.Color.LightSteelBlue;
 			this.PanelFillSlider.ColorFgParameterLabel = System.Drawing.Color.White;
+			this.PanelFillSlider.ForeColor = System.Drawing.Color.DeepPink;
 			this.PanelFillSlider.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.PanelFillSlider.ForeColor = System.Drawing.Color.DeepPink;
 			this.PanelFillSlider.LabelText = "Length of Vehicle, cm";

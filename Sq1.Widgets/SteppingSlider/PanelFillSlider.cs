@@ -9,11 +9,11 @@ using Sq1.Core.Indicators;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class PanelFillSlider : PanelDoubleBuffered {
-		SolidBrush brushBgValueCurrentEnabled = new SolidBrush(System.Drawing.Color.FromArgb(192, 192, 255));
+		SolidBrush brushBgValueCurrentEnabled = new SolidBrush(Color.LightSteelBlue);
 		SolidBrush brushBgValueCurrentDisabled = new SolidBrush(Color.DarkGray);
 		SolidBrush brushBgValueCurrent { get { return base.Enabled ? brushBgValueCurrentEnabled : brushBgValueCurrentDisabled; } }
 		
-		SolidBrush brushBgMouseOverEnabled = new SolidBrush(Color.LightGreen);
+		SolidBrush brushBgMouseOverEnabled = new SolidBrush(Color.YellowGreen);
 		SolidBrush brushBgMouseOverDisabled = new SolidBrush(Color.DarkGreen);
 		SolidBrush brushBgMouseOver { get { return base.Enabled ? brushBgMouseOverEnabled : brushBgMouseOverDisabled; } }
 

@@ -69,13 +69,21 @@
 			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
 			this.toolStripStatusLabel1.Size = new System.Drawing.Size(50, 17);
 			this.toolStripStatusLabel1.Text = "500 Bars";
+			this.toolStripStatusLabel1.Visible = false;
 			// 
 			// toolStripItemTrackBar1
 			// 
+			this.toolStripItemTrackBar1.LabelText = "% Backtest Calculated";
 			this.toolStripItemTrackBar1.Name = "toolStripItemTrackBar1";
 			this.toolStripItemTrackBar1.Padding = new System.Windows.Forms.Padding(0, 1, 0, 0);
-			this.toolStripItemTrackBar1.Size = new System.Drawing.Size(260, 20);
+			this.toolStripItemTrackBar1.Size = new System.Drawing.Size(310, 20);
 			this.toolStripItemTrackBar1.Text = "toolStripItemTrackBar1";
+			this.toolStripItemTrackBar1.ValueCurrent = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+			this.toolStripItemTrackBar1.WalkForwardChecked = false;
 			// 
 			// CorrelatorControl
 			// 
