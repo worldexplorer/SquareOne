@@ -93,7 +93,7 @@ namespace Sq1.Core.Indicators {
 
 			if (this.ValueCurrent != ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent) {
 				string msg = "we collapsed IndicatorParameters into a single instance thing; are we back to duplicates?...";
-				//Debugger.Break();
+				//Debugger.Launch();
 				this.ValueCurrent = ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent;
 				ret = true;
 			}

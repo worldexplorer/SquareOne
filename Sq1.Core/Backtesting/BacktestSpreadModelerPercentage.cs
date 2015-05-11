@@ -25,7 +25,7 @@ namespace Sq1.Core.Backtesting {
 			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
 				//string msg = "you can't use RoundDown here";
-				//Debugger.Break();
+				//Debugger.Launch();
 				spreadAligned = symbolInfo.PriceStep;
 			}
 			
@@ -72,7 +72,7 @@ namespace Sq1.Core.Backtesting {
 			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
 				string msg = "you can't use RoundDown here";
-				//Debugger.Break();
+				//Debugger.Launch();
 				spreadAligned = symbolInfo.PriceStep;
 			}
 			
@@ -80,7 +80,7 @@ namespace Sq1.Core.Backtesting {
 
 			// attempt to make generatedBar.Low,Hight exactly the same as originalBar.Low,Height; I check upstack if I succeeded
 			//base.AlignBidAskToPriceLevel(quote, PriceLevelRoundingMode.RoundUp, spreadAligned);
-			//if (quote.Spread == 0) Debugger.Break();
+			//if (quote.Spread == 0) Debugger.Launch();
 		}
 		public override void FillBidBasedOnAsk(QuoteGenerated quote) {
 			string msig = " " + this.GetType().Name + ".GenerateFillBidAskSymmetrically(" + quote.ToString() + ")";
@@ -96,14 +96,14 @@ namespace Sq1.Core.Backtesting {
 			double spreadAligned = symbolInfo.AlignToPriceLevel(spread, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 			if (spreadAligned == 0) {
 				//string msg = "you can't use RoundDown here";
-				//Debugger.Break();
+				//Debugger.Launch();
 				spreadAligned = symbolInfo.PriceStep;
 			}
 			
 			quote.Bid = quote.Ask - spreadAligned;
 			// attempt to make generatedBar.Low,Hight exactly the same as originalBar.Low,Height; I check upstack if I succeeded 
 			//base.AlignBidAskToPriceLevel(quote, PriceLevelRoundingMode.RoundDown, spreadAligned);
-			//if (quote.Spread == 0) Debugger.Break();
+			//if (quote.Spread == 0) Debugger.Launch();
 		}
 		public override string ToString() {
 			return "BacktestSpreadModelerPercentage[" + Percentage + "]%";

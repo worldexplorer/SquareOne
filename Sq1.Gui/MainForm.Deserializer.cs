@@ -103,7 +103,7 @@ namespace Sq1.Gui {
 						bool existsName = persistedParsedToHash.TryGetValue("StrategyName", out strategyName);
 						if (existsName == false) {
 							#if DEBUG
-							Debugger.Break();
+							Debugger.Launch();
 							#endif
 							strategyName = "STRATEGY_NAME_HAVENT_BEEN_SERIALIZED";
 						}

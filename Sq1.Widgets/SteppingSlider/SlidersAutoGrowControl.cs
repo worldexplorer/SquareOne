@@ -96,7 +96,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				//    base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				//    string mustBeMe = slider.Parent.ToString();
 				//    if (mustBeMe != this.ToString()) {
-				//        System.Diagnostics.Debugger.Break();
+				//        System.Diagnostics.Debugger.Launch();
 				//        string msg = "WHO_THEN???";
 				//    }
 				//}

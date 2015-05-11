@@ -166,7 +166,7 @@ namespace Sq1.Widgets.Exceptions {
 				}
 				if (this.Exceptions.Count == 0) {
 					string msg = "SHOULD_HAPPEN_ONCE_PER_APP_LIFETIME";
-					//Debugger.Break();
+					//Debugger.Launch();
 				}
 
 				this.ExceptionTimes.Add(exception, DateTime.Now);
@@ -235,7 +235,7 @@ namespace Sq1.Widgets.Exceptions {
 		//	if (this.InvokeRequired) {
 		//		// this.BeginInvoke((MethodInvoker)delegate() { this.InsertExceptionToOLVIfDockContentDeserialized_inGuiThread(); });
 		//		string msg = "I_MUST_BE_ALREADY_IN_GUI_THREAD__HOPING_TO_INSERT_IN_SEQUENCE_OF_INVOCATION";
-		//		Debugger.Break();
+		//		Debugger.Launch();
 		//		return;
 		//	}
 		//	if (this.Exceptions.Count > 0) {
@@ -298,7 +298,7 @@ namespace Sq1.Widgets.Exceptions {
 			if (this.InvokeRequired) {
 				this.BeginInvoke((MethodInvoker)delegate() { this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread(); });
 				//string msg = "I_MUST_BE_ALREADY_IN_GUI_THREAD__HOPING_TO_INSERT_IN_SEQUENCE_OF_INVOCATION";
-				//Debugger.Break();
+				//Debugger.Launch();
 				return;
 			} else {
 				string msg = "if we are in GUI thread, go on timer immediately (correlator throwing thousands at startup, or chart.OnPaint() doing something wrong)";
@@ -356,7 +356,7 @@ namespace Sq1.Widgets.Exceptions {
 					if (parentForm != null) {
 						string counters = this.Exceptions.Count.ToString();
 						if (this.exceptionsNotFlushedYet.Count > 0) counters += "/" + this.exceptionsNotFlushedYet.Count;
-						parentForm.Text = "Exceptions (" + counters + ")";
+						parentForm.Text = "Exceptions :: " + counters;
 					}
 				}
 			}

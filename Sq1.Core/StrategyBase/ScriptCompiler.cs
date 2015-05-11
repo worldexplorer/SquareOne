@@ -40,7 +40,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "I_CANNOT_CREATE_TEMP_DIRECTORY_CHECK_PERMISSIONS_AND_DISK_QUOTE tmpAbsPath["
 					+ this.TempFolderAbsPath + "]";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg + " ScriptCompiler.CompileSourceReturnInstance()", ex);
 			}
@@ -48,7 +48,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "TEMP_DIRECTORY_DOES_NOT_EXISTS attemptedToCreateDirectory["
 					+ attemptedToCreateDirectory + "] tmpAbsPath[" + this.TempFolderAbsPath + "]";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg + " ScriptCompiler.CompileSourceReturnInstance()");
 			}
@@ -124,7 +124,7 @@ namespace Sq1.Core.StrategyBase {
 			return result;
 		} }
 		void addApplicationAssemblies(CompilerParameters compilerParameters) {
-			//Debugger.Break();	//TESTED
+			//Debugger.Launch();	//TESTED
 			List<string> dllsFound = new List<string>();
 			List<Assembly> assembliesFound = new List<Assembly>();
 			DirectoryInfo directoryInfo = new DirectoryInfo(Assembler.InstanceInitialized.AppStartupPath);		//Application.ExecutablePath

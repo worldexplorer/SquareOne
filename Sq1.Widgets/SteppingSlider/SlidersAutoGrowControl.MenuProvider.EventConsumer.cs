@@ -17,7 +17,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			ContextScript scriptContextToLoad = this.ScriptContextFromMniTag(sender);
 			if (scriptContextToLoad == null) {
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				return;
 			}

@@ -63,16 +63,16 @@ namespace Sq1.Charting {
 				#if TEST_COMPATIBILITY
 				if (this.visibleVolumeMinCurrent != this.VisibleVolumeMinNew) {
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 				} else {
 					#if DEBUG
-					//Debugger.Break();
+					//Debugger.Launch();
 					#endif
 				}
 				#endif
 //} catch (Exception ex) {
-//	Debugger.Break();
+//	Debugger.Launch();
 //}
 				return this.visibleVolumeMinCurrent;
 			} }
@@ -96,11 +96,11 @@ namespace Sq1.Charting {
 				#if TEST_COMPATIBILITY
 				if (this.visibleVolumeMaxCurrent != this.VisibleVolumeMaxNew) {
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 				} else {
 					#if DEBUG
-					//Debugger.Break();
+					//Debugger.Launch();
 					#endif
 				}
 				#endif

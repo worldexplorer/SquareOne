@@ -40,7 +40,7 @@ namespace Sq1.Charting {
 				foreach (Indicator indicator in this.Indicators.Values) {
 					if (indicator.OwnValuesCalculated == null) {
 						#if DEBUG
-						Debugger.Break();
+						Debugger.Launch();
 						#endif
 						continue;
 					}
@@ -244,7 +244,7 @@ namespace Sq1.Charting {
 				List<OnChartLine> linesByLeftImMovingTo	  = this.LinesByLeftBar[barLeft];
 				if (linesByLeftImMovingFrom.Contains(lineToModify) == false) {
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					string msg = "LINES_BY_LEFT_MUST_CONTAIN_PREVIOUSLY_ADDED_LINE"
 						+ " LinesByLeftBar[" + barLeft + "].Count[" + linesByLeftImMovingTo.Count + "]";
@@ -264,7 +264,7 @@ namespace Sq1.Charting {
 				List<OnChartLine> linesByRightImMovingTo   = this.LinesByRightBar[barRight];
 				if (linesByRightImMovingFrom.Contains(lineToModify) == false) {
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					string msg = "LINES_BY_RIGHT_MUST_CONTAIN_PREVIOUSLY_ADDED_LINE"
 						+ " LinesByRightBar[" + barRight + "].Count[" + linesByRightImMovingTo.Count + "]";

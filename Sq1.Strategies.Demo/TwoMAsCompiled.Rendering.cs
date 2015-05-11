@@ -14,7 +14,7 @@ namespace Sq1.Strategies.Demo {
 			
 			// one line is drawn across one day regardless of timeframe: just the date is enough to "address" the line 
 			string lineId = barFirstForCurrentTradingDay.DateTimeOpen.ToString("yyyy-MMM-dd");
-			//Debugger.Break();
+			//Debugger.Launch();
 			base.Executor.ChartConditionalLineDrawModify(lineId,
 				barFirstForCurrentTradingDay.ParentBarsIndex, dayOpenedAtPrice,
 				barStaticFormed.ParentBarsIndex, dayOpenedAtPrice,

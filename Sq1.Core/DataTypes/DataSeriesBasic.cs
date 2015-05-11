@@ -14,7 +14,7 @@ namespace Sq1.Core.DataTypes {
 				if (this.doubleValues.Count == 0) {
 					string msg = "USE_APPEND_BECAUSE_DOUBLE_VALUES_ARE_EMPTY_NOW; STREAMING_VALUE_IS_SIMPLY_LAST_ELEMENT";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					throw new Exception(msg);
 				}
@@ -30,7 +30,7 @@ namespace Sq1.Core.DataTypes {
 			this.doubleValues = new List<double>();
 			#if DEBUG	// PARANOID EMBEDDED_TEST_FOR_LastValue_MUST_BE_NAN 
 			if (double.IsNaN(this.LastValue) == false) {
-				Debugger.Break();
+				Debugger.Launch();
 			}
 			#endif
 		}
@@ -52,7 +52,7 @@ namespace Sq1.Core.DataTypes {
 				if (barIndex == this.doubleValues.Count) {
 					string msg = "DEPRECATED_NOTATION this[this.Count]_get; STREAMING_VALUE_IS_NOW_AT_this[this.Count-1]";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					throw new Exception(msg);
 					//return this.doubleValues[barIndex - 1];
@@ -63,14 +63,14 @@ namespace Sq1.Core.DataTypes {
 				if (barIndex < 0 || barIndex > this.Count) {
 					string msg = "[" + barIndex + "] is out of bounds: " + this;
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					throw new ArgumentOutOfRangeException(msg);
 				}
 				if (barIndex == this.doubleValues.Count) {
 					string msg = "DEPRECATED_NOTATION this[this.Count]_set; STREAMING_VALUE_IS_NOW_AT_this[this.Count-1]";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					throw new Exception(msg);
 					//this.StreamingValue = value;
@@ -147,7 +147,7 @@ namespace Sq1.Core.DataTypes {
 				if (i >= this.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					Assembler.PopupException("VisibleVolumeMin(): " + msg);
 					continue;
@@ -159,7 +159,7 @@ namespace Sq1.Core.DataTypes {
 			#if DEBUG
 			if (ret == double.MaxValue) {
 				// IndicatorAtrBand.OwnValuesCalculated are all NaNs; DONT_NORMALIZE_VERTICALLY_INDICATORS_DRAWING_ON_PRICE_PANEL
-				//Debugger.Break();
+				//Debugger.Launch();
 			}
 			#endif
 			return ret;
@@ -172,7 +172,7 @@ namespace Sq1.Core.DataTypes {
 				if (i >= this.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 					string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					Assembler.PopupException("VisibleVolumeMax(): " + msg);
 					continue;
@@ -183,7 +183,7 @@ namespace Sq1.Core.DataTypes {
 			}
 			#if DEBUG
 			if (ret == double.MinValue) {
-				//Debugger.Break();
+				//Debugger.Launch();
 			}
 			#endif
 			return ret;

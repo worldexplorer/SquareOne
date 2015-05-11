@@ -144,7 +144,7 @@ namespace Sq1.Widgets {
 					string msg = "go find out if I'm covered by other forms docked into the same area"
 						+ " ; meanwhile I'll report I'm not covered so you can click ChartForm>HIDESourceCodeEditor";
 					#if DEBUG
-					//Debugger.Break();
+					//Debugger.Launch();
 					#endif
 					return false;
 				}
@@ -152,28 +152,28 @@ namespace Sq1.Widgets {
 					string msg = "go find out if I'm covered by other forms floating in the same window"
 						+ " ; meanwhile I'll report I'm not covered so you can click ChartForm>HIDESourceCodeEditor";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					return false;
 				}
 				if (this.DockState == DockState.Unknown) {
 					string msg = "EDITOR_WAS_CONDITIONALLY_INSTANTIATED_BUT_NOT_DOCKPANEL.SHOW()n";
 					#if DEBUG
-					//Debugger.Break();
+					//Debugger.Launch();
 					#endif
 					return true;
 				}
 				if (this.DockState == DockState.Hidden) {
 					string msg = "DESERIALIZED_AS_HIDDEN__NOT_REALLY_DOCKED_NOR_COVERED";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					return true;
 				}
 				
 				string msg1 = "WHERE_AM_I,THEN???";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				return true;
 			} }

@@ -17,7 +17,7 @@ namespace Sq1.Core.Indicators.HelperSeries {
 		public void AppendWithParentBar(DateTime dateTimeOpen, double value, Bar parentBar) {
 			base.Append(dateTimeOpen, value);
 			this.ParentBarsByDate.Add(dateTimeOpen, parentBar);
-			//Debugger.Break();
+			//Debugger.Launch();
 		}
 		
 		public override void Clear() {

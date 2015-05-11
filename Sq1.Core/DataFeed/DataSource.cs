@@ -136,7 +136,7 @@ namespace Sq1.Core.DataFeed {
 				if (executorProhibitedRenaming) return;	// event handlers are responsible to Assembler.PopupException(), I reported MY errors above
 	
 				#if DEBUG
-				//TESTED Debugger.Break();
+				//TESTED Debugger.Launch();
 				#endif
 				//v3 SYMBOL_NOT_STORED_ANYMORE optimize file write time by seek to Bars.Symbol position &write FIXED-LENGTH string in header only => don't have to flush out 3Mb with bars' OHLCV;
 				//Bars bars = this.RequestDataFromRepository(oldSymbolName);

@@ -10,7 +10,7 @@ namespace Sq1.Gui {
 	public partial class MainForm : IStatusReporter {
 	
 		public void DisplayStatus(string Message) {
-			//Debugger.Break();	// ACTIVATE_MY_ATTEMPTS_BELOW_TO MAKE THE LABEL DISPLAY THE DAMN MESSAGE
+			//Debugger.Launch();	// ACTIVATE_MY_ATTEMPTS_BELOW_TO MAKE THE LABEL DISPLAY THE DAMN MESSAGE
 			if (base.InvokeRequired) {
 				base.BeginInvoke((MethodInvoker)delegate { this.DisplayStatus(Message); });
 				return;
@@ -29,7 +29,7 @@ namespace Sq1.Gui {
 //			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 //				#if DEBUG
 //				if (debuggingBreak) {
-//					Debugger.Break();
+//					Debugger.Launch();
 //				}
 //				#endif
 //				
@@ -51,7 +51,7 @@ namespace Sq1.Gui {
 			//		//#if DEBUG
 			//		//if (debuggingBreak) {
 			//		//	string note = "BREAKING_EARLIER__BECAUSE_YOU_WILL_LOOSE_CALLSTACK_SOON";
-			//		//	Debugger.Break();
+			//		//	Debugger.Launch();
 			//		//}
 			//		//#endif
 			//		//base.BeginInvoke((MethodInvoker)delegate { this.PopupException(msg, exc, false); });
@@ -61,7 +61,7 @@ namespace Sq1.Gui {
 			//} catch (Exception ex) {
 			//	#if DEBUG
 			//	if (debuggingBreak) {
-			//		Debugger.Break();
+			//		Debugger.Launch();
 			//	}
 			//	#endif
 				

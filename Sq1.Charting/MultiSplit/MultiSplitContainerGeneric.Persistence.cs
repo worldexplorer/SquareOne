@@ -70,7 +70,7 @@ try {
 					continue;
 				}
 				//if (this.VerticalizeAllLogic) {
-				//	Debugger.Break();
+				//	Debugger.Launch();
 				//}
 				splitterFound.Location = this.VerticalizeAllLogic == false
 					? new Point(splitterFound.Location.X, prop.Distance)
@@ -110,7 +110,7 @@ try {
 						panelHeight = baseHeight - panelY;
 						if (panelHeight < 0) {
 							#if DEBUG
-							//POSTPONE_WINDOWS_MAGIC Debugger.Break();	// AFTERDRAG_MANUAL_ORDER_WASNT_SYNCED YOUVE_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
+							//POSTPONE_WINDOWS_MAGIC Debugger.Launch();	// AFTERDRAG_MANUAL_ORDER_WASNT_SYNCED YOUVE_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
 							#endif
 							return;
 						}
@@ -145,7 +145,7 @@ try {
 						panelWidth = baseHeight - panelX;
 						if (panelWidth < 0) {
 							#if DEBUG
-							//POSTPONE_WINDOWS_MAGIC Debugger.Break();	// AFTERDRAG_MANUAL_ORDER_WASNT_SYNCED YOUVE_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
+							//POSTPONE_WINDOWS_MAGIC Debugger.Launch();	// AFTERDRAG_MANUAL_ORDER_WASNT_SYNCED YOUVE_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
 							#endif
 							return;
 						}
@@ -172,21 +172,21 @@ try {
 			#if DEBUG		// TESTS_EMBEDDED
 			if (this.VerticalizeAllLogic == false) {
 				if (base.Height != baseHeight) {
-					Debugger.Break();
+					Debugger.Launch();
 				}
 				baseHeight = base.Height;
 				int roundingError = Math.Abs(yCheckDiff - baseHeight);
 				if (roundingError > 10) {
-					//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
+					//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Launch();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 				}
 			} else {
 				if (base.Width != baseHeight) {
-					Debugger.Break();
+					Debugger.Launch();
 				}
 				baseHeight = base.Width;
 				int roundingError = Math.Abs(yCheckDiff - baseHeight);
 				if (roundingError > 10) {
-					//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
+					//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Launch();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 				}
 			}
 			#endif

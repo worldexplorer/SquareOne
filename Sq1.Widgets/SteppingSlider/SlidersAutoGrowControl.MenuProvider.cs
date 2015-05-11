@@ -76,7 +76,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				foreach (ToolStripMenuItem mni in this.tsiScriptContextsDynamic.Values) {
 					if (mni.IsDisposed) {
 						#if DEBUG
-						Debugger.Break();
+						Debugger.Launch();
 						#endif
 					}
 				}
@@ -88,7 +88,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				#if DEBUG
 				if (this.mniParameterBagsNotHighlighted.IsDisposed) {
-					Debugger.Break();
+					Debugger.Launch();
 					this.mniParameterBagsNotHighlighted = new Sq1.Widgets.LabeledTextBox.MenuItemLabel();
 					// 
 					// mniParameterBagsNotHighlighted
@@ -106,7 +106,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				#if DEBUG
 				if (this.mniltbParametersBagNewWithDefaults.IsDisposed) {
-					Debugger.Break();
+					Debugger.Launch();
 					this.mniltbParametersBagNewWithDefaults = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 					// 
 					// mniltbParametersBagNewWithDefaults
@@ -126,7 +126,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				if (this.toolStripSeparator2.IsDisposed) {
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 				}
@@ -134,7 +134,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				#if DEBUG
 				if (this.mniAllParamsResetToScriptDefaults.IsDisposed) {
-					Debugger.Break();
+					Debugger.Launch();
 					this.mniAllParamsResetToScriptDefaults = new System.Windows.Forms.ToolStripMenuItem();
 					// 
 					// mniAllParamsResetToScriptDefaults
@@ -149,7 +149,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				#if DEBUG
 				if (this.mniAllParamsShowNumeric.IsDisposed) {
-					Debugger.Break();
+					Debugger.Launch();
 					this.mniAllParamsShowNumeric = new System.Windows.Forms.ToolStripMenuItem();
 					// 
 					// mniAllParamsShowNumeric
@@ -165,7 +165,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				#if DEBUG
 				if (this.mniAllParamsShowBorder.IsDisposed) {
-					Debugger.Break();
+					Debugger.Launch();
 					this.mniAllParamsShowBorder = new System.Windows.Forms.ToolStripMenuItem();
 					// 
 					// mniAllParamsShowBorder

@@ -47,7 +47,7 @@ namespace Sq1.Core.StrategyBase {
 					if (this.ScriptContextsByName.ContainsKey(ScriptContextCurrentName) == false)  {
 					string msg = "ScriptContextCurrentName[" + ScriptContextCurrentName + "] doesn't exist in Strategy[" + this.ToString() + "]";
 						#if DEBUG
-						Debugger.Break();
+						Debugger.Launch();
 						#endif
 						throw new Exception(msg);
 					}

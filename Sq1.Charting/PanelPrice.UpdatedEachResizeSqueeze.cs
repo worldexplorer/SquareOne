@@ -53,11 +53,11 @@ namespace Sq1.Charting {
 				#if TEST_COMPATIBILITY
 				if (this.visiblePriceMaxCurrent != this.VisiblePriceMaxNew) {
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 				} else {
 					#if DEBUG
-					//Debugger.Break();
+					//Debugger.Launch();
 					#endif
 				}
 				#endif
@@ -87,11 +87,11 @@ namespace Sq1.Charting {
 				#if TEST_COMPATIBILITY
 				if (this.visiblePriceMinCurrent != this.VisiblePriceMinNew) {
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 				} else {
 					#if DEBUG
-					//Debugger.Break();
+					//Debugger.Launch();
 					#endif
 				}
 				#endif

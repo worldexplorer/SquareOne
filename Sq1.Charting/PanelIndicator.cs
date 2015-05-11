@@ -13,7 +13,7 @@ namespace Sq1.Charting {
 				if (this.Indicator == null) {
 					string msg = "CATCH_IT_EARLIER!!! did ctor get indicator=null ?";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					return true;
 				}
@@ -23,7 +23,7 @@ namespace Sq1.Charting {
 					//	+ " Indicator.BacktestStartingConstructOwnValuesValidateParameters()"
 					//	+ " to assure Executor's freedom to feed any bars during backtest; Indicator itself lives a longer life";
 					#if DEBUG
-					//Debugger.Break();
+					//Debugger.Launch();
 					#endif
 					return true;
 				}

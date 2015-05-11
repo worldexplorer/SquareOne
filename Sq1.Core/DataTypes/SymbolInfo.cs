@@ -164,7 +164,7 @@ namespace Sq1.Core.DataTypes {
 			PositionLongShort positionLongShort = MarketConverter.LongShortFromDirection(direction);
 			if (positionLongShortV1 != positionLongShort) {
 				string msg = "DEFINITELY_DIFFERENT_POSTPONE_TILL_ORDER_EXECUTOR_BACK_FOR_QUIK_BROKER";
-				//Debugger.Break();
+				//Debugger.Launch();
 			}
 			return this.AlignAlertToPriceLevel(orderPrice, entryNotExit, positionLongShortV1, marketLimitStop);
 		}
@@ -236,7 +236,7 @@ namespace Sq1.Core.DataTypes {
 			if (price == lowerLevel) {
 				string msg = "ALREADY_ROUNDED_NO_REMAINDER_AFTER_DIVISION_TO_STEPS";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				return price;
 			}
@@ -258,7 +258,7 @@ namespace Sq1.Core.DataTypes {
 					double mathRound = Math.Round(priceOrRef, this.DecimalsPrice);
 					string msg1 = "price[" + price.ToString("R") + "]=>aligned[" + ret.ToString("R") + "] mathRound[" + mathRound + "]";
 					if (this.DecimalsPrice > 0 && ret != mathRound) {
-						Debugger.Break();
+						Debugger.Launch();
 					}
 					#endif
 
@@ -279,7 +279,7 @@ namespace Sq1.Core.DataTypes {
 		public double AlignToPriceLevel(double price, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
 			if (this.PriceDecimals < 0) {
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new NotImplementedException();
 			}
@@ -306,7 +306,7 @@ namespace Sq1.Core.DataTypes {
 		public double AlignToVolumeStep(double volume, PriceLevelRoundingMode upOrDown = PriceLevelRoundingMode.RoundToClosest) {
 			if (this.VolumeDecimals < 0) {
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new NotImplementedException();
 			}

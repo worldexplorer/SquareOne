@@ -105,7 +105,7 @@ namespace Sq1.Core.Backtesting {
 				spreadAligned = symbolInfo.AlignToPriceLevel(spreadAlignedToMaintain, PriceLevelRoundingMode.RoundToClosest);	//changed to RoundToClosest and checking below; RoundUp so I wont' get spread = 0
 				if (spreadAligned == 0) {
 					//string msg = "you can't use RoundDown here";
-					//Debugger.Break();
+					//Debugger.Launch();
 					spreadAligned = symbolInfo.PriceStep;
 				}
 				if (quote.SpreadAligned < spreadAligned) {
@@ -127,7 +127,7 @@ namespace Sq1.Core.Backtesting {
 
 				double quoteSreadAligned = symbolInfo.AlignToPriceLevel(askAligned - bidAligned, PriceLevelRoundingMode.RoundUp);
 				if (quoteSreadAligned <= 0) {
-					//Debugger.Break();
+					//Debugger.Launch();
 					bidAligned = symbolInfo.AlignToPriceLevel(quote.Bid, PriceLevelRoundingMode.RoundDown); 
 					askAligned = symbolInfo.AlignToPriceLevel(quote.Ask, PriceLevelRoundingMode.RoundUp);
 					double quoteSreadAligned2 = symbolInfo.AlignToPriceLevel(askAligned - bidAligned, PriceLevelRoundingMode.RoundUp);
@@ -145,28 +145,28 @@ namespace Sq1.Core.Backtesting {
 			if (quote == null) {
 				string msg = "REFUSE_TO_ALIGN: DONT_PASS_QUOTE_NULL";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
 			if (quote.ParentBarSimulated == null) {
 				string msg = "REFUSE_TO_ALIGN: quote.ParentBarSimulated=null";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
 			if (quote.ParentBarSimulated.ParentBars == null) {
 				string msg = "REFUSE_TO_ALIGN: quote.ParentBarSimulated.ParentBars=null";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
 			if (quote.ParentBarSimulated.ParentBars.SymbolInfo == null) {
 				string msg = "REFUSE_TO_ALIGN: quote.ParentBarSimulated.ParentBars.SymbolInfo=null";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}

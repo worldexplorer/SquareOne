@@ -66,7 +66,7 @@ namespace Sq1.Core.Backtesting {
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GenerateFillAskBasedOnBid()";
 						Assembler.PopupException(msg + msig);
 						#if DEBUG
-						Debugger.Break();
+						Debugger.Launch();
 						#endif
 					}
 					break;
@@ -79,7 +79,7 @@ namespace Sq1.Core.Backtesting {
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GenerateFillAskBasedOnBid()";
 						Assembler.PopupException(msg + msig);
 						#if DEBUG
-						Debugger.Break();
+						Debugger.Launch();
 						#endif
 					}
 					break;
@@ -92,7 +92,7 @@ namespace Sq1.Core.Backtesting {
 						string msg = "SPREAD_MUST_NOT_BE_ZERO_AFTER GeneratedQuoteFillBidAsk()";
 						Assembler.PopupException(msg + msig);
 						#if DEBUG
-						Debugger.Break();
+						Debugger.Launch();
 						#endif
 					}
 					break;
@@ -213,7 +213,7 @@ namespace Sq1.Core.Backtesting {
 			if (bar2simulate.HighLowDistance > 0) {
 				// IRRELEVANT TO COMPARE PREV_QUOTE BID AGAINST THIS_BAR_ASK
 				//if (bar2simulate.HighLowDistance > quotePrev.Spread && bar2simulate.ContainsBidAskForQuoteGenerated(quotePrev) == false) {
-				//	Debugger.Break();
+				//	Debugger.Launch();
 				//}
 				if (bar2simulate.HighLowDistance > quoteToReach.Spread
 					&& bar2simulate.ContainsBidAskForQuoteGenerated(quoteToReach) == false) {
@@ -491,7 +491,7 @@ namespace Sq1.Core.Backtesting {
 				volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, barSimulated.ParentBars.SymbolInfo.VolumeDecimals);
 				if (volumeOneQuarterOfBar == 0) {
 					#if DEBUG	// TEST_EMBEDDED
-					//TESTED Debugger.Break();
+					//TESTED Debugger.Launch();
 					//double minimalValue = Math.Pow(1, -decimalsVolume);		// 1^(-2) = 0.01
 					#endif
 					volumeOneQuarterOfBar = barSimulated.ParentBars.SymbolInfo.VolumeStepFromDecimal;

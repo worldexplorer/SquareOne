@@ -65,12 +65,12 @@ namespace Sq1.Charting {
 				int ret = this.VisibleBarRight - this.BarsCanFitForCurrentWidth;				
 				if (ret < 0) {
 					string msg = "RESIZING_WINDOW_WHEN_ON_FIRST_LEFT_BAR EXTENDING_SO_THAT_ONE_MORE_BAR_CAN_FIT";
-					//Debugger.Break();
+					//Debugger.Launch();
 					ret = 0;
 				}
 				if (this.hScrollBar.Value == this.hScrollBar.Minimum && ret > 1) {
 					string msg = "NO_DECISION_FOR_THIS_PHENOMENON_YET VisibleBarLeft must be zero at ScrollBar.Minimum, mustn't it?...";
-					//Debugger.Break();
+					//Debugger.Launch();
 				}
 				return ret;
 			} }
@@ -101,15 +101,15 @@ namespace Sq1.Charting {
 				#if DEBUG
 				//REDUNDANT_ALREADY_CHECKED_2_LINES_ABOVE 
 				if (double.IsNaN(panelMax)) {
-					Debugger.Break();
+					Debugger.Launch();
 					continue;
 				}
 				if (double.IsPositiveInfinity(panelMax)) {
-					Debugger.Break();
+					Debugger.Launch();
 					continue;
 				}
 				if (double.IsNegativeInfinity(panelMax)) {
-					Debugger.Break();
+					Debugger.Launch();
 					continue;
 				}
 				#endif

@@ -45,7 +45,7 @@ namespace Sq1.Core.DataTypes {
 				this.LastValueAppended = value;
 			} catch (Exception e) {
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw e;
 			}
@@ -61,14 +61,14 @@ namespace Sq1.Core.DataTypes {
 			if (appending == DateTime.MinValue) {
 				string msg = "#1 APPENDING_MIN_DATE_NOT_ALLOWED appending[" + appending + "]";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
 			if (this.doublesByDate.ContainsKey(appending)) {
 				string msg = "#2 APPENDING_SAME_DATE_TWICE_NOT_ALLOWED doublesByDate[" + appending + "]=[" + this.doublesByDate[appending] + "]";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -80,7 +80,7 @@ namespace Sq1.Core.DataTypes {
 				string msg = "#3 LAST_APPEND_DIDNT_UPDATE_INTERNAL_LastDateAppended this.LastStaticDate[" + this.LastDateAppended
 					+ "] should be = lastDateKey[" + lastDateKey + "]; appending[" + appending + "] is probably ok";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -89,7 +89,7 @@ namespace Sq1.Core.DataTypes {
 				string msg = "#4 APPENDING_EARLIER_DATE_NOT_ALLOWED appending[" + appending + "] should be > this.LastStaticDate["
 					+ lastIndex + "/" + this.LastDateAppended + "]=[" + this.LastDateAppended + "]";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}

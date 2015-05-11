@@ -166,7 +166,7 @@ namespace Sq1.Core.DataTypes {
 			bool ret = diffUp >= 0 && diffDn >= 0;
 
 			if (ret == false) {
-				//Debugger.Break();									// WTF 1760.2-1706.2=-2.27E-13
+				//Debugger.Launch();									// WTF 1760.2-1706.2=-2.27E-13
 				double diffUpRounded = Math.Round(diffUp, 5);		// WTF 1760.2-1706.2=-2.27E-13
 				double diffDnRounded = Math.Round(diffDn, 5);
 				ret = diffUpRounded >= 0 && diffDnRounded >= 0;
@@ -175,7 +175,7 @@ namespace Sq1.Core.DataTypes {
 				// if (filled == 1 && this.fillOutsideQuoteSpreadParanoidCheckThrow == true) {alert.IsFilledOutsideQuote_DEBUG_CHECK;alert.IsFilledOutsideBarSnapshotFrozen_DEBUG_CHECK;}
 				//if (ret == false) {
 				//	#if DEBUG
-				//	Debugger.Break();	// ENABLE_BREAK_UPSTACK_IF_YOU_COMMENT_IT_OUT_HERE
+				//	Debugger.Launch();	// ENABLE_BREAK_UPSTACK_IF_YOU_COMMENT_IT_OUT_HERE
 				//	#endif
 				//}
 			}

@@ -33,12 +33,12 @@ namespace Sq1.Charting {
 		// price, volume or indicator-calculated; not abstract for Designer to throw less exceptions
 		[Browsable(false)]	public	virtual	double	VisibleMinDoubleMaxValueUnsafe { get {
 			#if DEBUG
-			Debugger.Break();
+			Debugger.Launch();
 			#endif
 			throw new NotImplementedException(); } }
 		[Browsable(false)]	public	virtual	double	VisibleMaxDoubleMinValueUnsafe { get {
 			#if DEBUG
-			Debugger.Break();
+			Debugger.Launch();
 			#endif
 			throw new NotImplementedException(); } }
 		// USE_CACHED_VARIABLE_INSTEAD [Browsable(false)] public virtual double VisibleRange { get { return this.VisibleMax - this.VisibleMin; } }
@@ -85,7 +85,7 @@ namespace Sq1.Charting {
 			} }
 		[Browsable(true)]	public	virtual	double	ValueGetNaNunsafe(int barIndex) {
 			#if DEBUG
-			Debugger.Break();
+			Debugger.Launch();
 			#endif
 			throw new NotImplementedException();
 		}
@@ -118,7 +118,7 @@ namespace Sq1.Charting {
 
 		[Browsable(true)]	public	virtual	int		ValueIndexLastAvailableMinusOneUnsafe { get {
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new NotImplementedException();
 			} }
@@ -457,7 +457,7 @@ namespace Sq1.Charting {
 				}
 				//v2
 				if (this.PanelHasValuesForVisibleBarWindow == false) {
-					//Debugger.Break();
+					//Debugger.Launch();
 					return;
 				}
 
@@ -476,11 +476,11 @@ namespace Sq1.Charting {
 				this.ensureFontMetricsAreCalculated(e.Graphics);	//MOVED_HERE_FROM_MOVE_UPSTACK_THIS_FONT_HEIGHT_CALCULATION
 //DEBUGGING_FOR_MOVED_HERE_FROM_MOVE_UPSTACK_THIS_FONT_HEIGHT_CALCULATION remove next commit
 //				if (this.GutterBottomDraw && this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
-//					Debugger.Break();
+//					Debugger.Launch();
 //				}
 //				if (this.PanelHeightMinusGutterBottomHeight_cached != 0
 //						&& this.PanelHeightMinusGutterBottomHeight_cached != this.PanelHeightMinusGutterBottomHeight) {
-//					Debugger.Break();
+//					Debugger.Launch();
 //				}
 				this.PanelHeightMinusGutterBottomHeight_cached = this.PanelHeightMinusGutterBottomHeight;
 				
@@ -567,15 +567,15 @@ namespace Sq1.Charting {
 			double range2 = max2 - min2;
 		
 			if (min != min2) {
-				//Debugger.Break();
+				//Debugger.Launch();
 				min = min2;
 			}
 			if (max != max2) {
-				//Debugger.Break();
+				//Debugger.Launch();
 				max = max2;
 			}
 			if (rangeMinMax != range2) {
-				//Debugger.Break();
+				//Debugger.Launch();
 				rangeMinMax = range2;
 			}
 			#endif

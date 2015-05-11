@@ -35,7 +35,7 @@ namespace Sq1.Core.StrategyBase {
 				entryAlert.PositionLongShortFromDirection, entryAlert.MarketLimitStop);
 			if (entryPriceOut1 != entryAlert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
-				Debugger.Break();
+				Debugger.Launch();
 			} else {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 			}
@@ -66,7 +66,7 @@ namespace Sq1.Core.StrategyBase {
 							break;
 						default:
 							#if DEBUG
-							Debugger.Break();
+							Debugger.Launch();
 							#endif
 							throw new Exception("NYI: direction[" + entryAlert.Direction + "] is not Long or Short");
 					}
@@ -85,7 +85,7 @@ namespace Sq1.Core.StrategyBase {
 							break;
 						default:
 							#if DEBUG
-							Debugger.Break();
+							Debugger.Launch();
 							#endif
 							throw new Exception("NYI: direction[" + entryAlert.Direction + "] is not Long or Short");
 					}
@@ -121,14 +121,14 @@ namespace Sq1.Core.StrategyBase {
 							break;
 						default:
 							#if DEBUG
-							Debugger.Break();
+							Debugger.Launch();
 							#endif
 							throw new Exception("CheckEntry() NYI direction[" + entryAlert.Direction + "] for [" + entryAlert + "]");
 					}
 					break;
 				default:
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					throw new Exception("NYI: marketLimitStop[" + entryAlert.MarketLimitStop + "] is not Limit or Stop");
 			}
@@ -137,7 +137,7 @@ namespace Sq1.Core.StrategyBase {
 			if (entryPriceOut <= 0) {
 				string msg = "entryPrice[" + entryPriceOut + "]<=0 what do you mean??? get Bars.LastBar.Close for Market...";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -151,7 +151,7 @@ namespace Sq1.Core.StrategyBase {
 			//		+ entryPriceOut + "] at entryAlert.Bars.BarStreaming[" + entryAlert.Bars.BarStreaming + "]";
 			//	//throw new Exception(msg);
 			//	#if DEBUG
-			//	//Debugger.Break();
+			//	//Debugger.Launch();
 			//	#endif
 			//	return false;
 			//}
@@ -183,7 +183,7 @@ namespace Sq1.Core.StrategyBase {
 				exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 			if (exitPriceOut1 != exitAlert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
-				Debugger.Break();
+				Debugger.Launch();
 			} else {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 			}
@@ -212,7 +212,7 @@ namespace Sq1.Core.StrategyBase {
 							break;
 						default:
 							#if DEBUG
-							Debugger.Break();
+							Debugger.Launch();
 							#endif
 							throw new Exception("CheckExit() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
 					}
@@ -231,7 +231,7 @@ namespace Sq1.Core.StrategyBase {
 							break;
 						default:
 							#if DEBUG
-							Debugger.Break();
+							Debugger.Launch();
 							#endif
 							throw new Exception("CheckExit() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
 					}
@@ -253,7 +253,7 @@ namespace Sq1.Core.StrategyBase {
 						exitAlert.PositionLongShortFromDirection, exitAlert.MarketLimitStop);
 					if (priceStopActivationAligned1 != exitAlert.PriceStopLimitActivationAligned) {
 						string msg = "FIX_Alert.PriceStopLimitActivation";
-						Debugger.Break();
+						Debugger.Launch();
 					} else {
 						string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 					}
@@ -291,7 +291,7 @@ namespace Sq1.Core.StrategyBase {
 							if (this.stopLossesActivatedOnPreviousQuotes.Contains(exitAlert) == false) {
 								string msg = "DUPE simulateFillExit has previously completely filled Sell StopLimit (StopActivated+Limit) " + exitAlert;
 								#if DEBUG
-								Debugger.Break();
+								Debugger.Launch();
 								#endif
 								throw new Exception(msg);
 							}
@@ -336,7 +336,7 @@ namespace Sq1.Core.StrategyBase {
 							break;
 						default:
 							#if DEBUG
-							Debugger.Break();
+							Debugger.Launch();
 							#endif
 							throw new Exception("CheckExit() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
 					}
@@ -358,14 +358,14 @@ namespace Sq1.Core.StrategyBase {
 							break;
 						default:
 							#if DEBUG
-							Debugger.Break();
+							Debugger.Launch();
 							#endif
 							throw new Exception("CheckExit() NYI direction[" + exitAlert.Direction + "] for [" + exitAlert + "]");
 					}
 					break;
 				default:
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					throw new Exception("NYI marketLimitStop[" + exitAlert.MarketLimitStop + "]");
 			}
@@ -375,7 +375,7 @@ namespace Sq1.Core.StrategyBase {
 			if (exitPriceOut <= 0) {
 				string msg = "exitPriceOut[" + exitPriceOut + "]<=0 what do you mean??? get Bars.LastBar.Close for Market...";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -389,7 +389,7 @@ namespace Sq1.Core.StrategyBase {
 			//		+ exitPriceOut + "] at exitAlert.Bars.BarStreaming[" + exitAlert.Bars.BarStreaming + "]";
 			//	//throw new Exception(msg);
 			//	#if DEBUG
-			//	Debugger.Break();
+			//	Debugger.Launch();
 			//	#endif
 			//	return false;
 			//}
@@ -467,7 +467,7 @@ namespace Sq1.Core.StrategyBase {
 				bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "SimulateFillPendingAlert(WAIT)");
 				Assembler.PopupException(msg + " SimulatePendingFill(" + quote + ")");
 			} else {
-				//Debugger.Break();
+				//Debugger.Launch();
 			}
 			if (this.FillOutsideQuoteSpreadParanoidCheckThrow == true && this.executor.Backtester.IsLivesim == false) {
 				string msg = "";
@@ -528,14 +528,14 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "SimulateFill*() should not be used for RealTime BrokerAdapters and RealTime Mocks!"
 					+ " make sure you invoked executor.CallbackAlertFilledInvokeScript() from where you are now";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
 			if (this.executor.ExecutionDataSnapshot.AlertsPending.Count == 0) {
 				string msg = "Before you call me, Please check executor.ExecutionDataSnapshot.AlertsPending.Count!=0";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 				//return 0;
@@ -543,7 +543,7 @@ namespace Sq1.Core.StrategyBase {
 			if (quote.ParentBarStreaming == null) {
 				string msg = "I refuse to serve this quoteToReach.ParentStreamingBar=null";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -551,7 +551,7 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "I refuse to serve this quoteToReach.ParentStreamingBar.ParentBarsIndex["
 					+ quote.ParentBarStreaming.ParentBarsIndex + "] != this.executor.Bars.Count-1[" + (this.executor.Bars.Count - 1) + "]";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}

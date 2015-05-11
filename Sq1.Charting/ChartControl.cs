@@ -249,7 +249,7 @@ namespace Sq1.Charting {
 			if (this.Bars == null) {
 				#if DEBUG
 				string msg = "POSSIBLY_DISABLE_SCROLLBAR_WHEN_CHART_HAS_NO_BARS? OR MAKE_CHART_ALWAYS_DISPLAY_BARS";
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				return;
 			}
@@ -462,7 +462,7 @@ namespace Sq1.Charting {
 			//v3
 			//MULTISPLITTER_IS_SPAMMED_BY_ONRESIZE_BUT_IT_WORKS_FOR_HORIZONTAL_AND_IT_DOESNT_SET_X_FOR_LEVEL2_IF_ON_RIGHTMOST_COLUMN
 			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) {
-				//Debugger.Break();
+				//Debugger.Launch();
 				//return;
 			}
 			this.multiSplitContainerRows.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterRowsPropertiesByPanelName);

@@ -192,7 +192,7 @@ namespace Sq1.Core.Streaming {
 					 && barConsumer.ConsumerBarsToAppendInto.BarStaticLastNullUnsafe.DateTimeOpen == barStreamingUnattached.DateTimeOpen) {
 					string msg = "KEEP_THIS_NOT_HAPPENING_BY_LEAVING_STATIC_LAST_ON_APPRESTART_NULL_ON_LIVEBACKTEST_CONTAINING_LAST_INCOMING_QUOTE"
 						+ " we are on 1st ever streaming quote: probably shouln't add it to avoid ALREADY_HAVE exception";
-					//Debugger.Break();
+					//Debugger.Launch();
 					Assembler.PopupException(msg + msig, null, false);
 					continue;
 				}

@@ -112,11 +112,11 @@ namespace Sq1.Charting.MultiSplit {
 		}
 		//protected override void OnMouseMove(MouseEventArgs e) {
 		//	// all my nested this.panels intercept their own OnMouseMove()s so I'm receiving only mouse-above-splitters here
-		//	//Debugger.Break();
+		//	//Debugger.Launch();
 		//	//base.Invalidate();
 		//}
 		//protected override void OnMouseDown(MouseEventArgs e) {
-		//	Debugger.Break();
+		//	Debugger.Launch();
 		//}
 		
 		string panelText { get { return this.panelMouseIsOverNow != null ? this.panelMouseIsOverNow.Text : "<none>"; } }
@@ -125,7 +125,7 @@ namespace Sq1.Charting.MultiSplit {
 		void panel_MouseEnter(object sender, EventArgs e) {
 			if (panelMouseIsOverNow == sender) return;
 			if (splitterStartedResizeOrDrag == null) { 
-				//Debugger.Break();
+				//Debugger.Launch();
 				return;
 			}
 			PANEL_BASE panel = sender as PANEL_BASE;
@@ -354,18 +354,18 @@ namespace Sq1.Charting.MultiSplit {
 				if (beyondUpperLeft || doesntContain) {
 					if (this.panelMouseIsOverNow != null) {
 						string msg = "panel_MouseLeave should've set this.panelMouseIsOverNow=null";
-						//Debugger.Break();
+						//Debugger.Launch();
 						continue;
 					}
 					//if (this.panelMouseIsOverNow == panel) {
 						this.panel_MouseLeave(panel, null);
 					//} else {
-						//Debugger.Break();
+						//Debugger.Launch();
 					//}
 				} else {
 					if (panelMouseOvered != null) {
 						string msg = "did you find the second panel mouseovered simultaneously???..";
-						//Debugger.Break();
+						//Debugger.Launch();
 					}
 					panelMouseOvered = panel;
 				}
@@ -373,7 +373,7 @@ namespace Sq1.Charting.MultiSplit {
 			if (panelMouseOvered == null) return;
 			if (this.panelMouseIsOverNow != null) {
 				string msg = "panel_MouseLeave should've set this.panelMouseIsOverNow=null";
-				//Debugger.Break();
+				//Debugger.Launch();
 				this.panel_MouseLeave(this.panelMouseIsOverNow, null);
 				this.panelMouseIsOverNow = null;
 			}

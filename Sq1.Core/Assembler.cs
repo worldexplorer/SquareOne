@@ -215,7 +215,7 @@ namespace Sq1.Core {
 			//v1-SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD 
 //			#if DEBUG
 //			if (debuggingBreak) {
-//				Debugger.Break();
+//				Debugger.Launch();
 //				// SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD
 //				// break here and add to ExceptionControl.ExceptionsList later; if you let it go then
 //				// MainForm might switch to GUI thread and you'll loose your callstack in VS/SharpDevelop

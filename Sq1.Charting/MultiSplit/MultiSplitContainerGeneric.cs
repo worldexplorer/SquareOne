@@ -65,7 +65,7 @@ namespace Sq1.Charting.MultiSplit {
 //		}
 		public void InitializeCreateSplittersDistributeFor(List<PANEL_BASE> whatIadd) {
 			// DOENST_HELP_OPENING_IN_DESIGNER STILL_THROWS if (base.DesignMode) return;
-			//Debugger.Break();
+			//Debugger.Launch();
 			this.panels.Clear();
 			this.splitters.Clear();
 			foreach (PANEL_BASE c in whatIadd) {
@@ -203,12 +203,12 @@ namespace Sq1.Charting.MultiSplit {
 			
 			#if DEBUG		// TESTS_EMBEDDED
 			if (base.Height != baseHeight) {
-				Debugger.Break();
+				Debugger.Launch();
 			}
 			baseHeight = base.Height;
 			int roundingError = Math.Abs(y - baseHeight);
 			if (roundingError > 1) {
-				Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
+				Debugger.Launch();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 			}
 			#endif
 			
@@ -323,12 +323,12 @@ namespace Sq1.Charting.MultiSplit {
 			
 			#if DEBUG		// TESTS_EMBEDDED
 			if (base.Width != baseWidth) {
-				Debugger.Break();
+				Debugger.Launch();
 			}
 			baseWidth = base.Width;
 			int roundingError = Math.Abs(x - baseWidth);
 			if (roundingError > 1) {
-				Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
+				Debugger.Launch();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 			}
 			#endif
 			
@@ -363,7 +363,7 @@ namespace Sq1.Charting.MultiSplit {
 			if (base.Parent.Controls.Contains(panel)) {
 				string msg = "I expect panels be removed from miltisplitContainer.Parent"
 					+ " so that only miltisplitContainer.Size will trigger miltisplitContainer.Controls.*.Resize()";
-				Debugger.Break();
+				Debugger.Launch();
 			}
 			#endif
 			this.panels.Add(panel);

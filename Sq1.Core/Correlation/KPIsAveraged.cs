@@ -29,9 +29,9 @@ namespace Sq1.Core.Correlation {
 			base.MaxConsecWinners	/= dontRoundDivisionToInt;
 			base.MaxConsecLosers	/= dontRoundDivisionToInt;
 
-			//if (double.IsNaN(base.WinLossRatio)) System.Diagnostics.Debugger.Break();
-			//if (double.IsNaN(base.ProfitFactor)) System.Diagnostics.Debugger.Break();
-			//if (double.IsNaN(base.RecoveryFactor)) System.Diagnostics.Debugger.Break();
+			//if (double.IsNaN(base.WinLossRatio)) System.Diagnostics.Debugger.Launch();
+			//if (double.IsNaN(base.ProfitFactor)) System.Diagnostics.Debugger.Launch();
+			//if (double.IsNaN(base.RecoveryFactor)) System.Diagnostics.Debugger.Launch();
 		}
 		public KPIsAveraged Clone() {
 			return (KPIsAveraged)base.MemberwiseClone();

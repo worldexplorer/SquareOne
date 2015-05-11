@@ -328,7 +328,7 @@ namespace Sq1.Core.Backtesting {
 				// DOESNT_HELP_HOPE_ON_OnBacktestedAllBars() in InterForm this.Executor.ChartShadow.Invalidate();
 			} catch (Exception ex) {
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw ex;
 			} finally {
@@ -369,7 +369,7 @@ namespace Sq1.Core.Backtesting {
 				
 				#if DEBUG //TEST_EMEDDED
 				if (quote.ParentBarSimulated.ParentBarsIndex != bar2simulate.ParentBarsIndex) {
-					Debugger.Break();
+					Debugger.Launch();
 				}
 
 				// PREV_QUOTE_ABSNO_SHOULD_NOT_BE_LINEAR_CAN_CONTAIN_HOLES_DUE_TO_QUOTES_INJECTED_TO_FILL_ALERTS
@@ -379,14 +379,14 @@ namespace Sq1.Core.Backtesting {
 				//	if (quote.Absno != quotePrev.Absno + 1) {
 				//		//string msg = "IRRELEVANT since GenerateQuotesFromBar() has been upgraded to return SortedList<int, QuoteGenerated> instead of randomized List<QuoteGenerated>";
 				//		string msg = "PREV_QUOTE_ABSNO_MUST_BE_LINEAR_WITHOUT_HOLES STILL_RELEVANT FIXME";
-				//		//Debugger.Break();
+				//		//Debugger.Launch();
 				//	}
 				//}
 				#endif
 
 				#if DEBUG //TEST_EMBEDDED GENERATED_QUOTE_OUT_OF_BOUNDARY_CHECK #1/2
 				if (bar2simulate.ContainsBidAskForQuoteGenerated(quote, true) == false) {
-					Debugger.Break();
+					Debugger.Launch();
 				}
 				#endif
 

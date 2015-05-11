@@ -33,7 +33,7 @@ namespace Sq1.Core.StrategyBase {
 			//double entryPriceScript1 = entryBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(priceScriptOrStreaming, true, longShortFromDirection, entryMarketLimitStop);
 			//if (entryPriceScript1 != entryPriceScript) {
 			//	string msg = "FIX_Alert.entryPriceScript";
-			//	Debugger.Break();
+			//	Debugger.Launch();
 			//} else {
 			//	string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertToPriceLevel()";
 			//}
@@ -51,7 +51,7 @@ namespace Sq1.Core.StrategyBase {
 			#if DEBUG	// REMOVE_ONCE_NEW_ALIGNMENT_MATURES_NOVEMBER_15TH_2014
 			if (entryPriceScript != alert.PriceScriptAligned) {
 				string msg = "FIX_Alert.PriceScriptAligned";
-				Debugger.Break();
+				Debugger.Launch();
 			} else {
 				string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertPriceToPriceLevel()";
 			}
@@ -80,7 +80,7 @@ namespace Sq1.Core.StrategyBase {
 			//double exitPriceScript1 = exitBar.ParentBars.SymbolInfo.AlignAlertToPriceLevel(priceScriptOrStreaming, true, longShortFromDirection, exitMarketLimitStop);
 			//if (exitPriceScript1 != exitPriceScript) {
 			//	string msg = "FIX_Alert.entryPriceScript";
-			//	Debugger.Break();
+			//	Debugger.Launch();
 			//} else {
 			//	string msg = "GET_RID_OF_COMPLEX_ALIGNMENT executor.AlignAlertToPriceLevel()";
 			//}
@@ -223,7 +223,7 @@ namespace Sq1.Core.StrategyBase {
 					+ " it's not a time-insensitive QuotesFromBar-generated Streaming Backtest"
 					+ " (both are routed to here, MarketSim, hypothetical order execution)";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -231,7 +231,7 @@ namespace Sq1.Core.StrategyBase {
 			if (alert.PositionAffected == null) {
 				string msg = "alertToBeKilled always has a PositionAffected, even for OnChartManual Buy/Short Market/Stop/Limit";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -243,7 +243,7 @@ namespace Sq1.Core.StrategyBase {
 					+ alert.Symbol + ")=null StreamingAdapter[" + this.executor.DataSource.StreamingAdapter + "]"
 					+ " MARKET_SIM_NEEDS_QUOTE_TO_TRY_FILL_AND_SAY_IF_FILLED";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -252,7 +252,7 @@ namespace Sq1.Core.StrategyBase {
 			if (quoteLast.ParentBarStreaming.ParentBarsIndex == -1) {
 				string msg = "EARLY_BINDER_DIDNT_DO_ITS_JOB#1 quote.ParentStreamingBar.ParentBarsIndex=-1 ";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -261,7 +261,7 @@ namespace Sq1.Core.StrategyBase {
 				if (alert.PositionAffected.IsEntryFilled) {
 					string msg = "WONT_FILL_ENTRY_TWICE PositionAffected.EntryFilled => did you create many threads in your QuikTerminalMock?";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					throw new Exception(msg);
 				}
@@ -271,7 +271,7 @@ namespace Sq1.Core.StrategyBase {
 				if (alert.PositionAffected.IsEntryFilled == false) {
 					string msg = "WONT_FILL_EXIT_TWICE I refuse to tryFill an ExitOrder because ExitOrder.Alert.PositionAffected.EntryFilled=false";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					throw new Exception(msg);
 				}

@@ -279,7 +279,7 @@ namespace Sq1.Gui.ReportersSupport {
 				if (dockContentImproved == null) {
 					string msg = "reporterToPopup.Parent IS_NOT DockContentImproved";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					Assembler.PopupException(msg + " //PopupReporters_OnParentChartActivated()");
 					return;

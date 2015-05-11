@@ -51,7 +51,7 @@ namespace Sq1.Core.Execution {
 				string msg = "WRONG USAGE OF PositionPrototype.ctor()!"
 					+ " PositionPrototype should contain positive offset for TakeProfit";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -61,7 +61,7 @@ namespace Sq1.Core.Execution {
 				string msg = "WRONG USAGE OF PositionPrototype.ctor()!"
 					+ " PositionPrototype should contain negative offset for StopLoss";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -69,7 +69,7 @@ namespace Sq1.Core.Execution {
 				string msg = "WRONG USAGE OF PositionPrototype.ctor()!"
 					+ " PositionPrototype should contain negative offset for StopLossActivation";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -79,7 +79,7 @@ namespace Sq1.Core.Execution {
 					+ "; StopLossActivation[" + stopLossActivationNegativeOffset + "]"
 					+ " should be >= StopLoss[" + stopLossNegativeOffset + "]";
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				throw new Exception(msg);
 			}
@@ -116,7 +116,7 @@ namespace Sq1.Core.Execution {
 					string msg = "OffsetToPrice(): No PositionLongShort[" + this.LongShort + "] handler "
 						+ "; must be one of those: Long/Short";
 					#if DEBUG
-					Debugger.Break();
+					Debugger.Launch();
 					#endif
 					throw new Exception(msg);
 			}

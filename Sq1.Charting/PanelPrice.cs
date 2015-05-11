@@ -64,7 +64,7 @@ namespace Sq1.Charting {
 
 				List<AlertArrow> arrows = arrowListByBar[i];
 				if (arrows.Count > 1) {
-					//Debugger.Break();
+					//Debugger.Launch();
 				}
 				int positionsAboveBar = 0;
 				int positionsBelowBar = 0;

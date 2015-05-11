@@ -38,7 +38,7 @@ namespace Sq1.Gui.Forms {
 					if (this.Strategy == null) return null;
 					if (this.Strategy.ActivatedFromDll == true) return null;
 						#if DEBUG
-						//Debugger.Break();
+						//Debugger.Launch();
 						#endif
 					if (this.scriptEditorFormFactory == null) {
 						this.scriptEditorFormFactory = new ScriptEditorFormFactory(this);
@@ -595,7 +595,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			if (this.Strategy.Script.Executor == null) {
-				//IM_GETTING_HERE_ON_STARTUP_AFTER_SUCCESFULL_COMPILATION_CHART_RELATED_STRATEGIES Debugger.Break();
+				//IM_GETTING_HERE_ON_STARTUP_AFTER_SUCCESFULL_COMPILATION_CHART_RELATED_STRATEGIES Debugger.Launch();
 				if (this.Strategy.ActivatedFromDll == true) {
 					string msg = "you should never get here; a compiled script should've been already linked to Executor (without bars on deserialization)"
 						+ " 10 lines above in this.InitializeWithStrategy(mainForm, strategy)";
@@ -632,7 +632,7 @@ namespace Sq1.Gui.Forms {
 		public void ReportersDumpCurrentForSerialization() {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 				#if DEBUG
-				//Debugger.Break();
+				//Debugger.Launch();
 				#endif
 				return;
 			}
@@ -798,7 +798,7 @@ namespace Sq1.Gui.Forms {
 				this.StrategyCompileActivateBeforeShow();
 			} else {
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 			}
 
@@ -828,7 +828,7 @@ namespace Sq1.Gui.Forms {
 			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;
 			if (ctxScript == null) {
 				#if DEBUG
-				Debugger.Break();
+				Debugger.Launch();
 				#endif
 				return;
 			}
