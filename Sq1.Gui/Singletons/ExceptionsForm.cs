@@ -23,7 +23,7 @@ namespace Sq1.Gui.Singletons {
 		public void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
 			#if DEBUG
 			if (debuggingBreak) {
-				Debugger.Break();
+				Debugger.Launch();
 			}
 			#endif
 
@@ -34,22 +34,29 @@ namespace Sq1.Gui.Singletons {
 			//    this.ExceptionControl.InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(ex);
 			//}));
 			//v2 TRYING_TO_1)LET_INVOKER_GO_EARLIER_FOR_FURTHER_2)QUEUEING_OF_LISTVIEW_REPAINT__2)NYI
-			#region EXPERIMENTAL
-			Task t = new Task(delegate {
-			    base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
-			        this.ExceptionControl.InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(ex);
-			    }));
-			});
-			t.ContinueWith(delegate {
-			    string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
-			    #if DEBUG
-			        Debugger.Break();
-			    #else
-			        Assembler.PopupException(msg2, t.Exception);
-			    #endif
-			}, TaskContinuationOptions.OnlyOnFaulted);
-			t.Start();
-			#endregion
+			//#region EXPERIMENTAL
+			//Task t = new Task(delegate {
+			//    base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
+			//        this.ExceptionControl.InsertSyncAndFlushExceptionsToOLVIfDockContentDeserialized_inGuiThread(ex);
+			//    }));
+			//});
+			//t.ContinueWith(delegate {
+			//    string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
+			//    Assembler.PopupException(msg2, t.Exception);
+			//}, TaskContinuationOptions.OnlyOnFaulted);
+			//t.Start();
+			//#endregion
+			//v3 FlushExceptionsToOLV
+			this.ExceptionControl.InsertAsyncAutoFlush(ex);
+			//v4 timers are spawned!!!
+			//Task t = new Task(delegate {
+			//    this.ExceptionControl.InsertAsyncAutoFlush(ex);
+			//});
+			//t.ContinueWith(delegate {
+			//    string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
+			//    Assembler.PopupException(msg2, t.Exception);
+			//}, TaskContinuationOptions.OnlyOnFaulted);
+			//t.Start();
 		}
 		protected override void OnLoad(EventArgs e) {
 			foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {

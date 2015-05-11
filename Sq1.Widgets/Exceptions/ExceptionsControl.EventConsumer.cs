@@ -8,7 +8,7 @@ namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
 		void form_OnLoad(object sender, System.EventArgs e) {
 			if (base.DesignMode) return;
-			this.FlushListToTreeIfDockContentDeserialized_inGuiThread();
+			// IF_ONLY_YOU_WANT_TO_FLUSH_DESERIALIZED_FROM_LAST_RESTART_NIY this.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 		}
 		void tree_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.treeExceptions.SelectedObject == null) {
@@ -20,7 +20,7 @@ namespace Sq1.Widgets.Exceptions {
 		}
 		void mniClear_Click(object sender, EventArgs e) {
 			this.Exceptions.Clear();
-			this.FlushListToTreeIfDockContentDeserialized_inGuiThread();
+			this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 		}
 		void mniCopy_Click(object sender, EventArgs e) {
 			this.CopyExceptionDataToClipboard();
@@ -44,7 +44,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.DataSnapshotSerializer.Serialize();
 		}
 		
-		void SplitContainerHorizontal_SplitterMoved(object sender, SplitterEventArgs e) {
+		void splitContainerHorizontal_SplitterMoved(object sender, SplitterEventArgs e) {
 			if (this.DataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
 			//v1 BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
@@ -85,6 +85,14 @@ namespace Sq1.Widgets.Exceptions {
 			this.DataSnapshotSerializer.Serialize();
 			this.olvTime.Text = this.DataSnapshot.TreeShowExceptionTime ? "Time" : "Message";
 			this.treeExceptions.RebuildAll(true);
+		}
+		void mniRecentAlwaysSelected_Click(object sender, EventArgs e) {
+			this.DataSnapshot.RecentAlwaysSelected = this.mniRecentAlwaysSelected.Checked;
+			this.DataSnapshotSerializer.Serialize();
+			this.selectMostRecentException();
+		}
+		void mniRefresh_Click(object sender, EventArgs e) {
+			this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 		}
 	}
 }

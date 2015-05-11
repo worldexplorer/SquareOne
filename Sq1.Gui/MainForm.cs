@@ -208,7 +208,7 @@ namespace Sq1.Gui {
 				}
 				if (ExceptionsForm.Instance.IsShown) {
 					// MOVED_TO_AFTER_MAINFORM_RESUMELAYOUT ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
-					ExceptionsForm.Instance.ExceptionControl.FlushListToTreeIfDockContentDeserialized_inGuiThread();
+					// EXCEPTION_BORN_IN_GUI_THREAD_ARE_ALWAYS_ON_TIMER ExceptionsForm.Instance.ExceptionControl.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("WorkspaceLoad#1()", ex);

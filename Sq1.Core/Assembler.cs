@@ -228,13 +228,13 @@ namespace Sq1.Core {
 				// this is gonna throw from a non-GUI thread, right?!... (moved to MainForm.PopupException() with base.BeginInvoke() as first step)
 				// if I PopupException from a BrokerAdapter thread, exceptionsForm.Visible and others should throw
 				Form exceptionsForm = Assembler.InstanceInitialized.StatusReporter as Form;
+				Assembler.InstanceInitialized.StatusReporter.PopupException(msg, ex, debuggingBreak);
 			} catch (Exception ex1) {
 				#if DEBUG
-				Debugger.Break();
+				string msg1 = "NOWHERE_ELSE_I_COULD_DUMP_EXCEPTION_BRO";
+				Debugger.Launch();
 				#endif
 			}
-
-			Assembler.InstanceInitialized.StatusReporter.PopupException(msg, ex, debuggingBreak);
 		}
 		public static void DisplayStatus(string msg) {
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();

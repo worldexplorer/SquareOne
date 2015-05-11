@@ -36,7 +36,7 @@ namespace Sq1.Charting.Demo
 			exceptionsForm.Show();
 			Assembler.InstanceUninitialized.Initialize(exceptionsForm);
 			Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
-			exceptionsForm.ExceptionControl.FlushListToTreeIfDockContentDeserialized_inGuiThread();
+			//exceptionsForm.ExceptionControl.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 
 
 			List<Control> twoColumns = new List<Control>() {

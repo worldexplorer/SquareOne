@@ -5,6 +5,8 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Sq1.Core;
 using Sq1.Core.Serializers;
@@ -25,10 +27,30 @@ namespace Sq1.Widgets.Exceptions {
 //				return ret;
 //			} }
 
+		//v2 for delayed auto-flushing
+				List<Exception>			exceptionsNotFlushedYet;
+				Stopwatch				howLongTreeRebuilds;
+				System.Windows.Forms.Timer	rebuildTimerWF;
+				System.Threading.Timer	rebuildTimer;	//http://stackoverflow.com/questions/13026980/wait-with-return-statement-until-timer-elapsed
+				//AutoResetEvent		noMoreNewExceptionsWithinMaxRebuildTime;
+				//Task					threadRebuildingTree;
+				int						rebuildInitialDelay;
+				bool					rebuildingNow;
+				bool					rebuildScheduled { get { return this.rebuildTimerWF != null; } }
+				DateTime				exceptionDateNotFlushedLast;
+				object					lockInsertAsync;
+
 		public ExceptionsControl() : base() {
-			this.lockedByTreeListView = new object();
-			this.Exceptions = new List<Exception>();
-			this.ExceptionTimes = new Dictionary<Exception, DateTime>();
+			lockedByTreeListView = new object();
+			Exceptions = new List<Exception>();
+			ExceptionTimes = new Dictionary<Exception, DateTime>();
+
+			exceptionsNotFlushedYet = new List<Exception>();
+			howLongTreeRebuilds = new Stopwatch();
+			//noMoreNewExceptionsWithinMaxRebuildTime = new AutoResetEvent(false);
+			exceptionDateNotFlushedLast = DateTime.MinValue;
+			rebuildInitialDelay = 10000;
+			lockInsertAsync = new object();
 
 			this.InitializeComponent();
 			//WindowsFormsUtils.SetDoubleBuffered(this.tree);	//doesn't help, still flickers
@@ -37,7 +59,34 @@ namespace Sq1.Widgets.Exceptions {
 			
 			this.exceptionsTreeListViewCustomize();
 			this.treeExceptions.SetObjects(this.Exceptions);
+
+			//this.launchThreadRebuildingTree();
 		}
+
+		//void launchThreadRebuildingTree() {
+		//    threadRebuildingTree = new Task(delegate {
+		//        while (noMoreNewExceptionsWithinMaxRebuildTime.WaitOne()) {
+		//            base.ShowPopupSwitchToGuiThreadRunDelegateInIt(new Action(delegate {
+		//                this.howLongTreeRebuilds.Restart();
+		//                this.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
+		//                this.howLongTreeRebuilds.Stop();	// 11ms
+		//                this.ExceptionsNotFlushedYet.Clear();
+		//            }));
+		//        }
+		//    });
+		//    threadRebuildingTree.ContinueWith(delegate {
+		//        string msg2 = "TASK_THREW_ExceptionsControl.launchThreadRebuildingTree()";
+		//        Assembler.PopupException(msg2, t.Exception);
+		//    }, TaskContinuationOptions.OnlyOnFaulted);
+		//    threadRebuildingTree.Start();
+		//}
+		//protected override void Dispose(bool disposing) {
+		//    if (disposing && (components != null)) {
+		//        components.Dispose();
+		//    }
+		//    threadRebuildingTree.Dispose();		//you dispose when it's still alive; who's gonna stop this thread??
+		//    base.Dispose(disposing);
+		//}
 
 		public void Initialize() {
 			//WARNING! LiveSimControl uses non-ExceptionsForm-singleton MULTIPLE ExceptionsControls for LivesimStreamingEditor and LivesimBrokerEditor
@@ -92,28 +141,38 @@ namespace Sq1.Widgets.Exceptions {
 			//late binding prevents SplitterMoved() induced by DockContent layouting LoadAsXml()ed docked forms 
 			this.splitContainerVertical.SplitterMoved -= new System.Windows.Forms.SplitterEventHandler(this.splitContainerVertical_SplitterMoved);
 			this.splitContainerVertical.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerVertical_SplitterMoved);
-			this.splitContainerHorizontal.SplitterMoved -= new System.Windows.Forms.SplitterEventHandler(this.SplitContainerHorizontal_SplitterMoved);
-			this.splitContainerHorizontal.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.SplitContainerHorizontal_SplitterMoved);
+			this.splitContainerHorizontal.SplitterMoved -= new System.Windows.Forms.SplitterEventHandler(this.splitContainerHorizontal_SplitterMoved);
+			this.splitContainerHorizontal.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainerHorizontal_SplitterMoved);
 
 			this.mniRecentAlwaysSelected.Checked = this.DataSnapshot.RecentAlwaysSelected;
 			this.mniltbDelay.InputFieldValue = this.DataSnapshot.TreeRefreshDelayMsec.ToString();
 			this.mniTreeShowExceptionTime.Checked = this.DataSnapshot.TreeShowExceptionTime;
 			this.olvTime.Text = this.DataSnapshot.TreeShowExceptionTime ? "Time" : "Message";
 		}
-		public void InsertExceptionBlocking(Exception exception) { lock (this.lockedByTreeListView) {
+		public void InsertExceptionBlocking(Exception exception) {
 			if (exception == null) {
 				string msg = "DONT_INVOKE_ME_WITH_NULL";
-				Assembler.PopupException(msg);
+				//v1 IM_AFRAID_OF_RECURSION_HERE Assembler.PopupException(msg);
+				//v2
+				#if DEBUG
+				Debugger.Launch();
+				#endif
 				return;
 			}
-			if (this.Exceptions.Count == 0) {
-				string msg = "SHOULD_HAPPEN_ONCE_PER_APP_LIFETIME";
-				//Debugger.Break();
+			lock (this.lockedByTreeListView) {
+				if (this.rebuildingNow) {
+					this.exceptionsNotFlushedYet.Add(exception);
+					return;
+				}
+				if (this.Exceptions.Count == 0) {
+					string msg = "SHOULD_HAPPEN_ONCE_PER_APP_LIFETIME";
+					//Debugger.Break();
+				}
+
+				this.ExceptionTimes.Add(exception, DateTime.Now);
+				this.Exceptions.Insert(0, exception);
 			}
 
-			this.ExceptionTimes.Add(exception, DateTime.Now);
-			this.Exceptions.Insert(0, exception);
-			
 			//flushToTree will visualize whole the control AFTER IT WILL BE SHOWN 
 //			this.treeExceptions.SetObjects(this.Exceptions);
 //			//this.tree.RefreshObject(exception);
@@ -124,11 +183,11 @@ namespace Sq1.Widgets.Exceptions {
 //			this.treeExceptions.Expand(exception);
 //			// MAKES StrategiesTreeControl.CellClick invoke handlers 100 times!!! nonsense I know Application.DoEvents();	// TsiProgressBarETAClick doesn't get control when every quote there is an exception and user can't interrupt the backtest
 			// MOVED_TO_EXCEPTIONS_FORM this.FlushListToTreeIfDockContentDeserialized();
-		} }
+		}
 		void selectMostRecentException() {
 			if (this.treeExceptions.GetItemCount() == 0) return;
 			this.treeExceptions.SelectedIndex = 0;
-			this.treeExceptions.RefreshSelectedObjects();
+			//WHAT_FOR? this.treeExceptions.RefreshSelectedObjects();
 			this.treeExceptions.EnsureVisible(0);
 		}
 		void displayStackTrace() {
@@ -155,12 +214,81 @@ namespace Sq1.Widgets.Exceptions {
 				this.lvStackTrace.EndUpdate();
 			}
 		}
-		public void InsertSyncAndFlushListToTreeIfDockContentDeserialized_inGuiThread(Exception ex) { lock (this.lockedByTreeListView) {
+		public void InsertSyncAndFlushExceptionsToOLVIfDockContentDeserialized_inGuiThread(Exception ex) { lock (this.lockedByTreeListView) {
 			this.InsertExceptionBlocking(ex);
 			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-			this.FlushListToTreeIfDockContentDeserialized_inGuiThread();
+			//v1
+			this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
+			//v2 "When the ListView is in virtual mode, you cannot add items to the ListView items collection. Use  the VirtualListSize property instead to change the size of the ListView items collection."
+			//Stopwatch howLongToInsert = new Stopwatch();
+			//howLongToInsert.Start();
+			//this.InsertExceptionToOLVIfDockContentDeserialized_inGuiThread(ex);
+			//howLongToInsert.Stop();
 		} }
-		public void FlushListToTreeIfDockContentDeserialized_inGuiThread() { lock (this.lockedByTreeListView) {
+		//public void InsertExceptionToOLVIfDockContentDeserialized_inGuiThread(Exception ex) { lock (this.lockedByTreeListView) {
+		//	if (base.DesignMode) return;
+		//	if (Assembler.IsInitialized == false) return; //I_HATE_LIVESIM_FORM_THROWING_EXCEPTIONS_IN_DESIGN_MODE
+		//	// WINDOWS.FORMS.VISIBLE=FALSE_IS_SET_BY_DOCK_CONTENT_LUO ANALYZE_DockContentImproved.IsShown_INSTEAD if (this.Visible == false) return;
+		//	if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+		//		return;
+		//	}
+		//	if (this.InvokeRequired) {
+		//		// this.BeginInvoke((MethodInvoker)delegate() { this.InsertExceptionToOLVIfDockContentDeserialized_inGuiThread(); });
+		//		string msg = "I_MUST_BE_ALREADY_IN_GUI_THREAD__HOPING_TO_INSERT_IN_SEQUENCE_OF_INVOCATION";
+		//		Debugger.Break();
+		//		return;
+		//	}
+		//	if (this.Exceptions.Count > 0) {
+		//		Exception lastAdded = this.Exceptions[0];
+		//		string msg = "HELPS_TO_FIGURE_OUT_MESSAGE_WHILE_ALREADY_IN_GUI_THREAD";
+		//	}
+		//	// "When the ListView is in virtual mode, you cannot add items to the ListView items collection. Use  the VirtualListSize property instead to change the size of the ListView items collection."
+		//	this.treeExceptions.InsertObjects(0, new List<Exception>() {ex});
+		//	this.treeExceptions.Expand(ex);
+		//	this.selectMostRecentException();
+		//} }
+		//[Obsolete("USING_INSERT_INSTEAD_OF_FLUSH__MIGHT_BE_SUITABLE_FOR_MNI_REBUILD_ALL")]
+		public void InsertAsyncAutoFlush(Exception ex) {
+			lock(this.lockInsertAsync) {
+				this.InsertExceptionBlocking(ex);
+				if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+					return;
+				}
+				if (this.rebuildScheduled) {
+					//return;
+					// third exception came in (tree might have finished rebuilding from first), and we scheduled a rebuild for second => postpone the second rebuild
+					TimeSpan rebuildPostponingDelay = DateTime.Now.Subtract(this.exceptionDateNotFlushedLast);
+					rebuildPostponingDelay = new TimeSpan(0, 0, 0, 1);
+					//this.rebuildTimer.Change(rebuildPostponingDelay.Ticks, System.Threading.Timeout.Infinite);
+					this.rebuildTimerWF.Stop();
+					this.rebuildTimerWF.Interval = (int) rebuildPostponingDelay.TotalMilliseconds;
+					this.rebuildTimerWF.Start();
+					this.exceptionDateNotFlushedLast = DateTime.Now;
+					return;
+				}
+				if (	this.rebuildingNow
+					||  this.InvokeRequired == false	// if we are in GUI thread, go on timer immediately (correlator throwing thousands at startup, or chart.OnPaint() doing something wrong)
+					) {
+					// second exception came in while tree was rebuilding (after the first one wasn't finished) => schedule rebuild in 
+					//this.rebuildTimer = new System.Threading.Timer((TimerCallback)this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread, null
+					//	, this.rebuildInitialDelay, System.Threading.Timeout.Infinite);
+					this.rebuildTimerWF = new System.Windows.Forms.Timer();
+					this.rebuildTimerWF.Interval = this.rebuildInitialDelay;
+					this.rebuildTimerWF.Tick += new EventHandler(rebuildTimerWF_Tick);
+					this.rebuildTimerWF.Start();
+					this.exceptionDateNotFlushedLast = DateTime.Now;
+					return;
+				}
+				// first exception came in => rebuild immediately, but mark already now that all other fresh exceptions would line up by timer
+				this.rebuildingNow = true;
+			}
+			this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
+		}
+
+		void rebuildTimerWF_Tick(object sender, EventArgs e) {
+			this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
+		}
+		public void flushExceptionsToOLVIfDockContentDeserialized_inGuiThread(object stateForTimerCallback = null) {
 			if (base.DesignMode) return;
 			if (Assembler.IsInitialized == false) return; //I_HATE_LIVESIM_FORM_THROWING_EXCEPTIONS_IN_DESIGN_MODE
 			// WINDOWS.FORMS.VISIBLE=FALSE_IS_SET_BY_DOCK_CONTENT_LUO ANALYZE_DockContentImproved.IsShown_INSTEAD if (this.Visible == false) return;
@@ -168,23 +296,71 @@ namespace Sq1.Widgets.Exceptions {
 				return;
 			}
 			if (this.InvokeRequired) {
-				this.BeginInvoke((MethodInvoker) delegate() { this.FlushListToTreeIfDockContentDeserialized_inGuiThread(); });
+				this.BeginInvoke((MethodInvoker)delegate() { this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread(); });
+				//string msg = "I_MUST_BE_ALREADY_IN_GUI_THREAD__HOPING_TO_INSERT_IN_SEQUENCE_OF_INVOCATION";
+				//Debugger.Break();
 				return;
+			} else {
+				string msg = "if we are in GUI thread, go on timer immediately (correlator throwing thousands at startup, or chart.OnPaint() doing something wrong)";
+				//return;
 			}
-			if (this.Exceptions.Count > 0) {
-				Exception lastAdded = this.Exceptions[0];
-				string msg = "HELPS_TO_FIGURE_OUT_MESSAGE_WHILE_ALREADY_IN_GUI_THREAD";
+			try {
+				lock (this.lockedByTreeListView) {
+					if (this.rebuildingNow != true) {
+						string msg = "DONT_USE_V1_WAY_TO_INVOKE_ME__USE_InsertAsyncAutoFlush()";
+						#if DEBUG
+						Debugger.Launch();
+						#endif
+					} else {
+						return;
+					}
+					foreach (Exception ex in this.exceptionsNotFlushedYet) {
+						this.Exceptions.Insert(0, ex);
+					}
+					this.exceptionsNotFlushedYet.Clear();
+					if (this.Exceptions.Count > 0) {
+						Exception lastAdded = this.Exceptions[0];
+						string msg = "HELPS_TO_FIGURE_OUT_MESSAGE_WHILE_ALREADY_IN_GUI_THREAD";
+					}
+					//v1
+					this.treeExceptions.SetObjects(this.Exceptions);
+					this.treeExceptions.RebuildAll(true);
+					if (this.Exceptions.Count == 0) {
+						this.txtExceptionMessage.Text = "";
+						this.lvStackTrace.Items.Clear();
+						return;
+					}
+					this.treeExceptions.ExpandAll();
+					this.selectMostRecentException();
+					//v2
+					//return;
+					//v3
+					//Thread.Sleep(10000);
+				}
+			} catch(Exception ex) {
+				string msg = "NOWHERE_TO_DUMP_EXCEPTION_DURING_FLUSHING";
+				throw new Exception(msg, ex);
+			} finally {
+				this.rebuildingNow = false;
+				//this.rebuildTimer.Dispose();
+				//this.rebuildTimer = null;
+				if (this.rebuildTimerWF != null) {
+					this.rebuildTimerWF.Stop();
+					this.rebuildTimerWF.Dispose();
+					this.rebuildTimerWF = null;
+				} else {
+					string msg = "YOU_CLICKED_MNI_EXCEPTIONS_CLEAR_OR_REFRESH";
+				}
+				if (this.InvokeRequired == false) {
+					Form parentForm = this.Parent as Form;
+					if (parentForm != null) {
+						string counters = this.Exceptions.Count.ToString();
+						if (this.exceptionsNotFlushedYet.Count > 0) counters += "/" + this.exceptionsNotFlushedYet.Count;
+						parentForm.Text = "Exceptions (" + counters + ")";
+					}
+				}
 			}
-			this.treeExceptions.SetObjects(this.Exceptions);
-			this.treeExceptions.RebuildAll(true);
-			if (this.Exceptions.Count == 0) {
-				this.txtExceptionMessage.Text = "";
-				this.lvStackTrace.Items.Clear();
-				return;
-			}
-			this.treeExceptions.ExpandAll();
-			this.selectMostRecentException();
-		} }
+		}
 		public override string ToString() {
 			StringBuilder formattedException = new StringBuilder();
 			if (this.exceptionSelectedInTree != null) {
@@ -208,11 +384,11 @@ namespace Sq1.Widgets.Exceptions {
 					StackFrame exceptionFrame = exceptionStack.GetFrame(i);
 
 					formattedException.Append("\t").Append("Method Name: ").Append(exceptionFrame.GetMethod().ToString()).Append(Environment.NewLine)
-								.Append("\t").Append("\t").Append("File Name: ").Append(exceptionFrame.GetFileName()).Append(Environment.NewLine)
-								.Append("\t").Append("\t").Append("Column: ").Append(exceptionFrame.GetFileColumnNumber()).Append(Environment.NewLine)
-								.Append("\t").Append("\t").Append("Line: ").Append(exceptionFrame.GetFileLineNumber()).Append(Environment.NewLine)
-								.Append("\t").Append("\t").Append("CIL Offset: ").Append(exceptionFrame.GetILOffset()).Append(Environment.NewLine)
-								.Append("\t").Append("\t").Append("Native Offset: ").Append(exceptionFrame.GetNativeOffset()).Append(Environment.NewLine)
+						.Append("\t").Append("\t").Append("File Name: ").Append(exceptionFrame.GetFileName()).Append(Environment.NewLine)
+						.Append("\t").Append("\t").Append("Column: ").Append(exceptionFrame.GetFileColumnNumber()).Append(Environment.NewLine)
+						.Append("\t").Append("\t").Append("Line: ").Append(exceptionFrame.GetFileLineNumber()).Append(Environment.NewLine)
+						.Append("\t").Append("\t").Append("CIL Offset: ").Append(exceptionFrame.GetILOffset()).Append(Environment.NewLine)
+						.Append("\t").Append("\t").Append("Native Offset: ").Append(exceptionFrame.GetNativeOffset()).Append(Environment.NewLine)
 						.Append(Environment.NewLine);
 				}
 
@@ -245,10 +421,5 @@ namespace Sq1.Widgets.Exceptions {
 		public void CopyExceptionDataToClipboard() {
 			Clipboard.SetDataObject(this.ToString(), true);
 		}
-		void mniRecentAlwaysSelected_Click(object sender, EventArgs e) {
-			this.DataSnapshot.RecentAlwaysSelected = this.mniRecentAlwaysSelected.Checked;
-			this.DataSnapshotSerializer.Serialize();
-			this.selectMostRecentException();
-		}				
 	}
 }

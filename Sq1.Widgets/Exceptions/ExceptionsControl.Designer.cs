@@ -35,6 +35,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.lvhFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.ctxCallStack = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniCopyStackPosition = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.treeExceptions)).BeginInit();
 			this.ctxTree.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerVertical)).BeginInit();
@@ -52,14 +53,13 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			this.treeExceptions.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.treeExceptions.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.olvTime});
+            this.olvTime});
 			this.treeExceptions.ContextMenuStrip = this.ctxTree;
 			this.treeExceptions.CopySelectionOnControlC = false;
 			this.treeExceptions.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeExceptions.EmptyListMsg = "";
 			this.treeExceptions.FullRowSelect = true;
 			this.treeExceptions.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.treeExceptions.HeaderUsesThemes = false;
 			this.treeExceptions.HideSelection = false;
 			this.treeExceptions.IncludeColumnHeadersInCopy = true;
 			this.treeExceptions.IncludeHiddenColumnsInDataTransfer = true;
@@ -84,36 +84,36 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			// olvTime
 			// 
-			this.olvTime.CellPadding = null;
 			this.olvTime.FillsFreeSpace = true;
 			this.olvTime.Text = "Time";
 			// 
 			// ctxTree
 			// 
 			this.ctxTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniRecentAlwaysSelected,
-			this.mniTreeShowExceptionTime,
-			this.mniltbDelay,
-			this.toolStripSeparator1,
-			this.mniCopy,
-			this.mniClear});
+            this.mniRecentAlwaysSelected,
+            this.mniTreeShowExceptionTime,
+            this.mniltbDelay,
+            this.toolStripSeparator1,
+            this.mniCopy,
+            this.mniClear,
+            this.mniRefresh});
 			this.ctxTree.Name = "ctx";
-			this.ctxTree.Size = new System.Drawing.Size(255, 122);
+			this.ctxTree.Size = new System.Drawing.Size(235, 166);
 			// 
 			// mniRecentAlwaysSelected
 			// 
 			this.mniRecentAlwaysSelected.CheckOnClick = true;
 			this.mniRecentAlwaysSelected.Name = "mniRecentAlwaysSelected";
 			this.mniRecentAlwaysSelected.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.R)));
-			this.mniRecentAlwaysSelected.Size = new System.Drawing.Size(254, 22);
+			this.mniRecentAlwaysSelected.Size = new System.Drawing.Size(234, 22);
 			this.mniRecentAlwaysSelected.Text = "Recent Always Selected";
 			this.mniRecentAlwaysSelected.Click += new System.EventHandler(this.mniRecentAlwaysSelected_Click);
 			// 
-			// mniTreeShowsTimesInsteadOfMessages
+			// mniTreeShowExceptionTime
 			// 
 			this.mniTreeShowExceptionTime.CheckOnClick = true;
 			this.mniTreeShowExceptionTime.Name = "mniTreeShowExceptionTime";
-			this.mniTreeShowExceptionTime.Size = new System.Drawing.Size(254, 22);
+			this.mniTreeShowExceptionTime.Size = new System.Drawing.Size(234, 22);
 			this.mniTreeShowExceptionTime.Text = "Show Timestamps";
 			this.mniTreeShowExceptionTime.Click += new System.EventHandler(this.mniTreeShowsTimesInsteadOfMessages_Click);
 			// 
@@ -121,26 +121,33 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			this.mniltbDelay.BackColor = System.Drawing.Color.Transparent;
 			this.mniltbDelay.Enabled = false;
+			this.mniltbDelay.InputFieldAlignedRight = false;
+			this.mniltbDelay.InputFieldEditable = false;
 			this.mniltbDelay.InputFieldOffsetX = 80;
 			this.mniltbDelay.InputFieldValue = "";
 			this.mniltbDelay.InputFieldWidth = 0;
 			this.mniltbDelay.Name = "mniltbDelay";
-			this.mniltbDelay.Size = new System.Drawing.Size(165, 21);
+			this.mniltbDelay.Size = new System.Drawing.Size(83, 21);
 			this.mniltbDelay.TextLeft = "Delay, msec:";
+			this.mniltbDelay.TextLeftOffsetX = 0;
+			this.mniltbDelay.TextLeftWidth = 75;
 			this.mniltbDelay.TextRed = false;
+			this.mniltbDelay.TextRight = "~= 121pips";
+			this.mniltbDelay.TextRightOffsetX = 83;
+			this.mniltbDelay.TextRightWidth = 68;
 			this.mniltbDelay.Visible = false;
 			this.mniltbDelay.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDelay_UserTyped);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(251, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(231, 6);
 			// 
 			// mniCopy
 			// 
 			this.mniCopy.Name = "mniCopy";
 			this.mniCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.mniCopy.Size = new System.Drawing.Size(254, 22);
+			this.mniCopy.Size = new System.Drawing.Size(234, 22);
 			this.mniCopy.Text = "Copy";
 			this.mniCopy.Click += new System.EventHandler(this.mniCopy_Click);
 			// 
@@ -148,7 +155,7 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			this.mniClear.Name = "mniClear";
 			this.mniClear.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.C)));
-			this.mniClear.Size = new System.Drawing.Size(254, 22);
+			this.mniClear.Size = new System.Drawing.Size(234, 22);
 			this.mniClear.Text = "Clear";
 			this.mniClear.Click += new System.EventHandler(this.mniClear_Click);
 			// 
@@ -210,10 +217,10 @@ namespace Sq1.Widgets.Exceptions {
 			this.lvStackTrace.Activation = System.Windows.Forms.ItemActivation.OneClick;
 			this.lvStackTrace.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.lvStackTrace.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.lvhMethod,
-			this.lvhDeclaringClass,
-			this.lvhLine,
-			this.lvhFile});
+            this.lvhMethod,
+            this.lvhDeclaringClass,
+            this.lvhLine,
+            this.lvhFile});
 			this.lvStackTrace.ContextMenuStrip = this.ctxCallStack;
 			this.lvStackTrace.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.lvStackTrace.FullRowSelect = true;
@@ -251,7 +258,7 @@ namespace Sq1.Widgets.Exceptions {
 			// ctxCallStack
 			// 
 			this.ctxCallStack.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.mniCopyStackPosition});
+            this.mniCopyStackPosition});
 			this.ctxCallStack.Name = "ctxCallStack";
 			this.ctxCallStack.Size = new System.Drawing.Size(145, 26);
 			// 
@@ -262,6 +269,14 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniCopyStackPosition.Size = new System.Drawing.Size(144, 22);
 			this.mniCopyStackPosition.Text = "Copy";
 			this.mniCopyStackPosition.Click += new System.EventHandler(this.mniCopyStackPosition_Click);
+			// 
+			// mniRefresh
+			// 
+			this.mniRefresh.Name = "mniRefresh";
+			this.mniRefresh.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+			this.mniRefresh.Size = new System.Drawing.Size(234, 22);
+			this.mniRefresh.Text = "Refresh";
+			this.mniRefresh.Click += new System.EventHandler(this.mniRefresh_Click);
 			// 
 			// ExceptionsControl
 			// 
@@ -307,6 +322,7 @@ namespace Sq1.Widgets.Exceptions {
 		private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.ContextMenuStrip ctxTree;
 		#endregion
+		private ToolStripMenuItem mniRefresh;
 		
 	}
 }

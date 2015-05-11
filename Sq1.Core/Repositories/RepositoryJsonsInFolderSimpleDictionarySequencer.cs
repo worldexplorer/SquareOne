@@ -15,7 +15,7 @@ namespace Sq1.Core.Repositories {
 				string msg = "NOT_CHECKING_FOR_REWIDING_KPIs_KOZ_DeserializeSingle(" + fname + ")=null";
 				Assembler.PopupException(msg);
 			} else {
-				ret.CheckPositionsCountMustIncreaseOnly();
+				//ret.CheckPositionsCountMustIncreaseOnly();
 			}
 			return ret;
 		}
