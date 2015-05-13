@@ -32,20 +32,29 @@ namespace Sq1.Widgets.SteppingSlider {
 				if (this.LeftToRight) {		// INVERTED_SLIDER_ORIGINAL TODO: DO_PIXEL_PERFECT_REFACTORING
 					float partOfRange = (float)(this.ValueCurrent - this.ValueMin) / (float)range;
 					this.FilledPercentageCurrentValue = 100 * partOfRange;
-					int widthToFillCurrentValue = (int)Math.Round(widthMinusBorder * partOfRange);
-					
-					g.FillRectangle(brushBgValueCurrent, 0, 0, widthToFillCurrentValue, base.Height);
+					int widthToFillFromMinToCurrent = (int)Math.Round(widthMinusBorder * partOfRange);
+
+					if (this.fillFromCurrentToMax) {
+						int widthToFillFromCurrentToMax = widthMinusBorder - widthToFillFromMinToCurrent;
+						g.FillRectangle(brushBgValueCurrent, widthToFillFromMinToCurrent, 0, widthToFillFromCurrentToMax, base.Height);
+					} else {
+						g.FillRectangle(brushBgValueCurrent, 0, 0, widthToFillFromMinToCurrent, base.Height);
+					}
 					using (Pen curPurple = new Pen(base.ForeColor)) {
-						g.DrawLine(curPurple, widthToFillCurrentValue, 0, widthToFillCurrentValue, base.Height);
+						g.DrawLine(curPurple, widthToFillFromMinToCurrent, 0, widthToFillFromMinToCurrent, base.Height);
 					}
 
-					int widthToFillMouseOver = 0;
+					int widthToFillFromMinToMouseOver = (int)Math.Round((widthMinusBorder * this.FilledPercentageMouseOver / 100));
 					if (this.mouseOver) {
-						widthToFillMouseOver = (int)Math.Round((widthMinusBorder * this.FilledPercentageMouseOver / 100));
-						g.FillRectangle(brushBgMouseOver, 0, 0, widthToFillMouseOver, base.Height);
+						if (this.fillFromCurrentToMax) {
+							int widthToFillFromMouseOverToMax = widthMinusBorder - widthToFillFromMinToMouseOver;
+							g.FillRectangle(brushBgMouseOver, widthToFillFromMinToMouseOver, 0, widthToFillFromMouseOverToMax, base.Height);
+						} else {
+							g.FillRectangle(brushBgMouseOver, 0, 0, widthToFillFromMinToMouseOver, base.Height);
+						}
 					}
 	
-					int valueCurrentXpos = widthToFillCurrentValue - valueCurrentWidthMeasured - base.Padding.Right - paddingRight;
+					int valueCurrentXpos = widthToFillFromMinToCurrent - valueCurrentWidthMeasured - base.Padding.Right - paddingRight;
 					int valueMinEndsAt = valueMinWidthMeasured + base.Padding.Left;
 					bool currentOverlapsMin = valueCurrentXpos < valueMinEndsAt;
 					if (currentOverlapsMin == false) {
@@ -54,7 +63,7 @@ namespace Sq1.Widgets.SteppingSlider {
 	
 					int labelTextXposition = base.Padding.Left + valueMinWidthMeasured + paddingLeft;
 					int valueMaxXpos = widthMinusBorder - valueMaxWidthMeasured - base.Padding.Right - paddingRight;
-					bool currentOverlapsMax = widthToFillCurrentValue > valueMaxXpos;
+					bool currentOverlapsMax = widthToFillFromMinToCurrent > valueMaxXpos;
 					if (currentOverlapsMax == false || this.mouseOver == true) {
 						g.DrawString(this.ValueMax.ToString(this.ValueFormat), this.Font, this.brushFgText, valueMaxXpos, labelYposition);
 // LOOKS LIKE NONSENSE here in ORIGINAL LeftToRight version (TODO: comment out and observe the "missing")
@@ -68,7 +77,7 @@ namespace Sq1.Widgets.SteppingSlider {
 					if (this.mouseOver == true && this.ValueMouseOver > this.ValueMin) {	// && this.ValueMouseOver < this.ValueMax) {
 						g.DrawString(this.LabelText, this.Font, this.brushFgParameterLabel, labelTextXposition, labelYposition);
 	
-						int valueMouseOverXpos = widthToFillMouseOver - valueMouseOverWidthMeasured - base.Padding.Right - paddingRight;
+						int valueMouseOverXpos = widthToFillFromMinToMouseOver - valueMouseOverWidthMeasured - base.Padding.Right - paddingRight;
 						if (valueMouseOverXpos < base.Padding.Right + paddingRight) valueMouseOverXpos = base.Padding.Right + paddingRight;
 						g.FillRectangle(brushBgMouseOver, valueMouseOverXpos, 0, valueMouseOverWidthMeasured, base.Height);
 	
@@ -77,7 +86,7 @@ namespace Sq1.Widgets.SteppingSlider {
 						g.DrawString(this.LabelText, this.Font, this.brushFgParameterLabel, labelTextXposition, labelYposition);
 						g.DrawString(this.ValueCurrent.ToString(this.ValueFormat), this.Font, this.brushFgText, valueCurrentXpos, labelYposition);
 					}
-				} else {		// INVERTED_SLIDER_ORIGINAL_PORTED_BY_MIRRORRING; MAX and MIN INVERTED BELOW
+				} else {		// INVERTED_SLIDER_ORIGINAL_PORTED_BY_MIRRORRING; MAX and MIN INVERTED BELOW; NOT_PORTED: if (this.fillFromCurrentToMax)
 					float partOfRange = (float)(this.ValueCurrent - this.ValueMax) / (float)range;
 					this.FilledPercentageCurrentValue = 100 * partOfRange;
 					int widthToFillCurrentValue = (int)Math.Round(widthMinusBorder * partOfRange);

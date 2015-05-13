@@ -7,8 +7,8 @@ using Sq1.Core;
 using Sq1.Core.Indicators;
 using Sq1.Core.Sequencing;
 using Sq1.Core.StrategyBase;
-using Sq1.Widgets.LabeledTextBox;
 using Sq1.Core.Repositories;
+using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.Sequencing {
 	public partial class SequencerControl {
@@ -61,7 +61,8 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvBacktests.EmptyListMsg = threadsLaunched + " threads launched";
 			this.olvBacktests.UseWaitCursor = true;
 			
-			this.statsAndHistoryCollapse();
+			//v1 this.statsAndHistoryCollapse();
+			this.cbxExpanded.Checked = false;
 		}
 
 //		void sequencer_OnBacktestStarted(object sender, EventArgs e) {
@@ -77,6 +78,7 @@ namespace Sq1.Widgets.Sequencing {
 				return;
 			}
 			this.backtestsLocalEasierToSync.Add(e.SystemPerformanceRestoreAble);
+
 			//v1 this.olvBacktests.SetObjects(this.backtests, true); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
 			this.olvBacktests.AddObject(e.SystemPerformanceRestoreAble);
 			
@@ -124,10 +126,19 @@ namespace Sq1.Widgets.Sequencing {
 			//}
 			//strategy.Serialize();
 			//v2
-			this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync, symbolScaleRange);
+			//this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync, symbolScaleRange);
+			//v3
+			if (this.backtestsLocalEasierToSync.ProfitFactorAverage == 0) {
+				this.backtestsLocalEasierToSync.CalculateProfitFactorAverage();
+			}
+			string fnameWithPFappended = FnameDateSizeColorPFavg.AppendProfitFactorAverage(
+				symbolScaleRange, this.backtestsLocalEasierToSync.ProfitFactorAverage);
+			this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync, fnameWithPFappended);
 			this.backtestsLocalEasierToSync.CheckPositionsCountMustIncreaseOnly();
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
-			this.statsAndHistoryExpand();
+
+			//v1 this.statsAndHistoryExpand();
+			this.cbxExpanded.Checked = true;
 			this.RaiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
 		}
 		void sequencer_OnSequencerAborted(object sender, EventArgs e) {
@@ -247,7 +258,7 @@ namespace Sq1.Widgets.Sequencing {
 //		}
 		void olvBacktests_CellRightClick(object sender, CellRightClickEventArgs e) {
 			if (e.RowIndex == -1) return;	// right click on the blank space (not on a row with data)
-			e.MenuStrip = this.ctxOneBacktestResult;
+			e.MenuStrip = this.ctxBacktests_OneResult;
 		}
 		void mniCopyToClipboard_Click(object sender, EventArgs e) {
 			Assembler.DisplayStatus("USER_OLVs_CTRL+A,CTRL+C NYI SequencerControl.mniCopyToClipboard_Click()");
@@ -269,14 +280,15 @@ namespace Sq1.Widgets.Sequencing {
 			this.mniltbCopyToNewContextBacktest.InputFieldValue	= uniqueBacktestNumbers;
 
 			//string stratSymbolScaleRange	= sysPerfRestoreAble.StrategyName + " " + sysPerfRestoreAble.SymbolScaleIntervalDataRange;
-			string stratSymbolScaleRange	= "FIX_MY_StrategyName + sysPerfRestoreAble.SymbolScaleIntervalDataRange";
+			//string stratSymbolScaleRange = "FIX_MY_StrategyName + sysPerfRestoreAble.SymbolScaleIntervalDataRange";
+			string stratSymbolScaleRange	= this.sequencer.Executor.StrategyName + " " + this.sequencer.SymbolScaleIntervalAsString;
 			this.mniInfo.Text				= uniqueBacktestNumbers + " => " + stratSymbolScaleRange;
 		}
 		void olvHistory_ItemActivate(object sender, EventArgs e) {
 			try {
-				FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
+				FnameDateSizeColorPFavg fname = this.olvHistory.SelectedObject as FnameDateSizeColorPFavg;
 				if (fname == null) return;
-                this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(fname.Name);
+				this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(fname.SymbolScaleRange);
 			} catch (Exception ex) {
 				string msg = "FIXME //olvHistory_ItemActivate()";
 				Assembler.PopupException(msg, ex);
@@ -285,11 +297,11 @@ namespace Sq1.Widgets.Sequencing {
 		void olvHistory_KeyDown(object sender, KeyEventArgs e) {
 			try {
 				if (e.KeyCode == Keys.Delete) {
-					FnameDateSizeColor fname = this.olvHistory.SelectedObject as FnameDateSizeColor;
+					FnameDateSizeColorPFavg fname = this.olvHistory.SelectedObject as FnameDateSizeColorPFavg;
 					if (fname == null) return;
 					bool deleted = this.RepositoryJsonSequencer.ItemDelete_dirtyImplementation(fname);
 					if (deleted == false) {
-						string msg = "FIXME/REFACTOR RepositoryJsonOptimizationResults.ItemDelete_dirtyImplementation(" + fname + ") //olvHistory_KeyDown()";
+						string msg = "FIXME/REFACTOR RepositoryJsonSequencer.ItemDelete_dirtyImplementation(" + fname + ") //olvHistory_KeyDown()";
 						Assembler.PopupException(msg);
 					}
 					this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
@@ -298,6 +310,10 @@ namespace Sq1.Widgets.Sequencing {
 				string msg = "FIXME //olvHistory_KeyDown()";
 				Assembler.PopupException(msg, ex);
 			}
+		}
+
+		void mniOneSequencedBacktest_delete_Click(object sender, EventArgs e) {
+			this.olvHistory_KeyDown(this.olvHistory, new KeyEventArgs(Keys.Delete));
 		}
 		
 		void olvParameters_Click(object sender, EventArgs e) {
@@ -338,10 +354,10 @@ namespace Sq1.Widgets.Sequencing {
 		//	this.sequencer.ExecutorCloneToBeSpawned.Strategy.Serialize();
 		//}
 		void cbxExpandCollapse_CheckedChanged(object sender, EventArgs e) {
-			if (this.cbxExpandCollapse.Checked == true) {
-				this.statsAndHistoryExpand();
+			if (this.cbxExpanded.Checked == true) {
+				this.statsAndHistoryExpand(false);
 			} else {
-				this.statsAndHistoryCollapse();
+				this.statsAndHistoryCollapse(false);
 			}
 		}
 		bool showAllScriptIndicatorParametersInSequencedBacktest;

@@ -215,7 +215,7 @@
       <DependentUpon>RepositoryBarsFile.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\RepositoryJsonsInFolderSimple.cs" />
-    <Compile Include="Repositories\FnameDateSizeColor.cs" />
+    <Compile Include="Repositories\FnameDateSizeColorPFavg.cs" />
     <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionarySequencer.cs" />
     <Compile Include="Repositories\StrategySelfSaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

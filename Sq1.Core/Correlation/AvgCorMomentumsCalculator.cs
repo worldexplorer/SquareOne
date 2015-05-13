@@ -111,7 +111,7 @@ namespace Sq1.Core.Correlation {
 
 			if (paramVarying.Values.Count <= 1) {
 				string msg = "DONT_INVOKE_ME_FOR_A_NON_VARYING_PARAMETER";
-				Assembler.PopupException(msg, null, false);
+				// UNIMPORTANT Assembler.PopupException(msg, null, false);
 				return;
 			}
 

@@ -157,6 +157,16 @@ namespace Sq1.Widgets.SteppingSlider {
 		
 		public bool LeftToRight { get { return (this.ValueMin < this.ValueMax); } }
 
+				bool fillFromCurrentToMax;
+		[Browsable(true)]
+		public	bool FillFromCurrentToMax {
+			get { return this.fillFromCurrentToMax; }
+			set {
+				this.fillFromCurrentToMax = value;
+				this.Invalidate();
+			}
+		}
+
 		IndicatorParameter parameterJustForDebugging;
 		public void SetParameterForDebuggingOnly(IndicatorParameter parameterJustForDebugging) {
 			this.parameterJustForDebugging = parameterJustForDebugging;

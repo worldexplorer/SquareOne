@@ -198,7 +198,10 @@ namespace Newtonsoft.Json.Serialization
 				//if (thereIsHandler) {
 				//	this.HandleError(writer, initialDepth);
 				//} else {
-					string msg = "member[" + member.ToString() + "] value[" + value.ToString() + "] type[" + value.GetType().ToString() + "]";
+					string memberAsString		= member == null ? "[MEMBER_NULL]"		: member.ToString();
+					string valueAsString		= value == null ? "[VALUE_NULL]"		: value.ToString();
+					string valueTypeAsString	= value == null ? "[VALUETYPE_NULL]"	: value.GetType().ToString();
+					string msg = "member[" + memberAsString + "] value[" + valueAsString + "] type[" + valueTypeAsString + "]";
 					throw new Exception(msg, ex);
 				//}
 			}

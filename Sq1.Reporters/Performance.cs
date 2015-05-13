@@ -92,9 +92,9 @@ namespace Sq1.Reporters {
 			this.addCurrency(	   -slice.CommissionBoth,		"Commission", "-CommissionBoth", this.getLviForeColor(-slice.CommissionBoth));
 
 			this.addNumeric(		slice.PositionsCount,		 "All Trades", "PositionsCountClosed", Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.addNumeric(		slice.AvgProfitBoth,		"Avg Profit", "Avg Profit = NetProfitForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.AvgProfitBoth));
-			this.addPercent(		slice.AvgProfitPctBoth,		"Avg Profit %", "Avg Profit % = NetProfitPctForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.AvgProfitPctBoth));
-			this.addNumeric(		slice.AvgBarsHeldBoth,		"Avg Bars Held", "Avg Bars Held = BarsHeldTotalForClosedPositionsBoth / PositionsCountBoth");
+			this.addNumeric(		slice.PositionAvgProfitBoth,		"Avg Profit", "Avg Profit = NetProfitForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.PositionAvgProfitBoth));
+			this.addPercent(		slice.PositionAvgProfitPctBoth,		"Avg Profit %", "Avg Profit % = NetProfitPctForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.PositionAvgProfitPctBoth));
+			this.addNumeric(		slice.PositionAvgBarsHeldBoth,		"Avg Bars Held", "Avg Bars Held = BarsHeldTotalForClosedPositionsBoth / PositionsCountBoth");
 			this.addNumeric(		slice.ProfitPerBarBoth, 	"Profit per Bar", "Profit per Bar = NetProfitForClosedPositionsBoth / BarsHeldTotalForClosedPositionsBoth",	this.getLviForeColor(slice.NetProfitForClosedPositionsBoth));
 			this.addCurrency(		slice.MaxDrawDown,			"Max Drawdown", "Max Drawdown = Min(NetProfitForClosedPositionsBoth - NetProfitPeak)", Color.Empty, Color.Empty, this.getLviForeColor(slice.MaxDrawDown));
 			this.addDateTime(		slice.MaxDrawDownLastLossDate, "Max Drawdown Date", "Max Drawdown Date = Date(Max Drawdown)");

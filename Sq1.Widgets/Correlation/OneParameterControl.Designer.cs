@@ -230,7 +230,8 @@ namespace Sq1.Widgets.Correlation {
 			this.olv.ContextMenuStrip = this.ctxOneParameterControl;
 			this.olv.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olv.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.olv.EmptyListMsg = "";
+			this.olv.EmptyListMsg = "Click on any SequencedBacktest in Sequencer";
+			this.olv.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.olv.FullRowSelect = true;
 			this.olv.IncludeColumnHeadersInCopy = true;
 			this.olv.Location = new System.Drawing.Point(0, 0);

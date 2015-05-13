@@ -44,7 +44,7 @@ namespace Sq1.Core.Sequencing {
 		}
 		public void RaiseOnAllBacktestsFinished() {
 			if (this.OnAllBacktestsFinished == null) {
-				string msg = "SEQUENCER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_OPTIMIZATION_COMPLETE";
+				string msg = "SEQUENCER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_SEQUENCER_COMPLETE";
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -53,20 +53,20 @@ namespace Sq1.Core.Sequencing {
 				this.BacktestsSecondsElapsed = (float) Math.Round(stopWatch.ElapsedMilliseconds / 1000d, 1);
 				this.OnAllBacktestsFinished(this, EventArgs.Empty);
 			} catch (Exception ex) {
-				string msg = "SEQUENCER_CONTROL_THREW_ON_OPTIMIZATION_COMPLETE";
+				string msg = "SEQUENCER_CONTROL_THREW_ON_SEQUENCER_COMPLETE";
 				Assembler.PopupException(msg, ex);
 			}
 		}
 		public void RaiseOnSequencerAborted() {
 			if (this.OnSequencerAborted == null) {
-				string msg = "SEQUENCER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_OPTIMIZATION_ABORTED";
+				string msg = "SEQUENCER_HAS_NO_SUBSCRIBERS_TO_NOTIFY_ABOUT_SEQUENCER_ABORTED";
 				Assembler.PopupException(msg);
 				return;
 			}
 			try {
 				this.OnSequencerAborted(this, EventArgs.Empty);
 			} catch (Exception ex) {
-				string msg = "SEQUENCER_CONTROL_THREW_ON_OPTIMIZATION_ABORTED";
+				string msg = "SEQUENCER_CONTROL_THREW_ON_SEQUENCER_ABORTED";
 				Assembler.PopupException(msg, ex);
 			}
 		}

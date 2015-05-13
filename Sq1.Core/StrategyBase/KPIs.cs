@@ -24,16 +24,12 @@ namespace Sq1.Core.StrategyBase {
 			this.ReasonToExist		= reasonToExist;
 		}
 
-		public KPIs(string reasonToExist, int positionsCountBoth, double netProfitForClosedPositionsBoth
+		public KPIs(string reasonToExist, int positionsCountBoth, double netProfitForClosedPositionsBoth, double positionAvgProfit
 					, double winLossRatio, double profitFactor, double recoveryFactor
 					, double maxDrawDown, double maxConsecWinners, double maxConsecLosers) : this(reasonToExist) {
 			this.PositionsCount		= positionsCountBoth;
 			this.NetProfit			= netProfitForClosedPositionsBoth;
-			if (this.PositionsCount != 0) {
-				this.PositionAvgProfit = this.NetProfit / this.PositionsCount;
-			} else {
-				string msg = "WHEN_YOU_HAVE_TWO_MAs_SAME_PERIOD_THERE_WILL_BE_NO_POSITIONS_AND_ALL_NANs_INFINITIES_AND_ZEROES";
-			}
+			this.PositionAvgProfit	= positionAvgProfit;
 			this.WinLossRatio		= winLossRatio;
 			this.ProfitFactor		= profitFactor;
 			this.RecoveryFactor		= recoveryFactor;
@@ -106,29 +102,31 @@ namespace Sq1.Core.StrategyBase {
 			this.MaxConsecLosers	= 0;
 		}
 		protected void AbsorbFrom(KPIs finalForSubset) {
-			this.PositionsCount			= finalForSubset.PositionsCount;
-			this.PositionAvgProfit		= finalForSubset.PositionAvgProfit;
-			this.NetProfit				= finalForSubset.NetProfit;
-			this.WinLossRatio			= finalForSubset.WinLossRatio;
-			this.ProfitFactor			= finalForSubset.ProfitFactor;
-			this.RecoveryFactor			= finalForSubset.RecoveryFactor;
-			this.MaxDrawDown			= finalForSubset.MaxDrawDown;
-			this.MaxConsecWinners		= finalForSubset.MaxConsecWinners;
-			this.MaxConsecLosers		= finalForSubset.MaxConsecLosers;
+			this.PositionsCount		= finalForSubset.PositionsCount;
+			this.PositionAvgProfit	= finalForSubset.PositionAvgProfit;
+			this.NetProfit			= finalForSubset.NetProfit;
+			this.WinLossRatio		= finalForSubset.WinLossRatio;
+			this.ProfitFactor		= finalForSubset.ProfitFactor;
+			this.RecoveryFactor		= finalForSubset.RecoveryFactor;
+			this.MaxDrawDown		= finalForSubset.MaxDrawDown;
+			this.MaxConsecWinners	= finalForSubset.MaxConsecWinners;
+			this.MaxConsecLosers	= finalForSubset.MaxConsecLosers;
 		}
 		public void Invert() {
-			this.PositionsCount			*= -1;
-			this.PositionAvgProfit		*= -1;
-			this.NetProfit				*= -1;
-			this.WinLossRatio			*= -1;
-			this.ProfitFactor			*= -1;
-			this.RecoveryFactor			*= -1;
-			this.MaxDrawDown			*= -1;
-			this.MaxConsecWinners		*= -1;
-			this.MaxConsecLosers		*= -1;
+			this.PositionsCount		*= -1;
+			this.PositionAvgProfit	*= -1;
+			this.NetProfit			*= -1;
+			this.WinLossRatio		*= -1;
+			this.ProfitFactor		*= -1;
+			this.RecoveryFactor		*= -1;
+			this.MaxDrawDown		*= -1;
+			this.MaxConsecWinners	*= -1;
+			this.MaxConsecLosers	*= -1;
 		}
 		public KPIs Clone() {
-			return (KPIs)this.MemberwiseClone();
+			KPIs ret = (KPIs)this.MemberwiseClone();
+			ret.ReasonToExist += "_CLONED";
+			return ret;
 		}
 		public override string ToString() {
 			string netFormatted = this.NetProfit.ToString("N2").Replace(",", "");	//copypaste from NetProfitRecoveryForScriptContextNewName

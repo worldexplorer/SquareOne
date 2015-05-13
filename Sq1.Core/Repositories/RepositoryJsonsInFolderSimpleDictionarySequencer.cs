@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 using Sq1.Core.Sequencing;
 
@@ -9,6 +10,14 @@ namespace Sq1.Core.Repositories {
 		public RepositoryJsonsInFolderSimpleDictionarySequencer() : base()	{
 		}
 
+		public override void SerializeSingle(SequencedBacktests backtests, string jsonRelname) {
+			string jsonRelnameForSaving = jsonRelname;
+			jsonRelnameForSaving += base.Extension;
+			string jsonAbsname = Path.Combine(base.AbsPath, jsonRelname);
+			backtests.FileName = jsonAbsname;
+
+			base.SerializeSingle(backtests, jsonRelname);
+		}
 		public override SequencedBacktests DeserializeSingle(string fname) {
 			SequencedBacktests ret = base.DeserializeSingle(fname);
 			if (ret == null) {

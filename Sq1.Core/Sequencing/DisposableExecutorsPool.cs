@@ -105,7 +105,7 @@ namespace Sq1.Core.Sequencing {
 				this.spawnToReachTotalNr(threadsToUse);
 			}
 			for (int i = this.ExecutorsRunningNow; i < threadsToUse; i++) {
-				string ctxName = Sequencer.OPTIMIZATION_CONTEXT_PREFIX + " " + (this.sequencer.BacktestsFinished + 1) + "/" + this.sequencer.BacktestsTotal;
+				string ctxName = Sequencer.ITERATION_PREFIX + (this.sequencer.BacktestsFinished + 1) + "/" + this.sequencer.BacktestsTotal;
 				ContextScript ctxNext = this.parametersSequencer.GetFirstOrNextScriptContext(ctxName);
 				DisposableExecutor launchingIdle = this.executorsIdlingNow[0];
 

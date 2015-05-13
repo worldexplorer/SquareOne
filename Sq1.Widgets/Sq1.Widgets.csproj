@@ -384,13 +384,13 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="StrategiesTree\StrategiesTreeDataSnapshot.cs" />
-    <Compile Include="ToolStripTrackBar\TrackBarControl.cs">
+    <Compile Include="WalkForward\WalkForwardControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ToolStripTrackBar\TrackBarControl.Designer.cs">
-      <DependentUpon>TrackBarControl.cs</DependentUpon>
+    <Compile Include="WalkForward\WalkForwardControl.Designer.cs">
+      <DependentUpon>WalkForwardControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ToolStripTrackBar\ToolStripItemTrackBar.cs">
+    <Compile Include="WalkForward\ToolStripItemTrackBarWalkForward.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
@@ -462,8 +462,8 @@
     <EmbeddedResource Include="StrategiesTree\StrategiesTreeControl.resx">
       <DependentUpon>StrategiesTreeControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ToolStripTrackBar\TrackBarControl.resx">
-      <DependentUpon>TrackBarControl.cs</DependentUpon>
+    <EmbeddedResource Include="WalkForward\WalkForwardControl.resx">
+      <DependentUpon>WalkForwardControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -140,11 +140,11 @@ namespace Sq1.Widgets.SteppingSlider {
 			}
 		}
 
-		[Browsable(true)]
-		public PanelFillSlider InnerPanelFillSlider {
-			get { return this.PanelFillSlider; }
-			set { this.PanelFillSlider = value; }
-		}
+		//[Browsable(true)]	// this is for the Designer, but all its properties are tunneled explicitly via properties here
+		//public PanelFillSlider InnerPanelFillSlider {
+		//    get { return this.PanelFillSlider; }
+		//    set { this.PanelFillSlider = value; }
+		//}
 
 		[Browsable(true)]
 		public DomainUpDownWithMouseEvents InnerDomainUpDownWithMouseEvents {
@@ -156,6 +156,12 @@ namespace Sq1.Widgets.SteppingSlider {
 		public new bool Enabled {
 			get { return base.Enabled; }
 			set { base.Enabled = value; base.Invalidate(); }
+		}
+
+		[Browsable(true)]
+		public bool FillFromCurrentToMax {
+			get { return this.PanelFillSlider.FillFromCurrentToMax; }
+			set { this.PanelFillSlider.FillFromCurrentToMax = value; }
 		}
 		
 		//v2  SteppingSlider_RTL branch: SteppingSlider if Max < Min then draw filled part from right to left

@@ -23,7 +23,7 @@ namespace Sq1.Gui.Singletons {
 		public void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
 			#if DEBUG
 			if (debuggingBreak) {
-				Debugger.Launch();
+				Debugger.Break();
 			}
 			#endif
 

@@ -68,9 +68,9 @@ namespace Sq1.Core.Correlation {
 			return foundInUnchosen;
 		}
 
-		public double SubsetPercentage { get { return this.sequencedBacktestOriginal.SubsetPercentage; } }
-		public bool SubsetPercentageFromEnd { get { return this.sequencedBacktestOriginal.SubsetPercentageFromEnd; } }
-		public DateTime SubsetWaterLineDateTime { get { return this.sequencedBacktestOriginal.SubsetWaterLineDateTime; } }
+		public	double				SubsetPercentage		{ get { return this.sequencedBacktestOriginal.SubsetPercentage; } }
+		public	bool				SubsetPercentageFromEnd { get { return this.sequencedBacktestOriginal.SubsetPercentageFromEnd; } }
+		public	DateTime			SubsetWaterLineDateTime { get { return this.sequencedBacktestOriginal.SubsetWaterLineDateTime; } }
 
 		public void SubsetPercentagePropagate(double subsetPercentage) {
 			this.sequencedBacktestOriginal.SubsetPercentageSetInvalidate(subsetPercentage);
@@ -84,9 +84,10 @@ namespace Sq1.Core.Correlation {
 			this.InvalidateBacktestsMinusUnchosen();
 			this.calculateGlobals_runMomentumCalculator();	//rebuildParametersByName() invoked only once per lifetime, koz I subscribe to event late (3 steps omitted here but you'll fig)		}
 		}
-		SequencedBacktests sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached;
-		Dictionary<string, OneParameterAllValuesAveraged>	keepDeserializedChosen;
-		SequencedBacktests					SequencedBacktestsOriginalMinusParameterValuesUnchosen { get { lock(this.lockForAllRecalculations) {
+
+		private SequencedBacktests									sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached;
+		private	Dictionary<string, OneParameterAllValuesAveraged>	keepDeserializedChosen;
+		private	SequencedBacktests									sequencedBacktestsOriginalMinusParameterValuesUnchosen { get { lock(this.lockForAllRecalculations) {
 			if (this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached != null)
 				return this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached;
 			this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached = new SequencedBacktests();
@@ -104,7 +105,7 @@ namespace Sq1.Core.Correlation {
 			}
 			return this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached;
 		} } }
-		public ScriptExecutor Executor	{ get; private set; } 
+		public ScriptExecutor	Executor	{ get; private set; } 
 
 		
 		Correlator() {
@@ -118,8 +119,18 @@ namespace Sq1.Core.Correlation {
 			this.Executor = scriptExecutor;
 		}
 
-		public void Initialize(SequencedBacktests optimizationResults, string relPathAndNameForSequencerResults, string fileName) {
-			this.sequencedBacktestOriginal = optimizationResults;
+		public void Initialize(SequencedBacktests sequencedBacktests, string relPathAndNameForSequencerResults, string fileName) {
+			if (sequencedBacktests == null) {
+				string msg = "DONT_PASS_NULL_originalSequencedBacktests";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (this.sequencedBacktestOriginal != null && this.sequencedBacktestOriginal.ToString() == sequencedBacktests.ToString()) {
+				string msg = "MUSTVE_BEEN_ALREADY_SYNCHRONIZED_UPSTACK";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.sequencedBacktestOriginal = sequencedBacktests;
 
 			this.repositoryJsonCorrelator.Initialize(Assembler.InstanceInitialized.AppDataPath
 				, Path.Combine("Correlator", relPathAndNameForSequencerResults), fileName);

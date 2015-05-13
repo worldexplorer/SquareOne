@@ -78,7 +78,7 @@ namespace Sq1.Core.StrategyBase {
 			//ABSORBS_TO_CURRENT_INSTEAD_OF_NEW var forceParametersFillScriptContext = this.ScriptParametersMergedWithCurrentContext;
 			this.ScriptContextsByName.Add(newScriptContextName, newScriptContext);
 
-			bool dontSaveWeOptimize = newScriptContextName.Contains(Sequencer.OPTIMIZATION_CONTEXT_PREFIX);
+			bool dontSaveWeOptimize = newScriptContextName.Contains(Sequencer.ITERATION_PREFIX);
 			bool shouldSave = !dontSaveWeOptimize; 
 			if (setAddedAsCurrent) {
 				this.ContextSwitchCurrentToNamedAndSerialize(newScriptContextName, shouldSave);
@@ -101,7 +101,7 @@ namespace Sq1.Core.StrategyBase {
 			ContextScript newScriptContext = this.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(absorbParamsFrom, newScriptContextName);
 			this.ScriptContextsByName.Add(newScriptContextName, newScriptContext);
 
-			bool dontSaveWeOptimize = newScriptContextName.Contains(Sequencer.OPTIMIZATION_CONTEXT_PREFIX);
+			bool dontSaveWeOptimize = newScriptContextName.Contains(Sequencer.ITERATION_PREFIX);
 			bool shouldSave = !dontSaveWeOptimize; 
 			if (setAddedAsCurrent) {
 				this.ContextSwitchCurrentToNamedAndSerialize(newScriptContextName, shouldSave);

@@ -142,22 +142,22 @@ namespace Sq1.Widgets.Sequencing {
 		void olvHistoryCustomize() {
 			this.olvHistoryCustomizeColors();
 			this.olvcHistoryDate.AspectGetter = delegate(object o) {
-				FnameDateSizeColor fnameDateSize = o as FnameDateSizeColor;
+				FnameDateSizeColorPFavg fnameDateSize = o as FnameDateSizeColorPFavg;
 				if (fnameDateSize == null) return "olvcHistoryDate.AspectGetter: fnameDateSize=null";
 				return fnameDateSize.DateSmart;
 			};
 			this.olvcHistorySymbolScaleRange.AspectGetter = delegate(object o) {
-				FnameDateSizeColor fnameDateSize = o as FnameDateSizeColor;
+				FnameDateSizeColorPFavg fnameDateSize = o as FnameDateSizeColorPFavg;
 				if (fnameDateSize == null) return "olvcHistorySymbolScaleRange.AspectGetter: fnameDateSize=null";
-				return fnameDateSize.Name;
+				return fnameDateSize.SymbolScaleRange;
 			};
 			this.olvcHistorySize.AspectGetter = delegate(object o) {
-				FnameDateSizeColor fnameDateSize = o as FnameDateSizeColor;
+				FnameDateSizeColorPFavg fnameDateSize = o as FnameDateSizeColorPFavg;
 				if (fnameDateSize == null) return "olvcHistorySize.AspectGetter: fnameDateSize=null";
 				return fnameDateSize.SizeMb;
 			};
 			this.olvcPFavg.AspectGetter = delegate(object o) {
-				FnameDateSizeColor fnameDateSize = o as FnameDateSizeColor;
+				FnameDateSizeColorPFavg fnameDateSize = o as FnameDateSizeColorPFavg;
 				if (fnameDateSize == null) return "olvcProfitFactor.AspectGetter: fnameDateSize=null";
 				return fnameDateSize.PFavg.ToString();
 			};
@@ -167,7 +167,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvHistory.FormatRow += new EventHandler<FormatRowEventArgs>(olvHistory_FormatRow);
 		}
 		void olvHistory_FormatRow(object sender, FormatRowEventArgs e) {
-			FnameDateSizeColor fname = e.Model as FnameDateSizeColor;
+			FnameDateSizeColorPFavg fname = e.Model as FnameDateSizeColorPFavg;
 			if (fname == null) return;
 			if (fname.PFavg == 0) return;	// SystemPerformanceRestoreAble didn't have ProfitFactor calculated/deserialized
 			e.Item.BackColor = (fname.PFavg >= 1) ? this.colorBackgroundGreen : this.colorBackgroundRed;

@@ -26,10 +26,10 @@ namespace Sq1.Core.Repositories {
 		public string	MaskAbs						{ get { return Path.Combine(this.AbsPath, Mask); } }
 		public string	Extension					{ get { return Path.GetExtension(this.Mask); } }
 		
-		public List<FnameDateSizeColor> ItemsFound { get; protected set; }
+		public List<FnameDateSizeColorPFavg> ItemsFound { get; protected set; }
 
 		public RepositoryJsonsInFolderSimple() {
-			ItemsFound = new List<FnameDateSizeColor>();
+			ItemsFound = new List<FnameDateSizeColorPFavg>();
 		}
 
 		public void Initialize(string rootPath,
@@ -82,35 +82,44 @@ namespace Sq1.Core.Repositories {
 				DateTime dateModified = finfo.LastWriteTime;
 				long size = finfo.Length;
 				string fname = Path.GetFileNameWithoutExtension(absFileName);
-				FnameDateSizeColor fnameDateSize = new FnameDateSizeColor(fname, dateModified, size);
+				FnameDateSizeColorPFavg fnameDateSize = new FnameDateSizeColorPFavg(fname, dateModified, size);
 				this.ItemsFound.Add(fnameDateSize);
 			}
 		}
-		public bool ItemsFoundContainsName(string name) {
-			bool ret = false;
-			foreach (FnameDateSizeColor each in this.ItemsFound) {
-				if (each.Name != name) continue;
-				ret = true;
+		public FnameDateSizeColorPFavg ItemsFoundContainsSymbolScaleRange_NullUnsafe(string symbolScaleRange) {
+			FnameDateSizeColorPFavg ret = null;
+			foreach (FnameDateSizeColorPFavg each in this.ItemsFound) {
+				if (each.SymbolScaleRange != symbolScaleRange) continue;
+				ret = each;
 				break;
 			}
 			return ret;
 		}
+		//public bool ItemsFoundContainsName(string name) {
+		//    bool ret = false;
+		//    foreach (FnameDateSizeColorPFavg each in this.ItemsFound) {
+		//        if (each.NameWithMarker != name) continue;
+		//        ret = true;
+		//        break;
+		//    }
+		//    return ret;
+		//}
 		public string AbsFnameFor(string fname) {
 			return Path.Combine(this.AbsPath, fname + this.Extension);
 		}
 		public int ItemsFoundDeleteAll() {
 			int ret = 0;
-			foreach (FnameDateSizeColor each in this.ItemsFound) {
-				string absFname = this.AbsFnameFor(each.Name);
+			foreach (FnameDateSizeColorPFavg each in this.ItemsFound) {
+				string absFname = this.AbsFnameFor(each.NameWithMarker);
 				File.Delete(absFname);
 				ret++;
 			}
 			this.RescanFolderStoreNamesFound();
 			return ret;
 		}
-		public bool ItemDelete_dirtyImplementation(FnameDateSizeColor mustExist) {
+		public bool ItemDelete_dirtyImplementation(FnameDateSizeColorPFavg mustExist) {
 			bool ret = false;
-			string absFname = this.AbsFnameFor(mustExist.Name);
+			string absFname = this.AbsFnameFor(mustExist.NameWithMarker);
 			File.Delete(absFname);
 			ret = true;
 			this.RescanFolderStoreNamesFound();

@@ -8,7 +8,7 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Sequencing {
 	public partial class Sequencer {
-		public static string OPTIMIZATION_CONTEXT_PREFIX = "ITERATION_";
+		public static string ITERATION_PREFIX = "ITERATION_";
 
 		public	ScriptExecutor					Executor	{ get; private set; }
 				DisposableExecutorsPool			disposableExecutorsPool;
@@ -206,7 +206,7 @@ namespace Sq1.Core.Sequencing {
 				this.Unpaused = true;	// DEADLOCK_OTHERWIZE__LET_ALL_SCHEDULED_PAUSED_STILL_INERTIOUSLY_FINISH__DISABLE_BUTTONS_FOR_USER_NOT_TO_WORSEN
 			}
 			if (this.disposableExecutorsPool == null) {
-				string msg = "OPTIMIZATION_DIDNT_START_YET_sequencerExecutorsPool=null";
+				string msg = "SEQUENCER_DIDNT_START_YET_sequencerExecutorsPool=null";
 				Assembler.PopupException(msg);
 			} else {
 				this.disposableExecutorsPool.AbortAllTasksAndDispose();

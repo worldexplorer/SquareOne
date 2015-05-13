@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace Sq1.Gui.Forms {
 	public partial class CorrelatorForm : DockContentImproved {
 		ChartFormsManager chartFormsManager;
+		public bool Initialized { get { return this.chartFormsManager != null; } }
 
 		// INVOKED_BY_DOCKCONTENT.DESERIALIZE_FROM_XML
 		public CorrelatorForm() {
@@ -30,12 +31,29 @@ namespace Sq1.Gui.Forms {
 		}
 
 		// INVOKED_AFTER_DOCKCONTENT.DESERIALIZE_FROM_XML
-        internal void Initialize(ChartFormsManager chartFormManagerPassed) {
-            if (chartFormManagerPassed == null) {
+        internal void Initialize(ChartFormsManager chartFormsManagerPassed) {
+            if (chartFormsManagerPassed == null) {
 				string msg = "USE_DIFFERENT_VAR_NAME__DONT_PASS_CHART_FORMS_MANAGER=NULL:WindowTitlePullFromStrategy()_WILL_THROW";
 				Assembler.PopupException(msg);
 			}
-            this.chartFormsManager = chartFormManagerPassed;
+			if (this.chartFormsManager == chartFormsManagerPassed) return;
+
+			if (this.chartFormsManager != null) {
+				this.chartFormsManager.Executor.Correlator
+				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
+					-= new EventHandler<SequencedBacktestsEventArgs>(
+						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
+			}
+			this.chartFormsManager = chartFormsManagerPassed;
+			this.chartFormsManager.Executor.Correlator
+				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
+					-= new EventHandler<SequencedBacktestsEventArgs>(
+						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
+			this.chartFormsManager.Executor.Correlator
+				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
+					+= new EventHandler<SequencedBacktestsEventArgs>(
+						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
+
 			this.CorrelatorControl.Initialize(this.chartFormsManager.Executor.Correlator);
 			this.WindowTitlePullFromStrategy();
 		}
@@ -58,16 +76,17 @@ namespace Sq1.Gui.Forms {
 		public void PopulateSequencedHistory(SequencedBacktests originalSequencedBacktests) {
 			string msig = " //CorrelatorForm.PopulateSequencedHistory()";
 
-			// UNSUBSCRIBE_FIRST__JUST_IN_CASE
-			this.chartFormsManager.Executor.Correlator
-				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
-					-= new EventHandler<SequencedBacktestsEventArgs>(
-						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
+			//MOVED_INTO_Initialize()
+			//// UNSUBSCRIBE_FIRST__JUST_IN_CASE
+			//this.chartFormsManager.Executor.Correlator
+			//    .OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
+			//        -= new EventHandler<SequencedBacktestsEventArgs>(
+			//            correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 
-			this.chartFormsManager.Executor.Correlator
-				.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
-					+= new EventHandler<SequencedBacktestsEventArgs>(
-						correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
+			//this.chartFormsManager.Executor.Correlator
+			//    .OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt
+			//        += new EventHandler<SequencedBacktestsEventArgs>(
+			//            correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 
 			//v1
 			this.CorrelatorControl.Initialize(originalSequencedBacktests

@@ -57,7 +57,7 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		public double PayoffRatio { get {
 				if (this.AvgLossPctLosers == 0) return 0;
-				return Math.Round(Math.Abs(this.AvgProfitPctBoth / (double)this.AvgLossPctLosers), 2);
+				return Math.Round(Math.Abs(this.PositionAvgProfitPctBoth / (double)this.AvgLossPctLosers), 2);
 			} }
 
 		#region AllTrades
@@ -70,15 +70,15 @@ namespace Sq1.Core.StrategyBase {
 				return Math.Round(this.NetProfitForClosedPositionsBoth / (double)this.BarsHeldTotalForClosedPositionsBoth, 2);
 			} }
 		public int PositionsCount;
-		public double AvgProfitBoth { get {
+		public double PositionAvgProfitBoth { get {
 				if (this.PositionsCount == 0) return 0;
 				return Math.Round(this.NetProfitForClosedPositionsBoth / (double)this.PositionsCount, 2);
 			} }
-		public double AvgProfitPctBoth { get {
+		public double PositionAvgProfitPctBoth { get {
 				if (this.PositionsCount == 0) return 0;
 				return Math.Round(this.NetProfitPctForClosedPositionsBoth / (double)this.PositionsCount, 2);
 			} }
-		public double AvgBarsHeldBoth { get {
+		public double PositionAvgBarsHeldBoth { get {
 				if (this.PositionsCount == 0) return 0;
 				return Math.Round(this.BarsHeldTotalForClosedPositionsBoth / (double)this.PositionsCount, 1);
 			} }
@@ -538,20 +538,22 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			if (this.PositionLongShortImTracking != SystemPerformancePositionsTracking.LongAndShort) return positionsOpenAbsorbedBoth;
+			if (positionsClosedAbsorbedBoth == 0) return positionsOpenAbsorbedBoth;
 
 			KPIs kpisForBar = new KPIs(this.ReasonToExist, 
-				this.PositionsCount, this.NetProfitForClosedPositionsBoth,
+				this.PositionsCount, this.NetProfitForClosedPositionsBoth, this.PositionAvgProfitBoth,
 				this.WinLossRatio, this.ProfitFactor, this.RecoveryFactor,
 				this.MaxDrawDown, this.MaxConsecWinners, this.MaxConsecLosers);
 
-			if (this.KPIsCumulativeByDate.ContainsKey(barDateTime) == false) {
-				if (this.positionsCountPrevStep_MustIncreaseOnly >= this.PositionsCount && this.PositionsCount > 0) {
-					string msg = "POSITIONS_COUNT_CANT_DECREASE ["
-						+ this.positionsCountPrevStep_MustIncreaseOnly + "]MUST_BE_LESS_THAN[" + kpisForBar.PositionsCount + "]";
-					Assembler.PopupException(msg, null, false);
-				}
-				this.positionsCountPrevStep_MustIncreaseOnly = this.PositionsCount;
+			if (this.positionsCountPrevStep_MustIncreaseOnly >= this.PositionsCount && this.PositionsCount > 0) {
+				string msg = "POSITIONS_COUNT_CANT_DECREASE ["
+					+ this.positionsCountPrevStep_MustIncreaseOnly + "]MUST_BE_LESS_THAN[" + kpisForBar.PositionsCount + "]"
+					+ " //" + this.ReasonToExist;
+				Assembler.PopupException(msg);
+			}
+			this.positionsCountPrevStep_MustIncreaseOnly = this.PositionsCount;
 
+			if (this.KPIsCumulativeByDate.ContainsKey(barDateTime) == false) {
 				this.KPIsCumulativeByDate.Add(barDateTime, kpisForBar);
 			} else {
 				string msg = "NONSENSE_BUT_ADDING__MUST_NOT_BE_DUPLICATES_KOZ_INVOKING_ONCE_PER_BAR barDateTime[" + barDateTime + "]";
@@ -603,5 +605,6 @@ namespace Sq1.Core.StrategyBase {
 			return this.CumulativeNetProfitDollar.ContainsKey(position) ? this.CumulativeNetProfitDollar[position] : -1; }
 		public double CumulativeNetProfitPercentForPosition(Position position) {
 			return this.CumulativeNetProfitPercent.ContainsKey(position) ? this.CumulativeNetProfitPercent[position] : -1; }
+
 	}
 }

@@ -133,11 +133,11 @@ namespace Sq1.Widgets {
 //		}
 		#endregion
 
-		public bool IsShown				{ get { return this.DockState != DockState.Unknown; } }
-		public bool IsFloatingWindow	{ get { return this.DockState == DockState.Float; } }
-		public bool IsInDocumentArea	{ get { return this.DockState == DockState.Document; } }
-		public bool IsDocked			{ get { return DockHelper.IsDockWindowState(this.DockState); } }
-		public bool IsDockedAutoHide	{ get { return DockHelper.IsDockStateAutoHide(this.DockState); } }
+		public bool IsShown				{ get { return base.DockState != DockState.Unknown; } }
+		public bool IsFloatingWindow	{ get { return base.DockState == DockState.Float; } }
+		public bool IsInDocumentArea	{ get { return base.DockState == DockState.Document; } }
+		public bool IsDocked			{ get { return DockHelper.IsDockWindowState(base.DockState); } }
+		public bool IsDockedAutoHide	{ get { return DockHelper.IsDockStateAutoHide(base.DockState); } }
 		public bool IsCoveredOrAutoHidden { get {
 				if (this.IsDockedAutoHide) return true;
 				if (this.IsDocked) {
@@ -146,7 +146,9 @@ namespace Sq1.Widgets {
 					#if DEBUG
 					//Debugger.Launch();
 					#endif
-					return false;
+					//v1 return false;
+					bool isCovered = base.Pane.ActiveContent != this;
+					return isCovered;
 				}
 				if (this.IsFloatingWindow) {
 					string msg = "go find out if I'm covered by other forms floating in the same window"
@@ -156,14 +158,14 @@ namespace Sq1.Widgets {
 					#endif
 					return false;
 				}
-				if (this.DockState == DockState.Unknown) {
+				if (base.DockState == DockState.Unknown) {
 					string msg = "EDITOR_WAS_CONDITIONALLY_INSTANTIATED_BUT_NOT_DOCKPANEL.SHOW()n";
 					#if DEBUG
 					//Debugger.Launch();
 					#endif
 					return true;
 				}
-				if (this.DockState == DockState.Hidden) {
+				if (base.DockState == DockState.Hidden) {
 					string msg = "DESERIALIZED_AS_HIDDEN__NOT_REALLY_DOCKED_NOR_COVERED";
 					#if DEBUG
 					Debugger.Launch();

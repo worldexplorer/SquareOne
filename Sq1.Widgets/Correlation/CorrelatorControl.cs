@@ -14,8 +14,8 @@ namespace Sq1.Widgets.Correlation {
 
 		public CorrelatorControl() {
 			InitializeComponent();
-			this.toolStripItemTrackBar1.ValueCurrentChanged += new EventHandler<EventArgs>(toolStripItemTrackBar1_ValueCurrentChanged);
-			this.toolStripItemTrackBar1.WalkForwardCheckedChanged += new EventHandler<EventArgs>(toolStripItemTrackBar1_WalkForwardCheckedChanged);
+			this.toolStripItemTrackBarWalkForward.ValueCurrentChanged += new EventHandler<EventArgs>(toolStripItemTrackBar1_ValueCurrentChanged);
+			this.toolStripItemTrackBarWalkForward.WalkForwardCheckedChanged += new EventHandler<EventArgs>(toolStripItemTrackBar1_WalkForwardCheckedChanged);
 		}
 
 		public void Initialize(Correlator correlator) {
@@ -23,8 +23,13 @@ namespace Sq1.Widgets.Correlation {
 			this.oneParameterControl1.Initialize_byMovingControlsToInner();
 		}
 
-		public void Initialize(SequencedBacktests originalSequencedBacktests
-					, string relPathAndNameForSequencerResults, string fileName) {
+		public void Initialize(SequencedBacktests originalSequencedBacktests, string relPathAndNameForSequencerResults, string fileName) {
+			if (originalSequencedBacktests == null) {
+				string msg = "DONT_PASS_NULL_originalSequencedBacktests";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (this.sequencedOriginal != null && this.sequencedOriginal.ToString() == originalSequencedBacktests.ToString()) return;
 			this.sequencedOriginal = originalSequencedBacktests;
 			if (this.sequencedOriginal.Count > 0) {
 				//v1
@@ -53,8 +58,9 @@ namespace Sq1.Widgets.Correlation {
 				this.Correlator.Initialize(originalSequencedBacktests, relPathAndNameForSequencerResults, fileName);
 
 				// only available after Correlator.Initialize otherwize NPE due to this.sequencedOriginal=null
-				this.toolStripItemTrackBar1.ValueCurrent = (decimal)this.Correlator.SubsetPercentage;
-				this.toolStripItemTrackBar1.WalkForwardChecked = this.Correlator.SubsetPercentageFromEnd;
+				this.toolStripItemTrackBarWalkForward.ValueCurrent = (decimal)this.Correlator.SubsetPercentage;
+				this.toolStripItemTrackBarWalkForward.WalkForwardChecked = this.Correlator.SubsetPercentageFromEnd;
+				this.toolStripItemTrackBarWalkForward.WalkForwardEnabled = this.toolStripItemTrackBarWalkForward.ValueCurrent < 100;
 
 				this.flushCalculationsToGui();
 			} finally {

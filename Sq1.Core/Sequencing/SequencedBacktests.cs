@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 namespace Sq1.Core.Sequencing {
 	public class SequencedBacktests : NamedObjectJsonSerializable {
 		public const string REASON_TO_EXIST = "1) keep only backtested KPIs, IndicatorParameters should not contain CorrelatorSnap; 2) allow subset selection for %backtest/walkforward";
+		public const string SEQUENCED_BACKTESTS_NO_FNAME__REINITIALIZE_REPOSITORY = "SEQUENCED_BACKTESTS_NO_FNAME__REINITIALIZE_REPOSITORY";
 		
 		[JsonProperty]	public	string								StrategyName					{ get; private set; }
 		// if PriceFormat.IsNullOrEmpty, grab from RepositorySymbolInfo.FindSymbolInfoOrNew(first.Symbol)
@@ -18,7 +19,8 @@ namespace Sq1.Core.Sequencing {
 		[JsonProperty]	public	DateTime							BacktestedBarFirstDateTime		{ get; private set; }
 		[JsonProperty]	public	DateTime							BacktestedBarLastDateTime		{ get; private set; }
 		
-		[JsonIgnore]	public	string								FileName;//						{ get; private set; }
+		[JsonProperty]	public	string								FileName;//						{ get; private set; }
+		[JsonProperty]	public	double								ProfitFactorAverage				{ get; private set; }
 		
 		[JsonProperty]	private	List<SystemPerformanceRestoreAble>	backtests;//					{ get; private set; }
 		
@@ -150,49 +152,47 @@ namespace Sq1.Core.Sequencing {
 			} }
 		
 		public SequencedBacktests() {
-			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
-			backtests	= new List<SystemPerformanceRestoreAble>();
-			FileName 	= "SHRINKED_OPTIMIZED_NO_FNAME";
+			string msig				= "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
+			backtests				= new List<SystemPerformanceRestoreAble>();
+			FileName 				= SequencedBacktests.SEQUENCED_BACKTESTS_NO_FNAME__REINITIALIZE_REPOSITORY;
 			SubsetPercentage		= 100;
 			SubsetPercentageFromEnd = false;
 		}
-		public SequencedBacktests(string fileName, List<SystemPerformanceRestoreAble> backtests) : this() {
-			if (backtests == null) {
-				string msg = "I_REFUSE_TO_RECEIVE_BACKTESTS_NULL__AVOIDING_NPE";
-				Assembler.PopupException(msg);
-			}
-			FileName 	= fileName;
-			backtests	= backtests;
-			//subsetWalkforward_cached = null;
-			//subsetBacktest_cached = null;
-			BacktestedBarFirstDateTime = DateTime.MinValue;
-			BacktestedBarLastDateTime = DateTime.MaxValue;
-			if (this.backtests.Count > 0) {
-				this.BacktestedBarFirstDateTime = backtests[0].KPIsCumulativeDateFirst_DateTimeMinUnsafe;
-				this.BacktestedBarLastDateTime = backtests[0].KPIsCumulativeDateLast_DateTimeMaxUnsafe;
-			} else {
-				string msg = "CANT_FIGURE_BOUNDARIES__EXCEPTIONS_TBF";
-				Assembler.PopupException(msg);
-			}
-		}
-		public SequencedBacktests(ScriptExecutor executor, string fileName) : this(fileName, new List<SystemPerformanceRestoreAble>()) {
+		public SequencedBacktests(ScriptExecutor executor, string fileName) : this() {
 			this.StrategyName					= executor.StrategyName;
-			//this.ContextScript				= executor.Strategy.ScriptContextCurrent;
-			this.StrategyName					= executor.Strategy.ScriptContextCurrent.Symbol;
+			//this.StrategyName					= executor.Strategy.ScriptContextCurrent.Symbol;
 			this.SymbolScaleIntervalDataRange	= executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+			this.FileName						= this.SymbolScaleIntervalDataRange;
 			base.Name							= this.SymbolScaleIntervalDataRange;
 		}
-		//
-		//public void ChangeSubset(double subsetPercentage, bool subsetPercentageFromEnd) {
-		//    this.SubsetPercentage			= subsetPercentage;
-		//    this.SubsetPercentageFromEnd	= subsetPercentageFromEnd;
-		//    this.subsetBacktest_cached		= null;
-		//}
+		public void CalculateProfitFactorAverage() {
+			double backtestsValidProfitFactorSum = 0;		// netProfit could overflow outside double for 1000000000 backtests in one deserialized list; profit factor is expected [-10...10];
+			double backtestsValidCount = 0;
+			if (this.backtests.Count == 0) return;
+			foreach (SystemPerformanceRestoreAble backtest in this.BacktestsReadonly) {
+				if (double.IsNaN(backtest.ProfitFactor)) continue;
+				if (double.IsPositiveInfinity(backtest.ProfitFactor)) continue;
+				if (double.IsNegativeInfinity(backtest.ProfitFactor)) continue;
+				backtestsValidProfitFactorSum += backtest.ProfitFactor;
+				backtestsValidCount++;
+			}
+			if (backtestsValidProfitFactorSum == 0) {
+				string msg = "SequencedBacktests didn't have ProfitFactor calculated/deserialized for[" + this.ToString() + "]";
+				Assembler.PopupException(msg);
+			}
+			if (backtestsValidCount == 0) {
+				string msg = "AVOIDIND_DIVISION_BY_ZERO__YOU_MUST_HAVE_CHECKED this.backtests.Count=0 for[" + this.ToString() + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (backtestsValidCount > 0) {		// AVOIDING_OUR_GOOD_FRIEND_DIVISION_TO_ZERO_EXCEPTION
+				this.ProfitFactorAverage = backtestsValidProfitFactorSum / backtestsValidCount;
+			}
+			this.ProfitFactorAverage = Math.Round(this.ProfitFactorAverage, 2);
+		}
 		internal void SubsetPercentageFromEndSetInvalidate(bool subsetPercentageFromEnd) {
 			this.SubsetPercentageFromEnd = subsetPercentageFromEnd;
-			this.subsetBacktest_cached = null;
-			this.subsetWalkforward_cached = null;
-			this.subset_cached = null;
+			this.clearSubsets_cached();
 		}
 		internal void SubsetPercentageSetInvalidate(double subsetPercentage) {
 			if (subsetPercentage <= 0) {
@@ -200,6 +200,9 @@ namespace Sq1.Core.Sequencing {
 				Assembler.PopupException(msg);
 			}
 			this.SubsetPercentage = subsetPercentage;
+			this.clearSubsets_cached();
+		}
+		void clearSubsets_cached() {
 			this.subsetBacktest_cached = null;
 			this.subsetWalkforward_cached = null;
 			this.subset_cached = null;
@@ -225,7 +228,8 @@ namespace Sq1.Core.Sequencing {
 
 					KPIs KPIs = backtest.KPIsCumulativeByDateIncreasing[datePositionClosed];
 					if (positionsCountCantDecrease >= KPIs.PositionsCount && positionsCountCantDecrease > 0) {
-						string msg = "POSITIONS_COUNT_CANT_DECREASE [" + positionsCountCantDecrease + "] >= [" + KPIs.PositionsCount + "]";
+						string msg = "POSITIONS_COUNT_CANT_DECREASE [" + positionsCountCantDecrease + "] >= [" + KPIs.PositionsCount + "]"
+							+ " //" + backtest.ReasonToExist;
 						Assembler.PopupException(msg, null, false);
 						//return;
 					}
@@ -246,8 +250,8 @@ namespace Sq1.Core.Sequencing {
 			this.SubsetPercentage = 100;
 			this.SubsetPercentageFromEnd = false;
 			this.backtests.Clear();
+			this.clearSubsets_cached();
 		}
-
 		public void Add(SystemPerformanceRestoreAble eachBacktest) {
 			try {
 				eachBacktest.CheckPositionsCountMustIncreaseOnly();
@@ -256,10 +260,6 @@ namespace Sq1.Core.Sequencing {
 				string msg = "MULTITHREADING_ISSUE__YOU_MUST_PASS_CLONE_AND_THEN_LET_OTHER_DISPOSABLE_EXECUTOR_TO_RUN_ANOTHER_BACKTEST";
 				Assembler.PopupException(msg, ex);
 			}
-		}
-
-		internal void Serialize() {
-			throw new NotImplementedException();
 		}
 	}
 }

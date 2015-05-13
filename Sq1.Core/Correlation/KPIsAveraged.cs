@@ -1,6 +1,7 @@
-﻿using Sq1.Core.Sequencing;
+﻿using System;
+
+using Sq1.Core.Sequencing;
 using Sq1.Core.StrategyBase;
-using System;
 
 namespace Sq1.Core.Correlation {
 	public class KPIsAveraged : KPIs {
@@ -17,7 +18,8 @@ namespace Sq1.Core.Correlation {
 		internal void DivideTotalByCount(int totalCountItotalled) {
 			double dontRoundDivisionToInt = (double) totalCountItotalled;
 			if (base.PositionsCount == 0) {
-				string msg = "WHY?";
+				string msg = "WHY_base.PositionsCount == 0?";
+				//Assembler.PopupException(msg);
 			}
 			base.PositionsCount		/= dontRoundDivisionToInt;
 			base.PositionAvgProfit	/= dontRoundDivisionToInt;

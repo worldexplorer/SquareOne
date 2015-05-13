@@ -12,15 +12,13 @@ using Sq1.Core.Indicators;
 
 namespace Sq1.Widgets.Sequencing {
 	public partial class SequencerControl : UserControl {
-				Sequencer							sequencer;
-				List<string>						colMetricsShouldStay;
-				SequencedBacktests					backtestsLocalEasierToSync;
-				List<OLVColumn>						columnsDynParams;
+				Sequencer					sequencer;
+				List<string>				colMetricsShouldStay;
+				SequencedBacktests			backtestsLocalEasierToSync;
+				List<OLVColumn>				columnsDynParams;
 		public	RepositoryJsonsInFolderSimpleDictionarySequencer		RepositoryJsonSequencer					{ get; private set; }
-				List<IndicatorParameter>			scriptAndIndicatorParametersMergedCloned;
-
-		public SequencedBacktestsEventArgs PushToCorrelator { get {
-			return new SequencedBacktestsEventArgs(this.backtestsLocalEasierToSync); } } 
+				List<IndicatorParameter>	scriptAndIndicatorParametersMergedCloned;
+		public SequencedBacktestsEventArgs	PushToCorrelator { get { return new SequencedBacktestsEventArgs(this.backtestsLocalEasierToSync); } } 
 
 		public SequencerControl() {
 			InitializeComponent();
@@ -67,6 +65,7 @@ namespace Sq1.Widgets.Sequencing {
 				this.olvBacktests.EmptyListMsg = "this.sequencerInitializedProperly == false";
 				return;
 			}
+			this.backtestsLocalEasierToSync = new SequencedBacktests(this.sequencer.Executor, this.sequencer.Executor.Strategy.ScriptContextCurrentName);
 
 			// removing first to avoid reception of same SystemResults reception due to multiple Initializations by SequencerControl.Initialize() 
 			//SETTING_COLLAPSED_FROM_BTN_RUN_CLICK this.sequencer.OnBacktestStarted -= new EventHandler<EventArgs>(sequencer_OnBacktestStarted);
@@ -100,6 +99,7 @@ namespace Sq1.Widgets.Sequencing {
 			//string symbolScaleRange = this.sequencer.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//this.olvHistoryRescanRefillSelect(symbolScaleRange);
 
+			this.symbolScaleRangeSelected = "";
 			this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 		}
 		void olvParameterPopulate() {
@@ -110,9 +110,9 @@ namespace Sq1.Widgets.Sequencing {
 			this.RepositoryJsonSequencer.RescanFolderStoreNamesFound();
 			this.olvHistoryComputeAverage();
 			this.olvHistory.SetObjects(this.RepositoryJsonSequencer.ItemsFound);
-			FnameDateSizeColor found = null;
-			foreach (FnameDateSizeColor each in this.RepositoryJsonSequencer.ItemsFound) {
-				if (each.Name != symbolScaleRange) continue;
+			FnameDateSizeColorPFavg found = null;
+			foreach (FnameDateSizeColorPFavg each in this.RepositoryJsonSequencer.ItemsFound) {
+				if (each.SymbolScaleRange != symbolScaleRange) continue;
 				found = each;
 				break;
 			}
@@ -126,74 +126,61 @@ namespace Sq1.Widgets.Sequencing {
 		void olvHistoryComputeAverage() {
 			return;
 
-			foreach (FnameDateSizeColor each in this.RepositoryJsonSequencer.ItemsFound) {
-				double profitFactorTotal = 0;		// netProfit could overflow outside double for 1000000000 backtests in one deserialized list; profit factor is expected [-10...10];
-				int backtestSequence = 0;
-				SequencedBacktests eachSequence = this.RepositoryJsonSequencer.DeserializeSingle(each.Name);
+			foreach (FnameDateSizeColorPFavg each in this.RepositoryJsonSequencer.ItemsFound) {
+				SequencedBacktests eachSequence = this.RepositoryJsonSequencer.DeserializeSingle(each.NameWithMarker);
 				if (eachSequence == null || this.backtestsLocalEasierToSync.Count == 0) {
-					string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + each.Name;
+					string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + each.NameWithMarker;
 					Assembler.PopupException(msg);
 					continue;
-				}
-				foreach (SystemPerformanceRestoreAble backtest in eachSequence.BacktestsReadonly) {
-					if (double.IsNaN(backtest.ProfitFactor)) continue;
-					if (double.IsPositiveInfinity(backtest.ProfitFactor)) continue;
-					if (double.IsNegativeInfinity(backtest.ProfitFactor)) continue;
-					profitFactorTotal += backtest.ProfitFactor;
-					backtestSequence++;
-				}
-				double profitFactorAverage = 0;
-				if (backtestSequence > 0) {		// AVOIDING_OUR_GOOD_FRIEND_DIVISION_TO_ZERO_EXCEPTION
-					profitFactorAverage = profitFactorTotal / (double)backtestSequence;
-				}
-				each.PFavg = Math.Round(profitFactorAverage, 2);
-				if (profitFactorTotal == 0) {
-					string msg= "SystemPerformanceRestoreAble didn't have ProfitFactor calculated/deserialized for[" + each + "] //olvHistoryComputeAverage()";
-					Assembler.PopupException(msg, null, false);
 				}
 			}
 		}
 		public void SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(string symbolScaleRange = null) {
 			if (base.InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(); });
+				base.BeginInvoke((MethodInvoker)delegate { this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(symbolScaleRange); });
 				return;
 			}
 
 			if (string.IsNullOrEmpty(symbolScaleRange)) {
 				Strategy strategy = this.sequencer.Executor.Strategy;
 				symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
-			} else {
-				this.SymbolScaleRangeSelected = symbolScaleRange;
 			}
 
 			this.olvHistory.UseWaitCursor = true;
 			this.olvBacktests.UseWaitCursor = true;
 
-			if (this.RepositoryJsonSequencer.ItemsFoundContainsName(symbolScaleRange)) {
-				this.backtestsLocalEasierToSync = this.RepositoryJsonSequencer.DeserializeSingle(symbolScaleRange);
-				if (this.backtestsLocalEasierToSync == null || this.backtestsLocalEasierToSync.Count == 0) {
-					string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + symbolScaleRange;
-					Assembler.PopupException(msg);
-					this.olvHistory.UseWaitCursor = false;
-					this.olvBacktests.UseWaitCursor = false;
-					return;
-				}
-				this.backtestsLocalEasierToSync.FileName = symbolScaleRange;
-				this.backtestsLocalEasierToSync.CheckPositionsCountMustIncreaseOnly();
-			} else {
-				if (this.backtestsLocalEasierToSync.Count > 0) {
-					string msg = "MOVE_CLEAR_TO_SEQUENCED_BACKTESTS___BUT_IF_NEVER_CALLED_THEN_REMOVE_COMPLETELY";
-					Assembler.PopupException(msg);
-					this.backtestsLocalEasierToSync.Clear();
+			if (this.symbolScaleRangeSelected != symbolScaleRange) {
+				FnameDateSizeColorPFavg foundBySymbolScaleRange = this.RepositoryJsonSequencer.ItemsFoundContainsSymbolScaleRange_NullUnsafe(symbolScaleRange);
+				if (foundBySymbolScaleRange != null) {
+					this.backtestsLocalEasierToSync = this.RepositoryJsonSequencer.DeserializeSingle(foundBySymbolScaleRange.NameWithMarker);
+					if (this.backtestsLocalEasierToSync == null || this.backtestsLocalEasierToSync.Count == 0) {
+						string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + symbolScaleRange;
+						Assembler.PopupException(msg);
+						//this.olvHistory.UseWaitCursor = false;
+						//this.olvBacktests.UseWaitCursor = false;
+						// 1) POPULATE_CHANGED_BARS_500=>500_INTO_SEQUENCER 2) WAIT_CURSOR_REMOVE DONT_return;
+					}
+					this.backtestsLocalEasierToSync.FileName = symbolScaleRange;
+					this.backtestsLocalEasierToSync.CheckPositionsCountMustIncreaseOnly();
+					this.symbolScaleRangeSelected = symbolScaleRange;
+				} else {
+					string msg = "NOT_FOUND_WITH_MARKER_FOR_symbolScaleRange[" + symbolScaleRange + "]";
+					//Assembler.PopupException(msg);
 				}
 			}
-			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
-			if (backtestsLocalEasierToSync.Count > 0) {
-				this.RaiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
-			}
+
+			//preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
+			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true);
 
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
 			this.populateTextboxesFromExecutorsState();
+
+			if (backtestsLocalEasierToSync.Count > 0) {
+				//my future Correlator wasn't initialized with me and no subscribers for this event so far => duplicate 20 lines above
+				this.RaiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
+				//v1 this.statsAndHistoryCollapse();
+				//ANNOYING this.cbxExpanded.Checked = false;
+			}
 
 			this.olvHistory.UseWaitCursor = false;
 			this.olvBacktests.UseWaitCursor = false;
@@ -244,6 +231,8 @@ namespace Sq1.Widgets.Sequencing {
 		}
 
 		void adjustSplitterDistanceToNumberOfParameters_invokeMeAfterRecompiled() {
+			//I_NEED_NEW_HEIGHT_ANYWAY if (this.cbxExpanded.Checked == false) return;
+
 			//int rowsShown = this.fastOLVparametersYesNoMinMaxStep.RowsPerPage;
 			int splitterDistanceForTwoLines = 196;
 			int allParameterLinesToDraw = this.sequencer.AllParameterLinesToDraw;
@@ -252,11 +241,12 @@ namespace Sq1.Widgets.Sequencing {
 			int inAdditionToTwo = (allParameterLinesToDraw - 2) * heightEachNewLine;
 			this.heightExpanded = splitterDistanceForTwoLines + inAdditionToTwo;
 			
-			if (allParameterLinesToDraw <= 3) {
-				this.splitContainer1.SplitterDistance = splitterDistanceForTwoLines;
-				return;
-			}
-			this.statsAndHistoryExpand();
+			//if (allParameterLinesToDraw <= 3) {
+			//    this.splitContainer1.SplitterDistance = splitterDistanceForTwoLines;
+			//    return;
+			//}
+			//v1 this.statsAndHistoryExpand();
+			this.cbxExpanded.Checked = true;
 		}
 		void populateColumns() {
 			//DONT_CLEAR_RESULTS_AFTER_TAB_SWITCHING_ONLY_RUN_WILL_CLEAR_OLD_TABLE this.olvBacktests.Items.Clear();
@@ -321,12 +311,13 @@ namespace Sq1.Widgets.Sequencing {
 		}
 		
 		int heightExpanded;	//REPLACED_BY_this.adjustSplitterDistanceToNumberOfParameters_invokeMeAfterRecompiled() { get { return this.splitContainer1.Panel1MinSize * 8; } }
-		public string SymbolScaleRangeSelected { get; private set; }
+		string symbolScaleRangeSelected;
 		int heightCollapsed { get { return this.splitContainer1.Panel1MinSize; } }
 		public void NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize() {
 			Strategy strategy = this.sequencer.Executor.Strategy;
 			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
-			if (this.RepositoryJsonSequencer.ItemsFoundContainsName(symbolScaleRange)) return;
+			FnameDateSizeColorPFavg foundBySymbolScaleRange = this.RepositoryJsonSequencer.ItemsFoundContainsSymbolScaleRange_NullUnsafe(symbolScaleRange);
+			if (foundBySymbolScaleRange == null) return;
 
 			//string staleReason = this.sequencer.StaleReason;
 			//this.lblStats.Text = staleReason; // TextBox doesn't display "null" for null-string
@@ -339,21 +330,21 @@ namespace Sq1.Widgets.Sequencing {
 			//this.cbxRunCancel.Text = userClickedAnotherSymbolScaleIntervalRangePositionSize
 			//	? "Clear to Optimize" : "Run " + this.sequencer.BacktestsTotal + " backtests";
 		}
-		
-		void statsAndHistoryExpand() {
+
+		void statsAndHistoryExpand(bool changeCheckboxState = true) {
 			try {
 				this.splitContainer1.SplitterDistance = this.heightExpanded;
-				this.cbxExpandCollapse.Text = "-";
-				this.cbxExpandCollapse.Checked = true;
+				this.cbxExpanded.Text = "-";
+				if (changeCheckboxState == true && this.cbxExpanded.Checked != true) this.cbxExpanded.Checked = true;
 			} catch (Exception ex) {
 				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
 			}
 		}
-		void statsAndHistoryCollapse() {
+		void statsAndHistoryCollapse(bool changeCheckboxState = true) {
 			try {
 				this.splitContainer1.SplitterDistance = this.heightCollapsed;
-				this.cbxExpandCollapse.Text = "+";
-				this.cbxExpandCollapse.Checked = false;
+				this.cbxExpanded.Text = "+";
+				if (changeCheckboxState == true && this.cbxExpanded.Checked != false) this.cbxExpanded.Checked = false;
 			} catch (Exception ex) {
 				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
 			}
@@ -366,6 +357,15 @@ namespace Sq1.Widgets.Sequencing {
 
 		public void BacktestsRestoreCorrelatedClosed() {
 			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true);
+		}
+		public override string ToString() {
+			string ret = "UNINITIALIZED";
+			if (this.sequencer != null) {
+				Strategy strategy = this.sequencer.Executor.Strategy;
+				ret = strategy.Name;
+				if (strategy.ActivatedFromDll == true) ret += "-DLL";
+			}
+			return "Sequencer :: " + ret;
 		}
 	}
 }

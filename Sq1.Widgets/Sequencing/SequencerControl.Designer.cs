@@ -47,11 +47,13 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvcHistorySymbolScaleRange = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcHistoryDate = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcHistorySize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.ctxOlvHistory_oneSequencedBacktest = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.mniOneSequencedBacktest_delete = new System.Windows.Forms.ToolStripMenuItem();
 			this.cbxPauseResume = new System.Windows.Forms.CheckBox();
 			this.cbxRunCancel = new System.Windows.Forms.CheckBox();
 			this.lblStats = new System.Windows.Forms.Label();
 			this.progressBar1 = new System.Windows.Forms.ProgressBar();
-			this.cbxExpandCollapse = new System.Windows.Forms.CheckBox();
+			this.cbxExpanded = new System.Windows.Forms.CheckBox();
 			this.olvBacktests = new BrightIdeasSoftware.ObjectListView();
 			this.olvcSerno = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcTotalPositions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -63,7 +65,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvcMaxDrawdown = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxConsecutiveWinners = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.ctxOneBacktestResult = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.ctxBacktests_OneResult = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniInfo = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniCopyToDefaultCtxBacktest = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,8 +87,9 @@ namespace Sq1.Widgets.Sequencing {
 			((System.ComponentModel.ISupportInitialize)(this.olvParameters)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudThreadsToRun)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.olvHistory)).BeginInit();
+			this.ctxOlvHistory_oneSequencedBacktest.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.olvBacktests)).BeginInit();
-			this.ctxOneBacktestResult.SuspendLayout();
+			this.ctxBacktests_OneResult.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// splitContainer1
@@ -105,7 +108,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.splitContainer1.Panel1.Controls.Add(this.cbxRunCancel);
 			this.splitContainer1.Panel1.Controls.Add(this.lblStats);
 			this.splitContainer1.Panel1.Controls.Add(this.progressBar1);
-			this.splitContainer1.Panel1.Controls.Add(this.cbxExpandCollapse);
+			this.splitContainer1.Panel1.Controls.Add(this.cbxExpanded);
 			this.splitContainer1.Panel1MinSize = 27;
 			// 
 			// splitContainer1.Panel2
@@ -153,7 +156,7 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			this.splitContainer2.Panel2.Controls.Add(this.olvHistory);
 			this.splitContainer2.Size = new System.Drawing.Size(638, 186);
-			this.splitContainer2.SplitterDistance = 418;
+			this.splitContainer2.SplitterDistance = 370;
 			this.splitContainer2.TabIndex = 1;
 			// 
 			// lblQuotesGenerator
@@ -168,7 +171,7 @@ namespace Sq1.Widgets.Sequencing {
 			// lblSpread
 			// 
 			this.lblSpread.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblSpread.Location = new System.Drawing.Point(262, 90);
+			this.lblSpread.Location = new System.Drawing.Point(214, 90);
 			this.lblSpread.Name = "lblSpread";
 			this.lblSpread.Size = new System.Drawing.Size(105, 17);
 			this.lblSpread.TabIndex = 45;
@@ -182,7 +185,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.txtQuotesGenerator.Enabled = false;
 			this.txtQuotesGenerator.Location = new System.Drawing.Point(78, 87);
 			this.txtQuotesGenerator.Name = "txtQuotesGenerator";
-			this.txtQuotesGenerator.Size = new System.Drawing.Size(178, 20);
+			this.txtQuotesGenerator.Size = new System.Drawing.Size(130, 20);
 			this.txtQuotesGenerator.TabIndex = 43;
 			this.txtQuotesGenerator.Text = "SixteenStrokes";
 			// 
@@ -190,7 +193,7 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			this.txtSpread.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtSpread.Enabled = false;
-			this.txtSpread.Location = new System.Drawing.Point(373, 87);
+			this.txtSpread.Location = new System.Drawing.Point(325, 87);
 			this.txtSpread.Name = "txtSpread";
 			this.txtSpread.Size = new System.Drawing.Size(40, 20);
 			this.txtSpread.TabIndex = 44;
@@ -236,7 +239,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvParameters.ShowGroups = false;
 			this.olvParameters.ShowImagesOnSubItems = true;
 			this.olvParameters.ShowItemToolTips = true;
-			this.olvParameters.Size = new System.Drawing.Size(415, 77);
+			this.olvParameters.Size = new System.Drawing.Size(367, 77);
 			this.olvParameters.TabIndex = 41;
 			this.olvParameters.TintSortColumn = true;
 			this.olvParameters.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -255,7 +258,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvcParamName.FillsFreeSpace = true;
 			this.olvcParamName.HeaderCheckBox = true;
 			this.olvcParamName.Text = "Parameter";
-			this.olvcParamName.Width = 120;
+			this.olvcParamName.Width = 112;
 			// 
 			// olvcParamNumberOfRuns
 			// 
@@ -318,7 +321,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.txtStrategy.Enabled = false;
 			this.txtStrategy.Location = new System.Drawing.Point(79, 3);
 			this.txtStrategy.Name = "txtStrategy";
-			this.txtStrategy.Size = new System.Drawing.Size(336, 20);
+			this.txtStrategy.Size = new System.Drawing.Size(288, 20);
 			this.txtStrategy.TabIndex = 25;
 			this.txtStrategy.Text = "MA_ATRComplied (UserStop=1,ActivateLog=3) (ATR.Period=14,ATRband.Multiplier=1.56)" +
     "";
@@ -344,7 +347,7 @@ namespace Sq1.Widgets.Sequencing {
 			// nudThreadsToRun
 			// 
 			this.nudThreadsToRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.nudThreadsToRun.Location = new System.Drawing.Point(374, 24);
+			this.nudThreadsToRun.Location = new System.Drawing.Point(326, 24);
 			this.nudThreadsToRun.Name = "nudThreadsToRun";
 			this.nudThreadsToRun.Size = new System.Drawing.Size(40, 20);
 			this.nudThreadsToRun.TabIndex = 33;
@@ -367,7 +370,7 @@ namespace Sq1.Widgets.Sequencing {
 			// lblThreadsToRun
 			// 
 			this.lblThreadsToRun.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblThreadsToRun.Location = new System.Drawing.Point(263, 27);
+			this.lblThreadsToRun.Location = new System.Drawing.Point(215, 27);
 			this.lblThreadsToRun.Name = "lblThreadsToRun";
 			this.lblThreadsToRun.Size = new System.Drawing.Size(105, 16);
 			this.lblThreadsToRun.TabIndex = 23;
@@ -381,14 +384,14 @@ namespace Sq1.Widgets.Sequencing {
 			this.txtSymbol.Enabled = false;
 			this.txtSymbol.Location = new System.Drawing.Point(79, 24);
 			this.txtSymbol.Name = "txtSymbol";
-			this.txtSymbol.Size = new System.Drawing.Size(178, 20);
+			this.txtSymbol.Size = new System.Drawing.Size(130, 20);
 			this.txtSymbol.TabIndex = 26;
 			this.txtSymbol.Text = "MOCK :: RIM3";
 			// 
 			// lblIndicatorParameterTotalNr
 			// 
 			this.lblIndicatorParameterTotalNr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblIndicatorParameterTotalNr.Location = new System.Drawing.Point(263, 69);
+			this.lblIndicatorParameterTotalNr.Location = new System.Drawing.Point(215, 69);
 			this.lblIndicatorParameterTotalNr.Name = "lblIndicatorParameterTotalNr";
 			this.lblIndicatorParameterTotalNr.Size = new System.Drawing.Size(105, 17);
 			this.lblIndicatorParameterTotalNr.TabIndex = 32;
@@ -402,14 +405,14 @@ namespace Sq1.Widgets.Sequencing {
 			this.txtDataRange.Enabled = false;
 			this.txtDataRange.Location = new System.Drawing.Point(79, 45);
 			this.txtDataRange.Name = "txtDataRange";
-			this.txtDataRange.Size = new System.Drawing.Size(178, 20);
+			this.txtDataRange.Size = new System.Drawing.Size(130, 20);
 			this.txtDataRange.TabIndex = 27;
 			this.txtDataRange.Text = "LastBars=500";
 			// 
 			// lblScriptParameterTotalNr
 			// 
 			this.lblScriptParameterTotalNr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblScriptParameterTotalNr.Location = new System.Drawing.Point(263, 48);
+			this.lblScriptParameterTotalNr.Location = new System.Drawing.Point(215, 48);
 			this.lblScriptParameterTotalNr.Name = "lblScriptParameterTotalNr";
 			this.lblScriptParameterTotalNr.Size = new System.Drawing.Size(105, 17);
 			this.lblScriptParameterTotalNr.TabIndex = 29;
@@ -423,7 +426,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.txtPositionSize.Enabled = false;
 			this.txtPositionSize.Location = new System.Drawing.Point(79, 66);
 			this.txtPositionSize.Name = "txtPositionSize";
-			this.txtPositionSize.Size = new System.Drawing.Size(178, 20);
+			this.txtPositionSize.Size = new System.Drawing.Size(130, 20);
 			this.txtPositionSize.TabIndex = 28;
 			this.txtPositionSize.Text = "SharesConstant=1";
 			// 
@@ -431,7 +434,7 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			this.txtScriptParameterTotalNr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtScriptParameterTotalNr.Enabled = false;
-			this.txtScriptParameterTotalNr.Location = new System.Drawing.Point(374, 45);
+			this.txtScriptParameterTotalNr.Location = new System.Drawing.Point(326, 45);
 			this.txtScriptParameterTotalNr.Name = "txtScriptParameterTotalNr";
 			this.txtScriptParameterTotalNr.Size = new System.Drawing.Size(40, 20);
 			this.txtScriptParameterTotalNr.TabIndex = 30;
@@ -441,7 +444,7 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			this.txtIndicatorParameterTotalNr.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtIndicatorParameterTotalNr.Enabled = false;
-			this.txtIndicatorParameterTotalNr.Location = new System.Drawing.Point(374, 66);
+			this.txtIndicatorParameterTotalNr.Location = new System.Drawing.Point(326, 66);
 			this.txtIndicatorParameterTotalNr.Name = "txtIndicatorParameterTotalNr";
 			this.txtIndicatorParameterTotalNr.Size = new System.Drawing.Size(40, 20);
 			this.txtIndicatorParameterTotalNr.TabIndex = 31;
@@ -464,9 +467,10 @@ namespace Sq1.Widgets.Sequencing {
             this.olvcHistorySymbolScaleRange,
             this.olvcHistoryDate,
             this.olvcHistorySize});
+			this.olvHistory.ContextMenuStrip = this.ctxOlvHistory_oneSequencedBacktest;
 			this.olvHistory.Cursor = System.Windows.Forms.Cursors.Default;
 			this.olvHistory.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.olvHistory.EmptyListMsg = "OPTIMIZATION_HISTORY_IS_EMPTY Never optimized since last script recompilation";
+			this.olvHistory.EmptyListMsg = "SEQUENCER_HISTORY_IS_EMPTY Never optimized since last script recompilation";
 			this.olvHistory.EmptyListMsgFont = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.olvHistory.FullRowSelect = true;
 			this.olvHistory.HideSelection = false;
@@ -479,7 +483,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvHistory.ShowImagesOnSubItems = true;
 			this.olvHistory.ShowItemCountOnGroups = true;
 			this.olvHistory.ShowItemToolTips = true;
-			this.olvHistory.Size = new System.Drawing.Size(216, 186);
+			this.olvHistory.Size = new System.Drawing.Size(264, 186);
 			this.olvHistory.TabIndex = 42;
 			this.olvHistory.TintSortColumn = true;
 			this.olvHistory.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -500,14 +504,14 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			this.olvcPFavg.IsEditable = false;
 			this.olvcPFavg.Text = "PFavg";
-			this.olvcPFavg.ToolTipText = "Average Profit Factor among all the backtests in the optimization";
-			this.olvcPFavg.Width = 45;
+			this.olvcPFavg.ToolTipText = "Average Profit Factor among all the backtests in the SequencedBacktests";
+			this.olvcPFavg.Width = 41;
 			// 
 			// olvcHistorySymbolScaleRange
 			// 
 			this.olvcHistorySymbolScaleRange.FillsFreeSpace = true;
 			this.olvcHistorySymbolScaleRange.Text = "Symbol Scale Range";
-			this.olvcHistorySymbolScaleRange.ToolTipText = "Script Context settings taken at the moment of optimization";
+			this.olvcHistorySymbolScaleRange.ToolTipText = "Script Context settings taken at the moment of Sequencer started";
 			this.olvcHistorySymbolScaleRange.Width = 160;
 			// 
 			// olvcHistoryDate
@@ -515,14 +519,29 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvcHistoryDate.IsEditable = false;
 			this.olvcHistoryDate.Text = "Modified";
 			this.olvcHistoryDate.ToolTipText = "Reminder when you did it";
-			this.olvcHistoryDate.Width = 55;
+			this.olvcHistoryDate.Width = 52;
 			// 
 			// olvcHistorySize
 			// 
 			this.olvcHistorySize.IsEditable = false;
 			this.olvcHistorySize.Text = "Size";
 			this.olvcHistorySize.ToolTipText = "JSON file size";
-			this.olvcHistorySize.Width = 55;
+			this.olvcHistorySize.Width = 50;
+			// 
+			// ctxOlvHistory_oneSequencedBacktest
+			// 
+			this.ctxOlvHistory_oneSequencedBacktest.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mniOneSequencedBacktest_delete});
+			this.ctxOlvHistory_oneSequencedBacktest.Name = "ctxOlvHistory_oneSequencedBacktest";
+			this.ctxOlvHistory_oneSequencedBacktest.Size = new System.Drawing.Size(132, 26);
+			// 
+			// mniOneSequencedBacktest_delete
+			// 
+			this.mniOneSequencedBacktest_delete.Name = "mniOneSequencedBacktest_delete";
+			this.mniOneSequencedBacktest_delete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+			this.mniOneSequencedBacktest_delete.Size = new System.Drawing.Size(131, 22);
+			this.mniOneSequencedBacktest_delete.Text = "Delete";
+			this.mniOneSequencedBacktest_delete.Click += new System.EventHandler(this.mniOneSequencedBacktest_delete_Click);
 			// 
 			// cbxPauseResume
 			// 
@@ -568,19 +587,19 @@ namespace Sq1.Widgets.Sequencing {
 			this.progressBar1.TabIndex = 34;
 			this.progressBar1.Value = 48;
 			// 
-			// cbxExpandCollapse
+			// cbxExpanded
 			// 
-			this.cbxExpandCollapse.Appearance = System.Windows.Forms.Appearance.Button;
-			this.cbxExpandCollapse.Checked = true;
-			this.cbxExpandCollapse.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbxExpandCollapse.Location = new System.Drawing.Point(5, 2);
-			this.cbxExpandCollapse.Name = "cbxExpandCollapse";
-			this.cbxExpandCollapse.Size = new System.Drawing.Size(23, 23);
-			this.cbxExpandCollapse.TabIndex = 44;
-			this.cbxExpandCollapse.Text = "-";
-			this.cbxExpandCollapse.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.cbxExpandCollapse.UseVisualStyleBackColor = true;
-			this.cbxExpandCollapse.CheckedChanged += new System.EventHandler(this.cbxExpandCollapse_CheckedChanged);
+			this.cbxExpanded.Appearance = System.Windows.Forms.Appearance.Button;
+			this.cbxExpanded.Checked = true;
+			this.cbxExpanded.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cbxExpanded.Location = new System.Drawing.Point(5, 2);
+			this.cbxExpanded.Name = "cbxExpanded";
+			this.cbxExpanded.Size = new System.Drawing.Size(23, 23);
+			this.cbxExpanded.TabIndex = 44;
+			this.cbxExpanded.Text = "-";
+			this.cbxExpanded.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.cbxExpanded.UseVisualStyleBackColor = true;
+			this.cbxExpanded.CheckedChanged += new System.EventHandler(this.cbxExpandCollapse_CheckedChanged);
 			// 
 			// olvBacktests
 			// 
@@ -716,9 +735,9 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvcMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers";
 			this.olvcMaxConsecutiveLosers.Width = 30;
 			// 
-			// ctxOneBacktestResult
+			// ctxBacktests_OneResult
 			// 
-			this.ctxOneBacktestResult.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.ctxBacktests_OneResult.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniInfo,
             this.toolStripSeparator1,
             this.mniCopyToDefaultCtxBacktest,
@@ -729,9 +748,9 @@ namespace Sq1.Widgets.Sequencing {
             this.mni_showAllScriptIndicatorParametersInSequencedBacktest,
             this.mniCopyToClipboard,
             this.mniSaveCsv});
-			this.ctxOneBacktestResult.Name = "ctxOneBacktestResult";
-			this.ctxOneBacktestResult.Size = new System.Drawing.Size(509, 198);
-			this.ctxOneBacktestResult.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOneBacktestResult_Opening);
+			this.ctxBacktests_OneResult.Name = "ctxOneBacktestResult";
+			this.ctxBacktests_OneResult.Size = new System.Drawing.Size(509, 198);
+			this.ctxBacktests_OneResult.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOneBacktestResult_Opening);
 			// 
 			// mniInfo
 			// 
@@ -846,8 +865,9 @@ namespace Sq1.Widgets.Sequencing {
 			((System.ComponentModel.ISupportInitialize)(this.olvParameters)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudThreadsToRun)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.olvHistory)).EndInit();
+			this.ctxOlvHistory_oneSequencedBacktest.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.olvBacktests)).EndInit();
-			this.ctxOneBacktestResult.ResumeLayout(false);
+			this.ctxBacktests_OneResult.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -872,7 +892,7 @@ namespace Sq1.Widgets.Sequencing {
 		private BrightIdeasSoftware.OLVColumn olvcRecoveryFactor;
 		private BrightIdeasSoftware.OLVColumn olvcWinLoss;
 		private BrightIdeasSoftware.OLVColumn olvcNetProfit;
-		private System.Windows.Forms.ContextMenuStrip ctxOneBacktestResult;
+		private System.Windows.Forms.ContextMenuStrip ctxBacktests_OneResult;
 		private BrightIdeasSoftware.ObjectListView olvBacktests;
 		private System.Windows.Forms.CheckBox cbxPauseResume;
 		private System.Windows.Forms.CheckBox cbxRunCancel;
@@ -892,7 +912,7 @@ namespace Sq1.Widgets.Sequencing {
 		private System.Windows.Forms.NumericUpDown nudThreadsToRun;
 		private System.Windows.Forms.ProgressBar progressBar1;
 		private System.Windows.Forms.Label lblStats;
-		private System.Windows.Forms.CheckBox cbxExpandCollapse;
+		private System.Windows.Forms.CheckBox cbxExpanded;
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.ToolStripMenuItem mniInfo;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -914,5 +934,7 @@ namespace Sq1.Widgets.Sequencing {
 		private BrightIdeasSoftware.OLVColumn olvcParamNumberOfRuns;
 		private System.Windows.Forms.SplitContainer splitContainer2;	
 		private System.Windows.Forms.ToolStripMenuItem mni_showAllScriptIndicatorParametersInSequencedBacktest;
+		private System.Windows.Forms.ContextMenuStrip ctxOlvHistory_oneSequencedBacktest;
+		private System.Windows.Forms.ToolStripMenuItem mniOneSequencedBacktest_delete;
 	}
 }

@@ -668,50 +668,75 @@ namespace Sq1.Gui.Forms {
 			//useless: will be re-calculated in ctxStrategy_Opening(); this.ChartForm.MniShowSourceCodeEditor.Checked = this.ScriptEditorIsOnSurface;
 		}
 		public void SequencerFormShow(bool keepAutoHidden = true) {
-			this.SequencerFormConditionalInstance.Initialize(this);
+			if (this.SequencerFormConditionalInstance.Initialized == false) {
+				this.SequencerFormConditionalInstance.Initialize(this);
+			} else {
+				this.SequencerFormConditionalInstance.SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
+			}
 
-			DockPanel mainPanelOrAnotherSequencersPanel = this.dockPanel;
+			if (this.SequencerFormConditionalInstance.MustBeActivated) {
+				this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+				return;
+			}
+			DockPanel mainPanelOrAnotherSequencerPanel = this.dockPanel;
+			DockPane			 anotherSequencerPane  = null;
 			SequencerForm anotherSequencer = null;
 			foreach (DockContent form in this.dockPanel.Contents) {
 				anotherSequencer = form as SequencerForm;
 				if (anotherSequencer == null) continue;
 				if (anotherSequencer.Pane == null) continue;
-				mainPanelOrAnotherSequencersPanel = anotherSequencer.Pane.DockPanel;
+				mainPanelOrAnotherSequencerPanel = anotherSequencer.Pane.DockPanel;		// will point to Main's this.dockPanel
+				anotherSequencerPane = anotherSequencer.Pane;
 				break;
 			}
-			this.SequencerFormConditionalInstance.Show(mainPanelOrAnotherSequencersPanel);
+			if (anotherSequencerPane != null) {
+				this.SequencerFormConditionalInstance.Show(anotherSequencerPane, null);	// will place new sequencer into the same panel as (at right of) the previous & found
+			} else {
+				this.SequencerFormConditionalInstance.Show(mainPanelOrAnotherSequencerPanel);
+			}
 			this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
 			//this.SequencerFormConditionalInstance.SequencerControl.Refresh();	// olvBacktest doens't repaint while having results?...
 			//this.SequencerFormConditionalInstance.SequencerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}
 		public void CorrelatorFormShow(bool keepAutoHidden = true) {
-			this.CorrelatorFormConditionalInstance.Initialize(this);
+			//MUST_BE_INVOKED_SINCE_SECOND_INITIALIZATION_WILL_POPULATE_DESERIALIZED if (this.CorrelatorFormConditionalInstance.Initialized == false) {
+				this.CorrelatorFormConditionalInstance.Initialize(this);
+			//}
 
-			if (this.SequencerFormConditionalInstance.MustBeActivated) {
-				this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(false, true);
+			if (this.CorrelatorFormConditionalInstance.MustBeActivated) {
+				this.CorrelatorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
 			}
 
-			if (this.SequencerFormConditionalInstance.IsShown) {
-				this.CorrelatorFormConditionalInstance.Show(this.SequencerFormConditionalInstance.Pane, DockAlignment.Bottom, 0.8);
+			DockPanel mainPanelOrAnotherCorrelatorPanel = this.dockPanel;
+			DockPane			 anotherCorrelatorPane  = null;
+			CorrelatorForm anotherCorrelator = null;
+			foreach (DockContent form in this.dockPanel.Contents) {
+				anotherCorrelator = form as CorrelatorForm;
+				if (anotherCorrelator == null) continue;
+				if (anotherCorrelator.Pane == null) continue;
+				mainPanelOrAnotherCorrelatorPanel = anotherCorrelator.Pane.DockPanel;		// will point to Main's this.dockPanel
+				anotherCorrelatorPane = anotherCorrelator.Pane;
+				//this.CorrelatorFormConditionalInstance.Show(mainPanelOrAnotherCorrelatorPanel, DockState.Document);
+				break;
+			}
+			if (anotherCorrelatorPane != null) {
+				this.CorrelatorFormConditionalInstance.Show(anotherCorrelatorPane, null);	// will place new correlator into the same panel as (at right of) the previous & found
 			} else {
-				DockPanel mainPanelOrAnotherCorrelatorPanel = this.dockPanel;
-				CorrelatorForm anotherCorrelator = null;
-				foreach (DockContent form in this.dockPanel.Contents) {
-					anotherCorrelator = form as CorrelatorForm;
-					if (anotherCorrelator == null) continue;
-					if (anotherCorrelator.Pane == null) continue;
-					mainPanelOrAnotherCorrelatorPanel = anotherCorrelator.Pane.DockPanel;
-					break;
+				if (mainPanelOrAnotherCorrelatorPanel == this.dockPanel) {
+					this.CorrelatorFormConditionalInstance.Show(this.SequencerFormConditionalInstance.Pane, DockAlignment.Bottom, 0.6);
+				} else {
+					string msg = "UNKNOWN_CASE__REMOVE_ME_IF_YOU_NEVER_SEE_ME";
+					Assembler.PopupException(msg);
+					this.CorrelatorFormConditionalInstance.Show(mainPanelOrAnotherCorrelatorPanel);
 				}
-				this.CorrelatorFormConditionalInstance.Show(this.dockPanel);
 			}
 			this.CorrelatorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
 
 			// WILL_RAISE_BUT_AND_CORRELATOR_ALREADY_CATCHES_IT this.SequencerFormConditionalInstance.SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 			//NEXT_LINE_RAISE_WILL_PUSH_IT_BUT_SECOND_CLICK_WILL_SHOW_ZEROES this.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.SequencerFormConditionalInstance.SequencerControl.PushToCorrelator);
 			//DONT_INIT_IF_I_HAVE_NON_DEFAULT_SCALEINTERVAL_SELECTED this.SequencerFormShow(false);
-			this.CorrelatorFormConditionalInstance.CorrelatorControl.Correlator.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
-			this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(false, true);
+			//REMOVED_GUI_OPTIMIZATION__WHY_IS_IT_HERE?? this.CorrelatorFormConditionalInstance.CorrelatorControl.Correlator.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
+			//this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(false, true);
 		}
 		public void LivesimFormShow(bool keepAutoHidden = true) {
 			this.LivesimFormConditionalInstance.Initialize(this);
@@ -853,10 +878,10 @@ namespace Sq1.Gui.Forms {
 						repositoryJsonSequencer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 							Path.Combine("Sequencer", this.Strategy.RelPathAndNameForSequencerResults));
 						int deleted = repositoryJsonSequencer.ItemsFoundDeleteAll();
-						string msg = "RECOMPILATION_ERASED_OPTIMIZATION_HISTORY [" + deleted + "] optimizations deleted (with many backtests each)";
+						string msg = "RECOMPILATION_ERASED_SEQUENCER_HISTORY [" + deleted + "] SequencedBacktests deleted (with many backtests each)";
 						Assembler.DisplayStatus(msg);
 					} catch (Exception ex) {
-						string msg = "RECOMPILATION_COULD_NOT_ERASE_OPTIMIZATION_HISTORY";
+						string msg = "RECOMPILATION_COULD_NOT_ERASE_SEQUENCER_HISTORY";
 						Assembler.PopupException(msg, ex);
 					}
 				}
@@ -867,9 +892,11 @@ namespace Sq1.Gui.Forms {
 				//Assembler.PopupException(msg);
 				return;
 			}
-			
+
+			//v1
 			SequencerControl control = this.SequencerFormConditionalInstance.SequencerControl;
 			control.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
+			//v2 NO!!! I_SELECTED_SIXTEEN_STROKE_AND_I_EXPECT_this.populateTextboxesFromExecutorsState() olvHistory_ItemActivate will do a better job
 
 			//string staleReason = control.PopulateTextboxesFromExecutorsState();
 			//bool clearFirstBeforeClickingAnotherSymbolScaleIntervalRangePositionSize = string.IsNullOrEmpty(staleReason) == false;

@@ -47,7 +47,18 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		[JsonIgnore]	public SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParametersMergedUnclonedForSequencerByName { get {
 				SortedDictionary<string, IndicatorParameter> ret = new SortedDictionary<string, IndicatorParameter>();
-				foreach (IndicatorParameter iParam in this.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders) ret.Add(iParam.FullName, iParam);
+				foreach (IndicatorParameter iParam in this.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders) {
+					if (ret.ContainsKey(iParam.FullName)) {
+						if (iParam.FullName.Contains("NOT_ATTACHED_TO_ANY_INDICATOR_YET")) {
+							string msg2 = "IM_CLONING_A_CONTEXT_TO_PUSH_FROM_SEQUENCER__NO_IDEA_HOW_TO_FIX";
+							continue;
+						}
+						string msg = "AVOIDING_KEY_ALREADY_EXISTS [" + iParam.FullName + "]";
+						Assembler.PopupException(msg);
+						continue;
+					}
+					ret.Add(iParam.FullName, iParam);
+				}
 				return ret;
 			} }
 		[JsonProperty]	public	string										ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString { get {
@@ -108,7 +119,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		
 		public ContextScript CloneAndAbsorbFromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized, string newScriptContextName = null) {
-			Assembler.PopupException("TESTME //CloneAndAbsorbFromSystemPerformanceRestoreAble()");
+			Assembler.PopupException("TESTME //CloneAndAbsorbFromSystemPerformanceRestoreAble()", null, false);
 			ContextScript clone = (ContextScript)base.MemberwiseClone();
 			if (string.IsNullOrEmpty(newScriptContextName) == false) {
 				clone.Name = newScriptContextName;
@@ -212,7 +223,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 			} catch (Exception ex) {
-				string msg = "SCRIPT_RECOMPILED_OPTIMIZATION_SEQUENCER_WAS_NOT_NOTIFIED_ABOUT_CHANGED_SCRIPT_OR_INDICATOR_PARAMETERS";
+				string msg = "SCRIPT_RECOMPILED__SEQUENCER_WAS_NOT_NOTIFIED_ABOUT_CHANGED_SCRIPT_OR_INDICATOR_PARAMETERS";
 				Assembler.PopupException(msg);
 			}
 			return ret;
@@ -241,7 +252,7 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 			} catch (Exception ex) {
-				string msg = "SCRIPT_RECOMPILED_OPTIMIZATION_SEQUENCER_WAS_NOT_NOTIFIED_ABOUT_CHANGED_SCRIPT_OR_INDICATOR_PARAMETERS";
+				string msg = "SCRIPT_RECOMPILED__SEQUENCER_WAS_NOT_NOTIFIED_ABOUT_CHANGED_SCRIPT_OR_INDICATOR_PARAMETERS";
 				Assembler.PopupException(msg);
 			}
 			return ret;

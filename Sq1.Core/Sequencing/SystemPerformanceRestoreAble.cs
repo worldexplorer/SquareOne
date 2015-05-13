@@ -69,7 +69,7 @@ namespace Sq1.Core.Sequencing {
 			this.PriceFormat			= sysPerfBacktestResult.Bars.SymbolInfo.PriceFormat;
 			
 			base.PositionsCount			= sysPerfBacktestResult.SlicesShortAndLong.PositionsCount;
-			base.PositionAvgProfit		= sysPerfBacktestResult.SlicesShortAndLong.AvgProfitBoth;
+			base.PositionAvgProfit		= sysPerfBacktestResult.SlicesShortAndLong.PositionAvgProfitBoth;
 			base.NetProfit				= sysPerfBacktestResult.SlicesShortAndLong.NetProfitForClosedPositionsBoth;
 			base.WinLossRatio			= sysPerfBacktestResult.SlicesShortAndLong.WinLossRatio;
 			base.ProfitFactor			= sysPerfBacktestResult.SlicesShortAndLong.ProfitFactor;
@@ -151,9 +151,9 @@ namespace Sq1.Core.Sequencing {
 				Assembler.PopupException(msg);
 				return null;
 			}
-			KPIs lastCumulativeMinusWaterline = this.KPIsCumulativeByDateIncreasing[dateLast];
-			lastCumulativeMinusWaterline.AddKPIs(cloneToSubtract);
-			ret.AbsorbFrom(lastCumulativeMinusWaterline);
+			KPIs lastCumulativeMinusWaterline_Clone = this.KPIsCumulativeByDateIncreasing[dateLast].Clone();
+			lastCumulativeMinusWaterline_Clone.AddKPIs(cloneToSubtract);
+			ret.AbsorbFrom(lastCumulativeMinusWaterline_Clone);
 			if (this.NetProfit == ret.NetProfit && ret.NetProfit > 0) {	// inline test
 				string msg = "MY_OWN_SUBSET_MUST_HAVE_DIFFERENT_NUMBERS";
 				Assembler.PopupException(msg + this.NetProfitRecovery);
@@ -166,7 +166,7 @@ namespace Sq1.Core.Sequencing {
 				Assembler.PopupException(msg);
 				return null;
 			}
-			SystemPerformanceRestoreAble ret = this.Clone(reasonToExist);
+			SystemPerformanceRestoreAble ret = this.Clone(reasonToExist + "_CLONED_FOR_SUBSET");
 			// reset to disable creating a subset from a subset; ask parent to spawn another subset instead
 			ret.KPIsCumulativeByDateIncreasing = null;
 			return ret;
