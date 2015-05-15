@@ -39,7 +39,7 @@ namespace Sq1.Core.Sequencing {
 					try {
 						ret *= sp.NumberOfRuns;
 					} catch (Exception ex) {
-						//Debugger.Launch();
+						//Debugger.Break();
 						Assembler.PopupException("DECREASE_RANGE_OR_INCREASE_STEP_FOR_SCRIPT_PARAMETERS_PRIOR_TO " + sp.ToString(), ex, false);
 						ret = -1;
 						break;
@@ -57,7 +57,7 @@ namespace Sq1.Core.Sequencing {
 					try {
 						ret *= ip.NumberOfRuns;
 					} catch (Exception ex) {
-						//Debugger.Launch();
+						//Debugger.Break();
 						Assembler.PopupException("INCREASE_STEP_FOR_INDICATOR_PARAMETERS_PRIOR_TO " + ip.ToString(), ex, false);
 						ret = -1;
 						break;

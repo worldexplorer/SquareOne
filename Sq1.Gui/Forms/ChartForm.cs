@@ -290,7 +290,7 @@ namespace Sq1.Gui.Forms {
 
 			if (this.ChartFormManager.MainForm.ChartFormActiveNullUnsafe == this) {
 				string msg = "WE_ARE_HERE_WHEN_WE_SWITCH_STRATEGY_FOR_CHART";
-				//Debugger.Launch();
+				//Debugger.Break();
 				
 				//v1 DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
 				//v1 StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormManager.Executor.Strategy);

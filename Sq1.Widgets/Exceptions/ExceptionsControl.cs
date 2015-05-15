@@ -5,8 +5,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Sq1.Core;
 using Sq1.Core.Serializers;
@@ -130,7 +128,7 @@ namespace Sq1.Widgets.Exceptions {
 				//v1 IM_AFRAID_OF_RECURSION_HERE Assembler.PopupException(msg);
 				//v2
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				return;
 			}
@@ -141,7 +139,7 @@ namespace Sq1.Widgets.Exceptions {
 				}
 				if (this.Exceptions.Count == 0) {
 					string msg = "SHOULD_HAPPEN_ONCE_PER_APP_LIFETIME";
-					//Debugger.Launch();
+					//Debugger.Break();
 				}
 
 				this.ExceptionTimes.Add(exception, DateTime.Now);
@@ -207,7 +205,7 @@ namespace Sq1.Widgets.Exceptions {
 					if (rebuildPostponingDelay.TotalMilliseconds == 0) {
 						string msg = "LOOKS_VERY_POSSIBLE__BUT_I_HAVE_NO_SOLUTION";
 						#if DEBUG
-						Debugger.Launch();
+						Debugger.Break();
 						#endif
 						return;
 					}
@@ -248,7 +246,7 @@ namespace Sq1.Widgets.Exceptions {
 			if (this.InvokeRequired) {
 				this.BeginInvoke((MethodInvoker)delegate() { this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread(); });
 				//string msg = "I_MUST_BE_ALREADY_IN_GUI_THREAD__HOPING_TO_INSERT_IN_SEQUENCE_OF_INVOCATION";
-				//Debugger.Launch();
+				//Debugger.Break();
 				return;
 			} else {
 				string msg = "if we are in GUI thread, go on timer immediately (correlator throwing thousands at startup, or chart.OnPaint() doing something wrong)";
@@ -259,7 +257,7 @@ namespace Sq1.Widgets.Exceptions {
 					if (this.rebuildingNow != true) {
 						string msg = "DONT_USE_V1_WAY_TO_INVOKE_ME__USE_InsertAsyncAutoFlush()";
 						#if DEBUG
-						Debugger.Launch();
+						Debugger.Break();
 						#endif
 					} else {
 						return;

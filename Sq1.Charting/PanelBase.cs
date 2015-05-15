@@ -33,12 +33,12 @@ namespace Sq1.Charting {
 		// price, volume or indicator-calculated; not abstract for Designer to throw less exceptions
 		[Browsable(false)]	public	virtual	double	VisibleMinDoubleMaxValueUnsafe { get {
 			#if DEBUG
-			Debugger.Launch();
+			Debugger.Break();
 			#endif
 			throw new NotImplementedException(); } }
 		[Browsable(false)]	public	virtual	double	VisibleMaxDoubleMinValueUnsafe { get {
 			#if DEBUG
-			Debugger.Launch();
+			Debugger.Break();
 			#endif
 			throw new NotImplementedException(); } }
 		// USE_CACHED_VARIABLE_INSTEAD [Browsable(false)] public virtual double VisibleRange { get { return this.VisibleMax - this.VisibleMin; } }
@@ -85,7 +85,7 @@ namespace Sq1.Charting {
 			} }
 		[Browsable(true)]	public	virtual	double	ValueGetNaNunsafe(int barIndex) {
 			#if DEBUG
-			Debugger.Launch();
+			Debugger.Break();
 			#endif
 			throw new NotImplementedException();
 		}
@@ -118,7 +118,7 @@ namespace Sq1.Charting {
 
 		[Browsable(true)]	public	virtual	int		ValueIndexLastAvailableMinusOneUnsafe { get {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new NotImplementedException();
 			} }
@@ -387,7 +387,13 @@ namespace Sq1.Charting {
 //#else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
 //#endif
+			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
+				if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
+				return;
+			}
+
 			string msig = " " + this.PanelName + ".OnPaintBackgroundDoubleBuffered()";
+
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			//if (this.DesignMode) return;
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
@@ -422,10 +428,14 @@ namespace Sq1.Charting {
 				
 				this.RepaintSernoBackground++;
 				if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
-					this.DrawError(e.Graphics, "BACKTEST_IS_RUNNING_WAIT");
-					string msgRepaint = "repaintFore#" + this.RepaintSernoForeground + "/Back#" + this.RepaintSernoBackground;
-					this.DrawError(e.Graphics, msgRepaint);
-					if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
+					//v1
+					//this.DrawError(e.Graphics, "BACKTEST_IS_RUNNING_WAIT");
+					//string msgRepaint = "repaintFore#" + this.RepaintSernoForeground + "/Back#" + this.RepaintSernoBackground;
+					//this.DrawError(e.Graphics, msgRepaint);
+					//if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
+					//v2
+					string msg = "MOVED_TO_THE_BEGINNING__SKIPPING_ALL_REPAINTS_DURING_BACKTEST__SETTING_WaitCursor";
+					Assembler.PopupException(msg);
 					return;
 				}
 				if (this.Cursor != Cursors.Default) this.Cursor = Cursors.Default;
@@ -457,7 +467,7 @@ namespace Sq1.Charting {
 				}
 				//v2
 				if (this.PanelHasValuesForVisibleBarWindow == false) {
-					//Debugger.Launch();
+					//Debugger.Break();
 					return;
 				}
 
@@ -476,11 +486,11 @@ namespace Sq1.Charting {
 				this.ensureFontMetricsAreCalculated(e.Graphics);	//MOVED_HERE_FROM_MOVE_UPSTACK_THIS_FONT_HEIGHT_CALCULATION
 //DEBUGGING_FOR_MOVED_HERE_FROM_MOVE_UPSTACK_THIS_FONT_HEIGHT_CALCULATION remove next commit
 //				if (this.GutterBottomDraw && this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
-//					Debugger.Launch();
+//					Debugger.Break();
 //				}
 //				if (this.PanelHeightMinusGutterBottomHeight_cached != 0
 //						&& this.PanelHeightMinusGutterBottomHeight_cached != this.PanelHeightMinusGutterBottomHeight) {
-//					Debugger.Launch();
+//					Debugger.Break();
 //				}
 				this.PanelHeightMinusGutterBottomHeight_cached = this.PanelHeightMinusGutterBottomHeight;
 				
@@ -567,15 +577,15 @@ namespace Sq1.Charting {
 			double range2 = max2 - min2;
 		
 			if (min != min2) {
-				//Debugger.Launch();
+				//Debugger.Break();
 				min = min2;
 			}
 			if (max != max2) {
-				//Debugger.Launch();
+				//Debugger.Break();
 				max = max2;
 			}
 			if (rangeMinMax != range2) {
-				//Debugger.Launch();
+				//Debugger.Break();
 				rangeMinMax = range2;
 			}
 			#endif

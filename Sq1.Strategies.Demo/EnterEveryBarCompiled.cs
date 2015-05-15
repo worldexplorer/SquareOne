@@ -44,12 +44,12 @@ namespace Sq1.Strategies.Demo {
 			//this.Executor.PopupException(msg + whereIam);
 		}
 		public override void InitializeBacktest() {
-			//Debugger.Launch();
+			//Debugger.Break();
 			//this.PadBars(0);
 			if (base.Strategy == null) {
 				log("CANT_SET_EXCEPTIONS_LIMIT: base.Strategy == null");
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				return;
 			}
@@ -106,13 +106,13 @@ namespace Sq1.Strategies.Demo {
 
 			Bar barStreaming = base.Bars.BarStreamingNullUnsafe;
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
-				//Debugger.Launch();
+				//Debugger.Break();
 			}
 			if (barStaticFormed.ParentBarsIndex <= 2) return;
 			if (barStaticFormed.IsBarStreaming) {
 				string msg = "SHOULD_NEVER_HAPPEN triggered@barStaticFormed.IsBarStreaming[" + barStaticFormed + "] while Streaming[" + barStreaming + "]";
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 			}
 
@@ -121,21 +121,21 @@ namespace Sq1.Strategies.Demo {
 			if (isLastPositionNotClosedYet) {
 				if (lastPos.EntryFilledBarIndex > barStaticFormed.ParentBarsIndex) {
 					string msg1 = "NOTIFIED_ABOUT_LAST_FORMED_WHILE_LAST_POST_FILLED_AT_STREAMING__LOOKS_OK";
-					//Debugger.Launch();
+					//Debugger.Break();
 				}
 
 				if (lastPos.ExitAlert != null) {
 					string msg1 = "you want to avoid POSITION_ALREADY_HAS_AN_EXIT_ALERT_REPLACE_INSTEAD_OF_ADDING_SECOND"
 						+ " ExitAtMarket by throwing [can't have two closing alerts for one positionExit] Strategy[" + this.Strategy.ToString() + "]";
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					return;
 				}
 
 				//if (barStaticFormed.ParentBarsIndex == 163) {
 				//	#if DEBUG
-				//	Debugger.Launch();
+				//	Debugger.Break();
 				//	#endif
 				//	StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
 				//	Quote lastQuote = streaming.LastQuoteCloneGetForSymbol(barStaticFormed.Symbol);
@@ -186,14 +186,14 @@ namespace Sq1.Strategies.Demo {
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
 				Position buyPlaced = base.BuyAtMarket(barStreaming, msg);
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
-				//Debugger.Launch();
+				//Debugger.Break();
 				this.log(msg);
 			} else {
 				string msg = "ShortAtMarket@" + barStaticFormed.ParentBarsIdent;
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
 				Position shortPlaced = base.ShortAtMarket(barStreaming, msg);
 				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
-				//Debugger.Launch();
+				//Debugger.Break();
 				this.log(msg);
 			}
 		}
@@ -228,34 +228,34 @@ namespace Sq1.Strategies.Demo {
 		
 		public override void OnAlertFilledCallback(Alert alertFilled) {
 			if (alertFilled.FilledBarIndex == 12) {
-				//Debugger.Launch();
+				//Debugger.Break();
 			}
 		}
 		public override void OnAlertKilledCallback(Alert alertKilled) {
 			#if DEBUG
-			Debugger.Launch();
+			Debugger.Break();
 			#endif
 		}
 		public override void OnAlertNotSubmittedCallback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
 			#if DEBUG
-			Debugger.Launch();
+			Debugger.Break();
 			#endif
 		}
 		public override void OnPositionOpenedCallback(Position positionOpened) {
 			//if (positionOpened.EntryFilledBarIndex == 37) {
 			//	#if DEBUG
-			//	Debugger.Launch();
+			//	Debugger.Break();
 			//	#endif
 			//}
 		}
 		public override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedByPrototype) {
 			#if DEBUG
-			Debugger.Launch();
+			Debugger.Break();
 			#endif
 		}
 		public override void OnPositionClosedCallback(Position positionClosed) {
 			//if (positionClosed.EntryFilledBarIndex == 37) {
-			//	Debugger.Launch();
+			//	Debugger.Break();
 			//}
 		}
 		//void testBarAnnotations(Bar barStaticFormed) {

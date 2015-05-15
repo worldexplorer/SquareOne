@@ -59,7 +59,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 				decimal roundedChangesSliders = this.RoundToClosestStep(value);
 				if (value != roundedChangesSliders) {
-					//Debugger.Launch();
+					//Debugger.Break();
 				}
 				valueCurrent = roundedChangesSliders;
 				this.RaiseValueCurrentChanged();

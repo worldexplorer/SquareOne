@@ -8,7 +8,7 @@ namespace Sq1.Charting {
 		protected override void OnResize(EventArgs e) {
 			if (base.DesignMode) return;
 			if (this.ScrollLargeChange <= 0) {
-				//Debugger.Launch();	// HAPPENS_WHEN_WINDOW_IS_MINIMIZED OR BEFORE_FIRST_PAINT_SETS_GutterRightWidth_cached... how to disable any OnPaint when app isn't visible?... 
+				//Debugger.Break();	// HAPPENS_WHEN_WINDOW_IS_MINIMIZED OR BEFORE_FIRST_PAINT_SETS_GutterRightWidth_cached... how to disable any OnPaint when app isn't visible?... 
 				return;
 			}
 			this.hScrollBar.LargeChange = this.ScrollLargeChange;
@@ -52,7 +52,7 @@ namespace Sq1.Charting {
 //			return base.IsInputKey(keyData);
 //		}
 //		protected override void OnKeyDown(KeyEventArgs keyEventArgs) {
-//			Debugger.Launch();
+//			Debugger.Break();
 //			if (this.BarsEmpty) return;
 //			this.keysToReaction(keyEventArgs.KeyCode);
 //			base.OnKeyDown(keyEventArgs);
@@ -67,7 +67,7 @@ namespace Sq1.Charting {
 		}
 		
 		void keysToReaction(Keys keyData) {
-			//Debugger.Launch();
+			//Debugger.Break();
 			switch (keyData) {
 				case Keys.Up:
 					this.BarWidthIncrementAtKeyPressRate();
@@ -123,7 +123,7 @@ namespace Sq1.Charting {
 			// that will show that 10s delay actually makes better sense than relying on MainFormDockFormsFullyDeserializedLayoutComplete in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized()
 			//try {
 			//	int justCurious = this.ChartSettings.MultiSplitterPropertiesByPanelName[this.panelVolume.PanelName].Distance;
-			//	Debugger.Launch();
+			//	Debugger.Break();
 			//} catch (Exception ex) {
 			//	Assembler.PopupException(null, ex);
 			//}

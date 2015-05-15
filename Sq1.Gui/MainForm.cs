@@ -184,7 +184,7 @@ namespace Sq1.Gui {
 					int indicatorsReflectedCount = chartStrategy.Script.IndicatorsByName_ReflectedCached.Count;
 					if (indicatorsReflectedCount > 0) {
 						bool mergedIfAny = chartStrategy.ScriptContextCurrent.IndicatorParametersByName.Count == indicatorsReflectedCount;
-						if (mergedIfAny == false) Debugger.Launch();
+						if (mergedIfAny == false) Debugger.Break();
 					}
 					#endif
 
@@ -230,7 +230,7 @@ namespace Sq1.Gui {
 			}
 		}
 		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {
-			// OK_SO_LUO_PLAYS_WITH_WINDOWS.FORMS.VISIBLE_I_SEE Debugger.Launch();
+			// OK_SO_LUO_PLAYS_WITH_WINDOWS.FORMS.VISIBLE_I_SEE Debugger.Break();
 			DataSourcesForm	.Instance.VisibleChanged	+= delegate { this.mniSymbols.Checked		= DataSourcesForm	.Instance.Visible; };
 			ExceptionsForm	.Instance.VisibleChanged	+= delegate { this.mniExceptions.Checked	= ExceptionsForm	.Instance.Visible; };
 			SlidersForm		.Instance.VisibleChanged	+= delegate { this.mniSliders.Checked		= SlidersForm		.Instance.Visible; };

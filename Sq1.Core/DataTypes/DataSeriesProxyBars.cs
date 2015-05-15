@@ -33,7 +33,7 @@ namespace Sq1.Core.DataTypes {
 				if (barIndex >= this.BarsBeingProxied.Count) {
 					string msg = "REFACTOR_INVOKER! DEPRECATED_NOTATION this[this.Count]_get; STREAMING_VALUE_IS_NOW_AT_this[this.Count-1]";
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					throw new Exception(msg);
 					//return double.NaN;

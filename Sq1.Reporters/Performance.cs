@@ -167,7 +167,7 @@ namespace Sq1.Reporters {
 			} else {
 				if (this.currentRow >= this.lvPerformance.Items.Count) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					return;
 				}

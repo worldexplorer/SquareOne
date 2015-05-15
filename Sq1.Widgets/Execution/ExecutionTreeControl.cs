@@ -127,7 +127,7 @@ namespace Sq1.Widgets.Execution {
 							if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal > 0) {
 								string msg = "+67_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_HORIZONTAL";
 								int newDistance = this.DataSnapshot.MessagePaneSplitDistanceHorizontal;	// + 67 this.splitContainerMessagePane.SplitterWidth;
-				//Debugger.Launch();
+				//Debugger.Break();
 								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
 									this.splitContainerMessagePane.SplitterDistance =  newDistance;
 								}
@@ -136,7 +136,7 @@ namespace Sq1.Widgets.Execution {
 							if (this.DataSnapshot.MessagePaneSplitDistanceVertical > 0) {
 								string msg = "+151_SEEMS_TO_BE_REPRODUCED_AT_THE_SAME_DISTANCE_I_LEFT_VERTICAL";
 								int newDistance = this.DataSnapshot.MessagePaneSplitDistanceVertical;		// + 151 this.splitContainerMessagePane.SplitterWidth;
-				//Debugger.Launch();
+				//Debugger.Break();
 								if (this.splitContainerMessagePane.SplitterDistance != newDistance) {
 									this.splitContainerMessagePane.SplitterDistance =  newDistance;
 								}

@@ -111,7 +111,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			if (null == position.ExitAlert) {
 				string msg = "FIXME I_REFUSE_TO_KILL_UNFILLED_EXIT_ALERT {for prototyped position, position.ExitAlert contains TakeProfit} position[" + position + "]";
-				Debugger.Launch();
+				Debugger.Break();
 				return alertsSubmittedToKill;
 			}
 			if (string.IsNullOrEmpty(signalName)) signalName = "PositionCloseImmediately()";

@@ -405,7 +405,7 @@ namespace Sq1.Charting {
 //				int barYLowInverted = this.ValueToYinverted(bar.Low);
 //
 //				int candleBodyHeight = barYLowInverted - barYHighInverted;		// height is measured DOWN the screen from candleBodyInverted.Y, not UP
-//				if (candleBodyHeight < 0) Debugger.Launch();
+//				if (candleBodyHeight < 0) Debugger.Break();
 //				if (candleBodyHeight == 0) candleBodyHeight = 1;
 //
 //				Rectangle candleBodyInverted = default(Rectangle);
@@ -426,7 +426,7 @@ namespace Sq1.Charting {
 				if (indicator.HostPanelForIndicator != this) continue;
 				if (indicator.Executor == null) {							// indicator.BarsEffective will throw if indicator.Executor==null
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					continue;
 				}
@@ -434,7 +434,7 @@ namespace Sq1.Charting {
 					string msg = "DONT_RUN_BACKTESTER_BEFORE_BARS_ARE_LOADED /RenderIndicators()";
 					Assembler.PopupException(msg);
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					continue;
 				}
@@ -451,7 +451,7 @@ namespace Sq1.Charting {
 					}
 					if (indicator.BarsEffective.BarFirst == null) {	// happens after I edited DataSource and removed ",Sun" from DaysMarketOpen
 						#if DEBUG
-						Debugger.Launch();
+						Debugger.Break();
 						#endif
 						string msg2 = "SKIPPING_RENDERING_INDICATOR_TITLES for indicator[" + indicator + "].BarsEffective[" + indicator.BarsEffective + "].BarFirst=null";
 						Assembler.PopupException(msg2);

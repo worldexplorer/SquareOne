@@ -30,7 +30,7 @@ namespace Sq1.Core.Streaming {
 				string msg = "CANT_FILL_STREAMING_CLOSE_FROM_BID_OR_ASK_UNKNOWN quote.PriceLastDeal[" + quoteClone.TradedPrice + "];"
 					+ "what kind of quote is that?... (" + quoteClone + ")";
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 				//return;
@@ -40,7 +40,7 @@ namespace Sq1.Core.Streaming {
 				string msg = "StreamingBar.Symbol=[" + this.BarStreamingUnattached.Symbol + "]!=quote.Symbol["
 					+ quoteClone.Symbol + "] (" + quoteClone + ")";
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 				//return;

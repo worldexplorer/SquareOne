@@ -191,7 +191,7 @@ namespace Sq1.Core.DataTypes {
 
 			if (string.IsNullOrEmpty(msg)) return msg;
 
-			//Debugger.Launch();
+			//Debugger.Break();
 			if (throwNewException) {
 				throw new Exception(msg);
 			}
@@ -430,7 +430,7 @@ namespace Sq1.Core.DataTypes {
 			#if DEBUG
 			if (this.Open.ToString(priceFormat) != Math.Round(this.Open,	priceDecimals).ToString(priceFormat)) {
 				string msg = "Double.ToString() doesn't invoke Math.Round!";
-				Debugger.Launch();
+				Debugger.Break();
 			}
 			#endif
 			
@@ -484,13 +484,13 @@ namespace Sq1.Core.DataTypes {
 			
 			if (quote.Ask == quote.Bid) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				return false;
 			}
 			if (quote.Ask < quote.Bid) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				return false;
 			}
@@ -506,7 +506,7 @@ namespace Sq1.Core.DataTypes {
 				// MOSTLY_FROM_SCANNING_UP_GenerateClosestQuoteForEachPendingAlertOnOurWayTo() 
 				if (feedingGarbageAndIknowItDontBreak == false) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 				}
 				return false;
@@ -517,7 +517,7 @@ namespace Sq1.Core.DataTypes {
 				// MOSTLY_FROM_SCANNING_UP_GenerateClosestQuoteForEachPendingAlertOnOurWayTo()
 				if (feedingGarbageAndIknowItDontBreak == false) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 				}
 				return false;
@@ -525,7 +525,7 @@ namespace Sq1.Core.DataTypes {
 			
 			if (quote.Size > this.Volume) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				return false;
 			}
@@ -548,7 +548,7 @@ namespace Sq1.Core.DataTypes {
 			bool outsideSpread = fillBelowLowAndSpread || fillBelowLowAndSpread;
 			if (outsideSpread) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 			}
 			return !outsideSpread;

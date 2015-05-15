@@ -23,7 +23,7 @@ namespace Sq1.Strategies.Demo {
 			//WHATS_THE_DIFFERENCE? if (isBacktesting) return;
 
 			if (bar.ParentBarsIndex == 138) {
-				//Debugger.Launch();
+				//Debugger.Break();
 			}
 
 			if (base.HasPositionsOpenNow) return;
@@ -71,7 +71,7 @@ namespace Sq1.Strategies.Demo {
 			Position position = alertFilled.PositionAffected;
 		}
 		public override void OnAlertKilledCallback(Alert alertKilled) {
-			//Debugger.Launch();
+			//Debugger.Break();
 		}
 		public override void OnAlertNotSubmittedCallback(Alert alertNotSubmitted, int barNotSubmittedRelno) {
 			string msig = " //OnAlertNotSubmittedCallback(" + alertNotSubmitted + ", " + barNotSubmittedRelno + ")";
@@ -99,7 +99,7 @@ namespace Sq1.Strategies.Demo {
 			//}
 		}
 		public override void OnPositionClosedCallback(Position positionClosed) {
-			//Debugger.Launch();
+			//Debugger.Break();
 		}
 		public override void OnPositionOpenedCallback(Position positionOpened) {
 			string msg = " NEVER_INVOKED_SINCE_I_USE_POSITION_PROTOTYPES_ONLY no direct BuyAt* or SellAt*";

@@ -106,9 +106,10 @@ namespace Sq1.Core.Correlation {
 		}
 
 		internal void CalculateLocalsAndDeltas() {
+			string msig = " //CalculateLocalsAndDeltas()";
 			if (this.IsArtificialRow) {
 				string msg = "USE_CalculateLocalsAndDeltasForArtificial()_INSTEAD";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg + msig);
 				return;
 			}
 
@@ -134,7 +135,7 @@ namespace Sq1.Core.Correlation {
 
 			int noDivisionToZero = this.backtestsWithMyValueAndOnlyChosenOtherValues.Count;
 			if (noDivisionToZero == 0) {
-				Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO", null, false);
+				Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO" + msig, null, false);
 				this.kPIsLocalMinusGlobal_cached = null;
 				return;
 			}
@@ -152,6 +153,7 @@ namespace Sq1.Core.Correlation {
 		}
 
 		internal void CalculateLocalsAndDeltasForArtificial_Average() {
+			string msig = " //CalculateLocalsAndDeltasForArtificial_Average()";
 			this.KPIsLocal.Reset();
 
 			List<OneParameterOneValue> parentValues = new List<OneParameterOneValue>(this.oneParameterAllValuesAveraged.ValuesByParam.Values);
@@ -160,13 +162,14 @@ namespace Sq1.Core.Correlation {
 			}
 			int noDivisionToZero = parentValues.Count;
 			if (noDivisionToZero == 0) {
-				Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO");
+				Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO" + msig);
 				return;
 			}
 			this.KPIsLocal.DivideTotalByCount(noDivisionToZero);
 			this.kPIsLocalMinusGlobal_cached = null;
 		}
 		internal void CalculateGlobalsForArtificial_Average() {
+			string msig = " //CalculateGlobalsForArtificial_Average()";
 			this.KPIsGlobal.Reset();
 
 			List<OneParameterOneValue> parentValues = new List<OneParameterOneValue>(this.oneParameterAllValuesAveraged.ValuesByParam.Values);
@@ -175,7 +178,7 @@ namespace Sq1.Core.Correlation {
 			}
 			int noDivisionToZero = parentValues.Count;
 			if (noDivisionToZero == 0) {
-				Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO");
+				Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO" + msig);
 				return;
 			}
 			this.KPIsGlobal.DivideTotalByCount(noDivisionToZero);

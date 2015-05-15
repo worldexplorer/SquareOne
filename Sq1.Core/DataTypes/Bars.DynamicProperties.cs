@@ -36,7 +36,7 @@ namespace Sq1.Core.DataTypes {
 //			if (this.MarketInfo == null) return ret;
 //			#if DEBUG // TEST_EMBEDDED
 //			if (barLastToday.IsAlignedToOwnScaleInterval == false) {
-//				Debugger.Launch();
+//				Debugger.Break();
 //				return null;
 //			}
 //			#endif
@@ -46,7 +46,7 @@ namespace Sq1.Core.DataTypes {
 //					+ barLastToday + "].ParentBars.MarketInfo[" + this.MarketInfo + "]";
 //				Assembler.PopupException(msg);
 //				#if DEBUG
-//				Debugger.Launch();
+//				Debugger.Break();
 //				#endif
 //				return ret;
 //			}
@@ -62,7 +62,7 @@ namespace Sq1.Core.DataTypes {
 //					+ " 3) use Bar/DataSeriesTimeBased.roundDateDownToMyInterval() before passing it to me;"; 
 //				Assembler.PopupException(msg);
 //				#if DEBUG
-//				Debugger.Launch();
+//				Debugger.Break();
 //				#endif
 //				return ret;
 //			}
@@ -82,7 +82,7 @@ namespace Sq1.Core.DataTypes {
 //					+ "] todayMarketCloseServerTime[" + todayMarketCloseServerTime + "]";
 //				Assembler.PopupException(msg);
 //				#if DEBUG
-//				Debugger.Launch();
+//				Debugger.Break();
 //				#endif
 //				return todayMarketCloseServerTime;
 //			}
@@ -93,7 +93,7 @@ namespace Sq1.Core.DataTypes {
 //			for (ret = dateStartScanBackwards; ret > todayMarketCloseServerTime; ret = ret.Subtract(distanceBetweenBars)) {
 //				if (barsScanned > barsMaxDayCanFit) {
 //					#if DEBUG	// TEST_EMBEDDED
-//					Debugger.Launch();
+//					Debugger.Break();
 //					#endif
 //					break;
 //				}
@@ -102,7 +102,7 @@ namespace Sq1.Core.DataTypes {
 //				// I won't cry if we haven't received a bar between lastBarToday and an earlier barMarketClose
 //				if (this.ContainsKey(ret) == false) continue;
 //				#if DEBUG	// TEST_EMBEDDED
-//				if (this.IsMarketOpenDuringWholeBar(this[ret]) == false) Debugger.Launch();
+//				if (this.IsMarketOpenDuringWholeBar(this[ret]) == false) Debugger.Break();
 //				#endif
 //			}
 //			// FOR ended when ret <= todayMarketCloseServerTime, ret=dateOfExistingBarPriorOrEqualToMarketClose
@@ -115,7 +115,7 @@ namespace Sq1.Core.DataTypes {
 //			for (DateTime eachBar = dateStartScanBackwards; eachBar > todayMarketCloseServerTime; eachBar = eachBar.Subtract(distanceBetweenBars)) {
 //				if (barsScanned > barsMaxDayCanFit) {
 //					#if DEBUG	// TEST_EMBEDDED
-//					Debugger.Launch();
+//					Debugger.Break();
 //					#endif
 //					break;
 //				}
@@ -123,7 +123,7 @@ namespace Sq1.Core.DataTypes {
 //				
 //				// I won't cry if we haven't received a bar between lastBarToday and an earlier barMarketClose
 //				//if (this.ContainsKey(eachBar) == false) continue;
-//				//if (this.IsMarketOpenDuringWholeBar(this[eachBar]) == false) Debugger.Launch();
+//				//if (this.IsMarketOpenDuringWholeBar(this[eachBar]) == false) Debugger.Break();
 //				if (this.MarketInfo.IsMarketOpenDuringDateIntervalServerTime(eachBar, eachBar.Add(distanceBetweenBars)) == false) continue;
 //			}
 //			// FOR ended when ret <= todayMarketCloseServerTime, ret=dateOfExistingBarPriorOrEqualToMarketClose
@@ -286,7 +286,7 @@ namespace Sq1.Core.DataTypes {
 //			}
 //			//if (howManyBarsToAdd < 0) {
 //			//TESTED:1yes2yes 	string msg = "CHECKING_1)_TimeSpan_CAN_BE_NEGATIVE_2)_DATE.ADD(NEGATIVE)_SHOULD_BE_REWRITTEN";
-//			//	Debugger.Launch();
+//			//	Debugger.Break();
 //			//}
 //			TimeSpan totalTimeSpan = new TimeSpan(this.ScaleInterval.AsTimeSpan.Ticks * howManyBarsToAdd);
 //			DateTime ret = dateTimeToAddIntervalsTo.Add(totalTimeSpan);
@@ -297,14 +297,14 @@ namespace Sq1.Core.DataTypes {
 //				if (this.MarketInfo == null) return ret;
 //				if (this.ScaleInterval.Scale == BarScale.Unknown) {
 //					#if DEBUG
-//					Debugger.Launch();
+//					Debugger.Break();
 //					#endif
 //					return ret;
 //				}
 //				int seconds = this.ScaleInterval.AsTimeSpanInSeconds;
 //				if (seconds <= 0) {
 //					#if DEBUG
-//					Debugger.Launch();
+//					Debugger.Break();
 //					#endif
 //					return ret;
 //				}
@@ -318,7 +318,7 @@ namespace Sq1.Core.DataTypes {
 //						int secondsInFortsSession = (24-10) * 60 * 60;	// 10...24 in seconds
 //						secondsInFortsSession -= 10 * 60;				// subtract 10 minutes from 23:50
 //						if (marketOpenDurationSeconds != secondsInFortsSession) {
-//							Debugger.Launch();
+//							Debugger.Break();
 //						}
 //					}
 //				}
@@ -333,7 +333,7 @@ namespace Sq1.Core.DataTypes {
 //					string msg = "CAN_NOT_CALCULATE_ClearingIntervalsStretchingWholeBarsTotalled_FOR_BARS_WITH_EMPTY_BarScaleInterval this.ScaleInterval[" + this.ScaleInterval + "]";
 //					Assembler.PopupException(msg);
 //					#if DEBUG
-//					Debugger.Launch();
+//					Debugger.Break();
 //					#endif
 //					return ret;
 //				}
@@ -341,7 +341,7 @@ namespace Sq1.Core.DataTypes {
 //					string msg = "CAN_NOT_CALCULATE_ClearingIntervalsStretchingWholeBarsTotalled_FOR_BARS_WITH_UNKNOWN_BarScaleInterval this.ScaleInterval[" + this.ScaleInterval + "]";
 //					Assembler.PopupException(msg);
 //					#if DEBUG
-//					Debugger.Launch();
+//					Debugger.Break();
 //					#endif
 //					return ret;
 //				}

@@ -176,7 +176,7 @@ namespace Sq1.Core.Livesim {
 				}
 			} catch (Exception e) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw e;
 			} finally {

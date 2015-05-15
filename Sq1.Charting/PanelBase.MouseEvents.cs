@@ -293,7 +293,7 @@ namespace Sq1.Charting {
 
 			int barIndexMouseIsOverNow = this.XToBar(e.X);
 			if (barIndexMouseIsOverNow < this.VisibleBarLeft_cached) return tooltipPositionShown;
-			if (barIndexMouseIsOverNow > this.VisibleBarRight_cached) return tooltipPositionShown;	//Debugger.Launch();
+			if (barIndexMouseIsOverNow > this.VisibleBarRight_cached) return tooltipPositionShown;	//Debugger.Break();
 
 			Dictionary<int, List<AlertArrow>> alertArrowsListByBar = this.ChartControl.ScriptExecutorObjects.AlertArrowsListByBar;
 			if (alertArrowsListByBar.ContainsKey(barIndexMouseIsOverNow) == false) {
@@ -347,7 +347,7 @@ namespace Sq1.Charting {
 
 			int barIndexMouseIsOverNow = this.XToBar(e.X);
 			if (barIndexMouseIsOverNow < this.VisibleBarLeft_cached) return;
-			if (barIndexMouseIsOverNow > this.VisibleBarRight_cached) return;	//Debugger.Launch();
+			if (barIndexMouseIsOverNow > this.VisibleBarRight_cached) return;	//Debugger.Break();
 
 			Bar barMouseIsOverNow = this.ChartControl.Bars[barIndexMouseIsOverNow];
 			if (double.IsNaN(barMouseIsOverNow.Low)) return;

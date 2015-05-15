@@ -232,7 +232,7 @@ namespace Sq1.Core.Streaming {
 
 			if (double.IsNaN(price)) {
 				string msg = "NEVER_HAPPENED_SO_FAR PRICE_MUST_BE_POSITIVE_NOT_NAN";
-				Debugger.Launch();
+				Debugger.Break();
 			}
 			symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(symbol);
 			//v2

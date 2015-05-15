@@ -121,7 +121,7 @@ namespace Sq1.Widgets.Sequencing {
 				//colDynParam.AspectGetter = new AspectGetterDelegate(object o) {
 				//	string colDynParamNameStatic2 = colDynParam.Name;
 				//	if (colDynParamNameStatic2 != colDynParamNameStatic) {
-				//		//Debugger.Launch();	// THIS_IS_WHY_I_HATE_LAMBDAS
+				//		//Debugger.Break();	// THIS_IS_WHY_I_HATE_LAMBDAS
 				//	}
 
 				//	SystemPerformanceRestoreAble SystemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;

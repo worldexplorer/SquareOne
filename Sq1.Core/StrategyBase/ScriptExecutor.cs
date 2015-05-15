@@ -50,7 +50,7 @@ namespace Sq1.Core.StrategyBase {
 				if (this.Strategy == null) {
 					string msg = "ScriptExecutor.PositionSize: you should not access PositionSize before you've set Strategy";
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					throw new Exception(msg);
 				}
@@ -60,7 +60,7 @@ namespace Sq1.Core.StrategyBase {
 				if (this.Bars == null) {
 					string msg = "ScriptExecutor.DataSource: you should not access DataSource BEFORE you've set ScriptExecutor.Bars";
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					throw new Exception(msg);
 				}
@@ -464,14 +464,14 @@ namespace Sq1.Core.StrategyBase {
 				bool setStatusSubmitting = this.IsStreamingTriggeringScript && this.IsStrategyEmittingOrders;
 				if (willEmit) {
 					string msg3 = "Breakpoint";
-					//Debugger.Launch();
+					//Debugger.Break();
 					//#D_FREEZE Assembler.PopupException(msg3, null, false);
 				}
 
 				if (willEmit) {
 					string msg2 = "Breakpoint";
 					//#D_FREEZE Assembler.PopupException(msg2);
-					//Debugger.Launch();
+					//Debugger.Break();
 					ContextScript ctx = this.Strategy.ScriptContextCurrent;
 
 					bool noNeedToUnpauseLivesimKozItsNeverPaused = this.Bars.DataSource is LivesimDataSource;
@@ -562,13 +562,13 @@ namespace Sq1.Core.StrategyBase {
 			string invoker = (new StackFrame(3, true).GetMethod().Name) + "(): ";
 			if (this.Bars == null) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msig + " this.Bars=[null] " + invoker);
 			}
 			if (entryBar == null) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msig + " for Bars=[" + this.Bars + "]" + invoker);
 			}
@@ -615,7 +615,7 @@ namespace Sq1.Core.StrategyBase {
 			this.CheckThrowAlertCanBeCreated(exitBar, "BARS.BARSTREAMING_OR_BARS.BARLASTSTATIC_IS_NULL_SellOrCoverAlertCreateRegister() ");
 			if (position == null) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception("POSITION_CAN_NOT_BE_NULL_SellOrCoverAlertCreateRegister()");
 			}
@@ -677,7 +677,7 @@ namespace Sq1.Core.StrategyBase {
 			if (alert == null) {
 				string msg = "don't invoke KillAlert with alert=null; check for TP=0 or SL=0 prior to invocation";
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
@@ -816,14 +816,14 @@ namespace Sq1.Core.StrategyBase {
 			if (priceFill == -1) {
 				string msg = "won't set priceFill=-1 for alert [" + alertFilled + "]";
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
 			if (alertFilled.PositionAffected == null) {
 				string msg = "CallbackAlertFilled can't do its job: alert.PositionAffected=null for alert [" + alertFilled + "]";
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
@@ -898,7 +898,7 @@ namespace Sq1.Core.StrategyBase {
 			bool removed = this.ExecutionDataSnapshot.AlertsPending.Remove(alertFilled, this, "callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected(WAIT)");
 			if (removed == false) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 			}
 
@@ -962,7 +962,7 @@ namespace Sq1.Core.StrategyBase {
 					if (alertsNewAfterAlertFilled.Count > 0) {
 						string msg = "NONSENSE@Exit: there must be no alerts (got " + alertsNewAfterAlertFilled.Count + "): killer works silently";
 						#if DEBUG
-						Debugger.Launch();
+						Debugger.Break();
 						#endif
 						throw new Exception(msg);
 					}
@@ -1164,7 +1164,7 @@ namespace Sq1.Core.StrategyBase {
 				if (this.Backtester.IsBacktestingNoLivesimNow == false) {
 					msg = "RealTime alerts should NOT have OrderFollowed=null; " + msg;
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					throw new Exception(msg);
 				}
@@ -1390,21 +1390,21 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Strategy == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Executor.Strategy=null; " + this;
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
 			if (this.Strategy.Script == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Executor.Strategy.Script=null, didn't compile; " + this;
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
 			if (this.Bars == null) {
 				string msg = "WILL_NOT_EXECUTE_BACKTESTER: Bars=null; select 1) TimeFrame 2) Range 3) PositionSize - for corresponding Chart; " + this;
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
@@ -1438,7 +1438,7 @@ namespace Sq1.Core.StrategyBase {
 						+ " because threadPoolAvailablePercentage[" + threadPoolAvailablePercentage
 						+ "]<" + ThreadPoolAvailablePercentageLimit + "%";
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					throw new Exception(msg);
 				}
@@ -1489,7 +1489,7 @@ namespace Sq1.Core.StrategyBase {
 			if (barsClicked == null) {
 				string msg = "don't feed Bars=null into the foodchain!";
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
@@ -1559,7 +1559,7 @@ namespace Sq1.Core.StrategyBase {
 			SymbolInfo symbolInfo = bar.ParentBars.SymbolInfo;
 			if (symbolInfo.SecurityType == SecurityType.Future && symbolInfo.LeverageForFutures <= 0.0) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new ArgumentException("Margin must be greater than zero");
 			}
@@ -1578,7 +1578,7 @@ namespace Sq1.Core.StrategyBase {
 				default:
 					string msg = "RETURNING_ONE_SHARE_UNSUPPORED_PositionSizeMode [" + this.PositionSize.Mode + "]";
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					throw new NotImplementedException();
 			}

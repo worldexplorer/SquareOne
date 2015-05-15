@@ -159,7 +159,7 @@ namespace Sq1.Core.Indicators {
 				double eachBarCloses = base.ClosesProxyEffective[i];
 				if (double.IsNaN(eachBarCloses)) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					continue;
 				}
@@ -168,18 +168,18 @@ namespace Sq1.Core.Indicators {
 			}
 			if (barsProcessedCheck != this.ParamPeriod.ValueCurrent) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 			}
 			double retOld = sum / this.ParamPeriod.ValueCurrent;
 			
 			if (retOld != ret) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 			} else {
 				#if DEBUG
-				//Debugger.Launch();
+				//Debugger.Break();
 				#endif
 			}
 			#endif

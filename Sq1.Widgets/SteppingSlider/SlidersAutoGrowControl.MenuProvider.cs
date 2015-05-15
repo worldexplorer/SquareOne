@@ -76,7 +76,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				foreach (ToolStripMenuItem mni in this.tsiScriptContextsDynamic.Values) {
 					if (mni.IsDisposed) {
 						#if DEBUG
-						Debugger.Launch();
+						Debugger.Break();
 						#endif
 					}
 				}
@@ -88,7 +88,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				#if DEBUG
 				if (this.mniParameterBagsNotHighlighted.IsDisposed) {
-					Debugger.Launch();
+					Debugger.Break();
 					this.mniParameterBagsNotHighlighted = new Sq1.Widgets.LabeledTextBox.MenuItemLabel();
 					// 
 					// mniParameterBagsNotHighlighted
@@ -100,13 +100,15 @@ namespace Sq1.Widgets.SteppingSlider {
 					this.mniParameterBagsNotHighlighted.Text = "Script Contexts";
 				}
 				#endif
+				this.mniParameterBagsNotHighlighted.Text = "Script Contexts :: " + this.Strategy.Name;
 				ret.Add(this.mniParameterBagsNotHighlighted);
+				ret.Add(this.toolStripSeparator3);
 
 				ret.AddRange(this.TsiScriptContextsDynamic);
 
 				#if DEBUG
 				if (this.mniltbParametersBagNewWithDefaults.IsDisposed) {
-					Debugger.Launch();
+					Debugger.Break();
 					this.mniltbParametersBagNewWithDefaults = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 					// 
 					// mniltbParametersBagNewWithDefaults
@@ -126,7 +128,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				if (this.toolStripSeparator2.IsDisposed) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 				}
@@ -134,7 +136,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				#if DEBUG
 				if (this.mniAllParamsResetToScriptDefaults.IsDisposed) {
-					Debugger.Launch();
+					Debugger.Break();
 					this.mniAllParamsResetToScriptDefaults = new System.Windows.Forms.ToolStripMenuItem();
 					// 
 					// mniAllParamsResetToScriptDefaults
@@ -149,7 +151,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				#if DEBUG
 				if (this.mniAllParamsShowNumeric.IsDisposed) {
-					Debugger.Launch();
+					Debugger.Break();
 					this.mniAllParamsShowNumeric = new System.Windows.Forms.ToolStripMenuItem();
 					// 
 					// mniAllParamsShowNumeric
@@ -165,7 +167,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				#if DEBUG
 				if (this.mniAllParamsShowBorder.IsDisposed) {
-					Debugger.Launch();
+					Debugger.Break();
 					this.mniAllParamsShowBorder = new System.Windows.Forms.ToolStripMenuItem();
 					// 
 					// mniAllParamsShowBorder

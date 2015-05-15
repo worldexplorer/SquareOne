@@ -14,7 +14,7 @@ namespace Sq1.Charting.Demo {
 			// below I want to avoid {Assembler.instance=null}-related exception in DesignMode
 			if (base.DesignMode) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception("I doubt that a Form.ctor() could ever have base.DesignMode=true" +
 					"; base() has not been informed yet that the form IS in DesignMode, right?...");
@@ -25,7 +25,7 @@ namespace Sq1.Charting.Demo {
 		public void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
 			#if DEBUG
 			if (debuggingBreak) {
-				Debugger.Launch();
+				Debugger.Break();
 			}
 			#endif
 
@@ -43,7 +43,7 @@ namespace Sq1.Charting.Demo {
 			t.ContinueWith(delegate {
 				string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
 				#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 				#else
 					Assembler.PopupException(msg2, t.Exception);
 				#endif

@@ -85,15 +85,15 @@ namespace Sq1.Core.Indicators {
 			} }
 		public bool AbsorbCurrentFixBoundariesIfChanged(IndicatorParameter ctxParamToAbsorbCurrentAndFixBoundaries) {
 			this.WillBeSequenced	= ctxParamToAbsorbCurrentAndFixBoundaries.WillBeSequenced;
-			this.BorderShown						= ctxParamToAbsorbCurrentAndFixBoundaries.BorderShown;
-			this.NumericUpdownShown					= ctxParamToAbsorbCurrentAndFixBoundaries.NumericUpdownShown;
-			this.CorrelatorSnap						= ctxParamToAbsorbCurrentAndFixBoundaries.CorrelatorSnap;
+			this.BorderShown		= ctxParamToAbsorbCurrentAndFixBoundaries.BorderShown;
+			this.NumericUpdownShown	= ctxParamToAbsorbCurrentAndFixBoundaries.NumericUpdownShown;
+			this.CorrelatorSnap		= ctxParamToAbsorbCurrentAndFixBoundaries.CorrelatorSnap;
 
 			bool ret = false;
 
 			if (this.ValueCurrent != ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent) {
 				string msg = "we collapsed IndicatorParameters into a single instance thing; are we back to duplicates?...";
-				//Debugger.Launch();
+				//Debugger.Break();
 				this.ValueCurrent = ctxParamToAbsorbCurrentAndFixBoundaries.ValueCurrent;
 				ret = true;
 			}

@@ -180,7 +180,7 @@ namespace Sq1.Core.Execution {
 				bool notFilled = (this.FilledBarSnapshotFrozenAtFill == null);
 				if (notFilled) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					return true;
 				}
@@ -188,7 +188,7 @@ namespace Sq1.Core.Execution {
 				bool noQuoteFilled = (this.QuoteFilledThisAlertDuringBacktestNotLive == null);
 				if (noQuoteFilled) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					return true;
 				}
@@ -198,7 +198,7 @@ namespace Sq1.Core.Execution {
 					this.PriceFilledThroughPosition, this.QuoteFilledThisAlertDuringBacktestNotLive.Spread);
 				if (!fillAtSlimBarIsWithinSpread) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					return true;
 				}
@@ -208,7 +208,7 @@ namespace Sq1.Core.Execution {
 					bool outsideBar = !insideBar;
 					if (outsideBar) {
 						#if DEBUG
-						Debugger.Launch();
+						Debugger.Break();
 						#endif
 						return true;
 					}
@@ -216,7 +216,7 @@ namespace Sq1.Core.Execution {
 					bool containsBidAsk = this.FilledBarSnapshotFrozenAtFill.ContainsBidAskForQuoteGenerated(this.QuoteFilledThisAlertDuringBacktestNotLive);
 					if (!containsBidAsk && fillAtSlimBarIsWithinSpread) {
 						#if DEBUG
-						Debugger.Launch();
+						Debugger.Break();
 						#endif
 						return true;
 					}
@@ -225,7 +225,7 @@ namespace Sq1.Core.Execution {
 				bool priceBetweenFilledQuotesBidAsk = this.QuoteFilledThisAlertDuringBacktestNotLive.PriceBetweenBidAsk(this.PriceFilledThroughPosition);
 				if (!priceBetweenFilledQuotesBidAsk) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					return true;
 				}
@@ -238,7 +238,7 @@ namespace Sq1.Core.Execution {
 		//		bool outsideBar = !insideBar; 
 		//		#if DEBUG
 		//		if (outsideBar) {
-		//			Debugger.Launch();
+		//			Debugger.Break();
 		//		}
 		//		#endif
 		//		return outsideBar;
@@ -249,7 +249,7 @@ namespace Sq1.Core.Execution {
 				bool outsideQuote = !insideQuote; 
 				#if DEBUG
 				if (outsideQuote) {
-					Debugger.Launch();
+					Debugger.Break();
 				}
 				#endif
 				return outsideQuote;
@@ -338,7 +338,7 @@ namespace Sq1.Core.Execution {
 			if (priceScript < 0) {
 				string msg = "ALERT_CTOR_PRICE_SCRIPT_CANT_BE_NEGATIVE";
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}
@@ -395,7 +395,7 @@ namespace Sq1.Core.Execution {
 			if (this.PriceScriptAligned < 0) {
 				string msg = "ALERT_CTOR_PRICE_SCRIPT_CANT_BE_NEGATIVE";
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception(msg);
 			}

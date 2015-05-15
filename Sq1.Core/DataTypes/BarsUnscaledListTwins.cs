@@ -58,7 +58,7 @@ namespace Sq1.Core.DataTypes {
 				if (double.IsNaN(bar.Volume)) msg += "bar.Volume[NaN] ";
 				if (string.IsNullOrEmpty(msg) == false) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					throw new Exception("BARS_UNSCALED[]_MUST_ALWAYS_RETURN_BAR_WITHOUT_NANS: " + msg);
 				}
@@ -82,7 +82,7 @@ namespace Sq1.Core.DataTypes {
 				if (double.IsNaN(bar.Volume)) msg += "bar.Volume[NaN] ";
 				if (string.IsNullOrEmpty(msg) == false) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					throw new Exception("BARS_UNSCALED[]_MUST_ALWAYS_RETURN_BAR_WITHOUT_NANS: " + msg);
 				}

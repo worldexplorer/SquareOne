@@ -25,7 +25,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				if (partFilled > 1) {
 					string msg = "PART_FILLED_MUST_BE_LESS_THAN_1=e.X[" + e.X + "]/base.Width[" + base.Width + "] MOUSE_MOVE_FROM_ANOTHER_CONTROL?";
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					Assembler.PopupException(msg, null, false);
 					return;
@@ -46,10 +46,10 @@ namespace Sq1.Widgets.SteppingSlider {
 			//COMMENTED_TO_FIX_BEGIN crash on slider change while "Parameter Bags" CTX is open
 			//if (leftMouseButtonHeldDown) {	// I_HATE_HACKING_F_WINDOWS_FORMS
 			//	string msg = "DRAG_SIMULATION_AND_ON_DRAG_OVER_BOTH_DONT_WORK IF_YOU_SEE_THIS_SEND_A_SCREENSHOT_TO_DEVELOPER";
-			//	//Debugger.Launch();
+			//	//Debugger.Break();
 			//	Assembler.PopupException(msg);
 			//	if (this.ValueCurrent != this.ValueMouseOver) {
-			//		//Debugger.Launch();
+			//		//Debugger.Break();
 			//		this.ValueCurrent = this.ValueMouseOver;
 			//	}
 			//}

@@ -12,7 +12,7 @@ namespace Sq1.Gui.Singletons {
 			// below I want to avoid {Assembler.instance=null}-related exception in DesignMode
 			if (base.DesignMode) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				throw new Exception("I doubt that a Form.ctor() could ever have base.DesignMode=true" +
 					"; base() has not been informed yet that the form IS in DesignMode, right?...");

@@ -93,7 +93,7 @@ namespace Sq1.Core.StrategyBase {
 			foreach (Position posOpen in positionsOpenSafe) {
 				if (positionsClosedSafe.Contains(posOpen, this, "BuildStatsOnBacktestFinished(WAIT)") == false) {
 					#if DEBUG
-					Debugger.Launch();
+					Debugger.Break();
 					#endif
 					continue;
 				}

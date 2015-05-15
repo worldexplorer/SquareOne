@@ -171,7 +171,7 @@ namespace Sq1.Widgets.Execution {
 			if (this.OrdersTreeOLV.SelectedItem.ForeColor == Color.DimGray) {
 				string msg = "tree_FormatRow() sets Item.ForeColor=Color.DimGray when AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)==false"
 					+ " (all JSON-deserialized orders have no chart to get popped-up)";
-				//Debugger.Launch();
+				//Debugger.Break();
 				return;
 			}
 			//otherwize if you'll see REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR - dont forget to use Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
@@ -195,7 +195,7 @@ namespace Sq1.Widgets.Execution {
 			//v1 BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 			//	#if DEBUG
-			//	Debugger.Launch();
+			//	Debugger.Break();
 			//	#endif
 				return;
 			}
@@ -208,7 +208,7 @@ namespace Sq1.Widgets.Execution {
 			//}
 			//v3
 			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
-			//Debugger.Launch();
+			//Debugger.Break();
 			if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
 				//if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;
 				//this.DataSnapshot.MessagePaneSplitDistanceHorizontal = e.SplitY;
