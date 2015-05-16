@@ -42,7 +42,16 @@ namespace Sq1.Core.StrategyBase {
 		[JsonIgnore]	public List<IndicatorParameter>		ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders { get {
 				List<IndicatorParameter> ret = new List<IndicatorParameter>();
 				ret.AddRange(this.ScriptParametersById.Values);
-				foreach (List<IndicatorParameter> iParams in this.IndicatorParametersByName.Values) ret.AddRange(iParams);
+				//v1 foreach (List<IndicatorParameter> iParams in this.IndicatorParametersByName.Values) ret.AddRange(iParams);
+				//v2 fixes OneParameterControl.indicatorParameterNullUnsafe: ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.ContainsKey(" + this.parameter.ParameterName + ") == false becomes true
+				foreach (string indicatorName in this.IndicatorParametersByName.Keys) {
+					List<IndicatorParameter> iParams = this.IndicatorParametersByName[indicatorName];
+					foreach (IndicatorParameter iParam in iParams) {
+						if (iParam.IndicatorName == indicatorName) continue;
+						iParam.IndicatorName = indicatorName;
+					}
+					ret.AddRange(iParams);
+				}
 				return ret;
 			} }
 		[JsonIgnore]	public SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParametersMergedUnclonedForSequencerByName { get {
@@ -51,6 +60,7 @@ namespace Sq1.Core.StrategyBase {
 					if (ret.ContainsKey(iParam.FullName)) {
 						if (iParam.FullName.Contains("NOT_ATTACHED_TO_ANY_INDICATOR_YET")) {
 							string msg2 = "IM_CLONING_A_CONTEXT_TO_PUSH_FROM_SEQUENCER__NO_IDEA_HOW_TO_FIX";
+							Assembler.PopupException(msg2);
 							continue;
 						}
 						string msg = "AVOIDING_KEY_ALREADY_EXISTS [" + iParam.FullName + "]";
@@ -272,6 +282,7 @@ namespace Sq1.Core.StrategyBase {
 		internal int ScriptParametersReflectedAbsorbFromCurrentContextReplace(SortedDictionary<int, ScriptParameter> scriptParametersById_ReflectedCached) {
 			string msig = " //ScriptParametersAbsorbFromReflectedReplace()";
 			int ret = 0;
+			if (scriptParametersById_ReflectedCached.Count == 0) return ret;
 			foreach (ScriptParameter spReflected in scriptParametersById_ReflectedCached.Values) {
 				if (this.ScriptParametersById.ContainsKey(spReflected.Id) == false) continue;
 				ScriptParameter spContext = this.ScriptParametersById[spReflected.Id];
@@ -285,11 +296,17 @@ namespace Sq1.Core.StrategyBase {
 //				Assembler.PopupException(msg + msig, null, true);
 //				//strategySerializeRequired = false;
 //			}
+			if (ret == 0) {
+				string msg = "NO_SCRIPT_PARAMETER_VALUES_ABSORBED_SAME_FOR_Count[" + scriptParametersById_ReflectedCached.Count + "]";
+				Assembler.PopupException(msg, null, false);
+			}
 			return ret;
 		}
-		internal int IndicatorParamsReflectedAbsorbFromCurrentContextReplace(Dictionary<string, List<IndicatorParameter>> indicatorParametersByIndicator_ReflectedCached) {
+		internal int PushIndicatorParamsCurrentValuesIntoReflectedIndicators(
+				Dictionary<string, List<IndicatorParameter>> indicatorParametersByIndicator_ReflectedCached) {
 			string msig = " //IndicatorParamsAbsorbFromReflectedReplace()";
 			int ret = 0;
+			if (indicatorParametersByIndicator_ReflectedCached.Count == 0) return ret;
 			foreach (string indicatorName in indicatorParametersByIndicator_ReflectedCached.Keys) {
 				if (this.IndicatorParametersByName.ContainsKey(indicatorName) == false) continue;
 				List<IndicatorParameter> iParamsCtx = this.IndicatorParametersByName[indicatorName];
@@ -300,23 +317,29 @@ namespace Sq1.Core.StrategyBase {
 					foreach (IndicatorParameter iParamReflected in iParamsReflected) {
 						//v1 WILL_ALWAYS_CONTINUE_KOZ_iParamCtx.IndicatorName="NOT_ATTACHED_TO_ANY_INDICATOR"__LAZY_TO_SET_AFTER_DESERIALIZATION_KOZ_WILL_THROW_IT_10_LINES_BELOW_AND_PARAM_NAMES_ARE_UNIQUE_WITHIN_INDICATOR if (iParamReflected.FullName != iParamCtx.FullName) {
 						if (iParamReflected.Name != iParamCtx.Name) {
-							string msg = "iParamReflected[" + iParamReflected.ToString() + "].Name[" + iParamReflected.Name + "] != iParamCtx[" + iParamCtx.ToString() + "].Name[" + iParamCtx.Name + "]";
+							string msg = "iParamReflected[" + iParamReflected	.ToString() + "].Name[" + iParamReflected	.Name + "]"
+								   + " != iParamCtx["		+ iParamCtx			.ToString() + "].Name[" + iParamCtx			.Name + "]";
 							Assembler.PopupException(msg);
 							continue;
 						}
 						bool valueCurrentAbsorbed = iParamReflected.AbsorbCurrentFixBoundariesIfChanged(iParamCtx);
 						if (valueCurrentAbsorbed) ret++;
-						break;
+						//WOZU?... break;
 					}
 				}
 			}
-			this.IndicatorParametersByName = indicatorParametersByIndicator_ReflectedCached;
+			//YOU_JUST_SYNCHED_IN_TWO_INNER_LOOPS__WHY_DO_YOU_OVERWRITE_BRO????v1? this.IndicatorParametersByName = indicatorParametersByIndicator_ReflectedCached;
+
 //			bool dontSaveWeOptimize = this.Name.Contains(Sequencer.OPTIMIZATION_CONTEXT_PREFIX);
 //			if (dontSaveWeOptimize) {
 //				string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_SEQUENCER_PROVIDED_IN_SCRIPTCONTEXT #2";
 //				Assembler.PopupException(msg + msig, null, true);
 //				//strategySerializeRequired = false;
 //			}
+			if (ret == 0) {
+				string msg = "NO_INDICATOR_PARAMETER_VALUES_ABSORBED_SAME_FOR_Count[" + indicatorParametersByIndicator_ReflectedCached.Count + "]";
+				Assembler.PopupException(msg, null, false);
+			}
 			return ret;
 		}
 	}

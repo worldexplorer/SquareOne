@@ -32,7 +32,6 @@
 			// 
 			this.Cbx_Walkforward.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.Cbx_Walkforward.AutoSize = true;
-			this.Cbx_Walkforward.Enabled = false;
 			this.Cbx_Walkforward.Location = new System.Drawing.Point(226, 0);
 			this.Cbx_Walkforward.Name = "Cbx_Walkforward";
 			this.Cbx_Walkforward.Size = new System.Drawing.Size(89, 17);

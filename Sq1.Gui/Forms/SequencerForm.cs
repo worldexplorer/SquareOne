@@ -2,6 +2,7 @@
 
 using Sq1.Core.Sequencing;
 using Sq1.Widgets;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Gui.Forms {
 	public partial class SequencerForm : DockContentImproved {
@@ -34,12 +35,7 @@ namespace Sq1.Gui.Forms {
 			//string windowTitle = "Sequencer :: " + this.chartFormsManager.Strategy.Name;
 			//if (this.chartFormsManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
 			//v2
-			string windowTitle = this.SequencerControl.ToString();
-
-			if (this.chartFormsManager.ScriptEditedNeedsSaving) {
-				windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
-			}
-			this.Text = windowTitle;
+			this.Text = this.SequencerControl.ToString();
 		}
 	}
 }

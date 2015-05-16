@@ -12,8 +12,8 @@ namespace Sq1.Core.Sequencing {
 
 		[JsonIgnore]	public	bool		DontForgetEverythingNonIgnoredIsSerialized;
 
-		[JsonProperty]	public	SortedDictionary<int, ScriptParameter>			ScriptParametersById_BuiltOnBacktestFinished					{ get; private set; }
-		[JsonProperty]	public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished				{ get; private set; }
+		[JsonIgnore]	public	SortedDictionary<int, ScriptParameter>			ScriptParametersById_BuiltOnBacktestFinished					{ get; private set; }
+		[JsonIgnore]	public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished				{ get; private set; }
 		[JsonProperty]	public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished	{ get; private set; }
 		[JsonProperty]	public	string											ParametersAsString { get {
 				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
@@ -26,25 +26,13 @@ namespace Sq1.Core.Sequencing {
 				return "(" + ret + ")";
 			} }
 		
-		[JsonProperty]	public	string	NetProfitRecovery				{ get; private set; }
-		[JsonProperty]	public	bool	IsSubset						{ get { return this.ToString().Contains(WATERLINE); } }
-		
-		[JsonProperty]	public	string	PriceFormat						{ get; private set; }
-
-		// moved to KPIs
-		//[JsonProperty]	public	int		PositionsCount					{ get; private set; }
-		//[JsonProperty]	public	double	PositionAvgProfit				{ get; private set; }
-		//[JsonProperty]	public	double	NetProfit						{ get; private set; }
-		//[JsonProperty]	public	double	WinLossRatio					{ get; private set; }
-		//[JsonProperty]	public	double	ProfitFactor					{ get; private set; }
-		//[JsonProperty]	public	double	RecoveryFactor					{ get; private set; }
-		//[JsonProperty]	public	double	MaxDrawDown						{ get; private set; }
-		//[JsonProperty]	public	double	MaxConsecWinners				{ get; private set; }
-		//[JsonProperty]	public	double	MaxConsecLosers					{ get; private set; }
-		
+		[JsonProperty]	public	string	NetProfitRecovery			{ get; private set; }
+		[JsonIgnore]	public	bool	IsSubset					{ get { return this.ToString().Contains(WATERLINE); } }
+		[JsonProperty]	public	string	PriceFormat					{ get; private set; }
 		[JsonProperty]	public	string	SequenceIterationName		{ get; private set; }
 		[JsonProperty]	public	int		SequenceIterationSerno;		//ASSIGNED_FROM_ABROAD { get; private set; }
 
+		//having KPIsCumulativeByDateIncreasing allows {Subset}s => CorrelatorControl can display WalkForward and propagate back to Sequencer
 		[JsonProperty]	public	SortedDictionary<DateTime, KPIs>	KPIsCumulativeByDateIncreasing	{ get; private set; }
 		
 		public SystemPerformanceRestoreAble() {
@@ -81,9 +69,14 @@ namespace Sq1.Core.Sequencing {
 			// for %backtest / walkForward analysis
 			this.KPIsCumulativeByDateIncreasing				= sysPerfBacktestResult.SlicesShortAndLong.KPIsCumulativeByDate;
 
-			this.shrinkForSerialization();
+			// Added_[JsonIgnore] to:
+			// [JsonIgnore]	public	SortedDictionary<int, ScriptParameter>			ScriptParametersById_BuiltOnBacktestFinished					{ get; private set; }
+			// [JsonIgnore]	public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished				{ get; private set; }
+
+			// DESPITE_YOU_Added_[JsonIgnore]_THERE_IS_STILL_GARBAGE
+			this.shrinkCorrelatorSnapForSerialization();
 		}
-		void shrinkForSerialization() {
+		void shrinkCorrelatorSnapForSerialization() {
 			foreach (IndicatorParameter param in this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Values) {
 				param.ShrinkForSerialization();
 			}
@@ -132,7 +125,7 @@ namespace Sq1.Core.Sequencing {
 			if (this.NetProfit == ret.NetProfit && ret.NetProfit > 0) {	// inline test
 				TimeSpan lesser = this.KPIsCumulativeDateLast_DateTimeMaxUnsafe.Subtract(waterlineDateTime);
 				string msg = "MY_OWN_SUBSET_MUST_HAVE_DIFFERENT_NUMBERS_FOR[" + lesser.ToString() + "]lesser";
-				Assembler.PopupException(msg + this.NetProfitRecovery);
+				Assembler.PopupException(msg + this.NetProfitRecovery, null, false);
 			}
 			return ret;
 		}

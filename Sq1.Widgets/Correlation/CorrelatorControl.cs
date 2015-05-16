@@ -60,7 +60,7 @@ namespace Sq1.Widgets.Correlation {
 				// only available after Correlator.Initialize otherwize NPE due to this.sequencedOriginal=null
 				this.toolStripItemTrackBarWalkForward.ValueCurrent = (decimal)this.Correlator.SubsetPercentage;
 				this.toolStripItemTrackBarWalkForward.WalkForwardChecked = this.Correlator.SubsetPercentageFromEnd;
-				this.toolStripItemTrackBarWalkForward.WalkForwardEnabled = this.toolStripItemTrackBarWalkForward.ValueCurrent < 100;
+				//this.toolStripItemTrackBarWalkForward.WalkForwardEnabled = this.toolStripItemTrackBarWalkForward.ValueCurrent < 100;
 
 				this.flushCalculationsToGui();
 			} finally {

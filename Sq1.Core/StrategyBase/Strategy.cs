@@ -44,12 +44,16 @@ namespace Sq1.Core.StrategyBase {
 		[JsonIgnore]	public ContextScript						ScriptContextCurrent { get {
 				lock (this.ScriptContextCurrentName) {	// Monitor shouldn't care whether I change the variable that I use for exclusive access...
 				//v2 lock (this.scriptContextCurrentNameLock) {
-					if (this.ScriptContextsByName.ContainsKey(ScriptContextCurrentName) == false)  {
-					string msg = "ScriptContextCurrentName[" + ScriptContextCurrentName + "] doesn't exist in Strategy[" + this.ToString() + "]";
-						#if DEBUG
-						Debugger.Launch();
-						#endif
-						throw new Exception(msg);
+					if (this.ScriptContextsByName.ContainsKey(this.ScriptContextCurrentName) == false) {
+						string msg = "ENFORCING_DEFAULT_SCRIPT_CONTEXT ScriptContextCurrentName[" + this.ScriptContextCurrentName
+							+ "] doesn't exist in Strategy[" + this.ToString() + "]";
+						Assembler.PopupException(msg);
+						if (this.ScriptContextsByName.ContainsKey(ContextScript.DEFAULT_NAME) == false) {
+							string msg2 = "CANT_ENFORCE_DEFAULT_SCRIPT_CONTEXT DEVELOPER_NEVER_ALLOW_DELETE_DEFALUT_CONTEXT"
+								+ " Strategy[" + this.ToString() + "].ScriptContextsByName.ContainsKey(" + ContextScript.DEFAULT_NAME + ") == false[";
+							throw new Exception(msg2);
+						}
+						this.ScriptContextCurrentName = ContextScript.DEFAULT_NAME;
 					}
 					return this.ScriptContextsByName[this.ScriptContextCurrentName];
 				}
@@ -60,7 +64,15 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public LivesimStreamingSettings				LivesimStreamingSettings;
 		//v1 [JsonProperty]	public Dictionary<string, List<SystemPerformanceRestoreAble>>	OptimizationResultsByContextIdent;
 
-	
+		[JsonIgnore]	public	bool			ScriptEditedNeedsSaving;
+		[JsonIgnore]	public	const string	PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE = "* ";
+		[JsonIgnore]	public	string			WindowTitle { get {
+				string ret = this.Name;
+				if (this.ScriptEditedNeedsSaving) ret = PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + ret;
+				if (this.ActivatedFromDll == true) ret += "-DLL";
+				return ret;
+			} }
+
 		// programmer's constructor
 		public Strategy(string name) : this() {
 			this.Name = name;
@@ -68,7 +80,7 @@ namespace Sq1.Core.StrategyBase {
 		// deserializer's constructor
 		public Strategy() {
 			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
-			
+
 			this.Guid = Guid.NewGuid();
 			this.ScriptContextCurrentName			= ContextScript.DEFAULT_NAME;
 			this.ScriptContextsByName				= new Dictionary<string, ContextScript>();
@@ -79,6 +91,7 @@ namespace Sq1.Core.StrategyBase {
 			this.LivesimBrokerSettings				= new LivesimBrokerSettings(this);
 			this.LivesimStreamingSettings			= new LivesimStreamingSettings(this);
 			//v1this.OptimizationResultsByContextIdent	= new Dictionary<string, List<SystemPerformanceRestoreAble>>();
+			this.ScriptEditedNeedsSaving			= false;
 		}
 		public override string ToString() {
 			string ret = this.Name;
@@ -107,12 +120,12 @@ namespace Sq1.Core.StrategyBase {
 			Strategy ret = (Strategy)base.MemberwiseClone();
 
 			// I don't want ScriptDerived's own List and Dictionaries to refer to the Strategy.Script running live now;
-			ret.Script = (Script) Activator.CreateInstance(this.Script.GetType());
+			ret.Script = (Script)Activator.CreateInstance(this.Script.GetType());
 
 			// each ParameterSequencer.Next() (having its own NAME), will be absorbed to DEFAULT; messing with Dictionary to keep synchronized is too costly
 			ret.ScriptContextsByName = new Dictionary<string, ContextScript>();
 			ret.ScriptContextsByName.Add(this.ScriptContextCurrentName, new ContextScript(this.ScriptContextCurrentName));
-			ret.ScriptContextCurrentName = ContextScript.DEFAULT_NAME;
+			//I_SPAWN_DISPOSABLE_EXECUTORS_FROM_ANY_POSSIBLE_CURRENT_CONTEXT ret.ScriptContextCurrentName = ContextScript.DEFAULT_NAME;
 			//v1 ret.ScriptContextCurrent..CloneResetAllToMin_ForSequencer("FOR_EACH_DISPOSABLE_EXECUTOR");
 			ret.ScriptContextCurrent.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly("FRESH_DEFAULT_CTX_FOR_EACH_DISPOSABLE", this.ScriptContextCurrent);
 
@@ -141,15 +154,23 @@ namespace Sq1.Core.StrategyBase {
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
 		}
 
-		public int ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(bool saveStrategy = false) {
+		public int ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(bool saveStrategyFalseForDisposedExecutorsInSequencer = false) {
 			int currentValuesAbsorbed = this.ScriptContextCurrent.ScriptParametersReflectedAbsorbFromCurrentContextReplace(
 					this.Script.ScriptParametersById_ReflectedCached);
-			if (currentValuesAbsorbed > 0 && saveStrategy == true) this.Serialize();
+			if (currentValuesAbsorbed > 0 && saveStrategyFalseForDisposedExecutorsInSequencer == true) this.Serialize();
+
+			if (this.Script == null) {
+				string msg = "CANT_SWITCH_CTX_FOR_UNCOMPILED_STRATEGY__SCRIPT_NULL";
+				Assembler.PopupException(msg);
+			} else {
+				this.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(saveStrategyFalseForDisposedExecutorsInSequencer);
+			}
+
 			return currentValuesAbsorbed;
 		}
 
-		internal int IndicatorParametersReflectedAbsorbMergeFromCurrenctContext_SaveStrategy(bool saveStrategy = false) {
-			int currentValuesAbsorbed = this.ScriptContextCurrent.IndicatorParamsReflectedAbsorbFromCurrentContextReplace(
+		internal int IndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(bool saveStrategy = false) {
+			int currentValuesAbsorbed = this.ScriptContextCurrent.PushIndicatorParamsCurrentValuesIntoReflectedIndicators(
 					this.Script.IndicatorParametersByIndicator_ReflectedCached);
 			if (currentValuesAbsorbed > 0 && saveStrategy == true) this.Serialize();
 			return currentValuesAbsorbed;

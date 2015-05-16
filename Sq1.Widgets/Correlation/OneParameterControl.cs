@@ -47,7 +47,8 @@ namespace Sq1.Widgets.Correlation {
 				this.correlator.Executor.Strategy.ScriptContextCurrent
 					.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName;
 			if (parametersByFullName.ContainsKey(this.parameter.ParameterName) == false) {
-				string msg = "OneParameterControl.correlator.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedOriginalForCorrelator.ContainsKey(" + this.parameter.ParameterName + ") == false";
+				string msg = "OneParameterControl.correlator.Executor.Strategy.ScriptContextCurrent"
+					+ ".ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.ContainsKey(" + this.parameter.ParameterName + ") == false";
 				Assembler.PopupException(msg);
 				return ret;
 			}
@@ -338,15 +339,19 @@ namespace Sq1.Widgets.Correlation {
 			this.olv.RebuildColumns();
 		}
 
+		bool dontSerializeStrategy_ImAligingInCtor = false;
 		public OneParameterControl(CorrelatorControl allParametersControl, OneParameterAllValuesAveraged parameter) : this() {
 			this.allParametersControl = allParametersControl;
 			this.parameter = parameter;
 			this.olvcParamValues.Text = this.parameter.ParameterName;
 			this.olvAllValuesForOneParamCustomize();
+
+			this.dontSerializeStrategy_ImAligingInCtor = true;
 			this.olv.SetObjects(this.parameter.AllValuesWithArtificials);
 			parameter.OnParameterRecalculatedLocalsAndDeltas += new EventHandler<OneParameterAllValuesAveragedEventArgs>(parameter_ParameterRecalculatedLocalsAndDeltas);
 			base.Initialize_byMovingControlsToInner();
 			this.AlignBaseSizeToDisplayedCells();
+			this.dontSerializeStrategy_ImAligingInCtor = true;
 		}
 
 		void Initialize() {

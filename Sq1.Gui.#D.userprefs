@@ -1,19 +1,6 @@
 ﻿<Properties StartupItem="Sq1.Gui\Sq1.Gui.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Sq1.Widgets\Optimization\OneParameterAllValuesAveraged.cs">
-    <Files>
-      <File FileName="Sq1.Widgets\Optimization\AllParametersControl.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterControl.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterOneValue.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterControl.Customizer.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterControl.EventGenerator.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterAllValuesAveraged.cs" Line="43" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\KPIs.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\OptimizerControl.EventConsumer.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\OneParameterControl.Designer.cs" Line="1" Column="1" />
-      <File FileName="Sq1.Widgets\Optimization\Optimizer2.cs" Line="1" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

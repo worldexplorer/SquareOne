@@ -60,11 +60,11 @@ namespace Sq1.Gui.Forms {
 
 		public void WindowTitlePullFromStrategy() {
 			try {
-				string windowTitle = "Correlator :: " + this.chartFormsManager.Strategy.Name;
-				if (this.chartFormsManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
-				if (this.chartFormsManager.ScriptEditedNeedsSaving) {
-					windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
-				}
+				string windowTitle = "Correlator :: " + this.chartFormsManager.Strategy.WindowTitle;
+				//if (this.chartFormsManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
+				//if (this.chartFormsManager.ScriptEditedNeedsSaving) {
+				//    windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
+				//}
 				this.Text = windowTitle;
 			} catch (Exception ex) {
 				string msg = "WILL_CONTINUE_THOUGH";

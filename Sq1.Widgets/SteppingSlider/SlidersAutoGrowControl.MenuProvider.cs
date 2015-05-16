@@ -87,44 +87,55 @@ namespace Sq1.Widgets.SteppingSlider {
 				var ret = new List<ToolStripItem>();
 
 				#if DEBUG
-				if (this.mniParameterBagsNotHighlighted.IsDisposed) {
+				if (this.mniScriptContextsMniHeader.IsDisposed) {
 					Debugger.Break();
-					this.mniParameterBagsNotHighlighted = new Sq1.Widgets.LabeledTextBox.MenuItemLabel();
+					this.mniScriptContextsMniHeader = new Sq1.Widgets.LabeledTextBox.MenuItemLabel();
 					// 
 					// mniParameterBagsNotHighlighted
 					// 
-					this.mniParameterBagsNotHighlighted.BackColor = System.Drawing.Color.Transparent;
-					this.mniParameterBagsNotHighlighted.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-					this.mniParameterBagsNotHighlighted.Name = "mniParameterBagsNotHighlighted";
-					this.mniParameterBagsNotHighlighted.Size = new System.Drawing.Size(100, 23);
-					this.mniParameterBagsNotHighlighted.Text = "Script Contexts";
+					this.mniScriptContextsMniHeader.BackColor = System.Drawing.Color.Transparent;
+					this.mniScriptContextsMniHeader.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+					this.mniScriptContextsMniHeader.Name = "mniParameterBagsNotHighlighted";
+					this.mniScriptContextsMniHeader.Size = new System.Drawing.Size(100, 23);
+					this.mniScriptContextsMniHeader.Text = "Script Contexts";
 				}
 				#endif
-				this.mniParameterBagsNotHighlighted.Text = "Script Contexts :: " + this.Strategy.Name;
-				ret.Add(this.mniParameterBagsNotHighlighted);
+				this.mniScriptContextsMniHeader.Text = "Script Contexts :: " + this.Strategy.WindowTitle;
+				ret.Add(this.mniScriptContextsMniHeader);
 				ret.Add(this.toolStripSeparator3);
 
 				ret.AddRange(this.TsiScriptContextsDynamic);
 
 				#if DEBUG
-				if (this.mniltbParametersBagNewWithDefaults.IsDisposed) {
+				if (this.mniltbScriptContextNewWithDefaults.IsDisposed) {
 					Debugger.Break();
-					this.mniltbParametersBagNewWithDefaults = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+					this.mniltbScriptContextNewWithDefaults = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 					// 
 					// mniltbParametersBagNewWithDefaults
 					// 
-					this.mniltbParametersBagNewWithDefaults.BackColor = System.Drawing.Color.Transparent;
-					this.mniltbParametersBagNewWithDefaults.InputFieldOffsetX = 80;
-					this.mniltbParametersBagNewWithDefaults.InputFieldValue = "";
-					this.mniltbParametersBagNewWithDefaults.InputFieldWidth = 85;
-					this.mniltbParametersBagNewWithDefaults.Name = "mniltbParametersBagNewWithDefaults";
-					this.mniltbParametersBagNewWithDefaults.Size = new System.Drawing.Size(168, 21);
-					this.mniltbParametersBagNewWithDefaults.TextLeft = "New clean";
-					this.mniltbParametersBagNewWithDefaults.TextRed = false;
-					this.mniltbParametersBagNewWithDefaults.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextNewWithDefaults_UserTyped);
+					this.mniltbScriptContextNewWithDefaults.BackColor = System.Drawing.Color.Transparent;
+					this.mniltbScriptContextNewWithDefaults.InputFieldOffsetX = 80;
+					this.mniltbScriptContextNewWithDefaults.InputFieldValue = "";
+					this.mniltbScriptContextNewWithDefaults.InputFieldWidth = 85;
+					this.mniltbScriptContextNewWithDefaults.Name = "mniltbParametersBagNewWithDefaults";
+					this.mniltbScriptContextNewWithDefaults.Size = new System.Drawing.Size(168, 21);
+					this.mniltbScriptContextNewWithDefaults.TextLeft = "New clean";
+					this.mniltbScriptContextNewWithDefaults.TextRed = false;
+					this.mniltbScriptContextNewWithDefaults.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbScriptContextNewWithDefaults_UserTyped);
 				}
 				#endif
-				ret.Add(this.mniltbParametersBagNewWithDefaults);
+
+				if (this.Strategy.ScriptContextsByName.ContainsKey(ContextScript.DEFAULT_NAME)) {
+					ContextScript ctx = this.Strategy.ScriptContextsByName[ContextScript.DEFAULT_NAME];
+					this.mniltbScriptContextNewWithDefaults.TextRight = this.Strategy.ScriptContextCurrent.SpreadModelerPercent.ToString() + " %";
+				} else {
+					string msg = "CANT_GET_DEFAULT_SPREAD_PERCENTAGE_FOR_TsiDynamic"
+						+ " DEVELOPER_NEVER_ALLOW_DEFAULT_CONTEXT_DELETION"
+						+ " //this.Strategy.ScriptContextsByName.ContainsKey(" + ContextScript.DEFAULT_NAME + ")";
+					Assembler.PopupException(msg);
+				}
+
+				ret.Add(this.mniltbScriptContextNewWithDefaults);
 
 				if (this.toolStripSeparator2.IsDisposed) {
 					#if DEBUG

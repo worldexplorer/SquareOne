@@ -360,11 +360,7 @@ namespace Sq1.Widgets.Sequencing {
 		}
 		public override string ToString() {
 			string ret = "UNINITIALIZED";
-			if (this.sequencer != null) {
-				Strategy strategy = this.sequencer.Executor.Strategy;
-				ret = strategy.Name;
-				if (strategy.ActivatedFromDll == true) ret += "-DLL";
-			}
+			if (this.sequencer != null) ret = this.sequencer.Executor.Strategy.WindowTitle;
 			return "Sequencer :: " + ret;
 		}
 	}

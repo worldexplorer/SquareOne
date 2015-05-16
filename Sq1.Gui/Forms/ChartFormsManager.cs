@@ -38,7 +38,7 @@ namespace Sq1.Gui.Forms {
 					if (this.Strategy == null) return null;
 					if (this.Strategy.ActivatedFromDll == true) return null;
 						#if DEBUG
-						//Debugger.Launch();
+						//Debugger.Break();
 						#endif
 					if (this.scriptEditorFormFactory == null) {
 						this.scriptEditorFormFactory = new ScriptEditorFormFactory(this);
@@ -121,7 +121,6 @@ namespace Sq1.Gui.Forms {
 			} }
 		
 		public	ChartFormInterformEventsConsumer	InterformEventsConsumer;
-		public	bool								ScriptEditedNeedsSaving;
 		public	ChartFormStreamingConsumer			ChartStreamingConsumer;
 		
 		public	Dictionary<string, DockContentImproved>	FormsAllRelated						{ get {
@@ -159,7 +158,6 @@ namespace Sq1.Gui.Forms {
 		ChartFormsManager() {
 			this.StrategyFoundDuringDeserialization = false;
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
-			this.ScriptEditedNeedsSaving = false;
 			//			this.Executor = new ScriptExecutor(Assembler.InstanceInitialized.ScriptExecutorConfig
 			//				, this.ChartForm.ChartControl, null, Assembler.InstanceInitialized.OrderProcessor, Assembler.InstanceInitialized.StatusReporter);
 			this.Executor = new ScriptExecutor("EXECUTOR_FOR_AN_OPENED_CHART_UNCLONED");
@@ -302,7 +300,7 @@ namespace Sq1.Gui.Forms {
 
 			try {
 				// Click on strategy should open new chart,  
-				if (this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == true && this.Strategy.ActivatedFromDll == false && this.Strategy.Script == null) {
+				if (this.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == true && this.Strategy.Script == null) {		// && this.Strategy.ActivatedFromDll == false
 					this.StrategyCompileActivatePopulateSlidersShow();
 				}
 				//I'm here via Persist.Deserialize() (=> Reporters haven't been restored yet => backtest should be postponed); will backtest in InitializeStrategyAfterDeserialization
@@ -571,9 +569,11 @@ namespace Sq1.Gui.Forms {
 
 			if (willBacktest == false) {
 				// COPYFROM_StrategyCompileActivatePopulateSlidersShow()
-				if (this.Strategy.Script != null && this.Strategy.ActivatedFromDll) {
-					this.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
-					this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
+				if (this.Strategy.Script == null) {		 //&& this.Strategy.ActivatedFromDll
+					string msg = "COMPILE_AND_INITIALIZE_SCRIPT_THEN??...";
+					Assembler.PopupException(msg);
+				} else {
+					this.Strategy.ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
 				}
 				// candidate to be moved to MainForm.cs:156 into foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				//this.SequencerFormShow(true);
@@ -595,7 +595,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			if (this.Strategy.Script.Executor == null) {
-				//IM_GETTING_HERE_ON_STARTUP_AFTER_SUCCESFULL_COMPILATION_CHART_RELATED_STRATEGIES Debugger.Launch();
+				//IM_GETTING_HERE_ON_STARTUP_AFTER_SUCCESFULL_COMPILATION_CHART_RELATED_STRATEGIES Debugger.Break();
 				if (this.Strategy.ActivatedFromDll == true) {
 					string msg = "you should never get here; a compiled script should've been already linked to Executor (without bars on deserialization)"
 						+ " 10 lines above in this.InitializeWithStrategy(mainForm, strategy)";
@@ -632,7 +632,7 @@ namespace Sq1.Gui.Forms {
 		public void ReportersDumpCurrentForSerialization() {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 				#if DEBUG
-				//Debugger.Launch();
+				//Debugger.Break();
 				#endif
 				return;
 			}
@@ -756,7 +756,6 @@ namespace Sq1.Gui.Forms {
 			//this.LivesimFormConditionalInstance.SequencerControl.Invalidate();	// olvBacktest doens't repaint while having results?...
 		}
 		
-		public const string PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE = "* ";
 		internal void PopulateWindowTitlesFromChartContextOrStrategy() {
 			if (this.Strategy == null) {
 				//string msg = "ChartFormsManager doesn't have a pointer to Strategy; Opening a Chart without Strategy is NYI";
@@ -770,16 +769,11 @@ namespace Sq1.Gui.Forms {
 				this.ChartForm.Text = this.DataSnapshot.ContextChart.ToString();
 				return;
 			}
-			string windowTitle = this.Strategy.Name;
-			if (this.ScriptEditedNeedsSaving) windowTitle = PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
-			if (this.ScriptEditorForm != null) {
-				this.ScriptEditorForm.Text = windowTitle;
-			}
-			//ALWAYS_NOT_NULL REDUNDANT if (this.ChartForm != null) {
-			this.ChartForm.Text = windowTitle;
-			if (this.Strategy.ActivatedFromDll == true) this.ChartForm.Text += "-DLL";
+			this.ChartForm.Text = this.Strategy.WindowTitle;
 			this.ChartForm.IsHidden = false;
-			//}
+			if (this.ScriptEditorForm != null) {
+				this.ScriptEditorForm.Text = this.ChartForm.Text;
+			}
 
 			this.ReportersFormsManager.WindowTitlePullFromStrategy_allReporterWrappers();
 			if (DockContentImproved.IsNullOrDisposed(this.SequencerForm) == false) {
@@ -823,13 +817,15 @@ namespace Sq1.Gui.Forms {
 				this.StrategyCompileActivateBeforeShow();
 			} else {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 			}
 
-			if (this.Strategy.Script != null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
-				this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
-				this.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
+			if (this.Strategy.Script == null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
+				string msg = "COMPILE_AND_INITIALIZE_SCRIPT_THEN??...";
+				Assembler.PopupException(msg);
+			} else {
+				this.Strategy.ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
 			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.PopulateSliders();
@@ -853,7 +849,7 @@ namespace Sq1.Gui.Forms {
 			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;
 			if (ctxScript == null) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				return;
 			}

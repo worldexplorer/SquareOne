@@ -113,9 +113,9 @@ namespace Sq1.Gui.ReportersSupport {
 
 				string windowTitle = rep.TabText + " :: " + this.ChartFormsManager.ChartForm.Text;
 				//ALREADY_APPENDED if (this.ChartFormManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
-				if (this.ChartFormsManager.ScriptEditedNeedsSaving) {
-					windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
-				}
+				//if (this.ChartFormsManager.ScriptEditedNeedsSaving) {
+				//    windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;
+				//}
 				parent.Text = windowTitle;
 			}
 		}

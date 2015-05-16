@@ -62,8 +62,7 @@ namespace Sq1.Core.StrategyBase {
 			this.indicatorParametersByIndicator_ReflectionForced = true;
 
 			//v1
-			this.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(saveStrategy_falseForSequencer);
-			this.Executor.Strategy.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(saveStrategy_falseForSequencer);
+			this.Executor.Strategy.ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(saveStrategy_falseForSequencer);
 			//v2
 			//this.AbsorbValuesFromCurrentContextAndReplacePointers();
 		}
@@ -216,7 +215,7 @@ namespace Sq1.Core.StrategyBase {
 			} }
 
 		public void IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(bool saveStrategy_falseForSequencer = true) {
-			this.Strategy.IndicatorParametersReflectedAbsorbMergeFromCurrenctContext_SaveStrategy(saveStrategy_falseForSequencer);
+			int parametersAbsorbed = this.Strategy.IndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(saveStrategy_falseForSequencer);
 			foreach (Indicator indicatorInstance in this.IndicatorsByName_ReflectedCached.Values) {
 				// moved from upstairs coz: after absorbing all deserialized indicator parameters from ScriptContext, GetHostPanelForIndicator will return an pre-instantiated PanelIndicator
 				// otherwize GetHostPanelForIndicator created a new one for an indicator with default Indicator parameters;
@@ -281,6 +280,8 @@ namespace Sq1.Core.StrategyBase {
 					}
 				}
 			}
+			string msg2 = "YOU_JUST_SELF_CLONED_AND_ABSORBED__YOU_JUST_NEED_TO_INIT_SCRIPT_INDICATORS_WITH_NEW_INDICATOR_PARAMS_AND_HOST_PANELS";
+			Assembler.PopupException(msg2);
 			this.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 		}
 		public override string ToString() {

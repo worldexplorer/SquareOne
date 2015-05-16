@@ -8,7 +8,7 @@ namespace Sq1.Widgets.Correlation {
 			this.Correlator.SubsetPercentagePropagate((double)this.toolStripItemTrackBarWalkForward.ValueCurrent);
 			this.toolStripItemTrackBarWalkForward.LabelText = this.Correlator.SubsetWaterLineDateTime.ToString(Assembler.DateTimeFormatToMinutes);
 			// DEAD_END: 90% => click WalkForward => 100% => WalkForward gets disabled => what's next???
-			this.toolStripItemTrackBarWalkForward.WalkForwardEnabled = this.toolStripItemTrackBarWalkForward.ValueCurrent < 100;
+			//this.toolStripItemTrackBarWalkForward.WalkForwardEnabled = this.toolStripItemTrackBarWalkForward.ValueCurrent < 100;
 		}
 		void toolStripItemTrackBar1_WalkForwardCheckedChanged(object sender, EventArgs e) {
 			this.Correlator.SubsetPercentageFromEndPropagate(this.toolStripItemTrackBarWalkForward.WalkForwardChecked);

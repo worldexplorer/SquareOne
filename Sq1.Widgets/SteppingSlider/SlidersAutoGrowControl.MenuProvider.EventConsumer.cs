@@ -1,12 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
-using Sq1.Widgets.LabeledTextBox;
-using System.Diagnostics;
 using Sq1.Core.Indicators;
+using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.SteppingSlider {
 	public partial class SlidersAutoGrowControl {
@@ -17,7 +17,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			ContextScript scriptContextToLoad = this.ScriptContextFromMniTag(sender);
 			if (scriptContextToLoad == null) {
 				#if DEBUG
-				Debugger.Launch();
+				Debugger.Break();
 				#endif
 				return;
 			}
@@ -99,26 +99,32 @@ namespace Sq1.Widgets.SteppingSlider {
 				mniOpening.DropDown = this.ctxOperations;
 				//this.ctxOperations.OwnerItem = mniOpening;	// will help to reach mniOpening.Tag as ScriptContext, from ctxOperations.Items[TextLabelBox]
 				this.mniParameterBagLoad.Text = "Load [" + mniOpening.Text + "]";
-				this.mniParameterBagDelete.Text = "Delete [" + mniOpening.Text + "]";
+				this.mniScriptContextDelete.Text = "Delete [" + mniOpening.Text + "]";
 				
 				if (this.Strategy.ScriptContextCurrent.Name == mniOpening.Text) {
-					this.mniParameterBagDelete.Enabled = false;
-					this.mniParameterBagDelete.Text += " [load next ctx NYI]";
+					//SWITCHING_TO_DEFAULT this.mniParameterBagDelete.Enabled = false;
+					//SWITCHING_TO_DEFAULT this.mniParameterBagDelete.Text += " [load next ctx NYI]";
 					
 					this.mniParameterBagLoad.Enabled = false;
 					this.mniParameterBagLoad.Text = "Already Loaded [" + mniOpening.Text + "]";
 				} else {
-					this.mniParameterBagDelete.Enabled = true;
+					this.mniScriptContextDelete.Enabled = true;
 					this.mniParameterBagLoad.Enabled = true;
 				}
-				
+
 				if (mniOpening.Text == "Default") {
-					this.mniltbParameterBagRenameTo.Enabled = false;
-					this.mniParameterBagDelete.Enabled = false;
+					this.mniltbScriptContextRenameTo	.Enabled = false;
+					this.mniltbScriptContextRenameTo	.InputFieldValue = "";
+					this.mniltbScriptContextDuplicateTo	.InputFieldValue = "";
+					this.mniScriptContextDelete			.Enabled = false;
+					this.mniScriptContextDelete			.Text += " [DEFAULT_MUST_STAY]";
 				} else {
-					this.mniltbParameterBagRenameTo.Enabled = true;
+					this.mniltbScriptContextRenameTo	.Enabled = true;
+					this.mniScriptContextDelete			.Enabled = true;
+					this.mniltbScriptContextRenameTo	.InputFieldValue = mniOpening.Text;
+					this.mniltbScriptContextDuplicateTo	.InputFieldValue = mniOpening.Text;
 				}
-				
+
 				this.ctxOperations.Tag = (ContextScript) mniOpening.Tag;
 
 				// part#2/2 rebuild ctxOperations to display all the ContextScript parameter values;
@@ -127,6 +133,12 @@ namespace Sq1.Widgets.SteppingSlider {
 					string msg = "mniOpening.Tag[" + mniOpening.Tag + "] must inject ContextScript into ctxOperations.Tag[" + this.ctxOperations.Tag + "]";
 					Assembler.PopupException(msg);
 					return;
+				} else {
+					//if (this.Strategy.ScriptContextsByName.ContainsKey(mniOpening.Text)) {
+					//    ctx = this.Strategy.ScriptContextsByName[mniOpening.Text];
+					//}
+					this.mniltbScriptContextRenameTo	.TextRight = ctx.SpreadModelerPercent.ToString() + " %";
+					this.mniltbScriptContextDuplicateTo	.TextRight = ctx.SpreadModelerPercent.ToString() + " %";
 				}
 
 				this.ctxOperations.SuspendLayout();
@@ -153,9 +165,9 @@ namespace Sq1.Widgets.SteppingSlider {
 
 				this.ctxOperations.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 					this.toolStripSeparator1,
-					this.mniltbParameterBagRenameTo,
-					this.mniltbParameterBagDuplicateTo,
-					this.mniParameterBagDelete});
+					this.mniltbScriptContextRenameTo,
+					this.mniltbScriptContextDuplicateTo,
+					this.mniScriptContextDelete});
 				this.ctxOperations.ResumeLayout(true);
 
 			} catch (Exception ex) {

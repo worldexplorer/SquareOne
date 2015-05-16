@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.Indicators {
 	public class IndicatorParameter {
-		[JsonIgnore]	public string			IndicatorName;
+		[JsonProperty]	public string			IndicatorName;
 		[JsonIgnore]	public virtual string	FullName { get { return this.IndicatorName + "." + this.Name; } } // "MAslow.Period" for indicators, plain Name for StrategyParams
 		
 		[JsonProperty]	public string			Name;	// unlike user-editable ScriptParameter, IndicatorParameter.Name is compiled and remains constant (no need for Id)

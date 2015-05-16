@@ -43,14 +43,9 @@ namespace Sq1.Core.StrategyBase {
 				ContextScript found = this.ScriptContextsByName[scriptContextName];
 				this.ScriptContextCurrentName = found.Name;
 			}
-			if (shouldSave) {
-				this.Serialize();
-			}
 			this.ContextMarkCurrentInListByName(scriptContextName);
-			if (this.Script != null) {
-				this.ScriptParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
-				this.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
-			}
+			// if (shouldSave) this.Serialize();
+			this.ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy();
 		}
 		public void ContextMarkCurrentInListByName(string scriptContextName) {
 			this.checkThrowContextNameShouldExist(scriptContextName);
@@ -92,14 +87,20 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void ScriptContextAdd_cloneAndAbsorbCurrentValuesFromSequencer(string newScriptContextName,
 						SystemPerformanceRestoreAble absorbParamsFrom, bool setAddedAsCurrent = false) {
-			if (this.ScriptContextsByName.ContainsKey(newScriptContextName)) {
-				string msg = "CANT_ADD_EXISTING scriptContextName[" + newScriptContextName + "] already exists for strategy[" + this + "]";
-				//Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
-				Assembler.PopupException(msg, null, false);
-				return;
-			}
+
+			string msg2 = "scriptContextName[" + newScriptContextName + "] added for strategy[" + this + "]";
 			ContextScript newScriptContext = this.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(absorbParamsFrom, newScriptContextName);
-			this.ScriptContextsByName.Add(newScriptContextName, newScriptContext);
+			if (this.ScriptContextsByName.ContainsKey(newScriptContextName)) {
+				//v1
+				//string msg = "CANT_ADD_EXISTING scriptContextName[" + newScriptContextName + "] already exists for strategy[" + this + "]";
+				//Assembler.PopupException(msg, null, false);
+				//return;
+				//v2
+				msg2 = "SCRIPT_CONTEXT_OVERWRITTEN scriptContextName[" + newScriptContextName + "] strategy[" + this.ToString() + "]";
+				this.ScriptContextsByName[newScriptContextName] = newScriptContext;
+			} else {
+				this.ScriptContextsByName.Add(newScriptContextName, newScriptContext);
+			}
 
 			bool dontSaveWeOptimize = newScriptContextName.Contains(Sequencer.ITERATION_PREFIX);
 			bool shouldSave = !dontSaveWeOptimize; 
@@ -110,7 +111,6 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			this.Serialize();
-			string msg2 = "scriptContextName[" + newScriptContextName + "] added for strategy[" + this + "]";
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg2);
 		}
 		public void ScriptContextDelete(string scriptContextName) {
@@ -121,16 +121,24 @@ namespace Sq1.Core.StrategyBase {
 				return;
 				//e.Cancel = true;
 			}
+			string msg2 = "DELETED scriptContextName[" + scriptContextName + "] strategy[" + this + "]";
 			if (this.ScriptContextCurrent.Name == scriptContextName) {
-				string msg = "CANT_DELETE_CURRENT_LOAD_NEXT_NYI scriptContextName[" + scriptContextName + "] is the current one; load another one first and then delete [" + scriptContextName + "]";
-				//Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg);
-				Assembler.PopupException(msg);
-				return;
+				//v1
+				//string msg = "CANT_DELETE_CURRENT_LOAD_NEXT_NYI scriptContextName[" + scriptContextName + "] is the current one; load another one first and then delete [" + scriptContextName + "]";
+				//Assembler.PopupException(msg);
+				//return;
 				//e.Cancel = true;
+
+				//v2
+				if (this.Script != null) {
+					this.Script.SwitchToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed();
+				} else {
+					this.ContextSwitchCurrentToNamedAndSerialize(ContextScript.DEFAULT_NAME, false);
+				}
+				msg2 = "SWITCHED_TO " + this.ScriptContextCurrent.Name + "; " + msg2;
 			}
 			this.ScriptContextsByName.Remove(scriptContextName);
 			this.Serialize();
-			string msg2 = "scriptContextName[" + scriptContextName + "] deleted for strategy[" + this + "]";
 			Assembler.InstanceInitialized.StatusReporter.DisplayStatus(msg2);
 		}
 		public void ScriptContextRename(ContextScript scriptContextToRename, string scriptContextNewName) {

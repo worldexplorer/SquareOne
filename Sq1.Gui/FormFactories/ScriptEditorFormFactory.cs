@@ -26,8 +26,8 @@ namespace Sq1.Gui.FormFactories {
 		}
 		void scriptEditorControl_OnTextNotSaved(object sender, ScriptEditorEventArgs e) {
 			try {
-				if (this.chartFormManager.ScriptEditedNeedsSaving) return;
-				this.chartFormManager.ScriptEditedNeedsSaving = true;
+				if (this.chartFormManager.Strategy.ScriptEditedNeedsSaving) return;
+				this.chartFormManager.Strategy.ScriptEditedNeedsSaving = true;
 				this.chartFormManager.PopulateWindowTitlesFromChartContextOrStrategy();
 			} catch (Exception ex) {
 				Assembler.PopupException("ScriptEditorControl_OnTextNotSaved", ex);
@@ -39,7 +39,7 @@ namespace Sq1.Gui.FormFactories {
 				strategy.ScriptSourceCode = e.ScriptText;
 				strategy.Serialize();
 				this.chartFormManager.MainForm.DisplayStatus("Strategy [" + Path.Combine(strategy.StoredInFolderRelName, strategy.StoredInJsonRelName) + "] saved");
-				this.chartFormManager.ScriptEditedNeedsSaving = false;
+				this.chartFormManager.Strategy.ScriptEditedNeedsSaving = false;
 				this.chartFormManager.PopulateWindowTitlesFromChartContextOrStrategy();
 			} catch (Exception ex) {
 				Assembler.PopupException("ScriptEditorControl_OnSave", ex);

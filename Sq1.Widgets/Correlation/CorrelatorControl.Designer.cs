@@ -76,7 +76,6 @@
             0,
             0});
 			this.toolStripItemTrackBarWalkForward.WalkForwardChecked = false;
-			this.toolStripItemTrackBarWalkForward.WalkForwardEnabled = true;
 			// 
 			// CorrelatorControl
 			// 

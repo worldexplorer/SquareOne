@@ -681,9 +681,11 @@ namespace Sq1.Widgets.Correlation {
 				return newState;
 			};
 
+			// TOO_MANY_STRATEGY_SERIALIZATIONS__INTRODUCED_dontSerializeStrategy_ImAligingInCtor
 			this.olv.ColumnWidthChanged += new ColumnWidthChangedEventHandler(olv_ColumnWidthChanged);
 		}
 		void olv_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e) {
+			if (this.dontSerializeStrategy_ImAligingInCtor) return;
 			this.olvStateBinaryStateSaveAndRaiseStrategySerialize();
 			this.AlignBaseSizeToDisplayedCells();
 		}

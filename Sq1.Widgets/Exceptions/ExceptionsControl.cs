@@ -204,10 +204,11 @@ namespace Sq1.Widgets.Exceptions {
 					TimeSpan rebuildPostponingDelay = DateTime.Now.Subtract(this.exceptionDateNotFlushedLast);
 					if (rebuildPostponingDelay.TotalMilliseconds == 0) {
 						string msg = "LOOKS_VERY_POSSIBLE__BUT_I_HAVE_NO_SOLUTION";
-						#if DEBUG
-						Debugger.Break();
-						#endif
+						//#if DEBUG
+						//Debugger.Break();
+						//#endif
 						return;
+						//rebuildPostponingDelay = new TimeSpan(0, 0, 0, 0, this.rebuildInitialDelay);
 					}
 					//rebuildPostponingDelay = new TimeSpan(0, 0, 0, 1);
 					this.rebuildTimerWF.Stop();
@@ -254,14 +255,7 @@ namespace Sq1.Widgets.Exceptions {
 			}
 			try {
 				lock (this.lockedByTreeListView) {
-					if (this.rebuildingNow != true) {
-						string msg = "DONT_USE_V1_WAY_TO_INVOKE_ME__USE_InsertAsyncAutoFlush()";
-						#if DEBUG
-						Debugger.Break();
-						#endif
-					} else {
-						return;
-					}
+					if (this.rebuildingNow == true) return;
 					foreach (Exception ex in this.exceptionsNotFlushedYet) {
 						this.Exceptions.Insert(0, ex);
 					}
