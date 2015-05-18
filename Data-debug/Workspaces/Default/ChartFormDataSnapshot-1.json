@@ -138,7 +138,7 @@
       "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 48
+        "Distance": 34
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -151,7 +151,7 @@
       "multiSplitContainerRows": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 38
+        "Distance": 28
       }
     }
   },

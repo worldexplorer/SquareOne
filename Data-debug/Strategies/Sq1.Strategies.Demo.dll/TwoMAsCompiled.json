@@ -7,7 +7,7 @@
   "DllPathIfNoSourceCode": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\Sq1.Strategies.Demo.dll",
   "ExceptionsLimitToAbortBacktest": 10,
   "StoredInJsonAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json",
-  "ScriptContextCurrentName": "+ Net[1054.0] PF[2.28] RF[3.28]",
+  "ScriptContextCurrentName": "+ Net[248.0] PF[1.19] RF[0.55]",
   "ScriptContextsByName": {
     "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.StrategyBase.ContextScript, Sq1.Core]], mscorlib",
     "Default": {
@@ -197,10 +197,10 @@
           }
         ]
       },
-      "IsCurrent": false,
+      "IsCurrent": true,
       "StrategyEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
-      "BacktestOnRestart": true,
+      "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
@@ -318,7 +318,7 @@
           }
         ]
       },
-      "IsCurrent": true,
+      "IsCurrent": false,
       "StrategyEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [],
       "BacktestOnRestart": true,
