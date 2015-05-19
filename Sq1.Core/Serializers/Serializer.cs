@@ -6,12 +6,12 @@ using Newtonsoft.Json;
 namespace Sq1.Core.Serializers {
 	// http://stackoverflow.com/questions/1727346/what-is-the-use-of-default-keyword-in-c
 	public class Serializer<T> where T : new() {
-		public string OfWhat			{ get { return typeof(T).Name; } }
+		public	string			OfWhat			{ get { return typeof(T).Name; } }
 		
-		public string RootPath			{ get; protected set; }
-		public string Subfolder			{ get; protected set; }
-		public string WorkspaceName		{ get; protected set; }
-		public string AbsPath			{ get {
+		public	string			RootPath		{ get; protected set; }
+		public	string			Subfolder		{ get; protected set; }
+		public	string			WorkspaceName	{ get; protected set; }
+		public	string			AbsPath			{ get {
 				//string ret = this.RootPath + this.Subfolder + this.WorkspaceName + Path.DirectorySeparatorChar;
 				string ret = this.RootPath;
 				if (String.IsNullOrEmpty(this.Subfolder) == false) {
@@ -23,13 +23,13 @@ namespace Sq1.Core.Serializers {
 				//if (ret.EndsWith(Path.DirectorySeparatorChar) == false) ret += Path.DirectorySeparatorChar;
 				return ret;
 			} }
-		public string FnameRelpath		{ get; protected set; }
-		public string JsonAbsFile		{ get { return Path.Combine(this.AbsPath, FnameRelpath); } }
-		public T Entity					{ get; protected set; }
-		public Action<T> ActionAfterDeserialized;
+		public		string		FnameRelpath				{ get; protected set; }
+		public		string		JsonAbsFile					{ get { return Path.Combine(this.AbsPath, FnameRelpath); } }
+		protected	T			EntityDeserialized;			//RENAME_IN_CHILDREN__AVOID_MAUVAIS_TONE	{ get; protected set; }
+		public		Action<T>	ActionAfterDeserialized;
 
 		public Serializer() {
-			this.Entity = new T();
+			this.EntityDeserialized = new T();
 		}
 		public bool Initialize(string rootPath, string relFname,
 					string subfolder = "Workspaces", string workspaceName = "Default",
@@ -88,26 +88,26 @@ namespace Sq1.Core.Serializers {
 		}
 
 		public virtual T Deserialize() {
-			if (File.Exists(this.JsonAbsFile) == false) return this.Entity;
+			if (File.Exists(this.JsonAbsFile) == false) return this.EntityDeserialized;
 			try {
 				string json = File.ReadAllText(this.JsonAbsFile);
 				if (string.IsNullOrEmpty(json) == false) {
-					this.Entity = JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings {
+					this.EntityDeserialized = JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings {
 						TypeNameHandling = TypeNameHandling.Objects});
 				}
-				if (this.Entity == null) this.Entity = new T();
-				if (this.ActionAfterDeserialized != null) this.ActionAfterDeserialized(this.Entity);
+				if (this.EntityDeserialized == null) this.EntityDeserialized = new T();
+				if (this.ActionAfterDeserialized != null) this.ActionAfterDeserialized(this.EntityDeserialized);
 			} catch (Exception ex) {
 				string msig = " Serializer<" + OfWhat + ">::Deserialize(): ";
 				string msg = "FAILED_Deserialize_WITH_this.JsonAbsFile[" + this.JsonAbsFile + "]";
 				this.ThrowOrPopup(msg + msig, ex);
 			}
-			return this.Entity;
+			return this.EntityDeserialized;
 		}
 		public virtual void Serialize() {
 			string json;
 			try {
-				json = JsonConvert.SerializeObject(this.Entity, Formatting.Indented,
+				json = JsonConvert.SerializeObject(this.EntityDeserialized, Formatting.Indented,
 					new JsonSerializerSettings {
 						TypeNameHandling = TypeNameHandling.Objects
 					});

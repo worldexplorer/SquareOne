@@ -121,9 +121,9 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			// splitContainer2
 			// 
-			this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainer2.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.splitContainer2.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
 			this.splitContainer2.Location = new System.Drawing.Point(0, 27);
@@ -180,8 +180,8 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			// txtQuotesGenerator
 			// 
-			this.txtQuotesGenerator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtQuotesGenerator.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtQuotesGenerator.Enabled = false;
 			this.txtQuotesGenerator.Location = new System.Drawing.Point(78, 87);
 			this.txtQuotesGenerator.Name = "txtQuotesGenerator";
@@ -209,9 +209,9 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvParameters.AllColumns.Add(this.olvcParamStep);
 			this.olvParameters.AllColumns.Add(this.olvcParamWillBeSequenced);
 			this.olvParameters.AllowColumnReorder = true;
-			this.olvParameters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.olvParameters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.olvParameters.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.olvParameters.CellEditEnterChangesRows = true;
 			this.olvParameters.CellEditTabChangesRows = true;
@@ -316,15 +316,15 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			// txtStrategy
 			// 
-			this.txtStrategy.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtStrategy.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtStrategy.Enabled = false;
 			this.txtStrategy.Location = new System.Drawing.Point(79, 3);
 			this.txtStrategy.Name = "txtStrategy";
 			this.txtStrategy.Size = new System.Drawing.Size(288, 20);
 			this.txtStrategy.TabIndex = 25;
 			this.txtStrategy.Text = "MA_ATRComplied (UserStop=1,ActivateLog=3) (ATR.Period=14,ATRband.Multiplier=1.56)" +
-    "";
+				"";
 			// 
 			// lblSymbol
 			// 
@@ -379,8 +379,8 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			// txtSymbol
 			// 
-			this.txtSymbol.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtSymbol.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtSymbol.Enabled = false;
 			this.txtSymbol.Location = new System.Drawing.Point(79, 24);
 			this.txtSymbol.Name = "txtSymbol";
@@ -400,8 +400,8 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			// txtDataRange
 			// 
-			this.txtDataRange.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtDataRange.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtDataRange.Enabled = false;
 			this.txtDataRange.Location = new System.Drawing.Point(79, 45);
 			this.txtDataRange.Name = "txtDataRange";
@@ -421,8 +421,8 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			// txtPositionSize
 			// 
-			this.txtPositionSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtPositionSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtPositionSize.Enabled = false;
 			this.txtPositionSize.Location = new System.Drawing.Point(79, 66);
 			this.txtPositionSize.Name = "txtPositionSize";
@@ -579,8 +579,8 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			// progressBar1
 			// 
-			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this.progressBar1.Location = new System.Drawing.Point(318, 6);
 			this.progressBar1.Name = "progressBar1";
 			this.progressBar1.Size = new System.Drawing.Size(161, 16);
@@ -635,7 +635,6 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvBacktests.IncludeHiddenColumnsInDataTransfer = true;
 			this.olvBacktests.Location = new System.Drawing.Point(0, 0);
 			this.olvBacktests.Margin = new System.Windows.Forms.Padding(0);
-			this.olvBacktests.MultiSelect = false;
 			this.olvBacktests.Name = "olvBacktests";
 			this.olvBacktests.ShowCommandMenuOnRightClick = true;
 			this.olvBacktests.ShowGroups = false;
@@ -790,11 +789,11 @@ namespace Sq1.Widgets.Sequencing {
 			this.mniltbCopyToNewContextBacktest.Size = new System.Drawing.Size(448, 22);
 			this.mniltbCopyToNewContextBacktest.TextLeft = "Copy To New Context, Backtest:";
 			this.mniltbCopyToNewContextBacktest.TextLeftOffsetX = 0;
-			this.mniltbCopyToNewContextBacktest.TextLeftWidth = 178;
+			this.mniltbCopyToNewContextBacktest.TextLeftWidth = 164;
 			this.mniltbCopyToNewContextBacktest.TextRed = false;
 			this.mniltbCopyToNewContextBacktest.TextRight = "~= 121pips";
 			this.mniltbCopyToNewContextBacktest.TextRightOffsetX = 383;
-			this.mniltbCopyToNewContextBacktest.TextRightWidth = 68;
+			this.mniltbCopyToNewContextBacktest.TextRightWidth = 62;
 			this.mniltbCopyToNewContextBacktest.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContextBacktest_UserTyped);
 			// 
 			// mniltbCopyToNewContext
@@ -809,11 +808,11 @@ namespace Sq1.Widgets.Sequencing {
 			this.mniltbCopyToNewContext.Size = new System.Drawing.Size(448, 22);
 			this.mniltbCopyToNewContext.TextLeft = "Copy To New Context:";
 			this.mniltbCopyToNewContext.TextLeftOffsetX = 0;
-			this.mniltbCopyToNewContext.TextLeftWidth = 128;
+			this.mniltbCopyToNewContext.TextLeftWidth = 116;
 			this.mniltbCopyToNewContext.TextRed = false;
 			this.mniltbCopyToNewContext.TextRight = "~= 121pips";
 			this.mniltbCopyToNewContext.TextRightOffsetX = 383;
-			this.mniltbCopyToNewContext.TextRightWidth = 68;
+			this.mniltbCopyToNewContext.TextRightWidth = 62;
 			this.mniltbCopyToNewContext.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContext_UserTyped);
 			// 
 			// toolStripSeparator2

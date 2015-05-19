@@ -34,7 +34,7 @@
 			this.mniExecution = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniSliders = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniStrategies = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniSymbols = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniDataSources = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniExceptions = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniExit = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,6 +53,7 @@
 			this.btnFullScreen = new System.Windows.Forms.ToolStripButton();
 			this.lblSpace = new System.Windows.Forms.ToolStripStatusLabel();
 			this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
+			this.mniSymbolsEditor = new System.Windows.Forms.ToolStripMenuItem();
 			this.ctxTools.SuspendLayout();
 			this.mainFormStatusStrip.SuspendLayout();
 			this.CtxWorkspaces.SuspendLayout();
@@ -61,17 +62,18 @@
 			// ctxTools
 			// 
 			this.ctxTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mniSymbolsEditor,
             this.mniCsvImporter,
             this.mniExecution,
             this.mniSliders,
             this.mniStrategies,
-            this.mniSymbols,
+            this.mniDataSources,
             this.mniExceptions,
             this.toolStripSeparator1,
             this.mniExit});
 			this.ctxTools.Name = "ctxmsTools";
 			this.ctxTools.OwnerItem = this.mniMainMenu;
-			this.ctxTools.Size = new System.Drawing.Size(186, 164);
+			this.ctxTools.Size = new System.Drawing.Size(186, 208);
 			// 
 			// mniCsvImporter
 			// 
@@ -104,12 +106,12 @@
 			this.mniStrategies.Text = "Strategies";
 			this.mniStrategies.Click += new System.EventHandler(this.mniStrategies_Click);
 			// 
-			// mniSymbols
+			// mniDataSources
 			// 
-			this.mniSymbols.Name = "mniSymbols";
-			this.mniSymbols.Size = new System.Drawing.Size(185, 22);
-			this.mniSymbols.Text = "Symbols";
-			this.mniSymbols.Click += new System.EventHandler(this.mniSymbols_Click);
+			this.mniDataSources.Name = "mniDataSources";
+			this.mniDataSources.Size = new System.Drawing.Size(185, 22);
+			this.mniDataSources.Text = "Data Sources";
+			this.mniDataSources.Click += new System.EventHandler(this.mniSymbols_Click);
 			// 
 			// mniExceptions
 			// 
@@ -277,11 +279,11 @@
 			this.mniltbWorklspaceNewBlank.Size = new System.Drawing.Size(162, 20);
 			this.mniltbWorklspaceNewBlank.TextLeft = "New Blank";
 			this.mniltbWorklspaceNewBlank.TextLeftOffsetX = 0;
-			this.mniltbWorklspaceNewBlank.TextLeftWidth = 65;
+			this.mniltbWorklspaceNewBlank.TextLeftWidth = 61;
 			this.mniltbWorklspaceNewBlank.TextRed = false;
 			this.mniltbWorklspaceNewBlank.TextRight = "~= 121pips";
 			this.mniltbWorklspaceNewBlank.TextRightOffsetX = 162;
-			this.mniltbWorklspaceNewBlank.TextRightWidth = 68;
+			this.mniltbWorklspaceNewBlank.TextRightWidth = 62;
 			// 
 			// mniltbWorklspaceCloneTo
 			// 
@@ -295,11 +297,11 @@
 			this.mniltbWorklspaceCloneTo.Size = new System.Drawing.Size(162, 20);
 			this.mniltbWorklspaceCloneTo.TextLeft = "Clone To";
 			this.mniltbWorklspaceCloneTo.TextLeftOffsetX = 0;
-			this.mniltbWorklspaceCloneTo.TextLeftWidth = 57;
+			this.mniltbWorklspaceCloneTo.TextLeftWidth = 52;
 			this.mniltbWorklspaceCloneTo.TextRed = false;
 			this.mniltbWorklspaceCloneTo.TextRight = "~= 121pips";
 			this.mniltbWorklspaceCloneTo.TextRightOffsetX = 162;
-			this.mniltbWorklspaceCloneTo.TextRightWidth = 68;
+			this.mniltbWorklspaceCloneTo.TextRightWidth = 62;
 			// 
 			// mniltbWorklspaceRenameTo
 			// 
@@ -313,11 +315,11 @@
 			this.mniltbWorklspaceRenameTo.Size = new System.Drawing.Size(162, 20);
 			this.mniltbWorklspaceRenameTo.TextLeft = "RenameTo";
 			this.mniltbWorklspaceRenameTo.TextLeftOffsetX = 0;
-			this.mniltbWorklspaceRenameTo.TextLeftWidth = 66;
+			this.mniltbWorklspaceRenameTo.TextLeftWidth = 62;
 			this.mniltbWorklspaceRenameTo.TextRed = false;
 			this.mniltbWorklspaceRenameTo.TextRight = "~= 121pips";
 			this.mniltbWorklspaceRenameTo.TextRightOffsetX = 162;
-			this.mniltbWorklspaceRenameTo.TextRightWidth = 68;
+			this.mniltbWorklspaceRenameTo.TextRightWidth = 62;
 			// 
 			// toolStripSeparator2
 			// 
@@ -344,6 +346,13 @@
 			this.lblStatus.Size = new System.Drawing.Size(16, 17);
 			this.lblStatus.Text = "...";
 			// 
+			// mniSymbolsEditor
+			// 
+			this.mniSymbolsEditor.Name = "mniSymbolsEditor";
+			this.mniSymbolsEditor.Size = new System.Drawing.Size(185, 22);
+			this.mniSymbolsEditor.Text = "Symbols Editor";
+			this.mniSymbolsEditor.Click += new System.EventHandler(mniSymbolsEditor_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -366,6 +375,7 @@
 			this.PerformLayout();
 
 		}
+
 		private System.Windows.Forms.ToolStripMenuItem mniCsvImporter;
 		private System.Windows.Forms.ContextMenuStrip ctxWindows;
 		private System.Windows.Forms.ToolStripDropDownButton btnWindows;
@@ -380,7 +390,7 @@
 		private System.Windows.Forms.ToolStripMenuItem mniExceptions;
 		private System.Windows.Forms.ToolStripMenuItem mniExecution;
 		private System.Windows.Forms.ToolStripMenuItem mniSliders;
-		private System.Windows.Forms.ToolStripMenuItem mniSymbols;
+		private System.Windows.Forms.ToolStripMenuItem mniDataSources;
 		public WeifenLuo.WinFormsUI.Docking.DockPanel DockPanel;
 		private System.Windows.Forms.ToolStripMenuItem mniStrategies;
 		private System.Windows.Forms.StatusStrip mainFormStatusStrip;
@@ -391,5 +401,6 @@
 		private System.Windows.Forms.ToolStripMenuItem mniExit;
 		private System.Windows.Forms.ToolStripDropDownButton btnWorkSpaces;
 		private System.Windows.Forms.ToolStripStatusLabel lblStatus;
+		private System.Windows.Forms.ToolStripMenuItem mniSymbolsEditor;
 	}
 }

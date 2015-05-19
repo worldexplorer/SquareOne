@@ -6,57 +6,37 @@ using Sq1.Core.Execution;
 
 namespace Sq1.Core.DataTypes {
 	public class SymbolInfo {
-		[JsonProperty]	public SecurityType		SecurityType;
-		[JsonProperty]	public string			Symbol;
-		[JsonProperty]	public string			SymbolClass;
-		[JsonProperty]		   double			_Point2Dollar;
-		[JsonProperty]	public double			Point2Dollar {
-			get { return this._Point2Dollar; }
-			set {
-				if (value <= 0.0) {
-					this._Point2Dollar = 1.0;
-					return;
-				}
-				this._Point2Dollar = value;
-			}
-		}
-		[JsonProperty]	public double			PriceStep;
-		[JsonProperty]	public int				PriceDecimals;
-		[JsonProperty]	public int				VolumeDecimals;					// valid for partial Forex lots and Bitcoins; for stocks/options/futures its always (int)1
+		[JsonProperty]	public	SecurityType	SecurityType;
+		[JsonProperty]	public	string			Symbol;
+		[JsonProperty]	public	string			SymbolClass;
+		[JsonProperty]	public	double			Point2Dollar;
+		[JsonProperty]	public	double			PriceStep;
+		[JsonProperty]	public	int				PriceDecimals;
+		[JsonProperty]	public	int				VolumeDecimals;					// valid for partial Forex lots and Bitcoins; for stocks/options/futures its always (int)1
 
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
-		[JsonIgnore]	public double			PriceStepFromDecimal	{ get { return Math.Pow(10, -this.PriceDecimals); } }		// 10^(-2) = 0.01
-		[JsonIgnore]	public double			VolumeStepFromDecimal	{ get { return Math.Pow(10, -this.VolumeDecimals); } }		// 10^(-2) = 0.01
+		[JsonIgnore]	public	double			PriceStepFromDecimal	{ get { return Math.Pow(10, -this.PriceDecimals); } }		// 10^(-2) = 0.01
+		[JsonIgnore]	public	double			VolumeStepFromDecimal	{ get { return Math.Pow(10, -this.VolumeDecimals); } }		// 10^(-2) = 0.01
 		
-		[JsonProperty]	public bool				SameBarPolarCloseThenOpen;
-		[JsonProperty]	public int				SequencedOpeningAfterClosedDelayMillis;
-		[JsonProperty]	public int				EmergencyCloseDelayMillis;
-		[JsonProperty]	public int				EmergencyCloseAttemptsMax;
-		[JsonProperty]	public bool				ReSubmitRejected;
-		[JsonProperty]	public bool				ReSubmittedUsesNextSlippage;
-		[JsonProperty]	public bool				UseFirstSlippageForBacktest;
-		[JsonProperty]	public string			SlippagesBuy;
-		[JsonProperty]	public string			SlippagesSell;
-		[JsonProperty]	public MarketOrderAs	MarketOrderAs;
-		[JsonProperty]	public bool				MarketZeroOrMinMax				{ get {
+		[JsonProperty]	public	bool			SameBarPolarCloseThenOpen;
+		[JsonProperty]	public	int				SequencedOpeningAfterClosedDelayMillis;
+		[JsonProperty]	public	int				EmergencyCloseDelayMillis;
+		[JsonProperty]	public	int				EmergencyCloseAttemptsMax;
+		[JsonProperty]	public	bool			ReSubmitRejected;
+		[JsonProperty]	public	bool			ReSubmittedUsesNextSlippage;
+		[JsonProperty]	public	bool			UseFirstSlippageForBacktest;
+		[JsonProperty]	public	string			SlippagesBuy;
+		[JsonProperty]	public	string			SlippagesSell;
+		[JsonProperty]	public	MarketOrderAs	MarketOrderAs;
+		[JsonIgnore]	public	bool			MarketZeroOrMinMax				{ get {
 				return this.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
 					|| this.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
 			} }
-		[JsonProperty]	public bool				ReplaceTidalWithCrossMarket;
-		[JsonProperty]	public int				ReplaceTidalMillis;
-		[JsonProperty]	public bool				SimBugOutOfBarStopsFill;
-		[JsonProperty]	public bool				SimBugOutOfBarLimitsFill;
-		[JsonProperty]		   double			_Margin;
-		[JsonIgnore]	public double			LeverageForFutures {
-			get { return this._Margin; }
-			set {
-				if (value <= 0.0) {
-					this._Margin = 1000.0;
-					return;
-				}
-				this._Margin = value;
-			}
-		}
+		[JsonProperty]	public	bool			ReplaceTidalWithCrossMarket;
+		[JsonProperty]	public	int				ReplaceTidalMillis;
+		[JsonProperty]	public	bool			SimBugOutOfBarStopsFill;
+		[JsonProperty]	public	bool			SimBugOutOfBarLimitsFill;
+		[JsonProperty]	public	double			LeverageForFutures;
 		[JsonIgnore]	public	string			PriceFormat		{ get { return "N" + (this.PriceDecimals + 1); } }
 		[JsonIgnore]	public	string			VolumeFormat	{ get { return "N" + (this.VolumeDecimals + 1); } }
 
@@ -82,22 +62,6 @@ namespace Sq1.Core.DataTypes {
 			this.EmergencyCloseAttemptsMax = 5;
 			this.LeverageForFutures = 1;
 		}
-//		public SymbolInfo(string symbol, SecurityType securityType, int decimals) : this() {
-//			this.Symbol = symbol;
-//			this.SecurityType = securityType;
-//			this.PriceDecimals = decimals;
-//		}
-//		public SymbolInfo(string symbol, SecurityType securityType, int decimals, string ClassCode) : this(symbol, securityType, decimals) {
-//				//,, double priceLevelSizeForBonds, double margin, double point2Dollar
-//				//bool overrideMarketPriceToZero, //bool reSubmitRejected, bool reSubmittedUsesNextSlippage) {
-//			//this.LeverageForFutures = margin;
-//			//this.Point2Dollar = point2Dollar;
-//			//this.PriceLevelSizeForBonds = priceLevelSizeForBonds;
-//			this.SymbolClass = ClassCode;
-//			//this.OverrideMarketPriceToZero = overrideMarketPriceToZero;
-//			//this.ReSubmitRejected = reSubmitRejected;
-//			//this.ReSubmittedUsesNextSlippage = reSubmittedUsesNextSlippage;
-//		}
 		public int getSlippageIndexMax(Direction direction) {
 			int ret = -1;
 			string slippagesCommaSeparated = (direction == Direction.Buy || direction == Direction.Cover)

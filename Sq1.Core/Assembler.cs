@@ -153,7 +153,7 @@ namespace Sq1.Core {
 			this.StatusReporter = mainForm;
 			
 			bool createdNewFile = this.RepositorySymbolInfo.Initialize(this.AppDataPath, "SymbolInfo.json", "", null);
-			List<SymbolInfo> symbolInfosNotUsed = this.RepositorySymbolInfo.Deserialize();
+			this.RepositorySymbolInfo			.Deserialize();
 			
 			createdNewFile = this.RepositoryMarketInfo.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
 			this.RepositoryMarketInfo			.Deserialize();

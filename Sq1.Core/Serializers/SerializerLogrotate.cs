@@ -28,7 +28,7 @@ namespace Sq1.Core.Serializers {
 		}
 
 		public override List<T> Deserialize() {
-			if (File.Exists(base.JsonAbsFile) == false) return base.Entity;
+			if (File.Exists(base.JsonAbsFile) == false) return base.EntityDeserialized;
 			try {
 				string json = File.ReadAllText(base.JsonAbsFile);
 				lock (this.entityLock) {
@@ -39,7 +39,7 @@ namespace Sq1.Core.Serializers {
 				string msg = "FAILED_DeserializeLogrotate_WITH_base.JsonAbsFile[" + base.JsonAbsFile + "]";
 				throw new Exception(msg + msig, e);
 			}
-			return base.Entity;
+			return base.EntityDeserialized;
 		}
 		public override void Serialize() {
 			if (this.currentlySerializing == true) return;
@@ -49,15 +49,15 @@ namespace Sq1.Core.Serializers {
 			try {
 				this.currentlySerializing = true;
 				lock (this.entityLock) {
-					if (base.Entity.Count == 0) return;
-					string json = JsonConvert.SerializeObject(base.Entity, Formatting.Indented,
+					if (base.EntityDeserialized.Count == 0) return;
+					string json = JsonConvert.SerializeObject(base.EntityDeserialized, Formatting.Indented,
 						new JsonSerializerSettings {
 							TypeNameHandling = TypeNameHandling.Objects
 						});
 					this.safeRotateWriteAll(base.JsonAbsFile, json);
 					lock (this.itemsBufferedWhileSerializingLock) {
 						if (this.itemsBufferedWhileSerializing.Count > 0) {
-							base.Entity.AddRange(this.itemsBufferedWhileSerializing);
+							base.EntityDeserialized.AddRange(this.itemsBufferedWhileSerializing);
 							this.itemsBufferedWhileSerializing.Clear();
 						}
 					}
@@ -95,7 +95,7 @@ namespace Sq1.Core.Serializers {
 				 + fileNameWithDate + Path.GetExtension(fileAbspath);
 			try {
 				File.Move(fileAbspath, fileAbsNameWithDate);
-				base.Entity.Clear();		// hardcore cleanup!!
+				base.EntityDeserialized.Clear();		// hardcore cleanup!!
 			} catch (Exception ex) {
 				string msg = "FAILED_TO logRotate() File.Move([" + fileAbspath + "], [" + fileAbsNameWithDate + "])";
 				base.ThrowOrPopup(msg + msig, ex);
@@ -108,15 +108,15 @@ namespace Sq1.Core.Serializers {
 				}
 			} else {
 				lock (this.entityLock) {
-					base.Entity.Insert(index, order);
+					base.EntityDeserialized.Insert(index, order);
 				}
 			}
 			this.HasChangesToSave = true;
 		}
 		public void Remove(List<T> ordersToRemove) { lock (this.entityLock) {
 				foreach (T orderRemoving in ordersToRemove) {
-					if (base.Entity.Contains(orderRemoving)) {
-						base.Entity.Remove(orderRemoving);
+					if (base.EntityDeserialized.Contains(orderRemoving)) {
+						base.EntityDeserialized.Remove(orderRemoving);
 					}
 				}
 			this.HasChangesToSave = true;

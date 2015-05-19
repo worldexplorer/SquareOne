@@ -14,6 +14,8 @@ namespace Sq1.Core.Repositories {
 		public string AbsFilenameTimeZonesCsv { get { return base.RootPath + Path.DirectorySeparatorChar + fnameTimeZonesCsv; } }
 		public Dictionary<string, string> TimeZonesWithUTC { get; protected set; }
 
+		public	Dictionary<string, MarketInfo>	MarketsByName { get { return base.EntityDeserialized; } }
+
 		public RepositorySerializerMarketInfo() : base() {}
 		public new bool Initialize(string rootPath, string relFname,
 					string subfolder = "Workspaces", string workspaceName = "Default",
@@ -33,12 +35,12 @@ namespace Sq1.Core.Repositories {
 		}
 		public new void Deserialize() {
 			base.Deserialize();
-			if (base.Entity.Count == 0) base.Entity = this.MarketsDefault;
+			if (base.EntityDeserialized.Count == 0) base.EntityDeserialized = this.MarketsDefault;
 			this.trimHolidaysToYMD();
 			this.adjustIfClearingTimespanOutsideOpenClose();
 		}
 		void trimHolidaysToYMD() {
-			foreach (MarketInfo market in base.Entity.Values) {
+			foreach (MarketInfo market in base.EntityDeserialized.Values) {
 				if (market.HolidaysYMD000 == null) continue;
 				if (market.HolidaysYMD000.Count == 0) continue;
 				List<DateTime> holidaysTrimmed = new List<DateTime>();
@@ -50,7 +52,7 @@ namespace Sq1.Core.Repositories {
 		}
 		string adjustIfClearingTimespanOutsideOpenClose() {
 			string ret = "";
-			foreach (MarketInfo market in base.Entity.Values) {
+			foreach (MarketInfo market in base.EntityDeserialized.Values) {
 				if (market.ClearingTimespans == null) continue;
 				if (market.ClearingTimespans.Count == 0) continue;
 				List<DateTime> holidaysTrimmed = new List<DateTime>();
@@ -88,8 +90,8 @@ namespace Sq1.Core.Repositories {
 		}
 		public MarketInfo FindMarketInfo(string marketName) {
 			if (string.IsNullOrEmpty(marketName)) return null;
-			foreach (string market in Entity.Keys) {
-				if (market.ToUpper() == marketName.ToUpper()) return Entity[market];
+			foreach (string market in EntityDeserialized.Keys) {
+				if (market.ToUpper() == marketName.ToUpper()) return EntityDeserialized[market];
 			}
 			return null;
 		}
@@ -162,12 +164,12 @@ namespace Sq1.Core.Repositories {
 		}
 		public MarketInfo MarketDefault {
 			get {
-				if (Entity.ContainsKey(RepositorySerializerMarketInfo.MarketDefaultName) == false) {
+				if (EntityDeserialized.ContainsKey(RepositorySerializerMarketInfo.MarketDefaultName) == false) {
 					throw new Exception("please add Market.Name=[" + RepositorySerializerMarketInfo.MarketDefaultName + "]"
 						+ " into your [" + Path.Combine(base.RootPath, base.FnameRelpath) + "]"
 						+ " for MarketInfoRepository.MarketDefault");
 				}
-				return Entity[RepositorySerializerMarketInfo.MarketDefaultName];
+				return EntityDeserialized[RepositorySerializerMarketInfo.MarketDefaultName];
 			}
 		}
 		public static List<DayOfWeek> ParseDaysOfWeekCsv(string csv, string separator) {
@@ -222,12 +224,12 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		public void RenameMarketInfoRearrangeDictionary(MarketInfo marketInfo) {
-			if (Entity.ContainsKey(marketInfo.Name)) {
+			if (EntityDeserialized.ContainsKey(marketInfo.Name)) {
 				throw new Exception("the Market[" + marketInfo.Name + "] is already defined, choose another name");
 			}
 			string oldMarketName = null;
-			foreach (string marketName in Entity.Keys) {
-				if (Entity[marketName] == marketInfo) {
+			foreach (string marketName in EntityDeserialized.Keys) {
+				if (EntityDeserialized[marketName] == marketInfo) {
 					oldMarketName = marketName;
 					break;
 				}
@@ -235,8 +237,8 @@ namespace Sq1.Core.Repositories {
 			if (string.IsNullOrEmpty(oldMarketName)) {
 				throw new Exception("CRAZY#86 the Market[" + marketInfo.Name + "] wasn't found in Markets");
 			}
-			Entity.Remove(oldMarketName);
-			Entity.Add(marketInfo.Name, marketInfo);
+			EntityDeserialized.Remove(oldMarketName);
+			EntityDeserialized.Add(marketInfo.Name, marketInfo);
 		}
 	}
 }

@@ -3,11 +3,15 @@ using System.Diagnostics;
 using System.Threading;
 
 using Sq1.Core.Serializers;
+using System.Collections.Generic;
+using Sq1.Core.Execution;
 
 namespace Sq1.Core.Serializers {
 	public class SerializerLogrotatePeriodic<T> : SerializerLogrotate<T> {
 		public string OfWhat { get { return typeof(T).Name; } }
-		
+
+		public List<T> Orders { get { return base.EntityDeserialized; } }
+
 		Timer timer;
 		int periodMillis;
 

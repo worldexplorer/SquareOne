@@ -67,6 +67,7 @@ namespace Sq1.Gui {
 				StrategiesForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
 				ExecutionForm		.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
 				CsvImporterForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				SymbolsEditorForm	.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfo);
 			} catch (Exception ex) {
 				Assembler.PopupException("ASSEMBLER_OR_SINGLETONS_FAILED //MainForm()", ex);
 			}
@@ -231,7 +232,7 @@ namespace Sq1.Gui {
 		}
 		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {
 			// OK_SO_LUO_PLAYS_WITH_WINDOWS.FORMS.VISIBLE_I_SEE Debugger.Break();
-			DataSourcesForm	.Instance.VisibleChanged	+= delegate { this.mniSymbols.Checked		= DataSourcesForm	.Instance.Visible; };
+			DataSourcesForm	.Instance.VisibleChanged	+= delegate { this.mniDataSources.Checked		= DataSourcesForm	.Instance.Visible; };
 			ExceptionsForm	.Instance.VisibleChanged	+= delegate { this.mniExceptions.Checked	= ExceptionsForm	.Instance.Visible; };
 			SlidersForm		.Instance.VisibleChanged	+= delegate { this.mniSliders.Checked		= SlidersForm		.Instance.Visible; };
 			StrategiesForm	.Instance.VisibleChanged	+= delegate { this.mniStrategies.Checked	= StrategiesForm	.Instance.Visible; };

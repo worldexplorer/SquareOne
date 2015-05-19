@@ -54,7 +54,7 @@ namespace Sq1.Gui {
 		}
 		void mniSymbols_Click(object sender, EventArgs e) {
 			try {
-				if (this.mniSymbols.Checked == false) {
+				if (this.mniDataSources.Checked == false) {
 					DataSourcesForm.Instance.Show(this.DockPanel);
 				} else {
 					DataSourcesForm.Instance.Hide();
@@ -111,6 +111,18 @@ namespace Sq1.Gui {
 				this.MainFormSerialize();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniCsvImporter_Click()", ex);
+			}
+		}
+		void mniSymbolsEditor_Click(object sender, System.EventArgs e) {
+			try {
+				if (this.mniSymbolsEditor.Checked == false) {
+					SymbolsEditorForm.Instance.ShowAsDocumentTabNotPane(this.DockPanel);
+				} else {
+					SymbolsEditorForm.Instance.Hide();
+				}
+				this.MainFormSerialize();
+			} catch (Exception ex) {
+				Assembler.PopupException("mniSymbolsEditor_Click()", ex);
 			}
 		}
 		

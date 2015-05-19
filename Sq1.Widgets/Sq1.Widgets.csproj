@@ -384,6 +384,16 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="StrategiesTree\StrategiesTreeDataSnapshot.cs" />
+    <Compile Include="SymbolEditor\SymbolEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SymbolEditor\SymbolEditorControl.Customizer.cs">
+      <DependentUpon>SymbolEditorControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SymbolEditor\SymbolEditorControl.Designer.cs">
+      <DependentUpon>SymbolEditorControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="WalkForward\WalkForwardControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -461,6 +471,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="StrategiesTree\StrategiesTreeControl.resx">
       <DependentUpon>StrategiesTreeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SymbolEditor\SymbolEditorControl.resx">
+      <DependentUpon>SymbolEditorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WalkForward\WalkForwardControl.resx">
       <DependentUpon>WalkForwardControl.cs</DependentUpon>

@@ -238,6 +238,12 @@
     <Compile Include="Singletons\SlidersForm.Designer.cs">
       <DependentUpon>SlidersForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Singletons\SymbolsEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\SymbolsEditorForm.Designer.cs">
+      <DependentUpon>SymbolsEditorForm.cs</DependentUpon>
+    </Compile>
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
@@ -284,6 +290,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Singletons\SlidersForm.resx">
       <DependentUpon>SlidersForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\SymbolsEditorForm.resx">
+      <DependentUpon>SymbolsEditorForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
