@@ -58,7 +58,7 @@ namespace Sq1.Charting {
 			
 			double commissions = position.EntryFilledCommission + position.ExitFilledCommission;
 			this.lblCommissionVal.Text = commissions.ToString();
-			this.lblPriceLevelSizeVal.Text = position.Bars.SymbolInfo.PriceStep.ToString(priceFormat);
+			this.lblPriceLevelSizeVal.Text = position.Bars.SymbolInfo.PriceStepFromDecimal.ToString(priceFormat);
 			this.lblBasisPriceVal.Text = position.EntryFilledPrice.ToString(priceFormat);
 	
 			Color color = (position.NetProfit > 0.0) ? Color.Green : Color.Red;

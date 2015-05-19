@@ -119,7 +119,7 @@ namespace Sq1.Core.Broker {
 			OrderState newState = rejectedExitOrder.InStateErrorComplementaryEmergencyState;
 			string changeState = "ExitOrderCriticalState[" + rejectedExitOrder.State + "]=>[" + newState + "]";
 
-			int millis = rejectedExitOrder.Alert.Bars.SymbolInfo.EmergencyCloseDelayMillis;
+			int millis = rejectedExitOrder.Alert.Bars.SymbolInfo.EmergencyCloseInterAttemptDelayMillis;
 			if (millis > 0) {
 				string msg = "Emergency sleeping millis[" + millis + "] before " + changeState;
 				OrderStateMessage omsg = new OrderStateMessage(rejectedExitOrder, newState, msg);

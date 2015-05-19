@@ -3,64 +3,125 @@ using System.Diagnostics;
 
 using Newtonsoft.Json;
 using Sq1.Core.Execution;
+using System.ComponentModel;
 
 namespace Sq1.Core.DataTypes {
 	public class SymbolInfo {
-		[JsonProperty]	public	SecurityType	SecurityType;
-		[JsonProperty]	public	string			Symbol;
-		[JsonProperty]	public	string			SymbolClass;
-		[JsonProperty]	public	double			Point2Dollar;
-		[JsonProperty]	public	double			PriceStep;
-		[JsonProperty]	public	int				PriceDecimals;
-		[JsonProperty]	public	int				VolumeDecimals;					// valid for partial Forex lots and Bitcoins; for stocks/options/futures its always (int)1
+
+		[Category("1. Essential"), Description("[Stock] is linear, [Future] expires and has to be glued up (2D), [Option] has strikes (3D), [Forex] allows non-integer lots and trades Mon6am-Fri5pm EST, [CryptoCurrencies] are slow due to their JSON-over-web nature, [USBond] has 1/16 PriceStep")]
+		[JsonProperty]	public	SecurityType	SecurityType				{ get; set; }
+
+		[Category("1. Essential"), Description("")]
+		[JsonProperty]	public	string			Symbol						{ get; set; }
+
+		[Category("1. Essential"), Description("")]
+		[JsonProperty]	public	string			SymbolClass					{ get; set; }
+
+		[Category("1. Essential"), Description("For {RTSIndex = MICEX * USD/RUR}: {Position.Size = Position.Size * SymbolInfo.Point2Dollar}")]
+		[JsonProperty]	public	double			Point2Dollar				{ get; set; }
+
+		//[Category("EmergencyProcessor"), Description("NOT_USED Connected somehow with Point2Dollar")]
+		//[JsonProperty]	public	double			LeverageForFutures			{ get; set; }
+
+
+
+		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min Price Step; 2 for Cents, 0 for Dollars, -2 for $100")]
+		[JsonProperty]	public	int				PriceDecimals				{ get; set; }
 
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
-		[JsonIgnore]	public	double			PriceStepFromDecimal	{ get { return Math.Pow(10, -this.PriceDecimals); } }		// 10^(-2) = 0.01
-		[JsonIgnore]	public	double			VolumeStepFromDecimal	{ get { return Math.Pow(10, -this.VolumeDecimals); } }		// 10^(-2) = 0.01
-		
-		[JsonProperty]	public	bool			SameBarPolarCloseThenOpen;
-		[JsonProperty]	public	int				SequencedOpeningAfterClosedDelayMillis;
-		[JsonProperty]	public	int				EmergencyCloseDelayMillis;
-		[JsonProperty]	public	int				EmergencyCloseAttemptsMax;
-		[JsonProperty]	public	bool			ReSubmitRejected;
-		[JsonProperty]	public	bool			ReSubmittedUsesNextSlippage;
-		[JsonProperty]	public	bool			UseFirstSlippageForBacktest;
-		[JsonProperty]	public	string			SlippagesBuy;
-		[JsonProperty]	public	string			SlippagesSell;
-		[JsonProperty]	public	MarketOrderAs	MarketOrderAs;
-		[JsonIgnore]	public	bool			MarketZeroOrMinMax				{ get {
+		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min lot Volume; valid for partial Forex lots (-5 for 0.00001) and Bitcoins (-6 for 0.0000001); for stocks/options/futures 0")]
+		[JsonIgnore]	public	double			PriceStepFromDecimal		{ get { return Math.Pow(10, -this.PriceDecimals); } }		// 10^(-2) = 0.01
+
+		[Category("2. Price and Volume Units"), Description("Chart and Execution will display PriceDecimals+1 to visually assure Streaming and Broker adapters haven't got prices out of your expectations")]
+		[JsonIgnore]	public	string			PriceFormat					{ get { return "N" + (this.PriceDecimals + 1); } }
+
+
+
+		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min lot Volume; valid for partial Forex lots (-5 for 0.00001) and Bitcoins (-6 for 0.0000001); for stocks/options/futures I'd set 0 here")]
+		[JsonProperty]	public	int				VolumeDecimals				{ get; set; }
+
+		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
+		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min lot Volume; valid for partial Forex lots (-5 for 0.00001) and Bitcoins (-6 for 0.0000001); for stocks/options/futures I'd set 0 here")]
+		[JsonIgnore]	public	double			VolumeStepFromDecimal		{ get { return Math.Pow(10, -this.VolumeDecimals); } }		// 10^(-2) = 0.01
+
+		[Category("2. Price and Volume Units"), Description("Chart and Execution will display VolumeDecimals+1 to visually assure Streaming and Broker adapters haven't got volumes out of your expectations")]
+		[JsonIgnore]	public	string			VolumeFormat				{ get { return "N" + (this.VolumeDecimals + 1); } }
+
+
+
+		[Category("3. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis")]
+		[JsonProperty]	public	bool			SameBarPolarCloseThenOpen	{ get; set; }
+
+		[Category("3. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis")]
+		[JsonProperty]	public	int				SequencedOpeningAfterClosedDelayMillis		{ get; set; }
+
+
+
+		[Category("4. Post-OrderProcessor"), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)")]
+		[JsonProperty]	public	int				EmergencyCloseAttemptsMax	{ get; set; }
+
+		[Category("4. Post-OrderProcessor"), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max")]
+		[JsonProperty]	public	int				EmergencyCloseInterAttemptDelayMillis	{ get; set; }
+
+		[Category("4. Post-OrderProcessor"), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
+		[JsonProperty]	public	bool			ReSubmitRejected			{ get; set; }
+
+		[Category("4. Post-OrderProcessor"), Description("OrderPostProcessorRejected and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell")]
+		[JsonProperty]	public	bool			ReSubmittedUsesNextSlippage	{ get; set; }
+
+
+
+		[Category("5. Pre-OrderProcessor"), Description("prior to Emitting, auto-convert Market orders by setting a Broker-acceptable Price: [MarketZeroSentToBroker] will set Alert[Market].Price=0 and send it;[MarketMinMaxSentToBroker] sets Alert.Price to Streaming's two special values received per instrument (see QUIK to Excel import); [LimitCrossMarket] puts counterparty's current observed price from the other side of the spread; [LimitTidal] is good for frequent fluctuations, saves you spread but has less chance to get fill; auto-conversion is useful for: 1) Forex doesn't support market orders (MT4/MT5?); 2) Market Buy for RTS-Index must mention MaxPrice instead of 0/omitted")]
+		[JsonProperty]	public	MarketOrderAs	MarketOrderAs				{ get; set; }
+
+		[Browsable(false)]
+		[JsonIgnore]	public	bool			MarketZeroOrMinMax			{ get {
 				return this.MarketOrderAs == MarketOrderAs.MarketZeroSentToBroker
 					|| this.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
 			} }
-		[JsonProperty]	public	bool			ReplaceTidalWithCrossMarket;
-		[JsonProperty]	public	int				ReplaceTidalMillis;
-		[JsonProperty]	public	bool			SimBugOutOfBarStopsFill;
-		[JsonProperty]	public	bool			SimBugOutOfBarLimitsFill;
-		[JsonProperty]	public	double			LeverageForFutures;
-		[JsonIgnore]	public	string			PriceFormat		{ get { return "N" + (this.PriceDecimals + 1); } }
-		[JsonIgnore]	public	string			VolumeFormat	{ get { return "N" + (this.VolumeDecimals + 1); } }
+
+		[Category("5. Pre-OrderProcessor"), Description("")]
+		[JsonProperty]	public	string			SlippagesBuy				{ get; set; }
+
+		[Category("5. Pre-OrderProcessor"), Description("")]
+		[JsonProperty]	public	string			SlippagesSell				{ get; set; }
+
+		[Category("5. Pre-OrderProcessor"), Description("")]
+		[JsonProperty]	public	bool			UseFirstSlippageForBacktest	{ get; set; }
+
+		[Category("5. Pre-OrderProcessor"), Description("For StopSell + ")]
+		[JsonProperty]	public	bool			ReplaceTidalWithCrossMarket	{ get; set; }
+
+		[Category("5. Pre-OrderProcessor"), Description("")]
+		[JsonProperty]	public	int				ReplaceTidalMillis			{ get; set; }
+
+
+		[Category("6. Other"), Description("")]
+		[JsonProperty]	public	bool			SimBugOutOfBarStopsFill		{ get; set; }
+
+		[Category("6. Other"), Description("")]
+		[JsonProperty]	public	bool			SimBugOutOfBarLimitsFill	{ get; set; }
 
 		public SymbolInfo() { 		// used by JSONdeserialize() /  XMLdeserialize()
 			//this.MarketName = "US Equities";
-			this.SecurityType = SecurityType.Stock;
-			this.SymbolClass = "";
-			this.Point2Dollar = 1.0;
-			this.PriceDecimals = 2;
-			this.VolumeDecimals = 0;	// if your Forex Symbol uses lotMin=0.001, DecimalsVolume = 3 
-			this.PriceStep = 1.0;
-			this.SameBarPolarCloseThenOpen = true;
+			this.SecurityType					= SecurityType.Stock;
+			this.Symbol							= "UNKNOWN_SYMBOL";
+			this.SymbolClass					= "";
+			this.Point2Dollar					= 1.0;
+			this.PriceDecimals					= 2;
+			this.VolumeDecimals					= 0;	// if your Forex Symbol uses lotMin=0.001, DecimalsVolume = 3 
+			this.SameBarPolarCloseThenOpen		= true;
 			this.SequencedOpeningAfterClosedDelayMillis = 1000;
-			this.MarketOrderAs = MarketOrderAs.Unknown;
-			this.ReplaceTidalWithCrossMarket = false;
-			this.ReplaceTidalMillis = 0;
-			this.SlippagesBuy = "";
-			this.SlippagesSell = "";
-			this.ReSubmitRejected = false;
-			this.ReSubmittedUsesNextSlippage = false;
-			this.UseFirstSlippageForBacktest = true;
-			this.EmergencyCloseDelayMillis = 8000;
-			this.EmergencyCloseAttemptsMax = 5;
-			this.LeverageForFutures = 1;
+			this.MarketOrderAs					= MarketOrderAs.Unknown;
+			this.ReplaceTidalWithCrossMarket	= false;
+			this.ReplaceTidalMillis				= 0;
+			this.SlippagesBuy					= "";
+			this.SlippagesSell					= "";
+			this.ReSubmitRejected				= false;
+			this.ReSubmittedUsesNextSlippage	= false;
+			this.UseFirstSlippageForBacktest	= true;
+			this.EmergencyCloseInterAttemptDelayMillis		= 8000;
+			this.EmergencyCloseAttemptsMax		= 5;
 		}
 		public int getSlippageIndexMax(Direction direction) {
 			int ret = -1;
@@ -301,7 +362,7 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		public override string ToString() {
-			string ret = this.Symbol + ":" + this.PriceStep;
+			string ret = this.Symbol + ":" + this.PriceStepFromDecimal;
 			ret += "(" + Enum.GetName(typeof(SecurityType), this.SecurityType) + ")";
 			return ret;
 		}

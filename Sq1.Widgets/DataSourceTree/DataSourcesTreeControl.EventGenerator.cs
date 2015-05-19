@@ -12,6 +12,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		public event EventHandler<DataSourceSymbolEventArgs> OnNewChartForSymbolClicked;
 		public event EventHandler<DataSourceSymbolEventArgs> OnOpenStrategyForSymbolClicked;
 		public event EventHandler<DataSourceSymbolEventArgs> OnBarsAnalyzerClicked;
+		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolInfoEditorClicked;
 
 		public event EventHandler<DataSourceEventArgs> OnDataSourceEditClicked;
 		//public event EventHandler<DataSourceEventArgs> OnDataSourceDeleteClicked;
@@ -86,6 +87,14 @@ namespace Sq1.Widgets.DataSourcesTree {
 				foundWithSameName = this.DataSourceSelected;
 			}
 			this.OnDataSourceEditClicked(this, new DataSourceEventArgs(foundWithSameName));
+		}
+		public void RaiseOnSymbolInfoEditorClicked() {
+			if (this.OnSymbolInfoEditorClicked == null) {
+				string msg = "DataSourcesTree.mniEditDataSource_Click(): event OnDataSourceEditClicked: no subscribers";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.OnSymbolInfoEditorClicked(this, new DataSourceSymbolEventArgs(this.DataSourceSelected, this.SymbolSelected));
 		}
 	}
 }

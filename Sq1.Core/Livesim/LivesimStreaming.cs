@@ -29,7 +29,7 @@ namespace Sq1.Core.Livesim {
 
 		public void Initialize(ChartShadow chartShadow) {
 			this.chartShadow = chartShadow;
-			double stepPrice = this.chartShadow.Bars.SymbolInfo.PriceStep;
+			double stepPrice = this.chartShadow.Bars.SymbolInfo.PriceStepFromDecimal;
 			double stepSize = this.chartShadow.Bars.SymbolInfo.VolumeStepFromDecimal;
 			SymbolInfo symbolInfo = this.chartShadow.Executor.Bars.SymbolInfo;	//LivesimLevelTwoGenerator needs to align price and volume to Levels
 			int howMany = chartShadow.Executor.Strategy.LivesimStreamingSettings.LevelTwoLevelsToGenerate;

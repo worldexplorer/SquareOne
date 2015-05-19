@@ -65,7 +65,7 @@ namespace Sq1.Core.Execution {
 			} }
 		public double Size { get {
 				if (this.Bars.SymbolInfo.SecurityType == SecurityType.Future) {
-					return this.Bars.SymbolInfo.LeverageForFutures * this.Shares;
+					return this.Bars.SymbolInfo.Point2Dollar * this.Shares;
 				}
 				return this.EntryFilledPrice * this.Shares;
 			} }

@@ -722,7 +722,7 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Strategy.ScriptContextCurrent.EnableSlippage == false) return 0.0;
 			if (isLimitOrder && this.Strategy.ScriptContextCurrent.LimitOrderSlippage == false) return 0.0;
 			if (this.Bars.SymbolInfo.SecurityType == SecurityType.Future) {
-				return (double)this.Strategy.ScriptContextCurrent.SlippageTicks * this.Bars.SymbolInfo.PriceStep;
+				return (double)this.Strategy.ScriptContextCurrent.SlippageTicks * this.Bars.SymbolInfo.PriceStepFromDecimal;
 			}
 			double ret = 0.01 * this.Strategy.ScriptContextCurrent.SlippageUnits * priceAligned;
 			//if (direction == Direction.Short || direction == Direction.Sell) ret = -ret;
@@ -1557,7 +1557,7 @@ namespace Sq1.Core.StrategyBase {
 		public double PositionSizeCalculate(Bar bar, double priceScriptAligned) {
 			double ret = 1;
 			SymbolInfo symbolInfo = bar.ParentBars.SymbolInfo;
-			if (symbolInfo.SecurityType == SecurityType.Future && symbolInfo.LeverageForFutures <= 0.0) {
+			if (symbolInfo.SecurityType == SecurityType.Future && symbolInfo.Point2Dollar <= 0.0) {
 				#if DEBUG
 				Debugger.Break();
 				#endif

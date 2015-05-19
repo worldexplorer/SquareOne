@@ -67,7 +67,7 @@ namespace Sq1.Gui {
 				StrategiesForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
 				ExecutionForm		.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
 				CsvImporterForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
-				SymbolsEditorForm	.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfo);
+				SymbolEditorForm	.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfo);
 			} catch (Exception ex) {
 				Assembler.PopupException("ASSEMBLER_OR_SINGLETONS_FAILED //MainForm()", ex);
 			}
@@ -232,12 +232,13 @@ namespace Sq1.Gui {
 		}
 		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {
 			// OK_SO_LUO_PLAYS_WITH_WINDOWS.FORMS.VISIBLE_I_SEE Debugger.Break();
-			DataSourcesForm	.Instance.VisibleChanged	+= delegate { this.mniDataSources.Checked		= DataSourcesForm	.Instance.Visible; };
-			ExceptionsForm	.Instance.VisibleChanged	+= delegate { this.mniExceptions.Checked	= ExceptionsForm	.Instance.Visible; };
-			SlidersForm		.Instance.VisibleChanged	+= delegate { this.mniSliders.Checked		= SlidersForm		.Instance.Visible; };
-			StrategiesForm	.Instance.VisibleChanged	+= delegate { this.mniStrategies.Checked	= StrategiesForm	.Instance.Visible; };
-			ExecutionForm	.Instance.VisibleChanged	+= delegate { this.mniExecution.Checked		= ExecutionForm		.Instance.Visible; };
-			CsvImporterForm	.Instance.VisibleChanged	+= delegate { this.mniCsvImporter.Checked	= CsvImporterForm	.Instance.Visible; };
+			DataSourcesForm	.Instance.VisibleChanged	+= delegate { this.mniDataSources	.Checked = DataSourcesForm	.Instance.Visible; };
+			ExceptionsForm	.Instance.VisibleChanged	+= delegate { this.mniExceptions	.Checked = ExceptionsForm	.Instance.Visible; };
+			SlidersForm		.Instance.VisibleChanged	+= delegate { this.mniSliders		.Checked = SlidersForm		.Instance.Visible; };
+			StrategiesForm	.Instance.VisibleChanged	+= delegate { this.mniStrategies	.Checked = StrategiesForm	.Instance.Visible; };
+			ExecutionForm	.Instance.VisibleChanged	+= delegate { this.mniExecution		.Checked = ExecutionForm	.Instance.Visible; };
+			CsvImporterForm	.Instance.VisibleChanged	+= delegate { this.mniCsvImporter	.Checked = CsvImporterForm	.Instance.Visible; };
+			SymbolEditorForm.Instance.VisibleChanged	+= delegate { this.mniSymbolsEditor	.Checked = SymbolEditorForm	.Instance.Visible; };
 
 			this.MainFormEventManager = new MainFormEventManager(this);
 
@@ -252,6 +253,7 @@ namespace Sq1.Gui {
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnNewChartForSymbolClicked		+= this.MainFormEventManager.DataSourcesTree_OnNewChartForSymbolClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnOpenStrategyForSymbolClicked	+= this.MainFormEventManager.DataSourcesTree_OnOpenStrategyForSymbolClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnBarsAnalyzerClicked			+= this.MainFormEventManager.DataSourcesTree_OnBarsAnalyzerClicked;
+			DataSourcesForm.Instance.DataSourcesTreeControl.OnSymbolInfoEditorClicked		+= this.MainFormEventManager.DataSourcesTree_OnSymbolInfoEditorClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceEditClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceEditClicked;
 			//DataSourcesForm.Instance.DataSourcesTree.OnDataSourceDeleteClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceDeletedClicked;
 			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemCanBeRemoved		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceCanBeRemoved);

@@ -116,9 +116,9 @@ namespace Sq1.Gui {
 		void mniSymbolsEditor_Click(object sender, System.EventArgs e) {
 			try {
 				if (this.mniSymbolsEditor.Checked == false) {
-					SymbolsEditorForm.Instance.ShowAsDocumentTabNotPane(this.DockPanel);
+					SymbolEditorForm.Instance.ShowAsDocumentTabNotPane(this.DockPanel);
 				} else {
-					SymbolsEditorForm.Instance.Hide();
+					SymbolEditorForm.Instance.Hide();
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {

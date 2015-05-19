@@ -36,6 +36,8 @@ namespace Sq1.Gui {
 					ret = ExecutionForm.Instance;
 				} else if (persistedTypeFullName == typeof(CsvImporterForm).ToString()) {
 					ret = CsvImporterForm.Instance;
+				} else if (persistedTypeFullName == typeof(SymbolEditorForm).ToString()) {
+					ret = SymbolEditorForm.Instance;
 				} else {
 					// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos
 					return this.handleClassesWithGetPersistStringOverridden(persistedTypeFullName);

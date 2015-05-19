@@ -854,6 +854,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
+			DataSourcesForm.Instance.DataSourcesTreeControl.RaiseOnSymbolInfoEditorClicked();
 			if (this.Strategy != null) {
 				StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.Strategy);
 			} else {

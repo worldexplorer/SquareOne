@@ -37,6 +37,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				string newExisting = (true) ? "New" : "Existing";	//chart != null
 				this.mniNewChartSymbol.Text = newExisting + " Chart for " + this.SymbolSelected;
 				this.mniBarsAnalyzerSymbol.Text = "Bars Analyzer for " + this.SymbolSelected;
+				this.mniSymbolInfoEditor.Text = "Open Symbol Editor for " + this.SymbolSelected;
 				this.mniOpenStrategySymbol.Text = "New Strategy for " + this.SymbolSelected;
 				this.mniRemoveSymbol.Text = "Remove [" + this.SymbolSelected + "] from [" + this.DataSourceSelected.Name + "]";
 				DataSourceSymbolEventArgs subscribersPolled =
@@ -329,6 +330,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 			} catch (Exception ex) {
 				Assembler.PopupException("mniShowHeader_Click", ex);
 			}
+		}
+		void mniSymbolInfoEditor_Click(object sender, EventArgs e) {
+			this.RaiseOnSymbolInfoEditorClicked();
 		}
 	}
 }

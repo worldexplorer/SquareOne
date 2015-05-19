@@ -387,12 +387,12 @@
     <Compile Include="SymbolEditor\SymbolEditorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SymbolEditor\SymbolEditorControl.Customizer.cs">
-      <DependentUpon>SymbolEditorControl.cs</DependentUpon>
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="SymbolEditor\SymbolEditorControl.Designer.cs">
       <DependentUpon>SymbolEditorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SymbolEditor\SymbolEditorControl.EventConsumer.cs">
+      <DependentUpon>SymbolEditorControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="WalkForward\WalkForwardControl.cs">
       <SubType>UserControl</SubType>

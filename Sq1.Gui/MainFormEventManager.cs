@@ -180,6 +180,9 @@ namespace Sq1.Gui {
 		#region DataSourcesTree
 		internal void DataSourcesTree_OnBarsAnalyzerClicked(object sender, DataSourceSymbolEventArgs e) {
 		}
+		internal void DataSourcesTree_OnSymbolInfoEditorClicked(object sender, DataSourceSymbolEventArgs e) {
+			SymbolEditorForm.Instance.SymbolEditorControl.PopulateWithSymbol(e);
+		}
 		internal void DataSourcesTree_OnDataSourceDeletedClicked(object sender, DataSourceEventArgs e) {
 		}
 		internal void RepositoryJsonDataSource_OnDataSourceCanBeRemoved(object sender, NamedObjectJsonEventArgs<DataSource> e) {
