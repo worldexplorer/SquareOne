@@ -2,7 +2,7 @@
 using System.Threading;
 
 namespace Sq1.Core.Execution {
-	public partial class ExecutionDataSnapshot {
+	public partial class ExecutionDataSnapshot : IDisposable {
 			ManualResetEvent	ScriptRunningOnBarStaticLast					;//	{ get; private set; }
 			ManualResetEvent	ScriptRunningOnNewQuote							;//	{ get; private set; }
 			ManualResetEvent	ScriptRunningOnAlertFilled						;//	{ get; private set; }
@@ -142,6 +142,29 @@ namespace Sq1.Core.Execution {
 			// 2) all three require Core's smart decision simultaneously: script.OnPrototypeSLfilled, streaming.OnNewQuote, broker.OnAnotherAlertFilled
 			// 3) strategy accessing two symbols is doomed (multi-strike options strategies tam biem)
 			Assembler.PopupException("POTENTIAL_RACE_CONDITION " + msg + msig, null, false);
+		}
+
+		public void Dispose() {
+			this.ScriptRunningOnBarStaticLast						.Dispose();
+			this.ScriptRunningOnNewQuote							.Dispose();
+			this.ScriptRunningOnAlertFilled							.Dispose();
+			this.ScriptRunningOnAlertKilled							.Dispose();
+			this.ScriptRunningOnAlertNotSubmitted					.Dispose();
+			this.ScriptRunningOnPositionOpened						.Dispose();
+			this.ScriptRunningOnPositionOpenedPrototypeSlTpPlaced	.Dispose();
+			this.ScriptRunningOnPositionClosed						.Dispose();
+			this.ScriptRunningOnStreamingTriggeringScriptTurnedOn	.Dispose();
+			this.ScriptRunningOnStreamingTriggeringScriptTurnedOff	.Dispose();
+			this.ScriptRunningOnStrategyEmittingOrdersTurnedOn		.Dispose();
+			this.ScriptRunningOnStrategyEmittingOrdersTurnedOff		.Dispose();
+
+			this.AlertsPending										.Dispose();
+			this.AlertsMaster										.Dispose();
+			this.AlertsNewAfterExec									.Dispose();
+			this.PositionsMaster									.Dispose();
+			this.PositionsOpenNow									.Dispose();
+			this.PositionsOpenedAfterExec							.Dispose();
+			this.PositionsClosedAfterExec							.Dispose();
 		}
 	}
 }

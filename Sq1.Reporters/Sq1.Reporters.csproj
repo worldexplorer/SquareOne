@@ -78,6 +78,10 @@
     <Compile Include="Performance.Designer.cs">
       <DependentUpon>Performance.cs</DependentUpon>
     </Compile>
+    <Compile Include="Performance.EventConsumer.cs">
+      <DependentUpon>Performance.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Positions.cs">
       <SubType>UserControl</SubType>
     </Compile>

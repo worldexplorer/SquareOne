@@ -10,8 +10,8 @@ namespace Sq1.Core.Streaming {
 		public		Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>> DistributionChannels { get; protected set; }
 
 		DataDistributor() {
-			DistributionChannels = new Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>();
-			lockConsumersBySymbol = new object();
+			DistributionChannels	= new Dictionary<string, Dictionary<BarScaleInterval, SymbolScaleDistributionChannel>>();
+			lockConsumersBySymbol	= new object();
 		}
 		public DataDistributor(StreamingAdapter streamingAdapter) : this() {
 			this.StreamingAdapter = streamingAdapter;

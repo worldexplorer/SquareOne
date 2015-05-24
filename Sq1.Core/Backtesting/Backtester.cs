@@ -10,7 +10,7 @@ using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Backtesting {
-	public class Backtester {
+	public class Backtester : IDisposable {
 		public const string				BARS_BACKTEST_CLONE_PREFIX		= "BACKTEST_BARS_CLONED_FROM_";
 		public ScriptExecutor			Executor						{ get; private set; }
 
@@ -468,6 +468,12 @@ namespace Sq1.Core.Backtesting {
 			this.Executor.Strategy.Serialize();
 			if (this.Executor.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false) return;
 			this.Executor.BacktesterRunSimulationTrampoline(null, true);
+		}
+
+		public void Dispose() {
+			this.RequestingBacktestAbort	.Dispose();
+			this.BacktestAborted			.Dispose();
+			this.BacktestIsRunning			.Dispose();
 		}
 	}
 }

@@ -164,7 +164,7 @@ namespace Sq1.Core.Repositories {
 		}
 		public MarketInfo MarketDefault {
 			get {
-				if (EntityDeserialized.ContainsKey(RepositorySerializerMarketInfo.MarketDefaultName) == false) {
+				if (base.EntityDeserialized.ContainsKey(RepositorySerializerMarketInfo.MarketDefaultName) == false) {
 					throw new Exception("please add Market.Name=[" + RepositorySerializerMarketInfo.MarketDefaultName + "]"
 						+ " into your [" + Path.Combine(base.RootPath, base.FnameRelpath) + "]"
 						+ " for MarketInfoRepository.MarketDefault");
@@ -224,12 +224,12 @@ namespace Sq1.Core.Repositories {
 			return ret;
 		}
 		public void RenameMarketInfoRearrangeDictionary(MarketInfo marketInfo) {
-			if (EntityDeserialized.ContainsKey(marketInfo.Name)) {
+			if (base.EntityDeserialized.ContainsKey(marketInfo.Name)) {
 				throw new Exception("the Market[" + marketInfo.Name + "] is already defined, choose another name");
 			}
 			string oldMarketName = null;
 			foreach (string marketName in EntityDeserialized.Keys) {
-				if (EntityDeserialized[marketName] == marketInfo) {
+				if (base.EntityDeserialized[marketName] == marketInfo) {
 					oldMarketName = marketName;
 					break;
 				}
@@ -237,8 +237,8 @@ namespace Sq1.Core.Repositories {
 			if (string.IsNullOrEmpty(oldMarketName)) {
 				throw new Exception("CRAZY#86 the Market[" + marketInfo.Name + "] wasn't found in Markets");
 			}
-			EntityDeserialized.Remove(oldMarketName);
-			EntityDeserialized.Add(marketInfo.Name, marketInfo);
+			base.EntityDeserialized.Remove(oldMarketName);
+			base.EntityDeserialized.Add(marketInfo.Name, marketInfo);
 		}
 	}
 }

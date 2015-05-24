@@ -48,7 +48,17 @@ namespace Sq1.Core.StrategyBase {
 				string msg = "FYI_MOVED_TO__ChartFormManager.ReportersFormsManager.ReporterActivateShowRegisterMniTick()";
 				Assembler.PopupException(msg);
 			}
+
+			if (this.SystemPerformance != null && this.SystemPerformance.Bars != null) {
+				string msg = "REPORTER_WILL_CHANGE_BARS_AFTER_CHART_LOADS_BACKTESTS_ANOTHER_STRATEGY?";
+				Assembler.PopupException(msg);
+				this.SystemPerformance.Bars.SymbolInfo.PriceDecimalsChanged -= new EventHandler<EventArgs>(SymbolInfo_PriceDecimalsChanged);
+			}
 			this.SystemPerformance = performance;
+			this.SystemPerformance.Bars.SymbolInfo.PriceDecimalsChanged += new EventHandler<EventArgs>(SymbolInfo_PriceDecimalsChanged);
+		}
+
+		protected virtual void SymbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
 		}
 
 		// dont make it runtime error, bring the error to the earliest stage!

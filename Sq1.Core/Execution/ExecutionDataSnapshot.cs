@@ -5,9 +5,9 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Execution {
 	public partial class ExecutionDataSnapshot {
-			   ScriptExecutor					executor;
-			   object 							addingSynchronouslyToAlertsMasterPendingNew;
-			   object							positionsMasterLock;
+				ScriptExecutor					executor;
+				object 							addingSynchronouslyToAlertsMasterPendingNew;
+				object positionsMasterLock;
 		
 		public	AlertList						AlertsMaster				{ get; private set; }
 		public	AlertList						AlertsNewAfterExec			{ get; private set; }

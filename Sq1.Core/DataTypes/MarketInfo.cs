@@ -5,15 +5,15 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public class MarketInfo {
-		[JsonProperty]	public string Name;
-		[JsonProperty]	public string Description;
-		[JsonProperty]	public DateTime MarketOpenServerTime;
-		[JsonIgnore]	public string MarketOpenServerTimeAsString { get { return MarketCloseServerTime.ToString("HH:mm"); } }
-		[JsonProperty]	public DateTime MarketCloseServerTime;
-		[JsonIgnore]	public string MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
-		[JsonProperty]	public List<DayOfWeek> DaysOfWeekOpen;
-		[JsonProperty]	public string TimeZoneName;
-		[JsonProperty]	public TimeZoneInfo TimeZoneInfo { get {
+		[JsonProperty]	public	string				Name;
+		[JsonProperty]	public	string				Description;
+		[JsonProperty]	public	DateTime			MarketOpenServerTime;
+		[JsonIgnore]	public	string				MarketOpenServerTimeAsString { get { return MarketCloseServerTime.ToString("HH:mm"); } }
+		[JsonProperty]	public	DateTime			MarketCloseServerTime;
+		[JsonIgnore]	public	string				MarketCloseServerTimeAsString { get { return MarketOpenServerTime.ToString("HH:mm"); } }
+		[JsonProperty]	public	List<DayOfWeek>		DaysOfWeekOpen;
+		[JsonProperty]	public	string				TimeZoneName;
+		[JsonProperty]	public	TimeZoneInfo		TimeZoneInfo { get {
 				TimeZoneInfo ret = TimeZoneInfo.Local;
 				if (String.IsNullOrEmpty(this.TimeZoneName)) return ret;
 				try {
@@ -25,9 +25,9 @@ namespace Sq1.Core.DataTypes {
 				}
 				return ret;
 			} }
-		[JsonProperty]	public List<MarketClearingTimespan> ClearingTimespans;
-		[JsonProperty]	public List<DateTime> HolidaysYMD000;
-		[JsonProperty]	public List<MarketShortDay> ShortDays;
+		[JsonProperty]	public	List<MarketClearingTimespan>	ClearingTimespans;
+		[JsonProperty]	public	List<DateTime>					HolidaysYMD000;
+		[JsonProperty]	public	List<MarketShortDay>			ShortDays;
 
 		public MarketInfo() {
 			Name = "ERROR_DESERIALISING_JSON";

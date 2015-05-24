@@ -33,6 +33,22 @@ namespace Sq1.Reporters {
 			if (oLVColumn == null) return;
 			this.olvBinaryStateSaveRaiseStrategySerialize();
 		}
+		void objectListViewReCustomize_OnPriceDecimalsChanged() {
+			if (this.olvcEntryPrice			.AspectToStringFormat == "{0:" + base.FormatPrice + "}") {
+				string msg = "FORMAT_PRICE_DIDNT_CHANGE__WHY_DID_YOU_INVOKE_ME???";
+				Assembler.PopupException(msg);
+			}
+			this.olvcEntryPrice			.AspectToStringFormat = "{0:" + base.FormatPrice + "}";
+			this.olvcExitPrice			.AspectToStringFormat = "{0:" + base.FormatPrice + "}";
+			this.olvcProfitPct			.AspectToStringFormat = "{0:" + base.FormatPrice + "} %";
+			this.olvcQuantity			.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
+			this.olvcProfitPerBar		.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
+			this.olvcMae				.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
+			this.olvcMfe				.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
+			this.olvcCumNetProfitDollar	.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
+			this.olvcComission			.AspectToStringFormat = "{0:" + base.FormatPrice + "} $";
+			this.olvcCost				.AspectToStringFormat = "{0:" + base.FormatPrice + "}";
+		}
 		void objectListViewCustomize() {
 			this.objectListViewCustomizeColors();
 			this.olvBinaryStateRestore();

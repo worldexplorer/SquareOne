@@ -78,6 +78,7 @@ namespace Sq1.Widgets.Exceptions {
 			}
 		}
 		public void PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized() {
+			string msig = " //PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized()";
 			// WILL_SET_THIS_FLAG_NEXT_LINE_UPSTACK
 			// NOT_ANYMORE!!!_NOW_TIMER____ALSO_in_SplitContainerVertical/Horizontal_SplitterMoved_I_IGNORE_DISTANCES_RELYING_ON_MainFormDockFormsFullyDeserializedLayoutComplete
 //			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
@@ -86,7 +87,7 @@ namespace Sq1.Widgets.Exceptions {
 //			}
 			if (this.Width == 0) {
 				string msg = "CANT_SET_SPLITTER_DISTANCE_FOR_UNSHOWN_CONTROL ExceptionsControl.Visible[" + this.Visible + "]; can't set SplitDistanceVertical, SplitDistanceHorizontal";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg + msig);
 			} else {
 				try {
 					this.SuspendLayout();
@@ -106,7 +107,7 @@ namespace Sq1.Widgets.Exceptions {
 					}
 				} catch (Exception ex) {
 					string msg = "TRYING_TO_LOCALIZE_SPLITTER_MUST_BE_BETWEEN_0_AND_PANEL_MIN";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig, null, false);
 				} finally {
 					this.ResumeLayout(true);
 				}

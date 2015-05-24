@@ -30,7 +30,9 @@ namespace Sq1.Gui.FormFactories {
 		void sequencerControl_OnCorrelatorShouldPopulate(object sender, SequencedBacktestsEventArgs e) {
 			CorrelatorForm correlatorForm = this.chartFormManager.CorrelatorFormConditionalInstance;
 			correlatorForm.PopulateSequencedHistory(e.SequencedBacktests);
-			correlatorForm.ActivateDockContentPopupAutoHidden(false);
+			if (this.chartFormManager.SequencerForm.Visible) {
+				correlatorForm.ActivateDockContentPopupAutoHidden(false);
+			}
 
 			//DockState designedDockState = allParametersForm.ShowHint;
 			//if (designedDockState != DockState.Float) {

@@ -277,11 +277,8 @@ namespace Sq1.Gui.ReportersSupport {
 			foreach (Reporter reporterToPopup in this.ReporterShortNamesUserInvoked.Values) {
 				DockContentImproved dockContentImproved = reporterToPopup.Parent as DockContentImproved;
 				if (dockContentImproved == null) {
-					string msg = "reporterToPopup.Parent IS_NOT DockContentImproved";
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					Assembler.PopupException(msg + " //PopupReporters_OnParentChartActivated()");
+					string msg = "MUST_BE_DockContentImproved_reporterToPopup.Parent[" + reporterToPopup.Parent + "]";
+					Assembler.PopupException(msg + " //PopupReporters_OnParentChartActivated()", null, false);
 					return;
 				}
 				// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE form.Activate();
@@ -301,6 +298,18 @@ namespace Sq1.Gui.ReportersSupport {
 				ReporterFormWrapper wrapper = rep.Parent as ReporterFormWrapper;
 				if (wrapper == null) continue;
 				if (wrapper.IsCoveredOrAutoHidden == true) wrapper.ToggleAutoHide();
+			}
+		}
+
+		internal void Dispose_workspaceReloading() {
+			foreach (ReporterFormWrapper each in this.FormsAllRelated.Values) {
+				if (each.IsDisposed || each.Disposing) continue;
+				each.Dispose();
+			}
+			// each Reporter was added into ReporterFormWrapper, so none of my Reporters should have left undisposed by now
+			foreach (Reporter each in this.ReporterShortNamesUserInvoked.Values) {
+				if (each.IsDisposed || each.Disposing) continue;
+				each.Dispose();
 			}
 		}
 	}

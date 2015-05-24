@@ -62,7 +62,7 @@ namespace Sq1.Gui {
 			}
 		}
 		internal void StrategiesTree_OnStrategyRenamed(object sender, StrategyEventArgs e) {
-			foreach (ChartFormsManager chartFormsManager in this.mainForm.GuiDataSnapshot.ChartFormManagers.Values) {
+			foreach (ChartFormsManager chartFormsManager in this.mainForm.GuiDataSnapshot.ChartFormsManagers.Values) {
 				if (chartFormsManager.Strategy != e.Strategy) continue;
 				if (chartFormsManager.ScriptEditorFormConditionalInstance != null) {
 					chartFormsManager.ScriptEditorFormConditionalInstance.Text = e.Strategy.Name;
@@ -75,7 +75,7 @@ namespace Sq1.Gui {
 		ChartFormsManager chartCreateShowPopulateSelectorsSlidersFromStrategy(Strategy strategy) {
 			ChartFormsManager chartFormManager = new ChartFormsManager(this.mainForm);
 			chartFormManager.InitializeWithStrategy(strategy, false);
-			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
+			this.mainForm.GuiDataSnapshot.ChartFormsManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 			chartFormManager.ChartFormShow();
 			chartFormManager.StrategyCompileActivatePopulateSlidersShow();
 			return chartFormManager;
@@ -83,7 +83,7 @@ namespace Sq1.Gui {
 		void chartCreateShowPopulateSelectorsSlidersNoStrategy(ContextChart contextChart) {
 			ChartFormsManager chartFormManager = new ChartFormsManager(this.mainForm);
 			chartFormManager.InitializeChartNoStrategy(contextChart);
-			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
+			this.mainForm.GuiDataSnapshot.ChartFormsManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 			chartFormManager.ChartFormShow();
 		}
 		#endregion
@@ -92,12 +92,34 @@ namespace Sq1.Gui {
 		internal void ChartForm_FormClosed(object sender, FormClosedEventArgs e) {
 			if (this.mainForm.MainFormClosingSkipChartFormsRemoval) return;
 			try {
+				// chartFormsManager lifecycle ends here
 				ChartForm chartFormClosed = sender as ChartForm;
 				ChartFormsManager chartFormManager = chartFormClosed.ChartFormManager;
-				// chartFormsManager lifecycle ends here
-				this.mainForm.GuiDataSnapshot.ChartFormManagers.Remove(chartFormManager.DataSnapshot.ChartSerno);
 
 				if (DockContentImproved.IsNullOrDisposed(chartFormManager.ScriptEditorForm) == false) chartFormManager.ScriptEditorFormConditionalInstance.Close();
+
+				string msg = null;
+				var mgrs = this.mainForm.GuiDataSnapshot.ChartFormsManagers;
+				if (mgrs.Count <= 0) {
+					msg += "ChartFormsManagers.Count=0 ";
+				} else {
+					if (this.mainForm.GuiDataSnapshot.ChartFormsManagers.ContainsValue(chartFormManager) == false) {
+						msg += "chartFormManager_NOT_FOUND[" + chartFormManager.ToString() + "] ";
+					} else {
+						if (mgrs.ContainsKey(chartFormManager.DataSnapshot.ChartSerno) == false) {
+							msg += "ChartSerno_NOT_FOUND[" + chartFormManager.DataSnapshot.ChartSerno + "] ";
+						}
+					}
+				}
+
+				if (string.IsNullOrEmpty(msg) == false) {
+					Assembler.PopupException("CHART_FORMS_MANAGER_MUST_HAVE_BEEN_ADDED " + msg);
+				} else {
+					this.mainForm.GuiDataSnapshot.ChartFormsManagers.Remove(chartFormManager.DataSnapshot.ChartSerno);
+				}
+
+				chartFormManager.Dispose_workspaceReloading();
+
 				//foreach (Reporter reporter in chartFormsManager.Reporters.Values) {
 				//	Control reporterAsControl = reporter as Control;
 				//	Control reporterParent = reporterAsControl.Parent;
@@ -119,6 +141,10 @@ namespace Sq1.Gui {
 				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
 				return;
 			}
+			if (this.mainForm.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) {
+				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
+				return;
+			}
 
 			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveDocument as ChartForm;
 			if (chartFormClicked == null) {
@@ -131,7 +157,9 @@ namespace Sq1.Gui {
 			try {
 				chartFormClicked.ChartFormManager.InterformEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
 				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
-				this.mainForm.GuiDataSnapshotSerializer.Serialize();
+				//v1 this.mainForm.GuiDataSnapshotSerializer.Serialize();
+				//v2
+				this.mainForm.MainFormSerialize();
 				
 				//v1: DOESNT_POPULATE_SYMBOL_AND_SCRIPT_PARAMETERS 
 				//if (chartFormClicked.ChartFormManager.Strategy == null) {
@@ -148,6 +176,15 @@ namespace Sq1.Gui {
 		}
 		//v2
 		internal void DockPanel_ActiveContentChanged(object sender, EventArgs e) {
+			if (this.mainForm.MainFormClosingSkipChartFormsRemoval) {
+				string msg = "onAppClose getting invoked for each [mosaically] visible content, right? nope just once per Close()";
+				return;
+			}
+			if (this.mainForm.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) {
+				string msg = "onAppClose getting invoked for each [mosaically] visible content, right? nope just once per Close()";
+				return;
+			}
+
 			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveContent as ChartForm;
 			if (chartFormClicked == null) {
 				string msig = " DockPanel_ActiveContentChanged() is looking for mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus["
@@ -170,7 +207,9 @@ namespace Sq1.Gui {
 			try {
 				chartFormClicked.ChartFormManager.InterformEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
 				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
-				this.mainForm.GuiDataSnapshotSerializer.Serialize();
+				//v1 this.mainForm.GuiDataSnapshotSerializer.Serialize();
+				//v2
+				this.mainForm.MainFormSerialize();
 				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 			} catch (Exception ex) {
 				Assembler.PopupException("DockPanel_ActiveContentChanged()", ex);

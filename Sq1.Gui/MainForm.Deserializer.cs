@@ -89,7 +89,7 @@ namespace Sq1.Gui {
 					//if (this.ChartFormsManager.Strategy.ScriptContextCurrent != null) {
 					//	ret += ",StrategyScriptContextName:" + this.ChartFormsManager.Strategy.ScriptContextCurrent.Name;
 					//}
-					if (this.GuiDataSnapshot.ChartFormManagers.ContainsKey(chartSerno)) {
+					if (this.GuiDataSnapshot.ChartFormsManagers.ContainsKey(chartSerno)) {
 						// who knows why LoadFromXml invokes me twice?
 						return ret;
 					}
@@ -277,19 +277,6 @@ namespace Sq1.Gui {
 				}
 				//v2 END
 			}
-		}
-		void mainForm_ResizeEnd(object sender, EventArgs e) {
-			if (this.GuiDataSnapshot == null) return;
-			this.GuiDataSnapshot.MainFormSize = base.Size;
-		}
-		void mainForm_LocationChanged(object sender, EventArgs e) {
-			if (this.GuiDataSnapshot == null) {
-				string msg = "Forms.Control.Visible.set() invokes LocationChaned, we'll come back after this.DataSnapshot gets created";
-				return;
-			}
-			if (base.Location.X < 0) return;
-			if (base.Location.Y < 0) return;
-			this.GuiDataSnapshot.MainFormLocation = base.Location;
 		}
 	}
 }

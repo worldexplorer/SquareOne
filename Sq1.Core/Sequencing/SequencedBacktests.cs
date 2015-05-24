@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 using Sq1.Core.StrategyBase;
-using System.Collections.ObjectModel;
 
 namespace Sq1.Core.Sequencing {
 	public class SequencedBacktests : NamedObjectJsonSerializable {
@@ -160,7 +160,7 @@ namespace Sq1.Core.Sequencing {
 		}
 		public SequencedBacktests(ScriptExecutor executor, string fileName) : this() {
 			this.StrategyName					= executor.StrategyName;
-			//this.StrategyName					= executor.Strategy.ScriptContextCurrent.Symbol;
+			this.Symbol							= executor.Strategy.ScriptContextCurrent.Symbol;
 			this.SymbolScaleIntervalDataRange	= executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			this.FileName						= this.SymbolScaleIntervalDataRange;
 			base.Name							= this.SymbolScaleIntervalDataRange;

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Execution {
-	public class AlertList : ConcurrentListWD<Alert> {
+	public class AlertList : ConcurrentListWD<Alert>, IDisposable {
 		protected Dictionary<int, List<Alert>>	ByBarPlaced		{ get; private set; }
 		
 		public Dictionary<int, AlertList>	ByBarPlacedSafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
@@ -175,6 +175,10 @@ namespace Sq1.Core.Execution {
 		}
 		public override string ToString() {
 			return base.ToString() + " ByBarPlaced.Bars[" + ByBarPlaced.Keys.Count + "]";
+		}
+
+		void IDisposable.Dispose() {
+			this.DisposeWaitHandlesAndClear(this, "EXTERNAL_DISPOSE()_CALL");
 		}
 	}
 }

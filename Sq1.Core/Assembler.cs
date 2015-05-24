@@ -153,7 +153,7 @@ namespace Sq1.Core {
 			this.StatusReporter = mainForm;
 			
 			bool createdNewFile = this.RepositorySymbolInfo.Initialize(this.AppDataPath, "SymbolInfo.json", "", null);
-			this.RepositorySymbolInfo			.Deserialize();
+			this.RepositorySymbolInfo			.DeserializeAndSort();
 			
 			createdNewFile = this.RepositoryMarketInfo.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
 			this.RepositoryMarketInfo			.Deserialize();
@@ -164,8 +164,8 @@ namespace Sq1.Core {
 			this.RepositoryDllBrokerAdapter		.InitializeAndScan(this.AppStartupPath);
 			this.RepositoryDllReporters			.InitializeAndScan(this.AppStartupPath);
 			
-			this.WorkspacesRepository			.Initialize(this.AppDataPath, "Workspaces", this.StatusReporter);
-			this.WorkspacesRepository			.ScanFolders();
+			this.WorkspacesRepository			.Initialize(this.AppDataPath, "Workspaces");
+			this.WorkspacesRepository			.RescanFolders();
 
 			this.OrderProcessor					.Initialize(this.AppDataPath);
 

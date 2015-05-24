@@ -1,8 +1,8 @@
 ﻿using System;
 
+using Sq1.Core.StrategyBase;
 using Sq1.Core.Sequencing;
 using Sq1.Widgets;
-using Sq1.Core.StrategyBase;
 
 namespace Sq1.Gui.Forms {
 	public partial class SequencerForm : DockContentImproved {

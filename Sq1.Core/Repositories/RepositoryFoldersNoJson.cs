@@ -6,7 +6,6 @@ using Sq1.Core.Support;
 
 namespace Sq1.Core.Repositories {
 	public class RepositoryFoldersNoJson {
-		protected IStatusReporter StatusReporter;
 		public string RootPath { get; protected set; }
 		public string Subfolder { get; protected set; }
 		public string AbsPath { get {
@@ -22,17 +21,14 @@ namespace Sq1.Core.Repositories {
 		public RepositoryFoldersNoJson() { this.FoldersWithin = new List<string>(); }
 		public void Initialize(string rootPath,
 					string subfolder = "DataSources",
-					IStatusReporter statusReporter = null,
 					bool createNonExistingPath = true) {
-			
-			this.StatusReporter = statusReporter;
 			
 			string msig = "RepositoryFoldersNoJson::Initialize("
 					+ "rootPath=[" + rootPath + "], subfolder=[" + subfolder + "]: ";
 			
 			if (string.IsNullOrEmpty(rootPath)) {
 				string msg = "rootPath.IsNullOrEmpty(" + rootPath + ")";
-				this.ThrowOrPopup(msig + msg);
+				Assembler.PopupException(msig + msg);
 			}
 
 			//if (string.IsNullOrEmpty(subfolder) == false && subfolder.EndsWith(Path.DirectorySeparatorChar) == false) subfolder += Path.DirectorySeparatorChar;
@@ -54,7 +50,7 @@ namespace Sq1.Core.Repositories {
 				}
 			}
 		}
-		public void ScanFolders() {
+		public void RescanFolders() {
 			this.FoldersWithin.Clear();
 			if (Directory.Exists(this.AbsPath) == false) {
 				string msg = "ScanFolders() path[" + this.AbsPath + "] doesn't exist; returning";
@@ -67,13 +63,6 @@ namespace Sq1.Core.Repositories {
 				string folderName = Path.GetFileName(folderAbspath);
 				this.FoldersWithin.Add(folderName);
 			}
-		}
-		public void ThrowOrPopup(string msg, Exception ex = null) {
-			ex = new Exception(msg, ex); 
-			if (this.StatusReporter == null) {
-				throw ex;
-			}
-			Assembler.PopupException(msg, ex);
 		}
 	}
 }

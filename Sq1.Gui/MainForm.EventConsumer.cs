@@ -19,11 +19,24 @@ namespace Sq1.Gui {
 				Assembler.PopupException("MainFormEventManagerInitializeWhenDockingIsNotNullAnymore()", ex);
 			}
 			try {
-				this.createWorkspacesManager();
-				this.WorkspaceLoad(Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName);
+				this.WorkspacesManager.RescanRebuildWorkspacesMenu();
+				this.WorkspaceLoad();
 			} catch (Exception ex) {
 				Assembler.PopupException("mainForm_Load()", ex);
 			}
+		}
+		void mainForm_ResizeEnd(object sender, EventArgs e) {
+			if (this.GuiDataSnapshot == null) return;
+			this.GuiDataSnapshot.MainFormSize = base.Size;
+		}
+		void mainForm_LocationChanged(object sender, EventArgs e) {
+			if (this.GuiDataSnapshot == null) {
+				string msg = "Forms.Control.Visible.set() invokes LocationChaned, we'll come back after this.DataSnapshot gets created";
+				return;
+			}
+			if (base.Location.X < 0) return;
+			if (base.Location.Y < 0) return;
+			this.GuiDataSnapshot.MainFormLocation = base.Location;
 		}
 
 		protected override void WndProc(ref Message m) {
@@ -40,6 +53,8 @@ namespace Sq1.Gui {
 			this.MainFormSerialize();
 			this.MainFormClosingSkipChartFormsRemoval = true;
 		}
+
+
 		void mniExceptions_Click(object sender, EventArgs e) {
 			try {
 				if (this.mniExceptions.Checked == false) {
@@ -151,7 +166,7 @@ namespace Sq1.Gui {
 		}
 		void ctxWindowsOpening(object sender, System.ComponentModel.CancelEventArgs e) {
 			this.ctxWindows.Items.Clear();
-			foreach (var mgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
+			foreach (var mgr in this.GuiDataSnapshot.ChartFormsManagers.Values) {
 				var mniRoot = new ToolStripMenuItem();
 				mniRoot.Text = mgr.ChartForm.Text;
 				var ctxChartRelatedForms = new ContextMenuStrip();

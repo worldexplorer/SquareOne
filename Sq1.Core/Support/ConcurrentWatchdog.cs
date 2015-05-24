@@ -6,7 +6,7 @@ using System.Threading;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Support {
-	public class ConcurrentWatchdog {
+	public class ConcurrentWatchdog : IDisposable {
 		public		const int		TIMEOUT_DEFAULT				= 3000;
 
 		public		string					ReasonToExist { get; protected set; }
@@ -187,5 +187,27 @@ namespace Sq1.Core.Support {
 			return sb.ToString();
 		} }
 
+		public void Dispose() {
+			//I_ABORT_GUI_THREAD_HERE?!?!???
+			//if (this.unlockedThread != null) {
+			//    try {
+			//        this.unlockedThread.Abort();
+			//    } catch (Exception ex) {
+			//        string msg = "DONT_RE_THROW";
+			//    }
+			//}
+			try {
+				this.stopwatchLock.Stop();
+			} catch (Exception ex) {
+			}
+			try {
+				this.stopwatchUnlock.Stop();
+			} catch (Exception ex) {
+			}
+			try {
+				this.isFree.Dispose();
+			} catch (Exception ex) {
+			}
+		}
 	}
 }

@@ -8,8 +8,8 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
-using Sq1.Charting.MultiSplit;
 using Sq1.Core.Streaming;
+using Sq1.Charting.MultiSplit;
 
 namespace Sq1.Charting {
 	public partial class ChartControl {
@@ -270,16 +270,32 @@ namespace Sq1.Charting {
 			}
 		}
 		void barEventsAttach() {
-			if (this.Bars == null) return; 
-			this.Bars.BarStaticAdded			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);		// quite useless since I don't plan to append-statically to displayed-bars 
-			this.Bars.BarStreamingAdded			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.BarStreamingUpdatedMerged	+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			if (this.Bars == null) {
+				string msg = "BARS_NULL__I_CAN_NOT_SUBSCRIBE_FOR_BARS_EVENTS";
+				Assembler.PopupException(msg);
+				return;
+			}
+			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
+			//this.Bars.BarStaticAdded					+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStreamingAdded					+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStreamingUpdatedMerged			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.SymbolInfo.PriceDecimalsChanged	+= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
 		}
 		void barEventsDetach() {
-			if (this.Bars == null) return;
-			this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.BarStreamingAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.BarStaticAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			if (this.Bars == null) {
+				string msg = "BARS_NULL__I_CAN_NOT_UNSUBSCRIBE_FOR_BARS_EVENTS";
+				//Assembler.PopupException(msg);
+				return;
+			}
+			this.Bars.SymbolInfo.PriceDecimalsChanged	-= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
+			this.Bars.BarStreamingUpdatedMerged			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStreamingAdded					-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+
+			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
+			//this.Bars.BarStaticAdded					-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+		}
+		void bars_symbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
+			this.InvalidateAllPanels();
 		}
 		void chartControl_BarAddedUpdated_ShouldTriggerRepaint(object sender, BarEventArgs e) {
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) return;

@@ -133,7 +133,7 @@ namespace Sq1.Gui.Forms {
 			bool subscribed = this.Subscribed;
 			if (subscribed == false) {
 				string msg = "CHART_STREAMING_ALREADY_UNSUBSCRIBED_QUOTES_AND_BARS";
-				Assembler.PopupException(msg + this.msigForNpExceptions);
+				Assembler.PopupException(msg + this.msigForNpExceptions, null, false);
 				return;
 			}
 

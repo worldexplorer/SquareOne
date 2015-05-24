@@ -11,7 +11,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
-	public class LivesimStreaming : BacktestStreaming {
+	public class LivesimStreaming : BacktestStreaming, IDisposable {
 		public	ManualResetEvent			Unpaused			{ get; private set; }
 				ChartShadow					chartShadow;
 				LivesimDataSource			livesimDataSource;
@@ -116,5 +116,9 @@ namespace Sq1.Core.Livesim {
 			return;
 		}
 		#endregion
+
+		public void Dispose() {
+			this.Unpaused.Dispose();
+		}
 	}
 }

@@ -9,6 +9,7 @@ using Sq1.Core.Sequencing;
 using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Indicators;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Widgets.Sequencing {
 	public partial class SequencerControl : UserControl {
@@ -18,7 +19,7 @@ namespace Sq1.Widgets.Sequencing {
 				List<OLVColumn>				columnsDynParams;
 		public	RepositoryJsonsInFolderSimpleDictionarySequencer		RepositoryJsonSequencer					{ get; private set; }
 				List<IndicatorParameter>	scriptAndIndicatorParametersMergedCloned;
-		public SequencedBacktestsEventArgs	PushToCorrelator { get { return new SequencedBacktestsEventArgs(this.backtestsLocalEasierToSync); } } 
+		public	SequencedBacktestsEventArgs	PushToCorrelator { get { return new SequencedBacktestsEventArgs(this.backtestsLocalEasierToSync); } } 
 
 		public SequencerControl() {
 			InitializeComponent();
@@ -162,10 +163,21 @@ namespace Sq1.Widgets.Sequencing {
 					}
 					this.backtestsLocalEasierToSync.FileName = symbolScaleRange;
 					this.backtestsLocalEasierToSync.CheckPositionsCountMustIncreaseOnly();
+
+					RepositorySerializerSymbolInfo symbolInfoRep = Assembler.InstanceInitialized.RepositorySymbolInfo;
+					SymbolInfo reloadNetWhenSymbolInfoChanged = symbolInfoRep.FindSymbolInfoNullUnsafe(this.backtestsLocalEasierToSync.Symbol);
+					if (reloadNetWhenSymbolInfoChanged != null) {
+						reloadNetWhenSymbolInfoChanged.PriceDecimalsChanged -= new EventHandler<EventArgs>(reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged);
+						reloadNetWhenSymbolInfoChanged.PriceDecimalsChanged += new EventHandler<EventArgs>(reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged);
+					} else {
+						string msg = "SYMBOL_WAS_NOT_SERIALIZED_IN_foundBySymbolScaleRange[" + foundBySymbolScaleRange + "]";
+						Assembler.PopupException(msg);
+					}
+
 					this.symbolScaleRangeSelected = symbolScaleRange;
 				} else {
 					string msg = "NOT_FOUND_WITH_MARKER_FOR_symbolScaleRange[" + symbolScaleRange + "]";
-					//Assembler.PopupException(msg);
+					Assembler.PopupException(msg, null, false);
 				}
 			}
 
@@ -184,6 +196,22 @@ namespace Sq1.Widgets.Sequencing {
 
 			this.olvHistory.UseWaitCursor = false;
 			this.olvBacktests.UseWaitCursor = false;
+		}
+
+		void reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged(object sender, EventArgs e) {
+			if (base.InvokeRequired) {
+				string msg = "NYI__SYMBOL_INFO.PRICE_DECIMALS__CHANGED_IN_A_NON_GUI_THREAD //SequencerControl.reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged()";
+				Assembler.PopupException(msg);
+				return;
+			}
+			SymbolInfo iUpdatedPriceFormat = sender as SymbolInfo;
+			if (iUpdatedPriceFormat == null) {
+				string msg = "MUST_BE_SymbolInfo_sender[" + sender + "] //reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged()";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.olvBacktestsReCustomize_OnPriceDecimalsChanged();
+			this.olvBacktests.RebuildColumns();
 		}
 
 		void populateTextboxesFromExecutorsState() {

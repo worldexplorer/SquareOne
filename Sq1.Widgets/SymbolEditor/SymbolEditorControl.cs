@@ -8,8 +8,9 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Widgets.SymbolEditor {
 	public partial class SymbolEditorControl : UserControl {
-		RepositorySerializerSymbolInfo repositorySerializerSymbolInfo;
-		SymbolInfo symbolInfoSelected { get { return this.toolStripComboBox1.SelectedItem as SymbolInfo; } }
+		RepositorySerializerSymbolInfo	repositorySerializerSymbolInfo;
+		SymbolInfo						symbolInfoSelectedNullUnsafe { get { return this.toolStripComboBox1.SelectedItem as SymbolInfo; } }
+		bool							rebuildingDropdown;
 
 		public SymbolEditorControl() {
 			InitializeComponent();
@@ -17,17 +18,23 @@ namespace Sq1.Widgets.SymbolEditor {
 		public void Initialize(RepositorySerializerSymbolInfo repositorySerializerSymbolInfo) {
 			this.repositorySerializerSymbolInfo = repositorySerializerSymbolInfo;
 			this.rebuildDropdown();
-			if (this.repositorySerializerSymbolInfo.Symbols.Count > 0) {
-				this.Initialize(this.repositorySerializerSymbolInfo.Symbols[0]);
+			if (this.repositorySerializerSymbolInfo.SymbolInfos.Count > 0) {
+				this.Initialize(this.repositorySerializerSymbolInfo.SymbolInfos[0]);
 			}
 		}
+
 		void rebuildDropdown() {
-			this.toolStripComboBox1.Items.Clear();
-			foreach (SymbolInfo symbolInfo in this.repositorySerializerSymbolInfo.Symbols) {
-				this.toolStripComboBox1.Items.Add(symbolInfo);
+			this.rebuildingDropdown = true;
+			try {
+				this.toolStripComboBox1.Items.Clear();
+				foreach (SymbolInfo symbolInfo in this.repositorySerializerSymbolInfo.SymbolInfos) {
+					this.toolStripComboBox1.Items.Add(symbolInfo);
+				}
+			} finally {
+				this.rebuildingDropdown = false;
 			}
 		}
-		public void Initialize(SymbolInfo symbolInfo) {
+		public void Initialize(SymbolInfo symbolInfo, bool rebuildDropdown = false) {
 			if (symbolInfo == null) {
 				string msg = "I_REFUSE_TO_INITIALIZE_WITH_NULL_SYMBOL_INFO";
 				Assembler.PopupException(msg);
@@ -39,8 +46,14 @@ namespace Sq1.Widgets.SymbolEditor {
 				parent.Text = "Symbol Editor :: " + symbolInfo.ToString();
 			}
 
+			this.mniDeleteSymbol.Text				= "Delete [" + symbolInfo.Symbol + "]";
+			this.mniltbAddNew.InputFieldValue		= symbolInfo.Symbol;
+			this.mniltbDuplicate.InputFieldValue	= symbolInfo.Symbol;
+			this.mniltbRename.InputFieldValue		= symbolInfo.Symbol;
+
 			this.propertyGrid1.SelectedObject = symbolInfo;
-			if (this.symbolInfoSelected != null && this.symbolInfoSelected.ToString() != symbolInfo.ToString()) {
+			if (rebuildDropdown) this.rebuildDropdown();
+			if (this.symbolInfoSelectedNullUnsafe != null && this.symbolInfoSelectedNullUnsafe.ToString() == symbolInfo.ToString()) {
 				return;
 			}
 			foreach (SymbolInfo eachSymbolInfo in this.toolStripComboBox1.Items) {
@@ -49,7 +62,6 @@ namespace Sq1.Widgets.SymbolEditor {
 				break;
 			}
 		}
-
 		public void PopulateWithSymbol(DataSourceSymbolEventArgs e) {
 			SymbolInfo symbolInfo = this.repositorySerializerSymbolInfo.FindSymbolInfoOrNew(e.Symbol);
 			this.Initialize(symbolInfo);

@@ -135,7 +135,7 @@ namespace Sq1.Core.Correlation {
 
 			int noDivisionToZero = this.backtestsWithMyValueAndOnlyChosenOtherValues.Count;
 			if (noDivisionToZero == 0) {
-				Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO" + msig, null, false);
+				//Assembler.PopupException("AVOIDING_DIVISION_BY_ZERO" + msig, null, false);
 				this.kPIsLocalMinusGlobal_cached = null;
 				return;
 			}

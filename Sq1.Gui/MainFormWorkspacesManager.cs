@@ -3,38 +3,52 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Core.Repositories;
 using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Gui {
 	public class MainFormWorkspacesManager {
 		const string prefix = "workspace_";
 		MainForm mainForm;
+		RepositoryFoldersNoJson repository;
 
 		public string WorkspaceCurrentName { get { return this.WorkspaceCurrentMni.Text; } }
 		public ToolStripMenuItem WorkspaceCurrentMni { get; protected set; }
 
-		List<ToolStripMenuItem> workspaceMenuItems;
-		public ToolStripMenuItem[] WorkspaceMenuItemsWithHandlers { get { return this.workspaceMenuItems.ToArray(); } }
+				List<ToolStripMenuItem>	workspaceMenuItems;
+		public	ToolStripMenuItem[]		workspaceMenuItemsWithHandlers { get { return this.workspaceMenuItems.ToArray(); } }
 
-		public MainFormWorkspacesManager(MainForm mainForm) {
+		public MainFormWorkspacesManager(MainForm mainForm, RepositoryFoldersNoJson workspacesRepository) {
 			this.mainForm = mainForm;
-			this.workspaceMenuItems = this.initializeFromRepository();
+			this.repository = workspacesRepository;
+
+			this.workspaceMenuItems = new List<ToolStripMenuItem>();
+
+			// DOCK_CONTENT_SHOWS_ONLY_CHART_FORM_NO_SPLITTERS this.RescanRebuildWorkspacesMenu();
+
+			this.mainForm.MniWorkspaceDeleteCurrent.Click		+= new EventHandler(this.mniltbDeleteCurrent_Click);
+			this.mainForm.MniltbWorklspaceCloneTo.UserTyped		+= new EventHandler<LabeledTextBoxUserTypedArgs>(this.mniltbCloneTo_UserTyped);
+			this.mainForm.MniltbWorklspaceRenameTo.UserTyped	+= new EventHandler<LabeledTextBoxUserTypedArgs>(this.mniltbRenameTo_UserTyped);
+			this.mainForm.MniltbWorklspaceNewBlank.UserTyped	+= new EventHandler<LabeledTextBoxUserTypedArgs>(this.mniltbNewBlank_UserTyped);
 		}
 		
-		List<ToolStripMenuItem> initializeFromRepository() {
-			var ret = new List<ToolStripMenuItem>();
-			foreach (string workspace in Assembler.InstanceInitialized.WorkspacesRepository.FoldersWithin) {
+		void rescanFolders_BuildWorkspacesMenuItemsWithHandlersFromRepository() {
+			foreach (ToolStripMenuItem mni in this.workspaceMenuItems) {
+				mni.Click -= new EventHandler(mniWorkspaceLoad_Click);
+			}
+			this.workspaceMenuItems.Clear();
+			this.repository.RescanFolders();
+			foreach (string workspace in this.repository.FoldersWithin) {
 				var mni = new ToolStripMenuItem();
 				mni.Text = workspace;
 				mni.Name = MainFormWorkspacesManager.prefix + workspace; 
-				mni.Click += new EventHandler(mniWorkspace_Click);
+				mni.Click += new EventHandler(mniWorkspaceLoad_Click);
 				mni.CheckOnClick = true;
-				ret.Add(mni);
+				this.workspaceMenuItems.Add(mni);
 			}
-			return ret;
 		}
 		
-		void mniWorkspace_Click(object sender, EventArgs e) {
+		void mniWorkspaceLoad_Click(object sender, EventArgs e) {
 			var mniWorkspace = sender as ToolStripMenuItem;
 			if (mniWorkspace == null) {
 				Assembler.PopupException("mniWorkspace_Click(): (sender as ToolStripMenuItem) = null");
@@ -45,7 +59,7 @@ namespace Sq1.Gui {
 			this.mainForm.WorkspaceLoad(this.WorkspaceCurrentName);
 		}
 
-		public void WorkspaceDeleteCurrent_Click(object sender, EventArgs e) {
+		void mniltbDeleteCurrent_Click(object sender, EventArgs e) {
 			var next = this.findNextOrPrevIfLastAfterDeletion();
 			//Assembler.InstanceInitialized.WorkspacesRepository.ItemDelete(this.WorkspaceCurrent);
 			if (next == null) return;
@@ -53,7 +67,7 @@ namespace Sq1.Gui {
 			this.mainForm.WorkspaceLoad(this.WorkspaceCurrentName);
 		}
 
-		public void WorkspaceCloneTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+		void mniltbCloneTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string workspaceCloneToName = e.StringUserTyped;
 //			ScriptContext scriptContextToRename = this.ScriptContextFromMniTag(sender);
 //			this.Strategy.ScriptContextRename(scriptContextToRename, workspaceCloneToName);
@@ -61,17 +75,18 @@ namespace Sq1.Gui {
 //			this.ctxParameterBags_Opening(this, null);
 			Assembler.PopupException("NotImplementedException WorkspaceCloneTo_UserTyped(" + e.StringUserTyped + ")");
 		}
-		public void WorkspaceNewBlank_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+		void mniltbNewBlank_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string workspaceNewBlankName = e.StringUserTyped;
 			Assembler.PopupException("NotImplementedException WorkspaceNewBlank_UserTyped(" + e.StringUserTyped + ")");
 		}
-		public void WorkspaceRenameTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+		void mniltbRenameTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			string workspaceRenameToName = e.StringUserTyped;
 			Assembler.PopupException("NotImplementedException WorkspaceRenameTo_UserTyped(" + e.StringUserTyped + ")");
+			//this.repository.Ent
 		}
 
 		public void SelectWorkspaceLoaded(string workspaceLoaded) {
-			var mni = this.FindMniByWorkspaceName(workspaceLoaded);
+			var mni = this.findMniByWorkspaceName(workspaceLoaded);
 			if (mni == null) {
 				Assembler.PopupException("SelectWorkspaceLoaded(" + workspaceLoaded + ") not found");
 				return;
@@ -81,7 +96,7 @@ namespace Sq1.Gui {
 			this.WorkspaceCurrentMni.Checked = true;
 		}
 		
-		public ToolStripMenuItem FindMniByWorkspaceName(string workspaceToFind) {
+		ToolStripMenuItem findMniByWorkspaceName(string workspaceToFind) {
 			ToolStripMenuItem ret = null;
 			foreach (var mni in this.workspaceMenuItems) {
 				if (mni.Text != workspaceToFind) continue;
@@ -112,5 +127,45 @@ namespace Sq1.Gui {
 			}
 			return this.workspaceMenuItems[index];
 		}
+
+
+		public void RescanRebuildWorkspacesMenu(string currentWorkspaceName = null) {
+			if (string.IsNullOrEmpty(currentWorkspaceName)) {
+				currentWorkspaceName = Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName;
+			}
+
+			this.rescanFolders_BuildWorkspacesMenuItemsWithHandlersFromRepository();
+
+			//this.mainForm.CtxWorkspaces.Items.Clear();
+			//this.mainForm.CtxWorkspaces.Items.AddRange(new ToolStripItem[] {
+			//    this.mainForm.MniWorkspaceDeleteCurrent,
+			//    this.mainForm.MniltbWorklspaceNewBlank,
+			//    this.mainForm.MniltbWorklspaceCloneTo,
+			//    this.mainForm.MniltbWorklspaceRenameTo,
+			//    this.mainForm.MniWorkspacesToolStripSeparator});
+
+			//this.SyncMniEnabledAndSuggestNames(currentWorkspaceName);
+			this.mainForm.CtxWorkspaces.Items.AddRange(this.workspaceMenuItemsWithHandlers);
+		}
+
+		public void SyncMniEnabledAndSuggestNames(string currentWorkspaceName = null) {
+			if (string.IsNullOrEmpty(currentWorkspaceName)) {
+				currentWorkspaceName = Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName;
+			}
+
+			if (currentWorkspaceName == "Default") currentWorkspaceName = "DEFAULT_MUST_STAY";
+			this.mainForm.MniWorkspaceDeleteCurrent.Text = "Delete [" + currentWorkspaceName + "]";
+			this.mainForm.MniltbWorklspaceCloneTo.InputFieldValue = currentWorkspaceName;
+			this.mainForm.MniltbWorklspaceRenameTo.InputFieldValue = currentWorkspaceName;
+
+			if (currentWorkspaceName == "DEFAULT_MUST_STAY") {
+				this.mainForm.MniWorkspaceDeleteCurrent.Enabled = false;
+				this.mainForm.MniltbWorklspaceRenameTo.Enabled = false;
+			} else {
+				this.mainForm.MniWorkspaceDeleteCurrent.Enabled = true;
+				this.mainForm.MniltbWorklspaceRenameTo.Enabled = true;
+			}
+		}
+
 	}
 }

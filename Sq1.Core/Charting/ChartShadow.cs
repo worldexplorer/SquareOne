@@ -22,6 +22,7 @@ namespace Sq1.Core.Charting {
 //#else
 //	UserControl
 //#endif
+		, IDisposable
 	{
 		//REPLACED_BY_ScriptExecutorObjects public ScriptToChartCommunicator ScriptToChartCommunicator { get; protected set; }
 		public event EventHandler<EventArgs> ChartSettingsChangedContainerShouldSerialize;
@@ -174,6 +175,13 @@ namespace Sq1.Core.Charting {
 		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 		public virtual void InvalidateAllPanels() { }
 		//public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
-		
-	}	
+
+		protected override void Dispose(bool disposing) {
+			base.Dispose(disposing);
+			this.Dispose();
+		}
+		public void Dispose() {
+			this.paintAllowed.Dispose();
+		}
+	}
 }

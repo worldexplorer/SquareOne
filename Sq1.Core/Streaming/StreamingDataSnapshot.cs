@@ -162,7 +162,7 @@ namespace Sq1.Core.Streaming {
 			double price = 0;
 			oss = OrderSpreadSide.ERROR;
 
-			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfo(symbol);
+			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoNullUnsafe(symbol);
 			MarketOrderAs spreadSide;
 			if (forceCrossMarket) {
 				spreadSide = MarketOrderAs.LimitCrossMarket;
@@ -170,7 +170,7 @@ namespace Sq1.Core.Streaming {
 				spreadSide = (symbolInfo == null) ? MarketOrderAs.LimitCrossMarket : symbolInfo.MarketOrderAs;
 			}
 			if (spreadSide == MarketOrderAs.ERROR || spreadSide == MarketOrderAs.Unknown) {
-				string msg = "Set Symbol[" + symbol + "].SymbolInfo.LimitCrossMarket; should not be spreadSide[" + spreadSide + "]";
+				string msg = "CHANGE SymbolInfo[" + symbol + "].LimitCrossMarket; should not be spreadSide[" + spreadSide + "]";
 				Assembler.PopupException(msg);
 				throw new Exception(msg);
 				//return;

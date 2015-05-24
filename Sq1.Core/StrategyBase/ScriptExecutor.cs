@@ -19,7 +19,7 @@ using Sq1.Core.Support;
 using Sq1.Core.Correlation;
 
 namespace Sq1.Core.StrategyBase {
-	public partial class ScriptExecutor {
+	public partial class ScriptExecutor : IDisposable {
 		#region constructed (my own data)
 		public	string							ReasonToExist				{ get; protected set; }
 		public	ExecutionDataSnapshot			ExecutionDataSnapshot		{ get; protected set; }
@@ -46,7 +46,7 @@ namespace Sq1.Core.StrategyBase {
 
 		#region volatile Script is recompiled and replaced
 		public	Bars							Bars						{ get; private set; }
-		public PositionSize PositionSize { get {
+		public	PositionSize PositionSize { get {
 				if (this.Strategy == null) {
 					string msg = "ScriptExecutor.PositionSize: you should not access PositionSize before you've set Strategy";
 					#if DEBUG
@@ -56,7 +56,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return this.Strategy.ScriptContextCurrent.PositionSize;
 			} }
-		public DataSource DataSource { get {
+		public	DataSource DataSource { get {
 				if (this.Bars == null) {
 					string msg = "ScriptExecutor.DataSource: you should not access DataSource BEFORE you've set ScriptExecutor.Bars";
 					#if DEBUG
@@ -98,7 +98,7 @@ namespace Sq1.Core.StrategyBase {
 					//Assembler.PopupException(msg, null, false);
 					return;
 				}
-				if (this is DisposableExecutor == false) {
+				if (this is ReusableExecutor == false) {
 					this.Strategy.Serialize();
 				}
 				
@@ -708,7 +708,7 @@ namespace Sq1.Core.StrategyBase {
 
 		public void PopupException(string msg, Exception ex = null, bool debuggingBreak = true) {
 			Assembler.PopupException(msg, ex, debuggingBreak);
-			this.Backtester.AbortBacktestIfExceptionsLimitReached();
+			//this.Backtester.AbortBacktestIfExceptionsLimitReached();
 		}
 
 		public double OrderCommissionCalculate(Direction direction, MarketLimitStop marketLimitStop, double price, double shares, Bars bars) {
@@ -721,7 +721,7 @@ namespace Sq1.Core.StrategyBase {
 		public double getSlippageOld(double priceAligned, bool isLimitOrder) {
 			if (this.Strategy.ScriptContextCurrent.EnableSlippage == false) return 0.0;
 			if (isLimitOrder && this.Strategy.ScriptContextCurrent.LimitOrderSlippage == false) return 0.0;
-			if (this.Bars.SymbolInfo.SecurityType == SecurityType.Future) {
+			if (this.Bars.SymbolInfo.SecurityType == SecurityType.Futures) {
 				return (double)this.Strategy.ScriptContextCurrent.SlippageTicks * this.Bars.SymbolInfo.PriceStepFromDecimal;
 			}
 			double ret = 0.01 * this.Strategy.ScriptContextCurrent.SlippageUnits * priceAligned;
@@ -1557,7 +1557,7 @@ namespace Sq1.Core.StrategyBase {
 		public double PositionSizeCalculate(Bar bar, double priceScriptAligned) {
 			double ret = 1;
 			SymbolInfo symbolInfo = bar.ParentBars.SymbolInfo;
-			if (symbolInfo.SecurityType == SecurityType.Future && symbolInfo.Point2Dollar <= 0.0) {
+			if (symbolInfo.SecurityType == SecurityType.Futures && symbolInfo.Point2Dollar <= 0.0) {
 				#if DEBUG
 				Debugger.Break();
 				#endif
@@ -1611,6 +1611,17 @@ namespace Sq1.Core.StrategyBase {
 			ret += this.ToString();
 			//ret += " why???PerformanceAfterBacktest:" + this.PerformanceAfterBacktest.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished_AsString;
 			return ret;
+		}
+
+		public void Dispose() {
+			this.ExecutionDataSnapshot					.Dispose();
+			this.Backtester								.Dispose();
+			this.Sequencer								.Dispose();
+			this.Livesimulator							.Dispose();
+			this.ScriptIsRunningCantAlterInternalLists	.Dispose();
+			this.ChartShadow							.Dispose();
+			this.OrderProcessor		= null;
+			this.Bars				= null;		// if this.Bars are subscribed to anything, the event generator will keep Bars' handler and so this.Bars wont get GC'ed
 		}
 	}
 }

@@ -8,25 +8,30 @@ using System.ComponentModel;
 namespace Sq1.Core.DataTypes {
 	public class SymbolInfo {
 
-		[Category("1. Essential"), Description("[Stock] is linear, [Future] expires and has to be glued up (2D), [Option] has strikes (3D), [Forex] allows non-integer lots and trades Mon6am-Fri5pm EST, [CryptoCurrencies] are slow due to their JSON-over-web nature, [USBond] has 1/16 PriceStep")]
+		[Category("1. Essential"), Description("[Stock] is linear, [Future] expires and has to be glued up (2D), [Option] has strikes (3D), [Forex] allows non-integer lots and trades Mon6am-Fri5pm EST, [CryptoCurrencies] are slow due to their JSON-over-web nature, [USBond] has 1/16 PriceStep"), DefaultValue(SecurityType.Stock)]
 		[JsonProperty]	public	SecurityType	SecurityType				{ get; set; }
 
-		[Category("1. Essential"), Description("")]
+		[Category("1. Essential"), Description(""), ReadOnly(true)]
 		[JsonProperty]	public	string			Symbol						{ get; set; }
 
 		[Category("1. Essential"), Description("")]
 		[JsonProperty]	public	string			SymbolClass					{ get; set; }
 
-		[Category("1. Essential"), Description("For {RTSIndex = MICEX * USD/RUR}: {Position.Size = Position.Size * SymbolInfo.Point2Dollar}")]
+		[Category("1. Essential"), Description("For {RTSIndex = MICEX * USD/RUR}: {Position.Size = Position.Size * SymbolInfo.Point2Dollar}"), DefaultValue(1)]
 		[JsonProperty]	public	double			Point2Dollar				{ get; set; }
 
 		//[Category("EmergencyProcessor"), Description("NOT_USED Connected somehow with Point2Dollar")]
 		//[JsonProperty]	public	double			LeverageForFutures			{ get; set; }
 
 
+		[Browsable(false)]
+		[JsonProperty]	public	int				priceDecimals;
 
-		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min Price Step; 2 for Cents, 0 for Dollars, -2 for $100")]
-		[JsonProperty]	public	int				PriceDecimals				{ get; set; }
+		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min Price Step; 2 for Cents, 0 for Dollars, -2 for $100"), DefaultValue(2)]
+		[JsonIgnore]	public	int				PriceDecimals				{
+			get { return this.priceDecimals; }
+			set { this.priceDecimals = value; this.raisePriceDecimalsChanged(); }
+		}
 
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
 		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min lot Volume; valid for partial Forex lots (-5 for 0.00001) and Bitcoins (-6 for 0.0000001); for stocks/options/futures 0")]
@@ -37,7 +42,7 @@ namespace Sq1.Core.DataTypes {
 
 
 
-		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min lot Volume; valid for partial Forex lots (-5 for 0.00001) and Bitcoins (-6 for 0.0000001); for stocks/options/futures I'd set 0 here")]
+		[Category("2. Price and Volume Units"), Description("digits after decimal dot for min lot Volume; valid for partial Forex lots (-5 for 0.00001) and Bitcoins (-6 for 0.0000001); for stocks/options/futures I'd set 0 here"), DefaultValue(0)]
 		[JsonProperty]	public	int				VolumeDecimals				{ get; set; }
 
 		//BEFORE Pow/Log was invented: for (int i = this.Decimals; i > 0; i--) this.PriceLevelSize /= 10.0;
@@ -49,29 +54,29 @@ namespace Sq1.Core.DataTypes {
 
 
 
-		[Category("3. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis")]
+		[Category("3. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis"), DefaultValue(true)]
 		[JsonProperty]	public	bool			SameBarPolarCloseThenOpen	{ get; set; }
 
-		[Category("3. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis")]
+		[Category("3. OrderProcessor"), Description("for same-bar open+close (MA crossover), SameBarPolarCloseThenOpen=[True] will submit close first, wait for Close=>Filled/KilledPending + SequencedOpeningAfterClosedDelayMillis"), DefaultValue(100)]
 		[JsonProperty]	public	int				SequencedOpeningAfterClosedDelayMillis		{ get; set; }
 
 
 
-		[Category("4. Post-OrderProcessor"), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)")]
+		[Category("4. Post-OrderProcessor"), Description("EmergencyClose is PostProcessor's thread that kicks in when triggers when Position's Close was Rejected (Ctrl+Shift+F: InStateErrorComplementaryEmergencyState)"), DefaultValue(5)]
 		[JsonProperty]	public	int				EmergencyCloseAttemptsMax	{ get; set; }
 
-		[Category("4. Post-OrderProcessor"), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max")]
+		[Category("4. Post-OrderProcessor"), Description("EmergencyClose will sleep EmergencyCloseInterAttemptDelayMillis in its thread and repeat Closing of a Rejected ExitOrder, until ExitOrder.Clone will be returned by the BrokerAdapter as Filled, EmergencyCloseAttemptsMax times max"), DefaultValue(100)]
 		[JsonProperty]	public	int				EmergencyCloseInterAttemptDelayMillis	{ get; set; }
 
-		[Category("4. Post-OrderProcessor"), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry")]
+		[Category("4. Post-OrderProcessor"), Description("OrderPostProcessorRejected is somehow different than OrderPostProcessorEmergency... sorry"), DefaultValue(true)]
 		[JsonProperty]	public	bool			ReSubmitRejected			{ get; set; }
 
-		[Category("4. Post-OrderProcessor"), Description("OrderPostProcessorRejected and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell")]
+		[Category("4. Post-OrderProcessor"), Description("OrderPostProcessorRejected and OrderPostProcessorEmergency will increase the distance (=> decrease the profit) by using next available from SlippagesBuy/SlippagesSell"), DefaultValue(true)]
 		[JsonProperty]	public	bool			ReSubmittedUsesNextSlippage	{ get; set; }
 
 
 
-		[Category("5. Pre-OrderProcessor"), Description("prior to Emitting, auto-convert Market orders by setting a Broker-acceptable Price: [MarketZeroSentToBroker] will set Alert[Market].Price=0 and send it;[MarketMinMaxSentToBroker] sets Alert.Price to Streaming's two special values received per instrument (see QUIK to Excel import); [LimitCrossMarket] puts counterparty's current observed price from the other side of the spread; [LimitTidal] is good for frequent fluctuations, saves you spread but has less chance to get fill; auto-conversion is useful for: 1) Forex doesn't support market orders (MT4/MT5?); 2) Market Buy for RTS-Index must mention MaxPrice instead of 0/omitted")]
+		[Category("5. Pre-OrderProcessor"), Description("prior to Emitting, auto-convert Market orders by setting a Broker-acceptable Price: [MarketZeroSentToBroker] will set Alert[Market].Price=0 and send it;[MarketMinMaxSentToBroker] sets Alert.Price to Streaming's two special values received per instrument (see QUIK to Excel import); [LimitCrossMarket] puts counterparty's current observed price from the other side of the spread; [LimitTidal] is good for frequent fluctuations, saves you spread but has less chance to get fill; auto-conversion is useful for: 1) Forex doesn't support market orders (MT4/MT5?); 2) Market Buy for RTS-Index must mention MaxPrice instead of 0/omitted"), DefaultValue(MarketOrderAs.MarketZeroSentToBroker)]
 		[JsonProperty]	public	MarketOrderAs	MarketOrderAs				{ get; set; }
 
 		[Browsable(false)]
@@ -80,26 +85,26 @@ namespace Sq1.Core.DataTypes {
 					|| this.MarketOrderAs == MarketOrderAs.MarketMinMaxSentToBroker;
 			} }
 
-		[Category("5. Pre-OrderProcessor"), Description("")]
+		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue("10,20,30,40")]
 		[JsonProperty]	public	string			SlippagesBuy				{ get; set; }
 
-		[Category("5. Pre-OrderProcessor"), Description("")]
+		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue("10,20,30,40")]
 		[JsonProperty]	public	string			SlippagesSell				{ get; set; }
 
-		[Category("5. Pre-OrderProcessor"), Description("")]
+		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue(true)]
 		[JsonProperty]	public	bool			UseFirstSlippageForBacktest	{ get; set; }
 
-		[Category("5. Pre-OrderProcessor"), Description("For StopSell + ")]
+		[Category("5. Pre-OrderProcessor"), Description("For StopSell + "), DefaultValue(true)]
 		[JsonProperty]	public	bool			ReplaceTidalWithCrossMarket	{ get; set; }
 
-		[Category("5. Pre-OrderProcessor"), Description("")]
+		[Category("5. Pre-OrderProcessor"), Description(""), DefaultValue(100)]
 		[JsonProperty]	public	int				ReplaceTidalMillis			{ get; set; }
 
 
-		[Category("6. Other"), Description("")]
+		[Category("6. Other"), Description(""), DefaultValue(true)]
 		[JsonProperty]	public	bool			SimBugOutOfBarStopsFill		{ get; set; }
 
-		[Category("6. Other"), Description("")]
+		[Category("6. Other"), Description(""), DefaultValue(true)]
 		[JsonProperty]	public	bool			SimBugOutOfBarLimitsFill	{ get; set; }
 
 		public SymbolInfo() { 		// used by JSONdeserialize() /  XMLdeserialize()
@@ -365,6 +370,22 @@ namespace Sq1.Core.DataTypes {
 			string ret = this.Symbol + ":" + this.PriceStepFromDecimal;
 			ret += "(" + Enum.GetName(typeof(SecurityType), this.SecurityType) + ")";
 			return ret;
+		}
+		// I_HATE_SUCH_INTRANSPARENCY__ALMOST_INTRODUCED_FOR_List<Symbol>__BUT_IMPLEMENTED__MY_WAY_TO_AVOID_OVERRIDING_EQUALS
+		//public override bool Equals(object obj) {
+		//    return this.Symbol == (((SymbolInfo))obj));
+		//}
+
+
+		public event EventHandler<EventArgs> PriceDecimalsChanged;
+		void raisePriceDecimalsChanged() {
+			if (this.PriceDecimalsChanged == null) return;
+			try {
+				this.PriceDecimalsChanged(this, null);
+			} catch (Exception ex) {
+				string msg = "ONE_OF_PriceDecimalsChanged_SUBSCRIBERS_THREW_DEPRIVING_OTHERS SymbolInfo[" + this.Symbol + "].PriceDecimals=>[" + this.PriceDecimals + "]";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 	}
 }

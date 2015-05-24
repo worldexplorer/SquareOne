@@ -7,7 +7,7 @@
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 5,
+    "BarWidthIncludingPadding": 8,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -46,7 +46,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 4985,
+    "ScrollPositionAtBarIndex": 0,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -113,7 +113,7 @@
       "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 36
+        "Distance": 40
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -126,7 +126,7 @@
       "multiSplitContainerRows": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 26
+        "Distance": 57
       }
     }
   },

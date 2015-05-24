@@ -12,7 +12,7 @@ using Sq1.Core.Support;
 
 namespace Sq1.Widgets.Correlation {
 	public partial class OneParameterControl : UserControlResizeable {
-		OneParameterAllValuesAveraged parameter;
+		public OneParameterAllValuesAveraged Parameter { get; private set; }
 
 		Dictionary<ToolStripMenuItem, List<OLVColumn>>			columnsByFilter;
 		Dictionary<ToolStripMenuItem, OLVColumn>				columnToSortDescendingByMaximizationMni;
@@ -46,13 +46,13 @@ namespace Sq1.Widgets.Correlation {
 			SortedDictionary<string, IndicatorParameter> parametersByFullName =
 				this.correlator.Executor.Strategy.ScriptContextCurrent
 					.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName;
-			if (parametersByFullName.ContainsKey(this.parameter.ParameterName) == false) {
+			if (parametersByFullName.ContainsKey(this.Parameter.ParameterName) == false) {
 				string msg = "OneParameterControl.correlator.Executor.Strategy.ScriptContextCurrent"
-					+ ".ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.ContainsKey(" + this.parameter.ParameterName + ") == false";
+					+ ".ScriptAndIndicatorParametersMergedUnclonedForSequencerByName.ContainsKey(" + this.Parameter.ParameterName + ") == false";
 				Assembler.PopupException(msg);
 				return ret;
 			}
-			ret = parametersByFullName[this.parameter.ParameterName];
+			ret = parametersByFullName[this.Parameter.ParameterName];
 			return ret;
 		} }
 
@@ -342,21 +342,23 @@ namespace Sq1.Widgets.Correlation {
 		bool dontSerializeStrategy_ImAligingInCtor = false;
 		public OneParameterControl(CorrelatorControl allParametersControl, OneParameterAllValuesAveraged parameter) : this() {
 			this.allParametersControl = allParametersControl;
-			this.parameter = parameter;
-			this.olvcParamValues.Text = this.parameter.ParameterName;
+			this.Parameter = parameter;
+			//MOVED_DOWN_populateKPIsToParamColumnHeader() this.olvcParamValues.Text = this.Parameter.ParameterName;
 			this.olvAllValuesForOneParamCustomize();
 
 			this.dontSerializeStrategy_ImAligingInCtor = true;
-			this.olv.SetObjects(this.parameter.AllValuesWithArtificials);
+			this.olv.SetObjects(this.Parameter.AllValuesWithArtificials);
 			parameter.OnParameterRecalculatedLocalsAndDeltas += new EventHandler<OneParameterAllValuesAveragedEventArgs>(parameter_ParameterRecalculatedLocalsAndDeltas);
 			base.Initialize_byMovingControlsToInner();
 			this.AlignBaseSizeToDisplayedCells();
 			this.dontSerializeStrategy_ImAligingInCtor = true;
+
+			this.populateKPIsToParamColumnHeader();
 		}
 
 		void Initialize() {
-			if (this.mniToCheckForMaximizationCriterion.ContainsKey(this.parameter.MaximizationCriterion)) {
-				ToolStripMenuItem mniToCheck = this.mniToCheckForMaximizationCriterion[this.parameter.MaximizationCriterion];
+			if (this.mniToCheckForMaximizationCriterion.ContainsKey(this.Parameter.MaximizationCriterion)) {
+				ToolStripMenuItem mniToCheck = this.mniToCheckForMaximizationCriterion[this.Parameter.MaximizationCriterion];
 				this.checkOneMniForMaximizationCriterionUncheckOthers(mniToCheck);
 				OLVColumn sortBy = this.columnToSortDescendingByMaximizationMni[mniToCheck];
 				this.olv.Sort(sortBy, SortOrder.Descending);
@@ -366,7 +368,7 @@ namespace Sq1.Widgets.Correlation {
 		}
 
 		internal void KPIsLocalRecalculateDone_refreshOLV() {
-			this.olv.SetObjects(this.parameter.AllValuesWithArtificials, true);
+			this.olv.SetObjects(this.Parameter.AllValuesWithArtificials, true);
 			this.olv.UseWaitCursor = false;
 		}
 		public void AlignBaseSizeToDisplayedCells() {
@@ -374,7 +376,7 @@ namespace Sq1.Widgets.Correlation {
 			oneRowFullHeight += (this.olv.CellPadding != null)
 						? this.olv.CellPadding.Value.Top + this.olv.CellPadding.Value.Bottom
 						: 2;
-			int rowsPlusArtificials = this.parameter.ValuesByParam.Count + 2;	// 3		//REPLACE_WITH_max(avg(Net)),min(StDev(Net))_ALIGNED_WITH_MaximizationCriterion 
+			int rowsPlusArtificials = this.Parameter.ValuesByParam.Count + 2;	// 3		//REPLACE_WITH_max(avg(Net)),min(StDev(Net))_ALIGNED_WITH_MaximizationCriterion 
 			int parentResizeableBordersTopBottom = base.PaddingMouseReceiving.Top + base.PaddingMouseReceiving.Bottom;
 			int headerAssumedHeight = oneRowFullHeight - 4;		//28;	// enough to fit hscrollbar...
 			//	headerAssumedHeight += 12;	// enough to fit hscrollbar...
@@ -432,6 +434,10 @@ namespace Sq1.Widgets.Correlation {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			if (this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised) return;
 			this.allParametersControl.Correlator.Executor.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+		}
+
+		internal void OlvRebuildColumns() {
+			this.olv.RebuildColumns();
 		}
 	}
 }

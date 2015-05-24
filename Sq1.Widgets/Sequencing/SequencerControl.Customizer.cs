@@ -34,6 +34,12 @@ namespace Sq1.Widgets.Sequencing {
 		string priceFormat { get { return this.sequencer.Executor.Bars.SymbolInfo.PriceFormat; } }
 		string kpiFormat { get { return "N2"; } }
 
+		void olvBacktestsReCustomize_OnPriceDecimalsChanged() {
+			this.olvcNetProfit.AspectToStringFormat			= "{0:" + this.priceFormat + "}";
+			this.olvcProfitPerPosition.AspectToStringFormat = "{0:" + this.priceFormat + "}";
+			this.olvcMaxDrawdown.AspectToStringFormat		= "{0:" + this.priceFormat + "}";
+		}
+
 		void olvBacktestsCustomize() {
 			this.olvBacktestsCustomizeColors();
 			this.olvcSerno.AspectGetter = delegate(object o) {

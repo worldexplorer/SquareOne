@@ -21555,8 +21555,8 @@
     }
   ],
   "Name": "RIM3 1-Minute 510 Bars",
-  "StrategyName": "RIM3",
-  "Symbol": null,
+  "StrategyName": "XXXXX",
+  "Symbol": "RIM3",
   "SymbolScaleIntervalDataRange": "RIM3 1-Minute 510 Bars",
   "BacktestedBarFirstDateTime": "2013-05-10T16:51:00",
   "BacktestedBarLastDateTime": "2013-05-10T23:38:00",

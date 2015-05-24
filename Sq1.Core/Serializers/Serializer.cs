@@ -25,7 +25,7 @@ namespace Sq1.Core.Serializers {
 			} }
 		public		string		FnameRelpath				{ get; protected set; }
 		public		string		JsonAbsFile					{ get { return Path.Combine(this.AbsPath, FnameRelpath); } }
-		protected	T			EntityDeserialized;			//RENAME_IN_CHILDREN__AVOID_MAUVAIS_TONE	{ get; protected set; }
+		protected	T			EntityDeserialized;			//RENAME_IN_CHILDREN__AVOID_MAUVAIS_TONE__INHERIT_RESPONSIBILITY_FOR_ITS_LIFECYCLE	{ get; protected set; }
 		public		Action<T>	ActionAfterDeserialized;
 
 		public Serializer() {

@@ -64,7 +64,7 @@ namespace Sq1.Core.Execution {
 				return barExit.DateTimeOpen;
 			} }
 		public double Size { get {
-				if (this.Bars.SymbolInfo.SecurityType == SecurityType.Future) {
+				if (this.Bars.SymbolInfo.SecurityType == SecurityType.Futures) {
 					return this.Bars.SymbolInfo.Point2Dollar * this.Shares;
 				}
 				return this.EntryFilledPrice * this.Shares;

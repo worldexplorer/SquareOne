@@ -8,17 +8,17 @@ namespace Sq1.Core.DataTypes {
 	public partial class Bars : BarsUnscaled {
 		[JsonIgnore]	public static int InstanceAbsno = 0;
 		
-		[JsonIgnore]	public string SymbolHumanReadable;
-		[JsonIgnore]	public BarScaleInterval ScaleInterval { get; private set; }
+		[JsonIgnore]	public	string				SymbolHumanReadable;
+		[JsonIgnore]	public	BarScaleInterval	ScaleInterval { get; private set; }
 
-		[JsonIgnore]	public MarketInfo MarketInfo;
-		[JsonIgnore]	public DataSource DataSource;
+		[JsonIgnore]	public	MarketInfo			MarketInfo;
+		[JsonIgnore]	public	DataSource			DataSource;
 
-		[JsonIgnore]	public bool IsIntraday { get { return this.ScaleInterval.IsIntraday; } }
-		[JsonIgnore]	public string SymbolIntervalScale { get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
+		[JsonIgnore]	public	bool				IsIntraday { get { return this.ScaleInterval.IsIntraday; } }
+		[JsonIgnore]	public	string				SymbolIntervalScale { get { return "[" + this.Symbol + " " + this.ScaleInterval.ToString() + "]"; } }
 
-		[JsonIgnore]	public Bar BarStreamingNullUnsafe { get; private set; }
-		[JsonIgnore]	public Bar BarStreamingNullUnsafeCloneReadonly { get {
+		[JsonIgnore]	public	Bar					BarStreamingNullUnsafe { get; private set; }
+		[JsonIgnore]	public	Bar					BarStreamingNullUnsafeCloneReadonly { get {
 				//v1
 //				Bar lastStatic = this.BarStaticLast;
 //				DateTime lastStaticOrServerNow = (lastStatic != null)

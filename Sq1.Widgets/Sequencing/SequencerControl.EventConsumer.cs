@@ -42,7 +42,11 @@ namespace Sq1.Widgets.Sequencing {
 			//	return;
 			//}
 
-			this.backtestsLocalEasierToSync.Clear();
+			//v1 KEPT_STRATEGY_NAME=SYMBOL,SYMBOL=NULL__STUCK_IN_SERIALIZED_FILE
+			//this.backtestsLocalEasierToSync.Clear();
+			//v2
+			this.backtestsLocalEasierToSync = new SequencedBacktests(this.sequencer.Executor, this.sequencer.Executor.Strategy.ScriptContextCurrentName);
+
 			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true);
 			//this.olvBacktests.RebuildColumns();
 			//this.olvBacktests.BuildList();

@@ -7,11 +7,11 @@ using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Sequencing {
-	public partial class Sequencer {
+	public partial class Sequencer : IDisposable {
 		public static string ITERATION_PREFIX = "ITERATION_";
 
 		public	ScriptExecutor					Executor	{ get; private set; }
-				DisposableExecutorsPool			disposableExecutorsPool;
+				ReusableExecutorsPool			reusableExecutorsPool;
 				//List<SystemPerformance>			backtestsUnused;
 
 		public	string		DataRangeAsString				{ get { return this.Executor.Strategy.ScriptContextCurrent.DataRange.ToString(); } }
@@ -79,13 +79,13 @@ namespace Sq1.Core.Sequencing {
 		public	int			BacktestsTotal					{ get; private set; }
 		public	int			BacktestsRemaining				{ get { return this.BacktestsTotal - this.BacktestsFinished; } }
 		public	int			DisposableExecutorsRunningNow	{ get {
-				return (this.disposableExecutorsPool != null)
-					? this.disposableExecutorsPool.ExecutorsRunningNow
+				return (this.reusableExecutorsPool != null)
+					? this.reusableExecutorsPool.ExecutorsRunningNow
 					: 0;
 			} }
 		public	int			DisposableExecutorsSpawnedNow	{ get {
-				return (this.disposableExecutorsPool != null)
-					? this.disposableExecutorsPool.ExecutorsSpawnedNow
+				return (this.reusableExecutorsPool != null)
+					? this.reusableExecutorsPool.ExecutorsSpawnedNow
 					: 0;
 			} }
 		public	int			BacktestsFinished				{ get; private set; }
@@ -188,8 +188,8 @@ namespace Sq1.Core.Sequencing {
 		public int SequencerRun() {
 			this.AbortedDontScheduleNewBacktests = false;
 			this.BacktestsFinished = 0;
-			this.disposableExecutorsPool = new DisposableExecutorsPool(this);
-			this.disposableExecutorsPool.SpawnAndLaunch(this.ThreadsToUse);
+			this.reusableExecutorsPool = new ReusableExecutorsPool(this);
+			this.reusableExecutorsPool.SpawnAndLaunch(this.ThreadsToUse);
 			stopWatch.Restart();
 
 			this.iWasRunForSymbolScaleIntervalAsString = this.SymbolScaleIntervalAsString;
@@ -205,12 +205,12 @@ namespace Sq1.Core.Sequencing {
 			if (this.Unpaused == false) {
 				this.Unpaused = true;	// DEADLOCK_OTHERWIZE__LET_ALL_SCHEDULED_PAUSED_STILL_INERTIOUSLY_FINISH__DISABLE_BUTTONS_FOR_USER_NOT_TO_WORSEN
 			}
-			if (this.disposableExecutorsPool == null) {
+			if (this.reusableExecutorsPool == null) {
 				string msg = "SEQUENCER_DIDNT_START_YET_sequencerExecutorsPool=null";
 				Assembler.PopupException(msg);
 			} else {
-				this.disposableExecutorsPool.AbortAllTasksAndDispose();
-				this.disposableExecutorsPool = null;
+				this.reusableExecutorsPool.AbortAllTasksAndDispose();
+				this.reusableExecutorsPool = null;
 			}
 			this.RaiseOnSequencerAborted();
 		}
@@ -237,19 +237,26 @@ namespace Sq1.Core.Sequencing {
 			}
 
 			bool unpaused2 = this.UnpausedBlocking;
-			this.disposableExecutorsPool.LaunchToReachTotalNr(this.ThreadsToUse);
+			this.reusableExecutorsPool.LaunchToReachTotalNr(this.ThreadsToUse);
 		}
 
 		public void PoolFinishedBacktestsAll() {
-			if (this.disposableExecutorsPool == null) {
+			if (this.reusableExecutorsPool == null) {
 				string msg = "POOL_AREADY_DISPOSED_FIX_COUNTERS";
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.disposableExecutorsPool.Dispose();
-			this.disposableExecutorsPool = null;
+			this.reusableExecutorsPool.Reinitialize();
+			this.reusableExecutorsPool = null;
 			this.RaiseOnAllBacktestsFinished();
 		}
 
+
+		public void Dispose() {
+			if (this.reusableExecutorsPool != null) {
+				this.reusableExecutorsPool.Dispose();		// appears in SequencerRun(), disappears in PoolFinishedBacktestsAll()
+			}
+			this.unpaused.Dispose();
+		}
 	}
 }

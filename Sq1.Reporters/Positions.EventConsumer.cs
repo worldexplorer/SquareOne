@@ -47,5 +47,9 @@ namespace Sq1.Reporters {
 				Assembler.PopupException(ex.Message);
 			}
 		}
+		protected override void SymbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
+			this.objectListViewReCustomize_OnPriceDecimalsChanged();
+			this.olvPositions.RebuildColumns();
+		}
 	}
 }

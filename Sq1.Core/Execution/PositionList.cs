@@ -48,34 +48,36 @@ namespace Sq1.Core.Execution {
 			}
 			return ret;
 		}
-		public AlertList AlertsEntry { get {
-			AlertList ret = new AlertList("AlertsEntry", base.Snap);
-			foreach (List<Position> positionsOpened in this.ByEntryBarFilled.Values) {
-				foreach (Position position in positionsOpened) {
-					if (position.EntryAlert == null) continue;
-					ret.AddNoDupe(position.EntryAlert, this, "AlertsEntry(WAIT)");
-				}
-			}
-			return ret;
-		} }
-		public AlertList AlertsExit { get {
-			AlertList ret = new AlertList("AlertsExit", base.Snap);
-			foreach (List<Position> positionsClosed in this.ByExitBarFilled.Values) {
-				foreach (Position position in positionsClosed) {
-					if (position.ExitAlert == null) continue;
-					ret.AddNoDupe(position.ExitAlert, this, "AlertsExit(WAIT)");
-				}
-			}
-			return ret;
-		} }
-		public AlertList AlertsOpenNow { get {
-			AlertList ret = new AlertList("AlertsOpenNow", base.Snap);
-			foreach (Position position in base.InnerList) {
-				if (position.ExitAlert == null) continue;
-				ret.AddNoDupe(position.ExitAlert, this, "AlertsOpenNow(WAIT)");
-			}
-			return ret;
-		} }
+		#region AVOIDING_HEADACHE_DISPOSING_THOSE
+		//public AlertList AlertsEntry { get {
+		//    AlertList ret = new AlertList("AlertsEntry", base.Snap);
+		//    foreach (List<Position> positionsOpened in this.ByEntryBarFilled.Values) {
+		//        foreach (Position position in positionsOpened) {
+		//            if (position.EntryAlert == null) continue;
+		//            ret.AddNoDupe(position.EntryAlert, this, "AlertsEntry(WAIT)");
+		//        }
+		//    }
+		//    return ret;
+		//} }
+		//public AlertList AlertsExit { get {
+		//    AlertList ret = new AlertList("AlertsExit", base.Snap);
+		//    foreach (List<Position> positionsClosed in this.ByExitBarFilled.Values) {
+		//        foreach (Position position in positionsClosed) {
+		//            if (position.ExitAlert == null) continue;
+		//            ret.AddNoDupe(position.ExitAlert, this, "AlertsExit(WAIT)");
+		//        }
+		//    }
+		//    return ret;
+		//} }
+		//public AlertList AlertsOpenNow { get {
+		//    AlertList ret = new AlertList("AlertsOpenNow", base.Snap);
+		//    foreach (Position position in base.InnerList) {
+		//        if (position.ExitAlert == null) continue;
+		//        ret.AddNoDupe(position.ExitAlert, this, "AlertsOpenNow(WAIT)");
+		//    }
+		//    return ret;
+		//} }
+		#endregion
 
 		public int LastBarIndexEntry;
 		public int LastBarIndexExit;
@@ -238,7 +240,7 @@ namespace Sq1.Core.Execution {
 			lockPurpose += " //" + base.ReasonToExist + ".Clone()";
 			try {
 				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
-				PositionList ret		= new PositionList("CLONE_" + base.ReasonToExist, base.Snap, base.InnerList);
+				PositionList ret		= new PositionList("CLONE_" + base.ReasonToExist, base.Snap, base.InnerList);		// WHO_DISPOSES_MANUAL_RESET_EVENT_OF_THE_CHILD__WHEN_RELOADING_WORKSPACE???
 				ret.ByEntryBarFilled	= this.ByEntryBarFilledSafeCopy(this, "Clone(WAIT)");
 				ret.ByExitBarFilled		= this.ByExitBarFilledSafeCopy(this, "Clone(WAIT)");
 				ret.Count				= this.Count;

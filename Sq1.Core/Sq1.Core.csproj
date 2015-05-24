@@ -66,8 +66,10 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accounting\Account.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="DataTypes\BarsUnscaledEventArgs.cs" />
     <Compile Include="DataTypes\BarsUnscaledListTwins.cs" />
     <Compile Include="DataTypes\BidOrAsk.cs" />
+    <Compile Include="DataTypes\SymbolInfoList.cs" />
     <Compile Include="DoubleBuffered\PanelDoubleBuffered.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -205,8 +208,8 @@
     <Compile Include="Sequencing\Sequencer.EventGenerator.cs">
       <DependentUpon>Sequencer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Sequencing\DisposableExecutor.cs" />
-    <Compile Include="Sequencing\DisposableExecutorsPool.cs" />
+    <Compile Include="Sequencing\ReusableExecutor.cs" />
+    <Compile Include="Sequencing\ReusableExecutorsPool.cs" />
     <Compile Include="Sequencing\ParametersSequencer.cs" />
     <Compile Include="Sequencing\SystemPerformanceRestoreAbleEventArgs.cs" />
     <Compile Include="Sequencing\SystemPerformanceRestoreAble.cs" />
@@ -290,6 +293,7 @@
     <Compile Include="Support\ExtensionAttribute.cs" />
     <Compile Include="Support\FontCache.cs" />
     <Compile Include="Support\ObjectListViewStateSerializer.cs" />
+    <Compile Include="Support\ReflexionExtension.cs" />
     <Compile Include="Support\SkipInstantiationAt.cs" />
     <Compile Include="Broker\OrderLaneByType.cs" />
     <Compile Include="Broker\OrderCallbackDupesChecker.cs" />

@@ -11,7 +11,7 @@ using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Livesim {
-	public class Livesimulator : Backtester {
+	public class Livesimulator : Backtester, IDisposable {
 		const string REASON_TO_EXIST = "VISUALLY CONFIRM THAT CORE CAN COPE WITH FOUR THREADS SIMULTANEOUSLY:"
 			+ " 1) STREAMING_ADAPTER"
 			+ " 2) ITS QUOTE_PUMP INVOKING SCRIPT.OVERRIDES"
@@ -34,10 +34,10 @@ namespace Sq1.Core.Livesim {
 
 
 		public Livesimulator(ScriptExecutor executor) : base(executor) {
-			base.BacktestDataSource = new LivesimDataSource(executor);
+			base.BacktestDataSource			= new LivesimDataSource(executor);
 			base.BacktestDataSource.Initialize(Assembler.InstanceInitialized.OrderProcessor);
 			//base.SeparatePushingThreadEnabled = false;
-			this.livesimQuoteBarConsumer = new LivesimQuoteBarConsumer(this);
+			this.livesimQuoteBarConsumer	= new LivesimQuoteBarConsumer(this);
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
 		}
 
@@ -292,6 +292,10 @@ namespace Sq1.Core.Livesim {
 		public override string ToString() {
 			string ret = TO_STRING_PREFIX + base.Executor.ToString();
 			return ret;
+		}
+
+		public void Dispose() {
+			base.Dispose();
 		}
 	}
 }

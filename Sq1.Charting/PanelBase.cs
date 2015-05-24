@@ -387,6 +387,7 @@ namespace Sq1.Charting {
 //#else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
 //#endif
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
 				if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
 				return;

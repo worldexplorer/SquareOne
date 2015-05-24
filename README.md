@@ -19,6 +19,7 @@ Already implemented in v1.0-dev (this branch, to be released ~Jan2015 **)
 * put streamingProvider-delivered quote into inboundQueue and return immediately  (disconnect streaming and strategy execution using quote buffer); let the streaming do its business in thread#1 while Distributor will push quotes/bars received in thread#2 (smth like ConcurrentQueue implementing IObservable in in its own thread) //for myself
 * strategy optimizer consumes 45,000 handles after 56 backtests
 * optimizer results: heat map on top of ObjectListView's grouping / sorting 
+* add SymbolInfo editor
 
 
 TODO list for v1.0-dev (this branch, to be released ~Jan2015 **)
@@ -31,7 +32,6 @@ TODO list for v1.0-dev (this branch, to be released ~Jan2015 **)
 TODO list for v2.0-dev (next release after this one, ~Jun2015 **)
 -----------------------------------------------------------------
 
-* add SymbolInfo editor
 * simulate & test OrderPostProcessor* activation
 * WinForms port to MONO (drop P/Invoke from ObjectListView and DockPanelSuite)
 * streaming/realtime access to another instrument's Bars within userland strategy code, at least within the same DataSource (after which it wouldn't be difficult to subscribe the strategy to any other Symbol across all StreamingProviders / exchanges; inter-exchange order execution/accounting will be the next big task) //for Alex,calendarSpread

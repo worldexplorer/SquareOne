@@ -13,7 +13,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
-	public class LivesimBroker : BrokerAdapter {
+	public class LivesimBroker : BrokerAdapter, IDisposable {
 		public	List<Order>					OrdersSubmittedForOneLivesimBacktest	{ get; private set; }
 				LivesimDataSource			livesimDataSource;
 				LivesimBrokerSettings		settings { get { return this.livesimDataSource.Executor.Strategy.LivesimBrokerSettings; } }
@@ -259,6 +259,11 @@ namespace Sq1.Core.Livesim {
 			if (alertFilled.QtyFilledThroughPosition != qtyFilled) {
 				string msg = "WHO_FILLS_POSITION_QTY_FILLED_THEN?";
 			}
+		}
+
+		public void Dispose() {
+			this.livesimDataSource	.Dispose();
+			this.DataSnapshot		.Dispose();
 		}
 	}
 }

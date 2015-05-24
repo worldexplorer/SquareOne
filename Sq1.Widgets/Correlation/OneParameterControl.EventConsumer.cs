@@ -18,7 +18,7 @@ namespace Sq1.Widgets.Correlation {
 				return;
 			}
 			if (mniClicked.Checked) {
-				this.parameter.MaximizationCriterion = MaximizationCriterion.UNKNOWN;
+				this.Parameter.MaximizationCriterion = MaximizationCriterion.UNKNOWN;
 				mniClicked.Checked = false;
 				this.olv.Unsort();
 				return;
@@ -53,6 +53,8 @@ namespace Sq1.Widgets.Correlation {
 			if (columns.Count == 0) return;
 
 			this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised = true;
+			this.populateKPIsToParamColumnHeader();
+
 			try {
 				foreach (OLVColumn column in columns) {
 					column.IsVisible = newCheckedState;
@@ -88,6 +90,32 @@ namespace Sq1.Widgets.Correlation {
 			} finally {
 				this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised = false;
 			}
+		}
+
+		void populateKPIsToParamColumnHeader() {
+			string mnisCheckedToHeader = "";
+			foreach (ToolStripMenuItem each in this.columnsByFilter.Keys) {
+				if (each.Checked == false) continue;
+				if (mnisCheckedToHeader != "") mnisCheckedToHeader += ",";
+				if (each == this.mniShowAllBacktestedParams) {
+					mnisCheckedToHeader += "All";
+				} else if (each == this.mniShowChosenParams) {
+					mnisCheckedToHeader += "Chosen";
+				} else if (each == this.mniShowDeltasBtwAllAndChosenParams) {
+					mnisCheckedToHeader += "Deltas";
+
+				} else if (each == this.mniShowMomentumsAverage) {
+					mnisCheckedToHeader += "Mean";
+				} else if (each == this.mniShowMomentumsDispersion) {
+					mnisCheckedToHeader += "StDev";
+				} else if (each == this.mniShowMomentumsVariance) {
+					mnisCheckedToHeader += "Var";
+				} else {
+					string msg = "CHECKED_MNIS_TO_HEADER_DOESNT_KNOW_ABOUT_YOUR_NEW_MNI[" + each.Text + "]";
+					Assembler.PopupException(msg);
+				}
+			}
+			this.olvcParamValues.Text = this.Parameter.ParameterName + " [" + mnisCheckedToHeader + "]";
 		}
 		void parameter_ParameterRecalculatedLocalsAndDeltas(object sender, OneParameterAllValuesAveragedEventArgs e) {
 			this.Initialize();

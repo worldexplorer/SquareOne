@@ -24,7 +24,7 @@
       },
       "17": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": false,
+        "Chosen": true,
         "ValueSequenced": 17.0,
         "BacktestsWithMyValueCount": 6,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
@@ -71,8 +71,8 @@
         "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": ""
       }
     },
-    "ChosenAsString": "20,26,29,32",
-    "ChosenCount": 4
+    "ChosenAsString": "17,20,26,29,32",
+    "ChosenCount": 5
   },
   "MAslow.Period": {
     "$type": "Sq1.Core.Correlation.OneParameterAllValuesAveraged, Sq1.Core",

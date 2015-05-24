@@ -5,11 +5,11 @@ namespace Sq1.Core.DataTypes {
 	public class BarsUnscaled : BarsUnscaledListTwins {
 		public event EventHandler<BarsUnscaledEventArgs> BarsRenamed_SEEMS_EXCESSIVE;
 	
-		public string Symbol { get; protected set; }
-		public string ReasonToExist;
+		public	string Symbol { get; protected set; }
+		public	string ReasonToExist;
 
-		private SymbolInfo symbolInfo;
-		public SymbolInfo SymbolInfo {
+				SymbolInfo symbolInfo;
+		public	SymbolInfo SymbolInfo {
 			get {
 				if (this.symbolInfo == null) {
 					this.symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(this.Symbol);
@@ -19,9 +19,9 @@ namespace Sq1.Core.DataTypes {
 			set { this.symbolInfo = value; }	//it's initialized in ctor(), SymbolInfo=null will initiate repository scan on next get{}
 		}
 
-		public Bar BarFirst		{ get { return (base.Count >= 1) ? this[0] : null; } }
-		public Bar BarLast		{ get { return (base.Count >= 1) ? this[this.Count - 1] : null; } }
-		public Bar BarPreLast	{ get { return (base.Count >= 2) ? this[this.Count - 2] : null; } }
+		public	Bar BarFirst	{ get { return (base.Count >= 1) ? this[0] : null; } }
+		public	Bar BarLast		{ get { return (base.Count >= 1) ? this[this.Count - 1] : null; } }
+		public	Bar BarPreLast	{ get { return (base.Count >= 2) ? this[this.Count - 2] : null; } }
 
 
 		public BarsUnscaled(string symbol, string reasonToExist = "NOREASON") : base() {

@@ -676,7 +676,7 @@ namespace Sq1.Gui.Forms {
 
 			if (this.SequencerFormConditionalInstance.MustBeActivated) {
 				this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
-				return;
+				return;			// NOT_SURE
 			}
 			DockPanel mainPanelOrAnotherSequencerPanel = this.dockPanel;
 			DockPane			 anotherSequencerPane  = null;
@@ -705,6 +705,7 @@ namespace Sq1.Gui.Forms {
 
 			if (this.CorrelatorFormConditionalInstance.MustBeActivated) {
 				this.CorrelatorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+				return;			// NOT_SURE
 			}
 
 			DockPanel mainPanelOrAnotherCorrelatorPanel = this.dockPanel;
@@ -730,7 +731,7 @@ namespace Sq1.Gui.Forms {
 					this.CorrelatorFormConditionalInstance.Show(mainPanelOrAnotherCorrelatorPanel);
 				}
 			}
-			this.CorrelatorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, true);
+			this.CorrelatorFormConditionalInstance.ActivateDockContentPopupAutoHidden(keepAutoHidden, !keepAutoHidden);
 
 			// WILL_RAISE_BUT_AND_CORRELATOR_ALREADY_CATCHES_IT this.SequencerFormConditionalInstance.SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 			//NEXT_LINE_RAISE_WILL_PUSH_IT_BUT_SECOND_CLICK_WILL_SHOW_ZEROES this.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.SequencerFormConditionalInstance.SequencerControl.PushToCorrelator);
@@ -835,6 +836,7 @@ namespace Sq1.Gui.Forms {
 			// if you are tired of seeing "CHART_NO_STRATEGY" if (this.Strategy == null) return;
 			if (SlidersForm.Instance.DockPanel == null) SlidersForm.Instance.Show(this.dockPanel);
 			SlidersForm.Instance.Initialize(this.Strategy);		
+			if (SlidersForm.Instance.IsDockedAutoHide) return;	// don't activate the tab if minimized (by user click or during WorkspaceLoad()))
 			if (SlidersForm.Instance.Visible == false) {		// don't activate the tab if user has docked another Form on top of SlidersForm
 				//FOR_CHART_NO_STRATEGY_BRINGS_EMPTY_SLIDERS_UP SlidersForm.Instance.Show(this.dockPanel);
 				bool bringUp = this.Strategy != null;
@@ -914,6 +916,16 @@ namespace Sq1.Gui.Forms {
 			if (exec.IsCoveredOrAutoHidden == true) exec.ToggleAutoHide();
 			exec.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
 			this.ReportersFormsManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenReporters();
+		}
+		public void Dispose_workspaceReloading() {
+			string msig = "ChartFormsManager.Dispose_workspaceReloading()";
+			this.ChartStreamingConsumer.StreamingUnsubscribe(msig);
+			this.ReportersFormsManager	.Dispose_workspaceReloading();
+			this.ChartForm				.Dispose();
+			//this.SequencerForm			.Dispose();
+			//this.CorrelatorForm			.Dispose();
+			//this.LivesimForm			.Dispose();
+			this.Executor				.Dispose();
 		}
 	}
 }
