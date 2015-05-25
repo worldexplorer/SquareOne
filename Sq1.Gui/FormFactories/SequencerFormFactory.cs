@@ -59,7 +59,7 @@ namespace Sq1.Gui.FormFactories {
 			Strategy strategyOnChart = this.chartFormManager.Strategy;
 			strategyOnChart.ScriptContextAdd_cloneAndAbsorbCurrentValuesFromSequencer(scriptContextNewName, ctxAdding, false);
 			SlidersForm.Instance.Show();
-			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(e.ScriptContextNewName);
+			SlidersForm.Instance.SteppingSlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(e.ScriptContextNewName);
 		}
 		void sequencerControl_OnCopyToContextDefaultBacktest(object sender, SystemPerformanceRestoreAbleEventArgs e) {
 			this.sequencerControl_OnCopyToContextDefault(sender, e);
@@ -88,8 +88,8 @@ namespace Sq1.Gui.FormFactories {
 			ctxScript.AbsorbOnlyScriptAndIndicatorParameterCurrentValues_fromSequencer(sperfParametersToAbsorbIntoDefault);
 			strategyOnChart.Serialize();
 			SlidersForm.Instance.Show();
-			SlidersForm.Instance.Initialize(SlidersForm.Instance.SlidersAutoGrowControl.Strategy);
-			SlidersForm.Instance.SlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(ContextScript.DEFAULT_NAME);
+			SlidersForm.Instance.Initialize(SlidersForm.Instance.SteppingSlidersAutoGrowControl.Strategy);
+			SlidersForm.Instance.SteppingSlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(ContextScript.DEFAULT_NAME);
 		}
 		void sequencerForm_FormClosing(object sender, FormClosingEventArgs e) {
 			// only when user closed => allow scriptEditorForm_FormClosed() to serialize

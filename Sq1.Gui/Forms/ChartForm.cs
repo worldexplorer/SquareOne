@@ -11,6 +11,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Widgets.LabeledTextBox;
 using System.ComponentModel;
+using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
@@ -334,6 +335,11 @@ namespace Sq1.Gui.Forms {
 		public void AppendReportersMenuItems(ToolStripItem[] toolStripItems) {
 			this.ctxStrategy.Items.Add(this.TssReportersBelowMe);	// if not added then we didn't initialize!
 			this.ctxStrategy.Items.AddRange(toolStripItems);
+		}
+		protected override void OnMouseUp(MouseEventArgs e) {
+			if (base.DesignMode) return;
+			base.OnMouseUp(e);
+			ChartSettingsEditorForm.Instance.ChartSettingsEditorControl.PopulateWithChartSettings();
 		}
 	}
 }

@@ -9,7 +9,7 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Widgets.SteppingSlider {
 	//public partial class SlidersAutoGrowControl : UserControlDoubleBuffered {
-	public partial class SlidersAutoGrowControl : UserControl {
+	public partial class SteppingSlidersAutoGrowControl : UserControl {
 		public Strategy Strategy { get; private set; }
 
 		[Browsable(true)]
@@ -25,10 +25,10 @@ namespace Sq1.Widgets.SteppingSlider {
 				foreach (UserControl control in base.Controls) ret += control.Height + this.VerticalSpaceBetweenSliders;
 				return ret;
 			} }
-		public List<SliderComboControl> SlidersScriptAndIndicatorParameters { get {
-				List<SliderComboControl> ret = new List<SliderComboControl>();
+		public List<SteppingSliderComboControl> SlidersScriptAndIndicatorParameters { get {
+				List<SteppingSliderComboControl> ret = new List<SteppingSliderComboControl>();
 				foreach (Control mustBeSliderCombo in base.Controls) {
-					SliderComboControl slider = mustBeSliderCombo as SliderComboControl;
+					SteppingSliderComboControl slider = mustBeSliderCombo as SteppingSliderComboControl;
 					if (slider == null) continue;
 					ret.Add(slider);
 				}
@@ -38,7 +38,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			get {
 				if (base.DesignMode == true) return null;
 				Dictionary<string, double> ret = new Dictionary<string, double>();
-				foreach (SliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
+				foreach (SteppingSliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
 					ScriptParameter parameter = slider.Tag as ScriptParameter;
 					ret.Add(parameter.Name, (double)slider.ValueCurrent);
 				}
@@ -50,7 +50,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		[Browsable(true)]
 		public int VerticalSpaceBetweenSliders { get; set; }
 
-		public SlidersAutoGrowControl() {
+		public SteppingSlidersAutoGrowControl() {
 			InitializeComponent();
 			// JUST_IN_CASE_IF_DESIGNER_REMOVED_COMMENTED_LINES, v1 contained this.mniParameterBagLoad as well:
 			// IF_UNCOMMENT_DONT_FORGET_TO_CLEAN_AFTER_INITALIZE_COMPONENTS: this.ctxOperations.Items.Clear();
@@ -68,7 +68,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 			base.SuspendLayout();
 			foreach (UserControl control in base.Controls) {
-				SliderComboControl  slider = control as SliderComboControl;
+				SteppingSliderComboControl  slider = control as SteppingSliderComboControl;
 				if (slider == null) {
 					string msg = "let context menus with items live; dispose only the sliders since you're going to rebuild them"
 						+ "; remember you blew up on this.mniAllParamsResetToScriptDefaults.IsDisposed in TsiDynamic {get{}} in commit fb4c86e31ab6d67fa8b9aad2756e0f4b9c14d4db ?...";
@@ -112,7 +112,7 @@ namespace Sq1.Widgets.SteppingSlider {
 						this.addSpacingBeforeIndicatorParameters();
 					}
 					parameterPrevToFeelChangeAndAddSpacing = param;
-					SliderComboControl slider = this.SliderComboFactory(param);
+					SteppingSliderComboControl slider = this.SliderComboFactory(param);
 					base.Controls.Add(slider);		// later accessible by this.SlidersScriptParameters
 				}
 
@@ -134,7 +134,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			bool atLeastOneBorderShown = false;
 			bool atLeastOneNumericShown = false;
 
-			foreach (SliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
+			foreach (SteppingSliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
 				if (slider.EnableBorder) atLeastOneBorderShown = true;
 				if (slider.EnableNumeric) atLeastOneNumericShown = true;
 			}
@@ -146,10 +146,10 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowNumeric.Text = atLeastOneNumericShown ? "All Params -> HideNumeric" : "All Params -> ShowNumeric";
 		}
 
-		SliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptparameter, string indicatorNameDotParameterName = null) {
+		SteppingSliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptparameter, string indicatorNameDotParameterName = null) {
 			//v1 WOULD_BE_TOO_EASY ret = this.templateSliderControl.Clone();
 			//BEGIN merged with SlidersAutoGrow.Designer.cs:InitializeComponent()
-			SliderComboControl ret = new SliderComboControl();
+			SteppingSliderComboControl ret = new SteppingSliderComboControl();
 			//SCHEMA1
 			//ret.ColorBgMouseOver = System.Drawing.Color.Gold;
 			//ret.ColorBgValueCurrent = System.Drawing.SystemColors.ActiveCaption;

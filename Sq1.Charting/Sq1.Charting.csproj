@@ -198,6 +198,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.cs" />
     <Compile Include="ChartControlFrozenForRendering.cs" />
+    <Compile Include="ChartSettingsEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ChartSettingsEditorControl.Designer.cs">
+      <DependentUpon>ChartSettingsEditorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChartSettingsEditorControl.EventConsumer.cs">
+      <DependentUpon>ChartSettingsEditorControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="TooltipPosition.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -230,6 +240,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <DependentUpon>Resources.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChartSettingsEditorControl.resx">
+      <DependentUpon>ChartSettingsEditorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TooltipPosition.resx">
       <DependentUpon>TooltipPosition.cs</DependentUpon>

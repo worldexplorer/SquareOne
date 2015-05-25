@@ -6,12 +6,12 @@ using Sq1.Core.StrategyBase;
 using Sq1.Widgets.SteppingSlider;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public partial class SlidersAutoGrowControl {
+	public partial class SteppingSlidersAutoGrowControl {
 		void slider_ValueCurrentChanged(object sender, EventArgs e) {
 			try {
 				//PanelFillSlider panel = sender as PanelFillSlider;
 				//SliderComboControl slider = panel.Parent.Parent.Parent as SliderComboControl;
-				SliderComboControl slider = sender as SliderComboControl;
+				SteppingSliderComboControl slider = sender as SteppingSliderComboControl;
 				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;
 				
@@ -32,7 +32,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		void slider_ShowBorderChanged(object sender, EventArgs e) {
 			try {
-				SliderComboControl slider = sender as SliderComboControl;
+				SteppingSliderComboControl slider = sender as SteppingSliderComboControl;
 				bool userChoseEnableBorder = slider.EnableBorder;
 				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 				if (indicatorParameterChanged == null) {
@@ -49,7 +49,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 		void slider_ShowNumericUpdownChanged(object sender, EventArgs e) {
 			try {
-				SliderComboControl slider = sender as SliderComboControl;
+				SteppingSliderComboControl slider = sender as SteppingSliderComboControl;
 				bool userChoseEnableNumeric = slider.EnableNumeric;
 				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 				if (indicatorParameterChanged == null) {
@@ -69,7 +69,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		void mniAllParamsShowBorder_Click(object sender, EventArgs e) {
 			try {
 				bool borderShown = this.mniAllParamsShowBorder.Checked;
-				foreach (SliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
+				foreach (SteppingSliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
 					IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 					if (indicatorParameterChanged == null) {
 						string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_SOMETHING_ELSE";
@@ -87,7 +87,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		void mniAllParamsShowNumeric_Click(object sender, EventArgs e) {
 			try {
 				bool numericShown = this.mniAllParamsShowNumeric.Checked;
-				foreach (SliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
+				foreach (SteppingSliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
 					IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
 					if (indicatorParameterChanged == null) {
 						string msg = "SLIDER_TAG_MUST_CONTAIN_INDICATOR_OR_SCRIPT_PARAMETER NOW_SOMETHING_ELSE";

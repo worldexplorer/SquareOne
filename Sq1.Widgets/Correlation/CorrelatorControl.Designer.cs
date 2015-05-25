@@ -26,7 +26,7 @@
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this.oneParameterControl1 = new Sq1.Widgets.Correlation.OneParameterControl();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-			this.toolStripItemTrackBarWalkForward = new Sq1.Widgets.WalkForward.ToolStripItemTrackBarWalkForward();
+			this.toolStripItemTrackBarWalkForward = new Sq1.Widgets.ToolStripImproved.ToolStripItemWalkForward();
 			this.flowLayoutPanel1.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
 			this.SuspendLayout();
@@ -98,6 +98,6 @@
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
 		private OneParameterControl oneParameterControl1;
 		private System.Windows.Forms.StatusStrip statusStrip1;
-		private WalkForward.ToolStripItemTrackBarWalkForward toolStripItemTrackBarWalkForward;
+		private Sq1.Widgets.ToolStripImproved.ToolStripItemWalkForward toolStripItemTrackBarWalkForward;
 	}
 }

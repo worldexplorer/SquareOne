@@ -5,7 +5,7 @@ using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public partial class SlidersAutoGrowControl {
+	public partial class SteppingSlidersAutoGrowControl {
 		public event EventHandler<ScriptParameterEventArgs> SliderChangedParameterValue;
 		public event EventHandler<IndicatorParameterEventArgs> SliderChangedIndicatorValue;
 		public event EventHandler<EventArgs> ControlHeightChangedDueToNumberOfSliders;

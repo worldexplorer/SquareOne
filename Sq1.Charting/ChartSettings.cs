@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.ComponentModel;
 
 using Newtonsoft.Json;
 using Sq1.Core.Charting;
@@ -9,118 +10,340 @@ namespace Sq1.Charting {
 	// why ChartSettings inherits Component? F4 on ChartSettings will allow you to edit colors visually
 	// REMOVE ": Component" when you're done with visual editing to stop Designer flooding ChartControl.Designer.cs
 	public class ChartSettings { //: Component {
-		[JsonProperty]	public Color	ChartColorBackground;
-		[JsonProperty]	public int		BarWidthIncludingPadding;
-		[JsonProperty]	public int		BarWidthIncludingPaddingMax;
-		[JsonProperty]	public Font		PanelNameAndSymbolFont;
-		[JsonProperty]	public Color	PriceColorBarUp;
-		[JsonProperty]	public Color	PriceColorBarDown;
-		[JsonProperty]	public Color	VolumeColorBarUp;
-		[JsonProperty]	public Color	VolumeColorBarDown;
-		[JsonProperty]	public Color	GutterRightColorBackground;
-		[JsonProperty]	public Color	GutterRightColorForeground;
-		[JsonProperty]	public int		GutterRightPadding;
-		[JsonProperty]	public Font		GutterRightFont;
-		[JsonProperty]	public Color	GutterBottomColorBackground;
-		[JsonProperty]	public Color	GutterBottomColorForeground;
-		[JsonProperty]	public Color	GutterBottomNewDateColorForeground;
-		[JsonProperty]	public int		GutterBottomPadding;
-		[JsonProperty]	public Font		GutterBottomFont;
-		[JsonProperty]	public string	GutterBottomDateFormatDayOpener;
-		[JsonProperty]	public string	GutterBottomDateFormatIntraday;
-		[JsonProperty]	public string	GutterBottomDateFormatDaily;
-		[JsonProperty]	public string	GutterBottomDateFormatWeekly;
-		[JsonProperty]	public string	GutterBottomDateFormatYearly;
-		[JsonProperty]	public Color	GridlinesHorizontalColor;
-		[JsonProperty]	public Color	GridlinesVerticalColor;
-		[JsonProperty]	public Color	GridlinesVerticalNewDateColor;
-		[JsonProperty]	public bool		GridlinesHorizontalShow;
-		[JsonProperty]	public bool		GridlinesVerticalShow;
-		[JsonProperty]	public int		ScrollSqueezeMouseDragSensitivityPx;
-		[JsonProperty]	public int		ScrollNBarsPerOneDragMouseEvent;
-		[JsonProperty]	public int		ScrollNBarsPerOneKeyPress;
-		[JsonProperty]	public int		SqueezeVerticalPaddingPx;
-		[JsonProperty]	public int		SqueezeVerticalPaddingStep;
-		[JsonProperty]	public int		SqueezeHorizontalStep;
-		[JsonProperty]	public int		SqueezeHorizontalMouse1pxDistanceReceivedToOneStep;
-		[JsonProperty]	public int		SqueezeHorizontalKeyOnePressReceivedToOneStep;
-		[JsonProperty]	public bool		TooltipPriceShow;
-		[JsonProperty]	public bool		TooltipPriceShowOnlyWhenMouseTouchesCandle;
-		[JsonProperty]	public bool		TooltipPositionShow;
-		[JsonProperty]	public int		TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave;
-		[JsonProperty]	public int		PositionArrowPaddingVertical;
-		[JsonProperty]	public int		ScrollPositionAtBarIndex;
-		[JsonProperty]	public int		TooltipBordersMarginToKeepBordersVisible;
-		[JsonProperty]	public Color	PositionPlannedEllipseColor;
-		[JsonProperty]	public int		PositionPlannedEllipseColorAlpha;
-		[JsonProperty]	public int		PositionPlannedEllipseDiameter;
-		[JsonProperty]	public Color	PositionFilledDotColor;
-		[JsonProperty]	public int		PositionFilledDotColorAlpha;
-		[JsonProperty]	public int		PositionFilledDotDiameter;
-		[JsonProperty]	public int		PositionLineHighlightedWidth;
-		[JsonProperty]	public int		PositionLineHighlightedAlpha;
-		[JsonProperty]	public Color	PositionLineNoExitYetColor;
-		[JsonProperty]	public int		PositionLineNoExitYetColorAlpha;
-		[JsonProperty]	public Color	PositionLineProfitableColor;
-		[JsonProperty]	public int		PositionLineProfitableColorAlpha;
-		[JsonProperty]	public Color	PositionLineLossyColor;
-		[JsonProperty]	public int		PositionLineLossyColorAlpha;
-		[JsonProperty]	public int 		PriceVsVolumeSplitterDistance;
+
+		[Category("1. Essential"), Description("description to be composed"), ReadOnly(true)]
+		[JsonProperty]	public string	StrategyName											{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public Color	ChartColorBackground									{ get; set; }
+
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		BarWidthIncludingPadding								{ get; set; }
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		BarWidthIncludingPaddingMax								{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public Font		PanelNameAndSymbolFont									{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public Color	PriceColorBarUp											{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public Color	PriceColorBarDown										{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public Color	VolumeColorBarUp										{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public Color	VolumeColorBarDown										{ get; set; }
+
+
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	GutterRightColorBackground								{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	GutterRightColorForeground								{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public int		GutterRightPadding										{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Font		GutterRightFont											{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	GutterBottomColorBackground								{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	GutterBottomColorForeground								{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	GutterBottomNewDateColorForeground						{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public int		GutterBottomPadding										{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Font		GutterBottomFont										{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public string	GutterBottomDateFormatDayOpener							{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public string	GutterBottomDateFormatIntraday							{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public string	GutterBottomDateFormatDaily								{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public string	GutterBottomDateFormatWeekly							{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public string	GutterBottomDateFormatYearly							{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	GridlinesHorizontalColor								{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	GridlinesVerticalColor									{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	GridlinesVerticalNewDateColor							{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public bool		GridlinesHorizontalShow									{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public bool		GridlinesVerticalShow									{ get; set; }
+
+
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		ScrollSqueezeMouseDragSensitivityPx						{ get; set; }
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		ScrollNBarsPerOneDragMouseEvent							{ get; set; }
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		ScrollNBarsPerOneKeyPress								{ get; set; }
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		SqueezeVerticalPaddingPx								{ get; set; }
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		SqueezeVerticalPaddingStep								{ get; set; }
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		SqueezeHorizontalStep									{ get; set; }
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		SqueezeHorizontalMouse1pxDistanceReceivedToOneStep		{ get; set; }
+
+		[Category("3. Scroll and Squeeze"), Description("description to be composed")]
+		[JsonProperty]	public int		SqueezeHorizontalKeyOnePressReceivedToOneStep			{ get; set; }
+
+
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public bool		TooltipPriceShow										{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public bool		TooltipPriceShowOnlyWhenMouseTouchesCandle				{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public bool		TooltipPositionShow										{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public int		TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave	{ get; set; }
+
+
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		PositionArrowPaddingVertical							{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		ScrollPositionAtBarIndex								{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		TooltipBordersMarginToKeepBordersVisible				{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public Color	PositionPlannedEllipseColor								{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		PositionPlannedEllipseColorAlpha						{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		PositionPlannedEllipseDiameter							{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public Color	PositionFilledDotColor									{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		PositionFilledDotColorAlpha								{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		PositionFilledDotDiameter								{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		PositionLineHighlightedWidth							{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		PositionLineHighlightedAlpha							{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public Color	PositionLineNoExitYetColor								{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		PositionLineNoExitYetColorAlpha							{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public Color	PositionLineProfitableColor								{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		PositionLineProfitableColorAlpha						{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public Color	PositionLineLossyColor									{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		PositionLineLossyColorAlpha								{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int 		PriceVsVolumeSplitterDistance							{ get; set; }
+
+
+
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public Color	AlertPendingEllipseColor								{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingEllipseColorAlpha							{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingEllipsePenWidth								{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingEllipseRadius								{ get; set; }
+
+
+
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public Color	AlertPendingProtoTakeProfitEllipseColor					{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingProtoTakeProfitEllipseColorAlpha			{ get; set; }
+
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingProtoTakeProfitEllipsePenWidth				{ get; set; }
 		
-		[JsonProperty]	public Color	AlertPendingEllipseColor;
-		[JsonProperty]	public int		AlertPendingEllipseColorAlpha;
-		[JsonProperty]	public int		AlertPendingEllipsePenWidth;
-		[JsonProperty]	public int		AlertPendingEllipseRadius;
 
-		[JsonProperty]	public Color	AlertPendingProtoTakeProfitEllipseColor;
-		[JsonProperty]	public int		AlertPendingProtoTakeProfitEllipseColorAlpha;
-		[JsonProperty]	public int		AlertPendingProtoTakeProfitEllipsePenWidth;
-		
-		[JsonProperty]	public Color	AlertPendingProtoStopLossEllipseColor;
-		[JsonProperty]	public int		AlertPendingProtoStopLossEllipseColorAlpha;
-		[JsonProperty]	public int		AlertPendingProtoStopLossEllipsePenWidth;
 
-		[JsonProperty]	public bool		MousePositionTrackOnGutters;
-		[JsonProperty]	public Color	MousePositionTrackOnGuttersColor;
-		[JsonProperty]	public int		BarsBackgroundTransparencyAlpha;
-		[JsonProperty]	public int		ChartLabelsUpperLeftYstartTopmost;
-		[JsonProperty]	public int		ChartLabelsUpperLeftX;
-		[JsonProperty]	public int		ChartLabelsUpperLeftPlatePadding;
-		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquarePadding;
-		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquareSize;
-		[JsonProperty]	public int		OnChartBarAnnotationsVerticalAwayFromPositionArrows;
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public Color	AlertPendingProtoStopLossEllipseColor					{ get; set; }
 
-		[JsonProperty]	public Color	SpreadBidLineColor;
-		[JsonProperty]	public int		SpreadBidLineColorAlpha;
-		[JsonProperty]	public int		SpreadBidLineWidth;
-		[JsonProperty]	public Color	SpreadAskLineColor;
-		[JsonProperty]	public int		SpreadAskLineColorAlpha;
-		[JsonProperty]	public int		SpreadAskLineWidth;
-		[JsonProperty]	public Font		SpreadLabelFont;
-		[JsonProperty]	public Color	SpreadLabelColor;
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingProtoStopLossEllipseColorAlpha				{ get; set; }
 
-		[JsonProperty]	public Color	LevelTwoColorBackgroundStreamingHasNoLastQuote;
-		[JsonProperty]	public Color	LevelTwoColorBackground;
-		[JsonProperty]	public Color	LevelTwoLotsColorBackground;
-		[JsonProperty]	public Color	LevelTwoLotsColorForeground;
-		[JsonProperty]	public Color	LevelTwoAskColorBackground;
-		[JsonProperty]	public Color	LevelTwoAskColorContour;
-		[JsonProperty]	public Color	LevelTwoBidColorBackground;
-		[JsonProperty]	public Color	LevelTwoBidColorContour;
+		[Category("4. Alerts and Positions"), Description("description to be composed")]
+		[JsonProperty]	public int		AlertPendingProtoStopLossEllipsePenWidth				{ get; set; }
 
-		[JsonProperty]	public int		LevelTwoMinimumPriceLevelThicknessRendered;
-		[JsonProperty]	public bool		LevelTwoLotDrawString;
-		[JsonProperty]	public Font		LevelTwoLotFont;
-		[JsonProperty]	public Color	LevelTwoLotColor;
-		[JsonProperty]	public int		LevelTwoLotPaddingHorizontal;
+
+
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public bool		MousePositionTrackOnGutters								{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	MousePositionTrackOnGuttersColor						{ get; set; }
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public int		BarsBackgroundTransparencyAlpha							{ get; set; }
+
+		[Category("5. Annotations and Labels"), Description("description to be composed")]
+		[JsonProperty]	public int		ChartLabelsUpperLeftYstartTopmost						{ get; set; }
+
+		[Category("5. Annotations and Labels"), Description("description to be composed")]
+		[JsonProperty]	public int		ChartLabelsUpperLeftX									{ get; set; }
+
+		[Category("5. Annotations and Labels"), Description("description to be composed")]
+		[JsonProperty]	public int		ChartLabelsUpperLeftPlatePadding						{ get; set; }
+
+		[Category("5. Annotations and Labels"), Description("description to be composed")]
+		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquarePadding				{ get; set; }
+
+		[Category("5. Annotations and Labels"), Description("description to be composed")]
+		[JsonProperty]	public int		ChartLabelsUpperLeftIndicatorSquareSize					{ get; set; }
+
+		[Category("5. Annotations and Labels"), Description("description to be composed")]
+		[JsonProperty]	public int		OnChartBarAnnotationsVerticalAwayFromPositionArrows		{ get; set; }
+
+
+
+
+		[Category("6. Spread"), Description("description to be composed")]
+		[JsonProperty]	public Color	SpreadBidLineColor										{ get; set; }
+
+		[Category("6. Spread"), Description("description to be composed")]
+		[JsonProperty]	public int		SpreadBidLineColorAlpha									{ get; set; }
+
+		[Category("6. Spread"), Description("description to be composed")]
+		[JsonProperty]	public int		SpreadBidLineWidth										{ get; set; }
+
+		[Category("6. Spread"), Description("description to be composed")]
+		[JsonProperty]	public Color	SpreadAskLineColor										{ get; set; }
+
+		[Category("6. Spread"), Description("description to be composed")]
+		[JsonProperty]	public int		SpreadAskLineColorAlpha									{ get; set; }
+
+		[Category("6. Spread"), Description("description to be composed")]
+		[JsonProperty]	public int		SpreadAskLineWidth										{ get; set; }
+
+		[Category("6. Spread"), Description("description to be composed")]
+		[JsonProperty]	public Font		SpreadLabelFont											{ get; set; }
+
+		[Category("6. Spread"), Description("description to be composed")]
+		[JsonProperty]	public Color	SpreadLabelColor										{ get; set; }
+
+
+
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public Color	LevelTwoColorBackgroundStreamingHasNoLastQuote			{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public Color	LevelTwoColorBackground									{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public Color	LevelTwoLotsColorBackground								{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public Color	LevelTwoLotsColorForeground								{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public Color	LevelTwoAskColorBackground								{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public Color	LevelTwoAskColorContour									{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public Color	LevelTwoBidColorBackground								{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public Color	LevelTwoBidColorContour									{ get; set; }
+
+
+
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public int		LevelTwoMinimumPriceLevelThicknessRendered				{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public bool		LevelTwoLotDrawString									{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public Font		LevelTwoLotFont											{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public Color	LevelTwoLotColor										{ get; set; }
+
+		[Category("7. Level 2"), Description("description to be composed")]
+		[JsonProperty]	public int		LevelTwoLotPaddingHorizontal							{ get; set; }
 
 
 
 		// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
+		[Browsable(false)]
 		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterRowsPropertiesByPanelName;
+		[Browsable(false)]
 		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterColumnsPropertiesByPanelName;
 		
 		// DONE_IN_RenderBarsPrice_KISS cache them all until user edits this.BarTotalWidthPx so they won't be calculated again with the same result for each bar
+		[Browsable(false)]
 		[JsonIgnore]	public int BarPaddingRight { get {
 			if (this.BarWidthIncludingPadding <= 3) return 0;
 			//int nominal = (int) (this.BarWidthIncludingPadding * 0.25F);
@@ -132,124 +355,142 @@ namespace Sq1.Charting {
 			//return compensated;
 			return nominal;
 		} }
+		[Browsable(false)]
 		[JsonIgnore]	public int BarWidthMinusRightPadding { get { return this.BarWidthIncludingPadding - this.BarPaddingRight; } }
+		[Browsable(false)]
 		[JsonIgnore]	public int BarShadowXoffset { get { return this.BarWidthMinusRightPadding / 2; } }
 		
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushBackground;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushBackground { get {
 				if (this.brushBackground == null) this.brushBackground = new SolidBrush(this.ChartColorBackground);
 				return this.brushBackground;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushBackgroundReversed;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushBackgroundReversed { get {
 				if (this.brushBackgroundReversed == null) this.brushBackgroundReversed = new SolidBrush(ColorReverse(this.ChartColorBackground));
 				return this.brushBackgroundReversed;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushGutterRightBackground;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushGutterRightBackground { get {
 				if (this.brushGutterRightBackground == null) this.brushGutterRightBackground = new SolidBrush(this.GutterRightColorBackground);
 				return this.brushGutterRightBackground;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushGutterRightForeground;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushGutterRightForeground { get {
 				if (this.brushGutterRightForeground == null) this.brushGutterRightForeground = new SolidBrush(this.GutterRightColorForeground);
 				return this.brushGutterRightForeground;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushGutterBottomBackground;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushGutterBottomBackground { get {
 				if (this.brushGutterBottomBackground == null) this.brushGutterBottomBackground = new SolidBrush(this.GutterBottomColorBackground);
 				return this.brushGutterBottomBackground;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushGutterBottomForeground;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushGutterBottomForeground { get {
 				if (this.brushGutterBottomForeground == null) this.brushGutterBottomForeground = new SolidBrush(this.GutterBottomColorForeground);
 				return this.brushGutterBottomForeground;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushGutterBottomNewDateForeground;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushGutterBottomNewDateForeground { get {
 				if (this.brushGutterBottomNewDateForeground == null) this.brushGutterBottomNewDateForeground = new SolidBrush(this.GutterBottomNewDateColorForeground);
 				return this.brushGutterBottomNewDateForeground;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushPriceBarUp;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushPriceBarUp { get {
 				if (this.brushPriceBarUp == null) this.brushPriceBarUp = 
 					new SolidBrush(this.PriceColorBarUp);
 				return this.brushPriceBarUp;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penPriceBarUp;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenPriceBarUp { get {
 				if (this.penPriceBarUp == null) this.penPriceBarUp = 
 					new Pen(this.PriceColorBarUp);
 				return this.penPriceBarUp;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushPriceBarDown;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushPriceBarDown { get {
 				if (this.brushPriceBarDown == null) this.brushPriceBarDown = 
 					new SolidBrush(this.PriceColorBarDown);
 				return this.brushPriceBarDown;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penPriceBarDown;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenPriceBarDown { get {
 				if (this.penPriceBarDown == null) this.penPriceBarDown = 
 					new Pen(this.PriceColorBarDown);
 				return this.penPriceBarDown;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushVolumeBarUp;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushVolumeBarUp { get {
 				if (this.brushVolumeBarUp == null) this.brushVolumeBarUp = 
 					new SolidBrush(this.VolumeColorBarUp);
 				return this.brushVolumeBarUp;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushVolumeBarDown;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushVolumeBarDown { get {
 				if (this.brushVolumeBarDown == null) this.brushVolumeBarDown = 
 					new SolidBrush(this.VolumeColorBarDown);
 				return this.brushVolumeBarDown;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penGridlinesHorizontal;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenGridlinesHorizontal { get {
 				if (this.penGridlinesHorizontal == null) this.penGridlinesHorizontal = 
 					new Pen(this.GridlinesHorizontalColor);
 				return this.penGridlinesHorizontal;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penGridlinesVertical;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenGridlinesVertical { get {
 				if (this.penGridlinesVertical == null) this.penGridlinesVertical = 
 					new Pen(this.GridlinesVerticalColor);
 				return this.penGridlinesVertical;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penGridlinesVerticalNewDate;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenGridlinesVerticalNewDate { get {
 				if (this.penGridlinesVerticalNewDate == null) this.penGridlinesVerticalNewDate = 
 					new Pen(this.GridlinesVerticalNewDateColor);
@@ -257,39 +498,44 @@ namespace Sq1.Charting {
 			} }
 
 		
+		[Browsable(false)]
 		[JsonIgnore]	Pen penPositionPlannedEllipse;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenPositionPlannedEllipse { get {
 				if (this.penPositionPlannedEllipse == null) this.penPositionPlannedEllipse =
 					new Pen(Color.FromArgb(this.PositionPlannedEllipseColorAlpha, this.PositionPlannedEllipseColor), this.PositionPlannedEllipseDiameter);
 				return this.penPositionPlannedEllipse;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penPositionFilledDot;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenPositionFilledDot { get {
 				if (this.penPositionFilledDot == null) this.penPositionFilledDot =
 					new Pen(Color.FromArgb(this.PositionFilledDotColorAlpha, this.PositionFilledDotColor));
 				return this.penPositionFilledDot;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Brush brushPositionFilledDot;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Brush BrushPositionFilledDot { get {
 				if (this.brushPositionFilledDot == null) this.brushPositionFilledDot = 
 					new SolidBrush(Color.FromArgb(this.PositionFilledDotColorAlpha, this.PositionFilledDotColor));
 				return this.brushPositionFilledDot;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penPositionLineEntryExitConnectedUnknown;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenPositionLineEntryExitConnectedUnknown { get {
 				if (this.penPositionLineEntryExitConnectedUnknown == null) this.penPositionLineEntryExitConnectedUnknown =
 					new Pen(Color.FromArgb(this.PositionLineNoExitYetColorAlpha, this.PositionLineNoExitYetColor));
 				return this.penPositionLineEntryExitConnectedUnknown;
 			} }
+		[Browsable(false)]
 		[JsonIgnore]	Pen penPositionLineEntryExitConnectedProfit;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenPositionLineEntryExitConnectedProfit { get {
 				if (this.penPositionLineEntryExitConnectedProfit == null) this.penPositionLineEntryExitConnectedProfit =
 					new Pen(Color.FromArgb(this.PositionLineProfitableColorAlpha, this.PositionLineProfitableColor));
@@ -297,114 +543,132 @@ namespace Sq1.Charting {
 			} }
 
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penPositionLineEntryExitConnectedLoss;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenPositionLineEntryExitConnectedLoss { get {
 				if (this.penPositionLineEntryExitConnectedLoss == null) this.penPositionLineEntryExitConnectedLoss =
 					new Pen(Color.FromArgb(this.PositionLineLossyColorAlpha, this.PositionLineLossyColor));
 				return this.penPositionLineEntryExitConnectedLoss;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penAlertPendingEllipse;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenAlertPendingEllipse { get {
 				if (this.penAlertPendingEllipse == null) this.penAlertPendingEllipse =
 					new Pen(Color.FromArgb(this.AlertPendingEllipseColorAlpha, this.AlertPendingEllipseColor), this.AlertPendingEllipsePenWidth);
 				return this.penAlertPendingEllipse;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penAlertPendingProtoTakeProfitEllipse;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenAlertPendingProtoTakeProfitEllipse { get {
 				if (this.penAlertPendingProtoTakeProfitEllipse == null) this.penAlertPendingProtoTakeProfitEllipse =
 					new Pen(Color.FromArgb(this.AlertPendingProtoTakeProfitEllipseColorAlpha, this.AlertPendingProtoTakeProfitEllipseColor), this.AlertPendingProtoTakeProfitEllipsePenWidth);
 				return this.penAlertPendingProtoTakeProfitEllipse;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penAlertPendingProtoStopLossEllipse;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenAlertPendingProtoStopLossEllipse { get {
 				if (this.penAlertPendingProtoStopLossEllipse == null) this.penAlertPendingProtoStopLossEllipse =
 					new Pen(Color.FromArgb(this.AlertPendingProtoStopLossEllipseColorAlpha, this.AlertPendingProtoStopLossEllipseColor), this.AlertPendingProtoStopLossEllipsePenWidth);
 				return this.penAlertPendingProtoStopLossEllipse;
 			} }
 			
+		[Browsable(false)]
 		[JsonIgnore]	Pen penMousePositionTrackOnGutters;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenMousePositionTrackOnGutters { get {
 				if (this.penMousePositionTrackOnGutters == null) this.penMousePositionTrackOnGutters = 
 					new Pen(this.MousePositionTrackOnGuttersColor);
 				return this.penMousePositionTrackOnGutters;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penSpreadBid;
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenSpreadBid { get {
 				if (this.penSpreadBid == null) this.penSpreadBid =
 					new Pen(Color.FromArgb(this.SpreadBidLineColorAlpha, this.SpreadBidLineColor), this.SpreadAskLineWidth);
 				return this.penSpreadBid;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penSpreadAsk;
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenSpreadAsk { get {
 				if (this.penSpreadAsk == null) this.penSpreadAsk =
 					new Pen(Color.FromArgb(this.SpreadAskLineColorAlpha, this.SpreadAskLineColor), this.SpreadAskLineWidth);
 				return this.penSpreadAsk;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Brush brushSpreadLabel;
+		[Browsable(false)]
 		[JsonIgnore]	public Brush BrushSpreadLabel { get {
 				if (this.brushSpreadLabel == null) this.brushSpreadLabel = new SolidBrush(this.SpreadLabelColor);
 				return this.brushSpreadLabel;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushLevelTwoLotsColorBackground;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushLevelTwoLotsColorBackground { get {
 				if (this.brushLevelTwoLotsColorBackground == null) this.brushLevelTwoLotsColorBackground =
 					new SolidBrush(this.LevelTwoLotsColorBackground);
 				return this.brushLevelTwoLotsColorBackground;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushLevelTwoAskColorBackground;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushLevelTwoAskColorBackground { get {
 				if (this.brushLevelTwoAskColorBackground == null) this.brushLevelTwoAskColorBackground =
 					new SolidBrush(this.LevelTwoAskColorBackground);
 				return this.brushLevelTwoAskColorBackground;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushLevelTwoBidColorBackground;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public SolidBrush BrushLevelTwoBidColorBackground { get {
 				if (this.brushLevelTwoBidColorBackground == null) this.brushLevelTwoBidColorBackground =
 					new SolidBrush(this.LevelTwoBidColorBackground);
 				return this.brushLevelTwoBidColorBackground;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penLevelTwoAskColorContour;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenLevelTwoAskColorContour { get {
 				if (this.penLevelTwoAskColorContour == null) this.penLevelTwoAskColorContour =
 					new Pen(this.LevelTwoAskColorContour);
 				return this.penLevelTwoAskColorContour;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Pen penLevelTwoBidColorContour;
-		//[Browsable(false)]
+		[Browsable(false)]
 		[JsonIgnore]	public Pen PenLevelTwoBidColorContour { get {
 				if (this.penLevelTwoBidColorContour == null) this.penLevelTwoBidColorContour =
 					new Pen(this.LevelTwoBidColorContour);
 				return this.penLevelTwoBidColorContour;
 			} }
 
+		[Browsable(false)]
 		[JsonIgnore]	Brush brushLevelTwoLot;
+		[Browsable(false)]
 		[JsonIgnore]	public Brush BrushLevelTwoLot { get {
 				if (this.brushLevelTwoLot == null) this.brushLevelTwoLot = new SolidBrush(this.LevelTwoLotColor);
 				return this.brushLevelTwoLot;
 			} }
 
 	
-		public ChartSettings()	{
+		public ChartSettings() {
 			ChartColorBackground = Color.White;
 			BarWidthIncludingPadding = 8;
 			BarWidthIncludingPaddingMax = 100;
@@ -521,41 +785,93 @@ namespace Sq1.Charting {
 		}
 		
 		public void DisposeAllGDIs_handlesLeakHunter() {
-			if (this.penAlertPendingEllipse						!= null) this.penAlertPendingEllipse.Dispose();
-			if (this.penAlertPendingProtoStopLossEllipse		!= null) this.penAlertPendingProtoStopLossEllipse.Dispose();
-			if (this.penAlertPendingProtoTakeProfitEllipse		!= null) this.penAlertPendingProtoTakeProfitEllipse.Dispose();
-			if (this.penGridlinesHorizontal						!= null) this.penGridlinesHorizontal.Dispose();
-			if (this.penGridlinesVertical						!= null) this.penGridlinesVertical.Dispose();
-			if (this.penGridlinesVerticalNewDate				!= null) this.penGridlinesVerticalNewDate.Dispose();
-			if (this.penLevelTwoAskColorContour					!= null) this.penLevelTwoAskColorContour.Dispose();
-			if (this.penLevelTwoBidColorContour					!= null) this.penLevelTwoBidColorContour.Dispose();
-			if (this.penMousePositionTrackOnGutters				!= null) this.penMousePositionTrackOnGutters.Dispose();
-			if (this.penPositionFilledDot						!= null) this.penPositionFilledDot.Dispose();
-			if (this.penPositionLineEntryExitConnectedLoss		!= null) this.penPositionLineEntryExitConnectedLoss.Dispose();
-			if (this.penPositionLineEntryExitConnectedProfit	!= null) this.penPositionLineEntryExitConnectedProfit.Dispose();
-			if (this.penPositionLineEntryExitConnectedUnknown	!= null) this.penPositionLineEntryExitConnectedUnknown.Dispose();
-			if (this.penPositionPlannedEllipse					!= null) this.penPositionPlannedEllipse.Dispose();
-			if (this.penPriceBarDown							!= null) this.penPriceBarDown.Dispose();
-			if (this.penPriceBarUp								!= null) this.penPriceBarUp.Dispose();
-			if (this.penSpreadAsk								!= null) this.penSpreadAsk.Dispose();
-			if (this.penSpreadBid								!= null) this.penSpreadBid.Dispose();
+			//if (this.penAlertPendingEllipse						!= null) { this.penAlertPendingEllipse					.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penAlertPendingProtoStopLossEllipse		!= null) { this.penAlertPendingProtoStopLossEllipse		.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penAlertPendingProtoTakeProfitEllipse		!= null) { this.penAlertPendingProtoTakeProfitEllipse	.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penGridlinesHorizontal						!= null) { this.penGridlinesHorizontal					.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penGridlinesVertical						!= null) { this.penGridlinesVertical					.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penGridlinesVerticalNewDate				!= null) { this.penGridlinesVerticalNewDate				.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penLevelTwoAskColorContour					!= null) { this.penLevelTwoAskColorContour				.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penLevelTwoBidColorContour					!= null) { this.penLevelTwoBidColorContour				.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penMousePositionTrackOnGutters				!= null) { this.penMousePositionTrackOnGutters			.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penPositionFilledDot						!= null) { this.penPositionFilledDot					.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penPositionLineEntryExitConnectedLoss		!= null) { this.penPositionLineEntryExitConnectedLoss	.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penPositionLineEntryExitConnectedProfit	!= null) { this.penPositionLineEntryExitConnectedProfit	.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penPositionLineEntryExitConnectedUnknown	!= null) { this.penPositionLineEntryExitConnectedUnknown.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penPositionPlannedEllipse					!= null) { this.penPositionPlannedEllipse				.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penPriceBarDown							!= null) { this.penPriceBarDown							.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penPriceBarUp								!= null) { this.penPriceBarUp							.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penSpreadAsk								!= null) { this.penSpreadAsk							.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.penSpreadBid								!= null) { this.penSpreadBid							.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushBackground							!= null) { this.brushBackground							.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushBackgroundReversed					!= null) { this.brushBackgroundReversed					.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushGutterBottomBackground				!= null) { this.brushGutterBottomBackground				.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushGutterBottomNewDateForeground			!= null) { this.brushGutterBottomNewDateForeground		.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushGutterRightBackground					!= null) { this.brushGutterRightBackground				.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushGutterRightForeground					!= null) { this.brushGutterRightForeground				.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushLevelTwoAskColorBackground			!= null) { this.brushLevelTwoAskColorBackground			.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushLevelTwoBidColorBackground			!= null) { this.brushLevelTwoBidColorBackground			.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushLevelTwoLot							!= null) { this.brushLevelTwoLot						.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushLevelTwoLotsColorBackground			!= null) { this.brushLevelTwoLotsColorBackground		.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushPositionFilledDot						!= null) { this.brushPositionFilledDot					.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushPriceBarDown							!= null) { this.brushPriceBarDown						.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushPriceBarUp							!= null) { this.brushPriceBarUp							.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushSpreadLabel							!= null) { this.brushSpreadLabel						.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushVolumeBarDown							!= null) { this.brushVolumeBarDown						.Dispose(); this.penAlertPendingEllipse = null; }
+			//if (this.brushVolumeBarUp							!= null) { this.brushVolumeBarUp						.Dispose(); this.penAlertPendingEllipse = null; }
+			this.PensAndBrushesCached_DisposeAndNullify();
+		}
 
-			if (this.brushBackground							!= null) this.brushBackground.Dispose();
-			if (this.brushBackgroundReversed					!= null) this.brushBackgroundReversed.Dispose();
-			if (this.brushGutterBottomBackground				!= null) this.brushGutterBottomBackground.Dispose();
-			if (this.brushGutterBottomNewDateForeground			!= null) this.brushGutterBottomNewDateForeground.Dispose();
-			if (this.brushGutterRightBackground					!= null) this.brushGutterRightBackground.Dispose();
-			if (this.brushGutterRightForeground					!= null) this.brushGutterRightForeground.Dispose();
-			if (this.brushLevelTwoAskColorBackground			!= null) this.brushLevelTwoAskColorBackground.Dispose();
-			if (this.brushLevelTwoBidColorBackground			!= null) this.brushLevelTwoBidColorBackground.Dispose();
-			if (this.brushLevelTwoLot							!= null) this.brushLevelTwoLot.Dispose();
-			if (this.brushLevelTwoLotsColorBackground			!= null) this.brushLevelTwoLotsColorBackground.Dispose();
-			if (this.brushPositionFilledDot						!= null) this.brushPositionFilledDot.Dispose();
-			if (this.brushPriceBarDown							!= null) this.brushPriceBarDown.Dispose();
-			if (this.brushPriceBarUp							!= null) this.brushPriceBarUp.Dispose();
-			if (this.brushSpreadLabel							!= null) this.brushSpreadLabel.Dispose();
-			if (this.brushVolumeBarDown							!= null) this.brushVolumeBarDown.Dispose();
-			if (this.brushVolumeBarUp							!= null) this.brushVolumeBarUp.Dispose();
+		public void PensAndBrushesCached_DisposeAndNullify() {
+			List<IDisposable> disposables = new List<IDisposable>(){
+				this.brushBackground,
+				this.brushBackgroundReversed,
+				this.brushGutterRightBackground,
+				this.brushGutterRightForeground,
+				this.brushGutterBottomBackground,
+				this.brushGutterBottomForeground,
+				this.brushGutterBottomNewDateForeground,
+				this.brushPriceBarUp,
+				this.penPriceBarUp,
+				this.brushPriceBarDown,
+				this.penPriceBarDown,
+				this.brushVolumeBarUp,
+				this.brushVolumeBarDown,
+				this.penGridlinesHorizontal,
+				this.penGridlinesVertical,
+				this.penGridlinesVerticalNewDate,
+				this.penPositionPlannedEllipse,
+				this.penPositionFilledDot,
+				this.brushPositionFilledDot,
+				this.penPositionLineEntryExitConnectedUnknown,
+				this.penPositionLineEntryExitConnectedProfit,
+				this.penPositionLineEntryExitConnectedLoss,
+				this.penAlertPendingEllipse,
+				this.penAlertPendingProtoTakeProfitEllipse,
+				this.penAlertPendingProtoStopLossEllipse,
+				this.penMousePositionTrackOnGutters,
+				this.penSpreadBid,
+				this.penSpreadAsk,
+				this.brushSpreadLabel,
+				this.brushLevelTwoLotsColorBackground,
+				this.brushLevelTwoAskColorBackground,
+				this.brushLevelTwoBidColorBackground,
+				this.penLevelTwoAskColorContour,
+				this.penLevelTwoBidColorContour,
+				this.brushLevelTwoLot,
+			};
+
+			//foreach (IDisposable each in disposables) {
+			for (int i=0; i<disposables.Count; i++) {
+				IDisposable each = disposables[i];
+				if (each == null) continue;
+				each.Dispose();
+				each = null;
+			}
+		}
+
+		public override string ToString() {
+			return this.StrategyName;
 		}
 	}
 }

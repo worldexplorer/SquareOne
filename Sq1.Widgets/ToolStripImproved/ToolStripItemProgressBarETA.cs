@@ -3,7 +3,9 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace Sq1.Widgets.ProgressBacktestETA {
+using Sq1.Widgets.ProgressBacktestETA;
+
+namespace Sq1.Widgets.ToolStripImproved {
 	[ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.StatusStrip)]
 	public class ToolStripItemProgressBarETA : ToolStripControlHost {
 		public ProgressBarAndLabelControl ProgressBarAndLabel { get; private set; }

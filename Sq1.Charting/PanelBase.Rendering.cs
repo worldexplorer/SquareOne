@@ -22,7 +22,11 @@ namespace Sq1.Charting {
 				gutterRightRect.Width = this.ChartControl.GutterRightWidth_cached;
 				gutterRightRect.Y = 0;
 				gutterRightRect.Height = this.PanelHeightMinusGutterBottomHeight;
-				g.FillRectangle(this.ChartControl.ChartSettings.BrushGutterRightBackground, gutterRightRect);
+				try {
+					g.FillRectangle(this.ChartControl.ChartSettings.BrushGutterRightBackground, gutterRightRect);
+				} catch (Exception ex) {
+					Assembler.PopupException(null, ex, false);
+				}
 			}
 			if (this.GutterBottomDraw) {
 				Rectangle gutterBottomRect = default(Rectangle);
@@ -30,7 +34,11 @@ namespace Sq1.Charting {
 				gutterBottomRect.Width = base.Width;
 				gutterBottomRect.Y = this.PanelHeightMinusGutterBottomHeight;
 				gutterBottomRect.Height = this.GutterBottomHeight_cached;
-				g.FillRectangle(this.ChartControl.ChartSettings.BrushGutterBottomBackground, gutterBottomRect);
+				try {
+					g.FillRectangle(this.ChartControl.ChartSettings.BrushGutterBottomBackground, gutterBottomRect);
+				} catch (Exception ex) {
+					Assembler.PopupException(null, ex, false);
+				}
 			}
 		}
 		// virtual will allow indicator panes to have their own backgrounds different to the price&volume backgrounds
@@ -81,7 +89,11 @@ namespace Sq1.Charting {
 						}
 					}
 				}
-				g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, 0, mouseY, base.Width, mouseY);
+				try {
+					g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, 0, mouseY, base.Width, mouseY);
+				} catch (Exception ex) {
+					Assembler.PopupException(null, ex, false);
+				}
 			}
 			if (this.GutterRightDraw) {
 				int minDistanceInFontHeights = this.ThisPanelIsPricePanel ? 3 : 2;
@@ -98,7 +110,14 @@ namespace Sq1.Charting {
 				
 				for (double gridPrice = gridStart; gridPrice <= gridEnd; gridPrice += gridStep) {
 					int gridY = this.ValueToYinverted(gridPrice);
-					g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesHorizontal, 0, gridY, this.PanelWidthMinusRightPriceGutter-1, gridY);
+					try {
+						if (this.ChartControl.ChartSettings.PenGridlinesHorizontal == null) {
+							int a = 1;
+						}
+						g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesHorizontal, 0, gridY, this.PanelWidthMinusRightPriceGutter-1, gridY);
+					} catch (Exception ex) {
+						Assembler.PopupException(null, ex, false);
+					}
 					int labelYadjustedUp = (int)gridY - this.GutterRightFontHeightHalf_cached;
 					labelYadjustedUp = this.AdjustToPanelHeight(labelYadjustedUp);
 					//v1 string priceFormatted = this.ChartControl.ValueFormattedToSymbolInfoDecimalsOr5(gridPrice, this.ThisPanelIsPricePanel);

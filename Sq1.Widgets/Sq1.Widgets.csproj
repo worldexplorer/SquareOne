@@ -319,50 +319,50 @@
       <DependentUpon>PanelFillSlider.cs</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\SliderComboControl.EventConsumer.cs">
-      <DependentUpon>SliderComboControl.cs</DependentUpon>
+    <Compile Include="SteppingSlider\SteppingSliderComboControl.EventConsumer.cs">
+      <DependentUpon>SteppingSliderComboControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\SliderComboControl.EventGenerator.cs">
-      <DependentUpon>SliderComboControl.cs</DependentUpon>
+    <Compile Include="SteppingSlider\SteppingSliderComboControl.EventGenerator.cs">
+      <DependentUpon>SteppingSliderComboControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\SlidersAutoGrowControl.cs">
+    <Compile Include="SteppingSlider\SteppingSlidersAutoGrowControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\SlidersAutoGrowControl.Designer.cs">
-      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+    <Compile Include="SteppingSlider\SteppingSlidersAutoGrowControl.Designer.cs">
+      <DependentUpon>SteppingSlidersAutoGrowControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="SteppingSlider\SliderComboControl.cs">
+    <Compile Include="SteppingSlider\SteppingSliderComboControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\SliderComboControl.Designer.cs">
-      <DependentUpon>SliderComboControl.cs</DependentUpon>
+    <Compile Include="SteppingSlider\SteppingSliderComboControl.Designer.cs">
+      <DependentUpon>SteppingSliderComboControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProgressBacktestETA\ToolStripItemProgressBarETA.cs">
+    <Compile Include="ToolStripImproved\ToolStripItemProgressBarETA.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\SlidersAutoGrowControl.EventConsumer.cs">
-      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+    <Compile Include="SteppingSlider\SteppingSlidersAutoGrowControl.EventConsumer.cs">
+      <DependentUpon>SteppingSlidersAutoGrowControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\SlidersAutoGrowControl.EventGenerator.cs">
-      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+    <Compile Include="SteppingSlider\SteppingSlidersAutoGrowControl.EventGenerator.cs">
+      <DependentUpon>SteppingSlidersAutoGrowControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\SlidersAutoGrowControl.MenuProvider.cs">
-      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+    <Compile Include="SteppingSlider\SteppingSlidersAutoGrowControl.MenuProvider.cs">
+      <DependentUpon>SteppingSlidersAutoGrowControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\SlidersAutoGrowControl.MenuProvider.EventConsumer.cs">
-      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+    <Compile Include="SteppingSlider\SteppingSlidersAutoGrowControl.MenuProvider.EventConsumer.cs">
+      <DependentUpon>SteppingSlidersAutoGrowControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\SlidersAutoGrowControl.MenuProvider.EventGenerator.cs">
-      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+    <Compile Include="SteppingSlider\SteppingSlidersAutoGrowControl.MenuProvider.EventGenerator.cs">
+      <DependentUpon>SteppingSlidersAutoGrowControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SteppingSlider\ToolStripItemSteppingSlider.cs">
+    <Compile Include="ToolStripImproved\ToolStripItemSteppingSlider.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="StrategiesTree\StrategiesTreeControl.cs">
@@ -384,15 +384,18 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="StrategiesTree\StrategiesTreeDataSnapshot.cs" />
-    <Compile Include="SymbolEditor\SymbolEditorControl.cs">
+    <Compile Include="SymbolInfoEditor\SymbolInfoEditorControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SymbolEditor\SymbolEditorControl.Designer.cs">
-      <DependentUpon>SymbolEditorControl.cs</DependentUpon>
+    <Compile Include="SymbolInfoEditor\SymbolInfoEditorControl.Designer.cs">
+      <DependentUpon>SymbolInfoEditorControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="SymbolEditor\SymbolEditorControl.EventConsumer.cs">
-      <DependentUpon>SymbolEditorControl.cs</DependentUpon>
+    <Compile Include="SymbolInfoEditor\SymbolInfoEditorControl.EventConsumer.cs">
+      <DependentUpon>SymbolInfoEditorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ToolStripImproved\ToolStripItemComboBox.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="WalkForward\WalkForwardControl.cs">
       <SubType>UserControl</SubType>
@@ -400,7 +403,7 @@
     <Compile Include="WalkForward\WalkForwardControl.Designer.cs">
       <DependentUpon>WalkForwardControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="WalkForward\ToolStripItemTrackBarWalkForward.cs">
+    <Compile Include="ToolStripImproved\ToolStripItemWalkForward.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
@@ -462,18 +465,18 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="SteppingSlider\SlidersAutoGrowControl.resx">
-      <DependentUpon>SlidersAutoGrowControl.cs</DependentUpon>
+    <EmbeddedResource Include="SteppingSlider\SteppingSlidersAutoGrowControl.resx">
+      <DependentUpon>SteppingSlidersAutoGrowControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SteppingSlider\SliderComboControl.resx">
-      <DependentUpon>SliderComboControl.cs</DependentUpon>
+    <EmbeddedResource Include="SteppingSlider\SteppingSliderComboControl.resx">
+      <DependentUpon>SteppingSliderComboControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="StrategiesTree\StrategiesTreeControl.resx">
       <DependentUpon>StrategiesTreeControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SymbolEditor\SymbolEditorControl.resx">
-      <DependentUpon>SymbolEditorControl.cs</DependentUpon>
+    <EmbeddedResource Include="SymbolInfoEditor\SymbolInfoEditorControl.resx">
+      <DependentUpon>SymbolInfoEditorControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WalkForward\WalkForwardControl.resx">
       <DependentUpon>WalkForwardControl.cs</DependentUpon>

@@ -9,7 +9,7 @@ using Sq1.Core.Indicators;
 using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public partial class SlidersAutoGrowControl {
+	public partial class SteppingSlidersAutoGrowControl {
 		void mniScriptContextLoad_Click(object sender, EventArgs e) {
 			// otherwize crash on slider change while "Parameter Bags" CTX is open this.ctxParameterBags_Opening(this, null);
 			//this.ctxParameterBags.Hide();

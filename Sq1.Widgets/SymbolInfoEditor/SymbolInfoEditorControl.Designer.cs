@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 namespace Sq1.Widgets.SymbolEditor {
-	partial class SymbolEditorControl {
+	partial class SymbolInfoEditorControl {
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
@@ -24,16 +24,16 @@ namespace Sq1.Widgets.SymbolEditor {
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SymbolEditorControl));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SymbolInfoEditorControl));
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-			this.tsmniSymbol = new System.Windows.Forms.ToolStripDropDownButton();
+			this.toolStripItemComboBox1 = new Sq1.Widgets.ToolStripImproved.ToolStripItemComboBox();
+			this.tsmniModify = new System.Windows.Forms.ToolStripDropDownButton();
 			this.mniDeleteSymbol = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniltbAddNew = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniltbRename = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniltbDuplicate = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
-			this.toolStripComboBox1 = new System.Windows.Forms.ToolStripComboBox();
 			this.statusStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -52,30 +52,35 @@ namespace Sq1.Widgets.SymbolEditor {
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmniSymbol});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 518);
+            this.toolStripItemComboBox1,
+            this.tsmniModify});
+			this.statusStrip1.Location = new System.Drawing.Point(0, 515);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(234, 22);
+			this.statusStrip1.Size = new System.Drawing.Size(234, 25);
 			this.statusStrip1.SizingGrip = false;
 			this.statusStrip1.TabIndex = 2;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
-			// tsmniSymbol
+			// toolStripItemComboBox1
 			// 
-			this.tsmniSymbol.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-			this.tsmniSymbol.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.toolStripItemComboBox1.Name = "toolStripItemComboBox1";
+			this.toolStripItemComboBox1.Size = new System.Drawing.Size(140, 23);
+			// 
+			// tsmniModify
+			// 
+			this.tsmniModify.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.tsmniModify.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mniDeleteSymbol,
             this.mniltbAddNew,
             this.toolStripSeparator1,
             this.mniltbRename,
-            this.mniltbDuplicate,
-            this.toolStripComboBox1});
-			this.tsmniSymbol.Image = ((System.Drawing.Image)(resources.GetObject("tsmniSymbol.Image")));
-			this.tsmniSymbol.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.tsmniSymbol.Name = "tsmniSymbol";
-			this.tsmniSymbol.Size = new System.Drawing.Size(47, 20);
-			this.tsmniSymbol.Text = "RIM3";
-			this.tsmniSymbol.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.mniltbDuplicate});
+			this.tsmniModify.Image = ((System.Drawing.Image)(resources.GetObject("tsmniModify.Image")));
+			this.tsmniModify.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.tsmniModify.Name = "tsmniModify";
+			this.tsmniModify.Size = new System.Drawing.Size(58, 23);
+			this.tsmniModify.Text = "Modify";
+			this.tsmniModify.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// mniDeleteSymbol
 			// 
@@ -148,23 +153,13 @@ namespace Sq1.Widgets.SymbolEditor {
 			this.mniltbDuplicate.TextRightWidth = 2;
 			this.mniltbDuplicate.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDuplicate_UserTyped);
 			// 
-			// toolStripComboBox1
-			// 
-			this.toolStripComboBox1.DropDownHeight = 180;
-			this.toolStripComboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.toolStripComboBox1.IntegralHeight = false;
-			this.toolStripComboBox1.MaxDropDownItems = 20;
-			this.toolStripComboBox1.Name = "toolStripComboBox1";
-			this.toolStripComboBox1.Size = new System.Drawing.Size(143, 23);
-			this.toolStripComboBox1.SelectedIndexChanged += new System.EventHandler(this.toolStripComboBox1_SelectedIndexChanged);
-			// 
-			// SymbolEditorControl
+			// SymbolInfoEditorControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.propertyGrid1);
-			this.Name = "SymbolEditorControl";
+			this.Name = "SymbolInfoEditorControl";
 			this.Size = new System.Drawing.Size(234, 540);
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
@@ -177,12 +172,12 @@ namespace Sq1.Widgets.SymbolEditor {
 
 		private System.Windows.Forms.PropertyGrid propertyGrid1;
 		private System.Windows.Forms.StatusStrip statusStrip1;
-		private System.Windows.Forms.ToolStripDropDownButton tsmniSymbol;
+		private System.Windows.Forms.ToolStripDropDownButton tsmniModify;
 		private System.Windows.Forms.ToolStripMenuItem mniDeleteSymbol;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private LabeledTextBox.MenuItemLabeledTextBox mniltbRename;
 		private LabeledTextBox.MenuItemLabeledTextBox mniltbDuplicate;
-		private System.Windows.Forms.ToolStripComboBox toolStripComboBox1;
 		private LabeledTextBox.MenuItemLabeledTextBox mniltbAddNew;
+		private ToolStripImproved.ToolStripItemComboBox toolStripItemComboBox1;
 	}
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace Sq1.Widgets.SteppingSlider {
-	partial class SliderComboControl {
+	partial class SteppingSliderComboControl {
 		private System.ComponentModel.IContainer components = null;
 
 		protected override void Dispose(bool disposing) {

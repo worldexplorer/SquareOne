@@ -25,7 +25,7 @@
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.Cbx_Walkforward = new System.Windows.Forms.CheckBox();
-			this.SliderComboControl = new Sq1.Widgets.SteppingSlider.SliderComboControl();
+			this.SliderComboControl = new Sq1.Widgets.SteppingSlider.SteppingSliderComboControl();
 			this.SuspendLayout();
 			// 
 			// Cbx_Walkforward
@@ -98,6 +98,6 @@
 		#endregion
 
 		public System.Windows.Forms.CheckBox Cbx_Walkforward;
-		public SteppingSlider.SliderComboControl SliderComboControl;
+		public SteppingSlider.SteppingSliderComboControl SliderComboControl;
 	}
 }

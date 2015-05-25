@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 
 namespace Sq1.Widgets.SteppingSlider {
-	partial class SlidersAutoGrowControl {
+	partial class SteppingSlidersAutoGrowControl {
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
@@ -41,7 +41,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowNumeric = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniScriptContextsMniHeader = new Sq1.Widgets.LabeledTextBox.MenuItemLabel();
 			this.mniltbScriptContextNewWithDefaults = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
-			this.templateSliderControl = new Sq1.Widgets.SteppingSlider.SliderComboControl();
+			this.templateSliderControl = new Sq1.Widgets.SteppingSlider.SteppingSliderComboControl();
 			this.mniltbScriptContextRenameTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniltbScriptContextDuplicateTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.ctxOperations.SuspendLayout();
@@ -269,7 +269,7 @@ namespace Sq1.Widgets.SteppingSlider {
 
 		#endregion
 
-		private Sq1.Widgets.SteppingSlider.SliderComboControl templateSliderControl;
+		private Sq1.Widgets.SteppingSlider.SteppingSliderComboControl templateSliderControl;
 		private System.Windows.Forms.ContextMenuStrip ctxOperations;
 		private System.Windows.Forms.ToolStripMenuItem mniParameterBagLoad;
 		private System.Windows.Forms.ToolStripMenuItem mniScriptContextDelete;

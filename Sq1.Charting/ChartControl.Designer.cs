@@ -1,4 +1,5 @@
 ﻿using System;
+using Sq1.Core;
 
 namespace Sq1.Charting {
 	partial class ChartControl {
@@ -9,6 +10,13 @@ namespace Sq1.Charting {
 					components.Dispose();
 				}
 				this.barEventsDetach();
+
+				if (this.ChartSettings != null) {
+					this.ChartSettings.PensAndBrushesCached_DisposeAndNullify();
+				} else {
+					string msg = "this.ChartSettings=null //ChartControl.Dispose()";
+					Assembler.PopupException(msg);
+				}
 			}
 			base.Dispose(disposing);
 		}

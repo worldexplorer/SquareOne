@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public partial class SliderComboControl : UserControlDoubleBuffered {
+	public partial class SteppingSliderComboControl : UserControlDoubleBuffered {
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public decimal ValueMin {
 			get { return this.PanelFillSlider.ValueMin; }
@@ -100,7 +100,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		[DefaultValueAttribute(typeof(TextBox), null), Browsable(true)]
 		public String ValueFormat;
 			
-		public SliderComboControl() {
+		public SteppingSliderComboControl() {
 			InitializeComponent();
 			//this.mniltbValueMin.InputFieldEditable = false;
 			//this.mniltbValueMax.InputFieldEditable = false;
@@ -168,7 +168,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		public decimal ValueMinRtlSafe { get { return Math.Min(this.ValueMin, this.ValueMax); } }
 		public decimal ValueMaxRtlSafe { get { return Math.Max(this.ValueMin, this.ValueMax); } }
 
-		public SlidersAutoGrowControl ParentAutoGrowControl;
+		public SteppingSlidersAutoGrowControl ParentAutoGrowControl;
 
 		public override string ToString() {
 			string ret = "UNDERLYING_PANEL_FILL_SLIDER_NOT_YET_INITIALIZED";

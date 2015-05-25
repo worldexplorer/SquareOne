@@ -6,6 +6,33 @@
   "ContextChart": null,
   "ChartSettings": {
     "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
+    "MultiSplitterRowsPropertiesByPanelName": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
+      "panelVolume": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 0,
+        "Distance": 0
+      },
+      "panelPrice": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 42
+      }
+    },
+    "MultiSplitterColumnsPropertiesByPanelName": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
+      "panelLevel2": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 0,
+        "Distance": 0
+      },
+      "multiSplitContainerRows": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 28
+      }
+    },
+    "StrategyName": "EnterEveryBarCompiled",
     "ChartColorBackground": "White",
     "BarWidthIncludingPadding": 8,
     "BarWidthIncludingPaddingMax": 100,
@@ -36,14 +63,14 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 0,
+    "SqueezeVerticalPaddingPx": 20,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
     "SqueezeHorizontalKeyOnePressReceivedToOneStep": 1,
     "TooltipPriceShow": true,
-    "TooltipPriceShowOnlyWhenMouseTouchesCandle": true,
-    "TooltipPositionShow": true,
+    "TooltipPriceShowOnlyWhenMouseTouchesCandle": false,
+    "TooltipPositionShow": false,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
     "ScrollPositionAtBarIndex": 0,
@@ -102,33 +129,7 @@
     "LevelTwoLotDrawString": true,
     "LevelTwoLotFont": "Microsoft Sans Serif, 8.25pt",
     "LevelTwoLotColor": "Black",
-    "LevelTwoLotPaddingHorizontal": 3,
-    "MultiSplitterRowsPropertiesByPanelName": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "panelVolume": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 0,
-        "Distance": 0
-      },
-      "panelPrice": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 1,
-        "Distance": 40
-      }
-    },
-    "MultiSplitterColumnsPropertiesByPanelName": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "panelLevel2": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 0,
-        "Distance": 0
-      },
-      "multiSplitContainerRows": {
-        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
-        "ManualOrder": 1,
-        "Distance": 57
-      }
-    }
+    "LevelTwoLotPaddingHorizontal": 3
   },
   "ChartSerno": 2,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\EnterEveryBarCompiled.json], ScriptContextCurrentName[?Default?]"

@@ -5,8 +5,8 @@ using System.Windows.Forms;
 //http://www.codeproject.com/Articles/12870/Don-t-Flicker-Double-Buffer
 namespace Sq1.Core.DoubleBuffered {
 	public abstract class PanelDoubleBuffered : Panel {
-		protected BufferedGraphicsContext graphicManager;
-		protected BufferedGraphics bufferedGraphics;
+		BufferedGraphicsContext graphicManager;
+		BufferedGraphics bufferedGraphics;
 		
 		protected abstract void OnPaintDoubleBuffered(PaintEventArgs pe);
 		protected virtual void OnPaintBackgroundDoubleBuffered(PaintEventArgs pe) {
@@ -22,7 +22,7 @@ namespace Sq1.Core.DoubleBuffered {
 		//} }
 
 		public PanelDoubleBuffered() : base() {
-			Application.ApplicationExit += new EventHandler(disposeAndNullifyToRecreateInPaint);
+			Application.ApplicationExit += new EventHandler(DisposeAndNullifyToRecreateInPaint);
 			//base.SetStyle( ControlStyles.AllPaintingInWmPaint
 			//             | ControlStyles.OptimizedDoubleBuffer
 			//        //	 | ControlStyles.UserPaint
@@ -38,7 +38,7 @@ namespace Sq1.Core.DoubleBuffered {
 			this.bufferedGraphics = this.graphicManager.Allocate(gNew, base.ClientRectangle);
 			gNew.Dispose();
 		}
-		void disposeAndNullifyToRecreateInPaint(object sender, EventArgs e) {
+		public void DisposeAndNullifyToRecreateInPaint(object sender = null, EventArgs e = null) {
 			if (this.bufferedGraphics == null) return;
 			this.bufferedGraphics.Dispose();
 			this.bufferedGraphics = null;
@@ -82,7 +82,7 @@ namespace Sq1.Core.DoubleBuffered {
 		}
 		protected override void OnResize(EventArgs e) {
 			try {
-				this.disposeAndNullifyToRecreateInPaint(this, e);
+				this.DisposeAndNullifyToRecreateInPaint(this, e);
 				this.Invalidate();
 			} catch (Exception ex) {
 				string msg = "PANEL_DOUBLE_BUFFERED.OnResize()_HAS_PROBLEMS_WITH_DOUBLE_BUFFERING_API"

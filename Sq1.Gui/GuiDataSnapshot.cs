@@ -4,6 +4,8 @@ using System.Drawing;
 
 using Newtonsoft.Json;
 using Sq1.Gui.Forms;
+using Sq1.Charting;
+using Sq1.Gui.Singletons;
 
 //using Newtonsoft.Json;
 //	[DataContract]
@@ -14,6 +16,7 @@ namespace Sq1.Gui {
 	//[DataContract]
 	public class GuiDataSnapshot {
 		[JsonIgnore]	public Dictionary<int, ChartFormsManager> ChartFormsManagers;
+		[JsonIgnore]	public Dictionary<ChartSettings, ChartControl> ChartSettingsForChartSettingsEditor;
 		[JsonProperty]	public Point MainFormLocation;
 		[JsonProperty]	public Size MainFormSize;
 		[JsonProperty]	public bool MainFormIsFullScreen;
@@ -29,6 +32,7 @@ namespace Sq1.Gui {
 
 		public GuiDataSnapshot() {
 			this.ChartFormsManagers = new Dictionary<int, ChartFormsManager>();
+			this.ChartSettingsForChartSettingsEditor = new Dictionary<ChartSettings, ChartControl>();
 		}
 
 		//public void RebuildDeserializedChartFormsManagers(MainForm mainForm) {
@@ -44,7 +48,11 @@ namespace Sq1.Gui {
 		//}
 		public void AddChartFormsManagerJustDeserialized(ChartFormsManager mgr) {
 			if (mgr.DataSnapshot.ChartSerno > this.ChartSernoLastUsed) this.ChartSernoLastUsed = mgr.DataSnapshot.ChartSerno;
+
 			this.ChartFormsManagers.Add(mgr.DataSnapshot.ChartSerno, mgr);
+			// AddChartFormsManagerJustDeserialized() IS_ONLY_INVOKED_FROM_DESERIALIZER_SKIP_REBUILDING_DROPDOWN ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
+
+			this.ChartSettingsForChartSettingsEditor.Add(mgr.ChartForm.ChartControl.ChartSettings, mgr.ChartForm.ChartControl);
 		}
 		public ChartFormsManager FindChartFormsManagerBySerno(int chartSerno, string invokerMsig = "CALLER_UNKNOWN", bool throwIfNotFound = true) {
 			ChartFormsManager ret = null;

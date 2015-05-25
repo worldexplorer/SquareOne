@@ -103,12 +103,13 @@ namespace Sq1.Charting {
 			//this.Initialize(BarsBasic.GenerateRandom(chartShouldntCare));
 			Bars generated = new Bars("RANDOM", chartShouldntCare, "test-ChartControl-DesignMode");
 			generated.GenerateAppend();
-			this.Initialize(generated);
+			this.Initialize(generated, "NO_STRATEGY_RANDOM_BARS");
 			#endregion
 		}
-		public override void Initialize(Bars barsNotNull, bool invalidateAllPanels = true) {
+		public override void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool invalidateAllPanels = true) {
 			this.barEventsDetach();
-			base.Initialize(barsNotNull, invalidateAllPanels);
+			this.ChartSettings.StrategyName = strategySavedInChartSettings;
+			base.Initialize(barsNotNull, strategySavedInChartSettings, invalidateAllPanels);
 			//if (this.BarsNotEmpty == false) {
 			if (this.Bars == null) {
 				string msg = "I_CANT_ATTACH_BAR_EVENTS_TO_NULL_BARS DONT_PASS_EMPTY_BARS_TO_CHART_CONTROL " + this.Bars.Count;
@@ -167,6 +168,12 @@ namespace Sq1.Charting {
 			this.hScrollBar.Minimum = 0;						// index of first available Bar in this.Bars 
 			this.hScrollBar.Maximum = this.Bars.Count - 1;		// index of  last available Bar in this.Bars
 			this.hScrollBar.Value = this.hScrollBar.Maximum;
+		}
+		public void DisposeBufferedGraphicsAndInvalidateAllPanels() {
+			foreach (PanelBase panel in this.panelsInvalidateAll) {
+				panel.DisposeAndNullifyToRecreateInPaint();
+			}
+			this.InvalidateAllPanels();
 		}
 		public override void InvalidateAllPanels() {
 			if (base.InvokeRequired) {

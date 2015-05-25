@@ -3,7 +3,7 @@
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public partial class SlidersAutoGrowControl {
+	public partial class SteppingSlidersAutoGrowControl {
 		public event EventHandler<StrategyEventArgs> ScriptContextLoadRequestedSubscriberImplementsCurrentSwitch;
 		public event EventHandler<StrategyEventArgs> ScriptContextRenamed;
 		public event EventHandler<StrategyEventArgs> ScriptContextDuplicated;

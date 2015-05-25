@@ -3,13 +3,15 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace Sq1.Widgets.SteppingSlider {
+using Sq1.Widgets.SteppingSlider;
+
+namespace Sq1.Widgets.ToolStripImproved {
 	[ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.StatusStrip)]
 	public class ToolStripItemSteppingSlider : ToolStripControlHost {
-		public SliderComboControl SliderComboControl { get; private set; }
+		public SteppingSliderComboControl SliderComboControl { get; private set; }
 
-		public ToolStripItemSteppingSlider() : base(new SliderComboControl()) {
-			this.SliderComboControl = this.Control as SliderComboControl;
+		public ToolStripItemSteppingSlider() : base(new SteppingSliderComboControl()) {
+			this.SliderComboControl = this.Control as SteppingSliderComboControl;
 		}
 
 		// Add properties, events etc. you want to expose...

@@ -27,7 +27,7 @@
 			this.pnlNoParametersInScript = new System.Windows.Forms.Panel();
 			this.lblNoParametersDefined = new System.Windows.Forms.Label();
 			this.lblScriptName = new System.Windows.Forms.Label();
-			this.SlidersAutoGrowControl = new Sq1.Widgets.SteppingSlider.SlidersAutoGrowControl();
+			this.SteppingSlidersAutoGrowControl = new Sq1.Widgets.SteppingSlider.SteppingSlidersAutoGrowControl();
 			this.pnlNoParametersInScript.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -63,22 +63,22 @@
 			// 
 			// SlidersAutoGrowControl
 			// 
-			this.SlidersAutoGrowControl.BackColor = System.Drawing.SystemColors.Control;
-			this.SlidersAutoGrowControl.CurrentParametersFromChildSliders = null;
-			this.SlidersAutoGrowControl.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.SlidersAutoGrowControl.Location = new System.Drawing.Point(0, 0);
-			this.SlidersAutoGrowControl.Name = "SlidersAutoGrowControl";
-			this.SlidersAutoGrowControl.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-			this.SlidersAutoGrowControl.Size = new System.Drawing.Size(360, 89);
-			this.SlidersAutoGrowControl.TabIndex = 30;
-			this.SlidersAutoGrowControl.VerticalSpaceBetweenSliders = 4;
+			this.SteppingSlidersAutoGrowControl.BackColor = System.Drawing.SystemColors.Control;
+			this.SteppingSlidersAutoGrowControl.CurrentParametersFromChildSliders = null;
+			this.SteppingSlidersAutoGrowControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.SteppingSlidersAutoGrowControl.Location = new System.Drawing.Point(0, 0);
+			this.SteppingSlidersAutoGrowControl.Name = "SlidersAutoGrowControl";
+			this.SteppingSlidersAutoGrowControl.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.SteppingSlidersAutoGrowControl.Size = new System.Drawing.Size(360, 89);
+			this.SteppingSlidersAutoGrowControl.TabIndex = 30;
+			this.SteppingSlidersAutoGrowControl.VerticalSpaceBetweenSliders = 4;
 			// 
 			// SlidersForm
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.ClientSize = new System.Drawing.Size(360, 89);
 			this.Controls.Add(this.pnlNoParametersInScript);
-			this.Controls.Add(this.SlidersAutoGrowControl);
+			this.Controls.Add(this.SteppingSlidersAutoGrowControl);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.Name = "SlidersForm";
 			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockLeft;
@@ -93,6 +93,6 @@
 		private System.Windows.Forms.Panel pnlNoParametersInScript;
 		private System.Windows.Forms.Label lblNoParametersDefined;
 		private System.Windows.Forms.Label lblScriptName;
-		public Sq1.Widgets.SteppingSlider.SlidersAutoGrowControl SlidersAutoGrowControl;
+		public Sq1.Widgets.SteppingSlider.SteppingSlidersAutoGrowControl SteppingSlidersAutoGrowControl;
 	}
 }

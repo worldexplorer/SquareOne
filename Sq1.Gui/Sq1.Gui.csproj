@@ -187,6 +187,12 @@
     <Compile Include="ReportersSupport\ReporterFormWrapper.Designer.cs">
       <DependentUpon>ReporterFormWrapper.cs</DependentUpon>
     </Compile>
+    <Compile Include="Singletons\ChartSettingsEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\ChartSettingsEditorForm.Designer.cs">
+      <DependentUpon>ChartSettingsEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Singletons\CsvImporterForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -238,11 +244,11 @@
     <Compile Include="Singletons\SlidersForm.Designer.cs">
       <DependentUpon>SlidersForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Singletons\SymbolEditorForm.cs">
+    <Compile Include="Singletons\SymbolInfoEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Singletons\SymbolEditorForm.Designer.cs">
-      <DependentUpon>SymbolEditorForm.cs</DependentUpon>
+    <Compile Include="Singletons\SymbolInfoEditorForm.Designer.cs">
+      <DependentUpon>SymbolInfoEditorForm.cs</DependentUpon>
     </Compile>
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
@@ -273,6 +279,9 @@
     <EmbeddedResource Include="ReportersSupport\ReporterFormWrapper.resx">
       <DependentUpon>ReporterFormWrapper.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\ChartSettingsEditorForm.resx">
+      <DependentUpon>ChartSettingsEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Singletons\CsvImporterForm.resx">
       <DependentUpon>CsvImporterForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -291,8 +300,8 @@
     <EmbeddedResource Include="Singletons\SlidersForm.resx">
       <DependentUpon>SlidersForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Singletons\SymbolEditorForm.resx">
-      <DependentUpon>SymbolEditorForm.cs</DependentUpon>
+    <EmbeddedResource Include="Singletons\SymbolInfoEditorForm.resx">
+      <DependentUpon>SymbolInfoEditorForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

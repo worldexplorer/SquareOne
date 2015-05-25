@@ -128,6 +128,7 @@ namespace Sq1.Gui.Forms {
 				if (this.ChartForm			!= null) ret.Add("Chart",		this.ChartForm);
 				if (this.ScriptEditorForm	!= null) ret.Add("Source Code",	this.ScriptEditorForm);
 				if (this.SequencerForm		!= null) ret.Add("Sequencer",	this.SequencerForm);
+				if (this.CorrelatorForm		!= null) ret.Add("Correlator",	this.CorrelatorForm);
 				if (this.LivesimForm		!= null) ret.Add("LiveSim",		this.LivesimForm);
 				foreach (string textForMenuItem in this.ReportersFormsManager.FormsAllRelated.Keys) {
 					ret.Add(textForMenuItem, this.ReportersFormsManager.FormsAllRelated[textForMenuItem]);
@@ -416,7 +417,9 @@ namespace Sq1.Gui.Forms {
 						new EventHandler<DataSourceEventArgs>(chartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
 
 				bool invalidateAllPanels = wontBacktest;
-				this.ChartForm.ChartControl.Initialize(barsClicked, invalidateAllPanels);
+
+				string strategyName = this.Strategy == null ? "CHART_ONLY" : this.Strategy.Name;
+				this.ChartForm.ChartControl.Initialize(barsClicked, strategyName, invalidateAllPanels);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
 				this.ChartForm.PopulateBtnStreamingTriggersScriptAfterBarsLoaded();
 			}

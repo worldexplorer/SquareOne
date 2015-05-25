@@ -232,7 +232,7 @@ namespace Sq1.Core.Livesim {
 				this.chartShadow.BeginInvoke((MethodInvoker)delegate { this.executor_BacktesterContextInitializedStep2of4(sender, e); });
 				return;
 			}
-			this.chartShadow.Initialize(base.Executor.Bars, true);
+			this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, true);
 
 			this.btnPauseResume.Enabled = true;
 			this.btnPauseResume.Text = "Pause";
@@ -254,7 +254,7 @@ namespace Sq1.Core.Livesim {
 			this.chartShadow.BeginInvoke((MethodInvoker)delegate {
 				this.btnStartStop.Text = "Start";
 				this.btnStartStop.CheckState = CheckState.Unchecked;
-				this.chartShadow.Initialize(base.Executor.Bars, true);
+				this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, true);
 
 				float seconds = (float)Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);
 				this.btnPauseResume.Text = seconds.ToString() + " sec";

@@ -128,16 +128,28 @@ namespace Sq1.Gui {
 				Assembler.PopupException("mniCsvImporter_Click()", ex);
 			}
 		}
-		void mniSymbolsEditor_Click(object sender, System.EventArgs e) {
+		void mniSymbolInfoEditor_Click(object sender, System.EventArgs e) {
 			try {
-				if (this.mniSymbolsEditor.Checked == false) {
-					SymbolEditorForm.Instance.ShowAsDocumentTabNotPane(this.DockPanel);
+				if (this.mniSymbolInfoEditor.Checked == false) {
+					SymbolInfoEditorForm.Instance.Show(this.DockPanel);
 				} else {
-					SymbolEditorForm.Instance.Hide();
+					SymbolInfoEditorForm.Instance.Hide();
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
-				Assembler.PopupException("mniSymbolsEditor_Click()", ex);
+				Assembler.PopupException("mniSymbolInfoEditor_Click()", ex);
+			}
+		}
+		void mniChartSettingsEditor_Click(object sender, EventArgs e) {
+			try {
+				if (this.mniSymbolInfoEditor.Checked == false) {
+					ChartSettingsEditorForm.Instance.Show(this.DockPanel);
+				} else {
+					ChartSettingsEditorForm.Instance.Hide();
+				}
+				this.MainFormSerialize();
+			} catch (Exception ex) {
+				Assembler.PopupException("mniChartSettingsEditor_Click()", ex);
 			}
 		}
 		

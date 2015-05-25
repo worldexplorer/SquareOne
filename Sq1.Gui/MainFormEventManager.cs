@@ -76,6 +76,10 @@ namespace Sq1.Gui {
 			ChartFormsManager chartFormManager = new ChartFormsManager(this.mainForm);
 			chartFormManager.InitializeWithStrategy(strategy, false);
 			this.mainForm.GuiDataSnapshot.ChartFormsManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
+
+			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);
+			ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
+
 			chartFormManager.ChartFormShow();
 			chartFormManager.StrategyCompileActivatePopulateSlidersShow();
 			return chartFormManager;
@@ -84,6 +88,10 @@ namespace Sq1.Gui {
 			ChartFormsManager chartFormManager = new ChartFormsManager(this.mainForm);
 			chartFormManager.InitializeChartNoStrategy(contextChart);
 			this.mainForm.GuiDataSnapshot.ChartFormsManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
+
+			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);
+			ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
+
 			chartFormManager.ChartFormShow();
 		}
 		#endregion
@@ -116,6 +124,8 @@ namespace Sq1.Gui {
 					Assembler.PopupException("CHART_FORMS_MANAGER_MUST_HAVE_BEEN_ADDED " + msg);
 				} else {
 					this.mainForm.GuiDataSnapshot.ChartFormsManagers.Remove(chartFormManager.DataSnapshot.ChartSerno);
+					this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Remove(chartFormClosed.ChartControl.ChartSettings);
+					ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
 				}
 
 				chartFormManager.Dispose_workspaceReloading();
@@ -170,6 +180,7 @@ namespace Sq1.Gui {
 				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 				//chartFormClicked.Activate();	// I_GUESS_ITS_ALREADY_ACTIVE
 				chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
+				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormClicked.ChartControl.ChartSettings);
 			} catch (Exception ex) {
 				Assembler.PopupException("DockPanel_ActiveDocumentChanged()", ex);
 			}
@@ -220,7 +231,7 @@ namespace Sq1.Gui {
 		internal void DataSourcesTree_OnBarsAnalyzerClicked(object sender, DataSourceSymbolEventArgs e) {
 		}
 		internal void DataSourcesTree_OnSymbolInfoEditorClicked(object sender, DataSourceSymbolEventArgs e) {
-			SymbolEditorForm.Instance.SymbolEditorControl.PopulateWithSymbol(e);
+			SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbol(e);
 		}
 		internal void DataSourcesTree_OnDataSourceDeletedClicked(object sender, DataSourceEventArgs e) {
 		}

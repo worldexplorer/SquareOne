@@ -7,7 +7,7 @@ using Sq1.Core;
 using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public partial class SliderComboControl {
+	public partial class SteppingSliderComboControl {
 		void domainUpDown_KeyDown(object sender, KeyEventArgs e) {
 			if (e.KeyCode != Keys.Enter) return;
 			this.DomainUpDown.Select(0, this.DomainUpDown.Text.Length);
@@ -147,7 +147,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniHeaderNonHighlighted.Text = this.LabelText;
 
 			//v1 ???base.Parent is NULL here:  SlidersAutoGrowControl slidersAutoGrow = base.Parent as SlidersAutoGrowControl;
-			SlidersAutoGrowControl slidersAutoGrow = this.ParentAutoGrowControl;
+			SteppingSlidersAutoGrowControl slidersAutoGrow = this.ParentAutoGrowControl;
 			if (slidersAutoGrow == null) {
 				string msg = "SliderCombo should be added into SlidersAutoGrow"
 					+ " to get SlidersAutoGrow's menu and append it to rightClick on a slider";

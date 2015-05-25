@@ -56,7 +56,7 @@ namespace Sq1.Core.Charting {
 		public virtual void SetExecutor(ScriptExecutor executor) {
 			this.Executor = executor;
 		}
-		public virtual void Initialize(Bars barsNotNull, bool invalidateAllPanels = true) {
+		public virtual void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool invalidateAllPanels = true) {
 			this.Bars = barsNotNull;
 		}
 		

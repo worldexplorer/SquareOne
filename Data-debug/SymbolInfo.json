@@ -94,7 +94,7 @@
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
     "priceDecimals": 2,
-    "SecurityType": 1,
+    "SecurityType": 2,
     "Symbol": "RIH3",
     "SymbolClass": "SPBFUT",
     "Point2Dollar": 1.0,
@@ -163,7 +163,7 @@
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
     "priceDecimals": 2,
-    "SecurityType": 1,
+    "SecurityType": 2,
     "Symbol": "RIU3",
     "SymbolClass": "SPBFUT",
     "Point2Dollar": 1.0,
@@ -186,7 +186,7 @@
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
     "priceDecimals": 2,
-    "SecurityType": 1,
+    "SecurityType": 2,
     "Symbol": "RIZ2",
     "SymbolClass": "SPBFUT",
     "Point2Dollar": 1.0,
@@ -209,7 +209,7 @@
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
     "priceDecimals": 2,
-    "SecurityType": 1,
+    "SecurityType": 2,
     "Symbol": "SBER",
     "SymbolClass": "EQBR",
     "Point2Dollar": 1.0,
@@ -232,7 +232,7 @@
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
     "priceDecimals": 2,
-    "SecurityType": 1,
+    "SecurityType": 2,
     "Symbol": "SPFB.RTS",
     "SymbolClass": "SPBFUT",
     "Point2Dollar": 1.0,

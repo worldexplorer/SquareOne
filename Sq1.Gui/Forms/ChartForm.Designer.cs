@@ -58,7 +58,7 @@ namespace Sq1.Gui.Forms {
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mnitlbShowLastBars = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniShowBarRange = new System.Windows.Forms.ToolStripMenuItem();
-			this.TsiProgressBarETA = new Sq1.Widgets.ProgressBacktestETA.ToolStripItemProgressBarETA();
+			this.TsiProgressBarETA = new Sq1.Widgets.ToolStripImproved.ToolStripItemProgressBarETA();
 			this.btnStreamingTriggersScript = new System.Windows.Forms.ToolStripButton();
 			this.btnStrategyEmittingOrders = new System.Windows.Forms.ToolStripButton();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -603,7 +603,7 @@ namespace Sq1.Gui.Forms {
 		private System.Windows.Forms.ContextMenuStrip ctxStrategy;
 		public System.Windows.Forms.ToolStripButton btnStrategyEmittingOrders;
 		public System.Windows.Forms.ToolStripButton btnStreamingTriggersScript;
-		public Sq1.Widgets.ProgressBacktestETA.ToolStripItemProgressBarETA TsiProgressBarETA;
+		public Sq1.Widgets.ToolStripImproved.ToolStripItemProgressBarETA TsiProgressBarETA;
 		private System.Windows.Forms.StatusStrip statusStrip;
 		public System.Windows.Forms.ToolStripDropDownButton DdbBacktest;
 		public System.Windows.Forms.ToolStripDropDownButton DdbStrategy;

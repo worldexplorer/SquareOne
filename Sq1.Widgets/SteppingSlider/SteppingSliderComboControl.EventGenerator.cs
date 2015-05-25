@@ -3,7 +3,7 @@
 using Sq1.Core;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public partial class SliderComboControl {
+	public partial class SteppingSliderComboControl {
 		public event EventHandler<EventArgs> ValueCurrentChanged;
 		public event EventHandler<EventArgs> ShowBorderChanged;
 		public event EventHandler<EventArgs> ShowNumericUpdownChanged;

@@ -8,7 +8,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.SteppingSlider {
-	public partial class SlidersAutoGrowControl {
+	public partial class SteppingSlidersAutoGrowControl {
 		public const string MNI_PREFIX = "mniScriptContext_";
 		// http://stackoverflow.com/questions/8307959/toolstripmenuitem-for-multiple-contextmenustrip?rq=1
 		// http://stackoverflow.com/questions/6275120/toolstripmenuitem-added-to-several-places?rq=1

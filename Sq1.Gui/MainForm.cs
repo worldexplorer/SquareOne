@@ -55,11 +55,11 @@ namespace Sq1.Gui {
 					Assembler.InstanceInitialized.RepositoryDllStreamingAdapter	.CloneableInstanceByClassName,
 					Assembler.InstanceInitialized.RepositoryDllBrokerAdapter	.CloneableInstanceByClassName);
 	
-				DataSourcesForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
-				StrategiesForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
-				ExecutionForm		.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
-				CsvImporterForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
-				SymbolEditorForm	.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfo);
+				DataSourcesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				StrategiesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+				ExecutionForm				.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
+				CsvImporterForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				SymbolInfoEditorForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfo);
 
 				this.WorkspacesManager = new MainFormWorkspacesManager(this, Assembler.InstanceInitialized.WorkspacesRepository);
 			} catch (Exception ex) {
@@ -279,13 +279,14 @@ namespace Sq1.Gui {
 		}
 		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {
 			// OK_SO_LUO_PLAYS_WITH_WINDOWS.FORMS.VISIBLE_I_SEE Debugger.Break();
-			DataSourcesForm	.Instance.VisibleChanged	+= delegate { this.mniDataSources	.Checked = DataSourcesForm	.Instance.Visible; };
-			ExceptionsForm	.Instance.VisibleChanged	+= delegate { this.mniExceptions	.Checked = ExceptionsForm	.Instance.Visible; };
-			SlidersForm		.Instance.VisibleChanged	+= delegate { this.mniSliders		.Checked = SlidersForm		.Instance.Visible; };
-			StrategiesForm	.Instance.VisibleChanged	+= delegate { this.mniStrategies	.Checked = StrategiesForm	.Instance.Visible; };
-			ExecutionForm	.Instance.VisibleChanged	+= delegate { this.mniExecution		.Checked = ExecutionForm	.Instance.Visible; };
-			CsvImporterForm	.Instance.VisibleChanged	+= delegate { this.mniCsvImporter	.Checked = CsvImporterForm	.Instance.Visible; };
-			SymbolEditorForm.Instance.VisibleChanged	+= delegate { this.mniSymbolsEditor	.Checked = SymbolEditorForm	.Instance.Visible; };
+			DataSourcesForm			.Instance.VisibleChanged	+= delegate { this.mniDataSources			.Checked = DataSourcesForm			.Instance.Visible; };
+			ExceptionsForm			.Instance.VisibleChanged	+= delegate { this.mniExceptions			.Checked = ExceptionsForm			.Instance.Visible; };
+			SlidersForm				.Instance.VisibleChanged	+= delegate { this.mniSliders				.Checked = SlidersForm				.Instance.Visible; };
+			StrategiesForm			.Instance.VisibleChanged	+= delegate { this.mniStrategies			.Checked = StrategiesForm			.Instance.Visible; };
+			ExecutionForm			.Instance.VisibleChanged	+= delegate { this.mniExecution				.Checked = ExecutionForm			.Instance.Visible; };
+			CsvImporterForm			.Instance.VisibleChanged	+= delegate { this.mniCsvImporter			.Checked = CsvImporterForm			.Instance.Visible; };
+			SymbolInfoEditorForm	.Instance.VisibleChanged	+= delegate { this.mniSymbolInfoEditor		.Checked = SymbolInfoEditorForm		.Instance.Visible; };
+			ChartSettingsEditorForm	.Instance.VisibleChanged	+= delegate { this.mniChartSettingsEditor	.Checked = ChartSettingsEditorForm	.Instance.Visible; };
 
 			this.MainFormEventManager = new MainFormEventManager(this);
 
@@ -308,10 +309,10 @@ namespace Sq1.Gui {
 			//DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceNewClicked		+= this.MainFormEventManager.DataSourcesTree_OnDataSourceNewClicked;
 
 			// TYPE_MANGLING_INSIDE_WARNING NOTICE_THAT_BOTH_PARAMETER_SCRIPT_AND_INDICATOR_VALUE_CHANGED_EVENTS_ARE_HANDLED_BY_SINGLE_HANDLER
-			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedParameterValue			+= new EventHandler<ScriptParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
-			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedIndicatorValue			+= new EventHandler<IndicatorParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
-			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextLoadRequestedSubscriberImplementsCurrentSwitch += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextLoadClicked;
-			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextRenamed				+= this.MainFormEventManager.SlidersAutoGrow_OnScriptContextRenamed;
+			SlidersForm.Instance.SteppingSlidersAutoGrowControl.SliderChangedParameterValue			+= new EventHandler<ScriptParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
+			SlidersForm.Instance.SteppingSlidersAutoGrowControl.SliderChangedIndicatorValue			+= new EventHandler<IndicatorParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
+			SlidersForm.Instance.SteppingSlidersAutoGrowControl.ScriptContextLoadRequestedSubscriberImplementsCurrentSwitch += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextLoadClicked;
+			SlidersForm.Instance.SteppingSlidersAutoGrowControl.ScriptContextRenamed				+= this.MainFormEventManager.SlidersAutoGrow_OnScriptContextRenamed;
 		}
 		void mainFormEventManagerInitializeAfterDockingDeserialized() {
 			// too frequent
@@ -319,7 +320,6 @@ namespace Sq1.Gui {
 			// just as often as I needed!
 			this.DockPanel.ActiveDocumentChanged += this.MainFormEventManager.DockPanel_ActiveDocumentChanged;
 		}
-
 		public void MainFormSerialize() {
 			if (this.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) return;
 			this.DockPanel.SaveAsXml(this.LayoutXml);

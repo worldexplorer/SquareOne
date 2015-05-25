@@ -1,5 +1,5 @@
 ﻿namespace Sq1.Gui.Singletons {
-	partial class SymbolEditorForm {
+	partial class SymbolInfoEditorForm {
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -23,7 +23,7 @@
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			this.SymbolEditorControl = new Sq1.Widgets.SymbolEditor.SymbolEditorControl();
+			this.SymbolEditorControl = new Sq1.Widgets.SymbolEditor.SymbolInfoEditorControl();
 			this.SuspendLayout();
 			// 
 			// symbolEditorControl1
@@ -51,6 +51,6 @@
 
 		#endregion
 
-		public Widgets.SymbolEditor.SymbolEditorControl SymbolEditorControl;
+		public Widgets.SymbolEditor.SymbolInfoEditorControl SymbolEditorControl;
 	}
 }

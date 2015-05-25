@@ -1,17 +1,17 @@
 ﻿//http://stackoverflow.com/questions/5549895/toolstriptextbox-customisation
 using System;
-using System.ComponentModel;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 using Sq1.Core;
+using Sq1.Widgets.WalkForward;
 
-namespace Sq1.Widgets.WalkForward {
+namespace Sq1.Widgets.ToolStripImproved {
 	[ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.StatusStrip)]
-	public class ToolStripItemTrackBarWalkForward : ToolStripControlHost {
+	public class ToolStripItemWalkForward : ToolStripControlHost {
 		public WalkForwardControl WalkForwardControl { get; private set; }
 
-		public ToolStripItemTrackBarWalkForward() : base(new WalkForwardControl()) {
+		public ToolStripItemWalkForward() : base(new WalkForwardControl()) {
 			this.WalkForwardControl = this.Control as WalkForwardControl;
 			this.WalkForwardControl.SliderComboControl.ValueCurrentChanged += new EventHandler<EventArgs>(SliderComboControl_ValueCurrentChanged);
 			this.WalkForwardControl.Cbx_Walkforward.CheckedChanged += new EventHandler(Cbx_Walkforward_CheckedChanged);
