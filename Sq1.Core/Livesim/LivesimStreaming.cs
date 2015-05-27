@@ -118,7 +118,15 @@ namespace Sq1.Core.Livesim {
 		#endregion
 
 		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
 			this.Unpaused.Dispose();
+			this.Unpaused = null;
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

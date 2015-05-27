@@ -50,7 +50,15 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		public void Dispose() {
-			this.alertsPending.Dispose();
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.alertsPending	.Dispose();
+			//this.livesimDataSource.Executor.ExecutionDataSnapshot.AlertsPending = null;
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

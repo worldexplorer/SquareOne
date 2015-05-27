@@ -181,7 +181,15 @@ namespace Sq1.Core.Charting {
 			this.Dispose();
 		}
 		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
 			this.paintAllowed.Dispose();
+			this.paintAllowed = null;
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

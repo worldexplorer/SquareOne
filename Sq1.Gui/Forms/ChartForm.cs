@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
@@ -10,7 +11,6 @@ using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Widgets.LabeledTextBox;
-using System.ComponentModel;
 using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.Forms {

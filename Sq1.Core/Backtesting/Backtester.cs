@@ -8,6 +8,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.Backtesting {
 	public class Backtester : IDisposable {
@@ -471,9 +472,20 @@ namespace Sq1.Core.Backtesting {
 		}
 
 		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
 			this.RequestingBacktestAbort	.Dispose();
 			this.BacktestAborted			.Dispose();
 			this.BacktestIsRunning			.Dispose();
+
+			this.RequestingBacktestAbort	= null;
+			this.BacktestAborted			= null;
+			this.BacktestIsRunning			= null;
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

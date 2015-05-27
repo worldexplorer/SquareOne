@@ -90,7 +90,7 @@ namespace Sq1.Charting {
 					}
 				}
 				try {
-					g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, 0, mouseY, base.Width, mouseY);
+					g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGuttersForeground, 0, mouseY, base.Width, mouseY);
 				} catch (Exception ex) {
 					Assembler.PopupException(null, ex, false);
 				}
@@ -111,10 +111,9 @@ namespace Sq1.Charting {
 				for (double gridPrice = gridStart; gridPrice <= gridEnd; gridPrice += gridStep) {
 					int gridY = this.ValueToYinverted(gridPrice);
 					try {
-						if (this.ChartControl.ChartSettings.PenGridlinesHorizontal == null) {
-							int a = 1;
+						if (this.ChartControl.ChartSettings.GridlinesHorizontalShow) {
+							g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesHorizontal, 0, gridY, this.PanelWidthMinusRightPriceGutter-1, gridY);
 						}
-						g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesHorizontal, 0, gridY, this.PanelWidthMinusRightPriceGutter-1, gridY);
 					} catch (Exception ex) {
 						Assembler.PopupException(null, ex, false);
 					}
@@ -163,17 +162,17 @@ namespace Sq1.Charting {
 						labelYadjustedUp -= pxBelowBottomBoundary;
 					}
 					
-					Rectangle plate = new Rectangle(labelXalignedRight, labelYadjustedUp - 2, labelWidth + 1, labelHeight + 3);
+					Rectangle plate = new Rectangle(labelXalignedRight, labelYadjustedUp - 2, labelWidth + 2, labelHeight + 3);
 					if (base.ForeColor != Color.Empty) {
 						using (SolidBrush indicatorColorBrush = new SolidBrush(base.ForeColor)) {
 							g.FillRectangle(indicatorColorBrush, plate);
 						}
-						using (SolidBrush brushWhite = new SolidBrush(Color.White)) {
+						using (SolidBrush brushIndicatorInverted = new SolidBrush(base.BackColor)) {
 							g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
-										 brushWhite, labelXalignedRight, labelYadjustedUp);
+										 brushIndicatorInverted, labelXalignedRight, labelYadjustedUp);
 						}
 					} else {
-						g.FillRectangle(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters.Brush, plate);
+						g.FillRectangle(this.ChartControl.ChartSettings.PenMousePositionTrackOnGuttersForeground.Brush, plate);
 						g.DrawString(panelValueFormatted, this.ChartControl.ChartSettings.GutterRightFont,
 									 this.ChartControl.ChartSettings.BrushGutterRightForeground, labelXalignedRight, labelYadjustedUp);
 					}
@@ -195,7 +194,7 @@ namespace Sq1.Charting {
 				}
 
 				int mouseBarMiddleX = mouseBarX + this.BarShadowOffset;
-				g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters, mouseBarMiddleX, 0, mouseBarMiddleX, base.Height);
+				g.DrawLine(this.ChartControl.ChartSettings.PenMousePositionTrackOnGuttersForeground, mouseBarMiddleX, 0, mouseBarMiddleX, base.Height);
 			}
 			
 			if (this.GutterBottomDraw == false && this.ThisPanelIsPricePanel) {
@@ -236,7 +235,9 @@ namespace Sq1.Charting {
 					for (int i = this.VisibleBarRightExisting - 1; i >= this.VisibleBarLeftExisting; i--, barPrevX -= this.BarWidthIncludingPadding_cached) {
 						Bar bar = this.ChartControl.Bars[i];
 						if (bar.DateTimeOpen.Day == barOpenerPrevDay.DateTimeOpen.Day) continue;
-						g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesVerticalNewDate, barPrevX, 0, barPrevX, this.PanelHeightMinusGutterBottomHeight_cached - 1);
+						if (this.ChartControl.ChartSettings.GridlinesVerticalShow) {
+							g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesVerticalNewDate, barPrevX, 0, barPrevX, this.PanelHeightMinusGutterBottomHeight_cached - 1);
+						}
 						
 						string barDayOpener = barOpenerPrevDay.DateTimeOpen.ToString(this.ChartControl.ChartSettings.GutterBottomDateFormatDayOpener);
 						int barDayOpenerWidth = (int)g.MeasureString(barDayOpener, this.ChartControl.ChartSettings.GutterBottomFont).Width;
@@ -276,7 +277,9 @@ namespace Sq1.Charting {
 						break;
 					}
 					if (tooCrowded) continue;
-					g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesVertical, barMiddleX, 0, barMiddleX, this.PanelHeightMinusGutterBottomHeight_cached - 1);
+					if (this.ChartControl.ChartSettings.GridlinesVerticalShow) {
+						g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesVertical, barMiddleX, 0, barMiddleX, this.PanelHeightMinusGutterBottomHeight_cached - 1);
+					}
 					g.DrawString(dateFormatted, this.ChartControl.ChartSettings.GutterBottomFont, this.ChartControl.ChartSettings.BrushGutterBottomForeground, xLabel, y);
 					barDateLabelsAlreadyDrawn.Add(proposal);
 				}
@@ -291,12 +294,12 @@ namespace Sq1.Charting {
 					if (null != mouseBar) {
 						string dateFormatted = mouseBar.DateTimeOpen.ToString(this.formatForBars);
 						int dateFormattedWidth = (int)g.MeasureString(dateFormatted, this.ChartControl.ChartSettings.GutterBottomFont).Width;
-						int xLabel = mouseBarMiddleX - dateFormattedWidth / 2;
+						int xLabel = (int) Math.Floor(mouseBarMiddleX - dateFormattedWidth / 2f);
 						
 						if (xLabel < 0) xLabel = 0;
-						Rectangle plate = new Rectangle(xLabel - 2, y, dateFormattedWidth + 2, this.GutterRightFontHeight_cached);
-						g.FillRectangle(this.ChartControl.ChartSettings.PenMousePositionTrackOnGutters.Brush, plate);
-						g.DrawString(dateFormatted, this.ChartControl.ChartSettings.GutterBottomFont, this.ChartControl.ChartSettings.BrushGutterBottomForeground, xLabel, y);
+						Rectangle plate = new Rectangle(xLabel, y, dateFormattedWidth + 2, this.GutterRightFontHeight_cached);
+						g.FillRectangle(this.ChartControl.ChartSettings.PenMousePositionTrackOnGuttersForeground.Brush, plate);
+						g.DrawString(dateFormatted, this.ChartControl.ChartSettings.GutterBottomFont, this.ChartControl.ChartSettings.BrushMousePositionTrackOnGuttersInverted, xLabel, y);
 					}
 				}
 			}
@@ -364,15 +367,16 @@ namespace Sq1.Charting {
 				graphics.FillRectangle(brushDown, histogramBarInverted);
 			//}
 		}
-		protected void RenderBarCandle(Graphics graphics, int barX, int barYOpenInverted, int barYHighInverted, int barYLowInverted, int barYCloseInverted, bool fillDownCandleBody) {
+		protected void RenderBarCandle(Graphics graphics, int barX, int barYOpenInverted, int barYHighInverted, int barYLowInverted, int barYCloseInverted, bool candleUpFillBody) {
 			string msig = " //PanelBase.RenderBarCandle()";
 			int candleBodyLower = barYOpenInverted;	// assuming it is a white candle (rising price)
 			int candleBodyHigher = barYCloseInverted;
-			if (barYOpenInverted > barYCloseInverted) {
-				if (fillDownCandleBody == true) {
-					string msg = "MUST_BE_FALSE_HER fillDownCandleBody[" + fillDownCandleBody + "]";
-					Assembler.PopupException(msg + msig);
-				}
+			bool candleUp = barYOpenInverted > barYCloseInverted;
+			if (candleUp) {
+				//if (candleUpFillBody == true) {
+				//    string msg = "MUST_BE_FALSE_HER fillDownCandleBody[" + candleUpFillBody + "]";
+				//    Assembler.PopupException(msg + msig);
+				//}
 				candleBodyLower = barYCloseInverted;	// nope it's a black candle (falling price)
 				candleBodyHigher = barYOpenInverted;
 			}
@@ -391,18 +395,18 @@ namespace Sq1.Charting {
 			candleBodyInverted.Height = candleBodyHeight;
 
 			int shadowX = barX + this.BarShadowXoffset_cached;
-			if (fillDownCandleBody) {
-				var brushDown = this.ChartControl.ChartSettings.BrushPriceBarDown;
-				var penDown = this.ChartControl.ChartSettings.PenPriceBarDown;
-				graphics.FillRectangle(brushDown, candleBodyInverted);
-				graphics.DrawLine(penDown, shadowX, barYHighInverted, shadowX, barYLowInverted);
+
+			var settings = this.ChartControl.ChartSettings;
+			var brush	= candleUp ? settings.BrushPriceBarUp : settings.BrushPriceBarDown;
+			var pen		= candleUp ? settings.  PenPriceBarUp : settings.  PenPriceBarDown;
+			if (candleUpFillBody) {
+				graphics.FillRectangle(brush, candleBodyInverted);
+				graphics.DrawLine(pen, shadowX, barYHighInverted, shadowX, barYLowInverted);
 			} else {
-				var brushUp = this.ChartControl.ChartSettings.BrushPriceBarUp;
-				var penUp = this.ChartControl.ChartSettings.PenPriceBarUp;
 				candleBodyInverted.Width--;	// drawing using a pen produces 1px narrower rectangle that drawing using a brush???...
-				graphics.DrawRectangle(penUp, candleBodyInverted);
-				graphics.DrawLine(penUp, shadowX, barYHighInverted, shadowX, candleBodyInverted.Top);
-				graphics.DrawLine(penUp, shadowX, barYLowInverted, shadowX, candleBodyInverted.Bottom);
+				graphics.DrawRectangle(pen, candleBodyInverted);
+				graphics.DrawLine(pen, shadowX, barYHighInverted, shadowX, candleBodyInverted.Top);
+				graphics.DrawLine(pen, shadowX, barYLowInverted, shadowX, candleBodyInverted.Bottom);
 			}
 		}
 

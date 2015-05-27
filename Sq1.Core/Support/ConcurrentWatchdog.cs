@@ -188,6 +188,11 @@ namespace Sq1.Core.Support {
 		} }
 
 		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
 			//I_ABORT_GUI_THREAD_HERE?!?!???
 			//if (this.unlockedThread != null) {
 			//    try {
@@ -208,6 +213,8 @@ namespace Sq1.Core.Support {
 				this.isFree.Dispose();
 			} catch (Exception ex) {
 			}
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

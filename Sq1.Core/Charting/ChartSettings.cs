@@ -5,13 +5,18 @@ using System.ComponentModel;
 
 using Newtonsoft.Json;
 using Sq1.Core.Charting;
+using Sq1.Core;
+using Sq1.Core.DataFeed;
+using System.Reflection;
 
-namespace Sq1.Charting {
+namespace Sq1.Core.Charting {
 	// why ChartSettings inherits Component? F4 on ChartSettings will allow you to edit colors visually
 	// REMOVE ": Component" when you're done with visual editing to stop Designer flooding ChartControl.Designer.cs
-	public class ChartSettings { //: Component {
+	public class ChartSettings : NamedObjectJsonSerializable {	//: ChartSettingsBase { //: Component {
+		[Browsable(false)]
+		[JsonIgnore]	public static string NAME_DEFAULT = "Default";
 
-		[Category("1. Essential"), Description("description to be composed"), ReadOnly(true)]
+		[Category("1. Essential"), Description("description to be composed"), ReadOnly(true), Browsable(false)]
 		[JsonProperty]	public string	StrategyName											{ get; set; }
 
 		[Category("1. Essential"), Description("description to be composed")]
@@ -39,6 +44,12 @@ namespace Sq1.Charting {
 		[Category("1. Essential"), Description("description to be composed")]
 		[JsonProperty]	public Color	VolumeColorBarDown										{ get; set; }
 
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public Color	VolumeRightGutterColorForeground						{ get; set; }
+
+
+		[Category("1. Essential"), Description("description to be composed")]
+		[JsonProperty]	public bool		BarUpFillCandleBody										{ get; set; }
 
 
 		[Category("2. Grids and Gutters"), Description("description to be composed")]
@@ -239,7 +250,11 @@ namespace Sq1.Charting {
 		[JsonProperty]	public bool		MousePositionTrackOnGutters								{ get; set; }
 
 		[Category("2. Grids and Gutters"), Description("description to be composed")]
-		[JsonProperty]	public Color	MousePositionTrackOnGuttersColor						{ get; set; }
+		[JsonProperty]	public Color	MousePositionTrackOnGuttersColorBackground				{ get; set; }
+
+		[Category("2. Grids and Gutters"), Description("description to be composed")]
+		[JsonProperty]	public Color	MousePositionTrackOnGuttersColorForeground				{ get; set; }
+
 
 		[Category("1. Essential"), Description("description to be composed")]
 		[JsonProperty]	public int		BarsBackgroundTransparencyAlpha							{ get; set; }
@@ -360,21 +375,21 @@ namespace Sq1.Charting {
 		[Browsable(false)]
 		[JsonIgnore]	public int BarShadowXoffset { get { return this.BarWidthMinusRightPadding / 2; } }
 		
-		[Browsable(false)]
-		[JsonIgnore]	SolidBrush brushBackground;
-		[Browsable(false)]
-		[JsonIgnore]	public SolidBrush BrushBackground { get {
-				if (this.brushBackground == null) this.brushBackground = new SolidBrush(this.ChartColorBackground);
-				return this.brushBackground;
-			} }
+		//[Browsable(false)]
+		//[JsonIgnore]	SolidBrush brushBackground;
+		//[Browsable(false)]
+		//[JsonIgnore]	public SolidBrush BrushBackground { get {
+		//        if (this.brushBackground == null) this.brushBackground = new SolidBrush(this.ChartColorBackground);
+		//        return this.brushBackground;
+		//    } }
 
-		[Browsable(false)]
-		[JsonIgnore]	SolidBrush brushBackgroundReversed;
-		[Browsable(false)]
-		[JsonIgnore]	public SolidBrush BrushBackgroundReversed { get {
-				if (this.brushBackgroundReversed == null) this.brushBackgroundReversed = new SolidBrush(ColorReverse(this.ChartColorBackground));
-				return this.brushBackgroundReversed;
-			} }
+		//[Browsable(false)]
+		//[JsonIgnore]	SolidBrush brushBackgroundReversed;
+		//[Browsable(false)]
+		//[JsonIgnore]	public SolidBrush BrushBackgroundReversed { get {
+		//        if (this.brushBackgroundReversed == null) this.brushBackgroundReversed = new SolidBrush(ColorReverse(this.ChartColorBackground));
+		//        return this.brushBackgroundReversed;
+		//    } }
 
 		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushGutterRightBackground;
@@ -392,6 +407,7 @@ namespace Sq1.Charting {
 				return this.brushGutterRightForeground;
 			} }
 
+
 		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushGutterBottomBackground;
 		[Browsable(false)]
@@ -407,6 +423,7 @@ namespace Sq1.Charting {
 				if (this.brushGutterBottomForeground == null) this.brushGutterBottomForeground = new SolidBrush(this.GutterBottomColorForeground);
 				return this.brushGutterBottomForeground;
 			} }
+
 
 		[Browsable(false)]
 		[JsonIgnore]	SolidBrush brushGutterBottomNewDateForeground;
@@ -582,11 +599,21 @@ namespace Sq1.Charting {
 		[Browsable(false)]
 		[JsonIgnore]	Pen penMousePositionTrackOnGutters;
 		[Browsable(false)]
-		[JsonIgnore]	public Pen PenMousePositionTrackOnGutters { get {
+		[JsonIgnore]	public Pen PenMousePositionTrackOnGuttersForeground { get {
 				if (this.penMousePositionTrackOnGutters == null) this.penMousePositionTrackOnGutters = 
-					new Pen(this.MousePositionTrackOnGuttersColor);
+					new Pen(this.MousePositionTrackOnGuttersColorForeground);
 				return this.penMousePositionTrackOnGutters;
 			} }
+
+		[Browsable(false)]
+		[JsonIgnore]	Brush brushMousePositionTrackOnGuttersBackground;
+		[Browsable(false)]
+		[JsonIgnore]	public Brush BrushMousePositionTrackOnGuttersInverted { get {
+			if (this.brushMousePositionTrackOnGuttersBackground == null) this.brushMousePositionTrackOnGuttersBackground = 
+					new SolidBrush(this.MousePositionTrackOnGuttersColorBackground);
+				return this.brushMousePositionTrackOnGuttersBackground;
+			} }
+
 
 		[Browsable(false)]
 		[JsonIgnore]	Pen penSpreadBid;
@@ -661,6 +688,7 @@ namespace Sq1.Charting {
 
 		[Browsable(false)]
 		[JsonIgnore]	Brush brushLevelTwoLot;
+		private string p;
 		[Browsable(false)]
 		[JsonIgnore]	public Brush BrushLevelTwoLot { get {
 				if (this.brushLevelTwoLot == null) this.brushLevelTwoLot = new SolidBrush(this.LevelTwoLotColor);
@@ -677,6 +705,9 @@ namespace Sq1.Charting {
 			PriceColorBarDown = Color.IndianRed;
 			VolumeColorBarUp = Color.CadetBlue;
 			VolumeColorBarDown = Color.CadetBlue;
+			VolumeRightGutterColorForeground = Color.White;
+			BarUpFillCandleBody = false;
+
 			GutterRightColorBackground = Color.Gainsboro;
 			GutterRightColorForeground = Color.Black;
 			GutterRightFont = new Font("Consolas", 8f);
@@ -740,7 +771,8 @@ namespace Sq1.Charting {
 			AlertPendingProtoStopLossEllipsePenWidth = 2;
 
 			MousePositionTrackOnGutters = true;
-			MousePositionTrackOnGuttersColor = Color.LightGray;
+			MousePositionTrackOnGuttersColorBackground = Color.Black;
+			MousePositionTrackOnGuttersColorForeground = Color.LightGray;
 			BarsBackgroundTransparencyAlpha = 24;
 			ChartLabelsUpperLeftYstartTopmost = 5;
 			ChartLabelsUpperLeftX = 5;
@@ -775,6 +807,12 @@ namespace Sq1.Charting {
 			LevelTwoLotFont = new Font("Microsoft Sans Serif", 8.25f);
 			LevelTwoLotColor = Color.Black;
 			LevelTwoLotPaddingHorizontal = 3;
+
+			base.Name = "UNASSIGNED";
+		}
+
+		public ChartSettings(string name) : this() {
+			base.Name = name;
 		}
 
 		public static Color ColorReverse(Color color) {
@@ -785,93 +823,82 @@ namespace Sq1.Charting {
 		}
 		
 		public void DisposeAllGDIs_handlesLeakHunter() {
-			//if (this.penAlertPendingEllipse						!= null) { this.penAlertPendingEllipse					.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penAlertPendingProtoStopLossEllipse		!= null) { this.penAlertPendingProtoStopLossEllipse		.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penAlertPendingProtoTakeProfitEllipse		!= null) { this.penAlertPendingProtoTakeProfitEllipse	.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penGridlinesHorizontal						!= null) { this.penGridlinesHorizontal					.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penGridlinesVertical						!= null) { this.penGridlinesVertical					.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penGridlinesVerticalNewDate				!= null) { this.penGridlinesVerticalNewDate				.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penLevelTwoAskColorContour					!= null) { this.penLevelTwoAskColorContour				.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penLevelTwoBidColorContour					!= null) { this.penLevelTwoBidColorContour				.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penMousePositionTrackOnGutters				!= null) { this.penMousePositionTrackOnGutters			.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penPositionFilledDot						!= null) { this.penPositionFilledDot					.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penPositionLineEntryExitConnectedLoss		!= null) { this.penPositionLineEntryExitConnectedLoss	.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penPositionLineEntryExitConnectedProfit	!= null) { this.penPositionLineEntryExitConnectedProfit	.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penPositionLineEntryExitConnectedUnknown	!= null) { this.penPositionLineEntryExitConnectedUnknown.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penPositionPlannedEllipse					!= null) { this.penPositionPlannedEllipse				.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penPriceBarDown							!= null) { this.penPriceBarDown							.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penPriceBarUp								!= null) { this.penPriceBarUp							.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penSpreadAsk								!= null) { this.penSpreadAsk							.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.penSpreadBid								!= null) { this.penSpreadBid							.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushBackground							!= null) { this.brushBackground							.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushBackgroundReversed					!= null) { this.brushBackgroundReversed					.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushGutterBottomBackground				!= null) { this.brushGutterBottomBackground				.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushGutterBottomNewDateForeground			!= null) { this.brushGutterBottomNewDateForeground		.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushGutterRightBackground					!= null) { this.brushGutterRightBackground				.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushGutterRightForeground					!= null) { this.brushGutterRightForeground				.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushLevelTwoAskColorBackground			!= null) { this.brushLevelTwoAskColorBackground			.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushLevelTwoBidColorBackground			!= null) { this.brushLevelTwoBidColorBackground			.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushLevelTwoLot							!= null) { this.brushLevelTwoLot						.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushLevelTwoLotsColorBackground			!= null) { this.brushLevelTwoLotsColorBackground		.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushPositionFilledDot						!= null) { this.brushPositionFilledDot					.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushPriceBarDown							!= null) { this.brushPriceBarDown						.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushPriceBarUp							!= null) { this.brushPriceBarUp							.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushSpreadLabel							!= null) { this.brushSpreadLabel						.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushVolumeBarDown							!= null) { this.brushVolumeBarDown						.Dispose(); this.penAlertPendingEllipse = null; }
-			//if (this.brushVolumeBarUp							!= null) { this.brushVolumeBarUp						.Dispose(); this.penAlertPendingEllipse = null; }
-			this.PensAndBrushesCached_DisposeAndNullify();
+			if (this.penAlertPendingEllipse						!= null) { this.penAlertPendingEllipse					.Dispose(); this.penAlertPendingEllipse						= null; }
+			if (this.penAlertPendingProtoStopLossEllipse		!= null) { this.penAlertPendingProtoStopLossEllipse		.Dispose(); this.penAlertPendingProtoStopLossEllipse		= null; }
+			if (this.penAlertPendingProtoTakeProfitEllipse		!= null) { this.penAlertPendingProtoTakeProfitEllipse	.Dispose(); this.penAlertPendingProtoTakeProfitEllipse		= null; }
+			if (this.penGridlinesHorizontal						!= null) { this.penGridlinesHorizontal					.Dispose(); this.penGridlinesHorizontal						= null; }
+			if (this.penGridlinesVertical						!= null) { this.penGridlinesVertical					.Dispose(); this.penGridlinesVertical						= null; }
+			if (this.penGridlinesVerticalNewDate				!= null) { this.penGridlinesVerticalNewDate				.Dispose(); this.penGridlinesVerticalNewDate				= null; }
+			if (this.penLevelTwoAskColorContour					!= null) { this.penLevelTwoAskColorContour				.Dispose(); this.penLevelTwoAskColorContour					= null; }
+			if (this.penLevelTwoBidColorContour					!= null) { this.penLevelTwoBidColorContour				.Dispose(); this.penLevelTwoBidColorContour					= null; }
+			if (this.penMousePositionTrackOnGutters				!= null) { this.penMousePositionTrackOnGutters			.Dispose(); this.penMousePositionTrackOnGutters				= null; }
+			if (this.brushMousePositionTrackOnGuttersBackground	!= null) { this.brushMousePositionTrackOnGuttersBackground.Dispose(); this.brushMousePositionTrackOnGuttersBackground	= null; }
+			if (this.penPositionFilledDot						!= null) { this.penPositionFilledDot					.Dispose(); this.penPositionFilledDot						= null; }
+			if (this.penPositionLineEntryExitConnectedLoss		!= null) { this.penPositionLineEntryExitConnectedLoss	.Dispose(); this.penPositionLineEntryExitConnectedLoss		= null; }
+			if (this.penPositionLineEntryExitConnectedProfit	!= null) { this.penPositionLineEntryExitConnectedProfit	.Dispose(); this.penPositionLineEntryExitConnectedProfit	= null; }
+			if (this.penPositionLineEntryExitConnectedUnknown	!= null) { this.penPositionLineEntryExitConnectedUnknown.Dispose(); this.penPositionLineEntryExitConnectedUnknown	= null; }
+			if (this.penPositionPlannedEllipse					!= null) { this.penPositionPlannedEllipse				.Dispose(); this.penPositionPlannedEllipse					= null; }
+			if (this.penPriceBarDown							!= null) { this.penPriceBarDown							.Dispose(); this.penPriceBarDown							= null; }
+			if (this.penPriceBarUp								!= null) { this.penPriceBarUp							.Dispose(); this.penPriceBarUp								= null; }
+			if (this.penSpreadAsk								!= null) { this.penSpreadAsk							.Dispose(); this.penSpreadAsk								= null; }
+			if (this.penSpreadBid								!= null) { this.penSpreadBid							.Dispose(); this.penSpreadBid								= null; }
+			if (this.brushGutterBottomBackground				!= null) { this.brushGutterBottomBackground				.Dispose(); this.brushGutterBottomBackground				= null; }
+			if (this.brushGutterBottomForeground				!= null) { this.brushGutterBottomForeground				.Dispose(); this.brushGutterBottomForeground				= null; }
+			if (this.brushGutterBottomNewDateForeground			!= null) { this.brushGutterBottomNewDateForeground		.Dispose(); this.brushGutterBottomNewDateForeground			= null; }
+			if (this.brushGutterRightBackground					!= null) { this.brushGutterRightBackground				.Dispose(); this.brushGutterRightBackground					= null; }
+			if (this.brushGutterRightForeground					!= null) { this.brushGutterRightForeground				.Dispose(); this.brushGutterRightForeground					= null; }
+			if (this.brushLevelTwoAskColorBackground			!= null) { this.brushLevelTwoAskColorBackground			.Dispose(); this.brushLevelTwoAskColorBackground			= null; }
+			if (this.brushLevelTwoBidColorBackground			!= null) { this.brushLevelTwoBidColorBackground			.Dispose(); this.brushLevelTwoBidColorBackground			= null; }
+			if (this.brushLevelTwoLot							!= null) { this.brushLevelTwoLot						.Dispose(); this.brushLevelTwoLot							= null; }
+			if (this.brushLevelTwoLotsColorBackground			!= null) { this.brushLevelTwoLotsColorBackground		.Dispose(); this.brushLevelTwoLotsColorBackground			= null; }
+			if (this.brushPositionFilledDot						!= null) { this.brushPositionFilledDot					.Dispose(); this.brushPositionFilledDot						= null; }
+			if (this.brushPriceBarDown							!= null) { this.brushPriceBarDown						.Dispose(); this.brushPriceBarDown							= null; }
+			if (this.brushPriceBarUp							!= null) { this.brushPriceBarUp							.Dispose(); this.brushPriceBarUp							= null; }
+			if (this.brushSpreadLabel							!= null) { this.brushSpreadLabel						.Dispose(); this.brushSpreadLabel							= null; }
+			if (this.brushVolumeBarDown							!= null) { this.brushVolumeBarDown						.Dispose(); this.brushVolumeBarDown							= null; }
+			if (this.brushVolumeBarUp							!= null) { this.brushVolumeBarUp						.Dispose(); this.brushVolumeBarUp							= null; }
 		}
 
 		public void PensAndBrushesCached_DisposeAndNullify() {
-			List<IDisposable> disposables = new List<IDisposable>(){
-				this.brushBackground,
-				this.brushBackgroundReversed,
-				this.brushGutterRightBackground,
-				this.brushGutterRightForeground,
-				this.brushGutterBottomBackground,
-				this.brushGutterBottomForeground,
-				this.brushGutterBottomNewDateForeground,
-				this.brushPriceBarUp,
-				this.penPriceBarUp,
-				this.brushPriceBarDown,
-				this.penPriceBarDown,
-				this.brushVolumeBarUp,
-				this.brushVolumeBarDown,
-				this.penGridlinesHorizontal,
-				this.penGridlinesVertical,
-				this.penGridlinesVerticalNewDate,
-				this.penPositionPlannedEllipse,
-				this.penPositionFilledDot,
-				this.brushPositionFilledDot,
-				this.penPositionLineEntryExitConnectedUnknown,
-				this.penPositionLineEntryExitConnectedProfit,
-				this.penPositionLineEntryExitConnectedLoss,
-				this.penAlertPendingEllipse,
-				this.penAlertPendingProtoTakeProfitEllipse,
-				this.penAlertPendingProtoStopLossEllipse,
-				this.penMousePositionTrackOnGutters,
-				this.penSpreadBid,
-				this.penSpreadAsk,
-				this.brushSpreadLabel,
-				this.brushLevelTwoLotsColorBackground,
-				this.brushLevelTwoAskColorBackground,
-				this.brushLevelTwoBidColorBackground,
-				this.penLevelTwoAskColorContour,
-				this.penLevelTwoBidColorContour,
-				this.brushLevelTwoLot,
-			};
-
-			//foreach (IDisposable each in disposables) {
-			for (int i=0; i<disposables.Count; i++) {
-				IDisposable each = disposables[i];
-				if (each == null) continue;
-				each.Dispose();
-				each = null;
-			}
+			this.DisposeAllGDIs_handlesLeakHunter();
 		}
 
 		public override string ToString() {
 			return this.StrategyName;
+		}
+
+		public virtual ChartSettings Clone() {
+			return (ChartSettings)base.MemberwiseClone();
+		}
+
+		public void AbsorbFrom(ChartSettings tpl) {
+			PropertyInfo[] props = this.GetType().GetProperties();
+			foreach (PropertyInfo prop in props) {
+				bool jsonPropertyFound = false;
+				bool browseable = true;
+				//foreach (Attribute attr in prop.GetCustomAttributes(typeof(JsonPropertyAttribute), true)) {
+				foreach (Attribute attr in ((MemberInfo)prop).GetCustomAttributes(true)) {
+					if (attr == null) continue;
+
+					BrowsableAttribute attrAsBrowsable = attr as BrowsableAttribute;
+					if (attrAsBrowsable != null) {
+						if (attrAsBrowsable.Browsable) continue;
+						browseable = false;
+						continue;
+					}
+
+					JsonPropertyAttribute attrAsJsonProperty = attr as JsonPropertyAttribute;
+					if (attrAsJsonProperty != null) {
+						jsonPropertyFound = true;
+					}
+				}
+				if (jsonPropertyFound == false || browseable == false) continue;
+
+				PropertyInfo  tplProperty =  tpl.GetType().GetProperty(prop.Name);
+				object tplValue = prop.GetValue(tpl, null);
+				prop.SetValue(this, tplValue, null);
+			}
+			this.Name = tpl.Name;
 		}
 	}
 }

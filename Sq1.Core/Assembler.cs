@@ -32,6 +32,8 @@ namespace Sq1.Core {
 		public	DictionaryManyToOne<ChartShadow, Alert>	AlertsForChart;
 		public	AssemblerDataSnapshot					AssemblerDataSnapshot;
 		public	Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;
+		//public	RepositorySerializerChartSettingsTemplates	RepositorySerializerChartSettingsTemplates;
+		public RepositoryJsonChartSettingsTemplates			RepositoryJsonChartSettingsTemplates;
 
 		public	const string							DateTimeFormatIndicatorHasNoValuesFor 	= "yyyy-MMM-dd ddd HH:mm";
 		public	const string							DateTimeFormatToMinutes				 	= "yyyy-MMM-dd HH:mm";
@@ -139,6 +141,9 @@ namespace Sq1.Core {
 			AssemblerDataSnapshot					= new AssemblerDataSnapshot();
 			AssemblerDataSnapshotSerializer			= new Serializer<AssemblerDataSnapshot>();
 
+			//RepositorySerializerChartSettingsTemplates = new RepositorySerializerChartSettingsTemplates();
+			RepositoryJsonChartSettingsTemplates	= new RepositoryJsonChartSettingsTemplates();
+
 		}
 		public Assembler Initialize(IStatusReporter mainForm) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
@@ -180,6 +185,13 @@ namespace Sq1.Core {
 			
 			createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);
 			this.AssemblerDataSnapshot = this.AssemblerDataSnapshotSerializer.Deserialize();
+
+			//createdNewFile = this.RepositorySerializerChartSettingsTemplates.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
+			//this.RepositoryMarketInfo.Deserialize();
+
+			this.RepositoryJsonChartSettingsTemplates.Initialize(this.AppDataPath, "ChartSettingsTemplates");
+			this.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder_IfNoneCreateDefault();
+			
 			
 			//v1
 			try {

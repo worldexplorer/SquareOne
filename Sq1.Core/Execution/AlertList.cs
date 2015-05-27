@@ -177,8 +177,15 @@ namespace Sq1.Core.Execution {
 			return base.ToString() + " ByBarPlaced.Bars[" + ByBarPlaced.Keys.Count + "]";
 		}
 
-		void IDisposable.Dispose() {
+		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
 			this.DisposeWaitHandlesAndClear(this, "EXTERNAL_DISPOSE()_CALL");
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

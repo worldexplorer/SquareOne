@@ -94,6 +94,7 @@
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\OrdersAutoTree.cs" />
+    <Compile Include="Charting\ChartSettings.cs" />
     <Compile Include="Charting\ChartShadow.PaintSynchronizer.cs">
       <DependentUpon>ChartShadow.cs</DependentUpon>
       <SubType>UserControl</SubType>
@@ -199,6 +200,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerDataSnapshot.cs" />
+    <Compile Include="Repositories\RepositoryJsonChartSettingsTemplates.cs" />
     <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionary.cs" />
     <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionarySorted.cs" />
     <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionaryCorrelator.cs" />

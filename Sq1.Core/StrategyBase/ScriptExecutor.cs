@@ -1614,14 +1614,30 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
 			this.ExecutionDataSnapshot					.Dispose();
 			this.Backtester								.Dispose();
 			this.Sequencer								.Dispose();
 			this.Livesimulator							.Dispose();
 			this.ScriptIsRunningCantAlterInternalLists	.Dispose();
-			this.ChartShadow							.Dispose();
+
+			// ALREADY_DISPOSED_IN_ChartFormsManager.Dispose_workspaceReloading() this.ChartShadow							.Dispose();
+
+			this.ExecutionDataSnapshot					= null;
+			this.Backtester								= null;
+			this.Sequencer								= null;
+			this.Livesimulator							= null;
+			this.ScriptIsRunningCantAlterInternalLists	= null;
+			this.ChartShadow							= null;
+
 			this.OrderProcessor		= null;
 			this.Bars				= null;		// if this.Bars are subscribed to anything, the event generator will keep Bars' handler and so this.Bars wont get GC'ed
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

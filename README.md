@@ -4,6 +4,7 @@ SquareOne v1.0-dev branch
 ![ScreenShot](Screenshot-v1.0-dev-livesim.png)
 ![ScreenShot](Screenshot-v1.0-dev-optimizer.png)
 ![ScreenShot](Screenshot-v1.0-dev-correlator.png)
+![ScreenShot](Screenshot-v1.0-dev-chart-symbol.png)
 
 Already implemented in v1.0-dev (this branch, to be released ~Jan2015 **)
 -------------------------------------------------------------------------

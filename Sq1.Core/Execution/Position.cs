@@ -166,6 +166,11 @@ namespace Sq1.Core.Execution {
 			} }
 		
 		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				//Assembler.PopupException(msg);
+				return;
+			}
 			if (this.EntryAlert != null) {
 				this.EntryAlert.Dispose();
 				//LATE_CALLBACKS_TOO_NOISY this.EntryAlert = null;
@@ -174,8 +179,11 @@ namespace Sq1.Core.Execution {
 				this.ExitAlert.Dispose();
 				//LATE_CALLBACKS_TOO_NOISY this.ExitAlert = null;
 			}
+			this.IsDisposed = true;
 		}
-		~ Position() { this.Dispose(); }
+		public bool IsDisposed { get; private set; }
+
+		~Position() { this.Dispose(); }
 		public Position() {
 			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
 			

@@ -198,7 +198,9 @@ namespace Sq1.Gui {
 
 			
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
-				if (disposePreviousDockPanel != null) disposePreviousDockPanel.Dispose();		// doesn't heal memory,handles,GDI,UserObj leak on same-workspace load
+				if (disposePreviousDockPanel != null) {
+					// MAKES_INNER_FORMS_CLUMSY_SIZED_AND_THROWS_INSIDE_WELFEN_LUO disposePreviousDockPanel.Dispose();		// doesn't heal memory,handles,GDI,UserObj leak on same-workspace load
+				}
 
 				foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormsManagers.Values) {
 					if (cfmgr.ChartForm == null) continue;

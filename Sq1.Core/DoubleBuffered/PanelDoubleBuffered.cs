@@ -22,7 +22,7 @@ namespace Sq1.Core.DoubleBuffered {
 		//} }
 
 		public PanelDoubleBuffered() : base() {
-			Application.ApplicationExit += new EventHandler(DisposeAndNullifyToRecreateInPaint);
+			Application.ApplicationExit += new EventHandler(disposeAndNullifyToRecreateInPaint);
 			//base.SetStyle( ControlStyles.AllPaintingInWmPaint
 			//             | ControlStyles.OptimizedDoubleBuffer
 			//        //	 | ControlStyles.UserPaint
@@ -38,7 +38,7 @@ namespace Sq1.Core.DoubleBuffered {
 			this.bufferedGraphics = this.graphicManager.Allocate(gNew, base.ClientRectangle);
 			gNew.Dispose();
 		}
-		public void DisposeAndNullifyToRecreateInPaint(object sender = null, EventArgs e = null) {
+		void disposeAndNullifyToRecreateInPaint(object sender = null, EventArgs e = null) {
 			if (this.bufferedGraphics == null) return;
 			this.bufferedGraphics.Dispose();
 			this.bufferedGraphics = null;
@@ -82,7 +82,7 @@ namespace Sq1.Core.DoubleBuffered {
 		}
 		protected override void OnResize(EventArgs e) {
 			try {
-				this.DisposeAndNullifyToRecreateInPaint(this, e);
+				this.disposeAndNullifyToRecreateInPaint(this, e);
 				this.Invalidate();
 			} catch (Exception ex) {
 				string msg = "PANEL_DOUBLE_BUFFERED.OnResize()_HAS_PROBLEMS_WITH_DOUBLE_BUFFERING_API"

@@ -262,8 +262,17 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
 			this.livesimDataSource	.Dispose();
 			this.DataSnapshot		.Dispose();
+			this.livesimDataSource	= null;
+			this.DataSnapshot		= null;
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

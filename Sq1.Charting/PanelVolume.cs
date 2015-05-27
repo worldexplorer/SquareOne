@@ -24,6 +24,7 @@ namespace Sq1.Charting {
 			// 2) paints Right and Bottom gutter foregrounds;
 			base.PaintWholeSurfaceBarsNotEmpty(g);
 			base.ForeColor = base.ChartControl.ChartSettings.VolumeColorBarDown;
+			base.BackColor = base.ChartControl.ChartSettings.VolumeRightGutterColorForeground;
 			this.renderBarsVolume(g);
 		}
 //		protected override void OnPaintBackground(PaintEventArgs pe) {

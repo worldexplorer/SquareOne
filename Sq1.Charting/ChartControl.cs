@@ -9,6 +9,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.Streaming;
+using Sq1.Core.Charting;
 using Sq1.Charting.MultiSplit;
 
 namespace Sq1.Charting {
@@ -32,7 +33,7 @@ namespace Sq1.Charting {
 		public int BarIndexMouseIsOverNow;
 
 		public ChartControl() {
-			this.ChartSettings = new ChartSettings(); // was a component, used at InitializeComponent() (to draw SampleBars)
+			this.ChartSettings = new ChartSettings(ChartSettings.NAME_DEFAULT);
 			this.ScriptExecutorObjects = new ChartControlFrozenForRendering();
 
 			InitializeComponent();
@@ -169,12 +170,12 @@ namespace Sq1.Charting {
 			this.hScrollBar.Maximum = this.Bars.Count - 1;		// index of  last available Bar in this.Bars
 			this.hScrollBar.Value = this.hScrollBar.Maximum;
 		}
-		public void DisposeBufferedGraphicsAndInvalidateAllPanels() {
-			foreach (PanelBase panel in this.panelsInvalidateAll) {
-				panel.DisposeAndNullifyToRecreateInPaint();
-			}
-			this.InvalidateAllPanels();
-		}
+		//public void DisposeBufferedGraphicsAndInvalidateAllPanels() {
+		//    foreach (PanelBase panel in this.panelsInvalidateAll) {
+		//        panel.disposeAndNullifyToRecreateInPaint();
+		//    }
+		//    this.InvalidateAllPanels();
+		//}
 		public override void InvalidateAllPanels() {
 			if (base.InvokeRequired) {
 				base.BeginInvoke(new MethodInvoker(this.InvalidateAllPanels));

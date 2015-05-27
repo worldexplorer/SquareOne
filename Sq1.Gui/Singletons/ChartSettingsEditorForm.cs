@@ -3,7 +3,9 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 
 using Sq1.Core.Repositories;
+using Sq1.Core.Charting;
 using Sq1.Charting;
+
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Singletons {

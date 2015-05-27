@@ -253,10 +253,19 @@ namespace Sq1.Core.Sequencing {
 
 
 		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
 			if (this.reusableExecutorsPool != null) {
 				this.reusableExecutorsPool.Dispose();		// appears in SequencerRun(), disappears in PoolFinishedBacktestsAll()
+				this.reusableExecutorsPool = null;
 			}
 			this.unpaused.Dispose();
+			this.unpaused = null;
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

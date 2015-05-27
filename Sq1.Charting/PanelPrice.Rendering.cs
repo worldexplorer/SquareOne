@@ -33,6 +33,7 @@ namespace Sq1.Charting {
 				int barYCloseInverted = base.ValueToYinverted(bar.Close);
 				//base.CheckConvertedBarDataIsNotZero(xOffsetFromRightBorder, barYOpen, barYHigh, barYLow, barYClose);
 				bool fillCandleBody = (bar.Open > bar.Close) ? true : false;
+				fillCandleBody |= base.ChartControl.ChartSettings.BarUpFillCandleBody;
 				base.RenderBarCandle(g, barX, barYOpenInverted, barYHighInverted, barYLowInverted, barYCloseInverted, fillCandleBody);
 
 				//int shadowX = 0;

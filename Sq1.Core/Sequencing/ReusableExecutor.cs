@@ -4,7 +4,7 @@ using Sq1.Core.Charting;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Sequencing {
-	public class ReusableExecutor : ScriptExecutor, IDisposable  {
+	public class ReusableExecutor : ScriptExecutor/*, IDisposable*/  {
 		// invoked once per DisposableExecutorsPool.ctor() { executorToBeSpawned = new DisposableExecutor(this.sequencer.Executor)}
 		public ReusableExecutor(string reasonToExist, ScriptExecutor scriptExecutor) : base(reasonToExist) {
 			if (base.Livesimulator != null) {

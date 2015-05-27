@@ -286,7 +286,7 @@ namespace Sq1.Core.Execution {
 
 		public void Dispose() {
 			if (this.IsDisposed || this.MreOrderFollowedIsAssignedNow == null) {
-				string msg = "ALERT_WAS_ALREADY_DISPOSED__ACCESSING_WAIT_HANDLE_WILL_THROW_NPE " + this.ToString();
+				string msg = "ALERT_WAS_ALREADY_DISPOSED__ACCESSING_NULL_WAIT_HANDLE_WILL_THROW_NPE " + this.ToString();
 				//Assembler.PopupException(msg);
 				return;
 			}

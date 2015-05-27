@@ -96,7 +96,6 @@
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ChartSettings.cs" />
     <Compile Include="ChartControl.ChartShadowProtocol.cs">
       <DependentUpon>ChartControl.cs</DependentUpon>
       <SubType>UserControl</SubType>

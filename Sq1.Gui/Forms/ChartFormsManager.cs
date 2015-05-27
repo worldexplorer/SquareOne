@@ -921,7 +921,12 @@ namespace Sq1.Gui.Forms {
 			this.ReportersFormsManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenReporters();
 		}
 		public void Dispose_workspaceReloading() {
-			string msig = "ChartFormsManager.Dispose_workspaceReloading()";
+			string msig = " //ChartFormsManager.Dispose_workspaceReloading()";
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg + msig);
+				return;
+			}
 			this.ChartStreamingConsumer.StreamingUnsubscribe(msig);
 			this.ReportersFormsManager	.Dispose_workspaceReloading();
 			this.ChartForm				.Dispose();
@@ -929,6 +934,16 @@ namespace Sq1.Gui.Forms {
 			//this.CorrelatorForm			.Dispose();
 			//this.LivesimForm			.Dispose();
 			this.Executor				.Dispose();
+
+			this.ReportersFormsManager	= null;
+			this.ChartForm				= null;
+			this.SequencerForm			= null;
+			this.CorrelatorForm			= null;
+			this.LivesimForm			= null;
+			this.Executor 				= null;
+
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

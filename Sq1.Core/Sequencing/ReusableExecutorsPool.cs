@@ -155,9 +155,19 @@ namespace Sq1.Core.Sequencing {
 		} }
 
 		public void Dispose() {
-			foreach (ScriptExecutor each in executorsSpawned) {
-				each.Dispose();
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
 			}
+			foreach (ScriptExecutor each in this.executorsSpawned) {
+				each.Dispose();
+				//DOESNT_NULLIFY each = null;
+			}
+			this.executorsSpawned.Clear();
+			this.executorsSpawned = null;
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

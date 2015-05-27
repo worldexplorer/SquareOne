@@ -25,13 +25,24 @@ namespace Sq1.Charting {
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChartSettingsEditorControl));
+			this.components = new System.ComponentModel.Container();
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
 			this.toolStripItemComboBox1 = new Sq1.Widgets.ToolStripImproved.ToolStripItemComboBox();
 			this.mniAbsorbFromChart = new System.Windows.Forms.ToolStripDropDownButton();
+			this.ctxTemplates = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+			this.ctxTemplateActions = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.mniLoad = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniltbSaveCurrentAs = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniltbDuplicate = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.mniltbRenameTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniAddNew = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.mniDelete = new System.Windows.Forms.ToolStripMenuItem();
 			this.statusStrip1.SuspendLayout();
+			this.ctxTemplateActions.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// propertyGrid1
@@ -42,7 +53,7 @@ namespace Sq1.Charting {
 			this.propertyGrid1.CommandsVisibleIfAvailable = false;
 			this.propertyGrid1.Location = new System.Drawing.Point(0, -27);
 			this.propertyGrid1.Name = "propertyGrid1";
-			this.propertyGrid1.Size = new System.Drawing.Size(234, 546);
+			this.propertyGrid1.Size = new System.Drawing.Size(234, 605);
 			this.propertyGrid1.TabIndex = 1;
 			this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
 			// 
@@ -66,17 +77,145 @@ namespace Sq1.Charting {
 			// mniAbsorbFromChart
 			// 
 			this.mniAbsorbFromChart.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.mniAbsorbFromChart.DropDown = this.ctxTemplates;
 			this.mniAbsorbFromChart.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.mniAbsorbFromChart.Name = "mniAbsorbFromChart";
-			this.mniAbsorbFromChart.Size = new System.Drawing.Size(121, 23);
-			this.mniAbsorbFromChart.Text = "Absorb From Chart";
+			this.mniAbsorbFromChart.Size = new System.Drawing.Size(75, 23);
+			this.mniAbsorbFromChart.Text = "Templates";
 			this.mniAbsorbFromChart.Click += new System.EventHandler(this.mniAbsorbFromChart_Click);
+			// 
+			// ctxTemplates
+			// 
+			this.ctxTemplates.Name = "ctxTemplates";
+			this.ctxTemplates.OwnerItem = this.mniAbsorbFromChart;
+			this.ctxTemplates.Size = new System.Drawing.Size(61, 4);
+			this.ctxTemplates.Opening += new System.ComponentModel.CancelEventHandler(this.ctxTemplates_Opening);
 			// 
 			// toolStripMenuItem5
 			// 
 			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
 			this.toolStripMenuItem5.Size = new System.Drawing.Size(181, 22);
 			this.toolStripMenuItem5.Text = "toolStripMenuItem5";
+			// 
+			// ctxTemplateActions
+			// 
+			this.ctxTemplateActions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mniLoad,
+            this.mniltbSaveCurrentAs,
+            this.toolStripSeparator2,
+            this.mniltbDuplicate,
+            this.mniltbRenameTo,
+            this.toolStripSeparator1,
+            this.mniAddNew,
+            this.mniDelete});
+			this.ctxTemplateActions.Name = "ctxTemplateActions";
+			this.ctxTemplateActions.Size = new System.Drawing.Size(267, 178);
+			// 
+			// mniLoad
+			// 
+			this.mniLoad.Name = "mniLoad";
+			this.mniLoad.Size = new System.Drawing.Size(266, 22);
+			this.mniLoad.Text = "Load [vvv]";
+			this.mniLoad.Visible = false;
+			this.mniLoad.Click += new System.EventHandler(this.mniLoad_Click);
+			// 
+			// mniltbSaveCurrentAs
+			// 
+			this.mniltbSaveCurrentAs.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbSaveCurrentAs.InputFieldAlignedRight = false;
+			this.mniltbSaveCurrentAs.InputFieldEditable = true;
+			this.mniltbSaveCurrentAs.InputFieldOffsetX = 80;
+			this.mniltbSaveCurrentAs.InputFieldValue = "www";
+			this.mniltbSaveCurrentAs.InputFieldWidth = 118;
+			this.mniltbSaveCurrentAs.Name = "mniltbSaveCurrentAs";
+			this.mniltbSaveCurrentAs.Size = new System.Drawing.Size(206, 21);
+			this.mniltbSaveCurrentAs.Text = "Save Current:";
+			this.mniltbSaveCurrentAs.TextLeft = "Save Current:";
+			this.mniltbSaveCurrentAs.TextLeftOffsetX = 0;
+			this.mniltbSaveCurrentAs.TextLeftWidth = 52;
+			this.mniltbSaveCurrentAs.TextRed = false;
+			this.mniltbSaveCurrentAs.TextRight = "";
+			this.mniltbSaveCurrentAs.TextRightOffsetX = 201;
+			this.mniltbSaveCurrentAs.TextRightWidth = 2;
+			this.mniltbSaveCurrentAs.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbSaveCurrentAs_UserTyped);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(263, 6);
+			// 
+			// mniltbDuplicate
+			// 
+			this.mniltbDuplicate.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbDuplicate.InputFieldAlignedRight = false;
+			this.mniltbDuplicate.InputFieldEditable = true;
+			this.mniltbDuplicate.InputFieldOffsetX = 80;
+			this.mniltbDuplicate.InputFieldValue = "xxxx";
+			this.mniltbDuplicate.InputFieldWidth = 118;
+			this.mniltbDuplicate.Name = "mniltbDuplicate";
+			this.mniltbDuplicate.Size = new System.Drawing.Size(206, 21);
+			this.mniltbDuplicate.Text = "Duplicate To:";
+			this.mniltbDuplicate.TextLeft = "Duplicate To:";
+			this.mniltbDuplicate.TextLeftOffsetX = 0;
+			this.mniltbDuplicate.TextLeftWidth = 79;
+			this.mniltbDuplicate.TextRed = false;
+			this.mniltbDuplicate.TextRight = "";
+			this.mniltbDuplicate.TextRightOffsetX = 201;
+			this.mniltbDuplicate.TextRightWidth = 2;
+			this.mniltbDuplicate.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDuplicate_UserTyped);
+			// 
+			// mniltbRenameTo
+			// 
+			this.mniltbRenameTo.BackColor = System.Drawing.Color.Transparent;
+			this.mniltbRenameTo.InputFieldAlignedRight = false;
+			this.mniltbRenameTo.InputFieldEditable = true;
+			this.mniltbRenameTo.InputFieldOffsetX = 80;
+			this.mniltbRenameTo.InputFieldValue = "yyyy";
+			this.mniltbRenameTo.InputFieldWidth = 118;
+			this.mniltbRenameTo.Name = "mniltbRenameTo";
+			this.mniltbRenameTo.Size = new System.Drawing.Size(206, 21);
+			this.mniltbRenameTo.Text = "Rename To:";
+			this.mniltbRenameTo.TextLeft = "Rename To:";
+			this.mniltbRenameTo.TextLeftOffsetX = 0;
+			this.mniltbRenameTo.TextLeftWidth = 72;
+			this.mniltbRenameTo.TextRed = false;
+			this.mniltbRenameTo.TextRight = "";
+			this.mniltbRenameTo.TextRightOffsetX = 201;
+			this.mniltbRenameTo.TextRightWidth = 2;
+			this.mniltbRenameTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbRenameTo_UserTyped);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(263, 6);
+			// 
+			// mniAddNew
+			// 
+			this.mniAddNew.BackColor = System.Drawing.Color.Transparent;
+			this.mniAddNew.InputFieldAlignedRight = false;
+			this.mniAddNew.InputFieldEditable = true;
+			this.mniAddNew.InputFieldOffsetX = 80;
+			this.mniAddNew.InputFieldValue = "zzzz";
+			this.mniAddNew.InputFieldWidth = 118;
+			this.mniAddNew.Name = "mniAddNew";
+			this.mniAddNew.Size = new System.Drawing.Size(206, 21);
+			this.mniAddNew.Text = "Add New:";
+			this.mniAddNew.TextLeft = "Add New:";
+			this.mniAddNew.TextLeftOffsetX = 0;
+			this.mniAddNew.TextLeftWidth = 61;
+			this.mniAddNew.TextRed = false;
+			this.mniAddNew.TextRight = "";
+			this.mniAddNew.TextRightOffsetX = 201;
+			this.mniAddNew.TextRightWidth = 2;
+			this.mniAddNew.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniAddNew_UserTyped);
+			// 
+			// mniDelete
+			// 
+			this.mniDelete.Name = "mniDelete";
+			this.mniDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
+			this.mniDelete.Size = new System.Drawing.Size(266, 22);
+			this.mniDelete.Text = "Delete [Default]";
+			this.mniDelete.Click += new System.EventHandler(this.mniDelete_Click);
 			// 
 			// ChartSettingsEditorControl
 			// 
@@ -88,6 +227,7 @@ namespace Sq1.Charting {
 			this.Size = new System.Drawing.Size(234, 540);
 			this.statusStrip1.ResumeLayout(false);
 			this.statusStrip1.PerformLayout();
+			this.ctxTemplateActions.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -100,5 +240,15 @@ namespace Sq1.Charting {
 		private ToolStripMenuItem toolStripMenuItem5;
 		public Widgets.ToolStripImproved.ToolStripItemComboBox toolStripItemComboBox1;
 		private ToolStripDropDownButton mniAbsorbFromChart;
+		private ContextMenuStrip ctxTemplates;
+		private ContextMenuStrip ctxTemplateActions;
+		private Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbDuplicate;
+		private Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbRenameTo;
+		private ToolStripSeparator toolStripSeparator1;
+		private Widgets.LabeledTextBox.MenuItemLabeledTextBox mniAddNew;
+		private ToolStripMenuItem mniDelete;
+		private ToolStripMenuItem mniLoad;
+		private Widgets.LabeledTextBox.MenuItemLabeledTextBox mniltbSaveCurrentAs;
+		private ToolStripSeparator toolStripSeparator2;
 	}
 }

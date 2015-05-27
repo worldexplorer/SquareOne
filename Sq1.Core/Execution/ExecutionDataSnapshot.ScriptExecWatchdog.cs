@@ -145,7 +145,12 @@ namespace Sq1.Core.Execution {
 		}
 
 		public void Dispose() {
-			this.ScriptRunningOnBarStaticLast						.Dispose();
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.ScriptRunningOnBarStaticLast.Dispose();
 			this.ScriptRunningOnNewQuote							.Dispose();
 			this.ScriptRunningOnAlertFilled							.Dispose();
 			this.ScriptRunningOnAlertKilled							.Dispose();
@@ -165,6 +170,8 @@ namespace Sq1.Core.Execution {
 			this.PositionsOpenNow									.Dispose();
 			this.PositionsOpenedAfterExec							.Dispose();
 			this.PositionsClosedAfterExec							.Dispose();
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 	}
 }

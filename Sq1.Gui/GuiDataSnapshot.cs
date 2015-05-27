@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Newtonsoft.Json;
-using Sq1.Gui.Forms;
 using Sq1.Charting;
+using Sq1.Core.Charting;
+using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
+
+using Newtonsoft.Json;
 
 //using Newtonsoft.Json;
 //	[DataContract]
