@@ -180,7 +180,7 @@ namespace Sq1.Gui.Forms {
 			}
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 				"ChartFormDataSnapshot-" + charSernoDeserialized + ".json", "Workspaces",
-				Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
+				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 			if (this.DataSnapshot == null) {
 				string msg = "I_REFUSE_CTOR_SERIALIZATION AVOIDING_NPE this.DataSnapshot[" + this.DataSnapshot + "]=null";
@@ -219,7 +219,7 @@ namespace Sq1.Gui.Forms {
 				int charSernoNext = this.MainForm.GuiDataSnapshot.ChartSernoNextAvailable;
 				bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 					"ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
-					Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
+					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 				this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();	// will CREATE a new ChartFormDataSnapshot and keep the reference for further Serialize(); we should fill THIS object
 				this.DataSnapshot.ChartSerno = charSernoNext;
 				this.DataSnapshotSerializer.Serialize();
@@ -269,7 +269,7 @@ namespace Sq1.Gui.Forms {
 				int charSernoNext = this.MainForm.GuiDataSnapshot.ChartSernoNextAvailable;
 				bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 					"ChartFormDataSnapshot-" + charSernoNext + ".json", "Workspaces",
-					Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
+					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 				this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 				this.DataSnapshot.ChartSerno = charSernoNext;
 			}

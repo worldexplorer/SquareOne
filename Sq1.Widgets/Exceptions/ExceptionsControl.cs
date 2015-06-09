@@ -69,7 +69,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.DataSnapshotSerializer = new Serializer<ExceptionsControlDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 				"Sq1.Widgets.ExceptionsControlDataSnapshot.json", "Workspaces",
-				Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName);
+				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded);
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 			if (createdNewFile) {
 				this.DataSnapshot.SplitDistanceVertical = this.splitContainerVertical.SplitterDistance;

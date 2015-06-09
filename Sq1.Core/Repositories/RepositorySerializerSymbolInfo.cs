@@ -85,14 +85,17 @@ namespace Sq1.Core.Repositories {
 		}
 
 
-		public class ASC : IComparer<SymbolInfo> { int IComparer<SymbolInfo>.Compare(SymbolInfo x, SymbolInfo y) { return x.Symbol.CompareTo(y.Symbol); } }
-		public void sort() {
+		public class ASC : IComparer<SymbolInfo> {
+			int IComparer<SymbolInfo>.Compare(SymbolInfo x, SymbolInfo y) { return x.Symbol.CompareTo(y.Symbol); }
+		}
+		void sort() {
 			this.SymbolInfos.Sort(new ASC());
 		}
 		internal void DeserializeAndSort() {
 			this.Deserialize();
 			this.sort();
 		}
+
 
 		bool deserializedOnce_nowSyncOnly = false;
 		public override SymbolInfoList Deserialize() {

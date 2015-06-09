@@ -34,7 +34,7 @@ namespace Sq1.Widgets.StrategiesTree {
 			
 			bool createdNewFile = this.dataSnapshotSerializer.Initialize(this.strategyRepository.RootPath,
 				"Sq1.Widgets.StrategiesTree.StrategiesTreeDataSnapshot.json", "Workspaces",
-				Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, false, true);
+				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, false, true);
 			this.dataSnapshot = this.dataSnapshotSerializer.Deserialize();
 			
 			this.populateStrategyRepositoryIntoTreeListView();			

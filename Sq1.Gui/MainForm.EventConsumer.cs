@@ -8,6 +8,7 @@ using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
+using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Gui {
 	public partial class MainForm {
@@ -198,7 +199,7 @@ namespace Sq1.Gui {
 					mniChartSubitem.Text = textForMenu;
 					mniChartSubitem.Tag = formImproved;
 					mniChartSubitem.Checked = (formImproved.IsCoveredOrAutoHidden == false);
-					mniChartSubitem.Click += new EventHandler(mniWindowsCtxShart_SubitemClick);
+					mniChartSubitem.Click += new EventHandler(mniWindowsCtxChart_SubitemClick);
 					mniChartSubitem.MouseEnter += new EventHandler(mniWindowsCtxChart_SubitemMouseEnter);
 					mniChartSubitem.MouseLeave += new EventHandler(mniWindowsCtxChart_SubitemMouseLeave);
 					mniChartSubitem.CheckOnClick = false;
@@ -208,7 +209,7 @@ namespace Sq1.Gui {
 				this.ctxWindows.Items.Add(mniRoot);
 			}
 		}
-		void mniWindowsCtxShart_SubitemClick(object sender, EventArgs e) {
+		void mniWindowsCtxChart_SubitemClick(object sender, EventArgs e) {
 			ToolStripMenuItem mniChartRelatedForm = sender as ToolStripMenuItem;
 			if (mniChartRelatedForm == null) {
 				string msg = "SENDER_MUST_BE_ToolStripMenuItem sender[" + sender + "]";
@@ -265,5 +266,6 @@ namespace Sq1.Gui {
 			// otherwize I didn't click and it was IsCoveredOrAutoHidden==false; put it back Left=>LeftHidden
 			chartRelatedForm.ToggleAutoHide();
 		}
+
 	}
 }

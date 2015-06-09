@@ -45,7 +45,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			try {
 				bool createdNewFile = this.dataSnapshotSerializer.Initialize(this.dataSourceRepository.RootPath,
 					"Sq1.Widgets.DataSourcesTree.DataSourceTreeDataSnapshot.json", "Workspaces",
-					Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
+					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 				this.dataSnapshot = this.dataSnapshotSerializer.Deserialize();
 				if (createdNewFile) {
 					this.dataSnapshotSerializer.Serialize();

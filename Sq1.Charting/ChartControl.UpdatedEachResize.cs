@@ -86,7 +86,7 @@ namespace Sq1.Charting {
 //			int ret = Math.Max(maxPrice, maxVolume);
 
 			int ret = 0;
-			foreach (PanelBase panel in this.panelsInvalidateAll) {
+			foreach (PanelBase panel in this.panelsForInvalidateAll_dontForgetIndicators) {
 				if (panel.PanelHasValuesForVisibleBarWindow == false) continue;
 				double panelMax = panel.VisibleMaxDoubleMinValueUnsafe;
 				if (panelMax == double.MinValue) {

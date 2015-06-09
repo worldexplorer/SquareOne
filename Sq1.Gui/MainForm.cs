@@ -69,7 +69,7 @@ namespace Sq1.Gui {
 		public void WorkspaceLoad(string workspaceToLoad = null) {
 			bool dockContentWillBeReCreated = true;
 			if (string.IsNullOrEmpty(workspaceToLoad)) {
-				workspaceToLoad = Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName;
+				workspaceToLoad = Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded;
 				dockContentWillBeReCreated = false;
 			}
 
@@ -139,13 +139,13 @@ namespace Sq1.Gui {
 
 
 
-				if (Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName != workspaceToLoad) {
-					Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName  = workspaceToLoad;
+				if (Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded != workspaceToLoad) {
+					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded  = workspaceToLoad;
 					Assembler.InstanceInitialized.AssemblerDataSnapshotSerializer.Serialize();
 				}
 				bool createdNewFile = this.GuiDataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 					"Sq1.Gui.GuiDataSnapshot.json", "Workspaces",
-					Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName);
+					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded);
 
 				this.GuiDataSnapshot = this.GuiDataSnapshotSerializer.Deserialize();
 				if (createdNewFile) {
@@ -161,7 +161,7 @@ namespace Sq1.Gui {
 					//v2
 					this.WorkspacesManager.RescanRebuildWorkspacesMenu();
 				}
-				this.WorkspacesManager.SyncMniEnabledAndSuggestNames();
+				//this.WorkspacesManager.SyncMniEnabledAndSuggestNames();
 				//this.DataSnapshot.RebuildDeserializedChartFormsManagers(this);
 
 
@@ -190,7 +190,7 @@ namespace Sq1.Gui {
 					this.ChartFormActiveNullUnsafe.Invalidate();	// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
 				}
 	
-				this.WorkspacesManager.SelectWorkspaceLoaded(workspaceToLoad);
+				this.WorkspacesManager.SelectWorkspaceAfterLoaded(workspaceToLoad);
 
 				if (ExceptionsForm.Instance.ExceptionControl.Exceptions.Count > 0) {
 					ExceptionsForm.Instance.Show(this.DockPanel);
@@ -248,6 +248,7 @@ namespace Sq1.Gui {
 					cfmgr.SequencerFormShow(true);
 					cfmgr.CorrelatorFormShow(true);
 					cfmgr.LivesimFormShow(true);
+					// INNER_DOCK_CONTENT_DOESNT_GET_FILLED_TO_THE_WINDOW_AREA??? cfmgr.ChartForm.ChartControl.InvalidateAllPanels();
 				}
 				
 				//NOPE ExecutionForm.Instance.ExecutionTreeControl.MoveStateColumnToLeftmost();

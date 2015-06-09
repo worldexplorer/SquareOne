@@ -191,6 +191,11 @@ namespace Sq1.Core.Indicators {
 			}
 		}
 		public void Initialize(HostPanelForIndicator panelNamedFolding) {
+			if (this.HostPanelForIndicator == panelNamedFolding) {
+				string msg = "INDICATOR_ALREADY_INITIALIZE_WITH_SAME_HOST_PANEL [" + this + "] this.HostPanelForIndicator[" + this.HostPanelForIndicator + "]";
+				//Assembler.PopupException(msg, null, false);
+				return;
+			}
 			this.HostPanelForIndicator = panelNamedFolding;
 		}
 		public void IndicatorErrorsOnBacktestStartingAppend(string msg, string separator = "; ") {

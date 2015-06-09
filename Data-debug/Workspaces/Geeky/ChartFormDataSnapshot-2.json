@@ -8,15 +8,15 @@
     "$type": "Sq1.Core.Charting.ChartSettings, Sq1.Core",
     "MultiSplitterRowsPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "panelPrice": {
+      "panelVolume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0
       },
-      "panelVolume": {
+      "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 518
+        "Distance": 69
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -29,7 +29,7 @@
       "multiSplitContainerRows": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 294
+        "Distance": 170
       }
     },
     "Name": "EnterEveryBarCompiled",

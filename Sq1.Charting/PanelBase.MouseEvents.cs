@@ -55,6 +55,8 @@ namespace Sq1.Charting {
 			//if (this.ChartControl.TooltipPositionShownAndMouseOverIt == true) {
 			//	return;
 			//}
+
+			if (this.ThisPanelIsPricePanel && this.ChartControl.TooltipPriceVisible) return;
 			
 			this.scrollingHorizontally = false;
 			this.squeezingHorizontally = false;
@@ -73,8 +75,8 @@ namespace Sq1.Charting {
 			BarIndexMouseIsOverNow = -1;
 			this.ChartControl.BarIndexMouseIsOverNow = -1;
 
-			this.ChartControl.TooltipPriceHide();
-			this.ChartControl.TooltipPositionHide();
+			// WHEN_ONMOUSEOVER_TOOLTIP_I_GET_MOUSELEAVE_HERE__FOLLOWING_INVALIDATE_WILL_HIDE this.ChartControl.TooltipPriceHide();
+			// WHEN_ONMOUSEOVER_TOOLTIP_I_GET_MOUSELEAVE_HERE__FOLLOWING_INVALIDATE_WILL_HIDE this.ChartControl.TooltipPositionHide();
 
 			this.ChartControl.InvalidateAllPanels();	//	DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES
 		}

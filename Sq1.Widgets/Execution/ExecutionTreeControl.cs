@@ -169,7 +169,7 @@ namespace Sq1.Widgets.Execution {
 			this.DataSnapshotSerializer = new Serializer<ExecutionTreeDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 				"Sq1.Widgets.ExecutionTreeDataSnapshot.json", "Workspaces" ,
-				Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName);
+				Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded);
 			this.DataSnapshot = this.DataSnapshotSerializer.Deserialize();
 			if (createdNewFile) {
 				this.DataSnapshot.ToggleMessagePaneSplittedHorizontally = (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) ? true : false;

@@ -132,7 +132,7 @@
       "FillOutsideQuoteSpreadParanoidCheckThrow": false,
       "SpreadModelerClassName": "BacktestSpreadModelerPercentage",
       "SpreadModelerPercent": 0.005,
-      "BacktestStrokesPerBar": 4,
+      "BacktestStrokesPerBar": 16,
       "SequenceIterationName": "it was a F5 GUI invoked backtest, not an optimization",
       "SequenceIterationSerno": -1,
       "Name": "Default",

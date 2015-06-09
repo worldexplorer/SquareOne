@@ -179,18 +179,19 @@ namespace Sq1.Charting {
 							public			int		BarShadowOffset { get { return this.ChartControl.ChartSettings.BarShadowXoffset; } }
 
 							// only used in PanelLeve2 to grow to the left if PanelLeve2 is on the left of PanelPrice, or grow to the right if PanelLeve2 is on the right of PanelPrice
-							protected		MultiSplitContainer ParentMultiSplitContainerNullUnsafe { get {return base.Parent as MultiSplitContainer; } }
+							public			MultiSplitContainer ParentMultiSplitContainerNullUnsafe { get {return base.Parent as MultiSplitContainer; } }
 							protected		List<Control>		ParentMultiSplitSiblings { get {
 								return this.ParentMultiSplitContainerNullUnsafe != null
 									? this.ParentMultiSplitContainerNullUnsafe.ControlsContained
 									: new List<Control>(); } }
 							protected		bool	ParentMultiSplitIamFirst { get { return this.ParentMultiSplitSiblings.IndexOf(this) == 0; } }
-							protected		bool	ParentMultiSplitIamLast  { get { return this.ParentMultiSplitSiblings.IndexOf(this) == this.ParentMultiSplitSiblings.Count - 1; } }
-							public			Point	ParentMultiSplitMyLocationAmongAllPanels { get {
+							public			bool	ParentMultiSplitIamLast  { get { return this.ParentMultiSplitSiblings.IndexOf(this) == this.ParentMultiSplitSiblings.Count - 1; } }
+							[Obsolete("RETURNS_LOCATION_AMONG_SAME_MULTISPLITTER_PANELS; TO_GET_X_OF_ALL_PANELS_WHEN_LEVEL2_IS_IN_LEFT_COLUMN_USE_")]
+							public			Point	ParentMultiSplitMyLocationAmongSiblingsPanels { get {
 								Point ret = new Point(-1, -1);
-								foreach (Control meOrMySibling in this.ParentMultiSplitSiblings) {
-									if (meOrMySibling != this) continue;
-									ret = meOrMySibling.Location;
+								foreach (Control meOrNeighbourPanels in this.ParentMultiSplitSiblings) {
+									if (meOrNeighbourPanels != this) continue;
+									ret = meOrNeighbourPanels.Location;
 									break;
 								}
 								if (ret.X == -1) {
@@ -439,7 +440,8 @@ namespace Sq1.Charting {
 					Assembler.PopupException(msg);
 					return;
 				}
-				if (this.Cursor != Cursors.Default) this.Cursor = Cursors.Default;
+				//if (this.Cursor != Cursors.Default) this.Cursor = Cursors.Default;
+				if (this.dragButtonPressed == false) this.Cursor = Cursors.Default;
 
 				
 				// TODO: we get here 4 times per Panel: DockContentHandler.SetVisible, set_FlagClipWindow, WndProc * 2
@@ -641,7 +643,8 @@ namespace Sq1.Charting {
 		}
 		public override string ToString() {
 			string ret = this.PanelName;
-			ret += ":" + this.Location.Y + "+" + this.Height + "=" + (this.Location.Y + this.Height);
+			//ret += ": Location[" + this.Location + "]; Size[" + this.Size + "] (" + this.Height + ");"
+			ret += " ClientRectangle[" + this.ClientRectangle + "]";
 			return ret;
 		}
 

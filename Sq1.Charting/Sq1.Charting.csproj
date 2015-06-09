@@ -213,11 +213,19 @@
     <Compile Include="TooltipPosition.Designer.cs">
       <DependentUpon>TooltipPosition.cs</DependentUpon>
     </Compile>
+    <Compile Include="TooltipPosition.EventConsumer.cs">
+      <DependentUpon>TooltipPosition.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="TooltipPrice.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="TooltipPrice.Designer.cs">
       <DependentUpon>TooltipPrice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TooltipPrice.EventConsumer.cs">
+      <DependentUpon>TooltipPrice.cs</DependentUpon>
+      <SubType>UserControl</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>

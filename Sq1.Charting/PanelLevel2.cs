@@ -157,7 +157,7 @@ namespace Sq1.Charting {
 			//double	pxPerLot_Width = base.Width / lotRangeToDisplay;
 			double pxPerLot_Width = base.Width / lotsMax;
 			int pxPerPriceStep_Height = panelPrice.PixelsPerPriceStep5pxLeast_cached;
-			int pxPricePanelVertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongAllPanels.Y;
+			int pxPricePanelVertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
 			if (pxPricePanelVertialOffset == -1) {
 				string msg = "PARANOID__PANEL_PRICE_MUST_BE_IN_THE_LIST_OF_MULTISPLITTER_CONTENT_BUT_NOT_FOUND_NONSENSE";
 				throw new Exception(msg);
@@ -343,7 +343,7 @@ namespace Sq1.Charting {
 			if (double.IsNaN(spread) == true) return;
 
 			PanelPrice panelPrice = this.ChartControl.PanelPrice;
-			int		pxPricePanelVertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongAllPanels.Y;
+			int		pxPricePanelVertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
 
 			int yBid = 0;
 			double bid = quoteLast.Bid;

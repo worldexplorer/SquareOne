@@ -298,7 +298,7 @@ namespace Sq1.Core.StrategyBase {
 //			}
 			if (ret == 0) {
 				string msg = "NO_SCRIPT_PARAMETER_VALUES_ABSORBED_SAME_FOR_Count[" + scriptParametersById_ReflectedCached.Count + "]";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 			}
 			return ret;
 		}
@@ -338,7 +338,7 @@ namespace Sq1.Core.StrategyBase {
 //			}
 			if (ret == 0) {
 				string msg = "NO_INDICATOR_PARAMETER_VALUES_ABSORBED_SAME_FOR_Count[" + indicatorParametersByIndicator_ReflectedCached.Count + "]";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 			}
 			return ret;
 		}

@@ -5,6 +5,7 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
 using Sq1.Gui.Singletons;
+using System.Diagnostics;
 
 namespace Sq1.Gui {
 	public partial class MainForm : IStatusReporter {
@@ -110,6 +111,9 @@ namespace Sq1.Gui {
 				exceptionsForm.PopupException(msg, exc, debuggingBreak);
 			} catch (Exception ex) {
 				//Assembler.PopupException(null, exc);
+				#if DEBUG
+				Debugger.Break();
+				#endif
 				throw (ex);
 			}
 		}

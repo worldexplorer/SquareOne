@@ -108,13 +108,14 @@ namespace Sq1.Charting {
             this.toolStripSeparator1,
             this.mniAddNew,
             this.mniDelete});
+			this.ctxTemplateActions.MinimumSize = new System.Drawing.Size(300, 0);
 			this.ctxTemplateActions.Name = "ctxTemplateActions";
-			this.ctxTemplateActions.Size = new System.Drawing.Size(267, 178);
+			this.ctxTemplateActions.Size = new System.Drawing.Size(309, 178);
 			// 
 			// mniLoad
 			// 
 			this.mniLoad.Name = "mniLoad";
-			this.mniLoad.Size = new System.Drawing.Size(266, 22);
+			this.mniLoad.Size = new System.Drawing.Size(308, 22);
 			this.mniLoad.Text = "Load [vvv]";
 			this.mniLoad.Visible = false;
 			this.mniLoad.Click += new System.EventHandler(this.mniLoad_Click);
@@ -126,23 +127,23 @@ namespace Sq1.Charting {
 			this.mniltbSaveCurrentAs.InputFieldEditable = true;
 			this.mniltbSaveCurrentAs.InputFieldOffsetX = 80;
 			this.mniltbSaveCurrentAs.InputFieldValue = "www";
-			this.mniltbSaveCurrentAs.InputFieldWidth = 118;
+			this.mniltbSaveCurrentAs.InputFieldWidth = 160;
 			this.mniltbSaveCurrentAs.Name = "mniltbSaveCurrentAs";
-			this.mniltbSaveCurrentAs.Size = new System.Drawing.Size(206, 21);
+			this.mniltbSaveCurrentAs.Size = new System.Drawing.Size(248, 21);
 			this.mniltbSaveCurrentAs.Text = "Save Current:";
 			this.mniltbSaveCurrentAs.TextLeft = "Save Current:";
 			this.mniltbSaveCurrentAs.TextLeftOffsetX = 0;
-			this.mniltbSaveCurrentAs.TextLeftWidth = 52;
+			this.mniltbSaveCurrentAs.TextLeftWidth = 79;
 			this.mniltbSaveCurrentAs.TextRed = false;
 			this.mniltbSaveCurrentAs.TextRight = "";
-			this.mniltbSaveCurrentAs.TextRightOffsetX = 201;
+			this.mniltbSaveCurrentAs.TextRightOffsetX = 243;
 			this.mniltbSaveCurrentAs.TextRightWidth = 2;
 			this.mniltbSaveCurrentAs.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbSaveCurrentAs_UserTyped);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(263, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(305, 6);
 			// 
 			// mniltbDuplicate
 			// 
@@ -151,16 +152,16 @@ namespace Sq1.Charting {
 			this.mniltbDuplicate.InputFieldEditable = true;
 			this.mniltbDuplicate.InputFieldOffsetX = 80;
 			this.mniltbDuplicate.InputFieldValue = "xxxx";
-			this.mniltbDuplicate.InputFieldWidth = 118;
+			this.mniltbDuplicate.InputFieldWidth = 160;
 			this.mniltbDuplicate.Name = "mniltbDuplicate";
-			this.mniltbDuplicate.Size = new System.Drawing.Size(206, 21);
+			this.mniltbDuplicate.Size = new System.Drawing.Size(248, 21);
 			this.mniltbDuplicate.Text = "Duplicate To:";
 			this.mniltbDuplicate.TextLeft = "Duplicate To:";
 			this.mniltbDuplicate.TextLeftOffsetX = 0;
 			this.mniltbDuplicate.TextLeftWidth = 79;
 			this.mniltbDuplicate.TextRed = false;
 			this.mniltbDuplicate.TextRight = "";
-			this.mniltbDuplicate.TextRightOffsetX = 201;
+			this.mniltbDuplicate.TextRightOffsetX = 243;
 			this.mniltbDuplicate.TextRightWidth = 2;
 			this.mniltbDuplicate.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDuplicate_UserTyped);
 			// 
@@ -171,23 +172,23 @@ namespace Sq1.Charting {
 			this.mniltbRenameTo.InputFieldEditable = true;
 			this.mniltbRenameTo.InputFieldOffsetX = 80;
 			this.mniltbRenameTo.InputFieldValue = "yyyy";
-			this.mniltbRenameTo.InputFieldWidth = 118;
+			this.mniltbRenameTo.InputFieldWidth = 160;
 			this.mniltbRenameTo.Name = "mniltbRenameTo";
-			this.mniltbRenameTo.Size = new System.Drawing.Size(206, 21);
+			this.mniltbRenameTo.Size = new System.Drawing.Size(248, 21);
 			this.mniltbRenameTo.Text = "Rename To:";
 			this.mniltbRenameTo.TextLeft = "Rename To:";
 			this.mniltbRenameTo.TextLeftOffsetX = 0;
 			this.mniltbRenameTo.TextLeftWidth = 72;
 			this.mniltbRenameTo.TextRed = false;
 			this.mniltbRenameTo.TextRight = "";
-			this.mniltbRenameTo.TextRightOffsetX = 201;
+			this.mniltbRenameTo.TextRightOffsetX = 243;
 			this.mniltbRenameTo.TextRightWidth = 2;
 			this.mniltbRenameTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbRenameTo_UserTyped);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(263, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(305, 6);
 			// 
 			// mniAddNew
 			// 
@@ -196,16 +197,16 @@ namespace Sq1.Charting {
 			this.mniAddNew.InputFieldEditable = true;
 			this.mniAddNew.InputFieldOffsetX = 80;
 			this.mniAddNew.InputFieldValue = "zzzz";
-			this.mniAddNew.InputFieldWidth = 118;
+			this.mniAddNew.InputFieldWidth = 160;
 			this.mniAddNew.Name = "mniAddNew";
-			this.mniAddNew.Size = new System.Drawing.Size(206, 21);
+			this.mniAddNew.Size = new System.Drawing.Size(248, 21);
 			this.mniAddNew.Text = "Add New:";
 			this.mniAddNew.TextLeft = "Add New:";
 			this.mniAddNew.TextLeftOffsetX = 0;
 			this.mniAddNew.TextLeftWidth = 61;
 			this.mniAddNew.TextRed = false;
 			this.mniAddNew.TextRight = "";
-			this.mniAddNew.TextRightOffsetX = 201;
+			this.mniAddNew.TextRightOffsetX = 243;
 			this.mniAddNew.TextRightWidth = 2;
 			this.mniAddNew.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniAddNew_UserTyped);
 			// 
@@ -213,7 +214,7 @@ namespace Sq1.Charting {
 			// 
 			this.mniDelete.Name = "mniDelete";
 			this.mniDelete.ShortcutKeys = System.Windows.Forms.Keys.Delete;
-			this.mniDelete.Size = new System.Drawing.Size(266, 22);
+			this.mniDelete.Size = new System.Drawing.Size(308, 22);
 			this.mniDelete.Text = "Delete [Default]";
 			this.mniDelete.Click += new System.EventHandler(this.mniDelete_Click);
 			// 

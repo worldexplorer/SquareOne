@@ -1,4 +1,5 @@
 {
   "$type": "Sq1.Core.AssemblerDataSnapshot, Sq1.Core",
-  "CurrentWorkspaceName": "Default"
+  "WorkspaceCurrentlyLoaded": "Default",
+  "SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch": 10
 }
