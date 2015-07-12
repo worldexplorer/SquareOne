@@ -8,6 +8,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui {
 	public class MainFormEventManager {
@@ -182,6 +183,22 @@ namespace Sq1.Gui {
 				chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
 				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormClicked.ChartControl.ChartSettings);
 			} catch (Exception ex) {
+				if (ex.Message == "The previous pane is invalid. It can not be null, and its docking state must not be auto-hide.") {
+					foreach (DockPane eachPane in this.mainForm.DockPanel.Panes) {
+						bool autoHide = eachPane.DockState == DockState.DockBottomAutoHide
+									 || eachPane.DockState == DockState.DockLeftAutoHide
+									 || eachPane.DockState == DockState.DockRightAutoHide
+									 || eachPane.DockState == DockState.DockTopAutoHide;
+						if (autoHide == false) continue;
+						string whosInside = "";
+						foreach (IDockContent outlaw in eachPane.DisplayingContents) {
+							if (whosInside != "") whosInside += ",";
+							whosInside += outlaw.ToString();
+						}
+						string msg = "FIXED_AS:CANT_ADD_PANE_RELATIVELY_TO_AUTOHIDE_PANE ADD_THOSE_AS_NON_AUTO_HIDDENS [" + whosInside + "]";
+						Assembler.PopupException(msg, null, false);
+					}
+				}
 				Assembler.PopupException("DockPanel_ActiveDocumentChanged()", ex);
 			}
 		}
@@ -332,6 +349,9 @@ namespace Sq1.Gui {
 //			} else {
 //				string msg = "DO_NOTHING_ELSE_INDICATOR_PANEL_SPLITTER_POSITIONS_SHOULDNT_BE_SAVED_HERE";
 //			}
+
+			//ScriptContext.Sliders => Sequencer's.Parameters.Current
+			chartFormActive.ChartFormManager.SequencerForm.SequencerControl.OlvParameterPopulate();
 		}
 		#endregion SlidersForm.Instance.SlidersAutoGrow
 

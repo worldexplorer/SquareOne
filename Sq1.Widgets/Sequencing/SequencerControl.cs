@@ -19,7 +19,25 @@ namespace Sq1.Widgets.Sequencing {
 				List<OLVColumn>				columnsDynParams;
 		public	RepositoryJsonsInFolderSimpleDictionarySequencer		RepositoryJsonSequencer					{ get; private set; }
 				List<IndicatorParameter>	scriptAndIndicatorParametersMergedCloned;
-		public	SequencedBacktestsEventArgs	PushToCorrelator { get { return new SequencedBacktestsEventArgs(this.backtestsLocalEasierToSync); } } 
+		public	SequencedBacktestsEventArgs	PushToCorrelator { get { return new SequencedBacktestsEventArgs(this.backtestsLocalEasierToSync); } }
+		public bool ShowOnlyCorrelatorChosenBacktests {
+			get {
+				if (this.backtestsLocalEasierToSync == null) {
+					string msg = "YOU_GET_ShowOnlyCorrelatorChosen_WHILE_this.backtestsLocalEasierToSync=null //SequencerControl.ShowOnlyCorrelatorChosen";
+					Assembler.PopupException(msg, null, false);
+					return true;
+				}
+				return this.backtestsLocalEasierToSync.ShowOnlyCorrelatorChosenBacktests;
+			}
+			set {
+				if (this.backtestsLocalEasierToSync == null) {
+					string msg = "YOU_SET_ShowOnlyCorrelatorChosen_WHILE_this.backtestsLocalEasierToSync=null //SequencerControl.ShowOnlyCorrelatorChosen";
+					Assembler.PopupException(msg, null, false);
+					return;
+				}
+				this.backtestsLocalEasierToSync.ShowOnlyCorrelatorChosenBacktests = value;
+			}
+		}
 
 		public SequencerControl() {
 			InitializeComponent();
@@ -88,7 +106,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.populateTextboxesFromExecutorsState();
 
 			this.olvParametersCustomize();
-			this.olvParameterPopulate();
+			this.OlvParameterPopulate();
 
 			this.populateColumns();
 			this.olvBacktestsCustomize();
@@ -103,7 +121,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.symbolScaleRangeSelected = "";
 			this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 		}
-		void olvParameterPopulate() {
+		public void OlvParameterPopulate() {
 			this.scriptAndIndicatorParametersMergedCloned = this.sequencer.Executor.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerAndSliders;
 			this.olvParameters.SetObjects(this.scriptAndIndicatorParametersMergedCloned);
 		}
@@ -189,7 +207,7 @@ namespace Sq1.Widgets.Sequencing {
 
 			if (backtestsLocalEasierToSync.Count > 0) {
 				//my future Correlator wasn't initialized with me and no subscribers for this event so far => duplicate 20 lines above
-				this.RaiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
+				this.raiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
 				//v1 this.statsAndHistoryCollapse();
 				//ANNOYING this.cbxExpanded.Checked = false;
 			}
@@ -378,14 +396,51 @@ namespace Sq1.Widgets.Sequencing {
 			}
 		}
 
-		public void BacktestsReplaceWithCorrelated(IEnumerable<SystemPerformanceRestoreAble> list) {
-			this.olvBacktests.SetObjects(list, true);
-			this.mni_showAllScriptIndicatorParametersInSequencedBacktest.Checked = false;
+		private SequencedBacktests sequencedBacktestsCorrelatorChosenOnly;
+		public void BacktestsReplaceWithCorrelated(SequencedBacktests sequencedBacktests) {
+			this.sequencedBacktestsCorrelatorChosenOnly = sequencedBacktests;
+			//v1 WHEN_THERE_WAS_NO_FLAG_ShowOnlyCorrelatorChosenBacktests
+			//this.olvBacktests.SetObjects(list, true);
+			//this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked = false;
+			////this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Text = "Show Backtests with All Script + Indicator Parameters";
+			//this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Checked = true;
+			//this.ShowOnlyCorrelatorChosenBacktests = !this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked;
+			//this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync);
+			//v2 dispatching now
+			if (this.ShowOnlyCorrelatorChosenBacktests) {
+				this.BacktestsShowCorrelatorChosen();
+			} else {
+				this.BacktestsShowAll_regardlessWhatIsChosenInCorrelator();
+			}
+
+		}
+		public void BacktestsShowAll_regardlessWhatIsChosenInCorrelator() {
+			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true);
+			this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked = true;
+			//BEFORE_I_MADE_RADIOGROUP this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Text = "Show Only Backtests with Parameters CHECKED in Correlator";
+			this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Checked = false;
+			this.txtDataRange.Text = this.sequencer.DataRangeAsString + " REGARDLESS_CHOSEN";
+
+			bool newValue = !this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked;
+			if (this.ShowOnlyCorrelatorChosenBacktests != newValue) {
+				this.ShowOnlyCorrelatorChosenBacktests  = newValue;
+				this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync);
+			}
+		}
+		public void BacktestsShowCorrelatorChosen() {
+			this.olvBacktests.SetObjects(this.sequencedBacktestsCorrelatorChosenOnly.BacktestsReadonly, true);
+			this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked = false;
+			//BEFORE_I_MADE_RADIOGROUP this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Text = "Show Backtests with All Script + Indicator Parameters";
+			this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Checked = true;
+			this.txtDataRange.Text = this.sequencer.DataRangeAsString + " " + this.sequencedBacktestsCorrelatorChosenOnly.SubsetAsString;
+
+			bool newValue = !this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked;
+			if (this.ShowOnlyCorrelatorChosenBacktests != newValue) {
+				this.ShowOnlyCorrelatorChosenBacktests  = newValue;
+				this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync);
+			}
 		}
 
-		public void BacktestsRestoreCorrelatedClosed() {
-			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true);
-		}
 		public override string ToString() {
 			string ret = "UNINITIALIZED";
 			if (this.sequencer != null) ret = this.sequencer.Executor.Strategy.WindowTitle;

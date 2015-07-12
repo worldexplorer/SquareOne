@@ -16,7 +16,7 @@
       "panelVolume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 518
+        "Distance": 523
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -29,13 +29,13 @@
       "multiSplitContainerRows": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 294
+        "Distance": 34
       }
     },
     "Name": "EnterEveryBarCompiled",
     "StrategyName": "EnterEveryBarCompiled",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 25,
+    "BarWidthIncludingPadding": 8,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "DeepPink",
@@ -66,7 +66,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 0,
+    "SqueezeVerticalPaddingPx": 50,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -76,7 +76,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 0,
+    "ScrollPositionAtBarIndex": 125,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,

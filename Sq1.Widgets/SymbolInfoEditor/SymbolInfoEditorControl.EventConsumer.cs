@@ -7,7 +7,9 @@ using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Widgets.SymbolEditor {
 	public partial class SymbolInfoEditorControl {
-		//void comboBox1_SelectedIndexChanged(object sender, EventArgs e) {
+		void toolStripItemComboBox1_DropDown(object sender, EventArgs e) {
+			this.rebuildDropdown();
+		}
 		void toolStripItemComboBox1_SelectedIndexChanged(object sender, EventArgs e) {
 			// IM_EXECUTED_TWICE__WHEN_DESELECTING_OLD_AND_WHEN_SELECTING_NEW
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;

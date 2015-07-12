@@ -196,6 +196,19 @@ namespace Sq1.Gui {
 					ExceptionsForm.Instance.Show(this.DockPanel);
 				}
 
+				foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormsManagers.Values) {
+					if (cfmgr.ChartForm == null) continue;
+
+					if (cfmgr.SequencerFormConditionalInstance.IsShown	== false) cfmgr.SequencerFormShow(true);
+					if (cfmgr.CorrelatorFormConditionalInstance.IsShown == false) cfmgr.CorrelatorFormShow(true);
+					if (cfmgr.LivesimFormConditionalInstance.IsShown	== false) cfmgr.LivesimFormShow(true);
+
+					// if sequencer instantiated first and fired, then correlator instantiated and didn't get the bullet; vice versa is even worse
+					cfmgr.SequencerFormConditionalInstance.SequencerControl.RaiseOnCorrelatorShouldPopulate_usedByMainFormAfterBothAreInstantiated();
+
+					// INNER_DOCK_CONTENT_DOESNT_GET_FILLED_TO_THE_WINDOW_AREA???
+					cfmgr.ChartForm.ChartControl.InvalidateAllPanels();
+				}
 			
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 				if (disposePreviousDockPanel != null) {
@@ -244,11 +257,6 @@ namespace Sq1.Gui {
 						cfmgr.Executor.DataSource.StreamingAdapter.UpstreamConnect();
 					}
 					//}
-
-					cfmgr.SequencerFormShow(true);
-					cfmgr.CorrelatorFormShow(true);
-					cfmgr.LivesimFormShow(true);
-					// INNER_DOCK_CONTENT_DOESNT_GET_FILLED_TO_THE_WINDOW_AREA??? cfmgr.ChartForm.ChartControl.InvalidateAllPanels();
 				}
 				
 				//NOPE ExecutionForm.Instance.ExecutionTreeControl.MoveStateColumnToLeftmost();
@@ -261,6 +269,22 @@ namespace Sq1.Gui {
 					// EXCEPTION_BORN_IN_GUI_THREAD_ARE_ALWAYS_ON_TIMER ExceptionsForm.Instance.ExceptionControl.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 				}
 			} catch (Exception ex) {
+				if (ex.Message == "The previous pane is invalid. It can not be null, and its docking state must not be auto-hide.") {
+					foreach (DockPane eachPane in this.DockPanel.Panes) {
+						bool autoHide = eachPane.DockState == DockState.DockBottomAutoHide
+									 || eachPane.DockState == DockState.DockLeftAutoHide
+									 || eachPane.DockState == DockState.DockRightAutoHide
+									 || eachPane.DockState == DockState.DockTopAutoHide;
+						if (autoHide == false) continue;
+						string whosInside = "";
+						foreach (IDockContent outlaw in eachPane.DisplayingContents) {
+							if (whosInside != "") whosInside += ",";
+							whosInside += outlaw.ToString();
+						}
+						string msg = "FIXED_AS:CANT_ADD_PANE_RELATIVELY_TO_AUTOHIDE_PANE ADD_THOSE_AS_NON_AUTO_HIDDENS [" + whosInside + "]";
+						Assembler.PopupException(msg, null, false);
+					}
+				}
 				Assembler.PopupException("WorkspaceLoad#1()", ex);
 			} finally {
 				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>

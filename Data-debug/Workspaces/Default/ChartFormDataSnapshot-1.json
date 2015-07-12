@@ -16,7 +16,7 @@
       "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 51
+        "Distance": 33
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -29,21 +29,21 @@
       "multiSplitContainerRows": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 70
+        "Distance": 16
       }
     },
-    "Name": "TwoMAsCompiled",
+    "Name": "Default",
     "StrategyName": "TwoMAsCompiled",
-    "ChartColorBackground": "Gold",
-    "BarWidthIncludingPadding": 9,
-    "BarWidthIncludingPaddingMax": 50,
-    "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt, style=Bold",
-    "PriceColorBarUp": "Lime",
-    "PriceColorBarDown": "Salmon",
-    "VolumeColorBarUp": "PowderBlue",
-    "VolumeColorBarDown": "DeepSkyBlue",
-    "VolumeRightGutterColorForeground": "Bisque",
-    "BarUpFillCandleBody": true,
+    "ChartColorBackground": "White",
+    "BarWidthIncludingPadding": 5,
+    "BarWidthIncludingPaddingMax": 100,
+    "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
+    "PriceColorBarUp": "RoyalBlue",
+    "PriceColorBarDown": "IndianRed",
+    "VolumeColorBarUp": "CadetBlue",
+    "VolumeColorBarDown": "CadetBlue",
+    "VolumeRightGutterColorForeground": "White",
+    "BarUpFillCandleBody": false,
     "GutterRightColorBackground": "Gainsboro",
     "GutterRightColorForeground": "Black",
     "GutterRightPadding": 5,
@@ -66,7 +66,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 30,
+    "SqueezeVerticalPaddingPx": 40,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -76,7 +76,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 353,
+    "ScrollPositionAtBarIndex": 509,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -104,8 +104,8 @@
     "AlertPendingProtoStopLossEllipseColorAlpha": 100,
     "AlertPendingProtoStopLossEllipsePenWidth": 2,
     "MousePositionTrackOnGutters": true,
-    "MousePositionTrackOnGuttersColorBackground": "GreenYellow",
-    "MousePositionTrackOnGuttersColorForeground": "Indigo",
+    "MousePositionTrackOnGuttersColorBackground": "Black",
+    "MousePositionTrackOnGuttersColorForeground": "LightGray",
     "BarsBackgroundTransparencyAlpha": 24,
     "ChartLabelsUpperLeftYstartTopmost": 5,
     "ChartLabelsUpperLeftX": 5,

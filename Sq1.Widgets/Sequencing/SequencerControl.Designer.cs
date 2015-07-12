@@ -73,9 +73,11 @@ namespace Sq1.Widgets.Sequencing {
 			this.mniltbCopyToNewContextBacktest = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.mniltbCopyToNewContext = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.mni_showAllScriptIndicatorParametersInSequencedBacktest = new System.Windows.Forms.ToolStripMenuItem();
+			this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniCopyToClipboard = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniSaveCsv = new System.Windows.Forms.ToolStripMenuItem();
+			this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -744,36 +746,38 @@ namespace Sq1.Widgets.Sequencing {
             this.mniltbCopyToNewContextBacktest,
             this.mniltbCopyToNewContext,
             this.toolStripSeparator2,
-            this.mni_showAllScriptIndicatorParametersInSequencedBacktest,
+            this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked,
+            this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All,
+            this.toolStripSeparator3,
             this.mniCopyToClipboard,
             this.mniSaveCsv});
 			this.ctxBacktests_OneResult.Name = "ctxOneBacktestResult";
-			this.ctxBacktests_OneResult.Size = new System.Drawing.Size(509, 198);
+			this.ctxBacktests_OneResult.Size = new System.Drawing.Size(515, 248);
 			this.ctxBacktests_OneResult.Opening += new System.ComponentModel.CancelEventHandler(this.ctxOneBacktestResult_Opening);
 			// 
 			// mniInfo
 			// 
 			this.mniInfo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
 			this.mniInfo.Name = "mniInfo";
-			this.mniInfo.Size = new System.Drawing.Size(508, 22);
+			this.mniInfo.Size = new System.Drawing.Size(514, 22);
 			this.mniInfo.Text = "Net(-33,5415.00)PF(2.3)RF(5.6) > MA_ATRcompiled-DLL aaa";
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(505, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(511, 6);
 			// 
 			// mniCopyToDefaultCtxBacktest
 			// 
 			this.mniCopyToDefaultCtxBacktest.Name = "mniCopyToDefaultCtxBacktest";
-			this.mniCopyToDefaultCtxBacktest.Size = new System.Drawing.Size(508, 22);
+			this.mniCopyToDefaultCtxBacktest.Size = new System.Drawing.Size(514, 22);
 			this.mniCopyToDefaultCtxBacktest.Text = "Copy To Default Context, Backtest";
 			this.mniCopyToDefaultCtxBacktest.Click += new System.EventHandler(this.mniCopyToDefaultCtxBacktest_Click);
 			// 
 			// mniCopyToDefaultCtx
 			// 
 			this.mniCopyToDefaultCtx.Name = "mniCopyToDefaultCtx";
-			this.mniCopyToDefaultCtx.Size = new System.Drawing.Size(508, 22);
+			this.mniCopyToDefaultCtx.Size = new System.Drawing.Size(514, 22);
 			this.mniCopyToDefaultCtx.Text = "Copy To Default Context";
 			this.mniCopyToDefaultCtx.Click += new System.EventHandler(this.mniCopyToDefaultCtx_Click);
 			// 
@@ -786,14 +790,14 @@ namespace Sq1.Widgets.Sequencing {
 			this.mniltbCopyToNewContextBacktest.InputFieldValue = "";
 			this.mniltbCopyToNewContextBacktest.InputFieldWidth = 200;
 			this.mniltbCopyToNewContextBacktest.Name = "mniltbCopyToNewContextBacktest";
-			this.mniltbCopyToNewContextBacktest.Size = new System.Drawing.Size(448, 22);
+			this.mniltbCopyToNewContextBacktest.Size = new System.Drawing.Size(454, 22);
 			this.mniltbCopyToNewContextBacktest.TextLeft = "Copy To New Context, Backtest:";
 			this.mniltbCopyToNewContextBacktest.TextLeftOffsetX = 0;
-			this.mniltbCopyToNewContextBacktest.TextLeftWidth = 164;
+			this.mniltbCopyToNewContextBacktest.TextLeftWidth = 178;
 			this.mniltbCopyToNewContextBacktest.TextRed = false;
 			this.mniltbCopyToNewContextBacktest.TextRight = "~= 121pips";
 			this.mniltbCopyToNewContextBacktest.TextRightOffsetX = 383;
-			this.mniltbCopyToNewContextBacktest.TextRightWidth = 62;
+			this.mniltbCopyToNewContextBacktest.TextRightWidth = 68;
 			this.mniltbCopyToNewContextBacktest.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContextBacktest_UserTyped);
 			// 
 			// mniltbCopyToNewContext
@@ -805,34 +809,34 @@ namespace Sq1.Widgets.Sequencing {
 			this.mniltbCopyToNewContext.InputFieldValue = "";
 			this.mniltbCopyToNewContext.InputFieldWidth = 200;
 			this.mniltbCopyToNewContext.Name = "mniltbCopyToNewContext";
-			this.mniltbCopyToNewContext.Size = new System.Drawing.Size(448, 22);
+			this.mniltbCopyToNewContext.Size = new System.Drawing.Size(454, 22);
 			this.mniltbCopyToNewContext.TextLeft = "Copy To New Context:";
 			this.mniltbCopyToNewContext.TextLeftOffsetX = 0;
-			this.mniltbCopyToNewContext.TextLeftWidth = 116;
+			this.mniltbCopyToNewContext.TextLeftWidth = 128;
 			this.mniltbCopyToNewContext.TextRed = false;
 			this.mniltbCopyToNewContext.TextRight = "~= 121pips";
 			this.mniltbCopyToNewContext.TextRightOffsetX = 383;
-			this.mniltbCopyToNewContext.TextRightWidth = 62;
+			this.mniltbCopyToNewContext.TextRightWidth = 68;
 			this.mniltbCopyToNewContext.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbCopyToNewContext_UserTyped);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(505, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(511, 6);
 			// 
-			// mni_showAllScriptIndicatorParametersInSequencedBacktest
+			// mni_showInSequencedBacktest_ScriptIndicatorParameters_All
 			// 
-			this.mni_showAllScriptIndicatorParametersInSequencedBacktest.CheckOnClick = true;
-			this.mni_showAllScriptIndicatorParametersInSequencedBacktest.Name = "mni_showAllScriptIndicatorParametersInSequencedBacktest";
-			this.mni_showAllScriptIndicatorParametersInSequencedBacktest.Size = new System.Drawing.Size(508, 22);
-			this.mni_showAllScriptIndicatorParametersInSequencedBacktest.Text = "Show All Script + Indicator Parameters In SequencedBacktest";
-			this.mni_showAllScriptIndicatorParametersInSequencedBacktest.Click += new System.EventHandler(this.mni_showAllScriptIndicatorParametersInSequencedBacktestClick);
+			this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.CheckOnClick = true;
+			this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Name = "mni_showInSequencedBacktest_ScriptIndicatorParameters_All";
+			this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Size = new System.Drawing.Size(514, 22);
+			this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Text = "Show Backtests with All Script + Indicator Parameters (ignore what's CHOSEN in Correlator)";
+			this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Click += new System.EventHandler(this.mni_showInSequencedBacktests_ScriptIndicatorParameters_All_Click);
 			// 
 			// mniCopyToClipboard
 			// 
 			this.mniCopyToClipboard.Enabled = false;
 			this.mniCopyToClipboard.Name = "mniCopyToClipboard";
-			this.mniCopyToClipboard.Size = new System.Drawing.Size(508, 22);
+			this.mniCopyToClipboard.Size = new System.Drawing.Size(514, 22);
 			this.mniCopyToClipboard.Text = "Copy To Clipboard (Paste-able to Excel)";
 			this.mniCopyToClipboard.Click += new System.EventHandler(this.mniCopyToClipboard_Click);
 			// 
@@ -840,9 +844,21 @@ namespace Sq1.Widgets.Sequencing {
 			// 
 			this.mniSaveCsv.Enabled = false;
 			this.mniSaveCsv.Name = "mniSaveCsv";
-			this.mniSaveCsv.Size = new System.Drawing.Size(508, 22);
+			this.mniSaveCsv.Size = new System.Drawing.Size(514, 22);
 			this.mniSaveCsv.Text = "Save as CSV...";
 			this.mniSaveCsv.Click += new System.EventHandler(this.mniSaveCsv_Click);
+			// 
+			// mni_showInSequencedBacktest_ScriptIndicatorParameters_CorrelatorChecked
+			// 
+			this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Name = "mni_showInSequencedBacktest_ScriptIndicatorParameters_CorrelatorChecked";
+			this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Size = new System.Drawing.Size(514, 22);
+			this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Text = "Show Only Backtests with Parameters CHECKED in Correlator";
+			this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Click += new System.EventHandler(this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked_Click);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(511, 6);
 			// 
 			// SequencerControl
 			// 
@@ -932,8 +948,10 @@ namespace Sq1.Widgets.Sequencing {
 		private BrightIdeasSoftware.OLVColumn olvcParamValueCurrent;
 		private BrightIdeasSoftware.OLVColumn olvcParamNumberOfRuns;
 		private System.Windows.Forms.SplitContainer splitContainer2;	
-		private System.Windows.Forms.ToolStripMenuItem mni_showAllScriptIndicatorParametersInSequencedBacktest;
+		private System.Windows.Forms.ToolStripMenuItem mni_showInSequencedBacktest_ScriptIndicatorParameters_All;
 		private System.Windows.Forms.ContextMenuStrip ctxOlvHistory_oneSequencedBacktest;
 		private System.Windows.Forms.ToolStripMenuItem mniOneSequencedBacktest_delete;
+		private System.Windows.Forms.ToolStripMenuItem mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 	}
 }

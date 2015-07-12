@@ -298,17 +298,17 @@ namespace Sq1.Widgets.Correlation {
 			// olvcMomentumsDispersionTotalPositions
 			// 
 			this.olvcMomentumsDispersionTotalPositions.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionTotalPositions.Text = "#pos MomDisp";
+			this.olvcMomentumsDispersionTotalPositions.Text = "#pos StDev";
 			this.olvcMomentumsDispersionTotalPositions.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionTotalPositions.ToolTipText = "TotalPositions generated MomDisp(selected with checkboxes))";
+			this.olvcMomentumsDispersionTotalPositions.ToolTipText = "TotalPositions generated StDev(selected with checkboxes))";
 			this.olvcMomentumsDispersionTotalPositions.Width = 43;
 			// 
 			// olvcMomentumsVarianceTotalPositions
 			// 
 			this.olvcMomentumsVarianceTotalPositions.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceTotalPositions.Text = "#pos MomVari";
+			this.olvcMomentumsVarianceTotalPositions.Text = "#pos Variance";
 			this.olvcMomentumsVarianceTotalPositions.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceTotalPositions.ToolTipText = "TotalPositions generated MomVari=AllBacktested-Chosen";
+			this.olvcMomentumsVarianceTotalPositions.ToolTipText = "TotalPositions generated Variance=AllBacktested-Chosen";
 			this.olvcMomentumsVarianceTotalPositions.Width = 43;
 			// 
 			// olvcProfitPerPositionGlobal
@@ -338,25 +338,25 @@ namespace Sq1.Widgets.Correlation {
 			// olvcMomentumsAverageProfitPerPosition
 			// 
 			this.olvcMomentumsAverageProfitPerPosition.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageProfitPerPosition.Text = "$/POS  MomAvg";
+			this.olvcMomentumsAverageProfitPerPosition.Text = "$/POS Mean";
 			this.olvcMomentumsAverageProfitPerPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageProfitPerPosition.ToolTipText = "AverageProfit per Position Closed  MomAvg";
+			this.olvcMomentumsAverageProfitPerPosition.ToolTipText = "AverageProfit per Position Closed Mean";
 			this.olvcMomentumsAverageProfitPerPosition.Width = 52;
 			// 
 			// olvcMomentumsDispersionProfitPerPosition
 			// 
 			this.olvcMomentumsDispersionProfitPerPosition.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionProfitPerPosition.Text = "$/pos MomDisp";
+			this.olvcMomentumsDispersionProfitPerPosition.Text = "$/pos StDev";
 			this.olvcMomentumsDispersionProfitPerPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionProfitPerPosition.ToolTipText = "AverageProfit per Position Closed MomDisp(selected with checkboxes)";
+			this.olvcMomentumsDispersionProfitPerPosition.ToolTipText = "AverageProfit per Position Closed StDev(selected with checkboxes)";
 			this.olvcMomentumsDispersionProfitPerPosition.Width = 52;
 			// 
 			// olvcMomentumsVarianceProfitPerPosition
 			// 
 			this.olvcMomentumsVarianceProfitPerPosition.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceProfitPerPosition.Text = "$/pos MomVari";
+			this.olvcMomentumsVarianceProfitPerPosition.Text = "$/pos Variance";
 			this.olvcMomentumsVarianceProfitPerPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceProfitPerPosition.ToolTipText = "AverageProfit per Position Closed MomVari=AllBacktested-Chosen";
+			this.olvcMomentumsVarianceProfitPerPosition.ToolTipText = "AverageProfit per Position Closed Variance=AllBacktested-Chosen";
 			this.olvcMomentumsVarianceProfitPerPosition.Width = 52;
 			// 
 			// olvcNetProfitGlobal
@@ -386,25 +386,25 @@ namespace Sq1.Widgets.Correlation {
 			// olvcMomentumsAverageNetProfit
 			// 
 			this.olvcMomentumsAverageNetProfit.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageNetProfit.Text = "NET  MomAvg";
+			this.olvcMomentumsAverageNetProfit.Text = "NET Mean";
 			this.olvcMomentumsAverageNetProfit.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageNetProfit.ToolTipText = "NetProfit  MomAvg";
+			this.olvcMomentumsAverageNetProfit.ToolTipText = "NetProfit Mean";
 			this.olvcMomentumsAverageNetProfit.Width = 63;
 			// 
 			// olvcMomentumsDispersionNetProfit
 			// 
 			this.olvcMomentumsDispersionNetProfit.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionNetProfit.Text = "net MomDisp";
+			this.olvcMomentumsDispersionNetProfit.Text = "net StDev";
 			this.olvcMomentumsDispersionNetProfit.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionNetProfit.ToolTipText = "NetProfit MomDisp(selected with checkboxes)";
+			this.olvcMomentumsDispersionNetProfit.ToolTipText = "NetProfit StDev(selected with checkboxes)";
 			this.olvcMomentumsDispersionNetProfit.Width = 63;
 			// 
 			// olvcMomentumsVarianceNetProfit
 			// 
 			this.olvcMomentumsVarianceNetProfit.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceNetProfit.Text = "net MomVari";
+			this.olvcMomentumsVarianceNetProfit.Text = "net Variance";
 			this.olvcMomentumsVarianceNetProfit.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceNetProfit.ToolTipText = "NetProfit MomVari=AllBacktested-Chosen";
+			this.olvcMomentumsVarianceNetProfit.ToolTipText = "NetProfit Variance=AllBacktested-Chosen";
 			this.olvcMomentumsVarianceNetProfit.Width = 63;
 			// 
 			// olvcWinLossGlobal
@@ -434,25 +434,25 @@ namespace Sq1.Widgets.Correlation {
 			// olvcMomentumsAverageWinLoss
 			// 
 			this.olvcMomentumsAverageWinLoss.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageWinLoss.Text = "WL  MomAvg";
+			this.olvcMomentumsAverageWinLoss.Text = "WL Mean";
 			this.olvcMomentumsAverageWinLoss.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss  MomAvg";
+			this.olvcMomentumsAverageWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss Mean";
 			this.olvcMomentumsAverageWinLoss.Width = 35;
 			// 
 			// olvcMomentumsDispersionWinLoss
 			// 
 			this.olvcMomentumsDispersionWinLoss.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionWinLoss.Text = "wl MomDisp";
+			this.olvcMomentumsDispersionWinLoss.Text = "wl StDev";
 			this.olvcMomentumsDispersionWinLoss.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss MomDisp(selected with checkboxes)";
+			this.olvcMomentumsDispersionWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss StDev(selected with checkboxes)";
 			this.olvcMomentumsDispersionWinLoss.Width = 35;
 			// 
 			// olvcMomentumsVarianceWinLoss
 			// 
 			this.olvcMomentumsVarianceWinLoss.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceWinLoss.Text = "wl MomVari";
+			this.olvcMomentumsVarianceWinLoss.Text = "wl Variance";
 			this.olvcMomentumsVarianceWinLoss.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss MomVari=AllBacktested-Chosen";
+			this.olvcMomentumsVarianceWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss Variance=AllBacktested-Chosen";
 			this.olvcMomentumsVarianceWinLoss.Width = 35;
 			// 
 			// olvcProfitFactorGlobal
@@ -482,25 +482,25 @@ namespace Sq1.Widgets.Correlation {
 			// olvcMomentumsAverageProfitFactor
 			// 
 			this.olvcMomentumsAverageProfitFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageProfitFactor.Text = "PF  MomAvg";
+			this.olvcMomentumsAverageProfitFactor.Text = "PF Mean";
 			this.olvcMomentumsAverageProfitFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost  MomAvg";
+			this.olvcMomentumsAverageProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost Mean";
 			this.olvcMomentumsAverageProfitFactor.Width = 32;
 			// 
 			// olvcMomentumsDispersionProfitFactor
 			// 
 			this.olvcMomentumsDispersionProfitFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionProfitFactor.Text = "pf MomDisp";
+			this.olvcMomentumsDispersionProfitFactor.Text = "pf StDev";
 			this.olvcMomentumsDispersionProfitFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost MomDisp(selected with checkboxes)";
+			this.olvcMomentumsDispersionProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost StDev(selected with checkboxes)";
 			this.olvcMomentumsDispersionProfitFactor.Width = 32;
 			// 
 			// olvcMomentumsVarianceProfitFactor
 			// 
 			this.olvcMomentumsVarianceProfitFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceProfitFactor.Text = "pf MomVari";
+			this.olvcMomentumsVarianceProfitFactor.Text = "pf Variance";
 			this.olvcMomentumsVarianceProfitFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost MomVari=AllBacktested-Chosen";
+			this.olvcMomentumsVarianceProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost Variance=AllBacktested-Chosen";
 			this.olvcMomentumsVarianceProfitFactor.Width = 32;
 			// 
 			// olvcRecoveryFactorGlobal
@@ -532,26 +532,26 @@ namespace Sq1.Widgets.Correlation {
 			// olvcMomentumsAverageRecoveryFactor
 			// 
 			this.olvcMomentumsAverageRecoveryFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageRecoveryFactor.Text = "RF  MomAvg";
+			this.olvcMomentumsAverageRecoveryFactor.Text = "RF Mean";
 			this.olvcMomentumsAverageRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown  MomAvg";
+			this.olvcMomentumsAverageRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown Mean";
 			this.olvcMomentumsAverageRecoveryFactor.Width = 32;
 			// 
 			// olvcMomentumsDispersionRecoveryFactor
 			// 
 			this.olvcMomentumsDispersionRecoveryFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionRecoveryFactor.Text = "rf MomDisp";
+			this.olvcMomentumsDispersionRecoveryFactor.Text = "rf StDev";
 			this.olvcMomentumsDispersionRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown MomDisp(selected w" +
+			this.olvcMomentumsDispersionRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown StDev(selected w" +
     "ith checkboxes)";
 			this.olvcMomentumsDispersionRecoveryFactor.Width = 32;
 			// 
 			// olvcMomentumsVarianceRecoveryFactor
 			// 
 			this.olvcMomentumsVarianceRecoveryFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceRecoveryFactor.Text = "rf MomVari";
+			this.olvcMomentumsVarianceRecoveryFactor.Text = "rf Variance";
 			this.olvcMomentumsVarianceRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown MomVari=AllBacktes" +
+			this.olvcMomentumsVarianceRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown Variance=AllBacktes" +
     "ted-Chosen";
 			this.olvcMomentumsVarianceRecoveryFactor.Width = 32;
 			// 
@@ -582,25 +582,25 @@ namespace Sq1.Widgets.Correlation {
 			// olvcMomentumsAverageMaxDrawdown
 			// 
 			this.olvcMomentumsAverageMaxDrawdown.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageMaxDrawdown.Text = "DD  MomAvg";
+			this.olvcMomentumsAverageMaxDrawdown.Text = "DD Mean";
 			this.olvcMomentumsAverageMaxDrawdown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageMaxDrawdown.ToolTipText = "MaxDrawdown, $  MomAvg";
+			this.olvcMomentumsAverageMaxDrawdown.ToolTipText = "MaxDrawdown, $ Mean";
 			this.olvcMomentumsAverageMaxDrawdown.Width = 63;
 			// 
 			// olvcMomentumsDispersionMaxDrawdown
 			// 
 			this.olvcMomentumsDispersionMaxDrawdown.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxDrawdown.Text = "dd MomDisp";
+			this.olvcMomentumsDispersionMaxDrawdown.Text = "dd StDev";
 			this.olvcMomentumsDispersionMaxDrawdown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxDrawdown.ToolTipText = "MaxDrawdown, $ MomDisp(selected with checkboxes)";
+			this.olvcMomentumsDispersionMaxDrawdown.ToolTipText = "MaxDrawdown, $ StDev(selected with checkboxes)";
 			this.olvcMomentumsDispersionMaxDrawdown.Width = 63;
 			// 
 			// olvcMomentumsVarianceMaxDrawdown
 			// 
 			this.olvcMomentumsVarianceMaxDrawdown.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceMaxDrawdown.Text = "dd MomVari";
+			this.olvcMomentumsVarianceMaxDrawdown.Text = "dd Variance";
 			this.olvcMomentumsVarianceMaxDrawdown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceMaxDrawdown.ToolTipText = "MaxDrawdown, $ MomVari=AllBacktested-Chosen";
+			this.olvcMomentumsVarianceMaxDrawdown.ToolTipText = "MaxDrawdown, $ Variance=AllBacktested-Chosen";
 			this.olvcMomentumsVarianceMaxDrawdown.Width = 63;
 			// 
 			// olvcMaxConsecutiveWinnersGlobal
@@ -630,25 +630,25 @@ namespace Sq1.Widgets.Correlation {
 			// olvcMomentumsAverageMaxConsecutiveWinners
 			// 
 			this.olvcMomentumsAverageMaxConsecutiveWinners.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageMaxConsecutiveWinners.Text = "CW  MomAvg";
+			this.olvcMomentumsAverageMaxConsecutiveWinners.Text = "CW Mean";
 			this.olvcMomentumsAverageMaxConsecutiveWinners.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners  MomAvg";
+			this.olvcMomentumsAverageMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners Mean";
 			this.olvcMomentumsAverageMaxConsecutiveWinners.Width = 31;
 			// 
 			// olvcMomentumsDispersionMaxConsecutiveWinners
 			// 
 			this.olvcMomentumsDispersionMaxConsecutiveWinners.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxConsecutiveWinners.Text = "cw MomDisp";
+			this.olvcMomentumsDispersionMaxConsecutiveWinners.Text = "cw StDev";
 			this.olvcMomentumsDispersionMaxConsecutiveWinners.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners MomDisp(selected with checkboxes)";
+			this.olvcMomentumsDispersionMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners StDev(selected with checkboxes)";
 			this.olvcMomentumsDispersionMaxConsecutiveWinners.Width = 31;
 			// 
 			// olvcMomentumsVarianceMaxConsecutiveWinners
 			// 
 			this.olvcMomentumsVarianceMaxConsecutiveWinners.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceMaxConsecutiveWinners.Text = "cw MomVari";
+			this.olvcMomentumsVarianceMaxConsecutiveWinners.Text = "cw Variance";
 			this.olvcMomentumsVarianceMaxConsecutiveWinners.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners MomVari=AllBacktested-Chosen";
+			this.olvcMomentumsVarianceMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners Variance=AllBacktested-Chosen";
 			this.olvcMomentumsVarianceMaxConsecutiveWinners.Width = 31;
 			// 
 			// olvcMaxConsecutiveLosersGlobal
@@ -678,25 +678,25 @@ namespace Sq1.Widgets.Correlation {
 			// olvcMomentumsAverageMaxConsecutiveLosers
 			// 
 			this.olvcMomentumsAverageMaxConsecutiveLosers.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageMaxConsecutiveLosers.Text = "CL  MomAvg";
+			this.olvcMomentumsAverageMaxConsecutiveLosers.Text = "CL Mean";
 			this.olvcMomentumsAverageMaxConsecutiveLosers.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsAverageMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers  MomAvg";
+			this.olvcMomentumsAverageMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers Mean";
 			this.olvcMomentumsAverageMaxConsecutiveLosers.Width = 30;
 			// 
 			// olvcMomentumsDispersionMaxConsecutiveLosers
 			// 
 			this.olvcMomentumsDispersionMaxConsecutiveLosers.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxConsecutiveLosers.Text = "cl MomDisp";
+			this.olvcMomentumsDispersionMaxConsecutiveLosers.Text = "cl StDev";
 			this.olvcMomentumsDispersionMaxConsecutiveLosers.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers MomDisp(selected with checkboxes)";
+			this.olvcMomentumsDispersionMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers StDev(selected with checkboxes)";
 			this.olvcMomentumsDispersionMaxConsecutiveLosers.Width = 30;
 			// 
 			// olvcMomentumsVarianceMaxConsecutiveLosers
 			// 
 			this.olvcMomentumsVarianceMaxConsecutiveLosers.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceMaxConsecutiveLosers.Text = "cl MomVari";
+			this.olvcMomentumsVarianceMaxConsecutiveLosers.Text = "cl Variance";
 			this.olvcMomentumsVarianceMaxConsecutiveLosers.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers MomVari=AllBacktested-Chosen";
+			this.olvcMomentumsVarianceMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers Variance=AllBacktested-Chosen";
 			this.olvcMomentumsVarianceMaxConsecutiveLosers.Width = 30;
 			// 
 			// ctxOneParameterControl

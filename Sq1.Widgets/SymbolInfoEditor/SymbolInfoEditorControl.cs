@@ -19,7 +19,8 @@ namespace Sq1.Widgets.SymbolEditor {
 			// DESIGNER_RESETS_TO_EDITABLE__LAZY_TO_TUNNEL_PROPERTIES_AND_EVENTS_IN_ToolStripItemComboBox.cs
 			this.toolStripItemComboBox1.ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 			this.toolStripItemComboBox1.ComboBox.Sorted = true;
-			this.toolStripItemComboBox1.ComboBox.SelectedIndexChanged += new EventHandler(this.toolStripItemComboBox1_SelectedIndexChanged);
+			this.toolStripItemComboBox1.ComboBox.SelectedIndexChanged	+= new EventHandler(this.toolStripItemComboBox1_SelectedIndexChanged);
+			this.toolStripItemComboBox1.ComboBox.DropDown				+= new EventHandler(this.toolStripItemComboBox1_DropDown);
 		}
 		public void Initialize(RepositorySerializerSymbolInfo repositorySerializerSymbolInfo) {
 			this.repositorySerializerSymbolInfo = repositorySerializerSymbolInfo;

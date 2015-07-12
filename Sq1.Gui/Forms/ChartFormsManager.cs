@@ -18,6 +18,8 @@ using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets.Sequencing;
 using Sq1.Widgets;
+using Sq1.Core.Sequencing;
+using Sq1.Widgets.Correlation;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormsManager {
@@ -247,7 +249,12 @@ namespace Sq1.Gui.Forms {
 			this.ChartForm.Initialize(false);
 
 			try {
-				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true, false);
+				string msg = "WHAT_SELECTORS???__IS_THAT_THE_WAY_TO_CLEAR_SLIDERS_AFTER_REMOVING_STRATEGY_FROM_THE_CHART???";
+				Assembler.PopupException(msg, null, false);
+				bool loadNewBars = true;
+				bool skipBacktest = true;
+				bool saveStrategyRequired = false;
+				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, loadNewBars, skipBacktest, saveStrategyRequired);
 				//v1 if (this.DataSnapshot.ContextChart.IsStreaming) {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
@@ -307,7 +314,9 @@ namespace Sq1.Gui.Forms {
 				//I'm here via Persist.Deserialize() (=> Reporters haven't been restored yet => backtest should be postponed); will backtest in InitializeStrategyAfterDeserialization
 				// STRATEGY_CLICK_TO_CHART_DOESNT_BACKTEST this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, true);
 				// ALL_SORT_OF_STARTUP_ERRORS this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, false);
-				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, true, skipBacktestDuringDeserialization, false);
+				bool loadNewBars = true;
+				bool saveStrategyRequired = false;
+				this.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(msig, loadNewBars, skipBacktestDuringDeserialization, saveStrategyRequired);
 				if (skipBacktestDuringDeserialization == false) {
 					string msg = "YOU_DID_NOT_SWITCH_TO_GUI_THREAD...";
 					this.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
@@ -331,7 +340,8 @@ namespace Sq1.Gui.Forms {
 		void executor_OnBacktesterContextRestoredAfterExecutingAllBars_step4of4(object sender, EventArgs e) {
 			throw new NotImplementedException();
 		}
-		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyRequired = true) {
+		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(
+					string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyRequired = true) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
 			this.Executor.BacktesterAbortIfRunningRestoreContext();
 
@@ -675,6 +685,22 @@ namespace Sq1.Gui.Forms {
 				this.SequencerFormConditionalInstance.Initialize(this);
 			} else {
 				this.SequencerFormConditionalInstance.SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
+				// I dont know why it's a second call (must be first) during app startup, but I wanna get CHECKED to shrink full backtests list
+				//since I just restored CHECKED in Correlator, I want only sequencer's backtests checked in Correlator!
+				//v1 DOESNT_SHOW_ALL_AFTER_RESTART this.CorrelatorForm.CorrelatorControl.Correlator.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
+				//v2  copypaste from correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt(object sender, SequencedBacktestsEventArgs e)
+				SequencerControl sequencerControl = this.SequencerFormConditionalInstance.SequencerControl;
+				//v2 MOVED_TO_BacktestsReplaceWithCorrelated()
+				//if (sequencerControl.ShowOnlyCorrelatorChosenBacktests) {
+				//    CorrelatorControl correlatorControl = this.CorrelatorFormConditionalInstance.CorrelatorControl;
+				//    SequencedBacktests chosenOnly = correlatorControl.Correlator.SequencedBacktestsOriginalMinusParameterValuesUnchosen;
+				//    sequencerControl.BacktestsReplaceWithCorrelated(chosenOnly.BacktestsReadonly);
+				//} else {
+				//    sequencerControl.BacktestsShowAll_regardlessWhatIsChosenInCorrelator();
+				//}
+				CorrelatorControl correlatorControl = this.CorrelatorFormConditionalInstance.CorrelatorControl;
+				SequencedBacktests chosenOnly = correlatorControl.Correlator.SequencedBacktestsOriginalMinusParameterValuesUnchosen;
+				sequencerControl.BacktestsReplaceWithCorrelated(chosenOnly);
 			}
 
 			if (this.SequencerFormConditionalInstance.MustBeActivated) {
@@ -727,7 +753,28 @@ namespace Sq1.Gui.Forms {
 				this.CorrelatorFormConditionalInstance.Show(anotherCorrelatorPane, null);	// will place new correlator into the same panel as (at right of) the previous & found
 			} else {
 				if (mainPanelOrAnotherCorrelatorPanel == this.dockPanel) {
-					this.CorrelatorFormConditionalInstance.Show(this.SequencerFormConditionalInstance.Pane, DockAlignment.Bottom, 0.6);
+					if (this.SequencerFormConditionalInstance.Pane == null) {
+						this.SequencerFormShow(false);
+					}
+					if (this.SequencerFormConditionalInstance.Pane == null) {
+						string msg = "STILL_NULL_AFTER_OPENING_SEQUENCER__AVOIDING_NPE"
+							+ " this.SequencerFormConditionalInstance.Pane=null ATER this.SequencerFormShow(false)";
+						Assembler.PopupException(msg);
+						return;
+					}
+					DockPane landingPane = this.SequencerFormConditionalInstance.Pane;
+					bool autoHide = landingPane.DockState == DockState.DockBottomAutoHide
+								 || landingPane.DockState == DockState.DockLeftAutoHide
+								 || landingPane.DockState == DockState.DockRightAutoHide
+								 || landingPane.DockState == DockState.DockTopAutoHide;
+
+					if (autoHide) {
+						string msg = "CANT_ADD_PANE_RELATIVELY_TO_AUTOHIDE_PANE ADDING_TO_RIGHT__NOT_BEST_SOLUTION_BUT_DOESNT_THROW";
+						Assembler.PopupException(msg, null, false);
+						this.CorrelatorFormConditionalInstance.Show(this.dockPanel, DockState.DockRight);
+					} else {
+						this.CorrelatorFormConditionalInstance.Show(this.SequencerFormConditionalInstance.Pane, DockAlignment.Bottom, 0.6);
+					}
 				} else {
 					string msg = "UNKNOWN_CASE__REMOVE_ME_IF_YOU_NEVER_SEE_ME";
 					Assembler.PopupException(msg);

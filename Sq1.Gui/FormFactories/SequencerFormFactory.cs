@@ -106,7 +106,20 @@ namespace Sq1.Gui.FormFactories {
 			// both at FormCloseByX and MainForm.onClose()
 			this.chartFormManager.ChartForm.MniShowSequencer.Checked = false;
 			this.chartFormManager.MainForm.MainFormSerialize();
-		}
 
+			SequencerForm dontLeakMemory = sender as SequencerForm;
+			if (dontLeakMemory == null) {
+				string msg = "CLOSED_SequencerControl_CANT_BE_DISPOSED_SINCE_IS_STILL_SUBSCRIBED (sender[" + sender.GetType() + "] as SequencerForm)=null";
+				Assembler.PopupException(msg);
+				return;
+			}
+
+			// DONT_FORGET_TO_MENTION_ALL_SUBSCRIPTIONS__COPYPASTE_FROM_SequencerFormFactory.CreateSequencerFormSubscribe()
+			dontLeakMemory.SequencerControl.OnCopyToContextDefault			-= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(sequencerControl_OnCopyToContextDefault);
+			dontLeakMemory.SequencerControl.OnCopyToContextDefaultBacktest	-= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(sequencerControl_OnCopyToContextDefaultBacktest);
+			dontLeakMemory.SequencerControl.OnCopyToContextNew				-= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(sequencerControl_OnCopyToContextNew);
+			dontLeakMemory.SequencerControl.OnCopyToContextNewBacktest		-= new EventHandler<SystemPerformanceRestoreAbleEventArgs>(sequencerControl_OnCopyToContextNewBacktest);
+			dontLeakMemory.SequencerControl.OnCorrelatorShouldPopulate		-= new EventHandler<SequencedBacktestsEventArgs>(sequencerControl_OnCorrelatorShouldPopulate);
+		}
 	}
 }

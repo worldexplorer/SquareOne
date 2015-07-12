@@ -13,7 +13,7 @@ namespace Sq1.Widgets.Sequencing {
 
 		public event EventHandler<SequencedBacktestsEventArgs> OnCorrelatorShouldPopulate;
 
-		public void RaiseOnCopyToContextDefault(SystemPerformanceRestoreAble scriptAndParametersHolder) {
+		void raiseOnCopyToContextDefault(SystemPerformanceRestoreAble scriptAndParametersHolder) {
 			if (this.OnCopyToContextDefault == null) return;
 			try {
 				this.OnCopyToContextDefault(this, new SystemPerformanceRestoreAbleEventArgs(scriptAndParametersHolder));
@@ -21,7 +21,7 @@ namespace Sq1.Widgets.Sequencing {
 				Assembler.PopupException("RaiseOnCopyToContextDefault(" + scriptAndParametersHolder + ")", ex);
 			}
 		}
-		public void RaiseOnCopyToContextDefaultBacktest(SystemPerformanceRestoreAble scriptAndParametersHolder) {
+		void raiseOnCopyToContextDefaultBacktest(SystemPerformanceRestoreAble scriptAndParametersHolder) {
 			if (this.OnCopyToContextDefaultBacktest == null) return;
 			try {
 				this.OnCopyToContextDefaultBacktest(this, new SystemPerformanceRestoreAbleEventArgs(scriptAndParametersHolder));
@@ -29,7 +29,7 @@ namespace Sq1.Widgets.Sequencing {
 				Assembler.PopupException("RaiseOnCopyToContextDefaultBacktest(" + scriptAndParametersHolder + ")", ex);
 			}
 		}
-		public void RaiseOnCopyToContextNew(SystemPerformanceRestoreAble scriptAndParametersHolder, string scriptContextNewName) {
+		void raiseOnCopyToContextNew(SystemPerformanceRestoreAble scriptAndParametersHolder, string scriptContextNewName) {
 			if (this.OnCopyToContextNew == null) return;
 			try {
 				this.OnCopyToContextNew(this, new SystemPerformanceRestoreAbleEventArgs(scriptAndParametersHolder, scriptContextNewName));
@@ -37,7 +37,7 @@ namespace Sq1.Widgets.Sequencing {
 				Assembler.PopupException("RaiseOnCopyToContextNew(" + scriptAndParametersHolder + ")", ex);
 			}
 		}
-		public void RaiseOnCopyToContextNewBacktest(SystemPerformanceRestoreAble scriptAndParametersHolder, string scriptContextNewName) {
+		void raiseOnCopyToContextNewBacktest(SystemPerformanceRestoreAble scriptAndParametersHolder, string scriptContextNewName) {
 			if (this.OnCopyToContextNewBacktest == null) return;
 			try {
 				this.OnCopyToContextNewBacktest(this, new SystemPerformanceRestoreAbleEventArgs(scriptAndParametersHolder, scriptContextNewName));
@@ -45,7 +45,7 @@ namespace Sq1.Widgets.Sequencing {
 				Assembler.PopupException("RaiseOnCopyToContextNewBacktest(" + scriptAndParametersHolder + ")", ex);
 			}
 		}
-		void RaiseOnCorrelatorShouldPopulate(SequencedBacktests deserialized) {
+		void raiseOnCorrelatorShouldPopulate(SequencedBacktests deserialized) {
 			if (this.OnCorrelatorShouldPopulate == null) return;
 			try {
 				this.olvBacktests.UseWaitCursor = true;
@@ -56,6 +56,14 @@ namespace Sq1.Widgets.Sequencing {
 			} finally {
 				this.olvBacktests.UseWaitCursor = false;
 			}
+		}
+		public void RaiseOnCorrelatorShouldPopulate_usedByMainFormAfterBothAreInstantiated() {
+			if (this.backtestsLocalEasierToSync == null) {
+				string msg = "I_REFUSE_TO_RAISE_WITH_NULL_DESERIALIZED //RaiseOnCorrelatorShouldPopulate()";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			this.raiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
 		}
 	}
 }

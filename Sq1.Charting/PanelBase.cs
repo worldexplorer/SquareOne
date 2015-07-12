@@ -496,6 +496,11 @@ namespace Sq1.Charting {
 //					Debugger.Break();
 //				}
 				this.PanelHeightMinusGutterBottomHeight_cached = this.PanelHeightMinusGutterBottomHeight;
+				if (this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
+					string msg = "WASTED_ASSIGNMENT_WILL_THROW_SOON"
+						+ " this.PanelHeightMinusGutterBottomHeight[" + this.PanelHeightMinusGutterBottomHeight_cached + "]<=0";
+					Assembler.PopupException(msg, null, false);
+				}
 				
 				this.PaintBackgroundWholeSurfaceBarsNotEmpty(e.Graphics);
 				//this.ChartControl.ChartSettings.DisposeAllGDIs_handlesLeakHunter();

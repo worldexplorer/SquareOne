@@ -1278,11 +1278,11 @@ namespace Sq1.Core.StrategyBase {
 		Bars		preBacktestBars;
 		DataSource	preDataSource;
 		bool		preBacktestIsStreaming;
-		internal void BacktestContextInitialize(Bars bars) {
+		internal void BacktestContextInitialize(Bars barsEmptyButWillGrow) {
 			if (this.Bars.DataSource.StreamingAdapter != null) {
 				bool thereWereNeighbours = this.Bars.DataSource.PumpPauseNeighborsIfAnyFor(this, this.Backtester.IsBacktestingNoLivesimNow);
 			} else {
-				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + bars + ")";
+				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
 				//Assembler.PopupException(msg, null, false);
 			}
 			
@@ -1290,11 +1290,11 @@ namespace Sq1.Core.StrategyBase {
 			this.preDataSource = this.DataSource;
 			this.preBacktestIsStreaming = this.IsStreamingTriggeringScript;
 
-			if (this.Bars == bars) {
+			if (this.Bars == barsEmptyButWillGrow) {
 				string msg = "LIFECYCLE_INCONSISTENT__BARS_ALREADY_INITIALIZED " + this.Bars;
 				Assembler.PopupException(msg);
 			} else {
-				this.Bars = bars;
+				this.Bars = barsEmptyButWillGrow;
 				bool indicatorsHaveNoErrorsCanStartBacktesting = true;
 				foreach (Indicator indicator in this.Strategy.Script.IndicatorsByName_ReflectedCached.Values) {
 					indicatorsHaveNoErrorsCanStartBacktesting &= indicator.BacktestStartingConstructOwnValuesValidateParameters(this);

@@ -71,6 +71,7 @@ namespace Sq1.Charting {
 		void ctxTemplates_Opening(object sender, CancelEventArgs e) {
 			this.ctxTemplates.Items.Clear();
 			List<ToolStripMenuItem> ret = new List<ToolStripMenuItem>();
+			Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder();
 			foreach (ChartSettings tpl in Assembler.InstanceInitialized.RepositoryJsonChartSettingsTemplates.ItemsAsList) {
 				ToolStripMenuItem mni = new ToolStripMenuItem();
 				mni.Text = tpl.Name;

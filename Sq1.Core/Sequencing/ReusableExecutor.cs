@@ -63,9 +63,25 @@ namespace Sq1.Core.Sequencing {
 			base.PerformanceAfterBacktest = new SystemPerformance(this);
 			base.PerformanceAfterBacktest.Initialize();
 
-			base.Strategy.Script.Initialize(this, false);
 			base.MarketsimBacktest.Initialize(base.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
 			base.Strategy.ScriptContextCurrent.AbsorbOnlyScriptAndIndicatorParameterCurrentValues_toDisposableFromSequencer(ctxNext);
+
+			// MOVING_1_LINE_UP_WILL_INDUCE_SEQUENCER_INITPARAMSxCORE_BUG pushes Strategy.ScriptContextCurrent => Strategy.Script
+			base.Strategy.Script.Initialize(this, false);
+
+			#if DEBUG
+			string copyFromCtx =							ctxNext.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString;
+			string copyToCtx   = base.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString;
+			if (copyFromCtx != copyToCtx) {
+				string msg = "NOT_ABSORBED_PROPERLY__SEQUENCER_INITPARAMSxCORE_BUG copyFrom[" + copyFromCtx + "] != copyTo[" + copyToCtx + "]";
+				Assembler.PopupException(msg, null, false);
+			}
+			string copyToScript = base.Strategy.Script.ScriptAndIndicatorParametersMergedUnclonedForReusableExecutorToCheckByName_AsString;
+			if (copyFromCtx != copyToScript) {
+				string msg = "NOT_ABSORBED_PROPERLY__SEQUENCER_INITPARAMSxCORE_BUG copyFrom[" + copyFromCtx + "] != copyScript[" + copyToScript + "]";
+				Assembler.PopupException(msg, null, false);
+			}
+			#endif
 		}
 
 		public void Reinitialize() {

@@ -255,6 +255,9 @@
     <Compile Include="Livesim\LivesimBrokerSettings.cs" />
     <Compile Include="Livesim\LivesimStreamingSettings.cs" />
     <Compile Include="StrategyBase\KPIs.cs" />
+    <Compile Include="StrategyBase\Script.ReusableExecutorChecks.cs">
+      <DependentUpon>Script.cs</DependentUpon>
+    </Compile>
     <Compile Include="StrategyBase\SystemPerformancePositionsTracking.cs" />
     <Compile Include="StrategyBase\Reporter.cs">
       <SubType>UserControl</SubType>

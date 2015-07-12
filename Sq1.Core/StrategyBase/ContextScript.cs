@@ -139,7 +139,7 @@ namespace Sq1.Core.StrategyBase {
 			clone.replaceWithClonesScriptAndIndicatorParameters("NEW_CTX_FROM_OPTIMIZED", false);
 			return clone;
 		}
-		public void AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly(string reasonToClone, ContextScript found) {
+		public void AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerOnly(string reasonToClone, ContextScript found) {
 			this.ScriptParametersById			= found.ScriptParametersById;
 			this.IndicatorParametersByName		= found.IndicatorParametersByName;
 			this.replaceWithClonesScriptAndIndicatorParameters("FOR_" + reasonToClone, false);
@@ -151,7 +151,7 @@ namespace Sq1.Core.StrategyBase {
 			
 			this.PositionSize = found.PositionSize.Clone();
 			if (absorbScriptAndIndicatorParams) {
-				this.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly("FOR_userClickedDuplicateCtx", found);
+				this.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerOnly("FOR_userClickedDuplicateCtx", found);
 			}
 			
 			//some of these guys can easily be absorbed by object.MemberwiseClone(), why do I prefer to maintain the growing list manually?... 

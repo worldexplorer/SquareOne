@@ -53,8 +53,8 @@
 			this.lblSpace = new System.Windows.Forms.ToolStripStatusLabel();
 			this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
 			this.CtxWorkspacesModify = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.MniltbWorklspaceRenameTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.MniltbWorklspaceDuplicateTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
+			this.MniltbWorklspaceRenameTo = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.MniWorkspacesToolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.MniltbWorklspaceNewBlank = new Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox();
 			this.MniWorkspaceDelete = new System.Windows.Forms.ToolStripMenuItem();
@@ -267,6 +267,7 @@
 			// ctxWindows
 			// 
 			this.ctxWindows.Name = "ctxWindows";
+			this.ctxWindows.OwnerItem = this.mniWindows;
 			this.ctxWindows.ShowImageMargin = false;
 			this.ctxWindows.Size = new System.Drawing.Size(36, 4);
 			this.ctxWindows.Opening += new System.ComponentModel.CancelEventHandler(this.ctxWindowsOpening);
@@ -280,11 +281,13 @@
 			this.mniWorkSpaces.Name = "mniWorkSpaces";
 			this.mniWorkSpaces.Size = new System.Drawing.Size(84, 20);
 			this.mniWorkSpaces.Text = "WorkSpaces";
+			this.mniWorkSpaces.DropDownOpening += new System.EventHandler(this.mniWorkSpaces_DropDownOpening);
 			// 
 			// CtxWorkspaces
 			// 
 			this.CtxWorkspaces.Name = "ctxWorkspaces";
-			this.CtxWorkspaces.Size = new System.Drawing.Size(61, 4);
+			this.CtxWorkspaces.OwnerItem = this.mniWorkSpaces;
+			this.CtxWorkspaces.Size = new System.Drawing.Size(153, 26);
 			// 
 			// btnFullScreen
 			// 
@@ -315,25 +318,7 @@
             this.MniltbWorklspaceNewBlank,
             this.MniWorkspaceDelete});
 			this.CtxWorkspacesModify.Name = "ctxWorkspacesModify";
-			this.CtxWorkspacesModify.Size = new System.Drawing.Size(309, 123);
-			// 
-			// MniltbWorklspaceRenameTo
-			// 
-			this.MniltbWorklspaceRenameTo.BackColor = System.Drawing.Color.Transparent;
-			this.MniltbWorklspaceRenameTo.InputFieldAlignedRight = false;
-			this.MniltbWorklspaceRenameTo.InputFieldEditable = true;
-			this.MniltbWorklspaceRenameTo.InputFieldOffsetX = 80;
-			this.MniltbWorklspaceRenameTo.InputFieldValue = "";
-			this.MniltbWorklspaceRenameTo.InputFieldWidth = 160;
-			this.MniltbWorklspaceRenameTo.Name = "MniltbWorklspaceRenameTo";
-			this.MniltbWorklspaceRenameTo.Size = new System.Drawing.Size(248, 20);
-			this.MniltbWorklspaceRenameTo.TextLeft = "Rename To:";
-			this.MniltbWorklspaceRenameTo.TextLeftOffsetX = 0;
-			this.MniltbWorklspaceRenameTo.TextLeftWidth = 72;
-			this.MniltbWorklspaceRenameTo.TextRed = false;
-			this.MniltbWorklspaceRenameTo.TextRight = "";
-			this.MniltbWorklspaceRenameTo.TextRightOffsetX = 243;
-			this.MniltbWorklspaceRenameTo.TextRightWidth = 2;
+			this.CtxWorkspacesModify.Size = new System.Drawing.Size(309, 101);
 			// 
 			// MniltbWorklspaceDuplicateTo
 			// 
@@ -352,6 +337,24 @@
 			this.MniltbWorklspaceDuplicateTo.TextRight = "";
 			this.MniltbWorklspaceDuplicateTo.TextRightOffsetX = 243;
 			this.MniltbWorklspaceDuplicateTo.TextRightWidth = 2;
+			// 
+			// MniltbWorklspaceRenameTo
+			// 
+			this.MniltbWorklspaceRenameTo.BackColor = System.Drawing.Color.Transparent;
+			this.MniltbWorklspaceRenameTo.InputFieldAlignedRight = false;
+			this.MniltbWorklspaceRenameTo.InputFieldEditable = true;
+			this.MniltbWorklspaceRenameTo.InputFieldOffsetX = 80;
+			this.MniltbWorklspaceRenameTo.InputFieldValue = "";
+			this.MniltbWorklspaceRenameTo.InputFieldWidth = 160;
+			this.MniltbWorklspaceRenameTo.Name = "MniltbWorklspaceRenameTo";
+			this.MniltbWorklspaceRenameTo.Size = new System.Drawing.Size(248, 20);
+			this.MniltbWorklspaceRenameTo.TextLeft = "Rename To:";
+			this.MniltbWorklspaceRenameTo.TextLeftOffsetX = 0;
+			this.MniltbWorklspaceRenameTo.TextLeftWidth = 72;
+			this.MniltbWorklspaceRenameTo.TextRed = false;
+			this.MniltbWorklspaceRenameTo.TextRight = "";
+			this.MniltbWorklspaceRenameTo.TextRightOffsetX = 243;
+			this.MniltbWorklspaceRenameTo.TextRightWidth = 2;
 			// 
 			// MniWorkspacesToolStripSeparator
 			// 

@@ -87,10 +87,17 @@ namespace Sq1.Core.Correlation {
 
 		private SequencedBacktests									sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached;
 		private	Dictionary<string, OneParameterAllValuesAveraged>	keepDeserializedChosen;
-		private	SequencedBacktests									sequencedBacktestsOriginalMinusParameterValuesUnchosen { get { lock(this.lockForAllRecalculations) {
+		public	SequencedBacktests									SequencedBacktestsOriginalMinusParameterValuesUnchosen { get { lock(this.lockForAllRecalculations) {
 			if (this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached != null)
 				return this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached;
 			this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached = new SequencedBacktests();
+
+			// SubsetAsString="[0..75%]" is forwared to the SequencerControl.txtDataRange.Text
+			this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached
+				.SubsetPercentageSetInvalidate(this.sequencedBacktestOriginal.SubsetPercentage);
+			this.sequencedBacktestsOriginalMinusParameterValuesUnchosen_cached
+				.SubsetPercentageFromEndSetInvalidate(this.sequencedBacktestOriginal.SubsetPercentageFromEnd);
+
 			this.valuesUnchosenByParameter_cached = null;
 
 			if (this.sequencedBacktestOriginal == null) {
@@ -119,21 +126,21 @@ namespace Sq1.Core.Correlation {
 			this.Executor = scriptExecutor;
 		}
 
-		public void Initialize(SequencedBacktests sequencedBacktests, string relPathAndNameForSequencerResults, string fileName) {
+		public void Initialize(SequencedBacktests sequencedBacktests, string relPathAndNameForCorrelatorResults, string fileName) {
 			if (sequencedBacktests == null) {
 				string msg = "DONT_PASS_NULL_originalSequencedBacktests";
 				Assembler.PopupException(msg);
 				return;
 			}
 			if (this.sequencedBacktestOriginal != null && this.sequencedBacktestOriginal.ToString() == sequencedBacktests.ToString()) {
-				string msg = "MUSTVE_BEEN_ALREADY_SYNCHRONIZED_UPSTACK";
-				Assembler.PopupException(msg);
+				string msg = "YOU_ALREADY_INVOKED_ME_EARLIER_WITH_SAME_SEQUENCED_HISTORY";
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			this.sequencedBacktestOriginal = sequencedBacktests;
 
 			this.repositoryJsonCorrelator.Initialize(Assembler.InstanceInitialized.AppDataPath
-				, Path.Combine("Correlator", relPathAndNameForSequencerResults), fileName);
+				, Path.Combine("Correlator", relPathAndNameForCorrelatorResults), fileName);
 
 			this.keepDeserializedChosen = this.repositoryJsonCorrelator.DeserializeSortedDictionary();
 
@@ -172,13 +179,21 @@ namespace Sq1.Core.Correlation {
 			foreach (OneParameterAllValuesAveraged eachParameter in this.ParametersByName.Values) {
 				eachParameter.KPIsGlobalNoMoreParameters_DivideTotalsByCount_step3of3();
 			}
-			this.calculateLocalsAndDeltas(false);
+
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				this.calculateLocalsAndDeltas(false, false);	// WHY??? raiseAllEvents=false, serialize=false
+			} else {
+				this.calculateLocalsAndDeltas(false);			// WHY??? raiseAllEvents=false, serialize=true
+			}
 
 			this.AvgMomentumsCalculator.Initialize_runEachValueAgainstAllParametersFullyChosen();
 
 			int chosenWereFound_runCalculateLocalAndDeltas = this.absorbChosenFlagFromDeserialized();
 			if (chosenWereFound_runCalculateLocalAndDeltas > 0) {
 				this.calculateLocalsAndDeltas();
+			} else {
+				string msg = "SO_WHAT_DIDNT_CHANGE_AFTER_this.AvgMomentumsCalculator.Initialize_runEachValueAgainstAllParametersFullyChosen() ???";
+				Assembler.PopupException(msg);
 			}
 		}
 
@@ -212,9 +227,15 @@ namespace Sq1.Core.Correlation {
 				OneParameterAllValuesAveraged paramDeserialized = this.keepDeserializedChosen.ContainsKey(paramRebuilt.ParameterName)
 					? this.keepDeserializedChosen[paramRebuilt.ParameterName]
 					: null;
-				if (paramDeserialized == null || paramDeserialized.ValuesByParam == null) {
-					string msg = "WHOS_THE_MOLE_HERE? AVOIDING_NPE";
+				if (paramDeserialized == null) {
+					string msg = "I_REFUSE_TO_ABSORB_CHOSEN__DESERIALIZED_DOESNT_CONTAIN paramRebuilt[" + paramRebuilt.ParameterName + "]";
 					Assembler.PopupException(msg);
+					continue;
+				}
+				if (paramDeserialized.ValuesByParam == null) {
+					string msg = "I_REFUSE_TO_ABSORB_NO_VALUES_FOR___DESERIALIZED [" + paramDeserialized + "] paramRebuilt[" + paramRebuilt.ParameterName + "]";
+					Assembler.PopupException(msg);
+					continue;
 				}
 				foreach (OneParameterOneValue eachValue in paramRebuilt.ValuesByParam.Values) {
 					bool chosen = true;

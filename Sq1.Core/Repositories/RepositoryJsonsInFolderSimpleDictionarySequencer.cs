@@ -10,6 +10,16 @@ namespace Sq1.Core.Repositories {
 		public RepositoryJsonsInFolderSimpleDictionarySequencer() : base()	{
 		}
 
+
+		public void SerializeSingle(SequencedBacktests backtests) {
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (backtests.ProfitFactorAverage == 0) {
+				backtests.CalculateProfitFactorAverage();
+			}
+			string fnameWithPFappended = FnameDateSizeColorPFavg.AppendProfitFactorAverage(
+				backtests.SymbolScaleIntervalDataRange, backtests.ProfitFactorAverage);
+			this.SerializeSingle(backtests, fnameWithPFappended);
+		}
 		public override void SerializeSingle(SequencedBacktests backtests, string jsonRelname) {
 			string jsonRelnameForSaving = jsonRelname;
 			jsonRelnameForSaving += base.Extension;

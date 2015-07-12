@@ -77,6 +77,7 @@ namespace Sq1.Widgets.Sequencing {
 //			this.splitContainer1.SplitterDistance = heightCollapsed;
 //		}
 		void sequencer_OnOneBacktestFinished(object sender, SystemPerformanceRestoreAbleEventArgs e) {
+			string msig = " //SequencerControl.sequencer_OnOneBacktestFinished()";
 			if (base.InvokeRequired) {
 				base.BeginInvoke((MethodInvoker)delegate { this.sequencer_OnOneBacktestFinished(sender, e); });
 				return;
@@ -84,8 +85,15 @@ namespace Sq1.Widgets.Sequencing {
 			this.backtestsLocalEasierToSync.Add(e.SystemPerformanceRestoreAble);
 
 			//v1 this.olvBacktests.SetObjects(this.backtests, true); //preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
-			this.olvBacktests.AddObject(e.SystemPerformanceRestoreAble);
-			
+			try {
+				this.olvBacktests.AddObject(e.SystemPerformanceRestoreAble);
+			} catch (Exception ex) {
+				string msg = "YOU_FORGOT_TO_UNSUBSCRIBE_ME_FROM_ALL_EVENTS__GC_CANT_DISPOSE_ME"
+					+ " EVENT_GENERATORS_KEEP_SENDING_EVENTS_WHICH_MY_GUTS_ARENT_READY_TO_DIGEST"
+					+ " RETURNING_FROM_CLOSED_SUBSCRIBER_NO_ACTION_DONE";
+				Assembler.PopupException(msg + msig, ex, false);
+				return;
+			}
 			int backtestsTotal		= this.sequencer.BacktestsTotal;
 			int backtestsFinished	= this.sequencer.BacktestsFinished;
 			
@@ -132,18 +140,21 @@ namespace Sq1.Widgets.Sequencing {
 			//v2
 			//this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync, symbolScaleRange);
 			//v3
-			if (this.backtestsLocalEasierToSync.ProfitFactorAverage == 0) {
-				this.backtestsLocalEasierToSync.CalculateProfitFactorAverage();
-			}
-			string fnameWithPFappended = FnameDateSizeColorPFavg.AppendProfitFactorAverage(
-				symbolScaleRange, this.backtestsLocalEasierToSync.ProfitFactorAverage);
-			this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync, fnameWithPFappended);
+			//if (this.backtestsLocalEasierToSync.ProfitFactorAverage == 0) {
+			//    this.backtestsLocalEasierToSync.CalculateProfitFactorAverage();
+			//}
+			//string fnameWithPFappended = FnameDateSizeColorPFavg.AppendProfitFactorAverage(
+			//    symbolScaleRange, this.backtestsLocalEasierToSync.ProfitFactorAverage);
+			//this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync, fnameWithPFappended);
+			//v4
+			this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync);
+
 			this.backtestsLocalEasierToSync.CheckPositionsCountMustIncreaseOnly();
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
 
 			//v1 this.statsAndHistoryExpand();
 			this.cbxExpanded.Checked = true;
-			this.RaiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
+			this.raiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
 		}
 		void sequencer_OnSequencerAborted(object sender, EventArgs e) {
 			this.sequencer_OnAllBacktestsFinished(sender, e);
@@ -182,7 +193,7 @@ namespace Sq1.Widgets.Sequencing {
 //			this.RaiseOnCopyToContextDefaultBacktest(selectedClone);
 			SystemPerformanceRestoreAble sysPerfRestoreAble = this.olvBacktests.SelectedObject as SystemPerformanceRestoreAble;
 			if (sysPerfRestoreAble == null) return;
-			this.RaiseOnCopyToContextDefaultBacktest(sysPerfRestoreAble);
+			this.raiseOnCopyToContextDefaultBacktest(sysPerfRestoreAble);
 			this.olvParameters.Refresh();	//otherwize you'll see CURRENT changed only after mouseover on the CHANGEDs	MUST_BE_AN_INTERFORM_EVENT_BUT_LAZY
 		}
 		void mniCopyToDefaultCtx_Click(object sender, EventArgs e) {
@@ -192,7 +203,7 @@ namespace Sq1.Widgets.Sequencing {
 //			this.RaiseOnCopyToContextDefault(selectedClone);
 			SystemPerformanceRestoreAble sysPerfRestoreAble = this.olvBacktests.SelectedObject as SystemPerformanceRestoreAble;
 			if (sysPerfRestoreAble == null) return;
-			this.RaiseOnCopyToContextDefault(sysPerfRestoreAble);
+			this.raiseOnCopyToContextDefault(sysPerfRestoreAble);
 			this.olvParameters.Refresh();	//otherwize you'll see CURRENT changed only after mouseover on the CHANGEDs	MUST_BE_AN_INTERFORM_EVENT_BUT_LAZY
 		}
 		void mniltbCopyToNewContext_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
@@ -203,7 +214,7 @@ namespace Sq1.Widgets.Sequencing {
 //			this.RaiseOnCopyToContextNew(selectedClone);
 			SystemPerformanceRestoreAble sysPerfRestoreAble = this.olvBacktests.SelectedObject as SystemPerformanceRestoreAble;
 			if (sysPerfRestoreAble == null) return;
-			this.RaiseOnCopyToContextNew(sysPerfRestoreAble, scriptContextNewName);
+			this.raiseOnCopyToContextNew(sysPerfRestoreAble, scriptContextNewName);
 			this.olvParameters.Refresh();	//otherwize you'll see CURRENT changed only after mouseover on the CHANGEDs	MUST_BE_AN_INTERFORM_EVENT_BUT_LAZY
 		}
 		void mniltbCopyToNewContextBacktest_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
@@ -214,7 +225,7 @@ namespace Sq1.Widgets.Sequencing {
 //			this.RaiseOnCopyToContextNewBacktest(selectedClone);
 			SystemPerformanceRestoreAble sysPerfRestoreAble = this.olvBacktests.SelectedObject as SystemPerformanceRestoreAble;
 			if (sysPerfRestoreAble == null) return;
-			this.RaiseOnCopyToContextNewBacktest(sysPerfRestoreAble, scriptContextNewName);
+			this.raiseOnCopyToContextNewBacktest(sysPerfRestoreAble, scriptContextNewName);
 			this.olvParameters.Refresh();	//otherwize you'll see CURRENT changed only after mouseover on the CHANGEDs	MUST_BE_AN_INTERFORM_EVENT_BUT_LAZY
 		}
 		
@@ -273,6 +284,12 @@ namespace Sq1.Widgets.Sequencing {
 		void ctxOneBacktestResult_Opening(object sender, CancelEventArgs e) {
 			string msig = " /ctxOneBacktestResult_Opening()";
 			SystemPerformanceRestoreAble sysPerfRestoreAble = (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject;
+			if (sysPerfRestoreAble == null && this.olvBacktests.Items.Count > 0) {
+				this.olvBacktests.SelectedObject = this.olvBacktests.GetModelObject(0);
+				sysPerfRestoreAble = (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject;
+				string msg = "I_EMULATED_CLICK_ON_FIRST_AVAILABLE_BACKTEST WEIRD_ITS_HAPPENED";
+				Assembler.PopupException(msg + msig, null, false);
+			}
 			if (sysPerfRestoreAble == null) {
 				string msg = "IS_NULL (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject";
 				Assembler.PopupException(msg + msig);
@@ -365,17 +382,27 @@ namespace Sq1.Widgets.Sequencing {
 			}
 		}
 		bool showAllScriptIndicatorParametersInSequencedBacktest;
-		void mni_showAllScriptIndicatorParametersInSequencedBacktestClick(object sender, EventArgs e) {
-			if (this.mni_showAllScriptIndicatorParametersInSequencedBacktest.Checked == true) {
-				string msg = "ChartForm > Menu > Show Correlator > Click any checkbox to shrink again";
-				Assembler.PopupException(msg);
-				return;
-			}
+		void mni_showInSequencedBacktests_ScriptIndicatorParameters_All_Click(object sender, EventArgs e) {
+			//if (this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked == true) {
+			//    string msg = "ChartForm > Menu > Show Correlator > Click any checkbox to shrink again";
+			//    Assembler.PopupException(msg);
+			//    return;
+			//}
 			//this.showAllScriptIndicatorParametersInOptimizationResults = this.mni_showAllScriptIndicatorParametersInOptimizationResults.Checked;
 			//this.olvParameters.Refresh();
 			//CHANGING_COLUMN_VISIBILITY_INSTEAD this.populateColumns_onlyWillBeSequencedDuringOptimization_orAll();
 			//CHANGING_COLUMN_VISIBILITY_INSTEAD this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync);
-			this.BacktestsRestoreCorrelatedClosed();	// can't access here: chartFormsManager.CorrelatorFormConditionalInstance.Close();
+
+			//if (this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked == true) {
+				this.BacktestsShowAll_regardlessWhatIsChosenInCorrelator();
+			//} else {
+			//	this.BacktestsShowCorrelatorChosen();
+			//}
+			this.ctxBacktests_OneResult.Show();
+		}
+		void mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked_Click(object sender, EventArgs e) {
+			this.BacktestsShowCorrelatorChosen();
+			this.ctxBacktests_OneResult.Show();
 		}
 	}
 }

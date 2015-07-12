@@ -34,7 +34,7 @@ namespace Sq1.Core.Sequencing {
 			this.slowIndex = this.confirmOrFindNextParameterMarkedForSequencing(this.slowIndex);
 
 			ContextScript ret = new ContextScript(ctxName);
-			ret.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly("FOR_userClickedDuplicateCtx", this.contextScriptCloneIterateable);
+			ret.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerOnly("FOR_userClickedDuplicateCtx", this.contextScriptCloneIterateable);
 			this.IncrementsDone++;
 			ret.SequenceIterationSerno = this.IncrementsDone;
 			this.logDump(ctxName);
@@ -43,7 +43,7 @@ namespace Sq1.Core.Sequencing {
 		ContextScript getNextScriptContextSequenced(string ctxName) { lock (this.getNextLock) {
 			ContextScript ret = new ContextScript(ctxName);
 			this.nextMerged();
-			ret.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly("FOR_userClickedDuplicateCtx", this.contextScriptCloneIterateable);
+			ret.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerOnly("FOR_userClickedDuplicateCtx", this.contextScriptCloneIterateable);
 			this.IncrementsDone++;
 			ret.SequenceIterationSerno = this.IncrementsDone;
 			this.logDump(ctxName);
@@ -138,7 +138,11 @@ namespace Sq1.Core.Sequencing {
 			foreach(IndicatorParameter param in this.paramsMerged) {
 				iteration += "\t" + param.ToString();
 			}
-			this.log += iteration + "\r\n"; 
+			if (this.log.Contains(iteration)) {
+				string msg = "ITERATION_HAS_ALREADY_BEEN_BACKTESTED iteration[" + iteration + "]";
+				Assembler.PopupException(msg);
+			}
+			this.log += iteration + "\r\n";
 		}
 	}
 }

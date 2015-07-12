@@ -127,7 +127,7 @@ namespace Sq1.Core.StrategyBase {
 			ret.ScriptContextsByName.Add(this.ScriptContextCurrentName, new ContextScript(this.ScriptContextCurrentName));
 			//I_SPAWN_DISPOSABLE_EXECUTORS_FROM_ANY_POSSIBLE_CURRENT_CONTEXT ret.ScriptContextCurrentName = ContextScript.DEFAULT_NAME;
 			//v1 ret.ScriptContextCurrent..CloneResetAllToMin_ForSequencer("FOR_EACH_DISPOSABLE_EXECUTOR");
-			ret.ScriptContextCurrent.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerSequencerOnly("FRESH_DEFAULT_CTX_FOR_EACH_DISPOSABLE", this.ScriptContextCurrent);
+			ret.ScriptContextCurrent.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerOnly("FRESH_DEFAULT_CTX_FOR_EACH_DISPOSABLE", this.ScriptContextCurrent);
 
 			ret.ScriptCompiler				= null;
 			ret.LivesimBrokerSettings		= null;

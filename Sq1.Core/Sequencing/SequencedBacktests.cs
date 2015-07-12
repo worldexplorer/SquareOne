@@ -23,9 +23,10 @@ namespace Sq1.Core.Sequencing {
 		[JsonProperty]	public	double								ProfitFactorAverage				{ get; private set; }
 		
 		[JsonProperty]	private	List<SystemPerformanceRestoreAble>	backtests;//					{ get; private set; }
+		[JsonProperty]	public	bool								ShowOnlyCorrelatorChosenBacktests;		//{ get; private set; }
 		
-		[JsonIgnore]			List<SystemPerformanceRestoreAble> subset_cached;
-		[JsonIgnore]	public	List<SystemPerformanceRestoreAble> Subset { get {
+		[JsonIgnore]			List<SystemPerformanceRestoreAble>	subset_cached;
+		[JsonIgnore]	public	List<SystemPerformanceRestoreAble>	Subset { get {
 				if (this.SubsetPercentage == 100) return this.backtests;
 				if (this.SubsetWaterLineDateTime == DateTime.MaxValue) return this.backtests;
 				if (this.subset_cached != null) return this.subset_cached;
@@ -35,7 +36,7 @@ namespace Sq1.Core.Sequencing {
 
 
 		
-		// main reason for this class to be created is to vary backtest / walkforward percentage in CorrelatorControl and see KPI deltas immediately
+		// main reason for this class to be created was to vary backtest / walkforward percentage in CorrelatorControl and see KPI deltas immediately
 		[JsonIgnore]	public	List<SystemPerformanceRestoreAble>	subsetBacktest_cached;
 		[JsonIgnore]	public	List<SystemPerformanceRestoreAble>	SubsetBacktest					{ get {
 				if (this.subsetBacktest_cached != null) return this.subsetBacktest_cached;
@@ -150,6 +151,13 @@ namespace Sq1.Core.Sequencing {
 				}
 				return ret;
 			} }
+
+		[JsonProperty]	public	string								SubsetAsString { get {
+			string range = this.SubsetPercentageFromEnd
+				? this.SubsetPercentage + "..100"
+				: "0.." + this.SubsetPercentage;
+			return "[" + range + "]%";
+		} }
 		
 		public SequencedBacktests() {
 			string msig				= "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
@@ -239,9 +247,8 @@ namespace Sq1.Core.Sequencing {
 			#endif
 		}
 		public override string ToString() {
-			return this.FileName + ":" + this.backtests.Count + "backtests;" + this.SubsetPercentage + "%";
+			return this.FileName + ":" + this.backtests.Count + "backtests; " + this.SubsetAsString;
 		}
-
 
 		[JsonIgnore]	public	ReadOnlyCollection<SystemPerformanceRestoreAble>	BacktestsReadonly				{ get { return this.backtests.AsReadOnly(); } }
 		[JsonIgnore]	public	int		Count		{ get { return this.backtests.Count; } }

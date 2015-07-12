@@ -45,7 +45,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvcSerno.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;
 				if (systemPerformanceRestoreAble == null) return "olvcSerno.AspectGetter: SystemPerformanceRestoreAble=null";
-				return systemPerformanceRestoreAble.SequenceIterationSerno.ToString();
+				return systemPerformanceRestoreAble.SequenceIterationSerno;
 			};
 			this.olvcNetProfit.AspectGetter = delegate(object o) {
 				SystemPerformanceRestoreAble systemPerformanceRestoreAble = o as SystemPerformanceRestoreAble;

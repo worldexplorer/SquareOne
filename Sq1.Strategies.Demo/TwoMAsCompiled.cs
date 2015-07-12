@@ -19,7 +19,7 @@ namespace Sq1.Strategies.Demo {
 			MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
 
 			MAslow = new IndicatorMovingAverageSimple();
-			MAslow.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 2);	//5);
+			MAslow.ParamPeriod = new IndicatorParameter("Period", 16, 10, 20, 2);	//5);
 			MAslow.LineColor = System.Drawing.Color.LightCoral;
 			fontArial6 = new Font("Arial", 6);
 		}
@@ -31,6 +31,8 @@ namespace Sq1.Strategies.Demo {
 			} }
 
 		public override void InitializeBacktest() {
+			string msg = "HERE_I_SHOULD_CATCH_NEW_MAS_PERIODS_CHANGED_AFTER_CLICK_ON_PARAMETERS_SLIDERS";
+			//Assembler.PopupException(msg, null, false);
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 		}

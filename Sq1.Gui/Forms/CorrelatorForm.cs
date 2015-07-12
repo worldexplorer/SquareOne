@@ -91,7 +91,7 @@ namespace Sq1.Gui.Forms {
 			//v1
 			this.CorrelatorControl.Initialize(originalSequencedBacktests
 				, this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
-				, originalSequencedBacktests.FileName);
+				, originalSequencedBacktests.SymbolScaleIntervalDataRange);
 			//v2 COULDNT_SET_SUBSET_PERCENTAGE
 			//Task letGuiDraw = new Task(delegate() {
 			//    this.CorrelatorControl.Initialize(originalOptimizationResults

@@ -191,6 +191,9 @@ namespace Sq1.Widgets.Correlation {
 
 		void olvAllValuesForOneParam_CellClick(object sender, CellClickEventArgs e) {
 			if (e.Column != this.olvcParamValues) return;
+			//if (this.olv.UseWaitCursor == true) {	// CANT_FIX_FIRST_CLICK_RESETTING_ALL_CHECKBOXES
+			//    return;	// FIRST_CLICK_ON_CHECKBOX_DESELECTS_OTHERS__SYNCING_VIA_WAIT_CURSOR DO_NOTHING_SINCE_PUTTER_ARRIVES_FIRST
+			//}
 
 			OneParameterOneValue paramValueClicked = e.Model as OneParameterOneValue;
 			this.olv.UseWaitCursor = true;
@@ -676,7 +679,7 @@ namespace Sq1.Widgets.Correlation {
 				//}
 				oneParameterOneValue.Chosen = newState.CompareTo(CheckState.Checked) == 0;
 				this.olv.RefreshObject(oneParameterOneValue);
-				this.olv.UseWaitCursor = true;
+				this.olv.UseWaitCursor = true;	// CANT_FIX_FIRST_CLICK_RESETTING_ALL_CHECKBOXES FIRST_CLICK_ON_CHECKBOX_DESELECTS_OTHERS__SYNCING_VIA_WAIT_CURSOR
 				this.correlator.OneParameterOneValueUserSelectedChanged_recalculateAllKPIsLocal(oneParameterOneValue);
 				return newState;
 			};

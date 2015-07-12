@@ -339,7 +339,7 @@ namespace Sq1.Gui.Forms {
 		protected override void OnMouseUp(MouseEventArgs e) {
 			if (base.DesignMode) return;
 			base.OnMouseUp(e);
-			ChartSettingsEditorForm.Instance.ChartSettingsEditorControl.PopulateWithChartSettings();
+			//NO_VISIBLE_IMPAIRMENT_IF_COMMENTED_OUT_RIGHT? ChartSettingsEditorForm.Instance.ChartSettingsEditorControl.PopulateWithChartSettings();
 		}
 	}
 }

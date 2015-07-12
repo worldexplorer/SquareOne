@@ -149,7 +149,7 @@ namespace Sq1.Core.Sequencing {
 			ret.AbsorbFrom(lastCumulativeMinusWaterline_Clone);
 			if (this.NetProfit == ret.NetProfit && ret.NetProfit > 0) {	// inline test
 				string msg = "MY_OWN_SUBSET_MUST_HAVE_DIFFERENT_NUMBERS";
-				Assembler.PopupException(msg + this.NetProfitRecovery);
+				Assembler.PopupException(msg + this.NetProfitRecovery, null, false);
 			}
 			return ret;
 		}

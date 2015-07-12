@@ -12,7 +12,7 @@ namespace Sq1.Core.Correlation {
 			if (this.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt == null) return;
 			try {
 				this.OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt(this
-					, new SequencedBacktestsEventArgs(this.sequencedBacktestsOriginalMinusParameterValuesUnchosen));
+					, new SequencedBacktestsEventArgs(this.SequencedBacktestsOriginalMinusParameterValuesUnchosen));
 			} catch (Exception ex) {
 				string msg = "SEQUENCER_WASNT_READY_TO_GET_BACK_SHRINKED_SEQUENCED_BACKTESTS //RaiseOptimizedBacktestsListIsRebuiltWithoutUnchosenParameters()";
 				Assembler.PopupException(msg, ex);

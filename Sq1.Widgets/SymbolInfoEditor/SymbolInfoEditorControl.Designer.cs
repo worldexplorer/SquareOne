@@ -85,7 +85,7 @@ namespace Sq1.Widgets.SymbolEditor {
 			// mniDeleteSymbol
 			// 
 			this.mniDeleteSymbol.Name = "mniDeleteSymbol";
-			this.mniDeleteSymbol.Size = new System.Drawing.Size(210, 22);
+			this.mniDeleteSymbol.Size = new System.Drawing.Size(308, 22);
 			this.mniDeleteSymbol.Text = "Delete [RIM3]";
 			// 
 			// mniltbAddNew
@@ -95,23 +95,23 @@ namespace Sq1.Widgets.SymbolEditor {
 			this.mniltbAddNew.InputFieldEditable = true;
 			this.mniltbAddNew.InputFieldOffsetX = 80;
 			this.mniltbAddNew.InputFieldValue = "RIM3";
-			this.mniltbAddNew.InputFieldWidth = 62;
+			this.mniltbAddNew.InputFieldWidth = 160;
 			this.mniltbAddNew.Name = "mniltbAddNew";
-			this.mniltbAddNew.Size = new System.Drawing.Size(150, 21);
+			this.mniltbAddNew.Size = new System.Drawing.Size(248, 21);
 			this.mniltbAddNew.Text = "Add New:";
 			this.mniltbAddNew.TextLeft = "Add New:";
 			this.mniltbAddNew.TextLeftOffsetX = 0;
 			this.mniltbAddNew.TextLeftWidth = 61;
 			this.mniltbAddNew.TextRed = false;
 			this.mniltbAddNew.TextRight = "";
-			this.mniltbAddNew.TextRightOffsetX = 145;
+			this.mniltbAddNew.TextRightOffsetX = 243;
 			this.mniltbAddNew.TextRightWidth = 2;
 			this.mniltbAddNew.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbAddNew_UserTyped);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(207, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(305, 6);
 			// 
 			// mniltbRename
 			// 
@@ -120,16 +120,16 @@ namespace Sq1.Widgets.SymbolEditor {
 			this.mniltbRename.InputFieldEditable = true;
 			this.mniltbRename.InputFieldOffsetX = 80;
 			this.mniltbRename.InputFieldValue = "RIM3";
-			this.mniltbRename.InputFieldWidth = 62;
+			this.mniltbRename.InputFieldWidth = 160;
 			this.mniltbRename.Name = "mniltbRename";
-			this.mniltbRename.Size = new System.Drawing.Size(150, 21);
+			this.mniltbRename.Size = new System.Drawing.Size(248, 21);
 			this.mniltbRename.Text = "Rename To:";
 			this.mniltbRename.TextLeft = "Rename To:";
 			this.mniltbRename.TextLeftOffsetX = 0;
 			this.mniltbRename.TextLeftWidth = 72;
 			this.mniltbRename.TextRed = false;
 			this.mniltbRename.TextRight = "";
-			this.mniltbRename.TextRightOffsetX = 145;
+			this.mniltbRename.TextRightOffsetX = 243;
 			this.mniltbRename.TextRightWidth = 2;
 			this.mniltbRename.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbRename_UserTyped);
 			// 
@@ -140,16 +140,16 @@ namespace Sq1.Widgets.SymbolEditor {
 			this.mniltbDuplicate.InputFieldEditable = true;
 			this.mniltbDuplicate.InputFieldOffsetX = 80;
 			this.mniltbDuplicate.InputFieldValue = "RIM3";
-			this.mniltbDuplicate.InputFieldWidth = 62;
+			this.mniltbDuplicate.InputFieldWidth = 160;
 			this.mniltbDuplicate.Name = "mniltbDuplicate";
-			this.mniltbDuplicate.Size = new System.Drawing.Size(150, 21);
+			this.mniltbDuplicate.Size = new System.Drawing.Size(248, 21);
 			this.mniltbDuplicate.Text = "Duplicate To:";
 			this.mniltbDuplicate.TextLeft = "Duplicate To:";
 			this.mniltbDuplicate.TextLeftOffsetX = 0;
 			this.mniltbDuplicate.TextLeftWidth = 79;
 			this.mniltbDuplicate.TextRed = false;
 			this.mniltbDuplicate.TextRight = "";
-			this.mniltbDuplicate.TextRightOffsetX = 145;
+			this.mniltbDuplicate.TextRightOffsetX = 243;
 			this.mniltbDuplicate.TextRightWidth = 2;
 			this.mniltbDuplicate.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDuplicate_UserTyped);
 			// 

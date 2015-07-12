@@ -154,9 +154,9 @@ namespace Sq1.Widgets {
 					string msg = "go find out if I'm covered by other forms floating in the same window"
 						+ " ; meanwhile I'll report I'm not covered so you can click ChartForm>HIDESourceCodeEditor";
 					#if DEBUG
-					Debugger.Break();
+					//Debugger.Break();
 					#endif
-					return false;
+					return true;
 				}
 				if (base.DockState == DockState.Unknown) {
 					string msg = "EDITOR_WAS_CONDITIONALLY_INSTANTIATED_BUT_NOT_DOCKPANEL.SHOW()n";

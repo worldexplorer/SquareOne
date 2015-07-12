@@ -128,9 +128,20 @@ namespace Sq1.Gui {
 		}
 
 		public void SelectWorkspaceAfterLoaded(string workspaceLoaded) {
+			string msig = " //SelectWorkspaceAfterLoaded(" + workspaceLoaded + ")";
+			if (string.IsNullOrEmpty(workspaceLoaded)) {
+				string msg = "I_REFUSE_TO_CHECK_EMPTY_WORKSPACE string.IsNullOrEmpty(" + workspaceLoaded + ") == true";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
 			var mni = this.findMniByWorkspaceName(workspaceLoaded);
 			if (mni == null) {
 				Assembler.PopupException("SelectWorkspaceLoaded(" + workspaceLoaded + ") not found");
+				return;
+			}
+			if (this.WorkspaceCurrentMni == mni) {
+				string msg = "I_REFUSE_TO_CHECK_THIS_AND_UNCHECK_OTHERS__YOU_CHECKED_THE_SAME this.WorkspaceCurrentMni=mni[" + mni.Text + "]";
+				//Assembler.PopupException(msg + msig);
 				return;
 			}
 			this.WorkspaceCurrentMni = mni;
@@ -157,6 +168,7 @@ namespace Sq1.Gui {
 
 			this.mainForm.CtxWorkspaces.Items.Clear();
 			this.mainForm.CtxWorkspaces.Items.AddRange(this.workspaceMenuItemsWithHandlers.ToArray());
+			this.SelectWorkspaceAfterLoaded(currentWorkspaceName);
 		}
 	}
 }

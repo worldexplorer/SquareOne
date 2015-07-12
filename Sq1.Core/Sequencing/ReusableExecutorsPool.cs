@@ -5,7 +5,7 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Sequencing {
 	public class ReusableExecutorsPool : IDisposable {
-		public	bool						IsReinitialized 			{ get; private set; }
+		public	bool						IsReinitialized 	{ get; private set; }
 		public	int							ExecutorsSpawnedNow { get; private set; }
 		public	int							ExecutorsRunningNow { get; private set; }
 		public	int							ExecutorsIdlingNow	{ get; private set; }
@@ -24,8 +24,8 @@ namespace Sq1.Core.Sequencing {
 			executorsIdlingNow	= new List<ReusableExecutor>();
 			executorsSpawned	= new List<ReusableExecutor>();
 		}
-		public ReusableExecutorsPool(Sequencer sequencer) : this() {
-			this.sequencer = sequencer;
+		public ReusableExecutorsPool(Sequencer sequencerPassed) : this() {
+			this.sequencer = sequencerPassed;
 			executorEthalonWithDetachedBars = new ReusableExecutor("DISPOSABLE_EHTALON", this.sequencer.Executor);
 			parametersSequencer = new ParametersSequencer(executorEthalonWithDetachedBars.Strategy.ScriptContextCurrent);
 			IsReinitialized = false;
@@ -105,8 +105,14 @@ namespace Sq1.Core.Sequencing {
 				this.spawnToReachTotalNr(threadsToUse);
 			}
 			for (int i = this.ExecutorsRunningNow; i < threadsToUse; i++) {
-				string ctxName = Sequencer.ITERATION_PREFIX + (this.sequencer.BacktestsFinished + 1) + "/" + this.sequencer.BacktestsTotal;
+				//v1 string ctxName = Sequencer.ITERATION_PREFIX + (this.sequencer.BacktestsFinished + 1) + "/" + this.sequencer.BacktestsTotal;
+				string ctxName = Sequencer.ITERATION_PREFIX + (this.parametersSequencer.IncrementsDone + 1) + "/" + this.sequencer.BacktestsTotal;
 				ContextScript ctxNext = this.parametersSequencer.GetFirstOrNextScriptContext(ctxName);
+				if (ctxNext.SequenceIterationSerno != this.parametersSequencer.IncrementsDone) {
+					string msg = "WRONG_GUESS_ON_ctxName__GetFirstOrNextScriptContext()_SHOULD_HAVE_INCREASED_+1_WHILE_YOU_ADDED_"
+						+ (this.parametersSequencer.IncrementsDone - ctxNext.SequenceIterationSerno - 1);
+					Assembler.PopupException(msg);
+				}
 				ReusableExecutor launchingIdle = this.executorsIdlingNow[0];
 
 				this.executorsIdlingNow.Remove(launchingIdle);

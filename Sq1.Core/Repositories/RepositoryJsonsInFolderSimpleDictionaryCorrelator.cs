@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 
 using Sq1.Core.Correlation;
@@ -17,6 +18,10 @@ namespace Sq1.Core.Repositories {
 				Assembler.PopupException(fileName);
 			}
 			base.Initialize(rootPath, subfolder);
+			if (fileName != Path.GetFileName(fileName)) {
+				string msg = "DONT_FEED_ME_WITH_ABSOLUTE_FILENAME__IT_CONTAINS_SEQUENCER_WHILE_I_AM_A_CORRELATOR fileName[" + fileName + "]";
+				Assembler.PopupException(msg, null, false);
+			}
 			this.symbolScaleRange = fileName;
 		}
 	

@@ -87,7 +87,8 @@ namespace Sq1.Gui.Forms {
 			//}
 
 			this.chartFormManager.ReportersFormsManager.PopupReporters_OnParentChartActivated(sender, e);
-			this.chartFormManager.ChartForm.ChartControl.RangeBar.Enabled = false;
+			//this.chartFormManager.ChartForm.ChartControl.RangeBar.Enabled = false;	// WHY false?? YOU_SHOULD_NOT_CHANGE_VISIBILITY_OF_RANGEBAR
+			this.chartFormManager.ChartForm.ChartControl.InvalidateAllPanels();		// CHART_WAS_INVOKED_WITH_SIZE_DIFFERENT_ON_START__HELPS_TO_STRETCH_CHART_TO_ACTUAL_SIZE__COVERED_WAS_FIRST_TIME_SHOWN__ACTIVE_IS_OK
 			
 			//if (this.chartFormManager.SequencerForm == null) {
 			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.SequencerForm) == true) {

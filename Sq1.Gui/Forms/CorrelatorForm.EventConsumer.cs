@@ -21,10 +21,10 @@ namespace Sq1.Gui.Forms {
             // both at FormCloseByX and MainForm.onClose()
             this.chartFormsManager.ChartForm.MniShowCorrelator.Checked = false;
             this.chartFormsManager.MainForm.MainFormSerialize();
-			this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsRestoreCorrelatedClosed();
+			this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsShowAll_regardlessWhatIsChosenInCorrelator();
         }
 		void correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt(object sender, SequencedBacktestsEventArgs e) {
-			this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsReplaceWithCorrelated(e.SequencedBacktests.BacktestsReadonly);
+			this.chartFormsManager.SequencerFormConditionalInstance.SequencerControl.BacktestsReplaceWithCorrelated(e.SequencedBacktests);
 		}
 
 	}
