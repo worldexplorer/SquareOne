@@ -193,7 +193,7 @@ namespace Sq1.Core.Correlation {
 				this.calculateLocalsAndDeltas();
 			} else {
 				string msg = "SO_WHAT_DIDNT_CHANGE_AFTER_this.AvgMomentumsCalculator.Initialize_runEachValueAgainstAllParametersFullyChosen() ???";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 		}
 

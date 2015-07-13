@@ -262,7 +262,7 @@
     <Compile Include="StrategyBase\Reporter.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="StrategyBase\Scrip.TunnelledToChartControl.cs">
+    <Compile Include="StrategyBase\Script.TunnelledToChartControl.cs">
       <DependentUpon>Script.cs</DependentUpon>
     </Compile>
     <Compile Include="StrategyBase\Script.DerivedShouldOverride.cs">

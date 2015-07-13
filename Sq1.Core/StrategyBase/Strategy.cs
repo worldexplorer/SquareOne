@@ -5,6 +5,7 @@ using System.IO;
 
 using Newtonsoft.Json;
 using Sq1.Core.Livesim;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class Strategy {
@@ -31,12 +32,12 @@ namespace Sq1.Core.StrategyBase {
 		//CANT_DESERIALIZE_JsonException public Dictionary<int, ScriptParameter> ScriptParametersByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
 		//					return this.Script.ParametersById;
 		//				} }
-		[JsonIgnore]	public string								ScriptParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
-				if (this.Script == null) return null;
+		[JsonIgnore]	public string								ScriptParametersAsStringJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+				if (this.Script == null) return "CANT_DUMP_SCRIPT_PARAMETERS this.Script=null";
 				return this.Script.ScriptParametersAsString;
 			} }
-		[JsonIgnore]	public string								IndicatorParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
-				if (this.Script == null) return null;
+		[JsonIgnore]	public string								IndicatorParametersAsStringJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+				if (this.Script == null) return "CANT_DUMP_INDICATOR_PARAMETERS this.Script=null";
 				return this.Script.IndicatorParametersAsString;
 			} }
 		[JsonProperty]	public string								ScriptContextCurrentName;	// if you restrict SET, serializer won't be able to restore from JSON { get; private set; }
@@ -174,6 +175,21 @@ namespace Sq1.Core.StrategyBase {
 					this.Script.IndicatorParametersByIndicator_ReflectedCached);
 			if (currentValuesAbsorbed > 0 && saveStrategy == true) this.Serialize();
 			return currentValuesAbsorbed;
+		}
+
+		public void PushChangedScriptParameterValueToScript(IndicatorParameter indicatorParameterChangedDueToUserClickInSliders) {
+			string msig = " //Strategy.PushChangedScriptParameterValueToScript(" + indicatorParameterChangedDueToUserClickInSliders + ")";
+			if (indicatorParameterChangedDueToUserClickInSliders == null) {
+				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT SLIDERS_AUTOGROW_GENERATED_AN_EVENT_WITH_EMPTY_INDICATOR_PARAMETER_INSIDE";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (this.Script == null) {
+				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT YOU_SHOULD_HAVE_CLEARED_AUTOGROW_DUE_TO_UN-COMPILE-ABLE_SCRIPT_SOURCE";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			this.Script.PushChangedScriptParameterValueToScript(indicatorParameterChangedDueToUserClickInSliders);
 		}
 	}
 }

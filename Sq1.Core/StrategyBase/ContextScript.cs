@@ -241,12 +241,24 @@ namespace Sq1.Core.StrategyBase {
 		public int AbsorbOnlyScriptAndIndicatorParameterCurrentValues_fromSequencer(SystemPerformanceRestoreAble sperfParametersToAbsorbIntoDefault) {
 			int ret = 0;
 			try {
+				int paramsRebuit = sperfParametersToAbsorbIntoDefault.Ensure_OnBacktestFinisheds_AreRebuiltAfterDeserialization();
+				if (sperfParametersToAbsorbIntoDefault.ScriptParametersById_BuiltOnBacktestFinished == null) {
+					string msg = "MUST_BE_EMPTY_LIST_INSTEAD_OF_NULL_AFTER Ensure_OnBacktestFinisheds_AreRebuiltAfterDeserialization()";
+					Assembler.PopupException(msg);
+					return ret;
+				}
 				foreach (int id in sperfParametersToAbsorbIntoDefault.ScriptParametersById_BuiltOnBacktestFinished.Keys) {
-					ScriptParameter spOpt  = sperfParametersToAbsorbIntoDefault	.ScriptParametersById_BuiltOnBacktestFinished[id];
-					ScriptParameter spMine = this								.ScriptParametersById[id];
+					ScriptParameter spOpt = sperfParametersToAbsorbIntoDefault.ScriptParametersById_BuiltOnBacktestFinished[id];
+					ScriptParameter spMine = this.ScriptParametersById[id];
 					if (spMine.ValueCurrent == spOpt.ValueCurrent) continue;	//looks stupig but inserting breakpoint on next line is useful
 					spMine.ValueCurrent = spOpt.ValueCurrent;
 					ret++;
+				}
+
+				if (sperfParametersToAbsorbIntoDefault.ScriptParametersById_BuiltOnBacktestFinished == null) {
+					string msg = "MUST_BE_EMPTY_SORTED_DICTIONARY_INSTEAD_OF_NULL_AFTER Ensure_OnBacktestFinisheds_AreRebuiltAfterDeserialization()";
+					Assembler.PopupException(msg);
+					return ret;
 				}
 				foreach (string indicatorName in sperfParametersToAbsorbIntoDefault.IndicatorParametersByName_BuiltOnBacktestFinished.Keys) {
 					List<IndicatorParameter> ipsOpt  = sperfParametersToAbsorbIntoDefault	.IndicatorParametersByName_BuiltOnBacktestFinished[indicatorName];
@@ -274,10 +286,10 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return this.ReportersSnapshots[reporterName];
 		}
-		public string ToStringSymbolScaleIntervalDataRangeForScriptContextNewName() {
+		public string SymbolScaleIntervalDataRangeForScriptContextNewName { get {
 			string ret = this.Symbol + " " + this.ScaleInterval + " " + this.DataRange;
 			return ret;
-		}
+		} }
 
 		internal int ScriptParametersReflectedAbsorbFromCurrentContextReplace(SortedDictionary<int, ScriptParameter> scriptParametersById_ReflectedCached) {
 			string msig = " //ScriptParametersAbsorbFromReflectedReplace()";

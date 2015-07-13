@@ -13,7 +13,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				//SliderComboControl slider = panel.Parent.Parent.Parent as SliderComboControl;
 				SteppingSliderComboControl slider = sender as SteppingSliderComboControl;
 				IndicatorParameter indicatorParameterChanged = slider.Tag as IndicatorParameter;
-				ScriptParameter scriptParameterChanged = slider.Tag as ScriptParameter;
+				ScriptParameter		  scriptParameterChanged = slider.Tag as ScriptParameter;
 				
 				if (scriptParameterChanged != null) {		// check ScriptParameter first because it's derived (same as "catch most fine grained Exceptions first")
 					// single instance, no need to synchronize between Slider and ScriptContext

@@ -34,19 +34,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				}
 				return ret;
 			} }
-		public Dictionary<string, double> CurrentParametersFromChildSliders {
-			get {
-				if (base.DesignMode == true) return null;
-				Dictionary<string, double> ret = new Dictionary<string, double>();
-				foreach (SteppingSliderComboControl slider in this.SlidersScriptAndIndicatorParameters) {
-					ScriptParameter parameter = slider.Tag as ScriptParameter;
-					ret.Add(parameter.Name, (double)slider.ValueCurrent);
-				}
-				return ret;
-			}
-			set { }		// Designer adds .CurrentParametersFromChildSliders = null;
-		}
-		
+
 		[Browsable(true)]
 		public int VerticalSpaceBetweenSliders { get; set; }
 
@@ -64,6 +52,8 @@ namespace Sq1.Widgets.SteppingSlider {
 		}
 
 		public void Initialize(Strategy strategy) {
+			if (this.skipSlidersFactory_changingValueDoesntChangeNumberOfSliders) return;
+
 			this.Strategy = strategy;
 
 			base.SuspendLayout();
@@ -146,7 +136,7 @@ namespace Sq1.Widgets.SteppingSlider {
 			this.mniAllParamsShowNumeric.Text = atLeastOneNumericShown ? "All Params -> HideNumeric" : "All Params -> ShowNumeric";
 		}
 
-		SteppingSliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptparameter, string indicatorNameDotParameterName = null) {
+		SteppingSliderComboControl SliderComboFactory(IndicatorParameter indicatorOrScriptParameter, string indicatorNameDotParameterName = null) {
 			//v1 WOULD_BE_TOO_EASY ret = this.templateSliderControl.Clone();
 			//BEGIN merged with SlidersAutoGrow.Designer.cs:InitializeComponent()
 			SteppingSliderComboControl ret = new SteppingSliderComboControl();
@@ -180,16 +170,16 @@ namespace Sq1.Widgets.SteppingSlider {
 			//END merged
 
 			string nameForScriptDotSeparatedForIndicator = indicatorNameDotParameterName;
-			if (string.IsNullOrEmpty(nameForScriptDotSeparatedForIndicator)) nameForScriptDotSeparatedForIndicator = indicatorOrScriptparameter.FullName; 
+			if (string.IsNullOrEmpty(nameForScriptDotSeparatedForIndicator)) nameForScriptDotSeparatedForIndicator = indicatorOrScriptParameter.FullName; 
 			ret.LabelText = nameForScriptDotSeparatedForIndicator;
 			ret.Name = "parameter_" + nameForScriptDotSeparatedForIndicator;
 			
 			//v1 ValueCurrent="200" set initially, impedes setting ValueMax=10
 			//sequence matters! ret.ValueCurrent checks that you didn't set it outside the boundaries AND within the Increment; fix manually designer-generated SliderComboControl.InitializeComponents() as well 
-			ret.ValueIncrement	= new decimal(indicatorOrScriptparameter.ValueIncrement);
-			ret.ValueMin		= new decimal(indicatorOrScriptparameter.ValueMin);
-			ret.ValueMax		= new decimal(indicatorOrScriptparameter.ValueMax);
-			ret.ValueCurrent	= new decimal(indicatorOrScriptparameter.ValueCurrent);
+			ret.ValueIncrement	= new decimal(indicatorOrScriptParameter.ValueIncrement);
+			ret.ValueMin		= new decimal(indicatorOrScriptParameter.ValueMin);
+			ret.ValueMax		= new decimal(indicatorOrScriptParameter.ValueMax);
+			ret.ValueCurrent	= new decimal(indicatorOrScriptParameter.ValueCurrent);
 			//v2
 			//ret.ValidateValuesAndAbsorbFrom(indicatorOrScriptparameter);
 			
@@ -197,16 +187,16 @@ namespace Sq1.Widgets.SteppingSlider {
 			//ret.PaddingPanelSlider = new System.Windows.Forms.Padding(0, 1, 0, 0);
 			ret.Location = new System.Drawing.Point(0, this.PreferredHeight + this.VerticalSpaceBetweenSliders);
 			ret.Size = new System.Drawing.Size(this.Width, ret.Size.Height);
-			ret.Tag = indicatorOrScriptparameter;
+			ret.Tag = indicatorOrScriptParameter;
 			ret.ParentAutoGrowControl = this;
 			ret.ValueCurrentChanged += slider_ValueCurrentChanged;
 			// WILL_ADD_PARENT_MENU_ITEMS_IN_Opening
 			
-			ret.EnableBorder = indicatorOrScriptparameter.BorderShown;
-			ret.EnableNumeric = indicatorOrScriptparameter.NumericUpdownShown;
+			ret.EnableBorder	= indicatorOrScriptParameter.BorderShown;
+			ret.EnableNumeric	= indicatorOrScriptParameter.NumericUpdownShown;
 			
-			ret.ShowBorderChanged += slider_ShowBorderChanged;
-			ret.ShowNumericUpdownChanged += slider_ShowNumericUpdownChanged;
+			ret.ShowBorderChanged			+= slider_ShowBorderChanged;
+			ret.ShowNumericUpdownChanged	+= slider_ShowNumericUpdownChanged;
 			
 			return ret;
 		}

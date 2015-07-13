@@ -162,7 +162,7 @@ namespace Sq1.Widgets.Sequencing {
 
 			if (string.IsNullOrEmpty(symbolScaleRange)) {
 				Strategy strategy = this.sequencer.Executor.Strategy;
-				symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+				symbolScaleRange = strategy.ScriptContextCurrent.SymbolScaleIntervalDataRangeForScriptContextNewName;
 			}
 
 			this.olvHistory.UseWaitCursor = true;
@@ -361,7 +361,7 @@ namespace Sq1.Widgets.Sequencing {
 		int heightCollapsed { get { return this.splitContainer1.Panel1MinSize; } }
 		public void NormalizeBackgroundOrMarkIfBacktestResultsAreForDifferentSymbolScaleIntervalRangePositionSize() {
 			Strategy strategy = this.sequencer.Executor.Strategy;
-			string symbolScaleRange = strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+			string symbolScaleRange = strategy.ScriptContextCurrent.SymbolScaleIntervalDataRangeForScriptContextNewName;
 			FnameDateSizeColorPFavg foundBySymbolScaleRange = this.RepositoryJsonSequencer.ItemsFoundContainsSymbolScaleRange_NullUnsafe(symbolScaleRange);
 			if (foundBySymbolScaleRange == null) return;
 

@@ -204,5 +204,30 @@ namespace Sq1.Core.Sequencing {
 				}
 			}
 		}
+
+		internal int Ensure_OnBacktestFinisheds_AreRebuiltAfterDeserialization() {
+			int ret = 0;
+			if (this.ScriptParametersById_BuiltOnBacktestFinished != null || this.IndicatorParametersByName_BuiltOnBacktestFinished != null) {
+				string msg = "ALREADY_RESTORED";
+				return ret;
+			}
+			this.ScriptParametersById_BuiltOnBacktestFinished		= new SortedDictionary<int, ScriptParameter>();
+			this.IndicatorParametersByName_BuiltOnBacktestFinished	= new Dictionary<string, List<IndicatorParameter>>();
+			foreach (IndicatorParameter indicatorOrScriptParameter in this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Values) {
+				ScriptParameter scriptParameter = indicatorOrScriptParameter as ScriptParameter;
+				if (scriptParameter != null) {
+					this.ScriptParametersById_BuiltOnBacktestFinished.Add(scriptParameter.Id, scriptParameter);
+				} else {
+					string indicatorName = indicatorOrScriptParameter.IndicatorName;
+					if (this.IndicatorParametersByName_BuiltOnBacktestFinished.ContainsKey(indicatorName) == false) {
+						this.IndicatorParametersByName_BuiltOnBacktestFinished.Add(indicatorName, new List<IndicatorParameter>());
+					}
+					List<IndicatorParameter> parametersForIndicator = this.IndicatorParametersByName_BuiltOnBacktestFinished[indicatorName];
+					parametersForIndicator.Add(indicatorOrScriptParameter);
+				}
+				ret++;
+			}
+			return ret;
+		}
 	}
 }

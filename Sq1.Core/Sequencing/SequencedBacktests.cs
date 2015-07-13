@@ -169,7 +169,7 @@ namespace Sq1.Core.Sequencing {
 		public SequencedBacktests(ScriptExecutor executor, string fileName) : this() {
 			this.StrategyName					= executor.StrategyName;
 			this.Symbol							= executor.Strategy.ScriptContextCurrent.Symbol;
-			this.SymbolScaleIntervalDataRange	= executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
+			this.SymbolScaleIntervalDataRange	= executor.Strategy.ScriptContextCurrent.SymbolScaleIntervalDataRangeForScriptContextNewName;
 			this.FileName						= this.SymbolScaleIntervalDataRange;
 			base.Name							= this.SymbolScaleIntervalDataRange;
 		}

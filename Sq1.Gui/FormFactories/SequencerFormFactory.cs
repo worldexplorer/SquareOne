@@ -62,14 +62,17 @@ namespace Sq1.Gui.FormFactories {
 			SlidersForm.Instance.SteppingSlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(e.ScriptContextNewName);
 		}
 		void sequencerControl_OnCopyToContextDefaultBacktest(object sender, SystemPerformanceRestoreAbleEventArgs e) {
-			this.sequencerControl_OnCopyToContextDefault(sender, e);
-			this.chartFormManager.BacktesterRunSimulation();
+			this.sequencerControl_OnCopyToContextDefault_handler(e, true);
 		}
 		void sequencerControl_OnCopyToContextDefault(object sender, SystemPerformanceRestoreAbleEventArgs e) {
+			this.sequencerControl_OnCopyToContextDefault_handler(e, false);
+		}
+
+		void sequencerControl_OnCopyToContextDefault_handler(SystemPerformanceRestoreAbleEventArgs e, bool switchToDefaultAndBacktest = false) {
 			SystemPerformanceRestoreAble sperfParametersToAbsorbIntoDefault = e.SystemPerformanceRestoreAble;
 			string mustBeNull = e.ScriptContextNewName;
 			if (string.IsNullOrEmpty(mustBeNull) == false) {
-				string msg = "MUST_BE_NULL e.ScriptContextNewName[" + mustBeNull+ "] //sequencerControl_OnCopyToContextDefault()";
+				string msg = "MUST_BE_NULL e.ScriptContextNewName[" + mustBeNull + "] //sequencerControl_OnCopyToContextDefault()";
 				Assembler.PopupException(msg);
 			}
 			Strategy strategyOnChart = this.chartFormManager.Strategy;
@@ -78,15 +81,20 @@ namespace Sq1.Gui.FormFactories {
 				Assembler.PopupException(msg);
 				return;
 			}
-			ContextChart  ctxChart  = strategyOnChart.ScriptContextsByName[ContextScript.DEFAULT_NAME];
-			ContextScript ctxScript = ctxChart as ContextScript;
-			if (ctxScript == null) {
+			ContextChart ctxChartDefault = strategyOnChart.ScriptContextsByName[ContextScript.DEFAULT_NAME];
+			ContextScript ctxScriptDefault = ctxChartDefault as ContextScript;
+			if (ctxScriptDefault == null) {
 				string msg = "NONSENSE_THAT_YOU_WERE_OPTIMIZING_CHART_HAVING_NO_SCRIPT_CONTEXT...";
 				Assembler.PopupException(msg);
 				return;
 			}
-			ctxScript.AbsorbOnlyScriptAndIndicatorParameterCurrentValues_fromSequencer(sperfParametersToAbsorbIntoDefault);
+			ctxScriptDefault.AbsorbOnlyScriptAndIndicatorParameterCurrentValues_fromSequencer(sperfParametersToAbsorbIntoDefault);
 			strategyOnChart.Serialize();
+
+			if (switchToDefaultAndBacktest) {
+				strategyOnChart.ContextSwitchCurrentToNamedAndSerialize(ContextScript.DEFAULT_NAME, false);
+				this.chartFormManager.BacktesterRunSimulation();
+			}
 			SlidersForm.Instance.Show();
 			SlidersForm.Instance.Initialize(SlidersForm.Instance.SteppingSlidersAutoGrowControl.Strategy);
 			SlidersForm.Instance.SteppingSlidersAutoGrowControl.PopupScriptContextsToConfirmAddedOptimized(ContextScript.DEFAULT_NAME);

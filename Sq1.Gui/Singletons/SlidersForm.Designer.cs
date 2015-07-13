@@ -64,7 +64,6 @@
 			// SlidersAutoGrowControl
 			// 
 			this.SteppingSlidersAutoGrowControl.BackColor = System.Drawing.SystemColors.Control;
-			this.SteppingSlidersAutoGrowControl.CurrentParametersFromChildSliders = null;
 			this.SteppingSlidersAutoGrowControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.SteppingSlidersAutoGrowControl.Location = new System.Drawing.Point(0, 0);
 			this.SteppingSlidersAutoGrowControl.Name = "SlidersAutoGrowControl";

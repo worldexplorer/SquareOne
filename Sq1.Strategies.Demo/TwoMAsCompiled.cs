@@ -10,18 +10,18 @@ using Sq1.Core.StrategyBase;
 namespace Sq1.Strategies.Demo {
 	public partial class TwoMAsCompiled : Script {
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
-		IndicatorMovingAverageSimple MAfast;
 		IndicatorMovingAverageSimple MAslow;
+		IndicatorMovingAverageSimple MAfast;
 
 		public TwoMAsCompiled() {
-			MAfast = new IndicatorMovingAverageSimple();
-			MAfast.ParamPeriod = new IndicatorParameter("Period", 22, 11, 33, 3);	//11);
-			MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
-
 			MAslow = new IndicatorMovingAverageSimple();
 			MAslow.ParamPeriod = new IndicatorParameter("Period", 16, 10, 20, 2);	//5);
 			MAslow.LineColor = System.Drawing.Color.LightCoral;
-			fontArial6 = new Font("Arial", 6);
+
+			MAfast = new IndicatorMovingAverageSimple();
+			MAfast.ParamPeriod = new IndicatorParameter("Period", 22, 11, 32, 3);	//11);
+			MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
+			this.constructRenderingTools();
 		}
 		
 		public int PeriodLargestAmongMAs { get {

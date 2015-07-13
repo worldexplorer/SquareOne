@@ -284,6 +284,32 @@ namespace Sq1.Core.StrategyBase {
 			Assembler.PopupException(msg2);
 			this.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
 		}
+		internal void PushChangedScriptParameterValueToScript(IndicatorParameter indicatorParameterChangedDueToUserClickInSliders) {
+			string msig = " //Script.PushChangedScriptParameterValueToScript(" + indicatorParameterChangedDueToUserClickInSliders + ")";
+			if (indicatorParameterChangedDueToUserClickInSliders == null) {
+				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT SLIDERS_AUTOGROW_GENERATED_AN_EVENT_WITH_EMPTY_INDICATOR_PARAMETER_INSIDE";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			SortedDictionary<string, IndicatorParameter> reflectedAll = this.scriptAndIndicatorParametersReflectedMergedUnclonedForReusableExecutorToCheckByName;
+			if (reflectedAll.ContainsKey(indicatorParameterChangedDueToUserClickInSliders.FullName) == false) {
+				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT STALE_PARAMETER_CLICKED_WHICH_DOESNT_EXIST_IN_RECOMPILED_SCRIPT";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			IndicatorParameter reflected = reflectedAll[indicatorParameterChangedDueToUserClickInSliders.FullName];
+			if (reflected == indicatorParameterChangedDueToUserClickInSliders) {
+				string msg = "SCRIPT_PARAMETERS_SEEMS_TO_BE_THE_SAME_OBJECTS_WHILE_INDICATOR_PARAMETERS_ARE_DIFFERENT??? CATCH_DECIDE_COPY_OR_SAME";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (reflected.ValueCurrent == indicatorParameterChangedDueToUserClickInSliders.ValueCurrent) {
+				string msg = "SCRIPT_PARAMETER_VALUE_ALREADY_SAME_AS_PROPAGATING NAIL_ANOTHER_SYNC/PUSH_MECHANISM";
+				Assembler.PopupException(msg);
+				return;
+			}
+			reflected.AbsorbCurrentFixBoundariesIfChanged(indicatorParameterChangedDueToUserClickInSliders);
+		}
 		public override string ToString() {
 			string ret = "Script[" + this.GetType().Name + "].Strategy";
 			if (this.Strategy == null) {

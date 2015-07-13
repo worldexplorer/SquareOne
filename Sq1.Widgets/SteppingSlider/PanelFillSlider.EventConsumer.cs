@@ -101,7 +101,7 @@ namespace Sq1.Widgets.SteppingSlider {
 				leftMouseButtonHeldDown = true;	// I_HATE_HACKING_F_WINDOWS_FORMS
 			}
 			if (this.ValueCurrent != this.ValueMouseOver && leftMouseButtonHeldDown) {
-				this.ValueCurrent = this.ValueMouseOver;
+				this.ValueCurrent  = this.ValueMouseOver;
 			}
 		}
 		bool rightClickShouldKeepMouseOver = false;

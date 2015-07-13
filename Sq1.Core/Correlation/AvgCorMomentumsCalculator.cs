@@ -103,11 +103,13 @@ namespace Sq1.Core.Correlation {
 
 			#if DEBUG		// inline test
 			if (this.correlator.Parameters.Count <= 0) {
-				string msg = "DONT_INVOKE_ME_WITH_NO_PARAMETERS";
-				Assembler.PopupException(msg);
+				string msg = "FOR_THE_CHART_OPENED_CORRELATOR_DOESNT_HAVE_ANY_BACKTESTS " + this.correlator.Executor.ChartShadow;
+				msg += this.correlator.Executor.Strategy.ScriptContextCurrent.SymbolScaleIntervalDataRangeForScriptContextNewName;
+				Assembler.PopupException(msg, null, false);
+				return;
 			}
 
-			var paramVarying	= this.correlator.Parameters[1];
+			var paramVarying	= this.correlator.Parameters[0];
 
 			if (paramVarying.Values.Count <= 1) {
 				string msg = "DONT_INVOKE_ME_FOR_A_NON_VARYING_PARAMETER";
@@ -139,7 +141,7 @@ namespace Sq1.Core.Correlation {
 			this.momentumsAveragedByParameter_cached = null;
 			if (this.ParametersByName.Count == 0) {
 				string msg = "NOTHING_TO_RESET ParametersByName.Count=0 //AvgCorMomentumsCalculator.reset()";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 			foreach (OneParameterAllValuesAveraged varyingThisWhileOthersFullyChosen in this.ParametersByName.Values) {
 				if (varyingThisWhileOthersFullyChosen.ValuesByParam.Count <= 1) continue;

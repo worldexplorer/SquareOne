@@ -7,7 +7,10 @@ using Sq1.Core.Charting.OnChart;
 namespace Sq1.Strategies.Demo {
 	public partial class TwoMAsCompiled {
 		Font fontArial6;
-		
+
+		void constructRenderingTools() {
+			fontArial6 = new Font("Arial", 6);
+		}
 		void drawLinesSample(Bar barStaticFormed) {
 			Bar barFirstForCurrentTradingDay = barStaticFormed.BarMarketOpenedTodayScanBackwardIgnoringMarketInfo;
 			double dayOpenedAtPrice = barFirstForCurrentTradingDay.Open;

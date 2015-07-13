@@ -10,8 +10,7 @@ using Sq1.Core.Indicators;
 namespace Sq1.Core.StrategyBase {
 	public partial class Script {
 		#region Only ReusableExecutor uses it ToCheck; copypaste from ContextScript
-		List<IndicatorParameter> ScriptAndIndicatorParametersMergedUnclonedForReusableExecutorToCheck {
-			get {
+		List<IndicatorParameter> scriptAndIndicatorParametersReflectedMergedUnclonedForReusableExecutorToCheck { get {
 				List<IndicatorParameter> ret = new List<IndicatorParameter>();
 				this.scriptParametersById_ReflectionForced = true;
 				ret.AddRange(this.ScriptParametersById_ReflectedCached.Values);
@@ -27,12 +26,10 @@ namespace Sq1.Core.StrategyBase {
 					ret.AddRange(iParams);
 				}
 				return ret;
-			}
-		}
-		SortedDictionary<string, IndicatorParameter> ScriptAndIndicatorParametersMergedUnclonedForReusableExecutorToCheckByName {
-			get {
+			} }
+		SortedDictionary<string, IndicatorParameter> scriptAndIndicatorParametersReflectedMergedUnclonedForReusableExecutorToCheckByName { get {
 				SortedDictionary<string, IndicatorParameter> ret = new SortedDictionary<string, IndicatorParameter>();
-				foreach (IndicatorParameter iParam in this.ScriptAndIndicatorParametersMergedUnclonedForReusableExecutorToCheck) {
+				foreach (IndicatorParameter iParam in this.scriptAndIndicatorParametersReflectedMergedUnclonedForReusableExecutorToCheck) {
 					if (ret.ContainsKey(iParam.FullName)) {
 						if (iParam.FullName.Contains("NOT_ATTACHED_TO_ANY_INDICATOR_YET")) {
 							string msg2 = "IM_CLONING_A_CONTEXT_TO_PUSH_FROM_SEQUENCER__NO_IDEA_HOW_TO_FIX";
@@ -46,11 +43,9 @@ namespace Sq1.Core.StrategyBase {
 					ret.Add(iParam.FullName, iParam);
 				}
 				return ret;
-			}
-		}
-		public string ScriptAndIndicatorParametersMergedUnclonedForReusableExecutorToCheckByName_AsString {
-			get {
-				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParametersMergedUnclonedForReusableExecutorToCheckByName;
+			} }
+		public string ScriptAndIndicatorParametersMergedUnclonedForReusableExecutorToCheckByName_AsString { get {
+				SortedDictionary<string, IndicatorParameter> merged = this.scriptAndIndicatorParametersReflectedMergedUnclonedForReusableExecutorToCheckByName;
 				if (merged.Count == 0) return "(NoParameters)";
 				string ret = "";
 				foreach (string indicatorDotParameter in merged.Keys) {
@@ -58,8 +53,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				ret = ret.TrimEnd(",".ToCharArray());
 				return "(" + ret + ")";
-			}
-		}
+			} }
 		#endregion
 	}
 }

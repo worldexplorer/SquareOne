@@ -9,6 +9,7 @@ using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
+using Sq1.Widgets.SteppingSlider;
 
 namespace Sq1.Gui {
 	public class MainFormEventManager {
@@ -318,7 +319,7 @@ namespace Sq1.Gui {
 			SlidersForm.Instance.PopulateFormTitle(strategy);
 		}
 		// TYPE_MANGLING_INSIDE_WARNING NOTICE_THAT_BOTH_PARAMETER_SCRIPT_AND_INDICATOR_VALUE_CHANGED_EVENTS_ARE_HANDLED_BY_SINGLE_HANDLER
-		internal void SlidersAutoGrow_SliderValueChanged(object sender, IndicatorParameterEventArgs e) {
+		internal void SlidersAutoGrow_SliderValueChanged(object sender, IndicatorParameterEventArgs indicatorParamChangedArg) {
 			ChartForm chartFormActive = this.mainForm.ChartFormActiveNullUnsafe;
 			if (chartFormActive == null) {
 				string msg = "DRAG_CHART_INTO_DOCUMENT_AREA";
@@ -339,6 +340,10 @@ namespace Sq1.Gui {
 //			} else {
 //				strategyToSaveAndRun.PushChangedIndicatorParameterValueToScriptAndSerialize(e.IndicatorParameter);
 //			}
+
+			// SAME_OBJECTS_BETWEEN_SLIDER_AND_CURRENT_SCRIPT_CONTEXT_BUT_SCRIPT_HAS_ITS_OWN_ACCESSIBLE_THROUGH_REFLECTED
+			strategyToSaveAndRun.PushChangedScriptParameterValueToScript(indicatorParamChangedArg.IndicatorParameter);
+
 			chartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
 
 // NO_FREAKING_IDEA_WHY_THIS_WAS_TYPED_IN_HERE			
