@@ -10,7 +10,7 @@ using BrightIdeasSoftware;
 namespace Sq1.Widgets.Exceptions {
 	[ToolboxBitmap(typeof(ExceptionsControl), "ExceptionsControl")]
 	[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
-	public partial class ExceptionsControl : UserControl {
+	public partial class ExceptionsControl : UserControlImproved {
 		#region Windows Form Designer generated code
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ghdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "hdfgh"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "hdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "dfghdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Occured")]

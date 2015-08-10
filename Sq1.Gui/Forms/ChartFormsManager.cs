@@ -513,8 +513,27 @@ namespace Sq1.Gui.Forms {
 					Assembler.PopupException(msg);
 					return;
 				}
+				if (this.ChartForm.IsDisposed) {
+					string msg = "CREATE_CHART_FORM_FIRST__ON_APPRESTART_AND WORKSPACE_RELOAD";
+					Assembler.PopupException(msg);
+					return;
+				}
 				if (this.ChartForm.InvokeRequired) {
+					if (this.ChartForm.ChartFormIsLoaded_NonBlocking == false) {
+						bool loadedIwaited = this.ChartForm.ChartFormIsLoaded_Blocking;
+						string msg = "CHART_FORM_IS_LOADED__NOW_IT_CAN_DRAW_BACKTESTED_POSITIONS " + this.Executor.ToString();
+						Assembler.PopupException(msg, null, false);
+					}
+
 					this.ChartForm.BeginInvoke((MethodInvoker)delegate { this.afterBacktestComplete(myOwnExecutorIgnoring); });
+					//v2 after worspace is loaded (app restart / workspace change), I don't hit the breakpoint 4 lines below; it looks like ChartFormsManager gets destroyed?
+					//v2 making Invoke linear (in the same thread instead of postponed BeginInvoke) allowed to catch the ChartForm.Disposed Exception...
+					//this.ChartForm.Invoke((MethodInvoker)delegate { this.afterBacktestComplete(myOwnExecutorIgnoring); });
+					return;
+				}
+				if (this.ChartForm.IsDisposed) {
+					string msg = "CREATE_CHART_FORM_FIRST__ON_APPRESTART_AND WORKSPACE_RELOAD";
+					Assembler.PopupException(msg);
 					return;
 				}
 				//this.clonePositionsForChartPickupBacktest(this.Executor.ExecutionDataSnapshot.PositionsMaster);

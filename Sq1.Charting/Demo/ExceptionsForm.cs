@@ -38,7 +38,8 @@ namespace Sq1.Charting.Demo {
 			//v2 TRYING_TO_1)LET_INVOKER_GO_EARLIER_FOR_FURTHER_2)QUEUEING_OF_LISTVIEW_REPAINT__2)NYI
 			#region EXPERIMENTAL
 			Task t = new Task(delegate {
-				this.ExceptionControl.InsertSyncAndFlushExceptionsToOLVIfDockContentDeserialized_inGuiThread(ex);
+				//v1 this.ExceptionControl.InsertSyncAndFlushExceptionsToOLVIfDockContentDeserialized_inGuiThread(ex);
+				this.ExceptionControl.InsertAsyncAutoFlush(ex);
 				});
 			t.ContinueWith(delegate {
 				string msg2 = "TASK_THREW_ExceptionsForm.popupException()";

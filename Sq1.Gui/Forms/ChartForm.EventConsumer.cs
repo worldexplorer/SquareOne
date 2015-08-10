@@ -434,5 +434,18 @@ namespace Sq1.Gui.Forms {
 		void TsiProgressBarETA_Click(object sender, EventArgs e) {
 			this.ChartFormManager.Executor.Backtester.AbortRunningBacktestWaitAborted("Backtest Aborted by clicking on progress bar");
 		}
+		protected override void OnMouseUp(MouseEventArgs e) {
+			if (base.DesignMode) return;
+			base.OnMouseUp(e);
+			//NO_VISIBLE_IMPAIRMENT_IF_COMMENTED_OUT_RIGHT? ChartSettingsEditorForm.Instance.ChartSettingsEditorControl.PopulateWithChartSettings();
+		}
+		void chartForm_Load(object sender, EventArgs e) {
+			if (this.waitForChartFormIsLoaded.WaitOne(0) == true) {
+				string msg = "MUST_BE_INSTANTIATED_AS_NON_SIGNALLED_IN_CTOR()_#1 waitForChartFormIsLoaded.WaitOne(0)=[true]";
+				Assembler.PopupException(msg);
+				return;	// why signal on already-signalled?
+			}
+			this.waitForChartFormIsLoaded.Set();
+		}
 	}
 }

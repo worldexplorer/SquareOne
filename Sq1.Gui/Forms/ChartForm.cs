@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.ComponentModel;
+using System.Threading;
+using System.Diagnostics;		//Stopwatch
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
@@ -13,12 +15,39 @@ using Sq1.Core.Streaming;
 using Sq1.Widgets.LabeledTextBox;
 using Sq1.Gui.Singletons;
 
+
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
-		public ChartFormsManager ChartFormManager;
+		public	ChartFormsManager	ChartFormManager;
 
-		List<string> GroupScaleLabeledTextboxes;
-		List<string> GroupPositionSizeLabeledTextboxes;
+				List<string>		GroupScaleLabeledTextboxes;
+				List<string>		GroupPositionSizeLabeledTextboxes;
+
+				ManualResetEvent	waitForChartFormIsLoaded;
+		public	bool				ChartFormIsLoaded_NonBlocking { get { return this.waitForChartFormIsLoaded.WaitOne(0); } }
+		public	bool				ChartFormIsLoaded_Blocking { get {
+			string ident = " [" + this.ChartFormManager.Executor.ToString() + "]";	// base.Text throws cross-thread exception, of course on Workspace reload
+			// POTENTIALLY_CAN_BE_INVOKED_AFTER_BEED_TRIGGERED_AS_LOADED, ExceptionsControl:UserControlImproved is a more obvious case
+			//if (this.waitForChartFormIsLoaded.WaitOne(0) == true) {
+			//    string msg1 = "MUST_BE_INSTANTIATED_AS_NON_SIGNALLED_IN_CTOR()_#2 waitForChartFormIsLoaded.WaitOne(0)=[true]";
+			//    Assembler.PopupException(msg1);
+			//    return false;
+			//}
+			Stopwatch formLoaded = new Stopwatch();
+			formLoaded.Start();
+			string msg = "CHART_FORM_IS_LOADED__WAITING..." + ident;
+			//Assembler.PopupException(msg, null, false);
+			bool loaded = this.waitForChartFormIsLoaded.WaitOne(-1);
+			long waitedForMillis = formLoaded.ElapsedMilliseconds;
+			formLoaded.Stop();
+			if (this.waitForChartFormIsLoaded.WaitOne(0) == false) {
+				msg = "CHART_PARANOID FORM_IS_LOADED__FALSE_AFTER_WAITING" + ident;
+				Assembler.PopupException(msg);
+			}
+			msg = "CHART_FORM_IS_LOADED[" + loaded + "] waited[" + waitedForMillis + "]ms" + ident;
+			Assembler.PopupException(msg, null, false);
+			return loaded;
+		} }
 
 		// SharpDevelop/VisualStudio Designer's constructor
 		public ChartForm() {
@@ -41,6 +70,8 @@ namespace Sq1.Gui.Forms {
 			this.GroupPositionSizeLabeledTextboxes = new List<string>() {
 				this.mnitlbPositionSizeDollarsEachTradeConstant.Name, this.mnitlbPositionSizeSharesConstantEachTrade.Name};
 			//OVERRODE_IN_CHART_CONTROL_DONT_CARE_HERE_NOW: override bool ProcessCmdKey //base.KeyPreview = true;
+
+			this.waitForChartFormIsLoaded = new ManualResetEvent(false);
 		}
 		//programmer's constructor
 		public ChartForm(ChartFormsManager chartFormManager) : this() {
@@ -335,11 +366,6 @@ namespace Sq1.Gui.Forms {
 		public void AppendReportersMenuItems(ToolStripItem[] toolStripItems) {
 			this.ctxStrategy.Items.Add(this.TssReportersBelowMe);	// if not added then we didn't initialize!
 			this.ctxStrategy.Items.AddRange(toolStripItems);
-		}
-		protected override void OnMouseUp(MouseEventArgs e) {
-			if (base.DesignMode) return;
-			base.OnMouseUp(e);
-			//NO_VISIBLE_IMPAIRMENT_IF_COMMENTED_OUT_RIGHT? ChartSettingsEditorForm.Instance.ChartSettingsEditorControl.PopulateWithChartSettings();
 		}
 	}
 }

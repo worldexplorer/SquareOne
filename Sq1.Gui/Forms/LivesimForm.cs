@@ -38,7 +38,8 @@ namespace Sq1.Gui.Forms {
 			this.chartFormsManager = chartFormManager;
 			this.WindowTitlePullFromStrategy();
 			//this.liveSimControl.Initialize(this.chartFormManager.Executor.Sequencer);
-			this.LivesimControl.LblStrategyAsString.Text = this.chartFormsManager.Executor.ToStringWithCurrentParameters();
+			//this.LivesimControl.LblStrategyAsString.Text = this.chartFormsManager.Executor.ToStringWithCurrentParameters();
+			this.LivesimControl.TssLblStrategyAsString.Text = this.chartFormsManager.Executor.ToStringWithCurrentParameters();
 			
 			try {
 				//LivesimDataSource livesimDS = this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe;

@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Sq1.Core;
 using Sq1.Core.Serializers;
 using Sq1.Support;
+using System.Threading;
 
 namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
@@ -25,8 +26,7 @@ namespace Sq1.Widgets.Exceptions {
 				Stopwatch				howLongTreeRebuilds;
 				System.Windows.Forms.Timer	rebuildTimerWF;
 				int						rebuildInitialDelay;
-				bool					rebuildingNow;
-				bool					rebuildScheduled { get { return this.rebuildTimerWF != null; } }
+				bool					rebuildScheduled;
 				DateTime				exceptionDateNotFlushedLast;
 				object					lockInsertAsync;
 
@@ -38,7 +38,7 @@ namespace Sq1.Widgets.Exceptions {
 			exceptionsNotFlushedYet = new List<Exception>();
 			howLongTreeRebuilds = new Stopwatch();
 			exceptionDateNotFlushedLast = DateTime.MinValue;
-			rebuildInitialDelay = 100;
+			rebuildInitialDelay = 200;
 			lockInsertAsync = new object();
 
 			this.InitializeComponent();
@@ -48,6 +48,11 @@ namespace Sq1.Widgets.Exceptions {
 			
 			this.exceptionsTreeListViewCustomize();
 			this.treeExceptions.SetObjects(this.Exceptions);
+
+			this.rebuildTimerWF = new System.Windows.Forms.Timer();
+			this.rebuildTimerWF.Enabled = true;
+			this.rebuildTimerWF.Tick += new EventHandler(rebuildTimerWF_Tick);
+			this.Ident_UserControlImproved = "ExceptionsControl";
 		}
 
 		protected override void Dispose(bool disposing) {
@@ -55,8 +60,9 @@ namespace Sq1.Widgets.Exceptions {
 				components.Dispose();
 			}
 			if (rebuildTimerWF != null) {
-				rebuildTimerWF.Stop();
-				rebuildTimerWF.Dispose();
+				this.rebuildTimerWF.Stop();
+				this.rebuildTimerWF.Enabled = false;
+				this.rebuildTimerWF.Dispose();
 			}
 			base.Dispose(disposing);
 		}
@@ -134,7 +140,7 @@ namespace Sq1.Widgets.Exceptions {
 				return;
 			}
 			lock (this.lockedByTreeListView) {
-				if (this.rebuildingNow) {
+				if (this.rebuildScheduled) {
 					this.exceptionsNotFlushedYet.Add(exception);
 					return;
 				}
@@ -188,54 +194,65 @@ namespace Sq1.Widgets.Exceptions {
 				this.lvStackTrace.EndUpdate();
 			}
 		}
-		public void InsertSyncAndFlushExceptionsToOLVIfDockContentDeserialized_inGuiThread(Exception ex) { lock (this.lockedByTreeListView) {
-			this.InsertExceptionBlocking(ex);
-			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-			this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
-		} }
 
 		public void InsertAsyncAutoFlush(Exception ex) {
-			lock(this.lockInsertAsync) {
+			// http://stackoverflow.com/questions/2475435/c-sharp-timer-wont-tick
+			// Always stop/start a System.Windows.Forms.Timer on the UI thread, apparently! –  user145426
+
+			// Timer is Enabled until event fired; after that Enabled can be used for a repetitive firing (I don't use repetitive so on every re-use of Start() I set Enabled
+			// hint: https://msdn.microsoft.com/en-us/library/system.windows.forms.timer.tick(v=vs.110).aspx
+
+			if (this.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.InsertAsyncAutoFlush(ex); });
+				return;
+			}
+			
+			lock (this.lockInsertAsync) {
 				this.InsertExceptionBlocking(ex);
-				if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-					return;
-				}
+				//v1
+				//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				//	return;
+				//}
 				if (this.rebuildScheduled) {
 					// third exception came in (tree might have finished rebuilding from first), and we scheduled a rebuild for second => postpone the second rebuild
-					TimeSpan rebuildPostponingDelay = DateTime.Now.Subtract(this.exceptionDateNotFlushedLast);
-					if (rebuildPostponingDelay.TotalMilliseconds == 0) {
-						string msg = "LOOKS_VERY_POSSIBLE__BUT_I_HAVE_NO_SOLUTION";
-						//#if DEBUG
-						//Debugger.Break();
-						//#endif
-						return;
-						//rebuildPostponingDelay = new TimeSpan(0, 0, 0, 0, this.rebuildInitialDelay);
-					}
+					//TimeSpan rebuildPostponingDelay = DateTime.Now.Subtract(this.exceptionDateNotFlushedLast);
+					//if (rebuildPostponingDelay.TotalMilliseconds == 0) {
+					//    string msg = "LOOKS_VERY_POSSIBLE__BUT_I_HAVE_NO_SOLUTION";
+					//    //#if DEBUG
+					//    //Debugger.Break();
+					//    //#endif
+					//    return;
+					//    //rebuildPostponingDelay = new TimeSpan(0, 0, 0, 0, this.rebuildInitialDelay);
+					//}
 					//rebuildPostponingDelay = new TimeSpan(0, 0, 0, 1);
 					this.rebuildTimerWF.Stop();
-					this.rebuildTimerWF.Interval = (int) rebuildPostponingDelay.TotalMilliseconds;
-					this.rebuildTimerWF.Start();
-					this.exceptionDateNotFlushedLast = DateTime.Now;
-					return;
-				}
-				if (	this.rebuildingNow
-					||  this.InvokeRequired == false	// if we are in GUI thread, go on timer immediately (correlator throwing thousands at startup, or chart.OnPaint() doing something wrong)
-					) {
-					// second exception came in while tree was rebuilding (after the first one wasn't finished) => schedule rebuild in 
-					this.rebuildTimerWF = new System.Windows.Forms.Timer();
+					//this.rebuildTimerWF.Interval = (int)rebuildPostponingDelay.TotalMilliseconds;		// OUTRAGEOUS_NUMBER, WHOLE IF(){} IS BUSTED
 					this.rebuildTimerWF.Interval = this.rebuildInitialDelay;
-					this.rebuildTimerWF.Tick += new EventHandler(rebuildTimerWF_Tick);
 					this.rebuildTimerWF.Start();
+					//this.rebuildTimerWF.Enabled = true;
 					this.exceptionDateNotFlushedLast = DateTime.Now;
 					return;
 				}
+				//if (this.InvokeRequired == true	// if we are in GUI thread, go on timer immediately (correlator throwing thousands at startup, or chart.OnPaint() doing something wrong)
+				//    || Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false
+				//    ) {
+					// second exception came in while tree was rebuilding (after the first one wasn't finished) => schedule rebuild in 
+					this.rebuildTimerWF.Interval = this.rebuildInitialDelay;
+					this.rebuildTimerWF.Start();
+					//this.rebuildTimerWF.Enabled = true;
+					this.exceptionDateNotFlushedLast = DateTime.Now;
+				//    return;
+				//}
 				// first exception came in => rebuild immediately, but mark already now that all other fresh exceptions would line up by timer
-				this.rebuildingNow = true;
+				this.rebuildScheduled = true;
 			}
-			this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 		}
 
 		void rebuildTimerWF_Tick(object sender, EventArgs e) {
+			if (base.ParentControlsLoaded_NonBlocking == false) {
+				return;			// Timer will re-invoke rebuildTimerWF_Tick, and when base.ParentControlsLoaded_NonBlocking==true, we'll flushExceptionsToOLVIfDockContentDeserialized_inGuiThread()
+			}
+			// NOT_NEEDED_DUE_TO_NON_BLOCKING_ABOVE bool loadedIwaited = base.ParentControlIsLoaded_Blocking;
 			this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 		}
 		public void flushExceptionsToOLVIfDockContentDeserialized_inGuiThread(object stateForTimerCallback = null) {
@@ -256,7 +273,7 @@ namespace Sq1.Widgets.Exceptions {
 			}
 			try {
 				lock (this.lockedByTreeListView) {
-					if (this.rebuildingNow == true) return;
+					//if (this.rebuildScheduled == true) return;
 					foreach (Exception ex in this.exceptionsNotFlushedYet) {
 						this.Exceptions.Insert(0, ex);
 					}
@@ -284,18 +301,30 @@ namespace Sq1.Widgets.Exceptions {
 				string msg = "NOWHERE_TO_DUMP_EXCEPTION_DURING_FLUSHING";
 				throw new Exception(msg, ex);
 			} finally {
-				this.rebuildingNow = false;
 				//this.rebuildTimer.Dispose();
 				//this.rebuildTimer = null;
-				if (this.rebuildTimerWF != null) {
+				//if (this.rebuildTimerWF != null) {
 					this.rebuildTimerWF.Stop();
-					this.rebuildTimerWF.Dispose();
-					this.rebuildTimerWF = null;
-				} else {
-					string msg = "YOU_CLICKED_MNI_EXCEPTIONS_CLEAR_OR_REFRESH";
-				}
+					//this.rebuildTimerWF.Enabled = false;
+				//	this.rebuildTimerWF.Dispose();
+				//	this.rebuildTimerWF = null;
+				//} else {
+				//	string msg = "YOU_CLICKED_MNI_EXCEPTIONS_CLEAR_OR_REFRESH";
+				//}
+				this.rebuildScheduled = false;
 				if (this.InvokeRequired == false) {
 					Form parentForm = this.Parent as Form;
+					if (parentForm == null) {
+						string msg = "all that was probably needed for messy LivesimControl having splitContainer3<splitContainer1<LivesimControl - deleted; otherwize no idea why so many nested splitters";
+						Assembler.PopupException(msg);
+						//SplitterPanel parentSplitterPanel = this.Parent as SplitterPanel;
+						//if (parentSplitterPanel != null) {
+						//    SplitContainer parentSplitContainer = parentSplitterPanel.Parent as SplitContainer;
+						//    if (parentSplitContainer != null) {
+						//        parentForm = parentSplitContainer.Parent as Form;
+						//    }
+						//}
+					}
 					if (parentForm != null) {
 						string counters = this.Exceptions.Count.ToString();
 						if (this.exceptionsNotFlushedYet.Count > 0) counters += "/" + this.exceptionsNotFlushedYet.Count;

@@ -435,12 +435,12 @@ namespace Sq1.Charting {
 			if (x < 0) x = barWithShadowsRectangle.Right + awayFromBarXpx;
 
 			Point panelPriceOffset = this.PanelPriceLocationInChartControl;
-			int multiVpanelOffset = panelPriceOffset.X;
-			if (multiVpanelOffset == -1) {
+			int multiSplitterHorizontalpanelOffset = panelPriceOffset.X;
+			if (multiSplitterHorizontalpanelOffset == -1) {
 				string msg = "DID_YOU_REMOVE_LEVEL2_AND_VERTICAL_MULTISPLITTER??";
 				Assembler.PopupException(msg, null, false);
 			}
-			x += multiVpanelOffset;
+			x += multiSplitterHorizontalpanelOffset;
 
 			int y = barWithShadowsRectangle.Top - this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
 			if (y < 0) y = 0;
@@ -464,7 +464,7 @@ namespace Sq1.Charting {
 
 			if (alertArrow.ArrowIsForPositionEntry) {
 				xPosition	= rectangleYarrowXbar.Left - this.tooltipPosition.Width - awayFromBarXpx;
-				xPrice		= rectangleYarrowXbar.Left - this.tooltipPrice.Width - awayFromBarXpx;
+				xPrice		= rectangleYarrowXbar.Left - this.tooltipPrice	 .Width - awayFromBarXpx;
 // LET_POSITION_TOOLTIP_GO_BEHIND_LEFT_EDGE_AND_PARTIALLY_OVERLAP_I_NEED_POSITION_LINE_TO_BE_FULLY_VISIBLE_TO_HIGHLIGHT
 //				if (xPrice < 0)	xPrice = rectangleYarrowXbar.Right + awayFromBarXpx;
 //				if (xPosition < 0) {	// positionTooltip is wider, dont squeeze priceTooltip but take the same side as the big brother
@@ -475,7 +475,16 @@ namespace Sq1.Charting {
 				xPosition	= rectangleYarrowXbar.Right + awayFromBarXpx;
 				xPrice		= xPosition;
 			}
-			xPrice += this.PanelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.X;
+			//v1 xPrice += this.PanelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.X;
+
+			Point panelPriceOffset = this.PanelPriceLocationInChartControl;
+			int multiSplitterHorizontalpanelOffset = panelPriceOffset.X;
+			if (multiSplitterHorizontalpanelOffset == -1) {
+				string msg = "DID_YOU_REMOVE_LEVEL2_AND_VERTICAL_MULTISPLITTER??";
+				Assembler.PopupException(msg, null, false);
+			}
+			xPrice		+= multiSplitterHorizontalpanelOffset;
+			xPosition	+= multiSplitterHorizontalpanelOffset;
 
 			int yPrice = rectangleYarrowXbar.Top - twoTooltipsCombinedHeight / 2;
 			if (yPrice <= 0) yPrice = this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
