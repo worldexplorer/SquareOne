@@ -194,10 +194,10 @@ namespace Sq1.Widgets {
 		}
 
 		public void ToggleAutoHide() {
-			if (this.DockState == DockState.Unknown) return;
-			if (this.DockState == DockState.Document) return;
-			if (this.DockState == DockState.Float) return;
-			if (this.DockState == DockState.Hidden) return;
+			if (this.DockState == DockState.Unknown)	return;
+			if (this.DockState == DockState.Document)	return;
+			if (this.DockState == DockState.Float)		return;
+			if (this.DockState == DockState.Hidden)		return;
 			//DockState newState = // BROKEN_CONTAINS_DUPLICATED_LOGIC_NONSENSE DockHelper.ToggleAutoHideState(this.Pane.DockState);
 			DockState newState = this.ToggleAutoHideState(this.Pane.DockState);
 			this.Pane.SetDockState(newState);

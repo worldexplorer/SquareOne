@@ -39,7 +39,7 @@ namespace Sq1.Core.Execution {
 		public static OrderStatesCollections CemeteryHealthy =
 			new OrderStatesCollections(new List<OrderState>() {
 				OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted,
-				OrderState.AutoSubmitNotEnabled,
+				OrderState.EmitOrdersNotClicked,
 				OrderState.MarketClosed,
 				OrderState.RejectedLimitReached,
 				OrderState.Filled,

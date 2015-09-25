@@ -106,7 +106,7 @@ namespace Sq1.Core.Broker {
 				alert.PositionAffected.EntryAlert.OrderFollowed.DerivedOrdersAdd(newborn);
 			}
 
-			OrderState newbornOrderState = OrderState.AutoSubmitNotEnabled;
+			OrderState newbornOrderState = OrderState.EmitOrdersNotClicked;
 			string newbornMessage = "alert[" + alert + "]";
 
 			if (setStatusSubmitting == true) {
@@ -169,7 +169,7 @@ namespace Sq1.Core.Broker {
 						alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScriptNonReenterably(alert, alert.Bars.Count);
 						continue;
 					}
-					if (newOrder.State == OrderState.AutoSubmitNotEnabled) continue;
+					if (newOrder.State == OrderState.EmitOrdersNotClicked) continue;
 					//if (newOrder.Alert.Strategy.Script.Executor.IsAutoSubmitting == true
 					//&& newOrder.Alert.Strategy.Script.Executor.IsStreaming == true
 					//&& newOrder.FromAutoTrading == true

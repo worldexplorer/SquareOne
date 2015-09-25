@@ -41,6 +41,12 @@ namespace Sq1.Widgets.Execution {
 			
 			this.orderTreeListViewCustomize();
 			this.messagesListViewCustomize();
+
+			// THROWS this.olvMessages.AllColumns.AddRange(new List<OLVColumn>() {
+			//    this.colheMessageDateTime,
+			//    this.colheMessageState,
+			//    this.colheMessageText});
+			// DOESNT_BUILD this.olvMessages.RebuildColumns();	// hoping to eliminate RebuildColumns() in populateMessagesFor()
 			
 			WindowsFormsUtils.SetDoubleBuffered(this.OrdersTreeOLV);
 			WindowsFormsUtils.SetDoubleBuffered(this.olvMessages);
@@ -218,62 +224,101 @@ namespace Sq1.Widgets.Execution {
 			this.SelectOrderAndOrPopulateMessages(firstOrNull);
 			//this.lvOrders_SelectedIndexChanged(this.lvOrders, EventArgs.Empty);
 		}
-		public void SelectOrderAndOrPopulateMessages(Order orderNullMeansClear) {
-			bool firstRowShouldStaySelected = true;
-			if (this.DataSnapshot != null) firstRowShouldStaySelected = this.DataSnapshot.FirstRowShouldStaySelected;
-			
-			if (firstRowShouldStaySelected == true) {
+		public void SelectOrderAndOrPopulateMessages(Order orderNullMeansClearMessages) {
+			bool firstRowShouldStaySelected = (this.DataSnapshot != null) ? this.DataSnapshot.FirstRowShouldStaySelected : true;
+			if (firstRowShouldStaySelected) {
 				//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectObject(orderTopmost, true);
 				//THROWS REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR this.OrdersTree.SelectedIndex = 0;
 				// as far as I remember, this doesn't work: this.OrdersTreeOLV.SelectedItem = orderNullMeansClear;
-				int indexToSelect = this.OrdersTreeOLV.IndexOf(orderNullMeansClear);
-				if (indexToSelect != -1) {
-					this.OrdersTreeOLV.SelectedIndex = indexToSelect;
-					this.OrdersTreeOLV.RefreshSelectedObjects();
-					// SelectedIndex=X above will invoke ordersTree_SelectedIndexChanged() => populateMessagesFor(theSameOrderWeJustSelected) 
+				int indexToSelect = this.OrdersTreeOLV.IndexOf(orderNullMeansClearMessages);
+				if (indexToSelect == -1) {
+					this.populateMessagesFor(null);
+					return;
 				}
-			} else {
-				this.populateMessagesFor(orderNullMeansClear);
+				this.OrdersTreeOLV.EnsureVisible(indexToSelect);
+				this.OrdersTreeOLV.Expand(orderNullMeansClearMessages);
+				this.OrdersTreeOLV.SelectedIndex = indexToSelect;
+				this.OrdersTreeOLV.RefreshSelectedObjects();
+				// SelectedIndex=X above will invoke ordersTree_SelectedIndexChanged() => populateMessagesFor(theSameOrderWeJustSelected) 
 			}
+			this.populateMessagesFor(orderNullMeansClearMessages);
 		}
-		void populateMessagesFor(Order orderNullMeansClear) {
-			string msig = " PopulateMessagesFromSelectedOrder(" + orderNullMeansClear + ")";
-			//if (this.olvMessages == null) {
-			//	string msg = "this.lvMessages=null";
-			//	//throw new Exception(msg);
-			//	Assembler.PopupException(msg + msig);
-			//	return;
-			//}
-
-			if (orderNullMeansClear == null) {
-				//string msg = "order=null || (OrdersTree.SelectedObject as Order)=null";
-				//throw new Exception(msg);
-				//Assembler.PopupException(msg + msig);
+		void populateMessagesFor(Order orderNullMeansClearMessages) {
+			string msig = " PopulateMessagesFromSelectedOrder(" + orderNullMeansClearMessages + ")";
+			if (orderNullMeansClearMessages == null) {
 				this.olvMessages.Clear();
+				this.olvMessages.RebuildColumns();	// after appRestart, olv header is missing
 				return;
 			}
 
 			if (this.splitContainerMessagePane.Panel2Collapsed == true) return;
-			ConcurrentQueue<OrderStateMessage> messagesSafeCopy = orderNullMeansClear.MessagesSafeCopy;
+			ConcurrentQueue<OrderStateMessage> messagesSafeCopy = orderNullMeansClearMessages.MessagesSafeCopy;
 			if (messagesSafeCopy == null) {
-				string msg = "order.MessagesSafeCopy=null; must be at least empty list";
+				string msg = "MUST_BE_AT_LEAST_EMPTY_LIST order.MessagesSafeCopy=null";
 				//throw new Exception(msg);
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			
+			if (messagesSafeCopy.Count == 0) {
+				string msg = "NO_MESSAGES_TO_POPULATE order.MessagesSafeCopy.Count==0";
+				//throw new Exception(msg);
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+
+			bool wasEmpty = this.olvMessages.GetItemCount() == 0;
 			// TODO: neutralize Sort() downstack 
 			this.olvMessages.SetObjects(messagesSafeCopy, true);
 			// SetObjects() doesn't require Invalidate(), unlike RefreshObject()  
 			//this.lvMessages.Invalidate();
 			this.olvMessages.Refresh();
-			//this.olvMessages.RebuildColumns();	// TIRED_OF_FORGETTING_THAT_SET_OBJECTS_DOESNT_REFRESH_ITSELF
-
+			if (wasEmpty && messagesSafeCopy.Count > 0) {
+				this.olvMessages.RebuildColumns();	// TIRED_OF_FORGETTING_THAT_SET_OBJECTS_DOESNT_REFRESH_ITSELF
+			}
 			//	order.Messages.Sort((x, y) => y.DateTime.CompareTo(x.DateTime));
 		}
-		//public void OrderInsertToListView(Order order) {
-		//	this.RebuildAllTreeFocusOnTopmost();
-		//}
+		public void OrderInsertToListView(Order order) {
+			//if (this.OrdersTreeOLV.Items.Count == 0) {
+			//    this.RebuildAllTreeFocusOnTopmost();
+			//    return;
+			//}
+			//if (order.DerivedFrom == null) {
+			//    // copypaste from BuildList()
+			//    this.OrdersTreeOLV.BeginUpdate();
+			//    try {
+			//        OLVListItem lvi = new OLVListItem(order);
+			//        this.OrdersTreeOLV.Items.Insert(0, lvi);
+			//    } finally {
+			//        this.OrdersTreeOLV.EndUpdate();
+			//    }
+			//    this.SelectOrderAndOrPopulateMessages(order);
+			//} else {
+			//    int index = this.OrdersTreeOLV.TreeModel.GetObjectIndex(order.DerivedFrom);
+			//    if (index == -1) {
+			//        this.RebuildAllTreeFocusOnTopmost();
+			//        return;
+			//    }
+			//    // copypaste from BuildList()
+			//    try {
+			//        OLVListItem lvi = new OLVListItem(order);
+			//        // when in virtual mode, use model :(
+			//        this.OrdersTreeOLV.Items.Insert(index + 1, lvi);
+			//    } finally {
+			//        this.OrdersTreeOLV.EndUpdate();
+			//    }
+			//    this.SelectOrderAndOrPopulateMessages(order);
+			//    this.RebuildOneRootNodeChildAdded(order.DerivedFrom);
+			//}
+			//v2
+			try {
+				//this.OrdersTreeOLV.SetObjects(this.ordersTree.SafeCopy);
+				this.OrdersTreeOLV.Refresh();
+				//this.selectLastOrderPopulateMessagesSafe();
+			} catch (Exception ex) {
+				string msg = " //ExecutionTreeControl.OrderInsertToListView()";
+				Assembler.PopupException(msg, ex, false);
+			}
+		}
 		public void OrderAlreadyRemovedFromBothLists_JustRebuildListView(List<Order> orders) {
 			try {
 				if (orders.Count == 0) {
@@ -303,40 +348,6 @@ namespace Sq1.Widgets.Execution {
 				Assembler.PopupException(msg, ex, false);
 			}
 		}
-//		public void OrderInsertToListView(Order order) {
-//			if (this.OrdersTreeOLV.Items.Count == 0) {
-//				this.RebuildAllTreeFocusOnTopmost();
-//				return;
-//			}
-//			if (order.DerivedFrom == null) {
-//				// copypaste from BuildList()
-//	            this.OrdersTreeOLV.BeginUpdate();
-//	            try {
-//					OLVListItem lvi = new OLVListItem(order);
-//					this.OrdersTreeOLV.Items.Insert(0, lvi);
-//	            } finally {
-//	                this.OrdersTreeOLV.EndUpdate();
-//	            }
-//				this.SelectOrderAndOrPopulateMessages(order);
-//			} else {
-//				int index = this.OrdersTreeOLV.TreeModel.GetObjectIndex(order.DerivedFrom);
-//				if (index == -1) {
-//					this.RebuildAllTreeFocusOnTopmost();
-//					return;
-//				}
-//				// copypaste from BuildList()
-//	            try {
-//					OLVListItem lvi = new OLVListItem(order);
-//					// when in virtual mode, use model :(
-//					this.OrdersTreeOLV.Items.Insert(index + 1, lvi);
-//	            } finally {
-//	                this.OrdersTreeOLV.EndUpdate();
-//	            }
-//				this.SelectOrderAndOrPopulateMessages(order);
-//				this.RebuildOneRootNodeChildAdded(order.DerivedFrom);
-//			}
-//		}
-
 		void selectLastOrderPopulateMessagesSafe() {
 			//NOPE I WANT TO CLEAR MESSAGES AFTER I WIPED OUT ALL THE ORDERS if (this.ordersTree.InnerOrderList.Count == 0) return;
 			if (this.ordersTree.Count == 0) {

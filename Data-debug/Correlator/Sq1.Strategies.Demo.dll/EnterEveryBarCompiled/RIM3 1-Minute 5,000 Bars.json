@@ -8,7 +8,7 @@
       "$type": "System.Collections.Generic.SortedDictionary`2[[System.Double, mscorlib],[Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core]], System",
       "10": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": true,
+        "Chosen": false,
         "ValueSequenced": 10.0,
         "BacktestsWithMyValueCount": 1,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
@@ -16,7 +16,7 @@
       },
       "11": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": true,
+        "Chosen": false,
         "ValueSequenced": 11.0,
         "BacktestsWithMyValueCount": 1,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
@@ -24,7 +24,7 @@
       },
       "12": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": true,
+        "Chosen": false,
         "ValueSequenced": 12.0,
         "BacktestsWithMyValueCount": 1,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
@@ -32,7 +32,7 @@
       },
       "13": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": true,
+        "Chosen": false,
         "ValueSequenced": 13.0,
         "BacktestsWithMyValueCount": 1,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
@@ -48,7 +48,7 @@
       },
       "15": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": true,
+        "Chosen": false,
         "ValueSequenced": 15.0,
         "BacktestsWithMyValueCount": 2,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 2,
@@ -56,7 +56,7 @@
       },
       "16": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": true,
+        "Chosen": false,
         "ValueSequenced": 16.0,
         "BacktestsWithMyValueCount": 1,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
@@ -64,7 +64,7 @@
       },
       "17": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": true,
+        "Chosen": false,
         "ValueSequenced": 17.0,
         "BacktestsWithMyValueCount": 1,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
@@ -72,7 +72,7 @@
       },
       "18": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": true,
+        "Chosen": false,
         "ValueSequenced": 18.0,
         "BacktestsWithMyValueCount": 1,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
@@ -80,15 +80,15 @@
       },
       "19": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
-        "Chosen": true,
+        "Chosen": false,
         "ValueSequenced": 19.0,
         "BacktestsWithMyValueCount": 1,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
         "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "11"
       }
     },
-    "ChosenAsString": "10,11,12,13,14,15,16,17,18,19",
-    "ChosenCount": 10
+    "ChosenAsString": "14",
+    "ChosenCount": 1
   },
   "test": {
     "$type": "Sq1.Core.Correlation.OneParameterAllValuesAveraged, Sq1.Core",

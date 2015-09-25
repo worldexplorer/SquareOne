@@ -24,18 +24,19 @@ namespace Sq1.Gui.Singletons {
 			this.PopulateWindowText();
 			
 			//v1 when in virtual mode, use model :(
-			//foreach (Order o in e.Orders) {
-			//	this.ExecutionTreeControl.OrderInsertToListView(o);
-			//}
-			//v2 ADDED_anyHasTime_FILTER__SAFE_ENOUGH_TO_SKIP_SOME_SINCE_ENDOFBACKTEST_WILL_RUIBUILD_FULLY  TOO_SLOW
-			bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
-			foreach (Order order in e.Orders) {
-				if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
-				if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
-				safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
-				break;
+			foreach (Order o in e.Orders) {
+				this.ExecutionTreeControl.OrderInsertToListView(o);
 			}
-			if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
+			//v2 ADDED_anyHasTime_FILTER__SAFE_ENOUGH_TO_SKIP_SOME_SINCE_ENDOFBACKTEST_WILL_RUIBUILD_FULLY  TOO_SLOW
+			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
+			//foreach (Order order in e.Orders) {
+			//    if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
+			//    if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
+			//    safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
+			//    break;
+			//}
+			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
+
 			this.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();
 		}
 		void orderProcessor_OrderMessageAdded(object sender, OrderStateMessageEventArgs e) {
@@ -51,9 +52,9 @@ namespace Sq1.Gui.Singletons {
 
 			this.PopulateWindowText();
 
-			Alert alert = e.OrderStateMessage.Order.Alert;
-			bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = (alert.IsBacktestingLivesimNow_FalseIfNoBacktester == true && alert.GuiHasTimeRebuildReportersAndExecution == false);
-			if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
+			//Alert alert = e.OrderStateMessage.Order.Alert;
+			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = (alert.IsBacktestingLivesimNow_FalseIfNoBacktester == true && alert.GuiHasTimeRebuildReportersAndExecution == false);
+			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
 
 			this.ExecutionTreeControl.SelectOrderAndOrPopulateMessages(e.OrderStateMessage.Order);
 		}
@@ -67,14 +68,14 @@ namespace Sq1.Gui.Singletons {
 
 			this.PopulateWindowText();
 
-			bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
-			foreach (Order order in e.Orders) {
-				if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
-				//if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
-				safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
-				break;
-			}
-			if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
+			//bool safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = false;
+			//foreach (Order order in e.Orders) {
+			//    if (order.Alert.IsBacktestingLivesimNow_FalseIfNoBacktester == false) break;
+			//    //if (order.Alert.GuiHasTimeRebuildReportersAndExecution == false) continue;
+			//    safeToIgnoreForLivesimSinceBacktestEndRebuildsAll = true;
+			//    break;
+			//}
+			//if (safeToIgnoreForLivesimSinceBacktestEndRebuildsAll == true) return;
 
 			this.ExecutionTreeControl.OrderStateUpdateOLV(e.Orders);
 		}

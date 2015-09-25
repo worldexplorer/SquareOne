@@ -37,6 +37,7 @@ namespace Sq1.Widgets.Livesim
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.StreamingLivesimEditor = new Sq1.Core.Livesim.LivesimStreamingEditor();
 			this.BrokerLivesimEditor = new Sq1.Core.Livesim.LivesimBrokerEditor();
@@ -44,6 +45,7 @@ namespace Sq1.Widgets.Livesim
 			this.TssBtnStartStop = new System.Windows.Forms.ToolStripButton();
 			this.TssBtnPauseResume = new System.Windows.Forms.ToolStripButton();
 			this.TssLblStrategyAsString = new System.Windows.Forms.ToolStripStatusLabel();
+			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
 			this.splitContainer2.Panel1.SuspendLayout();
 			this.splitContainer2.Panel2.SuspendLayout();
@@ -126,10 +128,16 @@ namespace Sq1.Widgets.Livesim
 			this.TssLblStrategyAsString.Name = "TssLblStrategyAsString";
 			this.TssLblStrategyAsString.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
 			this.TssLblStrategyAsString.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-			this.TssLblStrategyAsString.Size = new System.Drawing.Size(597, 17);
+			this.TssLblStrategyAsString.Size = new System.Drawing.Size(566, 17);
 			this.TssLblStrategyAsString.Spring = true;
 			this.TssLblStrategyAsString.Text = "EntryEveryBar Default MAfast[10] MAslow[40] SLtype[3]";
 			this.TssLblStrategyAsString.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.TssLblStrategyAsString.ToolTipText = "qwerqwerqwer";
+			// 
+			// toolTip1
+			// 
+			this.toolTip1.IsBalloon = true;
+			this.toolTip1.UseAnimation = false;
 			// 
 			// LivesimControl
 			// 
@@ -155,5 +163,6 @@ namespace Sq1.Widgets.Livesim
 		public System.Windows.Forms.ToolStripButton TssBtnStartStop;
 		public System.Windows.Forms.ToolStripButton TssBtnPauseResume;
 		public System.Windows.Forms.ToolStripStatusLabel TssLblStrategyAsString;
+		private System.Windows.Forms.ToolTip toolTip1;
 	}
 }

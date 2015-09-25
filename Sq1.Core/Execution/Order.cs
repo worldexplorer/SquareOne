@@ -128,7 +128,7 @@ namespace Sq1.Core.Execution {
 		[JsonProperty]	public bool				InStateChangeableToSubmitted { get {
 				if (this.State == OrderState.PreSubmit
 					|| this.State == OrderState.AlertCreatedOnPreviousBarNotAutoSubmitted
-					|| this.State == OrderState.AutoSubmitNotEnabled
+					|| this.State == OrderState.EmitOrdersNotClicked
 					//&& this._IsLoggedInOrPaperAccount(current3)
 					) {
 					return true;

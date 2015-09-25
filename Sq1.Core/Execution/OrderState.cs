@@ -5,7 +5,7 @@ namespace Sq1.Core.Execution {
 		LeaveTheSame			= 2,
 
 		AlertCreatedOnPreviousBarNotAutoSubmitted = 100,
-		AutoSubmitNotEnabled	= 110,
+		EmitOrdersNotClicked	= 110,
 		MarketClosed			= 120,
 
 		PreSubmit				= 200,

@@ -447,5 +447,31 @@ namespace Sq1.Gui.Forms {
 			}
 			this.waitForChartFormIsLoaded.Set();
 		}
+
+		void mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim_Clicked(object sender, EventArgs e) {
+			string msig = "mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim_Clicked()";
+			try {
+				this.ctxStrategy.Visible = true;
+				//if (this.ChartFormManager.Strategy == null) return;
+				Strategy strategy = this.ChartFormManager.Executor.Strategy;
+				if (strategy == null) {
+					string msg = "CAN_NOT_SAVE_CHECKBOX_YOU_CLICKED__INACCESSIBLE_ScriptContextCurrent this.ChartFormManager.Executor.Strategy=null";
+					Assembler.PopupException(msg + msig);
+					return;
+				}
+				strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim
+									= this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim.Checked;
+				strategy.Serialize();
+				this.MniShowLivesim.ShowDropDown();
+
+				if (strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim) {	// sync after click (paused or running)
+					this.ChartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
+				} else {
+					this.ChartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
+				}
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
+		}
 	}
 }

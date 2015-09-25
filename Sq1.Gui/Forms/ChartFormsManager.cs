@@ -975,12 +975,25 @@ namespace Sq1.Gui.Forms {
 
 		public void LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters() {
 			LivesimStreamingSettings stream = this.ChartForm.ChartFormManager.Executor.Strategy.LivesimStreamingSettings;
-			if (stream.DelayBetweenSerialQuotesEnabled && stream.DelayBetweenSerialQuotesMin >= 50) return;
+			// REPLACED_BY_CHECKBOX if (stream.DelayBetweenSerialQuotesEnabled && stream.DelayBetweenSerialQuotesMin >= 50) return;
+
+			if (this.Strategy == null) {
+				if (this.Executor.Strategy != null) {
+					string msg = "INCONSISTENCY_TINY_CHECK [this.Strategy==null while this.Executor.Strategy!=null]";
+					Assembler.PopupException(msg);
+				}
+				return;
+			}
+			if (this.Strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim == false) return;
+
 			ExecutionForm exec = ExecutionForm.Instance;
 			if (exec.IsCoveredOrAutoHidden == false) exec.ToggleAutoHide();
 			this.ReportersFormsManager.LivesimStartedOrUnpaused_AutoHideReporters();
 		}
 		public void LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters() {
+			if (this.Strategy == null) return;
+			if (this.Strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim == true) return;
+
 			ExecutionForm exec = ExecutionForm.Instance;
 			if (exec.IsCoveredOrAutoHidden == true) exec.ToggleAutoHide();
 			exec.ExecutionTreeControl.RebuildAllTreeFocusOnTopmost();

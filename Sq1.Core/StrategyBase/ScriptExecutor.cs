@@ -1606,9 +1606,9 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public string ToStringWithCurrentParameters() {
 			string ret = "";
-			// this.Strategy.Script==null for an {editor-based + compilation failed} Script
-			if (this.Strategy.Script != null) ret += this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString + " ";
 			ret += this.ToString();
+			// this.Strategy.Script==null for an {editor-based + compilation failed} Script
+			if (this.Strategy.Script != null) ret += " " + this.Strategy.ScriptContextCurrent.ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString;
 			//ret += " why???PerformanceAfterBacktest:" + this.PerformanceAfterBacktest.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished_AsString;
 			return ret;
 		}
@@ -1636,7 +1636,7 @@ namespace Sq1.Core.StrategyBase {
 
 			this.OrderProcessor		= null;
 			this.Bars				= null;		// if this.Bars are subscribed to anything, the event generator will keep Bars' handler and so this.Bars wont get GC'ed
-			this.IsDisposed = true;
+			this.IsDisposed			= true;
 		}
 		public bool IsDisposed { get; private set; }
 	}

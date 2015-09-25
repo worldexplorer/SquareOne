@@ -235,9 +235,12 @@ namespace Sq1.Gui.Forms {
 			ContextScript ctxScript = ctxChart as ContextScript;
 			if (ctxScript == null) return;
 			
-			this.mniBacktestOnRestart.Checked = ctxScript.BacktestOnRestart;
-			this.mniBacktestOnSelectorsChange.Checked = ctxScript.BacktestOnSelectorsChange;
-			this.btnStrategyEmittingOrders.Checked = ctxScript.StrategyEmittingOrders;
+			this.mniBacktestOnRestart			.Checked = ctxScript.BacktestOnRestart;
+			this.mniBacktestOnSelectorsChange	.Checked = ctxScript.BacktestOnSelectorsChange;
+			this.btnStrategyEmittingOrders		.Checked = ctxScript.StrategyEmittingOrders;
+			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim
+												.Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
+
 			this.PropagateContextScriptToLTB(ctxScript);
 		}
 		
