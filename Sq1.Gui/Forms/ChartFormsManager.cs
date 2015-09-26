@@ -347,8 +347,10 @@ namespace Sq1.Gui.Forms {
 
 			ContextChart context = this.ContextCurrentChartOrStrategy;
 			if (context == null) {
-				string msg = "WONT_POPULATE_NULL_CONTEXT: strategy JSON/DLL was removedBetweenRestart / deserializedWithExceptionDueToDataFormatChange" +
-					" + chart for strategy doesn't contain Context; expect also Bars=NULL exception";
+				string msg = "WONT_POPULATE_NULL_CONTEXT: "
+					+ Assembler.InstanceInitialized.AppDataPath + "\\Strategies\\*\\<SomeStrategy>.json or "
+					+ Assembler.InstanceInitialized.AppStartupPath + "\\<SomeStrategy>.dll was removedBetweenRestart / deserializedWithExceptionDueToDataFormatChange"
+					+ "; chart for strategy (should but) doesn't contain Context; expect also Bars=NULL exception";
 				Assembler.PopupException(msg);
 				return;
 			}
