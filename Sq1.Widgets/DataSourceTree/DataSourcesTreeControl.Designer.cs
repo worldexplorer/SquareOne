@@ -43,6 +43,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.ctxSymbol = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniNewChartSymbol = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniOpenStrategySymbol = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.mniSymbolInfoEditor = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniBarsAnalyzerSymbol = new System.Windows.Forms.ToolStripMenuItem();
 			this.sepSymbol = new System.Windows.Forms.ToolStripSeparator();
 			this.mniRemoveSymbol = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,8 +55,6 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.pnlSearch = new System.Windows.Forms.TableLayoutPanel();
 			this.tree = new BrightIdeasSoftware.TreeListView();
 			this.olvColumnName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.mniSymbolInfoEditor = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.ctxDataSource.SuspendLayout();
 			this.ctxSymbol.SuspendLayout();
 			this.pnlSearch.SuspendLayout();
@@ -82,7 +82,7 @@ namespace Sq1.Widgets.DataSourcesTree {
             this.mniShowHeader,
             this.mniShowSearchBar});
 			this.ctxDataSource.Name = "popupDataSource";
-			this.ctxDataSource.Size = new System.Drawing.Size(229, 198);
+			this.ctxDataSource.Size = new System.Drawing.Size(234, 220);
 			this.ctxDataSource.Opening += new System.ComponentModel.CancelEventHandler(this.ctxDataSource_Opening);
 			// 
 			// mniltbDataSourceAddNew
@@ -94,26 +94,26 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniltbDataSourceAddNew.InputFieldValue = "";
 			this.mniltbDataSourceAddNew.InputFieldWidth = 85;
 			this.mniltbDataSourceAddNew.Name = "mniltbDataSourceAddNew";
-			this.mniltbDataSourceAddNew.Size = new System.Drawing.Size(168, 21);
+			this.mniltbDataSourceAddNew.Size = new System.Drawing.Size(173, 21);
 			this.mniltbDataSourceAddNew.TextLeft = "Add New:";
 			this.mniltbDataSourceAddNew.TextLeftOffsetX = 0;
 			this.mniltbDataSourceAddNew.TextLeftWidth = 61;
 			this.mniltbDataSourceAddNew.TextRed = false;
-			this.mniltbDataSourceAddNew.TextRight = "~= 121pips";
+			this.mniltbDataSourceAddNew.TextRight = "";
 			this.mniltbDataSourceAddNew.TextRightOffsetX = 168;
-			this.mniltbDataSourceAddNew.TextRightWidth = 68;
+			this.mniltbDataSourceAddNew.TextRightWidth = 2;
 			this.mniltbDataSourceAddNew.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDataSourceAddNew_UserTyped);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(225, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(230, 6);
 			// 
 			// mniDataSourceEdit
 			// 
 			this.mniDataSourceEdit.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mniDataSourceEdit.Name = "mniDataSourceEdit";
-			this.mniDataSourceEdit.Size = new System.Drawing.Size(228, 22);
+			this.mniDataSourceEdit.Size = new System.Drawing.Size(233, 22);
 			this.mniDataSourceEdit.Text = "Edit DataSource";
 			this.mniDataSourceEdit.Click += new System.EventHandler(this.mniDataSourceEdit_Click);
 			// 
@@ -126,14 +126,14 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniltbDataSourceRename.InputFieldValue = "";
 			this.mniltbDataSourceRename.InputFieldWidth = 85;
 			this.mniltbDataSourceRename.Name = "mniltbDataSourceRename";
-			this.mniltbDataSourceRename.Size = new System.Drawing.Size(168, 21);
+			this.mniltbDataSourceRename.Size = new System.Drawing.Size(173, 21);
 			this.mniltbDataSourceRename.TextLeft = "Rename To:";
 			this.mniltbDataSourceRename.TextLeftOffsetX = 0;
 			this.mniltbDataSourceRename.TextLeftWidth = 72;
 			this.mniltbDataSourceRename.TextRed = false;
-			this.mniltbDataSourceRename.TextRight = "~= 121pips";
+			this.mniltbDataSourceRename.TextRight = "";
 			this.mniltbDataSourceRename.TextRightOffsetX = 168;
-			this.mniltbDataSourceRename.TextRightWidth = 68;
+			this.mniltbDataSourceRename.TextRightWidth = 2;
 			this.mniltbDataSourceRename.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbDataSourceRename_UserTyped);
 			// 
 			// mniDataSourceDelete
@@ -141,7 +141,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniDataSourceDelete.Enabled = false;
 			this.mniDataSourceDelete.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mniDataSourceDelete.Name = "mniDataSourceDelete";
-			this.mniDataSourceDelete.Size = new System.Drawing.Size(228, 22);
+			this.mniDataSourceDelete.Size = new System.Drawing.Size(233, 22);
 			this.mniDataSourceDelete.Text = "Delete this DataSource";
 			this.mniDataSourceDelete.Click += new System.EventHandler(this.mniDataSourceDelete_Click);
 			// 
@@ -154,26 +154,26 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniltbSymbolAdd.InputFieldValue = "";
 			this.mniltbSymbolAdd.InputFieldWidth = 85;
 			this.mniltbSymbolAdd.Name = "mniltbSymbolAdd";
-			this.mniltbSymbolAdd.Size = new System.Drawing.Size(168, 21);
+			this.mniltbSymbolAdd.Size = new System.Drawing.Size(173, 21);
 			this.mniltbSymbolAdd.TextLeft = "Add Symbol:";
 			this.mniltbSymbolAdd.TextLeftOffsetX = 0;
 			this.mniltbSymbolAdd.TextLeftWidth = 77;
 			this.mniltbSymbolAdd.TextRed = false;
-			this.mniltbSymbolAdd.TextRight = "~= 121pips";
+			this.mniltbSymbolAdd.TextRight = "";
 			this.mniltbSymbolAdd.TextRightOffsetX = 168;
-			this.mniltbSymbolAdd.TextRightWidth = 68;
+			this.mniltbSymbolAdd.TextRightWidth = 2;
 			this.mniltbSymbolAdd.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbSymbolAdd_UserTyped);
 			// 
 			// sepNewDS
 			// 
 			this.sepNewDS.Name = "sepNewDS";
-			this.sepNewDS.Size = new System.Drawing.Size(225, 6);
+			this.sepNewDS.Size = new System.Drawing.Size(230, 6);
 			// 
 			// mniRefresh
 			// 
 			this.mniRefresh.Name = "mniRefresh";
 			this.mniRefresh.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.mniRefresh.Size = new System.Drawing.Size(228, 22);
+			this.mniRefresh.Size = new System.Drawing.Size(233, 22);
 			this.mniRefresh.Text = "Refresh";
 			this.mniRefresh.Click += new System.EventHandler(this.mniRefresh_Click);
 			// 
@@ -181,7 +181,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// 
 			this.mniShowHeader.CheckOnClick = true;
 			this.mniShowHeader.Name = "mniShowHeader";
-			this.mniShowHeader.Size = new System.Drawing.Size(228, 22);
+			this.mniShowHeader.Size = new System.Drawing.Size(233, 22);
 			this.mniShowHeader.Text = "Show Header";
 			this.mniShowHeader.Click += new System.EventHandler(this.mniShowHeader_Click);
 			// 
@@ -189,7 +189,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// 
 			this.mniShowSearchBar.CheckOnClick = true;
 			this.mniShowSearchBar.Name = "mniShowSearchBar";
-			this.mniShowSearchBar.Size = new System.Drawing.Size(228, 22);
+			this.mniShowSearchBar.Size = new System.Drawing.Size(233, 22);
 			this.mniShowSearchBar.Text = "Show Search Bar";
 			this.mniShowSearchBar.Click += new System.EventHandler(this.mniShowSearchBar_Click);
 			// 
@@ -206,7 +206,7 @@ namespace Sq1.Widgets.DataSourcesTree {
             this.mniRemoveSymbol,
             this.mnitlbSymbolRenameTo});
 			this.ctxSymbol.Name = "popupSymbol";
-			this.ctxSymbol.Size = new System.Drawing.Size(253, 172);
+			this.ctxSymbol.Size = new System.Drawing.Size(253, 150);
 			// 
 			// mniNewChartSymbol
 			// 
@@ -223,6 +223,18 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniOpenStrategySymbol.Size = new System.Drawing.Size(252, 22);
 			this.mniOpenStrategySymbol.Text = "New Strategy for ";
 			this.mniOpenStrategySymbol.Click += new System.EventHandler(this.mniOpenStrategySymbol_Click);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(249, 6);
+			// 
+			// mniSymbolInfoEditor
+			// 
+			this.mniSymbolInfoEditor.Name = "mniSymbolInfoEditor";
+			this.mniSymbolInfoEditor.Size = new System.Drawing.Size(252, 22);
+			this.mniSymbolInfoEditor.Text = "Open Symbol Editor for";
+			this.mniSymbolInfoEditor.Click += new System.EventHandler(this.mniSymbolInfoEditor_Click);
 			// 
 			// mniBarsAnalyzerSymbol
 			// 
@@ -255,14 +267,14 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mnitlbSymbolRenameTo.InputFieldValue = "";
 			this.mnitlbSymbolRenameTo.InputFieldWidth = 85;
 			this.mnitlbSymbolRenameTo.Name = "mnitlbSymbolRenameTo";
-			this.mnitlbSymbolRenameTo.Size = new System.Drawing.Size(168, 21);
+			this.mnitlbSymbolRenameTo.Size = new System.Drawing.Size(173, 21);
 			this.mnitlbSymbolRenameTo.TextLeft = "Rename To:";
 			this.mnitlbSymbolRenameTo.TextLeftOffsetX = 0;
 			this.mnitlbSymbolRenameTo.TextLeftWidth = 72;
 			this.mnitlbSymbolRenameTo.TextRed = false;
-			this.mnitlbSymbolRenameTo.TextRight = "~= 121pips";
+			this.mnitlbSymbolRenameTo.TextRight = "";
 			this.mnitlbSymbolRenameTo.TextRightOffsetX = 168;
-			this.mnitlbSymbolRenameTo.TextRightWidth = 68;
+			this.mnitlbSymbolRenameTo.TextRightWidth = 2;
 			this.mnitlbSymbolRenameTo.UserTyped += new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.mniltbSymbolRenameTo_UserTyped);
 			// 
 			// txtSearch
@@ -348,18 +360,6 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// 
 			this.olvColumnName.FillsFreeSpace = true;
 			this.olvColumnName.Text = "Name";
-			// 
-			// mniSymbolInfoEditor
-			// 
-			this.mniSymbolInfoEditor.Name = "mniSymbolInfoEditor";
-			this.mniSymbolInfoEditor.Size = new System.Drawing.Size(252, 22);
-			this.mniSymbolInfoEditor.Text = "Open Symbol Editor for";
-			this.mniSymbolInfoEditor.Click += new EventHandler(mniSymbolInfoEditor_Click);
-			// 
-			// toolStripSeparator3
-			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(249, 6);
 			// 
 			// DataSourcesTreeControl
 			// 

@@ -58,7 +58,8 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		public	DataSource DataSource { get {
 				if (this.Bars == null) {
-					string msg = "ScriptExecutor.DataSource: you should not access DataSource BEFORE you've set ScriptExecutor.Bars";
+					string msg = "ScriptExecutor.DataSource: you should not access DataSource BEFORE you've set ScriptExecutor.Bars"
+						+ "; " + Assembler.InstanceInitialized.RepositoryJsonDataSource.AbsPath + "\\xxx.json/xxxFolder deleted between AppRestart?..";
 					#if DEBUG
 					Debugger.Break();
 					#endif
