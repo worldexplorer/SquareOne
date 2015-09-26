@@ -7,28 +7,41 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Streaming;
 
 namespace Sq1.Strategies.Demo {
 	public class EnterEveryBarCompiled : Script {
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
-		public IndicatorMovingAverageSimple MAfast;
+		IndicatorMovingAverageSimple	MAfast;
+		ScriptParameter					test;
+		ScriptParameter					verbose;
+		Font							fontConsolas8bold;
+		Font							fontConsolas7;
 
 		public EnterEveryBarCompiled() {
 			MAfast = new IndicatorMovingAverageSimple();
 			MAfast.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 1);
 			MAfast.LineWidth = 2;
 			MAfast.LineColor = Color.LightSeaGreen;
-			base.ScriptParameterCreateRegister(1, "test", 0, 0, 10, 1);
-			base.ScriptParameterCreateRegister(2, "verbose", 0, 0, 1, 1, "set to 0 if you don't want log() to spam your Exceptions window");
+			
+			//base.ScriptParameterCreateRegister(1, "test", 0, 0, 10, 1);
+			test = new ScriptParameter(1, "test", 0, 0, 10, 1, "hopefully this will go to tooltip");
+
+			//base.ScriptParameterCreateRegister(2, "verbose", 0, 0, 1, 1, "set to 0 if you don't want log() to spam your Exceptions window");
+			verbose = new ScriptParameter(2, "verbose", 0, 0, 10, 1, "set to 0 if you don't want log() to spam your Exceptions window");
+
+			// trying to reduce {HANDLES(after 121 optimization runs) => 61k} in taskmgr32.exe; I don't want to dispose reusable GDI+ objects
+			fontConsolas8bold	= new Font("Consolas", 8, FontStyle.Bold);
+			fontConsolas7		= new Font("Consolas", 7);
 		}
 		
 		protected void log(string msg) {
-			if (this.ScriptParametersById[2].ValueCurrent == 0.0) {
+			return;
+
+			if (this.verbose.ValueCurrent == 0) {
 				return;
 			}
 			string whereIam = "\n\r\n\rEnterEveryBar.cs now=[" + DateTime.Now.ToString("ddd dd-MMM-yyyy HH:mm:ss.fff") + "]";
-			this.Executor.PopupException(msg + whereIam);
+			//this.Executor.PopupException(msg + whereIam);
 		}
 		public override void InitializeBacktest() {
 			//Debugger.Break();
@@ -46,26 +59,26 @@ namespace Sq1.Strategies.Demo {
 			//this.MAslow.NotOnChartBarScaleInterval = new BarScaleInterval(BarScale.Minute, 15);
 			//this.MAslow.LineWidth = 2;
 			//this.MAslow.LineColor = System.Drawing.Color.LightCoral;
-			
+
+			//if (this.Executor.Sequencer.IsRunningNow == false) {
+			//    string msg = "SEQUENCER_IS_ALREADY_RUN_KOZ_4CORES-SPAWNED_EXECUTORS(WHOS_MY_FATER)_ARE_POINTING_TO_SAME_SEQUENCER";
+			//    Assembler.PopupException(msg);
+			//}
 			testChartLabelDrawOnNextLineModify();
 		}
 		void testChartLabelDrawOnNextLineModify() {
-			string parameterNameToLookup = "test";
-			if (base.ScriptParametersByNameInlineCopy.ContainsKey(parameterNameToLookup) == false) {
-				string msg = "if you renamed parameter [" + parameterNameToLookup + "] please ajdust the name here as well";
-				Assembler.PopupException(msg);
-			}
-			ScriptParameter param = base.ScriptParametersByNameInlineCopy[parameterNameToLookup];
-			double paramValue = param.ValueCurrent;
-			//Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
+			if (this.Executor.Sequencer.IsRunningNow) return;
+			//DISPOSE_OR_TURN_TO_CLASS_VAR Font font = new Font(FontFamily.GenericMonospace, 8, FontStyle.Bold);
 			//base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test[" + test+ "]", font, Color.Brown, Color.Empty);
-			Font font = new Font("Consolas", 8, FontStyle.Bold);
-			base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", parameterNameToLookup + "[" + paramValue + "]", font, Color.Brown, Color.Beige);
+			base.Executor.ChartConditionalChartLabelDrawOnNextLineModify("labelTest", "test["
+				+ this.test.ValueCurrent + "]", this.fontConsolas8bold, Color.Brown, Color.Beige);
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 			//double slowStreaming = this.MAslow.BarClosesProxied.StreamingValue;
 			//double slowStatic = this.MAslow.ClosesProxyEffective.LastStaticValue;
 			//DateTime slowStaticDate = this.MAslow.ClosesProxyEffective.LastStaticDate;
+
+			if (this.Executor.Sequencer.IsRunningNow) return;
 
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
 				Bar bar = quote.ParentBarStreaming;
@@ -77,9 +90,11 @@ namespace Sq1.Strategies.Demo {
 				DateTime thisBarDateTimeOpen = barNormalizedDateTimes.DateTimeOpen;
 				int a = 1;
 			}
-			//log("OnNewQuoteCallback(): [" + quote.ToString() + "]"); 
+			//log("OnNewQuoteCallback(): [" + quote.ToString() + "]");
+			#if VERBOSE_STRINGS_SLOW
 			string msg = "OnNewQuoteCallback(): [" + quote.ToString() + "]";
 			log("EnterEveryBar.cs now=[" + DateTime.Now.ToString("ddd dd-MMM-yyyy HH:mm:ss.fff" + "]: " + msg));
+			#endif
 
 			if (quote.IntraBarSerno == 0) {
 				return;
@@ -87,8 +102,9 @@ namespace Sq1.Strategies.Demo {
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
 			//this.testBarAnnotations(barStaticFormed);
-			
-			Bar barStreaming = base.Bars.BarStreaming;
+			//Thread.Sleep(500);
+
+			Bar barStreaming = base.Bars.BarStreamingNullUnsafe;
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow == false) {
 				//Debugger.Break();
 			}
@@ -117,19 +133,21 @@ namespace Sq1.Strategies.Demo {
 					return;
 				}
 
-				if (barStaticFormed.ParentBarsIndex == 163) {
-					#if DEBUG
-					Debugger.Break();
-					#endif
-					StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
-					Quote lastQuote = streaming.LastQuoteCloneGetForSymbol(barStaticFormed.Symbol);
-					double priceForMarketOrder = streaming.LastQuoteGetPriceForMarketOrder(barStaticFormed.Symbol);
-				}
+				//if (barStaticFormed.ParentBarsIndex == 163) {
+				//	#if DEBUG
+				//	Debugger.Break();
+				//	#endif
+				//	StreamingDataSnapshot streaming = this.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
+				//	Quote lastQuote = streaming.LastQuoteCloneGetForSymbol(barStaticFormed.Symbol);
+				//	double priceForMarketOrder = streaming.LastQuoteGetPriceForMarketOrder(barStaticFormed.Symbol);
+				//}
 
 				string msg = "ExitAtMarket@" + barStaticFormed.ParentBarsIdent;
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = false;
-				Alert exitPlaced = ExitAtMarket(barStreaming, lastPos, msg);
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = true;
+				//return;
+
+				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
+				Alert exitPlaced = base.ExitAtMarket(barStreaming, lastPos, msg);
+				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
 				log("Execute(): " + msg);
 			}
 
@@ -139,7 +157,7 @@ namespace Sq1.Strategies.Demo {
 			//if (base.HasAlertsPendingAndPositionsOpenNow) {
 				if (snap.AlertsPending.Count > 0) {
 					//GOT_OUT_OF_BOUNDADRY_EXCEPTION_ONCE Alert firstPendingAlert = snap.AlertsPending.InnerList[0];
-					Alert firstPendingAlert = snap.AlertsPending.LastNullUnsafe;
+					Alert firstPendingAlert = snap.AlertsPending.LastNullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
 					Alert lastPosEntryAlert = lastPos != null ? lastPos.EntryAlert : null;
 					Alert lastPosExitAlert  = lastPos != null ? lastPos.ExitAlert : null;
 					if (firstPendingAlert == lastPosEntryAlert) {
@@ -155,7 +173,7 @@ namespace Sq1.Strategies.Demo {
 				}
 				if (snap.PositionsOpenNow.Count > 1) {
 					string msg = "EXPECTED: I got multiple positions[" + snap.PositionsOpenNow.Count + "]";
-					if (snap.PositionsOpenNow.InnerList[0] == lastPos) {
+					if (snap.PositionsOpenNow.FirstNullUnsafe(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)") == lastPos) {
 						msg += "50/50: positionsMaster.Last = positionsOpenNow.First";
 					}
 					this.log(msg);
@@ -165,16 +183,16 @@ namespace Sq1.Strategies.Demo {
 
 			if (barStaticFormed.Close > barStaticFormed.Open) {
 				string msg = "BuyAtMarket@" + barStaticFormed.ParentBarsIdent;
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = false;
-				Position buyPlaced = BuyAtMarket(barStreaming, msg);
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = true;
+				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
+				Position buyPlaced = base.BuyAtMarket(barStreaming, msg);
+				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
 				//Debugger.Break();
 				this.log(msg);
 			} else {
 				string msg = "ShortAtMarket@" + barStaticFormed.ParentBarsIdent;
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = false;
-				Position shortPlaced = ShortAtMarket(barStreaming, msg);
-				this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLast = true;
+				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;
+				Position shortPlaced = base.ShortAtMarket(barStreaming, msg);
+				//this.Executor.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
 				//Debugger.Break();
 				this.log(msg);
 			}
@@ -224,11 +242,11 @@ namespace Sq1.Strategies.Demo {
 			#endif
 		}
 		public override void OnPositionOpenedCallback(Position positionOpened) {
-			if (positionOpened.EntryFilledBarIndex == 37) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
-			}
+			//if (positionOpened.EntryFilledBarIndex == 37) {
+			//	#if DEBUG
+			//	Debugger.Break();
+			//	#endif
+			//}
 		}
 		public override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedByPrototype) {
 			#if DEBUG
@@ -240,19 +258,18 @@ namespace Sq1.Strategies.Demo {
 			//	Debugger.Break();
 			//}
 		}
-		void testBarAnnotations(Bar barStaticFormed) {
-			int barIndex = barStaticFormed.ParentBarsIndex;
-			string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
-			labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
-			labelText += barStaticFormed.BarIndexExpectedSinceTodayMarketOpen + ":" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
-			Font font = new Font("Consolas", 7);
-			//bool evenAboveOddBelow = true;
-			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
-			base.Executor.ChartConditionalBarAnnotationDrawModify(
-				barIndex, "ann" + barIndex, labelText, font, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
-			// checking labels stacking next upon (underneath) the previous
-			base.Executor.ChartConditionalBarAnnotationDrawModify(
-				barIndex, "ann2" + barIndex, labelText, font, Color.ForestGreen, Color.LightGray, evenAboveOddBelow);
-		}
+		//void testBarAnnotations(Bar barStaticFormed) {
+		//    int barIndex = barStaticFormed.ParentBarsIndex;
+		//    string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
+		//    labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
+		//    labelText += barStaticFormed.BarIndexExpectedSinceTodayMarketOpen + ":" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
+		//    //bool evenAboveOddBelow = true;
+		//    bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
+		//    base.Executor.ChartConditionalBarAnnotationDrawModify(
+		//        barIndex, "ann" + barIndex, labelText, this.fontConsolas7, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
+		//    // checking labels stacking next upon (underneath) the previous
+		//    base.Executor.ChartConditionalBarAnnotationDrawModify(
+		//        barIndex, "ann2" + barIndex, labelText, this.fontConsolas7, Color.ForestGreen, Color.LightGray, evenAboveOddBelow);
+		//}
 	}
 }

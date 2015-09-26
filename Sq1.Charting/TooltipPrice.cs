@@ -26,13 +26,13 @@ namespace Sq1.Charting {
 			string titleBlue = barToPopulate.DateTimeOpen.ToString("HH:mm ") + " #" + barToPopulate.ParentBarsIndex;
 			this.lblHeaderVal.Text = titleBlue;
 			this.lblDateValue.Text = barToPopulate.DateTimeOpen.ToString("ddd dd-MMM-yyyy");
-			string formatPrice = barToPopulate.ParentBars.SymbolInfo.FormatPrice;
+			string formatPrice = barToPopulate.ParentBars.SymbolInfo.PriceFormat;
 			this.lblOpenVal.Text = barToPopulate.Open.ToString(formatPrice);
 			this.lblHighVal.Text = barToPopulate.High.ToString(formatPrice);
 			this.lblLowVal.Text = barToPopulate.Low.ToString(formatPrice);
 			this.lblCloseVal.Text = barToPopulate.Close.ToString(formatPrice);
 
-			string formatVolume = barToPopulate.ParentBars.SymbolInfo.FormatVolume;
+			string formatVolume = barToPopulate.ParentBars.SymbolInfo.VolumeFormat;
 			this.lblVolumeVal.Text = barToPopulate.Volume.ToString(formatVolume);
 
 			string alertsAsString = "";
@@ -116,9 +116,6 @@ namespace Sq1.Charting {
 				this.Controls.Remove(item);
 			}
 			this.Size = new Size(this.Size.Width, this.initialStaticHeight);
-		}
-		void TooltipPrice_MouseMove(object sender, MouseEventArgs e) {
-			this.Visible = false;
 		}
 	}
 }

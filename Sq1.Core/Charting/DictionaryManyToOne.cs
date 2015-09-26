@@ -15,11 +15,13 @@ namespace Sq1.Core.Charting {
 			string msig = " //DictionaryManyToOne::Register()";
 			if (this.Lookup.ContainsKey(chart)) {
 				string msg = "ALREADY_REGISTERED_IN_this.Lookup chart[" + chart + "]";
-				throw new Exception(msg + msig);
+				Assembler.PopupException(msg + msig);
+				return;
 			}
 //			if (this.Reverse.ContainsValue(chart)) {
 //				string msg = "chart[" + chart + "] is already registered in this.Reverse";
-//				throw new Exception(msg + msig);
+//				Assembler.PopupException(msg + msig);
+//				return;
 //			}
 			this.Lookup.Add(chart, new List<ALERTS>());
 		}
@@ -28,11 +30,13 @@ namespace Sq1.Core.Charting {
 			string msig = " //DictionaryManyToOne::UnRegister()";
 			if (this.Lookup.ContainsKey(chart) == false) {
 				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
-				throw new Exception(msg + msig);
+				Assembler.PopupException(msg + msig);
+				return;
 			}
 //			if (this.Reverse.ContainsValue(chart)) {
 //				string msg = "chart[" + chart + "] was never registered in this.Reverse";
-//				throw new Exception(msg + msig);
+//				Assembler.PopupException(msg + msig);
+//				return;
 //			}
 			this.Lookup.Add(chart, new List<ALERTS>());
 		}
@@ -41,12 +45,14 @@ namespace Sq1.Core.Charting {
 			string msig = " //DictionaryManyToOne::ClearDependantsFor()";
 			if (this.Lookup.ContainsKey(chart) == false) {
 				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
-				throw new Exception(msg + msig);
+				Assembler.PopupException(msg + msig);
+				return;
 			}
 			foreach (ALERTS dependant in this.Lookup[chart]) {
 				if (this.Reverse.ContainsKey(dependant) == false) {
 					string msg = "position[" + dependant + "] is not found in this.Reverse, you should've gotten an exception during Add()? AlmostImpossible happened";
-					throw new Exception(msg + msig);
+					Assembler.PopupException(msg + msig);
+					return;
 				}
 				this.Reverse.Remove(dependant);
 			}
@@ -54,21 +60,35 @@ namespace Sq1.Core.Charting {
 		}
 		
 		public void Add(CHART chart, ALERTS alert) {
-			string msig = " //DictionaryManyToOne::Add(chart[" + chart + "], alert[" + alert + "])";
+			ALERTS alertPointerCopy = alert;		// at some point alert=null and Dictionary.Insert() throws NullReferenceException
+			string msig = " //DictionaryManyToOne::Add(chart[" + chart + "], alertPointerCopy[" + alertPointerCopy + "])";
+			if (chart == null) {
+				string msg = "I_REFUSE_TO_ADD_CHART_NULL__FILTER_ME_OUT_UPSTACK_OR_CREATE_EMPTY_CHART_SHADOW";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (alertPointerCopy == null) {
+				string msg = "I_REFUSE_TO_ADD_alertPointerCopy_NULL__FILTER_ME_OUT_UPSTACK";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
 			if (this.Lookup.ContainsKey(chart) == false) {
 				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
-				throw new Exception(msg + msig);
+				Assembler.PopupException(msg + msig);
+				return;
 			}
-			if (this.Lookup[chart].Contains(alert)) {
-				string msg = "ALREADY_ADDED_INTO_this.Lookup[chart] alert[" + alert + "]";
-				throw new Exception(msg + msig);
+			if (this.Lookup[chart].Contains(alertPointerCopy)) {
+				string msg = "ALREADY_ADDED_INTO_this.Lookup[chart] alertPointerCopy[" + alertPointerCopy + "]";
+				Assembler.PopupException(msg + msig);
+				return;
 			}
-			if (this.Reverse.ContainsKey(alert)) {
-				string msg = "ALREADY_ADDED_INTO_this.Reverse alert[" + alert + "]";
-				throw new Exception(msg + msig);
+			if (this.Reverse.ContainsKey(alertPointerCopy)) {
+				string msg = "ALREADY_ADDED_INTO_this.Reverse alertPointerCopy[" + alertPointerCopy + "]";
+				Assembler.PopupException(msg + msig);
+				return;
 			}
-			this.Lookup[chart].Add(alert);
-			this.Reverse.Add(alert, chart);
+			this.Lookup[chart].Add(alertPointerCopy);
+			this.Reverse.Add(alertPointerCopy, chart);
 		}
 		
 //		public void AddRange(CHART chart, List<ALERTS> alerts) {
@@ -81,15 +101,18 @@ namespace Sq1.Core.Charting {
 			string msig = " //DictionaryManyToOne::Remove(chart[" + chart + "], alert[" + alert + "])";
 			if (this.Lookup.ContainsKey(chart) == false) {
 				string msg = "CONTAINER_WAS_NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
-				throw new Exception(msg + msig);
+				Assembler.PopupException(msg + msig);
+				return;
 			}
 			if (this.Lookup[chart].Contains(alert) == false) {
 				string msg = "LOOKUP_REFERENCE_WAS_NEVER_ADDED_FOR alert[" + alert + "]";
-				throw new Exception(msg + msig);
+				Assembler.PopupException(msg + msig);
+				return;
 			}
 			if (this.Reverse.ContainsKey(alert) == false) {
 				string msg = "REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert[" + alert + "]";
-				throw new Exception(msg + msig);
+				Assembler.PopupException(msg + msig);
+				return;
 			}
 			this.Lookup[chart].Remove(alert);
 			this.Reverse.Remove(alert);
@@ -99,19 +122,23 @@ namespace Sq1.Core.Charting {
 			string msig = " DictionaryManyToOne::IsItemRegistered(alert[" + alert + "]): ";
 			return this.Reverse.ContainsKey(alert);
 		}
-		public CHART FindContainerFor(ALERTS alert) {
+		public CHART FindContainerForNull(ALERTS alert) {
 			string msig = " //DictionaryManyToOne::FindContainerFor(alert[" + alert + "])";
 			if (this.Reverse.ContainsKey(alert) == false) {
 				string msg = "REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert[" + alert + "]";
 				throw new Exception(msg + msig);	// I hate nullable types alltogether; can't return null here koz CHART=null is nonsence for the Dictionary
+				//v2
+				//Assembler.PopupException(msg + msig);	// I hate nullable types alltogether; can't return null here koz CHART=null is nonsence for the Dictionary
+				//return null;
 			}
 			return this.Reverse[alert];
 		}
-		public List<ALERTS> FindContentsOf(CHART chart) {
+		public List<ALERTS> FindContentsOfNullUnsafe(CHART chart) {
 			string msig = " //DictionaryManyToOne::FindContents(chart[" + chart + "])";
 			if (this.Lookup.ContainsKey(chart) == false) {
 				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
-				throw new Exception(msg + msig);
+				Assembler.PopupException(msg + msig);
+				return null;
 			}
 			return this.Lookup[chart];
 		}

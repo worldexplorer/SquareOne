@@ -80,17 +80,27 @@ namespace Sq1.Core.Indicators {
 				}
 				return this.penForeground;
 			} }
-			
-		
+
+				bool parametersByName_ReflectionForced;
+				Dictionary<string, IndicatorParameter> parametersByName;
 		public	Dictionary<string, IndicatorParameter> ParametersByName { get {
-				Dictionary<string, IndicatorParameter> ret = new Dictionary<string, IndicatorParameter>();
+				if (parametersByName_ReflectionForced == false) return parametersByName;
+				parametersByName_ReflectionForced = false;
+				parametersByName.Clear();
+
 				Type myChild = this.GetType();
 				//v1
 				//PropertyInfo[] lookingForIndicatorParameterProperties = myChild.GetProperties();
 				//foreach (PropertyInfo indicatorParameterPropertyInfo in lookingForIndicatorParameterProperties) {
 				//	Type expectingIndicatorParameterType = indicatorParameter.PropertyType;
 				//v2
-				FieldInfo[] lookingForIndicatorParameterFields = myChild.GetFields();
+				//FieldInfo[] lookingForIndicatorParameterFields = myChild.GetFields();
+				FieldInfo[] lookingForIndicatorParameterFields = myChild.GetFields(
+															  BindingFlags.Public
+															| BindingFlags.NonPublic
+															| BindingFlags.DeclaredOnly
+															| BindingFlags.Instance
+														);
 				foreach (FieldInfo indicatorParameter in lookingForIndicatorParameterFields) {
 					Type expectingIndicatorParameterType = indicatorParameter.FieldType;
 					bool isIndicatorParameterChild = typeof(IndicatorParameter).IsAssignableFrom(expectingIndicatorParameterType);
@@ -105,10 +115,11 @@ namespace Sq1.Core.Indicators {
 					}
 					IndicatorParameter indicatorParameterInstance = expectingConstructedNonNull as IndicatorParameter; 
 					// NOPE_COZ_ATR.ParamPeriod=new IndicatorParameter("Period",..) indicatorParameterInstance.Name = indicatorParameterPropertyInfo.Name;
+					indicatorParameterInstance.IndicatorName = this.Name;
 					indicatorParameterInstance.ValidateSelf();
-					ret.Add(indicatorParameterInstance.Name, indicatorParameterInstance);
+					parametersByName.Add(indicatorParameterInstance.FullName, indicatorParameterInstance);
 				}
-				return ret;
+				return parametersByName;
 			} }
 		
 		public	string	parametersAsStringShort_cached;
@@ -142,13 +153,15 @@ namespace Sq1.Core.Indicators {
 		
 		protected Indicator() {
 			AbsnoInstance = ++AbsnoCurrent;
-			Name = "INDICATOR_NAME_NOT_SET_IN_DERIVED_CONSTRUCTOR";
+			Name = "INDICATOR_NAME_NOT_SET_IN_DERIVED_CONSTRUCTOR //will be replaced by Script.IndicatorsByName_ReflectedCached()";
 			DataSeriesProxyFor = DataSeriesProxyableFromBars.Close;
 			ChartPanelType = ChartPanelType.PanelPrice;
 			OwnValuesCalculated = new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), this.Name);
 			LineColor = Color.Indigo;
 			LineWidth = 1;
 			Decimals = 2;
+			parametersByName = new Dictionary<string, IndicatorParameter>();
+			parametersByName_ReflectionForced = true;
 		}
 
 		public virtual void BacktestContextRestoreSwitchToOriginalBarsContinueToLiveNorecalculate() {
@@ -178,6 +191,11 @@ namespace Sq1.Core.Indicators {
 			}
 		}
 		public void Initialize(HostPanelForIndicator panelNamedFolding) {
+			if (this.HostPanelForIndicator == panelNamedFolding) {
+				string msg = "INDICATOR_ALREADY_INITIALIZE_WITH_SAME_HOST_PANEL [" + this + "] this.HostPanelForIndicator[" + this.HostPanelForIndicator + "]";
+				//Assembler.PopupException(msg, null, false);
+				return;
+			}
 			this.HostPanelForIndicator = panelNamedFolding;
 		}
 		public void IndicatorErrorsOnBacktestStartingAppend(string msg, string separator = "; ") {
@@ -198,7 +216,7 @@ namespace Sq1.Core.Indicators {
 			string paramerersAllValidatedErrors = this.ParametersAllValidate();
 			this.IndicatorErrorsOnBacktestStartingAppend(paramerersAllValidatedErrors);
 
-			this.Decimals = Math.Max(this.BarsEffective.SymbolInfo.DecimalsPrice, 1);	// for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
+			this.Decimals = Math.Max(this.BarsEffective.SymbolInfo.PriceDecimals, 1);	// for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
 
 			string indicatorSelfValidationErrors = this.InitializeBacktestStartingPreCheckErrors();
 			this.IndicatorErrorsOnBacktestStartingAppend(indicatorSelfValidationErrors);
@@ -330,7 +348,12 @@ namespace Sq1.Core.Indicators {
 			}
 		}
 		public virtual void OnNewStreamingQuote(Quote newStreamingQuote) {
+			#if VERBOSE_STRINGS_SLOW
 			string msig = " //OnNewStreamingQuote(" + newStreamingQuote.ToString() + ")";
+			#else
+			string msig = " //OnNewStreamingQuote()";
+			#endif
+			
 			bool canRunCalculation = this.canRunCalculation(true);
 			if (canRunCalculation == false) return;
 			double derivedCalculated = this.CalculateOwnValueOnNewStreamingQuote_invokedAtEachQuoteNoExceptions_NoPeriodWaiting(newStreamingQuote);

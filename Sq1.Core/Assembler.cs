@@ -32,10 +32,13 @@ namespace Sq1.Core {
 		public	DictionaryManyToOne<ChartShadow, Alert>	AlertsForChart;
 		public	AssemblerDataSnapshot					AssemblerDataSnapshot;
 		public	Serializer<AssemblerDataSnapshot>		AssemblerDataSnapshotSerializer;
+		//public	RepositorySerializerChartSettingsTemplates	RepositorySerializerChartSettingsTemplates;
+		public RepositoryJsonChartSettingsTemplates			RepositoryJsonChartSettingsTemplates;
 
-		public	const string							DateTimeFormatIndicatorHasNoValuesFor = "yyyy-MMM-dd ddd HH:mm";
-		public	const string							DateTimeFormatLong = "HH:mm:ss.fff ddd dd MMM yyyy";
-		public	const string							DateTimeFormatLongFilename = "yyyy-MMM-dd_ddd_HH.mm.ss";
+		public	const string							DateTimeFormatIndicatorHasNoValuesFor 	= "yyyy-MMM-dd ddd HH:mm";
+		public	const string							DateTimeFormatToMinutes				 	= "yyyy-MMM-dd HH:mm";
+		public	const string							DateTimeFormatLong						= "HH:mm:ss.fff ddd dd MMM yyyy";
+		public	const string							DateTimeFormatLongFilename				= "yyyy-MMM-dd_ddd_HH.mm.ss";
 		
 		public	static string FormattedLongFilename(DateTime dt) {
 			return dt.ToString(Assembler.DateTimeFormatLongFilename);
@@ -111,7 +114,7 @@ namespace Sq1.Core {
 				if (secondsLeftToIgnore > 0) {
 					string msg = "SPLITTER_EVENTS_IGNORED_FOR_MORE_SECONDS " + secondsLeftToIgnore + "/"
 						+ this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch;
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 				} else {
 					ret = true;
 				}
@@ -138,6 +141,9 @@ namespace Sq1.Core {
 			AssemblerDataSnapshot					= new AssemblerDataSnapshot();
 			AssemblerDataSnapshotSerializer			= new Serializer<AssemblerDataSnapshot>();
 
+			//RepositorySerializerChartSettingsTemplates = new RepositorySerializerChartSettingsTemplates();
+			RepositoryJsonChartSettingsTemplates	= new RepositoryJsonChartSettingsTemplates();
+
 		}
 		public Assembler Initialize(IStatusReporter mainForm) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
@@ -152,7 +158,10 @@ namespace Sq1.Core {
 			this.StatusReporter = mainForm;
 			
 			bool createdNewFile = this.RepositorySymbolInfo.Initialize(this.AppDataPath, "SymbolInfo.json", "", null);
-			List<SymbolInfo> symbolInfosNotUsed = this.RepositorySymbolInfo.Deserialize();
+
+			//v1  this.RepositorySymbolInfo		.DeserializeAndSort();
+			//v2 SORTED_IN_SymbolInfoEditorControl()_BY_this.toolStripItemComboBox1.ComboBox.Sorted=true;
+			this.RepositorySymbolInfo			.Deserialize();
 			
 			createdNewFile = this.RepositoryMarketInfo.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
 			this.RepositoryMarketInfo			.Deserialize();
@@ -163,8 +172,8 @@ namespace Sq1.Core {
 			this.RepositoryDllBrokerAdapter		.InitializeAndScan(this.AppStartupPath);
 			this.RepositoryDllReporters			.InitializeAndScan(this.AppStartupPath);
 			
-			this.WorkspacesRepository			.Initialize(this.AppDataPath, "Workspaces", this.StatusReporter);
-			this.WorkspacesRepository			.ScanFolders();
+			this.WorkspacesRepository			.Initialize(this.AppDataPath, "Workspaces");
+			this.WorkspacesRepository			.RescanFolders();
 
 			this.OrderProcessor					.Initialize(this.AppDataPath);
 
@@ -176,6 +185,13 @@ namespace Sq1.Core {
 			
 			createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);
 			this.AssemblerDataSnapshot = this.AssemblerDataSnapshotSerializer.Deserialize();
+
+			//createdNewFile = this.RepositorySerializerChartSettingsTemplates.Initialize(this.AppDataPath, "MarketInfo.json", "", null);
+			//this.RepositoryMarketInfo.Deserialize();
+
+			this.RepositoryJsonChartSettingsTemplates.Initialize(this.AppDataPath, "ChartSettingsTemplates");
+			this.RepositoryJsonChartSettingsTemplates.DeserializeJsonsInFolder_IfNoneCreateDefault();
+			
 			
 			//v1
 			try {
@@ -227,13 +243,13 @@ namespace Sq1.Core {
 				// this is gonna throw from a non-GUI thread, right?!... (moved to MainForm.PopupException() with base.BeginInvoke() as first step)
 				// if I PopupException from a BrokerAdapter thread, exceptionsForm.Visible and others should throw
 				Form exceptionsForm = Assembler.InstanceInitialized.StatusReporter as Form;
+				Assembler.InstanceInitialized.StatusReporter.PopupException(msg, ex, debuggingBreak);
 			} catch (Exception ex1) {
 				#if DEBUG
+				string msg1 = "NOWHERE_ELSE_I_COULD_DUMP_EXCEPTION_BRO";
 				Debugger.Break();
 				#endif
 			}
-
-			Assembler.InstanceInitialized.StatusReporter.PopupException(msg, ex, debuggingBreak);
 		}
 		public static void DisplayStatus(string msg) {
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();

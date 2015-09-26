@@ -15,7 +15,7 @@ namespace Sq1.Core.Indicators {
 		}
 		
 		public IndicatorMovingAverageSimple() : base() {
-			base.Name = "MA";
+			base.Name = "MA //will be replaced by Script.IndicatorsByName_ReflectedCached()";
 			// NOW DEFAULT base.ChartPanelType = ChartPanelType.PanelPrice;
 			ParamPeriod = new IndicatorParameter("Period", 55, 11, 99, 11);
 		}
@@ -77,7 +77,7 @@ namespace Sq1.Core.Indicators {
 				string msg = "INTERNAL_SMA_MUST_NOT_BE_EMPTY_OR_FRESHLY_CONSTRUCTED__OTHERWIZE_checkPopupOnResetAndSync()_WILL_THROW";
 				Assembler.PopupException(msg);
 			}
-			this.checkPopupOnResetAndSync(msig);
+			// WHATS_THE_POINT? this.checkPopupOnResetAndSync(msig);
 		}
 		public override void BacktestStartingResetBarsEffectiveProxy() {
 			string msig = " //BacktestStartingResetBarsEffectiveProxy() EMPTY_CLONE_BARS_AT_BACKTEST_START ";

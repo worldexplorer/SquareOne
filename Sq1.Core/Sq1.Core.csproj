@@ -21,7 +21,7 @@
     <RootNamespace>Sq1.Core</RootNamespace>
     <SignAssembly>False</SignAssembly>
     <DelaySign>False</DelaySign>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
@@ -53,16 +53,23 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED;VERBOSE_STRINGS_SLOW;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled</DefineConstants>
+    <DefineConstants>DEBUG;NON_DOUBLE_BUFFERED_disabled;VERBOSE_STRINGS_SLOW_disabled;TEST_COMPATIBILITY_disabled;USE_CUSTOM_ROUNDING_disabled</DefineConstants>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Accounting\Account.cs" />
@@ -87,6 +94,7 @@
       <DependentUpon>OrderProcessor.cs</DependentUpon>
     </Compile>
     <Compile Include="Broker\OrdersAutoTree.cs" />
+    <Compile Include="Charting\ChartSettings.cs" />
     <Compile Include="Charting\ChartShadow.PaintSynchronizer.cs">
       <DependentUpon>ChartShadow.cs</DependentUpon>
       <SubType>UserControl</SubType>
@@ -99,6 +107,21 @@
     <Compile Include="Charting\HostPanelForIndicator.cs" />
     <Compile Include="Charting\MultiSplitterProperties.cs" />
     <Compile Include="Charting\OnChartObjectOperationStatus.cs" />
+    <Compile Include="Correlation\AvgCorMomentumsCalculator.cs" />
+    <Compile Include="Correlation\OneParameterAllAvgCorMomentums.cs" />
+    <Compile Include="Correlation\KPIsAveraged.cs" />
+    <Compile Include="Correlation\OneParameterAllValuesAveraged.cs" />
+    <Compile Include="Correlation\OneParameterAllValuesAveraged.EventGenerator.cs">
+      <DependentUpon>OneParameterAllValuesAveraged.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Correlation\OneParameterAllValuesAveragedEventArgs.cs" />
+    <Compile Include="Correlation\OneParameterOneValue.cs" />
+    <Compile Include="Correlation\Correlator.cs" />
+    <Compile Include="Correlation\Correlator.EventGenerator.cs">
+      <DependentUpon>Correlator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Correlation\AvgCorMomentums.cs" />
+    <Compile Include="Correlation\Stats.cs" />
     <Compile Include="DataFeed\DataSource.EventGenerator.cs">
       <DependentUpon>DataSource.cs</DependentUpon>
     </Compile>
@@ -112,12 +135,13 @@
       <DependentUpon>Bars.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\Bars.EventGenerator.cs">
-      <DependentUpon>Bar.cs</DependentUpon>
+      <DependentUpon>Bars.cs</DependentUpon>
     </Compile>
     <Compile Include="DataTypes\BarsUnscaled.cs" />
     <Compile Include="DataTypes\BarsUnscaledEventArgs.cs" />
-    <Compile Include="DataTypes\BarsUnscaledList.cs" />
+    <Compile Include="DataTypes\BarsUnscaledListTwins.cs" />
     <Compile Include="DataTypes\BidOrAsk.cs" />
+    <Compile Include="DataTypes\SymbolInfoList.cs" />
     <Compile Include="DoubleBuffered\PanelDoubleBuffered.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -134,6 +158,7 @@
     <Compile Include="Execution\Position.Stats.cs">
       <DependentUpon>Position.cs</DependentUpon>
     </Compile>
+    <Compile Include="Correlation\CorrelatorOneParameterSnapshot.cs" />
     <Compile Include="Indicators\HelperSeries\DataSeriesTimeBasedColorified.cs" />
     <Compile Include="Indicators\HelperSeries\MovingAverageSimple.cs" />
     <Compile Include="Indicators\HelperSeries\TrueRange.cs" />
@@ -175,19 +200,28 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Livesim\LivesimBrokerDataSnapshot.cs" />
-    <Compile Include="Optimization\Optimizer.cs" />
-    <Compile Include="Optimization\Optimizer.EventGenerator.cs">
-      <DependentUpon>Optimizer.cs</DependentUpon>
+    <Compile Include="Repositories\RepositoryJsonChartSettingsTemplates.cs" />
+    <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionary.cs" />
+    <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionarySorted.cs" />
+    <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionaryCorrelator.cs" />
+    <Compile Include="Sequencing\MaximizationCriterion.cs" />
+    <Compile Include="Sequencing\SequencedBacktests.cs" />
+    <Compile Include="Sequencing\Sequencer.cs" />
+    <Compile Include="Sequencing\Sequencer.EventGenerator.cs">
+      <DependentUpon>Sequencer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Optimization\OptimizerParametersSequencer.cs" />
-    <Compile Include="Optimization\SystemPerformanceRestoreAbleEventArgs.cs" />
-    <Compile Include="Optimization\SystemPerformanceRestoreAble.cs" />
+    <Compile Include="Sequencing\ReusableExecutor.cs" />
+    <Compile Include="Sequencing\ReusableExecutorsPool.cs" />
+    <Compile Include="Sequencing\ParametersSequencer.cs" />
+    <Compile Include="Sequencing\SystemPerformanceRestoreAbleEventArgs.cs" />
+    <Compile Include="Sequencing\SystemPerformanceRestoreAble.cs" />
+    <Compile Include="Sequencing\SequencedBacktestsEventArgs.cs" />
     <Compile Include="Repositories\RepositoryBarsFile.Obsolete.cs">
       <DependentUpon>RepositoryBarsFile.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\RepositoryJsonsInFolderSimple.cs" />
-    <Compile Include="Repositories\FnameDateSizeColor.cs" />
-    <Compile Include="Repositories\RepositoryJsonOptimizationResults.cs" />
+    <Compile Include="Repositories\FnameDateSizeColorPFavg.cs" />
+    <Compile Include="Repositories\RepositoryJsonsInFolderSimpleDictionarySequencer.cs" />
     <Compile Include="Repositories\StrategySelfSaver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataFeed\NamedObjectJsonSerializable.cs" />
@@ -218,14 +252,17 @@
     <Compile Include="Serializers\Serializer.cs" />
     <Compile Include="Charting\ContextChart.cs" />
     <Compile Include="StrategyBase\ContextScript.cs" />
-    <Compile Include="StrategyBase\ContextScriptEventArgs.cs" />
     <Compile Include="Livesim\LivesimBrokerSettings.cs" />
     <Compile Include="Livesim\LivesimStreamingSettings.cs" />
+    <Compile Include="StrategyBase\KPIs.cs" />
+    <Compile Include="StrategyBase\Script.ReusableExecutorChecks.cs">
+      <DependentUpon>Script.cs</DependentUpon>
+    </Compile>
     <Compile Include="StrategyBase\SystemPerformancePositionsTracking.cs" />
     <Compile Include="StrategyBase\Reporter.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="StrategyBase\Scrip.TunnelledToChartControl.cs">
+    <Compile Include="StrategyBase\Script.TunnelledToChartControl.cs">
       <DependentUpon>Script.cs</DependentUpon>
     </Compile>
     <Compile Include="StrategyBase\Script.DerivedShouldOverride.cs">
@@ -254,9 +291,14 @@
     </Compile>
     <Compile Include="Streaming\StreamingSolidifier.cs" />
     <Compile Include="Support\ConcurrentDictionaryGeneric.cs" />
-    <Compile Include="Support\ConcurrentList.cs" />
-    <Compile Include="Support\ConcurrentWatchdog.cs" />
+    <Compile Include="Support\ConcurrentListWD.cs" />
+    <Compile Include="Support\ConcurrentWatchdog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Support\ExtensionAttribute.cs" />
+    <Compile Include="Support\FontCache.cs" />
     <Compile Include="Support\ObjectListViewStateSerializer.cs" />
+    <Compile Include="Support\ReflexionExtension.cs" />
     <Compile Include="Support\SkipInstantiationAt.cs" />
     <Compile Include="Broker\OrderLaneByType.cs" />
     <Compile Include="Broker\OrderCallbackDupesChecker.cs" />
@@ -385,4 +427,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
 </Project>

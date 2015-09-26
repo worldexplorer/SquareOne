@@ -7,17 +7,17 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public Bar BarStaticFirstNullUnsafe { get {
 			Bar last = base.BarFirst;
 			if (last == null) return null; 
-			if (last != this.BarStreaming) return last;
+			if (last != this.BarStreamingNullUnsafe) return last;
 			return null;
 			//throw new Exception("Bars.BarLast point to Bars.StreamingBar???");
 		} }
 		[JsonIgnore]	public Bar BarStaticLastNullUnsafe { get {
 			Bar last = base.BarLast;
 			if (last == null) return null; 
-			if (last != this.BarStreaming) return last;
+			if (last != this.BarStreamingNullUnsafe) return last;
 			Bar preLast = base.BarPreLast;
 			if (preLast == null) return null;
-			if (preLast != this.BarStreaming) return preLast;
+			if (preLast != this.BarStreamingNullUnsafe) return preLast;
 			//return null;
 			throw new Exception("both Bars.BarLast and Bars.BarPreLast point to Bars.StreamingBar???");
 		} }

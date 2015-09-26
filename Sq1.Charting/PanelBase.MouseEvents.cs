@@ -39,7 +39,7 @@ namespace Sq1.Charting {
 			this.squeezingVertically = false;
 			this.mouseOver = true;
 			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
-				this.ChartControl.InvalidateAllPanels();
+				//DEBUGGING_HEIGHT_CACHED__REDUCING_NUMBER_OF_EVENTS__IM_OK_WITH_CROSSHAIR_STUCK this.ChartControl.InvalidateAllPanels();
 			}
 		}
 		protected override void OnMouseLeave(EventArgs e) {
@@ -55,6 +55,8 @@ namespace Sq1.Charting {
 			//if (this.ChartControl.TooltipPositionShownAndMouseOverIt == true) {
 			//	return;
 			//}
+
+			if (this.ThisPanelIsPricePanel && this.ChartControl.TooltipPriceVisible) return;
 			
 			this.scrollingHorizontally = false;
 			this.squeezingHorizontally = false;
@@ -66,17 +68,17 @@ namespace Sq1.Charting {
 			
 			this.mouseOver = false;
 			if (this.ChartControl.ChartSettings.MousePositionTrackOnGutters) {
-				this.ChartControl.InvalidateAllPanels();
+				//DEBUGGING_HEIGHT_CACHED__REDUCING_NUMBER_OF_EVENTS__IM_OK_WITH_CROSSHAIR_STUCK this.ChartControl.InvalidateAllPanels();
 			}
 			
 			barIndexMouseIsOverPrev = -1;
 			BarIndexMouseIsOverNow = -1;
 			this.ChartControl.BarIndexMouseIsOverNow = -1;
 
-			this.ChartControl.TooltipPriceHide();
-			this.ChartControl.TooltipPositionHide();
+			// WHEN_ONMOUSEOVER_TOOLTIP_I_GET_MOUSELEAVE_HERE__FOLLOWING_INVALIDATE_WILL_HIDE this.ChartControl.TooltipPriceHide();
+			// WHEN_ONMOUSEOVER_TOOLTIP_I_GET_MOUSELEAVE_HERE__FOLLOWING_INVALIDATE_WILL_HIDE this.ChartControl.TooltipPositionHide();
 
-			this.ChartControl.InvalidateAllPanels();	//	DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES
+			//DEBUGGING_HEIGHT_CACHED__REDUCING_NUMBER_OF_EVENTS__IM_OK_WITH_CROSSHAIR_STUCK this.ChartControl.InvalidateAllPanels();	//	DRAWING_CURRENT_JUMPING_STREAMING_VALUE_ON_GUTTER_SINCE_MOUSE_WENT_OUT_OF_BOUNDARIES
 		}
 		protected override void OnMouseDown(MouseEventArgs e) {
 			if (this.ChartControl == null) return;
@@ -255,7 +257,8 @@ namespace Sq1.Charting {
 					}
 					this.RaisePanelPriceSqueezed();
 				}
-				
+
+				bool prevXYwereMinusOne = this.moveHorizontalXprev == -1 && this.moveHorizontalYprev == -1;
 				if (this.moveHorizontalXprev == e.X && this.moveHorizontalYprev == e.Y) {
 					return;
 				}
@@ -270,7 +273,8 @@ namespace Sq1.Charting {
 					if (barIndexMouseIsOverPrev != this.BarIndexMouseIsOverNow) {
 						barIndexMouseIsOverPrev  = this.BarIndexMouseIsOverNow;		// barIndexMouseIsOverPrev is needed for a mouse over Volume to paint CurrentBar'sClose on Price (try & see)
 						this.ChartControl.BarIndexMouseIsOverNow  = this.BarIndexMouseIsOverNow;
-						this.ChartControl.InvalidateAllPanels();
+						// ADDED_prevXYwereMinusOne==false_KOZ_DEBUGGING_HEIGHT_CACHED__REDUCING_NUMBER_OF_EVENTS__IM_OK_WITH_CROSSHAIR_STUCK_
+						if (prevXYwereMinusOne == false) this.ChartControl.InvalidateAllPanels();
 					}
 				}
 

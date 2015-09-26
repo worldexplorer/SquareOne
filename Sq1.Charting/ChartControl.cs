@@ -8,11 +8,13 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
+using Sq1.Core.Streaming;
+using Sq1.Core.Charting;
 using Sq1.Charting.MultiSplit;
 
 namespace Sq1.Charting {
 	public partial class ChartControl {
-		List<ScrollableControl> panelsInvalidateAll;
+		List<ScrollableControl> panelsForInvalidateAll_dontForgetIndicators;
 		public bool RangeBarCollapsed {
 			get { return this.splitContainerChartVsRange.Panel2Collapsed; }
 			set { this.splitContainerChartVsRange.Panel2Collapsed = value; }
@@ -25,18 +27,23 @@ namespace Sq1.Charting {
 	 	public int GutterRightWidth_cached = -1;
 		public int GutterBottomHeight_cached = -1;
 		public ChartSettings ChartSettings;
-		public ScriptExecutorObjects ScriptExecutorObjects;
+		public ChartControlFrozenForRendering ScriptExecutorObjects;
 
 		public int HeightMinusBottomHscrollbar { get { return base.Height - this.hScrollBar.Height; } }
 		public int BarIndexMouseIsOverNow;
 
 		public ChartControl() {
-			this.ChartSettings = new ChartSettings(); // was a component, used at InitializeComponent() (to draw SampleBars)
-			this.ScriptExecutorObjects = new ScriptExecutorObjects();
+			this.ChartSettings = new ChartSettings(ChartSettings.NAME_DEFAULT);
+			this.ScriptExecutorObjects = new ChartControlFrozenForRendering();
 
 			InitializeComponent();
 			//when previous line doesn't help and Designer still throws exceptions return;
-			
+
+
+			//TRANSPARENT_MOUSEMOVE_FORWARDING__WHEN_ONMOUSEOVER_TOOLTIP_I_GET_MOUSELEAVE_HERE__FOLLOWING_INVALIDATE_WILL_HIDE
+			this.tooltipPosition.Initialize(this);
+			this.tooltipPrice.Initialize(this);
+
 			// moved here from Designer to Make ChartForm work is Designer (third button)  
 			//this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelVolume);
 			//this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelPrice);
@@ -52,10 +59,10 @@ namespace Sq1.Charting {
 			//this.HScroll = true;
 			this.hScrollBar.SmallChange = this.ChartSettings.ScrollNBarsPerOneKeyPress;
 
-			panelsInvalidateAll = new List<ScrollableControl>();
-			panelsInvalidateAll.Add(this.PanelPrice);
-			panelsInvalidateAll.Add(this.panelVolume);
-			panelsInvalidateAll.Add(this.panelLevel2);
+			panelsForInvalidateAll_dontForgetIndicators = new List<ScrollableControl>();
+			panelsForInvalidateAll_dontForgetIndicators.Add(this.PanelPrice);
+			panelsForInvalidateAll_dontForgetIndicators.Add(this.panelVolume);
+			panelsForInvalidateAll_dontForgetIndicators.Add(this.panelLevel2);
 
 			//v1 1/2 making ChartForm editable in Designer: exit to avoid InitializeCreateSplittersDistributeFor() below throw
 			//if (base.DesignMode) return; // Generics in InitializeComponent() cause Designer to throw up (new Sq1.Charting.MultiSplit.MultiSplitContainer<PanelBase>())
@@ -102,12 +109,13 @@ namespace Sq1.Charting {
 			//this.Initialize(BarsBasic.GenerateRandom(chartShouldntCare));
 			Bars generated = new Bars("RANDOM", chartShouldntCare, "test-ChartControl-DesignMode");
 			generated.GenerateAppend();
-			this.Initialize(generated);
+			this.Initialize(generated, "NO_STRATEGY_RANDOM_BARS");
 			#endregion
 		}
-		public override void Initialize(Bars barsNotNull, bool invalidateAllPanels = true) {
+		public override void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool invalidateAllPanels = true) {
 			this.barEventsDetach();
-			base.Initialize(barsNotNull, invalidateAllPanels);
+			this.ChartSettings.StrategyName = strategySavedInChartSettings;
+			base.Initialize(barsNotNull, strategySavedInChartSettings, invalidateAllPanels);
 			//if (this.BarsNotEmpty == false) {
 			if (this.Bars == null) {
 				string msg = "I_CANT_ATTACH_BAR_EVENTS_TO_NULL_BARS DONT_PASS_EMPTY_BARS_TO_CHART_CONTROL " + this.Bars.Count;
@@ -151,10 +159,11 @@ namespace Sq1.Charting {
 			if (noExceptionsExpected) {
 				this.hScrollBar.Value = this.ChartSettings.ScrollPositionAtBarIndex;
 			}
-			foreach (PanelBase panel in this.panelsInvalidateAll) {	// at least PanelPrice and PanelVolume
+			foreach (PanelBase panel in this.panelsForInvalidateAll_dontForgetIndicators) {	// at least PanelPrice and PanelVolume
 				panel.InitializeWithNonEmptyBars(this);
 			}
 			if (invalidateAllPanels == false) return;
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.InvalidateAllPanels();
 		}
 		public void SyncHorizontalScrollToBarsCount() {
@@ -167,6 +176,12 @@ namespace Sq1.Charting {
 			this.hScrollBar.Maximum = this.Bars.Count - 1;		// index of  last available Bar in this.Bars
 			this.hScrollBar.Value = this.hScrollBar.Maximum;
 		}
+		//public void DisposeBufferedGraphicsAndInvalidateAllPanels() {
+		//    foreach (PanelBase panel in this.panelsInvalidateAll) {
+		//        panel.disposeAndNullifyToRecreateInPaint();
+		//    }
+		//    this.InvalidateAllPanels();
+		//}
 		public override void InvalidateAllPanels() {
 			if (base.InvokeRequired) {
 				base.BeginInvoke(new MethodInvoker(this.InvalidateAllPanels));
@@ -175,7 +190,7 @@ namespace Sq1.Charting {
 			//LIVESIM_PAUSED_SHOULD_H_SCROLL__THIS_WAS_AN_OBSTACLE_NON_REPAINTING if (base.IsBacktestingNow) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
-			foreach (PanelBase panel in this.panelsInvalidateAll) {
+			foreach (PanelBase panel in this.panelsForInvalidateAll_dontForgetIndicators) {
 				panel.Invalidate();
 			}
 			//if (this.InvalidatedByStreamingKeepTooltipsOpen == true) return;
@@ -183,35 +198,35 @@ namespace Sq1.Charting {
 			//this.TooltipPositionHide();
 			//this.InvalidatedByStreamingKeepTooltipsOpen = false;
 		}
-		public override void RefreshAllPanelsNonBlockingRefreshNotYetStarted() {
-			// RESETTING_ASAP_IN_THIS_THREAD_AND_SETTING_IN_GUI_THREAD__SWITCHING_IS_SLOW
-			// AVOIDING_signalledAlready==true_IN_RefreshAllPanelsFinidhesWaiterSignalledLivesimCanProceedToGenerateNewQuote()
-			// WILL_RESET_AFTER_WAIT(0)_GETS_CONTROL base.RefreshAllPanelsFinishedWaiterReset();
-			if (base.RefreshAllPanelsIsSignalled == true) {
-				string msg = "NO_SIGNALLING_HAPPENS_AFTER_QUOTE_BUT_ORDER_EXEC_ALSO_TRIGGERS_REPAINT_WHEN_LIVESIMULATION"
-					+ " VERY_LAZY_GUI_THREAD_SIGNALLED_FOR_PREV_REPAINT_SO_LATE???"
-					+ " MUST_BE_UNSIGNALLED_KOZ_IM_THE_ONLY_WHO_WILL_SIGNAL";
-				//Assembler.PopupException(msg, null, false);
-			}
-			if (base.InvokeRequired) {
-				base.BeginInvoke(new MethodInvoker(this.RefreshAllPanelsNonBlockingRefreshNotYetStarted));
-				return;
-			}
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-			//WHY??? this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
-			PanelBase panelThrew = null;
-			try {
-				foreach (PanelBase panel in this.panelsInvalidateAll) {
-					panelThrew = panel;
-					panel.Refresh();
-				}
-			} catch (Exception ex) {
-				string msg = "panelThrew[" + panelThrew.ToString() + "].Refresh() //RefreshAllPanelsNonBlockingRefreshNotYetStarted()";
-				Assembler.PopupException(msg, ex);
-			} finally {
-				base.RefreshAllPanelsFinishedWaiterNotifyAll();
-			}
-		}
+		//public override void RefreshAllPanelsNonBlockingRefreshNotYetStarted() {
+		//    // RESETTING_ASAP_IN_THIS_THREAD_AND_SETTING_IN_GUI_THREAD__SWITCHING_IS_SLOW
+		//    // AVOIDING_signalledAlready==true_IN_RefreshAllPanelsFinidhesWaiterSignalledLivesimCanProceedToGenerateNewQuote()
+		//    // WILL_RESET_AFTER_WAIT(0)_GETS_CONTROL base.RefreshAllPanelsFinishedWaiterReset();
+		//    if (base.RefreshAllPanelsIsSignalled == true) {
+		//        string msg = "NO_SIGNALLING_HAPPENS_AFTER_QUOTE_BUT_ORDER_EXEC_ALSO_TRIGGERS_REPAINT_WHEN_LIVESIMULATION"
+		//            + " VERY_LAZY_GUI_THREAD_SIGNALLED_FOR_PREV_REPAINT_SO_LATE???"
+		//            + " MUST_BE_UNSIGNALLED_KOZ_IM_THE_ONLY_WHO_WILL_SIGNAL";
+		//        //Assembler.PopupException(msg, null, false);
+		//    }
+		//    if (base.InvokeRequired) {
+		//        base.BeginInvoke(new MethodInvoker(this.RefreshAllPanelsNonBlockingRefreshNotYetStarted));
+		//        return;
+		//    }
+		//    if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+		//    //WHY??? this.hScrollBar.Minimum = this.BarsCanFitForCurrentWidth;
+		//    PanelBase panelThrew = null;
+		//    try {
+		//        foreach (PanelBase panel in this.panelsInvalidateAll) {
+		//            panelThrew = panel;
+		//            panel.Refresh();
+		//        }
+		//    } catch (Exception ex) {
+		//        string msg = "panelThrew[" + panelThrew.ToString() + "].Refresh() //RefreshAllPanelsNonBlockingRefreshNotYetStarted()";
+		//        Assembler.PopupException(msg, ex);
+		//    } finally {
+		//        base.RefreshAllPanelsFinishedWaiterNotifyAll();
+		//    }
+		//}
 		void scrollToBarSafely(int bar) {
 			if (bar > this.hScrollBar.Maximum) bar = this.hScrollBar.Maximum;
 			if (bar < this.hScrollBar.Minimum) bar = this.hScrollBar.Minimum;
@@ -269,24 +284,55 @@ namespace Sq1.Charting {
 			}
 		}
 		void barEventsAttach() {
-			if (this.Bars == null) return; 
-			this.Bars.BarStaticAdded			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);		// quite useless since I don't plan to append-statically to displayed-bars 
-			this.Bars.BarStreamingAdded			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.BarStreamingUpdatedMerged	+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			if (this.Bars == null) {
+				string msg = "BARS_NULL__I_CAN_NOT_SUBSCRIBE_FOR_BARS_EVENTS";
+				Assembler.PopupException(msg);
+				return;
+			}
+			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
+			//this.Bars.BarStaticAdded					+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStreamingAdded					+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStreamingUpdatedMerged			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.SymbolInfo.PriceDecimalsChanged	+= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
 		}
 		void barEventsDetach() {
-			if (this.Bars == null) return;
-			this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.BarStreamingAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.BarStaticAdded			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			if (this.Bars == null) {
+				string msg = "BARS_NULL__I_CAN_NOT_UNSUBSCRIBE_FOR_BARS_EVENTS";
+				//Assembler.PopupException(msg);
+				return;
+			}
+			this.Bars.SymbolInfo.PriceDecimalsChanged	-= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
+			this.Bars.BarStreamingUpdatedMerged			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStreamingAdded					-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+
+			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
+			//this.Bars.BarStaticAdded					-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+		}
+		void bars_symbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
+			this.InvalidateAllPanels();
 		}
 		void chartControl_BarAddedUpdated_ShouldTriggerRepaint(object sender, BarEventArgs e) {
+			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) return;
+
 			// if I was designing events for WinForms, I would switch to GUI thread automatically
 			if (base.InvokeRequired == true) {
 				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarAddedUpdated_ShouldTriggerRepaint(sender, e); });
 				return;
 			} else {
 				this.ScriptExecutorObjects.QuoteLast = this.Bars.LastQuoteCloneNullUnsafe;
+
+				// doing same thing from GUI thread at PanelLevel2.renderLevel2() got me even closer to realtime (after pausing a Livesim
+				// and repainting Level2 whole thing was misplaced comparing to PanelPrice spread) but looked really random, not behind and not ahead;
+				// but main reason is ConcurrentLocker was spitting messages (I dont remember what exactly but easy to move back to renderLevel2() and see)
+				StreamingDataSnapshot snap = this.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
+				this.ScriptExecutorObjects.Bids_cachedForOnePaint = new LevelTwoHalfFrozen(
+					"BIDS_FROZEN",
+					snap.LevelTwoBids.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+					new LevelTwoHalfFrozen.DESC());
+				this.ScriptExecutorObjects.Asks_cachedForOnePaint = new LevelTwoHalfFrozen(
+					"ASKS_FROZEN",
+					snap.LevelTwoAsks.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+					new LevelTwoHalfFrozen.ASC());
 			}
 			if (this.VisibleBarRight != this.Bars.Count - 1) {
 				string msg = "I_WILL_MOVE_SLIDER_IF_ONLY_LAST_BAR_IS_VISIBLE";
@@ -332,16 +378,78 @@ namespace Sq1.Charting {
 			this.PanelPrice.Invalidate();
 			//base.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
+
+		[Obsolete("CAREFUL_WHEN_CHANGING_LAYOUT!!!__RELIES_ON_TWO_COLUMNS_AND_MULTIPLE_ROWS")]
+		public Point PanelPriceLocationInChartControl { get { return this.PanelLocationInChartControl(this.PanelPrice); } }
+		[Obsolete("CAREFUL_WHEN_CHANGING_LAYOUT!!!__RELIES_ON_TWO_COLUMNS_AND_MULTIPLE_ROWS")]
+		public Point PanelLocationInChartControl(PanelBase priceIndicatorVolumeOrLevel2) {
+			int x = -1;
+			int y = -1;
+			if (priceIndicatorVolumeOrLevel2 == null) {
+				string msg = "PANEL_MUST_NOT_BE_NULL";
+				Assembler.PopupException(msg);
+				return new Point(x, y);
+			}
+			//v1 HARDCODE but still valid
+			if (priceIndicatorVolumeOrLevel2.ThisPanelIsPricePanel) {
+				x = 0;
+				if (priceIndicatorVolumeOrLevel2.ParentMultiSplitIamLast) {
+					x = this.multiSplitContainerColumns.LocationOfInnerMultisplitContainer(this.multiSplitContainerRows).X;
+				}
+				y = priceIndicatorVolumeOrLevel2.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
+				return new Point(x, y);
+			}
+			//v2 NOT_TESTED_SINCE_NOT_USED_YET__HOPING_RECURSIVE_ADDING_CONTROLS_TO_EACH_OTHER_ARE_CAUGHT_BY_WINFORMS
+			MultiSplitContainer whichMultisplitter = priceIndicatorVolumeOrLevel2.ParentMultiSplitContainerNullUnsafe;
+			if (whichMultisplitter == null) {
+				string msg = "PANEL_MUST_BE_ADDED_IN_VERTICAL/HORIZONTAL_MULTISPLIT_CONTAINER priceIndicatorVolumeOrLevel2[" + priceIndicatorVolumeOrLevel2.ToString() + "].ParentMultiSplitContainerNullUnsafe = null";
+				Assembler.PopupException(msg);
+				return new Point(x, y);
+			}
+			if (whichMultisplitter == this.multiSplitContainerColumns) {	//contains only two columns: PanelLevel2 and horizontal MultiSplitContainer
+				if (priceIndicatorVolumeOrLevel2 == this.panelLevel2) {
+					return this.panelLevel2.ParentMultiSplitMyLocationAmongSiblingsPanels;
+				} else {
+					string msg = "YOU_CHANGED_THE_LAYOUT__THERE_MUST_BE_ONLY_TWO_COLUMNS__ONE=LEVEL2,ANOTHER=MULTISPLITTER_WITH_PRICE_VOLUME_INDICATORS";
+					Assembler.PopupException(msg);
+				}
+				return new Point(x, y);
+			}
+			if (whichMultisplitter == this.multiSplitContainerRows) {	//contains 2 or more rows: PanelPrice, PanelVolume and all PanelIndicator
+				x = this.multiSplitContainerColumns.LocationOfInnerMultisplitContainer(this.multiSplitContainerRows).X;
+				y = priceIndicatorVolumeOrLevel2.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
+				return new Point(x, y);
+			}
+
+			string msg2 = "PANEL_ADDED_IN_UNKNOWN_MULTISPLIT_CONTAINER__NOT_VERTICAL/HORIZONTAL_I_KNOW_OF"
+				+ " priceIndicatorVolumeOrLevel2[" + priceIndicatorVolumeOrLevel2.ToString() + "].ParentMultiSplitContainerNullUnsafe[" + whichMultisplitter.ToString() + "]";
+			Assembler.PopupException(msg2);
+			return new Point(x, y);
+		}
+
 		public void TooltipPriceShowAlone(Bar barToPopulate, Rectangle barWithShadowsRectangle) {
 			if (this.ChartSettings.TooltipPriceShow == false) return;
 			// MouseX will never go over tooltip => PanelNamedFolding.OnMouseLeave() never invoked
 			int awayFromBarXpx = this.ChartSettings.TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave;
 			int x = barWithShadowsRectangle.Left - this.tooltipPrice.Width - awayFromBarXpx;
 			if (x < 0) x = barWithShadowsRectangle.Right + awayFromBarXpx;
+
+			Point panelPriceOffset = this.PanelPriceLocationInChartControl;
+			int multiSplitterHorizontalpanelOffset = panelPriceOffset.X;
+			if (multiSplitterHorizontalpanelOffset == -1) {
+				string msg = "DID_YOU_REMOVE_LEVEL2_AND_VERTICAL_MULTISPLITTER??";
+				Assembler.PopupException(msg, null, false);
+			}
+			x += multiSplitterHorizontalpanelOffset;
+
 			int y = barWithShadowsRectangle.Top - this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
 			if (y < 0) y = 0;
-			if (y + this.tooltipPrice.Height > this.HeightMinusBottomHscrollbar)
+
+			if (y + this.tooltipPrice.Height > this.HeightMinusBottomHscrollbar) {
 				y = this.HeightMinusBottomHscrollbar - this.tooltipPrice.Height - this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
+			}
+			y += panelPriceOffset.Y;
+
 			this.tooltipPriceShowXY(barToPopulate, x, y);
 		}
 		public void TooltipPositionAndPriceShow(AlertArrow alertArrow, Bar barToPopulate, Rectangle rectangleYarrowXbar) {
@@ -356,7 +464,7 @@ namespace Sq1.Charting {
 
 			if (alertArrow.ArrowIsForPositionEntry) {
 				xPosition	= rectangleYarrowXbar.Left - this.tooltipPosition.Width - awayFromBarXpx;
-				xPrice		= rectangleYarrowXbar.Left - this.tooltipPrice.Width - awayFromBarXpx;
+				xPrice		= rectangleYarrowXbar.Left - this.tooltipPrice	 .Width - awayFromBarXpx;
 // LET_POSITION_TOOLTIP_GO_BEHIND_LEFT_EDGE_AND_PARTIALLY_OVERLAP_I_NEED_POSITION_LINE_TO_BE_FULLY_VISIBLE_TO_HIGHLIGHT
 //				if (xPrice < 0)	xPrice = rectangleYarrowXbar.Right + awayFromBarXpx;
 //				if (xPosition < 0) {	// positionTooltip is wider, dont squeeze priceTooltip but take the same side as the big brother
@@ -367,13 +475,25 @@ namespace Sq1.Charting {
 				xPosition	= rectangleYarrowXbar.Right + awayFromBarXpx;
 				xPrice		= xPosition;
 			}
+			//v1 xPrice += this.PanelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.X;
+
+			Point panelPriceOffset = this.PanelPriceLocationInChartControl;
+			int multiSplitterHorizontalpanelOffset = panelPriceOffset.X;
+			if (multiSplitterHorizontalpanelOffset == -1) {
+				string msg = "DID_YOU_REMOVE_LEVEL2_AND_VERTICAL_MULTISPLITTER??";
+				Assembler.PopupException(msg, null, false);
+			}
+			xPrice		+= multiSplitterHorizontalpanelOffset;
+			xPosition	+= multiSplitterHorizontalpanelOffset;
 
 			int yPrice = rectangleYarrowXbar.Top - twoTooltipsCombinedHeight / 2;
 			if (yPrice <= 0) yPrice = this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
+			yPrice += this.PanelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
 			if (yPrice + twoTooltipsCombinedHeight > this.HeightMinusBottomHscrollbar) {
 				yPrice = this.HeightMinusBottomHscrollbar - twoTooltipsCombinedHeight - this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
 				if (yPrice <= 0) yPrice = this.ChartSettings.TooltipBordersMarginToKeepBordersVisible;
 			}
+
 			int yPosition = yPrice + this.tooltipPrice.Height + twoTooltipsVerticalDistance;
 			
 			this.tooltipPriceShowXY(barToPopulate, xPrice, yPrice);
@@ -444,10 +564,17 @@ namespace Sq1.Charting {
 			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
 			//v3
-			//MULTISPLITTER_IS_NOT_SPAMMED_BY_ONRESIZE if (Assembler.InstanceInitialized.SplitterEventsAreAllowedAssumingInitialInnerDockResizingFinished == false) return;
+			//MULTISPLITTER_IS_SPAMMED_BY_ONRESIZE_BUT_IT_WORKS_FOR_HORIZONTAL_AND_IT_DOESNT_SET_X_FOR_LEVEL2_IF_ON_RIGHTMOST_COLUMN
+			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) {
+				//Debugger.Break();
+				//return;
+			}
 			this.multiSplitContainerRows.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterRowsPropertiesByPanelName);
 			this.multiSplitContainerColumns.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName);
 		}
+
+		public bool TooltipPriceVisible { get { return this.tooltipPrice.Visible; } }
+
 		public AlertArrow TooltipPositionShownForAlertArrow { get {
 				AlertArrow ret = null;
 				if (this.tooltipPosition.Visible == false) return ret;

@@ -48,7 +48,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 		void populateMarketNamesDataGrid() {
 			this.ignoreSelectionEventDuringPopulate = true;
 			this.dgMarketName.Rows.Clear();
-			foreach (MarketInfo marketInfo in this.marketInfoRepository.Entity.Values) {
+			foreach (MarketInfo marketInfo in this.marketInfoRepository.MarketsByName.Values) {
 				int index = this.dgMarketName.Rows.Add(new object[] {
 					marketInfo.Name,
 					this.dataSourceRepository.UsedTimes(marketInfo)

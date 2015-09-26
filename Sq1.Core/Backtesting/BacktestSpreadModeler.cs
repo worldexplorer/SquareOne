@@ -106,7 +106,7 @@ namespace Sq1.Core.Backtesting {
 				if (spreadAligned == 0) {
 					//string msg = "you can't use RoundDown here";
 					//Debugger.Break();
-					spreadAligned = symbolInfo.PriceStep;
+					spreadAligned = symbolInfo.PriceStepFromDecimal;
 				}
 				if (quote.SpreadAligned < spreadAligned) {
 					switch(upOrDown) {

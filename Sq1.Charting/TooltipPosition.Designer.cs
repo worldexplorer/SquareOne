@@ -327,7 +327,6 @@ namespace Sq1.Charting {
 			this.ForeColor = System.Drawing.SystemColors.InfoText;
 			this.Name = "TooltipPosition";
 			this.Size = new System.Drawing.Size(139, 215);
-			this.MouseMove += new MouseEventHandler(TooltipPosition_MouseMove);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 		}

@@ -24,6 +24,7 @@ namespace Sq1.Charting {
 			// 2) paints Right and Bottom gutter foregrounds;
 			base.PaintWholeSurfaceBarsNotEmpty(g);
 			base.ForeColor = base.ChartControl.ChartSettings.VolumeColorBarDown;
+			base.BackColor = base.ChartControl.ChartSettings.VolumeRightGutterColorForeground;
 			this.renderBarsVolume(g);
 		}
 //		protected override void OnPaintBackground(PaintEventArgs pe) {
@@ -34,7 +35,7 @@ namespace Sq1.Charting {
 		public override double VisibleMinDoubleMaxValueUnsafe { get { return this.VisibleVolumeMinNew; } }
 		public override double VisibleMaxDoubleMinValueUnsafe { get { return this.VisibleVolumeMaxNew; } }
 		#else
-		public override double VisibleMinDoubleMaxValueUnsafe { get { return this.VisibleVolumeMinOld; } }
+		public override double VisibleMinDoubleMaxValueUnsafe { get { return 0; /* AVOIDING_LOWERING_BARS return this.VisibleVolumeMinOld; */ } }
 		public override double VisibleMaxDoubleMinValueUnsafe { get { return this.VisibleVolumeMaxOld; } }
 		#endif
 		
@@ -160,7 +161,6 @@ namespace Sq1.Charting {
 			Bar bar = base.ChartControl.Bars[barIndex];
 			return bar.Volume;
 		}
-		public override int Decimals { get { return (base.ChartControl.Bars.SymbolInfo != null) ? base.ChartControl.Bars.SymbolInfo.DecimalsVolume : 0; } }
 		public override int ValueIndexLastAvailableMinusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }
 	}
 }

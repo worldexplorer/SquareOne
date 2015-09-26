@@ -36,7 +36,7 @@ namespace Sq1.Widgets.CsvImporter {
 			this.DataSourceRepository = dataSourceRepository;
 			bool createdNewFile = this.dataSnapshotSerializer.Initialize(this.DataSourceRepository.RootPath,
 												   "Sq1.Widgets.CsvImporter.CsvImporterDataSnapshot.json", "Workspaces",
-												   Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName, true, true);
+												   Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded, true, true);
 
 			//this.dataSnapshot = new CsvImporterDataSnapshot();
 			this.dataSnapshot = this.dataSnapshotSerializer.Deserialize();

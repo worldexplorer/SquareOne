@@ -2,7 +2,7 @@
 using System.Threading;
 
 namespace Sq1.Core.Execution {
-	public partial class ExecutionDataSnapshot {
+	public partial class ExecutionDataSnapshot : IDisposable {
 			ManualResetEvent	ScriptRunningOnBarStaticLast					;//	{ get; private set; }
 			ManualResetEvent	ScriptRunningOnNewQuote							;//	{ get; private set; }
 			ManualResetEvent	ScriptRunningOnAlertFilled						;//	{ get; private set; }
@@ -16,84 +16,84 @@ namespace Sq1.Core.Execution {
 			ManualResetEvent	ScriptRunningOnStrategyEmittingOrdersTurnedOn	;//	{ get; private set; }
 			ManualResetEvent	ScriptRunningOnStrategyEmittingOrdersTurnedOff	;//	{ get; private set; }
 
-		public	bool	AnyScriptOverridenMethodIsRunningNow { get {
-			bool ret =	IsScriptRunningOnBarStaticLast;
-			ret		|=	IsScriptRunningOnNewQuote;
-			ret		|=	IsScriptRunningOnAlertFilled;
-			ret		|=	IsScriptRunningOnAlertFilled;
-			ret		|=	IsScriptRunningOnAlertNotSubmitted;
-			ret		|=	IsScriptRunningOnPositionOpened;
-			ret		|=	IsScriptRunningOnPositionOpenedPrototypeSlTpPlaced;
-			ret		|=	IsScriptRunningOnPositionClosed;
-			ret		|=	IsScriptRunningOnStreamingTriggeringScriptTurnedOn;
-			ret		|=	IsScriptRunningOnStreamingTriggeringScriptTurnedOff;
-			ret		|=	IsScriptRunningOnStrategyEmittingOrdersTurnedOn;
-			ret		|=	IsScriptRunningOnStrategyEmittingOrdersTurnedOff;
+		public	bool	AnyScriptOverridenMethodIsRunningNowBlockingRead { get {
+			bool ret =	IsScriptRunningOnBarStaticLastNonBlockingRead;
+			ret		|=	IsScriptRunningOnNewQuoteNonBlockingRead;
+			ret		|=	IsScriptRunningOnAlertFilledNonBlockingRead;
+			ret		|=	IsScriptRunningOnAlertKilledNonBlockingRead;
+			ret		|=	IsScriptRunningOnAlertNotSubmittedNonBlockingRead;
+			ret		|=	IsScriptRunningOnPositionOpenedNonBlockingRead;
+			ret		|=	IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead;
+			ret		|=	IsScriptRunningOnPositionClosedNonBlockingRead;
+			ret		|=	IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead;
+			ret		|=	IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead;
+			ret		|=	IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead;
+			ret		|=	IsScriptRunningOnStrategyEmittingOrdersTurnedOffNonBlockingRead;
 			return ret;
 		} }
 
-		public bool IsScriptRunningOnBarStaticLast						{
+		public bool IsScriptRunningOnBarStaticLastNonBlockingRead						{
 			get { return this.ScriptRunningOnBarStaticLast.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnBarStaticLast.Set();
 								else this.ScriptRunningOnBarStaticLast.Reset(); } }
-		public bool IsScriptRunningOnNewQuote							{
+		public bool IsScriptRunningOnNewQuoteNonBlockingRead							{
 			get { return this.ScriptRunningOnNewQuote.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnNewQuote.Set();
 								else this.ScriptRunningOnNewQuote.Reset(); } }
-		public bool IsScriptRunningOnAlertFilled						{
+		public bool IsScriptRunningOnAlertFilledNonBlockingRead						{
 			get { return this.ScriptRunningOnAlertFilled.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnAlertFilled.Set();
 								else this.ScriptRunningOnAlertFilled.Reset(); } }
-		public bool IsScriptRunningOnAlertKilled						{
+		public bool IsScriptRunningOnAlertKilledNonBlockingRead						{
 			get { return this.ScriptRunningOnAlertKilled.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnAlertKilled.Set();
 								else this.ScriptRunningOnAlertKilled.Reset(); } }
-		public bool IsScriptRunningOnAlertNotSubmitted					{
+		public bool IsScriptRunningOnAlertNotSubmittedNonBlockingRead					{
 			get { return this.ScriptRunningOnAlertNotSubmitted.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnAlertNotSubmitted.Set();
 								else this.ScriptRunningOnAlertNotSubmitted.Reset(); } }
-		public bool IsScriptRunningOnPositionOpened						{
+		public bool IsScriptRunningOnPositionOpenedNonBlockingRead						{
 			get { return this.ScriptRunningOnPositionOpened.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnPositionOpened.Set();
 								else this.ScriptRunningOnPositionOpened.Reset(); } }
-		public bool IsScriptRunningOnPositionOpenedPrototypeSlTpPlaced	{
+		public bool IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead	{
 			get { return this.ScriptRunningOnPositionOpenedPrototypeSlTpPlaced.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnPositionOpenedPrototypeSlTpPlaced.Set();
 								else this.ScriptRunningOnPositionOpenedPrototypeSlTpPlaced.Reset(); } }
-		public bool IsScriptRunningOnPositionClosed						{
+		public bool IsScriptRunningOnPositionClosedNonBlockingRead						{
 			get { return this.ScriptRunningOnPositionClosed.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnPositionClosed.Set();
 								else this.ScriptRunningOnPositionClosed.Reset(); } }
-		public bool IsScriptRunningOnStreamingTriggeringScriptTurnedOn	{
+		public bool IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead	{
 			get { return this.ScriptRunningOnStreamingTriggeringScriptTurnedOn.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnStreamingTriggeringScriptTurnedOn.Set();
 								else this.ScriptRunningOnStreamingTriggeringScriptTurnedOn.Reset(); } }
-		public bool IsScriptRunningOnStreamingTriggeringScriptTurnedOff	{
+		public bool IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead	{
 			get { return this.ScriptRunningOnStreamingTriggeringScriptTurnedOff.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnStreamingTriggeringScriptTurnedOff.Set();
 								else this.ScriptRunningOnStreamingTriggeringScriptTurnedOff.Reset(); } }
-		public bool IsScriptRunningOnStrategyEmittingOrdersTurnedOn		{
+		public bool IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead		{
 			get { return this.ScriptRunningOnStrategyEmittingOrdersTurnedOn.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnStrategyEmittingOrdersTurnedOn.Set();
 								else this.ScriptRunningOnStrategyEmittingOrdersTurnedOn.Reset(); } }
-		public bool IsScriptRunningOnStrategyEmittingOrdersTurnedOff {
+		public bool IsScriptRunningOnStrategyEmittingOrdersTurnedOffNonBlockingRead {
 			get { return this.ScriptRunningOnStrategyEmittingOrdersTurnedOff.WaitOne(0); }
 			set { if (value == true) this.ScriptRunningOnStrategyEmittingOrdersTurnedOff.Set();
 								else this.ScriptRunningOnStrategyEmittingOrdersTurnedOff.Reset(); } }
 
-		public string WhatScriptOverridenMethodsAreRunningNow { get {
+				string whatScriptOverridenMethodsAreRunningNow { get {
 			string ret = "";
-			if (this.IsScriptRunningOnBarStaticLast)						ret += "OnBarStaticLast,";
-			if (this.IsScriptRunningOnNewQuote)								ret += "OnNewQuote,";
-			if (this.IsScriptRunningOnAlertFilled)							ret += "OnAlertFilled,";
-			if (this.IsScriptRunningOnAlertNotSubmitted)					ret += "OnAlertNotSubmitted,";
-			if (this.IsScriptRunningOnPositionOpened)						ret += "OnPositionOpened,";
-			if (this.IsScriptRunningOnPositionOpenedPrototypeSlTpPlaced)	ret += "OnPositionOpenedPrototypeSlTpPlaced,";
-			if (this.IsScriptRunningOnPositionClosed)						ret += "PositionClosed,";
-			if (this.IsScriptRunningOnStreamingTriggeringScriptTurnedOn)	ret += "OnStreamingTriggeringScriptTurnedOn,";
-			if (this.IsScriptRunningOnStreamingTriggeringScriptTurnedOff)	ret += "OnStreamingTriggeringScriptTurnedOff,";
-			if (this.IsScriptRunningOnStrategyEmittingOrdersTurnedOn)		ret += "OnStrategyEmittingOrdersTurnedOn,";
-			if (this.IsScriptRunningOnStrategyEmittingOrdersTurnedOff)		ret += "OnStrategyEmittingOrdersTurnedOff,";
+			if (this.IsScriptRunningOnBarStaticLastNonBlockingRead)							ret += "OnBarStaticLast,";
+			if (this.IsScriptRunningOnNewQuoteNonBlockingRead)								ret += "OnNewQuote,";
+			if (this.IsScriptRunningOnAlertFilledNonBlockingRead)							ret += "OnAlertFilled,";
+			if (this.IsScriptRunningOnAlertNotSubmittedNonBlockingRead)						ret += "OnAlertNotSubmitted,";
+			if (this.IsScriptRunningOnPositionOpenedNonBlockingRead)						ret += "OnPositionOpened,";
+			if (this.IsScriptRunningOnPositionOpenedPrototypeSlTpPlacedNonBlockingRead)		ret += "OnPositionOpenedPrototypeSlTpPlaced,";
+			if (this.IsScriptRunningOnPositionClosedNonBlockingRead)						ret += "PositionClosed,";
+			if (this.IsScriptRunningOnStreamingTriggeringScriptTurnedOnNonBlockingRead)		ret += "OnStreamingTriggeringScriptTurnedOn,";
+			if (this.IsScriptRunningOnStreamingTriggeringScriptTurnedOffNonBlockingRead)	ret += "OnStreamingTriggeringScriptTurnedOff,";
+			if (this.IsScriptRunningOnStrategyEmittingOrdersTurnedOnNonBlockingRead)		ret += "OnStrategyEmittingOrdersTurnedOn,";
+			if (this.IsScriptRunningOnStrategyEmittingOrdersTurnedOffNonBlockingRead)		ret += "OnStrategyEmittingOrdersTurnedOff,";
 			ret = ret.TrimEnd(",".ToCharArray());
 			return ret;
 		} }
@@ -112,10 +112,66 @@ namespace Sq1.Core.Execution {
 			ScriptRunningOnStrategyEmittingOrdersTurnedOn		= new ManualResetEvent(false);
 			ScriptRunningOnStrategyEmittingOrdersTurnedOff		= new ManualResetEvent(false);
 		}
-		public void PopupIfRunning(string msig) {
-			if (this.AnyScriptOverridenMethodIsRunningNow == false) return;
-			string msg = this.WhatScriptOverridenMethodsAreRunningNow;
-			Assembler.PopupException(msg + msig, null, false);
+		public void BarkIfAnyScriptOverrideIsRunning(string msig) {
+			//WHATS_THE_POINT_THEN return;	//EXPLAIN_BETTER  POTENTIAL_RACE_CONDITIONs are all followed by lock(){} upstack, right?
+
+			if (this.AnyScriptOverridenMethodIsRunningNowBlockingRead == false) return;
+			if (this.executor.Backtester.IsBacktestingNoLivesimNow) {
+				string msg1 = "SKIPPING_CHECKS_FOR_BACKTESTER_SINCE_ITS_SINGLE_THREADED";
+				return;
+			}
+			string msg = this.whatScriptOverridenMethodsAreRunningNow;
+			if (string.IsNullOrEmpty(msg)) {
+				string funny = "NO_DANGER__SCRIPT_OVERRIDE_ALREADY_TERMINATED__WHILE_YOU_WERE_CONCATENATING_YOUR_SLOW_STRINGS__JAJA ";
+				Assembler.PopupException(funny + msig, null, false);
+				return;
+			}
+			// I want to provide script overridden methods collections-not-modified guarantee;
+			// collision might happen when 2 event happen simultaneously:
+			// 1) Streaming delivered a new quote => Script.OnNewQuote invokees Buy/Sell which modifies AlertsPending
+			// 2) Broker delivered an OrderFill => Core adds a PositionsOpenedNow and invokes Script.OnAlertFilled
+
+			// current implementation is rather verbose and "preventive" for easy lifecycle debugging, than sober and consise:
+			// 1) Core, before modifying AlertsPending / PositionsOpenNow (as a result of BrokerAdapter.AlertFilledNotifyCore)
+			// 2) checks if any Script's *Callback is executed now (during which I want to avoid CollectionModified Exception)
+			// 3) if there Script's override was indeed running - adds a detailed message into ExceptionForm
+			// 4) and locks on ConcurrentList.LockObject for the ConcurrentList it's trying to modify
+
+			// deadlocks still have chance to evolve:
+			// 1) Broker=>OrderFilledCallback locks on AlertsPending, Streaming=>Strategy.OnNewQuote=>Buy has queued on AlertPending, while Performance in GUI reads AlertsPending.Count and throws
+			// 2) all three require Core's smart decision simultaneously: script.OnPrototypeSLfilled, streaming.OnNewQuote, broker.OnAnotherAlertFilled
+			// 3) strategy accessing two symbols is doomed (multi-strike options strategies tam biem)
+			Assembler.PopupException("POTENTIAL_RACE_CONDITION " + msg + msig, null, false);
 		}
+
+		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.ScriptRunningOnBarStaticLast.Dispose();
+			this.ScriptRunningOnNewQuote							.Dispose();
+			this.ScriptRunningOnAlertFilled							.Dispose();
+			this.ScriptRunningOnAlertKilled							.Dispose();
+			this.ScriptRunningOnAlertNotSubmitted					.Dispose();
+			this.ScriptRunningOnPositionOpened						.Dispose();
+			this.ScriptRunningOnPositionOpenedPrototypeSlTpPlaced	.Dispose();
+			this.ScriptRunningOnPositionClosed						.Dispose();
+			this.ScriptRunningOnStreamingTriggeringScriptTurnedOn	.Dispose();
+			this.ScriptRunningOnStreamingTriggeringScriptTurnedOff	.Dispose();
+			this.ScriptRunningOnStrategyEmittingOrdersTurnedOn		.Dispose();
+			this.ScriptRunningOnStrategyEmittingOrdersTurnedOff		.Dispose();
+
+			this.AlertsPending										.Dispose();
+			this.AlertsMaster										.Dispose();
+			this.AlertsNewAfterExec									.Dispose();
+			this.PositionsMaster									.Dispose();
+			this.PositionsOpenNow									.Dispose();
+			this.PositionsOpenedAfterExec							.Dispose();
+			this.PositionsClosedAfterExec							.Dispose();
+			this.IsDisposed = true;
+		}
+		public bool IsDisposed { get; private set; }
 	}
 }

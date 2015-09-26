@@ -14,21 +14,21 @@ namespace Sq1.Gui.Singletons {
 		public void Initialize(Strategy strategy) {
 			try {
 				base.SuspendLayout();
-				this.Size = new Size(this.Size.Width, this.SlidersAutoGrowControl.Height);
+				this.Size = new Size(this.Size.Width, this.SteppingSlidersAutoGrowControl.Height);
 				bool showEmptyStubWhenStrategyNullOrNoParameters = true;
 				if (strategy != null && strategy.Script != null) {
-					int parametersToShow = strategy.ScriptContextCurrent.IndicatorParametersByName.Values.Count + strategy.Script.ScriptParametersById.Count; 
+					int parametersToShow = strategy.ScriptContextCurrent.IndicatorParametersByName.Values.Count + strategy.Script.ScriptParametersById_ReflectedCached.Count; 
 					if (parametersToShow > 0) showEmptyStubWhenStrategyNullOrNoParameters = false;
 				}
 				if (showEmptyStubWhenStrategyNullOrNoParameters == false) {
-					this.SlidersAutoGrowControl.Show();
+					this.SteppingSlidersAutoGrowControl.Show();
 					this.pnlNoParametersInScript.Hide();
-					this.SlidersAutoGrowControl.Initialize(strategy);
+					this.SteppingSlidersAutoGrowControl.Initialize(strategy);
 					this.PopulateFormTitle(strategy);
 					return;
 				}
 				
-				this.SlidersAutoGrowControl.Hide();
+				this.SteppingSlidersAutoGrowControl.Hide();
 				this.pnlNoParametersInScript.Show();
 				if (strategy == null) {
 					string scriptName = "CHART_NO_STRATEGY";

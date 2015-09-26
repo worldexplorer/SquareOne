@@ -23,11 +23,11 @@ namespace Sq1.Core.StrategyBase {
 			//bool a = this.executor.Backtester.IsBacktestingNow;
 
 			Position posWithAlert = executor.BuyOrShortAlertCreateRegister (
-				executor.Bars.BarStreaming, proto.PriceEntry,
+				executor.Bars.BarStreamingNullUnsafe, proto.PriceEntry,
 				proto.SignalEntry + "protoEntry@" + proto.PriceEntry,
 				MarketConverter.EntryDirectionFromLongShort(proto.LongShort),
 				MarketConverter.EntryMarketLimitStopFromDirection(
-					executor.Bars.BarStreamingCloneReadonly.Close, proto.PriceEntry, proto.LongShort)
+					executor.Bars.BarStreamingNullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort)
 				);
 			if (posWithAlert == null) {
 				string msg = "man I don't understand this null; out-of-bar limit should still leave a pending Alert.PositionAffected";
@@ -48,8 +48,9 @@ namespace Sq1.Core.StrategyBase {
 			posWithAlert.Prototype = proto;
 		}
 
-		private bool checkPrototypeAlreadyPlaced(PositionPrototype proto) {
-			foreach (Alert alert in executor.ExecutionDataSnapshot.AlertsPending.InnerList) {
+		bool checkPrototypeAlreadyPlaced(PositionPrototype proto) {
+			List<Alert> pendingSafe = this.executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, " //checkPrototypeAlreadyPlaced(WAIT)");
+			foreach (Alert alert in pendingSafe) {
 				Position pos = alert.PositionAffected;
 				if (pos == null) continue;
 				if (pos.Prototype == null) continue;
@@ -57,9 +58,10 @@ namespace Sq1.Core.StrategyBase {
 			}
 			return false;
 		}
-		private bool checkPendingEntryPositionAlreadyPlaced(Position entryPosition) {
+		bool checkPendingEntryPositionAlreadyPlaced(Position entryPosition) {
 			if (entryPosition.EntryAlert == null) return false;
-			foreach (Alert alert in executor.ExecutionDataSnapshot.AlertsPending.InnerList) {
+			List<Alert> pendingSafe = this.executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, " //checkPendingEntryPositionAlreadyPlaced(WAIT)");
+			foreach (Alert alert in pendingSafe) {
 				Position pos = alert.PositionAffected;
 				if (pos == null) continue;
 				if (pos.EntryAlert == null) continue;
@@ -111,7 +113,7 @@ namespace Sq1.Core.StrategyBase {
 				proto.PriceEntryAbsorb(position.EntryFilledPrice);
 			}
 			Alert alertStopLoss = executor.SellOrCoverAlertCreateDontRegisterInNew (
-				executor.Bars.BarStreaming,
+				executor.Bars.BarStreamingNullUnsafe,
 				position, proto.PriceStopLoss,
 				proto.SignalStopLoss + "protoStopLossExit:" + proto.StopLossActivationNegativeOffset
 					+ "@" + proto.StopLossNegativeOffset + " for " + position.EntrySignal,
@@ -148,7 +150,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			Alert alertTakeProfit = executor.SellOrCoverAlertCreateDontRegisterInNew (
-				executor.Bars.BarStreaming,
+				executor.Bars.BarStreamingNullUnsafe,
 				position, proto.PriceTakeProfit,
 				proto.SignalTakeProfit + "protoTakeProfitExit:" + proto.TakeProfitPositiveOffset
 					+ "@" + proto.PriceTakeProfit + " for " + position.EntrySignal,
@@ -376,7 +378,7 @@ namespace Sq1.Core.StrategyBase {
 			double priceBestBidAsk = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.BidOrAskFor(proto.Symbol, proto.LongShort);
 			bool willBeExecutedImmediately = false;
 			MarketLimitStop planningEntryUsing = MarketConverter.EntryMarketLimitStopFromDirection(
-				executor.Bars.BarStreamingCloneReadonly.Close, proto.PriceEntry, proto.LongShort);
+				executor.Bars.BarStreamingNullUnsafeCloneReadonly.Close, proto.PriceEntry, proto.LongShort);
 
 			string msg = "";
 			Direction dir = MarketConverter.EntryDirectionFromLongShort(proto.LongShort);
@@ -465,10 +467,12 @@ namespace Sq1.Core.StrategyBase {
 							break;
 					}
 					break;
-				#endregion
+					#endregion
 				case MarketLimitStop.Stop:
 					string ident2 = "PureStopLoss{old[" + proto.PriceStopLoss + "]:new[" + newStopLossPrice + "]}";
-					switch (proto.StopLossAlertForAnnihilation.Direction) {
+					Direction slDirectionAssumedOrActualIfFilled = proto.LongShort == PositionLongShort.Long ? Direction.Sell : Direction.Cover;
+					if (proto.StopLossAlertForAnnihilation != null) slDirectionAssumedOrActualIfFilled = proto.StopLossAlertForAnnihilation.Direction;
+					switch (slDirectionAssumedOrActualIfFilled) {
 						case Direction.Sell:
 							double ask = executor.DataSource.StreamingAdapter.StreamingDataSnapshot.BestAskGetForMarketOrder(proto.Symbol);
 							if (newStopLossPrice > ask) {

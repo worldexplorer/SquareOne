@@ -4,31 +4,64 @@ using System.Collections.Generic;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Execution {
-	public class AlertList : ConcurrentList<Alert> {
-		public Dictionary<int, List<Alert>>	ByBarPlaced		{ get; protected set; }
+	public class AlertList : ConcurrentListWD<Alert>, IDisposable {
+		protected Dictionary<int, List<Alert>>	ByBarPlaced		{ get; private set; }
 		
-		public Dictionary<int, List<Alert>>	ByBarPlacedSafeCopy { get { lock (base.LockObject) {
-			Dictionary<int, List<Alert>> ret = new Dictionary<int, List<Alert>>();
-			foreach (int bar in this.ByBarPlaced.Keys) ret.Add(bar, new List<Alert>(this.ByBarPlaced[bar]));
+		public Dictionary<int, AlertList>	ByBarPlacedSafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			Dictionary<int, AlertList> ret = new Dictionary<int, AlertList>();
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				foreach (int bar in this.ByBarPlaced.Keys) ret.Add(bar, new AlertList("ByBarPlacedSafeCopy", null, this.ByBarPlaced[bar]));
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
 			return ret;
-		} } }
+		}
+		public List<Alert> SafeCopy(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			return base.SafeCopy(owner, lockPurpose, waitMillis);
+		}
+		public AlertList(string reasonToExist, ExecutionDataSnapshot snap = null, List<Alert> copyFrom = null) : this(reasonToExist, snap) {
+			if (copyFrom == null) return;
+			base.InnerList.AddRange(copyFrom);
+		}
 		public AlertList(string reasonToExist, ExecutionDataSnapshot snap = null) : base(reasonToExist, snap) {
 			ByBarPlaced	= new Dictionary<int, List<Alert>>();
 		}
-		public void Clear() { lock(base.LockObject) {
-			base.Snap.PopupIfRunning(" //" + this.ToString() + ".Clear()");
-			base					.ClearInnerList();
-			this.ByBarPlacedSafeCopy.Clear();
-		} }
-		public void AddRange(List<Alert> alerts) {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".AddRange(" + alerts.Count + ")");
-			foreach (Alert alert in alerts) this.AddNoDupe(alert);
+		public void Clear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + base.ReasonToExist + ".Clear()";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				base			.Clear(owner, lockPurpose, waitMillis);
+				this.ByBarPlaced.Clear();
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
 		}
-		public ByBarDumpStatus AddNoDupe(Alert alert, bool duplicateThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".AddNoDupe(" + alert.ToString() + ")");
-			lock (base.LockObject) {
+		public void DisposeWaitHandlesAndClear(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + base.ReasonToExist + ".DisposeWaitHandlesAndClear()";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				foreach (Alert alert in base.InnerList) alert.Dispose();
+				this.Clear(owner, lockPurpose, waitMillis);
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+		}
+		public void AddRange(List<Alert> alerts, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+			lockPurpose += " //" + base.ReasonToExist + ".AddRange(" + alerts.Count + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				foreach (Alert alert in alerts) this.AddNoDupe(alert, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+		}
+		public ByBarDumpStatus AddNoDupe(Alert alert, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool duplicateThrowsAnError = true) {
+			lockPurpose += " //" + base.ReasonToExist + ".AddNoDupe(" + alert.ToString() + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
 				bool newBarAddedInHistory = false;
-				bool added = base.AddToInnerList(alert, duplicateThrowsAnError);
+				bool added = base.Add(alert, owner, lockPurpose, waitMillis, duplicateThrowsAnError);
 				if (added == false) return ByBarDumpStatus.BarAlreadyContainedTheAlertToAdd;
 
 				//int barIndexAlertStillPending = alert.Bars.Count - 1;
@@ -45,12 +78,15 @@ namespace Sq1.Core.Execution {
 				slot.Add(alert);
 				return (newBarAddedInHistory) ? ByBarDumpStatus.OneNewAlertAddedForNewBarInHistory
 					: ByBarDumpStatus.SequentialAlertAddedForExistingBarInHistory;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
 		}
-		public bool Remove(Alert alert, bool absenseThrowsAnError = true) {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".Remove(" + alert.ToString() + ")");
-			lock (base.LockObject) {
-				bool removed = base.RemoveFromInnerList(alert, absenseThrowsAnError);
+		public bool Remove(Alert alert, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool absenseThrowsAnError = true) {
+			lockPurpose += " //" + base.ReasonToExist + ".Remove(" + alert.ToString() + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				bool removed = base.Remove(alert, owner, lockPurpose, waitMillis, absenseThrowsAnError);
 				int barIndexPlaced = alert.PlacedBarIndex;
 				if (this.ByBarPlaced.ContainsKey(barIndexPlaced)) {
 					List<Alert> slot = this.ByBarPlaced[barIndexPlaced];
@@ -58,42 +94,46 @@ namespace Sq1.Core.Execution {
 					if (slot.Count == 0) this.ByBarPlaced.Remove(barIndexPlaced);
 				}
 				return removed;
-			}
-		}
-		public AlertList Clone() {
-			if (base.Snap != null) base.Snap.PopupIfRunning(" //" + this.ToString() + ".Clone()");
-			lock (base.LockObject) {
-				AlertList ret = new AlertList(this.ReasonToExist + "_CLONE", base.Snap);
-				//ret.AddRange(this.InnerList);
-				ret.InnerList = base.InnerListSafeCopy;
-				ret.ByBarPlaced = this.ByBarPlacedSafeCopy;
-				return ret;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
 		}
 
 
-		public bool ContainsIdentical(Alert maybeAlready, bool onlyUnfilled = true) { lock(base.LockObject) {
-			foreach (Alert each in this.InnerList) {
-				if (maybeAlready.IsIdenticalOrderlessPriceless(each) == false) continue;
-				if (onlyUnfilled && each.IsFilled) continue;
-				return true;
-			}
-			return false;
-		} }
-		public Alert FindSimilarNotSameIdenticalForOrdersPending(Alert alert) { lock(base.LockObject) {
-			Alert similar = null;
-			foreach (Alert alertSimilar in this.InnerList) {
-				if (alertSimilar == alert) continue;
-				if (alertSimilar.IsIdenticalForOrdersPending(alert)) {
-					if (similar != null) {
-						string msg = "there are 2 or more " + this.ReasonToExist + " Alerts similar to " + alert;
-						throw new Exception(msg);
-					}
-					similar = alertSimilar;
+		public bool ContainsIdentical(Alert maybeAlready, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT, bool onlyUnfilled = true) {
+			lockPurpose += " //" + base.ReasonToExist + ".ContainsIdentical(" + maybeAlready + ", " + onlyUnfilled + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				foreach (Alert each in base.InnerList) {
+					if (maybeAlready.IsIdenticalOrderlessPriceless(each) == false) continue;
+					if (onlyUnfilled && each.IsFilled) continue;
+					return true;
 				}
+				return false;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
-			return similar;
-		} }
+		}
+		public Alert FindSimilarNotSameIdenticalForOrdersPending(Alert alert, object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + base.ReasonToExist + ".FindSimilarNotSameIdenticalForOrdersPending(" + alert + ")";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				Alert similar = null;
+				foreach (Alert alertSimilar in base.InnerList) {
+					if (alertSimilar == alert) continue;
+					if (alertSimilar.IsIdenticalForOrdersPending(alert)) {
+						if (similar != null) {
+							string msg = "there are 2 or more " + this.ReasonToExist + " Alerts similar to " + alert;
+							throw new Exception(msg);
+						}
+						similar = alertSimilar;
+					}
+				}
+				return similar;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+		}
 		// UNCOMMENT_WHEN_NEEDED
 		//public Dictionary<int, List<Alert>> SafeCopyRangeForRenderer(int barIndexLeftVisible, int barIndexRightVisible) { lock(base.LockObject) {
 		//	//if (barIndexRightVisible == -1) barIndexRightVisible = this.executor.Bars.Count;
@@ -105,13 +145,47 @@ namespace Sq1.Core.Execution {
 		//	return ret;
 		//} }
 
-		public bool GuiHasTimeToRebuild { get {
-			bool guiHasTime = false;
-			foreach (Alert alert in this.InnerList) {
-				guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
-				if (guiHasTime) break;
+		public bool GuiHasTimeToRebuild(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + base.ReasonToExist + ".GuiHasTimeToRebuild";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				bool guiHasTime = false;
+				foreach (Alert alert in base.InnerList) {
+					guiHasTime = alert.GuiHasTimeRebuildReportersAndExecution;
+					if (guiHasTime) break;
+				}
+				return guiHasTime;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
 			}
-			return guiHasTime;
-		} }
+		}
+		public new AlertList Clone(object owner, string lockPurpose, int waitMillis = ConcurrentWatchdog.TIMEOUT_DEFAULT) {
+			lockPurpose += " //" + base.ReasonToExist + "Clone()";
+			try {
+				base.WaitAndLockFor(owner, lockPurpose, waitMillis);
+				AlertList ret		= new AlertList("CLONE_" + base.ReasonToExist, base.Snap, base.InnerList);
+				//v1 ret.ByBarPlaced		= this.ByBarPlacedSafeCopy(this, "Clone(WAIT)");
+				foreach (int bar in this.ByBarPlaced.Keys) {
+					ret.ByBarPlaced.Add(bar, new List<Alert>(this.ByBarPlaced[bar]));
+				}
+				return ret;
+			} finally {
+				base.UnLockFor(owner, lockPurpose);
+			}
+		}
+		public override string ToString() {
+			return base.ToString() + " ByBarPlaced.Bars[" + ByBarPlaced.Keys.Count + "]";
+		}
+
+		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.DisposeWaitHandlesAndClear(this, "EXTERNAL_DISPOSE()_CALL");
+			this.IsDisposed = true;
+		}
+		public bool IsDisposed { get; private set; }
 	}
 }

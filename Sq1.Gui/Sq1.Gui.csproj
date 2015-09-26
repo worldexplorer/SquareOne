@@ -17,7 +17,7 @@
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -34,6 +34,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <ApplicationIcon>Sq1-64.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -77,15 +78,32 @@
     <ApplicationIcon>Sq1-64.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormFactories\OptimizerFormFactory.cs" />
+    <Compile Include="FormFactories\SequencerFormFactory.cs" />
+    <Compile Include="Forms\CorrelatorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CorrelatorForm.Designer.cs">
+      <DependentUpon>CorrelatorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ChartForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,9 +123,13 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ChartFormDataSnapshot.cs" />
-    <Compile Include="Forms\ChartFormManager.cs" />
+    <Compile Include="Forms\ChartFormsManager.cs" />
     <Compile Include="Forms\ChartFormInterformEventsConsumer.cs" />
     <Compile Include="Forms\ChartFormStreamingConsumer.cs" />
+    <Compile Include="Forms\CorrelatorForm.EventConsumer.cs">
+      <DependentUpon>CorrelatorForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\LivesimForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,11 +140,11 @@
       <DependentUpon>LivesimForm.cs</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\OptimizerForm.cs">
+    <Compile Include="Forms\SequencerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\OptimizerForm.Designer.cs">
-      <DependentUpon>OptimizerForm.cs</DependentUpon>
+    <Compile Include="Forms\SequencerForm.Designer.cs">
+      <DependentUpon>SequencerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\ScriptEditorForm.cs">
       <SubType>Form</SubType>
@@ -164,6 +186,12 @@
     </Compile>
     <Compile Include="ReportersSupport\ReporterFormWrapper.Designer.cs">
       <DependentUpon>ReporterFormWrapper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Singletons\ChartSettingsEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\ChartSettingsEditorForm.Designer.cs">
+      <DependentUpon>ChartSettingsEditorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Singletons\CsvImporterForm.cs">
       <SubType>Form</SubType>
@@ -216,17 +244,26 @@
     <Compile Include="Singletons\SlidersForm.Designer.cs">
       <DependentUpon>SlidersForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Singletons\SymbolInfoEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Singletons\SymbolInfoEditorForm.Designer.cs">
+      <DependentUpon>SymbolInfoEditorForm.cs</DependentUpon>
+    </Compile>
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\CorrelatorForm.resx">
+      <DependentUpon>CorrelatorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ChartForm.resx">
       <DependentUpon>ChartForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\LivesimForm.resx">
       <DependentUpon>LivesimForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\OptimizerForm.resx">
-      <DependentUpon>OptimizerForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\SequencerForm.resx">
+      <DependentUpon>SequencerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ScriptEditorForm.resx">
       <DependentUpon>ScriptEditorForm.cs</DependentUpon>
@@ -241,6 +278,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ReportersSupport\ReporterFormWrapper.resx">
       <DependentUpon>ReporterFormWrapper.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\ChartSettingsEditorForm.resx">
+      <DependentUpon>ChartSettingsEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Singletons\CsvImporterForm.resx">
       <DependentUpon>CsvImporterForm.cs</DependentUpon>
@@ -259,6 +299,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Singletons\SlidersForm.resx">
       <DependentUpon>SlidersForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Singletons\SymbolInfoEditorForm.resx">
+      <DependentUpon>SymbolInfoEditorForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

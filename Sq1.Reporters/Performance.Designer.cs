@@ -21,29 +21,28 @@ namespace Sq1.Reporters {
 		void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.lvPerformance = new System.Windows.Forms.ListView();
-			this.colKpiTitles = new System.Windows.Forms.ColumnHeader();
-			this.collAllTrades = new System.Windows.Forms.ColumnHeader();
-			this.colLongTrades = new System.Windows.Forms.ColumnHeader();
-			this.colShortTrades = new System.Windows.Forms.ColumnHeader();
-			this.colBuyHold = new System.Windows.Forms.ColumnHeader();
+			this.colKpiTitles = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.collAllTrades = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.colLongTrades = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.colShortTrades = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.colBuyHold = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.SuspendLayout();
 			// 
-			// olvReport
+			// lvPerformance
 			// 
 			this.lvPerformance.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.lvPerformance.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-									this.colKpiTitles,
-									this.collAllTrades,
-									this.colLongTrades,
-									this.colShortTrades,
-									this.colBuyHold});
+            this.colKpiTitles,
+            this.collAllTrades,
+            this.colLongTrades,
+            this.colShortTrades,
+            this.colBuyHold});
 			this.lvPerformance.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.lvPerformance.FullRowSelect = true;
 			this.lvPerformance.HideSelection = false;
 			this.lvPerformance.Location = new System.Drawing.Point(0, 0);
-			this.lvPerformance.MultiSelect = false;
-			this.lvPerformance.Name = "olvReport";
+			this.lvPerformance.Name = "lvPerformance";
 			this.lvPerformance.ShowItemToolTips = true;
 			this.lvPerformance.Size = new System.Drawing.Size(654, 374);
 			this.lvPerformance.TabIndex = 3;
@@ -86,6 +85,7 @@ namespace Sq1.Reporters {
 			this.Name = "Performance";
 			this.Size = new System.Drawing.Size(654, 374);
 			this.ResumeLayout(false);
+
 		}
 
 		private ToolTip toolTip1;

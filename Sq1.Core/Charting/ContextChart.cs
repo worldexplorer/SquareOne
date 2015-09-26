@@ -12,24 +12,24 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public BarScaleInterval	ScaleInterval;
 		[JsonProperty]	public BarDataRange		DataRange;
 
-		//public int ChartBarSpacing;
 		[JsonProperty]	public bool				IsStreamingTriggeringScript;
 		[JsonProperty]	public bool				ShowRangeBar;
 		[JsonProperty]	public bool				IsStreaming;
 
-		public ContextChart(string name = "UNDEFINED") : this() {
+		public ContextChart(string name) : this() {
 			Name = name;
 		}
-		protected ContextChart() {
-			Name = "UNDEFINED";
-			Symbol = "UNDEFINED";
-			DataSourceName = "UNDEFINED";
-			ScaleInterval = new BarScaleInterval();
-			DataRange = new BarDataRange(500);
-			//ChartBarSpacing = 6;
-			IsStreamingTriggeringScript = false;
-			ShowRangeBar = false;
-			IsStreaming = true;
+		public ContextChart() {
+			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
+			
+			Name						= 			"NAME_UNDEFINED__CTX_JUST_CREATED";
+			Symbol						= 		  "SYMBOL_UNDEFINED__CTX_JUST_CREATED";
+			DataSourceName				= "DATASOURCENAME_UNDEFINED__CTX_JUST_CREATED";
+			ScaleInterval				= new BarScaleInterval(BarScale.Unknown, -1);
+			DataRange					= new BarDataRange(500);
+			IsStreamingTriggeringScript	= false;
+			ShowRangeBar				= false;
+			IsStreaming					= true;
 		}
 		public void AbsorbFrom(ContextChart found) {
 			if (found == null) return;
@@ -42,9 +42,6 @@ namespace Sq1.Core.StrategyBase {
 			this.IsStreamingTriggeringScript	= found.IsStreamingTriggeringScript;
 			this.ShowRangeBar					= found.ShowRangeBar;
 		}
-//		public ChartContext MemberwiseClone() {
-//			return (ChartContext)base.MemberwiseClone();
-//		}
 		public override string ToString() {
 			//return this.Name;
 			//v1
@@ -59,7 +56,7 @@ namespace Sq1.Core.StrategyBase {
 			sb.Append(" :: ");
 			sb.Append(this.Symbol);
 			sb.Append(" [");
-			sb.Append(this.ScaleInterval.ToString());
+			if (this.ScaleInterval != null) sb.Append(this.ScaleInterval.ToString());
 			sb.Append(" ]");
 			if (typeof(ContextChart) != this.GetType()) {	//append ContextScript name, not for ContextChart
 				sb.Append(" ctx/");

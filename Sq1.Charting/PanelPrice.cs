@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-using Sq1.Charting.OnChart;
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
@@ -12,16 +11,7 @@ namespace Sq1.Charting {
 		List<Position> PositionLineAlreadyDrawnFromOneOfTheEnds;
 
 		public override int ValueIndexLastAvailableMinusOneUnsafe	{ get { return base.ChartControl.Bars.Count - 1; } }
-		public override int Decimals								{ get {
-			return 	  base.ChartControl.Bars.SymbolInfo != null
-					? base.ChartControl.Bars.SymbolInfo.DecimalsPrice
-					: 5; } }
-		public 			double PriceStep							{ get {
-			return	  base.ChartControl.Bars.SymbolInfo != null
-					? base.ChartControl.Bars.SymbolInfo.PriceStep
-					: -1d; } }
 
-		
 		public PanelPrice() : base() {
 			this.PositionLineAlreadyDrawnFromOneOfTheEnds = new List<Position>();
 			base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
@@ -86,12 +76,12 @@ namespace Sq1.Charting {
 					if (arrow.AboveBar) {
 						positionsAboveBar++;
 						increment += base.ChartControl.ChartSettings.PositionArrowPaddingVertical * positionsAboveBar;
-						increment += arrow.Bitmap.Height * positionsAboveBar;
+						increment += arrow.Height * positionsAboveBar;
 						increment = -increment;
 					} else {
 						positionsBelowBar++;
 						increment += base.ChartControl.ChartSettings.PositionArrowPaddingVertical * positionsBelowBar;
-						increment += arrow.Bitmap.Height * (positionsBelowBar - 1);
+						increment += arrow.Height * (positionsBelowBar - 1);
 					}
 					arrow.Ytransient += increment;
 					arrow.Ytransient = base.AdjustToPanelHeight(arrow.Ytransient);

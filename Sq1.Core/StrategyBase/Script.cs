@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 
 using Sq1.Core.Charting;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
-using Sq1.Core.Optimization;
 
 namespace Sq1.Core.StrategyBase {
 	public abstract partial class Script {
 		public		ScriptExecutor	Executor							{ get; private set; }
-		protected	Bars			Bars								{ get { return (Executor == null) ? null : Executor.Bars; } }
+		protected	Bars			Bars								{ get { return (this.Executor == null) ? null : this.Executor.Bars; } }
 		public		Strategy		Strategy							{ get { return this.Executor.Strategy; } }
 		public		string			StrategyName						{ get { return this.Executor.StrategyName; } }
 		public		PositionList	Positions							{ get { return this.Executor.ExecutionDataSnapshot.PositionsMaster; } }
@@ -25,14 +23,10 @@ namespace Sq1.Core.StrategyBase {
 				return (pos.ExitMarketLimitStop == MarketLimitStop.Unknown);
 			} }
 		public		Position		LastPositionOpenNow					{ get {
-				List<Position> positionsOpenNow = this.Executor.ExecutionDataSnapshot.PositionsOpenNow.InnerList;
-				if (positionsOpenNow.Count == 0) return null;
-				return positionsOpenNow[positionsOpenNow.Count - 1];
+				return this.Executor.ExecutionDataSnapshot.PositionsOpenNow.LastNullUnsafe(this, "//LastPositionOpenNowWAIT");
 			} }
 		public		Position		LastPosition						{ get {
-				List<Position> positionsMaster = this.Executor.ExecutionDataSnapshot.PositionsMaster.InnerList;
-				if (positionsMaster.Count == 0) return null;
-				return positionsMaster[positionsMaster.Count - 1];
+				return this.Executor.ExecutionDataSnapshot.PositionsMaster.LastNullUnsafe(this, "//LastPositionWAIT");
 			} }
 		public		bool			HasAlertsPendingAndPositionsOpenNow	{ get { return this.HasAlertsPending && this.HasPositionsOpenNow; } }
 		public		bool			HasAlertsPendingOrPositionsOpenNow	{ get { return this.HasAlertsPending || this.HasPositionsOpenNow; } }
@@ -40,24 +34,11 @@ namespace Sq1.Core.StrategyBase {
 		public		bool			HasPositionsOpenNow					{ get { return (this.Executor.ExecutionDataSnapshot.PositionsOpenNow.Count > 0); } }
 		#endregion
 		
-		public	SortedDictionary<int, ScriptParameter>	ScriptParametersById;
-		public	Dictionary<string, ScriptParameter>		ScriptParametersByNameInlineCopy { get {
-				Dictionary<string, ScriptParameter> ret = new Dictionary<string, ScriptParameter>();
-				foreach (ScriptParameter param in ScriptParametersById.Values) {
-					if (ret.ContainsKey(param.Name)) {
-						string msg = "PARAMETER_NAME_NOT_UNIQUE[" + param.Name + "], prev[" + ret[param.Name].ToString() + "] this[" + param.ToString() + "]";
-						Assembler.PopupException(msg + " //Script.ParametersByName");
-						continue;
-					}
-					ret.Add(param.Name, param);
-				}
-				return ret;
-			} }
-		public	string				ScriptParametersByIdAsString		{ get {
-				if (this.ScriptParametersById.Count == 0) return "(NoScriptParameters)";
+		public	string				ScriptParametersAsString		{ get {
+				if (this.ScriptParametersById_ReflectedCached.Count == 0) return "(NoScriptParameters)";
 				string ret = "";
-				foreach (int id in this.ScriptParametersById.Keys) {
-					ret += this.ScriptParametersById[id].Name + "=" + this.ScriptParametersById[id].ValueCurrent + ",";
+				foreach (int id in this.ScriptParametersById_ReflectedCached.Keys) {
+					ret += this.ScriptParametersById_ReflectedCached[id].Name + "=" + this.ScriptParametersById_ReflectedCached[id].ValueCurrent + ",";
 				}
 				ret = ret.TrimEnd(",".ToCharArray());
 				return "(" + ret + ")";
@@ -65,12 +46,25 @@ namespace Sq1.Core.StrategyBase {
 
 		// that's a smart suggestion SharpDevelop pops up: "Constructors in abstract classes should not be public"
 		protected Script() {
-			ScriptParametersById = new SortedDictionary<int, ScriptParameter>();
+			scriptParametersById_ReflectedCached			= new SortedDictionary<int, ScriptParameter>();
+			indicatorsByName_ReflectedCached				= new Dictionary<string, Indicator>();
+			indicatorsParameters_ReflectedCached			= new Dictionary<string, IndicatorParameter>();
+			indicatorParametersByIndicator_ReflectedCached	= new Dictionary<string, List<IndicatorParameter>>();
 		}
 
 		#region Initializers
-		public void Initialize(ScriptExecutor scriptExecutor) {
+		public void Initialize(ScriptExecutor scriptExecutor, bool saveStrategy_falseForSequencer = true) {
 			this.Executor = scriptExecutor;
+
+			this.scriptParametersById_ReflectionForced = true;
+			this.indicatorsByName_ReflectionForced = true;
+			this.indicatorParameters_ReflectionForced = true;
+			this.indicatorParametersByIndicator_ReflectionForced = true;
+
+			//v1
+			this.Executor.Strategy.ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(saveStrategy_falseForSequencer);
+			//v2
+			//this.AbsorbValuesFromCurrentContextAndReplacePointers();
 		}
 		public void InitializeBacktestWrapper() {
 			if (this.Bars == null) {
@@ -90,99 +84,13 @@ namespace Sq1.Core.StrategyBase {
 				this.Executor.Backtester.RequestingBacktestAbort.Set();
 			}
 		}		
-		//FIX_FOR: TOO_SMART_INCOMPATIBLE_WITH_LIFE_SPENT_4_HOURS_DEBUGGING DESERIALIZED_STRATEGY_HAD_PARAMETERS_NOT_INITIALIZED INITIALIZED_BY_SLIDERS_AUTO_GROW_CONTROL
-		public void PushRegisteredScriptParametersIntoCurrentContextSaveStrategy() {
-			string msig = " //PushRegisteredScriptParametersIntoCurrentContextSaveStrategy()";
-			bool storeStrategySinceParametersGottenFromScript = false;
-			foreach (ScriptParameter scriptParam in this.ScriptParametersById.Values) {
-				if (this.Strategy.ScriptContextCurrent.ScriptParametersById.ContainsKey(scriptParam.Id)) {
-					double valueContext = this.Strategy.ScriptContextCurrent.ScriptParametersById[scriptParam.Id].ValueCurrent;
-					if (scriptParam.ValueCurrent != valueContext) {
-						string msg = "REPLACED_ScriptParameter[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "] => valueNow[" + valueContext + "] " + this.ToString();
-						#if DEBUG
-						Assembler.PopupException(msg + msig, null, false);
-						#endif
-						scriptParam.ValueCurrent = valueContext;
-						storeStrategySinceParametersGottenFromScript = true;
-					}
-				} else {
-					this.Strategy.ScriptContextCurrent.ScriptParametersById.Add(scriptParam.Id, scriptParam);
-					string msg = "ADDED_ScriptParameter[Id=" + scriptParam.Id + " value=" + scriptParam.ValueCurrent + "] " + this.ToString();
-					Assembler.PopupException(msg + msig, null, false);
-					storeStrategySinceParametersGottenFromScript = true;
-				}
-			}
-			if (storeStrategySinceParametersGottenFromScript) {
-				bool dontSaveWeOptimize = this.Strategy.ScriptContextCurrent.Name.Contains(Optimizer.OPTIMIZATION_CONTEXT_PREFIX);
-				if (dontSaveWeOptimize) {
-					string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_OPTIMIZER_PROVIDED_IN_SCRIPTCONTEXT";
-					Assembler.PopupException(msg + msig, null, false);
-					return;
-				}
-				this.Strategy.Serialize();
-			}
-		}
 		#endregion
 
-		#region script parameters and indicator parameter userland-invokable helper
-		public ScriptParameter ScriptParameterCreateRegister(int id, string name, double value, double min, double max, double increment, string reasonToExist="NO_REASON_TO_EXIST") {
-			this.checkThrowScriptParameterAlreadyRegistered(id, name);
-			ScriptParameter strategyParameter = new ScriptParameter(id, name, value, min, max, increment, reasonToExist);
-			this.ScriptParametersById.Add(id, strategyParameter);
-			return strategyParameter;
-		}
-		protected void checkThrowScriptParameterAlreadyRegistered(int id, string name) {
-			if (this.ScriptParametersById.ContainsKey(id) == false) return;
-			ScriptParameter param = this.ScriptParametersById[id];
-			string msg = "Script[" + this.StrategyName + "] already had parameter {id[" + param.Id + "] name[" + param.Name + "]}"
-				+ " while adding {id[" + id + "] name[" + name + "]}; edit source code and make IDs unique for every parameter";
-			#if DEBUG
-			Debugger.Break();
-			#endif
-			throw new Exception(msg);
-		}
-
-		#endregion
 
 		#region all Indicator-related is grouped here
-		public Dictionary<string, IndicatorParameter> IndicatorsParametersInitializedInDerivedConstructorByNameForSliders { get {
-				Dictionary<string, IndicatorParameter> ret = new Dictionary<string, IndicatorParameter>();
-				Dictionary<string, List<IndicatorParameter>> parametersByIndicatorName = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
-
-				//List<Indicator> indicatorsInitializedInDerivedConstructor = this.IndicatorsInitializedInDerivedConstructor; 
-				//bool mustBeMergedIfAny = indicatorsInitializedInDerivedConstructor.Count > 0
-				//	//&& parametersByIndicatorName.Count != indicatorsInitializedInDerivedConstructor.Count
-				//	;
-				//if (mustBeMergedIfAny) {
-				//	#if DEBUG
-				//	Debugger.Break();
-				//	this.Strategy.Script.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
-				//	parametersByIndicatorName = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
-				//	#endif
-				//	if (parametersByIndicatorName.Count == 0) {
-				//		#if DEBUG
-				//		Debugger.Break();
-				//		#endif
-				//		return ret;
-				//	}
-				//}
-				foreach (string indicatorName in parametersByIndicatorName.Keys) {
-					List<IndicatorParameter> indicatorParameters = parametersByIndicatorName[indicatorName];
-					foreach (IndicatorParameter indicatorParameter in indicatorParameters) {
-						string indicatorDotParameterName = indicatorName + "." + indicatorParameter.Name;
-						if (indicatorParameter.FullName.StartsWith(indicatorName) == false) {
-							// HACK! Indicator Instantiator must have had set Indicator.Name=<Script's variable name>
-							//Debugger.Break();
-							indicatorParameter.IndicatorName = indicatorName;
-						}
-						ret.Add(indicatorDotParameterName, indicatorParameter);
-					}
-				}
-				return ret;
-			} }
-		public string IndicatorParametersAsString { get {
+		public	string IndicatorParametersAsString { get {
 				if (this.Executor == null) return "(NoExecutorAssignedYetJustInstantiatedFromDll)";
-				Dictionary<string, IndicatorParameter> merged = this.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders;
+				Dictionary<string, IndicatorParameter> merged = this.IndicatorsParameters_ReflectedCached;
 				if (merged.Count == 0) return "(NoIndicatorParameters)";
 				string ret = "";
 				foreach (string indicatorDotParameter in merged.Keys) {
@@ -191,69 +99,124 @@ namespace Sq1.Core.StrategyBase {
 				ret = ret.TrimEnd(",".ToCharArray());
 				return "(" + ret + ")";
 			} }
-		public List<Indicator> IndicatorsInitializedInDerivedConstructor { get {
-				List<Indicator> ret = new List<Indicator>();
+
+				bool indicatorParametersByIndicator_ReflectionForced;
+				Dictionary<string, List<IndicatorParameter>>	indicatorParametersByIndicator_ReflectedCached;
+		public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByIndicator_ReflectedCached { get {
+				if (indicatorParametersByIndicator_ReflectionForced == false) return this.indicatorParametersByIndicator_ReflectedCached;
+				indicatorParametersByIndicator_ReflectionForced = false;
+				indicatorParametersByIndicator_ReflectedCached.Clear();
+
+				foreach (string indicatorName in this.IndicatorsByName_ReflectedCached.Keys) {
+					Indicator indicator = this.IndicatorsByName_ReflectedCached[indicatorName];
+					List<IndicatorParameter> indicatorParameters = new List<IndicatorParameter>(indicator.ParametersByName.Values);
+					indicatorParametersByIndicator_ReflectedCached.Add(indicator.Name, indicatorParameters);
+				}
+				return this.IndicatorParametersByIndicator_ReflectedCached;
+			} }
+
+
+				bool indicatorParameters_ReflectionForced;
+				Dictionary<string, IndicatorParameter> indicatorsParameters_ReflectedCached;
+		public	Dictionary<string, IndicatorParameter> IndicatorsParameters_ReflectedCached { get {
+				if (indicatorParameters_ReflectionForced == false) return this.indicatorsParameters_ReflectedCached;
+				indicatorParameters_ReflectionForced = false;
+				indicatorsParameters_ReflectedCached.Clear();
+
+				foreach (Indicator indicator in this.IndicatorsByName_ReflectedCached.Values) {
+					foreach (string parameterName in indicator.ParametersByName.Keys) {
+						IndicatorParameter indicatorParameter = indicator.ParametersByName[parameterName];
+						if (indicatorParameter.FullName.StartsWith(indicator.Name) == false) {
+							string msg = "FIXME_NOW!!! YOU_MUST_TRIGGER_Script.IndicatorsByName_ReflectedCached_AND_THEN_Script.IndicatorsParameters_ReflectedCached"
+								+ " Indicator.ParametersByName_SHOULD_HAVE_SET_indicatorParameterInstance.IndicatorName = this.Name;"
+								+ " Script.IndicatorsByName_ReflectedCached Indicator.Name=<Script's variable name>";
+							Assembler.PopupException(msg);
+							indicatorParameter.IndicatorName = indicator.Name;
+						}
+						this.indicatorsParameters_ReflectedCached.Add(indicatorParameter.FullName, indicatorParameter);
+					}
+				}
+				return this.indicatorsParameters_ReflectedCached;
+			} }
+
+				bool indicatorsByName_ReflectionForced;
+				Dictionary<string, Indicator>	indicatorsByName_ReflectedCached;
+		public	Dictionary<string, Indicator>	IndicatorsByName_ReflectedCached { get {
+				if (indicatorsByName_ReflectionForced == false) return this.indicatorsByName_ReflectedCached;
+				indicatorsByName_ReflectionForced = false;
+				this.indicatorsByName_ReflectedCached.Clear();
 				
 				Type myChild = this.GetType();
 				//PropertyInfo[] lookingForIndicators = myChild.GetProperties();
-				FieldInfo[] lookingForIndicators = myChild.GetFields();
+				FieldInfo[] lookingForIndicators = myChild.GetFields(
+															  BindingFlags.Public
+															| BindingFlags.NonPublic
+															| BindingFlags.DeclaredOnly
+															| BindingFlags.Instance
+														);
 				foreach (FieldInfo indicatorCandidate in lookingForIndicators) {
 					Type indicatorConcreteType = indicatorCandidate.FieldType;
 					bool isIndicatorChild = typeof(Indicator).IsAssignableFrom(indicatorConcreteType);
 					if (isIndicatorChild == false) continue;
-					Indicator indicatorInstance = null;
 					object expectingConstructedNonNull = indicatorCandidate.GetValue(this);
 					if (expectingConstructedNonNull == null) {
-						string msg = "INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR Script[" + this.ToString();// + "].[" + variableIndicator.Name + "]";
+						string msg = "YOU_MUST_ASSIGN_INDICATOR_IN_CTOR " + this.GetType().Name + "() { this." + indicatorCandidate.Name + " = new " + indicatorCandidate.GetType() + "(...); }"
+							//"INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR Script[" + this.ToString();// + "].[" + variableIndicator.Name + "]";
+							;
 						Assembler.PopupException(msg);
 						continue;
 					}
 					Indicator variableIndicator = expectingConstructedNonNull as Indicator;
-					variableIndicator.Name = indicatorCandidate.Name;
-					ret.Add(variableIndicator);
+					variableIndicator.Name = indicatorCandidate.Name;		// after Script.ctor() { this.MAfast = new IndicatorMovingAverageSimple(); } I set this.Mafast.Name="Mafast" instead of "MA";
+					this.indicatorsByName_ReflectedCached.Add(variableIndicator.Name, variableIndicator);
 				}
-				return ret;
+				return this.indicatorsByName_ReflectedCached;
 			} }
-		public void IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot() {
-			this.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Clear();
-			bool strategySaveRequired = false;
-			foreach (Indicator indicatorInstance in this.IndicatorsInitializedInDerivedConstructor) {
-				if (this.Strategy.ScriptContextCurrent.IndicatorParametersByName.ContainsKey(indicatorInstance.Name)) {
-					string msg = "IndicatorsInitializedInDerivedConstructor are getting initialized from ContextCurrent and will be kept in sync with user clicks"
-						+ "; ScriptContextCurrent.IndicatorParametersByName are assigned to PanelSlider.Tag and click will save to JSON by StrategyRepo.Save(Strategy)";
-					List<IndicatorParameter> iParamsCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName[indicatorInstance.Name];
-					Dictionary<string, IndicatorParameter> iParamsCtxLookup = new Dictionary<string, IndicatorParameter>();
-					foreach (IndicatorParameter iParamCtx in iParamsCtx) iParamsCtxLookup.Add(iParamCtx.Name, iParamCtx);
 
-					foreach (IndicatorParameter iParamInstantiated in indicatorInstance.ParametersByName.Values) {
-						if (iParamsCtxLookup.ContainsKey(iParamInstantiated.Name) == false) {
-							msg = "JSONStrategy_UNCHANGED_BUT_INDICATOR_EVOLVED_AND_INRODUCED_NEW_PARAMETER__APPARENTLY_STORING_DEFAULT_VALUE_IN_CURRENT_CONTEXT"
-								+ "; CLONE_OF_INSTANTIATED_GOES_TO_CONTEXT_AND_TO_SLIDER__THIS_CLONE_HAS_SHORTER_LIFECYCLE_WILL_REMAIN_IN_SYNC_FROM_WITHIN_CLICK_HANLDER";
-							iParamsCtx.Add(iParamInstantiated.Clone());
-							continue;
-						}
-						msg = "ABSORBING_CONTEXT_INDICATOR_VALUE_INTO_INSTANTIATED_INDICATOR_PARAMETER";
-						IndicatorParameter iParamFoundCtx = iParamsCtxLookup[iParamInstantiated.Name];
-						iParamInstantiated.AbsorbCurrentFixBoundariesIfChanged(iParamFoundCtx);
-
-						//WRONG_CONTEXT_AND_SLIDER_ARE_SAME__KEEPING_INSTANTIATED_CHANGING_SEPARATELY 
-						/*if (iParamInstantiated != iParamFoundCtx) {
-							#if DEBUG
-							Debugger.Break();			//NOPE_ITS_A_CLONE
-							#endif
-							iParamsCtx.Remove(iParamFoundCtx);	// instead of JsonDeserialized,
-							iParamsCtx.Add(iParamInstantiated);	// ...put Instantiated into the Context
-						} */
-					}
-				} else {
-					string msg = "JSONStrategy_JUST_ADDED_NEW_INDICATOR_WITH_ITS_NEW_PARAMETERS[" + indicatorInstance.Name + "]";
-					Assembler.PopupException(msg, null, false);
-					this.Strategy.ScriptContextCurrent.IndicatorParametersByName.Add(indicatorInstance.Name, new List<IndicatorParameter>(indicatorInstance.ParametersByName.Values));
-					strategySaveRequired = true;
-				}
-
-				this.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances.Add(indicatorInstance.Name, indicatorInstance);
+				bool scriptParametersById_ReflectionForced;
+				SortedDictionary<int, ScriptParameter> scriptParametersById_ReflectedCached;
+		public	SortedDictionary<int, ScriptParameter> ScriptParametersById_ReflectedCached { get {
+				if (scriptParametersById_ReflectionForced == false) return scriptParametersById_ReflectedCached;
+				scriptParametersById_ReflectionForced = false;
+				scriptParametersById_ReflectedCached.Clear();
 				
+				Type myChild = this.GetType();
+				//PropertyInfo[] lookingForScriptParameters = myChild.GetProperties();
+				FieldInfo[] lookingForScriptParameters = myChild.GetFields(
+															  BindingFlags.Public
+															| BindingFlags.NonPublic
+															| BindingFlags.DeclaredOnly
+															| BindingFlags.Instance
+														);
+				foreach (FieldInfo scriptParameterCandidate in lookingForScriptParameters) {
+					Type scriptParameterConcreteType = scriptParameterCandidate.FieldType;
+					bool isIndicatorChild = typeof(ScriptParameter).IsAssignableFrom(scriptParameterConcreteType);
+					if (isIndicatorChild == false) continue;
+					object expectingConstructedNonNull = scriptParameterCandidate.GetValue(this);
+					if (expectingConstructedNonNull == null) {
+						string msg = "YOU_MUST_ASSIGN_INDICATOR_IN_CTOR " + this.GetType().Name + "() { this." + scriptParameterCandidate.Name + " = new " + scriptParameterCandidate.GetType() + "(...); }";
+							//+ "SCRIPT_PARAMETER_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR Script[" + this.ToString();// + "].[" + variableIndicator.Name + "]";
+							;
+						Assembler.PopupException(msg);
+						continue;
+					}
+					ScriptParameter variableScriptParameter = expectingConstructedNonNull as ScriptParameter;
+					// if Script constructed a ScriptParameter with "null" as it second ctor() parameter, take introspected variable name as declared in Script
+					if (string.IsNullOrEmpty(variableScriptParameter.Name)) variableScriptParameter.Name = scriptParameterCandidate.Name;
+					try {
+						scriptParametersById_ReflectedCached.Add(variableScriptParameter.Id, variableScriptParameter);
+					} catch (Exception ex) {
+						string msg = "SCRIPT_PARAMETER_ID_SHOULD_BE_UNIQUE_FOR_EACH id[" + variableScriptParameter.Id
+							+ "] is declared by two parameters 1) [" + scriptParametersById_ReflectedCached[variableScriptParameter.Id] + "] 2) [" + variableScriptParameter + "]";
+						Assembler.PopupException(msg, null, false);
+					}
+				}
+				return scriptParametersById_ReflectedCached;
+			} }
+
+		public void IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(bool saveStrategy_falseForSequencer = true) {
+			int parametersAbsorbed = this.Strategy.IndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(saveStrategy_falseForSequencer);
+			foreach (Indicator indicatorInstance in this.IndicatorsByName_ReflectedCached.Values) {
 				// moved from upstairs coz: after absorbing all deserialized indicator parameters from ScriptContext, GetHostPanelForIndicator will return an pre-instantiated PanelIndicator
 				// otherwize GetHostPanelForIndicator created a new one for an indicator with default Indicator parameters;
 				// example: MultiSplitterPropertiesByPanelName["ATR (Period:9[1..11/2])"] exists, while default Period for ATR is 5 => new PanelIndicator will be created
@@ -261,11 +224,10 @@ namespace Sq1.Core.StrategyBase {
 				HostPanelForIndicator priceOrItsOwnPanel = this.Executor.ChartConditionalHostPanelForIndicatorGet(indicatorInstance);
 				indicatorInstance.Initialize(priceOrItsOwnPanel);
 			}
-			if (strategySaveRequired) this.Strategy.Serialize();
 		}
 		#endregion
 
-		public void AbsorbScriptAndIndicatorParametersFromSelfCloneConstructed() {
+		public void SwitchToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed() {
 			object selfCloneConstructed = Activator.CreateInstance(this.GetType());	//default ctor invoked where developer is supposed to add ScriptAndIndicatorParameters into new This
 			Script clone = selfCloneConstructed as Script;
 			if (clone == null) {
@@ -275,22 +237,22 @@ namespace Sq1.Core.StrategyBase {
 			}
 
 			// first half of the job
-			SortedDictionary<int, ScriptParameter> cloneScriptParametersFrom = clone.ScriptParametersById;
-			Dictionary<int, ScriptParameter>	   myctxScriptParametersTo	 = this.Strategy.ScriptContextCurrent.ScriptParametersById;
+			SortedDictionary<int, ScriptParameter>	cloneScriptParametersFrom	= clone.ScriptParametersById_ReflectedCached;
+			SortedDictionary<int, ScriptParameter>	myctxScriptParametersTo		= this.Strategy.ScriptContextCurrent.ScriptParametersById;
 			foreach (int cloneSPindex in cloneScriptParametersFrom.Keys) {
 				ScriptParameter cloneSparam = cloneScriptParametersFrom[cloneSPindex];
 				if (myctxScriptParametersTo.ContainsKey(cloneSPindex) == false) {
-					string msg = "myctxScriptParametersTo.ContainsKey(" + cloneSPindex + ") == false; Script.ScriptParametersAsString=" + this.ScriptParametersByIdAsString;
+					string msg = "myctxScriptParametersTo.ContainsKey(" + cloneSPindex + ") == false; Script.ScriptParametersAsString=" + this.ScriptParametersAsString;
 					Assembler.PopupException(msg);
 					//continue;
-					myctxScriptParametersTo.Add(cloneSPindex, cloneSparam.Clone());
+					myctxScriptParametersTo.Add(cloneSPindex, cloneSparam.CloneAsScriptParameter("REFACTOR_SwitchedToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed"));
 				} else {
 					myctxScriptParametersTo[cloneSPindex].AbsorbCurrentFixBoundariesIfChanged(cloneSparam);
 				}
 			}
 
 			// second half of the job
-			List<Indicator> cloneIndicators = clone.IndicatorsInitializedInDerivedConstructor;
+			List<Indicator> cloneIndicators = new List<Indicator>(clone.IndicatorsByName_ReflectedCached.Values);
 			Dictionary<string, List<IndicatorParameter>> cloneIndicatorsFrom = new Dictionary<string, List<IndicatorParameter>>();
 			foreach (Indicator cloneI in cloneIndicators) cloneIndicatorsFrom.Add(cloneI.Name, new List<IndicatorParameter>(cloneI.ParametersByName.Values));
 
@@ -311,19 +273,47 @@ namespace Sq1.Core.StrategyBase {
 						string msg = "myctxIparamsLookup.ContainsKey(" + cloneIparam.Name + ") == false";
 						Assembler.PopupException(msg);
 						//continue;
-						myctxIparams.Add(cloneIparam.Clone());
+						myctxIparams.Add(cloneIparam.CloneAsIndicatorParameter("REFACTOR_SwitchedToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed"));
 					} else {
 						IndicatorParameter myctxIparam = myctxIparamsLookup[cloneIparam.Name];
 						myctxIparam.AbsorbCurrentFixBoundariesIfChanged(cloneIparam);
 					}
 				}
 			}
-			this.IndicatorsInitializeAbsorbParamsFromJsonStoreInSnapshot();
+			string msg2 = "YOU_JUST_SELF_CLONED_AND_ABSORBED__YOU_JUST_NEED_TO_INIT_SCRIPT_INDICATORS_WITH_NEW_INDICATOR_PARAMS_AND_HOST_PANELS";
+			Assembler.PopupException(msg2);
+			this.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
+		}
+		internal void PushChangedScriptParameterValueToScript(IndicatorParameter indicatorParameterChangedDueToUserClickInSliders) {
+			string msig = " //Script.PushChangedScriptParameterValueToScript(" + indicatorParameterChangedDueToUserClickInSliders + ")";
+			if (indicatorParameterChangedDueToUserClickInSliders == null) {
+				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT SLIDERS_AUTOGROW_GENERATED_AN_EVENT_WITH_EMPTY_INDICATOR_PARAMETER_INSIDE";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			SortedDictionary<string, IndicatorParameter> reflectedAll = this.scriptAndIndicatorParametersReflectedMergedUnclonedForReusableExecutorToCheckByName;
+			if (reflectedAll.ContainsKey(indicatorParameterChangedDueToUserClickInSliders.FullName) == false) {
+				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT STALE_PARAMETER_CLICKED_WHICH_DOESNT_EXIST_IN_RECOMPILED_SCRIPT";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			IndicatorParameter reflected = reflectedAll[indicatorParameterChangedDueToUserClickInSliders.FullName];
+			if (reflected == indicatorParameterChangedDueToUserClickInSliders) {
+				string msg = "SCRIPT_PARAMETERS_SEEMS_TO_BE_THE_SAME_OBJECTS_WHILE_INDICATOR_PARAMETERS_ARE_DIFFERENT??? CATCH_DECIDE_COPY_OR_SAME";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (reflected.ValueCurrent == indicatorParameterChangedDueToUserClickInSliders.ValueCurrent) {
+				string msg = "SCRIPT_PARAMETER_VALUE_ALREADY_SAME_AS_PROPAGATING NAIL_ANOTHER_SYNC/PUSH_MECHANISM";
+				Assembler.PopupException(msg);
+				return;
+			}
+			reflected.AbsorbCurrentFixBoundariesIfChanged(indicatorParameterChangedDueToUserClickInSliders);
 		}
 		public override string ToString() {
 			string ret = "Script[" + this.GetType().Name + "].Strategy";
 			if (this.Strategy == null) {
-				ret += "[NULL_NONSENSE!!!]";
+				ret += "[STRATEGY_NULL_NO_CTX_NONSENSE!!!]";
 			} else {
 				ret += ".ScriptContextCurrent[" + this.Strategy.ScriptContextCurrent.Name + "]";
 			}

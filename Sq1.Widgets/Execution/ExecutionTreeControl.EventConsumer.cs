@@ -11,12 +11,13 @@ namespace Sq1.Widgets.Execution {
 	public partial class ExecutionTreeControl {
 		void ordersTree_SelectedIndexChanged(object sender, EventArgs e) {
 			try {
-				this.DataSnapshot.firstRowShouldStaySelected = (this.OrdersTreeOLV.SelectedIndex == 0) ? true : false;
+				this.DataSnapshot.FirstRowShouldStaySelected = (this.OrdersTreeOLV.SelectedIndex == 0) ? true : false;
 				int selectedIndex = this.OrdersTreeOLV.SelectedIndex;
 				if (selectedIndex == -1) return;		// when selection changes, old selected is unselected; we got here twice on every click
 				
-				this.OrdersTreeOLV.RedrawItems(selectedIndex, selectedIndex, true);
-				this.PopulateMessagesFromSelectedOrder(this.OrdersTreeOLV.SelectedObject as Order);
+				//this.OrdersTreeOLV.RedrawItems(selectedIndex, selectedIndex, true);
+				this.OrdersTreeOLV.RefreshSelectedObjects();
+				this.populateMessagesFor(this.OrdersTreeOLV.SelectedObject as Order);
 				
 				/*bool removeEmergencyLockEnabled = false;
 				foreach (Order selectedOrder in this.OrdersSelected) {
@@ -44,8 +45,8 @@ namespace Sq1.Widgets.Execution {
 				return;
 			}
 			mni.Checked = !mni.Checked;
-			if (columnsByFilters.ContainsKey(mni) == false) {
-				string msg = "Add ToolStripMenuItem[" + mni.Name + "] into columnsByFilters";
+			if (columnsByFilter.ContainsKey(mni) == false) {
+				string msg = "Add ToolStripMenuItem[" + mni.Name + "] into columnsByFilter";
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -54,7 +55,7 @@ namespace Sq1.Widgets.Execution {
 //			this.settingsManager.Set("ExecutionForm." + mni.Name + ".Checked", mni.Checked);
 //			this.settingsManager.SaveSettings();
 
-			List<OLVColumn> columns = columnsByFilters[mni];
+			List<OLVColumn> columns = columnsByFilter[mni];
 			if (columns.Count == 0) return;
 
 			foreach (OLVColumn column in columns) {
@@ -142,7 +143,9 @@ namespace Sq1.Widgets.Execution {
 		}
 		void mniOrderKill_Click(object sender, EventArgs e) {
 			if (this.OrdersSelected.Count == 0) return;
-			Assembler.InstanceInitialized.OrderProcessor.KillPending(this.OrdersSelected);
+			foreach (Order pendingOrder in this.OrdersSelected) {
+				Assembler.InstanceInitialized.OrderProcessor.KillPendingOrderWithoutKiller(pendingOrder);
+			}
 		}
 		void mniOrdersCancel_Click(object sender, EventArgs e) {
 			//DialogResult dialogResult = MessageBox.Show(this,
@@ -174,15 +177,17 @@ namespace Sq1.Widgets.Execution {
 			//otherwize if you'll see REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR - dont forget to use Assembler.InstanceInitialized.AlertsForChart.Add(this.ChartShadow, pos.ExitAlert);
 			this.raiseOnOrderDoubleClickedChartFormNotification(this, this.OrdersTreeOLV.SelectedObject as Order);
 		}
-		void mniTreeExpandAll_Click(object sender, EventArgs e) {
-			this.OrdersTreeOLV.ExpandAll();
-		}
+
+
 		void mniTreeCollapseAll_Click(object sender, EventArgs e) {
 			this.OrdersTreeOLV.CollapseAll();
 		}
-		void mniRebuildAll_Click(object sender, EventArgs e) {
-			this.OrdersTreeOLV.RebuildAll(true);
-		}		
+		void mniTreeExpandAll_Click(object sender, EventArgs e) {
+			this.OrdersTreeOLV.ExpandAll();
+		}
+		void mniTreeRebuildAll_Click(object sender, EventArgs e) {
+			this.RebuildAllTreeFocusOnTopmost();
+		}
 		
 		void splitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {
 			if (this.DataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()

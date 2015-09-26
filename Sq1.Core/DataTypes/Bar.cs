@@ -32,16 +32,19 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public bool HasParentBars { get { return this.ParentBars != null; } }
 		[JsonProperty]	public string ParentBarsIdent { get {
 				if (this.HasParentBars == false) return "NO_PARENT_BARS";
-				string ret = "StaticBar";
+				StringBuilder sb = new StringBuilder("StaticBar");
 				//if (this.ParentBarsIndex <  this.ParentBars.Count - 1) ret = this.ParentBarsIndex.ToString();
 				//if (this.ParentBarsIndex == this.ParentBars.Count - 1) ret = "LastStaticBar";// +this.ParentBarsIndex;
 				//if (this.ParentBarsIndex == this.ParentBars.Count) ret = "StreamingBar";// +this.ParentBarsIndex;
 				//if (this.ParentBarsIndex >  this.ParentBars.Count) ret = "ScaryGhostBar:" + this.ParentBarsIndex;
-				if (this.IsBarStreaming) ret = "BarStreaming";// +this.ParentBarsIndex;
-				if (this.IsBarStaticLast) ret = "StaticBarLast";// +this.ParentBarsIndex;
-				if (this.IsBarStaticFirst) ret = "StaticBarFist";// +this.ParentBarsIndex;
-				ret += "#" + this.ParentBarsIndex + "/" + (this.ParentBars.Count-1);
-				return ret;
+				if (this.IsBarStreaming)	sb.Append("BarStreaming");// +this.ParentBarsIndex;
+				if (this.IsBarStaticLast)	sb.Append("StaticBarLast");// +this.ParentBarsIndex;
+				if (this.IsBarStaticFirst)	sb.Append("StaticBarFist");// +this.ParentBarsIndex;
+				sb.Append("#");
+				sb.Append(this.ParentBarsIndex);
+				sb.Append("/");
+				sb.Append((this.ParentBars.Count-1));
+				return sb.ToString();
 			} }
 		// Perst deserializer invokes default ctor()
 		[JsonProperty]	public int DaySerial;
@@ -77,11 +80,11 @@ namespace Sq1.Core.DataTypes {
 			this.Close = close;
 			this.Volume = volume;
 			if (symbolInfo != null) {
-				this.Open	= Math.Round(this.Open,		symbolInfo.DecimalsPrice);
-				this.High	= Math.Round(this.High,		symbolInfo.DecimalsPrice);
-				this.Low	= Math.Round(this.Low,		symbolInfo.DecimalsPrice);
-				this.Close	= Math.Round(this.Close,	symbolInfo.DecimalsPrice);
-				this.Volume	= Math.Round(this.Volume,	symbolInfo.DecimalsVolume);
+				this.Open	= Math.Round(this.Open,		symbolInfo.PriceDecimals);
+				this.High	= Math.Round(this.High,		symbolInfo.PriceDecimals);
+				this.Low	= Math.Round(this.Low,		symbolInfo.PriceDecimals);
+				this.Close	= Math.Round(this.Close,	symbolInfo.PriceDecimals);
+				this.Volume	= Math.Round(this.Volume,	symbolInfo.VolumeDecimals);
 
 				//this.Open = symbolInfo.AlignToPriceLevel(this.Open, PriceLevelRoundingMode.RoundToClosest);
 				//this.High = symbolInfo.AlignToPriceLevel(this.High, PriceLevelRoundingMode.RoundToClosest);
@@ -408,10 +411,10 @@ namespace Sq1.Core.DataTypes {
 			int volumeDecimals = 3;
 			
 			if (this.ParentBars != null && this.ParentBars.SymbolInfo != null) {
-				priceDecimals	= this.ParentBars.SymbolInfo.DecimalsPrice;
-				volumeDecimals	= this.ParentBars.SymbolInfo.DecimalsVolume;
-				priceFormat		= this.ParentBars.SymbolInfo.FormatPrice;
-				volumeFormat	= this.ParentBars.SymbolInfo.FormatVolume;
+				priceDecimals	= this.ParentBars.SymbolInfo.PriceDecimals;
+				volumeDecimals	= this.ParentBars.SymbolInfo.VolumeDecimals;
+				priceFormat		= this.ParentBars.SymbolInfo.PriceFormat;
+				volumeFormat	= this.ParentBars.SymbolInfo.VolumeFormat;
 			}
 			
 //			return this.ParentBarsIdent + ":"
@@ -493,10 +496,10 @@ namespace Sq1.Core.DataTypes {
 			}
 			
 			// 81.41 > 81.41 ???? introducing Rounding
-			double lowRounded = Math.Round(this.Low, this.ParentBars.SymbolInfo.DecimalsPrice);
-			double highRounded = Math.Round(this.High, this.ParentBars.SymbolInfo.DecimalsPrice);
-			double bidRounded = Math.Round(quote.Bid, this.ParentBars.SymbolInfo.DecimalsPrice);
-			double askRounded = Math.Round(quote.Ask, this.ParentBars.SymbolInfo.DecimalsPrice);
+			double lowRounded = Math.Round(this.Low, this.ParentBars.SymbolInfo.PriceDecimals);
+			double highRounded = Math.Round(this.High, this.ParentBars.SymbolInfo.PriceDecimals);
+			double bidRounded = Math.Round(quote.Bid, this.ParentBars.SymbolInfo.PriceDecimals);
+			double askRounded = Math.Round(quote.Ask, this.ParentBars.SymbolInfo.PriceDecimals);
 			
 			//if (quote.Bid < this.Low) {
 			if (bidRounded < lowRounded) {

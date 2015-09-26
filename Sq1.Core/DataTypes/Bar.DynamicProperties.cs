@@ -8,7 +8,7 @@ namespace Sq1.Core.DataTypes {
 				if (this.HasParentBars == false) {
 					throw new Exception("PROPERTY_VALID_ONLY_WHEN_THIS_BAR_IS_ADDED_INTO_BARS: IsStreamingBar: Bar[" + this + "].HasParentBars=false");
 				}
-				return this == this.ParentBars.BarStreaming;
+				return this == this.ParentBars.BarStreamingNullUnsafe;
 			} }
 		[JsonIgnore]	public bool IsBarStaticLast { get {
 				if (this.HasParentBars == false) {

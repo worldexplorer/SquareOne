@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Drawing;
+
+using Sq1.Core;
 
 namespace Sq1.Charting.MultiSplit {
 	// REASON_TO_EXIST: VS2010 Designer stupidly says The type 'Sq1.Charting.MultiSplit.MultiSplitContainerGeneric' doesn't have a constructor (doesn't recognize generics). 
@@ -11,5 +15,17 @@ namespace Sq1.Charting.MultiSplit {
 	// 2) MultiSplitContainer < UserControl (not DoubleBuffered to paint splitted into TargetDropRedColor FIXME) < ContainerControl < ScrollableControl  
 	// but I'm using Control :) all I need is Control.Name to reliably (de)serialize distances for splitters (see MultiSplitContainerGeneric.Persistence.cs)
 	public partial class MultiSplitContainer : MultiSplitContainerGeneric<Control> {
+
+		internal Point LocationOfInnerMultisplitContainer(MultiSplitContainer multiSplitContainer) {
+			int x = -1;
+			int y = -1;
+			List<Control> mustContainMultiSplittContainer =  base.ControlsContained;
+			if (mustContainMultiSplittContainer.Contains(multiSplitContainer) == false) {
+				string msg = "WAS_NOT_ADDED_AS_INNER_MULTISPLITTER  multiSplitContainer[" + multiSplitContainer + "]";
+				Assembler.PopupException(msg);
+				return new Point(x, y);
+			}
+			return multiSplitContainer.Location;
+		}
 	}
 }

@@ -21,7 +21,7 @@ namespace Sq1.Core.Livesim {
 			ScriptExecutor executor = this.livesimulator.Executor;
 			ReporterPokeUnit pokeUnitNullUnsafe = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quote);
 			if (pokeUnitNullUnsafe != null && pokeUnitNullUnsafe.PositionsOpenNow.Count > 0) {
-				executor.Performance.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executor.ExecutionDataSnapshot.PositionsOpenNow);
+				executor.PerformanceAfterBacktest.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executor.ExecutionDataSnapshot.PositionsOpenNow);
 				if (guiHasTime) {
 					executor.EventGenerator.RaiseOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(pokeUnitNullUnsafe);
 				}

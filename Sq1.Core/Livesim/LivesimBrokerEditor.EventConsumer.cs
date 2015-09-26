@@ -30,9 +30,13 @@ namespace Sq1.Core.Livesim {
 			} else if (whatIchecked == this.cbx_AdaperDisconnectEnabled) {
 				this.livesimBrokerSettings.AdaperDisconnectEnabled = whatIchecked.Checked;
 
+			} else if (whatIchecked == this.cbx_KillPendingDelayEnabled) {
+				this.livesimBrokerSettings.KillPendingDelayEnabled = whatIchecked.Checked;
+
 			} else {
 				Assembler.PopupException("ADD_TARGET_FOR_CLICK_PROPAGATION_FOR_whatIchecked[" + whatIchecked.Name + "]");
 			}
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.livesimBrokerSettings.SaveStrategy();
 		}
 
@@ -109,6 +113,12 @@ namespace Sq1.Core.Livesim {
 
 			} else if (whereItyped == this.txt_PriceDeviationForMarketOrdersPercentageOfBestPriceMax) {
 				this.livesimBrokerSettings.PriceDeviationForMarketOrdersPercentageOfBestPriceMax = parsedInt;
+
+			} else if (whereItyped == this.txt_KillPendingDelay_min) {
+				this.livesimBrokerSettings.KillPendingDelayMillisMin = parsedInt;
+
+			} else if (whereItyped == this.txt_KillPendingDelay_max) {
+				this.livesimBrokerSettings.KillPendingDelayMillisMax = parsedInt;
 
 			} else if (whereItyped == this.txt_AdaperDisconnectHappensOncePerQuoteMin) {
 				this.livesimBrokerSettings.AdaperDisconnectHappensOncePerQuoteMin = parsedInt;

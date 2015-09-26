@@ -21,7 +21,8 @@ namespace Sq1.Gui.Forms {
 		}
 		void ctxStrategy_Opening(object sender, CancelEventArgs e) {
 			this.MniShowLivesim		.Checked = this.ChartFormManager.LivesimFormIsOnSurface;
-			this.MniShowOptimizer	.Checked = this.ChartFormManager.OptimizerIsOnSurface;
+			this.MniShowCorrelator	.Checked = this.ChartFormManager.CorrelatorFormIsOnSurface;
+			this.MniShowSequencer	.Checked = this.ChartFormManager.SequencerIsOnSurface;
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
 		}
@@ -46,24 +47,44 @@ namespace Sq1.Gui.Forms {
 			// DUPLICATE_XML_SERIALIZATION_AFTER ScriptEditorForm.OnFormClosed()
 			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
-		void mniShowOptimizer_Click(object sender, System.EventArgs e) {
+		void mniShowSequencer_Click(object sender, System.EventArgs e) {
 			this.ctxStrategy.Visible = true;
-			if (this.MniShowOptimizer.Checked == false) {
-				this.MniShowOptimizer.Checked = true;
+			if (this.MniShowSequencer.Checked == false) {
+				this.MniShowSequencer.Checked = true;
 				// if autohidden => popup and keepAutoHidden=false
-				this.ChartFormManager.OptimizerFormShow(false);
+				this.ChartFormManager.SequencerFormShow(false);
 				this.ChartFormManager.MainForm.MainFormSerialize();
 			} else {
-				this.MniShowOptimizer.Checked = false;
-				//v1 this.ChartFormManager.OptimizerFormConditionalInstance.ToggleAutoHide();
-				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.OptimizerForm)) {
-					string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_OPTIMIZER_FORM_WAS_CLOSED_BY_X";
+				this.MniShowSequencer.Checked = false;
+				//v1 this.ChartFormManager.SequencerFormConditionalInstance.ToggleAutoHide();
+				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.SequencerForm)) {
+					string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_SEQUENCER_FORM_WAS_CLOSED_BY_X";
 					//Assembler.PopupException(msg);
 				} else {
-					this.ChartFormManager.OptimizerForm.Close();
+					this.ChartFormManager.SequencerForm.Close();
 				}
 			}
-			// DUPLICATE_XML_SERIALIZATION_AFTER OptimizerForm.OnFormClosed()
+			// DUPLICATE_XML_SERIALIZATION_AFTER SequencerForm.OnFormClosed()
+			//this.ChartFormManager.MainForm.MainFormSerialize();
+		}
+		void mniShowCorrelator_Click(object sender, System.EventArgs e) {
+			this.ctxStrategy.Visible = true;
+			if (this.MniShowCorrelator.Checked == false) {
+				this.MniShowCorrelator.Checked = true;
+				// if autohidden => popup and keepAutoHidden=false
+				this.ChartFormManager.CorrelatorFormShow(false);
+				this.ChartFormManager.MainForm.MainFormSerialize();
+			} else {
+				this.MniShowCorrelator.Checked = false;
+				//v1 this.ChartFormManager.CorrelatorFormConditionalInstance.ToggleAutoHide();
+				if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.CorrelatorForm)) {
+					string msg = "CHECK_ON_CLICK_WILL_SET_CHECKED_AFTER_THIS_HANDLER_EXITS YOU_DIDNT_SYNC_MNI_TICK=OFF_WHEN_Correlator_FORM_WAS_CLOSED_BY_X";
+					//Assembler.PopupException(msg);
+				} else {
+					this.ChartFormManager.CorrelatorForm.Close();
+				}
+			}
+			// DUPLICATE_XML_SERIALIZATION_AFTER CorrelatorForm.OnFormClosed()
 			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
 		void mniShowLivesim_Click(object sender, EventArgs e) {
@@ -116,12 +137,13 @@ namespace Sq1.Gui.Forms {
 		}
 		void mniBacktestOnEveryChange_Click(object sender, System.EventArgs e) {
 			try {
-				this.ctxBacktest.Visible = true;
 				Strategy strategy = this.ChartFormManager.Executor.Strategy;
 				if (strategy == null) return;
 				strategy.ScriptContextCurrent.BacktestOnSelectorsChange = this.mniBacktestOnSelectorsChange.Checked;
 				strategy.ScriptContextCurrent.BacktestOnDataSourceSaved = this.mniBacktestOnDataSourceSaved.Checked;
 				strategy.Serialize();
+
+				this.ctxBacktest.Visible = true;
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestOnEveryChange_Click()", ex);
 			}
@@ -194,7 +216,7 @@ namespace Sq1.Gui.Forms {
 				context.ScaleInterval = scaleIntervalUserEntered;
 				
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mniltbAll_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniltbMinutes_UserTyped()", ex);
 			}
@@ -245,7 +267,7 @@ namespace Sq1.Gui.Forms {
 				this.mniShowBarRange_Click(sender, null);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbShowLastBars_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbShowLastBars_UserTyped()", ex);
 			}
@@ -291,7 +313,7 @@ namespace Sq1.Gui.Forms {
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbPositionSizeSharesConstant_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeSharesConstant_UserTyped()", ex);
 			}
@@ -316,7 +338,7 @@ namespace Sq1.Gui.Forms {
 				this.selectOneDeselectResetOthers(this.DdbBacktest.DropDownItems, sender, this.GroupPositionSizeLabeledTextboxes);
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbPositionSizeDollarsEachTradeConstant_UserTyped()", ex);
 			}
@@ -345,13 +367,14 @@ namespace Sq1.Gui.Forms {
 				
 				ContextScript context = this.ChartFormManager.Strategy.ScriptContextCurrent;
 				context.SpreadModelerPercent = userTypedDouble;
+				this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
 				
 				if (this.ChartFormManager.Executor.Backtester.BacktestDataSource == null) {
 					this.ChartFormManager.Executor.Backtester.InitializeQuoteGenerator();
 				}
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");
-				this.ChartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("mnitlbSpreadGeneratorPct_UserTyped()", ex);
 			}
@@ -410,6 +433,45 @@ namespace Sq1.Gui.Forms {
 		}
 		void TsiProgressBarETA_Click(object sender, EventArgs e) {
 			this.ChartFormManager.Executor.Backtester.AbortRunningBacktestWaitAborted("Backtest Aborted by clicking on progress bar");
+		}
+		protected override void OnMouseUp(MouseEventArgs e) {
+			if (base.DesignMode) return;
+			base.OnMouseUp(e);
+			//NO_VISIBLE_IMPAIRMENT_IF_COMMENTED_OUT_RIGHT? ChartSettingsEditorForm.Instance.ChartSettingsEditorControl.PopulateWithChartSettings();
+		}
+		void chartForm_Load(object sender, EventArgs e) {
+			if (this.waitForChartFormIsLoaded.WaitOne(0) == true) {
+				string msg = "MUST_BE_INSTANTIATED_AS_NON_SIGNALLED_IN_CTOR()_#1 waitForChartFormIsLoaded.WaitOne(0)=[true]";
+				Assembler.PopupException(msg);
+				return;	// why signal on already-signalled?
+			}
+			this.waitForChartFormIsLoaded.Set();
+		}
+
+		void mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim_Clicked(object sender, EventArgs e) {
+			string msig = "mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim_Clicked()";
+			try {
+				this.ctxStrategy.Visible = true;
+				//if (this.ChartFormManager.Strategy == null) return;
+				Strategy strategy = this.ChartFormManager.Executor.Strategy;
+				if (strategy == null) {
+					string msg = "CAN_NOT_SAVE_CHECKBOX_YOU_CLICKED__INACCESSIBLE_ScriptContextCurrent this.ChartFormManager.Executor.Strategy=null";
+					Assembler.PopupException(msg + msig);
+					return;
+				}
+				strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim
+									= this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim.Checked;
+				strategy.Serialize();
+				this.MniShowLivesim.ShowDropDown();
+
+				if (strategy.ScriptContextCurrent.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim) {	// sync after click (paused or running)
+					this.ChartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
+				} else {
+					this.ChartFormManager.LivesimEndedOrStoppedOrPaused_RestoreAutoHiddenExecutionAndReporters();
+				}
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
 		}
 	}
 }

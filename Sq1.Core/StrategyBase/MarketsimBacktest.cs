@@ -408,7 +408,7 @@ namespace Sq1.Core.StrategyBase {
 			int exitsFilled = 0;
 			int entriesFilled = 0;
 
-			List<Alert> alertsPendingSafeCopy = this.executor.ExecutionDataSnapshot.AlertsPending.InnerListSafeCopy;
+			List<Alert> alertsPendingSafeCopy = this.executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "SimulateFillAllPendingAlerts(WAIT)");
 			foreach (Alert alert in alertsPendingSafeCopy) {
 				if (alert.IsFilled && alert.IsExitAlert && alert.PositionAffected.Prototype != null) {
 					bool thisAlertWasAnnihilated = false;
@@ -460,11 +460,11 @@ namespace Sq1.Core.StrategyBase {
 			string msg2 = "below is a shortcut for Backtest+MarketSim to shorten realtime mutithreaded"
 				+ " logic: Order.ctor()=>OrderSubmit()=>PostProcessOrderState=>CallbackAlertFilledMoveAroundInvokeScript()";
 			
-			if (this.executor.ExecutionDataSnapshot.AlertsPending.ContainsInInnerList(alert) == true) {
+			if (this.executor.ExecutionDataSnapshot.AlertsPending.Contains(alert, this, "SimulateFillPendingAlert(WAIT)") == true) {
 				string msg = "ALERT_MUST_HAVE_BEEN_REMOVED_FROM_PENDINGS_AFTER_FILL"
 					+ "; normally, the filled alert should be already removed here by CallbackAlertFilledMoveAroundInvokeScript()"
 					+ "; AlertsPending.Contains(" + alert + ")=true";
-				bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
+				bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "SimulateFillPendingAlert(WAIT)");
 				Assembler.PopupException(msg + " SimulatePendingFill(" + quote + ")");
 			} else {
 				//Debugger.Break();
@@ -547,7 +547,7 @@ namespace Sq1.Core.StrategyBase {
 				#endif
 				throw new Exception(msg);
 			}
-			if (quote.ParentBarStreaming.ParentBarsIndex != this.executor.Bars.Count - 1) {
+			if (this.executor.Backtester.IsLivesim == false && quote.ParentBarStreaming.ParentBarsIndex != this.executor.Bars.Count - 1) {
 				string msg = "I refuse to serve this quoteToReach.ParentStreamingBar.ParentBarsIndex["
 					+ quote.ParentBarStreaming.ParentBarsIndex + "] != this.executor.Bars.Count-1[" + (this.executor.Bars.Count - 1) + "]";
 				#if DEBUG
@@ -590,7 +590,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return filled;
 			}
-			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote,
+			this.executor.CallbackAlertFilledMoveAroundInvokeScriptNonReenterably(alert, quote,
 				priceFill, alert.Qty, slippageFill, entryCommission);
 			return filled;
 		}
@@ -622,32 +622,32 @@ namespace Sq1.Core.StrategyBase {
 				}
 				return filled;
 			}
-			this.executor.CallbackAlertFilledMoveAroundInvokeScript(alert, quote,
+			this.executor.CallbackAlertFilledMoveAroundInvokeScriptNonReenterably(alert, quote,
 				priceFill, alert.Qty, slippageFill, exitCommission);
 			return filled;
 		}
 
 		public void SimulateStopLossMoved(Alert alertToBeKilled) {
 			Alert replacement = executor.PositionPrototypeActivator.CreateStopLossFromPositionPrototype(alertToBeKilled.PositionAffected);
-			bool removed = executor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled);
+			bool removed = executor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled, this, "SimulateStopLossMoved(WAIT)");
 			//ALREADY_ADDED_BY AlertEnrichedRegister
 			// executor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
 			// executor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
 		}
 		public void SimulateTakeProfitMoved(Alert alertToBeKilled) {
 			Alert replacement = executor.PositionPrototypeActivator.CreateTakeProfitFromPositionPrototype(alertToBeKilled.PositionAffected);
-			bool removed = executor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled);
+			bool removed = executor.ExecutionDataSnapshot.AlertsPending.Remove(alertToBeKilled, this, "SimulateTakeProfitMoved(WAIT)");
 			//ALREADY_ADDED_BY AlertEnrichedRegister
 			// executor.ExecutionDataSnapshot.AlertsPending.ByBarExpectedFillAddNoDupe(alertToBeKilled);
 			// executor.ExecutionDataSnapshot.AlertsPending.AddNoDupe(replacement);
 		}
 		public bool AnnihilateCounterpartyAlert(Alert alert) {
-			if (this.executor.ExecutionDataSnapshot.AlertsPending.ContainsInInnerList(alert) == false) {
+			if (this.executor.ExecutionDataSnapshot.AlertsPending.Contains(alert, this, "AnnihilateCounterpartyAlert(WAIT)") == false) {
 				string msg = "ANNIHILATE_COUNTERPARTY_ALREADY_REMOVED " + alert;	//ExecSnap.AlertsPending not synchronized: already removed
 				throw new Exception(msg);
 				//return false;
 			}
-			bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert);
+			bool removed = this.executor.ExecutionDataSnapshot.AlertsPending.Remove(alert, this, "AnnihilateCounterpartyAlert(WAIT)");
 			// no alert.OrderFollowed here!
 			//this.executor.RemovePendingAlertClosePosition(alert, "MarketSim:AnnihilateCounterparty(): ");
 			return true;
@@ -655,7 +655,7 @@ namespace Sq1.Core.StrategyBase {
 		
 		public void SimulateAlertKillPending(Alert alert) {
 			alert.IsKilled = true;
-			this.executor.CallbackAlertKilledInvokeScript(alert);
+			this.executor.CallbackAlertKilledInvokeScriptNonReenterably(alert);
 		}
 	}
 }

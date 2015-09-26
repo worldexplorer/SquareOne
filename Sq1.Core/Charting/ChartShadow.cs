@@ -22,6 +22,7 @@ namespace Sq1.Core.Charting {
 //#else
 //	UserControl
 //#endif
+		, IDisposable
 	{
 		//REPLACED_BY_ScriptExecutorObjects public ScriptToChartCommunicator ScriptToChartCommunicator { get; protected set; }
 		public event EventHandler<EventArgs> ChartSettingsChangedContainerShouldSerialize;
@@ -55,7 +56,7 @@ namespace Sq1.Core.Charting {
 		public virtual void SetExecutor(ScriptExecutor executor) {
 			this.Executor = executor;
 		}
-		public virtual void Initialize(Bars barsNotNull, bool invalidateAllPanels = true) {
+		public virtual void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool invalidateAllPanels = true) {
 			this.Bars = barsNotNull;
 		}
 		
@@ -143,9 +144,11 @@ namespace Sq1.Core.Charting {
 
 		public virtual void PositionsBacktestAdd(List<Position> positionsMaster) { }
 		public virtual void PositionsRealtimeAdd(ReporterPokeUnit pokeUnit) { }
+		public virtual void AlertsPendingStillNotFilledForBarAdd(int barIndex, List<Alert> alertsPendingSafeCopy) { }
 
-		public virtual void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) { }
-		public virtual void PendingRealtimeAdd(ReporterPokeUnit pokeUnit) { }
+
+		public virtual void PendingHistoryBacktestAdd(Dictionary<int, AlertList> alertsPendingHistorySafeCopy) { }
+		public virtual void AlertsPlacedRealtimeAdd(List<Alert> alertsNewPlaced) { }
 
 		public virtual OnChartObjectOperationStatus LineDrawModify(
 				string id, int barStart, double priceStart, int barEnd, double priceEnd,
@@ -171,7 +174,22 @@ namespace Sq1.Core.Charting {
 
 		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 		public virtual void InvalidateAllPanels() { }
-		public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
-		
-	}	
+		//public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
+
+		protected override void Dispose(bool disposing) {
+			base.Dispose(disposing);
+			this.Dispose();
+		}
+		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.paintAllowed.Dispose();
+			this.paintAllowed = null;
+			this.IsDisposed = true;
+		}
+		public bool IsDisposed { get; private set; }
+	}
 }

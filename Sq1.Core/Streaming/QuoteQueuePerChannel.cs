@@ -14,11 +14,11 @@ namespace Sq1.Core.Streaming {
 		protected	ConcurrentQueue<Quote>			QQ;
 					Stopwatch						waitedForBacktestToFinish;
 
-		public			bool	UpdateThreadNameAfterMaxConsumersSubscribed;
-		public			bool	HasSeparatePushingThread	{ get { return this is QuotePumpPerChannel; } }
-		public virtual	bool	Paused			{ get {
+		public			bool						UpdateThreadNameAfterMaxConsumersSubscribed;
+		public			bool						HasSeparatePushingThread						{ get { return this is QuotePumpPerChannel; } }
+		public virtual	bool						Paused											{ get {
 				#if DEBUG
-				Debugger.Break();
+				//Debugger.Break();
 				#endif
 				string msg = "QuoteQueue.Paused: OVERRIDE_ME_KOZ_PAUSING_MAKES_SENSE_FOR_REAL_STREAMING_QUOTE_PUMP_NOT_QUEUE"
 					+ " WHILE_ACTIVATING_ONE_OPRIMIZATION_RESULT_YOU_PAUSE_SINGLE_THREADED_BACKTESTER_INSTEAD_OF_STREAMING_PROVIDER?";

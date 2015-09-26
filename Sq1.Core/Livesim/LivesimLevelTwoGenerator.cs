@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Sq1.Core.Backtesting;
 using Sq1.Core.Support;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
 	class LivesimLevelTwoGenerator {
 		LivesimStreaming	livesimStreaming;
+		SymbolInfo			symbolInfo;
+
 		int					levelsToGenerate;
 		double				stepSize;
 		double				stepPrice;
@@ -20,7 +22,8 @@ namespace Sq1.Core.Livesim {
 		public LivesimLevelTwoGenerator(LivesimStreaming livesimStreaming) : this() {
 			this.livesimStreaming = livesimStreaming;
 		}
-		public void Initialize(int levelsToGenerate, double stepPrice, double stepSize) {
+		public void Initialize(SymbolInfo symbolInfo, int levelsToGenerate, double stepPrice, double stepSize) {
+			this.symbolInfo			= symbolInfo;
 			this.levelsToGenerate	= levelsToGenerate;
 			this.stepPrice			= stepPrice;
 			this.stepSize			= stepSize;
@@ -45,10 +48,12 @@ namespace Sq1.Core.Livesim {
 				prevAsk += this.stepPrice;
 				prevBid -= this.stepPrice;
 
-				double	randomSizeIncrement = quote.Size * (new Random(28).Next(5, 50) / 100d);
+				double	randomSizeIncrement = quote.Size * (new Random(6169916).Next(50, 99) / 100d);
+				randomSizeIncrement = symbolInfo.AlignToVolumeStep(randomSizeIncrement);
 				sizeAsk += randomSizeIncrement;
 
-						randomSizeIncrement = quote.Size * (new Random(6169916).Next(50, 99) / 100d);
+						randomSizeIncrement = quote.Size * (new Random(28).Next(5, 50) / 100d);
+				randomSizeIncrement = symbolInfo.AlignToVolumeStep(randomSizeIncrement);
 				sizeBid += randomSizeIncrement;
 			}
 		}

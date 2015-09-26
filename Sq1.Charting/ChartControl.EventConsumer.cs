@@ -118,8 +118,8 @@ namespace Sq1.Charting {
 			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 			//	return;
 			//}
-			this.ChartSettings.MultiSplitterRowsPropertiesByPanelName = this.multiSplitContainerRows.SplitterPropertiesByPanelNameGet();
-			this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName = this.multiSplitContainerColumns.SplitterPropertiesByPanelNameGet();
+			this.ChartSettings.MultiSplitterRowsPropertiesByPanelName		= this.multiSplitContainerRows		.SplitterPropertiesByPanelNameGet();
+			this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName	= this.multiSplitContainerColumns	.SplitterPropertiesByPanelNameGet();
 			// that will show that 10s delay actually makes better sense than relying on MainFormDockFormsFullyDeserializedLayoutComplete in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized()
 			//try {
 			//	int justCurious = this.ChartSettings.MultiSplitterPropertiesByPanelName[this.panelVolume.PanelName].Distance;

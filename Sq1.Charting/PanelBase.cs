@@ -25,9 +25,6 @@ namespace Sq1.Charting {
 		[Browsable(false)]	public	string			BarsIdent			{ get; set; }		//if a public field isn't a property, Designer will crash
 							public	bool			GutterRightDraw		{ get; set; }
 							public	bool			GutterBottomDraw	{ get; set; }
-		
-							public	bool			ImPaintingForegroundNow = false;
-							public	bool			ImPaintingBackgroundNow = false;
 
 		[Browsable(false)]	public	string			PanelNameAndSymbol	{ get { return this.PanelName + " " + this.BarsIdent; } }
 		[Browsable(false)]	public	ChartControl	ChartControl;		//{ get { return base.Parent as ChartControl; } }
@@ -59,13 +56,13 @@ namespace Sq1.Charting {
 		// PanelPrice		must return bars[barIndexMouseOvered].Close
 		// PanelVolume		must return bars[barIndexMouseOvered].Volume
 		// PanelIndicator	must return OwnValues[barIndexMouseOvered]
-							public	virtual	double	PanelValueForBarMouseOveredNaNunsafe { get {
+		[Browsable(true)]	public	virtual	double	PanelValueForBarMouseOveredNaNunsafe { get {
 				double ret = double.NaN;
 				if (this.ChartControl.BarIndexMouseIsOverNow == -1) return ret;
 				ret = this.ValueGetNaNunsafe(this.ChartControl.BarIndexMouseIsOverNow);
 				return ret;
 			} }
-							public	virtual	bool	PanelHasValuesForVisibleBarWindow { get {
+		[Browsable(true)]	public	virtual	bool	PanelHasValuesForVisibleBarWindow { get {
 				string msig = this.ToString();
 				bool ret = false;
 				if (this.VisibleBarRight_cached == -1) {
@@ -86,20 +83,40 @@ namespace Sq1.Charting {
 				ret = this.VisibleBarRight_cached <= this.ValueIndexLastAvailableMinusOneUnsafe;
 				return ret;
 			} }
-							public	virtual	double	ValueGetNaNunsafe(int barIndex) {
+		[Browsable(true)]	public	virtual	double	ValueGetNaNunsafe(int barIndex) {
 			#if DEBUG
 			Debugger.Break();
 			#endif
 			throw new NotImplementedException();
 		}
+
+
 		// REASON_TO_EXIST: for SBER, constant ATR shows truncated (imprecise) mouseOver value on gutter
-							public	virtual	int		Decimals { get {
-			#if DEBUG
-			Debugger.Break();
-			#endif
-			throw new NotImplementedException(); } }
-							public			string	Format { get { return "N" + (this.Decimals + 1); } }
-							public	virtual	int		ValueIndexLastAvailableMinusOneUnsafe { get {
+		[Browsable(true)]	public	virtual	int		PriceDecimals { get {
+				return 	  this.ChartControl.Bars.SymbolInfo != null
+					? this.ChartControl.Bars.SymbolInfo.PriceDecimals
+					: 5; } }
+		[Browsable(true)]	public			string	PriceFormat { get {
+				return 	  this.ChartControl.Bars.SymbolInfo != null
+					? this.ChartControl.Bars.SymbolInfo.PriceFormat
+					: "N" + (this.PriceDecimals + 1); } }
+
+		[Browsable(true)]	public	virtual	int		VolumeDecimals { get {
+				return 	  this.ChartControl.Bars.SymbolInfo != null
+					? this.ChartControl.Bars.SymbolInfo.VolumeDecimals
+					: 1; } }
+		[Browsable(true)]	public			string	VolumeFormat { get {
+				return 	  this.ChartControl.Bars.SymbolInfo != null
+					? this.ChartControl.Bars.SymbolInfo.VolumeFormat
+					: "N" + (this.VolumeDecimals + 1); } }
+
+		[Browsable(true)]	public 	virtual	double	PriceStep						{ get {
+			return	  this.ChartControl.Bars.SymbolInfo != null
+					? this.ChartControl.Bars.SymbolInfo.PriceStepFromDecimal
+					: -1d; } }
+
+
+		[Browsable(true)]	public	virtual	int		ValueIndexLastAvailableMinusOneUnsafe { get {
 				#if DEBUG
 				Debugger.Break();
 				#endif
@@ -162,18 +179,19 @@ namespace Sq1.Charting {
 							public			int		BarShadowOffset { get { return this.ChartControl.ChartSettings.BarShadowXoffset; } }
 
 							// only used in PanelLeve2 to grow to the left if PanelLeve2 is on the left of PanelPrice, or grow to the right if PanelLeve2 is on the right of PanelPrice
-							protected		MultiSplitContainer ParentMultiSplitContainerNullUnsafe { get {return base.Parent as MultiSplitContainer; } }
+							public			MultiSplitContainer ParentMultiSplitContainerNullUnsafe { get {return base.Parent as MultiSplitContainer; } }
 							protected		List<Control>		ParentMultiSplitSiblings { get {
 								return this.ParentMultiSplitContainerNullUnsafe != null
 									? this.ParentMultiSplitContainerNullUnsafe.ControlsContained
 									: new List<Control>(); } }
 							protected		bool	ParentMultiSplitIamFirst { get { return this.ParentMultiSplitSiblings.IndexOf(this) == 0; } }
-							protected		bool	ParentMultiSplitIamLast  { get { return this.ParentMultiSplitSiblings.IndexOf(this) == this.ParentMultiSplitSiblings.Count - 1; } }
-							public			Point	ParentMultiSplitMyLocationAmongAllPanels { get {
+							public			bool	ParentMultiSplitIamLast  { get { return this.ParentMultiSplitSiblings.IndexOf(this) == this.ParentMultiSplitSiblings.Count - 1; } }
+							[Obsolete("RETURNS_LOCATION_AMONG_SAME_MULTISPLITTER_PANELS; TO_GET_X_OF_ALL_PANELS_WHEN_LEVEL2_IS_IN_LEFT_COLUMN_USE_")]
+							public			Point	ParentMultiSplitMyLocationAmongSiblingsPanels { get {
 								Point ret = new Point(-1, -1);
-								foreach (Control meOrMySibling in this.ParentMultiSplitSiblings) {
-									if (meOrMySibling != this) continue;
-									ret = meOrMySibling.Location;
+								foreach (Control meOrNeighbourPanels in this.ParentMultiSplitSiblings) {
+									if (meOrNeighbourPanels != this) continue;
+									ret = meOrNeighbourPanels.Location;
 									break;
 								}
 								if (ret.X == -1) {
@@ -250,21 +268,18 @@ namespace Sq1.Charting {
 				Assembler.PopupException(msg, null, false);
 			}
 
-			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
-			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
-			
-			this.ChartControl.SyncHorizontalScrollToBarsCount();
-
-//			if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
-//				string msg = "MUST_BE_POSITIVE#2_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
-//				Assembler.PopupException(msg + msig);
-//				return;
-//			}
-			
-			if (this.ImPaintingForegroundNow) return;
 			try {
-				this.ImPaintingForegroundNow = true;
-				
+				//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
+				e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
+			
+				this.ChartControl.SyncHorizontalScrollToBarsCount();
+
+				//if (this.VisibleRangeWithTwoSqueezers_cached <= 0) {
+				//	string msg = "MUST_BE_POSITIVE#2_this.VisibleRangeWithTwoSqueezers_cached[" + this.VisibleRangeWithTwoSqueezers_cached + "] panel[" + this.ToString() + "]";
+				//	Assembler.PopupException(msg + msig);
+				//	return;
+				//}
+			
 				if (this.PanelHasValuesForVisibleBarWindow == false) {
 					string msg = "PANEL_BASE_PAINT_ENTRY_POINT_PROTECTS_DERIVED_FROM_INVOKING_PaintWholeSurfaceBarsNotEmpty()"
 						+ " occurs for JSON-Scripted Strategies with PanelIndicator* open without indicator's data"
@@ -272,6 +287,8 @@ namespace Sq1.Charting {
 					Assembler.PopupException(msg + msig, null, false);
 					return;
 				}
+				
+				this.RepaintSernoForeground++;
 				
 				this.PaintWholeSurfaceBarsNotEmpty(e.Graphics);	// GOOD: we get here once per panel
 				// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
@@ -297,12 +314,11 @@ namespace Sq1.Charting {
 						e.Graphics.DrawString(this.PanelNameAndSymbol, font, brush, new Point(2, 2));
 					}
 				}
+				//this.ChartControl.ChartSettings.DisposeAllGDIs_handlesLeakHunter();
 			} catch (Exception ex) {
 				string msg = "OnPaintDoubleBuffered(): caught[" + ex.Message + "]";
 				Assembler.PopupException(msg + msig, ex);
 				this.DrawError(e.Graphics, msg);
-			} finally {
-				this.ImPaintingForegroundNow = false;
 			}
 		}
 		protected virtual void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
@@ -363,6 +379,8 @@ namespace Sq1.Charting {
 			this.GutterGridLinesRightBottomDrawForeground(g);
 		}
 
+		protected	int RepaintSernoForeground;
+		protected	int RepaintSernoBackground;
 
 //#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
 //		protected override void OnPaintBackground(PaintEventArgs e) {
@@ -370,11 +388,17 @@ namespace Sq1.Charting {
 //#else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
 //#endif
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
+				if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
+				return;
+			}
+
 			string msig = " " + this.PanelName + ".OnPaintBackgroundDoubleBuffered()";
+
 			//DIDNT_MOVE_TO_PanelDoubleBuffered.OnPaint()_CHILDREN_DONT_GET_WHOLE_SURFACE_CLIPPED
 			//if (this.DesignMode) return;
 			e.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
-			if (this.ImPaintingBackgroundNow) return;
 			if (this.ChartControl == null) {
 				//e.Graphics.Clear(SystemColors.Control);
 				e.Graphics.Clear(base.BackColor);
@@ -397,13 +421,29 @@ namespace Sq1.Charting {
 				this.DrawError(e.Graphics, msig + msg);
 				return;
 			}
-			this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
-			//if (this.ChartControl.BarsNotEmpty) {}
-			this.ChartControl.SyncHorizontalScrollToBarsCount();
-			
 			try {
-				this.ImPaintingBackgroundNow = true;
+				this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
+				//if (this.ChartControl.BarsNotEmpty) {}
+				this.ChartControl.SyncHorizontalScrollToBarsCount();
+			
 				e.Graphics.Clear(this.ChartControl.ChartSettings.ChartColorBackground);
+				
+				this.RepaintSernoBackground++;
+				if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
+					//v1
+					//this.DrawError(e.Graphics, "BACKTEST_IS_RUNNING_WAIT");
+					//string msgRepaint = "repaintFore#" + this.RepaintSernoForeground + "/Back#" + this.RepaintSernoBackground;
+					//this.DrawError(e.Graphics, msgRepaint);
+					//if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
+					//v2
+					string msg = "MOVED_TO_THE_BEGINNING__SKIPPING_ALL_REPAINTS_DURING_BACKTEST__SETTING_WaitCursor";
+					Assembler.PopupException(msg);
+					return;
+				}
+				//if (this.Cursor != Cursors.Default) this.Cursor = Cursors.Default;
+				if (this.dragButtonPressed == false) this.Cursor = Cursors.Default;
+
+				
 				// TODO: we get here 4 times per Panel: DockContentHandler.SetVisible, set_FlagClipWindow, WndProc * 2
 				
 				this.VisibleBarRight_cached = this.ChartControl.VisibleBarRight;
@@ -456,14 +496,18 @@ namespace Sq1.Charting {
 //					Debugger.Break();
 //				}
 				this.PanelHeightMinusGutterBottomHeight_cached = this.PanelHeightMinusGutterBottomHeight;
+				if (this.PanelHeightMinusGutterBottomHeight_cached <= 0) {
+					string msg = "WASTED_ASSIGNMENT_WILL_THROW_SOON"
+						+ " this.PanelHeightMinusGutterBottomHeight[" + this.PanelHeightMinusGutterBottomHeight_cached + "]<=0";
+					Assembler.PopupException(msg, null, false);
+				}
 				
 				this.PaintBackgroundWholeSurfaceBarsNotEmpty(e.Graphics);
+				//this.ChartControl.ChartSettings.DisposeAllGDIs_handlesLeakHunter();
 			} catch (Exception ex) {
 				string msg = "OnPaintBackgroundDoubleBuffered(): caught[" + ex.Message + "]";
 				Assembler.PopupException(msg, ex);
 				this.DrawError(e.Graphics, msg);
-			} finally {
-				this.ImPaintingBackgroundNow = false;
 			}
 		}
 
@@ -604,31 +648,35 @@ namespace Sq1.Charting {
 		}
 		public override string ToString() {
 			string ret = this.PanelName;
-			ret += ":" + this.Location.Y + "+" + this.Height + "=" + (this.Location.Y + this.Height);
+			//ret += ": Location[" + this.Location + "]; Size[" + this.Size + "] (" + this.Height + ");"
+			ret += " ClientRectangle[" + this.ClientRectangle + "]";
 			return ret;
 		}
 
 		public string FormatValue(double value, bool shorten = false) {
+			// on right gutter, indicators will also show MA="13" for SymbolInfo.DecimalsPrice=0
+			string format = this.ThisPanelIsVolumePanel ? this.VolumeFormat : this.PriceFormat;
+
 			if (shorten) {
 				double num = Math.Abs(value);
 				if (num >= 1000000000000.0) {
 					value /= 1000000000000.0;
-					return value.ToString(this.Format) + "T";
+					return value.ToString(format) + "T";
 				}
 				if (num >= 1000000000.0) {
 					value /= 1000000000.0;
-					return value.ToString(this.Format) + "B";
+					return value.ToString(format) + "B";
 				}
 				if (num >= 1000000.0) {
 					value /= 1000000.0;
-					return value.ToString(this.Format) + "M";
+					return value.ToString(format) + "M";
 				}
 				if (num >= 10000.0) {
 					value /= 1000.0;
-					return value.ToString(this.Format) + "K";
+					return value.ToString(format) + "K";
 				}
 			}
-			return value.ToString(this.Format);
+			return value.ToString(format);
 		}
 	}
 }

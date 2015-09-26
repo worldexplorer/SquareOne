@@ -27,8 +27,16 @@ namespace Sq1.Core.Repositories {
 		// 4)	ASYNC_APPEND_TBI-related Task<LastBarAppender> could use this one: http://stackoverflow.com/questions/50744/wait-until-file-is-unlocked-in-net
 		object fileReadWriteSequentialLock;
 
-		Dictionary<double, long> headerSizesByVersion	= new Dictionary<double, long>() { { 3, 20 } };	// got 20 in Debugger from this.headerSize while reading saved v3 file
-		Dictionary<double, long> barSizesByVersion		= new Dictionary<double, long>() { { 3, 48 } };	// got 48 in Debugger from this.oneBarSize while reading saved v3 file
+		Dictionary<double, long> headerSizesByVersion	= new Dictionary<double, long>() {
+			{ 1, 42 },	// got 20 in below, but length depends on Symbol/ClassName
+			{ 2, 20 },	// got 20 in Debugger from this.headerSize while reading saved v3 file
+			{ 3, 20 },	// got 20 in Debugger from this.headerSize while reading saved v3 file
+		};
+		Dictionary<double, long> barSizesByVersion		= new Dictionary<double, long>() {
+			{ 1, 48 },	// got 48 in Debugger from this.oneBarSize while reading saved v3 file
+			{ 2, 48 },	// got 48 in Debugger from this.oneBarSize while reading saved v3 file
+			{ 3, 48 }	// got 48 in Debugger from this.oneBarSize while reading saved v3 file
+		};
 		
 		public RepositoryBarsFile(RepositoryBarsSameScaleInterval barsFolder, string symbol, bool throwIfDoesntExist = true, bool createIfDoesntExist = false) {
 			fileReadWriteSequentialLock = new object();
@@ -189,7 +197,10 @@ namespace Sq1.Core.Repositories {
 				try {
 					long headerSize = this.headerSizesByVersion[version];
 					if (headerSize != this.headerSize) {
+						#if DEBUG
 						this.headerSizesByVersion[version] = this.headerSize;
+						Assembler.PopupException("STORE_ME_JUST_BECAUSE?");
+						#endif
 					}
 				} catch (Exception ex) {
 					string msg2 = "FAILED_TO_SYNC this.headerSizesByVersion[" + version + "]";

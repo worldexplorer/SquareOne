@@ -1,9 +1,11 @@
 ﻿using System;
 
-using Newtonsoft.Json;
 using Sq1.Charting;
 using Sq1.Core;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Charting;
+
+using Newtonsoft.Json;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormDataSnapshot {

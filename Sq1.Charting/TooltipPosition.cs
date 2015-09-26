@@ -18,7 +18,7 @@ namespace Sq1.Charting {
 			this.AlertArrow = arrow;
 			Position position = arrow.Position;
 			Bars bars = position.Bars;
-			string priceFormat = bars.SymbolInfo.FormatPrice;
+			string priceFormat = bars.SymbolInfo.PriceFormat;
 
 			if (position.PositionLongShort == PositionLongShort.Long) {
 				lblEntry.Text = "Long" + position.EntryMarketLimitStop.ToString().Substring(0, 1);
@@ -37,10 +37,10 @@ namespace Sq1.Charting {
 			if (bars.IsIntraday) {
 				//text = text + " " + bars.Date[barNumber].ToShortTimeString();
 				//text = text + bars[bar].DateTimeOpen.ToString("HH:mm ");
-				text = text + position.EntryDate.ToString("HH:mm ");
+				text = text + position.EntryDateBarTimeOpen.ToString("HH:mm ");
 			}
 			//text = text + bars[bar].DateTimeOpen.ToString("ddd dd-MMM-yyyy");
-			text = text + position.EntryDate.ToString("ddd dd-MMM-yyyy");
+			text = text + position.EntryDateBarTimeOpen.ToString("ddd dd-MMM-yyyy");
 			this.lblDateVal.Text = text;
 
 			this.lblEntryVal.Text = position.EntryFilledPrice.ToString(priceFormat);
@@ -58,7 +58,7 @@ namespace Sq1.Charting {
 			
 			double commissions = position.EntryFilledCommission + position.ExitFilledCommission;
 			this.lblCommissionVal.Text = commissions.ToString();
-			this.lblPriceLevelSizeVal.Text = position.Bars.SymbolInfo.PriceStep.ToString(priceFormat);
+			this.lblPriceLevelSizeVal.Text = position.Bars.SymbolInfo.PriceStepFromDecimal.ToString(priceFormat);
 			this.lblBasisPriceVal.Text = position.EntryFilledPrice.ToString(priceFormat);
 	
 			Color color = (position.NetProfit > 0.0) ? Color.Green : Color.Red;
@@ -78,9 +78,6 @@ namespace Sq1.Charting {
 			}
 
 			this.lblSlippagesVal.Text = position.EntryFilledSlippage.ToString() + " / " + position.ExitFilledSlippage.ToString();
-		}
-		void TooltipPosition_MouseMove(object sender, MouseEventArgs e) {
-			this.Visible = false;
 		}
 	}
 }

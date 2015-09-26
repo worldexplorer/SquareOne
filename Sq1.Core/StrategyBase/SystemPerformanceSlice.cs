@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.StrategyBase {
 	public class SystemPerformanceSlice {
@@ -18,7 +19,7 @@ namespace Sq1.Core.StrategyBase {
 		public	Dictionary<Position, double> CumulativeNetProfitPercent;
 		
 		public	PositionList		PositionsImTracking				{ get; private set; }
-		public	IList<Position>		PositionsImTrackingReadonly		{ get { return this.PositionsImTracking.InnerList.AsReadOnly(); } }
+		public	List<Position>		PositionsImTrackingReadonly		{ get { return this.PositionsImTracking.SafeCopy(this, "//PositionsImTrackingReadonly(WAIT)"); } }
 
 		public	double				CashAvailable;
 
@@ -41,12 +42,12 @@ namespace Sq1.Core.StrategyBase {
 				return Math.Round(Math.Abs(this.NetProfitForClosedPositionsBoth / this.MaxDrawDown), 2);
 			} }
 		public double WinRatePct	{ get {
-				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
-				return Math.Round(100 * this.PositionsCountWinners / (double)this.PositionsCountBoth, 1);
+				if (this.PositionsCount == 0) return double.PositiveInfinity;
+				return Math.Round(100 * this.PositionsCountWinners / (double)this.PositionsCount, 1);
 			} }
 		public double LossRatePct	{ get {
-				if (this.PositionsCountBoth == 0) return double.PositiveInfinity;
-				return Math.Round(100 * this.PositionsCountLosers / (double)this.PositionsCountBoth, 2);
+				if (this.PositionsCount == 0) return double.PositiveInfinity;
+				return Math.Round(100 * this.PositionsCountLosers / (double)this.PositionsCount, 2);
 			} }
 		public double WinLossRatio  { get {
 				double ret = double.NaN;
@@ -56,7 +57,7 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		public double PayoffRatio { get {
 				if (this.AvgLossPctLosers == 0) return 0;
-				return Math.Round(Math.Abs(this.AvgProfitPctBoth / (double)this.AvgLossPctLosers), 2);
+				return Math.Round(Math.Abs(this.PositionAvgProfitPctBoth / (double)this.AvgLossPctLosers), 2);
 			} }
 
 		#region AllTrades
@@ -68,18 +69,18 @@ namespace Sq1.Core.StrategyBase {
 				if (this.BarsHeldTotalForClosedPositionsBoth == 0) return 0;
 				return Math.Round(this.NetProfitForClosedPositionsBoth / (double)this.BarsHeldTotalForClosedPositionsBoth, 2);
 			} }
-		public int PositionsCountBoth;
-		public double AvgProfitBoth { get {
-				if (this.PositionsCountBoth == 0) return 0;
-				return Math.Round(this.NetProfitForClosedPositionsBoth / (double)this.PositionsCountBoth, 2);
+		public int PositionsCount;
+		public double PositionAvgProfitBoth { get {
+				if (this.PositionsCount == 0) return 0;
+				return Math.Round(this.NetProfitForClosedPositionsBoth / (double)this.PositionsCount, 2);
 			} }
-		public double AvgProfitPctBoth { get {
-				if (this.PositionsCountBoth == 0) return 0;
-				return Math.Round(this.NetProfitPctForClosedPositionsBoth / (double)this.PositionsCountBoth, 2);
+		public double PositionAvgProfitPctBoth { get {
+				if (this.PositionsCount == 0) return 0;
+				return Math.Round(this.NetProfitPctForClosedPositionsBoth / (double)this.PositionsCount, 2);
 			} }
-		public double AvgBarsHeldBoth { get {
-				if (this.PositionsCountBoth == 0) return 0;
-				return Math.Round(this.BarsHeldTotalForClosedPositionsBoth / (double)this.PositionsCountBoth, 1);
+		public double PositionAvgBarsHeldBoth { get {
+				if (this.PositionsCount == 0) return 0;
+				return Math.Round(this.BarsHeldTotalForClosedPositionsBoth / (double)this.PositionsCount, 1);
 			} }
 		#endregion
 
@@ -131,52 +132,59 @@ namespace Sq1.Core.StrategyBase {
 			} }
 		#endregion
 
+		public SortedDictionary<DateTime, KPIs> KPIsCumulativeByDate { get; private set; }
+		int positionsCountPrevStep_MustIncreaseOnly;
+	
 		protected SystemPerformanceSlice() {
 			ReasonToExist = "NO_REASON_TO_EXIST";
 			// LOOKS_STUPID_BUT_DONT_SUGGEST_BRINGING_EXECUTOR_HERE: new BarScaleInterval(BarScale.Unknown, 0)
 			CashCurve	= new DataSeriesTimeBased(new BarScaleInterval(BarScale.Unknown, 0), "Cash");
 			
-			CumulativeNetProfitDollar	= new Dictionary<Position, double>();
-			CumulativeNetProfitPercent = new Dictionary<Position, double>();
+			CumulativeNetProfitDollar		= new Dictionary<Position, double>();
+			CumulativeNetProfitPercent		= new Dictionary<Position, double>();
 
 			PositionsImTracking = new PositionList("PositionsImTracking", null);
 			//v1 PositionLongShortImTracking = PositionLongShort.Unknown;	// direction not specified => it means "both short and long" here
 			//v2
-			PositionLongShortImTracking = SystemPerformancePositionsTracking.LongAndShort;
+			PositionLongShortImTracking		= SystemPerformancePositionsTracking.LongAndShort;
+			KPIsCumulativeByDate			= new SortedDictionary<DateTime, KPIs>();
 		}
 		public SystemPerformanceSlice(SystemPerformancePositionsTracking positionLongShortImTracking, string reasonToExist) : this() {
 			PositionLongShortImTracking = positionLongShortImTracking;
 			ReasonToExist = reasonToExist;
 		}
 		internal void Initialize(double startingCapital = -1) {
-			this.PositionsImTracking.Clear();
+			this.PositionsImTracking.Clear(this, "Clear");
 			this.CashCurve.Clear();
 			this.CashAvailable = 0;
 
 			this.CumulativeNetProfitDollar.Clear();
 			this.CumulativeNetProfitPercent.Clear();
 
-			this.MaxDrawDownLastLossDate = DateTime.MinValue;
-			this.MaxDrawDown = 0;
-			this.NetProfitPeakDate = DateTime.MinValue;
-			this.NetProfitPeak = 0;
+			this.MaxDrawDownLastLossDate				= DateTime.MinValue;
+			this.MaxDrawDown							= 0;
+			this.NetProfitPeakDate						= DateTime.MinValue;
+			this.NetProfitPeak							= 0;
 
-			this.curConsecWinners = 0;
-			this.curConsecLosers = 0;
-			this.MaxConsecWinners = 0;
-			this.MaxConsecLosers = 0;
+			this.curConsecWinners						= 0;
+			this.curConsecLosers						= 0;
+			this.MaxConsecWinners						= 0;
+			this.MaxConsecLosers						= 0;
 
-			this.NetProfitForClosedPositionsBoth = 0;
-			this.BarsHeldTotalForClosedPositionsBoth = 0;
-			this.PositionsCountBoth = 0;
+			this.NetProfitForClosedPositionsBoth		= 0;
+			this.BarsHeldTotalForClosedPositionsBoth	= 0;
+			this.PositionsCount						= 0;
 
-			this.NetProfitWinners = 0;
-			this.BarsHeldTotalForClosedPositionsWinners = 0;
-			this.PositionsCountWinners = 0;
+			this.NetProfitWinners						= 0;
+			this.BarsHeldTotalForClosedPositionsWinners	= 0;
+			this.PositionsCountWinners					= 0;
 
-			this.NetLossLosers = 0;
-			this.BarsHeldTotalForClosedPositionsLosers = 0;
-			this.PositionsCountLosers = 0;
+			this.NetLossLosers							= 0;
+			this.BarsHeldTotalForClosedPositionsLosers	= 0;
+			this.PositionsCountLosers					= 0;
+
+			this.KPIsCumulativeByDate.Clear();
+			this.positionsCountPrevStep_MustIncreaseOnly = 0;
 		}
 		[Obsolete("GET_RID_OF_ME__IM_TOO_EXPENSIVE__REPLACE_WITH_RANGED_updateStatsForBar+CumulativeAppendForPositionClosed")]
 		public void BuildStatsCumulativeOnBacktestFinished() {
@@ -208,7 +216,7 @@ namespace Sq1.Core.StrategyBase {
 			double prevCumProfitDollar = 0;
 			double prevCumProfitPercent = 0;
 
-			Position preLastPositionTracked = this.PositionsImTracking.PreLastNullUnsafe;
+			Position preLastPositionTracked = this.PositionsImTracking.PreLastNullUnsafe(this, "CumulativeAppendOrReplaceForPositionClosedOrOpenNow(WAIT)");
 			if (preLastPositionTracked != null) {
 				if (this.CumulativeNetProfitDollar.ContainsKey(preLastPositionTracked) == false) {
 					if (this.CumulativeNetProfitDollar.Count > this.PositionsImTracking.Count - 2) {
@@ -255,7 +263,7 @@ namespace Sq1.Core.StrategyBase {
 		internal int BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(Position positionOpened) {
 			int positionsOpenAbsorbedBoth = 0;
 			if (this.positionIsMineShouldAppendAndUpdate(positionOpened) == false) return positionsOpenAbsorbedBoth;
-			bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, true);
+			bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, this, "BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
 			if (added == false) {
 				string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH?";
 				Assembler.PopupException(msg);
@@ -274,7 +282,7 @@ namespace Sq1.Core.StrategyBase {
 		internal int BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(Position positionClosed) {
 			int positionsClosedAbsorbedBoth = 0;
 			if (this.positionIsMineShouldAppendAndUpdate(positionClosed) == false) return positionsClosedAbsorbedBoth; 
-			bool added = this.PositionsImTracking.AddToClosedDictionary_step2of2(positionClosed, true);
+			bool added = this.PositionsImTracking.AddToClosedDictionary_step2of2(positionClosed, this, "BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
 			if (added == false) {
 				return positionsClosedAbsorbedBoth;
 			}
@@ -289,12 +297,14 @@ namespace Sq1.Core.StrategyBase {
 		internal int BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(PositionList positionsOpenNow) {
 			int positionsUpdatedAbsorbed = 0;
 
-			List<int> barIndexesAsc = new List<int>(positionsOpenNow.ByEntryBarFilled.Keys);
+			var byEntryBarFilledSafeCopySafeCopy = positionsOpenNow.ByEntryBarFilledSafeCopy(
+				this, "//BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(WAIT)");
+			List<int> barIndexesAsc = new List<int>(byEntryBarFilledSafeCopySafeCopy.Keys);
 			barIndexesAsc.Sort();
 
 			List<Position> positionsClosedAtBar = new List<Position>();
 			foreach (int barIndex in barIndexesAsc) {
-				List<Position> positionsOpenedAtBar = positionsOpenNow.ByEntryBarFilled[barIndex];
+				List<Position> positionsOpenedAtBar = byEntryBarFilledSafeCopySafeCopy[barIndex];
 				foreach (Position positionOpenedAtBar in positionsOpenedAtBar) {
 					if (positionsOpenedAtBar.Count != 1) {
 						string msg = "MULTIPLE_POSITIONS_OPEN_FOR_ONE_BAR[" + barIndex + "] positionOpenedAtBar[" + positionOpenedAtBar + "]";
@@ -309,15 +319,16 @@ namespace Sq1.Core.StrategyBase {
 				string msg = " SOME_POSITIONS_NOT_ABSORBED_BY " + this.ToString()
 					+ " positionsUpdatedAbsorbed[" + positionsUpdatedAbsorbed + "]"
 					+ " positionsOpenNow[" + positionsOpenNow.Count + "]";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 			}
 			return positionsUpdatedAbsorbed;
 		}
 		public int BuildStatsOnBacktestFinished(ReporterPokeUnit pokeUnit) {
 			int positionsOpenedAbsorbedToInternal = 0;
-			foreach (Position positionOpened in pokeUnit.PositionsOpened.InnerList) {
+			List<Position> openedSafe = pokeUnit.PositionsOpened.SafeCopy(this, "//BuildStatsOnBacktestFinished(WAIT)");
+			foreach (Position positionOpened in openedSafe) {
 				if (this.positionIsMineShouldAppendAndUpdate(positionOpened) == false) continue;
-				bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, true);
+				bool added = this.PositionsImTracking.AddOpened_step1of2(positionOpened, this, "BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
 				if (added == false) {
 					string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH? SHOULD_I_CLEAR_BEFORE_BuildStatsOnBacktestFinished()?";
 					Assembler.PopupException(msg);
@@ -325,15 +336,16 @@ namespace Sq1.Core.StrategyBase {
 				}
 				positionsOpenedAbsorbedToInternal++;
 			}
-			if (positionsOpenedAbsorbedToInternal != pokeUnit.PositionsOpened.InnerList.Count) {
-					string msg = "IS_THERE_ANY_PROBLEM?";
-					//Assembler.PopupException(msg);
+			if (positionsOpenedAbsorbedToInternal != openedSafe.Count) {
+				string msg = "NO_ITS_FINE IS_THERE_ANY_PROBLEM? positionsOpenedAbsorbedToInternal[" + positionsOpenedAbsorbedToInternal + "] != openedSafe.Count[" + openedSafe.Count + "]";
+				//Assembler.PopupException(msg, null, false);
 			}
 			
 			int positionsClosedAbsorbedToInternal = 0;
-			foreach (Position positionClosed in pokeUnit.PositionsClosed.InnerList) {
+			List<Position> closedSafe = pokeUnit.PositionsClosed.SafeCopy(this, "//BuildStatsOnBacktestFinished(WAIT)");
+			foreach (Position positionClosed in closedSafe) {
 				if (this.positionIsMineShouldAppendAndUpdate(positionClosed) == false) continue; 
-				bool added = this.PositionsImTracking.AddToClosedDictionary_step2of2(positionClosed, true);
+				bool added = this.PositionsImTracking.AddToClosedDictionary_step2of2(positionClosed, this, "BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(WAIT)", ConcurrentWatchdog.TIMEOUT_DEFAULT, true);
 				if (added == false) {
 					string msg = "IS_THIS_WHY_I_GET_EMPTY_INNER_LIST_FOR_SLICE_BOTH? SHOULD_I_CLEAR_BEFORE_BuildStatsOnBacktestFinished()?";
 					Assembler.PopupException(msg);
@@ -341,14 +353,14 @@ namespace Sq1.Core.StrategyBase {
 				}
 				positionsClosedAbsorbedToInternal++;
 			}
-			if (positionsClosedAbsorbedToInternal != pokeUnit.PositionsClosed.InnerList.Count) {
+			if (positionsClosedAbsorbedToInternal != closedSafe.Count) {
 					string msg = "IS_THERE_ANY_PROBLEM?";
 					//Assembler.PopupException(msg);
 			}
-			
 
-			Dictionary<int, List<Position>> positionsOpenedAfterExec	= pokeUnit.PositionsOpened.ByEntryBarFilled;
-			Dictionary<int, List<Position>> positionsClosedAfterExec	= pokeUnit.PositionsClosed.ByExitBarFilled;
+
+			Dictionary<int, List<Position>> positionsOpenedAfterExec	= pokeUnit.PositionsOpened.ByEntryBarFilledSafeCopy(this, "BuildStatsOnBacktestFinished(WAIT)");
+			Dictionary<int, List<Position>> positionsClosedAfterExec	= pokeUnit.PositionsClosed.ByExitBarFilledSafeCopy(this, "BuildStatsOnBacktestFinished(WAIT)");
 			
 			int positionsOpenAbsorbed = 0;
 
@@ -412,7 +424,7 @@ namespace Sq1.Core.StrategyBase {
 				//v1 if (this.PositionLongShortImTracking != PositionLongShort.Unknown && entryPosition.PositionLongShort != this.PositionLongShortImTracking) continue;
 				if (this.positionIsMineShouldAppendAndUpdate(positionOpened) == false) continue;
 				if (barDateTime == DateTime.MinValue) barDateTime = positionOpened.EntryBar.DateTimeOpen;
-				if (positionOpened.EntryDate != barDateTime) {
+				if (positionOpened.EntryDateBarTimeOpen != barDateTime) {
 					string msg = "YOU_GOT_POSITIONS_WITH_ALL_DIFFERENT_DATES_WHILE_MUST_BE_SAME_FOR_positionsOpenedAtBar";
 					Assembler.PopupException(msg);
 				}
@@ -432,6 +444,12 @@ namespace Sq1.Core.StrategyBase {
 			int positionsClosedAbsorbedBoth = 0;
 
 			foreach (Position positionClosed in positionsClosedAtBar) {
+				if (positionClosed.ExitAlert == null) {
+					string msg = "QUE_BOI_HACER_HERMA? positionClosed.ExitAlert=null";
+					Assembler.PopupException(msg);
+					continue;
+				}
+				if (positionClosed.ExitAlert.ForcefullyClosedBacktestLastPosition) continue;
 				if (positionsClosedAccounted.Contains(positionClosed)) {
 					string msg = "SHOULD_BE_INVOKED_FOR_LIVE_CLOSED_POSITION_ONCE";
 					Assembler.PopupException(msg);
@@ -441,7 +459,7 @@ namespace Sq1.Core.StrategyBase {
 				//v1 if (this.PositionLongShortImTracking != PositionLongShort.Unknown && exitPosition.PositionLongShort != this.PositionLongShortImTracking) continue;
 				if (this.positionIsMineShouldAppendAndUpdate(positionClosed) == false) continue;
 				if (barDateTime == DateTime.MinValue) barDateTime = positionClosed.ExitBar.DateTimeOpen;
-				if (positionClosed.ExitDate != barDateTime) {
+				if (positionClosed.ExitDateBarTimeOpen != barDateTime) {
 					string msg = "YOU_GOT_POSITIONS_WITH_ALL_DIFFERENT_DATES_WHILE_MUST_BE_SAME_FOR_positionsClosedAtBar barDateTime[" + barDateTime + "] " + positionClosed;
 					Assembler.PopupException(msg);
 				}
@@ -490,7 +508,8 @@ namespace Sq1.Core.StrategyBase {
 			this.CashCurve	.SumupOrAppend(barDateTime, cashBalanceAtBar);
 
 			this.CommissionBoth							+= commissionWinners + commissionLosers;
-			this.PositionsCountBoth						+= positionsOpenAbsorbedBoth + positionsClosedAbsorbedBoth;
+			//this.PositionsCountBoth						+= positionsOpenAbsorbedBoth + positionsClosedAbsorbedBoth;
+			this.PositionsCount							+= positionsClosedAbsorbedBoth;
 			this.BarsHeldTotalForClosedPositionsBoth	+= barsHeldAtBarBoth;
 			this.NetProfitForClosedPositionsBoth		+= netProfitAtBarBoth;
 			this.NetProfitPctForClosedPositionsBoth		+= netProfitPctAtBarBoth;
@@ -516,6 +535,32 @@ namespace Sq1.Core.StrategyBase {
 			if (this.MaxDrawDown > drawDown) {
 				this.MaxDrawDown = drawDown;
 				this.MaxDrawDownLastLossDate = barDateTime;
+			}
+
+			if (this.PositionLongShortImTracking != SystemPerformancePositionsTracking.LongAndShort) return positionsOpenAbsorbedBoth;
+			if (positionsClosedAbsorbedBoth == 0) return positionsOpenAbsorbedBoth;
+
+			KPIs kpisForBar = new KPIs(this.ReasonToExist, 
+				this.PositionsCount, this.NetProfitForClosedPositionsBoth, this.PositionAvgProfitBoth,
+				this.WinLossRatio, this.ProfitFactor, this.RecoveryFactor,
+				this.MaxDrawDown, this.MaxConsecWinners, this.MaxConsecLosers);
+
+			if (this.positionsCountPrevStep_MustIncreaseOnly >= this.PositionsCount && this.PositionsCount > 0) {
+				string msg = "POSITIONS_COUNT_CANT_DECREASE ["
+					+ this.positionsCountPrevStep_MustIncreaseOnly + "]MUST_BE_LESS_THAN[" + kpisForBar.PositionsCount + "]"
+					+ " //" + this.ReasonToExist;
+				Assembler.PopupException(msg);
+			}
+			this.positionsCountPrevStep_MustIncreaseOnly = this.PositionsCount;
+
+			if (this.KPIsCumulativeByDate.ContainsKey(barDateTime) == false) {
+				this.KPIsCumulativeByDate.Add(barDateTime, kpisForBar);
+			} else {
+				string msg = "NONSENSE_BUT_ADDING__MUST_NOT_BE_DUPLICATES_KOZ_INVOKING_ONCE_PER_BAR barDateTime[" + barDateTime + "]";
+				//Assembler.PopupException(msg, null, false);
+
+				KPIs existing = this.KPIsCumulativeByDate[barDateTime];
+				existing.AddKPIs(kpisForBar);
 			}
 
 			return positionsOpenAbsorbedBoth;
@@ -560,5 +605,6 @@ namespace Sq1.Core.StrategyBase {
 			return this.CumulativeNetProfitDollar.ContainsKey(position) ? this.CumulativeNetProfitDollar[position] : -1; }
 		public double CumulativeNetProfitPercentForPosition(Position position) {
 			return this.CumulativeNetProfitPercent.ContainsKey(position) ? this.CumulativeNetProfitPercent[position] : -1; }
+
 	}
 }

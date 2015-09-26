@@ -1,28 +1,27 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 
 using Sq1.Core;
-using Sq1.Core.Charting.OnChart;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 
 namespace Sq1.Strategies.Demo {
-	public class TwoMAsCompiled : Script {
+	public partial class TwoMAsCompiled : Script {
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
-		public IndicatorMovingAverageSimple MAfast;
-		public IndicatorMovingAverageSimple MAslow;
+		IndicatorMovingAverageSimple MAslow;
+		IndicatorMovingAverageSimple MAfast;
 
 		public TwoMAsCompiled() {
-			MAfast = new IndicatorMovingAverageSimple();
-			MAfast.ParamPeriod = new IndicatorParameter("Period", 22, 11, 33, 3);	//11);
-			MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
-
 			MAslow = new IndicatorMovingAverageSimple();
-			MAslow.ParamPeriod = new IndicatorParameter("Period", 15, 10, 20, 2);	//5);
+			MAslow.ParamPeriod = new IndicatorParameter("Period", 16, 10, 20, 2);	//5);
 			MAslow.LineColor = System.Drawing.Color.LightCoral;
+
+			MAfast = new IndicatorMovingAverageSimple();
+			MAfast.ParamPeriod = new IndicatorParameter("Period", 22, 11, 32, 3);	//11);
+			MAfast.LineColor = System.Drawing.Color.LightSeaGreen;
+			this.constructRenderingTools();
 		}
 		
 		public int PeriodLargestAmongMAs { get {
@@ -32,15 +31,19 @@ namespace Sq1.Strategies.Demo {
 			} }
 
 		public override void InitializeBacktest() {
+			string msg = "HERE_I_SHOULD_CATCH_NEW_MAS_PERIODS_CHANGED_AFTER_CLICK_ON_PARAMETERS_SLIDERS";
+			//Assembler.PopupException(msg, null, false);
 		}
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {
 		}
 		public override void OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(Bar barStaticFormed) {
-			this.drawLinesSample(barStaticFormed);
-			//this.testBarBackground(barStaticFormed);
-			//this.testBarAnnotations(barStaticFormed);
+			if (this.Executor.Sequencer.IsRunningNow == false) {
+				this.drawLinesSample(barStaticFormed);
+				//this.testBarBackground(barStaticFormed);
+				//this.testBarAnnotations(barStaticFormed);
+			}
 			
-			Bar barStreaming = barStaticFormed.ParentBars.BarStreaming;
+			Bar barStreaming = barStaticFormed.ParentBars.BarStreamingNullUnsafe;
 			if (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;
 
 			if (this.MAslow.OwnValuesCalculated == null) {
@@ -100,71 +103,6 @@ namespace Sq1.Strategies.Demo {
 		public override void OnPositionOpenedPrototypeSlTpPlacedCallback(Position positionOpenedByPrototype) {
 		}
 		public override void OnPositionClosedCallback(Position positionClosed) {
-		}
-
-		void drawLinesSample(Bar barStaticFormed) {
-			Bar barFirstForCurrentTradingDay = barStaticFormed.BarMarketOpenedTodayScanBackwardIgnoringMarketInfo;
-			double dayOpenedAtPrice = barFirstForCurrentTradingDay.Open;
-			
-			// one line is drawn across one day regardless of timeframe: just the date is enough to "address" the line 
-			string lineId = barFirstForCurrentTradingDay.DateTimeOpen.ToString("yyyy-MMM-dd");
-			//Debugger.Break();
-			base.Executor.ChartConditionalLineDrawModify(lineId,
-				barFirstForCurrentTradingDay.ParentBarsIndex, dayOpenedAtPrice,
-				barStaticFormed.ParentBarsIndex, dayOpenedAtPrice,
-				Color.Blue, 1);
-
-			
-			double upperLimit = dayOpenedAtPrice + dayOpenedAtPrice * 0.005;	//143.200 + 716 = 143.916 - most likely visible on the chart, not beoynd
-			double lowerLimit = dayOpenedAtPrice - dayOpenedAtPrice * 0.005;
-			
-			base.ChartConditionalLineDrawModify(lineId + "_red",
-				barFirstForCurrentTradingDay.ParentBarsIndex, upperLimit,
-				barStaticFormed.ParentBarsIndex, upperLimit,
-				Color.Red, 2);
-			base.ChartConditionalLineDrawModify(lineId + "_green",
-				barFirstForCurrentTradingDay.ParentBarsIndex, lowerLimit,
-				barStaticFormed.ParentBarsIndex, lowerLimit,
-				Color.Green, 2);
-			
-			
-			if (barStaticFormed == barFirstForCurrentTradingDay) {
-				OnChartObjectOperationStatus status = base.Executor.ChartConditionalLineDrawModify(lineId + "_brown",
-					barStaticFormed.ParentBarsIndex, lowerLimit,
-					barStaticFormed.ParentBarsIndex, upperLimit,
-					Color.Brown, 3);
-				if (status != OnChartObjectOperationStatus.OnChartObjectJustCreated) {
-					string msg = "NEVER_HAPPENED_SO_FAR status[" + status + "] != OnChartObjectOperationStatus.OnChartObjectJustCreated";
-					Assembler.PopupException(msg);
-				}
-			}
-
-			if (base.Executor.Backtester.BarsOriginal == null) {
-				string msg = "I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL base.Executor.Backtester.BarsOriginal == null";
-				//Assembler.PopupException(msg + " //Script=" + this.ToString());
-				return;
-			}
-
-			if (base.Bars.Count == base.Executor.Backtester.BarsOriginal.Count) {
-				base.ChartConditionalLineDrawModify("acrossAllBars",
-					0, base.Bars.BarStaticFirstNullUnsafe.Open,
-					base.Bars.BarStaticLastNullUnsafe.ParentBarsIndex, base.Bars.BarStaticLastNullUnsafe.Open,
-					Color.Goldenrod, 1);
-			}
-		}
-		void testBarBackground(Bar barStaticFormed) {
-			Color bg = (barStaticFormed.Open > barStaticFormed.Close) ? Color.LightGreen : Color.LightSalmon;
-			base.ChartConditionalBarBackgroundSet(barStaticFormed.ParentBarsIndex, bg);
-		}
-		void testBarAnnotations(Bar barStaticFormed) {
-			int barIndex = barStaticFormed.ParentBarsIndex;
-			string labelText = barStaticFormed.DateTimeOpen.ToString("HH:mm");
-			labelText += " " + barStaticFormed.BarIndexAfterMidnightReceived + "/";
-			labelText += barStaticFormed.BarIndexExpectedSinceTodayMarketOpen + ":" + barStaticFormed.BarIndexExpectedMarketClosesTodaySinceMarketOpen;
-			Font font = new Font("Arial", 6);
-			bool evenAboveOddBelow = (barStaticFormed.ParentBarsIndex % 2) == 0;
-			base.Executor.ChartConditionalBarAnnotationDrawModify(
-				barIndex, "ann" + barIndex, labelText, font, Color.ForestGreen, Color.Empty, evenAboveOddBelow);
 		}
 	}
 }

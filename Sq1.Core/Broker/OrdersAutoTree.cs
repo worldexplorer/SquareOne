@@ -24,7 +24,7 @@ namespace Sq1.Core.Broker {
 			int derivedsFound = 0;
 
 			List<Order> foundSoRemoveFromRoot = new List<Order>();
-			foreach (Order orderWithDeriveds in ordersFlat.InnerOrderList) {
+			foreach (Order orderWithDeriveds in ordersFlat.SafeCopy) {
 				if (orderWithDeriveds.DerivedOrdersGuids == null) continue;
 				foreach (string guidToFind in orderWithDeriveds.DerivedOrdersGuids) {
 					string ident = "orderWithDeriveds[" + orderWithDeriveds.GUID + "] has derivedGuid[" + guidToFind + "]";
@@ -35,7 +35,7 @@ namespace Sq1.Core.Broker {
 					}
 					
 					Order orderFound = null;
-					foreach (Order orderEveryScanning in ordersFlat.InnerOrderList) {
+					foreach (Order orderEveryScanning in ordersFlat.SafeCopy) {
 						if (orderEveryScanning.GUID != guidToFind) continue;
 						orderFound = orderEveryScanning;
 						break;
@@ -63,12 +63,12 @@ namespace Sq1.Core.Broker {
 				}
 			}
 			
-			foreach (Order order in ordersFlat.InnerOrderList) {
+			foreach (Order order in ordersFlat.SafeCopy) {
 				if (foundSoRemoveFromRoot.Contains(order)) continue;
 				base.Insert(order);
 			}
 
-			string stats = "DERIVEDS_MOVED[" + derivedsFound + "] = ordersFlat.Count[" + ordersFlat.InnerOrderList.Count + "] - base.Count[" + base.InnerOrderList.Count + "]";
+			string stats = "DERIVEDS_MOVED[" + derivedsFound + "] = ordersFlat.Count[" + ordersFlat.Count + "] - base.Count[" + base.Count + "]";
 			//Assembler.PopupException(stats + msig);
 		}
 

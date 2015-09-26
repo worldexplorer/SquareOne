@@ -36,6 +36,10 @@ namespace Sq1.Gui {
 					ret = ExecutionForm.Instance;
 				} else if (persistedTypeFullName == typeof(CsvImporterForm).ToString()) {
 					ret = CsvImporterForm.Instance;
+				} else if (persistedTypeFullName == typeof(SymbolInfoEditorForm).ToString()) {
+					ret = SymbolInfoEditorForm.Instance;
+				} else if (persistedTypeFullName == typeof(ChartSettingsEditorForm).ToString()) {
+					ret = ChartSettingsEditorForm.Instance;
 				} else {
 					// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos
 					return this.handleClassesWithGetPersistStringOverridden(persistedTypeFullName);
@@ -78,7 +82,7 @@ namespace Sq1.Gui {
 			// DockContent.Layout.xml contains definitions of "ReporterWrapped" and "ScriptEditor" next lines AFTER parent ChartFormsManager,
 			// so we must've had parent chart deserialized on the previous invocation at {case ("Chart"):}
 			// if too unreliable, then switch back to GuiDataSnapshot.ChartFormsManagers + GuiDataSnapshot.RebuildDeserializedChartFormsManagers()
-			ChartFormManager parentChart = null;
+			ChartFormsManager parentChart = null;
 
 			switch (managedFormCase) {
 				case ("Chart"):
@@ -87,11 +91,11 @@ namespace Sq1.Gui {
 					//if (this.ChartFormsManager.Strategy.ScriptContextCurrent != null) {
 					//	ret += ",StrategyScriptContextName:" + this.ChartFormsManager.Strategy.ScriptContextCurrent.Name;
 					//}
-					if (this.GuiDataSnapshot.ChartFormManagers.ContainsKey(chartSerno)) {
+					if (this.GuiDataSnapshot.ChartFormsManagers.ContainsKey(chartSerno)) {
 						// who knows why LoadFromXml invokes me twice?
 						return ret;
 					}
-					ChartFormManager chartFormsManagerDeserialized = new ChartFormManager(this, chartSerno);
+					ChartFormsManager chartFormsManagerDeserialized = new ChartFormsManager(this, chartSerno);
 					//chartFormsManagerDeserialized.Initialize(this, strategy);
 					string strategyGuid;
 					bool existsGuid = persistedParsedToHash.TryGetValue("StrategyGuid", out strategyGuid);
@@ -132,11 +136,11 @@ namespace Sq1.Gui {
 					ret = parentChart.ScriptEditorFormConditionalInstance;
 					break;
 
-				case ("Optimizer"):
-					//return "Optimizer:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
+				case ("Sequencer"):
+					//return "Sequencer:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
 					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
-					ret = parentChart.OptimizerFormConditionalInstance;
+					ret = parentChart.SequencerFormConditionalInstance;
 					break;
 
 				case ("LiveSim"):
@@ -144,6 +148,13 @@ namespace Sq1.Gui {
 					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
 					if (parentChart.StrategyFoundDuringDeserialization == false) break;
 					ret = parentChart.LivesimFormConditionalInstance;
+					break;
+
+				case ("Correlator"):
+					//return "Livesim:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.ChartSerno;
+					parentChart = this.GuiDataSnapshot.FindChartFormsManagerBySerno(chartSerno, msig, true);
+					if (parentChart.StrategyFoundDuringDeserialization == false) break;
+					ret = parentChart.CorrelatorFormConditionalInstance;
 					break;
 
 				case ("DataSourceEditor"):
@@ -268,19 +279,10 @@ namespace Sq1.Gui {
 				}
 				//v2 END
 			}
-		}
-		void mainForm_ResizeEnd(object sender, EventArgs e) {
-			if (this.GuiDataSnapshot == null) return;
-			this.GuiDataSnapshot.MainFormSize = base.Size;
-		}
-		void mainForm_LocationChanged(object sender, EventArgs e) {
-			if (this.GuiDataSnapshot == null) {
-				string msg = "Forms.Control.Visible.set() invokes LocationChaned, we'll come back after this.DataSnapshot gets created";
-				return;
+			ChartSettingsEditorForm.Instance.Initialize(this.GuiDataSnapshot.ChartSettingsForChartSettingsEditor);
+			if (this.ChartFormActiveNullUnsafe != null) {
+				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(this.ChartFormActiveNullUnsafe.ChartControl.ChartSettings);
 			}
-			if (base.Location.X < 0) return;
-			if (base.Location.Y < 0) return;
-			this.GuiDataSnapshot.MainFormLocation = base.Location;
 		}
 	}
 }

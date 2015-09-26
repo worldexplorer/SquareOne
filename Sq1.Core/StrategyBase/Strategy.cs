@@ -4,12 +4,12 @@ using System.Diagnostics;
 using System.IO;
 
 using Newtonsoft.Json;
-using Sq1.Core.Indicators;
 using Sq1.Core.Livesim;
+using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public partial class Strategy {
-		[JsonProperty]	public Guid Guid;
+		[JsonProperty]	public Guid									Guid;
 		[JsonProperty]	public string								Name;
 		[JsonProperty]	public string								ScriptSourceCode;
 		[JsonProperty]	public string								DotNetReferences;
@@ -17,9 +17,9 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public int									ExceptionsLimitToAbortBacktest;
 
 		[JsonProperty]	public string								StoredInJsonAbspath;
-		[JsonIgnore]	public string								StoredInFolderRelName	{ get { return Path.GetFileName(Path.GetDirectoryName(this.StoredInJsonAbspath)); } }
-		[JsonIgnore]	public string								StoredInJsonRelName		{ get { return Path.GetFileName(this.StoredInJsonAbspath); } }
-		[JsonIgnore]	public string								RelPathAndNameForOptimizationResults			{ get { return Path.Combine(this.StoredInFolderRelName, this.Name); } }
+		[JsonIgnore]	public string								StoredInFolderRelName				{ get { return Path.GetFileName(Path.GetDirectoryName(this.StoredInJsonAbspath)); } }
+		[JsonIgnore]	public string								StoredInJsonRelName					{ get { return Path.GetFileName(this.StoredInJsonAbspath); } }
+		[JsonIgnore]	public string								RelPathAndNameForSequencerResults	{ get { return Path.Combine(this.StoredInFolderRelName, this.Name); } }
 		
 		[JsonIgnore]	public bool									ActivatedFromDll { get {
 				if (string.IsNullOrEmpty(this.DllPathIfNoSourceCode)) return false;
@@ -32,12 +32,12 @@ namespace Sq1.Core.StrategyBase {
 		//CANT_DESERIALIZE_JsonException public Dictionary<int, ScriptParameter> ScriptParametersByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
 		//					return this.Script.ParametersById;
 		//				} }
-		[JsonIgnore]	public string								ScriptParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
-				if (this.Script == null) return null;
-				return this.Script.ScriptParametersByIdAsString;
+		[JsonIgnore]	public string								ScriptParametersAsStringJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+				if (this.Script == null) return "CANT_DUMP_SCRIPT_PARAMETERS this.Script=null";
+				return this.Script.ScriptParametersAsString;
 			} }
-		[JsonIgnore]	public string								IndicatorParametersAsStringByIdJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
-				if (this.Script == null) return null;
+		[JsonIgnore]	public string								IndicatorParametersAsStringJSONcheck { get {	// not for in-program use; for a human reading Strategy's JSON
+				if (this.Script == null) return "CANT_DUMP_INDICATOR_PARAMETERS this.Script=null";
 				return this.Script.IndicatorParametersAsString;
 			} }
 		[JsonProperty]	public string								ScriptContextCurrentName;	// if you restrict SET, serializer won't be able to restore from JSON { get; private set; }
@@ -45,12 +45,16 @@ namespace Sq1.Core.StrategyBase {
 		[JsonIgnore]	public ContextScript						ScriptContextCurrent { get {
 				lock (this.ScriptContextCurrentName) {	// Monitor shouldn't care whether I change the variable that I use for exclusive access...
 				//v2 lock (this.scriptContextCurrentNameLock) {
-					if (this.ScriptContextsByName.ContainsKey(ScriptContextCurrentName) == false)  {
-					string msg = "ScriptContextCurrentName[" + ScriptContextCurrentName + "] doesn't exist in Strategy[" + this.ToString() + "]";
-						#if DEBUG
-						Debugger.Break();
-						#endif
-						throw new Exception(msg);
+					if (this.ScriptContextsByName.ContainsKey(this.ScriptContextCurrentName) == false) {
+						string msg = "ENFORCING_DEFAULT_SCRIPT_CONTEXT ScriptContextCurrentName[" + this.ScriptContextCurrentName
+							+ "] doesn't exist in Strategy[" + this.ToString() + "]";
+						Assembler.PopupException(msg);
+						if (this.ScriptContextsByName.ContainsKey(ContextScript.DEFAULT_NAME) == false) {
+							string msg2 = "CANT_ENFORCE_DEFAULT_SCRIPT_CONTEXT DEVELOPER_NEVER_ALLOW_DELETE_DEFALUT_CONTEXT"
+								+ " Strategy[" + this.ToString() + "].ScriptContextsByName.ContainsKey(" + ContextScript.DEFAULT_NAME + ") == false[";
+							throw new Exception(msg2);
+						}
+						this.ScriptContextCurrentName = ContextScript.DEFAULT_NAME;
 					}
 					return this.ScriptContextsByName[this.ScriptContextCurrentName];
 				}
@@ -61,13 +65,23 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public LivesimStreamingSettings				LivesimStreamingSettings;
 		//v1 [JsonProperty]	public Dictionary<string, List<SystemPerformanceRestoreAble>>	OptimizationResultsByContextIdent;
 
-	
+		[JsonIgnore]	public	bool			ScriptEditedNeedsSaving;
+		[JsonIgnore]	public	const string	PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE = "* ";
+		[JsonIgnore]	public	string			WindowTitle { get {
+				string ret = this.Name;
+				if (this.ScriptEditedNeedsSaving) ret = PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + ret;
+				if (this.ActivatedFromDll == true) ret += "-DLL";
+				return ret;
+			} }
+
 		// programmer's constructor
 		public Strategy(string name) : this() {
 			this.Name = name;
 		}
 		// deserializer's constructor
 		public Strategy() {
+			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
+
 			this.Guid = Guid.NewGuid();
 			this.ScriptContextCurrentName			= ContextScript.DEFAULT_NAME;
 			this.ScriptContextsByName				= new Dictionary<string, ContextScript>();
@@ -78,6 +92,7 @@ namespace Sq1.Core.StrategyBase {
 			this.LivesimBrokerSettings				= new LivesimBrokerSettings(this);
 			this.LivesimStreamingSettings			= new LivesimStreamingSettings(this);
 			//v1this.OptimizationResultsByContextIdent	= new Dictionary<string, List<SystemPerformanceRestoreAble>>();
+			this.ScriptEditedNeedsSaving			= false;
 		}
 		public override string ToString() {
 			string ret = this.Name;
@@ -96,70 +111,29 @@ namespace Sq1.Core.StrategyBase {
 		}
 
 		public Strategy CloneWithNewGuid() {
-			var ret = (Strategy)base.MemberwiseClone();
+			Strategy ret = (Strategy)base.MemberwiseClone();
 			ret.Guid = Guid.NewGuid();
 			return ret;
 		}
-		public Strategy CloneWithNewScriptInstanceResetContextsToSingle(ContextScript ctxNext, ScriptExecutor executorCloneForOptimizer) {
-			var ret = (Strategy)base.MemberwiseClone();
-			if (ret.Script != null) {
-				//WILL_THROW: public Strategy Strategy { get { return this.Executor.Strategy } }
-				ret.Script = (Script) Activator.CreateInstance(ret.Script.GetType());
-				//ret.Script = ret.Script.Clo);
-				ret.Script.Initialize(executorCloneForOptimizer);
-			}
-			//Debugger.Break();
-			//ret.ScriptContextsByName = new Dictionary<string, ContextScript>();
-			//if (ret.ScriptContextsByName.Count == this.ScriptContextsByName.Count) {
-			//	Debugger.Break();
-			//}
-			//ret.ScriptContextAdd(ctxNext.Name, ctxNext, true);
-			//MOVED_UPSTACK ret.ContextSwitchCurrentToNamedAndSerialize(ctxNext.Name, false);
-			return ret;
-		}
-		public void PushChangedScriptParameterValueToScriptAndSerialize(ScriptParameter scriptParameter) {
-			//ScriptParameters are only identical objects between script context and sliders.tags, while every click-change is pushed into Script.ParametersByID)
-			int paramId = scriptParameter.Id;
-			double valueNew = scriptParameter.ValueCurrent;
-			if (this.Script.ScriptParametersById.ContainsKey(paramId) == false) {
-				string msg = "YOU_CHANGED_SCRIPT_PARAMETER_WHICH_NO_LONGER_EXISTS_IN_SCRIPT";
-				Assembler.PopupException(msg);
-				return;
-			}
 
-			double valueOld = this.Script.ScriptParametersById[paramId].ValueCurrent;
-			if (valueOld == valueNew) {
-				string msg = "SLIDER_CHANGED_TO_VALUE_SCRIPT_PARAMETER_ALREADY_HAD [" + valueOld + "]=[" + valueNew + "]";
-				Assembler.PopupException(msg);
-				return;
-			}
-			this.Script.ScriptParametersById[paramId].ValueCurrent = valueNew;
-		}
-		public void PushChangedIndicatorParameterValueToScriptAndSerialize(IndicatorParameter iParamChangedCtx) {
-			//new concept that IndicatorParameters are only identical objects between script context and sliders.tags, while every click-change is absorbed by snapshot.IndicatorsInstancesReflected
-			string indicatorName = iParamChangedCtx.IndicatorName;
-			string indicatorParameterName = iParamChangedCtx.Name;
-			Dictionary<string, Indicator> indicatorsByName = this.Script.Executor.ExecutionDataSnapshot.IndicatorsReflectedScriptInstances;
-			if (indicatorsByName.ContainsKey(indicatorName) == false) {
-				string msg = "WILL_PICK_UP_ON_BACKTEST__INDICATOR_NOT_FOUND_IN_INDICATORS_REFLECTED: " + indicatorName;
-				Assembler.PopupException(msg);
-				return;
-			}
-			Indicator indicatorInstantiated = indicatorsByName[indicatorName];
-			if (indicatorInstantiated.ParametersByName.ContainsKey(indicatorParameterName) == false) {
-				string msg = "INDICATOR_PARAMETER_NOT_FOUND_FOR_INDICATOR_REFLECTED_FOUND: " + indicatorParameterName;
-				Assembler.PopupException(msg);
-				return;
-			}
-			IndicatorParameter iParamInstantiated = indicatorInstantiated.ParametersByName[indicatorParameterName];
-			double valueNew = iParamChangedCtx.ValueCurrent;
-			double valueOld = iParamInstantiated.ValueCurrent;
-			if (valueOld == valueNew) {
-				string msg = "SLIDER_CHANGED_TO_VALUE_INDICATOR_PARAMETER_ALREADY_HAD [" + valueOld + "]=[" + valueNew + "]";
-				Assembler.PopupException(msg);
-				return;
-			}
-			iParamInstantiated.AbsorbCurrentFixBoundariesIfChanged(iParamChangedCtx);
+		//v2 I_NEED_SCRIPT_ONLY__WILL_FULLY_RECONSTRUCT_CONTEXT_FROM_PARAMETERS_SEQUENCER
+		internal Strategy CloneMinimalForEachThread_forEachDisposableExecutorInSequencerPool() {
+			Strategy ret = (Strategy)base.MemberwiseClone();
+
+			// I don't want ScriptDerived's own List and Dictionaries to refer to the Strategy.Script running live now;
+			ret.Script = (Script)Activator.CreateInstance(this.Script.GetType());
+
+			// each ParameterSequencer.Next() (having its own NAME), will be absorbed to DEFAULT; messing with Dictionary to keep synchronized is too costly
+			ret.ScriptContextsByName = new Dictionary<string, ContextScript>();
+			ret.ScriptContextsByName.Add(this.ScriptContextCurrentName, new ContextScript(this.ScriptContextCurrentName));
+			//I_SPAWN_DISPOSABLE_EXECUTORS_FROM_ANY_POSSIBLE_CURRENT_CONTEXT ret.ScriptContextCurrentName = ContextScript.DEFAULT_NAME;
+			//v1 ret.ScriptContextCurrent..CloneResetAllToMin_ForSequencer("FOR_EACH_DISPOSABLE_EXECUTOR");
+			ret.ScriptContextCurrent.AbsorbOnlyScriptAndIndicatorParamsFrom_usedBySequencerOnly("FRESH_DEFAULT_CTX_FOR_EACH_DISPOSABLE", this.ScriptContextCurrent);
+
+			ret.ScriptCompiler				= null;
+			ret.LivesimBrokerSettings		= null;
+			ret.LivesimStreamingSettings	= null;
+			return ret;
 		}
 
 		public void ResetScriptAndIndicatorParametersInCurrentContextToScriptDefaultsAndSave() {
@@ -169,8 +143,8 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			try {
-				this.Script.AbsorbScriptAndIndicatorParametersFromSelfCloneConstructed();
-				this.Serialize();
+				this.Script.SwitchToDefaultContextByAbsorbingScriptAndIndicatorParametersFromSelfCloneConstructed();
+				//ALREADY_SAVED_BY_LINE_ABOVE this.Serialize();
 				string msg = "Successfully reset ScriptContextCurrentName[" + this.ScriptContextCurrentName + "] for strategy[" + this + "]";
 				Assembler.DisplayStatus(msg);
 			} catch (Exception ex) {
@@ -179,6 +153,43 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void Serialize() {
 			Assembler.InstanceInitialized.RepositoryDllJsonStrategy.StrategySave(this);
+		}
+
+		public int ScriptAndIndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(bool saveStrategyFalseForDisposedExecutorsInSequencer = false) {
+			int currentValuesAbsorbed = this.ScriptContextCurrent.ScriptParametersReflectedAbsorbFromCurrentContextReplace(
+					this.Script.ScriptParametersById_ReflectedCached);
+			if (currentValuesAbsorbed > 0 && saveStrategyFalseForDisposedExecutorsInSequencer == true) this.Serialize();
+
+			if (this.Script == null) {
+				string msg = "CANT_SWITCH_CTX_FOR_UNCOMPILED_STRATEGY__SCRIPT_NULL";
+				Assembler.PopupException(msg);
+			} else {
+				this.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel(saveStrategyFalseForDisposedExecutorsInSequencer);
+			}
+
+			return currentValuesAbsorbed;
+		}
+
+		internal int IndicatorParametersReflectedAbsorbMergeFromCurrentContext_SaveStrategy(bool saveStrategy = false) {
+			int currentValuesAbsorbed = this.ScriptContextCurrent.PushIndicatorParamsCurrentValuesIntoReflectedIndicators(
+					this.Script.IndicatorParametersByIndicator_ReflectedCached);
+			if (currentValuesAbsorbed > 0 && saveStrategy == true) this.Serialize();
+			return currentValuesAbsorbed;
+		}
+
+		public void PushChangedScriptParameterValueToScript(IndicatorParameter indicatorParameterChangedDueToUserClickInSliders) {
+			string msig = " //Strategy.PushChangedScriptParameterValueToScript(" + indicatorParameterChangedDueToUserClickInSliders + ")";
+			if (indicatorParameterChangedDueToUserClickInSliders == null) {
+				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT SLIDERS_AUTOGROW_GENERATED_AN_EVENT_WITH_EMPTY_INDICATOR_PARAMETER_INSIDE";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (this.Script == null) {
+				string msg = "I_REFUSE_TO_PUSH_PARAMETER_CLICKED_TO_SCRIPT YOU_SHOULD_HAVE_CLEARED_AUTOGROW_DUE_TO_UN-COMPILE-ABLE_SCRIPT_SOURCE";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			this.Script.PushChangedScriptParameterValueToScript(indicatorParameterChangedDueToUserClickInSliders);
 		}
 	}
 }

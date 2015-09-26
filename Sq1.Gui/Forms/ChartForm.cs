@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.ComponentModel;
+using System.Threading;
+using System.Diagnostics;		//Stopwatch
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
@@ -10,14 +13,41 @@ using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Widgets.LabeledTextBox;
-using System.ComponentModel;
+using Sq1.Gui.Singletons;
+
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
-		public ChartFormManager ChartFormManager;
+		public	ChartFormsManager	ChartFormManager;
 
-		List<string> GroupScaleLabeledTextboxes;
-		List<string> GroupPositionSizeLabeledTextboxes;
+				List<string>		GroupScaleLabeledTextboxes;
+				List<string>		GroupPositionSizeLabeledTextboxes;
+
+				ManualResetEvent	waitForChartFormIsLoaded;
+		public	bool				ChartFormIsLoaded_NonBlocking { get { return this.waitForChartFormIsLoaded.WaitOne(0); } }
+		public	bool				ChartFormIsLoaded_Blocking { get {
+			string ident = " [" + this.ChartFormManager.Executor.ToString() + "]";	// base.Text throws cross-thread exception, of course on Workspace reload
+			// POTENTIALLY_CAN_BE_INVOKED_AFTER_BEED_TRIGGERED_AS_LOADED, ExceptionsControl:UserControlImproved is a more obvious case
+			//if (this.waitForChartFormIsLoaded.WaitOne(0) == true) {
+			//    string msg1 = "MUST_BE_INSTANTIATED_AS_NON_SIGNALLED_IN_CTOR()_#2 waitForChartFormIsLoaded.WaitOne(0)=[true]";
+			//    Assembler.PopupException(msg1);
+			//    return false;
+			//}
+			Stopwatch formLoaded = new Stopwatch();
+			formLoaded.Start();
+			string msg = "CHART_FORM_IS_LOADED__WAITING..." + ident;
+			//Assembler.PopupException(msg, null, false);
+			bool loaded = this.waitForChartFormIsLoaded.WaitOne(-1);
+			long waitedForMillis = formLoaded.ElapsedMilliseconds;
+			formLoaded.Stop();
+			if (this.waitForChartFormIsLoaded.WaitOne(0) == false) {
+				msg = "CHART_PARANOID FORM_IS_LOADED__FALSE_AFTER_WAITING" + ident;
+				Assembler.PopupException(msg);
+			}
+			msg = "CHART_FORM_IS_LOADED[" + loaded + "] waited[" + waitedForMillis + "]ms" + ident;
+			Assembler.PopupException(msg, null, false);
+			return loaded;
+		} }
 
 		// SharpDevelop/VisualStudio Designer's constructor
 		public ChartForm() {
@@ -40,9 +70,11 @@ namespace Sq1.Gui.Forms {
 			this.GroupPositionSizeLabeledTextboxes = new List<string>() {
 				this.mnitlbPositionSizeDollarsEachTradeConstant.Name, this.mnitlbPositionSizeSharesConstantEachTrade.Name};
 			//OVERRODE_IN_CHART_CONTROL_DONT_CARE_HERE_NOW: override bool ProcessCmdKey //base.KeyPreview = true;
+
+			this.waitForChartFormIsLoaded = new ManualResetEvent(false);
 		}
 		//programmer's constructor
-		public ChartForm(ChartFormManager chartFormManager) : this() {
+		public ChartForm(ChartFormsManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
 			// right now this.ChartFormsManager.Executor IS NULL, will create and Chart.Initialize() upstack :((
 			//this.Chart.Initialize(this.ChartFormsManager.Executor);
@@ -203,9 +235,12 @@ namespace Sq1.Gui.Forms {
 			ContextScript ctxScript = ctxChart as ContextScript;
 			if (ctxScript == null) return;
 			
-			this.mniBacktestOnRestart.Checked = ctxScript.BacktestOnRestart;
-			this.mniBacktestOnSelectorsChange.Checked = ctxScript.BacktestOnSelectorsChange;
-			this.btnStrategyEmittingOrders.Checked = ctxScript.StrategyEmittingOrders;
+			this.mniBacktestOnRestart			.Checked = ctxScript.BacktestOnRestart;
+			this.mniBacktestOnSelectorsChange	.Checked = ctxScript.BacktestOnSelectorsChange;
+			this.btnStrategyEmittingOrders		.Checked = ctxScript.StrategyEmittingOrders;
+			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim
+												.Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
+
 			this.PropagateContextScriptToLTB(ctxScript);
 		}
 		
@@ -286,6 +321,7 @@ namespace Sq1.Gui.Forms {
 			
 			this.mniFillOutsideQuoteSpreadParanoidCheckThrow.Checked = ctxScript.FillOutsideQuoteSpreadParanoidCheckThrow;
 			this.mnitlbSpreadGeneratorPct.InputFieldValue = ctxScript.SpreadModelerPercent.ToString();
+			this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
 
 			if (this.ChartFormManager.MainForm.ChartFormActiveNullUnsafe == this) {
 				string msg = "WE_ARE_HERE_WHEN_WE_SWITCH_STRATEGY_FOR_CHART";

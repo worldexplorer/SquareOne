@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
@@ -17,11 +18,12 @@ namespace Sq1.Gui {
 	public partial class MainForm : Form {
 		const string GUI_THREAD_NAME = "GUI_THREAD"; // USED_WHEN_base.InvokeRequired_THROWS_#D SHARP_DEVELOP_THROWS_WHEN_TRYING_TO_POPUP_EXCEPTION_FROM_QUIK_TERMINAL_MOCK_THREAD
 
-		public MainFormEventManager			MainFormEventManager;
-		public MainFormWorkspacesManager	WorkspacesManager;
-		public GuiDataSnapshot				GuiDataSnapshot;
-		public Serializer<GuiDataSnapshot>	GuiDataSnapshotSerializer;
-		public bool							MainFormClosingSkipChartFormsRemoval;
+		public	MainFormEventManager			MainFormEventManager;
+		public	MainFormWorkspacesManager		WorkspacesManager;
+		public	GuiDataSnapshot					GuiDataSnapshot;
+		public	Serializer<GuiDataSnapshot>		GuiDataSnapshotSerializer;
+		public	bool							MainFormClosingSkipChartFormsRemoval;
+		public	bool							dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace { get; private set; }
 
 		public ChartForm ChartFormActiveNullUnsafe { get {
 				var ret = this.DockPanel.ActiveDocument as ChartForm;
@@ -30,7 +32,7 @@ namespace Sq1.Gui {
 					//throw new Exception(msg);
 					return null;
 				}
-				foreach (ChartFormManager chartFormDataSnap in this.GuiDataSnapshot.ChartFormManagers.Values) {
+				foreach (ChartFormsManager chartFormDataSnap in this.GuiDataSnapshot.ChartFormsManagers.Values) {
 					if (chartFormDataSnap.ChartForm == ret) return ret;
 				}
 				string msg2 = "MainForm.DockPanel.ActiveDocument is [" + ret.ToString() + "] but it's not found among MainForm.ChartFormsManagers registry;"
@@ -44,57 +46,106 @@ namespace Sq1.Gui {
 			this.lblSpace.Text = "   ||   ";
 			#endif
 
-			//string currentThreadName;
-			//try {
-			//	currentThreadName = Thread.CurrentThread.Name;	// SharpDevelop4.4 Debugger doesn't evaluate, so I assign to visualize it 
-			//	Thread.CurrentThread.Name = GUI_THREAD_NAME;
-			//	currentThreadName = Thread.CurrentThread.Name;
-			//} catch (Exception ex) {
-			//	string msg = "FAILED_TO_SET_GUI_THREAD_NAME Thread.CurrentThread.Name=[" + GUI_THREAD_NAME + "] //MainForm()";
-			//	Assembler.PopupException(msg, ex);
-			//}
-
 			try {
 				Assembler.InstanceUninitialized.Initialize(this as IStatusReporter);
 				this.GuiDataSnapshotSerializer = new Serializer<GuiDataSnapshot>();
 	
 				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeContext(Assembler.InstanceInitialized);
 				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeAdapters(
-					Assembler.InstanceInitialized.RepositoryDllStreamingAdapter.CloneableInstanceByClassName,
-					Assembler.InstanceInitialized.RepositoryDllBrokerAdapter.CloneableInstanceByClassName);
+					Assembler.InstanceInitialized.RepositoryDllStreamingAdapter	.CloneableInstanceByClassName,
+					Assembler.InstanceInitialized.RepositoryDllBrokerAdapter	.CloneableInstanceByClassName);
 	
-				DataSourcesForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
-				StrategiesForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
-				ExecutionForm		.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
-				CsvImporterForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				DataSourcesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				StrategiesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
+				ExecutionForm				.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
+				CsvImporterForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
+				SymbolInfoEditorForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfo);
+
+				this.WorkspacesManager = new MainFormWorkspacesManager(this, Assembler.InstanceInitialized.WorkspacesRepository);
 			} catch (Exception ex) {
 				Assembler.PopupException("ASSEMBLER_OR_SINGLETONS_FAILED //MainForm()", ex);
 			}
 		}
+		public void WorkspaceLoad(string workspaceToLoad = null) {
+			bool dockContentWillBeReCreated = true;
+			if (string.IsNullOrEmpty(workspaceToLoad)) {
+				workspaceToLoad = Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded;
+				dockContentWillBeReCreated = false;
+			}
 
-		void createWorkspacesManager() {
-			this.WorkspacesManager = new MainFormWorkspacesManager(this);
-			//this.CtxWorkspaces.Items.Clear();
-			this.CtxWorkspaces.Items.AddRange(this.WorkspacesManager.WorkspaceMenuItemsWithHandlers);
-			this.mniWorkspaceDeleteCurrent.Click		+= new EventHandler(this.WorkspacesManager.WorkspaceDeleteCurrent_Click);
-			this.mniltbWorklspaceCloneTo.UserTyped		+= new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.WorkspacesManager.WorkspaceCloneTo_UserTyped);
-			this.mniltbWorklspaceRenameTo.UserTyped		+= new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.WorkspacesManager.WorkspaceRenameTo_UserTyped);
-			this.mniltbWorklspaceNewBlank.UserTyped		+= new System.EventHandler<Sq1.Widgets.LabeledTextBox.LabeledTextBoxUserTypedArgs>(this.WorkspacesManager.WorkspaceNewBlank_UserTyped);
-		}
-		public void WorkspaceLoad(string workspaceToLoad) {
+			Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = false;
 			try {
 				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
 				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
 				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
 				this.SuspendLayout();
-				
-				if (Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName != workspaceToLoad) {
-					Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName = workspaceToLoad;
+
+
+				////foreach (Form each in this.OwnedForms) each.Close();
+				//foreach (IDockContent each in new List<IDockContent>(this.DockPanel.Documents)) {
+				//	var form = each as DockContent;
+				//	form.HideOnClose = false;
+				//	form.Close();
+				//}
+				//foreach (FloatWindow each in new List<FloatWindow>(this.DockPanel.FloatWindows)) {
+				//	each.Close(); 
+				//}
+				//foreach (DockWindow each in new List<DockWindow>(this.DockPanel.DockWindows)) {
+				//	//each.Close();
+				//}
+				//if (this.DockPanel.Contents.Count > 0) {
+				//	Debugger.Break();
+
+				DockPanel disposePreviousDockPanel = null;
+				if (dockContentWillBeReCreated) {
+					this.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace = true;
+					disposePreviousDockPanel = this.DockPanel;
+
+					this.Controls.Remove(this.DockPanel);
+
+					//v1 TOO_MESSY
+					//foreach (IDockContent each in new List<IDockContent>(this.DockPanel.Contents)) {
+					//    if (each.GetType().IsSubClassOfGeneric(typeof(DockContentSingleton<>))) continue;
+					//    DockContent eachForm = each as DockContent;
+					//    if (eachForm == null) continue;
+					//    ChartForm eachChart = each as ChartForm;
+					//    if (eachChart == null) continue;
+					//    eachChart.HideOnClose = false;
+					//    eachChart.Close();
+					//    eachChart.Dispose();
+					//}
+					//v2
+					foreach (ChartFormsManager cfm in this.GuiDataSnapshot.ChartFormsManagers.Values) {
+						cfm.Dispose_workspaceReloading();
+					}
+
+					this.DockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
+					this.DockPanel.BackColor = System.Drawing.SystemColors.ControlDark;
+					this.DockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+					this.DockPanel.DockBottomPortion = 0.4D;
+					this.DockPanel.DockLeftPortion = 0.15D;
+					this.DockPanel.DockRightPortion = 0.35D;
+					this.DockPanel.DockTopPortion = 0.3D;
+					this.DockPanel.DocumentTabStripLocation = WeifenLuo.WinFormsUI.Docking.DocumentTabStripLocation.Bottom;
+					this.DockPanel.Location = new System.Drawing.Point(0, 0);
+					this.DockPanel.Name = "DockPanel";
+					this.DockPanel.Size = new System.Drawing.Size(774, 423);
+					this.Controls.Add(this.DockPanel);
+
+					// ADDING_STATUS_STRIP_THE_LAST__OTHERWIZE_NEW_DOCK_CONTENT'S_BOTTOM_MINIMIZED_TABS_GO_UNDER_STATUS_STRIP
+					this.Controls.Remove(this.mainFormStatusStrip);
+					this.Controls.Add(this.mainFormStatusStrip);
+				}
+
+
+
+				if (Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded != workspaceToLoad) {
+					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded  = workspaceToLoad;
 					Assembler.InstanceInitialized.AssemblerDataSnapshotSerializer.Serialize();
 				}
 				bool createdNewFile = this.GuiDataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
 					"Sq1.Gui.GuiDataSnapshot.json", "Workspaces",
-					Assembler.InstanceInitialized.AssemblerDataSnapshot.CurrentWorkspaceName);
+					Assembler.InstanceInitialized.AssemblerDataSnapshot.WorkspaceCurrentlyLoaded);
 
 				this.GuiDataSnapshot = this.GuiDataSnapshotSerializer.Deserialize();
 				if (createdNewFile) {
@@ -102,23 +153,18 @@ namespace Sq1.Gui {
 					this.mainForm_ResizeEnd(this, null);
 					this.GuiDataSnapshotSerializer.Serialize();
 					
-					// re-reading Workspaces\ since I just created one, and before it was empty; copy-paste from initializeWorkspacesManagerTrampoline()
-					Assembler.InstanceInitialized.WorkspacesRepository.ScanFolders();
-					this.WorkspacesManager = new MainFormWorkspacesManager(this);
-					this.CtxWorkspaces.Items.AddRange(this.WorkspacesManager.WorkspaceMenuItemsWithHandlers);
+					//re-reading Workspaces\ since I just created one, and before it was empty; copy-paste from initializeWorkspacesManagerTrampoline()
+					//v1
+					//Assembler.InstanceInitialized.WorkspacesRepository.ScanFolders();
+					//this.WorkspacesManager = new MainFormWorkspacesManager(this, Assembler.InstanceInitialized.WorkspacesRepository);
+					//this.CtxWorkspaces.Items.AddRange(this.WorkspacesManager.WorkspaceMenuItemsWithHandlers);
+					//v2
+					this.WorkspacesManager.RescanRebuildWorkspacesMenu();
 				}
+				//this.WorkspacesManager.SyncMniEnabledAndSuggestNames();
 				//this.DataSnapshot.RebuildDeserializedChartFormsManagers(this);
-				
-				//foreach (Form each in this.OwnedForms) each.Close();
-				foreach (IDockContent each in this.DockPanel.Documents) {
-					var form = each as DockContent;
-					form.Close();
-				}
-				foreach (FloatWindow each in this.DockPanel.FloatWindows) each.Close(); 
-				foreach (DockWindow each in this.DockPanel.DockWindows) {
-					//each.Close();
-				}
-	
+
+
 				string file = this.LayoutXml;
 				if (File.Exists(file) == false) file = this.LayoutXmlInitial;
 				if (File.Exists(file)) {
@@ -144,16 +190,32 @@ namespace Sq1.Gui {
 					this.ChartFormActiveNullUnsafe.Invalidate();	// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
 				}
 	
-				this.WorkspacesManager.SelectWorkspaceLoaded(workspaceToLoad);
+				this.WorkspacesManager.SelectWorkspaceAfterLoaded(workspaceToLoad);
 
 				if (ExceptionsForm.Instance.ExceptionControl.Exceptions.Count > 0) {
 					ExceptionsForm.Instance.Show(this.DockPanel);
 				}
 
+				foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormsManagers.Values) {
+					if (cfmgr.ChartForm == null) continue;
+
+					if (cfmgr.SequencerFormConditionalInstance.IsShown	== false) cfmgr.SequencerFormShow(true);
+					if (cfmgr.CorrelatorFormConditionalInstance.IsShown == false) cfmgr.CorrelatorFormShow(true);
+					if (cfmgr.LivesimFormConditionalInstance.IsShown	== false) cfmgr.LivesimFormShow(true);
+
+					// if sequencer instantiated first and fired, then correlator instantiated and didn't get the bullet; vice versa is even worse
+					cfmgr.SequencerFormConditionalInstance.SequencerControl.RaiseOnCorrelatorShouldPopulate_usedByMainFormAfterBothAreInstantiated();
+
+					// INNER_DOCK_CONTENT_DOESNT_GET_FILLED_TO_THE_WINDOW_AREA???
+					cfmgr.ChartForm.ChartControl.InvalidateAllPanels();
+				}
 			
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
+				if (disposePreviousDockPanel != null) {
+					// MAKES_INNER_FORMS_CLUMSY_SIZED_AND_THROWS_INSIDE_WELFEN_LUO disposePreviousDockPanel.Dispose();		// doesn't heal memory,handles,GDI,UserObj leak on same-workspace load
+				}
 
-				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
+				foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormsManagers.Values) {
 					if (cfmgr.ChartForm == null) continue;
 					if (cfmgr.ChartForm.MniShowSourceCodeEditor.Enabled) {		//set to true in InitializeWithStrategy() << DeserializeDockContent() 20 lines above
 						cfmgr.ChartForm.MniShowSourceCodeEditor.Checked = cfmgr.ScriptEditorIsOnSurface;
@@ -181,10 +243,10 @@ namespace Sq1.Gui {
 					//}
 					//v2
 					#if DEBUG
-					bool mergedIfAny = chartStrategy.Script.IndicatorsInitializedInDerivedConstructor.Count > 0
-						&& chartStrategy.ScriptContextCurrent.IndicatorParametersByName.Count == chartStrategy.Script.IndicatorsInitializedInDerivedConstructor.Count;
-					if (mergedIfAny == false) {
-						Debugger.Break();
+					int indicatorsReflectedCount = chartStrategy.Script.IndicatorsByName_ReflectedCached.Count;
+					if (indicatorsReflectedCount > 0) {
+						bool mergedIfAny = chartStrategy.ScriptContextCurrent.IndicatorParametersByName.Count == indicatorsReflectedCount;
+						if (mergedIfAny == false) Debugger.Break();
 					}
 					#endif
 
@@ -204,15 +266,32 @@ namespace Sq1.Gui {
 				}
 				if (ExceptionsForm.Instance.IsShown) {
 					// MOVED_TO_AFTER_MAINFORM_RESUMELAYOUT ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
-					ExceptionsForm.Instance.ExceptionControl.FlushListToTreeIfDockContentDeserialized_inGuiThread();
+					// EXCEPTION_BORN_IN_GUI_THREAD_ARE_ALWAYS_ON_TIMER ExceptionsForm.Instance.ExceptionControl.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 				}
 			} catch (Exception ex) {
+				if (ex.Message == "The previous pane is invalid. It can not be null, and its docking state must not be auto-hide.") {
+					foreach (DockPane eachPane in this.DockPanel.Panes) {
+						bool autoHide = eachPane.DockState == DockState.DockBottomAutoHide
+									 || eachPane.DockState == DockState.DockLeftAutoHide
+									 || eachPane.DockState == DockState.DockRightAutoHide
+									 || eachPane.DockState == DockState.DockTopAutoHide;
+						if (autoHide == false) continue;
+						string whosInside = "";
+						foreach (IDockContent outlaw in eachPane.DisplayingContents) {
+							if (whosInside != "") whosInside += ",";
+							whosInside += outlaw.ToString();
+						}
+						string msg = "FIXED_AS:CANT_ADD_PANE_RELATIVELY_TO_AUTOHIDE_PANE ADD_THOSE_AS_NON_AUTO_HIDDENS [" + whosInside + "]";
+						Assembler.PopupException(msg, null, false);
+					}
+				}
 				Assembler.PopupException("WorkspaceLoad#1()", ex);
 			} finally {
 				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
 				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
 				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
 				this.ResumeLayout(true);
+				this.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace = false;
 			}
 			try {
 				if (ExecutionForm.Instance.IsShown) {
@@ -227,12 +306,14 @@ namespace Sq1.Gui {
 		}
 		void MainFormEventManagerInitializeWhenDockingIsNotNullAnymore() {
 			// OK_SO_LUO_PLAYS_WITH_WINDOWS.FORMS.VISIBLE_I_SEE Debugger.Break();
-			DataSourcesForm	.Instance.VisibleChanged	+= delegate { this.mniSymbols.Checked		= DataSourcesForm	.Instance.Visible; };
-			ExceptionsForm	.Instance.VisibleChanged	+= delegate { this.mniExceptions.Checked	= ExceptionsForm	.Instance.Visible; };
-			SlidersForm		.Instance.VisibleChanged	+= delegate { this.mniSliders.Checked		= SlidersForm		.Instance.Visible; };
-			StrategiesForm	.Instance.VisibleChanged	+= delegate { this.mniStrategies.Checked	= StrategiesForm	.Instance.Visible; };
-			ExecutionForm	.Instance.VisibleChanged	+= delegate { this.mniExecution.Checked		= ExecutionForm		.Instance.Visible; };
-			CsvImporterForm	.Instance.VisibleChanged	+= delegate { this.mniCsvImporter.Checked	= CsvImporterForm	.Instance.Visible; };
+			DataSourcesForm			.Instance.VisibleChanged	+= delegate { this.mniDataSources			.Checked = DataSourcesForm			.Instance.Visible; };
+			ExceptionsForm			.Instance.VisibleChanged	+= delegate { this.mniExceptions			.Checked = ExceptionsForm			.Instance.Visible; };
+			SlidersForm				.Instance.VisibleChanged	+= delegate { this.mniSliders				.Checked = SlidersForm				.Instance.Visible; };
+			StrategiesForm			.Instance.VisibleChanged	+= delegate { this.mniStrategies			.Checked = StrategiesForm			.Instance.Visible; };
+			ExecutionForm			.Instance.VisibleChanged	+= delegate { this.mniExecution				.Checked = ExecutionForm			.Instance.Visible; };
+			CsvImporterForm			.Instance.VisibleChanged	+= delegate { this.mniCsvImporter			.Checked = CsvImporterForm			.Instance.Visible; };
+			SymbolInfoEditorForm	.Instance.VisibleChanged	+= delegate { this.mniSymbolInfoEditor		.Checked = SymbolInfoEditorForm		.Instance.Visible; };
+			ChartSettingsEditorForm	.Instance.VisibleChanged	+= delegate { this.mniChartSettingsEditor	.Checked = ChartSettingsEditorForm	.Instance.Visible; };
 
 			this.MainFormEventManager = new MainFormEventManager(this);
 
@@ -247,6 +328,7 @@ namespace Sq1.Gui {
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnNewChartForSymbolClicked		+= this.MainFormEventManager.DataSourcesTree_OnNewChartForSymbolClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnOpenStrategyForSymbolClicked	+= this.MainFormEventManager.DataSourcesTree_OnOpenStrategyForSymbolClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnBarsAnalyzerClicked			+= this.MainFormEventManager.DataSourcesTree_OnBarsAnalyzerClicked;
+			DataSourcesForm.Instance.DataSourcesTreeControl.OnSymbolInfoEditorClicked		+= this.MainFormEventManager.DataSourcesTree_OnSymbolInfoEditorClicked;
 			DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceEditClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceEditClicked;
 			//DataSourcesForm.Instance.DataSourcesTree.OnDataSourceDeleteClicked			+= this.MainFormEventManager.DataSourcesTree_OnDataSourceDeletedClicked;
 			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnItemCanBeRemoved		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(this.MainFormEventManager.RepositoryJsonDataSource_OnDataSourceCanBeRemoved);
@@ -254,10 +336,10 @@ namespace Sq1.Gui {
 			//DataSourcesForm.Instance.DataSourcesTreeControl.OnDataSourceNewClicked		+= this.MainFormEventManager.DataSourcesTree_OnDataSourceNewClicked;
 
 			// TYPE_MANGLING_INSIDE_WARNING NOTICE_THAT_BOTH_PARAMETER_SCRIPT_AND_INDICATOR_VALUE_CHANGED_EVENTS_ARE_HANDLED_BY_SINGLE_HANDLER
-			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedParameterValue			+= new EventHandler<ScriptParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
-			SlidersForm.Instance.SlidersAutoGrowControl.SliderChangedIndicatorValue			+= new EventHandler<IndicatorParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
-			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextLoadRequestedSubscriberImplementsCurrentSwitch += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextLoadClicked;
-			SlidersForm.Instance.SlidersAutoGrowControl.ScriptContextRenamed				+= this.MainFormEventManager.SlidersAutoGrow_OnScriptContextRenamed;
+			SlidersForm.Instance.SteppingSlidersAutoGrowControl.SliderChangedParameterValue			+= new EventHandler<ScriptParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
+			SlidersForm.Instance.SteppingSlidersAutoGrowControl.SliderChangedIndicatorValue			+= new EventHandler<IndicatorParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
+			SlidersForm.Instance.SteppingSlidersAutoGrowControl.ScriptContextLoadRequestedSubscriberImplementsCurrentSwitch += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextLoadClicked;
+			SlidersForm.Instance.SteppingSlidersAutoGrowControl.ScriptContextRenamed				+= this.MainFormEventManager.SlidersAutoGrow_OnScriptContextRenamed;
 		}
 		void mainFormEventManagerInitializeAfterDockingDeserialized() {
 			// too frequent
@@ -265,8 +347,8 @@ namespace Sq1.Gui {
 			// just as often as I needed!
 			this.DockPanel.ActiveDocumentChanged += this.MainFormEventManager.DockPanel_ActiveDocumentChanged;
 		}
-
 		public void MainFormSerialize() {
+			if (this.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) return;
 			this.DockPanel.SaveAsXml(this.LayoutXml);
 			this.GuiDataSnapshotSerializer.Serialize();
 			// nope, I'm dumping when ReporterShortNamesUserInvoked.Add() & Remove()
@@ -274,6 +356,5 @@ namespace Sq1.Gui {
 			//	chart.DumpCurrentReportersForSerialization();
 			//}
 		}
-
 	}
 }

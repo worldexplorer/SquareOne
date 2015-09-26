@@ -9,16 +9,19 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Livesim;
 using Sq1.Core.Charting;
+using Sq1.Core.Backtesting;
 
 namespace Sq1.Core.Execution {
-	public	class Alert {
+	public	class Alert : IDisposable {
+		[JsonIgnore]	public const string FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION = "IGNORED_FOR_KPIs__FORCEFULLY_CLOSED_BY_BACKTESTER";
+
 		[JsonIgnore]	public	Bars				Bars;
 		[JsonProperty]	public	Bar					PlacedBar						{ get; protected set; }
 		[JsonProperty]	public	int					PlacedBarIndex					{ get; protected set; }
 		[JsonProperty]	public	Bar					FilledBar						{ get; protected set; }
 		[JsonProperty]	public	Bar					FilledBarSnapshotFrozenAtFill	{ get; protected set; }
 		[JsonProperty]	public	int					FilledBarIndex					{ get; protected set; }
-		[JsonProperty]	public	DateTime			PlacedDateTime					{ get {
+		[JsonProperty]	public	DateTime			PlacedDateTimeBarAligned		{ get {
 				if (this.PlacedBar == null) return DateTime.MinValue;
 //				if (this.PlacedBarIndex == -1 || this.PlacedBarIndex > this.Bars.Count) return PlacedDateTime.MinValue;
 //				if (this.PlacedBarIndex == this.Bars.Count) {
@@ -73,52 +76,61 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public	PositionLongShort	PositionLongShortFromDirection	{ get { return MarketConverter.LongShortFromDirection(this.Direction); } }
 		[JsonIgnore]	public	bool				IsExitAlert						{ get { return !IsEntryAlert; } }
 		[JsonIgnore]	public	bool				IsEntryAlert					{ get { return MarketConverter.IsEntryFromDirection(this.Direction); } }
+
 		[JsonProperty]	public	string				SignalName;						//ORDER_SETS_NAME_FOR_KILLER_ALERTS { get; protected set; }
+		[JsonIgnore]	public	bool				ForcefullyClosedBacktestLastPosition { get { return this.SignalName.Contains(Alert.FORCEFULLY_CLOSED_BACKTEST_LAST_POSITION); } }
+
 		[JsonProperty]	public	Guid				StrategyID						{ get; protected set; }
 		[JsonProperty]	public	string				StrategyName					{ get; protected set; }
 		[JsonIgnore]	public	Strategy			Strategy						{ get; protected set; }
-		[JsonIgnore]	public	bool				IsExecutorBacktestingNow		{ get {
+
+		[JsonIgnore]			Backtester			BacktesterNullUnsafeForDeserialized			{ get {
 				if (this.Strategy == null) {
 					string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL__ADDED_[JsonIgnore]";
-					return false;
+					Assembler.PopupException(msg);
+					return null;
 				}
 				if (this.Strategy.Script == null) {
-					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script=null for " + this);
+					string msg = "IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script=null for " + this;
+					Assembler.PopupException(msg);
+					return null;
 				}
 				if (this.Strategy.Script.Executor == null) {
-					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor=null for " + this);
+					string msg = "IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor=null for " + this;
+					Assembler.PopupException(msg);
+					return null;
 				}
 				if (this.Strategy.Script.Executor.Backtester == null) {
-					throw new Exception("IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this);
+					string msg = "IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this;
+					Assembler.PopupException(msg);
+					return null;
 				}
-				return this.Strategy.Script.Executor.Backtester.IsBacktestingNoLivesimNow;
-				//v2 WRONG_FOR_BrokerAdapter.SubmitOrders() return this.Strategy.Script.Executor.Backtester.IsBacktestRunning;
-			}
+				return this.Strategy.Script.Executor.Backtester;
+			} }
+		[JsonIgnore]	public	bool				IsBacktestRunning_FalseIfNoBacktester		{ get {
+				Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
+				if (backtester == null) return false;
+				return backtester.IsBacktestRunning;
+			} }
+		[JsonIgnore]	public	bool				IsBacktestingNoLivesimNow_FalseIfNoBacktester		{ get {
+		        Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
+		        if (backtester == null) return false;
+		        return backtester.IsBacktestingNoLivesimNow;
+		    } }
+		[JsonIgnore]	public	bool				IsBacktestingLivesimNow_FalseIfNoBacktester		{ get {
+		        Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
+		        if (backtester == null) return false;
+		        return this.Strategy.Script.Executor.Backtester.IsBacktestingLivesimNow;
+		    }
 		}
-		//[JsonIgnore]	public	bool				IsExecutorLivesimulatingNow		{ get {
-		//		if (this.Strategy == null) {
-		//			string msg = "ORDERS_RESTORED_AFTER_APP_RESTART_HAVE_ALERT.STRATEGY=NULL,BARS=NULL__ADDED_[JsonIgnore]";
-		//			return false;
-		//		}
-		//		if (this.Strategy.Script == null) {
-		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script=null for " + this);
-		//		}
-		//		if (this.Strategy.Script.Executor == null) {
-		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor=null for " + this);
-		//		}
-		//		if (this.Strategy.Script.Executor.Backtester == null) {
-		//			throw new Exception("IsExecutorLivesimulatingNow Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this);
-		//		}
-		//		return this.Strategy.Script.Executor.Backtester.IsLivesimRunning;
-		//	} }
 		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }
 		[JsonProperty]	public	OrderSpreadSide		OrderSpreadSide;
 		[JsonProperty]	public	Quote				QuoteCreatedThisAlert;
 		[JsonProperty]	public	Quote				QuoteFilledThisAlertDuringBacktestNotLive;
 		[JsonProperty]	public	Quote				QuoteLastWhenThisAlertFilled;
 		[JsonIgnore]	public	Position			PositionAffected;
-		[JsonIgnore]	public	DateTime			PositionEntryDate				{ get {
-				if (this.PositionAffected != null) return this.PositionAffected.EntryDate;
+		[JsonIgnore]	public	DateTime			PositionEntryDateTimeBarAligned				{ get {
+				if (this.PositionAffected != null) return this.PositionAffected.EntryDateBarTimeOpen;
 				return DateTime.MinValue;
 			} }
 		[JsonIgnore]	public	Order				OrderFollowed;			// set on Order(alert).executed;
@@ -256,7 +268,11 @@ namespace Sq1.Core.Execution {
 			bool ret = true;
 			if (this.MyBrokerIsLivesim == false) return ret;
 			try {
-				ChartShadow chartShadow = Assembler.InstanceInitialized.AlertsForChart.FindContainerFor(this);
+				ChartShadow chartShadow = Assembler.InstanceInitialized.AlertsForChart.FindContainerForNull(this);
+					if (chartShadow == null) {
+						string msg = "LOOKS_LIKE_PROTOTYPED_ALERTS_WERENT_ADDED_FOR_CHART_IN_callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected";
+						return false;
+					}
 				ScriptExecutor executor = chartShadow.Executor;
 				bool livesimSleeping = executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
 				ret = livesimSleeping;
@@ -266,9 +282,23 @@ namespace Sq1.Core.Execution {
 			}
 			return ret;
 		} }
+		[JsonIgnore]	public	bool				IsDisposed;
 
-
-		public	Alert() {	// called by Json.Deserialize()
+		public void Dispose() {
+			if (this.IsDisposed || this.MreOrderFollowedIsAssignedNow == null) {
+				string msg = "ALERT_WAS_ALREADY_DISPOSED__ACCESSING_NULL_WAIT_HANDLE_WILL_THROW_NPE " + this.ToString();
+				//Assembler.PopupException(msg);
+				return;
+			}
+			this.MreOrderFollowedIsAssignedNow.Dispose();	// BASTARDO_ESTA_AQUI !!!! LEAKED_HANDLES_HUNTER
+			this.MreOrderFollowedIsAssignedNow = null;
+			this.IsDisposed = true;
+		}
+		
+		~Alert() { this.Dispose(); }
+		public	Alert() {
+			string msig = "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
+			
 			PlacedBarIndex				= -1;
 			FilledBarIndex				= -1;
 			//TimeCreatedServerBar		= DateTime.MinValue;
@@ -284,7 +314,7 @@ namespace Sq1.Core.Execution {
 			Direction					= Direction.Unknown;
 			SignalName					= "";
 			StrategyID					= Guid.Empty;
-			StrategyName				= "NO_STRATEGY"; 
+			StrategyName				= "NO_STRATEGY";
 			BarsScaleInterval			= new BarScaleInterval(BarScale.Unknown, 0);
 			OrderFollowed				= null;
 			MreOrderFollowedIsAssignedNow	= new ManualResetEvent(false);
@@ -412,9 +442,9 @@ namespace Sq1.Core.Execution {
 				msg.Append(this.QtyFilledThroughPosition);
 			}
 			if (this.PositionAffected != null) {
-				msg.Append("; PositionAffected=[");
+				msg.Append("; PositionAffected=[#");
 				//msg.Append(this.PositionAffected.ToString());
-				msg.Append("LONG_STRING");
+				msg.Append(this.PositionAffected.SernoAbs);
 				msg.Append("]");
 			}
 			return msg.ToString();
@@ -454,10 +484,11 @@ namespace Sq1.Core.Execution {
 				&& this.Qty == alert.Qty
 				&& this.PriceScript == alert.PriceScript		// added for SimulateStopLossMoved()
 				&& this.SignalName == alert.SignalName
-				&& this.PositionEntryDate == alert.PositionEntryDate
+				&& this.PositionEntryDateTimeBarAligned == alert.PositionEntryDateTimeBarAligned
 				&& this.PlacedBarIndex == alert.PlacedBarIndex
 				;
 			if (alert.PlacedBarIndex == alert.Bars.Count) {
+				string msg = "AM_I_HERE_DURING_LIVESIM_FOR_DELAYED_FILLS??? IF_NOT_THEN_BARS.COUNT_IS_TOO_EXPENSIVE";
 				return basic;
 			}
 			bool streamingBarMayBeDifferent = this.PriceScript == alert.PriceScript;
@@ -491,13 +522,14 @@ namespace Sq1.Core.Execution {
 						+ ", duplicateFill @[" + barFill + "]";
 				throw new Exception(msg);
 			}
-			if (this.MyBrokerIsLivesim) {
-				if (barFill.DateTimeOpen != this.PlacedBar.DateTimeOpen) {
-					string msg = "FOR_DELAYED_LIVESIM_FILLS_PUT_BAR_FILL_BACK_TO_PLACED";
-					//Assembler.PopupException(msg, null, false);
-					barFill = this.PlacedBar;
-				}
-			}
+			//WHY_DID_YOU_REWIND_IT??? DELAY_IN_BROKER_EXACTLY_MENT_TO_MODEL_VERY_LATE_FILLS
+			//if (this.MyBrokerIsLivesim) {
+			//	if (barFill.DateTimeOpen != this.PlacedBar.DateTimeOpen) {
+			//		string msg = "FOR_DELAYED_LIVESIM_FILLS_PUT_BAR_FILL_BACK_TO_PLACED";
+			//		//Assembler.PopupException(msg, null, false);
+			//		barFill = this.PlacedBar;
+			//	}
+			//}
 			this.FilledBarSnapshotFrozenAtFill = barFill.Clone();		//BarsStreaming#130 becomes BarStatic#130
 			this.FilledBar = barFill;
 			this.FilledBarIndex = barFillRelno;

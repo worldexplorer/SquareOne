@@ -1,61 +1,49 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "7725f2be-42e2-495f-8d71-5ecd0c305d29",
-  "StrategyNameJsonCheck": "TwoMAs",
-  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\WellKnown\\TwoMAs.json",
-  "ContextChart": {
-    "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
-    "Name": "CHART_RIM3",
-    "Symbol": "RIM3",
-    "DataSourceName": "MOCK",
-    "ScaleInterval": {
-      "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-      "Scale": 3,
-      "Interval": 1,
-      "IsIntraday": true,
-      "AsTimeSpanInSeconds": 60,
-      "AsTimeSpan": "00:01:00"
-    },
-    "DataRange": {
-      "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
-      "Range": 1,
-      "DateFrom": "0001-01-01T00:00:00",
-      "DateTill": "9999-12-31T23:59:59.9999999",
-      "RecentBars": 500,
-      "RecentTimeunits": 0
-    },
-    "IsStreamingTriggeringScript": false,
-    "ShowRangeBar": false,
-    "IsStreaming": true
-  },
+  "StrategyGuidJsonCheck": "87a196aa-4f88-4a56-b0ab-39b77bba7b33",
+  "StrategyNameJsonCheck": "TwoMAsCompiled",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json",
+  "ContextChart": null,
   "ChartSettings": {
-    "$type": "Sq1.Charting.ChartSettings, Sq1.Charting",
-    "GutterBottomDateFormatDayOpener": "ddd dd-MMM-yyyy",
-    "GutterBottomDateFormatIntraday": "HH:mm",
-    "GutterBottomDateFormatDaily": "ddd dd-MMM",
-    "GutterBottomDateFormatWeekly": "MMM-yy",
-    "GutterBottomDateFormatYearly": "yyyy",
-    "MultiSplitterPropertiesByPanelName": {
+    "$type": "Sq1.Core.Charting.ChartSettings, Sq1.Core",
+    "MultiSplitterRowsPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "Volume": {
+      "panelVolume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0
       },
-      "Price": {
+      "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 59
+        "Distance": 33
       }
     },
+    "MultiSplitterColumnsPropertiesByPanelName": {
+      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
+      "panelLevel2": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 0,
+        "Distance": 0
+      },
+      "multiSplitContainerRows": {
+        "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
+        "ManualOrder": 1,
+        "Distance": 57
+      }
+    },
+    "Name": "Default",
+    "StrategyName": "TwoMAsCompiled",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 9,
+    "BarWidthIncludingPadding": 8,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
     "PriceColorBarDown": "IndianRed",
     "VolumeColorBarUp": "CadetBlue",
     "VolumeColorBarDown": "CadetBlue",
+    "VolumeRightGutterColorForeground": "White",
+    "BarUpFillCandleBody": false,
     "GutterRightColorBackground": "Gainsboro",
     "GutterRightColorForeground": "Black",
     "GutterRightPadding": 5,
@@ -65,6 +53,11 @@
     "GutterBottomNewDateColorForeground": "Green",
     "GutterBottomPadding": 2,
     "GutterBottomFont": "Consolas, 8pt",
+    "GutterBottomDateFormatDayOpener": "ddd dd-MMM-yyyy",
+    "GutterBottomDateFormatIntraday": "HH:mm",
+    "GutterBottomDateFormatDaily": "ddd dd-MMM",
+    "GutterBottomDateFormatWeekly": "MMM-yy",
+    "GutterBottomDateFormatYearly": "yyyy",
     "GridlinesHorizontalColor": "WhiteSmoke",
     "GridlinesVerticalColor": "WhiteSmoke",
     "GridlinesVerticalNewDateColor": "Lime",
@@ -73,7 +66,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 0,
+    "SqueezeVerticalPaddingPx": 40,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,
@@ -83,12 +76,12 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 1226,
+    "ScrollPositionAtBarIndex": 502,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
     "PositionPlannedEllipseDiameter": 6,
-    "PositionFilledDotColor": "Olive",
+    "PositionFilledDotColor": "Chocolate",
     "PositionFilledDotColorAlpha": 200,
     "PositionFilledDotDiameter": 4,
     "PositionLineHighlightedWidth": 2,
@@ -100,13 +93,21 @@
     "PositionLineLossyColor": "Salmon",
     "PositionLineLossyColorAlpha": 100,
     "PriceVsVolumeSplitterDistance": 0,
-    "AlertPendingEllipseColor": "Maroon",
-    "AlertPendingEllipseColorAlpha": 160,
-    "AlertPendingEllipseWidth": 1,
+    "AlertPendingEllipseColor": "DarkBlue",
+    "AlertPendingEllipseColorAlpha": 180,
+    "AlertPendingEllipsePenWidth": 2,
+    "AlertPendingEllipseRadius": 3,
+    "AlertPendingProtoTakeProfitEllipseColor": "Green",
+    "AlertPendingProtoTakeProfitEllipseColorAlpha": 100,
+    "AlertPendingProtoTakeProfitEllipsePenWidth": 2,
+    "AlertPendingProtoStopLossEllipseColor": "Red",
+    "AlertPendingProtoStopLossEllipseColorAlpha": 100,
+    "AlertPendingProtoStopLossEllipsePenWidth": 2,
     "MousePositionTrackOnGutters": true,
-    "MousePositionTrackOnGuttersColor": "LightGray",
+    "MousePositionTrackOnGuttersColorBackground": "Black",
+    "MousePositionTrackOnGuttersColorForeground": "LightGray",
     "BarsBackgroundTransparencyAlpha": 24,
-    "ChartLabelsUpperLeftYstartTopmost": 18,
+    "ChartLabelsUpperLeftYstartTopmost": 5,
     "ChartLabelsUpperLeftX": 5,
     "ChartLabelsUpperLeftPlatePadding": 1,
     "ChartLabelsUpperLeftIndicatorSquarePadding": 4,
@@ -119,8 +120,21 @@
     "SpreadAskLineColorAlpha": 64,
     "SpreadAskLineWidth": 1,
     "SpreadLabelFont": "Consolas, 8pt",
-    "SpreadLabelColor": "DarkGray"
+    "SpreadLabelColor": "DarkGray",
+    "LevelTwoColorBackgroundStreamingHasNoLastQuote": "DarkGray",
+    "LevelTwoColorBackground": "White",
+    "LevelTwoLotsColorBackground": "WhiteSmoke",
+    "LevelTwoLotsColorForeground": "Black",
+    "LevelTwoAskColorBackground": "255, 230, 230",
+    "LevelTwoAskColorContour": "205, 180, 180",
+    "LevelTwoBidColorBackground": "230, 255, 230",
+    "LevelTwoBidColorContour": "180, 205, 180",
+    "LevelTwoMinimumPriceLevelThicknessRendered": 14,
+    "LevelTwoLotDrawString": true,
+    "LevelTwoLotFont": "Microsoft Sans Serif, 8.25pt",
+    "LevelTwoLotColor": "Black",
+    "LevelTwoLotPaddingHorizontal": 3
   },
   "ChartSerno": 1,
-  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
+  "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json], ScriptContextCurrentName[?Default?]"
 }

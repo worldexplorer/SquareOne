@@ -26,7 +26,7 @@ namespace Sq1.Core.Backtesting {
 			if (spreadAligned == 0) {
 				//string msg = "you can't use RoundDown here";
 				//Debugger.Break();
-				spreadAligned = symbolInfo.PriceStep;
+				spreadAligned = symbolInfo.PriceStepFromDecimal;
 			}
 			
 			if (barSimulated.HighLowDistance < spreadAligned) {
@@ -73,7 +73,7 @@ namespace Sq1.Core.Backtesting {
 			if (spreadAligned == 0) {
 				string msg = "you can't use RoundDown here";
 				//Debugger.Break();
-				spreadAligned = symbolInfo.PriceStep;
+				spreadAligned = symbolInfo.PriceStepFromDecimal;
 			}
 			
 			quote.Ask = quote.Bid + spreadAligned;
@@ -97,7 +97,7 @@ namespace Sq1.Core.Backtesting {
 			if (spreadAligned == 0) {
 				//string msg = "you can't use RoundDown here";
 				//Debugger.Break();
-				spreadAligned = symbolInfo.PriceStep;
+				spreadAligned = symbolInfo.PriceStepFromDecimal;
 			}
 			
 			quote.Bid = quote.Ask - spreadAligned;

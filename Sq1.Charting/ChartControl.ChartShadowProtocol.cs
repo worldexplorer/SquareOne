@@ -136,17 +136,20 @@ namespace Sq1.Charting {
 //		public override void PendingHistoryClearBacktestStarting() {
 //			this.ScriptExecutorObjects.PendingHistoryClearBacktestStarting();
 //		}
-		public override void PendingHistoryBacktestAdd(Dictionary<int, List<Alert>> alertsPendingHistorySafeCopy) {
-			this.ScriptExecutorObjects.PendingHistoryBacktestAdd(alertsPendingHistorySafeCopy);
+		public override void PendingHistoryBacktestAdd(Dictionary<int, AlertList> alertsPendingHistorySafeCopy) {
+			this.ScriptExecutorObjects.AlertsPlacedBacktestAdd(alertsPendingHistorySafeCopy);
 		}
-		public override void PendingRealtimeAdd(ReporterPokeUnit pokeUnit) {
-			this.ScriptExecutorObjects.PendingRealtimeAdd(pokeUnit);
+		public override void AlertsPlacedRealtimeAdd(List<Alert> alertsNewPlaced) {
+			this.ScriptExecutorObjects.AlertsPlacedRealtimeAdd(alertsNewPlaced);
+		}
+		public override void AlertsPendingStillNotFilledForBarAdd(int barIndex, List<Alert> alertsPendingAtCurrentBarSafeCopy) {
+			this.ScriptExecutorObjects.AlertsPendingStillNotFilledForBarAdd(barIndex, alertsPendingAtCurrentBarSafeCopy);
 		}
 		
 		Dictionary<Indicator, PanelIndicator> PanelsByIndicator = new Dictionary<Indicator, PanelIndicator>();
 		public override void HostPanelForIndicatorClear() {
 			foreach (PanelIndicator panel in this.PanelsByIndicator.Values) {
-				this.panelsInvalidateAll.Remove(panel);
+				this.panelsForInvalidateAll_dontForgetIndicators.Remove(panel);
 				this.multiSplitContainerRows.PanelRemove(panel);
 			}
 			this.PanelsByIndicator.Clear();
@@ -171,7 +174,7 @@ namespace Sq1.Charting {
 						}
 						
 						this.PanelsByIndicator.Add(indicator, panel);
-						this.panelsInvalidateAll.Add(panel);
+						this.panelsForInvalidateAll_dontForgetIndicators.Add(panel);
 						this.multiSplitContainerRows.PanelAddSplitterCreateAdd(panel, true);		//, this.ChartSettings.MultiSplitterPropertiesByPanelName);
 						needToReReadSplitterPositionsSinceIndicatorsWereAdded = true;
 					}
@@ -284,7 +287,7 @@ namespace Sq1.Charting {
 			return barAnnotation.Status;
 		}
 		public override void SyncBarsIdentDueToSymbolRename() {
-			foreach (PanelBase panelFolding in this.panelsInvalidateAll) {	// at least PanelPrice and PanelVolume
+			foreach (PanelBase panelFolding in this.panelsForInvalidateAll_dontForgetIndicators) {	// at least PanelPrice and PanelVolume
 				panelFolding.InitializeWithNonEmptyBars(this);
 				panelFolding.Invalidate();
 			}

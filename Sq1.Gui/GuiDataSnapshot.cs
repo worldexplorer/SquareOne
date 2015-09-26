@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.Serialization;
+
+using Sq1.Charting;
+using Sq1.Core.Charting;
+using Sq1.Gui.Forms;
+using Sq1.Gui.Singletons;
 
 using Newtonsoft.Json;
-using Sq1.Gui.Forms;
-using Sq1.Widgets;
 
 //using Newtonsoft.Json;
 //	[DataContract]
@@ -15,7 +17,8 @@ using Sq1.Widgets;
 namespace Sq1.Gui {
 	//[DataContract]
 	public class GuiDataSnapshot {
-		[JsonIgnore]	public Dictionary<int, ChartFormManager> ChartFormManagers;
+		[JsonIgnore]	public Dictionary<int, ChartFormsManager> ChartFormsManagers;
+		[JsonIgnore]	public Dictionary<ChartSettings, ChartControl> ChartSettingsForChartSettingsEditor;
 		[JsonProperty]	public Point MainFormLocation;
 		[JsonProperty]	public Size MainFormSize;
 		[JsonProperty]	public bool MainFormIsFullScreen;
@@ -24,13 +27,14 @@ namespace Sq1.Gui {
 		[JsonProperty]	public int ChartSernoLastKnownHadFocus;
 		[JsonIgnore]	public string ChartSernosInstantiatedAsString { get {
 				string ret = "";
-				foreach (int chartSerno in this.ChartFormManagers.Keys) ret += chartSerno + ",";
+				foreach (int chartSerno in this.ChartFormsManagers.Keys) ret += chartSerno + ",";
 				ret = ret.TrimEnd(",".ToCharArray());
 				return ret;
 			} }
 
 		public GuiDataSnapshot() {
-			this.ChartFormManagers = new Dictionary<int, ChartFormManager>();
+			this.ChartFormsManagers = new Dictionary<int, ChartFormsManager>();
+			this.ChartSettingsForChartSettingsEditor = new Dictionary<ChartSettings, ChartControl>();
 		}
 
 		//public void RebuildDeserializedChartFormsManagers(MainForm mainForm) {
@@ -44,13 +48,17 @@ namespace Sq1.Gui {
 		//		mgr.RebuildAfterDeserialization(mainForm);
 		//	}
 		//}
-		public void AddChartFormsManagerJustDeserialized(ChartFormManager mgr) {
+		public void AddChartFormsManagerJustDeserialized(ChartFormsManager mgr) {
 			if (mgr.DataSnapshot.ChartSerno > this.ChartSernoLastUsed) this.ChartSernoLastUsed = mgr.DataSnapshot.ChartSerno;
-			this.ChartFormManagers.Add(mgr.DataSnapshot.ChartSerno, mgr);
+
+			this.ChartFormsManagers.Add(mgr.DataSnapshot.ChartSerno, mgr);
+			// AddChartFormsManagerJustDeserialized() IS_ONLY_INVOKED_FROM_DESERIALIZER_SKIP_REBUILDING_DROPDOWN ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
+
+			this.ChartSettingsForChartSettingsEditor.Add(mgr.ChartForm.ChartControl.ChartSettings, mgr.ChartForm.ChartControl);
 		}
-		public ChartFormManager FindChartFormsManagerBySerno(int chartSerno, string invokerMsig = "CALLER_UNKNOWN", bool throwIfNotFound = true) {
-			ChartFormManager ret = null;
-			if (this.ChartFormManagers.ContainsKey(chartSerno) == false) {
+		public ChartFormsManager FindChartFormsManagerBySerno(int chartSerno, string invokerMsig = "CALLER_UNKNOWN", bool throwIfNotFound = true) {
+			ChartFormsManager ret = null;
+			if (this.ChartFormsManagers.ContainsKey(chartSerno) == false) {
 				if (throwIfNotFound) {
 					string msg = "CANT_DESERIALIZE_REPORTER/EDITOR_PARENT_CHART_NOT_FOUND"
 						+ " CHART_DESERIALIZATION_FAILED_OR_CHARTFORM_DOESNT_EXIST_IN_LAYOUT.XML"
@@ -59,7 +67,7 @@ namespace Sq1.Gui {
 				}
 				return ret;
 			}
-			ret = this.ChartFormManagers[chartSerno];
+			ret = this.ChartFormsManagers[chartSerno];
 			return ret;
 		}
 	}

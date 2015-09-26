@@ -119,7 +119,7 @@ namespace Sq1.Core.Broker {
 			OrderState newState = rejectedExitOrder.InStateErrorComplementaryEmergencyState;
 			string changeState = "ExitOrderCriticalState[" + rejectedExitOrder.State + "]=>[" + newState + "]";
 
-			int millis = rejectedExitOrder.Alert.Bars.SymbolInfo.EmergencyCloseDelayMillis;
+			int millis = rejectedExitOrder.Alert.Bars.SymbolInfo.EmergencyCloseInterAttemptDelayMillis;
 			if (millis > 0) {
 				string msg = "Emergency sleeping millis[" + millis + "] before " + changeState;
 				OrderStateMessage omsg = new OrderStateMessage(rejectedExitOrder, newState, msg);
@@ -215,7 +215,7 @@ namespace Sq1.Core.Broker {
 				emergencyReplacement.EmergencyCloseAttemptSerno = 1;
 			}
 			DateTime serverTimeNow = rejectedOrderToReplace.Alert.Bars.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
-			emergencyReplacement.TimeCreatedBroker = serverTimeNow;
+			emergencyReplacement.CreatedBrokerTime = serverTimeNow;
 
 			this.orderProcessor.DataSnapshot.OrderInsertNotifyGuiAsync(emergencyReplacement);
 			this.orderProcessor.RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(this, new List<Order>(){rejectedOrderToReplace});

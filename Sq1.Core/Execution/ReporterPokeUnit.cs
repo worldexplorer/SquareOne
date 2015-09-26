@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using Sq1.Core.DataTypes;
 
@@ -11,8 +10,10 @@ namespace Sq1.Core.Execution {
 		public PositionList		PositionsClosed			{ get; protected set; }
 		public PositionList		PositionsOpenNow		{ get; protected set; }
 		
-		public int				PositionsCount				{ get { return this.PositionsOpened.Count + this.PositionsClosed.Count; } }
-		public int				PositionsPlusAlertsCount	{ get { return this.PositionsCount + this.AlertsNew.Count; } }
+		public int				PositionsOpenedAfterExecPlusClosedCount							{ get { return this.PositionsOpened.Count + this.PositionsClosed.Count; } }
+		public int				PositionsOpenedAfterExecPlusClosedPlusAlertsNewCount			{ get { return this.PositionsOpenedAfterExecPlusClosedCount + this.AlertsNew.Count; } }
+		// lets Execute() return non-null PokeUnit => Reporters are notified on quoteUpdatedPositions if !GuiIsBusy
+		public int				PositionsNowPlusOpenedPlusClosedAfterExecPlusAlertsNewCount		{ get { return this.PositionsOpenedAfterExecPlusClosedPlusAlertsNewCount + this.PositionsOpenNow.Count; } }
 		
 		public ReporterPokeUnit() {
 			AlertsNew			= new AlertList("AlertsNew", null);
@@ -29,10 +30,10 @@ namespace Sq1.Core.Execution {
 		}
 		public ReporterPokeUnit Clone() {
 			ReporterPokeUnit ret = new ReporterPokeUnit(this.QuoteGeneratedThisUnit,
-				this.AlertsNew.Clone(),
-				this.PositionsOpened.Clone(),
-				this.PositionsClosed.Clone(),
-				this.PositionsOpenNow.Clone()
+				this.AlertsNew.Clone(this, "ReporterPokeUnit.Clone"),
+				this.PositionsOpened.Clone(this, "ReporterPokeUnit.Clone"),
+				this.PositionsClosed.Clone(this, "ReporterPokeUnit.Clone"),
+				this.PositionsOpenNow.Clone(this, "ReporterPokeUnit.Clone")
 			);
 			return ret;
 		}

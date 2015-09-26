@@ -4,7 +4,7 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Charting {
-	public partial class PanelPrice : PanelBase {
+	public partial class PanelPrice {
 		
 		#if USE_DATASERIES_MINMAX
 		public override double VisibleMinDoubleMaxValueUnsafe { get { return this.VisiblePriceMinNew; } }

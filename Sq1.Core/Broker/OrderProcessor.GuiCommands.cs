@@ -27,15 +27,6 @@ namespace Sq1.Core.Broker {
 			//this.KillSelectedOrders(allOrdersClone);
 			Assembler.PopupException("DOESNT_MAKE_SENSE_NOT_IMPLEMETED KillAll()");
 		}
-		public void KillPending(List<Order> orders) {
-			if (orders.Count == 0) return;
-			List<Order> ordersToCancel = new List<Order>();
-			for (int i = orders.Count - 1; i >= 0; i--) {
-				Order victimOrder = orders[i];
-				this.KillOrderUsingKillerOrder(victimOrder);
-			}
-			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
-		}
 		public void CancelStrategyOrders(string account, Strategy strategy, string symbol, BarScaleInterval dataScale) {
 			try {
 				Exception e = new Exception("just for call stack trace");
@@ -46,31 +37,33 @@ namespace Sq1.Core.Broker {
 			}
 		}
 		public void CancelAllPending() {
-			List<Order> ordersToCancel = this.DataSnapshot.OrdersPending.InnerOrderList;
-			if (ordersToCancel.Count == 0) {
-				string msg = "NO_PENDING_ORDERS_TO_CANCEL__SHOULD_I_CHECK_ANOTHER_LANE?... OrdersPending.Count[" + ordersToCancel.Count + "]";
+			List<Order> ordersPendingToKill = this.DataSnapshot.OrdersPending.SafeCopy;
+			if (ordersPendingToKill.Count == 0) {
+				string msg = "NO_PENDING_ORDERS_TO_CANCEL__SHOULD_I_CHECK_ANOTHER_LANE?... ordersPendingToKill.Count[" + ordersPendingToKill.Count + "]";
 				return;
 			}
-			BrokerAdapter broker = this.extractSameBrokerAdapterThrowIfDifferent(ordersToCancel, "CancelAll(): ");
-			this.KillPending(ordersToCancel);
-		}
-		public void CancelReplaceOrder(Order orderToReplace, Order orderReplacement) {
-			string msgVictim = "expecting callback on successful REPLACEMENT completion [" + orderReplacement + "]";
-			OrderStateMessage newOrderStateVictim = new OrderStateMessage(orderToReplace, OrderState.KillPending, msgVictim);
-			this.UpdateOrderStateAndPostProcess(orderToReplace, newOrderStateVictim);
-
-			orderReplacement.State = OrderState.Submitted;
-			orderReplacement.IsReplacement = true;
-			this.DataSnapshot.OrderInsertNotifyGuiAsync(orderReplacement);
-
-			if (orderToReplace.hasBrokerAdapter("CancelReplaceOrder(): ") == false) {
-				string msg = "CRAZY #65";
-				Assembler.PopupException(msg);
-				return;
+			BrokerAdapter broker = this.extractSameBrokerAdapterThrowIfDifferent(ordersPendingToKill, "CancelAllPending(): ");
+			foreach (Order pendingOrder in ordersPendingToKill) {
+				this.KillPendingOrderWithoutKiller(pendingOrder);
 			}
-			orderToReplace.Alert.DataSource.BrokerAdapter.CancelReplace(orderToReplace, orderReplacement);
-
-			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
 		}
+//		public void CancelReplaceOrder(Order orderToReplace, Order orderReplacement) {
+//			string msgVictim = "expecting callback on successful REPLACEMENT completion [" + orderReplacement + "]";
+//			OrderStateMessage newOrderStateVictim = new OrderStateMessage(orderToReplace, OrderState.KillPending, msgVictim);
+//			this.UpdateOrderStateAndPostProcess(orderToReplace, newOrderStateVictim);
+//
+//			orderReplacement.State = OrderState.Submitted;
+//			orderReplacement.IsReplacement = true;
+//			this.DataSnapshot.OrderInsertNotifyGuiAsync(orderReplacement);
+//
+//			if (orderToReplace.hasBrokerAdapter("CancelReplaceOrder(): ") == false) {
+//				string msg = "CRAZY #65";
+//				Assembler.PopupException(msg);
+//				return;
+//			}
+//			orderToReplace.Alert.DataSource.BrokerAdapter.CancelReplace(orderToReplace, orderReplacement);
+//
+//			this.DataSnapshot.SerializerLogrotateOrders.HasChangesToSave = true;
+//		}
 	}
 }

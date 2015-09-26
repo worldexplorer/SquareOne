@@ -7,10 +7,11 @@ using Sq1.Core.Support;
 using Sq1.Core.DataFeed;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Execution;
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
-	public class LivesimStreaming : BacktestStreaming {
+	public class LivesimStreaming : BacktestStreaming, IDisposable {
 		public	ManualResetEvent			Unpaused			{ get; private set; }
 				ChartShadow					chartShadow;
 				LivesimDataSource			livesimDataSource;
@@ -28,9 +29,11 @@ namespace Sq1.Core.Livesim {
 
 		public void Initialize(ChartShadow chartShadow) {
 			this.chartShadow = chartShadow;
-			double stepPrice = this.chartShadow.Bars.SymbolInfo.PriceStep;
+			double stepPrice = this.chartShadow.Bars.SymbolInfo.PriceStepFromDecimal;
 			double stepSize = this.chartShadow.Bars.SymbolInfo.VolumeStepFromDecimal;
-			this.level2gen.Initialize(chartShadow.Executor.Strategy.LivesimStreamingSettings.LevelTwoLevelsToGenerate, stepPrice, stepSize);
+			SymbolInfo symbolInfo = this.chartShadow.Executor.Bars.SymbolInfo;	//LivesimLevelTwoGenerator needs to align price and volume to Levels
+			int howMany = chartShadow.Executor.Strategy.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
+			this.level2gen.Initialize(symbolInfo, howMany, stepPrice, stepSize);
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
@@ -43,10 +46,10 @@ namespace Sq1.Core.Livesim {
 			bool isUnpaused = this.Unpaused.WaitOne(0);
 			if (isUnpaused == false) {
 				string msg = "LIVESTREAMING_CAUGHT_PAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
-				Assembler.PopupException(msg, null, false);
+				//Assembler.PopupException(msg, null, false);
 				this.Unpaused.WaitOne();
 				string msg2 = "LIVESTREAMING_CAUGHT_UNPAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
-				Assembler.PopupException(msg2, null, false);
+				//Assembler.PopupException(msg2, null, false);
 			}
 
 			ScriptExecutor executor = this.livesimDataSource.Executor;
@@ -113,5 +116,17 @@ namespace Sq1.Core.Livesim {
 			return;
 		}
 		#endregion
+
+		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.Unpaused.Dispose();
+			this.Unpaused = null;
+			this.IsDisposed = true;
+		}
+		public bool IsDisposed { get; private set; }
 	}
 }

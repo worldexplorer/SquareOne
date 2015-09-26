@@ -8,9 +8,10 @@ using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
+using Sq1.Core.Support;
 
 namespace Sq1.Core.Backtesting {
-	public class Backtester {
+	public class Backtester : IDisposable {
 		public const string				BARS_BACKTEST_CLONE_PREFIX		= "BACKTEST_BARS_CLONED_FROM_";
 		public ScriptExecutor			Executor						{ get; private set; }
 
@@ -32,8 +33,8 @@ namespace Sq1.Core.Backtesting {
 			} }
 		public int						QuotesGeneratedSoFar			{ get { return BarsSimulatedSoFar * this.QuotesGenerator.BacktestStrokesPerBarAsInt; } }
 		//public BacktestQuotesPerBar		BacktestQuotesPerBar			{ get {
-		//    if (this.QuotesGenerator == null) return BacktestQuotesPerBar.Unknown;
-		//    else return this.QuotesGenerator.BacktestStrokesPerBar;
+		//	if (this.QuotesGenerator == null) return BacktestQuotesPerBar.Unknown;
+		//	else return this.QuotesGenerator.BacktestStrokesPerBar;
 		//} }
 		public BacktestQuotesGenerator	QuotesGenerator					{ get; private set; }
 
@@ -96,7 +97,7 @@ namespace Sq1.Core.Backtesting {
 			//string msg = "MAKE_SURE_WE_WILL_INVOKE_BacktestStartingConstructOwnValuesValidateParameters()";
 			//Assembler.PopupException(msg, null, false);
 
-			int repaintableChunk = (int)(this.BarsOriginal.Count / 20);
+			int repaintableChunk = (int)(this.BarsOriginal.Count / 10);
 			if (repaintableChunk <= 0) repaintableChunk = 1;
 				
 			int excludeLastBarStreamingWillTriggerIt = this.BarsOriginal.Count - 1;
@@ -133,7 +134,7 @@ namespace Sq1.Core.Backtesting {
 				: "";					// "BACKTESTED_ALL_REQUIRED_BARS";
 			return msg;
 		}
-		public void AbortRunningBacktestWaitAborted(string whyAborted, int millisecondsToWait = 1000) {
+		public void AbortRunningBacktestWaitAborted(string whyAborted, int millisecondsToWait = 3000) {
 			if (this.IsBacktestRunning == false) return;
 
 			//bool abortIsAlreadyRequested = this.RequestingBacktestAbort.WaitOne(0);
@@ -158,7 +159,8 @@ namespace Sq1.Core.Backtesting {
 		}
 		void closePositionsLeftOpenAfterBacktest() {
 			//return;
-			foreach (Alert alertPending in this.Executor.ExecutionDataSnapshot.AlertsPending.InnerListSafeCopy) {
+			List<Alert> alertsSafe = this.Executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "closePositionsLeftOpenAfterBacktest(WAIT)");
+			foreach (Alert alertPending in alertsSafe) {
 				try {
 					//if (alertPending.IsEntryAlert) {
 					//	this.Executor.ClosePositionWithAlertClonedFromEntryBacktestEnded(alertPending);
@@ -179,10 +181,11 @@ namespace Sq1.Core.Backtesting {
 				Assembler.PopupException(msg, null, false);
 			}
 
-			foreach (Position positionOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow.InnerListSafeCopy) {
+			List<Position> positionsSafe = this.Executor.ExecutionDataSnapshot.PositionsOpenNow.SafeCopy(this, "closePositionsLeftOpenAfterBacktest(WAIT)");
+			foreach (Position positionOpen in positionsSafe) {
 				//v1 List<Alert> alertsSubmittedToKill = this.Executor.Strategy.Script.PositionCloseImmediately(positionOpen, );
 				//v2 WONT_CLOSE_POSITION_EARLIER_THAN_OPENED Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStaticLastNullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
-				Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStreaming, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
+				Alert exitAlert = this.Executor.Strategy.Script.ExitAtMarket(this.Executor.Bars.BarStreamingNullUnsafe, positionOpen, "BACKTEST_ENDED_EXIT_FORCED");
 				if (exitAlert != positionOpen.ExitAlert) {
 					string msg = "FIXME_SOMEHOW";
 					Assembler.PopupException(msg);
@@ -319,16 +322,16 @@ namespace Sq1.Core.Backtesting {
 				this.Executor.BacktestContextRestore();
 				this.BarsOriginal = null;	// I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL WILL_AFFECT_ChartForm.TsiProgressBarETA
 				if (this.Executor.ChartShadow == null) {
-					string msg3 = "IAM_IN_OPTIMIZER_HAVING_NO_CHART_ASSOCIATED";
+					string msg3 = "IAM_IN_SEQUENCER_HAVING_NO_CHART_ASSOCIATED";
 					return;
 				}
 				this.Executor.ChartShadow.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;
 				// DOESNT_HELP_HOPE_ON_OnBacktestedAllBars() in InterForm this.Executor.ChartShadow.Invalidate();
-			} catch (Exception e) {
+			} catch (Exception ex) {
 				#if DEBUG
 				Debugger.Break();
 				#endif
-				throw e;
+				throw ex;
 			} finally {
 				// Calling ManualResetEvent.Set opens the gate,
 				// allowing any number of threads calling WaitOne to be let through
@@ -467,5 +470,22 @@ namespace Sq1.Core.Backtesting {
 			if (this.Executor.Strategy.ScriptContextCurrent.BacktestOnSelectorsChange == false) return;
 			this.Executor.BacktesterRunSimulationTrampoline(null, true);
 		}
+
+		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.RequestingBacktestAbort	.Dispose();
+			this.BacktestAborted			.Dispose();
+			this.BacktestIsRunning			.Dispose();
+
+			this.RequestingBacktestAbort	= null;
+			this.BacktestAborted			= null;
+			this.BacktestIsRunning			= null;
+			this.IsDisposed = true;
+		}
+		public bool IsDisposed { get; private set; }
 	}
 }

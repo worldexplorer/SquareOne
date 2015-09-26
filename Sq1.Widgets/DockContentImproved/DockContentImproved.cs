@@ -133,11 +133,11 @@ namespace Sq1.Widgets {
 //		}
 		#endregion
 
-		public bool IsShown				{ get { return this.DockState != DockState.Unknown; } }
-		public bool IsFloatingWindow	{ get { return this.DockState == DockState.Float; } }
-		public bool IsInDocumentArea	{ get { return this.DockState == DockState.Document; } }
-		public bool IsDocked			{ get { return DockHelper.IsDockWindowState(this.DockState); } }
-		public bool IsDockedAutoHide	{ get { return DockHelper.IsDockStateAutoHide(this.DockState); } }
+		public bool IsShown				{ get { return base.DockState != DockState.Unknown; } }
+		public bool IsFloatingWindow	{ get { return base.DockState == DockState.Float; } }
+		public bool IsInDocumentArea	{ get { return base.DockState == DockState.Document; } }
+		public bool IsDocked			{ get { return DockHelper.IsDockWindowState(base.DockState); } }
+		public bool IsDockedAutoHide	{ get { return DockHelper.IsDockStateAutoHide(base.DockState); } }
 		public bool IsCoveredOrAutoHidden { get {
 				if (this.IsDockedAutoHide) return true;
 				if (this.IsDocked) {
@@ -146,24 +146,26 @@ namespace Sq1.Widgets {
 					#if DEBUG
 					//Debugger.Break();
 					#endif
-					return false;
+					//v1 return false;
+					bool isCovered = base.Pane.ActiveContent != this;
+					return isCovered;
 				}
 				if (this.IsFloatingWindow) {
 					string msg = "go find out if I'm covered by other forms floating in the same window"
 						+ " ; meanwhile I'll report I'm not covered so you can click ChartForm>HIDESourceCodeEditor";
 					#if DEBUG
-					Debugger.Break();
+					//Debugger.Break();
 					#endif
-					return false;
+					return true;
 				}
-				if (this.DockState == DockState.Unknown) {
+				if (base.DockState == DockState.Unknown) {
 					string msg = "EDITOR_WAS_CONDITIONALLY_INSTANTIATED_BUT_NOT_DOCKPANEL.SHOW()n";
 					#if DEBUG
 					//Debugger.Break();
 					#endif
 					return true;
 				}
-				if (this.DockState == DockState.Hidden) {
+				if (base.DockState == DockState.Hidden) {
 					string msg = "DESERIALIZED_AS_HIDDEN__NOT_REALLY_DOCKED_NOR_COVERED";
 					#if DEBUG
 					Debugger.Break();
@@ -192,10 +194,10 @@ namespace Sq1.Widgets {
 		}
 
 		public void ToggleAutoHide() {
-			if (this.DockState == DockState.Unknown) return;
-			if (this.DockState == DockState.Document) return;
-			if (this.DockState == DockState.Float) return;
-			if (this.DockState == DockState.Hidden) return;
+			if (this.DockState == DockState.Unknown)	return;
+			if (this.DockState == DockState.Document)	return;
+			if (this.DockState == DockState.Float)		return;
+			if (this.DockState == DockState.Hidden)		return;
 			//DockState newState = // BROKEN_CONTAINS_DUPLICATED_LOGIC_NONSENSE DockHelper.ToggleAutoHideState(this.Pane.DockState);
 			DockState newState = this.ToggleAutoHideState(this.Pane.DockState);
 			this.Pane.SetDockState(newState);

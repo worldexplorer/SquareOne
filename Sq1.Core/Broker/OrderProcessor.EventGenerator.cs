@@ -55,11 +55,10 @@ namespace Sq1.Core.Broker {
 			List<Order> ordersStaleScreenedFromClearForNewThread = new List<Order>(ordersToRemove);
 			Task t = new Task(delegate {
 				//if (ordersToRemove.Count == 0 && ordersStaleScreenedFromClearForNewThread.Count != 0) {
-					// NO
-				ordersToRemove = ordersStaleScreenedFromClearForNewThread;
+				// NO ordersToRemove = ordersStaleScreenedFromClearForNewThread;
 				//	string msg = "WILL_JUST_OrdersTreeOLV.RebuildAll(true)_IN_OrderRemoveFromListView() ordersToRemove already clear()ed before this task has started";
 				//}
-				this.OnOrderRemovedExecutionFormNotification(sender, new OrdersListEventArgs(ordersToRemove));
+				this.OnOrderRemovedExecutionFormNotification(sender, new OrdersListEventArgs(ordersStaleScreenedFromClearForNewThread));
 			});
 			t.ContinueWith(delegate {
 				string msg = "TASK_THREW_OrderEventDistributor.RaiseAsyncOrderAddedExecutionFormShouldRebuildTree()";

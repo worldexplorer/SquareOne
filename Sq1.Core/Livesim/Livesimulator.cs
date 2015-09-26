@@ -11,20 +11,33 @@ using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Livesim {
-	public class Livesimulator : Backtester {
+	public class Livesimulator : Backtester, IDisposable {
+		const string REASON_TO_EXIST = "VISUALLY CONFIRM THAT CORE CAN COPE WITH FOUR THREADS SIMULTANEOUSLY:"
+			+ " 1) STREAMING_ADAPTER"
+			+ " 2) ITS QUOTE_PUMP INVOKING SCRIPT.OVERRIDES"
+			+ " 3) BROKER_ADAPTER ALSO INVOKING SCRIPT.OVERRIDES WITHOUT TASKS"
+			+ " 4) CHARTING/REPORTING IN GUI THREAD;"
+			+ " ALL OF THOSE SEQUENTIALLY AND NON-CONTRADICTIVELY DEALING WITH EXECUTION_DATA_SNAPSHOT"
+			+ " AND OTHER INTERNALS AT 1000 QUOTES/SECOND WOULD BE CONSIDERED A HUGE SUCCESS";
+
 		public	Backtester				BacktesterBackup				{ get; private set; }
 		public	LivesimDataSource		DataSourceAsLivesimNullUnsafe	{ get { return base.BacktestDataSource as LivesimDataSource; } }
-				Button					btnStartStop;
-				Button					btnPauseResume;
+				//v1
+				// Button					btnStartStop;
+				// Button					btnPauseResume;
+				//v2
+				ToolStripButton			btnStartStop;
+				ToolStripButton			btnPauseResume;
+
 				ChartShadow				chartShadow;
 				LivesimQuoteBarConsumer livesimQuoteBarConsumer;
 
 
 		public Livesimulator(ScriptExecutor executor) : base(executor) {
-			base.BacktestDataSource = new LivesimDataSource(executor);
+			base.BacktestDataSource			= new LivesimDataSource(executor);
 			base.BacktestDataSource.Initialize(Assembler.InstanceInitialized.OrderProcessor);
 			//base.SeparatePushingThreadEnabled = false;
-			this.livesimQuoteBarConsumer = new LivesimQuoteBarConsumer(this);
+			this.livesimQuoteBarConsumer	= new LivesimQuoteBarConsumer(this);
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
 		}
 
@@ -143,10 +156,10 @@ namespace Sq1.Core.Livesim {
 				distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
 
 				//if (this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar != this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar) {
-				//    string msg2 = "PARANOID_CHECK QuotesGenerator.BacktestStrokesPerBar[" + this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar
-				//        + "] != ScriptContextCurrent.BacktestStrokesPerBar[" + this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar + "]";
-				//    msg += "BacktestContextRestore will DisplayStatus how many StrokesPerBar was backtested; but since in GUI thread QuoteGenerator will be reset, I do equality check here :(";
-				//    Assembler.PopupException(msg2);
+				//	string msg2 = "PARANOID_CHECK QuotesGenerator.BacktestStrokesPerBar[" + this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar
+				//		+ "] != ScriptContextCurrent.BacktestStrokesPerBar[" + this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar + "]";
+				//	msg += "BacktestContextRestore will DisplayStatus how many StrokesPerBar was backtested; but since in GUI thread QuoteGenerator will be reset, I do equality check here :(";
+				//	Assembler.PopupException(msg2);
 				//}
 
 				double sec = Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);
@@ -182,7 +195,8 @@ namespace Sq1.Core.Livesim {
 		}
 
 
-		public void Start_inGuiThread(Button btnStartStop, Button btnPauseResume, ChartShadow chartShadow) {
+		//v1 public void Start_inGuiThread(Button btnStartStop, Button btnPauseResume, ChartShadow chartShadow) {
+		public void Start_inGuiThread(ToolStripButton btnStartStop, ToolStripButton btnPauseResume, ChartShadow chartShadow) {
 			this.btnStartStop = btnStartStop;
 			this.btnPauseResume = btnPauseResume;
 			this.chartShadow = chartShadow;
@@ -204,7 +218,13 @@ namespace Sq1.Core.Livesim {
 				// too late to do it in GUI thread; switch takes a tons of time; do gui-unrelated preparations NOW
 				List<Order> ordersStale = this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe.OrdersSubmittedForOneLivesimBacktest;
 				if (ordersStale.Count > 0) {
+					int beforeCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
 					this.Executor.OrderProcessor.DataSnapshot.OrdersRemove(ordersStale);
+					int afterCleanup = this.Executor.OrderProcessor.DataSnapshot.OrdersAll.Count;
+					if (beforeCleanup > 0 && beforeCleanup <= afterCleanup)  {
+						string msg = "STALE_ORDER_CLEANUP_DOESNT_WORK__LIVESIM";
+						Assembler.PopupException(msg);
+					}
 					ordersStale.Clear();
 				}
 				base.Stopwatch.Restart();
@@ -212,7 +232,7 @@ namespace Sq1.Core.Livesim {
 				this.chartShadow.BeginInvoke((MethodInvoker)delegate { this.executor_BacktesterContextInitializedStep2of4(sender, e); });
 				return;
 			}
-			this.chartShadow.Initialize(base.Executor.Bars, true);
+			this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, true);
 
 			this.btnPauseResume.Enabled = true;
 			this.btnPauseResume.Text = "Pause";
@@ -230,11 +250,13 @@ namespace Sq1.Core.Livesim {
 			base.Executor.Backtester = this.BacktesterBackup;
 			base.BarsOriginal = null;	// I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL WILL_AFFECT_ChartForm.TsiProgressBarETA
 
-			this.btnStartStop.BeginInvoke((MethodInvoker)delegate {
+			//v1 this.btnStartStop.BeginInvoke((MethodInvoker)delegate {
+			this.chartShadow.BeginInvoke((MethodInvoker)delegate {
 				this.btnStartStop.Text = "Start";
-				this.chartShadow.Initialize(base.Executor.Bars, true);
+				this.btnStartStop.CheckState = CheckState.Unchecked;
+				this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, true);
 
-				float seconds = (float)Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 1);
+				float seconds = (float)Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);
 				this.btnPauseResume.Text = seconds.ToString() + " sec";
 				this.btnPauseResume.Enabled = false;
 			});
@@ -251,7 +273,7 @@ namespace Sq1.Core.Livesim {
 					unpausedMR.Set();
 				}
 				string msg2 = " LIVESIM_HAS_SINGLE_THREADED_QUOTE_PUMP__DONT_REQUEST_AND_DONT_WAIT_JUST_CONTINUE";
-				base.AbortRunningBacktestWaitAborted(msig + msg2, 0);
+				base.AbortRunningBacktestWaitAborted(msig + msg2);
 			} catch (Exception ex) {
 				Assembler.PopupException("Livesimulator.Stop_inGuiThread()", ex);
 			}
@@ -259,6 +281,8 @@ namespace Sq1.Core.Livesim {
 
 		public void Pause_inGuiThread() {
 			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Unpaused.Reset();
+			string msg = "AlertsScheduledForDelayedFill.Count=" + this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe.DataSnapshot.AlertsScheduledForDelayedFill.Count  + " LEAKED_HANDLES_HUNTER";
+			//Assembler.PopupException(msg);
 		}
 		public void Unpause_inGuiThread() {
 			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Unpaused.Set();
@@ -269,5 +293,16 @@ namespace Sq1.Core.Livesim {
 			string ret = TO_STRING_PREFIX + base.Executor.ToString();
 			return ret;
 		}
+
+		public void Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
+			base.Dispose();
+			this.IsDisposed = true;
+		}
+		public bool IsDisposed { get; private set; }
 	}
 }

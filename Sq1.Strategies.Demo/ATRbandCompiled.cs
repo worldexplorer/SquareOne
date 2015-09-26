@@ -9,8 +9,9 @@ using Sq1.Core.StrategyBase;
 namespace Sq1.Strategies.Demo {
 	public class ATRbandCompiled : Script {
 		// if an indicator is NULL (isn't initialized in this.ctor()) you'll see INDICATOR_DECLARED_BUT_NOT_CREATED+ASSIGNED_IN_CONSTRUCTOR in ExceptionsForm 
-		public IndicatorAverageTrueRange ATR;
-		public IndicatorAtrBand ATRband;
+		IndicatorAverageTrueRange ATR;
+		IndicatorAtrBand ATRband;
+		ScriptParameter test;
 		
 		public ATRbandCompiled() {
 			// CLEANER_SCRIPT_PARAMETERS
@@ -26,7 +27,8 @@ namespace Sq1.Strategies.Demo {
 			this.ATRband = new IndicatorAtrBand(this.ATR);
 			// ALREADY_COPIED_FROM_ATR_BY_CTOR this.ATRband.LineColor = Color.RosyBrown;
 
-			base.ScriptParameterCreateRegister(1, "test", 0, 0, 10, 1);
+			//base.ScriptParameterCreateRegister(1, "test", 0, 0, 10, 1);
+			test = new ScriptParameter(1, "test", 0, 0, 10, 1, "hopefully this will go to the tooltip");
 		}
 		public override void InitializeBacktest() {
 		}

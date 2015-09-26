@@ -8,23 +8,35 @@ using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
 	public class SystemPerformance {
-		public ScriptExecutor				Executor			{ get; private set; }
-		public Bars							BarsBuyAndHold		{ get { return this.Bars; } }
-		public Bars							Bars				{ get {
+		public	ScriptExecutor				Executor			{ get; private set; }
+		public	Bars						BarsBuyAndHold		{ get { return this.Bars; } }
+		public	Bars						Bars				{ get {
 				if (this.Executor.Bars == null) {
 					string msg = "don't execute any SystemPerformance calculations before calling InitializeAndScan(): this.Executor.Bars == null";
 					throw new Exception(msg);
 				}
 				return this.Executor.Bars;
 			} }
-		public SystemPerformanceSlice		SlicesShortAndLong	{ get; private set; }
-		public SystemPerformanceSlice		SliceLong			{ get; private set; }
-		public SystemPerformanceSlice		SliceShort			{ get; private set; }
-		public SystemPerformanceSlice		SliceBuyHold		{ get; private set; }
+		public	SystemPerformanceSlice		SlicesShortAndLong	{ get; private set; }
+		public	SystemPerformanceSlice		SliceLong			{ get; private set; }
+		public	SystemPerformanceSlice		SliceShort			{ get; private set; }
+		public	SystemPerformanceSlice		SliceBuyHold		{ get; private set; }
 		
-		public SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished		{ get; private set; }
-		public Dictionary<int, ScriptParameter>		ScriptParametersById_BuiltOnBacktestFinished								{ get; private set; }
-		public Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished					{ get; private set; }
+		public	SortedDictionary<int, ScriptParameter>			ScriptParametersById_BuiltOnBacktestFinished						{ get; private set; }
+		public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished					{ get; private set; }
+		public	SortedDictionary<string, IndicatorParameter>	ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished		{ get; private set; }
+		public	string											ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished_AsString { get {
+				SortedDictionary<string, IndicatorParameter> merged = this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
+				if (merged == null) return "(NotOptimizedYet)";
+				if (merged.Count == 0) return "(NoParameters)";
+				string ret = "";
+				foreach (string indicatorDotParameter in merged.Keys) {
+					ret += indicatorDotParameter + "=" + merged[indicatorDotParameter].ValueCurrent + ",";
+				}
+				ret = ret.TrimEnd(",".ToCharArray());
+				return "(" + ret + ")";
+			} }
+
 
 		public string						NetProfitRecoveryForScriptContextNewName	{ get {
 				string netFormatted = Math.Round(this.SlicesShortAndLong.NetProfitForClosedPositionsBoth, 2).ToString();
@@ -75,21 +87,23 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 
-			PositionList positionsClosed = this.Executor.ExecutionDataSnapshot.PositionsMaster.Clone();
-			foreach (Position posOpen in this.Executor.ExecutionDataSnapshot.PositionsOpenNow.InnerList) {
-				if (positionsClosed.ContainsInInnerList(posOpen) == false) {
+			// OVERKILL_OPTIMIZE_ME__HAPPENS_ONCE__NO_MULTIPLE_THREADS_INVOLVED__RIGHT?
+			PositionList positionsClosedSafe = this.Executor.ExecutionDataSnapshot.PositionsMaster.Clone(this, "BuildStatsOnBacktestFinished(WAIT)");
+			List<Position> positionsOpenSafe = this.Executor.ExecutionDataSnapshot.PositionsOpenNow.SafeCopy(this, "BuildStatsOnBacktestFinished(WAIT)");
+			foreach (Position posOpen in positionsOpenSafe) {
+				if (positionsClosedSafe.Contains(posOpen, this, "BuildStatsOnBacktestFinished(WAIT)") == false) {
 					#if DEBUG
 					Debugger.Break();
 					#endif
 					continue;
 				}
-				positionsClosed.Remove(posOpen);
+				positionsClosedSafe.Remove(posOpen, this, "BuildStatsOnBacktestFinished(WAIT)");
 			}
 			// at the end of backtest, I closed all positions, last may be still open 
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(null, null,
 					//this.Executor.ExecutionDataSnapshot.PositionsOpenNow,
 					this.Executor.ExecutionDataSnapshot.PositionsMaster,
-					positionsClosed,
+					positionsClosedSafe,
 					this.Executor.ExecutionDataSnapshot.PositionsOpenNow
 				);
 			
@@ -100,23 +114,23 @@ namespace Sq1.Core.StrategyBase {
 
 			Strategy strategy = this.Executor.Strategy;
 			Script script = strategy.Script;
-			if (script.ScriptParametersById == null) {
+			if (script.ScriptParametersById_ReflectedCached == null) {
 				string msg = "CANT_GRAB_";
 				Assembler.PopupException(msg);
 				return;
 			}
 			//WRONG this.ScriptAndIndicatorParameterClonesByName.Clear();
 			this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished = new SortedDictionary<string, IndicatorParameter>();
-			this.ScriptParametersById_BuiltOnBacktestFinished = new Dictionary<int, ScriptParameter>();
+			this.ScriptParametersById_BuiltOnBacktestFinished = new SortedDictionary<int, ScriptParameter>();
 
-			string pids = script.ScriptParametersByIdAsString;
-			foreach (ScriptParameter sp in script.ScriptParametersById.Values) {
+			string pids = script.ScriptParametersAsString;
+			foreach (ScriptParameter sp in script.ScriptParametersById_ReflectedCached.Values) {
 				if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(sp.Name)) {
 					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_ScriptParameter[" + sp.Name + "]: " + pids;
 					Assembler.PopupException(msg);
 					continue;
 				}
-				ScriptParameter clone = sp.Clone();
+				ScriptParameter clone = sp.CloneAsScriptParameter("FOR_BuildStatsOnBacktestFinished");
 				this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(sp.Name, clone);
 				this.ScriptParametersById_BuiltOnBacktestFinished.Add(sp.Id, clone);
 			}
@@ -124,13 +138,13 @@ namespace Sq1.Core.StrategyBase {
 			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
 			string iids = script.IndicatorParametersAsString;
 			//foreach (IndicatorParameter ip in this.Executor.Strategy.Script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
-			foreach (IndicatorParameter ip in script.IndicatorsParametersInitializedInDerivedConstructorByNameForSliders.Values) {
+			foreach (IndicatorParameter ip in script.IndicatorsParameters_ReflectedCached.Values) {
 				if (this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.ContainsKey(ip.FullName)) {
 					string msg = "WONT_ADD_ALREADY_IN_SYSTEM_PERFORMANCE_IndicatorParameter[" + ip.Name + "]: " + iids;
 					Assembler.PopupException(msg);
 					continue;
 				}
-				IndicatorParameter clone = ip.Clone();
+				IndicatorParameter clone = ip.CloneAsIndicatorParameter("FOR_BuildStatsOnBacktestFinished#1");
 				this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Add(ip.FullName, clone);
 			}
 
@@ -140,7 +154,7 @@ namespace Sq1.Core.StrategyBase {
 				List<IndicatorParameter> iParams = ctx.IndicatorParametersByName[iParamName];
 				List<IndicatorParameter> iParamsCloned = new List<IndicatorParameter>();
 				foreach (IndicatorParameter ip in iParams) {
-					IndicatorParameter clone = ip.Clone();
+					IndicatorParameter clone = ip.CloneAsIndicatorParameter("FOR_BuildStatsOnBacktestFinished#2");
 					iParamsCloned.Add(clone);
 				}
 				this.IndicatorParametersByName_BuiltOnBacktestFinished.Add(iParamName, iParamsCloned);
@@ -152,10 +166,10 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg);
 				return;
 			}
-			int absorbedOpenLong	= this.SliceLong			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
-			int absorbedOpenShort	= this.SliceShort			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
-			int absorbedOpenBoth	= this.SlicesShortAndLong	.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
-			int absorbedOpenBH		= this.SliceBuyHold			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
+			int absorbedOpenLong		= this.SliceLong			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
+			int absorbedOpenShort		= this.SliceShort			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
+			int absorbedOpenBoth		= this.SlicesShortAndLong	.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
+			int absorbedOpenBH			= this.SliceBuyHold			.BuildIncrementalBrokerFilledAlertsOpeningForPositions_step1of3(position);
 		}
 		public void BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(PositionList positions) {
 			int absorbedUpdatedLong		= this.SliceLong			.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);
@@ -164,15 +178,15 @@ namespace Sq1.Core.StrategyBase {
 			int absorbedUpdatedBH		= this.SliceBuyHold			.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(positions);
 		}
 		internal void BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(Position position) {
-			int absorbedClosedLong	= this.SliceLong			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
-			int absorbedClosedShort	= this.SliceShort			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
-			int absorbedClosedBoth	= this.SlicesShortAndLong	.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
-			int absorbedClosedBH	= this.SliceBuyHold			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
+			int absorbedClosedLong		= this.SliceLong			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
+			int absorbedClosedShort		= this.SliceShort			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
+			int absorbedClosedBoth		= this.SlicesShortAndLong	.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
+			int absorbedClosedBH		= this.SliceBuyHold			.BuildReportIncrementalBrokerFilledAlertsClosingForPositions_step3of3(position);
 		}
 
-		public SystemPerformance CloneForOptimizer() {
-			// Optimizer takes Clone with Slices ready to use; same (parent) SystemPerformance.Initialize() overwrites with new Slices,
-			// while clone keeps pointers to old Slices => Optimizer is happy   
+		public SystemPerformance CloneForSequencer() {
+			// Sequencer takes Clone with Slices ready to use; same (parent) SystemPerformance.Initialize() overwrites with new Slices,
+			// while clone keeps pointers to old Slices => Sequencer is happy   
 			return (SystemPerformance)base.MemberwiseClone();
 		}
 		//public SystemPerformance CloneForReporter() {
@@ -185,7 +199,7 @@ namespace Sq1.Core.StrategyBase {
 		//}
 		public override string ToString() {
 			string msg = "HAS_MEANINFULL_VALUE_ONLY_AFTER int absorbedBH = this.SliceBuyHold.BuildStatsOnBacktestFinished(pokeUnit)";
-			return this.NetProfitRecoveryForScriptContextNewName;
+			return this.NetProfitRecoveryForScriptContextNewName + " " + this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished_AsString;
 		}
 	}
 }

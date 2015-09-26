@@ -26,7 +26,7 @@ namespace Sq1.Core.Backtesting {
 			string subclassName = this.GetType().Name;
 			//string BacktestQuotesGeneratorString = base.GetType().Name;	// assuming no grand-children; inheritance tree is ONE level deep
 			//if (subclassName.StartsWith(BacktestQuotesGeneratorString)) {
-			//    subclassName = this.WhoGeneratedThisQuote.Remove(0, BacktestQuotesGeneratorString.Length);
+			//	subclassName = this.WhoGeneratedThisQuote.Remove(0, BacktestQuotesGeneratorString.Length);
 			//}
 			string strokesEnum = Enum.GetName(typeof(BacktestStrokesPerBar), this.BacktestStrokesPerBar);
 			this.WhoGeneratedQuote = strokesEnum + ":" + subclassName + ".cs";
@@ -36,9 +36,9 @@ namespace Sq1.Core.Backtesting {
 			this.backtester = backtester;
 		}
 		//public BacktestQuotesGenerator CloneAndInitialize(Backtester backtester) {
-		//    BacktestQuotesGenerator initializedFromMni = (BacktestQuotesGenerator)Activator.CreateInstance(this.GetType());
-		//    initializedFromMni.initialize(backtester);
-		//    return initializedFromMni;
+		//	BacktestQuotesGenerator initializedFromMni = (BacktestQuotesGenerator)Activator.CreateInstance(this.GetType());
+		//	initializedFromMni.initialize(backtester);
+		//	return initializedFromMni;
 		//}
 
 		protected QuoteGenerated GenerateNewQuoteChildrenHelper(int intraBarSerno, string symbol, DateTime serverTime,
@@ -171,11 +171,11 @@ namespace Sq1.Core.Backtesting {
 
 				int pendingAfterInjected = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count;
 				if (pendingsToFillInitially != pendingAfterInjected) {
-					string msg = "it looks like the quoteInjected triggered something";
+					string msg = " it looks like the quoteInjected triggered something";
 					//Assembler.PopupException(msg, null, false);
 					if (this.backtester.IsLivesim && this.backtester.Executor.Strategy.LivesimBrokerSettings.DelayBeforeFillEnabled) {
-						msg = "NO_ORDER_MUST_HAVE_BEEN_FILLED_WHILE_INJECTING__KOZ_LIVESIM_BROKER_EXECUTION_IS_DELAYED" + msg;
-						Assembler.PopupException(msg, null, false);
+						msg = "SEPARATE_MARKET_MODEL_WOULD_HELP_LAZY NO_ORDER_MUST_HAVE_BEEN_FILLED_WHILE_INJECTING__KOZ_LIVESIM_BROKER_EXECUTION_IS_DELAYED" + msg;
+						// NOTHING_WRONG_WITH_ALERT_FILLED_DURING_LIVESIM Assembler.PopupException(msg, null, false);
 					}
 				}
 				if (injectedPushed.Count >= iterationsLimit) {
@@ -237,8 +237,8 @@ namespace Sq1.Core.Backtesting {
 
 			bool scanningDown = quoteToReach.Bid < quotePrev.Bid;
 			QuoteGenerated quoteClosest = null;
-
-			foreach (Alert alert in this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.InnerListSafeCopy) {
+			List<Alert> alertsSafe = this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.SafeCopy(this, "generateClosestQuoteForEachPendingAlertOnOurWayTo(WAIT)");
+			foreach (Alert alert in alertsSafe) {
 				// DONT_EXPECT_THEM_TO_BE_FILLED_YOU_SHOULD_FILL_ALL_RELEVANT_NOW
 				//if (scanningDown) {
 				//	// while GEN'ing down, all BUY/COVER STOPs pending were already triggered & executed
@@ -488,7 +488,7 @@ namespace Sq1.Core.Backtesting {
 
 			double volumeOneQuarterOfBar = barSimulated.Volume / this.BacktestStrokesPerBarAsInt;
 			if (barSimulated.ParentBars != null && barSimulated.ParentBars.SymbolInfo != null) {
-				volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, barSimulated.ParentBars.SymbolInfo.DecimalsVolume);
+				volumeOneQuarterOfBar = Math.Round(volumeOneQuarterOfBar, barSimulated.ParentBars.SymbolInfo.VolumeDecimals);
 				if (volumeOneQuarterOfBar == 0) {
 					#if DEBUG	// TEST_EMBEDDED
 					//TESTED Debugger.Break();

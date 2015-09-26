@@ -2,14 +2,14 @@
 
 namespace Sq1.Core.DataTypes {
 	// #DEVELOP_PROFILER_SAYS_DATETIME>.COMPARE_IS_VERY_SLOW_DURING_BACKTEST  public class BarsUnscaled : BarsUnscaledSortedList_DEPRECATED {
-	public class BarsUnscaled : BarsUnscaledList {
+	public class BarsUnscaled : BarsUnscaledListTwins {
 		public event EventHandler<BarsUnscaledEventArgs> BarsRenamed_SEEMS_EXCESSIVE;
 	
-		public string Symbol { get; protected set; }
-		public string ReasonToExist;
+		public	string Symbol { get; protected set; }
+		public	string ReasonToExist;
 
-		private SymbolInfo symbolInfo;
-		public SymbolInfo SymbolInfo {
+				SymbolInfo symbolInfo;
+		public	SymbolInfo SymbolInfo {
 			get {
 				if (this.symbolInfo == null) {
 					this.symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(this.Symbol);
@@ -19,11 +19,9 @@ namespace Sq1.Core.DataTypes {
 			set { this.symbolInfo = value; }	//it's initialized in ctor(), SymbolInfo=null will initiate repository scan on next get{}
 		}
 
-		public string Format { get { return "N" + this.SymbolInfo.DecimalsPrice; } }
-
-		public Bar BarFirst { get { return (base.Count >= 1) ? this[0] : null; } }
-		public Bar BarLast { get { return (base.Count >= 1) ? this[this.Count - 1] : null; } }
-		public Bar BarPreLast { get { return (base.Count >= 2) ? this[this.Count - 2] : null; } }
+		public	Bar BarFirst	{ get { return (base.Count >= 1) ? this[0] : null; } }
+		public	Bar BarLast		{ get { return (base.Count >= 1) ? this[this.Count - 1] : null; } }
+		public	Bar BarPreLast	{ get { return (base.Count >= 2) ? this[this.Count - 2] : null; } }
 
 
 		public BarsUnscaled(string symbol, string reasonToExist = "NOREASON") : base() {
@@ -97,7 +95,7 @@ namespace Sq1.Core.DataTypes {
 		public virtual void RenameSymbol(string symbolNew) {
 			// TODO test rename during streaming OR disable renaming feature in GUI while streaming
 			this.Symbol = symbolNew;
-			foreach (Bar barRegardlessScaledOrNot in this.Values) {
+			foreach (Bar barRegardlessScaledOrNot in this.BarsList) {
 				barRegardlessScaledOrNot.Symbol = symbolNew;
 			}
 			this.RaiseBarsRenamed_SEEMS_EXCESSIVE();
@@ -146,7 +144,7 @@ namespace Sq1.Core.DataTypes {
 //			return ret;
 //		}
 		public string FormatValue(double value) {
-			return value.ToString(this.Format);
+			return value.ToString(this.SymbolInfo.PriceFormat);
 		}
 		public override string ToString() {
 			string ret = "[" + this.Symbol + "]" + this.Count + "bars";

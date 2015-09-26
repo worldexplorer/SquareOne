@@ -9,12 +9,15 @@ using Sq1.Core.Charting;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Support;
+using Sq1.Core.Support;
 
 namespace Sq1.Reporters {
 	public partial class Performance : Reporter {
 		int currentColumn;
 		int currentRow;
-		Dictionary<FontStyle, Font> fontsByStyle;
+
+		//v1 Dictionary<FontStyle, Font> fontsByStyle_dontDisposeReusableGDI;
+		FontCache fontCache;
 
 		public Performance(ChartShadow chart): this() {
 			this.Initialize(chart, null);
@@ -22,9 +25,10 @@ namespace Sq1.Reporters {
 		public Performance() : base() {
 			base.TabText = "Performance";
 			this.InitializeComponent();
-			this.fontsByStyle = new Dictionary<FontStyle, Font>();
+			//this.fontsByStyle_dontDisposeReusableGDI = new Dictionary<FontStyle, Font>();
 			WindowsFormsUtils.SetDoubleBuffered(this.lvPerformance);
 			this.objectListViewCustomize();
+			fontCache = new FontCache(this.Font);
 		}
 		public override void BuildFullOnBacktestFinished() {
 			this.propagatePerformanceReport();
@@ -36,8 +40,8 @@ namespace Sq1.Reporters {
 				return;
 			}
 			
-			this.fontsByStyle.Clear();
-			this.fontsByStyle.Add(this.Font.Style, this.Font);
+			//this.fontsByStyle_dontDisposeReusableGDI.Clear();
+			//this.fontsByStyle_dontDisposeReusableGDI.Add(this.Font.Style, this.Font);
 			try {
 				this.lvPerformance.BeginUpdate();
 				this.lvPerformance.Items.Clear();
@@ -77,7 +81,7 @@ namespace Sq1.Reporters {
 			}
 		}
 		protected virtual void GenerateReportForOneColumn(SystemPerformanceSlice slice) {
-			IList<Position> positionsAllReadOnly = slice.PositionsImTrackingReadonly;  
+			List<Position> positionsAllReadOnly = slice.PositionsImTrackingReadonly;  
 
 			// NO_FORMATTING_PRINT_AS_IT_IS !!!! YOULL_NEVER_FIND_ROUNDING_ERROR_IF_YOU_ROUND_JUST_BEFORE_PRINTING
 			this.addCurrency(		slice.NetProfitForClosedPositionsBoth, "Net Profit", "NetProfitForClosedPositionsBoth", Color.Empty, Color.Empty, this.getLviForeColor(slice.NetProfitForClosedPositionsBoth), FontStyle.Bold, FontStyle.Regular);
@@ -87,10 +91,10 @@ namespace Sq1.Reporters {
 			this.addNumeric(		slice.PayoffRatio,			"Payout", "Payout = Abs(AvgProfitPctBoth / AvgLossPctLosers)", this.getLviForeColor(slice.ProfitFactor, 1));
 			this.addCurrency(	   -slice.CommissionBoth,		"Commission", "-CommissionBoth", this.getLviForeColor(-slice.CommissionBoth));
 
-			this.addNumeric(		slice.PositionsCountBoth,	 "All Trades", "PositionsCountBoth", Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
-			this.addNumeric(		slice.AvgProfitBoth,		"Avg Profit", "Avg Profit = NetProfitForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.AvgProfitBoth));
-			this.addPercent(		slice.AvgProfitPctBoth,		"Avg Profit %", "Avg Profit % = NetProfitPctForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.AvgProfitPctBoth));
-			this.addNumeric(		slice.AvgBarsHeldBoth,		"Avg Bars Held", "Avg Bars Held = BarsHeldTotalForClosedPositionsBoth / PositionsCountBoth");
+			this.addNumeric(		slice.PositionsCount,		 "All Trades", "PositionsCountClosed", Color.Gainsboro, Color.Empty, Color.Empty, FontStyle.Bold, FontStyle.Regular);
+			this.addNumeric(		slice.PositionAvgProfitBoth,		"Avg Profit", "Avg Profit = NetProfitForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.PositionAvgProfitBoth));
+			this.addPercent(		slice.PositionAvgProfitPctBoth,		"Avg Profit %", "Avg Profit % = NetProfitPctForClosedPositionsBoth / PositionsCountBoth", this.getLviForeColor(slice.PositionAvgProfitPctBoth));
+			this.addNumeric(		slice.PositionAvgBarsHeldBoth,		"Avg Bars Held", "Avg Bars Held = BarsHeldTotalForClosedPositionsBoth / PositionsCountBoth");
 			this.addNumeric(		slice.ProfitPerBarBoth, 	"Profit per Bar", "Profit per Bar = NetProfitForClosedPositionsBoth / BarsHeldTotalForClosedPositionsBoth",	this.getLviForeColor(slice.NetProfitForClosedPositionsBoth));
 			this.addCurrency(		slice.MaxDrawDown,			"Max Drawdown", "Max Drawdown = Min(NetProfitForClosedPositionsBoth - NetProfitPeak)", Color.Empty, Color.Empty, this.getLviForeColor(slice.MaxDrawDown));
 			this.addDateTime(		slice.MaxDrawDownLastLossDate, "Max Drawdown Date", "Max Drawdown Date = Date(Max Drawdown)");
@@ -122,7 +126,7 @@ namespace Sq1.Reporters {
 		void addCurrency(double value, string label, string tooltip,
 				Color backColor, Color labelFontColor, Color itemFontColor,
 				FontStyle labelFontStyle = FontStyle.Regular, FontStyle itemFontStyle = FontStyle.Regular) {
-			string format = SystemPerformance.Bars.SymbolInfo.FormatPrice;
+			string format = SystemPerformance.Bars.SymbolInfo.PriceFormat;
 			string valueFormatted = value.ToString(format);
 			this.addLvi(valueFormatted, label, tooltip, backColor, labelFontColor, itemFontColor, labelFontStyle, itemFontStyle);
 		}
@@ -151,11 +155,15 @@ namespace Sq1.Reporters {
 				lvi.UseItemStyleForSubItems = false;
 				if (colorForeLabel != Color.Empty) lvi.ForeColor = colorForeLabel;
 				if (colorBack != Color.Empty) lvi.BackColor = colorBack;
-				if (this.fontsByStyle.ContainsKey(labelFontStyle) == false) {
-					Font font = new Font(this.Font, labelFontStyle);
-					this.fontsByStyle.Add(labelFontStyle, font);
-				}
-				lvi.Font = this.fontsByStyle[labelFontStyle];
+
+				//v1
+				//if (this.fontsByStyle_dontDisposeReusableGDI.ContainsKey(labelFontStyle) == false) {
+				//    Font font = new Font(this.Font, labelFontStyle);
+				//    this.fontsByStyle_dontDisposeReusableGDI.Add(labelFontStyle, font);
+				//}
+				//lvi.Font = this.fontsByStyle_dontDisposeReusableGDI[labelFontStyle];
+				//v2
+				lvi.Font = this.fontCache.GetCachedFontWithStyle(labelFontStyle);
 			} else {
 				if (this.currentRow >= this.lvPerformance.Items.Count) {
 					#if DEBUG
@@ -166,12 +174,16 @@ namespace Sq1.Reporters {
 				lvi = this.lvPerformance.Items[this.currentRow];
 				this.currentRow++;
 			}
-			
-			if (this.fontsByStyle.ContainsKey(itemFontStyle) == false) {
-				Font newFont = new Font(this.Font, itemFontStyle);
-				this.fontsByStyle.Add(itemFontStyle, newFont);
-			}
-			Font subLviFont = this.fontsByStyle[itemFontStyle];
+
+			//v1
+			//if (this.fontsByStyle_dontDisposeReusableGDI.ContainsKey(itemFontStyle) == false) {
+			//    Font newFont = new Font(this.Font, itemFontStyle);
+			//    this.fontsByStyle_dontDisposeReusableGDI.Add(itemFontStyle, newFont);
+			//}
+			//Font subLviFont = this.fontsByStyle_dontDisposeReusableGDI[itemFontStyle];
+			//v2
+			Font subLviFont = this.fontCache.GetCachedFontWithStyle(itemFontStyle);
+
 			ListViewItem.ListViewSubItem subLvi = new ListViewItem.ListViewSubItem(lvi, valueAlreadyFormatted, colorFore, colorBack, subLviFont);
 //			subLvi.ToolTipText = tooltip;
 //			if (colorBack	!= Color.Empty) subLvi.BackColor = colorBack;
@@ -211,7 +223,27 @@ namespace Sq1.Reporters {
 				//if (this.lastKnownCashAvailable == base.SystemPerformance.SlicesShortAndLong.CashAvailable) return;
 				//	this.lastKnownCashAvailable = base.SystemPerformance.SlicesShortAndLong.CashAvailable;
 			}
-			this.propagatePerformanceReport();
+			//PERFORMANCE_ISNT_CHANGED_ON_EACH_QUOTE__RECALCULATED_ONCE_AFTER_POSITION_CLOSE_AND_STAYS_UNCHANGED
+			return;
+
+			////v1 this.propagatePerformanceReport();
+			////v2 ACCELERATING_ON_POSITION_FILLED
+			//if (this.lvPerformance.Items.Count == 0) {
+			//     this.propagatePerformanceReport();
+			//     return;
+			//}
+
+			//if (pokeUnit.PositionsOpened.Count == 0) return;
+
+			//// MINIMIZED_IF_STREAMING_QUOTE_DELAY<100ms_UNMINIMIZE_AND_WATCH__REALTIME_UNAFFECTED
+			////bool livesimStreamingIsSleeping = pokeUnit.PositionsOpened.AlertsEntry.GuiHasTimeToRebuild(
+			////    this, "Reporters.Performance.BuildIncrementalUpdateOpenPositionsDueToStreamingNewQuote_step2of3(WAIT)");
+			////if (livesimStreamingIsSleeping == false) {
+			////    return;
+			////}
+			//if (base.Visible == false) return;		//DockContent is minimized / "autohidden"
+			//this.propagatePerformanceReport();
+			//this.lvPerformance.Refresh();
 		}
 	}
 }

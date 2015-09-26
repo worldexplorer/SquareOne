@@ -225,9 +225,16 @@ namespace Sq1.Core.Streaming {
 
 		#region NOT_USED_YET if I'll need to stop the Pump+AllConsumers when ChartFormsManager gets disposed
 		void IDisposable.Dispose() {
+			if (this.IsDisposed) {
+				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+				Assembler.PopupException(msg);
+				return;
+			}
 			this.exitPushingThreadRequested = true;
 			this.HasQuoteToPushWrite = true;		// fake gateway open, just to let the thread process disposed=true; 
+			this.IsDisposed = true;
 		}
+		public bool IsDisposed { get; private set; }
 		#endregion
 
 		public override void PusherPause() {

@@ -8,7 +8,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
 namespace Sq1.Charting {
-	public partial class PanelPrice : PanelBase {
+	public partial class PanelPrice {
 		void renderBarsPrice(Graphics g) {
 			//for (int i = 0; i < base.ChartControl.BarsCanFitForCurrentWidth; i++) {
 			//	int barFromRight = base.ChartControl.BarsCanFitForCurrentWidth - i - 1;
@@ -33,6 +33,7 @@ namespace Sq1.Charting {
 				int barYCloseInverted = base.ValueToYinverted(bar.Close);
 				//base.CheckConvertedBarDataIsNotZero(xOffsetFromRightBorder, barYOpen, barYHigh, barYLow, barYClose);
 				bool fillCandleBody = (bar.Open > bar.Close) ? true : false;
+				fillCandleBody |= base.ChartControl.ChartSettings.BarUpFillCandleBody;
 				base.RenderBarCandle(g, barX, barYOpenInverted, barYHighInverted, barYLowInverted, barYCloseInverted, fillCandleBody);
 
 				//int shadowX = 0;
@@ -49,24 +50,38 @@ namespace Sq1.Charting {
 			}
 		}
 		void renderPendingAlertsIfExistForBar(int barIndex, int shadowX, Graphics g) {
-			Dictionary<int, List<Alert>> alertPendingListByBar = base.ChartControl.ScriptExecutorObjects.AlertsPendingHistorySafeCopy;
+			Dictionary<int, AlertList> alertPendingListByBar = base.ChartControl.ScriptExecutorObjects.AlertsPlacedByBar;
 			if (alertPendingListByBar.ContainsKey(barIndex) == false) return;
-			List<Alert> alertsPending = alertPendingListByBar[barIndex];
-			if (alertsPending.Count > 1 || barIndex == 443) {
-				string msg = "TRYING_TO_DRAW_MISSING_STOP_LOSSES";
-				//Debugger.Break();
-			}
+			List<Alert> alertsPending = alertPendingListByBar[barIndex].SafeCopy(this, "//renderPendingAlertsIfExistForBar(WAIT)");
+
+			Pen penPending	= base.ChartControl.ChartSettings.PenAlertPendingEllipse;
+			Pen penTP		= base.ChartControl.ChartSettings.PenAlertPendingProtoTakeProfitEllipse;
+			Pen penSL		= base.ChartControl.ChartSettings.PenAlertPendingProtoStopLossEllipse;
+			int radius		= base.ChartControl.ChartSettings.AlertPendingEllipseRadius;
+			int diameter	= radius * 2;
+
 			foreach (Alert pending in alertsPending) {
+				Pen pen = penPending;
+				if (pending.PositionAffected != null && pending.PositionAffected.Prototype != null) {
+					if (pending == pending.PositionAffected.Prototype.StopLossAlertForAnnihilation) {
+						//Assembler.PopupException("SL_CIRCLE_RED");
+						pen = penSL;
+					}
+					if (pending == pending.PositionAffected.Prototype.TakeProfitAlertForAnnihilation) {
+						//Assembler.PopupException("TP_CIRCLE_GREEN");
+						pen = penTP;
+					}
+				}
 				double pendingAlertPrice = pending.PriceScript;
 				int pendingY = base.ValueToYinverted(pendingAlertPrice);
-				Rectangle entryPlannedRect = new Rectangle(shadowX-2, pendingY-2, 4, 4);
-				g.DrawEllipse(base.ChartControl.ChartSettings.PenAlertPendingEllipse, entryPlannedRect);
+				Rectangle entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
+				g.DrawEllipse(pen, entryPlannedRect);
 
 				if (pending.MarketLimitStop == MarketLimitStop.StopLimit) {
 					double pendingStopActivationPrice = pending.PriceStopLimitActivation;
 					pendingY = base.ValueToYinverted(pendingStopActivationPrice);
-					entryPlannedRect = new Rectangle(shadowX - 2, pendingY - 2, 4, 4);
-					g.DrawEllipse(base.ChartControl.ChartSettings.PenAlertPendingEllipse, entryPlannedRect);
+					entryPlannedRect = new Rectangle(shadowX - radius, pendingY - radius, diameter, diameter);
+					g.DrawEllipse(pen, entryPlannedRect);
 				}
 			}
 		}
@@ -78,11 +93,13 @@ namespace Sq1.Charting {
 			foreach (AlertArrow arrow in arrows) {
 				//g.DrawImage(position.Bitmap, new Point(shadowX, position.Ytransient));
 				//MOVED_TO_AlignVisiblePositionArrowsAndCountMaxOutstanding() position.XBarMiddle = shadowX;
-				g.DrawImage(arrow.Bitmap, arrow.Location);
-				//g.DrawImageUnscaled(position.Bitmap, position.Location);
-				//http://stackoverflow.com/questions/7690546/replace-gdi-drawimage-with-pinvoked-gdi-and-transparent-pngs
-				//http://stackoverflow.com/questions/264720/gdi-graphicsdrawimage-really-slow
-				//g.FillRectangle(position.BitmapTextureBrush, position.ClientRectangle);
+				if (arrow.Bitmap != null) {
+					g.DrawImage(arrow.Bitmap, arrow.Location);
+					//g.DrawImageUnscaled(position.Bitmap, position.Location);
+					//http://stackoverflow.com/questions/7690546/replace-gdi-drawimage-with-pinvoked-gdi-and-transparent-pngs
+					//http://stackoverflow.com/questions/264720/gdi-graphicsdrawimage-really-slow
+					//g.FillRectangle(position.BitmapTextureBrush, position.ClientRectangle);
+				}
 
 				this.renderPositionLineForArrow(arrow, g, false);
 
@@ -141,7 +158,7 @@ namespace Sq1.Charting {
 				} else {
 					// BarStreaming, end up on GutterRight
 					oppositeEndX = base.ChartControl.ChartWidthMinusGutterRightPrice;
-					oppositeEndY = base.ValueToYinverted(position.Bars.BarStreaming.Close);
+					oppositeEndY = base.ValueToYinverted(position.Bars.BarStreamingNullUnsafe.Close);
 				}
 			} else {
 				// Exit
@@ -174,7 +191,7 @@ namespace Sq1.Charting {
 		}
 		void renderOnChartLines(Graphics g) {
 			// avoiding throwing "Dictionary.CopyTo target array wrong size" below during backtest & chartMouseOver
-			if (base.ChartControl != null && base.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
+			//if (base.ChartControl != null && base.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
 			
 			if (base.VisibleBarRight_cached > base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
 				string msg = "YOU_SHOULD_INVOKE_SyncHorizontalScrollToBarsCount_PRIOR_TO_RENDERING_I_DONT_KNOW_ITS_NOT_SYNCED_AFTER_ChartControl.Initialize(Bars)";
@@ -185,7 +202,7 @@ namespace Sq1.Charting {
 
 			//int barX = base.ChartControl.ChartWidthMinusGutterRightPrice;
 
-			ScriptExecutorObjects seo = base.ChartControl.ScriptExecutorObjects;
+			ChartControlFrozenForRendering seo = base.ChartControl.ScriptExecutorObjects;
 			List<OnChartLine> linesToDraw = new List<OnChartLine>();		// helps to avoid drawing the same line twice
 
 			// v1 - buggy because it doesn't display lines started way before and ended way later the visible barWindow
@@ -258,7 +275,7 @@ namespace Sq1.Charting {
 			}
 			// DO_I_NEED_SIMILAR_CHECK_HERE???? MOST_LIKELY_I_DONT this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
-			ScriptExecutorObjects seo = base.ChartControl.ScriptExecutorObjects;
+			ChartControlFrozenForRendering seo = base.ChartControl.ScriptExecutorObjects;
 			foreach (OnChartLabel label in seo.OnChartLabelsById.Values) {
 				try {
 					base.DrawLabelOnNextLine(g, label.LabelText, label.Font, label.ColorForeground, label.ColorBackground);
@@ -278,7 +295,7 @@ namespace Sq1.Charting {
 			// DO_I_NEED_SIMILAR_CHECK_HERE???? MOST_LIKELY_I_DONT this.PositionLineAlreadyDrawnFromOneOfTheEnds.Clear();
 
 			int barXshadow = base.ChartControl.ChartWidthMinusGutterRightPrice + base.BarShadowXoffset_cached;
-			ScriptExecutorObjects seo = base.ChartControl.ScriptExecutorObjects;
+			ChartControlFrozenForRendering seo = base.ChartControl.ScriptExecutorObjects;
 
 			for (int barIndex = base.VisibleBarRight_cached; barIndex > base.VisibleBarLeft_cached; barIndex--) {
 				if (barIndex >= base.ChartControl.Bars.Count) {	// we want to display 0..64, but Bars has only 10 bars inside
@@ -300,7 +317,7 @@ namespace Sq1.Charting {
 				if (alertArrowsListByBar.ContainsKey(barIndex)) {
 					List<AlertArrow> arrows = alertArrowsListByBar[barIndex];
 					foreach (AlertArrow arrow in arrows) {
-						int arrowHeight = arrow.Bitmap.Height + base.ChartControl.ChartSettings.PositionArrowPaddingVertical;
+						int arrowHeight = arrow.Height + base.ChartControl.ChartSettings.PositionArrowPaddingVertical;
 						if (arrow.AboveBar) yForLabelsAbove -= arrowHeight + base.ChartControl.ChartSettings.PositionArrowPaddingVertical; 
 						else yForLabelsBelow += arrowHeight; 
 					}
@@ -383,10 +400,10 @@ namespace Sq1.Charting {
 
 			double spread = quoteLast.Spread;
 			if (double.IsNaN(spread) == false && base.ChartControl.ChartSettings.SpreadLabelColor != Color.Empty) {
-				string spreadFormatted = spread.ToString("N" + this.Decimals);
+				string spreadFormatted = spread.ToString(this.PriceFormat);
 				g.DrawString("spread[" + spreadFormatted + "]",
 					base.ChartControl.ChartSettings.SpreadLabelFont,
-					base.ChartControl.ChartSettings.SpreadLabelBrush, 5, yBid + 3);
+					base.ChartControl.ChartSettings.BrushSpreadLabel, 5, yBid + 3);
 			}
 		}
 	}

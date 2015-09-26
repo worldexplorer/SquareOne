@@ -77,6 +77,9 @@ namespace Sq1.Gui.Forms {
 				BacktestQuotesGenerator clone = BacktestQuotesGenerator.CreateForQuotesPerBarAndInitialize(generatorStrokeAmount, backtester);
 				backtester.SetQuoteGeneratorAndConditionallyRebacktest_invokedInGuiThread(clone);
 				this.ctxStrokesPopulateOrSelectCurrent();
+				// to inform SequencerControl of new strokes selected
+				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("ChartForm_OnBacktestStrokesClicked");
+				this.ChartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				string msg = "REBACKTEST_FAILED?";
 				Assembler.PopupException(msg, ex, false);

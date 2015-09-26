@@ -5,8 +5,8 @@ using System.Windows.Forms;
 //http://www.codeproject.com/Articles/12870/Don-t-Flicker-Double-Buffer
 namespace Sq1.Core.DoubleBuffered {
 	public abstract class PanelDoubleBuffered : Panel {
-		protected BufferedGraphicsContext graphicManager;
-		protected BufferedGraphics bufferedGraphics;
+		BufferedGraphicsContext graphicManager;
+		BufferedGraphics bufferedGraphics;
 		
 		protected abstract void OnPaintDoubleBuffered(PaintEventArgs pe);
 		protected virtual void OnPaintBackgroundDoubleBuffered(PaintEventArgs pe) {
@@ -23,18 +23,22 @@ namespace Sq1.Core.DoubleBuffered {
 
 		public PanelDoubleBuffered() : base() {
 			Application.ApplicationExit += new EventHandler(disposeAndNullifyToRecreateInPaint);
-			base.SetStyle( ControlStyles.AllPaintingInWmPaint
-						 | ControlStyles.OptimizedDoubleBuffer
-					//	 | ControlStyles.UserPaint
-					//	 | ControlStyles.ResizeRedraw
-					, true);
+			//base.SetStyle( ControlStyles.AllPaintingInWmPaint
+			//             | ControlStyles.OptimizedDoubleBuffer
+			//        //	 | ControlStyles.UserPaint
+			//        //	 | ControlStyles.ResizeRedraw
+			//        , true);
 			this.graphicManager = BufferedGraphicsManager.Current;
 		}
 		void initializeBuffer() {
 			this.graphicManager.MaximumBuffer =  new Size(base.Width + 1, base.Height + 1);
-			this.bufferedGraphics = this.graphicManager.Allocate(this.CreateGraphics(),  base.ClientRectangle);
+			//v1 this.bufferedGraphics = this.graphicManager.Allocate(this.CreateGraphics(),  base.ClientRectangle);
+			// http://dotnetfacts.blogspot.ca/2008/03/things-you-must-dispose.html
+			Graphics gNew = this.CreateGraphics();
+			this.bufferedGraphics = this.graphicManager.Allocate(gNew, base.ClientRectangle);
+			gNew.Dispose();
 		}
-		void disposeAndNullifyToRecreateInPaint(object sender, EventArgs e) {
+		void disposeAndNullifyToRecreateInPaint(object sender = null, EventArgs e = null) {
 			if (this.bufferedGraphics == null) return;
 			this.bufferedGraphics.Dispose();
 			this.bufferedGraphics = null;

@@ -5,7 +5,7 @@ using System.Threading;
 using Sq1.Core.Execution;
 
 namespace Sq1.Core.Support {
-	public class ConcurrentDictionarySorted<PRICE_LEVEL, TOTAL_LOTS> : ConcurrentDictionary<PRICE_LEVEL, TOTAL_LOTS> {
+	public class ConcurrentDictionarySorted<PRICE_LEVEL, TOTAL_LOTS> : ConcurrentDictionaryGeneric<PRICE_LEVEL, TOTAL_LOTS> {
 
 		// slow & ugly with generics!! hopefully wont be a pita for level2, otherwise use unsorted Dictionary and paint while enumerating pricelevels
 		public class  ASC : IComparer<PRICE_LEVEL> {

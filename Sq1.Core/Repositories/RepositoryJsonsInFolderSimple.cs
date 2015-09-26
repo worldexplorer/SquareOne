@@ -6,7 +6,8 @@ using Newtonsoft.Json;
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Repositories {
-	public partial class RepositoryJsonsInFolderSimple<SYSTEM_PERFORMANCE_RESTORE_ABLE>  /* hack for ItemRename() */ where SYSTEM_PERFORMANCE_RESTORE_ABLE : NamedObjectJsonSerializable {
+	public class RepositoryJsonsInFolderSimple<SYSTEM_PERFORMANCE_RESTORE_ABLE>
+		/* hack for ItemRename() */ where SYSTEM_PERFORMANCE_RESTORE_ABLE : NamedObjectJsonSerializable, new() {
 		public string	OfWhat						{ get { return typeof(SYSTEM_PERFORMANCE_RESTORE_ABLE).Name; } }
 
 		public string	RootPath					{ get; protected set; }
@@ -25,14 +26,14 @@ namespace Sq1.Core.Repositories {
 		public string	MaskAbs						{ get { return Path.Combine(this.AbsPath, Mask); } }
 		public string	Extension					{ get { return Path.GetExtension(this.Mask); } }
 		
-		public List<FnameDateSizeColor> ItemsFound { get; protected set; }
+		public List<FnameDateSizeColorPFavg> ItemsFound { get; protected set; }
 
 		public RepositoryJsonsInFolderSimple() {
-			ItemsFound = new List<FnameDateSizeColor>();
+			ItemsFound = new List<FnameDateSizeColorPFavg>();
 		}
 
 		public void Initialize(string rootPath,
-					string subfolder = "OptimizationResults",
+					string subfolder = "Sequencer",
 					string mask = "*.json",
 					bool createNonExistingPath = true, bool createNonExistingFile = true) {
 
@@ -81,51 +82,68 @@ namespace Sq1.Core.Repositories {
 				DateTime dateModified = finfo.LastWriteTime;
 				long size = finfo.Length;
 				string fname = Path.GetFileNameWithoutExtension(absFileName);
-				FnameDateSizeColor fnameDateSize = new FnameDateSizeColor(fname, dateModified, size);
+				FnameDateSizeColorPFavg fnameDateSize = new FnameDateSizeColorPFavg(fname, dateModified, size);
 				this.ItemsFound.Add(fnameDateSize);
 			}
 		}
-		public bool ItemsFoundContainsName(string name) {
-			bool ret = false;
-			foreach (FnameDateSizeColor each in this.ItemsFound) {
-				if (each.Name != name) continue;
-				ret = true;
+		public FnameDateSizeColorPFavg ItemsFoundContainsSymbolScaleRange_NullUnsafe(string symbolScaleRange) {
+			FnameDateSizeColorPFavg ret = null;
+			foreach (FnameDateSizeColorPFavg each in this.ItemsFound) {
+				if (each.SymbolScaleRange != symbolScaleRange) continue;
+				ret = each;
 				break;
 			}
 			return ret;
 		}
+		//public bool ItemsFoundContainsName(string name) {
+		//    bool ret = false;
+		//    foreach (FnameDateSizeColorPFavg each in this.ItemsFound) {
+		//        if (each.NameWithMarker != name) continue;
+		//        ret = true;
+		//        break;
+		//    }
+		//    return ret;
+		//}
 		public string AbsFnameFor(string fname) {
 			return Path.Combine(this.AbsPath, fname + this.Extension);
 		}
 		public int ItemsFoundDeleteAll() {
 			int ret = 0;
-			foreach (FnameDateSizeColor each in this.ItemsFound) {
-				string absFname = this.AbsFnameFor(each.Name);
+			foreach (FnameDateSizeColorPFavg each in this.ItemsFound) {
+				string absFname = this.AbsFnameFor(each.NameWithMarker);
 				File.Delete(absFname);
 				ret++;
 			}
 			this.RescanFolderStoreNamesFound();
 			return ret;
 		}
-		public virtual List<SYSTEM_PERFORMANCE_RESTORE_ABLE> DeserializeList(string fname) {
-			List<SYSTEM_PERFORMANCE_RESTORE_ABLE> tmp = null;
-			List<SYSTEM_PERFORMANCE_RESTORE_ABLE> ret = null;
+		public bool ItemDelete_dirtyImplementation(FnameDateSizeColorPFavg mustExist) {
+			bool ret = false;
+			string absFname = this.AbsFnameFor(mustExist.NameWithMarker);
+			File.Delete(absFname);
+			ret = true;
+			this.RescanFolderStoreNamesFound();
+			return ret;
+		}
+		
+		public virtual SYSTEM_PERFORMANCE_RESTORE_ABLE DeserializeSingle(string fname) {
+			SYSTEM_PERFORMANCE_RESTORE_ABLE ret = new SYSTEM_PERFORMANCE_RESTORE_ABLE();
 			string jsonAbsfile = Path.Combine(this.AbsPath, fname + this.Extension);
 			if (File.Exists(jsonAbsfile) == false) return ret;
 			try {
 				string json = File.ReadAllText(jsonAbsfile);
-				ret = JsonConvert.DeserializeObject<List<SYSTEM_PERFORMANCE_RESTORE_ABLE>>(json, new JsonSerializerSettings {
+				ret = JsonConvert.DeserializeObject<SYSTEM_PERFORMANCE_RESTORE_ABLE>(json, new JsonSerializerSettings {
 					TypeNameHandling = TypeNameHandling.Objects
 				});
 			} catch (Exception ex) {
-				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::DeserializeList(): ";
+				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::DeserializeSingle(): ";
 				string msg = "FAILED_DeserializeList_WITH_jsonAbsfile[" + jsonAbsfile + "]";
 				Assembler.PopupException(msg + msig, ex);
 				return ret;
 			}
 			return ret;
 		}
-		public virtual void SerializeList(List<SYSTEM_PERFORMANCE_RESTORE_ABLE> backtests, string jsonRelname) {
+		public virtual void SerializeSingle(SYSTEM_PERFORMANCE_RESTORE_ABLE backtests, string jsonRelname) {
 			jsonRelname += this.Extension;
 			string jsonAbsname = Path.Combine(this.AbsPath, jsonRelname);
 			try {
@@ -135,11 +153,45 @@ namespace Sq1.Core.Repositories {
 					});
 				File.WriteAllText(jsonAbsname, json);
 			} catch (Exception ex) {
-				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeList(): ";
+				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeSingle(): ";
 				string msg = "FAILED_SerializeList_WITH_this.jsonAbsname[" + jsonAbsname + "]";
 				Assembler.PopupException(msg + msig, ex);
 				return;
 			}
 		}
+		// was used for RepositoryJsonsInFolderSimple<SystemPerformanceRestoreAble>; replaced by *Single for RepositoryJsonsInFolderSimple<SequencedBacktests>
+//		public virtual List<SYSTEM_PERFORMANCE_RESTORE_ABLE> DeserializeList(string fname) {
+//			List<SYSTEM_PERFORMANCE_RESTORE_ABLE> ret = null;
+//			string jsonAbsfile = Path.Combine(this.AbsPath, fname + this.Extension);
+//			if (File.Exists(jsonAbsfile) == false) return ret;
+//			try {
+//				string json = File.ReadAllText(jsonAbsfile);
+//				ret = JsonConvert.DeserializeObject<List<SYSTEM_PERFORMANCE_RESTORE_ABLE>>(json, new JsonSerializerSettings {
+//					TypeNameHandling = TypeNameHandling.Objects
+//				});
+//			} catch (Exception ex) {
+//				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::DeserializeList(): ";
+//				string msg = "FAILED_DeserializeList_WITH_jsonAbsfile[" + jsonAbsfile + "]";
+//				Assembler.PopupException(msg + msig, ex);
+//				return ret;
+//			}
+//			return ret;
+//		}
+//		public virtual void SerializeList(List<SYSTEM_PERFORMANCE_RESTORE_ABLE> backtests, string jsonRelname) {
+//			jsonRelname += this.Extension;
+//			string jsonAbsname = Path.Combine(this.AbsPath, jsonRelname);
+//			try {
+//				string json = JsonConvert.SerializeObject(backtests, Formatting.Indented,
+//					new JsonSerializerSettings {
+//						TypeNameHandling = TypeNameHandling.Objects
+//					});
+//				File.WriteAllText(jsonAbsname, json);
+//			} catch (Exception ex) {
+//				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::SerializeList(): ";
+//				string msg = "FAILED_SerializeList_WITH_this.jsonAbsname[" + jsonAbsname + "]";
+//				Assembler.PopupException(msg + msig, ex);
+//				return;
+//			}
+//		}
 	}
 }

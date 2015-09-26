@@ -28,19 +28,19 @@ namespace Sq1.Core.Broker {
 		public List<OrderLane>		LanesForCallbackOrderState					{ get; private set; }
 
 		protected OrderProcessorDataSnapshot() {
-			OrdersSubmitting		= new OrderLaneByState(OrderStatesCollections.AllowedForSubmissionToBrokerAdapter);
-			OrdersPending			= new OrderLaneByState(OrderStatesCollections.NoInterventionRequired);
-			OrdersPendingFailed		= new OrderLaneByState(OrderStatesCollections.InterventionRequired);
-			OrdersCemeteryHealthy	= new OrderLaneByState(OrderStatesCollections.CemeteryHealthy);
-			OrdersCemeterySick		= new OrderLaneByState(OrderStatesCollections.CemeterySick);
-			OrdersAll				= new OrderLane("OrdersAll", this);
-			//OrdersByAccount		= new Dictionary<Account, List<Order>>();
+			OrdersSubmitting			= new OrderLaneByState(OrderStatesCollections.AllowedForSubmissionToBrokerAdapter);
+			OrdersPending				= new OrderLaneByState(OrderStatesCollections.NoInterventionRequired);
+			OrdersPendingFailed			= new OrderLaneByState(OrderStatesCollections.InterventionRequired);
+			OrdersCemeteryHealthy		= new OrderLaneByState(OrderStatesCollections.CemeteryHealthy);
+			OrdersCemeterySick			= new OrderLaneByState(OrderStatesCollections.CemeterySick);
+			OrdersAll					= new OrderLane("OrdersAll", this);
+			//OrdersByAccount			= new Dictionary<Account, List<Order>>();
 
 			SerializerLogrotateOrders	= new SerializerLogrotatePeriodic<Order>();
 			OrdersAutoTree				= new OrdersAutoTree();
-			orderSwitchingLanesLock	= new object();
+			orderSwitchingLanesLock		= new object();
 
-			LanesForCallbackOrderState = new List<OrderLane>() { this.OrdersPending, this.OrdersSubmitting, this.OrdersAll };
+			LanesForCallbackOrderState	= new List<OrderLane>() { this.OrdersPending, this.OrdersSubmitting, this.OrdersAll };
 		}
 		public OrderProcessorDataSnapshot(OrderProcessor orderProcessor) : this() {
 			this.orderProcessor = orderProcessor;
@@ -51,7 +51,7 @@ namespace Sq1.Core.Broker {
 				this.SerializerLogrotateOrders.Deserialize();
 				// OrdersTree was historically introduced the last, but filling Order.DerivedOrders early here, just in case
 				//this.OrdersTree.InitializeScanDeserializedMoveDerivedsInsideBuildTreeShadow(this.SerializerLogRotate.OrdersBuffered.ItemsMain);
-				List<Order> ordersInit = this.SerializerLogrotateOrders.Entity; 
+				List<Order> ordersInit = this.SerializerLogrotateOrders.Orders;
 				foreach (Order current in ordersInit) {
 					if (current.InStateExpectingCallbackFromBroker) {
 						current.State = OrderState.SubmittedNoFeedback;
@@ -92,8 +92,8 @@ namespace Sq1.Core.Broker {
 			this.orderProcessor.RaiseAsyncOrderAddedExecutionFormShouldRebuildOLV(this, new List<Order>(){orderToAdd});
 		}
 		public void OrdersRemove(List<Order> ordersToRemove, bool serializeSinceThisIsNotBatchRemove = true) {
-			this.OrdersAll.RemoveAll(ordersToRemove);
-			this.OrdersAutoTree.RemoveFromRootLevelKeepOrderPointers(ordersToRemove);
+			this.OrdersAll				.RemoveAll(ordersToRemove);
+			this.OrdersAutoTree			.RemoveFromRootLevelKeepOrderPointers(ordersToRemove);
 
 			this.OrdersSubmitting		.RemoveAll(ordersToRemove, true);
 			this.OrdersPending			.RemoveAll(ordersToRemove, true);

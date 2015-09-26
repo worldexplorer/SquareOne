@@ -1,8 +1,10 @@
-﻿<Properties StartupItem="Sq1.Core\Sq1.Core.csproj">
+﻿<Properties StartupItem="Sq1.Gui\Sq1.Gui.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches>
+    <Watch file="Sq1.Charting\ChartControl.EventConsumer.cs" line="121" offsetX="1026" offsetY="912" expression="this.ChartSettings.MultiSplitterRowsPropertiesByPanelName" liveUpdate="False" />
+  </MonoDevelop.Ide.DebuggingService.PinnedWatches>
 </Properties>

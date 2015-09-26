@@ -11,10 +11,10 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormInterformEventsConsumer {
-		ChartFormManager chartFormManager;
+		ChartFormsManager chartFormManager;
 		private bool backtestAlreadyFinished;
 
-		public ChartFormInterformEventsConsumer(ChartFormManager chartFormManager, ChartForm chartFormNotAssignedToManagerInTheFactoryYet = null) {
+		public ChartFormInterformEventsConsumer(ChartFormsManager chartFormManager, ChartForm chartFormNotAssignedToManagerInTheFactoryYet = null) {
 			this.chartFormManager = chartFormManager;
 			chartFormNotAssignedToManagerInTheFactoryYet.FormClosing += ChartForm_FormClosing;
 			chartFormNotAssignedToManagerInTheFactoryYet.Load += ChartForm_Load;
@@ -60,7 +60,7 @@ namespace Sq1.Gui.Forms {
 				if (contextChart.DataSourceName != e.DataSource.Name)	contextChart.DataSourceName = e.DataSource.Name; 
 				if (contextChart.Symbol			!= e.Symbol) 			contextChart.Symbol 		= e.Symbol;
 				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("DataSourcesTree_OnSymbolSelected");
-				this.chartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("DataSourcesTree_OnSymbolSelected()", ex);
 			}
@@ -87,17 +87,26 @@ namespace Sq1.Gui.Forms {
 			//}
 
 			this.chartFormManager.ReportersFormsManager.PopupReporters_OnParentChartActivated(sender, e);
-			this.chartFormManager.ChartForm.ChartControl.RangeBar.Enabled = false;
+			//this.chartFormManager.ChartForm.ChartControl.RangeBar.Enabled = false;	// WHY false?? YOU_SHOULD_NOT_CHANGE_VISIBILITY_OF_RANGEBAR
+			this.chartFormManager.ChartForm.ChartControl.InvalidateAllPanels();		// CHART_WAS_INVOKED_WITH_SIZE_DIFFERENT_ON_START__HELPS_TO_STRETCH_CHART_TO_ACTUAL_SIZE__COVERED_WAS_FIRST_TIME_SHOWN__ACTIVE_IS_OK
 			
-			//if (this.chartFormManager.OptimizerForm == null) {
-			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.OptimizerForm) == true) {
+			//if (this.chartFormManager.SequencerForm == null) {
+			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.SequencerForm) == true) {
 				string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
 				Assembler.PopupException(msg, null, false);
 			} else {
-				this.chartFormManager.OptimizerFormShow(true);
+				this.chartFormManager.SequencerFormShow(true);
 			}
 
-			//if (this.chartFormManager.LivesimForm == null) {
+            //if (this.chartFormManager.CorrelatorForm == null) {
+            if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.CorrelatorForm) == true) {
+                string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
+                Assembler.PopupException(msg, null, false);
+            } else {
+                this.chartFormManager.CorrelatorFormShow(true);
+            }
+
+            //if (this.chartFormManager.LivesimForm == null) {
 			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.LivesimForm) == true) {
 				string msg = "don't even try to access LivesimFormConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
 				Assembler.PopupException(msg, null, false);
@@ -144,8 +153,8 @@ namespace Sq1.Gui.Forms {
 
 			this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;
 			
-			this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
-			this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
+			//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
+			//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
 			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 			// CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END
 		}
@@ -191,8 +200,8 @@ namespace Sq1.Gui.Forms {
 				//}
 				this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarMaximum = quotesTotal;
 				this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = true;
-				this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
-				this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
+				//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = false;
+				//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = false;
 				this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 			}
 			// HACK FOR CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END COPYPASTE
@@ -223,8 +232,8 @@ namespace Sq1.Gui.Forms {
 			this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarValue = 0;
 			this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = false;
 			
-			this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
-			this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
+			//this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
+			//this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
 			this.chartFormManager.ChartForm.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 
 			this.chartFormManager.OnBacktestedOrLivesimmed();
@@ -233,7 +242,7 @@ namespace Sq1.Gui.Forms {
 			BarDataRange newRange = new BarDataRange(e.ValueMin.Date, e.ValueMax.Date);
 			try {
 				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("ChartRangeBar_AnyValueChanged");
-				this.chartFormManager.OptimizerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 			} catch (Exception ex) {
 				Assembler.PopupException("ChartRangeBar_AnyValueChanged", ex);
 			}

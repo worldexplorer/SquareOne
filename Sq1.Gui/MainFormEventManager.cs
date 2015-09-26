@@ -5,10 +5,11 @@ using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
-using Sq1.Core.Support;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets;
+using WeifenLuo.WinFormsUI.Docking;
+using Sq1.Widgets.SteppingSlider;
 
 namespace Sq1.Gui {
 	public class MainFormEventManager {
@@ -51,7 +52,7 @@ namespace Sq1.Gui {
 			Strategy strategy = e.Strategy;
 			ChartForm active = this.mainForm.ChartFormActiveNullUnsafe;
 			if (active == null) {
-				ChartFormManager msg = this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
+				ChartFormsManager msg = this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
 				active = msg.ChartForm;
 			}
 			active.ChartFormManager.InitializeWithStrategy(strategy, false);
@@ -63,7 +64,7 @@ namespace Sq1.Gui {
 			}
 		}
 		internal void StrategiesTree_OnStrategyRenamed(object sender, StrategyEventArgs e) {
-			foreach (ChartFormManager chartFormsManager in this.mainForm.GuiDataSnapshot.ChartFormManagers.Values) {
+			foreach (ChartFormsManager chartFormsManager in this.mainForm.GuiDataSnapshot.ChartFormsManagers.Values) {
 				if (chartFormsManager.Strategy != e.Strategy) continue;
 				if (chartFormsManager.ScriptEditorFormConditionalInstance != null) {
 					chartFormsManager.ScriptEditorFormConditionalInstance.Text = e.Strategy.Name;
@@ -73,18 +74,26 @@ namespace Sq1.Gui {
 				}
 			}
 		}
-		ChartFormManager chartCreateShowPopulateSelectorsSlidersFromStrategy(Strategy strategy) {
-			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
+		ChartFormsManager chartCreateShowPopulateSelectorsSlidersFromStrategy(Strategy strategy) {
+			ChartFormsManager chartFormManager = new ChartFormsManager(this.mainForm);
 			chartFormManager.InitializeWithStrategy(strategy, false);
-			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
+			this.mainForm.GuiDataSnapshot.ChartFormsManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
+
+			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);
+			ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
+
 			chartFormManager.ChartFormShow();
 			chartFormManager.StrategyCompileActivatePopulateSlidersShow();
 			return chartFormManager;
 		}
 		void chartCreateShowPopulateSelectorsSlidersNoStrategy(ContextChart contextChart) {
-			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
+			ChartFormsManager chartFormManager = new ChartFormsManager(this.mainForm);
 			chartFormManager.InitializeChartNoStrategy(contextChart);
-			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
+			this.mainForm.GuiDataSnapshot.ChartFormsManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
+
+			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);
+			ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
+
 			chartFormManager.ChartFormShow();
 		}
 		#endregion
@@ -93,12 +102,36 @@ namespace Sq1.Gui {
 		internal void ChartForm_FormClosed(object sender, FormClosedEventArgs e) {
 			if (this.mainForm.MainFormClosingSkipChartFormsRemoval) return;
 			try {
-				ChartForm chartFormClosed = sender as ChartForm;
-				ChartFormManager chartFormManager = chartFormClosed.ChartFormManager;
 				// chartFormsManager lifecycle ends here
-				this.mainForm.GuiDataSnapshot.ChartFormManagers.Remove(chartFormManager.DataSnapshot.ChartSerno);
+				ChartForm chartFormClosed = sender as ChartForm;
+				ChartFormsManager chartFormManager = chartFormClosed.ChartFormManager;
 
 				if (DockContentImproved.IsNullOrDisposed(chartFormManager.ScriptEditorForm) == false) chartFormManager.ScriptEditorFormConditionalInstance.Close();
+
+				string msg = null;
+				var mgrs = this.mainForm.GuiDataSnapshot.ChartFormsManagers;
+				if (mgrs.Count <= 0) {
+					msg += "ChartFormsManagers.Count=0 ";
+				} else {
+					if (this.mainForm.GuiDataSnapshot.ChartFormsManagers.ContainsValue(chartFormManager) == false) {
+						msg += "chartFormManager_NOT_FOUND[" + chartFormManager.ToString() + "] ";
+					} else {
+						if (mgrs.ContainsKey(chartFormManager.DataSnapshot.ChartSerno) == false) {
+							msg += "ChartSerno_NOT_FOUND[" + chartFormManager.DataSnapshot.ChartSerno + "] ";
+						}
+					}
+				}
+
+				if (string.IsNullOrEmpty(msg) == false) {
+					Assembler.PopupException("CHART_FORMS_MANAGER_MUST_HAVE_BEEN_ADDED " + msg);
+				} else {
+					this.mainForm.GuiDataSnapshot.ChartFormsManagers.Remove(chartFormManager.DataSnapshot.ChartSerno);
+					this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Remove(chartFormClosed.ChartControl.ChartSettings);
+					ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
+				}
+
+				chartFormManager.Dispose_workspaceReloading();
+
 				//foreach (Reporter reporter in chartFormsManager.Reporters.Values) {
 				//	Control reporterAsControl = reporter as Control;
 				//	Control reporterParent = reporterAsControl.Parent;
@@ -120,6 +153,10 @@ namespace Sq1.Gui {
 				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
 				return;
 			}
+			if (this.mainForm.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) {
+				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
+				return;
+			}
 
 			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveDocument as ChartForm;
 			if (chartFormClicked == null) {
@@ -132,7 +169,9 @@ namespace Sq1.Gui {
 			try {
 				chartFormClicked.ChartFormManager.InterformEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
 				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
-				this.mainForm.GuiDataSnapshotSerializer.Serialize();
+				//v1 this.mainForm.GuiDataSnapshotSerializer.Serialize();
+				//v2
+				this.mainForm.MainFormSerialize();
 				
 				//v1: DOESNT_POPULATE_SYMBOL_AND_SCRIPT_PARAMETERS 
 				//if (chartFormClicked.ChartFormManager.Strategy == null) {
@@ -143,18 +182,44 @@ namespace Sq1.Gui {
 				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 				//chartFormClicked.Activate();	// I_GUESS_ITS_ALREADY_ACTIVE
 				chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
+				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormClicked.ChartControl.ChartSettings);
 			} catch (Exception ex) {
+				if (ex.Message == "The previous pane is invalid. It can not be null, and its docking state must not be auto-hide.") {
+					foreach (DockPane eachPane in this.mainForm.DockPanel.Panes) {
+						bool autoHide = eachPane.DockState == DockState.DockBottomAutoHide
+									 || eachPane.DockState == DockState.DockLeftAutoHide
+									 || eachPane.DockState == DockState.DockRightAutoHide
+									 || eachPane.DockState == DockState.DockTopAutoHide;
+						if (autoHide == false) continue;
+						string whosInside = "";
+						foreach (IDockContent outlaw in eachPane.DisplayingContents) {
+							if (whosInside != "") whosInside += ",";
+							whosInside += outlaw.ToString();
+						}
+						string msg = "FIXED_AS:CANT_ADD_PANE_RELATIVELY_TO_AUTOHIDE_PANE ADD_THOSE_AS_NON_AUTO_HIDDENS [" + whosInside + "]";
+						Assembler.PopupException(msg, null, false);
+					}
+				}
 				Assembler.PopupException("DockPanel_ActiveDocumentChanged()", ex);
 			}
 		}
 		//v2
 		internal void DockPanel_ActiveContentChanged(object sender, EventArgs e) {
+			if (this.mainForm.MainFormClosingSkipChartFormsRemoval) {
+				string msg = "onAppClose getting invoked for each [mosaically] visible content, right? nope just once per Close()";
+				return;
+			}
+			if (this.mainForm.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace) {
+				string msg = "onAppClose getting invoked for each [mosaically] visible content, right? nope just once per Close()";
+				return;
+			}
+
 			ChartForm chartFormClicked = this.mainForm.DockPanel.ActiveContent as ChartForm;
 			if (chartFormClicked == null) {
 				string msig = " DockPanel_ActiveContentChanged() is looking for mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus["
 					+ this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus + "]";
 				int lastKnownChartSerno = this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus;
-				ChartFormManager lastKnownChartFormManager = this.mainForm.GuiDataSnapshot.FindChartFormsManagerBySerno(lastKnownChartSerno, msig, false);
+				ChartFormsManager lastKnownChartFormManager = this.mainForm.GuiDataSnapshot.FindChartFormsManagerBySerno(lastKnownChartSerno, msig, false);
 				if (lastKnownChartFormManager == null) {
 					string msg = "DOCK_ACTIVE_CONTENT_CHANGED_BUT_CANT_FIND_LAST_CHART lastKnownChartSerno[" + lastKnownChartSerno + "]";
 					// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE Assembler.PopupException(msg + msig);
@@ -171,7 +236,9 @@ namespace Sq1.Gui {
 			try {
 				chartFormClicked.ChartFormManager.InterformEventsConsumer.MainForm_ActivateDocumentPane_WithChart(sender, e);
 				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = chartFormClicked.ChartFormManager.DataSnapshot.ChartSerno;
-				this.mainForm.GuiDataSnapshotSerializer.Serialize();
+				//v1 this.mainForm.GuiDataSnapshotSerializer.Serialize();
+				//v2
+				this.mainForm.MainFormSerialize();
 				chartFormClicked.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 			} catch (Exception ex) {
 				Assembler.PopupException("DockPanel_ActiveContentChanged()", ex);
@@ -181,6 +248,9 @@ namespace Sq1.Gui {
 		#region DataSourcesTree
 		internal void DataSourcesTree_OnBarsAnalyzerClicked(object sender, DataSourceSymbolEventArgs e) {
 		}
+		internal void DataSourcesTree_OnSymbolInfoEditorClicked(object sender, DataSourceSymbolEventArgs e) {
+			SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbol(e);
+		}
 		internal void DataSourcesTree_OnDataSourceDeletedClicked(object sender, DataSourceEventArgs e) {
 		}
 		internal void RepositoryJsonDataSource_OnDataSourceCanBeRemoved(object sender, NamedObjectJsonEventArgs<DataSource> e) {
@@ -189,7 +259,7 @@ namespace Sq1.Gui {
 		}
 		internal void RepositoryJsonDataSource_OnDataSourceRemoved(object sender, NamedObjectJsonEventArgs<DataSource> e) {
 			int a = 1;
-			//if a running optimizer / backtester / streaming chart had DataSource, possibly shut them down?
+			//if a running sequencer / backtester / streaming chart had DataSource, possibly shut them down?
 		}
 		internal void DataSourcesTree_OnDataSourceEditClicked(object sender, DataSourceEventArgs e) {
 			//DataSourceEditorForm.Instance.DataSourceEditorControl.Initialize(e.DataSource);
@@ -249,7 +319,7 @@ namespace Sq1.Gui {
 			SlidersForm.Instance.PopulateFormTitle(strategy);
 		}
 		// TYPE_MANGLING_INSIDE_WARNING NOTICE_THAT_BOTH_PARAMETER_SCRIPT_AND_INDICATOR_VALUE_CHANGED_EVENTS_ARE_HANDLED_BY_SINGLE_HANDLER
-		internal void SlidersAutoGrow_SliderValueChanged(object sender, IndicatorParameterEventArgs e) {
+		internal void SlidersAutoGrow_SliderValueChanged(object sender, IndicatorParameterEventArgs indicatorParamChangedArg) {
 			ChartForm chartFormActive = this.mainForm.ChartFormActiveNullUnsafe;
 			if (chartFormActive == null) {
 				string msg = "DRAG_CHART_INTO_DOCUMENT_AREA";
@@ -263,21 +333,30 @@ namespace Sq1.Gui {
 				return;
 			}
 
-			ScriptParameterEventArgs scripParamChanged = e as ScriptParameterEventArgs;
-			if (scripParamChanged != null) {
-				strategyToSaveAndRun.PushChangedScriptParameterValueToScriptAndSerialize(scripParamChanged.ScriptParameter);
-			} else {
-				strategyToSaveAndRun.PushChangedIndicatorParameterValueToScriptAndSerialize(e.IndicatorParameter);
-			}
+// CHANGING_SLIDERS_ALREADY_AFFECTS_SCRIPT_AND_INDICATOR_PARAMS_KOZ_THERE_ARE_NO_CLONES_ANYMORE
+//			ScriptParameterEventArgs scripParamChanged = e as ScriptParameterEventArgs;
+//			if (scripParamChanged != null) {
+//				strategyToSaveAndRun.PushChangedScriptParameterValueToScriptAndSerialize(scripParamChanged.ScriptParameter);
+//			} else {
+//				strategyToSaveAndRun.PushChangedIndicatorParameterValueToScriptAndSerialize(e.IndicatorParameter);
+//			}
+
+			// SAME_OBJECTS_BETWEEN_SLIDER_AND_CURRENT_SCRIPT_CONTEXT_BUT_SCRIPT_HAS_ITS_OWN_ACCESSIBLE_THROUGH_REFLECTED
+			strategyToSaveAndRun.PushChangedScriptParameterValueToScript(indicatorParamChangedArg.IndicatorParameter);
+
 			chartFormActive.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("SlidersAutoGrow_SliderValueChanged", false);
-			
-			ScriptParameterEventArgs demuxScriptParameterEventArgs = e as ScriptParameterEventArgs;   
-			if (demuxScriptParameterEventArgs == null) {
-				string msg = "MultiSplitterPropertiesByPanelName[ATR (Period:5[1..11/2]) ] key should be synchronized when user clicks Period 5=>7";
-				chartFormActive.ChartControl.SerializeSplitterDistanceOrPanelName();
-			} else {
-				string msg = "DO_NOTHING_ELSE_INDICATOR_PANEL_SPLITTER_POSITIONS_SHOULDNT_BE_SAVED_HERE";
-			}
+
+// NO_FREAKING_IDEA_WHY_THIS_WAS_TYPED_IN_HERE			
+//			ScriptParameterEventArgs demuxScriptParameterEventArgs = e as ScriptParameterEventArgs;   
+//			if (demuxScriptParameterEventArgs == null) {
+//				string msg = "MultiSplitterPropertiesByPanelName[ATR (Period:5[1..11/2]) ] key should be synchronized when user clicks Period 5=>7";
+//				chartFormActive.ChartControl.SerializeSplitterDistanceOrPanelName();
+//			} else {
+//				string msg = "DO_NOTHING_ELSE_INDICATOR_PANEL_SPLITTER_POSITIONS_SHOULDNT_BE_SAVED_HERE";
+//			}
+
+			//ScriptContext.Sliders => Sequencer's.Parameters.Current
+			chartFormActive.ChartFormManager.SequencerForm.SequencerControl.OlvParameterPopulate();
 		}
 		#endregion SlidersForm.Instance.SlidersAutoGrow
 

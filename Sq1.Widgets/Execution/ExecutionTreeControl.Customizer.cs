@@ -22,7 +22,7 @@ namespace Sq1.Widgets.Execution {
 //			}
 			byte[] olvStateBinary = this.OrdersTreeOLV.SaveState();
 			this.DataSnapshot.OrdersTreeOlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
-
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.DataSnapshotSerializer.Serialize();
 		}
 
@@ -77,12 +77,12 @@ namespace Sq1.Widgets.Execution {
 				DateTime orderCreated;
 				if (this.mniToggleBrokerTime.Checked) {
 					orderCreated = (order.Alert.QuoteCreatedThisAlertServerTime != DateTime.MinValue)
-						? order.Alert.QuoteCreatedThisAlertServerTime : order.TimeCreatedBroker;
+						? order.Alert.QuoteCreatedThisAlertServerTime : order.CreatedBrokerTime;
 				} else {
 					if (order.Alert.Bars != null) {
-						orderCreated = order.Alert.Bars.MarketInfo.ConvertServerTimeToLocal(order.TimeCreatedBroker);
+						orderCreated = order.Alert.Bars.MarketInfo.ConvertServerTimeToLocal(order.CreatedBrokerTime);
 					} else {
-						orderCreated = order.TimeCreatedBroker;
+						orderCreated = order.CreatedBrokerTime;
 					}
 				}
 				return orderCreated.ToString(Assembler.DateTimeFormatLong);
@@ -110,12 +110,12 @@ namespace Sq1.Widgets.Execution {
 			this.colheSpreadSide.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colheSpreadSide.AspectGetter: order=null";
-				return order.IsKiller ? "" : formatOrderPriceSpreadSide(order, this.DataSnapshot.pricingDecimalForSymbol);
+				return order.IsKiller ? "" : formatOrderPriceSpreadSide(order, this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.colhePriceScript.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colhePriceScript.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.Alert.PriceScript.ToString("N" + this.DataSnapshot.pricingDecimalForSymbol);
+				return order.IsKiller ? "" : order.Alert.PriceScript.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.colheSlippage.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -125,12 +125,12 @@ namespace Sq1.Widgets.Execution {
 			this.colhePriceScriptRequested.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colhePriceScriptRequested.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.PriceRequested.ToString("N" + this.DataSnapshot.pricingDecimalForSymbol);
+				return order.IsKiller ? "" : order.PriceRequested.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.colhePriceFilled.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colhePriceFilled.AspectGetter: order=null";
-				return order.IsKiller ? "" : order.PriceFill.ToString("N" + this.DataSnapshot.pricingDecimalForSymbol);
+				return order.IsKiller ? "" : order.PriceFill.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.colheStateTime.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -155,7 +155,7 @@ namespace Sq1.Widgets.Execution {
 			this.colhePriceDeposited.AspectGetter = delegate(object o) {
 				var order = o as Order;
 				if (order == null) return "colhePriceDeposited.AspectGetter: order=null";
-				return (order.QtyFill == 0) ? "0" : order.Alert.PriceDeposited.ToString("N" + this.DataSnapshot.pricingDecimalForSymbol);
+				return (order.QtyFill == 0) ? "0" : order.Alert.PriceDeposited.ToString("N" + this.DataSnapshot.PricingDecimalForSymbol);
 			};
 			this.colheQtyRequested.AspectGetter = delegate(object o) {
 				var order = o as Order;
@@ -260,11 +260,15 @@ namespace Sq1.Widgets.Execution {
 				return omsg.DateTime.ToString(Assembler.DateTimeFormatLong);
 			};
 		}
+
+		FontCache fontCache;
+
 		void tree_FormatRow(object sender, BrightIdeasSoftware.FormatRowEventArgs e) {
 			Order order = e.Model as Order;
 			if (order == null) return;
 			if (order.InStateExpectingCallbackFromBroker) {
-				e.Item.Font = new Font(e.Item.Font, FontStyle.Bold);
+				//v1 e.Item.Font = new Font(e.Item.Font, FontStyle.Bold);
+				e.Item.Font = this.fontCache.Bolden();
 			}
 
 			//v1 if (Assembler.InstanceInitialized.AlertsForChart.IsItemRegisteredForAnyContainer(order.Alert)) return;

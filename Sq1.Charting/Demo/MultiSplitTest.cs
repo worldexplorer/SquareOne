@@ -17,7 +17,7 @@ namespace Sq1.Charting.Demo {
 			exceptionsForm.Show();
 			Assembler.InstanceUninitialized.Initialize(exceptionsForm);
 			Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
-			exceptionsForm.ExceptionControl.FlushListToTreeIfDockContentDeserialized_inGuiThread();
+			//exceptionsForm.ExceptionControl.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 
 			this.multiSplitContainerOfPanelBase1.DebugSplitter = true;
 			this.multiSplitContainerOfPanelBase1.SplitterHeight = 20;
