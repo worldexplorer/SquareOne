@@ -8,15 +8,15 @@
     "$type": "Sq1.Core.Charting.ChartSettings, Sq1.Core",
     "MultiSplitterRowsPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "panelPrice": {
+      "panelVolume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0
       },
-      "panelVolume": {
+      "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 162
+        "Distance": 34
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -29,13 +29,13 @@
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 502
+        "Distance": 800
       }
     },
     "Name": "Default",
     "StrategyName": "TwoMAsCompiled",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 8,
+    "BarWidthIncludingPadding": 1,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -76,7 +76,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 0,
+    "ScrollPositionAtBarIndex": 502,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -123,7 +123,7 @@
     "SpreadLabelColor": "DarkGray",
     "LevelTwoColorBackgroundStreamingHasNoLastQuote": "DarkGray",
     "LevelTwoColorBackground": "White",
-    "LevelTwoLotsColorBackground": "White",
+    "LevelTwoLotsColorBackground": "WhiteSmoke",
     "LevelTwoLotsColorForeground": "Black",
     "LevelTwoAskColorBackground": "255, 230, 230",
     "LevelTwoAskColorContour": "205, 180, 180",
@@ -135,6 +135,6 @@
     "LevelTwoLotColor": "Black",
     "LevelTwoLotPaddingHorizontal": 3
   },
-  "ChartSerno": 1,
+  "ChartSerno": 3,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_CONTAINS_STRATEGY_SO_this.ContextChart_IS_NULL check [C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json], ScriptContextCurrentName[?Default?]"
 }

@@ -154,7 +154,7 @@ namespace Sq1.Adapters.Quik {
 			//}
 
 			base.OrderProcessor.UpdateOrderStateDontPostProcess(order, omsg);
-			base.CallbackOrderStateReceived(order);
+			//base.CallbackOrderStateReceived(order);
 		}
 
 		//[JsonIgnore]	[JsonIgnore]	[JsonIgnore]	

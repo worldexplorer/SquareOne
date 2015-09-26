@@ -1,0 +1,64 @@
+{
+  "$type": "Sq1.Core.DataFeed.DataSource, Sq1.Core",
+  "SymbolSelected": "",
+  "Symbols": [],
+  "ScaleInterval": {
+    "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+    "AsString_cached": "5-Minute",
+    "Scale": 3,
+    "Interval": 5,
+    "IsIntraday": true,
+    "AsTimeSpanInSeconds": 300,
+    "AsTimeSpan": "00:05:00"
+  },
+  "StreamingAdapter": {
+    "$type": "Sq1.Adapters.Quik.StreamingQuik, Sq1.Adapters.Quik",
+    "DdeServerPrefix": "SQ1",
+    "DdeTopicQuotes": "quotes",
+    "DdeTopicTrades": "trades",
+    "DdeTopicPrefixDom": "dom",
+    "StreamingDataSnapshot": {
+      "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
+      "lastQuoteClonesReceivedUnboundBySymbol": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib"
+      },
+      "FortsDepositSell": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
+      },
+      "FortsDepositBuy": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
+      },
+      "FortsPriceMin": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
+      },
+      "FortsPriceMax": {
+        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
+      },
+      "SymbolsSubscribedAndReceiving": ""
+    }
+  },
+  "BrokerAdapter": {
+    "$type": "Sq1.Adapters.Quik.BrokerQuik, Sq1.Adapters.Quik",
+    "AccountMicex": {
+      "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
+      "AccountNumber": "QUIK_MICEX_ACCTNR_NOT_SET",
+      "CashAvailable": -1001.0,
+      "AccountValueTimeStamp": "0001-01-01T00:00:00"
+    },
+    "Account": {
+      "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
+      "AccountNumber": "ACCTNR_NOT_SET",
+      "CashAvailable": -1000.0,
+      "AccountValueTimeStamp": "0001-01-01T00:00:00"
+    },
+    "QuikFolder": "",
+    "QuikDllName": "TRANS2QUIK.DLL",
+    "QuikClientCode": null,
+    "ReconnectTimeoutMillis": 0
+  },
+  "MarketName": "FORTS",
+  "Name": "QUIK",
+  "StreamingAdapterName": "Quik Streaming",
+  "BrokerAdapterName": "Quik Broker",
+  "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\QUIK"
+}

@@ -406,8 +406,8 @@ nOrderDescriptor Тип: Long. Дескриптор заявки, может и�
 					break;
 				case 2: //«2» - «Снята»
 					//if (orderExecuted.State == OrderState.KillPending) {
-					if (order.FindStateInOrderMessages(OrderState.KillPending)) {
-						newOrderStateReceived = OrderState.Killed;
+					if (order.FindStateInOrderMessages(OrderState.KilledPending)) {
+						newOrderStateReceived = OrderState.KillerDone;
 					} else {
 						// what was the state of a victim before you said Rejected? must be Killed!! TradeStatus!!! shit!
 						newOrderStateReceived = OrderState.Rejected;
@@ -459,7 +459,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			if (orderSubmitting == null) {
 				msg += " Order not found Guid[" + GUID + "] ; orderSernos=["
 					+ orders.SessionSernosAsString
-					+ "] Count=[" + orders.InnerOrderList.Count + "]";
+					+ "] Count=[" + orders.SafeCopy.Count + "]";
 				Assembler.PopupException(msg);
 				return;
 			}
@@ -602,7 +602,7 @@ lpstrTransactionReplyMessage Тип: указатель на переменну�
 			Trans2Quik.Result r = Trans2Quik.SEND_ASYNC_TRANSACTION(trans, out error, this.callbackErrorMsg, this.callbackErrorMsg.Capacity);
 			msgSubmitted = msig + r + "    " + ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
 			if (r == Trans2Quik.Result.SUCCESS) {
-				orderState = OrderState.KillPending;
+				orderState = OrderState.KilledPending;
 			} else {
 				orderState = OrderState.Error;
 			}

@@ -98,7 +98,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 					msg = "MOCK_CHECK: order.State[" + order.State + "] NOT_IN (" + allowed + ") after QuikTerminal::CallbackOrderStatus(), won't run the loop!";
 					base.BrokerQuik.OrderProcessor.AppendOrderMessageAndPropagateCheckThrowOrderNull(order, msg + msig);
 					//order.Alert.Strategy.Script.Executor.RemovePendingAlertClosePosition(order.Alert, msig);
-					order.Alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScript(order.Alert, order.Alert.Bars.Count);
+					order.Alert.Strategy.Script.Executor.CreatedOrderWontBePlacedPastDueInvokeScriptNonReenterably(order.Alert, order.Alert.Bars.Count);
 					return;
 				}
 
@@ -200,8 +200,8 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 					break;
 				//case OrderState.Submitting:
 				//	break;
-				case OrderState.KillPending:
-				case OrderState.Killed:
+				case OrderState.KilledPending:
+				case OrderState.KillerDone:
 				case OrderState.TPAnnihilated:
 				case OrderState.SLAnnihilated:
 					msg = "THREAD_TERMINATING_ANNIHILATED: [" + order.State + "] is expected and handled";
@@ -383,7 +383,7 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 
 			victimMsgSubmitted = msig + "Trans2Quik.Result.SUCCESS    "
 				+ ((this.callbackErrorMsg.Length > 0) ? this.callbackErrorMsg.ToString() : " error[" + error + "]");
-			victimOrderState = OrderState.KillPending;
+			victimOrderState = OrderState.KilledPending;
 
 			QuikTerminalMockThreadParam tp = new QuikTerminalMockThreadParam();
 			tp.ClassCode = ClassCode;
