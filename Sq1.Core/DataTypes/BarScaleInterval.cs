@@ -89,45 +89,23 @@ namespace Sq1.Core.DataTypes {
 			return hashCode;
 		}
 		#endregion
-			
-		public static bool operator <(BarScaleInterval first, BarScaleInterval second) {
-			return first != second && !(first > second);
+
+		public bool LessGranularThan(BarScaleInterval another) {
+			return this.AsTimeSpanInSeconds < another.AsTimeSpanInSeconds;		// SHOW_ME_THE_NUMBERS this.AsTimeSpan < another.AsTimeSpan
 		}
-		public static bool operator >(BarScaleInterval first, BarScaleInterval second) {
-			switch (first.Scale) {
-				case BarScale.Daily:
-					return second.IsIntraday;
-				case BarScale.Weekly:
-					return second.IsIntraday
-						|| second.Scale == BarScale.Daily;
-				case BarScale.Monthly:
-					return second.IsIntraday 
-						|| second.Scale == BarScale.Daily 
-						|| second.Scale == BarScale.Weekly;
-				case BarScale.Minute:
-					if (second.Scale != BarScale.Second) {
-						if (second.Scale != BarScale.Tick) {
-							return second.Scale == BarScale.Minute && first.Interval
-								> second.Interval;
-						}
-					}
-					return true;
-				case BarScale.Second:
-					return second.Scale == BarScale.Tick 
-						|| (second.Scale == BarScale.Second && first.Interval > second.Interval);
-				case BarScale.Tick:
-					return second.Scale == BarScale.Tick && first.Interval > second.Interval;
-				case BarScale.Quarterly:
-					return second.IsIntraday 
-						|| second.Scale == BarScale.Daily 
-						|| second.Scale == BarScale.Weekly 
-						|| second.Scale == BarScale.Monthly;
-				case BarScale.Yearly:
-					return second.Scale != BarScale.Yearly;
-				default:
-					return false;
-			}
+		public bool MoreGranularThan(BarScaleInterval another) {
+			return this.AsTimeSpanInSeconds > another.AsTimeSpanInSeconds;		// SHOW_ME_THE_NUMBERS this.AsTimeSpan > another.AsTimeSpan
 		}
+
+		public bool CanConvertTo(BarScaleInterval scaleIntervalTo) {
+			// for proper comparison, make sure Sq1.Core.DataTypes.BarScale enum has scales growing from Tick to Yearly
+			if (this.Scale > scaleIntervalTo.Scale) return false;	//can't convert from 1hr to 5min
+			if (this.Scale < scaleIntervalTo.Scale) return true;
+			// here we are if (this.ScaleInterval.Scale == scaleIntervalTo.Scale)
+			if (this.Interval <= scaleIntervalTo.Interval) return true;
+			return false;
+		}
+
 		public static BarScaleInterval MaxValue = new BarScaleInterval(BarScale.Yearly, 1);
 		public static BarScaleInterval MinValue = new BarScaleInterval(BarScale.Tick, 1);
 		public static BarScaleInterval FromTimeSpan(TimeSpan ts) {

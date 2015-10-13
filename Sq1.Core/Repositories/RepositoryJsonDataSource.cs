@@ -49,8 +49,8 @@ namespace Sq1.Core.Repositories {
 		}
 		public override void ItemCanBeDeletedCascade(NamedObjectJsonEventArgs<DataSource> args, object sender = null) {
 		}
-		public override void ItemRenameCascade(DataSource itemRenamed, string oldName, object sender = null) {
-			itemRenamed.DataSourceFolderRename(oldName);
+		public override void ItemRenameCascade(DataSource itemToRename, string newName, object sender = null) {
+			itemToRename.DataSourceFolderRename(newName);
 		}
 
 		public DataSourceSymbolEventArgs SymbolCanBeDeleted(DataSource dataSource, string symbolToDelete, object sender = null) {
@@ -123,6 +123,18 @@ namespace Sq1.Core.Repositories {
 				if (ds.MarketInfo == marketInfo) ret++;
 			}
 			return ret;
-		}		
+		}
+
+		public void SymbolCopyOrCompressFrom(DataSource dataSourceFrom, string symbolToCopy, DataSource dataSourceTo, object sender = null) {
+			if (sender == null) sender = this;
+			string msig = " RepositoryJsonDataSource.SymbolCopy(" + dataSourceFrom.Name + ", " + symbolToCopy + ", " + dataSourceTo.Name + "): ";
+			try {
+				dataSourceTo.SymbolCopyOrCompressFrom(dataSourceFrom, symbolToCopy, dataSourceTo);
+				base.SerializeSingle(dataSourceTo);
+				this.RaiseOnSymbolAdded(sender, dataSourceTo, symbolToCopy);
+			} catch (Exception ex) {
+				Assembler.PopupException(msig, ex);
+			}
+		}
 	}
 }

@@ -110,6 +110,29 @@ namespace Sq1.Core.DataFeed {
 			this.BarsRepository.SymbolDataFileAdd(symbolToAdd);
 			this.Symbols.Add(symbolToAdd);
 		}
+		internal void SymbolCopyOrCompressFrom(DataSource dataSourceFrom, string symbolToCopy, DataSource dataSourceTo) {
+			string msig = " // DataSource[" + this.Name + "].SymbolCopyOrCompressFrom(" + dataSourceFrom.Name + ", " + symbolToCopy + ") ";
+			if (this.Symbols.Contains(symbolToCopy)) {
+				throw new Exception("ALREADY_EXISTS[" + symbolToCopy + "]" + msig);
+			}
+			if (dataSourceFrom.ScaleInterval.CanConvertTo(dataSourceTo.ScaleInterval) == false) {
+				throw new Exception("CANT_CONVERT_TIMEFRAMES_TO_MORE_GRANULAR " + dataSourceFrom.Name + "[" + dataSourceFrom.ScaleInterval + "]=> " + dataSourceTo.Name + "[" + dataSourceTo.ScaleInterval + "]" + msig);
+			}
+			if (dataSourceFrom.ScaleInterval.AsTimeSpanInSeconds == dataSourceTo.ScaleInterval.AsTimeSpanInSeconds) {
+				string abspathSource = dataSourceFrom.BarsRepository.AbspathForSymbol(symbolToCopy);
+				this.BarsRepository.SymbolDataFileCopy(symbolToCopy, abspathSource);
+				RepositoryBarsFile filePickedUp = this.BarsRepository.DataFileForSymbol(symbolToCopy);
+				Assembler.PopupException("BARS_SAVED_UNCOMPRESSED: " + filePickedUp.BarsLoadAllNullUnsafeThreadSafe().Count + msig, null, false);
+			} else {
+				string millisElapsedLoadCompress;
+				Bars barsCompressed = dataSourceFrom.BarsLoadAndCompress(symbolToCopy, dataSourceTo.ScaleInterval, out millisElapsedLoadCompress);
+				this.BarsRepository.SymbolDataFileAdd(symbolToCopy, true);
+				RepositoryBarsFile fileToSaveTo = this.BarsRepository.DataFileForSymbol(symbolToCopy);
+				int barsSaved = fileToSaveTo.BarsSaveThreadSafe(barsCompressed);
+				Assembler.PopupException("BARS_SAVED_COMPRESSED: " + barsSaved + msig + millisElapsedLoadCompress, null, false);
+			}
+			this.Symbols.Add(symbolToCopy);
+		}
 		// internal => use only RepositoryJsonDataSource.SymbolRename() which will notify subscribers about rename operation
 		internal void SymbolRename(string oldSymbolName, string newSymbolName) {
 			if (this.Symbols.Contains(oldSymbolName) == false) {
@@ -230,21 +253,25 @@ namespace Sq1.Core.DataFeed {
 			return symbolsToDelete.Count;
 		}
 		internal void DataSourceFolderDeleteWithSymbols() {
+			if (this.BarsRepository == null) {
+				string msg = "DATASOURCE_INITIALIZE_NOT_INVOKED_YET //DataSourceFolderDeleteWithSymbols()";
+				Assembler.PopupException(msg);
+			}
 			this.BarsRepository.DeleteAllDataFilesAllSymbols();
 			Directory.Delete(this.DataSourceAbspath);
 		}
 		internal void DataSourceFolderRename(string newName) {
 			string msig = " DataSourceFolderRename(" + this.Name + "=>" + newName + ")";
-			if (File.Exists(this.DataSourceAbspath) == false) {
+			if (Directory.Exists(this.DataSourceAbspath) == false) {
 				throw new Exception("DATASOURCE_OLD_FOLDER_DOESNT_EXIST this.FolderForBarDataStore[" + this.DataSourceAbspath + "]" + msig);
 			}
-			string abspathNewFolderName = Path.Combine(this.BarsRepository.DataSourceAbspath, newName);
-			if (File.Exists(abspathNewFolderName)) {
+			string abspathNewFolderName = Path.Combine(this.DataSourcesAbspath, newName);
+			if (Directory.Exists(abspathNewFolderName)) {
 				throw new Exception("DATASOURCE_NEW_FOLDER_ALREADY_EXISTS abspathNewFolderName[" + abspathNewFolderName + "]" + msig);
 			}
 			Directory.Move(this.DataSourceAbspath, abspathNewFolderName);
 			this.Name = newName;
-			this.DataSourceAbspath = Path.Combine(this.DataSourcesAbspath, this.Name);
+			this.DataSourceAbspath = abspathNewFolderName;
 			this.BarsRepository = new RepositoryBarsSameScaleInterval(this.DataSourceAbspath, this.ScaleInterval, true);
 		}
 		public Bars BarsLoadAndCompress(string symbolRq, BarScaleInterval scaleIntervalRq, out string millisElapsed) {
@@ -253,46 +280,52 @@ namespace Sq1.Core.DataFeed {
 			Stopwatch readAllTimer = new Stopwatch();
 			readAllTimer.Start();
 	
-			Bars ret;
+			Bars barsOriginal;
 			//BarsFolder perstFolder = new BarsFolder(this.BarsFolder.RootFolder, this.DataSource.ScaleInterval, true, "dts");
 			//RepositoryBarsPerst barsPerst = new RepositoryBarsPerst(perstFolder, symbol, false);
 			//ret = barsPerst.BarsRead();
 			//if (ret == null) {
 			RepositoryBarsFile barsFile = this.BarsRepository.DataFileForSymbol(symbolRq);
-			ret = barsFile.BarsLoadAllNullUnsafeThreadSafe();
+			barsOriginal = barsFile.BarsLoadAllNullUnsafeThreadSafe();
 			//}
 
 			readAllTimer.Stop();
-			millisElapsed = "BarsLoadAndCompress[" + ret.Symbol + "][" + ret.Count + "](" + readAllTimer.ElapsedMilliseconds + ")ms";
-
-			if (ret == null) ret = new Bars(symbolRq, this.ScaleInterval, "FILE_NOT_FOUND_OR_EMPTY " + this.GetType().Name);
-			ret.DataSource = this;
-			ret.MarketInfo = this.MarketInfo;
-			ret.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(ret.Symbol);
-			if (ret.Count == 0) return ret;
-			if (scaleIntervalRq == ret.ScaleInterval) return ret;
-			
-			bool canConvert = ret.CanConvertTo(scaleIntervalRq);
-			if (canConvert == false) {
-				string msg = "CANNOT_COMPRESS_BARS " + symbolRq + "[" + ret.ScaleInterval + "]=>[" + scaleIntervalRq + "]";
+			if (barsOriginal == null) {
+				barsOriginal = new Bars(symbolRq, this.ScaleInterval, "FILE_NOT_FOUND_OR_EMPTY " + this.GetType().Name);
+				string msg = "BARS_NULL " + barsFile.Abspath + " //BarsLoadAndCompress(" + symbolRq + ":" + this.BarsRepository.ScaleInterval + "][NULL]bars[" + readAllTimer.ElapsedMilliseconds + "]msRead";
 				Assembler.PopupException(msg);
-				return ret;
+			}
+			barsOriginal.DataSource = this;
+			barsOriginal.MarketInfo = this.MarketInfo;
+			barsOriginal.SymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoOrNew(barsOriginal.Symbol);
+
+			millisElapsed = "BarsLoadAndCompress[" + barsOriginal.Symbol + ":" + barsOriginal.ScaleInterval + "]["
+				+ barsOriginal.Count + "]bars[" + readAllTimer.ElapsedMilliseconds + "]msRead";
+			if (barsOriginal.Count == 0) return barsOriginal;
+			if (scaleIntervalRq == barsOriginal.ScaleInterval) return barsOriginal;
+
+			bool canConvert = barsOriginal.ScaleInterval.CanConvertTo(scaleIntervalRq);
+			if (canConvert == false) {
+				string msg = "CANNOT_INCREASE_GRANULARITY " + symbolRq + "[" + barsOriginal.ScaleInterval + "]=>[" + scaleIntervalRq + "]";
+				Assembler.PopupException(msg);
+				return barsOriginal;
 			}
 
 			Stopwatch compressTimer = new Stopwatch();
 			compressTimer.Start();
 
+			Bars barsCompressed;
 			try {
-				ret = ret.ToLargerScaleInterval(scaleIntervalRq);
+				barsCompressed = barsOriginal.ToLargerScaleInterval(scaleIntervalRq);
 			} catch (Exception e) {
 				Assembler.PopupException("BARS_COMPRESSION_FAILED (ret, scaleIntervalRq)", e);
 				throw e;
 			}
 
 			compressTimer.Stop();
-			millisElapsed += " ToLargerScaleInterval(" + scaleIntervalRq + ")[" + compressTimer.ElapsedMilliseconds + "]ms";
+			millisElapsed += " ToLargerScaleInterval[" + barsCompressed.Symbol + ":" + barsCompressed.ScaleInterval + "][" + barsCompressed.Count + "]bars[" + compressTimer.ElapsedMilliseconds + "]msCompressed";
 
-			return ret;
+			return barsCompressed;
 		}
 		public bool PumpPauseNeighborsIfAnyFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
 			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelForNullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);

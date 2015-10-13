@@ -266,18 +266,10 @@ namespace Sq1.Core.DataTypes {
 			return ret;
 		}
 		
-		public bool CanConvertTo(BarScaleInterval scaleIntervalTo) {
-			// for proper comparison, make sure Sq1.Core.DataTypes.BarScale enum has scales growing from Tick to Yearly
-			if (this.ScaleInterval.Scale > scaleIntervalTo.Scale) return false;	//can't convert from 1hr to 5min
-			if (this.ScaleInterval.Scale < scaleIntervalTo.Scale) return true;
-			// here we are if (this.ScaleInterval.Scale == scaleIntervalTo.Scale)
-			if (this.ScaleInterval.Interval <= scaleIntervalTo.Interval) return true;
-			return false;
-		}
 		void checkThrowCanConvert(BarScaleInterval scaleIntervalTo) {
 			string msig = "checkThrowCanConvert(" + this.ScaleInterval + "=>" + scaleIntervalTo + ") for " + this + " datasource[" + this.DataSource + "]";
 			string msg = "";
-			bool canConvert = this.CanConvertTo(scaleIntervalTo);
+			bool canConvert = this.ScaleInterval.CanConvertTo(scaleIntervalTo);
 			if (canConvert == false) msg += "CANNOT_CONVERT_TO_LARGER_SCALE_INTERVAL";
 			if (this.Count == 0) msg += " EMPTY_BARS_FROM";
 			//if (barsFrom.ScaleInterval.Scale == BarScale.Tick) msg += " TICKS_CAN_NOT_BE_CONVERTED_TO_ANYTHING";
