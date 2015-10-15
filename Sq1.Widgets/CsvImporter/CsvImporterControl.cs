@@ -290,7 +290,7 @@ namespace Sq1.Widgets.CsvImporter {
 				TimeSpan ts = bar.DateTime - prevDateTime;
 				prevDateTime = bar.DateTime;
 				BarScaleInterval bsi = BarScaleInterval.FromTimeSpan(ts);
-				if (bsi < ret) ret = bsi; 
+				if (bsi.LessGranularThan(ret)) ret = bsi; 
 			}
 			return ret;
 		}

@@ -30,6 +30,17 @@ namespace Sq1.Widgets.DataSourcesTree {
 			get { return this.showScaleIntervalInsteadOfMarket; }
 			set { this.showScaleIntervalInsteadOfMarket = value; }
 		}
+		public List<ToolStripMenuItem> DataSourcesAsMniList { get {
+			List<ToolStripMenuItem> ret = new List<ToolStripMenuItem>();
+			foreach (DataSource ds in Assembler.InstanceInitialized.RepositoryJsonDataSource.ItemsAsList) {
+				ToolStripMenuItem mni = new ToolStripMenuItem();
+				mni.Text = ds.Name;
+				mni.Tag = ds;
+				//mni.Image = ...
+				ret.Add(mni);
+			}
+			return ret;
+		} }
 		public DataSourcesTreeControl() {
 			this.InitializeComponent();
 			this.dataSourceTreeListViewCustomize();
@@ -38,6 +49,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.tree.Expanded += new EventHandler<TreeBranchExpandedEventArgs>(tree_Expanded);
 			this.tree.Collapsed += new EventHandler<TreeBranchCollapsedEventArgs>(tree_Collapsed);
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;
+			this.mniSymbolCopyToAnotherDataSource.DropDownItems.Add("CAUSING_SUBMENU_TRIANGLE_TO_APPEAR__WILL_BE_CLEARED_ON_OPENING");
 		}
 		public void Initialize(RepositoryJsonDataSource dataSourceRepository) {
 			this.dataSourceRepository = dataSourceRepository;

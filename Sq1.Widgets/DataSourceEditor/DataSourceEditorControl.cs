@@ -8,6 +8,7 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
+using Sq1.Core.Repositories;
 
 namespace Sq1.Widgets.DataSourceEditor {
 	public partial class DataSourceEditorControl : UserControl, IDataSourceEditor {
@@ -60,7 +61,25 @@ namespace Sq1.Widgets.DataSourceEditor {
 			else 									this.highlightBrokerByName(BrokerAdapter.NO_BROKER_ADAPTER);
 
 			this.marketInfoEditor.Initialize(ds, this.assemblerInstance.RepositoryJsonDataSource, this.assemblerInstance.RepositoryMarketInfo);
+
+
+			RepositoryJsonDataSource dsRepo = this.assemblerInstance.RepositoryJsonDataSource;
+			dsRepo.OnItemRemovedDone -= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor);
+			dsRepo.OnItemRemovedDone += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor);
+
+			dsRepo.OnItemRenamed -= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(repositoryJsonDataSource_OnDataSourceRenamed_refreshTitle);
+			dsRepo.OnItemRenamed += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(repositoryJsonDataSource_OnDataSourceRenamed_refreshTitle);
+
+			dsRepo.OnSymbolAdded -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
+			dsRepo.OnSymbolAdded += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
+
+			dsRepo.OnSymbolRemovedDone -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
+			dsRepo.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
+
+			dsRepo.OnSymbolRenamed -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
+			dsRepo.OnSymbolRenamed += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
 		}
+
 		public void PopulateScaleIntervalFromDataSource() {
 			this.cmbScale.Items.Clear();
 			int indexSelected = 0;

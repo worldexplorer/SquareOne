@@ -208,15 +208,17 @@ namespace Sq1.Core.Repositories {
 			string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::ItemRename(" + itemStored.Name + ", " + newName + "): ";
 			try {
 				if (this.ItemsByName.ContainsKey(itemStored.Name) == false) {
-					throw new Exception("ALREADY_DELETED[" + itemStored.Name + "]");
+					string msg = "ALREADY_DELETED[" + itemStored.Name + "]";
+					// throw new Exception(msg);
+					Assembler.PopupException(msg + msig);
 				}
 				if (this.ItemsByName.ContainsKey(newName)) {
-					throw new Exception("ALREADY_EXISTS[" + itemStored.Name + "]");
+					string msg = "ALREADY_EXISTS[" + itemStored.Name + "]";
+					// throw new Exception(msg);
+					Assembler.PopupException(msg + msig);
 				}
 				string jsonRelnameToDeleteBeforeRename = this.jsonRelnameForItem(itemStored);
-				string oldName = itemStored.Name;
-				itemStored.Name = newName;
-				this.ItemRenameCascade(itemStored, oldName, sender);
+				this.ItemRenameCascade(itemStored, newName, sender);
 
 				var items = new List<DATASOURCE>(this.ItemsByName.Values);
 				this.ItemsByName.Clear();
@@ -231,7 +233,7 @@ namespace Sq1.Core.Repositories {
 				Assembler.PopupException(msig, ex);
 			}
 		}
-		public virtual void ItemRenameCascade(DATASOURCE itemRenamed, string oldName, object sender = null) {
+		public virtual void ItemRenameCascade(DATASOURCE itemToRename, string newName, object sender = null) {
 		}
 		public void JsonDeleteItem(DATASOURCE itemStored) {
 			string jsonRelname = this.jsonRelnameForItem(itemStored);

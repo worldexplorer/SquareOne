@@ -5,6 +5,7 @@ using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Widgets.DataSourceEditor {
 	public partial class DataSourceEditorControl {
@@ -77,6 +78,22 @@ namespace Sq1.Widgets.DataSourceEditor {
 		}
 		void nmrInterval_ValueChanged(object sender, EventArgs e) {
 			ds.ScaleInterval.Interval = (int)this.nmrInterval.Value;
+		}
+
+		void repositoryJsonDataSource_OnDataSourceRenamed_refreshTitle(object sender, NamedObjectJsonEventArgs<DataSource> e) {
+			this.txtDataSourceName.Text = this.ds.Name;
+		}
+		void repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor(object sender, NamedObjectJsonEventArgs<DataSource> e) {
+			this.ParentForm.Close();
+		}
+		void repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea(object sender, DataSourceSymbolEventArgs e) {
+			if (this.ds != e.DataSource) {
+				string msg = "WHERE_SHOULD_I_GET_SymbolsCSV ? this.ds[" + this.ds.Name + "] != e.DataSource[" + e.DataSource.Name + "]"
+					+ this.ds.Name + ".SymbolsCSV[" + this.ds.Name + "] or [" + e.DataSource.Name + "].SymbolsCSV" + e.DataSource.SymbolsCSV + "] ?";
+				Assembler.PopupException(msg);
+			}
+			//this.txtSymbols.Text = this.ds.SymbolsCSV;
+			this.txtSymbols.Text = e.DataSource.SymbolsCSV;
 		}
 	}
 }

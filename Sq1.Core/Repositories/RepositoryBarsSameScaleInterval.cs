@@ -70,7 +70,7 @@ namespace Sq1.Core.Repositories {
 		bool createNonExistingSubfolder;
 		public string SubfolderAbspath { get {
 				string ret = Path.Combine(this.DataSourceAbspath, this.SubfolderScaleInterval);
-				if (!Directory.Exists(ret) && this.createNonExistingSubfolder) {
+				if (Directory.Exists(ret) == false && this.createNonExistingSubfolder) {
 					Directory.CreateDirectory(ret);
 				}
 				return ret;
@@ -115,13 +115,20 @@ namespace Sq1.Core.Repositories {
 			// Data-debug\DataSources\Mock-debug\Minute-1\RIM3_Minute-1.BAR
 			return symbol + "_" + this.SubfolderScaleInterval + "." + this.Extension;
 		}
-		public void SymbolDataFileAdd(string symbolToAdd, bool overwriteIfExistsDontThrow = false) {
-			string abspath = this.AbspathForSymbol(symbolToAdd);
-			if (File.Exists(abspath)) {
-				throw new Exception("FILE_ALREADY_EXISTS[" + abspath + "]" + " SymbolDataFileAdd(" + symbolToAdd + ")");
+		public void SymbolDataFileAdd(string symbolToAdd, bool silentlyOverwriteExisting_dontThrow = false) {
+			string abspath = this.AbspathForSymbol(symbolToAdd, false, true);
+			if (File.Exists(abspath) && silentlyOverwriteExisting_dontThrow == false) {
+				throw new Exception("ADD__FILE_ALREADY_EXISTS[" + abspath + "]" + " SymbolDataFileAdd(" + symbolToAdd + ")");
 			}
 			var fs = File.Create(abspath);
 			fs.Close();
+		}
+		public void SymbolDataFileCopy(string symbolToCopy, string abspathFromOtherRepositoryBars, bool overwriteIfExistsDontThrow = false) {
+			string abspathOfTheCopy = this.AbspathForSymbol(symbolToCopy);
+			if (File.Exists(abspathOfTheCopy)) {
+				throw new Exception("COPY__FILE_ALREADY_EXISTS[" + abspathOfTheCopy + "]" + " SymbolDataFileCopy(" + symbolToCopy + ")");
+			}
+			File.Copy(abspathFromOtherRepositoryBars, abspathOfTheCopy);
 		}
 		public void SymbolDataFileRename(string oldSymbolName, string newSymbolName) {
 			string msig = " SymbolDataFileRename(" + oldSymbolName + "=>" + newSymbolName + ")";
@@ -147,7 +154,7 @@ namespace Sq1.Core.Repositories {
 			foreach (string symbolToDelete in this.SymbolsInScaleIntervalSubFolder) {
 				this.SymbolDataFileDelete(symbolToDelete);
 			}
-			this.createNonExistingSubfolder = false;
+			// PREVENTS_CREATING_WITH_SAME_NAME this.createNonExistingSubfolder = false;
 			Directory.Delete(this.SubfolderAbspath);
 			return ret;
 		}

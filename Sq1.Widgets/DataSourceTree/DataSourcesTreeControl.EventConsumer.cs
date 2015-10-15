@@ -8,6 +8,7 @@ using BrightIdeasSoftware;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Widgets.LabeledTextBox;
+using System.Collections.Generic;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl {
@@ -21,7 +22,13 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 		}
 		void tree_CellRightClick(object sender, CellRightClickEventArgs e) {
-			if (e.RowIndex == -1) { // empty tree, no datasources added yet
+			if (e.RowIndex == -1) { // 1) empty tree, no datasources added yet; 2) clicked on blank area of some tree
+				this.mniDataSourceBrief		.Visible = false;
+				this.mniDataSourceEdit		.Visible = false;
+				this.mniltbDataSourceRename	.Visible = false;
+				this.mniDataSourceDelete	.Visible = false;
+				this.mniltbSymbolAdd		.Visible = false;
+				this.toolStripSeparator1	.Visible = false;
 				this.ContextMenuStrip = this.ctxDataSource;
 				return;
 			}
@@ -35,14 +42,18 @@ namespace Sq1.Widgets.DataSourcesTree {
 				//string chartTitlePartial = " - " + symbol + " (" + dataSourceName + ")";
 				//ChartForm chart = MainModule.Instance.MainForm.findByChartTitlePartialIfOpen(chartTitlePartial);
 				string newExisting = (true) ? "New" : "Existing";	//chart != null
-				this.mniNewChartSymbol.Text = newExisting + " Chart for " + this.SymbolSelected;
-				this.mniBarsAnalyzerSymbol.Text = "Bars Analyzer for " + this.SymbolSelected;
-				this.mniSymbolInfoEditor.Text = "Open Symbol Editor for " + this.SymbolSelected;
-				this.mniOpenStrategySymbol.Text = "New Strategy for " + this.SymbolSelected;
-				this.mniRemoveSymbol.Text = "Remove [" + this.SymbolSelected + "] from [" + this.DataSourceSelected.Name + "]";
+				this.mniNewChartSymbol.Text = newExisting + " Chart for [" + this.SymbolSelected + "]";
+				this.mniOpenStrategySymbol				.Text = "New Strategy for [" + this.SymbolSelected + "]";
+				this.mniSymbolBarsAnalyzer				.Text = "Bars Analyzer for [" + this.SymbolSelected + "]";
+				this.mniSymbolInfoEditor				.Text = "Open Symbol Editor for [" + this.SymbolSelected + "]";
+				this.mniSymbolBarsAnalyzer				.Text = "Open Bar Analyzer for [" + this.SymbolSelected + "]";
+				this.mniSymbolFuturesMerger				.Text = "Open Futures Merger for [" + this.SymbolSelected + "]";
+				this.mniSymbolRemove					.Text = "Remove [" + this.SymbolSelected + "] from [" + this.DataSourceSelected.Name + "] DataSource";
+				this.mniltbSymbolRenameTo				.TextLeft = "Rename [" + this.SymbolSelected + "] to";
+				this.mniSymbolCopyToAnotherDataSource	.Text = "Copy [" + this.SymbolSelected + "] to another DataSource";
 				DataSourceSymbolEventArgs subscribersPolled =
 					this.dataSourceRepository.SymbolCanBeDeleted(this.DataSourceSelected, this.SymbolSelected, this);
-				this.mniRemoveSymbol.Enabled = (subscribersPolled.DoNotDeleteItsUsedElsewhere == false);
+				this.mniSymbolRemove.Enabled = (subscribersPolled.DoNotDeleteItsUsedElsewhere == false);
 				//int imageIndex = getProviderImageIndexForDataSource(this.DataSourceSelected);
 				//if (imageIndex == -1) return;
 				//Image providerIcon = this.tree.SmallImageList.Images[imageIndex];
@@ -53,10 +64,21 @@ namespace Sq1.Widgets.DataSourcesTree {
 			} else {
 				NamedObjectJsonEventArgs<DataSource> subscribersPolled =
 					this.dataSourceRepository.ItemCanBeDeleted(this.DataSourceSelected, this);
-				this.mniDataSourceEdit.Enabled = (subscribersPolled.DoNotDeleteItsUsedElsewhere == false);
-				this.mniDataSourceDelete.Enabled = (subscribersPolled.DoNotDeleteItsUsedElsewhere == false);
-				this.mniDataSourceEdit.Text = "Edit DataSource [" + this.DataSourceSelected.Name + "]";
-				this.mniDataSourceDelete.Text = "Delete DataSource [" + this.DataSourceSelected.Name + "]";
+				// REVERSING_AFTER_OUT_OF_TREE_CLICK
+				this.mniDataSourceBrief		.Visible = true;
+				this.mniDataSourceEdit		.Visible = true;
+				this.mniltbDataSourceRename	.Visible = true;
+				this.mniDataSourceDelete	.Visible = true;
+				this.mniltbSymbolAdd		.Visible = true;
+				this.toolStripSeparator1	.Visible = true;
+
+				this.mniDataSourceBrief		.Text = "DataSource [" + this.DataSourceSelected.Name + "][" + this.DataSourceSelected.ScaleInterval + "], [" + this.DataSourceSelected.Symbols.Count + "]Symbols";
+				this.mniDataSourceEdit		.Enabled = (subscribersPolled.DoNotDeleteItsUsedElsewhere == false);
+				this.mniDataSourceEdit		.Text = "Edit [" + this.DataSourceSelected.Name + "] DataSource";
+				this.mniltbDataSourceRename	.TextLeft = "Rename [" + this.DataSourceSelected.Name + "] to";
+				this.mniDataSourceDelete	.Enabled = (subscribersPolled.DoNotDeleteItsUsedElsewhere == false);
+				this.mniDataSourceDelete	.Text = "Delete [" + this.DataSourceSelected.Name + "] DataSource";
+				this.mniltbSymbolAdd		.TextLeft = "Add Symbol to [" + this.DataSourceSelected.Name + "]";
 				this.ContextMenuStrip = this.ctxDataSource;
 			}
 		}
@@ -242,7 +264,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 			// literally: create, add, make it visible, emulate a click on the newborn, popup editor 
 			var dataSourceNewborn = new DataSource(newDataSourceName);
-			this.dataSourceRepository.ItemAdd(dataSourceNewborn, this);
+			dataSourceNewborn.Initialize(this.dataSourceRepository.AbsPath, Assembler.InstanceInitialized.OrderProcessor);
+			this.dataSourceRepository.ItemAdd(dataSourceNewborn, this, true);
 			// all the rest was already done in dataSourceRepository.ItemAdd() => dataSourceRepository_OnDataSourceAdded(),
 //			this.populateDataSourcesIntoTreeListView();
 //			this.tree.EnsureModelVisible(foundWithSameName);
@@ -333,6 +356,77 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 		void mniSymbolInfoEditor_Click(object sender, EventArgs e) {
 			this.RaiseOnSymbolInfoEditorClicked();
+		}
+		void mniSymbolCopyToAnotherDataSource_DropDownOpening(object sender, EventArgs e) {
+			ToolStripMenuItem mniDataSource = sender as ToolStripMenuItem;
+			if (mniDataSource == null) {
+				string msg = "MUST_BE_OF_TYPE_ToolStripMenuItem mniDataSource[" + sender + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			//DataSource ds = mniDataSource.Tag as DataSource;
+			DataSource dsSource = this.DataSourceSelected;
+			if (dsSource == null) {
+				string msg = "MUST_BE_OF_TYPE_DataSource mniDataSource.Tag[" + mniDataSource.Tag + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			string dsSourceName = dsSource.Name;
+			if (this.mniSymbolCopyToAnotherDataSource.DropDownItems.Count > 0) this.mniSymbolCopyToAnotherDataSource.DropDownItems.Clear(); //CAUSING_SUBMENU_TRIANGLE_TO_APPEAR__WILL_BE_CLEARED_ON_OPENING
+			foreach (ToolStripMenuItem mni in this.DataSourcesAsMniList) {
+				this.mniSymbolCopyToAnotherDataSource.DropDownItems.Add(mni);
+				DataSource dsTarget = mni.Tag as DataSource;
+				if (dsTarget == null) {
+					string msg = "MUST_BE_OF_TYPE_DataSource mni[" + mni.Text+ "].Tag[" + mni.Tag + "]";
+					Assembler.PopupException(msg);
+					continue;
+				}
+				string dsTargetName = dsTarget.Name;
+				if (dsSourceName == mni.Text) {
+					mni.Enabled = false;
+					mni.Text += " [Im copying from]";
+					continue;
+				}
+				if (dsTarget.Symbols.Contains(this.SymbolSelected)) {
+					mni.Enabled = false;
+					mni.Text += " [already has " + this.SymbolSelected + "]";
+					continue;
+				}
+				if (dsSource.ScaleInterval.CanConvertTo(dsTarget.ScaleInterval) == false) {
+					mni.Enabled = false;
+					mni.Text += " [CANT_INCREASE_GRANULARITY " + dsSource.Name + "[" + dsSource.ScaleInterval + "]=>" + dsTarget.Name + "[" + dsTarget.ScaleInterval + "]";
+					continue;
+				}
+				
+				// REPLACED_BY_mniSymbolCopy_DropDownItemClicked mni.Click += new EventHandler(mniSymbolCopy_Click);
+			}
+		}
+		void mniSymbolCopyToAnotherDataSource_DropDownClosed(object sender, EventArgs e) {
+			// REPLACED_BY_mniSymbolCopy_DropDownItemClicked 
+			//foreach (ToolStripMenuItem mni in this.mniSymbolCopyToAnotherDataSource.DropDownItems) {
+			//	mni.Click -= mniSymbolCopy_DropDownItemClicked;
+			//}
+			this.mniSymbolCopyToAnotherDataSource.DropDownItems.Clear();
+			this.mniSymbolCopyToAnotherDataSource.DropDownItems.Add("CAUSING_SUBMENU_TRIANGLE_TO_APPEAR__WILL_BE_CLEARED_ON_OPENING");
+		}
+		// REPLACED_BY_mniSymbolCopy_DropDownItemClicked
+		//void mniSymbolCopy_Click(object sender, EventArgs e) {
+		//	ToolStripMenuItem mniDataSourceDestination = sender as ToolStripMenuItem;
+		void mniSymbolCopyToAnotherDataSource_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e) {
+			ToolStripMenuItem mniDsDestination = e.ClickedItem as ToolStripMenuItem;
+			if (mniDsDestination == null) {
+				string msg = "MUST_BE_OF_TYPE_ToolStripMenuItem mniDataSourceDestination[" + mniDsDestination.GetType() + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			DataSource dsDestination = mniDsDestination.Tag as DataSource;
+			if (dsDestination == null) {
+				string msg = "MUST_BE_OF_TYPE_ToolStripMenuItem mniDataSource[" + dsDestination + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			Assembler.InstanceInitialized.RepositoryJsonDataSource.SymbolCopyOrCompressFrom(this.DataSourceSelected, this.SymbolSelected, dsDestination, this);
+			this.populateDataSourcesIntoTreeListView();
 		}
 	}
 }
