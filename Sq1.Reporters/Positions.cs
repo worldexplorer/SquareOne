@@ -63,13 +63,14 @@ namespace Sq1.Reporters {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (base.SystemPerformance.Bars.IsIntraday) {
-				this.olvcEntryDate.Width = 120;
-				this.olvcExitDate.Width = 120;
-			} else {
-				this.olvcEntryDate.Width = 80;
-				this.olvcExitDate.Width = 80;
-			}
+			// ATAVISM RESTORED_BINARY_OLV INDUCES_UNNECESSARY_STRATEGY_SAVE
+			//if (base.SystemPerformance.Bars.IsIntraday) {
+			//    this.olvcEntryDate.Width = 120;
+			//    this.olvcExitDate.Width = 120;
+			//} else {
+			//    this.olvcEntryDate.Width = 80;
+			//    this.olvcExitDate.Width = 80;
+			//}
 
 			this.positionsAllReversedCached.Clear();
 			SystemPerformanceSlice both = base.SystemPerformance.SlicesShortAndLong;
@@ -84,10 +85,13 @@ namespace Sq1.Reporters {
 			}
 			this.RebuildingFullReportForced_onLivesimPaused();
 		}
+		bool ignoreColumnWidthChanged_onNewReportDataFlushed_dontSaveStrategy;
 		public override void RebuildingFullReportForced_onLivesimPaused() {
 			try {
 				//DOESNT_MAKE_SENSE  this.olvPositions.SuspendLayout();
+				this.ignoreColumnWidthChanged_onNewReportDataFlushed_dontSaveStrategy = true;
 				this.olvPositions.SetObjects(this.positionsAllReversedCached, false);
+				this.ignoreColumnWidthChanged_onNewReportDataFlushed_dontSaveStrategy = false;
 				//TOO_MUCH__CLEARS_ITEMS_COLUMNS__ADDS_RANGE__SORTS___UPDATES_FILTERING this.olvPositions.RebuildColumns();
 				//CLEARS_ADDS_RANGE_SORTS__ALREADY_INVOKED_FROM_SetObjects() this.olvPositions.BuildList(false);
 				//DOESNT_MAKE_SENSE this.olvPositions.Invalidate();

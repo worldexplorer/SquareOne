@@ -10,6 +10,7 @@ using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Indicators;
 using Sq1.Core.DataTypes;
+using Sq1.Core.Serializers;
 
 namespace Sq1.Widgets.Sequencing {
 	public partial class SequencerControl : UserControl {
@@ -20,24 +21,10 @@ namespace Sq1.Widgets.Sequencing {
 		public	RepositoryJsonsInFolderSimpleDictionarySequencer		RepositoryJsonSequencer					{ get; private set; }
 				List<IndicatorParameter>	scriptAndIndicatorParametersMergedCloned;
 		public	SequencedBacktestsEventArgs	PushToCorrelator { get { return new SequencedBacktestsEventArgs(this.backtestsLocalEasierToSync); } }
-		public bool ShowOnlyCorrelatorChosenBacktests {
-			get {
-				if (this.backtestsLocalEasierToSync == null) {
-					string msg = "YOU_GET_ShowOnlyCorrelatorChosen_WHILE_this.backtestsLocalEasierToSync=null //SequencerControl.ShowOnlyCorrelatorChosen";
-					Assembler.PopupException(msg, null, false);
-					return true;
-				}
-				return this.backtestsLocalEasierToSync.ShowOnlyCorrelatorChosenBacktests;
-			}
-			set {
-				if (this.backtestsLocalEasierToSync == null) {
-					string msg = "YOU_SET_ShowOnlyCorrelatorChosen_WHILE_this.backtestsLocalEasierToSync=null //SequencerControl.ShowOnlyCorrelatorChosen";
-					Assembler.PopupException(msg, null, false);
-					return;
-				}
-				this.backtestsLocalEasierToSync.ShowOnlyCorrelatorChosenBacktests = value;
-			}
-		}
+
+
+		private	SequencerDataSnapshot				sequencerDataSnapshot;
+		private Serializer<SequencerDataSnapshot>	sequencerDataSnapshotSerializer;
 
 		public SequencerControl() {
 			InitializeComponent();
@@ -73,6 +60,9 @@ namespace Sq1.Widgets.Sequencing {
 			backtestsLocalEasierToSync	= new SequencedBacktests();
 			columnsDynParams			= new List<OLVColumn>();
 			RepositoryJsonSequencer		= new RepositoryJsonsInFolderSimpleDictionarySequencer();
+
+			sequencerDataSnapshot = new SequencerDataSnapshot();
+			sequencerDataSnapshotSerializer = new Serializer<SequencerDataSnapshot>();
 		}
 		public void Initialize(Sequencer sequencer) {
 			this.sequencer = sequencer;
@@ -114,7 +104,24 @@ namespace Sq1.Widgets.Sequencing {
 			this.olvHistoryCustomize();
 			this.RepositoryJsonSequencer.Initialize(Assembler.InstanceInitialized.AppDataPath
 				, Path.Combine("Sequencer", this.sequencer.Executor.Strategy.RelPathAndNameForSequencerResults));
-			
+
+			//public bool Initialize(string rootPath, string relFname,
+			//        string subfolder = "Workspaces", string workspaceName = "Default",
+			//        bool createNonExistingPath = true, bool createNonExistingFile = true) {
+			//v1
+			// C:\SquareOne\Data-debug\Sequencer\Sq1.Strategies.Demo.dll\TwoMAsCompiled\SequencerDataSnapshot.json <== WRONG_KOZ_WILL_BE_LISTED_AS_SEQUENCED_BACKTEST
+			//this.sequencerDataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath, "SequencerDataSnapshot.json"
+			//    , "Sequencer"
+			//    , sequencer.Executor.Strategy.RelPathAndNameForSequencerResults	// WRONG_KOZ_WILL_BE_LISTED_AS_SEQUENCED_BACKTEST
+			//    );
+			//v2
+			// C:\SquareOne\Data-debug\Sequencer\Sq1.Strategies.Demo.dll\TwoMAsCompiled.json
+			this.sequencerDataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath, sequencer.Executor.Strategy.StoredInJsonRelName
+				, "Sequencer"
+				, sequencer.Executor.Strategy.StoredInFolderRelName
+				);
+			this.sequencerDataSnapshot = this.sequencerDataSnapshotSerializer.Deserialize();
+
 			//string symbolScaleRange = this.sequencer.Executor.Strategy.ScriptContextCurrent.ToStringSymbolScaleIntervalDataRangeForScriptContextNewName();
 			//this.olvHistoryRescanRefillSelect(symbolScaleRange);
 
@@ -378,21 +385,41 @@ namespace Sq1.Widgets.Sequencing {
 		}
 
 		void statsAndHistoryExpand(bool changeCheckboxState = true) {
+			if (this.splitContainer1.SplitterDistance == this.heightExpanded) return;
 			try {
 				this.splitContainer1.SplitterDistance = this.heightExpanded;
 				this.cbxExpanded.Text = "-";
 				if (changeCheckboxState == true && this.cbxExpanded.Checked != true) this.cbxExpanded.Checked = true;
+
+				base.UseWaitCursor = true;
+				bool newValue = this.cbxExpanded.Checked == false;
+				if (this.sequencerDataSnapshot.StatsAndHistoryCollapsed != newValue) {
+					this.sequencerDataSnapshot.StatsAndHistoryCollapsed = newValue;
+					this.sequencerDataSnapshotSerializer.Serialize();
+				}
 			} catch (Exception ex) {
 				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
+			} finally {
+				base.UseWaitCursor = false;
 			}
 		}
 		void statsAndHistoryCollapse(bool changeCheckboxState = true) {
+			if (this.splitContainer1.SplitterDistance == this.heightCollapsed) return;
 			try {
 				this.splitContainer1.SplitterDistance = this.heightCollapsed;
 				this.cbxExpanded.Text = "+";
 				if (changeCheckboxState == true && this.cbxExpanded.Checked != false) this.cbxExpanded.Checked = false;
+
+				base.UseWaitCursor = true;
+				bool newValue = this.cbxExpanded.Checked == false;
+				if (this.sequencerDataSnapshot.StatsAndHistoryCollapsed != newValue) {
+					this.sequencerDataSnapshot.StatsAndHistoryCollapsed = newValue;
+					this.sequencerDataSnapshotSerializer.Serialize();
+				}
 			} catch (Exception ex) {
 				Assembler.PopupException("RESIZE_DIDNT_SYNC_SPLITTER_MIN_MAX???", ex);
+			} finally {
+				base.UseWaitCursor = false;
 			}
 		}
 
@@ -407,12 +434,17 @@ namespace Sq1.Widgets.Sequencing {
 			//this.ShowOnlyCorrelatorChosenBacktests = !this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked;
 			//this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync);
 			//v2 dispatching now
-			if (this.ShowOnlyCorrelatorChosenBacktests) {
+			if (this.sequencerDataSnapshot.ShowOnlyCorrelatorChosenBacktests) {
 				this.BacktestsShowCorrelatorChosen();
 			} else {
 				this.BacktestsShowAll_regardlessWhatIsChosenInCorrelator();
 			}
 
+			if (this.sequencerDataSnapshot.StatsAndHistoryCollapsed) {
+				this.statsAndHistoryCollapse();
+			} else {
+				this.statsAndHistoryExpand();
+			}
 		}
 		public void BacktestsShowAll_regardlessWhatIsChosenInCorrelator() {
 			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true);
@@ -421,24 +453,32 @@ namespace Sq1.Widgets.Sequencing {
 			this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Checked = false;
 			this.txtDataRange.Text = this.sequencer.DataRangeAsString + " REGARDLESS_CHOSEN";
 
-			bool newValue = !this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked;
-			if (this.ShowOnlyCorrelatorChosenBacktests != newValue) {
-				this.ShowOnlyCorrelatorChosenBacktests  = newValue;
-				this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync);
+			bool newValue = this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked == false;
+			if (this.sequencerDataSnapshot.ShowOnlyCorrelatorChosenBacktests != newValue) {
+				this.sequencerDataSnapshot.ShowOnlyCorrelatorChosenBacktests = newValue;
+				this.sequencerDataSnapshotSerializer.Serialize();
 			}
 		}
 		public void BacktestsShowCorrelatorChosen() {
+			if (this.sequencedBacktestsCorrelatorChosenOnly == null) {
+				string msg = "YOU_DIDNT_INVOKE_BacktestsReplaceWithCorrelated()";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
 			this.olvBacktests.SetObjects(this.sequencedBacktestsCorrelatorChosenOnly.BacktestsReadonly, true);
 			this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked = false;
 			//BEFORE_I_MADE_RADIOGROUP this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Text = "Show Backtests with All Script + Indicator Parameters";
 			this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Checked = true;
 			this.txtDataRange.Text = this.sequencer.DataRangeAsString + " " + this.sequencedBacktestsCorrelatorChosenOnly.SubsetAsString;
 
-			bool newValue = !this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked;
-			if (this.ShowOnlyCorrelatorChosenBacktests != newValue) {
-				this.ShowOnlyCorrelatorChosenBacktests  = newValue;
-				this.RepositoryJsonSequencer.SerializeSingle(this.backtestsLocalEasierToSync);
+			bool newValue = this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Checked == false;
+			if (this.sequencerDataSnapshot.ShowOnlyCorrelatorChosenBacktests != newValue) {
+				this.sequencerDataSnapshot.ShowOnlyCorrelatorChosenBacktests = newValue;
+				this.sequencerDataSnapshotSerializer.Serialize();
 			}
+		}
+		public void RaiseOnCorrelatorShouldPopulateBacktestsIhave() {
+			this.raiseOnCorrelatorShouldPopulate(this.backtestsLocalEasierToSync);
 		}
 
 		public override string ToString() {

@@ -71,8 +71,12 @@ namespace Sq1.Gui.Forms {
 			this.ctxStrategy.Visible = true;
 			if (this.MniShowCorrelator.Checked == false) {
 				this.MniShowCorrelator.Checked = true;
-				// if autohidden => popup and keepAutoHidden=false
-				this.ChartFormManager.CorrelatorFormShow(false);
+				if (this.ChartFormManager.CorrelatorForm == null) {
+					this.ChartFormManager.CorrelatorFormConditionalInstance.Initialize(this.ChartFormManager);
+					//this.ChartFormManager.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.ChartFormManager.SequencerFormConditionalInstance.SequencerControl.Seq.SequencedBacktests);
+					this.ChartFormManager.SequencerFormConditionalInstance.SequencerControl.RaiseOnCorrelatorShouldPopulateBacktestsIhave();
+				}
+				this.ChartFormManager.CorrelatorFormShow(false);		// if autohidden => popup and keepAutoHidden=false
 				this.ChartFormManager.MainForm.MainFormSerialize();
 			} else {
 				this.MniShowCorrelator.Checked = false;

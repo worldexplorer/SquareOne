@@ -4,19 +4,19 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.StrategyBase {
 	public class KPIs {
-		[JsonProperty]	public	string	ReasonToExist		{ get; protected set; }
+		[JsonProperty]	public			string	ReasonToExist		{ get; protected set; }
 
-		[JsonProperty]	public	double	PositionsCount		;//CORRELATOR_WRITES_DIRECTLY{ get; protected set; }
-		[JsonProperty]	public	double	PositionAvgProfit	;//CORRELATOR_WRITES_DIRECTLY{ get; protected set; }
-		[JsonProperty]	public	double	NetProfit			;//CORRELATOR_WRITES_DIRECTLY{ get; protected set; }
-		[JsonProperty]	public	double	WinLossRatio		;//CORRELATOR_WRITES_DIRECTLY{ get; protected set; }
-		[JsonProperty]	public	double	ProfitFactor		;//CORRELATOR_WRITES_DIRECTLY{ get; protected set; }
-		[JsonProperty]	public	double	RecoveryFactor		;//CORRELATOR_WRITES_DIRECTLY{ get; protected set; }
-		[JsonProperty]	public	double	MaxDrawDown			;//CORRELATOR_WRITES_DIRECTLY{ get; protected set; }
-		[JsonProperty]	public	double	MaxConsecWinners	;//CORRELATOR_WRITES_DIRECTLY{ get; protected set; }
-		[JsonProperty]	public	double	MaxConsecLosers		;//CORRELATOR_WRITES_DIRECTLY{ get; protected set; }
+		[JsonProperty]	public	virtual	double	PositionsCount		{ get; set; }
+		[JsonProperty]	public	virtual	double	PositionAvgProfit	{ get; set; }
+		[JsonProperty]	public	virtual	double	NetProfit			{ get; set; }
+		[JsonProperty]	public	virtual	double	WinLossRatio		{ get; set; }
+		[JsonProperty]	public	virtual	double	ProfitFactor		{ get; set; }
+		[JsonProperty]	public	virtual	double	RecoveryFactor		{ get; set; }
+		[JsonProperty]	public	virtual	double	MaxDrawDown			{ get; set; }
+		[JsonProperty]	public	virtual	double	MaxConsecWinners	{ get; set; }
+		[JsonProperty]	public	virtual	double	MaxConsecLosers		{ get; set; }
 
-		public KPIs() {
+		protected KPIs() {
 			string msg = "IM_INVOKED_DURING_DESERIALIZATION";
 			this.ReasonToExist = "NOT_INITIALIZED";
 		}
@@ -37,26 +37,7 @@ namespace Sq1.Core.StrategyBase {
 			this.MaxConsecWinners	= maxConsecWinners;
 			this.MaxConsecLosers	= maxConsecLosers;
 		}
-		internal void AddKPIs(KPIs kpis) {
-			if (this.PositionsCount < 0) {
-				string msg = "HOW_IS_IT_POSSIBLE this.PositionsCount[" + this.PositionsCount + "]";
-				Assembler.PopupException(msg, null, false);
-			}
-			if (this.PositionsCount < 0) {
-				string msg = "HOW_IS_IT_POSSIBLE kpis.PositionsCount[" + kpis.PositionsCount + "]";
-				Assembler.PopupException(msg, null, false);
-			}
-			this.PositionsCount		+= kpis.PositionsCount;
-			this.PositionAvgProfit	+= kpis.PositionAvgProfit;
-			this.NetProfit			+= kpis.NetProfit;
-			this.WinLossRatio		+= kpis.WinLossRatio;
-			this.ProfitFactor		+= kpis.ProfitFactor;
-			this.RecoveryFactor		+= kpis.RecoveryFactor;
-			this.MaxDrawDown		+= kpis.MaxDrawDown;
-			this.MaxConsecWinners	+= kpis.MaxConsecWinners;
-			this.MaxConsecLosers	+= kpis.MaxConsecLosers;
-		}
-		internal void AddKPIs(SystemPerformanceRestoreAble anotherRun) {
+		internal virtual void AddKPIs(KPIs anotherRun) {
 			this.PositionsCount		+= anotherRun.PositionsCount;
 			if (anotherRun.PositionsCount < 0) {
 				string msg = "HOW_IS_IT_POSSIBLE anotherRun.PositionsCount[" + anotherRun.PositionsCount + "]";
@@ -90,7 +71,7 @@ namespace Sq1.Core.StrategyBase {
 			this.MaxConsecWinners	+= anotherRun.MaxConsecWinners;
 			this.MaxConsecLosers	+= anotherRun.MaxConsecLosers;
 		}
-		public void Reset() {
+		public virtual void Reset() {
 			this.PositionsCount		= 0;
 			this.PositionAvgProfit	= 0;
 			this.NetProfit			= 0;
@@ -134,7 +115,6 @@ namespace Sq1.Core.StrategyBase {
 				+ " PF[" + this.ProfitFactor.ToString("N2") + "]"
 				+ " RF[" + this.RecoveryFactor.ToString("N2") + "]";
 			return ret;
-
 		}
 	}
 }

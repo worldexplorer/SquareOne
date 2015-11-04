@@ -55,7 +55,7 @@ namespace Sq1.Widgets.Correlation {
 
 			if (e.Column == this.olvcTotalPositionsDelta) {
 				e.SubItem.BackColor = (rowModel.KPIsDelta.PositionsCount == 0) ? Color.White
-									: (rowModel.KPIsDelta.PositionsCount > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+									: (rowModel.KPIsDelta.PositionsCount < 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			} else if (e.Column == this.olvcNetProfitDelta) {
 				e.SubItem.BackColor = (rowModel.KPIsDelta.NetProfit == 0) ? Color.White
 									: (rowModel.KPIsDelta.NetProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
@@ -84,95 +84,157 @@ namespace Sq1.Widgets.Correlation {
 
 			#region KPIsMomentumsAverage
 			if (e.Column == this.olvcMomentumsAverageTotalPositions) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsAverage.PositionsCount == 0) ? Color.White
-									: (rowModel.KPIsMomentumsAverage.PositionsCount > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+				e.SubItem.BackColor = (rowModel.KPIsMomentumAverage.PositionsCount == 0) ? Color.White
+									: (rowModel.KPIsMomentumAverage.PositionsCount > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			} else if (e.Column == this.olvcMomentumsAverageNetProfit) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsAverage.NetProfit == 0) ? Color.White
-									: (rowModel.KPIsMomentumsAverage.NetProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+				e.SubItem.BackColor = (rowModel.KPIsMomentumAverage.NetProfit == 0) ? Color.White
+									: (rowModel.KPIsMomentumAverage.NetProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			} else if (e.Column == this.olvcMomentumsAverageProfitPerPosition) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsAverage.PositionAvgProfit == 0) ? Color.White
-									: (rowModel.KPIsMomentumsAverage.PositionAvgProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+				e.SubItem.BackColor = (rowModel.KPIsMomentumAverage.PositionAvgProfit == 0) ? Color.White
+									: (rowModel.KPIsMomentumAverage.PositionAvgProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			} else if (e.Column == this.olvcMomentumsAverageProfitFactor) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsAverage.ProfitFactor == 0) ? Color.White
-									: (rowModel.KPIsMomentumsAverage.ProfitFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+				e.SubItem.BackColor = (rowModel.KPIsMomentumAverage.ProfitFactor == 0) ? Color.White
+									: (rowModel.KPIsMomentumAverage.ProfitFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			} else if (e.Column == this.olvcMomentumsAverageWinLoss) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsAverage.WinLossRatio == 0) ? Color.White
-									: (rowModel.KPIsMomentumsAverage.WinLossRatio > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+				e.SubItem.BackColor = (rowModel.KPIsMomentumAverage.WinLossRatio == 0) ? Color.White
+									: (rowModel.KPIsMomentumAverage.WinLossRatio > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			} else if (e.Column == this.olvcMomentumsAverageRecoveryFactor) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsAverage.RecoveryFactor == 0) ? Color.White
-									: (rowModel.KPIsMomentumsAverage.RecoveryFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+				e.SubItem.BackColor = (rowModel.KPIsMomentumAverage.RecoveryFactor == 0) ? Color.White
+									: (rowModel.KPIsMomentumAverage.RecoveryFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			} else if (e.Column == this.olvcMomentumsAverageMaxDrawdown) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsAverage.MaxDrawDown == 0) ? Color.White
-									: (rowModel.KPIsMomentumsAverage.MaxDrawDown > 0) ? this.colorBackgroundRed : this.colorBackgroundGreen;
+				e.SubItem.BackColor = (rowModel.KPIsMomentumAverage.MaxDrawDown == 0) ? Color.White
+									: (rowModel.KPIsMomentumAverage.MaxDrawDown > 0) ? this.colorBackgroundRed : this.colorBackgroundGreen;
 			} else if (e.Column == this.olvcMomentumsAverageMaxConsecutiveWinners) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsAverage.MaxConsecWinners == 0) ? Color.White
-									: (rowModel.KPIsMomentumsAverage.MaxConsecWinners > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+				e.SubItem.BackColor = (rowModel.KPIsMomentumAverage.MaxConsecWinners == 0) ? Color.White
+									: (rowModel.KPIsMomentumAverage.MaxConsecWinners > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			} else if (e.Column == this.olvcMomentumsAverageMaxConsecutiveLosers) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsAverage.MaxConsecLosers == 0) ? Color.White
-									: (rowModel.KPIsMomentumsAverage.MaxConsecLosers > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+				e.SubItem.BackColor = (rowModel.KPIsMomentumAverage.MaxConsecLosers == 0) ? Color.White
+									: (rowModel.KPIsMomentumAverage.MaxConsecLosers > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			}
 			#endregion
 
-			#region KPIsMomentumsDispersion
-			if (e.Column == this.olvcMomentumsDispersionTotalPositions) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsDispersion.PositionsCount == 0) ? Color.White
-									: (rowModel.KPIsMomentumsDispersion.PositionsCount > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsDispersionNetProfit) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsDispersion.NetProfit == 0) ? Color.White
-									: (rowModel.KPIsMomentumsDispersion.NetProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsDispersionProfitPerPosition) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsDispersion.PositionAvgProfit == 0) ? Color.White
-									: (rowModel.KPIsMomentumsDispersion.PositionAvgProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsDispersionProfitFactor) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsDispersion.ProfitFactor == 0) ? Color.White
-									: (rowModel.KPIsMomentumsDispersion.ProfitFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsDispersionWinLoss) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsDispersion.WinLossRatio == 0) ? Color.White
-									: (rowModel.KPIsMomentumsDispersion.WinLossRatio > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsDispersionRecoveryFactor) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsDispersion.RecoveryFactor == 0) ? Color.White
-									: (rowModel.KPIsMomentumsDispersion.RecoveryFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsDispersionMaxDrawdown) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsDispersion.MaxDrawDown == 0) ? Color.White
-									: (rowModel.KPIsMomentumsDispersion.MaxDrawDown > 0) ? this.colorBackgroundRed : this.colorBackgroundGreen;
-			} else if (e.Column == this.olvcMomentumsDispersionMaxConsecutiveWinners) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsDispersion.MaxConsecWinners == 0) ? Color.White
-									: (rowModel.KPIsMomentumsDispersion.MaxConsecWinners > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsDispersionMaxConsecutiveLosers) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsDispersion.MaxConsecLosers == 0) ? Color.White
-									: (rowModel.KPIsMomentumsDispersion.MaxConsecLosers > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			#region KPIsMomentumsDispersionGlobal
+			if (e.Column == this.olvcMomentumsDispersionGlobalTotalPositions) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionGlobal.PositionsCount == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionGlobal.PositionsCount > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionGlobalNetProfit) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionGlobal.NetProfit == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionGlobal.NetProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionGlobalProfitPerPosition) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionGlobal.PositionAvgProfit == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionGlobal.PositionAvgProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionGlobalProfitFactor) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionGlobal.ProfitFactor == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionGlobal.ProfitFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionGlobalWinLoss) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionGlobal.WinLossRatio == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionGlobal.WinLossRatio > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionGlobalRecoveryFactor) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionGlobal.RecoveryFactor == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionGlobal.RecoveryFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionGlobalMaxDrawdown) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionGlobal.MaxDrawDown == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionGlobal.MaxDrawDown > 0) ? this.colorBackgroundRed : this.colorBackgroundGreen;
+			} else if (e.Column == this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionGlobal.MaxConsecWinners == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionGlobal.MaxConsecWinners > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionGlobal.MaxConsecLosers == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionGlobal.MaxConsecLosers > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			}
+			#endregion
+
+			#region KPIsMomentumsDispersionLocal
+			if (e.Column == this.olvcMomentumsDispersionLocalTotalPositions) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionLocal.PositionsCount == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionLocal.PositionsCount > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionLocalNetProfit) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionLocal.NetProfit == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionLocal.NetProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionLocalProfitPerPosition) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionLocal.PositionAvgProfit == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionLocal.PositionAvgProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionLocalProfitFactor) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionLocal.ProfitFactor == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionLocal.ProfitFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionLocalWinLoss) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionLocal.WinLossRatio == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionLocal.WinLossRatio > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionLocalRecoveryFactor) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionLocal.RecoveryFactor == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionLocal.RecoveryFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionLocalMaxDrawdown) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionLocal.MaxDrawDown == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionLocal.MaxDrawDown > 0) ? this.colorBackgroundRed : this.colorBackgroundGreen;
+			} else if (e.Column == this.olvcMomentumsDispersionLocalMaxConsecutiveWinners) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionLocal.MaxConsecWinners == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionLocal.MaxConsecWinners > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionLocalMaxConsecutiveLosers) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionLocal.MaxConsecLosers == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionLocal.MaxConsecLosers > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			}
+			#endregion
+
+			#region KPIsMomentumsDispersionDelta
+			if (e.Column == this.olvcMomentumsDispersionDeltaTotalPositions) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionDelta.PositionsCount == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionDelta.PositionsCount < 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionDeltaNetProfit) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionDelta.NetProfit == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionDelta.NetProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionDeltaProfitPerPosition) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionDelta.PositionAvgProfit == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionDelta.PositionAvgProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionDeltaProfitFactor) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionDelta.ProfitFactor == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionDelta.ProfitFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionDeltaWinLoss) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionDelta.WinLossRatio == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionDelta.WinLossRatio > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionDeltaRecoveryFactor) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionDelta.RecoveryFactor == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionDelta.RecoveryFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionDeltaMaxDrawdown) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionDelta.MaxDrawDown == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionDelta.MaxDrawDown > 0) ? this.colorBackgroundRed : this.colorBackgroundGreen;
+			} else if (e.Column == this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionDelta.MaxConsecWinners == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionDelta.MaxConsecWinners > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			} else if (e.Column == this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers) {
+				e.SubItem.BackColor = (rowModel.KPIsMomentumDispersionDelta.MaxConsecLosers == 0) ? Color.White
+									: (rowModel.KPIsMomentumDispersionDelta.MaxConsecLosers > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
 			}
 			#endregion
 
 			#region KPIsMomentumsVariance
-			if (e.Column == this.olvcMomentumsVarianceTotalPositions) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsVariance.PositionsCount == 0) ? Color.White
-									: (rowModel.KPIsMomentumsVariance.PositionsCount > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsVarianceNetProfit) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsVariance.NetProfit == 0) ? Color.White
-									: (rowModel.KPIsMomentumsVariance.NetProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsVarianceProfitPerPosition) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsVariance.PositionAvgProfit == 0) ? Color.White
-									: (rowModel.KPIsMomentumsVariance.PositionAvgProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsVarianceProfitFactor) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsVariance.ProfitFactor == 0) ? Color.White
-									: (rowModel.KPIsMomentumsVariance.ProfitFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsVarianceWinLoss) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsVariance.WinLossRatio == 0) ? Color.White
-									: (rowModel.KPIsMomentumsVariance.WinLossRatio > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsVarianceRecoveryFactor) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsVariance.RecoveryFactor == 0) ? Color.White
-									: (rowModel.KPIsMomentumsVariance.RecoveryFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsVarianceMaxDrawdown) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsVariance.MaxDrawDown == 0) ? Color.White
-									: (rowModel.KPIsMomentumsVariance.MaxDrawDown > 0) ? this.colorBackgroundRed : this.colorBackgroundGreen;
-			} else if (e.Column == this.olvcMomentumsVarianceMaxConsecutiveWinners) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsVariance.MaxConsecWinners == 0) ? Color.White
-									: (rowModel.KPIsMomentumsVariance.MaxConsecWinners > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			} else if (e.Column == this.olvcMomentumsVarianceMaxConsecutiveLosers) {
-				e.SubItem.BackColor = (rowModel.KPIsMomentumsVariance.MaxConsecLosers == 0) ? Color.White
-									: (rowModel.KPIsMomentumsVariance.MaxConsecLosers > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
-			}
+			//if (e.Column == this.olvcMomentumsVarianceTotalPositions) {
+			//    e.SubItem.BackColor = (rowModel.KPIsMomentumVariance.PositionsCount == 0) ? Color.White
+			//                        : (rowModel.KPIsMomentumVariance.PositionsCount > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			//} else if (e.Column == this.olvcMomentumsVarianceNetProfit) {
+			//    e.SubItem.BackColor = (rowModel.KPIsMomentumVariance.NetProfit == 0) ? Color.White
+			//                        : (rowModel.KPIsMomentumVariance.NetProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			//} else if (e.Column == this.olvcMomentumsVarianceProfitPerPosition) {
+			//    e.SubItem.BackColor = (rowModel.KPIsMomentumVariance.PositionAvgProfit == 0) ? Color.White
+			//                        : (rowModel.KPIsMomentumVariance.PositionAvgProfit > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			//} else if (e.Column == this.olvcMomentumsVarianceProfitFactor) {
+			//    e.SubItem.BackColor = (rowModel.KPIsMomentumVariance.ProfitFactor == 0) ? Color.White
+			//                        : (rowModel.KPIsMomentumVariance.ProfitFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			//} else if (e.Column == this.olvcMomentumsVarianceWinLoss) {
+			//    e.SubItem.BackColor = (rowModel.KPIsMomentumVariance.WinLossRatio == 0) ? Color.White
+			//                        : (rowModel.KPIsMomentumVariance.WinLossRatio > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			//} else if (e.Column == this.olvcMomentumsVarianceRecoveryFactor) {
+			//    e.SubItem.BackColor = (rowModel.KPIsMomentumVariance.RecoveryFactor == 0) ? Color.White
+			//                        : (rowModel.KPIsMomentumVariance.RecoveryFactor > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			//} else if (e.Column == this.olvcMomentumsVarianceMaxDrawdown) {
+			//    e.SubItem.BackColor = (rowModel.KPIsMomentumVariance.MaxDrawDown == 0) ? Color.White
+			//                        : (rowModel.KPIsMomentumVariance.MaxDrawDown > 0) ? this.colorBackgroundRed : this.colorBackgroundGreen;
+			//} else if (e.Column == this.olvcMomentumsVarianceMaxConsecutiveWinners) {
+			//    e.SubItem.BackColor = (rowModel.KPIsMomentumVariance.MaxConsecWinners == 0) ? Color.White
+			//                        : (rowModel.KPIsMomentumVariance.MaxConsecWinners > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			//} else if (e.Column == this.olvcMomentumsVarianceMaxConsecutiveLosers) {
+			//    e.SubItem.BackColor = (rowModel.KPIsMomentumVariance.MaxConsecLosers == 0) ? Color.White
+			//                        : (rowModel.KPIsMomentumVariance.MaxConsecLosers > 0) ? this.colorBackgroundGreen : this.colorBackgroundRed;
+			//}
 			#endregion
 		}
 		void olvAllValuesForOneParamCustomizeColors() {
@@ -195,6 +257,15 @@ namespace Sq1.Widgets.Correlation {
 			//    return;	// FIRST_CLICK_ON_CHECKBOX_DESELECTS_OTHERS__SYNCING_VIA_WAIT_CURSOR DO_NOTHING_SINCE_PUTTER_ARRIVES_FIRST
 			//}
 
+			//string msg = "olvAllValuesForOneParam_CellClick() WHEN_BOTH_PUTTER_AND_CELLCLICK_REGISTERED_BOTH_ARE_INVOKED_ON_PUTTER_FIRST_TIME_CLICKED_PUTTER_THEN_CLICK";
+			//Assembler.PopupException(msg, null, false);
+			if (this.ignoreCellClickDupe_HappensOnFirstCheckboxPutter == -1) {
+				this.ignoreCellClickDupe_HappensOnFirstCheckboxPutter = 0;	// user clicked the label first (CellClick), not the checkbox (putter) => the bug will never arise again (observation)
+			}
+			if (this.ignoreCellClickDupe_HappensOnFirstCheckboxPutter == 1) {
+				this.ignoreCellClickDupe_HappensOnFirstCheckboxPutter = 0;
+				return;		// user clicked the checkbox first (putter invoked) => CellClick handler gets a buggy duplicated => drop this event, reset and forget forever koz happens once / lifetime
+			}
 			OneParameterOneValue paramValueClicked = e.Model as OneParameterOneValue;
 			this.olv.UseWaitCursor = true;
 			this.correlator.ChooseThisOneResetOthers_RecalculateAllKPIsLocalAndDelta(paramValueClicked);
@@ -238,7 +309,7 @@ namespace Sq1.Widgets.Correlation {
 
 		void olvAllValuesForOneParamCustomize() {
 			this.olvAllValuesForOneParamCustomizeColors();
-			//this.olvStateBinaryRestoreAllValuesForOneParam();
+			this.olvStateBinaryRestoreAllValuesForOneParam();
 
 			this.olvcParamValues.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
@@ -253,7 +324,7 @@ namespace Sq1.Widgets.Correlation {
 				return oneParameterOneValue.KPIsGlobal.PositionsCount;
 			};
 			//this.olvcTotalPositionsGlobal.AspectToStringConverter = this.formatterPriceFormat;
-			this.olvcTotalPositionsGlobal.AspectToStringFormat = "{0:N0}";
+			this.olvcTotalPositionsGlobal.AspectToStringFormat = "{0:N1}";
 
 			this.olvcProfitPerPositionGlobal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
@@ -321,7 +392,7 @@ namespace Sq1.Widgets.Correlation {
 				return oneParameterOneValue.KPIsLocal.PositionsCount;
 			};
 			//this.olvcTotalPositionsLocal.AspectToStringConverter = this.formatterPriceFormat;
-			this.olvcTotalPositionsLocal.AspectToStringFormat = "{0:N0}";
+			this.olvcTotalPositionsLocal.AspectToStringFormat = "{0:N1}";
 
 			this.olvcProfitPerPositionLocal.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
@@ -457,199 +528,341 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsAverageTotalPositions.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageTotalPositions.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsAverage.PositionsCount;
+				double positionsCount = oneParameterOneValue.KPIsMomentumAverage.PositionsCount;
+				if (positionsCount == 0) {
+					string msg = "TAKE_DELTA_FOR_CELL_WITH_AVG_OR_STDEV_OR_VAR";
+					if (oneParameterOneValue.ArtificialName == OneParameterAllValuesAveraged.ARTIFICIAL_ROW_MEAN) {
+						positionsCount = oneParameterOneValue.KPIsDelta.PositionsCount;
+					} else if (oneParameterOneValue.ArtificialName == OneParameterAllValuesAveraged.ARTIFICIAL_ROW_DISPERSION) {
+						positionsCount = oneParameterOneValue.KPIsDelta.PositionsCount;
+					} else {
+						positionsCount = -999;
+					}
+				}
+				return positionsCount;
 			};
 			this.olvcMomentumsAverageTotalPositions.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageProfitPerPosition.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageProfitPerPosition.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsAverage.PositionAvgProfit;
+				return oneParameterOneValue.KPIsMomentumAverage.PositionAvgProfit;
 			};
 			this.olvcMomentumsAverageProfitPerPosition.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageNetProfit.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageNetProfit.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsAverage.NetProfit;
+				return oneParameterOneValue.KPIsMomentumAverage.NetProfit;
 			};
 			this.olvcMomentumsAverageNetProfit.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageWinLoss.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageWinLoss.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsAverage.WinLossRatio;
+				return oneParameterOneValue.KPIsMomentumAverage.WinLossRatio;
 			};
 			this.olvcMomentumsAverageWinLoss.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageProfitFactor.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageProfitFactor.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsAverage.ProfitFactor;
+				return oneParameterOneValue.KPIsMomentumAverage.ProfitFactor;
 			};
 			this.olvcMomentumsAverageProfitFactor.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageRecoveryFactor.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageRecoveryFactor.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsAverage.RecoveryFactor;
+				return oneParameterOneValue.KPIsMomentumAverage.RecoveryFactor;
 			};
 			this.olvcMomentumsAverageRecoveryFactor.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageMaxDrawdown.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageMaxDrawdown.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsAverage.MaxDrawDown;
+				return oneParameterOneValue.KPIsMomentumAverage.MaxDrawDown;
 			};
 			this.olvcMomentumsAverageMaxDrawdown.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageMaxConsecutiveWinners.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageMaxConsecutiveWinners.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsAverage.MaxConsecWinners;
+				return oneParameterOneValue.KPIsMomentumAverage.MaxConsecWinners;
 			};
 			this.olvcMomentumsAverageMaxConsecutiveWinners.AspectToStringFormat = this.formatMomentums;
 
 			this.olvcMomentumsAverageMaxConsecutiveLosers.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return "olvcMomentumsAverageMaxConsecutiveLosers.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsAverage.MaxConsecLosers;
+				return oneParameterOneValue.KPIsMomentumAverage.MaxConsecLosers;
 			};
 			this.olvcMomentumsAverageMaxConsecutiveLosers.AspectToStringFormat = this.formatMomentums;
 			#endregion
 
-			#region Momentums: Dispersion
-			this.olvcMomentumsDispersionTotalPositions.AspectGetter = delegate(object o) {
+			#region Momentums: Dispersion Global
+			this.olvcMomentumsDispersionGlobalTotalPositions.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsDispersionTotalPositions.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsDispersion.PositionsCount;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionGlobalTotalPositions.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionGlobal.PositionsCount;
 			};
-			this.olvcMomentumsDispersionTotalPositions.AspectToStringFormat = this.formatMomentums;
+			this.olvcMomentumsDispersionGlobalTotalPositions.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsDispersionProfitPerPosition.AspectGetter = delegate(object o) {
+			this.olvcMomentumsDispersionGlobalProfitPerPosition.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsDispersionProfitPerPosition.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsDispersion.PositionAvgProfit;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionGlobalProfitPerPosition.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionGlobal.PositionAvgProfit;
 			};
-			this.olvcMomentumsDispersionProfitPerPosition.AspectToStringFormat = this.formatMomentums;
+			this.olvcMomentumsDispersionGlobalProfitPerPosition.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsDispersionNetProfit.AspectGetter = delegate(object o) {
+			this.olvcMomentumsDispersionGlobalNetProfit.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsDispersionNetProfit.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsDispersion.NetProfit;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionGlobalNetProfit.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionGlobal.NetProfit;
 			};
-			this.olvcMomentumsDispersionNetProfit.AspectToStringFormat = this.formatMomentums;
+			this.olvcMomentumsDispersionGlobalNetProfit.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsDispersionWinLoss.AspectGetter = delegate(object o) {
+			this.olvcMomentumsDispersionGlobalWinLoss.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsDispersionWinLoss.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsDispersion.WinLossRatio;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionGlobalWinLoss.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionGlobal.WinLossRatio;
 			};
-			this.olvcMomentumsDispersionWinLoss.AspectToStringFormat = this.formatMomentums;
+			this.olvcMomentumsDispersionGlobalWinLoss.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsDispersionProfitFactor.AspectGetter = delegate(object o) {
+			this.olvcMomentumsDispersionGlobalProfitFactor.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsDispersionProfitFactor.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsDispersion.ProfitFactor;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionGlobalProfitFactor.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionGlobal.ProfitFactor;
 			};
-			this.olvcMomentumsDispersionProfitFactor.AspectToStringFormat = this.formatMomentums;
+			this.olvcMomentumsDispersionGlobalProfitFactor.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsDispersionRecoveryFactor.AspectGetter = delegate(object o) {
+			this.olvcMomentumsDispersionGlobalRecoveryFactor.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsDispersionRecoveryFactor.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsDispersion.RecoveryFactor;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionGlobalRecoveryFactor.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionGlobal.RecoveryFactor;
 			};
-			this.olvcMomentumsDispersionRecoveryFactor.AspectToStringFormat = this.formatMomentums;
+			this.olvcMomentumsDispersionGlobalRecoveryFactor.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsDispersionMaxDrawdown.AspectGetter = delegate(object o) {
+			this.olvcMomentumsDispersionGlobalMaxDrawdown.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsDispersionMaxDrawdown.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsDispersion.MaxDrawDown;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionGlobalMaxDrawdown.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionGlobal.MaxDrawDown;
 			};
-			this.olvcMomentumsDispersionMaxDrawdown.AspectToStringFormat = this.formatMomentums;
+			this.olvcMomentumsDispersionGlobalMaxDrawdown.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsDispersionMaxConsecutiveWinners.AspectGetter = delegate(object o) {
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsDispersionMaxConsecutiveWinners.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsDispersion.MaxConsecWinners;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionGlobalMaxConsecutiveWinners.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionGlobal.MaxConsecWinners;
 			};
-			this.olvcMomentumsDispersionMaxConsecutiveWinners.AspectToStringFormat = this.formatMomentums;
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsDispersionMaxConsecutiveLosers.AspectGetter = delegate(object o) {
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers.AspectGetter = delegate(object o) {
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsDispersionMaxConsecutiveLosers.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsDispersion.MaxConsecLosers;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionGlobalMaxConsecutiveLosers.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionGlobal.MaxConsecLosers;
 			};
-			this.olvcMomentumsDispersionMaxConsecutiveLosers.AspectToStringFormat = this.formatMomentums;
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers.AspectToStringFormat = this.formatMomentums;
 			#endregion
 
+			#region Momentums: Dispersion Local
+			this.olvcMomentumsDispersionLocalTotalPositions.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionLocalTotalPositions.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionLocal.PositionsCount;
+			};
+			this.olvcMomentumsDispersionLocalTotalPositions.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionLocalProfitPerPosition.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionLocalProfitPerPosition.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionLocal.PositionAvgProfit;
+			};
+			this.olvcMomentumsDispersionLocalProfitPerPosition.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionLocalNetProfit.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionLocalNetProfit.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionLocal.NetProfit;
+			};
+			this.olvcMomentumsDispersionLocalNetProfit.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionLocalWinLoss.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionLocalWinLoss.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionLocal.WinLossRatio;
+			};
+			this.olvcMomentumsDispersionLocalWinLoss.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionLocalProfitFactor.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionLocalProfitFactor.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionLocal.ProfitFactor;
+			};
+			this.olvcMomentumsDispersionLocalProfitFactor.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionLocalRecoveryFactor.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionLocalRecoveryFactor.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionLocal.RecoveryFactor;
+			};
+			this.olvcMomentumsDispersionLocalRecoveryFactor.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionLocalMaxDrawdown.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionLocalMaxDrawdown.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionLocal.MaxDrawDown;
+			};
+			this.olvcMomentumsDispersionLocalMaxDrawdown.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionLocalMaxConsecutiveWinners.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionLocalMaxConsecutiveWinners.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionLocal.MaxConsecWinners;
+			};
+			this.olvcMomentumsDispersionLocalMaxConsecutiveWinners.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionLocalMaxConsecutiveLosers.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionLocalMaxConsecutiveLosers.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionLocal.MaxConsecLosers;
+			};
+			this.olvcMomentumsDispersionLocalMaxConsecutiveLosers.AspectToStringFormat = this.formatMomentums;
+			#endregion
+
+			#region Momentums: Dispersion Delta
+			this.olvcMomentumsDispersionDeltaTotalPositions.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionDeltaTotalPositions.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionDelta.PositionsCount;
+			};
+			this.olvcMomentumsDispersionDeltaTotalPositions.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionDeltaProfitPerPosition.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionDeltaProfitPerPosition.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionDelta.PositionAvgProfit;
+			};
+			this.olvcMomentumsDispersionDeltaProfitPerPosition.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionDeltaNetProfit.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionDeltaNetProfit.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionDelta.NetProfit;
+			};
+			this.olvcMomentumsDispersionDeltaNetProfit.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionDeltaWinLoss.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionDeltaWinLoss.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionDelta.WinLossRatio;
+			};
+			this.olvcMomentumsDispersionDeltaWinLoss.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionDeltaProfitFactor.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionDeltaProfitFactor.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionDelta.ProfitFactor;
+			};
+			this.olvcMomentumsDispersionDeltaProfitFactor.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionDeltaRecoveryFactor.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionDeltaRecoveryFactor.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionDelta.RecoveryFactor;
+			};
+			this.olvcMomentumsDispersionDeltaRecoveryFactor.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionDeltaMaxDrawdown.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionDeltaMaxDrawdown.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionDelta.MaxDrawDown;
+			};
+			this.olvcMomentumsDispersionDeltaMaxDrawdown.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionDeltaMaxConsecutiveWinners.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionDelta.MaxConsecWinners;
+			};
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners.AspectToStringFormat = this.formatMomentums;
+
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers.AspectGetter = delegate(object o) {
+				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+				if (oneParameterOneValue == null) return "olvcMomentumsDispersionDeltaMaxConsecutiveLosers.AspectGetter: OneParameterOneValue=null";
+				return oneParameterOneValue.KPIsMomentumDispersionDelta.MaxConsecLosers;
+			};
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers.AspectToStringFormat = this.formatMomentums;
+			#endregion
+
+
 			#region Momentums: Variance
-			this.olvcMomentumsVarianceTotalPositions.AspectGetter = delegate(object o) {
-				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceTotalPositionsDelta.AspectGetter: OneParameterOneValue=null";
-				//return oneParameterOneValue.KPIsMomentumsVariance.PositionsCountFormatted;
-				return oneParameterOneValue.KPIsMomentumsVariance.PositionsCount;
-			};
-			this.olvcMomentumsVarianceTotalPositions.AspectToStringFormat = this.formatMomentums;
+			//this.olvcMomentumsVarianceTotalPositions.AspectGetter = delegate(object o) {
+			//    OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+			//    if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceTotalPositionsDelta.AspectGetter: OneParameterOneValue=null";
+			//    //return oneParameterOneValue.KPIsMomentumsVariance.PositionsCountFormatted;
+			//    return oneParameterOneValue.KPIsMomentumVariance.PositionsCount;
+			//};
+			//this.olvcMomentumsVarianceTotalPositions.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsVarianceProfitPerPosition.AspectGetter = delegate(object o) {
-				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceProfitPerPositionDelta.AspectGetter: OneParameterOneValue=null";
-				//return oneParameterOneValue.KPIsMomentumsVariance.PositionAvgProfitFormatted;
-				return oneParameterOneValue.KPIsMomentumsVariance.PositionAvgProfit;
-			};
-			// PRINTED_N1 this.olvcMomentumsVarianceProfitPerPosition.AspectToStringFormat = "N1";
-			this.olvcMomentumsVarianceProfitPerPosition.AspectToStringFormat = this.formatMomentums;
+			//this.olvcMomentumsVarianceProfitPerPosition.AspectGetter = delegate(object o) {
+			//    OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+			//    if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceProfitPerPositionDelta.AspectGetter: OneParameterOneValue=null";
+			//    //return oneParameterOneValue.KPIsMomentumsVariance.PositionAvgProfitFormatted;
+			//    return oneParameterOneValue.KPIsMomentumVariance.PositionAvgProfit;
+			//};
+			//// PRINTED_N1 this.olvcMomentumsVarianceProfitPerPosition.AspectToStringFormat = "N1";
+			//this.olvcMomentumsVarianceProfitPerPosition.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsVarianceNetProfit.AspectGetter = delegate(object o) {
-				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceNetProfitDelta.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsVariance.NetProfit;
-			};
-			this.olvcMomentumsVarianceNetProfit.AspectToStringFormat = this.formatMomentums;
-			// DIDNT_MAKE_ANY_CHANGE this.olvcMomentumsVarianceNetProfit.DataType = typeof(int);
+			//this.olvcMomentumsVarianceNetProfit.AspectGetter = delegate(object o) {
+			//    OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+			//    if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceNetProfitDelta.AspectGetter: OneParameterOneValue=null";
+			//    return oneParameterOneValue.KPIsMomentumVariance.NetProfit;
+			//};
+			//this.olvcMomentumsVarianceNetProfit.AspectToStringFormat = this.formatMomentums;
+			//// DIDNT_MAKE_ANY_CHANGE this.olvcMomentumsVarianceNetProfit.DataType = typeof(int);
 
-			this.olvcMomentumsVarianceWinLoss.AspectGetter = delegate(object o) {
-				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceWinLossDelta.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsVariance.WinLossRatio;
-			};
-			this.olvcMomentumsVarianceWinLoss.AspectToStringFormat = this.formatMomentums;
+			//this.olvcMomentumsVarianceWinLoss.AspectGetter = delegate(object o) {
+			//    OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+			//    if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceWinLossDelta.AspectGetter: OneParameterOneValue=null";
+			//    return oneParameterOneValue.KPIsMomentumVariance.WinLossRatio;
+			//};
+			//this.olvcMomentumsVarianceWinLoss.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsVarianceProfitFactor.AspectGetter = delegate(object o) {
-				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceProfitFactorDelta.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsVariance.ProfitFactor;
-			};
-			this.olvcMomentumsVarianceProfitFactor.AspectToStringFormat = this.formatMomentums;
+			//this.olvcMomentumsVarianceProfitFactor.AspectGetter = delegate(object o) {
+			//    OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+			//    if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceProfitFactorDelta.AspectGetter: OneParameterOneValue=null";
+			//    return oneParameterOneValue.KPIsMomentumVariance.ProfitFactor;
+			//};
+			//this.olvcMomentumsVarianceProfitFactor.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsVarianceRecoveryFactor.AspectGetter = delegate(object o) {
-				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceRecoveryFactorDelta.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsVariance.RecoveryFactor;
-			};
-			this.olvcMomentumsVarianceRecoveryFactor.AspectToStringFormat = this.formatMomentums;
+			//this.olvcMomentumsVarianceRecoveryFactor.AspectGetter = delegate(object o) {
+			//    OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+			//    if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceRecoveryFactorDelta.AspectGetter: OneParameterOneValue=null";
+			//    return oneParameterOneValue.KPIsMomentumVariance.RecoveryFactor;
+			//};
+			//this.olvcMomentumsVarianceRecoveryFactor.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsVarianceMaxDrawdown.AspectGetter = delegate(object o) {
-				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceMaxDrawdownDelta.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsVariance.MaxDrawDown;
-			};
-			this.olvcMomentumsVarianceMaxDrawdown.AspectToStringFormat = this.formatMomentums;
+			//this.olvcMomentumsVarianceMaxDrawdown.AspectGetter = delegate(object o) {
+			//    OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+			//    if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceMaxDrawdownDelta.AspectGetter: OneParameterOneValue=null";
+			//    return oneParameterOneValue.KPIsMomentumVariance.MaxDrawDown;
+			//};
+			//this.olvcMomentumsVarianceMaxDrawdown.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsVarianceMaxConsecutiveWinners.AspectGetter = delegate(object o) {
-				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceMaxConsecutiveWinnersDelta.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsVariance.MaxConsecWinners;
-			};
-			this.olvcMomentumsVarianceMaxConsecutiveWinners.AspectToStringFormat = this.formatMomentums;
+			//this.olvcMomentumsVarianceMaxConsecutiveWinners.AspectGetter = delegate(object o) {
+			//    OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+			//    if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceMaxConsecutiveWinnersDelta.AspectGetter: OneParameterOneValue=null";
+			//    return oneParameterOneValue.KPIsMomentumVariance.MaxConsecWinners;
+			//};
+			//this.olvcMomentumsVarianceMaxConsecutiveWinners.AspectToStringFormat = this.formatMomentums;
 
-			this.olvcMomentumsVarianceMaxConsecutiveLosers.AspectGetter = delegate(object o) {
-				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
-				if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceMaxConsecutiveLosersDelta.AspectGetter: OneParameterOneValue=null";
-				return oneParameterOneValue.KPIsMomentumsVariance.MaxConsecLosers;
-			};
-			this.olvcMomentumsVarianceMaxConsecutiveLosers.AspectToStringFormat = this.formatMomentums;
+			//this.olvcMomentumsVarianceMaxConsecutiveLosers.AspectGetter = delegate(object o) {
+			//    OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
+			//    if (oneParameterOneValue == null) return "olvcMomentumsVarianceMomentumsVarianceMaxConsecutiveLosersDelta.AspectGetter: OneParameterOneValue=null";
+			//    return oneParameterOneValue.KPIsMomentumVariance.MaxConsecLosers;
+			//};
+			//this.olvcMomentumsVarianceMaxConsecutiveLosers.AspectToStringFormat = this.formatMomentums;
 			#endregion
 
 
@@ -662,6 +875,8 @@ namespace Sq1.Widgets.Correlation {
 			//};
 
 			this.olv.CheckStateGetter = delegate(object o) {
+				//if (this.ignoreCheckStateWillRefreshLater_fixFirstClickResettingAllCheckboxes) return CheckState.Indeterminate;
+				//if (this.olv.UseWaitCursor == true) return CheckState.Indeterminate;
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return CheckState.Indeterminate;
 				return oneParameterOneValue.Chosen ? CheckState.Checked : CheckState.Unchecked;
@@ -670,33 +885,59 @@ namespace Sq1.Widgets.Correlation {
 				//if (this.IgnoreCheboxStatePutterImanuallyResetThem) return;
 				OneParameterOneValue oneParameterOneValue = o as OneParameterOneValue;
 				if (oneParameterOneValue == null) return CheckState.Indeterminate;
-				//bool clickWillCheckOnlyClickedCheckboxAndUncheckAllOthers
-				//	= this.olvAllValuesForOneParam.CheckIndeterminateHeaderCheckBox(this.olvcParamValues);
-				// GUI thread will invoke Putters asynchronously, you can't control them in a linear manner :(((
-				//if (clickWillCheckOnlyClickedCheckboxAndUncheckAllOthers == true) {
-				//    this.IgnoreCheboxStatePutterImanuallyResetThem = true;
-				//    this.IgnoreCheboxStatePutterImanuallyResetThem = true;
-				//}
+
 				oneParameterOneValue.Chosen = newState.CompareTo(CheckState.Checked) == 0;
-				this.olv.RefreshObject(oneParameterOneValue);
+
+				//string msg = "oneParameterOneValue[" + oneParameterOneValue + "].Chosen[" + oneParameterOneValue.Chosen + "] WHEN_BOTH_PUTTER_AND_CELLCLICK_REGISTERED_BOTH_ARE_INVOKED_ON_PUTTER_FIRST_TIME_CLICKED_PUTTER_THEN_CLICK";
+				//Assembler.PopupException(msg, null, false);
+				if (this.ignoreCellClickDupe_HappensOnFirstCheckboxPutter == -1) {
+					this.ignoreCellClickDupe_HappensOnFirstCheckboxPutter = 1;	// user clicked checkbox first (putter) => inform CellClick handler to drop its buggy event
+				}
+
 				this.olv.UseWaitCursor = true;	// CANT_FIX_FIRST_CLICK_RESETTING_ALL_CHECKBOXES FIRST_CLICK_ON_CHECKBOX_DESELECTS_OTHERS__SYNCING_VIA_WAIT_CURSOR
-				this.correlator.OneParameterOneValueUserSelectedChanged_recalculateAllKPIsLocal(oneParameterOneValue);
+				this.correlator.OneParameterOneValueUserSelectedChanged_recalculateLocalKPIsMomentums(oneParameterOneValue);
+				// NO_NEED__ALL_THREE
+				//this.olv.RefreshObject(oneParameterOneValue);
+				//this.olv.RebuildColumns();
+				//this.olv.Refresh();
 				return newState;
 			};
 
 			// TOO_MANY_STRATEGY_SERIALIZATIONS__INTRODUCED_dontSerializeStrategy_ImAligingInCtor
 			this.olv.ColumnWidthChanged += new ColumnWidthChangedEventHandler(olv_ColumnWidthChanged);
+			this.olv.ColumnWidthChanging += new ColumnWidthChangingEventHandler(olv_ColumnWidthChanging);
+		}
+
+		int ignoreCellClickDupe_HappensOnFirstCheckboxPutter = -1;
+
+		void olv_ColumnWidthChanging(object sender, ColumnWidthChangingEventArgs e) {
+			if (this.dontSerializeStrategy_ImAligingInCtor) return;
+			if (this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised) return;
+			if (this.dontSerializeStrategy_ImAligingInCtor) return;
+			try {
+				this.AlignBaseSizeToDisplayedCells();
+			} catch (Exception ex) {
+				string msg = "olv_ColumnWidthChanging()";
+				Assembler.PopupException(msg, ex, false);
+			}
 		}
 		void olv_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e) {
 			if (this.dontSerializeStrategy_ImAligingInCtor) return;
-			this.olvStateBinaryStateSaveAndRaiseStrategySerialize();
-			this.AlignBaseSizeToDisplayedCells();
+			if (this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised) return;
+			if (this.dontSerializeStrategy_ImAligingInCtor) return;
+			try {
+				//MOVED_TO_olv_ColumnWidthChanging() this.AlignBaseSizeToDisplayedCells();
+				this.olvSaveBinaryState_SerializeSnapshot();
+			} catch (Exception ex) {
+				string msg = "NYI: NEED_TO_IGNORE MULTIPLE_COLUMNS_WIDTHS_CHANGED INDUCED_BY_REBUILD_COLUMNS after RIGHT_CLICK_INDIVIDUAL_COLUMN_CHECKED";
+				Assembler.PopupException(msg, ex, false);
+			}
 		}
 		void oLVColumn_VisibilityChanged(object sender, EventArgs e) {
 			if (this.indicatorParameterNullUnsafe == null) return;
 			OLVColumn oLVColumn = sender as OLVColumn;
 			if (oLVColumn == null) return;
-			this.olvStateBinaryStateSaveAndRaiseStrategySerialize();
+			this.olvSaveBinaryState_SerializeSnapshot();
 		}
 	}
 	// USED_AspectToStringConverter_INSTEAD_OF_CUSTOM_SORTING

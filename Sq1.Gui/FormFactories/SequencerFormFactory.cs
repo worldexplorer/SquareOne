@@ -28,6 +28,10 @@ namespace Sq1.Gui.FormFactories {
 		}
 
 		void sequencerControl_OnCorrelatorShouldPopulate(object sender, SequencedBacktestsEventArgs e) {
+			if (this.chartFormManager.CorrelatorForm == null) {
+				string msg = "don't force Correlator showup if I clicked only mniShowSequencer and it wasn't restored from XML";
+				return;
+			}
 			CorrelatorForm correlatorForm = this.chartFormManager.CorrelatorFormConditionalInstance;
 			correlatorForm.PopulateSequencedHistory(e.SequencedBacktests);
 			if (this.chartFormManager.SequencerForm.Visible) {
@@ -113,6 +117,7 @@ namespace Sq1.Gui.FormFactories {
 		void sequencerForm_FormClosed(object sender, FormClosedEventArgs e) {
 			// both at FormCloseByX and MainForm.onClose()
 			this.chartFormManager.ChartForm.MniShowSequencer.Checked = false;
+			this.chartFormManager.Strategy.Serialize();
 			this.chartFormManager.MainForm.MainFormSerialize();
 
 			SequencerForm dontLeakMemory = sender as SequencerForm;

@@ -4,7 +4,7 @@
     "$type": "Sq1.Core.Correlation.OneParameterAllValuesAveraged, Sq1.Core",
     "MaximizationCriterion": 0,
     "Name": "MAfast.Period",
-    "ValuesByParam": {
+    "OneParamOneValueByValues": {
       "$type": "System.Collections.Generic.SortedDictionary`2[[System.Double, mscorlib],[Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core]], System",
       "10": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
@@ -94,7 +94,7 @@
     "$type": "Sq1.Core.Correlation.OneParameterAllValuesAveraged, Sq1.Core",
     "MaximizationCriterion": 0,
     "Name": "test",
-    "ValuesByParam": {
+    "OneParamOneValueByValues": {
       "$type": "System.Collections.Generic.SortedDictionary`2[[System.Double, mscorlib],[Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core]], System",
       "8": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
@@ -112,7 +112,7 @@
     "$type": "Sq1.Core.Correlation.OneParameterAllValuesAveraged, Sq1.Core",
     "MaximizationCriterion": 0,
     "Name": "verbose",
-    "ValuesByParam": {
+    "OneParamOneValueByValues": {
       "$type": "System.Collections.Generic.SortedDictionary`2[[System.Double, mscorlib],[Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core]], System",
       "3": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",

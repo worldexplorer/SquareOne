@@ -8,18 +8,19 @@
   ],
   "ScaleInterval": {
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-    "AsString_cached": "5-Minute",
     "Scale": 3,
     "Interval": 5,
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 300,
     "AsTimeSpan": "00:05:00"
   },
+  "StaticProvider": null,
   "StreamingAdapter": null,
   "BrokerAdapter": null,
   "MarketName": "MOCK",
   "Name": "STATIC",
-  "StreamingAdapterName": "PLEASE_ATTACH_AND_CONFIGURE_STREAMING_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT",
-  "BrokerAdapterName": "PLEASE_ATTACH_AND_CONFIGURE_BROKER_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT",
-  "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\STATIC"
+  "StaticProviderName": "STATIC_PROVIDER_NOT_INITIALIZED",
+  "StreamingAdapterName": "STREAMING_PROVIDER_NOT_INITIALIZED",
+  "BrokerAdapterName": "BROKER_PROVIDER_NOT_INITIALIZED",
+  "DataSourceAbspath": "D:\\etc\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\STATIC"
 }

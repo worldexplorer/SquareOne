@@ -13,10 +13,10 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui {
 	public partial class MainForm {
-		const string dockContentLayoutXml = "Sq1.Gui.Layout.xml";
-		const string dockContentLayoutXmlInitial = "Sq1.Gui.Layout.Initial.xml";
-		public string LayoutXml { get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXml); } }
-		public string LayoutXmlInitial { get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXmlInitial); } }
+		const string dockContentLayoutXml			= "Sq1.Gui.Layout.xml";
+		const string dockContentLayoutXmlInitial	= "Sq1.Gui.Layout.Initial.xml";
+		public string LayoutXml			{ get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXml); } }
+		public string LayoutXmlInitial	{ get { return Path.Combine(this.GuiDataSnapshotSerializer.AbsPath, dockContentLayoutXmlInitial); } }
 	
 		IDockContent persistStringInstantiator(string persistedTypeFullName) {
 			string msig = " //persistStringInstantiator(" + persistedTypeFullName + ")";

@@ -105,14 +105,14 @@ namespace Sq1.Gui {
 
 					//v1 TOO_MESSY
 					//foreach (IDockContent each in new List<IDockContent>(this.DockPanel.Contents)) {
-					//    if (each.GetType().IsSubClassOfGeneric(typeof(DockContentSingleton<>))) continue;
-					//    DockContent eachForm = each as DockContent;
-					//    if (eachForm == null) continue;
-					//    ChartForm eachChart = each as ChartForm;
-					//    if (eachChart == null) continue;
-					//    eachChart.HideOnClose = false;
-					//    eachChart.Close();
-					//    eachChart.Dispose();
+					//	if (each.GetType().IsSubClassOfGeneric(typeof(DockContentSingleton<>))) continue;
+					//	DockContent eachForm = each as DockContent;
+					//	if (eachForm == null) continue;
+					//	ChartForm eachChart = each as ChartForm;
+					//	if (eachChart == null) continue;
+					//	eachChart.HideOnClose = false;
+					//	eachChart.Close();
+					//	eachChart.Dispose();
 					//}
 					//v2
 					foreach (ChartFormsManager cfm in this.GuiDataSnapshot.ChartFormsManagers.Values) {
@@ -199,9 +199,23 @@ namespace Sq1.Gui {
 				foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormsManagers.Values) {
 					if (cfmgr.ChartForm == null) continue;
 
-					if (cfmgr.SequencerFormConditionalInstance.IsShown	== false) cfmgr.SequencerFormShow(true);
-					if (cfmgr.CorrelatorFormConditionalInstance.IsShown == false) cfmgr.CorrelatorFormShow(true);
-					if (cfmgr.LivesimFormConditionalInstance.IsShown	== false) cfmgr.LivesimFormShow(true);
+					if (cfmgr.SequencerForm != null) {
+						if (cfmgr.SequencerFormConditionalInstance.IsShown	== false) cfmgr.SequencerFormShow(true);
+					} else {
+						string msg = "SequencerForm wasn't mentioned in [" + this.LayoutXml + "]";
+					}
+
+					if (cfmgr.CorrelatorForm != null) {
+						if (cfmgr.CorrelatorFormConditionalInstance.IsShown == false) cfmgr.CorrelatorFormShow(true);
+					} else {
+						string msg = "CorrelatorForm wasn't mentioned in [" + this.LayoutXml + "]";
+					}
+
+					if (cfmgr.LivesimForm != null) {
+						if (cfmgr.LivesimFormConditionalInstance.IsShown	== false) cfmgr.LivesimFormShow(true);
+					} else {
+						string msg = "LivesimForm wasn't mentioned in [" + this.LayoutXml + "]";
+					}
 
 					// if sequencer instantiated first and fired, then correlator instantiated and didn't get the bullet; vice versa is even worse
 					cfmgr.SequencerFormConditionalInstance.SequencerControl.RaiseOnCorrelatorShouldPopulate_usedByMainFormAfterBothAreInstantiated();

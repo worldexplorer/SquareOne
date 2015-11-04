@@ -158,8 +158,8 @@ namespace Sq1.Core.Streaming {
 						break;
 					}
 					if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == true) {
-						string msg = "MainFormClosingIgnoreReLayoutDockedForms == true";
-						Assembler.PopupException(msg);
+						string msg = "AM_I_CLOSING_THE_APPLICATION? MainFormClosingIgnoreReLayoutDockedForms == true";
+						//Assembler.PopupException(msg);
 						break;	// breaks WHILE and exits the thread
 					}
 

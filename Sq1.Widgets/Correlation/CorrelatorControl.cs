@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using Sq1.Core;
 using Sq1.Core.Sequencing;
 using Sq1.Core.Correlation;
 using Sq1.Core.Repositories;
 using Sq1.Core.DataTypes;
-using System.Collections.Generic;
 
 namespace Sq1.Widgets.Correlation {
 	public partial class CorrelatorControl : UserControl {
@@ -57,17 +57,17 @@ namespace Sq1.Widgets.Correlation {
 
 			if (this.sequencedOriginal.Count > 0) {
 				//v1
-//				int i = 0;
-//				int scanFirstLimit = 200;
-//				string symbolFound = null;
-//				foreach (SystemPerformanceRestoreAble firstScanned in this.sequencedOriginal.Backtests) {
-//					if (string.IsNullOrEmpty(firstScanned.Symbol) == false) {
-//						symbolFound = firstScanned.Symbol;
-//					}
-//					this.PriceFormat = firstScanned.PriceFormat;
-//					if (string.IsNullOrEmpty(this.PriceFormat) == false) break;
-//					if (++i >= scanFirstLimit) break;
-//				}
+				//int i = 0;
+				//int scanFirstLimit = 200;
+				//string symbolFound = null;
+				//foreach (SystemPerformanceRestoreAble firstScanned in this.sequencedOriginal.Backtests) {
+				//    if (string.IsNullOrEmpty(firstScanned.Symbol) == false) {
+				//        symbolFound = firstScanned.Symbol;
+				//    }
+				//    this.PriceFormat = firstScanned.PriceFormat;
+				//    if (string.IsNullOrEmpty(this.PriceFormat) == false) break;
+				//    if (++i >= scanFirstLimit) break;
+				//}
 				string symbolFound = this.sequencedOriginal.Symbol;
 				if (string.IsNullOrEmpty(symbolFound)) {
 					string msg = "SYMBOL_WAS_NOT_SERIALIZED_IN_foundBySymbolScaleRange[" + fileName + "]";
@@ -92,6 +92,8 @@ namespace Sq1.Widgets.Correlation {
 				//this.toolStripItemTrackBarWalkForward.WalkForwardEnabled = this.toolStripItemTrackBarWalkForward.ValueCurrent < 100;
 
 				this.flushCalculationsToGui();
+			} catch (Exception ex) {
+				Assembler.PopupException("SHOULD_NEVER_HAPPEN_I_ONLY_NEEDED_FINALLY", ex);
 			} finally {
 				this.setCursorDefault();
 			}
@@ -136,7 +138,7 @@ namespace Sq1.Widgets.Correlation {
 			this.flowLayoutPanel1.Controls.Clear();
 			foreach (string parameterName in this.Correlator.ParametersByName.Keys) {
 				OneParameterAllValuesAveraged oneParamForOneOLV = this.Correlator.ParametersByName[parameterName];
-				if (oneParamForOneOLV.ValuesByParam.Count <= 1) continue;
+				if (oneParamForOneOLV.OneParamOneValueByValues.Count <= 1) continue;
 				//List<OneParameterOneValue> objectsForList = oneParamForOneOLV.AllValuesForOneParameterWithAverages;
 				OneParameterControl adding = new OneParameterControl(this, oneParamForOneOLV);
 				//OneParameterControlAsMdiForm adding = new OneParameterControlAsMdiForm(this, oneParamForOneOLV);
