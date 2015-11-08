@@ -457,7 +457,9 @@ namespace Sq1.Widgets.Correlation {
 				this.mniShowDeltasBtwAllAndChosenParams	.Checked = snap.MniShowDeltaChecked;
 
 				this.mniShowMomentumsAverage			.Checked = snap.MniShowMomentumsAverageChecked;
-				this.mniShowMomentumsDispersionGlobal			.Checked = snap.MniShowMomentumsDispersionGlobalChecked;
+				this.mniShowMomentumsDispersionGlobal	.Checked = snap.MniShowMomentumsDispersionGlobalChecked;
+				this.mniShowMomentumsDispersionLocal	.Checked = snap.MniShowMomentumsDispersionLocalChecked;
+				this.mniShowMomentumsDispersionDelta	.Checked = snap.MniShowMomentumsDispersionDeltaChecked;
 				this.mniShowMomentumsVariance			.Checked = snap.MniShowMomentumsVarianceChecked;
 
 				this.propagateColumnVisibilityFromMni();

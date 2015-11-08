@@ -228,49 +228,7 @@ namespace Sq1.Widgets.Sequencing {
 			this.raiseOnCopyToContextNewBacktest(sysPerfRestoreAble, scriptContextNewName);
 			this.olvParameters.Refresh();	//otherwize you'll see CURRENT changed only after mouseover on the CHANGEDs	MUST_BE_AN_INTERFORM_EVENT_BUT_LAZY
 		}
-		
-// MOVED_TO_CONTEXT_SCRIPT
-//		ContextScript convertOptimizationResultToScriptContext(string msig) {
-//			SystemPerformanceRestoreAble sysPerfRestoreAble = (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject;
-//			if (sysPerfRestoreAble == null) {
-//				string msg = "IS_NULL (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject";
-//				Assembler.PopupException(msg + msig);
-//				return null;
-//			}
-//			
-//			#if DEBUG	// inline unittest
-//			foreach (OLVColumn olvc in this.columnsDynParams) {
-//				string iParamName = olvc.Text;
-//
-//				var iDisplayedByName = this.sequencer.ScriptAndIndicatorParametersMergedByName;
-//				if (iDisplayedByName.ContainsKey(iParamName) == false) {
-//					string msg = "NEVER_HAPPENED_SO_FAR iDisplayedByName.ContainsKey(" +  iParamName + ") == false";
-//					Assembler.PopupException(msg);
-//				}
-//				IndicatorParameter iDisplayed = iDisplayedByName[iParamName];
-//
-//				var iPropagatingByName = sysPerfRestoreAble.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished;
-//				if (iPropagatingByName.ContainsKey(iParamName) == false) {
-//					string msg = "NEVER_HAPPENED_SO_FAR iPropagatingByName.ContainsKey(" + iParamName + ") == false";
-//					Assembler.PopupException(msg);
-//				}
-//				IndicatorParameter iPropagating = iPropagatingByName[iParamName];
-//
-//				if (iDisplayed.ValueCurrent != iPropagating.ValueCurrent) {
-//					string msg = "both are wrong; I clicked on MaSlow=20,MaFast=11; iDisplayed=MaFast=33, iPropagating=MaFast=22; replacing executorPool with newExecutor() each backtest";
-//					Assembler.PopupException(msg, null, false);
-//				}
-//			}
-//			#endif
-//
-//			if (sysPerfRestoreAble.ScriptParametersById_BuiltOnBacktestFinished == null) {
-//				string msg = "BACKTEST_WAS_ABORTED_CANT_POPUPLATE";
-//				Assembler.PopupException(msg + msig);
-//				return null;
-//			}
-//			ContextScript selectedClone = this.sequencer.Executor.Strategy.ScriptContextCurrent.CloneAndAbsorbFromSystemPerformanceRestoreAble(sysPerfRestoreAble);
-//			return selectedClone;
-//		}
+
 		void olvBacktests_CellRightClick(object sender, CellRightClickEventArgs e) {
 			if (e.RowIndex == -1) return;	// right click on the blank space (not on a row with data)
 			e.MenuStrip = this.ctxBacktests_OneResult;
@@ -283,6 +241,13 @@ namespace Sq1.Widgets.Sequencing {
 		}
 		void ctxOneBacktestResult_Opening(object sender, CancelEventArgs e) {
 			string msig = " /ctxOneBacktestResult_Opening()";
+			//if (this.sequencer.Executor.ExecutionDataSnapshot.CorrelatorFormIsVisible) {
+			//    this.mni_showInSequencedBacktest_ScriptIndicatorParameters_All.Enabled = false;
+			//    this.mni_showInSequencedBacktests_ScriptIndicatorParameters_CorrelatorChecked.Enabled = false;
+			//    // and show ALL even if we 1) clicked "chosen" 2) closed the CorrelatorForm
+			//    ...
+			//}
+
 			SystemPerformanceRestoreAble sysPerfRestoreAble = (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject;
 			if (sysPerfRestoreAble == null && this.olvBacktests.Items.Count > 0) {
 				this.olvBacktests.SelectedObject = this.olvBacktests.GetModelObject(0);
@@ -292,7 +257,7 @@ namespace Sq1.Widgets.Sequencing {
 			}
 			if (sysPerfRestoreAble == null) {
 				string msg = "IS_NULL (SystemPerformanceRestoreAble)this.olvBacktests.SelectedObject";
-				Assembler.PopupException(msg + msig);
+				//Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
 			

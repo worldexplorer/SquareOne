@@ -61,7 +61,7 @@ namespace Sq1.Widgets.Sequencing {
 			columnsDynParams			= new List<OLVColumn>();
 			RepositoryJsonSequencer		= new RepositoryJsonsInFolderSimpleDictionarySequencer();
 
-			sequencerDataSnapshot = new SequencerDataSnapshot();
+			sequencerDataSnapshot			= new SequencerDataSnapshot();
 			sequencerDataSnapshotSerializer = new Serializer<SequencerDataSnapshot>();
 		}
 		public void Initialize(Sequencer sequencer) {
