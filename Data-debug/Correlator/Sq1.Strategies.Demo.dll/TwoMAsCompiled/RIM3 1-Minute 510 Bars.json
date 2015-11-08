@@ -37,7 +37,7 @@
         "BacktestsWithMyValueCount": 6,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 1,
         "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "24",
-        "Chosen": false
+        "Chosen": true
       },
       "23": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
@@ -72,8 +72,8 @@
         "Chosen": true
       }
     },
-    "ChosenCount": 7,
-    "ChosenAsString": "11,14,17,23,26,29,32"
+    "ChosenCount": 8,
+    "ChosenAsString": "11,14,17,20,23,26,29,32"
   },
   "MAslow.Period": {
     "$type": "Sq1.Core.Correlation.OneParameterAllValuesAveraged, Sq1.Core",
@@ -120,7 +120,7 @@
         "BacktestsWithMyValueCount": 8,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 8,
         "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "5,11,17,23,29,35,41,47",
-        "Chosen": false
+        "Chosen": true
       },
       "20": {
         "$type": "Sq1.Core.Correlation.OneParameterOneValue, Sq1.Core",
@@ -128,10 +128,10 @@
         "BacktestsWithMyValueCount": 8,
         "BacktestsWithMyValueAndOnlyChosenOtherValuesCount": 8,
         "BacktestsWithMyValueAndOnlyChosenOtherValueAsString": "6,12,18,24,30,36,42,48",
-        "Chosen": true
+        "Chosen": false
       }
     },
     "ChosenCount": 1,
-    "ChosenAsString": "20"
+    "ChosenAsString": "18"
   }
 }

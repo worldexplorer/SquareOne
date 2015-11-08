@@ -6,22 +6,22 @@ namespace Sq1.Core.StrategyBase {
 	public class KPIs {
 		[JsonProperty]	public			string	ReasonToExist		{ get; protected set; }
 
-		[JsonProperty]	public	virtual	double	PositionsCount		{ get; set; }
-		[JsonProperty]	public	virtual	double	PositionAvgProfit	{ get; set; }
-		[JsonProperty]	public	virtual	double	NetProfit			{ get; set; }
-		[JsonProperty]	public	virtual	double	WinLossRatio		{ get; set; }
-		[JsonProperty]	public	virtual	double	ProfitFactor		{ get; set; }
-		[JsonProperty]	public	virtual	double	RecoveryFactor		{ get; set; }
-		[JsonProperty]	public	virtual	double	MaxDrawDown			{ get; set; }
-		[JsonProperty]	public	virtual	double	MaxConsecWinners	{ get; set; }
-		[JsonProperty]	public	virtual	double	MaxConsecLosers		{ get; set; }
+		[JsonProperty]	public	double	PositionsCount;		//	{ get; set; }
+		[JsonProperty]	public	double	PositionAvgProfit;	//	{ get; set; }
+		[JsonProperty]	public	double	NetProfit;			//	{ get; set; }
+		[JsonProperty]	public	double	WinLossRatio;		//	{ get; set; }
+		[JsonProperty]	public	double	ProfitFactor;		//	{ get; set; }
+		[JsonProperty]	public	double	RecoveryFactor;		//	{ get; set; }
+		[JsonProperty]	public	double	MaxDrawDown;		//	{ get; set; }
+		[JsonProperty]	public	double	MaxConsecWinners;	//	{ get; set; }
+		[JsonProperty]	public	double	MaxConsecLosers;	//	{ get; set; }
 
 		protected KPIs() {
 			string msg = "IM_INVOKED_DURING_DESERIALIZATION";
 			this.ReasonToExist = "NOT_INITIALIZED";
 		}
 		public KPIs(string reasonToExist) : this() {
-			this.ReasonToExist		= reasonToExist;
+			this.ReasonToExist	= reasonToExist;
 		}
 
 		public KPIs(string reasonToExist, int positionsCountBoth, double netProfitForClosedPositionsBoth, double positionAvgProfit

@@ -24,6 +24,19 @@ namespace Sq1.Core.Correlation {
 
 					//SortedDictionary<int, SystemPerformanceRestoreAble> chosenOnly = thisChosenOthersNot.BacktestsWithMyValueAndOnlyChosenOtherValues;
 					List<SystemPerformanceRestoreAble> chosenOnly_subset = this.correlator.SequencedBacktestsOriginalMinusParameterValuesUnchosen.Subset;
+
+					#if DEBUG		// inline test
+					System.Collections.ObjectModel.ReadOnlyCollection<SystemPerformanceRestoreAble> chosen = this.correlator.SequencedBacktestsOriginalMinusParameterValuesUnchosen.BacktestsReadonly;
+					System.Collections.ObjectModel.ReadOnlyCollection<SystemPerformanceRestoreAble> all = this.correlator.SequencedBacktestOriginal.BacktestsReadonly;
+					List<SystemPerformanceRestoreAble> all_subset = this.correlator.SequencedBacktestOriginal.Subset;
+					if (thisChosenOthersNot.ParameterNameValue == "MAslow.Period=20") {
+						string msg = "Here I have an Excel with manually calculated Stdev(DD)";
+						if (chosenOnly_subset[0].MaxDrawDown != chosen[0].MaxDrawDown) {
+							string msg2 = "CHOSE_100%_SO_THAT_I_CAN_VERIFY_ALL_VA_SUBSET";
+						}
+					}
+					#endif
+
 					thisChosenOthersNot.KPIsMomentumDispersionGlobal.Reset_addBacktests_getMyMembersReady(chosenOnly_subset);
 
 					momentumsDumped++;

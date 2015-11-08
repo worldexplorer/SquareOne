@@ -126,9 +126,13 @@ namespace Sq1.Core.Correlation {
 				eachParameter.KPIsGlobalNoMoreParameters_CalculateGlobalsAndCloneToLocals_step3of3();
 			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-				this.CalculateLocalsAndDeltas_RaiseAllEvents_Serialize(false, false);	// WHY??? raiseAllEvents=false, serialize=false
+				// restoring Workspace
+				// notify Sequencer of the backtests chosen to force it apply SequencerDataSnapshot.ShowOnlyCorrelatorChosenBacktests .StatsAndHistoryCollapsed via BacktestsReplaceWithCorrelated()
+				// no serialization needed koz the user didn't change anything
+				this.CalculateLocalsAndDeltas_RaiseAllEvents_Serialize(true, false);
 			} else {
-				this.CalculateLocalsAndDeltas_RaiseAllEvents_Serialize(false);			// WHY??? raiseAllEvents=false, serialize=true
+				// user changed the SubsetPercentage
+				this.CalculateLocalsAndDeltas_RaiseAllEvents_Serialize(true, true);
 			}
 		}
 

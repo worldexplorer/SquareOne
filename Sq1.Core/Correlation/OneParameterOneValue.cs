@@ -94,18 +94,24 @@ namespace Sq1.Core.Correlation {
 			BacktestsWithMyValue	= new SortedDictionary<int, SystemPerformanceRestoreAble>();
 			KPIsGlobal				= new KPIsAveraged("IM_KPIsGlobal");
 			KPIsLocal				= new KPIsAveraged("IM_KPIsLocal");
-
-			// will be reassigned soon; just want to avoid NPE in Customiser.cs
-			KPIsMomentumAverage				= new KPIsMomentum(KPIsMomentum.KPIS_MOMENTUM_AVERAGE);
-			KPIsMomentumDispersionGlobal	= new KPIsMomentum(KPIsMomentum.KPIS_MOMENTUM_DISPERSION_GLOBAL);
-			KPIsMomentumDispersionLocal		= new KPIsMomentum(KPIsMomentum.KPIS_MOMENTUM_DISPERSION_LOCAL);
 		}
 
 		public OneParameterOneValue(OneParameterAllValuesAveraged oneParameterAllValuesAveraged
 				, double optimizedValue, string artificialName = null) : this() {
+			if (oneParameterAllValuesAveraged == null) {
+				string msg = "AVOIDING_NPE_DURING_DESERIALIZATION__this.ParameterNameValue";
+				return;
+			}
+
 			this.OneParameterAllValuesAveraged = oneParameterAllValuesAveraged;
 			this.ValueSequenced = optimizedValue;
 			this.ArtificialName = artificialName;
+
+			string momentumFor = "(" + this.ParameterNameValue + ")";
+			// will be reassigned soon; just want to avoid NPE in Customiser.cs
+			KPIsMomentumAverage				= new KPIsMomentum(KPIsMomentum.KPIS_MOMENTUM_AVERAGE			 + momentumFor);
+			KPIsMomentumDispersionGlobal	= new KPIsMomentum(KPIsMomentum.KPIS_MOMENTUM_DISPERSION_GLOBAL	 + momentumFor);
+			KPIsMomentumDispersionLocal		= new KPIsMomentum(KPIsMomentum.KPIS_MOMENTUM_DISPERSION_LOCAL	 + momentumFor);
 		}
 
 		internal void ClearBacktestsWithMyValue_step1of3() {

@@ -30,6 +30,12 @@ namespace Sq1.Core.Correlation {
 		}
 
 		internal override void AddKPIs(KPIs anotherRun) {
+			if (base.IgnoreBacktestRunsWithZeroPositionCount && anotherRun.PositionsCount == 0) {
+				string msg = "I_DIDNT_INCLUDE_BACKTEST_RUN_DUE_TO_ZERO_POSITIONS " + anotherRun;
+				//Assembler.PopupException(msg, null, false);
+				return;
+			}
+
 			this.List_PositionsCount		.Add(anotherRun.PositionsCount);
 			if (anotherRun.PositionsCount < 0) {
 				string msg = "HOW_IS_IT_POSSIBLE anotherRun.PositionsCount[" + anotherRun.PositionsCount + "]";
@@ -72,6 +78,13 @@ namespace Sq1.Core.Correlation {
 			base.ProfitFactor		= this.List_ProfitFactor		.StdDev();
 			base.RecoveryFactor		= this.List_RecoveryFactor		.StdDev();
 			base.MaxDrawDown		= this.List_MaxDrawDown			.StdDev();
+			#if DEBUG
+			if (this.ReasonToExist.Contains("(MAslow.Period=20)")) {
+				double mean				= this.List_MaxDrawDown.Mean();
+				double variance			= this.List_MaxDrawDown.Variance();
+				string breakpoint = "here";
+			}
+			#endif
 			base.MaxConsecWinners	= this.List_MaxConsecWinners	.StdDev();
 			base.MaxConsecLosers	= this.List_MaxConsecLosers		.StdDev();
 		}

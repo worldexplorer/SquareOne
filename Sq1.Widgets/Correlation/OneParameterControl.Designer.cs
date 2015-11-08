@@ -57,6 +57,8 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcWinLossDelta = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsAverageWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsDispersionGlobalWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionLocalWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionDeltaWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcProfitFactorGlobal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcProfitFactorLocal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -98,8 +100,6 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsDispersionLocalMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionLocalWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionDeltaWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxOneParameterControl = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniShowAllBacktestedParams = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniShowChosenParams = new System.Windows.Forms.ToolStripMenuItem();
@@ -164,6 +164,8 @@ namespace Sq1.Widgets.Correlation {
 			this.olv.AllColumns.Add(this.olvcWinLossDelta);
 			this.olv.AllColumns.Add(this.olvcMomentumsAverageWinLoss);
 			this.olv.AllColumns.Add(this.olvcMomentumsDispersionGlobalWinLoss);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionLocalWinLoss);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionDeltaWinLoss);
 			this.olv.AllColumns.Add(this.olvcMomentumsVarianceWinLoss);
 			this.olv.AllColumns.Add(this.olvcProfitFactorGlobal);
 			this.olv.AllColumns.Add(this.olvcProfitFactorLocal);

@@ -7,7 +7,8 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Correlation {
 	public class KPIsAveraged : KPIs {
-		[JsonIgnore]	protected double	TotalCount;			// divider must be double in C# otherwize truncated result
+		[JsonIgnore]	protected	double	TotalCount;			// divider must be double in C# otherwize truncated result
+		[JsonProperty]	public		bool	IgnoreBacktestRunsWithZeroPositionCount		{ get; protected set; }	// each backtest is also a KPI; so ignoring starts making sense only for averaged and momentums
 
 		[JsonIgnore]	double	cumulativePositionsCount;
 		[JsonIgnore]	double	cumulativePositionAvgProfit;
@@ -22,7 +23,8 @@ namespace Sq1.Core.Correlation {
 		protected KPIsAveraged() : base() {
 			base.ReasonToExist = "KPIsAveraged()_INVOKED_DURING_DESERIALIZATION";
 		}
-		public KPIsAveraged(string reasonToExist) : base(reasonToExist) {
+		public KPIsAveraged(string reasonToExist, bool ignoreBacktestRunsWithZeroPositionCount = true) : base(reasonToExist) {
+			this.IgnoreBacktestRunsWithZeroPositionCount	= ignoreBacktestRunsWithZeroPositionCount;
 		}
 
 		internal void Reset_addBacktests_getMyMembersReady(SortedDictionary<int, SystemPerformanceRestoreAble> backtestsWithMyValue) {
@@ -51,11 +53,16 @@ namespace Sq1.Core.Correlation {
 			this.Finalize_allKPIsAdded();
 
 			if (this.PositionsCount == 0) {
-				string msg = "DONT_BLAME_YOURSELF_HAPPENS_WHEN_MaFast[14]&&MaSlow[14] => base.PositionsCount == 0 ?";
-				Assembler.PopupException(msg, null, false);
+				string msg = "DONT_BLAME_YOURSELF__HAPPENS_WHEN_MaFast[14]&&MaSlow[14] => base.PositionsCount == 0 ?";
+				//Assembler.PopupException(msg, null, false);
 			}
 		}
 		internal override void AddKPIs(KPIs anotherRun) {
+			if (this.IgnoreBacktestRunsWithZeroPositionCount && anotherRun.PositionsCount == 0) {
+				string msg = "I_DIDNT_INCLUDE_BACKTEST_RUN_DUE_TO_ZERO_POSITIONS " + anotherRun;
+				//Assembler.PopupException(msg, null, false);
+				return;
+			}
 			this.cumulativePositionsCount		+= anotherRun.PositionsCount;
 			if (anotherRun.PositionsCount < 0) {
 				string msg = "HOW_IS_IT_POSSIBLE anotherRun.PositionsCount[" + anotherRun.PositionsCount + "]";
