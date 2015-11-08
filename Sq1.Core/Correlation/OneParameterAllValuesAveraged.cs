@@ -7,54 +7,60 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Correlation {
 	public partial class OneParameterAllValuesAveraged : NamedObjectJsonSerializable {
-		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE				= "Mean";
-		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE_DISPERSION	= "Standard Deviation";
-		[JsonIgnore]	public const string ARTIFICIAL_AVERAGE_VARIANCE 	= "Variance";
+		[JsonIgnore]	public const string ARTIFICIAL_ROW_MEAN			= "Mean";
+		[JsonIgnore]	public const string ARTIFICIAL_ROW_DISPERSION	= "Standard Deviation";
+		[JsonIgnore]	public const string ARTIFICIAL_ROW_VARIANCE 	= "Variance";
 
-		[JsonIgnore]	public Correlator					Correlator;
-		[JsonIgnore]	public string						ParameterName				{ get; private set; }
+		[JsonIgnore]	public	Correlator					Correlator;
+		[JsonProperty]	public	string						ParameterName				{ get; private set; }
 
 		[Obsolete("DONT_USE_ME_IM_HERE_FOR_DESERIALIZER_ONLY")]
-		[JsonProperty]	public string						Name						{
+		[JsonProperty]	public	string						Name						{
 			get { return this.ParameterName; }
 			set { this.ParameterName = value; }
 		}
-		[JsonProperty]	public MaximizationCriterion		MaximizationCriterion;
+		[JsonProperty]	public	MaximizationCriterion		MaximizationCriterion;
 
-		[JsonProperty]	public SortedDictionary<double, OneParameterOneValue>	ValuesByParam	{ get; private set; }
-		[JsonIgnore]	public List<OneParameterOneValue>						Values			{ get { return new List<OneParameterOneValue>(this.ValuesByParam.Values); } }
+		[JsonProperty]	public	SortedDictionary<double, OneParameterOneValue>	OneParamOneValueByValues	{ get; private set; }
+		[JsonIgnore]	public	List<OneParameterOneValue>						OneParamOneValues			{ get { return new List<OneParameterOneValue>(this.OneParamOneValueByValues.Values); } }
 
-		[JsonIgnore]	public OneParameterOneValue			ArtificialRowAverage		{ get; private set; }
-		[JsonIgnore]	public OneParameterOneValue			ArtificialRowDispersion		{ get; private set; }
-		[JsonIgnore]	public OneParameterOneValue			ArtificialRowVariance		{ get; private set; }
-		[JsonIgnore]	public List<OneParameterOneValue>	AllValuesWithArtificials	{ get; private set; }
+		[JsonIgnore]	public	OneParameterOneValue		ArtificialRowMean			{ get; private set; }
+		[JsonIgnore]	public	OneParameterOneValue		ArtificialRowDispersion		{ get; private set; }
+		[JsonIgnore]	public	OneParameterOneValue		ArtificialRowVariance		{ get; private set; }
+		[JsonIgnore]	public	List<OneParameterOneValue>	AllValuesWithArtificials	{ get; private set; }
 
-		public string ChosenAsString { get {
-			string ret = "";
-			foreach (var eachValue in this.ValuesByParam.Values) {
+		[JsonIgnore]			List<OneParameterOneValue>	oneParamValuesChosen_cached;
+		[JsonIgnore]	public	List<OneParameterOneValue>	OneParamValuesChosen	{ get {
+			//SINCE_WE_MANIPULATE_CHOSEN_ON_STARTUP_I_GET_WRONG_NUMBERS if (this.oneParamValuesChosen_cached != null) return this.oneParamValuesChosen_cached;
+			List<OneParameterOneValue> ret = new List<OneParameterOneValue>();
+			foreach (var eachValue in this.OneParamOneValueByValues.Values) {
 				if (eachValue.Chosen == false) continue;
+				ret.Add(eachValue);
+			}
+			this.oneParamValuesChosen_cached = ret;
+			return ret;
+		} }
+		[JsonProperty]	public	int							ChosenCount		{ get { return this.OneParamValuesChosen.Count; } }
+		[JsonProperty]	public	string						ChosenAsString	{ get {
+			string ret = "";
+			foreach (var eachValue in OneParamValuesChosen) {
 				ret += eachValue.ValueSequenced + ",";
 			}
 			if (string.IsNullOrEmpty(ret) == false) ret = ret.TrimEnd(",".ToCharArray());
 			return ret;
 		} }
-		public int ChosenCount { get {
-			int ret = 0;
-			foreach (var eachValue in this.ValuesByParam.Values) {
-				if (eachValue.Chosen == false) continue;
-				ret ++;
-			}
-			return ret;
-		} }
 
-		// "public" for RepositoryBlaBlaBla where T : new()
+
 		public OneParameterAllValuesAveraged() {
-			AllValuesWithArtificials	= new List<OneParameterOneValue>();
-			ValuesByParam				= new SortedDictionary<double, OneParameterOneValue>();
+			string msig = "THIS_CTOR_IS_REQUIRED_BY {public for RepositoryBlaBlaBla where T : new()}";
 
-			ArtificialRowAverage		= new OneParameterOneValue(this, 0, ARTIFICIAL_AVERAGE);
-			ArtificialRowDispersion		= new OneParameterOneValue(this, 0, ARTIFICIAL_AVERAGE_DISPERSION);
-			ArtificialRowVariance		= new OneParameterOneValue(this, 0, ARTIFICIAL_AVERAGE_VARIANCE);
+			AllValuesWithArtificials	= new List<OneParameterOneValue>();
+			OneParamOneValueByValues	= new SortedDictionary<double, OneParameterOneValue>();
+
+			ArtificialRowMean			= new OneParameterOneValue(this, 0, ARTIFICIAL_ROW_MEAN);
+			ArtificialRowDispersion		= new OneParameterOneValue(this, 0, ARTIFICIAL_ROW_DISPERSION);
+			ArtificialRowVariance		= new OneParameterOneValue(this, 0, ARTIFICIAL_ROW_VARIANCE);
+
 			MaximizationCriterion		= MaximizationCriterion.UNKNOWN;
 		}
 		public OneParameterAllValuesAveraged(Correlator correlator, string parameterName) : this() {
@@ -63,65 +69,70 @@ namespace Sq1.Core.Correlation {
 		}
 
 		internal void ClearBacktestsForAllMyValue_step1of3() {
-			foreach (OneParameterOneValue paramValue in this.ValuesByParam.Values) {
+			foreach (OneParameterOneValue paramValue in this.OneParamOneValueByValues.Values) {
 				paramValue.ClearBacktestsWithMyValue_step1of3();
 			}
+			this.oneParamValuesChosen_cached = null;
 		}
 
 		internal void AddBacktestForValue_KPIsGlobalAddForIndicatorValue_step2of3(double optimizedValue, SystemPerformanceRestoreAble eachRun) {
-			if (this.ValuesByParam.ContainsKey(optimizedValue) == false) {
-				this.ValuesByParam		  .Add(optimizedValue, new OneParameterOneValue	(this, optimizedValue));
+			if (this.OneParamOneValueByValues.ContainsKey(optimizedValue) == false) {
+				this.OneParamOneValueByValues		  .Add(optimizedValue, new OneParameterOneValue	(this, optimizedValue));
 				//this.AvgMomentumsByParam  .Add(optimizedValue, new AvgCorMomentums		(this, optimizedValue));
 			}
-			OneParameterOneValue paramValue = this.ValuesByParam[optimizedValue];
-			paramValue.AddBacktestForValue_AddKPIsGlobal_step2of3(eachRun);
+			OneParameterOneValue paramValue = this.OneParamOneValueByValues[optimizedValue];
+			paramValue.AddBacktestForValue(eachRun);
+			this.oneParamValuesChosen_cached = null;
 		}
 
-		internal void KPIsGlobalNoMoreParameters_DivideTotalsByCount_step3of3() {
-			foreach (OneParameterOneValue kpisForValue in this.ValuesByParam.Values) {
-				kpisForValue.KPIsGlobal_DivideTotalsByCount_step3of3();
+		internal void KPIsGlobalNoMoreParameters_CalculateGlobalsAndCloneToLocals_step3of3() {
+			foreach (OneParameterOneValue kpisForValue in this.OneParamOneValueByValues.Values) {
+				kpisForValue.CalculateGlobalsAndCloneToLocals();
 			}
 
-			this.AllValuesWithArtificials = new List<OneParameterOneValue>(this.ValuesByParam.Values);
+			this.AllValuesWithArtificials = new List<OneParameterOneValue>(this.OneParamOneValueByValues.Values);
 
-			this.ArtificialRowAverage.CalculateGlobalsForArtificial_Average();
-			this.ArtificialRowAverage.CalculateLocalsAndDeltasForArtificial_Average();
-			this.AllValuesWithArtificials.Add(this.ArtificialRowAverage);
+			//this.ArtificialRowMean.CalculateGlobalsForArtificial_Average();
+			//this.ArtificialRowMean.CalculateLocalsAndDeltasForArtificial_Average();
+			//this.AllValuesWithArtificials.Add(this.ArtificialRowMean);
 
-			this.ArtificialRowDispersion.CalculateGlobalsForArtificial_Dispersion();
-			this.ArtificialRowDispersion.CalculateLocalsAndDeltasForArtificial_Dispersion();
-			this.AllValuesWithArtificials.Add(this.ArtificialRowDispersion);
+			//this.ArtificialRowDispersion.CalculateGlobalsForArtificial_Dispersion();
+			//this.ArtificialRowDispersion.CalculateLocalsAndDeltasForArtificial_Dispersion();
+			//this.AllValuesWithArtificials.Add(this.ArtificialRowDispersion);
 
-			this.ArtificialRowVariance.CalculateGlobalsForArtificial_Variance();
-			this.ArtificialRowVariance.CalculateLocalsAndDeltasForArtificial_Variance();
+			//this.ArtificialRowVariance.CalculateGlobalsForArtificial_Variance();
+			//this.ArtificialRowVariance.CalculateLocalsAndDeltasForArtificial_Variance();
 			//REPLACE_WITH_max(avg(Net)),min(StDev(Net))_ALIGNED_WITH_MaximizationCriterion this.AllValuesWithArtificials.Add(this.ArtificialRowVariance);
+
+			this.oneParamValuesChosen_cached = null;
 		}
 
 		internal void CalculateLocalsAndDeltas_forEachValue_and3artificials() {
-			if (this.ValuesByParam.Count <= 1) {
+			if (this.OneParamOneValueByValues.Count <= 1) {
 				string msg = "I_HAVE_ONLY_ONE_VALUE_ACROSS_ALL_BACKTESTS__IM_NOT_DISPLAYED__SKIP_ME_UPSTACK";
 				Assembler.PopupException(msg);
 			}
-			foreach (OneParameterOneValue eachValue in this.ValuesByParam.Values) {
+			foreach (OneParameterOneValue eachValue in this.OneParamOneValueByValues.Values) {
 				eachValue.CalculateLocalsAndDeltas();
 			}
 
-			this.ArtificialRowAverage		.CalculateLocalsAndDeltasForArtificial_Average();
-			this.ArtificialRowDispersion	.CalculateLocalsAndDeltasForArtificial_Dispersion();
-			this.ArtificialRowVariance		.CalculateLocalsAndDeltasForArtificial_Variance();
+			//this.ArtificialRowMean			.CalculateLocalsAndDeltasForArtificial_Average();
+			//this.ArtificialRowDispersion	.CalculateLocalsAndDeltasForArtificial_Dispersion();
+			//this.ArtificialRowVariance		.CalculateLocalsAndDeltasForArtificial_Variance();
 		}
 
 		public override string ToString() {
-			string ret = this.ParameterName + ":" + this.ValuesByParam.Count + "values";
+			string ret = this.ParameterName + ":" + this.OneParamOneValueByValues.Count + "values";
 			ret += ";chosen[" + this.ChosenAsString + "]";
 			return ret;
 		}
 
 		internal void chooseThisUnchooseOthers(OneParameterOneValue thisCheckedOthersOff) {
 			int found = 0;
-			foreach (OneParameterOneValue eachValue in this.ValuesByParam.Values) {
+			foreach (OneParameterOneValue eachValue in this.OneParamOneValueByValues.Values) {
 				if (eachValue != thisCheckedOthersOff) {
 					eachValue.Chosen = false;
+					this.oneParamValuesChosen_cached = null;
 					continue;
 				}
 				eachValue.Chosen = true;
@@ -135,8 +146,9 @@ namespace Sq1.Core.Correlation {
 		}
 
 		internal void chooseAllValues() {
-			foreach (OneParameterOneValue eachValue in this.ValuesByParam.Values) {
+			foreach (OneParameterOneValue eachValue in this.OneParamOneValueByValues.Values) {
 				eachValue.Chosen = true;
+				this.oneParamValuesChosen_cached = null;
 			}
 		}
 

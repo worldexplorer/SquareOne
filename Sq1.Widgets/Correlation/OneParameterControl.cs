@@ -26,6 +26,7 @@ namespace Sq1.Widgets.Correlation {
 				Assembler.PopupException(msg);
 			}
 			return this.allParametersControl.Correlator; } }
+
 		IndicatorParameter	indicatorParameterNullUnsafe	{ get { 
 			IndicatorParameter ret = null;
 			if (this.correlator.Executor == null) {
@@ -298,19 +299,45 @@ namespace Sq1.Widgets.Correlation {
 				this.olvcMomentumsAverageMaxConsecutiveLosers
 				});
 
-			this.mniShowMomentumsDispersion.Click += new EventHandler(this.mniShowColumnByFilter_Click);
-			columnsByFilter.Add(this.mniShowMomentumsDispersion, new List<OLVColumn>() {
-				this.olvcMomentumsDispersionTotalPositions,
-				this.olvcMomentumsDispersionProfitPerPosition,
-				this.olvcMomentumsDispersionNetProfit,
-				this.olvcMomentumsDispersionWinLoss,
-				this.olvcMomentumsDispersionProfitFactor,
-				this.olvcMomentumsDispersionRecoveryFactor,
-				this.olvcMomentumsDispersionMaxDrawdown,
-				this.olvcMomentumsDispersionMaxConsecutiveWinners,
-				this.olvcMomentumsDispersionMaxConsecutiveLosers
+			this.mniShowMomentumsDispersionGlobal.Click += new EventHandler(this.mniShowColumnByFilter_Click);
+			columnsByFilter.Add(this.mniShowMomentumsDispersionGlobal, new List<OLVColumn>() {
+				this.olvcMomentumsDispersionGlobalTotalPositions,
+				this.olvcMomentumsDispersionGlobalProfitPerPosition,
+				this.olvcMomentumsDispersionGlobalNetProfit,
+				this.olvcMomentumsDispersionGlobalWinLoss,
+				this.olvcMomentumsDispersionGlobalProfitFactor,
+				this.olvcMomentumsDispersionGlobalRecoveryFactor,
+				this.olvcMomentumsDispersionGlobalMaxDrawdown,
+				this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners,
+				this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers
 				});
 
+			this.mniShowMomentumsDispersionLocal.Click += new EventHandler(this.mniShowColumnByFilter_Click);
+			columnsByFilter.Add(this.mniShowMomentumsDispersionLocal, new List<OLVColumn>() {
+				this.olvcMomentumsDispersionLocalTotalPositions,
+				this.olvcMomentumsDispersionLocalProfitPerPosition,
+				this.olvcMomentumsDispersionLocalNetProfit,
+				this.olvcMomentumsDispersionLocalWinLoss,
+				this.olvcMomentumsDispersionLocalProfitFactor,
+				this.olvcMomentumsDispersionLocalRecoveryFactor,
+				this.olvcMomentumsDispersionLocalMaxDrawdown,
+				this.olvcMomentumsDispersionLocalMaxConsecutiveWinners,
+				this.olvcMomentumsDispersionLocalMaxConsecutiveLosers
+				});
+
+			this.mniShowMomentumsDispersionDelta.Click += new EventHandler(this.mniShowColumnByFilter_Click);
+			columnsByFilter.Add(this.mniShowMomentumsDispersionDelta, new List<OLVColumn>() {
+				this.olvcMomentumsDispersionDeltaTotalPositions,
+				this.olvcMomentumsDispersionDeltaProfitPerPosition,
+				this.olvcMomentumsDispersionDeltaNetProfit,
+				this.olvcMomentumsDispersionDeltaWinLoss,
+				this.olvcMomentumsDispersionDeltaProfitFactor,
+				this.olvcMomentumsDispersionDeltaRecoveryFactor,
+				this.olvcMomentumsDispersionDeltaMaxDrawdown,
+				this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners,
+				this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers
+				});
+	
 			this.mniShowMomentumsVariance.Click += new EventHandler(this.mniShowColumnByFilter_Click);
 			columnsByFilter.Add(this.mniShowMomentumsVariance, new List<OLVColumn>() {
 				this.olvcMomentumsVarianceTotalPositions,
@@ -351,9 +378,8 @@ namespace Sq1.Widgets.Correlation {
 			parameter.OnParameterRecalculatedLocalsAndDeltas += new EventHandler<OneParameterAllValuesAveragedEventArgs>(parameter_ParameterRecalculatedLocalsAndDeltas);
 			base.Initialize_byMovingControlsToInner();
 			this.AlignBaseSizeToDisplayedCells();
-			this.dontSerializeStrategy_ImAligingInCtor = true;
-
 			this.populateKPIsToParamColumnHeader();
+			this.dontSerializeStrategy_ImAligingInCtor = false;
 		}
 
 		void Initialize() {
@@ -368,6 +394,19 @@ namespace Sq1.Widgets.Correlation {
 		}
 
 		internal void KPIsLocalRecalculateDone_refreshOLV() {
+			if (this.Parameter == null) {
+				string msg = "DONT_USE_DESIGNER_PURPOSED_DEFAULT_CONTROL "
+					+ " YOU_SHOULD_CALL_PROPER_CTOR public OneParameterControl(CorrelatorControl allParametersControl, OneParameterAllValuesAveraged parameter)"
+					+ " //KPIsLocalRecalculateDone_refreshOLV()";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			if (this.olv.IsDisposed == true) {
+				string msg = "CREATE_OLV_AFTER_YOU_CLOSED_CORELLATOR_FORM"
+					+ " //KPIsLocalRecalculateDone_refreshOLV()";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
 			this.olv.SetObjects(this.Parameter.AllValuesWithArtificials, true);
 			this.olv.UseWaitCursor = false;
 		}
@@ -376,10 +415,18 @@ namespace Sq1.Widgets.Correlation {
 			oneRowFullHeight += (this.olv.CellPadding != null)
 						? this.olv.CellPadding.Value.Top + this.olv.CellPadding.Value.Bottom
 						: 2;
-			int rowsPlusArtificials = this.Parameter.ValuesByParam.Count + 2;	// 3		//REPLACE_WITH_max(avg(Net)),min(StDev(Net))_ALIGNED_WITH_MaximizationCriterion 
+			if (this.Parameter == null) {
+				string msg = "DONT_USE_DESIGNER_PURPOSED_DEFAULT_CONTROL "
+					+ " YOU_SHOULD_CALL_PROPER_CTOR public OneParameterControl(CorrelatorControl allParametersControl, OneParameterAllValuesAveraged parameter)"
+					+ " //AlignBaseSizeToDisplayedCells()";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			//int rowsPlusArtificials = this.Parameter.OneParamOneValueByValues.Count + 2;	// 3		//REPLACE_WITH_max(avg(Net)),min(StDev(Net))_ALIGNED_WITH_MaximizationCriterion 
+			int rowsPlusArtificials = this.Parameter.AllValuesWithArtificials.Count;
 			int parentResizeableBordersTopBottom = base.PaddingMouseReceiving.Top + base.PaddingMouseReceiving.Bottom;
 			int headerAssumedHeight = oneRowFullHeight - 4;		//28;	// enough to fit hscrollbar...
-			//	headerAssumedHeight += 12;	// enough to fit hscrollbar...
+				headerAssumedHeight += 6;		//12;	// enough to fit hscrollbar...
 			int visibleRowsHeight = oneRowFullHeight * rowsPlusArtificials + parentResizeableBordersTopBottom + headerAssumedHeight;
 			base.Height = visibleRowsHeight;
 
@@ -400,13 +447,19 @@ namespace Sq1.Widgets.Correlation {
 			}
 
 			try {
-				CorrelatorOneParameterSnapshot snap = this.indicatorParameterNullUnsafe.CorrelatorSnap;
+				if (this.correlator.CorrelatorDataSnapshot.ContainsKey(this.Parameter.ParameterName) == false) {
+					this.correlator.CorrelatorDataSnapshot.Add(this.Parameter.ParameterName, new CorrelatorOneParameterSnapshot(this.Parameter.ParameterName));
+				}
+				CorrelatorOneParameterSnapshot snap = this.correlator.CorrelatorDataSnapshot[this.Parameter.ParameterName];
+
 				this.mniShowAllBacktestedParams			.Checked = snap.MniShowAllBacktestsChecked;
 				this.mniShowChosenParams				.Checked = snap.MniShowChosenChecked;
 				this.mniShowDeltasBtwAllAndChosenParams	.Checked = snap.MniShowDeltaChecked;
 
-				this.mniShowDeltasBtwAllAndChosenParams	.Checked = snap.MniShowMomentumsAverageChecked;
-				this.mniShowMomentumsDispersion			.Checked = snap.MniShowMomentumsDispersionChecked;
+				this.mniShowMomentumsAverage			.Checked = snap.MniShowMomentumsAverageChecked;
+				this.mniShowMomentumsDispersionGlobal	.Checked = snap.MniShowMomentumsDispersionGlobalChecked;
+				this.mniShowMomentumsDispersionLocal	.Checked = snap.MniShowMomentumsDispersionLocalChecked;
+				this.mniShowMomentumsDispersionDelta	.Checked = snap.MniShowMomentumsDispersionDeltaChecked;
 				this.mniShowMomentumsVariance			.Checked = snap.MniShowMomentumsVarianceChecked;
 
 				this.propagateColumnVisibilityFromMni();
@@ -419,21 +472,28 @@ namespace Sq1.Widgets.Correlation {
 					oLVColumn.VisibilityChanged += oLVColumn_VisibilityChanged;
 				}
 				// #2/2 OBJECTLISTVIEW_HACK__SEQUENCE_MATTERS!!!! otherwize RestoreState() doesn't restore after restart
-				if (this.indicatorParameterNullUnsafe.CorrelatorSnap.OlvStateBase64.Length > 0) {
-					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(this.indicatorParameterNullUnsafe.CorrelatorSnap.OlvStateBase64);
+				if (snap.OlvStateBase64.Length > 0) {
+					byte[] olvStateBinary = ObjectListViewStateSerializer.Base64Decode(snap.OlvStateBase64);
 					this.olv.RestoreState(olvStateBinary);
 				}
 			} catch (Exception ex) {
-				string msg = "this.olv.RestoreState(olvStateBinary)";
+				string msg = "CorrelatorDataSnapshot[" + this.Parameter.ParameterName + "] //olvStateBinaryRestoreAllValuesForOneParam()";
 				Assembler.PopupException(msg, ex);
 			}
 		}
-		void olvStateBinaryStateSaveAndRaiseStrategySerialize() {
-			byte[] olvStateBinary = this.olv.SaveState();
-			this.indicatorParameterNullUnsafe.CorrelatorSnap.OlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
+		void olvSaveBinaryState_SerializeSnapshot() {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			if (this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised) return;
-			this.allParametersControl.Correlator.Executor.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+			try {
+				byte[] olvStateBinary = this.olv.SaveState();
+				CorrelatorOneParameterSnapshot snap = this.correlator.CorrelatorDataSnapshot[this.Parameter.ParameterName];
+				snap.OlvStateBase64 = ObjectListViewStateSerializer.Base64Encode(olvStateBinary);
+				this.correlator.CorrelatorDataSnapshotSerializer.Serialize();
+				//I_REMOVED_CORRELATOR_SNAP_FROM_PARAMETERS__NO_NEED_TO_SAVE_ANYMORE this.allParametersControl.Correlator.Executor.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+			} catch (Exception ex) {
+				string msg = "CorrelatorDataSnapshot[" + this.Parameter.ParameterName + "] //olvSaveBinaryState_SerializeSnapshot()";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 
 		internal void OlvRebuildColumns() {

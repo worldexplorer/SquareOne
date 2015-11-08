@@ -32,55 +32,73 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcTotalPositionsLocal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcTotalPositionsDelta = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsAverageTotalPositions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionTotalPositions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionGlobalTotalPositions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionLocalTotalPositions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionDeltaTotalPositions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceTotalPositions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcProfitPerPositionGlobal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcProfitPerPositionLocal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcProfitPerPositionDelta = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsAverageProfitPerPosition = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionProfitPerPosition = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionGlobalProfitPerPosition = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionLocalProfitPerPosition = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionDeltaProfitPerPosition = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceProfitPerPosition = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcNetProfitGlobal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcNetProfitLocal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcNetProfitDelta = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsAverageNetProfit = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionNetProfit = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionGlobalNetProfit = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionLocalNetProfit = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionDeltaNetProfit = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceNetProfit = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcWinLossGlobal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcWinLossLocal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcWinLossDelta = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsAverageWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionGlobalWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionLocalWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionDeltaWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceWinLoss = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcProfitFactorGlobal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcProfitFactorLocal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcProfitFactorDelta = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsAverageProfitFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionProfitFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionGlobalProfitFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionLocalProfitFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionDeltaProfitFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceProfitFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcRecoveryFactorGlobal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcRecoveryFactorLocal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcRecoveryFactorDelta = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsAverageRecoveryFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionRecoveryFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionGlobalRecoveryFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionLocalRecoveryFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionDeltaRecoveryFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceRecoveryFactor = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxDrawdownGlobal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxDrawdownLocal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxDrawdownDelta = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsAverageMaxDrawdown = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionMaxDrawdown = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionGlobalMaxDrawdown = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionLocalMaxDrawdown = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionDeltaMaxDrawdown = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceMaxDrawdown = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxConsecutiveWinnersGlobal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxConsecutiveWinnersLocal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxConsecutiveWinnersDelta = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsAverageMaxConsecutiveWinners = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionMaxConsecutiveWinners = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionLocalMaxConsecutiveWinners = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceMaxConsecutiveWinners = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxConsecutiveLosersGlobal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxConsecutiveLosersLocal = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMaxConsecutiveLosersDelta = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsAverageMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcMomentumsDispersionMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionLocalMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcMomentumsVarianceMaxConsecutiveLosers = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxOneParameterControl = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniShowAllBacktestedParams = new System.Windows.Forms.ToolStripMenuItem();
@@ -88,7 +106,9 @@ namespace Sq1.Widgets.Correlation {
 			this.mniShowDeltasBtwAllAndChosenParams = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniShowMomentumsAverage = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniShowMomentumsDispersion = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniShowMomentumsDispersionGlobal = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniShowMomentumsDispersionLocal = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniShowMomentumsDispersionDelta = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniShowMomentumsVariance = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniMaximiseDeltaTotalPositions = new System.Windows.Forms.ToolStripMenuItem();
@@ -103,6 +123,7 @@ namespace Sq1.Widgets.Correlation {
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniMaximiseDeltaAutoRunAfterSequencerFinished = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniResizeToShowAllVisibleCells = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniCopyVisibleCellsToClipboard = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.olv)).BeginInit();
 			this.ctxOneParameterControl.SuspendLayout();
 			this.SuspendLayout();
@@ -118,55 +139,73 @@ namespace Sq1.Widgets.Correlation {
 			this.olv.AllColumns.Add(this.olvcTotalPositionsLocal);
 			this.olv.AllColumns.Add(this.olvcTotalPositionsDelta);
 			this.olv.AllColumns.Add(this.olvcMomentumsAverageTotalPositions);
-			this.olv.AllColumns.Add(this.olvcMomentumsDispersionTotalPositions);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionGlobalTotalPositions);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionLocalTotalPositions);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionDeltaTotalPositions);
 			this.olv.AllColumns.Add(this.olvcMomentumsVarianceTotalPositions);
 			this.olv.AllColumns.Add(this.olvcProfitPerPositionGlobal);
 			this.olv.AllColumns.Add(this.olvcProfitPerPositionLocal);
 			this.olv.AllColumns.Add(this.olvcProfitPerPositionDelta);
 			this.olv.AllColumns.Add(this.olvcMomentumsAverageProfitPerPosition);
-			this.olv.AllColumns.Add(this.olvcMomentumsDispersionProfitPerPosition);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionGlobalProfitPerPosition);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionLocalProfitPerPosition);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionDeltaProfitPerPosition);
 			this.olv.AllColumns.Add(this.olvcMomentumsVarianceProfitPerPosition);
 			this.olv.AllColumns.Add(this.olvcNetProfitGlobal);
 			this.olv.AllColumns.Add(this.olvcNetProfitLocal);
 			this.olv.AllColumns.Add(this.olvcNetProfitDelta);
 			this.olv.AllColumns.Add(this.olvcMomentumsAverageNetProfit);
-			this.olv.AllColumns.Add(this.olvcMomentumsDispersionNetProfit);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionGlobalNetProfit);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionLocalNetProfit);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionDeltaNetProfit);
 			this.olv.AllColumns.Add(this.olvcMomentumsVarianceNetProfit);
 			this.olv.AllColumns.Add(this.olvcWinLossGlobal);
 			this.olv.AllColumns.Add(this.olvcWinLossLocal);
 			this.olv.AllColumns.Add(this.olvcWinLossDelta);
 			this.olv.AllColumns.Add(this.olvcMomentumsAverageWinLoss);
-			this.olv.AllColumns.Add(this.olvcMomentumsDispersionWinLoss);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionGlobalWinLoss);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionLocalWinLoss);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionDeltaWinLoss);
 			this.olv.AllColumns.Add(this.olvcMomentumsVarianceWinLoss);
 			this.olv.AllColumns.Add(this.olvcProfitFactorGlobal);
 			this.olv.AllColumns.Add(this.olvcProfitFactorLocal);
 			this.olv.AllColumns.Add(this.olvcProfitFactorDelta);
 			this.olv.AllColumns.Add(this.olvcMomentumsAverageProfitFactor);
-			this.olv.AllColumns.Add(this.olvcMomentumsDispersionProfitFactor);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionGlobalProfitFactor);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionLocalProfitFactor);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionDeltaProfitFactor);
 			this.olv.AllColumns.Add(this.olvcMomentumsVarianceProfitFactor);
 			this.olv.AllColumns.Add(this.olvcRecoveryFactorGlobal);
 			this.olv.AllColumns.Add(this.olvcRecoveryFactorLocal);
 			this.olv.AllColumns.Add(this.olvcRecoveryFactorDelta);
 			this.olv.AllColumns.Add(this.olvcMomentumsAverageRecoveryFactor);
-			this.olv.AllColumns.Add(this.olvcMomentumsDispersionRecoveryFactor);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionGlobalRecoveryFactor);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionLocalRecoveryFactor);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionDeltaRecoveryFactor);
 			this.olv.AllColumns.Add(this.olvcMomentumsVarianceRecoveryFactor);
 			this.olv.AllColumns.Add(this.olvcMaxDrawdownGlobal);
 			this.olv.AllColumns.Add(this.olvcMaxDrawdownLocal);
 			this.olv.AllColumns.Add(this.olvcMaxDrawdownDelta);
 			this.olv.AllColumns.Add(this.olvcMomentumsAverageMaxDrawdown);
-			this.olv.AllColumns.Add(this.olvcMomentumsDispersionMaxDrawdown);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionGlobalMaxDrawdown);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionLocalMaxDrawdown);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionDeltaMaxDrawdown);
 			this.olv.AllColumns.Add(this.olvcMomentumsVarianceMaxDrawdown);
 			this.olv.AllColumns.Add(this.olvcMaxConsecutiveWinnersGlobal);
 			this.olv.AllColumns.Add(this.olvcMaxConsecutiveWinnersLocal);
 			this.olv.AllColumns.Add(this.olvcMaxConsecutiveWinnersDelta);
 			this.olv.AllColumns.Add(this.olvcMomentumsAverageMaxConsecutiveWinners);
-			this.olv.AllColumns.Add(this.olvcMomentumsDispersionMaxConsecutiveWinners);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionLocalMaxConsecutiveWinners);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners);
 			this.olv.AllColumns.Add(this.olvcMomentumsVarianceMaxConsecutiveWinners);
 			this.olv.AllColumns.Add(this.olvcMaxConsecutiveLosersGlobal);
 			this.olv.AllColumns.Add(this.olvcMaxConsecutiveLosersLocal);
 			this.olv.AllColumns.Add(this.olvcMaxConsecutiveLosersDelta);
 			this.olv.AllColumns.Add(this.olvcMomentumsAverageMaxConsecutiveLosers);
-			this.olv.AllColumns.Add(this.olvcMomentumsDispersionMaxConsecutiveLosers);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionLocalMaxConsecutiveLosers);
+			this.olv.AllColumns.Add(this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers);
 			this.olv.AllColumns.Add(this.olvcMomentumsVarianceMaxConsecutiveLosers);
 			this.olv.AllowColumnReorder = true;
 			this.olv.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -177,55 +216,73 @@ namespace Sq1.Widgets.Correlation {
             this.olvcTotalPositionsLocal,
             this.olvcTotalPositionsDelta,
             this.olvcMomentumsAverageTotalPositions,
-            this.olvcMomentumsDispersionTotalPositions,
+            this.olvcMomentumsDispersionGlobalTotalPositions,
+            this.olvcMomentumsDispersionLocalTotalPositions,
+            this.olvcMomentumsDispersionDeltaTotalPositions,
             this.olvcMomentumsVarianceTotalPositions,
             this.olvcProfitPerPositionGlobal,
             this.olvcProfitPerPositionLocal,
             this.olvcProfitPerPositionDelta,
             this.olvcMomentumsAverageProfitPerPosition,
-            this.olvcMomentumsDispersionProfitPerPosition,
+            this.olvcMomentumsDispersionGlobalProfitPerPosition,
+            this.olvcMomentumsDispersionLocalProfitPerPosition,
+            this.olvcMomentumsDispersionDeltaProfitPerPosition,
             this.olvcMomentumsVarianceProfitPerPosition,
             this.olvcNetProfitGlobal,
             this.olvcNetProfitLocal,
             this.olvcNetProfitDelta,
             this.olvcMomentumsAverageNetProfit,
-            this.olvcMomentumsDispersionNetProfit,
+            this.olvcMomentumsDispersionGlobalNetProfit,
+            this.olvcMomentumsDispersionLocalNetProfit,
+            this.olvcMomentumsDispersionDeltaNetProfit,
             this.olvcMomentumsVarianceNetProfit,
             this.olvcWinLossGlobal,
             this.olvcWinLossLocal,
             this.olvcWinLossDelta,
             this.olvcMomentumsAverageWinLoss,
-            this.olvcMomentumsDispersionWinLoss,
+            this.olvcMomentumsDispersionGlobalWinLoss,
+            this.olvcMomentumsDispersionLocalWinLoss,
+            this.olvcMomentumsDispersionDeltaWinLoss,
             this.olvcMomentumsVarianceWinLoss,
             this.olvcProfitFactorGlobal,
             this.olvcProfitFactorLocal,
             this.olvcProfitFactorDelta,
             this.olvcMomentumsAverageProfitFactor,
-            this.olvcMomentumsDispersionProfitFactor,
+            this.olvcMomentumsDispersionGlobalProfitFactor,
+            this.olvcMomentumsDispersionLocalProfitFactor,
+            this.olvcMomentumsDispersionDeltaProfitFactor,
             this.olvcMomentumsVarianceProfitFactor,
             this.olvcRecoveryFactorGlobal,
             this.olvcRecoveryFactorLocal,
             this.olvcRecoveryFactorDelta,
             this.olvcMomentumsAverageRecoveryFactor,
-            this.olvcMomentumsDispersionRecoveryFactor,
+            this.olvcMomentumsDispersionGlobalRecoveryFactor,
+            this.olvcMomentumsDispersionLocalRecoveryFactor,
+            this.olvcMomentumsDispersionDeltaRecoveryFactor,
             this.olvcMomentumsVarianceRecoveryFactor,
             this.olvcMaxDrawdownGlobal,
             this.olvcMaxDrawdownLocal,
             this.olvcMaxDrawdownDelta,
             this.olvcMomentumsAverageMaxDrawdown,
-            this.olvcMomentumsDispersionMaxDrawdown,
+            this.olvcMomentumsDispersionGlobalMaxDrawdown,
+            this.olvcMomentumsDispersionLocalMaxDrawdown,
+            this.olvcMomentumsDispersionDeltaMaxDrawdown,
             this.olvcMomentumsVarianceMaxDrawdown,
             this.olvcMaxConsecutiveWinnersGlobal,
             this.olvcMaxConsecutiveWinnersLocal,
             this.olvcMaxConsecutiveWinnersDelta,
             this.olvcMomentumsAverageMaxConsecutiveWinners,
-            this.olvcMomentumsDispersionMaxConsecutiveWinners,
+            this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners,
+            this.olvcMomentumsDispersionLocalMaxConsecutiveWinners,
+            this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners,
             this.olvcMomentumsVarianceMaxConsecutiveWinners,
             this.olvcMaxConsecutiveLosersGlobal,
             this.olvcMaxConsecutiveLosersLocal,
             this.olvcMaxConsecutiveLosersDelta,
             this.olvcMomentumsAverageMaxConsecutiveLosers,
-            this.olvcMomentumsDispersionMaxConsecutiveLosers,
+            this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers,
+            this.olvcMomentumsDispersionLocalMaxConsecutiveLosers,
+            this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers,
             this.olvcMomentumsVarianceMaxConsecutiveLosers});
 			this.olv.ContextMenuStrip = this.ctxOneParameterControl;
 			this.olv.Cursor = System.Windows.Forms.Cursors.Default;
@@ -295,13 +352,29 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsAverageTotalPositions.ToolTipText = "TotalPositions generated AllBacktested";
 			this.olvcMomentumsAverageTotalPositions.Width = 43;
 			// 
-			// olvcMomentumsDispersionTotalPositions
+			// olvcMomentumsDispersionGlobalTotalPositions
 			// 
-			this.olvcMomentumsDispersionTotalPositions.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionTotalPositions.Text = "#pos StDev";
-			this.olvcMomentumsDispersionTotalPositions.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionTotalPositions.ToolTipText = "TotalPositions generated StDev(selected with checkboxes))";
-			this.olvcMomentumsDispersionTotalPositions.Width = 43;
+			this.olvcMomentumsDispersionGlobalTotalPositions.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalTotalPositions.Text = "#POS StDev";
+			this.olvcMomentumsDispersionGlobalTotalPositions.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalTotalPositions.ToolTipText = "TotalPositions generated StDev(selected with checkboxes))";
+			this.olvcMomentumsDispersionGlobalTotalPositions.Width = 43;
+			// 
+			// olvcMomentumsDispersionLocalTotalPositions
+			// 
+			this.olvcMomentumsDispersionLocalTotalPositions.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalTotalPositions.Text = "#pos StDev";
+			this.olvcMomentumsDispersionLocalTotalPositions.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalTotalPositions.ToolTipText = "TotalPositions generated StDev(selected with checkboxes))";
+			this.olvcMomentumsDispersionLocalTotalPositions.Width = 43;
+			// 
+			// olvcMomentumsDispersionDeltaTotalPositions
+			// 
+			this.olvcMomentumsDispersionDeltaTotalPositions.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaTotalPositions.Text = "#pos StDev delta";
+			this.olvcMomentumsDispersionDeltaTotalPositions.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaTotalPositions.ToolTipText = "TotalPositions generated StDev(selected with checkboxes))";
+			this.olvcMomentumsDispersionDeltaTotalPositions.Width = 43;
 			// 
 			// olvcMomentumsVarianceTotalPositions
 			// 
@@ -343,13 +416,29 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsAverageProfitPerPosition.ToolTipText = "AverageProfit per Position Closed Mean";
 			this.olvcMomentumsAverageProfitPerPosition.Width = 52;
 			// 
-			// olvcMomentumsDispersionProfitPerPosition
+			// olvcMomentumsDispersionGlobalProfitPerPosition
 			// 
-			this.olvcMomentumsDispersionProfitPerPosition.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionProfitPerPosition.Text = "$/pos StDev";
-			this.olvcMomentumsDispersionProfitPerPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionProfitPerPosition.ToolTipText = "AverageProfit per Position Closed StDev(selected with checkboxes)";
-			this.olvcMomentumsDispersionProfitPerPosition.Width = 52;
+			this.olvcMomentumsDispersionGlobalProfitPerPosition.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalProfitPerPosition.Text = "$/POS StDev";
+			this.olvcMomentumsDispersionGlobalProfitPerPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalProfitPerPosition.ToolTipText = "AverageProfit per Position Closed StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionGlobalProfitPerPosition.Width = 52;
+			// 
+			// olvcMomentumsDispersionLocalProfitPerPosition
+			// 
+			this.olvcMomentumsDispersionLocalProfitPerPosition.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalProfitPerPosition.Text = "$/pos StDev";
+			this.olvcMomentumsDispersionLocalProfitPerPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalProfitPerPosition.ToolTipText = "AverageProfit per Position Closed StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionLocalProfitPerPosition.Width = 52;
+			// 
+			// olvcMomentumsDispersionDeltaProfitPerPosition
+			// 
+			this.olvcMomentumsDispersionDeltaProfitPerPosition.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaProfitPerPosition.Text = "$/pos StDev delta";
+			this.olvcMomentumsDispersionDeltaProfitPerPosition.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaProfitPerPosition.ToolTipText = "AverageProfit per Position Closed StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionDeltaProfitPerPosition.Width = 52;
 			// 
 			// olvcMomentumsVarianceProfitPerPosition
 			// 
@@ -391,13 +480,29 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsAverageNetProfit.ToolTipText = "NetProfit Mean";
 			this.olvcMomentumsAverageNetProfit.Width = 63;
 			// 
-			// olvcMomentumsDispersionNetProfit
+			// olvcMomentumsDispersionGlobalNetProfit
 			// 
-			this.olvcMomentumsDispersionNetProfit.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionNetProfit.Text = "net StDev";
-			this.olvcMomentumsDispersionNetProfit.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionNetProfit.ToolTipText = "NetProfit StDev(selected with checkboxes)";
-			this.olvcMomentumsDispersionNetProfit.Width = 63;
+			this.olvcMomentumsDispersionGlobalNetProfit.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalNetProfit.Text = "NET StDev";
+			this.olvcMomentumsDispersionGlobalNetProfit.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalNetProfit.ToolTipText = "NetProfit StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionGlobalNetProfit.Width = 63;
+			// 
+			// olvcMomentumsDispersionLocalNetProfit
+			// 
+			this.olvcMomentumsDispersionLocalNetProfit.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalNetProfit.Text = "net StDev";
+			this.olvcMomentumsDispersionLocalNetProfit.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalNetProfit.ToolTipText = "NetProfit StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionLocalNetProfit.Width = 63;
+			// 
+			// olvcMomentumsDispersionDeltaNetProfit
+			// 
+			this.olvcMomentumsDispersionDeltaNetProfit.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaNetProfit.Text = "net StDev delta";
+			this.olvcMomentumsDispersionDeltaNetProfit.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaNetProfit.ToolTipText = "NetProfit StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionDeltaNetProfit.Width = 63;
 			// 
 			// olvcMomentumsVarianceNetProfit
 			// 
@@ -439,13 +544,13 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsAverageWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss Mean";
 			this.olvcMomentumsAverageWinLoss.Width = 35;
 			// 
-			// olvcMomentumsDispersionWinLoss
+			// olvcMomentumsDispersionGlobalWinLoss
 			// 
-			this.olvcMomentumsDispersionWinLoss.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionWinLoss.Text = "wl StDev";
-			this.olvcMomentumsDispersionWinLoss.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss StDev(selected with checkboxes)";
-			this.olvcMomentumsDispersionWinLoss.Width = 35;
+			this.olvcMomentumsDispersionGlobalWinLoss.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalWinLoss.Text = "WL StDev";
+			this.olvcMomentumsDispersionGlobalWinLoss.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionGlobalWinLoss.Width = 35;
 			// 
 			// olvcMomentumsVarianceWinLoss
 			// 
@@ -487,13 +592,29 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsAverageProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost Mean";
 			this.olvcMomentumsAverageProfitFactor.Width = 32;
 			// 
-			// olvcMomentumsDispersionProfitFactor
+			// olvcMomentumsDispersionGlobalProfitFactor
 			// 
-			this.olvcMomentumsDispersionProfitFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionProfitFactor.Text = "pf StDev";
-			this.olvcMomentumsDispersionProfitFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost StDev(selected with checkboxes)";
-			this.olvcMomentumsDispersionProfitFactor.Width = 32;
+			this.olvcMomentumsDispersionGlobalProfitFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalProfitFactor.Text = "PF StDev";
+			this.olvcMomentumsDispersionGlobalProfitFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionGlobalProfitFactor.Width = 32;
+			// 
+			// olvcMomentumsDispersionLocalProfitFactor
+			// 
+			this.olvcMomentumsDispersionLocalProfitFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalProfitFactor.Text = "pf StDev";
+			this.olvcMomentumsDispersionLocalProfitFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionLocalProfitFactor.Width = 32;
+			// 
+			// olvcMomentumsDispersionDeltaProfitFactor
+			// 
+			this.olvcMomentumsDispersionDeltaProfitFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaProfitFactor.Text = "pf StDev delta";
+			this.olvcMomentumsDispersionDeltaProfitFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaProfitFactor.ToolTipText = "ProfitFactor = total$won / total$lost StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionDeltaProfitFactor.Width = 32;
 			// 
 			// olvcMomentumsVarianceProfitFactor
 			// 
@@ -537,22 +658,40 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsAverageRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown Mean";
 			this.olvcMomentumsAverageRecoveryFactor.Width = 32;
 			// 
-			// olvcMomentumsDispersionRecoveryFactor
+			// olvcMomentumsDispersionGlobalRecoveryFactor
 			// 
-			this.olvcMomentumsDispersionRecoveryFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionRecoveryFactor.Text = "rf StDev";
-			this.olvcMomentumsDispersionRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown StDev(selected w" +
-    "ith checkboxes)";
-			this.olvcMomentumsDispersionRecoveryFactor.Width = 32;
+			this.olvcMomentumsDispersionGlobalRecoveryFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalRecoveryFactor.Text = "RF StDev";
+			this.olvcMomentumsDispersionGlobalRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown StDev(selected wit" +
+    "h checkboxes)";
+			this.olvcMomentumsDispersionGlobalRecoveryFactor.Width = 32;
+			// 
+			// olvcMomentumsDispersionLocalRecoveryFactor
+			// 
+			this.olvcMomentumsDispersionLocalRecoveryFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalRecoveryFactor.Text = "rf StDev";
+			this.olvcMomentumsDispersionLocalRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown StDev(selected wit" +
+    "h checkboxes)";
+			this.olvcMomentumsDispersionLocalRecoveryFactor.Width = 32;
+			// 
+			// olvcMomentumsDispersionDeltaRecoveryFactor
+			// 
+			this.olvcMomentumsDispersionDeltaRecoveryFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaRecoveryFactor.Text = "rf StDev delta";
+			this.olvcMomentumsDispersionDeltaRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown StDev(selected wit" +
+    "h checkboxes)";
+			this.olvcMomentumsDispersionDeltaRecoveryFactor.Width = 32;
 			// 
 			// olvcMomentumsVarianceRecoveryFactor
 			// 
 			this.olvcMomentumsVarianceRecoveryFactor.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcMomentumsVarianceRecoveryFactor.Text = "rf Variance";
 			this.olvcMomentumsVarianceRecoveryFactor.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsVarianceRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown Variance=AllBacktes" +
-    "ted-Chosen";
+			this.olvcMomentumsVarianceRecoveryFactor.ToolTipText = "RecoveryFactor = NetProfitForClosedPositionsBoth / MaxDrawDown Variance=AllBackte" +
+    "sted-Chosen";
 			this.olvcMomentumsVarianceRecoveryFactor.Width = 32;
 			// 
 			// olvcMaxDrawdownGlobal
@@ -587,13 +726,29 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsAverageMaxDrawdown.ToolTipText = "MaxDrawdown, $ Mean";
 			this.olvcMomentumsAverageMaxDrawdown.Width = 63;
 			// 
-			// olvcMomentumsDispersionMaxDrawdown
+			// olvcMomentumsDispersionGlobalMaxDrawdown
 			// 
-			this.olvcMomentumsDispersionMaxDrawdown.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxDrawdown.Text = "dd StDev";
-			this.olvcMomentumsDispersionMaxDrawdown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxDrawdown.ToolTipText = "MaxDrawdown, $ StDev(selected with checkboxes)";
-			this.olvcMomentumsDispersionMaxDrawdown.Width = 63;
+			this.olvcMomentumsDispersionGlobalMaxDrawdown.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalMaxDrawdown.Text = "DD StDev";
+			this.olvcMomentumsDispersionGlobalMaxDrawdown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalMaxDrawdown.ToolTipText = "MaxDrawdown, $ StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionGlobalMaxDrawdown.Width = 63;
+			// 
+			// olvcMomentumsDispersionLocalMaxDrawdown
+			// 
+			this.olvcMomentumsDispersionLocalMaxDrawdown.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalMaxDrawdown.Text = "dd StDev";
+			this.olvcMomentumsDispersionLocalMaxDrawdown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalMaxDrawdown.ToolTipText = "MaxDrawdown, $ StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionLocalMaxDrawdown.Width = 63;
+			// 
+			// olvcMomentumsDispersionDeltaMaxDrawdown
+			// 
+			this.olvcMomentumsDispersionDeltaMaxDrawdown.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaMaxDrawdown.Text = "dd StDev delta";
+			this.olvcMomentumsDispersionDeltaMaxDrawdown.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaMaxDrawdown.ToolTipText = "MaxDrawdown, $ StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionDeltaMaxDrawdown.Width = 63;
 			// 
 			// olvcMomentumsVarianceMaxDrawdown
 			// 
@@ -635,13 +790,29 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsAverageMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners Mean";
 			this.olvcMomentumsAverageMaxConsecutiveWinners.Width = 31;
 			// 
-			// olvcMomentumsDispersionMaxConsecutiveWinners
+			// olvcMomentumsDispersionGlobalMaxConsecutiveWinners
 			// 
-			this.olvcMomentumsDispersionMaxConsecutiveWinners.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxConsecutiveWinners.Text = "cw StDev";
-			this.olvcMomentumsDispersionMaxConsecutiveWinners.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners StDev(selected with checkboxes)";
-			this.olvcMomentumsDispersionMaxConsecutiveWinners.Width = 31;
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners.Text = "CW StDev";
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveWinners.Width = 31;
+			// 
+			// olvcMomentumsDispersionLocalMaxConsecutiveWinners
+			// 
+			this.olvcMomentumsDispersionLocalMaxConsecutiveWinners.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalMaxConsecutiveWinners.Text = "cw StDev";
+			this.olvcMomentumsDispersionLocalMaxConsecutiveWinners.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionLocalMaxConsecutiveWinners.Width = 31;
+			// 
+			// olvcMomentumsDispersionDeltaMaxConsecutiveWinners
+			// 
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners.Text = "cw StDev delta";
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners.ToolTipText = "MaxConsecutiveWinners StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveWinners.Width = 31;
 			// 
 			// olvcMomentumsVarianceMaxConsecutiveWinners
 			// 
@@ -683,13 +854,29 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsAverageMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers Mean";
 			this.olvcMomentumsAverageMaxConsecutiveLosers.Width = 30;
 			// 
-			// olvcMomentumsDispersionMaxConsecutiveLosers
+			// olvcMomentumsDispersionGlobalMaxConsecutiveLosers
 			// 
-			this.olvcMomentumsDispersionMaxConsecutiveLosers.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxConsecutiveLosers.Text = "cl StDev";
-			this.olvcMomentumsDispersionMaxConsecutiveLosers.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcMomentumsDispersionMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers StDev(selected with checkboxes)";
-			this.olvcMomentumsDispersionMaxConsecutiveLosers.Width = 30;
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers.Text = "CL StDev";
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionGlobalMaxConsecutiveLosers.Width = 30;
+			// 
+			// olvcMomentumsDispersionLocalMaxConsecutiveLosers
+			// 
+			this.olvcMomentumsDispersionLocalMaxConsecutiveLosers.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalMaxConsecutiveLosers.Text = "cl StDev";
+			this.olvcMomentumsDispersionLocalMaxConsecutiveLosers.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionLocalMaxConsecutiveLosers.Width = 30;
+			// 
+			// olvcMomentumsDispersionDeltaMaxConsecutiveLosers
+			// 
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers.Text = "cl StDev delta";
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionDeltaMaxConsecutiveLosers.Width = 30;
 			// 
 			// olvcMomentumsVarianceMaxConsecutiveLosers
 			// 
@@ -699,6 +886,22 @@ namespace Sq1.Widgets.Correlation {
 			this.olvcMomentumsVarianceMaxConsecutiveLosers.ToolTipText = "MaxConsecutiveLosers Variance=AllBacktested-Chosen";
 			this.olvcMomentumsVarianceMaxConsecutiveLosers.Width = 30;
 			// 
+			// olvcMomentumsDispersionLocalWinLoss
+			// 
+			this.olvcMomentumsDispersionLocalWinLoss.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalWinLoss.Text = "wl StDev";
+			this.olvcMomentumsDispersionLocalWinLoss.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionLocalWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionLocalWinLoss.Width = 35;
+			// 
+			// olvcMomentumsDispersionDeltaWinLoss
+			// 
+			this.olvcMomentumsDispersionDeltaWinLoss.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaWinLoss.Text = "wl StDev delta";
+			this.olvcMomentumsDispersionDeltaWinLoss.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcMomentumsDispersionDeltaWinLoss.ToolTipText = "Win/Loss; WL=1 <= 50%win,50%loss StDev(selected with checkboxes)";
+			this.olvcMomentumsDispersionDeltaWinLoss.Width = 35;
+			// 
 			// ctxOneParameterControl
 			// 
 			this.ctxOneParameterControl.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -707,7 +910,9 @@ namespace Sq1.Widgets.Correlation {
             this.mniShowDeltasBtwAllAndChosenParams,
             this.toolStripSeparator1,
             this.mniShowMomentumsAverage,
-            this.mniShowMomentumsDispersion,
+            this.mniShowMomentumsDispersionGlobal,
+            this.mniShowMomentumsDispersionLocal,
+            this.mniShowMomentumsDispersionDelta,
             this.mniShowMomentumsVariance,
             this.toolStripSeparator2,
             this.mniMaximiseDeltaTotalPositions,
@@ -721,9 +926,10 @@ namespace Sq1.Widgets.Correlation {
             this.mniMaximiseDeltaMaxConsecutiveLosers,
             this.toolStripSeparator3,
             this.mniMaximiseDeltaAutoRunAfterSequencerFinished,
-            this.mniResizeToShowAllVisibleCells});
+            this.mniResizeToShowAllVisibleCells,
+            this.mniCopyVisibleCellsToClipboard});
 			this.ctxOneParameterControl.Name = "ctxOneParameterControl";
-			this.ctxOneParameterControl.Size = new System.Drawing.Size(343, 396);
+			this.ctxOneParameterControl.Size = new System.Drawing.Size(343, 484);
 			// 
 			// mniShowAllBacktestedParams
 			// 
@@ -758,14 +964,28 @@ namespace Sq1.Widgets.Correlation {
 			this.mniShowMomentumsAverage.Size = new System.Drawing.Size(342, 22);
 			this.mniShowMomentumsAverage.Text = "Show Momentums: Mean";
 			// 
-			// mniShowMomentumsDispersion
+			// mniShowMomentumsDispersionGlobal
 			// 
-			this.mniShowMomentumsDispersion.Checked = true;
-			this.mniShowMomentumsDispersion.CheckOnClick = true;
-			this.mniShowMomentumsDispersion.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.mniShowMomentumsDispersion.Name = "mniShowMomentumsDispersion";
-			this.mniShowMomentumsDispersion.Size = new System.Drawing.Size(342, 22);
-			this.mniShowMomentumsDispersion.Text = "Show Momentums: Standard Deviation";
+			this.mniShowMomentumsDispersionGlobal.CheckOnClick = true;
+			this.mniShowMomentumsDispersionGlobal.Name = "mniShowMomentumsDispersionGlobal";
+			this.mniShowMomentumsDispersionGlobal.Size = new System.Drawing.Size(342, 22);
+			this.mniShowMomentumsDispersionGlobal.Text = "Show StDev: All Backtested Params";
+			// 
+			// mniShowMomentumsDispersionLocal
+			// 
+			this.mniShowMomentumsDispersionLocal.CheckOnClick = true;
+			this.mniShowMomentumsDispersionLocal.Name = "mniShowMomentumsDispersionLocal";
+			this.mniShowMomentumsDispersionLocal.Size = new System.Drawing.Size(342, 22);
+			this.mniShowMomentumsDispersionLocal.Text = "Show StDev: Chosen Parameters";
+			// 
+			// mniShowMomentumsDispersionDelta
+			// 
+			this.mniShowMomentumsDispersionDelta.Checked = true;
+			this.mniShowMomentumsDispersionDelta.CheckOnClick = true;
+			this.mniShowMomentumsDispersionDelta.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.mniShowMomentumsDispersionDelta.Name = "mniShowMomentumsDispersionDelta";
+			this.mniShowMomentumsDispersionDelta.Size = new System.Drawing.Size(342, 22);
+			this.mniShowMomentumsDispersionDelta.Text = "Show StDev: Deltas = (Chosen - AllBacktested)";
 			// 
 			// mniShowMomentumsVariance
 			// 
@@ -865,6 +1085,14 @@ namespace Sq1.Widgets.Correlation {
 			this.mniResizeToShowAllVisibleCells.Text = "Resize To Show All Visible Cells";
 			this.mniResizeToShowAllVisibleCells.Click += new System.EventHandler(this.mniShowAllVisibleCells_Click);
 			// 
+			// mniCopyVisibleCellsToClipboard
+			// 
+			this.mniCopyVisibleCellsToClipboard.Name = "mniCopyVisibleCellsToClipboard";
+			this.mniCopyVisibleCellsToClipboard.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.mniCopyVisibleCellsToClipboard.Size = new System.Drawing.Size(342, 22);
+			this.mniCopyVisibleCellsToClipboard.Text = "Copy Visible Cells to Clipboard";
+			this.mniCopyVisibleCellsToClipboard.Click += new System.EventHandler(this.mniCopyVisibleCellsToClipboard_Click);
+			// 
 			// OneParameterControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -926,15 +1154,35 @@ namespace Sq1.Widgets.Correlation {
 		private BrightIdeasSoftware.OLVColumn olvcMomentumsAverageMaxConsecutiveWinners;
 		private BrightIdeasSoftware.OLVColumn olvcMomentumsAverageMaxConsecutiveLosers;
 
-		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionTotalPositions;
-		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionProfitPerPosition;
-		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionNetProfit;
-		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionWinLoss;
-		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionProfitFactor;
-		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionRecoveryFactor;
-		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionMaxDrawdown;
-		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionMaxConsecutiveWinners;
-		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionMaxConsecutiveLosers;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionGlobalTotalPositions;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionGlobalProfitPerPosition;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionGlobalNetProfit;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionGlobalWinLoss;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionGlobalProfitFactor;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionGlobalRecoveryFactor;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionGlobalMaxDrawdown;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionGlobalMaxConsecutiveWinners;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionGlobalMaxConsecutiveLosers;
+
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionLocalTotalPositions;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionLocalProfitPerPosition;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionLocalNetProfit;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionLocalWinLoss;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionLocalProfitFactor;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionLocalRecoveryFactor;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionLocalMaxDrawdown;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionLocalMaxConsecutiveWinners;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionLocalMaxConsecutiveLosers;
+
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionDeltaTotalPositions;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionDeltaProfitPerPosition;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionDeltaNetProfit;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionDeltaWinLoss;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionDeltaProfitFactor;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionDeltaRecoveryFactor;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionDeltaMaxDrawdown;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionDeltaMaxConsecutiveWinners;
+		private BrightIdeasSoftware.OLVColumn olvcMomentumsDispersionDeltaMaxConsecutiveLosers;
 
 		private BrightIdeasSoftware.OLVColumn olvcMomentumsVarianceTotalPositions;
 		private BrightIdeasSoftware.OLVColumn olvcMomentumsVarianceProfitPerPosition;
@@ -963,9 +1211,12 @@ namespace Sq1.Widgets.Correlation {
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem mniMaximiseDeltaAutoRunAfterSequencerFinished;
 		private System.Windows.Forms.ToolStripMenuItem mniShowMomentumsAverage;
-		private System.Windows.Forms.ToolStripMenuItem mniShowMomentumsDispersion;
+		private System.Windows.Forms.ToolStripMenuItem mniShowMomentumsDispersionGlobal;
 		private System.Windows.Forms.ToolStripMenuItem mniShowMomentumsVariance;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripMenuItem mniResizeToShowAllVisibleCells;
+		private System.Windows.Forms.ToolStripMenuItem mniCopyVisibleCellsToClipboard;
+		private System.Windows.Forms.ToolStripMenuItem mniShowMomentumsDispersionLocal;
+		private System.Windows.Forms.ToolStripMenuItem mniShowMomentumsDispersionDelta;
 	}
 }

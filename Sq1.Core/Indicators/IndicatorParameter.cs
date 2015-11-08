@@ -34,16 +34,14 @@ namespace Sq1.Core.Indicators {
 		//public string ValueString;
 		//public BarScaleInterval ValueBarScaleInterval;
 
-		[JsonProperty]	public bool		BorderShown;
-		[JsonProperty]	public bool		NumericUpdownShown;
-		[JsonProperty]	public CorrelatorOneParameterSnapshot	CorrelatorSnap;
+		[JsonProperty]	public bool				BorderShown;
+		[JsonProperty]	public bool				NumericUpdownShown;
 
 		// DESPITE_NOT_INVOKED_EXPLICITLY__I_GUESS_INITIALIZING_VALUES_USING_OTHER_CONSTRUCTOR_MAY_CORRUPT_JSON_DESERIALIZATION
 		public IndicatorParameter() {
 			BorderShown = false;
 			NumericUpdownShown = true;
 			IndicatorName = "NOT_ATTACHED_TO_ANY_INDICATOR_YET will be replaced in Indicator.cs:118.ParametersByNameParametersByName";
-			CorrelatorSnap = new CorrelatorOneParameterSnapshot();
 		}
 		public IndicatorParameter(string name, double valueCurrent = double.NaN,
 								  double valueMin = double.NaN, double valueMax = double.NaN, double valueIncrement = double.NaN) : this() {
@@ -87,7 +85,6 @@ namespace Sq1.Core.Indicators {
 			this.WillBeSequenced	= ctxParamToAbsorbCurrentAndFixBoundaries.WillBeSequenced;
 			this.BorderShown		= ctxParamToAbsorbCurrentAndFixBoundaries.BorderShown;
 			this.NumericUpdownShown	= ctxParamToAbsorbCurrentAndFixBoundaries.NumericUpdownShown;
-			this.CorrelatorSnap		= ctxParamToAbsorbCurrentAndFixBoundaries.CorrelatorSnap;
 
 			bool ret = false;
 
@@ -125,10 +122,5 @@ namespace Sq1.Core.Indicators {
 			ret.ReasonToClone = "CLONE[" + reasonToClone + "]_" + ret.ReasonToClone;
 			return ret;
 		}
-		
-		public void ShrinkForSerialization() {
-			this.CorrelatorSnap = null;
-		}
-
 	}
 }

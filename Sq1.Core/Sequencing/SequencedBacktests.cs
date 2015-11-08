@@ -23,7 +23,9 @@ namespace Sq1.Core.Sequencing {
 		[JsonProperty]	public	double								ProfitFactorAverage				{ get; private set; }
 		
 		[JsonProperty]	private	List<SystemPerformanceRestoreAble>	backtests;//					{ get; private set; }
-		[JsonProperty]	public	bool								ShowOnlyCorrelatorChosenBacktests;		//{ get; private set; }
+
+		//MOVED_TO_CorrelatorOneParameterSnapshot [JsonProperty]	public	bool								ShowOnlyCorrelatorChosenBacktests;		//CANDIDATE_FOR_SMALLER_JSON_FILE { get; private set; }
+		//MOVED_TO_CorrelatorOneParameterSnapshot [JsonProperty]	public	bool								StatsAndHistoryCollapsed;				//CANDIDATE_FOR_SMALLER_JSON_FILE { get; private set; }
 		
 		[JsonIgnore]			List<SystemPerformanceRestoreAble>	subset_cached;
 		[JsonIgnore]	public	List<SystemPerformanceRestoreAble>	Subset { get {
@@ -100,8 +102,10 @@ namespace Sq1.Core.Sequencing {
 				return this.subsetWalkforward_cached;
 			} }
 
-		[JsonProperty]	public	double								SubsetPercentage				{ get; private set; }
-		[JsonProperty]	public	bool								SubsetPercentageFromEnd			{ get; private set; }		//WalkForward=true
+		//MOVED_TO_CorrelatorOneParameterSnapshot
+		[JsonProperty]	public	double								SubsetPercentage				{ get; private set; }		//CANDIDATE_FOR_SMALLER_JSON_FILE 
+		//MOVED_TO_CorrelatorOneParameterSnapshot
+		[JsonProperty]	public	bool								SubsetPercentageFromEnd			{ get; private set; }		//CANDIDATE_FOR_SMALLER_JSON_FILE  WalkForward=true
 		[JsonProperty]	public	DateTime							SubsetWaterLineDateTime			{ get {
 				DateTime ret = DateTime.MaxValue;
 				//if (this.BacktestedBarFirstDateTime == DateTime.MinValue) {
@@ -163,8 +167,8 @@ namespace Sq1.Core.Sequencing {
 			string msig				= "THIS_CTOR_IS_INVOKED_BY_JSON_DESERIALIZER__KEEP_ME_PUBLIC__CREATE_[JsonIgnore]d_VARIABLES_HERE";
 			backtests				= new List<SystemPerformanceRestoreAble>();
 			FileName 				= SequencedBacktests.SEQUENCED_BACKTESTS_NO_FNAME__REINITIALIZE_REPOSITORY;
-			SubsetPercentage		= 100;
-			SubsetPercentageFromEnd = false;
+			//SubsetPercentage		= 100;
+			//SubsetPercentageFromEnd = false;
 		}
 		public SequencedBacktests(ScriptExecutor executor, string fileName) : this() {
 			this.StrategyName					= executor.StrategyName;

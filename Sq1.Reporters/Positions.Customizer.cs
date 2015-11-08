@@ -267,6 +267,7 @@ namespace Sq1.Reporters {
 		}
 
 		void olvPositions_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e) {
+			if (this.ignoreColumnWidthChanged_onNewReportDataFlushed_dontSaveStrategy) return;
 			this.olvBinaryStateSaveRaiseStrategySerialize();
 		}
 	}

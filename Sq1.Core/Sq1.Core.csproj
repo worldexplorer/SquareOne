@@ -107,8 +107,10 @@
     <Compile Include="Charting\HostPanelForIndicator.cs" />
     <Compile Include="Charting\MultiSplitterProperties.cs" />
     <Compile Include="Charting\OnChartObjectOperationStatus.cs" />
-    <Compile Include="Correlation\AvgCorMomentumsCalculator.cs" />
-    <Compile Include="Correlation\OneParameterAllAvgCorMomentums.cs" />
+    <Compile Include="Correlation\KPIsCalculator.cs" />
+    <Compile Include="Correlation\MomentumsCalculator.cs" />
+    <Compile Include="Correlation\KPIsMomentum.cs" />
+    <Compile Include="Sequencing\SequencerSnapshot.cs" />
     <Compile Include="Correlation\KPIsAveraged.cs" />
     <Compile Include="Correlation\OneParameterAllValuesAveraged.cs" />
     <Compile Include="Correlation\OneParameterAllValuesAveraged.EventGenerator.cs">
@@ -120,7 +122,9 @@
     <Compile Include="Correlation\Correlator.EventGenerator.cs">
       <DependentUpon>Correlator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Correlation\AvgCorMomentums.cs" />
+    <Compile Include="Correlation\Correlator.Subset.cs">
+      <DependentUpon>Correlator.cs</DependentUpon>
+    </Compile>
     <Compile Include="Correlation\Stats.cs" />
     <Compile Include="DataFeed\DataSource.EventGenerator.cs">
       <DependentUpon>DataSource.cs</DependentUpon>

@@ -41,7 +41,7 @@ namespace Sq1.Core.Sequencing {
 		}
 		public SystemPerformanceRestoreAble(SystemPerformance sysPerfBacktestResult) : this() {
 			if (sysPerfBacktestResult == null) {
-				Assembler.PopupException("DONT_INVOKE_ME_WITH_NULL AVOIDING_NPE");
+				Assembler.PopupException("DONT_INVOKE_ME_WITH_NULL AVOIDING_NPE PARAMETERLESS_CTOR_MUST_BE_PUBLIC_SystemPerformanceRestoreAble(){}_FOR_DESERIALIZATION");
 				return;
 			}
 			this.ScriptParametersById_BuiltOnBacktestFinished						= sysPerfBacktestResult.ScriptParametersById_BuiltOnBacktestFinished;
@@ -72,14 +72,6 @@ namespace Sq1.Core.Sequencing {
 			// Added_[JsonIgnore] to:
 			// [JsonIgnore]	public	SortedDictionary<int, ScriptParameter>			ScriptParametersById_BuiltOnBacktestFinished					{ get; private set; }
 			// [JsonIgnore]	public	Dictionary<string, List<IndicatorParameter>>	IndicatorParametersByName_BuiltOnBacktestFinished				{ get; private set; }
-
-			// DESPITE_YOU_Added_[JsonIgnore]_THERE_IS_STILL_GARBAGE
-			this.shrinkCorrelatorSnapForSerialization();
-		}
-		void shrinkCorrelatorSnapForSerialization() {
-			foreach (IndicatorParameter param in this.ScriptAndIndicatorParameterClonesByName_BuiltOnBacktestFinished.Values) {
-				param.ShrinkForSerialization();
-			}
 		}
 
 		[JsonProperty]	public	DateTime	KPIsCumulativeDateFirst_DateTimeMinUnsafe		{ get {

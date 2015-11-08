@@ -21502,7 +21502,6 @@
       "ReasonToExist": "SEQUENCED_ITERATION_48/48"
     }
   ],
-  "ShowOnlyCorrelatorChosenBacktests": false,
   "Name": "RIM3 1-Minute 510 Bars",
   "StrategyName": "TwoMAsCompiled",
   "Symbol": "RIM3",

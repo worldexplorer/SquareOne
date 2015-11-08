@@ -53,7 +53,7 @@ namespace Sq1.Widgets.Correlation {
 			if (columns.Count == 0) return;
 
 			this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised = true;
-			this.populateKPIsToParamColumnHeader();
+			//this.populateKPIsToParamColumnHeader();
 
 			try {
 				foreach (OLVColumn column in columns) {
@@ -63,7 +63,8 @@ namespace Sq1.Widgets.Correlation {
 				this.AlignBaseSizeToDisplayedCells();
 				this.ctxOneParameterControl.Show();	//I like when it stays open, but AutoClose=false results in not opening at all
 
-				CorrelatorOneParameterSnapshot snap = this.indicatorParameterNullUnsafe.CorrelatorSnap;
+				//CorrelatorOneParameterSnapshot snap = this.indicatorParameterNullUnsafe.CorrelatorSnap;
+				CorrelatorOneParameterSnapshot snap = this.correlator.CorrelatorDataSnapshot[this.Parameter.ParameterName];
 				if (mni == this.mniShowAllBacktestedParams) {
 					snap.MniShowAllBacktestsChecked = mni.Checked;
 				} else if (mni == this.mniShowChosenParams) {
@@ -73,19 +74,28 @@ namespace Sq1.Widgets.Correlation {
 
 				} else if (mni == this.mniShowMomentumsAverage) {
 					snap.MniShowMomentumsAverageChecked = mni.Checked;
-				} else if (mni == this.mniShowMomentumsDispersion) {
-					snap.MniShowMomentumsDispersionChecked = mni.Checked;
+				} else if (mni == this.mniShowMomentumsDispersionGlobal) {
+					snap.MniShowMomentumsDispersionGlobalChecked = mni.Checked;
+				} else if (mni == this.mniShowMomentumsDispersionLocal) {
+					snap.MniShowMomentumsDispersionLocalChecked = mni.Checked;
+				} else if (mni == this.mniShowMomentumsDispersionDelta) {
+					snap.MniShowMomentumsDispersionDeltaChecked = mni.Checked;
 				} else if (mni == this.mniShowMomentumsVariance) {
 					snap.MniShowMomentumsVarianceChecked = mni.Checked;
 				} else {
 					string msg = "I_DONT_HAVE_A_PLACE_IN_CorrelatorOneParameterSnapshot_TO_SAVE_STATE_OF_YOUR_MNI[" + mni.Text + "]";
 					Assembler.PopupException(msg);
 				}
-
-				// shortest path to serialize CorrelationSnapshot
-				this.allParametersControl.Correlator.Executor.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+				//v1
+				//this.correlator.CorrelatorDataSnapshotSerializer.Serialize();
+				//// shortest path to serialize CorrelationSnapshot
+				//this.allParametersControl.Correlator.Executor.ChartShadow.RaiseContextScriptChangedContainerShouldSerialize();
+				//v2
+				this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised = false;
+				this.olvSaveBinaryState_SerializeSnapshot();
+				this.populateKPIsToParamColumnHeader();
 			} catch (Exception ex) {
-				string msg = "STRATEGY_SERIALIZATION_FAILED";
+				string msg = "STRATEGY_SERIALIZATION_FAILED //mniShowColumnByFilter_Click()";
 				Assembler.PopupException(msg + msig, ex);
 			} finally {
 				this.dontRaiseContainerShouldSerializedForEachColumnVisibilityChanged_alreadyRaised = false;
@@ -106,8 +116,12 @@ namespace Sq1.Widgets.Correlation {
 
 				} else if (each == this.mniShowMomentumsAverage) {
 					mnisCheckedToHeader += "Mean";
-				} else if (each == this.mniShowMomentumsDispersion) {
-					mnisCheckedToHeader += "StDev";
+				} else if (each == this.mniShowMomentumsDispersionGlobal) {
+					mnisCheckedToHeader += "StDevAll";
+				} else if (each == this.mniShowMomentumsDispersionLocal) {
+					mnisCheckedToHeader += "StDevChosen";
+				} else if (each == this.mniShowMomentumsDispersionDelta) {
+					mnisCheckedToHeader += "StDevDelta";
 				} else if (each == this.mniShowMomentumsVariance) {
 					mnisCheckedToHeader += "Var";
 				} else {
@@ -122,6 +136,10 @@ namespace Sq1.Widgets.Correlation {
 		}
 		void mniShowAllVisibleCells_Click(object sender, EventArgs e) {
 			this.AlignBaseSizeToDisplayedCells();
+		}
+
+		void mniCopyVisibleCellsToClipboard_Click(object sender, EventArgs e) {
+			this.olv.CopyObjectsToClipboard(this.Parameter.AllValuesWithArtificials);
 		}
 	}
 }
