@@ -23,7 +23,7 @@ namespace Sq1.Widgets.SteppingSlider {
 		public decimal ValueCurrent {
 			get { return this.PanelFillSlider.ValueCurrent; }
 			set {
-				this.PanelFillSlider.ValueCurrent = value;
+				this.PanelFillSlider.ValueCurrent = value;		// => RaiseValueCurrentChanged()
 				this.mniltbValueCurrent.InputFieldValue = this.format(this.PanelFillSlider.ValueCurrent);
 				this.DomainUpDown.Text = this.format(this.PanelFillSlider.ValueCurrent);
 				// numericUpDown clicked causes double backtest and Disposes TSI menu items this.RaiseValueChanged();

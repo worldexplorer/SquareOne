@@ -21,7 +21,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				var dataSource = o as DataSource;
 				if (dataSource == null) return o.ToString();
 				string dsName = dataSource.Name;
-				if (this.showScaleIntervalInsteadOfMarket) {
+				if (this.ShowScaleIntervalInsteadOfMarket) {
 					dsName += " :: " + dataSource.ScaleInterval;
 				} else {
 					if (dataSource.MarketInfo != null) {
