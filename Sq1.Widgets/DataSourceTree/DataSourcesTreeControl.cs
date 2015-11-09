@@ -11,25 +11,21 @@ using Sq1.Core.Streaming;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl : UserControl {
-		RepositoryJsonDataSource dataSourceRepository;
-		Dictionary<Type, int> imageIndexByStreamingAdapterType = new Dictionary<Type, int>();
+				RepositoryJsonDataSource				dataSourceRepository;
+				Dictionary<Type, int>					imageIndexByStreamingAdapterType = new Dictionary<Type, int>();
 
-		public DataSource DataSourceSelected;
-		public string SymbolSelected;
+		public	DataSource								DataSourceSelected	{ get; private set; }
+		public	string									SymbolSelected		{ get; private set; }
 
-		bool ignoreExpandCollapseEventsDuringInitializationOrUninitialized;
-		DataSourceTreeDataSnapshot dataSnapshot;
-		Serializer<DataSourceTreeDataSnapshot> dataSnapshotSerializer;
+				bool									ignoreExpandCollapseEventsDuringInitializationOrUninitialized;
+				DataSourceTreeDataSnapshot				dataSnapshot;
+				Serializer<DataSourceTreeDataSnapshot>	dataSnapshotSerializer;
 
 		public string TreeFirstColumnNameText {
 			get { return this.olvColumnName.Text; }
 			set { this.olvColumnName.Text = value; }
 		}
-		private bool showScaleIntervalInsteadOfMarket;
-		public bool ShowScaleIntervalInsteadOfMarket {
-			get { return this.showScaleIntervalInsteadOfMarket; }
-			set { this.showScaleIntervalInsteadOfMarket = value; }
-		}
+		public bool ShowScaleIntervalInsteadOfMarket;
 		public List<ToolStripMenuItem> DataSourcesAsMniList { get {
 			List<ToolStripMenuItem> ret = new List<ToolStripMenuItem>();
 			foreach (DataSource ds in Assembler.InstanceInitialized.RepositoryJsonDataSource.ItemsAsList) {
@@ -176,6 +172,36 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 			this.DataSourceSelected = dataSourceParent;
 			this.SymbolSelected = symbol;
+		}
+		public void SelectDatasource(string dataSourceName) {
+			string msig = " SelectDatasource([" + dataSourceName + "])";
+			DataSource dataSourceFound = null;
+			int indexForDataSource = 0;
+			foreach (object shouldBeDataSource in this.tree.Objects) {
+				DataSource dataSourceEach = shouldBeDataSource as DataSource;
+				//if (dataSourceEach == null) continue;	//that was Symbol1-2-3
+				if (dataSourceEach.Name == dataSourceName) {
+					dataSourceFound = dataSourceEach;
+					break;
+				}
+				indexForDataSource++;
+				if (this.tree.IsExpanded(dataSourceEach)) {
+					indexForDataSource += dataSourceEach.Symbols.Count;
+				}
+			}
+			if (dataSourceFound == null) {
+				string msg = "DATASOURCE_NOT_FOUND_IN_TREE_OBJECTS dataSourceName[" + dataSourceName + "]"
+					+ "; you may have removed from DataSources before application restart"
+					+ ", and one of the strategies requested the deleted datasource";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.tree.Expand(dataSourceFound);
+			this.tree.EnsureModelVisible(dataSourceFound);
+			this.tree.SelectObject(dataSourceFound);
+
+			this.DataSourceSelected = dataSourceFound;
+			this.SymbolSelected = null;
 		}
 		public void SelectSymbol(string dataSourceName, string symbol) {
 			string msig = " SelectSymbol([" + dataSourceName + "], [" + symbol + "])";

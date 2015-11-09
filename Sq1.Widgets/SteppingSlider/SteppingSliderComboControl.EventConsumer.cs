@@ -46,8 +46,8 @@ namespace Sq1.Widgets.SteppingSlider {
 				this.DomainUpDown.BackColor = Color.White;
 				parsed -= this.ValueIncrement;
 				if (parsed < this.ValueMinRtlSafe) return;
-				this.ValueCurrent = parsed;
-				this.RaiseValueChanged();
+				this.ValueCurrent = parsed;		// => RaiseValueCurrentChanged()
+				// AVOIDING_DUPLICATED_EVENT__ASSIGNING_ALREADY_RAISED this.RaiseValueChanged();
 			} catch (Exception ex) {
 				this.DomainUpDown.BackColor = Color.LightSalmon;
 			}
@@ -58,8 +58,8 @@ namespace Sq1.Widgets.SteppingSlider {
 				this.DomainUpDown.BackColor = Color.White;
 				parsed += this.ValueIncrement;
 				if (parsed > this.ValueMaxRtlSafe) return;
-				this.ValueCurrent = parsed;
-				this.RaiseValueChanged();
+				this.ValueCurrent = parsed;		// => RaiseValueCurrentChanged()
+				// AVOIDING_DUPLICATED_EVENT__ASSIGNING_ALREADY_RAISED this.RaiseValueChanged();
 			} catch (Exception ex) {
 				this.DomainUpDown.BackColor = Color.LightSalmon;
 			}

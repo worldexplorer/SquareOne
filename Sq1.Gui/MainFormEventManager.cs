@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 
+using WeifenLuo.WinFormsUI.Docking;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
@@ -8,7 +10,6 @@ using Sq1.Core.StrategyBase;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 using Sq1.Widgets;
-using WeifenLuo.WinFormsUI.Docking;
 using Sq1.Widgets.SteppingSlider;
 
 namespace Sq1.Gui {
@@ -163,6 +164,14 @@ namespace Sq1.Gui {
 				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = -1;
 				string msg = "focus might have moved away from a document to Docked Panel"
 					+ "; I'm here after having focused on ExceptionsForm docked into Documents pane";
+				
+				DataSourceEditorForm dataSourceEditorFormClicked = this.mainForm.DockPanel.ActiveDocument as DataSourceEditorForm;
+				if (dataSourceEditorFormClicked != null) {
+					DataSourcesForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+					string dsNameToSelect = dataSourceEditorFormClicked.DataSourceEditorControl.DataSourceName;
+					DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
+				}
+
 				return;
 			}
 			//if (chartFormClicked.IsActivated == false) return;	//NOUP ActiveDocumentChanged is invoked twice: 1) for a form loosing control, 2) for a form gaining control
