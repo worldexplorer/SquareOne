@@ -9,10 +9,10 @@ using System.Globalization;
 using Sq1.Core;
 
 namespace Sq1.Adapters.Quik.Dde.XlDde {
-	public abstract class XlDdeChannel {
-		public string Topic { get; private set; }
-		public bool isConnected;
-		public virtual bool IsConnected {
+	public abstract class XlDdeTable {
+		public			string		Topic				{ get; private set; }
+		public 			bool		isConnected;
+		public virtual	bool		IsConnected			{
 			get { return this.isConnected; }
 			set {
 				if (this.isConnected == value) return;
@@ -21,20 +21,20 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			}
 		}
 
-		public DateTime LastDataReceived { get; protected set; }
-		public bool IsError { get; protected set; }
-		public void ResetError() { IsError = false; }
+		public			DateTime	LastDataReceived	{ get; protected set; }
+		public			bool		InErrorState				{ get; protected set; }
+		public			void		ResetError()		{ InErrorState = false; }
 
-		protected List<XlColumn> columns;
-		protected Dictionary<int, XlColumn> columnsByIndexFound;
-		protected bool columnsIdentified;
+		protected	List<XlColumn>				columns;
+		protected	Dictionary<int, XlColumn>	columnsByIndexFound;
+		protected	bool						columnsIdentified;
 		//List<string> primaryKey;
 		//Dictionary<string, XlColumn> rowParsed;
 
-		public XlDdeChannel(string topic) : this() {
+		public XlDdeTable(string topic) : this() {
 			this.Topic = topic;
 		}
-		public XlDdeChannel() {
+		public XlDdeTable() {
 			this.columnsIdentified = false;
 			this.columns = new List<XlColumn>();
 		}
@@ -43,17 +43,17 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			this.LastDataReceived = DateTime.UtcNow;
 
 			using (XlTable xt = new XlTable(data)) {
-				this.ProcessTable(xt);
+				this.PutDdeTable(xt);
 			}
 		}
-		protected virtual void ProcessTable(XlTable xt) {
+		protected virtual void PutDdeTable(XlTable xt) {
 			for (int i = 0; i < xt.RowsCount; i++) {
 				if (this.columnsIdentified == false) {
-					this.columnsIdentified = identifyColumnsByReadingHeader(xt);
+					this.columnsIdentified = this.identifyColumnsByReadingHeader(xt);
 					if (this.columnsIdentified == false) return;
 					if (xt.RowsCount == 1) return;
 				}
-				XlRowParsed rowParsed = parseRow(xt);
+				XlRowParsed rowParsed = this.parseRow(xt);
 				if (rowParsed == null || rowParsed.Count == 0) continue;
 				string columnName = columns[0].Name;
 				if (rowParsed[columnName] == null) continue;
@@ -78,7 +78,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 				}
 
 				try {
-					processNonHeaderRowParsed(rowParsed);
+					this.processNonHeaderRowParsed(rowParsed);
 				} catch (Exception e) {
 					string msg = "[" + this.LastDataReceived.ToString("HH:mm:ss.fff ddd dd MMM yyyy") + "] Exception in Channdel: " + e.Message;
 					Assembler.PopupException(msg, e);
@@ -167,7 +167,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			string ret = "";
 			if (string.IsNullOrEmpty(this.Topic) == false) ret += "Topic[" + this.Topic + "] ";
 			ret += (this.IsConnected ? "Connected" : "Disconnected")
-				+ " " + (this.IsError ? "Error!" : "NoError")
+				+ " " + (this.InErrorState ? "Error!" : "NoError")
 				+ " " + (this.columnsIdentified ? "columnsIdentified" : "columnsNotIdentified");
 			return ret;
 		}

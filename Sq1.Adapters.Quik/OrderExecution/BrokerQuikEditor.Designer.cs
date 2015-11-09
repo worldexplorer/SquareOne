@@ -68,8 +68,6 @@ namespace Sq1.Adapters.Quik {
 			// 
 			// txtQuikAccount
 			// 
-			this.txtQuikAccount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtQuikAccount.Location = new System.Drawing.Point(3, 100);
 			this.txtQuikAccount.Name = "txtQuikAccount";
 			this.txtQuikAccount.Size = new System.Drawing.Size(108, 20);
@@ -111,15 +109,15 @@ namespace Sq1.Adapters.Quik {
 			// 
 			this.txtQuikAccountMicex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtQuikAccountMicex.Location = new System.Drawing.Point(133, 100);
+			this.txtQuikAccountMicex.Location = new System.Drawing.Point(130, 100);
 			this.txtQuikAccountMicex.Name = "txtQuikAccountMicex";
-			this.txtQuikAccountMicex.Size = new System.Drawing.Size(108, 20);
+			this.txtQuikAccountMicex.Size = new System.Drawing.Size(111, 20);
 			this.txtQuikAccountMicex.TabIndex = 23;
 			// 
 			// lblQuikAccountMicex
 			// 
 			this.lblQuikAccountMicex.AutoSize = true;
-			this.lblQuikAccountMicex.Location = new System.Drawing.Point(133, 84);
+			this.lblQuikAccountMicex.Location = new System.Drawing.Point(131, 84);
 			this.lblQuikAccountMicex.Name = "lblQuikAccountMicex";
 			this.lblQuikAccountMicex.Size = new System.Drawing.Size(102, 13);
 			this.lblQuikAccountMicex.TabIndex = 22;
@@ -137,13 +135,13 @@ namespace Sq1.Adapters.Quik {
 			// lblCashAvailableMicex
 			// 
 			this.lblCashAvailableMicex.AutoSize = true;
-			this.lblCashAvailableMicex.Location = new System.Drawing.Point(130, 123);
+			this.lblCashAvailableMicex.Location = new System.Drawing.Point(131, 123);
 			this.lblCashAvailableMicex.Name = "lblCashAvailableMicex";
 			this.lblCashAvailableMicex.Size = new System.Drawing.Size(113, 13);
 			this.lblCashAvailableMicex.TabIndex = 24;
 			this.lblCashAvailableMicex.Text = "Cash Available MICEX";
 			// 
-			// BrokerQuikSettingsEditor
+			// BrokerQuikEditor
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.AutoScroll = true;
@@ -160,7 +158,7 @@ namespace Sq1.Adapters.Quik {
 			this.Controls.Add(this.txtQuikFolder);
 			this.Controls.Add(this.lblQuikAccount);
 			this.Controls.Add(this.lblQuikPath);
-			this.Name = "BrokerQuikSettingsEditor";
+			this.Name = "BrokerQuikEditor";
 			this.Size = new System.Drawing.Size(244, 171);
 			this.ResumeLayout(false);
 			this.PerformLayout();

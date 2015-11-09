@@ -7,16 +7,16 @@ using System;
 using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
-	public sealed class DdeChannelTrades : XlDdeChannel {
-		const string cnDate = "TRADEDATE";
-		const string cnTime = "TRADETIME";
-		const string cnSecCode = "SECCODE";
-		const string cnClassCode = "CLASSCODE";
-		const string cnPrice = "PRICE";
-		const string cnQuantity = "QTY";
-		const string cnOperation = "BUYSELL";
-		const string strBuyOp = "BUY";
-		const string strSellOp = "SELL";
+	public class DdeTableTrades : XlDdeTable {
+		const string cnDate			= "TRADEDATE";
+		const string cnTime			= "TRADETIME";
+		const string cnSecCode		= "SECCODE";
+		const string cnClassCode	= "CLASSCODE";
+		const string cnPrice		= "PRICE";
+		const string cnQuantity		= "QTY";
+		const string cnOperation	= "BUYSELL";
+		const string strBuyOp		= "BUY";
+		const string strSellOp		= "SELL";
 		
 		StreamingQuik quikStreamingAdapter;
 		int cDate;
@@ -26,25 +26,25 @@ namespace Sq1.Adapters.Quik.Dde {
 		int cOp;
 		int cSecCode;
 		int cClassCode;
-		bool columnsUnknown;
+		bool columnsNotDetected;
 
-		public DdeChannelTrades(string topic, StreamingQuik streamingAdapter) : base(topic) {
+		public DdeTableTrades(string topic, StreamingQuik streamingAdapter) : base(topic) {
 			this.quikStreamingAdapter = streamingAdapter;
-			columnsUnknown = true;
+			this.columnsNotDetected = true;
 		}
 		public override bool IsConnected {
 			get { return base.IsConnected; }
 			set {
-				columnsUnknown = true;
+				this.columnsNotDetected = true;
 				base.IsConnected = value;
 			}
 		}
 		protected override void processNonHeaderRowParsed(XlRowParsed row) {
 			int a = 1;
 		}
-		protected override void ProcessTable(XlTable xt) {
+		protected override void PutDdeTable(XlTable xt) {
 			int row = 0;
-			if (columnsUnknown) {
+			if (this.columnsNotDetected) {
 				cDate = -1;
 				cTime = -1;
 				cPrice = -1;
@@ -83,12 +83,12 @@ namespace Sq1.Adapters.Quik.Dde {
 				}
 
 				if (cDate < 0 || cTime < 0 || cPrice < 0 || cQuantity < 0 || cOp < 0 || cSecCode < 0 || cClassCode < 0) {
-					IsError = true;
+					InErrorState = true;
 					return;
 				}
 
 				row++;
-				columnsUnknown = false;
+				columnsNotDetected = false;
 			}
 
 			while (row++ < xt.RowsCount) {
@@ -158,7 +158,7 @@ namespace Sq1.Adapters.Quik.Dde {
 				if (rowCorrect) {
 					quikStreamingAdapter.TradeDeliveredDdeCallback(secCode + classCode, t);
 				} else {
-					IsError = true;
+					InErrorState = true;
 				}
 			}
 		}

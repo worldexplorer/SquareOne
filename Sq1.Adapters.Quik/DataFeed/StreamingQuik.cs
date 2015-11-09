@@ -15,12 +15,12 @@ namespace Sq1.Adapters.Quik {
 		[JsonProperty]	public	string		DdeTopicQuotes		{ get; internal set; }
 		[JsonProperty]	public	string		DdeTopicTrades		{ get; internal set; }
 		[JsonProperty]	public	string		DdeTopicPrefixDom	{ get; internal set; }
-		[JsonIgnore]			DdeChannels	DdeChannels;
+		[JsonIgnore]			DdeTables	DdeTables;
 		[JsonIgnore]			string		DdeChannelsEstablished { get {
 				string ret = "DDE_CHANNELS_NULL__STREAMING_QUIK_NOT_YET_INITIALIZED";
-				if (this.DdeChannels == null) return ret;
+				if (this.DdeTables == null) return ret;
 				lock (base.SymbolsSubscribedLock) {
-					ret = this.DdeChannels.ToString();
+					ret = this.DdeTables.ToString();
 				}
 				return ret;
 			} }
@@ -36,11 +36,11 @@ namespace Sq1.Adapters.Quik {
 			} }
 		[JsonProperty]	public override List<string> SymbolsUpstreamSubscribed { get {
 				List<string> ret = new List<string>();
-				if (this.DdeChannels == null) {
+				if (this.DdeTables == null) {
 					string msg = "NO_SYMBOLS__STREAMING_QUIK_NOT_INITIALIZED_DDE_CHANNELS_NULL";
 					return ret;
 				}
-				ret = this.DdeChannels.SymbolsHavingIndividualChannels;
+				ret = this.DdeTables.SymbolsHavingIndividualChannels;
 				return ret;
 			} }
 		
@@ -57,30 +57,30 @@ namespace Sq1.Adapters.Quik {
 		public override void Initialize(DataSource dataSource) {
 			base.Name = "Quik Streaming";
 			base.Initialize(dataSource);
-			this.DdeChannels = new DdeChannels(this);
+			this.DdeTables = new DdeTables(this);
 			//MOVED_TO_MainForm.WorkspaceLoad() this.Connect();
 		}
 		public override void UpstreamConnect() {
 			if (base.IsConnected == true) return;
-			string symbolsSubscribed = subscribeAllSymbols();
-			this.DdeChannels.StartDdeServer();
+			string symbolsSubscribed = this.upstreamSubscribeAllSymbols();
+			this.DdeTables.StartDdeServer();
 			base.ConnectionState = ConnectionState.ConnectedUnsubscribed;
 			//Assembler.DisplayConnectionStatus(base.ConnectionState, "Started symbolsSubscribed[" + symbolsSubscribed + "]");
-			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " started DdeChannels[" + this.DdeChannels.ToString() + "]");
+			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " started DdeChannels[" + this.DdeTables.ToString() + "]");
 			base.IsConnected = true;
 		}
 		public override void UpstreamDisconnect() {
 			if (base.IsConnected == false) return;
-			Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeChannels.ToString() + "]");
-			string symbolsUnsubscribed = unsubscribeAllSymbols();
+			Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeTables.ToString() + "]");
+			string symbolsUnsubscribed = this.upstreamUnsubscribeAllSymbols();
 			base.ConnectionState = ConnectionState.Disconnected;
 			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " Stopped symbolsUnsubscribed[" + symbolsUnsubscribed + "]");
-			this.DdeChannels.StopDdeServer();
-			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " stopped DdeChannels[" + this.DdeChannels.ToString() + "]");
+			this.DdeTables.StopDdeServer();
+			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " stopped DdeChannels[" + this.DdeTables.ToString() + "]");
 			base.IsConnected = false;
 		}
 
-		private string subscribeAllSymbols() {
+		string upstreamSubscribeAllSymbols() {
 			string ret = "";
 			lock (base.SymbolsSubscribedLock) {
 				foreach (string symbol in base.DataSource.Symbols) {
@@ -91,7 +91,7 @@ namespace Sq1.Adapters.Quik {
 			ret = ret.TrimEnd(' ');
 			return ret;
 		}
-		private string unsubscribeAllSymbols() {
+		string upstreamUnsubscribeAllSymbols() {
 			string ret = "";
 			lock (base.SymbolsSubscribedLock) {
 				foreach (string symbol in base.DataSource.Symbols) {
@@ -109,13 +109,13 @@ namespace Sq1.Adapters.Quik {
 				return;
 			}
 			lock (base.SymbolsSubscribedLock) {
-				if (this.DdeChannels.SymbolHasIndividualChannels(symbol)) {
-					String msg = "QUIK: ALREADY SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeChannels.IndividualChannelsForSymbol(symbol) + "]";
+				if (this.DdeTables.SymbolHasIndividualChannels(symbol)) {
+					String msg = "QUIK: ALREADY SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeTables.IndividualChannelsForSymbol(symbol) + "]";
 					Assembler.PopupException(msg);
 					//this.StatusReporter.UpdateConnectionStatus(ConnectionState.OK, 0, msg);
 					return;
 				}
-				this.DdeChannels.AddIndividualSymbolChannels(symbol);
+				this.DdeTables.AddIndividualSymbolChannels(symbol);
 			}
 		}
 		public override void UpstreamUnSubscribe(string symbol) {
@@ -124,12 +124,12 @@ namespace Sq1.Adapters.Quik {
 				return;
 			}
 			lock (base.SymbolsSubscribedLock) {
-				if (this.DdeChannels.SymbolHasIndividualChannels(symbol) == false) {
-					string errormsg = "QUIK: NOTHING TO REMOVE SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeChannels.IndividualChannelsForSymbol(symbol) + "]";
+				if (this.DdeTables.SymbolHasIndividualChannels(symbol) == false) {
+					string errormsg = "QUIK: NOTHING TO REMOVE SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeTables.IndividualChannelsForSymbol(symbol) + "]";
 					Assembler.PopupException(errormsg);
 					return;
 				}
-				this.DdeChannels.RemoveIndividualSymbolChannels(symbol);
+				this.DdeTables.RemoveIndividualSymbolChannels(symbol);
 			}
 		}
 		public override bool UpstreamIsSubscribed(string symbol) {
@@ -138,7 +138,7 @@ namespace Sq1.Adapters.Quik {
 				return false;
 			}
 			lock (base.SymbolsSubscribedLock) {
-				return this.DdeChannels.SymbolHasIndividualChannels(symbol);
+				return this.DdeTables.SymbolHasIndividualChannels(symbol);
 			}
 		}
 

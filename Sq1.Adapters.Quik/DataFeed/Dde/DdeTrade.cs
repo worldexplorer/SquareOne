@@ -5,11 +5,11 @@ using System;
 
 namespace Sq1.Adapters.Quik.Dde {
 	public struct DdeTrade {
-		public int IntPrice;
-		public double RawPrice;
-		public int Quantity;
-		public DdeTradeOp Op;
-		public DateTime DateTime;
+		public	int				IntPrice;
+		public	double			RawPrice;
+		public	int				Quantity;
+		public	DdeTradeOp		Op;
+		public	DateTime		DateTime;
 		//public DateTime Received;
 	}
 }

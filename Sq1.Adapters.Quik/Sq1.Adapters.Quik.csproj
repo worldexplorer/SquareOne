@@ -77,16 +77,16 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataFeed\Dde\DdeChannelDepth.cs" />
-    <Compile Include="DataFeed\Dde\DdeChannelLastQuote.cs" />
-    <Compile Include="DataFeed\Dde\DdeChannels.cs" />
-    <Compile Include="DataFeed\Dde\DdeChannelTrades.cs" />
+    <Compile Include="DataFeed\Dde\DdeTableDepth.cs" />
+    <Compile Include="DataFeed\Dde\DdeTableLastQuotes.cs" />
+    <Compile Include="DataFeed\Dde\DdeTables.cs" />
+    <Compile Include="DataFeed\Dde\DdeTableTrades.cs" />
     <Compile Include="DataFeed\Dde\DdeQuote.cs" />
     <Compile Include="DataFeed\Dde\DdeQuoteType.cs" />
     <Compile Include="DataFeed\Dde\DdeTrade.cs" />
     <Compile Include="DataFeed\Dde\DdeTradeOp.cs" />
     <Compile Include="DataFeed\Dde\XlDde\XlColumn.cs" />
-    <Compile Include="DataFeed\Dde\XlDde\XlDdeChannel.cs" />
+    <Compile Include="DataFeed\Dde\XlDde\XlDdeTable.cs" />
     <Compile Include="DataFeed\Dde\XlDde\XlDdeServer.cs" />
     <Compile Include="DataFeed\Dde\XlDde\XlRowParsed.cs" />
     <Compile Include="DataFeed\Dde\XlDde\XlTable.cs" />

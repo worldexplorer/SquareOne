@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
-	public class DdeChannelLastQuote : XlDdeChannel {
+	public class DdeTableLastQuotes : XlDdeTable {
 		protected StreamingQuik quikStreamingAdapter;
 		protected string quoteSource = "QUIK_DDE";
 		protected DateTime lastQuoteDateTimeForVolume = DateTime.MinValue;
 		protected double lastQuoteSizeForVolume = 0;
 
-		public DdeChannelLastQuote(string topic, StreamingQuik quikStreamingAdapter) : base(topic) {
+		public DdeTableLastQuotes(string topic, StreamingQuik quikStreamingAdapter) : base(topic) {
 			this.quikStreamingAdapter = quikStreamingAdapter;
 			base.columns = new List<XlColumn>() {
 				new XlColumn() { Name = "SHORTNAME",	TypeExpected = XlTable.BlockType.String,	Mandatory = true },

@@ -6,10 +6,10 @@ using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik {
 	public class StreamingDataSnapshotQuik : StreamingDataSnapshot {
-		[JsonProperty]	protected Dictionary<string, double> FortsDepositSell { get; private set; }
-		[JsonProperty]	protected Dictionary<string, double> FortsDepositBuy { get; private set; }
-		[JsonProperty]	protected Dictionary<string, double> FortsPriceMin { get; private set; }
-		[JsonProperty]	protected Dictionary<string, double> FortsPriceMax { get; private set; }
+		[JsonProperty]	protected Dictionary<string, double> FortsDepositSell	{ get; private set; }
+		[JsonProperty]	protected Dictionary<string, double> FortsDepositBuy	{ get; private set; }
+		[JsonProperty]	protected Dictionary<string, double> FortsPriceMin		{ get; private set; }
+		[JsonProperty]	protected Dictionary<string, double> FortsPriceMax		{ get; private set; }
 
 		public StreamingDataSnapshotQuik(StreamingAdapter streamingAdapter) : base(streamingAdapter) {
 			this.FortsDepositBuy	= new Dictionary<string, double>();

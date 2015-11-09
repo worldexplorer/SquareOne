@@ -15,10 +15,10 @@ namespace Sq1.Adapters.Quik {
 		}
 
 		public void EnrichFromStreamingDataSnapshotQuik(StreamingDataSnapshotQuik quikStreamingDataSnapshot) {
-			this.FortsDepositBuy = quikStreamingDataSnapshot.FortsGetDepositBuyForSymbol(base.Symbol);
-			this.FortsDepositSell = quikStreamingDataSnapshot.FortsGetDepositSellForSymbol(base.Symbol);
-			this.FortsPriceMin = quikStreamingDataSnapshot.FortsGetPriceMinForSymbol(base.Symbol);
-			this.FortsPriceMax = quikStreamingDataSnapshot.FortsGetPriceMaxForSymbol(base.Symbol);
+			this.FortsDepositBuy	= quikStreamingDataSnapshot.FortsGetDepositBuyForSymbol	(base.Symbol);
+			this.FortsDepositSell	= quikStreamingDataSnapshot.FortsGetDepositSellForSymbol(base.Symbol);
+			this.FortsPriceMin		= quikStreamingDataSnapshot.FortsGetPriceMinForSymbol	(base.Symbol);
+			this.FortsPriceMax		= quikStreamingDataSnapshot.FortsGetPriceMaxForSymbol	(base.Symbol);
 		}
 		public static QuoteQuik SafeUpcast(Quote quote) {
 			if (quote is QuoteQuik == false) {
