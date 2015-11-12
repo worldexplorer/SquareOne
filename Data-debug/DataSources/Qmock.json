@@ -2,10 +2,12 @@
   "$type": "Sq1.Core.DataFeed.DataSource, Sq1.Core",
   "SymbolSelected": "",
   "Symbols": [
-    "autogen"
+    "autogen",
+    "RIM3-Qmock"
   ],
   "ScaleInterval": {
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
+    "AsString_cached": "1-Minute",
     "Scale": 3,
     "Interval": 1,
     "IsIntraday": true,
@@ -21,25 +23,41 @@
       "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
       "lastQuoteClonesReceivedUnboundBySymbol": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
-        "autogen": null
+        "autogen": null,
+        "RIM3": null,
+        "RIM3-Qmock": null,
+        "RIM3-Qmoc": null,
+        "RIM3-Qmock66": null
       },
       "FortsDepositSell": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 10079.0
+        "autogen": 10021.0,
+        "RIM3-Qmock": 10086.0,
+        "RIM3-Qmoc": 10011.0,
+        "RIM3-Qmock66": 10057.0
       },
       "FortsDepositBuy": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 10043.0
+        "autogen": 10021.0,
+        "RIM3-Qmock": 10022.0,
+        "RIM3-Qmoc": 10086.0,
+        "RIM3-Qmock66": 10097.0
       },
       "FortsPriceMin": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 156000.0
+        "autogen": 156000.0,
+        "RIM3-Qmock": 156000.0,
+        "RIM3-Qmoc": 156000.0,
+        "RIM3-Qmock66": 156000.0
       },
       "FortsPriceMax": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 160000.0
+        "autogen": 160000.0,
+        "RIM3-Qmock": 160000.0,
+        "RIM3-Qmoc": 160000.0,
+        "RIM3-Qmock66": 160000.0
       },
-      "SymbolsSubscribedAndReceiving": "autogen:NULL"
+      "SymbolsSubscribedAndReceiving": "autogen:NULL,RIM3:NULL,RIM3-Qmock:NULL,RIM3-Qmoc:NULL,RIM3-Qmock66:NULL"
     }
   },
   "BrokerAdapter": {

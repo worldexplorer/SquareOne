@@ -59,9 +59,9 @@
       "IsCurrent": true,
       "StrategyEmittingOrders": false,
       "ReporterShortNamesUserInvokedJSONcheck": [
-        "Positions"
+        "Performance"
       ],
-      "BacktestOnRestart": true,
+      "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
@@ -90,8 +90,8 @@
       "SequenceIterationName": "it was a F5 GUI invoked backtest, not an optimization",
       "SequenceIterationSerno": -1,
       "Name": "Default",
-      "Symbol": "RIM3",
-      "DataSourceName": "MOCK",
+      "Symbol": "RIM3-Qmock",
+      "DataSourceName": "Qmock",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
         "AsString_cached": "1-Minute",
@@ -113,7 +113,7 @@
       "ShowRangeBar": false,
       "IsStreaming": false,
       "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=29,MAslow.Period=14)",
-      "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3 1-Minute 510 Bars"
+      "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3-Qmock 1-Minute 510 Bars"
     },
     "+ Net[248.0] PF[1.19] RF[0.55]": {
       "$type": "Sq1.Core.StrategyBase.ContextScript, Sq1.Core",

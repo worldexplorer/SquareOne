@@ -1,89 +1,12 @@
 {
   "$type": "Sq1.Gui.Forms.ChartFormDataSnapshot, Sq1.Gui",
-  "StrategyGuidJsonCheck": "NO_STRATEGY_CHART_ONLY",
-  "StrategyNameJsonCheck": "NO_STRATEGY_CHART_ONLY",
-  "StrategyAbsPathJsonCheck": "NO_STRATEGY_CHART_ONLY",
+  "StrategyGuidJsonCheck": "87a196aa-4f88-4a56-b0ab-39b77bba7b33",
+  "StrategyNameJsonCheck": "TwoMAsCompiled",
+  "StrategyAbsPathJsonCheck": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\Strategies\\Sq1.Strategies.Demo.dll\\TwoMAsCompiled.json",
   "ContextChart": {
-    "$type": "Sq1.Core.StrategyBase.ContextScript, Sq1.Core",
-    "PositionSize": {
-      "$type": "Sq1.Core.Execution.PositionSize, Sq1.Core",
-      "Mode": 1,
-      "DollarsConstantEachTrade": 0.0,
-      "SharesConstantEachTrade": 1.0
-    },
-    "ScriptParametersById": {
-      "$type": "System.Collections.Generic.SortedDictionary`2[[System.Int32, mscorlib],[Sq1.Core.StrategyBase.ScriptParameter, Sq1.Core]], System"
-    },
-    "IndicatorParametersByName": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Collections.Generic.List`1[[Sq1.Core.Indicators.IndicatorParameter, Sq1.Core]], mscorlib]], mscorlib",
-      "MAslow": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "IndicatorName": "MAslow",
-          "Name": "Period",
-          "ValueMin": 10.0,
-          "ValueMax": 20.0,
-          "ValueIncrement": 2.0,
-          "ValueCurrent": 14.0,
-          "WillBeSequenced": true,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "NumberOfRuns": 6,
-          "ValuesAsString": "14[10..20/2]"
-        }
-      ],
-      "MAfast": [
-        {
-          "$type": "Sq1.Core.Indicators.IndicatorParameter, Sq1.Core",
-          "IndicatorName": "MAfast",
-          "Name": "Period",
-          "ValueMin": 11.0,
-          "ValueMax": 32.0,
-          "ValueIncrement": 3.0,
-          "ValueCurrent": 29.0,
-          "WillBeSequenced": true,
-          "BorderShown": false,
-          "NumericUpdownShown": true,
-          "NumberOfRuns": 8,
-          "ValuesAsString": "29[11..32/3]"
-        }
-      ]
-    },
-    "IsCurrent": true,
-    "StrategyEmittingOrders": false,
-    "ReporterShortNamesUserInvokedJSONcheck": [
-      "Positions"
-    ],
-    "BacktestOnRestart": false,
-    "BacktestOnSelectorsChange": true,
-    "BacktestOnDataSourceSaved": true,
-    "ReportersSnapshots": {
-      "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
-      "Performance": null,
-      "Positions": {
-        "$type": "Sq1.Reporters.PositionsDataSnapshot, Sq1.Reporters",
-        "Colorify": true,
-        "PositionsOlvStateBase64": "AAEAAAD/////AQAAAAAAAAAMAgAAAFNPYmplY3RMaXN0VmlldywgVmVyc2lvbj0yLjguMC41OTcsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49YjFjNWJmNTgxNDgxYmNkNAwDAAAAV1N5c3RlbS5XaW5kb3dzLkZvcm1zLCBWZXJzaW9uPTQuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjc3YTVjNTYxOTM0ZTA4OQUBAAAANkJyaWdodElkZWFzU29mdHdhcmUuT2JqZWN0TGlzdFZpZXcrT2JqZWN0TGlzdFZpZXdTdGF0ZQkAAAANVmVyc2lvbk51bWJlcg9OdW1iZXJPZkNvbHVtbnMLQ3VycmVudFZpZXcKU29ydENvbHVtbg9Jc1Nob3dpbmdHcm91cHMNTGFzdFNvcnRPcmRlcg9Db2x1bW5Jc1Zpc2libGUVQ29sdW1uRGlzcGxheUluZGljaWVzDENvbHVtbldpZHRocwAABAAABAMDAwgIGVN5c3RlbS5XaW5kb3dzLkZvcm1zLlZpZXcDAAAACAEeU3lzdGVtLldpbmRvd3MuRm9ybXMuU29ydE9yZGVyAwAAABxTeXN0ZW0uQ29sbGVjdGlvbnMuQXJyYXlMaXN0HFN5c3RlbS5Db2xsZWN0aW9ucy5BcnJheUxpc3QcU3lzdGVtLkNvbGxlY3Rpb25zLkFycmF5TGlzdAIAAAABAAAAGAAAAAX8////GVN5c3RlbS5XaW5kb3dzLkZvcm1zLlZpZXcBAAAAB3ZhbHVlX18ACAMAAAABAAAA/////wAF+////x5TeXN0ZW0uV2luZG93cy5Gb3Jtcy5Tb3J0T3JkZXIBAAAAB3ZhbHVlX18ACAMAAAAAAAAACQYAAAAJBwAAAAkIAAAABAYAAAAcU3lzdGVtLkNvbGxlY3Rpb25zLkFycmF5TGlzdAMAAAAGX2l0ZW1zBV9zaXplCF92ZXJzaW9uBQAACAgJCQAAABgAAAAYAAAAAQcAAAAGAAAACQoAAAAYAAAAGAAAAAEIAAAABgAAAAkLAAAAGAAAABgAAAAQCQAAACAAAAAIAQEIAQEIAQAIAQAIAQAIAQAIAQAIAQAIAQEIAQAIAQAIAQAIAQEIAQAIAQAIAQAIAQAIAQAIAQAIAQAIAQAIAQAIAQAIAQANCBAKAAAAIAAAAAgIAAAAAAgIAQAAAAgIAgAAAAgIAwAAAAgIBAAAAAgIBQAAAAgIBgAAAAgIBwAAAAgICAAAAAgICQAAAAgICgAAAAgICwAAAAgIDAAAAAgIDQAAAAgIDgAAAAgIDwAAAAgIEAAAAAgIEQAAAAgIEgAAAAgIEwAAAAgIFAAAAAgIFQAAAAgIFgAAAAgI/////w0IEAsAAAAgAAAACAgjAAAACAgeAAAACAgoAAAACAgPAAAACAg8AAAACAh4AAAACAg8AAAACAgjAAAACAh4AAAACAg8AAAACAgjAAAACAhFAAAACAgsAAAACAgfAAAACAgoAAAACAhGAAAACAhGAAAACAgvAAAACAgvAAAACAg4AAAACAg5AAAACAg+AAAACAg8AAAACAgtAAAADQgL"
-      }
-    },
-    "ApplyCommission": false,
-    "EnableSlippage": false,
-    "LimitOrderSlippage": false,
-    "RoundEquityLots": false,
-    "RoundEquityLotsToUpperHundred": false,
-    "NoDecimalRoundingForLimitStopPrice": false,
-    "SlippageUnits": 1.0,
-    "SlippageTicks": 1,
-    "PriceStep": 0,
-    "FillOutsideQuoteSpreadParanoidCheckThrow": false,
-    "SpreadModelerClassName": "BacktestSpreadModelerPercentage",
-    "SpreadModelerPercent": 0.005,
-    "BacktestStrokesPerBar": 4,
-    "MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim": false,
-    "SequenceIterationName": "it was a F5 GUI invoked backtest, not an optimization",
-    "SequenceIterationSerno": -1,
-    "Name": "Default",
-    "Symbol": "RIM3-Qmock",
+    "$type": "Sq1.Core.StrategyBase.ContextChart, Sq1.Core",
+    "Name": "CHART_RIM3",
+    "Symbol": "RIM3",
     "DataSourceName": "Qmock",
     "ScaleInterval": {
       "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
@@ -99,14 +22,12 @@
       "Range": 1,
       "DateFrom": "0001-01-01T00:00:00",
       "DateTill": "9999-12-31T23:59:59.9999999",
-      "RecentBars": 510,
+      "RecentBars": 500,
       "RecentTimeunits": 0
     },
-    "IsStreamingTriggeringScript": true,
+    "IsStreamingTriggeringScript": false,
     "ShowRangeBar": false,
-    "IsStreaming": false,
-    "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=29,MAslow.Period=14)",
-    "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3-Qmock 1-Minute 510 Bars"
+    "IsStreaming": false
   },
   "ChartSettings": {
     "$type": "Sq1.Core.Charting.ChartSettings, Sq1.Core",
@@ -120,7 +41,7 @@
       "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 47
+        "Distance": 26
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -133,13 +54,13 @@
       "multiSplitContainerRows": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 18
+        "Distance": 26
       }
     },
     "Name": "Default",
-    "StrategyName": "CHART_ONLY",
+    "StrategyName": "TwoMAsCompiled",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 3,
+    "BarWidthIncludingPadding": 4,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
@@ -180,7 +101,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 401,
+    "ScrollPositionAtBarIndex": 492,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,
@@ -239,6 +160,6 @@
     "LevelTwoLotColor": "Black",
     "LevelTwoLotPaddingHorizontal": 3
   },
-  "ChartSerno": 3,
+  "ChartSerno": 5,
   "ContextChartCommentJsonCheck": "THIS_CHARTFORM_HAS_NO_STRATEGY_ATTACHED_SO_this.ContextChart_CONTAINS_CURRENT_BARSCALEINTEVAL_DATARANGE"
 }
