@@ -8,6 +8,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Widgets.RangeBar;
 using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
+using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormInterformEventsConsumer {
@@ -54,6 +55,14 @@ namespace Sq1.Gui.Forms {
 			//	Assembler.PopupException(msg);
 			//	return;
 			//}
+			string msig = " //DataSourcesTree_OnSymbolSelected(" + e.Symbol + ")";
+
+			if (this.chartFormManager.Executor.Strategy != null && this.chartFormManager.Executor.IsStreamingTriggeringScript) {
+				string msg = "I_REFUSE_CHANGE_SYMBOL__CURRENT_CHART_HAS_STRATEGY_RUNNING_ON_STREAMING";
+				Assembler.PopupException(msg + msig, null, false);
+				return;
+			}
+
 			try {
 				//v2
 				ContextChart contextChart = this.chartFormManager.ContextCurrentChartOrStrategy;
@@ -61,8 +70,16 @@ namespace Sq1.Gui.Forms {
 				if (contextChart.Symbol			!= e.Symbol) 			contextChart.Symbol 		= e.Symbol;
 				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("DataSourcesTree_OnSymbolSelected");
 				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
+
+				//copypaste from MainFormEventManager.DockPanel_ActiveDocumentChanged()
+				ChartForm chartFormCurrentlyOpen = this.chartFormManager.ChartForm;
+				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormCurrentlyOpen.ChartControl.ChartSettings);
+				if (chartFormCurrentlyOpen.ChartFormManager.Executor.Bars != null) {
+					SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbolInfo(chartFormCurrentlyOpen.ChartFormManager.Executor.Bars.SymbolInfo);
+				}
+
 			} catch (Exception ex) {
-				Assembler.PopupException("DataSourcesTree_OnSymbolSelected()", ex);
+				Assembler.PopupException(msig, ex);
 			}
 		}
 		internal void MainForm_ActivateDocumentPane_WithChart(object sender, EventArgs e) {
@@ -92,26 +109,26 @@ namespace Sq1.Gui.Forms {
 			
 			//if (this.chartFormManager.SequencerForm == null) {
 			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.SequencerForm) == true) {
-				string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
-				Assembler.PopupException(msg, null, false);
+				string msg = "don't even try to access SequencerConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
+				//Assembler.PopupException(msg, null, false);
 			} else {
-				this.chartFormManager.SequencerFormShow(true);
+				if (this.chartFormManager.SequencerForm.IsShown) this.chartFormManager.SequencerFormShow(true);
 			}
 
             //if (this.chartFormManager.CorrelatorForm == null) {
             if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.CorrelatorForm) == true) {
-                string msg = "don't even try to access OptimizationConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
-                Assembler.PopupException(msg, null, false);
+                string msg = "don't even try to access CorrelatorConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
+                //Assembler.PopupException(msg, null, false);
             } else {
-                this.chartFormManager.CorrelatorFormShow(true);
+                if (this.chartFormManager.CorrelatorForm.IsShown) this.chartFormManager.CorrelatorFormShow(true);
             }
 
             //if (this.chartFormManager.LivesimForm == null) {
 			if (DockContentImproved.IsNullOrDisposed(this.chartFormManager.LivesimForm) == true) {
-				string msg = "don't even try to access LivesimFormConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
-				Assembler.PopupException(msg, null, false);
+				string msg = "don't even try to access LivesimConditionalInstance if user didn't click implicitly; TODO where to can I incapsulate it?";
+				//Assembler.PopupException(msg, null, false);
 			} else {
-				this.chartFormManager.LivesimFormShow(true);
+				if (this.chartFormManager.LivesimForm.IsShown) this.chartFormManager.LivesimFormShow(true);
 			}
 		}
 		internal void Executor_BacktesterContextInitialized_step2of4(object sender, EventArgs e) {

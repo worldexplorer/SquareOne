@@ -11,6 +11,7 @@ using Sq1.Core.Indicators;
 using Sq1.Core.Streaming;
 using Sq1.Core.Charting;
 using Sq1.Charting.MultiSplit;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Charting {
 	public partial class ChartControl {
@@ -118,9 +119,12 @@ namespace Sq1.Charting {
 			base.Initialize(barsNotNull, strategySavedInChartSettings, invalidateAllPanels);
 			//if (this.BarsNotEmpty == false) {
 			if (this.Bars == null) {
-				string msg = "I_CANT_ATTACH_BAR_EVENTS_TO_NULL_BARS DONT_PASS_EMPTY_BARS_TO_CHART_CONTROL " + this.Bars.Count;
-				Assembler.PopupException(msg);
-				//return;
+				string msg = "SYMBOL_REMOVED_FROM_DATASOURCE_CLEARING_CHART"
+					// I_CANT_ATTACH_BAR_EVENTS_TO_NULL_BARS DONT_PASS_EMPTY_BARS_TO_CHART_CONTROL "
+					;
+				//Assembler.PopupException(msg);
+				this.InvalidateAllPanels();
+				return;
 			}
 			this.barEventsAttach();
 			this.SyncHorizontalScrollToBarsCount();
@@ -294,6 +298,9 @@ namespace Sq1.Charting {
 			this.Bars.BarStreamingAdded					+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
 			this.Bars.BarStreamingUpdatedMerged			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
 			this.Bars.SymbolInfo.PriceDecimalsChanged	+= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
+
+			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
+			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
 		}
 		void barEventsDetach() {
 			if (this.Bars == null) {

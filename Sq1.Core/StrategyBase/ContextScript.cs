@@ -126,8 +126,8 @@ namespace Sq1.Core.StrategyBase {
 			SpreadModelerPercent					= BacktestStreaming.PERCENTAGE_DEFAULT;
 			BacktestStrokesPerBar					= BacktestStrokesPerBar.FourStrokeOHLC;
 
-			SequenceIterationName = "it was a F5 GUI invoked backtest, not an optimization";
-			SequenceIterationSerno = -1;	// it was a F5 GUI invoked backtest, not an optimization;
+			SequenceIterationName = "it was a F5 GUI invoked backtest, not a sequencer-generated run";
+			SequenceIterationSerno = -1;	// it was a F5 GUI invoked backtest, not a sequencer-generated run;
 		}
 		
 		public ContextScript CloneAndAbsorbFromSystemPerformanceRestoreAble(SystemPerformanceRestoreAble sysPerfOptimized, string newScriptContextName = null) {
@@ -304,8 +304,8 @@ namespace Sq1.Core.StrategyBase {
 				if (valueCurrentAbsorbed) ret++;
 			}
 			this.ScriptParametersById = scriptParametersById_ReflectedCached;
-//			bool dontSaveWeOptimize = this.Name.Contains(Sequencer.OPTIMIZATION_CONTEXT_PREFIX);
-//			if (dontSaveWeOptimize) {
+//			bool dontSaveWeSequence = this.Name.Contains(Sequencer.ITERATION_PREFIX);
+//			if (dontSaveWeSequence) {
 //				string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_SEQUENCER_PROVIDED_IN_SCRIPTCONTEXT #1";
 //				Assembler.PopupException(msg + msig, null, true);
 //				//strategySerializeRequired = false;
@@ -344,8 +344,8 @@ namespace Sq1.Core.StrategyBase {
 			}
 			//YOU_JUST_SYNCHED_IN_TWO_INNER_LOOPS__WHY_DO_YOU_OVERWRITE_BRO????v1? this.IndicatorParametersByName = indicatorParametersByIndicator_ReflectedCached;
 
-//			bool dontSaveWeOptimize = this.Name.Contains(Sequencer.OPTIMIZATION_CONTEXT_PREFIX);
-//			if (dontSaveWeOptimize) {
+//			bool dontSaveWeSequence = this.Name.Contains(Sequencer.ITERATION_PREFIX);
+//			if (dontSaveWeSequence) {
 //				string msg = "SCRIPT_RECOMPILED_ADDING_MORE_PARAMETERS_THAN_SEQUENCER_PROVIDED_IN_SCRIPTCONTEXT #2";
 //				Assembler.PopupException(msg + msig, null, true);
 //				//strategySerializeRequired = false;

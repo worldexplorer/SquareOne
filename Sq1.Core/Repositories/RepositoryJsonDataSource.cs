@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Sq1.Core.Broker;
 using Sq1.Core.DataFeed;
@@ -117,7 +118,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return ret;
 		}
-		public int UsedTimes(MarketInfo marketInfo) {
+		public int SameMarketInfoInHowManyDataSources(MarketInfo marketInfo) {
 			int ret = 0;
 			foreach (DataSource ds in base.ItemsAsList) {
 				if (ds.MarketInfo == marketInfo) ret++;
@@ -135,6 +136,13 @@ namespace Sq1.Core.Repositories {
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}
+		}
+		public List<DataSource> SameSymbolInHowManyDataSources(string symbol) {
+			List<DataSource> ret = new List<DataSource>();
+			foreach (DataSource ds in base.ItemsAsList) {
+				if (ds.Symbols.Contains(symbol)) ret.Add(ds);
+			}
+			return ret;
 		}
 	}
 }

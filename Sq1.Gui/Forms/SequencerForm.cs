@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Windows.Forms;
 
-using Sq1.Core.StrategyBase;
 using Sq1.Core.Sequencing;
+using Sq1.Core.StrategyBase;
 using Sq1.Widgets;
 
 namespace Sq1.Gui.Forms {
@@ -15,6 +16,9 @@ namespace Sq1.Gui.Forms {
 		
 		public SequencerForm(ChartFormsManager chartFormManager) : this() {
 			this.Initialize(chartFormManager);
+			//ERASES_LINE_IN_DOCK_CONTENT_XML_IF_WITHOUT_IGNORING this.Disposed += this.LivesimForm_Disposed;
+			this.FormClosing += new FormClosingEventHandler(this.sequencerForm_FormClosing);
+			this.FormClosed += new FormClosedEventHandler(this.sequencerForm_FormClosed);
 		}
 
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos

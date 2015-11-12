@@ -88,15 +88,17 @@ namespace Sq1.Gui.Forms {
 			//        += new EventHandler<SequencedBacktestsEventArgs>(
 			//            correlator_OnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt);
 
+			if (originalSequencedBacktests.Count == 0) return;
+
 			//v1
 			this.CorrelatorControl.Initialize(originalSequencedBacktests
 				, this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
 				, originalSequencedBacktests.SymbolScaleIntervalDataRange);
 			//v2 COULDNT_SET_SUBSET_PERCENTAGE
 			//Task letGuiDraw = new Task(delegate() {
-			//    this.CorrelatorControl.Initialize(originalOptimizationResults
+			//    this.CorrelatorControl.Initialize(originalSequencedBacktests
 			//        , this.chartFormsManager.Executor.Strategy.RelPathAndNameForSequencerResults
-			//        , originalOptimizationResults.FileName);
+			//        , originalSequencedBacktests.FileName);
 			//    // WAS_ALREADY_INVOKED??? this.chartFormsManager.Executor.Correlator
 			//    //	.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
 			//});

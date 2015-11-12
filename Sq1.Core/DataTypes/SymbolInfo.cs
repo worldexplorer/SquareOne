@@ -1,9 +1,9 @@
 using System;
 using System.Diagnostics;
+using System.ComponentModel;
 
 using Newtonsoft.Json;
 using Sq1.Core.Execution;
-using System.ComponentModel;
 
 namespace Sq1.Core.DataTypes {
 	public class SymbolInfo {

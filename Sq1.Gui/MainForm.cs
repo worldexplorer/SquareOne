@@ -59,7 +59,7 @@ namespace Sq1.Gui {
 				StrategiesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
 				ExecutionForm				.Instance.Initialize(Assembler.InstanceInitialized.OrderProcessor);
 				CsvImporterForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
-				SymbolInfoEditorForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfo);
+				SymbolInfoEditorForm		.Instance.Initialize(Assembler.InstanceInitialized.RepositorySymbolInfo, Assembler.InstanceInitialized.RepositoryJsonDataSource);
 
 				this.WorkspacesManager = new MainFormWorkspacesManager(this, Assembler.InstanceInitialized.WorkspacesRepository);
 			} catch (Exception ex) {
@@ -218,7 +218,9 @@ namespace Sq1.Gui {
 					}
 
 					// if sequencer instantiated first and fired, then correlator instantiated and didn't get the bullet; vice versa is even worse
-					cfmgr.SequencerFormConditionalInstance.SequencerControl.RaiseOnCorrelatorShouldPopulate_usedByMainFormAfterBothAreInstantiated();
+					if (cfmgr.Executor.Strategy != null) {
+						cfmgr.SequencerFormConditionalInstance.SequencerControl.RaiseOnCorrelatorShouldPopulate_usedByMainFormAfterBothAreInstantiated();
+					}
 
 					// INNER_DOCK_CONTENT_DOESNT_GET_FILLED_TO_THE_WINDOW_AREA???
 					cfmgr.ChartForm.ChartControl.InvalidateAllPanels();
@@ -313,6 +315,12 @@ namespace Sq1.Gui {
 				}
 				if (ExceptionsForm.Instance.IsShown) {
 					ExceptionsForm.Instance.ExceptionControl.PopulateDataSnapshotInitializeSplittersAfterDockContentDeserialized();
+				}
+				if (DataSourceEditorForm.Instance.IsShown) {
+					// ON_WORKSPACE_LOAD__ActiveDocumentChanged_IS_NOT_INVOKED
+					DataSourcesForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+					string dsNameToSelect = DataSourceEditorForm.Instance.DataSourceEditorControl.DataSourceName;
+					DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException("WorkspaceLoad#2()", ex);

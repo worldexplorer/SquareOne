@@ -85,8 +85,8 @@ namespace Sq1.Core.StrategyBase {
 			set {
 				if (this.Strategy == null) {
 					//v1 this.isStreamingWhenNoStrategyLoaded = value;
-					string msg = "IsStreamingTriggeringScript__set: CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING";
-					Assembler.PopupException(msg);
+					string msg = "IsStreamingTriggeringScript__set[" + value + "]: CHANGE_OF_CONCEPT__CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING";
+					Assembler.PopupException(msg, null, false);
 					return;
 				}
 				
@@ -241,70 +241,70 @@ namespace Sq1.Core.StrategyBase {
 			
 			this.Sequencer.InitializedProperly_executorHasScript_readyToOptimize = false;
 
-			if (this.Strategy != null) {
-				if (this.Bars != null) {
-					this.Strategy.ScriptContextCurrent.Symbol = this.Bars.Symbol;
-					this.Strategy.ScriptContextCurrent.DataSourceName = this.DataSource.Name;
-				}
-				if (this.Strategy.Script == null) {
-					msg = "I will be compiling this.Strategy.Script when in ChartFormsManager.StrategyCompileActivatePopulateSliders()";
-					//} else if (this.Bars == null) {
-					//	msg = "InitializeStrategyAfterDeserialization will Script.Initialize(this) later with bars";
-				} else {
-					this.Strategy.Script.Initialize(this, saveStrategy_falseForSequencer);
-
-					#region PARANOID
-					#if DEBUG
-					var reflected = this.Strategy.Script.ScriptParametersById_ReflectedCached;
-					var ctx = this.Strategy.ScriptContextCurrent.ScriptParametersById;
-					if (reflected.Count != ctx.Count) {
-						string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
-						Assembler.PopupException(msg2);
-					}
-					foreach (int id in reflected.Keys) {
-						if (ctx.ContainsKey(id) == false) {
-							string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
-							Assembler.PopupException(msg2);
-							continue;
-						}
-						if (ctx[id] != reflected[id]) {
-							string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
-							Assembler.PopupException(msg2);
-							continue;
-						}
-					}
-
-					//v1: CRAZY_TYPES_CONVERSION,CONSIDER_CONTEXT_SAVE_IN_SAME_FORMAT_AS_REFLECTED_OR_INTRODUCE_ARTIFICIAL_SIMILAR_NEXT_TO_REFLECTED
-					//var iReflected = this.Strategy.Script.IndicatorsByName_ReflectedCached;
-					//var iCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
-					//if (reflected.Count != ctx.Count) {
-					//	string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
-					//	Assembler.PopupException(msg2);
-					//}
-					//foreach (int id in reflected.Keys) {
-					//	if (ctx.ContainsKey(id) == false) {
-					//		string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
-					//		Assembler.PopupException(msg2);
-					//		continue;
-					//	}
-					//	if (ctx[id] != reflected[id]) {
-					//		string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
-					//		Assembler.PopupException(msg2);
-					//		continue;
-					//	}
-					//}
-					//v2 just force it and find duplicate calls in debugger...
-					//SEQUENCER_ALREADY_DONE_IT_CloneForSequencer this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
-					#endif
-					#endregion
-
-					// here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference
-					this.Sequencer.Initialize();	//otherwize this.Sequencer.InitializedProperly = false; => can't optimize anything
-				}
-			}
 			this.ExecutionDataSnapshot.Initialize();
 			// SO_WHAT??? Executor.Bars are NULL in ScriptExecutor.ctor() and NOT NULL in SetBars
 			this.PerformanceAfterBacktest.Initialize();
+
+			if (this.Strategy == null) return;
+			if (this.Bars != null) {
+				this.Strategy.ScriptContextCurrent.Symbol = this.Bars.Symbol;
+				this.Strategy.ScriptContextCurrent.DataSourceName = this.DataSource.Name;
+			}
+			if (this.Strategy.Script == null) {
+				msg = "I will be compiling this.Strategy.Script when in ChartFormsManager.StrategyCompileActivatePopulateSliders()";
+				//} else if (this.Bars == null) {
+				//	msg = "InitializeStrategyAfterDeserialization will Script.Initialize(this) later with bars";
+			} else {
+				this.Strategy.Script.Initialize(this, saveStrategy_falseForSequencer);
+
+				#region PARANOID
+				#if DEBUG
+				var reflected = this.Strategy.Script.ScriptParametersById_ReflectedCached;
+				var ctx = this.Strategy.ScriptContextCurrent.ScriptParametersById;
+				if (reflected.Count != ctx.Count) {
+					string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+					Assembler.PopupException(msg2);
+				}
+				foreach (int id in reflected.Keys) {
+					if (ctx.ContainsKey(id) == false) {
+						string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+						Assembler.PopupException(msg2);
+						continue;
+					}
+					if (ctx[id] != reflected[id]) {
+						string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+						Assembler.PopupException(msg2);
+						continue;
+					}
+				}
+
+				//v1: CRAZY_TYPES_CONVERSION,CONSIDER_CONTEXT_SAVE_IN_SAME_FORMAT_AS_REFLECTED_OR_INTRODUCE_ARTIFICIAL_SIMILAR_NEXT_TO_REFLECTED
+				//var iReflected = this.Strategy.Script.IndicatorsByName_ReflectedCached;
+				//var iCtx = this.Strategy.ScriptContextCurrent.IndicatorParametersByName;
+				//if (reflected.Count != ctx.Count) {
+				//	string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+				//	Assembler.PopupException(msg2);
+				//}
+				//foreach (int id in reflected.Keys) {
+				//	if (ctx.ContainsKey(id) == false) {
+				//		string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+				//		Assembler.PopupException(msg2);
+				//		continue;
+				//	}
+				//	if (ctx[id] != reflected[id]) {
+				//		string msg2 = "here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference";
+				//		Assembler.PopupException(msg2);
+				//		continue;
+				//	}
+				//}
+				//v2 just force it and find duplicate calls in debugger...
+				//SEQUENCER_ALREADY_DONE_IT_CloneForSequencer this.Strategy.Script.IndicatorParamsAbsorbMergeFromReflected_InitializeIndicatorsWithHostPanel();
+				#endif
+				#endregion
+
+				// here Reflected must have ValueCurrents absorbed CurrentContext and all params pushed back to CurrentContext by reference
+				this.Sequencer.Initialize();	//otherwize this.Sequencer.InitializedProperly = false; => can't optimize anything
+			}
 			this.MarketsimBacktest.Initialize(this.Strategy.ScriptContextCurrent.FillOutsideQuoteSpreadParanoidCheckThrow);
 			//v1, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
 			// if I listen to DataSourceRepository, all ScriptExecutors receive same notification including irrelated to my Bars

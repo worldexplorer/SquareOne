@@ -8,7 +8,8 @@ using Sq1.Core.DoubleBuffered;
 namespace Sq1.Charting.MultiSplit {
 	public class MultiSplitter
 #if NON_DOUBLE_BUFFERED
-//#Dev doesn't F12 on PanelAbove 			: UserControl
+//#Dev doesn't F12 on PanelAbove 
+			: UserControl
 #else
 			: UserControlDoubleBuffered
 #endif

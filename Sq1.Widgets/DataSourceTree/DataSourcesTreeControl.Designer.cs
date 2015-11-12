@@ -182,7 +182,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// 
 			this.mniSymbolInfoEditor.Name = "mniSymbolInfoEditor";
 			this.mniSymbolInfoEditor.Size = new System.Drawing.Size(303, 22);
-			this.mniSymbolInfoEditor.Text = "Open Symbol Editor for [RIM3]";
+			this.mniSymbolInfoEditor.Text = "Symbol Editor for [RIM3]";
 			this.mniSymbolInfoEditor.Click += new System.EventHandler(this.mniSymbolInfoEditor_Click);
 			// 
 			// mniBarsAnalyzerSymbol
@@ -191,7 +191,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniSymbolBarsAnalyzer.ImageTransparentColor = System.Drawing.Color.Fuchsia;
 			this.mniSymbolBarsAnalyzer.Name = "mniBarsAnalyzerSymbol";
 			this.mniSymbolBarsAnalyzer.Size = new System.Drawing.Size(303, 22);
-			this.mniSymbolBarsAnalyzer.Text = "Open Bar Analyzer for  [RIM3]";
+			this.mniSymbolBarsAnalyzer.Text = "Bar Analyzer for  [RIM3]";
 			this.mniSymbolBarsAnalyzer.Click += new System.EventHandler(this.mniBarsAnalyzerSymbol_Click);
 			// 
 			// sepSymbol
@@ -388,7 +388,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.mniSymbolFuturesMerger.Enabled = false;
 			this.mniSymbolFuturesMerger.Name = "mniSymbolFuturesMerger";
 			this.mniSymbolFuturesMerger.Size = new System.Drawing.Size(303, 22);
-			this.mniSymbolFuturesMerger.Text = "Open Futures Merger for [RIM3]";
+			this.mniSymbolFuturesMerger.Text = "Futures Merger for [RIM3]";
 			// 
 			// DataSourcesTreeControl
 			// 

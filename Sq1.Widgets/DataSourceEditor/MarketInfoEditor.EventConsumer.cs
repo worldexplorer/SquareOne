@@ -18,7 +18,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			try {
 				this.dataSource.MarketInfo = marketInfo;
 				this.populateMarketFromDataSource();
-				this.lnkMarketNameDelete.Enabled = (this.dataSourceRepository.UsedTimes(marketInfo) > 0) ? true : false;
+				this.lnkMarketNameDelete.Enabled = (this.dataSourceRepository.SameMarketInfoInHowManyDataSources(marketInfo) > 0) ? true : false;
 				this.dataSourceRepository.SerializeSingle(this.dataSource);
 			} catch (Exception ex) {
 				Assembler.PopupException("dgMarketName_SelectionChanged", ex);

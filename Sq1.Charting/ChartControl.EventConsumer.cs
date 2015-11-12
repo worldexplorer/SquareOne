@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Charting {
 	public partial class ChartControl	{
@@ -130,5 +131,25 @@ namespace Sq1.Charting {
 			this.RaiseChartSettingsChangedContainerShouldSerialize();
 		}
 
+		void repositoryJsonDataSource_OnSymbolRemoved_clearChart(object sender, DataSourceSymbolEventArgs e) {
+			string msig = " //repositoryJsonDataSource_OnSymbolRemoved_clearChart(" + e.Symbol + ") chart[" + this.ToString() + "]";
+			if (this.Bars.DataSource != e.DataSource) {
+				string msg = "IGNORING_DELETION_OTHER_DATASOURCE_NOT_IM_ACTUALLY_DISPLAYING"
+					+ " this.Bars.DataSource[" + this.Bars.DataSource + "] != e.DataSource[" + e.DataSource + "]";
+				#if DEBUG
+				Assembler.PopupException(msg + msig, null, false);
+				#endif
+				return;
+			}
+			if (this.Bars.Symbol != e.Symbol) {
+				string msg = "IGNORING_DELETION_OTHER_SYMBOL_NOT_IM_ACTUALLY_DISPLAYING"
+					+ " this.Bars.Symbol[" + this.Bars.Symbol + "] != e.Symbol[" + e.Symbol + "]";
+				#if DEBUG
+				Assembler.PopupException(msg + msig);
+				#endif
+				return;
+			}
+			this.Initialize(null, this.ChartSettings.StrategyName);
+		}
 	}
 }

@@ -63,7 +63,7 @@ namespace Sq1.Core.StrategyBase {
 		// I_DONT_WANT_TO_BRING_CHART_SETTINGS_TO_CORE public ChartSettings ChartSettings;
 		[JsonProperty]	public LivesimBrokerSettings				LivesimBrokerSettings;
 		[JsonProperty]	public LivesimStreamingSettings				LivesimStreamingSettings;
-		//v1 [JsonProperty]	public Dictionary<string, List<SystemPerformanceRestoreAble>>	OptimizationResultsByContextIdent;
+		//v1 [JsonProperty]	public Dictionary<string, List<SystemPerformanceRestoreAble>>	SequencedResultsByContextIdent;
 
 		[JsonIgnore]	public	bool			ScriptEditedNeedsSaving;
 		[JsonIgnore]	public	const string	PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE = "* ";
@@ -91,7 +91,7 @@ namespace Sq1.Core.StrategyBase {
 			this.scriptContextCurrentNameLock		= new object();
 			this.LivesimBrokerSettings				= new LivesimBrokerSettings(this);
 			this.LivesimStreamingSettings			= new LivesimStreamingSettings(this);
-			//v1this.OptimizationResultsByContextIdent	= new Dictionary<string, List<SystemPerformanceRestoreAble>>();
+			//v1 this.SequencedResultsByContextIdent	= new Dictionary<string, List<SystemPerformanceRestoreAble>>();
 			this.ScriptEditedNeedsSaving			= false;
 		}
 		public override string ToString() {

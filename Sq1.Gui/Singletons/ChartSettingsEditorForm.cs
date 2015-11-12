@@ -9,7 +9,8 @@ using Sq1.Charting;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.Singletons {
-	// TO_ENABLE_DESIGNER public partial class ChartSettingsEditorForm : DockContent {
+	// TO_ENABLE_DESIGNER
+	//public partial class ChartSettingsEditorForm : DockContent {
 	// TO_ENABLE_SINGLETON_FUNCTIONALITY
 	public partial class ChartSettingsEditorForm : DockContentSingleton<ChartSettingsEditorForm> {
 		public ChartSettingsEditorForm() {

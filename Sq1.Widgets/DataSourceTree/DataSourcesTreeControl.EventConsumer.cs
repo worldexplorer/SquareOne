@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Forms;
@@ -7,8 +8,8 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
+using Sq1.Core.DataTypes;
 using Sq1.Widgets.LabeledTextBox;
-using System.Collections.Generic;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl {
@@ -43,13 +44,14 @@ namespace Sq1.Widgets.DataSourcesTree {
 				//ChartForm chart = MainModule.Instance.MainForm.findByChartTitlePartialIfOpen(chartTitlePartial);
 				string newExisting = (true) ? "New" : "Existing";	//chart != null
 				this.mniNewChartSymbol.Text = newExisting + " Chart for [" + this.SymbolSelected + "]";
-				this.mniOpenStrategySymbol				.Text = "New Strategy for [" + this.SymbolSelected + "]";
-				this.mniSymbolBarsAnalyzer				.Text = "Bars Analyzer for [" + this.SymbolSelected + "]";
-				this.mniSymbolInfoEditor				.Text = "Open Symbol Editor for [" + this.SymbolSelected + "]";
-				this.mniSymbolBarsAnalyzer				.Text = "Open Bar Analyzer for [" + this.SymbolSelected + "]";
-				this.mniSymbolFuturesMerger				.Text = "Open Futures Merger for [" + this.SymbolSelected + "]";
-				this.mniSymbolRemove					.Text = "Remove [" + this.SymbolSelected + "] from [" + this.DataSourceSelected.Name + "] DataSource";
-				this.mniltbSymbolRenameTo				.TextLeft = "Rename [" + this.SymbolSelected + "] to";
+				this.mniOpenStrategySymbol	.Text = "New Strategy for [" + this.SymbolSelected + "]";
+				this.mniSymbolBarsAnalyzer	.Text = "Bars Analyzer for [" + this.SymbolSelected + "]";
+				this.mniSymbolInfoEditor	.Text = "Symbol Editor for [" + this.SymbolSelected + "]";
+				this.mniSymbolBarsAnalyzer	.Text = "Bar Analyzer for [" + this.SymbolSelected + "]";
+				this.mniSymbolFuturesMerger	.Text = "Futures Merger for [" + this.SymbolSelected + "]";
+				this.mniSymbolRemove		.Text = "Remove [" + this.SymbolSelected + "] from [" + this.DataSourceSelected.Name + "] DataSource";
+				this.mniltbSymbolRenameTo	.TextLeft = "Rename [" + this.SymbolSelected + "] to";
+				this.mniltbSymbolRenameTo	.InputFieldValue = this.SymbolSelected;
 				this.mniSymbolCopyToAnotherDataSource	.Text = "Copy [" + this.SymbolSelected + "] to another DataSource";
 				DataSourceSymbolEventArgs subscribersPolled =
 					this.dataSourceRepository.SymbolCanBeDeleted(this.DataSourceSelected, this.SymbolSelected, this);
@@ -76,6 +78,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.mniDataSourceEdit		.Enabled = (subscribersPolled.DoNotDeleteItsUsedElsewhere == false);
 				this.mniDataSourceEdit		.Text = "Edit [" + this.DataSourceSelected.Name + "] DataSource";
 				this.mniltbDataSourceRename	.TextLeft = "Rename [" + this.DataSourceSelected.Name + "] to";
+				this.mniltbSymbolRenameTo	.InputFieldValue = this.SymbolSelected;
 				this.mniDataSourceDelete	.Enabled = (subscribersPolled.DoNotDeleteItsUsedElsewhere == false);
 				this.mniDataSourceDelete	.Text = "Delete [" + this.DataSourceSelected.Name + "] DataSource";
 				this.mniltbSymbolAdd		.TextLeft = "Add Symbol to [" + this.DataSourceSelected.Name + "]";
@@ -240,13 +243,45 @@ namespace Sq1.Widgets.DataSourcesTree {
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 		}
 		void mniltbSymbolRenameTo_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
+			string sourceSymbol = this.SymbolSelected;
+			string targetSymbol = e.StringUserTyped;
+
+			string msig = " //mnitlbSymbolRenameTo_UserTyped(" + sourceSymbol + "=>" + targetSymbol + ")";
+
 			if (this.DataSourceSelected == null) {
-				Assembler.PopupException("mnitlbSymbolRenameTo_UserTyped(): this.DataSourceSelected=null");
+				Assembler.PopupException("this.DataSourceSelected=null" + msig);
 				return;
 			}
-			// repository has no idea who loaded the bars that are being renamed now {BTABRN}
-			// but DataSource.SymbolRenamedExecutorShouldRenameEachBarAndSave() will notify Executors using BTABRN and their Chart will repaint after mouseover  
-			this.dataSourceRepository.SymbolRename(this.DataSourceSelected, this.SymbolSelected, e.StringUserTyped, this);
+
+			try {
+				int numberOfDataSourcesHavingSymbolToBeRenamed = this.dataSourceRepository.SameSymbolInHowManyDataSources(sourceSymbol).Count;
+
+				if (numberOfDataSourcesHavingSymbolToBeRenamed < 1) {
+					string msg = "I_REFUSE_TO_RENAME SYMBOL_MUST_EXIST_AT_LEAST_IN_1_DATASOURCE [" + this.DataSourceSelected + "] numberOfDataSourcesHavingSymbolToBeRenamed[" + numberOfDataSourcesHavingSymbolToBeRenamed + "] < 1";
+					Assembler.PopupException(msg + msig);
+					return;
+				}
+
+				bool renameSymbolInfoKozNoOtherDataSourceHasSameSymbol = numberOfDataSourcesHavingSymbolToBeRenamed == 1;
+
+				SymbolInfo sourceSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoNullUnsafe(sourceSymbol);
+				SymbolInfo targetSymbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoNullUnsafe(targetSymbol);
+
+				if (targetSymbolInfo == null) {
+					if (renameSymbolInfoKozNoOtherDataSourceHasSameSymbol) {
+						Assembler.InstanceInitialized.RepositorySymbolInfo.Rename(sourceSymbolInfo, targetSymbol);
+					} else {
+						Assembler.InstanceInitialized.RepositorySymbolInfo.Duplicate(targetSymbolInfo, targetSymbol);	// targetSymbolInfoAlreadyExists
+					}
+				}
+
+				// repository has no idea who loaded the bars that are being renamed now {BTABRN}
+				// but DataSource.SymbolRenamedExecutorShouldRenameEachBarAndSave() will notify Executors using BTABRN and their Chart will repaint after mouseover  
+				this.dataSourceRepository.SymbolRename(this.DataSourceSelected, this.SymbolSelected, e.StringUserTyped, this);
+			} catch (Exception ex) {
+				Assembler.PopupException("REPOSITORIES_FILE_ACCESS__OR_OnSymbolRenamed_EVENT_CONSUMERS" + msig, ex);
+			}
+
 			//REPOSITORY_WILL_NOTIFY_ME_USING_EVENT this.SelectSymbol(this.DataSourceSelected.Name, e.StringUserTyped);
 			e.RootHandlerShouldCloseParentContextMenuStrip = true;
 		}
@@ -287,7 +322,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.SelectSymbol(e.DataSource.Name, e.Symbol);
 			}
 		}
-		void dataSourceRepository_OnSymbolRenamed(object sender, DataSourceSymbolEventArgs e) {
+		void dataSourceRepository_OnSymbolRenamed(object sender, DataSourceSymbolRenamedEventArgs e) {
 			this.tree.RefreshObject(this.DataSourceSelected);
 			if (sender != this) {
 				//RefreshObject()WORKS_FINE this.populateDataSourcesIntoTreeListView();

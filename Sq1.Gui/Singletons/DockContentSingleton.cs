@@ -2,9 +2,10 @@
 using System.Windows.Forms;
 
 using Sq1.Widgets;
+using Sq1.Core;
 
 namespace Sq1.Gui.Singletons {
-	public class DockContentSingleton<T> : DockContentImproved where T : new() {
+	public class DockContentSingleton<T> : DockContentImproved where T : DockContentImproved, new() {
 		#region v1 DockContentSingleton-derived forms had to implement Instance when DockContentSingleton wasn't generic
 		//static ExceptionsForm instance = null;
 		//public new static ExceptionsForm Instance {
@@ -31,7 +32,16 @@ namespace Sq1.Gui.Singletons {
 		protected static T instance;
 		public static T Instance { get {
 				// without "where T : new()" in class declaration above, "new T()" below can not be compiled
-				if (DockContentSingleton<T>.instance == null) {
+				bool IamNotYetCreated = DockContentSingleton<T>.instance == null;
+				bool IamDisposed = false;
+				if (IamNotYetCreated == false) IamDisposed = DockContentSingleton<T>.instance.IsDisposed;
+				if (IamNotYetCreated || IamDisposed) {
+					if (IamNotYetCreated == false && IamDisposed) {
+						string ofWhatStatic = DockContentSingleton<T>.instance.GetType().GetGenericTypeDefinition().GetType().FullName;
+						string msig = " //DockContentSingleton<" + ofWhatStatic + ">[" + DockContentSingleton<T>.instance.Name + "].Instance";
+						string msg = "IF_YOU_CLOSED_A_FORM__PLEASE_NULLIFY_THE_POINTER";
+						Assembler.PopupException(msg + msig);
+					}
 					DockContentSingleton<T>.instanceBeingConstructedUseForDesignMode = true;
 					DockContentSingleton<T>.instance = new T();
 					DockContentSingleton<T>.instanceBeingConstructedUseForDesignMode = false;
