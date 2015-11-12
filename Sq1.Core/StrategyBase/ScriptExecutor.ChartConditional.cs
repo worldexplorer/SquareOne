@@ -6,7 +6,7 @@ using Sq1.Core.Charting.OnChart;
 using Sq1.Core.Indicators;
 
 namespace Sq1.Core.StrategyBase {
-	public partial class ScriptExecutor {	// the following wrappers only make sense for optimization, when Executor.ChartShadow=null
+	public partial class ScriptExecutor {	// the following wrappers only make sense for Sequencing, when Executor.ChartShadow=null
 		// COMPILATION_ERROR??? public => internal block access from Script-derived and to enforce usage of Script's wrappers for the same methods
 //		public  void ChartConditionalSetIndicators(Dictionary<string, Indicator> indicators) {
 //			if (this.ChartShadow == null) return;

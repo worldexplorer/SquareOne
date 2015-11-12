@@ -365,6 +365,11 @@ namespace Sq1.Gui.Forms {
 
 			this.MniShowSourceCodeEditor.Enabled = containsStrategy;
 			if (containsStrategy) this.MniShowSourceCodeEditor.Enabled = !strategyActivatedFromDll;
+
+			this.mniStrategyRemove	.Enabled = containsStrategy;
+			this.MniShowLivesim		.Enabled = containsStrategy;	// disables F-key from being clicked despite whole "Strategy" parent ctx is disabled
+			this.MniShowCorrelator	.Enabled = containsStrategy;	// disables F-key from being clicked despite whole "Strategy" parent ctx is disabled
+			this.MniShowSequencer	.Enabled = containsStrategy;	// disables F-key from being clicked despite whole "Strategy" parent ctx is disabled
 		}
 		public void AppendReportersMenuItems(ToolStripItem[] toolStripItems) {
 			this.ctxStrategy.Items.Add(this.TssReportersBelowMe);	// if not added then we didn't initialize!

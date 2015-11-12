@@ -271,10 +271,10 @@ namespace Sq1.Gui.Forms {
 			// 
 			// mniStrategyRemove
 			// 
-			this.mniStrategyRemove.Enabled = false;
 			this.mniStrategyRemove.Name = "mniStrategyRemove";
 			this.mniStrategyRemove.Size = new System.Drawing.Size(248, 22);
-			this.mniStrategyRemove.Text = "NYI Remove Strategy From Chart";
+			this.mniStrategyRemove.Text = "Remove Strategy From Chart";
+			this.mniStrategyRemove.Click += new System.EventHandler(this.mniStrategyRemove_Click);
 			// 
 			// MniShowSourceCodeEditor
 			// 

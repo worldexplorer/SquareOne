@@ -4,23 +4,35 @@ using System.Windows.Forms;
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Widgets.LabeledTextBox;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Widgets.SymbolEditor {
 	public partial class SymbolInfoEditorControl {
 		void toolStripItemComboBox1_DropDown(object sender, EventArgs e) {
-			this.rebuildDropdown();
+			if (this.symbolInfoSelectedNullUnsafe != null) {
+				bool rebuildToRemove_noSymbolSelected = this.symbolInfoSelectedNullUnsafe.Symbol == noSymbolSelected_symbol;
+				if (rebuildToRemove_noSymbolSelected == false) return;
+				this.PopulateWithSymbolInfo(this.symbolInfoSelectedNullUnsafe, rebuildToRemove_noSymbolSelected);
+			} else {
+				this.rebuildDropdown();
+			}
 		}
 		void toolStripItemComboBox1_SelectedIndexChanged(object sender, EventArgs e) {
-			// IM_EXECUTED_TWICE__WHEN_DESELECTING_OLD_AND_WHEN_SELECTING_NEW
+			// IM_EXECUTED_TWICE___FIRST_SELECTING_NEW_SECOND__DESELECTING_OLD__WINFORM_FULL_OF_PARADOXES_FRIENDS_OF_GENIUS_APPARENTLY
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-			if (this.rebuildingDropdown) return;
+			if (this.ignoreEvent_SelectedIndexChanged_resetInHandler) {
+				this.ignoreEvent_SelectedIndexChanged_resetInHandler = false;
+				return;
+			}
 
-			if (this.symbolInfoSelectedNullUnsafe == null) {
+			if (this.symbolInfoSelectedNullUnsafe != null) {
+				bool rebuild_onFirstEventAfterNoSymbolWasChosenAfterDeletion = this.symbolInfoSelectedNullUnsafe == this.noSymbolSelected_symbolInfo;
+				this.PopulateWithSymbolInfo(this.symbolInfoSelectedNullUnsafe, rebuild_onFirstEventAfterNoSymbolWasChosenAfterDeletion);
+			} else {
 				string msg = "YOU_MUST_INITIALIZE_DROPDOWN_WITH_CURRENT_SYMBOL_INFO__USE_PopulateWithSymbol()"
 					+ "; now this.toolStripItemComboBox1.ComboBox.SelectedItem as SymbolInfo=null";
 				Assembler.PopupException(msg);
 			}
-			this.populateWithSymbolInfo(this.symbolInfoSelectedNullUnsafe);
 
 			// I want to keep dropdown open to save user from monkey-clicking; when I initialize() at startup, this.rebuildingDropdown=true and I don't reach to here;
 			// the only time I'm kicked in is when I switch charts => SymbolInfoEditor syncs to the current chart's symbol;
@@ -33,31 +45,58 @@ namespace Sq1.Widgets.SymbolEditor {
 		}
 		void propertyGrid1_PropertyValueChanged(object sender, PropertyValueChangedEventArgs e) {
 			this.repositorySerializerSymbolInfo.Serialize();
-			this.populateWithSymbolInfo(this.symbolInfoSelectedNullUnsafe, true);
+			this.PopulateWithSymbolInfo(this.symbolInfoSelectedNullUnsafe, true);
 		}
 		void mniltbDuplicate_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			SymbolInfo dupe = this.repositorySerializerSymbolInfo.Duplicate(this.symbolInfoSelectedNullUnsafe, e.StringUserTyped);
 			this.mniltbDuplicate.TextRed = dupe == null;
 			if (dupe == null) return;
-			this.populateWithSymbolInfo(dupe, true);
+			this.PopulateWithSymbolInfo(dupe, true);
 		}
 		void mniltbRename_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			SymbolInfo renamed = this.repositorySerializerSymbolInfo.Rename(this.symbolInfoSelectedNullUnsafe, e.StringUserTyped);
 			this.mniltbRename.TextRed = renamed == null;
 			if (renamed == null) return;
-			this.populateWithSymbolInfo(renamed, true);
+			this.PopulateWithSymbolInfo(renamed, true);
 		}
 		void mniDeleteSymbol_Click(object sender, EventArgs e) {
 			SymbolInfo priorToDeleted = this.repositorySerializerSymbolInfo.Delete(this.symbolInfoSelectedNullUnsafe);
 			if (priorToDeleted == null) return;
-			this.populateWithSymbolInfo(priorToDeleted, true);
+			this.PopulateWithSymbolInfo(priorToDeleted, true);
 			this.toolStripItemComboBox1.ComboBox.DroppedDown = true;
 		}
 		void mniltbAddNew_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			SymbolInfo added = this.repositorySerializerSymbolInfo.Add(e.StringUserTyped);
 			this.mniltbAddNew.TextRed = added == null;
 			if (added == null) return;
-			this.populateWithSymbolInfo(added, true);
+			this.PopulateWithSymbolInfo(added, true);
+		}
+
+		//void repositoryJsonDataSource_OnDataSourceRenamed_refreshTitle(object sender, NamedObjectJsonEventArgs<DataSource> e) {
+		//    this.PopulateWithSymbol(e.Item
+		//}
+		//void repositoryJsonDataSource_OnDataSourceDeleted_closeSymbolInfoEditor(object sender, NamedObjectJsonEventArgs<DataSource> e) {
+		//    if (repositoryJsonDataSource_OnDataSourceDeleted_closeSymbolInfoEditor
+		//    this.ParentForm.Close();
+		//}
+		void repositoryJsonDataSource_OnSymbolRenamed_refresh(object sender, DataSourceSymbolRenamedEventArgs e) {
+			string msig = " //repositoryJsonDataSource_OnSymbolRenamed_refresh(" + e.SymbolOld + "=>" + e.Symbol + ")";
+			if (e.SymbolOld == e.Symbol) {
+				string msg = "SYMBOL_NOT_CHANGED_WHY_DID_YOU_INVOKE_ME? this.symbolInfoSelectedNullUnsafe.Symbol[" + this.symbolInfoSelectedNullUnsafe.Symbol + "]";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			this.PopulateRenamedSymbol_rebuildDropdown(e);
+		}
+		void repositoryJsonDataSource_OnSymbolRemoved_clean(object sender, DataSourceSymbolEventArgs e) {
+			string msig = " //repositoryJsonDataSource_OnSymbolRemoved_clean(" + e.Symbol + ")";
+			if (this.symbolInfoSelectedNullUnsafe.Symbol != e.Symbol) {
+				string msg = "IGNORING_DELETION_OTHER_SYMBOL_NOT_IM_ACTUALLY_DISPLAYING"
+					+ " this.symbolInfoSelectedNullUnsafe.Symbol[" + this.symbolInfoSelectedNullUnsafe.Symbol + "] != e.Symbol[" + e.Symbol + "]";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			this.CleanPropertyEditor();
 		}
 	}
 }

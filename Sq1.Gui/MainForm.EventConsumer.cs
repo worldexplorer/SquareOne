@@ -131,10 +131,13 @@ namespace Sq1.Gui {
 		}
 		void mniSymbolInfoEditor_Click(object sender, System.EventArgs e) {
 			try {
-				if (this.mniSymbolInfoEditor.Checked == false) {
+				//if (this.mniSymbolInfoEditor.Checked == false) {
+				if (SymbolInfoEditorForm.Instance.IsShown == false) {
 					SymbolInfoEditorForm.Instance.Show(this.DockPanel);
+					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = true;
 				} else {
 					SymbolInfoEditorForm.Instance.Hide();
+					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = false;
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {
@@ -143,10 +146,13 @@ namespace Sq1.Gui {
 		}
 		void mniChartSettingsEditor_Click(object sender, EventArgs e) {
 			try {
-				if (this.mniSymbolInfoEditor.Checked == false) {
+				//if (this.mniSymbolInfoEditor.Checked == false) {
+				if (ChartSettingsEditorForm.Instance.IsShown == false) {
 					ChartSettingsEditorForm.Instance.Show(this.DockPanel);
+					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = true;
 				} else {
 					ChartSettingsEditorForm.Instance.Hide();
+					//NO_NEED_HANDLED_IN_MainFormEventManagerInitializeWhenDockingIsNotNullAnymore this.mniSymbolInfoEditor.Checked = false;
 				}
 				this.MainFormSerialize();
 			} catch (Exception ex) {

@@ -21,14 +21,33 @@ namespace Sq1.Gui.Forms {
 		}
 		void ctxStrategy_Opening(object sender, CancelEventArgs e) {
 			this.MniShowLivesim		.Checked = this.ChartFormManager.LivesimFormIsOnSurface;
-			this.MniShowCorrelator	.Checked = this.ChartFormManager.CorrelatorFormIsOnSurface;
 			this.MniShowSequencer	.Checked = this.ChartFormManager.SequencerIsOnSurface;
+			this.MniShowCorrelator	.Checked = this.ChartFormManager.CorrelatorFormIsOnSurface;
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
 		}
 		void ctxBacktest_Opening(object sender, CancelEventArgs e) {
 		}
-
+		void mniStrategyRemove_Click(object sender, System.EventArgs e) {
+			this.ChartFormManager.Strategy = null;
+			this.ChartFormManager.Executor.Initialize(null, this.ChartFormManager.ChartForm.ChartControl);
+			this.ChartFormManager.InitializeChartNoStrategy(this.ChartFormManager.ContextCurrentChartOrStrategy);
+			this.ChartFormManager.ChartForm.ChartControl.ClearAllScriptObjectsBeforeBacktest();
+			
+			if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.ScriptEditorForm) == false) {
+				this.ChartFormManager.ScriptEditorForm.Close();
+			}
+			if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.LivesimForm) == false) {
+				this.ChartFormManager.LivesimForm.Close();
+			}
+			if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.CorrelatorForm) == false) {
+				this.ChartFormManager.CorrelatorForm.Close();
+			}
+			if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.SequencerForm) == false) {
+				this.ChartFormManager.SequencerForm.Close();
+			}
+			this.mniStrategyRemove.Enabled = false;
+		}
 		void mniShowSourceCodeEditor_Click(object sender, System.EventArgs e) {
 			this.ctxStrategy.Visible = true;
 			if (this.MniShowSourceCodeEditor.Checked) {
@@ -88,6 +107,9 @@ namespace Sq1.Gui.Forms {
 					this.ChartFormManager.CorrelatorForm.Close();
 				}
 			}
+			this.ctxStrategy.Visible = false;	// only mniCorrelator.Checked=true;
+			this.ctxStrategy.Visible = true;	// reopen will show mniSequencer.Checked=true koz we just opened both
+
 			// DUPLICATE_XML_SERIALIZATION_AFTER CorrelatorForm.OnFormClosed()
 			//this.ChartFormManager.MainForm.MainFormSerialize();
 		}
@@ -120,14 +142,20 @@ namespace Sq1.Gui.Forms {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStart();
 					// same idea as in mniSubscribedToStreamingAdapterQuotesBars_Click();
 					ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
-					if (this.ChartFormManager.Executor.Strategy.Script != null && ctxChart.IsStreamingTriggeringScript) {
+					if (	this.ChartFormManager.Executor.Strategy != null
+						&&	this.ChartFormManager.Executor.Strategy.Script != null
+						&&	ctxChart.IsStreamingTriggeringScript) {
 						this.ChartFormManager.BacktesterRunSimulation();
 					}
 				} else {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStop();
 				}
 				this.PopulateBtnStreamingTriggersScriptAfterBarsLoaded();
-				this.ChartFormManager.Strategy.Serialize();
+				if (this.ChartFormManager.Strategy != null) {
+					this.ChartFormManager.Strategy.Serialize();
+				} else {
+					string msg = "CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING_I_JUST_IGNORED??_BUTTON_UNCLICK";
+				}
 				//WHO_ELSE_NEEDS_IT? this.RaiseStreamingButtonStateChanged();
 				this.PropagateSelectorsDisabledIfStreamingForCurrentChart();
 			} catch (Exception ex) {

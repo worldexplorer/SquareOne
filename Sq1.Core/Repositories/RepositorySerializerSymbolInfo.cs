@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 using Sq1.Core.DataTypes;
 using Sq1.Core.Serializers;
-using System.IO;
-using System;
 using Newtonsoft.Json;
 
 namespace Sq1.Core.Repositories {

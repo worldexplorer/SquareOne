@@ -133,11 +133,11 @@ namespace Sq1.Widgets {
 //		}
 		#endregion
 
-		public bool IsShown				{ get { return base.DockState != DockState.Unknown; } }
-		public bool IsFloatingWindow	{ get { return base.DockState == DockState.Float; } }
-		public bool IsInDocumentArea	{ get { return base.DockState == DockState.Document; } }
-		public bool IsDocked			{ get { return DockHelper.IsDockWindowState(base.DockState); } }
-		public bool IsDockedAutoHide	{ get { return DockHelper.IsDockStateAutoHide(base.DockState); } }
+		public bool IsShown				{ get { return base.Visible && base.DockState != DockState.Unknown; } }
+		public bool IsFloatingWindow	{ get { return base.Visible && base.DockState == DockState.Float; } }
+		public bool IsInDocumentArea	{ get { return base.Visible && base.DockState == DockState.Document; } }
+		public bool IsDocked			{ get { return base.Visible && DockHelper.IsDockWindowState(base.DockState); } }
+		public bool IsDockedAutoHide	{ get { return base.Visible && DockHelper.IsDockStateAutoHide(base.DockState); } }
 		public bool IsCoveredOrAutoHidden { get {
 				if (this.IsDockedAutoHide) return true;
 				if (this.IsDocked) {

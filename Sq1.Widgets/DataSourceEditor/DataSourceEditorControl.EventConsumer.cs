@@ -88,9 +88,12 @@ namespace Sq1.Widgets.DataSourceEditor {
 		}
 		void repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea(object sender, DataSourceSymbolEventArgs e) {
 			if (this.ds != e.DataSource) {
-				string msg = "WHERE_SHOULD_I_GET_SymbolsCSV ? this.ds[" + this.ds.Name + "] != e.DataSource[" + e.DataSource.Name + "]"
-					+ this.ds.Name + ".SymbolsCSV[" + this.ds.Name + "] or [" + e.DataSource.Name + "].SymbolsCSV" + e.DataSource.SymbolsCSV + "] ?";
-				Assembler.PopupException(msg);
+				string msg = "NOT_THE_DATASOURCE_IM_EDITING_IGNORING"
+					//+ " WHERE_SHOULD_I_GET_SymbolsCSV ? this.ds[" + this.ds.Name + "] != e.DataSource[" + e.DataSource.Name + "]"
+					//+ this.ds.Name + ".SymbolsCSV[" + this.ds.Name + "] or [" + e.DataSource.Name + "].SymbolsCSV" + e.DataSource.SymbolsCSV + "] ?"
+					;
+				Assembler.PopupException(msg, null, false);
+				return;
 			}
 			//this.txtSymbols.Text = this.ds.SymbolsCSV;
 			this.txtSymbols.Text = e.DataSource.SymbolsCSV;

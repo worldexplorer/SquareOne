@@ -29,7 +29,7 @@ namespace Sq1.Strategies.Demo {
 			//base.ScriptParameterCreateRegister(2, "verbose", 0, 0, 1, 1, "set to 0 if you don't want log() to spam your Exceptions window");
 			verbose = new ScriptParameter(2, "verbose", 0, 0, 10, 1, "set to 0 if you don't want log() to spam your Exceptions window");
 
-			// trying to reduce {HANDLES(after 121 optimization runs) => 61k} in taskmgr32.exe; I don't want to dispose reusable GDI+ objects
+			// trying to reduce {HANDLES(after 121 sequencer runs) => 61k} in taskmgr32.exe; I don't want to dispose reusable GDI+ objects
 			fontConsolas8bold	= new Font("Consolas", 8, FontStyle.Bold);
 			fontConsolas7		= new Font("Consolas", 7);
 		}

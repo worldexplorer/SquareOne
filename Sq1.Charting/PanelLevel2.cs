@@ -51,9 +51,13 @@ namespace Sq1.Charting {
 
 //		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
 //			base.PaintWholeSurfaceBarsNotEmpty(g);
-//		protected override void OnPaint(PaintEventArgs pe) {
+
+#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
+		protected override void OnPaintBackground(PaintEventArgs pe) {
 			//ONLY_FOR_PRICE_PANEL?? //base.OnPaintBackgroundDoubleBuffered(pe);	 //base.DrawError drew label only lowest 2px shown from top of panel
+#else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs pe) {
+#endif
 			this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
 			Graphics g = pe.Graphics;
 			g.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
@@ -87,7 +91,11 @@ namespace Sq1.Charting {
 			}
 
 		}
+#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
+		protected override void OnPaint(PaintEventArgs pe) {
+#else
 		protected override void OnPaintDoubleBuffered(PaintEventArgs pe) {
+#endif
 			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
 
 			Graphics g = pe.Graphics;

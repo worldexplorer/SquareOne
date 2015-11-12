@@ -164,14 +164,13 @@ namespace Sq1.Gui {
 				this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus = -1;
 				string msg = "focus might have moved away from a document to Docked Panel"
 					+ "; I'm here after having focused on ExceptionsForm docked into Documents pane";
-				
+				// ON_WORKSPACE_LOAD__ActiveDocumentChanged_IS_NOT_INVOKED_NO_NEED_TO_MOVE_5_LINES_UP
 				DataSourceEditorForm dataSourceEditorFormClicked = this.mainForm.DockPanel.ActiveDocument as DataSourceEditorForm;
 				if (dataSourceEditorFormClicked != null) {
 					DataSourcesForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
 					string dsNameToSelect = dataSourceEditorFormClicked.DataSourceEditorControl.DataSourceName;
 					DataSourcesForm.Instance.DataSourcesTreeControl.SelectDatasource(dsNameToSelect);
 				}
-
 				return;
 			}
 			//if (chartFormClicked.IsActivated == false) return;	//NOUP ActiveDocumentChanged is invoked twice: 1) for a form loosing control, 2) for a form gaining control
@@ -192,6 +191,9 @@ namespace Sq1.Gui {
 				//chartFormClicked.Activate();	// I_GUESS_ITS_ALREADY_ACTIVE
 				chartFormClicked.Focus();		// FLOATING_FORM_CANT_BE_RESIZED_WITHOUT_FOCUS FOCUS_WAS_PROBABLY_STOLEN_BY_SOME_OTHER_FORM(MAIN?)_LAZY_TO_DEBUG
 				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(chartFormClicked.ChartControl.ChartSettings);
+				if (chartFormClicked.ChartFormManager.Executor.Bars != null) {
+					SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbolInfo(chartFormClicked.ChartFormManager.Executor.Bars.SymbolInfo);
+				}
 			} catch (Exception ex) {
 				if (ex.Message == "The previous pane is invalid. It can not be null, and its docking state must not be auto-hide.") {
 					foreach (DockPane eachPane in this.mainForm.DockPanel.Panes) {
@@ -258,7 +260,12 @@ namespace Sq1.Gui {
 		internal void DataSourcesTree_OnBarsAnalyzerClicked(object sender, DataSourceSymbolEventArgs e) {
 		}
 		internal void DataSourcesTree_OnSymbolInfoEditorClicked(object sender, DataSourceSymbolEventArgs e) {
-			SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbol(e);
+			string msig = " //DataSourcesTree_OnSymbolInfoEditorClicked()";
+			if (SymbolInfoEditorForm.Instance.IsShown) {
+				SymbolInfoEditorForm.Instance.ActivateDockContentPopupAutoHidden(false, true);
+			} else {
+				SymbolInfoEditorForm.Instance.Show();
+			}
 		}
 		internal void DataSourcesTree_OnDataSourceDeletedClicked(object sender, DataSourceEventArgs e) {
 		}

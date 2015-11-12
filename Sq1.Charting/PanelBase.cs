@@ -14,7 +14,8 @@ using Sq1.Charting.MultiSplit;
 namespace Sq1.Charting {
 	public partial class PanelBase :
 #if NON_DOUBLE_BUFFERED
-//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH Panel
+//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH
+		Panel
 #else
 			PanelDoubleBuffered //UserControlDoubleBuffered
 #endif
@@ -225,17 +226,17 @@ namespace Sq1.Charting {
 			this.DrawLabelOnNextLine(g, msg, null, Color.Red, Color.Empty);
 		}
 
-//#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD
-//		protected override void OnResize(EventArgs e) {	//PanelDoubleBuffered does this already to DisposeAndNullify managed Graphics
-//			if (base.DesignMode) return;
-//			base.OnResize(e);	// empty inside but who knows what useful job it does?
-//			base.Invalidate();	// SplitterMoved => repaint; Panel and UserControl don't have that (why?)
-//		}
-//		protected override void OnPaint(PaintEventArgs e) {
-//			base.OnPaint(e);
-//#else
+#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD
+		protected override void OnResize(EventArgs e) {	//PanelDoubleBuffered does this already to DisposeAndNullify managed Graphics
+			if (base.DesignMode) return;
+			base.OnResize(e);	// empty inside but who knows what useful job it does?
+			base.Invalidate();	// SplitterMoved => repaint; Panel and UserControl don't have that (why?)
+		}
+		protected override void OnPaint(PaintEventArgs e) {
+			base.OnPaint(e);
+#else
 		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
-//#endif
+#endif
 			string msig = " " + this.PanelName + ".OnPaintDoubleBuffered()";
 			if (this.DesignMode) return;
 			if (this.ChartControl == null) {
@@ -263,7 +264,11 @@ namespace Sq1.Charting {
 					//+ " ImPaintingBackgroundNow=" + this.ImPaintingBackgroundNow
 					//+ " ImPaintingForegroundNow=" + this.ImPaintingForegroundNow
 					;
+#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD
+				this.OnPaintBackground(e);
+#else
 				this.OnPaintBackgroundDoubleBuffered(e);
+#endif
 				msg = "GOT VisibleBarLeft_cached[" + this.VisibleBarLeft_cached + "] VisibleBarLeft[" + this.ChartControl.VisibleBarLeft + "] AFTER" + msg;
 				Assembler.PopupException(msg, null, false);
 			}
@@ -382,12 +387,12 @@ namespace Sq1.Charting {
 		protected	int RepaintSernoForeground;
 		protected	int RepaintSernoBackground;
 
-//#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
-//		protected override void OnPaintBackground(PaintEventArgs e) {
-//			base.OnPaintBackground(e);
-//#else
+#if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
+		protected override void OnPaintBackground(PaintEventArgs e) {
+			base.OnPaintBackground(e);
+#else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
-//#endif
+#endif
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
 				if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;

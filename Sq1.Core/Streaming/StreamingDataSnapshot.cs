@@ -133,7 +133,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public virtual double GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(string symbol, Direction direction
 				, out OrderSpreadSide oss, bool forceCrossMarket) {
-			string msig = " GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(" + symbol + ", " + direction + ")";
+			string msig = " //GetAlignedBidOrAskForTidalOrCrossMarketFromStreaming(" + symbol + ", " + direction + ")";
 			double priceLastQuote = this.LastQuoteGetPriceForMarketOrder(symbol);
 			if (priceLastQuote == 0) {
 				string msg = "QuickCheck ZERO priceLastQuote=" + priceLastQuote + " for Symbol=[" + symbol + "]"
@@ -198,7 +198,7 @@ namespace Sq1.Core.Streaming {
 							break;
 						default:
 							string msg2 = "no handler for spreadSide[" + spreadSide + "] direction[" + direction + "]";
-							throw new Exception(msg2);
+							throw new Exception(msg2 + msig);
 					}
 					break;
 				case Direction.Short:
@@ -222,12 +222,12 @@ namespace Sq1.Core.Streaming {
 							break;
 						default:
 							string msg2 = "no handler for spreadSide[" + spreadSide + "] direction[" + direction + "]";
-							throw new Exception(msg2);
+							throw new Exception(msg2 + msig);
 					}
 					break;
 				default:
 					string msg = "no handler for direction[" + direction + "]";
-					throw new Exception(msg);
+					throw new Exception(msg + msig);
 			}
 
 			if (double.IsNaN(price)) {

@@ -76,8 +76,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 			dsRepo.OnSymbolRemovedDone -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
 			dsRepo.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
 
-			dsRepo.OnSymbolRenamed -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
-			dsRepo.OnSymbolRenamed += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
+			dsRepo.OnSymbolRenamed -= new EventHandler<DataSourceSymbolRenamedEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
+			dsRepo.OnSymbolRenamed += new EventHandler<DataSourceSymbolRenamedEventArgs>(repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea);
 		}
 
 		public void PopulateScaleIntervalFromDataSource() {

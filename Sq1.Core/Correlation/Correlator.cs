@@ -11,11 +11,11 @@ using Sq1.Core.Serializers;
 namespace Sq1.Core.Correlation {
 	public partial class Correlator {
 					object											lockForAllRecalculations;
-		internal	SequencedBacktests								SequencedBacktestOriginal;
+		public		SequencedBacktests								SequencedBacktestOriginal	{ get; private set; }
 					RepositoryJsonCorrelator						repositoryJsonCorrelator;
 
-		public		KPIsCalculator										KPIsCalculator		{ get; private set; }
-		public		MomentumsCalculator									MomentumsCalculator	{ get; private set; }
+		public		KPIsCalculator										KPIsCalculator			{ get; private set; }
+		public		MomentumsCalculator									MomentumsCalculator		{ get; private set; }
 
 		public		Dictionary<string, OneParameterAllValuesAveraged>	ParametersByName		{ get; private set; }
 		public		List<OneParameterAllValuesAveraged>					Parameters				{ get { return new List<OneParameterAllValuesAveraged>(this.ParametersByName.Values); } }

@@ -26,24 +26,23 @@
 			this.ChartSettingsEditorControl = new Sq1.Charting.ChartSettingsEditorControl();
 			this.SuspendLayout();
 			// 
-			// SymbolEditorControl
+			// ChartSettingsEditorControl
 			// 
 			this.ChartSettingsEditorControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ChartSettingsEditorControl.Location = new System.Drawing.Point(0, 0);
-			this.ChartSettingsEditorControl.Name = "SymbolEditorControl";
+			this.ChartSettingsEditorControl.Name = "ChartSettingsEditorControl";
 			this.ChartSettingsEditorControl.Size = new System.Drawing.Size(205, 393);
 			this.ChartSettingsEditorControl.TabIndex = 0;
 			// 
 			// ChartSettingsEditorForm
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.ClientSize = new System.Drawing.Size(205, 393);
 			this.Controls.Add(this.ChartSettingsEditorControl);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.HideOnClose = true;
 			this.Name = "ChartSettingsEditorForm";
-			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockLeftAutoHide;
+			this.ShowHint = WeifenLuo.WinFormsUI.Docking.DockState.DockRight;
 			this.Text = "Chart Editor";
 			this.ResumeLayout(false);
 

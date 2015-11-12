@@ -87,9 +87,9 @@ namespace Sq1.Gui.Forms {
 			} }
 		public	bool								SequencerIsOnSurface				{ get {
 				SequencerForm sequencer = this.SequencerForm;
-				bool sequencerNotInstantiated = DockContentImproved.IsNullOrDisposed(sequencer);
-				bool sequencerMustBeActivated = sequencerNotInstantiated ? true : sequencer.MustBeActivated;
-				return !sequencerMustBeActivated;
+				if (DockContentImproved.IsNullOrDisposed(sequencer)) return false;
+				if (sequencer.IsShown == false) return false;
+				return sequencer.MustBeActivated == false;
 			} }
 
 		public	LivesimForm LivesimForm;
@@ -102,9 +102,9 @@ namespace Sq1.Gui.Forms {
 			} }
 		public	bool								LivesimFormIsOnSurface				{ get {
 				LivesimForm livesim = this.LivesimForm;
-				bool livesimNotInstantiated = DockContentImproved.IsNullOrDisposed(livesim);
-				bool livesimMustBeActivated = livesimNotInstantiated ? true : livesim.MustBeActivated;
-				return !livesimMustBeActivated;
+				if (DockContentImproved.IsNullOrDisposed(livesim)) return false;
+				if (livesim.IsShown == false) return false;
+				return livesim.MustBeActivated == false;
 			} }
 
 		public	CorrelatorForm CorrelatorForm;
@@ -116,10 +116,10 @@ namespace Sq1.Gui.Forms {
 				return this.CorrelatorForm;
 			} }
 		public	bool								CorrelatorFormIsOnSurface				{ get {
-				CorrelatorForm Correlator = this.CorrelatorForm;
-				bool CorrelatorNotInstantiated = DockContentImproved.IsNullOrDisposed(Correlator);
-				bool CorrelatorMustBeActivated = CorrelatorNotInstantiated ? true : Correlator.MustBeActivated;
-				return !CorrelatorMustBeActivated;
+				CorrelatorForm correlator = this.CorrelatorForm;
+				if (DockContentImproved.IsNullOrDisposed(correlator)) return false;
+				if (correlator.IsShown == false) return false;
+				return correlator.MustBeActivated == false;
 			} }
 		
 		public	ChartFormInterformEventsConsumer	InterformEventsConsumer;
@@ -428,7 +428,8 @@ namespace Sq1.Gui.Forms {
 				this.Executor.Bars.DataSource.DataSourceEditedChartsDisplayedShouldRunBacktestAgain +=
 						new EventHandler<DataSourceEventArgs>(chartFormManager_DataSourceEditedChartsDisplayedShouldRunBacktestAgain);
 
-				bool invalidateAllPanels = wontBacktest;
+				//v1 I_LOADED_NEW_BARS__SHOULD_INVALIDATE_ALL_OTHERWIZE_REPAINTED_ONLY_AFTER_MOUSEOVER__WONT_BACKTEST_DOESNT_MATTER bool invalidateAllPanels = wontBacktest;
+				bool invalidateAllPanels = true;
 
 				string strategyName = this.Strategy == null ? "CHART_ONLY" : this.Strategy.Name;
 				this.ChartForm.ChartControl.Initialize(barsClicked, strategyName, invalidateAllPanels);
@@ -720,8 +721,12 @@ namespace Sq1.Gui.Forms {
 				//    sequencerControl.BacktestsShowAll_regardlessWhatIsChosenInCorrelator();
 				//}
 				CorrelatorControl correlatorControl = this.CorrelatorFormConditionalInstance.CorrelatorControl;
-				SequencedBacktests chosenOnly = correlatorControl.Correlator.SequencedBacktestsOriginalMinusParameterValuesUnchosen;
-				sequencerControl.BacktestsReplaceWithCorrelated(chosenOnly);
+				if (correlatorControl.Correlator.SequencedBacktestOriginal != null) {
+					SequencedBacktests chosenOnly = correlatorControl.Correlator.SequencedBacktestsOriginalMinusParameterValuesUnchosen;
+					sequencerControl.BacktestsReplaceWithCorrelated(chosenOnly);
+				} else {
+					string msg = "AVOIDING_NPE_IN_SequencedBacktestsOriginalMinusParameterValuesUnchosen";
+				}
 			}
 
 			if (this.SequencerFormConditionalInstance.MustBeActivated) {
@@ -807,7 +812,7 @@ namespace Sq1.Gui.Forms {
 			// WILL_RAISE_BUT_AND_CORRELATOR_ALREADY_CATCHES_IT this.SequencerFormConditionalInstance.SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange();
 			//NEXT_LINE_RAISE_WILL_PUSH_IT_BUT_SECOND_CLICK_WILL_SHOW_ZEROES this.CorrelatorFormConditionalInstance.PopulateSequencedHistory(this.SequencerFormConditionalInstance.SequencerControl.PushToCorrelator);
 			//DONT_INIT_IF_I_HAVE_NON_DEFAULT_SCALEINTERVAL_SELECTED this.SequencerFormShow(false);
-			//REMOVED_GUI_OPTIMIZATION__WHY_IS_IT_HERE?? this.CorrelatorFormConditionalInstance.CorrelatorControl.Correlator.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
+			//REMOVED_GUI_SEQUENCING__WHY_IS_IT_HERE?? this.CorrelatorFormConditionalInstance.CorrelatorControl.Correlator.RaiseOnSequencedBacktestsOriginalMinusParameterValuesUnchosenIsRebuilt();
 			//this.SequencerFormConditionalInstance.ActivateDockContentPopupAutoHidden(false, true);
 		}
 		public void LivesimFormShow(bool keepAutoHidden = true) {
@@ -927,7 +932,9 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
-			DataSourcesForm.Instance.DataSourcesTreeControl.RaiseOnSymbolInfoEditorClicked();
+			if (SymbolInfoEditorForm.Instance.IsShown) {
+				DataSourcesForm.Instance.DataSourcesTreeControl.RaiseOnSymbolInfoEditorClicked();
+			}
 			if (this.Strategy != null) {
 				StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.Strategy);
 			} else {
@@ -939,7 +946,7 @@ namespace Sq1.Gui.Forms {
 		
 		public void SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory(bool deleteSequencedBacktest = false) {
 			if (deleteSequencedBacktest) {
-				//v1 this.Strategy.OptimizationResultsByContextIdent.Clear();
+				//v1 this.Strategy.SequencedResultsByContextIdent.Clear();
 				if (this.SequencerForm != null) {
 					this.SequencerForm.SequencerControl.RepositoryJsonSequencer.ItemsFoundDeleteAll();
 				} else {

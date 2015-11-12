@@ -8,7 +8,7 @@ using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.FormFactories {
-	public class SequencerFormFactory {	// REASON_TO_EXIST: way to refresh Sliders and run Chart.Backtest() for added ContextScript from Sq1.Widgets.dll:OptimizationControl
+	public class SequencerFormFactory {	// REASON_TO_EXIST: way to refresh Sliders and run Chart.Backtest() for added ContextScript from Sq1.Widgets.dll:SequencerControl
 		ChartFormsManager chartFormManager;
 
 		public SequencerFormFactory(ChartFormsManager chartFormsManager) {

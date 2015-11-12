@@ -206,7 +206,7 @@ namespace Sq1.Widgets.Sequencing {
 				}
 			}
 
-			//preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while optimization is still running)
+			//preserveState=true will help NOT having SelectedObject=null between (rightClickCtx and Copy)clicks (while Sequencing is still running)
 			this.olvBacktests.SetObjects(this.backtestsLocalEasierToSync.BacktestsReadonly, true);
 
 			this.olvHistoryRescanRefillSelect(symbolScaleRange);
@@ -330,8 +330,8 @@ namespace Sq1.Widgets.Sequencing {
 			}
 
 			foreach (ScriptParameter sp in sparams.Values) {
-				//CHANGING_COLUMN_VISIBILITY_INSTEAD if (this.showAllScriptIndicatorParametersInOptimizationResults == false) {
-				//CHANGING_COLUMN_VISIBILITY_INSTEAD 	if (sp.WillBeSequencedDuringOptimization == false) continue;
+				//CHANGING_COLUMN_VISIBILITY_INSTEAD if (this.showAllScriptIndicatorParametersInSequencedBacktest == false) {
+				//CHANGING_COLUMN_VISIBILITY_INSTEAD 	if (sp.WillBeSequenced == false) continue;
 				//CHANGING_COLUMN_VISIBILITY_INSTEAD }
 				OLVColumn olvcSP = new OLVColumn();
 				olvcSP.Name = sp.Name;
@@ -345,9 +345,9 @@ namespace Sq1.Widgets.Sequencing {
 			}
 			
 			foreach (string indicatorDotParameter in iparams.Keys) {
-				//CHANGING_COLUMN_VISIBILITY_INSTEAD if (this.showAllScriptIndicatorParametersInOptimizationResults == false) {
+				//CHANGING_COLUMN_VISIBILITY_INSTEAD if (this.showAllScriptIndicatorParametersInSequencedBacktest == false) {
 				//CHANGING_COLUMN_VISIBILITY_INSTEAD 	IndicatorParameter ip = iparams[indicatorDotParameter];
-				//CHANGING_COLUMN_VISIBILITY_INSTEAD 	if (ip.WillBeSequencedDuringOptimization == false) continue;
+				//CHANGING_COLUMN_VISIBILITY_INSTEAD 	if (ip.WillBeSequenced == false) continue;
 				//CHANGING_COLUMN_VISIBILITY_INSTEAD }
 				OLVColumn olvcIP = new OLVColumn();
 				olvcIP.Name = indicatorDotParameter;

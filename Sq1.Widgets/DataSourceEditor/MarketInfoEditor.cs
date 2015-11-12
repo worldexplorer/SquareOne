@@ -51,7 +51,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			foreach (MarketInfo marketInfo in this.marketInfoRepository.MarketsByName.Values) {
 				int index = this.dgMarketName.Rows.Add(new object[] {
 					marketInfo.Name,
-					this.dataSourceRepository.UsedTimes(marketInfo)
+					this.dataSourceRepository.SameMarketInfoInHowManyDataSources(marketInfo)
 				});
 				this.dgMarketName.Rows[index].Tag = marketInfo;
 				if (marketInfo == this.dataSource.MarketInfo) {

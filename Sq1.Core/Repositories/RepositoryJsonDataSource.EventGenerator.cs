@@ -6,7 +6,7 @@ namespace Sq1.Core.Repositories {
 	// the hackiest class in the whole solution :(
 	public partial class RepositoryJsonDataSource {
 		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolAdded;
-		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolRenamed;
+		public event EventHandler<DataSourceSymbolRenamedEventArgs> OnSymbolRenamed;
 		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolCanBeRemoved;
 		public event EventHandler<DataSourceSymbolEventArgs> OnSymbolRemovedDone;
 
