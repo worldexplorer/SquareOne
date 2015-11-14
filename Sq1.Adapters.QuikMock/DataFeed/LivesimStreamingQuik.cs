@@ -3,23 +3,27 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Newtonsoft.Json;
-using Sq1.Adapters.Quik;
-using Sq1.Adapters.QuikMock.Dde;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
+
+using Sq1.Adapters.Quik;
+using Sq1.Adapters.QuikMock.Dde;
 
 namespace Sq1.Adapters.QuikMock {
-	public class StreamingMock : StreamingAdapter {
-		[JsonIgnore]	protected	Dictionary<string, DdeChannelsMock> MockDdeChannelsBySymbol;
+	public class LivesimStreamingQuik : LivesimStreaming {
+		[JsonIgnore]	protected	Dictionary<string, DdeTablesMock> MockDdeChannelsBySymbol;
 		[JsonProperty]				int				QuoteDelay;
+		private LivesimDataSourceQuik livesimDataSourceQuik;
 		[JsonIgnore]	public		int				QuoteDelayAutoPropagate {
 			get { return this.QuoteDelay; }
 			internal set {
 				this.QuoteDelay = value;
 				lock (base.SymbolsSubscribedLock) {
-					foreach (DdeChannelsMock quoteGenerator in MockDdeChannelsBySymbol.Values) {
+					foreach (DdeTablesMock quoteGenerator in MockDdeChannelsBySymbol.Values) {
 						quoteGenerator.ChannelQuote.setNextQuoteDelayMs(this.QuoteDelayAutoPropagate);
 					}
 				}
@@ -55,7 +59,7 @@ namespace Sq1.Adapters.QuikMock {
 			internal set {
 				this.GeneratingNow = value;
 				lock (base.SymbolsSubscribedLock) {
-					foreach (DdeChannelsMock quoteGenerator in this.MockDdeChannelsBySymbol.Values) {
+					foreach (DdeTablesMock quoteGenerator in this.MockDdeChannelsBySymbol.Values) {
 						if (this.GeneratingNow) {
 							quoteGenerator.ChannelQuote.MockStart();
 						} else {
@@ -66,14 +70,19 @@ namespace Sq1.Adapters.QuikMock {
 			}
 		}
 		
-		public StreamingMock() : base() {
+		public LivesimStreamingQuik() : base() {
 			this.GenerateOnlySymbols = new List<string>();
-			this.MockDdeChannelsBySymbol = new Dictionary<string, DdeChannelsMock>();
+			this.MockDdeChannelsBySymbol = new Dictionary<string, DdeTablesMock>();
 			base.Name = "StreamingQuikMockDummy";
 			base.Description = "MOCK generating quotes, QuikTerminalMock is still used";
 			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStaticAdapter;
 			base.StreamingDataSnapshot = new StreamingDataSnapshotQuik(this);
 			StreamingDataSnapshotQuik throwAtEarlyStage = this.StreamingDataSnapshotQuik;
+		}
+
+		public LivesimStreamingQuik(LivesimDataSourceQuik livesimDataSourceQuik) {
+			// TODO: Complete member initialization
+			this.livesimDataSourceQuik = livesimDataSourceQuik;
 		}
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.StreamingEditorInitializeHelper(dataSourceEditor);
@@ -104,12 +113,12 @@ namespace Sq1.Adapters.QuikMock {
 				string ret = "";
 				foreach (string symbol in base.DataSource.Symbols) {
 					if (this.MockDdeChannelsBySymbol.ContainsKey(symbol) == false) {
-						DdeChannelsMock channels = new DdeChannelsMock(this, symbol);
+						DdeTablesMock channels = new DdeTablesMock(this, symbol);
 						string msg = "SHOULD_HAVE_BEEN_ADDED_ALREADY " + channels;
 						Assembler.PopupException(msg, null, false);
 						this.MockDdeChannelsBySymbol.Add(symbol, channels);
 					}
-					DdeChannelsMock ddeChannelsMock = this.MockDdeChannelsBySymbol[symbol];
+					DdeTablesMock ddeChannelsMock = this.MockDdeChannelsBySymbol[symbol];
 					string started = this.GeneratingNow ? ddeChannelsMock.AllChannelsForSymbolStart() : "GENERATING_NOW=FALSE";
 					string msg2 = "subscribed[" + symbol + "]: [" + started + "]";
 					Assembler.PopupException(msg2, null, false);
@@ -148,7 +157,7 @@ namespace Sq1.Adapters.QuikMock {
 					//this.StatusReporter.UpdateConnectionStatus(ConnectionState.ErrorSymbolSubscribing, 1, msg2);
 					return;
 				}
-				DdeChannelsMock ddeChannelsMock = new DdeChannelsMock(this, symbol);
+				DdeTablesMock ddeChannelsMock = new DdeTablesMock(this, symbol);
 				msig += ": [" + ddeChannelsMock.ToString() + "]";
 				
 				if (this.QuoteDelayAutoPropagate > 0) ddeChannelsMock.ChannelQuote.setNextQuoteDelayMs(this.QuoteDelayAutoPropagate);

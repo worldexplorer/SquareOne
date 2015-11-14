@@ -54,12 +54,13 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataFeed\Dde\DdeChannelLastQuoteMock.cs" />
-    <Compile Include="DataFeed\Dde\DdeChannelsMock.cs" />
+    <Compile Include="DataFeed\Dde\DdeTableLastQuoteMock.cs" />
+    <Compile Include="DataFeed\Dde\DdeTablesMock.cs" />
+    <Compile Include="DataFeed\LivesimDataSourceQuik.cs" />
     <Compile Include="DataFeed\StreamingMockEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataFeed\StreamingMock.cs" />
+    <Compile Include="DataFeed\LivesimStreamingQuik.cs" />
     <Compile Include="DataFeed\StreamingMockEditor.Designer.cs">
       <DependentUpon>StreamingMockEditor.cs</DependentUpon>
     </Compile>
@@ -70,7 +71,7 @@
     <Compile Include="OrderExecution\BrokerMockEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OrderExecution\BrokerMock.cs" />
+    <Compile Include="OrderExecution\LivesimBrokerQuik.cs" />
     <Compile Include="OrderExecution\BrokerMockEditor.Designer.cs">
       <DependentUpon>BrokerMockEditor.cs</DependentUpon>
     </Compile>

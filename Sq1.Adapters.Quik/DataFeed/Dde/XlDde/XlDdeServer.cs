@@ -8,25 +8,25 @@ using NDde.Server;
 
 namespace Sq1.Adapters.Quik.Dde.XlDde {
 	public class XlDdeServer : DdeServer {
-		Dictionary<string, XlDdeTable> channels;
+		Dictionary<string, XlDdeTable> tables;
 		public XlDdeServer(string service) : base(service) {
-			channels = new Dictionary<string, XlDdeTable>();
+			tables = new Dictionary<string, XlDdeTable>();
 		}
 		public void AddChannel(string topic, XlDdeTable channel) {
-			if (channels.ContainsKey(topic)) return;
-			channels.Add(topic, channel);
+			if (tables.ContainsKey(topic)) return;
+			tables.Add(topic, channel);
 		}
 		public void RemoveChannel(string topic) {
-			if (channels.ContainsKey(topic) == false) return;
-			channels.Remove(topic);
+			if (tables.ContainsKey(topic) == false) return;
+			tables.Remove(topic);
 		}
 		protected override bool OnBeforeConnect(string topic) {
-			return channels.ContainsKey(topic);
+			return tables.ContainsKey(topic);
 		}
 		protected override void OnAfterConnect(DdeConversation c) {
-			XlDdeTable channel = channels[c.Topic];
-			c.Tag = channel;
-			channel.IsConnected = true;
+			XlDdeTable table = tables[c.Topic];
+			c.Tag = table;
+			table.IsConnected = true;
 		}
 		protected override void OnDisconnect(DdeConversation c) {
 			((XlDdeTable)c.Tag).IsConnected = false;

@@ -3,24 +3,27 @@ using System.Drawing;
 using System.Diagnostics;
 
 using Newtonsoft.Json;
+
 using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
+
 using Sq1.Adapters.Quik;
 using Sq1.Adapters.QuikMock.Terminal;
 
 namespace Sq1.Adapters.QuikMock {
-	public class BrokerMock : BrokerQuik {
+	public class LivesimBrokerQuik : LivesimBroker {
 		[JsonIgnore]	public	QuikTerminalMock	MockTerminal;
 		[JsonProperty]	public	int					ExecutionDelayMillis	{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 		[JsonProperty]	public	int					RejectFirstNOrders		{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 		[JsonProperty]	public	bool				RejectRandomly			{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 		[JsonProperty]	public	bool				RejectAllUpcoming		{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 
-		public BrokerMock() : base() {
-			base.Name = "BrokerQuikMockDummy";
+		public LivesimBrokerQuik(LivesimDataSourceQuik livesimDataSourceQuik) : base(livesimDataSourceQuik) {
+			base.Name = "LivesimBrokerQuikDummy";
 			base.Icon = (Bitmap)Sq1.Adapters.QuikMock.Properties.Resources.imgMockQuikStreamingAdapter;
 			base.QuikTerminal = new QuikTerminalMock(this);
 			this.ExecutionDelayMillis = 1000;
@@ -31,7 +34,7 @@ namespace Sq1.Adapters.QuikMock {
 		public override void Initialize(DataSource dataSource, StreamingAdapter streamingAdapter, OrderProcessor orderProcessor) {
 			base.Initialize(dataSource, streamingAdapter, orderProcessor);
 			base.QuikTerminal.ConnectDll();
-			base.Name = "BrokerQuikMock";
+			base.Name = "LivesimBrokerQuik";
 		}
 		public override BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.BrokerEditorInitializeHelper(dataSourceEditor);
@@ -82,7 +85,7 @@ namespace Sq1.Adapters.QuikMock {
 
 			if (order.Alert.MarketLimitStop == MarketLimitStop.Market) {
 				// TODO: paste link where did you take this piece of silliness (I promise!!)
-				StreamingMock quickBrokerAcceptsMarketOrdersOnlyWithMinOrMaxPrice = base.StreamingAdapter as StreamingMock;
+				LivesimStreamingQuik quickBrokerAcceptsMarketOrdersOnlyWithMinOrMaxPrice = base.StreamingAdapter as LivesimStreamingQuik;
 				if (quickBrokerAcceptsMarketOrdersOnlyWithMinOrMaxPrice != null) {
 					double fortsPriceMin = quickBrokerAcceptsMarketOrdersOnlyWithMinOrMaxPrice.StreamingDataSnapshotQuik.FortsGetPriceMinForSymbol(order.Alert.Symbol);
 					double fortsPriceMax = quickBrokerAcceptsMarketOrdersOnlyWithMinOrMaxPrice.StreamingDataSnapshotQuik.FortsGetPriceMaxForSymbol(order.Alert.Symbol);

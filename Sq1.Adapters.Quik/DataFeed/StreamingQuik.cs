@@ -45,7 +45,7 @@ namespace Sq1.Adapters.Quik {
 			} }
 		
 		public StreamingQuik() : base() {
-			base.Name = "Quik StreamingDummy";
+			base.Name = "QuikStreaming-DllScanned";
 			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
 			this.DdeServerPrefix = "SQ1";
 			this.DdeTopicQuotes = "quotes";

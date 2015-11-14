@@ -6,8 +6,8 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Adapters.QuikMock.Dde {
-	public class DdeChannelLastQuoteMock {	//: DdeChannelLastQuote
-		protected StreamingMock adapterMock;
+	public class DdeTableLastQuoteMock {	//: DdeChannelLastQuote
+		protected LivesimStreamingQuik adapterMock;
 		protected string quoteSource = "QUIK_DDE";
 		protected string symbol = "RIZ2";
 
@@ -34,7 +34,7 @@ namespace Sq1.Adapters.QuikMock.Dde {
 		Random rnd;
 		bool prevRandWasPositive = true;
 
-		public DdeChannelLastQuoteMock(StreamingMock providerMock, string SymbolSubscribing, bool autoStart = false) {
+		public DdeTableLastQuoteMock(LivesimStreamingQuik providerMock, string SymbolSubscribing, bool autoStart = false) {
 			//: base(streamingAdapter, SymbolSubscribing)
 			this.adapterMock = providerMock;
 			this.symbol = SymbolSubscribing;

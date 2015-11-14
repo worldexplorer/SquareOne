@@ -36,7 +36,7 @@ namespace Sq1.Adapters.QuikMock {
 			get { return this.cbxGeneratingNow.Checked; }
 			set { this.cbxGeneratingNow.Checked = value; }
 		}
-		StreamingMock mockStreamingAdapter { get { return base.streamingAdapter as StreamingMock; } }
+		LivesimStreamingQuik mockStreamingAdapter { get { return base.streamingAdapter as LivesimStreamingQuik; } }
 
 		// Designer will call this
 		public StreamingMockEditor()  {

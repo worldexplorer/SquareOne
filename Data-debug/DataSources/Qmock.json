@@ -15,7 +15,7 @@
     "AsTimeSpan": "00:01:00"
   },
   "StreamingAdapter": {
-    "$type": "Sq1.Adapters.QuikMock.StreamingMock, Sq1.Adapters.QuikMock",
+    "$type": "Sq1.Adapters.QuikLivesim.QuikLivesimStreaming, Sq1.Adapters.QuikLivesim",
     "QuoteDelay": 1000,
     "GenerateOnlySymbols": [],
     "GeneratingNow": true,
@@ -61,7 +61,7 @@
     }
   },
   "BrokerAdapter": {
-    "$type": "Sq1.Adapters.QuikMock.BrokerMock, Sq1.Adapters.QuikMock",
+    "$type": "Sq1.Adapters.QuikLivesim.QuikLivesimBroker, Sq1.Adapters.QuikLivesim",
     "Account": {
       "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
       "AccountNumber": "ACCTNR_NOT_SET",

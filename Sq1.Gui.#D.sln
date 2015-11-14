@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sq1.Adapters.QuikMock", "Sq
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDde", "NDde.2.01.0563.src\NDde\Source\NDde\NDde.csproj", "{D77772F9-3D3D-40BA-B95F-05C45878078F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sq1.Adapters.QuikLivesim", "Sq1.Adapters.QuickLivesim\Sq1.Adapters.QuikLivesim.csproj", "{8F890999-D27F-45E5-8C41-5D21DC229A57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -194,6 +196,16 @@ Global
 		{D77772F9-3D3D-40BA-B95F-05C45878078F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D77772F9-3D3D-40BA-B95F-05C45878078F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D77772F9-3D3D-40BA-B95F-05C45878078F}.Release|x86.ActiveCfg = Release|Any CPU
+		{8F890999-D27F-45E5-8C41-5D21DC229A57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F890999-D27F-45E5-8C41-5D21DC229A57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F890999-D27F-45E5-8C41-5D21DC229A57}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8F890999-D27F-45E5-8C41-5D21DC229A57}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8F890999-D27F-45E5-8C41-5D21DC229A57}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8F890999-D27F-45E5-8C41-5D21DC229A57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F890999-D27F-45E5-8C41-5D21DC229A57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F890999-D27F-45E5-8C41-5D21DC229A57}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8F890999-D27F-45E5-8C41-5D21DC229A57}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8F890999-D27F-45E5-8C41-5D21DC229A57}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

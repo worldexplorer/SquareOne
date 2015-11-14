@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading;
 
-using Sq1.Adapters.Quik.Terminal;
 using Sq1.Core;
 using Sq1.Core.Broker;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
+
+using Sq1.Adapters.Quik.Terminal;
 
 namespace Sq1.Adapters.QuikMock.Terminal {
 	public class QuikTerminalMock : QuikTerminal {
@@ -16,12 +17,12 @@ namespace Sq1.Adapters.QuikMock.Terminal {
 		bool simulateTradeStatus = false;
 		bool simulateOrderStatusDupes = false;
 
-		BrokerMock mockBrokerAdapter { get { return base.BrokerQuik as BrokerMock; } }
+		LivesimBrokerQuik mockBrokerAdapter { get { return base.BrokerQuik as LivesimBrokerQuik; } }
 
 		public QuikTerminalMock() {
 			throw new Exception("FOR_JSON_DESERIALIZER QuikTerminalMock doesn't support default constructor, use QuikTerminalMock(BrokerMock)");
 		}
-		public QuikTerminalMock(BrokerMock mockBrokerAdapter) : base(mockBrokerAdapter) {
+		public QuikTerminalMock(LivesimBrokerQuik mockBrokerAdapter) : base(mockBrokerAdapter) {
 			base.BrokerQuik = mockBrokerAdapter;
 			base.BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.JustInitialized, "Connected to " + this.DllName);
 		}

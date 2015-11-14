@@ -67,7 +67,7 @@ namespace Sq1.Adapters.QuikMock {
 			}
 			set { this.txtExecutionDelayMillis.Text = value.ToString(); }
 		}
-		BrokerMock mockBrokerAdapter { get { return base.brokerAdapter as BrokerMock; } }
+		LivesimBrokerQuik mockBrokerAdapter { get { return base.brokerAdapter as LivesimBrokerQuik; } }
 
 		// Designer will call this
 		public BrokerMockEditor() {
@@ -75,7 +75,7 @@ namespace Sq1.Adapters.QuikMock {
 		}
 
 		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => brokerAdapterInstance.BrokerEditorInitialize() will call this
-		public BrokerMockEditor(BrokerMock mockBrokerAdapter, IDataSourceEditor dataSourceEditor) : this() {
+		public BrokerMockEditor(LivesimBrokerQuik mockBrokerAdapter, IDataSourceEditor dataSourceEditor) : this() {
 			base.Initialize(mockBrokerAdapter, dataSourceEditor);
 		}
 
