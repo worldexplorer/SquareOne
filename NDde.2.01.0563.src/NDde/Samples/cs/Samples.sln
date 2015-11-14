@@ -1,6 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
+# SharpDevelop 4.4
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{04E46B25-B029-488B-BD1B-9E4AB12E72E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientWin", "ClientWin\ClientWin.csproj", "{8FD4456A-9C49-46ED-9EB4-155C2D738730}"
@@ -8,6 +9,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{68784D57-3C16-40AC-B483-21202554E114}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monitor", "Monitor\Monitor.csproj", "{6AEEBA41-2B34-48F8-AE1C-DD8D19E67B6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDde", "..\..\Source\NDde\NDde.csproj", "{D77772F9-3D3D-40BA-B95F-05C45878078F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +34,10 @@ Global
 		{6AEEBA41-2B34-48F8-AE1C-DD8D19E67B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AEEBA41-2B34-48F8-AE1C-DD8D19E67B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AEEBA41-2B34-48F8-AE1C-DD8D19E67B6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D77772F9-3D3D-40BA-B95F-05C45878078F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D77772F9-3D3D-40BA-B95F-05C45878078F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D77772F9-3D3D-40BA-B95F-05C45878078F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D77772F9-3D3D-40BA-B95F-05C45878078F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
