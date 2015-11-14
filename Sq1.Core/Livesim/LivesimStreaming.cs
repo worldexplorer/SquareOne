@@ -27,6 +27,12 @@ namespace Sq1.Core.Livesim {
 			this.level2gen = new LivesimLevelTwoGenerator(this);
 		}
 
+		protected LivesimStreaming() : base() {
+			string msg = "I_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
+				+ "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_STREAMING_ADAPTERS_FOUND"
+				+ " example:QuikLivesimStreaming()";
+		}
+
 		public void Initialize(ChartShadow chartShadow) {
 			this.chartShadow = chartShadow;
 			double stepPrice = this.chartShadow.Bars.SymbolInfo.PriceStepFromDecimal;

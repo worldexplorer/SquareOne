@@ -403,7 +403,7 @@ namespace Sq1.Core.Broker {
 			order.AppendMessage(msg + msig);
 		}
 
-// NOT_USE_AND_DONT_STEAL_THE_JOB_FROM_ORDER_PROCESSOR
+// NOT_USED_AND_DONT_STEAL_THE_JOB_FROM_ORDER_PROCESSOR
 //		public void CallbackOrderStateReceived(Order orderWithNewState) {
 //			string msig = "BrokerAdapter::CallbackOrderStateReceived(): orderExecuted.State=[" + orderWithNewState.State + "]: ";
 //			string msg = "";
@@ -453,7 +453,7 @@ namespace Sq1.Core.Broker {
 //				Assembler.PopupException("InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter()" + msig, e);
 //			}
 //		}
-//DONT_STEAL_THE_JOB_FROM_ORDER_PROCESSOR 
+// NOT_USED_AND_DONT_STEAL_THE_JOB_FROM_ORDER_PROCESSOR 
 //		void removeOrdersPendingOnFilledCallback(Order orderExecuted, string msig) {
 //			msig = "RemoveOrdersPendingOnFilledCallback(): ";
 //			//if (OrderStatesCollections.CemeteryHealthy.OrderStates.Contains(orderExecuted.State) == false) return;

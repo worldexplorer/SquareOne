@@ -116,7 +116,8 @@ namespace Sq1.Core.Repositories {
 				}
 			} catch (Exception ex) {
 				string msig = " RepositoryJsonsInFolder<" + this.OfWhat + ">::DeserializeSingle(): ";
-				string msg = "FAILED_DeserializeSingle_WITH_jsonAbsfile[" + jsonAbsfile + "]";
+				string msg = "FAILED_DeserializeSingle_WITH_jsonAbsfile[" + jsonAbsfile + "]"
+					+ " check if you have DLL with the failed type in the same folder next to Sq1.Gui.exe";
 				Assembler.PopupException(msg + msig, ex);
 				return ret;
 			}

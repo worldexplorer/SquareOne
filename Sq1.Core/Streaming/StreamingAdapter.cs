@@ -86,15 +86,15 @@ namespace Sq1.Core.Streaming {
 		#region the essence#2 of streaming adapter
 		public virtual void UpstreamSubscribe(string symbol) {
 			throw new Exception("please override StreamingAdapter::UpstreamSubscribe()");
-			//CHILDRENT_TEMPLATE: base.UpstreamSubscribeRegistryHelper(symbol);
+			//CHILDREN_TEMPLATE: base.UpstreamSubscribeRegistryHelper(symbol);
 		}
 		public virtual void UpstreamUnSubscribe(string symbol) {
 			throw new Exception("please override StreamingAdapter::UpstreamUnSubscribe()");
-			//CHILDRENT_TEMPLATE: base.UpstreamUnSubscribeRegistryHelper(symbol);
+			//CHILDREN_TEMPLATE: base.UpstreamUnSubscribeRegistryHelper(symbol);
 		}
 		public virtual bool UpstreamIsSubscribed(string symbol) {
 			throw new Exception("please override StreamingAdapter::UpstreamIsSubscribed()");
-			//CHILDRENT_TEMPLATE: return base.UpstreamIsSubscribedRegistryHelper(symbol);
+			//CHILDREN_TEMPLATE: return base.UpstreamIsSubscribedRegistryHelper(symbol);
 		}
 		#endregion
 

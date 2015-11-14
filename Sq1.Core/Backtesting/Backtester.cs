@@ -471,7 +471,7 @@ namespace Sq1.Core.Backtesting {
 			this.Executor.BacktesterRunSimulationTrampoline(null, true);
 		}
 
-		public void Dispose() {
+		public virtual void Dispose() {
 			if (this.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
 				Assembler.PopupException(msg);

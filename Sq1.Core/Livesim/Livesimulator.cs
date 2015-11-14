@@ -294,15 +294,16 @@ namespace Sq1.Core.Livesim {
 			return ret;
 		}
 
-		public void Dispose() {
-			if (this.IsDisposed) {
-				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
-				Assembler.PopupException(msg);
-				return;
-			}
-			base.Dispose();
-			this.IsDisposed = true;
-		}
-		public bool IsDisposed { get; private set; }
+		// MOVED_TO_BASE
+		//public override void Dispose() {
+		//    if (base.IsDisposed) {
+		//        string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
+		//        Assembler.PopupException(msg);
+		//        return;
+		//    }
+		//    base.Dispose();
+		//    // ALREADY_SET_IN_BACKTESTER_BASE this.IsDisposed = true;
+		//}
+		//public bool IsDisposed { get; private set; }
 	}
 }

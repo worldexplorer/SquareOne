@@ -9,10 +9,10 @@ namespace Sq1.Core.Repositories {
 	public class RepositoryDllScanner<T> {
 		public string OfWhat { get { return typeof(T).Name; } }
 		
-		public List<Type> TypesFound;
-		public Dictionary<string, T> CloneableInstanceByClassName;
-		public Dictionary<Assembly, List<T>> CloneableInstancesByAssemblies;
-		public string AssembliesWithCloneableTypesFoundAsString { get {
+		public List<Type>						TypesFound;
+		public Dictionary<string, T>			CloneableInstanceByClassName;
+		public Dictionary<Assembly, List<T>>	CloneableInstancesByAssemblies;
+		public string							AssembliesWithCloneableTypesFoundAsString { get {
 				string ret = "";
 				foreach (Assembly asm in this.CloneableInstancesByAssemblies.Keys) {
 					ret += "{" + Path.GetFileName(asm.Location) + "}, ";
@@ -21,8 +21,8 @@ namespace Sq1.Core.Repositories {
 				return "[" + ret + "]";
 			} }
 
-		public List<string> NonEmptyDllsScanned;
-		public string NonEmptyDllsScannedAsString { get {
+		public List<string>						NonEmptyDllsScanned;
+		public string							NonEmptyDllsScannedAsString { get {
 				string ret = "";
 				foreach (string dllPath in this.NonEmptyDllsScanned) {
 					ret += "{" + Path.GetFileName(dllPath) + "}, ";
@@ -30,15 +30,16 @@ namespace Sq1.Core.Repositories {
 				ret = ret.TrimEnd(", ".ToCharArray());
 				return "[" + ret + "]";
 			} }
-		public List<Exception> ExceptionsWhileScanning;
-		public string RootPath { get; protected set; }
-		public string Subfolder;
-		public string PathMask;
-		public string AbsPath { get { return this.RootPath + Subfolder; } }
-		public List<string> skipDlls = new List<string>() {
+		public List<Exception>					ExceptionsWhileScanning;
+		public string							RootPath	{ get; private set; }
+		public string							Subfolder	{ get; private set; }
+		public string							PathMask	{ get; private set; }
+		public string							AbsPath		{ get { return this.RootPath + Subfolder; } }
+		public List<string>						skipDlls = new List<string>() {
 				"CsvHelper35.dll", "DigitalRune.Windows.TextEditor.dll", "NDde.dll", "Newtonsoft.Json.dll",		//"log4net.dll", 
 				"ObjectListView.dll", "Sq1.Charting.dll", "Sq1.Core.dll", "Sq1.Gui.dll", "Sq1.Widgets.dll",
 				"WeifenLuo.WinFormsUI.Docking.dll"};
+		private bool							includeGrandChildren;
 
 		public RepositoryDllScanner() {
 			this.TypesFound = new List<Type>();
@@ -62,7 +63,7 @@ namespace Sq1.Core.Repositories {
 			}
 			return ret.ToArray();
 		}
-		public Dictionary<string, T> ScanDlls(bool denyDuplicateShortNamesAndPreInstantiateToClone = true) {
+		public Dictionary<string, T> ScanDlls(bool denyDuplicateShortNames = true) {
 			Dictionary<string, T> ret = new Dictionary<string, T>();
 			if (Directory.Exists(this.AbsPath) == false) return ret;
 			DirectoryInfo directoryInfo = new DirectoryInfo(this.AbsPath);
@@ -70,15 +71,15 @@ namespace Sq1.Core.Repositories {
 			FileInfo[] dllsFiltered = DllsFoundMinusSkip(dllsAllFoundInFolder);
 			foreach (FileInfo fileInfo in dllsFiltered) {
 				//ALREADY_dllsFiltered if (skipDlls.Contains(fileInfo.Name)) continue;
-				Type[] types;
+				Type[] typesFoundInDll;
 				string dllAbsPath = Path.Combine(directoryInfo.FullName, fileInfo.Name);
 				Assembly assembly;
 				string msig = " Assembly.LoadFile(" + dllAbsPath + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanDlls()";
 				try {
 					assembly = Assembly.LoadFile(dllAbsPath);
 					if (assembly == null) continue;
-					types = assembly.GetTypes();
-					if (types == null) continue;
+					typesFoundInDll = assembly.GetTypes();
+					if (typesFoundInDll == null) continue;
 				} catch (ReflectionTypeLoadException ex) {
 					foreach (var loaderEx in ex.LoaderExceptions) {
 						string msg = "ReflectionTypeLoadException/LOADFILE_FAILED";
@@ -95,25 +96,41 @@ namespace Sq1.Core.Repositories {
 					continue;
 				}
 				this.NonEmptyDllsScanned.Add(dllAbsPath);
-				foreach (Type type in types) {
-					if (typeof(T).IsAssignableFrom(type) == false) continue;
-					if (type.FullName == typeof(T).FullName) continue;
-					if (denyDuplicateShortNamesAndPreInstantiateToClone == true) {
-						bool wannaAvoidCloneableInsancesToThrow = this.checkShortNameAlreadyFound(type.Name);
+				foreach (Type typeFound in typesFoundInDll) {
+					msig = " Activator.CreateInstance(" + typeFound + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanDlls("
+						+ denyDuplicateShortNames + ", [" + dllAbsPath + "])";
+						
+					string typeFoundName = typeFound.FullName;
+					string typeMustBeParent = typeof(T).FullName;
+
+					if (typeFound.Name == "QuikLivesimStreaming"
+							&& typeMustBeParent == "Sq1.Core.Streaming.StreamingAdapter"
+							//&& typeMustBeParent.Contains("StreamingAdapter")
+						) {
+						string breakpoint = "here";
+					}
+					bool isAssignable = typeof(T).IsAssignableFrom(typeFound);
+					if (isAssignable == false) {
+						string msg = "typeFoundName[" + typeFoundName+ "].IsNotValidTORepresent[" + typeMustBeParent + "]";
+						continue;
+					}
+
+					bool imInstantiatingTheParent_itMustBeAbstract = typeFoundName == typeMustBeParent;
+					if (imInstantiatingTheParent_itMustBeAbstract) continue;
+		
+					if (denyDuplicateShortNames == true) {
+						bool wannaAvoidCloneableInsancesToThrow = this.checkShortNameAlreadyFound(typeFound.Name);
 						if (wannaAvoidCloneableInsancesToThrow) continue;
 					}
-					this.TypesFound.Add(type);
+					this.TypesFound.Add(typeFound);
 
-					if (denyDuplicateShortNamesAndPreInstantiateToClone == false) continue;
-					if (SkipInstantiationAtAttribute.AtStartup(type) == true) continue;
+					//if (denyDuplicateShortNames == false) continue;
+					if (SkipInstantiationAtAttribute.AtStartup(typeFound) == true) continue;
 					
-					msig = " Activator.CreateInstance(" + type + ") << RepositoryDllScanner<" + typeof(T) + ">.ScanDlls("
-						+ denyDuplicateShortNamesAndPreInstantiateToClone + ", [" + dllAbsPath + "])";
-						
 					// 1/3
 					object instance;
 					try {
-						instance = Activator.CreateInstance(type);	// Type.Assembly points to where the Type "lives"
+						instance = Activator.CreateInstance(typeFound);	// Type.Assembly points to where the Type "lives"
 						if (instance == null) throw new Exception("INSTANCE_RETURNED_IS_NULL");
 					} catch (Exception ex) {
 						string msg = "ACTIVATION_FAILED";
@@ -136,7 +153,7 @@ namespace Sq1.Core.Repositories {
 					// 3/3
 					try {
 						//this.CloneableInstanceByClassName.Add(classCastedInstance.Name, classCastedInstance);
-						this.CloneableInstanceByClassName.Add(type.Name, classCastedInstance);
+						this.CloneableInstanceByClassName.Add(typeFound.Name, classCastedInstance);
 
 						if (this.CloneableInstancesByAssemblies.ContainsKey(assembly) == false) {
 							this.CloneableInstancesByAssemblies.Add(assembly, new List<T>());

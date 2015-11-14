@@ -14,11 +14,11 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
 	public class LivesimBroker : BrokerAdapter, IDisposable {
-		public	List<Order>					OrdersSubmittedForOneLivesimBacktest	{ get; private set; }
-				LivesimDataSource			livesimDataSource;
-				LivesimBrokerSettings		settings { get { return this.livesimDataSource.Executor.Strategy.LivesimBrokerSettings; } }
-				object						threadEntryLockToHaveQuoteSentToThread;
-		public	LivesimBrokerDataSnapshot	DataSnapshot;
+		public		List<Order>					OrdersSubmittedForOneLivesimBacktest	{ get; private set; }
+		protected	LivesimDataSource			livesimDataSource;
+					LivesimBrokerSettings		settings { get { return this.livesimDataSource.Executor.Strategy.LivesimBrokerSettings; } }
+					object						threadEntryLockToHaveQuoteSentToThread;
+		public		LivesimBrokerDataSnapshot	DataSnapshot;
 
 		public LivesimBroker(LivesimDataSource livesimDataSource) : base() {
 			base.Name = "LivesimBroker";
@@ -28,6 +28,12 @@ namespace Sq1.Core.Livesim {
 			this.livesimDataSource					= livesimDataSource;
 			threadEntryLockToHaveQuoteSentToThread	= new object();
 			DataSnapshot							= new LivesimBrokerDataSnapshot(this.livesimDataSource);
+		}
+
+		protected LivesimBroker() {
+			string msg = "I_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
+				+ "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_BROKER_ADAPTERS_FOUND"
+				+ " example:QuikLivesimBroker()";
 		}
 
 		public override void OrderSubmit(Order order) {
