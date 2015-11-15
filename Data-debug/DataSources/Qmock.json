@@ -16,76 +16,48 @@
   },
   "StreamingAdapter": {
     "$type": "Sq1.Adapters.QuikLivesim.QuikLivesimStreaming, Sq1.Adapters.QuikLivesim",
-    "QuoteDelay": 1000,
-    "GenerateOnlySymbols": [],
-    "GeneratingNow": true,
+    "SpreadModeler": {
+      "$type": "Sq1.Core.Backtesting.BacktestSpreadModelerPercentage, Sq1.Core",
+      "AlignToPriceLevel": true
+    },
+    "Unpaused": {
+      "$type": "System.Threading.ManualResetEvent, mscorlib",
+      "Handle": {
+        "$type": "System.IntPtr, mscorlib",
+        "value": 1148
+      },
+      "SafeWaitHandle": {
+        "$type": "Microsoft.Win32.SafeHandles.SafeWaitHandle, mscorlib",
+        "IsInvalid": false,
+        "IsClosed": false
+      }
+    },
+    "IsDisposed": false,
     "StreamingDataSnapshot": {
-      "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
+      "$type": "Sq1.Core.Streaming.StreamingDataSnapshot, Sq1.Core",
       "lastQuoteClonesReceivedUnboundBySymbol": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
         "autogen": null,
-        "RIM3": null,
-        "RIM3-Qmock": null,
-        "RIM3-Qmoc": null,
-        "RIM3-Qmock66": null
+        "RIM3-Qmock": null
       },
-      "FortsDepositSell": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 10021.0,
-        "RIM3-Qmock": 10086.0,
-        "RIM3-Qmoc": 10011.0,
-        "RIM3-Qmock66": 10057.0
-      },
-      "FortsDepositBuy": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 10021.0,
-        "RIM3-Qmock": 10022.0,
-        "RIM3-Qmoc": 10086.0,
-        "RIM3-Qmock66": 10097.0
-      },
-      "FortsPriceMin": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 156000.0,
-        "RIM3-Qmock": 156000.0,
-        "RIM3-Qmoc": 156000.0,
-        "RIM3-Qmock66": 156000.0
-      },
-      "FortsPriceMax": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib",
-        "autogen": 160000.0,
-        "RIM3-Qmock": 160000.0,
-        "RIM3-Qmoc": 160000.0,
-        "RIM3-Qmock66": 160000.0
-      },
-      "SymbolsSubscribedAndReceiving": "autogen:NULL,RIM3:NULL,RIM3-Qmock:NULL,RIM3-Qmoc:NULL,RIM3-Qmock66:NULL"
+      "SymbolsSubscribedAndReceiving": "autogen:NULL,RIM3-Qmock:NULL"
     }
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.QuikLivesim.QuikLivesimBroker, Sq1.Adapters.QuikLivesim",
+    "DataSnapshot": null,
     "Account": {
       "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
       "AccountNumber": "ACCTNR_NOT_SET",
       "CashAvailable": -1000.0,
       "AccountValueTimeStamp": "0001-01-01T00:00:00"
     },
-    "AccountMicex": {
-      "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
-      "AccountNumber": "ACCTNR_NOT_SET",
-      "CashAvailable": -1001.0,
-      "AccountValueTimeStamp": "0001-01-01T00:00:00"
-    },
-    "ExecutionDelayMillis": 1000,
-    "RejectFirstNOrders": 0,
-    "RejectRandomly": false,
-    "RejectAllUpcoming": false,
-    "QuikFolder": null,
-    "QuikDllName": "TRANS2QUIK.DLL",
-    "QuikClientCode": null,
-    "ReconnectTimeoutMillis": 0
+    "OrdersSubmittedForOneLivesimBacktest": null,
+    "IsDisposed": false
   },
   "MarketName": "MOCK",
   "Name": "Qmock",
-  "StreamingAdapterName": "StreamingQuikMock",
-  "BrokerAdapterName": "BrokerQuikMock",
+  "StreamingAdapterName": "QuikLivesimStreaming",
+  "BrokerAdapterName": "QuikLivesimBroker-DllFound",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
 }

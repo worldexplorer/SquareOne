@@ -15,8 +15,18 @@ namespace Sq1.Adapters.QuikLivesim {
 			base.Name = "QuikLivesimStreaming-DllFound";
 			base.Icon = (Bitmap)Sq1.Adapters.QuikLivesim.Properties.Resources.imgQuikLivesimStreaming;
 		}
-		public QuikLivesimStreaming(LivesimDataSource livesimDataSource) : base(livesimDataSource) {
+		// SEPARATE_CTOR_FOR_LIVESIM_STREAMING_CHILDREN
+		//public QuikLivesimStreaming(DataSource deserializedDataSource) : base(deserializedDataSource) {
+		//    string msg = "U_USED_Activate.CreateInstance(datasource) to avoid ctor(empty)+Initialize(livesimDataSource)";
+		//    base.Name = "QuikLivesimStreaming";	// THIS_MUST_BE_INVOKED_AFTER_DESERIALIZATION_RESTORED_DATASOURCE__NOT_INITIALIZE
+		//    base.Icon = (Bitmap)Sq1.Adapters.QuikLivesim.Properties.Resources.imgQuikLivesimStreaming;
+		//}
+		public override void Initialize(DataSource deserializedDataSource) {
 			base.Name = "QuikLivesimStreaming";
+			base.Initialize(deserializedDataSource);
+		}
+		protected override void SubscribeSolidifier() {
+			return;
 		}
 
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {

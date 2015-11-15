@@ -54,6 +54,7 @@
     "ReporterShortNamesUserInvokedJSONcheck": [
       "Positions"
     ],
+    "BacktestOnTriggeringYesWhenNotSubscribed": false,
     "BacktestOnRestart": false,
     "BacktestOnSelectorsChange": true,
     "BacktestOnDataSourceSaved": true,
