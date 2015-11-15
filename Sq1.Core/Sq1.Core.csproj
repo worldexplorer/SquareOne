@@ -87,7 +87,7 @@
     </Compile>
     <Compile Include="Broker\OrdersAutoTree.cs" />
     <Compile Include="Charting\ChartSettings.cs" />
-    <Compile Include="Charting\ChartShadow.PaintSynchronizer.cs">
+    <Compile Include="Charting\ChartShadow.EventDistributor.cs">
       <DependentUpon>ChartShadow.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>

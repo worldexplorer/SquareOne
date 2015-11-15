@@ -93,7 +93,20 @@ namespace Sq1.Core.DataFeed {
 		public void Initialize(OrderProcessor orderProcessor) {
 			// works only for deserialized adapters; for a newDataSource they are NULLs to be assigned in DataSourceEditor 
 			if (this.StreamingAdapter == null) return;
+			//v1
 			this.StreamingAdapter.Initialize(this);
+			//v2 SEPARATE_CTOR_FOR_LIVESIM_STREAMING_CHILDREN
+			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+			//    try {
+			//        this.StreamingAdapter = (StreamingAdapter) Activator.CreateInstance(this.StreamingAdapter.GetType(), this);
+			//    } catch (Exception ex) {
+			//        string msg = "U_USED_Activate.CreateInstance(" + this.StreamingAdapter.GetType() .Name+ ", " + this + ") to avoid ctor(empty)+Initialize(livesimDataSource)";
+			//        Assembler.PopupException(msg, ex, false);
+			//        this.StreamingAdapter.Initialize(this);
+			//    }
+			//} else {
+			//    this.StreamingAdapter.Initialize(this);
+			//}
 			if (this.BrokerAdapter == null) return;
 			this.BrokerAdapter.Initialize(this, this.StreamingAdapter, orderProcessor);
 		}

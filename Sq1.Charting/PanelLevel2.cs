@@ -121,7 +121,7 @@ namespace Sq1.Charting {
 
 			base.RepaintSernoForeground++;
 			if (this.errorDetected) {
-				string whoAmI = "Leve2 first[" + base.ParentMultiSplitIamFirst + "] last[" + base.ParentMultiSplitIamLast + "]";
+				string whoAmI = "Level2 first[" + base.ParentMultiSplitIamFirst + "] last[" + base.ParentMultiSplitIamLast + "]";
 				base.DrawError(g, whoAmI);
 				string msgRepaint = "repaintFore#" + this.RepaintSernoForeground + "/Back#" + this.RepaintSernoBackground;
 				base.DrawError(g, msgRepaint);

@@ -14,6 +14,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Widgets.LabeledTextBox;
 using Sq1.Gui.Singletons;
+using Sq1.Widgets.RangeBar;
 
 
 namespace Sq1.Gui.Forms {
@@ -72,6 +73,8 @@ namespace Sq1.Gui.Forms {
 			//OVERRODE_IN_CHART_CONTROL_DONT_CARE_HERE_NOW: override bool ProcessCmdKey //base.KeyPreview = true;
 
 			this.waitForChartFormIsLoaded = new ManualResetEvent(false);
+
+			this.ChartControl.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged);
 		}
 		//programmer's constructor
 		public ChartForm(ChartFormsManager chartFormManager) : this() {
@@ -83,20 +86,18 @@ namespace Sq1.Gui.Forms {
 			this.ctxStrokesForQuoteGenerator.Opening += new CancelEventHandler(ctxStrokesForQuoteGenerator_Opening_SelectCurrent);
 		}
 		public void ChartFormEventsToChartFormManagerAttach() {
-			this.ChartControl.RangeBar.ValueMinChanged += this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
-			this.ChartControl.RangeBar.ValueMaxChanged += this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
-			this.ChartControl.RangeBar.ValuesMinAndMaxChanged += this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
-			
-			this.ChartControl.ChartSettingsChangedContainerShouldSerialize += new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
-			this.ChartControl.ContextScriptChangedContainerShouldSerialize += new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
+			this.ChartControl.RangeBar.ValueMinChanged						+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.RangeBar.ValueMaxChanged						+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.RangeBar.ValuesMinAndMaxChanged				+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.ChartSettingsChangedContainerShouldSerialize	+= new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
+			this.ChartControl.ContextScriptChangedContainerShouldSerialize	+= new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
 		}
 		public void ChartFormEventsToChartFormManagerDetach() {
-			this.ChartControl.RangeBar.ValueMinChanged -= this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
-			this.ChartControl.RangeBar.ValueMaxChanged -= this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
-			this.ChartControl.RangeBar.ValuesMinAndMaxChanged -= this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged;
-
-			this.ChartControl.ChartSettingsChangedContainerShouldSerialize -= new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
-			this.ChartControl.ContextScriptChangedContainerShouldSerialize -= new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
+			this.ChartControl.RangeBar.ValueMinChanged						-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.RangeBar.ValueMaxChanged						-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.RangeBar.ValuesMinAndMaxChanged				-= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
+			this.ChartControl.ChartSettingsChangedContainerShouldSerialize	-= new EventHandler<EventArgs>(ChartControl_ChartSettingsChangedContainerShouldSerialize);
+			this.ChartControl.ContextScriptChangedContainerShouldSerialize	-= new EventHandler<EventArgs>(ChartControl_ContextScriptChangedContainerShouldSerialize);
 		}
 
 		void ChartControl_ContextScriptChangedContainerShouldSerialize(object sender, EventArgs e) {
@@ -125,10 +126,26 @@ namespace Sq1.Gui.Forms {
 			}
 			return ret;
 		}
-		public void PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution(Quote quote) {
-			if (quote == null) return;
+		public void PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(Quote quote) {
+			if (quote == null) {
+				if (this.ChartFormManager.Executor.DataSource.StreamingAdapter == null) {
+					string msg = "I_REFUSE_TO_PRINT_QUOTE_TIMESTAMP this.ChartFormManager.Executor.DataSource.StreamingAdapter==null";
+					Assembler.PopupException(msg);
+					return;
+				}
+				if (this.ChartFormManager.Executor.Bars == null) {
+					string msg = "I_REFUSE_TO_PRINT_QUOTE_TIMESTAMP this.ChartFormManager.Executor.Bars==null";
+					Assembler.PopupException(msg);
+					return;
+				}
+				quote = this.ChartFormManager.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(this.ChartFormManager.Executor.Bars.Symbol);
+			}
 			if (InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution(quote); });
+				base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote); });
+				return;
+			}
+			if (quote == null) {
+				this.btnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent;
 				return;
 			}
 			StringBuilder sb = new StringBuilder(this.ChartFormManager.StreamingButtonIdent);
@@ -153,7 +170,7 @@ namespace Sq1.Gui.Forms {
 			}
 			this.btnStreamingTriggersScript.Text = sb.ToString();
 		}
-		public void PopulateBtnStreamingTriggersScriptAfterBarsLoaded() {
+		public void PopulateBtnStreamingTriggersScript_afterBarsLoaded() {
 			//v1: IDEALLY_BACKTESTS_ARE_POSSIBLE_EVEN_DURING_STREAMING_USING_PUT_ON_HOLD
 //			bool streamingNow = this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming;
 //			if (streamingNow) {
@@ -172,14 +189,38 @@ namespace Sq1.Gui.Forms {
 				this.btnStreamingTriggersScript.Text = "DataSource: [" + StreamingAdapter.NO_STREAMING_ADAPTER + "]";
 				this.btnStreamingTriggersScript.Enabled = false;
 				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed: edit DataSource > attach StreamingAdapter";
-			} else {
-				this.btnStreamingTriggersScript.Text = this.ChartFormManager.StreamingButtonIdent + " 00:00:00.000"; //+:: 00:00:00.000";
-				this.btnStreamingTriggersScript.Enabled = true;
+				return;
+			}
 
-				// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
-				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapter.Name + "]";
+			this.btnStreamingTriggersScript.Enabled = true;
+
+			//v1 AVOIDING_NPE_quote.IntraBarSerno
+			this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
+			//v2
+			//string btnText = this.ChartFormManager.StreamingButtonIdent;
+			////if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreamingTriggeringScript) {
+			////    string msg = "POTENTIALLY_NEVER_HAPPENS__WANTED_TO_SAY_NotSubscribed_WITHOUT_ZERO_TIME";
+			////    btnText += " 00:00:00.000";
+			////}
+			////this.btnStreamingTriggersScript.Text = btnText;
+
+			// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
+			this.populateIsStreamingAsOrangeInBarsMni();
+		}
+		void populateIsStreamingAsOrangeInBarsMni() {
+			if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming == false) {
+				this.mniSubscribedToStreamingAdapterQuotesBars.Checked = false;
+				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
+				this.DdbBars.BackColor = Color.LightSalmon;
+				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapterName + "]";
+			} else {
+				this.mniSubscribedToStreamingAdapterQuotesBars.Checked = true;
+				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = SystemColors.Control;
+				this.DdbBars.BackColor = SystemColors.Control;
+				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapterName + "]";
 			}
 		}
+
 		public void AbsorbContextBarsToGui() {
 			if (base.InvokeRequired) {
 				base.BeginInvoke((MethodInvoker)delegate { this.AbsorbContextBarsToGui(); });
@@ -212,16 +253,6 @@ namespace Sq1.Gui.Forms {
 
 			// WAS_METHOD_PARAMETER_BUT_ACCESSIBLE_LIKE_THIS__NULL_CHECK_DONE_UPSTACK
 			ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
-
-			this.mniSubscribedToStreamingAdapterQuotesBars.Checked = ctxChart.IsStreaming;
-			if (this.mniSubscribedToStreamingAdapterQuotesBars.Checked == false) {
-				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
-				this.DdbBars.BackColor = Color.LightSalmon;
-				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT " + this.mniSubscribedToStreamingAdapterQuotesBars.Text;
-			} else {
-				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = SystemColors.Control;
-				this.DdbBars.BackColor = SystemColors.Control;
-			}
 			
 			if (ctxChart.ShowRangeBar) {
 				this.ChartControl.RangeBarCollapsed = false; 
@@ -231,12 +262,18 @@ namespace Sq1.Gui.Forms {
 				this.mniShowBarRange.Checked = false;
 			}
 
+			this.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
+
 			this.btnStreamingTriggersScript.Checked = ctxChart.IsStreamingTriggeringScript;
+
 			ContextScript ctxScript = ctxChart as ContextScript;
 			if (ctxScript == null) return;
 			
+			this.mniBacktestOnTriggeringYesWhenNotSubscribed	.Checked = ctxScript.BacktestOnTriggeringYesWhenNotSubscribed;
+			this.mniBacktestOnDataSourceSaved	.Checked = ctxScript.BacktestOnDataSourceSaved;	// looks redundant here
 			this.mniBacktestOnRestart			.Checked = ctxScript.BacktestOnRestart;
 			this.mniBacktestOnSelectorsChange	.Checked = ctxScript.BacktestOnSelectorsChange;
+
 			this.btnStrategyEmittingOrders		.Checked = ctxScript.StrategyEmittingOrders;
 			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim
 												.Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
@@ -245,6 +282,14 @@ namespace Sq1.Gui.Forms {
 		}
 		
 		public void PropagateContextScriptToLTB(ContextScript ctxScript) {
+			this.mnitlbMinutes	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
+			this.mnitlbDaily	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
+			this.mnitlbHourly	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
+			this.mnitlbWeekly	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
+			this.mnitlbMonthly	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
+			//this.mnitlbQuarterly	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
+			this.mnitlbYearly	.InputFieldValue = "";	// otherwize it holds "0.0005" initialized in MenuItemLabeledTextBox.ctor()
+
 			MenuItemLabeledTextBox mnitlbForScale = null;
 			switch (ctxScript.ScaleInterval.Scale) {
 				case BarScale.Minute:		mnitlbForScale = this.mnitlbMinutes; break; 
@@ -332,9 +377,9 @@ namespace Sq1.Gui.Forms {
 				//v2
 				this.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 			}
-			this.PropagateSelectorsDisabledIfStreamingForCurrentChart();
+			this.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
 		}
-		public void PropagateSelectorsDisabledIfStreamingForCurrentChart() {
+		public void PropagateSelectorsDisabledIfStreaming_forCurrentChart() {
 			Strategy strategyClicked = this.ChartFormManager.Strategy;
 			if (strategyClicked == null) return;
 
@@ -344,16 +389,16 @@ namespace Sq1.Gui.Forms {
 			
 			//DataSourcesForm.Instance.DataSourcesTree.Enabled = enableForNonStreaming;
 			
-			this.mnitlbMinutes.Enabled = enableForNonStreaming;
-			this.mnitlbDaily.Enabled = enableForNonStreaming;
-			this.mnitlbHourly.Enabled = enableForNonStreaming;
-			this.mnitlbWeekly.Enabled = enableForNonStreaming;
-			this.mnitlbMonthly.Enabled = enableForNonStreaming;
-			//this.mnitlbQuarterly.Enabled = enableForNonStreaming;
-			this.mnitlbYearly.Enabled = enableForNonStreaming;
-			this.mnitlbShowLastBars.Enabled = enableForNonStreaming;
-			this.mnitlbPositionSizeDollarsEachTradeConstant.Enabled = enableForNonStreaming;
-			this.mnitlbPositionSizeSharesConstantEachTrade.Enabled = enableForNonStreaming;
+			this.mnitlbMinutes								.Enabled = enableForNonStreaming;
+			this.mnitlbDaily								.Enabled = enableForNonStreaming;
+			this.mnitlbHourly								.Enabled = enableForNonStreaming;
+			this.mnitlbWeekly								.Enabled = enableForNonStreaming;
+			this.mnitlbMonthly								.Enabled = enableForNonStreaming;
+			//this.mnitlbQuarterly							.Enabled = enableForNonStreaming;
+			this.mnitlbYearly								.Enabled = enableForNonStreaming;
+			this.mnitlbShowLastBars							.Enabled = enableForNonStreaming;
+			this.mnitlbPositionSizeDollarsEachTradeConstant	.Enabled = enableForNonStreaming;
+			this.mnitlbPositionSizeSharesConstantEachTrade	.Enabled = enableForNonStreaming;
 
 			this.ctxStrokesPopulateOrSelectCurrent();
 		}

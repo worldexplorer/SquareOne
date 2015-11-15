@@ -18,6 +18,21 @@ namespace Sq1.Core.Livesim {
 				LivesimStreamingSettings	settings			{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
 				LivesimLevelTwoGenerator	level2gen;
 
+		// SEPARATE_CTOR_FOR_LIVESIM_STREAMING_CHILDREN
+		//public LivesimStreaming(DataSource deserializedDataSource_forQuikLivesimStreaming)
+		//        : this(deserializedDataSource_forQuikLivesimStreaming as LivesimDataSource) {
+		//    LivesimDataSource mostLikelyNull = deserializedDataSource_forQuikLivesimStreaming as LivesimDataSource;
+		//    string msig = " //Activate.CreateInstance(" + deserializedDataSource_forQuikLivesimStreaming + " as  LivesimDataSource[" + mostLikelyNull + "])"
+		//        + " to avoid ctor()+Initialize()";
+		//    if (mostLikelyNull != null) {
+		//        string msg = "YOU_WONT_NEED_TO_INITIALIZE_ME_ONCE_AGAIN";
+		//        Assembler.PopupException(msg + msig, null, false);
+		//    } else {
+		//        string msg = "YOULL_HAVE_TO_INITIALIZE_ME_ONCE_AGAIN__WITH_SIMULATED_LIVESIM_DATASOURCE";
+		//        Assembler.PopupException(msg + msig, null, false);
+		//    }
+		//}
+
 		public LivesimStreaming(LivesimDataSource livesimDataSource) : base() {
 			base.Name = "LivesimStreaming";
 			base.StreamingSolidifier = null;

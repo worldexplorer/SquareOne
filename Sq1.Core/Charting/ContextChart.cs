@@ -12,7 +12,7 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public BarScaleInterval	ScaleInterval;
 		[JsonProperty]	public BarDataRange		DataRange;
 
-		[JsonProperty]	public bool				IsStreamingTriggeringScript;
+		[JsonProperty]	public bool				IsStreamingTriggeringScript;	// this should be in ContextScript !...
 		[JsonProperty]	public bool				ShowRangeBar;
 		[JsonProperty]	public bool				IsStreaming;
 

@@ -79,10 +79,14 @@ namespace Sq1.Core.Livesim {
 
 				base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;
 
-				DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.DataDistributor;
-				distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
-				distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
-				//streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
+				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
+				bool chartIsSubscribed = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
+				if (chartIsSubscribed) {
+					DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.DataDistributor;
+					distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
+					distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
+					//streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
+				}
 
 				base.Executor.BacktestContextInitialize(base.BarsSimulating);
 
@@ -151,9 +155,13 @@ namespace Sq1.Core.Livesim {
 					//	streamingBacktest, base.BarsOriginal.Symbol, base.BarsOriginal.ScaleInterval);
 				}
 
-				DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.DataDistributor;
-				distr.ConsumerQuoteUnsubscribe(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
-				distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
+				bool chartIsSubscribed = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
+				if (chartIsSubscribed) {
+					DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.DataDistributor;
+					distr.ConsumerQuoteUnsubscribe(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+					distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+				}
 
 				//if (this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar != this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar) {
 				//	string msg2 = "PARANOID_CHECK QuotesGenerator.BacktestStrokesPerBar[" + this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar
