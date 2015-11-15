@@ -295,8 +295,8 @@ namespace Sq1.Charting {
 			}
 			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
 			//this.Bars.BarStaticAdded					+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.BarStreamingAdded					+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.BarStreamingUpdatedMerged			+= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStreamingAdded					+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
+			this.Bars.BarStreamingUpdatedMerged			+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
 			this.Bars.SymbolInfo.PriceDecimalsChanged	+= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
 
 			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
@@ -309,8 +309,8 @@ namespace Sq1.Charting {
 				return;
 			}
 			this.Bars.SymbolInfo.PriceDecimalsChanged	-= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
-			this.Bars.BarStreamingUpdatedMerged			-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
-			this.Bars.BarStreamingAdded					-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
+			this.Bars.BarStreamingUpdatedMerged			-= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
+			this.Bars.BarStreamingAdded					-= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
 
 			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
 			//this.Bars.BarStaticAdded					-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
@@ -318,12 +318,12 @@ namespace Sq1.Charting {
 		void bars_symbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
 			this.InvalidateAllPanels();
 		}
-		void chartControl_BarAddedUpdated_ShouldTriggerRepaint(object sender, BarEventArgs e) {
+		void chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(object sender, BarEventArgs e) {
 			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) return;
 
 			// if I was designing events for WinForms, I would switch to GUI thread automatically
 			if (base.InvokeRequired == true) {
-				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarAddedUpdated_ShouldTriggerRepaint(sender, e); });
+				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(sender, e); });
 				return;
 			} else {
 				this.ScriptExecutorObjects.QuoteLast = this.Bars.LastQuoteCloneNullUnsafe;
@@ -348,6 +348,7 @@ namespace Sq1.Charting {
 			string msg1 = "IM_MOVING_SLIDER_TO_THE_RIGHTMOST_BAR_KOZ_WE_ARE_ON_LAST_BAR";
 			this.SyncHorizontalScrollToBarsCount();
 			this.InvalidateAllPanels();
+			// UPDATED_VIA_ PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution() updating 00:00:00.000 on ChartForm.btnStreamingTriggersScript
 
 			if (this.splitContainerChartVsRange.Panel2Collapsed == true) {
 				string msg = "YES_splitContainerChartVsRange.Panel2Collapsed_WAS_THE_ONE WAS_THAT_THE_RIGHT_VISIBILITY_CRITERION???";

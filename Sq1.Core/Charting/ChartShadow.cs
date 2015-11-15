@@ -7,7 +7,6 @@ using System.Threading;
 using System.Windows.Forms;
 #endif
 
-using Sq1.Core.Charting;
 using Sq1.Core.Charting.OnChart;
 using Sq1.Core.DoubleBuffered;
 using Sq1.Core.Execution;
@@ -24,10 +23,6 @@ namespace Sq1.Core.Charting {
 //#endif
 		, IDisposable
 	{
-		//REPLACED_BY_ScriptExecutorObjects public ScriptToChartCommunicator ScriptToChartCommunicator { get; protected set; }
-		public event EventHandler<EventArgs> ChartSettingsChangedContainerShouldSerialize;
-		public event EventHandler<EventArgs> ContextScriptChangedContainerShouldSerialize;
-
 		// REASON_TO_EXIST: renderOnChartLines() was throwing "Dictionary.CopyTo target array wrong size" during backtest & chartMouseOver
 		// push-type notification from Backtester: ChartControl:ChartShadow doen't have access to Core.ScriptExecutor.BacktestIsRunning so Backtester mimics it here 
 		public ManualResetEvent paintAllowed { get; private set; }
@@ -58,8 +53,15 @@ namespace Sq1.Core.Charting {
 		}
 		public virtual void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool invalidateAllPanels = true) {
 			this.Bars = barsNotNull;
+			// ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
+			this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
+			this.Bars.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
 		}
 		
+		void bars_BarStreamingUpdatedMerged(object sender, BarEventArgs e) {
+			this.RaiseBarStreamingUpdatedMerged(e);
+		}
+
 		public virtual bool SelectPosition(Position position) {
 			string msg = "ChartShadow::SelectPosition() TODO: implement HIGHLIGHTING for a position[" + position + "]; chart[" + this + "]";
 			Assembler.PopupException(msg);
@@ -83,22 +85,6 @@ namespace Sq1.Core.Charting {
 //		}
 //#else
 //#endif
-		public void RaiseChartSettingsChangedContainerShouldSerialize() {
-			if (this.ChartSettingsChangedContainerShouldSerialize == null) return;
-			try {
-				this.ChartSettingsChangedContainerShouldSerialize(this, null);
-			} catch (Exception ex) {
-				Assembler.PopupException("RaiseChartSettingsChangedContainerShouldSerialize()", ex);
-			}
-		}
-		public void RaiseContextScriptChangedContainerShouldSerialize() {
-			if (this.ContextScriptChangedContainerShouldSerialize == null) return;
-			try {
-				this.ContextScriptChangedContainerShouldSerialize(this, null);
-			} catch (Exception ex) {
-				Assembler.PopupException("RaiseContextScriptChangedContainerShouldSerialize()", ex);
-			}
-		}
 		
 		/*
 #region there is no graphics-related (PositionArrows / LinesDrawnOnChart) DataSnapshot in Core; ChartControl knows how to handle your wishes in terms of Core objects

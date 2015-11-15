@@ -19,7 +19,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public DataSource				DataSource;
 		[JsonIgnore]	public string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }
 		[JsonIgnore]	public DataDistributor			DataDistributor						{ get; protected set; }
-		[JsonIgnore]	public DataDistributor			DataDistributorSolidifiers		{ get; protected set; }
+		[JsonIgnore]	public DataDistributor			DataDistributorSolidifiers			{ get; protected set; }
 		[JsonProperty]	public StreamingDataSnapshot	StreamingDataSnapshot				{ get; protected set; }
 		[JsonIgnore]	public virtual List<string>		SymbolsUpstreamSubscribed			{ get; private set; }
 		[JsonIgnore]	protected object				SymbolsSubscribedLock;
@@ -214,6 +214,10 @@ namespace Sq1.Core.Streaming {
 			this.StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
 
 			try {
+				if (this.DataDistributorSolidifiers.DistributionChannels.Count > 0) {
+					string msg = "REMIND_ME_WHEN_SOLIDIFIERS_ARE_SUBSCRIBED? I_WANT_TO_COLLECT_AND_SAVE_BARS_FOR_SYMBOLS_NON_OPENED_AS_CHARTS";
+					Assembler.PopupException(msg);
+				}
 				//this.DataDistributorSolidifiers.PushQuoteToDistributionChannels(quote);
 			} catch (Exception ex) {
 				string msg = "SOME_CONSUMERS_SOME_SCALEINTERVALS_FAILED_INSIDE"

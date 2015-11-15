@@ -19,6 +19,7 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public bool							StrategyEmittingOrders;
 
 		[JsonProperty]	public List<string>					ReporterShortNamesUserInvokedJSONcheck;
+		[JsonProperty]	public bool							BacktestOnTriggeringYesWhenNotSubscribed;
 		[JsonProperty]	public bool							BacktestOnRestart;
 		[JsonProperty]	public bool							BacktestOnSelectorsChange;
 		[JsonProperty]	public bool							BacktestOnDataSourceSaved;
@@ -106,6 +107,7 @@ namespace Sq1.Core.StrategyBase {
 			
 			IsCurrent								= false;
 			StrategyEmittingOrders					= false;
+			BacktestOnTriggeringYesWhenNotSubscribed				= false;
 			BacktestOnRestart						= false;
 			BacktestOnSelectorsChange				= true;
 			BacktestOnDataSourceSaved				= true;
@@ -159,9 +161,12 @@ namespace Sq1.Core.StrategyBase {
 			//some of these guys can easily be absorbed by object.MemberwiseClone(), why do I prefer to maintain the growing list manually?... 
 			//this.ChartBarSpacing							= found.ChartBarSpacing;
 			this.StrategyEmittingOrders						= found.StrategyEmittingOrders;
+			
+			this.BacktestOnTriggeringYesWhenNotSubscribed	= found.BacktestOnTriggeringYesWhenNotSubscribed;
 			this.BacktestOnRestart							= found.BacktestOnRestart;
 			this.BacktestOnSelectorsChange					= found.BacktestOnSelectorsChange;
 			this.BacktestOnDataSourceSaved					= found.BacktestOnDataSourceSaved;
+
 			this.ReporterShortNamesUserInvokedJSONcheck		= new List<string>(found.ReporterShortNamesUserInvokedJSONcheck);
 			this.FillOutsideQuoteSpreadParanoidCheckThrow	= found.FillOutsideQuoteSpreadParanoidCheckThrow;
 			this.BacktestStrokesPerBar						= found.BacktestStrokesPerBar;

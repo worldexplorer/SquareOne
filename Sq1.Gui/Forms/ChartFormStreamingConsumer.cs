@@ -6,6 +6,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Gui.Forms {
 	// ANY_STRATEGY_WILL_RUN_WITH_A_CHART_ITS_NOT_A_SERVER_APPLICATION
@@ -77,6 +78,23 @@ namespace Sq1.Gui.Forms {
 				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.DataSource.StreamingAdapter.StreamingSolidifier=null");
 				return ret;
 			} }
+		#region LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR 
+		Livesimulator Livesimulator { get {
+				Livesimulator ret = this.Executor.Livesimulator;
+				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Livesimulator=null");
+				return ret;
+			} }
+		LivesimDataSource LivesimDataSource { get {
+				LivesimDataSource ret = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe;
+				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe=null");
+				return ret;
+			} }
+		LivesimStreaming LivesimStreamingAdapter { get {
+				LivesimStreaming ret = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
+				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe=null");
+				return ret;
+			} }
+		#endregion
 		ChartForm ChartForm { get {
 				var ret = this.ChartFormManager.ChartForm;
 				this.actionForNullPointer(ret, "this.chartFormsManager.ChartForm=null");
@@ -125,10 +143,10 @@ namespace Sq1.Gui.Forms {
 		}
 		public void StreamingUnsubscribe(string reason = "NO_REASON_FOR_STREAMING_UNSUBSCRIBE") {
 			this.msigForNpExceptions = " //ChartFormStreamingConsumer.StreamingUnsubscribe(" + this.ToString() + ")";
-			var executorSafe = this.Executor;
-			var symbolSafe = this.Symbol;
-			var scaleIntervalSafe = this.ScaleInterval;
-			var streamingSafe = this.StreamingAdapter;
+			var executorSafe		= this.Executor;
+			var symbolSafe			= this.Symbol;
+			var scaleIntervalSafe	= this.ScaleInterval;
+			var streamingSafe		= this.StreamingAdapter;
 
 			bool subscribed = this.Subscribed;
 			if (subscribed == false) {
@@ -137,6 +155,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
+			#region 1/2 "Real" data streams
 			if (streamingSafe.DataDistributor.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, this) == false) {
 				Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_QUOTE" + this.msigForNpExceptions);
 			} else {
@@ -150,6 +169,25 @@ namespace Sq1.Gui.Forms {
 				//Assembler.PopupException("UnSubscribing BarsConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
 				streamingSafe.DataDistributor.ConsumerBarUnsubscribe(symbolSafe, scaleIntervalSafe, this);
 			}
+			#endregion
+
+			#region 2/2 LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR make Livesim also obey Subscribed/Unsubscribed; Simulation of Live must be 100% alike to lifecycle of (and control over) real broker streams
+			//var livesimStreamingSafe		= this.LivesimStreamingAdapter;
+
+			//if (livesimStreamingSafe.DataDistributor.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, this) == false) {
+			//    Assembler.PopupException("CHART_LIVESIM_STREAMING_WASNT_SUBSCRIBED_CONSUMER_QUOTE" + this.msigForNpExceptions);
+			//} else {
+			//    //Assembler.PopupException("UnSubscribing QuoteConsumer [" + this + "]  to " + plug + "  (was subscribed)");
+			//    livesimStreamingSafe.DataDistributor.ConsumerQuoteUnsubscribe(symbolSafe, scaleIntervalSafe, this);
+			//}
+
+			//if (livesimStreamingSafe.DataDistributor.ConsumerBarIsSubscribed(symbolSafe, scaleIntervalSafe, this) == false) {
+			//    Assembler.PopupException("CHART_LIVESIM_STREAMING_WASNT_SUBSCRIBED_CONSUMER_BAR" + this.msigForNpExceptions);
+			//} else {
+			//    //Assembler.PopupException("UnSubscribing BarsConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
+			//    livesimStreamingSafe.DataDistributor.ConsumerBarUnsubscribe(symbolSafe, scaleIntervalSafe, this);
+			//}
+			#endregion
 
 			subscribed = this.Subscribed;
 			if (subscribed) {
@@ -186,14 +224,14 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
-			var executorSafe = this.Executor;
-			var symbolSafe = this.Symbol;
-			var scaleIntervalSafe = this.ScaleInterval;
-			var streamingSafe = this.StreamingAdapter;
-			var streamingBarSafeCloneSafe = this.StreamingBarSafeClone;
+			var executorSafe				= this.Executor;
+			var symbolSafe					= this.Symbol;
+			var scaleIntervalSafe			= this.ScaleInterval;
+			var streamingSafe				= this.StreamingAdapter;
+			var streamingBarSafeCloneSafe	= this.StreamingBarSafeClone;
 
+			#region 1/2 "Real" data streams
 			//NPE_AFTER_SEPARATED_SOLIDIFIERS SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelForNullUnsafe(symbolSafe, scaleIntervalSafe);
-
 			if (streamingSafe.DataDistributor.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, this) == true) {
 				Assembler.PopupException("CHART_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_QUOTE" + this.msigForNpExceptions);
 			} else {
@@ -219,6 +257,37 @@ namespace Sq1.Gui.Forms {
 					}
 				}
 			}
+			#endregion
+
+			#region 2/2 LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR  make Livesim also obey Subscribed/Unsubscribed; Simulation of Live must be 100% alike to lifecycle of (and control over) real broker streams
+			//var livesimStreamingSafe		= this.LivesimStreamingAdapter;
+
+			//if (livesimStreamingSafe.DataDistributor.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, this) == true) {
+			//    Assembler.PopupException("CHART_LIVESIM_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_QUOTE" + this.msigForNpExceptions);
+			//} else {
+			//    //Assembler.PopupException("Subscribing QuoteConsumer [" + this + "]  to " + plug + "  (wasn't registered)");
+			//    livesimStreamingSafe.DataDistributor.ConsumerQuoteSubscribe(symbolSafe, scaleIntervalSafe, this, true);
+			//}
+
+			//if (livesimStreamingSafe.DataDistributor.ConsumerBarIsSubscribed(symbolSafe, scaleIntervalSafe, this) == true) {
+			//    Assembler.PopupException("CHART_LIVESIM_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_BAR" + this.msigForNpExceptions);
+			//} else {
+			//    //Assembler.PopupException("Subscribing BarsConsumer [" + this + "] to " + this.ToString() + " (wasn't registered)");
+			//    if (this.chartFormManager.Executor.Bars == null) {
+			//        // in Initialize() this.ChartForm is requesting bars in a separate thread
+			//        livesimStreamingSafe.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, this, true);
+			//    } else {
+			//        // fully initialized, after streaming was stopped for a moment and resumed - append into PartialBar
+			//        if (double.IsNaN(streamingBarSafeCloneSafe.Open) == false) {
+			//            //livesimStreamingSafe.ConsumerBarRegister(symbolSafe, scaleIntervalSafe, this, streamingBarSafeCloneSafe);
+			//            livesimStreamingSafe.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, this, true);
+			//        } else {
+			//            //livesimStreamingSafe.ConsumerBarRegister(symbolSafe, scaleIntervalSafe, this, lastStaticBarSafe);
+			//            livesimStreamingSafe.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, this, true);
+			//        }
+			//    }
+			//}
+			#endregion
 
 			bool subscribed = this.Subscribed;
 			if (subscribed == false) {
@@ -398,7 +467,7 @@ namespace Sq1.Gui.Forms {
 
 			// #1/4 launch update in GUI thread
 			//MOVED_TO_chartControl_BarAddedUpdated_ShouldTriggerRepaint chartFormSafe.ChartControl.ScriptExecutorObjects.QuoteLast = quote.Clone();
-			chartFormSafe.PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution(quote);
+			chartFormSafe.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote);
 
 			// #2/4 execute strategy in the thread of a StreamingAdapter (DDE server for MockQuickProvider)
 			if (executorSafe.Strategy != null) {
@@ -415,11 +484,11 @@ namespace Sq1.Gui.Forms {
 					// UPDATE_REPORTS_OPEN_POSITIONS_WITH_EACH_QUOTE_DESPITE_STRATEGY_IS_NOT_TRIGGERED
 					// copypaste from Executor.ExecuteOnNewBarOrNewQuote()
 					ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quote,
-														executorSafe.ExecutionDataSnapshot.AlertsNewAfterExec.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
-														executorSafe.ExecutionDataSnapshot.PositionsOpenedAfterExec.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
-														executorSafe.ExecutionDataSnapshot.PositionsClosedAfterExec.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
-														executorSafe.ExecutionDataSnapshot.PositionsOpenNow.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)")
-													);
+						executorSafe.ExecutionDataSnapshot.AlertsNewAfterExec		.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
+						executorSafe.ExecutionDataSnapshot.PositionsOpenedAfterExec	.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
+						executorSafe.ExecutionDataSnapshot.PositionsClosedAfterExec	.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)"),
+						executorSafe.ExecutionDataSnapshot.PositionsOpenNow			.Clone(this, "ConsumeQuoteOfStreamingBar(WAIT)")
+					);
 
 					// FROM_ChartFormStreamingConsumer.ConsumeQuoteOfStreamingBar() #4/4 notify Positions that it should update open positions, I wanna see current profit/loss and relevant red/green background
 					if (pokeUnit.PositionsOpenNow.Count > 0) {

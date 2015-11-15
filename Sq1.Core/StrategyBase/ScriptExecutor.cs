@@ -398,7 +398,10 @@ namespace Sq1.Core.StrategyBase {
 					try {
 						this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = true;
 						this.ScriptIsRunningCantAlterInternalLists.WaitAndLockFor(this, "OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(WAIT)");
-						this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLastNullUnsafe);
+						if (this.IsStreamingTriggeringScript) {
+							// TODO: What about Script.onQuote, onAlertFilled, onPositionClosed/Opened? - should they also NOT be invoked?
+							this.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(this.Bars.BarStaticLastNullUnsafe);
+						}
 					} finally {
 						this.ScriptIsRunningCantAlterInternalLists.UnLockFor(this);
 						this.ExecutionDataSnapshot.IsScriptRunningOnBarStaticLastNonBlockingRead = false;

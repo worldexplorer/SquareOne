@@ -111,9 +111,26 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = false;
 		}
 		void populateIconForDataSource(DataSource ds) {
-			if (ds == null) return;
+			string msig = " //populateIconForDataSource()";
+			if (ds == null) {
+				string msg = "ds==null";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+
 			StreamingAdapter adapter = ds.StreamingAdapter;
-			if (adapter == null) return;
+			if (adapter == null) {
+				string msg = "ds[" + ds + "].StreamingAdapter==null";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+
+			if (adapter.Icon == null) {
+				string msg = "ds[" + ds + "].StreamingAdapter[" + adapter + "].Icon==null";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+
 			this.imageList.Images.Add(adapter.Icon);
 			int providerIconImageIndex = this.imageList.Images.Count - 1;
 			if (this.imageIndexByStreamingAdapterType.ContainsKey(adapter.GetType()) == false) {

@@ -27,7 +27,7 @@ namespace Sq1.Core.Livesim {
 				}
 			}
 			if (guiHasTime) {
-				// ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
+				// ALREADY_HANDLED_BY chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline
 				//executor.ChartShadow.Invalidate();
 				//executor.ChartShadow.InvalidateAllPanels();
 				//executor.ChartShadow.RefreshAllPanelsWaitFinishedSoLivesimCouldGenerateNewQuote(0);

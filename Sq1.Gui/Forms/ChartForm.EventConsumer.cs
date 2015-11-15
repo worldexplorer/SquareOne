@@ -144,20 +144,22 @@ namespace Sq1.Gui.Forms {
 					ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
 					if (	this.ChartFormManager.Executor.Strategy != null
 						&&	this.ChartFormManager.Executor.Strategy.Script != null
-						&&	ctxChart.IsStreamingTriggeringScript) {
+						&&	ctxChart.IsStreamingTriggeringScript
+						&& this.ChartFormManager.Strategy.ScriptContextCurrent.BacktestOnTriggeringYesWhenNotSubscribed
+						) {
 						this.ChartFormManager.BacktesterRunSimulation();
 					}
 				} else {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStop();
 				}
-				this.PopulateBtnStreamingTriggersScriptAfterBarsLoaded();
+				this.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 				if (this.ChartFormManager.Strategy != null) {
 					this.ChartFormManager.Strategy.Serialize();
 				} else {
 					string msg = "CHART_WITHOUT_STRATEGY_IS_ALWAYS_STREAMING_I_JUST_IGNORED??_BUTTON_UNCLICK";
 				}
 				//WHO_ELSE_NEEDS_IT? this.RaiseStreamingButtonStateChanged();
-				this.PropagateSelectorsDisabledIfStreamingForCurrentChart();
+				this.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
 			} catch (Exception ex) {
 				Assembler.PopupException(ex.Message);
 			}
@@ -167,28 +169,20 @@ namespace Sq1.Gui.Forms {
 			this.ChartFormManager.Executor.IsStrategyEmittingOrders = this.btnStrategyEmittingOrders.Checked;
 			this.ChartFormManager.Strategy.Serialize();
 		}
+
 		void mniBacktestOnEveryChange_Click(object sender, System.EventArgs e) {
 			try {
 				Strategy strategy = this.ChartFormManager.Executor.Strategy;
 				if (strategy == null) return;
-				strategy.ScriptContextCurrent.BacktestOnSelectorsChange = this.mniBacktestOnSelectorsChange.Checked;
-				strategy.ScriptContextCurrent.BacktestOnDataSourceSaved = this.mniBacktestOnDataSourceSaved.Checked;
+				strategy.ScriptContextCurrent.BacktestOnTriggeringYesWhenNotSubscribed	= this.mniBacktestOnTriggeringYesWhenNotSubscribed.Checked;
+				strategy.ScriptContextCurrent.BacktestOnSelectorsChange					= this.mniBacktestOnSelectorsChange.Checked;
+				strategy.ScriptContextCurrent.BacktestOnDataSourceSaved					= this.mniBacktestOnDataSourceSaved.Checked;
+				strategy.ScriptContextCurrent.BacktestOnRestart							= this.mniBacktestOnRestart.Checked;
 				strategy.Serialize();
 
 				this.ctxBacktest.Visible = true;
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestOnEveryChange_Click()", ex);
-			}
-		}
-		void mniBacktestOnRestart_Click(object sender, System.EventArgs e) {
-			try {
-				this.ctxBacktest.Visible = true;
-				Strategy strategy = this.ChartFormManager.Executor.Strategy;
-				if (strategy == null) return;
-				strategy.ScriptContextCurrent.BacktestOnRestart = this.mniBacktestOnRestart.Checked;
-				strategy.Serialize();
-			} catch (Exception ex) {
-				Assembler.PopupException("mniBacktestOnRestart_Click()", ex);
 			}
 		}
 		void mniBacktestNow_Click(object sender, System.EventArgs e) {
@@ -412,25 +406,17 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		void mniSubscribedToStreamingAdapterQuotesBars_Click(object sender, EventArgs e) {
-			this.ctxBars.Visible = true;
 			try {
-				if (this.mniSubscribedToStreamingAdapterQuotesBars.Checked == false) {
-					this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
-					this.DdbBars.BackColor = Color.LightSalmon;
-					this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapterName + "]";
-				} else {
-					this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = SystemColors.Control;
-					this.DdbBars.BackColor = SystemColors.Control;
-					this.mniSubscribedToStreamingAdapterQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapterName + "]";
-				}
-
 				ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
 				bool prevStreaming = ctxChart.IsStreaming;
 
 				string reason = "mniSubscribedToStreamingAdapterQuotesBars.Checked[" + this.mniSubscribedToStreamingAdapterQuotesBars.Checked + "]";
 				if (this.mniSubscribedToStreamingAdapterQuotesBars.Checked) {
 					this.ChartFormManager.ChartStreamingConsumer.StreamingSubscribe(reason);
-					if (this.ChartFormManager.Strategy != null && ctxChart.IsStreamingTriggeringScript) {
+					if (this.ChartFormManager.Strategy != null
+							// GET_IT_FROM_SCRIPT_NOT_CHART_ALTHOUGH_SAME_POINTER && ctxChart.IsStreamingTriggeringScript
+							&& this.ChartFormManager.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript
+						) {
 						// without backtest here, Indicators aren't calculated if there was no "Backtest Now" or "Backtest on App Restart"
 						// better duplicated backtest but synced, than streaming starts without prior bars are processed by the strategy
 						// TODO few quotes might get pushed into the indicators/strategy before backtest pauses QuotePump in new thread
@@ -445,6 +431,8 @@ namespace Sq1.Gui.Forms {
 					string msg = "SHOULD_HAVE_CHANGED_BUT_STAYS_THE_SAME nowStreaming[" + nowStreaming + "] == prevStreaming[" + prevStreaming + "]";
 					Assembler.PopupException(msg);
 				}
+				this.populateIsStreamingAsOrangeInBarsMni();
+				this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
 				if (nowStreaming != this.mniSubscribedToStreamingAdapterQuotesBars.Checked) {
 					string msg = "MUST_BE_SYNCHRONIZED_BUT_STAYS_UNSYNC nowStreaming[" + nowStreaming
 						+ "] != this.mniSubscribedToStreamingAdapterQuotesBars.Checked[" + this.mniSubscribedToStreamingAdapterQuotesBars.Checked + "]";
@@ -459,10 +447,12 @@ namespace Sq1.Gui.Forms {
 					this.ChartFormManager.Strategy.Serialize();
 				}
 
+				this.ctxBars.Visible = true;
 			} catch (Exception ex) {
 				Assembler.PopupException("mniRedrawChartOnEachQuote_Click()", ex);
 			}
 		}
+
 		void TsiProgressBarETA_Click(object sender, EventArgs e) {
 			this.ChartFormManager.Executor.Backtester.AbortRunningBacktestWaitAborted("Backtest Aborted by clicking on progress bar");
 		}
@@ -504,6 +494,17 @@ namespace Sq1.Gui.Forms {
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex);
 			}
+		}
+
+		void chartControl_BarStreamingUpdatedMerged(object sender, BarEventArgs e) {
+			if (this.ChartFormManager.Executor.Backtester.IsBacktestingLivesimNow == false) {
+				string msg = "NON_LIVESIM_STREAMING_SEEMS_TO_HAVE_ChartFormStreamingConsumer_HANDLING_QUOTE_TIMESTAMP_ON_BTN";
+				Assembler.PopupException(msg);
+				return;
+			}
+			bool guiHasTime = this.ChartFormManager.Executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
+			if (guiHasTime == false) return;
+			this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
 		}
 	}
 }

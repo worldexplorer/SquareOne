@@ -144,15 +144,15 @@ namespace Sq1.Gui.Forms {
 					return msg;
 				}
 				
-				string emptyChartOrStrategy = this.ContextCurrentChartOrStrategy.Symbol;
-				string onOff = this.ContextCurrentChartOrStrategy.IsStreaming ? " On" : " Off";
+				//I_NEED_STREAMING_PROVIDER_NAME__STRATEGY_NAME_IS_IN_WINDOW_TITLE string emptyChartOrStrategy = this.ContextCurrentChartOrStrategy.Symbol;
+				string emptyChartOrStrategy = this.Executor.Bars == null	// AVOIDING_NPE_IN_this.Executor.DataSource
+					? this.ContextCurrentChartOrStrategy.Symbol
+					: this.Executor.DataSource.StreamingAdapterName;
 
-				if (this.Strategy != null) {
-					emptyChartOrStrategy = this.Strategy.Name;
-					onOff = this.Executor.IsStreamingTriggeringScript ? " On" : " Off";
-				}
+				string subscribed = this.ContextCurrentChartOrStrategy.IsStreaming ? " Subscribed" : " NotSubscribed";
+				string triggering = this.ContextCurrentChartOrStrategy.IsStreamingTriggeringScript ? " TriggeringScript" : " NotTriggeringScript";
 
-				return emptyChartOrStrategy + onOff;
+				return emptyChartOrStrategy + subscribed + triggering;
 			} }
 		public	ContextChart						ContextCurrentChartOrStrategy		{ get {
 				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart; } }
@@ -434,7 +434,7 @@ namespace Sq1.Gui.Forms {
 				string strategyName = this.Strategy == null ? "CHART_ONLY" : this.Strategy.Name;
 				this.ChartForm.ChartControl.Initialize(barsClicked, strategyName, invalidateAllPanels);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
-				this.ChartForm.PopulateBtnStreamingTriggersScriptAfterBarsLoaded();
+				this.ChartForm.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 			}
 
 			// set original Streaming Icon before we lost in simulationPreBarsSubstitute() and launched backtester in another thread

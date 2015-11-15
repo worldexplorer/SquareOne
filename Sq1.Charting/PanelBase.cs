@@ -179,7 +179,7 @@ namespace Sq1.Charting {
 			} }
 							public			int		BarShadowOffset { get { return this.ChartControl.ChartSettings.BarShadowXoffset; } }
 
-							// only used in PanelLeve2 to grow to the left if PanelLeve2 is on the left of PanelPrice, or grow to the right if PanelLeve2 is on the right of PanelPrice
+							// only used in PanelLevel2 to grow to the left if PanelLeve2 is on the left of PanelPrice, or grow to the right if PanelLeve2 is on the right of PanelPrice
 							public			MultiSplitContainer ParentMultiSplitContainerNullUnsafe { get {return base.Parent as MultiSplitContainer; } }
 							protected		List<Control>		ParentMultiSplitSiblings { get {
 								return this.ParentMultiSplitContainerNullUnsafe != null
