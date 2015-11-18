@@ -22,7 +22,7 @@ using Sq1.Core.Sequencing;
 using Sq1.Widgets.Correlation;
 
 namespace Sq1.Gui.Forms {
-	public class ChartFormsManager {
+	public class ChartFormManager {
 		public	MainForm							MainForm;
 		public	ChartFormDataSnapshot				DataSnapshot;
 		public	Serializer<ChartFormDataSnapshot>	DataSnapshotSerializer;
@@ -158,7 +158,7 @@ namespace Sq1.Gui.Forms {
 				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart; } }
 
 		// WHATTTTT???? I dont want it "internal" when "private" is omitted
-		ChartFormsManager() {
+		ChartFormManager() {
 			this.StrategyFoundDuringDeserialization = false;
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
 			//			this.Executor = new ScriptExecutor(Assembler.InstanceInitialized.ScriptExecutorConfig
@@ -174,7 +174,7 @@ namespace Sq1.Gui.Forms {
 
 			this.DataSnapshotSerializer = new Serializer<ChartFormDataSnapshot>();
 		}
-		public ChartFormsManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {
+		public ChartFormManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {
 			this.MainForm = mainForm;
 			if (charSernoDeserialized == -1) {
 				this.DataSnapshot = new ChartFormDataSnapshot();

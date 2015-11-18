@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 namespace Sq1.Gui {
 	//[DataContract]
 	public class GuiDataSnapshot {
-		[JsonIgnore]	public Dictionary<int, ChartFormsManager> ChartFormsManagers;
+		[JsonIgnore]	public Dictionary<int, ChartFormManager> ChartFormManagers;
 		[JsonIgnore]	public Dictionary<ChartSettings, ChartControl> ChartSettingsForChartSettingsEditor;
 		[JsonProperty]	public Point MainFormLocation;
 		[JsonProperty]	public Size MainFormSize;
@@ -27,13 +27,13 @@ namespace Sq1.Gui {
 		[JsonProperty]	public int ChartSernoLastKnownHadFocus;
 		[JsonIgnore]	public string ChartSernosInstantiatedAsString { get {
 				string ret = "";
-				foreach (int chartSerno in this.ChartFormsManagers.Keys) ret += chartSerno + ",";
+				foreach (int chartSerno in this.ChartFormManagers.Keys) ret += chartSerno + ",";
 				ret = ret.TrimEnd(",".ToCharArray());
 				return ret;
 			} }
 
 		public GuiDataSnapshot() {
-			this.ChartFormsManagers = new Dictionary<int, ChartFormsManager>();
+			this.ChartFormManagers = new Dictionary<int, ChartFormManager>();
 			this.ChartSettingsForChartSettingsEditor = new Dictionary<ChartSettings, ChartControl>();
 		}
 
@@ -48,17 +48,17 @@ namespace Sq1.Gui {
 		//		mgr.RebuildAfterDeserialization(mainForm);
 		//	}
 		//}
-		public void AddChartFormsManagerJustDeserialized(ChartFormsManager mgr) {
+		public void AddChartFormsManagerJustDeserialized(ChartFormManager mgr) {
 			if (mgr.DataSnapshot.ChartSerno > this.ChartSernoLastUsed) this.ChartSernoLastUsed = mgr.DataSnapshot.ChartSerno;
 
-			this.ChartFormsManagers.Add(mgr.DataSnapshot.ChartSerno, mgr);
+			this.ChartFormManagers.Add(mgr.DataSnapshot.ChartSerno, mgr);
 			// AddChartFormsManagerJustDeserialized() IS_ONLY_INVOKED_FROM_DESERIALIZER_SKIP_REBUILDING_DROPDOWN ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
 
 			this.ChartSettingsForChartSettingsEditor.Add(mgr.ChartForm.ChartControl.ChartSettings, mgr.ChartForm.ChartControl);
 		}
-		public ChartFormsManager FindChartFormsManagerBySerno(int chartSerno, string invokerMsig = "CALLER_UNKNOWN", bool throwIfNotFound = true) {
-			ChartFormsManager ret = null;
-			if (this.ChartFormsManagers.ContainsKey(chartSerno) == false) {
+		public ChartFormManager FindChartFormsManagerBySerno(int chartSerno, string invokerMsig = "CALLER_UNKNOWN", bool throwIfNotFound = true) {
+			ChartFormManager ret = null;
+			if (this.ChartFormManagers.ContainsKey(chartSerno) == false) {
 				if (throwIfNotFound) {
 					string msg = "CANT_DESERIALIZE_REPORTER/EDITOR_PARENT_CHART_NOT_FOUND"
 						+ " CHART_DESERIALIZATION_FAILED_OR_CHARTFORM_DOESNT_EXIST_IN_LAYOUT.XML"
@@ -67,7 +67,7 @@ namespace Sq1.Gui {
 				}
 				return ret;
 			}
-			ret = this.ChartFormsManagers[chartSerno];
+			ret = this.ChartFormManagers[chartSerno];
 			return ret;
 		}
 	}

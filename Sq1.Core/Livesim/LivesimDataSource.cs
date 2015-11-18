@@ -20,6 +20,11 @@ namespace Sq1.Core.Livesim {
 			this.Executor = executor;
 		}
 
+		public void SubstituteAdapters(LivesimStreaming liveStreamingChild, LivesimBroker liveBrokerChild) {
+			base.StreamingAdapter	= liveStreamingChild;
+			base.BrokerAdapter		= liveBrokerChild;
+		}
+
 		public void Dispose() {
 			if (this.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();

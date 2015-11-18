@@ -14,7 +14,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public string					Name								{ get; protected set; }
 		[JsonIgnore]	public string					Description							{ get; protected set; }
 		[JsonIgnore]	public Bitmap					Icon								{ get; protected set; }
-		[JsonIgnore]	public bool						IsConnected							{ get; protected set; }
+		[JsonIgnore]	public bool						StreamingConnected					{ get; protected set; }
 		[JsonIgnore]	public StreamingSolidifier		StreamingSolidifier					{ get; protected set; }
 		[JsonIgnore]	public DataSource				DataSource;
 		[JsonIgnore]	public string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }

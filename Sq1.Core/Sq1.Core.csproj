@@ -102,6 +102,12 @@
     <Compile Include="Correlation\KPIsCalculator.cs" />
     <Compile Include="Correlation\MomentumsCalculator.cs" />
     <Compile Include="Correlation\KPIsMomentum.cs" />
+    <Compile Include="Livesim\LivesimBroker.Paranoid.cs">
+      <DependentUpon>LivesimBroker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Livesim\LivesimStreaming.Paranoid.cs">
+      <DependentUpon>LivesimStreaming.cs</DependentUpon>
+    </Compile>
     <Compile Include="Sequencing\SequencerSnapshot.cs" />
     <Compile Include="Correlation\KPIsAveraged.cs" />
     <Compile Include="Correlation\OneParameterAllValuesAveraged.cs" />

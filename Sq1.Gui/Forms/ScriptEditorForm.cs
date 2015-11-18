@@ -4,7 +4,7 @@ using Sq1.Widgets;
 
 namespace Sq1.Gui.Forms {
 	public partial class ScriptEditorForm : DockContentImproved {
-		ChartFormsManager chartFormManager;
+		ChartFormManager chartFormManager;
 
 		// don't use this constuctor outside this class!
 		private ScriptEditorForm() {
@@ -12,7 +12,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		// chartFormsManager is needed for serialization and the following deserialization
-		public ScriptEditorForm(ChartFormsManager chartFormsManager) : this() {
+		public ScriptEditorForm(ChartFormManager chartFormsManager) : this() {
 			this.Initialize(chartFormsManager);
 		}
 
@@ -22,7 +22,7 @@ namespace Sq1.Gui.Forms {
 			return "ScriptEditor:" + this.ScriptEditorControl.GetType().FullName + ",ChartSerno:" + this.chartFormManager.DataSnapshot.ChartSerno;
 		}
 
-		internal void Initialize(ChartFormsManager chartFormManager) {
+		internal void Initialize(ChartFormManager chartFormManager) {
 			this.chartFormManager = chartFormManager;
 			this.Text = this.chartFormManager.Strategy.Name;
 			this.ScriptEditorControl.DocumentChangedIgnoredDuringInitialization = true;

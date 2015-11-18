@@ -9,9 +9,9 @@ using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.FormFactories {
 	public class SequencerFormFactory {	// REASON_TO_EXIST: way to refresh Sliders and run Chart.Backtest() for added ContextScript from Sq1.Widgets.dll:SequencerControl
-		ChartFormsManager chartFormManager;
+		ChartFormManager chartFormManager;
 
-		public SequencerFormFactory(ChartFormsManager chartFormsManager) {
+		public SequencerFormFactory(ChartFormManager chartFormsManager) {
 			this.chartFormManager = chartFormsManager;
 		}
 

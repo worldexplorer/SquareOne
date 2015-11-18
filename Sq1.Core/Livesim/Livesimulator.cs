@@ -40,6 +40,23 @@ namespace Sq1.Core.Livesim {
 			this.livesimQuoteBarConsumer	= new LivesimQuoteBarConsumer(this);
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
 		}
+		public void RedirectDataSourceToUserLivesimImplementations(LivesimStreaming liveStreamingChild, LivesimBroker livesimBrokerChild) {
+			string msig = " //RedirectDataSourceToUserLivesimImplementations(" + liveStreamingChild + ", " + livesimBrokerChild + ")";
+			if (	this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	== liveStreamingChild
+				 && this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	== livesimBrokerChild) {
+				string msg = "DATASOURCE_NOT_REDIRECTED__SAME_STREAMING_AND_BROKER_ADAPTERS";
+				Assembler.PopupException(msg + msig, null, false);
+				return;
+			}
+				
+			// deserialized, they were created with dummy constructor; now I re-create the same adapters to initialize them with the DataSource having QuoteGenerator and no Solidifier
+			LivesimStreaming streamingRecreatedWithPointerBack = (LivesimStreaming)	Activator.CreateInstance(liveStreamingChild	.GetType(), this.DataSourceAsLivesimNullUnsafe);
+			LivesimBroker		brokerRecreatedWithPointerBack = (LivesimBroker)	Activator.CreateInstance(livesimBrokerChild	.GetType(), this.DataSourceAsLivesimNullUnsafe);
+			this.DataSourceAsLivesimNullUnsafe.SubstituteAdapters(streamingRecreatedWithPointerBack, brokerRecreatedWithPointerBack);
+
+			string msg1 = "DATASOURCE_REDIRECTED";
+			Assembler.PopupException(msg1 + msig, null, false);
+		}
 
 		protected override void SimulationPreBarsSubstitute_overrideable() {
 			if (base.BarsOriginal == base.Executor.Bars) {
@@ -82,10 +99,13 @@ namespace Sq1.Core.Livesim {
 				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
 				bool chartIsSubscribed = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
 				if (chartIsSubscribed) {
-					DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.DataDistributor;
-					distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
-					distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
-					//streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
+				    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
+				    distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
+				    distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
+				    //streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
+
+					// QuikLivesimStreaming should instantiate the Real QuikStreaming with a DDE server and then connect to it; parent's Livesim probably must ignore this pseudo-Event
+					this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UpstreamConnect_LivesimStarting(this);	// exception instantiating DDE server with same topics wont run the simulation
 				}
 
 				base.Executor.BacktestContextInitialize(base.BarsSimulating);
@@ -158,9 +178,12 @@ namespace Sq1.Core.Livesim {
 				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
 				bool chartIsSubscribed = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
 				if (chartIsSubscribed) {
-					DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter.DataDistributor;
-					distr.ConsumerQuoteUnsubscribe(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
-					distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+				    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
+				    distr.ConsumerQuoteUnsubscribe(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+				    distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+
+					// QuikLivesimStreaming should instantiate the Real QuikStreaming with a DDE server and then connect to it; parent's Livesim probably must ignore this pseudo-Event
+					this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UpstreamDisconnect_LivesimEnded();
 				}
 
 				//if (this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar != this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar) {

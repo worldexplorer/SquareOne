@@ -11,29 +11,19 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
-	public class LivesimStreaming : BacktestStreaming, IDisposable {
-		public	ManualResetEvent			Unpaused			{ get; private set; }
-				ChartShadow					chartShadow;
-				LivesimDataSource			livesimDataSource;
-				LivesimStreamingSettings	settings			{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
-				LivesimLevelTwoGenerator	level2gen;
-
-		// SEPARATE_CTOR_FOR_LIVESIM_STREAMING_CHILDREN
-		//public LivesimStreaming(DataSource deserializedDataSource_forQuikLivesimStreaming)
-		//        : this(deserializedDataSource_forQuikLivesimStreaming as LivesimDataSource) {
-		//    LivesimDataSource mostLikelyNull = deserializedDataSource_forQuikLivesimStreaming as LivesimDataSource;
-		//    string msig = " //Activate.CreateInstance(" + deserializedDataSource_forQuikLivesimStreaming + " as  LivesimDataSource[" + mostLikelyNull + "])"
-		//        + " to avoid ctor()+Initialize()";
-		//    if (mostLikelyNull != null) {
-		//        string msg = "YOU_WONT_NEED_TO_INITIALIZE_ME_ONCE_AGAIN";
-		//        Assembler.PopupException(msg + msig, null, false);
-		//    } else {
-		//        string msg = "YOULL_HAVE_TO_INITIALIZE_ME_ONCE_AGAIN__WITH_SIMULATED_LIVESIM_DATASOURCE";
-		//        Assembler.PopupException(msg + msig, null, false);
-		//    }
-		//}
+	public partial class LivesimStreaming : BacktestStreaming, IDisposable {
+		public		ManualResetEvent			Unpaused			{ get; private set; }
+					ChartShadow					chartShadow;
+					LivesimDataSource			livesimDataSource;
+					LivesimStreamingSettings	settings			{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
+					LivesimLevelTwoGenerator	level2gen;
+		public		Livesimulator				Livesimulator;		// used by QuikLivesimStreaming to instantiate QuikStreaming with a fake DataSource (LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor)
 
 		public LivesimStreaming(LivesimDataSource livesimDataSource) : base() {
+			if (livesimDataSource == null) {
+				string msg = "DID_ACTIVATOR_PICK_THE_WRONG_CONSTRUCTOR?...";
+				Assembler.PopupException(msg);
+			}
 			base.Name = "LivesimStreaming";
 			base.StreamingSolidifier = null;
 			base.QuotePumpSeparatePushingThreadEnabled = false;
@@ -43,9 +33,10 @@ namespace Sq1.Core.Livesim {
 		}
 
 		protected LivesimStreaming() : base() {
-			string msg = "I_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
-				+ "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_STREAMING_ADAPTERS_FOUND"
-				+ " example:QuikLivesimStreaming()";
+		    string msg = "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
+		        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_STREAMING_ADAPTERS_FOUND"
+		        + " example:QuikLivesimStreaming()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
+			base.Name = "LivesimStreaming-child_ACTIVATOR_DLL-SCANNED";
 		}
 
 		public void Initialize(ChartShadow chartShadow) {
@@ -138,6 +129,13 @@ namespace Sq1.Core.Livesim {
 		}
 		#endregion
 
+		public virtual void UpstreamConnect_LivesimStarting() {
+			Assembler.DisplayStatus("UpstreamConnect_LivesimStarting(): NOT_OVERRIDEN_IN_CHILD " + this.ToString());
+		}
+		public virtual void UpstreamDisconnect_LivesimEnded() {
+			Assembler.DisplayStatus("UpstreamDisconnect_LivesimEnded(): NOT_OVERRIDEN_IN_CHILD " + this.ToString());
+		}
+
 		public void Dispose() {
 			if (this.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
@@ -149,5 +147,9 @@ namespace Sq1.Core.Livesim {
 			this.IsDisposed = true;
 		}
 		public bool IsDisposed { get; private set; }
+
+		public virtual void UpstreamConnect_LivesimStarting(Livesimulator livesimulator) {
+			this.Livesimulator = livesimulator;
+		}
 	}
 }

@@ -3,8 +3,8 @@ using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Backtesting {
 	public class BacktestDataSource : DataSource {
-		public BacktestStreaming StreamingAsBacktestNullUnsafe	{ get { return base.StreamingAdapter as BacktestStreaming; } }
-		public BacktestBroker	 BrokerAsBacktestNullUnsafe		{ get { return base.BrokerAdapter as BacktestBroker; } }
+		public BacktestStreaming StreamingAsBacktestNullUnsafe	{ get { return base.StreamingAdapter	as BacktestStreaming; } }
+		public BacktestBroker	    BrokerAsBacktestNullUnsafe	{ get { return base   .BrokerAdapter	as BacktestBroker; } }
 
 		public BacktestDataSource() {
 			base.Name = "BacktestDataSource";
@@ -22,10 +22,11 @@ namespace Sq1.Core.Backtesting {
 		}
 
 		public override string ToString() {
-			return this.Name
-				+ "(" + this.ScaleInterval.ToString() + ")"
-				+ this.SymbolsCSV
-				+ " {" + this.StreamingAdapterName + ":" + this.BrokerAdapterName + "}";
+			string ret = this.Name;
+			if (this.ScaleInterval != null) ret += "(" + this.ScaleInterval.ToString() + ")";
+			ret += this.SymbolsCSV;
+			ret += " {" + this.StreamingAdapterName + ":" + this.BrokerAdapterName + "}";
+			return ret;
 		}
 	}
 }

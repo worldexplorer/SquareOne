@@ -123,7 +123,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\ChartFormDataSnapshot.cs" />
-    <Compile Include="Forms\ChartFormsManager.cs" />
+    <Compile Include="Forms\ChartFormManager.cs" />
     <Compile Include="Forms\ChartFormInterformEventsConsumer.cs" />
     <Compile Include="Forms\ChartFormStreamingConsumer.cs" />
     <Compile Include="Forms\CorrelatorForm.EventConsumer.cs">

@@ -12,10 +12,10 @@ using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormInterformEventsConsumer {
-		ChartFormsManager chartFormManager;
+		ChartFormManager chartFormManager;
 		private bool backtestAlreadyFinished;
 
-		public ChartFormInterformEventsConsumer(ChartFormsManager chartFormManager, ChartForm chartFormNotAssignedToManagerInTheFactoryYet = null) {
+		public ChartFormInterformEventsConsumer(ChartFormManager chartFormManager, ChartForm chartFormNotAssignedToManagerInTheFactoryYet = null) {
 			this.chartFormManager = chartFormManager;
 			chartFormNotAssignedToManagerInTheFactoryYet.FormClosing += ChartForm_FormClosing;
 			chartFormNotAssignedToManagerInTheFactoryYet.Load += ChartForm_Load;
