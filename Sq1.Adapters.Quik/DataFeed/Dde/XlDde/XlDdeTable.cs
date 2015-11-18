@@ -11,19 +11,10 @@ using Sq1.Core;
 namespace Sq1.Adapters.Quik.Dde.XlDde {
 	public abstract class XlDdeTable {
 		public			string		Topic				{ get; private set; }
-		public 			bool		isConnected;
-		public virtual	bool		IsConnected			{
-			get { return this.isConnected; }
-			set {
-				if (this.isConnected == value) return;
-				//this.columnsIdentified = false;
-				this.isConnected = value;
-			}
-		}
-
 		public			DateTime	LastDataReceived	{ get; protected set; }
-		public			bool		InErrorState				{ get; protected set; }
-		public			void		ResetError()		{ InErrorState = false; }
+		public	virtual	bool		ReceivingDataDde				{ get; set; }
+		public			bool		ErrorParsing		{ get; protected set; }
+		public			void		ResetError()		{ ErrorParsing = false; }
 
 		protected	List<XlColumn>				columns;
 		protected	Dictionary<int, XlColumn>	columnsByIndexFound;
@@ -166,8 +157,8 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		public override string ToString() {
 			string ret = "";
 			if (string.IsNullOrEmpty(this.Topic) == false) ret += "Topic[" + this.Topic + "] ";
-			ret += (this.IsConnected ? "Connected" : "Disconnected")
-				+ " " + (this.InErrorState ? "Error!" : "NoError")
+			ret += (this.ReceivingDataDde ? "GettingData" : "NeverReceived")
+				+ " " + (this.ErrorParsing ? "Error!" : "NoError")
 				+ " " + (this.columnsIdentified ? "columnsIdentified" : "columnsNotIdentified");
 			return ret;
 		}

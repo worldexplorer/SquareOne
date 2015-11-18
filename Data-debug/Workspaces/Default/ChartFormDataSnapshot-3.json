@@ -84,7 +84,7 @@
     "SequenceIterationName": "it was a F5 GUI invoked backtest, not an optimization",
     "SequenceIterationSerno": -1,
     "Name": "Default",
-    "Symbol": "RIM3-Qmock",
+    "Symbol": "autogen",
     "DataSourceName": "Qmock",
     "ScaleInterval": {
       "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
@@ -107,7 +107,7 @@
     "ShowRangeBar": false,
     "IsStreaming": false,
     "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=29,MAslow.Period=14)",
-    "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3-Qmock 1-Minute 510 Bars"
+    "SymbolScaleIntervalDataRangeForScriptContextNewName": "autogen 1-Minute 510 Bars"
   },
   "ChartSettings": {
     "$type": "Sq1.Core.Charting.ChartSettings, Sq1.Core",
@@ -181,7 +181,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 401,
+    "ScrollPositionAtBarIndex": 50,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,

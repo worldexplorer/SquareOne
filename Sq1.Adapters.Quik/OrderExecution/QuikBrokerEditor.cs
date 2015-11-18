@@ -60,7 +60,7 @@ namespace Sq1.Adapters.Quik {
 				this.txtCashAvailableMicex.Text = value.CashAvailable.ToString();
 			}
 		}
-		BrokerQuik BrokerQuik { get { return base.brokerAdapter as BrokerQuik; } }
+		QuikBroker BrokerQuik { get { return base.brokerAdapter as QuikBroker; } }
 
 		// Designer will call this
 		public BrokerQuikEditor() {

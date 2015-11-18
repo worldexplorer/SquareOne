@@ -11,7 +11,7 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Adapters.Quik.Terminal {
 	public class QuikTerminal {
-		protected BrokerQuik BrokerQuik;
+		protected QuikBroker BrokerQuik;
 		protected static int transId;
 		protected int error;
 		protected StringBuilder callbackErrorMsg;
@@ -25,7 +25,7 @@ namespace Sq1.Adapters.Quik.Terminal {
 		public QuikTerminal() {
 			throw new Exception("QuikTerminal doesn't support default constructor, use QuikTerminal(BrokerQuik)");
 		}
-		public QuikTerminal(BrokerQuik BrokerQuik) {
+		public QuikTerminal(QuikBroker BrokerQuik) {
 			tryingToConnectDllLock = new Object();
 			callbackErrorMsg = new StringBuilder(256);
 			this.BrokerQuik = BrokerQuik;
@@ -94,7 +94,7 @@ namespace Sq1.Adapters.Quik.Terminal {
 						return;
 					}
 
-					DllConnected = true;
+					this.DllConnected = true;
 					CurrentStatus = "1/2: DLL Connected, No Symbols subscribed";
 					/*
 					ret = Trans2Quik.UNSUBSCRIBE_ORDERS();
@@ -116,11 +116,11 @@ namespace Sq1.Adapters.Quik.Terminal {
 					}
 					*/
 					connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					msg = "#" + connectionAttempts + "//timeoutInfinite QuikTerminal(" + this.DllName + ") 2/2 " + ConnectionState.ConnectedUnsubscribed;
-					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.ConnectedUnsubscribed, msg);
+					msg = "#" + connectionAttempts + "//timeoutInfinite QuikTerminal(" + this.DllName + ") 2/2 " + ConnectionState.DllNotConnectedUnsubscribed;
+					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.DllNotConnectedUnsubscribed, msg);
 					Assembler.PopupException(msg);
 				} catch (Exception e) {
-					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.ErrorConnecting, e.Message);
+					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.ErrorConnectingNoRetriesAnymore, e.Message);
 					Assembler.PopupException("Should we set a limit/timeout on trials?", e);
 					return;
 				}

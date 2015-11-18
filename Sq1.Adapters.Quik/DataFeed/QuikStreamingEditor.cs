@@ -21,7 +21,7 @@ namespace Sq1.Adapters.Quik {
 			get { return this.txtTopicPrefixDOM.Text; }
 			set { this.txtTopicPrefixDOM.Text = value; }
 		}
-		private StreamingQuik quikStreamingAdapter { get { return base.streamingAdapter as StreamingQuik; } }
+		private QuikStreaming quikStreamingAdapter { get { return base.streamingAdapter as QuikStreaming; } }
 
 		public StreamingQuikEditor() {
 			this.InitializeComponent();
@@ -31,14 +31,14 @@ namespace Sq1.Adapters.Quik {
 			base.Initialize(quikStreamingAdapter, dataSourceEditor);
 		}
 		public override void PushStreamingAdapterSettingsToEditor() {
-			this.DdeServerPrefix = this.quikStreamingAdapter.DdeServerPrefix;
+			this.DdeServerPrefix = this.quikStreamingAdapter.DdeServiceName;
 			this.DdeTopicQuotes = this.quikStreamingAdapter.DdeTopicQuotes;
 			this.DdeTopicTrades = this.quikStreamingAdapter.DdeTopicTrades;
 			this.DdeTopicPrefixDom = this.quikStreamingAdapter.DdeTopicPrefixDom;
 		}
 		public override void PushEditedSettingsToStreamingAdapter() {
 			if (base.ignoreEditorFieldChangesWhileInitializingEditor) return;
-			this.quikStreamingAdapter.DdeServerPrefix = this.DdeServerPrefix;
+			this.quikStreamingAdapter.DdeServiceName = this.DdeServerPrefix;
 			this.quikStreamingAdapter.DdeTopicQuotes = this.DdeTopicQuotes;
 			this.quikStreamingAdapter.DdeTopicTrades = this.DdeTopicTrades;
 			this.quikStreamingAdapter.DdeTopicPrefixDom = this.DdeTopicPrefixDom;

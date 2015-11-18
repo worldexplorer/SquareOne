@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
-	public class DdeTableLastQuotes : XlDdeTable {
-		protected StreamingQuik quikStreamingAdapter;
-		protected string quoteSource = "QUIK_DDE";
-		protected DateTime lastQuoteDateTimeForVolume = DateTime.MinValue;
-		protected double lastQuoteSizeForVolume = 0;
+	public class DdeTableQuotes : XlDdeTable {
+		protected QuikStreaming	quikStreamingAdapter;
+		protected string		quoteSource = "QUIK_DDE";
+		protected DateTime		lastQuoteDateTimeForVolume = DateTime.MinValue;
+		protected double		lastQuoteSizeForVolume = 0;
 
-		public DdeTableLastQuotes(string topic, StreamingQuik quikStreamingAdapter) : base(topic) {
-			this.quikStreamingAdapter = quikStreamingAdapter;
+		public DdeTableQuotes(string topic, QuikStreaming quikStreaming) : base(topic) {
+			this.quikStreamingAdapter = quikStreaming;
 			base.columns = new List<XlColumn>() {
 				new XlColumn() { Name = "SHORTNAME",	TypeExpected = XlTable.BlockType.String,	Mandatory = true },
 				new XlColumn() { Name = "CLASS_CODE",	TypeExpected = XlTable.BlockType.String,	Mandatory = true },
@@ -37,18 +37,18 @@ namespace Sq1.Adapters.Quik.Dde {
 			//	int a = 1;
 			//}
 			QuoteQuik quikQuote = new QuoteQuik(DateTime.Now);
-			quikQuote.Source = this.quoteSource + " Topic[" + base.Topic + "]";
-			quikQuote.Symbol = (string)rowParsed["SHORTNAME"];
-			quikQuote.SymbolClass = (string)rowParsed["CLASS_CODE"];
-			quikQuote.Bid = (double)rowParsed["bid"];
-			quikQuote.Ask = (double)rowParsed["offer"];
-			//quikQuote.PriceLastDeal = (double)rowParsed["last"];
-			quikQuote.FortsDepositBuy = (double)rowParsed["buydepo"];
-			quikQuote.FortsDepositSell = (double)rowParsed["selldepo"];
-			quikQuote.FortsPriceMin = (double)rowParsed["pricemin"];
-			quikQuote.FortsPriceMax = (double)rowParsed["pricemax"];
+			quikQuote.Source			= this.quoteSource + " Topic[" + base.Topic + "]";
+			quikQuote.Symbol			= (string)rowParsed["SHORTNAME"];
+			quikQuote.SymbolClass		= (string)rowParsed["CLASS_CODE"];
+			quikQuote.Bid				= (double)rowParsed["bid"];
+			quikQuote.Ask				= (double)rowParsed["offer"];
+			//quikQuote.PriceLastDeal	= (double)rowParsed["last"];
+			quikQuote.FortsDepositBuy	= (double)rowParsed["buydepo"];
+			quikQuote.FortsDepositSell	= (double)rowParsed["selldepo"];
+			quikQuote.FortsPriceMin		= (double)rowParsed["pricemin"];
+			quikQuote.FortsPriceMax		= (double)rowParsed["pricemax"];
 
-			quikQuote.ServerTime = (DateTime)rowParsed["time"];
+			quikQuote.ServerTime		= (DateTime)rowParsed["time"];
 			//DateTime qChangeTime = DateTime.MinValue;
 			//if (quote.ServerTime == DateTime.MinValue && qChangeTime != DateTime.MinValue) {
 			//	quote.ServerTime = qChangeTime;
@@ -63,10 +63,10 @@ namespace Sq1.Adapters.Quik.Dde {
 			//	lastQuoteSizeForVolume = sizeParsed;
 			//	quote.Size = sizeParsed;
 			//}
-			quikStreamingAdapter.PushQuoteReceived(quikQuote);
+			this.quikStreamingAdapter.PushQuoteReceived(quikQuote);
 		}
 		public override string ToString() {
-			return "ChannelQuotes{Symbols[" + quikStreamingAdapter.StreamingDataSnapshot.SymbolsSubscribedAndReceiving + "] " + base.ToString() + "}";
+			return "TableQuotes{Symbols[" + this.quikStreamingAdapter.StreamingDataSnapshot.SymbolsSubscribedAndReceiving + "] " + base.ToString() + "}";
 		}
 	}
 }

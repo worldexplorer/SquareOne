@@ -3,38 +3,64 @@
 // Nikolay Moroshkin can tell me to remove his code completely => I'll rewrite the pieces borrowed //Pavel Chuchkalov 
 //    XlDdeServer.cs (c) 2011 Nikolay Moroshkin, http://www.moroshkin.com/
 
+using System;
 using System.Collections.Generic;
 using NDde.Server;
+using Sq1.Core;
 
 namespace Sq1.Adapters.Quik.Dde.XlDde {
 	public class XlDdeServer : DdeServer {
-		Dictionary<string, XlDdeTable> tables;
+		Dictionary<string, XlDdeTable> tablesByTopic;
+
 		public XlDdeServer(string service) : base(service) {
-			tables = new Dictionary<string, XlDdeTable>();
+			this.tablesByTopic = new Dictionary<string, XlDdeTable>();
 		}
-		public void AddChannel(string topic, XlDdeTable channel) {
-			if (tables.ContainsKey(topic)) return;
-			tables.Add(topic, channel);
+		public void TableAdd(string topic, XlDdeTable channel) {
+			if (this.tablesByTopic.ContainsKey(topic)) return;
+			this.tablesByTopic.Add(topic, channel);
 		}
-		public void RemoveChannel(string topic) {
-			if (tables.ContainsKey(topic) == false) return;
-			tables.Remove(topic);
+		public void TableRemove(string topic) {
+			if (this.tablesByTopic.ContainsKey(topic) == false) return;
+			this.tablesByTopic.Remove(topic);
 		}
 		protected override bool OnBeforeConnect(string topic) {
-			return tables.ContainsKey(topic);
+			string msig = " //OnBeforeConnect(" + topic + ")";
+			bool readyToAccept = this.tablesByTopic.ContainsKey(topic);
+			if (readyToAccept == false) {
+				string msg = "QUIK_REQUESTS_TO_ACCEPT_TOPIC_IM_NOT_SUBSCRIBED_TO";
+				Assembler.PopupException(msg + msig, null, false);
+			}
+			return readyToAccept;
 		}
 		protected override void OnAfterConnect(DdeConversation c) {
-			XlDdeTable table = tables[c.Topic];
+			string msig = " //OnAfterConnect(" + c.Topic + ")";
+			if (this.tablesByTopic.ContainsKey(c.Topic) == false) {
+				string msg = "TABLE_DISAPPEARED_FOR_TOPIC";
+				Assembler.PopupException(msg + msig, null, false);
+				return;
+			}
+			XlDdeTable table = this.tablesByTopic[c.Topic];
 			c.Tag = table;
-			table.IsConnected = true;
+			table.ReceivingDataDde = true;
 		}
 		protected override void OnDisconnect(DdeConversation c) {
-			((XlDdeTable)c.Tag).IsConnected = false;
+			string msig = " //OnDisconnect(" + c.Topic + ")";
+			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
+			tableRecipient.ReceivingDataDde = false;
+			string msg = "TABLE_MAGICALLY_REMOVED_FOR_TOPIC";
+			Assembler.PopupException(msg + msig, null, false);
 		}
 		protected override PokeResult OnPoke(DdeConversation c, string item, byte[] data, int format) {
+			string msig = " //OnPoke(" + c.Topic + "," + item + ")";
 			//if(format != xlTableFormat) return PokeResult.NotProcessed;
-
-			((XlDdeTable)c.Tag).PutDdeData(data);
+			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
+			try {
+				tableRecipient.PutDdeData(data);
+			} catch (Exception ex) {
+				string msg = "DDE_DATA_PARSING_FAILED tableRecipient[" + tableRecipient.Topic + "]";
+				Assembler.PopupException(msg + msig, ex);
+				return PokeResult.NotProcessed;
+			}
 			return PokeResult.Processed;
 		}
 	}

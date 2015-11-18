@@ -5,13 +5,13 @@ using Newtonsoft.Json;
 using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik {
-	public class StreamingDataSnapshotQuik : StreamingDataSnapshot {
+	public class QuikStreamingDataSnapshot : StreamingDataSnapshot {
 		[JsonProperty]	protected Dictionary<string, double> FortsDepositSell	{ get; private set; }
 		[JsonProperty]	protected Dictionary<string, double> FortsDepositBuy	{ get; private set; }
 		[JsonProperty]	protected Dictionary<string, double> FortsPriceMin		{ get; private set; }
 		[JsonProperty]	protected Dictionary<string, double> FortsPriceMax		{ get; private set; }
 
-		public StreamingDataSnapshotQuik(StreamingAdapter streamingAdapter) : base(streamingAdapter) {
+		public QuikStreamingDataSnapshot(StreamingAdapter streamingAdapter) : base(streamingAdapter) {
 			this.FortsDepositBuy	= new Dictionary<string, double>();
 			this.FortsDepositSell	= new Dictionary<string, double>();
 			this.FortsPriceMin		= new Dictionary<string, double>();

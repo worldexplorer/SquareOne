@@ -12,13 +12,13 @@
     "AsTimeSpan": "00:05:00"
   },
   "StreamingAdapter": {
-    "$type": "Sq1.Adapters.Quik.StreamingQuik, Sq1.Adapters.Quik",
+    "$type": "Sq1.Adapters.Quik.QuikStreaming, Sq1.Adapters.Quik",
     "DdeServerPrefix": "SQ1",
     "DdeTopicQuotes": "quotes",
     "DdeTopicTrades": "trades",
     "DdeTopicPrefixDom": "dom",
     "StreamingDataSnapshot": {
-      "$type": "Sq1.Adapters.Quik.StreamingDataSnapshotQuik, Sq1.Adapters.Quik",
+      "$type": "Sq1.Adapters.Quik.QuikStreamingDataSnapshot, Sq1.Adapters.Quik",
       "lastQuoteClonesReceivedUnboundBySymbol": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib"
       },
@@ -38,7 +38,7 @@
     }
   },
   "BrokerAdapter": {
-    "$type": "Sq1.Adapters.Quik.BrokerQuik, Sq1.Adapters.Quik",
+    "$type": "Sq1.Adapters.Quik.QuikBroker, Sq1.Adapters.Quik",
     "AccountMicex": {
       "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
       "AccountNumber": "QUIK_MICEX_ACCTNR_NOT_SET",

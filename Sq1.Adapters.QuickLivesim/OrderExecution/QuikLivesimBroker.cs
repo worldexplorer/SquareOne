@@ -26,7 +26,8 @@ namespace Sq1.Adapters.QuikLivesim {
 		}
 
 		public QuikLivesimBroker(LivesimDataSource livesimDataSource) : base(livesimDataSource) {
-			base.Name = "QuikLivesimBroker";
+			base.Name = "QuikLivesimBroker-recreatedWithLDSpointer";
+			base.Icon = (Bitmap)Sq1.Adapters.QuikLivesim.Properties.Resources.imgQuikLivesimBroker;
 		}
 
 		

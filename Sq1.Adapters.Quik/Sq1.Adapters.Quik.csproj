@@ -78,8 +78,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataFeed\Dde\DdeTableDepth.cs" />
-    <Compile Include="DataFeed\Dde\DdeTableLastQuotes.cs" />
-    <Compile Include="DataFeed\Dde\DdeTables.cs" />
+    <Compile Include="DataFeed\Dde\DdeTableQuotes.cs" />
+    <Compile Include="DataFeed\Dde\DdeSubscriptionManager.cs" />
     <Compile Include="DataFeed\Dde\DdeTableTrades.cs" />
     <Compile Include="DataFeed\Dde\DdeQuote.cs" />
     <Compile Include="DataFeed\Dde\DdeQuoteType.cs" />
@@ -90,31 +90,34 @@
     <Compile Include="DataFeed\Dde\XlDde\XlDdeServer.cs" />
     <Compile Include="DataFeed\Dde\XlDde\XlRowParsed.cs" />
     <Compile Include="DataFeed\Dde\XlDde\XlTable.cs" />
+    <Compile Include="DataFeed\QuikStreaming.StreamingAdapterProtocol.cs">
+      <DependentUpon>QuikStreaming.cs</DependentUpon>
+    </Compile>
     <Compile Include="DataFeed\QuoteQuik.cs" />
-    <Compile Include="DataFeed\StreamingDataSnapshotQuik.cs" />
-    <Compile Include="DataFeed\StreamingQuikEditor.cs">
+    <Compile Include="DataFeed\QuikStreamingDataSnapshot.cs" />
+    <Compile Include="DataFeed\QuikStreamingEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataFeed\StreamingQuik.cs" />
-    <Compile Include="DataFeed\StreamingQuikEditor.Designer.cs">
-      <DependentUpon>StreamingQuikEditor.cs</DependentUpon>
+    <Compile Include="DataFeed\QuikStreaming.cs" />
+    <Compile Include="DataFeed\QuikStreamingEditor.Designer.cs">
+      <DependentUpon>QuikStreamingEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataFeed\StreamingQuikEditor.EventConsumer.cs">
-      <DependentUpon>StreamingQuikEditor.cs</DependentUpon>
+    <Compile Include="DataFeed\QuikStreamingEditor.EventConsumer.cs">
+      <DependentUpon>QuikStreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OrderExecution\BrokerQuikEditor.cs">
+    <Compile Include="OrderExecution\QuikBrokerEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OrderExecution\BrokerQuik.cs" />
-    <Compile Include="OrderExecution\BrokerQuikEditor.Designer.cs">
-      <DependentUpon>BrokerQuikEditor.cs</DependentUpon>
+    <Compile Include="OrderExecution\QuikBroker.cs" />
+    <Compile Include="OrderExecution\QuikBrokerEditor.Designer.cs">
+      <DependentUpon>QuikBrokerEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="OrderExecution\BrokerQuikEditor.EventConsumer.cs">
-      <DependentUpon>BrokerQuikEditor.cs</DependentUpon>
+    <Compile Include="OrderExecution\QuikBrokerEditor.EventConsumer.cs">
+      <DependentUpon>QuikBrokerEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OrderExecution\OrderCallbackDupesCheckerQuik.cs" />
+    <Compile Include="OrderExecution\QuikOrderCallbackDupesChecker.cs" />
     <Compile Include="OrderExecution\Terminal\QuikTerminal.cs" />
     <Compile Include="OrderExecution\Terminal\Trans2Quik.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -139,11 +142,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DataFeed\StreamingQuikEditor.resx">
-      <DependentUpon>StreamingQuikEditor.cs</DependentUpon>
+    <EmbeddedResource Include="DataFeed\QuikStreamingEditor.resx">
+      <DependentUpon>QuikStreamingEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OrderExecution\BrokerQuikEditor.resx">
-      <DependentUpon>BrokerQuikEditor.cs</DependentUpon>
+    <EmbeddedResource Include="OrderExecution\QuikBrokerEditor.resx">
+      <DependentUpon>QuikBrokerEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

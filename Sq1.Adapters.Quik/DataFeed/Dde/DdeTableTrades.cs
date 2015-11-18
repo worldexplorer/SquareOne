@@ -18,7 +18,7 @@ namespace Sq1.Adapters.Quik.Dde {
 		const string strBuyOp		= "BUY";
 		const string strSellOp		= "SELL";
 		
-		StreamingQuik quikStreamingAdapter;
+		QuikStreaming quikStreamingAdapter;
 		int cDate;
 		int cTime;
 		int cPrice;
@@ -28,15 +28,15 @@ namespace Sq1.Adapters.Quik.Dde {
 		int cClassCode;
 		bool columnsNotDetected;
 
-		public DdeTableTrades(string topic, StreamingQuik streamingAdapter) : base(topic) {
+		public DdeTableTrades(string topic, QuikStreaming streamingAdapter) : base(topic) {
 			this.quikStreamingAdapter = streamingAdapter;
 			this.columnsNotDetected = true;
 		}
-		public override bool IsConnected {
-			get { return base.IsConnected; }
+		public override bool ReceivingDataDde {
+			get { return base.ReceivingDataDde; }
 			set {
 				this.columnsNotDetected = true;
-				base.IsConnected = value;
+				base.ReceivingDataDde = value;
 			}
 		}
 		protected override void processNonHeaderRowParsed(XlRowParsed row) {
@@ -83,7 +83,7 @@ namespace Sq1.Adapters.Quik.Dde {
 				}
 
 				if (cDate < 0 || cTime < 0 || cPrice < 0 || cQuantity < 0 || cOp < 0 || cSecCode < 0 || cClassCode < 0) {
-					InErrorState = true;
+					ErrorParsing = true;
 					return;
 				}
 
@@ -158,7 +158,7 @@ namespace Sq1.Adapters.Quik.Dde {
 				if (rowCorrect) {
 					quikStreamingAdapter.TradeDeliveredDdeCallback(secCode + classCode, t);
 				} else {
-					InErrorState = true;
+					ErrorParsing = true;
 				}
 			}
 		}

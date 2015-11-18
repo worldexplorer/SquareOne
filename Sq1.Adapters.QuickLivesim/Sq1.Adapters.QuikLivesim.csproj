@@ -36,42 +36,44 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataFeed\QuikLivesimDdeClient.cs" />
+    <Compile Include="DataFeed\QuikLivesimStreaming.CoreCallbacks.cs">
+      <DependentUpon>QuikLivesimStreaming.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataFeed\QuikLivesimStreaming.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="QuikLivesimBroker.CoreCallbacks.cs">
+    <Compile Include="OrderExecution\QuikLivesimBroker.CoreCallbacks.cs">
       <DependentUpon>QuikLivesimBroker.cs</DependentUpon>
     </Compile>
-    <Compile Include="QuikLivesimBrokerEditor.cs">
+    <Compile Include="OrderExecution\QuikLivesimBrokerEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="QuikLivesimBrokerEditor.Designer.cs">
+    <Compile Include="OrderExecution\QuikLivesimBrokerEditor.Designer.cs">
       <DependentUpon>QuikLivesimBrokerEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="QuikLivesimBrokerEditor.EventConsumer.cs">
+    <Compile Include="OrderExecution\QuikLivesimBrokerEditor.EventConsumer.cs">
       <DependentUpon>QuikLivesimBrokerEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="QuikLivesimBrokerSettings.cs" />
-    <Compile Include="QuikLivesimBroker.cs" />
-    <Compile Include="QuikLivesimStreaming.CoreCallbacks.cs">
-      <DependentUpon>QuikLivesimStreaming.cs</DependentUpon>
-    </Compile>
-    <Compile Include="QuikLivesimStreaming.cs" />
-    <Compile Include="QuikLivesimStreamingEditor.cs">
+    <Compile Include="OrderExecution\QuikLivesimBrokerSettings.cs" />
+    <Compile Include="OrderExecution\QuikLivesimBroker.cs" />
+    <Compile Include="DataFeed\QuikLivesimStreamingEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="QuikLivesimStreamingEditor.Designer.cs">
+    <Compile Include="DataFeed\QuikLivesimStreamingEditor.Designer.cs">
       <DependentUpon>QuikLivesimStreamingEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="QuikLivesimStreamingEditor.EventConsumer.cs">
+    <Compile Include="DataFeed\QuikLivesimStreamingEditor.EventConsumer.cs">
       <DependentUpon>QuikLivesimStreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="QuikLivesimStreamingSettings.cs" />
+    <Compile Include="DataFeed\QuikLivesimStreamingSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataFeed\QuikStreamingPuppet.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
@@ -96,10 +98,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="QuikLivesimBrokerEditor.resx">
+    <EmbeddedResource Include="OrderExecution\QuikLivesimBrokerEditor.resx">
       <DependentUpon>QuikLivesimBrokerEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="QuikLivesimStreamingEditor.resx">
+    <EmbeddedResource Include="DataFeed\QuikLivesimStreamingEditor.resx">
       <DependentUpon>QuikLivesimStreamingEditor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

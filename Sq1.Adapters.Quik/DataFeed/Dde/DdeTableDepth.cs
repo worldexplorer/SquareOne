@@ -8,24 +8,20 @@ namespace Sq1.Adapters.Quik.Dde {
 		const string cnBidVolume	= "BUY_VOLUME";
 		const string cnPrice		= "PRICE";
 		
-		StreamingQuik	quikStreamingAdapter;
+		QuikStreaming	quikStreamingAdapter;
 		string			symbol;
 
-		public DdeTableDepth(string topic, StreamingQuik receiver, string SymbolSubscribing) : base (topic) {
+		public DdeTableDepth(string topic, QuikStreaming receiver, string SymbolSubscribing) : base (topic) {
 			this.quikStreamingAdapter = receiver;
 			this.symbol = SymbolSubscribing;
 			this.columnsIdentified = false;
-		}
-		public override bool IsConnected {
-			get { return base.IsConnected; }
-			set { columnsIdentified = false; base.IsConnected = value; }
 		}
 		protected override void processNonHeaderRowParsed(XlRowParsed row) {
 			int a = 1;
 		}
 		protected override void PutDdeTable(XlTable xt) {
 			if (xt.RowsCount < 3) {
-				this.InErrorState = true;
+				this.ErrorParsing = true;
 				return;
 			}
 			int cAskVolume = -1, cBidVolume = -1, cPrice = -1;
@@ -45,7 +41,7 @@ namespace Sq1.Adapters.Quik.Dde {
 					}
 			}
 			if (cAskVolume < 0 || cBidVolume < 0 || cPrice < 0) {
-				this.InErrorState = true;
+				this.ErrorParsing = true;
 				return;
 			}
 			DdeQuote[] ddeQuotes = new DdeQuote[xt.RowsCount - 1];
@@ -73,7 +69,7 @@ namespace Sq1.Adapters.Quik.Dde {
 					if (sc == xt.ColumnsCount) {
 						break;
 					} else {
-						this.InErrorState = true;
+						this.ErrorParsing = true;
 						return;
 					}
 				}
@@ -86,12 +82,12 @@ namespace Sq1.Adapters.Quik.Dde {
 					}
 					ddeQuotes[row] = new DdeQuote(priceLevel, bidVolume, DdeQuoteType.Bid);
 				} else {
-					this.InErrorState = true;
+					this.ErrorParsing = true;
 					return;
 				}
 			}
 			if (ask == -1 || bid == -1 || ddeQuotes[0].Price <= ddeQuotes[1].Price) {
-				InErrorState = true;
+				ErrorParsing = true;
 				return;
 			}
 			ddeQuotes[ask].Type = DdeQuoteType.BestAsk;

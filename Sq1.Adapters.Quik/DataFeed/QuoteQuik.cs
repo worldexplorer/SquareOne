@@ -14,7 +14,7 @@ namespace Sq1.Adapters.Quik {
 		public QuoteQuik(DateTime quoteDate) : base(quoteDate) {
 		}
 
-		public void EnrichFromStreamingDataSnapshotQuik(StreamingDataSnapshotQuik quikStreamingDataSnapshot) {
+		public void EnrichFromStreamingDataSnapshotQuik(QuikStreamingDataSnapshot quikStreamingDataSnapshot) {
 			this.FortsDepositBuy	= quikStreamingDataSnapshot.FortsGetDepositBuyForSymbol	(base.Symbol);
 			this.FortsDepositSell	= quikStreamingDataSnapshot.FortsGetDepositSellForSymbol(base.Symbol);
 			this.FortsPriceMin		= quikStreamingDataSnapshot.FortsGetPriceMinForSymbol	(base.Symbol);

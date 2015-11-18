@@ -13,7 +13,7 @@ using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik {
-	public class BrokerQuik : BrokerAdapter {
+	public class QuikBroker : BrokerAdapter {
 		[JsonIgnore]	public	QuikTerminal	QuikTerminal			{ get; protected set; }
 		[JsonProperty]	public	string			QuikFolder				{ get; internal set; }		// internal <= POPULATED_IN_EDITOR
 		[JsonProperty]	public	string			QuikDllName				{ get; protected set; }
@@ -29,7 +29,7 @@ namespace Sq1.Adapters.Quik {
 			}
 		}
 
-		public BrokerQuik() : base() {		// base() will be invoked anyways by .NET, just wanna make it obvious (reminder)
+		public QuikBroker() : base() {		// base() will be invoked anyways by .NET, just wanna make it obvious (reminder)
 			base.Name = "Quik BrokerDummy";
 			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
 			this.QuikTerminal = new QuikTerminal(this);
