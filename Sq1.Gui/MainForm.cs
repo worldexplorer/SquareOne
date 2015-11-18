@@ -13,6 +13,8 @@ using Sq1.Core.Support;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 using WeifenLuo.WinFormsUI.Docking;
+using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Gui {
 	public partial class MainForm : Form {
@@ -32,7 +34,7 @@ namespace Sq1.Gui {
 					//throw new Exception(msg);
 					return null;
 				}
-				foreach (ChartFormsManager chartFormDataSnap in this.GuiDataSnapshot.ChartFormsManagers.Values) {
+				foreach (ChartFormManager chartFormDataSnap in this.GuiDataSnapshot.ChartFormManagers.Values) {
 					if (chartFormDataSnap.ChartForm == ret) return ret;
 				}
 				string msg2 = "MainForm.DockPanel.ActiveDocument is [" + ret.ToString() + "] but it's not found among MainForm.ChartFormsManagers registry;"
@@ -115,7 +117,7 @@ namespace Sq1.Gui {
 					//	eachChart.Dispose();
 					//}
 					//v2
-					foreach (ChartFormsManager cfm in this.GuiDataSnapshot.ChartFormsManagers.Values) {
+					foreach (ChartFormManager cfm in this.GuiDataSnapshot.ChartFormManagers.Values) {
 						cfm.Dispose_workspaceReloading();
 					}
 
@@ -196,7 +198,7 @@ namespace Sq1.Gui {
 					ExceptionsForm.Instance.Show(this.DockPanel);
 				}
 
-				foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormsManagers.Values) {
+				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 					if (cfmgr.ChartForm == null) continue;
 
 					if (cfmgr.SequencerForm != null) {
@@ -231,7 +233,7 @@ namespace Sq1.Gui {
 					// MAKES_INNER_FORMS_CLUMSY_SIZED_AND_THROWS_INSIDE_WELFEN_LUO disposePreviousDockPanel.Dispose();		// doesn't heal memory,handles,GDI,UserObj leak on same-workspace load
 				}
 
-				foreach (ChartFormsManager cfmgr in this.GuiDataSnapshot.ChartFormsManagers.Values) {
+				foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 					if (cfmgr.ChartForm == null) continue;
 					if (cfmgr.ChartForm.MniShowSourceCodeEditor.Enabled) {		//set to true in InitializeWithStrategy() << DeserializeDockContent() 20 lines above
 						cfmgr.ChartForm.MniShowSourceCodeEditor.Checked = cfmgr.ScriptEditorIsOnSurface;
@@ -266,12 +268,14 @@ namespace Sq1.Gui {
 					}
 					#endif
 
+					//WILL_NEED_TO_COLLECT_QUOTES_FOR_SYMBOLS_WITHOUT_STREAMING_CHARTS_OPEN
 					//if (cfmgr.DataSnapshot.ContextChart.IsStreaming == true) {
-					//	string msg = "CHART_SUBSCRIBED__BUT_SHOULD_CONNECT_AFTER_BACKTEST";
+					//    string msg = "CHART_SUBSCRIBED__BUT_SHOULD_CONNECT_AFTER_BACKTEST";
 					//} else {
-					if (cfmgr.Executor.DataSource.StreamingAdapter != null) {
-						cfmgr.Executor.DataSource.StreamingAdapter.UpstreamConnect();
-					}
+						StreamingAdapter streaming = cfmgr.Executor.DataSource.StreamingAdapter;
+						if (streaming != null && (streaming is LivesimStreaming) == false) {
+							streaming.UpstreamConnect();
+						}
 					//}
 				}
 				

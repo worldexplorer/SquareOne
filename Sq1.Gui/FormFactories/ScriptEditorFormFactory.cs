@@ -9,11 +9,11 @@ using Sq1.Widgets.ScriptEditor;
 
 namespace Sq1.Gui.FormFactories {
 	public class ScriptEditorFormFactory {	// REASON_TO_EXIST: allows to run backtest in ChartForm context, stores Strategy.SourceCode in JSON, bridges Sq1.Widgets.dll and Sq1.Core.dll
-		ChartFormsManager chartFormManager;
-		public ScriptEditorFormFactory(ChartFormsManager chartFormsManager) {
+		ChartFormManager chartFormManager;
+		public ScriptEditorFormFactory(ChartFormManager chartFormsManager) {
 			this.chartFormManager = chartFormsManager;
 		}
-		public void CreateEditorFormSubscribePushToManager(ChartFormsManager chartFormsManager) {
+		public void CreateEditorFormSubscribePushToManager(ChartFormManager chartFormsManager) {
 			ScriptEditorForm scriptEditorForm = new ScriptEditorForm(chartFormsManager);
 			scriptEditorForm.ScriptEditorControl.OnSave				+= scriptEditorControl_OnSave;
 			scriptEditorForm.ScriptEditorControl.OnCompile			+= scriptEditorControl_OnCompile;

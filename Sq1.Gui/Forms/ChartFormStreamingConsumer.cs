@@ -14,11 +14,11 @@ namespace Sq1.Gui.Forms {
 		//public event EventHandler<BarEventArgs> NewBar;
 		//public event EventHandler<QuoteEventArgs> NewQuote;
 		//public event EventHandler<BarsEventArgs> BarsLocked;
-		ChartFormsManager chartFormManager;
+		ChartFormManager chartFormManager;
 		string msigForNpExceptions = "Failed to StreamingSubscribe(): ";
 
 		#region CASCADED_INITIALIZATION_ALL_CHECKING_CONSISTENCY_FROM_ONE_METHOD begin
-		ChartFormsManager ChartFormManager { get {
+		ChartFormManager ChartFormManager { get {
 				var ret = this.chartFormManager;
 				this.actionForNullPointer(ret, "this.chartFormsManager=null");
 				return ret;
@@ -79,21 +79,21 @@ namespace Sq1.Gui.Forms {
 				return ret;
 			} }
 		#region LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR 
-		Livesimulator Livesimulator { get {
-				Livesimulator ret = this.Executor.Livesimulator;
-				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Livesimulator=null");
-				return ret;
-			} }
-		LivesimDataSource LivesimDataSource { get {
-				LivesimDataSource ret = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe;
-				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe=null");
-				return ret;
-			} }
-		LivesimStreaming LivesimStreamingAdapter { get {
-				LivesimStreaming ret = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
-				this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe=null");
-				return ret;
-			} }
+		//Livesimulator Livesimulator { get {
+		//        Livesimulator ret = this.Executor.Livesimulator;
+		//        this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Livesimulator=null");
+		//        return ret;
+		//    } }
+		//LivesimDataSource LivesimDataSource { get {
+		//        LivesimDataSource ret = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe;
+		//        this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe=null");
+		//        return ret;
+		//    } }
+		//LivesimStreaming LivesimStreamingAdapter { get {
+		//        LivesimStreaming ret = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
+		//        this.actionForNullPointer(ret, "this.chartFormsManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe=null");
+		//        return ret;
+		//    } }
 		#endregion
 		ChartForm ChartForm { get {
 				var ret = this.ChartFormManager.ChartForm;
@@ -138,7 +138,7 @@ namespace Sq1.Gui.Forms {
 		}
 		#endregion
 
-		public ChartFormStreamingConsumer(ChartFormsManager chartFormManager) {
+		public ChartFormStreamingConsumer(ChartFormManager chartFormManager) {
 			this.chartFormManager = chartFormManager;
 		}
 		public void StreamingUnsubscribe(string reason = "NO_REASON_FOR_STREAMING_UNSUBSCRIBE") {

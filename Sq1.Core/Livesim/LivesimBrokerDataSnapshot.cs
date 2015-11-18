@@ -45,6 +45,11 @@ namespace Sq1.Core.StrategyBase {
 		}
 		
 		public LivesimBrokerDataSnapshot(LivesimDataSource livesimDataSource) {
+			string msig = " //LivesimBrokerDataSnapshot(" + livesimDataSource + ")";
+			if (livesimDataSource == null) {
+				string msg = "YOU_LOST_MY_POINTER_BACK_TO LivesimDataSource";
+				Assembler.PopupException(msg + msig);
+			}
 			this.livesimDataSource = livesimDataSource;	// LAZY_TO_SPLIT_TO_CTOR_AND_INITIALIZE() null for dummies, non-null for clone() { Activator.Create() } 'd LivesimBrokers
 			this.AlertsScheduledForDelayedFill = new AlertList("SCHEDULED_FOR_DELAYED_FILL", null);
 		}

@@ -82,7 +82,7 @@ namespace Sq1.Gui {
 			// DockContent.Layout.xml contains definitions of "ReporterWrapped" and "ScriptEditor" next lines AFTER parent ChartFormsManager,
 			// so we must've had parent chart deserialized on the previous invocation at {case ("Chart"):}
 			// if too unreliable, then switch back to GuiDataSnapshot.ChartFormsManagers + GuiDataSnapshot.RebuildDeserializedChartFormsManagers()
-			ChartFormsManager parentChart = null;
+			ChartFormManager parentChart = null;
 
 			switch (managedFormCase) {
 				case ("Chart"):
@@ -91,11 +91,11 @@ namespace Sq1.Gui {
 					//if (this.ChartFormsManager.Strategy.ScriptContextCurrent != null) {
 					//	ret += ",StrategyScriptContextName:" + this.ChartFormsManager.Strategy.ScriptContextCurrent.Name;
 					//}
-					if (this.GuiDataSnapshot.ChartFormsManagers.ContainsKey(chartSerno)) {
+					if (this.GuiDataSnapshot.ChartFormManagers.ContainsKey(chartSerno)) {
 						// who knows why LoadFromXml invokes me twice?
 						return ret;
 					}
-					ChartFormsManager chartFormsManagerDeserialized = new ChartFormsManager(this, chartSerno);
+					ChartFormManager chartFormsManagerDeserialized = new ChartFormManager(this, chartSerno);
 					//chartFormsManagerDeserialized.Initialize(this, strategy);
 					string strategyGuid;
 					bool existsGuid = persistedParsedToHash.TryGetValue("StrategyGuid", out strategyGuid);

@@ -9,6 +9,9 @@ using Sq1.Gui.Singletons;
 using Sq1.Widgets;
 using WeifenLuo.WinFormsUI.Docking;
 using Sq1.Widgets.LabeledTextBox;
+using Sq1.Gui.Forms;
+using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Gui {
 	public partial class MainForm {
@@ -51,6 +54,18 @@ namespace Sq1.Gui {
 			base.WndProc(ref m);
 		}
 		void mainForm_FormClosing(object sender, FormClosingEventArgs e) {
+			string msig = " //mainForm_FormClosing()";
+			foreach (ChartFormManager eachChartManager in this.GuiDataSnapshot.ChartFormManagers.Values) {
+				StreamingAdapter streaming = eachChartManager.Executor.DataSource.StreamingAdapter;
+				if (streaming == null) continue;
+				if (streaming is LivesimStreaming) continue;
+				try {
+					streaming.UpstreamDisconnect();
+				} catch (Exception ex) {
+					string msg = "STREAMING_THREW_WHILE_DISCONNECTING [" + streaming.ToString() + "]";
+					Assembler.PopupException(msg + msig, ex);
+				}
+			}
 			this.MainFormSerialize();
 			this.MainFormClosingSkipChartFormsRemoval = true;
 		}
@@ -185,7 +200,7 @@ namespace Sq1.Gui {
 		}
 		void ctxWindowsOpening(object sender, System.ComponentModel.CancelEventArgs e) {
 			this.ctxWindows.Items.Clear();
-			foreach (var mgr in this.GuiDataSnapshot.ChartFormsManagers.Values) {
+			foreach (var mgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				var mniRoot = new ToolStripMenuItem();
 				mniRoot.Text = mgr.ChartForm.Text;
 				var ctxChartRelatedForms = new ContextMenuStrip();

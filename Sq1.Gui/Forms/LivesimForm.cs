@@ -6,7 +6,7 @@ using Sq1.Widgets;
 
 namespace Sq1.Gui.Forms {
 	public partial class LivesimForm : DockContentImproved {
-		ChartFormsManager chartFormsManager;
+		ChartFormManager chartFormManager;
 		
 		// INVOKED_BY_DOCKCONTENT.DESERIALIZE_FROM_XML
 		public LivesimForm() {
@@ -14,7 +14,7 @@ namespace Sq1.Gui.Forms {
 		}
 		
 		// INVOKED_AT_USER_CLICK
-		public LivesimForm(ChartFormsManager chartFormsManager) : this() {
+		public LivesimForm(ChartFormManager chartFormsManager) : this() {
 			this.Initialize(chartFormsManager);
 			//ERASES_LINE_IN_DOCK_CONTENT_XML_IF_WITHOUT_IGNORING this.Disposed += this.LivesimForm_Disposed;
 			this.FormClosing							+= new FormClosingEventHandler(this.livesimForm_FormClosing);
@@ -30,16 +30,16 @@ namespace Sq1.Gui.Forms {
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos
 		// using ":" since "=" leads to an exception in DockPanelPersistor.cs
 		protected override string GetPersistString() {
-			return "LiveSim:" + this.LivesimControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.DataSnapshot.ChartSerno;
+			return "LiveSim:" + this.LivesimControl.GetType().FullName + ",ChartSerno:" + this.chartFormManager.DataSnapshot.ChartSerno;
 		}
 
 		// INVOKED_AFTER_DOCKCONTENT.DESERIALIZE_FROM_XML
-		internal void Initialize(ChartFormsManager chartFormManager) {
-			this.chartFormsManager = chartFormManager;
+		internal void Initialize(ChartFormManager chartFormManager) {
+			this.chartFormManager = chartFormManager;
 			this.WindowTitlePullFromStrategy();
 			//this.liveSimControl.Initialize(this.chartFormManager.Executor.Sequencer);
 			//this.LivesimControl.LblStrategyAsString.Text = this.chartFormsManager.Executor.ToStringWithCurrentParameters();
-			this.LivesimControl.TssLblStrategyAsString.Text = this.chartFormsManager.Executor.ToStringWithCurrentParameters();
+			this.LivesimControl.TssLblStrategyAsString.Text = this.chartFormManager.Executor.ToStringWithCurrentParameters();
 			
 			try {
 				//LivesimDataSource livesimDS = this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe;
@@ -55,9 +55,9 @@ namespace Sq1.Gui.Forms {
 				//this.chartFormManager.Executor.EventGenerator.OnStrategyExecutedOneQuoteOrBarOrdersEmitted +=
 				//	new EventHandler<EventArgs>(this.livesimForm_StrategyExecutedOneQuoteOrBarOrdersEmitted);
 
-				this.chartFormsManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Initialize(this.chartFormsManager.ChartForm.ChartControl);
-				this.LivesimControl.StreamingLivesimEditor.Initialize(this.chartFormsManager.Strategy.LivesimStreamingSettings);
-				this.LivesimControl.   BrokerLivesimEditor.Initialize(this.chartFormsManager.Strategy.LivesimBrokerSettings);
+				this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Initialize(this.chartFormManager.ChartForm.ChartControl);
+				this.LivesimControl.StreamingLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimStreamingSettings);
+				this.LivesimControl.   BrokerLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimBrokerSettings);
 			} catch (Exception ex) {
 				string msg = "SO_MANY_NULL_UNSAFES_RIGHT?...";
 				Assembler.PopupException(msg, ex);
@@ -65,7 +65,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		public void WindowTitlePullFromStrategy() {
-			string windowTitle = "LiveSim :: " + this.chartFormsManager.Strategy.WindowTitle;
+			string windowTitle = "LiveSim :: " + this.chartFormManager.Strategy.WindowTitle;
 			//if (this.chartFormsManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
 			//if (this.chartFormsManager.ScriptEditedNeedsSaving) {
 			//    windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;

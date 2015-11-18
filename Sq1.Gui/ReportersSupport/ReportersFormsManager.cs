@@ -14,7 +14,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Gui.ReportersSupport {
 	public class ReportersFormsManager {
-		public	ChartFormsManager 				ChartFormsManager 				{ get; private set; }
+		public	ChartFormManager 				ChartFormsManager 				{ get; private set; }
 				RepositoryDllReporters 			reportersRepo;
 		public	Dictionary<string, Reporter>	ReporterShortNamesUserInvoked	{ get; private set; }	// multiple instances of the same reporter invoked for one chart <= are not allowed
 		public	MenuItemsProvider				MenuItemsProvider				{ get; private set; }
@@ -40,7 +40,7 @@ namespace Sq1.Gui.ReportersSupport {
 			ReporterShortNamesUserInvoked = new Dictionary<string, Reporter>();
 			MenuItemsProvider = new MenuItemsProvider(this, this.reportersRepo.TypesFound);
 		}
-		public ReportersFormsManager(ChartFormsManager chartFormManager) : this() {
+		public ReportersFormsManager(ChartFormManager chartFormManager) : this() {
 			this.ChartFormsManager = chartFormManager;
 
 			this.ChartFormsManager.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(

@@ -2,6 +2,7 @@
 	partial class LivesimForm {
 		private System.ComponentModel.IContainer components = null;
 		public Sq1.Widgets.Livesim.LivesimControl LivesimControl;
+
 		protected override void Dispose(bool disposing) {
 			if (disposing) {
 				if (components != null) {

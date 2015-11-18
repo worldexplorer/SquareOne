@@ -7,14 +7,14 @@ using Sq1.Widgets;
 
 namespace Sq1.Gui.Forms {
 	public partial class SequencerForm : DockContentImproved {
-		ChartFormsManager chartFormsManager;
+		ChartFormManager chartFormsManager;
 		public bool Initialized { get { return this.chartFormsManager != null; } }
 		
 		public SequencerForm() {
 			InitializeComponent();
 		}
 		
-		public SequencerForm(ChartFormsManager chartFormManager) : this() {
+		public SequencerForm(ChartFormManager chartFormManager) : this() {
 			this.Initialize(chartFormManager);
 			//ERASES_LINE_IN_DOCK_CONTENT_XML_IF_WITHOUT_IGNORING this.Disposed += this.LivesimForm_Disposed;
 			this.FormClosing += new FormClosingEventHandler(this.sequencerForm_FormClosing);
@@ -27,7 +27,7 @@ namespace Sq1.Gui.Forms {
 			return "Sequencer:" + this.SequencerControl.GetType().FullName + ",ChartSerno:" + this.chartFormsManager.DataSnapshot.ChartSerno;
 		}
 
-		internal void Initialize(ChartFormsManager chartFormsManagerPassed) {
+		internal void Initialize(ChartFormManager chartFormsManagerPassed) {
 			//if (this.chartFormsManager == chartFormsManagerPassed) return;
 			this.chartFormsManager = chartFormsManagerPassed;
 			this.SequencerControl.Initialize(this.chartFormsManager.Executor.Sequencer);

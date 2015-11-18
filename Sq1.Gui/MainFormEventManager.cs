@@ -53,7 +53,7 @@ namespace Sq1.Gui {
 			Strategy strategy = e.Strategy;
 			ChartForm active = this.mainForm.ChartFormActiveNullUnsafe;
 			if (active == null) {
-				ChartFormsManager msg = this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
+				ChartFormManager msg = this.chartCreateShowPopulateSelectorsSlidersFromStrategy(strategy);
 				active = msg.ChartForm;
 			}
 			active.ChartFormManager.InitializeWithStrategy(strategy, false);
@@ -65,7 +65,7 @@ namespace Sq1.Gui {
 			}
 		}
 		internal void StrategiesTree_OnStrategyRenamed(object sender, StrategyEventArgs e) {
-			foreach (ChartFormsManager chartFormsManager in this.mainForm.GuiDataSnapshot.ChartFormsManagers.Values) {
+			foreach (ChartFormManager chartFormsManager in this.mainForm.GuiDataSnapshot.ChartFormManagers.Values) {
 				if (chartFormsManager.Strategy != e.Strategy) continue;
 				if (chartFormsManager.ScriptEditorFormConditionalInstance != null) {
 					chartFormsManager.ScriptEditorFormConditionalInstance.Text = e.Strategy.Name;
@@ -75,10 +75,10 @@ namespace Sq1.Gui {
 				}
 			}
 		}
-		ChartFormsManager chartCreateShowPopulateSelectorsSlidersFromStrategy(Strategy strategy) {
-			ChartFormsManager chartFormManager = new ChartFormsManager(this.mainForm);
+		ChartFormManager chartCreateShowPopulateSelectorsSlidersFromStrategy(Strategy strategy) {
+			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
 			chartFormManager.InitializeWithStrategy(strategy, false);
-			this.mainForm.GuiDataSnapshot.ChartFormsManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
+			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 
 			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);
 			ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
@@ -88,9 +88,9 @@ namespace Sq1.Gui {
 			return chartFormManager;
 		}
 		void chartCreateShowPopulateSelectorsSlidersNoStrategy(ContextChart contextChart) {
-			ChartFormsManager chartFormManager = new ChartFormsManager(this.mainForm);
+			ChartFormManager chartFormManager = new ChartFormManager(this.mainForm);
 			chartFormManager.InitializeChartNoStrategy(contextChart);
-			this.mainForm.GuiDataSnapshot.ChartFormsManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
+			this.mainForm.GuiDataSnapshot.ChartFormManagers.Add(chartFormManager.DataSnapshot.ChartSerno, chartFormManager);
 
 			this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Add(chartFormManager.ChartForm.ChartControl.ChartSettings, chartFormManager.ChartForm.ChartControl);
 			ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
@@ -105,16 +105,16 @@ namespace Sq1.Gui {
 			try {
 				// chartFormsManager lifecycle ends here
 				ChartForm chartFormClosed = sender as ChartForm;
-				ChartFormsManager chartFormManager = chartFormClosed.ChartFormManager;
+				ChartFormManager chartFormManager = chartFormClosed.ChartFormManager;
 
 				if (DockContentImproved.IsNullOrDisposed(chartFormManager.ScriptEditorForm) == false) chartFormManager.ScriptEditorFormConditionalInstance.Close();
 
 				string msg = null;
-				var mgrs = this.mainForm.GuiDataSnapshot.ChartFormsManagers;
+				var mgrs = this.mainForm.GuiDataSnapshot.ChartFormManagers;
 				if (mgrs.Count <= 0) {
 					msg += "ChartFormsManagers.Count=0 ";
 				} else {
-					if (this.mainForm.GuiDataSnapshot.ChartFormsManagers.ContainsValue(chartFormManager) == false) {
+					if (this.mainForm.GuiDataSnapshot.ChartFormManagers.ContainsValue(chartFormManager) == false) {
 						msg += "chartFormManager_NOT_FOUND[" + chartFormManager.ToString() + "] ";
 					} else {
 						if (mgrs.ContainsKey(chartFormManager.DataSnapshot.ChartSerno) == false) {
@@ -126,7 +126,7 @@ namespace Sq1.Gui {
 				if (string.IsNullOrEmpty(msg) == false) {
 					Assembler.PopupException("CHART_FORMS_MANAGER_MUST_HAVE_BEEN_ADDED " + msg);
 				} else {
-					this.mainForm.GuiDataSnapshot.ChartFormsManagers.Remove(chartFormManager.DataSnapshot.ChartSerno);
+					this.mainForm.GuiDataSnapshot.ChartFormManagers.Remove(chartFormManager.DataSnapshot.ChartSerno);
 					this.mainForm.GuiDataSnapshot.ChartSettingsForChartSettingsEditor.Remove(chartFormClosed.ChartControl.ChartSettings);
 					ChartSettingsEditorForm.Instance.RebuildDropDown_dueToChartFormAddedOrRemoved();
 				}
@@ -230,7 +230,7 @@ namespace Sq1.Gui {
 				string msig = " DockPanel_ActiveContentChanged() is looking for mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus["
 					+ this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus + "]";
 				int lastKnownChartSerno = this.mainForm.GuiDataSnapshot.ChartSernoLastKnownHadFocus;
-				ChartFormsManager lastKnownChartFormManager = this.mainForm.GuiDataSnapshot.FindChartFormsManagerBySerno(lastKnownChartSerno, msig, false);
+				ChartFormManager lastKnownChartFormManager = this.mainForm.GuiDataSnapshot.FindChartFormsManagerBySerno(lastKnownChartSerno, msig, false);
 				if (lastKnownChartFormManager == null) {
 					string msg = "DOCK_ACTIVE_CONTENT_CHANGED_BUT_CANT_FIND_LAST_CHART lastKnownChartSerno[" + lastKnownChartSerno + "]";
 					// INFINITE_LOOP_HANGAR_NINE_DOOMED_TO_COLLAPSE Assembler.PopupException(msg + msig);

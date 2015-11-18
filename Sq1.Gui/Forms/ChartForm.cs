@@ -19,7 +19,7 @@ using Sq1.Widgets.RangeBar;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
-		public	ChartFormsManager	ChartFormManager;
+		public	ChartFormManager	ChartFormManager;
 
 				List<string>		GroupScaleLabeledTextboxes;
 				List<string>		GroupPositionSizeLabeledTextboxes;
@@ -77,7 +77,7 @@ namespace Sq1.Gui.Forms {
 			this.ChartControl.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged);
 		}
 		//programmer's constructor
-		public ChartForm(ChartFormsManager chartFormManager) : this() {
+		public ChartForm(ChartFormManager chartFormManager) : this() {
 			this.ChartFormManager = chartFormManager;
 			// right now this.ChartFormsManager.Executor IS NULL, will create and Chart.Initialize() upstack :((
 			//this.Chart.Initialize(this.ChartFormsManager.Executor);
