@@ -4,17 +4,18 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
+using WeifenLuo.WinFormsUI.Docking;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
 using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
 using Sq1.Core.Support;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
-using WeifenLuo.WinFormsUI.Docking;
-using Sq1.Core.Streaming;
-using Sq1.Core.Livesim;
 
 namespace Sq1.Gui {
 	public partial class MainForm : Form {

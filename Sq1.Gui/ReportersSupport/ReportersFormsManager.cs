@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 
+using WeifenLuo.WinFormsUI.Docking;
+
 using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.Execution;
 using Sq1.Core.Repositories;
 using Sq1.Core.StrategyBase;
-using Sq1.Gui.Forms;
 using Sq1.Widgets;
-using WeifenLuo.WinFormsUI.Docking;
+using Sq1.Gui.Forms;
 
 namespace Sq1.Gui.ReportersSupport {
 	public class ReportersFormsManager {

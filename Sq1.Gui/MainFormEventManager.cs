@@ -7,10 +7,10 @@ using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
-using Sq1.Gui.Forms;
-using Sq1.Gui.Singletons;
 using Sq1.Widgets;
 using Sq1.Widgets.SteppingSlider;
+using Sq1.Gui.Forms;
+using Sq1.Gui.Singletons;
 
 namespace Sq1.Gui {
 	public class MainFormEventManager {
