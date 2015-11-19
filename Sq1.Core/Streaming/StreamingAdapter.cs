@@ -31,20 +31,18 @@ namespace Sq1.Core.Streaming {
 				ret = ret.TrimEnd(',');
 				return ret;
 			} }
-		[JsonIgnore]	protected object				BarsConsumersLock;
-		[JsonIgnore]	public ConnectionState			ConnectionState						{ get; protected set; }
+		[JsonProperty]	public ConnectionState			ConnectionState						{ get; protected set; }
 		[JsonIgnore]	public bool						QuotePumpSeparatePushingThreadEnabled { get; protected set; }
 
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingAdapter() {
-			SymbolsSubscribedLock			= new object();
-			BarsConsumersLock				= new object();
-			SymbolsUpstreamSubscribed		= new List<string>();
-			DataDistributor					= new DataDistributorCharts(this);
-			DataDistributorSolidifiers		= new DataDistributorSolidifiers(this);
-			StreamingDataSnapshot			= new StreamingDataSnapshot(this);
-			StreamingSolidifier				= new StreamingSolidifier();
-			QuotePumpSeparatePushingThreadEnabled = true;
+			SymbolsSubscribedLock					= new object();
+			SymbolsUpstreamSubscribed				= new List<string>();
+			DataDistributor							= new DataDistributorCharts(this);
+			DataDistributorSolidifiers				= new DataDistributorSolidifiers(this);
+			StreamingDataSnapshot					= new StreamingDataSnapshot(this);
+			StreamingSolidifier						= new StreamingSolidifier();
+			QuotePumpSeparatePushingThreadEnabled	= true;
 		}
 		public virtual void Initialize(DataSource dataSource) {
 			this.InitializeFromDataSource(dataSource);
