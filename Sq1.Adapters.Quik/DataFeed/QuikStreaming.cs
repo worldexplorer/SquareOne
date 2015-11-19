@@ -19,7 +19,6 @@ namespace Sq1.Adapters.Quik {
 		[JsonProperty]	public		string					DdeTopicPrefixDom;	//QuikLivesimStreaming needs it public { get; internal set; }
 
 		[JsonIgnore]	public		XlDdeServer				DdeServer					{ get; private set; }
-		[JsonIgnore]	public		ConnectionState			ConnectionState				{ get; private set; }
 		[JsonIgnore]	public		DdeSubscriptionManager	DdeSubscriptionManager		{ get; private set; }
 		[JsonIgnore]				string					ddeChannelsEstablished		{ get {
 				string ret = "DDE_CHANNELS_NULL__STREAMING_QUIK_NOT_YET_INITIALIZED";
@@ -45,27 +44,28 @@ namespace Sq1.Adapters.Quik {
 					string msg = "NO_SYMBOLS__STREAMING_QUIK_NOT_INITIALIZED_DDE_CHANNELS_NULL";
 					return ret;
 				}
-				ret = this.DdeSubscriptionManager.SymbolsHavingIndividualChannels;
+				ret = this.DdeSubscriptionManager.SymbolsHavingIndividualTables;
 				return ret;
 			} }
 		
 		public QuikStreaming() : base() {
-			base.Name = "QuikStreaming-DllScanned";
-			base.Icon = (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
-			this.DdeServiceName		= "SQ1";
-			this.DdeTopicQuotes		= "quotes";
-			this.DdeTopicTrades		= "trades";
-			this.DdeTopicPrefixDom	= "dom";
+			base.Name					= "QuikStreaming-DllScanned";
+			base.Icon					= (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
+			this.DdeServiceName			= "SQ1";
+			this.DdeTopicQuotes			= "quotes";
+			this.DdeTopicTrades			= "trades";
+			this.DdeTopicPrefixDom		= "dom";
 			base.StreamingDataSnapshot	= new QuikStreamingDataSnapshot(this);
-			this.DdeServer				= new XlDdeServer(this.DdeServiceName);
 			this.ConnectionState		= ConnectionState.InitiallyDisconnected;
 		}
 		public override void Initialize(DataSource dataSource) {
-			base.Name = "QuikStreaming";
+			base.Name			= "QuikStreaming";
+			this.DdeServer		= new XlDdeServer(this.DdeServiceName);	// MOVED_FROM_CTOR_TO_HAVE_QuikStreamingPuppet_PREFIX_SERVICE_AND_TOPICS DUMMY_STREAMING_ISNT_INITIALIZED_WITH_DATASOURCE_SO_IN_CTOR_IT_WOULD_HAVE_OCCUPIED_SERVICE_NAME_FOR_NO_USE
+
 			if (this.DdeSubscriptionManager != null) {
 				string msg = "RETHINK_INITIALIZATION_AND_DdeTables_LIFECYCLE";
 				Assembler.PopupException(msg);
-				this.stopDdeServer();
+				this.ddeServerStop();
 			} else {
 				this.DdeSubscriptionManager = new DdeSubscriptionManager(this);
 			}
@@ -74,7 +74,7 @@ namespace Sq1.Adapters.Quik {
 			this.ConnectionState		= ConnectionState.JustInitialized;
 		}
 
-		void startDdeServer() {
+		void ddeServerStart() {
 			string msg = "";
 			if (string.IsNullOrWhiteSpace(this.DdeServer.Service)) {
 				Assembler.PopupException("can't start DdeServer with IsNullOrWhiteSpace(server.Service)");
@@ -85,32 +85,30 @@ namespace Sq1.Adapters.Quik {
 				this.DdeServer.Register();
 			} catch (Exception ex) {
 				this.ConnectionState = ConnectionState.ConnectFailed;
-				Assembler.PopupException(this.ToString(), ex);
+				Assembler.PopupException("DDE_SERVER_REGISTRATION_FAILED " + this.ToString(), ex);
 				return;
 			}
 
 			this.ConnectionState = ConnectionState.ConnectedSubscribedAll;
-			msg = DateTime.Now + " DDE_REGISTERED " + this.ToString();
+			msg = "DDE_SERVER_STARTED " + this.ToString();
 			Assembler.PopupException(msg, null, false);
 		}
-		public void stopDdeServer() {
+
+		void ddeServerStop() {
 			string msg = "";
 			try {
 				this.DdeServer.Disconnect();
 				this.DdeServer.Unregister();
-				//this.ddeServer.Dispose();
-				//this.ddeServer = null;
-			} catch (Exception e) {
+				//NO_I_WILL_RESTART_IT this.DdeServer.Dispose();
+				//NO_I_WILL_RESTART_IT this.ddeServer = null;
+			} catch (Exception ex) {
 				this.ConnectionState = ConnectionState.DisconnectFailed;
-				msg = "ERROR stopping " + this + " " + e.ToString();
-				Assembler.PopupException(this.ConnectionState + " " + msg, e);
+				Assembler.PopupException("DDE_SERVER_STOPPING_ERROR " + this.ToString(), ex);
 				return;
 			}
 
 			this.ConnectionState = ConnectionState.DisconnectedUnsubscribedAll;
-			msg = "Stopped " + this;
-			Assembler.PopupException(this.ConnectionState + " " + msg, null);
-			Assembler.PopupException("StopDdeServer() Disconnected DdeChannels " + msg);
+			Assembler.PopupException("DDE_SERVER_STOPPED " + this.ToString(), null, false);
 		}
 
 

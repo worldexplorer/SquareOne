@@ -7,6 +7,7 @@ namespace Sq1.Adapters.Quik.Dde {
 		public int Price;
 		public int Volume;
 		public DdeQuoteType Type;
+
 		public DdeQuote(int price, int volume, DdeQuoteType type) {
 			this.Price = price;
 			this.Volume = volume;

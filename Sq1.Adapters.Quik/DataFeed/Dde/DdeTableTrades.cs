@@ -1,8 +1,4 @@
-﻿// QScalp source code was downloaded on O2-Jun-2012 for free from http://www.qscalp.ru/download/qscalp_src.zip
-// SquareOne uses QScalp's modified classes and keeps original author Name and URL
-// Nikolay Moroshkin can tell me to remove his code completely => I'll rewrite the pieces borrowed //Pavel Chuchkalov 
-
-using System;
+﻿using System;
 
 using Sq1.Adapters.Quik.Dde.XlDde;
 
@@ -39,7 +35,7 @@ namespace Sq1.Adapters.Quik.Dde {
 				base.ReceivingDataDde = value;
 			}
 		}
-		protected override void processNonHeaderRowParsed(XlRowParsed row) {
+		protected override void PushIncomingRowParsed(XlRowParsed row) {
 			int a = 1;
 		}
 		protected override void PutDdeTable(XlTable xt) {

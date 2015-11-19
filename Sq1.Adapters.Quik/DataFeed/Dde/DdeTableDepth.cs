@@ -1,6 +1,7 @@
-﻿using Sq1.Adapters.Quik.Dde.XlDde;
-using Sq1.Core;
+﻿using Sq1.Core;
 using Sq1.Core.DataTypes;
+
+using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
 	public class DdeTableDepth : XlDdeTable {
@@ -16,7 +17,7 @@ namespace Sq1.Adapters.Quik.Dde {
 			this.symbol = SymbolSubscribing;
 			this.columnsIdentified = false;
 		}
-		protected override void processNonHeaderRowParsed(XlRowParsed row) {
+		protected override void PushIncomingRowParsed(XlRowParsed row) {
 			int a = 1;
 		}
 		protected override void PutDdeTable(XlTable xt) {

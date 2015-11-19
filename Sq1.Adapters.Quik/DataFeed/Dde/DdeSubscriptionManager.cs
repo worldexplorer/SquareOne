@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Sq1.Adapters.Quik.Dde.XlDde;
 using Sq1.Core;
 using Sq1.Core.DataTypes;
+
+using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
 	public class DdeSubscriptionManager {
@@ -13,7 +14,7 @@ namespace Sq1.Adapters.Quik.Dde {
 		public		DdeTableTrades							TableTrades		{ get; protected set; }
 
 					Dictionary<string, List<XlDdeTable>>	individualTablesBySymbol;
-		public		List<string>							SymbolsHavingIndividualChannels { get { return new List<string>(this.individualTablesBySymbol.Keys); } }
+		public		List<string>							SymbolsHavingIndividualTables { get { return new List<string>(this.individualTablesBySymbol.Keys); } }
 		
 		public DdeSubscriptionManager(QuikStreaming streamingAdapter) {
 			this.quikStreamingAdapter		= streamingAdapter;
@@ -54,10 +55,10 @@ namespace Sq1.Adapters.Quik.Dde {
 		}
 		public override string ToString() {
 			string ret = "DdeServiceName[" + this.quikStreamingAdapter.DdeServiceName + "]/[" + this.quikStreamingAdapter.ConnectionState + "]:";
-			if (this.TableQuotes != null)  ret += " " + this.TableQuotes.ToString() + " ";
-			if (this.TableTrades != null) ret += " " + this.TableTrades.ToString();
+			if (this.TableQuotes != null)	ret += " " + this.TableQuotes.ToString() + " ";
+			if (this.TableTrades != null)	ret += " " + this.TableTrades.ToString();
 			string individualChannels = "";
-			foreach (string symbol in this.SymbolsHavingIndividualChannels) {
+			foreach (string symbol in this.SymbolsHavingIndividualTables) {
 				ret += " {"
 					//+ " Symbol[" + symbol + "]"
 					+ this.IndividualChannelsForSymbol(symbol) + "}";

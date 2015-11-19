@@ -7,12 +7,12 @@ using Sq1.Core;
 
 namespace Sq1.Adapters.QuikLivesim.DataFeed {
 	class QuikLivesimDdeClient : ISynchronizeInvoke {
-				QuikLivesimStreaming quikLivesimStreaming;
-		public	DdeClient DdeClient;
+				QuikLivesimStreaming	quikLivesimStreaming;
+		public	DdeClient				DdeClient;
 		
-				Form	syncContext		{ get { return this.quikLivesimStreaming.Livesimulator.Executor.ChartShadow.ParentForm; } }
-				string	ddeService		{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeServiceName; } }
-				string	ddeTopicQuotes	{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeSubscriptionManager.TableQuotes.Topic; } }
+				Form					syncContext		{ get { return this.quikLivesimStreaming.Livesimulator.Executor.ChartShadow.ParentForm; } }
+				string					ddeService		{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeServiceName; } }
+				string					ddeTopicQuotes	{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeSubscriptionManager.TableQuotes.Topic; } }
 
 		public QuikLivesimDdeClient(QuikLivesimStreaming quikLivesimStreaming) {
 			this.quikLivesimStreaming = quikLivesimStreaming;

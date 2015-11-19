@@ -1,26 +1,20 @@
-// QScalp source code was downloaded on O2-Jun-2012 for free from http://www.qscalp.ru/download/qscalp_src.zip
-// SquareOne uses QScalp's modified classes and keeps original author Name and URL
-// Nikolay Moroshkin can tell me to remove his code completely => I'll rewrite the pieces borrowed //Pavel Chuchkalov 
-//    XlDdeServer.cs (c) 2011 Nikolay Moroshkin, http://www.moroshkin.com/
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+
 using Sq1.Core;
 
 namespace Sq1.Adapters.Quik.Dde.XlDde {
 	public abstract class XlDdeTable {
 		public			string		Topic				{ get; private set; }
 		public			DateTime	LastDataReceived	{ get; protected set; }
-		public	virtual	bool		ReceivingDataDde				{ get; set; }
+		public	virtual	bool		ReceivingDataDde	{ get; set; }
 		public			bool		ErrorParsing		{ get; protected set; }
 		public			void		ResetError()		{ ErrorParsing = false; }
 
 		protected	List<XlColumn>				columns;
 		protected	Dictionary<int, XlColumn>	columnsByIndexFound;
 		protected	bool						columnsIdentified;
-		//List<string> primaryKey;
-		//Dictionary<string, XlColumn> rowParsed;
 
 		public XlDdeTable(string topic) : this() {
 			this.Topic = topic;
@@ -28,6 +22,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		public XlDdeTable() {
 			this.columnsIdentified = false;
 			this.columns = new List<XlColumn>();
+			this.columnsByIndexFound = new Dictionary<int, XlColumn>();
 		}
 
 		public void PutDdeData(byte[] data) {
@@ -69,7 +64,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 				}
 
 				try {
-					this.processNonHeaderRowParsed(rowParsed);
+					this.PushIncomingRowParsed(rowParsed);
 				} catch (Exception e) {
 					string msg = "[" + this.LastDataReceived.ToString("HH:mm:ss.fff ddd dd MMM yyyy") + "] Exception in Channdel: " + e.Message;
 					Assembler.PopupException(msg, e);
@@ -79,7 +74,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		protected bool identifyColumnsByReadingHeader(XlTable xt) {
 			bool ret = false;
 			List<XlColumn> mandatoriesNotFound = new List<XlColumn>();
-			columnsByIndexFound = new Dictionary<int, XlColumn>();
+			this.columnsByIndexFound.Clear();
 			foreach (XlColumn col in this.columns) {
 				col.IndexFound = -1;
 				if (col.Mandatory) mandatoriesNotFound.Add(col);
@@ -90,7 +85,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 				string columnNameToIdentify = xt.StringValue;
 				foreach (XlColumn col in this.columns) {
 					if (col.Name != columnNameToIdentify) continue;
-					columnsByIndexFound.Add(col_serno, col.Clone());
+					this.columnsByIndexFound.Add(col_serno, col.Clone());
 					if (mandatoriesNotFound.Contains(col)) mandatoriesNotFound.Remove(col);
 					break;
 				}
@@ -102,8 +97,8 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			XlRowParsed rowParsed = new XlRowParsed();
 			for (int col = 0; col < xt.ColumnsCount; col++) {
 				xt.ReadValue();
-				if (columnsByIndexFound.ContainsKey(col) == false) continue;
-				XlColumn xlCol = columnsByIndexFound[col].Clone();
+				if (this.columnsByIndexFound.ContainsKey(col) == false) continue;
+				XlColumn xlCol = this.columnsByIndexFound[col].Clone();
 				switch (xt.ValueType) {
 					case XlTable.BlockType.Float:
 						xlCol.Value = xt.FloatValue;
@@ -153,7 +148,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			}
 			return rowParsed;
 		}
-		protected abstract void processNonHeaderRowParsed(XlRowParsed row);
+		protected abstract void PushIncomingRowParsed(XlRowParsed row);
 		public override string ToString() {
 			string ret = "";
 			if (string.IsNullOrEmpty(this.Topic) == false) ret += "Topic[" + this.Topic + "] ";

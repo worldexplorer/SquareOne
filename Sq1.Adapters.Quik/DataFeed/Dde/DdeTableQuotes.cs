@@ -32,7 +32,7 @@ namespace Sq1.Adapters.Quik.Dde {
 				new XlColumn() { Name = "stepprice",	TypeExpected = XlTable.BlockType.Float },
 			};
 		}
-		protected override void processNonHeaderRowParsed(XlRowParsed rowParsed) {
+		protected override void PushIncomingRowParsed(XlRowParsed rowParsed) {
 			//if (rowParsed["SHORTNAME"] == "LKOH") {
 			//	int a = 1;
 			//}

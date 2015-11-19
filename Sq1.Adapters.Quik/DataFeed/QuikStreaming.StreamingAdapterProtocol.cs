@@ -14,23 +14,27 @@ namespace Sq1.Adapters.Quik {
 	public partial class QuikStreaming : StreamingAdapter {
 
 		public override void UpstreamConnect() {
-			if (base.StreamingConnected == true) return;
-			string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
-			this.startDdeServer();
-			base.ConnectionState = ConnectionState.DllNotConnectedUnsubscribed;
-			//Assembler.DisplayConnectionStatus(base.ConnectionState, "Started symbolsSubscribed[" + symbolsSubscribed + "]");
-			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " started DdeChannels[" + this.DdeSubscriptionManager.ToString() + "]");
-			base.StreamingConnected = true;
+			lock (base.SymbolsSubscribedLock) {
+				if (base.StreamingConnected == true) return;
+				string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
+				this.ddeServerStart();
+				base.ConnectionState = ConnectionState.DllNotConnectedUnsubscribed;
+				//Assembler.DisplayConnectionStatus(base.ConnectionState, "Started symbolsSubscribed[" + symbolsSubscribed + "]");
+				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " started DdeChannels[" + this.DdeSubscriptionManager.ToString() + "]");
+				base.StreamingConnected = true;
+			}
 		}
 		public override void UpstreamDisconnect() {
-			if (base.StreamingConnected == false) return;
-			Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeSubscriptionManager.ToString() + "]");
-			string symbolsUnsubscribed = this.upstreamUnsubscribeAllDataSourceSymbols();
-			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " Stopped symbolsUnsubscribed[" + symbolsUnsubscribed + "]");
-			this.stopDdeServer();
-			base.ConnectionState = ConnectionState.InitiallyDisconnected;
-			Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " stopped DdeChannels[" + this.DdeSubscriptionManager.ToString() + "]");
-			base.StreamingConnected = false;
+			lock (base.SymbolsSubscribedLock) {
+				if (base.StreamingConnected == false) return;
+				Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeSubscriptionManager.ToString() + "]");
+				string symbolsUnsubscribed = this.upstreamUnsubscribeAllDataSourceSymbols();
+				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " Stopped symbolsUnsubscribed[" + symbolsUnsubscribed + "]");
+				this.ddeServerStop();
+				base.ConnectionState = ConnectionState.InitiallyDisconnected;
+				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " stopped DdeChannels[" + this.DdeSubscriptionManager.ToString() + "]");
+				base.StreamingConnected = false;
+			}
 		}
 
 		public override void UpstreamSubscribe(string symbol) {

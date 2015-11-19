@@ -1,5 +1,6 @@
-﻿using Sq1.Adapters.Quik;
-using Sq1.Core.Support;
+﻿using Sq1.Core.Support;
+
+using Sq1.Adapters.Quik;
 
 namespace Sq1.Adapters.QuikLivesim {
 	[SkipInstantiationAt(Startup = true)]		// I'm an internally-used proxy that must not appear in DataSourceEditor's list of available StreamingAdapters
