@@ -36,11 +36,15 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataFeed\Dde\DdeTableGeneratorQuotes.cs" />
+    <Compile Include="DataFeed\Dde\XlDde\XlDdeTableGenerator.cs" />
     <Compile Include="DataFeed\QuikLivesimDdeClient.cs" />
     <Compile Include="DataFeed\QuikLivesimStreaming.CoreCallbacks.cs">
       <DependentUpon>QuikLivesimStreaming.cs</DependentUpon>
     </Compile>
     <Compile Include="DataFeed\QuikLivesimStreaming.cs" />
+    <Compile Include="DataFeed\Dde\XlDde\XlDdeClient.cs" />
+    <Compile Include="DataFeed\Dde\XlDde\XlWriter.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

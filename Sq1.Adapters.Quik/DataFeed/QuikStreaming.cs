@@ -139,7 +139,7 @@ namespace Sq1.Adapters.Quik {
 
 		
 		
-		public void TradeDeliveredDdeCallback(string skey, DdeTrade trade) {
+		public void TradeDeliveredDdeCallback(QuikTrade trade) {
 			string msg = "FINALLY_I_CAN_SET_SET_FILLED_STATE_FOR_AN_ORDER REDIRECT_PROCESSING_TO_QuikBroker_ASAP";
 			Assembler.PopupException(msg);
 		}

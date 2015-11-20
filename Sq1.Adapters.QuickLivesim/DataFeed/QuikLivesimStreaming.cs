@@ -11,6 +11,8 @@ using Sq1.Core;
 
 using Sq1.Adapters.Quik;
 using Sq1.Adapters.QuikLivesim.DataFeed;
+using Sq1.Core.Backtesting;
+using NDde.Client;
 
 namespace Sq1.Adapters.QuikLivesim {
 	[SkipInstantiationAt(Startup = false)]		// overriding LivesimStreaming's TRUE to have QuikLivesimStreaming appear in DataSourceEditor
@@ -21,8 +23,8 @@ namespace Sq1.Adapters.QuikLivesim {
 
 		string ddeTopicsPrefix = "QuikLiveSim-";
 
-		public QuikStreaming QuikStreamingPuppet;
-		QuikLivesimDdeClient QuikLivesimDdeClient;
+		public QuikStreaming		QuikStreamingPuppet;
+		public QuikLivesimDdeClient	QuikLivesimDdeClient;
 
 		//		QuikLivesimStreamingSettings	settings			{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
 
@@ -50,7 +52,7 @@ namespace Sq1.Adapters.QuikLivesim {
 
 			string msig = " //UpstreamConnect_LivesimStarting(" + this.ToString() + ")";
 			string msg = "Instantiating QuikStreaming with prefixed DDE tables [...]";
-			Assembler.PopupException(msg + msig, null, false);
+			//Assembler.PopupException(msg + msig, null, false);
 
 			this.QuikStreamingPuppet = new QuikStreamingPuppet(this.ddeTopicsPrefix);
 			this.QuikStreamingPuppet.Initialize(base.Livesimulator.DataSourceAsLivesimNullUnsafe);	//LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor
@@ -70,6 +72,11 @@ namespace Sq1.Adapters.QuikLivesim {
 			this.QuikLivesimDdeClient.DdeClient.Disconnect();
 			this.QuikLivesimDdeClient.DdeClient.Dispose();
 			this.QuikStreamingPuppet.UpstreamDisconnect();	// not disposed, QuikStreaming.ddeServerStart() is reusable
+		}
+
+		public override void PushQuoteGenerated(QuoteGenerated quote) {
+			//NOPE_REDIRECT_TO_DDE_CLIENT_ALREADY_CONNECTED_TO_QUIK_PUPPET base.PushQuoteGenerated(quote);
+			this.QuikLivesimDdeClient.SendQuote(quote);
 		}
 
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {

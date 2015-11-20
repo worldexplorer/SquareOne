@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using NDde.Server;
 
 using Sq1.Core;
+using Sq1.Adapters.Quik.Dde.XlDde;
 
-namespace Sq1.Adapters.Quik.Dde.XlDde {
-	public class XlDdeServer : DdeServer {
+namespace Sq1.Adapters.QuikLivesim.Dde.XlDde {
+	public class XlDdeClient : DdeServer {
 		Dictionary<string, XlDdeTable> tablesByTopic;
 
-		public XlDdeServer(string service) : base(service) {
+		public XlDdeClient(string service) : base(service) {
 			this.tablesByTopic = new Dictionary<string, XlDdeTable>();
 		}
 		public void TableAdd(string topic, XlDdeTable channel) {
