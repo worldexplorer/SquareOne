@@ -52,7 +52,7 @@ namespace Sq1.Core.Livesim {
 				randomSizeIncrement = symbolInfo.AlignToVolumeStep(randomSizeIncrement);
 				sizeAsk += randomSizeIncrement;
 
-						randomSizeIncrement = quote.Size * (new Random(28).Next(5, 50) / 100d);
+				randomSizeIncrement = quote.Size * (new Random(28).Next(5, 50) / 100d);
 				randomSizeIncrement = symbolInfo.AlignToVolumeStep(randomSizeIncrement);
 				sizeBid += randomSizeIncrement;
 			}
