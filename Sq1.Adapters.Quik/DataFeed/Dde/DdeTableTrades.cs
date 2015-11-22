@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Sq1.Adapters.Quik.Dde.XlDde;
 
@@ -6,8 +7,7 @@ namespace Sq1.Adapters.Quik.Dde {
 	public class DdeTableTrades : XlDdeTable {
 		protected override string DdeConsumerClassName { get { return "DdeTableTrades"; } }
 
-		public DdeTableTrades(string topic, QuikStreaming quikStreaming) : base(topic, quikStreaming) {
-		}
+		public DdeTableTrades(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns) {}
 
 		protected override void IncomingRowParsedDelivered(XlRowParsed row) {
 			QuikTrade quikTrade			= new QuikTrade(this.DdeConsumerClassName + " Topic[" + base.Topic + "]");

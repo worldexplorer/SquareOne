@@ -7,7 +7,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
-	public class DdeSubscriptionManager {
+	public class DdeBatchSubscriber {
 					QuikStreaming							quikStreamingAdapter;
 		
 		public		DdeTableQuotes							TableQuotes		{ get; protected set; }
@@ -16,7 +16,7 @@ namespace Sq1.Adapters.Quik.Dde {
 					Dictionary<string, List<XlDdeTable>>	individualTablesBySymbol;
 		public		List<string>							SymbolsHavingIndividualTables { get { return new List<string>(this.individualTablesBySymbol.Keys); } }
 		
-		public DdeSubscriptionManager(QuikStreaming streamingAdapter) {
+		public DdeBatchSubscriber(QuikStreaming streamingAdapter) {
 			this.quikStreamingAdapter		= streamingAdapter;
 			this.individualTablesBySymbol	= new Dictionary<string, List<XlDdeTable>>();
 			this.tables_CommonForAllSymbols_Add();
@@ -24,7 +24,7 @@ namespace Sq1.Adapters.Quik.Dde {
 		public void TableIndividual_DepthOfMarket_ForSymbolAdd(string symbol) {
 			if (this.individualTablesBySymbol.ContainsKey(symbol)) return;
 			string domTopic				= this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicPrefixDom + "-" + symbol;
-			DdeTableDepth channelDom	= new DdeTableDepth(domTopic, this.quikStreamingAdapter, symbol);
+			DdeTableDepth channelDom	= new DdeTableDepth(domTopic, this.quikStreamingAdapter, TableDefinitions.XlColumnsForTable_DepthOfMarketPerSymbol, symbol);
 			this.quikStreamingAdapter.DdeServer.TableAdd(domTopic, channelDom);
 			this.individualTablesBySymbol.Add(symbol, new List<XlDdeTable>() { channelDom });
 			channelDom.ReceivingDataDde = true;
@@ -68,8 +68,10 @@ namespace Sq1.Adapters.Quik.Dde {
 		}
 
 		internal void tables_CommonForAllSymbols_Add() {
-			this.TableQuotes = new DdeTableQuotes(this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicQuotes, this.quikStreamingAdapter);
-			this.TableTrades = new DdeTableTrades(this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicTrades, this.quikStreamingAdapter);
+			this.TableQuotes = new DdeTableQuotes(this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicQuotes
+				, this.quikStreamingAdapter, TableDefinitions.XlColumnsForTable_Quotes);
+			this.TableTrades = new DdeTableTrades(this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicTrades
+				, this.quikStreamingAdapter, TableDefinitions.XlColumnsForTable_Trades);
 
 			this.quikStreamingAdapter.DdeServer.TableAdd(this.TableQuotes.Topic, this.TableQuotes);
 			this.quikStreamingAdapter.DdeServer.TableAdd(this.TableTrades.Topic, this.TableTrades);

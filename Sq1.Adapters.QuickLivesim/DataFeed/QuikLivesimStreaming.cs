@@ -54,14 +54,15 @@ namespace Sq1.Adapters.QuikLivesim {
 			string msg = "Instantiating QuikStreaming with prefixed DDE tables [...]";
 			//Assembler.PopupException(msg + msig, null, false);
 
-			this.QuikStreamingPuppet = new QuikStreamingPuppet(this.ddeTopicsPrefix);
+			this.QuikStreamingPuppet = new QuikStreamingPuppet(this.ddeTopicsPrefix, this.DataDistributor);
 			this.QuikStreamingPuppet.Initialize(base.Livesimulator.DataSourceAsLivesimNullUnsafe);	//LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor
-			//ALREADY_INVOKED_BY_DataDistributor_Ignored_to_avoid_Solidifier this.quikStreamingPuppet.UpstreamConnect();
+			//this.QuikStreamingPuppet.DataDistributor.ConsumerQuoteSubscribe();
+			//this.QuikStreamingPuppet.DataDistributor.ConsumerBarSubscribe();
 			this.QuikStreamingPuppet.UpstreamConnect();
 
 			this.QuikLivesimDdeClient = new QuikLivesimDdeClient(this);
 			this.QuikLivesimDdeClient.DdeClient.Connect();
-			msg = "DDE_CLIENT_CONNECTED[" + this.QuikStreamingPuppet.DdeServiceName + "] TOPICS[" + this.QuikStreamingPuppet.DdeSubscriptionManager.TopicsAsString + "]";
+			msg = "DDE_CLIENT_CONNECTED[" + this.QuikStreamingPuppet.DdeServiceName + "] TOPICS[" + this.QuikStreamingPuppet.DdeBatchSubscriber.TopicsAsString + "]";
 			Assembler.PopupException(msg + msig, null, false);
 		}
 
@@ -75,8 +76,11 @@ namespace Sq1.Adapters.QuikLivesim {
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
-			//NOPE_REDIRECT_TO_DDE_CLIENT_ALREADY_CONNECTED_TO_QUIK_PUPPET base.PushQuoteGenerated(quote);
-			this.QuikLivesimDdeClient.SendQuote(quote);
+			//NOPE_REDIRECT_TO_DDE_CLIENT_ALREADY_CONNECTED_TO_QUIK_PUPPET
+			//WILL_PROCEED_TO_MY_EXECUTOR_VIA_DATA_DISTRIBUTOR base.PushQuoteGenerated(quote);
+			this.QuikLivesimDdeClient.DdeClientWillSendQuoteToDdeServer(quote);
+			//var myDistributorToExamine = this.DataDistributor;
+			//var mustContainSubscriberChartAndExectutor = this.QuikStreamingPuppet.DataDistributor;
 		}
 
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {

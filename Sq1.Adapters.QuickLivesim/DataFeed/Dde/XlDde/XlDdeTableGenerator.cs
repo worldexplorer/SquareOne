@@ -15,7 +15,7 @@ namespace Sq1.Adapters.QuikLiveism.Dde {
 		protected	QuikLivesimStreaming	QuikLivesimStreaming	{ get; private set; }
 
 		public		List<XlColumn>					Columns				{ get; private set; }
-		public		Dictionary<string, XlColumn>	XlColumnsLookup		{ get; private set; }
+		public		Dictionary<string, XlColumn>	ColumnsLookup		{ get; private set; }
 
 		protected	XlWriter				XlWriter				{ get; private set; }
 
@@ -31,9 +31,9 @@ namespace Sq1.Adapters.QuikLiveism.Dde {
 			}
 
 			this.Columns = columns;
-			this.XlColumnsLookup = new Dictionary<string, XlColumn>();
+			this.ColumnsLookup = new Dictionary<string, XlColumn>();
 			foreach (XlColumn col in this.Columns) {
-				this.XlColumnsLookup.Add(col.Name, col);
+				this.ColumnsLookup.Add(col.Name, col);
 			}
 
 			this.XlWriter = new XlWriter(this);

@@ -19,12 +19,12 @@ namespace Sq1.Adapters.Quik {
 		[JsonProperty]	public		string					DdeTopicPrefixDom;	//QuikLivesimStreaming needs it public { get; internal set; }
 
 		[JsonIgnore]	public		XlDdeServer				DdeServer					{ get; private set; }
-		[JsonIgnore]	public		DdeSubscriptionManager	DdeSubscriptionManager		{ get; private set; }
+		[JsonIgnore]	public		DdeBatchSubscriber		DdeBatchSubscriber			{ get; private set; }
 		[JsonIgnore]				string					ddeChannelsEstablished		{ get {
 				string ret = "DDE_CHANNELS_NULL__STREAMING_QUIK_NOT_YET_INITIALIZED";
-				if (this.DdeSubscriptionManager == null) return ret;
+				if (this.DdeBatchSubscriber == null) return ret;
 				lock (base.SymbolsSubscribedLock) {
-					ret = this.DdeSubscriptionManager.ToString();
+					ret = this.DdeBatchSubscriber.ToString();
 				}
 				return ret;
 			} }
@@ -40,11 +40,11 @@ namespace Sq1.Adapters.Quik {
 			} }
 		[JsonProperty]	public override List<string> SymbolsUpstreamSubscribed { get {
 				List<string> ret = new List<string>();
-				if (this.DdeSubscriptionManager == null) {
+				if (this.DdeBatchSubscriber == null) {
 					string msg = "NO_SYMBOLS__STREAMING_QUIK_NOT_INITIALIZED_DDE_CHANNELS_NULL";
 					return ret;
 				}
-				ret = this.DdeSubscriptionManager.SymbolsHavingIndividualTables;
+				ret = this.DdeBatchSubscriber.SymbolsHavingIndividualTables;
 				return ret;
 			} }
 		
@@ -62,12 +62,12 @@ namespace Sq1.Adapters.Quik {
 			base.Name			= "QuikStreaming";
 			this.DdeServer		= new XlDdeServer(this.DdeServiceName);	// MOVED_FROM_CTOR_TO_HAVE_QuikStreamingPuppet_PREFIX_SERVICE_AND_TOPICS DUMMY_STREAMING_ISNT_INITIALIZED_WITH_DATASOURCE_SO_IN_CTOR_IT_WOULD_HAVE_OCCUPIED_SERVICE_NAME_FOR_NO_USE
 
-			if (this.DdeSubscriptionManager != null) {
+			if (this.DdeBatchSubscriber != null) {
 				string msg = "RETHINK_INITIALIZATION_AND_DdeTables_LIFECYCLE";
 				Assembler.PopupException(msg);
 				this.ddeServerStop();
 			} else {
-				this.DdeSubscriptionManager = new DdeSubscriptionManager(this);
+				this.DdeBatchSubscriber = new DdeBatchSubscriber(this);
 			}
 			base.Initialize(dataSource);
 			//MOVED_TO_MainForm.WorkspaceLoad() this.Connect();

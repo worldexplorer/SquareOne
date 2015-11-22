@@ -8,9 +8,11 @@ using Sq1.Core;
 namespace Sq1.Adapters.Quik.Dde.XlDde {
 	public class XlDdeServer : DdeServer {
 		Dictionary<string, XlDdeTable> tablesByTopic;
+		object lockSynchronousPoke;
 
 		public XlDdeServer(string service) : base(service) {
 			this.tablesByTopic = new Dictionary<string, XlDdeTable>();
+			this.lockSynchronousPoke = new object();
 		}
 		public void TableAdd(string topic, XlDdeTable channel) {
 			if (this.tablesByTopic.ContainsKey(topic)) return;
@@ -47,7 +49,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			string msg = "TABLE_MAGICALLY_REMOVED_FOR_TOPIC";
 			Assembler.PopupException(msg + msig, null, false);
 		}
-		protected override PokeResult OnPoke(DdeConversation c, string item, byte[] data, int format) {
+		protected override PokeResult OnPoke(DdeConversation c, string item, byte[] data, int format) { lock(this.lockSynchronousPoke) {
 			string msig = " //OnPoke(" + c.Topic + "," + item + ")";
 			//if(format != xlTableFormat) return PokeResult.NotProcessed;
 			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
@@ -59,6 +61,6 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 				return PokeResult.NotProcessed;
 			}
 			return PokeResult.Processed;
-		}
+		} }
 	}
 }

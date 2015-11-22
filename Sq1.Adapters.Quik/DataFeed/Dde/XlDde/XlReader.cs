@@ -9,7 +9,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		const int fsize = 8;
 		const int hsize = wsize * 2;
 		
-		byte[]			data;
+		byte[]			byteArrayReceived;
 		MemoryStream	ms;
 		BinaryReader	br;
 		int				blocksize;
@@ -21,13 +21,25 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		public string		StringValue		{ get; private set; }
 		public ushort		WValue			{ get; private set; }
 		
-		public XlReader(byte[] data) {
-			this.data = data;
-			this.ms = new MemoryStream(data);
+		public XlReader(byte[] byteArrayReceived) {
+			this.byteArrayReceived = byteArrayReceived;
+			this.ms = new MemoryStream(byteArrayReceived);
 			this.br = new BinaryReader(this.ms, Encoding.ASCII);
-			if (this.data.Length < wsize * 4 || (XlBlockType)br.ReadUInt16() != XlBlockType.Table) this.SetBadDataStatus();
-			this.ms.Seek(wsize, SeekOrigin.Current);
+			if (this.byteArrayReceived.Length < wsize * 4) this.SetBadDataStatus();
+
+			XlBlockType messageType = (XlBlockType) br.ReadUInt16();
+			if (messageType != XlBlockType.Table) this.SetBadDataStatus();
+			long positionAfterMessageType = this.ms.Position;	// this.ms.Position=2 now
+
+			//this.ms.Seek(wsize, SeekOrigin.Current);			// add two dummy bytes?...
+			UInt16 twoDummyBytes = (UInt16) br.ReadUInt16();
+			long positionMagicWsize = this.ms.Position;			// this.ms.Position=4 now
+			
 			this.RowsCount		= br.ReadUInt16();
+			if (this.RowsCount == 0) {
+				string msg = "CLIENT_SENT_ZERO_ROWS this.ms.Position[" + this.ms.Position + "]";
+				string breakpoint = "here";
+			}
 			this.ColumnsCount	= br.ReadUInt16();
 			this.ValueType		= XlBlockType.Unknown;
 		}
@@ -35,31 +47,37 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			this.ValueType = XlBlockType.Bad;
 			this.blocksize = 1;
 		}
-		public void ReadValue() {
+		public void ReadNext() {
 			this.FloatValue		= float.NaN;
 			this.StringValue	= null;
 			this.WValue			= ushort.MinValue;
+			if (this.ms.Position == 8) {
+				int a = 1;
+			}
 			if (this.ValueType == XlBlockType.Unknown) {
-				if (this.ms.Position + hsize > this.data.Length) {
+				if (this.ms.Position + hsize > this.byteArrayReceived.Length) {
 					this.SetBadDataStatus();
+					throw new EndOfStreamException();
 				}  else {
-					this.ValueType = (XlBlockType)this.br.ReadUInt16();
-					this.blocksize = this.br.ReadUInt16();
+					this.ValueType = (XlBlockType)this.br.ReadUInt16();	//Position=8
+					this.blocksize = this.br.ReadUInt16();				//Position=10
 
-					if (this.ms.Position + this.blocksize > this.data.Length)
-						this.SetBadDataStatus();
+					if (this.ms.Position + this.blocksize > this.byteArrayReceived.Length) {
+						this.SetBadDataStatus();		//Position=193 while reading: magically beoynd buffer size
+						throw new EndOfStreamException();
+					}
 				}
 			}
 			if (this.blocksize <= 0) {
 				this.ValueType = XlBlockType.Unknown;
-				this.ReadValue();
+				this.ReadNext();
 				return;
 			}
 			switch (this.ValueType) {
 				case XlBlockType.Float:
 					this.blocksize -= fsize;
 					if (this.blocksize >= 0) {
-						this.FloatValue = br.ReadDouble();
+						this.FloatValue = br.ReadDouble();		// br.Read() cant read (float)s
 					} else {
 						this.SetBadDataStatus();
 					}
@@ -69,7 +87,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					int strlen = ms.ReadByte();
 					this.blocksize -= strlen + 1;
 					if (this.blocksize >= 0) {
-						this.StringValue = Encoding.GetEncoding(codepage).GetString(this.data, (int)this.ms.Position, strlen);
+						this.StringValue = Encoding.GetEncoding(codepage).GetString(this.byteArrayReceived, (int)this.ms.Position, strlen);
 						br.BaseStream.Seek(strlen, SeekOrigin.Current);
 					} else {
 						this.SetBadDataStatus();
@@ -77,9 +95,17 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					break;
 					
 				case XlBlockType.Bool:
+				case XlBlockType.Int:
+					this.blocksize -= wsize;
+					if (this.blocksize >= 0) {
+						this.WValue = br.ReadUInt16();
+					} else {
+						this.SetBadDataStatus();
+					}
+					break;
+
 				case XlBlockType.Error:
 				case XlBlockType.Blank:
-				case XlBlockType.Int:
 				case XlBlockType.Skip:
 					this.blocksize -= wsize;
 					if (this.blocksize >= 0) {

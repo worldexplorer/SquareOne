@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 
 using Sq1.Core;
+using System.IO;
 
 namespace Sq1.Adapters.Quik.Dde.XlDde {
 	public abstract class XlDdeTable {
@@ -11,38 +12,47 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		public				DateTime			LastDataReceived		{ get; protected set; }
 		public	virtual		bool				ReceivingDataDde		{ get; set; }
 
-		protected	List<XlColumn>				Columns;				// part of the abstraction to implement in children
-		protected	Dictionary<int, XlColumn>	ColumnsByIndexFound;
-		protected	bool						ColumnsIdentified;
-		protected	QuikStreaming				QuikStreaming			{ get; private set; }
+		protected	List<XlColumn>					Columns;				// part of the abstraction to implement in children
+		protected	Dictionary<string, XlColumn>	ColumnsLookup;
+
+		protected	Dictionary<int, XlColumn>		ColumnsByIndexFound;
+		protected	bool							ColumnsIdentified;
+		protected	QuikStreaming					QuikStreaming			{ get; private set; }
 
 		XlDdeTable() {
 			this.ColumnsIdentified		= false;
 			this.Columns				= new List<XlColumn>();			// part of the abstraction to implement in children
 			this.ColumnsByIndexFound	= new Dictionary<int, XlColumn>();
 		}
-		protected XlDdeTable(string topic, QuikStreaming quikStreaming) : this() {
+		protected XlDdeTable(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : this() {
 			this.Topic = topic;
 			this.QuikStreaming = quikStreaming;
+			this.Columns = columns;
+
+			this.ColumnsLookup = new Dictionary<string, XlColumn>();
+			foreach (XlColumn col in this.Columns) {
+				this.ColumnsLookup.Add(col.Name, col);
+			}
 		}
 
 		public void ParseDeliveredDdeData_pushToStreaming(byte[] data) {
 			this.LastDataReceived = DateTime.UtcNow;
 
 			this.IncomingTableBegun();
-			using (XlReader xt = new XlReader(data)) {
-				this.FillTable_readParseMessage(xt);
+			using (XlReader reader = new XlReader(data)) {
+				this.FillTable_readParseMessage(reader);
 			}
 			this.IncomingTableTerminated();
 		}
-		protected virtual void FillTable_readParseMessage(XlReader xt) {
-			for (int i = 0; i < xt.RowsCount; i++) {
-				if (this.ColumnsIdentified == false) {
-					this.ColumnsIdentified = this.identifyColumnsByReadingHeader(xt);
-					if (this.ColumnsIdentified == false) return;
-					if (xt.RowsCount == 1) return;
-				}
-				XlRowParsed rowParsed = this.parseRow(xt);
+		protected virtual void FillTable_readParseMessage(XlReader reader) {
+			// IDENTIFY_EACH_NEW_MESSAGE_DONT_CACHE if (this.ColumnsIdentified == false) {
+				this.ColumnsIdentified = this.identifyColumnsByReadingHeader(reader);
+				if (this.ColumnsIdentified == false) return;
+				if (reader.RowsCount == 1) return;
+			//}
+
+			for (int i = 1; i < reader.RowsCount; i++) {
+				XlRowParsed rowParsed = this.parseRow(reader);
 				if (rowParsed == null || rowParsed.Count == 0) continue;
 				string columnName = Columns[0].Name;
 				if (rowParsed[columnName] == null) continue;
@@ -51,30 +61,40 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					if (cellParced == columnName) continue;
 				}
 
+				#region CONSISTENCY_CHECK
 				foreach (XlColumn col in this.Columns) {
-					string typeParsed = rowParsed[col.Name].GetType().Name;
-					if (typeParsed == "Double") typeParsed = "Float";
-					string typeExpected = col.TypeExpected.ToString();
-					if (typeParsed == "DateTime") typeParsed = "String";
-					if (typeParsed != typeExpected) {
-						this.ColumnsIdentified = false;
-						string msg = "rowParsed[" + col.Name + "][" + rowParsed[col.Name] + "]"
-							+ " is not a col.TypeExpected[" + col.TypeExpected.GetType() + "]"
-							+ ", column order changed, skipping quote and re-identifyingColumnsByReadingHeader";
-						Assembler.PopupException(msg);
+					if (rowParsed.ContainsKey(col.Name) == false) {
+						string msg = "I_EXPECTED_ALL_COLUMNS_BE_PRESENT__THEY_JUST_MUST";
 						continue;
 					}
+					object valueParsed = rowParsed[col.Name];
+					if (valueParsed == null) {
+						string msg = "JUST_IGNORE?...";
+						continue;
+					}
+					string typeParsed = valueParsed.GetType().Name;
+					if (typeParsed == "Double") typeParsed = "Float";	// BinaryReader/Writer can't read/write (float)s, so I transfer doubles and consume doubles in Streaming
+					string typeExpected = col.TypeExpected.ToString();
+					if (typeParsed == "DateTime") typeParsed = "String";
+					if (typeParsed == typeExpected) continue;
+
+					this.ColumnsIdentified = false;
+					string msg1 = "rowParsed[" + col.Name + "][" + rowParsed[col.Name] + "]"
+						+ " is not a col.TypeExpected[" + col.TypeExpected.GetType() + "]"
+						+ ", column order changed, skipping quote and re-identifyingColumnsByReadingHeader";
+					Assembler.PopupException(msg1);
 				}
+				#endregion
 
 				try {
 					this.IncomingRowParsedDelivered(rowParsed);
-				} catch (Exception e) {
-					string msg = "[" + this.LastDataReceived.ToString("HH:mm:ss.fff ddd dd MMM yyyy") + "] Exception in Channdel: " + e.Message;
-					Assembler.PopupException(msg, e);
+				} catch (Exception ex) {
+					string msg = "[" + this.LastDataReceived.ToString("HH:mm:ss.fff ddd dd MMM yyyy") + "]";
+					Assembler.PopupException(msg, ex);
 				}
 			}
 		}
-		protected bool identifyColumnsByReadingHeader(XlReader xt) {
+		protected bool identifyColumnsByReadingHeader(XlReader reader) {
 			bool ret = false;
 			List<XlColumn> mandatoriesNotFound = new List<XlColumn>();
 			this.ColumnsByIndexFound.Clear();
@@ -82,10 +102,17 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 				col.IndexFound = -1;
 				if (col.Mandatory) mandatoriesNotFound.Add(col);
 			}
-			for (int col_serno = 0; col_serno < xt.ColumnsCount; col_serno++) {
-				xt.ReadValue();
-				if (xt.ValueType != XlBlockType.String) continue;
-				string columnNameToIdentify = xt.StringValue;
+			for (int col_serno = 0; col_serno < reader.ColumnsCount; col_serno++) {
+				try {
+					reader.ReadNext();
+				} catch (EndOfStreamException ex) {
+					string errmsg3 = "ARE_YOU_READING_17_COLUMN_WHEN_ONLY_16_WERE_TRANSMITTED?";
+					Assembler.PopupException(errmsg3, ex);
+					return ret;
+				}
+
+				if (reader.ValueType != XlBlockType.String) continue;
+				string columnNameToIdentify = reader.StringValue;
 				foreach (XlColumn col in this.Columns) {
 					if (col.Name != columnNameToIdentify) continue;
 					this.ColumnsByIndexFound.Add(col_serno, col.Clone());
@@ -93,61 +120,63 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					break;
 				}
 			}
-			if (mandatoriesNotFound.Count == 0) ret = true;
+			ret = mandatoriesNotFound.Count == 0;
+			if (ret == false) {
+				string columnsNotReceived = "";
+				foreach (XlColumn colNF in mandatoriesNotFound) {
+					columnsNotReceived += colNF.Name + ",";
+				}
+				columnsNotReceived = columnsNotReceived.TrimEnd(',');
+				string msg = "MANDATORY_COLUMNS_NOT_RECEIVED: [" + columnsNotReceived + "]";
+				Assembler.PopupException(msg);
+			}
 			return ret;
 		}
-		protected XlRowParsed parseRow(XlReader xt) {
-			XlRowParsed rowParsed = new XlRowParsed();
-			for (int col = 0; col < xt.ColumnsCount; col++) {
-				xt.ReadValue();
+		protected virtual XlRowParsed parseRow(XlReader received) {
+			XlRowParsed rowParsed = new XlRowParsed(this.DdeConsumerClassName);
+			for (int col = 0; col < received.ColumnsCount; col++) {
+				try {
+					received.ReadNext();
+				} catch (EndOfStreamException ex) {
+					string errmsg3 = "ARE_YOU_READING_3RD_ROW_WHEN_ONLY_2_WERE_TRANSMITTED?";
+					Assembler.PopupException(errmsg3);
+					return rowParsed;
+				}
 				if (this.ColumnsByIndexFound.ContainsKey(col) == false) continue;
+
 				XlColumn xlCol = this.ColumnsByIndexFound[col].Clone();
-				switch (xt.ValueType) {
+
+				if (received.ValueType != XlBlockType.Blank &&
+					received.ValueType != xlCol.TypeExpected) {
+					string errmsg3 = "GOT[" + received.ValueType + "] INSTEAD_OF TypeExpected[" + xlCol.TypeExpected + "]"
+						+ " FOR xlCol[" + xlCol.Name + "]"
+						+ " with StringValue[" + received.StringValue + "] FloatValue[" + received.FloatValue + "]"
+						;
+					//rowParsed.ErrorMessages.Add(errmsg3);
+					Assembler.PopupException(errmsg3);
+					//continue;
+				}
+
+				object valueReceived = null;
+				switch (received.ValueType) {
+					case XlBlockType.Blank:
+						string msg = "will be added as null";
+						break;
 					case XlBlockType.Float:
-						xlCol.Value = xt.FloatValue;
+						valueReceived = received.FloatValue;
 						break;
 					case XlBlockType.String:
-						switch (xlCol.TypeExpected) {
-							case XlBlockType.String:
-								if (string.IsNullOrEmpty(xlCol.ToDateTimeParseFormat) == false) {
-									try {
-										xlCol.Value = DateTime.ParseExact(xt.StringValue,
-											xlCol.ToDateTimeParseFormat, CultureInfo.InvariantCulture);
-									} catch (Exception ex) {
-										string errmsg = "can not convert StringValue[" + xt.StringValue + "]"
-											+ " to xlCol[" + xlCol.Name + "].TypeExpected[" + xlCol.TypeExpected + "]"
-											+ " // xt.ValueType[" + xt.ValueType + "] with StringValue[" + xt.StringValue + "] FloatValue[" + xt.FloatValue + "] ";
-										rowParsed.ErrorMessages.Add(errmsg);
-										xlCol.Value = DateTime.MinValue;
-										break;	// leave the cell blank but add it with the last command of the method
-									}
-								} else {
-									xlCol.Value = xt.StringValue;
-								}
-								break;
-							case XlBlockType.Float:
-								try {
-									xlCol.Value = (double) Convert.ToDouble(xt.StringValue);
-								} catch (Exception e) {
-									// crazy but for last="2000.8" xt.ValueType=String, xt.StringValue="", xt.FloatValue=2000.8
-									xlCol.Value = xt.FloatValue;
-								}
-								break;
-							default:
-								string errmsg2 = "no handler to convert StringValue[" + xt.StringValue + "]"
-									+ " to xlCol[" + xlCol.Name + "].TypeExpected[" + xlCol.TypeExpected + "]"
-									+ " // xt.ValueType[" + xt.ValueType + "] with StringValue[" + xt.StringValue + "] FloatValue[" + xt.FloatValue + "] ";
-								rowParsed.ErrorMessages.Add(errmsg2);
-								break;
-						}
+						valueReceived = received.StringValue;
 						break;
 					default:
-						string errmsg3 = "xlCol[" + xlCol.Name + "].TypeExpected[" + xlCol.TypeExpected + "]!=xt.ValueType[" + xt.ValueType + "]"
-							+ " with StringValue[" + xt.StringValue + "] FloatValue[" + xt.FloatValue + "]";
-						rowParsed.ErrorMessages.Add(errmsg3);
+						string errmsg3 = "NO_HANDLER_FOR [" + received.ValueType + "] FOR xlCol[" + xlCol.Name + "]."
+							+ " with StringValue[" + received.StringValue + "] FloatValue[" + received.FloatValue + "]"
+							;
+						//rowParsed.ErrorMessages.Add(errmsg3);
+						Assembler.PopupException(errmsg3);
 						break;
 				}
-				rowParsed.Add(xlCol.Name, xlCol.Value);
+				rowParsed.Add_popupIfDuplicate(xlCol.Name, valueReceived);
 			}
 			return rowParsed;
 		}

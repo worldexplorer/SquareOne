@@ -1,8 +1,9 @@
-﻿using Sq1.Core;
-using Sq1.Core.DataTypes;
+﻿using System.Collections.Generic;
 
-using Sq1.Adapters.Quik.Dde.XlDde;
+using Sq1.Core;
+using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
+using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {
 	public class DdeTableDepth : XlDdeTable {
@@ -13,7 +14,7 @@ namespace Sq1.Adapters.Quik.Dde {
 		ConcurrentDictionaryGeneric<double, double> levelTwoAsks { get { return base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks; } }
 		ConcurrentDictionaryGeneric<double, double> levelTwoBids { get { return base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids; } }
 
-		public DdeTableDepth(string topic, QuikStreaming quikStreaming, string symbol) : base(topic, quikStreaming) {
+		public DdeTableDepth(string topic, QuikStreaming quikStreaming, List<XlColumn> columns, string symbol) : base(topic, quikStreaming, columns) {
 			this.symbol = symbol;
 		}
 		protected override void IncomingTableBegun() {

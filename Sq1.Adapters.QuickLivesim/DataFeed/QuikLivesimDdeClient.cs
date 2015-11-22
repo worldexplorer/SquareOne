@@ -17,7 +17,7 @@ namespace Sq1.Adapters.QuikLivesim.DataFeed {
 		
 				Form					syncContext		{ get { return this.quikLivesimStreaming.Livesimulator.Executor.ChartShadow.ParentForm; } }
 				string					ddeService		{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeServiceName; } }
-				string					ddeTopicQuotes	{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeSubscriptionManager.TableQuotes.Topic; } }
+				string					ddeTopicQuotes	{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeBatchSubscriber.TableQuotes.Topic; } }
 
 		public QuikLivesimDdeClient(QuikLivesimStreaming quikLivesimStreaming) {
 			this.quikLivesimStreaming	= quikLivesimStreaming;
@@ -27,7 +27,7 @@ namespace Sq1.Adapters.QuikLivesim.DataFeed {
 			this.ddeTableGeneratorQuotes = new DdeTableGeneratorQuotes(this.ddeTopicQuotes, this.quikLivesimStreaming);
 		}
 
-		internal void SendQuote(QuoteGenerated quote) {
+		internal void DdeClientWillSendQuoteToDdeServer(QuoteGenerated quote) {
 			try {
 				ddeTableGeneratorQuotes.OutgoingTableBegin();
 				ddeTableGeneratorQuotes.OutgoingObjectBufferize_eachRow(quote);
@@ -36,7 +36,8 @@ namespace Sq1.Adapters.QuikLivesim.DataFeed {
 				byte[] bufferToSend = this.ddeTableGeneratorQuotes.GetXlDdeMessage();
 				
 			    IAsyncResult handle = this.DdeClient.BeginPoke("quote", bufferToSend, 0, null, this);
-			    this.DdeClient.EndPoke(handle);
+			    //SYNCHRONOUS_IS_EASIER_TO_DEBUG
+				this.DdeClient.EndPoke(handle);
 			} catch (ArgumentNullException ex) {
 				Assembler.PopupException("This is thrown when item or data is a null reference.", ex);
 			} catch (ArgumentException ex) {
