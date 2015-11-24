@@ -128,7 +128,7 @@ namespace Sq1.Core.Streaming {
 				}
 			}
 
-			lock (lockConsumersQuote) {
+			lock (this.lockConsumersQuote) {
 				this.bindConsumeQuote(quoteSernoEnrichedWithUnboundStreamingBar);
 			}
 			//this.RaiseOnQuoteSyncPushedToAllConsumers(quoteSernoEnrichedWithUnboundStreamingBar);
@@ -303,7 +303,7 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		public string SymbolScaleInterval { get { return this.Symbol + "_" + this.ScaleInterval; } }
-		public string ConsumersQuoteAsString { get { lock (lockConsumersQuote) {
+		public string ConsumersQuoteAsString { get { lock (this.lockConsumersQuote) {
 					string ret = "";
 					foreach (IStreamingConsumer consumer in this.consumersQuote) {
 						if (ret != "") ret += ", ";
@@ -321,20 +321,20 @@ namespace Sq1.Core.Streaming {
 				} } }
 		public override string ToString() { return this.SymbolScaleInterval + ":Quotes[" + this.ConsumersQuoteAsString + "],Bars[" + this.ConsumersBarAsString + "]"; }
 
-		public bool ConsumersQuoteContains(IStreamingConsumer consumer) { lock (lockConsumersQuote) { return this.consumersQuote.Contains(consumer); } }
-		public void ConsumersQuoteAdd(IStreamingConsumer consumer) { lock (lockConsumersQuote) {
+		public bool ConsumersQuoteContains(IStreamingConsumer consumer) { lock (this.lockConsumersQuote) { return this.consumersQuote.Contains(consumer); } }
+		public void ConsumersQuoteAdd(IStreamingConsumer consumer) { lock (this.lockConsumersQuote) {
 				this.consumersQuote.Add(consumer);
 				if (binderPerConsumer.ContainsKey(consumer)) return;
 				binderPerConsumer.Add(consumer, new StreamingLateBinder(this.StreamingBarFactoryUnattached, consumer));
 			} }
-		public void ConsumersQuoteRemove(IStreamingConsumer consumer) { lock (lockConsumersQuote) {
+		public void ConsumersQuoteRemove(IStreamingConsumer consumer) { lock (this.lockConsumersQuote) {
 				this.consumersQuote.Remove(consumer);
 				//if (earlyBinders.ContainsKey(consumer) && this.consumersBar.Contains(consumer) == false) {
 				if (this.consumersBar.Contains(consumer)) return;
 				if (binderPerConsumer.ContainsKey(consumer) == false) return;
 				binderPerConsumer.Remove(consumer);
 			} }
-		public int ConsumersQuoteCount { get { lock (lockConsumersQuote) { return this.consumersQuote.Count; } } }
+		public int ConsumersQuoteCount { get { lock (this.lockConsumersQuote) { return this.consumersQuote.Count; } } }
 
 		public bool ConsumersBarContains(IStreamingConsumer consumer) { lock (this.lockConsumersBar) { return this.consumersBar.Contains(consumer); } }
 		public void ConsumersBarAdd(IStreamingConsumer consumer) { lock (this.lockConsumersBar) {

@@ -7,19 +7,20 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Livesim {
 	public class LivesimQuoteBarConsumer : IStreamingConsumer {
-				Livesimulator livesimulator;
+		protected		Livesimulator Livesimulator;
+
 		public	LivesimQuoteBarConsumer(Livesimulator livesimulator) {
-			this.livesimulator = livesimulator;
+			this.Livesimulator = livesimulator;
 		}
-				Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { return livesimulator.BarsSimulating; } }
+				Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { return Livesimulator.BarsSimulating; } }
 		void IStreamingConsumer.UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
 		}
 		void IStreamingConsumer.UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
 		}
 		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Quote quote) {
-			bool guiHasTime = this.livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
-			ScriptExecutor executor = this.livesimulator.Executor;
-			ReporterPokeUnit pokeUnitNullUnsafe = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quote);
+			bool guiHasTime = this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;
+			ScriptExecutor executor = this.Livesimulator.Executor;
+			ReporterPokeUnit pokeUnitNullUnsafe = this.Livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quote);
 			if (pokeUnitNullUnsafe != null && pokeUnitNullUnsafe.PositionsOpenNow.Count > 0) {
 				executor.PerformanceAfterBacktest.BuildIncrementalOpenPositionsUpdatedDueToStreamingNewQuote_step2of3(executor.ExecutionDataSnapshot.PositionsOpenNow);
 				if (guiHasTime) {
@@ -44,10 +45,10 @@ namespace Sq1.Core.Livesim {
 			}
 			msig += "(" + barLastFormed.ToString() + ")";
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
-			ReporterPokeUnit pokeUnitNullUnsafe = this.livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
+			ReporterPokeUnit pokeUnitNullUnsafe = this.Livesimulator.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
 		}
 		public override string ToString() {
-			string ret = "CONSUMER_FOR_" + this.livesimulator.ToString();
+			string ret = "CONSUMER_FOR_" + this.Livesimulator.ToString();
 			return ret;
 		}
 	}
