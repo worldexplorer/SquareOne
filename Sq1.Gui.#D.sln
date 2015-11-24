@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sq1.Adapters.Quik", "Sq1.Ad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NDde", "NDde.2.01.0563.src\NDde\Source\NDde\NDde.csproj", "{D77772F9-3D3D-40BA-B95F-05C45878078F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sq1.Adapters.QuikLivesim", "Sq1.Adapters.QuickLivesim\Sq1.Adapters.QuikLivesim.csproj", "{8F890999-D27F-45E5-8C41-5D21DC229A57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sq1.Adapters.QuikLivesim", "Sq1.Adapters.QuikLivesim\Sq1.Adapters.QuikLivesim.csproj", "{8F890999-D27F-45E5-8C41-5D21DC229A57}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
