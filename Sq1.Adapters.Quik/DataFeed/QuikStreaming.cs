@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Newtonsoft.Json;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
@@ -136,8 +137,6 @@ namespace Sq1.Adapters.Quik {
 			ret = ret.TrimEnd(' ');
 			return ret;
 		}
-
-		
 		
 		public void TradeDeliveredDdeCallback(QuikTrade trade) {
 			string msg = "FINALLY_I_CAN_SET_SET_FILLED_STATE_FOR_AN_ORDER REDIRECT_PROCESSING_TO_QuikBroker_ASAP";

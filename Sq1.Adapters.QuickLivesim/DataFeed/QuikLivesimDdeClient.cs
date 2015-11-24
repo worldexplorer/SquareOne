@@ -2,12 +2,15 @@
 using System.ComponentModel;
 using System.Windows.Forms;
 
+using NDde;
 using NDde.Client;
+
 using Sq1.Core;
 using Sq1.Core.Backtesting;
-using NDde;
-using Sq1.Adapters.QuikLivesim.Dde;
 using Sq1.Core.DataTypes;
+
+using Sq1.Adapters.Quik;
+using Sq1.Adapters.QuikLivesim.Dde;
 
 namespace Sq1.Adapters.QuikLivesim.DataFeed {
 	public class QuikLivesimDdeClient : ISynchronizeInvoke {
@@ -15,7 +18,7 @@ namespace Sq1.Adapters.QuikLivesim.DataFeed {
 		public	DdeClient				DdeClient;
 				DdeTableGeneratorQuotes ddeTableGeneratorQuotes;
 		
-				Form					syncContext		{ get { return this.quikLivesimStreaming.Livesimulator.Executor.ChartShadow.ParentForm; } }
+				Form					syncContext		{ get { return this.quikLivesimStreaming.LivesimulatorRedundant.Executor.ChartShadow.ParentForm; } }
 				string					ddeService		{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeServiceName; } }
 				string					ddeTopicQuotes	{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeBatchSubscriber.TableQuotes.Topic; } }
 
@@ -29,13 +32,14 @@ namespace Sq1.Adapters.QuikLivesim.DataFeed {
 
 		internal void DdeClientWillSendQuoteToDdeServer(QuoteGenerated quote) {
 			try {
-				ddeTableGeneratorQuotes.OutgoingTableBegin();
-				ddeTableGeneratorQuotes.OutgoingObjectBufferize_eachRow(quote);
-				ddeTableGeneratorQuotes.OutgoingTableTerminate();
+				this.ddeTableGeneratorQuotes.OutgoingTableBegin();
+				this.ddeTableGeneratorQuotes.OutgoingObjectBufferize_eachRow(quote);
+				this.ddeTableGeneratorQuotes.OutgoingTableTerminate();
 
 				byte[] bufferToSend = this.ddeTableGeneratorQuotes.GetXlDdeMessage();
 				
-			    IAsyncResult handle = this.DdeClient.BeginPoke("quote", bufferToSend, 0, null, this);
+			    //IAsyncResult handle = this.DdeClient.BeginPoke("quote", bufferToSend, 0, new AsyncCallback(this.ddePokeAsyncCallback), this);
+			    IAsyncResult handle = this.DdeClient.BeginPoke("item-quote", bufferToSend, 0, null, this);
 			    //SYNCHRONOUS_IS_EASIER_TO_DEBUG
 				this.DdeClient.EndPoke(handle);
 			} catch (ArgumentNullException ex) {
@@ -78,6 +82,14 @@ namespace Sq1.Adapters.QuikLivesim.DataFeed {
 			get { return syncContext.InvokeRequired; }
 		}
 		#endregion
+
+		public override string ToString() {
+			return "QuikLivesimDdeClient[" + this.ddeService + "]";
+		}
+
+		void ddePokeAsyncCallback(IAsyncResult ar) {
+			int a = 1;
+		}
 
 	}
 }

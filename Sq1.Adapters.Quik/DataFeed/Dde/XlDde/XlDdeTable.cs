@@ -79,9 +79,9 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					if (typeParsed == typeExpected) continue;
 
 					this.ColumnsIdentified = false;
-					string msg1 = "rowParsed[" + col.Name + "][" + rowParsed[col.Name] + "]"
-						+ " is not a col.TypeExpected[" + col.TypeExpected.GetType() + "]"
-						+ ", column order changed, skipping quote and re-identifyingColumnsByReadingHeader";
+					string msg1 = "TYPE_MISTMATCH col.TypeExpected[" + col.TypeExpected + "]!=typeParsed[" + typeParsed + "]"
+						+ " rowParsed[" + col.Name + "][" + valueParsed + "]"
+						+ ", skipping quote and re-identifyingColumnsByReadingHeader";
 					Assembler.PopupException(msg1);
 				}
 				#endregion
@@ -111,8 +111,12 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					return ret;
 				}
 
-				if (reader.ValueType != XlBlockType.String) continue;
-				string columnNameToIdentify = reader.StringValue;
+				if (reader.BlockType != XlBlockType.String) {
+					string msg = "FIRST_HEADER_ROW_MUST_CONTAIN_ONLY_STRINGS";
+					Assembler.PopupException(msg);
+					continue;
+				}
+				string columnNameToIdentify = (string) reader.ValueJustRead;
 				foreach (XlColumn col in this.Columns) {
 					if (col.Name != columnNameToIdentify) continue;
 					this.ColumnsByIndexFound.Add(col_serno, col.Clone());
@@ -132,50 +136,38 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			}
 			return ret;
 		}
-		protected virtual XlRowParsed parseRow(XlReader received) {
+		protected virtual XlRowParsed parseRow(XlReader reader) {
 			XlRowParsed rowParsed = new XlRowParsed(this.DdeConsumerClassName);
-			for (int col = 0; col < received.ColumnsCount; col++) {
+			for (int col = 0; col < reader.ColumnsCount; col++) {
 				try {
-					received.ReadNext();
+					reader.ReadNext();
 				} catch (EndOfStreamException ex) {
 					string errmsg3 = "ARE_YOU_READING_3RD_ROW_WHEN_ONLY_2_WERE_TRANSMITTED?";
-					Assembler.PopupException(errmsg3);
+					Assembler.PopupException(errmsg3, ex);
 					return rowParsed;
 				}
 				if (this.ColumnsByIndexFound.ContainsKey(col) == false) continue;
 
 				XlColumn xlCol = this.ColumnsByIndexFound[col].Clone();
 
-				if (received.ValueType != XlBlockType.Blank &&
-					received.ValueType != xlCol.TypeExpected) {
-					string errmsg3 = "GOT[" + received.ValueType + "] INSTEAD_OF TypeExpected[" + xlCol.TypeExpected + "]"
-						+ " FOR xlCol[" + xlCol.Name + "]"
-						+ " with StringValue[" + received.StringValue + "] FloatValue[" + received.FloatValue + "]"
-						;
-					//rowParsed.ErrorMessages.Add(errmsg3);
+				
+				if (reader.BlockType == XlBlockType.Blank) {
+					rowParsed.Add_popupIfDuplicate(xlCol.Name, null);
+					continue;
+				}
+
+				if (reader.BlockType != xlCol.TypeExpected) {
+					string errmsg3 = "GOT[" + reader.BlockType + "] INSTEAD_OF TypeExpected[" + xlCol.TypeExpected + "] FOR xlCol[" + xlCol.Name + "]";
 					Assembler.PopupException(errmsg3);
 					//continue;
 				}
 
-				object valueReceived = null;
-				switch (received.ValueType) {
-					case XlBlockType.Blank:
-						string msg = "will be added as null";
-						break;
-					case XlBlockType.Float:
-						valueReceived = received.FloatValue;
-						break;
-					case XlBlockType.String:
-						valueReceived = received.StringValue;
-						break;
-					default:
-						string errmsg3 = "NO_HANDLER_FOR [" + received.ValueType + "] FOR xlCol[" + xlCol.Name + "]."
-							+ " with StringValue[" + received.StringValue + "] FloatValue[" + received.FloatValue + "]"
-							;
-						//rowParsed.ErrorMessages.Add(errmsg3);
-						Assembler.PopupException(errmsg3);
-						break;
+				object valueReceived = reader.ValueJustRead;
+				if (valueReceived == null) {
+					string errmsg3 = "MUST_NOT_BE_NULL reader.ValueJustRead[" + reader.ValueJustRead + "] BlockType[" + reader.BlockType + "] FOR xlCol[" + xlCol.Name + "]";
+					Assembler.PopupException(errmsg3);
 				}
+
 				rowParsed.Add_popupIfDuplicate(xlCol.Name, valueReceived);
 			}
 			return rowParsed;

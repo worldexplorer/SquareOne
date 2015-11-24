@@ -15,31 +15,6 @@ namespace Sq1.Adapters.Quik.Dde {
 
 		public DdeTableQuotes(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns) {}
 
-		protected override XlRowParsed parseRow(XlReader reader) {
-			XlRowParsed rowParsed = base.parseRow(reader);
-			rowParsed["ServerTime"] = DateTime.MinValue;
-
-			string dateReceived = rowParsed.GetString("date", "QUOTE_DATE_NOT_DELIVERED_DDE");
-			string timeReceived = rowParsed.GetString("time", "QUOTE_TIME_NOT_DELIVERED_DDE");
-			string dateTimeReceived = dateReceived + " " + timeReceived;
-			if (dateTimeReceived.Contains("NOT_DELIVERED_DDE")) {
-				return rowParsed;
-			}
-
-			string dateFormat = base.ColumnsLookup["date"].ToDateTimeParseFormat;
-			string timeFormat = base.ColumnsLookup["time"].ToDateTimeParseFormat;
-			string dateTimeFormat = dateFormat + " " + timeFormat;
-
-
-			try {
-			    rowParsed["ServerTime"] = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);
-			} catch (Exception ex) {
-			    string errmsg = "TROWN DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
-			    rowParsed.ErrorMessages.Add(errmsg);
-			}
-
-			return rowParsed;
-		}
 		protected override void IncomingRowParsedDelivered(XlRowParsed row) {
 			//if (rowParsed["SHORTNAME"] == "LKOH") {
 			//	int a = 1;
@@ -77,17 +52,43 @@ namespace Sq1.Adapters.Quik.Dde {
 
 			double sizeParsed			= row.GetDouble("qty"			, double.NaN);
 			if (lastQuoteDateTimeForVolume != quikQuote.ServerTime) {
-				lastQuoteDateTimeForVolume = quikQuote.ServerTime;
+				lastQuoteDateTimeForVolume  = quikQuote.ServerTime;
 				quikQuote.Size = sizeParsed;
 			} else {
 				string msg = "SHOULD_I_DELIVER_THE_DUPLIATE_QUOTE?";
-				Assembler.PopupException(msg);
+				//Assembler.PopupException(msg, null, false);
+				return;
 			}
 			//if (lastQuoteSizeForVolume != sizeParsed) {
 			//	lastQuoteSizeForVolume = sizeParsed;
 			//	quote.Size = sizeParsed;
 			//}
+
+			this.reconstructServerDate(row);
+
 			base.QuikStreaming.PushQuoteReceived(quikQuote);
+		}
+		void reconstructServerDate(XlRowParsed rowParsed) {
+			rowParsed["ServerTime"] = DateTime.MinValue;
+
+			string dateReceived = rowParsed.GetString("date", "QUOTE_DATE_NOT_DELIVERED_DDE");
+			string timeReceived = rowParsed.GetString("time", "QUOTE_TIME_NOT_DELIVERED_DDE");
+			string dateTimeReceived = dateReceived + " " + timeReceived;
+			if (dateTimeReceived.Contains("NOT_DELIVERED_DDE")) {
+				return;
+			}
+
+			string dateFormat = base.ColumnsLookup["date"].ToDateTimeParseFormat;
+			string timeFormat = base.ColumnsLookup["time"].ToDateTimeParseFormat;
+			string dateTimeFormat = dateFormat + " " + timeFormat;
+
+
+			try {
+			    rowParsed["ServerTime"] = DateTime.ParseExact(dateTimeReceived, dateTimeFormat, CultureInfo.InvariantCulture);
+			} catch (Exception ex) {
+			    string errmsg = "TROWN DateTime.ParseExact(" + dateTimeReceived + ", " + dateTimeFormat + "): " + ex.Message;
+			    rowParsed.ErrorMessages.Add(errmsg);
+			}
 		}
 	}
 }

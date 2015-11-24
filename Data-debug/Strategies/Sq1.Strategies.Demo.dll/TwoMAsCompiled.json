@@ -63,7 +63,7 @@
       ],
       "BacktestOnTriggeringYesWhenNotSubscribed": false,
       "BacktestOnRestart": false,
-      "BacktestOnSelectorsChange": true,
+      "BacktestOnSelectorsChange": false,
       "BacktestOnDataSourceSaved": false,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
@@ -110,7 +110,7 @@
         "RecentBars": 510,
         "RecentTimeunits": 0
       },
-      "IsStreamingTriggeringScript": true,
+      "IsStreamingTriggeringScript": false,
       "ShowRangeBar": false,
       "IsStreaming": true,
       "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=29,MAslow.Period=16)",
@@ -362,7 +362,7 @@
   },
   "LivesimStreamingSettings": {
     "$type": "Sq1.Core.Livesim.LivesimStreamingSettings, Sq1.Core",
-    "DelayBetweenSerialQuotesMin": 5000,
+    "DelayBetweenSerialQuotesMin": 500,
     "DelayBetweenSerialQuotesMax": 0,
     "DelayBetweenSerialQuotesEnabled": true,
     "OutOfOrderQuoteGenerationHappensOncePerQuoteMin": 0,

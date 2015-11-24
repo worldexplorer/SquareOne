@@ -7,46 +7,46 @@ namespace Sq1.Adapters.Quik.Dde {
 	public class TableDefinitions {
 		public static List<XlColumn> XlColumnsForTable_Quotes { get {
 			return  new List<XlColumn>() {
-				new XlColumn() { Name = "SHORTNAME",	TypeExpected = XlBlockType.String,	Mandatory = true },
-				new XlColumn() { Name = "CLASS_CODE",	TypeExpected = XlBlockType.String,	Mandatory = true },
-				new XlColumn() { Name = "bid",			TypeExpected = XlBlockType.Float,	Mandatory = true },
-				new XlColumn() { Name = "biddepth",		TypeExpected = XlBlockType.Float },
-				new XlColumn() { Name = "offer",		TypeExpected = XlBlockType.Float,	Mandatory = true },
-				new XlColumn() { Name = "offerdepth",	TypeExpected = XlBlockType.Float },
-				new XlColumn() { Name = "last",			TypeExpected = XlBlockType.Float,	Mandatory = false },
-				//new XlColumn() { Name = "realvmprice",	TypeExpected = XlTable.BlockType.String },
+				new XlColumn(XlBlockType.String,	"SHORTNAME",	true),
+				new XlColumn(XlBlockType.String,	"CLASS_CODE",	true),
+				new XlColumn(XlBlockType.Float,		"bid",			true),
+				new XlColumn(XlBlockType.Float,		"biddepth"),
+				new XlColumn(XlBlockType.Float,		"offer",		true),
+				new XlColumn(XlBlockType.Float,		"offerdepth"),
+				new XlColumn(XlBlockType.Float,		"last",			true),
+				//new XlColumn(, "realvmprice",	TypeExpected = XlTable.BlockType.String },
 				//new XlColumn() { Names = new List<string>() {"time", "changetime"}, Type = XlTable.BlockType.String, Format = "h:mm:sstt" },
-				new XlColumn() { Name = "date",			TypeExpected = XlBlockType.String,	Mandatory = true,	ToDateTimeParseFormat = "dd.MM.yyyy" },
-				new XlColumn() { Name = "time",			TypeExpected = XlBlockType.String,	Mandatory = true,	ToDateTimeParseFormat = "HH:mm:ss" },
-				new XlColumn() { Name = "changetime",	TypeExpected = XlBlockType.String,	Mandatory = false,	ToDateTimeParseFormat = "h:mm:sstt" },
-				new XlColumn() { Name = "selldepo",		TypeExpected = XlBlockType.Float },
-				new XlColumn() { Name = "buydepo",		TypeExpected = XlBlockType.Float },
-				new XlColumn() { Name = "qty",			TypeExpected = XlBlockType.Float,	Mandatory = true },
-				new XlColumn() { Name = "pricemin",		TypeExpected = XlBlockType.Float },
-				new XlColumn() { Name = "pricemax",		TypeExpected = XlBlockType.Float },
-				new XlColumn() { Name = "stepprice",	TypeExpected = XlBlockType.Float },
+				new XlColumn(XlBlockType.String,	"date",			true)	{ ToDateTimeParseFormat = "dd.MM.yyyy" },
+				new XlColumn(XlBlockType.String,	"time",			true)	{ ToDateTimeParseFormat = "HH:mm:ss" },
+				new XlColumn(XlBlockType.String,	"changetime")			{ ToDateTimeParseFormat = "h:mm:sstt" },
+				new XlColumn(XlBlockType.Float,		"selldepo"),
+				new XlColumn(XlBlockType.Float,		"buydepo"),
+				new XlColumn(XlBlockType.Float,		"qty"),
+				new XlColumn(XlBlockType.Float,		"pricemin"),
+				new XlColumn(XlBlockType.Float,		"pricemax"),
+				new XlColumn(XlBlockType.Float,		"stepprice"),
 			};
 		} }
 
 		public static List<XlColumn> XlColumnsForTable_Trades { get {
 			return  new List<XlColumn>() {
-				new XlColumn() { Name = "TRADEDATE",	TypeExpected = XlBlockType.String,	ToDateTimeParseFormat = "h:mm:sstt", Mandatory = true },
-				new XlColumn() { Name = "TRADETIME",	TypeExpected = XlBlockType.String,	ToDateTimeParseFormat = "h:mm:sstt", Mandatory = true },
-				new XlColumn() { Name = "SECCODE",		TypeExpected = XlBlockType.String,	Mandatory = true },
-				new XlColumn() { Name = "CLASSCODE",	TypeExpected = XlBlockType.String,	Mandatory = true },
-				new XlColumn() { Name = "PRICE",		TypeExpected = XlBlockType.Float,	Mandatory = true },
-				new XlColumn() { Name = "QTY",			TypeExpected = XlBlockType.Float,	Mandatory = true },
-				new XlColumn() { Name = "BUYSELL",		TypeExpected = XlBlockType.String,	Mandatory = true },
-				new XlColumn() { Name = "BUY",			TypeExpected = XlBlockType.Float,	Mandatory = true },
-				new XlColumn() { Name = "SELL",			TypeExpected = XlBlockType.Float,	Mandatory = true },
+				new XlColumn(XlBlockType.String,	"TRADEDATE")	{ ToDateTimeParseFormat = "h:mm:sstt" },
+				new XlColumn(XlBlockType.String,	"TRADETIME")	{ ToDateTimeParseFormat = "h:mm:sstt" },
+				new XlColumn(XlBlockType.Float,		"SECCODE"),
+				new XlColumn(XlBlockType.Float,		"CLASSCODE"),
+				new XlColumn(XlBlockType.Float,		"PRICE"),
+				new XlColumn(XlBlockType.Float,		"QTY"),
+				new XlColumn(XlBlockType.Float,		"BUYSELL"),
+				new XlColumn(XlBlockType.Float,		"BUY"),
+				new XlColumn(XlBlockType.Float,		"SELL"),
 			};
 		} }
 
 		public static List<XlColumn> XlColumnsForTable_DepthOfMarketPerSymbol { get {
 			return  new List<XlColumn>() {
-				new XlColumn() { Name = "SELL_VOLUME",	TypeExpected = XlBlockType.Float,	Mandatory = true },
-				new XlColumn() { Name = "PRICE",		TypeExpected = XlBlockType.Float,	Mandatory = true },
-				new XlColumn() { Name = "BUY_VOLUME",	TypeExpected = XlBlockType.Float,	Mandatory = true },
+				new XlColumn(XlBlockType.Float,		"SELL_VOLUME",	true),
+				new XlColumn(XlBlockType.Float,		"PRICE",		true),
+				new XlColumn(XlBlockType.Float,		"BUY_VOLUME",	true),
 			};
 		} }
 

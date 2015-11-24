@@ -24,7 +24,7 @@ namespace Sq1.Adapters.QuikLivesim.Dde {
 			}
 			QuoteGenerated quote = quoteAsObject as QuoteGenerated;
 			if (quote == null) {
-				Assembler.PopupException("MUST_BE_A_QUOTE [" + quoteAsObject.GetType() + "]" + msig);
+				Assembler.PopupException("MUST_BE_A_QuoteGenerated [" + quoteAsObject.GetType() + "]" + msig);
 				return;
 			}
 			base.XlWriter.Put("SHORTNAME",	quote.Symbol);

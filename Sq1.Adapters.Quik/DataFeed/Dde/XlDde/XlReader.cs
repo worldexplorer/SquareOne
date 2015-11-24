@@ -1,39 +1,40 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Sq1.Core;
 
 namespace Sq1.Adapters.Quik.Dde.XlDde {
-	public sealed class XlReader : IDisposable {
+	public class XlReader : IDisposable {
 		const int codepage = 1251;
-		const int wsize = 2;
-		const int fsize = 8;
-		const int hsize = wsize * 2;
+		const int bytes2 = 2;
+		const int bytes8 = 8;
+		const int bytes16 = bytes2 * 2;
 		
-		byte[]			byteArrayReceived;
-		MemoryStream	ms;
-		BinaryReader	br;
-		int				blocksize;
+		byte[]				byteArrayReceived;
+		MemoryStream		ms;
+		BinaryReader		br;
+		int					blocksize;
+
+		public int			RowsCount			{ get; private set; }
+		public int			ColumnsCount		{ get; private set; }
+
+		public bool			BlockIdentified		{ get; private set; }
+		public bool			BlockBad			{ get; private set; }
+		public XlBlockType	BlockType			{ get; private set; }
 		
-		public int			RowsCount		{ get; private set; }
-		public int			ColumnsCount	{ get; private set; }
-		public XlBlockType	ValueType		{ get; private set; }
-		public double		FloatValue		{ get; private set; }
-		public string		StringValue		{ get; private set; }
-		public ushort		WValue			{ get; private set; }
+		public object		ValueJustRead		{ get; private set; }
 		
 		public XlReader(byte[] byteArrayReceived) {
 			this.byteArrayReceived = byteArrayReceived;
 			this.ms = new MemoryStream(byteArrayReceived);
 			this.br = new BinaryReader(this.ms, Encoding.ASCII);
-			if (this.byteArrayReceived.Length < wsize * 4) this.SetBadDataStatus();
 
-			XlBlockType messageType = (XlBlockType) br.ReadUInt16();
+			if (this.byteArrayReceived.Length < bytes2 * 4) this.SetBadDataStatus();
+
+			XlBlockType messageType = (XlBlockType) br.ReadUInt16();	// [2]
 			if (messageType != XlBlockType.Table) this.SetBadDataStatus();
-			long positionAfterMessageType = this.ms.Position;	// this.ms.Position=2 now
 
-			//this.ms.Seek(wsize, SeekOrigin.Current);			// add two dummy bytes?...
-			UInt16 twoDummyBytes = (UInt16) br.ReadUInt16();
-			long positionMagicWsize = this.ms.Position;			// this.ms.Position=4 now
+			UInt16 twoDummyBytes = (UInt16) br.ReadUInt16();			// [4] add two dummy bytes?...
 			
 			this.RowsCount		= br.ReadUInt16();
 			if (this.RowsCount == 0) {
@@ -41,43 +42,43 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 				string breakpoint = "here";
 			}
 			this.ColumnsCount	= br.ReadUInt16();
-			this.ValueType		= XlBlockType.Unknown;
+			this.BlockIdentified = false;
 		}
 		void SetBadDataStatus() {
-			this.ValueType = XlBlockType.Bad;
+			this.BlockBad = true;
 			this.blocksize = 1;
 		}
 		public void ReadNext() {
-			this.FloatValue		= float.NaN;
-			this.StringValue	= null;
-			this.WValue			= ushort.MinValue;
-			if (this.ms.Position == 8) {
-				int a = 1;
-			}
-			if (this.ValueType == XlBlockType.Unknown) {
-				if (this.ms.Position + hsize > this.byteArrayReceived.Length) {
-					this.SetBadDataStatus();
+			this.ValueJustRead = null;
+			if (this.BlockIdentified == false) {
+				if (this.ms.Position + bytes16 > this.byteArrayReceived.Length) {
 					throw new EndOfStreamException();
-				}  else {
-					this.ValueType = (XlBlockType)this.br.ReadUInt16();	//Position=8
-					this.blocksize = this.br.ReadUInt16();				//Position=10
-
-					if (this.ms.Position + this.blocksize > this.byteArrayReceived.Length) {
-						this.SetBadDataStatus();		//Position=193 while reading: magically beoynd buffer size
-						throw new EndOfStreamException();
-					}
+				}
+				this.BlockType = (XlBlockType)this.br.ReadUInt16();	//Position=8
+				this.BlockBad = false;
+				this.blocksize = this.br.ReadUInt16();				//Position=10
+				if (this.ms.Position + this.blocksize > this.byteArrayReceived.Length) {
+					throw new EndOfStreamException();
 				}
 			}
 			if (this.blocksize <= 0) {
-				this.ValueType = XlBlockType.Unknown;
+				this.BlockIdentified = false;
 				this.ReadNext();
 				return;
 			}
-			switch (this.ValueType) {
+
+			if (this.BlockBad) {
+				string msg1 = "REFACTOR_BLOCK_BAD";
+				Assembler.PopupException(msg1);
+				return;
+			}
+
+			switch (this.BlockType) {
 				case XlBlockType.Float:
-					this.blocksize -= fsize;
+					this.blocksize -= bytes8;
 					if (this.blocksize >= 0) {
-						this.FloatValue = br.ReadDouble();		// br.Read() cant read (float)s
+						this.BlockIdentified = true;
+						this.ValueJustRead = br.ReadDouble();		// br.Read() cant read (float)s
 					} else {
 						this.SetBadDataStatus();
 					}
@@ -87,7 +88,8 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					int strlen = ms.ReadByte();
 					this.blocksize -= strlen + 1;
 					if (this.blocksize >= 0) {
-						this.StringValue = Encoding.GetEncoding(codepage).GetString(this.byteArrayReceived, (int)this.ms.Position, strlen);
+						this.BlockIdentified = true;
+						this.ValueJustRead = Encoding.GetEncoding(codepage).GetString(this.byteArrayReceived, (int)this.ms.Position, strlen);
 						br.BaseStream.Seek(strlen, SeekOrigin.Current);
 					} else {
 						this.SetBadDataStatus();
@@ -96,9 +98,10 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					
 				case XlBlockType.Bool:
 				case XlBlockType.Int:
-					this.blocksize -= wsize;
+					this.blocksize -= bytes2;
 					if (this.blocksize >= 0) {
-						this.WValue = br.ReadUInt16();
+						this.BlockIdentified = true;
+						this.ValueJustRead = br.ReadUInt16();
 					} else {
 						this.SetBadDataStatus();
 					}
@@ -107,9 +110,11 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 				case XlBlockType.Error:
 				case XlBlockType.Blank:
 				case XlBlockType.Skip:
-					this.blocksize -= wsize;
+					this.blocksize -= bytes2;
 					if (this.blocksize >= 0) {
-						this.WValue = br.ReadUInt16();
+						this.BlockIdentified = true;
+						UInt16 toBeIgnored = br.ReadUInt16();
+						this.ValueJustRead = null;
 					} else {
 						this.SetBadDataStatus();
 					}
@@ -117,6 +122,8 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					
 				default:
 					this.SetBadDataStatus();
+					string msg1 = "ADD_NEW_READER_HANDLER_FOR_NEW_TYPE[" + this.BlockType + "]";
+					Assembler.PopupException(msg1);
 					break;
 			}	// switch
 		}

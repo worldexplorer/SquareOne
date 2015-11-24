@@ -10,7 +10,6 @@ namespace Sq1.Adapters.QuikLivesim {
 	[SkipInstantiationAt(Startup = true)]		// I'm an internally-used proxy that must not appear in DataSourceEditor's list of available StreamingAdapters
 	public class QuikStreamingPuppet : QuikStreaming {
 		string ddeTopicsPrefix;
-		private string p;
 
 		public QuikStreamingPuppet(string ddeTopicsPrefix, DataDistributor dataDistributor) : base() {
 			this.ddeTopicsPrefix	= ddeTopicsPrefix;

@@ -87,6 +87,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Sq1.Adapters.Quik\Sq1.Adapters.Quik.csproj">
+      <Project>{32CE7489-6617-4157-83A6-2CFDF054CE77}</Project>
+      <Name>Sq1.Adapters.Quik</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
       <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
       <Name>Sq1.Core</Name>

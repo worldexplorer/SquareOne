@@ -9,12 +9,18 @@
 		public	bool			Mandatory;
 		public	bool			UpperLowerCaseSensitive;
 
-		public XlColumn() {
-			TypeExpected			= XlBlockType.Unknown;
+		XlColumn() {
 			IndexFound				= -1;
 			Mandatory				= false;
 			UpperLowerCaseSensitive	= false;
 		}
+
+		public XlColumn(XlBlockType typeExpected, string name, bool mandatory = false) : this() {
+			TypeExpected = typeExpected;
+			Name = name;
+			Mandatory = mandatory;
+		}
+
 		public XlColumn Clone() {
 			XlColumn ret = (XlColumn)this.MemberwiseClone();
 			ret.Value = null;

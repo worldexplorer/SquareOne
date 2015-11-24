@@ -10,7 +10,5 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		Int		= 0x06,
 		Skip	= 0x07,
 		Table	= 0x10,
-		Unknown = 0x10000,
-		Bad		= 0x10001
 	}
 }

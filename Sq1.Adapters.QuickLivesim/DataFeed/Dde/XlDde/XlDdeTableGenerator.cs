@@ -8,16 +8,16 @@ using Sq1.Core;
 
 namespace Sq1.Adapters.QuikLiveism.Dde {
 	public abstract class XlDdeTableGenerator  {
-		protected abstract	string			DdeGeneratorClassName	{ get; }
-		public				DateTime		LastDataReceived		{ get; protected set; }
+		protected abstract	string				DdeGeneratorClassName		{ get; }
+		public		DateTime					LastDataReceived			{ get; protected set; }
 
-		public		string					Topic					{ get; private set; }
-		protected	QuikLivesimStreaming	QuikLivesimStreaming	{ get; private set; }
+		public		string							Topic					{ get; private set; }
+		protected	QuikLivesimStreaming			QuikLivesimStreaming	{ get; private set; }
 
-		public		List<XlColumn>					Columns				{ get; private set; }
-		public		Dictionary<string, XlColumn>	ColumnsLookup		{ get; private set; }
+		public		List<XlColumn>					Columns					{ get; private set; }
+		public		Dictionary<string, XlColumn>	ColumnsLookup			{ get; private set; }
 
-		protected	XlWriter				XlWriter				{ get; private set; }
+		protected	XlWriter						XlWriter				{ get; private set; }
 
 		protected XlDdeTableGenerator(string topic, QuikLivesimStreaming quikLivesimStreaming) {
 			this.Topic = topic;
