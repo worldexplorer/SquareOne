@@ -113,5 +113,15 @@ namespace Sq1.Core.Backtesting {
 			sb.Append("]");
 			return sb.ToString();
 		}
+
+		public static QuoteGenerated SafeUpcast(Quote quote) {
+			QuoteGenerated upcasted = quote as QuoteGenerated;
+			if (upcasted == null) {
+				string msg = "Should be of a type Sq1.Core.Backtesting.QuoteGenerated instead of Sq1.Core.DataTypes.Quote: "
+					+ quote;
+				throw new Exception(msg);
+			}
+			return upcasted;
+		}
 	}
 }

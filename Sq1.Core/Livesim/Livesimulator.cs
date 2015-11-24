@@ -40,6 +40,19 @@ namespace Sq1.Core.Livesim {
 			this.livesimQuoteBarConsumer	= new LivesimQuoteBarConsumer(this);
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
 		}
+		public void ReplaceConsumerAndResubscribe_forLivesimStreamingChildren(LivesimQuoteBarConsumer consumerProvidedByStreaming) {
+		    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
+		    distr.ConsumerQuoteUnsubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+		    distr.ConsumerBarUnsubscribe(  this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
+			if (distr.DistributionChannels.Count != 0) {
+				string msg = "SOME_SUBSCRIBERS_LEFT__STATIONARY_LIVESIM_MUST_BE_FULLY_UNSUBSCRIBED_BY_NOW__YOU'LL_GET_SOME_ARTIFACTS_INSTEAD_OF_QuikDdeLivesim_REDIRECT";
+				Assembler.PopupException(msg);
+			}
+
+			this.livesimQuoteBarConsumer	= consumerProvidedByStreaming;
+		    distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
+		    distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
+		}
 		public void RedirectDataSourceToUserLivesimImplementations(LivesimStreaming liveStreamingChild, LivesimBroker livesimBrokerChild) {
 			string msig = " //RedirectDataSourceToUserLivesimImplementations(" + liveStreamingChild + ", " + livesimBrokerChild + ")";
 			if (	this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	== liveStreamingChild
@@ -336,5 +349,6 @@ namespace Sq1.Core.Livesim {
 		//    // ALREADY_SET_IN_BACKTESTER_BASE this.IsDisposed = true;
 		//}
 		//public bool IsDisposed { get; private set; }
+
 	}
 }

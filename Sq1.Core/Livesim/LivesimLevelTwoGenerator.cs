@@ -5,7 +5,7 @@ using Sq1.Core.Support;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
-	class LivesimLevelTwoGenerator {
+	public class LivesimLevelTwoGenerator {
 		LivesimStreaming	livesimStreaming;
 		SymbolInfo			symbolInfo;
 

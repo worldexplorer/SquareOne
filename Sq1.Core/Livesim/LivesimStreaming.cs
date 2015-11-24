@@ -15,9 +15,17 @@ namespace Sq1.Core.Livesim {
 		public		ManualResetEvent			Unpaused			{ get; private set; }
 					ChartShadow					chartShadow;
 					LivesimDataSource			livesimDataSource;
-					LivesimStreamingSettings	settings			{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
-					LivesimLevelTwoGenerator	level2gen;
-		public		Livesimulator				Livesimulator;		// used by QuikLivesimStreaming to instantiate QuikStreaming with a fake DataSource (LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor)
+					ScriptExecutor				executor			{ get { return this.livesimDataSource.Executor; } }
+		public		Livesimulator				Livesimulator		{ get { return this.livesimDataSource.Executor.Livesimulator; } }
+		internal	LivesimStreamingSettings	LivesimSettings		{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
+
+		//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
+		protected	LivesimBroker				LivesimBroker		{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe; } }
+		protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap	{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe.DataSnapshot; } }
+
+		protected	LivesimLevelTwoGenerator	Level2generator;
+		public		Livesimulator				LivesimulatorRedundant;		// used by QuikLivesimStreaming to instantiate QuikStreaming with a fake DataSource (LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor)
+		protected	LivesimSpoiler				LivesimSpoiler;
 
 		public LivesimStreaming(LivesimDataSource livesimDataSource) : base() {
 			if (livesimDataSource == null) {
@@ -29,7 +37,8 @@ namespace Sq1.Core.Livesim {
 			base.QuotePumpSeparatePushingThreadEnabled = false;
 			this.Unpaused = new ManualResetEvent(true);
 			this.livesimDataSource = livesimDataSource;
-			this.level2gen = new LivesimLevelTwoGenerator(this);
+			this.Level2generator = new LivesimLevelTwoGenerator(this);
+			this.LivesimSpoiler = new LivesimSpoiler(this);
 		}
 
 		protected LivesimStreaming() : base() {
@@ -42,19 +51,13 @@ namespace Sq1.Core.Livesim {
 		public void Initialize(ChartShadow chartShadow) {
 			this.chartShadow = chartShadow;
 			double stepPrice = this.chartShadow.Bars.SymbolInfo.PriceStepFromDecimal;
-			double stepSize = this.chartShadow.Bars.SymbolInfo.VolumeStepFromDecimal;
+			double stepSize  = this.chartShadow.Bars.SymbolInfo.VolumeStepFromDecimal;
 			SymbolInfo symbolInfo = this.chartShadow.Executor.Bars.SymbolInfo;	//LivesimLevelTwoGenerator needs to align price and volume to Levels
 			int howMany = chartShadow.Executor.Strategy.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
-			this.level2gen.Initialize(symbolInfo, howMany, stepPrice, stepSize);
+			this.Level2generator.Initialize(symbolInfo, howMany, stepPrice, stepSize);
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
-			this.level2gen.GenerateAndStoreInStreamingSnap(quote);
-
-			if (quote.IamInjectedToFillPendingAlerts) {
-				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
-			}
-
 			bool isUnpaused = this.Unpaused.WaitOne(0);
 			if (isUnpaused == false) {
 				string msg = "LIVESTREAMING_CAUGHT_PAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
@@ -64,20 +67,13 @@ namespace Sq1.Core.Livesim {
 				//Assembler.PopupException(msg2, null, false);
 			}
 
-			ScriptExecutor executor = this.livesimDataSource.Executor;
-			int delay = 0;
-			if (this.settings.DelayBetweenSerialQuotesEnabled) {
-				delay = settings.DelayBetweenSerialQuotesMin;
-				if (settings.DelayBetweenSerialQuotesMax > 0) {
-					int range = Math.Abs(settings.DelayBetweenSerialQuotesMax - settings.DelayBetweenSerialQuotesMin);
-					double rnd0to1 = new Random().NextDouble();
-					int rangePart = (int)Math.Round(range * rnd0to1);
-					delay += rangePart;
-				}
+			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
+			this.LivesimSpoiler.Spoil_priorTo_PushQuoteGenerated();
+
+			if (quote.IamInjectedToFillPendingAlerts) {
+				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
 			}
-			if (delay > 0) {
-				executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
-			}
+			this.Level2generator.GenerateAndStoreInStreamingSnap(quote);
 			base.PushQuoteGenerated(quote);
 	
 			if (this.chartShadow == null) {
@@ -101,25 +97,21 @@ namespace Sq1.Core.Livesim {
 			//ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
 			//if (snap.AlertsPending.Count > 0) {
 			//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
-			LivesimBroker liveBro = this.livesimDataSource.BrokerAsLivesimNullUnsafe;
-			LivesimBrokerDataSnapshot snap = liveBro.DataSnapshot;
-			AlertList notYetScheduled = snap.AlertsNotYetScheduledForDelayedFillBy(quote);
+			AlertList notYetScheduled = this.LivesimBrokerSnap.AlertsNotYetScheduledForDelayedFillBy(quote);
 			if (notYetScheduled.Count > 0) {
 				if (quote.ParentBarStreaming != null) {
 					string msg = "I_MUST_HAVE_IT_UNATTACHED_HERE";
 					//Assembler.PopupException(msg);
 				}
-				this.livesimDataSource.BrokerAsLivesimNullUnsafe.ConsumeQuoteOfStreamingBarToFillPending(quote, notYetScheduled);
+				this.LivesimBroker.ConsumeQuoteOfStreamingBarToFillPending(quote, notYetScheduled);
 			} else {
 				string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
 			}
 
-			if (delay > 0) {
-				//Application.DoEvents();
-				Thread.Sleep(delay);
-			}
-			executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
+			this.LivesimSpoiler.Spoil_after_PushQuoteGenerated();
+			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 		}
+
 		#region DISABLING_SOLIDIFIER
 		public override void Initialize(DataSource dataSource) {
 			base.InitializeFromDataSource(dataSource);
@@ -149,7 +141,7 @@ namespace Sq1.Core.Livesim {
 		public bool IsDisposed { get; private set; }
 
 		public virtual void UpstreamConnect_LivesimStarting(Livesimulator livesimulator) {
-			this.Livesimulator = livesimulator;
+			this.LivesimulatorRedundant = livesimulator;
 		}
 	}
 }
