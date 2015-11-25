@@ -5,7 +5,7 @@ using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Livesim {
 	public class LivesimDataSource : BacktestDataSource, IDisposable {
-		public ScriptExecutor Executor;
+		public ScriptExecutor		Executor						{ get; private set; }
 
 		public LivesimStreaming		StreamingAsLivesimNullUnsafe	{ get { return base.StreamingAdapter	as LivesimStreaming; } }
 		public LivesimBroker		BrokerAsLivesimNullUnsafe		{ get { return base.BrokerAdapter		as LivesimBroker; } }
@@ -21,6 +21,10 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public void SubstituteAdapters(LivesimStreaming liveStreamingChild, LivesimBroker liveBrokerChild) {
+			//TOO_MANY_ALREADY_DISPOSED_EXCEPTIONS SEEMS_TO_BE_SAME_DUMMY_ACROSS_MANY_DATASOURCES_POINTING_TO_IT
+			//this.StreamingAsLivesimNullUnsafe.Dispose();
+			//this.   BrokerAsLivesimNullUnsafe.Dispose();
+
 			base.StreamingAdapter	= liveStreamingChild;
 			base.BrokerAdapter		= liveBrokerChild;
 		}

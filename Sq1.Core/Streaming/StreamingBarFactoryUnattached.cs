@@ -151,10 +151,11 @@ namespace Sq1.Core.Streaming {
 		}
 
 		internal void AbsorbBarLastStaticFromChannelBacktesterComplete(SymbolScaleDistributionChannel channelBacktest) {
+			string msig = " //StreamingBarFactoryUnattached.AbsorbBarLastStaticFromChannelBacktesterComplete(" + channelBacktest + ")";
 			string msg = this.BarLastFormedUnattachedNullUnsafe == null ? "NULL" : this.BarLastFormedUnattachedNullUnsafe.ToString();
 			this.BarLastFormedUnattachedNullUnsafe = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe.CloneDetached();
 			msg += " => " + this.BarLastFormedUnattachedNullUnsafe.ToString();
-			Assembler.PopupException(msg, null, false);
+			Assembler.PopupException(msg + msig, null, false);
 		}
 // KEEP_THIS_NOT_HAPPENING_BY_LEAVING_STATIC_LAST_ON_APPRESTART_NULL_ON_LIVEBACKTEST_CONTAINING_LAST_INCOMING_QUOTE
 		internal void AbsorbBarStreamingFromChannel(SymbolScaleDistributionChannel channelBacktest) {

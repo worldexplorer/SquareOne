@@ -200,11 +200,19 @@ namespace Sq1.Core.Backtesting {
 				return null;
 			}
 
-			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
-				.LastQuoteCloneGetForSymbol(quoteToReach.Symbol);
-			QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
+			Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde =
+				this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
+					.LastQuoteCloneGetForSymbol(quoteToReach.Symbol);
 
-			#region PARANOID_CHECKS_HERE
+			QuoteGenerated quotePrev = quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
+			if (quotePrev == null) {
+				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
+					+ " Source[" + quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde.Source + "]";
+				quotePrev = new QuoteGenerated(quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
+			}
+
+			#region PARANOID_CHECKS_HERE THANK_YOU_LED_TO_10_LINES_ABOVE
+			QuoteGenerated quotePrevAsDde = quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
 			if (quotePrev == null) {
 				string msg = "PARANOINDAL_CHECK_IF_PREV_QUOTE_IS_QUOTE_TO_REACH copypaste";
 				Assembler.PopupException(msg);
@@ -383,14 +391,24 @@ namespace Sq1.Core.Backtesting {
 			}
 			#endif
 
+			//v1
+			//Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
+			//    .LastQuoteCloneGetForSymbol(alert.Symbol);
+			//QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
+			//if (quotePrev == null) {
+			//    string msg = "PREV_QUOTE_NULL";
+			//    Assembler.PopupException(msg + msig);
+			//}
 
-			Quote quotePrevDowncasted = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
-				.LastQuoteCloneGetForSymbol(alert.Symbol);
-
-			QuoteGenerated quotePrev = quotePrevDowncasted as QuoteGenerated;
+			//v2
+			Quote quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde =
+				this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
+					.LastQuoteCloneGetForSymbol(alert.Symbol);
+			QuoteGenerated quotePrev = quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
 			if (quotePrev == null) {
-				string msg = "PREV_QUOTE_NULL";
-				Assembler.PopupException(msg + msig);
+				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
+					+ " Source[" + quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde.Source + "]";
+				quotePrev = new QuoteGenerated(quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
 			}
 
 			BacktestSpreadModeler modeler = this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler;

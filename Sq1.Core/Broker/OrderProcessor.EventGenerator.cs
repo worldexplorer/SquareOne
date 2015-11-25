@@ -46,7 +46,7 @@ namespace Sq1.Core.Broker {
 				string msg = "TASK_THREW_OrderEventDistributor.RaiseAsyncOrderAddedExecutionFormShouldRebuildTree()";
 				Assembler.PopupException(msg, t.Exception);
 			}, TaskContinuationOptions.OnlyOnFaulted);
-			t.Start();
+			t.Start();		// WHO_DOES t.Dispose() ?
 			#endregion
 		}
 		public void RaiseAsyncOrderRemovedExecutionFormExecutionFormShouldRebuildOLV(object sender, List<Order> ordersToRemove) {
@@ -64,7 +64,7 @@ namespace Sq1.Core.Broker {
 				string msg = "TASK_THREW_OrderEventDistributor.RaiseAsyncOrderAddedExecutionFormShouldRebuildTree()";
 				Assembler.PopupException(msg, t.Exception);
 			}, TaskContinuationOptions.OnlyOnFaulted);
-			t.Start();
+			t.Start();		// WHO_DOES t.Dispose() ?
 			#endregion
 		}
 		public void RaiseOrderStateOrPropertiesChangedExecutionFormShouldDisplay(object sender, List<Order> ordersUpdated) {

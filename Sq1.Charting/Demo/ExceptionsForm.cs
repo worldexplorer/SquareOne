@@ -49,7 +49,7 @@ namespace Sq1.Charting.Demo {
 					Assembler.PopupException(msg2, t.Exception);
 				#endif
 			}, TaskContinuationOptions.OnlyOnFaulted);
-			t.Start();
+			t.Start();		// WHO_DOES t.Dispose() ?
 			#endregion
 		}
 		protected override void OnLoad(EventArgs e) {

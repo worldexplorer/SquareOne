@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 
@@ -20,21 +21,32 @@ namespace Sq1.Core.Streaming {
 				}
 				return ret;
 			} }
-		//[JsonIgnore]	public ConcurrentDictionarySorted<double, double>	LevelTwoAsks;
-		//[JsonIgnore]	public ConcurrentDictionarySorted<double, double>	LevelTwoBids;
-		[JsonIgnore]	public LevelTwoHalf	LevelTwoAsks;
-		[JsonIgnore]	public LevelTwoHalf	LevelTwoBids;
+		[JsonIgnore]	public LevelTwoHalf			LevelTwoAsks;
+		[JsonIgnore]	public LevelTwoHalf			LevelTwoBids;
 
-		private StreamingDataSnapshot() {
+		StreamingDataSnapshot() {
 			lastQuoteClonesReceivedUnboundBySymbol = new Dictionary<string, Quote>();
 			lockLastQuote = new object();
-			//LevelTwoAsks = new ConcurrentDictionarySorted<double, double>("LevelTwoAsks", new ConcurrentDictionarySorted<double, double>.ASC());
-			//LevelTwoBids = new ConcurrentDictionarySorted<double, double>("LevelTwoBids", new ConcurrentDictionarySorted<double, double>.DESC());
 			LevelTwoAsks = new LevelTwoHalf("LevelTwoAsks");
 			LevelTwoBids = new LevelTwoHalf("LevelTwoBids");
 		}
 
 		public StreamingDataSnapshot(StreamingAdapter streamingAdapter) : this() {
+			if (streamingAdapter == null) {
+				string msg = "DESERIALIZATION_ANOMALY DONT_FORGET_TO_INVOKE_InitializeWithStreaming()_AFTER_ALL_DATASOURCES_DESERIALIZED";
+				//Assembler.PopupException(msg);
+			}
+			this.streamingAdapter = streamingAdapter;
+		}
+		public void InitializeWithStreaming(StreamingAdapter streamingAdapter) {
+			if (this.streamingAdapter != null) {
+				if (this.streamingAdapter == streamingAdapter) {
+					Assembler.PopupException("TWO_DATASOURCES_WITH_SAME_STREAMING_ADAPTERS__EACH_", null, false);
+					return;
+				}
+				string msg = "STREAMING_DATA_SNAPSHOT__REASSIGNED_FOR_LIVESIM_PUPPET";
+				Assembler.PopupException(msg, null, false);
+			}
 			this.streamingAdapter = streamingAdapter;
 		}
 
@@ -48,13 +60,13 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		public void LastQuoteInitialize(string symbol) { lock (lockLastQuote) {
-				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(symbol)) {
-					Quote prevQuote = this.lastQuoteClonesReceivedUnboundBySymbol[symbol];
-					this.lastQuoteClonesReceivedUnboundBySymbol[symbol] = null;
-				} else {
-					this.lastQuoteClonesReceivedUnboundBySymbol.Add(symbol, null);
-				}
-			} }
+			if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(symbol)) {
+				Quote prevQuote = this.lastQuoteClonesReceivedUnboundBySymbol[symbol];
+				this.lastQuoteClonesReceivedUnboundBySymbol[symbol] = null;
+			} else {
+				this.lastQuoteClonesReceivedUnboundBySymbol.Add(symbol, null);
+			}
+		} }
 		public void LastQuoteCloneSetForSymbol(Quote quote) {
 			string msig = " StreamingDataSnapshot.LastQuoteSetForSymbol(" + quote.ToString() + ")";
 
@@ -93,7 +105,7 @@ namespace Sq1.Core.Streaming {
 				return weirdAttachedToOriginalBarsInsteadOfRegeneratedGrowingCopy;
 			} }
 		public double LastQuoteGetPriceForMarketOrder(string Symbol) {
-			Quote lastQuote = LastQuoteCloneGetForSymbol(Symbol);
+			Quote lastQuote = this.LastQuoteCloneGetForSymbol(Symbol);
 			if (lastQuote == null) return 0;
 			if (lastQuote.TradedAt == BidOrAsk.UNKNOWN) {
 				string msg = "NEVER_HAPPENED_SO_FAR LAST_QUOTE_MUST_BE_BID_OR_ASK lastQuote.TradeOccuredAt[" + lastQuote.TradedAt + "]=BidOrAsk.UNKNOWN";
@@ -104,23 +116,28 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public double BestBidGetForMarketOrder(string Symbol) { lock (this.lockLastQuote) {
-				double ret = -1;
-				//lock (this.bestBidBySymbol) { if (this.bestBidBySymbol.ContainsKey(Symbol)) { ret = this.bestBidBySymbol[Symbol]; } }
-				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol)) {
-					Quote lastQuote = this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
-					ret = lastQuote.Bid;
+			double ret = -1;
+			//lock (this.bestBidBySymbol) { if (this.bestBidBySymbol.ContainsKey(Symbol)) { ret = this.bestBidBySymbol[Symbol]; } }
+			if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol)) {
+				Quote lastQuote = this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
+				if (lastQuote == null) {
+					string msg = "LAST_TIME_I_HAD_IT_WHEN_Livesimulator_STORED_QUOTES_IN_QuikLivesimStreaming_WHILE_MarketLive_ASKED_QuikStreaming_TO_FILL_ALERT";
+					Assembler.PopupException(msg);
+					return ret;
 				}
-				return ret;
-			} }
+				ret = lastQuote.Bid;
+			}
+			return ret;
+		} }
 		public double BestAskGetForMarketOrder(string Symbol) { lock (this.lockLastQuote) {
-				double ret = -1;
-				//lock (this.bestAskBySymbol) { if (this.bestAskBySymbol.ContainsKey(Symbol)) { ret = this.bestAskBySymbol[Symbol]; } }
-				if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol)) {
-					Quote lastQuote = this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
-					ret = lastQuote.Ask;
-				}
-				return ret;
-			} }
+			double ret = -1;
+			//lock (this.bestAskBySymbol) { if (this.bestAskBySymbol.ContainsKey(Symbol)) { ret = this.bestAskBySymbol[Symbol]; } }
+			if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(Symbol)) {
+				Quote lastQuote = this.lastQuoteClonesReceivedUnboundBySymbol[Symbol];
+				ret = lastQuote.Ask;
+			}
+			return ret;
+		} }
 
 		public double BidOrAskFor(string Symbol, PositionLongShort direction) {
 			if (direction == PositionLongShort.Unknown) {
@@ -249,5 +266,9 @@ namespace Sq1.Core.Streaming {
 			
 			return price;
 		}
+		public override string ToString() {
+			return "StreamingDataSnapshot_FOR_" + this.streamingAdapter;
+		}
+
 	}
 }

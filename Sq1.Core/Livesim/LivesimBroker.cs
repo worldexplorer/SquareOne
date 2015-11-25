@@ -109,7 +109,7 @@ namespace Sq1.Core.Livesim {
 				string msg = "TASK_THREW";
 				Assembler.PopupException(msg + msig, t.Exception);
 			}, TaskContinuationOptions.OnlyOnFaulted);
-			t.Start();
+			t.Start();		// WHO_DOES t.Dispose() ?
 		}
 
 		public void ConsumeQuoteOfStreamingBarToFillPending(QuoteGenerated quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
@@ -166,7 +166,7 @@ namespace Sq1.Core.Livesim {
 				string msg = "TASK_THREW_LivesimBroker.consumeQuoteOfStreamingBarToFillPendingAsync()";
 				Assembler.PopupException(msg, t.Exception);
 			}, TaskContinuationOptions.OnlyOnFaulted);
-			t.Start();
+			t.Start();		// WHO_DOES t.Dispose() ?
 
 			// I Sleep(10) since I wanna get quoteShadow pointer copied/stored inside the Task.Start()ed scope
 			// before the parent thread (this one here) will drop/change quoteUnattached pointer upstack
@@ -274,7 +274,11 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.livesimDataSource	.Dispose();
+			if (this.livesimDataSource.IsDisposed == false) {
+				this.livesimDataSource	.Dispose();
+			} else {
+				string msg = "ITS_OKAY this.livesimDataSource might have been already disposed by LivesimStreaming.Dispose()";
+			}
 			this.DataSnapshot		.Dispose();
 			this.livesimDataSource	= null;
 			this.DataSnapshot		= null;

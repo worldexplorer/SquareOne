@@ -1,13 +1,16 @@
 ﻿using System;
 
+using Newtonsoft.Json;
+
 using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 
 namespace Sq1.Core.Backtesting {
 	[SkipInstantiationAt(Startup = true)]
 	public class BacktestStreaming : StreamingAdapter {
-		public BacktestSpreadModeler SpreadModeler;
-		public const double PERCENTAGE_DEFAULT= 0.005;
+		// without [JsonIgnore] Livesim children will have these properties in JSON
+		[JsonIgnore] public BacktestSpreadModeler SpreadModeler;
+		[JsonIgnore] public const double PERCENTAGE_DEFAULT= 0.005;
 
 //		public BacktestStreamingAdapter() {
 //			string msg = "We should never be here; skip instantiation by Activator in MainModule::InitializeProviders()";
@@ -45,7 +48,7 @@ namespace Sq1.Core.Backtesting {
 		}
 
 		public override string ToString() {
-			return Name + ": DataSource[" + this.DataSource + "]";
+			return this.Name + ": DataSource[" + this.DataSource + "]";
 		}
 
 	}
