@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading;
 
+using Newtonsoft.Json;
+
 using Sq1.Core.Backtesting;
 using Sq1.Core.Charting;
 using Sq1.Core.Support;
@@ -12,20 +14,21 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
 	public partial class LivesimStreaming : BacktestStreaming, IDisposable {
-		public		ManualResetEvent			Unpaused			{ get; private set; }
-					ChartShadow					chartShadow;
-					LivesimDataSource			livesimDataSource;
-					ScriptExecutor				executor			{ get { return this.livesimDataSource.Executor; } }
-		public		Livesimulator				Livesimulator		{ get { return this.livesimDataSource.Executor.Livesimulator; } }
-		internal	LivesimStreamingSettings	LivesimSettings		{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
+		// without [JsonIgnore] Livesim children will have these properties in JSON
+		[JsonIgnore]	public		ManualResetEvent			Unpaused			{ get; private set; }
+		[JsonIgnore]				ChartShadow					chartShadow;
+		[JsonIgnore]				LivesimDataSource			livesimDataSource;
+		[JsonIgnore]				ScriptExecutor				executor			{ get { return this.livesimDataSource.Executor; } }
+		[JsonIgnore]	public		Livesimulator				Livesimulator		{ get { return this.livesimDataSource.Executor.Livesimulator; } }
+		[JsonIgnore]	internal	LivesimStreamingSettings	LivesimSettings		{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
 
 		//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
-		protected	LivesimBroker				LivesimBroker		{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe; } }
-		protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap	{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe.DataSnapshot; } }
+		[JsonIgnore]	protected	LivesimBroker				LivesimBroker		{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe; } }
+		[JsonIgnore]	protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap	{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe.DataSnapshot; } }
 
-		protected	LivesimLevelTwoGenerator	Level2generator;
-		public		Livesimulator				LivesimulatorRedundant;		// used by QuikLivesimStreaming to instantiate QuikStreaming with a fake DataSource (LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor)
-		protected	LivesimSpoiler				LivesimSpoiler;
+		[JsonIgnore]	protected	LivesimLevelTwoGenerator	Level2generator;
+		[JsonIgnore]	protected	LivesimSpoiler				LivesimSpoiler;
+		[JsonIgnore]	public bool IsDisposed { get; private set; }
 
 		public LivesimStreaming(LivesimDataSource livesimDataSource) : base() {
 			if (livesimDataSource == null) {
@@ -138,10 +141,6 @@ namespace Sq1.Core.Livesim {
 			this.Unpaused = null;
 			this.IsDisposed = true;
 		}
-		public bool IsDisposed { get; private set; }
 
-		public virtual void UpstreamConnect_LivesimStarting(Livesimulator livesimulator) {
-			this.LivesimulatorRedundant = livesimulator;
-		}
 	}
 }

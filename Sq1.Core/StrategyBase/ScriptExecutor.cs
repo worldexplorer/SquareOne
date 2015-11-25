@@ -1470,7 +1470,7 @@ namespace Sq1.Core.StrategyBase {
 					});
 				}
 				//ON_REQUESTING_ABORT_TASK_DIES_WITHOUT_INVOKING_CONTINUE_WITH started.Start(TaskScheduler.FromCurrentSynchronizationContext());
-				backtesterTask.Start();
+				backtesterTask.Start();		// WHO_DOES t.Dispose() ?
 			} else {
 				//this.Executor.BacktesterRunSimulation();
 				//this.ChartForm.Chart.DoInvalidate();
@@ -1524,7 +1524,7 @@ namespace Sq1.Core.StrategyBase {
 			LivesimStreaming streamingAsLivesimChild = this.DataSource.StreamingAdapter	as LivesimStreaming;
 			LivesimBroker		brokerAsLivesimChild = this.DataSource.BrokerAdapter	as LivesimBroker;
 			if (streamingAsLivesimChild != null && brokerAsLivesimChild != null) {
-				this.Livesimulator.RedirectDataSourceToUserLivesimImplementations(streamingAsLivesimChild, brokerAsLivesimChild);
+				this.Livesimulator.RedirectDataSource_reactivateLivesimsWithLivesimDataSource(streamingAsLivesimChild, brokerAsLivesimChild);
 			}
 		}
 		void barDataSource_SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(object sender, DataSourceSymbolRenamedEventArgs e) {

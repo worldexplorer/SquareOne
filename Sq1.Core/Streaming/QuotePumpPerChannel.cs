@@ -11,9 +11,9 @@ namespace Sq1.Core.Streaming {
 	public class QuotePumpPerChannel : QuoteQueuePerChannel, IDisposable {
 		const string THREAD_PREFIX = "PUMP_";	//SEPARATE_THREAD_QUOTE_FOR_
 
-		ManualResetEvent	hasQuoteToPush;			// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
-		ManualResetEvent	confirmThreadStarted;	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
-		ManualResetEvent	confirmThreadExited;	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
+					ManualResetEvent	hasQuoteToPush;			// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
+					ManualResetEvent	confirmThreadStarted;	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
+					ManualResetEvent	confirmThreadExited;	// Calling ManualResetEvent.Set opens the gate, allowing any number of threads calling WaitOne to be let through
 
 		protected	bool				pauseRequested;
 		protected	bool				unPauseRequested;
@@ -57,30 +57,12 @@ namespace Sq1.Core.Streaming {
 			base.UpdateThreadNameAfterMaxConsumersSubscribed = false;
 			//v1 NOPE_ITS_TOO_THICK_FOR_POST_CONSTRUCTOR_TIMES_this.PusherPause();	// ALL_PUMPS_AT_BIRTH_ARE_PAUSED__AVOIDING_INDICATORS_NOT_HAVING_EXECUTOR_AT_APP_RESTART_BACKTEST
 			this.confirmPaused.Set();		// IF_ON_APP_RESTART_WE_HAVE_BACKTESTS_SCHEDULED_SymbolCScaleDistributionChannel.PumpResumeBacktesterFinishedRemove()_WILL_UNPAUSE_AFTER_THEY_FINISH
-			this.PushingThreadStart();
+			if (this.HasSeparatePushingThread) {
+				this.PushingThreadStart();
+			}
 		}
 
 		bool isPushingThreadStarted;
-		private void PushingThreadStop() {
-			bool currentlyPushing = this.HasSeparatePushingThread;
-			string msig = " //PushingThreadStop[" + currentlyPushing + "]=>[" + false + "] " + this.ToString();
-			if (this.isPushingThreadStarted == false) {
-				// this.simulationPreBarsSubstitute() waits for 10 seconds
-				// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
-				return;
-			}
-			try {
-				this.confirmThreadExited.Reset();
-				this.exitPushingThreadRequested = true;
-				bool exitConfirmed = this.confirmThreadExited.WaitOne(this.heartbeatTimeout * 2);
-				string msg = exitConfirmed ? "THREAD_EXITED__" : "EXITING_THREAD_DIDNT_CONFIRM_ITS_OWN_EXIT__";
-				Assembler.PopupException(msg + msig, null, false);
-			} catch (Exception ex) {
-				string msg = "IMPOSSIBLE_HAPPENED_WHILE_PUSHING_THREAD_STARTING/STOPPING";
-				Assembler.PopupException(msg + msig, ex);
-			}
-			this.isPushingThreadStarted = false;
-		}
 		private void PushingThreadStart() {
 			bool currentlyPushing = this.HasSeparatePushingThread;
 			string msig = " //PushingThreadStart[" + currentlyPushing + "]=>[" + true + "] " + this.ToString();
@@ -117,6 +99,26 @@ namespace Sq1.Core.Streaming {
 			}
 			this.isPushingThreadStarted = true;
 		}
+		private void PushingThreadStop() {
+			bool currentlyPushing = this.HasSeparatePushingThread;
+			string msig = " //PushingThreadStop[" + currentlyPushing + "]=>[" + false + "] " + this.ToString();
+			if (this.isPushingThreadStarted == false) {
+				// this.simulationPreBarsSubstitute() waits for 10 seconds
+				// you'll be waiting for confirmThreadExited.WaitOne(1000) because there was no running thread to confirm its own exit
+				return;
+			}
+			try {
+				this.confirmThreadExited.Reset();
+				this.exitPushingThreadRequested = true;
+				bool exitConfirmed = this.confirmThreadExited.WaitOne(this.heartbeatTimeout * 2);
+				string msg = exitConfirmed ? "THREAD_EXITED__" : "EXITING_THREAD_DIDNT_CONFIRM_ITS_OWN_EXIT__";
+				Assembler.PopupException(msg + msig, null, false);
+			} catch (Exception ex) {
+				string msg = "IMPOSSIBLE_HAPPENED_WHILE_PUSHING_THREAD_STARTING/STOPPING";
+				Assembler.PopupException(msg + msig, ex);
+			}
+			this.isPushingThreadStarted = false;
+		}
 		public override int PushStraightOrBuffered(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
 			if (this.isPushingThreadStarted == false) {
 				string msg = "PUSHING_THREAD_MUST_START_IN_CTOR_OTHERWISE_USE_SINGLE_THREADED_QUEUE";
@@ -139,6 +141,8 @@ namespace Sq1.Core.Streaming {
 			string msig = "THREW_PRIOR_TO_INITIALIZATION_pusherEntryPoint()";
 			if (this.bufferPusherThreadId == 0) {
 				this.bufferPusherThreadId = Thread.CurrentThread.ManagedThreadId;
+				//Thread.CurrentThread.Name = "QUOTE_PUMP";
+				this.SetThreadName();
 			}
 			try {
 				this.timesThreadWasStarted++;
@@ -230,6 +234,13 @@ namespace Sq1.Core.Streaming {
 				Assembler.PopupException(msg);
 				return;
 			}
+			this.hasQuoteToPush			.Dispose();
+			this.bufferPusher			.Dispose();
+			this.confirmThreadStarted	.Dispose();
+			this.confirmThreadExited	.Dispose();
+			this.confirmPaused			.Dispose();
+			this.confirmUnpaused		.Dispose();
+
 			this.exitPushingThreadRequested = true;
 			this.HasQuoteToPushWrite = true;		// fake gateway open, just to let the thread process disposed=true; 
 			this.IsDisposed = true;

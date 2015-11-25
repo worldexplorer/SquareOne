@@ -305,8 +305,9 @@ namespace Sq1.Core.Backtesting {
 				StreamingAdapter streamingOriginal = this.BarsOriginal.DataSource.StreamingAdapter;
 				string msg = "NOW_INSERT_BREAKPOINT_TO_this.channel.PushQuoteToConsumers(quoteDequeued) CATCHING_BACKTEST_END_UNPAUSE_PUMP";
 
-				if (streamingOriginal != null) {
-					string msg2 = "BRO_THIS_IS_NONSENSE!!!";
+				if (streamingOriginal != null && streamingOriginal is LivesimStreaming == false) {
+					string msg2 = "MUST_BE_EMPTY_ORIGINAL_BARS.STREAMING ABSORBING_FROM_BACKTEST_COMPLETE";
+					Assembler.PopupException(msg2);
 					streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
 				}
 

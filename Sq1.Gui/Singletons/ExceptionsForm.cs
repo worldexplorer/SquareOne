@@ -44,7 +44,7 @@ namespace Sq1.Gui.Singletons {
 			//    string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
 			//    Assembler.PopupException(msg2, t.Exception);
 			//}, TaskContinuationOptions.OnlyOnFaulted);
-			//t.Start();
+			//t.Start();		// WHO_DOES t.Dispose() ?
 			//#endregion
 			//v3 FlushExceptionsToOLV
 			this.ExceptionControl.InsertAsyncAutoFlush(ex);
@@ -56,7 +56,7 @@ namespace Sq1.Gui.Singletons {
 			//    string msg2 = "TASK_THREW_ExceptionsForm.popupException()";
 			//    Assembler.PopupException(msg2, t.Exception);
 			//}, TaskContinuationOptions.OnlyOnFaulted);
-			//t.Start();
+			//t.Start();		// WHO_DOES t.Dispose() ?
 		}
 		protected override void OnLoad(EventArgs e) {
 			foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {

@@ -20,7 +20,7 @@ namespace Sq1.Core.Streaming {
 		[JsonIgnore]	public string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }
 		[JsonIgnore]	public DataDistributor			DataDistributor						{ get; protected set; }
 		[JsonIgnore]	public DataDistributor			DataDistributorSolidifiers			{ get; protected set; }
-		[JsonProperty]	public StreamingDataSnapshot	StreamingDataSnapshot				{ get; protected set; }
+		[JsonIgnore]	public StreamingDataSnapshot	StreamingDataSnapshot				{ get; protected set; }
 		[JsonIgnore]	public virtual List<string>		SymbolsUpstreamSubscribed			{ get; private set; }
 		[JsonIgnore]	protected object				SymbolsSubscribedLock;
 		[JsonIgnore]	public virtual string			SymbolsUpstreamSubscribedAsString 	{ get {

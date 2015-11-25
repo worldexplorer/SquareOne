@@ -182,6 +182,7 @@ namespace Sq1.Core {
 			
 			this.RepositoryJsonDataSource		.Initialize(this.AppDataPath, "DataSources", this.RepositoryMarketInfo, this.OrderProcessor);
 			this.RepositoryJsonDataSource		.DeserializeJsonsInFolder();
+			//SNAP_IS_NOT_SERIALIZED_ANYMORE this.RepositoryJsonDataSource		.ReattachDataSnaphotsToOwnersStreamingAdapters();
 			
 			createdNewFile = this.AssemblerDataSnapshotSerializer.Initialize(this.AppDataPath, "AssemblerDataSnapshot.json", "", null);
 			this.AssemblerDataSnapshot = this.AssemblerDataSnapshotSerializer.Deserialize();

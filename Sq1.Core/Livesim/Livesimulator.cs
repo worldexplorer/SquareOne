@@ -40,20 +40,7 @@ namespace Sq1.Core.Livesim {
 			this.livesimQuoteBarConsumer	= new LivesimQuoteBarConsumer(this);
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
 		}
-		public void ReplaceConsumerAndResubscribe_forLivesimStreamingChildren(LivesimQuoteBarConsumer consumerProvidedByStreaming) {
-		    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
-		    distr.ConsumerQuoteUnsubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
-		    distr.ConsumerBarUnsubscribe(  this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
-			if (distr.DistributionChannels.Count != 0) {
-				string msg = "SOME_SUBSCRIBERS_LEFT__STATIONARY_LIVESIM_MUST_BE_FULLY_UNSUBSCRIBED_BY_NOW__YOU'LL_GET_SOME_ARTIFACTS_INSTEAD_OF_QuikDdeLivesim_REDIRECT";
-				Assembler.PopupException(msg);
-			}
-
-			this.livesimQuoteBarConsumer	= consumerProvidedByStreaming;
-		    distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
-		    distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
-		}
-		public void RedirectDataSourceToUserLivesimImplementations(LivesimStreaming liveStreamingChild, LivesimBroker livesimBrokerChild) {
+		public void RedirectDataSource_reactivateLivesimsWithLivesimDataSource(LivesimStreaming liveStreamingChild, LivesimBroker livesimBrokerChild) {
 			string msig = " //RedirectDataSourceToUserLivesimImplementations(" + liveStreamingChild + ", " + livesimBrokerChild + ")";
 			if (	this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	== liveStreamingChild
 				 && this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	== livesimBrokerChild) {
@@ -66,8 +53,9 @@ namespace Sq1.Core.Livesim {
 			LivesimStreaming streamingRecreatedWithPointerBack = (LivesimStreaming)	Activator.CreateInstance(liveStreamingChild	.GetType(), this.DataSourceAsLivesimNullUnsafe);
 			LivesimBroker		brokerRecreatedWithPointerBack = (LivesimBroker)	Activator.CreateInstance(livesimBrokerChild	.GetType(), this.DataSourceAsLivesimNullUnsafe);
 			this.DataSourceAsLivesimNullUnsafe.SubstituteAdapters(streamingRecreatedWithPointerBack, brokerRecreatedWithPointerBack);
+			// I_REPLACED_DUMMIES DID_NOT_INVOKE_THEIR_DISPOSE()_TO_RELEASE_WAIT_HANDLES
 
-			string msg1 = "DATASOURCE_REDIRECTED";
+			string msg1 = "DATASOURCE_REDIRECTED_FOR_EXECUTOR " + this.Executor.ToString();
 			Assembler.PopupException(msg1 + msig, null, false);
 		}
 
@@ -117,8 +105,8 @@ namespace Sq1.Core.Livesim {
 				    distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
 				    //streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
 
-					// QuikLivesimStreaming should instantiate the Real QuikStreaming with a DDE server and then connect to it; parent's Livesim probably must ignore this pseudo-Event
-					this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UpstreamConnect_LivesimStarting(this);	// exception instantiating DDE server with same topics wont run the simulation
+				    // QuikLivesimStreaming should instantiate the Real QuikStreaming with a DDE server and then connect to it; parent's Livesim probably must ignore this pseudo-Event
+				    this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UpstreamConnect_LivesimStarting();	// exception instantiating DDE server with same topics wont run the simulation
 				}
 
 				base.Executor.BacktestContextInitialize(base.BarsSimulating);
