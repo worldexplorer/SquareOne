@@ -12,26 +12,26 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		public				DateTime			LastDataReceived		{ get; protected set; }
 		public	virtual		bool				ReceivingDataDde		{ get; set; }
 
-		protected	List<XlColumn>					Columns;				// part of the abstraction to implement in children
-		protected	Dictionary<string, XlColumn>	ColumnsLookup;
+		protected	List<XlColumn>					ColumnDefinitions;				// part of the abstraction to implement in children
+		protected	Dictionary<string, XlColumn>	ColumnDefinitionsByNameLookup;
 
-		protected	Dictionary<int, XlColumn>		ColumnsByIndexFound;
+		protected	Dictionary<int, XlColumn>		ColumnClonesFoundByIndex;
 		protected	bool							ColumnsIdentified;
 		protected	QuikStreaming					QuikStreaming			{ get; private set; }
 
 		XlDdeTable() {
-			this.ColumnsIdentified		= false;
-			this.Columns				= new List<XlColumn>();			// part of the abstraction to implement in children
-			this.ColumnsByIndexFound	= new Dictionary<int, XlColumn>();
+			this.ColumnsIdentified			= false;
+			this.ColumnDefinitions			= new List<XlColumn>();			// part of the abstraction to implement in children
+			this.ColumnClonesFoundByIndex	= new Dictionary<int, XlColumn>();
 		}
 		protected XlDdeTable(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : this() {
 			this.Topic = topic;
 			this.QuikStreaming = quikStreaming;
-			this.Columns = columns;
+			this.ColumnDefinitions = columns;
 
-			this.ColumnsLookup = new Dictionary<string, XlColumn>();
-			foreach (XlColumn col in this.Columns) {
-				this.ColumnsLookup.Add(col.Name, col);
+			this.ColumnDefinitionsByNameLookup = new Dictionary<string, XlColumn>();
+			foreach (XlColumn col in this.ColumnDefinitions) {
+				this.ColumnDefinitionsByNameLookup.Add(col.Name, col);
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			for (int i = 1; i < reader.RowsCount; i++) {
 				XlRowParsed rowParsed = this.parseRow(reader);
 				if (rowParsed == null || rowParsed.Count == 0) continue;
-				string columnName = Columns[0].Name;
+				string columnName = ColumnDefinitions[0].Name;
 				if (rowParsed[columnName] == null) continue;
 				if (rowParsed[columnName] is string) {
 					string cellParced = (string) rowParsed[columnName];
@@ -62,7 +62,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 				}
 
 				#region CONSISTENCY_CHECK
-				foreach (XlColumn col in this.Columns) {
+				foreach (XlColumn col in this.ColumnDefinitions) {
 					if (rowParsed.ContainsKey(col.Name) == false) {
 						string msg = "I_EXPECTED_ALL_COLUMNS_BE_PRESENT__THEY_JUST_MUST";
 						continue;
@@ -97,12 +97,12 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		protected bool identifyColumnsByReadingHeader(XlReader reader) {
 			bool ret = false;
 			List<XlColumn> mandatoriesNotFound = new List<XlColumn>();
-			this.ColumnsByIndexFound.Clear();
-			foreach (XlColumn col in this.Columns) {
+			this.ColumnClonesFoundByIndex.Clear();
+			foreach (XlColumn col in this.ColumnDefinitions) {
 				col.IndexFound = -1;
 				if (col.Mandatory) mandatoriesNotFound.Add(col);
 			}
-			for (int col_serno = 0; col_serno < reader.ColumnsCount; col_serno++) {
+			for (int colSerno = 0; colSerno < reader.ColumnsCount; colSerno++) {
 				try {
 					reader.ReadNext();
 				} catch (EndOfStreamException ex) {
@@ -117,10 +117,12 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					continue;
 				}
 				string columnNameToIdentify = (string) reader.ValueJustRead;
-				foreach (XlColumn col in this.Columns) {
-					if (col.Name != columnNameToIdentify) continue;
-					this.ColumnsByIndexFound.Add(col_serno, col.Clone());
-					if (mandatoriesNotFound.Contains(col)) mandatoriesNotFound.Remove(col);
+				foreach (XlColumn colDef in this.ColumnDefinitions) {
+					if (colDef.Name != columnNameToIdentify) continue;
+					XlColumn colFound = colDef.Clone();
+					colFound.IndexFound = colSerno;
+					this.ColumnClonesFoundByIndex.Add(colSerno, colFound);
+					if (mandatoriesNotFound.Contains(colDef)) mandatoriesNotFound.Remove(colDef);
 					break;
 				}
 			}
@@ -146,9 +148,9 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					Assembler.PopupException(errmsg3, ex);
 					return rowParsed;
 				}
-				if (this.ColumnsByIndexFound.ContainsKey(col) == false) continue;
+				if (this.ColumnClonesFoundByIndex.ContainsKey(col) == false) continue;
 
-				XlColumn xlCol = this.ColumnsByIndexFound[col].Clone();
+				XlColumn xlCol = this.ColumnClonesFoundByIndex[col].Clone();
 
 				
 				if (reader.BlockType == XlBlockType.Blank) {

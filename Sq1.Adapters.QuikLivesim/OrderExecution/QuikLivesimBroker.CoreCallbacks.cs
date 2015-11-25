@@ -69,7 +69,7 @@ namespace Sq1.Adapters.QuikLivesim {
 		//        string msg = "TASK_THREW_LivesimBroker.consumeQuoteOfStreamingBarToFillPendingAsync()";
 		//        Assembler.PopupException(msg, t.Exception);
 		//    }, TaskContinuationOptions.OnlyOnFaulted);
-		//    t.Start();
+		//    t.Start();		// WHO_DOES t.Dispose() ?
 
 		//    // I Sleep(10) since I wanna get quoteShadow pointer copied/stored inside the Task.Start()ed scope
 		//    // before the parent thread (this one here) will drop/change quoteUnattached pointer upstack

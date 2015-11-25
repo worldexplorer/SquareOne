@@ -26,5 +26,9 @@
 			ret.Value = null;
 			return ret;
 		}
+
+		public override string ToString() {
+			return "{" + this.IndexFound + "}" + this.TypeExpected + ":" + this.Name + "[" + this.Value + "]";
+		}
 	}
 }

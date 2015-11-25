@@ -44,6 +44,7 @@ namespace Sq1.Adapters.Quik.Dde {
 			quikQuote.FortsPriceMin		= row.GetDouble("pricemin"		, double.NaN);
 			quikQuote.FortsPriceMax		= row.GetDouble("pricemax"		, double.NaN);
 
+			this.reconstructServerTime(row);
 			quikQuote.ServerTime		= row.GetDateTime("ServerTime"	, DateTime.Now);
 			//DateTime qChangeTime = DateTime.MinValue;
 			//if (quote.ServerTime == DateTime.MinValue && qChangeTime != DateTime.MinValue) {
@@ -64,11 +65,9 @@ namespace Sq1.Adapters.Quik.Dde {
 			//	quote.Size = sizeParsed;
 			//}
 
-			this.reconstructServerDate(row);
-
 			base.QuikStreaming.PushQuoteReceived(quikQuote);
 		}
-		void reconstructServerDate(XlRowParsed rowParsed) {
+		void reconstructServerTime(XlRowParsed rowParsed) {
 			rowParsed["ServerTime"] = DateTime.MinValue;
 
 			string dateReceived = rowParsed.GetString("date", "QUOTE_DATE_NOT_DELIVERED_DDE");
@@ -78,8 +77,8 @@ namespace Sq1.Adapters.Quik.Dde {
 				return;
 			}
 
-			string dateFormat = base.ColumnsLookup["date"].ToDateTimeParseFormat;
-			string timeFormat = base.ColumnsLookup["time"].ToDateTimeParseFormat;
+			string dateFormat = base.ColumnDefinitionsByNameLookup["date"].ToDateTimeParseFormat;
+			string timeFormat = base.ColumnDefinitionsByNameLookup["time"].ToDateTimeParseFormat;
 			string dateTimeFormat = dateFormat + " " + timeFormat;
 
 

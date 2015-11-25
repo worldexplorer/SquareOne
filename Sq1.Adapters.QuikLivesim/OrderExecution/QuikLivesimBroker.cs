@@ -92,7 +92,7 @@ namespace Sq1.Adapters.QuikLivesim {
 		//        string msg = "TASK_THREW";
 		//        Assembler.PopupException(msg + msig, t.Exception);
 		//    }, TaskContinuationOptions.OnlyOnFaulted);
-		//    t.Start();
+		//    t.Start();		// WHO_DOES t.Dispose() ?
 		//}
 
 	}

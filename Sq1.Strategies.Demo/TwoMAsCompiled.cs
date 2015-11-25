@@ -46,11 +46,13 @@ namespace Sq1.Strategies.Demo {
 
 			QuoteGenerated quoteGenerated = quote as QuoteGenerated;
 			if (quoteGenerated != null) {
-				Assembler.PopupException("WE_ARE_RUNNING_BACKTEST_OR_LIVESIM [" + quoteGenerated.GetType() + "] //" + base.StrategyName);
+				string msg = "WE_ARE_RUNNING_BACKTEST_OR_LIVESIM [" + quoteGenerated.GetType() + "] //" + base.StrategyName;
+				Assembler.PopupException(msg, null, false);
 			}
 			QuoteQuik quoteQuik = quote as QuoteQuik;
 			if (quoteQuik != null) {
-				Assembler.PopupException("WE_ARE_RUNNING_QuikLIVESIM_OR_QuikREALTIME [" + quoteQuik.GetType() + "] //" + base.StrategyName);
+				string msg = "WE_ARE_RUNNING_QuikLIVESIM_OR_QuikREALTIME [" + quoteQuik.GetType() + "] //" + base.StrategyName;
+				Assembler.PopupException(msg, null, false);
 			}
 		}
 

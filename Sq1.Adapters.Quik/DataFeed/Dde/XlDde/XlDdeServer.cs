@@ -54,6 +54,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			//if(format != xlTableFormat) return PokeResult.NotProcessed;
 			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
 			try {
+				// SET_QUOTE_PUMP_STRAIGHT_NO_SEPARATE_THREAD
 				tableRecipient.ParseDeliveredDdeData_pushToStreaming(data);
 			} catch (Exception ex) {
 				string msg = "DDE_DATA_PARSING_FAILED tableRecipient[" + tableRecipient.Topic + "]";

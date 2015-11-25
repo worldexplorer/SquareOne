@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Threading;
 
 using NDde.Client;
+using Newtonsoft.Json;
 
 using Sq1.Core;
 using Sq1.Core.Support;
@@ -11,30 +12,32 @@ using Sq1.Core.Livesim;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Streaming;
 using Sq1.Core.Backtesting;
+using Sq1.Core.Execution;
 
 using Sq1.Adapters.Quik;
 using Sq1.Adapters.QuikLivesim.DataFeed;
-using Sq1.Core.Execution;
 
 namespace Sq1.Adapters.QuikLivesim {
 	[SkipInstantiationAt(Startup = false)]		// overriding LivesimStreaming's TRUE to have QuikLivesimStreaming appear in DataSourceEditor
 	public partial class QuikLivesimStreaming : LivesimStreaming {
-		string reasonToExist = "1) use LivesimForm as control "
-			+ "2) instantiate QuikStreaming and make it run its DDE server "
-			+ "3) push quotes generated using DDE client";
+		[JsonIgnore]	string reasonToExist =    "1) use LivesimForm as control "
+												+ "2) instantiate QuikStreaming and make it run its DDE server "
+												+ "3) push quotes generated using DDE client";
 
-		string ddeTopicsPrefix = "QuikLiveSim-";
+		[JsonIgnore]	string ddeTopicsPrefix = "QuikLiveSim-";
 
-		public QuikStreaming		QuikStreamingPuppet;
-		public QuikLivesimDdeClient	QuikLivesimDdeClient;
+		[JsonIgnore]	public QuikStreaming		QuikStreamingPuppet;
+		[JsonIgnore]	public QuikLivesimDdeClient	QuikLivesimDdeClient;
 
-		//private QuikLivesimQuoteBarConsumer quikLivesimQuoteBarConsumer;
-
-		//		QuikLivesimStreamingSettings	settings			{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
+		[JsonIgnore]	ConcurrentDictionaryGeneric<double, double> LevelTwoAsks { get { return base.StreamingDataSnapshot.LevelTwoAsks; } }
+		[JsonIgnore]	ConcurrentDictionaryGeneric<double, double> LevelTwoBids { get { return base.StreamingDataSnapshot.LevelTwoBids; } }
 
 		public QuikLivesimStreaming() : base() {
 			base.Name = "QuikLivesimStreaming-DllFound";
 			base.Icon = (Bitmap)Sq1.Adapters.QuikLivesim.Properties.Resources.imgQuikLivesimStreaming;
+
+			//NO_DESERIALIZATION_WILL_THROW_YOULL_NULLIFY_ME_IN_UpstreamConnect YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
+			//this.StreamingDataSnapshot = null;
 		}
 
 		public QuikLivesimStreaming(LivesimDataSource livesimDataSource) : base(livesimDataSource) {
@@ -51,29 +54,31 @@ namespace Sq1.Adapters.QuikLivesim {
 			string msg = "OTHERWIZE_BASE_WILL_SUBSCRIBE_SOLIDIFIER LIVESIM_MUST_NOT_SAVE_ANY_BARS";
 		}
 
-		public override void UpstreamConnect_LivesimStarting(Livesimulator livesimulator) {
-			//REDIRECTING_PushQuoteGenerated_RADICAL_PARENT_DETACHED
-			//if (this.quikLivesimQuoteBarConsumer == null) {
-			//    //I_REGISTERED_MY_OWN_CONSUMER OTHERWIZE_IGNORES_LIVESIM_DELAYS_AND_DOESNT_INJECT_QUOTES_TO_FILL_ALERTS
-			//    this.quikLivesimQuoteBarConsumer = new QuikLivesimQuoteBarConsumer(livesimulator);
-			//    livesimulator.ReplaceConsumerAndResubscribe_forLivesimStreamingChildren(this.quikLivesimQuoteBarConsumer);
-			//}
-
-			base.UpstreamConnect_LivesimStarting(livesimulator);
-
+		public override void UpstreamConnect_LivesimStarting() {
 			string msig = " //UpstreamConnect_LivesimStarting(" + this.ToString() + ")";
-			string msg = "Instantiating QuikStreaming with prefixed DDE tables [...]";
-			//Assembler.PopupException(msg + msig, null, false);
 
 			this.QuikStreamingPuppet = new QuikStreamingPuppet(this.ddeTopicsPrefix, this.DataDistributor);
-			this.QuikStreamingPuppet.Initialize(base.LivesimulatorRedundant.DataSourceAsLivesimNullUnsafe);	//LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor
+			this.QuikStreamingPuppet.Initialize(base.Livesimulator.DataSourceAsLivesimNullUnsafe);	//LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor
 			//this.QuikStreamingPuppet.DataDistributor.ConsumerQuoteSubscribe();
 			//this.QuikStreamingPuppet.DataDistributor.ConsumerBarSubscribe();
 			this.QuikStreamingPuppet.UpstreamConnect();
 
+
+			// MarketLive checks for LastQuote, which I don't save anymore in QuikLivesimStreaming
+			// QuikLivesimStreaming is a handicap without StreamingDataSnapshot; normally Snap is maintained by
+			// 1) DataDistributorChart.StreamingDataSnapshot.LastQuoteCloneInitialize(symbol)
+			//		but QuikLivesimStreaming.DataDistributor is donated to the Puppet
+			// 2) StreamingAdapter(base).PushQuoteGenerated(): StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
+			//		but QuikLivesimStreaming doesnt invoke base.PushQuoteGenerated(quote) because it shoots the quote to DDE and doesnt deal with Distributor
+			//if (this.StreamingDataSnapshot != null) {
+			//    string msg1 = "MUST_BE_NULL__ONLY_INITIALIZED_FOR_MarketLive_FOR_A_LIVESIM_SESSION__OTHERWIZE_MUST_BE_NULL";
+			//    Assembler.PopupException(msg1);
+			//}
+			this.StreamingDataSnapshot = this.QuikStreamingPuppet.StreamingDataSnapshot;
+
 			this.QuikLivesimDdeClient = new QuikLivesimDdeClient(this);
 			this.QuikLivesimDdeClient.DdeClient.Connect();
-			msg = "DDE_CLIENT_CONNECTED[" + this.QuikStreamingPuppet.DdeServiceName + "] TOPICS[" + this.QuikStreamingPuppet.DdeBatchSubscriber.TopicsAsString + "]";
+			string msg = "DDE_CLIENT_CONNECTED[" + this.QuikStreamingPuppet.DdeServiceName + "] TOPICS[" + this.QuikStreamingPuppet.DdeBatchSubscriber.TopicsAsString + "]";
 			Assembler.PopupException(msg + msig, null, false);
 		}
 
@@ -84,16 +89,22 @@ namespace Sq1.Adapters.QuikLivesim {
 			this.QuikLivesimDdeClient.DdeClient.Disconnect();
 			this.QuikLivesimDdeClient.DdeClient.Dispose();
 			this.QuikStreamingPuppet.UpstreamDisconnect();	// not disposed, QuikStreaming.ddeServerStart() is reusable
+
+			// YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
+			this.StreamingDataSnapshot = null;
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
-			//NOPE_REDIRECT_TO_DDE_CLIENT_ALREADY_CONNECTED_TO_QUIK_PUPPET
-			//v1 NOPE_THIS_IGNORES_LIVESIM_DELAYS_AND_DOESNT_INJECT_QUOTES_TO_FILL_ALERTS WILL_PROCEED_TO_MY_EXECUTOR_VIA_DATA_DISTRIBUTOR this.QuikLivesimDdeClient.DdeClientWillSendQuoteToDdeServer(quote);
-			
-			//v2 I_REGISTERED_MY_OWN_CONSUMER
-			//base.PushQuoteGenerated(quote);
-
 			//v3 REDIRECTING_PushQuoteGenerated_RADICAL_PARENT_DETACHED this.Level2generator.GenerateAndStoreInStreamingSnap(quote);
+
+			bool isUnpaused = this.Unpaused.WaitOne(0);
+			if (isUnpaused == false) {
+				string msg = "QuikLIVESTREAMING_CAUGHT_PAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
+				//Assembler.PopupException(msg, null, false);
+				this.Unpaused.WaitOne();
+				string msg2 = "QuikLIVESTREAMING_CAUGHT_UNPAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
+				//Assembler.PopupException(msg2, null, false);
+			}
 
 			base.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 			base.LivesimSpoiler.Spoil_priorTo_PushQuoteGenerated();
@@ -102,19 +113,9 @@ namespace Sq1.Adapters.QuikLivesim {
 				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
 			}
 
-			//v2 base.PushQuoteGenerated(quote);
-			this.QuikLivesimDdeClient.DdeClientWillSendQuoteToDdeServer(quote);
-	
-			// NO_NEED_IN_THIS_AT_ALL => STREAMING_WILL_INVALIDATE_ALL_PANELS,ORDERPROCESSOR_WILL_REBUILD_EXECUTION,EXECUTOR_REBUILDS_REPORTERS
-			//if (base.chartShadow == null) {
-			//    string msg = "DIDNT_YOU_FORGET_TO_LET_QuikStreaming_KNOW_ABOUT_CHART_CONTROL__TO_WAIT_FOR_REPAINT_COMPLETED_BEFORE_FEEDING_NEXT_QUOTE_TO_EXECUTOR_VIA_PUMP";
-			//    Assembler.PopupException(msg);
-			//    return;
-			//}
-			//12.9secOff vs 14.7secOn base.chartShadow.RefreshAllPanelsWaitFinishedSoLivesimCouldGenerateNewQuote();
-			//base.chartShadow.Invalidate();
+			//LivesimStreaming.cs does {base.PushQuoteGenerated(quote);} here
+			this.QuikLivesimDdeClient.SendQuote_DdeClientPokesDdeServer_waitServerProcessed(quote);
 
-			//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
 			AlertList notYetScheduled = base.LivesimBrokerSnap.AlertsNotYetScheduledForDelayedFillBy(quote);
 			if (notYetScheduled.Count > 0) {
 				if (quote.ParentBarStreaming != null) {
@@ -131,10 +132,6 @@ namespace Sq1.Adapters.QuikLivesim {
 
 			string msg1 = "CAN_PUSH_LEVEL2_NOW__AFTER_base.PushQuoteGenerated(quote)";
 		}
-
-
-		ConcurrentDictionaryGeneric<double, double> LevelTwoAsks { get { return base.StreamingDataSnapshot.LevelTwoAsks; } }
-		ConcurrentDictionaryGeneric<double, double> LevelTwoBids { get { return base.StreamingDataSnapshot.LevelTwoBids; } }
 
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.StreamingEditorInitializeHelper(dataSourceEditor);

@@ -49,7 +49,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		}
 
 		internal void Add_popupIfDuplicate(string columnName, object value) {
-			if (base.ContainsKey(columnName)) {
+			if (base.ContainsKey(columnName) == false) {
 				base.Add(columnName, value);
 			} else {
 				Assembler.PopupException("DUPLICATE_COLUMN_ALREADY_EXISTED [" + columnName + "]", null, false);
