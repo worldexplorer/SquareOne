@@ -36,9 +36,10 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataFeed\Dde\DdeTableGeneratorDepth.cs" />
     <Compile Include="DataFeed\Dde\DdeTableGeneratorQuotes.cs" />
     <Compile Include="DataFeed\Dde\XlDde\XlDdeTableGenerator.cs" />
-    <Compile Include="DataFeed\QuikLivesimDdeClient.cs" />
+    <Compile Include="DataFeed\QuikLivesimBatchPublisher.cs" />
     <Compile Include="DataFeed\QuikLivesimStreaming.CoreCallbacks.cs">
       <DependentUpon>QuikLivesimStreaming.cs</DependentUpon>
     </Compile>

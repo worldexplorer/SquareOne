@@ -49,6 +49,7 @@ namespace Sq1.Adapters.Quik {
 					//this.StatusReporter.UpdateConnectionStatus(ConnectionState.OK, 0, msg);
 					return;
 				}
+				// NO_SERVER_ISNOT_STARTED_HERE_YET NB adding another DdeConversation into the registered DDE server - is NDDE capable of registering receiving topics on-the-fly?
 				this.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolAdd(symbol);
 			}
 		}

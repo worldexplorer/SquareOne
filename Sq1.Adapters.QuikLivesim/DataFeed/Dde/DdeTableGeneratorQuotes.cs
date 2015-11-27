@@ -1,23 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Sq1.Adapters.QuikLivesim;
-using Sq1.Adapters.Quik.Dde;
-using Sq1.Adapters.QuikLiveism.Dde;
-using Sq1.Core.DataTypes;
+using NDde;
+using NDde.Client;
+
 using Sq1.Core;
+using Sq1.Core.DataTypes;
 using Sq1.Core.Backtesting;
+
+using Sq1.Adapters.Quik.Dde;
+using Sq1.Adapters.QuikLivesim;
+using Sq1.Adapters.QuikLiveism.Dde;
 
 namespace Sq1.Adapters.QuikLivesim.Dde {
 	public class DdeTableGeneratorQuotes : XlDdeTableGenerator {
 		protected override string DdeGeneratorClassName { get { return "DdeTableGeneratorQuotes"; } }
 
-		public DdeTableGeneratorQuotes(string topic, QuikLivesimStreaming quikLivesimStreaming) : base(topic, quikLivesimStreaming) {
+		public DdeTableGeneratorQuotes(string ddeService, string ddeTopic, QuikLivesimStreaming quikLivesimStreaming) : base(ddeService, ddeTopic, quikLivesimStreaming) {
 			base.Initialize(TableDefinitions.XlColumnsForTable_Quotes);
 		}
 
-		public override void OutgoingObjectBufferize_eachRow(object quoteAsObject) {
-			string msig = " //OutgoingObjectBufferizeAndSend(" + quoteAsObject + ")";
+		public void OutgoingObjectBufferize_eachRow(object quoteAsObject) {
+			string msig = " //" + this.DdeGeneratorClassName + ".OutgoingObjectBufferize_eachRow(" + quoteAsObject + ")";
 			if (quoteAsObject == null) {
 				Assembler.PopupException("MUST_NOT_BE_NULL" + msig);
 				return;
@@ -55,8 +59,34 @@ namespace Sq1.Adapters.QuikLivesim.Dde {
 			//base.XlWriter.Put("stepprice",	quote.Symbol);
 		}
 
-		internal byte[] GetXlDdeMessage() {
-			return this.XlWriter.ConvertToXlDdeMessage();
+		internal void Send_DdeClientPokesDdeServer_waitServerProcessed(QuoteGenerated quote) {
+			try {
+				base.OutgoingTableBegin();
+				this.OutgoingObjectBufferize_eachRow(quote);
+				base.OutgoingTableTerminate();
+
+				byte[] bufferToSend = base.XlWriter.ConvertToXlDdeMessage();
+				
+				//IRANAI_DES IAsyncResult handle = this.DdeClient.BeginPoke("item-quote", bufferToSend, 0, new AsyncCallback(this.ddePokeAsyncCallback), this);
+				IAsyncResult handle = base.DdeClient.BeginPoke("item-quote", bufferToSend, 0, null, this);
+	
+				bool isCompleted_hereNo		= handle.IsCompleted;
+				// this.DdeClient.EndPoke(handle) is waiting for DdeServer.OnPoke() to return PokeResult.Processed;
+				// with straight (non-threaded) QuotePump that means Strategy.OnQuote() has returned
+				this.DdeClient.EndPoke(handle);		//SYNCHRONOUS_IS_EASIER_TO_DEBUG
+				//bool completedSynchronously_hereFalse_noIdea	= handle.CompletedSynchronously;
+				bool isCompleted_hereYes	= handle.IsCompleted;
+			} catch (ArgumentNullException ex) {
+				Assembler.PopupException("This is thrown when item or data is a null reference.", ex);
+			} catch (ArgumentException ex) {
+				Assembler.PopupException("This is thown when item exceeds 255 characters.", ex);
+			} catch (InvalidOperationException ex) {
+				Assembler.PopupException("This is thrown when the client is not connected.", ex);
+			} catch (DdeException ex) {
+				Assembler.PopupException("This is thrown when the asynchronous operation could not begin.", ex);
+			} catch (Exception ex) {
+				Assembler.PopupException("UNKNOWN_ERROR_DDE_CLIENT_BEGIN_POKE", ex);
+			}
 		}
 	}
 }

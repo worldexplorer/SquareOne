@@ -41,20 +41,20 @@
       "panelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 40
+        "Distance": 27
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "panelLevel2": {
+      "multiSplitContainerRows": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
         "Distance": 0
       },
-      "multiSplitContainerRows": {
+      "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 62
+        "Distance": 857
       }
     },
     "Name": "Default",

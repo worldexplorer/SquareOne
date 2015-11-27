@@ -15,7 +15,7 @@ namespace Sq1.Adapters.Quik.Dde {
 
 		public DdeTableQuotes(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns) {}
 
-		protected override void IncomingRowParsedDelivered(XlRowParsed row) {
+		protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
 			//if (rowParsed["SHORTNAME"] == "LKOH") {
 			//	int a = 1;
 			//}

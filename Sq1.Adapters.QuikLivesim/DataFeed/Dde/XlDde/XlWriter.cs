@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
+
 using Sq1.Adapters.Quik.Dde.XlDde;
 using Sq1.Adapters.QuikLiveism.Dde;
 
@@ -20,6 +21,7 @@ namespace Sq1.Adapters.QuikLivesim.Dde.XlDde {
 		Dictionary<string, XlColumn>		XlColumnsLookup			{ get { return this.xlDdeTableGenerator.ColumnsLookup; } }
 
 		int									currentColumn;
+		int									currentRow;
 		
 		List<Dictionary<string, object>>	rows;
 
@@ -29,7 +31,8 @@ namespace Sq1.Adapters.QuikLivesim.Dde.XlDde {
 			this.ms = new MemoryStream();
 			this.bw = new BinaryWriter(this.ms, Encoding.ASCII);
 			this.rows = new List<Dictionary<string, object>>();
-			this.currentColumn = -1;
+			this.currentColumn	= -1;
+			this.currentRow		= -1;
 		}
 		public XlWriter(XlDdeTableGenerator xlDdeTableGenerator) : this() {
 			this.xlDdeTableGenerator = xlDdeTableGenerator;
@@ -49,7 +52,10 @@ namespace Sq1.Adapters.QuikLivesim.Dde.XlDde {
 			this.bw.Write((UInt16)this.XlColumnsDescription.Count);	// [6-8] number of columns
 
 			// flushing the header
+			int currentRowWhileFlushing = 1;
+			int currentColumnWhileFlushing = 0;
 			foreach (XlColumn col in this.XlColumnsDescription) {
+				currentColumnWhileFlushing++;
 				this.bw.Write((UInt16)XlBlockType.String);
 				string colName = col.Name;
 				if (colName.Length > 255) colName = colName.Substring(0, 255);
@@ -59,7 +65,10 @@ namespace Sq1.Adapters.QuikLivesim.Dde.XlDde {
 
 			// flushing rows (at least one empty, appended in the constructor)
 			foreach (Dictionary<string, object> row in rows) {
+				currentRowWhileFlushing++;
+				currentColumnWhileFlushing = 0;
 				foreach (XlColumn col in this.XlColumnsDescription) {
+					currentColumnWhileFlushing++;
 					if (row.ContainsKey(col.Name) == false) {
 						this.bw.Write((UInt16)XlBlockType.Blank);
 						this.bw.Write((UInt16)2);		//blank is 2 bytes wide
@@ -68,6 +77,14 @@ namespace Sq1.Adapters.QuikLivesim.Dde.XlDde {
 					}
 
 					object cell = row[col.Name];
+
+					if (col.Mandatory == false && cell == null) {
+						this.bw.Write((UInt16)XlBlockType.Blank);
+						this.bw.Write((UInt16)2);		//blank is 2 bytes wide
+						this.bw.Write((UInt16)0xFF);	//and can contain whatever => ignored
+						continue;
+					}
+		
 					this.bw.Write((UInt16)col.TypeExpected);
 					try {
 						switch (col.TypeExpected) {
@@ -123,6 +140,7 @@ namespace Sq1.Adapters.QuikLivesim.Dde.XlDde {
 				return;
 			}
 			this.currentColumn = 0;
+			this.currentRow++;
 			this.rows.Add(new Dictionary<string, object>());
 		}
 
@@ -139,7 +157,16 @@ namespace Sq1.Adapters.QuikLivesim.Dde.XlDde {
 			}
 
 			XlColumn colForName = this.XlColumnsLookup[colName];
-			string msig = " IS_[" + value.GetType() + "] //Put(" + colName + ", " + value + ")";
+
+			string type = value == null ? "NULL" : value.GetType().Name;
+			string msig = " IS_[" + type + "] //Put(" + colName + ", " + value + ")";
+
+			if (value == null && colForName.Mandatory == false) {
+				this.rowLast.Add(colName, value);	//yes add null
+				this.currentColumn++;
+				return;
+			}
+
 			switch (colForName.TypeExpected) {
 				case XlBlockType.Float:
 					if ((value is double) == false) {
@@ -165,8 +192,13 @@ namespace Sq1.Adapters.QuikLivesim.Dde.XlDde {
 						return;
 					}
 					break;
+				case XlBlockType.Blank:
+					if (value != null) {
+						Assembler.PopupException("MUST_BE_NULL");
+						return;
+					}
+					break;
 				case XlBlockType.Error:		break;
-				case XlBlockType.Blank:		break;
 				case XlBlockType.Skip:		break;
 				case XlBlockType.Table:		break;
 				//case XlBlockType.Unknown:	break;

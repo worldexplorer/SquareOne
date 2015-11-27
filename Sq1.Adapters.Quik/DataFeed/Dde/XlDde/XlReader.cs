@@ -131,5 +131,9 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			br.Dispose();
 			ms.Dispose();
 		}
+
+		internal void Rewind() {
+			this.ms.Seek(0, SeekOrigin.Begin);
+		}
 	}
 }

@@ -40,26 +40,24 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 
 			this.IncomingTableBegun();
 			using (XlReader reader = new XlReader(data)) {
-				this.FillTable_readParseMessage(reader);
+				this.ParseMessage_readAsTable_convertEachRowToDataStructures(reader);
 			}
 			this.IncomingTableTerminated();
 		}
-		protected virtual void FillTable_readParseMessage(XlReader reader) {
+		protected virtual void ParseMessage_readAsTable_convertEachRowToDataStructures(XlReader reader) {
 			// IDENTIFY_EACH_NEW_MESSAGE_DONT_CACHE if (this.ColumnsIdentified == false) {
 				this.ColumnsIdentified = this.identifyColumnsByReadingHeader(reader);
-				if (this.ColumnsIdentified == false) return;
+				if (this.ColumnsIdentified == false) {
+					reader.Rewind();
+					this.ColumnsIdentified = this.identifyColumnsByReadingHeader(reader, true);
+					return;
+				}
 				if (reader.RowsCount == 1) return;
 			//}
 
 			for (int i = 1; i < reader.RowsCount; i++) {
 				XlRowParsed rowParsed = this.parseRow(reader);
 				if (rowParsed == null || rowParsed.Count == 0) continue;
-				string columnName = ColumnDefinitions[0].Name;
-				if (rowParsed[columnName] == null) continue;
-				if (rowParsed[columnName] is string) {
-					string cellParced = (string) rowParsed[columnName];
-					if (cellParced == columnName) continue;
-				}
 
 				#region CONSISTENCY_CHECK
 				foreach (XlColumn col in this.ColumnDefinitions) {
@@ -87,14 +85,14 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 				#endregion
 
 				try {
-					this.IncomingRowParsedDelivered(rowParsed);
+					this.IncomingTableRow_convertToDataStructure(rowParsed);
 				} catch (Exception ex) {
 					string msg = "[" + this.LastDataReceived.ToString("HH:mm:ss.fff ddd dd MMM yyyy") + "]";
 					Assembler.PopupException(msg, ex);
 				}
 			}
 		}
-		protected bool identifyColumnsByReadingHeader(XlReader reader) {
+		protected bool identifyColumnsByReadingHeader(XlReader reader, bool debugMandatoryNotFound = false) {
 			bool ret = false;
 			List<XlColumn> mandatoriesNotFound = new List<XlColumn>();
 			this.ColumnClonesFoundByIndex.Clear();
@@ -123,6 +121,9 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 					colFound.IndexFound = colSerno;
 					this.ColumnClonesFoundByIndex.Add(colSerno, colFound);
 					if (mandatoriesNotFound.Contains(colDef)) mandatoriesNotFound.Remove(colDef);
+					if (debugMandatoryNotFound) {
+						Assembler.PopupException("MANDATORY_NOT_FOUND");
+					}
 					break;
 				}
 			}
@@ -154,7 +155,12 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 
 				
 				if (reader.BlockType == XlBlockType.Blank) {
-					rowParsed.Add_popupIfDuplicate(xlCol.Name, null);
+					switch (xlCol.TypeExpected) {
+						case XlBlockType.Float:		rowParsed.Add_popupIfDuplicate(xlCol.Name, double.NaN);	break;
+						//case XlBlockType.String:	rowParsed.Add_popupIfDuplicate(xlCol.Name, double.NaN);	break;
+						//case XlBlockType.Bool:		rowParsed.Add_popupIfDuplicate(xlCol.Name, double.NaN);	break;
+						default:					rowParsed.Add_popupIfDuplicate(xlCol.Name, null);		break;
+					}
 					continue;
 				}
 
@@ -176,7 +182,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		}
 
 		protected virtual void IncomingTableBegun() { }
-		protected abstract void IncomingRowParsedDelivered(XlRowParsed row);	// you can push to Streaming here (doesn't make sense to commit quotes to QuikStreaming as a table)
+		protected abstract void IncomingTableRow_convertToDataStructure(XlRowParsed row);	// you can push to Streaming here (doesn't make sense to commit quotes to QuikStreaming as a table)
 		protected virtual void IncomingTableTerminated() { }				//  or you can push to Streaming here (it is more consistent to unlock per-symbol DepthOfMarket as whole table so that QuikStreaming Level2 consumers will get the whole frame at once)
 
 		public override string ToString() {

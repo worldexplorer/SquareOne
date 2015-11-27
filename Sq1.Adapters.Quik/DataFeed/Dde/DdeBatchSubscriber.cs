@@ -22,12 +22,24 @@ namespace Sq1.Adapters.Quik.Dde {
 			this.tables_CommonForAllSymbols_Add();
 		}
 		public void TableIndividual_DepthOfMarket_ForSymbolAdd(string symbol) {
-			if (this.individualTablesBySymbol.ContainsKey(symbol)) return;
-			string domTopic				= this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicPrefixDom + "-" + symbol;
+			if (this.individualTablesBySymbol.ContainsKey(symbol)) {
+				string msg = "YOU_ALREADY_SUBSCRIBED_DOM_FOR_SYMBOL [" + symbol + "]";
+				Assembler.PopupException(msg);
+				return;
+			}
+			string domTopic = this.GetDomTopicForSymbol(symbol);
 			DdeTableDepth channelDom	= new DdeTableDepth(domTopic, this.quikStreamingAdapter, TableDefinitions.XlColumnsForTable_DepthOfMarketPerSymbol, symbol);
 			this.quikStreamingAdapter.DdeServer.TableAdd(domTopic, channelDom);
 			this.individualTablesBySymbol.Add(symbol, new List<XlDdeTable>() { channelDom });
 			channelDom.ReceivingDataDde = true;
+		}
+
+		public string GetDomTopicForSymbol(string symbol) {
+			if (string.IsNullOrEmpty(symbol)) {
+				Assembler.PopupException("SYMBOL_MUST_NOT_BE_NULL //GetDomTopicForSymbol(" + symbol + ")");
+				return null;
+			}
+			return this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicPrefixDom + "-" + symbol;
 		}
 		public void TableIndividual_DepthOfMarket_ForSymbolRemove(string symbol) {
 			if (this.individualTablesBySymbol.ContainsKey(symbol) == false) return;

@@ -44,9 +44,9 @@ namespace Sq1.Adapters.Quik.Dde {
 
 		public static List<XlColumn> XlColumnsForTable_DepthOfMarketPerSymbol { get {
 			return  new List<XlColumn>() {
-				new XlColumn(XlBlockType.Float,		"SELL_VOLUME",	true),
+				new XlColumn(XlBlockType.Float,		"SELL_VOLUME",	false),		// will be null@Write/Blank@Read  for levelTwoBids
 				new XlColumn(XlBlockType.Float,		"PRICE",		true),
-				new XlColumn(XlBlockType.Float,		"BUY_VOLUME",	true),
+				new XlColumn(XlBlockType.Float,		"BUY_VOLUME",	false),		// will be null@Write/Blank@Read  for levelTwoAsks
 			};
 		} }
 

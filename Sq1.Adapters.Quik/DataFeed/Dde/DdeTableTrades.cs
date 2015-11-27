@@ -9,7 +9,7 @@ namespace Sq1.Adapters.Quik.Dde {
 
 		public DdeTableTrades(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns) {}
 
-		protected override void IncomingRowParsedDelivered(XlRowParsed row) {
+		protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
 			QuikTrade quikTrade			= new QuikTrade(this.DdeConsumerClassName + " Topic[" + base.Topic + "]");
 
 			quikTrade.Symbol			= (string)row["SECCODE"];

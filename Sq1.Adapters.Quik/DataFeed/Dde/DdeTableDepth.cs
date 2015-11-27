@@ -24,19 +24,22 @@ namespace Sq1.Adapters.Quik.Dde {
 			this.levelTwoBids.WaitAndLockFor(this, "IncomingTableBegun");
 		}
 		protected override void IncomingTableTerminated() {
-			this.levelTwoAsks.UnLockFor(this, "IncomingTableTerminated");
-			this.levelTwoBids.UnLockFor(this, "IncomingTableTerminated");
+			this.levelTwoAsks.UnLockFor(this, "IncomingTableBegun");
+			this.levelTwoBids.UnLockFor(this, "IncomingTableBegun");
 			string msg = "send a notify event or Chart is already Wait(indefinitely)'ing to get a FrozenHalfs  and go draw them?...";
+
+			// is ChartControl.chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline() invoked?
+			//base.QuikStreaming.(quikQuote);
 		}
 
-		protected override void IncomingRowParsedDelivered(XlRowParsed row) {
+		protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
 			double bidVolume	= (double)row["SELL_VOLUME"];
-			double askVolume	= (double)row["BUY_VOLUME"];
 			double price		= (double)row["PRICE"];
-			if (double.IsNaN(bidVolume) == false) {
+			double askVolume	= (double)row["BUY_VOLUME"];
+			if (double.IsNaN(bidVolume) == false) {		// where Blank become NaN?
 				base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids.Add(price, bidVolume, this, "IncomingRowParsedPush");
 			} else {
-				base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks.Add(price, bidVolume, this, "IncomingRowParsedPush");
+				base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks.Add(price, askVolume, this, "IncomingRowParsedPush");
 			}
 		}
 	}

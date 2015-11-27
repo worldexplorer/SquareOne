@@ -27,7 +27,7 @@ namespace Sq1.Adapters.QuikLivesim {
 		[JsonIgnore]	string ddeTopicsPrefix = "QuikLiveSim-";
 
 		[JsonIgnore]	public QuikStreaming		QuikStreamingPuppet;
-		[JsonIgnore]	public QuikLivesimDdeClient	QuikLivesimDdeClient;
+		[JsonIgnore]	public QuikLivesimBatchPublisher	QuikLivesimBatchPublisher;
 
 		[JsonIgnore]	ConcurrentDictionaryGeneric<double, double> LevelTwoAsks { get { return base.StreamingDataSnapshot.LevelTwoAsks; } }
 		[JsonIgnore]	ConcurrentDictionaryGeneric<double, double> LevelTwoBids { get { return base.StreamingDataSnapshot.LevelTwoBids; } }
@@ -38,6 +38,8 @@ namespace Sq1.Adapters.QuikLivesim {
 
 			//NO_DESERIALIZATION_WILL_THROW_YOULL_NULLIFY_ME_IN_UpstreamConnect YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
 			//this.StreamingDataSnapshot = null;
+
+			this.Level2generator = new LevelTwoGenerator();		// this one has it's own LevelTwoAsks,LevelTwoBids NOT_REDIRECTED to StreamingDatasnapshot => sending Level2 via DDE to QuikStreaming.StreamingDatasnapshot
 		}
 
 		public QuikLivesimStreaming(LivesimDataSource livesimDataSource) : base(livesimDataSource) {
@@ -76,18 +78,18 @@ namespace Sq1.Adapters.QuikLivesim {
 			//}
 			this.StreamingDataSnapshot = this.QuikStreamingPuppet.StreamingDataSnapshot;
 
-			this.QuikLivesimDdeClient = new QuikLivesimDdeClient(this);
-			this.QuikLivesimDdeClient.DdeClient.Connect();
-			string msg = "DDE_CLIENT_CONNECTED[" + this.QuikStreamingPuppet.DdeServiceName + "] TOPICS[" + this.QuikStreamingPuppet.DdeBatchSubscriber.TopicsAsString + "]";
-			Assembler.PopupException(msg + msig, null, false);
+			this.QuikLivesimBatchPublisher = new QuikLivesimBatchPublisher(this);
+			this.QuikLivesimBatchPublisher.ConnectAll();
+			//string msg = "ALL_DDE_CLIENTS_CONNECTED[" + this.QuikStreamingPuppet.DdeServiceName + "] TOPICS[" + this.QuikStreamingPuppet.DdeBatchSubscriber.TopicsAsString + "]";
+			//Assembler.PopupException(msg + msig, null, false);
 		}
 
 		public override void UpstreamDisconnect_LivesimEnded() {
 			string msig = " //UpstreamDisconnect_LivesimEnded(" + this.ToString() + ")";
 			string msg = "Disposing QuikStreaming with prefixed DDE tables [...]";
 			Assembler.PopupException(msg + msig, null, false);
-			this.QuikLivesimDdeClient.DdeClient.Disconnect();
-			this.QuikLivesimDdeClient.DdeClient.Dispose();
+			this.QuikLivesimBatchPublisher.DisconnectAll();
+			this.QuikLivesimBatchPublisher.DisposeAll();
 			this.QuikStreamingPuppet.UpstreamDisconnect();	// not disposed, QuikStreaming.ddeServerStart() is reusable
 
 			// YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
@@ -95,27 +97,38 @@ namespace Sq1.Adapters.QuikLivesim {
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
-			//v3 REDIRECTING_PushQuoteGenerated_RADICAL_PARENT_DETACHED this.Level2generator.GenerateAndStoreInStreamingSnap(quote);
-
+			#region otherwize LivesimulatorForm.PAUSE button doesn't pause livesim (copypaste from LivesimStreaming)
 			bool isUnpaused = this.Unpaused.WaitOne(0);
 			if (isUnpaused == false) {
 				string msg = "QuikLIVESTREAMING_CAUGHT_PAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
 				//Assembler.PopupException(msg, null, false);
-				this.Unpaused.WaitOne();
+				this.Unpaused.WaitOne();	// 1CORE=100% while Livesim Paused
+
+
 				string msg2 = "QuikLIVESTREAMING_CAUGHT_UNPAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
 				//Assembler.PopupException(msg2, null, false);
 			}
 
-			base.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
+			base.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
 			base.LivesimSpoiler.Spoil_priorTo_PushQuoteGenerated();
 
 			if (quote.IamInjectedToFillPendingAlerts) {
 				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
 			}
+			#endregion
 
 			//LivesimStreaming.cs does {base.PushQuoteGenerated(quote);} here
-			this.QuikLivesimDdeClient.SendQuote_DdeClientPokesDdeServer_waitServerProcessed(quote);
 
+			
+			string msg1 = "I_PREFER_TO_PUSH_LEVEL2_NOW__BEFORE_base.PushQuoteGenerated(quote)";
+			//v3 REDIRECTING_PushQuoteGenerated_RADICAL_PARENT_DETACHED base.Level2generator.GenerateAndStoreInStreamingSnap(quote);
+			base.Level2generator.GenerateForQuote(quote);
+			this.QuikLivesimBatchPublisher.SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(base.Level2generator.LevelTwoAsks, base.Level2generator.LevelTwoBids);
+
+
+			this.QuikLivesimBatchPublisher.SendQuote_DdeClientPokesDdeServer_waitServerProcessed(quote);
+
+			#region otherwize injectQuotesToFillPendings doesn't get invoked (copypaste from LivesimStreaming)
 			AlertList notYetScheduled = base.LivesimBrokerSnap.AlertsNotYetScheduledForDelayedFillBy(quote);
 			if (notYetScheduled.Count > 0) {
 				if (quote.ParentBarStreaming != null) {
@@ -129,8 +142,7 @@ namespace Sq1.Adapters.QuikLivesim {
 
 			base.LivesimSpoiler.Spoil_after_PushQuoteGenerated();
 			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
-
-			string msg1 = "CAN_PUSH_LEVEL2_NOW__AFTER_base.PushQuoteGenerated(quote)";
+			#endregion
 		}
 
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {

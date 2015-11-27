@@ -23,16 +23,16 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			this.tablesByTopic.Remove(topic);
 		}
 		protected override bool OnBeforeConnect(string topic) {
-			string msig = " //OnBeforeConnect(" + topic + ")";
+			string msig = " //OnBeforeConnect(" + topic + ") " + this.ToString();
 			bool readyToAccept = this.tablesByTopic.ContainsKey(topic);
 			if (readyToAccept == false) {
-				string msg = "QUIK_REQUESTS_TO_ACCEPT_TOPIC_IM_NOT_SUBSCRIBED_TO";
+				string msg = "QUIK_REQUESTS_TO_ACCEPT_TOPIC_IM_NOT_SUBSCRIBED_TO USE_XlDdeServer.TableAdd(" + topic + ",new{DdeTableXXX:XlDdeTable})";
 				Assembler.PopupException(msg + msig, null, false);
 			}
 			return readyToAccept;
 		}
 		protected override void OnAfterConnect(DdeConversation c) {
-			string msig = " //OnAfterConnect(" + c.Topic + ")";
+			string msig = " //OnAfterConnect(" + c.Topic + ") " + this.ToString();
 			if (this.tablesByTopic.ContainsKey(c.Topic) == false) {
 				string msg = "TABLE_DISAPPEARED_FOR_TOPIC";
 				Assembler.PopupException(msg + msig, null, false);
@@ -41,18 +41,28 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			XlDdeTable table = this.tablesByTopic[c.Topic];
 			c.Tag = table;
 			table.ReceivingDataDde = true;
+			string msg1 = "DDE_SERVER_CONNECTED_TO_TOPIC[" + c.Topic + "]";
+			Assembler.PopupException(msg1 + msig, null, false);
 		}
 		protected override void OnDisconnect(DdeConversation c) {
-			string msig = " //OnDisconnect(" + c.Topic + ")";
+			string msig = " //OnDisconnect(" + c.Topic + ") " + this.ToString();
 			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
 			tableRecipient.ReceivingDataDde = false;
-			string msg = "TABLE_MAGICALLY_REMOVED_FOR_TOPIC";
+			string msg = "DDE_SERVER_DISCONNECTED_FROM_TOPIC[" + c.Topic + "]";
 			Assembler.PopupException(msg + msig, null, false);
 		}
 		protected override PokeResult OnPoke(DdeConversation c, string item, byte[] data, int format) { lock(this.lockSynchronousPoke) {	// NOT_NEEDED_BUT_I_WANT_TO_MAKE_SURE__REMOVE_IF_TOO_SLOW
 			string msig = " //OnPoke(" + c.Topic + "," + item + ")";
 			//if(format != xlTableFormat) return PokeResult.NotProcessed;
 			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
+			
+			// only for QuikLivesimStreaming
+			if (item.Contains("level2") && tableRecipient is DdeTableDepth == false) {
+				string msg = "NDDE_WRONGLY_ASSOCIATED_THE_MESSAGE_RECEIVED_WITH DdeConversation[" + c.Topic + "]"
+					+ " MUST_BE_DdeTableDepth_GOT[" + tableRecipient.ToString() + "]";
+				Assembler.PopupException(msg);
+			}
+			
 			try {
 				// SET_QUOTE_PUMP_STRAIGHT_NO_SEPARATE_THREAD
 				tableRecipient.ParseDeliveredDdeData_pushToStreaming(data);
