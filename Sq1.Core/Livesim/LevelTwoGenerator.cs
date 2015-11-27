@@ -5,32 +5,29 @@ using Sq1.Core.Support;
 using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Livesim {
-	public class LivesimLevelTwoGenerator {
-		LivesimStreaming	livesimStreaming;
+	public class LevelTwoGenerator {
 		SymbolInfo			symbolInfo;
-
-		int					levelsToGenerate;
 		double				stepSize;
 		double				stepPrice;
+		int					levelsToGenerate;
 
-		ConcurrentDictionaryGeneric<double, double> LevelTwoAsks { get { return this.livesimStreaming.StreamingDataSnapshot.LevelTwoAsks; } }
-		ConcurrentDictionaryGeneric<double, double> LevelTwoBids { get { return this.livesimStreaming.StreamingDataSnapshot.LevelTwoBids; } }
+		public	ConcurrentDictionaryGeneric<double, double> LevelTwoAsks	{ get; protected set; }
+		public	ConcurrentDictionaryGeneric<double, double> LevelTwoBids	{ get; protected set; }
 
-		private LivesimLevelTwoGenerator() {
+		public LevelTwoGenerator() {
 			levelsToGenerate = 5;
+			LevelTwoAsks = new ConcurrentDictionaryGeneric<double, double>("LevelTwoAsks_FOR_QuikLivesimStreaming");
+			LevelTwoBids = new ConcurrentDictionaryGeneric<double, double>("LevelTwoBids_FOR_QuikLivesimStreaming");
 		}
-		public LivesimLevelTwoGenerator(LivesimStreaming livesimStreaming) : this() {
-			this.livesimStreaming = livesimStreaming;
-		}
-		public void Initialize(SymbolInfo symbolInfo, int levelsToGenerate, double stepPrice, double stepSize) {
+		public void Initialize(SymbolInfo symbolInfo, int levelsToGenerate) {
 			this.symbolInfo			= symbolInfo;
+			this.stepPrice			= this.symbolInfo.PriceStepFromDecimal;
+			this.stepSize			= this.symbolInfo.VolumeStepFromDecimal;
 			this.levelsToGenerate	= levelsToGenerate;
-			this.stepPrice			= stepPrice;
-			this.stepSize			= stepSize;
 		}
-		public void GenerateAndStoreInStreamingSnap(QuoteGenerated quote) {
-			this.LevelTwoBids.Clear(this, "GenerateAndStoreInStreamingSnap(" + quote + ")");
-			this.LevelTwoAsks.Clear(this, "GenerateAndStoreInStreamingSnap(" + quote + ")");
+		public void GenerateForQuote(QuoteGenerated quote) {
+			if (this.LevelTwoBids.Count(this, "GenerateForQuote(" + quote + ")") > 0) this.LevelTwoBids.Clear(this, "GenerateForQuote(" + quote + ")");
+			if (this.LevelTwoAsks.Count(this, "GenerateForQuote(" + quote + ")") > 0) this.LevelTwoAsks.Clear(this, "GenerateForQuote(" + quote + ")");
 
 			double sizeAsk = quote.Size;
 			double sizeBid = quote.Size;

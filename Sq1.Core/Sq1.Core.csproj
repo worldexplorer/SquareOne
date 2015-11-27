@@ -102,6 +102,7 @@
     <Compile Include="Correlation\KPIsCalculator.cs" />
     <Compile Include="Correlation\MomentumsCalculator.cs" />
     <Compile Include="Correlation\KPIsMomentum.cs" />
+    <Compile Include="Livesim\LevelTwoGenerator.cs" />
     <Compile Include="Livesim\LivesimBroker.Paranoid.cs">
       <DependentUpon>LivesimBroker.cs</DependentUpon>
     </Compile>
@@ -176,7 +177,7 @@
     <Compile Include="Indicators\IndicatorParameterEventArgs.cs" />
     <Compile Include="Livesim\LivesimBroker.cs" />
     <Compile Include="Livesim\LivesimDataSource.cs" />
-    <Compile Include="Livesim\LivesimLevelTwoGenerator.cs" />
+    <Compile Include="Livesim\LevelTwoGeneratorLivesim.cs" />
     <Compile Include="Livesim\LivesimQuoteBarConsumer.cs">
       <SubType>Code</SubType>
     </Compile>
