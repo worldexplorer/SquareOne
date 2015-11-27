@@ -16,9 +16,8 @@ namespace Sq1.Core.Livesim {
 	public partial class LivesimStreaming : BacktestStreaming, IDisposable {
 		// without [JsonIgnore] Livesim children will have these properties in JSON
 		[JsonIgnore]	public		ManualResetEvent			Unpaused			{ get; private set; }
-		[JsonIgnore]				ChartShadow					chartShadow;
+		[JsonIgnore]				ChartShadow					chartShadow_notUsed;
 		[JsonIgnore]				LivesimDataSource			livesimDataSource;
-		[JsonIgnore]				ScriptExecutor				executor			{ get { return this.livesimDataSource.Executor; } }
 		[JsonIgnore]	public		Livesimulator				Livesimulator		{ get { return this.livesimDataSource.Executor.Livesimulator; } }
 		[JsonIgnore]	internal	LivesimStreamingSettings	LivesimSettings		{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
 
@@ -26,7 +25,7 @@ namespace Sq1.Core.Livesim {
 		[JsonIgnore]	protected	LivesimBroker				LivesimBroker		{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe; } }
 		[JsonIgnore]	protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap	{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe.DataSnapshot; } }
 
-		[JsonIgnore]	protected	LivesimLevelTwoGenerator	Level2generator;
+		[JsonIgnore]	protected	LevelTwoGenerator			Level2generator;
 		[JsonIgnore]	protected	LivesimSpoiler				LivesimSpoiler;
 		[JsonIgnore]	public bool IsDisposed { get; private set; }
 
@@ -40,7 +39,7 @@ namespace Sq1.Core.Livesim {
 			base.QuotePumpSeparatePushingThreadEnabled = false;
 			this.Unpaused = new ManualResetEvent(true);
 			this.livesimDataSource = livesimDataSource;
-			this.Level2generator = new LivesimLevelTwoGenerator(this);
+			this.Level2generator = new LevelTwoGeneratorLivesim(this);
 			this.LivesimSpoiler = new LivesimSpoiler(this);
 		}
 
@@ -51,13 +50,33 @@ namespace Sq1.Core.Livesim {
 			base.Name = "LivesimStreaming-child_ACTIVATOR_DLL-SCANNED";
 		}
 
+		// invoked after LivesimFormShow(), but must have meaning "Executor.Bars changed"...
 		public void Initialize(ChartShadow chartShadow) {
-			this.chartShadow = chartShadow;
-			double stepPrice = this.chartShadow.Bars.SymbolInfo.PriceStepFromDecimal;
-			double stepSize  = this.chartShadow.Bars.SymbolInfo.VolumeStepFromDecimal;
-			SymbolInfo symbolInfo = this.chartShadow.Executor.Bars.SymbolInfo;	//LivesimLevelTwoGenerator needs to align price and volume to Levels
-			int howMany = chartShadow.Executor.Strategy.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
-			this.Level2generator.Initialize(symbolInfo, howMany, stepPrice, stepSize);
+			this.chartShadow_notUsed = chartShadow;
+
+			//v1 why did you do it so messy?....
+			//double stepPrice = this.chartShadow_notUsed.Bars.SymbolInfo.PriceStepFromDecimal;
+			//double stepSize  = this.chartShadow_notUsed.Bars.SymbolInfo.VolumeStepFromDecimal;
+			//SymbolInfo symbolInfo_fromExecutor = this.chartShadow_notUsed.Executor.Bars.SymbolInfo;	//LivesimLevelTwoGenerator needs to align price and volume to Levels
+			//int howMany = this.chartShadow_notUsed.Executor.Strategy.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
+			//this.Level2generator.Initialize(symbolInfo_fromExecutor, howMany, stepPrice, stepSize);
+			if (this.chartShadow_notUsed.Executor != this.livesimDataSource.Executor) {
+				string msg = "IS_THIS_WHAT_YOU_WANTED_TO_AVOID#1_AND_CREATED_THE_MESS_ABOVE?... YOU_ARE_FORGIVEN__NOW_JUST_FIX_IT";
+				Assembler.PopupException(msg);
+			}
+			//YES_THEY_ARE_DIFFERENT if (this.chartShadow_notUsed.Executor.Bars != this.chartShadow_notUsed.Bars) {
+			//    string msg = "IS_THIS_WHAT_YOU_WANTED_TO_AVOID#2_AND_CREATED_THE_MESS_ABOVE?... YOU_ARE_FORGIVEN__NOW_JUST_FIX_IT";
+			//    Assembler.PopupException(msg);
+			//}
+			if (this.chartShadow_notUsed.Executor.Bars.SymbolInfo != this.chartShadow_notUsed.Bars.SymbolInfo) {
+				string msg = "IS_THIS_WHAT_YOU_WANTED_TO_AVOID#3_AND_CREATED_THE_MESS_ABOVE?... YOU_ARE_FORGIVEN__NOW_JUST_FIX_IT";
+				Assembler.PopupException(msg);
+			}
+
+			//v2
+			SymbolInfo symbolInfo_fromExecutor = this.livesimDataSource.Executor.Bars.SymbolInfo;
+			int howMany = this.LivesimSettings.LevelTwoLevelsToGenerate;
+			this.Level2generator.Initialize(symbolInfo_fromExecutor, howMany);
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
@@ -70,16 +89,16 @@ namespace Sq1.Core.Livesim {
 				//Assembler.PopupException(msg2, null, false);
 			}
 
-			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
+			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
 			this.LivesimSpoiler.Spoil_priorTo_PushQuoteGenerated();
 
 			if (quote.IamInjectedToFillPendingAlerts) {
 				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
 			}
-			this.Level2generator.GenerateAndStoreInStreamingSnap(quote);
+			this.Level2generator.GenerateForQuote(quote);
 			base.PushQuoteGenerated(quote);
 	
-			if (this.chartShadow == null) {
+			if (this.chartShadow_notUsed == null) {
 				string msg = "YOU_FORGOT_TO_LET_LivesimStreaming_KNOW_ABOUT_CHART_CONTROL__TO_WAIT_FOR_REPAINT_COMPLETED_BEFORE_FEEDING_NEXT_QUOTE_TO_EXECUTOR_VIA_PUMP";
 				Assembler.PopupException(msg);
 				return;
