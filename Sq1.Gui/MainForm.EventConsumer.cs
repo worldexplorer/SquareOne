@@ -13,6 +13,7 @@ using Sq1.Widgets.LabeledTextBox;
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 using Sq1.Gui.ReportersSupport;
+using System.Threading.Tasks;
 
 namespace Sq1.Gui {
 	public partial class MainForm {
@@ -56,21 +57,56 @@ namespace Sq1.Gui {
 		}
 		void mainForm_FormClosing(object sender, FormClosingEventArgs e) {
 			string msig = " //mainForm_FormClosing()";
+			this.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad = true;
+
 			foreach (ChartFormManager eachChartManager in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				StreamingAdapter streaming = eachChartManager.Executor.DataSource.StreamingAdapter;
 				if (streaming == null) continue;
-				if (streaming is LivesimStreaming) continue;
+
+				Livesimulator livesimRunning =  eachChartManager.Executor.Livesimulator;
+				if (streaming is LivesimStreaming && livesimRunning.IsBacktestingLivesimNow) {
+					// NEVER_DO_THIS  LETS_WAIT_UNTIL_LIVESIM_RESTORES_CONTEXT continue;
+					//v1 WE_ARE_BLOCKED,MAINFORM_STAYS_OPEN_WAITING_FOREVER_FOR QuikLivesim.XlDdeTableGenerator.syncContext.Invoke(method, args) to wait while this methods returns (WindowsMessageQueue-related)
+					//v1 livesimRunning.AbortRunningBacktestWaitAborted(msig, 60 * 1000);
+					//v1 DOESNT_HELP Application.DoEvents();
+
+					//v1
+					//int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count;
+					//if (mustBeZero_AbortedOk != 0) {
+					//    string msg = "I_REFUSE_TO_CLOSE_MAINFORM CHART_STAYS_STREAMING_AND_ON_RESTART_THE_STRATEGY_GETS_BACKTESTED_WHILE_USER_DIDNT_WANT_TO mustBeZero_AbortedOk[" + mustBeZero_AbortedOk + "]";
+					//    Assembler.PopupException(msg);
+					//    e.Cancel = true;
+					//    return;
+					//}
+
+					//v2 CANCELLING_THIS_CLOSE_EVENT_COMLETELY,WAITING_LIVESIM(s)_TO_STOP_AND_GENERATING_ANOTHER_CLOSE_EVENT_AGAIN THIS_WAY_I_LET_DDE_RUN
+					Task t = new Task(delegate() {
+						livesimRunning.AbortRunningBacktestWaitAborted(msig, 60 * 1000);
+						int mustBeZero_AbortedOk = livesimRunning.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count;
+						if (mustBeZero_AbortedOk != 0) {
+						    string msg = "mustBeZero_AbortedOk[" + mustBeZero_AbortedOk + "]";
+						    Assembler.PopupException(msg, null, false);
+							//return;
+						}
+						this.BeginInvoke(new MethodInvoker(delegate { this.Close(); } ) );
+					});		//.ContinueWith({});
+					t.Start();
+
+					e.Cancel = true;
+					return;
+				}
 				try {
-					streaming.UpstreamDisconnect();
+					if (streaming.StreamingConnected) streaming.UpstreamDisconnect();
 				} catch (Exception ex) {
 					string msg = "STREAMING_THREW_WHILE_DISCONNECTING [" + streaming.ToString() + "]";
 					Assembler.PopupException(msg + msig, ex);
 				}
 			}
 			this.MainFormSerialize();
-			this.MainFormClosingSkipChartFormsRemoval = true;
 		}
-
+		void mainForm_FormClosed(object sender, FormClosedEventArgs e) {
+			Assembler.ExceptionsDuringApplicationShutdown_PopupNotepad();
+		}
 
 		void mniExceptions_Click(object sender, EventArgs e) {
 			try {

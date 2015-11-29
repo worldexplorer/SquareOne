@@ -25,7 +25,7 @@ namespace Sq1.Gui {
 		public	MainFormWorkspacesManager		WorkspacesManager;
 		public	GuiDataSnapshot					GuiDataSnapshot;
 		public	Serializer<GuiDataSnapshot>		GuiDataSnapshotSerializer;
-		public	bool							MainFormClosingSkipChartFormsRemoval;
+		public	bool							MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad;
 		public	bool							dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace { get; private set; }
 
 		public ChartForm ChartFormActiveNullUnsafe { get {

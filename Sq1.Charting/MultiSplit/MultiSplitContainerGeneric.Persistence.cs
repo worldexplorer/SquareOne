@@ -60,6 +60,7 @@ try {
 
 				MultiSplitter splitterFound = null;
 				foreach (MultiSplitter each in this.splitters) {
+					if (each.PanelBelow == null) continue;
 					if (each.PanelBelow.Name != panelName) continue;
 					splitterFound = each;
 					break;

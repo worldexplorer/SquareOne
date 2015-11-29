@@ -10,8 +10,8 @@ using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.Streaming;
 using Sq1.Core.Charting;
-using Sq1.Charting.MultiSplit;
 using Sq1.Core.DataFeed;
+using Sq1.Charting.MultiSplit;
 
 namespace Sq1.Charting {
 	public partial class ChartControl {

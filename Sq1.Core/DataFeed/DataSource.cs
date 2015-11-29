@@ -341,6 +341,12 @@ namespace Sq1.Core.DataFeed {
 			return true;
 		}
 		public bool PumpResumeNeighborsIfAnyFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
+				string msg = "I_REFUSE_TO_RESUME_PUMP_BECAUSE_IT_LEADS_TO_DEADLOCK IM_CLOSING_MAINFORM_WHILE_LIVESIM_IS_RUNNING";
+				Assembler.PopupException(msg, null, false);
+				return false;
+			}
+
 			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelForNullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel == null) return false;
 

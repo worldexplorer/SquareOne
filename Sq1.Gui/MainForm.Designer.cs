@@ -396,6 +396,7 @@
 			this.Name = "MainForm";
 			this.Text = "SquareOne";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.mainForm_FormClosing);
+			this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.mainForm_FormClosed);
 			this.Load += new System.EventHandler(this.mainForm_Load);
 			this.ResizeEnd += new System.EventHandler(this.mainForm_ResizeEnd);
 			this.LocationChanged += new System.EventHandler(this.mainForm_LocationChanged);

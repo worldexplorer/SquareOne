@@ -267,10 +267,14 @@ namespace Sq1.Core {
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
 			Assembler.InstanceInitialized.exceptionsDuringApplicationShutdown_InsertAndSerialize(exc, indexToInsert);
 		}
+		public static void ExceptionsDuringApplicationShutdown_PopupNotepad() {
+			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
+			Assembler.InstanceInitialized.exceptionsDuringApplicationShutdown_PopupNotepad();
+		}
 		
 		public	List<Exception>							ExceptionsDuringApplicationShutdown;
 		public	Serializer<List<Exception>>				ExceptionsDuringApplicationShutdownSerializer;
-		public void exceptionsDuringApplicationShutdown_InsertAndSerialize(Exception exc, int indexToInsert = 0) {
+		void exceptionsDuringApplicationShutdown_InsertAndSerialize(Exception exc, int indexToInsert = 0) {
 			if (exc == null) return;
 			if (this.ExceptionsDuringApplicationShutdown == null) {
 				//v1 TRYING_TO_FIX_BY_MOVING_TO_ASSEMBLER produced useless "[ null ]" file
@@ -278,16 +282,20 @@ namespace Sq1.Core {
 				this.ExceptionsDuringApplicationShutdownSerializer = new Serializer<List<Exception>>();
 				string now = Assembler.FormattedLongFilename(DateTime.Now);
 				bool createdNewFile = this.ExceptionsDuringApplicationShutdownSerializer.Initialize(this.AppDataPath,
-					"ExceptionsDuringApplicationShutdown-" + now + ".json", "Exceptions", null, true, true);
+					"ExceptionsDuringSquareOneShutdown-" + now + ".json", "Exceptions", null, true, true);
 				this.ExceptionsDuringApplicationShutdown = this.ExceptionsDuringApplicationShutdownSerializer.Deserialize(); 
 				//v2
 				//return;
 			}
 			this.ExceptionsDuringApplicationShutdown.Insert(0, exc);
+			//COLLECTION_MODIFIED_EXCEPTION__LAZY_TO_LOCK_MOVED_TO_PopupNotepad this.ExceptionsDuringApplicationShutdownSerializer.Serialize();
+		}
+		void exceptionsDuringApplicationShutdown_PopupNotepad() {
+			if (this.ExceptionsDuringApplicationShutdown == null) return;
+			if (this.ExceptionsDuringApplicationShutdown.Count == 0) return;
 			this.ExceptionsDuringApplicationShutdownSerializer.Serialize();
-
-			//DIDNT_CHECK http://stackoverflow.com/questions/7613576/how-to-open-text-in-notepad-from-net
-			Process.Start("notepad.exe ", this.ExceptionsDuringApplicationShutdownSerializer.AbsPath);
+			// http://stackoverflow.com/questions/7613576/how-to-open-text-in-notepad-from-net
+			Process.Start("notepad.exe ", this.ExceptionsDuringApplicationShutdownSerializer.JsonAbsFile);
 		}
 		#endregion
 	}
