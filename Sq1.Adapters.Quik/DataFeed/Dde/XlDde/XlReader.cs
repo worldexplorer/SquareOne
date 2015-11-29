@@ -133,6 +133,8 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 		}
 
 		internal void Rewind() {
+			string msg = "COLUMNS_ARE_NOT_IDENTIFIED__I_WANTED_TO_FALL_TO_PARSING_WITH_DEBUGGING__BUT_REWIND_IS_UNTESTED";
+			Assembler.PopupException(msg);
 			this.ms.Seek(0, SeekOrigin.Begin);
 		}
 	}

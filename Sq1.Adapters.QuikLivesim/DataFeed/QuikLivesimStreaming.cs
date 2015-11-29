@@ -93,10 +93,25 @@ namespace Sq1.Adapters.QuikLivesim {
 			this.QuikStreamingPuppet.UpstreamDisconnect();	// not disposed, QuikStreaming.ddeServerStart() is reusable
 
 			// YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
-			this.StreamingDataSnapshot = null;
+			// NO_LEAVE_IT__SECOND_LIVESIM_RUN_THROWS_NPE_IN_base.InitializeFromDataSource() this.StreamingDataSnapshot = null;
+
+			// ALREADY_AUTO_DISCONNECTED_AFTER_LAST_CLIENT_DISCONNECTED? this.QuikStreamingPuppet.UpstreamDisconnect();
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
+			//second Livesim gets NPE - fixed but the caveat is when you clicked on "stopping" disabled button, new livesim restarts with lots of NPE...)
+			if (base.Livesimulator.RequestingBacktestAbort.WaitOne(0) == true) {
+				string msg = "MUST_NEVER_HAPPEN PUSHING_QUOTE_DENERATED_AFTER_LIVESIM_REQUESTED_TO_STOP";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (base.Livesimulator.BacktestAborted.WaitOne(0) == true) {
+				string msg = "MUST_NEVER_HAPPEN PUSHING_QUOTE_DENERATED_AFTER_LIVESIM_CONFIRMED_TO_STOP";
+				Assembler.PopupException(msg);
+				return;
+			}
+
+
 			#region otherwize LivesimulatorForm.PAUSE button doesn't pause livesim (copypaste from LivesimStreaming)
 			bool isUnpaused = this.Unpaused.WaitOne(0);
 			if (isUnpaused == false) {

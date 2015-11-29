@@ -64,18 +64,18 @@ namespace Sq1.Adapters.QuikLiveism.Dde {
 		internal void Connect() {
 			this.DdeClient.Connect();
 			string msg = "DDE_CLIENT_CONNECTED [" + this.DdeClient.Topic + "]";
-			Assembler.PopupException(msg);
+			Assembler.PopupException(msg, null, false);
 		}
 		internal void Disconnect() {
 			this.DdeClient.Disconnect();
 			string msg = "DDE_CLIENT_CONNECTED [" + this.DdeClient.Topic + "]";
-			Assembler.PopupException(msg);
+			Assembler.PopupException(msg, null, false);
 		}
 		internal void Dispose() {
 			string topic = this.DdeClient.Topic;
 			this.DdeClient.Dispose();
 			string msg = "DDE_CLIENT_DISPOSED [" + topic + "]";
-			Assembler.PopupException(msg);
+			Assembler.PopupException(msg, null, false);
 		}
 
 		// IRANAI_DES
