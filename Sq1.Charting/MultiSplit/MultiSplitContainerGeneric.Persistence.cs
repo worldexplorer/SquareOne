@@ -45,6 +45,7 @@ namespace Sq1.Charting.MultiSplit {
 	   		int baseHeight = base.Height;
 	   		if (this.VerticalizeAllLogic) baseHeight = base.Width; 
 try {
+			//this.DistributePanelsAndSplitters();
 			foreach (string panelName in splitterPropertiesByPanelName.Keys) {
 				MultiSplitterProperties prop = splitterPropertiesByPanelName[panelName];
 				if (prop.ManualOrder < 0 && prop.ManualOrder >= this.splitters.Count) {
@@ -67,7 +68,8 @@ try {
 				}
 				if (splitterFound == null) {
 					string msg = "SPLITTER_NOT_FOUND_WHILE_SETTING_MANORDER_DISTANCE panelName[" + panelName + "]";
-					//LET_IT_SPARSELY_ASSIGN_PANEL_HEIGHTS__OR_RECONSTRUCT_PANELS_HERE_FORCIBLY? Assembler.PopupException(msg);
+					//LET_IT_SPARSELY_ASSIGN_PANEL_HEIGHTS__OR_RECONSTRUCT_PANELS_HERE_FORCIBLY?
+					Assembler.PopupException(msg, null, false);
 					continue;
 				}
 				//if (this.VerticalizeAllLogic) {
@@ -127,9 +129,18 @@ try {
 					}
 	
 					//panelHeight -= splitter.Height + 40;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
-					if (panel.Height != panelHeight) {
-						panel.Height = panelHeight;
+					PanelBase panelBase = panel as PanelBase;
+					MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
+					if (panelBase != null) {
+						panelBase.SetHeightIgnoreResize(panelHeight);
+					} else if (panelAsMultiSplitContainer != null) {
+						panelAsMultiSplitContainer.SetHeightIgnoreResize(panelHeight);
+					} else {
+						if (panel.Height != panelHeight) {
+							panel.Height  = panelHeight;
+						}
 					}
+
 					yCheckDiff += splitter.Height;
 					yCheckDiff += panel.Height;
 				} else {
@@ -162,9 +173,18 @@ try {
 					}
 	
 					//panelHeight -= splitter.Height + 40;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
-					if (panel.Width != panelWidth) {
-						panel.Width = panelWidth;
+					PanelBase panelBase = panel as PanelBase;
+					MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
+					if (panelBase != null) {
+						panelBase.SetWidthIgnoreResize(panelWidth);
+					} else if (panelAsMultiSplitContainer != null) {
+						panelAsMultiSplitContainer.SetWidthIgnoreResize(panelWidth);
+					} else {
+						if (panel.Width != panelWidth) {
+						    panel.Width  = panelWidth;
+						}
 					}
+
 					yCheckDiff += splitter.Width;
 					yCheckDiff += panel.Width;
 				}

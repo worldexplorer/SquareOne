@@ -683,5 +683,27 @@ namespace Sq1.Charting {
 			}
 			return value.ToString(format);
 		}
+
+		bool ignoreResizeImSettingWidthOrHeight;
+		internal void SetWidthIgnoreResize(int panelWidth) {
+			if (base.Width == panelWidth) return;
+			if (this.ignoreResizeImSettingWidthOrHeight) return;
+			try {
+				this.ignoreResizeImSettingWidthOrHeight = true;
+				base.Width  = panelWidth;
+			} finally {
+				this.ignoreResizeImSettingWidthOrHeight = false;
+			}
+		}
+		internal void SetHeightIgnoreResize(int panelHeight) {
+			if (base.Height == panelHeight) return;
+			if (this.ignoreResizeImSettingWidthOrHeight) return;
+			try {
+				this.ignoreResizeImSettingWidthOrHeight = true;
+				base.Height  = panelHeight;
+			} finally {
+				this.ignoreResizeImSettingWidthOrHeight = false;
+			}
+		}
 	}
 }

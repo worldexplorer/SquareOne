@@ -560,10 +560,10 @@ namespace Sq1.Charting {
 		}
 		
 		public void PropagateSplitterManorderDistanceIfFullyDeserialized() {
-			//v1 BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
-			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-			//	return;
-			//}
+			//v1 WHATT?? BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				return;		// ignoring all persistStringInstantiators()
+			}
 			//v2 HACK http://stackoverflow.com/questions/10161088/get-elapsed-time-since-application-start-in-c-sharp
 			//try {
 			//	TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
@@ -571,14 +571,13 @@ namespace Sq1.Charting {
 			//} catch (Exception ex) {
 			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
-			//v3
 			//MULTISPLITTER_IS_SPAMMED_BY_ONRESIZE_BUT_IT_WORKS_FOR_HORIZONTAL_AND_IT_DOESNT_SET_X_FOR_LEVEL2_IF_ON_RIGHTMOST_COLUMN
-			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) {
+			//v3 NOT_UNDER_WINDOWS if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) {
 				//Debugger.Break();
 				//return;
-			}
-			this.multiSplitContainerRows.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterRowsPropertiesByPanelName);
-			this.multiSplitContainerColumns.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName);
+			//}
+			this.multiSplitContainerRows	.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterRowsPropertiesByPanelName);
+			this.multiSplitContainerColumns	.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName);
 		}
 
 		public bool TooltipPriceVisible { get { return this.tooltipPrice.Visible; } }

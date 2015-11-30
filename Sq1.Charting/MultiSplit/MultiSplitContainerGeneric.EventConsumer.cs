@@ -8,15 +8,17 @@ using Sq1.Core.DoubleBuffered;
 namespace Sq1.Charting.MultiSplit {
 	public partial class MultiSplitContainerGeneric<PANEL_BASE>
 // USING_NON_DOUBLE_BUFFERED_TO_PAINT_RED_SPLITTER_BACKGROUND_ON_DRAGGING_USING_GRIP...
-//#if NON_DOUBLE_BUFFERED
+#if NON_DOUBLE_BUFFERED
 			: UserControl
-//#else
-//#DevClickThroughAndF12			: UserControlDoubleBuffered
-//#endif
+#else
+//SharpDevelopClickThroughAndF12
+			: UserControlDoubleBuffered
+#endif
 			where PANEL_BASE : Control {
 		
 		protected override void OnResize(EventArgs e) {
-			base.OnResize(e);
+			//I_WILL_INVOKE_MY_TENANTS_DistributePanelsAndSplitters/Invalidate()_ON_MY_OWN base.OnResize(e);
+
 			if (this.DesignMode) return;
 			if (Assembler.IsInitialized == false) return;
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
@@ -28,8 +30,9 @@ namespace Sq1.Charting.MultiSplit {
 
 			if (this.panels.Count == 0) return;
 			try {
-				this.DistributePanelsAndSplitters();
-				
+				if (this.ignoreResizeImSettingWidthOrHeight == false) {
+					this.DistributePanelsAndSplitters();		// otherwize internal Controls do not fit extended MainForm window surface
+				}			
 				if (this.VerticalizeAllLogic == false) {
 					foreach (MultiSplitter splitter in this.splitters) {
 				   		splitter.Width = base.Width;
@@ -49,39 +52,39 @@ namespace Sq1.Charting.MultiSplit {
 				   		//TESTME panel.Invalidate();
 					}
 				}
-				base.Invalidate();
+				//base.Invalidate();
 			} catch (Exception ex) {
-				Assembler.PopupException("OnResize()???", ex);
+				Assembler.PopupException(" //MultiSplitContainerGeneric.OnResize()???", ex);
 			}
 		}
 // USING_NON_DOUBLE_BUFFERED_TO_PAINT_RED_SPLITTER_BACKGROUND_ON_DRAGGING_USING_GRIP...
-//#if NON_DOUBLE_BUFFERED		//WHEN_INHERITED_FROM_REGULAR_USERCONTROL
+#if NON_DOUBLE_BUFFERED		//WHEN_INHERITED_FROM_REGULAR_USERCONTROL
 		protected override void OnPaintBackground(PaintEventArgs e) {
 			base.OnPaintBackground(e);
-//#else							//WHEN_INHERITED_FROM_USERCONTROL_DOUBLEBUFFERED
-//		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
-//#endif
+#else							//WHEN_INHERITED_FROM_USERCONTROL_DOUBLEBUFFERED
+		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
+#endif
 
 			if (base.DesignMode) return;
 			return;
 			
-			try {
-				for (int i=0; i<this.panels.Count; i++) {
-					Control panel = this.panels[i];
-					//panel.Invalidate();	// base.OnPaint() did it already
-				}
-			} catch (Exception ex) {
-				string msg = "CONTROL.INVALIDATE()_IS_VERY_UNLIKELY_TO_THROW //MultiSplitContainerGeneric<PANEL_BASE>.OnPaintBackground()";
-				Assembler.PopupException(msg, ex);
-			}
+			//try {
+			//    for (int i=0; i<this.panels.Count; i++) {
+			//        Control panel = this.panels[i];
+			//        //panel.Invalidate();	// base.OnPaint() did it already
+			//    }
+			//} catch (Exception ex) {
+			//    string msg = "CONTROL.INVALIDATE()_IS_VERY_UNLIKELY_TO_THROW //MultiSplitContainerGeneric<PANEL_BASE>.OnPaintBackground()";
+			//    Assembler.PopupException(msg, ex);
+			//}
 		}
 // USING_NON_DOUBLE_BUFFERED_TO_PAINT_RED_SPLITTER_BACKGROUND_ON_DRAGGING_USING_GRIP...
-//#if NON_DOUBLE_BUFFERED		//WHEN_INHERITED_FROM_REGULAR_USERCONTROL
+#if NON_DOUBLE_BUFFERED		//WHEN_INHERITED_FROM_REGULAR_USERCONTROL
 		protected override void OnPaint(PaintEventArgs e) {
 			base.OnPaint(e);	//DOUBLEBUFFERED_PARENT_DID_THAT
-//#else							//WHEN_INHERITED_FROM_USERCONTROL_DOUBLEBUFFERED
-//		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
-//#endif
+#else							//WHEN_INHERITED_FROM_USERCONTROL_DOUBLEBUFFERED
+		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
+#endif
 			if (base.DesignMode) return;
 			try {
 				for (int i=0; i<this.panels.Count; i++) {
@@ -389,10 +392,10 @@ namespace Sq1.Charting.MultiSplit {
 			
 			if (this.VerticalizeAllLogic == false) {
 				// mouseMovingUp CAN BE NEGATIVE
-				int mouseMovingLeft = this.splitterStartedResizeOrDragPoint.Y - mousePositionFromSplitContainerUpperLeft.Y;
-				if (mouseMovingLeft > 0 && panelAbove.Height <= 5) return;
-				if (mouseMovingLeft < 0 && panelBelow.Height <= 5) return;
-				if (mouseMovingLeft < 0 && splitterIndex == this.splitters.Count - 1) {
+				int mouseMovingUp = this.splitterStartedResizeOrDragPoint.Y - mousePositionFromSplitContainerUpperLeft.Y;
+				if (mouseMovingUp > 0 && panelAbove.Height <= 5) return;
+				if (mouseMovingUp < 0 && panelBelow.Height <= 5) return;
+				if (mouseMovingUp < 0 && splitterIndex == this.splitters.Count - 1) {
 					int baseHeight = base.Height;
 					if (splitter.Location.Y + splitter.Height >= base.Height - 5) {
 						return;
@@ -402,7 +405,7 @@ namespace Sq1.Charting.MultiSplit {
 				if (panelAbove.MinimumSize != default(Size)) {
 					panelAboveMinimumHeight = panelAbove.MinimumSize.Height;
 				}
-				int panelAboveHeightProjected = panelAbove.Height - mouseMovingLeft; 
+				int panelAboveHeightProjected = panelAbove.Height - mouseMovingUp; 
 				if (panelAboveHeightProjected < panelAboveMinimumHeight) {
 					Cursor.Current = Cursors.No;
 					return;
@@ -412,17 +415,45 @@ namespace Sq1.Charting.MultiSplit {
 				if (panelBelow.MinimumSize != default(Size)) {
 					panelBelowMinimumHeight = panelBelow.MinimumSize.Height;
 				}
-				int panelBelowHeightProjected = panelBelow.Height + mouseMovingLeft;
+				int panelBelowHeightProjected = panelBelow.Height + mouseMovingUp;
 				if (panelBelowHeightProjected < panelBelowMinimumHeight) {
 					Cursor.Current = Cursors.No;
 					return;
 				}
 				
 				Cursor.Current = Cursors.HSplit;
-				//SAME_DOWN if (mouseMovingUp > 0) {
-					panelBelow.Height += mouseMovingLeft;
-					panelAbove.Height -= mouseMovingLeft;
-				//}
+
+				int panelBelowNewHeight = panelBelow.Height + mouseMovingUp;
+				int panelAboveNewHeight = panelAbove.Height - mouseMovingUp;
+
+				PanelBase panelBaseBelow = panelBelow as PanelBase;
+				MultiSplitContainer multiSplitContainerBelow = panelBelow as MultiSplitContainer;
+				if (panelBaseBelow != null) {
+					panelBaseBelow			.SetHeightIgnoreResize(panelBelowNewHeight);
+				} else if (multiSplitContainerBelow != null) {
+					multiSplitContainerBelow.SetHeightIgnoreResize(panelBelowNewHeight);
+				} else {
+					panelBelow.Height += mouseMovingUp;	// will invoke OnResize() => Distribute()
+				}
+
+				//v2 REPLACEMENT_FOR_DistributePanelsAndSplitters()_BELOW
+				Point panelBelowLocation = new Point(panelBelow.Location.X, panelBelow.Location.Y - mouseMovingUp);
+				panelBelow.Location = panelBelowLocation;
+				Point splitterLocation = new Point(splitter.Location.X, splitter.Location.Y - mouseMovingUp);
+				splitter.Location = splitterLocation;
+				//v2 END
+
+				PanelBase panelBaseAbove = panelAbove as PanelBase;
+				MultiSplitContainer multiSplitContainerAbove = panelAbove as MultiSplitContainer;
+				if (panelBaseAbove != null) {
+					panelBaseAbove			.SetHeightIgnoreResize(panelAboveNewHeight);
+				} else if (multiSplitContainerAbove != null) {
+					multiSplitContainerAbove.SetHeightIgnoreResize(panelAboveNewHeight);
+				} else {
+					panelAbove.Height += mouseMovingUp;	// will invoke OnResize() => Distribute()
+				}
+
+
 			} else {
 				int mouseMovingLeft = this.splitterStartedResizeOrDragPoint.X - mousePositionFromSplitContainerUpperLeft.X;
 				if (mouseMovingLeft > 0 && panelAbove.Width <= 5) return;
@@ -454,17 +485,48 @@ namespace Sq1.Charting.MultiSplit {
 				}
 				
 				Cursor.Current = Cursors.VSplit;
-				//SAME_DOWN if (mouseMovingUp > 0) {
-					panelBelow.Width += mouseMovingLeft;
-					panelAbove.Width -= mouseMovingLeft;
-				//}
+
+				int panelBelowNewWidth = panelBelow.Width + mouseMovingLeft;
+				int panelAboveNewWidth = panelAbove.Width - mouseMovingLeft;
+
+				PanelBase panelBaseBelow = panelBelow as PanelBase;
+				MultiSplitContainer multiSplitContainerBelow = panelBelow as MultiSplitContainer;
+				if (panelBaseBelow != null) {
+					panelBaseBelow			.SetWidthIgnoreResize(panelBelowNewWidth);
+				} else if (multiSplitContainerBelow != null) {
+					multiSplitContainerBelow.SetWidthIgnoreResize(panelBelowNewWidth);
+				} else {
+					panelBelow.Width += mouseMovingLeft;	// will invoke OnResize() => Distribute()
+				}
+
+				//v2 REPLACEMENT_FOR_DistributePanelsAndSplitters()_BELOW
+				Point panelBelowLocation = new Point(panelBelow.Location.X - mouseMovingLeft, panelBelow.Location.Y);
+				panelBelow.Location = panelBelowLocation;
+				Point splitterLocation = new Point(splitter.Location.X - mouseMovingLeft, splitter.Location.Y);
+				splitter.Location = splitterLocation;
+				//v2 END
+
+				PanelBase panelBaseAbove = panelAbove as PanelBase;
+				MultiSplitContainer multiSplitContainerAbove = panelAbove as MultiSplitContainer;
+				if (panelBaseAbove != null) {
+					panelBaseAbove			.SetWidthIgnoreResize(panelAboveNewWidth);
+				} else if (multiSplitContainerAbove != null) {
+					multiSplitContainerAbove.SetWidthIgnoreResize(panelAboveNewWidth);
+				} else {
+					panelAbove.Width += mouseMovingLeft;	// will invoke OnResize() => Distribute()
+				}
 			}
 
-			this.DistributePanelsAndSplitters();
+			//v1 this.DistributePanelsAndSplitters();		// otherwize black rectangles flying unproportionally mouse move <= splitter must move and location of the right/bottom pane (above we set only the Widths)
+			//v2 REPLACEMENT_FOR_DistributePanelsAndSplitters()
+
+			base.Invalidate();
+
+			// otherwize there are 1-3px painted black :(
 			panelBelow.Invalidate();
 			panelAbove.Invalidate();
 			splitter.Invalidate();
-			base.Invalidate();
+
 			this.RaiseOnSplitterMovingNow(splitter);
 		}
 	}

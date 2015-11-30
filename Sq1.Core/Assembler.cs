@@ -95,33 +95,33 @@ namespace Sq1.Core {
 				return ret;
 			} }
 
-		public	bool									SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished { get {
-				bool ret = false;
-				//v1 looks like Process.GetCurrentProcess().StartTime counts the milliseconds elapsed by the processor for the app
-				//(1sec during last 2mins with 1% CPU load), while I need solarTimeNow minus solarTimeAppStarted => switching to Stopwatch
-				double sinceApplicationStartSeconds = -1;
-				try {
-					TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
-					sinceApplicationStartSeconds = sinceApplicationStart.TotalSeconds;
-					//v2
-					//int sinceApplicationStartSeconds2 = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
-				} catch (Exception ex) {
-					Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
-					sinceApplicationStartSeconds = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
-				}
+		// NOT_UNDER_WINDOWS
+		//		Stopwatch								stopWatchIfProcessUnsupported;
+		//public	bool									SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished { get {
+		//        bool ret = false;
+		//        //v1 looks like Process.GetCurrentProcess().StartTime counts the milliseconds elapsed by the processor for the app
+		//        //(1sec during last 2mins with 1% CPU load), while I need solarTimeNow minus solarTimeAppStarted => switching to Stopwatch
+		//        double sinceApplicationStartSeconds = -1;
+		//        try {
+		//            TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
+		//            sinceApplicationStartSeconds = sinceApplicationStart.TotalSeconds;
+		//            //v2
+		//            //int sinceApplicationStartSeconds2 = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
+		//        } catch (Exception ex) {
+		//            Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
+		//            sinceApplicationStartSeconds = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
+		//        }
 
-				double secondsLeftToIgnore = this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch - sinceApplicationStartSeconds;
-				if (secondsLeftToIgnore > 0) {
-					string msg = "SPLITTER_EVENTS_IGNORED_FOR_MORE_SECONDS " + secondsLeftToIgnore + "/"
-						+ this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch;
-					//Assembler.PopupException(msg, null, false);
-				} else {
-					ret = true;
-				}
-				return ret;
-			} }
-
-				Stopwatch								stopWatchIfProcessUnsupported;
+		//        double secondsLeftToIgnore = this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch - sinceApplicationStartSeconds;
+		//        if (secondsLeftToIgnore > 0) {
+		//            string msg = "SPLITTER_EVENTS_IGNORED_FOR_MORE_SECONDS " + secondsLeftToIgnore + "/"
+		//                + this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch;
+		//            //Assembler.PopupException(msg, null, false);
+		//        } else {
+		//            ret = true;
+		//        }
+		//        return ret;
+		//    } }
 		
 		public Assembler() {
 			RepositorySymbolInfo					= new RepositorySerializerSymbolInfo();
@@ -203,8 +203,9 @@ namespace Sq1.Core {
 					+ "]=SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch";
 				//Assembler.PopupException(msg, null, false);
 			} catch (Exception ex) {
-				Assembler.PopupException("PLATFORM_DOESNT_SUPPORT_Process.GetCurrentProcess().StartTime_AS_DESCRIBED_IN_MSDN__LAUNCHING_STOPWATCH", ex);
-				this.stopWatchIfProcessUnsupported = Stopwatch.StartNew();
+				string msg = "NEVER_HAPPENED_UNDER_WINDOWS PLATFORM_DOESNT_SUPPORT_Process.GetCurrentProcess().StartTime_AS_DESCRIBED_IN_MSDN__LAUNCHING_STOPWATCH";
+				Assembler.PopupException(msg, ex);
+				//this.stopWatchIfProcessUnsupported = Stopwatch.StartNew();
 			}
 			//v2
 			//this.stopWatchIfProcessUnsupported = Stopwatch.StartNew();

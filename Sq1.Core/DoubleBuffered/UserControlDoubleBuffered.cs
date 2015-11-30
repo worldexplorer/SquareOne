@@ -14,6 +14,7 @@ namespace Sq1.Core.DoubleBuffered {
 		}
 		protected virtual void OnPaintBackgroundDoubleBuffered(PaintEventArgs pe) {
 			pe.Graphics.Clear(base.BackColor);
+			//NOPE base.OnPaintBackground(pe);	// horizontal Panels inside MultiSplitter will receive PaintBackground on MultiSplitter.Invalidate()
 		}
 		
 		// what sort of TRANSPARENT does it allow?... ommitting will require "override OnResize()"
@@ -76,6 +77,10 @@ namespace Sq1.Core.DoubleBuffered {
 				if (this.BufferedGraphics == null) this.initializeBuffer();
 				PaintEventArgs peSubstituted = new PaintEventArgs(BufferedGraphics.Graphics, pe.ClipRectangle);
 				this.OnPaintBackgroundDoubleBuffered(peSubstituted);
+
+				// WHY_THIS_WASNT_HERE_BEFORE?? TRYING_TO_FIX_SPLITTERS_BECOMING_GRAY_ONLY_AFTER_MOUSEOVER
+				// DOESNT_HELP_THE_SPLITTERS this.BufferedGraphics.Render(pe.Graphics);
+				//NOPE base.OnPaintBackground(pe);	// horizontal Panels inside MultiSplitter will receive PaintBackground on MultiSplitter.Invalidate()
 			} catch (Exception ex) {
 				string msg = "USER_CONTROL_DOUBLE_BUFFERED.OnPaint()_HAS_PROBLEMS_WITH_DOUBLE_BUFFERING_API"
 					+ " OTHERWIZE_REFACTOR_CHILDREN_TO_CATCH_THEIR_OWN_EXCEPTIONS";

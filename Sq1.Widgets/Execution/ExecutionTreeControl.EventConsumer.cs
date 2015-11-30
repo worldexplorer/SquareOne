@@ -192,11 +192,8 @@ namespace Sq1.Widgets.Execution {
 		void splitContainerMessagePane_SplitterMoved(object sender, SplitterEventArgs e) {
 			if (this.DataSnapshot == null) return;	// there is no DataSnapshot deserialized in InitializeComponents()
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) return;
-			//v1 BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			//v1 WHATT??? BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-			//	#if DEBUG
-			//	Debugger.Break();
-			//	#endif
 				return;
 			}
 			//v2 HACK http://stackoverflow.com/questions/10161088/get-elapsed-time-since-application-start-in-c-sharp
@@ -206,8 +203,7 @@ namespace Sq1.Widgets.Execution {
 			//} catch (Exception ex) {
 			//	Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
 			//}
-			//v3
-			if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
+			//v3 NOT_UNDER_WINDOWS if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished == false) return;
 			//Debugger.Break();
 			if (this.splitContainerMessagePane.Orientation == Orientation.Horizontal) {
 				//if (this.DataSnapshot.MessagePaneSplitDistanceHorizontal == e.SplitY) return;

@@ -11,15 +11,15 @@ using Sq1.Core.Charting;
 namespace Sq1.Charting.MultiSplit {
 	//LAZY_TO_MAKE_IT_ACCEPT_NESTED_PANELS_DROPPED_FOR_DESIGNER THIS_SOLVES_ANOTHER_PROBLEM http://stackoverflow.com/questions/2785376/how-to-enable-design-support-in-a-custom-control/2863807#2863807
 	public partial class MultiSplitContainerGeneric<PANEL_BASE> {
-		public	int		SplitterHeight;
-		public	int		GrabHandleWidth;
-		public	int		MinimumPanelHeight;
-		public	Color	ColorGrabHandle;
-		public	Color	ColorBackgroundSliderDroppingTarget;
-		public	Color	ColorBackgroundSliderRegular;
-		public	Color	ColorBackgroundSliderMouseOver;
-		public	bool	DebugSplitter;
-		public	bool	VerticalizeAllLogic;	// ideally I'd split to MultiSplitHorizontal and MultiSplitVertical; but I might offer the orientation swap in runtime
+		public		int		SplitterHeight;
+		protected	int		GrabHandleWidth;
+		protected	int		MinimumPanelHeight;
+		protected	Color	ColorGrabHandle;
+		protected	Color	ColorBackgroundSliderDroppingTarget;
+		protected	Color	ColorBackgroundSliderRegular;
+		protected	Color	ColorBackgroundSliderMouseOver;
+		public		bool	DebugSplitter;
+		public		bool	VerticalizeAllLogic;	// ideally I'd split to MultiSplitHorizontal and MultiSplitVertical; but I might offer the orientation swap in runtime
 		
 				// not observing (no events attached to add/move/remove)
 				// didn't find a better implementation for swap() or .Move() - that's all I needed
@@ -38,8 +38,9 @@ namespace Sq1.Charting.MultiSplit {
 			return ret;
 		} }
 
-		
-		public MultiSplitContainerGeneric() : this(false, false) {
+		MultiSplitContainerGeneric(bool verticalizeAllLogic = false, bool debugSplitter = false) {
+			VerticalizeAllLogic = verticalizeAllLogic;
+			DebugSplitter = debugSplitter;
 			panels = new ObservableCollection<PANEL_BASE>();
 			splitters = new ObservableCollection<MultiSplitter>();
 			SplitterHeight = 5;
@@ -50,10 +51,9 @@ namespace Sq1.Charting.MultiSplit {
 			ColorBackgroundSliderRegular = Color.DarkGray;
 			ColorBackgroundSliderMouseOver = Color.SlateGray;
 		}
-		public MultiSplitContainerGeneric(bool verticalizeAllLogic = false, bool debugSplitter = false) {
-			VerticalizeAllLogic = verticalizeAllLogic;
-			DebugSplitter = debugSplitter;
+		public MultiSplitContainerGeneric() : this(false, false) {
 		}
+
 //		[Obsolete("pass panels implicitly to InitializeCreateSplittersDistributeFor() since you may have other controls in base.Controls, such as buttons with fixed position etc")]
 //		public void InitializeExtractPanelsFromBaseControlsCreateSplittersDistribute() {
 //			var list = new List<PANEL_BASE>();
@@ -81,22 +81,28 @@ namespace Sq1.Charting.MultiSplit {
 			this.DistributePanelsAndSplitters();
 		}
 		public void DistributePanelsAndSplitters() {		//Dictionary<int, int> splitterPositionsByManorder = null) {
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				string msg = "ONCE_PER_PANEL_LET_IT_DISTRIBUTE_COMMENTED WHAT_IF_YOU_FIND_ALL_AND_LINK_PANEL_BELOWs_HERE?...";
+			//	return;
+			}
 			if (this.VerticalizeAllLogic == false) {
 				try {
-					this.DistributePanelsAndSplittersVertically();
+					this.DistributePanelsAndSplittersVertically_setHeightAndY();
 				} catch (Exception ex) {
 					Assembler.PopupException("//DistributePanelsAndSplittersVertically()", ex);
 				}
 			} else {
 				try {
-					this.DistributePanelsAndSplittersHorizontally();
+					this.DistributePanelsAndSplittersHorizontally_setWidthAndX();
 				} catch (Exception ex) {
 					Assembler.PopupException("//DistributePanelsAndSplittersHorizontally()", ex);
 				}
 			}
 		}
-		public void DistributePanelsAndSplittersVertically() {		//Dictionary<int, int> splitterPositionsByManorder = null) {
+		public void DistributePanelsAndSplittersVertically_setHeightAndY() {		//Dictionary<int, int> splitterPositionsByManorder = null) {
 			if (this.DesignMode) return;
+			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+
 			int baseHeight = base.Height;
 			//baseHeight -= 4;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR diagnose by swapping with upper panel
 			
@@ -138,7 +144,7 @@ namespace Sq1.Charting.MultiSplit {
 				y += panel.Height;
 			}
 			
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			// MOVED_20_LINES_UP if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			
 			int deserializationError = Math.Abs(y - baseHeight);
 			if (deserializationError <= 3) {
@@ -215,8 +221,11 @@ namespace Sq1.Charting.MultiSplit {
 			// DO_I_NEED_IT? base.ResumeLayout();
 			//base.Invalidate();
 		}
-		public void DistributePanelsAndSplittersHorizontally() {		//Dictionary<int, int> splitterPositionsByManorder = null) {
+
+		public void DistributePanelsAndSplittersHorizontally_setWidthAndX() {		//Dictionary<int, int> splitterPositionsByManorder = null) {
 			if (this.DesignMode) return;
+			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+
 			int baseWidth = base.Width;
 			//baseHeight -= 4;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR diagnose by swapping with upper panel
 			
@@ -254,11 +263,11 @@ namespace Sq1.Charting.MultiSplit {
 				if (i > 0) splitter.PanelAbove = this.panels[i - 1] as Control;
 
 				//panel.Location = new Point(panel.Location.X, y);
-				panel.Location = new Point(x, 0);
+				//YOU_MAY_NEED_X_BUT_WHY_DO_YOU_SET_IT_NOW??? panel.Location = new Point(x, 0);
 				x += panel.Width;
 			}
 			
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			//MOVED_20_LINES_UP if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			
 			int deserializationError = Math.Abs(x - baseWidth);
 			if (deserializationError <= 3) {
@@ -303,6 +312,7 @@ namespace Sq1.Charting.MultiSplit {
 				x += splitter.Width;
 				
 				panel.Location = new Point(x, 0);
+				// NB WILL_INVOKE_SiblingPanels.OnResize() => DistributePanelsAndSplittersVertically
 				panel.Width = (int)(Math.Round(panel.Width * fillVerticalK, 0));
 				if (i == this.panels.Count - 1) {
 					if (panel.Width < minimumPanelWidth) {
@@ -350,8 +360,8 @@ namespace Sq1.Charting.MultiSplit {
 
 			//v1
 			//if (panel.Parent != null && panel.Parent is Control) {
-			//    Control parentControl = panel.Parent as Control;
-			//    if (parentControl.Controls.Contains(panel)) parentControl.Controls.Remove(panel);
+			//	Control parentControl = panel.Parent as Control;
+			//	if (parentControl.Controls.Contains(panel)) parentControl.Controls.Remove(panel);
 			//}
 			//v2
 			if (panel == this) {
@@ -399,6 +409,30 @@ namespace Sq1.Charting.MultiSplit {
 			this.splitters.Add(splitter);
 			base.Controls.Add(splitter);	//make splitter receive OnPaint()
 		}
+
+		
+		bool ignoreResizeImSettingWidthOrHeight;
+		internal void SetWidthIgnoreResize(int panelWidth) {
+			if (base.Width == panelWidth) return;
+			if (this.ignoreResizeImSettingWidthOrHeight) return;
+			try {
+				this.ignoreResizeImSettingWidthOrHeight = true;
+				base.Width  = panelWidth;
+			} finally {
+				this.ignoreResizeImSettingWidthOrHeight = false;
+			}
+		}
+		internal void SetHeightIgnoreResize(int panelHeight) {
+			if (base.Height == panelHeight) return;
+			if (this.ignoreResizeImSettingWidthOrHeight) return;
+			try {
+				this.ignoreResizeImSettingWidthOrHeight = true;
+				base.Height  = panelHeight;
+			} finally {
+				this.ignoreResizeImSettingWidthOrHeight = false;
+			}
+		}
+
 		public override string ToString() {
 			string ret = "NO_PARENT_INFO";
 			SplitterPanel splitterBarRangeEtMoi = this.Parent as SplitterPanel;
