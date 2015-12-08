@@ -207,8 +207,17 @@ namespace Sq1.Charting {
 			this.BarsIdent = "UNINITIALIZED_BARS_IDENT_PanelNamedFolding";
 			this.GutterRightDraw = true;
 			this.GutterBottomDraw = false;
-			this.AutoScroll = false;
-			this.HScroll = true;
+			
+			if (this.AutoScroll != false) {
+				this.AutoScroll  = false;		// IM_CAUSING_this.OnLayout()
+			}
+			base.HScroll = false;
+			base.VScroll = false;
+			base.AutoSize = false;
+
+			// keep false or wont appear proportionally distributed base.AutoSize = true;
+			//base.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			
 			this.ThisPanelIsPricePanel = this.GetType() == typeof(PanelPrice);		//panels don't change their type; hopefully a boolean calculated once will work faster than dynamic evaluation 
 			this.ThisPanelIsVolumePanel = this.GetType() == typeof(PanelVolume);
 			this.ThisPanelIsIndicatorPanel = this.GetType() == typeof(PanelIndicator);
@@ -227,11 +236,6 @@ namespace Sq1.Charting {
 		}
 
 #if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD
-		protected override void OnResize(EventArgs e) {	//PanelDoubleBuffered does this already to DisposeAndNullify managed Graphics
-			if (base.DesignMode) return;
-			base.OnResize(e);	// empty inside but who knows what useful job it does?
-			base.Invalidate();	// SplitterMoved => repaint; Panel and UserControl don't have that (why?)
-		}
 		protected override void OnPaint(PaintEventArgs e) {
 			base.OnPaint(e);
 #else
@@ -241,7 +245,7 @@ namespace Sq1.Charting {
 			if (this.DesignMode) return;
 			if (this.ChartControl == null) {
 				string msg = "PanelNamedFolding[" + this.PanelName + "].ChartControl=null; invoke PanelNamedFolding.Initialize() from derived.ctor()";
-				Assembler.PopupException(msg + msig, null, false);
+				//Assembler.PopupException(msg + msig, null, false);
 				this.DrawError(e.Graphics, msg);
 				return;
 			}
@@ -389,15 +393,20 @@ namespace Sq1.Charting {
 
 #if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
 		protected override void OnPaintBackground(PaintEventArgs e) {
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			base.OnPaintBackground(e);
 #else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
-#endif
+			if (this.ChartControl == null) {
+				base.OnPaintBackgroundDoubleBuffered(pe);	// will e.Graphics.Clear(base.BackColor);
+				return;
+			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
+			if (this.ChartControl != null && this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
 				if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
 				return;
 			}
+#endif
 
 			string msig = " " + this.PanelName + ".OnPaintBackgroundDoubleBuffered()";
 
@@ -407,6 +416,10 @@ namespace Sq1.Charting {
 			if (this.ChartControl == null) {
 				//e.Graphics.Clear(SystemColors.Control);
 				e.Graphics.Clear(base.BackColor);
+				using (Pen penRed = new Pen(Color.Brown, 1)) {
+					e.Graphics.DrawLine(penRed, 0, 0, base.Width, base.Height);
+				}
+				this.ChartLabelsUpperLeftYincremental = 10;
 				this.DrawError(e.Graphics, "OnPaintBackgroundDoubleBuffered got this.ChartControl=null");
 				return;
 			}
@@ -415,6 +428,9 @@ namespace Sq1.Charting {
 				//if (this.ChartControl.Bars != null) msg = "BUG: bars=[" + this.ChartControl.Bars + "]";
 				//e.Graphics.Clear(SystemColors.Control);
 				e.Graphics.Clear(base.BackColor);
+				using (Pen penRed = new Pen(Color.Yellow, 1)) {
+					e.Graphics.DrawLine(penRed, 0, 0, base.Width, base.Height);
+				}
 				this.DrawError(e.Graphics, msig + msg);
 				return;
 			}
@@ -685,25 +701,39 @@ namespace Sq1.Charting {
 		}
 
 		bool ignoreResizeImSettingWidthOrHeight;
-		internal void SetWidthIgnoreResize(int panelWidth) {
-			if (base.Width == panelWidth) return;
-			if (this.ignoreResizeImSettingWidthOrHeight) return;
+		internal bool SetWidthIgnoreResize(int panelWidth) {
+			if (base.Width == panelWidth) return false;
+			if (this.ignoreResizeImSettingWidthOrHeight) return false;
 			try {
 				this.ignoreResizeImSettingWidthOrHeight = true;
+				if (base.Parent != null) {
+					if (panelWidth >= base.Parent.Width) {
+						string msg = "BEOYND_PARENTS_WIDTH__NOT_TALKING_ABOUT_BORDERS panelWidth[" + panelWidth + "] >= base.Parent.Width[" + base.Parent.Width + "]";
+						Assembler.PopupException(msg, null, false);
+					}
+				}
 				base.Width  = panelWidth;
 			} finally {
 				this.ignoreResizeImSettingWidthOrHeight = false;
 			}
+			return true;
 		}
-		internal void SetHeightIgnoreResize(int panelHeight) {
-			if (base.Height == panelHeight) return;
-			if (this.ignoreResizeImSettingWidthOrHeight) return;
+		internal bool SetHeightIgnoreResize(int panelHeight) {
+			if (base.Height == panelHeight) return false;
+			if (this.ignoreResizeImSettingWidthOrHeight) return false;
 			try {
 				this.ignoreResizeImSettingWidthOrHeight = true;
+				if (base.Parent != null) {
+					if (panelHeight >= base.Parent.Height) {
+						string msg = "BEOYND_PARENTS_HEIGHT__NOT_TALKING_ABOUT_BORDERS panelWidth[" + panelHeight + "] >= base.Parent.Width[" + base.Parent.Height + "]";
+						Assembler.PopupException(msg, null, false);
+					}
+				}
 				base.Height  = panelHeight;
 			} finally {
 				this.ignoreResizeImSettingWidthOrHeight = false;
 			}
+			return true;
 		}
 	}
 }

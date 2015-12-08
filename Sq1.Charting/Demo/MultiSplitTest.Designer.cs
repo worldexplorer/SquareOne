@@ -126,6 +126,7 @@ namespace Sq1.Charting.Demo
 			this.Name = "MultiSplitTest";
 			this.Text = "MultiSplitTest";
 			this.ResumeLayout(false);
+
 		}
 		private System.Windows.Forms.Panel panel6;
 		private System.Windows.Forms.Panel panel5;

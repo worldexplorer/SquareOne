@@ -89,9 +89,12 @@ namespace Sq1.Core.DoubleBuffered {
 		}
 		protected override void OnResize(EventArgs e) {
 			try {
+				//v1 NOPE_POSTPONING_CREATION_UNTIL_PAINT_FOREGROUND_WILL_MAKE_BACKGROUND_PAINT_NPE
 				this.disposeAndNullifyToRecreateInPaint(this, e);
-				//base.Invalidate();		// for RangeBar consisting of no inner controls it was enough, but  
-				base.PerformLayout();		// ChartShadow : UserControlDoubleBuffered wasn't resizing it's inner Splitters with Dock=Fill 
+				//v2 CREATING_EXPLICITLY_MAY_BE_REDUNDANT this.BufferReset();
+				base.Invalidate();		// for RangeBar consisting of no inner controls it was enough, but  
+				//base.PerformLayout();		// ChartShadow : UserControlDoubleBuffered wasn't resizing it's inner Splitters with Dock=Fill
+				base.OnResize(e);			// I_NEED_TO_PLACE hscroll at the bottom!
 			} catch (Exception ex) {
 				string msg = "USER_CONTROL_DOUBLE_BUFFERED.OnPaint()_HAS_PROBLEMS_WITH_DOUBLE_BUFFERING_API"
 					+ " OTHERWIZE_REFACTOR_CHILDREN_TO_CATCH_THEIR_OWN_EXCEPTIONS";
@@ -101,7 +104,7 @@ namespace Sq1.Core.DoubleBuffered {
 		public void BufferReset() {
 			this.disposeAndNullifyToRecreateInPaint(this, null);
 			this.initializeBuffer();
-			base.Invalidate();
+			//THROWS_IF_OnResize()_UPSTACK base.Invalidate();
 		}
 	}
 }

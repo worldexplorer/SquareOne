@@ -72,7 +72,7 @@ namespace Sq1.Widgets.Exceptions {
 		public void Initialize() {
 			//WARNING! LiveSimControl uses non-ExceptionsForm-singleton MULTIPLE ExceptionsControls for LivesimStreamingEditor and LivesimBrokerEditor
 			//LivesimControl throws here in Designer (unbelieabable though)
-			//if (Assembler.IsInitialized == false) return;
+			if (Assembler.IsInitialized == false) return;		// useful for MultiSplitTest, PanelsTest
 				
 			this.DataSnapshotSerializer = new Serializer<ExceptionsControlDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,

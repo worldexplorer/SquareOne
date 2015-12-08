@@ -20,8 +20,7 @@
     <DelaySign>False</DelaySign>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <SourceAnalysisOverrideSettingsFile>C:\Users\PChuchkalov\AppData\Roaming\ICSharpCode\SharpDevelop5\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
-    <OutputType>Library</OutputType>
-    <NoWin32Manifest>False</NoWin32Manifest>
+    <OutputType>WinExe</OutputType>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
@@ -52,30 +51,19 @@
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;NON_DOUBLE_BUFFERED_disabled;DEBUG_HEAVY_disabled;TEST_COMPATIBILITY_disabled;USE_DATASERIES_MINMAX_disabled</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+    <DefineConstants>TRACE;DEBUG;NON_DOUBLE_BUFFERED;DEBUG_HEAVY_disabled;TEST_COMPATIBILITY_disabled;USE_DATASERIES_MINMAX_disabled</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Sq1.Charting.Demo.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CSharp">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlertArrow.cs" />
@@ -113,15 +101,16 @@
     <Compile Include="Demo\MultiSplitTest.Designer.cs">
       <DependentUpon>MultiSplitTest.cs</DependentUpon>
     </Compile>
-    <Compile Include="Demo\Panels.cs">
+    <Compile Include="Demo\PanelsTest.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Demo\Panels.Designer.cs">
-      <DependentUpon>Panels.cs</DependentUpon>
+    <Compile Include="Demo\PanelsTest.Designer.cs">
+      <DependentUpon>PanelsTest.cs</DependentUpon>
     </Compile>
     <Compile Include="Demo\Program.cs" />
     <Compile Include="MultiSplit\MultiSplitContainerGeneric.EventGenerator.cs">
       <SubType>UserControl</SubType>
+      <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>
     </Compile>
     <Compile Include="MultiSplit\MultiSplitContainerGeneric.Persistence.cs">
       <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>
@@ -137,6 +126,10 @@
       <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="MultiSplit\MultiSplitter.EventConsumer.cs">
+      <DependentUpon>MultiSplitter.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="MultiSplit\MultiSplitterEventArgs.cs" />
     <Compile Include="MultiSplit\MultiSplitter.cs">
       <SubType>UserControl</SubType>
@@ -144,6 +137,10 @@
     <Compile Include="OnChart\OnChartBarAnnotation.cs" />
     <Compile Include="OnChart\OnChartLabel.cs" />
     <Compile Include="OnChart\OnChartLine.cs" />
+    <Compile Include="PanelBase.EventConsumer.cs">
+      <DependentUpon>PanelBase.cs</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="PanelBase.EventGenerator.cs">
       <DependentUpon>PanelBase.cs</DependentUpon>
       <SubType>Component</SubType>
@@ -239,8 +236,8 @@
     <EmbeddedResource Include="Demo\MultiSplitTest.resx">
       <DependentUpon>MultiSplitTest.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Demo\Panels.resx">
-      <DependentUpon>Panels.cs</DependentUpon>
+    <EmbeddedResource Include="Demo\PanelsTest.resx">
+      <DependentUpon>PanelsTest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MultiSplit\MultiSplitter.resx">
       <DependentUpon>MultiSplitter.cs</DependentUpon>
@@ -268,10 +265,6 @@
     <ProjectReference Include="..\Sq1.Widgets\Sq1.Widgets.csproj">
       <Project>{E4E3D133-E335-4437-B85E-89D6738B3FA2}</Project>
       <Name>Sq1.Widgets</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
-      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
-      <Name>Newtonsoft.Json.Net20</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

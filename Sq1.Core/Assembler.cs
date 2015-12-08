@@ -145,7 +145,7 @@ namespace Sq1.Core {
 			RepositoryJsonChartSettingsTemplates	= new RepositoryJsonChartSettingsTemplates();
 
 		}
-		public Assembler Initialize(IStatusReporter mainForm) {
+		public Assembler Initialize(IStatusReporter mainForm, bool usedOnlyToPopupExceptions_NPEunsafe = false) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
 				string msg = "Assembler.InstanceInitialized.StatusReporter[" + this.StatusReporter + "] != mainForm[" + mainForm + "]";
 				msg += "; you initialize the StatusReporter and ExecutionForm once per lifetime;"
@@ -156,6 +156,7 @@ namespace Sq1.Core {
 				throw new Exception();
 			}
 			this.StatusReporter = mainForm;
+			if (usedOnlyToPopupExceptions_NPEunsafe) return Assembler.InstanceInitialized;
 			
 			bool createdNewFile = this.RepositorySymbolInfo.Initialize(this.AppDataPath, "SymbolInfo.json", "", null);
 

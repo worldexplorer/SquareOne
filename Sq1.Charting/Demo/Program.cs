@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 
+using Sq1.Core;
+
 namespace Sq1.Charting.Demo {
 	internal sealed class Program {
 		[STAThread]
@@ -8,7 +10,7 @@ namespace Sq1.Charting.Demo {
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			//Application.Run(new MultiSplitTest());
-			Application.Run(new Panels());
+			Application.Run(new PanelsTest());
 		}
 	}
 }

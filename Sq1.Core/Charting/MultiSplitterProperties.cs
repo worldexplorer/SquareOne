@@ -6,10 +6,12 @@ namespace Sq1.Core.Charting {
 	public class MultiSplitterProperties {
 		[JsonProperty]	public int ManualOrder;
 		[JsonProperty]	public int Distance;
+		[JsonProperty]	public int DistanceMinimal;
 		
-		public MultiSplitterProperties(int manualOrder, int distance) {
+		public MultiSplitterProperties(int manualOrder, int distance, int distanceMinimal = 15) {
 			ManualOrder = manualOrder;
 			Distance = distance;
+			DistanceMinimal = distanceMinimal;
 		}
 
 		// I will not delete ManualOrder because:

@@ -33,7 +33,7 @@ namespace Sq1.Charting {
 		public PanelIndicator(Indicator indicator) : base() {
 			Indicator = indicator;
 			base.PanelName = indicator.ToString();
-			base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
+			//base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
 			base.ForeColor = indicator.LineColor;
 			base.MinimumSize = new Size(20, 15);	// only height matters for MultiSplitContainer
 		}

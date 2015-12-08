@@ -10,8 +10,8 @@ using Sq1.Core.Charting;
 
 namespace Sq1.Charting.MultiSplit {
 	 public partial class MultiSplitContainerGeneric<PANEL_BASE> {
-		public Dictionary<string, MultiSplitterProperties> SplitterPropertiesByPanelNameGet() {
-			Dictionary<string, MultiSplitterProperties> ret = new Dictionary<string, MultiSplitterProperties>();
+		public SortedDictionary<string, MultiSplitterProperties> SplitterPropertiesByPanelNameGet() {
+			SortedDictionary<string, MultiSplitterProperties> ret = new SortedDictionary<string, MultiSplitterProperties>();
 			foreach (MultiSplitter s in this.splitters) {
 				#region CANT_ACCESS_PANELS_FROM_SlidersAutoGrow_SliderValueChanged()__NEED_MultiSplitterPropertiesByPanelName_SYNCED_TO_RESTORE_AFTER_DESERIALIZATION
 				PanelIndicator panelIndicator = s.PanelBelow as PanelIndicator;  
@@ -33,7 +33,7 @@ namespace Sq1.Charting.MultiSplit {
 			}
 			return ret;
 		}
-		public void SplitterPropertiesByPanelNameSet(Dictionary<string, MultiSplitterProperties> splitterPropertiesByPanelName) {
+		public void SplitterPropertiesByPanelNameSet(SortedDictionary<string, MultiSplitterProperties> splitterPropertiesByPanelName) {
 			if (splitterPropertiesByPanelName == null) return;
 			if (splitterPropertiesByPanelName.Count == 0) return;
 			if (splitterPropertiesByPanelName.Count != this.panels.Count) {
@@ -44,8 +44,9 @@ namespace Sq1.Charting.MultiSplit {
 			}
 	   		int baseHeight = base.Height;
 	   		if (this.VerticalizeAllLogic) baseHeight = base.Width; 
+			int thingsIchanged = 0;
 try {
-			//this.DistributePanelsAndSplitters();
+			//NO__AssignPanelBelowAbove_fromPanelsList()_INVOKED_EARLIER_NOW_SET_LOCATIONS_AND_WIDTHs/HEIGHTs this.DistributePanelsAndSplitters();
 			foreach (string panelName in splitterPropertiesByPanelName.Keys) {
 				MultiSplitterProperties prop = splitterPropertiesByPanelName[panelName];
 				if (prop.ManualOrder < 0 && prop.ManualOrder >= this.splitters.Count) {
@@ -61,7 +62,11 @@ try {
 
 				MultiSplitter splitterFound = null;
 				foreach (MultiSplitter each in this.splitters) {
-					if (each.PanelBelow == null) continue;
+					if (each.PanelBelow == null) {
+						string msg = "YOU_DIDNT_INVOKE_AssignPanelBelowAbove_fromPanelsList()";
+						Assembler.PopupException(msg);
+						continue;
+					}
 					if (each.PanelBelow.Name != panelName) continue;
 					splitterFound = each;
 					break;
@@ -107,6 +112,7 @@ try {
 					int panelY = splitter.Location.Y + splitter.Height;
 					if (panel.Location.Y != panelY) {
 						panel.Location = new Point(panel.Location.X, panelY);
+						thingsIchanged++;
 					}
 					int panelHeight = -1;
 					if (i == this.splitters.Count-1) {
@@ -127,19 +133,22 @@ try {
 							panelHeight = minimumPanelHeight;
 						}
 					}
-	
+
 					//panelHeight -= splitter.Height + 40;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 					PanelBase panelBase = panel as PanelBase;
 					MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
+					bool heightChanged = false;
 					if (panelBase != null) {
-						panelBase.SetHeightIgnoreResize(panelHeight);
+						heightChanged = panelBase.SetHeightIgnoreResize(panelHeight);
 					} else if (panelAsMultiSplitContainer != null) {
-						panelAsMultiSplitContainer.SetHeightIgnoreResize(panelHeight);
+						heightChanged = panelAsMultiSplitContainer.SetHeightIgnoreResize(panelHeight);
 					} else {
 						if (panel.Height != panelHeight) {
 							panel.Height  = panelHeight;
+							heightChanged = true;
 						}
 					}
+					if (heightChanged) thingsIchanged++;
 
 					yCheckDiff += splitter.Height;
 					yCheckDiff += panel.Height;
@@ -151,6 +160,7 @@ try {
 					int panelX = splitter.Location.X + splitter.Width;
 					if (panel.Location.X != panelX) {
 						panel.Location = new Point(panelX, panel.Location.Y);
+						thingsIchanged++;
 					}
 					int panelWidth = -1;
 					if (i == this.splitters.Count-1) {
@@ -175,15 +185,18 @@ try {
 					//panelHeight -= splitter.Height + 40;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 					PanelBase panelBase = panel as PanelBase;
 					MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
+					bool widthChanged = false;
 					if (panelBase != null) {
-						panelBase.SetWidthIgnoreResize(panelWidth);
+						widthChanged = panelBase.SetWidthIgnoreResize(panelWidth);
 					} else if (panelAsMultiSplitContainer != null) {
-						panelAsMultiSplitContainer.SetWidthIgnoreResize(panelWidth);
+						widthChanged = panelAsMultiSplitContainer.SetWidthIgnoreResize(panelWidth);
 					} else {
 						if (panel.Width != panelWidth) {
 						    panel.Width  = panelWidth;
+							widthChanged = true;
 						}
 					}
+					if (widthChanged) thingsIchanged++;
 
 					yCheckDiff += splitter.Width;
 					yCheckDiff += panel.Width;
@@ -216,6 +229,16 @@ try {
 	string msg = "YOU_GOT_PANES_DECLARED_FOR_NON-YET_INSTANTIATED_INDICATORS MOVING_PANES_ON_DESERIALIZATION_TO_RESTORE_LAYOUT_NYI";
 	Assembler.PopupException(msg, ex, false);
 }
+			#if DEBUG
+			if (thingsIchanged == 0) {
+				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK //SplitterPropertiesByPanelNameSet()";
+				Assembler.PopupException(msg, null, false);
+			}
+			if (thingsIchanged % 2 != 1) {
+			    string msg = "I_CHANGE_TWO_HEIGHTS_AND_ONE_LOCATION_EACH_CHART_CONTRO";
+			    //Assembler.PopupException(msg, null, false);
+			}
+			#endif
 		}
 	}
 }

@@ -229,7 +229,6 @@ namespace Sq1.Gui {
 					cfmgr.ChartForm.ChartControl.InvalidateAllPanels();
 				}
 			
-				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 				if (disposePreviousDockPanel != null) {
 					// MAKES_INNER_FORMS_CLUMSY_SIZED_AND_THROWS_INSIDE_WELFEN_LUO disposePreviousDockPanel.Dispose();		// doesn't heal memory,handles,GDI,UserObj leak on same-workspace load
 				}
@@ -312,6 +311,7 @@ namespace Sq1.Gui {
 				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
 				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
 				this.ResumeLayout(true);
+				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 				this.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace = false;
 			}
 			try {

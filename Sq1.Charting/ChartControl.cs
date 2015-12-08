@@ -576,6 +576,7 @@ namespace Sq1.Charting {
 				//Debugger.Break();
 				//return;
 			//}
+			this.multiSplitContainerColumns.DistributePanelsAndSplitters();	// lower panels hangs out below hscroll
 			this.multiSplitContainerRows	.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterRowsPropertiesByPanelName);
 			this.multiSplitContainerColumns	.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName);
 		}
