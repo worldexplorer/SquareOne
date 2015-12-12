@@ -23,7 +23,7 @@ namespace Sq1.Widgets.Exceptions {
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
 			this.treeExceptions = new BrightIdeasSoftware.TreeListView();
-			this.olvTime = new BrightIdeasSoftware.OLVColumn();
+			this.olvTime = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxTree = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniRecentAlwaysSelected = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniTreeShowExceptionTime = new System.Windows.Forms.ToolStripMenuItem();
@@ -36,10 +36,10 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerHorizontal = new System.Windows.Forms.SplitContainer();
 			this.txtExceptionMessage = new System.Windows.Forms.TextBox();
 			this.lvStackTrace = new System.Windows.Forms.ListView();
-			this.lvhMethod = new System.Windows.Forms.ColumnHeader();
-			this.lvhDeclaringClass = new System.Windows.Forms.ColumnHeader();
-			this.lvhLine = new System.Windows.Forms.ColumnHeader();
-			this.lvhFile = new System.Windows.Forms.ColumnHeader();
+			this.lvhMethod = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.lvhDeclaringClass = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.lvhLine = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.lvhFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.ctxCallStack = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniCopyStackPosition = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.treeExceptions)).BeginInit();
@@ -59,7 +59,7 @@ namespace Sq1.Widgets.Exceptions {
 			// 
 			this.treeExceptions.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.treeExceptions.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-									this.olvTime});
+            this.olvTime});
 			this.treeExceptions.ContextMenuStrip = this.ctxTree;
 			this.treeExceptions.CopySelectionOnControlC = false;
 			this.treeExceptions.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -75,7 +75,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.treeExceptions.ShowCommandMenuOnRightClick = true;
 			this.treeExceptions.ShowGroups = false;
 			this.treeExceptions.ShowItemToolTips = true;
-			this.treeExceptions.Size = new System.Drawing.Size(111, 353);
+			this.treeExceptions.Size = new System.Drawing.Size(316, 353);
 			this.treeExceptions.TabIndex = 3;
 			this.treeExceptions.TintSortColumn = true;
 			this.treeExceptions.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -96,13 +96,13 @@ namespace Sq1.Widgets.Exceptions {
 			// ctxTree
 			// 
 			this.ctxTree.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.mniRecentAlwaysSelected,
-									this.mniTreeShowExceptionTime,
-									this.mniltbDelay,
-									this.toolStripSeparator1,
-									this.mniCopy,
-									this.mniClear,
-									this.mniRefresh});
+            this.mniRecentAlwaysSelected,
+            this.mniTreeShowExceptionTime,
+            this.mniltbDelay,
+            this.toolStripSeparator1,
+            this.mniCopy,
+            this.mniClear,
+            this.mniRefresh});
 			this.ctxTree.Name = "ctx";
 			this.ctxTree.Size = new System.Drawing.Size(235, 144);
 			// 
@@ -190,7 +190,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerVertical.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainerVertical.Panel2.Controls.Add(this.splitContainerHorizontal);
 			this.splitContainerVertical.Size = new System.Drawing.Size(506, 353);
-			this.splitContainerVertical.SplitterDistance = 111;
+			this.splitContainerVertical.SplitterDistance = 316;
 			this.splitContainerVertical.SplitterWidth = 5;
 			this.splitContainerVertical.TabIndex = 6;
 			// 
@@ -209,8 +209,8 @@ namespace Sq1.Widgets.Exceptions {
 			// splitContainerHorizontal.Panel2
 			// 
 			this.splitContainerHorizontal.Panel2.Controls.Add(this.lvStackTrace);
-			this.splitContainerHorizontal.Size = new System.Drawing.Size(390, 353);
-			this.splitContainerHorizontal.SplitterDistance = 148;
+			this.splitContainerHorizontal.Size = new System.Drawing.Size(185, 353);
+			this.splitContainerHorizontal.SplitterDistance = 213;
 			this.splitContainerHorizontal.SplitterWidth = 5;
 			this.splitContainerHorizontal.TabIndex = 15;
 			// 
@@ -221,7 +221,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.txtExceptionMessage.Location = new System.Drawing.Point(0, 0);
 			this.txtExceptionMessage.Multiline = true;
 			this.txtExceptionMessage.Name = "txtExceptionMessage";
-			this.txtExceptionMessage.Size = new System.Drawing.Size(390, 148);
+			this.txtExceptionMessage.Size = new System.Drawing.Size(185, 213);
 			this.txtExceptionMessage.TabIndex = 1;
 			this.txtExceptionMessage.TabStop = false;
 			this.txtExceptionMessage.Text = "ghdfg hdfg\r\ndfghdfg hdfgh\r\n9999";
@@ -231,10 +231,10 @@ namespace Sq1.Widgets.Exceptions {
 			this.lvStackTrace.Activation = System.Windows.Forms.ItemActivation.OneClick;
 			this.lvStackTrace.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.lvStackTrace.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-									this.lvhMethod,
-									this.lvhDeclaringClass,
-									this.lvhLine,
-									this.lvhFile});
+            this.lvhMethod,
+            this.lvhDeclaringClass,
+            this.lvhLine,
+            this.lvhFile});
 			this.lvStackTrace.ContextMenuStrip = this.ctxCallStack;
 			this.lvStackTrace.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.lvStackTrace.FullRowSelect = true;
@@ -244,7 +244,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.lvStackTrace.Name = "lvStackTrace";
 			this.lvStackTrace.Scrollable = false;
 			this.lvStackTrace.ShowItemToolTips = true;
-			this.lvStackTrace.Size = new System.Drawing.Size(390, 200);
+			this.lvStackTrace.Size = new System.Drawing.Size(185, 135);
 			this.lvStackTrace.TabIndex = 12;
 			this.lvStackTrace.UseCompatibleStateImageBehavior = false;
 			this.lvStackTrace.View = System.Windows.Forms.View.Details;
@@ -272,7 +272,7 @@ namespace Sq1.Widgets.Exceptions {
 			// ctxCallStack
 			// 
 			this.ctxCallStack.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.mniCopyStackPosition});
+            this.mniCopyStackPosition});
 			this.ctxCallStack.Name = "ctxCallStack";
 			this.ctxCallStack.Size = new System.Drawing.Size(145, 26);
 			// 
@@ -304,6 +304,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerHorizontal.ResumeLayout(false);
 			this.ctxCallStack.ResumeLayout(false);
 			this.ResumeLayout(false);
+
 		}
 		private System.Windows.Forms.ToolStripMenuItem mniTreeShowExceptionTime;
 		private TreeListView treeExceptions;

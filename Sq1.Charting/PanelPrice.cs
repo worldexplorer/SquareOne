@@ -10,7 +10,7 @@ namespace Sq1.Charting {
 	public partial class PanelPrice : PanelBase {
 		List<Position> PositionLineAlreadyDrawnFromOneOfTheEnds;
 
-		public override int ValueIndexLastAvailableMinusOneUnsafe	{ get { return base.ChartControl.Bars.Count - 1; } }
+		protected override int ValueIndexLastAvailableMinusOneUnsafe	{ get { return base.ChartControl.Bars.Count - 1; } }
 
 		public PanelPrice() : base() {
 			this.PositionLineAlreadyDrawnFromOneOfTheEnds = new List<Position>();

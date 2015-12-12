@@ -353,9 +353,9 @@ namespace Sq1.Core.Charting {
 
 		// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
 		[Browsable(false)]
-		[JsonProperty]	public SortedDictionary<string, MultiSplitterProperties> MultiSplitterRowsPropertiesByPanelName;
+		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterRowsPropertiesByPanelName;
 		[Browsable(false)]
-		[JsonProperty]	public SortedDictionary<string, MultiSplitterProperties> MultiSplitterColumnsPropertiesByPanelName;
+		[JsonProperty]	public Dictionary<string, MultiSplitterProperties> MultiSplitterColumnsPropertiesByPanelName;
 		
 		// DONE_IN_RenderBarsPrice_KISS cache them all until user edits this.BarTotalWidthPx so they won't be calculated again with the same result for each bar
 		[Browsable(false)]
@@ -782,8 +782,8 @@ namespace Sq1.Core.Charting {
 			OnChartBarAnnotationsVerticalAwayFromPositionArrows = 3;
 
 			// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
-			MultiSplitterRowsPropertiesByPanelName		= new SortedDictionary<string, MultiSplitterProperties>();
-			MultiSplitterColumnsPropertiesByPanelName	= new SortedDictionary<string, MultiSplitterProperties>();
+			MultiSplitterRowsPropertiesByPanelName		= new Dictionary<string, MultiSplitterProperties>();
+			MultiSplitterColumnsPropertiesByPanelName	= new Dictionary<string, MultiSplitterProperties>();
 
 			SpreadBidLineColor = Color.Gray;
 			SpreadBidLineColorAlpha = 64;

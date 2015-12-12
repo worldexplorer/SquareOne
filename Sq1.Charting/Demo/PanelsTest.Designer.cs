@@ -47,7 +47,7 @@ namespace Sq1.Charting.Demo
 			// multiSplitHorizontal
 			// 
 			this.multiSplitHorizontal.BackColor = System.Drawing.SystemColors.ControlDark;
-			this.multiSplitHorizontal.Location = new System.Drawing.Point(139, 104);
+			this.multiSplitHorizontal.Location = new System.Drawing.Point(71, 50);
 			this.multiSplitHorizontal.Name = "multiSplitHorizontal";
 			this.multiSplitHorizontal.Size = new System.Drawing.Size(150, 150);
 			this.multiSplitHorizontal.TabIndex = 4;
@@ -65,14 +65,15 @@ namespace Sq1.Charting.Demo
 			this.panelVolume.AutoScroll = true;
 			this.panelVolume.AutoSize = true;
 			this.panelVolume.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.panelVolume.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelVolume.BarsIdent = "UNINITIALIZED_BARS_IDENT_PanelNamedFolding";
 			this.panelVolume.GutterBottomDraw = false;
 			this.panelVolume.GutterRightDraw = true;
-			this.panelVolume.Location = new System.Drawing.Point(327, 145);
-			this.panelVolume.MinimumSize = new System.Drawing.Size(20, 15);
+			this.panelVolume.Location = new System.Drawing.Point(381, 81);
+			this.panelVolume.MinimumSize = new System.Drawing.Size(25, 25);
 			this.panelVolume.Name = "panelVolume";
 			this.panelVolume.PanelName = "UNINITIALIZED_PANEL_NAME_PanelNamedFolding";
-			this.panelVolume.Size = new System.Drawing.Size(20, 15);
+			this.panelVolume.Size = new System.Drawing.Size(25, 25);
 			this.panelVolume.TabIndex = 2;
 			// 
 			// panelPrice
@@ -80,14 +81,15 @@ namespace Sq1.Charting.Demo
 			this.panelPrice.AutoScroll = true;
 			this.panelPrice.AutoSize = true;
 			this.panelPrice.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.panelPrice.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelPrice.BarsIdent = "UNINITIALIZED_BARS_IDENT_PanelNamedFolding";
 			this.panelPrice.GutterBottomDraw = false;
 			this.panelPrice.GutterRightDraw = true;
-			this.panelPrice.Location = new System.Drawing.Point(362, 51);
-			this.panelPrice.MinimumSize = new System.Drawing.Size(20, 25);
+			this.panelPrice.Location = new System.Drawing.Point(381, 50);
+			this.panelPrice.MinimumSize = new System.Drawing.Size(25, 25);
 			this.panelPrice.Name = "panelPrice";
 			this.panelPrice.PanelName = "UNINITIALIZED_PANEL_NAME_PanelNamedFolding";
-			this.panelPrice.Size = new System.Drawing.Size(20, 25);
+			this.panelPrice.Size = new System.Drawing.Size(25, 25);
 			this.panelPrice.TabIndex = 1;
 			// 
 			// panelLevel2
@@ -95,14 +97,15 @@ namespace Sq1.Charting.Demo
 			this.panelLevel2.AutoScroll = true;
 			this.panelLevel2.AutoSize = true;
 			this.panelLevel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.panelLevel2.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.panelLevel2.BarsIdent = "UNINITIALIZED_BARS_IDENT_PanelNamedFolding";
 			this.panelLevel2.GutterBottomDraw = false;
 			this.panelLevel2.GutterRightDraw = true;
-			this.panelLevel2.Location = new System.Drawing.Point(231, 36);
-			this.panelLevel2.MinimumSize = new System.Drawing.Size(1, 15);
+			this.panelLevel2.Location = new System.Drawing.Point(325, 50);
+			this.panelLevel2.MinimumSize = new System.Drawing.Size(20, 60);
 			this.panelLevel2.Name = "panelLevel2";
 			this.panelLevel2.PanelName = "UNINITIALIZED_PANEL_NAME_PanelNamedFolding";
-			this.panelLevel2.Size = new System.Drawing.Size(1, 15);
+			this.panelLevel2.Size = new System.Drawing.Size(20, 60);
 			this.panelLevel2.TabIndex = 0;
 			// 
 			// tooltipPrice1

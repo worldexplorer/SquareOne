@@ -20,25 +20,18 @@ namespace Sq1.Charting.MultiSplit {
 			//I_WILL_INVOKE_MY_TENANTS_DistributePanelsAndSplitters/Invalidate()_ON_MY_OWN
 			base.OnResize(e); // I NEED UserControlDoubleBuffered to rebuild its offscreen buffer size and sync !!! otherwize the canvas for chart etc stays the same ingoring MainForm.Resizes
 
-			if (this.DesignMode) return;
+			if (base.DesignMode) return;
 			if (Assembler.IsInitialized == false) return;
-			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
-				return;
-			}
-			//if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished) {
-			//	return;
-			//}
-
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			//if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished) return;
 			if (this.ignoreResizeImSettingWidthOrHeight) return;
-
 			if (this.panels.Count == 0) return;
+
 			try {
-				if (this.ignoreResizeImSettingWidthOrHeight == false) {
-					this.DistributePanelsAndSplitters();		// otherwize internal Controls do not fit extended MainForm window surface
-				}
-				int  baseWidthMinusVScroll = this.ClientRectangle.Width;
-				int baseHeightMinusHScroll = this.ClientRectangle.Height;
-				if (this.Height != this.ClientRectangle.Height) {
+				this.DistributePanelsAndSplitters();		// otherwize internal Controls do not fit extended MainForm window surface
+				int  baseWidthMinusVScroll = base.ClientRectangle.Width;
+				int baseHeightMinusHScroll = base.ClientRectangle.Height;
+				if (base.Height != base.ClientRectangle.Height) {
 					string msg = "WAS_HSCROLL_HEIGHT_SUBTRACTED? AND DOCUMENT_TABS???";
 				}
 				if (this.VerticalizeAllLogic == false) {
@@ -118,8 +111,8 @@ namespace Sq1.Charting.MultiSplit {
 					}
 					//splitter.Invalidate();
 				}
-				//Point location = new Point(0, 0);
-				//e.Graphics.DrawString(this.panelText, this.Font, SystemBrushes.ControlText, location);
+				Point location = new Point(40, 10);
+				e.Graphics.DrawString(this.panelText, this.Font, SystemBrushes.ControlText, location);
 			} catch (Exception ex) {
 				string msg = "CONTROL.INVALIDATE()_IS_VERY_UNLIKELY_TO_THROW //MultiSplitContainerGeneric<PANEL_BASE>.OnPaint()";
 				Assembler.PopupException(msg, ex);
@@ -156,8 +149,9 @@ namespace Sq1.Charting.MultiSplit {
 				//splitterAboveTarget.Text = this.splitterResizeOrDragStartedText + " targetIndex[" + this.panelMouseIsOverNowIndexDropTarget + "]";
 				splitterForThisPanel.Text = " target[" + this.panelMouseIsOverNow.Text + "] index[" + this.panelMouseIsOverNowIndexDropTarget + "]";
 			}
-			//NOT_ENOUGH splitterForThisPanel.Invalidate();
-			this.Invalidate();
+			//NOT_ENOUGH
+			splitterForThisPanel.Invalidate();
+			base.Invalidate();
 		}
 		void panel_MouseLeave(object sender, EventArgs e) {
 			string msig = " //panel_MouseLeave()";
@@ -181,8 +175,9 @@ namespace Sq1.Charting.MultiSplit {
 			if (this.DebugSplitter) {
 				splitterForThisPanel.Text = "<leftThisPanel>";
 			}
-			//NOT_ENOUGH splitterForThisPanel.Invalidate();
-			this.Invalidate();
+			//NOT_ENOUGH
+			splitterForThisPanel.Invalidate();
+			base.Invalidate();
 		}
 		
 		bool splitterIsDraggingNow = false;
@@ -238,7 +233,7 @@ namespace Sq1.Charting.MultiSplit {
 			if (DebugSplitter) {
 				splitter.Text += " x:" + e.X + " y:" + e.Y;
 				splitter.Invalidate();
-				//this.Invalidate();
+				//base.Invalidate();
 			}
 			this.RaiseOnSplitterMovingNow(splitter);
 		}
@@ -276,7 +271,7 @@ namespace Sq1.Charting.MultiSplit {
 			if (DebugSplitter) {
 				splitter.Text = "<leftThisSplitter>";
 				splitter.Invalidate();
-				//this.Invalidate();
+				//base.Invalidate();
 			}
 		}
 

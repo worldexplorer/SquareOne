@@ -162,6 +162,6 @@ namespace Sq1.Charting {
 			Bar bar = base.ChartControl.Bars[barIndex];
 			return bar.Volume;
 		}
-		public override int ValueIndexLastAvailableMinusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }
+		protected override int ValueIndexLastAvailableMinusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }
 	}
 }

@@ -113,7 +113,7 @@ namespace Sq1.Charting {
 
 		
 		private int howManyPositionArrowsBeyondPriceBoundaries = 0; 
-		public override int PaddingVerticalSqueeze { get { return base.ChartControl.ChartSettings.SqueezeVerticalPaddingPx; } }
+		protected override int PaddingVerticalSqueeze { get { return base.ChartControl.ChartSettings.SqueezeVerticalPaddingPx; } }
 
 				
 	}

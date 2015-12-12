@@ -18,20 +18,32 @@ namespace Sq1.Charting.Demo {
 			Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 			//exceptionsForm.ExceptionControl.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 
-			List<Control> twoRows = new List<Control>() {
-				this.panelVolume,
-				this.panelPrice
-			};
-			this.multiSplitHorizontal.InitializeCreateSplittersDistributeFor(twoRows);
-			this.multiSplitHorizontal.PerformLayout();	// I hope it will invoke Resize(), not overridden in MSContainer
+			base.SuspendLayout();
+
+			this.multiSplitVertical.DebugSplitter = true;
+			this.multiSplitHorizontal.DebugSplitter = true;
 
 			List<Control> twoColumns = new List<Control>() {
 				this.panelLevel2,
 				this.multiSplitHorizontal
 			};
 			this.multiSplitVertical.VerticalizeAllLogic = true;
-			this.multiSplitVertical.InitializeCreateSplittersDistributeFor(twoColumns);
 			this.multiSplitVertical.Dock = DockStyle.Fill;		// invokes Resize() that will SET the size of inner controls
+			this.multiSplitVertical.InitializeCreateSplittersDistributeFor(twoColumns);
+
+	
+			List<Control> twoRows = new List<Control>() {
+				this.panelVolume,
+				this.panelPrice
+			};
+			this.multiSplitHorizontal.InitializeCreateSplittersDistributeFor(twoRows);
+			
+			base.ResumeLayout();
+			//v1
+			this.multiSplitHorizontal.PerformLayout();	// I hope it will invoke Resize(), not overridden in MSContainer
+			//base.ResumeLayout(true);
+
+			// NO_THIS_IS_ESSENTIAL LAYOUT_MANAGER_IS_OUT_OF_POWER
 		}
 
 	}

@@ -75,19 +75,21 @@ namespace Sq1.Charting {
 			this.panelVolume.Initialize(this);
 			this.panelLevel2.Initialize(this);
 
+
+			List<Control> controlsColumns = new List<Control>() {
+				this.panelLevel2,
+				this.multiSplitContainerRows
+			};
+			this.multiSplitContainerColumns.VerticalizeAllLogic = true;
+			this.multiSplitContainerColumns.InitializeCreateSplittersDistributeFor(controlsColumns);
+			//this.multiSplitContainerColumns.Dock = DockStyle.Fill;	// invokes Resize()
+
 			List<Control> controlsRows = new List<Control>() {
 				this.panelVolume,
 				this.PanelPrice
 			};
 			this.multiSplitContainerRows.InitializeCreateSplittersDistributeFor(controlsRows);
 
-			List<Control> controlsColumns = new List<Control>() {
-				this.panelLevel2,
-				this.multiSplitContainerRows
-			};
-			this.multiSplitContainerColumns.Dock = DockStyle.Fill;
-			this.multiSplitContainerColumns.VerticalizeAllLogic = true;
-			this.multiSplitContainerColumns.InitializeCreateSplittersDistributeFor(controlsColumns);
 
 
 			// Splitter might still notify them for Resize() during startup (while only multiSplitter's size should generate Resize in nested controls)  

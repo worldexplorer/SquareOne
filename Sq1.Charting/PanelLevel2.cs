@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 using Sq1.Core;
 using Sq1.Core.Streaming;
@@ -11,9 +12,9 @@ namespace Sq1.Charting {
 	public class PanelLevel2 : PanelBase {
 		const string REASON_TO_EXIST = "besides my own Panel, paint also on a clipped Graphics to draw below candles on PanelPrice (intensivity of layers might be controlled by sliders))";
 
-		public override bool					PanelHasValuesForVisibleBarWindow		{ get { return false;	/* this will cancel drawing right gutter */ } }
-		public override int						ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
-		public			StreamingDataSnapshot	StreamingDataSnapshotNullUnsafe			{ get {
+		[Browsable(false)]	public override bool					PanelHasValuesForVisibleBarWindow		{ get { return false;	/* this will cancel drawing right gutter */ } }
+		[Browsable(false)]	protected override int						ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
+		[Browsable(false)]	public			StreamingDataSnapshot	StreamingDataSnapshotNullUnsafe			{ get {
 			if (base.ChartControl.Executor.DataSource.StreamingAdapter == null) return null;
 			return base.ChartControl.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
 		} }
@@ -54,7 +55,10 @@ namespace Sq1.Charting {
 
 #if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
 		protected override void OnPaintBackground(PaintEventArgs pe) {
-			if (base.DesignMode) return;
+			if (base.DesignMode) {
+				base.OnPaintBackground(pe);
+				return;
+			}
 
 			//ONLY_FOR_PRICE_PANEL?? //base.OnPaintBackgroundDoubleBuffered(pe);	 //base.DrawError drew label only lowest 2px shown from top of panel
 			if (base.ChartControl == null) {
@@ -102,7 +106,10 @@ namespace Sq1.Charting {
 		}
 #if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
 		protected override void OnPaint(PaintEventArgs pe) {
-			if (base.DesignMode) return;
+			if (base.DesignMode) {
+				base.OnPaint(pe);
+				return;
+			}
 			if (base.ChartControl == null) {
 				base.OnPaint(pe);	// will e.Graphics.Clear(base.BackColor);
 				return;

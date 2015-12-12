@@ -10,8 +10,8 @@ using Sq1.Core.Charting;
 
 namespace Sq1.Charting.MultiSplit {
 	 public partial class MultiSplitContainerGeneric<PANEL_BASE> {
-		public SortedDictionary<string, MultiSplitterProperties> SplitterPropertiesByPanelNameGet() {
-			SortedDictionary<string, MultiSplitterProperties> ret = new SortedDictionary<string, MultiSplitterProperties>();
+		public Dictionary<string, MultiSplitterProperties> SplitterPropertiesByPanelNameGet() {
+			Dictionary<string, MultiSplitterProperties> ret = new Dictionary<string, MultiSplitterProperties>();
 			foreach (MultiSplitter s in this.splitters) {
 				#region CANT_ACCESS_PANELS_FROM_SlidersAutoGrow_SliderValueChanged()__NEED_MultiSplitterPropertiesByPanelName_SYNCED_TO_RESTORE_AFTER_DESERIALIZATION
 				PanelIndicator panelIndicator = s.PanelBelow as PanelIndicator;  
@@ -28,12 +28,13 @@ namespace Sq1.Charting.MultiSplit {
 					Assembler.PopupException(msg, null, false);
 					continue;
 				}
-				int distance = this.VerticalizeAllLogic == false ? s.Location.Y : s.Location.X;
-				ret.Add(s.PanelBelow.Name, new MultiSplitterProperties(manualOrder, distance));
+				int distance	= this.VerticalizeAllLogic == false ? s.Location.Y			: s.Location.X;
+				int panelHeight	= this.VerticalizeAllLogic == false ? s.PanelBelow.Height	: s.PanelBelow.Width;
+				ret.Add(s.PanelBelow.Name, new MultiSplitterProperties(manualOrder, distance, this.SplitterHeight, panelHeight));
 			}
 			return ret;
 		}
-		public void SplitterPropertiesByPanelNameSet(SortedDictionary<string, MultiSplitterProperties> splitterPropertiesByPanelName) {
+		public void SplitterPropertiesByPanelNameSet(Dictionary<string, MultiSplitterProperties> splitterPropertiesByPanelName) {
 			if (splitterPropertiesByPanelName == null) return;
 			if (splitterPropertiesByPanelName.Count == 0) return;
 			if (splitterPropertiesByPanelName.Count != this.panels.Count) {
@@ -42,203 +43,229 @@ namespace Sq1.Charting.MultiSplit {
 				Assembler.PopupException(msg, null, false);
 				// NO_BETTER_LET_IT_SPARSELY_ASSIGN_PANEL_HEIGHTS__INDICATORS_WILL_PERFECTLY_FIT_IN_LATER return;
 			}
-	   		int baseHeight = base.Height;
-	   		if (this.VerticalizeAllLogic) baseHeight = base.Width; 
-			int thingsIchanged = 0;
-try {
-			//NO__AssignPanelBelowAbove_fromPanelsList()_INVOKED_EARLIER_NOW_SET_LOCATIONS_AND_WIDTHs/HEIGHTs this.DistributePanelsAndSplitters();
-			foreach (string panelName in splitterPropertiesByPanelName.Keys) {
-				MultiSplitterProperties prop = splitterPropertiesByPanelName[panelName];
-				if (prop.ManualOrder < 0 && prop.ManualOrder >= this.splitters.Count) {
-					string msg = "SPLITTER_SKIPPED_CANT_MOVE_NO_DESTINATION_WHERE_TO panelName[" + panelName + "]";
-					Assembler.PopupException(msg);
-					continue;
-				}
-				if (prop.ManualOrder < 0 && prop.ManualOrder >= this.panels.Count) {
-					string msg = "SPLITTER_SKIPPED_CANT_MOVE_PANEL_NO_DESTINATION_WHERE_TO panelName[" + panelName + "]";
-					Assembler.PopupException(msg);
-					continue;
-				}
 
-				MultiSplitter splitterFound = null;
-				foreach (MultiSplitter each in this.splitters) {
-					if (each.PanelBelow == null) {
-						string msg = "YOU_DIDNT_INVOKE_AssignPanelBelowAbove_fromPanelsList()";
-						Assembler.PopupException(msg);
-						continue;
-					}
-					if (each.PanelBelow.Name != panelName) continue;
-					splitterFound = each;
-					break;
-				}
-				if (splitterFound == null) {
-					string msg = "SPLITTER_NOT_FOUND_WHILE_SETTING_MANORDER_DISTANCE panelName[" + panelName + "]";
-					//LET_IT_SPARSELY_ASSIGN_PANEL_HEIGHTS__OR_RECONSTRUCT_PANELS_HERE_FORCIBLY?
-					Assembler.PopupException(msg, null, false);
-					continue;
-				}
-				//if (this.VerticalizeAllLogic) {
-				//	Debugger.Break();
-				//}
-				splitterFound.Location = this.VerticalizeAllLogic == false
-					? new Point(splitterFound.Location.X, prop.Distance)
-					: new Point(prop.Distance, splitterFound.Location.Y);
-				
-				int splitterFoundIndex = this.splitters.IndexOf(splitterFound);
-				if (splitterFoundIndex == prop.ManualOrder) {
-					continue;
-				}
-				try {
-					this.panels.Move(splitterFoundIndex, prop.ManualOrder);
-					this.splitters.Move(splitterFoundIndex, prop.ManualOrder);
-				} catch (Exception ex) {
-					string msg = "very illogical way to sync-up; splitters may have holes and implies MultiSplitterPropertiesByPanelName.*.ManualOrder must have no holes/duplicates";
-					Assembler.PopupException(msg, ex, false);
-				}
-			}
-			
-			// align panels to splitters; I need to know the prevSplitterLocationY to set panelHeight
-			int yCheckDiff = 0;
 			for (int i=this.splitters.Count-1; i>=0; i--) {
 				PANEL_BASE panel = this.panels[i];
 				MultiSplitter splitter = this.splitters[i];
-				var panelControl = panel as Control;
 
-				if (this.VerticalizeAllLogic == false) {
-					int minimumPanelHeight = this.MinimumPanelHeight;
-					if (panelControl != null) {
-						minimumPanelHeight = panelControl.MinimumSize.Height;
-					}
-					int panelY = splitter.Location.Y + splitter.Height;
-					if (panel.Location.Y != panelY) {
-						panel.Location = new Point(panel.Location.X, panelY);
-						thingsIchanged++;
-					}
-					int panelHeight = -1;
-					if (i == this.splitters.Count-1) {
-						panelHeight = baseHeight - panelY;
-						if (panelHeight < 0) {
-							#if DEBUG
-							//POSTPONE_WINDOWS_MAGIC Debugger.Break();	// AFTERDRAG_MANUAL_ORDER_WASNT_SYNCED YOUVE_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
-							#endif
-							return;
-						}
-						if (panelHeight < minimumPanelHeight) {
-							panelHeight = minimumPanelHeight;
-						}
-					} else {
-						MultiSplitter lowerSplitter = this.splitters[i+1];		//prevSplitterLocationY
-						panelHeight = lowerSplitter.Location.Y - panelY;  
-						if (panelHeight < minimumPanelHeight) {
-							panelHeight = minimumPanelHeight;
-						}
-					}
+				string panelName = panel.Name;
+				if (splitterPropertiesByPanelName.ContainsKey(panelName) == false) {
+					string msg = "CRITICAL YOU_ADDED_RENAMED_A_PANEL_AFTER_BUILDING_PROPERTIES or DESERIALIZED_DICTIONARY_CONTAINS_OLD_CONTENT_OR_NAMES_OF_PANELS";
+					Assembler.PopupException(msg);
+					return;
+				}
 
-					//panelHeight -= splitter.Height + 40;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
-					PanelBase panelBase = panel as PanelBase;
-					MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
-					bool heightChanged = false;
-					if (panelBase != null) {
-						heightChanged = panelBase.SetHeightIgnoreResize(panelHeight);
-					} else if (panelAsMultiSplitContainer != null) {
-						heightChanged = panelAsMultiSplitContainer.SetHeightIgnoreResize(panelHeight);
-					} else {
-						if (panel.Height != panelHeight) {
-							panel.Height  = panelHeight;
-							heightChanged = true;
-						}
-					}
-					if (heightChanged) thingsIchanged++;
-
-					yCheckDiff += splitter.Height;
-					yCheckDiff += panel.Height;
-				} else {
-					int minimumPanelWidth = this.MinimumPanelHeight;
-					if (panelControl != null) {
-						minimumPanelWidth = panelControl.MinimumSize.Width;
-					}
-					int panelX = splitter.Location.X + splitter.Width;
-					if (panel.Location.X != panelX) {
-						panel.Location = new Point(panelX, panel.Location.Y);
-						thingsIchanged++;
-					}
-					int panelWidth = -1;
-					if (i == this.splitters.Count-1) {
-						panelWidth = baseHeight - panelX;
-						if (panelWidth < 0) {
-							#if DEBUG
-							//POSTPONE_WINDOWS_MAGIC Debugger.Break();	// AFTERDRAG_MANUAL_ORDER_WASNT_SYNCED YOUVE_HAD_MAXIMIZED_OK_BUT_NORMAL_WINDOW_SIZE_MADE_THE_PANEL_TOO_SMALL MAYBE_YOU_CAN_COLLAPSE_EXCEPTIONS_PANEL_TO_SEE_VOLUME?
-							#endif
-							return;
-						}
-						if (panelWidth < minimumPanelWidth) {
-							panelWidth = minimumPanelWidth;
-						}
-					} else {
-						MultiSplitter rightSplitter = this.splitters[i+1];		//prevSplitterLocationY
-						panelWidth = rightSplitter.Location.X - panelX;  
-						if (panelWidth < minimumPanelWidth) {
-							panelWidth = minimumPanelWidth;
-						}
-					}
-	
-					//panelHeight -= splitter.Height + 40;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
-					PanelBase panelBase = panel as PanelBase;
-					MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
-					bool widthChanged = false;
-					if (panelBase != null) {
-						widthChanged = panelBase.SetWidthIgnoreResize(panelWidth);
-					} else if (panelAsMultiSplitContainer != null) {
-						widthChanged = panelAsMultiSplitContainer.SetWidthIgnoreResize(panelWidth);
-					} else {
-						if (panel.Width != panelWidth) {
-						    panel.Width  = panelWidth;
-							widthChanged = true;
-						}
-					}
-					if (widthChanged) thingsIchanged++;
-
-					yCheckDiff += splitter.Width;
-					yCheckDiff += panel.Width;
+				MultiSplitterProperties props = splitterPropertiesByPanelName[panelName];
+				if (props.ManualOrder != i) {
+					string msg = "YOU_SWAPPED_PANELS_AND_SAVED_IN_PROPERTIES__NEED_TO_MOVE_INSIDE_ARRAYS";
+					Assembler.PopupException(msg);
+					return;
 				}
 			}
+
+			base.SuspendLayout();
+			int thingsIchanged = this.VerticalizeAllLogic
+				? this.propagateColumns(splitterPropertiesByPanelName)
+				: this.propagateRows(splitterPropertiesByPanelName);
+			base.ResumeLayout();
+		}
+		int propagateColumns(Dictionary<string, MultiSplitterProperties> splitterPropertiesByPanelName) {
+			int thingsIchanged = 0;
+			int xCheckDiff = 0;
+			for (int i=0; i<this.splitters.Count; i++) {
+				PANEL_BASE panel = this.panels[i];
+				MultiSplitter splitter = this.splitters[i];
+
+				string panelName = panel.Name;
+				MultiSplitterProperties props = splitterPropertiesByPanelName[panelName];
+
+				if (splitter.Width != this.SplitterHeight) {
+					string msg = "MUST_BE_INITIALIZED_EARLIER splitter[" + splitter.Name + "].Width[" + splitter.Width+ "] => [" + this.SplitterHeight + "]";
+					Assembler.PopupException(msg);
+					splitter.Width  = this.SplitterHeight;
+					thingsIchanged++;
+				}
+				if (splitter.Location.X != props.Distance) {
+					splitter.Location = new Point(props.Distance, 0);
+					thingsIchanged++;
+				}
+
+				int panelX = splitter.Location.X + splitter.Width;
+				if (panel.Location.X != panelX) {
+					panel.Location = new Point(panelX, 0);
+					thingsIchanged++;
+				}
+
+				bool widthChanged = false;
+				int newWidth = props.PanelHeight;	// yes PanelHeight with VerticalizeLogic = Width
+				if (panel.Width != newWidth) {
+					//PanelBase panelBase = panel as PanelBase;
+					//MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
+					//if (panelBase != null) {
+					//    widthChanged = panelBase.SetWidthIgnoreResize(newWidth);
+					//} else if (panelAsMultiSplitContainer != null) {
+					//    widthChanged = panelAsMultiSplitContainer.SetWidthIgnoreResize(newWidth);
+					//} else {
+						panel.Width  = newWidth;
+						widthChanged = true;
+					//}
+				}
+				if (widthChanged) thingsIchanged++;
+				if (panel.Width != newWidth) {
+					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Width[" + panel.Width + "] != newWidth[" + newWidth + "]";
+					Assembler.PopupException(msg);
+				}
+
+
+				bool heightChanged = false;
+		   		int baseHeight = base.Height;
+				if (splitter.Height != baseHeight) {
+					string msg = "splitter.Height BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
+					Assembler.PopupException(msg, null, false);
+					splitter.Height = baseHeight;			// happily resized and repainted
+					thingsIchanged++;
+				}
+				if (panel.Height != baseHeight) {
+					string msg = "panel.Height BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
+					Assembler.PopupException(msg, null, false);
+
+					//PanelBase panelBase = panel as PanelBase;
+					//MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
+					//if (panelBase != null) {
+					//    heightChanged = panelBase.SetHeightIgnoreResize(baseHeight);
+					//} else if (panelAsMultiSplitContainer != null) {
+					//    heightChanged = panelAsMultiSplitContainer.SetHeightIgnoreResize(baseHeight);
+					//} else {
+						panel.Height  = baseHeight;
+						heightChanged = true;
+					//}
+				}
+				if (heightChanged) thingsIchanged++;
+				if (panel.Width != newWidth) {
+					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Width[" + panel.Width + "] != newWidth[" + newWidth + "]";
+					Assembler.PopupException(msg);
+				}
+
+				xCheckDiff += splitter.Width;
+				xCheckDiff += panel.Width;
+			}
+
 
 			#if DEBUG		// TESTS_EMBEDDED
-			if (this.VerticalizeAllLogic == false) {
-				if (base.Height != baseHeight) {
-					Debugger.Break();
-				}
-				baseHeight = base.Height;
-				int roundingError = Math.Abs(yCheckDiff - baseHeight);
-				if (roundingError > 10) {
-					//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
-				}
-			} else {
-				if (base.Width != baseHeight) {
-					Debugger.Break();
-				}
-				baseHeight = base.Width;
-				int roundingError = Math.Abs(yCheckDiff - baseHeight);
-				if (roundingError > 10) {
-					//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
-				}
+			int roundingError = Math.Abs(xCheckDiff - base.Width);
+			if (roundingError > 10) {
+				//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
 			}
-			#endif
-			
-} catch (Exception ex) {
-	string msg = "YOU_GOT_PANES_DECLARED_FOR_NON-YET_INSTANTIATED_INDICATORS MOVING_PANES_ON_DESERIALIZATION_TO_RESTORE_LAYOUT_NYI";
-	Assembler.PopupException(msg, ex, false);
-}
-			#if DEBUG
 			if (thingsIchanged == 0) {
-				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK //SplitterPropertiesByPanelNameSet()";
+				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK //propagateColumns()";
 				Assembler.PopupException(msg, null, false);
 			}
-			if (thingsIchanged % 2 != 1) {
-			    string msg = "I_CHANGE_TWO_HEIGHTS_AND_ONE_LOCATION_EACH_CHART_CONTRO";
-			    //Assembler.PopupException(msg, null, false);
-			}
+			//if (thingsIchanged % 2 != 1) {
+			//    string msg = "I_CHANGE_TWO_HEIGHTS_AND_ONE_LOCATION_EACH_CHART_CONTRO";
+			//    //Assembler.PopupException(msg, null, false);
+			//}
 			#endif
+			return thingsIchanged;
+		}
+
+		int propagateRows(Dictionary<string, MultiSplitterProperties> splitterPropertiesByPanelName) {
+			int thingsIchanged = 0;
+			int yCheckDiff = 0;
+			for (int i=0; i<this.splitters.Count; i++) {
+				PANEL_BASE panel = this.panels[i];
+				MultiSplitter splitter = this.splitters[i];
+
+				string panelName = panel.Name;
+				MultiSplitterProperties props = splitterPropertiesByPanelName[panelName];
+
+				if (splitter.Height != this.SplitterHeight) {
+					string msg = "MUST_BE_INITIALIZED_EARLIER splitter[" + splitter.Name + "].Height[" + splitter.Height+ "] => [" + this.SplitterHeight + "]";
+					Assembler.PopupException(msg);
+					splitter.Height  = this.SplitterHeight;
+					thingsIchanged++;
+				}
+
+				if (splitter.Location.Y != props.Distance) {
+					splitter.Location = new Point(0, props.Distance);
+					thingsIchanged++;
+				}
+
+				int panelY = splitter.Location.Y + splitter.Height;
+				if (panel.Location.Y != panelY) {
+					panel.Location = new Point(0, panelY);
+					thingsIchanged++;
+				}
+
+				bool heightChanged = false;
+				int newHeight = props.PanelHeight;
+				if (panel.Height != newHeight) {
+					//PanelBase panelBase = panel as PanelBase;
+					//MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
+					//if (panelBase != null) {
+					//    heightChanged = panelBase.SetHeightIgnoreResize(newHeight);
+					//} else if (panelAsMultiSplitContainer != null) {
+					//    heightChanged = panelAsMultiSplitContainer.SetHeightIgnoreResize(newHeight);
+					//} else {
+						panel.Height  = props.PanelHeight;
+						heightChanged = true;
+					//}
+				}
+				if (heightChanged) thingsIchanged++;
+				if (panel.Height != newHeight) {
+					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Height[" + panel.Height + "] != newHeight[" + newHeight+ "]";
+					Assembler.PopupException(msg);
+				}
+
+
+				bool widthChanged = false;
+		   		int baseWidth = base.Width;
+				if (splitter.Width != baseWidth) {
+					string msg = "splitter.Width BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
+					Assembler.PopupException(msg, null, false);
+					splitter.Width = baseWidth;			// happily resized and repainted
+					thingsIchanged++;
+				}
+				if (panel.Width != baseWidth) {
+					string msg = "panel.Width BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
+					Assembler.PopupException(msg, null, false);
+
+					//PanelBase panelBase = panel as PanelBase;
+					//MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
+					//if (panelBase != null) {
+					//    widthChanged = panelBase.SetWidthIgnoreResize(baseWidth);
+					//} else if (panelAsMultiSplitContainer != null) {
+					//    widthChanged = panelAsMultiSplitContainer.SetWidthIgnoreResize(baseWidth);
+					//} else {
+						panel.Width  = baseWidth;
+						widthChanged = true;
+					//}
+				}
+				if (widthChanged) thingsIchanged++;
+				if (panel.Width != baseWidth) {
+					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Width[" + panel.Width + "] != baseWidth[" + baseWidth + "]";
+					Assembler.PopupException(msg);
+				}
+
+				yCheckDiff += splitter.Height;
+				yCheckDiff += panel.Height;
+			}
+
+
+			#if DEBUG		// TESTS_EMBEDDED
+			int roundingError = Math.Abs(yCheckDiff - base.Height);
+			if (roundingError > 10) {
+				//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
+			}
+			if (thingsIchanged == 0) {
+				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK //propagateRows()";
+				Assembler.PopupException(msg, null, false);
+			}
+			//if (thingsIchanged % 2 != 1) {
+			//    string msg = "I_CHANGE_TWO_HEIGHTS_AND_ONE_LOCATION_EACH_CHART_CONTRO";
+			//    //Assembler.PopupException(msg, null, false);
+			//}
+			#endif
+			return thingsIchanged;
 		}
 	}
 }
