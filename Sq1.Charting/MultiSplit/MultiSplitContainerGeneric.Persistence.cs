@@ -67,7 +67,7 @@ namespace Sq1.Charting.MultiSplit {
 			int thingsIchanged = this.VerticalizeAllLogic
 				? this.propagateColumns(splitterPropertiesByPanelName)
 				: this.propagateRows(splitterPropertiesByPanelName);
-			base.ResumeLayout();
+			base.ResumeLayout(true);
 		}
 		int propagateColumns(Dictionary<string, MultiSplitterProperties> splitterPropertiesByPanelName) {
 			int thingsIchanged = 0;
@@ -121,13 +121,13 @@ namespace Sq1.Charting.MultiSplit {
 		   		int baseHeight = base.Height;
 				if (splitter.Height != baseHeight) {
 					string msg = "splitter.Height BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 					splitter.Height = baseHeight;			// happily resized and repainted
 					thingsIchanged++;
 				}
 				if (panel.Height != baseHeight) {
 					string msg = "panel.Height BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 
 					//PanelBase panelBase = panel as PanelBase;
 					//MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
@@ -153,8 +153,9 @@ namespace Sq1.Charting.MultiSplit {
 
 			#if DEBUG		// TESTS_EMBEDDED
 			int roundingError = Math.Abs(xCheckDiff - base.Width);
-			if (roundingError > 10) {
-				//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
+			if (roundingError != 0) {
+				string msg = "USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTAR LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR";
+				Assembler.PopupException(msg, null, false);
 			}
 			if (thingsIchanged == 0) {
 				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK //propagateColumns()";
@@ -221,13 +222,13 @@ namespace Sq1.Charting.MultiSplit {
 		   		int baseWidth = base.Width;
 				if (splitter.Width != baseWidth) {
 					string msg = "splitter.Width BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 					splitter.Width = baseWidth;			// happily resized and repainted
 					thingsIchanged++;
 				}
 				if (panel.Width != baseWidth) {
 					string msg = "panel.Width BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
-					Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg, null, false);
 
 					//PanelBase panelBase = panel as PanelBase;
 					//MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
@@ -253,8 +254,9 @@ namespace Sq1.Charting.MultiSplit {
 
 			#if DEBUG		// TESTS_EMBEDDED
 			int roundingError = Math.Abs(yCheckDiff - base.Height);
-			if (roundingError > 10) {
-				//USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
+			if (roundingError != 0) {
+				string msg = "USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTAR LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR";
+				Assembler.PopupException(msg);
 			}
 			if (thingsIchanged == 0) {
 				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK //propagateRows()";

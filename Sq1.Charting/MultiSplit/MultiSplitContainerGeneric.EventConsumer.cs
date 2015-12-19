@@ -145,12 +145,12 @@ namespace Sq1.Charting.MultiSplit {
 			this.panelMouseIsOverNow = panel;
 			this.panelMouseIsOverNowIndexDropTarget = this.panels.IndexOf(this.panelMouseIsOverNow);
 			MultiSplitter splitterForThisPanel = this.splitters[this.panelMouseIsOverNowIndexDropTarget];
-			if (DebugSplitter) {
+			if (this.DebugSplitter) {
 				//splitterAboveTarget.Text = this.splitterResizeOrDragStartedText + " targetIndex[" + this.panelMouseIsOverNowIndexDropTarget + "]";
 				splitterForThisPanel.Text = " target[" + this.panelMouseIsOverNow.Text + "] index[" + this.panelMouseIsOverNowIndexDropTarget + "]";
+				//splitterForThisPanel.Text += " :" + mousePositionFromSplitContainerUpperLeft;
 			}
-			//NOT_ENOUGH
-			splitterForThisPanel.Invalidate();
+			//NOT_ENOUGH splitterForThisPanel.Invalidate();
 			base.Invalidate();
 		}
 		void panel_MouseLeave(object sender, EventArgs e) {
@@ -175,8 +175,7 @@ namespace Sq1.Charting.MultiSplit {
 			if (this.DebugSplitter) {
 				splitterForThisPanel.Text = "<leftThisPanel>";
 			}
-			//NOT_ENOUGH
-			splitterForThisPanel.Invalidate();
+			//NOT_ENOUGH splitterForThisPanel.Invalidate();
 			base.Invalidate();
 		}
 		
@@ -207,7 +206,7 @@ namespace Sq1.Charting.MultiSplit {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (DebugSplitter) {
+			if (this.DebugSplitter) {
 				splitter.Text = this.splitterStartedResizeOrDragText;
 			}
 			
@@ -230,7 +229,7 @@ namespace Sq1.Charting.MultiSplit {
 				}
 			}
 
-			if (DebugSplitter) {
+			if (this.DebugSplitter) {
 				splitter.Text += " x:" + e.X + " y:" + e.Y;
 				splitter.Invalidate();
 				//base.Invalidate();
@@ -256,7 +255,7 @@ namespace Sq1.Charting.MultiSplit {
 				return;
 			}
 			if (this.splitterStartedResizeOrDrag != null) {
-				if (DebugSplitter) {
+				if (this.DebugSplitter) {
 					splitter.Text = "<leftThisSplitterWhileDragging>";
 				}
 				return;
@@ -268,7 +267,7 @@ namespace Sq1.Charting.MultiSplit {
 			splitter.BackColor = ColorBackgroundSliderRegular;
 			splitter.Invalidate();
 				
-			if (DebugSplitter) {
+			if (this.DebugSplitter) {
 				splitter.Text = "<leftThisSplitter>";
 				splitter.Invalidate();
 				//base.Invalidate();
@@ -293,9 +292,9 @@ namespace Sq1.Charting.MultiSplit {
 			}
 			this.splitterStartedResizeOrDrag = splitter;
 			this.splitterStartedResizeOrDragPoint = this.VerticalizeAllLogic == false
-				? new Point(splitter.Location.X + e.X, splitter.Location.Y + e.Y - splitter.Height)
-				: new Point(splitter.Location.X + e.X - splitter.Width, splitter.Location.Y + e.Y);
-			if (DebugSplitter) {
+			    ? new Point(splitter.Location.X + e.X, splitter.Location.Y + e.Y - splitter.Height)
+			    : new Point(splitter.Location.X + e.X - splitter.Width, splitter.Location.Y + e.Y);
+			if (this.DebugSplitter) {
 				splitter.Text = this.splitterStartedResizeOrDragText;
 				splitter.Invalidate();		// makes the Text visible
 			}
@@ -323,7 +322,7 @@ namespace Sq1.Charting.MultiSplit {
 					if (indexToMoveFrom != indexToMoveTo) {
 						this.panels		.Move(indexToMoveFrom, indexToMoveTo);
 						this.splitters	.Move(indexToMoveFrom, indexToMoveTo);
-						this.AssignPanelBelowAbove_fromPanelsList();
+						this.AssignPanelBelowAbove_setMinimalSize_fromPanelsList();
 						this.DistributePanelsAndSplitters();
 					}
 				}
@@ -340,7 +339,7 @@ namespace Sq1.Charting.MultiSplit {
 			this.splitterIsMovingNow = false;
 			this.splitterStartedResizeOrDragPoint = new Point(-1, -1);
 
-			if (DebugSplitter) {
+			if (this.DebugSplitter) {
 				splitter.Text = this.splitterStartedResizeOrDragText;
 				splitter.Invalidate();		// makes the Text visible
 			}
@@ -357,7 +356,7 @@ namespace Sq1.Charting.MultiSplit {
 		void splitterDraggingNow_PanelsSwap(MultiSplitter splitter, Point mousePositionFromSplitContainerUpperLeft) {
 			//splitter.Text += " dragging";
 			// I_HATE_HACKING_WINDOWS_FORMS mousedrag doesn't fire panel_MouseEnter()/panel_MouseLeave() even if the mouse is above them now, simulating it manually here
-			Control panelMouseOvered = null; 
+			Control panelMouseOvered = null;
 			//foreach (Control panel in this.panels) {
 			for (int i=0; i<this.panels.Count; i++) {
 				Control panel = this.panels[i];
@@ -417,10 +416,17 @@ namespace Sq1.Charting.MultiSplit {
 						return;
 					}
 				}
+
 				int panelAboveMinimumHeight = this.MinimumPanelHeight;
-				if (panelAbove.MinimumSize != default(Size)) {
-					panelAboveMinimumHeight = panelAbove.MinimumSize.Height;
-				}
+				//MultiSplitContainer multiSplitContainerAbove = panelAbove as MultiSplitContainer;
+				//if (multiSplitContainerAbove != null) {		// I avoid setting MinimalSize for the MultiSplitContainer itself
+				//    string msg = "CALCULATING_SUM_OF_MIN_HEIGHTS_AMONG_NESTED_PANELS__ABOVE_SPLITTER";
+				//    panelAboveMinimumHeight = multiSplitContainerAbove.MinimalPanelHeights_SumIfHorizontal_MaxIfVertical;
+				//} else {
+					if (panelAbove.MinimumSize != default(Size)) {
+						panelAboveMinimumHeight = panelAbove.MinimumSize.Height;
+					}
+				//}
 				int panelAboveHeightProjected = panelAbove.Height - mouseMovingUp; 
 				if (panelAboveHeightProjected < panelAboveMinimumHeight) {
 					Cursor.Current = Cursors.No;
@@ -428,9 +434,15 @@ namespace Sq1.Charting.MultiSplit {
 				}
 				
 				int panelBelowMinimumHeight = this.MinimumPanelHeight;
-				if (panelBelow.MinimumSize != default(Size)) {
-					panelBelowMinimumHeight = panelBelow.MinimumSize.Height;
-				}
+				//MultiSplitContainer multiSplitContainerBelow = panelBelow as MultiSplitContainer;
+				//if (multiSplitContainerBelow != null) {		// I avoid setting MinimalSize for the MultiSplitContainer itself
+				//    string msg = "CALCULATING_SUM_OF_MIN_HEIGHTS_AMONG_NESTED_PANELS__BELOW_SPLITTER";
+				//    panelAboveMinimumHeight = multiSplitContainerBelow.MinimalPanelHeights_SumIfHorizontal_MaxIfVertical;
+				//} else {
+					if (panelBelow.MinimumSize != default(Size)) {
+						panelBelowMinimumHeight = panelBelow.MinimumSize.Height;
+					}
+				//}
 				int panelBelowHeightProjected = panelBelow.Height + mouseMovingUp;
 				if (panelBelowHeightProjected < panelBelowMinimumHeight) {
 					Cursor.Current = Cursors.No;
@@ -460,6 +472,7 @@ namespace Sq1.Charting.MultiSplit {
 				panelBelow.Location = panelBelowLocation;
 				Point splitterLocation = new Point(splitter.Location.X, splitter.Location.Y - mouseMovingUp);
 				splitter.Location = splitterLocation;
+				thingsIchanged++;
 				//v2 END
 
 				//PanelBase panelBaseAbove = panelAbove as PanelBase;
@@ -477,39 +490,52 @@ namespace Sq1.Charting.MultiSplit {
 
 
 			} else {
-				int mouseMovingLeft = this.splitterStartedResizeOrDragPoint.X - mousePositionFromSplitContainerUpperLeft.X;
-				if (mouseMovingLeft > 0 && panelAbove.Width <= 5) return;
-				if (mouseMovingLeft < 0 && panelBelow.Width <= 5) return;
-				if (mouseMovingLeft < 0 && splitterIndex == this.splitters.Count - 1) {
+				int mouseMovedLeftFromPointClicked = this.splitterStartedResizeOrDragPoint.X - mousePositionFromSplitContainerUpperLeft.X;
+				if (mouseMovedLeftFromPointClicked > 0 && panelAbove.Width <= 5) return;
+				if (mouseMovedLeftFromPointClicked < 0 && panelBelow.Width <= 5) return;
+				if (mouseMovedLeftFromPointClicked < 0 && splitterIndex == this.splitters.Count - 1) {
 					int baseHeight = base.Width;
 					if (splitter.Location.X + splitter.Width >= base.Width - 5) {
 						return;
 					}
 				}
-				int panelAboveMinimumHeight = this.MinimumPanelHeight;
-				if (panelAbove.MinimumSize != default(Size)) {
-					panelAboveMinimumHeight = panelAbove.MinimumSize.Width;
-				}
-				int panelAboveHeightProjected = panelAbove.Height - mouseMovingLeft; 
-				if (panelAboveHeightProjected < panelAboveMinimumHeight) {
+				int panelAboveMinimumWidth = this.MinimumPanelHeight;
+				//MultiSplitContainer multiSplitContainerAbove = panelAbove as MultiSplitContainer;
+				//if (multiSplitContainerAbove != null) {		// I avoid setting MinimalSize for the MultiSplitContainer itself
+				//    string msg = "CALCULATING_SUM_OF_MIN_WIDTHS_AMONG_NESTED_PANELS__ABOVE_SPLITTER";
+				//    panelAboveMinimumWidth = multiSplitContainerAbove.MinimalPanelWidths_SumIfVertical_MaxIfHorizontal;
+				//} else {
+					if (panelAbove.MinimumSize != default(Size)) {
+						panelAboveMinimumWidth = panelAbove.MinimumSize.Width;
+					}
+				//}
+				int panelAboveWidthProjected = panelAbove.Width - mouseMovedLeftFromPointClicked; 
+				if (panelAboveWidthProjected < panelAboveMinimumWidth) {
 					Cursor.Current = Cursors.No;
 					return;
 				}
 				
 				int panelBelowMinimumWidth = this.MinimumPanelHeight;
-				if (panelBelow.MinimumSize != default(Size)) {
-					panelBelowMinimumWidth = panelBelow.MinimumSize.Width;
-				}
-				int panelBelowHeightProjected = panelBelow.Height + mouseMovingLeft;
-				if (panelBelowHeightProjected < panelBelowMinimumWidth) {
+				//MultiSplitContainer multiSplitContainerBelow = panelBelow as MultiSplitContainer;
+				//if (multiSplitContainerBelow != null) {		// I avoid setting MinimalSize for the MultiSplitContainer itself
+				//    string msg = "CALCULATING_SUM_OF_MIN_WIDTHS_AMONG_NESTED_PANELS__BELOW_SPLITTER";
+				//    panelBelowMinimumWidth = multiSplitContainerBelow.MinimalPanelWidths_SumIfVertical_MaxIfHorizontal;
+				//} else {
+					if (panelBelow.MinimumSize != default(Size)) {
+						panelBelowMinimumWidth = panelBelow.MinimumSize.Width;
+					}
+				//}
+				//panelBelow might be another MultiSplitContainer
+				int panelBelowWidthProjected = panelBelow.Width + mouseMovedLeftFromPointClicked;
+				if (panelBelowWidthProjected < panelBelowMinimumWidth) {
 					Cursor.Current = Cursors.No;
 					return;
 				}
 				
 				Cursor.Current = Cursors.VSplit;
 
-				int panelBelowNewWidth = panelBelow.Width + mouseMovingLeft;
-				int panelAboveNewWidth = panelAbove.Width - mouseMovingLeft;
+				int panelBelowNewWidth = panelBelow.Width + mouseMovedLeftFromPointClicked;
+				int panelAboveNewWidth = panelAbove.Width - mouseMovedLeftFromPointClicked;
 
 				//PanelBase panelBaseBelow = panelBelow as PanelBase;
 				//MultiSplitContainer multiSplitContainerBelow = panelBelow as MultiSplitContainer;
@@ -525,9 +551,9 @@ namespace Sq1.Charting.MultiSplit {
 				//}
 
 				//v2 REPLACEMENT_FOR_DistributePanelsAndSplitters()_BELOW
-				Point panelBelowLocation = new Point(panelBelow.Location.X - mouseMovingLeft, panelBelow.Location.Y);
+				Point panelBelowLocation = new Point(panelBelow.Location.X - mouseMovedLeftFromPointClicked, panelBelow.Location.Y);
 				panelBelow.Location = panelBelowLocation;
-				Point splitterLocation = new Point(splitter.Location.X - mouseMovingLeft, splitter.Location.Y);
+				Point splitterLocation = new Point(splitter.Location.X - mouseMovedLeftFromPointClicked, splitter.Location.Y);
 				splitter.Location = splitterLocation;
 				thingsIchanged++;
 				//v2 END
