@@ -219,9 +219,9 @@ namespace Sq1.Charting {
 					//int dayOpenersDrawn = 0;
 					
 					//if (dayOpenersDrawn == 0) {	//draw in left corner the date anyway (too much eyeballing to find the date I need)
-					Bar barLeftmost = this.ChartControl.Bars[this.VisibleBarLeftExisting];
+					Bar barLeftmost = this.ChartControl.Bars[this.visibleBarLeftExisting];
 					string barLeftmostFormatted = barLeftmost.DateTimeOpen.ToString(this.ChartControl.ChartSettings.GutterBottomDateFormatDayOpener);
-					int barLeftmostX = this.BarToX(this.VisibleBarLeftExisting);
+					int barLeftmostX = this.BarToX(this.visibleBarLeftExisting);
 					int barLeftmostWidth = (int)g.MeasureString(barLeftmostFormatted, this.ChartControl.ChartSettings.GutterBottomFont).Width;
 					barLeftmostX = this.adjustToBoundariesHorizontalGutter(barLeftmostX, barLeftmostWidth);
 					//g.DrawLine(this.ChartControl.ChartSettings.PenGridlinesVerticalNewDate, barLeftmostX, 0, barLeftmostX, this.PanelHeightMinusGutterBottomHeight_cached);
@@ -230,9 +230,9 @@ namespace Sq1.Charting {
 					barDateLabelsAlreadyDrawn.Add(rectLeftmost);
 					//}
 					
-					Bar barOpenerPrevDay = this.ChartControl.Bars[this.VisibleBarRightExisting];
+					Bar barOpenerPrevDay = this.ChartControl.Bars[this.visibleBarRightExisting];
 					int barPrevX = this.PanelWidthMinusRightPriceGutter - this.BarWidthIncludingPadding_cached;
-					for (int i = this.VisibleBarRightExisting - 1; i >= this.VisibleBarLeftExisting; i--, barPrevX -= this.BarWidthIncludingPadding_cached) {
+					for (int i = this.visibleBarRightExisting - 1; i >= this.visibleBarLeftExisting; i--, barPrevX -= this.BarWidthIncludingPadding_cached) {
 						Bar bar = this.ChartControl.Bars[i];
 						if (bar.DateTimeOpen.Day == barOpenerPrevDay.DateTimeOpen.Day) continue;
 						if (this.ChartControl.ChartSettings.GridlinesVerticalShow) {
@@ -261,7 +261,7 @@ namespace Sq1.Charting {
 				
 				//this.ChartControl.ChartSettings.PenGridlinesVertical.Width = 1f;
 				int barMiddleX = this.PanelWidthMinusRightPriceGutter - this.BarWidthIncludingPadding_cached + this.BarShadowXoffset_cached;
-				for (int i = this.VisibleBarRightExisting; i >= this.VisibleBarLeftExisting; i--, barMiddleX -= this.BarWidthIncludingPadding_cached) {
+				for (int i = this.visibleBarRightExisting; i >= this.visibleBarLeftExisting; i--, barMiddleX -= this.BarWidthIncludingPadding_cached) {
 					Bar bar = this.ChartControl.Bars[i];
 					if (isIntraday_cached && bar.DateTimeOpen.Minute > 0) continue;
 					string dateFormatted = bar.DateTimeOpen.ToString(this.formatForBars);
@@ -486,7 +486,7 @@ namespace Sq1.Charting {
 				}
 				// UNNECESSARY_BUT_HELPS_CATCH_BUGS end
 				
-				if (this.ThisPanelIsIndicatorPanel) return;
+				if (this.thisPanelIsIndicatorPanel) return;
 				string indicatorLabel = indicator.NameWithParameters;
 				this.DrawLabelOnNextLine(graphics, indicatorLabel, null, indicator.LineColor, Color.Empty, true);
 			}

@@ -8,7 +8,7 @@
  */
 namespace Sq1.Charting.Demo
 {
-	partial class MultiSplitTest
+	partial class TestMultiSplit
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.
@@ -126,6 +126,7 @@ namespace Sq1.Charting.Demo
 			this.Name = "MultiSplitTest";
 			this.Text = "MultiSplitTest";
 			this.ResumeLayout(false);
+
 		}
 		private System.Windows.Forms.Panel panel6;
 		private System.Windows.Forms.Panel panel5;

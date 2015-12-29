@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.ComponentModel;
 
 using Sq1.Core;
 using Sq1.Core.Streaming;
@@ -11,9 +12,10 @@ namespace Sq1.Charting {
 	public class PanelLevel2 : PanelBase {
 		const string REASON_TO_EXIST = "besides my own Panel, paint also on a clipped Graphics to draw below candles on PanelPrice (intensivity of layers might be controlled by sliders))";
 
-		public override bool					PanelHasValuesForVisibleBarWindow		{ get { return false;	/* this will cancel drawing right gutter */ } }
-		public override int						ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
-		public			StreamingDataSnapshot	StreamingDataSnapshotNullUnsafe			{ get {
+		[Browsable(false)]	public override bool					PanelHasValuesForVisibleBarWindow		{ get { return false;	/* this will cancel drawing right gutter */ } }
+		[Browsable(false)]	protected override int					ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
+		[Browsable(false)]	public			StreamingDataSnapshot	StreamingDataSnapshotNullUnsafe			{ get {
+			if (base.ChartControl.Executor == null) return null;		// for TestChartControl
 			if (base.ChartControl.Executor.DataSource.StreamingAdapter == null) return null;
 			return base.ChartControl.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
 		} }
@@ -21,7 +23,7 @@ namespace Sq1.Charting {
 		bool errorDetected;
 
 		public PanelLevel2() : base() {
-			base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
+			//base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
 			base.MinimumSize = new Size(1, 15);	// only width matters when this.multiSplitContainerColumns.VerticalizeAllLogic = true;
 		}
 
@@ -45,7 +47,7 @@ namespace Sq1.Charting {
 		}
 
 		//using (var brush = new SolidBrush(Color.Red)) {
-		//	Font font = (this.ChartControl != null) ? this.ChartControl.ChartSettings.PanelNameAndSymbolFont : this.Font;
+		//	Font font = (base.ChartControl != null) ? base.ChartControl.ChartSettings.PanelNameAndSymbolFont : this.Font;
 		//	g.DrawString(msgRepaint, font, brush, new Point(60, 60));
 		//}
 
@@ -54,22 +56,35 @@ namespace Sq1.Charting {
 
 #if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
 		protected override void OnPaintBackground(PaintEventArgs pe) {
+			if (base.DesignMode) {
+				base.OnPaintBackground(pe);
+				return;
+			}
+
 			//ONLY_FOR_PRICE_PANEL?? //base.OnPaintBackgroundDoubleBuffered(pe);	 //base.DrawError drew label only lowest 2px shown from top of panel
+			if (base.ChartControl == null) {
+				base.OnPaintBackground(pe);
+				return;
+			}
 #else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs pe) {
+			if (base.ChartControl == null) {
+				base.OnPaintBackgroundDoubleBuffered(pe);
+				return;
+			}
 #endif
-			this.ChartLabelsUpperLeftYincremental = this.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
+			this.ChartLabelsUpperLeftYincremental = base.ChartControl.ChartSettings.ChartLabelsUpperLeftYstartTopmost;
 			Graphics g = pe.Graphics;
 			g.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 			
 			try {
-				g.Clear(this.ChartControl.ChartSettings.LevelTwoColorBackground);
+				g.Clear(base.ChartControl.ChartSettings.LevelTwoColorBackground);
 				
 				base.RepaintSernoBackground++;
-				if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
-					this.DrawError(g, "BACKTEST_IS_RUNNING_WAIT");
+				if (base.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) {
+					base.DrawError(g, "BACKTEST_IS_RUNNING_WAIT");
 					string msgRepaint = "repaintFore#" + this.RepaintSernoForeground + "/Back#" + this.RepaintSernoBackground;
-					this.DrawError(g, msgRepaint);
+					base.DrawError(g, msgRepaint);
 					if (this.Cursor != Cursors.WaitCursor) this.Cursor = Cursors.WaitCursor;
 					return;
 				}
@@ -83,20 +98,32 @@ namespace Sq1.Charting {
 				//int labelMeasurementsWidth = (int)Math.Round(labelMeasurements.Width);
 				int labelMeasurementsHeight = (int)Math.Round(labelMeasurements.Height);
 				base.ChartControl.ChartSettings.LevelTwoMinimumPriceLevelThicknessRendered = labelMeasurementsHeight;
-
 			} catch (Exception ex) {
 				string msg = "OnPaintBackgroundDoubleBuffered(): caught[" + ex.Message + "]";
 				Assembler.PopupException(msg, ex);
-				this.DrawError(g, msg);
+				base.DrawError(g, msg);
 			}
 
 		}
 #if NON_DOUBLE_BUFFERED	//SAFE_TO_UNCOMMENT_COMMENTED_OUT_TO_MAKE_C#DEVELOPER_EXTRACT_METHOD 
 		protected override void OnPaint(PaintEventArgs pe) {
+			if (base.DesignMode) {
+				base.OnPaint(pe);
+				return;
+			}
+			if (base.ChartControl == null) {
+				base.OnPaint(pe);	// will e.Graphics.Clear(base.BackColor);
+				return;
+			}
 #else
 		protected override void OnPaintDoubleBuffered(PaintEventArgs pe) {
+			if (base.ChartControl == null) {
+				base.OnPaintDoubleBuffered(pe);	// will e.Graphics.Clear(base.BackColor);
+				return;
+			}
 #endif
-			if (this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
+
+			if (base.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished == false) return;
 
 			Graphics g = pe.Graphics;
 			g.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
@@ -106,13 +133,13 @@ namespace Sq1.Charting {
 				base.DrawError(g, "EDIT_DATASOURCE_SELECT_STREAMING_ADAPTER");
 				this.errorDetected = true;
 			}
-			if (this.ChartControl.Bars == null) {
+			if (base.ChartControl.Bars == null) {
 				base.DrawError(g, "CHART_CONTROL_HAS_NO_BARS");
 				this.errorDetected = true;
 			}
 			Quote lastQuote = null;
 			if (this.errorDetected == false) {
-				lastQuote = this.StreamingDataSnapshotNullUnsafe.LastQuoteCloneGetForSymbol(this.ChartControl.Bars.Symbol);
+				lastQuote = this.StreamingDataSnapshotNullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
 				if (lastQuote == null) {
 					base.DrawError(g, "CONNECT_STREAMING__OR__CHART>BARS>SUBSCRIBE");
 					this.errorDetected = true;
@@ -136,7 +163,7 @@ namespace Sq1.Charting {
 			}
 		}
 		void renderLevel2(Graphics g, Quote lastQuote) {
-			PanelPrice panelPrice = this.ChartControl.PanelPrice;
+			PanelPrice panelPrice = base.ChartControl.PanelPrice;
 			double priceStep = panelPrice.PriceStep;
 
 			//string msgPixelsPerPriceStep = "Px[" + base.Height + "]/PriceStep[" + priceStep + "]=" 
@@ -223,7 +250,7 @@ namespace Sq1.Charting {
 				//if (base.ClientRectangle.Contains(horizontalBar) == false) continue;
 				if (base.ClientRectangle.IntersectsWith(horizontalBar) == false) continue;
 
-				g.FillRectangle(this.ChartControl.ChartSettings.BrushLevelTwoAskColorBackground, horizontalBar);
+				g.FillRectangle(base.ChartControl.ChartSettings.BrushLevelTwoAskColorBackground, horizontalBar);
 
 				Point[] leftUpContour = new Point[3];
 				leftUpContour[0] = base.ParentMultiSplitIamLast
@@ -235,7 +262,7 @@ namespace Sq1.Charting {
 				leftUpContour[2] = base.ParentMultiSplitIamLast
 					? new Point(lotsRelativeWidth, yAsk - pxPerPriceStep_Height)
 					: new Point(base.Width - lotsRelativeWidth, yAsk - pxPerPriceStep_Height);
-				g.DrawLines(this.ChartControl.ChartSettings.PenLevelTwoAskColorContour, leftUpContour);
+				g.DrawLines(base.ChartControl.ChartSettings.PenLevelTwoAskColorContour, leftUpContour);
 
 				string lotCumulativeFormatted = lotCumulative.ToString(base.VolumeFormat);
 				SizeF labelMeasurements = g.MeasureString(lotCumulativeFormatted, base.ChartControl.ChartSettings.LevelTwoLotFont);
@@ -296,7 +323,7 @@ namespace Sq1.Charting {
 				//if (base.ClientRectangle.Contains(horizontalBar) == false) continue;
 				if (base.ClientRectangle.IntersectsWith(horizontalBar) == false) continue;
 
-				g.FillRectangle(this.ChartControl.ChartSettings.BrushLevelTwoBidColorBackground, horizontalBar);
+				g.FillRectangle(base.ChartControl.ChartSettings.BrushLevelTwoBidColorBackground, horizontalBar);
 
 				Point[] leftDownContour = new Point[3];
 				leftDownContour[0] = base.ParentMultiSplitIamLast
@@ -308,7 +335,7 @@ namespace Sq1.Charting {
 				leftDownContour[2] = base.ParentMultiSplitIamLast
 					? new Point(lotsRelativeWidth, yBid + pxPerPriceStep_Height)
 					: new Point(base.Width - lotsRelativeWidth, yBid + pxPerPriceStep_Height);
-				g.DrawLines(this.ChartControl.ChartSettings.PenLevelTwoBidColorContour, leftDownContour);
+				g.DrawLines(base.ChartControl.ChartSettings.PenLevelTwoBidColorContour, leftDownContour);
 
 				string lotCumulativeFormatted = lotCumulative.ToString(base.VolumeFormat);
 				SizeF labelMeasurements = g.MeasureString(lotCumulativeFormatted, base.ChartControl.ChartSettings.LevelTwoLotFont);
@@ -340,7 +367,7 @@ namespace Sq1.Charting {
 			Quote quoteLast = base.ChartControl.ScriptExecutorObjects.QuoteLast;
 			if (quoteLast == null) return;
 
-			//Quote quoteLastFromDictionary = this.StreamingDataSnapshotNullUnsafe.LastQuoteCloneGetForSymbol(this.ChartControl.Bars.Symbol);
+			//Quote quoteLastFromDictionary = this.StreamingDataSnapshotNullUnsafe.LastQuoteCloneGetForSymbol(base.ChartControl.Bars.Symbol);
 			//if (quoteLast.SameBidAsk(quoteLastFromDictionary) == false) {
 			//	string msg = "GOOD_THAT_YOU_CACHED DATASNAP_UNSYNCED_EXECOBJ quoteLast[" + quoteLast + "] != quoteLastFromDictionary[" + quoteLastFromDictionary + "]";
 			//	Assembler.PopupException(msg, null, false);
@@ -350,7 +377,7 @@ namespace Sq1.Charting {
 			double spread = quoteLast.Spread;
 			if (double.IsNaN(spread) == true) return;
 
-			PanelPrice panelPrice = this.ChartControl.PanelPrice;
+			PanelPrice panelPrice = base.ChartControl.PanelPrice;
 			int		pxPricePanelVertialOffset	= panelPrice.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
 
 			int yBid = 0;

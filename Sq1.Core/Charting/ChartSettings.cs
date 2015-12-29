@@ -782,7 +782,8 @@ namespace Sq1.Core.Charting {
 			OnChartBarAnnotationsVerticalAwayFromPositionArrows = 3;
 
 			// SplitterPositionsByManorder isn't a "Setting" but I don't want to add event into ChartShadow to save/restore this from ChartFormDataSnaptshot
-			MultiSplitterRowsPropertiesByPanelName = new Dictionary<string, MultiSplitterProperties>();
+			MultiSplitterRowsPropertiesByPanelName		= new Dictionary<string, MultiSplitterProperties>();
+			MultiSplitterColumnsPropertiesByPanelName	= new Dictionary<string, MultiSplitterProperties>();
 
 			SpreadBidLineColor = Color.Gray;
 			SpreadBidLineColorAlpha = 64;

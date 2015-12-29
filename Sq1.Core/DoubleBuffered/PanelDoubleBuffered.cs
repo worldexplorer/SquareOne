@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 //http://www.codeproject.com/Articles/12870/Don-t-Flicker-Double-Buffer
 namespace Sq1.Core.DoubleBuffered {
@@ -12,6 +13,11 @@ namespace Sq1.Core.DoubleBuffered {
 		protected virtual void OnPaintBackgroundDoubleBuffered(PaintEventArgs pe) {
 			pe.Graphics.SetClip(base.ClientRectangle);	// always repaint whole Panel; by default, only extended area is "Clipped"
 			pe.Graphics.Clear(base.BackColor);
+			// HOPING_TO_PAINT_SPLITTERS__NOW_BLACK_UNTIL_MOUSEOVER now we spit BufferedGraphics into the screen
+			// LOOKS_IT_MADE_IT!!! MOVED_TO_Splitter.PaintForegroundDoubleBuffered...
+			//HEY_I_SOLVE_THE_PROBLEM_BUT_NEVER_INVOKED??
+			//Debugger.Break();
+			//this.bufferedGraphics.Render(pe.Graphics);
 		}
 		
 		// what sort of TRANSPARENT does it allow?... ommitting will require "override OnResize()"
@@ -74,6 +80,9 @@ namespace Sq1.Core.DoubleBuffered {
 				if (this.bufferedGraphics == null) this.initializeBuffer();
 				PaintEventArgs peSubstituted = new PaintEventArgs(bufferedGraphics.Graphics, pe.ClipRectangle);
 				this.OnPaintBackgroundDoubleBuffered(peSubstituted);
+	
+				// WAS_I_HOPING_THAT_FOREGROUNG_REPAINT_WILL_FLUSH???_IT_WASNT_HERE now we spit BufferedGraphics into the screen
+				// ABSOLUTELY_FLICKERING_LIKE_WITHOUT_DOUBLE_BUFFERING this.bufferedGraphics.Render(pe.Graphics);
 			} catch (Exception ex) {
 				string msg = "PANEL_DOUBLE_BUFFERED.OnPaintBackground()_HAS_PROBLEMS_WITH_DOUBLE_BUFFERING_API"
 					+ " OTHERWIZE_REFACTOR_CHILDREN_TO_CATCH_THEIR_OWN_EXCEPTIONS";

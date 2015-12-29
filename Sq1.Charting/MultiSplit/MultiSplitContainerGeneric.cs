@@ -38,12 +38,43 @@ namespace Sq1.Charting.MultiSplit {
 			return ret;
 		} }
 
+		//public int MinimalPanelWidths_SumIfVertical_MaxIfHorizontal { get {
+		//    int ret = 0;
+		//    foreach (PANEL_BASE panel in this.panels) {
+		//        if (panel.ToString().Contains("UNINITIALIZED")) {
+		//            string msg = "YOU_DIDNT_INITIALIZE_THE_PANEL_NAME";
+		//            Assembler.PopupException(msg);
+		//        }
+		//        if (this.VerticalizeAllLogic) {
+		//            ret += panel.MinimumSize.Width;
+		//        } else {
+		//            ret = Math.Max(ret, panel.MinimumSize.Width);
+		//        }
+		//    }
+		//    return ret;
+		//} }
+		//public int MinimalPanelHeights_SumIfHorizontal_MaxIfVertical { get {
+		//    int ret = 0;
+		//    foreach (PANEL_BASE panel in this.panels) {
+		//        if (panel.ToString().Contains("UNINITIALIZED")) {
+		//            string msg = "YOU_DIDNT_INITIALIZE_THE_PANEL_NAME";
+		//            Assembler.PopupException(msg);
+		//        }
+		//        if (this.VerticalizeAllLogic == false) {
+		//            ret += panel.MinimumSize.Height;
+		//        } else {
+		//            ret = Math.Max(ret, panel.MinimumSize.Height);
+		//        }
+		//    }
+		//    return ret;
+		//} }
+
 		MultiSplitContainerGeneric(bool verticalizeAllLogic = false, bool debugSplitter = false) {
 			VerticalizeAllLogic = verticalizeAllLogic;
 			DebugSplitter = debugSplitter;
 			panels = new ObservableCollection<PANEL_BASE>();
 			splitters = new ObservableCollection<MultiSplitter>();
-			SplitterHeight = 5;
+			SplitterHeight = 6;
 			GrabHandleWidth = 30;
 			MinimumPanelHeight = 5;
 			ColorGrabHandle = Color.Orange;
@@ -54,20 +85,12 @@ namespace Sq1.Charting.MultiSplit {
 		public MultiSplitContainerGeneric() : this(false, false) {
 		}
 
-//		[Obsolete("pass panels implicitly to InitializeCreateSplittersDistributeFor() since you may have other controls in base.Controls, such as buttons with fixed position etc")]
-//		public void InitializeExtractPanelsFromBaseControlsCreateSplittersDistribute() {
-//			var list = new List<PANEL_BASE>();
-//			foreach (PANEL_BASE c in base.Controls) {
-//				c.Text = c.Name;
-//				list.Add(c);
-//			}
-//			this.InitializeCreateSplittersDistributeFor(list);
-//		}
 		public void InitializeCreateSplittersDistributeFor(List<PANEL_BASE> whatIadd) {
 			// DOENST_HELP_OPENING_IN_DESIGNER STILL_THROWS if (base.DesignMode) return;
 			//Debugger.Break();
 			this.panels.Clear();
 			this.splitters.Clear();
+			//base.SuspendLayout();	// forces this.PanelAddSplitterCreateAdd not to invoke my.OnResize() <=PerformLayout() 
 			foreach (PANEL_BASE c in whatIadd) {
 				PANEL_BASE panel = c as PANEL_BASE;
 				if (panel == null) continue;
@@ -78,292 +101,192 @@ namespace Sq1.Charting.MultiSplit {
 					Assembler.PopupException(msg, ex);
 				}
 			}
-			this.DistributePanelsAndSplitters();
-		}
-		public void DistributePanelsAndSplitters() {		//Dictionary<int, int> splitterPositionsByManorder = null) {
+			if (Assembler.IsInitialized == false) return;	// otherwize I couldn't drop ChartControl from Toolbox to TestChartControl form / designer
+
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 				string msg = "ONCE_PER_PANEL_LET_IT_DISTRIBUTE_COMMENTED WHAT_IF_YOU_FIND_ALL_AND_LINK_PANEL_BELOWs_HERE?...";
-			//	return;
+				msg += " AssignPanelBelowAbove_setMinimalSize_fromPanelsList() and DistributePanelsAndSplitters() are invoked in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized";
+				// Assembler.PopupException(msg);
+		        return;
 			}
-			if (this.VerticalizeAllLogic == false) {
-				try {
-					this.DistributePanelsAndSplittersVertically_setHeightAndY();
-				} catch (Exception ex) {
-					Assembler.PopupException("//DistributePanelsAndSplittersVertically()", ex);
+		    if (this.splitters.Count < 1) {
+		        string msg = "YOU_NEED_TO_ADD_PANELS_BEFORE_HEIGHT_DISTRIBUTION";
+		        Assembler.PopupException(msg);
+		        return;
+		    }
+		    if (this.splitters.Count != this.panels.Count) {
+		        string msg = "YOU_GOT_MORE_PANELS_(DESERIALIZED)_THAN_SPLITTERS MUST_BE_EQUAL";
+		        Assembler.PopupException(msg);
+		        return;
+		    }
+			for (int i=0; i<this.panels.Count; i++) {
+				PANEL_BASE panel = this.panels[i];
+				if (panel == null) {
+					string msg = "PANELS_MUST_NOT_BE_NULL";
+					Assembler.PopupException(msg);
+					return;
 				}
-			} else {
-				try {
-					this.DistributePanelsAndSplittersHorizontally_setWidthAndX();
-				} catch (Exception ex) {
-					Assembler.PopupException("//DistributePanelsAndSplittersHorizontally()", ex);
+				if (string.IsNullOrEmpty(panel.Name)) {
+					string msg = "PANELS_MUST_HAVE_NAME";
+					Assembler.PopupException(msg);
+					return;
 				}
 			}
-		}
-		public void DistributePanelsAndSplittersVertically_setHeightAndY() {		//Dictionary<int, int> splitterPositionsByManorder = null) {
-			if (this.DesignMode) return;
-			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 
-			int baseHeight = base.Height;
-			//baseHeight -= 4;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR diagnose by swapping with upper panel
-			
-			// DO_I_NEED_IT? base.SuspendLayout();
-			
-			// FIRST_LOOP_DISTRIBUTES_VERTICALLY_KEEP_ORIGINAL_PANELS_HEIGHTS
-			int y = 0;
+			this.AssignPanelBelowAbove_setMinimalSize_fromPanelsList();
+			this.DistributePanelsAndSplitters();	// this must be single panel distribution after MainFormDockFormsFullyDeserializedLayoutComplete=true
+			//base.ResumeLayout(true);
+		}
+		public void AssignPanelBelowAbove_setMinimalSize_fromPanelsList() {
 			for (int i=0; i<this.panels.Count; i++) {
 				if (i >= this.splitters.Count) {
 					string msg = "YOU_GOT_MORE_PANELS_(DESERIALIZED)_THAN_SPLITTERS MUST_BE_EQUAL";
 					Assembler.PopupException(msg);
 					break;
 				}
-				
 				PANEL_BASE panel = this.panels[i];
 				MultiSplitter splitter = this.splitters[i];
 
-				//splitter.Location = new Point(splitter.Location.X, y);
-				splitter.Location = new Point(0, y);
-				y += splitter.Height;
-				
-				// SplitterMovingEnded will need to know splitter.PanelBelow.Location to save it
-				//v1
-				//PanelBase panelNamedFolding = panel as PanelBase;	// back from generics to real world
-				//if (panelNamedFolding != null) {
-				//	splitter.PanelBelow = panelNamedFolding;
-				//	if (i > 0) {
-				//		PANEL_BASE prevPanel = this.panels[i - 1];
-				//		PanelBase prevPanelNamedFolding = prevPanel as PanelBase;	// back from generics to real world
-				//		if (panelNamedFolding != null) splitter.PanelAbove = prevPanelNamedFolding;
-				//	}
-				//}
-				//v2 it could be another MultiSplitContainer and I want its name for de/serialization
-				splitter.PanelBelow = panel as Control;				// back to real world from generics
-				if (i > 0) splitter.PanelAbove = this.panels[i - 1] as Control;
-
-				//panel.Location = new Point(panel.Location.X, y);
-				panel.Location = new Point(0, y);
-				y += panel.Height;
-			}
-			
-			// MOVED_20_LINES_UP if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-			
-			int deserializationError = Math.Abs(y - baseHeight);
-			if (deserializationError <= 3) {
-				string msg = "we don't need proportional vertical fill when 1) splitterMoved, 2) splitterDragged"
-					+ " , 3) splitterPositionsByManorder.Count==this.panels.Count";
-				//Assembler.PopupException(msg);
-				return;
-			}
-			
-			int panelHeight = baseHeight - this.MinimumPanelHeight;
-			if (panelHeight < 0) {
-				string msg = "I_SHOULD_NEVER_BE_HERE__WTF";
-				Assembler.PopupException(msg);
-				return;
-			}
-
-			// we need proportional vertical fill when 1) a new panel was added, 2) an old panel was removed, 3) Initialize(List<Panel>), 4) OnResize
-			// SECOND_LOOP_RESIZES_EACH_HEIGHT_PROPORTIONALLY_TO_FILL_WHOLE_CONTAINER_SURFACE_VERTICALLY
-			int totalFixedHeight = this.SplitterHeight * this.panels.Count;
-			double fillVerticalK = (double) (baseHeight - totalFixedHeight) / (double) (y - totalFixedHeight);
-			
-			y = 0;
-			for (int i=0; i<this.panels.Count; i++) {
-				PANEL_BASE panel = this.panels[i];
-				MultiSplitter splitter = this.splitters[i];
-				
-				int minimumPanelHeight = this.MinimumPanelHeight;
-				var panelControl = panel as Control;
-				Size defaultSize = default(Size);
-				if (panelControl != null && panelControl.MinimumSize != null && panelControl.MinimumSize != defaultSize) {
-					minimumPanelHeight = panelControl.MinimumSize.Height;
+				//v1 splitter.PanelBelow = panel as Control;				// back to real world from generics
+				splitter.PanelBelow = panel;
+				if (i > 0) {
+					splitter.PanelAbove = this.panels[i - 1] as Control;
+				} else {
+					splitter.PanelAbove = null;
 				}
 
-				if (i == this.panels.Count - 1) {
-					int lastSplitterMaxY = baseHeight - (splitter.Height + minimumPanelHeight);
-					if (y > lastSplitterMaxY) {
-						y = lastSplitterMaxY; 
-					}
+				if (panel.MinimumSize.Width > base.MinimumSize.Width) {
+					base.MinimumSize = new Size(panel.MinimumSize.Width, base.MinimumSize.Height);
 				}
-
-				splitter.Location = new Point(0, y);
-				y += splitter.Height;
-				
-				panel.Location = new Point(0, y);
-				panel.Height = (int)(Math.Round(panel.Height * fillVerticalK, 0));
-				if (i == this.panels.Count - 1) {
-					if (panel.Height < minimumPanelHeight) {
-						panel.Height = minimumPanelHeight;
-					}
-
-					if (y + panel.Height > baseHeight) {
-						panel.Height = baseHeight - y;
-						if (panel.Height < 0) {
-							string msg = "STILL_RESIZING_IN_GUI_THREAD???  panel.Height[" + panel.Height + "] < 0";
-							Assembler.PopupException(msg);
-							return;
-						}
-					}
+				if (panel.MinimumSize.Height > base.MinimumSize.Height) {
+					base.MinimumSize = new Size(base.MinimumSize.Height, panel.MinimumSize.Width);
 				}
-				y += panel.Height;
 			}
-			
-			#if DEBUG		// TESTS_EMBEDDED
-			if (base.Height != baseHeight) {
-				Debugger.Break();
-			}
-			baseHeight = base.Height;
-			int roundingError = Math.Abs(y - baseHeight);
-			if (roundingError > 1) {
-				Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
-			}
-			#endif
-			
-			// DO_I_NEED_IT? base.ResumeLayout();
-			//base.Invalidate();
+		}
+		public void DistributePanelsAndSplitters() {		//Dictionary<int, int> splitterPositionsByManorder = null) {
+			Dictionary<string, MultiSplitterProperties> splittersDistributed =
+				this.VerticalizeAllLogic
+					? this.distributeColumns()
+					: this.distributeRows();
+			this.SplitterPropertiesByPanelNameSet(splittersDistributed);
 		}
 
-		public void DistributePanelsAndSplittersHorizontally_setWidthAndX() {		//Dictionary<int, int> splitterPositionsByManorder = null) {
-			if (this.DesignMode) return;
-			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+		Dictionary<string, MultiSplitterProperties> distributeColumns() {
+		    int panelsWidthOriginal= 0;
+		    for (int i=0; i<this.splitters.Count; i++) {
+				PANEL_BASE panel = this.panels[i];
+		        panelsWidthOriginal += panel.Width;		// mapanelsWidthOriginalgo beoynd base.Width but I will handle that on SetProperties()
+		    }
 
 			int baseWidth = base.Width;
-			//baseHeight -= 4;	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR diagnose by swapping with upper panel
-			
-			// DO_I_NEED_IT? base.SuspendLayout();
-			
-			// FIRST_LOOP_DISTRIBUTES_VERTICALLY_KEEP_ORIGINAL_PANELS_HEIGHTS
-			int x = 0;
-			for (int i=0; i<this.panels.Count; i++) {
-				if (i >= this.splitters.Count) {
-					string msg = "YOU_GOT_MORE_PANELS_(DESERIALIZED)_THAN_SPLITTERS MUST_BE_EQUAL";
-					Assembler.PopupException(msg);
-					break;
-				}
-				
-				PANEL_BASE panel = this.panels[i];
-				MultiSplitter splitter = this.splitters[i];
-
-				//splitter.Location = new Point(splitter.Location.X, y);
-				splitter.Location = new Point(x, 0);
-				x += splitter.Width;
-				
-				// SplitterMovingEnded will need to know splitter.PanelBelow.Location to save it
-				//v1
-				//PanelBase panelNamedFolding = panel as PanelBase;	// back from generics to real world
-				//if (panelNamedFolding != null) {
-				//	splitter.PanelBelow = panelNamedFolding;
-				//	if (i > 0) {
-				//		PANEL_BASE prevPanel = this.panels[i - 1];
-				//		PanelBase prevPanelNamedFolding = prevPanel as PanelBase;	// back from generics to real world
-				//		if (panelNamedFolding != null) splitter.PanelAbove = prevPanelNamedFolding;
-				//	}
-				//}
-				//v2 it could be another MultiSplitContainer and I want its name for de/serialization
-				splitter.PanelBelow = panel as Control;				// back to real world from generics
-				if (i > 0) splitter.PanelAbove = this.panels[i - 1] as Control;
-
-				//panel.Location = new Point(panel.Location.X, y);
-				//YOU_MAY_NEED_X_BUT_WHY_DO_YOU_SET_IT_NOW??? panel.Location = new Point(x, 0);
-				x += panel.Width;
-			}
-			
-			//MOVED_20_LINES_UP if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
-			
-			int deserializationError = Math.Abs(x - baseWidth);
-			if (deserializationError <= 3) {
-				string msg = "we don't need proportional horizontal fill when 1) splitterMoved, 2) splitterDragged"
-					+ " , 3) splitterPositionsByManorder.Count==this.panels.Count";
-				//Assembler.PopupException(msg, null, false);
-				return;
-			}
-			
-			int panelWidth = baseWidth - this.MinimumPanelHeight;
-			if (panelWidth < 0) {
-				string msg = "I_SHOULD_NEVER_BE_HERE__WTF";
-				Assembler.PopupException(msg);
-				return;
-			}
-
 			// we need proportional vertical fill when 1) a new panel was added, 2) an old panel was removed, 3) Initialize(List<Panel>), 4) OnResize
-			// SECOND_LOOP_RESIZES_EACH_HEIGHT_PROPORTIONALLY_TO_FILL_WHOLE_CONTAINER_SURFACE_VERTICALLY
-			int totalFixedWidth = this.SplitterHeight * this.panels.Count;
-			double fillVerticalK = (double) (baseWidth - totalFixedWidth) / (double) (x - totalFixedWidth);
+			int totalFixedWidth = this.SplitterHeight * this.splitters.Count;
+			int panelsWidthEffective = baseWidth - totalFixedWidth;
+			//panelsWidthEffective -= this.splitters.Count * 2;	// panel start NEXT pixel after splitter's boundary => each panel has 1px less space
+			double stretchVerticalK = (double) panelsWidthEffective / (double) panelsWidthOriginal;
 			
-			x = 0;
-			for (int i=0; i<this.panels.Count; i++) {
+		    int x = 0;
+			int stealFromNextPanel = 0;
+			string lastPanelName = null;
+		    Dictionary<string, MultiSplitterProperties> ret = new Dictionary<string, MultiSplitterProperties>();
+
+			for (int i=0; i<this.splitters.Count; i++) {
 				PANEL_BASE panel = this.panels[i];
-				MultiSplitter splitter = this.splitters[i];
-				
-				int minimumPanelWidth = this.MinimumPanelHeight;
-				var panelControl = panel as Control;
-				Size defaultSize = default(Size);
-				if (panelControl != null && panelControl.MinimumSize != null && panelControl.MinimumSize != defaultSize) {
-					minimumPanelWidth = panelControl.MinimumSize.Width;
+				lastPanelName = panel.Name;
+				int panelWidthStretched = (int)(Math.Round(panel.Width * stretchVerticalK, 0));
+
+				if (stealFromNextPanel > 0) {
+					x += stealFromNextPanel;
+					stealFromNextPanel = 0;
 				}
 
-				if (i == this.panels.Count - 1) {
-					int lastSplitterMaxY = baseWidth - (splitter.Width + minimumPanelWidth);
-					if (x > lastSplitterMaxY) {
-						x = lastSplitterMaxY; 
-					}
+				int panelWidthMinimal = this.MinimumPanelHeight;
+				if (panel.MinimumSize != null && panel.MinimumSize.Width > 0) {
+					panelWidthMinimal = panel.MinimumSize.Width;
 				}
 
-				splitter.Location = new Point(x, 0);
-				x += splitter.Width;
-				
-				panel.Location = new Point(x, 0);
-				// NB WILL_INVOKE_SiblingPanels.OnResize() => DistributePanelsAndSplittersVertically
-				panel.Width = (int)(Math.Round(panel.Width * fillVerticalK, 0));
-				if (i == this.panels.Count - 1) {
-					if (panel.Width < minimumPanelWidth) {
-						panel.Width = minimumPanelWidth;
-					}
-
-					if (x + panel.Width > baseWidth) {
-						panel.Width = baseWidth - x;
-						if (panel.Height < 0) {
-							string msg = "STILL_RESIZING_IN_GUI_THREAD???  panel.Width[" + panel.Width + "] < 0";
-							Assembler.PopupException(msg);
-							return;
-						}
-					}
+				if (panelWidthMinimal > panelWidthStretched) {
+					stealFromNextPanel = panelWidthMinimal - panelWidthStretched;
+					panelWidthStretched = panelWidthMinimal;
 				}
-				x += panel.Width;
+
+				MultiSplitterProperties splitterDistance = new MultiSplitterProperties(i, x, this.SplitterHeight, panelWidthStretched);
+				ret.Add(panel.Name, splitterDistance);
+
+				x += this.SplitterHeight;	// separate heights for splitters, different for each splitter, aren't supported
+				x += panelWidthStretched;
 			}
-			
-			#if DEBUG		// TESTS_EMBEDDED
-			if (base.Width != baseWidth) {
-				Debugger.Break();
-			}
-			baseWidth = base.Width;
-			int roundingError = Math.Abs(x - baseWidth);
-			if (roundingError > 1) {
-				Debugger.Break();	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
-			}
-			#endif
-			
-			// DO_I_NEED_IT? base.ResumeLayout();
-			//base.Invalidate();
+
+		    int roundingError = Math.Abs(x - baseWidth);
+		    if (roundingError != 0) {
+				string msg = "YOUR_DISTRIBUTION_COEFFICIENT_WASNT_PRECISE LAST_PANEL_WIDTH_SUBTRACTED[" + roundingError + "]";	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
+				Assembler.PopupException(msg, null, false);
+
+				MultiSplitterProperties lastSplitterProp = ret[lastPanelName];
+				lastSplitterProp.PanelHeight -= roundingError;
+		    }
+			return ret;
 		}
-		
-		public void PanelAddSplitterCreateAdd(PANEL_BASE panel, bool redistributeAfterAddingOneNotManyResistributeManual = true) {
-//											  , Dictionary<string, MultiSplitterProperties> splitterPositionsByManorder = null) {
-//			panel.Capture = true;	// NO_YOU_WONT will I have MouseEnter during dragging the splitter? I_HATE_HACKING_WINDOWS_FORMS
-//		   	panel.MouseEnter += new EventHandler(panel_MouseEnter);
-//		   	panel.MouseLeave += new EventHandler(panel_MouseLeave);
-			//if (base.Controls.Contains(panel)) base.Controls.Remove(panel);
-			if (this.VerticalizeAllLogic == false) {
-				panel.Width = base.Width;
-			} else {
-				panel.Height = base.Height;
+
+		Dictionary<string, MultiSplitterProperties> distributeRows() {
+		    int panelsHeightOriginal= 0;
+		    for (int i=0; i<this.splitters.Count; i++) {
+				PANEL_BASE panel = this.panels[i];
+		        panelsHeightOriginal += panel.Height;		// mapanelsHeightOriginalgo beoynd base.Width but I will handle that on SetProperties()
+		    }
+
+			int baseHeight = base.Height;
+			// we need proportional vertical fill when 1) a new panel was added, 2) an old panel was removed, 3) Initialize(List<Panel>), 4) OnResize
+			int totalFixedHeight = this.SplitterHeight * this.splitters.Count;
+			int panelsHeightEffective = baseHeight - totalFixedHeight;
+			//BOTTOM_4PX_GRAY panelsHeightEffective -= this.splitters.Count * 2;	// panel start NEXT pixel after splitter's boundary => each panel has 1px less space
+			double stretchVerticalK = (double) panelsHeightEffective / (double) panelsHeightOriginal;
+			
+		    int y = 0;
+			int stealFromNextPanel = 0;
+			string lastPanelName = null;
+		    Dictionary<string, MultiSplitterProperties> ret = new Dictionary<string, MultiSplitterProperties>();
+
+			for (int i=0; i<this.splitters.Count; i++) {
+				PANEL_BASE panel = this.panels[i];
+				lastPanelName = panel.Name;
+				int panelHeightStretched = (int)(Math.Round(panel.Height * stretchVerticalK, 0));
+
+				if (stealFromNextPanel > 0) {
+					panelHeightStretched -= stealFromNextPanel;
+					stealFromNextPanel = 0;
+				}
+
+				int panelHeightMinimal = this.MinimumPanelHeight;
+				if (panel.MinimumSize != null && panel.MinimumSize.Height > 0) {
+					panelHeightMinimal = panel.MinimumSize.Height;
+				}
+
+				if (panelHeightMinimal > panelHeightStretched) {
+					stealFromNextPanel = panelHeightMinimal - panelHeightStretched;
+					panelHeightStretched = panelHeightMinimal;
+				}
+
+				MultiSplitterProperties splitterDistance = new MultiSplitterProperties(i, y, this.SplitterHeight, panelHeightStretched);
+				ret.Add(panel.Name, splitterDistance);
+
+				y += this.SplitterHeight;	// separate heights for splitters, different for each splitter, aren't supported
+				y += panelHeightStretched;
 			}
 
-			//v1
-			//if (panel.Parent != null && panel.Parent is Control) {
-			//	Control parentControl = panel.Parent as Control;
-			//	if (parentControl.Controls.Contains(panel)) parentControl.Controls.Remove(panel);
-			//}
-			//v2
+		    int roundingError = Math.Abs(y - baseHeight);
+		    if (roundingError != 0) {
+				string msg = "YOUR_DISTRIBUTION_COEFFICIENT_WASNT_PRECISE LAST_PANEL_HEIGHT_SUBTRACTED[" + roundingError + "]";	// LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR
+				Assembler.PopupException(msg, null, false);
+
+				MultiSplitterProperties lastSplitterProp = ret[lastPanelName];
+				lastSplitterProp.PanelHeight -= roundingError;
+		    }
+			return ret;
+		}
+
+
+		public void PanelAddSplitterCreateAdd(PANEL_BASE panel, bool redistributeAfterAddingOneNotManyResistributeManual = true) {
 			if (panel == this) {
 				string msg = "CHECK_CAREFULLY_YOU_ARE_ADDING_ME_TO_MY_OWN_CONTROLS__BEEN_THERE__WINFORMS_EXCEPTION_WILL_FOLLOW_NEXT_LINE";
 				Assembler.PopupException(msg);
@@ -378,6 +301,7 @@ namespace Sq1.Charting.MultiSplit {
 			#endif
 			this.panels.Add(panel);
 			this.splitterCreateAdd(panel);
+			// WILL_DO_LATER_ONCE_FOR_ALL__PropagateSplitterManorderDistanceIfFullyDeserialized() this.AssignPanelBelowAbove_fromPanelsList();
 			if (redistributeAfterAddingOneNotManyResistributeManual == false) return;
 			this.DistributePanelsAndSplitters();
 		}
@@ -389,10 +313,12 @@ namespace Sq1.Charting.MultiSplit {
 			this.splitters.Remove(splitter);
 			base.Controls.Remove(panel);
 			base.Controls.Remove(splitter);
+			this.AssignPanelBelowAbove_setMinimalSize_fromPanelsList();
 			this.DistributePanelsAndSplitters();
 		}
 		void splitterCreateAdd(PANEL_BASE panel) {
-			MultiSplitter splitter = new MultiSplitter(GrabHandleWidth, ColorGrabHandle, this.VerticalizeAllLogic, false);
+			MultiSplitter splitter = new MultiSplitter(GrabHandleWidth, ColorGrabHandle, this.VerticalizeAllLogic, this.DebugSplitter);
+			splitter.PanelBelow = panel;
 			if (this.VerticalizeAllLogic == false) {
 				splitter.Width = base.Width;
 				splitter.Height = this.SplitterHeight;
@@ -412,25 +338,39 @@ namespace Sq1.Charting.MultiSplit {
 
 		
 		bool ignoreResizeImSettingWidthOrHeight;
-		internal void SetWidthIgnoreResize(int panelWidth) {
-			if (base.Width == panelWidth) return;
-			if (this.ignoreResizeImSettingWidthOrHeight) return;
+		internal bool SetWidthIgnoreResize(int panelWidth) {
+			if (base.Width == panelWidth) return false;
+			if (this.ignoreResizeImSettingWidthOrHeight) return false;
 			try {
 				this.ignoreResizeImSettingWidthOrHeight = true;
+				if (base.Parent != null) {
+					if (panelWidth > base.Parent.Width) {
+						string msg = "BEOYND_PARENTS_WIDTH__NOT_TALKING_ABOUT_BORDERS panelWidth[" + panelWidth + "] >= base.Parent.Width[" + base.Parent.Width + "]";
+						Assembler.PopupException(msg, null, false);
+					}
+				}
 				base.Width  = panelWidth;
 			} finally {
 				this.ignoreResizeImSettingWidthOrHeight = false;
 			}
+			return true;
 		}
-		internal void SetHeightIgnoreResize(int panelHeight) {
-			if (base.Height == panelHeight) return;
-			if (this.ignoreResizeImSettingWidthOrHeight) return;
+		internal bool SetHeightIgnoreResize(int panelHeight) {
+			if (base.Height == panelHeight) return false;
+			if (this.ignoreResizeImSettingWidthOrHeight) return false;
 			try {
 				this.ignoreResizeImSettingWidthOrHeight = true;
+				if (base.Parent != null) {
+					if (panelHeight > base.Parent.Height) {
+						string msg = "BEOYND_PARENTS_HEIGHT__NOT_TALKING_ABOUT_BORDERS panelWidth[" + panelHeight + "] >= base.Parent.Width[" + base.Parent.Height + "]";
+						Assembler.PopupException(msg, null, false);
+					}
+				}
 				base.Height  = panelHeight;
 			} finally {
 				this.ignoreResizeImSettingWidthOrHeight = false;
 			}
+			return true;
 		}
 
 		public override string ToString() {

@@ -12,7 +12,7 @@ using Sq1.Core.Charting;
 namespace Sq1.Charting {
 	public partial class ChartSettingsEditorControl : UserControl {
 		Dictionary<ChartSettings, ChartControl> chartSettings;
-		ChartSettings							chartSettingsSelectedNullUnsafe { get { return this.toolStripItemComboBox1.ComboBox.SelectedItem as ChartSettings; } }
+		ChartSettings							chartSettingsSelectedNullUnsafe { get { return this.cbxSettings.ComboBox.SelectedItem as ChartSettings; } }
 		bool									rebuildingDropdown;
 		bool									openDropDownAfterSelected;
 
@@ -20,9 +20,9 @@ namespace Sq1.Charting {
 			InitializeComponent();
 
 			// DESIGNER_RESETS_TO_EDITABLE__LAZY_TO_TUNNEL_PROPERTIES_AND_EVENTS_IN_ToolStripItemComboBox.cs
-			this.toolStripItemComboBox1.ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-			this.toolStripItemComboBox1.ComboBox.Sorted = true;
-			this.toolStripItemComboBox1.ComboBox.SelectedIndexChanged += new EventHandler(this.toolStripItemComboBox1_SelectedIndexChanged);
+			this.cbxSettings.ComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+			this.cbxSettings.ComboBox.Sorted = true;
+			this.cbxSettings.ComboBox.SelectedIndexChanged += new EventHandler(this.cbxSettings_SelectedIndexChanged);
 		}
 
 		public void Initialize(Dictionary<ChartSettings, ChartControl> chartControlsPassed) {
@@ -41,9 +41,9 @@ namespace Sq1.Charting {
 			}
 			this.rebuildingDropdown = true;
 			try {
-				this.toolStripItemComboBox1.ComboBox.Items.Clear();
+				this.cbxSettings.ComboBox.Items.Clear();
 				foreach (ChartSettings chartSettings in this.chartSettings.Keys) {
-					this.toolStripItemComboBox1.ComboBox.Items.Add(chartSettings);
+					this.cbxSettings.ComboBox.Items.Add(chartSettings);
 				}
 			} finally {
 				this.rebuildingDropdown = false;
@@ -68,17 +68,17 @@ namespace Sq1.Charting {
 
 			ChartSettings selected = this.chartSettingsSelectedNullUnsafe;
 			if (selected == null) {
-				this.toolStripItemComboBox1.ComboBox.SelectedItem = chartSettings;
+				this.cbxSettings.ComboBox.SelectedItem = chartSettings;
 				return;
 			} else {
 				if (selected.ToString() == chartSettings.ToString()) {
 					return;
 				}
 			}
-			foreach (ChartSettings eachChartSettings in this.toolStripItemComboBox1.ComboBox.Items) {
+			foreach (ChartSettings eachChartSettings in this.cbxSettings.ComboBox.Items) {
 				if (eachChartSettings.ToString() != chartSettings.ToString()) continue;
 				this.openDropDownAfterSelected = false;
-				this.toolStripItemComboBox1.ComboBox.SelectedItem = eachChartSettings;	// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelectedNullUnsafe + Initialize()
+				this.cbxSettings.ComboBox.SelectedItem = eachChartSettings;	// triggering event to invoke toolStripComboBox1_SelectedIndexChanged => testing chartSettingsSelectedNullUnsafe + Initialize()
 				break;
 			}
 		}

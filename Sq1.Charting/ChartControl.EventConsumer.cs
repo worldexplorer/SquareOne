@@ -3,11 +3,16 @@ using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.DataFeed;
+using Sq1.Core.DataTypes;
+using System.Diagnostics;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Charting {
 	public partial class ChartControl	{
 		protected override void OnResize(EventArgs e) {
 			if (base.DesignMode) return;
+			if (Assembler.IsInitialized == false) return;
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			if (this.ScrollLargeChange <= 0) {
 				//Debugger.Break();	// HAPPENS_WHEN_WINDOW_IS_MINIMIZED OR BEFORE_FIRST_PAINT_SETS_GutterRightWidth_cached... how to disable any OnPaint when app isn't visible?... 
 				return;
@@ -100,6 +105,73 @@ namespace Sq1.Charting {
 		}
 		#endregion
 
+		void hScrollBar_Scroll(object sender, ScrollEventArgs scrollEventArgs) {
+			if (this.Bars == null) {
+				#if DEBUG
+				string msg = "POSSIBLY_DISABLE_SCROLLBAR_WHEN_CHART_HAS_NO_BARS? OR MAKE_CHART_ALWAYS_DISPLAY_BARS";
+				Debugger.Break();
+				#endif
+				return;
+			}
+
+			if (this.hScrollBar.Value != scrollEventArgs.NewValue) {	// FILTER_OUT_UNNECESSARY_INVOCATIONS
+				//ALREADY_THERE_AFTER_EVENT_HANDLER_TERMINATES this.hScrollBar.Value = scrollEventArgs.NewValue;
+				this.InvalidateAllPanels();
+			}
+
+			if (scrollEventArgs.Type == ScrollEventType.ThumbPosition || scrollEventArgs.Type == ScrollEventType.ThumbTrack) {
+				// dragging: ThumbPosition -> ThumbTrack -> EndScroll; EndScroll will follow 100% and we'll serialize
+				return;
+			}
+			// single-click input (arrows, direct position) or EndScroll after ThumbPosition
+			if (this.ChartSettings.ScrollPositionAtBarIndex != this.hScrollBar.Value) {
+				this.ChartSettings.ScrollPositionAtBarIndex  = this.hScrollBar.Value;
+				this.RaiseChartSettingsChangedContainerShouldSerialize();	//scrollbar should have OnDragCompleteMouseReleased event!!!
+			}
+		}
+		void bars_symbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
+			this.InvalidateAllPanels();
+		}
+		void chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(object sender, BarEventArgs e) {
+			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) return;
+
+			// if I was designing events for WinForms, I would switch to GUI thread automatically
+			if (base.InvokeRequired == true) {
+				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(sender, e); });
+				return;
+			} else {
+				this.ScriptExecutorObjects.QuoteLast = this.Bars.LastQuoteCloneNullUnsafe;
+
+				// doing same thing from GUI thread at PanelLevel2.renderLevel2() got me even closer to realtime (after pausing a Livesim
+				// and repainting Level2 whole thing was misplaced comparing to PanelPrice spread) but looked really random, not behind and not ahead;
+				// but main reason is ConcurrentLocker was spitting messages (I dont remember what exactly but easy to move back to renderLevel2() and see)
+				StreamingDataSnapshot snap = this.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
+				this.ScriptExecutorObjects.Bids_cachedForOnePaint = new LevelTwoHalfFrozen(
+					"BIDS_FROZEN",
+					snap.LevelTwoBids.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+					new LevelTwoHalfFrozen.DESC());
+				this.ScriptExecutorObjects.Asks_cachedForOnePaint = new LevelTwoHalfFrozen(
+					"ASKS_FROZEN",
+					snap.LevelTwoAsks.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+					new LevelTwoHalfFrozen.ASC());
+			}
+			if (this.VisibleBarRight != this.Bars.Count - 1) {
+				string msg = "I_WILL_MOVE_SLIDER_IF_ONLY_LAST_BAR_IS_VISIBLE";
+				//I_WILL_MOVE_ANYWAYS__WE_ARE_HERE_WHEN_PAUSED_LIVESIM_WAS_HSCROLLED_BACKWARDS return;
+			}
+			string msg1 = "IM_MOVING_SLIDER_TO_THE_RIGHTMOST_BAR_KOZ_WE_ARE_ON_LAST_BAR";
+			this.SyncHorizontalScrollToBarsCount();
+			this.InvalidateAllPanels();
+			// UPDATED_VIA_ PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution() updating 00:00:00.000 on ChartForm.btnStreamingTriggersScript
+
+			if (this.splitContainerChartVsRange.Panel2Collapsed == true) {
+				string msg = "YES_splitContainerChartVsRange.Panel2Collapsed_WAS_THE_ONE WAS_THAT_THE_RIGHT_VISIBILITY_CRITERION???";
+				//Assembler.PopupException(msg);
+				return;
+			}
+			this.RangeBar.Invalidate();
+		}
+
 		void multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded(object sender, EventArgs e) {
 			if (base.DesignMode) return;
 			if (this.ChartSettings == null) return;	// MAY_BE_REDUNDANT
@@ -119,8 +191,8 @@ namespace Sq1.Charting {
 			//if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 			//	return;
 			//}
-			this.ChartSettings.MultiSplitterRowsPropertiesByPanelName		= this.multiSplitContainerRows		.SplitterPropertiesByPanelNameGet();
-			this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName	= this.multiSplitContainerColumns	.SplitterPropertiesByPanelNameGet();
+			this.ChartSettings.MultiSplitterRowsPropertiesByPanelName		= this.multiSplitRowsVolumePrice		.SplitterPropertiesByPanelNameGet();
+			this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName	= this.multiSplitColumns_Level2_PriceVolumeMultisplit	.SplitterPropertiesByPanelNameGet();
 			// that will show that 10s delay actually makes better sense than relying on MainFormDockFormsFullyDeserializedLayoutComplete in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized()
 			//try {
 			//	int justCurious = this.ChartSettings.MultiSplitterPropertiesByPanelName[this.panelVolume.PanelName].Distance;

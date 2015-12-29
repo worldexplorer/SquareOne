@@ -53,6 +53,7 @@ namespace Sq1.Charting.Demo {
 			#endregion
 		}
 		protected override void OnLoad(EventArgs e) {
+			if (Assembler.IsInitialized == false) return;
 			foreach (Exception beforeFormInstantiated in Assembler.InstanceInitialized.ExceptionsWhileInstantiating) {
 				this.PopupException(null, beforeFormInstantiated, false);
 			}

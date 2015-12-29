@@ -6,16 +6,18 @@ using Sq1.Core;
 using Sq1.Core.Support;
 
 namespace Sq1.Charting.Demo {
-	public partial class MultiSplitTest : Form {
-		public MultiSplitTest() {
+	public partial class TestMultiSplit : Form {
+		public TestMultiSplit() {
 			InitializeComponent();
+			base.HScroll = true;
+			base.VScroll = true;
 			
 			// ChartControl, Panels and MultiSplitter all throw exceptions using Assembler.Instance 
 			//v1 Assembler.InstanceUninitialized.Initialize(this);
 			//v2 employed Sq1.Gui.ExceptionsForm, non-singletonized copy here in Sq1.Charting (LOTS OF EXCEPTIONS ABOUT REPOSITORIES DESERIALIZATION) 
 			ExceptionsForm exceptionsForm = new ExceptionsForm();
 			exceptionsForm.Show();
-			Assembler.InstanceUninitialized.Initialize(exceptionsForm);
+			Assembler.InstanceUninitialized.Initialize(exceptionsForm, true);
 			Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 			//exceptionsForm.ExceptionControl.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 

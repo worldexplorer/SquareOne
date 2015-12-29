@@ -7,7 +7,7 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Charting {
 	public class PanelVolume : PanelBase {
 		public PanelVolume() : base() {
-			base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
+			//base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
 			base.MinimumSize = new Size(20, 15);	// only height matters for MultiSplitContainer
 		}
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
@@ -17,6 +17,7 @@ namespace Sq1.Charting {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
+			if (base.DesignMode) return;
 				
 			// 1) uses here-defined VisibleMinDoubleMaxValueUnsafe,VisibleMaxDoubleMinValueUnsafe to set:
 			//		base.VisibleMin,Max,Range_cached,
@@ -161,6 +162,6 @@ namespace Sq1.Charting {
 			Bar bar = base.ChartControl.Bars[barIndex];
 			return bar.Volume;
 		}
-		public override int ValueIndexLastAvailableMinusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }
+		protected override int ValueIndexLastAvailableMinusOneUnsafe { get { return base.ChartControl.Bars.Count - 1; } }
 	}
 }
