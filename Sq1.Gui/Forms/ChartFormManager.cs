@@ -340,9 +340,6 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 
-		void executor_OnBacktesterContextRestoredAfterExecutingAllBars_step4of4(object sender, EventArgs e) {
-			throw new NotImplementedException();
-		}
 		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(
 					string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyRequired = true) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
@@ -681,6 +678,14 @@ namespace Sq1.Gui.Forms {
 
 		public void ChartFormShow(string scriptContext = null) {
 			this.ChartForm.ShowAsDocumentTabNotPane(this.dockPanel);
+
+			// FOR_SURE_NEEDED_AT_DESERIALIZATION__RUNTINE_CREATION_NOT_TESTED
+			this.ChartForm.PerformLayout();
+			if (this.ChartForm.ClientRectangle.Width != this.ChartForm.ChartControl.ClientRectangle.Width) {
+				string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm.PerformLayout()";
+				Assembler.PopupException(msg);
+			}
+
 			if (this.Strategy != null) {
 				this.PopulateWindowTitlesFromChartContextOrStrategy();
 				this.EditorFormShow();

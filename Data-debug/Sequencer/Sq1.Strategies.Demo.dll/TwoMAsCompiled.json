@@ -1,5 +1,5 @@
 {
   "$type": "Sq1.Core.Sequencing.SequencerDataSnapshot, Sq1.Core",
-  "ShowOnlyCorrelatorChosenBacktests": true,
-  "StatsAndHistoryCollapsed": true
+  "ShowOnlyCorrelatorChosenBacktests": false,
+  "StatsAndHistoryCollapsed": false
 }

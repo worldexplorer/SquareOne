@@ -84,6 +84,11 @@ namespace Sq1.Gui.Forms {
 			// TOO_EARLY_NO_BARS_SET_WILL_BE_THROWN this.PopulateBtnStreamingText();
 
 			this.ctxStrokesForQuoteGenerator.Opening += new CancelEventHandler(ctxStrokesForQuoteGenerator_Opening_SelectCurrent);
+
+			if (this.ChartControl.ClientRectangle.Width != base.ClientRectangle.Width) {
+				string msg = "CANT_CATCH_BEOYND_BOUNDARIES_BUG_HERE_DOCKCONTENT_DIDNT_RESIZE_ME_YET MUST_BE_EQUAL_SINCE_CHART_FORM_ISNT_RESIZED_BY_DOCK_CONTENT_BY_ASSIGNING_TO_DOCUMENT_AREA";
+				Assembler.PopupException(msg);
+			}
 		}
 		public void ChartFormEventsToChartFormManagerAttach() {
 			this.ChartControl.RangeBar.ValueMinChanged						+= new EventHandler<RangeArgs<DateTime>>(this.ChartFormManager.InterformEventsConsumer.ChartRangeBar_AnyValueChanged);
@@ -368,15 +373,24 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbSpreadGeneratorPct.InputFieldValue = ctxScript.SpreadModelerPercent.ToString();
 			this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
 
-			if (this.ChartFormManager.MainForm.ChartFormActiveNullUnsafe == this) {
-				string msg = "WE_ARE_HERE_WHEN_WE_SWITCH_STRATEGY_FOR_CHART";
-				//Debugger.Break();
-				
-				//v1 DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
-				//v1 StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormManager.Executor.Strategy);
-				//v2
-				this.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
+			if (this.ChartFormManager.MainForm.DockPanel.ActiveDocument == null) {
+				string msg = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET";
+				Assembler.PopupException(msg, null, false);
+				return;
 			}
+
+			ChartForm chartFormNullUnsafe = this.ChartFormManager.MainForm.ChartFormActiveNullUnsafe;
+			if (chartFormNullUnsafe == null) {
+				string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET";
+				Assembler.PopupException(msg2, null, false);
+			}
+			#if DEBUG	// PARANOID TEST
+			if (chartFormNullUnsafe != this) {
+				string msg = "WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART";
+				Assembler.PopupException(msg, null, false);
+			}
+			#endif
+			this.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 			this.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
 		}
 		public void PropagateSelectorsDisabledIfStreaming_forCurrentChart() {

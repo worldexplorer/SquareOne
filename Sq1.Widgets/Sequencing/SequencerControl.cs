@@ -162,6 +162,7 @@ namespace Sq1.Widgets.Sequencing {
 			}
 		}
 		public void SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(string symbolScaleRange = null) {
+			string msig = " //SequencerControl.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(" + symbolScaleRange + ")";
 			if (base.InvokeRequired) {
 				base.BeginInvoke((MethodInvoker)delegate { this.SelectHistoryPopulateBacktestsAndPushToCorellatorWithSequencedResultsBySymbolScaleRange(symbolScaleRange); });
 				return;
@@ -181,7 +182,7 @@ namespace Sq1.Widgets.Sequencing {
 					this.backtestsLocalEasierToSync = this.RepositoryJsonSequencer.DeserializeSingle(foundBySymbolScaleRange.NameWithMarker);
 					if (this.backtestsLocalEasierToSync == null || this.backtestsLocalEasierToSync.Count == 0) {
 						string msg = "NO_BACKTESTS_FOUND_INSIDE_FILE " + symbolScaleRange;
-						Assembler.PopupException(msg);
+						Assembler.PopupException(msg + msig);
 						//this.olvHistory.UseWaitCursor = false;
 						//this.olvBacktests.UseWaitCursor = false;
 						// 1) POPULATE_CHANGED_BARS_500=>500_INTO_SEQUENCER 2) WAIT_CURSOR_REMOVE DONT_return;
@@ -196,13 +197,13 @@ namespace Sq1.Widgets.Sequencing {
 						reloadNetWhenSymbolInfoChanged.PriceDecimalsChanged += new EventHandler<EventArgs>(reloadNetWhenSymbolInfoChanged_PriceDecimalsChanged);
 					} else {
 						string msg = "SYMBOL_WAS_NOT_SERIALIZED_IN_foundBySymbolScaleRange[" + foundBySymbolScaleRange + "]";
-						Assembler.PopupException(msg);
+						Assembler.PopupException(msg + msig);
 					}
 
 					this.symbolScaleRangeSelected = symbolScaleRange;
 				} else {
 					string msg = "NOT_FOUND_WITH_MARKER_FOR_symbolScaleRange[" + symbolScaleRange + "]";
-					Assembler.PopupException(msg, null, false);
+					Assembler.PopupException(msg + msig, null, false);
 				}
 			}
 

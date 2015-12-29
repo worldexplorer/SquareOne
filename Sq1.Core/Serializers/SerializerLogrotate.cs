@@ -65,7 +65,7 @@ namespace Sq1.Core.Serializers {
 			} catch (Exception ex) {
 				string msig = " LogrotateSerializer<" + OfWhat + ">::Serialize(): ";
 				string msg = "FAILED_SerializeLogrotate_WITH_this.JsonAbsFile[" + base.JsonAbsFile + "]";
-				base.ThrowOrPopup(msg + msig, ex);
+				Assembler.PopupException(msg + msig, ex);
 			} finally {
 				this.currentlySerializing = false;
 			}
@@ -82,7 +82,7 @@ namespace Sq1.Core.Serializers {
 					Directory.CreateDirectory(relpath);
 				} catch (Exception ex) {
 					string msg = "FAILED_TO Directory.CreateDirectory(" + relpath + ")";
-					base.ThrowOrPopup(msg + msig, ex);
+					Assembler.PopupException(msg + msig, ex);
 				}
 			}
 			if (File.Exists(fileAbspath) == false) File.Create(fileAbspath).Dispose();
@@ -98,7 +98,7 @@ namespace Sq1.Core.Serializers {
 				base.EntityDeserialized.Clear();		// hardcore cleanup!!
 			} catch (Exception ex) {
 				string msg = "FAILED_TO logRotate() File.Move([" + fileAbspath + "], [" + fileAbsNameWithDate + "])";
-				base.ThrowOrPopup(msg + msig, ex);
+				Assembler.PopupException(msg + msig, ex);
 			}
 		}
 		public void Insert(int index, T order) {
