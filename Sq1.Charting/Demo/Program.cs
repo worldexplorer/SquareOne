@@ -10,7 +10,9 @@ namespace Sq1.Charting.Demo {
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			//Application.Run(new MultiSplitTest());
-			Application.Run(new PanelsTest());
+			//Application.Run(new TestPanels());
+			//Application.Run(new TestChartForm());
+			Application.Run(new TestDockedChart());
 		}
 	}
 }

@@ -50,11 +50,11 @@ namespace Sq1.Charting {
 			//this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelPrice);
 
 			// doesn't live well in InitializeComponent(), designer barks 
-			this.multiSplitContainerRows.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerRows_OnResizing_OnSplitterMoveOrDragEnded);
-			this.multiSplitContainerRows.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerRows_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitRowsVolumePrice.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerRows_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitRowsVolumePrice.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerRows_OnResizing_OnSplitterMoveOrDragEnded);
 
-			this.multiSplitContainerColumns.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded);
-			this.multiSplitContainerColumns.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded);
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded);
 
 			this.AutoScroll = false;
 			//this.HScroll = true;
@@ -75,20 +75,22 @@ namespace Sq1.Charting {
 			this.panelVolume.Initialize(this);
 			this.panelLevel2.Initialize(this);
 
+			base.SuspendLayout();	// test multisplitter-related init&distrib in TestPanels first!
 
-			List<Control> controlsColumns = new List<Control>() {
+			List<Control> twoColumns = new List<Control>() {
 				this.panelLevel2,
-				this.multiSplitContainerRows
+				this.multiSplitRowsVolumePrice
 			};
-			this.multiSplitContainerColumns.VerticalizeAllLogic = true;
-			this.multiSplitContainerColumns.InitializeCreateSplittersDistributeFor(controlsColumns);
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.VerticalizeAllLogic = true;
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.Dock = DockStyle.Fill;		// invokes Resize() that will SET the size of inner controls
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.InitializeCreateSplittersDistributeFor(twoColumns);
 			//this.multiSplitContainerColumns.Dock = DockStyle.Fill;	// invokes Resize()
 
-			List<Control> controlsRows = new List<Control>() {
+			List<Control> twoRows = new List<Control>() {
 				this.panelVolume,
 				this.PanelPrice
 			};
-			this.multiSplitContainerRows.InitializeCreateSplittersDistributeFor(controlsRows);
+			this.multiSplitRowsVolumePrice.InitializeCreateSplittersDistributeFor(twoRows);
 
 
 
@@ -102,16 +104,24 @@ namespace Sq1.Charting {
 
 			BarIndexMouseIsOverNow = -1;	//if I didn't mouseover after app start, streaming values don't show up
 
+			//v1 base.ResumeLayout(true);	// test multisplitter-related init&distrib in TestPanels first!
+			base.ResumeLayout(false);		// test multisplitter-related init&distrib in TestPanels first!
+			base.PerformLayout();
+
+
 			#region 1/2 making ChartForm editable in Designer; I left that cumbersome because haven't finished investigation how to make ChartForm show ChartControl
 			// this.Initialize()_BELOW_MAKES_DESIGNER_THROW_DUE_TO_ASSEMBLER_NON_INSTANTIATED
-			return;
+			if (base.DesignMode) return;
 
 			//this.chartRenderer.Initialize(this);
 			BarScaleInterval chartShouldntCare = new BarScaleInterval(BarScale.Minute, 5);
 			//REFLECTION_FAILS_FOR_DESIGNER BarsBasic.GenerateRandom(chartShouldntCare)
 			//this.Initialize(BarsBasic.GenerateRandom(chartShouldntCare));
-			Bars generated = new Bars("RANDOM", chartShouldntCare, "test-ChartControl-DesignMode");
-			generated.GenerateAppend();
+			int barsToGenerate = 250;
+			Bars generated = new Bars("RANDOM_GENERATED_BARS:" + barsToGenerate, chartShouldntCare, "test-ChartControl-DesignMode");
+			generated.GenerateAppend(barsToGenerate);
+			generated.SymbolInfo.PriceDecimals = 0;
+			this.ChartSettings.ScrollPositionAtBarIndex = barsToGenerate;
 			this.Initialize(generated, "NO_STRATEGY_RANDOM_BARS");
 			#endregion
 		}
@@ -162,15 +172,28 @@ namespace Sq1.Charting {
 				string msg = "WHY_LIVESIM_HAS_IT_0_WHILE_MIN_IS_GREATER_THAN_0???";
 				noExceptionsExpected = false;
 			}
-			if (noExceptionsExpected) {
-				this.hScrollBar.Value = this.ChartSettings.ScrollPositionAtBarIndex;
+			if (this.hScrollBar.Value != this.ChartSettings.ScrollPositionAtBarIndex && noExceptionsExpected) {
+				this.hScrollBar.Value  = this.ChartSettings.ScrollPositionAtBarIndex;
 			}
 			foreach (PanelBase panel in this.panelsForInvalidateAll_dontForgetIndicators) {	// at least PanelPrice and PanelVolume
 				panel.InitializeWithNonEmptyBars(this);
 			}
 			if (invalidateAllPanels == false) return;
+			if (Assembler.IsInitialized == false) return;	// ChartForm: avoiding Designer's complains about Assembler.Initialized==false
+
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.InvalidateAllPanels();
+
+			Form parentForm = this.Parent as Form;
+			if (parentForm == null) {
+				string msg = "CHART_CONTROL_NOT_ADDED_TO_ANY_FORM???";
+				Assembler.PopupException(msg);
+				return;
+			}
+			if (parentForm.ClientRectangle.Width != base.ClientRectangle.Width) {
+				string msg = "ANY_CLUE_WHY_CHART_CONTROL_IS_OUT_OF_BOUNDARIES_OF_PARENT_FORM? ITS_NOT_DESERIALIZATION_BUT_USER_OPENED_ANOTHER_CHART";
+				Assembler.PopupException(msg);
+			}
 		}
 		public void SyncHorizontalScrollToBarsCount() {
 			// this.HorizontalScroll represents the scrolling window for the content, useful in UserControl.Autoscroll when an innerPanel is wider or has Top|Left < 0 
@@ -265,30 +288,6 @@ namespace Sq1.Charting {
 		public void ScrollToFirstBarLeft() {
 			this.scrollToBarSafely(this.hScrollBar.Minimum);
 		}
-		void hScrollBar_Scroll(object sender, ScrollEventArgs scrollEventArgs) {
-			if (this.Bars == null) {
-				#if DEBUG
-				string msg = "POSSIBLY_DISABLE_SCROLLBAR_WHEN_CHART_HAS_NO_BARS? OR MAKE_CHART_ALWAYS_DISPLAY_BARS";
-				Debugger.Break();
-				#endif
-				return;
-			}
-
-			if (this.hScrollBar.Value != scrollEventArgs.NewValue) {	// FILTER_OUT_UNNECESSARY_INVOCATIONS
-				//ALREADY_THERE_AFTER_EVENT_HANDLER_TERMINATES this.hScrollBar.Value = scrollEventArgs.NewValue;
-				this.InvalidateAllPanels();
-			}
-
-			if (scrollEventArgs.Type == ScrollEventType.ThumbPosition || scrollEventArgs.Type == ScrollEventType.ThumbTrack) {
-				// dragging: ThumbPosition -> ThumbTrack -> EndScroll; EndScroll will follow 100% and we'll serialize
-				return;
-			}
-			// single-click input (arrows, direct position) or EndScroll after ThumbPosition
-			if (this.ChartSettings.ScrollPositionAtBarIndex != this.hScrollBar.Value) {
-				this.ChartSettings.ScrollPositionAtBarIndex  = this.hScrollBar.Value;
-				this.RaiseChartSettingsChangedContainerShouldSerialize();	//scrollbar should have OnDragCompleteMouseReleased event!!!
-			}
-		}
 		void barEventsAttach() {
 			if (this.Bars == null) {
 				string msg = "BARS_NULL__I_CAN_NOT_SUBSCRIBE_FOR_BARS_EVENTS";
@@ -301,6 +300,7 @@ namespace Sq1.Charting {
 			this.Bars.BarStreamingUpdatedMerged			+= new EventHandler<BarEventArgs>(chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline);
 			this.Bars.SymbolInfo.PriceDecimalsChanged	+= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
 
+			if (Assembler.IsInitialized == false) return;	// ChartForm: avoiding Designer's complains about Assembler.Initialized==false
 			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
 			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
 		}
@@ -317,49 +317,6 @@ namespace Sq1.Charting {
 			// quite useless since I don't plan to append-statically to displayed-bars; I'll use Initialize(newBars)
 			//this.Bars.BarStaticAdded					-= new EventHandler<BarEventArgs>(chartControl_BarAddedUpdated_ShouldTriggerRepaint);
 		}
-		void bars_symbolInfo_PriceDecimalsChanged(object sender, EventArgs e) {
-			this.InvalidateAllPanels();
-		}
-		void chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(object sender, BarEventArgs e) {
-			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) return;
-
-			// if I was designing events for WinForms, I would switch to GUI thread automatically
-			if (base.InvokeRequired == true) {
-				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(sender, e); });
-				return;
-			} else {
-				this.ScriptExecutorObjects.QuoteLast = this.Bars.LastQuoteCloneNullUnsafe;
-
-				// doing same thing from GUI thread at PanelLevel2.renderLevel2() got me even closer to realtime (after pausing a Livesim
-				// and repainting Level2 whole thing was misplaced comparing to PanelPrice spread) but looked really random, not behind and not ahead;
-				// but main reason is ConcurrentLocker was spitting messages (I dont remember what exactly but easy to move back to renderLevel2() and see)
-				StreamingDataSnapshot snap = this.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
-				this.ScriptExecutorObjects.Bids_cachedForOnePaint = new LevelTwoHalfFrozen(
-					"BIDS_FROZEN",
-					snap.LevelTwoBids.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
-					new LevelTwoHalfFrozen.DESC());
-				this.ScriptExecutorObjects.Asks_cachedForOnePaint = new LevelTwoHalfFrozen(
-					"ASKS_FROZEN",
-					snap.LevelTwoAsks.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
-					new LevelTwoHalfFrozen.ASC());
-			}
-			if (this.VisibleBarRight != this.Bars.Count - 1) {
-				string msg = "I_WILL_MOVE_SLIDER_IF_ONLY_LAST_BAR_IS_VISIBLE";
-				//I_WILL_MOVE_ANYWAYS__WE_ARE_HERE_WHEN_PAUSED_LIVESIM_WAS_HSCROLLED_BACKWARDS return;
-			}
-			string msg1 = "IM_MOVING_SLIDER_TO_THE_RIGHTMOST_BAR_KOZ_WE_ARE_ON_LAST_BAR";
-			this.SyncHorizontalScrollToBarsCount();
-			this.InvalidateAllPanels();
-			// UPDATED_VIA_ PrintQuoteTimestampOnStrategyTriggeringButtonBeforeExecution() updating 00:00:00.000 on ChartForm.btnStreamingTriggersScript
-
-			if (this.splitContainerChartVsRange.Panel2Collapsed == true) {
-				string msg = "YES_splitContainerChartVsRange.Panel2Collapsed_WAS_THE_ONE WAS_THAT_THE_RIGHT_VISIBILITY_CRITERION???";
-				//Assembler.PopupException(msg);
-				return;
-			}
-			this.RangeBar.Invalidate();
-		}
-
 		public void BarWidthIncrementAtKeyPressRate() {
 			if (this.ChartSettings.BarWidthIncludingPadding >= this.ChartSettings.BarWidthIncludingPaddingMax) return; 
 			this.ChartSettings.BarWidthIncludingPadding += this.ChartSettings.SqueezeHorizontalKeyOnePressReceivedToOneStep;
@@ -404,7 +361,7 @@ namespace Sq1.Charting {
 			if (priceIndicatorVolumeOrLevel2.ThisPanelIsPricePanel) {
 				x = 0;
 				if (priceIndicatorVolumeOrLevel2.ParentMultiSplitIamLast) {
-					x = this.multiSplitContainerColumns.LocationOfInnerMultisplitContainer(this.multiSplitContainerRows).X;
+					x = this.multiSplitColumns_Level2_PriceVolumeMultisplit.LocationOfInnerMultisplitContainer(this.multiSplitRowsVolumePrice).X;
 				}
 				y = priceIndicatorVolumeOrLevel2.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
 				return new Point(x, y);
@@ -416,7 +373,7 @@ namespace Sq1.Charting {
 				Assembler.PopupException(msg);
 				return new Point(x, y);
 			}
-			if (whichMultisplitter == this.multiSplitContainerColumns) {	//contains only two columns: PanelLevel2 and horizontal MultiSplitContainer
+			if (whichMultisplitter == this.multiSplitColumns_Level2_PriceVolumeMultisplit) {	//contains only two columns: PanelLevel2 and horizontal MultiSplitContainer
 				if (priceIndicatorVolumeOrLevel2 == this.panelLevel2) {
 					return this.panelLevel2.ParentMultiSplitMyLocationAmongSiblingsPanels;
 				} else {
@@ -425,8 +382,8 @@ namespace Sq1.Charting {
 				}
 				return new Point(x, y);
 			}
-			if (whichMultisplitter == this.multiSplitContainerRows) {	//contains 2 or more rows: PanelPrice, PanelVolume and all PanelIndicator
-				x = this.multiSplitContainerColumns.LocationOfInnerMultisplitContainer(this.multiSplitContainerRows).X;
+			if (whichMultisplitter == this.multiSplitRowsVolumePrice) {	//contains 2 or more rows: PanelPrice, PanelVolume and all PanelIndicator
+				x = this.multiSplitColumns_Level2_PriceVolumeMultisplit.LocationOfInnerMultisplitContainer(this.multiSplitRowsVolumePrice).X;
 				y = priceIndicatorVolumeOrLevel2.ParentMultiSplitMyLocationAmongSiblingsPanels.Y;
 				return new Point(x, y);
 			}
@@ -564,6 +521,8 @@ namespace Sq1.Charting {
 		public void PropagateSplitterManorderDistanceIfFullyDeserialized() {
 			//v1 WHATT?? BECAUSE_MESSAGE_DELIVERY_IS_ASYNC_IM_FIRED_AFTER_IT'S_ALREADY_TRUE
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
+				string msg = "YOU_INVOKED_ME_WITH_ZERO_EFFECT__SET_FullyDeserializedLayoutComplete=true_FIRST //PropagateSplitterManorderDistanceIfFullyDeserialized()";
+				Assembler.PopupException(msg, null, false);
 				return;		// ignoring all persistStringInstantiators()
 			}
 			//v2 HACK http://stackoverflow.com/questions/10161088/get-elapsed-time-since-application-start-in-c-sharp
@@ -578,9 +537,14 @@ namespace Sq1.Charting {
 				//Debugger.Break();
 				//return;
 			//}
-			this.multiSplitContainerColumns.DistributePanelsAndSplitters();	// lower panels hangs out below hscroll
-			this.multiSplitContainerRows	.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterRowsPropertiesByPanelName);
-			this.multiSplitContainerColumns	.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName);
+
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.AssignPanelBelowAbove_setMinimalSize_fromPanelsList();
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.DistributePanelsAndSplitters();	// lower panels hangs out below hscroll
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterColumnsPropertiesByPanelName);
+
+			this.multiSplitRowsVolumePrice.AssignPanelBelowAbove_setMinimalSize_fromPanelsList();
+			//this.multiSplitRowsVolumePrice.DistributePanelsAndSplitters();	// is it legit here??
+			this.multiSplitRowsVolumePrice.SplitterPropertiesByPanelNameSet(this.ChartSettings.MultiSplitterRowsPropertiesByPanelName);
 		}
 
 		public bool TooltipPriceVisible { get { return this.tooltipPrice.Visible; } }

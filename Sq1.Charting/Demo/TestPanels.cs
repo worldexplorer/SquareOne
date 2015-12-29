@@ -6,8 +6,8 @@ using System.Windows.Forms;
 using Sq1.Core;
 
 namespace Sq1.Charting.Demo {
-	public partial class PanelsTest : Form {
-		public PanelsTest() {
+	public partial class TestPanels : Form {
+		public TestPanels() {
 			InitializeComponent();
 			base.HScroll = true;
 			base.VScroll = true;

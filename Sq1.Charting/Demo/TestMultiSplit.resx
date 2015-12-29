@@ -117,10 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="lblWinFormDesignerComment.Text" xml:space="preserve">
-    <value>1) PanelPrice and Panel volume are added into ChartControl, despite visually they are located in MultiSplitContainer; 2) InitializeCreateSplittersDistributeFor() will bring them into MultiSplitContainer for user drag &amp; resize; 3) don't delete this label, it's Invisible but gave you the clue when you opened ChartControl in Designer (VisualStudio or SharpDevelop)</value>
-  </data>
-  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>53</value>
-  </metadata>
 </root>

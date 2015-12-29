@@ -13,8 +13,9 @@ namespace Sq1.Charting {
 		const string REASON_TO_EXIST = "besides my own Panel, paint also on a clipped Graphics to draw below candles on PanelPrice (intensivity of layers might be controlled by sliders))";
 
 		[Browsable(false)]	public override bool					PanelHasValuesForVisibleBarWindow		{ get { return false;	/* this will cancel drawing right gutter */ } }
-		[Browsable(false)]	protected override int						ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
+		[Browsable(false)]	protected override int					ValueIndexLastAvailableMinusOneUnsafe	{ get { return -1; } }
 		[Browsable(false)]	public			StreamingDataSnapshot	StreamingDataSnapshotNullUnsafe			{ get {
+			if (base.ChartControl.Executor == null) return null;		// for TestChartControl
 			if (base.ChartControl.Executor.DataSource.StreamingAdapter == null) return null;
 			return base.ChartControl.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot;
 		} }

@@ -6,8 +6,8 @@ using Sq1.Core;
 using Sq1.Core.Support;
 
 namespace Sq1.Charting.Demo {
-	public partial class MultiSplitTest : Form {
-		public MultiSplitTest() {
+	public partial class TestMultiSplit : Form {
+		public TestMultiSplit() {
 			InitializeComponent();
 			base.HScroll = true;
 			base.VScroll = true;

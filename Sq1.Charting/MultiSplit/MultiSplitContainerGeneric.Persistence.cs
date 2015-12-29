@@ -57,9 +57,10 @@ namespace Sq1.Charting.MultiSplit {
 
 				MultiSplitterProperties props = splitterPropertiesByPanelName[panelName];
 				if (props.ManualOrder != i) {
-					string msg = "YOU_SWAPPED_PANELS_AND_SAVED_IN_PROPERTIES__NEED_TO_MOVE_INSIDE_ARRAYS";
-					Assembler.PopupException(msg);
-					return;
+					string msg = "REPLACE_WITH_MORE_RELIABLE_ALGORITHM YOU_SWAPPED_PANELS_AND_SAVED_IN_PROPERTIES__NEED_TO_MOVE_INSIDE_ARRAYS";
+					Assembler.PopupException(msg, null, false);
+					this.panels		.Move(i, props.ManualOrder);
+					this.splitters	.Move(i, props.ManualOrder);
 				}
 			}
 
@@ -70,6 +71,8 @@ namespace Sq1.Charting.MultiSplit {
 			base.ResumeLayout(true);
 		}
 		int propagateColumns(Dictionary<string, MultiSplitterProperties> splitterPropertiesByPanelName) {
+			string msig = " //propagateColumns():" + this.ToString();
+
 			int thingsIchanged = 0;
 			int xCheckDiff = 0;
 			for (int i=0; i<this.splitters.Count; i++) {
@@ -81,7 +84,7 @@ namespace Sq1.Charting.MultiSplit {
 
 				if (splitter.Width != this.SplitterHeight) {
 					string msg = "MUST_BE_INITIALIZED_EARLIER splitter[" + splitter.Name + "].Width[" + splitter.Width+ "] => [" + this.SplitterHeight + "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 					splitter.Width  = this.SplitterHeight;
 					thingsIchanged++;
 				}
@@ -102,9 +105,9 @@ namespace Sq1.Charting.MultiSplit {
 					//PanelBase panelBase = panel as PanelBase;
 					//MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
 					//if (panelBase != null) {
-					//    widthChanged = panelBase.SetWidthIgnoreResize(newWidth);
+					//	widthChanged = panelBase.SetWidthIgnoreResize(newWidth);
 					//} else if (panelAsMultiSplitContainer != null) {
-					//    widthChanged = panelAsMultiSplitContainer.SetWidthIgnoreResize(newWidth);
+					//	widthChanged = panelAsMultiSplitContainer.SetWidthIgnoreResize(newWidth);
 					//} else {
 						panel.Width  = newWidth;
 						widthChanged = true;
@@ -113,28 +116,29 @@ namespace Sq1.Charting.MultiSplit {
 				if (widthChanged) thingsIchanged++;
 				if (panel.Width != newWidth) {
 					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Width[" + panel.Width + "] != newWidth[" + newWidth + "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 				}
 
 
+				#region price scale goes right beoynd visible rectangle and lower panel hangs under visible Document boundary
 				bool heightChanged = false;
-		   		int baseHeight = base.Height;
+				int baseHeight = base.Height;
 				if (splitter.Height != baseHeight) {
 					string msg = "splitter.Height BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
-					//Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg + msig, null, false);
 					splitter.Height = baseHeight;			// happily resized and repainted
 					thingsIchanged++;
 				}
 				if (panel.Height != baseHeight) {
 					string msg = "panel.Height BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
-					//Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg + msig, null, false);
 
 					//PanelBase panelBase = panel as PanelBase;
 					//MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
 					//if (panelBase != null) {
-					//    heightChanged = panelBase.SetHeightIgnoreResize(baseHeight);
+					//	heightChanged = panelBase.SetHeightIgnoreResize(baseHeight);
 					//} else if (panelAsMultiSplitContainer != null) {
-					//    heightChanged = panelAsMultiSplitContainer.SetHeightIgnoreResize(baseHeight);
+					//	heightChanged = panelAsMultiSplitContainer.SetHeightIgnoreResize(baseHeight);
 					//} else {
 						panel.Height  = baseHeight;
 						heightChanged = true;
@@ -143,8 +147,9 @@ namespace Sq1.Charting.MultiSplit {
 				if (heightChanged) thingsIchanged++;
 				if (panel.Width != newWidth) {
 					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Width[" + panel.Width + "] != newWidth[" + newWidth + "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 				}
+				#endregion
 
 				xCheckDiff += splitter.Width;
 				xCheckDiff += panel.Width;
@@ -154,22 +159,24 @@ namespace Sq1.Charting.MultiSplit {
 			#if DEBUG		// TESTS_EMBEDDED
 			int roundingError = Math.Abs(xCheckDiff - base.Width);
 			if (roundingError != 0) {
-				string msg = "USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTAR LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR";
-				Assembler.PopupException(msg, null, false);
+				string msg = "USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR roundingError[" + roundingError + "]";
+				Assembler.PopupException(msg + msig, null, false);
 			}
 			if (thingsIchanged == 0) {
-				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK //propagateColumns()";
-				Assembler.PopupException(msg, null, false);
+				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK";
+				Assembler.PopupException(msg + msig, null, false);
 			}
 			//if (thingsIchanged % 2 != 1) {
-			//    string msg = "I_CHANGE_TWO_HEIGHTS_AND_ONE_LOCATION_EACH_CHART_CONTRO";
-			//    //Assembler.PopupException(msg, null, false);
+			//	string msg = "I_CHANGE_TWO_HEIGHTS_AND_ONE_LOCATION_EACH_CHART_CONTRO";
+			//	//Assembler.PopupException(msg, null, false);
 			//}
 			#endif
 			return thingsIchanged;
 		}
 
 		int propagateRows(Dictionary<string, MultiSplitterProperties> splitterPropertiesByPanelName) {
+			string msig = " //propagateRows():" + this.ToString();
+
 			int thingsIchanged = 0;
 			int yCheckDiff = 0;
 			for (int i=0; i<this.splitters.Count; i++) {
@@ -181,7 +188,7 @@ namespace Sq1.Charting.MultiSplit {
 
 				if (splitter.Height != this.SplitterHeight) {
 					string msg = "MUST_BE_INITIALIZED_EARLIER splitter[" + splitter.Name + "].Height[" + splitter.Height+ "] => [" + this.SplitterHeight + "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 					splitter.Height  = this.SplitterHeight;
 					thingsIchanged++;
 				}
@@ -203,9 +210,9 @@ namespace Sq1.Charting.MultiSplit {
 					//PanelBase panelBase = panel as PanelBase;
 					//MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
 					//if (panelBase != null) {
-					//    heightChanged = panelBase.SetHeightIgnoreResize(newHeight);
+					//	heightChanged = panelBase.SetHeightIgnoreResize(newHeight);
 					//} else if (panelAsMultiSplitContainer != null) {
-					//    heightChanged = panelAsMultiSplitContainer.SetHeightIgnoreResize(newHeight);
+					//	heightChanged = panelAsMultiSplitContainer.SetHeightIgnoreResize(newHeight);
 					//} else {
 						panel.Height  = props.PanelHeight;
 						heightChanged = true;
@@ -214,28 +221,29 @@ namespace Sq1.Charting.MultiSplit {
 				if (heightChanged) thingsIchanged++;
 				if (panel.Height != newHeight) {
 					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Height[" + panel.Height + "] != newHeight[" + newHeight+ "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 				}
 
 
+				#region price scale goes right beoynd visible rectangle and lower panel hangs under visible Document boundary
 				bool widthChanged = false;
-		   		int baseWidth = base.Width;
+				int baseWidth = base.Width;
 				if (splitter.Width != baseWidth) {
 					string msg = "splitter.Width BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
-					//Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg + msig, null, false);
 					splitter.Width = baseWidth;			// happily resized and repainted
 					thingsIchanged++;
 				}
 				if (panel.Width != baseWidth) {
 					string msg = "panel.Width BOTH_WIDTH_AND_HEIGHT_RESIZE I_DONT_KNOW_WHERE_TO_PUT_THIS_LOGIC";
-					//Assembler.PopupException(msg, null, false);
+					//Assembler.PopupException(msg + msig, null, false);
 
 					//PanelBase panelBase = panel as PanelBase;
 					//MultiSplitContainer panelAsMultiSplitContainer = panel as MultiSplitContainer;
 					//if (panelBase != null) {
-					//    widthChanged = panelBase.SetWidthIgnoreResize(baseWidth);
+					//	widthChanged = panelBase.SetWidthIgnoreResize(baseWidth);
 					//} else if (panelAsMultiSplitContainer != null) {
-					//    widthChanged = panelAsMultiSplitContainer.SetWidthIgnoreResize(baseWidth);
+					//	widthChanged = panelAsMultiSplitContainer.SetWidthIgnoreResize(baseWidth);
 					//} else {
 						panel.Width  = baseWidth;
 						widthChanged = true;
@@ -244,8 +252,9 @@ namespace Sq1.Charting.MultiSplit {
 				if (widthChanged) thingsIchanged++;
 				if (panel.Width != baseWidth) {
 					string msg = "TO_UNDELAY_SIZE_PROPAGATION_INVOKE_base.SuspendLayout()_UPSTACK panel.Width[" + panel.Width + "] != baseWidth[" + baseWidth + "]";
-					Assembler.PopupException(msg);
+					Assembler.PopupException(msg + msig);
 				}
+				#endregion
 
 				yCheckDiff += splitter.Height;
 				yCheckDiff += panel.Height;
@@ -255,16 +264,16 @@ namespace Sq1.Charting.MultiSplit {
 			#if DEBUG		// TESTS_EMBEDDED
 			int roundingError = Math.Abs(yCheckDiff - base.Height);
 			if (roundingError != 0) {
-				string msg = "USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTAR LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR";
-				Assembler.PopupException(msg);
+				string msg = "USER_LEFT_WHOLE_CHART_CONTROL_TOO_NARROW_BEFORE_RESTART LOWER_PANEL_GETS_CUT_BY_HSCROLLBAR roundingError[" + roundingError + "]";
+				Assembler.PopupException(msg + msig, null, false);
 			}
 			if (thingsIchanged == 0) {
 				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK //propagateRows()";
-				Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg + msig, null, false);
 			}
 			//if (thingsIchanged % 2 != 1) {
-			//    string msg = "I_CHANGE_TWO_HEIGHTS_AND_ONE_LOCATION_EACH_CHART_CONTRO";
-			//    //Assembler.PopupException(msg, null, false);
+			//	string msg = "I_CHANGE_TWO_HEIGHTS_AND_ONE_LOCATION_EACH_CHART_CONTRO";
+			//	//Assembler.PopupException(msg, null, false);
 			//}
 			#endif
 			return thingsIchanged;

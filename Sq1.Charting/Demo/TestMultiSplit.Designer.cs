@@ -8,7 +8,7 @@
  */
 namespace Sq1.Charting.Demo
 {
-	partial class MultiSplitTest
+	partial class TestMultiSplit
 	{
 		/// <summary>
 		/// Designer variable used to keep track of non-visual components.

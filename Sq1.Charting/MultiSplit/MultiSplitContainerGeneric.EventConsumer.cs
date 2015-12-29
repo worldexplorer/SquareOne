@@ -21,7 +21,7 @@ namespace Sq1.Charting.MultiSplit {
 			base.OnResize(e); // I NEED UserControlDoubleBuffered to rebuild its offscreen buffer size and sync !!! otherwize the canvas for chart etc stays the same ingoring MainForm.Resizes
 
 			if (base.DesignMode) return;
-			if (Assembler.IsInitialized == false) return;
+			if (Assembler.IsInitialized == false) return;	// otherwize I couldn't drop ChartControl from Toolbox to TestChartControl form / designer
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			//if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished) return;
 			if (this.ignoreResizeImSettingWidthOrHeight) return;
@@ -91,6 +91,12 @@ namespace Sq1.Charting.MultiSplit {
 		protected override void OnPaintDoubleBuffered(PaintEventArgs e) {
 #endif
 			if (base.DesignMode) return;
+			if (Assembler.IsInitialized == false) return;	// otherwize I couldn't drop ChartControl from Toolbox to TestChartControl form / designer
+			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
+			//if (Assembler.InstanceInitialized.SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished) return;
+			if (this.ignoreResizeImSettingWidthOrHeight) return;
+			if (this.panels.Count == 0) return;
+
 			try {
 				for (int i=0; i<this.panels.Count; i++) {
 					//Control panel = this.panels[i];

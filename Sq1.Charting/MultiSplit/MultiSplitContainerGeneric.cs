@@ -74,7 +74,7 @@ namespace Sq1.Charting.MultiSplit {
 			DebugSplitter = debugSplitter;
 			panels = new ObservableCollection<PANEL_BASE>();
 			splitters = new ObservableCollection<MultiSplitter>();
-			SplitterHeight = 25;
+			SplitterHeight = 6;
 			GrabHandleWidth = 30;
 			MinimumPanelHeight = 5;
 			ColorGrabHandle = Color.Orange;
@@ -101,9 +101,12 @@ namespace Sq1.Charting.MultiSplit {
 					Assembler.PopupException(msg, ex);
 				}
 			}
+			if (Assembler.IsInitialized == false) return;	// otherwize I couldn't drop ChartControl from Toolbox to TestChartControl form / designer
+
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) {
 				string msg = "ONCE_PER_PANEL_LET_IT_DISTRIBUTE_COMMENTED WHAT_IF_YOU_FIND_ALL_AND_LINK_PANEL_BELOWs_HERE?...";
-		        Assembler.PopupException(msg);
+				msg += " AssignPanelBelowAbove_setMinimalSize_fromPanelsList() and DistributePanelsAndSplitters() are invoked in ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized";
+				// Assembler.PopupException(msg);
 		        return;
 			}
 		    if (this.splitters.Count < 1) {
@@ -144,7 +147,8 @@ namespace Sq1.Charting.MultiSplit {
 				PANEL_BASE panel = this.panels[i];
 				MultiSplitter splitter = this.splitters[i];
 
-				splitter.PanelBelow = panel as Control;				// back to real world from generics
+				//v1 splitter.PanelBelow = panel as Control;				// back to real world from generics
+				splitter.PanelBelow = panel;
 				if (i > 0) {
 					splitter.PanelAbove = this.panels[i - 1] as Control;
 				} else {
@@ -314,6 +318,7 @@ namespace Sq1.Charting.MultiSplit {
 		}
 		void splitterCreateAdd(PANEL_BASE panel) {
 			MultiSplitter splitter = new MultiSplitter(GrabHandleWidth, ColorGrabHandle, this.VerticalizeAllLogic, this.DebugSplitter);
+			splitter.PanelBelow = panel;
 			if (this.VerticalizeAllLogic == false) {
 				splitter.Width = base.Width;
 				splitter.Height = this.SplitterHeight;

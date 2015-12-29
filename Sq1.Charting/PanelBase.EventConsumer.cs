@@ -145,7 +145,7 @@ namespace Sq1.Charting {
 #else
 		protected override void OnPaintBackgroundDoubleBuffered(PaintEventArgs e) {
 			if (this.ChartControl == null) {
-				base.OnPaintBackgroundDoubleBuffered(pe);	// will e.Graphics.Clear(base.BackColor);
+				base.OnPaintBackgroundDoubleBuffered(e);	// will e.Graphics.Clear(base.BackColor);
 				return;
 			}
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;

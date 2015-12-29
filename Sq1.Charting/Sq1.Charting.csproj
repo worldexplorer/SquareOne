@@ -51,8 +51,8 @@
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;NON_DOUBLE_BUFFERED;DEBUG_HEAVY_disabled;TEST_COMPATIBILITY_disabled;USE_DATASERIES_MINMAX_disabled</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>TRACE;DEBUG;NON_DOUBLE_BUFFERED_disabled;DEBUG_HEAVY_disabled;TEST_COMPATIBILITY_disabled;USE_DATASERIES_MINMAX_disabled</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -62,8 +62,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlertArrow.cs" />
@@ -95,19 +97,31 @@
     <Compile Include="Demo\ExceptionsForm.Designer.cs">
       <DependentUpon>ExceptionsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Demo\MultiSplitTest.cs">
+    <Compile Include="Demo\TestDockedChart.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Demo\MultiSplitTest.Designer.cs">
-      <DependentUpon>MultiSplitTest.cs</DependentUpon>
+    <Compile Include="Demo\TestDockedChart.Designer.cs">
+      <DependentUpon>TestDockedChart.cs</DependentUpon>
     </Compile>
-    <Compile Include="Demo\PanelsTest.cs">
+    <Compile Include="Demo\TestMultiSplit.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Demo\PanelsTest.Designer.cs">
-      <DependentUpon>PanelsTest.cs</DependentUpon>
+    <Compile Include="Demo\TestMultiSplit.Designer.cs">
+      <DependentUpon>TestMultiSplit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Demo\TestPanels.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Demo\TestPanels.Designer.cs">
+      <DependentUpon>TestPanels.cs</DependentUpon>
     </Compile>
     <Compile Include="Demo\Program.cs" />
+    <Compile Include="Demo\TestChartForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Demo\TestChartForm.Designer.cs">
+      <DependentUpon>TestChartForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MultiSplit\MultiSplitContainerGeneric.EventGenerator.cs">
       <SubType>UserControl</SubType>
       <DependentUpon>MultiSplitContainerGeneric.cs</DependentUpon>
@@ -233,11 +247,17 @@
     <EmbeddedResource Include="Demo\ExceptionsForm.resx">
       <DependentUpon>ExceptionsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Demo\MultiSplitTest.resx">
-      <DependentUpon>MultiSplitTest.cs</DependentUpon>
+    <EmbeddedResource Include="Demo\TestDockedChart.resx">
+      <DependentUpon>TestDockedChart.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Demo\PanelsTest.resx">
-      <DependentUpon>PanelsTest.cs</DependentUpon>
+    <EmbeddedResource Include="Demo\TestMultiSplit.resx">
+      <DependentUpon>TestMultiSplit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Demo\TestPanels.resx">
+      <DependentUpon>TestPanels.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Demo\TestChartForm.resx">
+      <DependentUpon>TestChartForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MultiSplit\MultiSplitter.resx">
       <DependentUpon>MultiSplitter.cs</DependentUpon>
@@ -258,6 +278,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\dockpanelsuite290-master\WinFormsUI\WinFormsUI.csproj">
+      <Project>{E580A3F0-6BED-4649-A159-58998CC077F3}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
       <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
       <Name>Sq1.Core</Name>
