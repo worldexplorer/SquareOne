@@ -14,6 +14,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
 using Sq1.Core.Support;
+
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 
@@ -230,7 +231,7 @@ namespace Sq1.Gui {
 					cfmgr.ChartFormShow();
 
 					// INNER_DOCK_CONTENT_DOESNT_GET_FILLED_TO_THE_WINDOW_AREA???
-					cfmgr.ChartForm.ChartControl.InvalidateAllPanels();
+					//cfmgr.ChartForm.ChartControl.InvalidateAllPanels();
 				}
 			
 				if (disposePreviousDockPanel != null) {
@@ -318,6 +319,8 @@ namespace Sq1.Gui {
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 				this.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace = false;
 			}
+				base.PerformLayout();
+				this.DockPanel.PerformLayout();
 			foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				if (cfmgr.ChartForm == null) {
 					string msg = "CHART_FORM_MANAGER_MUST_HAVE_CHART_FORM_ASSIGNED_NOT_NULL";
@@ -326,10 +329,21 @@ namespace Sq1.Gui {
 				}
 
 				//DOESNT_HELP cfmgr.ChartForm.SuspendLayout();
-				//DOESNT_HELP if (cfmgr.ChartForm.ChartControl.Dock != DockStyle.Fill) cfmgr.ChartForm.ChartControl.Dock = DockStyle.Fill;	// trying to trigger Dock.Fill to resize Control inside Form
+				//DOESNT_HELP
+				if (cfmgr.ChartForm.ChartControl.Dock != DockStyle.Fill) {
+					string msg = "DIDNT_YOU_FORGET_TO_SET_ChartControl.Dock=DockStyle.Fill";
+					Assembler.PopupException(msg, null, false);
+					//cfmgr.ChartForm.ChartControl.Dock = DockStyle.Fill;	// trying to trigger Dock.Fill to resize Control inside Form
+				}
 				//DOESNT_HELP cfmgr.ChartForm.ChartControl.PerformLayout();
 				//DOESNT_HELP cfmgr.ChartForm.ResumeLayout(false);
 				//MOVED_TO_cfmgr.ChartFormShow() cfmgr.ChartForm.PerformLayout();
+
+				if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {
+					string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout()";
+					Assembler.PopupException(msg, null, false);
+					cfmgr.ChartForm.ChartControl.PerformLayout();
+				}
 
 				if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {
 					string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout()";

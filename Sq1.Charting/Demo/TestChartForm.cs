@@ -17,8 +17,12 @@ namespace Sq1.Charting.Demo {
 
 			InitializeComponent();
 
-			this.chartControl1.RangeBarCollapsed = true;
+			if (base.ClientRectangle.Width != this.chartControl1.ClientRectangle.Width) {
+				string msg = "SIMULATING_Dock.Fill_ChartControl.Initialize(BARS_GENERATED_RANDOM)<=ctor() //TestChartForm()";
+				Assembler.PopupException(msg);
+			}
 
+			//this.chartControl1.RangeBarCollapsed = true;
 			//this.SplitterHeight = 6;
 			//exceptionsForm.ExceptionControl.FlushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 		}

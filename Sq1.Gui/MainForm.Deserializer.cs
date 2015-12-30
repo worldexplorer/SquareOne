@@ -280,9 +280,12 @@ namespace Sq1.Gui {
 				//v2 END
 			}
 			ChartSettingsEditorForm.Instance.Initialize(this.GuiDataSnapshot.ChartSettingsForChartSettingsEditor);
-			if (this.ChartFormActiveNullUnsafe != null) {
-				ChartSettingsEditorForm.Instance.PopulateWithChartSettings(this.ChartFormActiveNullUnsafe.ChartControl.ChartSettings);
+			if (this.ChartFormActiveNullUnsafe == null) {
+				string msg = "I_REFUSE_TO_PopulateWithChartSettings() this.ChartFormActiveNullUnsafe=null //initializeMainFromDeserializedDataSnapshot()";
+				Assembler.PopupException(msg);
+				return;
 			}
+			ChartSettingsEditorForm.Instance.PopulateWithChartSettings(this.ChartFormActiveNullUnsafe.ChartControl.ChartSettings);
 		}
 	}
 }

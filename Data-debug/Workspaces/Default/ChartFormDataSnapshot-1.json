@@ -11,25 +11,33 @@
       "panelVolume": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
-        "Distance": 0
+        "Distance": 0,
+        "SplitterHeight": 6,
+        "PanelHeight": 28
       },
-      "panelPrice": {
+      "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 43
+        "Distance": 34,
+        "SplitterHeight": 6,
+        "PanelHeight": 292
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
       "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core]], mscorlib",
-      "multiSplitContainerRows": {
+      "multiSplitRowsVolumePrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 0,
-        "Distance": 0
+        "Distance": 0,
+        "SplitterHeight": 6,
+        "PanelHeight": 557
       },
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 191
+        "Distance": 563,
+        "SplitterHeight": 6,
+        "PanelHeight": 55
       }
     },
     "Name": "Default",
@@ -76,7 +84,7 @@
     "TooltipPositionShow": true,
     "TooltipsPaddingFromBarLeftRightEdgesToAvoidMouseLeave": 3,
     "PositionArrowPaddingVertical": 2,
-    "ScrollPositionAtBarIndex": 502,
+    "ScrollPositionAtBarIndex": 417,
     "TooltipBordersMarginToKeepBordersVisible": 2,
     "PositionPlannedEllipseColor": "Aqua",
     "PositionPlannedEllipseColorAlpha": 90,

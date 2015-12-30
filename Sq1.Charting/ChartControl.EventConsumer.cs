@@ -4,7 +4,6 @@ using System.Windows.Forms;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
-using System.Diagnostics;
 using Sq1.Core.Streaming;
 
 namespace Sq1.Charting {
@@ -109,7 +108,7 @@ namespace Sq1.Charting {
 			if (this.Bars == null) {
 				#if DEBUG
 				string msg = "POSSIBLY_DISABLE_SCROLLBAR_WHEN_CHART_HAS_NO_BARS? OR MAKE_CHART_ALWAYS_DISPLAY_BARS";
-				Debugger.Break();
+				Assembler.PopupException(msg);
 				#endif
 				return;
 			}
@@ -222,6 +221,25 @@ namespace Sq1.Charting {
 				return;
 			}
 			this.Initialize(null, this.ChartSettings.StrategyName);
+		}
+
+		protected override void OnLayout(System.Windows.Forms.LayoutEventArgs levent) {
+			// INVOKERS: base.AutoScroll=false, ChartControl.PerformLayout()
+			base.OnLayout(levent);
+			this.simulateDockFill();
+		}
+
+		void simulateDockFill() {
+			Form parentForm = base.Parent as Form;
+			if (parentForm == null) {
+				string msg = "YOU_INVOKED_ChartControl.Initialize()_FROM_ChartControl.ctor(RANDOM_GENERATED_BARS) CHART_CONTROL_NOT_ADDED_TO_ANY_FORM";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			if (base.ClientRectangle.Width == parentForm.ClientRectangle.Width) return;		// looks already FILLed
+			string msg2 = "HAPPENS_WHEN_???";
+			Assembler.PopupException(msg2, null, false);
+			parentForm.PerformLayout();		// did it help to get the Control stretched to fill the surface of the form?
 		}
 	}
 }

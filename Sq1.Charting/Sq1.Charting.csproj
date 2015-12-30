@@ -20,7 +20,7 @@
     <DelaySign>False</DelaySign>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <SourceAnalysisOverrideSettingsFile>C:\Users\PChuchkalov\AppData\Roaming\ICSharpCode\SharpDevelop5\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Library</OutputType>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
@@ -52,13 +52,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DefineConstants>TRACE;DEBUG;NON_DOUBLE_BUFFERED_disabled;DEBUG_HEAVY_disabled;TEST_COMPATIBILITY_disabled;USE_DATASERIES_MINMAX_disabled</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NON_DOUBLE_BUFFERE_disabledD;DEBUG_HEAVY_disabled;TEST_COMPATIBILITY_disabled;USE_DATASERIES_MINMAX_disabled</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Sq1.Charting.Demo.Program</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

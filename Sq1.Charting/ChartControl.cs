@@ -11,6 +11,7 @@ using Sq1.Core.Indicators;
 using Sq1.Core.Streaming;
 using Sq1.Core.Charting;
 using Sq1.Core.DataFeed;
+
 using Sq1.Charting.MultiSplit;
 
 namespace Sq1.Charting {
@@ -56,7 +57,7 @@ namespace Sq1.Charting {
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.OnSplitterMoveEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded);
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.OnSplitterDragEnded += new EventHandler<MultiSplitterEventArgs>(multiSplitContainerColumns_OnResizing_OnSplitterMoveOrDragEnded);
 
-			this.AutoScroll = false;
+			//DEFAULT_FALSE_DONT_DISTURB_OnLayout() this.AutoScroll = false;
 			//this.HScroll = true;
 			this.hScrollBar.SmallChange = this.ChartSettings.ScrollNBarsPerOneKeyPress;
 
@@ -78,8 +79,8 @@ namespace Sq1.Charting {
 			base.SuspendLayout();	// test multisplitter-related init&distrib in TestPanels first!
 
 			List<Control> twoColumns = new List<Control>() {
-				this.panelLevel2,
-				this.multiSplitRowsVolumePrice
+				this.multiSplitRowsVolumePrice,
+				this.panelLevel2
 			};
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.VerticalizeAllLogic = true;
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.Dock = DockStyle.Fill;		// invokes Resize() that will SET the size of inner controls
@@ -92,8 +93,6 @@ namespace Sq1.Charting {
 			};
 			this.multiSplitRowsVolumePrice.InitializeCreateSplittersDistributeFor(twoRows);
 
-
-
 			// Splitter might still notify them for Resize() during startup (while only multiSplitter's size should generate Resize in nested controls)  
 			// trying to leave only multiSplitter to react on Panel2.Collapsed = true/false;
 			//this.splitContainerChartVsRange.Panel1.Controls.Remove(this.panelVolume);
@@ -102,7 +101,7 @@ namespace Sq1.Charting {
 
 			// TOO_EARLY_MOVED_TO_PropagateSettingSplitterDistancePriceVsVolume this.multiSplitContainer.SplitterPositionsByManorder = this.ChartSettings.SplitterPositionsByManorder;
 
-			BarIndexMouseIsOverNow = -1;	//if I didn't mouseover after app start, streaming values don't show up
+			this.BarIndexMouseIsOverNow = -1;	//if I didn't mouseover after app start, streaming values don't show up
 
 			//v1 base.ResumeLayout(true);	// test multisplitter-related init&distrib in TestPanels first!
 			base.ResumeLayout(false);		// test multisplitter-related init&distrib in TestPanels first!
@@ -184,16 +183,17 @@ namespace Sq1.Charting {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.InvalidateAllPanels();
 
-			Form parentForm = this.Parent as Form;
-			if (parentForm == null) {
-				string msg = "CHART_CONTROL_NOT_ADDED_TO_ANY_FORM???";
-				Assembler.PopupException(msg);
-				return;
-			}
-			if (parentForm.ClientRectangle.Width != base.ClientRectangle.Width) {
-				string msg = "ANY_CLUE_WHY_CHART_CONTROL_IS_OUT_OF_BOUNDARIES_OF_PARENT_FORM? ITS_NOT_DESERIALIZATION_BUT_USER_OPENED_ANOTHER_CHART";
-				Assembler.PopupException(msg);
-			}
+			//Form parentForm = this.Parent as Form;
+			//if (parentForm == null) {
+			//    string msg = "YOU_INVOKED_ChartControl.Initialize()_FROM_ChartControl.ctor(RANDOM_GENERATED_BARS) CHART_CONTROL_NOT_ADDED_TO_ANY_FORM";
+			//    Assembler.PopupException(msg);
+			//    return;
+			//}
+			//if (parentForm.ClientRectangle.Width != base.ClientRectangle.Width) {
+			//    string msg = "ANY_CLUE_WHY_CHART_CONTROL_IS_OUT_OF_BOUNDARIES_OF_PARENT_FORM? ITS_NOT_DESERIALIZATION_BUT_USER_OPENED_ANOTHER_CHART";
+			//    Assembler.PopupException(msg);
+			//}
+			this.simulateDockFill();
 		}
 		public void SyncHorizontalScrollToBarsCount() {
 			// this.HorizontalScroll represents the scrolling window for the content, useful in UserControl.Autoscroll when an innerPanel is wider or has Top|Left < 0 

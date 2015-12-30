@@ -682,7 +682,7 @@ namespace Sq1.Gui.Forms {
 			// FOR_SURE_NEEDED_AT_DESERIALIZATION__RUNTINE_CREATION_NOT_TESTED
 			this.ChartForm.PerformLayout();
 			if (this.ChartForm.ClientRectangle.Width != this.ChartForm.ChartControl.ClientRectangle.Width) {
-				string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm.PerformLayout()";
+				string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm.PerformLayout()__REMOVE_ChartForm.AutoSize=true";
 				Assembler.PopupException(msg);
 			}
 

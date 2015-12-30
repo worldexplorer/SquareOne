@@ -25,8 +25,8 @@ namespace Sq1.Charting {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChartControl));
 			this.hScrollBar = new System.Windows.Forms.HScrollBar();
 			this.splitContainerChartVsRange = new System.Windows.Forms.SplitContainer();
-			this.tooltipPrice = new Sq1.Charting.TooltipPrice();
 			this.panelLevel2 = new Sq1.Charting.PanelLevel2();
+			this.tooltipPrice = new Sq1.Charting.TooltipPrice();
 			this.tooltipPosition = new Sq1.Charting.TooltipPosition();
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit = new Sq1.Charting.MultiSplit.MultiSplitContainer();
 			this.lblWinFormDesignerComment = new System.Windows.Forms.Label();
@@ -42,9 +42,9 @@ namespace Sq1.Charting {
 			// hScrollBar
 			// 
 			this.hScrollBar.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.hScrollBar.Location = new System.Drawing.Point(0, 347);
+			this.hScrollBar.Location = new System.Drawing.Point(0, 303);
 			this.hScrollBar.Name = "hScrollBar";
-			this.hScrollBar.Size = new System.Drawing.Size(811, 17);
+			this.hScrollBar.Size = new System.Drawing.Size(840, 17);
 			this.hScrollBar.TabIndex = 0;
 			this.hScrollBar.Scroll += new System.Windows.Forms.ScrollEventHandler(this.hScrollBar_Scroll);
 			// 
@@ -60,58 +60,58 @@ namespace Sq1.Charting {
 			// 
 			// splitContainerChartVsRange.Panel1
 			// 
-			this.splitContainerChartVsRange.Panel1.Controls.Add(this.tooltipPrice);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelLevel2);
+			this.splitContainerChartVsRange.Panel1.Controls.Add(this.tooltipPrice);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.tooltipPosition);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.multiSplitColumns_Level2_PriceVolumeMultisplit);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.lblWinFormDesignerComment);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.multiSplitRowsVolumePrice);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelVolume);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.PanelPrice);
-			this.splitContainerChartVsRange.Size = new System.Drawing.Size(811, 347);
-			this.splitContainerChartVsRange.SplitterDistance = 290;
+			this.splitContainerChartVsRange.Size = new System.Drawing.Size(840, 303);
+			this.splitContainerChartVsRange.SplitterDistance = 246;
 			this.splitContainerChartVsRange.TabIndex = 0;
 			this.splitContainerChartVsRange.TabStop = false;
-			// 
-			// tooltipPrice
-			// 
-			this.tooltipPrice.BackColor = System.Drawing.SystemColors.Info;
-			this.tooltipPrice.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.tooltipPrice.ForeColor = System.Drawing.SystemColors.InfoText;
-			this.tooltipPrice.Location = new System.Drawing.Point(547, 171);
-			this.tooltipPrice.Name = "tooltipPrice";
-			this.tooltipPrice.Size = new System.Drawing.Size(116, 116);
-			this.tooltipPrice.TabIndex = 1;
-			this.tooltipPrice.Visible = false;
 			// 
 			// panelLevel2
 			// 
 			this.panelLevel2.BarsIdent = "UNINITIALIZED_BARS_IDENT_PanelNamedFolding";
 			this.panelLevel2.GutterBottomDraw = false;
 			this.panelLevel2.GutterRightDraw = true;
-			this.panelLevel2.Location = new System.Drawing.Point(3, 0);
+			this.panelLevel2.Location = new System.Drawing.Point(363, 13);
 			this.panelLevel2.MinimumSize = new System.Drawing.Size(1, 15);
 			this.panelLevel2.Name = "panelLevel2";
 			this.panelLevel2.PanelName = "Level2";
-			this.panelLevel2.Size = new System.Drawing.Size(50, 242);
+			this.panelLevel2.Size = new System.Drawing.Size(11, 212);
 			this.panelLevel2.TabIndex = 4;
+			// 
+			// tooltipPrice
+			// 
+			this.tooltipPrice.BackColor = System.Drawing.SystemColors.Info;
+			this.tooltipPrice.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.tooltipPrice.ForeColor = System.Drawing.SystemColors.InfoText;
+			this.tooltipPrice.Location = new System.Drawing.Point(564, 102);
+			this.tooltipPrice.Name = "tooltipPrice";
+			this.tooltipPrice.Size = new System.Drawing.Size(116, 116);
+			this.tooltipPrice.TabIndex = 1;
+			this.tooltipPrice.Visible = false;
 			// 
 			// tooltipPosition
 			// 
 			this.tooltipPosition.BackColor = System.Drawing.SystemColors.Info;
 			this.tooltipPosition.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.tooltipPosition.ForeColor = System.Drawing.SystemColors.InfoText;
-			this.tooltipPosition.Location = new System.Drawing.Point(669, 72);
+			this.tooltipPosition.Location = new System.Drawing.Point(696, 3);
 			this.tooltipPosition.Name = "tooltipPosition";
 			this.tooltipPosition.Size = new System.Drawing.Size(139, 215);
 			this.tooltipPosition.TabIndex = 0;
 			this.tooltipPosition.Visible = false;
 			// 
-			// multiSplitColumns_Level2_AnotherMultisplit
+			// multiSplitColumns_Level2_PriceVolumeMultisplit
 			// 
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.BackColor = System.Drawing.SystemColors.ControlDark;
-			this.multiSplitColumns_Level2_PriceVolumeMultisplit.Location = new System.Drawing.Point(399, 160);
-			this.multiSplitColumns_Level2_PriceVolumeMultisplit.Name = "multiSplitColumns_Level2_AnotherMultisplit";
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.Location = new System.Drawing.Point(399, 91);
+			this.multiSplitColumns_Level2_PriceVolumeMultisplit.Name = "multiSplitColumns_Level2_PriceVolumeMultisplit";
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.Size = new System.Drawing.Size(97, 118);
 			this.multiSplitColumns_Level2_PriceVolumeMultisplit.TabIndex = 3;
 			// 
@@ -127,7 +127,7 @@ namespace Sq1.Charting {
 			// multiSplitRowsVolumePrice
 			// 
 			this.multiSplitRowsVolumePrice.BackColor = System.Drawing.Color.DarkGray;
-			this.multiSplitRowsVolumePrice.Location = new System.Drawing.Point(439, 103);
+			this.multiSplitRowsVolumePrice.Location = new System.Drawing.Point(474, 130);
 			this.multiSplitRowsVolumePrice.Name = "multiSplitRowsVolumePrice";
 			this.multiSplitRowsVolumePrice.Size = new System.Drawing.Size(84, 88);
 			this.multiSplitRowsVolumePrice.TabIndex = 1;
@@ -138,11 +138,11 @@ namespace Sq1.Charting {
 			this.panelVolume.Font = new System.Drawing.Font("Consolas", 8.25F);
 			this.panelVolume.GutterBottomDraw = false;
 			this.panelVolume.GutterRightDraw = true;
-			this.panelVolume.Location = new System.Drawing.Point(59, 197);
+			this.panelVolume.Location = new System.Drawing.Point(3, 13);
 			this.panelVolume.MinimumSize = new System.Drawing.Size(20, 15);
 			this.panelVolume.Name = "panelVolume";
 			this.panelVolume.PanelName = "Volume";
-			this.panelVolume.Size = new System.Drawing.Size(331, 45);
+			this.panelVolume.Size = new System.Drawing.Size(354, 15);
 			this.panelVolume.TabIndex = 0;
 			// 
 			// PanelPrice
@@ -152,11 +152,11 @@ namespace Sq1.Charting {
 			this.PanelPrice.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.PanelPrice.GutterBottomDraw = true;
 			this.PanelPrice.GutterRightDraw = true;
-			this.PanelPrice.Location = new System.Drawing.Point(59, 0);
+			this.PanelPrice.Location = new System.Drawing.Point(3, 34);
 			this.PanelPrice.MinimumSize = new System.Drawing.Size(20, 25);
 			this.PanelPrice.Name = "PanelPrice";
 			this.PanelPrice.PanelName = "Price";
-			this.PanelPrice.Size = new System.Drawing.Size(331, 191);
+			this.PanelPrice.Size = new System.Drawing.Size(354, 191);
 			this.PanelPrice.TabIndex = 1;
 			// 
 			// RangeBar
@@ -188,7 +188,7 @@ namespace Sq1.Charting {
 			this.Controls.Add(this.hScrollBar);
 			this.Controls.Add(this.splitContainerChartVsRange);
 			this.Name = "ChartControl";
-			this.Size = new System.Drawing.Size(811, 364);
+			this.Size = new System.Drawing.Size(840, 320);
 			this.splitContainerChartVsRange.Panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerChartVsRange)).EndInit();
 			this.splitContainerChartVsRange.ResumeLayout(false);

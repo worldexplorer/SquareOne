@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -296,7 +295,7 @@ namespace Sq1.Charting.MultiSplit {
 			if (base.Parent.Controls.Contains(panel)) {
 				string msg = "I expect panels be removed from miltisplitContainer.Parent"
 					+ " so that only miltisplitContainer.Size will trigger miltisplitContainer.Controls.*.Resize()";
-				Debugger.Break();
+				Assembler.PopupException(msg);
 			}
 			#endif
 			this.panels.Add(panel);

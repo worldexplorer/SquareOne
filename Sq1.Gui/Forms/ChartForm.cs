@@ -12,8 +12,11 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
+
 using Sq1.Widgets.LabeledTextBox;
+
 using Sq1.Gui.Singletons;
+
 using Sq1.Widgets.RangeBar;
 
 

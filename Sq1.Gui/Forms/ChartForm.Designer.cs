@@ -349,9 +349,9 @@ namespace Sq1.Gui.Forms {
             this.btnStreamingTriggersScript,
             this.btnStrategyEmittingOrders});
 			this.statusStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-			this.statusStrip.Location = new System.Drawing.Point(0, 354);
+			this.statusStrip.Location = new System.Drawing.Point(0, 298);
 			this.statusStrip.Name = "statusStrip";
-			this.statusStrip.Size = new System.Drawing.Size(738, 22);
+			this.statusStrip.Size = new System.Drawing.Size(840, 22);
 			this.statusStrip.SizingGrip = false;
 			this.statusStrip.TabIndex = 4;
 			this.statusStrip.Text = "statusStrip1";
@@ -607,22 +607,21 @@ namespace Sq1.Gui.Forms {
 			// 
 			// ChartControl
 			// 
-			this.ChartControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+			this.ChartControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.ChartControl.Location = new System.Drawing.Point(0, 0);
 			this.ChartControl.Margin = new System.Windows.Forms.Padding(0);
 			this.ChartControl.Name = "ChartControl";
+			this.ChartControl.Padding = new System.Windows.Forms.Padding(0, 0, 0, 22);
 			this.ChartControl.PaintAllowedDuringLivesimOrAfterBacktestFinished = true;
 			this.ChartControl.RangeBarCollapsed = false;
-			this.ChartControl.Size = new System.Drawing.Size(738, 354);
+			this.ChartControl.Size = new System.Drawing.Size(840, 320);
 			this.ChartControl.TabIndex = 0;
 			// 
 			// ChartForm
 			// 
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
-			this.AutoSize = true;
-			this.ClientSize = new System.Drawing.Size(738, 376);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.ClientSize = new System.Drawing.Size(840, 320);
 			this.Controls.Add(this.statusStrip);
 			this.Controls.Add(this.ChartControl);
 			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
