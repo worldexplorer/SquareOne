@@ -74,8 +74,13 @@ namespace Sq1.Widgets {
 
 
 		public void ShowAsDocumentTabNotPane(DockPanel dockPanel) {
-			if (this.IsShown) {
-				this.ActivateDockContentPopupAutoHidden(false, true);
+			//v1 NOT_MOVING_TO_DOCUMENT_ON_RESTART
+			//if (this.IsShown) {
+			//    //this.ActivateDockContentPopupAutoHidden(false, true);
+			//    return;
+			//}
+			if (this.IsShown && this.IsInDocumentArea) {
+				this.Activate();
 				return;
 			}
 
@@ -139,6 +144,7 @@ namespace Sq1.Widgets {
 		public bool IsDocked			{ get { return base.Visible && DockHelper.IsDockWindowState(base.DockState); } }
 		public bool IsDockedAutoHide	{ get { return base.Visible && DockHelper.IsDockStateAutoHide(base.DockState); } }
 		public bool IsCoveredOrAutoHidden { get {
+				if (base.Visible == false) return false;
 				if (this.IsDockedAutoHide) return true;
 				if (this.IsDocked) {
 					string msg = "go find out if I'm covered by other forms docked into the same area"

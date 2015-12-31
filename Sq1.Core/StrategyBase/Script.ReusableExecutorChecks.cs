@@ -1,4 +1,4 @@
-#if DEBUG
+//#if DEBUG
 
 using System;
 using System.Collections.Generic;
@@ -57,4 +57,4 @@ namespace Sq1.Core.StrategyBase {
 		#endregion
 	}
 }
-#endif
+//#endif

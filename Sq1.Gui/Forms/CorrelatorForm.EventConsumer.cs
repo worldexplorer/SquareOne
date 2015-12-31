@@ -8,7 +8,7 @@ namespace Sq1.Gui.Forms {
 	public partial class CorrelatorForm {
         void correlatorForm_FormClosing(object sender, FormClosingEventArgs e) {
             // only when user closed => allow scriptEditorForm_FormClosed() to serialize
-            if (this.chartFormsManager.MainForm.MainFormClosingSkipChartFormsRemoval) {
+            if (this.chartFormsManager.MainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
                 e.Cancel = true;
                 return;
             }

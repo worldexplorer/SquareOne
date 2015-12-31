@@ -10,11 +10,11 @@ using System.Collections.Generic;
 
 namespace Sq1.Charting {
 	public partial class ChartSettingsEditorControl {
-		void toolStripItemComboBox1_SelectedIndexChanged(object sender, EventArgs e) {
+		void cbxSettings_SelectedIndexChanged(object sender, EventArgs e) {
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			if (this.rebuildingDropdown) return;
 
-			if (sender as ComboBox != this.toolStripItemComboBox1.ComboBox) {
+			if (sender as ComboBox != this.cbxSettings.ComboBox) {
 				string msg = "WHATT???? sender as ComboBox != this.toolStripItemComboBox1.ComboBox //toolStripItemComboBox1_SelectedIndexChanged()";
 				Assembler.PopupException(msg, null, false);
 
@@ -36,7 +36,7 @@ namespace Sq1.Charting {
 				this.openDropDownAfterSelected = true;
 				return;
 			}
-			this.toolStripItemComboBox1.ComboBox.DroppedDown = true;
+			this.cbxSettings.ComboBox.DroppedDown = true;
 		}
 		void propertyGrid1_PropertyValueChanged(object sender, PropertyValueChangedEventArgs e) {
 			ChartSettings selected = this.chartSettingsSelectedNullUnsafe;

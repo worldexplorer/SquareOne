@@ -150,7 +150,7 @@ namespace Sq1.Charting {
 		public override void HostPanelForIndicatorClear() {
 			foreach (PanelIndicator panel in this.PanelsByIndicator.Values) {
 				this.panelsForInvalidateAll_dontForgetIndicators.Remove(panel);
-				this.multiSplitContainerRows.PanelRemove(panel);
+				this.multiSplitRowsVolumePrice.PanelRemove(panel);
 			}
 			this.PanelsByIndicator.Clear();
 		}
@@ -175,7 +175,7 @@ namespace Sq1.Charting {
 						
 						this.PanelsByIndicator.Add(indicator, panel);
 						this.panelsForInvalidateAll_dontForgetIndicators.Add(panel);
-						this.multiSplitContainerRows.PanelAddSplitterCreateAdd(panel, true);		//, this.ChartSettings.MultiSplitterPropertiesByPanelName);
+						this.multiSplitRowsVolumePrice.PanelAddSplitterCreateAdd(panel, true);		//, this.ChartSettings.MultiSplitterPropertiesByPanelName);
 						needToReReadSplitterPositionsSinceIndicatorsWereAdded = true;
 					}
 					ret = this.PanelsByIndicator[indicator];

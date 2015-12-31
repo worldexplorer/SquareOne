@@ -6,7 +6,7 @@ using Sq1.Core;
 using Sq1.Core.DoubleBuffered;
 
 namespace Sq1.Charting.MultiSplit {
-	public class MultiSplitter
+	public partial class MultiSplitter
 #if NON_DOUBLE_BUFFERED
 //#Dev doesn't F12 on PanelAbove 
 			: UserControl
@@ -41,6 +41,8 @@ namespace Sq1.Charting.MultiSplit {
 			if (base.DesignMode) return;
 			try {
 				e.Graphics.Clear(this.BackColor);
+				// MAKES_SENSE_TO_REPAINT_EACH_ONRESIZE()_HERE_TO_AVOID_BLACK_UNTIL_MOUSEOVER AND BASE_DOESNT_PAINT_POSPONING_FLUSHING_BACKGROUNDS_ON_FINAL_FOREGROUND
+				// YES_SOLVES_THE_PROBLEM_BUT_VERY_SLOW base.BufferedGraphics.Render(e.Graphics);
 			} catch (Exception ex) {
 				string msig = " //MultiSplitter.OnPaintBackground()";
 				string msg = "SHOULD_NEVER_HAPPEN I_DONT_THINK_GRAPHICS.CLEAR_WOULD_EVER_THROW";
@@ -70,6 +72,7 @@ namespace Sq1.Charting.MultiSplit {
 						g.DrawString(base.Text, base.Font, textBrush, 0, 0);
 					}
 				}
+				// NO_NEED_BASE_WILL_SPIT_MY_GRAPHICS this.BufferedGraphics.Render(pe.Graphics);
 			} catch (Exception ex) {
 				string msg = "I_ONLY_DID_g.DrawString()_AND_g.FillRectangle() //MultiSplitter.OnPaint()";
 				Assembler.PopupException(msg, ex);

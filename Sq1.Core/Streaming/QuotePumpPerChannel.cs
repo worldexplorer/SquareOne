@@ -80,16 +80,17 @@ namespace Sq1.Core.Streaming {
 			try {
 				this.confirmThreadStarted.Reset();
 				this.bufferPusher.Start();
-				int delay = 10;
-				for (int i = 0; i <= 10000; i++) {
-					if (this.bufferPusherThreadId != 0) {
-						msig = " this.bufferPusherThreadId[" + this.bufferPusherThreadId + "] " + msig;
-						string msg2 = "THREAD_ID_SET_AFTER[" + (i * delay) + "]ms[" + i + "]iterations";
-						//Assembler.PopupException(msg2 + msig, null, false);
-						break;
-					}
-					Thread.Sleep(delay);	// I want this.bufferPusherThreadId to get set!
-				}
+				//v1 SET_INSIDE_THE_LAUNCHED_TREAD__in_pusherEntryPoint()
+				//int delay = 10;
+				//for (int i = 0; i <= 10000; i++) {
+				//    if (this.bufferPusherThreadId != 0) {
+				//        msig = " this.bufferPusherThreadId[" + this.bufferPusherThreadId + "] " + msig;
+				//        string msg2 = "THREAD_ID_SET_AFTER[" + (i * delay) + "]ms[" + i + "]iterations";
+				//        Assembler.PopupException(msg2 + msig, null, false);
+				//        break;
+				//    }
+				//    Thread.Sleep(delay);	// I_WANT_THIS.BUFFERPUSHERTHREADID_TO_GET_SET!
+				//}
 				bool startConfirmed = this.confirmThreadStarted.WaitOne(this.heartbeatTimeout * 2);
 				string msg = startConfirmed ? "PUMPING_THREAD_STARTED_CONFIRMED" : "PUMPING_THREAD_STARTED_NOT_CONFIRMED";
 				//Assembler.PopupException(msg + msig, null, false);
@@ -141,8 +142,10 @@ namespace Sq1.Core.Streaming {
 			string msig = "THREW_PRIOR_TO_INITIALIZATION_pusherEntryPoint()";
 			if (this.bufferPusherThreadId == 0) {
 				this.bufferPusherThreadId = Thread.CurrentThread.ManagedThreadId;
-				//Thread.CurrentThread.Name = "QUOTE_PUMP";
 				this.SetThreadName();
+			} else {
+				string msg = "DID_YOU_REACTIVATE I_WANT_THIS.BUFFERPUSHERTHREADID_TO_GET_SET?";
+				Assembler.PopupException(msg);
 			}
 			try {
 				this.timesThreadWasStarted++;

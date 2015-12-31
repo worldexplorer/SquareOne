@@ -10,7 +10,13 @@ using BrightIdeasSoftware;
 namespace Sq1.Widgets.Exceptions {
 	[ToolboxBitmap(typeof(ExceptionsControl), "ExceptionsControl")]
 	[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
+
+#if USE_CONTROL_IMPROVED
 	public partial class ExceptionsControl : UserControlImproved {
+#else
+	public partial class ExceptionsControl : UserControl {
+#endif
+
 		#region Windows Form Designer generated code
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ghdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "hdfgh"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "hdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "dfghdfg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Occured")]
@@ -25,6 +31,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.mniCopy = new System.Windows.Forms.ToolStripMenuItem();
 			this.mniClear = new System.Windows.Forms.ToolStripMenuItem();
+			this.mniRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainerVertical = new System.Windows.Forms.SplitContainer();
 			this.splitContainerHorizontal = new System.Windows.Forms.SplitContainer();
 			this.txtExceptionMessage = new System.Windows.Forms.TextBox();
@@ -35,7 +42,6 @@ namespace Sq1.Widgets.Exceptions {
 			this.lvhFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.ctxCallStack = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.mniCopyStackPosition = new System.Windows.Forms.ToolStripMenuItem();
-			this.mniRefresh = new System.Windows.Forms.ToolStripMenuItem();
 			((System.ComponentModel.ISupportInitialize)(this.treeExceptions)).BeginInit();
 			this.ctxTree.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainerVertical)).BeginInit();
@@ -69,7 +75,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.treeExceptions.ShowCommandMenuOnRightClick = true;
 			this.treeExceptions.ShowGroups = false;
 			this.treeExceptions.ShowItemToolTips = true;
-			this.treeExceptions.Size = new System.Drawing.Size(111, 353);
+			this.treeExceptions.Size = new System.Drawing.Size(212, 353);
 			this.treeExceptions.TabIndex = 3;
 			this.treeExceptions.TintSortColumn = true;
 			this.treeExceptions.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
@@ -98,7 +104,7 @@ namespace Sq1.Widgets.Exceptions {
             this.mniClear,
             this.mniRefresh});
 			this.ctxTree.Name = "ctx";
-			this.ctxTree.Size = new System.Drawing.Size(235, 166);
+			this.ctxTree.Size = new System.Drawing.Size(235, 144);
 			// 
 			// mniRecentAlwaysSelected
 			// 
@@ -127,7 +133,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniltbDelay.InputFieldValue = "";
 			this.mniltbDelay.InputFieldWidth = 0;
 			this.mniltbDelay.Name = "mniltbDelay";
-			this.mniltbDelay.Size = new System.Drawing.Size(83, 21);
+			this.mniltbDelay.Size = new System.Drawing.Size(148, 21);
 			this.mniltbDelay.TextLeft = "Delay, msec:";
 			this.mniltbDelay.TextLeftOffsetX = 0;
 			this.mniltbDelay.TextLeftWidth = 75;
@@ -159,6 +165,14 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniClear.Text = "Clear";
 			this.mniClear.Click += new System.EventHandler(this.mniClear_Click);
 			// 
+			// mniRefresh
+			// 
+			this.mniRefresh.Name = "mniRefresh";
+			this.mniRefresh.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
+			this.mniRefresh.Size = new System.Drawing.Size(234, 22);
+			this.mniRefresh.Text = "Refresh";
+			this.mniRefresh.Click += new System.EventHandler(this.mniRefresh_Click);
+			// 
 			// splitContainerVertical
 			// 
 			this.splitContainerVertical.BackColor = System.Drawing.SystemColors.ControlLight;
@@ -176,7 +190,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.splitContainerVertical.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainerVertical.Panel2.Controls.Add(this.splitContainerHorizontal);
 			this.splitContainerVertical.Size = new System.Drawing.Size(506, 353);
-			this.splitContainerVertical.SplitterDistance = 111;
+			this.splitContainerVertical.SplitterDistance = 212;
 			this.splitContainerVertical.SplitterWidth = 5;
 			this.splitContainerVertical.TabIndex = 6;
 			// 
@@ -195,8 +209,8 @@ namespace Sq1.Widgets.Exceptions {
 			// splitContainerHorizontal.Panel2
 			// 
 			this.splitContainerHorizontal.Panel2.Controls.Add(this.lvStackTrace);
-			this.splitContainerHorizontal.Size = new System.Drawing.Size(390, 353);
-			this.splitContainerHorizontal.SplitterDistance = 148;
+			this.splitContainerHorizontal.Size = new System.Drawing.Size(289, 353);
+			this.splitContainerHorizontal.SplitterDistance = 185;
 			this.splitContainerHorizontal.SplitterWidth = 5;
 			this.splitContainerHorizontal.TabIndex = 15;
 			// 
@@ -207,7 +221,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.txtExceptionMessage.Location = new System.Drawing.Point(0, 0);
 			this.txtExceptionMessage.Multiline = true;
 			this.txtExceptionMessage.Name = "txtExceptionMessage";
-			this.txtExceptionMessage.Size = new System.Drawing.Size(390, 148);
+			this.txtExceptionMessage.Size = new System.Drawing.Size(289, 185);
 			this.txtExceptionMessage.TabIndex = 1;
 			this.txtExceptionMessage.TabStop = false;
 			this.txtExceptionMessage.Text = "ghdfg hdfg\r\ndfghdfg hdfgh\r\n9999";
@@ -230,7 +244,7 @@ namespace Sq1.Widgets.Exceptions {
 			this.lvStackTrace.Name = "lvStackTrace";
 			this.lvStackTrace.Scrollable = false;
 			this.lvStackTrace.ShowItemToolTips = true;
-			this.lvStackTrace.Size = new System.Drawing.Size(390, 200);
+			this.lvStackTrace.Size = new System.Drawing.Size(289, 163);
 			this.lvStackTrace.TabIndex = 12;
 			this.lvStackTrace.UseCompatibleStateImageBehavior = false;
 			this.lvStackTrace.View = System.Windows.Forms.View.Details;
@@ -269,14 +283,6 @@ namespace Sq1.Widgets.Exceptions {
 			this.mniCopyStackPosition.Size = new System.Drawing.Size(144, 22);
 			this.mniCopyStackPosition.Text = "Copy";
 			this.mniCopyStackPosition.Click += new System.EventHandler(this.mniCopyStackPosition_Click);
-			// 
-			// mniRefresh
-			// 
-			this.mniRefresh.Name = "mniRefresh";
-			this.mniRefresh.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-			this.mniRefresh.Size = new System.Drawing.Size(234, 22);
-			this.mniRefresh.Text = "Refresh";
-			this.mniRefresh.Click += new System.EventHandler(this.mniRefresh_Click);
 			// 
 			// ExceptionsControl
 			// 

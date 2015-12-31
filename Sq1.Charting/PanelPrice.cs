@@ -10,16 +10,17 @@ namespace Sq1.Charting {
 	public partial class PanelPrice : PanelBase {
 		List<Position> PositionLineAlreadyDrawnFromOneOfTheEnds;
 
-		public override int ValueIndexLastAvailableMinusOneUnsafe	{ get { return base.ChartControl.Bars.Count - 1; } }
+		protected override int ValueIndexLastAvailableMinusOneUnsafe	{ get { return base.ChartControl.Bars.Count - 1; } }
 
 		public PanelPrice() : base() {
 			this.PositionLineAlreadyDrawnFromOneOfTheEnds = new List<Position>();
-			base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
+			//base.HScroll = false;	// I_SAW_THE_DEVIL_ON_PANEL_INDICATOR! is it visible by default??? I_HATE_HACKING_F_WINDOWS_FORMS
 			// startup with narrow AppFormHeight makes PanelPrice.Height too small => gutter disappears => EXCEPTION "Price-PANEL_HEIGHT_MUST_BE_POSITIVE"   
 			base.MinimumSize = new Size(20, 25);	// only height matters for MultiSplitContainer
 		}
 		
 		protected override void PaintWholeSurfaceBarsNotEmpty(Graphics g) {
+			if (base.DesignMode) return;
 			//v1
 			//if (this.VisibleMinDoubleMaxValueUnsafe == double.MaxValue) {
 			//	string msg = "this.VisibleBarLeft_cached > this.VisibleBarRight_cached";

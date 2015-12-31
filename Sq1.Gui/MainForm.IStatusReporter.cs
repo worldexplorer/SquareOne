@@ -104,7 +104,8 @@ namespace Sq1.Gui {
 			//	exceptionsForm.Visible = true;
 			//}
 
-			if (this.MainFormClosingSkipChartFormsRemoval) {
+			if (this.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
+				if (msg != null) exc = new Exception(msg, exc);
 				Assembler.ExceptionsDuringApplicationShutdown_InsertAndSerialize(exc);
 			}
 			try {

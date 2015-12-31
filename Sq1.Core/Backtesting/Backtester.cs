@@ -147,7 +147,11 @@ namespace Sq1.Core.Backtesting {
 			Assembler.PopupException(msg + msig, null, false);
 
 			bool aborted = this.BacktestAborted.WaitOne(millisecondsToWait);
-			msg = (aborted) ? "BACKTEST_ABORTED" : "BACKTESTER_DIDNT_ABORT_WITHIN_SECONDS[" + millisecondsToWait + "]";
+			msg = (aborted) ? "BACKTEST_ABORTED" : "BACKTESTER_DIDNT_ABORT_WITHIN_MS[" + millisecondsToWait + "]";
+			if (this.IsBacktestRunning == true) this.BacktestIsRunning.Reset();
+			if (this.IsBacktestRunning == true) {
+				msg = "STILL_RUNNING_INTERNAL_ERROR " + msg;
+			}
 			Assembler.PopupException(msg + msig, null, false);
 		}
 

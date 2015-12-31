@@ -28,7 +28,7 @@ namespace Sq1.Charting {
 			this.components = new System.ComponentModel.Container();
 			this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-			this.toolStripItemComboBox1 = new Sq1.Widgets.ToolStripImproved.ToolStripItemComboBox();
+			this.cbxSettings = new Sq1.Widgets.ToolStripImproved.ToolStripItemComboBox();
 			this.mniAbsorbFromChart = new System.Windows.Forms.ToolStripDropDownButton();
 			this.ctxTemplates = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,7 +60,7 @@ namespace Sq1.Charting {
 			// statusStrip1
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripItemComboBox1,
+            this.cbxSettings,
             this.mniAbsorbFromChart});
 			this.statusStrip1.Location = new System.Drawing.Point(0, 515);
 			this.statusStrip1.Name = "statusStrip1";
@@ -71,8 +71,8 @@ namespace Sq1.Charting {
 			// 
 			// toolStripItemComboBox1
 			// 
-			this.toolStripItemComboBox1.Name = "toolStripItemComboBox1";
-			this.toolStripItemComboBox1.Size = new System.Drawing.Size(160, 23);
+			this.cbxSettings.Name = "toolStripItemComboBox1";
+			this.cbxSettings.Size = new System.Drawing.Size(160, 23);
 			// 
 			// mniAbsorbFromChart
 			// 
@@ -87,7 +87,6 @@ namespace Sq1.Charting {
 			// ctxTemplates
 			// 
 			this.ctxTemplates.Name = "ctxTemplates";
-			this.ctxTemplates.OwnerItem = this.mniAbsorbFromChart;
 			this.ctxTemplates.Size = new System.Drawing.Size(61, 4);
 			this.ctxTemplates.Opening += new System.ComponentModel.CancelEventHandler(this.ctxTemplates_Opening);
 			// 
@@ -110,7 +109,7 @@ namespace Sq1.Charting {
             this.mniDelete});
 			this.ctxTemplateActions.MinimumSize = new System.Drawing.Size(300, 0);
 			this.ctxTemplateActions.Name = "ctxTemplateActions";
-			this.ctxTemplateActions.Size = new System.Drawing.Size(309, 178);
+			this.ctxTemplateActions.Size = new System.Drawing.Size(309, 156);
 			// 
 			// mniLoad
 			// 
@@ -239,7 +238,7 @@ namespace Sq1.Charting {
 		private System.Windows.Forms.PropertyGrid propertyGrid1;
 		private System.Windows.Forms.StatusStrip statusStrip1;
 		private ToolStripMenuItem toolStripMenuItem5;
-		public Widgets.ToolStripImproved.ToolStripItemComboBox toolStripItemComboBox1;
+		public Widgets.ToolStripImproved.ToolStripItemComboBox cbxSettings;
 		private ToolStripDropDownButton mniAbsorbFromChart;
 		private ContextMenuStrip ctxTemplates;
 		private ContextMenuStrip ctxTemplateActions;

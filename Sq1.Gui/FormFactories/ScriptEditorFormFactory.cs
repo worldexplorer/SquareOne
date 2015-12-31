@@ -71,7 +71,7 @@ namespace Sq1.Gui.FormFactories {
 		}
 		void scriptEditorForm_FormClosing(object sender, FormClosingEventArgs e) {
 			// only when user closed => allow scriptEditorForm_FormClosed() to serialize
-			if (this.chartFormManager.MainForm.MainFormClosingSkipChartFormsRemoval) {
+			if (this.chartFormManager.MainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
 				e.Cancel = true;
 				return;
 			}

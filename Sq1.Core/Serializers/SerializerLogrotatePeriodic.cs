@@ -35,7 +35,7 @@ namespace Sq1.Core.Serializers {
 			} catch (Exception ex) {
 				string msig = " SerializerLogrotatePeriodic<" + this.OfWhat + ">::serializerThreadEntry() ";
 				string msg = "JSON serialization problems?";
-				base.ThrowOrPopup(msg + msig, ex);
+				Assembler.PopupException(msg + msig, ex);
 			} finally {
 				watch.Stop();
 				//this.DataSnapshot.OrderProcessor.exceptionsForm.DisplayStatus(

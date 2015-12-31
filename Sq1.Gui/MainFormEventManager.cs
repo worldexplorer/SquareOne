@@ -101,7 +101,7 @@ namespace Sq1.Gui {
 		
 		#region ChartForm
 		internal void ChartForm_FormClosed(object sender, FormClosedEventArgs e) {
-			if (this.mainForm.MainFormClosingSkipChartFormsRemoval) return;
+			if (this.mainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) return;
 			try {
 				// chartFormsManager lifecycle ends here
 				ChartForm chartFormClosed = sender as ChartForm;
@@ -150,7 +150,7 @@ namespace Sq1.Gui {
 		#endregion
 		//v1
 		internal void DockPanel_ActiveDocumentChanged(object sender, EventArgs e) {
-			if (this.mainForm.MainFormClosingSkipChartFormsRemoval) {
+			if (this.mainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
 				string msg = "onAppClose getting invoked for each [mosaically] visible document, right? nope just once per Close()";
 				return;
 			}
@@ -216,7 +216,7 @@ namespace Sq1.Gui {
 		}
 		//v2
 		internal void DockPanel_ActiveContentChanged(object sender, EventArgs e) {
-			if (this.mainForm.MainFormClosingSkipChartFormsRemoval) {
+			if (this.mainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
 				string msg = "onAppClose getting invoked for each [mosaically] visible content, right? nope just once per Close()";
 				return;
 			}

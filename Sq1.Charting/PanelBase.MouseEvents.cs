@@ -146,8 +146,8 @@ namespace Sq1.Charting {
 
 				if (this.scrollingHorizontally) {
 					// should drag a little for me to consider the user is really dragging anything
-					if (Math.Abs(this.scrollHorizontalXstarted - e.X) <=
-						this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
+					int draggedPx = Math.Abs(this.scrollHorizontalXstarted - e.X);
+					if (draggedPx <= this.ChartControl.ChartSettings.ScrollSqueezeMouseDragSensitivityPx) return;
 					
 					int XnotBeyond0width = e.X;
 					//COMMENTED_OUT_TO_ALLOW_SCROLL_BEYOND_CONTROL/APPLICATION_VISIBLE_SURFACE_AREA
@@ -233,26 +233,26 @@ namespace Sq1.Charting {
 					//if (e.Y > base.Height) YnotBeyond0height = base.Height;
 
 					if (this.squeezeVerticalYprev == YnotBeyond0height) return;		// ignore vertical mouse movements while dragging (and all other 1-sec-frequency garbage events)
-					bool draggingUp = (this.squeezeVerticalYstarted > YnotBeyond0height) ? true : false;
-					if (draggingUp) {
-						if (this.squeezeVerticalYprev < YnotBeyond0height) {	// we reversed drag direction without releasing the mouse button
+					bool draggingDownWillSqueeze = (this.squeezeVerticalYstarted < YnotBeyond0height) ? true : false;
+					if (draggingDownWillSqueeze) {
+						if (this.squeezeVerticalYprev > YnotBeyond0height) {	// we reversed drag direction without releasing the mouse button
 							this.squeezeVerticalYstarted = YnotBeyond0height;
 							this.squeezeVerticalYprev = YnotBeyond0height;
 							return;
 						}
 					} else {
-						if (this.squeezeVerticalYprev > YnotBeyond0height) {	// we reversed drag direction without releasing the mouse button
+						if (this.squeezeVerticalYprev < YnotBeyond0height) {	// we reversed drag direction without releasing the mouse button
 							this.squeezeVerticalYstarted = YnotBeyond0height;
 							this.squeezeVerticalYprev = YnotBeyond0height;
 							return;
 						}
 					}
 					this.squeezeVerticalYprev = YnotBeyond0height;	// continue scrolling since we are still dragging to the same direction as for event-received-previously
-					if (draggingUp) {
-						this.Cursor = Cursors.PanNorth;
+					if (draggingDownWillSqueeze) {
+						this.Cursor = Cursors.PanSouth;
 						this.ChartControl.DragDownSqueeze();
 					} else {
-						this.Cursor = Cursors.PanSouth;
+						this.Cursor = Cursors.PanNorth;
 						this.ChartControl.DragUpUnsqueeze();
 					}
 					this.RaisePanelPriceSqueezed();

@@ -156,22 +156,16 @@ namespace Sq1.Core.Livesim {
 		}
 		protected override void SimulationPostBarsRestore_overrideable() {
 			try {
-				//v2 moved from 10 lines below and added unsyncHappenedNotAsResultOfAbort to IndicatorMovingAverageSimple.checkPopupOnResetAndSync()
-				if (base.BacktestWasAbortedByUserInGui) {
-					base.BacktestAborted.Set();
-					base.RequestingBacktestAbort.Reset();
-				}
-
 				LivesimStreaming streamingBacktest = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
 				StreamingAdapter streamingOriginal = base.BarsOriginal.DataSource.StreamingAdapter;
 				string msg = "NOW_INSERT_BREAKPOINT_TO_this.channel.PushQuoteToConsumers(quoteDequeued) CATCHING_BACKTEST_END_UNPAUSE_PUMP";
 				//if (streamingOriginal.
 
-				if (base.WasBacktestAborted) {
+				if (base.WasBacktestAborted || base.RequestingBacktestAbort.WaitOne(0) == true) {
 					string msg2 = "NOT_ABSORBING_LAST_LIVESIM_STREAMING_INTO_BARS_ORIGINAL__SOLIDIFIER_WILL_COMPLAIN_OTHERWISE";
 					Assembler.PopupException(msg2, null, false);
 				} else {
-					string msg2 = "BRO_THIS_IS_NONSENSE!!!";
+					string msg2 = "LOOKS_LIKE_WE_USED_UP_ALL_BARS_AND_SUCCESSFULLY_FINISHED_LIVESIM";
 					//streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(
 					//	streamingBacktest, base.BarsOriginal.Symbol, base.BarsOriginal.ScaleInterval);
 				}
@@ -223,6 +217,12 @@ namespace Sq1.Core.Livesim {
 				//}
 				//v3 moved from Stop_inGuiThread koz there it's too early
 				base.Executor.Backtester = this.BacktesterBackup;
+
+				//v3 MOVED_FROM_FIRST_LINES_OF_THIS_METHOD v2 moved from 10 lines below and added unsyncHappenedNotAsResultOfAbort to IndicatorMovingAverageSimple.checkPopupOnResetAndSync()
+				if (base.BacktestWasAbortedByUserInGui) {
+					base.BacktestAborted.Set();
+					base.RequestingBacktestAbort.Reset();
+				}
 			}
 		}
 

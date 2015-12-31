@@ -73,7 +73,7 @@ namespace Sq1.Gui.Forms {
 			this.chartFormManager.Executor.Livesimulator.Stop_inGuiThread();
 
 			// only when user closed => allow scriptEditorForm_FormClosed() to serialize
-			if (this.chartFormManager.MainForm.MainFormClosingSkipChartFormsRemoval) {
+			if (this.chartFormManager.MainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
 				e.Cancel = true;
 				return;
 			}

@@ -95,33 +95,33 @@ namespace Sq1.Core {
 				return ret;
 			} }
 
-		public	bool									SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished { get {
-				bool ret = false;
-				//v1 looks like Process.GetCurrentProcess().StartTime counts the milliseconds elapsed by the processor for the app
-				//(1sec during last 2mins with 1% CPU load), while I need solarTimeNow minus solarTimeAppStarted => switching to Stopwatch
-				double sinceApplicationStartSeconds = -1;
-				try {
-					TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
-					sinceApplicationStartSeconds = sinceApplicationStart.TotalSeconds;
-					//v2
-					//int sinceApplicationStartSeconds2 = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
-				} catch (Exception ex) {
-					Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
-					sinceApplicationStartSeconds = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
-				}
+		// NOT_UNDER_WINDOWS
+		//		Stopwatch								stopWatchIfProcessUnsupported;
+		//public	bool									SplitterEventsAreAllowedNsecAfterLaunchHopingInitialInnerDockResizingIsFinished { get {
+		//        bool ret = false;
+		//        //v1 looks like Process.GetCurrentProcess().StartTime counts the milliseconds elapsed by the processor for the app
+		//        //(1sec during last 2mins with 1% CPU load), while I need solarTimeNow minus solarTimeAppStarted => switching to Stopwatch
+		//        double sinceApplicationStartSeconds = -1;
+		//        try {
+		//            TimeSpan sinceApplicationStart = DateTime.Now - Process.GetCurrentProcess().StartTime;
+		//            sinceApplicationStartSeconds = sinceApplicationStart.TotalSeconds;
+		//            //v2
+		//            //int sinceApplicationStartSeconds2 = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
+		//        } catch (Exception ex) {
+		//            Assembler.PopupException("SEEMS_TO_BE_UNSUPPORTED_Process.GetCurrentProcess()", ex);
+		//            sinceApplicationStartSeconds = this.stopWatchIfProcessUnsupported.Elapsed.Seconds;
+		//        }
 
-				double secondsLeftToIgnore = this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch - sinceApplicationStartSeconds;
-				if (secondsLeftToIgnore > 0) {
-					string msg = "SPLITTER_EVENTS_IGNORED_FOR_MORE_SECONDS " + secondsLeftToIgnore + "/"
-						+ this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch;
-					//Assembler.PopupException(msg, null, false);
-				} else {
-					ret = true;
-				}
-				return ret;
-			} }
-
-				Stopwatch								stopWatchIfProcessUnsupported;
+		//        double secondsLeftToIgnore = this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch - sinceApplicationStartSeconds;
+		//        if (secondsLeftToIgnore > 0) {
+		//            string msg = "SPLITTER_EVENTS_IGNORED_FOR_MORE_SECONDS " + secondsLeftToIgnore + "/"
+		//                + this.AssemblerDataSnapshot.SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch;
+		//            //Assembler.PopupException(msg, null, false);
+		//        } else {
+		//            ret = true;
+		//        }
+		//        return ret;
+		//    } }
 		
 		public Assembler() {
 			RepositorySymbolInfo					= new RepositorySerializerSymbolInfo();
@@ -145,7 +145,7 @@ namespace Sq1.Core {
 			RepositoryJsonChartSettingsTemplates	= new RepositoryJsonChartSettingsTemplates();
 
 		}
-		public Assembler Initialize(IStatusReporter mainForm) {
+		public Assembler Initialize(IStatusReporter mainForm, bool usedOnlyToPopupExceptions_NPEunsafe = false) {
 			if (this.StatusReporter != null && this.StatusReporter != mainForm) {
 				string msg = "Assembler.InstanceInitialized.StatusReporter[" + this.StatusReporter + "] != mainForm[" + mainForm + "]";
 				msg += "; you initialize the StatusReporter and ExecutionForm once per lifetime;"
@@ -156,6 +156,7 @@ namespace Sq1.Core {
 				throw new Exception();
 			}
 			this.StatusReporter = mainForm;
+			if (usedOnlyToPopupExceptions_NPEunsafe) return Assembler.InstanceInitialized;
 			
 			bool createdNewFile = this.RepositorySymbolInfo.Initialize(this.AppDataPath, "SymbolInfo.json", "", null);
 
@@ -203,8 +204,9 @@ namespace Sq1.Core {
 					+ "]=SplitterEventsShouldBeIgnoredSecondsAfterAppLaunch";
 				//Assembler.PopupException(msg, null, false);
 			} catch (Exception ex) {
-				Assembler.PopupException("PLATFORM_DOESNT_SUPPORT_Process.GetCurrentProcess().StartTime_AS_DESCRIBED_IN_MSDN__LAUNCHING_STOPWATCH", ex);
-				this.stopWatchIfProcessUnsupported = Stopwatch.StartNew();
+				string msg = "NEVER_HAPPENED_UNDER_WINDOWS PLATFORM_DOESNT_SUPPORT_Process.GetCurrentProcess().StartTime_AS_DESCRIBED_IN_MSDN__LAUNCHING_STOPWATCH";
+				Assembler.PopupException(msg, ex);
+				//this.stopWatchIfProcessUnsupported = Stopwatch.StartNew();
 			}
 			//v2
 			//this.stopWatchIfProcessUnsupported = Stopwatch.StartNew();
@@ -267,10 +269,14 @@ namespace Sq1.Core {
 			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
 			Assembler.InstanceInitialized.exceptionsDuringApplicationShutdown_InsertAndSerialize(exc, indexToInsert);
 		}
+		public static void ExceptionsDuringApplicationShutdown_PopupNotepad() {
+			Assembler.InstanceInitialized.checkThrowIfNotInitializedStaticHelper();
+			Assembler.InstanceInitialized.exceptionsDuringApplicationShutdown_PopupNotepad();
+		}
 		
 		public	List<Exception>							ExceptionsDuringApplicationShutdown;
 		public	Serializer<List<Exception>>				ExceptionsDuringApplicationShutdownSerializer;
-		public void exceptionsDuringApplicationShutdown_InsertAndSerialize(Exception exc, int indexToInsert = 0) {
+		void exceptionsDuringApplicationShutdown_InsertAndSerialize(Exception exc, int indexToInsert = 0) {
 			if (exc == null) return;
 			if (this.ExceptionsDuringApplicationShutdown == null) {
 				//v1 TRYING_TO_FIX_BY_MOVING_TO_ASSEMBLER produced useless "[ null ]" file
@@ -278,16 +284,20 @@ namespace Sq1.Core {
 				this.ExceptionsDuringApplicationShutdownSerializer = new Serializer<List<Exception>>();
 				string now = Assembler.FormattedLongFilename(DateTime.Now);
 				bool createdNewFile = this.ExceptionsDuringApplicationShutdownSerializer.Initialize(this.AppDataPath,
-					"ExceptionsDuringApplicationShutdown-" + now + ".json", "Exceptions", null, true, true);
+					"ExceptionsDuringSquareOneShutdown-" + now + ".json", "Exceptions", null, true, true);
 				this.ExceptionsDuringApplicationShutdown = this.ExceptionsDuringApplicationShutdownSerializer.Deserialize(); 
 				//v2
 				//return;
 			}
 			this.ExceptionsDuringApplicationShutdown.Insert(0, exc);
+			//COLLECTION_MODIFIED_EXCEPTION__LAZY_TO_LOCK_MOVED_TO_PopupNotepad this.ExceptionsDuringApplicationShutdownSerializer.Serialize();
+		}
+		void exceptionsDuringApplicationShutdown_PopupNotepad() {
+			if (this.ExceptionsDuringApplicationShutdown == null) return;
+			if (this.ExceptionsDuringApplicationShutdown.Count == 0) return;
 			this.ExceptionsDuringApplicationShutdownSerializer.Serialize();
-
-			//DIDNT_CHECK http://stackoverflow.com/questions/7613576/how-to-open-text-in-notepad-from-net
-			Process.Start("notepad.exe ", this.ExceptionsDuringApplicationShutdownSerializer.AbsPath);
+			// http://stackoverflow.com/questions/7613576/how-to-open-text-in-notepad-from-net
+			Process.Start("notepad.exe ", this.ExceptionsDuringApplicationShutdownSerializer.JsonAbsFile);
 		}
 		#endregion
 	}

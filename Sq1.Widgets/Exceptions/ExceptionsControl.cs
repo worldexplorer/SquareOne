@@ -1,15 +1,15 @@
 using System;
+using System.Text;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Reflection;
-using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.Serializers;
 using Sq1.Support;
-using System.Threading;
 
 namespace Sq1.Widgets.Exceptions {
 	public partial class ExceptionsControl {
@@ -52,7 +52,9 @@ namespace Sq1.Widgets.Exceptions {
 			this.rebuildTimerWF = new System.Windows.Forms.Timer();
 			this.rebuildTimerWF.Enabled = true;
 			this.rebuildTimerWF.Tick += new EventHandler(rebuildTimerWF_Tick);
+#if USE_CONTROL_IMPROVED
 			this.Ident_UserControlImproved = "ExceptionsControl";
+#endif
 		}
 
 		protected override void Dispose(bool disposing) {
@@ -70,7 +72,7 @@ namespace Sq1.Widgets.Exceptions {
 		public void Initialize() {
 			//WARNING! LiveSimControl uses non-ExceptionsForm-singleton MULTIPLE ExceptionsControls for LivesimStreamingEditor and LivesimBrokerEditor
 			//LivesimControl throws here in Designer (unbelieabable though)
-			//if (Assembler.IsInitialized == false) return;
+			if (Assembler.IsInitialized == false) return;		// useful for MultiSplitTest, PanelsTest
 				
 			this.DataSnapshotSerializer = new Serializer<ExceptionsControlDataSnapshot>();
 			bool createdNewFile = this.DataSnapshotSerializer.Initialize(Assembler.InstanceInitialized.AppDataPath,
@@ -249,9 +251,11 @@ namespace Sq1.Widgets.Exceptions {
 		}
 
 		void rebuildTimerWF_Tick(object sender, EventArgs e) {
+#if USE_CONTROL_IMPROVED
 			if (base.ParentControlsLoaded_NonBlocking == false) {
 				return;			// Timer will re-invoke rebuildTimerWF_Tick, and when base.ParentControlsLoaded_NonBlocking==true, we'll flushExceptionsToOLVIfDockContentDeserialized_inGuiThread()
 			}
+#endif
 			// NOT_NEEDED_DUE_TO_NON_BLOCKING_ABOVE bool loadedIwaited = base.ParentControlIsLoaded_Blocking;
 			this.flushExceptionsToOLVIfDockContentDeserialized_inGuiThread();
 		}
@@ -275,6 +279,7 @@ namespace Sq1.Widgets.Exceptions {
 				lock (this.lockedByTreeListView) {
 					//if (this.rebuildScheduled == true) return;
 					foreach (Exception ex in this.exceptionsNotFlushedYet) {
+						this.ExceptionTimes.Add(ex, DateTime.Now);
 						this.Exceptions.Insert(0, ex);
 					}
 					this.exceptionsNotFlushedYet.Clear();

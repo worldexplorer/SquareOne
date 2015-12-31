@@ -19,8 +19,8 @@ namespace Sq1.Charting.MultiSplit {
 		internal Point LocationOfInnerMultisplitContainer(MultiSplitContainer multiSplitContainer) {
 			int x = -1;
 			int y = -1;
-			List<Control> mustContainMultiSplittContainer =  base.ControlsContained;
-			if (mustContainMultiSplittContainer.Contains(multiSplitContainer) == false) {
+			List<Control> mustContainMultiSplitContainer =  base.ControlsContained;
+			if (mustContainMultiSplitContainer.Contains(multiSplitContainer) == false) {
 				string msg = "WAS_NOT_ADDED_AS_INNER_MULTISPLITTER  multiSplitContainer[" + multiSplitContainer + "]";
 				Assembler.PopupException(msg);
 				return new Point(x, y);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.IO;
+
 using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
@@ -13,13 +14,15 @@ using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Livesim;
 using Sq1.Core.Sequencing;
+
+using Sq1.Widgets.Sequencing;
+using Sq1.Widgets;
+using Sq1.Widgets.Correlation;
+
 using Sq1.Gui.Forms;
 using Sq1.Gui.FormFactories;
 using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
-using Sq1.Widgets.Sequencing;
-using Sq1.Widgets;
-using Sq1.Widgets.Correlation;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormManager {
@@ -337,9 +340,6 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 
-		void executor_OnBacktesterContextRestoredAfterExecutingAllBars_step4of4(object sender, EventArgs e) {
-			throw new NotImplementedException();
-		}
 		public void PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy(
 					string msig, bool loadNewBars = true, bool skipBacktest = false, bool saveStrategyRequired = true) {
 			//TODO abort backtest here if running!!! (wait for streaming=off) since ChartStreaming wrongly sticks out after upstack you got "Selectors should've been disabled" Exception
@@ -678,6 +678,16 @@ namespace Sq1.Gui.Forms {
 
 		public void ChartFormShow(string scriptContext = null) {
 			this.ChartForm.ShowAsDocumentTabNotPane(this.dockPanel);
+
+			// FOR_SURE_NEEDED_AT_DESERIALIZATION__RUNTINE_CREATION_NOT_TESTED
+			this.ChartForm.PerformLayout();
+			if (this.ChartForm.ClientRectangle.Width != this.ChartForm.ChartControl.ClientRectangle.Width) {
+				string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm.PerformLayout()__REMOVE_ChartForm.AutoSize=true";
+				#if DEBUG_HEAVY
+				Assembler.PopupException(msg);
+				#endif
+			}
+
 			if (this.Strategy != null) {
 				this.PopulateWindowTitlesFromChartContextOrStrategy();
 				this.EditorFormShow();

@@ -14,6 +14,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
 using Sq1.Core.Support;
+
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 
@@ -25,22 +26,24 @@ namespace Sq1.Gui {
 		public	MainFormWorkspacesManager		WorkspacesManager;
 		public	GuiDataSnapshot					GuiDataSnapshot;
 		public	Serializer<GuiDataSnapshot>		GuiDataSnapshotSerializer;
-		public	bool							MainFormClosingSkipChartFormsRemoval;
+		public	bool							MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad;
 		public	bool							dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace { get; private set; }
 
 		public ChartForm ChartFormActiveNullUnsafe { get {
-				var ret = this.DockPanel.ActiveDocument as ChartForm;
-				if (ret == null) {
+				if (this.DockPanel.ActiveDocument == null) {
 					string msg = "MainForm.DockPanel.ActiveDocument is not a ChartForm; no charts open or drag your chart into DOCUMENT docking area";
-					//throw new Exception(msg);
+					Assembler.PopupException(msg);
 					return null;
 				}
+
+				ChartForm ret = this.DockPanel.ActiveDocument as ChartForm;
 				foreach (ChartFormManager chartFormDataSnap in this.GuiDataSnapshot.ChartFormManagers.Values) {
 					if (chartFormDataSnap.ChartForm == ret) return ret;
 				}
 				string msg2 = "MainForm.DockPanel.ActiveDocument is [" + ret.ToString() + "] but it's not found among MainForm.ChartFormsManagers registry;"
 					+ "1) did you forget to add? 2) MainForm.ChartFormsManagers doesn't have DockContent-restored Forms added?";
-				throw new Exception(msg2);
+				Assembler.PopupException(msg2);
+				return null;
 			} }
 
 		public MainForm() {
@@ -81,7 +84,7 @@ namespace Sq1.Gui {
 				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
 				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
 				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
-				this.SuspendLayout();
+				this.SuspendLayout();	// removes rounding error in propagateColumns/Rows
 
 
 				////foreach (Form each in this.OwnedForms) each.Close();
@@ -190,7 +193,7 @@ namespace Sq1.Gui {
 					//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormActive.ChartFormManager.Strategy);
 					//}
 					this.ChartFormActiveNullUnsafe.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
-					this.ChartFormActiveNullUnsafe.Invalidate();	// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
+					//this.ChartFormActiveNullUnsafe.Invalidate();	// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
 				}
 	
 				this.WorkspacesManager.SelectWorkspaceAfterLoaded(workspaceToLoad);
@@ -225,11 +228,12 @@ namespace Sq1.Gui {
 						cfmgr.SequencerFormConditionalInstance.SequencerControl.RaiseOnCorrelatorShouldPopulate_usedByMainFormAfterBothAreInstantiated();
 					}
 
+					cfmgr.ChartFormShow();
+
 					// INNER_DOCK_CONTENT_DOESNT_GET_FILLED_TO_THE_WINDOW_AREA???
-					cfmgr.ChartForm.ChartControl.InvalidateAllPanels();
+					//cfmgr.ChartForm.ChartControl.InvalidateAllPanels();
 				}
 			
-				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 				if (disposePreviousDockPanel != null) {
 					// MAKES_INNER_FORMS_CLUMSY_SIZED_AND_THROWS_INSIDE_WELFEN_LUO disposePreviousDockPanel.Dispose();		// doesn't heal memory,handles,GDI,UserObj leak on same-workspace load
 				}
@@ -240,7 +244,7 @@ namespace Sq1.Gui {
 						cfmgr.ChartForm.MniShowSourceCodeEditor.Checked = cfmgr.ScriptEditorIsOnSurface;
 					}
 
-					cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
+					//ADDED_ANOTHER_FOREACH_AFTER_ResumeLayout(true) cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 
 					Strategy chartStrategy = cfmgr.Executor.Strategy;
 					if (chartStrategy == null) continue;
@@ -309,10 +313,55 @@ namespace Sq1.Gui {
 				Assembler.PopupException("WorkspaceLoad#1()", ex);
 			} finally {
 				// it looks like ChartForm doesn't propagate its DockContent-set size to ChartControl =>
-				// for wider than in Designer ChartConrtrol sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
+				// for wider than in Designer ChartControl sizes I see gray horizontal lines and SliderOutOfBoundaries Exceptions for smaller than in Designer
 				// (Disable Resize during DockContent XML deserialization and fire manually for each ChartForm (Document only?) )
-				this.ResumeLayout(true);
+				this.ResumeLayout(true);	// removes rounding error in propagateColumns/Rows
+				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 				this.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace = false;
+			}
+
+			//NOT_NEEDED_AFTER_ChartForm.Size_FITS_DESIGNED_ChartControl.Size DOESNT_HELP base.PerformLayout();
+			//NOT_NEEDED_AFTER_ChartForm.Size_FITS_DESIGNED_ChartControl.Size DOESNT_HELP this.DockPanel.PerformLayout();
+			foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
+				if (cfmgr.ChartForm == null) {
+					string msg = "CHART_FORM_MANAGER_MUST_HAVE_CHART_FORM_ASSIGNED_NOT_NULL";
+					Assembler.PopupException(msg);
+					continue;
+				}
+
+				//DOESNT_HELP cfmgr.ChartForm.SuspendLayout();
+				//DOESNT_HELP
+				if (cfmgr.ChartForm.ChartControl.Dock != DockStyle.Fill) {
+					string msg = "YOU_FORGOT_TO_SET_ChartControl.Dock=DockStyle.Fill_IN_DESIGNER_OF_ChartForm";
+					Assembler.PopupException(msg, null, false);
+					//cfmgr.ChartForm.ChartControl.Dock = DockStyle.Fill;	// trying to trigger Dock.Fill to resize Control inside Form
+				}
+				//DOESNT_HELP cfmgr.ChartForm.ChartControl.PerformLayout();
+				//DOESNT_HELP cfmgr.ChartForm.ResumeLayout(false);
+				//MOVED_TO_cfmgr.ChartFormShow() cfmgr.ChartForm.PerformLayout();
+
+				//WRONG_INVOKES_ON_LAYOUT 
+				//if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {
+				//    string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout()";
+				//    #if DEBUG_HEAVY
+				//    Assembler.PopupException(msg, null, false);
+				//    #endif
+				//    //WRONG_INVOKES_ON_LAYOUT cfmgr.ChartForm.ChartControl.PerformLayout();
+				//}
+
+				if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {
+					string msg = "SIZES_DONT_MATCH_DESPITE_INVOKED_EARLIER_BY_cfmgr.ChartFormShow() => cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout() INVOKING_AGAIN_WILL_COMPLAIN_IF_NO_EFFECT";
+					#if DEBUG_HEAVY
+					Assembler.PopupException(msg, null, false);
+					#endif
+					cfmgr.ChartForm.PerformLayout();
+					if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {
+						string msg2 = "I_INVOKED_cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout()_BUT_IT_DIDNT_HELP!!!";
+						Assembler.PopupException(msg2, null, false);
+					}
+				}
+
+				cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 			}
 			try {
 				if (ExecutionForm.Instance.IsShown) {
