@@ -683,7 +683,9 @@ namespace Sq1.Gui.Forms {
 			this.ChartForm.PerformLayout();
 			if (this.ChartForm.ClientRectangle.Width != this.ChartForm.ChartControl.ClientRectangle.Width) {
 				string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm.PerformLayout()__REMOVE_ChartForm.AutoSize=true";
+				#if DEBUG_HEAVY
 				Assembler.PopupException(msg);
+				#endif
 			}
 
 			if (this.Strategy != null) {

@@ -63,7 +63,7 @@
         "Performance"
       ],
       "BacktestOnTriggeringYesWhenNotSubscribed": false,
-      "BacktestOnRestart": true,
+      "BacktestOnRestart": false,
       "BacktestOnSelectorsChange": true,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
@@ -111,7 +111,7 @@
         "RecentBars": 510,
         "RecentTimeunits": 0
       },
-      "IsStreamingTriggeringScript": false,
+      "IsStreamingTriggeringScript": true,
       "ShowRangeBar": false,
       "IsStreaming": false,
       "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=32,MAslow.Period=16)",
@@ -363,7 +363,7 @@
   },
   "LivesimStreamingSettings": {
     "$type": "Sq1.Core.Livesim.LivesimStreamingSettings, Sq1.Core",
-    "DelayBetweenSerialQuotesMin": 50,
+    "DelayBetweenSerialQuotesMin": 5,
     "DelayBetweenSerialQuotesMax": 0,
     "DelayBetweenSerialQuotesEnabled": true,
     "OutOfOrderQuoteGenerationHappensOncePerQuoteMin": 0,

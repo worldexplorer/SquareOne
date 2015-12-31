@@ -378,14 +378,18 @@ namespace Sq1.Gui.Forms {
 
 			if (this.ChartFormManager.MainForm.DockPanel.ActiveDocument == null) {
 				string msg = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET";
+				#if DEBUG_HEAVY
 				Assembler.PopupException(msg, null, false);
+				#endif
 				return;
 			}
 
 			ChartForm chartFormNullUnsafe = this.ChartFormManager.MainForm.ChartFormActiveNullUnsafe;
 			if (chartFormNullUnsafe == null) {
 				string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET";
+				#if DEBUG_HEAVY
 				Assembler.PopupException(msg2, null, false);
+				#endif
 			}
 			#if DEBUG	// PARANOID TEST
 			if (chartFormNullUnsafe != this) {

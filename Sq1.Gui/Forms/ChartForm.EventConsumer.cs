@@ -500,7 +500,7 @@ namespace Sq1.Gui.Forms {
 		void chartControl_BarStreamingUpdatedMerged(object sender, BarEventArgs e) {
 			if (this.ChartFormManager.Executor.Backtester.IsBacktestingLivesimNow == false) {
 				string msg = "NON_LIVESIM_STREAMING_SEEMS_TO_HAVE_ChartFormStreamingConsumer_HANDLING_QUOTE_TIMESTAMP_ON_BTN";
-				Assembler.PopupException(msg);
+				Assembler.PopupException(msg, null, false);
 				return;
 			}
 			bool guiHasTime = this.ChartFormManager.Executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;

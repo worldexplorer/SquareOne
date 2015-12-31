@@ -319,8 +319,9 @@ namespace Sq1.Gui {
 				Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete = true;
 				this.dontSaveXml_ignoreActiveContentEvents_whileLoadingAnotherWorkspace = false;
 			}
-				base.PerformLayout();
-				this.DockPanel.PerformLayout();
+
+			//NOT_NEEDED_AFTER_ChartForm.Size_FITS_DESIGNED_ChartControl.Size DOESNT_HELP base.PerformLayout();
+			//NOT_NEEDED_AFTER_ChartForm.Size_FITS_DESIGNED_ChartControl.Size DOESNT_HELP this.DockPanel.PerformLayout();
 			foreach (ChartFormManager cfmgr in this.GuiDataSnapshot.ChartFormManagers.Values) {
 				if (cfmgr.ChartForm == null) {
 					string msg = "CHART_FORM_MANAGER_MUST_HAVE_CHART_FORM_ASSIGNED_NOT_NULL";
@@ -331,7 +332,7 @@ namespace Sq1.Gui {
 				//DOESNT_HELP cfmgr.ChartForm.SuspendLayout();
 				//DOESNT_HELP
 				if (cfmgr.ChartForm.ChartControl.Dock != DockStyle.Fill) {
-					string msg = "DIDNT_YOU_FORGET_TO_SET_ChartControl.Dock=DockStyle.Fill";
+					string msg = "YOU_FORGOT_TO_SET_ChartControl.Dock=DockStyle.Fill_IN_DESIGNER_OF_ChartForm";
 					Assembler.PopupException(msg, null, false);
 					//cfmgr.ChartForm.ChartControl.Dock = DockStyle.Fill;	// trying to trigger Dock.Fill to resize Control inside Form
 				}
@@ -339,16 +340,25 @@ namespace Sq1.Gui {
 				//DOESNT_HELP cfmgr.ChartForm.ResumeLayout(false);
 				//MOVED_TO_cfmgr.ChartFormShow() cfmgr.ChartForm.PerformLayout();
 
-				if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {
-					string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout()";
-					Assembler.PopupException(msg, null, false);
-					cfmgr.ChartForm.ChartControl.PerformLayout();
-				}
+				//WRONG_INVOKES_ON_LAYOUT 
+				//if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {
+				//    string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout()";
+				//    #if DEBUG_HEAVY
+				//    Assembler.PopupException(msg, null, false);
+				//    #endif
+				//    //WRONG_INVOKES_ON_LAYOUT cfmgr.ChartForm.ChartControl.PerformLayout();
+				//}
 
 				if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {
-					string msg = "YOU_FORGOT_TO_INVOKE_cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout()";
+					string msg = "SIZES_DONT_MATCH_DESPITE_INVOKED_EARLIER_BY_cfmgr.ChartFormShow() => cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout() INVOKING_AGAIN_WILL_COMPLAIN_IF_NO_EFFECT";
+					#if DEBUG_HEAVY
 					Assembler.PopupException(msg, null, false);
+					#endif
 					cfmgr.ChartForm.PerformLayout();
+					if (cfmgr.ChartForm.ClientRectangle.Width != cfmgr.ChartForm.ChartControl.ClientRectangle.Width) {
+						string msg2 = "I_INVOKED_cfmgr.ChartForm[" + cfmgr.ChartForm + "].PerformLayout()_BUT_IT_DIDNT_HELP!!!";
+						Assembler.PopupException(msg2, null, false);
+					}
 				}
 
 				cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();

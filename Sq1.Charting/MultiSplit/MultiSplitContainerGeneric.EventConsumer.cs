@@ -583,7 +583,9 @@ namespace Sq1.Charting.MultiSplit {
 
 			if (thingsIchanged == 0) {
 				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK //splitterMovingNow_PanelsResize()";
+				#if DEBUG_HEAVY
 				Assembler.PopupException(msg, null, false);
+				#endif
 			}
 
 			base.Invalidate();

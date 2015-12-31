@@ -164,7 +164,9 @@ namespace Sq1.Charting.MultiSplit {
 			}
 			if (thingsIchanged == 0) {
 				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK";
+				#if DEBUG_HEAVY
 				Assembler.PopupException(msg + msig, null, false);
+				#endif
 			}
 			//if (thingsIchanged % 2 != 1) {
 			//	string msg = "I_CHANGE_TWO_HEIGHTS_AND_ONE_LOCATION_EACH_CHART_CONTRO";
@@ -268,8 +270,10 @@ namespace Sq1.Charting.MultiSplit {
 				Assembler.PopupException(msg + msig, null, false);
 			}
 			if (thingsIchanged == 0) {
-				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK //propagateRows()";
+				string msg = "I_WAS_USELESS__REMOVE_MY_INVOCATION_FROM_UPSTACK";
+				#if DEBUG_HEAVY
 				Assembler.PopupException(msg + msig, null, false);
+				#endif
 			}
 			//if (thingsIchanged % 2 != 1) {
 			//	string msg = "I_CHANGE_TWO_HEIGHTS_AND_ONE_LOCATION_EACH_CHART_CONTRO";

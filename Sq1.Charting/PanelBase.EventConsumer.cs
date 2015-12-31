@@ -175,7 +175,7 @@ namespace Sq1.Charting {
 				//if (this.ChartControl.Bars != null) msg = "BUG: bars=[" + this.ChartControl.Bars + "]";
 				//e.Graphics.Clear(SystemColors.Control);
 				e.Graphics.Clear(base.BackColor);
-				using (Pen penRed = new Pen(Color.Yellow, 1)) {
+				using (Pen penRed = new Pen(Color.Brown, 1)) {
 					e.Graphics.DrawLine(penRed, 0, 0, base.Width, base.Height);
 				}
 				this.DrawError(e.Graphics, msig + msg);

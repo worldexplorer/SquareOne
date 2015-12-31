@@ -64,6 +64,7 @@ namespace Sq1.Gui.Forms {
 			this.btnStrategyEmittingOrders = new System.Windows.Forms.ToolStripButton();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.ChartControl = new Sq1.Charting.ChartControl();
+			this.toolTip_fixToShowAbortOnProgressBar = new System.Windows.Forms.ToolTip(this.components);
 			this.ctxBacktest.SuspendLayout();
 			this.ctxStrategy.SuspendLayout();
 			this.statusStrip.SuspendLayout();
@@ -570,6 +571,7 @@ namespace Sq1.Gui.Forms {
 			this.TsiProgressBarETA.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
 			this.TsiProgressBarETA.Size = new System.Drawing.Size(200, 18);
 			this.TsiProgressBarETA.Text = "TsiProgressBarETA";
+			this.TsiProgressBarETA.ToolTipText = "Click to Abort Backtesting/Livesim";
 			this.TsiProgressBarETA.Visible = false;
 			this.TsiProgressBarETA.Click += new System.EventHandler(this.TsiProgressBarETA_Click);
 			// 
@@ -616,6 +618,12 @@ namespace Sq1.Gui.Forms {
 			this.ChartControl.RangeBarCollapsed = false;
 			this.ChartControl.Size = new System.Drawing.Size(840, 320);
 			this.ChartControl.TabIndex = 0;
+			// 
+			// toolTip_fixToShowAbortOnProgressBar
+			// 
+			this.toolTip_fixToShowAbortOnProgressBar.AutomaticDelay = 100;
+			this.toolTip_fixToShowAbortOnProgressBar.UseAnimation = false;
+			this.toolTip_fixToShowAbortOnProgressBar.UseFading = false;
 			// 
 			// ChartForm
 			// 
@@ -689,5 +697,6 @@ namespace Sq1.Gui.Forms {
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
 		private System.Windows.Forms.ToolStripMenuItem mniBacktestOnTriggeringYesWhenNotSubscribed;
+		private System.Windows.Forms.ToolTip toolTip_fixToShowAbortOnProgressBar;
 	}
 }

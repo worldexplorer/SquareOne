@@ -230,15 +230,20 @@ namespace Sq1.Charting {
 		}
 
 		void simulateDockFill() {
+			string msig = " //simulateDockFill()";
 			Form parentForm = base.Parent as Form;
 			if (parentForm == null) {
 				string msg = "YOU_INVOKED_ChartControl.Initialize()_FROM_ChartControl.ctor(RANDOM_GENERATED_BARS) CHART_CONTROL_NOT_ADDED_TO_ANY_FORM";
-				Assembler.PopupException(msg, null, false);
+				#if DEBUG_HEAVY
+				Assembler.PopupException(msg + msig, null, false);
+				#endif
 				return;
 			}
 			if (base.ClientRectangle.Width == parentForm.ClientRectangle.Width) return;		// looks already FILLed
-			string msg2 = "HAPPENS_WHEN_???";
-			Assembler.PopupException(msg2, null, false);
+			string msg2 = "HAPPENS_WHEN_??? ";
+			#if DEBUG_HEAVY
+			Assembler.PopupException(msg2 + msig, null, false);
+			#endif
 			parentForm.PerformLayout();		// did it help to get the Control stretched to fill the surface of the form?
 		}
 	}
