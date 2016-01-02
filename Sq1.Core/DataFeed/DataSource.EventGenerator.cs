@@ -5,7 +5,7 @@ namespace Sq1.Core.DataFeed {
 		public event EventHandler<DataSourceEventArgs>				DataSourceEditedChartsDisplayedShouldRunBacktestAgain;
 		public event EventHandler<DataSourceSymbolRenamedEventArgs> SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars;
 
-		public void RaiseDataSourceEditedChartsDisplayedShouldRunBacktestAgain() {
+		public void RaiseDataSourceEdited_chartsDisplayedShouldRunBacktestAgain() {
 			if (this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain == null) return;
 			this.DataSourceEditedChartsDisplayedShouldRunBacktestAgain(this, new DataSourceEventArgs(this));
 		}

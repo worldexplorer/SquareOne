@@ -409,8 +409,8 @@ namespace Sq1.Gui.Forms {
 			if (loadNewBars) {
 				string millisElapsedLoadCompress;
 				Bars barsAll = dataSource.BarsLoadAndCompress(symbol, context.ScaleInterval, out millisElapsedLoadCompress);
-				string stats = millisElapsedLoadCompress + " //dataSource[" + dataSource.ToString()
-					+ "].BarsLoadAndCompress(" + symbol + ", " + context.ScaleInterval + ") ";
+				//string stats = millisElapsedLoadCompress + " //dataSource[" + dataSource.ToString()
+				//	+ "].BarsLoadAndCompress(" + symbol + ", " + context.ScaleInterval + ") ";
 				//Assembler.PopupException(stats, null, false);
 
 				if (barsAll.Count > 0) {
@@ -936,9 +936,8 @@ namespace Sq1.Gui.Forms {
 		public void PopulateMainFormSymbolStrategyTreesScriptParameters() {
 			ContextChart ctxScript = this.ContextCurrentChartOrStrategy;
 			if (ctxScript == null) {
-				#if DEBUG
-				Debugger.Break();
-				#endif
+				string msg = "DONT_INVOKE_ME this.ContextCurrentChartOrStrategy=NULL //PopulateMainFormSymbolStrategyTreesScriptParameters()";
+				Assembler.PopupException(msg);
 				return;
 			}
 			DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);

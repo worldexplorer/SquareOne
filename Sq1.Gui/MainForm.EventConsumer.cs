@@ -2,18 +2,20 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
 using Sq1.Core.Streaming;
 using Sq1.Core.Livesim;
+
 using Sq1.Widgets;
 using Sq1.Widgets.LabeledTextBox;
+
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 using Sq1.Gui.ReportersSupport;
-using System.Threading.Tasks;
 
 namespace Sq1.Gui {
 	public partial class MainForm {

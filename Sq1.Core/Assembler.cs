@@ -248,9 +248,11 @@ namespace Sq1.Core {
 				Form exceptionsForm = Assembler.InstanceInitialized.StatusReporter as Form;
 				Assembler.InstanceInitialized.StatusReporter.PopupException(msg, ex, debuggingBreak);
 			} catch (Exception ex1) {
+				string msg1 = "NOWHERE_ELSE_ASSEMBLER_COULD_DUMP_THIS_EXCEPTION";
 				#if DEBUG
-				string msg1 = "NOWHERE_ELSE_I_COULD_DUMP_EXCEPTION_BRO";
 				Debugger.Break();
+				#else
+				throw new Exception (msg1, ex1);
 				#endif
 			}
 		}

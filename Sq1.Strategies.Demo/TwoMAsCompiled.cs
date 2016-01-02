@@ -7,7 +7,10 @@ using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Backtesting;
+
+#if QUIK_REFERRED
 using Sq1.Adapters.Quik;
+#endif
 
 namespace Sq1.Strategies.Demo {
 	public partial class TwoMAsCompiled : Script {
@@ -49,11 +52,13 @@ namespace Sq1.Strategies.Demo {
 				string msg = "WE_ARE_RUNNING_BACKTEST_OR_LIVESIM [" + quoteGenerated.GetType() + "] //" + base.StrategyName;
 				Assembler.PopupException(msg, null, false);
 			}
+			#if QUIK_REFERRED
 			QuoteQuik quoteQuik = quote as QuoteQuik;
 			if (quoteQuik != null) {
 				string msg = "WE_ARE_RUNNING_QuikLIVESIM_OR_QuikREALTIME [" + quoteQuik.GetType() + "] //" + base.StrategyName;
 				Assembler.PopupException(msg, null, false);
 			}
+			#endif
 		}
 
 		public override void OnNewQuoteOfStreamingBarCallback(Quote quote) {

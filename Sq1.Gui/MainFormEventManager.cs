@@ -7,8 +7,10 @@ using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Indicators;
 using Sq1.Core.StrategyBase;
+
 using Sq1.Widgets;
 using Sq1.Widgets.SteppingSlider;
+
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 
@@ -375,6 +377,12 @@ namespace Sq1.Gui {
 			chartFormActive.ChartFormManager.SequencerForm.SequencerControl.OlvParameterPopulate();
 		}
 		#endregion SlidersForm.Instance.SlidersAutoGrow
+
+
+		internal void DataSourceEditorControl_DataSourceEdited_updateDataSourcesTreeControl(object sender, DataSourceEventArgs e) {
+			// mouseover DataSource tree refreshes the OLV and the icon disappears after DataSourceEditor => change Streaming (even without Save, but Save is an official "event trigger")
+			DataSourcesForm.Instance.DataSourcesTreeControl.Refresh();
+		}
 
 	}
 }

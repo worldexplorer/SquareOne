@@ -20,12 +20,22 @@ namespace Sq1.Core.Livesim {
 			LevelTwoBids = new ConcurrentDictionaryGeneric<double, double>("LevelTwoBids_FOR_QuikLivesimStreaming");
 		}
 		public void Initialize(SymbolInfo symbolInfo, int levelsToGenerate) {
+			if (symbolInfo == null) {
+				string msg = "DONT_INVOKE_ME_WITH_NULL_SYMBOL_INFO //LevelTwoGenerator.Initialize(" + symbolInfo + ", " + levelsToGenerate + ")";
+				Assembler.PopupException(msg);
+				return;
+			}
 			this.symbolInfo			= symbolInfo;
 			this.stepPrice			= this.symbolInfo.PriceStepFromDecimal;
 			this.stepSize			= this.symbolInfo.VolumeStepFromDecimal;
 			this.levelsToGenerate	= levelsToGenerate;
 		}
 		public void GenerateForQuote(QuoteGenerated quote) {
+			if (this.symbolInfo == null) {
+				string msg = "DONT_INVOKE_ME_WITH_NULL_SYMBOL_INFO I_WOULD_THROW_ANYWAY_MAKING_THE_REASON_CLEAR //LevelTwoGenerator.GenerateForQuote(" + quote + ")";
+				throw new Exception(msg);
+			}
+
 			if (this.LevelTwoBids.Count(this, "GenerateForQuote(" + quote + ")") > 0) this.LevelTwoBids.Clear(this, "GenerateForQuote(" + quote + ")");
 			if (this.LevelTwoAsks.Count(this, "GenerateForQuote(" + quote + ")") > 0) this.LevelTwoAsks.Clear(this, "GenerateForQuote(" + quote + ")");
 

@@ -18,6 +18,7 @@ using Sq1.Widgets.LabeledTextBox;
 using Sq1.Gui.Singletons;
 
 using Sq1.Widgets.RangeBar;
+using Sq1.Core.DataFeed;
 
 
 namespace Sq1.Gui.Forms {
@@ -179,38 +180,25 @@ namespace Sq1.Gui.Forms {
 			this.btnStreamingTriggersScript.Text = sb.ToString();
 		}
 		public void PopulateBtnStreamingTriggersScript_afterBarsLoaded() {
-			//v1: IDEALLY_BACKTESTS_ARE_POSSIBLE_EVEN_DURING_STREAMING_USING_PUT_ON_HOLD
-//			bool streamingNow = this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming;
-//			if (streamingNow) {
-//				this.mniBacktestOnSelectorsChange.Enabled = false;
-//				this.mniBacktestOnDataSourceSaved.Enabled = false;
-//				this.mniBacktestNow.Enabled = false;
-//				this.btnStrategyEmittingOrders.Enabled = true;
-//			} else {
-//				this.mniBacktestOnSelectorsChange.Enabled = true;
-//				this.mniBacktestOnDataSourceSaved.Enabled = true;
-//				this.mniBacktestNow.Enabled = true;
-//				this.btnStrategyEmittingOrders.Enabled = false;
-//			}
-			
-			if (this.ChartFormManager.Executor.DataSource.StreamingAdapter == null) {
-				this.btnStreamingTriggersScript.Text = "DataSource: [" + StreamingAdapter.NO_STREAMING_ADAPTER + "]";
+			DataSource ds = this.ChartFormManager.Executor.DataSource;
+			if (ds.StreamingAdapter == null) {
+				this.btnStreamingTriggersScript.Text = "DataSource[" + ds + "]:Streaming[" + StreamingAdapter.NO_STREAMING_ADAPTER + "]";
 				this.btnStreamingTriggersScript.Enabled = false;
 				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed: edit DataSource > attach StreamingAdapter";
-				return;
+				this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = false;
+			} else {
+				this.btnStreamingTriggersScript.Enabled = true;
+				this.mniSubscribedToStreamingAdapterQuotesBars.Enabled = true;
+				//v1 AVOIDING_NPE_quote.IntraBarSerno
+				this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
+				//v2
+				//string btnText = this.ChartFormManager.StreamingButtonIdent;
+				////if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreamingTriggeringScript) {
+				////    string msg = "POTENTIALLY_NEVER_HAPPENS__WANTED_TO_SAY_NotSubscribed_WITHOUT_ZERO_TIME";
+				////    btnText += " 00:00:00.000";
+				////}
+				////this.btnStreamingTriggersScript.Text = btnText;
 			}
-
-			this.btnStreamingTriggersScript.Enabled = true;
-
-			//v1 AVOIDING_NPE_quote.IntraBarSerno
-			this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
-			//v2
-			//string btnText = this.ChartFormManager.StreamingButtonIdent;
-			////if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreamingTriggeringScript) {
-			////    string msg = "POTENTIALLY_NEVER_HAPPENS__WANTED_TO_SAY_NotSubscribed_WITHOUT_ZERO_TIME";
-			////    btnText += " 00:00:00.000";
-			////}
-			////this.btnStreamingTriggersScript.Text = btnText;
 
 			// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
 			this.populateIsStreamingAsOrangeInBarsMni();
@@ -237,22 +225,7 @@ namespace Sq1.Gui.Forms {
 
 			StreamingAdapter streaming = this.ChartFormManager.Executor.DataSource.StreamingAdapter;
 			Bitmap iconCanBeNull = streaming != null ? streaming.Icon : null;
-
-			if (iconCanBeNull != null) {
-				this.btnStreamingTriggersScript.Image = iconCanBeNull;
-			}
-			// ALWAYS_ENABLED_DUE_TO_QUOTE_PUMPfrom btnStreaming_Click(); not related but visualises the last clicked state
-			//if (this.btnStreamingTriggersScript.Checked) {
-			//	this.mniBacktestOnSelectorsChange.Enabled = false;
-			//	this.mniBacktestOnDataSourceSaved.Enabled = false;
-			//	this.mniBacktestNow.Enabled = false;
-			//	//this.btnStrategyEmittingOrders.Enabled = true;
-			//} else {
-			//	this.mniBacktestOnSelectorsChange.Enabled = true;
-			//	this.mniBacktestOnDataSourceSaved.Enabled = true;
-			//	this.mniBacktestNow.Enabled = true;
-			//	//this.btnStrategyEmittingOrders.Enabled = false;
-			//}
+			this.btnStreamingTriggersScript.Image = iconCanBeNull; 			// NO_I_WANT_ABSENCE_OF_STREAMING_TO_CLEAR_PREVIOUS_BARS_IN_CHART_AFTER_CHANGING_SYMBOL_FOR_CHART if (iconCanBeNull != null) {
 
 			Bars barsClickedUpstack = this.ChartFormManager.Executor.Bars;
 			this.mniBarsStoredScaleInterval.Text = barsClickedUpstack != null
@@ -277,14 +250,13 @@ namespace Sq1.Gui.Forms {
 			ContextScript ctxScript = ctxChart as ContextScript;
 			if (ctxScript == null) return;
 			
-			this.mniBacktestOnTriggeringYesWhenNotSubscribed	.Checked = ctxScript.BacktestOnTriggeringYesWhenNotSubscribed;
-			this.mniBacktestOnDataSourceSaved	.Checked = ctxScript.BacktestOnDataSourceSaved;	// looks redundant here
-			this.mniBacktestOnRestart			.Checked = ctxScript.BacktestOnRestart;
-			this.mniBacktestOnSelectorsChange	.Checked = ctxScript.BacktestOnSelectorsChange;
+			this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Checked = ctxScript.BacktestOnTriggeringYesWhenNotSubscribed;
+			this.mniBacktestOnDataSourceSaved								.Checked = ctxScript.BacktestOnDataSourceSaved;	// looks redundant here
+			this.mniBacktestOnRestart										.Checked = ctxScript.BacktestOnRestart;
+			this.mniBacktestOnSelectorsChange								.Checked = ctxScript.BacktestOnSelectorsChange;
 
-			this.btnStrategyEmittingOrders		.Checked = ctxScript.StrategyEmittingOrders;
-			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim
-												.Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
+			this.btnStrategyEmittingOrders									.Checked = ctxScript.StrategyEmittingOrders;
+			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
 
 			this.PropagateContextScriptToLTB(ctxScript);
 		}
@@ -386,17 +358,18 @@ namespace Sq1.Gui.Forms {
 
 			ChartForm chartFormNullUnsafe = this.ChartFormManager.MainForm.ChartFormActiveNullUnsafe;
 			if (chartFormNullUnsafe == null) {
-				string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET";
+				string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET WE_ARE_HERE_WHEN_I_SWITCH_ACTIVE_DOCUMENT_TAB_FROM_DataSourceEditor_TO_ChartForm";
 				#if DEBUG_HEAVY
 				Assembler.PopupException(msg2, null, false);
 				#endif
+			} else {
+				#if DEBUG	// PARANOID TEST
+				if (chartFormNullUnsafe != this) {
+					string msg = "WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART";
+					Assembler.PopupException(msg, null, false);
+				}
+				#endif
 			}
-			#if DEBUG	// PARANOID TEST
-			if (chartFormNullUnsafe != this) {
-				string msg = "WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART";
-				Assembler.PopupException(msg, null, false);
-			}
-			#endif
 			this.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 			this.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
 		}

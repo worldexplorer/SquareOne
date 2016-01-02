@@ -12,58 +12,67 @@ using Sq1.Core.Repositories;
 
 namespace Sq1.Widgets.DataSourceEditor {
 	public partial class DataSourceEditorControl : UserControl, IDataSourceEditor {
-		DataSource ds;
 		public string DataSourceName { get {
-				if (this.ds == null) return "NO_DATASOURCE_LOADED_FOR_EDITING";
-				return this.ds.Name;
+				if (this.dataSourceIamEditing == null) return "NO_DATASOURCE_LOADED_FOR_EDITING";
+				return this.dataSourceIamEditing.Name;
 			} }
-		public Dictionary<string, StreamingAdapter> StreamingAdaptersByName { get; private set; }
-		public Dictionary<string, BrokerAdapter> BrokerAdaptersByName { get; private set; }
-		public string symbolsDefault;
-		public string windowTitleDefault;
-		Assembler assemblerInstance;
+
+		public	Dictionary<string, StreamingAdapter>	StreamingAdaptersByName			{ get; private set; }
+		public	Dictionary<string, BrokerAdapter>		BrokerAdaptersByName			{ get; private set; }
+
+				RepositoryJsonDataSource				repositoryJsonDataSource;
+				RepositorySerializerMarketInfo			repositoryMarketInfo;
+				OrderProcessor							orderProcessor;
+				DataSource								dataSourceIamEditing;
+
+		string symbolsDefault;
+		string windowTitleDefault;
 
 		public DataSourceEditorControl() {
 			this.symbolsDefault = "RIZ2,RIH3";
 			InitializeComponent();
 		}
 
-		public void InitializeAdapters(
-				Dictionary<string, StreamingAdapter> streamingAdaptersByName,
-				Dictionary<string, BrokerAdapter> brokerAdaptersByName) {
-			this.StreamingAdaptersByName = streamingAdaptersByName;
-			this.BrokerAdaptersByName = brokerAdaptersByName;
-		}
-		public void InitializeContext(Assembler assembler) {
-			this.assemblerInstance = assembler;
+		public void InitializeContext(
+				Dictionary<string, StreamingAdapter>	streamingAdaptersByName,
+				Dictionary<string, BrokerAdapter>		brokerAdaptersByName,
+				RepositoryJsonDataSource				repositoryJsonDataSourcePassed,
+				RepositorySerializerMarketInfo			repositorySerializerMarketInfoPassed,
+				OrderProcessor							orderProcessorPassed
+			) {
+			this.StreamingAdaptersByName			= streamingAdaptersByName;
+			this.BrokerAdaptersByName				= brokerAdaptersByName;
+			this.repositoryJsonDataSource			= repositoryJsonDataSourcePassed;
+			this.repositoryMarketInfo				= repositorySerializerMarketInfoPassed;
+			this.orderProcessor						= orderProcessorPassed;
 		}
 		public void Initialize(DataSource dsEdit) {
 			if (dsEdit == null) {
 				throw new Exception("DataSourceEditor can not create the DataSource; pass an existing datasource for editing, not NULL");
 			}
-			this.ds = dsEdit;
+			this.dataSourceIamEditing = dsEdit;
 			if (this.Parent != null) {
-				this.Parent.Text = "DataSourceEdit :: " + ds.Name;
+				this.Parent.Text = "DataSourceEdit :: " + dataSourceIamEditing.Name;
 			} else {
-				this.Text = ds.Name;
+				this.Text = dataSourceIamEditing.Name;
 			}
-			if (this.ds.Name != windowTitleDefault) {
-				this.txtDataSourceName.Text = this.ds.Name;
+			if (this.dataSourceIamEditing.Name != windowTitleDefault) {
+				this.txtDataSourceName.Text = this.dataSourceIamEditing.Name;
 			}
-			this.txtSymbols.Text = this.ds.SymbolsCSV;
+			this.txtSymbols.Text = this.dataSourceIamEditing.SymbolsCSV;
 			this.PopulateScaleIntervalFromDataSource();
 			this.PopulateStreamingBrokerListViewsFromDataSource();
 
-			if (this.ds.StreamingAdapter != null) 	this.highlightStreamingByName(this.ds.StreamingAdapter.GetType().Name);
+			if (this.dataSourceIamEditing.StreamingAdapter != null) 	this.highlightStreamingByName(this.dataSourceIamEditing.StreamingAdapter.GetType().Name);
 			else									this.highlightStreamingByName(StreamingAdapter.NO_STREAMING_ADAPTER);
 
-			if (this.ds.BrokerAdapter != null)		this.highlightBrokerByName(this.ds.BrokerAdapter.GetType().Name);
+			if (this.dataSourceIamEditing.BrokerAdapter != null)		this.highlightBrokerByName(this.dataSourceIamEditing.BrokerAdapter.GetType().Name);
 			else 									this.highlightBrokerByName(BrokerAdapter.NO_BROKER_ADAPTER);
 
-			this.marketInfoEditor.Initialize(ds, this.assemblerInstance.RepositoryJsonDataSource, this.assemblerInstance.RepositoryMarketInfo);
+			this.marketInfoEditor.Initialize(dataSourceIamEditing, this.repositoryJsonDataSource, this.repositoryMarketInfo);
 
 
-			RepositoryJsonDataSource dsRepo = this.assemblerInstance.RepositoryJsonDataSource;
+			RepositoryJsonDataSource dsRepo = this.repositoryJsonDataSource;
 			dsRepo.OnItemRemovedDone -= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor);
 			dsRepo.OnItemRemovedDone += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor);
 
@@ -86,16 +95,16 @@ namespace Sq1.Widgets.DataSourceEditor {
 			int i = 0;
 			foreach (BarScale barScale in Enum.GetValues(typeof(BarScale))) {
 				this.cmbScale.Items.Add(barScale.ToString());
-				if (this.ds.ScaleInterval == null) {
+				if (this.dataSourceIamEditing.ScaleInterval == null) {
 					if (barScale == BarScale.Unknown) indexSelected = i;  
 				} else {
-					if (this.ds.ScaleInterval.Scale == barScale) indexSelected = i;
+					if (this.dataSourceIamEditing.ScaleInterval.Scale == barScale) indexSelected = i;
 				}
 				i++;
 			}
 			this.cmbScale.SelectedIndex = indexSelected;
-			if (this.ds.ScaleInterval != null) {
-				this.nmrInterval.Value = ds.ScaleInterval.Interval;
+			if (this.dataSourceIamEditing.ScaleInterval != null) {
+				this.nmrInterval.Value = dataSourceIamEditing.ScaleInterval.Interval;
 			}
 		}
 		public void PopulateStreamingBrokerListViewsFromDataSource() {
@@ -114,8 +123,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 			foreach (StreamingAdapter streamingAdapterPrototype in StreamingAdaptersByName.Values) {
 				try {
 					StreamingAdapter streamingAdapterInstance = null;	// streamingAdapterPrototype;
-					if (ds.StreamingAdapter != null && ds.StreamingAdapter.GetType().FullName == streamingAdapterPrototype.GetType().FullName) {
-						streamingAdapterInstance = ds.StreamingAdapter;
+					if (dataSourceIamEditing.StreamingAdapter != null && dataSourceIamEditing.StreamingAdapter.GetType().FullName == streamingAdapterPrototype.GetType().FullName) {
+						streamingAdapterInstance = dataSourceIamEditing.StreamingAdapter;
 					}
 					// I still want to get a new instance, so if user choses it, I'll Initialize() it and put into serialize-able DataSource
 					if (streamingAdapterInstance == null) {
@@ -157,8 +166,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 			foreach (BrokerAdapter brokerAdapterPrototype in BrokerAdaptersByName.Values) {
 				try {
 					BrokerAdapter brokerAdapterInstance = null;	// brokerAdapterPrototype;
-					if (ds.BrokerAdapter != null && ds.BrokerAdapter.GetType().FullName == brokerAdapterPrototype.GetType().FullName) {
-						brokerAdapterInstance = ds.BrokerAdapter;
+					if (dataSourceIamEditing.BrokerAdapter != null && dataSourceIamEditing.BrokerAdapter.GetType().FullName == brokerAdapterPrototype.GetType().FullName) {
+						brokerAdapterInstance = dataSourceIamEditing.BrokerAdapter;
 					}
 					// I still want to get a new instance, so if user choses it, I'll Initialize() it and put into serialize-able DataSource
 					if (brokerAdapterInstance == null) {
@@ -222,7 +231,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				this.txtDataSourceName.Focus();
 				return;
 			}
-//			DataSource foundSameName = this.assemblerInstance.RepositoryJsonDataSource.DataSourceFind(this.txtDataSourceName.Text);
+//			DataSource foundSameName = Assembler.Instance.RepositoryJsonDataSource.DataSourceFind(this.txtDataSourceName.Text);
 //			if (foundSameName != null) {
 //				string msg = "DataSource[" + this.txtDataSourceName.Text + "] existed before; Overwrite?";
 //				DialogResult dialogResult = MessageBox.Show(msg, "DataSource [" + this.txtDataSourceName.Text + "] already exists", MessageBoxButtons.YesNoCancel);
@@ -233,22 +242,36 @@ namespace Sq1.Widgets.DataSourceEditor {
 //						this.txtDataSourceName.Focus();
 //						return;
 //					case DialogResult.Yes:
-//						this.assemblerInstance.RepositoryJsonDataSource.SerializeSingle(ds);
+//						Assembler.Instance.RepositoryJsonDataSource.SerializeSingle(ds);
 //						base.DialogResult = System.Windows.Forms.DialogResult.OK;
 //						return;
 //				}
 //			}
 
-			ds.Name = this.txtDataSourceName.Text;
-			ds.Symbols = SymbolParser.ParseSymbols(this.txtSymbols.Text);
-			if (ds.StreamingAdapter != null) ds.StreamingAdapter.EditorInstance.PushEditedSettingsToStreamingAdapter();
-			if (ds.BrokerAdapter != null) ds.BrokerAdapter.EditorInstance.PushEditedSettingsToBrokerAdapter();
+			this.dataSourceIamEditing.Name = this.txtDataSourceName.Text;
+			this.dataSourceIamEditing.Symbols = SymbolParser.ParseSymbols(this.txtSymbols.Text);
+			if (this.dataSourceIamEditing.StreamingAdapter	!= null) this.dataSourceIamEditing.StreamingAdapter	.EditorInstance.PushEditedSettingsToStreamingAdapter();
+			if (this.dataSourceIamEditing.BrokerAdapter		!= null) this.dataSourceIamEditing.BrokerAdapter	.EditorInstance.PushEditedSettingsToBrokerAdapter();
+
 			// for DataSource, nothing changed, but providers were assigned by user clicks, so DS will Initialize() each
-			ds.Initialize(this.assemblerInstance.RepositoryJsonDataSource.AbsPath, this.assemblerInstance.OrderProcessor);
-			this.assemblerInstance.RepositoryJsonDataSource.SerializeSingle(ds);
-			//LOOKS_LIKE_STARTS_BACKTESTING_BEFORE_DSEDITOR_CLOSED
-			//USER_HAS_X_TO_CLOSE_THIS_WINDOW this.btnCancel_Click(this, null);
-			this.ds.RaiseDataSourceEditedChartsDisplayedShouldRunBacktestAgain();
+			this.dataSourceIamEditing.Initialize(this.repositoryJsonDataSource.AbsPath, this.orderProcessor);
+			this.repositoryJsonDataSource.SerializeSingle(dataSourceIamEditing);
+
+			try {
+				this.RaiseDataSourceEdited_updateDataSourcesTreeControl();
+			} catch (Exception ex) {
+				string msg = "SOMETHING_HAPPENED_TO_DataSourcesTreeControl.PopulateIconForDataSource()";
+				Assembler.PopupException(msg, ex);
+			}
+
+			try {
+				//LOOKS_LIKE_STARTS_BACKTESTING_BEFORE_DSEDITOR_CLOSED
+				//USER_HAS_X_TO_CLOSE_THIS_WINDOW this.btnCancel_Click(this, null);
+				this.dataSourceIamEditing.RaiseDataSourceEdited_chartsDisplayedShouldRunBacktestAgain();
+			} catch (Exception ex) {
+				string msg = "SOMETHING_HAPPENED_TO_ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy()";
+				Assembler.PopupException(msg, ex);
+			}
 		}
 	}
 }

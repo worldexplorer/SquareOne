@@ -8,6 +8,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 using Sq1.Core;
 using Sq1.Core.DataFeed;
+using Sq1.Core.DataTypes;
 using Sq1.Core.Indicators;
 using Sq1.Core.Serializers;
 using Sq1.Core.StrategyBase;
@@ -37,10 +38,18 @@ namespace Sq1.Gui {
 				}
 
 				ChartForm ret = this.DockPanel.ActiveDocument as ChartForm;
+				if (ret == null) {
+					string msg = "NO_WORRIES__DATA_SOURCE_EDITOR_TAB_IS_CURRENTLY_DISPLAYED_IN_DOCUMENT_PANE"
+						+ " MainForm.DockPanel.ActiveDocument is [" + this.DockPanel.ActiveDocument + "]";
+					#if DEBUG_HEAVY
+					Assembler.PopupException(msg2;
+					#endif
+					return null;
+				}
 				foreach (ChartFormManager chartFormDataSnap in this.GuiDataSnapshot.ChartFormManagers.Values) {
 					if (chartFormDataSnap.ChartForm == ret) return ret;
 				}
-				string msg2 = "MainForm.DockPanel.ActiveDocument is [" + ret.ToString() + "] but it's not found among MainForm.ChartFormsManagers registry;"
+				string msg2 = "MainForm.DockPanel.ActiveDocument is [" + this.DockPanel.ActiveDocument + "] but it's not found among MainForm.ChartFormsManagers registry;"
 					+ "1) did you forget to add? 2) MainForm.ChartFormsManagers doesn't have DockContent-restored Forms added?";
 				Assembler.PopupException(msg2);
 				return null;
@@ -56,10 +65,12 @@ namespace Sq1.Gui {
 				Assembler.InstanceUninitialized.Initialize(this as IStatusReporter);
 				this.GuiDataSnapshotSerializer = new Serializer<GuiDataSnapshot>();
 	
-				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeContext(Assembler.InstanceInitialized);
-				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeAdapters(
+				DataSourceEditorForm.Instance.DataSourceEditorControl.InitializeContext(
 					Assembler.InstanceInitialized.RepositoryDllStreamingAdapter	.CloneableInstanceByClassName,
-					Assembler.InstanceInitialized.RepositoryDllBrokerAdapter	.CloneableInstanceByClassName);
+					Assembler.InstanceInitialized.RepositoryDllBrokerAdapter	.CloneableInstanceByClassName,
+					Assembler.InstanceInitialized.RepositoryJsonDataSource,
+					Assembler.InstanceInitialized.RepositoryMarketInfo,
+					Assembler.InstanceInitialized.OrderProcessor);
 	
 				DataSourcesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryJsonDataSource);
 				StrategiesForm				.Instance.Initialize(Assembler.InstanceInitialized.RepositoryDllJsonStrategy);
@@ -185,15 +196,10 @@ namespace Sq1.Gui {
 				//this.PropagateSelectorsForCurrentChart();
 				//WHY???this.MainFormEventManager.DockPanel_ActiveDocumentChanged(this, EventArgs.Empty);
 				if (this.ChartFormActiveNullUnsafe != null) {
-					//v1
-					//this.ChartFormActive.ChartFormManager.PopulateSliders();
-					//if (this.ChartFormActive.ChartFormManager.Strategy == null) {
-					//	StrategiesForm.Instance.StrategiesTreeControl.UnSelectStrategy();
-					//} else {
-					//	StrategiesForm.Instance.StrategiesTreeControl.SelectStrategy(this.ChartFormActive.ChartFormManager.Strategy);
-					//}
 					this.ChartFormActiveNullUnsafe.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
-					//this.ChartFormActiveNullUnsafe.Invalidate();	// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
+					// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
+					//this.ChartFormActiveNullUnsafe.Invalidate();
+					// DOESNT_HELP this.ChartFormActiveNullUnsafe.PerformLayout();
 				}
 	
 				this.WorkspacesManager.SelectWorkspaceAfterLoaded(workspaceToLoad);
@@ -416,6 +422,8 @@ namespace Sq1.Gui {
 			SlidersForm.Instance.SteppingSlidersAutoGrowControl.SliderChangedIndicatorValue			+= new EventHandler<IndicatorParameterEventArgs>(this.MainFormEventManager.SlidersAutoGrow_SliderValueChanged);
 			SlidersForm.Instance.SteppingSlidersAutoGrowControl.ScriptContextLoadRequestedSubscriberImplementsCurrentSwitch += this.MainFormEventManager.SlidersAutoGrow_OnScriptContextLoadClicked;
 			SlidersForm.Instance.SteppingSlidersAutoGrowControl.ScriptContextRenamed				+= this.MainFormEventManager.SlidersAutoGrow_OnScriptContextRenamed;
+
+			DataSourceEditorForm.Instance.DataSourceEditorControl.DataSourceEdited_updateDataSourcesTreeControl += new EventHandler<DataSourceEventArgs>(this.MainFormEventManager.DataSourceEditorControl_DataSourceEdited_updateDataSourcesTreeControl);
 		}
 		void mainFormEventManagerInitializeAfterDockingDeserialized() {
 			// too frequent
