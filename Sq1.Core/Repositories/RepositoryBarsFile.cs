@@ -199,7 +199,7 @@ namespace Sq1.Core.Repositories {
 					if (headerSize != this.headerSize) {
 						#if DEBUG
 						this.headerSizesByVersion[version] = this.headerSize;
-						Assembler.PopupException("STORE_ME_JUST_BECAUSE?");
+						Assembler.PopupException("WHILE_LOADING_BARS_FILE_OVERWRITTEN_WITH_HEADER_FROM_NEWER_VERSION NEW_HEADER_SIZE[" + this.headerSize + "] " + msg3);
 						#endif
 					}
 				} catch (Exception ex) {

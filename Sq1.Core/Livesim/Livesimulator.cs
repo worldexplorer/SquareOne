@@ -50,8 +50,13 @@ namespace Sq1.Core.Livesim {
 			}
 				
 			// deserialized, they were created with dummy constructor; now I re-create the same adapters to initialize them with the DataSource having QuoteGenerator and no Solidifier
-			LivesimStreaming streamingRecreatedWithPointerBack = (LivesimStreaming)	Activator.CreateInstance(liveStreamingChild	.GetType(), this.DataSourceAsLivesimNullUnsafe);
-			LivesimBroker		brokerRecreatedWithPointerBack = (LivesimBroker)	Activator.CreateInstance(livesimBrokerChild	.GetType(), this.DataSourceAsLivesimNullUnsafe);
+			LivesimStreaming streamingRecreatedWithPointerBack = liveStreamingChild == null
+				? new LivesimStreaming(this.DataSourceAsLivesimNullUnsafe)
+				: (LivesimStreaming)	Activator.CreateInstance(liveStreamingChild	.GetType(), this.DataSourceAsLivesimNullUnsafe);
+
+			LivesimBroker		brokerRecreatedWithPointerBack = livesimBrokerChild == null
+				? new LivesimBroker(this.DataSourceAsLivesimNullUnsafe)
+				: (LivesimBroker)	Activator.CreateInstance(livesimBrokerChild	.GetType(), this.DataSourceAsLivesimNullUnsafe);
 			this.DataSourceAsLivesimNullUnsafe.SubstituteAdapters(streamingRecreatedWithPointerBack, brokerRecreatedWithPointerBack);
 			// I_REPLACED_DUMMIES DID_NOT_INVOKE_THEIR_DISPOSE()_TO_RELEASE_WAIT_HANDLES
 

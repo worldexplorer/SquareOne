@@ -358,17 +358,18 @@ namespace Sq1.Gui.Forms {
 
 			ChartForm chartFormNullUnsafe = this.ChartFormManager.MainForm.ChartFormActiveNullUnsafe;
 			if (chartFormNullUnsafe == null) {
-				string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET";
+				string msg2 = "IM_LOADING_WORKSPACE_WITHOUT_STRATEGY_LOADED_YET WE_ARE_HERE_WHEN_I_SWITCH_ACTIVE_DOCUMENT_TAB_FROM_DataSourceEditor_TO_ChartForm";
 				#if DEBUG_HEAVY
 				Assembler.PopupException(msg2, null, false);
 				#endif
+			} else {
+				#if DEBUG	// PARANOID TEST
+				if (chartFormNullUnsafe != this) {
+					string msg = "WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART";
+					Assembler.PopupException(msg, null, false);
+				}
+				#endif
 			}
-			#if DEBUG	// PARANOID TEST
-			if (chartFormNullUnsafe != this) {
-				string msg = "WHY___WE_ARE_HERE_WHEN_WE_CHANGE_TIMEFRAME_OF_CHART";
-				Assembler.PopupException(msg, null, false);
-			}
-			#endif
 			this.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 			this.PropagateSelectorsDisabledIfStreaming_forCurrentChart();
 		}

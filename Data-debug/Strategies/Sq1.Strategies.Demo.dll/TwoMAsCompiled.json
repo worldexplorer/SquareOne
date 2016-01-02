@@ -64,7 +64,7 @@
       ],
       "BacktestOnTriggeringYesWhenNotSubscribed": false,
       "BacktestOnRestart": false,
-      "BacktestOnSelectorsChange": true,
+      "BacktestOnSelectorsChange": false,
       "BacktestOnDataSourceSaved": true,
       "ReportersSnapshots": {
         "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib",
@@ -96,12 +96,12 @@
       "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-        "AsString_cached": "1-Minute",
+        "AsString_cached": "5-Minute",
         "Scale": 3,
-        "Interval": 1,
+        "Interval": 5,
         "IsIntraday": true,
-        "AsTimeSpanInSeconds": 60,
-        "AsTimeSpan": "00:01:00"
+        "AsTimeSpanInSeconds": 300,
+        "AsTimeSpan": "00:05:00"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -115,7 +115,7 @@
       "ShowRangeBar": false,
       "IsStreaming": false,
       "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=32,MAslow.Period=16)",
-      "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3 1-Minute 510 Bars"
+      "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3 5-Minute 510 Bars"
     },
     "+ Net[248.0] PF[1.19] RF[0.55]": {
       "$type": "Sq1.Core.StrategyBase.ContextScript, Sq1.Core",
@@ -363,7 +363,7 @@
   },
   "LivesimStreamingSettings": {
     "$type": "Sq1.Core.Livesim.LivesimStreamingSettings, Sq1.Core",
-    "DelayBetweenSerialQuotesMin": 5,
+    "DelayBetweenSerialQuotesMin": 50,
     "DelayBetweenSerialQuotesMax": 0,
     "DelayBetweenSerialQuotesEnabled": true,
     "OutOfOrderQuoteGenerationHappensOncePerQuoteMin": 0,
