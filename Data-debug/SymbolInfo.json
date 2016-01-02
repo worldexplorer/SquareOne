@@ -93,7 +93,7 @@
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
-    "priceDecimals": 2,
+    "priceDecimals": 0,
     "SecurityType": 1,
     "Symbol": "RANDOM_GENERATED_BARS:250",
     "SymbolClass": "",
@@ -163,7 +163,7 @@
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
     "priceDecimals": 0,
-    "SecurityType": 1,
+    "SecurityType": 2,
     "Symbol": "RIM3-Qmock",
     "SymbolClass": "",
     "Point2Dollar": 1.0,

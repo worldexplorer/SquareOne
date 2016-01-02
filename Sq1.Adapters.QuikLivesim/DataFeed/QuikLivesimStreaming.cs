@@ -125,7 +125,7 @@ namespace Sq1.Adapters.QuikLivesim {
 			}
 
 			base.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
-			base.LivesimSpoiler.Spoil_priorTo_PushQuoteGenerated();
+			base.LivesimStreamingSpoiler.Spoil_priorTo_PushQuoteGenerated();
 
 			if (quote.IamInjectedToFillPendingAlerts) {
 				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
@@ -155,7 +155,7 @@ namespace Sq1.Adapters.QuikLivesim {
 				string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
 			}
 
-			base.LivesimSpoiler.Spoil_after_PushQuoteGenerated();
+			base.LivesimStreamingSpoiler.Spoil_after_PushQuoteGenerated();
 			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 			#endregion
 		}

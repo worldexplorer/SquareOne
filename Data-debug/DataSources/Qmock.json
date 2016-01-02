@@ -16,32 +16,7 @@
   },
   "StreamingAdapter": {
     "$type": "Sq1.Adapters.QuikLivesim.QuikLivesimStreaming, Sq1.Adapters.QuikLivesim",
-    "SpreadModeler": {
-      "$type": "Sq1.Core.Backtesting.BacktestSpreadModelerPercentage, Sq1.Core",
-      "AlignToPriceLevel": true
-    },
-    "Unpaused": {
-      "$type": "System.Threading.ManualResetEvent, mscorlib",
-      "Handle": {
-        "$type": "System.IntPtr, mscorlib",
-        "value": 1148
-      },
-      "SafeWaitHandle": {
-        "$type": "Microsoft.Win32.SafeHandles.SafeWaitHandle, mscorlib",
-        "IsInvalid": false,
-        "IsClosed": false
-      }
-    },
-    "IsDisposed": false,
-    "StreamingDataSnapshot": {
-      "$type": "Sq1.Core.Streaming.StreamingDataSnapshot, Sq1.Core",
-      "lastQuoteClonesReceivedUnboundBySymbol": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib",
-        "autogen": null,
-        "RIM3-Qmock": null
-      },
-      "SymbolsSubscribedAndReceiving": "autogen:NULL,RIM3-Qmock:NULL"
-    }
+    "ConnectionState": 0
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.QuikLivesim.QuikLivesimBroker, Sq1.Adapters.QuikLivesim",
