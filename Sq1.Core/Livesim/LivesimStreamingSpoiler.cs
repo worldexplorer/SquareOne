@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Sq1.Core.Livesim {
-	public class LivesimSpoiler {
+	public class LivesimStreamingSpoiler {
 		int delayForCurrentQuotePush = 0;
 		LivesimStreaming livesimStreaming;
 
-		public LivesimSpoiler(LivesimStreaming livesimStreaming) {
+		public LivesimStreamingSpoiler(LivesimStreaming livesimStreaming) {
 			this.livesimStreaming = livesimStreaming;
 		}
 
 		public void Spoil_priorTo_PushQuoteGenerated() {
 			this.delayForCurrentQuotePush = 0;
-			if (this.livesimStreaming.LivesimSettings.DelayBetweenSerialQuotesEnabled) {
-				delayForCurrentQuotePush = this.livesimStreaming.LivesimSettings.DelayBetweenSerialQuotesMin;
-				if (this.livesimStreaming.LivesimSettings.DelayBetweenSerialQuotesMax > 0) {
-					int range = Math.Abs(this.livesimStreaming.LivesimSettings.DelayBetweenSerialQuotesMax -
-										 this.livesimStreaming.LivesimSettings.DelayBetweenSerialQuotesMin);
+			if (this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesEnabled) {
+				delayForCurrentQuotePush = this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesMin;
+				if (this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesMax > 0) {
+					int range = Math.Abs(this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesMax -
+										 this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesMin);
 					double rnd0to1 = new Random().NextDouble();
 					int rangePart = (int)Math.Round(range * rnd0to1);
 					delayForCurrentQuotePush += rangePart;

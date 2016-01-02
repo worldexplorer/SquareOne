@@ -55,7 +55,7 @@ namespace Sq1.Core.Livesim {
 			this.DataSourceAsLivesimNullUnsafe.SubstituteAdapters(streamingRecreatedWithPointerBack, brokerRecreatedWithPointerBack);
 			// I_REPLACED_DUMMIES DID_NOT_INVOKE_THEIR_DISPOSE()_TO_RELEASE_WAIT_HANDLES
 
-			string msg1 = "DATASOURCE_REDIRECTED_FOR_EXECUTOR " + this.Executor.ToString();
+			string msg1 = "ADAPTERS_SUBSTITUTED_FOR_LIVESIM_DATASOURCE " + this.DataSourceAsLivesimNullUnsafe.ToString();
 			Assembler.PopupException(msg1 + msig, null, false);
 		}
 

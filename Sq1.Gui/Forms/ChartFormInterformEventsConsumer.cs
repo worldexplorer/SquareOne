@@ -51,24 +51,15 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		internal void DataSourcesTree_OnSymbolSelected(object sender, DataSourceSymbolEventArgs e) {
-			//v1
-			//Strategy strategyToSave = this.chartFormManager.Strategy;
-			//if (strategyToSave.ScriptContextCurrent.Symbol == e.Symbol) {
-			//if (contextChart.Symbol == e.Symbol) {
-			//	string msg = "DebuggableCallback invokes ObjectListView.OnMouseUp():8266 twice, and ObjectListView.WndProc():4996 doesn't have a filter";
-			//	Assembler.PopupException(msg);
-			//	return;
-			//}
 			string msig = " //DataSourcesTree_OnSymbolSelected(" + e.Symbol + ")";
 
-			if (this.chartFormManager.Executor.Strategy != null && this.chartFormManager.Executor.IsStreamingTriggeringScript) {
-				string msg = "I_REFUSE_CHANGE_SYMBOL__CURRENT_CHART_HAS_STRATEGY_RUNNING_ON_STREAMING";
+			if (this.chartFormManager.Executor.DataSource.StreamingAdapter != null && this.chartFormManager.Executor.IsStreamingTriggeringScript) {
+				string msg = "I_REFUSE_CHANGE_SYMBOL__CURRENT_CHART_HAS_STRATEGY_RUNNING_ON_STREAMING click [" + this.chartFormManager.StreamingButtonIdent + "] button on ChartForm to unsubscribe";
 				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
 
 			try {
-				//v2
 				ContextChart contextChart = this.chartFormManager.ContextCurrentChartOrStrategy;
 				if (contextChart.DataSourceName != e.DataSource.Name)	contextChart.DataSourceName = e.DataSource.Name; 
 				if (contextChart.Symbol			!= e.Symbol) 			contextChart.Symbol 		= e.Symbol;
@@ -87,25 +78,9 @@ namespace Sq1.Gui.Forms {
 			}
 		}
 		internal void MainForm_ActivateDocumentPane_WithChart(object sender, EventArgs e) {
-			//v1
-			//ScriptEditorForm  scriptEditorFormCorresponding = chartFormClicked.ChartFormsManager.ScriptEditorFormConditionalInstance;
-			//if (DockHelper.IsDockStateAutoHide(scriptEditorFormCorresponding.DockState)) {
-			//	DockState newState = DockHelper.ToggleAutoHideState(scriptEditorFormCorresponding.Pane.DockState);
-			//	scriptEditorFormCorresponding.Pane.SetDockState(newState);
-			//}
-			//scriptEditorFormCorresponding.Activate();
-			//v2
 			if (this.chartFormManager.Strategy != null && this.chartFormManager.Strategy.ActivatedFromDll == false) {
 				this.chartFormManager.ScriptEditorFormConditionalInstance.ActivateDockContentPopupAutoHidden(true, true);
 			}
-			//during the update to the next DockContent version, copy&paste into DockHelper.cs:
-			//public static void ActivateDockContentPopupAutoHidden(DockContent form) {
-			//	if (DockHelper.IsDockStateAutoHide(form.DockState)) {
-			//		DockState newState = DockHelper.ToggleAutoHideState(form.Pane.DockState);
-			//		form.Pane.SetDockState(newState);
-			//	}
-			//	form.Activate();
-			//}
 
 			this.chartFormManager.ReportersFormsManager.PopupReporters_OnParentChartActivated(sender, e);
 			//this.chartFormManager.ChartForm.ChartControl.RangeBar.Enabled = false;	// WHY false?? YOU_SHOULD_NOT_CHANGE_VISIBILITY_OF_RANGEBAR

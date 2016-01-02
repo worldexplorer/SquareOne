@@ -307,7 +307,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 //			this.tree.SelectObject(foundWithSameName);
 //			this.SelectSymbol(ds.Name);
 			// but now user has selected the static provider and I want the provider's icon in the tree
-			this.populateIconForDataSource(dataSourceNewborn);
+			this.PopulateIconForDataSource(dataSourceNewborn);
 			this.RaiseOnDataSourceEditClicked();	//ds
 		}
 

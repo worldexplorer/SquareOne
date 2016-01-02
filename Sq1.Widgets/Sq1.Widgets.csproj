@@ -110,6 +110,10 @@
       <DependentUpon>DataSourceEditorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="DataSourceEditor\DataSourceEditorControl.EventGenerator.cs">
+      <DependentUpon>DataSourceEditorControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="DataSourceEditor\MarketInfoEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

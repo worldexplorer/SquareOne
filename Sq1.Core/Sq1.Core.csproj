@@ -106,7 +106,8 @@
     <Compile Include="Livesim\LivesimBroker.Paranoid.cs">
       <DependentUpon>LivesimBroker.cs</DependentUpon>
     </Compile>
-    <Compile Include="Livesim\LivesimSpoiler.cs" />
+    <Compile Include="Livesim\LivesimBrokerSpoiler.cs" />
+    <Compile Include="Livesim\LivesimStreamingSpoiler.cs" />
     <Compile Include="Livesim\LivesimStreaming.Paranoid.cs">
       <DependentUpon>LivesimStreaming.cs</DependentUpon>
     </Compile>

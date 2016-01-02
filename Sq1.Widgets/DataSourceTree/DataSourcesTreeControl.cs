@@ -97,7 +97,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			foreach (DataSource ds in dataSources) {
 				StreamingAdapter provider = ds.StreamingAdapter;
 				if (provider == null) continue;
-				this.populateIconForDataSource(ds);
+				this.PopulateIconForDataSource(ds);
 			}
 			this.tree.SetObjects(dataSources);
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;
@@ -110,23 +110,24 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.tree.SmallImageList = this.imageList; 	// #2 may be icons for recently added/edited datasources will show up/update?
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = false;
 		}
-		void populateIconForDataSource(DataSource ds) {
-			string msig = " //populateIconForDataSource()";
+		public void PopulateIconForDataSource(DataSource ds) {
+			string msig = " //PopulateIconForDataSource()";
 			if (ds == null) {
 				string msg = "ds==null";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
+			msig = " //PopulateIconForDataSource(" + ds.ToString() + ")";
 
 			StreamingAdapter adapter = ds.StreamingAdapter;
 			if (adapter == null) {
-				string msg = "ds[" + ds + "].StreamingAdapter==null";
-				Assembler.PopupException(msg + msig);
+				string msg = "LOOKS_LIKE_YOU_REMOVED_STREAMING_IN_DataSourceEditor_AND_SAVED_DataSource?";
+				//Assembler.PopupException(msg + msig);
 				return;
 			}
 
 			if (adapter.Icon == null) {
-				string msg = "ds[" + ds + "].StreamingAdapter[" + adapter + "].Icon==null";
+				string msg = "ds.StreamingAdapter[" + adapter + "].Icon==null";
 				Assembler.PopupException(msg + msig);
 				return;
 			}
@@ -267,8 +268,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 			try {
 				//throws when I point into Symbol folded inside a collapsed datasource this.tree.EnsureVisible(indexToSelect);
 				this.tree.Expand(dataSourceName);	// doesn't really expand the collapsed "Qmock" but let the selected row go "under" it; whatever, if I collapsed then I don't need the content
-				this.tree.SelectedIndex = indexToSelect;
-				this.tree.RefreshSelectedObjects();
+				if (this.tree.SelectedIndex != indexToSelect) {
+					this.tree.SelectedIndex  = indexToSelect;
+					this.tree.RefreshSelectedObjects();
+				}
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
 			}

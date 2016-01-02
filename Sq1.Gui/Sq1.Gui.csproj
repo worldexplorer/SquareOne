@@ -192,6 +192,10 @@
     <Compile Include="Singletons\CsvImporterForm.Designer.cs">
       <DependentUpon>CsvImporterForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Singletons\DataSourceEditorForm.EventConsumer.cs">
+      <DependentUpon>DataSourceEditorForm.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Singletons\DockContentSingleton.cs">
       <SubType>Form</SubType>
     </Compile>

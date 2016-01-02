@@ -15,19 +15,20 @@ namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
 	public partial class LivesimStreaming : BacktestStreaming, IDisposable {
 		// without [JsonIgnore] Livesim children will have these properties in JSON
-		[JsonIgnore]	public		ManualResetEvent			Unpaused			{ get; private set; }
+		[JsonIgnore]	public		ManualResetEvent			Unpaused					{ get; private set; }
 		[JsonIgnore]				ChartShadow					chartShadow_notUsed;
 		[JsonIgnore]				LivesimDataSource			livesimDataSource;
-		[JsonIgnore]	public		Livesimulator				Livesimulator		{ get { return this.livesimDataSource.Executor.Livesimulator; } }
-		[JsonIgnore]	internal	LivesimStreamingSettings	LivesimSettings		{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
+		[JsonIgnore]	public		Livesimulator				Livesimulator				{ get { return this.livesimDataSource.Executor.Livesimulator; } }
+		[JsonIgnore]	internal	LivesimStreamingSettings	LivesimStreamingSettings	{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
 
 		//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
-		[JsonIgnore]	protected	LivesimBroker				LivesimBroker		{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe; } }
-		[JsonIgnore]	protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap	{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe.DataSnapshot; } }
+		[JsonIgnore]	protected	LivesimBroker				LivesimBroker				{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe; } }
+		[JsonIgnore]	protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap			{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe.DataSnapshot; } }
 
 		[JsonIgnore]	protected	LevelTwoGenerator			Level2generator;
-		[JsonIgnore]	protected	LivesimSpoiler				LivesimSpoiler;
-		[JsonIgnore]	public bool IsDisposed { get; private set; }
+		[JsonIgnore]	protected	LivesimStreamingSpoiler		LivesimStreamingSpoiler;
+
+		[JsonIgnore]	public		bool						IsDisposed					{ get; private set; }
 
 		public LivesimStreaming(LivesimDataSource livesimDataSource) : base() {
 			if (livesimDataSource == null) {
@@ -40,7 +41,7 @@ namespace Sq1.Core.Livesim {
 			this.Unpaused = new ManualResetEvent(true);
 			this.livesimDataSource = livesimDataSource;
 			this.Level2generator = new LevelTwoGeneratorLivesim(this);
-			this.LivesimSpoiler = new LivesimSpoiler(this);
+			this.LivesimStreamingSpoiler = new LivesimStreamingSpoiler(this);
 		}
 
 		protected LivesimStreaming() : base() {
@@ -75,7 +76,7 @@ namespace Sq1.Core.Livesim {
 
 			//v2
 			SymbolInfo symbolInfo_fromExecutor = this.livesimDataSource.Executor.Bars.SymbolInfo;
-			int howMany = this.LivesimSettings.LevelTwoLevelsToGenerate;
+			int howMany = this.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
 			this.Level2generator.Initialize(symbolInfo_fromExecutor, howMany);
 		}
 
@@ -90,7 +91,7 @@ namespace Sq1.Core.Livesim {
 			}
 
 			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
-			this.LivesimSpoiler.Spoil_priorTo_PushQuoteGenerated();
+			this.LivesimStreamingSpoiler.Spoil_priorTo_PushQuoteGenerated();
 
 			if (quote.IamInjectedToFillPendingAlerts) {
 				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
@@ -130,7 +131,7 @@ namespace Sq1.Core.Livesim {
 				string msg = "NO_NEED_TO_PING_BROKER_EACH_NEW_QUOTE__EVERY_PENDING_ALREADY_SCHEDULED";
 			}
 
-			this.LivesimSpoiler.Spoil_after_PushQuoteGenerated();
+			this.LivesimStreamingSpoiler.Spoil_after_PushQuoteGenerated();
 			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 		}
 

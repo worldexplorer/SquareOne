@@ -18,17 +18,17 @@ namespace Sq1.Widgets.DataSourceEditor {
 			ListViewItem lvi = this.lvStreamingAdapters.SelectedItems[0];
 			if (lvi.Tag == null) {
 				this.pnlStreamingEditor.Controls.Clear();
-				ds.StreamingAdapter = null;
+				dataSourceIamEditing.StreamingAdapter = null;
 				return;
 			}
-			ds.StreamingAdapter = (StreamingAdapter)lvi.Tag;
-			ds.StreamingAdapter.EditorInstance.PushStreamingAdapterSettingsToEditor();
-			ds.StreamingAdapter.EditorInstance.Dock = DockStyle.Fill;
+			dataSourceIamEditing.StreamingAdapter = (StreamingAdapter)lvi.Tag;
+			dataSourceIamEditing.StreamingAdapter.EditorInstance.PushStreamingAdapterSettingsToEditor();
+			dataSourceIamEditing.StreamingAdapter.EditorInstance.Dock = DockStyle.Fill;
 			//this.btnNext.Enabled = true;
 			//this.btnFinished.Enabled = false;
 			this.pnlStreamingEditor.Controls.Clear();
-			this.pnlStreamingEditor.Controls.Add(ds.StreamingAdapter.EditorInstance);
-			this.grpStreaming.Text = ds.StreamingAdapter.Name + " Settings";
+			this.pnlStreamingEditor.Controls.Add(dataSourceIamEditing.StreamingAdapter.EditorInstance);
+			this.grpStreaming.Text = dataSourceIamEditing.StreamingAdapter.Name + " Settings";
 		}
 		void lvBrokerAdapters_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.lvBrokerAdapters.SelectedItems.Count == 0) {
@@ -39,17 +39,17 @@ namespace Sq1.Widgets.DataSourceEditor {
 			ListViewItem lvi = this.lvBrokerAdapters.SelectedItems[0];
 			if (lvi.Tag == null) {
 				this.pnlBrokerEditor.Controls.Clear();
-				ds.BrokerAdapter = null;
+				dataSourceIamEditing.BrokerAdapter = null;
 				return;
 			}
-			ds.BrokerAdapter = (BrokerAdapter)lvi.Tag;
-			ds.BrokerAdapter.EditorInstance.PushBrokerAdapterSettingsToEditor();
-			ds.BrokerAdapter.EditorInstance.Dock = DockStyle.Fill;
+			dataSourceIamEditing.BrokerAdapter = (BrokerAdapter)lvi.Tag;
+			dataSourceIamEditing.BrokerAdapter.EditorInstance.PushBrokerAdapterSettingsToEditor();
+			dataSourceIamEditing.BrokerAdapter.EditorInstance.Dock = DockStyle.Fill;
 			//this.btnNext.Enabled = true;
 			//this.btnFinished.Enabled = false;
 			this.pnlBrokerEditor.Controls.Clear();
-			this.pnlBrokerEditor.Controls.Add(ds.BrokerAdapter.EditorInstance);
-			this.grpExecution.Text = ds.BrokerAdapter.Name + " Settings";
+			this.pnlBrokerEditor.Controls.Add(dataSourceIamEditing.BrokerAdapter.EditorInstance);
+			this.grpExecution.Text = dataSourceIamEditing.BrokerAdapter.Name + " Settings";
 		}
 		void btnSave_Click(object sender, EventArgs e) {
 			try {
@@ -62,7 +62,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			int i = 0;
 			foreach (BarScale barScale in Enum.GetValues(typeof(BarScale))) {
 				if (i == this.cmbScale.SelectedIndex) {
-					ds.ScaleInterval.Scale = barScale;
+					dataSourceIamEditing.ScaleInterval.Scale = barScale;
 					break;
 				}
 				i++;
@@ -77,17 +77,17 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.nmrInterval.Enabled = true;
 		}
 		void nmrInterval_ValueChanged(object sender, EventArgs e) {
-			ds.ScaleInterval.Interval = (int)this.nmrInterval.Value;
+			dataSourceIamEditing.ScaleInterval.Interval = (int)this.nmrInterval.Value;
 		}
 
 		void repositoryJsonDataSource_OnDataSourceRenamed_refreshTitle(object sender, NamedObjectJsonEventArgs<DataSource> e) {
-			this.txtDataSourceName.Text = this.ds.Name;
+			this.txtDataSourceName.Text = this.dataSourceIamEditing.Name;
 		}
 		void repositoryJsonDataSource_OnDataSourceDeleted_closeDataSourceEditor(object sender, NamedObjectJsonEventArgs<DataSource> e) {
 			this.ParentForm.Close();
 		}
 		void repositoryJsonDataSource_OnSymbolAddedRenamedRemoved_refreshSymbolsTextarea(object sender, DataSourceSymbolEventArgs e) {
-			if (this.ds != e.DataSource) {
+			if (this.dataSourceIamEditing != e.DataSource) {
 				string msg = "NOT_THE_DATASOURCE_IM_EDITING_IGNORING"
 					//+ " WHERE_SHOULD_I_GET_SymbolsCSV ? this.ds[" + this.ds.Name + "] != e.DataSource[" + e.DataSource.Name + "]"
 					//+ this.ds.Name + ".SymbolsCSV[" + this.ds.Name + "] or [" + e.DataSource.Name + "].SymbolsCSV" + e.DataSource.SymbolsCSV + "] ?"

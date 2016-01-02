@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Forms;
 
 using Sq1.Core;
 using Sq1.Core.DataFeed;
@@ -23,7 +24,7 @@ namespace Sq1.Gui.Singletons {
 			}
 			this.DataSourceEditorControl.Initialize(found);
 		}
-		
+
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos
 		// using ":" since "=" leads to an exception in DockPanelPersistor.cs
 		protected override string GetPersistString() {

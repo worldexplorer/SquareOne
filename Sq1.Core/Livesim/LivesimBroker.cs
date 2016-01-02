@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 
+using Newtonsoft.Json;
+
 using Sq1.Core.Accounting;
 using Sq1.Core.Broker;
 using Sq1.Core.Support;
@@ -14,20 +16,24 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
 	public partial class LivesimBroker : BrokerAdapter, IDisposable {
-		public		List<Order>					OrdersSubmittedForOneLivesimBacktest	{ get; private set; }
-		protected	LivesimDataSource			livesimDataSource;
-					LivesimBrokerSettings		settings { get { return this.livesimDataSource.Executor.Strategy.LivesimBrokerSettings; } }
-					object						threadEntryLockToHaveQuoteSentToThread;
-		public		LivesimBrokerDataSnapshot	DataSnapshot;
+		[JsonIgnore]	public		List<Order>					OrdersSubmittedForOneLivesimBacktest	{ get; private set; }
+		[JsonIgnore]	protected	LivesimDataSource			livesimDataSource;
+		[JsonIgnore]	internal	LivesimBrokerSettings		LivesimBrokerSettings					{ get { return this.livesimDataSource.Executor.Strategy.LivesimBrokerSettings; } }
+		[JsonIgnore]				object						threadEntryLockToHaveQuoteSentToThread;
+		[JsonIgnore]	public		LivesimBrokerDataSnapshot	DataSnapshot;
+		[JsonIgnore]	protected	LivesimBrokerSpoiler		LivesimBrokerSpoiler;
+
+		[JsonIgnore]	public		bool						IsDisposed								{ get; private set; }
 
 		public LivesimBroker(LivesimDataSource livesimDataSource) : base() {
 			base.Name = "LivesimBroker";
 			base.AccountAutoPropagate = new Account("LIVESIM_ACCOUNT", -1000);
 			base.AccountAutoPropagate.Initialize(this);
-			OrdersSubmittedForOneLivesimBacktest	= new List<Order>();
-			threadEntryLockToHaveQuoteSentToThread	= new object();
-			this.livesimDataSource					= livesimDataSource;
-			DataSnapshot							= new LivesimBrokerDataSnapshot(this.livesimDataSource);
+			this.OrdersSubmittedForOneLivesimBacktest	= new List<Order>();
+			this.threadEntryLockToHaveQuoteSentToThread	= new object();
+			this.livesimDataSource						= livesimDataSource;
+			this.DataSnapshot							= new LivesimBrokerDataSnapshot(this.livesimDataSource);
+			this.LivesimBrokerSpoiler					= new LivesimBrokerSpoiler(this);
 		}
 
 		protected LivesimBroker() {
@@ -77,10 +83,10 @@ namespace Sq1.Core.Livesim {
 			base.OrderProcessor.UpdateOrderStateDontPostProcess(orderPendingToKill, omsg3);
 
 			int delay = 0;
-			if (this.settings.KillPendingDelayEnabled) {
-				delay = settings.KillPendingDelayMillisMin;
-				if (settings.KillPendingDelayMillisMax > 0) {
-					int range = Math.Abs(settings.KillPendingDelayMillisMax - settings.KillPendingDelayMillisMin);
+			if (this.LivesimBrokerSettings.KillPendingDelayEnabled) {
+				delay = LivesimBrokerSettings.KillPendingDelayMillisMin;
+				if (LivesimBrokerSettings.KillPendingDelayMillisMax > 0) {
+					int range = Math.Abs(LivesimBrokerSettings.KillPendingDelayMillisMax - LivesimBrokerSettings.KillPendingDelayMillisMin);
 					double rnd0to1 = new Random().NextDouble();
 					int rangePart = (int)Math.Round(range * rnd0to1);
 					delay += rangePart;
@@ -122,17 +128,20 @@ namespace Sq1.Core.Livesim {
 				return;
 			}
 
-			int delay = 0;
-			if (this.settings.DelayBeforeFillEnabled) {
-				delay = settings.DelayBeforeFillMillisMin;
-				if (settings.DelayBeforeFillMillisMax > 0) {
-					int range = Math.Abs(settings.DelayBeforeFillMillisMax - settings.DelayBeforeFillMillisMin);
-					double rnd0to1 = new Random().NextDouble();
-					int rangePart = (int)Math.Round(range * rnd0to1);
-					delay += rangePart;
-				}
-			}
-			if (delay == 0) {
+			//MOVED_TO_LivesimBrokerSpoiler
+			//int delayBeforeFill = 0;
+			//if (this.settings.DelayBeforeFillEnabled) {
+			//    delayBeforeFill = settings.DelayBeforeFillMillisMin;
+			//    if (settings.DelayBeforeFillMillisMax > 0) {
+			//        int range = Math.Abs(settings.DelayBeforeFillMillisMax - settings.DelayBeforeFillMillisMin);
+			//        double rnd0to1 = new Random().NextDouble();
+			//        int rangePart = (int)Math.Round(range * rnd0to1);
+			//        delayBeforeFill += rangePart;
+			//    }
+			//}
+
+			int delayBeforeFill = this.LivesimBrokerSpoiler.DelayBeforeFill_Calculate();
+			if (delayBeforeFill == 0) {
 				this.consumeQuoteOfStreamingBarToFillPendingAsync(quoteUnattachedVolatilePointer, willBeFilled);
 				return;
 			}
@@ -151,7 +160,8 @@ namespace Sq1.Core.Livesim {
 
 				executor.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
 				//Application.DoEvents();
-				Thread.Sleep(delay);
+				//MOVED_TO_LivesimBrokerSpoiler Thread.Sleep(delayBeforeFill);
+				this.LivesimBrokerSpoiler.DelayBeforeFill_ThreadSleep();
 				AlertList afterDelay = snap.AlertsPending;
 				if (afterDelay.Count == 0) return;
 				if (priorDelayedFill.Count != afterDelay.Count) {
@@ -284,6 +294,5 @@ namespace Sq1.Core.Livesim {
 			this.DataSnapshot		= null;
 			this.IsDisposed = true;
 		}
-		public bool IsDisposed { get; private set; }
 	}
 }

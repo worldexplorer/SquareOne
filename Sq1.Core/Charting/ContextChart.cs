@@ -29,7 +29,7 @@ namespace Sq1.Core.StrategyBase {
 			DataRange					= new BarDataRange(500);
 			IsStreamingTriggeringScript	= false;
 			ShowRangeBar				= false;
-			IsStreaming					= true;
+			IsStreaming					= false;
 		}
 		public void AbsorbFrom(ContextChart found) {
 			if (found == null) return;
@@ -57,7 +57,7 @@ namespace Sq1.Core.StrategyBase {
 			sb.Append(this.Symbol);
 			sb.Append(" [");
 			if (this.ScaleInterval != null) sb.Append(this.ScaleInterval.ToString());
-			sb.Append(" ]");
+			sb.Append("]");
 			if (typeof(ContextChart) != this.GetType()) {	//append ContextScript name, not for ContextChart
 				sb.Append(" ctx/");
 				sb.Append(this.Name);
