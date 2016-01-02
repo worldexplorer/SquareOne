@@ -20,15 +20,12 @@
   },
   "BrokerAdapter": {
     "$type": "Sq1.Adapters.QuikLivesim.QuikLivesimBroker, Sq1.Adapters.QuikLivesim",
-    "DataSnapshot": null,
     "Account": {
       "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
       "AccountNumber": "ACCTNR_NOT_SET",
       "CashAvailable": -1000.0,
       "AccountValueTimeStamp": "0001-01-01T00:00:00"
-    },
-    "OrdersSubmittedForOneLivesimBacktest": null,
-    "IsDisposed": false
+    }
   },
   "MarketName": "MOCK",
   "Name": "Qmock",

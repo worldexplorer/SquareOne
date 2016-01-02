@@ -13,14 +13,11 @@
     "AsTimeSpanInSeconds": 60,
     "AsTimeSpan": "00:01:00"
   },
-  "StreamingAdapter": {
-    "$type": "Sq1.Adapters.QuikLivesim.QuikLivesimStreaming, Sq1.Adapters.QuikLivesim",
-    "ConnectionState": 0
-  },
+  "StreamingAdapter": null,
   "BrokerAdapter": null,
-  "MarketName": "MOCK",
+  "MarketName": "BACKTEST",
   "Name": "MOCK",
-  "StreamingAdapterName": "QuikLivesimStreaming",
+  "StreamingAdapterName": "PLEASE_ATTACH_AND_CONFIGURE_STREAMING_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT",
   "BrokerAdapterName": "PLEASE_ATTACH_AND_CONFIGURE_BROKER_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\MOCK"
 }
