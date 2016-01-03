@@ -15,18 +15,11 @@
     "AsTimeSpanInSeconds": 300,
     "AsTimeSpan": "00:05:00"
   },
-  "StreamingAdapter": {
-    "$type": "Sq1.Adapters.Quik.QuikStreaming, Sq1.Adapters.Quik",
-    "DdeServiceName": "SQ1",
-    "DdeTopicQuotes": "quotes",
-    "DdeTopicTrades": "trades",
-    "DdeTopicPrefixDom": "dom",
-    "ConnectionState": 1
-  },
+  "StreamingAdapter": null,
   "BrokerAdapter": null,
   "MarketName": "MOCK",
   "Name": "STATIC",
-  "StreamingAdapterName": "QuikStreaming",
+  "StreamingAdapterName": "PLEASE_ATTACH_AND_CONFIGURE_STREAMING_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT",
   "BrokerAdapterName": "PLEASE_ATTACH_AND_CONFIGURE_BROKER_ADAPDER_IN_DATA_SOURCE_RIGHT_CLICK_EDIT",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\STATIC"
 }

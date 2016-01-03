@@ -91,16 +91,18 @@
       "SequenceIterationName": "it was a F5 GUI invoked backtest, not an optimization",
       "SequenceIterationSerno": -1,
       "Name": "Default",
-      "Symbol": "RIM3-Qmock",
-      "DataSourceName": "Qmock",
+      "Symbol": "RIM3",
+      "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-        "AsString_cached": "1-Minute",
+        "Interval": 5,
         "Scale": 3,
-        "Interval": 1,
+        "AsString_cached": "5-Minute",
         "IsIntraday": true,
-        "AsTimeSpanInSeconds": 60,
-        "AsTimeSpan": "00:01:00"
+        "AsTimeSpanInSeconds": 300,
+        "AsTimeSpan": "00:05:00",
+        "AsStringShortest_cached": "5m",
+        "AsStringShort_cached": "5min"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -114,7 +116,7 @@
       "ShowRangeBar": false,
       "IsStreaming": false,
       "ScriptAndIndicatorParametersMergedUnclonedForSequencerByName_AsString": "(MAfast.Period=29,MAslow.Period=16)",
-      "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3-Qmock 1-Minute 510 Bars"
+      "SymbolScaleIntervalDataRangeForScriptContextNewName": "RIM3 5-Minute 510 Bars"
     },
     "+ Net[248.0] PF[1.19] RF[0.55]": {
       "$type": "Sq1.Core.StrategyBase.ContextScript, Sq1.Core",
@@ -199,12 +201,14 @@
       "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-        "AsString_cached": "1-Minute",
-        "Scale": 3,
         "Interval": 1,
+        "Scale": 3,
+        "AsString_cached": "1-Minute",
         "IsIntraday": true,
         "AsTimeSpanInSeconds": 60,
-        "AsTimeSpan": "00:01:00"
+        "AsTimeSpan": "00:01:00",
+        "AsStringShortest_cached": "1m",
+        "AsStringShort_cached": "1min"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -306,12 +310,14 @@
       "DataSourceName": "MOCK",
       "ScaleInterval": {
         "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-        "AsString_cached": "1-Minute",
-        "Scale": 3,
         "Interval": 1,
+        "Scale": 3,
+        "AsString_cached": "1-Minute",
         "IsIntraday": true,
         "AsTimeSpanInSeconds": 60,
-        "AsTimeSpan": "00:01:00"
+        "AsTimeSpan": "00:01:00",
+        "AsStringShortest_cached": "1m",
+        "AsStringShort_cached": "1min"
       },
       "DataRange": {
         "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -362,7 +368,7 @@
   },
   "LivesimStreamingSettings": {
     "$type": "Sq1.Core.Livesim.LivesimStreamingSettings, Sq1.Core",
-    "DelayBetweenSerialQuotesMin": 15,
+    "DelayBetweenSerialQuotesMin": 35,
     "DelayBetweenSerialQuotesMax": 0,
     "DelayBetweenSerialQuotesEnabled": true,
     "OutOfOrderQuoteGenerationHappensOncePerQuoteMin": 0,

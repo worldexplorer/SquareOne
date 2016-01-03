@@ -1,7 +1,7 @@
 [
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
-    "priceDecimals": 2,
+    "priceDecimals": 0,
     "SecurityType": 1,
     "Symbol": "autogen",
     "SymbolClass": "NO_SYMBOL_CLASS",
@@ -47,7 +47,7 @@
   },
   {
     "$type": "Sq1.Core.DataTypes.SymbolInfo, Sq1.Core",
-    "priceDecimals": 2,
+    "priceDecimals": 0,
     "SecurityType": 1,
     "Symbol": "GMKN",
     "SymbolClass": "EQBR",

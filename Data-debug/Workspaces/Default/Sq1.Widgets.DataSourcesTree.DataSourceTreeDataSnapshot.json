@@ -5,6 +5,7 @@
     "STATIC",
     "MOCK"
   ],
-  "ShowHeader": true,
-  "ShowSearchBar": false
+  "ShowHeader": false,
+  "ShowSearchBar": false,
+  "AppendMarketToDataSourceName": false
 }

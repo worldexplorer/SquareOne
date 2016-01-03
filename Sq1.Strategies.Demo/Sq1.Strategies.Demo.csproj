@@ -28,7 +28,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\Sq1.Gui\bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;QUIK_REFERRED_disabled</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;QUIK_REFERRED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <BaseAddress>4194304</BaseAddress>

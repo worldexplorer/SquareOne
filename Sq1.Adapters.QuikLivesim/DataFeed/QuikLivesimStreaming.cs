@@ -134,13 +134,18 @@ namespace Sq1.Adapters.QuikLivesim {
 
 			//LivesimStreaming.cs does {base.PushQuoteGenerated(quote);} here
 
+			if (this.QuikLivesimBatchPublisher == null) {
+				string msg = "AVOIDING_NPE QuikLivesimBatchPublisher_WANST_CREATED_NORMALLY_IN_UpstreamConnect_LivesimStarting()";
+				Assembler.PopupException(msg);
+				//DONT_EVEN_WANNA_TRY_DEALOCK base.Livesimulator.AbortRunningBacktestWaitAborted();
+				base.Livesimulator.RequestingBacktestAbort.Set();
+			}
+
 			
 			string msg1 = "I_PREFER_TO_PUSH_LEVEL2_NOW__BEFORE_base.PushQuoteGenerated(quote)";
 			//v3 REDIRECTING_PushQuoteGenerated_RADICAL_PARENT_DETACHED base.Level2generator.GenerateAndStoreInStreamingSnap(quote);
 			base.Level2generator.GenerateForQuote(quote);
 			this.QuikLivesimBatchPublisher.SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(base.Level2generator.LevelTwoAsks, base.Level2generator.LevelTwoBids);
-
-
 			this.QuikLivesimBatchPublisher.SendQuote_DdeClientPokesDdeServer_waitServerProcessed(quote);
 
 			#region otherwize injectQuotesToFillPendings doesn't get invoked (copypaste from LivesimStreaming)
