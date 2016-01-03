@@ -64,6 +64,8 @@ namespace Sq1.Gui.Forms {
 				if (contextChart.DataSourceName != e.DataSource.Name)	contextChart.DataSourceName = e.DataSource.Name; 
 				if (contextChart.Symbol			!= e.Symbol) 			contextChart.Symbol 		= e.Symbol;
 				this.chartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("DataSourcesTree_OnSymbolSelected");
+				DataSourcesForm.Instance.DataSourcesTreeControl.Refresh();
+
 				this.chartFormManager.SequencerFormIfOpenPropagateTextboxesOrMarkStaleResultsAndDeleteHistory();
 
 				//copypaste from MainFormEventManager.DockPanel_ActiveDocumentChanged()

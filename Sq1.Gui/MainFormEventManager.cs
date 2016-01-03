@@ -268,6 +268,7 @@ namespace Sq1.Gui {
 			} else {
 				SymbolInfoEditorForm.Instance.Show();
 			}
+			SymbolInfoEditorForm.Instance.SymbolEditorControl.PopulateWithSymbol_findOrCreateSymbolInfo(e.Symbol);
 		}
 		internal void DataSourcesTree_OnDataSourceDeletedClicked(object sender, DataSourceEventArgs e) {
 		}
@@ -381,6 +382,7 @@ namespace Sq1.Gui {
 
 		internal void DataSourceEditorControl_DataSourceEdited_updateDataSourcesTreeControl(object sender, DataSourceEventArgs e) {
 			// mouseover DataSource tree refreshes the OLV and the icon disappears after DataSourceEditor => change Streaming (even without Save, but Save is an official "event trigger")
+			// WEIRD_BUT_NOT_ENOUGH DataSourcesForm.Instance.DataSourcesTreeControl.Invalidate();
 			DataSourcesForm.Instance.DataSourcesTreeControl.Refresh();
 		}
 

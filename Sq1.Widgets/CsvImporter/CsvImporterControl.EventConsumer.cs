@@ -128,8 +128,8 @@ namespace Sq1.Widgets.CsvImporter {
 				if (this.targetDataSource == null) {
 					throw new Exception("this.dataSourcesTree1.DataSourceSelected=null");
 				}
-				if (this.targetDataSource != this.dataSourcesTree1.DataSourceSelected) {
-					throw new Exception("this.targetDataSource[" + this.targetDataSource + "]!=this.dataSourcesTree1.DataSourceSelected[" + this.dataSourcesTree1.DataSourceSelected + "]");
+				if (this.targetDataSource != this.dataSourcesTree.DataSourceSelected) {
+					throw new Exception("this.targetDataSource[" + this.targetDataSource + "]!=this.dataSourcesTree1.DataSourceSelected[" + this.dataSourcesTree.DataSourceSelected + "]");
 				}
 				if (this.targetDataSource.BarsRepository == null) {
 					throw new Exception("dataSourcesTree1.DataSourceSelected.BarsFolder=null");

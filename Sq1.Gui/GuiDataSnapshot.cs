@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Sq1.Charting;
+
 using Sq1.Core.Charting;
+
 using Sq1.Gui.Forms;
 using Sq1.Gui.Singletons;
 

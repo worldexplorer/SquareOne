@@ -53,7 +53,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 		}
 		void btnSave_Click(object sender, EventArgs e) {
 			try {
-				this.ApplyEditorsToDataSourceAndClose();
+				this.ApplyEditorsToDataSource();
 			} catch (Exception exc) {
 				Assembler.PopupException("btnSave_Click()", exc);
 			}

@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.ComponentModel;	//[Browsable(true)]
 
 using BrightIdeasSoftware;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Repositories;
 using Sq1.Core.Serializers;
 using Sq1.Core.Streaming;
+using Sq1.Core.Charting;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl : UserControl {
@@ -22,10 +25,13 @@ namespace Sq1.Widgets.DataSourcesTree {
 				Serializer<DataSourceTreeDataSnapshot>	dataSnapshotSerializer;
 
 		public string TreeFirstColumnNameText {
-			get { return this.olvColumnName.Text; }
-			set { this.olvColumnName.Text = value; }
+			get { return this.olvcName.Text; }
+			set { this.olvcName.Text = value; }
 		}
-		public bool ShowScaleIntervalInsteadOfMarket;
+
+		[Browsable(true)]
+		public bool AppendMarketToDataSourceName { get; set; }
+
 		public List<ToolStripMenuItem> DataSourcesAsMniList { get {
 			List<ToolStripMenuItem> ret = new List<ToolStripMenuItem>();
 			foreach (DataSource ds in Assembler.InstanceInitialized.RepositoryJsonDataSource.ItemsAsList) {
@@ -39,6 +45,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		} }
 		public DataSourcesTreeControl() {
 			this.InitializeComponent();
+			this.AppendMarketToDataSourceName = true;
 			this.dataSourceTreeListViewCustomize();
 
 			this.dataSnapshotSerializer = new Serializer<DataSourceTreeDataSnapshot>();
@@ -66,14 +73,14 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.populateDataSnapshotDeserialized();
 			
 			// TODO MULTIPLE_INITIALIZATIONS_WILL_INVOKE_YOUR_HANDLERS_MULTIPLE_TIMES
-			this.dataSourceRepository.OnItemAdded += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceAdded);
-			this.dataSourceRepository.OnItemRenamed += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceRenamed);
-			this.dataSourceRepository.OnItemCanBeRemoved += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceCanBeRemoved);
-			this.dataSourceRepository.OnItemRemovedDone += new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceRemovedDone);
-			this.dataSourceRepository.OnSymbolAdded += new EventHandler<DataSourceSymbolEventArgs>(dataSourceRepository_OnSymbolAdded);
-			this.dataSourceRepository.OnSymbolRenamed += new EventHandler<DataSourceSymbolRenamedEventArgs>(dataSourceRepository_OnSymbolRenamed);
-			this.dataSourceRepository.OnSymbolCanBeRemoved += new EventHandler<DataSourceSymbolEventArgs>(dataSourceRepository_OnSymbolCanBeRemoved);
-			this.dataSourceRepository.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(dataSourceRepository_OnSymbolRemovedDone);
+			this.dataSourceRepository.OnItemAdded			+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceAdded);
+			this.dataSourceRepository.OnItemRenamed			+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceRenamed);
+			this.dataSourceRepository.OnItemCanBeRemoved	+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceCanBeRemoved);
+			this.dataSourceRepository.OnItemRemovedDone		+= new EventHandler<NamedObjectJsonEventArgs<DataSource>>(dataSourceRepository_OnDataSourceRemovedDone);
+			this.dataSourceRepository.OnSymbolAdded			+= new EventHandler<DataSourceSymbolEventArgs>(dataSourceRepository_OnSymbolAdded);
+			this.dataSourceRepository.OnSymbolRenamed		+= new EventHandler<DataSourceSymbolRenamedEventArgs>(dataSourceRepository_OnSymbolRenamed);
+			this.dataSourceRepository.OnSymbolCanBeRemoved	+= new EventHandler<DataSourceSymbolEventArgs>(dataSourceRepository_OnSymbolCanBeRemoved);
+			this.dataSourceRepository.OnSymbolRemovedDone	+= new EventHandler<DataSourceSymbolEventArgs>(dataSourceRepository_OnSymbolRemovedDone);
 		}
 		void populateDataSnapshotDeserialized() {
 			if (base.InvokeRequired) {
@@ -84,15 +91,18 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.tree.HeaderStyle = this.dataSnapshot.ShowHeader ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
 				this.mniShowHeader.Checked = this.dataSnapshot.ShowHeader;
 				
-				this.pnlSearch.Visible = this.dataSnapshot.ShowSearchBar;
-				this.mniShowSearchBar.Checked = this.dataSnapshot.ShowSearchBar;
+				this.pnlSearch			.Visible = this.dataSnapshot.ShowSearchBar;
+				this.mniShowSearchBar	.Checked = this.dataSnapshot.ShowSearchBar;
+
+				this.AppendMarketToDataSourceName									= this.dataSnapshot.AppendMarketToDataSourceName;
+				this.mniAppendMarketNameToDataSourceToolStripMenuItem	.Checked	= this.dataSnapshot.AppendMarketToDataSourceName;
 			} catch (Exception ex) {
 				string msg = "SHOULD_NEVER_HAPPEN StrategiesTreeControl.populateDataSnapshotDeserialized() ";
 				Assembler.PopupException(msg, ex);
 			}
 		}
 		void populateDataSourcesIntoTreeListView() {
-			var dataSources = dataSourceRepository.ItemsAsList;
+			List<DataSource> dataSources = dataSourceRepository.ItemsAsList;
 			this.imageList.Images.Clear();
 			foreach (DataSource ds in dataSources) {
 				StreamingAdapter provider = ds.StreamingAdapter;
@@ -101,7 +111,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			}
 			this.tree.SetObjects(dataSources);
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;
-			foreach (var dsEach in dataSources) {
+			foreach (DataSource dsEach in dataSources) {
 				if (this.dataSnapshot.DataSourceFoldersExpanded.Contains(dsEach.Name) == false) continue;
 				this.tree.Expand(dsEach);
 			}
@@ -177,12 +187,14 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// [5] => DataSource2.Symbol1
 			// [6] => DataSource2.Symbol2
 			foreach (object dsOrSymbol in this.tree.ObjectsForClustering) {
-				if (dsOrSymbol is DataSource) {
-					if (dataSourceParent == null || dataSourceParent != dsOrSymbol) dataSourceParent = (DataSource)dsOrSymbol;
-				} else {
+				DataSource dataSource = dsOrSymbol as DataSource;
+				SymbolOfDataSource symbolOfDataSource = dsOrSymbol as SymbolOfDataSource;
+				if (dataSource != null) {
+					if (dataSourceParent == null || dataSourceParent != dataSource) dataSourceParent = dataSource;
+				} else if (symbolOfDataSource != null) {
 					if (indexCurrent > itemRowIndex) break;
 					if (indexCurrent == itemRowIndex) {
-						symbol = dsOrSymbol.ToString();
+						symbol = symbolOfDataSource.Symbol;
 						break;
 					}
 				}
@@ -278,6 +290,12 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 			this.DataSourceSelected = dataSourceFound;
 			this.SymbolSelected = symbol;
+		}
+
+		public void SelectChartShadow(ChartShadow chartControl) {
+			this.tree.Expand(chartControl.SymbolOfDataSource);
+			this.tree.SelectObject(chartControl, true);
+			this.tree.RebuildAll(true);
 		}
 	}
 }

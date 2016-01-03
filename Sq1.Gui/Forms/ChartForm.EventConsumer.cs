@@ -11,6 +11,7 @@ using Sq1.Core.StrategyBase;
 
 using Sq1.Widgets;
 using Sq1.Widgets.LabeledTextBox;
+using Sq1.Core.Charting;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
@@ -193,12 +194,6 @@ namespace Sq1.Gui.Forms {
 			} catch (Exception ex) {
 				Assembler.PopupException("mniBacktestNow_Click()", ex);
 			}
-		}
-		void chartForm_Closed(object sender, FormClosedEventArgs e) {
-			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
-				return;
-			}
-			this.ChartFormManager.DataSnapshotSerializer.DeleteJsonFile();
 		}
 		void mnitlbAll_UserTyped(object sender, LabeledTextBoxUserTypedArgs e) {
 			this.ctxBars.Visible = true;
@@ -469,6 +464,14 @@ namespace Sq1.Gui.Forms {
 				return;	// why signal on already-signalled?
 			}
 			this.waitForChartFormIsLoaded.Set();
+			this.ChartControl.ChartShadow_AddToDataSource();
+		}
+		void chartForm_Closed(object sender, FormClosedEventArgs e) {
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
+				return;
+			}
+			this.ChartFormManager.DataSnapshotSerializer.DeleteJsonFile();
+			this.ChartControl.ChartShadow_RemoveFromDataSource();
 		}
 
 		void mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim_Clicked(object sender, EventArgs e) {

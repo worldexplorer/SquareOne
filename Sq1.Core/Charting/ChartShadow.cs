@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
 
-#if NON_DOUBLE_BUFFERED_reverted_to_compulsory_UserControl_no_buffering
+#if NON_DOUBLE_BUFFERED	//_reverted_to_compulsory_UserControl_no_buffering
 using System.Windows.Forms;
 #endif
 
@@ -13,16 +13,19 @@ using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
 using Sq1.Core.DataTypes;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Charting {
 	public partial class ChartShadow : 
-//COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH #if !NON_DOUBLE_BUFFERED_reverted_to_compulsory_UserControl_no_buffering
+//COMMENTED_OUT_TO_MAKE_C#DEVELOPER_CLICK_THROUGH
+#if NON_DOUBLE_BUFFERED //_reverted_to_compulsory_UserControl_no_buffering
+	UserControl
+#else
 	UserControlDoubleBuffered
-//#else
-//	UserControl
-//#endif
+#endif
 		, IDisposable
 	{
+		public SymbolOfDataSource SymbolOfDataSource { get; private set; }
 		// REASON_TO_EXIST: renderOnChartLines() was throwing "Dictionary.CopyTo target array wrong size" during backtest & chartMouseOver
 		// push-type notification from Backtester: ChartControl:ChartShadow doen't have access to Core.ScriptExecutor.BacktestIsRunning so Backtester mimics it here 
 		public ManualResetEvent paintAllowed { get; private set; }
@@ -52,7 +55,10 @@ namespace Sq1.Core.Charting {
 			this.Executor = executor;
 		}
 		public virtual void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool invalidateAllPanels = true) {
+			if (this.Bars != null) this.ChartShadow_RemoveFromDataSource();
 			this.Bars = barsNotNull;
+			this.ChartShadow_AddToDataSource();
+
 			// ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
 			this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
 			this.Bars.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
@@ -177,5 +183,67 @@ namespace Sq1.Core.Charting {
 			this.IsDisposed = true;
 		}
 		public bool IsDisposed { get; private set; }
+
+
+
+		public void ChartShadow_AddToDataSource() {
+			string msig = " //ChartShadow_AddToDataSource("  + this.ToString() + ")";
+			if (this.Bars == null) {
+				string msg = "DONT_ALLOW_CHART_WITHOUT_BARS";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (this.Bars.DataSource == null) {
+				string msg = "IM_LOADING_RANDOM_GENERATED_BARS_250";
+				//Assembler.PopupException(msg);
+				return;
+			}
+			string symbol = this.Bars.Symbol;
+			DictionaryManyToOne<SymbolOfDataSource, ChartShadow> chartsOpenForSymbol = this.Bars.DataSource.ChartsOpenForSymbol;
+			SymbolOfDataSource symbolOfDataSourceFound = chartsOpenForSymbol.FindSimilarKey(new SymbolOfDataSource(symbol, this.Bars.DataSource));
+			if (symbolOfDataSourceFound != null) {
+				List<ChartShadow> addingToList = chartsOpenForSymbol.FindContentsOf_NullUnsafe(symbolOfDataSourceFound);
+				if (addingToList.Contains(this) == false) {
+					chartsOpenForSymbol.Add(symbolOfDataSourceFound, this);
+				} else {
+					string msg = "YOU_ALREADY_ADDED_CHART_SHADOW_TO_DATASOURCE this.Bars.DataSource[" + this.Bars.DataSource + "].ChartsOpenForSymbol[" + symbolOfDataSourceFound + "]";
+					Assembler.PopupException(msg + msig);
+				}
+			} else {
+				string msg = "YOU_DIDNT_ADD_SYMBOL_TO_DATASOURCE.ChartsOpenForSymbol.Keys this.Bars.DataSource[" + this.Bars.DataSource + "].ChartsOpenForSymbol[" + symbolOfDataSourceFound + "]";
+				Assembler.PopupException(msg + msig);
+			}
+			this.SymbolOfDataSource = this.Bars.DataSource.ChartsOpenForSymbol.FindContainerFor_throws(this);
+		}
+		public void ChartShadow_RemoveFromDataSource() {
+			string msig = " //ChartShadow_RemoveFromDataSource("  + this.ToString() + ")";
+			if (this.Bars == null) {
+				string msg = "DONT_ALLOW_CHART_WITHOUT_BARS";
+				Assembler.PopupException(msg + msig);
+				return;
+			}
+			if (this.Bars.DataSource == null) {
+				string msg = "IM_REPLACING_RANDOM_GENERATED_BARS_250_WITH_SELECTED_FROM_DATASOURCE";
+				//Assembler.PopupException(msg);
+				return;
+			}
+			string symbol = this.Bars.Symbol;
+			DictionaryManyToOne<SymbolOfDataSource, ChartShadow> chartsOpenForSymbol = this.Bars.DataSource.ChartsOpenForSymbol;
+			SymbolOfDataSource symbolOfDataSourceFound = chartsOpenForSymbol.FindSimilarKey(new SymbolOfDataSource(symbol, this.Bars.DataSource));
+			if (symbolOfDataSourceFound != null) {
+				List<ChartShadow> iMustBeHere = chartsOpenForSymbol.FindContentsOf_NullUnsafe(symbolOfDataSourceFound);
+				if (iMustBeHere.Contains(this)) {
+					chartsOpenForSymbol.Remove(symbolOfDataSourceFound, this);
+				} else {
+					string msg = "YOU_DIDNT_ADD_CHART_SHADOW_TO_DATASOURCE this.Bars.DataSource[" + this.Bars.DataSource + "].ChartsOpenForSymbol[" + symbol + "]";
+					Assembler.PopupException(msg + msig);
+				}
+			} else {
+				string msg = "YOU_DIDNT_ADD_SYMBOL_TO_DATASOURCE.ChartsOpenForSymbol.Keys this.Bars.DataSource[" + this.Bars.DataSource + "].ChartsOpenForSymbol[" + symbol + "]";
+				Assembler.PopupException(msg + msig);
+			}
+			this.SymbolOfDataSource = null;
+		}
+
 	}
 }

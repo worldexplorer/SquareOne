@@ -224,7 +224,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.lvBrokerAdapters.Items[brokerIndex].Selected = true;
 			lvBrokerAdapters_SelectedIndexChanged(null, null);
 		}
-		public void ApplyEditorsToDataSourceAndClose() {
+		public void ApplyEditorsToDataSource() {
 			if (this.txtDataSourceName.Text == "") {
 				string msg = "Please provide Name for this new DataSet";
 				Assembler.PopupException(msg);
@@ -250,6 +250,8 @@ namespace Sq1.Widgets.DataSourceEditor {
 
 			this.dataSourceIamEditing.Name = this.txtDataSourceName.Text;
 			this.dataSourceIamEditing.Symbols = SymbolParser.ParseSymbols(this.txtSymbols.Text);
+			this.dataSourceIamEditing.ScaleInterval.StringsCachedInvalidate();
+
 			if (this.dataSourceIamEditing.StreamingAdapter	!= null) this.dataSourceIamEditing.StreamingAdapter	.EditorInstance.PushEditedSettingsToStreamingAdapter();
 			if (this.dataSourceIamEditing.BrokerAdapter		!= null) this.dataSourceIamEditing.BrokerAdapter	.EditorInstance.PushEditedSettingsToBrokerAdapter();
 

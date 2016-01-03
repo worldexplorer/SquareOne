@@ -18,6 +18,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.syncSymbolAndDataSourceSelectedFromRowIndexClicked(e.RowIndex);
 			if (this.SymbolSelected != null) {
 				this.RaiseOnSymbolSelected();
+				//this.tree.RebuildAll(true);
 			} else {
 				this.RaiseOnDataSourceSelected();
 			}
@@ -387,6 +388,17 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.txtSearch.Focus();
 			} catch (Exception ex) {
 				Assembler.PopupException("mniShowHeader_Click", ex);
+			}
+		}
+		void mniAppendMarketNameToDataSourceToolStripMenuItem_Click(object sender, EventArgs e) {
+			try {
+				this.AppendMarketToDataSourceName				= this.mniAppendMarketNameToDataSourceToolStripMenuItem.Checked;
+				this.dataSnapshot.AppendMarketToDataSourceName	= this.mniAppendMarketNameToDataSourceToolStripMenuItem.Checked;
+				this.dataSnapshotSerializer.Serialize();
+				//this.tree.RebuildAll(true);		// otherwize mouseover will trigger repaint
+				this.tree.Invalidate();		// otherwize mouseover will trigger repaint
+			} catch (Exception ex) {
+				Assembler.PopupException("mniAppendMarketNameToDataSourceToolStripMenuItem_Click", ex);
 			}
 		}
 		void mniSymbolInfoEditor_Click(object sender, EventArgs e) {
