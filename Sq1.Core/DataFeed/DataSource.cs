@@ -5,11 +5,13 @@ using System.Text;
 using System.Diagnostics;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.Broker;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Repositories;
 using Sq1.Core.Streaming;
 using Sq1.Core.StrategyBase;
+using Sq1.Core.Charting;
 
 namespace Sq1.Core.DataFeed {
 	public partial class DataSource : NamedObjectJsonSerializable {
@@ -49,6 +51,16 @@ namespace Sq1.Core.DataFeed {
 		[JsonProperty]	public string				DataSourceAbspath		{ get; protected set; }
 		[JsonIgnore]	public string				DataSourcesAbspath;
 
+		//[JsonIgnore]	public Dictionary<string, List<ChartShadow>>		ChartsOpenForSymbol { get; private set; }
+		//[JsonIgnore]	public List<SymbolOfDataSource>	SymbolsWithBackRef	{ get {
+		//    List<SymbolOfDataSource> ret = new List<SymbolOfDataSource>();
+		//    foreach (string symbol in this.Symbols) {
+		//        ret.Add(new SymbolOfDataSource(symbol, this));
+		//    }
+		//    return ret;
+		//} }
+		[JsonIgnore]	public DictionaryManyToOne<SymbolOfDataSource, ChartShadow>		ChartsOpenForSymbol { get; private set; }
+
 		// used only by JsonDeserialize()
 		public DataSource() {
 			Name = "";
@@ -56,6 +68,8 @@ namespace Sq1.Core.DataFeed {
 			Symbols = new List<string>();
 			SymbolSelected = "";
 			DataSourceAbspath = "DATASOURCE_INITIALIZE_NOT_INVOKED_YET";
+			//ChartsOpenForSymbol = new Dictionary<string, List<ChartShadow>>();
+			ChartsOpenForSymbol = new DictionaryManyToOne<SymbolOfDataSource, ChartShadow>();
 		}
 		
 		// should be used by a programmer
@@ -76,6 +90,9 @@ namespace Sq1.Core.DataFeed {
 			this.BarsRepository = new RepositoryBarsSameScaleInterval(this.DataSourceAbspath, this.ScaleInterval, true);
 
 			foreach (string symbol in this.Symbols) {
+				//this.ChartsOpenForSymbol.Add(symbol, new List<ChartShadow>());
+				this.ChartsOpenForSymbol.Register(new SymbolOfDataSource(symbol, this));
+
 				if (this.BarsRepository.DataFileExistsForSymbol(symbol)) continue;
 				Bars barsEmpty = new Bars(symbol, this.ScaleInterval, "DISCOVERED_NON_EXISTING");
 				// FAILED_FIXING_IN_DataDistributor BarStaticLastNullUnsafe=null for freshly added Symbol
@@ -109,6 +126,8 @@ namespace Sq1.Core.DataFeed {
 			}
 			this.BarsRepository.SymbolDataFileAdd(symbolToAdd);
 			this.Symbols.Add(symbolToAdd);
+			//NOPE_POSTPONED_AS_ATOMIC_KEY+FIRST_CONTENT this.ChartsOpenForSymbol.Add(symbolToAdd, new List<ChartShadow>());
+			// RepositoryJsonDataSource.RaiseOnSymbolAdded()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
 		}
 		internal void SymbolCopyOrCompressFrom(DataSource dataSourceFrom, string symbolToCopy, DataSource dataSourceTo) {
 			string msig = " // DataSource[" + this.Name + "].SymbolCopyOrCompressFrom(" + dataSourceFrom.Name + ", " + symbolToCopy + ") ";
@@ -142,36 +161,26 @@ namespace Sq1.Core.DataFeed {
 				throw new Exception("NEW_SYMBOL_ALREADY_EXISTS[" + newSymbolName + "] in [" + this.Name + "]");
 			}
 
-			//v1
-			//var replacement = new List<string>();
-			//foreach (var symbol in this.Symbols) {
-			//	var symbolCopy = symbol;
-			//	if (symbolCopy == oldSymbolName) {
-			//		symbolCopy = newSymbolName;
-			//	}
-			//	replacement.Add(symbolCopy);
-			//}
-			//this.Symbols = replacement;
-			
 			try {
-				//v2
 				bool executorProhibitedRenaming = this.RaiseSymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(oldSymbolName, newSymbolName);
 				if (executorProhibitedRenaming) return;	// event handlers are responsible to Assembler.PopupException(), I reported MY errors above
 	
-				#if DEBUG
-				//TESTED Debugger.Break();
-				#endif
-				//v3 SYMBOL_NOT_STORED_ANYMORE optimize file write time by seek to Bars.Symbol position &write FIXED-LENGTH string in header only => don't have to flush out 3Mb with bars' OHLCV;
-				//Bars bars = this.RequestDataFromRepository(oldSymbolName);
 				this.BarsRepository.SymbolDataFileRename(oldSymbolName, newSymbolName);
-				//bars.RenameSymbol(newSymbolName);
-				//this.BarsSave(bars);
-				//v3 SYMBOL_NOT_STORED_ANYMORE optimize end
+
+				// DUMB_AND_ERROR_PRONE
+				//List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol[oldSymbolName];
+				//this.ChartsOpenForSymbol.Add(newSymbolName, chartsForOldSymbol);
+				//this.ChartsOpenForSymbol.Remove(oldSymbolName);
+				SymbolOfDataSource oldSymbolOfDataSource = this.ChartsOpenForSymbol.FindSimilarKey(new SymbolOfDataSource(oldSymbolName, this));
+				if (oldSymbolOfDataSource != null) {
+					this.ChartsOpenForSymbol.RenameKey(oldSymbolOfDataSource, new SymbolOfDataSource(newSymbolName, this));
+				}
+				// RepositoryJsonDataSource.RaiseOnSymbolRenamed()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
 			} catch (Exception ex) {
 				Assembler.PopupException("DataSource.SymbolRename(" + oldSymbolName + "=>" + newSymbolName + ")", ex);
 			}
 
-			//re-read for DataSourceTree use (?)
+			// outside the try{} block to keep UI with latest changes
 			this.Symbols = this.BarsRepository.SymbolsInScaleIntervalSubFolder;
 		}
 		public void SymbolsRebuildReadDataSourceSubFolderAfterDeserialization() {
@@ -184,6 +193,16 @@ namespace Sq1.Core.DataFeed {
 			}
 			this.Symbols.Remove(symbolToDelete);
 			this.BarsRepository.SymbolDataFileDelete(symbolToDelete);
+
+			List<ChartShadow> chartsForOldSymbol = this.ChartsOpenForSymbol.FindContentsForSimilarKey_NullUnsafe(new SymbolOfDataSource(symbolToDelete, this));
+			if (chartsForOldSymbol != null) {
+				string msg = "SHOULD_I_CLOSE_THE_CHARTS_OPEN_WITH_SYMBOL? symbolToDelete[" + symbolToDelete + "]";
+				Assembler.PopupException(msg);
+			} else {
+				//this.ChartsOpenForSymbol.Remove(symbolToDelete);
+				this.ChartsOpenForSymbol.UnRegisterSimilar(new SymbolOfDataSource(symbolToDelete, this));
+				// RepositoryJsonDataSource.RaiseOnSymbolRemovedDone()_WILL_NOTIFY_DATASOURCE_TREE_UPSTACK this.DataSourceEdited_treeShouldRebuild(this);
+			}
 		}
 		internal int BarAppendOrReplaceLast(Bar barLastFormed, out string millisElapsed) {
 			int ret = -1;

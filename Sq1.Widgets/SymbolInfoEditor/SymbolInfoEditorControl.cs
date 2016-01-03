@@ -120,5 +120,16 @@ namespace Sq1.Widgets.SymbolEditor {
 			}
 			this.PopulateWithSymbolInfo(symbolInfo, true);
 		}
+
+		public void PopulateWithSymbol_findOrCreateSymbolInfo(string symbol) {
+			string msig = " //PopulateWithSymbol_findOrCreateSymbolInfo(" + symbol + ")";
+			SymbolInfo symbolInfo = this.repositorySerializerSymbolInfo.FindSymbolInfoNullUnsafe(symbol);
+			if (symbolInfo == null) {
+				string msg = "HACKY!!!!_RENAME_IN_REPOSITORY_FIRST__EDITOR_DEALS_WITH_EXISTING_DATA";
+				Assembler.PopupException(msg + msig);
+				symbolInfo = this.repositorySerializerSymbolInfo.FindSymbolInfoOrNew(symbol);
+			}
+			this.PopulateWithSymbolInfo(symbolInfo, true);
+		}
 	}
 }

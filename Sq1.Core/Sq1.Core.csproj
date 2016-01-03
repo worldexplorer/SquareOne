@@ -102,6 +102,7 @@
     <Compile Include="Correlation\KPIsCalculator.cs" />
     <Compile Include="Correlation\MomentumsCalculator.cs" />
     <Compile Include="Correlation\KPIsMomentum.cs" />
+    <Compile Include="DataFeed\SymbolOfDataSource.cs" />
     <Compile Include="Livesim\LevelTwoGenerator.cs" />
     <Compile Include="Livesim\LivesimBroker.Paranoid.cs">
       <DependentUpon>LivesimBroker.cs</DependentUpon>

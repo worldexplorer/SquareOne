@@ -902,10 +902,6 @@ namespace Sq1.Gui.Forms {
 		public void StrategyCompileActivatePopulateSlidersShow() {
 			if (this.Strategy.ActivatedFromDll == false) {
 				this.StrategyCompileActivateBeforeShow();
-			} else {
-				#if DEBUG
-				Debugger.Break();
-				#endif
 			}
 
 			if (this.Strategy.Script == null) {		// NULL if after restart the JSON Strategy.SourceCode was left with compilation errors/wont compile with MY_VERSION
@@ -940,7 +936,11 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg);
 				return;
 			}
-			DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
+
+			//v1 DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
+			//v2
+			DataSourcesForm.Instance.DataSourcesTreeControl.SelectChartShadow(this.ChartForm.ChartControl);
+
 			if (SymbolInfoEditorForm.Instance.IsShown) {
 				DataSourcesForm.Instance.DataSourcesTreeControl.RaiseOnSymbolInfoEditorClicked();
 			}

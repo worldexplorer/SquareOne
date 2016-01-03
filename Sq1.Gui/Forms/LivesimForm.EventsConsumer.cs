@@ -27,6 +27,12 @@ namespace Sq1.Gui.Forms {
 				btnStartStop.Enabled = true;
 				btnPauseResume.Enabled = true;
 				btnPauseResume.Checked = false;
+
+				// VERBOSE_LIVESIM_PART1/2_BTN_STREAMING_DISPLAYS_QUOTE_DETAILS-ACTIVATE
+				this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Enabled = false;
+				this.chartFormManager.ChartForm.btnStrategyEmittingOrders.Visible = true;
+				this.chartFormManager.ChartForm.btnStreamingTriggersScript.Enabled = false;
+				this.chartFormManager.ChartForm.btnStreamingTriggersScript.Visible = true;
 			} else {
 				btnStartStop.Text = "Stopping";
 				btnStartStop.Enabled = false;
@@ -36,6 +42,9 @@ namespace Sq1.Gui.Forms {
 				btnStartStop.Enabled = true;
 				btnPauseResume.Enabled = false;
 				btnPauseResume.Checked = false;
+
+				// VERBOSE_LIVESIM_PART1/2_BTN_STREAMING_DISPLAYS_QUOTE_DETAILS-RESTORE
+				this.chartFormManager.ChartForm.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 			}
 		}
 		void btnPauseResume_Click(object sender, EventArgs e) {

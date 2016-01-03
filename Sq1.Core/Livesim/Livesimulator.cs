@@ -104,7 +104,7 @@ namespace Sq1.Core.Livesim {
 
 				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
 				bool chartIsSubscribed = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
-				if (chartIsSubscribed) {
+				if (chartIsSubscribed == false) {
 				    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
 				    distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
 				    distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
@@ -112,6 +112,8 @@ namespace Sq1.Core.Livesim {
 
 				    // QuikLivesimStreaming should instantiate the Real QuikStreaming with a DDE server and then connect to it; parent's Livesim probably must ignore this pseudo-Event
 				    this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UpstreamConnect_LivesimStarting();	// exception instantiating DDE server with same topics wont run the simulation
+				} else {
+					string msg = "YOU_FORGOT_TO_UNSUBSCRIBE_TO_SUBSTITUTED_STREAMING";
 				}
 
 				base.Executor.BacktestContextInitialize(base.BarsSimulating);

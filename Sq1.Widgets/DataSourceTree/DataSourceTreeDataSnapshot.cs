@@ -8,5 +8,6 @@ namespace Sq1.Widgets.DataSourcesTree {
 		[JsonProperty]	public List<string> DataSourceFoldersExpanded = new List<string>();
 		[JsonProperty]	public bool ShowHeader = false;
 		[JsonProperty]	public bool ShowSearchBar = false;
+		[JsonProperty]	public bool AppendMarketToDataSourceName = true;
 	}
 }

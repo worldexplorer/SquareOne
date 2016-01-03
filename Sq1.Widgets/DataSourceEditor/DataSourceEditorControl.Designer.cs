@@ -399,6 +399,7 @@
 			this.txtSymbols.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtSymbols.Enabled = false;
 			this.txtSymbols.Location = new System.Drawing.Point(6, 112);
 			this.txtSymbols.Multiline = true;
 			this.txtSymbols.Name = "txtSymbols";
@@ -442,9 +443,9 @@
 			this.lblSymbols.AutoSize = true;
 			this.lblSymbols.Location = new System.Drawing.Point(6, 96);
 			this.lblSymbols.Name = "lblSymbols";
-			this.lblSymbols.Size = new System.Drawing.Size(46, 13);
+			this.lblSymbols.Size = new System.Drawing.Size(70, 13);
 			this.lblSymbols.TabIndex = 7;
-			this.lblSymbols.Text = "Symbols";
+			this.lblSymbols.Text = "Symbols CSV";
 			// 
 			// lblInterval
 			// 

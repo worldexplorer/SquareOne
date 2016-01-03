@@ -5,6 +5,10 @@ namespace Sq1.Core.Charting {
 	public class DictionaryManyToOne<CHART, ALERTS> {
 		Dictionary<CHART, List<ALERTS>> Lookup;
 		Dictionary<ALERTS, CHART> Reverse;
+
+		public List<CHART> Keys { get {
+			return new List<CHART>(this.Lookup.Keys);
+		} }
 		
 		public DictionaryManyToOne() {
 			this.Lookup = new Dictionary<CHART, List<ALERTS>>();
@@ -122,7 +126,7 @@ namespace Sq1.Core.Charting {
 			string msig = " DictionaryManyToOne::IsItemRegistered(alert[" + alert + "]): ";
 			return this.Reverse.ContainsKey(alert);
 		}
-		public CHART FindContainerForNull(ALERTS alert) {
+		public CHART FindContainerFor_throws(ALERTS alert) {
 			string msig = " //DictionaryManyToOne::FindContainerFor(alert[" + alert + "])";
 			if (this.Reverse.ContainsKey(alert) == false) {
 				string msg = "REVERSE_REFERENCE_WAS_NEVER_ADDED_FOR alert[" + alert + "]";
@@ -133,7 +137,7 @@ namespace Sq1.Core.Charting {
 			}
 			return this.Reverse[alert];
 		}
-		public List<ALERTS> FindContentsOfNullUnsafe(CHART chart) {
+		public List<ALERTS> FindContentsOf_NullUnsafe(CHART chart) {
 			string msig = " //DictionaryManyToOne::FindContents(chart[" + chart + "])";
 			if (this.Lookup.ContainsKey(chart) == false) {
 				string msg = "NEVER_REGISTERED_IN_this.Lookup chart[" + chart + "]";
@@ -141,6 +145,51 @@ namespace Sq1.Core.Charting {
 				return null;
 			}
 			return this.Lookup[chart];
+		}
+
+
+		// added for DataSource.cs: public DictionaryManyToOne<SymbolOfDataSource, ChartShadow> ChartsOpenForSymbol
+		internal void RenameKey(CHART oldSymbolName, CHART newSymbolName) {
+			List<ALERTS> chartShadowsOpenForSymbolOfDataSource = this.FindContentsOf_NullUnsafe(oldSymbolName);
+			foreach (ALERTS chartShadow in chartShadowsOpenForSymbolOfDataSource) {
+				this.Add(newSymbolName, chartShadow);
+				this.Remove(oldSymbolName, chartShadow);
+			}
+			if (this.Lookup[oldSymbolName].Count != 0) {
+				string msg = "MUST_BE_NO_CONTENT_FOR_THE_OLD_KEY[" + oldSymbolName + "] //RenameKey(" + oldSymbolName + "=>" + newSymbolName + ")";
+				Assembler.PopupException(msg);
+				return;
+			}
+			this.Lookup.Remove(oldSymbolName);
+		}
+		internal CHART FindSimilarKey(CHART anotherInstance) {
+			foreach (CHART existingKey in this.Lookup.Keys) {
+				if (existingKey.ToString() == anotherInstance.ToString()) return existingKey;
+			}
+			return default(CHART);		// I_HOPE_IT_IS_NULL
+		}
+		public List<ALERTS> FindContentsForSimilarKey_NullUnsafe(CHART anotherInstance) {
+			string msig = " //DictionaryManyToOne::FindContentsForSimilarKey(chart[" + anotherInstance + "])";
+			CHART existingKeyFound = this.FindSimilarKey(anotherInstance);
+			if (existingKeyFound == null) {
+				string msg = "NEVER_REGISTERED_IN_this.Lookup_WITH_SAME_.ToString() anotherInstance[" + anotherInstance.ToString() + "]";
+				Assembler.PopupException(msg + msig);
+			}
+			if (this.Lookup.ContainsKey(existingKeyFound) == false) {
+				string msg = "NEVER_REGISTERED_IN_this.Lookup existingKeyFound[" + existingKeyFound + "]";
+				Assembler.PopupException(msg + msig);
+				return null;
+			}
+			return this.Lookup[existingKeyFound];
+		}
+		internal void UnRegisterSimilar(CHART anotherInstance) {
+			string msig = " //DictionaryManyToOne::UnRegisterSimilar(" + anotherInstance + ")";
+			CHART existingKeyFound = this.FindSimilarKey(anotherInstance);
+			if (existingKeyFound == null) {
+				string msg = "NEVER_REGISTERED_IN_this.Lookup_WITH_SAME_.ToString() anotherInstance[" + existingKeyFound.ToString() + "]";
+				Assembler.PopupException(msg + msig);
+			}
+			this.UnRegister(existingKeyFound);
 		}
 	}
 }

@@ -4,13 +4,14 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
-using Sq1.Charting.OnChart;
 using Sq1.Core;
 using Sq1.Core.Charting;
 using Sq1.Core.Charting.OnChart;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Indicators;
+
+using Sq1.Charting.OnChart;
 
 namespace Sq1.Charting {
 	public partial class ChartControl : ChartShadow {

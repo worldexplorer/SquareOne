@@ -268,7 +268,7 @@ namespace Sq1.Core.Execution {
 			bool ret = true;
 			if (this.MyBrokerIsLivesim == false) return ret;
 			try {
-				ChartShadow chartShadow = Assembler.InstanceInitialized.AlertsForChart.FindContainerForNull(this);
+				ChartShadow chartShadow = Assembler.InstanceInitialized.AlertsForChart.FindContainerFor_throws(this);
 					if (chartShadow == null) {
 						string msg = "LOOKS_LIKE_PROTOTYPED_ALERTS_WERENT_ADDED_FOR_CHART_IN_callbackAlertFilledMoveAroundInvokeScriptReenterablyUnprotected";
 						return false;

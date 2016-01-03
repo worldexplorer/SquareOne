@@ -5,17 +5,33 @@ using Newtonsoft.Json;
 
 namespace Sq1.Core.DataTypes {
 	public class BarScaleInterval {
-		[JsonProperty]	public	string		AsString_cached;
-		[JsonProperty]	public	BarScale	Scale;
 		[JsonProperty]	public	int			Interval;
+		[JsonProperty]	public	BarScale	Scale;
+
 		[JsonProperty]	public	bool		IsIntraday { get {
-				if (this.Scale == BarScale.Hour) return true;
-				if (this.Scale == BarScale.Minute) return true;
-				if (this.Scale == BarScale.Second) return true;
-				if (this.Scale == BarScale.Tick) return true;
-				return false;
+				switch (this.Scale) {
+					case BarScale.Unknown:
+					case BarScale.Tick:
+					case BarScale.Second:
+					case BarScale.Minute:
+					case BarScale.Hour:
+						return true;
+
+					case BarScale.Daily:
+					case BarScale.Weekly:
+					case BarScale.Monthly:
+					case BarScale.Quarterly:
+					case BarScale.Yearly:
+						return true;
+
+					default:
+						Assembler.PopupException("IsIntraday__ADD_HANDLER_FOR_NEW_BarScale_ENUM[" + this.Scale + "]");
+						return true;
+				}
 			} }
-		[JsonProperty]	public int AsTimeSpanInSeconds { get {
+
+		[JsonProperty]	public	string		AsString_cached;
+		[JsonProperty]	public	int			AsTimeSpanInSeconds { get {
 				int ret = -1;
 				int yearly = (365 + 1/4) * 24 * 60 * 60;
 				switch(this.Scale) {
@@ -36,7 +52,49 @@ namespace Sq1.Core.DataTypes {
 				ret *= this.Interval;
 				return ret;
 			} }
-		[JsonProperty]	public TimeSpan AsTimeSpan { get { return new TimeSpan(0, 0, this.AsTimeSpanInSeconds); } }
+		[JsonProperty]	public	TimeSpan	AsTimeSpan { get { return new TimeSpan(0, 0, this.AsTimeSpanInSeconds); } }
+
+
+		[JsonIgnore]			string		asStringShortest_cached;
+		[JsonProperty]	public	string		AsStringShortest_cached { get {
+			if (this.asStringShortest_cached == null) {
+				this.asStringShortest_cached = this.Interval.ToString();
+				switch (this.Scale) {
+					case BarScale.Unknown:		this.asStringShortest_cached += "UKNOWN"; break;
+					case BarScale.Tick:			this.asStringShortest_cached += "t"; break;
+					case BarScale.Second:		this.asStringShortest_cached += "s"; break;
+					case BarScale.Minute:		this.asStringShortest_cached += "m"; break;
+					case BarScale.Hour:			this.asStringShortest_cached += "h"; break;
+					case BarScale.Daily:		this.asStringShortest_cached += "d"; break;
+					case BarScale.Weekly:		this.asStringShortest_cached += "w"; break;
+					case BarScale.Monthly:		this.asStringShortest_cached += "mo"; break;
+					case BarScale.Quarterly:	this.asStringShortest_cached += "q"; break;
+					case BarScale.Yearly:		this.asStringShortest_cached += "y"; break;
+					default: 					this.asStringShortest_cached += "AsStringShortest_cached__ADD_HANDLER_FOR_NEW_BarScale_ENUM[" + this.Scale + "]"; break;
+				}
+			}
+			return asStringShortest_cached;
+		} }
+		[JsonIgnore]			string		asStringShort_cached;
+		[JsonProperty]	public	string		AsStringShort_cached { get {
+			if (this.asStringShort_cached == null) {
+				this.asStringShort_cached = this.Interval.ToString();
+				switch (this.Scale) {
+					case BarScale.Unknown:		this.asStringShort_cached += "UKNOWN"; break;
+					case BarScale.Tick:			this.asStringShort_cached += "tks"; break;
+					case BarScale.Second:		this.asStringShort_cached += "sec"; break;
+					case BarScale.Minute:		this.asStringShort_cached += "min"; break;
+					case BarScale.Hour:			this.asStringShort_cached += "hrs"; break;
+					case BarScale.Daily:		this.asStringShort_cached += "days"; break;
+					case BarScale.Weekly:		this.asStringShort_cached += "wks"; break;
+					case BarScale.Monthly:		this.asStringShort_cached += "months"; break;
+					case BarScale.Quarterly:	this.asStringShort_cached += "quart"; break;
+					case BarScale.Yearly:		this.asStringShort_cached += "yr"; break;
+					default: 					this.asStringShort_cached += "AsStringShort_cached__ADD_HANDLER_FOR_NEW_BarScale_ENUM[" + this.Scale + "]"; break;
+				}
+			}
+			return asStringShort_cached;
+		} }
 
 		// keep public ctor for JSON_DESERIALIZER :((
 		public BarScaleInterval() {
@@ -166,18 +224,18 @@ namespace Sq1.Core.DataTypes {
 		
 		public override string ToString() {
 			if (this.AsString_cached == null) {
-				StringBuilder sb = new StringBuilder();
-				if (this.IsIntraday) {
-					sb.Append(this.Interval);
-					sb.Append("-");
-				}
-				sb.Append(this.Scale.ToString());
-				this.AsString_cached = sb.ToString();
+				this.AsString_cached = this.Interval +  "-" + this.Scale.ToString();
 			}
 			return this.AsString_cached; 
 		}
 		public BarScaleInterval Clone() {
 			return (BarScaleInterval)this.MemberwiseClone();
+		}
+
+		public void StringsCachedInvalidate() {
+			this.asStringShort_cached = null;
+			this.asStringShortest_cached = null;
+			this.AsString_cached = null;
 		}
 	}
 }
