@@ -388,7 +388,7 @@ namespace Sq1.Gui.Forms {
 			// 
 			// mniSubscribedToStreamingAdapterQuotesBars
 			// 
-			this.mniSubscribedToStreamingAdapterQuotesBars.Checked = false;
+			this.mniSubscribedToStreamingAdapterQuotesBars.Checked = true;
 			this.mniSubscribedToStreamingAdapterQuotesBars.CheckOnClick = true;
 			this.mniSubscribedToStreamingAdapterQuotesBars.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.mniSubscribedToStreamingAdapterQuotesBars.Name = "mniSubscribedToStreamingAdapterQuotesBars";

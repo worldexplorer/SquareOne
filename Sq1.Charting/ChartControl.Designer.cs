@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Sq1.Core;
 
 namespace Sq1.Charting {
@@ -68,6 +69,7 @@ namespace Sq1.Charting {
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.multiSplitRowsVolumePrice);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.panelVolume);
 			this.splitContainerChartVsRange.Panel1.Controls.Add(this.PanelPrice);
+			this.splitContainerChartVsRange.Panel2.Controls.Add(this.RangeBar);
 			this.splitContainerChartVsRange.Size = new System.Drawing.Size(840, 303);
 			this.splitContainerChartVsRange.SplitterDistance = 246;
 			this.splitContainerChartVsRange.TabIndex = 0;

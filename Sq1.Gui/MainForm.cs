@@ -199,7 +199,8 @@ namespace Sq1.Gui {
 					this.ChartFormActiveNullUnsafe.ChartFormManager.PopulateMainFormSymbolStrategyTreesScriptParameters();
 					// onStartup, current chart is blank - MAY_FAIL when PANEL_HEIGHT_MUST_BE_POSITIVE but works otherwize
 					//this.ChartFormActiveNullUnsafe.Invalidate();
-					// DOESNT_HELP this.ChartFormActiveNullUnsafe.PerformLayout();
+					//BARS_ARE_STILL_NOT_PAINTER_ON_APPRESTART__MOVED_TO_SECOND_CFMGR_LOOP_180_LINES_BELOW this.ChartFormActiveNullUnsafe.ChartControl.InvalidateAllPanels();
+					//DOESNT_HELP this.ChartFormActiveNullUnsafe.PerformLayout();
 				}
 	
 				this.WorkspacesManager.SelectWorkspaceAfterLoaded(workspaceToLoad);
@@ -368,6 +369,10 @@ namespace Sq1.Gui {
 				}
 
 				cfmgr.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
+			}
+			if (this.ChartFormActiveNullUnsafe != null) {
+				//+ainFrom.Deserializer on apprestart, Document.Active (ChartForm) doesn't paint Bars
+				this.ChartFormActiveNullUnsafe.ChartControl.InvalidateAllPanels();
 			}
 			try {
 				if (ExecutionForm.Instance.IsShown) {

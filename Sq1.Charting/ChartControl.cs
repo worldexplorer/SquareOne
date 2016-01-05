@@ -121,13 +121,13 @@ namespace Sq1.Charting {
 			generated.GenerateAppend(barsToGenerate);
 			generated.SymbolInfo.PriceDecimals = 0;
 			this.ChartSettings.ScrollPositionAtBarIndex = barsToGenerate;
-			this.Initialize(generated, "NO_STRATEGY_RANDOM_BARS");
+			this.Initialize(generated, "NO_STRATEGY_RANDOM_BARS", false, true);
 			#endregion
 		}
-		public override void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool invalidateAllPanels = true) {
+		public override void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool removeChartShadowFromOldSymbolAndAddToLoadingBars = false, bool invalidateAllPanels = true) {
 			this.barEventsDetach();
 			this.ChartSettings.StrategyName = strategySavedInChartSettings;
-			base.Initialize(barsNotNull, strategySavedInChartSettings, invalidateAllPanels);
+			base.Initialize(barsNotNull, strategySavedInChartSettings, removeChartShadowFromOldSymbolAndAddToLoadingBars, invalidateAllPanels);
 			//if (this.BarsNotEmpty == false) {
 			if (this.Bars == null) {
 				string msg = "SYMBOL_REMOVED_FROM_DATASOURCE_CLEARING_CHART"
@@ -177,23 +177,13 @@ namespace Sq1.Charting {
 			foreach (PanelBase panel in this.panelsForInvalidateAll_dontForgetIndicators) {	// at least PanelPrice and PanelVolume
 				panel.InitializeWithNonEmptyBars(this);
 			}
+
+			this.simulateDockFill();
+
 			if (invalidateAllPanels == false) return;
 			if (Assembler.IsInitialized == false) return;	// ChartForm: avoiding Designer's complains about Assembler.Initialized==false
-
 			if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == false) return;
 			this.InvalidateAllPanels();
-
-			//Form parentForm = this.Parent as Form;
-			//if (parentForm == null) {
-			//    string msg = "YOU_INVOKED_ChartControl.Initialize()_FROM_ChartControl.ctor(RANDOM_GENERATED_BARS) CHART_CONTROL_NOT_ADDED_TO_ANY_FORM";
-			//    Assembler.PopupException(msg);
-			//    return;
-			//}
-			//if (parentForm.ClientRectangle.Width != base.ClientRectangle.Width) {
-			//    string msg = "ANY_CLUE_WHY_CHART_CONTROL_IS_OUT_OF_BOUNDARIES_OF_PARENT_FORM? ITS_NOT_DESERIALIZATION_BUT_USER_OPENED_ANOTHER_CHART";
-			//    Assembler.PopupException(msg);
-			//}
-			this.simulateDockFill();
 		}
 		public void SyncHorizontalScrollToBarsCount() {
 			// this.HorizontalScroll represents the scrolling window for the content, useful in UserControl.Autoscroll when an innerPanel is wider or has Top|Left < 0 

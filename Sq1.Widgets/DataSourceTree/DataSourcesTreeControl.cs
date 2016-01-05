@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.ComponentModel;	//[Browsable(true)]
+using System.Drawing;
 
 using BrightIdeasSoftware;
 
@@ -49,8 +50,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.dataSourceTreeListViewCustomize();
 
 			this.dataSnapshotSerializer = new Serializer<DataSourceTreeDataSnapshot>();
-			this.tree.Expanded += new EventHandler<TreeBranchExpandedEventArgs>(tree_Expanded);
-			this.tree.Collapsed += new EventHandler<TreeBranchCollapsedEventArgs>(tree_Collapsed);
+			this.OlvTree.Expanded += new EventHandler<TreeBranchExpandedEventArgs>(tree_Expanded);
+			this.OlvTree.Collapsed += new EventHandler<TreeBranchCollapsedEventArgs>(tree_Collapsed);
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;
 			this.mniSymbolCopyToAnotherDataSource.DropDownItems.Add("CAUSING_SUBMENU_TRIANGLE_TO_APPEAR__WILL_BE_CLEARED_ON_OPENING");
 		}
@@ -88,7 +89,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				return;
 			}
 			try {
-				this.tree.HeaderStyle = this.dataSnapshot.ShowHeader ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
+				this.OlvTree.HeaderStyle = this.dataSnapshot.ShowHeader ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
 				this.mniShowHeader.Checked = this.dataSnapshot.ShowHeader;
 				
 				this.pnlSearch			.Visible = this.dataSnapshot.ShowSearchBar;
@@ -109,15 +110,15 @@ namespace Sq1.Widgets.DataSourcesTree {
 				if (provider == null) continue;
 				this.PopulateIconForDataSource(ds);
 			}
-			this.tree.SetObjects(dataSources);
+			this.OlvTree.SetObjects(dataSources);
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = true;
 			foreach (DataSource dsEach in dataSources) {
 				if (this.dataSnapshot.DataSourceFoldersExpanded.Contains(dsEach.Name) == false) continue;
-				this.tree.Expand(dsEach);
+				this.OlvTree.Expand(dsEach);
 			}
-			this.tree.RebuildAll(true);
-			this.tree.RefreshObjects(dataSources);		// #1 may be icons for recently added/edited datasources will show up/update?
-			this.tree.SmallImageList = this.imageList; 	// #2 may be icons for recently added/edited datasources will show up/update?
+			this.OlvTree.RebuildAll(true);
+			this.OlvTree.RefreshObjects(dataSources);		// #1 may be icons for recently added/edited datasources will show up/update?
+			this.OlvTree.SmallImageList = this.imageList; 	// #2 may be icons for recently added/edited datasources will show up/update?
 			this.ignoreExpandCollapseEventsDuringInitializationOrUninitialized = false;
 		}
 		public void PopulateIconForDataSource(DataSource ds) {
@@ -156,7 +157,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 		void syncSymbolAndDataSourceSelectedFromRowIndexClicked(int itemRowIndex) {
 			string msig = " //DataSourcesTreeControl.syncSymbolAndDataSourceSelectedFromRowIndexClicked(" + itemRowIndex + ")";
-			if (this.tree.SelectedObject == null) {
+			if (this.OlvTree.SelectedObject == null) {
 				string msg = "IM_HERE_WHEN_I_CLICKED_PLUS_TO_EXPAND_COLLAPSE";
 				Assembler.PopupException(msg + msig, null, false);
 				return;
@@ -164,7 +165,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			try {
 			//if ((this.tree.SelectedObject is NullReferenceException) == false) {
 				// first time loaded, nothing is selected event after right click; (SelectedObject as DataSource) was NullReferenceException 
-				DataSource dataSourceClicked = this.tree.SelectedObject as DataSource;
+				DataSource dataSourceClicked = this.OlvTree.SelectedObject as DataSource;
 				if (dataSourceClicked != null) {
 					this.DataSourceSelected = dataSourceClicked;
 					this.SymbolSelected = null;
@@ -176,7 +177,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				Assembler.PopupException(msg + msig, null, false);
 			}
 			string symbol = null;
-			DataSource dataSourceParent = this.tree.SelectedObject as DataSource;
+			DataSource dataSourceParent = this.OlvTree.SelectedObject as DataSource;
 			int indexCurrent = 0;
 			// stop by breakpoint to see what's inside ObjectsForClustering:
 			// [0] => DataSource1
@@ -186,7 +187,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// [4] => DataSource2
 			// [5] => DataSource2.Symbol1
 			// [6] => DataSource2.Symbol2
-			foreach (object dsOrSymbol in this.tree.ObjectsForClustering) {
+			foreach (object dsOrSymbol in this.OlvTree.ObjectsForClustering) {
 				DataSource dataSource = dsOrSymbol as DataSource;
 				SymbolOfDataSource symbolOfDataSource = dsOrSymbol as SymbolOfDataSource;
 				if (dataSource != null) {
@@ -207,7 +208,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			string msig = " SelectDatasource([" + dataSourceName + "])";
 			DataSource dataSourceFound = null;
 			int indexForDataSource = 0;
-			foreach (object shouldBeDataSource in this.tree.Objects) {
+			foreach (object shouldBeDataSource in this.OlvTree.Objects) {
 				DataSource dataSourceEach = shouldBeDataSource as DataSource;
 				//if (dataSourceEach == null) continue;	//that was Symbol1-2-3
 				if (dataSourceEach.Name == dataSourceName) {
@@ -215,7 +216,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 					break;
 				}
 				indexForDataSource++;
-				if (this.tree.IsExpanded(dataSourceEach)) {
+				if (this.OlvTree.IsExpanded(dataSourceEach)) {
 					indexForDataSource += dataSourceEach.Symbols.Count;
 				}
 			}
@@ -226,9 +227,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.tree.Expand(dataSourceFound);
-			this.tree.EnsureModelVisible(dataSourceFound);
-			this.tree.SelectObject(dataSourceFound);
+			this.OlvTree.Expand(dataSourceFound);
+			this.OlvTree.EnsureModelVisible(dataSourceFound);
+			this.OlvTree.SelectObject(dataSourceFound);
 
 			this.DataSourceSelected = dataSourceFound;
 			this.SymbolSelected = null;
@@ -240,7 +241,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			int indexForDataSource = 0;
 			int indexForSymbol = -1;
 			//foreach (object dsOrSymbol in this.tree.ObjectsForClustering) {
-			foreach (object shouldBeDataSource in this.tree.Objects) {
+			foreach (object shouldBeDataSource in this.OlvTree.Objects) {
 				DataSource dataSourceEach = shouldBeDataSource as DataSource;
 				//if (dataSourceEach == null) continue;	//that was Symbol1-2-3
 				if (dataSourceEach.Name == dataSourceName) {
@@ -248,7 +249,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 					break;
 				}
 				indexForDataSource++;
-				if (this.tree.IsExpanded(dataSourceEach)) {
+				if (this.OlvTree.IsExpanded(dataSourceEach)) {
 					indexForDataSource += dataSourceEach.Symbols.Count;
 				}
 			}
@@ -262,9 +263,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 			if (string.IsNullOrEmpty(symbol) == false) {
 				indexForSymbol = dataSourceFound.Symbols.IndexOf(symbol);
 				if (indexForSymbol == -1) {
-					this.tree.Expand(dataSourceFound);
-					this.tree.EnsureModelVisible(dataSourceFound);
-					this.tree.SelectObject(dataSourceFound);
+					this.OlvTree.Expand(dataSourceFound);
+					this.OlvTree.EnsureModelVisible(dataSourceFound);
+					this.OlvTree.SelectObject(dataSourceFound);
 
 					string msg = "SYMBOL_NOT_FOUND_IN_TREE_OBJECTS symbol[" + symbol + "]"
 						+ " you may have removed from DataSources before application restart"
@@ -279,10 +280,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 			int indexToSelect = indexForDataSource + indexForSymbol + 1;
 			try {
 				//throws when I point into Symbol folded inside a collapsed datasource this.tree.EnsureVisible(indexToSelect);
-				this.tree.Expand(dataSourceName);	// doesn't really expand the collapsed "Qmock" but let the selected row go "under" it; whatever, if I collapsed then I don't need the content
-				if (this.tree.SelectedIndex != indexToSelect) {
-					this.tree.SelectedIndex  = indexToSelect;
-					this.tree.RefreshSelectedObjects();
+				this.OlvTree.Expand(dataSourceName);	// doesn't really expand the collapsed "Qmock" but let the selected row go "under" it; whatever, if I collapsed then I don't need the content
+				if (this.OlvTree.SelectedIndex != indexToSelect) {
+					this.OlvTree.SelectedIndex  = indexToSelect;
+					this.OlvTree.RefreshSelectedObjects();
 				}
 			} catch (Exception ex) {
 				Assembler.PopupException(msig, ex, false);
@@ -292,10 +293,10 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.SymbolSelected = symbol;
 		}
 
-		public void SelectChartShadow(ChartShadow chartControl) {
-			this.tree.Expand(chartControl.SymbolOfDataSource);
-			this.tree.SelectObject(chartControl, true);
-			this.tree.RebuildAll(true);
+		public void ChartShadow_Select(ChartShadow chartControl) {
+			this.OlvTree.Expand(chartControl.SymbolOfDataSource);
+			this.OlvTree.SelectObject(chartControl, true);
+			this.OlvTree.RebuildAll(true);
 		}
 	}
 }
