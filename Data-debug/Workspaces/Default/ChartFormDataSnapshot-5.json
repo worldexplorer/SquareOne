@@ -10,12 +10,14 @@
     "DataSourceName": "Qmock",
     "ScaleInterval": {
       "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-      "AsString_cached": "1-Minute",
-      "Scale": 3,
       "Interval": 1,
+      "Scale": 3,
+      "AsString_cached": "1-Minute",
       "IsIntraday": true,
       "AsTimeSpanInSeconds": 60,
-      "AsTimeSpan": "00:01:00"
+      "AsTimeSpan": "00:01:00",
+      "AsStringShortest_cached": "1m",
+      "AsStringShort_cached": "1min"
     },
     "DataRange": {
       "$type": "Sq1.Core.DataTypes.BarDataRange, Sq1.Core",
@@ -38,14 +40,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 46
+        "PanelHeight": 26
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 52,
+        "Distance": 32,
         "SplitterHeight": 6,
-        "PanelHeight": 323
+        "PanelHeight": 390
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -55,20 +57,20 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 783
+        "PanelHeight": 712
       },
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 789,
+        "Distance": 718,
         "SplitterHeight": 6,
-        "PanelHeight": 49
+        "PanelHeight": 64
       }
     },
     "Name": "Default",
     "StrategyName": "TwoMAsCompiled",
     "ChartColorBackground": "White",
-    "BarWidthIncludingPadding": 11,
+    "BarWidthIncludingPadding": 9,
     "BarWidthIncludingPaddingMax": 100,
     "PanelNameAndSymbolFont": "Microsoft Sans Serif, 8.25pt",
     "PriceColorBarUp": "RoyalBlue",
