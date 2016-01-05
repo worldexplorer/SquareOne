@@ -3,12 +3,14 @@ using System.Collections.Generic;
 
 using Sq1.Core.DataFeed;
 using Sq1.Core.Charting;
+using System.Drawing;
+using BrightIdeasSoftware;
 
 namespace Sq1.Widgets.DataSourcesTree {
 	public partial class DataSourcesTreeControl {
 		void dataSourceTreeListViewCustomize() {
 			//v2	http://stackoverflow.com/questions/9802724/how-to-create-a-multicolumn-treeview-like-this-in-c-sharp-winforms-app/9802753#9802753
-			this.tree.CanExpandGetter = delegate(object o) {
+			this.OlvTree.CanExpandGetter = delegate(object o) {
 				DataSource dataSource = o as DataSource;
 				if (dataSource != null) return dataSource.Symbols.Count > 0;
 				
@@ -23,7 +25,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 				return false;
 			};
-			this.tree.ChildrenGetter = delegate(object o) {
+			this.OlvTree.ChildrenGetter = delegate(object o) {
 				DataSource dataSource = o as DataSource;
 				if (dataSource != null) return dataSource.ChartsOpenForSymbol.Keys;
 					
@@ -83,6 +85,22 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 				return o.ToString();
 			};
+
+			this.OlvTree.UseCellFormatEvents = true;
+			this.OlvTree.FormatRow += new EventHandler<FormatRowEventArgs>(olvPositions_FormatRow);
+		}
+		
+
+		void olvPositions_FormatRow(object sender, FormatRowEventArgs e) {
+			ChartShadow chartShadow = e.Model as ChartShadow;
+			if (chartShadow == null) return;
+
+			OLVListItem li = this.OlvTree.ModelToItem(chartShadow);
+			//if (e.Item.BackColor == li.BackColor) return;
+
+			if (chartShadow.ColorBackground_inDataSourceTree == null) return;
+			if (e.Item.BackColor == chartShadow.ColorBackground_inDataSourceTree) return;
+			e.Item.BackColor = chartShadow.ColorBackground_inDataSourceTree;
 		}
 	}
 }

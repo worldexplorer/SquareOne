@@ -168,7 +168,7 @@ namespace Sq1.Core.Charting {
 			}
 			return default(CHART);		// I_HOPE_IT_IS_NULL
 		}
-		public List<ALERTS> FindContentsForSimilarKey_NullUnsafe(CHART anotherInstance) {
+		internal List<ALERTS> FindContentsForSimilarKey_NullUnsafe(CHART anotherInstance) {
 			string msig = " //DictionaryManyToOne::FindContentsForSimilarKey(chart[" + anotherInstance + "])";
 			CHART existingKeyFound = this.FindSimilarKey(anotherInstance);
 			if (existingKeyFound == null) {

@@ -103,9 +103,11 @@ namespace Sq1.Core.Livesim {
 				base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;
 
 				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
-				bool chartIsSubscribed = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
-				if (chartIsSubscribed == false) {
-				    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
+				//v1 bool chartIsSubscribed_toBarsOriginal = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
+				//v2
+			    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
+				bool chartIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count > 0;
+				if (chartIsSubscribed_toBarsSimulated == false) {
 				    distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
 				    distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
 				    //streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
@@ -113,7 +115,8 @@ namespace Sq1.Core.Livesim {
 				    // QuikLivesimStreaming should instantiate the Real QuikStreaming with a DDE server and then connect to it; parent's Livesim probably must ignore this pseudo-Event
 				    this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UpstreamConnect_LivesimStarting();	// exception instantiating DDE server with same topics wont run the simulation
 				} else {
-					string msg = "YOU_FORGOT_TO_UNSUBSCRIBE_TO_SUBSTITUTED_STREAMING";
+					string msg1 = "WHO_SUBSCRIBED_LIVESIM.STREAMING_TO_BARS_SIMULATING??? DUPLICATE_CALL_TO_SimulationPreBarsSubstitute_overrideable()";
+					Assembler.PopupException(msg1);
 				}
 
 				base.Executor.BacktestContextInitialize(base.BarsSimulating);
@@ -142,6 +145,10 @@ namespace Sq1.Core.Livesim {
 					string msg = "consumers will expect base.Bars.Count = 0";
 					Assembler.PopupException(msg);
 				}
+
+				// otherwize, after apprestart, I change bars for the chart and click LivesimForm=>Start and get DONT_INVOKE_ME_WITH_NULL_SYMBOL_INFO I_WOULD_THROW_ANYWAY_MAKING_THE_REASON_CLEAR //LevelTwoGenerator.GenerateForQuote()
+			    //v1-LivesimStreaming.PushQuoteGenerated() is still complaining on chartShadow_notUsed=null this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.PushSymbolInfoToLevel2generator();
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Initialize(this.chartShadow);
 			} catch (Exception ex) {
 				string msg = "PreBarsSubstitute(): Backtester caught a long beard...";
 				base.Executor.PopupException(msg, ex);
@@ -178,14 +185,18 @@ namespace Sq1.Core.Livesim {
 				}
 
 				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
-				bool chartIsSubscribed = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
-				if (chartIsSubscribed) {
-				    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
+				//v1 bool chartIsSubscribed_toBarsOriginal = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
+				//v2
+			    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
+				bool chartIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count > 0;	// MUST_BE distr.DistributionChannels.Count=1
+				if (chartIsSubscribed_toBarsSimulated) {
 				    distr.ConsumerQuoteUnsubscribe(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
 				    distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
-
 					// QuikLivesimStreaming should instantiate the Real QuikStreaming with a DDE server and then connect to it; parent's Livesim probably must ignore this pseudo-Event
 					this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UpstreamDisconnect_LivesimEnded();
+				} else {
+					string msg1 = "WHO_UNSUBSCRIBED_LIVESIM.STREAMING_FROM_BARS_SIMULATING??? DUPLICATE_CALL_TO_SimulationPostBarsRestore_overrideable()";
+					Assembler.PopupException(msg1);
 				}
 
 				//if (this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar != this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar) {
@@ -271,7 +282,7 @@ namespace Sq1.Core.Livesim {
 				this.chartShadow.BeginInvoke((MethodInvoker)delegate { this.executor_BacktesterContextInitializedStep2of4(sender, e); });
 				return;
 			}
-			this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, true);
+			this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, false, true);
 
 			this.btnPauseResume.Enabled = true;
 			this.btnPauseResume.Text = "Pause";
@@ -293,7 +304,7 @@ namespace Sq1.Core.Livesim {
 			this.chartShadow.BeginInvoke((MethodInvoker)delegate {
 				this.btnStartStop.Text = "Start";
 				this.btnStartStop.CheckState = CheckState.Unchecked;
-				this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, true);
+				this.chartShadow.Initialize(base.Executor.Bars, base.Executor.StrategyName, false, true);
 
 				float seconds = (float)Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);
 				this.btnPauseResume.Text = seconds.ToString() + " sec";

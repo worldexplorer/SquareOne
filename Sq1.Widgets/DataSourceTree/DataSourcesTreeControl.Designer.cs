@@ -58,13 +58,13 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.btnClear = new System.Windows.Forms.Button();
 			this.pnlSearch = new System.Windows.Forms.TableLayoutPanel();
-			this.tree = new BrightIdeasSoftware.TreeListView();
+			this.OlvTree = new BrightIdeasSoftware.TreeListView();
 			this.olvcName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcTimeFrame = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.ctxDataSource.SuspendLayout();
 			this.ctxSymbol.SuspendLayout();
 			this.pnlSearch.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.tree)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.OlvTree)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// imageList
@@ -363,46 +363,43 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.pnlSearch.TabIndex = 5;
 			this.pnlSearch.Visible = false;
 			// 
-			// tree
+			// OlvTree
 			// 
-			this.tree.Activation = System.Windows.Forms.ItemActivation.OneClick;
-			this.tree.AllColumns.Add(this.olvcName);
-			this.tree.AllColumns.Add(this.olvcTimeFrame);
-			this.tree.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.tree.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
-			this.tree.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.OlvTree.Activation = System.Windows.Forms.ItemActivation.OneClick;
+			this.OlvTree.AllColumns.Add(this.olvcName);
+			this.OlvTree.AllColumns.Add(this.olvcTimeFrame);
+			this.OlvTree.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.OlvTree.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
+			this.OlvTree.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.olvcName,
             this.olvcTimeFrame});
-			this.tree.Cursor = System.Windows.Forms.Cursors.Arrow;
-			this.tree.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tree.EmptyListMsg = "Right Click To Create";
-			this.tree.FullRowSelect = true;
-			this.tree.HideSelection = false;
-			this.tree.Location = new System.Drawing.Point(0, 0);
-			this.tree.MultiSelect = false;
-			this.tree.Name = "tree";
-			this.tree.OwnerDraw = true;
-			this.tree.SelectAllOnControlA = false;
-			this.tree.SelectColumnsMenuStaysOpen = false;
-			this.tree.SelectColumnsOnRightClick = false;
-			this.tree.SelectColumnsOnRightClickBehaviour = BrightIdeasSoftware.ObjectListView.ColumnSelectBehaviour.None;
-			this.tree.ShowCommandMenuOnRightClick = true;
-			this.tree.ShowGroups = false;
-			this.tree.Size = new System.Drawing.Size(154, 237);
-			this.tree.SmallImageList = this.imageList;
-			this.tree.TabIndex = 2;
-			this.tree.TintSortColumn = true;
-			this.tree.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
-			this.tree.UseCompatibleStateImageBehavior = false;
-			this.tree.UseFilterIndicator = true;
-			this.tree.UseFiltering = true;
-			this.tree.UseHotItem = true;
-			this.tree.UseTranslucentHotItem = true;
-			this.tree.View = System.Windows.Forms.View.Details;
-			this.tree.VirtualMode = true;
-			this.tree.CellClick += new System.EventHandler<BrightIdeasSoftware.CellClickEventArgs>(this.tree_CellClick);
-			this.tree.CellRightClick += new System.EventHandler<BrightIdeasSoftware.CellRightClickEventArgs>(this.tree_CellRightClick);
-			this.tree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.tree_MouseDoubleClick);
+			this.OlvTree.Cursor = System.Windows.Forms.Cursors.Arrow;
+			this.OlvTree.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.OlvTree.EmptyListMsg = "Right Click To Create";
+			this.OlvTree.FullRowSelect = true;
+			this.OlvTree.Location = new System.Drawing.Point(0, 0);
+			this.OlvTree.MultiSelect = false;
+			this.OlvTree.Name = "OlvTree";
+			this.OlvTree.SelectAllOnControlA = false;
+			this.OlvTree.SelectColumnsOnRightClick = false;
+			this.OlvTree.SelectColumnsOnRightClickBehaviour = BrightIdeasSoftware.ObjectListView.ColumnSelectBehaviour.None;
+			this.OlvTree.ShowCommandMenuOnRightClick = true;
+			this.OlvTree.ShowGroups = false;
+			this.OlvTree.Size = new System.Drawing.Size(154, 237);
+			this.OlvTree.SmallImageList = this.imageList;
+			this.OlvTree.TabIndex = 2;
+			this.OlvTree.TintSortColumn = true;
+			this.OlvTree.UnfocusedHighlightBackgroundColor = System.Drawing.SystemColors.GradientActiveCaption;
+			this.OlvTree.UseCompatibleStateImageBehavior = false;
+			this.OlvTree.UseFilterIndicator = true;
+			this.OlvTree.UseFiltering = true;
+			this.OlvTree.UseHotItem = true;
+			this.OlvTree.UseTranslucentHotItem = true;
+			this.OlvTree.View = System.Windows.Forms.View.Details;
+			this.OlvTree.VirtualMode = true;
+			this.OlvTree.CellClick += new System.EventHandler<BrightIdeasSoftware.CellClickEventArgs>(this.tree_CellClick);
+			this.OlvTree.CellRightClick += new System.EventHandler<BrightIdeasSoftware.CellRightClickEventArgs>(this.tree_CellRightClick);
+			this.OlvTree.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.tree_MouseDoubleClick);
 			// 
 			// olvcName
 			// 
@@ -421,19 +418,19 @@ namespace Sq1.Widgets.DataSourcesTree {
 			// 
 			this.BackColor = System.Drawing.SystemColors.Window;
 			this.Controls.Add(this.pnlSearch);
-			this.Controls.Add(this.tree);
+			this.Controls.Add(this.OlvTree);
 			this.Name = "DataSourcesTreeControl";
 			this.Size = new System.Drawing.Size(154, 237);
 			this.ctxDataSource.ResumeLayout(false);
 			this.ctxSymbol.ResumeLayout(false);
 			this.pnlSearch.ResumeLayout(false);
 			this.pnlSearch.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.tree)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.OlvTree)).EndInit();
 			this.ResumeLayout(false);
 
 		}
 
-		private BrightIdeasSoftware.TreeListView tree;
+		public BrightIdeasSoftware.TreeListView OlvTree;
 		private BrightIdeasSoftware.OLVColumn olvcName;
 		private TextBox txtSearch;
 		private ToolTip toolTip1;

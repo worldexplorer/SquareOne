@@ -148,7 +148,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 		#region inline search, taken from ObjectListViewDemo
 		void txtSearch_TextChanged(object sender, EventArgs e) {
 			this.btnClear.Enabled = string.IsNullOrEmpty(txtSearch.Text) ? false : true;
-			this.TimedFilter(this.tree, txtSearch.Text);
+			this.TimedFilter(this.OlvTree, txtSearch.Text);
 		}
 		void TimedFilter(ObjectListView olv, string txt) {
 			this.TimedFilter(olv, txt, 0);
@@ -292,8 +292,8 @@ namespace Sq1.Widgets.DataSourcesTree {
 			DataSource foundWithSameName = this.dataSourceRepository.ItemFind(newDataSourceName);
 			if (foundWithSameName != null) {
 				Assembler.InstanceInitialized.StatusReporter.DisplayStatus("DataSource[" + newDataSourceName + "] already exists");
-				this.tree.EnsureModelVisible(foundWithSameName);
-				this.tree.SelectObject(foundWithSameName);
+				this.OlvTree.EnsureModelVisible(foundWithSameName);
+				this.OlvTree.SelectObject(foundWithSameName);
 				e.HighlightTextWithRed = true;
 				//e.RootHandlerShouldCloseParentContextMenuStrip = true;
 				return;
@@ -314,20 +314,20 @@ namespace Sq1.Widgets.DataSourcesTree {
 
 		void dataSourceRepository_OnSymbolAdded(object sender, DataSourceSymbolEventArgs e) {
 			if (sender == this) {
-				this.tree.RefreshObject(this.DataSourceSelected);
-				this.tree.Expand(e.DataSource);
+				this.OlvTree.RefreshObject(this.DataSourceSelected);
+				this.OlvTree.Expand(e.DataSource);
 			} else {
 				//this.populateDataSourcesIntoTreeListView();
-				this.tree.RebuildAll(true);
-				this.tree.Expand(e.DataSource);
+				this.OlvTree.RebuildAll(true);
+				this.OlvTree.Expand(e.DataSource);
 				this.SelectSymbol(e.DataSource.Name, e.Symbol);
 			}
 		}
 		void dataSourceRepository_OnSymbolRenamed(object sender, DataSourceSymbolRenamedEventArgs e) {
-			this.tree.RefreshObject(this.DataSourceSelected);
+			this.OlvTree.RefreshObject(this.DataSourceSelected);
 			if (sender != this) {
 				//RefreshObject()WORKS_FINE this.populateDataSourcesIntoTreeListView();
-				this.tree.Expand(e.DataSource);
+				this.OlvTree.Expand(e.DataSource);
 				this.SelectSymbol(e.DataSource.Name, e.Symbol);
 			}
 		}
@@ -337,12 +337,12 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 		void dataSourceRepository_OnSymbolRemovedDone(object sender, DataSourceSymbolEventArgs e) {
 			if (sender == this) {
-				this.tree.RebuildAll(true);
-				this.tree.Expand(this.DataSourceSelected);
+				this.OlvTree.RebuildAll(true);
+				this.OlvTree.Expand(this.DataSourceSelected);
 				this.SelectSymbol(this.DataSourceSelected.Name, null);
 			} else {
-				this.tree.RebuildAll(true);	//roots not changed, no need to call this.populateDataSourcesIntoTreeListView();
-				this.tree.Expand(e.DataSource);
+				this.OlvTree.RebuildAll(true);	//roots not changed, no need to call this.populateDataSourcesIntoTreeListView();
+				this.OlvTree.Expand(e.DataSource);
 				this.SelectSymbol(e.DataSource.Name, null);
 			}
 		}
@@ -353,9 +353,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 		}
 		void dataSourceRepository_OnDataSourceRenamed(object sender, NamedObjectJsonEventArgs<DataSource> e) {
 			if (sender == this) {
-				this.tree.RefreshObject(this.DataSourceSelected);
+				this.OlvTree.RefreshObject(this.DataSourceSelected);
 			} else {
-				this.tree.RefreshObject(e.Item);
+				this.OlvTree.RefreshObject(e.Item);
 				this.SelectSymbol(e.Item.Name, null);
 			}
 		}
@@ -375,7 +375,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 			try {
 				this.dataSnapshot.ShowHeader = this.mniShowHeader.Checked;
 				this.dataSnapshotSerializer.Serialize();
-				this.tree.HeaderStyle = this.dataSnapshot.ShowHeader ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
+				this.OlvTree.HeaderStyle = this.dataSnapshot.ShowHeader ? ColumnHeaderStyle.Clickable : ColumnHeaderStyle.None;
 			} catch (Exception ex) {
 				Assembler.PopupException("mniShowHeader_Click", ex);
 			}
@@ -396,7 +396,7 @@ namespace Sq1.Widgets.DataSourcesTree {
 				this.dataSnapshot.AppendMarketToDataSourceName	= this.mniAppendMarketNameToDataSourceToolStripMenuItem.Checked;
 				this.dataSnapshotSerializer.Serialize();
 				//this.tree.RebuildAll(true);		// otherwize mouseover will trigger repaint
-				this.tree.Invalidate();		// otherwize mouseover will trigger repaint
+				this.OlvTree.Invalidate();		// otherwize mouseover will trigger repaint
 			} catch (Exception ex) {
 				Assembler.PopupException("mniAppendMarketNameToDataSourceToolStripMenuItem_Click", ex);
 			}

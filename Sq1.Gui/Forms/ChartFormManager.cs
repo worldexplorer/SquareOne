@@ -15,14 +15,16 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Livesim;
 using Sq1.Core.Sequencing;
 
-using Sq1.Widgets.Sequencing;
 using Sq1.Widgets;
+using Sq1.Widgets.Sequencing;
 using Sq1.Widgets.Correlation;
 
 using Sq1.Gui.Forms;
 using Sq1.Gui.FormFactories;
 using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
+using System.Drawing;
+using BrightIdeasSoftware;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormManager {
@@ -160,23 +162,69 @@ namespace Sq1.Gui.Forms {
 		public	ContextChart						ContextCurrentChartOrStrategy		{ get {
 				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart; } }
 
+
+		System.Windows.Forms.Timer timerUnblink;
+
+
 		// WHATTTTT???? I dont want it "internal" when "private" is omitted
 		ChartFormManager() {
 			this.StrategyFoundDuringDeserialization = false;
 			// deserialization: ChartSerno will be restored; never use this constructor in your app!
 			//			this.Executor = new ScriptExecutor(Assembler.InstanceInitialized.ScriptExecutorConfig
 			//				, this.ChartForm.ChartControl, null, Assembler.InstanceInitialized.OrderProcessor, Assembler.InstanceInitialized.StatusReporter);
-			this.Executor = new ScriptExecutor("EXECUTOR_FOR_AN_OPENED_CHART_UNCLONED");
-			this.ReportersFormsManager = new ReportersFormsManager(this);
-			this.ChartStreamingConsumer = new ChartFormStreamingConsumer(this);
+			this.Executor					= new ScriptExecutor("EXECUTOR_FOR_AN_OPENED_CHART_UNCLONED");
+			this.Executor.EventGenerator.OnStrategyExecutedOneQuote += new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyExecutedOneQuote);
+
+			this.timerUnblink				= new System.Windows.Forms.Timer();
+			this.timerUnblink.Interval		= 400;
+			this.timerUnblink.Tick			+= new EventHandler(this.timerUnblink_IntervalElapsed);
+			this.timerUnblink.Enabled		= true;
+
+			this.colorBackgroundOrange_barsNotSubscribed				= Color.LightSalmon;
+			this.colorBackgroundRed_barsSubscribed_scriptNotTriggering	= Color.FromArgb(255, 230, 230);
+			this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering	= Color.FromArgb(230, 255, 230);
+
+			this.ReportersFormsManager		= new ReportersFormsManager(this);
+			this.ChartStreamingConsumer		= new ChartFormStreamingConsumer(this);
 
 			// never used in CHART_ONLY, but we have "Open In Current Chart" for Strategies
-			this.scriptEditorFormFactory = new ScriptEditorFormFactory(this);
-			this.sequencerFormFactory = new SequencerFormFactory(this);
-			//this.livesimFormFactory = new LivesimFormFactory(this);
+			this.scriptEditorFormFactory	= new ScriptEditorFormFactory(this);
+			this.sequencerFormFactory		= new SequencerFormFactory(this);
+			//this.livesimFormFactory		= new LivesimFormFactory(this);
 
-			this.DataSnapshotSerializer = new Serializer<ChartFormDataSnapshot>();
+			this.DataSnapshotSerializer		= new Serializer<ChartFormDataSnapshot>();
 		}
+
+
+		Color colorBackgroundOrange_barsNotSubscribed;
+		Color colorBackgroundRed_barsSubscribed_scriptNotTriggering;
+		Color colorBackgroundGreen_barsSubscribed_scriptIsTriggering;
+
+		void eventGenerator_OnStrategyExecutedOneQuote(object sender, QuoteEventArgs e) {
+			string symbol = e.Quote.ParentBarStreaming.Symbol;
+			DataSource originalBarsDataSource_evenForLivesimmed = e.Quote.ParentBarStreaming.ParentBars.DataSource;
+
+			// in the future, one chart can be subscribed to many symbols, so executing a Script.OnQuote has to use DataSource+Symbol supplied
+			//NOT_FOR_LIVESIM if (this.ContextCurrentChartOrStrategy.IsStreaming == false) {
+			if (this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count == 0) {
+				this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = colorBackgroundOrange_barsNotSubscribed;
+			} else {
+				this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = this.Executor.IsStreamingTriggeringScript
+					? this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering
+					: this.colorBackgroundRed_barsSubscribed_scriptNotTriggering;
+			}
+			this.timerUnblink.Start();
+			TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
+			//olvTree.DeselectAll();
+			olvTree.RefreshObject(this.ChartForm.ChartControl);
+		}
+		void timerUnblink_IntervalElapsed(object sender, EventArgs e) {
+			if (this.IsDisposed) return;
+			this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = Color.White;
+			TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
+			olvTree.RefreshObject(this.ChartForm.ChartControl);
+		}
+
 		public ChartFormManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {
 			this.MainForm = mainForm;
 			if (charSernoDeserialized == -1) {
@@ -193,7 +241,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			if (this.DataSnapshot.ChartSerno != charSernoDeserialized) {
-				this.DataSnapshot.ChartSerno = charSernoDeserialized;
+				this.DataSnapshot.ChartSerno  = charSernoDeserialized;
 				if (Assembler.InstanceInitialized.MainFormDockFormsFullyDeserializedLayoutComplete == true) {
 					string msg = "NEVER_INVOKED_SINCE_CHART_FORM_MANAGER_GOT_SERNO_FROM_XML_WHICH_MUST_BE_EQUAL_TO_SNAP";
 					Assembler.PopupException(msg);
@@ -432,7 +480,7 @@ namespace Sq1.Gui.Forms {
 				bool invalidateAllPanels = true;
 
 				string strategyName = this.Strategy == null ? "CHART_ONLY" : this.Strategy.Name;
-				this.ChartForm.ChartControl.Initialize(barsClicked, strategyName, invalidateAllPanels);
+				this.ChartForm.ChartControl.Initialize(barsClicked, strategyName, loadNewBars, invalidateAllPanels);
 				//SCROLL_TO_SNAPSHOTTED_BAR this.ChartForm.ChartControl.ScrollToLastBarRight();
 				this.ChartForm.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 			}
@@ -939,7 +987,7 @@ namespace Sq1.Gui.Forms {
 
 			//v1 DataSourcesForm.Instance.DataSourcesTreeControl.SelectSymbol(ctxScript.DataSourceName, ctxScript.Symbol);
 			//v2
-			DataSourcesForm.Instance.DataSourcesTreeControl.SelectChartShadow(this.ChartForm.ChartControl);
+			DataSourcesForm.Instance.DataSourcesTreeControl.ChartShadow_Select(this.ChartForm.ChartControl);
 
 			if (SymbolInfoEditorForm.Instance.IsShown) {
 				DataSourcesForm.Instance.DataSourcesTreeControl.RaiseOnSymbolInfoEditorClicked();
