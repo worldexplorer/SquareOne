@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.IO;
 
 using Sq1.Core;
-using System.IO;
 
 namespace Sq1.Adapters.Quik.Dde.XlDde {
 	public abstract class XlDdeTable {
-		protected abstract	string				DdeConsumerClassName	{ get; }
-		public				string				Topic					{ get; private set; }
-		public				DateTime			LastDataReceived		{ get; protected set; }
-		public	virtual		bool				ReceivingDataDde		{ get; set; }
+		protected abstract	string					DdeConsumerClassName	{ get; }
+		public				string					Topic					{ get; private set; }
+		public				DateTime				LastDataReceived		{ get; protected set; }
+		public	virtual		bool					ReceivingDataDde		{ get; set; }
+		public				long					DdeTablesReceived		{ get; set; }
 
 		protected	List<XlColumn>					ColumnDefinitions;				// part of the abstraction to implement in children
 		protected	Dictionary<string, XlColumn>	ColumnDefinitionsByNameLookup;
@@ -43,6 +43,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 				this.ParseMessage_readAsTable_convertEachRowToDataStructures(reader);
 			}
 			this.IncomingTableTerminated();
+			this.DdeTablesReceived++;
 		}
 		protected virtual void ParseMessage_readAsTable_convertEachRowToDataStructures(XlReader reader) {
 			// IDENTIFY_EACH_NEW_MESSAGE_DONT_CACHE if (this.ColumnsIdentified == false) {
@@ -181,9 +182,9 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			return rowParsed;
 		}
 
-		protected virtual void IncomingTableBegun() { }
-		protected abstract void IncomingTableRow_convertToDataStructure(XlRowParsed row);	// you can push to Streaming here (doesn't make sense to commit quotes to QuikStreaming as a table)
-		protected virtual void IncomingTableTerminated() { }				//  or you can push to Streaming here (it is more consistent to unlock per-symbol DepthOfMarket as whole table so that QuikStreaming Level2 consumers will get the whole frame at once)
+		protected virtual	void	IncomingTableBegun() { }
+		protected abstract	void	IncomingTableRow_convertToDataStructure(XlRowParsed row);	// you can push to Streaming here (doesn't make sense to commit quotes to QuikStreaming as a table)
+		protected virtual	void	IncomingTableTerminated() { }				//  or you can push to Streaming here (it is more consistent to unlock per-symbol DepthOfMarket as whole table so that QuikStreaming Level2 consumers will get the whole frame at once)
 
 		public override string ToString() {
 			string ret = "";

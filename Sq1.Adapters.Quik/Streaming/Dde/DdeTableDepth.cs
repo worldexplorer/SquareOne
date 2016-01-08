@@ -3,6 +3,7 @@
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
+
 using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik.Dde {

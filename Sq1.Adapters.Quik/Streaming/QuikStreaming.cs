@@ -14,12 +14,14 @@ using Sq1.Adapters.Quik.Dde.XlDde;
 
 namespace Sq1.Adapters.Quik {
 	public partial class QuikStreaming : StreamingAdapter {
-		[JsonProperty]	public		string					DdeServiceName;	//QuikLivesimStreaming needs it public	{ get; internal set; }
+		[JsonProperty]	public		string					DdeServiceName;		//QuikLivesimStreaming needs it public	{ get; internal set; }
 		[JsonProperty]	public		string					DdeTopicQuotes;		//QuikLivesimStreaming needs it public{ get; internal set; }
 		[JsonProperty]	public		string					DdeTopicTrades;		//QuikLivesimStreaming needs it public{ get; internal set; }
 		[JsonProperty]	public		string					DdeTopicPrefixDom;	//QuikLivesimStreaming needs it public { get; internal set; }
 
 		[JsonIgnore]	public		XlDdeServer				DdeServer					{ get; private set; }
+		[JsonProperty]	public		bool					DdeServerStarted			{ get; private set; }
+
 		[JsonIgnore]	public		DdeBatchSubscriber		DdeBatchSubscriber			{ get; private set; }
 		[JsonIgnore]				string					ddeChannelsEstablished		{ get {
 				string ret = "DDE_CHANNELS_NULL__STREAMING_QUIK_NOT_YET_INITIALIZED";
@@ -48,7 +50,20 @@ namespace Sq1.Adapters.Quik {
 				ret = this.DdeBatchSubscriber.SymbolsHavingIndividualTables;
 				return ret;
 			} }
-		
+
+
+		[JsonIgnore]	private	QuikStreamingMonitorForm monitorForm;
+		[JsonIgnore]	public	QuikStreamingMonitorForm MonitorForm { get {
+				if (this.monitorForm == null) {
+					this.monitorForm = new QuikStreamingMonitorForm(this);
+					this.monitorForm.FormClosed += delegate(object sender, System.Windows.Forms.FormClosedEventArgs e) {
+						this.monitorForm = null;
+					};
+				}
+				return this.monitorForm;
+			} }
+
+
 		public QuikStreaming() : base() {
 			base.Name					= "QuikStreaming-DllScanned";
 			base.Icon					= (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
@@ -66,7 +81,7 @@ namespace Sq1.Adapters.Quik {
 			if (this.DdeBatchSubscriber != null) {
 				string msg = "RETHINK_INITIALIZATION_AND_DdeTables_LIFECYCLE";
 				Assembler.PopupException(msg);
-				this.ddeServerStop();
+				this.DdeServerStop();
 			} else {
 				this.DdeBatchSubscriber = new DdeBatchSubscriber(this);
 			}
@@ -75,7 +90,7 @@ namespace Sq1.Adapters.Quik {
 			this.ConnectionState		= ConnectionState.JustInitialized;
 		}
 
-		void ddeServerStart() {
+		public void DdeServerStart() {
 			string msg = "";
 			if (string.IsNullOrWhiteSpace(this.DdeServer.Service)) {
 				Assembler.PopupException("can't start DdeServer with IsNullOrWhiteSpace(server.Service)");
@@ -84,6 +99,8 @@ namespace Sq1.Adapters.Quik {
 
 			try {
 				this.DdeServer.Register();
+				this.DdeServerStarted = true;
+				this.DdeBatchSubscriber.AllDdeTablesReceivedCountersReset();
 			} catch (Exception ex) {
 				this.ConnectionState = ConnectionState.ConnectFailed;
 				Assembler.PopupException("DDE_SERVER_REGISTRATION_FAILED " + this.ToString(), ex);
@@ -95,13 +112,14 @@ namespace Sq1.Adapters.Quik {
 			Assembler.PopupException(msg, null, false);
 		}
 
-		void ddeServerStop() {
+		public void DdeServerStop() {
 			string msg = "";
 			try {
 				this.DdeServer.Disconnect();
 				this.DdeServer.Unregister();
 				//NO_I_WILL_RESTART_IT this.DdeServer.Dispose();
 				//NO_I_WILL_RESTART_IT this.ddeServer = null;
+				this.DdeServerStarted = false;
 			} catch (Exception ex) {
 				this.ConnectionState = ConnectionState.DisconnectFailed;
 				Assembler.PopupException("DDE_SERVER_STOPPING_ERROR " + this.ToString(), ex);
@@ -147,5 +165,14 @@ namespace Sq1.Adapters.Quik {
 			return this.Name + "/[" + this.ConnectionState + "]: Symbols[" + base.SymbolsUpstreamSubscribedAsString + "]"
 				+ " DDE[" + this.ddeChannelsEstablished + "]";
 		}
+
+		public string IdentForMonitorWindowTitle { get {
+			string ret = "";
+			if (this.DataSource				!= null) ret += this.DataSource.Name;
+			if (this.DataSource.MarketInfo	!= null) ret += " :: " + this.DataSource.MarketInfo.Name;
+			ret += " [" + (string.IsNullOrEmpty(this.DdeTopicQuotes) ? "NO_DDE_TOPIC_QUOTES" : this.DdeTopicQuotes) + "]";
+			ret += " //TablesReceived[" + this.DdeBatchSubscriber.AllDdeTablesReceivedCountersTotal + "]";
+			return ret;
+		} }
 	}
 }

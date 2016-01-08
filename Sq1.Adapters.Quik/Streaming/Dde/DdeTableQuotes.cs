@@ -1,13 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
+using System.Collections.Generic;
 
-using Sq1.Adapters.Quik.Dde.XlDde;
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 
+using Sq1.Adapters.Quik.Dde.XlDde;
+
 namespace Sq1.Adapters.Quik.Dde {
-	public class DdeTableQuotes : XlDdeTable {
+	//public class DdeTableQuotes : XlDdeTable {
+	public class DdeTableQuotes : XlDdeTableMonitoreable<QuoteQuik> {
 		protected override string DdeConsumerClassName { get { return "DdeTableQuotes"; } }
 
 		protected DateTime		lastQuoteDateTimeForVolume = DateTime.MinValue;
@@ -15,7 +17,8 @@ namespace Sq1.Adapters.Quik.Dde {
 
 		public DdeTableQuotes(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns) {}
 
-		protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
+		//protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
+		protected override QuoteQuik IncomingTableRow_convertToDataStructure_monitoreable(XlRowParsed row) {
 			//if (rowParsed["SHORTNAME"] == "LKOH") {
 			//	int a = 1;
 			//}
@@ -58,14 +61,15 @@ namespace Sq1.Adapters.Quik.Dde {
 			} else {
 				string msg = "SHOULD_I_DELIVER_THE_DUPLIATE_QUOTE?";
 				//Assembler.PopupException(msg, null, false);
-				return;
+				return quikQuote;
 			}
 			//if (lastQuoteSizeForVolume != sizeParsed) {
 			//	lastQuoteSizeForVolume = sizeParsed;
 			//	quote.Size = sizeParsed;
 			//}
 
-			base.QuikStreaming.PushQuoteReceived(quikQuote);
+			base.QuikStreaming.PushQuoteReceived(quikQuote);	//goes to another thread via PUMP and invokes strategies letting me go
+			return quikQuote;									//one more delay is to raise and event which will go to GUI thread as well QuikStreamingMonitorForm.tableQuotes_DataStructureParsed_One()
 		}
 		void reconstructServerTime(XlRowParsed rowParsed) {
 			rowParsed["ServerTime"] = DateTime.MinValue;

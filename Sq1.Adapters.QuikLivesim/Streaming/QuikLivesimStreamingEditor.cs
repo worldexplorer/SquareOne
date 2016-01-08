@@ -13,7 +13,7 @@ namespace Sq1.Adapters.QuikLivesim {
 
 		public QuikLivesimStreamingEditor(QuikLivesimStreaming quikLivesimStreaming, IDataSourceEditor dataSourceEditor) : this() {
 			this.quikLivesimStreaming = quikLivesimStreaming;
-			this.dataSourceEditor = dataSourceEditor;
+			this.DataSourceEditor = dataSourceEditor;
 		}
 		public void Initialize(QuikLivesimStreamingSettings quikLivesimStreamingSettings) {
 			this.quikLivesimStreamingSettings = quikLivesimStreamingSettings;

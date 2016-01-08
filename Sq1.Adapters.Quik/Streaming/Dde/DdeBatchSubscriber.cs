@@ -79,7 +79,7 @@ namespace Sq1.Adapters.Quik.Dde {
 			return ret;
 		}
 
-		internal void tables_CommonForAllSymbols_Add() {
+		void tables_CommonForAllSymbols_Add() {
 			this.TableQuotes = new DdeTableQuotes(this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicQuotes
 				, this.quikStreamingAdapter, TableDefinitions.XlColumnsForTable_Quotes);
 			this.TableTrades = new DdeTableTrades(this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicTrades
@@ -96,6 +96,27 @@ namespace Sq1.Adapters.Quik.Dde {
 			foreach (List<XlDdeTable> tables in this.individualTablesBySymbol.Values) {
 				foreach (XlDdeTable table in tables) {
 					ret += "," + table.Topic;
+				}
+			}
+			return ret;
+		} }
+
+		internal void AllDdeTablesReceivedCountersReset() {
+			this.TableQuotes.DdeTablesReceived = 0;
+			this.TableTrades.DdeTablesReceived = 0;
+			foreach (List<XlDdeTable> tablesPerSymbol in this.individualTablesBySymbol.Values) {
+				foreach (XlDdeTable eachTable in tablesPerSymbol) {
+					eachTable.DdeTablesReceived = 0;
+				}
+			}
+		}
+		internal long AllDdeTablesReceivedCountersTotal { get {
+			long ret = 0;
+			ret += this.TableQuotes.DdeTablesReceived;
+			ret += this.TableTrades.DdeTablesReceived;
+			foreach (List<XlDdeTable> tablesPerSymbol in this.individualTablesBySymbol.Values) {
+				foreach (XlDdeTable eachTable in tablesPerSymbol) {
+					ret += eachTable.DdeTablesReceived;
 				}
 			}
 			return ret;

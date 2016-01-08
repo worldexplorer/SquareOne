@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 using Newtonsoft.Json;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
@@ -17,7 +17,7 @@ namespace Sq1.Adapters.Quik {
 			lock (base.SymbolsSubscribedLock) {
 				if (base.StreamingConnected == true) return;
 				string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
-				this.ddeServerStart();
+				this.DdeServerStart();
 				base.ConnectionState = ConnectionState.DllNotConnectedUnsubscribed;
 				//Assembler.DisplayConnectionStatus(base.ConnectionState, "Started symbolsSubscribed[" + symbolsSubscribed + "]");
 				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " started DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
@@ -30,7 +30,7 @@ namespace Sq1.Adapters.Quik {
 				Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]", null, false);
 				string symbolsUnsubscribed = this.upstreamUnsubscribeAllDataSourceSymbols();
 				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " Stopped symbolsUnsubscribed[" + symbolsUnsubscribed + "]");
-				this.ddeServerStop();
+				this.DdeServerStop();
 				base.ConnectionState = ConnectionState.InitiallyDisconnected;
 				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " stopped DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 				base.StreamingConnected = false;
@@ -107,7 +107,7 @@ namespace Sq1.Adapters.Quik {
 
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			base.StreamingEditorInitializeHelper(dataSourceEditor);
-			base.streamingEditorInstance = new StreamingQuikEditor(this, dataSourceEditor);
+			base.streamingEditorInstance = new QuikStreamingEditor(this, dataSourceEditor);
 			return base.streamingEditorInstance;
 		}
 

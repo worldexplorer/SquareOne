@@ -77,56 +77,90 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataFeed\Dde\TableDefinitions.cs" />
-    <Compile Include="DataFeed\Dde\DdeTableDepth.cs" />
-    <Compile Include="DataFeed\Dde\DdeTableQuotes.cs" />
-    <Compile Include="DataFeed\Dde\DdeBatchSubscriber.cs" />
-    <Compile Include="DataFeed\Dde\DdeTableTrades.cs" />
-    <Compile Include="DataFeed\QuikTrade.cs" />
-    <Compile Include="DataFeed\Dde\XlDde\XlBlockType.cs" />
-    <Compile Include="DataFeed\Dde\XlDde\XlColumn.cs" />
-    <Compile Include="DataFeed\Dde\XlDde\XlDdeTable.cs" />
-    <Compile Include="DataFeed\Dde\XlDde\XlDdeServer.cs" />
-    <Compile Include="DataFeed\Dde\XlDde\XlRowParsed.cs" />
-    <Compile Include="DataFeed\Dde\XlDde\XlReader.cs" />
-    <Compile Include="DataFeed\QuikStreaming.StreamingAdapterProtocol.cs">
+    <Compile Include="Streaming\Dde\Monitoreable\XlDdeTableMonitoreable.EventGenerator.cs">
+      <DependentUpon>XlDdeTableMonitoreable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\Dde\TableDefinitions.cs" />
+    <Compile Include="Streaming\Dde\DdeTableDepth.cs" />
+    <Compile Include="Streaming\Dde\DdeTableQuotes.cs" />
+    <Compile Include="Streaming\Dde\DdeBatchSubscriber.cs" />
+    <Compile Include="Streaming\Dde\DdeTableTrades.cs" />
+    <Compile Include="Streaming\Dde\Monitoreable\XlDdeTableMonitoreable.cs" />
+    <Compile Include="Streaming\Dde\Monitoreable\XlDdeTableMonitoringEventArg.cs" />
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorControl.Customizer.cs">
+      <DependentUpon>QuikStreamingMonitorControl.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorDom.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorDom.Designer.cs">
+      <DependentUpon>QuikStreamingMonitorDom.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\QuikStreaming.EventGenerator.cs">
       <DependentUpon>QuikStreaming.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataFeed\QuikQuote.cs" />
-    <Compile Include="DataFeed\QuikStreamingDataSnapshot.cs" />
-    <Compile Include="DataFeed\QuikStreamingEditor.cs">
+    <Compile Include="Streaming\QuikTrade.cs" />
+    <Compile Include="Streaming\Dde\XlDde\XlBlockType.cs" />
+    <Compile Include="Streaming\Dde\XlDde\XlColumn.cs" />
+    <Compile Include="Streaming\Dde\XlDde\XlDdeTable.cs" />
+    <Compile Include="Streaming\Dde\XlDde\XlDdeServer.cs" />
+    <Compile Include="Streaming\Dde\XlDde\XlRowParsed.cs" />
+    <Compile Include="Streaming\Dde\XlDde\XlReader.cs" />
+    <Compile Include="Streaming\QuikStreaming.StreamingAdapterProtocol.cs">
+      <DependentUpon>QuikStreaming.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\QuikQuote.cs" />
+    <Compile Include="Streaming\QuikStreamingDataSnapshot.cs" />
+    <Compile Include="Streaming\QuikStreamingEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DataFeed\QuikStreaming.cs" />
-    <Compile Include="DataFeed\QuikStreamingEditor.Designer.cs">
+    <Compile Include="Streaming\QuikStreaming.cs" />
+    <Compile Include="Streaming\QuikStreamingEditor.Designer.cs">
       <DependentUpon>QuikStreamingEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataFeed\QuikStreamingEditor.EventConsumer.cs">
+    <Compile Include="Streaming\QuikStreamingEditor.EventConsumer.cs">
       <DependentUpon>QuikStreamingEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OrderExecution\QuikBrokerEditor.cs">
+    <Compile Include="Broker\QuikBrokerEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OrderExecution\QuikBroker.cs" />
-    <Compile Include="OrderExecution\QuikBrokerEditor.Designer.cs">
+    <Compile Include="Broker\QuikBroker.cs" />
+    <Compile Include="Broker\QuikBrokerEditor.Designer.cs">
       <DependentUpon>QuikBrokerEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="OrderExecution\QuikBrokerEditor.EventConsumer.cs">
+    <Compile Include="Broker\QuikBrokerEditor.EventConsumer.cs">
       <DependentUpon>QuikBrokerEditor.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="OrderExecution\QuikOrderCallbackDupesChecker.cs" />
-    <Compile Include="OrderExecution\Terminal\QuikTerminal.cs" />
-    <Compile Include="OrderExecution\Terminal\Trans2Quik.cs" />
+    <Compile Include="Broker\QuikOrderCallbackDupesChecker.cs" />
+    <Compile Include="Broker\Terminal\QuikTerminal.cs" />
+    <Compile Include="Broker\Terminal\Trans2Quik.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorForm.Designer.cs">
+      <DependentUpon>QuikStreamingMonitorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorControl.Designer.cs">
+      <DependentUpon>QuikStreamingMonitorControl.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\dockpanelsuite290-master\WinFormsUI\WinFormsUI.csproj">
+      <Project>{E580A3F0-6BED-4649-A159-58998CC077F3}</Project>
+      <Name>WinFormsUI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Json6r6-src\Newtonsoft.Json\Newtonsoft.Json.Net20.csproj">
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json.Net20</Name>
@@ -135,27 +169,41 @@
       <Project>{D77772F9-3D3D-40BA-B95F-05C45878078F}</Project>
       <Name>NDde</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ObjectListView_280-src\ObjectListView2010.csproj">
+      <Project>{18FEDA0C-D147-4286-B39A-01204808106A}</Project>
+      <Name>ObjectListView2010</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sq1.Core\Sq1.Core.csproj">
       <Project>{DA6545DA-0BA2-4689-8C6F-78C09E2F83D5}</Project>
       <Name>Sq1.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Sq1.Widgets\Sq1.Widgets.csproj">
+      <Project>{E4E3D133-E335-4437-B85E-89D6738B3FA2}</Project>
+      <Name>Sq1.Widgets</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DataFeed\QuikStreamingEditor.resx">
+    <EmbeddedResource Include="Streaming\QuikStreamingEditor.resx">
       <DependentUpon>QuikStreamingEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OrderExecution\QuikBrokerEditor.resx">
+    <EmbeddedResource Include="Streaming\Monitor\QuikStreamingMonitorControl.resx">
+      <DependentUpon>QuikStreamingMonitorControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Broker\QuikBrokerEditor.resx">
       <DependentUpon>QuikBrokerEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Streaming\Monitor\QuikStreamingMonitorForm.resx">
+      <DependentUpon>QuikStreamingMonitorForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\imgQuikStaticProvider.bmp" />
     <Content Include="Resources\imgQuikStreamingProvider.bmp" />
-    <None Include="OrderExecution\Terminal\TRANS2QUIK-1.1.0.10.dll.copy" />
+    <None Include="Broker\Terminal\TRANS2QUIK-1.1.0.10.dll.copy" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
