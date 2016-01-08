@@ -10,12 +10,16 @@ using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 using Sq1.Core.Repositories;
 
+using WeifenLuo.WinFormsUI.Docking;
+
 namespace Sq1.Widgets.DataSourceEditor {
 	public partial class DataSourceEditorControl : UserControl, IDataSourceEditor {
 		public string DataSourceName { get {
 				if (this.dataSourceIamEditing == null) return "NO_DATASOURCE_LOADED_FOR_EDITING";
 				return this.dataSourceIamEditing.Name;
 			} }
+
+		public	DockPanel								MainFormDockPanel_forDdeMonitor	{ get; private set; }
 
 		public	Dictionary<string, StreamingAdapter>	StreamingAdaptersByName			{ get; private set; }
 		public	Dictionary<string, BrokerAdapter>		BrokerAdaptersByName			{ get; private set; }
@@ -46,7 +50,9 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.repositoryMarketInfo				= repositorySerializerMarketInfoPassed;
 			this.orderProcessor						= orderProcessorPassed;
 		}
-		public void Initialize(DataSource dsEdit) {
+		public void Initialize(DataSource dsEdit, DockPanel mainFormDockPanel) {
+			this.MainFormDockPanel_forDdeMonitor = mainFormDockPanel;
+
 			if (dsEdit == null) {
 				throw new Exception("DataSourceEditor can not create the DataSource; pass an existing datasource for editing, not NULL");
 			}
@@ -63,11 +69,18 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.PopulateScaleIntervalFromDataSource();
 			this.PopulateStreamingBrokerListViewsFromDataSource();
 
-			if (this.dataSourceIamEditing.StreamingAdapter != null) 	this.highlightStreamingByName(this.dataSourceIamEditing.StreamingAdapter.GetType().Name);
-			else									this.highlightStreamingByName(StreamingAdapter.NO_STREAMING_ADAPTER);
 
-			if (this.dataSourceIamEditing.BrokerAdapter != null)		this.highlightBrokerByName(this.dataSourceIamEditing.BrokerAdapter.GetType().Name);
-			else 									this.highlightBrokerByName(BrokerAdapter.NO_BROKER_ADAPTER);
+			if (this.dataSourceIamEditing.StreamingAdapter != null) {
+				this.highlightStreamingByName(this.dataSourceIamEditing.StreamingAdapter.GetType().Name);
+			} else {
+				this.highlightStreamingByName(StreamingAdapter.NO_STREAMING_ADAPTER);
+			}
+
+			if (this.dataSourceIamEditing.BrokerAdapter != null) {
+				this.highlightBrokerByName(this.dataSourceIamEditing.BrokerAdapter.GetType().Name);
+			} else {
+				this.highlightBrokerByName(BrokerAdapter.NO_BROKER_ADAPTER);
+			}
 
 			this.marketInfoEditor.Initialize(dataSourceIamEditing, this.repositoryJsonDataSource, this.repositoryMarketInfo);
 

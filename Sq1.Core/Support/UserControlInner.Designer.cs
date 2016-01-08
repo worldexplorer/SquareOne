@@ -1,4 +1,4 @@
-﻿namespace Sq1.Widgets.Correlation {
+﻿namespace Sq1.Core.Support {
 	partial class UserControlInner {
 		/// <summary> 
 		/// Required designer variable.

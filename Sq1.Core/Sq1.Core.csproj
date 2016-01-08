@@ -373,6 +373,18 @@
     <Compile Include="Streaming\StreamingAdapter.cs" />
     <Compile Include="StrategyBase\StrategyEventArgs.cs" />
     <Compile Include="Support\SymbolParser.cs" />
+    <Compile Include="Support\UserControlInner.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Support\UserControlInner.Designer.cs">
+      <DependentUpon>UserControlInner.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Support\UserControlResizeable.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Support\UserControlResizeable.Designer.cs">
+      <DependentUpon>UserControlResizeable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Support\WindowsFormsUtils.cs" />
     <Compile Include="DataTypes\Bar.cs" />
     <Compile Include="DataTypes\BarDataRange.cs" />
@@ -433,6 +445,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Livesim\LivesimStreamingEditor.resx">
       <DependentUpon>LivesimStreamingEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Support\UserControlResizeable.resx">
+      <DependentUpon>UserControlResizeable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -15,30 +15,30 @@ namespace Sq1.Core.Streaming {
 	//[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
 	
 	public class StreamingEditor : UserControl {
-		protected StreamingAdapter streamingAdapter;
-		protected IDataSourceEditor dataSourceEditor;
-		protected bool ignoreEditorFieldChangesWhileInitializingEditor;
+		protected	StreamingAdapter	StreamingAdapter;
+		protected	IDataSourceEditor	DataSourceEditor;
+		protected	bool				IgnoreEditorFieldChangesWhileInitializingEditor;
 
 		public StreamingEditor() {	/* used in Design Mode for the descendands */ }
 		public virtual void Initialize(StreamingAdapter streamingAdapter, IDataSourceEditor dataSourceEditor) {
-			this.streamingAdapter = streamingAdapter;
-			this.dataSourceEditor = dataSourceEditor;
+			this.StreamingAdapter = streamingAdapter;
+			this.DataSourceEditor = dataSourceEditor;
 			this.InitializeEditorFields();
 		}
 
 		// was intended to be abstract but has implementation for Designer to be able to instantiate StreamingEditor
 		public virtual void PushStreamingAdapterSettingsToEditor() {
-			throw new Exception("please override BrokerAdapter::PushStreamingAdapterSettingsToEditor() for streamingAdapter=[" + this.streamingAdapter + "]");
+			throw new Exception("please override BrokerAdapter::PushStreamingAdapterSettingsToEditor() for streamingAdapter=[" + this.StreamingAdapter + "]");
 		}
 		// was intended to be abstract but has implementation for Designer to be able to instantiate StreamingEditor
 		public virtual void PushEditedSettingsToStreamingAdapter() {
-			throw new Exception("please override BrokerAdapter::PushEditedSettingsToStreamingAdapter() for streamingAdapter=[" + this.streamingAdapter + "]");
+			throw new Exception("please override BrokerAdapter::PushEditedSettingsToStreamingAdapter() for streamingAdapter=[" + this.StreamingAdapter + "]");
 		}
 
 		public void InitializeEditorFields() {
-			this.ignoreEditorFieldChangesWhileInitializingEditor = true;
+			this.IgnoreEditorFieldChangesWhileInitializingEditor = true;
 			this.PushStreamingAdapterSettingsToEditor();
-			this.ignoreEditorFieldChangesWhileInitializingEditor = false;
+			this.IgnoreEditorFieldChangesWhileInitializingEditor = false;
 		}
 	}
 }

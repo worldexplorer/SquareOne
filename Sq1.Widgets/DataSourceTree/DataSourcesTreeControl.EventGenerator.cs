@@ -89,6 +89,9 @@ namespace Sq1.Widgets.DataSourcesTree {
 			this.OnDataSourceEditClicked(this, new DataSourceEventArgs(foundWithSameName));
 		}
 		public void RaiseOnSymbolInfoEditorClicked() {
+			if (this.DataSourceSelected	== null) return;
+			if (this.SymbolSelected		== null) return;
+
 			if (this.OnSymbolInfoEditorClicked == null) {
 				string msg = "DataSourcesTree.mniEditDataSource_Click(): event OnDataSourceEditClicked: no subscribers";
 				Assembler.PopupException(msg);
