@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 
+using WeifenLuo.WinFormsUI.Docking;
+
 namespace Sq1.Gui.Singletons {
 	public partial class DataSourceEditorForm : DockContentSingleton<DataSourceEditorForm> {
 		public string windowTitleDefault;
@@ -13,7 +15,7 @@ namespace Sq1.Gui.Singletons {
 			this.InitializeComponent();
 		}
 		
-		public void Initialize(string dsName) {
+		public void Initialize(string dsName, DockPanel mainFormDockPanel) {
 			if (string.IsNullOrEmpty(dsName)) return;
 			
 			DataSource found = Assembler.InstanceInitialized.RepositoryJsonDataSource.DataSourceFindNullUnsafe(dsName);
@@ -22,7 +24,7 @@ namespace Sq1.Gui.Singletons {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.DataSourceEditorControl.Initialize(found);
+			this.DataSourceEditorControl.Initialize(found, mainFormDockPanel);
 		}
 
 		// http://www.codeproject.com/Articles/525541/Decoupling-Content-From-Container-in-Weifen-Luos

@@ -11,7 +11,7 @@ namespace Sq1.Widgets {
 		// Docked Form with MinimumSize will take all MinimumSize area and overlap to neighbours
 		// MinimumSize should be 0 to avoid overlap confusion and let myself resize to 0
 		// using FloatWindowRecommendedSize as inDesigner-user-defined Size to set initial Floating Window size
-		public Size FloatWindowRecommendedSize;
+		public	Size		FloatWindowRecommendedSize;
 		
 		public DockContentImproved() : base() {
 		}
@@ -72,6 +72,11 @@ namespace Sq1.Widgets {
 //			base.OnFormClosed(e);
 //		}
 
+		//public	DockPanel	DockPanel { get; private set; }
+		//public new void Show(DockPanel dockPanelPassed) {
+		//    this.DockPanel = dockPanelPassed;
+		//    base.Show(this.DockPanel);
+		//}
 
 		public void ShowAsDocumentTabNotPane(DockPanel dockPanel) {
 			//v1 NOT_MOVING_TO_DOCUMENT_ON_RESTART

@@ -161,7 +161,7 @@ namespace Sq1.Gui {
 					//Assembler.PopupException("DataSourceEditorForm: initializing with datasource[" + persistedParsedToHash["DataSourceEditing"] + "]");
 					DataSourceEditorForm instance = DataSourceEditorForm.Instance;
 					string dsName = persistedParsedToHash["DataSourceEditing"];
-					instance.Initialize(dsName);
+					instance.Initialize(dsName, this.DockPanel);
 					ret = instance; 
 					break;
 

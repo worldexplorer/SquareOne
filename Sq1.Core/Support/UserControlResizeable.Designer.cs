@@ -1,4 +1,4 @@
-﻿namespace Sq1.Widgets.Correlation {
+﻿namespace Sq1.Core.Support {
 	partial class UserControlResizeable {
 		/// <summary> 
 		/// Required designer variable.
@@ -23,7 +23,7 @@
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			this.UserControlInner = new Sq1.Widgets.Correlation.UserControlInner();
+			this.UserControlInner = new Sq1.Core.Support.UserControlInner();
 			this.SuspendLayout();
 			// 
 			// UserControlInner

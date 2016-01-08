@@ -282,7 +282,7 @@ namespace Sq1.Gui {
 		}
 		internal void DataSourcesTree_OnDataSourceEditClicked(object sender, DataSourceEventArgs e) {
 			//DataSourceEditorForm.Instance.DataSourceEditorControl.Initialize(e.DataSource);
-			DataSourceEditorForm.Instance.Initialize(e.DataSource.Name);
+			DataSourceEditorForm.Instance.Initialize(e.DataSource.Name, this.mainForm.DockPanel);
 			try {
 				DataSourceEditorForm.Instance.ShowAsDocumentTabNotPane(this.mainForm.DockPanel);
 			} catch (Exception exc) {

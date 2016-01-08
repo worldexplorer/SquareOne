@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Sq1.Widgets.Correlation {
+namespace Sq1.Core.Support {
 	public partial class UserControlResizeable : UserControl {
 		public Padding PaddingMouseReceiving { get; private set; }
 		bool mouseLeftButtonPressedNow;

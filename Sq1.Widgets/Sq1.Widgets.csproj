@@ -64,12 +64,6 @@
       <DependentUpon>CorrelatorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Correlation\UserControlInner.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Correlation\UserControlInner.Designer.cs">
-      <DependentUpon>UserControlInner.cs</DependentUpon>
-    </Compile>
     <Compile Include="CsvImporter\ColumnCatcher.cs" />
     <Compile Include="CsvImporter\CsvBar.cs" />
     <Compile Include="CsvImporter\CsvImporterControl.cs">
@@ -145,12 +139,6 @@
     <Compile Include="DataSourceTree\DataSourceTreeDataSnapshot.cs" />
     <Compile Include="DockContentImproved\DockContentImproved.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Correlation\UserControlResizeable.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Correlation\UserControlResizeable.Designer.cs">
-      <DependentUpon>UserControlResizeable.cs</DependentUpon>
     </Compile>
     <Compile Include="Exceptions\ExceptionsControlDataSnapshot.cs" />
     <Compile Include="Exceptions\ExceptionsControl.cs">
@@ -422,9 +410,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DataSourceTree\DataSourcesTreeControl.resx">
       <DependentUpon>DataSourcesTreeControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Correlation\UserControlResizeable.resx">
-      <DependentUpon>UserControlResizeable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Exceptions\ExceptionsControl.resx">
       <DependentUpon>ExceptionsControl.cs</DependentUpon>

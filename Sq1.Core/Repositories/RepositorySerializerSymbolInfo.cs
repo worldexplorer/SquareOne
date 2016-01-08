@@ -17,6 +17,10 @@ namespace Sq1.Core.Repositories {
 			SymbolInfo ret = null;
 			if (string.IsNullOrEmpty(symbol)) return ret;
 			foreach (SymbolInfo eachSymbolInfo in this.SymbolInfos) {
+				if (eachSymbolInfo.Symbol == null) {
+					string msg = "DELETE_Symbol=null_IN_SYMBOL_INFO_EDITOR";
+					continue;
+				}
 				if (eachSymbolInfo.Symbol.ToUpper() != symbol.ToUpper()) continue;
 				ret = eachSymbolInfo;
 				break;
@@ -53,6 +57,11 @@ namespace Sq1.Core.Repositories {
 			return symbolInfo;
 		}
 		public SymbolInfo Add(string newSymbol) {
+			if (newSymbol == null) {
+				string msg = "I_REFUSE_TO_ADD_SYMBOL_NULL[" + newSymbol + "]";
+				Assembler.PopupException(msg);
+				return null;
+			}
 			if (this.FindSymbolInfoNullUnsafe(newSymbol) != null) {
 				string msg = "I_REFUSE_TO_ADD_SYMBOL_INFO__SYMBOL_ALREADY_EXISTS[" + newSymbol + "]";
 				Assembler.PopupException(msg);
