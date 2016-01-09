@@ -9,7 +9,7 @@ using Sq1.Core.StrategyBase;
 using Sq1.Core.Backtesting;
 
 #if QUIK_REFERRED
-using Sq1.Adapters.Quik;
+using Sq1.Adapters.Quik.Streaming;
 #endif
 
 namespace Sq1.Strategies.Demo {

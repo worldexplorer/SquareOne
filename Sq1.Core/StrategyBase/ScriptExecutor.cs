@@ -325,14 +325,14 @@ namespace Sq1.Core.StrategyBase {
 			//if (quote != null) {
 			if (onNewQuoteTrue_onNewBarFalse == true) {
 				if (this.quoteExecutedLast != null) {
-					int mustBeOne = quoteForAlertsCreated.AbsnoPerSymbol - quoteExecutedLast.AbsnoPerSymbol;
+					long mustBeOne = quoteForAlertsCreated.AbsnoPerSymbol - quoteExecutedLast.AbsnoPerSymbol;
 					if (mustBeOne == 0) {
 						string msg2 = "DUPE_IN_SCRIPT_INVOCATION__INDICATORS_WONT_COMPLAIN_TOO";
 						Assembler.PopupException(msg2, null, false);
 						return null;
 					}
 					if (mustBeOne > 1) {
-						int skipped = mustBeOne - 1;
+						long skipped = mustBeOne - 1;
 						string msg2 = "HOLE_IN_SCRIPT_INVOCATION";
 						Assembler.PopupException(msg2, null, false);
 						return null;
