@@ -162,7 +162,7 @@ namespace Sq1.Core.Streaming {
 				return;
 			}
 
-			int absnoPerSymbolNext = 0;
+			long absnoPerSymbolNext = 0;
 
 			Quote lastQuote = this.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(quote.Symbol);
 			if (lastQuote == null) {

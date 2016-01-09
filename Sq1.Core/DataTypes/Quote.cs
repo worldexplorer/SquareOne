@@ -20,7 +20,7 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public int			IntraBarSerno;
 		[JsonIgnore]	public bool			IamInjectedToFillPendingAlerts {
 			get { return this.IntraBarSerno >= Quote.IntraBarSernoShiftForGeneratedTowardsPendingFill; } }
-		[JsonProperty]	public int			AbsnoPerSymbol;
+		[JsonProperty]	public long			AbsnoPerSymbol;
 
 		[JsonIgnore]	public Bar			ParentBarStreaming	{ get; protected set; }
 		[JsonIgnore]	public bool			HasParentBar		{ get { return this.ParentBarStreaming != null; } }

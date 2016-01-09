@@ -39,7 +39,7 @@ namespace Sq1.Core.Livesim {
 		protected LivesimBroker() {
 			string msg = "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
 				+ "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_BROKER_ADAPTERS_FOUND"
-				+ " example:QuikLivesimBroker()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
+				+ " example:QuikBrokerLivesim()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
 			base.Name = "LivesimBroker-child_ACTIVATOR_DLL-SCANNED";
 		}
 
