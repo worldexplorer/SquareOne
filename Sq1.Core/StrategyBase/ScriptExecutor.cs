@@ -1519,13 +1519,6 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.Bars.DataSource.SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars +=
 				new EventHandler<DataSourceSymbolRenamedEventArgs>(barDataSource_SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars);
-
-			// each time I change bars on chart switching to 
-			LivesimStreaming streamingAsLivesimChild = this.DataSource.StreamingAdapter	as LivesimStreaming;
-			LivesimBroker		brokerAsLivesimChild = this.DataSource.BrokerAdapter	as LivesimBroker;
-			//AFTER_I_EDITED_DATASOURCE_AND_NULLIFIED_STREAMING_ADAPTER_I_WANNA_USE_MY_DUMB_LivesimStreaming() if (streamingAsLivesimChild != null && brokerAsLivesimChild != null) {
-				this.Livesimulator.RedirectDataSource_reactivateLivesimsWithLivesimDataSource(streamingAsLivesimChild, brokerAsLivesimChild);
-			//}
 		}
 		void barDataSource_SymbolRenamedExecutorShouldRenameEachBarSaveStrategyNotBars(object sender, DataSourceSymbolRenamedEventArgs e) {
 			if (this.Bars == null) {

@@ -55,7 +55,7 @@ namespace Sq1.Gui.Forms {
 				//this.chartFormManager.Executor.EventGenerator.OnStrategyExecutedOneQuoteOrBarOrdersEmitted +=
 				//	new EventHandler<EventArgs>(this.livesimForm_StrategyExecutedOneQuoteOrBarOrdersEmitted);
 
-				this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Initialize(this.chartFormManager.ChartForm.ChartControl);
+				//DataSourceAsLivesimNullUnsafe_IS_NULL_HERE this.chartFormManager.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Initialize(this.chartFormManager.ChartForm.ChartControl);
 				this.LivesimControl.StreamingLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimStreamingSettings);
 				this.LivesimControl.   BrokerLivesimEditor.Initialize(this.chartFormManager.Strategy.LivesimBrokerSettings);
 			} catch (Exception ex) {

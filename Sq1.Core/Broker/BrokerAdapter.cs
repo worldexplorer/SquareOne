@@ -8,6 +8,7 @@ using Sq1.Core.Accounting;
 using Sq1.Core.DataFeed;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Broker {
 	public partial class BrokerAdapter {
@@ -45,6 +46,8 @@ namespace Sq1.Core.Broker {
 		[JsonIgnore]	public OrderCallbackDupesChecker OrderCallbackDupesChecker { get; protected set; }
 		[JsonIgnore]	public bool SignalToTerminateAllOrderTryFillLoopsInAllMocks = false;
 
+		[JsonIgnore]	public LivesimBroker			LivesimBroker			{ get; protected set; }
+
 		public BrokerAdapter() {
 			//Accounts = new List<Account>();
 			this.lockSubmitOrders = new object();
@@ -56,6 +59,8 @@ namespace Sq1.Core.Broker {
 			this.StreamingAdapter = streamingAdapter;
 			this.OrderProcessor = orderProcessor;
 			this.AccountAutoPropagate.Initialize(this);
+			this.LivesimBroker		= new LivesimBroker(true);
+			//this.LivesimBroker.Initialize(dataSource);
 		}
 		public virtual void Connect() {
 			throw new Exception("please override BrokerAdapter::Connect() for BrokerAdapter.Name=[" + Name + "]");

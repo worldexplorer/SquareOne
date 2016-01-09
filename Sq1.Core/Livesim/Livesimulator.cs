@@ -35,34 +35,26 @@ namespace Sq1.Core.Livesim {
 
 		public Livesimulator(ScriptExecutor executor) : base(executor) {
 			base.BacktestDataSource			= new LivesimDataSource(executor);
-			base.BacktestDataSource.Initialize(Assembler.InstanceInitialized.OrderProcessor);
+			this.DataSourceAsLivesimNullUnsafe.Initialize(Assembler.InstanceInitialized.OrderProcessor);
 			//base.SeparatePushingThreadEnabled = false;
 			this.livesimQuoteBarConsumer	= new LivesimQuoteBarConsumer(this);
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
 		}
-		public void RedirectDataSource_reactivateLivesimsWithLivesimDataSource(LivesimStreaming liveStreamingChild, LivesimBroker livesimBrokerChild) {
-			string msig = " //RedirectDataSourceToUserLivesimImplementations(" + liveStreamingChild + ", " + livesimBrokerChild + ")";
-			if (	this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	== liveStreamingChild
-				 && this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	== livesimBrokerChild) {
-				string msg = "DATASOURCE_NOT_REDIRECTED__SAME_STREAMING_AND_BROKER_ADAPTERS";
-				Assembler.PopupException(msg + msig, null, false);
-				return;
-			}
+		//public void RedirectDataSource_reactivateLivesimsWithLivesimDataSource(LivesimStreaming liveStreamingChild, LivesimBroker livesimBrokerChild) {
+		//    string msig = " //RedirectDataSourceToUserLivesimImplementations(" + liveStreamingChild + ", " + livesimBrokerChild + ")";
+		//    if (	this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	== liveStreamingChild
+		//         && this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	== livesimBrokerChild) {
+		//        string msg = "DATASOURCE_NOT_REDIRECTED__SAME_STREAMING_AND_BROKER_ADAPTERS";
+		//        Assembler.PopupException(msg + msig, null, false);
+		//        return;
+		//    }
 				
-			// deserialized, they were created with dummy constructor; now I re-create the same adapters to initialize them with the DataSource having QuoteGenerator and no Solidifier
-			LivesimStreaming streamingRecreatedWithPointerBack = liveStreamingChild == null
-				? new LivesimStreaming(this.DataSourceAsLivesimNullUnsafe)
-				: (LivesimStreaming)	Activator.CreateInstance(liveStreamingChild	.GetType(), this.DataSourceAsLivesimNullUnsafe);
+		//    // move to the spot where a LivesimDataSource is created in anticipation of a livesim.Start();
+		//    this.DataSourceAsLivesimNullUnsafe.PushPreInstantiatedLivesimAdaptersToLivesimDataSource();
 
-			LivesimBroker		brokerRecreatedWithPointerBack = livesimBrokerChild == null
-				? new LivesimBroker(this.DataSourceAsLivesimNullUnsafe)
-				: (LivesimBroker)	Activator.CreateInstance(livesimBrokerChild	.GetType(), this.DataSourceAsLivesimNullUnsafe);
-			this.DataSourceAsLivesimNullUnsafe.SubstituteAdapters(streamingRecreatedWithPointerBack, brokerRecreatedWithPointerBack);
-			// I_REPLACED_DUMMIES DID_NOT_INVOKE_THEIR_DISPOSE()_TO_RELEASE_WAIT_HANDLES
-
-			string msg1 = "ADAPTERS_SUBSTITUTED_FOR_LIVESIM_DATASOURCE " + this.DataSourceAsLivesimNullUnsafe.ToString();
-			Assembler.PopupException(msg1 + msig, null, false);
-		}
+		//    string msg1 = "ADAPTERS_SUBSTITUTED_FOR_LIVESIM_DATASOURCE " + this.DataSourceAsLivesimNullUnsafe.ToString();
+		//    Assembler.PopupException(msg1 + msig, null, false);
+		//}
 
 		protected override void SimulationPreBarsSubstitute_overrideable() {
 			if (base.BarsOriginal == base.Executor.Bars) {
@@ -101,6 +93,13 @@ namespace Sq1.Core.Livesim {
 				#endregion
 
 				base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;
+				
+				// each time I change bars on chart switching to 
+				//LivesimStreaming streamingAsLivesimChild = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter_instantiatedForLivesim;
+				//LivesimBroker		brokerAsLivesimChild = this.DataSourceAsLivesimNullUnsafe.BrokerAdapter_instantiatedForLivesim;
+				//this.RedirectDataSource_reactivateLivesimsWithLivesimDataSource(streamingAsLivesimChild, brokerAsLivesimChild);
+				this.DataSourceAsLivesimNullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();
+
 
 				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
 				//v1 bool chartIsSubscribed_toBarsOriginal = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
@@ -147,8 +146,9 @@ namespace Sq1.Core.Livesim {
 				}
 
 				// otherwize, after apprestart, I change bars for the chart and click LivesimForm=>Start and get DONT_INVOKE_ME_WITH_NULL_SYMBOL_INFO I_WOULD_THROW_ANYWAY_MAKING_THE_REASON_CLEAR //LevelTwoGenerator.GenerateForQuote()
-			    //v1-LivesimStreaming.PushQuoteGenerated() is still complaining on chartShadow_notUsed=null this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.PushSymbolInfoToLevel2generator();
-				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Initialize(this.chartShadow);
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
+				this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.PushSymbolInfoToLevel2generator(this.Executor.Bars.SymbolInfo);
 			} catch (Exception ex) {
 				string msg = "PreBarsSubstitute(): Backtester caught a long beard...";
 				base.Executor.PopupException(msg, ex);

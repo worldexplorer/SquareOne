@@ -8,8 +8,8 @@ namespace Sq1.Core.DataTypes {
 		InitiallyDisconnected = 2,
 
 		// used in QuikBrokerAdapter
-		DllNotConnectedUnsubscribed = 3,
-		DllConnectedUnsubscribed = 4,
+		DisconnectedUnsubscribed = 3,
+		ConnectedUnsubscribed = 4,
 		SymbolSubscribed = 10,
 		SymbolUnsubscribed = 11,
 		ErrorConnectingNoRetriesAnymore = 12,
@@ -21,6 +21,7 @@ namespace Sq1.Core.DataTypes {
 		SymbolsSubscribedAllDataSource = 50,
 		ConnectedSubscribedAll = 51,
 		DisconnectedUnsubscribedAll = 70,
+
 		ConnectFailed = 90,
 		DisconnectFailed = 91,
 	}
