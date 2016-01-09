@@ -12,21 +12,24 @@ namespace Sq1.Core.Livesim {
 
 		LivesimDataSource() {
 			base.Name				= "LivesimDataSource";
-			base.StreamingAdapter	= new LivesimStreaming(this);
-			base.BrokerAdapter		= new LivesimBroker(this);
 		}
 
 		public LivesimDataSource(ScriptExecutor executor) : this() {
 			this.Executor = executor;
 		}
 
-		public void SubstituteAdapters(LivesimStreaming liveStreamingChild, LivesimBroker liveBrokerChild) {
+		public void PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource() {
+			string msig = " //PushPreInstantiatedLivesimAdaptersToLivesimDataSource() [" + this.ToString() + "]";
+
 			//TOO_MANY_ALREADY_DISPOSED_EXCEPTIONS SEEMS_TO_BE_SAME_DUMMY_ACROSS_MANY_DATASOURCES_POINTING_TO_IT
 			//this.StreamingAsLivesimNullUnsafe.Dispose();
 			//this.   BrokerAsLivesimNullUnsafe.Dispose();
 
-			base.StreamingAdapter	= liveStreamingChild;
-			base.BrokerAdapter		= liveBrokerChild;
+			base.StreamingAdapter	= base.StreamingAdapter.LivesimStreaming;
+			base.BrokerAdapter		= base.BrokerAdapter.LivesimBroker;
+
+		    string msg1 = "ADAPTERS_SUBSTITUTED_FOR_LIVESIM_DATASOURCE";
+		    Assembler.PopupException(msg1 + msig, null, false);
 		}
 
 		public void Dispose() {

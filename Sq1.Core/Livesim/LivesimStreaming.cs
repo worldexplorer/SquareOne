@@ -16,8 +16,8 @@ namespace Sq1.Core.Livesim {
 	public partial class LivesimStreaming : BacktestStreaming, IDisposable {
 		// without [JsonIgnore] Livesim children will have these properties in JSON
 		[JsonIgnore]	public		ManualResetEvent			Unpaused					{ get; private set; }
-		[JsonIgnore]				ChartShadow					chartShadow_notUsed;
-		[JsonIgnore]				LivesimDataSource			livesimDataSource;
+		//[JsonIgnore]				ChartShadow					chartShadow_notUsed;
+		[JsonIgnore]				LivesimDataSource			livesimDataSource			{ get { return base.DataSource as LivesimDataSource; } }
 		[JsonIgnore]	public		Livesimulator				Livesimulator				{ get { return this.livesimDataSource.Executor.Livesimulator; } }
 		[JsonIgnore]	internal	LivesimStreamingSettings	LivesimStreamingSettings	{ get { return this.livesimDataSource.Executor.Strategy.LivesimStreamingSettings; } }
 
@@ -30,52 +30,31 @@ namespace Sq1.Core.Livesim {
 
 		[JsonIgnore]	public		bool						IsDisposed					{ get; private set; }
 
-		public LivesimStreaming(LivesimDataSource livesimDataSource) : base() {
-			if (livesimDataSource == null) {
-				string msg = "DID_ACTIVATOR_PICK_THE_WRONG_CONSTRUCTOR?...";
-				Assembler.PopupException(msg);
-			}
-			base.Name = "LivesimStreaming";
-			base.StreamingSolidifier = null;
-			base.QuotePumpSeparatePushingThreadEnabled = false;
-			this.Unpaused = new ManualResetEvent(true);
-			this.livesimDataSource = livesimDataSource;
-			this.Level2generator = new LevelTwoGeneratorLivesim(this);
-			this.LivesimStreamingSpoiler = new LivesimStreamingSpoiler(this);
-		}
-
 		protected LivesimStreaming() : base() {
 		    string msg = "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
 		        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_STREAMING_ADAPTERS_FOUND"
 		        + " example:QuikLivesimStreaming()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
 			base.Name = "LivesimStreaming-child_ACTIVATOR_DLL-SCANNED";
 		}
+		public LivesimStreaming(bool IamNotAdummy) : base() {
+			base.Name = "LivesimStreaming";
+			base.StreamingSolidifier = null;
+			base.QuotePumpSeparatePushingThreadEnabled = false;
+			this.Unpaused = new ManualResetEvent(true);
+			this.Level2generator = new LevelTwoGeneratorLivesim(this);
+			this.LivesimStreamingSpoiler = new LivesimStreamingSpoiler(this);
+		}
+		public virtual void Initialize(LivesimDataSource livesimDataSource) {
+			if (livesimDataSource == null) {
+				string msg = "DID_ACTIVATOR_PICK_THE_WRONG_CONSTRUCTOR?...";
+				Assembler.PopupException(msg);
+			}
+			//this.livesimDataSource = livesimDataSource;
+			base.DataSource = livesimDataSource;
+		}
 
 		// invoked after LivesimFormShow(), but must have meaning "Executor.Bars changed"...
-		public void Initialize(ChartShadow chartShadow) {
-			this.chartShadow_notUsed = chartShadow;
-
-			//v1 why did you do it so messy?....
-			//double stepPrice = this.chartShadow_notUsed.Bars.SymbolInfo.PriceStepFromDecimal;
-			//double stepSize  = this.chartShadow_notUsed.Bars.SymbolInfo.VolumeStepFromDecimal;
-			//SymbolInfo symbolInfo_fromExecutor = this.chartShadow_notUsed.Executor.Bars.SymbolInfo;	//LivesimLevelTwoGenerator needs to align price and volume to Levels
-			//int howMany = this.chartShadow_notUsed.Executor.Strategy.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
-			//this.Level2generator.Initialize(symbolInfo_fromExecutor, howMany, stepPrice, stepSize);
-			if (this.chartShadow_notUsed.Executor != this.livesimDataSource.Executor) {
-				string msg = "IS_THIS_WHAT_YOU_WANTED_TO_AVOID#1_AND_CREATED_THE_MESS_ABOVE?... YOU_ARE_FORGIVEN__NOW_JUST_FIX_IT";
-				Assembler.PopupException(msg);
-			}
-			//YES_THEY_ARE_DIFFERENT if (this.chartShadow_notUsed.Executor.Bars != this.chartShadow_notUsed.Bars) {
-			//    string msg = "IS_THIS_WHAT_YOU_WANTED_TO_AVOID#2_AND_CREATED_THE_MESS_ABOVE?... YOU_ARE_FORGIVEN__NOW_JUST_FIX_IT";
-			//    Assembler.PopupException(msg);
-			//}
-			if (this.chartShadow_notUsed.Executor.Bars.SymbolInfo != this.chartShadow_notUsed.Bars.SymbolInfo) {
-				string msg = "IS_THIS_WHAT_YOU_WANTED_TO_AVOID#3_AND_CREATED_THE_MESS_ABOVE?... YOU_ARE_FORGIVEN__NOW_JUST_FIX_IT";
-				Assembler.PopupException(msg);
-			}
-
-			//v2
-			SymbolInfo symbolInfo_fromExecutor = this.livesimDataSource.Executor.Bars.SymbolInfo;
+		public void PushSymbolInfoToLevel2generator(SymbolInfo symbolInfo_fromExecutor) {
 			int howMany = this.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
 			this.Level2generator.Initialize(symbolInfo_fromExecutor, howMany);
 		}
@@ -99,26 +78,6 @@ namespace Sq1.Core.Livesim {
 			this.Level2generator.GenerateForQuote(quote);
 			base.PushQuoteGenerated(quote);
 	
-			if (this.chartShadow_notUsed == null) {
-				string msg = "YOU_FORGOT_TO_LET_LivesimStreaming_KNOW_ABOUT_CHART_CONTROL__TO_WAIT_FOR_REPAINT_COMPLETED_BEFORE_FEEDING_NEXT_QUOTE_TO_EXECUTOR_VIA_PUMP";
-				Assembler.PopupException(msg);
-				return;
-			}
-
-			// NO_NEED_IN_THIS_AT_ALL => STREAMING_WILL_INVALIDATE_ALL_PANELS,ORDERPROCESSOR_WILL_REBUILD_EXECUTION,EXECUTOR_REBUILDS_REPORTERS
-			//12.9secOff vs 14.7secOn this.chartShadow.RefreshAllPanelsWaitFinishedSoLivesimCouldGenerateNewQuote();
-			//this.chartShadow.Invalidate();
-
-			//SLEEP_IS_VITAL__OTHERWISE_FAST_LIVESIM_AND_100%CPU_AFTERWARDS
-			//Thread.Sleep(50);	// 50ms_ENOUGH_FOR_3.3GHZ_TO_KEEP_GUI_RESPONSIVE LET_WinProc_TO_HANDLE_ALL_THE_MESSAGES I_HATE_Application.DoEvents()_IT_KEEPS_THE_FORM_FROZEN
-
-			//WARNING WARNING WARNING!!!!!!!!!!!!! Application.DoEvents();
-			//NOT_ENOUGH_TO_UNFREEZE_PAUSE_BUTTON PAINTS_OKAY_AFTER_INVOKING_RangeBarCollapseToAccelerateLivesim()
-			// Thread.Sleep(1)_REDUCES_CPU_USAGE_DURING_LIVESIM_FROM_60%_TO_3%_DUAL_CORE__Application.DoEvents()_IS_USELESS
-
-			//v1 WORKED_FOR_NON_LIVE_BACKTEST
-			//ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
-			//if (snap.AlertsPending.Count > 0) {
 			//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2
 			AlertList notYetScheduled = this.LivesimBrokerSnap.AlertsNotYetScheduledForDelayedFillBy(quote);
 			if (notYetScheduled.Count > 0) {
@@ -161,6 +120,5 @@ namespace Sq1.Core.Livesim {
 			this.Unpaused = null;
 			this.IsDisposed = true;
 		}
-
 	}
 }

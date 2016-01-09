@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.DataTypes;
 using Sq1.Core.DataFeed;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Core.Streaming {
 	// TODO: it's not an abstract class because....
@@ -34,6 +36,8 @@ namespace Sq1.Core.Streaming {
 		[JsonProperty]	public ConnectionState			ConnectionState						{ get; protected set; }
 		[JsonIgnore]	public bool						QuotePumpSeparatePushingThreadEnabled { get; protected set; }
 
+		[JsonIgnore]	public LivesimStreaming			LivesimStreaming					{ get; protected set; }
+
 		// public for assemblyLoader: Streaming-derived.CreateInstance();
 		public StreamingAdapter() {
 			SymbolsSubscribedLock					= new object();
@@ -45,6 +49,7 @@ namespace Sq1.Core.Streaming {
 			QuotePumpSeparatePushingThreadEnabled	= true;
 		}
 		public virtual void Initialize(DataSource dataSource) {
+			LivesimStreaming						= new LivesimStreaming(true);	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 			this.InitializeFromDataSource(dataSource);
 			this.SubscribeSolidifier();
 		}

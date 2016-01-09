@@ -17,30 +17,31 @@ namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
 	public partial class LivesimBroker : BrokerAdapter, IDisposable {
 		[JsonIgnore]	public		List<Order>					OrdersSubmittedForOneLivesimBacktest	{ get; private set; }
-		[JsonIgnore]	protected	LivesimDataSource			livesimDataSource;
-		[JsonIgnore]	internal	LivesimBrokerSettings		LivesimBrokerSettings					{ get { return this.livesimDataSource.Executor.Strategy.LivesimBrokerSettings; } }
+		[JsonIgnore]	protected	LivesimDataSource			LivesimDataSource;
+		[JsonIgnore]	internal	LivesimBrokerSettings		LivesimBrokerSettings					{ get { return this.LivesimDataSource.Executor.Strategy.LivesimBrokerSettings; } }
 		[JsonIgnore]				object						threadEntryLockToHaveQuoteSentToThread;
 		[JsonIgnore]	public		LivesimBrokerDataSnapshot	DataSnapshot;
 		[JsonIgnore]	protected	LivesimBrokerSpoiler		LivesimBrokerSpoiler;
 
 		[JsonIgnore]	public		bool						IsDisposed								{ get; private set; }
 
-		public LivesimBroker(LivesimDataSource livesimDataSource) : base() {
+		protected LivesimBroker() {
+		    string msg = "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
+		        + "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_BROKER_ADAPTERS_FOUND"
+		        + " example:QuikBrokerLivesim()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
+		    base.Name = "LivesimBroker-child_ACTIVATOR_DLL-SCANNED";
+		}
+		public LivesimBroker(bool IamNotAdummy) : base() {
 			base.Name = "LivesimBroker";
 			base.AccountAutoPropagate = new Account("LIVESIM_ACCOUNT", -1000);
 			base.AccountAutoPropagate.Initialize(this);
 			this.OrdersSubmittedForOneLivesimBacktest	= new List<Order>();
 			this.threadEntryLockToHaveQuoteSentToThread	= new object();
-			this.livesimDataSource						= livesimDataSource;
-			this.DataSnapshot							= new LivesimBrokerDataSnapshot(this.livesimDataSource);
 			this.LivesimBrokerSpoiler					= new LivesimBrokerSpoiler(this);
 		}
-
-		protected LivesimBroker() {
-			string msg = "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
-				+ "_INVOKED_WHILE_REPOSITORY_SCANS_AND_INSTANTIATES_BROKER_ADAPTERS_FOUND"
-				+ " example:QuikBrokerLivesim()";	// activated on MainForm.ctor() if [SkipInstantiationAt(Startup = true)]
-			base.Name = "LivesimBroker-child_ACTIVATOR_DLL-SCANNED";
+		public virtual void Initialize(LivesimDataSource livesimDataSource) {
+			this.LivesimDataSource						= livesimDataSource;
+			this.DataSnapshot							= new LivesimBrokerDataSnapshot(this.LivesimDataSource);
 		}
 
 		public override void OrderSubmit(Order order) {
@@ -119,7 +120,7 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public void ConsumeQuoteOfStreamingBarToFillPending(QuoteGenerated quoteUnattachedVolatilePointer, AlertList willBeFilled) { lock (this.threadEntryLockToHaveQuoteSentToThread) {
-			ScriptExecutor executor = this.livesimDataSource.Executor;
+			ScriptExecutor executor = this.LivesimDataSource.Executor;
 			ExecutionDataSnapshot snap = executor.ExecutionDataSnapshot;
 			if (snap.AlertsPending.Count == 0) {
 				string msg = "CHECK_IT_UPSTACK_AND_DONT_INVOKE_ME!!! snap.AlertsPending.Count=0 //ConsumeQuoteOfStreamingBarToFillPending(" + willBeFilled + ") ";
@@ -193,7 +194,7 @@ namespace Sq1.Core.Livesim {
 			this.DataSnapshot.AlertsScheduledForDelayedFill.AddRange(safe, this, "ConsumeQuoteOfStreamingBarToFillPending(WAIT)");
 		} }
 		void consumeQuoteOfStreamingBarToFillPendingAsync(QuoteGenerated quoteUnattached, AlertList expectingToFill) {
-			ScriptExecutor executor = this.livesimDataSource.Executor;
+			ScriptExecutor executor = this.LivesimDataSource.Executor;
 			Bar barStreaming = executor.Bars.BarStreamingNullUnsafe;
 			if (barStreaming == null) {
 				string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_WITH_BAR_STREAMING_NULL__END_OF_LIVESIM?";
@@ -284,13 +285,13 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (this.livesimDataSource.IsDisposed == false) {
-				this.livesimDataSource	.Dispose();
+			if (this.LivesimDataSource.IsDisposed == false) {
+				this.LivesimDataSource	.Dispose();
 			} else {
 				string msg = "ITS_OKAY this.livesimDataSource might have been already disposed by LivesimStreaming.Dispose()";
 			}
 			this.DataSnapshot		.Dispose();
-			this.livesimDataSource	= null;
+			this.LivesimDataSource	= null;
 			this.DataSnapshot		= null;
 			this.IsDisposed = true;
 		}
