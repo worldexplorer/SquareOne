@@ -1,9 +1,10 @@
 ﻿using System;
 
+using WeifenLuo.WinFormsUI.Docking;
+
+using Sq1.Core;
 using Sq1.Core.Streaming;
 using Sq1.Core.DataFeed;
-
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreamingEditor {
@@ -23,7 +24,9 @@ namespace Sq1.Adapters.Quik.Streaming {
 			get { return this.txtTopicPrefixDOM.Text; }
 			set { this.txtTopicPrefixDOM.Text = value; }
 		}
-		private QuikStreaming quikStreamingAdapter { get { return base.StreamingAdapter as QuikStreaming; } }
+
+		QuikStreaming	quikStreamingAdapter { get { return base.StreamingAdapter as QuikStreaming; } }
+		bool			dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only;
 
 		public QuikStreamingEditor() {
 			this.InitializeComponent();
@@ -31,7 +34,17 @@ namespace Sq1.Adapters.Quik.Streaming {
 		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => streamingAdapterInstance.StreamingEditorInitialize() will call this
 		public QuikStreamingEditor(StreamingAdapter quikStreamingAdapter, IDataSourceEditor dataSourceEditor) : this() {
 			base.Initialize(quikStreamingAdapter, dataSourceEditor);
-			this.cbxStartDde.Checked = this.quikStreamingAdapter.DdeServerStarted;
+			if (this.cbxStartDde.Checked == this.quikStreamingAdapter.DdeServerStarted) return;
+			try {
+				this.dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only = true;
+				this.cbxStartDde.Checked  = this.quikStreamingAdapter.DdeServerStarted;
+			} catch (Exception ex) {
+				string msg = "HOPEFULLY_NEVER_HAPPENS__YOU_CAUGHT_IT_EARLIER //QuikStreamingEditor(" + quikStreamingAdapter + ")";
+				Assembler.PopupException(msg, ex);
+			} finally {
+				this.dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only = false;
+				this.propagateDdeState_intoBtnText_threadUnsafe();
+			}
 		}
 		public override void PushStreamingAdapterSettingsToEditor() {
 			this.DdeServerPrefix	= this.quikStreamingAdapter.DdeServiceName;
@@ -45,6 +58,12 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.quikStreamingAdapter.DdeTopicQuotes	= this.DdeTopicQuotes;
 			this.quikStreamingAdapter.DdeTopicTrades	= this.DdeTopicTrades;
 			this.quikStreamingAdapter.DdeTopicPrefixDom	= this.DdeTopicPrefixDom;
+		}
+
+		void propagateDdeState_intoBtnText_threadUnsafe() {
+			string btnTxtMustBe = this.quikStreamingAdapter.DdeServerStartStopOppositeAction;
+			if (this.cbxStartDde.Text == btnTxtMustBe) return;
+				this.cbxStartDde.Text  = btnTxtMustBe;
 		}
     }
 }

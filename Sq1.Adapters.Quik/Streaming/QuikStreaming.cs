@@ -71,6 +71,10 @@ namespace Sq1.Adapters.Quik.Streaming {
 			return ret;
 		} }
 
+		[JsonIgnore]	public	string					DdeServerStartStopOppositeAction { get {
+			return this.DdeServerStarted ? "Stop DDE Server (now started)" : "Start DDE Server (now stopped)";
+			} }
+
 		public QuikStreaming() : base() {
 			base.Name					= "QuikStreaming-DllScanned";
 			base.Icon					= (Bitmap)Sq1.Adapters.Quik.Properties.Resources.imgQuikStreamingAdapter;
@@ -98,9 +102,15 @@ namespace Sq1.Adapters.Quik.Streaming {
 		}
 
 		public void DdeServerStart() {
-			string msg = "";
 			if (string.IsNullOrWhiteSpace(this.DdeServer.Service)) {
-				Assembler.PopupException("can't start DdeServer with IsNullOrWhiteSpace(server.Service)");
+				string msg1 = "can't start DdeServer with IsNullOrWhiteSpace(server.Service)";
+				Assembler.PopupException(msg1);
+				return;
+			}
+
+			if (string.IsNullOrWhiteSpace(this.DdeServer.Service)) {
+				string msg1 = "DDE_SERVER_ALREADY_STARTED_FOR_QUIK_STREAMING_DATASOURCE[" + this.DataSource + "] WITH_TOPICS[" + this.ToString() + "]";
+				Assembler.PopupException(msg1);
 				return;
 			}
 
@@ -115,7 +125,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			}
 
 			this.ConnectionState = ConnectionState.ConnectedSubscribedAll;
-			msg = "DDE_SERVER_STARTED " + this.ToString();
+			string msg = "DDE_SERVER_STARTED " + this.ToString();
 			Assembler.PopupException(msg, null, false);
 		}
 
