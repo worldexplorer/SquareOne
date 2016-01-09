@@ -18,7 +18,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 				if (base.StreamingConnected == true) return;
 				string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
 				this.DdeServerStart();
-				base.ConnectionState = ConnectionState.DllNotConnectedUnsubscribed;
+				base.ConnectionState = ConnectionState.ConnectedUnsubscribed;
 				//Assembler.DisplayConnectionStatus(base.ConnectionState, "Started symbolsSubscribed[" + symbolsSubscribed + "]");
 				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " started DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 				base.StreamingConnected = true;

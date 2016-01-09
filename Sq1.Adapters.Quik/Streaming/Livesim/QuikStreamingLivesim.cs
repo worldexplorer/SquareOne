@@ -41,15 +41,16 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			this.Level2generator = new LevelTwoGenerator();		// this one has it's own LevelTwoAsks,LevelTwoBids NOT_REDIRECTED to StreamingDatasnapshot => sending Level2 via DDE to QuikStreaming.StreamingDatasnapshot
 		}
 
-		public QuikStreamingLivesim(LivesimDataSource livesimDataSource) : base(livesimDataSource) {
+		public override void Initialize(LivesimDataSource livesimDataSource) {
 			base.Name = "QuikStreamingLivesim-recreatedWithLDSpointer";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Streaming.Livesim.Properties.Resources.imgQuikStreamingLivesim;
+			base.Initialize(livesimDataSource);
 		}
 
-		public override void Initialize(DataSource deserializedDataSource) {
-			base.Name = "QuikStreamingLivesim";
-			base.Initialize(deserializedDataSource);
-		}
+		//public override void Initialize(DataSource deserializedDataSource) {
+		//    base.Name = "QuikStreamingLivesim";
+		//    base.Initialize(deserializedDataSource);
+		//}
 
 		protected override void SubscribeSolidifier() {
 			string msg = "OTHERWIZE_BASE_WILL_SUBSCRIBE_SOLIDIFIER LIVESIM_MUST_NOT_SAVE_ANY_BARS";

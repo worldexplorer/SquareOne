@@ -17,7 +17,7 @@ using Sq1.Core.DataFeed;
 namespace Sq1.Adapters.Quik.Broker.Livesim {
 	[SkipInstantiationAt(Startup = true)]		// overriding LivesimBroker's TRUE to have QuikStreamingLivesim appear in DataSourceEditor
 	public partial class QuikBrokerLivesim : LivesimBroker {
-				QuikBrokerLivesimSettings	settings { get { return base.livesimDataSource.Executor.Strategy.LivesimBrokerSettings as QuikBrokerLivesimSettings; } }
+				QuikBrokerLivesimSettings	settings { get { return base.LivesimDataSource.Executor.Strategy.LivesimBrokerSettings as QuikBrokerLivesimSettings; } }
 				object						threadEntryLockToHaveQuoteSentToThread;
 
 		public QuikBrokerLivesim() : base() {
@@ -25,7 +25,8 @@ namespace Sq1.Adapters.Quik.Broker.Livesim {
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Broker.Livesim.Properties.Resources.imgQuikBrokerLivesim;
 		}
 
-		public QuikBrokerLivesim(LivesimDataSource livesimDataSource) : base(livesimDataSource) {
+		public override void Initialize(LivesimDataSource livesimDataSource) {
+			base.Initialize(livesimDataSource);
 			base.Name = "QuikBrokerLivesim-recreatedWithLDSpointer";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Broker.Livesim.Properties.Resources.imgQuikBrokerLivesim;
 		}

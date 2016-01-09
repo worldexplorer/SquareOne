@@ -116,8 +116,8 @@ namespace Sq1.Adapters.Quik.Broker.Terminal {
 					}
 					*/
 					connectionTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					msg = "#" + connectionAttempts + "//timeoutInfinite QuikTerminal(" + this.DllName + ") 2/2 " + ConnectionState.DllNotConnectedUnsubscribed;
-					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.DllNotConnectedUnsubscribed, msg);
+					msg = "#" + connectionAttempts + "//timeoutInfinite QuikTerminal(" + this.DllName + ") 2/2 " + ConnectionState.DisconnectedUnsubscribed;
+					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.DisconnectedUnsubscribed, msg);
 					Assembler.PopupException(msg);
 				} catch (Exception e) {
 					BrokerQuik.callbackTerminalConnectionStateUpdated(ConnectionState.ErrorConnectingNoRetriesAnymore, e.Message);

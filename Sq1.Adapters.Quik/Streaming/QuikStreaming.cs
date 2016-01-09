@@ -12,6 +12,7 @@ using Sq1.Core.Streaming;
 using Sq1.Adapters.Quik.Streaming.Dde;
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 using Sq1.Adapters.Quik.Streaming.Monitor;
+using Sq1.Adapters.Quik.Streaming.Livesim;
 
 namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreaming : StreamingAdapter {
@@ -101,6 +102,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			base.Initialize(dataSource);
 			//MOVED_TO_MainForm.WorkspaceLoad() this.Connect();
 			this.ConnectionState		= ConnectionState.JustInitialized;
+			base.LivesimStreaming		= new QuikStreamingLivesim();
 		}
 
 		public void DdeServerStart() {
