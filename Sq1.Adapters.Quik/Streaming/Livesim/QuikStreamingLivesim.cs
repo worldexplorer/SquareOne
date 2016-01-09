@@ -25,7 +25,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 
 		[JsonIgnore]	string ddeTopicsPrefix = "QuikLiveSim-";
 
-		[JsonIgnore]	public QuikStreaming		QuikStreamingPuppet;
+		[JsonIgnore]	public QuikStreaming				QuikStreamingPuppet;
 		[JsonIgnore]	public QuikLivesimBatchPublisher	QuikLivesimBatchPublisher;
 
 		[JsonIgnore]	ConcurrentDictionaryGeneric<double, double> LevelTwoAsks { get { return base.StreamingDataSnapshot.LevelTwoAsks; } }
@@ -165,9 +165,9 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		}
 
 		public override StreamingEditor StreamingEditorInitialize(IDataSourceEditor dataSourceEditor) {
-			base.StreamingEditorInitializeHelper(dataSourceEditor);
-			base.streamingEditorInstance = new QuikStreamingLivesimEditor(this, dataSourceEditor);
-			return base.streamingEditorInstance;
+			string msg = "YOU_FORGOT_TO_SET_[SkipInstantiationAt(Startup=true)]_FOR " + this.GetType()
+				+ " LIVESIM_STREAMING_ADAPTERS_SHOULD_NOT_HAVE_ANY_EDITORS__SETTINGS_ARE_EDITED_IN_LIVESIM_FORM";
+			throw new Exception(msg);
 		}
 	}
 }

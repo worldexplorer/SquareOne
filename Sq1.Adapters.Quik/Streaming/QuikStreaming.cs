@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Newtonsoft.Json;
-using Sq1.Adapters.Quik.Streaming.Dde;
-using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
-using Sq1.Adapters.Quik.Streaming.Monitor;
+
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
+
+using Sq1.Adapters.Quik.Streaming.Dde;
+using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
+using Sq1.Adapters.Quik.Streaming.Monitor;
 
 namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreaming : StreamingAdapter {
@@ -130,7 +132,6 @@ namespace Sq1.Adapters.Quik.Streaming {
 		}
 
 		public void DdeServerStop() {
-			string msg = "";
 			try {
 				this.DdeServer.Disconnect();
 				this.DdeServer.Unregister();
@@ -144,7 +145,9 @@ namespace Sq1.Adapters.Quik.Streaming {
 			}
 
 			this.ConnectionState = ConnectionState.DisconnectedUnsubscribedAll;
-			Assembler.PopupException("DDE_SERVER_STOPPED " + this.ToString(), null, false);
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == false) {
+				Assembler.PopupException("DDE_SERVER_STOPPED " + this.ToString(), null, false);
+			}
 		}
 
 

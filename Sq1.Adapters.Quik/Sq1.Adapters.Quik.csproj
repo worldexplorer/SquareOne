@@ -112,9 +112,6 @@
     <Compile Include="Streaming\Monitor\QuikStreamingMonitorDom.Designer.cs">
       <DependentUpon>QuikStreamingMonitorDom.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\QuikStreaming.EventGenerator.cs">
-      <DependentUpon>QuikStreaming.cs</DependentUpon>
-    </Compile>
     <Compile Include="Streaming\QuikTrade.cs" />
     <Compile Include="Streaming\Dde\XlDde\XlBlockType.cs" />
     <Compile Include="Streaming\Dde\XlDde\XlColumn.cs" />
@@ -176,21 +173,7 @@
     <Compile Include="Streaming\Livesim\Dde\XlDde\XlDdeTableGenerator.cs" />
     <Compile Include="Streaming\Livesim\Dde\XlDde\XlWriter.cs" />
     <Compile Include="Streaming\Livesim\QuikLivesimBatchPublisher.cs" />
-    <Compile Include="Streaming\Livesim\QuikStreamingLivesim.CoreCallbacks.cs">
-      <DependentUpon>QuikStreamingLivesim.cs</DependentUpon>
-    </Compile>
     <Compile Include="Streaming\Livesim\QuikStreamingLivesim.cs" />
-    <Compile Include="Streaming\Livesim\QuikStreamingLivesimEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Streaming\Livesim\QuikStreamingLivesimEditor.Designer.cs">
-      <DependentUpon>QuikStreamingLivesimEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Streaming\Livesim\QuikStreamingLivesimEditor.EventConsumer.cs">
-      <DependentUpon>QuikStreamingLivesimEditor.cs</DependentUpon>
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Streaming\Livesim\QuikStreamingLivesimSettings.cs" />
     <Compile Include="Streaming\Livesim\QuikStreamingPuppet.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -238,9 +221,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Streaming\Monitor\QuikStreamingMonitorForm.resx">
       <DependentUpon>QuikStreamingMonitorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Streaming\Livesim\QuikStreamingLivesimEditor.resx">
-      <DependentUpon>QuikStreamingLivesimEditor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

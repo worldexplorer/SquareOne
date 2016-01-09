@@ -27,7 +27,9 @@ namespace Sq1.Adapters.Quik.Streaming {
 		public override void UpstreamDisconnect() {
 			lock (base.SymbolsSubscribedLock) {
 				if (base.StreamingConnected == false) return;
-				Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]", null, false);
+				if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == false) {
+					Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]", null, false);
+				}
 				string symbolsUnsubscribed = this.upstreamUnsubscribeAllDataSourceSymbols();
 				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " Stopped symbolsUnsubscribed[" + symbolsUnsubscribed + "]");
 				this.DdeServerStop();
