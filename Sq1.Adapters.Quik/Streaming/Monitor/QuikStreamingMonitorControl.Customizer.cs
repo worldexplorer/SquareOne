@@ -73,6 +73,13 @@ namespace Sq1.Adapters.Quik {
 				return quoteQuik.ServerTime;
 			};
 
+			this.olvcQuotesAbsnoPerSymbol.AspectGetter = delegate(object o) {
+				QuoteQuik quoteQuik = o as QuoteQuik;
+				if (quoteQuik == null) return "olvcQuotesAbsnoPerSymbol.AspectGetter: quoteQuik=null";
+				//return position.MFEPercent.ToString("F2") + " %";
+				return quoteQuik.AbsnoPerSymbol;
+			};
+
 		}
 	}
 }

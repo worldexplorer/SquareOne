@@ -77,7 +77,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Streaming\Dde\Monitoreable\XlDdeTableMonitoreable.EventGenerator.cs">
+    <Compile Include="Streaming\Dde\XlDde\XlDdeTableMonitoreable.EventGenerator.cs">
       <DependentUpon>XlDdeTableMonitoreable.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\Dde\TableDefinitions.cs" />
@@ -85,8 +85,8 @@
     <Compile Include="Streaming\Dde\DdeTableQuotes.cs" />
     <Compile Include="Streaming\Dde\DdeBatchSubscriber.cs" />
     <Compile Include="Streaming\Dde\DdeTableTrades.cs" />
-    <Compile Include="Streaming\Dde\Monitoreable\XlDdeTableMonitoreable.cs" />
-    <Compile Include="Streaming\Dde\Monitoreable\XlDdeTableMonitoringEventArg.cs" />
+    <Compile Include="Streaming\Dde\XlDde\XlDdeTableMonitoreable.cs" />
+    <Compile Include="Streaming\Dde\XlDde\XlDdeTableMonitoringEventArg.cs" />
     <Compile Include="Streaming\Monitor\QuikStreamingMonitorControl.Customizer.cs">
       <DependentUpon>QuikStreamingMonitorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>

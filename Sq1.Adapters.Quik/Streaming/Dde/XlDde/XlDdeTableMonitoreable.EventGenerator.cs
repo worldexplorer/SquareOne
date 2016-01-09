@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Sq1.Core;
 
 namespace Sq1.Adapters.Quik.Dde.XlDde {
-	public abstract partial class XlDdeTableMonitoreable<T> : XlDdeTable {
+	public abstract partial class XlDdeTableMonitoreable<T> {
 		public event EventHandler<XlDdeTableMonitoringEventArg<T>>			DataStructureParsed_One;
 		public event EventHandler<XlDdeTableMonitoringEventArg<List<T>>>	DataStructuresParsed_Table;
 

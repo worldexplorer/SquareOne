@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Sq1.Adapters.Quik.Dde.XlDde {
-	public abstract partial class XlDdeTableMonitoreable<T> {
+	public abstract partial class XlDdeTableMonitoreable<T> : XlDdeTable {
 		List<T> dataStructuresParsed;
 
 		public XlDdeTableMonitoreable(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns) {

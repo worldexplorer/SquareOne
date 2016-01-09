@@ -37,7 +37,7 @@
 			this.olvcQuotesFortsDepositSell = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQuotesFortsPriceMin = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQuotesFortsPriceMax = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.olvcQuotesCount = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+			this.olvcQuotesAbsnoPerSymbol = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.lblQuotesStatus = new System.Windows.Forms.Label();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.grpDom = new System.Windows.Forms.GroupBox();
@@ -76,7 +76,7 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-			this.splitContainer1.Size = new System.Drawing.Size(943, 633);
+			this.splitContainer1.Size = new System.Drawing.Size(939, 633);
 			this.splitContainer1.SplitterDistance = 183;
 			this.splitContainer1.TabIndex = 0;
 			// 
@@ -90,7 +90,7 @@
 			this.grpQuotes.Location = new System.Drawing.Point(9, 3);
 			this.grpQuotes.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
 			this.grpQuotes.Name = "grpQuotes";
-			this.grpQuotes.Size = new System.Drawing.Size(925, 171);
+			this.grpQuotes.Size = new System.Drawing.Size(921, 171);
 			this.grpQuotes.TabIndex = 0;
 			this.grpQuotes.TabStop = false;
 			this.grpQuotes.Text = "Quotes [Sq1-quotes]:26116";
@@ -108,7 +108,7 @@
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsDepositSell);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsPriceMin);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsPriceMax);
-			this.OlvQuotes.AllColumns.Add(this.olvcQuotesCount);
+			this.OlvQuotes.AllColumns.Add(this.olvcQuotesAbsnoPerSymbol);
 			this.OlvQuotes.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -124,10 +124,10 @@
             this.olvcQuotesFortsDepositSell,
             this.olvcQuotesFortsPriceMin,
             this.olvcQuotesFortsPriceMax,
-            this.olvcQuotesCount});
+            this.olvcQuotesAbsnoPerSymbol});
 			this.OlvQuotes.Location = new System.Drawing.Point(6, 32);
 			this.OlvQuotes.Name = "OlvQuotes";
-			this.OlvQuotes.Size = new System.Drawing.Size(913, 133);
+			this.OlvQuotes.Size = new System.Drawing.Size(909, 133);
 			this.OlvQuotes.TabIndex = 2;
 			this.OlvQuotes.UseCompatibleStateImageBehavior = false;
 			this.OlvQuotes.View = System.Windows.Forms.View.Details;
@@ -174,39 +174,39 @@
 			this.olvcQuotesQty.Text = "Qty";
 			this.olvcQuotesQty.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
-			// olvcQuotesFortsRepoBuy
+			// olvcQuotesFortsDepositBuy
 			// 
 			this.olvcQuotesFortsDepositBuy.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsDepositBuy.Text = "FortsRepoBuy";
 			this.olvcQuotesFortsDepositBuy.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsDepositBuy.Width = 85;
 			// 
-			// olvcQuotesFortsRepoSell
+			// olvcQuotesFortsDepositSell
 			// 
 			this.olvcQuotesFortsDepositSell.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsDepositSell.Text = "FortsRepoSell";
 			this.olvcQuotesFortsDepositSell.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsDepositSell.Width = 85;
 			// 
-			// olvcQuotesPriceMin
+			// olvcQuotesFortsPriceMin
 			// 
 			this.olvcQuotesFortsPriceMin.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsPriceMin.Text = "PriceMin";
 			this.olvcQuotesFortsPriceMin.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsPriceMin.Width = 85;
 			// 
-			// olvcQuotesPriceMax
+			// olvcQuotesFortsPriceMax
 			// 
 			this.olvcQuotesFortsPriceMax.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsPriceMax.Text = "PriceMax";
 			this.olvcQuotesFortsPriceMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvcQuotesFortsPriceMax.Width = 85;
 			// 
-			// olvcQuotesCount
+			// olvcQuotesAbsnoPerSymbol
 			// 
-			this.olvcQuotesCount.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcQuotesCount.Text = "Count";
-			this.olvcQuotesCount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcQuotesAbsnoPerSymbol.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.olvcQuotesAbsnoPerSymbol.Text = "Absno/Symbol";
+			this.olvcQuotesAbsnoPerSymbol.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			// 
 			// lblQuotesStatus
 			// 
@@ -233,7 +233,7 @@
 			// 
 			this.splitContainer2.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer2.Panel2.Controls.Add(this.grpTrades);
-			this.splitContainer2.Size = new System.Drawing.Size(943, 446);
+			this.splitContainer2.Size = new System.Drawing.Size(939, 446);
 			this.splitContainer2.SplitterDistance = 292;
 			this.splitContainer2.TabIndex = 0;
 			// 
@@ -247,7 +247,7 @@
 			this.grpDom.Location = new System.Drawing.Point(9, 3);
 			this.grpDom.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
 			this.grpDom.Name = "grpDom";
-			this.grpDom.Size = new System.Drawing.Size(925, 280);
+			this.grpDom.Size = new System.Drawing.Size(921, 280);
 			this.grpDom.TabIndex = 0;
 			this.grpDom.TabStop = false;
 			this.grpDom.Text = "Depths Of Market [Sq1-RIM3-dom]:3213 [Sq1-LKOH-dom]:5116";
@@ -260,7 +260,7 @@
 			this.flpDoms.BackColor = System.Drawing.SystemColors.Window;
 			this.flpDoms.Location = new System.Drawing.Point(6, 32);
 			this.flpDoms.Name = "flpDoms";
-			this.flpDoms.Size = new System.Drawing.Size(913, 242);
+			this.flpDoms.Size = new System.Drawing.Size(909, 242);
 			this.flpDoms.TabIndex = 3;
 			// 
 			// label1
@@ -282,7 +282,7 @@
 			this.grpTrades.Location = new System.Drawing.Point(9, 3);
 			this.grpTrades.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
 			this.grpTrades.Name = "grpTrades";
-			this.grpTrades.Size = new System.Drawing.Size(925, 138);
+			this.grpTrades.Size = new System.Drawing.Size(921, 138);
 			this.grpTrades.TabIndex = 0;
 			this.grpTrades.TabStop = false;
 			this.grpTrades.Text = "Trades [Sq1-trades]:41441";
@@ -294,7 +294,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.olvTrades.Location = new System.Drawing.Point(6, 32);
 			this.olvTrades.Name = "olvTrades";
-			this.olvTrades.Size = new System.Drawing.Size(913, 100);
+			this.olvTrades.Size = new System.Drawing.Size(909, 100);
 			this.olvTrades.TabIndex = 3;
 			this.olvTrades.UseCompatibleStateImageBehavior = false;
 			this.olvTrades.View = System.Windows.Forms.View.Details;
@@ -315,7 +315,7 @@
 			this.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.Controls.Add(this.splitContainer1);
 			this.Name = "QuikStreamingMonitorControl";
-			this.Size = new System.Drawing.Size(943, 633);
+			this.Size = new System.Drawing.Size(939, 633);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -360,6 +360,6 @@
 		private BrightIdeasSoftware.OLVColumn olvcQuotesFortsDepositSell;
 		private BrightIdeasSoftware.OLVColumn olvcQuotesFortsPriceMin;
 		private BrightIdeasSoftware.OLVColumn olvcQuotesFortsPriceMax;
-		private BrightIdeasSoftware.OLVColumn olvcQuotesCount;
+		private BrightIdeasSoftware.OLVColumn olvcQuotesAbsnoPerSymbol;
 	}
 }
