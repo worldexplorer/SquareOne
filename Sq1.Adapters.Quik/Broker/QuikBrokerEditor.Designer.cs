@@ -6,7 +6,7 @@ using System.ComponentModel.Design;
 
 using Sq1.Core.Broker;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Broker {
 	[ToolboxBitmap(typeof(BrokerQuikEditor), "BrokerQuik")]
 	[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
 	public partial class BrokerQuikEditor : BrokerEditor {

@@ -3,7 +3,7 @@
 using Sq1.Core.Execution;
 using Sq1.Core.Broker;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Broker {
 	public class OrderCallbackDupesCheckerQuik : OrderCallbackDupesChecker {
 		public OrderCallbackDupesCheckerQuik(BrokerAdapter brokerAdapter) : base(brokerAdapter) {
 		}

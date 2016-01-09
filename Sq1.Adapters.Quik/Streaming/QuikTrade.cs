@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sq1.Adapters.Quik.Dde {
+namespace Sq1.Adapters.Quik.Streaming {
 	public class QuikTrade {
 		public	string		Source;
 

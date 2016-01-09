@@ -9,7 +9,7 @@ using Sq1.Core.DataTypes;
 using Sq1.Adapters.Quik.Dde.XlDde;
 using Sq1.Adapters.QuikLiveism.Dde;
 
-namespace Sq1.Adapters.QuikLivesim.Dde.XlDde {
+namespace Sq1.Adapters.Quik.Broker.Livesim.Dde.XlDde {
 	public class XlWriter : IDisposable {
 		const int codepage = 1251;
 		

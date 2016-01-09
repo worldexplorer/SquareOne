@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 using Sq1.Core.Streaming;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Streaming {
 	[ToolboxBitmap(typeof(QuikStreamingEditor), "StreamingQuik")]
 	[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
 	public partial class QuikStreamingEditor : StreamingEditor {

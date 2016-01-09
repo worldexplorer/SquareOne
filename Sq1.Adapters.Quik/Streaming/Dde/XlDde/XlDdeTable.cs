@@ -4,7 +4,7 @@ using System.IO;
 
 using Sq1.Core;
 
-namespace Sq1.Adapters.Quik.Dde.XlDde {
+namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public abstract class XlDdeTable {
 		protected abstract	string					DdeConsumerClassName	{ get; }
 		public				string					Topic					{ get; private set; }

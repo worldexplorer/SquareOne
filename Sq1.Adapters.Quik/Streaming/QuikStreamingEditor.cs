@@ -5,7 +5,7 @@ using Sq1.Core.DataFeed;
 
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreamingEditor {
 		public String DdeServerPrefix {
 			get { return this.txtDdeServerPrefix.Text; }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Sq1.Adapters.Quik.Dde.XlDde;
+using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 
-namespace Sq1.Adapters.Quik.Dde {
+namespace Sq1.Adapters.Quik.Streaming.Dde {
 	public class DdeTableTrades : XlDdeTable {
 		protected override string DdeConsumerClassName { get { return "DdeTableTrades"; } }
 

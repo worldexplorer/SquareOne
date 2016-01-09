@@ -6,7 +6,7 @@ using Sq1.Core.DataTypes;
 
 using Sq1.Adapters.Quik;
 
-namespace Sq1.Adapters.QuikLivesim {
+namespace Sq1.Adapters.Quik.Broker.Livesim {
 	[SkipInstantiationAt(Startup = true)]		// I'm an internally-used proxy that must not appear in DataSourceEditor's list of available StreamingAdapters
 	public class QuikStreamingPuppet : QuikStreaming {
 		string ddeTopicsPrefix;

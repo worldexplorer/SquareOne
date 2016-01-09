@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using Sq1.Core;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
-namespace Sq1.Adapters.Quik.Dde.XlDde {
+using Sq1.Core;
+
+namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public class XlRowParsed : Dictionary<string, object> {
 		public List<string> ErrorMessages;
 		private string topicImServing;

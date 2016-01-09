@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Drawing;
 
 using Newtonsoft.Json;
-
+using Sq1.Adapters.Quik.Streaming.Dde;
+using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
+using Sq1.Adapters.Quik.Streaming.Monitor;
 using Sq1.Core;
 using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
 
-using Sq1.Adapters.Quik.Dde;
-using Sq1.Adapters.Quik.Dde.XlDde;
-
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreaming : StreamingAdapter {
-		[JsonProperty]	public		string					DdeServiceName;		//QuikLivesimStreaming needs it public	{ get; internal set; }
-		[JsonProperty]	public		string					DdeTopicQuotes;		//QuikLivesimStreaming needs it public{ get; internal set; }
-		[JsonProperty]	public		string					DdeTopicTrades;		//QuikLivesimStreaming needs it public{ get; internal set; }
-		[JsonProperty]	public		string					DdeTopicPrefixDom;	//QuikLivesimStreaming needs it public { get; internal set; }
+		[JsonProperty]	public		string					DdeServiceName;		//QuikStreamingLivesim needs it public	{ get; internal set; }
+		[JsonProperty]	public		string					DdeTopicQuotes;		//QuikStreamingLivesim needs it public{ get; internal set; }
+		[JsonProperty]	public		string					DdeTopicTrades;		//QuikStreamingLivesim needs it public{ get; internal set; }
+		[JsonProperty]	public		string					DdeTopicPrefixDom;	//QuikStreamingLivesim needs it public { get; internal set; }
 
 		[JsonIgnore]	public		XlDdeServer				DdeServer					{ get; private set; }
 		[JsonProperty]	public		bool					DdeServerStarted			{ get; private set; }
@@ -63,6 +62,14 @@ namespace Sq1.Adapters.Quik {
 				return this.monitorForm;
 			} }
 
+		[JsonIgnore]	public	string					IdentForMonitorWindowTitle { get {
+			string ret = "";
+			if (this.DataSource				!= null) ret += this.DataSource.Name;
+			if (this.DataSource.MarketInfo	!= null) ret += " :: " + this.DataSource.MarketInfo.Name;
+			ret += " [" + (string.IsNullOrEmpty(this.DdeTopicQuotes) ? "NO_DDE_TOPIC_QUOTES" : this.DdeTopicQuotes) + "]";
+			ret += " //TablesReceived[" + this.DdeBatchSubscriber.AllDdeTablesReceivedCountersTotal + "]";
+			return ret;
+		} }
 
 		public QuikStreaming() : base() {
 			base.Name					= "QuikStreaming-DllScanned";
@@ -165,14 +172,5 @@ namespace Sq1.Adapters.Quik {
 			return this.Name + "/[" + this.ConnectionState + "]: Symbols[" + base.SymbolsUpstreamSubscribedAsString + "]"
 				+ " DDE[" + this.ddeChannelsEstablished + "]";
 		}
-
-		public string IdentForMonitorWindowTitle { get {
-			string ret = "";
-			if (this.DataSource				!= null) ret += this.DataSource.Name;
-			if (this.DataSource.MarketInfo	!= null) ret += " :: " + this.DataSource.MarketInfo.Name;
-			ret += " [" + (string.IsNullOrEmpty(this.DdeTopicQuotes) ? "NO_DDE_TOPIC_QUOTES" : this.DdeTopicQuotes) + "]";
-			ret += " //TablesReceived[" + this.DdeBatchSubscriber.AllDdeTablesReceivedCountersTotal + "]";
-			return ret;
-		} }
 	}
 }

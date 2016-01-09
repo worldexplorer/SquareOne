@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 
-using Sq1.Adapters.Quik.Dde.XlDde;
+using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 
-namespace Sq1.Adapters.Quik.Dde {
+namespace Sq1.Adapters.Quik.Streaming.Dde {
 	//public class DdeTableQuotes : XlDdeTable {
 	public class DdeTableQuotes : XlDdeTableMonitoreable<QuoteQuik> {
 		protected override string DdeConsumerClassName { get { return "DdeTableQuotes"; } }

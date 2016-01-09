@@ -5,7 +5,7 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.Accounting;
 using Sq1.Core.Broker;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Broker {
 	public partial class BrokerQuikEditor {
 		public string QuikFolder {
 			get { return this.txtQuikFolder.Text; }

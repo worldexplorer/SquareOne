@@ -8,12 +8,14 @@
   ],
   "ScaleInterval": {
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-    "AsString_cached": "5-Minute",
-    "Scale": 3,
     "Interval": 5,
+    "Scale": 3,
+    "AsString_cached": null,
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 300,
-    "AsTimeSpan": "00:05:00"
+    "AsTimeSpan": "00:05:00",
+    "AsStringShortest_cached": "5m",
+    "AsStringShort_cached": "5min"
   },
   "StreamingAdapter": null,
   "BrokerAdapter": null,

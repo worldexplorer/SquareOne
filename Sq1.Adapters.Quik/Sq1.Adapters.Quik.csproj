@@ -77,6 +77,21 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Broker\Livesim\QuikBrokerLivesim.CoreCallbacks.cs">
+      <DependentUpon>QuikBrokerLivesim.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\Livesim\QuikBrokerLivesim.cs" />
+    <Compile Include="Broker\Livesim\QuikBrokerLivesimEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Broker\Livesim\QuikBrokerLivesimEditor.Designer.cs">
+      <DependentUpon>QuikBrokerLivesimEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Broker\Livesim\QuikBrokerLivesimEditor.EventConsumer.cs">
+      <DependentUpon>QuikBrokerLivesimEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Broker\Livesim\QuikBrokerLivesimSettings.cs" />
     <Compile Include="Streaming\Dde\XlDde\XlDdeTableMonitoreable.EventGenerator.cs">
       <DependentUpon>XlDdeTableMonitoreable.cs</DependentUpon>
     </Compile>
@@ -155,6 +170,28 @@
     <Compile Include="Streaming\Monitor\QuikStreamingMonitorControl.Designer.cs">
       <DependentUpon>QuikStreamingMonitorControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Streaming\Livesim\Dde\DdeTableGeneratorDepth.cs" />
+    <Compile Include="Streaming\Livesim\Dde\DdeTableGeneratorQuotes.cs" />
+    <Compile Include="Streaming\Livesim\Dde\XlDde\XlDdeClient.cs" />
+    <Compile Include="Streaming\Livesim\Dde\XlDde\XlDdeTableGenerator.cs" />
+    <Compile Include="Streaming\Livesim\Dde\XlDde\XlWriter.cs" />
+    <Compile Include="Streaming\Livesim\QuikLivesimBatchPublisher.cs" />
+    <Compile Include="Streaming\Livesim\QuikStreamingLivesim.CoreCallbacks.cs">
+      <DependentUpon>QuikStreamingLivesim.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\Livesim\QuikStreamingLivesim.cs" />
+    <Compile Include="Streaming\Livesim\QuikStreamingLivesimEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Streaming\Livesim\QuikStreamingLivesimEditor.Designer.cs">
+      <DependentUpon>QuikStreamingLivesimEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\Livesim\QuikStreamingLivesimEditor.EventConsumer.cs">
+      <DependentUpon>QuikStreamingLivesimEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Streaming\Livesim\QuikStreamingLivesimSettings.cs" />
+    <Compile Include="Streaming\Livesim\QuikStreamingPuppet.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dockpanelsuite290-master\WinFormsUI\WinFormsUI.csproj">
@@ -183,6 +220,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Broker\Livesim\QuikBrokerLivesimEditor.resx">
+      <DependentUpon>QuikBrokerLivesimEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Streaming\QuikStreamingEditor.resx">
       <DependentUpon>QuikStreamingEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -198,6 +238,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Streaming\Monitor\QuikStreamingMonitorForm.resx">
       <DependentUpon>QuikStreamingMonitorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Streaming\Livesim\QuikStreamingLivesimEditor.resx">
+      <DependentUpon>QuikStreamingLivesimEditor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

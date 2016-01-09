@@ -6,7 +6,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using Sq1.Core;
 using Sq1.Widgets.DataSourceEditor;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreamingEditor  {
 		void txtDdeServerPrefix_TextChanged(object sender, EventArgs e) {
 			this.lblMinus4.Text = this.txtDdeServerPrefix.Text + "-SYMBOL-";

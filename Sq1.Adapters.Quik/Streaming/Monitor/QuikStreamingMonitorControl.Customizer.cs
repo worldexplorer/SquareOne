@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikStreamingMonitorControl  {
 		void olvQuotesCustomize() {
 			this.olvcQuotesAsk.AspectGetter = delegate(object o) {

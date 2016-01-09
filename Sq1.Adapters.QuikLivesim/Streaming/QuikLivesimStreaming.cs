@@ -15,10 +15,10 @@ using Sq1.Core.Backtesting;
 using Sq1.Core.Execution;
 
 using Sq1.Adapters.Quik;
-using Sq1.Adapters.QuikLivesim.DataFeed;
+using Sq1.Adapters.Quik.Broker.Livesim.DataFeed;
 
-namespace Sq1.Adapters.QuikLivesim {
-	[SkipInstantiationAt(Startup = false)]		// overriding LivesimStreaming's TRUE to have QuikLivesimStreaming appear in DataSourceEditor
+namespace Sq1.Adapters.Quik.Broker.Livesim {
+	[SkipInstantiationAt(Startup = true)]		// overriding LivesimStreaming's TRUE to have QuikLivesimStreaming appear in DataSourceEditor
 	public partial class QuikLivesimStreaming : LivesimStreaming {
 		[JsonIgnore]	string reasonToExist =    "1) use LivesimForm as control "
 												+ "2) instantiate QuikStreaming and make it run its DDE server "
@@ -34,7 +34,7 @@ namespace Sq1.Adapters.QuikLivesim {
 
 		public QuikLivesimStreaming() : base() {
 			base.Name = "QuikLivesimStreaming-DllFound";
-			base.Icon = (Bitmap)Sq1.Adapters.QuikLivesim.Properties.Resources.imgQuikLivesimStreaming;
+			base.Icon = (Bitmap)Sq1.Adapters.Quik.Broker.Livesim.Properties.Resources.imgQuikLivesimStreaming;
 
 			//NO_DESERIALIZATION_WILL_THROW_YOULL_NULLIFY_ME_IN_UpstreamConnect YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
 			//this.StreamingDataSnapshot = null;
@@ -44,7 +44,7 @@ namespace Sq1.Adapters.QuikLivesim {
 
 		public QuikLivesimStreaming(LivesimDataSource livesimDataSource) : base(livesimDataSource) {
 			base.Name = "QuikLivesimStreaming-recreatedWithLDSpointer";
-			base.Icon = (Bitmap)Sq1.Adapters.QuikLivesim.Properties.Resources.imgQuikLivesimStreaming;
+			base.Icon = (Bitmap)Sq1.Adapters.Quik.Broker.Livesim.Properties.Resources.imgQuikLivesimStreaming;
 		}
 
 		public override void Initialize(DataSource deserializedDataSource) {

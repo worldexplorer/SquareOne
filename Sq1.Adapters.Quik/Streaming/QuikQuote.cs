@@ -3,7 +3,7 @@
 using Sq1.Core.DataTypes;
 using Newtonsoft.Json;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Streaming {
 	public class QuoteQuik : Quote {
 		[JsonProperty]	public double	FortsDepositBuy;
 		[JsonProperty]	public double	FortsDepositSell;

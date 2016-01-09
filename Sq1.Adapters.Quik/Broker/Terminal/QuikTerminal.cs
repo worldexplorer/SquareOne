@@ -9,7 +9,7 @@ using Sq1.Core.Broker;
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
 
-namespace Sq1.Adapters.Quik.Terminal {
+namespace Sq1.Adapters.Quik.Broker.Terminal {
 	public class QuikTerminal {
 		protected QuikBroker BrokerQuik;
 		protected static int transId;

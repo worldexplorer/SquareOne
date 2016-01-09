@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 
 using Newtonsoft.Json;
+
 using Sq1.Core.Streaming;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Streaming {
 	public class QuikStreamingDataSnapshot : StreamingDataSnapshot {
 		[JsonProperty]	protected Dictionary<string, double> FortsDepositSell	{ get; private set; }
 		[JsonProperty]	protected Dictionary<string, double> FortsDepositBuy	{ get; private set; }

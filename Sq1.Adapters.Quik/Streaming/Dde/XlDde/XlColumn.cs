@@ -1,4 +1,4 @@
-﻿namespace Sq1.Adapters.Quik.Dde.XlDde {
+﻿namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public class XlColumn {
 		public	XlBlockType		TypeExpected;
 		public	string			Name;

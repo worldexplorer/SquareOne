@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Sq1.Adapters.Quik.Dde.XlDde {
+namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public abstract partial class XlDdeTableMonitoreable<T> : XlDdeTable {
 		List<T> dataStructuresParsed;
 

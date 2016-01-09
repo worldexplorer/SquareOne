@@ -4,9 +4,9 @@ using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
 
-using Sq1.Adapters.Quik.Dde.XlDde;
+using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 
-namespace Sq1.Adapters.Quik.Dde {
+namespace Sq1.Adapters.Quik.Streaming.Dde {
 	public class DdeTableDepth : XlDdeTable {
 		protected override string DdeConsumerClassName { get { return "DdeTableDepth"; } }
 

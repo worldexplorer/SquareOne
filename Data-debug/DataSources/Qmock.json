@@ -7,29 +7,47 @@
   ],
   "ScaleInterval": {
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-    "AsString_cached": "1-Minute",
-    "Scale": 3,
     "Interval": 1,
+    "Scale": 3,
+    "AsString_cached": "1-Minute",
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 60,
-    "AsTimeSpan": "00:01:00"
+    "AsTimeSpan": "00:01:00",
+    "AsStringShortest_cached": "1m",
+    "AsStringShort_cached": "1min"
   },
   "StreamingAdapter": {
-    "$type": "Sq1.Adapters.QuikLivesim.QuikLivesimStreaming, Sq1.Adapters.QuikLivesim",
-    "ConnectionState": 0
+    "$type": "Sq1.Adapters.Quik.Streaming.QuikStreaming, Sq1.Adapters.Quik",
+    "DdeServiceName": "SQ1",
+    "DdeTopicQuotes": "quotes",
+    "DdeTopicTrades": "trades",
+    "DdeTopicPrefixDom": "dom",
+    "DdeServerStarted": true,
+    "IdentForMonitorWindowTitle": "Qmock :: MOCK [quotes] //TablesReceived[0]",
+    "ConnectionState": 1
   },
   "BrokerAdapter": {
-    "$type": "Sq1.Adapters.QuikLivesim.QuikLivesimBroker, Sq1.Adapters.QuikLivesim",
+    "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",
+    "AccountMicex": {
+      "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
+      "AccountNumber": "QUIK_MICEX_ACCTNR_NOT_SET",
+      "CashAvailable": -1001.0,
+      "AccountValueTimeStamp": "0001-01-01T00:00:00"
+    },
     "Account": {
       "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
       "AccountNumber": "ACCTNR_NOT_SET",
       "CashAvailable": -1000.0,
       "AccountValueTimeStamp": "0001-01-01T00:00:00"
-    }
+    },
+    "QuikFolder": "",
+    "QuikDllName": "TRANS2QUIK.DLL",
+    "QuikClientCode": null,
+    "ReconnectTimeoutMillis": 0
   },
   "MarketName": "MOCK",
   "Name": "Qmock",
-  "StreamingAdapterName": "QuikLivesimStreaming",
-  "BrokerAdapterName": "QuikLivesimBroker-DllFound",
+  "StreamingAdapterName": "QuikStreaming",
+  "BrokerAdapterName": "Quik Broker",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\Qmock"
 }

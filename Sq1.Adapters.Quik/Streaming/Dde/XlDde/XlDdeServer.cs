@@ -5,7 +5,7 @@ using NDde.Server;
 
 using Sq1.Core;
 
-namespace Sq1.Adapters.Quik.Dde.XlDde {
+namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public class XlDdeServer : DdeServer {
 		Dictionary<string, XlDdeTable> tablesByTopic;
 		object lockSynchronousPoke;	// NOT_NEEDED_BUT_I_WANT_TO_MAKE_SURE__REMOVE_IF_TOO_SLOW
@@ -56,7 +56,7 @@ namespace Sq1.Adapters.Quik.Dde.XlDde {
 			//if(format != xlTableFormat) return PokeResult.NotProcessed;
 			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
 			
-			// only for QuikLivesimStreaming
+			// only for QuikStreamingLivesim
 			if (item.Contains("level2") && tableRecipient is DdeTableDepth == false) {
 				string msg = "NDDE_WRONGLY_ASSOCIATED_THE_MESSAGE_RECEIVED_WITH DdeConversation[" + c.Topic + "]"
 					+ " MUST_BE_DdeTableDepth_GOT[" + tableRecipient.ToString() + "]";

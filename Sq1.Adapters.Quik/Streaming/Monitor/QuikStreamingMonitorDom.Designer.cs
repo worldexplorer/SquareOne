@@ -1,4 +1,4 @@
-﻿namespace Sq1.Adapters.Quik {
+﻿namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	partial class QuikStreamingMonitorDom {
 		/// <summary> 
 		/// Required designer variable.

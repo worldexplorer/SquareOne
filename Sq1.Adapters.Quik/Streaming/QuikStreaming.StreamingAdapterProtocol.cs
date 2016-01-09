@@ -8,9 +8,9 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Streaming;
 
-using Sq1.Adapters.Quik.Dde;
+using Sq1.Adapters.Quik.Streaming.Dde;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreaming : StreamingAdapter {
 
 		public override void UpstreamConnect() {

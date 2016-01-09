@@ -4,41 +4,27 @@
   "Symbols": [],
   "ScaleInterval": {
     "$type": "Sq1.Core.DataTypes.BarScaleInterval, Sq1.Core",
-    "AsString_cached": "5-Minute",
-    "Scale": 3,
     "Interval": 5,
+    "Scale": 3,
+    "AsString_cached": null,
     "IsIntraday": true,
     "AsTimeSpanInSeconds": 300,
-    "AsTimeSpan": "00:05:00"
+    "AsTimeSpan": "00:05:00",
+    "AsStringShortest_cached": "5m",
+    "AsStringShort_cached": "5min"
   },
   "StreamingAdapter": {
-    "$type": "Sq1.Adapters.Quik.QuikStreaming, Sq1.Adapters.Quik",
-    "DdeServerPrefix": "SQ1",
+    "$type": "Sq1.Adapters.Quik.Streaming.QuikStreaming, Sq1.Adapters.Quik",
+    "DdeServiceName": "SQ1",
     "DdeTopicQuotes": "quotes",
     "DdeTopicTrades": "trades",
     "DdeTopicPrefixDom": "dom",
-    "StreamingDataSnapshot": {
-      "$type": "Sq1.Adapters.Quik.QuikStreamingDataSnapshot, Sq1.Adapters.Quik",
-      "lastQuoteClonesReceivedUnboundBySymbol": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[Sq1.Core.DataTypes.Quote, Sq1.Core]], mscorlib"
-      },
-      "FortsDepositSell": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
-      },
-      "FortsDepositBuy": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
-      },
-      "FortsPriceMin": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
-      },
-      "FortsPriceMax": {
-        "$type": "System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Double, mscorlib]], mscorlib"
-      },
-      "SymbolsSubscribedAndReceiving": ""
-    }
+    "DdeServerStarted": false,
+    "IdentForMonitorWindowTitle": "QUIK :: FORTS [quotes] //TablesReceived[0]",
+    "ConnectionState": 1
   },
   "BrokerAdapter": {
-    "$type": "Sq1.Adapters.Quik.QuikBroker, Sq1.Adapters.Quik",
+    "$type": "Sq1.Adapters.Quik.Broker.QuikBroker, Sq1.Adapters.Quik",
     "AccountMicex": {
       "$type": "Sq1.Core.Accounting.Account, Sq1.Core",
       "AccountNumber": "QUIK_MICEX_ACCTNR_NOT_SET",
@@ -58,7 +44,7 @@
   },
   "MarketName": "FORTS",
   "Name": "QUIK",
-  "StreamingAdapterName": "Quik Streaming",
+  "StreamingAdapterName": "QuikStreaming",
   "BrokerAdapterName": "Quik Broker",
   "DataSourceAbspath": "C:\\SquareOne\\Sq1.Gui\\bin\\Debug\\..\\..\\..\\Data-debug\\DataSources\\QUIK"
 }

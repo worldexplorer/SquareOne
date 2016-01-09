@@ -25,7 +25,7 @@
 using System;
 using System.Text;
 using System.Runtime.InteropServices;
-namespace Sq1.Adapters.Quik.Terminal {
+namespace Sq1.Adapters.Quik.Broker.Terminal {
 	public static class Trans2Quik {
 		#region Тип возвращаемых значений
 

@@ -1,8 +1,6 @@
 ﻿using System;
 
-using Sq1.Core;
-
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreaming {
 
 	}

@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 
 using Newtonsoft.Json;
-using Sq1.Adapters.Quik.Terminal;
+
 using Sq1.Core;
 using Sq1.Core.Accounting;
 using Sq1.Core.Broker;
@@ -12,7 +12,10 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
 
-namespace Sq1.Adapters.Quik {
+using Sq1.Adapters.Quik.Streaming;
+using Sq1.Adapters.Quik.Broker.Terminal;
+
+namespace Sq1.Adapters.Quik.Broker {
 	public class QuikBroker : BrokerAdapter {
 		[JsonIgnore]	public	QuikTerminal	QuikTerminal			{ get; protected set; }
 		[JsonProperty]	public	string			QuikFolder				{ get; internal set; }		// internal <= POPULATED_IN_EDITOR

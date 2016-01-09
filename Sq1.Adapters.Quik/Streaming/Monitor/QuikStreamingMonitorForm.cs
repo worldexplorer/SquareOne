@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Sq1.Widgets;
-using Sq1.Adapters.Quik.Dde.XlDde;
+using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 
-namespace Sq1.Adapters.Quik {
+namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikStreamingMonitorForm : DockContentImproved {
 		QuikStreaming quikStreaming;
 

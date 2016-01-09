@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+
 using Sq1.Core;
 
-namespace Sq1.Adapters.Quik.Dde.XlDde {
+namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public class XlReader : IDisposable {
 		const int codepage = 1251;
 		const int bytes2 = 2;

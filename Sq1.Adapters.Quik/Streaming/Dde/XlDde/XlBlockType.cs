@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Sq1.Adapters.Quik.Dde.XlDde {
+﻿namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public enum XlBlockType {
 		Float	= 0x01,
 		String	= 0x02,

@@ -1,4 +1,4 @@
-﻿namespace Sq1.Adapters.Quik {
+﻿namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	partial class QuikStreamingMonitorForm {
 		/// <summary>
 		/// Required designer variable.
@@ -23,7 +23,7 @@
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			this.quikStreamingMonitorControl = new Sq1.Adapters.Quik.QuikStreamingMonitorControl();
+			this.quikStreamingMonitorControl = new Sq1.Adapters.Quik.Streaming.Monitor.QuikStreamingMonitorControl();
 			this.SuspendLayout();
 			// 
 			// quikStreamingMonitor1

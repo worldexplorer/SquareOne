@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Sq1.Adapters.Quik.Dde.XlDde;
+using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
 
-namespace Sq1.Adapters.Quik.Dde {
+namespace Sq1.Adapters.Quik.Streaming.Dde {
 	public class TableDefinitions {
 		public static List<XlColumn> XlColumnsForTable_Quotes { get {
 			return  new List<XlColumn>() {
