@@ -10,6 +10,7 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Execution;
 using Sq1.Core.DataTypes;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
@@ -29,6 +30,7 @@ namespace Sq1.Core.Livesim {
 		[JsonIgnore]	protected	LivesimStreamingSpoiler		LivesimStreamingSpoiler;
 
 		[JsonIgnore]	public		bool						IsDisposed					{ get; private set; }
+		[JsonIgnore]	public		StreamingAdapter			StreamingAdapterOriginal	{ get; private set; }
 
 		protected LivesimStreaming() : base() {
 		    string msg = "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
@@ -44,13 +46,14 @@ namespace Sq1.Core.Livesim {
 			this.Level2generator = new LevelTwoGeneratorLivesim(this);
 			this.LivesimStreamingSpoiler = new LivesimStreamingSpoiler(this);
 		}
-		public virtual void Initialize(LivesimDataSource livesimDataSource) {
+		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingAdapterOriginalPassed) {
 			if (livesimDataSource == null) {
 				string msg = "DID_ACTIVATOR_PICK_THE_WRONG_CONSTRUCTOR?...";
 				Assembler.PopupException(msg);
 			}
 			//this.livesimDataSource = livesimDataSource;
 			base.DataSource = livesimDataSource;
+			this.StreamingAdapterOriginal = streamingAdapterOriginalPassed;
 		}
 
 		// invoked after LivesimFormShow(), but must have meaning "Executor.Bars changed"...
@@ -95,10 +98,10 @@ namespace Sq1.Core.Livesim {
 		}
 
 		#region DISABLING_SOLIDIFIER
-		public override void Initialize(DataSource dataSource) {
+		public override void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
 			base.InitializeFromDataSource(dataSource);
 		}
-		protected override void SubscribeSolidifier() {
+		protected override void SolidifierSubscribe() {
 			return;
 		}
 		#endregion

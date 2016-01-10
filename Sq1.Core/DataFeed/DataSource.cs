@@ -110,7 +110,7 @@ namespace Sq1.Core.DataFeed {
 		public void Initialize(OrderProcessor orderProcessor) {
 			// works only for deserialized adapters; for a newDataSource they are NULLs to be assigned in DataSourceEditor 
 			if (this.StreamingAdapter == null) return;
-			this.StreamingAdapter.Initialize(this);
+			this.StreamingAdapter.InitializeDataSource(this);
 			if (this.BrokerAdapter == null) return;
 			this.BrokerAdapter.Initialize(this, this.StreamingAdapter, orderProcessor);
 		}

@@ -50,15 +50,19 @@ namespace Sq1.Core.Streaming {
 			if (this is LivesimStreaming) return;
 			LivesimStreaming						= new LivesimStreaming(true);	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
-		public virtual void Initialize(DataSource dataSource) {
+		public virtual void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
 			this.InitializeFromDataSource(dataSource);
-			this.SubscribeSolidifier();
+			if (subscribeSolidifier) {
+				this.SolidifierSubscribe();
+			} else {
+				this.SolidifierUnsubscribe(false);
+			}
 		}
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;
 			this.StreamingDataSnapshot.InitializeLastQuoteReceived(this.DataSource.Symbols);
 		}
-		protected virtual void SubscribeSolidifier() {
+		protected virtual void SolidifierSubscribe() {
 			this.StreamingSolidifier.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
 				this.DataDistributorSolidifiers.ConsumerBarSubscribe(symbol,
@@ -73,6 +77,21 @@ namespace Sq1.Core.Streaming {
 				}
 				channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
 				channel.QuotePump.PusherUnpause();
+			}
+		}
+		protected virtual void SolidifierUnsubscribe(bool throwOnAlreadySubscribed = true) {
+			foreach (string symbol in this.DataSource.Symbols) {
+				this.DataDistributorSolidifiers.ConsumerBarUnsubscribe(symbol,
+					this.DataSource.ScaleInterval, this.StreamingSolidifier);
+				this.DataDistributorSolidifiers.ConsumerQuoteUnsubscribe(symbol,
+					this.DataSource.ScaleInterval, this.StreamingSolidifier);
+				SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers.GetDistributionChannelForNullUnsafe(symbol, this.DataSource.ScaleInterval);
+				if (channel == null) {
+					string msg = "I_START_LIVESIM_WITHOUT_ANY_PRIOR_SUBSCRIBED_SOLIDIFIERS symbol[" + symbol + "]";
+					Assembler.PopupException(msg, null, false);
+					continue;
+				}
+				channel.QuotePump.PusherPause();
 			}
 		}
 
