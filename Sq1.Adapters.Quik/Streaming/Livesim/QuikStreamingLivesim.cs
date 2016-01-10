@@ -25,11 +25,13 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 
 		[JsonIgnore]	string ddeTopicsPrefix = "QuikLiveSim-";
 
-		[JsonIgnore]	public QuikStreaming				QuikStreamingPuppet;
-		[JsonIgnore]	public QuikLivesimBatchPublisher	QuikLivesimBatchPublisher;
+		[JsonIgnore]	public	QuikLivesimBatchPublisher	QuikLivesimBatchPublisher;
 
-		[JsonIgnore]	ConcurrentDictionaryGeneric<double, double> LevelTwoAsks { get { return base.StreamingDataSnapshot.LevelTwoAsks; } }
-		[JsonIgnore]	ConcurrentDictionaryGeneric<double, double> LevelTwoBids { get { return base.StreamingDataSnapshot.LevelTwoBids; } }
+		[JsonIgnore]			ConcurrentDictionaryGeneric<double, double> LevelTwoAsks	{ get { return base.StreamingDataSnapshot.LevelTwoAsks; } }
+		[JsonIgnore]			ConcurrentDictionaryGeneric<double, double> LevelTwoBids	{ get { return base.StreamingDataSnapshot.LevelTwoBids; } }
+
+		[JsonIgnore]	public	QuikStreaming	QuikStreamingOriginal						{ get { return base.StreamingAdapterOriginal as QuikStreaming; } }
+		[JsonIgnore]			bool			ddeWasStarted_preLivesim;
 
 		public QuikStreamingLivesim() : base(true) {
 			base.Name = "QuikStreamingLivesim-DllFound";
@@ -41,10 +43,10 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			this.Level2generator = new LevelTwoGenerator();		// this one has it's own LevelTwoAsks,LevelTwoBids NOT_REDIRECTED to StreamingDatasnapshot => sending Level2 via DDE to QuikStreaming.StreamingDatasnapshot
 		}
 
-		public override void Initialize(LivesimDataSource livesimDataSource) {
+		public void InitializeDataSource(LivesimDataSource livesimDataSource, bool subscribeSolidifier = true) {
 			base.Name = "QuikStreamingLivesim-recreatedWithLDSpointer";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Streaming.Livesim.Properties.Resources.imgQuikStreamingLivesim;
-			base.Initialize(livesimDataSource);
+			base.InitializeDataSource(livesimDataSource, subscribeSolidifier);
 		}
 
 		//public override void Initialize(DataSource deserializedDataSource) {
@@ -52,19 +54,20 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		//    base.Initialize(deserializedDataSource);
 		//}
 
-		protected override void SubscribeSolidifier() {
+		protected override void SolidifierSubscribe() {
 			string msg = "OTHERWIZE_BASE_WILL_SUBSCRIBE_SOLIDIFIER LIVESIM_MUST_NOT_SAVE_ANY_BARS";
 		}
 
 		public override void UpstreamConnect_LivesimStarting() {
 			string msig = " //UpstreamConnect_LivesimStarting(" + this.ToString() + ")";
 
-			this.QuikStreamingPuppet = new QuikStreamingPuppet(this.ddeTopicsPrefix, this.DataDistributor);
-			this.QuikStreamingPuppet.Initialize(base.Livesimulator.DataSourceAsLivesimNullUnsafe);	//LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor
+			//this.QuikStreamingPuppet = new QuikStreamingPuppet(this.ddeTopicsPrefix, base.DataDistributor);
+			this.ddeWasStarted_preLivesim = this.QuikStreamingOriginal.DdeServerStarted;
+
+			this.QuikStreamingOriginal.InitializeDataSource(base.Livesimulator.DataSourceAsLivesimNullUnsafe, false);	//LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor
 			//this.QuikStreamingPuppet.DataDistributor.ConsumerQuoteSubscribe();
 			//this.QuikStreamingPuppet.DataDistributor.ConsumerBarSubscribe();
-			this.QuikStreamingPuppet.UpstreamConnect();
-
+			this.QuikStreamingOriginal.UpstreamConnect();
 
 			// MarketLive checks for LastQuote, which I don't save anymore in QuikStreamingLivesim
 			// QuikStreamingLivesim is a handicap without StreamingDataSnapshot; normally Snap is maintained by
@@ -76,7 +79,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			//    string msg1 = "MUST_BE_NULL__ONLY_INITIALIZED_FOR_MarketLive_FOR_A_LIVESIM_SESSION__OTHERWIZE_MUST_BE_NULL";
 			//    Assembler.PopupException(msg1);
 			//}
-			this.StreamingDataSnapshot = this.QuikStreamingPuppet.StreamingDataSnapshot;
+			this.StreamingDataSnapshot = this.QuikStreamingOriginal.StreamingDataSnapshot;
 
 			this.QuikLivesimBatchPublisher = new QuikLivesimBatchPublisher(this);
 			this.QuikLivesimBatchPublisher.ConnectAll();
@@ -90,7 +93,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			Assembler.PopupException(msg + msig, null, false);
 			this.QuikLivesimBatchPublisher.DisconnectAll();
 			this.QuikLivesimBatchPublisher.DisposeAll();
-			this.QuikStreamingPuppet.UpstreamDisconnect();	// not disposed, QuikStreaming.ddeServerStart() is reusable
+			this.QuikStreamingOriginal.UpstreamDisconnect();	// not disposed, QuikStreaming.ddeServerStart() is reusable
 
 			// YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
 			// NO_LEAVE_IT__SECOND_LIVESIM_RUN_THROWS_NPE_IN_base.InitializeFromDataSource() this.StreamingDataSnapshot = null;

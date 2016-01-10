@@ -165,7 +165,7 @@
     "priceDecimals": 0,
     "SecurityType": 2,
     "Symbol": "RIM3-Qmock",
-    "SymbolClass": "",
+    "SymbolClass": "TESTCLASS",
     "Point2Dollar": 1.0,
     "VolumeDecimals": 0,
     "SameBarPolarCloseThenOpen": true,

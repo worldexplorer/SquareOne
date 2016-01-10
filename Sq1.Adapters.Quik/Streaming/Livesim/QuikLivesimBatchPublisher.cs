@@ -15,7 +15,7 @@ using Sq1.Adapters.Quik.Streaming.Livesim.Dde;
 
 namespace Sq1.Adapters.Quik.Streaming.Livesim {
 	public class QuikLivesimBatchPublisher {
-				QuikStreamingLivesim			quikLivesimStreaming;
+				QuikStreamingLivesim			quikStreamingLivesim;
 
 				DdeClient						ddeClientDepth;
 				DdeClient						ddeClientTrades;
@@ -24,21 +24,21 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 				DdeTableGeneratorDepth			ddeTableGeneratorDepth;
 				string							symbolSingleImLivesimmingDepth;
 		
-				string							ddeService		{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeServiceName; } }
-				string							ddeTopicQuotes	{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeBatchSubscriber.TableQuotes.Topic; } }
-				string							ddeTopicDepth	{ get { return this.quikLivesimStreaming.QuikStreamingPuppet.DdeBatchSubscriber.GetDomTopicForSymbol(this.symbolSingleImLivesimmingDepth); } }
+				string							ddeService		{ get { return this.quikStreamingLivesim.QuikStreamingOriginal.DdeServiceName; } }
+				string							ddeTopicQuotes	{ get { return this.quikStreamingLivesim.QuikStreamingOriginal.DdeBatchSubscriber.TableQuotes.Topic; } }
+				string							ddeTopicDepth	{ get { return this.quikStreamingLivesim.QuikStreamingOriginal.DdeBatchSubscriber.GetDomTopicForSymbol(this.symbolSingleImLivesimmingDepth); } }
 
 		public QuikLivesimBatchPublisher(QuikStreamingLivesim quikLivesimStreaming) {
-			this.quikLivesimStreaming	= quikLivesimStreaming;
+			this.quikStreamingLivesim	= quikLivesimStreaming;
 
-			this.ddeTableGeneratorQuotes		= new DdeTableGeneratorQuotes(this.ddeService,	this.ddeTopicQuotes	, this.quikLivesimStreaming);
+			this.ddeTableGeneratorQuotes		= new DdeTableGeneratorQuotes(this.ddeService,	this.ddeTopicQuotes	, this.quikStreamingLivesim);
 
-			if (this.quikLivesimStreaming.DataSource.Symbols.Count != 1) {
+			if (this.quikStreamingLivesim.DataSource.Symbols.Count != 1) {
 				string msg = "LIVESIM_DATASOURCE_MUST_CONTAIN_ONE_SYMBOL_YOU_ARE_BACKTESTING";	// and in the future many symbols, for multi-symbol-within-same-datasource strategies
 				Assembler.PopupException(msg);
 			} else {
-				this.symbolSingleImLivesimmingDepth	= this.quikLivesimStreaming.DataSource.Symbols[0];
-				this.ddeTableGeneratorDepth			= new DdeTableGeneratorDepth (this.ddeService,	this.ddeTopicDepth	, this.quikLivesimStreaming);
+				this.symbolSingleImLivesimmingDepth	= this.quikStreamingLivesim.DataSource.Symbols[0];
+				this.ddeTableGeneratorDepth			= new DdeTableGeneratorDepth (this.ddeService,	this.ddeTopicDepth	, this.quikStreamingLivesim);
 			}
 		}
 

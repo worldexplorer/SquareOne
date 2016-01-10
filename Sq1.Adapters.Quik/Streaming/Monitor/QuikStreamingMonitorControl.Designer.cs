@@ -100,10 +100,10 @@
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesSymbolClass);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesSymbol);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesServerTime);
+			this.OlvQuotes.AllColumns.Add(this.olvcQuotesQty);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesBid);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesAsk);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesLast);
-			this.OlvQuotes.AllColumns.Add(this.olvcQuotesQty);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsDepositBuy);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsDepositSell);
 			this.OlvQuotes.AllColumns.Add(this.olvcQuotesFortsPriceMin);
@@ -116,10 +116,10 @@
             this.olvcQuotesSymbolClass,
             this.olvcQuotesSymbol,
             this.olvcQuotesServerTime,
+            this.olvcQuotesQty,
             this.olvcQuotesBid,
             this.olvcQuotesAsk,
             this.olvcQuotesLast,
-            this.olvcQuotesQty,
             this.olvcQuotesFortsDepositBuy,
             this.olvcQuotesFortsDepositSell,
             this.olvcQuotesFortsPriceMin,
@@ -127,9 +127,14 @@
             this.olvcQuotesAbsnoPerSymbol});
 			this.OlvQuotes.Location = new System.Drawing.Point(6, 32);
 			this.OlvQuotes.Name = "OlvQuotes";
+			this.OlvQuotes.ShowGroups = false;
 			this.OlvQuotes.Size = new System.Drawing.Size(909, 133);
 			this.OlvQuotes.TabIndex = 2;
+			this.OlvQuotes.TintSortColumn = true;
 			this.OlvQuotes.UseCompatibleStateImageBehavior = false;
+			this.OlvQuotes.UseHotItem = true;
+			this.OlvQuotes.UseTranslucentHotItem = true;
+			this.OlvQuotes.UseTranslucentSelection = true;
 			this.OlvQuotes.View = System.Windows.Forms.View.Details;
 			// 
 			// olvcQuotesSymbolClass
@@ -140,12 +145,12 @@
 			// olvcQuotesSymbol
 			// 
 			this.olvcQuotesSymbol.Text = "Symbol";
-			this.olvcQuotesSymbol.Width = 65;
+			this.olvcQuotesSymbol.Width = 70;
 			// 
 			// olvcQuotesServerTime
 			// 
 			this.olvcQuotesServerTime.Text = "Time";
-			this.olvcQuotesServerTime.Width = 100;
+			this.olvcQuotesServerTime.Width = 110;
 			// 
 			// olvcQuotesBid
 			// 

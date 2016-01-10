@@ -28,7 +28,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			base.PushQuoteReceived(quote);
 		}
 
-		protected override void SubscribeSolidifier() {
+		protected override void SolidifierSubscribe() {
 			string msg = "OTHERWIZE_BASE_WILL_SUBSCRIBE_SOLIDIFIER PUPPET_ONLY_REGISTERS_DDE_SERVER_AND_PUSHES_QUOTES_TO_STRATEGY";
 		}
 	}

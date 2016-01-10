@@ -89,18 +89,23 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.ConnectionState		= ConnectionState.InitiallyDisconnected;
 			base.LivesimStreaming		= new QuikStreamingLivesim();
 		}
-		public override void Initialize(DataSource dataSource) {
+		public override void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
 			base.Name			= "QuikStreaming";
-			this.DdeServer		= new XlDdeServer(this.DdeServiceName);	// MOVED_FROM_CTOR_TO_HAVE_QuikStreamingPuppet_PREFIX_SERVICE_AND_TOPICS DUMMY_STREAMING_ISNT_INITIALIZED_WITH_DATASOURCE_SO_IN_CTOR_IT_WOULD_HAVE_OCCUPIED_SERVICE_NAME_FOR_NO_USE
+			if (this.DdeServer == null) {
+				this.DdeServer		= new XlDdeServer(this.DdeServiceName);	// MOVED_FROM_CTOR_TO_HAVE_QuikStreamingPuppet_PREFIX_SERVICE_AND_TOPICS DUMMY_STREAMING_ISNT_INITIALIZED_WITH_DATASOURCE_SO_IN_CTOR_IT_WOULD_HAVE_OCCUPIED_SERVICE_NAME_FOR_NO_USE
 
-			if (this.DdeBatchSubscriber != null) {
-				string msg = "RETHINK_INITIALIZATION_AND_DdeTables_LIFECYCLE";
-				Assembler.PopupException(msg);
-				this.DdeServerStop();
+				if (this.DdeBatchSubscriber != null) {
+					string msg = "RETHINK_INITIALIZATION_AND_DdeTables_LIFECYCLE";
+					Assembler.PopupException(msg);
+					this.DdeServerStop();
+				} else {
+					this.DdeBatchSubscriber = new DdeBatchSubscriber(this);
+				}
 			} else {
-				this.DdeBatchSubscriber = new DdeBatchSubscriber(this);
+				string msg = "QUIK_STREAMING_INITIALIZING_WITH_LIVESIM_DATASOURCE";
+				Assembler.PopupException(msg, null, false);
 			}
-			base.Initialize(dataSource);
+			base.InitializeDataSource(dataSource, subscribeSolidifier);
 			//MOVED_TO_MainForm.WorkspaceLoad() this.Connect();
 			this.ConnectionState		= ConnectionState.JustInitialized;
 		}
