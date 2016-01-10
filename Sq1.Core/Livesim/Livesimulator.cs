@@ -9,6 +9,7 @@ using Sq1.Core.Backtesting;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
+using Newtonsoft.Json;
 
 namespace Sq1.Core.Livesim {
 	public class Livesimulator : Backtester, IDisposable {
@@ -56,6 +57,7 @@ namespace Sq1.Core.Livesim {
 		//    Assembler.PopupException(msg1 + msig, null, false);
 		//}
 
+		[JsonIgnore]	public StreamingAdapter				StreamingOriginal;
 		protected override void SimulationPreBarsSubstitute_overrideable() {
 			if (base.BarsOriginal == base.Executor.Bars) {
 				string msg = "DID_YOU_FORGET_TO_RESET_base.BarsOriginal_TO_NULL_AFTER_BACKTEST_FINISHED??";
@@ -92,6 +94,9 @@ namespace Sq1.Core.Livesim {
 				this.DataSourceAsLivesimNullUnsafe.Initialize(base.BarsSimulating, spreadModeler);
 				#endregion
 
+		//[JsonIgnore]			DataSource		datasource_preLivesim;
+				this.StreamingOriginal = this.Executor.DataSource.StreamingAdapter;
+
 				base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;
 				
 				// each time I change bars on chart switching to 
@@ -100,7 +105,7 @@ namespace Sq1.Core.Livesim {
 				//this.RedirectDataSource_reactivateLivesimsWithLivesimDataSource(streamingAsLivesimChild, brokerAsLivesimChild);
 				this.DataSourceAsLivesimNullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();
 
-				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.InitializeLivesim(this.DataSourceAsLivesimNullUnsafe, this.StreamingOriginal);
 				this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
 
 				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
