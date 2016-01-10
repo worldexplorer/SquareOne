@@ -100,6 +100,8 @@ namespace Sq1.Core.Livesim {
 				//this.RedirectDataSource_reactivateLivesimsWithLivesimDataSource(streamingAsLivesimChild, brokerAsLivesimChild);
 				this.DataSourceAsLivesimNullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();
 
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
+				this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
 
 				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
 				//v1 bool chartIsSubscribed_toBarsOriginal = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
@@ -146,8 +148,8 @@ namespace Sq1.Core.Livesim {
 				}
 
 				// otherwize, after apprestart, I change bars for the chart and click LivesimForm=>Start and get DONT_INVOKE_ME_WITH_NULL_SYMBOL_INFO I_WOULD_THROW_ANYWAY_MAKING_THE_REASON_CLEAR //LevelTwoGenerator.GenerateForQuote()
-				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
-				this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
+				//MOVED_UP this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
+				//this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
 				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.PushSymbolInfoToLevel2generator(this.Executor.Bars.SymbolInfo);
 			} catch (Exception ex) {
 				string msg = "PreBarsSubstitute(): Backtester caught a long beard...";

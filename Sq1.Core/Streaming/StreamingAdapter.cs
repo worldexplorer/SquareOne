@@ -47,9 +47,10 @@ namespace Sq1.Core.Streaming {
 			StreamingDataSnapshot					= new StreamingDataSnapshot(this);
 			StreamingSolidifier						= new StreamingSolidifier();
 			QuotePumpSeparatePushingThreadEnabled	= true;
+			if (this is LivesimStreaming) return;
+			LivesimStreaming						= new LivesimStreaming(true);	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
 		public virtual void Initialize(DataSource dataSource) {
-			LivesimStreaming						= new LivesimStreaming(true);	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 			this.InitializeFromDataSource(dataSource);
 			this.SubscribeSolidifier();
 		}
