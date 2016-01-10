@@ -87,6 +87,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.DdeTopicPrefixDom		= "dom";
 			base.StreamingDataSnapshot	= new QuikStreamingDataSnapshot(this);
 			this.ConnectionState		= ConnectionState.InitiallyDisconnected;
+			base.LivesimStreaming		= new QuikStreamingLivesim();
 		}
 		public override void Initialize(DataSource dataSource) {
 			base.Name			= "QuikStreaming";
@@ -102,7 +103,6 @@ namespace Sq1.Adapters.Quik.Streaming {
 			base.Initialize(dataSource);
 			//MOVED_TO_MainForm.WorkspaceLoad() this.Connect();
 			this.ConnectionState		= ConnectionState.JustInitialized;
-			base.LivesimStreaming		= new QuikStreamingLivesim();
 		}
 
 		public void DdeServerStart() {

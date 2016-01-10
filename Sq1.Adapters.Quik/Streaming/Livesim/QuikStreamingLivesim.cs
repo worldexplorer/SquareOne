@@ -31,7 +31,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		[JsonIgnore]	ConcurrentDictionaryGeneric<double, double> LevelTwoAsks { get { return base.StreamingDataSnapshot.LevelTwoAsks; } }
 		[JsonIgnore]	ConcurrentDictionaryGeneric<double, double> LevelTwoBids { get { return base.StreamingDataSnapshot.LevelTwoBids; } }
 
-		public QuikStreamingLivesim() : base() {
+		public QuikStreamingLivesim() : base(true) {
 			base.Name = "QuikStreamingLivesim-DllFound";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Streaming.Livesim.Properties.Resources.imgQuikStreamingLivesim;
 

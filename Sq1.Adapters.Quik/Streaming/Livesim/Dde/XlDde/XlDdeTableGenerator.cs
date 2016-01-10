@@ -101,15 +101,22 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 
 		#region 1) requirement of new DdeClient(a, b, HERE); 2) 100% displayed form is the Chart
 		IAsyncResult ISynchronizeInvoke.BeginInvoke(Delegate method, object[] args) {
-			return syncContext.BeginInvoke(method, args);
+			IAsyncResult ret = null;
+			ret = syncContext.BeginInvoke(method, args);
+			return ret;
 		}
 
 		object ISynchronizeInvoke.EndInvoke(IAsyncResult result) {
-			return syncContext.EndInvoke(result);
+			object ret = null;
+			ret = syncContext.EndInvoke(result);
+			return ret;
 		}
 
 		object ISynchronizeInvoke.Invoke(Delegate method, object[] args) {
-			return syncContext.Invoke(method, args);
+			Application.DoEvents();
+			object ret = null;
+			ret = syncContext.Invoke(method, args);
+			return ret;
 		}
 
 		bool ISynchronizeInvoke.InvokeRequired {
