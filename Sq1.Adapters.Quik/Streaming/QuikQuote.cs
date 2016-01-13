@@ -11,6 +11,50 @@ namespace Sq1.Adapters.Quik.Streaming {
 		[JsonProperty]	public double	FortsPriceMax;
 		[JsonProperty]	public double	FortsPriceMin;
 
+
+		[JsonProperty]	public string		FortsDepositBuyFormatted { get {
+			string ret = this.FortsDepositBuy.ToString("N1");
+			if (this.ParentBarStreaming							== null) return ret;
+			if (this.ParentBarStreaming.ParentBars				== null) return ret;
+			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
+			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
+			ret = string.Format(symbolInfo.PriceFormat, this.FortsDepositBuy);
+			return ret;
+		} }
+
+		[JsonProperty]	public string		FortsDepositSellFormatted { get {
+			string ret = this.FortsDepositSell.ToString("N1");
+			if (this.ParentBarStreaming							== null) return ret;
+			if (this.ParentBarStreaming.ParentBars				== null) return ret;
+			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
+			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
+			ret = string.Format(symbolInfo.PriceFormat, this.FortsDepositSell);
+			return ret;
+		} }
+
+
+		[JsonProperty]	public string		FortsPriceMaxFormatted { get {
+			string ret = this.FortsPriceMax.ToString("N1");
+			if (this.ParentBarStreaming							== null) return ret;
+			if (this.ParentBarStreaming.ParentBars				== null) return ret;
+			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
+			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
+			ret = string.Format(symbolInfo.PriceFormat, this.FortsPriceMax);
+			return ret;
+		} }
+
+		[JsonProperty]	public string		FortsPriceMinFormatted { get {
+			string ret = this.FortsPriceMin.ToString("N1");
+			if (this.ParentBarStreaming							== null) return ret;
+			if (this.ParentBarStreaming.ParentBars				== null) return ret;
+			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
+			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
+			ret = string.Format(symbolInfo.PriceFormat, this.FortsPriceMin);
+			return ret;
+		} }
+
+
+
 		public QuoteQuik(DateTime quoteDate) : base(quoteDate) {
 		}
 

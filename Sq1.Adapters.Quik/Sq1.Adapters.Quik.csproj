@@ -174,7 +174,6 @@
     <Compile Include="Streaming\Livesim\Dde\XlDde\XlWriter.cs" />
     <Compile Include="Streaming\Livesim\QuikLivesimBatchPublisher.cs" />
     <Compile Include="Streaming\Livesim\QuikStreamingLivesim.cs" />
-    <Compile Include="Streaming\Livesim\QuikStreamingPuppet.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dockpanelsuite290-master\WinFormsUI\WinFormsUI.csproj">

@@ -13,8 +13,7 @@ using Sq1.Adapters.Quik.Streaming.Dde;
 namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreaming : StreamingAdapter {
 
-		public override void UpstreamConnect() {
-			lock (base.SymbolsSubscribedLock) {
+		public override void UpstreamConnect() { lock (base.SymbolsSubscribedLock) {
 				if (base.StreamingConnected == true) return;
 				string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
 				this.DdeServerStart();
@@ -22,10 +21,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 				//Assembler.DisplayConnectionStatus(base.ConnectionState, "Started symbolsSubscribed[" + symbolsSubscribed + "]");
 				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " started DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 				base.StreamingConnected = true;
-			}
-		}
-		public override void UpstreamDisconnect() {
-			lock (base.SymbolsSubscribedLock) {
+		} }
+		public override void UpstreamDisconnect() { lock (base.SymbolsSubscribedLock) {
 				if (base.StreamingConnected == false) return;
 				if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == false) {
 					Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]", null, false);
@@ -36,8 +33,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 				base.ConnectionState = ConnectionState.InitiallyDisconnected;
 				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " stopped DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 				base.StreamingConnected = false;
-			}
-		}
+		} }
 
 		public override void UpstreamSubscribe(string symbol) {
 			if (string.IsNullOrEmpty(symbol)) {

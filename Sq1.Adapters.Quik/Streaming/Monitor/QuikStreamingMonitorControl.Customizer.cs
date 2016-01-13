@@ -6,29 +6,25 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 			this.olvcQuotesAsk.AspectGetter = delegate(object o) {
 				QuoteQuik quoteQuik = o as QuoteQuik;
 				if (quoteQuik == null) return "olvcQuotesAsk.AspectGetter: quoteQuik=null";
-				//return position.MFEPercent.ToString("F2") + " %";
-				return quoteQuik.Ask;
+				return quoteQuik.AskFormatted;
 			};
 
 			this.olvcQuotesBid.AspectGetter = delegate(object o) {
 				QuoteQuik quoteQuik = o as QuoteQuik;
 				if (quoteQuik == null) return "olvcQuotesBid.AspectGetter: quoteQuik=null";
-				//return position.MFEPercent.ToString("F2") + " %";
-				return quoteQuik.Bid;
+				return quoteQuik.BidFormatted;
 			};
 
 			this.olvcQuotesFortsPriceMin.AspectGetter = delegate(object o) {
 				QuoteQuik quoteQuik = o as QuoteQuik;
 				if (quoteQuik == null) return "olvcQuotesFortsPriceMin.AspectGetter: quoteQuik=null";
-				//return position.MFEPercent.ToString("F2") + " %";
-				return quoteQuik.FortsPriceMin;
+				return quoteQuik.FortsPriceMinFormatted;
 			};
 
 			this.olvcQuotesFortsPriceMax.AspectGetter = delegate(object o) {
 				QuoteQuik quoteQuik = o as QuoteQuik;
 				if (quoteQuik == null) return "olvcQuotesFortsPriceMax.AspectGetter: quoteQuik=null";
-				//return position.MFEPercent.ToString("F2") + " %";
-				return quoteQuik.FortsPriceMax;
+				return quoteQuik.FortsPriceMaxFormatted;
 			};
 
 			this.olvcQuotesSymbol.AspectGetter = delegate(object o) {
@@ -49,21 +45,19 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				QuoteQuik quoteQuik = o as QuoteQuik;
 				if (quoteQuik == null) return "olvcQuotesFortsDepositBuy.AspectGetter: quoteQuik=null";
 				//return position.MFEPercent.ToString("F2") + " %";
-				return quoteQuik.FortsDepositBuy;
+				return quoteQuik.FortsDepositBuyFormatted;
 			};
 
 			this.olvcQuotesFortsDepositSell.AspectGetter = delegate(object o) {
 				QuoteQuik quoteQuik = o as QuoteQuik;
 				if (quoteQuik == null) return "olvcQuotesFortsDepositSell.AspectGetter: quoteQuik=null";
-				//return position.MFEPercent.ToString("F2") + " %";
-				return quoteQuik.FortsDepositSell;
+				return quoteQuik.FortsDepositSellFormatted;
 			};
 
 			this.olvcQuotesQty.AspectGetter = delegate(object o) {
 				QuoteQuik quoteQuik = o as QuoteQuik;
 				if (quoteQuik == null) return "olvcQuotesQty.AspectGetter: quoteQuik=null";
-				//return position.MFEPercent.ToString("F2") + " %";
-				return quoteQuik.Size;
+				return quoteQuik.SizeFormatted;
 			};
 
 			this.olvcQuotesServerTime.AspectGetter = delegate(object o) {
@@ -76,7 +70,6 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 			this.olvcQuotesAbsnoPerSymbol.AspectGetter = delegate(object o) {
 				QuoteQuik quoteQuik = o as QuoteQuik;
 				if (quoteQuik == null) return "olvcQuotesAbsnoPerSymbol.AspectGetter: quoteQuik=null";
-				//return position.MFEPercent.ToString("F2") + " %";
 				return quoteQuik.AbsnoPerSymbol;
 			};
 

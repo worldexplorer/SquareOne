@@ -19,11 +19,11 @@ using Sq1.Adapters.Quik;
 namespace Sq1.Adapters.Quik.Streaming.Livesim {
 	[SkipInstantiationAt(Startup = true)]		// overriding LivesimStreaming's TRUE to have QuikStreamingLivesim appear in DataSourceEditor
 	public partial class QuikStreamingLivesim : LivesimStreaming {
-		[JsonIgnore]	string reasonToExist =    "1) use LivesimForm as control "
+		[JsonIgnore]	string	reasonToExist =    "1) use LivesimForm as control "
 												+ "2) instantiate QuikStreaming and make it run its DDE server "
 												+ "3) push quotes generated using DDE client";
 
-		[JsonIgnore]	string ddeTopicsPrefix = "QuikLiveSim-";
+		[JsonIgnore]	string	ddeTopicsPrefix = "QuikLiveSim-";
 
 		[JsonIgnore]	public	QuikLivesimBatchPublisher	QuikLivesimBatchPublisher;
 
@@ -34,7 +34,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		[JsonIgnore]			bool			ddeWasStarted_preLivesim;
 
 		public QuikStreamingLivesim() : base(true) {
-			base.Name = "QuikStreamingLivesim-DllFound";
+			base.Name = "QuikStreamingLivesim-InstantiatedFromDll";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Streaming.Livesim.Properties.Resources.imgQuikStreamingLivesim;
 
 			//NO_DESERIALIZATION_WILL_THROW_YOULL_NULLIFY_ME_IN_UpstreamConnect YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
@@ -44,7 +44,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		}
 
 		public void InitializeDataSource(LivesimDataSource livesimDataSource, bool subscribeSolidifier = true) {
-			base.Name = "QuikStreamingLivesim-recreatedWithLDSpointer";
+			base.Name = "QuikStreamingLivesim-initializedWithLivesimDataSource";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Streaming.Livesim.Properties.Resources.imgQuikStreamingLivesim;
 			base.InitializeDataSource(livesimDataSource, subscribeSolidifier);
 		}
@@ -54,20 +54,23 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		//    base.Initialize(deserializedDataSource);
 		//}
 
-		protected override void SolidifierSubscribe() {
+		protected override void SolidifierAllSymbolsSubscribe() {
 			string msg = "OTHERWIZE_BASE_WILL_SUBSCRIBE_SOLIDIFIER LIVESIM_MUST_NOT_SAVE_ANY_BARS";
 		}
 
 		public override void UpstreamConnect_LivesimStarting() {
 			string msig = " //UpstreamConnect_LivesimStarting(" + this.ToString() + ")";
 
-			//this.QuikStreamingPuppet = new QuikStreamingPuppet(this.ddeTopicsPrefix, base.DataDistributor);
-			this.ddeWasStarted_preLivesim = this.QuikStreamingOriginal.DdeServerStarted;
+			this.ddeWasStarted_preLivesim = this.QuikStreamingOriginal.StreamingConnected;
+
+			//this.QuikStreamingOriginal.SolidifierUnsubscribeOneSymbol_imLivesimming();
+			base.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
+
 
 			this.QuikStreamingOriginal.InitializeDataSource(base.Livesimulator.DataSourceAsLivesimNullUnsafe, false);	//LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor
-			//this.QuikStreamingPuppet.DataDistributor.ConsumerQuoteSubscribe();
-			//this.QuikStreamingPuppet.DataDistributor.ConsumerBarSubscribe();
-			this.QuikStreamingOriginal.UpstreamConnect();
+			if (this.ddeWasStarted_preLivesim == false) {
+				this.QuikStreamingOriginal.UpstreamConnect();
+			}
 
 			// MarketLive checks for LastQuote, which I don't save anymore in QuikStreamingLivesim
 			// QuikStreamingLivesim is a handicap without StreamingDataSnapshot; normally Snap is maintained by
@@ -93,7 +96,11 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			Assembler.PopupException(msg + msig, null, false);
 			this.QuikLivesimBatchPublisher.DisconnectAll();
 			this.QuikLivesimBatchPublisher.DisposeAll();
-			this.QuikStreamingOriginal.UpstreamDisconnect();	// not disposed, QuikStreaming.ddeServerStart() is reusable
+			if (this.ddeWasStarted_preLivesim == false) {
+				this.QuikStreamingOriginal.UpstreamDisconnect();	// not disposed, QuikStreaming.ddeServerStart() is reusable
+			}
+			//this.QuikStreamingOriginal.SolidifierSubscribeOneSymbol_iFinishedLivesimming();
+			base.SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
 
 			// YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
 			// NO_LEAVE_IT__SECOND_LIVESIM_RUN_THROWS_NPE_IN_base.InitializeFromDataSource() this.StreamingDataSnapshot = null;
@@ -145,6 +152,12 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			}
 
 			
+			// FUNDAMENTAL: QuikStreamingLivesim doesn't use base.DataDitstributor AT ALL; I push to the DDE and I expect the QuikStreaming to:
+			// 1. extract only chart subscribed to bars and quotes for the Symbol-livesimming
+			// 2. assign this new DataDistributor to QuikStreamingOriginal; restore old DataDistributor+Streaming at the Livesim end/abort
+			// 3. other charts open for the livesimming Symbol (same or different timeframes) won't receive anything
+			// 4. solidifiers for original datasource timeframe won't receive anything
+
 			string msg1 = "I_PREFER_TO_PUSH_LEVEL2_NOW__BEFORE_base.PushQuoteGenerated(quote)";
 			//v3 REDIRECTING_PushQuoteGenerated_RADICAL_PARENT_DETACHED base.Level2generator.GenerateAndStoreInStreamingSnap(quote);
 			base.Level2generator.GenerateForQuote(quote);

@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 813
+        "PanelHeight": 427
       },
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 819,
+        "Distance": 433,
         "SplitterHeight": 6,
-        "PanelHeight": 159
+        "PanelHeight": 109
       }
     },
     "Name": "Default",

@@ -102,7 +102,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 					this.DdeBatchSubscriber = new DdeBatchSubscriber(this);
 				}
 			} else {
-				string msg = "QUIK_STREAMING_INITIALIZING_WITH_LIVESIM_DATASOURCE";
+				string msg = "QUIK_STREAMING_INITIALIZING_WITH_LIVESIM_DATASOURCE_AND_UNSUBSCRIBING_SOLIDIFIER__OR_RESTORING_BACK_AND_SUBSCRIBING";
 				Assembler.PopupException(msg, null, false);
 			}
 			base.InitializeDataSource(dataSource, subscribeSolidifier);
