@@ -198,8 +198,13 @@ namespace Sq1.Core.Streaming {
 						bool unPausedNow = this.confirmUnpaused.WaitOne(this.heartbeatTimeout);
 						//bool unPausedNow = this.confirmUnpaused.WaitOne(-1);
 						if (unPausedNow == false) {
-							msg = "WILL_RECHECK_IF_UNPAUSED_ON_NEXT_HEARTBEAT_IN_MILLISEC=" + this.heartbeatTimeout + " " + msg;
-							//Assembler.PopupException(msg + msig, null, false);
+							if (this.Channel.ConsumersQuoteAsString.Contains("LIVESIM")) {
+								msg = "STILL_PAUSED_AFTER=" + this.heartbeatTimeout + "sec";
+								Assembler.PopupException(msg + msig, null, false);
+							} else {
+								msg = "WILL_RECHECK_IF_UNPAUSED_ON_NEXT_HEARTBEAT_IN_MILLISEC=" + this.heartbeatTimeout + " " + msg;
+								//Assembler.PopupException(msg + msig, null, false);
+							}
 						}
 						continue;
 					}

@@ -101,7 +101,7 @@ namespace Sq1.Core.Livesim {
 		public override void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
 			base.InitializeFromDataSource(dataSource);
 		}
-		protected override void SolidifierSubscribe() {
+		protected override void SolidifierAllSymbolsSubscribe() {
 			return;
 		}
 		#endregion
@@ -122,6 +122,14 @@ namespace Sq1.Core.Livesim {
 			this.Unpaused.Dispose();
 			this.Unpaused = null;
 			this.IsDisposed = true;
+		}
+
+		public void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor() {
+			this.StreamingAdapterOriginal.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(this);
+		}
+
+		public void SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor() {
+			this.StreamingAdapterOriginal.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
 		}
 	}
 }

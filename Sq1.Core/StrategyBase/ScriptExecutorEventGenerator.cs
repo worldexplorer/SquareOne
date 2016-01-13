@@ -11,6 +11,7 @@ namespace Sq1.Core.StrategyBase {
 		public event EventHandler<EventArgs>		OnBacktesterSimulatedChunk_step3of4;
 		public event EventHandler<EventArgs>		OnBacktesterContextRestoredAfterExecutingAllBars_step4of4;
 
+		public event EventHandler<QuoteEventArgs>	OnStrategyPreExecuteOneQuote;
 		public event EventHandler<QuoteEventArgs>	OnStrategyExecutedOneQuote;
 		public event EventHandler<BarEventArgs>		OnStrategyExecutedOneBar;
 		public event EventHandler<EventArgs>		OnStrategyExecutedOneQuoteOrBarOrdersEmitted;
@@ -75,7 +76,16 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg, ex);
 			}
 		}
-
+		
+		public void RaiseOnStrategyPreExecuteOneQuote(Quote quoteForAlertsCreated) {
+			if (this.OnStrategyExecutedOneQuote == null) return;
+			try {
+				this.OnStrategyPreExecuteOneQuote(this, new QuoteEventArgs(quoteForAlertsCreated));
+			} catch (Exception ex) {
+				string msg = "FIX_THIS_ATAVISM_TUNNELLING_QUOTE_ARRIVED_TO_UPDATE_BTN_STREAMING_TEXT";
+				Assembler.PopupException(msg, ex);
+			}
+		}
 		public void RaiseOnStrategyExecutedOneQuote(Quote quoteForAlertsCreated) {
 			if (this.OnStrategyExecutedOneQuote == null) return;
 			this.OnStrategyExecutedOneQuote(this, new QuoteEventArgs(quoteForAlertsCreated));

@@ -28,7 +28,7 @@ namespace Sq1.Core.Streaming {
 			QQ							= new ConcurrentQueue<Quote>();
 			waitedForBacktestToFinish	= new Stopwatch();
 			//UpdateThreadNameAfterMaxConsumersSubscribed = true;
-			this.Channel				= channel;
+			Channel						= channel;
 		}
 		public virtual int PushStraightOrBuffered(Quote quoteSernoEnrichedWithUnboundStreamingBar) {
 			if (this.QQ.Count != 0) {

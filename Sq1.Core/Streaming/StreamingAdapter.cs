@@ -51,48 +51,81 @@ namespace Sq1.Core.Streaming {
 			LivesimStreaming						= new LivesimStreaming(true);	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
 		public virtual void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
+			//if (subscribeSolidifier == false) {
+			//    string msg = "UNSUBSCRIBING_SOLIDIFICATION_OF_ORIGINAL_STREAMING_PRIOR_TO_LIVESIM SYMBOL_AND_INTERVAL_WILL_BE_REPLACED_TO_SIMULATING_NEXT_LINE";
+			//    Assembler.PopupException(msg, null, false);
+			//    this.SolidifierUnsubscribe(false);
+			//}
 			this.InitializeFromDataSource(dataSource);
 			if (subscribeSolidifier) {
-				this.SolidifierSubscribe();
-			} else {
-				this.SolidifierUnsubscribe(false);
+				string msg = "SUBSCRIBING_SOLIDIFICATION_OF_ORIGINAL_STREAMING_AFTER_LIVESIM_TERMINATED/ABORTED AFTER_SYMBOL_AND_INTERVAL_RESTORED_TO_ORIGINAL_PREVIOUS_LINE";
+				Assembler.PopupException(msg, null, false);
+				this.SolidifierAllSymbolsSubscribe();
 			}
 		}
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;
 			this.StreamingDataSnapshot.InitializeLastQuoteReceived(this.DataSource.Symbols);
 		}
-		protected virtual void SolidifierSubscribe() {
+		protected virtual void SolidifierAllSymbolsSubscribe() {
 			this.StreamingSolidifier.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
-				this.DataDistributorSolidifiers.ConsumerBarSubscribe(symbol,
-					this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
-				this.DataDistributorSolidifiers.ConsumerQuoteSubscribe(symbol,
-					this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
-				SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers.GetDistributionChannelForNullUnsafe(symbol, this.DataSource.ScaleInterval);
-				if (channel == null) {
-					string msg = "NONSENSE";
-					Assembler.PopupException(msg);
-					return;
-				}
-				channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
-				channel.QuotePump.PusherUnpause();
+				this.solidifierSubscribeOneSymbol(symbol);
 			}
 		}
-		protected virtual void SolidifierUnsubscribe(bool throwOnAlreadySubscribed = true) {
-			foreach (string symbol in this.DataSource.Symbols) {
-				this.DataDistributorSolidifiers.ConsumerBarUnsubscribe(symbol,
-					this.DataSource.ScaleInterval, this.StreamingSolidifier);
-				this.DataDistributorSolidifiers.ConsumerQuoteUnsubscribe(symbol,
-					this.DataSource.ScaleInterval, this.StreamingSolidifier);
-				SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers.GetDistributionChannelForNullUnsafe(symbol, this.DataSource.ScaleInterval);
-				if (channel == null) {
-					string msg = "I_START_LIVESIM_WITHOUT_ANY_PRIOR_SUBSCRIBED_SOLIDIFIERS symbol[" + symbol + "]";
-					Assembler.PopupException(msg, null, false);
-					continue;
-				}
-				channel.QuotePump.PusherPause();
+
+		//public void SolidifierSubscribeOneSymbol_iFinishedLivesimming(string symbol = null) {
+		void solidifierSubscribeOneSymbol(string symbol = null) {
+			if (symbol == null) {
+				symbol  = this.LivesimStreaming.DataSource.Symbols[0];
 			}
+
+			this.DataDistributorSolidifiers.ConsumerBarSubscribe(symbol,
+				this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
+			this.DataDistributorSolidifiers.ConsumerQuoteSubscribe(symbol,
+				this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
+			SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers.GetDistributionChannelForNullUnsafe(symbol, this.DataSource.ScaleInterval);
+			if (channel == null) {
+				string msg = "NONSENSE";
+				Assembler.PopupException(msg);
+				return;
+			}
+			channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
+			channel.QuotePump.PusherUnpause();
+		}
+		//protected virtual void SolidifierAllSymbolsUnsubscribe(bool throwOnAlreadySubscribed = true) {
+		//    List<string> oneSymbolImLivesimming = this.DataSource.Symbols;
+		//    //List<string> oneSymbolImLivesimming = this.LivesimStreaming.DataSource.Symbols;
+		//    foreach (string symbol in oneSymbolImLivesimming) {
+		//        this.SolidifierUnsubscribeOneSymbol_imLivesimming(symbol);
+		//    }
+		//}
+
+		//public void SolidifierUnsubscribeOneSymbol_imLivesimming(string symbol = null) {
+		void solidifierUnsubscribeOneSymbol(string symbol = null) {
+			if (symbol == null) {
+				symbol  = this.LivesimStreaming.DataSource.Symbols[0];
+			}
+
+			if (this.DataDistributorSolidifiers.ConsumerBarIsSubscribed(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier, false)) {
+				this.DataDistributorSolidifiers.ConsumerBarUnsubscribe(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
+			} else {
+				string msg = "IGNORE_ME_IF_YOU_ARE_STARTED_LIVESIM SOLIDIFIER_NOT_SUBSCRIBED_BARS symbol[" + symbol + "] ScaleInterval[" + this.DataSource.ScaleInterval + "]";
+				Assembler.PopupException(msg, null, false);
+			}
+			if (this.DataDistributorSolidifiers.ConsumerQuoteIsSubscribed(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier, false)) {
+				this.DataDistributorSolidifiers.ConsumerQuoteUnsubscribe(symbol, this.DataSource.ScaleInterval, this.StreamingSolidifier);
+			} else {
+				string msg = "IGNORE_ME_IF_YOU_ARE_STARTED_LIVESIM SOLIDIFIER_NOT_SUBSCRIBED_QUOTES symbol[" + symbol + "] ScaleInterval[" + this.DataSource.ScaleInterval + "]";
+				Assembler.PopupException(msg, null, false);
+			}
+			SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers.GetDistributionChannelForNullUnsafe(symbol, this.DataSource.ScaleInterval);
+			if (channel == null) {
+				string msg = "I_START_LIVESIM_WITHOUT_ANY_PRIOR_SUBSCRIBED_SOLIDIFIERS symbol[" + symbol + "]";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			channel.QuotePump.PusherPause();
 		}
 
 		#region the essence#1 of streaming adapter
@@ -237,11 +270,18 @@ namespace Sq1.Core.Streaming {
 			this.StreamingDataSnapshot.LastQuoteCloneSetForSymbol(quote);
 
 			try {
-				if (this.DataDistributorSolidifiers.DistributionChannels.Count > 0) {
-					string msg = "REMIND_ME_WHEN_SOLIDIFIERS_ARE_SUBSCRIBED? I_WANT_TO_COLLECT_AND_SAVE_BARS_FOR_SYMBOLS_NON_OPENED_AS_CHARTS";
-					Assembler.PopupException(msg);
+				bool thisIsLivesimDataSource	= this is LivesimDataSource;
+				bool thisIsBacktestDataSource	= this is Backtesting.BacktestDataSource;
+				if (thisIsLivesimDataSource == false) {
+					string msg = "I_WANT_TO_COLLECT_AND_SAVE_BARS_FOR_SYMBOLS_NON_OPENED_AS_CHARTS";
+					Assembler.PopupException(msg, null, false);
+					this.DataDistributorSolidifiers.PushQuoteToDistributionChannels(quote);
+				} else {
+					if (this.DataDistributorSolidifiers.DistributionChannels.Count > 0) {
+						string msg = "LIVESIM_RUN__MUST_HAVE_REPLACED_MY_DATASOURCE_WITHOUT_SOLIDIFIERS";
+						Assembler.PopupException(msg, null, false);
+					}
 				}
-				//this.DataDistributorSolidifiers.PushQuoteToDistributionChannels(quote);
 			} catch (Exception ex) {
 				string msg = "SOME_CONSUMERS_SOME_SCALEINTERVALS_FAILED_INSIDE"
 					+ " DataDistributorSolidifiers.PushQuoteToDistributionChannels(" + quote + ")"
@@ -405,6 +445,43 @@ namespace Sq1.Core.Streaming {
 			} else {
 				channel.QuotePump.SetThreadName();
 			}
+		}
+
+		DataDistributor		distributorCharts_preLivesimForSymbolLivesimming = null;
+		DataDistributor		distributorSolidifier_preLivesimForSymbolLivesimming = null;
+
+		internal void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(LivesimStreaming livesimStreaming) {
+			this.distributorCharts_preLivesimForSymbolLivesimming = this.DataDistributor;
+			this.DataDistributor = new DataDistributor(this);
+
+			string symbol					= livesimStreaming.Livesimulator.BarsSimulating.Symbol;
+			BarScaleInterval scaleInterval	= livesimStreaming.Livesimulator.BarsSimulating.ScaleInterval;
+			string symbolIntervalScale		= livesimStreaming.Livesimulator.BarsSimulating.SymbolIntervalScale;
+			IStreamingConsumer chartShadow	= livesimStreaming.Livesimulator.Executor.ChartShadow.ChartStreamingConsumer;
+
+			bool willPushUsingPumpInSeparateThread = false;		// I wanna know which thread is going to be used; if DDE-client then cool
+			if (this.distributorCharts_preLivesimForSymbolLivesimming.ConsumerQuoteIsSubscribed(symbol, scaleInterval, chartShadow) == false) {
+				string msg = "EXECUTOR'S_CHART_SHADOW_WASNT_QUOTECONSUMING_WHAT_YOU_GONNA_LIVESIM NONSENSE " + symbolIntervalScale;
+				Assembler.PopupException(msg, null, false);
+			//} else {
+				// the chart will be subscribed twice to the same Symbol+ScaleInterval, yes! but the original distributor is backed up and PushQuoteReceived will only push to the new DataDistributor(this) with one chart only
+				this.DataDistributor.ConsumerQuoteSubscribe(symbol, scaleInterval, chartShadow, willPushUsingPumpInSeparateThread);
+			}
+			if (this.distributorCharts_preLivesimForSymbolLivesimming.ConsumerBarIsSubscribed(symbol, scaleInterval, chartShadow) == false) {
+				string msg = "EXECUTOR'S_CHART_SHADOW_WASNT_BARCONSUMING_WHAT_YOU_GONNA_LIVESIM NONSENSE " + symbolIntervalScale;
+				Assembler.PopupException(msg, null, false);
+			//} else {
+				// the chart will be subscribed twice to the same Symbol+ScaleInterval, yes! but the original distributor is backed up and PushBarReceived will only push to the new DataDistributor(this) with one chart only
+				this.DataDistributor.ConsumerBarSubscribe(symbol, scaleInterval, chartShadow, willPushUsingPumpInSeparateThread);
+			}
+
+			this.distributorSolidifier_preLivesimForSymbolLivesimming = this.DataDistributorSolidifiers;
+			this.DataDistributorSolidifiers = new DataDistributor(this);		// EMPTY!!! exactly what I wanted
+		}
+
+		internal void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor() {
+			this.DataDistributor			= this.distributorCharts_preLivesimForSymbolLivesimming;
+			this.DataDistributorSolidifiers	= this.distributorSolidifier_preLivesimForSymbolLivesimming;
 		}
 	}
 }

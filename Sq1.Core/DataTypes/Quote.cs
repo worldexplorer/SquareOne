@@ -36,6 +36,37 @@ namespace Sq1.Core.DataTypes {
 		[JsonProperty]	public double		Spread				{ get { return this.Ask - this.Bid; } }
 
 
+		[JsonProperty]	public string		AskFormatted { get {
+			string ret = this.Ask.ToString("N1");
+			if (this.ParentBarStreaming							== null) return ret;
+			if (this.ParentBarStreaming.ParentBars				== null) return ret;
+			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
+			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
+			ret = string.Format(symbolInfo.PriceFormat, this.Ask);
+			return ret;
+		} }
+
+		[JsonProperty]	public string		BidFormatted { get {
+			string ret = this.Bid.ToString("N1");
+			if (this.ParentBarStreaming							== null) return ret;
+			if (this.ParentBarStreaming.ParentBars				== null) return ret;
+			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
+			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
+			ret = string.Format(symbolInfo.PriceFormat, this.Bid);
+			return ret;
+		} }
+
+		[JsonProperty]	public string		SizeFormatted { get {
+			string ret = this.Size.ToString("N1");
+			if (this.ParentBarStreaming							== null) return ret;
+			if (this.ParentBarStreaming.ParentBars				== null) return ret;
+			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
+			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
+			ret = string.Format(symbolInfo.VolumeFormat, this.Size);
+			return ret;
+		} }
+
+
 		protected Quote() {	// make it proteted and use it when you'll need to super-modify a quote in StreamingAdapter-derived 
 			ServerTime = DateTime.MinValue;
 			//Absno = ++AbsnoStaticCounterForAllSymbolsUseless;

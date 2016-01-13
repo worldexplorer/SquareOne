@@ -138,22 +138,23 @@ namespace Sq1.Charting {
 			if (base.InvokeRequired == true) {
 				base.BeginInvoke((MethodInvoker)delegate { this.chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(sender, e); });
 				return;
-			} else {
-				this.ScriptExecutorObjects.QuoteLast = this.Bars.LastQuoteCloneNullUnsafe;
-
-				// doing same thing from GUI thread at PanelLevel2.renderLevel2() got me even closer to realtime (after pausing a Livesim
-				// and repainting Level2 whole thing was misplaced comparing to PanelPrice spread) but looked really random, not behind and not ahead;
-				// but main reason is ConcurrentLocker was spitting messages (I dont remember what exactly but easy to move back to renderLevel2() and see)
-				StreamingDataSnapshot snap = this.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
-				this.ScriptExecutorObjects.Bids_cachedForOnePaint = new LevelTwoHalfFrozen(
-					"BIDS_FROZEN",
-					snap.LevelTwoBids.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
-					new LevelTwoHalfFrozen.DESC());
-				this.ScriptExecutorObjects.Asks_cachedForOnePaint = new LevelTwoHalfFrozen(
-					"ASKS_FROZEN",
-					snap.LevelTwoAsks.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
-					new LevelTwoHalfFrozen.ASC());
 			}
+			
+			this.ScriptExecutorObjects.QuoteLast = this.Bars.LastQuoteCloneNullUnsafe;
+
+			// doing same thing from GUI thread at PanelLevel2.renderLevel2() got me even closer to realtime (after pausing a Livesim
+			// and repainting Level2 whole thing was misplaced comparing to PanelPrice spread) but looked really random, not behind and not ahead;
+			// but main reason is ConcurrentLocker was spitting messages (I dont remember what exactly but easy to move back to renderLevel2() and see)
+			StreamingDataSnapshot snap = this.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
+			this.ScriptExecutorObjects.Bids_cachedForOnePaint = new LevelTwoHalfFrozen(
+				"BIDS_FROZEN",
+				snap.LevelTwoBids.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+				new LevelTwoHalfFrozen.DESC());
+			this.ScriptExecutorObjects.Asks_cachedForOnePaint = new LevelTwoHalfFrozen(
+				"ASKS_FROZEN",
+				snap.LevelTwoAsks.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+				new LevelTwoHalfFrozen.ASC());
+
 			if (this.VisibleBarRight != this.Bars.Count - 1) {
 				string msg = "I_WILL_MOVE_SLIDER_IF_ONLY_LAST_BAR_IS_VISIBLE";
 				//I_WILL_MOVE_ANYWAYS__WE_ARE_HERE_WHEN_PAUSED_LIVESIM_WAS_HSCROLLED_BACKWARDS return;

@@ -4,7 +4,6 @@ using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.Charting {
 	public partial class ChartShadow {
-		//REPLACED_BY_ScriptExecutorObjects public ScriptToChartCommunicator ScriptToChartCommunicator { get; protected set; }
 		public event EventHandler<EventArgs> ChartSettingsChangedContainerShouldSerialize;
 		public event EventHandler<EventArgs> ContextScriptChangedContainerShouldSerialize;
 

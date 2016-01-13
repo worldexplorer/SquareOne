@@ -1,10 +1,12 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
-using System.IO;
+using System.Drawing;
 
 using WeifenLuo.WinFormsUI.Docking;
+using BrightIdeasSoftware;
 
 using Sq1.Core;
 using Sq1.Core.DataFeed;
@@ -23,8 +25,6 @@ using Sq1.Gui.Forms;
 using Sq1.Gui.FormFactories;
 using Sq1.Gui.ReportersSupport;
 using Sq1.Gui.Singletons;
-using System.Drawing;
-using BrightIdeasSoftware;
 
 namespace Sq1.Gui.Forms {
 	public class ChartFormManager {
@@ -128,7 +128,6 @@ namespace Sq1.Gui.Forms {
 			} }
 		
 		public	ChartFormInterformEventsConsumer	InterformEventsConsumer;
-		public	ChartFormStreamingConsumer			ChartStreamingConsumer;
 		
 		public	Dictionary<string, DockContentImproved>	FormsAllRelated						{ get {
 				var ret = new Dictionary<string, DockContentImproved>();
@@ -173,7 +172,8 @@ namespace Sq1.Gui.Forms {
 			//			this.Executor = new ScriptExecutor(Assembler.InstanceInitialized.ScriptExecutorConfig
 			//				, this.ChartForm.ChartControl, null, Assembler.InstanceInitialized.OrderProcessor, Assembler.InstanceInitialized.StatusReporter);
 			this.Executor					= new ScriptExecutor("EXECUTOR_FOR_AN_OPENED_CHART_UNCLONED");
-			this.Executor.EventGenerator.OnStrategyExecutedOneQuote += new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyExecutedOneQuote);
+			this.Executor.EventGenerator.OnStrategyPreExecuteOneQuote	+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText);
+			this.Executor.EventGenerator.OnStrategyExecutedOneQuote		+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree);
 
 			this.timerUnblink				= new System.Windows.Forms.Timer();
 			this.timerUnblink.Interval		= 400;
@@ -185,7 +185,6 @@ namespace Sq1.Gui.Forms {
 			this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering	= Color.FromArgb(230, 255, 230);
 
 			this.ReportersFormsManager		= new ReportersFormsManager(this);
-			this.ChartStreamingConsumer		= new ChartFormStreamingConsumer(this);
 
 			// never used in CHART_ONLY, but we have "Open In Current Chart" for Strategies
 			this.scriptEditorFormFactory	= new ScriptEditorFormFactory(this);
@@ -195,18 +194,33 @@ namespace Sq1.Gui.Forms {
 			this.DataSnapshotSerializer		= new Serializer<ChartFormDataSnapshot>();
 		}
 
-
 		Color colorBackgroundOrange_barsNotSubscribed;
 		Color colorBackgroundRed_barsSubscribed_scriptNotTriggering;
 		Color colorBackgroundGreen_barsSubscribed_scriptIsTriggering;
 
-		void eventGenerator_OnStrategyExecutedOneQuote(object sender, QuoteEventArgs e) {
+		void eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText(object sender, QuoteEventArgs e) {
+			 this.ChartForm.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(e.Quote);
+		}
+
+
+		// 1. XlDdeTableMonitoreable generates an event each quote/table is parsed => consumed by QuikDdeMonitor
+		// 2. <any>Bars<LoadedIntoChartShadow>.BarStreamingUpdatedMerged invokes ChartShadow.InvalidateAllPanels()		each quote is received => when GuiThread is ready it repaints ChartForm
+		// 3. <any>Bars<LoadedIntoChartShadow>.BarStreamingUpdatedMerged invokes ChartControl.UpdateStreamingBtnText()	each quote is received => when GuiThread is ready it repaints ChartForm
+		// 4. Executor.EventGenerator generates OnStrategyExecutedOneQuote => consumed in GuiThread (here) to unblink Strategy<=Symbol<=DataSource
+		// all the above should be subscribed in Livesim_pre()
+		void eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree(object sender, QuoteEventArgs e) {
 			string symbol = e.Quote.ParentBarStreaming.Symbol;
 			DataSource originalBarsDataSource_evenForLivesimmed = e.Quote.ParentBarStreaming.ParentBars.DataSource;
 
 			// in the future, one chart can be subscribed to many symbols, so executing a Script.OnQuote has to use DataSource+Symbol supplied
 			//NOT_FOR_LIVESIM if (this.ContextCurrentChartOrStrategy.IsStreaming == false) {
-			if (this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count == 0) {
+			LivesimStreaming streamingAsLivesimNullUnsafe = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
+			if (streamingAsLivesimNullUnsafe == null) {
+				string msg = "LivesimDataSource_MUST_BE_INITIALIZED_WITH_ITS_LivesimStreamingQuik_FIXME_IN_SimulationPreBarsSubstitute_overrideable()";
+				Assembler.PopupException(msg, null, false);
+				return;
+			}
+			if (streamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count == 0) {
 				this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = colorBackgroundOrange_barsNotSubscribed;
 			} else {
 				this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = this.Executor.IsStreamingTriggeringScript
@@ -311,7 +325,7 @@ namespace Sq1.Gui.Forms {
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
 				if (ctx.IsStreaming) {
 					string reason = "contextChart[" + ctx.ToString() + "].IsStreaming=true";
-					this.ChartStreamingConsumer.StreamingSubscribe(reason);
+					this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
 				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
@@ -380,7 +394,7 @@ namespace Sq1.Gui.Forms {
 						+ " OnApprestartBacktest will launch in another thread and I can't postpone subscription until it finishes"
 						+ " so the Pump should set paused now because UpstreamSubscribe should not invoke ChartFormStreamingConsumer"
 						+ " whenever StreamingAdapter is ready, but only after all ScaleSymbol consuming backtesters are complete";
-					this.ChartStreamingConsumer.StreamingSubscribe(reason);
+					this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
 				}
 			} catch (Exception ex) {
 				string msg = "PopulateCurrentChartOrScriptContext(): ";
@@ -1072,7 +1086,9 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			this.ChartStreamingConsumer.StreamingUnsubscribe(msig);
+			this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(msig);
+			this.ChartForm.ChartControl.ScriptExecutorObjects.QuoteLast = null;
+
 			this.ReportersFormsManager	.Dispose_workspaceReloading();
 			this.ChartForm				.Dispose();
 			//this.SequencerForm			.Dispose();

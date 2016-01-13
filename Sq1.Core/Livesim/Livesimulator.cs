@@ -41,21 +41,6 @@ namespace Sq1.Core.Livesim {
 			this.livesimQuoteBarConsumer	= new LivesimQuoteBarConsumer(this);
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_YOU_THEN!!! base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 += new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
 		}
-		//public void RedirectDataSource_reactivateLivesimsWithLivesimDataSource(LivesimStreaming liveStreamingChild, LivesimBroker livesimBrokerChild) {
-		//    string msig = " //RedirectDataSourceToUserLivesimImplementations(" + liveStreamingChild + ", " + livesimBrokerChild + ")";
-		//    if (	this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	== liveStreamingChild
-		//         && this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	== livesimBrokerChild) {
-		//        string msg = "DATASOURCE_NOT_REDIRECTED__SAME_STREAMING_AND_BROKER_ADAPTERS";
-		//        Assembler.PopupException(msg + msig, null, false);
-		//        return;
-		//    }
-				
-		//    // move to the spot where a LivesimDataSource is created in anticipation of a livesim.Start();
-		//    this.DataSourceAsLivesimNullUnsafe.PushPreInstantiatedLivesimAdaptersToLivesimDataSource();
-
-		//    string msg1 = "ADAPTERS_SUBSTITUTED_FOR_LIVESIM_DATASOURCE " + this.DataSourceAsLivesimNullUnsafe.ToString();
-		//    Assembler.PopupException(msg1 + msig, null, false);
-		//}
 
 		[JsonIgnore]	public StreamingAdapter				StreamingOriginal;
 		protected override void SimulationPreBarsSubstitute_overrideable() {
@@ -68,7 +53,6 @@ namespace Sq1.Core.Livesim {
 				base.BarsSimulating = base.Executor.Bars.CloneNoBars(BARS_BACKTEST_CLONE_PREFIX + base.BarsOriginal);
 				base.Executor.EventGenerator.RaiseOnBacktesterBarsIdenticalButEmptySubstitutedToGrow_step1of4();
 				
-				#region candidate for this.DataSourceAsLivesimNullUnsafeBuildFromUserSelection()
 				BacktestSpreadModeler spreadModeler;
 				// kept it on the surface and didn't pass ScriptContextCurrent.SpreadModelerPercent to "new DataSourceAsLivesimNullUnsafe()" because later DataSourceAsLivesimNullUnsafe:
 				// 1) will support different SpreadModelers with not only 1 parameter like SpreadModelerPercentage;
@@ -91,31 +75,32 @@ namespace Sq1.Core.Livesim {
 						spreadModeler = new BacktestSpreadModelerPercentage(base.Executor.Strategy.ScriptContextCurrent.SpreadModelerPercent);
 						break;
 				}
-				this.DataSourceAsLivesimNullUnsafe.Initialize(base.BarsSimulating, spreadModeler);
-				#endregion
-
-		//[JsonIgnore]			DataSource		datasource_preLivesim;
-				this.StreamingOriginal = this.Executor.DataSource.StreamingAdapter;
-
-				base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;
-				
 				// each time I change bars on chart switching to 
 				//LivesimStreaming streamingAsLivesimChild = this.DataSourceAsLivesimNullUnsafe.StreamingAdapter_instantiatedForLivesim;
 				//LivesimBroker		brokerAsLivesimChild = this.DataSourceAsLivesimNullUnsafe.BrokerAdapter_instantiatedForLivesim;
 				//this.RedirectDataSource_reactivateLivesimsWithLivesimDataSource(streamingAsLivesimChild, brokerAsLivesimChild);
-				this.DataSourceAsLivesimNullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();
-
-				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.InitializeLivesim(this.DataSourceAsLivesimNullUnsafe, this.StreamingOriginal);
-				this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
-
-				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
-				//v1 bool chartIsSubscribed_toBarsOriginal = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
-				//v2
-			    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
+				this.DataSourceAsLivesimNullUnsafe.PropagatePreInstantiatedLivesimAdapter_intoLivesimDataSource();	// no need to restore (this.DataSourceAsLivesimNullUnsafe will be re-initialized at next Livesim)
+				base.BarsSimulating.DataSource = this.DataSourceAsLivesimNullUnsafe;	// will need to restore (base.BarsSimulating is not needed after Livesim is done)
+				this.DataSourceAsLivesimNullUnsafe.Initialize(base.BarsSimulating, spreadModeler);
+				this.StreamingOriginal = this.Executor.DataSource.StreamingAdapter;		// will have to restore
+				
+				if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe != null) {
+					string msg = "LivesimStreaming_HAS_REFERENCE_TO_LivesimDataSource_SHOULD_BE_NO_NPE_IN_eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree";
+					Assembler.PopupException(msg, null, false);
+				}
+				// now I have those two assigned from Streaming/Broker-own-implemented instantiated adapters
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.InitializeLivesim	(this.DataSourceAsLivesimNullUnsafe, this.StreamingOriginal);
+				this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize			(this.DataSourceAsLivesimNullUnsafe);
+				// now I route QuoteGenerator to QuikStreamingLivesim (provided by QuikStreaming) DdeClient pushing to DdeServer into QuikStreaming
+				// LIVESIM_GENERATED_QUOTES_REACH_STRATEGY_VIA_DISTRIBUTOR_IN_LIVESIM_STREAMING__OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
+				//v1  WILL_BE_SILENT__TUNNELING_TO_DDE_ONLY DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
+				//v2 original Streaming will receive quotes from DDE and continue 1) ChartShadow.InvalidatePanelAll() and 2) Executor.invokeStrategy
+			    DataDistributor distr = this.StreamingOriginal.DataDistributor;
 				bool chartIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count > 0;
 				if (chartIsSubscribed_toBarsSimulated == false) {
-				    distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
-				    distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, false);
+					bool willPumpInNewThread = false;	// false led to deadlock on BeginInvoke both in DDE Server and in my GuiThread
+				    distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, willPumpInNewThread);
+				    distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, willPumpInNewThread);
 				    //streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
 
 				    // QuikLivesimStreaming should instantiate the Real QuikStreaming with a DDE server and then connect to it; parent's Livesim probably must ignore this pseudo-Event
@@ -191,11 +176,11 @@ namespace Sq1.Core.Livesim {
 					//	streamingBacktest, base.BarsOriginal.Symbol, base.BarsOriginal.ScaleInterval);
 				}
 
-				// LIVESIM_OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
-				//v1 bool chartIsSubscribed_toBarsOriginal = this.Executor.Strategy.ScriptContextCurrent.IsStreaming;
-				//v2
-			    DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
-				bool chartIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count > 0;	// MUST_BE distr.DistributionChannels.Count=1
+				// LIVESIM_GENERATED_QUOTES_REACH_STRATEGY_VIA_DISTRIBUTOR_IN_LIVESIM_STREAMING__OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
+				//v1  WILL_BE_SILENT__TUNNELING_TO_DDE_ONLY DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
+				//v2 original Streaming will receive quotes from DDE and continue 1) ChartShadow.InvalidatePanelAll() and 2) Executor.invokeStrategy
+			    DataDistributor distr = this.StreamingOriginal.DataDistributor;
+				bool chartIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count == 1;	// MUST_BE distr.DistributionChannels.Count=1
 				if (chartIsSubscribed_toBarsSimulated) {
 				    distr.ConsumerQuoteUnsubscribe(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
 				    distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
@@ -212,6 +197,8 @@ namespace Sq1.Core.Livesim {
 				//	msg += "BacktestContextRestore will DisplayStatus how many StrokesPerBar was backtested; but since in GUI thread QuoteGenerator will be reset, I do equality check here :(";
 				//	Assembler.PopupException(msg2);
 				//}
+
+				this.Executor.DataSource.StreamingAdapter = this.StreamingOriginal;
 
 				double sec = Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);
 				string strokesPerBar = base.QuotesGenerator.BacktestStrokesPerBar + "/Bar";
@@ -350,18 +337,5 @@ namespace Sq1.Core.Livesim {
 			string ret = TO_STRING_PREFIX + base.Executor.ToString();
 			return ret;
 		}
-
-		// MOVED_TO_BASE
-		//public override void Dispose() {
-		//    if (base.IsDisposed) {
-		//        string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
-		//        Assembler.PopupException(msg);
-		//        return;
-		//    }
-		//    base.Dispose();
-		//    // ALREADY_SET_IN_BACKTESTER_BASE this.IsDisposed = true;
-		//}
-		//public bool IsDisposed { get; private set; }
-
 	}
 }

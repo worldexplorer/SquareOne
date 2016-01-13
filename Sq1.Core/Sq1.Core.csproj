@@ -99,6 +99,7 @@
     <Compile Include="Charting\ChartShadow.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Charting\ChartStreamingConsumer.cs" />
     <Compile Include="Charting\DictionaryManyToOne.cs" />
     <Compile Include="Charting\HostPanelForIndicator.cs" />
     <Compile Include="Charting\MultiSplitterProperties.cs" />

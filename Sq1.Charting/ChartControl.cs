@@ -13,6 +13,7 @@ using Sq1.Core.Charting;
 using Sq1.Core.DataFeed;
 
 using Sq1.Charting.MultiSplit;
+using Sq1.Core.Livesim;
 
 namespace Sq1.Charting {
 	public partial class ChartControl {
@@ -291,6 +292,7 @@ namespace Sq1.Charting {
 			this.Bars.SymbolInfo.PriceDecimalsChanged	+= new EventHandler<EventArgs>(bars_symbolInfo_PriceDecimalsChanged);
 
 			if (Assembler.IsInitialized == false) return;	// ChartForm: avoiding Designer's complains about Assembler.Initialized==false
+			if (this.Bars.DataSource is LivesimDataSource) return;
 			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone -= new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
 			Assembler.InstanceInitialized.RepositoryJsonDataSource.OnSymbolRemovedDone += new EventHandler<DataSourceSymbolEventArgs>(repositoryJsonDataSource_OnSymbolRemoved_clearChart);
 		}

@@ -38,12 +38,23 @@ namespace Sq1.Core.Streaming {
 			return barStreamingBound;
 		}
 		public Quote BindQuote(Quote quoteCloneSernoEnrichedFactoryUnattachedStreamingBar) {
-			Bars bars = this.Consumer.ConsumerBarsToAppendInto;
+			if (this.Consumer is StreamingSolidifier) {
+				string msg = "StreamingSolidifier will attach Quote to the Bar itself";
+				//Assembler.PopupException(msg);
+				return quoteCloneSernoEnrichedFactoryUnattachedStreamingBar;
+			}
+
+			Bars bars = null;
+			try {
+				bars = this.Consumer.ConsumerBarsToAppendInto;
+			} catch (Exception ex) {
+				string msg = "CONSUMER_DIDNT_PROVIDE_BARS_TO_APPEND_INTO this.Consumer[" + this.Consumer + "]";
+				Assembler.PopupException(msg);
+				return quoteCloneSernoEnrichedFactoryUnattachedStreamingBar;
+			}
 			if (bars == null) {
-				if ((this.Consumer is StreamingSolidifier) == false) {
-					string msg = "CHECK_UPSTACK_WHETHER_CONSUMER_BARS_ARE_NULL StreamingSolidifier will attach the Bar itself";
-					Assembler.PopupException(msg);
-				}
+				string msg = "BARS_MUST_NOT_BE_NULL CANT_BIND_QUOTE CHECK_UPSTACK";
+				Assembler.PopupException(msg);
 				return quoteCloneSernoEnrichedFactoryUnattachedStreamingBar;
 			}
 //			if (this.consumer.ConsumerBarsToAppendInto.BarStreaming != null) {
