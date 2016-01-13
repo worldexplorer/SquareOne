@@ -141,7 +141,7 @@ namespace Sq1.Gui.Forms {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
 			try {
 				if (this.btnStreamingTriggersScript.Checked) {
-					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStart();
+					this.ChartFormManager.ChartForm.ChartControl.ChartStreamingConsumer.StreamingTriggeringScriptStart();
 					// same idea as in mniSubscribedToStreamingAdapterQuotesBars_Click();
 					ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
 					if (	this.ChartFormManager.Executor.Strategy != null
@@ -152,7 +152,7 @@ namespace Sq1.Gui.Forms {
 						this.ChartFormManager.BacktesterRunSimulation();
 					}
 				} else {
-					this.ChartFormManager.ChartStreamingConsumer.StreamingTriggeringScriptStop();
+					this.ChartFormManager.ChartForm.ChartControl.ChartStreamingConsumer.StreamingTriggeringScriptStop();
 				}
 				this.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 				if (this.ChartFormManager.Strategy != null) {
@@ -408,7 +408,7 @@ namespace Sq1.Gui.Forms {
 
 				string reason = "mniSubscribedToStreamingAdapterQuotesBars.Checked[" + this.mniSubscribedToStreamingAdapterQuotesBars.Checked + "]";
 				if (this.mniSubscribedToStreamingAdapterQuotesBars.Checked) {
-					this.ChartFormManager.ChartStreamingConsumer.StreamingSubscribe(reason);
+					this.ChartFormManager.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
 					if (this.ChartFormManager.Strategy != null
 							// GET_IT_FROM_SCRIPT_NOT_CHART_ALTHOUGH_SAME_POINTER && ctxChart.IsStreamingTriggeringScript
 							&& this.ChartFormManager.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript
@@ -419,7 +419,8 @@ namespace Sq1.Gui.Forms {
 						this.ChartFormManager.BacktesterRunSimulation();
 					}
 				} else {
-					this.ChartFormManager.ChartStreamingConsumer.StreamingUnsubscribe(reason);
+					this.ChartFormManager.ChartForm.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(reason);
+					this.ChartFormManager.ChartForm.ChartControl.ScriptExecutorObjects.QuoteLast = null;
 				}
 
 				bool nowStreaming = ctxChart.IsStreaming;

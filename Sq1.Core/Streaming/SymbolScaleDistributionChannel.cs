@@ -21,7 +21,7 @@ namespace Sq1.Core.Streaming {
 		//		2) pause the Live trading and re-Backtest with new parameters imported from Sequencer, and continue Live with them (handling open positions at the edge NYI)
 		//NB#2	QuotePump.PushConsumersPaused will freeze max all opened charts and one Solidifier per DataSource:Symbol:ScaleInterval;
 		//		ability to control on per-consumer level costs more, including dissync between Solidifier.BarsStored and Executor.BarsInMemory
-		public	QuoteQueuePerChannel						QuotePump						{ get; protected set; }
+		public	QuoteQueuePerChannel			QuotePump						{ get; protected set; }
 
 		SymbolScaleDistributionChannel() {
 			lockConsumersQuote	= new object();
@@ -37,9 +37,9 @@ namespace Sq1.Core.Streaming {
 			// moved BacktesterRunningAdd() to QuotePump.PushConsumersPaused = true;
 		}
 		public SymbolScaleDistributionChannel(string symbol, BarScaleInterval scaleInterval, bool quotePumpSeparatePushingThreadEnabled) : this() {
-			Symbol = symbol;
-			ScaleInterval = scaleInterval;
-			StreamingBarFactoryUnattached = new StreamingBarFactoryUnattached(symbol, ScaleInterval);
+			this.Symbol = symbol;
+			this.ScaleInterval = scaleInterval;
+			this.StreamingBarFactoryUnattached = new StreamingBarFactoryUnattached(symbol, ScaleInterval);
 
 			//v1
 			//// delayed start to 1) give BacktestStreaming-created channels to not start PumpThread (both architecturally and for linear call stack in debugger)
@@ -52,9 +52,9 @@ namespace Sq1.Core.Streaming {
 			//QuotePump = new QuotePumpPerChannel(this, quotePumpSeparatePushingThreadEnabled);
 			//v3 UNMESSING_QuotePump
 			if (quotePumpSeparatePushingThreadEnabled) {
-				QuotePump = new QuotePumpPerChannel(this);
+				this.QuotePump = new QuotePumpPerChannel(this);
 			} else {
-				QuotePump = new QuoteQueuePerChannel(this);
+				this.QuotePump = new QuoteQueuePerChannel(this);
 			}
 		}
 		public void PushQuoteToPump(Quote quote2bClonedForEachConsumer) {
@@ -138,7 +138,7 @@ namespace Sq1.Core.Streaming {
 			string msig = " //bindConsumeLastStaticFormed() " + this.ToString();
 			Bar barStreamingUnattached = this.StreamingBarFactoryUnattached.BarStreamingUnattached.Clone();
 			if (this.consumersBar.Count == 0) {
-				string msg = "NO_BARS_CONSUMERS__NOT_PUSHING lastBarFormed[" + barStreamingUnattached.ToString() + "]";
+				string msg = "NO_BARS_CONSUMERS__NOT_PUSHING lastBarFormed[" + barStreamingUnattached + "]";
 				Assembler.PopupException(msg + msig, null, false);
 				return;
 			}
@@ -175,6 +175,16 @@ namespace Sq1.Core.Streaming {
 				//}
 				#endregion
 				#endif
+
+				if (barConsumer is StreamingSolidifier) {
+					try {
+						barConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(barStreamingUnattached, quoteSernoEnrichedWithUnboundStreamingBar);
+					} catch (Exception ex) {
+						string msg = "BOUND_BAR_PUSH_FAILED " + barStreamingUnattached.ToString();
+						Assembler.PopupException(msg + msig, ex);
+					}
+					continue;
+				}
 				
 				if (barConsumer.ConsumerBarsToAppendInto == null) {
 					//try {
@@ -231,7 +241,6 @@ namespace Sq1.Core.Streaming {
 				} catch (Exception ex) {
 					string msg = "BOUND_BAR_PUSH_FAILED " + barStreamingAttached.ToString();
 					Assembler.PopupException(msg + msig, ex);
-					continue;
 				}
 			}
 		}
@@ -378,6 +387,12 @@ namespace Sq1.Core.Streaming {
 				if (this.backtestersRunningCausingPumpingPause.Count == 1) {
 					addedFirstBacktester = true;
 				}
+			}
+			if (this.QuotePump is QuoteQueuePerChannel && backtesterAdding is Sq1.Core.Livesim.Livesimulator) {
+				string msg = "NOPROB__YOU_SUBSCRIBED_LIVESIM_BARS_IN_SINGLE_THREADED_QUEUE SimulationPreBarsSubstitute_overrideable()<=Livesimulator.cs:105"
+					+ "NO_NEED_TO_PAUSE_COMPETITORS NO_COMPETITORS_FOR_LIVESIM_BAR_EVENTS";
+				Assembler.PopupException(msg, null, false);
+				return;
 			}
 			if (this.QuotePump.Paused == true) {
 				if (addedFirstBacktester) {

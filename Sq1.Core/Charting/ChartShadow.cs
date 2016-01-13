@@ -28,27 +28,28 @@ namespace Sq1.Core.Charting {
 	{
 		// REASON_TO_EXIST: renderOnChartLines() was throwing "Dictionary.CopyTo target array wrong size" during backtest & chartMouseOver
 		// push-type notification from Backtester: ChartControl:ChartShadow doen't have access to Core.ScriptExecutor.BacktestIsRunning so Backtester mimics it here 
-		public ManualResetEvent paintAllowed { get; private set; }
-		public bool PaintAllowedDuringLivesimOrAfterBacktestFinished {
+		public	ManualResetEvent		paintAllowed			{ get; private set; }
+		public	bool					PaintAllowedDuringLivesimOrAfterBacktestFinished {
 			get { return this.paintAllowed.WaitOne(0); }
 			set {	if (value)	this.paintAllowed.Set();
 					else		this.paintAllowed.Reset(); }
 		}
 
-		public Bars				Bars			{ get; private set; }
-		public bool				BarsEmpty		{ get { return this.Bars == null || this.Bars.Count == 0; } }
-		public bool				BarsNotEmpty	{ get { return this.Bars != null && this.Bars.Count > 0; } }
-		public ScriptExecutor	Executor		{ get; private set; }
+		public	Bars					Bars					{ get; private set; }
+		public	bool					BarsEmpty				{ get { return this.Bars == null || this.Bars.Count == 0; } }
+		public	bool					BarsNotEmpty			{ get { return this.Bars != null && this.Bars.Count > 0; } }
+		public	ScriptExecutor			Executor				{ get; private set; }
+		public	ChartStreamingConsumer	ChartStreamingConsumer	{ get; private set; }
 
-		public Color			ColorBackground_inDataSourceTree;
+		public	Color					ColorBackground_inDataSourceTree;
 
 		public ChartShadow() : base() {
 			paintAllowed = new ManualResetEvent(true);
-//			this.ScriptToChartCommunicator = new ScriptToChartCommunicator();
-			this.Register();
+			this.register();
 			this.ColorBackground_inDataSourceTree = Color.White;
+			this.ChartStreamingConsumer		= new ChartStreamingConsumer(this);
 		}
-		public void Register(bool dontAccessAssemblerWhileInDesignMode = false) {
+		void register(bool dontAccessAssemblerWhileInDesignMode = false) {
 			if (base.DesignMode) return;
 			if (dontAccessAssemblerWhileInDesignMode) return;
 			if (Assembler.InstanceUninitialized.StatusReporter == null) return;
@@ -58,20 +59,20 @@ namespace Sq1.Core.Charting {
 			this.Executor = executor;
 		}
 		public virtual void Initialize(Bars barsNotNull, string strategySavedInChartSettings, bool removeChartShadowFromOldSymbolAndAddToLoadingBars = false, bool invalidateAllPanels = true) {
-			#region I loaded bars by click on the DataSourceTree=>Symbol; I want the ChartName to move from previous symbol to barsNotNull.Symbol
-			// 1) ChartDeserialization
-			// 2) Backtester.InitializeAndRun_step1or2()
-			// 3) LIVESIM_START Livesimulator.executor_BacktesterContextInitializedStep2of4()
-			// 4) LIVESIM_END Livesimulator.afterBacktesterComplete()
+		    #region I loaded bars by click on the DataSourceTree=>Symbol; I want the ChartName to move from previous symbol to barsNotNull.Symbol
+		    // 1) ChartDeserialization
+		    // 2) Backtester.InitializeAndRun_step1or2()
+		    // 3) LIVESIM_START Livesimulator.executor_BacktesterContextInitializedStep2of4()
+		    // 4) LIVESIM_END Livesimulator.afterBacktesterComplete()
 
-			if (removeChartShadowFromOldSymbolAndAddToLoadingBars && this.Bars != null)	this.ChartShadow_RemoveFromDataSource();
-			this.Bars = barsNotNull;
-			if (removeChartShadowFromOldSymbolAndAddToLoadingBars)						this.ChartShadow_AddToDataSource();
-			#endregion
+		    if (removeChartShadowFromOldSymbolAndAddToLoadingBars && this.Bars != null)	this.ChartShadow_RemoveFromDataSource();
+		    this.Bars = barsNotNull;
+		    if (removeChartShadowFromOldSymbolAndAddToLoadingBars)						this.ChartShadow_AddToDataSource();
+		    #endregion
 
-			// ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
-			this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
-			this.Bars.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
+		    // ChartForm wants to update last received quote datetime; FOR_NON_CORE_CONSUMERS_ONLY CORE_DEFINED_CONSUMERS_IMPLEMENT_IStreamingConsumer.ConsumeQuoteOfStreamingBar()
+		    this.Bars.BarStreamingUpdatedMerged -= new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
+		    this.Bars.BarStreamingUpdatedMerged += new EventHandler<BarEventArgs>(bars_BarStreamingUpdatedMerged);
 		}
 		
 		void bars_BarStreamingUpdatedMerged(object sender, BarEventArgs e) {
@@ -141,7 +142,7 @@ namespace Sq1.Core.Charting {
 		public abstract void RefreshAllPanelsNonBlockingRefreshNotYetStarted();
 		*/
 
-		// will let you open ChartControl in windows forms Designer (remove "abstract" from class declaration as well) 
+		#region VIRTUAL instead of ABSTRACT will let you open ChartControl in windows forms Designer (remove "abstract" from class declaration as well)
 		public virtual void ClearAllScriptObjectsBeforeBacktest() { }
 
 		public virtual void PositionsBacktestAdd(List<Position> positionsMaster) { }
@@ -177,12 +178,15 @@ namespace Sq1.Core.Charting {
 		// RELEASE_DOESNT_REPAINT_CHART_LIVESIM_DELAYED ALREADY_HANDLED_BY_chartControl_BarAddedUpdated_ShouldTriggerRepaint
 		public virtual void InvalidateAllPanels() { }
 		//public virtual void RefreshAllPanelsNonBlockingRefreshNotYetStarted() { }
+		#endregion
+
+
 
 		protected override void Dispose(bool disposing) {
 			base.Dispose(disposing);
 			this.Dispose();
 		}
-		public void Dispose() {
+		void IDisposable.Dispose() {
 			if (this.IsDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
 				Assembler.PopupException(msg);

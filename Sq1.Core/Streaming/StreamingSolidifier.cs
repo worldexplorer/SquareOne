@@ -24,7 +24,7 @@ namespace Sq1.Core.Streaming {
 			this.barStreamingLastDumpedLocal = DateTime.MinValue;
 		}
 
-		Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { throw new Exception("DONT_EARLYBIND_FOR_TYPE_STREAMING_SOLIDIFIER"); } }
+		Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { throw new Exception("YOU_SHOULD_NOT_ACCESS_BARS_OF_STREAMING_SOLIDIFIER__THEY_ARE_WRITE_ONLY_THOUGH_SOLIDIFIER_METHODS"); } }
 
 		void IStreamingConsumer.UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
 		}

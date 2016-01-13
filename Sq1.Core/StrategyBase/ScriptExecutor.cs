@@ -1423,7 +1423,6 @@ namespace Sq1.Core.StrategyBase {
 			// only to reset the Glyphs and Positions
 			//this.ChartForm.Chart.Renderer.InitializeBarsInvalidateChart(this.Executor);
 			//this.Executor.Renderer.InitializeBarsInvalidateChart(this.Executor);
-			//this.ChartShadow.ScriptToChartCommunicator.PositionsBacktestClearAfterChartPickedUp();
 			if (this.ChartShadow != null) this.ChartShadow.ClearAllScriptObjectsBeforeBacktest();
 
 			//if (this.Strategy.ActivatedFromDll) {

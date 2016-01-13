@@ -114,7 +114,6 @@
     <Compile Include="Forms\ChartFormDataSnapshot.cs" />
     <Compile Include="Forms\ChartFormManager.cs" />
     <Compile Include="Forms\ChartFormInterformEventsConsumer.cs" />
-    <Compile Include="Forms\ChartFormStreamingConsumer.cs" />
     <Compile Include="Forms\CorrelatorForm.EventConsumer.cs">
       <DependentUpon>CorrelatorForm.cs</DependentUpon>
       <SubType>Form</SubType>

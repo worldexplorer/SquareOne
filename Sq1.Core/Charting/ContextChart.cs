@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Text;
 
-using Sq1.Core.DataTypes;
 using Newtonsoft.Json;
+
+using Sq1.Core.DataTypes;
 
 namespace Sq1.Core.StrategyBase {
 	public class ContextChart {
