@@ -4,23 +4,21 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.ComponentModel;
-using System.Threading;
 using System.Diagnostics;		//Stopwatch
+using System.Threading;
+using System.Threading.Tasks;
 
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
+using Sq1.Core.DataFeed;
 
+using Sq1.Widgets.RangeBar;
 using Sq1.Widgets.LabeledTextBox;
 
 using Sq1.Gui.Singletons;
-
-using Sq1.Widgets.RangeBar;
-using Sq1.Core.DataFeed;
-using System.Threading.Tasks;
-
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
@@ -237,6 +235,7 @@ namespace Sq1.Gui.Forms {
 			this.mniBarsStoredScaleInterval.Text = barsClickedUpstack != null
 				? barsClickedUpstack.ScaleInterval.ToString() + " Minimun"
 				: "[MIN_SCALEINTERVAL_UNKNOWN]";
+			this.mniBarsSymbolDataSource.Text = barsClickedUpstack.SymbolAndDataSource;
 
 			// WAS_METHOD_PARAMETER_BUT_ACCESSIBLE_LIKE_THIS__NULL_CHECK_DONE_UPSTACK
 			ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
@@ -254,16 +253,40 @@ namespace Sq1.Gui.Forms {
 			this.btnStreamingTriggersScript.Checked = ctxChart.IsStreamingTriggeringScript;
 
 			ContextScript ctxScript = ctxChart as ContextScript;
-			if (ctxScript == null) return;
+			if (ctxScript == null) {
+				this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Checked = false;
+				this.mniBacktestOnDataSourceSaved								.Checked = false;
+				this.mniBacktestOnRestart										.Checked = false;
+				this.mniBacktestOnSelectorsChange								.Checked = false;
+				this.btnStrategyEmittingOrders									.Checked = false;
+				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = false;
+
+				this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Enabled = false;
+				this.mniBacktestOnDataSourceSaved								.Enabled = false;
+				this.mniBacktestOnRestart										.Enabled = false;
+				this.mniBacktestOnSelectorsChange								.Enabled = false;
+				this.btnStrategyEmittingOrders									.Enabled = false;
+				this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Enabled = false;
+				
+				this.btnStreamingTriggersScript									.Enabled = false;
+				return;
+			}
 			
 			this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Checked = ctxScript.BacktestOnTriggeringYesWhenNotSubscribed;
 			this.mniBacktestOnDataSourceSaved								.Checked = ctxScript.BacktestOnDataSourceSaved;	// looks redundant here
 			this.mniBacktestOnRestart										.Checked = ctxScript.BacktestOnRestart;
 			this.mniBacktestOnSelectorsChange								.Checked = ctxScript.BacktestOnSelectorsChange;
-
 			this.btnStrategyEmittingOrders									.Checked = ctxScript.StrategyEmittingOrders;
 			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Checked = ctxScript.MinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim;
 
+			this.mniBacktestOnTriggeringYesWhenNotSubscribed				.Enabled = true;
+			this.mniBacktestOnDataSourceSaved								.Enabled = true;
+			this.mniBacktestOnRestart										.Enabled = true;
+			this.mniBacktestOnSelectorsChange								.Enabled = true;
+			this.btnStrategyEmittingOrders									.Enabled = true;
+			this.mniMinimizeAllReportersGuiExtensiveForTheDurationOfLiveSim .Enabled = true;
+
+			this.btnStreamingTriggersScript									.Enabled = true;
 			this.PropagateContextScriptToLTB(ctxScript);
 		}
 		
@@ -403,7 +426,12 @@ namespace Sq1.Gui.Forms {
 			this.ctxStrokesPopulateOrSelectCurrent();
 		}
 
-		public void Initialize(bool containsStrategy, bool strategyActivatedFromDll = false) {
+		public void Initialize(Strategy strategy = null) {
+			this.mniStrategyName.Text = strategy == null ? "[NO_STRATEGY_LOADED]" : strategy.NameAndDll;
+
+			bool containsStrategy = strategy != null;
+			bool strategyActivatedFromDll = (strategy != null && strategy.ActivatedFromDll) ? true : false;
+
 			this.DdbStrategy.Enabled = containsStrategy;
 			this.DdbBacktest.Enabled = containsStrategy;
 			//this.btnStrategyEmittingOrders.Enabled = containsStrategy;
