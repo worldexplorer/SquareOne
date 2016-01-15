@@ -23,18 +23,16 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 												+ "2) instantiate QuikStreaming and make it run its DDE server "
 												+ "3) push quotes generated using DDE client";
 
-		[JsonIgnore]	string	ddeTopicsPrefix = "QuikLiveSim-";
-
 		[JsonIgnore]	public	QuikLivesimBatchPublisher	QuikLivesimBatchPublisher;
 
-		[JsonIgnore]			ConcurrentDictionaryGeneric<double, double> LevelTwoAsks	{ get { return base.StreamingDataSnapshot.LevelTwoAsks; } }
-		[JsonIgnore]			ConcurrentDictionaryGeneric<double, double> LevelTwoBids	{ get { return base.StreamingDataSnapshot.LevelTwoBids; } }
+		[JsonIgnore]			ConcurrentDictionaryGeneric<double, double> LevelTwoAsks	{ get { return base.StreamingDataSnapshot.LevelTwoAsks_refactorBySymbol; } }
+		[JsonIgnore]			ConcurrentDictionaryGeneric<double, double> LevelTwoBids	{ get { return base.StreamingDataSnapshot.LevelTwoBids_refactorBySymbol; } }
 
-		[JsonIgnore]	public	QuikStreaming	QuikStreamingOriginal						{ get { return base.StreamingAdapterOriginal as QuikStreaming; } }
+		[JsonIgnore]	public	QuikStreaming	QuikStreamingOriginal						{ get { return base.StreamingOriginal as QuikStreaming; } }
 		[JsonIgnore]			bool			ddeWasStarted_preLivesim;
 
 		public QuikStreamingLivesim() : base(true) {
-			base.Name = "QuikStreamingLivesim-InstantiatedFromDll";
+			base.Name = "QuikStreamingLivesim";
 			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Streaming.Livesim.Properties.Resources.imgQuikStreamingLivesim;
 
 			//NO_DESERIALIZATION_WILL_THROW_YOULL_NULLIFY_ME_IN_UpstreamConnect YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
@@ -43,17 +41,6 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			this.Level2generator = new LevelTwoGenerator();		// this one has it's own LevelTwoAsks,LevelTwoBids NOT_REDIRECTED to StreamingDatasnapshot => sending Level2 via DDE to QuikStreaming.StreamingDatasnapshot
 		}
 
-		public void InitializeDataSource(LivesimDataSource livesimDataSource, bool subscribeSolidifier = true) {
-			base.Name = "QuikStreamingLivesim-initializedWithLivesimDataSource";
-			//base.Icon = (Bitmap)Sq1.Adapters.Quik.Streaming.Livesim.Properties.Resources.imgQuikStreamingLivesim;
-			base.InitializeDataSource(livesimDataSource, subscribeSolidifier);
-		}
-
-		//public override void Initialize(DataSource deserializedDataSource) {
-		//    base.Name = "QuikStreamingLivesim";
-		//    base.Initialize(deserializedDataSource);
-		//}
-
 		protected override void SolidifierAllSymbolsSubscribe() {
 			string msg = "OTHERWIZE_BASE_WILL_SUBSCRIBE_SOLIDIFIER LIVESIM_MUST_NOT_SAVE_ANY_BARS";
 		}
@@ -61,13 +48,10 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		public override void UpstreamConnect_LivesimStarting() {
 			string msig = " //UpstreamConnect_LivesimStarting(" + this.ToString() + ")";
 
-			this.ddeWasStarted_preLivesim = this.QuikStreamingOriginal.StreamingConnected;
-
-			//this.QuikStreamingOriginal.SolidifierUnsubscribeOneSymbol_imLivesimming();
 			base.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
-
-
 			this.QuikStreamingOriginal.InitializeDataSource(base.Livesimulator.DataSourceAsLivesimNullUnsafe, false);	//LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor
+	
+			this.ddeWasStarted_preLivesim = this.QuikStreamingOriginal.StreamingConnected;
 			if (this.ddeWasStarted_preLivesim == false) {
 				this.QuikStreamingOriginal.UpstreamConnect();
 			}
@@ -82,12 +66,12 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			//    string msg1 = "MUST_BE_NULL__ONLY_INITIALIZED_FOR_MarketLive_FOR_A_LIVESIM_SESSION__OTHERWIZE_MUST_BE_NULL";
 			//    Assembler.PopupException(msg1);
 			//}
-			this.StreamingDataSnapshot = this.QuikStreamingOriginal.StreamingDataSnapshot;
+			//NOT_USED_IN_LIVESIM_SINCE_NO_PUSH_QUOTE_INVOKED this.StreamingDataSnapshot = this.QuikStreamingOriginal.StreamingDataSnapshot;
 
 			this.QuikLivesimBatchPublisher = new QuikLivesimBatchPublisher(this);
 			this.QuikLivesimBatchPublisher.ConnectAll();
-			//string msg = "ALL_DDE_CLIENTS_CONNECTED[" + this.QuikStreamingPuppet.DdeServiceName + "] TOPICS[" + this.QuikStreamingPuppet.DdeBatchSubscriber.TopicsAsString + "]";
-			//Assembler.PopupException(msg + msig, null, false);
+			string msg = "DDE_CLIENT_PUBLISHING_TOPICS [" + this.QuikLivesimBatchPublisher.TopicsAsString + "]";
+			Assembler.PopupException(msg + msig, null, false);
 		}
 
 		public override void UpstreamDisconnect_LivesimEnded() {
@@ -110,12 +94,12 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
 			//second Livesim gets NPE - fixed but the caveat is when you clicked on "stopping" disabled button, new livesim restarts with lots of NPE...)
-			if (base.Livesimulator.RequestingBacktestAbort.WaitOne(0) == true) {
+			if (base.Livesimulator.RequestingBacktestAbortMre.WaitOne(0) == true) {
 				string msg = "MUST_NEVER_HAPPEN PUSHING_QUOTE_DENERATED_AFTER_LIVESIM_REQUESTED_TO_STOP";
 				Assembler.PopupException(msg);
 				return;
 			}
-			if (base.Livesimulator.BacktestAborted.WaitOne(0) == true) {
+			if (base.Livesimulator.BacktestAbortedMre.WaitOne(0) == true) {
 				string msg = "MUST_NEVER_HAPPEN PUSHING_QUOTE_DENERATED_AFTER_LIVESIM_CONFIRMED_TO_STOP";
 				Assembler.PopupException(msg);
 				return;
@@ -123,11 +107,11 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 
 
 			#region otherwize LivesimulatorForm.PAUSE button doesn't pause livesim (copypaste from LivesimStreaming)
-			bool isUnpaused = this.Unpaused.WaitOne(0);
+			bool isUnpaused = this.UnpausedMre.WaitOne(0);
 			if (isUnpaused == false) {
 				string msg = "QuikLIVESTREAMING_CAUGHT_PAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
 				//Assembler.PopupException(msg, null, false);
-				this.Unpaused.WaitOne();	// 1CORE=100% while Livesim Paused
+				this.UnpausedMre.WaitOne();	// 1CORE=100% while Livesim Paused
 
 
 				string msg2 = "QuikLIVESTREAMING_CAUGHT_UNPAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
@@ -148,7 +132,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 				string msg = "AVOIDING_NPE QuikLivesimBatchPublisher_WANST_CREATED_NORMALLY_IN_UpstreamConnect_LivesimStarting()";
 				Assembler.PopupException(msg);
 				//DONT_EVEN_WANNA_TRY_DEALOCK base.Livesimulator.AbortRunningBacktestWaitAborted();
-				base.Livesimulator.RequestingBacktestAbort.Set();
+				base.Livesimulator.RequestingBacktestAbortMre.Set();
 			}
 
 			

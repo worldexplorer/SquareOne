@@ -17,9 +17,6 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 	public class QuikLivesimBatchPublisher {
 				QuikStreamingLivesim			quikStreamingLivesim;
 
-				DdeClient						ddeClientDepth;
-				DdeClient						ddeClientTrades;
-
 				DdeTableGeneratorQuotes			ddeTableGeneratorQuotes;
 				DdeTableGeneratorDepth			ddeTableGeneratorDepth;
 				string							symbolSingleImLivesimmingDepth;
@@ -28,17 +25,22 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 				string							ddeTopicQuotes	{ get { return this.quikStreamingLivesim.QuikStreamingOriginal.DdeBatchSubscriber.TableQuotes.Topic; } }
 				string							ddeTopicDepth	{ get { return this.quikStreamingLivesim.QuikStreamingOriginal.DdeBatchSubscriber.GetDomTopicForSymbol(this.symbolSingleImLivesimmingDepth); } }
 
+		public	string							TopicsAsString { get {
+			string ret = "";
+			ret +=		this.ddeTableGeneratorQuotes.ToString();
+			ret += ","+ this.ddeTableGeneratorDepth .ToString();
+			return ret;
+		} }
+
 		public QuikLivesimBatchPublisher(QuikStreamingLivesim quikLivesimStreaming) {
-			this.quikStreamingLivesim	= quikLivesimStreaming;
-
-			this.ddeTableGeneratorQuotes		= new DdeTableGeneratorQuotes(this.ddeService,	this.ddeTopicQuotes	, this.quikStreamingLivesim);
-
+			this.quikStreamingLivesim		= quikLivesimStreaming;
+			this.ddeTableGeneratorQuotes	= new DdeTableGeneratorQuotes(this.ddeService,	this.ddeTopicQuotes	, this.quikStreamingLivesim);
 			if (this.quikStreamingLivesim.DataSource.Symbols.Count != 1) {
 				string msg = "LIVESIM_DATASOURCE_MUST_CONTAIN_ONE_SYMBOL_YOU_ARE_BACKTESTING";	// and in the future many symbols, for multi-symbol-within-same-datasource strategies
 				Assembler.PopupException(msg);
 			} else {
 				this.symbolSingleImLivesimmingDepth	= this.quikStreamingLivesim.DataSource.Symbols[0];
-				this.ddeTableGeneratorDepth			= new DdeTableGeneratorDepth (this.ddeService,	this.ddeTopicDepth	, this.quikStreamingLivesim);
+				this.ddeTableGeneratorDepth			= new DdeTableGeneratorDepth(this.ddeService,	this.ddeTopicDepth	, this.quikStreamingLivesim);
 			}
 		}
 
@@ -59,7 +61,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		}
 
 		public override string ToString() {
-			return "QuikLivesimDdeClient[" + this.ddeService + "]";
+			return "QuikLivesimDdeClient[" + this.ddeService + "] TOPICS[" + TopicsAsString + "]";
 		}
 
 		internal void ConnectAll() {

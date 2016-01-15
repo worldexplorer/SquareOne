@@ -18,7 +18,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
 			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format(symbolInfo.PriceFormat, this.FortsDepositBuy);
+			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.FortsDepositBuy);
 			return ret;
 		} }
 
@@ -28,7 +28,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
 			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format(symbolInfo.PriceFormat, this.FortsDepositSell);
+			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.FortsDepositSell);
 			return ret;
 		} }
 
@@ -39,7 +39,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
 			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format(symbolInfo.PriceFormat, this.FortsPriceMax);
+			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.FortsPriceMax);
 			return ret;
 		} }
 
@@ -49,7 +49,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
 			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format(symbolInfo.PriceFormat, this.FortsPriceMin);
+			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.FortsPriceMin);
 			return ret;
 		} }
 

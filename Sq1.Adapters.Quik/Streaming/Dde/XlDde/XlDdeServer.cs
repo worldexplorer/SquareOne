@@ -41,14 +41,14 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			XlDdeTable table = this.tablesByTopic[c.Topic];
 			c.Tag = table;
 			table.ReceivingDataDde = true;
-			string msg1 = "DDE_SERVER_CONNECTED_TO_TOPIC[" + c.Topic + "]";
+			string msg1 = "DDE_SERVER_CONNECTED[" + c.Topic + "]";
 			Assembler.PopupException(msg1 + msig, null, false);
 		}
 		protected override void OnDisconnect(DdeConversation c) {
 			string msig = " //OnDisconnect(" + c.Topic + ") " + this.ToString();
 			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
 			tableRecipient.ReceivingDataDde = false;
-			string msg = "DDE_SERVER_DISCONNECTED_FROM_TOPIC[" + c.Topic + "]";
+			string msg = "DDE_SERVER_DISCONNECTED[" + c.Topic + "]";
 			Assembler.PopupException(msg + msig, null, false);
 		}
 		protected override PokeResult OnPoke(DdeConversation c, string item, byte[] data, int format) { lock(this.lockSynchronousPoke) {	// NOT_NEEDED_BUT_I_WANT_TO_MAKE_SURE__REMOVE_IF_TOO_SLOW

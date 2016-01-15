@@ -70,8 +70,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 		}
 		public override string ToString() {
 			string ret = base.ToString();
-			ret += " " + this.DdeGeneratorClassName + "{Symbols["
-				+ this.QuikStreamingLivesim.StreamingDataSnapshot.SymbolsSubscribedAndReceiving + "]";
+			//ret += " " + this.DdeGeneratorClassName + "{Symbols[" + this.QuikStreamingLivesim.StreamingDataSnapshot.SymbolsSubscribedAndReceiving + "]";
 			return ret;
 		}
 	}

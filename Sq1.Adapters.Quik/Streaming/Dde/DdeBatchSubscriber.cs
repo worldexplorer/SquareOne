@@ -78,6 +78,17 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			if (individualChannels == "") individualChannels = " NO_DEPTHS_OF_MARKET";
 			return ret;
 		}
+		//public string TopicsAsString { get {
+		//    string ret = "";
+		//    ret +=		this.TableQuotes.Topic;
+		//    ret += ","+ this.TableTrades.Topic;
+		//    foreach (List<XlDdeTable> tables in this.individualTablesBySymbol.Values) {
+		//        foreach (XlDdeTable table in tables) {
+		//            ret += "," + table.Topic;
+		//        }
+		//    }
+		//    return ret;
+		//} }
 
 		void tables_CommonForAllSymbols_Add() {
 			this.TableQuotes = new DdeTableQuotes(this.quikStreamingAdapter.DdeServiceName + "-" + this.quikStreamingAdapter.DdeTopicQuotes
@@ -88,18 +99,6 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			this.quikStreamingAdapter.DdeServer.TableAdd(this.TableQuotes.Topic, this.TableQuotes);
 			this.quikStreamingAdapter.DdeServer.TableAdd(this.TableTrades.Topic, this.TableTrades);
 		}
-
-		public string TopicsAsString { get {
-			string ret = "";
-			ret +=		this.TableQuotes.Topic;
-			ret += ","+ this.TableTrades.Topic;
-			foreach (List<XlDdeTable> tables in this.individualTablesBySymbol.Values) {
-				foreach (XlDdeTable table in tables) {
-					ret += "," + table.Topic;
-				}
-			}
-			return ret;
-		} }
 
 		internal void AllDdeTablesReceivedCountersReset() {
 			this.TableQuotes.DdeTablesReceived = 0;

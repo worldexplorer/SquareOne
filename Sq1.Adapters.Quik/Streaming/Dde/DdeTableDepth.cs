@@ -12,8 +12,8 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 		string			symbol;
 
-		ConcurrentDictionaryGeneric<double, double> levelTwoAsks { get { return base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks; } }
-		ConcurrentDictionaryGeneric<double, double> levelTwoBids { get { return base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids; } }
+		ConcurrentDictionaryGeneric<double, double> levelTwoAsks { get { return base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks_refactorBySymbol; } }
+		ConcurrentDictionaryGeneric<double, double> levelTwoBids { get { return base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_refactorBySymbol; } }
 
 		public DdeTableDepth(string topic, QuikStreaming quikStreaming, List<XlColumn> columns, string symbol) : base(topic, quikStreaming, columns) {
 			this.symbol = symbol;
@@ -38,9 +38,9 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			double price		= (double)row["PRICE"];
 			double askVolume	= (double)row["BUY_VOLUME"];
 			if (double.IsNaN(bidVolume) == false) {		// where Blank become NaN?
-				base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids.Add(price, bidVolume, this, "IncomingRowParsedPush");
+				base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_refactorBySymbol.Add(price, bidVolume, this, "IncomingRowParsedPush");
 			} else {
-				base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks.Add(price, askVolume, this, "IncomingRowParsedPush");
+				base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks_refactorBySymbol.Add(price, askVolume, this, "IncomingRowParsedPush");
 			}
 		}
 	}

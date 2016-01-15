@@ -8,7 +8,6 @@ using NDde.Client;
 using Sq1.Core;
 
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
-using Sq1.Adapters.Quik.Streaming.Livesim;
 
 namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 	public abstract class XlDdeTableGenerator  : ISynchronizeInvoke {
@@ -67,7 +66,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 		}
 		internal void Disconnect() {
 			this.DdeClient.Disconnect();
-			string msg = "DDE_CLIENT_CONNECTED [" + this.DdeClient.Topic + "]";
+			string msg = "DDE_CLIENT_DISCONNECTED [" + this.DdeClient.Topic + "]";
 			Assembler.PopupException(msg, null, false);
 		}
 		internal void Dispose() {
@@ -113,7 +112,6 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 		}
 
 		object ISynchronizeInvoke.Invoke(Delegate method, object[] args) {
-			Application.DoEvents();
 			object ret = null;
 			ret = syncContext.Invoke(method, args);
 			return ret;
@@ -126,7 +124,9 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 
 
 		public override string ToString() {
-			return "Service[" + this.ddeService + "] Topic[" + this.ddeTopic + "]";
+			string connectedPaused = "DISCONNECTED";
+			if (this.DdeClient.IsConnected) connectedPaused = this.DdeClient.IsPaused ? "PAUSED" : "CONNECTED";
+			return "Topic[" + this.ddeTopic + "]:" + connectedPaused;
 		}
 	}
 }

@@ -76,7 +76,7 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-			this.splitContainer1.Size = new System.Drawing.Size(841, 487);
+			this.splitContainer1.Size = new System.Drawing.Size(858, 487);
 			this.splitContainer1.SplitterDistance = 144;
 			this.splitContainer1.TabIndex = 0;
 			// 
@@ -90,7 +90,7 @@
 			this.grpQuotes.Location = new System.Drawing.Point(9, 3);
 			this.grpQuotes.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
 			this.grpQuotes.Name = "grpQuotes";
-			this.grpQuotes.Size = new System.Drawing.Size(823, 132);
+			this.grpQuotes.Size = new System.Drawing.Size(840, 132);
 			this.grpQuotes.TabIndex = 0;
 			this.grpQuotes.TabStop = false;
 			this.grpQuotes.Text = "Quotes [Sq1-quotes]:26116";
@@ -129,7 +129,7 @@
 			this.OlvQuotes.Location = new System.Drawing.Point(6, 32);
 			this.OlvQuotes.Name = "OlvQuotes";
 			this.OlvQuotes.ShowGroups = false;
-			this.OlvQuotes.Size = new System.Drawing.Size(811, 94);
+			this.OlvQuotes.Size = new System.Drawing.Size(828, 94);
 			this.OlvQuotes.TabIndex = 2;
 			this.OlvQuotes.TintSortColumn = true;
 			this.OlvQuotes.UseCompatibleStateImageBehavior = false;
@@ -214,7 +214,7 @@
 			this.olvcQuotesAbsnoPerSymbol.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcQuotesAbsnoPerSymbol.Text = "Absno/Symbol";
 			this.olvcQuotesAbsnoPerSymbol.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.olvcQuotesAbsnoPerSymbol.Width = 30;
+			this.olvcQuotesAbsnoPerSymbol.Width = 52;
 			// 
 			// lblQuotesStatus
 			// 
@@ -241,7 +241,7 @@
 			// 
 			this.splitContainer2.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer2.Panel2.Controls.Add(this.grpTrades);
-			this.splitContainer2.Size = new System.Drawing.Size(841, 339);
+			this.splitContainer2.Size = new System.Drawing.Size(858, 339);
 			this.splitContainer2.SplitterDistance = 220;
 			this.splitContainer2.TabIndex = 0;
 			// 
@@ -255,7 +255,7 @@
 			this.grpDom.Location = new System.Drawing.Point(9, 3);
 			this.grpDom.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
 			this.grpDom.Name = "grpDom";
-			this.grpDom.Size = new System.Drawing.Size(823, 208);
+			this.grpDom.Size = new System.Drawing.Size(840, 208);
 			this.grpDom.TabIndex = 0;
 			this.grpDom.TabStop = false;
 			this.grpDom.Text = "Depths Of Market [Sq1-RIM3-dom]:3213 [Sq1-LKOH-dom]:5116";
@@ -268,7 +268,7 @@
 			this.flpDoms.BackColor = System.Drawing.SystemColors.Window;
 			this.flpDoms.Location = new System.Drawing.Point(6, 32);
 			this.flpDoms.Name = "flpDoms";
-			this.flpDoms.Size = new System.Drawing.Size(811, 170);
+			this.flpDoms.Size = new System.Drawing.Size(828, 170);
 			this.flpDoms.TabIndex = 3;
 			// 
 			// label1
@@ -290,7 +290,7 @@
 			this.grpTrades.Location = new System.Drawing.Point(9, 3);
 			this.grpTrades.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
 			this.grpTrades.Name = "grpTrades";
-			this.grpTrades.Size = new System.Drawing.Size(823, 103);
+			this.grpTrades.Size = new System.Drawing.Size(840, 103);
 			this.grpTrades.TabIndex = 0;
 			this.grpTrades.TabStop = false;
 			this.grpTrades.Text = "Trades [Sq1-trades]:41441";
@@ -302,7 +302,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.olvTrades.Location = new System.Drawing.Point(6, 32);
 			this.olvTrades.Name = "olvTrades";
-			this.olvTrades.Size = new System.Drawing.Size(811, 65);
+			this.olvTrades.Size = new System.Drawing.Size(828, 65);
 			this.olvTrades.TabIndex = 3;
 			this.olvTrades.UseCompatibleStateImageBehavior = false;
 			this.olvTrades.View = System.Windows.Forms.View.Details;
@@ -323,7 +323,7 @@
 			this.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.Controls.Add(this.splitContainer1);
 			this.Name = "QuikStreamingMonitorControl";
-			this.Size = new System.Drawing.Size(841, 487);
+			this.Size = new System.Drawing.Size(858, 487);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
