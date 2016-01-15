@@ -73,7 +73,15 @@ namespace Sq1.Core.StrategyBase {
 				if (this.ActivatedFromDll == true) ret += "-DLL";
 				return ret;
 			} }
-
+		[JsonIgnore]	public	string			NameAndDll { get {
+				string ret = this.Name;
+				if (this.ScriptEditedNeedsSaving) ret = PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + ret;
+				if (this.ActivatedFromDll) {
+					ret += " :: " + Path.GetFileName(this.GetType().Assembly.Location);
+				}
+				return ret;
+			} }
+		
 		// programmer's constructor
 		public Strategy(string name) : this() {
 			this.Name = name;

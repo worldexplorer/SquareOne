@@ -9,6 +9,11 @@ namespace Sq1.Core.DataTypes {
 		[JsonIgnore]	public static int InstanceAbsno = 0;
 		
 		[JsonIgnore]	public	string				SymbolHumanReadable;
+		[JsonIgnore]	public	string				SymbolAndDataSource { get {
+			string ret = this.Symbol;
+			if (this.DataSource != null) ret += " :: " + this.DataSource.Name;
+			return ret;
+		} }
 		[JsonIgnore]	public	BarScaleInterval	ScaleInterval { get; private set; }
 
 		[JsonIgnore]	public	MarketInfo			MarketInfo;

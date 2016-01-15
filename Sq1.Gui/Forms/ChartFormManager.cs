@@ -353,7 +353,7 @@ namespace Sq1.Gui.Forms {
 			}
 			this.DataSnapshotSerializer.Serialize();
 			#endregion
-			this.ChartForm.Initialize(false);
+			this.ChartForm.Initialize();
 
 			try {
 				string msg = "WHAT_SELECTORS???__IS_THAT_THE_WAY_TO_CLEAR_SLIDERS_AFTER_REMOVING_STRATEGY_FROM_THE_CHART???";
@@ -409,7 +409,7 @@ namespace Sq1.Gui.Forms {
 			}
 			this.ChartForm.ChartControl.PropagateSplitterManorderDistanceIfFullyDeserialized();
 			#endregion
-			this.ChartForm.Initialize(true, this.Strategy.ActivatedFromDll);
+			this.ChartForm.Initialize(this.Strategy);
 
 			this.Executor.Initialize(this.Strategy, this.ChartForm.ChartControl, false);
 
