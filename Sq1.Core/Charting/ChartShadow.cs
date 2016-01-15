@@ -183,20 +183,20 @@ namespace Sq1.Core.Charting {
 
 
 		protected override void Dispose(bool disposing) {
+			//this.Dispose();
 			base.Dispose(disposing);
-			this.Dispose();
 		}
 		void IDisposable.Dispose() {
-			if (this.IsDisposed) {
+			if (this.ChartShadowResourcesDisposed) {
 				string msg = "ALREADY_DISPOSED__DONT_INVOKE_ME_TWICE__" + this.ToString();
 				Assembler.PopupException(msg);
 				return;
 			}
 			this.paintAllowed.Dispose();
 			this.paintAllowed = null;
-			this.IsDisposed = true;
+			this.ChartShadowResourcesDisposed = true;
 		}
-		public bool IsDisposed { get; private set; }
+		public bool ChartShadowResourcesDisposed { get; private set; }
 
 	}
 }

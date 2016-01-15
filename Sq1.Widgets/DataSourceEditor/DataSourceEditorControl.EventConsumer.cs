@@ -18,17 +18,18 @@ namespace Sq1.Widgets.DataSourceEditor {
 			ListViewItem lvi = this.lvStreamingAdapters.SelectedItems[0];
 			if (lvi.Tag == null) {
 				this.pnlStreamingEditor.Controls.Clear();
-				dataSourceIamEditing.StreamingAdapter = null;
+				this.dataSourceIamEditing.StreamingAdapter = null;
+				this.grpStreaming.Text = "Select Streaming Adapter to Edit its Settings";
 				return;
 			}
-			dataSourceIamEditing.StreamingAdapter = (StreamingAdapter)lvi.Tag;
-			dataSourceIamEditing.StreamingAdapter.EditorInstance.PushStreamingAdapterSettingsToEditor();
-			dataSourceIamEditing.StreamingAdapter.EditorInstance.Dock = DockStyle.Fill;
+			this.dataSourceIamEditing.StreamingAdapter = (StreamingAdapter)lvi.Tag;
+			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.PushStreamingAdapterSettingsToEditor();
+			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.Dock = DockStyle.Fill;
 			//this.btnNext.Enabled = true;
 			//this.btnFinished.Enabled = false;
 			this.pnlStreamingEditor.Controls.Clear();
-			this.pnlStreamingEditor.Controls.Add(dataSourceIamEditing.StreamingAdapter.EditorInstance);
-			this.grpStreaming.Text = dataSourceIamEditing.StreamingAdapter.Name + " Settings";
+			this.pnlStreamingEditor.Controls.Add(this.dataSourceIamEditing.StreamingAdapter.EditorInstance);
+			this.grpStreaming.Text = this.dataSourceIamEditing.StreamingAdapter.NameWithVersion + " Settings";
 		}
 		void lvBrokerAdapters_SelectedIndexChanged(object sender, EventArgs e) {
 			if (this.lvBrokerAdapters.SelectedItems.Count == 0) {
@@ -39,17 +40,18 @@ namespace Sq1.Widgets.DataSourceEditor {
 			ListViewItem lvi = this.lvBrokerAdapters.SelectedItems[0];
 			if (lvi.Tag == null) {
 				this.pnlBrokerEditor.Controls.Clear();
-				dataSourceIamEditing.BrokerAdapter = null;
+				this.dataSourceIamEditing.BrokerAdapter = null;
+				this.grpBroker.Text = "Select Streaming Adapter to Edit its Settings";
 				return;
 			}
-			dataSourceIamEditing.BrokerAdapter = (BrokerAdapter)lvi.Tag;
-			dataSourceIamEditing.BrokerAdapter.EditorInstance.PushBrokerAdapterSettingsToEditor();
-			dataSourceIamEditing.BrokerAdapter.EditorInstance.Dock = DockStyle.Fill;
+			this.dataSourceIamEditing.BrokerAdapter = (BrokerAdapter)lvi.Tag;
+			this.dataSourceIamEditing.BrokerAdapter.EditorInstance.PushBrokerAdapterSettingsToEditor();
+			this.dataSourceIamEditing.BrokerAdapter.EditorInstance.Dock = DockStyle.Fill;
 			//this.btnNext.Enabled = true;
 			//this.btnFinished.Enabled = false;
 			this.pnlBrokerEditor.Controls.Clear();
-			this.pnlBrokerEditor.Controls.Add(dataSourceIamEditing.BrokerAdapter.EditorInstance);
-			this.grpExecution.Text = dataSourceIamEditing.BrokerAdapter.Name + " Settings";
+			this.pnlBrokerEditor.Controls.Add(this.dataSourceIamEditing.BrokerAdapter.EditorInstance);
+			this.grpBroker.Text = this.dataSourceIamEditing.BrokerAdapter.NameWithVersion + " Settings";
 		}
 		void btnSave_Click(object sender, EventArgs e) {
 			try {
@@ -62,7 +64,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			int i = 0;
 			foreach (BarScale barScale in Enum.GetValues(typeof(BarScale))) {
 				if (i == this.cmbScale.SelectedIndex) {
-					dataSourceIamEditing.ScaleInterval.Scale = barScale;
+					this.dataSourceIamEditing.ScaleInterval.Scale = barScale;
 					break;
 				}
 				i++;
@@ -77,7 +79,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 			this.nmrInterval.Enabled = true;
 		}
 		void nmrInterval_ValueChanged(object sender, EventArgs e) {
-			dataSourceIamEditing.ScaleInterval.Interval = (int)this.nmrInterval.Value;
+			this.dataSourceIamEditing.ScaleInterval.Interval = (int)this.nmrInterval.Value;
 		}
 
 		void repositoryJsonDataSource_OnDataSourceRenamed_refreshTitle(object sender, NamedObjectJsonEventArgs<DataSource> e) {

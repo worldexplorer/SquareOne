@@ -186,9 +186,9 @@ namespace Sq1.Core.Backtesting {
 					//Assembler.PopupException(msg);
 					break;
 				}
-				bool abortRequested = this.backtester.RequestingBacktestAbort.WaitOne(0);
+				bool abortRequested = this.backtester.RequestingBacktestAbortMre.WaitOne(0);
 				if (abortRequested) break;
-				bool backtestAborted = this.backtester.BacktestAborted.WaitOne(0);
+				bool backtestAborted = this.backtester.BacktestAbortedMre.WaitOne(0);
 				if (backtestAborted) break;
 				closestOnOurWay = this.generateClosestQuoteForEachPendingAlertOnOurWayTo(quoteToReach, bar2simulate);
 			}

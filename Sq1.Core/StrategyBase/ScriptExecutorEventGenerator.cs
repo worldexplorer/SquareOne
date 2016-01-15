@@ -82,7 +82,7 @@ namespace Sq1.Core.StrategyBase {
 			try {
 				this.OnStrategyPreExecuteOneQuote(this, new QuoteEventArgs(quoteForAlertsCreated));
 			} catch (Exception ex) {
-				string msg = "FIX_THIS_ATAVISM_TUNNELLING_QUOTE_ARRIVED_TO_UPDATE_BTN_STREAMING_TEXT";
+				string msg = "TUNNELLING_QUOTE_ARRIVED_TO_UPDATE_BTN_STREAMING_TEXT MOVED_FROM_ChartFromStreamingConsumer";
 				Assembler.PopupException(msg, ex);
 			}
 		}

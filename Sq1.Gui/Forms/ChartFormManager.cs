@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 
 using WeifenLuo.WinFormsUI.Docking;
 using BrightIdeasSoftware;
@@ -161,8 +163,25 @@ namespace Sq1.Gui.Forms {
 		public	ContextChart						ContextCurrentChartOrStrategy		{ get {
 				return (this.Strategy != null) ? this.Strategy.ScriptContextCurrent as ContextChart : this.DataSnapshot.ContextChart; } }
 
+		public string WhoImServing_moveMeToExecutor { get {
+			string ret = "EMPTY_CHART";
 
-		System.Windows.Forms.Timer timerUnblink;
+			if (this.Strategy == null) {
+				ret = this.Strategy.WindowTitle;
+			} else {
+				if (this.DataSnapshot.ContextChart == null) {
+					string msg = "CHART_WITHOUT_STRATEGY_MUST_HAVE_DataSnapshot.ContextChart; Sq1.Gui.Layout.xml and ChartFormDataSnapshot-*.json aren't in sync";
+					Assembler.PopupException(msg);
+					return ret;
+				}
+				//ret = this.DataSnapshot.ContextChart.ToString();
+				ret = this.ContextCurrentChartOrStrategy.ToString();
+			}
+			return ret;
+		} }
+
+		System.Threading.Timer timerUnblink;
+		const int timerUnblinkInterval = 200;
 
 
 		// WHATTTTT???? I dont want it "internal" when "private" is omitted
@@ -175,10 +194,7 @@ namespace Sq1.Gui.Forms {
 			this.Executor.EventGenerator.OnStrategyPreExecuteOneQuote	+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText);
 			this.Executor.EventGenerator.OnStrategyExecutedOneQuote		+= new EventHandler<QuoteEventArgs>(eventGenerator_OnStrategyExecutedOneQuote_unblinkDataSourceTree);
 
-			this.timerUnblink				= new System.Windows.Forms.Timer();
-			this.timerUnblink.Interval		= 400;
-			this.timerUnblink.Tick			+= new EventHandler(this.timerUnblink_IntervalElapsed);
-			this.timerUnblink.Enabled		= true;
+			this.timerUnblink				= new System.Threading.Timer(new TimerCallback(this.timerUnblink_IntervalElapsed), null, Timeout.Infinite, Timeout.Infinite);
 
 			this.colorBackgroundOrange_barsNotSubscribed				= Color.LightSalmon;
 			this.colorBackgroundRed_barsSubscribed_scriptNotTriggering	= Color.FromArgb(255, 230, 230);
@@ -199,7 +215,7 @@ namespace Sq1.Gui.Forms {
 		Color colorBackgroundGreen_barsSubscribed_scriptIsTriggering;
 
 		void eventGenerator_OnStrategyPreExecuteOneQuote_updateBtnStreamingText(object sender, QuoteEventArgs e) {
-			 this.ChartForm.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(e.Quote);
+			this.ChartForm.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(e.Quote);
 		}
 
 
@@ -212,6 +228,8 @@ namespace Sq1.Gui.Forms {
 			string symbol = e.Quote.ParentBarStreaming.Symbol;
 			DataSource originalBarsDataSource_evenForLivesimmed = e.Quote.ParentBarStreaming.ParentBars.DataSource;
 
+			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) return;
+
 			// in the future, one chart can be subscribed to many symbols, so executing a Script.OnQuote has to use DataSource+Symbol supplied
 			//NOT_FOR_LIVESIM if (this.ContextCurrentChartOrStrategy.IsStreaming == false) {
 			LivesimStreaming streamingAsLivesimNullUnsafe = this.Executor.Livesimulator.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
@@ -220,23 +238,47 @@ namespace Sq1.Gui.Forms {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			if (streamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count == 0) {
-				this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = colorBackgroundOrange_barsNotSubscribed;
-			} else {
-				this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = this.Executor.IsStreamingTriggeringScript
-					? this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering
-					: this.colorBackgroundRed_barsSubscribed_scriptNotTriggering;
-			}
-			this.timerUnblink.Start();
 			TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
+			//this.timerUnblink.Change(ChartFormManager.timerUnblinkInterval, Timeout.Infinite);
 			//olvTree.DeselectAll();
-			olvTree.RefreshObject(this.ChartForm.ChartControl);
+			//DEADLOCK#2 - happens when DdeMessagePump thread wants to switch to GUI thread; switching to GUI thread via trampoline Task releases this method from held in GuiMessageQueue
+			if (olvTree.InvokeRequired) {
+				Task deadlockOtherwize = new Task(delegate {
+					// WRONG_COLOR__QUIKSTREAMINGLIVESIM_HAS_NO_SUBSCRIBERS_AND_DOESNT_PUSH_TO_DISTRIBUTOR__ONLY_SENDS_OVER_DDE
+					//if (streamingAsLivesimNullUnsafe.DataDistributor.DistributionChannels.Count == 0) {
+					//    this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = colorBackgroundOrange_barsNotSubscribed;
+					//} else {
+						this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = this.Executor.IsStreamingTriggeringScript
+							? this.colorBackgroundGreen_barsSubscribed_scriptIsTriggering
+							: this.colorBackgroundRed_barsSubscribed_scriptNotTriggering;
+					//}
+					olvTree.BeginInvoke((MethodInvoker)delegate { olvTree.RefreshObject(this.ChartForm.ChartControl); });
+					if (this.timerUnblink_skipUntilExpires) return;
+					this.timerUnblink_skipUntilExpires = true;
+					this.timerUnblink.Change(ChartFormManager.timerUnblinkInterval, Timeout.Infinite);
+				});
+				deadlockOtherwize.Start();
+				return;
+			}
 		}
+		void timerUnblink_IntervalElapsed(object state) {
+			if (string.IsNullOrEmpty(Thread.CurrentThread.Name)) {
+				Thread.CurrentThread.Name = "timerUnblink_IntervalElapsed[" + this.WhoImServing_moveMeToExecutor + "]";
+			}
+			if (this.ChartForm.InvokeRequired) {
+			    this.ChartForm.BeginInvoke(new MethodInvoker(delegate { this.timerUnblink_IntervalElapsed(state); }));
+			    return;
+			}
+			// create an illusion for System.Threading.Timer to wake up in GUI thread, just because we will have to go to GUI thread anyway to unblink
+			this.timerUnblink_IntervalElapsed(null, null);
+		}
+		bool timerUnblink_skipUntilExpires;
 		void timerUnblink_IntervalElapsed(object sender, EventArgs e) {
 			if (this.IsDisposed) return;
 			this.ChartForm.ChartControl.ColorBackground_inDataSourceTree = Color.White;
 			TreeListView olvTree = DataSourcesForm.Instance.DataSourcesTreeControl.OlvTree;
 			olvTree.RefreshObject(this.ChartForm.ChartControl);
+			this.timerUnblink_skipUntilExpires = false;
 		}
 
 		public ChartFormManager(MainForm mainForm, int charSernoDeserialized = -1) : this() {
@@ -660,9 +702,12 @@ namespace Sq1.Gui.Forms {
 			}
 
 			ContextChart ctxChart = this.ContextCurrentChartOrStrategy;
-			bool streamingAsContinuationOfBacktest = ctxChart.IsStreaming && ctxChart.IsStreamingTriggeringScript;
-			streamingAsContinuationOfBacktest &= this.Executor.DataSource.StreamingAdapter != null;
-			bool willBacktest = streamingAsContinuationOfBacktest || this.Strategy.ScriptContextCurrent.BacktestOnRestart;
+			//v1 WHEN_IS_THIS_NEEDED?
+			//bool streamingAsContinuationOfBacktest = ctxChart.IsStreaming && ctxChart.IsStreamingTriggeringScript;
+			//streamingAsContinuationOfBacktest &= this.Executor.DataSource.StreamingAdapter != null;
+			//bool willBacktest = streamingAsContinuationOfBacktest || this.Strategy.ScriptContextCurrent.BacktestOnRestart;
+			//v2
+			bool willBacktest = this.Strategy.ScriptContextCurrent.BacktestOnRestart;
 
 			if (willBacktest == false) {
 				// COPYFROM_StrategyCompileActivatePopulateSlidersShow()
@@ -906,19 +951,7 @@ namespace Sq1.Gui.Forms {
 		}
 		
 		internal void PopulateWindowTitlesFromChartContextOrStrategy() {
-			if (this.Strategy == null) {
-				//string msg = "ChartFormsManager doesn't have a pointer to Strategy; Opening a Chart without Strategy is NYI";
-				//throw new Exception(msg);
-				if (this.DataSnapshot.ContextChart == null) {
-					string msg = "CHART_WITHOUT_STRATEGY_MUST_HAVE_DataSnapshot.ContextChart; Sq1.Gui.Layout.xml and ChartFormDataSnapshot-*.json aren't in sync";
-					this.ChartForm.Text = msg;
-					Assembler.PopupException(msg);
-					return;
-				}
-				this.ChartForm.Text = this.DataSnapshot.ContextChart.ToString();
-				return;
-			}
-			this.ChartForm.Text = this.Strategy.WindowTitle;
+			this.ChartForm.Text = this.WhoImServing_moveMeToExecutor;
 			this.ChartForm.IsHidden = false;
 			if (this.ScriptEditorForm != null) {
 				this.ScriptEditorForm.Text = this.ChartForm.Text;

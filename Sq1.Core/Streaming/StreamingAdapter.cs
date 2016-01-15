@@ -84,7 +84,7 @@ namespace Sq1.Core.Streaming {
 				this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
 			this.DataDistributorSolidifiers.ConsumerQuoteSubscribe(symbol,
 				this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
-			SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers.GetDistributionChannelForNullUnsafe(symbol, this.DataSource.ScaleInterval);
+			SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers.GetDistributionChannelFor_nullUnsafe(symbol, this.DataSource.ScaleInterval);
 			if (channel == null) {
 				string msg = "NONSENSE";
 				Assembler.PopupException(msg);
@@ -119,7 +119,7 @@ namespace Sq1.Core.Streaming {
 				string msg = "IGNORE_ME_IF_YOU_ARE_STARTED_LIVESIM SOLIDIFIER_NOT_SUBSCRIBED_QUOTES symbol[" + symbol + "] ScaleInterval[" + this.DataSource.ScaleInterval + "]";
 				Assembler.PopupException(msg, null, false);
 			}
-			SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers.GetDistributionChannelForNullUnsafe(symbol, this.DataSource.ScaleInterval);
+			SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers.GetDistributionChannelFor_nullUnsafe(symbol, this.DataSource.ScaleInterval);
 			if (channel == null) {
 				string msg = "I_START_LIVESIM_WITHOUT_ANY_PRIOR_SUBSCRIBED_SOLIDIFIERS symbol[" + symbol + "]";
 				Assembler.PopupException(msg, null, false);
@@ -194,8 +194,16 @@ namespace Sq1.Core.Streaming {
 		public virtual void PushQuoteReceived(Quote quote) {
 			string msig = " //StreamingAdapter.PushQuoteReceived()" + this.ToString();
 			
-			bool dontSolidifyAndDontPushToCharts = this.DataDistributor.DistributionChannels.Count == 0;
-			if (dontSolidifyAndDontPushToCharts) return;
+			if (this.DataDistributor.DistributionChannels.Count == 0) {
+				string msg = "I_REFUSE_TO_PUSH_QUOTE NO_SOLIDIFIER_NOR_CHARTS_SUBSCRIBED";
+				if (		this.LivesimStreaming != null
+						 && this.LivesimStreaming.Livesimulator != null
+						 && this.LivesimStreaming.Livesimulator.IsBacktestingLivesimNow) {
+					this.LivesimStreaming.Livesimulator.AbortRunningBacktestWaitAborted(msg, 0);
+				}
+				Assembler.PopupException(msg);
+				return;
+			}
 
 			if (quote.ServerTime == DateTime.MinValue) {
 				quote.ServerTime = this.DataSource.MarketInfo.ConvertLocalTimeToServer(DateTime.Now);
@@ -271,12 +279,7 @@ namespace Sq1.Core.Streaming {
 
 			try {
 				bool thisIsLivesimDataSource	= this is LivesimDataSource;
-				bool thisIsBacktestDataSource	= this is Backtesting.BacktestDataSource;
-				if (thisIsLivesimDataSource == false) {
-					string msg = "I_WANT_TO_COLLECT_AND_SAVE_BARS_FOR_SYMBOLS_NON_OPENED_AS_CHARTS";
-					Assembler.PopupException(msg, null, false);
-					this.DataDistributorSolidifiers.PushQuoteToDistributionChannels(quote);
-				} else {
+				if (thisIsLivesimDataSource) {
 					if (this.DataDistributorSolidifiers.DistributionChannels.Count > 0) {
 						string msg = "LIVESIM_RUN__MUST_HAVE_REPLACED_MY_DATASOURCE_WITHOUT_SOLIDIFIERS";
 						Assembler.PopupException(msg, null, false);
@@ -297,13 +300,13 @@ namespace Sq1.Core.Streaming {
 			}
 		}
 		public void UpstreamSubscribedToSymbolPokeConsumersHelper(string symbol) {
-			List<SymbolScaleDistributionChannel> channels = this.DataDistributor.GetDistributionChannelsFor(symbol);
+			List<SymbolScaleDistributionChannel> channels = this.DataDistributor.GetDistributionChannels_allScaleIntervals_forSymbol(symbol);
 			foreach (var channel in channels) {
 				channel.UpstreamSubscribedToSymbolPokeConsumers(symbol);
 			}
 		}
 		public void UpstreamUnSubscribedFromSymbolPokeConsumersHelper(string symbol) {
-			List<SymbolScaleDistributionChannel> channels = this.DataDistributor.GetDistributionChannelsFor(symbol);
+			List<SymbolScaleDistributionChannel> channels = this.DataDistributor.GetDistributionChannels_allScaleIntervals_forSymbol(symbol);
 			Quote lastQuoteReceived = this.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(symbol);
 			foreach (var channel in channels) {
 				channel.UpstreamUnSubscribedFromSymbolPokeConsumers(symbol, lastQuoteReceived);
@@ -311,7 +314,7 @@ namespace Sq1.Core.Streaming {
 		}
 		public void InitializeStreamingOHLCVfromStreamingAdapter(Bars chartBars) {
 			SymbolScaleDistributionChannel channel = this.DataDistributor
-				.GetDistributionChannelForNullUnsafe(chartBars.Symbol, chartBars.ScaleInterval);
+				.GetDistributionChannelFor_nullUnsafe(chartBars.Symbol, chartBars.ScaleInterval);
 			if (channel == null) return;
 			//v1 
 			//Bar streamingBar = distributionChannel.StreamingBarFactoryUnattached.StreamingBarUnattached;
@@ -361,14 +364,14 @@ namespace Sq1.Core.Streaming {
 		}
 
 		internal void AbsorbStreamingBarFactoryFromBacktestComplete(StreamingAdapter streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
-			SymbolScaleDistributionChannel channelBacktest = streamingBacktest.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
+			SymbolScaleDistributionChannel channelBacktest = streamingBacktest.DataDistributor.GetDistributionChannelFor_nullUnsafe(symbol, barScaleInterval);
 			if (channelBacktest == null) return;
 			Bar barLastFormedBacktest = channelBacktest.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
 			if (barLastFormedBacktest == null) return;
 
 			Bar barStreamingBacktest = channelBacktest.StreamingBarFactoryUnattached.BarStreamingUnattached;
 
-			SymbolScaleDistributionChannel channelOriginal = this.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
+			SymbolScaleDistributionChannel channelOriginal = this.DataDistributor.GetDistributionChannelFor_nullUnsafe(symbol, barScaleInterval);
 			if (channelOriginal == null) return;
 			Bar barLastFormedOriginal = channelOriginal.StreamingBarFactoryUnattached.BarLastFormedUnattachedNullUnsafe;
 			//if (barLastFormedOriginal == null) return;
@@ -434,7 +437,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		internal void SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(string symbol, BarScaleInterval barScaleInterval) {
-			SymbolScaleDistributionChannel channel = this.DataDistributor.GetDistributionChannelForNullUnsafe(symbol, barScaleInterval);
+			SymbolScaleDistributionChannel channel = this.DataDistributor.GetDistributionChannelFor_nullUnsafe(symbol, barScaleInterval);
 			if (channel == null) {
 				string msg = "SPLIT_QUOTE_PUMP_TO_SINGLE_THREADED_AND_SELF_LAUNCHING";
 				Assembler.PopupException(msg);
@@ -445,43 +448,6 @@ namespace Sq1.Core.Streaming {
 			} else {
 				channel.QuotePump.SetThreadName();
 			}
-		}
-
-		DataDistributor		distributorCharts_preLivesimForSymbolLivesimming = null;
-		DataDistributor		distributorSolidifier_preLivesimForSymbolLivesimming = null;
-
-		internal void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(LivesimStreaming livesimStreaming) {
-			this.distributorCharts_preLivesimForSymbolLivesimming = this.DataDistributor;
-			this.DataDistributor = new DataDistributor(this);
-
-			string symbol					= livesimStreaming.Livesimulator.BarsSimulating.Symbol;
-			BarScaleInterval scaleInterval	= livesimStreaming.Livesimulator.BarsSimulating.ScaleInterval;
-			string symbolIntervalScale		= livesimStreaming.Livesimulator.BarsSimulating.SymbolIntervalScale;
-			IStreamingConsumer chartShadow	= livesimStreaming.Livesimulator.Executor.ChartShadow.ChartStreamingConsumer;
-
-			bool willPushUsingPumpInSeparateThread = false;		// I wanna know which thread is going to be used; if DDE-client then cool
-			if (this.distributorCharts_preLivesimForSymbolLivesimming.ConsumerQuoteIsSubscribed(symbol, scaleInterval, chartShadow) == false) {
-				string msg = "EXECUTOR'S_CHART_SHADOW_WASNT_QUOTECONSUMING_WHAT_YOU_GONNA_LIVESIM NONSENSE " + symbolIntervalScale;
-				Assembler.PopupException(msg, null, false);
-			//} else {
-				// the chart will be subscribed twice to the same Symbol+ScaleInterval, yes! but the original distributor is backed up and PushQuoteReceived will only push to the new DataDistributor(this) with one chart only
-				this.DataDistributor.ConsumerQuoteSubscribe(symbol, scaleInterval, chartShadow, willPushUsingPumpInSeparateThread);
-			}
-			if (this.distributorCharts_preLivesimForSymbolLivesimming.ConsumerBarIsSubscribed(symbol, scaleInterval, chartShadow) == false) {
-				string msg = "EXECUTOR'S_CHART_SHADOW_WASNT_BARCONSUMING_WHAT_YOU_GONNA_LIVESIM NONSENSE " + symbolIntervalScale;
-				Assembler.PopupException(msg, null, false);
-			//} else {
-				// the chart will be subscribed twice to the same Symbol+ScaleInterval, yes! but the original distributor is backed up and PushBarReceived will only push to the new DataDistributor(this) with one chart only
-				this.DataDistributor.ConsumerBarSubscribe(symbol, scaleInterval, chartShadow, willPushUsingPumpInSeparateThread);
-			}
-
-			this.distributorSolidifier_preLivesimForSymbolLivesimming = this.DataDistributorSolidifiers;
-			this.DataDistributorSolidifiers = new DataDistributor(this);		// EMPTY!!! exactly what I wanted
-		}
-
-		internal void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor() {
-			this.DataDistributor			= this.distributorCharts_preLivesimForSymbolLivesimming;
-			this.DataDistributorSolidifiers	= this.distributorSolidifier_preLivesimForSymbolLivesimming;
 		}
 	}
 }

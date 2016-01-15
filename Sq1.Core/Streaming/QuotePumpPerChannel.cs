@@ -74,7 +74,7 @@ namespace Sq1.Core.Streaming {
 
 			this.exitPushingThreadRequested = false;
 			if (this.timesThreadWasStarted >= 1) {
-				Assembler.PopupException("TESTME_AND_DELETE_IF_OK QUOTE_PUMP_MUST_START_PUSHING_THREADE_JUST_ONCE_PER_LIFETIME");
+				Assembler.PopupException("TESTME_AND_DELETE_IF_OK QUOTE_PUMP_MUST_START_PUSHING_THREAD_JUST_ONCE_PER_LIFETIME");
 			}
 
 			try {

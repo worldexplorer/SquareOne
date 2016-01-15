@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Charting {

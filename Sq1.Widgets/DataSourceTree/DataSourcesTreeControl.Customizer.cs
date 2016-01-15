@@ -87,11 +87,11 @@ namespace Sq1.Widgets.DataSourcesTree {
 			};
 
 			this.OlvTree.UseCellFormatEvents = true;
-			this.OlvTree.FormatRow += new EventHandler<FormatRowEventArgs>(olvPositions_FormatRow);
+			this.OlvTree.FormatRow += new EventHandler<FormatRowEventArgs>(olvTree_FormatRow);
 		}
 		
 
-		void olvPositions_FormatRow(object sender, FormatRowEventArgs e) {
+		void olvTree_FormatRow(object sender, FormatRowEventArgs e) {
 			ChartShadow chartShadow = e.Model as ChartShadow;
 			if (chartShadow == null) return;
 

@@ -148,11 +148,11 @@ namespace Sq1.Charting {
 			StreamingDataSnapshot snap = this.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
 			this.ScriptExecutorObjects.Bids_cachedForOnePaint = new LevelTwoHalfFrozen(
 				"BIDS_FROZEN",
-				snap.LevelTwoBids.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+				snap.LevelTwoBids_refactorBySymbol.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
 				new LevelTwoHalfFrozen.DESC());
 			this.ScriptExecutorObjects.Asks_cachedForOnePaint = new LevelTwoHalfFrozen(
 				"ASKS_FROZEN",
-				snap.LevelTwoAsks.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+				snap.LevelTwoAsks_refactorBySymbol.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
 				new LevelTwoHalfFrozen.ASC());
 
 			if (this.VisibleBarRight != this.Bars.Count - 1) {

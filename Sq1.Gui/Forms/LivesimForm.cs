@@ -65,7 +65,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		public void WindowTitlePullFromStrategy() {
-			string windowTitle = "LiveSim :: " + this.chartFormManager.Strategy.WindowTitle;
+			string windowTitle = "LiveSim :: " + this.chartFormManager.WhoImServing_moveMeToExecutor;
 			//if (this.chartFormsManager.Strategy.ActivatedFromDll == true) windowTitle += "-DLL";
 			//if (this.chartFormsManager.ScriptEditedNeedsSaving) {
 			//    windowTitle = ChartFormsManager.PREFIX_FOR_UNSAVED_STRATEGY_SOURCE_CODE + windowTitle;

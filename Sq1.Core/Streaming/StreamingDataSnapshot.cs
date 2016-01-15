@@ -21,14 +21,14 @@ namespace Sq1.Core.Streaming {
 				}
 				return ret;
 			} }
-		[JsonIgnore]	public LevelTwoHalf			LevelTwoAsks;
-		[JsonIgnore]	public LevelTwoHalf			LevelTwoBids;
+		[JsonIgnore]	public LevelTwoHalf			LevelTwoAsks_refactorBySymbol;
+		[JsonIgnore]	public LevelTwoHalf			LevelTwoBids_refactorBySymbol;
 
 		StreamingDataSnapshot() {
 			lastQuoteClonesReceivedUnboundBySymbol = new Dictionary<string, Quote>();
 			lockLastQuote = new object();
-			LevelTwoAsks = new LevelTwoHalf("LevelTwoAsks");
-			LevelTwoBids = new LevelTwoHalf("LevelTwoBids");
+			LevelTwoAsks_refactorBySymbol = new LevelTwoHalf("LevelTwoAsks");
+			LevelTwoBids_refactorBySymbol = new LevelTwoHalf("LevelTwoBids");
 		}
 
 		public StreamingDataSnapshot(StreamingAdapter streamingAdapter) : this() {
@@ -56,16 +56,18 @@ namespace Sq1.Core.Streaming {
 				//if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(symbol)) continue;
 				//this.lastQuoteClonesReceivedUnboundBySymbol.Add(symbol, null);
 				//v2
-				this.LastQuoteInitialize(symbol);
+				this.InitializeLastQuoteAndLevelTwoForSymbol(symbol);
 			}
 		}
-		public void LastQuoteInitialize(string symbol) { lock (lockLastQuote) {
+		public void InitializeLastQuoteAndLevelTwoForSymbol(string symbol) { lock (lockLastQuote) {
 			if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(symbol)) {
 				Quote prevQuote = this.lastQuoteClonesReceivedUnboundBySymbol[symbol];
 				this.lastQuoteClonesReceivedUnboundBySymbol[symbol] = null;
 			} else {
 				this.lastQuoteClonesReceivedUnboundBySymbol.Add(symbol, null);
 			}
+			this.LevelTwoAsks_refactorBySymbol.Clear(this, "livesimEnded");
+			this.LevelTwoBids_refactorBySymbol.Clear(this, "livesimEnded");
 		} }
 		public void LastQuoteCloneSetForSymbol(Quote quote) {
 			string msig = " StreamingDataSnapshot.LastQuoteSetForSymbol(" + quote.ToString() + ")";

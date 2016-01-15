@@ -57,7 +57,7 @@ namespace Sq1.Core.Streaming {
 			string msg2 = "SUBSCRIBED_CHART_QUOTES[" + ret + "]";
 			//Assembler.PopupException(msg2 + msig, null, false);
 
-			base.StreamingAdapter.StreamingDataSnapshot.LastQuoteInitialize(symbol);
+			base.StreamingAdapter.StreamingDataSnapshot.InitializeLastQuoteAndLevelTwoForSymbol(symbol);
 			return ret;
 		}
 		public override bool ConsumerQuoteUnsubscribe(string symbol, BarScaleInterval scaleInterval, 
@@ -67,7 +67,8 @@ namespace Sq1.Core.Streaming {
 			string msg2 = "UNSUBSCRIBED_CHART_QUOTES[" + ret + "]";
 			//Assembler.PopupException(msg2 + msig, null, false);
 
-			base.StreamingAdapter.StreamingDataSnapshot.LastQuoteInitialize(symbol);
+			base.StreamingAdapter.StreamingDataSnapshot.InitializeLastQuoteAndLevelTwoForSymbol(symbol);
+
 			return ret;
 		}
 	}

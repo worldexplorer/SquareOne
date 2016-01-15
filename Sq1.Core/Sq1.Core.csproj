@@ -295,6 +295,9 @@
     <Compile Include="Streaming\LevelTwoHalfFrozen.cs" />
     <Compile Include="Streaming\QuotePumpPerChannel.cs" />
     <Compile Include="Streaming\QuoteQueuePerChannel.cs" />
+    <Compile Include="Streaming\StreamingAdapter.LivesimSupport.cs">
+      <DependentUpon>StreamingAdapter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
     <Compile Include="Streaming\StreamingLateBinder.cs" />
     <Compile Include="Streaming\StreamingAdapter.EditorSupport.cs">
@@ -438,6 +441,7 @@
     <None Include="StrategyBase\ScriptExecutor-howSymbolRenameWorks.jpg">
       <DependentUpon>ScriptExecutor.cs</DependentUpon>
     </None>
+    <None Include="Streaming\StreamingAdapterReferringItsOwnLivesimStreaming.jpg" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
