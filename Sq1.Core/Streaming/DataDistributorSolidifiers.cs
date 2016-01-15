@@ -16,7 +16,7 @@ namespace Sq1.Core.Streaming {
 
 			if (scaleInterval.Scale == BarScale.Unknown) {
 				string msg = "I_REFUSE_TO_SUBSCRIBE_TO_UNINITIALIZED_scaleInterval[" + scaleInterval + "]";
-				Assembler.PopupException(msg + msig, null, false);
+				Assembler.PopupException(msg + msig);
 				return ret;
 			}
 
@@ -27,10 +27,10 @@ namespace Sq1.Core.Streaming {
 				return ret;
 			}
 
-			SymbolScaleDistributionChannel channelNullUnsafe = base.GetDistributionChannelForNullUnsafe(symbol, scaleInterval);
+			SymbolScaleDistributionChannel channelNullUnsafe = base.GetDistributionChannelFor_nullUnsafe(symbol, scaleInterval);
 			if (channelNullUnsafe != null && channelNullUnsafe.ConsumersBarCount > 0) {
 				string msg = "I_REFUSE_TO_REGISTER_MULTIPLE_SOLIDIFIERS_FOR_SAME_SYMBOL";
-				Assembler.PopupException(msg + msig, null, false);
+				Assembler.PopupException(msg + msig);
 				return ret;
 			}
 
@@ -56,14 +56,14 @@ namespace Sq1.Core.Streaming {
 
 			if (scaleInterval.Scale == BarScale.Unknown) {
 				string msg = "I_REFUSE_TO_SUBSCRIBE_TO_UNINITIALIZED_scaleInterval[" + scaleInterval + "]";
-				Assembler.PopupException(msg + msig, null, false);
+				Assembler.PopupException(msg + msig);
 				return ret;
 			}
 
-			SymbolScaleDistributionChannel channelNullUnsafe = base.GetDistributionChannelForNullUnsafe(symbol, scaleInterval);
+			SymbolScaleDistributionChannel channelNullUnsafe = base.GetDistributionChannelFor_nullUnsafe(symbol, scaleInterval);
 			if (channelNullUnsafe != null && channelNullUnsafe.ConsumersQuoteCount > 0) {
 				string msg = "I_REFUSE_TO_REGISTER_MULTIPLE_SOLIDIFIERS_FOR_SAME_SYMBOL";
-				Assembler.PopupException(msg + msig, null, false);
+				Assembler.PopupException(msg + msig);
 				return ret;
 			}
 

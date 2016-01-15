@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 
 using Sq1.Core;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Gui.Forms {
 	public partial class LivesimForm {
@@ -19,6 +20,16 @@ namespace Sq1.Gui.Forms {
 			ToolStripButton btnStartStop = this.LivesimControl.TssBtnStartStop;
 			bool clickedStart = btnStartStop.Text.Contains("Start");
 			if (clickedStart) {
+				ScriptExecutor executor = this.chartFormManager.Executor;
+				string reasonWhyLivesimCanNotBeStartedForSymbol = executor.DataSource.StreamingAdapter
+				      .ReasonWhyLivesimCanNotBeStartedForSymbol(executor.Bars.Symbol, executor.ChartShadow);
+				if (string.IsNullOrEmpty(reasonWhyLivesimCanNotBeStartedForSymbol) == false) {
+				    string msg = "I_REFUSE_TO_START_LIVESIM_FOR[" + this.chartFormManager.WhoImServing_moveMeToExecutor + "]: " + reasonWhyLivesimCanNotBeStartedForSymbol;
+				    Assembler.PopupException(msg);
+					btnStartStop.Checked = false;
+				    return;
+				}
+
 				btnStartStop.Text = "Starting";
 				btnStartStop.Enabled = false;
 				this.chartFormManager.LivesimStartedOrUnpaused_AutoHiddeExecutionAndReporters();
@@ -79,7 +90,9 @@ namespace Sq1.Gui.Forms {
 		//	this.chartFormManager.MainForm.MainFormSerialize();
 		//}
 		void livesimForm_FormClosing(object sender, FormClosingEventArgs e) {
-			this.chartFormManager.Executor.Livesimulator.Stop_inGuiThread();
+			if (this.chartFormManager.Executor.Livesimulator.IsBacktestingLivesimNow) {
+				this.chartFormManager.Executor.Livesimulator.Stop_inGuiThread();
+			}
 
 			// only when user closed => allow scriptEditorForm_FormClosed() to serialize
 			if (this.chartFormManager.MainForm.MainFormClosing_skipChartFormsRemoval_serializeExceptionsToPopupInNotepad) {
@@ -87,7 +100,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms) {
-				e.Cancel = true;
+				//OTHERWISE_I_NEED_TO_X_TWICE e.Cancel = true;
 				return;
 			}
 		}

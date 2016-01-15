@@ -42,7 +42,7 @@ namespace Sq1.Core.DataTypes {
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
 			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format(symbolInfo.PriceFormat, this.Ask);
+			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.Ask);
 			return ret;
 		} }
 
@@ -52,7 +52,7 @@ namespace Sq1.Core.DataTypes {
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
 			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format(symbolInfo.PriceFormat, this.Bid);
+			ret = string.Format("{0:" + symbolInfo.PriceFormat + "}", this.Bid);
 			return ret;
 		} }
 
@@ -62,7 +62,7 @@ namespace Sq1.Core.DataTypes {
 			if (this.ParentBarStreaming.ParentBars				== null) return ret;
 			if (this.ParentBarStreaming.ParentBars.SymbolInfo	== null) return ret;
 			SymbolInfo symbolInfo = this.ParentBarStreaming.ParentBars.SymbolInfo;
-			ret = string.Format(symbolInfo.VolumeFormat, this.Size);
+			ret = string.Format("{0:" + symbolInfo.VolumeFormat + "}", this.Size);
 			return ret;
 		} }
 

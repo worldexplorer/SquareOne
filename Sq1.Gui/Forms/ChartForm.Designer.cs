@@ -384,7 +384,7 @@ namespace Sq1.Gui.Forms {
             this.mniShowBarRange});
 			this.ctxBars.Name = "ctxScaleInterval";
 			this.ctxBars.OwnerItem = this.DdbBars;
-			this.ctxBars.Size = new System.Drawing.Size(252, 278);
+			this.ctxBars.Size = new System.Drawing.Size(252, 256);
 			// 
 			// mniSubscribedToStreamingAdapterQuotesBars
 			// 
@@ -410,7 +410,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbYearly.InputFieldValue = "0.0005";
 			this.mnitlbYearly.InputFieldWidth = 40;
 			this.mnitlbYearly.Name = "mnitlbYearly";
-			this.mnitlbYearly.Size = new System.Drawing.Size(91, 21);
+			this.mnitlbYearly.Size = new System.Drawing.Size(88, 21);
 			this.mnitlbYearly.TextLeft = "Yearly";
 			this.mnitlbYearly.TextLeftOffsetX = 47;
 			this.mnitlbYearly.TextLeftWidth = 41;
@@ -429,7 +429,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbMonthly.InputFieldValue = "0.0005";
 			this.mnitlbMonthly.InputFieldWidth = 40;
 			this.mnitlbMonthly.Name = "mnitlbMonthly";
-			this.mnitlbMonthly.Size = new System.Drawing.Size(104, 21);
+			this.mnitlbMonthly.Size = new System.Drawing.Size(96, 21);
 			this.mnitlbMonthly.TextLeft = "Monthly";
 			this.mnitlbMonthly.TextLeftOffsetX = 47;
 			this.mnitlbMonthly.TextLeftWidth = 54;
@@ -448,7 +448,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbWeekly.InputFieldValue = "0.0005";
 			this.mnitlbWeekly.InputFieldWidth = 40;
 			this.mnitlbWeekly.Name = "mnitlbWeekly";
-			this.mnitlbWeekly.Size = new System.Drawing.Size(97, 21);
+			this.mnitlbWeekly.Size = new System.Drawing.Size(95, 21);
 			this.mnitlbWeekly.TextLeft = "Weekly";
 			this.mnitlbWeekly.TextLeftOffsetX = 47;
 			this.mnitlbWeekly.TextLeftWidth = 47;
@@ -467,7 +467,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbDaily.InputFieldValue = "0.0005";
 			this.mnitlbDaily.InputFieldWidth = 40;
 			this.mnitlbDaily.Name = "mnitlbDaily";
-			this.mnitlbDaily.Size = new System.Drawing.Size(85, 21);
+			this.mnitlbDaily.Size = new System.Drawing.Size(83, 21);
 			this.mnitlbDaily.TextLeft = "Daily";
 			this.mnitlbDaily.TextLeftOffsetX = 47;
 			this.mnitlbDaily.TextLeftWidth = 35;
@@ -486,7 +486,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbHourly.InputFieldValue = "0.0005";
 			this.mnitlbHourly.InputFieldWidth = 40;
 			this.mnitlbHourly.Name = "mnitlbHourly";
-			this.mnitlbHourly.Size = new System.Drawing.Size(95, 21);
+			this.mnitlbHourly.Size = new System.Drawing.Size(89, 21);
 			this.mnitlbHourly.TextLeft = "Hourly";
 			this.mnitlbHourly.TextLeftOffsetX = 47;
 			this.mnitlbHourly.TextLeftWidth = 45;
@@ -505,7 +505,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbMinutes.InputFieldValue = "0.0005";
 			this.mnitlbMinutes.InputFieldWidth = 40;
 			this.mnitlbMinutes.Name = "mnitlbMinutes";
-			this.mnitlbMinutes.Size = new System.Drawing.Size(102, 21);
+			this.mnitlbMinutes.Size = new System.Drawing.Size(96, 21);
 			this.mnitlbMinutes.TextLeft = "Minutes";
 			this.mnitlbMinutes.TextLeftOffsetX = 47;
 			this.mnitlbMinutes.TextLeftWidth = 52;
@@ -540,7 +540,7 @@ namespace Sq1.Gui.Forms {
 			this.mnitlbShowLastBars.InputFieldValue = "0.0005";
 			this.mnitlbShowLastBars.InputFieldWidth = 40;
 			this.mnitlbShowLastBars.Name = "mnitlbShowLastBars";
-			this.mnitlbShowLastBars.Size = new System.Drawing.Size(105, 21);
+			this.mnitlbShowLastBars.Size = new System.Drawing.Size(103, 21);
 			this.mnitlbShowLastBars.TextLeft = "Last Bars";
 			this.mnitlbShowLastBars.TextLeftOffsetX = 47;
 			this.mnitlbShowLastBars.TextLeftWidth = 55;

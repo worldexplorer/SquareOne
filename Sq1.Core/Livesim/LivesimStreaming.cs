@@ -16,7 +16,7 @@ namespace Sq1.Core.Livesim {
 	[SkipInstantiationAt(Startup = true)]
 	public partial class LivesimStreaming : BacktestStreaming, IDisposable {
 		// without [JsonIgnore] Livesim children will have these properties in JSON
-		[JsonIgnore]	public		ManualResetEvent			Unpaused					{ get; private set; }
+		[JsonIgnore]	public		ManualResetEvent			UnpausedMre					{ get; private set; }
 		//[JsonIgnore]				ChartShadow					chartShadow_notUsed;
 		[JsonIgnore]				LivesimDataSource			livesimDataSource			{ get { return base.DataSource as LivesimDataSource; } }
 		[JsonIgnore]	public		Livesimulator				Livesimulator				{ get { return this.livesimDataSource.Executor.Livesimulator; } }
@@ -30,7 +30,7 @@ namespace Sq1.Core.Livesim {
 		[JsonIgnore]	protected	LivesimStreamingSpoiler		LivesimStreamingSpoiler;
 
 		[JsonIgnore]	public		bool						IsDisposed					{ get; private set; }
-		[JsonIgnore]	public		StreamingAdapter			StreamingAdapterOriginal	{ get; private set; }
+		[JsonIgnore]	public		StreamingAdapter			StreamingOriginal	{ get; private set; }
 
 		protected LivesimStreaming() : base() {
 		    string msg = "IM_HERE_FOR_MY_CHILDREN_TO_HAVE_DEFAULT_CONSTRUCTOR"
@@ -42,18 +42,18 @@ namespace Sq1.Core.Livesim {
 			base.Name = "LivesimStreaming";
 			base.StreamingSolidifier = null;
 			base.QuotePumpSeparatePushingThreadEnabled = false;
-			this.Unpaused = new ManualResetEvent(true);
+			this.UnpausedMre = new ManualResetEvent(true);
 			this.Level2generator = new LevelTwoGeneratorLivesim(this);
 			this.LivesimStreamingSpoiler = new LivesimStreamingSpoiler(this);
 		}
-		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingAdapterOriginalPassed) {
+		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingOriginalPassed) {
 			if (livesimDataSource == null) {
 				string msg = "DID_ACTIVATOR_PICK_THE_WRONG_CONSTRUCTOR?...";
 				Assembler.PopupException(msg);
 			}
 			//this.livesimDataSource = livesimDataSource;
 			base.DataSource = livesimDataSource;
-			this.StreamingAdapterOriginal = streamingAdapterOriginalPassed;
+			this.StreamingOriginal = streamingOriginalPassed;
 		}
 
 		// invoked after LivesimFormShow(), but must have meaning "Executor.Bars changed"...
@@ -63,11 +63,11 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
-			bool isUnpaused = this.Unpaused.WaitOne(0);
+			bool isUnpaused = this.UnpausedMre.WaitOne(0);
 			if (isUnpaused == false) {
 				string msg = "LIVESTREAMING_CAUGHT_PAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
 				//Assembler.PopupException(msg, null, false);
-				this.Unpaused.WaitOne();
+				this.UnpausedMre.WaitOne();
 				string msg2 = "LIVESTREAMING_CAUGHT_UNPAUSE_BUTTON_PRESSED_IN_LIVESIM_CONTROL";
 				//Assembler.PopupException(msg2, null, false);
 			}
@@ -97,7 +97,7 @@ namespace Sq1.Core.Livesim {
 			this.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = false;
 		}
 
-		#region DISABLING_SOLIDIFIER
+		#region DISABLING_SOLIDIFIER__NOT_REALLY_USED_WHEN_STREAMING_ADAPTER_PROVIDES_ITS_OWN_LIVESIM_STREAMING
 		public override void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
 			base.InitializeFromDataSource(dataSource);
 		}
@@ -119,17 +119,17 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg);
 				return;
 			}
-			this.Unpaused.Dispose();
-			this.Unpaused = null;
+			this.UnpausedMre.Dispose();
+			this.UnpausedMre = null;
 			this.IsDisposed = true;
 		}
 
-		public void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor() {
-			this.StreamingAdapterOriginal.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(this);
+		public void					SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor() {
+			this.StreamingOriginal.	SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(this);
 		}
 
-		public void SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor() {
-			this.StreamingAdapterOriginal.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
+		public void					SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor() {
+			this.StreamingOriginal.	SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
 		}
 	}
 }

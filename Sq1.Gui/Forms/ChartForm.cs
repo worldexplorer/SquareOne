@@ -19,6 +19,7 @@ using Sq1.Gui.Singletons;
 
 using Sq1.Widgets.RangeBar;
 using Sq1.Core.DataFeed;
+using System.Threading.Tasks;
 
 
 namespace Sq1.Gui.Forms {
@@ -149,8 +150,13 @@ namespace Sq1.Gui.Forms {
 				}
 				quote = this.ChartFormManager.Executor.DataSource.StreamingAdapter.StreamingDataSnapshot.LastQuoteCloneGetForSymbol(this.ChartFormManager.Executor.Bars.Symbol);
 			}
-			if (InvokeRequired) {
-				base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote); });
+
+			//DEADLOCK#1 - happens when DdeMessagePump thread wants to switch to GUI thread; switching to GUI thread via trampoline Task releases this method from held in GuiMessageQueue
+			if (base.InvokeRequired) {
+				Task deadlockOtherwize = new Task(delegate {
+					base.BeginInvoke((MethodInvoker)delegate { this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(quote); });
+				});
+				deadlockOtherwize.Start();
 				return;
 			}
 			if (quote == null) {
@@ -171,7 +177,7 @@ namespace Sq1.Gui.Forms {
 				TimeSpan timeLeft = (quote.ParentBarStreaming.DateTimeNextBarOpenUnconditional > quote.ServerTime)
 					? quote.ParentBarStreaming.DateTimeNextBarOpenUnconditional.Subtract(quote.ServerTime)
 					: quote.ServerTime.Subtract(quote.ParentBarStreaming.DateTimeNextBarOpenUnconditional);
-				string format = ":ss";
+				string format = "mm:ss";
 				if (timeLeft.Minutes > 0) format = "mm:ss";
 				if (timeLeft.Hours > 0) format = "HH:mm:ss";
 				sb.Append(" ");

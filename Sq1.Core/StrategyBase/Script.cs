@@ -81,7 +81,7 @@ namespace Sq1.Core.StrategyBase {
 				this.InitializeBacktest();
 			} catch (Exception ex) {
 				Assembler.PopupException("FIX_YOUR_OVERRIDEN_METHOD Strategy[" + this.StrategyName + "].InitializeBacktest()", ex);
-				this.Executor.Backtester.RequestingBacktestAbort.Set();
+				this.Executor.Backtester.RequestingBacktestAbortMre.Set();
 			}
 		}		
 		#endregion

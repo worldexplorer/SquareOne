@@ -15,6 +15,15 @@ namespace Sq1.Core.Broker {
 				}
 				return brokerEditorInstance;
 			} }
+
+		[JsonIgnore]	public			string				NameWithVersion						{ get {
+			string version = "UNKNOWN";
+			var fullNameSplitted = this.GetType().Assembly.FullName.Split(new string[] {", "}, StringSplitOptions.RemoveEmptyEntries);
+			if (fullNameSplitted.Length >= 1) version = fullNameSplitted[1];
+			if (version.Length >= "Version=".Length) version = version.TrimStart("Version=".ToCharArray());
+			return this.Name + " v." + version;
+		} }
+
 		
 		public virtual BrokerEditor BrokerEditorInitialize(IDataSourceEditor dataSourceEditor) {
 			throw new Exception("please override BrokerAdapter::BrokerEditorInitialize() for [" + this + "]:"

@@ -1287,7 +1287,7 @@ namespace Sq1.Core.StrategyBase {
 				bool thereWereNeighbours = this.Bars.DataSource.PumpPauseNeighborsIfAnyFor(this, this.Backtester.IsBacktestingNoLivesimNow);
 			} else {
 				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
-				//Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg, null, false);
 			}
 			
 			this.preBacktestBars = this.Bars;	// this.preBacktestBars != null will help ignore this.IsStreaming saving IsStreaming state to json
@@ -1337,10 +1337,10 @@ namespace Sq1.Core.StrategyBase {
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
 			if (this.DataSource.StreamingAdapter != null) {
-				bool thereWereNeighbours = this.Bars.DataSource.PumpResumeNeighborsIfAnyFor(this);
+				bool thereWereNeighbours = this.Bars.DataSource.PumpResumeNeighborsIfAnyFor(this, this.Backtester.IsBacktestingNoLivesimNow);
 			} else {
 				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextRestore(" + this.Bars + ")";
-				//Assembler.PopupException(msg, null, false);
+				Assembler.PopupException(msg, null, false);
 				// WHO_NEEDS_IT? channel.QuotePump.PushConsumersPaused = false;
 			}
 			this.EventGenerator.RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(null);

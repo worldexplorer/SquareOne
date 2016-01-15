@@ -4,12 +4,13 @@ using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
 
+using Newtonsoft.Json;
+
 using Sq1.Core.Charting;
 using Sq1.Core.Backtesting;
 using Sq1.Core.StrategyBase;
 using Sq1.Core.Streaming;
 using Sq1.Core.Execution;
-using Newtonsoft.Json;
 
 namespace Sq1.Core.Livesim {
 	public class Livesimulator : Backtester, IDisposable {
@@ -23,10 +24,7 @@ namespace Sq1.Core.Livesim {
 
 		public	Backtester				BacktesterBackup				{ get; private set; }
 		public	LivesimDataSource		DataSourceAsLivesimNullUnsafe	{ get { return base.BacktestDataSource as LivesimDataSource; } }
-				//v1
-				// Button					btnStartStop;
-				// Button					btnPauseResume;
-				//v2
+
 				ToolStripButton			btnStartStop;
 				ToolStripButton			btnPauseResume;
 
@@ -89,26 +87,41 @@ namespace Sq1.Core.Livesim {
 					Assembler.PopupException(msg, null, false);
 				}
 				// now I have those two assigned from Streaming/Broker-own-implemented instantiated adapters
-				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.InitializeLivesim	(this.DataSourceAsLivesimNullUnsafe, this.StreamingOriginal);
-				this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize			(this.DataSourceAsLivesimNullUnsafe);
-				// now I route QuoteGenerator to QuikStreamingLivesim (provided by QuikStreaming) DdeClient pushing to DdeServer into QuikStreaming
-				// LIVESIM_GENERATED_QUOTES_REACH_STRATEGY_VIA_DISTRIBUTOR_IN_LIVESIM_STREAMING__OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
-				//v1  WILL_BE_SILENT__TUNNELING_TO_DDE_ONLY DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
-				//v2 original Streaming will receive quotes from DDE and continue 1) ChartShadow.InvalidatePanelAll() and 2) Executor.invokeStrategy
-			    DataDistributor distr = this.StreamingOriginal.DataDistributor;
-				bool chartIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count > 0;
-				if (chartIsSubscribed_toBarsSimulated == false) {
-					bool willPumpInNewThread = false;	// false led to deadlock on BeginInvoke both in DDE Server and in my GuiThread
-				    distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, willPumpInNewThread);
-				    distr.ConsumerBarSubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer, willPumpInNewThread);
-				    //streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
 
-				    // QuikLivesimStreaming should instantiate the Real QuikStreaming with a DDE server and then connect to it; parent's Livesim probably must ignore this pseudo-Event
-				    this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UpstreamConnect_LivesimStarting();	// exception instantiating DDE server with same topics wont run the simulation
-				} else {
-					string msg1 = "WHO_SUBSCRIBED_LIVESIM.STREAMING_TO_BARS_SIMULATING??? DUPLICATE_CALL_TO_SimulationPreBarsSubstitute_overrideable()";
-					Assembler.PopupException(msg1);
-				}
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.InitializeLivesim	(this.DataSourceAsLivesimNullUnsafe, this.StreamingOriginal);
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.UpstreamConnect_LivesimStarting();
+
+				this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize			(this.DataSourceAsLivesimNullUnsafe);
+
+				//DataDistributor distr = this.StreamingOriginal.DataDistributor;
+				//List<SymbolScaleDistributionChannel> mustBeOneTimeframe = distr.GetDistributionChannelsFor(base.Executor.Bars.Symbol);
+				//if (mustBeOneTimeframe.Count != 1) {
+				//    string msg1 = "BAD_JOB#1_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()";
+				//    Assembler.PopupException(msg1);
+				//} else {
+				//    SymbolScaleDistributionChannel mustBeChartSubscribedToQuotesAndBars = mustBeOneTimeframe[0];
+				//    if (mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteCount != 1) {
+				//        string msg1 = "BAD_JOB#2_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()";
+				//        Assembler.PopupException(msg1);
+				//    } else {
+				//        bool mustBeChartSubscribedToQuotes = mustBeChartSubscribedToQuotesAndBars.ConsumersQuoteContains(base.Executor.ChartShadow.ChartStreamingConsumer);
+				//        if (mustBeChartSubscribedToQuotes == false) {
+				//            string msg1 = "BAD_JOB#3_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()";
+				//            Assembler.PopupException(msg1);
+				//        }
+				//    }
+
+				//    if (mustBeChartSubscribedToQuotesAndBars.ConsumersBarCount != 1) {
+				//        string msg1 = "BAD_JOB#4_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()";
+				//        Assembler.PopupException(msg1);
+				//    } else {
+				//        bool mustBeChartSubscribedToBars = mustBeChartSubscribedToQuotesAndBars.ConsumersBarContains(base.Executor.ChartShadow.ChartStreamingConsumer);
+				//        if (mustBeChartSubscribedToBars == false) {
+				//            string msg1 = "BAD_JOB#5_SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor()";
+				//            Assembler.PopupException(msg1);
+				//        }
+				//    }
+				//}
 
 				base.Executor.BacktestContextInitialize(base.BarsSimulating);
 
@@ -137,9 +150,6 @@ namespace Sq1.Core.Livesim {
 					Assembler.PopupException(msg);
 				}
 
-				// otherwize, after apprestart, I change bars for the chart and click LivesimForm=>Start and get DONT_INVOKE_ME_WITH_NULL_SYMBOL_INFO I_WOULD_THROW_ANYWAY_MAKING_THE_REASON_CLEAR //LevelTwoGenerator.GenerateForQuote()
-				//MOVED_UP this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
-				//this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe	.Initialize(this.DataSourceAsLivesimNullUnsafe);
 				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.PushSymbolInfoToLevel2generator(this.Executor.Bars.SymbolInfo);
 			} catch (Exception ex) {
 				string msg = "PreBarsSubstitute(): Backtester caught a long beard...";
@@ -147,27 +157,18 @@ namespace Sq1.Core.Livesim {
 			} finally {
 				base.BarsSimulatedSoFar = 0;
 				base.BacktestWasAbortedByUserInGui = false;
-				base.BacktestAborted.Reset();
-				base.RequestingBacktestAbort.Reset();
-				base.BacktestIsRunning.Set();
+				base.BacktestAbortedMre.Reset();
+				base.RequestingBacktestAbortMre.Reset();
+				base.BacktestIsRunningMre.Set();
 				if (this.IsBacktestRunning == false) {
 					string msg = "IN_ORDER_TO_SIGNAL_UNFLAGGED_I_HAVE_TO_RESET_INSTEAD_OF_SET";
 					Assembler.PopupException(msg);
 				}
-
-				//COPIED_UPSTACK_FOR_BLOCKING_MOUSEMOVE_AFTER_BACKTEST_NOW_CLICK__BUT_ALSO_STAYS_HERE_FOR_SLIDER_CHANGE_NON_INVALIDATION
-				//WONT_BE_RESET_IF_EXCEPTION_OCCURS_BEFORE_TASK_LAUNCH
-				//if (base.Executor.ChartShadow != null) base.Executor.ChartShadow.PaintAllowedAfterBacktestFinished = true;
 			}
 		}
 		protected override void SimulationPostBarsRestore_overrideable() {
 			try {
-				LivesimStreaming streamingBacktest = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe;
-				StreamingAdapter streamingOriginal = base.BarsOriginal.DataSource.StreamingAdapter;
-				string msg = "NOW_INSERT_BREAKPOINT_TO_this.channel.PushQuoteToConsumers(quoteDequeued) CATCHING_BACKTEST_END_UNPAUSE_PUMP";
-				//if (streamingOriginal.
-
-				if (base.WasBacktestAborted || base.RequestingBacktestAbort.WaitOne(0) == true) {
+				if (base.WasBacktestAborted || base.RequestingBacktestAbortMre.WaitOne(0) == true) {
 					string msg2 = "NOT_ABSORBING_LAST_LIVESIM_STREAMING_INTO_BARS_ORIGINAL__SOLIDIFIER_WILL_COMPLAIN_OTHERWISE";
 					Assembler.PopupException(msg2, null, false);
 				} else {
@@ -176,30 +177,6 @@ namespace Sq1.Core.Livesim {
 					//	streamingBacktest, base.BarsOriginal.Symbol, base.BarsOriginal.ScaleInterval);
 				}
 
-				// LIVESIM_GENERATED_QUOTES_REACH_STRATEGY_VIA_DISTRIBUTOR_IN_LIVESIM_STREAMING__OBEY_BARS_SUBSCRIBED__HANDLED_BY_LIVESIMULATOR
-				//v1  WILL_BE_SILENT__TUNNELING_TO_DDE_ONLY DataDistributor distr = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.DataDistributor;
-				//v2 original Streaming will receive quotes from DDE and continue 1) ChartShadow.InvalidatePanelAll() and 2) Executor.invokeStrategy
-			    DataDistributor distr = this.StreamingOriginal.DataDistributor;
-				bool chartIsSubscribed_toBarsSimulated = distr.DistributionChannels.Count == 1;	// MUST_BE distr.DistributionChannels.Count=1
-				if (chartIsSubscribed_toBarsSimulated) {
-				    distr.ConsumerQuoteUnsubscribe(base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
-				    distr.ConsumerBarUnsubscribe  (base.BarsSimulating.Symbol, base.BarsSimulating.ScaleInterval, this.livesimQuoteBarConsumer);
-					// QuikLivesimStreaming should instantiate the Real QuikStreaming with a DDE server and then connect to it; parent's Livesim probably must ignore this pseudo-Event
-					this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UpstreamDisconnect_LivesimEnded();
-				} else {
-					string msg1 = "WHO_UNSUBSCRIBED_LIVESIM.STREAMING_FROM_BARS_SIMULATING??? DUPLICATE_CALL_TO_SimulationPostBarsRestore_overrideable()";
-					Assembler.PopupException(msg1);
-				}
-
-				//if (this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar != this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar) {
-				//	string msg2 = "PARANOID_CHECK QuotesGenerator.BacktestStrokesPerBar[" + this.Executor.Backtester.QuotesGenerator.BacktestStrokesPerBar
-				//		+ "] != ScriptContextCurrent.BacktestStrokesPerBar[" + this.Executor.Strategy.ScriptContextCurrent.BacktestStrokesPerBar + "]";
-				//	msg += "BacktestContextRestore will DisplayStatus how many StrokesPerBar was backtested; but since in GUI thread QuoteGenerator will be reset, I do equality check here :(";
-				//	Assembler.PopupException(msg2);
-				//}
-
-				this.Executor.DataSource.StreamingAdapter = this.StreamingOriginal;
-
 				double sec = Math.Round(base.Stopwatch.ElapsedMilliseconds / 1000d, 2);
 				string strokesPerBar = base.QuotesGenerator.BacktestStrokesPerBar + "/Bar";
 				string stats = "Livesim took [" + sec + "]sec at " + strokesPerBar;
@@ -207,6 +184,9 @@ namespace Sq1.Core.Livesim {
 
 				// down there, OnAllBarsBacktested will be raised and ChartFormManager will push performance to reporters.
 				base.Executor.BacktestContextRestore();
+
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.UpstreamDisconnect_LivesimEnded();
+				this.Executor.DataSource.StreamingAdapter = this.StreamingOriginal;
 
 				//if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.settings.DelayBetweenSerialQuotesEnabled) {
 				if (base.Executor.Strategy.LivesimStreamingSettings.DelayBetweenSerialQuotesEnabled == false) {
@@ -218,31 +198,19 @@ namespace Sq1.Core.Livesim {
 				#endif
 				throw e;
 			} finally {
-				// Calling ManualResetEvent.Set opens the gate,
-				// allowing any number of threads calling WaitOne to be let through
-				//moved to this.NotifyWaitingThreads()
-				//base.BacktestCompletedQuotesCantGo.Set();
-				//v2 moved to 10 lines above and added unsyncHappenedNotAsResultOfAbort to IndicatorMovingAverageSimple.checkPopupOnResetAndSync()
-				//if (base.BacktestWasAbortedByUserInGui) {
-				//	base.BacktestAborted.Set();
-				//	base.RequestingBacktestAbort.Reset();
-				//}
-				//v3 moved from Stop_inGuiThread koz there it's too early
 				base.Executor.Backtester = this.BacktesterBackup;
-
-				//v3 MOVED_FROM_FIRST_LINES_OF_THIS_METHOD v2 moved from 10 lines below and added unsyncHappenedNotAsResultOfAbort to IndicatorMovingAverageSimple.checkPopupOnResetAndSync()
 				if (base.BacktestWasAbortedByUserInGui) {
-					base.BacktestAborted.Set();
-					base.RequestingBacktestAbort.Reset();
+					base.BacktestAbortedMre.Set();
+					base.RequestingBacktestAbortMre.Reset();
 				}
 			}
 		}
 
 
 		//v1 public void Start_inGuiThread(Button btnStartStop, Button btnPauseResume, ChartShadow chartShadow) {
-		public void Start_inGuiThread(ToolStripButton btnStartStop, ToolStripButton btnPauseResume, ChartShadow chartShadow) {
-			this.btnStartStop = btnStartStop;
-			this.btnPauseResume = btnPauseResume;
+		public void Start_inGuiThread(ToolStripButton btnStartStopPassed, ToolStripButton btnPauseResumePassed, ChartShadow chartShadow) {
+			this.btnStartStop = btnStartStopPassed;
+			this.btnPauseResume = btnPauseResumePassed;
 			this.chartShadow = chartShadow;
 			this.chartShadow.RangeBarCollapseToAccelerateLivesim();
 			this.BacktesterBackup = base.Executor.Backtester;
@@ -307,29 +275,37 @@ namespace Sq1.Core.Livesim {
 		}
 
 		public void Stop_inGuiThread() {
-			string msig = "USER_CLICKED_STOP_IN_LIVESIM_FORM";
+			string msig = " //Livesimulator.Stop_inGuiThread()";
+			if (this.IsBacktestingLivesimNow == false) {
+				Assembler.PopupException("WHY_DID_YOU_INVOKE_ME? LIVESIM_IS_NOT_RUNNING_NOW" + msig);
+				return;
+			}
 			try {
-				ManualResetEvent unpausedMR = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Unpaused;
-				bool isUnpaused = unpausedMR.WaitOne(0);
-				if (isUnpaused == false) {
-					string msg = "AVOIDING_TO_WAIT_FOREVER: LivesimStreaming.GeneratedQuoteEnrichSymmetricallyAndPush()";
-					msg += " YOU_STOPPED_PAUSED_LIVESIM_FROM_GUI UNPAUSED_LIVESIM_QUOTE_PUMP__WOZU???_ORIGINAL_BARS_SOLIDIFIER_STILL_RUNNING_IN_ITS_THREAD";
-					unpausedMR.Set();
+				if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.QuotePumpSeparatePushingThreadEnabled) {
+					string msg = "YOU_STOPPED_PAUSED_LIVESIM_FROM_GUI UNPAUSED_LIVESIM_QUOTE_PUMP__WOZU???_ORIGINAL_BARS_SOLIDIFIER_STILL_RUNNING_IN_ITS_THREAD";
+					ManualResetEvent unpausedMre = this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UnpausedMre;
+					bool isUnpaused = unpausedMre.WaitOne(0);
+					if (isUnpaused == false) {
+						msg = "AVOIDING_TO_WAIT_FOREVER: LivesimStreaming.GeneratedQuoteEnrichSymmetricallyAndPush() " + msg;
+						unpausedMre.Set();
+					}
+					base.AbortRunningBacktestWaitAborted(msg + msig);
+				} else {
+					string msg2 = "LIVESIM_HAS_SINGLE_THREADED_QUOTE_PUMP__NOT_EVEN_USED_IN_QuikLivesimStreaming DONT_REQUEST_AND_DONT_WAIT_JUST_CONTINUE";
+					base.AbortRunningBacktestWaitAborted(msg2 + msig, 0);
 				}
-				string msg2 = " LIVESIM_HAS_SINGLE_THREADED_QUOTE_PUMP__DONT_REQUEST_AND_DONT_WAIT_JUST_CONTINUE";
-				base.AbortRunningBacktestWaitAborted(msig + msg2);
 			} catch (Exception ex) {
-				Assembler.PopupException("Livesimulator.Stop_inGuiThread()", ex);
+				Assembler.PopupException("USER_OR_MAINFORM_CLICKED_STOP_IN_LIVESIM_FORM" + msig, ex);
 			}
 		}
 
 		public void Pause_inGuiThread() {
-			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Unpaused.Reset();
+			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UnpausedMre.Reset();
 			string msg = "AlertsScheduledForDelayedFill.Count=" + this.DataSourceAsLivesimNullUnsafe.BrokerAsLivesimNullUnsafe.DataSnapshot.AlertsScheduledForDelayedFill.Count  + " LEAKED_HANDLES_HUNTER";
 			//Assembler.PopupException(msg);
 		}
 		public void Unpause_inGuiThread() {
-			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.Unpaused.Set();
+			this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.UnpausedMre.Set();
 		}
 		public const string TO_STRING_PREFIX = "LIVESIMULATOR_FOR_";
 		public bool LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild;

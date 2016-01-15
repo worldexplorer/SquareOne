@@ -21,7 +21,7 @@
 		private System.Windows.Forms.SplitContainer splitContainer4;
 		private System.Windows.Forms.SplitContainer splitContainer5;
 		private System.Windows.Forms.GroupBox grpStreaming;
-		private System.Windows.Forms.GroupBox grpExecution;
+		private System.Windows.Forms.GroupBox grpBroker;
 		private System.Windows.Forms.Label lblSymbols;
 		private System.Windows.Forms.TextBox txtSymbols;
 		private System.Windows.Forms.NumericUpDown nmrInterval;
@@ -51,7 +51,7 @@
 			this.lblExecution = new System.Windows.Forms.Label();
 			this.lvBrokerAdapters = new System.Windows.Forms.ListView();
 			this.imglBrokerAdapters = new System.Windows.Forms.ImageList(this.components);
-			this.grpExecution = new System.Windows.Forms.GroupBox();
+			this.grpBroker = new System.Windows.Forms.GroupBox();
 			this.pnlBrokerEditor = new System.Windows.Forms.Panel();
 			this.marketInfoEditor = new Sq1.Widgets.DataSourceEditor.MarketInfoEditor();
 			this.txtDataSourceName = new System.Windows.Forms.TextBox();
@@ -82,7 +82,7 @@
 			this.splitContainer5.Panel1.SuspendLayout();
 			this.splitContainer5.Panel2.SuspendLayout();
 			this.splitContainer5.SuspendLayout();
-			this.grpExecution.SuspendLayout();
+			this.grpBroker.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -245,7 +245,7 @@
 			// splitContainer5.Panel2
 			// 
 			this.splitContainer5.Panel2.BackColor = System.Drawing.SystemColors.Control;
-			this.splitContainer5.Panel2.Controls.Add(this.grpExecution);
+			this.splitContainer5.Panel2.Controls.Add(this.grpBroker);
 			this.splitContainer5.Size = new System.Drawing.Size(259, 269);
 			this.splitContainer5.SplitterDistance = 90;
 			this.splitContainer5.TabIndex = 11;
@@ -283,16 +283,16 @@
 			// 
 			// grpExecution
 			// 
-			this.grpExecution.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.grpBroker.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.grpExecution.Controls.Add(this.pnlBrokerEditor);
-			this.grpExecution.Location = new System.Drawing.Point(3, 3);
-			this.grpExecution.Name = "grpExecution";
-			this.grpExecution.Size = new System.Drawing.Size(253, 172);
-			this.grpExecution.TabIndex = 10;
-			this.grpExecution.TabStop = false;
-			this.grpExecution.Text = "Broker Settings";
+			this.grpBroker.Controls.Add(this.pnlBrokerEditor);
+			this.grpBroker.Location = new System.Drawing.Point(3, 3);
+			this.grpBroker.Name = "grpExecution";
+			this.grpBroker.Size = new System.Drawing.Size(253, 172);
+			this.grpBroker.TabIndex = 10;
+			this.grpBroker.TabStop = false;
+			this.grpBroker.Text = "Broker Settings";
 			// 
 			// pnlBrokerEditor
 			// 
@@ -485,7 +485,7 @@
 			this.splitContainer5.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
 			this.splitContainer5.ResumeLayout(false);
-			this.grpExecution.ResumeLayout(false);
+			this.grpBroker.ResumeLayout(false);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel1.PerformLayout();
 			this.splitContainer1.Panel2.ResumeLayout(false);
