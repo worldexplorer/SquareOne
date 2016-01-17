@@ -200,7 +200,7 @@ namespace Sq1.Strategies.Demo {
 		
 		public override void OnStreamingTriggeringScriptTurnedOnCallback() {
 			string msg = "SCRIPT_IS_NOW_AWARE_THAT_STREAMING_ADAPDER_WILL_TRIGGER_SCRIPT_METHODS"
-				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript+ "]";
+				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript+ "]";
 			Assembler.PopupException(msg, null, false);
 			
 			if (base.HasAlertsPendingOrPositionsOpenNow == false) return;
@@ -210,7 +210,7 @@ namespace Sq1.Strategies.Demo {
 		}
 		public override void OnStreamingTriggeringScriptTurnedOffCallback() {
 			string msg = "SCRIPT_IS_NOW_AWARE_THAT_STREAMING_ADAPDER_WILL_NOT_TRIGGER_SCRIPT_METHODS"
-				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript+ "]";
+				+ " ScriptContextCurrent.IsStreamingTriggeringScript[" + this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript+ "]";
 			Assembler.PopupException(msg, null, false);
 		}
 		

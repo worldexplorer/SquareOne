@@ -290,6 +290,7 @@ namespace Sq1.Core.Streaming {
 
 		public override string ToString() {
 			string ret = "";
+			ret += "DataDistributorFor[" + this.StreamingAdapter.Name + "]: ";
 			foreach (string symbol in this.DistributionChannels.Keys) {
 				string consumers = "";
 				Dictionary<BarScaleInterval, SymbolScaleDistributionChannel> distributionChannel = this.DistributionChannels[symbol];

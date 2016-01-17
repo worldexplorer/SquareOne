@@ -88,8 +88,8 @@ namespace Sq1.Core.StrategyBase {
 
 		[JsonIgnore]	public bool WillBacktestOnAppRestart { get {
 				return	this.BacktestOnRestart
-					&&	this.IsStreaming
-					&&	this.IsStreamingTriggeringScript;
+					&&	this.DownstreamSubscribed
+					&&	this.StreamingIsTriggeringScript;
 		} }
 		[JsonProperty]	public string						SequenceIterationName;
 		[JsonProperty]	public int							SequenceIterationSerno;

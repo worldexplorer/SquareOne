@@ -185,7 +185,7 @@ namespace Sq1.Core.Livesim {
 				// down there, OnAllBarsBacktested will be raised and ChartFormManager will push performance to reporters.
 				base.Executor.BacktestContextRestore();
 
-				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.UpstreamDisconnect_LivesimEnded();
+				this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe	.UpstreamDisconnect_LivesimTerminatedOrAborted();
 				this.Executor.DataSource.StreamingAdapter = this.StreamingOriginal;
 
 				//if (this.DataSourceAsLivesimNullUnsafe.StreamingAsLivesimNullUnsafe.settings.DelayBetweenSerialQuotesEnabled) {

@@ -205,19 +205,27 @@ namespace Sq1.Gui.Forms {
 			}
 
 			// "AfterBarsLoaded" implies Executor.SetBars() has already initialized this.ChartFormManager.Executor.DataSource
-			this.populateIsStreamingAsOrangeInBarsMni();
+			this.populateCtxMniBars_streamingConnectionState_orange();
 		}
-		void populateIsStreamingAsOrangeInBarsMni() {
-			if (this.ChartFormManager.ContextCurrentChartOrStrategy.IsStreaming == false) {
+		void populateCtxMniBars_streamingConnectionState_orange() {
+			if (this.ChartFormManager.ContextCurrentChartOrStrategy.DownstreamSubscribed == false) {
 				this.mniSubscribedToStreamingAdapterQuotesBars.Checked = false;
 				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = Color.LightSalmon;
 				this.DdbBars.BackColor = Color.LightSalmon;
-				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "NOT Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapterName + "]";
+
+				DataSource dataSource = this.ChartFormManager.Executor.DataSource;
+				string mniSubscribedText = "NOT Subscribed to [" + dataSource.StreamingAdapterName + "]";
+				mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
+				this.mniSubscribedToStreamingAdapterQuotesBars.Text = mniSubscribedText;
 			} else {
 				this.mniSubscribedToStreamingAdapterQuotesBars.Checked = true;
 				this.mniSubscribedToStreamingAdapterQuotesBars.BackColor = SystemColors.Control;
 				this.DdbBars.BackColor = SystemColors.Control;
-				this.mniSubscribedToStreamingAdapterQuotesBars.Text = "Subscribed to [" + this.ChartFormManager.Executor.DataSource.StreamingAdapterName + "]";
+
+				DataSource dataSource = this.ChartFormManager.Executor.DataSource;
+				string mniSubscribedText = "Subscribed to [" + dataSource.StreamingAdapterName + "]";
+				mniSubscribedText += dataSource.StreamingAdapter != null ? "[" + dataSource.StreamingAdapter.UpstreamConnectionState + "]" : "[StreamingAdapter_NULL]";
+				this.mniSubscribedToStreamingAdapterQuotesBars.Text = mniSubscribedText;
 			}
 		}
 
@@ -250,7 +258,7 @@ namespace Sq1.Gui.Forms {
 
 			this.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 
-			this.btnStreamingTriggersScript.Checked = ctxChart.IsStreamingTriggeringScript;
+			this.btnStreamingTriggersScript.Checked = ctxChart.StreamingIsTriggeringScript;
 
 			ContextScript ctxScript = ctxChart as ContextScript;
 			if (ctxScript == null) {

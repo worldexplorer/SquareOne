@@ -13,9 +13,9 @@ namespace Sq1.Core.StrategyBase {
 		[JsonProperty]	public BarScaleInterval	ScaleInterval;
 		[JsonProperty]	public BarDataRange		DataRange;
 
-		[JsonProperty]	public bool				IsStreamingTriggeringScript;	// this should be in ContextScript !...
+		[JsonProperty]	public bool				StreamingIsTriggeringScript;	// this should be in ContextScript !...
 		[JsonProperty]	public bool				ShowRangeBar;
-		[JsonProperty]	public bool				IsStreaming;
+		[JsonProperty]	public bool				DownstreamSubscribed;
 
 		public ContextChart(string name) : this() {
 			Name = name;
@@ -28,9 +28,9 @@ namespace Sq1.Core.StrategyBase {
 			DataSourceName				= "DATASOURCENAME_UNDEFINED__CTX_JUST_CREATED";
 			ScaleInterval				= new BarScaleInterval(BarScale.Unknown, -1);
 			DataRange					= new BarDataRange(500);
-			IsStreamingTriggeringScript	= false;
+			StreamingIsTriggeringScript	= false;
 			ShowRangeBar				= false;
-			IsStreaming					= false;
+			DownstreamSubscribed		= false;
 		}
 		public void AbsorbFrom(ContextChart found) {
 			if (found == null) return;
@@ -40,7 +40,7 @@ namespace Sq1.Core.StrategyBase {
 			this.ScaleInterval					= found.ScaleInterval.Clone();
 			this.DataRange						= found.DataRange.Clone();
 			//this.ChartBarSpacing				= found.ChartBarSpacing;
-			this.IsStreamingTriggeringScript	= found.IsStreamingTriggeringScript;
+			this.StreamingIsTriggeringScript	= found.StreamingIsTriggeringScript;
 			this.ShowRangeBar					= found.ShowRangeBar;
 		}
 		public override string ToString() {
@@ -53,8 +53,8 @@ namespace Sq1.Core.StrategyBase {
 			//return ret;
 			//v2
 			StringBuilder sb = new StringBuilder();
-			sb.Append(this.DataSourceName);
-			sb.Append(" :: ");
+			//sb.Append(this.DataSourceName);
+			//sb.Append(" :: ");
 			sb.Append(this.Symbol);
 			sb.Append(" [");
 			if (this.ScaleInterval != null) sb.Append(this.ScaleInterval.ToString());

@@ -155,8 +155,8 @@ namespace Sq1.Gui.Forms {
 					? this.ContextCurrentChartOrStrategy.Symbol
 					: this.Executor.DataSource.StreamingAdapterName;
 
-				string subscribed = this.ContextCurrentChartOrStrategy.IsStreaming ? " Subscribed" : " NotSubscribed";
-				string triggering = this.ContextCurrentChartOrStrategy.IsStreamingTriggeringScript ? " TriggeringScript" : " NotTriggeringScript";
+				string subscribed = this.ContextCurrentChartOrStrategy.DownstreamSubscribed ? " Subscribed" : " NotSubscribed";
+				string triggering = this.ContextCurrentChartOrStrategy.StreamingIsTriggeringScript ? " TriggeringScript" : " NotTriggeringScript";
 
 				return emptyChartOrStrategy + subscribed + triggering;
 			} }
@@ -365,8 +365,8 @@ namespace Sq1.Gui.Forms {
 				//v1 if (this.DataSnapshot.ContextChart.IsStreaming) {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
-				if (ctx.IsStreaming) {
-					string reason = "contextChart[" + ctx.ToString() + "].IsStreaming=true";
+				if (ctx.DownstreamSubscribed) {
+					string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=true";
 					this.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
 				}
 			} catch (Exception ex) {
@@ -431,8 +431,8 @@ namespace Sq1.Gui.Forms {
 				//v1 if (this.Strategy.ScriptContextCurrent.IsStreaming) {
 				//v2 universal for both InitializeWithStrategy() and InitializeChartNoStrategy()
 				ContextChart ctx = this.ContextCurrentChartOrStrategy;
-				if (ctx.IsStreaming) {
-					string reason = "contextChart[" + ctx.ToString() + "].IsStreaming=true;"
+				if (ctx.DownstreamSubscribed) {
+					string reason = "contextChart[" + ctx.ToString() + "].DownstreamSubscribed=true;"
 						+ " OnApprestartBacktest will launch in another thread and I can't postpone subscription until it finishes"
 						+ " so the Pump should set paused now because UpstreamSubscribe should not invoke ChartFormStreamingConsumer"
 						+ " whenever StreamingAdapter is ready, but only after all ScaleSymbol consuming backtesters are complete";
@@ -492,7 +492,7 @@ namespace Sq1.Gui.Forms {
 			//}
 			
 			//v2: I closed opened the app while streaming from StreamingMock and I want it streaming after app restart!!!
-			if (context.IsStreaming && context.IsStreamingTriggeringScript && saveStrategyRequired == true) {	// saveStrategyRequired=true for all user-clicked GUI events
+			if (context.DownstreamSubscribed && context.StreamingIsTriggeringScript && saveStrategyRequired == true) {	// saveStrategyRequired=true for all user-clicked GUI events
 				string msg = "NOT_AN_ERROR__I_REFUSE_TO_STOP_STREAMING__DISABLE_GUI_CONTROLS_THAT_TRIGGER_RELOADING_BARS";
 				Assembler.PopupException(msg + msig, null, false);
 			}
