@@ -138,7 +138,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.cbxStartDde.Name = "cbxStartDde";
 			this.cbxStartDde.Size = new System.Drawing.Size(207, 23);
 			this.cbxStartDde.TabIndex = 20;
-			this.cbxStartDde.Text = "Start DDE Server";
+			this.cbxStartDde.Text = "Start DDE Server (now stopped)";
 			this.cbxStartDde.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.cbxStartDde.UseVisualStyleBackColor = true;
 			this.cbxStartDde.CheckedChanged += new System.EventHandler(this.cbxStartDde_CheckedChanged);

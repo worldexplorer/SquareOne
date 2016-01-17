@@ -14,66 +14,64 @@ namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreaming : StreamingAdapter {
 
 		public override void UpstreamConnect() { lock (base.SymbolsSubscribedLock) {
-				if (base.StreamingConnected == true) return;
-				string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
-				this.DdeServerStart();
-				base.ConnectionState = ConnectionState.ConnectedUnsubscribed;
-				//Assembler.DisplayConnectionStatus(base.ConnectionState, "Started symbolsSubscribed[" + symbolsSubscribed + "]");
-				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " started DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
-				base.StreamingConnected = true;
+			if (base.UpstreamConnected == true) return;
+			string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
+			this.DdeServerRegister();	// ConnectionState.UpstreamConnected_downstreamUnsubscribed;		// will result in StreamingConnected=true
+			this.DdeBatchSubscriber.AllDdeTablesReceivedCountersReset();
+			this.UpstreamConnectionState = ConnectionState.UpstreamConnected_downstreamSubscribedAll;
+			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " started DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 		} }
 		public override void UpstreamDisconnect() { lock (base.SymbolsSubscribedLock) {
-				if (base.StreamingConnected == false) return;
-				if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == false) {
-					Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]", null, false);
-				}
-				string symbolsUnsubscribed = this.upstreamUnsubscribeAllDataSourceSymbols();
-				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " Stopped symbolsUnsubscribed[" + symbolsUnsubscribed + "]");
-				this.DdeServerStop();
-				base.ConnectionState = ConnectionState.InitiallyDisconnected;
-				Assembler.DisplayConnectionStatus(base.ConnectionState, this.Name + " stopped DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
-				base.StreamingConnected = false;
+			if (base.UpstreamConnected == false) return;
+			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == false) {
+				Assembler.PopupException("QUIK stopping DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]", null, false);
+			}
+			string symbolsUnsubscribed = this.upstreamUnsubscribeAllDataSourceSymbols();
+			this.UpstreamConnectionState = ConnectionState.UpstreamConnected_downstreamUnsubscribedAll;
+			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " symbolsUnsubscribedAll[" + symbolsUnsubscribed + "]");
+			this.DdeServerUnregister();
+			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " stopped DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 		} }
 
-		public override void UpstreamSubscribe(string symbol) {
+		public override void UpstreamSubscribe(string symbol) { lock (base.SymbolsSubscribedLock) {
 			if (string.IsNullOrEmpty(symbol)) {
 				Assembler.PopupException("can't subscribe empty symbol=[" + symbol + "]; returning");
 				return;
 			}
-			lock (base.SymbolsSubscribedLock) {
-				if (this.DdeBatchSubscriber.SymbolHasIndividualChannels(symbol)) {
-					String msg = "QUIK: ALREADY SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeBatchSubscriber.IndividualChannelsForSymbol(symbol) + "]";
-					Assembler.PopupException(msg);
-					//this.StatusReporter.UpdateConnectionStatus(ConnectionState.OK, 0, msg);
-					return;
-				}
-				// NO_SERVER_ISNOT_STARTED_HERE_YET NB adding another DdeConversation into the registered DDE server - is NDDE capable of registering receiving topics on-the-fly?
-				this.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolAdd(symbol);
+			if (this.DdeBatchSubscriber.SymbolHasIndividualChannels(symbol)) {
+				String msg = "QUIK: ALREADY SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeBatchSubscriber.IndividualChannelsForSymbol(symbol) + "]";
+				Assembler.PopupException(msg);
+				//this.StatusReporter.UpdateConnectionStatus(ConnectionState.OK, 0, msg);
+				return;
 			}
-		}
-		public override void UpstreamUnSubscribe(string symbol) {
+			// NO_SERVER_ISNOT_STARTED_HERE_YET NB adding another DdeConversation into the registered DDE server - is NDDE capable of registering receiving topics on-the-fly?
+			this.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolAdd(symbol);
+			this.UpstreamConnectionState = this.UpstreamConnected
+				?    ConnectionState.UpstreamConnected_downstreamSubscribed
+				: ConnectionState.UpstreamDisconnected_downstreamSubscribed;
+		} }
+		public override void UpstreamUnSubscribe(string symbol) { lock (base.SymbolsSubscribedLock) {
 			if (string.IsNullOrEmpty(symbol)) {
 				Assembler.PopupException("can't unsubscribe empty symbol=[" + symbol + "]; returning");
 				return;
 			}
-			lock (base.SymbolsSubscribedLock) {
-				if (this.DdeBatchSubscriber.SymbolHasIndividualChannels(symbol) == false) {
-					string errormsg = "QUIK: NOTHING TO REMOVE SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeBatchSubscriber.IndividualChannelsForSymbol(symbol) + "]";
-					Assembler.PopupException(errormsg);
-					return;
-				}
-				this.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolRemove(symbol);
+			if (this.DdeBatchSubscriber.SymbolHasIndividualChannels(symbol) == false) {
+				string errormsg = "QUIK: NOTHING TO REMOVE SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeBatchSubscriber.IndividualChannelsForSymbol(symbol) + "]";
+				Assembler.PopupException(errormsg);
+				return;
 			}
-		}
-		public override bool UpstreamIsSubscribed(string symbol) {
+			this.DdeBatchSubscriber.TableIndividual_DepthOfMarket_ForSymbolRemove(symbol);
+			this.UpstreamConnectionState = this.UpstreamConnected
+				?    ConnectionState.UpstreamConnected_downstreamUnsubscribed
+				: ConnectionState.UpstreamDisconnected_downstreamUnsubscribed;
+		} }
+		public override bool UpstreamIsSubscribed(string symbol) { lock (base.SymbolsSubscribedLock) {
 			if (String.IsNullOrEmpty(symbol)) {
 				Assembler.PopupException("IsSubscribed() symbol=[" + symbol + "]=IsNullOrEmpty; returning");
 				return false;
 			}
-			lock (base.SymbolsSubscribedLock) {
-				return this.DdeBatchSubscriber.SymbolHasIndividualChannels(symbol);
-			}
-		}
+			return this.DdeBatchSubscriber.SymbolHasIndividualChannels(symbol);
+		} }
 
 		public override void PushQuoteReceived(Quote quote) {
 			DateTime thisDayClose = this.DataSource.MarketInfo.getThisDayClose(quote);

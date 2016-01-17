@@ -5,6 +5,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using Sq1.Core;
 using Sq1.Core.Streaming;
 using Sq1.Core.DataFeed;
+using System.Windows.Forms;
 
 namespace Sq1.Adapters.Quik.Streaming {
 	public partial class QuikStreamingEditor {
@@ -34,18 +35,10 @@ namespace Sq1.Adapters.Quik.Streaming {
 		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => streamingAdapterInstance.StreamingEditorInitialize() will call this
 		public QuikStreamingEditor(StreamingAdapter quikStreamingAdapter, IDataSourceEditor dataSourceEditor) : this() {
 			base.Initialize(quikStreamingAdapter, dataSourceEditor);
-			if (this.cbxStartDde.Checked == this.quikStreamingAdapter.DdeServerStarted) return;
-			try {
-				this.dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only = true;
-				this.cbxStartDde.Checked  = this.quikStreamingAdapter.DdeServerStarted;
-			} catch (Exception ex) {
-				string msg = "HOPEFULLY_NEVER_HAPPENS__YOU_CAUGHT_IT_EARLIER //QuikStreamingEditor(" + quikStreamingAdapter + ")";
-				Assembler.PopupException(msg, ex);
-			} finally {
-				this.dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only = false;
-				this.propagateDdeState_intoBtnText_threadUnsafe();
-			}
+			this.quikStreamingAdapter.OnConnectionStateChanged += new EventHandler<EventArgs>(quikStreamingAdapter_OnConnectionStateChanged);
+			this.propagateStreamingConnected_intoBtnStateText();
 		}
+
 		public override void PushStreamingAdapterSettingsToEditor() {
 			this.DdeServerPrefix	= this.quikStreamingAdapter.DdeServiceName;
 			this.DdeTopicQuotes		= this.quikStreamingAdapter.DdeTopicQuotes;
@@ -60,7 +53,25 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.quikStreamingAdapter.DdeTopicPrefixDom	= this.DdeTopicPrefixDom;
 		}
 
-		void propagateDdeState_intoBtnText_threadUnsafe() {
+		void propagateStreamingConnected_intoBtnStateText() {
+			if (base.InvokeRequired) {
+				base.BeginInvoke(new MethodInvoker(this.propagateStreamingConnected_intoBtnStateText));
+				return;
+			}
+			//if (this.cbxStartDde.Checked == this.quikStreamingAdapter.DdeServerStarted) return;
+			if (this.cbxStartDde.Checked != this.quikStreamingAdapter.UpstreamConnected) {
+				try {
+					this.dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only = true;
+					//this.cbxStartDde.Checked  = this.quikStreamingAdapter.DdeServerStarted;
+					this.cbxStartDde.Checked = this.quikStreamingAdapter.UpstreamConnected;
+				} catch (Exception ex) {
+					string msg = "HOPEFULLY_NEVER_HAPPENS__YOU_CAUGHT_IT_EARLIER //QuikStreamingEditor(" + quikStreamingAdapter + ")";
+					Assembler.PopupException(msg, ex);
+				} finally {
+					this.dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only = false;
+				}
+			}
+	
 			string btnTxtMustBe = this.quikStreamingAdapter.DdeServerStartStopOppositeAction;
 			if (this.cbxStartDde.Text == btnTxtMustBe) return;
 				this.cbxStartDde.Text  = btnTxtMustBe;

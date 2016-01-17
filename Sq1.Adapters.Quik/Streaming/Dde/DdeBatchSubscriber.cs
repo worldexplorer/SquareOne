@@ -66,7 +66,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 			return ret;
 		}
 		public override string ToString() {
-			string ret = "DdeServiceName[" + this.quikStreamingAdapter.DdeServiceName + "]/[" + this.quikStreamingAdapter.ConnectionState + "]:";
+			string ret = "DdeServiceName[" + this.quikStreamingAdapter.DdeServiceName + "]/[" + this.quikStreamingAdapter.UpstreamConnectionState + "]:";
 			if (this.TableQuotes != null)	ret += " " + this.TableQuotes.ToString() + " ";
 			if (this.TableTrades != null)	ret += " " + this.TableTrades.ToString();
 			string individualChannels = "";

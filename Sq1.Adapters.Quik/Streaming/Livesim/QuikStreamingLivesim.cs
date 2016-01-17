@@ -29,7 +29,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		[JsonIgnore]			ConcurrentDictionaryGeneric<double, double> LevelTwoBids	{ get { return base.StreamingDataSnapshot.LevelTwoBids_refactorBySymbol; } }
 
 		[JsonIgnore]	public	QuikStreaming	QuikStreamingOriginal						{ get { return base.StreamingOriginal as QuikStreaming; } }
-		[JsonIgnore]			bool			ddeWasStarted_preLivesim;
+		[JsonIgnore]			bool			upstreamWasSubscribed_preLivesim;
 
 		public QuikStreamingLivesim() : base(true) {
 			base.Name = "QuikStreamingLivesim";
@@ -48,13 +48,15 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 		public override void UpstreamConnect_LivesimStarting() {
 			string msig = " //UpstreamConnect_LivesimStarting(" + this.ToString() + ")";
 
+			this.upstreamWasSubscribed_preLivesim = this.QuikStreamingOriginal.UpstreamConnected;
+
 			base.SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor();
-			this.QuikStreamingOriginal.InitializeDataSource(base.Livesimulator.DataSourceAsLivesimNullUnsafe, false);	//LivesimDataSource having LivesimBacktester and no-solidifier DataDistributor
+			//LivesimDataSource is now having LivesimBacktester and no-solidifier DataDistributor
+			this.QuikStreamingOriginal.InitializeDataSource(base.Livesimulator.DataSourceAsLivesimNullUnsafe, false);
 	
-			this.ddeWasStarted_preLivesim = this.QuikStreamingOriginal.StreamingConnected;
-			if (this.ddeWasStarted_preLivesim == false) {
+			//if (this.upstreamWasSubscribed_preLivesim == false) {
 				this.QuikStreamingOriginal.UpstreamConnect();
-			}
+			//}
 
 			// MarketLive checks for LastQuote, which I don't save anymore in QuikStreamingLivesim
 			// QuikStreamingLivesim is a handicap without StreamingDataSnapshot; normally Snap is maintained by
@@ -74,13 +76,13 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			Assembler.PopupException(msg + msig, null, false);
 		}
 
-		public override void UpstreamDisconnect_LivesimEnded() {
+		public override void UpstreamDisconnect_LivesimTerminatedOrAborted() {
 			string msig = " //UpstreamDisconnect_LivesimEnded(" + this.ToString() + ")";
 			string msg = "Disposing QuikStreaming with prefixed DDE tables [...]";
 			Assembler.PopupException(msg + msig, null, false);
 			this.QuikLivesimBatchPublisher.DisconnectAll();
 			this.QuikLivesimBatchPublisher.DisposeAll();
-			if (this.ddeWasStarted_preLivesim == false) {
+			if (this.upstreamWasSubscribed_preLivesim == false) {
 				this.QuikStreamingOriginal.UpstreamDisconnect();	// not disposed, QuikStreaming.ddeServerStart() is reusable
 			}
 			//this.QuikStreamingOriginal.SolidifierSubscribeOneSymbol_iFinishedLivesimming();

@@ -26,15 +26,17 @@ namespace Sq1.Adapters.Quik.Streaming {
 		}
 		void cbxStartDde_CheckedChanged(object sender, EventArgs e) {
 			if (this.dontStartStopDdeServer_imSyncingDdeStarted_intoTheBtnText_only) {
-				this.propagateDdeState_intoBtnText_threadUnsafe();
+				this.propagateStreamingConnected_intoBtnStateText();
 				return;
 			}
 			if (this.cbxStartDde.Checked) {
-				this.quikStreamingAdapter.DdeServerStart();
+				this.quikStreamingAdapter.DdeServerRegister();
 			} else {
-				this.quikStreamingAdapter.DdeServerStop();
+				this.quikStreamingAdapter.DdeServerUnregister();
 			}
-			this.propagateDdeState_intoBtnText_threadUnsafe();
+		}
+		void quikStreamingAdapter_OnConnectionStateChanged(object sender, EventArgs e) {
+			this.propagateStreamingConnected_intoBtnStateText();
 		}
    }
 }

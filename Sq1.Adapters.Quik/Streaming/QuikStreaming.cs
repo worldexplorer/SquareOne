@@ -22,7 +22,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 		[JsonProperty]	public		string					DdeTopicPrefixDom;	//QuikStreamingLivesim needs it public { get; internal set; }
 
 		[JsonIgnore]	public		XlDdeServer				DdeServer					{ get; private set; }
-		[JsonProperty]	public		bool					DdeServerStarted			{ get; private set; }
+		[JsonIgnore]	public		bool					DdeServerIsRegistered		{ get { return this.DdeServer != null && this.DdeServer.IsRegistered; } }
 
 		[JsonIgnore]	public		DdeBatchSubscriber		DdeBatchSubscriber			{ get; private set; }
 		[JsonIgnore]				string					ddeChannelsEstablished		{ get {
@@ -75,7 +75,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 		} }
 
 		[JsonIgnore]	public	string					DdeServerStartStopOppositeAction { get {
-			return this.DdeServerStarted ? "Stop DDE Server (now started)" : "Start DDE Server (now stopped)";
+			return this.DdeServerIsRegistered ? "Stop DDE Server (now started)" : "Start DDE Server (now stopped)";
 			} }
 
 		public QuikStreaming() : base() {
@@ -86,7 +86,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.DdeTopicTrades			= "trades";
 			this.DdeTopicPrefixDom		= "dom";
 			base.StreamingDataSnapshot	= new QuikStreamingDataSnapshot(this);
-			this.ConnectionState		= ConnectionState.InitiallyDisconnected;
+			this.UpstreamConnectionState		= ConnectionState.DisconnectedJustConstructed;
 			base.LivesimStreaming		= new QuikStreamingLivesim();
 		}
 		public override void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
@@ -97,7 +97,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 				if (this.DdeBatchSubscriber != null) {
 					string msg = "RETHINK_INITIALIZATION_AND_DdeTables_LIFECYCLE";
 					Assembler.PopupException(msg);
-					this.DdeServerStop();
+					this.DdeServerUnregister();
 				} else {
 					this.DdeBatchSubscriber = new DdeBatchSubscriber(this);
 				}
@@ -107,51 +107,55 @@ namespace Sq1.Adapters.Quik.Streaming {
 			}
 			base.InitializeDataSource(dataSource, subscribeSolidifier);
 			//MOVED_TO_MainForm.WorkspaceLoad() this.Connect();
-			this.ConnectionState		= ConnectionState.JustInitialized;
 		}
 
-		public void DdeServerStart() {
+		public void DdeServerRegister() {
 			if (string.IsNullOrWhiteSpace(this.DdeServer.Service)) {
 				string msg1 = "can't start DdeServer with IsNullOrWhiteSpace(server.Service)";
 				Assembler.PopupException(msg1);
 				return;
 			}
 
-			if (string.IsNullOrWhiteSpace(this.DdeServer.Service)) {
-				string msg1 = "DDE_SERVER_ALREADY_STARTED_FOR_QUIK_STREAMING_DATASOURCE[" + this.DataSource + "] WITH_TOPICS[" + this.ToString() + "]";
-				Assembler.PopupException(msg1);
+			if (this.DdeServerIsRegistered) {
+				string msg1 = "OKAY_TO_IGNORE_IF_YOU_SEE_UpstreamConnect_LivesimStarting_UPSTACK"
+					+ " DDE_SERVER_ALREADY_REGISTERED_FOR_QUIK_STREAMING_DATASOURCE[" + this.DataSource + "] WITH_TOPICS[" + this.ToString() + "]";
+				Assembler.PopupException(msg1, null, false);
 				return;
 			}
 
 			try {
 				this.DdeServer.Register();
-				this.DdeServerStarted = true;
-				this.DdeBatchSubscriber.AllDdeTablesReceivedCountersReset();
+				base.UpstreamConnectionState = ConnectionState.UpstreamConnected_downstreamUnsubscribed;		// will result in StreamingConnected=true
+				string msg = "DDE_SERVER_STARTED " + this.ToString();
+				Assembler.PopupException(msg, null, false);
 			} catch (Exception ex) {
-				this.ConnectionState = ConnectionState.ConnectFailed;
+				this.UpstreamConnectionState = ConnectionState.ConnectFailed;
 				Assembler.PopupException("DDE_SERVER_REGISTRATION_FAILED " + this.ToString(), ex);
 				return;
 			}
-
-			this.ConnectionState = ConnectionState.ConnectedSubscribedAll;
-			string msg = "DDE_SERVER_STARTED " + this.ToString();
-			Assembler.PopupException(msg, null, false);
 		}
 
-		public void DdeServerStop() {
+		public void DdeServerUnregister() {
+			if (this.DdeServerIsRegistered == false) {
+				string msg1 = "ARE_YOU_LIVESIMMING? DDE_SERVER_ALREADY_UNREGISTERRED_FOR_QUIK_STREAMING_DATASOURCE[" + this.DataSource + "] WITH_TOPICS[" + this.ToString() + "]";
+				Assembler.PopupException(msg1);
+				return;
+			}
+
 			try {
 				this.DdeServer.Disconnect();
 				this.DdeServer.Unregister();
 				//NO_I_WILL_RESTART_IT this.DdeServer.Dispose();
 				//NO_I_WILL_RESTART_IT this.ddeServer = null;
-				this.DdeServerStarted = false;
+				base.UpstreamConnectionState = ConnectionState.UpstreamDisconnected_downstreamUnsubscribed;
 			} catch (Exception ex) {
-				this.ConnectionState = ConnectionState.DisconnectFailed;
+				this.UpstreamConnectionState = ConnectionState.DisconnectFailed;
 				Assembler.PopupException("DDE_SERVER_STOPPING_ERROR " + this.ToString(), ex);
 				return;
 			}
 
-			this.ConnectionState = ConnectionState.DisconnectedUnsubscribedAll;
+			// I didn't mention/implement unsubscribeAll()?
+			//this.ConnectionState = ConnectionState.UpstreamDisconnected_downstreamUnsubscribed;
 			if (Assembler.InstanceInitialized.MainFormClosingIgnoreReLayoutDockedForms == false) {
 				Assembler.PopupException("DDE_SERVER_STOPPED " + this.ToString(), null, false);
 			}
@@ -189,7 +193,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 		}
 
 		public override string ToString() {
-			return this.Name + "/[" + this.ConnectionState + "]: Symbols[" + base.SymbolsUpstreamSubscribedAsString + "]"
+			return this.Name + "/[" + this.UpstreamConnectionState + "]: Symbols[" + base.SymbolsUpstreamSubscribedAsString + "]"
 				+ " DDE[" + this.ddeChannelsEstablished + "]";
 		}
 	}

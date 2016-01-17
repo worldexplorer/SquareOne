@@ -88,7 +88,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 		//}
 
 		void client_Disconnected(object sender, DdeDisconnectedEventArgs e) {
-			string msig = " //client_Disconnected(" + e.ToString() + ")";
+			string msig = " //XlDdeTableGenerator.client_Disconnected(" + e.ToString() + ")";
 			string msg = "QuikLivesimDdeClient[" + this.QuikStreamingLivesim.Name + "]";
 			Assembler.PopupException(msg + msig, null, false);
 		}
