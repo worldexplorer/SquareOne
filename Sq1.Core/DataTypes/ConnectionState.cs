@@ -4,23 +4,29 @@ namespace Sq1.Core.DataTypes {
 		//Error,
 		//Warning
 		Unknown = 0,
-		JustInitialized = 1,
-		InitiallyDisconnected = 2,
+		JustInitialized_solidifiersUnsubscribed = 1,
+		JustInitialized_solidifiersSubscribed = 2,
+		DisconnectedJustConstructed = 3,
 
 		// used in QuikBrokerAdapter
-		DisconnectedUnsubscribed = 3,
-		ConnectedUnsubscribed = 4,
-		SymbolSubscribed = 10,
-		SymbolUnsubscribed = 11,
-		ErrorConnectingNoRetriesAnymore = 12,
+		UpstreamConnected_downstreamUnsubscribed = 10,
+		UpstreamConnected_downstreamSubscribed = 11,
+		UpstreamConnected_downstreamSubscribedAll = 12,
+		UpstreamConnected_downstreamUnsubscribedAll = 13,
+
+		UpstreamDisconnected_downstreamSubscribed = 15,
+		UpstreamDisconnected_downstreamUnsubscribed = 16,
+
+		SymbolSubscribed = 30,
+		SymbolUnsubscribed = 31,
+		ErrorConnectingNoRetriesAnymore = 32,
 		//ErrorDisconnecting = 13,
 		//ErrorSymbolSubscribing = 14,
 		//ErrorSymbolUnsubscribing = 15,
 
 		// used in QuikLivesimStreaming
-		SymbolsSubscribedAllDataSource = 50,
-		ConnectedSubscribedAll = 51,
-		DisconnectedUnsubscribedAll = 70,
+		DdeClientConnected = 70,
+		DdeClientDisconnected = 71,
 
 		ConnectFailed = 90,
 		DisconnectFailed = 91,

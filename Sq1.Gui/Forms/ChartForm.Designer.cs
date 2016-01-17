@@ -402,6 +402,7 @@ namespace Sq1.Gui.Forms {
             this.mniShowBarRange});
 			this.ctxBars.Name = "ctxScaleInterval";
 			this.ctxBars.Size = new System.Drawing.Size(252, 278);
+			this.ctxBars.Opening += new System.ComponentModel.CancelEventHandler(ctxBars_Opening);
 			// 
 			// mniBarsSymbolDataSource
 			// 
@@ -672,7 +673,6 @@ namespace Sq1.Gui.Forms {
 			this.ctxBars.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
-
 		}
 
 		private Sq1.Widgets.LabeledTextBox.MenuItemLabeledTextBox mnitlbShowLastBars;

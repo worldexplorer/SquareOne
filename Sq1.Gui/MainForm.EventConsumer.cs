@@ -98,7 +98,7 @@ namespace Sq1.Gui {
 					return;
 				}
 				try {
-					if (streaming.StreamingConnected) streaming.UpstreamDisconnect();
+					if (streaming.UpstreamConnected) streaming.UpstreamDisconnect();
 				} catch (Exception ex) {
 					string msg = "STREAMING_THREW_WHILE_DISCONNECTING [" + streaming.ToString() + "]";
 					Assembler.PopupException(msg + msig, ex);

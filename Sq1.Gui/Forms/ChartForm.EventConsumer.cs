@@ -15,6 +15,9 @@ using Sq1.Widgets.LabeledTextBox;
 
 namespace Sq1.Gui.Forms {
 	public partial class ChartForm {
+		void ctxBars_Opening(object sender, CancelEventArgs e) {
+			this.populateCtxMniBars_streamingConnectionState_orange();
+		}
 		void ctxChart_Opening(object sender, CancelEventArgs e) {
 			if (this.MniShowSourceCodeEditor.Enabled == false) return;	// don't show ScriptEditor for Strategy.ActivatedFromDll
 			this.MniShowSourceCodeEditor.Checked = this.ChartFormManager.ScriptEditorIsOnSurface; 
@@ -32,9 +35,9 @@ namespace Sq1.Gui.Forms {
 		}
 		void mniStrategyRemove_Click(object sender, System.EventArgs e) {
 			this.ChartFormManager.Strategy = null;
-			this.ChartFormManager.Executor.Initialize(null, this.ChartFormManager.ChartForm.ChartControl);
+			this.ChartFormManager.Executor.Initialize(null, this.ChartControl);
 			this.ChartFormManager.InitializeChartNoStrategy(this.ChartFormManager.ContextCurrentChartOrStrategy);
-			this.ChartFormManager.ChartForm.ChartControl.ClearAllScriptObjectsBeforeBacktest();
+			this.ChartControl.ClearAllScriptObjectsBeforeBacktest();
 			
 			if (DockContentImproved.IsNullOrDisposed(this.ChartFormManager.ScriptEditorForm) == false) {
 				this.ChartFormManager.ScriptEditorForm.Close();
@@ -141,18 +144,18 @@ namespace Sq1.Gui.Forms {
 			// ToolStripButton pre-toggles itself when ChartForm{Properties}.BtnStreaming.CheckOnClick=True this.BtnStreaming.Checked = !this.BtnStreaming.Checked;
 			try {
 				if (this.btnStreamingTriggersScript.Checked) {
-					this.ChartFormManager.ChartForm.ChartControl.ChartStreamingConsumer.StreamingTriggeringScriptStart();
+					this.ChartControl.ChartStreamingConsumer.StreamingTriggeringScriptStart();
 					// same idea as in mniSubscribedToStreamingAdapterQuotesBars_Click();
 					ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
 					if (	this.ChartFormManager.Executor.Strategy != null
 						&&	this.ChartFormManager.Executor.Strategy.Script != null
-						&&	ctxChart.IsStreamingTriggeringScript
+						&&	ctxChart.StreamingIsTriggeringScript
 						&& this.ChartFormManager.Strategy.ScriptContextCurrent.BacktestOnTriggeringYesWhenNotSubscribed
 						) {
 						this.ChartFormManager.BacktesterRunSimulation();
 					}
 				} else {
-					this.ChartFormManager.ChartForm.ChartControl.ChartStreamingConsumer.StreamingTriggeringScriptStop();
+					this.ChartControl.ChartStreamingConsumer.StreamingTriggeringScriptStop();
 				}
 				this.PopulateBtnStreamingTriggersScript_afterBarsLoaded();
 				if (this.ChartFormManager.Strategy != null) {
@@ -404,14 +407,14 @@ namespace Sq1.Gui.Forms {
 		void mniSubscribedToStreamingAdapterQuotesBars_Click(object sender, EventArgs e) {
 			try {
 				ContextChart ctxChart = this.ChartFormManager.ContextCurrentChartOrStrategy;
-				bool prevStreaming = ctxChart.IsStreaming;
+				bool prevStreaming = ctxChart.DownstreamSubscribed;
 
 				string reason = "mniSubscribedToStreamingAdapterQuotesBars.Checked[" + this.mniSubscribedToStreamingAdapterQuotesBars.Checked + "]";
 				if (this.mniSubscribedToStreamingAdapterQuotesBars.Checked) {
-					this.ChartFormManager.ChartForm.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
+					this.ChartControl.ChartStreamingConsumer.StreamingSubscribe(reason);
 					if (this.ChartFormManager.Strategy != null
 							// GET_IT_FROM_SCRIPT_NOT_CHART_ALTHOUGH_SAME_POINTER && ctxChart.IsStreamingTriggeringScript
-							&& this.ChartFormManager.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript
+							&& this.ChartFormManager.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript
 						) {
 						// without backtest here, Indicators aren't calculated if there was no "Backtest Now" or "Backtest on App Restart"
 						// better duplicated backtest but synced, than streaming starts without prior bars are processed by the strategy
@@ -419,16 +422,16 @@ namespace Sq1.Gui.Forms {
 						this.ChartFormManager.BacktesterRunSimulation();
 					}
 				} else {
-					this.ChartFormManager.ChartForm.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(reason);
-					this.ChartFormManager.ChartForm.ChartControl.ScriptExecutorObjects.QuoteLast = null;
+					this.ChartControl.ChartStreamingConsumer.StreamingUnsubscribe(reason);
+					this.ChartControl.ScriptExecutorObjects.QuoteLast = null;
 				}
 
-				bool nowStreaming = ctxChart.IsStreaming;
+				bool nowStreaming = ctxChart.DownstreamSubscribed;
 				if (nowStreaming == prevStreaming) {
 					string msg = "SHOULD_HAVE_CHANGED_BUT_STAYS_THE_SAME nowStreaming[" + nowStreaming + "] == prevStreaming[" + prevStreaming + "] "  + reason;
 					Assembler.PopupException(msg);
 				}
-				this.populateIsStreamingAsOrangeInBarsMni();
+				this.populateCtxMniBars_streamingConnectionState_orange();
 				this.PrintQuoteTimestampOnStrategyTriggeringButton_beforeExecution_switchToGuiThread(null);
 				if (nowStreaming != this.mniSubscribedToStreamingAdapterQuotesBars.Checked) {
 					string msg = "MUST_BE_SYNCHRONIZED_BUT_STAYS_UNSYNC nowStreaming[" + nowStreaming
@@ -446,7 +449,7 @@ namespace Sq1.Gui.Forms {
 
 				this.ctxBars.Visible = true;
 			} catch (Exception ex) {
-				Assembler.PopupException("mniRedrawChartOnEachQuote_Click()", ex);
+				Assembler.PopupException("mniSubscribedToStreamingAdapterQuotesBars_Click()", ex);
 			}
 		}
 

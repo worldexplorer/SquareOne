@@ -80,7 +80,7 @@ namespace Sq1.Core.StrategyBase {
 					Assembler.PopupException(msg);
 					return false;
 				}
-				return this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript;
+				return this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript;
 			}
 			set {
 				if (this.Strategy == null) {
@@ -90,7 +90,7 @@ namespace Sq1.Core.StrategyBase {
 					return;
 				}
 				
-				this.Strategy.ScriptContextCurrent.IsStreamingTriggeringScript = value;
+				this.Strategy.ScriptContextCurrent.StreamingIsTriggeringScript = value;
 				// we are in beginning the backtest and will switch back to preBacktestIsStreaming after backtest finishes;
 				// if you AppKill during the backtest, you don't want btnStreaming be pressed (and disabled DataSource.StreamingAdapter=null) after AppRestart
 				if (this.preBacktestBars != null) {

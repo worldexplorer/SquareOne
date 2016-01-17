@@ -24,14 +24,14 @@ namespace Sq1.Gui.Forms {
 			List<ToolStripMenuItem> ret = new List<ToolStripMenuItem>();
 			foreach (BacktestStrokesPerBar generator in generatorsPotentiallyImplemented) {
 				string generatorName = Enum.GetName(typeof(BacktestStrokesPerBar), generator);
-				ToolStripMenuItem mni = new ToolStripMenuItem();
-				mni.Text = generatorName;
-				mni.Name = MNI_PREFIX + generatorName;
-				mni.CheckOnClick = true;
-				mni.Click += new EventHandler(mni_Click);
-				if (generator == current) mni.Checked = true;
-				if (generator == BacktestStrokesPerBar.Unknown) mni.Enabled = false;
-				ret.Add(mni);
+				ToolStripMenuItem mniFabricated_quoteGenerator = new ToolStripMenuItem();
+				mniFabricated_quoteGenerator.Text = generatorName;
+				mniFabricated_quoteGenerator.Name = MNI_PREFIX + generatorName;
+				mniFabricated_quoteGenerator.CheckOnClick = true;
+				mniFabricated_quoteGenerator.Click += new EventHandler(mniQuoteGeneratorFabricated_Click);
+				if (generator == current) mniFabricated_quoteGenerator.Checked = true;
+				if (generator == BacktestStrokesPerBar.Unknown) mniFabricated_quoteGenerator.Enabled = false;
+				ret.Add(mniFabricated_quoteGenerator);
 			}
 
 			return ret.ToArray();
@@ -53,7 +53,7 @@ namespace Sq1.Gui.Forms {
 			return current;
 		}
 
-		void mni_Click(object sender, EventArgs e) {
+		void mniQuoteGeneratorFabricated_Click(object sender, EventArgs e) {
 			ToolStripMenuItem mni = sender as ToolStripMenuItem;
 			if (mni == null) {
 				string msg = "sender_MUST_BE_ToolStripMenuItem " + sender;

@@ -100,6 +100,9 @@ namespace Sq1.Core.Livesim {
 		#region DISABLING_SOLIDIFIER__NOT_REALLY_USED_WHEN_STREAMING_ADAPTER_PROVIDES_ITS_OWN_LIVESIM_STREAMING
 		public override void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
 			base.InitializeFromDataSource(dataSource);
+			if (subscribeSolidifier) {
+				string msg = "RELAX_IM_NOT_FORWARING_IT_TO_BASE_BUT_I_HANDLE_InitializeDataSource()_IN_LivesimStreaming";
+			}
 		}
 		protected override void SolidifierAllSymbolsSubscribe() {
 			return;
@@ -109,7 +112,7 @@ namespace Sq1.Core.Livesim {
 		public virtual void UpstreamConnect_LivesimStarting() {
 			Assembler.DisplayStatus("UpstreamConnect_LivesimStarting(): NOT_OVERRIDEN_IN_CHILD " + this.ToString());
 		}
-		public virtual void UpstreamDisconnect_LivesimEnded() {
+		public virtual void UpstreamDisconnect_LivesimTerminatedOrAborted() {
 			Assembler.DisplayStatus("UpstreamDisconnect_LivesimEnded(): NOT_OVERRIDEN_IN_CHILD " + this.ToString());
 		}
 
@@ -124,11 +127,11 @@ namespace Sq1.Core.Livesim {
 			this.IsDisposed = true;
 		}
 
-		public void					SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor() {
+		protected void				SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor() {
 			this.StreamingOriginal.	SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(this);
 		}
 
-		public void					SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor() {
+		protected void				SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor() {
 			this.StreamingOriginal.	SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor();
 		}
 	}

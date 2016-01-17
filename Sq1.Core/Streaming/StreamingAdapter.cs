@@ -11,21 +11,20 @@ using Sq1.Core.Livesim;
 namespace Sq1.Core.Streaming {
 	// TODO: it's not an abstract class because....
 	public partial class StreamingAdapter {
-		[JsonIgnore]	public const string				NO_STREAMING_ADAPTER = "--- No Streaming Adapter ---";
+		[JsonIgnore]	public const string					NO_STREAMING_ADAPTER = "--- No Streaming Adapter ---";
 		
-		[JsonIgnore]	public string					Name								{ get; protected set; }
-		[JsonIgnore]	public string					Description							{ get; protected set; }
-		[JsonIgnore]	public Bitmap					Icon								{ get; protected set; }
-		[JsonIgnore]	public bool						StreamingConnected					{ get; protected set; }
-		[JsonIgnore]	public StreamingSolidifier		StreamingSolidifier					{ get; protected set; }
-		[JsonIgnore]	public DataSource				DataSource;
-		[JsonIgnore]	public string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }
-		[JsonIgnore]	public DataDistributor			DataDistributor						{ get; protected set; }
-		[JsonIgnore]	public DataDistributor			DataDistributorSolidifiers			{ get; protected set; }
-		[JsonIgnore]	public StreamingDataSnapshot	StreamingDataSnapshot				{ get; protected set; }
-		[JsonIgnore]	public virtual List<string>		SymbolsUpstreamSubscribed			{ get; private set; }
-		[JsonIgnore]	protected object				SymbolsSubscribedLock;
-		[JsonIgnore]	public virtual string			SymbolsUpstreamSubscribedAsString 	{ get {
+		[JsonIgnore]	public		string					Name								{ get; protected set; }
+		[JsonIgnore]	public		string					Description							{ get; protected set; }
+		[JsonIgnore]	public		Bitmap					Icon								{ get; protected set; }
+		[JsonIgnore]	public		StreamingSolidifier		StreamingSolidifier					{ get; protected set; }
+		[JsonIgnore]	public		DataSource				DataSource;
+		[JsonIgnore]	public		string					marketName							{ get { return this.DataSource.MarketInfo.Name; } }
+		[JsonIgnore]	public		DataDistributor			DataDistributor						{ get; protected set; }
+		[JsonIgnore]	public		DataDistributor			DataDistributorSolidifiers			{ get; protected set; }
+		[JsonIgnore]	public		StreamingDataSnapshot	StreamingDataSnapshot				{ get; protected set; }
+		[JsonIgnore]	public		virtual List<string>	SymbolsUpstreamSubscribed			{ get; private set; }
+		[JsonIgnore]	protected	object					SymbolsSubscribedLock;
+		[JsonIgnore]	public		virtual string			SymbolsUpstreamSubscribedAsString 	{ get {
 				string ret = "";
 				lock (SymbolsSubscribedLock) {
 					foreach (string symbol in SymbolsUpstreamSubscribed) ret += symbol + ",";
@@ -33,7 +32,58 @@ namespace Sq1.Core.Streaming {
 				ret = ret.TrimEnd(',');
 				return ret;
 			} }
-		[JsonProperty]	public ConnectionState			ConnectionState						{ get; protected set; }
+
+		[JsonIgnore]				ConnectionState			upstreamConnectionState;
+		[JsonIgnore]	public		ConnectionState			UpstreamConnectionState	{
+			get { return this.upstreamConnectionState; }
+			protected set {
+				if (this.upstreamConnectionState == value) return;	//don't invoke StateChanged if it didn't change
+				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamSubscribedAll
+								&& value == ConnectionState.JustInitialized_solidifiersUnsubscribed) {
+					Assembler.PopupException("YOU_ARE_RESETTING_ORIGINAL_DATASOURCE_WITH_LIVESIM_DATASOURCE", null, false);
+				}
+				if (this.upstreamConnectionState == ConnectionState.UpstreamConnected_downstreamUnsubscribed
+								&& value == ConnectionState.JustInitialized_solidifiersSubscribed) {
+					Assembler.PopupException("WHAT_DID_YOU_INITIALIZE? IT_WAS_ALREADY_INITIALIZED_AND_UPSTREAM_CONNECTED", null, false);
+				}
+				this.upstreamConnectionState = value;
+				this.RaiseOnConnectionStateChanged();
+			}
+		}
+		[JsonProperty]	public		bool					UpstreamConnected					{ get {
+			bool ret = false;
+			switch (this.UpstreamConnectionState) {
+				case ConnectionState.Unknown:											ret = false;	break;
+				case ConnectionState.JustInitialized_solidifiersUnsubscribed:			ret = false;	break;
+				case ConnectionState.JustInitialized_solidifiersSubscribed:				ret = false;	break;
+				case ConnectionState.DisconnectedJustConstructed:						ret = false;	break;
+
+				// used in QuikStreamingAdapter
+				case ConnectionState.UpstreamConnected_downstreamUnsubscribed:			ret = true;		break;
+				case ConnectionState.UpstreamConnected_downstreamSubscribed:			ret = true;		break;
+				case ConnectionState.UpstreamConnected_downstreamSubscribedAll:			ret = true;		break;
+				case ConnectionState.UpstreamConnected_downstreamUnsubscribedAll:		ret = true;		break;
+				case ConnectionState.UpstreamDisconnected_downstreamSubscribed:			ret = false;	break;
+				case ConnectionState.UpstreamDisconnected_downstreamUnsubscribed:		ret = false;	break;
+
+				// used in QuikBrokerAdapter
+				case ConnectionState.SymbolSubscribed:					ret = true;		break;
+				case ConnectionState.SymbolUnsubscribed:				ret = true;		break;
+				case ConnectionState.ErrorConnectingNoRetriesAnymore:	ret = false;	break;
+
+				// used in QuikLivesimStreaming
+
+				case ConnectionState.ConnectFailed:						ret = false;	break;
+				case ConnectionState.DisconnectFailed:					ret = false;	break;		// can still be connected but by saying NotConnected I prevent other attempt to subscribe symbols; use "Connect" button to resolve
+
+				default:
+					Assembler.PopupException("ADD_HANDLER_FOR_NEW_ENUM_VALUE this.ConnectionState[" + this.UpstreamConnectionState + "]");
+					ret = false;
+					break;
+			}
+			return ret;
+		} }
+
 		[JsonIgnore]	public bool						QuotePumpSeparatePushingThreadEnabled { get; protected set; }
 
 		[JsonIgnore]	public LivesimStreaming			LivesimStreaming					{ get; protected set; }
@@ -50,28 +100,34 @@ namespace Sq1.Core.Streaming {
 			if (this is LivesimStreaming) return;
 			LivesimStreaming						= new LivesimStreaming(true);	// QuikStreaming replaces it to DdeGenerator + QuikPuppet
 		}
-		public virtual void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {
+		public virtual void InitializeDataSource(DataSource dataSource, bool subscribeSolidifier = true) {	//, bool imRestoringSolidifierAfterLivesimTerminatedAborted = false) {
 			//if (subscribeSolidifier == false) {
 			//    string msg = "UNSUBSCRIBING_SOLIDIFICATION_OF_ORIGINAL_STREAMING_PRIOR_TO_LIVESIM SYMBOL_AND_INTERVAL_WILL_BE_REPLACED_TO_SIMULATING_NEXT_LINE";
 			//    Assembler.PopupException(msg, null, false);
 			//    this.SolidifierUnsubscribe(false);
 			//}
 			this.InitializeFromDataSource(dataSource);
-			if (subscribeSolidifier) {
-				string msg = "SUBSCRIBING_SOLIDIFICATION_OF_ORIGINAL_STREAMING_AFTER_LIVESIM_TERMINATED/ABORTED AFTER_SYMBOL_AND_INTERVAL_RESTORED_TO_ORIGINAL_PREVIOUS_LINE";
+			//if (imRestoringSolidifierAfterLivesimTerminatedAborted) {
+			//    string msg = "LIVESIM_TERMINATED/ABORTED_SUBSCRIBING_SOLIDIFIER";
+			//    Assembler.PopupException(msg, null, false);
+			//} else {
+				string msg = "SUBSCRIBING_SOLIDIFIER_APPRESTART " + this.DataSource.Name;
 				Assembler.PopupException(msg, null, false);
-				this.SolidifierAllSymbolsSubscribe();
-			}
+			//}
+			if (subscribeSolidifier == false) return;
+			this.SolidifierAllSymbolsSubscribe();
 		}
 		public virtual void InitializeFromDataSource(DataSource dataSource) {
 			this.DataSource = dataSource;
 			this.StreamingDataSnapshot.InitializeLastQuoteReceived(this.DataSource.Symbols);
+			this.UpstreamConnectionState = ConnectionState.JustInitialized_solidifiersUnsubscribed;
 		}
 		protected virtual void SolidifierAllSymbolsSubscribe() {
 			this.StreamingSolidifier.Initialize(this.DataSource);
 			foreach (string symbol in this.DataSource.Symbols) {
 				this.solidifierSubscribeOneSymbol(symbol);
 			}
+			this.UpstreamConnectionState = ConnectionState.JustInitialized_solidifiersSubscribed;
 		}
 
 		//public void SolidifierSubscribeOneSymbol_iFinishedLivesimming(string symbol = null) {
@@ -360,7 +416,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		public override string ToString() {
-			return this.Name + "/[" + this.ConnectionState + "]: UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]";
+			return this.Name + "/[" + this.UpstreamConnectionState + "]: UpstreamSymbols[" + this.SymbolsUpstreamSubscribedAsString + "]";
 		}
 
 		internal void AbsorbStreamingBarFactoryFromBacktestComplete(StreamingAdapter streamingBacktest, string symbol, BarScaleInterval barScaleInterval) {
@@ -449,5 +505,55 @@ namespace Sq1.Core.Streaming {
 				channel.QuotePump.SetThreadName();
 			}
 		}
+
+		internal void UnsubscribeChart(string symbolSafe, BarScaleInterval scaleIntervalSafe, Charting.ChartStreamingConsumer chartStreamingConsumer, string msigForNpExceptions) {
+			if (this.DataDistributor.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, false) == false) {
+			    Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_QUOTE" + msigForNpExceptions);
+			} else {
+			    //Assembler.PopupException("UnSubscribing QuoteConsumer [" + this + "]  to " + plug + "  (was subscribed)");
+			    this.DataDistributor.ConsumerQuoteUnsubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer);
+			}
+
+			if (this.DataDistributor.ConsumerBarIsSubscribed(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, false) == false) {
+			    Assembler.PopupException("CHART_STREAMING_WASNT_SUBSCRIBED_CONSUMER_BAR" + msigForNpExceptions);
+			} else {
+			    //Assembler.PopupException("UnSubscribing BarsConsumer [" + this + "] to " + this.ToString() + " (was subscribed)");
+			    this.DataDistributor.ConsumerBarUnsubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer);
+			}
+		}
+
+		internal void SubscribeChart(string symbolSafe, BarScaleInterval scaleIntervalSafe, Charting.ChartStreamingConsumer chartStreamingConsumer, string msigForNpExceptions) {
+			bool iWantChartToConsumeQuotesInSeparateThreadToLetStreamingGoWithoutWaitingForStrategyToFinish = true;
+
+			//NPE_AFTER_SEPARATED_SOLIDIFIERS SymbolScaleDistributionChannel channel = streamingSafe.DataDistributor.GetDistributionChannelForNullUnsafe(symbolSafe, scaleIntervalSafe);
+			if (this.DataDistributor.ConsumerQuoteIsSubscribed(symbolSafe, scaleIntervalSafe, chartStreamingConsumer) == true) {
+				Assembler.PopupException("CHART_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_QUOTE" + msigForNpExceptions);
+			} else {
+				//Assembler.PopupException("Subscribing QuoteConsumer [" + this + "]  to " + plug + "  (wasn't registered)");
+				this.DataDistributor.ConsumerQuoteSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer,
+						iWantChartToConsumeQuotesInSeparateThreadToLetStreamingGoWithoutWaitingForStrategyToFinish);
+			}
+
+			if (this.DataDistributor.ConsumerBarIsSubscribed(symbolSafe, scaleIntervalSafe, chartStreamingConsumer) == true) {
+				Assembler.PopupException("CHART_STREAMING_ALREADY_SUBSCRIBED_CONSUMER_BAR" + msigForNpExceptions);
+			} else {
+				//Assembler.PopupException("Subscribing BarsConsumer [" + this + "] to " + this.ToString() + " (wasn't registered)");
+				this.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
+				//nonsense taken from ChartStreamingConsumer
+				//if (executorSafe.Bars == null) {
+				//    // in Initialize() this.ChartForm is requesting bars in a separate thread
+				//    this.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
+				//} else {
+				//    // fully initialized, after streaming was stopped for a moment and resumed - append into PartialBar
+				//    if (double.IsNaN(streamingBarSafeCloneSafe.Open) == false) {
+				//        //streamingSafe.ConsumerBarRegister(symbolSafe, scaleIntervalSafe, this, streamingBarSafeCloneSafe);
+				//        this.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
+				//    } else {
+				//        //streamingSafe.ConsumerBarRegister(symbolSafe, scaleIntervalSafe, this, lastStaticBarSafe);
+				//        this.DataDistributor.ConsumerBarSubscribe(symbolSafe, scaleIntervalSafe, chartStreamingConsumer, true);
+				//    }
+				//}
+			}
+		}
 	}
-}
+} 
