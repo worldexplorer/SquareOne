@@ -212,7 +212,7 @@ namespace Sq1.Core.StrategyBase {
 		public bool AlertTryFillUsingBacktest(Alert alert, out bool abortTryFill, out string abortTryFillReason) {
 			abortTryFill = false;
 			abortTryFillReason = "NO_REASON_TO_ABORT_TRY_FILL";
-			if (this.executor.Backtester.IsBacktestingNoLivesimNow) {
+			if (this.executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
 				string msg = "WAIT_UNTIL_QUOTE_PUMP_RESUMES__DONT_INVOKE_ME_DURING_THE_BACKTEST AlertTryFillUsingBacktest() was designed for Sq1.Adapters.QuikMock.Terminal.QuikTerminalMock";
 				Assembler.PopupException(msg, null, false);
 				return false;

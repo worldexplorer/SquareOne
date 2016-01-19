@@ -198,7 +198,7 @@ namespace Sq1.Core.Livesim {
 				#endif
 				throw e;
 			} finally {
-				base.Executor.Backtester = this.BacktesterBackup;
+				base.Executor.BacktesterOrLivesimulator = this.BacktesterBackup;
 				if (base.BacktestWasAbortedByUserInGui) {
 					base.BacktestAbortedMre.Set();
 					base.RequestingBacktestAbortMre.Reset();
@@ -213,8 +213,8 @@ namespace Sq1.Core.Livesim {
 			this.btnPauseResume = btnPauseResumePassed;
 			this.chartShadow = chartShadow;
 			this.chartShadow.RangeBarCollapseToAccelerateLivesim();
-			this.BacktesterBackup = base.Executor.Backtester;
-			base.Executor.Backtester = this;
+			this.BacktesterBackup = base.Executor.BacktesterOrLivesimulator;
+			base.Executor.BacktesterOrLivesimulator = this;
 
 			// DONT_MOVE_TO_CONSTRUCTOR!!!WORKSPACE_LOAD_WILL_INVOKE_IT_THEN_INAPPROPRIETLY!!!  WITHOUT_UNSUBSCRIPTON_I_WAS_GETTING_MANY_INVOCATIONS_BAD
 			base.Executor.EventGenerator.OnBacktesterContextInitialized_step2of4 -= new EventHandler<EventArgs>(executor_BacktesterContextInitializedStep2of4);
@@ -259,7 +259,7 @@ namespace Sq1.Core.Livesim {
 			}
 			//IM_UNPAUSED_AFTER_LIVESIM_FINISHED Assembler.PopupException("TIME_TO_UNPAUSE_ORIGNIAL_QUOTE_PUMP_executorCompletePooled: " + executorCompletePooled.ToStringWithCurrentParameters() + msig, null, false);
 
-			base.Executor.Backtester = this.BacktesterBackup;
+			base.Executor.BacktesterOrLivesimulator = this.BacktesterBackup;
 			base.BarsOriginal = null;	// I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL WILL_AFFECT_ChartForm.TsiProgressBarETA
 
 			//v1 this.btnStartStop.BeginInvoke((MethodInvoker)delegate {

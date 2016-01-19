@@ -29,8 +29,8 @@ namespace Sq1.Charting {
 		public Dictionary<int, SortedDictionary<string, OnChartBarAnnotation>> OnChartBarAnnotationsByBar { get; private set; }
 
 		public Quote QuoteLast;
-		public LevelTwoHalfFrozen Bids_cachedForOnePaint;
-		public LevelTwoHalfFrozen Asks_cachedForOnePaint;
+		public LevelTwoHalfSortedFrozen Bids_sortedCachedForOnePaint;
+		public LevelTwoHalfSortedFrozen Asks_sortedCachedForOnePaint;
 
 		// BT_ONSLIDERS_OFF>BT_NOW>SWITCH_SYMBOL=>INDICATOR.OWNVALUES.COUNT=0=>DONT_RENDER_INDICATORS_BUT_RENDER_BARS
 		public bool IndicatorsAllHaveNoOwnValues { get {

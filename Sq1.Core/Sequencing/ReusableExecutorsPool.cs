@@ -57,7 +57,7 @@ namespace Sq1.Core.Sequencing {
 		internal void AbortAllTasksAndDispose() { lock (this.oneLockForAllLists) {
 			foreach (ReusableExecutor disposable in this.executorsRunningNow) {
 				string msg = "DISPOSABLE_ABORTED " + this.executorsRunningNow.IndexOf(disposable) + "/" + this.executorsRunningNow.Count;
-				disposable.Backtester.AbortRunningBacktestWaitAborted(msg);
+				disposable.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg);
 			}
 			this.Reinitialize();
 		} }

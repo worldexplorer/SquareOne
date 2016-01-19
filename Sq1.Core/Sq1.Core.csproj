@@ -293,7 +293,7 @@
     <Compile Include="Streaming\DataDistributorSolidifiers.cs" />
     <Compile Include="Streaming\LevelTwoAndLastQuote.cs" />
     <Compile Include="Streaming\LevelTwoHalf.cs" />
-    <Compile Include="Streaming\LevelTwoHalfFrozen.cs" />
+    <Compile Include="Streaming\LevelTwoHalfSortedFrozen.cs" />
     <Compile Include="Streaming\QuotePumpPerChannel.cs" />
     <Compile Include="Streaming\QuoteQueuePerChannel.cs" />
     <Compile Include="Streaming\StreamingAdapter.EventDistributor.cs">

@@ -394,8 +394,8 @@ namespace Sq1.Gui.Forms {
 				context.SpreadModelerPercent = userTypedDouble;
 				this.mnitlbSpreadGeneratorPct.TextRight = this.ChartFormManager.Executor.SpreadPips + " pips";
 				
-				if (this.ChartFormManager.Executor.Backtester.BacktestDataSource == null) {
-					this.ChartFormManager.Executor.Backtester.InitializeQuoteGenerator();
+				if (this.ChartFormManager.Executor.BacktesterOrLivesimulator.BacktestDataSource == null) {
+					this.ChartFormManager.Executor.BacktesterOrLivesimulator.InitializeQuoteGenerator();
 				}
 
 				this.ChartFormManager.PopulateSelectorsFromCurrentChartOrScriptContextLoadBarsSaveBacktestIfStrategy("mnitlbSpreadGeneratorPct_UserTyped");
@@ -454,7 +454,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		void TsiProgressBarETA_Click(object sender, EventArgs e) {
-			this.ChartFormManager.Executor.Backtester.AbortRunningBacktestWaitAborted("Backtest Aborted by clicking on progress bar");
+			this.ChartFormManager.Executor.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("Backtest Aborted by clicking on progress bar");
 		}
 		protected override void OnMouseUp(MouseEventArgs e) {
 			if (base.DesignMode) return;
@@ -505,7 +505,7 @@ namespace Sq1.Gui.Forms {
 		}
 
 		void chartControl_BarStreamingUpdatedMerged(object sender, BarEventArgs e) {
-			if (this.ChartFormManager.Executor.Backtester.IsBacktestingLivesimNow == false) {
+			if (this.ChartFormManager.Executor.BacktesterOrLivesimulator.IsBacktestingLivesimNow == false) {
 				string msg = "NON_LIVESIM_STREAMING_SEEMS_TO_HAVE_ChartFormStreamingConsumer_HANDLING_QUOTE_TIMESTAMP_ON_BTN";
 				//Assembler.PopupException(msg, null, false);
 				//return;

@@ -201,7 +201,7 @@ namespace Sq1.Core.Livesim {
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
-			if (executor.Backtester.IsBacktestingLivesimNow == false) {
+			if (executor.BacktesterOrLivesimulator.IsBacktestingLivesimNow == false) {
 				string msg = "I_REFUSE_TO_SIMULATE_FILL_PENDING_ALERTS_LIVESIM_NOT_RUNNING__PROBABLY_STOPPED/ABORTED?";
 				Assembler.PopupException(msg, null, false);
 				return;

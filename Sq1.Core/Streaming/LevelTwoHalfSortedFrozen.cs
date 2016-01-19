@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Sq1.Core.Streaming {
-	public class LevelTwoHalfFrozen : SortedDictionary<double, double> {
+	public class LevelTwoHalfSortedFrozen : SortedDictionary<double, double> {
 		public class  ASC : IComparer<double> { int IComparer<double>.Compare(double x, double y) { return x > y ? 1 : -1; } }
 		public class DESC : IComparer<double> { int IComparer<double>.Compare(double x, double y) { return x < y ? 1 : -1; } }
 		
@@ -16,7 +16,7 @@ namespace Sq1.Core.Streaming {
 
 		public Dictionary<double, double> LotsCumulative;
 
-		public LevelTwoHalfFrozen(string reasonToExist, Dictionary<double, double> level2half, IComparer<double> orderby) : base(level2half, orderby) {
+		public LevelTwoHalfSortedFrozen(string reasonToExist, Dictionary<double, double> level2half, IComparer<double> orderby) : base(level2half, orderby) {
 			this.ReasonToExist = reasonToExist;
 			LotsCumulative = new Dictionary<double, double>();
 			if (base.Count == 0) return;

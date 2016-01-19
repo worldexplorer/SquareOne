@@ -347,7 +347,7 @@ namespace Sq1.Core.DataFeed {
 			return barsCompressed;
 		}
 		public bool PumpPauseNeighborsIfAnyFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel == null) return false;
 
 			if (channel.QuotePump.HasSeparatePushingThread == false) {
@@ -357,7 +357,7 @@ namespace Sq1.Core.DataFeed {
 				}
 				return false;
 			}
-			channel.PumpPauseBacktesterLaunchingAdd(executor.Backtester);
+			channel.PumpPauseBacktesterLaunchingAdd(executor.BacktesterOrLivesimulator);
 			return true;
 		}
 		public bool PumpResumeNeighborsIfAnyFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
@@ -367,7 +367,7 @@ namespace Sq1.Core.DataFeed {
 				return false;
 			}
 
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel == null) return false;
 
 			if (channel.QuotePump.HasSeparatePushingThread == false) {
@@ -377,7 +377,7 @@ namespace Sq1.Core.DataFeed {
 				}
 				return false;
 			}
-			channel.PumpResumeBacktesterFinishedRemove(executor.Backtester);
+			channel.PumpResumeBacktesterFinishedRemove(executor.BacktesterOrLivesimulator);
 			return true;
 		}
 
@@ -394,7 +394,7 @@ namespace Sq1.Core.DataFeed {
 		//    return unpaused;
 		//}
 		public bool PumpingWaitUntilPaused(Bars bars, int maxWaitingMillis = 1000) {
-			DataDistributor distr = this.StreamingAdapter.DataDistributor;
+			DataDistributor distr = this.StreamingAdapter.DataDistributor_replacedForLivesim;
 			SymbolScaleDistributionChannel channel = distr.GetDistributionChannelFor_nullUnsafe(bars.Symbol, bars.ScaleInterval);
 			bool paused = channel.QuotePump.WaitUntilPaused(maxWaitingMillis);
 			return paused;

@@ -101,7 +101,7 @@ namespace Sq1.Core.Indicators {
 				string msg = "INDICATOR_SHOULD_STORE_UPPER_LOWER_ROUNDED_SYMMETRICAL"
 					+ " diffCloseToLower[" + diffCloseToLower + "] != diffCloseToUpper[" + diffCloseToUpper + "]"
 					+ " for bar.Close[" + BandLower.ParentBarsByDate[newStaticBar.DateTimeOpen].Close + "]"
-					+ " " + this.Executor.Backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler.ToString()
+					+ " " + this.Executor.BacktesterOrLivesimulator.BacktestDataSource.StreamingAsBacktestNullUnsafe.SpreadModeler.ToString()
 					;
 				int a = 1;
 				Assembler.PopupException(msg);

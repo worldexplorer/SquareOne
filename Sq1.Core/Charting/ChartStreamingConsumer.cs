@@ -212,8 +212,8 @@ namespace Sq1.Core.Charting {
 				var symbolSafe			= this.Symbol_nullReported;
 				var scaleIntervalSafe	= this.ScaleInterval_nullReported;
 
-				bool quote	= streamingSafe.DataDistributor.ConsumerQuoteIsSubscribed(	symbolSafe, scaleIntervalSafe, this);
-				bool bar	= streamingSafe.DataDistributor.ConsumerBarIsSubscribed(	symbolSafe, scaleIntervalSafe, this);
+				bool quote	= streamingSafe.DataDistributor_replacedForLivesim.ConsumerQuoteIsSubscribed(	symbolSafe, scaleIntervalSafe, this);
+				bool bar	= streamingSafe.DataDistributor_replacedForLivesim.ConsumerBarIsSubscribed(	symbolSafe, scaleIntervalSafe, this);
 				bool ret = quote & bar;
 				return ret;
 			}}
@@ -277,7 +277,7 @@ namespace Sq1.Core.Charting {
 			}
 
 			#if DEBUG
-			if (this.Executor_nullReported.Backtester.IsBacktestingNoLivesimNow) {
+			if (this.Executor_nullReported.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
 				string msg = "SHOULD_NEVER_HAPPEN IsBacktestingNoLivesimNow[true] //ChartStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended()";
 				Assembler.PopupException(msg);
 				return;

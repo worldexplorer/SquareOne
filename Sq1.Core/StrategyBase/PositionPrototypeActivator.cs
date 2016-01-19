@@ -128,7 +128,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			alertStopLoss.PriceStopLimitActivation = 0;
 			if (proto.StopLossActivationNegativeOffset < 0) alertStopLoss.PriceStopLimitActivation = proto.PriceStopLossActivation;
-			if (proto.StopLossAlertForAnnihilation != null && this.executor.Backtester.IsBacktestingNoLivesimNow == false) {
+			if (proto.StopLossAlertForAnnihilation != null && this.executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
 				string msg = "CLEANUP: I was trying to catch MoveStopLoss::if(proto.StopLossAlertForAnnihilation==null)"
 					+ " so I thought there is a new prototype assigned to a position,"
 					+ " since we never put null directly proto.StopLossAlertForAnnihilation";
@@ -191,7 +191,7 @@ namespace Sq1.Core.StrategyBase {
 					throw new Exception(msg);
 				}
 				killed = executor.AnnihilateCounterpartyAlertDispatched(position.Prototype.StopLossAlertForAnnihilation);
-				if (executor.Backtester.IsBacktestingNoLivesimNow == false) {
+				if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
 					string msg = "killed[" + killed + "] counterParty [" + position.Prototype.StopLossAlertForAnnihilation + "]";
 					this.appendMessageToTakeProfitOrder(position, msg);
 				}
@@ -213,7 +213,7 @@ namespace Sq1.Core.StrategyBase {
 					throw new Exception(msg);
 				}
 				killed = executor.AnnihilateCounterpartyAlertDispatched(position.Prototype.TakeProfitAlertForAnnihilation);
-				if (executor.Backtester.IsBacktestingNoLivesimNow == false) {
+				if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
 					string msg = "killed[" + killed + "] counterParty [" + position.Prototype.TakeProfitAlertForAnnihilation + "]";
 					this.appendMessageToStopLossOrder(position, msg);
 				}
@@ -291,7 +291,7 @@ namespace Sq1.Core.StrategyBase {
 				case MarketLimitStop.StopLimit:
 					#region StopLimit are considered NYI in Backtester.QuoteGenerator; switched to Stops since they do SL job perfectly;
 					//proto.checkOffsetsThrowBeforeAbsorbing(proto.TakeProfitPositiveOffset, newStopLossNegativeOffset, newActivationOffset);
-					if (executor.Backtester.IsBacktestingNoLivesimNow) {
+					if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
 						// NOPE!!! I WANT ALL ALERTS TO STAY IN HISTORY!!! just move SL in Alert, change Prices immediately; no orderKill/newOrder for StopLoss (Alerts don't have OrdersFollowed)
 						// PositionPrototypeActivator.checkThrowNewPriceMakesSense() made sure Alert!=null
 						// SL_WILL_BE_KILLED proto.StopLossAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newStopLossNegativeOffset);
@@ -305,7 +305,7 @@ namespace Sq1.Core.StrategyBase {
 					break;
 					#endregion
 				case MarketLimitStop.Stop:
-					if (executor.Backtester.IsBacktestingNoLivesimNow) {
+					if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
 						proto.SetNewStopLossOffsets(newStopLossNegativeOffset, 0);
 						// TODO: don't forget about backtesting and MarketSim (implement OppMover for offline)
 						executor.MarketsimBacktest.SimulateStopLossMoved(proto.StopLossAlertForAnnihilation);
@@ -333,7 +333,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			this.checkThrowNewTakeProfitOffsetMakesSense(position, newTakeProfitPositiveOffset);
 			//proto.checkOffsetsThrowBeforeAbsorbing(newTakeProfitPositiveOffset, proto.StopLossNegativeOffset, proto.StopLossActivationNegativeOffset);
-			if (executor.Backtester.IsBacktestingNoLivesimNow) {
+			if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
 				// NOPE!!! I WANT ALL ALERTS TO STAY IN HISTORY!!! just move TP in Alert, change Prices immediately; no orderKill/newOrder for TakeProfit (Alerts don't have OrdersFollowed)
 				// PositionPrototypeActivator.checkThrowNewPriceMakesSense() made sure Alert!=null
 				// TP_WILL_BE_KILLED proto.TakeProfitAlertForAnnihilation.PriceScript = proto.OffsetToPrice(newTakeProfitPositiveOffset);

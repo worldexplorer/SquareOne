@@ -255,7 +255,7 @@ namespace Sq1.Core.Backtesting {
 				this.BarsSimulating.DataSource = this.BacktestDataSource;
 
 				StreamingAdapter streaming = this.BacktestDataSource.StreamingAdapter;
-				DataDistributor distr = streaming.DataDistributor;
+				DataDistributor distr = streaming.DataDistributor_replacedForLivesim;
 				distr.ConsumerQuoteSubscribe(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
 				distr.ConsumerBarSubscribe  (this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer, false);
 				streaming.SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval);
@@ -316,7 +316,7 @@ namespace Sq1.Core.Backtesting {
 				//    streamingOriginal.AbsorbStreamingBarFactoryFromBacktestComplete(streamingBacktest, this.BarsOriginal.Symbol, this.BarsOriginal.ScaleInterval);
 				//}
 
-				DataDistributor distr = this.BacktestDataSource.StreamingAdapter.DataDistributor;
+				DataDistributor distr = this.BacktestDataSource.StreamingAdapter.DataDistributor_replacedForLivesim;
 				distr.ConsumerQuoteUnsubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
 				distr.ConsumerBarUnsubscribe	(this.BarsSimulating.Symbol, this.BarsSimulating.ScaleInterval, this.backtestQuoteBarConsumer);
 
