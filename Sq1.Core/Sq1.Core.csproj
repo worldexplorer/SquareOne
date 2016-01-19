@@ -291,6 +291,7 @@
     </Compile>
     <Compile Include="Streaming\DataDistributorCharts.cs" />
     <Compile Include="Streaming\DataDistributorSolidifiers.cs" />
+    <Compile Include="Streaming\LevelTwoAndLastQuote.cs" />
     <Compile Include="Streaming\LevelTwoHalf.cs" />
     <Compile Include="Streaming\LevelTwoHalfFrozen.cs" />
     <Compile Include="Streaming\QuotePumpPerChannel.cs" />

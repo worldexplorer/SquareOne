@@ -57,13 +57,13 @@ namespace Sq1.Core.Livesim {
 			int parsedInt = (int)Math.Abs(parsedDecimal);
 
 			if (whereItyped == this.txt_DelayBetweenSerialQuotesMin) {
-				this.livesimStreamingSettings.DelayBetweenSerialQuotesMin = parsedInt;
-
-			} else if (whereItyped == this.txt_DelayBetweenSerialQuotesMax) {
-				if (parsedInt <= 0) {
+				if (parsedInt < 3) {
 					parsedInt = 3;		// otherwize GUI becomes completely irresponsive; Application.DoEvents will unleash guiHasTime while it doesn't
 					whereItyped.Text = parsedInt.ToString();
 				}
+				this.livesimStreamingSettings.DelayBetweenSerialQuotesMin = parsedInt;
+
+			} else if (whereItyped == this.txt_DelayBetweenSerialQuotesMax) {
 				this.livesimStreamingSettings.DelayBetweenSerialQuotesMax = parsedInt;
 
 			} else if (whereItyped == this.txt_OutOfOrderQuoteGenerationHappensOncePerQuoteMin) {

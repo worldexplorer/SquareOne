@@ -26,7 +26,7 @@ namespace Sq1.Core.Livesim {
 		[JsonIgnore]	protected	LivesimBroker				LivesimBroker				{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe; } }
 		[JsonIgnore]	protected	LivesimBrokerDataSnapshot	LivesimBrokerSnap			{ get { return this.livesimDataSource.BrokerAsLivesimNullUnsafe.DataSnapshot; } }
 
-		[JsonIgnore]	protected	LevelTwoGenerator			Level2generator;
+		[JsonIgnore]	protected	LevelTwoGenerator			LevelTwoGenerator;
 		[JsonIgnore]	protected	LivesimStreamingSpoiler		LivesimStreamingSpoiler;
 
 		[JsonIgnore]	public		bool						IsDisposed					{ get; private set; }
@@ -43,10 +43,10 @@ namespace Sq1.Core.Livesim {
 			base.StreamingSolidifier = null;
 			base.QuotePumpSeparatePushingThreadEnabled = false;
 			this.UnpausedMre = new ManualResetEvent(true);
-			this.Level2generator = new LevelTwoGeneratorLivesim(this);
+			this.LevelTwoGenerator = new LevelTwoGeneratorLivesim(this);
 			this.LivesimStreamingSpoiler = new LivesimStreamingSpoiler(this);
 		}
-		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingOriginalPassed) {
+		public virtual void InitializeLivesim(LivesimDataSource livesimDataSource, StreamingAdapter streamingOriginalPassed, string symbolLivesimming) {
 			if (livesimDataSource == null) {
 				string msg = "DID_ACTIVATOR_PICK_THE_WRONG_CONSTRUCTOR?...";
 				Assembler.PopupException(msg);
@@ -54,12 +54,19 @@ namespace Sq1.Core.Livesim {
 			//this.livesimDataSource = livesimDataSource;
 			base.DataSource = livesimDataSource;
 			this.StreamingOriginal = streamingOriginalPassed;
+
+			LevelTwoGeneratorLivesim levelTwoGeneratorLivesim = this.LevelTwoGenerator as LevelTwoGeneratorLivesim;
+			if (levelTwoGeneratorLivesim != null) {
+				levelTwoGeneratorLivesim.InitializeLevelTwo(symbolLivesimming);
+			} else {
+				string msg = "WHERE_AM_I?";
+			}
 		}
 
 		// invoked after LivesimFormShow(), but must have meaning "Executor.Bars changed"...
 		public void PushSymbolInfoToLevel2generator(SymbolInfo symbolInfo_fromExecutor) {
 			int howMany = this.LivesimStreamingSettings.LevelTwoLevelsToGenerate;
-			this.Level2generator.Initialize(symbolInfo_fromExecutor, howMany);
+			this.LevelTwoGenerator.Initialize(symbolInfo_fromExecutor, howMany);
 		}
 
 		public override void PushQuoteGenerated(QuoteGenerated quote) {
@@ -78,7 +85,7 @@ namespace Sq1.Core.Livesim {
 			if (quote.IamInjectedToFillPendingAlerts) {
 				string msg = "PROOF_THAT_IM_SERVING_ALL_QUOTES__REGULAR_AND_INJECTED";
 			}
-			this.Level2generator.GenerateForQuote(quote);
+			this.LevelTwoGenerator.GenerateForQuote(quote);
 			base.PushQuoteGenerated(quote);
 	
 			//v2 HACK#1_BEFORE_I_INVENT_THE_BICYCLE_CREATE_MARKET_MODEL_WITH_SIMULATED_LEVEL2

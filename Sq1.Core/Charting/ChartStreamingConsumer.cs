@@ -266,7 +266,8 @@ namespace Sq1.Core.Charting {
 
 			if (executorSafe.Strategy != null && executorSafe.IsStreamingTriggeringScript) {
 				try {
-					bool thereWereNeighbours = dataSourceSafe.PumpPauseNeighborsIfAnyFor(executorSafe);		// NOW_FOR_LIVE_MOCK_BUFFERING
+					bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
+					bool thereWereNeighbours = dataSourceSafe.PumpPauseNeighborsIfAnyFor(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
 					// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
 					ReporterPokeUnit pokeUnitNullUnsafe = executorSafe.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);	//new Quote());
 					//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);
@@ -345,7 +346,8 @@ namespace Sq1.Core.Charting {
 			if (executorSafe.Strategy != null) {
 				if (executorSafe.IsStreamingTriggeringScript) {
 					try {
-						bool thereWereNeighbours = dataSourceSafe.PumpPauseNeighborsIfAnyFor(executorSafe);		// NOW_FOR_LIVE_MOCK_BUFFERING
+						bool wrongUsagePopup = executorSafe.Livesimulator.IsBacktestingNoLivesimNow;
+						bool thereWereNeighbours = dataSourceSafe.PumpPauseNeighborsIfAnyFor(executorSafe, wrongUsagePopup);		// NOW_FOR_LIVE_MOCK_BUFFERING
 						// TESTED BACKLOG_GREWUP Thread.Sleep(450);	// 10,000msec = 10sec
 						ReporterPokeUnit pokeUnitNullUnsafe1 = executorSafe.ExecuteOnNewBarOrNewQuote(quote, true);
 						//UNFILLED_POSITIONS_ARE_USELESS chartFormManager.ReportersFormsManager.BuildIncrementalAllReports(pokeUnit);

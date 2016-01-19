@@ -146,13 +146,17 @@ namespace Sq1.Charting {
 			// and repainting Level2 whole thing was misplaced comparing to PanelPrice spread) but looked really random, not behind and not ahead;
 			// but main reason is ConcurrentLocker was spitting messages (I dont remember what exactly but easy to move back to renderLevel2() and see)
 			StreamingDataSnapshot snap = this.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
+
+			LevelTwoHalf asksOriginal = snap.LevelTwoAsks_getForSymbol(this.Bars.Symbol);
 			this.ScriptExecutorObjects.Bids_cachedForOnePaint = new LevelTwoHalfFrozen(
 				"BIDS_FROZEN",
-				snap.LevelTwoBids_refactorBySymbol.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+				asksOriginal.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
 				new LevelTwoHalfFrozen.DESC());
+
+			LevelTwoHalf bidsOriginal = snap.LevelTwoBids_getForSymbol(this.Bars.Symbol);
 			this.ScriptExecutorObjects.Asks_cachedForOnePaint = new LevelTwoHalfFrozen(
 				"ASKS_FROZEN",
-				snap.LevelTwoAsks_refactorBySymbol.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
+				bidsOriginal.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
 				new LevelTwoHalfFrozen.ASC());
 
 			if (this.VisibleBarRight != this.Bars.Count - 1) {
