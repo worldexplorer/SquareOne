@@ -75,6 +75,7 @@ namespace Sq1.Core.Streaming {
 			if (quote == null) {
 				string msg = "USE_LastQuoteInitialize_INSTEAD_OF_PASSING_NULL_TO_LastQuoteCloneSetForSymbol";
 				Assembler.PopupException(msg + msig);
+				return;
 			}
 			if (this.lastQuoteClonesReceivedUnboundBySymbol.ContainsKey(quote.Symbol) == false) {
 				this.lastQuoteClonesReceivedUnboundBySymbol.Add(quote.Symbol, null);

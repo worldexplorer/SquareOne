@@ -14,16 +14,17 @@ namespace Sq1.Core.Livesim {
 		public void Spoil_priorTo_PushQuoteGenerated() {
 			this.delayForCurrentQuotePush = 0;
 			if (this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesEnabled) {
-				delayForCurrentQuotePush = this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesMin;
+				this.delayForCurrentQuotePush = this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesMin;
+
 				if (this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesMax > 0) {
 					int range = Math.Abs(this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesMax -
 										 this.livesimStreaming.LivesimStreamingSettings.DelayBetweenSerialQuotesMin);
 					double rnd0to1 = new Random().NextDouble();
 					int rangePart = (int)Math.Round(range * rnd0to1);
-					delayForCurrentQuotePush += rangePart;
+					this.delayForCurrentQuotePush += rangePart;
 				}
 			}
-			if (delayForCurrentQuotePush > 0) {
+			if (this.delayForCurrentQuotePush > 0) {
 				this.livesimStreaming.Livesimulator.LivesimStreamingIsSleepingNow_ReportersAndExecutionHaveTimeToRebuild = true;
 			}
 		}

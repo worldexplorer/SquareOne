@@ -302,6 +302,10 @@
       <DependentUpon>StreamingAdapter.cs</DependentUpon>
     </Compile>
     <Compile Include="Streaming\StreamingBarFactoryUnattached.cs" />
+    <Compile Include="Streaming\StreamingEditor.EventConsumer.cs">
+      <DependentUpon>StreamingEditor.cs</DependentUpon>
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Streaming\StreamingLateBinder.cs" />
     <Compile Include="Streaming\StreamingAdapter.EditorSupport.cs">
       <DependentUpon>StreamingAdapter.cs</DependentUpon>

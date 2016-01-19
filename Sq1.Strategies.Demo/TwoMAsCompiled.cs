@@ -71,7 +71,6 @@ namespace Sq1.Strategies.Demo {
 				//this.testBarAnnotations(barStaticFormed);
 			}
 			
-			Bar barStreaming = barStaticFormed.ParentBars.BarStreamingNullUnsafe;
 			if (barStaticFormed.ParentBarsIndex <= this.PeriodLargestAmongMAs) return;
 
 			if (this.MAslow.OwnValuesCalculated == null) {
@@ -104,20 +103,22 @@ namespace Sq1.Strategies.Demo {
 			}
 			bool crossed = fastCrossedUp || fastCrossedDown;
 				
+			Bar barStreaming = barStaticFormed.ParentBars.BarStreamingNullUnsafe;
+
 			Position lastPos = base.LastPosition;
 			bool isLastPositionNotClosedYet = base.IsLastPositionNotClosedYet;
 			if (isLastPositionNotClosedYet && crossed) {
 				string msg = "ExitAtMarket@" + barStaticFormed.ParentBarsIdent;
-				Alert exitPlaced = ExitAtMarket(barStreaming, lastPos, msg);
+				Alert exitPlaced = base.ExitAtMarket(barStreaming, lastPos, msg);
 			}
 
 			if (fastCrossedUp) {
 				string msg = "BuyAtMarket@" + barStaticFormed.ParentBarsIdent;
-				Position buyPlaced = BuyAtMarket(barStreaming, msg);
+				Position buyPlaced = base.BuyAtMarket(barStreaming, msg);
 			}
 			if (fastCrossedDown) {
 				string msg = "ShortAtMarket@" + barStaticFormed.ParentBarsIdent;
-				Position shortPlaced = ShortAtMarket(barStreaming, msg);
+				Position shortPlaced = base.ShortAtMarket(barStreaming, msg);
 			}
 		}
 		public override void OnAlertFilledCallback(Alert alertFilled) {
