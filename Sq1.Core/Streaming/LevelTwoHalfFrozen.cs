@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
 namespace Sq1.Core.Streaming {
 	public class LevelTwoHalfFrozen : SortedDictionary<double, double> {
 		public class  ASC : IComparer<double> { int IComparer<double>.Compare(double x, double y) { return x > y ? 1 : -1; } }

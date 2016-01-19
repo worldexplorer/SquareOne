@@ -3,6 +3,7 @@
 using Sq1.Core.Backtesting;
 using Sq1.Core.Support;
 using Sq1.Core.DataTypes;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Core.Livesim {
 	public class LevelTwoGenerator {
@@ -11,13 +12,13 @@ namespace Sq1.Core.Livesim {
 		double				stepPrice;
 		int					levelsToGenerate;
 
-		public	ConcurrentDictionaryGeneric<double, double> LevelTwoAsks	{ get; protected set; }
-		public	ConcurrentDictionaryGeneric<double, double> LevelTwoBids	{ get; protected set; }
+		public	LevelTwoHalf LevelTwoAsks	{ get; protected set; }
+		public	LevelTwoHalf LevelTwoBids	{ get; protected set; }
 
 		public LevelTwoGenerator() {
 			levelsToGenerate = 5;
-			LevelTwoAsks = new ConcurrentDictionaryGeneric<double, double>("LevelTwoAsks_FOR_QuikLivesimStreaming");
-			LevelTwoBids = new ConcurrentDictionaryGeneric<double, double>("LevelTwoBids_FOR_QuikLivesimStreaming");
+			LevelTwoAsks = new LevelTwoHalf("LevelTwoAsks_FOR_QuikLivesimStreaming");
+			LevelTwoBids = new LevelTwoHalf("LevelTwoBids_FOR_QuikLivesimStreaming");
 		}
 		public void Initialize(SymbolInfo symbolInfo, int levelsToGenerate) {
 			if (symbolInfo == null) {

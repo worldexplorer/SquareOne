@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 
 using Sq1.Core.Execution;
 
@@ -23,8 +22,8 @@ namespace Sq1.Core.Support {
 			//QUICK_HACK_FAILED
 			base.InnerDictionary	= new SortedDictionary<PRICE_LEVEL, TOTAL_LOTS>(orderby);
 		}
-		public override string ToString() { lock(this.LockObject) {
-			return string.Format("{0}:InnerSortedDictionary[{1}]", ReasonToExist, base.InnerDictionary.Count);
-		} }
+		public override string ToString() {
+			return this.ReasonToExist + ":InnerSortedDictionary[" + this.InnerDictionary.Count + "]";
+		}
 	}
 }
