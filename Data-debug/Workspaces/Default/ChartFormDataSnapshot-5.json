@@ -27,9 +27,9 @@
       "RecentBars": 500,
       "RecentTimeunits": 0
     },
-    "IsStreamingTriggeringScript": false,
+    "StreamingIsTriggeringScript": false,
     "ShowRangeBar": false,
-    "IsStreaming": false
+    "DownstreamSubscribed": false
   },
   "ChartSettings": {
     "$type": "Sq1.Core.Charting.ChartSettings, Sq1.Core",
@@ -40,14 +40,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 26
+        "PanelHeight": 35
       },
       "PanelPrice": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 32,
+        "Distance": 41,
         "SplitterHeight": 6,
-        "PanelHeight": 135
+        "PanelHeight": 174
       }
     },
     "MultiSplitterColumnsPropertiesByPanelName": {
@@ -57,14 +57,14 @@
         "ManualOrder": 0,
         "Distance": 0,
         "SplitterHeight": 6,
-        "PanelHeight": 818
+        "PanelHeight": 462
       },
       "panelLevel2": {
         "$type": "Sq1.Core.Charting.MultiSplitterProperties, Sq1.Core",
         "ManualOrder": 1,
-        "Distance": 824,
+        "Distance": 468,
         "SplitterHeight": 6,
-        "PanelHeight": 141
+        "PanelHeight": 317
       }
     },
     "Name": "Default",
@@ -101,7 +101,7 @@
     "ScrollSqueezeMouseDragSensitivityPx": 1,
     "ScrollNBarsPerOneDragMouseEvent": 3,
     "ScrollNBarsPerOneKeyPress": 1,
-    "SqueezeVerticalPaddingPx": 40,
+    "SqueezeVerticalPaddingPx": 70,
     "SqueezeVerticalPaddingStep": 10,
     "SqueezeHorizontalStep": 2,
     "SqueezeHorizontalMouse1pxDistanceReceivedToOneStep": 5,

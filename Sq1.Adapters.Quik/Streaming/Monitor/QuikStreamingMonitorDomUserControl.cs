@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using Sq1.Core.Support;
 
 using Sq1.Adapters.Quik.Streaming.Dde;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikStreamingMonitorDomUserControl : UserControlResizeable {
@@ -12,6 +13,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 
 		public QuikStreamingMonitorDomUserControl() {
 			InitializeComponent();
+			this.olvDomCustomize();
 		}
 		void layoutUserControlResizeable() {
 			base.UserControlInner.Controls.Add(this.olvcDom);
@@ -29,6 +31,18 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				return;
 			}
 			this.lblDomTitle.Text = this.tableLevel2.ToString();
+		}
+
+		internal void PopulateLevel2ToDomControl(LevelTwoOlv levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl) {
+			if (this.olvcDom.IsDisposed) return;
+			if (base.IsDisposed) return;
+
+			if (base.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.PopulateLevel2ToDomControl(levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl); });
+				return;
+			}
+
+			this.olvcDom.SetObjects(levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl.FreezeAndFlatten());
 		}
 	}
 }

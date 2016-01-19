@@ -5,26 +5,34 @@ using Sq1.Core.DataTypes;
 using Sq1.Core.Support;
 
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
+using Sq1.Core.Streaming;
 
 namespace Sq1.Adapters.Quik.Streaming.Dde {
-	public class DdeTableDepth : XlDdeTableMonitoreable<Level2> {
+	public class DdeTableDepth : XlDdeTableMonitoreable<LevelTwoOlv> {
 		protected override string DdeConsumerClassName { get { return "DdeTableDepth"; } }
 
 		string			symbol;
+		LevelTwoHalf	levelTwoAsks;
+		LevelTwoHalf	levelTwoBids;
+		LevelTwoOlv		levelTwoProxy;
 
-		ConcurrentDictionaryGeneric<double, double> levelTwoAsks { get { return base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks_refactorBySymbol; } }
-		ConcurrentDictionaryGeneric<double, double> levelTwoBids { get { return base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_refactorBySymbol; } }
-
-		Level2 level2;
-		Level2 Level2 { get {
-			if (this.level2 != null) return this.level2;
-			if (this.levelTwoBids != null && this.levelTwoAsks != null) this.level2 = new Level2(this.levelTwoBids, this.levelTwoAsks);
-			return this.level2;
-		} }
-
+		public	string			FormatVolume	{ get; private set; }
+		public	string			FormatPrice		{ get; private set; }
 
 		public DdeTableDepth(string topic, QuikStreaming quikStreaming, List<XlColumn> columns, string symbol) : base(topic, quikStreaming, columns) {
 			this.symbol = symbol;
+			this.levelTwoAsks = base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks_getForSymbol(this.symbol);
+			this.levelTwoBids = base.QuikStreaming.StreamingDataSnapshot.LevelTwoBids_getForSymbol(this.symbol);
+
+			this.FormatVolume	= "{0:N1}";
+			this.FormatPrice	= "{0:N1}";
+			SymbolInfo symbolInfo = Assembler.InstanceInitialized.RepositorySymbolInfo.FindSymbolInfoNullUnsafe(symbol);
+			if (symbolInfo != null) {
+				this.FormatVolume	= "{0:" + symbolInfo.VolumeFormat + "}";
+				this.FormatPrice	= "{0:" + symbolInfo.PriceFormat + "}";
+			}
+
+			if (this.levelTwoBids != null && this.levelTwoAsks != null) this.levelTwoProxy = new LevelTwoOlv(this.levelTwoBids, this.levelTwoAsks);
 		}
 		protected override void IncomingTableBegun() {
 			this.levelTwoAsks.Clear(this, "IncomingTableBegun");
@@ -39,10 +47,12 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 
 			// is ChartControl.chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline() invoked?
 			//base.QuikStreaming.(quikQuote);
+			msg = "notifying DomResizeableUserControl now:";
+			base.IncomingTableTerminated();
 		}
 
 		//protected override void IncomingTableRow_convertToDataStructure(XlRowParsed row) {
-		protected override Level2 IncomingTableRow_convertToDataStructure_monitoreable(XlRowParsed row) {
+		protected override LevelTwoOlv IncomingTableRow_convertToDataStructure_monitoreable(XlRowParsed row) {
 			double bidVolume	= (double)row["SELL_VOLUME"];
 			double price		= (double)row["PRICE"];
 			double askVolume	= (double)row["BUY_VOLUME"];
@@ -53,7 +63,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				//base.QuikStreaming.StreamingDataSnapshot.LevelTwoAsks_refactorBySymbol.Add(price, askVolume, this, "IncomingRowParsedPush");
 				levelTwoAsks.Add(price, askVolume, this, "IncomingRowParsedPush");
 			}
-			return this.Level2;
+			return this.levelTwoProxy;		// growing each time
 		}
 		public override string ToString() {
 			string ret = "";

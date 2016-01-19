@@ -24,12 +24,8 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 												+ "3) push quotes generated using DDE client";
 
 		[JsonIgnore]	public	QuikLivesimBatchPublisher	QuikLivesimBatchPublisher;
-
-		[JsonIgnore]			ConcurrentDictionaryGeneric<double, double> LevelTwoAsks	{ get { return base.StreamingDataSnapshot.LevelTwoAsks_refactorBySymbol; } }
-		[JsonIgnore]			ConcurrentDictionaryGeneric<double, double> LevelTwoBids	{ get { return base.StreamingDataSnapshot.LevelTwoBids_refactorBySymbol; } }
-
-		[JsonIgnore]	public	QuikStreaming	QuikStreamingOriginal						{ get { return base.StreamingOriginal as QuikStreaming; } }
-		[JsonIgnore]			bool			upstreamWasSubscribed_preLivesim;
+		[JsonIgnore]	public	QuikStreaming				QuikStreamingOriginal						{ get { return base.StreamingOriginal as QuikStreaming; } }
+		[JsonIgnore]			bool						upstreamWasSubscribed_preLivesim;
 
 		public QuikStreamingLivesim() : base(true) {
 			base.Name = "QuikStreamingLivesim";
@@ -38,7 +34,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			//NO_DESERIALIZATION_WILL_THROW_YOULL_NULLIFY_ME_IN_UpstreamConnect YES_I_PROVOKE_NPE__NEED_TO_KNOW_WHERE_SNAPSHOT_IS_USED WILL_POINT_IT_TO_QUIK_REAL_STREAMING_IN_UpstreamConnect_LivesimStarting()
 			//this.StreamingDataSnapshot = null;
 
-			this.Level2generator = new LevelTwoGenerator();		// this one has it's own LevelTwoAsks,LevelTwoBids NOT_REDIRECTED to StreamingDatasnapshot => sending Level2 via DDE to QuikStreaming.StreamingDatasnapshot
+			base.LevelTwoGenerator = new LevelTwoGenerator();		// this one has it's own LevelTwoAsks,LevelTwoBids NOT_REDIRECTED to StreamingDatasnapshot => sending Level2 via DDE to QuikStreaming.StreamingDatasnapshot
 		}
 
 		protected override void SolidifierAllSymbolsSubscribe() {
@@ -146,8 +142,8 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 
 			string msg1 = "I_PREFER_TO_PUSH_LEVEL2_NOW__BEFORE_base.PushQuoteGenerated(quote)";
 			//v3 REDIRECTING_PushQuoteGenerated_RADICAL_PARENT_DETACHED base.Level2generator.GenerateAndStoreInStreamingSnap(quote);
-			base.Level2generator.GenerateForQuote(quote);
-			this.QuikLivesimBatchPublisher.SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(base.Level2generator.LevelTwoAsks, base.Level2generator.LevelTwoBids);
+			base.LevelTwoGenerator.GenerateForQuote(quote);
+			this.QuikLivesimBatchPublisher.SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(base.LevelTwoGenerator.LevelTwoAsks, base.LevelTwoGenerator.LevelTwoBids);
 			this.QuikLivesimBatchPublisher.SendQuote_DdeClientPokesDdeServer_waitServerProcessed(quote);
 
 			#region otherwize injectQuotesToFillPendings doesn't get invoked (copypaste from LivesimStreaming)

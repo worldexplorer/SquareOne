@@ -38,9 +38,8 @@
 			this.UserControlInner.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.UserControlInner.Location = new System.Drawing.Point(4, 23);
 			this.UserControlInner.Padding = new System.Windows.Forms.Padding(0, 18, 0, 0);
-			this.UserControlInner.Size = new System.Drawing.Size(260, 278);
+			this.UserControlInner.Size = new System.Drawing.Size(210, 375);
 			// 
 			// panel1
 			// 
@@ -53,7 +52,7 @@
 			this.panel1.ForeColor = System.Drawing.SystemColors.Window;
 			this.panel1.Location = new System.Drawing.Point(4, 4);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(260, 19);
+			this.panel1.Size = new System.Drawing.Size(210, 19);
 			this.panel1.TabIndex = 1;
 			// 
 			// lblDomTitle
@@ -81,13 +80,12 @@
             this.olvPrice,
             this.olvBid});
 			this.olvcDom.Cursor = System.Windows.Forms.Cursors.Default;
-			this.olvcDom.GridLines = true;
-			this.olvcDom.Location = new System.Drawing.Point(13, 72);
+			this.olvcDom.Location = new System.Drawing.Point(4, 72);
 			this.olvcDom.Margin = new System.Windows.Forms.Padding(3, 30, 3, 3);
 			this.olvcDom.Name = "olvcDom";
 			this.olvcDom.ShowCommandMenuOnRightClick = true;
 			this.olvcDom.ShowGroups = false;
-			this.olvcDom.Size = new System.Drawing.Size(227, 153);
+			this.olvcDom.Size = new System.Drawing.Size(210, 261);
 			this.olvcDom.TabIndex = 2;
 			this.olvcDom.UseCompatibleStateImageBehavior = false;
 			this.olvcDom.UseFilterIndicator = true;
@@ -102,7 +100,6 @@
 			this.olvAsk.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvAsk.Text = "Ask";
 			this.olvAsk.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvAsk.Width = 80;
 			// 
 			// olvPrice
 			// 
@@ -118,7 +115,6 @@
 			this.olvBid.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this.olvBid.Text = "Bid";
 			this.olvBid.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.olvBid.Width = 80;
 			// 
 			// QuikStreamingMonitorDomUserControl
 			// 
@@ -127,7 +123,7 @@
 			this.Controls.Add(this.olvcDom);
 			this.Controls.Add(this.panel1);
 			this.Name = "QuikStreamingMonitorDomUserControl";
-			this.Size = new System.Drawing.Size(268, 305);
+			this.Size = new System.Drawing.Size(218, 383);
 			this.Controls.SetChildIndex(this.UserControlInner, 0);
 			this.Controls.SetChildIndex(this.panel1, 0);
 			this.Controls.SetChildIndex(this.olvcDom, 0);

@@ -31,11 +31,12 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				base.BeginInvoke((MethodInvoker)delegate { this.populateWindowTitle_grpStatuses(); });
 				return;
 			}
-			base.Text										= this.quikStreaming.DdeBatchSubscriber.WindowTitle;
+			base.Text = this.quikStreaming.DdeBatchSubscriber.WindowTitle;
 			this.QuikStreamingMonitorControl.Populate_grpStatuses();
 		}
 
 		void tableQuotes_DataStructuresParsed_Table(object sender, XlDdeTableMonitoringEventArg<List<QuoteQuik>> e) {
+			if (base.IsDisposed) return;
 			if (this.InvokeRequired) {
 				base.BeginInvoke((MethodInvoker)delegate { this.tableQuotes_DataStructuresParsed_Table(sender, e); });
 				return;

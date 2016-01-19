@@ -98,7 +98,7 @@
     <Compile Include="Streaming\Dde\DdeBatchSubscriber.EventGenerator.cs">
       <DependentUpon>DdeBatchSubscriber.cs</DependentUpon>
     </Compile>
-    <Compile Include="Streaming\Level2.cs" />
+    <Compile Include="Streaming\LevelTwoOlv.cs" />
     <Compile Include="Streaming\Dde\XlDde\XlDdeTableMonitoreable.EventGenerator.cs">
       <DependentUpon>XlDdeTableMonitoreable.cs</DependentUpon>
     </Compile>
@@ -109,11 +109,16 @@
     <Compile Include="Streaming\Dde\DdeTableTrades.cs" />
     <Compile Include="Streaming\Dde\XlDde\XlDdeTableMonitoreable.cs" />
     <Compile Include="Streaming\Dde\XlDde\XlDdeTableMonitoringEventArg.cs" />
+    <Compile Include="Streaming\LevelTwoOlvEachLine.cs" />
     <Compile Include="Streaming\Monitor\QuikStreamingMonitorControl.Customizer.cs">
       <DependentUpon>QuikStreamingMonitorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Streaming\Monitor\QuikStreamingMonitorDomUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorDomUserControl.Customizer.cs">
+      <DependentUpon>QuikStreamingMonitorDomUserControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Streaming\Monitor\QuikStreamingMonitorDomUserControl.Designer.cs">
