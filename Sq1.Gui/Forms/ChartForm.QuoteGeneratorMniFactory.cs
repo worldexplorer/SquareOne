@@ -73,7 +73,7 @@ namespace Sq1.Gui.Forms {
 				this.ctxBacktest.Visible = true;
 
 				BacktestStrokesPerBar generatorStrokeAmount = (BacktestStrokesPerBar)Enum.Parse(typeof(BacktestStrokesPerBar), clickedGenerator);
-				Backtester backtester = this.ChartFormManager.Executor.Backtester;
+				Backtester backtester = this.ChartFormManager.Executor.BacktesterOrLivesimulator;
 				BacktestQuotesGenerator clone = BacktestQuotesGenerator.CreateForQuotesPerBarAndInitialize(generatorStrokeAmount, backtester);
 				backtester.SetQuoteGeneratorAndConditionallyRebacktest_invokedInGuiThread(clone);
 				this.ctxStrokesPopulateOrSelectCurrent();

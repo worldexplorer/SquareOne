@@ -116,7 +116,7 @@ namespace Sq1.Gui.Forms {
 			string msig = " Executor_BacktesterContextInitialized_step2of4()" + this.chartFormManager.ToString();
 			if (this.chartFormManager.ChartForm == null) return;
 			if (this.chartFormManager.Executor == null) return;
-			if (this.chartFormManager.Executor.Backtester.BarsOriginal == null) {
+			if (this.chartFormManager.Executor.BacktesterOrLivesimulator.BarsOriginal == null) {
 				string msg = "I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL";
 				if (this.chartFormManager.ChartForm.InvokeRequired == false) {
 					msg = "NO_NEED_TO_REPORT_ITS_NOT_AN_ERROR  I_REFUSE_TO_CALCULATE_PERCENTAGE_COMPLETED BACKTEST_ALREADY_FINISHED_WHILE_SWTICHING_TO_GUI_THREAD";
@@ -127,8 +127,8 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
-			if (this.chartFormManager.Executor.Backtester.QuotesGenerator == null) return;
-			int quotesTotal = this.chartFormManager.Executor.Backtester.QuotesTotalToGenerate;
+			if (this.chartFormManager.Executor.BacktesterOrLivesimulator.QuotesGenerator == null) return;
+			int quotesTotal = this.chartFormManager.Executor.BacktesterOrLivesimulator.QuotesTotalToGenerate;
 			if (quotesTotal == -1) {
 				string msg = "I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL: Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
 				Assembler.PopupException(msg);
@@ -141,7 +141,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
-			this.chartFormManager.ChartForm.TsiProgressBarETA.ETALabelText = this.chartFormManager.Executor.Backtester.ProgressStats;
+			this.chartFormManager.ChartForm.TsiProgressBarETA.ETALabelText = this.chartFormManager.Executor.BacktesterOrLivesimulator.ProgressStats;
 			
 			// CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED BEGIN
 
@@ -169,13 +169,13 @@ namespace Sq1.Gui.Forms {
 				string msg = "Livesimulator.afterBacktesterComplete()_ALREADY_RESTORED_BACKTESTER_WHILE_SWITCHING_TO_GUI_THREAD [base.Executor.Backtester = this.BacktesterBackup]";
 				return;
 			}
-			if (this.chartFormManager.Executor.Backtester.QuotesGenerator == null) {
+			if (this.chartFormManager.Executor.BacktesterOrLivesimulator.QuotesGenerator == null) {
 				string msg = "YOU_DIDNT_INVOKE_Backtester.Initialize() AVOIDING_EXCEPTIONS_IN_QuotesGeneratedSoFar";
 				Assembler.PopupException(msg, null, false);
 				return;
 			}
 
-			int quotesTotal = this.chartFormManager.Executor.Backtester.QuotesTotalToGenerate;
+			int quotesTotal = this.chartFormManager.Executor.BacktesterOrLivesimulator.QuotesTotalToGenerate;
 			if (quotesTotal == -1) {
 				string msg = "CANT_CALCULATE_PERCENTAGE_KOZ_BARS_ORIGINAL_NULL"
 					+ " : Backtester.QuotesTotalToGenerate=-1 due to Backtester.BarsOriginal=null";
@@ -204,10 +204,10 @@ namespace Sq1.Gui.Forms {
 			}
 			// HACK FOR CHART_NOT_NOTIFIED_OF_BACKTEST_PROGRESS_AFTER_DESERIALIZATION_BACKTESTER_LAUNCHES_BEFORE_IM_SUBSCRIBED END COPYPASTE
 
-			this.chartFormManager.ChartForm.TsiProgressBarETA.ETALabelText = this.chartFormManager.Executor.Backtester.ProgressStats;
+			this.chartFormManager.ChartForm.TsiProgressBarETA.ETALabelText = this.chartFormManager.Executor.BacktesterOrLivesimulator.ProgressStats;
 			
 
-			int currentValue = this.chartFormManager.Executor.Backtester.QuotesGeneratedSoFar;
+			int currentValue = this.chartFormManager.Executor.BacktesterOrLivesimulator.QuotesGeneratedSoFar;
 			if (currentValue > this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarMaximum) return;
 			this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarValue = currentValue;
 
@@ -226,7 +226,7 @@ namespace Sq1.Gui.Forms {
 				return;
 			}
 
-			this.chartFormManager.ChartForm.TsiProgressBarETA.ETALabelText = this.chartFormManager.Executor.Backtester.ProgressStats;
+			this.chartFormManager.ChartForm.TsiProgressBarETA.ETALabelText = this.chartFormManager.Executor.BacktesterOrLivesimulator.ProgressStats;
 			this.chartFormManager.ChartForm.TsiProgressBarETA.ETAProgressBarValue = 0;
 			this.chartFormManager.ChartForm.TsiProgressBarETA.Visible = false;
 			

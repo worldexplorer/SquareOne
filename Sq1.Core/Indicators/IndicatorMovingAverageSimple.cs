@@ -35,7 +35,7 @@ namespace Sq1.Core.Indicators {
 				msg += "BARS_UNDERNEATH_INDICATOR_HAVE_DIFFERENT_LENGTH_WITH_ABSORBED ";
 			}
 			bool unsyncHappenedNotAsResultOfAbort = this.smaSeries.AverageFor.Count > 0
-				&& this.Executor.Backtester.WasBacktestAborted == false;
+				&& this.Executor.BacktesterOrLivesimulator.WasBacktestAborted == false;
 			if (unsyncHappenedNotAsResultOfAbort) {
 				//v1 if (this.smaSeries.AverageFor.Count != this.smaSeries.Count + (int)this.ParamPeriod.ValueCurrent) {
 				//v1 	msg += "INTERNAL_SMA_MUST_HAVE_COUNT_EQUALS_BARS_MINUS_PERIOD ";

@@ -175,18 +175,18 @@ namespace Sq1.Charting {
 			//    + "]/VisibleMaxPlusBottomSqueezer_cached[" + panelPrice.VisibleMaxPlusBottomSqueezer_cached + "]";
 			//base.DrawError(g, msgCalc);
 
-			LevelTwoHalfFrozen asks_cachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Asks_cachedForOnePaint;
-			LevelTwoHalfFrozen bids_cachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Bids_cachedForOnePaint;
+			LevelTwoHalfSortedFrozen asks_sortedCachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Asks_sortedCachedForOnePaint;
+			LevelTwoHalfSortedFrozen bidssortedCachedForOnePaint = base.ChartControl.ScriptExecutorObjects.Bids_sortedCachedForOnePaint;
 
-			if (asks_cachedForOnePaint == null) return;		//it's coming; I don't understand how I happen to be here then :(
-			if (bids_cachedForOnePaint == null) return;		//it's coming
+			if (asks_sortedCachedForOnePaint == null) return;		//it's coming; I don't understand how I happen to be here then :(
+			if (bidssortedCachedForOnePaint == null) return;		//it's coming
 
-			double	priceMax = Math.Max(bids_cachedForOnePaint.PriceMax, asks_cachedForOnePaint.PriceMax);
-			double	askQuote = Math.Min(bids_cachedForOnePaint.PriceMin, asks_cachedForOnePaint.PriceMin);
+			double	priceMax = Math.Max(bidssortedCachedForOnePaint.PriceMax, asks_sortedCachedForOnePaint.PriceMax);
+			double	askQuote = Math.Min(bidssortedCachedForOnePaint.PriceMin, asks_sortedCachedForOnePaint.PriceMin);
 			//double	priceRangeToDisplay = priceMax - priceMin;
 
-			double	lotsMax = Math.Max(bids_cachedForOnePaint.LotSum, asks_cachedForOnePaint.LotSum);
-			double	lotsMin = Math.Min(bids_cachedForOnePaint.LotSum, asks_cachedForOnePaint.LotSum);
+			double	lotsMax = Math.Max(bidssortedCachedForOnePaint.LotSum, asks_sortedCachedForOnePaint.LotSum);
+			double	lotsMin = Math.Min(bidssortedCachedForOnePaint.LotSum, asks_sortedCachedForOnePaint.LotSum);
 			double	lotRangeToDisplay = lotsMax - lotsMin;
 
 			//double	pxPerLot_Width = base.Width / lotRangeToDisplay;
@@ -217,10 +217,10 @@ namespace Sq1.Charting {
 			bool allowUnproportional = true;
 			//v1 foreach (double ask in asks_cachedForOnePaint.Keys) {		// Keys may be unsorted in a regular Dictionary => rendering price levels randomly
 			//	double lotAbsolute = asks_cachedForOnePaint[ask];
-			foreach (KeyValuePair<double, double> keyValue in asks_cachedForOnePaint) {
+			foreach (KeyValuePair<double, double> keyValue in asks_sortedCachedForOnePaint) {
 				double ask = keyValue.Key;
 				double lotAbsolute = keyValue.Value;
-				double lotCumulative	= asks_cachedForOnePaint.LotsCumulative[ask];
+				double lotCumulative	= asks_sortedCachedForOnePaint.LotsCumulative[ask];
 				double lotsRelative = lotCumulative;// -lotsMin;
 
 				int yAsk = -1;
@@ -290,10 +290,10 @@ namespace Sq1.Charting {
 			}
 
 			//int askY = panelPrice.ValueToYinverted(this.lastQuote_cached.Ask);
-			foreach (KeyValuePair<double, double> keyValue in bids_cachedForOnePaint) {
+			foreach (KeyValuePair<double, double> keyValue in bidssortedCachedForOnePaint) {
 				double bid = keyValue.Key;
 				double lotAbsolute = keyValue.Value;
-				double lotCumulative = bids_cachedForOnePaint.LotsCumulative[bid];
+				double lotCumulative = bidssortedCachedForOnePaint.LotsCumulative[bid];
 				double lotsRelative = lotCumulative;// -lotsMin;
 
 				int yBid = -1;

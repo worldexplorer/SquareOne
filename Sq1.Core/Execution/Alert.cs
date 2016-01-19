@@ -100,12 +100,12 @@ namespace Sq1.Core.Execution {
 					Assembler.PopupException(msg);
 					return null;
 				}
-				if (this.Strategy.Script.Executor.Backtester == null) {
+				if (this.Strategy.Script.Executor.BacktesterOrLivesimulator == null) {
 					string msg = "IsExecutorBacktesting Couldn't be calculated because Alert.Strategy.Script.Executor.Backtester=null for " + this;
 					Assembler.PopupException(msg);
 					return null;
 				}
-				return this.Strategy.Script.Executor.Backtester;
+				return this.Strategy.Script.Executor.BacktesterOrLivesimulator;
 			} }
 		[JsonIgnore]	public	bool				IsBacktestRunning_FalseIfNoBacktester		{ get {
 				Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
@@ -120,7 +120,7 @@ namespace Sq1.Core.Execution {
 		[JsonIgnore]	public	bool				IsBacktestingLivesimNow_FalseIfNoBacktester		{ get {
 		        Backtester	backtester = this.BacktesterNullUnsafeForDeserialized;
 		        if (backtester == null) return false;
-		        return this.Strategy.Script.Executor.Backtester.IsBacktestingLivesimNow;
+		        return this.Strategy.Script.Executor.BacktesterOrLivesimulator.IsBacktestingLivesimNow;
 		    }
 		}
 		[JsonProperty]	public	BarScaleInterval	BarsScaleInterval				{ get; protected set; }

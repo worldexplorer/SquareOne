@@ -48,13 +48,13 @@ namespace Sq1.Strategies.Demo {
 				}
 			}
 
-			if (base.Executor.Backtester.BarsOriginal == null) {
+			if (base.Executor.BacktesterOrLivesimulator.BarsOriginal == null) {
 				string msg = "I_RESTORED_CONTEXT__END_OF_BACKTEST_ORIGINAL_BECAME_NULL base.Executor.Backtester.BarsOriginal == null";
 				//Assembler.PopupException(msg + " //Script=" + this.ToString());
 				return;
 			}
 
-			if (base.Bars.Count == base.Executor.Backtester.BarsOriginal.Count) {
+			if (base.Bars.Count == base.Executor.BacktesterOrLivesimulator.BarsOriginal.Count) {
 				base.ChartConditionalLineDrawModify("acrossAllBars",
 					0, base.Bars.BarStaticFirstNullUnsafe.Open,
 					base.Bars.BarStaticLastNullUnsafe.ParentBarsIndex, base.Bars.BarStaticLastNullUnsafe.Open,

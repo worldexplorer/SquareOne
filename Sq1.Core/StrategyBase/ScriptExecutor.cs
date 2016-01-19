@@ -24,7 +24,7 @@ namespace Sq1.Core.StrategyBase {
 		public	string							ReasonToExist				{ get; protected set; }
 		public	ExecutionDataSnapshot			ExecutionDataSnapshot		{ get; protected set; }
 		public	SystemPerformance				PerformanceAfterBacktest	{ get; protected set; }
-		public	Backtester						Backtester;					//{ get; private set; }
+		public	Backtester						BacktesterOrLivesimulator;					//{ get; private set; }
 		public	PositionPrototypeActivator		PositionPrototypeActivator	{ get; protected set; }
 		public	MarketLive						MarketLive					{ get; protected set; }
 		public	MarketsimBacktest				MarketsimBacktest			{ get; protected set; }
@@ -187,7 +187,7 @@ namespace Sq1.Core.StrategyBase {
 		bool willEmit { get {
 			// will emit for livestreaming (it is a backtest!) only if
 			bool willEmit = true;
-			if (this.Backtester.IsBacktestingNoLivesimNow) {
+			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
 				string msg = "will NOT emit for static backtests";
 				willEmit = false;
 			} else {
@@ -196,7 +196,7 @@ namespace Sq1.Core.StrategyBase {
 					string msg = "SHOULD_NEVER_HAPPEN__LIVESIMULATOR_SHOULD_HAVE_ORDER_PROCESSOR_NON_NULL";
 					Assembler.PopupException(msg, null, false);
 				} else {
-					if (this.Backtester.IsBacktestingLivesimNow) {
+					if (this.BacktesterOrLivesimulator.IsBacktestingLivesimNow) {
 						willEmit = true;
 					} else {
 						string msg3 = "REALTIME_LIVE_DEPENDS_ON_CHARTFORM_BUTTON";
@@ -214,7 +214,7 @@ namespace Sq1.Core.StrategyBase {
 
 			ReasonToExist				= reasonToExist;
 			ExecutionDataSnapshot		= new ExecutionDataSnapshot(this);
-			Backtester					= new Backtester(this);
+			BacktesterOrLivesimulator					= new Backtester(this);
 			PositionPrototypeActivator	= new PositionPrototypeActivator(this);
 			MarketLive					= new MarketLive(this);
 			MarketsimBacktest			= new MarketsimBacktest(this);
@@ -338,7 +338,7 @@ namespace Sq1.Core.StrategyBase {
 						return null;
 					}
 				} else {
-					if (this.Backtester.IsBacktestRunning == false) {
+					if (this.BacktesterOrLivesimulator.IsBacktestRunning == false) {
 						string msg4 = "IM_AT_APPRESTART_BACKTEST_PRIOR_TO_LIVE__HERE_I_SHOULD_HAVE_EXECUTED_ON_LASTBAR__DID_SO_AT_BRO_THIS_IS_NONSENSE!!!FINALLY";
 					}
 				}
@@ -506,8 +506,8 @@ namespace Sq1.Core.StrategyBase {
 				this.ChartShadow.AlertsPlacedRealtimeAdd(alertsNewAfterExecSafeCopy);
 			}
 
-			if (this.Backtester.WasBacktestAborted) return null;
-			if (this.Backtester.IsBacktestingNoLivesimNow) return null;
+			if (this.BacktesterOrLivesimulator.WasBacktestAborted) return null;
+			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return null;
 			
 			
 			ReporterPokeUnit pokeUnit = new ReporterPokeUnit(quoteForAlertsCreated,
@@ -628,7 +628,7 @@ namespace Sq1.Core.StrategyBase {
 			if (position.Prototype != null) {
 				if (signalName.Contains("protoTakeProfitExit")
 					&& position.Prototype.TakeProfitAlertForAnnihilation != null
-					&& this.Backtester.IsBacktestingNoLivesimNow == false) {
+					&& this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
 					string msg = "I won't create another protoTakeProfitExit because"
 						+ " position.Prototype.TakeProfitAlertForAnnihilation != null"
 						+ " position[" + position + "]";
@@ -637,7 +637,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 				if (signalName.Contains("protoStopLossExit")
 					&& position.Prototype.StopLossAlertForAnnihilation != null
-					&& this.Backtester.IsBacktestingNoLivesimNow == false) {
+					&& this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
 					string msg = "I won't create another protoStopLossExit because"
 						+ " position.Prototype.StopLossAlertForAnnihilation != null"
 						+ " position[" + position + "]";
@@ -687,7 +687,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			bool killed = false;
 			if (this.IsStreamingTriggeringScript) {
-				if (this.Backtester.IsBacktestingNoLivesimNow == true) {
+				if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == true) {
 					killed = this.MarketsimBacktest.AnnihilateCounterpartyAlert(alert);
 					//killed = this.MarketSimStatic.AnnihilateCounterpartyAlert(alert);
 				} else {
@@ -1054,7 +1054,7 @@ namespace Sq1.Core.StrategyBase {
 				}
 			}
 
-			if (this.Backtester.IsBacktestingNoLivesimNow) {
+			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
 				string msg = "AFTER_BACKTEST_HOOK_INVOKES_Performance.BuildStatsOnBacktestFinished()_AND_ReportersFormsManager.BuildReportFullOnBacktestFinished()";
 				return;
 			}
@@ -1165,7 +1165,7 @@ namespace Sq1.Core.StrategyBase {
 				msg = "CANT_BE_REMOVED " + orderState + " isn't Pending alert[" + alert + "] ";
 			}
 			if (alert.OrderFollowed == null) {
-				if (this.Backtester.IsBacktestingNoLivesimNow == false) {
+				if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) {
 					msg = "RealTime alerts should NOT have OrderFollowed=null; " + msg;
 					#if DEBUG
 					Debugger.Break();
@@ -1284,7 +1284,7 @@ namespace Sq1.Core.StrategyBase {
 		bool		preBacktestIsStreaming;
 		internal void BacktestContextInitialize(Bars barsEmptyButWillGrow) {
 			if (this.Bars.DataSource.StreamingAdapter != null) {
-				bool thereWereNeighbours = this.Bars.DataSource.PumpPauseNeighborsIfAnyFor(this, this.Backtester.IsBacktestingNoLivesimNow);
+				bool thereWereNeighbours = this.Bars.DataSource.PumpPauseNeighborsIfAnyFor(this, this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow);
 			} else {
 				string msg = "NOT_PAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextInitialize(" + barsEmptyButWillGrow + ")";
 				Assembler.PopupException(msg, null, false);
@@ -1337,7 +1337,7 @@ namespace Sq1.Core.StrategyBase {
 			this.preBacktestBars = null;	// will help ignore this.IsStreaming saving IsStreaming state to json
 
 			if (this.DataSource.StreamingAdapter != null) {
-				bool thereWereNeighbours = this.Bars.DataSource.PumpResumeNeighborsIfAnyFor(this, this.Backtester.IsBacktestingNoLivesimNow);
+				bool thereWereNeighbours = this.Bars.DataSource.PumpResumeNeighborsIfAnyFor(this, this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow);
 			} else {
 				string msg = "NOT_UNPAUSING_QUOTE_PUMP StreamingAdapter=null //BacktestContextRestore(" + this.Bars + ")";
 				Assembler.PopupException(msg, null, false);
@@ -1346,9 +1346,9 @@ namespace Sq1.Core.StrategyBase {
 			this.EventGenerator.RaiseOnBacktesterContextRestoredAfterExecutingAllBars_step4of4(null);
 		}
 		public void BacktesterAbortIfRunningRestoreContext() {
-			if (this.Backtester.IsBacktestingNoLivesimNow == false) return;
+			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow == false) return;
 			// TODO INTRODUCE_NEW_MANUAL_RESET_SO_THAT_NEW_BACKTEST_WAITS_UNTIL_TERMINATION_OF_THIS_METHOD_TO_AVOID_BROKEN_DISTRIBUTION_CHANNELS
-			this.Backtester.AbortRunningBacktestWaitAborted("USER_CHANGED_SELECTORS_IN_GUI_NEW_BACKTEST_IS_ALMOST_TASK.SCHEDULED");
+			this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("USER_CHANGED_SELECTORS_IN_GUI_NEW_BACKTEST_IS_ALMOST_TASK.SCHEDULED");
 			//ALREADY_RESTORED_BY_simulationPostBarsRestore() this.BacktestContextRestore();
 		}
 		public void BacktesterRunSimulation_threadEntry_exceptionCatcher() {
@@ -1361,7 +1361,7 @@ namespace Sq1.Core.StrategyBase {
 
 				if (this.ChartShadow != null) this.ChartShadow.SetIndicators(this.Strategy.Script.IndicatorsByName_ReflectedCached);
 
-				this.Backtester.InitializeAndRun_step1of2();
+				this.BacktesterOrLivesimulator.InitializeAndRun_step1of2();
 			} catch (Exception exBacktest) {
 				backtestException = exBacktest;
 				string msg = "BACKTEST_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Bars + "]";
@@ -1369,7 +1369,7 @@ namespace Sq1.Core.StrategyBase {
 			}
 			
 			if (backtestException == null) {
-				if (this.Backtester.IsBacktestingLivesimNow == false) {		// && this.WasBacktestAborted
+				if (this.BacktesterOrLivesimulator.IsBacktestingLivesimNow == false) {		// && this.WasBacktestAborted
 					try {
 						this.PerformanceAfterBacktest.BuildStatsOnBacktestFinished();
 					} catch (Exception exPerformance) {
@@ -1383,7 +1383,7 @@ namespace Sq1.Core.StrategyBase {
 				Assembler.PopupException(msg, backtestException);
 			}
 			try {
-				this.Backtester.BacktestRestore_step2of2();
+				this.BacktesterOrLivesimulator.BacktestRestore_step2of2();
 			} catch (Exception exRestoringBars) {
 				string msg = "BARS_RESTORE_AFTER_BACKTEST_FAILED for Strategy[" + this.Strategy + "] on Bars[" + this.Bars + "]";
 				Assembler.PopupException(msg, exRestoringBars);
@@ -1413,8 +1413,8 @@ namespace Sq1.Core.StrategyBase {
 				throw new Exception(msg);
 			}
 
-			if (this.Backtester.IsBacktestingNoLivesimNow) {
-				this.Backtester.AbortRunningBacktestWaitAborted("ALREADY_BACKTESTING_this.Backtester.IsBacktestingNow");
+			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("ALREADY_BACKTESTING_this.Backtester.IsBacktestingNow");
 			}
 
 			//???????
@@ -1499,8 +1499,8 @@ namespace Sq1.Core.StrategyBase {
 			if (this.Bars == barsClicked) {
 				string msg = "DONT_SET_SAME_BARS";
 			}
-			if (this.Backtester.IsBacktestingNoLivesimNow) {
-				this.Backtester.AbortRunningBacktestWaitAborted("CLICKED_ON_OTHER_BARS_WHILE_BACKTESTING");
+			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
+				this.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted("CLICKED_ON_OTHER_BARS_WHILE_BACKTESTING");
 			}
 
 			//v2, ATTACHED_TO_BARS.DATASOURCE.SYMBOLRENAMED_INSTEAD_OF_DATASOURCE_REPOSITORY
@@ -1551,7 +1551,7 @@ namespace Sq1.Core.StrategyBase {
 		}
 		public void AlertKillPending(Alert alert) {
 			//if (this.Backtester.IsBacktestingNow) {
-			if (this.Backtester.IsBacktestingNoLivesimNow) {
+			if (this.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
 				this.MarketsimBacktest.SimulateAlertKillPending(alert);
 			} else {
 				this.MarketLive.AlertKillPending(alert);
@@ -1623,7 +1623,7 @@ namespace Sq1.Core.StrategyBase {
 				return;
 			}
 			this.ExecutionDataSnapshot					.Dispose();
-			this.Backtester								.Dispose();
+			this.BacktesterOrLivesimulator								.Dispose();
 			this.Sequencer								.Dispose();
 			this.Livesimulator							.Dispose();
 			this.ScriptIsRunningCantAlterInternalLists	.Dispose();
@@ -1631,7 +1631,7 @@ namespace Sq1.Core.StrategyBase {
 			// ALREADY_DISPOSED_IN_ChartFormsManager.Dispose_workspaceReloading() this.ChartShadow							.Dispose();
 
 			this.ExecutionDataSnapshot					= null;
-			this.Backtester								= null;
+			this.BacktesterOrLivesimulator								= null;
 			this.Sequencer								= null;
 			this.Livesimulator							= null;
 			this.ScriptIsRunningCantAlterInternalLists	= null;

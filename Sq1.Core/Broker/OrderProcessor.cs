@@ -144,10 +144,10 @@ namespace Sq1.Core.Broker {
 			BrokerAdapter broker = null;
 			foreach (Alert alert in alertsBatch) {
 				// I only needed alert.OrderFollowed=newOrder... mb even CreatePropagateOrderFromAlert() should be reduced for backtest
-				if (alert.Strategy.Script.Executor.Backtester.IsBacktestingNoLivesimNow) {
+				if (alert.Strategy.Script.Executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) {
 					string msg = "BACKTEST_DOES_NOT_SUBMIT_ORDERS__CHECK_QUIK_MOCK_FOR_LIVE_SIMULATION";
 					Assembler.PopupException(msg);
-					alert.Strategy.Script.Executor.Backtester.AbortRunningBacktestWaitAborted(msg);
+					alert.Strategy.Script.Executor.BacktesterOrLivesimulator.AbortRunningBacktestWaitAborted(msg);
 					continue;
 				}
 
@@ -862,7 +862,7 @@ namespace Sq1.Core.Broker {
 			ScriptExecutor executor = orderWithNewState.Alert.Strategy.Script.Executor;
 			ReporterPokeUnit afterHooksInvokedPokeUnit = new ReporterPokeUnit();
 			int hooksInvoked = this.OPPstatusCallbacks.InvokeOnceHooksForOrderStateAndDelete(orderWithNewState, afterHooksInvokedPokeUnit);
-			if (executor.Backtester.IsBacktestingNoLivesimNow) return;
+			if (executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return;
 
 			List<Alert> alertsCreatedByHooks = afterHooksInvokedPokeUnit.AlertsNew.SafeCopy(this, "InvokeHooksAndSubmitNewAlertsBackToBrokerAdapter(WAIT)");
 			if (alertsCreatedByHooks.Count == 0) {

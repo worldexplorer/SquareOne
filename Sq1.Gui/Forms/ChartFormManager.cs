@@ -228,7 +228,7 @@ namespace Sq1.Gui.Forms {
 			string symbol = e.Quote.ParentBarStreaming.Symbol;
 			DataSource originalBarsDataSource_evenForLivesimmed = e.Quote.ParentBarStreaming.ParentBars.DataSource;
 
-			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) return;
+			if (this.Executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return;
 
 			// in the future, one chart can be subscribed to many symbols, so executing a Script.OnQuote has to use DataSource+Symbol supplied
 			//NOT_FOR_LIVESIM if (this.ContextCurrentChartOrStrategy.IsStreaming == false) {

@@ -132,7 +132,7 @@ namespace Sq1.Charting {
 			this.InvalidateAllPanels();
 		}
 		void chartControl_BarStreamingUpdatedMerged_ShouldTriggerRepaint_WontUpdateBtnTriggeringScriptTimeline(object sender, BarEventArgs e) {
-			if (this.Executor.Backtester.IsBacktestingNoLivesimNow) return;
+			if (this.Executor.BacktesterOrLivesimulator.IsBacktestingNoLivesimNow) return;
 
 			// if I was designing events for WinForms, I would switch to GUI thread automatically
 			if (base.InvokeRequired == true) {
@@ -148,16 +148,16 @@ namespace Sq1.Charting {
 			StreamingDataSnapshot snap = this.Bars.DataSource.StreamingAdapter.StreamingDataSnapshot;
 
 			LevelTwoHalf asksOriginal = snap.LevelTwoAsks_getForSymbol(this.Bars.Symbol);
-			this.ScriptExecutorObjects.Bids_cachedForOnePaint = new LevelTwoHalfFrozen(
+			this.ScriptExecutorObjects.Bids_sortedCachedForOnePaint = new LevelTwoHalfSortedFrozen(
 				"BIDS_FROZEN",
 				asksOriginal.SafeCopy(this, "CLONING_BIDS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
-				new LevelTwoHalfFrozen.DESC());
+				new LevelTwoHalfSortedFrozen.DESC());
 
 			LevelTwoHalf bidsOriginal = snap.LevelTwoBids_getForSymbol(this.Bars.Symbol);
-			this.ScriptExecutorObjects.Asks_cachedForOnePaint = new LevelTwoHalfFrozen(
+			this.ScriptExecutorObjects.Asks_sortedCachedForOnePaint = new LevelTwoHalfSortedFrozen(
 				"ASKS_FROZEN",
 				bidsOriginal.SafeCopy(this, "CLONING_ASKS_FOR_PAINTING_FOREGROUND_ON_PanelLevel2"),
-				new LevelTwoHalfFrozen.ASC());
+				new LevelTwoHalfSortedFrozen.ASC());
 
 			if (this.VisibleBarRight != this.Bars.Count - 1) {
 				string msg = "I_WILL_MOVE_SLIDER_IF_ONLY_LAST_BAR_IS_VISIBLE";
