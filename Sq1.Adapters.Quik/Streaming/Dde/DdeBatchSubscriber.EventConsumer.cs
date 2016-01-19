@@ -18,9 +18,9 @@ namespace Sq1.Adapters.Quik.Streaming.Dde {
 				Assembler.PopupException(msg + msig);
 				return;
 			}
-			QuikStreamingMonitorDomUserControl domResizeable = tableLevel2.WhereIamMonitored as QuikStreamingMonitorDomUserControl;
+			QuikStreamingMonitorDomUserControl domResizeable = tableLevel2.UserControlMonitoringMe as QuikStreamingMonitorDomUserControl;
 			if (domResizeable == null) {
-				string msg = "I_MUST_HAVE_BEEN_QuikStreamingMonitorDomUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.WhereIamMonitored + "]";
+				string msg = "I_MUST_HAVE_BEEN_QuikStreamingMonitorDomUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}

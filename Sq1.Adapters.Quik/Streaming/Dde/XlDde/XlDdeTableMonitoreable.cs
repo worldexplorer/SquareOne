@@ -5,7 +5,7 @@ using System.Windows.Forms;
 namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public abstract partial class XlDdeTableMonitoreable<T> : XlDdeTable {
 		List<T> dataStructuresParsed;
-		public UserControl WhereIamMonitored;
+		public UserControl UserControlMonitoringMe;
 
 		public XlDdeTableMonitoreable(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : base(topic, quikStreaming, columns) {
 			this.dataStructuresParsed = new List<T>();

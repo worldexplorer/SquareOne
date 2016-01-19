@@ -25,9 +25,9 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		}
 		internal void DomUserControl_deleteFor(DdeTableDepth tableLevel2) {
 			string msig = " //DomUserControl_deleteFor(" + tableLevel2 + ")";
-			QuikStreamingMonitorDomUserControl domResizeable = tableLevel2.WhereIamMonitored as QuikStreamingMonitorDomUserControl;
+			QuikStreamingMonitorDomUserControl domResizeable = tableLevel2.UserControlMonitoringMe as QuikStreamingMonitorDomUserControl;
 			if (domResizeable == null) {
-				string msg = "I_MUST_HAVE_BEEN_QuikStreamingMonitorDomUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.WhereIamMonitored + "]";
+				string msg = "I_MUST_HAVE_BEEN_QuikStreamingMonitorDomUserControl_tableLevel2.WhereIamMonitored[" + tableLevel2.UserControlMonitoringMe + "]";
 				Assembler.PopupException(msg + msig);
 				return;
 			}

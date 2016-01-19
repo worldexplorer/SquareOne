@@ -7,6 +7,7 @@ using NDde.Client;
 using Sq1.Core;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Backtesting;
+using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 
 using Sq1.Adapters.Quik.Streaming.Dde;
@@ -20,9 +21,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 			base.Initialize(TableDefinitions.XlColumnsForTable_DepthOfMarketPerSymbol);
 		}
 
-		internal void OutgoingObjectsBufferize_perSymbol(
-					ConcurrentDictionaryGeneric<double, double> levelTwoAsks,
-					ConcurrentDictionaryGeneric<double, double> levelTwoBids) {
+		internal void OutgoingObjectsBufferize_perSymbol(LevelTwoHalf levelTwoAsks, LevelTwoHalf levelTwoBids) {
 			string msig = " //" + this.DdeGeneratorClassName + ".OutgoingObjectsBufferize_perSymbol(" + levelTwoAsks + "," + levelTwoBids + ")";
 
 			//foreach (double priceLevel in levelTwoAsks.InnerDictionary.Keys) {
@@ -46,7 +45,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde {
 			}
 		}
 
-		internal void Send_DdeClientPokesDdeServer_waitServerProcessed(ConcurrentDictionaryGeneric<double, double> levelTwoAsks, ConcurrentDictionaryGeneric<double, double> levelTwoBids) {
+		internal void Send_DdeClientPokesDdeServer_waitServerProcessed(LevelTwoHalf levelTwoAsks, LevelTwoHalf levelTwoBids) {
 			try {
 				base.OutgoingTableBegin();
 				this.OutgoingObjectsBufferize_perSymbol(levelTwoAsks, levelTwoBids);

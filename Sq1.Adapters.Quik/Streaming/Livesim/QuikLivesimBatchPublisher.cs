@@ -7,6 +7,7 @@ using NDde.Client;
 using Sq1.Core;
 using Sq1.Core.Backtesting;
 using Sq1.Core.DataTypes;
+using Sq1.Core.Streaming;
 using Sq1.Core.Support;
 
 using Sq1.Adapters.Quik;
@@ -44,9 +45,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim {
 			}
 		}
 
-		internal void SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(
-				ConcurrentDictionaryGeneric<double, double> levelTwoAsks,
-				ConcurrentDictionaryGeneric<double, double> levelTwoBids) {
+		internal void SendLevelTwo_DdeClientPokesDdeServer_waitServerProcessed(LevelTwoHalf levelTwoAsks, LevelTwoHalf levelTwoBids) {
 
 			if (this.ddeTableGeneratorDepth == null) {
 				string msg = "I_REFUSE_TO_SendLevelTwo()__DATASOURCE_DIDNT_CONTAIN_ANY_SYMBOLS_TO_LAUNCH_DdeClient_FOR";

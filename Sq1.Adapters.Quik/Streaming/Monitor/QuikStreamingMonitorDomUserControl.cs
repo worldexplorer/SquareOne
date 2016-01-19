@@ -16,12 +16,12 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 			this.olvDomCustomize();
 		}
 		void layoutUserControlResizeable() {
-			base.UserControlInner.Controls.Add(this.olvcDom);
-			this.olvcDom.Dock = DockStyle.Fill;
+			base.UserControlInner.Controls.Add(this.olvcLevelTwo);
+			this.olvcLevelTwo.Dock = DockStyle.Fill;
 		}
 		internal void Initialize(DdeTableDepth tableLevel2Passed) {
 			this.tableLevel2 = tableLevel2Passed;
-			this.tableLevel2.WhereIamMonitored = this;
+			this.tableLevel2.UserControlMonitoringMe = this;
 			this.layoutUserControlResizeable();
 			this.PopulateLevel2ToTitle();
 		}
@@ -34,7 +34,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		}
 
 		internal void PopulateLevel2ToDomControl(LevelTwoOlv levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl) {
-			if (this.olvcDom.IsDisposed) return;
+			if (this.olvcLevelTwo.IsDisposed) return;
 			if (base.IsDisposed) return;
 
 			if (base.InvokeRequired) {
@@ -42,7 +42,7 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				return;
 			}
 
-			this.olvcDom.SetObjects(levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl.FreezeAndFlatten());
+			this.olvcLevelTwo.SetObjects(levelTwoOLV_gotFromDde_pushTo_domResizeableUserControl.FreezeSortAndFlatten());
 		}
 	}
 }

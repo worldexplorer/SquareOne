@@ -14,18 +14,18 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.Asks = levelTwoAsks;
 		}
 
-		internal List<LevelTwoOlvEachLine> FreezeAndFlatten() {
+		internal List<LevelTwoOlvEachLine> FreezeSortAndFlatten() {
 			LevelTwoHalf bidsProxied = this.Bids;
-			LevelTwoHalfFrozen bidsFrozen = new LevelTwoHalfFrozen(
+			LevelTwoHalfSortedFrozen bidsFrozen = new LevelTwoHalfSortedFrozen(
 				"BIDS_FROZEN",
 				bidsProxied.SafeCopy(this, "FREEZING_PROXIED_BIDS_TO_PUSH_TO_DomResizeableUserControl"),
-				new LevelTwoHalfFrozen.DESC());
+				new LevelTwoHalfSortedFrozen.DESC());
 
 			LevelTwoHalf asksProxied = this.Asks;
-			LevelTwoHalfFrozen asksFrozen = new LevelTwoHalfFrozen(
+			LevelTwoHalfSortedFrozen asksFrozen = new LevelTwoHalfSortedFrozen(
 				"ASKS_FROZEN",
 				asksProxied.SafeCopy(this, "FREEZING_PROXIED_ASKS_TO_PUSH_TO_DomResizeableUserControl"),
-				new LevelTwoHalfFrozen.DESC());
+				new LevelTwoHalfSortedFrozen.DESC());
 
 			List<LevelTwoOlvEachLine> ret = new List<LevelTwoOlvEachLine>();
 
