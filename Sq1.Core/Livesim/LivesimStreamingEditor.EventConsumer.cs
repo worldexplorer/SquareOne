@@ -60,6 +60,10 @@ namespace Sq1.Core.Livesim {
 				this.livesimStreamingSettings.DelayBetweenSerialQuotesMin = parsedInt;
 
 			} else if (whereItyped == this.txt_DelayBetweenSerialQuotesMax) {
+				if (parsedInt <= 0) {
+					parsedInt = 3;		// otherwize GUI becomes completely irresponsive; Application.DoEvents will unleash guiHasTime while it doesn't
+					whereItyped.Text = parsedInt.ToString();
+				}
 				this.livesimStreamingSettings.DelayBetweenSerialQuotesMax = parsedInt;
 
 			} else if (whereItyped == this.txt_OutOfOrderQuoteGenerationHappensOncePerQuoteMin) {

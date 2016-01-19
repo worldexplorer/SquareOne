@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 
-//using System.ComponentModel;
-//using System.ComponentModel.Design;
-//using System.Drawing;
-
 using Sq1.Core.DataFeed;
 
 namespace Sq1.Core.Streaming {
@@ -14,7 +10,7 @@ namespace Sq1.Core.Streaming {
 	//[ToolboxBitmap(typeof(StreamingEditor), "StreamingEditor")]
 	//[Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))]
 	
-	public class StreamingEditor : UserControl {
+	public partial class StreamingEditor : UserControl {
 		protected	StreamingAdapter	StreamingAdapter;
 		protected	IDataSourceEditor	DataSourceEditor;
 		protected	bool				IgnoreEditorFieldChangesWhileInitializingEditor;
@@ -24,6 +20,7 @@ namespace Sq1.Core.Streaming {
 			this.StreamingAdapter = streamingAdapter;
 			this.DataSourceEditor = dataSourceEditor;
 			this.InitializeEditorFields();
+			this.StreamingAdapter.OnConnectionStateChanged += new EventHandler<EventArgs>(StreamingAdapter_OnConnectionStateChanged);
 		}
 
 		// was intended to be abstract but has implementation for Designer to be able to instantiate StreamingEditor
