@@ -5,13 +5,13 @@ using Sq1.Core;
 
 namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public abstract partial class XlDdeTableMonitoreable<T> {
-		public event EventHandler<XlDdeTableMonitoringEventArg<T>>			DataStructureParsed_One;
-		public event EventHandler<XlDdeTableMonitoringEventArg<List<T>>>	DataStructuresParsed_Table;
+		public event EventHandler<XlDdeTableMonitoringEventArg<T>>			OnDataStructureParsed_One;
+		public event EventHandler<XlDdeTableMonitoringEventArg<List<T>>>	OnDataStructuresParsed_Table;
 
 		void raiseDataStructureParsed_One(T oneParsed) {
-			if (this.DataStructureParsed_One == null) return;
+			if (this.OnDataStructureParsed_One == null) return;
 			try {
-				this.DataStructureParsed_One(this, new XlDdeTableMonitoringEventArg<T>(oneParsed));
+				this.OnDataStructureParsed_One(this, new XlDdeTableMonitoringEventArg<T>(oneParsed));
 			} catch (Exception ex) {
 				string msg = "QuikStreamingMonitorControl_TREW_IN_raiseDataStructureParsed_One(oneParsed[" + oneParsed + "])";
 				Assembler.PopupException(msg, ex);
@@ -19,9 +19,9 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		}
 
 		void raiseDataStructuresParsed_Table(List<T> tableParsed) {
-			if (this.DataStructuresParsed_Table == null) return;
+			if (this.OnDataStructuresParsed_Table == null) return;
 			try {
-				this.DataStructuresParsed_Table(this, new XlDdeTableMonitoringEventArg<List<T>>(tableParsed));
+				this.OnDataStructuresParsed_Table(this, new XlDdeTableMonitoringEventArg<List<T>>(tableParsed));
 			} catch (Exception ex) {
 				string msg = "QuikStreamingMonitorControl_TREW_IN_raiseDataStructuresParsed_Table(tableParsed[" + tableParsed + "])";
 				Assembler.PopupException(msg, ex);

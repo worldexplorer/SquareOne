@@ -92,6 +92,13 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Broker\Livesim\QuikBrokerLivesimSettings.cs" />
+    <Compile Include="Streaming\Dde\DdeBatchSubscriber.EventConsumer.cs">
+      <DependentUpon>DdeBatchSubscriber.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\Dde\DdeBatchSubscriber.EventGenerator.cs">
+      <DependentUpon>DdeBatchSubscriber.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\Level2.cs" />
     <Compile Include="Streaming\Dde\XlDde\XlDdeTableMonitoreable.EventGenerator.cs">
       <DependentUpon>XlDdeTableMonitoreable.cs</DependentUpon>
     </Compile>
@@ -106,11 +113,15 @@
       <DependentUpon>QuikStreamingMonitorControl.cs</DependentUpon>
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Streaming\Monitor\QuikStreamingMonitorDom.cs">
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorDomUserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Streaming\Monitor\QuikStreamingMonitorDom.Designer.cs">
-      <DependentUpon>QuikStreamingMonitorDom.cs</DependentUpon>
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorDomUserControl.Designer.cs">
+      <DependentUpon>QuikStreamingMonitorDomUserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Streaming\Monitor\QuikStreamingMonitorForm.EventConsumer.cs">
+      <DependentUpon>QuikStreamingMonitorForm.cs</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Streaming\QuikTrade.cs" />
     <Compile Include="Streaming\Dde\XlDde\XlBlockType.cs" />
@@ -204,6 +215,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Broker\Livesim\QuikBrokerLivesimEditor.resx">
       <DependentUpon>QuikBrokerLivesimEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Streaming\Monitor\QuikStreamingMonitorDomUserControl.resx">
+      <DependentUpon>QuikStreamingMonitorDomUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Streaming\QuikStreamingEditor.resx">
       <DependentUpon>QuikStreamingEditor.cs</DependentUpon>

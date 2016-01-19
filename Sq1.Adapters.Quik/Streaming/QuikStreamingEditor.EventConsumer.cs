@@ -35,7 +35,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 				this.quikStreamingAdapter.DdeServerUnregister();
 			}
 		}
-		void quikStreamingAdapter_OnConnectionStateChanged(object sender, EventArgs e) {
+		protected override void StreamingAdapter_OnConnectionStateChanged(object sender, EventArgs e) {
 			this.propagateStreamingConnected_intoBtnStateText();
 		}
    }

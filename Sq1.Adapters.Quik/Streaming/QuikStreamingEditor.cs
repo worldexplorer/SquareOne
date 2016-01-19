@@ -35,7 +35,6 @@ namespace Sq1.Adapters.Quik.Streaming {
 		// NEVER_FORGET_":this()" DataSourceEditorControl.PopulateStreamingBrokerListViewsFromDataSource() => streamingAdapterInstance.StreamingEditorInitialize() will call this
 		public QuikStreamingEditor(StreamingAdapter quikStreamingAdapter, IDataSourceEditor dataSourceEditor) : this() {
 			base.Initialize(quikStreamingAdapter, dataSourceEditor);
-			this.quikStreamingAdapter.OnConnectionStateChanged += new EventHandler<EventArgs>(quikStreamingAdapter_OnConnectionStateChanged);
 			this.propagateStreamingConnected_intoBtnStateText();
 		}
 

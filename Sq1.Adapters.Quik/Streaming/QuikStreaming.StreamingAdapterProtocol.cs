@@ -17,7 +17,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 			if (base.UpstreamConnected == true) return;
 			string symbolsSubscribed = this.upstreamSubscribeAllDataSourceSymbols();
 			this.DdeServerRegister();	// ConnectionState.UpstreamConnected_downstreamUnsubscribed;		// will result in StreamingConnected=true
-			this.DdeBatchSubscriber.AllDdeTablesReceivedCountersReset();
+			this.DdeBatchSubscriber.Tables_CommonForAllSymbols_Add();
+			this.DdeBatchSubscriber.AllDdeMessagesReceivedCounter_reset();
 			this.UpstreamConnectionState = ConnectionState.UpstreamConnected_downstreamSubscribedAll;
 			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " started DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 		} }
@@ -30,6 +31,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 			this.UpstreamConnectionState = ConnectionState.UpstreamConnected_downstreamUnsubscribedAll;
 			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " symbolsUnsubscribedAll[" + symbolsUnsubscribed + "]");
 			this.DdeServerUnregister();
+			//this.DdeBatchSubscriber.Tables_CommonForAllSymbols_Add();
 			Assembler.DisplayConnectionStatus(base.UpstreamConnectionState, this.Name + " stopped DdeChannels[" + this.DdeBatchSubscriber.ToString() + "]");
 		} }
 
@@ -38,8 +40,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 				Assembler.PopupException("can't subscribe empty symbol=[" + symbol + "]; returning");
 				return;
 			}
-			if (this.DdeBatchSubscriber.SymbolHasIndividualChannels(symbol)) {
-				String msg = "QUIK: ALREADY SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeBatchSubscriber.IndividualChannelsForSymbol(symbol) + "]";
+			if (this.DdeBatchSubscriber.SymbolIsSubscribedForLevel2(symbol)) {
+				String msg = "QUIK: ALREADY SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeBatchSubscriber.Level2ForSymbol(symbol) + "]";
 				Assembler.PopupException(msg);
 				//this.StatusReporter.UpdateConnectionStatus(ConnectionState.OK, 0, msg);
 				return;
@@ -55,8 +57,8 @@ namespace Sq1.Adapters.Quik.Streaming {
 				Assembler.PopupException("can't unsubscribe empty symbol=[" + symbol + "]; returning");
 				return;
 			}
-			if (this.DdeBatchSubscriber.SymbolHasIndividualChannels(symbol) == false) {
-				string errormsg = "QUIK: NOTHING TO REMOVE SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeBatchSubscriber.IndividualChannelsForSymbol(symbol) + "]";
+			if (this.DdeBatchSubscriber.SymbolIsSubscribedForLevel2(symbol) == false) {
+				string errormsg = "QUIK: NOTHING TO REMOVE SymbolHasIndividualChannels(" + symbol + ")=[" + this.DdeBatchSubscriber.Level2ForSymbol(symbol) + "]";
 				Assembler.PopupException(errormsg);
 				return;
 			}
@@ -70,7 +72,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 				Assembler.PopupException("IsSubscribed() symbol=[" + symbol + "]=IsNullOrEmpty; returning");
 				return false;
 			}
-			return this.DdeBatchSubscriber.SymbolHasIndividualChannels(symbol);
+			return this.DdeBatchSubscriber.SymbolIsSubscribedForLevel2(symbol);
 		} }
 
 		public override void PushQuoteReceived(Quote quote) {

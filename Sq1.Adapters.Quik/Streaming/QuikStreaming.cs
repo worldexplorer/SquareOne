@@ -49,7 +49,7 @@ namespace Sq1.Adapters.Quik.Streaming {
 					string msg = "NO_SYMBOLS__STREAMING_QUIK_NOT_INITIALIZED_DDE_CHANNELS_NULL";
 					return ret;
 				}
-				ret = this.DdeBatchSubscriber.SymbolsHavingIndividualTables;
+				ret = this.DdeBatchSubscriber.SymbolsDOMsSubscribed;
 				return ret;
 			} }
 
@@ -66,13 +66,13 @@ namespace Sq1.Adapters.Quik.Streaming {
 			} }
 
 		[JsonIgnore]	public	string					IdentForMonitorWindowTitle { get {
-			string ret = "";
-			if (this.DataSource				!= null) ret += this.DataSource.Name;
-			if (this.DataSource.MarketInfo	!= null) ret += " :: " + this.DataSource.MarketInfo.Name;
-			ret += " [" + (string.IsNullOrEmpty(this.DdeTopicQuotes) ? "NO_DDE_TOPIC_QUOTES" : this.DdeTopicQuotes) + "]";
-			ret += " //TablesReceived[" + this.DdeBatchSubscriber.AllDdeTablesReceivedCountersTotal + "]";
-			return ret;
-		} }
+				string ret = "";
+				if (this.DataSource				!= null) ret += this.DataSource.Name;
+				if (this.DataSource.MarketInfo	!= null) ret += " :: " + this.DataSource.MarketInfo.Name;
+				ret += " [" + (string.IsNullOrEmpty(this.DdeTopicQuotes) ? "NO_DDE_TOPIC_QUOTES" : this.DdeTopicQuotes) + "]";
+				ret += " //TablesReceived[" + this.DdeBatchSubscriber.AllDdeMessagesReceivedCounters_total + "]";
+				return ret;
+			} }
 
 		[JsonIgnore]	public	string					DdeServerStartStopOppositeAction { get {
 			return this.DdeServerIsRegistered ? "Stop DDE Server (now started)" : "Start DDE Server (now stopped)";

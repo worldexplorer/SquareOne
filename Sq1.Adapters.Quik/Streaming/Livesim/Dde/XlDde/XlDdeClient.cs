@@ -39,12 +39,12 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 			}
 			XlDdeTable table = this.tablesByTopic[c.Topic];
 			c.Tag = table;
-			table.ReceivingDataDde = true;
+			table.TopicConnected = true;
 		}
 		protected override void OnDisconnect(DdeConversation c) {
 			string msig = " //OnDisconnect(" + c.Topic + ")";
 			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
-			tableRecipient.ReceivingDataDde = false;
+			tableRecipient.TopicConnected = false;
 			string msg = "TABLE_MAGICALLY_REMOVED_FOR_TOPIC";
 			Assembler.PopupException(msg + msig, null, false);
 		}
@@ -53,7 +53,7 @@ namespace Sq1.Adapters.Quik.Streaming.Livesim.Dde.XlDde {
 			//if(format != xlTableFormat) return PokeResult.NotProcessed;
 			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
 			try {
-				tableRecipient.ParseDeliveredDdeData_pushToStreaming(data);
+				tableRecipient.ParseDdeDeliveredMessage_pushToStreaming(data);
 			} catch (Exception ex) {
 				string msg = "DDE_DATA_PARSING_FAILED tableRecipient[" + tableRecipient.Topic + "]";
 				Assembler.PopupException(msg + msig, ex);

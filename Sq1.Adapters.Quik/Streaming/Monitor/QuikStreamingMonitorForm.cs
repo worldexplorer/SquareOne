@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 using Sq1.Widgets;
 using Sq1.Adapters.Quik.Streaming.Dde.XlDde;
+using Sq1.Adapters.Quik.Streaming.Dde;
 
 namespace Sq1.Adapters.Quik.Streaming.Monitor {
 	public partial class QuikStreamingMonitorForm : DockContentImproved {
@@ -18,13 +19,20 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		// HUMAN_INVOKED_CONSTRUCTOR
 		public QuikStreamingMonitorForm(QuikStreaming quikStreamingInstantiatedForDataSource) : this() {
 			this.quikStreaming = quikStreamingInstantiatedForDataSource;
-			this.quikStreaming.DdeBatchSubscriber.TableQuotes.DataStructureParsed_One		+= new EventHandler<XlDdeTableMonitoringEventArg<QuoteQuik>>(		tableQuotes_DataStructureParsed_One);
-			this.quikStreaming.DdeBatchSubscriber.TableQuotes.DataStructuresParsed_Table	+= new EventHandler<XlDdeTableMonitoringEventArg<List<QuoteQuik>>>(	tableQuotes_DataStructuresParsed_Table);
+			this.QuikStreamingMonitorControl.Initialize(this.quikStreaming);
 		}
 
-		void quikStreamingMonitorForm_FormClosing(object sender, FormClosingEventArgs e) {
-			this.quikStreaming.DdeBatchSubscriber.TableQuotes.DataStructureParsed_One		-= new EventHandler<XlDdeTableMonitoringEventArg<QuoteQuik>>(		tableQuotes_DataStructureParsed_One);
-			this.quikStreaming.DdeBatchSubscriber.TableQuotes.DataStructuresParsed_Table	-= new EventHandler<XlDdeTableMonitoringEventArg<List<QuoteQuik>>>(	tableQuotes_DataStructuresParsed_Table);
+		void quikStreaming_OnConnectionStateChanged(object sender, EventArgs e) {
+			this.populateWindowTitle_grpStatuses();
+		}
+
+		void populateWindowTitle_grpStatuses() {
+			if (this.InvokeRequired) {
+				base.BeginInvoke((MethodInvoker)delegate { this.populateWindowTitle_grpStatuses(); });
+				return;
+			}
+			base.Text										= this.quikStreaming.DdeBatchSubscriber.WindowTitle;
+			this.QuikStreamingMonitorControl.Populate_grpStatuses();
 		}
 
 		void tableQuotes_DataStructuresParsed_Table(object sender, XlDdeTableMonitoringEventArg<List<QuoteQuik>> e) {
@@ -32,7 +40,10 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 				base.BeginInvoke((MethodInvoker)delegate { this.tableQuotes_DataStructuresParsed_Table(sender, e); });
 				return;
 			}
-			this.quikStreamingMonitorControl.OlvQuotes.SetObjects(e.DataStructureParsed);
+			this.QuikStreamingMonitorControl.OlvQuotes.SetObjects(e.DataStructureParsed);
+			XlDdeTableMonitoreable<QuoteQuik> xlDdeTable = sender as XlDdeTableMonitoreable<QuoteQuik>;
+			if (xlDdeTable == null) return;
+			this.QuikStreamingMonitorControl.grpQuotes.Text = xlDdeTable.ToString();
 		}
 		void tableQuotes_DataStructureParsed_One(object sender, XlDdeTableMonitoringEventArg<QuoteQuik> e) {
 		}
@@ -43,6 +54,5 @@ namespace Sq1.Adapters.Quik.Streaming.Monitor {
 		public override string ToString() {
 			return this.quikStreaming.IdentForMonitorWindowTitle;
 		}
-
 	}
 }

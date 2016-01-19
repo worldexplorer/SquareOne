@@ -40,14 +40,14 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			}
 			XlDdeTable table = this.tablesByTopic[c.Topic];
 			c.Tag = table;
-			table.ReceivingDataDde = true;
+			table.TopicConnected = true;
 			string msg1 = "DDE_SERVER_CONNECTED[" + c.Topic + "]";
 			Assembler.PopupException(msg1 + msig, null, false);
 		}
 		protected override void OnDisconnect(DdeConversation c) {
 			string msig = " //OnDisconnect(" + c.Topic + ") " + this.ToString();
 			XlDdeTable tableRecipient = (XlDdeTable)c.Tag;
-			tableRecipient.ReceivingDataDde = false;
+			tableRecipient.TopicConnected = false;
 			string msg = "DDE_SERVER_DISCONNECTED[" + c.Topic + "]";
 			Assembler.PopupException(msg + msig, null, false);
 		}
@@ -65,7 +65,7 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			
 			try {
 				// SET_QUOTE_PUMP_STRAIGHT_NO_SEPARATE_THREAD
-				tableRecipient.ParseDeliveredDdeData_pushToStreaming(data);
+				tableRecipient.ParseDdeDeliveredMessage_pushToStreaming(data);
 			} catch (Exception ex) {
 				string msg = "DDE_DATA_PARSING_FAILED tableRecipient[" + tableRecipient.Topic + "]";
 				Assembler.PopupException(msg + msig, ex);

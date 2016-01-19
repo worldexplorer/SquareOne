@@ -8,9 +8,18 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 	public abstract class XlDdeTable {
 		protected abstract	string					DdeConsumerClassName	{ get; }
 		public				string					Topic					{ get; private set; }
-		public				DateTime				LastDataReceived		{ get; protected set; }
-		public	virtual		bool					ReceivingDataDde		{ get; set; }
-		public				long					DdeTablesReceived		{ get; set; }
+		public				DateTime				LastDataReceived		{ get; private set; }
+
+							bool					topicConnected;
+		public	virtual		bool					TopicConnected			{
+			get { return this.topicConnected; }
+			set { if (value == true) { this.DdeConnectedTimes++; } this.topicConnected = value; }
+		}
+
+		public	virtual		int						DdeConnectedTimes		{ get; private set; }
+	
+		public				long					DdeMessagesReceived		{ get; private set; }
+		public				long					DdeRowsReceived			{ get; private set; }
 
 		protected	List<XlColumn>					ColumnDefinitions;				// part of the abstraction to implement in children
 		protected	Dictionary<string, XlColumn>	ColumnDefinitionsByNameLookup;
@@ -20,9 +29,10 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		protected	QuikStreaming					QuikStreaming			{ get; private set; }
 
 		XlDdeTable() {
-			this.ColumnsIdentified			= false;
 			this.ColumnDefinitions			= new List<XlColumn>();			// part of the abstraction to implement in children
 			this.ColumnClonesFoundByIndex	= new Dictionary<int, XlColumn>();
+			this.ColumnsIdentified			= false;	// sure it's false			at consctruction time
+			this.ResetCounters();						// sure they are zeroes		at consctruction time
 		}
 		protected XlDdeTable(string topic, QuikStreaming quikStreaming, List<XlColumn> columns) : this() {
 			this.Topic = topic;
@@ -35,15 +45,16 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 			}
 		}
 
-		public void ParseDeliveredDdeData_pushToStreaming(byte[] data) {
+		public void ParseDdeDeliveredMessage_pushToStreaming(byte[] data) {
 			this.LastDataReceived = DateTime.UtcNow;
 
 			this.IncomingTableBegun();
 			using (XlReader reader = new XlReader(data)) {
 				this.ParseMessage_readAsTable_convertEachRowToDataStructures(reader);
+				this.DdeRowsReceived++;
 			}
 			this.IncomingTableTerminated();
-			this.DdeTablesReceived++;
+			this.DdeMessagesReceived++;
 		}
 		protected virtual void ParseMessage_readAsTable_convertEachRowToDataStructures(XlReader reader) {
 			// IDENTIFY_EACH_NEW_MESSAGE_DONT_CACHE if (this.ColumnsIdentified == false) {
@@ -186,13 +197,34 @@ namespace Sq1.Adapters.Quik.Streaming.Dde.XlDde {
 		protected abstract	void	IncomingTableRow_convertToDataStructure(XlRowParsed row);	// you can push to Streaming here (doesn't make sense to commit quotes to QuikStreaming as a table)
 		protected virtual	void	IncomingTableTerminated() { }				//  or you can push to Streaming here (it is more consistent to unlock per-symbol DepthOfMarket as whole table so that QuikStreaming Level2 consumers will get the whole frame at once)
 
+		
+		internal void ResetCounters() {
+			this.DdeMessagesReceived = 0;
+			this.DdeRowsReceived = 0;
+		}
+
 		public override string ToString() {
-			string ret = "";
-			if (string.IsNullOrEmpty(this.Topic) == false) ret += "Topic[" + this.Topic + "] ";
-			ret += (this.ReceivingDataDde ? "GettingData" : "NeverReceived")
-				//+ " " + (this.ErrorParsing ? "Error!" : "NoError")
-				+ " " + (this.ColumnsIdentified ? "columnsIdentified" : "columnsNotIdentified");
-			ret = this.DdeConsumerClassName + "{Symbols[" + this.QuikStreaming.StreamingDataSnapshot.SymbolsSubscribedAndReceiving + "] " + ret + "}";
+			string ret = this.DdeConsumerClassName;
+
+			if (string.IsNullOrEmpty(this.Topic) == false) ret += " [" + this.Topic + "] ";
+
+			ret += " "	+ this.DdeMessagesReceived;
+			ret += ":"	+ this.DdeRowsReceived;
+
+			string connectionStatus = "NEVER_CONNECTED_DDE";
+			if (this.DdeConnectedTimes > 0) {
+				if (this.TopicConnected) {
+					connectionStatus = "LISTENING_DDE#";
+					if (this.DdeMessagesReceived > 0) connectionStatus = "RECEIVING_DDE#";
+				} else {
+					connectionStatus = "DISCONNECTED_DDE#";
+				}
+				connectionStatus += this.DdeConnectedTimes;
+			}
+
+			ret += " "	+ connectionStatus;
+			ret += " Symbols[" + this.QuikStreaming.StreamingDataSnapshot.SymbolsSubscribedAndReceiving + "]";
+			ret += " " + (this.ColumnsIdentified ? "columnsIdentified" : "columnsNotIdentified");
 			return ret;
 		}
 	}

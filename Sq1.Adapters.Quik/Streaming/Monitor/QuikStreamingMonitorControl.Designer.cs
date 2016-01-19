@@ -38,14 +38,11 @@
 			this.olvcQuotesFortsPriceMin = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQuotesFortsPriceMax = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
 			this.olvcQuotesAbsnoPerSymbol = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-			this.lblQuotesStatus = new System.Windows.Forms.Label();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.grpDom = new System.Windows.Forms.GroupBox();
 			this.flpDoms = new System.Windows.Forms.FlowLayoutPanel();
-			this.label1 = new System.Windows.Forms.Label();
 			this.grpTrades = new System.Windows.Forms.GroupBox();
 			this.olvTrades = new BrightIdeasSoftware.ObjectListView();
-			this.label2 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -76,8 +73,8 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-			this.splitContainer1.Size = new System.Drawing.Size(858, 487);
-			this.splitContainer1.SplitterDistance = 144;
+			this.splitContainer1.Size = new System.Drawing.Size(856, 474);
+			this.splitContainer1.SplitterDistance = 140;
 			this.splitContainer1.TabIndex = 0;
 			// 
 			// grpQuotes
@@ -86,14 +83,14 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.grpQuotes.Controls.Add(this.OlvQuotes);
-			this.grpQuotes.Controls.Add(this.lblQuotesStatus);
 			this.grpQuotes.Location = new System.Drawing.Point(9, 3);
 			this.grpQuotes.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
 			this.grpQuotes.Name = "grpQuotes";
-			this.grpQuotes.Size = new System.Drawing.Size(840, 132);
+			this.grpQuotes.Size = new System.Drawing.Size(838, 128);
 			this.grpQuotes.TabIndex = 0;
 			this.grpQuotes.TabStop = false;
-			this.grpQuotes.Text = "Quotes [Sq1-quotes]:26116";
+			this.grpQuotes.Text = "Quotes [Sq1-quotes]:26116 //TableQuotes.DataStructuresParsed_Table_MUST_BE_THE_SE" +
+    "NDER";
 			// 
 			// OlvQuotes
 			// 
@@ -126,10 +123,10 @@
             this.olvcQuotesFortsPriceMax,
             this.olvcQuotesAbsnoPerSymbol});
 			this.OlvQuotes.Cursor = System.Windows.Forms.Cursors.Default;
-			this.OlvQuotes.Location = new System.Drawing.Point(6, 32);
+			this.OlvQuotes.Location = new System.Drawing.Point(6, 19);
 			this.OlvQuotes.Name = "OlvQuotes";
 			this.OlvQuotes.ShowGroups = false;
-			this.OlvQuotes.Size = new System.Drawing.Size(828, 94);
+			this.OlvQuotes.Size = new System.Drawing.Size(826, 103);
 			this.OlvQuotes.TabIndex = 2;
 			this.OlvQuotes.TintSortColumn = true;
 			this.OlvQuotes.UseCompatibleStateImageBehavior = false;
@@ -216,15 +213,6 @@
 			this.olvcQuotesAbsnoPerSymbol.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.olvcQuotesAbsnoPerSymbol.Width = 52;
 			// 
-			// lblQuotesStatus
-			// 
-			this.lblQuotesStatus.AutoSize = true;
-			this.lblQuotesStatus.Location = new System.Drawing.Point(6, 16);
-			this.lblQuotesStatus.Name = "lblQuotesStatus";
-			this.lblQuotesStatus.Size = new System.Drawing.Size(280, 13);
-			this.lblQuotesStatus.TabIndex = 1;
-			this.lblQuotesStatus.Text = "Waiting for Quik to connect to my DDE topic [Sq1-quotes]";
-			// 
 			// splitContainer2
 			// 
 			this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -241,8 +229,8 @@
 			// 
 			this.splitContainer2.Panel2.BackColor = System.Drawing.SystemColors.Control;
 			this.splitContainer2.Panel2.Controls.Add(this.grpTrades);
-			this.splitContainer2.Size = new System.Drawing.Size(858, 339);
-			this.splitContainer2.SplitterDistance = 220;
+			this.splitContainer2.Size = new System.Drawing.Size(856, 330);
+			this.splitContainer2.SplitterDistance = 214;
 			this.splitContainer2.TabIndex = 0;
 			// 
 			// grpDom
@@ -251,11 +239,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.grpDom.Controls.Add(this.flpDoms);
-			this.grpDom.Controls.Add(this.label1);
 			this.grpDom.Location = new System.Drawing.Point(9, 3);
 			this.grpDom.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
 			this.grpDom.Name = "grpDom";
-			this.grpDom.Size = new System.Drawing.Size(840, 208);
+			this.grpDom.Size = new System.Drawing.Size(838, 202);
 			this.grpDom.TabIndex = 0;
 			this.grpDom.TabStop = false;
 			this.grpDom.Text = "Depths Of Market [Sq1-RIM3-dom]:3213 [Sq1-LKOH-dom]:5116";
@@ -265,20 +252,12 @@
 			this.flpDoms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.flpDoms.BackColor = System.Drawing.SystemColors.Window;
-			this.flpDoms.Location = new System.Drawing.Point(6, 32);
+			this.flpDoms.AutoScroll = true;
+			this.flpDoms.BackColor = System.Drawing.SystemColors.Control;
+			this.flpDoms.Location = new System.Drawing.Point(6, 19);
 			this.flpDoms.Name = "flpDoms";
-			this.flpDoms.Size = new System.Drawing.Size(828, 170);
+			this.flpDoms.Size = new System.Drawing.Size(826, 177);
 			this.flpDoms.TabIndex = 3;
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(6, 16);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(248, 13);
-			this.label1.TabIndex = 2;
-			this.label1.Text = "Listening:4 Waiting:1 Connected:2 Disconnected:1";
 			// 
 			// grpTrades
 			// 
@@ -286,11 +265,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.grpTrades.Controls.Add(this.olvTrades);
-			this.grpTrades.Controls.Add(this.label2);
 			this.grpTrades.Location = new System.Drawing.Point(9, 3);
 			this.grpTrades.Margin = new System.Windows.Forms.Padding(9, 3, 9, 9);
 			this.grpTrades.Name = "grpTrades";
-			this.grpTrades.Size = new System.Drawing.Size(840, 103);
+			this.grpTrades.Size = new System.Drawing.Size(838, 100);
 			this.grpTrades.TabIndex = 0;
 			this.grpTrades.TabStop = false;
 			this.grpTrades.Text = "Trades [Sq1-trades]:41441";
@@ -300,21 +278,12 @@
 			this.olvTrades.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.olvTrades.Location = new System.Drawing.Point(6, 32);
+			this.olvTrades.Location = new System.Drawing.Point(6, 19);
 			this.olvTrades.Name = "olvTrades";
-			this.olvTrades.Size = new System.Drawing.Size(828, 65);
+			this.olvTrades.Size = new System.Drawing.Size(826, 75);
 			this.olvTrades.TabIndex = 3;
 			this.olvTrades.UseCompatibleStateImageBehavior = false;
 			this.olvTrades.View = System.Windows.Forms.View.Details;
-			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(6, 16);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(277, 13);
-			this.label2.TabIndex = 2;
-			this.label2.Text = "Waiting for Quik to connect to my DDE topic [Sq1-trades]";
 			// 
 			// QuikStreamingMonitorControl
 			// 
@@ -323,22 +292,19 @@
 			this.BackColor = System.Drawing.SystemColors.ControlDark;
 			this.Controls.Add(this.splitContainer1);
 			this.Name = "QuikStreamingMonitorControl";
-			this.Size = new System.Drawing.Size(858, 487);
+			this.Size = new System.Drawing.Size(856, 474);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
 			this.splitContainer1.ResumeLayout(false);
 			this.grpQuotes.ResumeLayout(false);
-			this.grpQuotes.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.OlvQuotes)).EndInit();
 			this.splitContainer2.Panel1.ResumeLayout(false);
 			this.splitContainer2.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
 			this.splitContainer2.ResumeLayout(false);
 			this.grpDom.ResumeLayout(false);
-			this.grpDom.PerformLayout();
 			this.grpTrades.ResumeLayout(false);
-			this.grpTrades.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.olvTrades)).EndInit();
 			this.ResumeLayout(false);
 
@@ -347,14 +313,8 @@
 		#endregion
 
 		private System.Windows.Forms.SplitContainer splitContainer1;
-		private System.Windows.Forms.GroupBox grpQuotes;
 		public BrightIdeasSoftware.ObjectListView OlvQuotes;
-		private System.Windows.Forms.Label lblQuotesStatus;
 		private System.Windows.Forms.SplitContainer splitContainer2;
-		private System.Windows.Forms.GroupBox grpDom;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.GroupBox grpTrades;
-		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.FlowLayoutPanel flpDoms;
 		private BrightIdeasSoftware.ObjectListView olvTrades;
 		private BrightIdeasSoftware.OLVColumn olvcQuotesSymbolClass;
@@ -369,5 +329,8 @@
 		private BrightIdeasSoftware.OLVColumn olvcQuotesFortsPriceMin;
 		private BrightIdeasSoftware.OLVColumn olvcQuotesFortsPriceMax;
 		private BrightIdeasSoftware.OLVColumn olvcQuotesAbsnoPerSymbol;
+		public System.Windows.Forms.GroupBox grpQuotes;
+		public System.Windows.Forms.GroupBox grpDom;
+		public System.Windows.Forms.GroupBox grpTrades;
 	}
 }
