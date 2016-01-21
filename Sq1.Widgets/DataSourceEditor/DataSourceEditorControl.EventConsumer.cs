@@ -23,7 +23,7 @@ namespace Sq1.Widgets.DataSourceEditor {
 				return;
 			}
 			this.dataSourceIamEditing.StreamingAdapter = (StreamingAdapter)lvi.Tag;
-			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.PushStreamingAdapterSettingsToEditor();
+			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.PopulateStreamingAdapterSettingsToEditor();
 			this.dataSourceIamEditing.StreamingAdapter.EditorInstance.Dock = DockStyle.Fill;
 			//this.btnNext.Enabled = true;
 			//this.btnFinished.Enabled = false;

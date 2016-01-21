@@ -347,7 +347,8 @@ namespace Sq1.Core.DataFeed {
 			return barsCompressed;
 		}
 		public bool PumpPauseNeighborsIfAnyFor(ScriptExecutor executor, bool wrongUsagePopup = true) {
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
+				.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel == null) return false;
 
 			if (channel.QuotePump.HasSeparatePushingThread == false) {
@@ -367,7 +368,8 @@ namespace Sq1.Core.DataFeed {
 				return false;
 			}
 
-			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
+			SymbolScaleDistributionChannel channel = this.StreamingAdapter.DataDistributor_replacedForLivesim
+				.GetDistributionChannelFor_nullUnsafe(executor.Bars.Symbol, executor.Bars.ScaleInterval);
 			if (channel == null) return false;
 
 			if (channel.QuotePump.HasSeparatePushingThread == false) {

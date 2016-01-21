@@ -29,7 +29,7 @@ namespace Sq1.Core.Streaming {
 		const		int		WARN_AFTER_QUOTES_BUFFERED = 10;
 					int		timesThreadWasStarted;
 
-		public bool IshouldWaitConfirmationFromAnotherThread { get {
+		bool iShouldWaitConfirmationFromAnotherThread { get {
 				//v1
 				//return
 				//		Thread.CurrentThread.Name != null
@@ -58,12 +58,16 @@ namespace Sq1.Core.Streaming {
 			//v1 NOPE_ITS_TOO_THICK_FOR_POST_CONSTRUCTOR_TIMES_this.PusherPause();	// ALL_PUMPS_AT_BIRTH_ARE_PAUSED__AVOIDING_INDICATORS_NOT_HAVING_EXECUTOR_AT_APP_RESTART_BACKTEST
 			this.confirmPaused.Set();		// IF_ON_APP_RESTART_WE_HAVE_BACKTESTS_SCHEDULED_SymbolCScaleDistributionChannel.PumpResumeBacktesterFinishedRemove()_WILL_UNPAUSE_AFTER_THEY_FINISH
 			if (this.HasSeparatePushingThread) {
-				this.PushingThreadStart();
+				this.pushingThreadStart();
+				if (this.Paused) {
+					string msg = "DONT_FORGET_UNPAUSE__STARTED_THE_PUSHER_THREAD";
+					Assembler.PopupException(msg, null, false);
+				}
 			}
 		}
 
 		bool isPushingThreadStarted;
-		private void PushingThreadStart() {
+		void pushingThreadStart() {
 			bool currentlyPushing = this.HasSeparatePushingThread;
 			string msig = " //PushingThreadStart[" + currentlyPushing + "]=>[" + true + "] " + this.ToString();
 			if (this.isPushingThreadStarted == true) {
@@ -268,7 +272,7 @@ namespace Sq1.Core.Streaming {
 			string msig = " //pusherPause[" + currentlyPaused + "]=>[" + true + "] " + this.ToString();
 			this.confirmPaused.Reset();
 			try {
-				if (this.IshouldWaitConfirmationFromAnotherThread) {
+				if (this.iShouldWaitConfirmationFromAnotherThread) {
 					this.confirmPaused.Reset();
 					this.pauseRequested = true;
 					this.HasQuoteToPushWrite = true;		// fake gateway open, just to let the thread process pauseRequested=true
@@ -303,7 +307,7 @@ namespace Sq1.Core.Streaming {
 			}
 			string msig = " //pusherUnpause[" + currentlyPaused + "]=>[" + true + "] " + this.ToString();
 			try {
-				if (this.IshouldWaitConfirmationFromAnotherThread) {
+				if (this.iShouldWaitConfirmationFromAnotherThread) {
 					this.confirmUnpaused.Reset();
 					this.unPauseRequested = true;
 					this.HasQuoteToPushWrite = true;		// fake gateway open, just to let the thread process unPauseRequested=true
@@ -339,6 +343,6 @@ namespace Sq1.Core.Streaming {
 			bool paused = this.confirmPaused.WaitOne(maxWaitingMillis);
 			return paused;
 		}
-		public override string ToString() { return THREAD_PREFIX + this.Channel.ToString(); }
+		public override string ToString() { return THREAD_PREFIX + this.Channel.ConsumerNames; }
 	}
 }

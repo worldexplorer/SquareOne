@@ -7,22 +7,35 @@ using Sq1.Core.DataFeed;
 using Sq1.Core.Livesim;
 using Sq1.Core.DataTypes;
 using Sq1.Core.Charting;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Streaming {
 	public partial class StreamingAdapter {
-		[JsonIgnore]	DataDistributor		distributorCharts_preLivesimForSymbolLivesimming = null;
-		[JsonIgnore]	DataDistributor		distributorSolidifier_preLivesimForSymbolLivesimming = null;
+		[JsonIgnore]	DataDistributor		distributorCharts_preLivesimForSymbolLivesimming;
+		[JsonIgnore]	DataDistributor		distributorSolidifier_preLivesimForSymbolLivesimming;
+		[JsonIgnore]	LivesimStreaming	livesimStreamingForWhomDataDistributorsAreReplaced;
 
 		internal void SubstituteDistributorForSymbolsLivesimming_extractChartIntoSeparateDistributor(LivesimStreaming livesimStreaming) {
+			this.livesimStreamingForWhomDataDistributorsAreReplaced = livesimStreaming;
+
+			ScriptExecutor executor = this.livesimStreamingForWhomDataDistributorsAreReplaced.Livesimulator.Executor;
+			string reasonForNewDistributor = "LIVESIM_STARTING:"
+				+ this.livesimStreamingForWhomDataDistributorsAreReplaced.Name
+				+ "/" + executor.StrategyName
+				// NO_IT_DOES_CONTAIN_GARBAGE!!! + "@" + executor.Bars.ToString()	// should not contain Static/Streaming bars since Count=0
+				+ executor.Bars.SymbolIntervalScale
+				;
+
+			this.DataDistributor_replacedForLivesim.AllQuotePumps_Pause(reasonForNewDistributor);
 			this.distributorCharts_preLivesimForSymbolLivesimming = this.DataDistributor_replacedForLivesim;
-			this.DataDistributor_replacedForLivesim = new DataDistributor(this);
+			this.DataDistributor_replacedForLivesim = new DataDistributor(this, reasonForNewDistributor);
 
 			string symbol					= livesimStreaming.Livesimulator.BarsSimulating.Symbol;
 			BarScaleInterval scaleInterval	= livesimStreaming.Livesimulator.BarsSimulating.ScaleInterval;
 			string symbolIntervalScale		= livesimStreaming.Livesimulator.BarsSimulating.SymbolIntervalScale;
-			IStreamingConsumer chartShadow	= livesimStreaming.Livesimulator.Executor.ChartShadow.ChartStreamingConsumer;
+			StreamingConsumer chartShadow	= livesimStreaming.Livesimulator.Executor.ChartShadow.ChartStreamingConsumer;
 
-			bool willPushUsingPumpInSeparateThread = false;	// I wanna know which thread is going to be used; if DDE-client then cool; YES_IT_WAS_DDE_THREAD
+			bool willPushUsingPumpInSeparateThread = true;	// I wanna know which thread is going to be used; if DDE-client then cool; YES_IT_WAS_DDE_THREAD
 			//bool willPushUsingPumpInSeparateThread = true;			// and now I wanna Livesim just like it will be working with Real Quik
 			//if (this.distributorCharts_preLivesimForSymbolLivesimming.ConsumerQuoteIsSubscribed(symbol, scaleInterval, chartShadow) == false) {
 			//    string msg = "EXECUTOR'S_CHART_SHADOW_WASNT_QUOTECONSUMING_WHAT_YOU_GONNA_LIVESIM NONSENSE " + symbolIntervalScale;
@@ -38,8 +51,11 @@ namespace Sq1.Core.Streaming {
 			// the chart will be subscribed twice to the same Symbol+ScaleInterval, yes! but the original distributor is backed up and PushBarReceived will only push to the new DataDistributor(this) with one chart only
 			this.DataDistributor_replacedForLivesim.ConsumerBarSubscribe(symbol, scaleInterval, chartShadow, willPushUsingPumpInSeparateThread);
 
+			this.DataDistributorSolidifiers_replacedForLivesim.AllQuotePumps_Pause(reasonForNewDistributor);
 			this.distributorSolidifier_preLivesimForSymbolLivesimming = this.DataDistributorSolidifiers_replacedForLivesim;
-			this.DataDistributorSolidifiers_replacedForLivesim = new DataDistributor(this);		// EMPTY!!! exactly what I wanted
+			this.DataDistributorSolidifiers_replacedForLivesim = new DataDistributor(this, reasonForNewDistributor);		// EMPTY!!! exactly what I wanted
+
+			this.DataDistributor_replacedForLivesim.SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor(symbol, scaleInterval);
 
 			string msg1 = "THESE_STREAMING_CONSUMERS_LOST_INCOMING_QUOTES_FOR_THE_DURATION_OF_LIVESIM: ";
 			string msg2= this.distributorCharts_preLivesimForSymbolLivesimming.ToString();
@@ -47,8 +63,15 @@ namespace Sq1.Core.Streaming {
 		}
 
 		internal void SubstituteDistributorForSymbolsLivesimming_restoreOriginalDistributor() {
-			this.DataDistributor_replacedForLivesim			= this.distributorCharts_preLivesimForSymbolLivesimming;
+			this.DataDistributor_replacedForLivesim				= this.distributorCharts_preLivesimForSymbolLivesimming;
 			this.DataDistributorSolidifiers_replacedForLivesim	= this.distributorSolidifier_preLivesimForSymbolLivesimming;
+
+			ScriptExecutor executor = this.livesimStreamingForWhomDataDistributorsAreReplaced.Livesimulator.Executor;
+			string reasonForNewDistributor = this.livesimStreamingForWhomDataDistributorsAreReplaced.Name
+				+ "==RESTORING_AFTER_LIVESIM" + executor.StrategyName + "@" + executor.Bars.ToString();	// should not contain Static/Streaming bars since Count=0
+
+			this.DataDistributor_replacedForLivesim				.AllQuotePumps_Unpause(reasonForNewDistributor);
+			this.DataDistributorSolidifiers_replacedForLivesim	.AllQuotePumps_Unpause(reasonForNewDistributor);
 
 			string msg1 = "STREAMING_CONSUMERS_RESTORED_CONNECTIVITY_TO_STREAMING_ADAPTER_AFTER_LIVESIM: "
 				+ this.DataDistributor_replacedForLivesim.ToString() + " SOLIDIFIERS:" + this.DataDistributorSolidifiers_replacedForLivesim	;

@@ -24,7 +24,7 @@ namespace Sq1.Core.Streaming {
 		}
 
 		// was intended to be abstract but has implementation for Designer to be able to instantiate StreamingEditor
-		public virtual void PushStreamingAdapterSettingsToEditor() {
+		public virtual void PopulateStreamingAdapterSettingsToEditor() {
 			throw new Exception("please override BrokerAdapter::PushStreamingAdapterSettingsToEditor() for streamingAdapter=[" + this.StreamingAdapter + "]");
 		}
 		// was intended to be abstract but has implementation for Designer to be able to instantiate StreamingEditor
@@ -34,7 +34,7 @@ namespace Sq1.Core.Streaming {
 
 		public void InitializeEditorFields() {
 			this.IgnoreEditorFieldChangesWhileInitializingEditor = true;
-			this.PushStreamingAdapterSettingsToEditor();
+			this.PopulateStreamingAdapterSettingsToEditor();
 			this.IgnoreEditorFieldChangesWhileInitializingEditor = false;
 		}
 	}

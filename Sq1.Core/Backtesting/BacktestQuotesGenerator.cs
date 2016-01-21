@@ -195,6 +195,8 @@ namespace Sq1.Core.Backtesting {
 			return injectedPushed;
 		}
 		QuoteGenerated  generateClosestQuoteForEachPendingAlertOnOurWayTo(QuoteGenerated quoteToReach, Bar bar2simulate) {
+			string msig = " //generateClosestQuoteForEachPendingAlertOnOurWayTo(" + quoteToReach + "," + bar2simulate + ")";
+
 			if (this.backtester.Executor.ExecutionDataSnapshot.AlertsPending.Count == 0) {
 				string msg = "it looks like no Pending alerts are left anymore";
 				return null;
@@ -204,11 +206,22 @@ namespace Sq1.Core.Backtesting {
 				this.backtester.BacktestDataSource.StreamingAsBacktestNullUnsafe.StreamingDataSnapshot
 					.LastQuoteCloneGetForSymbol(quoteToReach.Symbol);
 
+			if (quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde == null) {
+				string msg = "I_CANNOT_CONTINUE_LIVESIM_FIXME#1";
+				Assembler.PopupException(msg + msig);
+				return null;
+			}
+
 			QuoteGenerated quotePrev = quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde as QuoteGenerated;
 			if (quotePrev == null) {
 				string msg = "YES_WE_LOST_PARENT_BAR_BECAUSE_QUOTE_WENT_THROUGH_QuikLivesimStreaming"
 					+ " Source[" + quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde.Source + "]";
 				quotePrev = new QuoteGenerated(quotePrev_QuoteGenerated_orQuoteQuikIrretraceableAfterDde, bar2simulate);
+				if (quotePrev == null) {
+					string msg1 = "I_CANNOT_CONTINUE_LIVESIM_FIXME#1";
+					Assembler.PopupException(msg1 + msig);
+					return null;
+				}
 			}
 
 			#region PARANOID_CHECKS_HERE THANK_YOU_LED_TO_10_LINES_ABOVE

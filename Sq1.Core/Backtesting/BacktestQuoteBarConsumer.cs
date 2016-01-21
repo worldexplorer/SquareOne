@@ -3,19 +3,28 @@
 using Sq1.Core.DataTypes;
 using Sq1.Core.Execution;
 using Sq1.Core.Streaming;
+using Sq1.Core.StrategyBase;
 
 namespace Sq1.Core.Backtesting {
-	public class BacktestQuoteBarConsumer : IStreamingConsumer {
+	public class BacktestQuoteBarConsumer : StreamingConsumer {
 				Backtester backtester;
 		public	BacktestQuoteBarConsumer(Backtester backtester) {
 			this.backtester = backtester;
 		}
-				Bars IStreamingConsumer.ConsumerBarsToAppendInto { get { return backtester.BarsSimulating; } }
-		void IStreamingConsumer.UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
+
+		#region StreamingConsumer
+		public	override ScriptExecutor	Executor			{ get {
+				var ret = this.backtester.Executor;
+				base.ActionForNullPointer(ret, "this.backtester.Executor=null");
+				return ret;
+			} }
+
+		public override Bars ConsumerBarsToAppendInto { get { return this.backtester.BarsSimulating; } }
+		public override void UpstreamSubscribedToSymbolNotification(Quote quoteFirstAfterStart) {
 		}
-		void IStreamingConsumer.UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
+		public override void UpstreamUnSubscribedFromSymbolNotification(Quote quoteLastBeforeStop) {
 		}
-		void IStreamingConsumer.ConsumeQuoteOfStreamingBar(Quote quote) {
+		public override void ConsumeQuoteOfStreamingBar(Quote quote) {
 			//Bar barLastFormed = quoteToReach.ParentStreamingBar;
 			ExecutionDataSnapshot snap = this.backtester.Executor.ExecutionDataSnapshot;
 
@@ -41,7 +50,7 @@ namespace Sq1.Core.Backtesting {
 			//this.backtester.Executor.Script.OnNewQuoteCallback(quoteToReach);
 			ReporterPokeUnit pokeUnitNullUnsafe = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quote);
 		}
-		void IStreamingConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
+		public override void ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended(Bar barLastFormed, Quote quoteForAlertsCreated) {
 			string msig = " //BacktestQuoteBarConsumer.ConsumeBarLastStaticJustFormedWhileStreamingBarWithOneQuoteAlreadyAppended";
 			if (barLastFormed == null) {
 				string msg = "THERE_IS_NO_STATIC_BAR_DURING_FIRST_4_QUOTES_GENERATED__ONLY_STREAMING"
@@ -54,6 +63,8 @@ namespace Sq1.Core.Backtesting {
 			//v1 this.backtester.Executor.Strategy.Script.OnBarStaticLastFormedWhileStreamingBarWithOneQuoteAlreadyAppendedCallback(barLastFormed);
 			ReporterPokeUnit pokeUnitNullUnsafe = this.backtester.Executor.ExecuteOnNewBarOrNewQuote(quoteForAlertsCreated, false);
 		}
+		#endregion
+
 		public override string ToString() {
 			string ret = "CONSUMER_FOR_" + this.backtester.ToString();
 			return ret;

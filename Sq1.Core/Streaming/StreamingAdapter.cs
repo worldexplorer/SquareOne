@@ -140,14 +140,18 @@ namespace Sq1.Core.Streaming {
 				this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
 			this.DataDistributorSolidifiers_replacedForLivesim.ConsumerQuoteSubscribe(symbol,
 				this.DataSource.ScaleInterval, this.StreamingSolidifier, this.QuotePumpSeparatePushingThreadEnabled);
-			SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(symbol, this.DataSource.ScaleInterval);
-			if (channel == null) {
-				string msg = "NONSENSE";
-				Assembler.PopupException(msg);
-				return;
-			}
-			channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
-			channel.QuotePump.PusherUnpause();
+
+			//v1
+			//SymbolScaleDistributionChannel channel = this.DataDistributorSolidifiers_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(symbol, this.DataSource.ScaleInterval);
+			//if (channel == null) {
+			//    string msg = "NONSENSE";
+			//    Assembler.PopupException(msg);
+			//    return;
+			//}
+			//channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
+			//MOVED_TO_SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor() channel.QuotePump.PusherUnpause();
+			//v2
+			this.DataDistributorSolidifiers_replacedForLivesim.SetQuotePumpThreadName_unpausePump_sinceNoMoreSubscribersWillFollowFor(symbol, this.DataSource.ScaleInterval);
 		}
 		//protected virtual void SolidifierAllSymbolsUnsubscribe(bool throwOnAlreadySubscribed = true) {
 		//    List<string> oneSymbolImLivesimming = this.DataSource.Symbols;
@@ -490,20 +494,6 @@ namespace Sq1.Core.Streaming {
 			//	string msg = "MUST_BE_DIFFERENT_FOR_MID_LIVE_BACKTEST_SINCE_QUOTES_MUST_HAVE_BEEN_PAUSED " + difference;
 			//	Assembler.PopupException(msg);
 			//}
-		}
-
-		internal void SetQuotePumpThreadNameSinceNoMoreSubscribersWillFollowFor(string symbol, BarScaleInterval barScaleInterval) {
-			SymbolScaleDistributionChannel channel = this.DataDistributor_replacedForLivesim.GetDistributionChannelFor_nullUnsafe(symbol, barScaleInterval);
-			if (channel == null) {
-				string msg = "SPLIT_QUOTE_PUMP_TO_SINGLE_THREADED_AND_SELF_LAUNCHING";
-				Assembler.PopupException(msg);
-				return;
-			}
-			if (this.QuotePumpSeparatePushingThreadEnabled) {
-				channel.QuotePump.UpdateThreadNameAfterMaxConsumersSubscribed = true;
-			} else {
-				channel.QuotePump.SetThreadName();
-			}
 		}
 
 		internal void UnsubscribeChart(string symbolSafe, BarScaleInterval scaleIntervalSafe, Charting.ChartStreamingConsumer chartStreamingConsumer, string msigForNpExceptions) {

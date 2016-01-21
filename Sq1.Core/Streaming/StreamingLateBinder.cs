@@ -4,9 +4,9 @@ using Sq1.Core.DataTypes;
 namespace Sq1.Core.Streaming {
 	public class StreamingLateBinder {
 		public	StreamingBarFactoryUnattached	StreamingBarFactoryUnattached	{ get; private set;}
-		public	IStreamingConsumer				Consumer						{ get; private set;}
+		public	StreamingConsumer				Consumer						{ get; private set;}
 
-		public StreamingLateBinder(StreamingBarFactoryUnattached streamingBarFactoryUnattached, IStreamingConsumer consumer) {
+		public StreamingLateBinder(StreamingBarFactoryUnattached streamingBarFactoryUnattached, StreamingConsumer consumer) {
 			this.StreamingBarFactoryUnattached = streamingBarFactoryUnattached;
 			this.Consumer = consumer;
 		}

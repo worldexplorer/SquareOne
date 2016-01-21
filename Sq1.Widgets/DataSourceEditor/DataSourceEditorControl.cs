@@ -269,8 +269,19 @@ namespace Sq1.Widgets.DataSourceEditor {
 			if (this.dataSourceIamEditing.BrokerAdapter		!= null) this.dataSourceIamEditing.BrokerAdapter	.EditorInstance.PushEditedSettingsToBrokerAdapter();
 
 			// for DataSource, nothing changed, but providers were assigned by user clicks, so DS will Initialize() each
-			this.dataSourceIamEditing.Initialize(this.repositoryJsonDataSource.AbsPath, this.orderProcessor);
-			this.repositoryJsonDataSource.SerializeSingle(dataSourceIamEditing);
+			try {
+				this.dataSourceIamEditing.Initialize(this.repositoryJsonDataSource.AbsPath, this.orderProcessor);
+			} catch (Exception ex) {
+				string msg = "SOMETHING_HAPPENED_WHILE_dataSourceIamEditing[" + this.dataSourceIamEditing + "].Initialize(" + this.repositoryJsonDataSource.AbsPath + ")";
+				Assembler.PopupException(msg, ex);
+			}
+
+			try {
+				this.repositoryJsonDataSource.SerializeSingle(dataSourceIamEditing);
+			} catch (Exception ex) {
+				string msg = "SOMETHING_HAPPENED_WHILE_repositoryJsonDataSource.SerializeSingle(" + this.dataSourceIamEditing + ")";
+				Assembler.PopupException(msg, ex);
+			}
 
 			try {
 				this.RaiseDataSourceEdited_updateDataSourcesTreeControl();
